@@ -1,3 +1,4 @@
+/* body:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds) と同じ詳細度を保つための置き換え。 */
 /* ============================================================
    作業台（シーシャ作り）と大会の演出
    大会中（data-mode="tournament"）は黒×ネオンの「スタイリッシュ職人バトル」。
@@ -54,6 +55,45 @@
 .worker-equipment > * { position: absolute; left: 50%; transform: translateX(-50%); }
 .worker-vignette { position: absolute; inset: 0; background: linear-gradient(180deg, #05030b33, transparent 30%, transparent 65%, #08060ed9), linear-gradient(90deg, #100c1222, transparent 60%, #100c1255); pointer-events: none; }
 .worker-scene-tag { position: absolute; left: 20px; top: 18px; font-size: 14px; letter-spacing: 0.02em; color: #d8cbbb; }
+/* 一台の記録（CFX03・js/craft/rig-record.js）: 工程を終えるたびに灯が点き、出来が良いほど明るい。数字は出さない */
+.rig-record { position: absolute; left: 16px; top: 44px; display: flex; gap: 6px; z-index: 3; pointer-events: none; }
+.rig-lamp { position: relative; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+  background: #120c18cc; border: 1px solid #6d5d7a; color: #7f6f8b; font-style: normal; transition: background .3s, border-color .3s, color .3s, box-shadow .3s; }
+.rig-lamp b { font-size: 12px; line-height: 1; font-weight: 700; }
+.rig-lamp[data-tier="dim"] { background: #2a2230e6; border-color: #8a7a96; color: #b8aac4; }
+.rig-lamp[data-tier="good"] { background: #5a3a1ee6; border-color: #e0a060; color: #ffe2bd; box-shadow: 0 0 6px #ff9a3a66; }
+.rig-lamp[data-tier="great"] { background: #b8601ce6; border-color: #ffc27a; color: #fff4e0; box-shadow: 0 0 10px #ff9a3acc; }
+.rig-lamp[data-tier="brilliant"] { background: radial-gradient(circle at 40% 35%, #fff6cf, #ffc21a 55%, #c97a00); border-color: #fff1b0; color: #4a2600;
+  box-shadow: 0 0 6px #fff1b0, 0 0 16px #ffc21acc; animation: rig-lamp-glow 2.4s ease-in-out infinite; }
+.rig-lamp.lit { animation: rig-lamp-pop .5s cubic-bezier(.2, 1.6, .4, 1); }
+.rig-lamp[data-tier="brilliant"].lit { animation: rig-lamp-pop .5s cubic-bezier(.2, 1.6, .4, 1), rig-lamp-glow 2.4s ease-in-out .5s infinite; }
+@keyframes rig-lamp-pop { 0% { transform: scale(.4); } 60% { transform: scale(1.35); } 100% { transform: scale(1); } }
+@keyframes rig-lamp-glow { 50% { box-shadow: 0 0 10px #fff1b0, 0 0 26px #ffc21a; } }
+/* 灯った分だけ作業風景に満ちる暖かい気配。全工程が輝くと縁がゆっくり脈打つ */
+.rig-aura { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: var(--rig-aura, 0); transition: opacity 1.2s ease;
+  background: radial-gradient(120% 70% at 62% 78%, #ffb04a38, transparent 62%); box-shadow: inset 0 0 40px #ffb04a55; }
+.rig-aura[data-full="true"] { animation: rig-aura-breathe 3s ease-in-out infinite; }
+@keyframes rig-aura-breathe { 50% { box-shadow: inset 0 0 64px #ffc21a88; } }
+@media (prefers-reduced-motion: reduce) {
+  .rig-lamp.lit, .rig-lamp[data-tier="brilliant"], .rig-lamp[data-tier="brilliant"].lit, .rig-aura[data-full="true"] { animation: none; }
+}
+/* ライバルの小窓（CFX04・js/craft/rival-windows.js）: 大会だけ。隣の台の進みを工程の灯で見せる。数字・順位は出さない */
+.rival-windows { position: absolute; right: 10px; top: 38%; display: flex; flex-direction: column; gap: 6px; z-index: 3; pointer-events: none; }
+.rival-card { position: relative; display: grid; grid-template-columns: 30px auto; grid-template-rows: auto auto; column-gap: 6px; align-items: center;
+  padding: 4px 8px 4px 4px; border-radius: 10px; background: #120c18d9; border: 1px solid #6d5d7a99; }
+.rival-face { grid-row: 1 / 3; width: 30px; height: 30px; border-radius: 50%; overflow: hidden; background: #2a2230; }
+.rival-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rival-name { font-size: 12px; line-height: 1.2; color: #e8dcef; font-weight: 700; white-space: nowrap; }
+.rival-lamps { display: flex; gap: 3px; }
+.rival-lamp { width: 7px; height: 7px; border-radius: 50%; background: #2a2230; border: 1px solid #6d5d7a; transition: background .3s, box-shadow .3s; }
+.rival-lamp[data-tier="dim"] { background: #6a5a76; }
+.rival-lamp[data-tier="good"] { background: #c98a4a; }
+.rival-lamp[data-tier="great"] { background: #ff9a3a; box-shadow: 0 0 4px #ff9a3a; }
+.rival-lamp[data-tier="brilliant"] { background: #ffd34a; border-color: #fff1b0; box-shadow: 0 0 6px #ffc21a; }
+.rival-card.flash { animation: rival-flash .9s ease-out; }
+@keyframes rival-flash { 0% { box-shadow: 0 0 0 0 #ffc21a00; border-color: #fff1b0; } 25% { box-shadow: 0 0 18px 4px #ffc21acc; transform: scale(1.06); }
+  100% { box-shadow: 0 0 0 0 #ffc21a00; transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .rival-card.flash { animation: none; } }
 .bench-worker-name { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 5px 16px; color: #dfd3c2; border-top: 1px solid #ffffff0d; background: #17151b; }
 .bench-worker-name > b { font-size: 14px; letter-spacing: 0.12em; }
 .bench-worker-caption { display: none; }
@@ -74,7 +114,7 @@
 .audience-note { margin: 0; font-size: 13px; color: #d1c7b6; line-height: 1.45; overflow-wrap: anywhere; }
 .bench-audience[data-tone="bright"] .audience-rating { color: #efcf8a; }
 .bench-audience[data-tone="bright"] .audience-note { font-size: 15px; font-weight: 700; color: #ecd4a1; line-height: 1.45; }
-.bench-audience[data-speaker="nagumo"][data-tone="bright"] .audience-note { font-size: 14px; font-weight: 600; color: #d9e1e7; }
+.bench-audience[data-speaker="sui"][data-tone="bright"] .audience-note { font-size: 14px; font-weight: 600; color: #d9e1e7; }
 .bench-audience[data-tone="warm"] .audience-note { font-size: 14px; color: #d3dcc6; }
 .bench-audience[data-tone="warm"] .audience-rating { color: #b7d2bc; }
 .bench-audience[data-tone="quiet"] .audience-note, .bench-audience[data-tone="quiet"] .audience-rating { color: #c4ada6; }
@@ -103,6 +143,14 @@
 .bench-demo-arrow[hidden] { display: none; }
 @keyframes bench-demo-bob { from { margin-top: -5px; } to { margin-top: 5px; } }
 .bench-demo-caption { min-height: 3em; margin: 10px 0; color: #f2e9dc; font-size: 17px; line-height: 1.5; }
+.bench-demo-status, .bench-demo-instructions { color: inherit; font-size: 16px; line-height: 1.6; }
+.bench-demo-status { margin: 10px 0; }
+.bench-demo-instructions { margin: 10px 0 14px; padding: 10px 14px; border: 1px solid #a895b6; border-radius: 8px; }
+.bench-demo-instructions summary { cursor: pointer; }
+.bench-demo-instructions summary:focus-visible { outline: 3px solid #ffe3a7; outline-offset: 3px; }
+.bench-demo-instructions ol { margin: 10px 0 0; padding-left: 24px; }
+.bench-demo-instructions li + li { margin-top: 6px; }
+.bench-demo-stage[hidden], .bench-demo-caption[hidden] { display: none; }
 .bench-demo-finish { display: block; margin-left: auto; }
 
 /* 制作中の操作ボタンは、道具・表情より目立ちすぎない面と一色の縁で統一。 */
@@ -319,12 +367,27 @@
 .foil-hole { position: absolute; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 43% 55% 40% 52%; background: radial-gradient(ellipse at 65% 25%, #060509 45%, #34313a 75%, #89828b); box-shadow: -1px 1px 1px 1px #f6f0debd, 1px -1px 2px 2px #332f386b; animation: hole-pop .2s var(--ease-out); }
 .foil-hole::before { content: ""; position: absolute; inset: -5px; border-radius: 45% 51% 40% 48%; background: linear-gradient(135deg, #20203255, transparent 45%, #fff6dd55 70%, transparent); pointer-events: none; }
 .foil-hole::after { content: ""; position: absolute; top: 4px; left: -7px; width: 22px; height: 1px; background: linear-gradient(90deg, transparent, #4e465ccc 30%, transparent 46%, #fff5dacc 70%, transparent); transform: rotate(var(--scratch-angle, -28deg)); pointer-events: none; }
-.foil-hole.close, .foil-hole.miss { border-radius: 24% 52% 32% 60%; }
-.foil-hole.close::after, .foil-hole.miss::after { width: 27px; height: 2px; }
+.foil-hole.close, .foil-hole.miss, .foil-hole.rough { border-radius: 24% 52% 32% 60%; }
+.foil-hole.close::after, .foil-hole.miss::after, .foil-hole.rough::after { width: 27px; height: 2px; }
 @keyframes hole-pop { from { transform: scale(2); } }
 .foil-cursor { position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; border: 3px solid #c5fcff; outline: 2px solid #132f40; background: transparent; box-shadow: inset 0 0 0 1px #132f40, 0 0 12px #52d9ed99; pointer-events: none; }
 .foil-cursor.technique-visible { box-shadow: inset 0 0 0 1px #132f40, 0 0 12px #52d9ed99, -7px 0 10px var(--stat-technique); }
 .foil-cursor::after { content: ""; position: absolute; inset: -7px; border: 2px solid #132f40; clip-path: polygon(40% 0, 60% 0, 60% 40%, 100% 40%, 100% 60%, 60% 60%, 60% 100%, 40% 100%, 40% 60%, 0 60%, 0 40%, 40% 40%); }
+/* #2937: 針は目印の近くだけを動く。押している間は沈み込み、アルミが小さくへこむ。押しすぎると色で知らせる。 */
+.foil-dents { position: absolute; inset: 0; pointer-events: none; }
+.foil-cursor { transition: opacity .12s; }
+.foil-cursor.resting { opacity: .4; }
+.foil-cursor.pressing { transform: scale(calc(1 - var(--press, 0) * .3)); }
+.foil-cursor::before { content: ""; position: absolute; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px 0 0 -3px; border-radius: 50%; box-shadow: inset 1px -1px 2px #13101a88, 0 0 0 1px #fff7; opacity: 0; }
+.foil-cursor.pressing::before { opacity: 1; transform: scale(calc(1 + var(--press, 0) * 2)); }
+.foil-cursor[data-depth="wide"] { border-color: #ffd27a; }
+.foil-cursor[data-depth="large"] { border-color: #ff9a76; }
+.foil-hole.shallow { width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; opacity: .75; }
+.foil-hole.wide { width: 12px; height: 12px; margin: -6px 0 0 -6px; }
+.foil-hole.large { width: 15px; height: 15px; margin: -7.5px 0 0 -7.5px; }
+.foil-dent { position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; box-shadow: inset 1px -1px 2px #13101a66, 0 0 0 1px #fff8; animation: foil-dent-fade 1.6s ease-out forwards; }
+@keyframes foil-dent-fade { 60% { opacity: .8; } to { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .foil-dent { animation: none; opacity: .4; } }
 .foil-legend { display: flex; justify-content: center; gap: 27px; margin-top: 26px; padding: 6px 8px; color: #e8dac7; font-size: 14px; }
 .foil-legend span { display: flex; align-items: center; gap: 12px; }
 .foil-legend i { position: relative; display: inline-block; left: auto; top: auto; margin: 0; flex: none; animation: none; }
@@ -342,6 +405,7 @@
 @keyframes hole-feedback-in { 0% { opacity: 0; transform: translate(-50%, -40%); } 15%, 80% { opacity: 1; transform: translate(-50%, -50%); } 100% { opacity: 0; transform: translate(-50%, -60%); } }
 .hr-punch { width: 100%; align-items: center; padding: 18px; font-size: 22px; }
 .hr-row { display: flex; gap: 8px; }
+.hr-depth-hint { margin: 0; font-size: 22px; line-height: 1.4; color: var(--text); order: 7; }
 .hr-plan { color: var(--text); font-size: 14px; line-height: 1.6; min-height: 3.2em; }
 .hr-row .btn { flex: 1; }
 .hr-row .btn:disabled, .hr-punch:disabled { opacity: 0.45; cursor: default; }
@@ -381,14 +445,6 @@
 .coal.pikan .c-hot { opacity: 1; filter: brightness(2.2) saturate(.75) drop-shadow(0 0 10px #ffe1a0); }
 .coal.pikan .coal-corners { animation: heat-ready .35s ease-in-out infinite alternate; }
 @keyframes heat-ready { to { opacity: .35; filter: drop-shadow(0 0 12px #ff6b36); } }
-.heat-actions { display: flex; justify-content: center; gap: 6px; margin: 4px auto 0; max-width: 600px; }
-.heat-pick { flex: 1; min-width: 0; min-height: 50px; padding: 5px 3px; border: 2px solid #b98d5d; border-radius: 8px; background: #281923; color: #ffe2b4; cursor: pointer; font: inherit; }
-.heat-pick b, .heat-pick small { display: block; line-height: 1.25; }
-.heat-pick b { font-size: 14px; }
-.heat-pick small { font-size: 12px; font-variant-numeric: tabular-nums; }
-.heat-pick[data-phase="just"] { border-color: #ffe2a0; background: #8b321c; color: #fff7d9; box-shadow: 0 0 12px #ff7935; animation: heat-ready .35s ease-in-out infinite alternate; }
-.heat-pick:focus-visible { outline: 3px solid #fff1bf; outline-offset: 2px; }
-.heat-pick:disabled { opacity: .55; cursor: default; }
 .coal.soon .coal-corners { border-color: #e6a160; }
 .heat.insight-visible .coal.soon .coal-corners { border-color: var(--stat-insight); box-shadow: 0 0 12px var(--stat-insight); animation: insight-soon .5s ease-in-out infinite alternate; }
 .coal .effect-insight { display: none; position: absolute; right: -15px; top: -12px; }
@@ -418,8 +474,6 @@
 .heat-picks { position: absolute; width: 1px; height: 1px; padding: 0; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .heat-compact { grid-template-columns: minmax(0, 1fr) 200px; gap: 12px; height: 355px; }
 .heat-compact .stove { margin-top: 35px; }
-.heat-compact .heat-pick { min-height: 42px; }
-.heat-compact .heat-pick b { font-size: 12px; }
 .heat-compact .coal { width: 84px; height: 72px; }
 .heat-compact .heat-info { padding: 10px 10px 6px; }
 .heat-compact .heat-carrier-head h2 { font-size: 24px; }
@@ -428,7 +482,7 @@
 .heat-compact .heat-feedback { height: 44px; flex-direction: column; gap: 2px; }
 .heat-compact .heat-feedback .stamp { font-size: 14px; }
 .heat-compact .heat-error { font-size: 14px; line-height: 1.2; padding-left: 0; border-left: 0; }
-@media (prefers-reduced-motion: reduce) { .coal, .coal-stored, .coal.pikan .coal-corners, .heat-pick { transition: none; animation: none; } .coal.pikan .c-core { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .coal, .coal-stored, .coal.pikan .coal-corners { transition: none; animation: none; } .coal.pikan .c-core { opacity: 1; } }
 
 /* キッチンタイマー：液晶と四つのボタンだけをコードで重ねる。 */
 .steam-timer { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; height: 100%; padding-bottom: 24px; }
@@ -605,10 +659,10 @@
 @keyframes fade-in { from { opacity: 0; } }
 .rc-over { position: absolute; left: 0; right: 0; top: 44%; text-align: center; font-size: 72px; font-weight: 800; color: #ff4a4a; text-shadow: 0 0 30px #f00; z-index: 5; animation: rc-pop 0.5s var(--ease-out); }
 
-/* ---------------------------------------------------------------- 南雲カットイン */
-.nagumo-cut { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: rgba(0, 0, 0, 0.9); opacity: 0; transition: opacity 0.4s; pointer-events: none; }
-.nagumo-cut.show { opacity: 1; }
-.nagumo-cut.out { opacity: 0; }
+/* ---------------------------------------------------------------- 千須カットイン */
+.sui-cut { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: rgba(0, 0, 0, 0.9); opacity: 0; transition: opacity 0.4s; pointer-events: none; }
+.sui-cut.show { opacity: 1; }
+.sui-cut.out { opacity: 0; }
 .nc-title { font-size: 22px; letter-spacing: 0.4em; color: var(--neon-cyan); }
 .nc-bars { display: flex; flex-direction: column; gap: 10px; width: 760px; }
 .nc-row { display: flex; align-items: center; gap: 12px; transition: order 0.1s; }
@@ -665,6 +719,10 @@
 .bc-lane { position: absolute; left: 0; right: 0; top: 76px; bottom: 145px; z-index: 6; overflow: hidden; pointer-events: none; user-select: none; container-type: inline-size;
   mask-image: linear-gradient(90deg, #000 0 36%, #000b 46% 96%, #000d 100%);
   clip-path: polygon(0 0, calc(100% - 180px) 0, calc(100% - 180px) 80px, 100% 80px, 100% 100%, 0 100%); }
+/* ワイド時（#3007 の会話幅拡張に合わせる）: 弾幕の帯も横を少し使う。鮮明に見える範囲を右へ伸ばし、右上の切り欠きを少し狭める。通常時は上の形のまま */
+#stage[data-wide] .bc-lane {
+  mask-image: linear-gradient(90deg, #000 0 48%, #000b 60% 96%, #000d 100%);
+  clip-path: polygon(0 0, calc(100% - 120px) 0, calc(100% - 120px) 80px, 100% 80px, 100% 100%, 0 100%); }
 .nico {
   position: absolute;
   left: 0;
@@ -689,7 +747,6 @@
   @keyframes nico-hold { 0% { opacity: 0; } 8%, 85% { opacity: 1; } 100% { opacity: 0; } }
 }
 .rt-part.feel b { font-size: 20px; color: #ffe79a; }
-
 
 /* 温度判定の細い高得点帯。実温度と見える針を同期し、遅れた表示で外れないようにする。 */
 .thermo-mark { transition: none; }
@@ -910,6 +967,12 @@
 .care-coal { min-width: 0; padding: 14px 8px; font-size: 19px; }
 .care-coal .btn-desc { font-size: 15px; font-weight: 900; letter-spacing: -.1em; color: #ffb36a; }
 .care-coal[data-test="care-coal-0"] .btn-desc { color: #a9cdff; letter-spacing: 0; }
+/* 炭の置き方（E06 案A）。個数の前に選んでおく三択。 */
+.care-places { display: flex; align-items: center; gap: 8px; }
+.care-places-label { font-size: 16px; font-weight: 800; color: #ffe3a1; margin-right: 4px; }
+.care-place { min-width: 0; flex: 1; padding: 8px 6px; font-size: 16px; }
+.care-place .btn-desc { font-size: 12px; }
+.care-place[aria-pressed="true"] { border-color: #ffb36a; box-shadow: inset 0 -3px #ffb36a; }
 /* 画面全体の大爆発（TH17）。ステージ全体を覆う。 */
 .screen-blast { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .screen-blast.still { background: #fff4d0; animation: blast-still .45s ease-out forwards; }
@@ -954,6 +1017,7 @@
 .dial-ring { filter: drop-shadow(0 0 10px #c8a36335); }
 .dial-rim { fill: none; stroke: #ffe4b778; stroke-width: 1.5; }
 .dial-gloss { fill: #fff8e529; }
+.pg-divider { fill: none; stroke: #fff4d9; stroke-width: 2.4; stroke-linecap: round; opacity: .92; filter: drop-shadow(0 0 3px #2015108c); }
 .pg-just { fill: #fffcdfaa; stroke: #fff8e6; stroke-width: 1.5; filter: drop-shadow(0 0 6px #fff0bcb0); }
 .pg-sense-extra { fill: var(--stat-sense); stroke: var(--stat-sense); stroke-width: 1; filter: drop-shadow(0 0 5px var(--stat-sense)); }
 .pull-dial .effect-badge { position: absolute; bottom: 10px; }
@@ -1264,20 +1328,17 @@
 .mix-temperature-preview > small { position: absolute; top: calc(100% - 36px); left: 2px; width: 84px; text-align: center; font-weight: 700; font-size: 12px; }
 .mix-temperature[data-selected="false"] .thermo-scale { background: #55515d; }
 .thermo[hidden], .mix-temperature-preview[hidden] { display: none; }
-/* DSの上画面でも両工程を同じ位置へ。既存の下画面スクロールから独立させる。 */
-body.game-ds .bench[data-step] .pull > .thermo { position: fixed; left: calc(var(--ds-vx) + var(--ds-vw) - 96px); top: calc(64px + var(--ds-vy) + 90px); height: max(80px, calc(var(--ds-vh) - 302px)); }
-body.game-ds .bench[data-step] .mix-temperature-preview { position: fixed; left: calc(var(--ds-vx) + var(--ds-vw) - 108px); top: calc(64px + var(--ds-vy) + 56px); height: max(134px, calc(var(--ds-vh) - 248px)); padding-bottom: 20px; }
 .mix-footer { grid-template-columns: 180px minmax(240px, 1fr); }
 
 .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { right: 104px; bottom: 140px; width: 102px; height: 260px; }
 .mix-temperature-preview:has([data-selected="false"]) > small { display: none; }
-
-body.game-ds .mix-temperature-legend { top: calc(100% - 15px); }
-body.game-ds .mix-temperature-preview > small { display: none; }
-body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { bottom: 128px; transform: scale(.4); transform-origin: 50% 100%; }
-@media (min-height: 600px) and (min-width: 761px) {
-  body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { transform: none; }
+/* パッキングでも配合と同じ左の温度帯ゲージを出す（横画面）。実温度針はまだ無いので帯のみ。 */
+body:not(:root) .bench[data-step="pack"] .packing { position: relative; }
+body:not(:root) .bench[data-step="pack"] .bench-panel { overflow: visible; }
+body:not(:root) .bench[data-step="pack"] .mix-temperature-preview {
+  left: -140px; height: 480px; padding-bottom: 78px; overflow: hidden;
 }
+
 
 /* #2359 CUI08: 入場札と実況を夜紫の面へ。 */
 .entrance { background: #150d22e8; }
@@ -1300,3 +1361,8 @@ body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve
 
 /* 明るい会場でも、観客の一言の文字と輪郭が背景へ溶けない。 */
 .nico { background:#160f21b8;border-radius:6px;padding:2px 8px;-webkit-text-stroke:1px #190e21;paint-order:stroke fill; }
+
+/* #2862 「?」の中の補足（詰め方の一覧など。工程が替わると外れる）。 */
+.bench-guide-extra ul { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 4px; }
+.bench-guide-extra li { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 15px; line-height: 1.5; color: #c9c2b9; }
+.bench-guide-extra li b { min-width: 6.5em; }

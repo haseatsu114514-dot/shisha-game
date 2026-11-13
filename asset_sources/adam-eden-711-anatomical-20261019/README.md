@@ -33,14 +33,14 @@
 | 第1章の実Adamレイヤー `naru.png` | 右向き横顔で本人左が緑、奥の右が赤 | 正しいため元blob維持。対応WebP・影も維持 |
 | 第1章レイヤー `adam.png` | 実画像は銀髪のなる | 対象外として維持。命名整理は行わない |
 | 採用済み第1章全体タイトル | 左から2人目のAdamが正しい横顔 | 元blob維持 |
-| 旧ch1 keyart、大会の南雲・博士CG | 確認した表示用画像にAdam／リンゴ対なし | 維持 |
+| 旧ch1 keyart、大会の須井・博士CG | 確認した表示用画像にAdam／リンゴ対なし | 維持 |
 | tournament_tension仮PNG | 文字だけで現行CG目録・非legacy参照なし | 未採用のまま維持 |
 
 立ち絵の旧採用元は `asset_sources/portraits/adam-remaster-v1/<expression>-preview.png` で、元の本番PNGと同一blob。[ch1-art採用記録](https://github.com/haseatsu114514-dot/shisha-game/blob/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d/asset_sources/adoptions/ch1-art-20261008/adoption.json) は改変しない。登場原画は `asset_sources/character-intros/adam-hajime-v4-20261008/adam/source.png` と同一blobだった。
 
 EDEN背景は `assets/backgrounds/{bg_eden_shop,eden}.png` の同一画像別名。両PNGと両WebPはそれぞれ同一bytesを保つ。ロゴは1960×802の採用シートから `[36,53,605,719]` を表示する。[採用台帳](https://github.com/haseatsu114514-dot/shisha-game/blob/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d/asset_sources/store-logos/ch1-issue470/adopted.json) と原画を照合し、後の別候補で上書きしていない。
 
-章題の実Adamは `assets/ui/chapters/ch1_layers/naru.png`。通常の本編第1章開始は `ch1.js → ch1-title-motion.js` が `remake/img/ui/chapters/ch1-title.webp` をcanvasへ描く。共通章題・プレビューは個別レイヤーも使うため、レイヤーを未使用扱いにしない。全体の採用原画は [selected-D/D-title.png](https://github.com/haseatsu114514-dot/shisha-game/blob/8a5bb15b839205ea13f7c6c83dbc9cf8e3acc79d/asset_sources/chapter-title/ch1-white-walk-385-20261013/selected-D/D-title.png)、採用記録SHA-256 `8ee5076b1429b376d542727a2c96ea691e2eeada913b315990da6661486cf972`。この原画PNG自体は未取得で、確認は実レイヤーPNGと採用全体WebPによる。
+章題レイヤーの名前と中身の入れ替わりは2026-11-06に修正済み（PR #2619）。`adam.png` は現行服装のAdam、`naru.png` は現行服装のNaruを、採用一枚絵の候補Bから切り出した。共通章題・プレビューの位置と足元の影も人物に合わせた。通常の本編第1章開始 `ch1.js → ch1-title-motion.js` は個別レイヤーを使わず、採用一枚絵 `remake/img/ui/chapters/ch1-title.webp` を表示する。採用原画は `asset_sources/chapter-title/ch1-white-walk-385-20261013/remake-b-20261106/title.png`。
 
 現行CG11件と台本のshow_cgを照合した。大会3CGは表示用実画像まで確認した。他の8CGはスミ／はじめの練習、みんと・つむぎの場面として目録・台本から除外した範囲で、全8枚の背景人物を目視したとは報告しない。titleArts 23件はヒロインに紐づく目録上の範囲確認。`shisha_eden.png` は現行manifest.scenePropsに存在せず表示対象外。未採用候補・旧生成指示は履歴として保持する。
 

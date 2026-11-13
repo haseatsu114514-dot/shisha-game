@@ -1,3 +1,4 @@
+/* body:not(:root)／.title:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds)／:not([data-layout="ds"]) と同じ詳細度を保つための置き換え。 */
 /* 制作画面と同じ暗い紫・真鍮・銀の面で、大会の記録を一つの放送画面に揃える。 */
 .tournament-heading { position: relative; width: 100%; color: #f4efe5; }
 .tournament-eyebrow { display: block; color: #c9b78e; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; }
@@ -8,8 +9,8 @@
 .tournament-face.loaded img { opacity: 1; }
 .face-fallback { position: absolute; font-size: 22px; font-weight: 700; color: #dfcfaf; }
 .tournament-face.loaded .face-fallback { visibility: hidden; }
-/* ===== 大会の中継グラフィック（中間投票・南雲の一括投入・結果発表）=====
-   ゲーム内1280×720基準。色: 金=主役/はじめ、審査員は --c（上園=桃・博士=青緑・南雲=金）。 */
+/* ===== 大会の中継グラフィック（中間投票・千須の一括投入・結果発表）=====
+   ゲーム内1280×720基準。色: 金=主役/はじめ、審査員は --c（上園=桃・博士=青緑・千須=金）。 */
 .tournament-live { display: inline-block; margin-right: 10px; padding: 2px 8px 2px 18px; position: relative; border-radius: 3px; background: #d8304f; color: #fff; font-size: 12px; font-weight: 700; font-style: normal; letter-spacing: .02em; vertical-align: 2px; }
 .tournament-live::before { content: ""; position: absolute; left: 7px; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%; background: #fff; animation: live-blink 1.2s steps(2) infinite; }
 @keyframes live-blink { 50% { opacity: .2; } }
@@ -37,6 +38,8 @@
 .judge-pips b { height: 9px; border-radius: 2px; background: #ffffff14; box-shadow: inset 0 0 0 1px #ffffff12; }
 .judge-pips b.on { background: var(--c); box-shadow: 0 0 6px color-mix(in srgb, var(--c) 70%, transparent); }
 .judge-left { font-size: 14px; color: #b8afc2; }
+.judge-chip:has(.judge-deduction):not(:has(.judge-face)) { grid-template-columns: minmax(0, 1fr); }
+.judge-deduction { grid-column: 1 / -1; min-width: 0; font-size: 12px; line-height: 1.5; color: #cfc4d8; white-space: normal; overflow-wrap: anywhere; }
 .judge-chip.held { background: linear-gradient(110deg, #3a2a0c, #140f19 75%); }
 .judge-chip.held .judge-pips b { background: repeating-linear-gradient(135deg, #f6c95e33 0 3px, #f6c95e12 3px 6px); }
 .judge-chip.held .judge-left { color: #f6d68e; font-weight: 700; }
@@ -73,7 +76,7 @@
 .sd-recognition { margin: 8px 0 0; padding: 7px 14px; color: #dfc595; border-left: 3px solid #e8c27a; background: #e8c27a0f; font-size: 15px; line-height: 1.5; }
 
 /* ---- 結果発表のカウント（共通の背景は下） */
-.count-screen, .nagumo-cut, .result-table { background: radial-gradient(ellipse 70% 55% at 50% 0%, #6a3f8a55, transparent 70%), linear-gradient(115deg, #100b1df7, #171124e8), url('../img/ui/continue/backdrop_stage.webp') center / cover; }
+.count-screen, .sui-cut, .result-table { background: radial-gradient(ellipse 70% 55% at 50% 0%, #6a3f8a55, transparent 70%), linear-gradient(115deg, #100b1df7, #171124e8), url('../img/ui/continue/backdrop_stage.webp') center / cover; }
 .count-screen .tournament-heading { position: absolute; left: 52px; top: 34px; width: calc(100% - 104px); }
 .count-screen .tournament-heading h1 { font-size: 40px; font-style: italic; }
 .count-screen::before { content: ""; position: absolute; left: 50%; top: -10%; width: 760px; height: 120%; transform: translateX(-50%); background: conic-gradient(from 180deg at 50% 0%, transparent 160deg, #fff3d61a 175deg, #fff3d626 180deg, #fff3d61a 185deg, transparent 200deg); pointer-events: none; animation: spot-sway 3.2s ease-in-out infinite alternate; }
@@ -93,27 +96,27 @@
 .count-screen .rc-cut { padding: 8px 16px; background: #1c142de8; border-left: 3px solid #f6c95e; font-size: 19px; color: #e7dcf0; box-shadow: 0 6px 18px #0009; }
 .count-screen .rc-crt { opacity: .3; }
 
-/* ---- 南雲の一括投入 */
-.nagumo-cut { align-items: stretch; justify-content: flex-start; padding: 40px 470px 40px 60px; gap: 18px; overflow: hidden; }
+/* ---- 千須の一括投入 */
+.sui-cut { align-items: stretch; justify-content: flex-start; padding: 40px 470px 40px 60px; gap: 18px; overflow: hidden; }
 .nc-rays { position: absolute; inset: 0; background: repeating-conic-gradient(from 0deg at 72% 60%, #f6c95e14 0 4deg, transparent 4deg 12deg); opacity: 0; transition: opacity .3s; pointer-events: none; }
-.nagumo-cut.cutting .nc-rays { opacity: 1; animation: rays-flicker .18s steps(2) infinite; }
+.sui-cut.cutting .nc-rays { opacity: 1; animation: rays-flicker .18s steps(2) infinite; }
 @keyframes rays-flicker { 50% { opacity: .55; } }
-.nagumo-cut .tournament-heading { position: relative; padding-bottom: 14px; border-bottom: 1px solid #f6c95e33; }
-.nagumo-cut .tournament-heading h1 { font-size: 44px; font-style: italic; background: linear-gradient(180deg, #fff6dc, #f6c95e); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.nagumo-cut .nc-bars { position: relative; width: 100%; gap: 10px; }
-.nagumo-cut .nc-row { display: grid; grid-template-columns: 40px 50px 130px 1fr 64px; align-items: center; gap: 12px; min-height: 64px; padding: 6px 18px 6px 10px; background: linear-gradient(90deg, #ffffff0e, #ffffff04); border: 1px solid #ffffff14; border-radius: 9px; clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); }
-.nagumo-cut .nc-row.me { border-color: #f6c95e99; background: linear-gradient(90deg, #f6c95e2e, #f6c95e08); box-shadow: inset 4px 0 0 #f6c95e; }
-.nagumo-cut .nc-row.hit { animation: nc-hit .6s ease-out; }
-.nagumo-cut .nc-row.lead { box-shadow: inset 4px 0 0 #f6c95e, 0 0 30px #f6c95e44; }
+.sui-cut .tournament-heading { position: relative; padding-bottom: 14px; border-bottom: 1px solid #f6c95e33; }
+.sui-cut .tournament-heading h1 { font-size: 44px; font-style: italic; background: linear-gradient(180deg, #fff6dc, #f6c95e); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.sui-cut .nc-bars { position: relative; width: 100%; gap: 10px; }
+.sui-cut .nc-row { display: grid; grid-template-columns: 40px 50px 130px 1fr 64px; align-items: center; gap: 12px; min-height: 64px; padding: 6px 18px 6px 10px; background: linear-gradient(90deg, #ffffff0e, #ffffff04); border: 1px solid #ffffff14; border-radius: 9px; clip-path: polygon(0 0, 100% 0, calc(100% - 12px) 100%, 0 100%); }
+.sui-cut .nc-row.me { border-color: #f6c95e99; background: linear-gradient(90deg, #f6c95e2e, #f6c95e08); box-shadow: inset 4px 0 0 #f6c95e; }
+.sui-cut .nc-row.hit { animation: nc-hit .6s ease-out; }
+.sui-cut .nc-row.lead { box-shadow: inset 4px 0 0 #f6c95e, 0 0 30px #f6c95e44; }
 @keyframes nc-hit { 0% { filter: brightness(2.2); } 100% { filter: none; } }
-.nagumo-cut .nc-name { width: auto; font-family: "Suien Name", serif; font-size: 19px; font-weight: 700; }
-.nagumo-cut .nc-row.me .nc-name, .nagumo-cut .nc-row.me .nc-pt { color: #ffe2a6; }
-.nagumo-cut .nc-face { width: 50px; height: 50px; border-radius: 10px; }
-.nagumo-cut .nc-bar { flex: none; height: 18px; border-radius: 3px; overflow: hidden; background: repeating-linear-gradient(90deg, #ffffff10 0 calc(5% - 1px), transparent calc(5% - 1px) 5%), #08060d; }
-.nagumo-cut .nc-bar b { transition: width 1s cubic-bezier(.2, .8, .2, 1); }
-.nagumo-cut .nc-pt { width: auto; text-align: right; font-size: 36px; font-weight: 900; font-style: italic; font-variant-numeric: tabular-nums; }
-.nagumo-cut .nc-cut { position: absolute; right: 0; bottom: 0; top: 96px; width: 440px; min-width: 0; margin: 0; padding: 0; display: block; background: none; clip-path: none; transform: translateX(110%); transition: transform .5s cubic-bezier(.2, .9, .2, 1.05); color: #1d1206; }
-.nagumo-cut .nc-cut.show { transform: none; }
+.sui-cut .nc-name { width: auto; font-family: "Suien Name", serif; font-size: 19px; font-weight: 700; }
+.sui-cut .nc-row.me .nc-name, .sui-cut .nc-row.me .nc-pt { color: #ffe2a6; }
+.sui-cut .nc-face { width: 50px; height: 50px; border-radius: 10px; }
+.sui-cut .nc-bar { flex: none; height: 18px; border-radius: 3px; overflow: hidden; background: repeating-linear-gradient(90deg, #ffffff10 0 calc(5% - 1px), transparent calc(5% - 1px) 5%), #08060d; }
+.sui-cut .nc-bar b { transition: width 1s cubic-bezier(.2, .8, .2, 1); }
+.sui-cut .nc-pt { width: auto; text-align: right; font-size: 36px; font-weight: 900; font-style: italic; font-variant-numeric: tabular-nums; }
+.sui-cut .nc-cut { position: absolute; right: 0; bottom: 0; top: 96px; width: 440px; min-width: 0; margin: 0; padding: 0; display: block; background: none; clip-path: none; transform: translateX(110%); transition: transform .5s cubic-bezier(.2, .9, .2, 1.05); color: #1d1206; }
+.sui-cut .nc-cut.show { transform: none; }
 .nc-cut-art { position: absolute; inset: 0 0 0 40px; overflow: hidden; background: linear-gradient(160deg, #fff1c4, #e7b450 55%, #8f5f1a); clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%); }
 .nc-cut-art::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(-62deg, #ffffff22 0 2px, transparent 2px 14px); mix-blend-mode: overlay; }
 .nc-cut-art img { position: absolute; left: 12%; bottom: -6%; width: 104%; height: auto; filter: drop-shadow(-8px 0 0 #3b2405aa); }
@@ -123,8 +126,8 @@
 .nc-cut-text b { display: block; font-size: 30px; letter-spacing: .1em; }
 .nc-cut-pt { display: flex; align-items: baseline; gap: 10px; margin-top: 2px; font-size: 15px; font-weight: 700; color: #f6d68e; }
 .nc-cut-pt strong { font-size: 64px; line-height: .9; font-style: italic; font-weight: 900; background: linear-gradient(180deg, #fff6dc, #f6c95e 55%, #b07a20); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 3px 0 #000a); }
-.nc-stamp { position: absolute; left: 30%; top: 15%; z-index: 5; padding: 6px 30px; border: 5px solid #ff4d6d; border-radius: 10px; color: #ff4d6d; font-size: 72px; font-weight: 900; letter-spacing: .14em; transform: translate(-50%, -50%) rotate(-10deg); background: #12081099; text-shadow: 0 0 20px #ff4d6d88; animation: stamp-in .4s cubic-bezier(.2, 1.4, .3, 1) backwards; pointer-events: none; }
-@keyframes stamp-in { from { opacity: 0; transform: translate(-50%, -50%) rotate(-10deg) scale(2.4); } }
+.nc-stamp { position: absolute; left: 30%; top: 15%; z-index: 5; padding: 6px 30px; border: 5px solid #ff4d6d; border-radius: 10px; color: #ff4d6d; font-size: 72px; font-weight: 900; letter-spacing: .14em; transform: translate(-50%, -50%) rotate(-10deg); background: #12081099; text-shadow: 0 0 20px #ff4d6d88; animation: nc-stamp-in .4s cubic-bezier(.2, 1.4, .3, 1) backwards; pointer-events: none; }
+@keyframes nc-stamp-in { from { opacity: 0; transform: translate(-50%, -50%) rotate(-10deg) scale(2.4); } }
 
 /* ---- 最終結果 */
 .result-table { padding: 26px 44px 24px; display: grid; grid-template-rows: 128px minmax(0, 1fr) 54px; gap: 16px; align-items: stretch; justify-content: stretch; overflow: hidden; }
@@ -157,20 +160,34 @@
 .rt-votes { display: inline; margin: 0; font-family: var(--font); font-size: 14px; font-weight: 500; color: #a79dae; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .result-table .rt-bar { grid-area: bar; display: flex; height: 12px; }
 .result-table .rt-pt { grid-area: pt; width: auto; text-align: right; font-size: 26px; font-weight: 900; font-style: italic; color: #eee6d4; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.result-table .rt-detail { width: auto; display: grid; grid-template-columns: 1fr 1fr; align-content: start; align-items: start; gap: 8px 12px; padding: 16px 18px; border: 1px solid #e8c27a2e; border-radius: 12px; background: linear-gradient(160deg, #1a1226d9, #0d0a15d9); }
+.result-table .rt-detail { width: auto; display: block; gap: 8px 12px; padding: 16px 18px; border: 1px solid #e8c27a2e; border-radius: 12px; background: linear-gradient(160deg, #1a1226d9, #0d0a15d9); }
 .result-table .rt-detail h4 { grid-column: 1 / -1; margin: 0 0 4px; font-size: 14px; letter-spacing: .08em; color: #cfc4d8; }
 .result-table .rt-part { position: relative; display: grid; grid-template-columns: 1fr 40px; align-items: center; gap: 2px 8px; padding: 7px 12px 9px; border-radius: 8px; background: #ffffff07; border: 1px solid #ffffff0f; font-size: 14px; font-weight: 700; }
 .result-table .rt-part b { grid-column: 2; grid-row: 1 / 3; font-size: 28px; text-align: center; }
 .result-table .rt-part small { width: auto; font-size: 14px; color: #a39cae; font-weight: 500; }
+/* 総合タイルは <b> が2つ（評価マークとランク文字）。同じセルに重ねず、右列に並べる（#3515）。 */
+.result-table .rt-part.total { grid-template-columns: 1fr auto auto; }
+.result-table .rt-part.total b { grid-row: 1 / 3; }
+.result-table .rt-part.total b.craft-evaluation { grid-column: 2; }
+.result-table .rt-part.total b[data-test='craft-final-rank'] { grid-column: 3; min-width: 28px; }
 .result-table .rt-part.total { margin: 0; background: linear-gradient(110deg, #f6c95e22, #f6c95e08); border-color: #f6c95e55; }
-.result-table .rt-detail > small { grid-column: 1 / -1; font-size: 12px; line-height: 1.5; color: #a39baa; }
+.result-table .rt-detail-scroll > small { grid-column: 1 / -1; font-size: 12px; line-height: 1.5; color: #a39baa; }
 .result-table .rt-judge-comment { color: #f6d68e !important; }
+.result-table .rt-deductions { grid-column: 1 / -1; display: grid; gap: 1px; }
+.result-table .rt-detail:has(.rt-deductions) { gap: 6px 12px; padding-top: 12px; padding-bottom: 12px; }
+.result-table .rt-deductions > small { font-size: 12px; line-height: 1.35; color: #a39baa; }
 .result-table .rt-next-tip { color: #9fe7d9 !important; }
 .result-table .flavor-actual { grid-column: 1 / -1; }
-.result-table .rt-detail { min-height: 0; overflow: auto; overscroll-behavior: contain; }
+/* Keep the card within its screen; only its evaluation content scrolls. */
+.result-table .rt-detail { min-height: 0; overflow: hidden; }
+.result-table .rt-detail-scroll { height: 100%; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-content: start; align-items: start; gap: inherit; overflow: auto; overscroll-behavior: contain; }
 .result-table .rt-good-point { color: #e9d6a1; }
 .result-table > .btn { justify-self: end; min-width: 320px; border: 1px solid #f6c95e99; border-radius: 8px; background: linear-gradient(135deg, #6a4e2c, #2f2536); box-shadow: inset 0 1px 0 #ffe8b526, 0 6px 20px #0008; color: #fff1d0; font-size: 18px; font-weight: 800; }
 .result-table > :is(.rt-hero, .rt-layout, .btn) { position: relative; }
+/* スマホ規格（#2851・#2977）では「表彰のあとへ」が規格の高さ（--phone-tap: 72px、ワイドでは 80px）になり、
+   下の段（54px）からはみ出して画面の下で欠けていた。スマホでは下の段をボタンの高さに合わせ、
+   その分だけ順位と評価の段を縮める（評価は今までどおり枠の中でスクロールする）。 */
+html:root[data-density="phone"] body:not(:root) .result-table { grid-template-rows: 128px minmax(0, 1fr) auto; }
 .craft-loading { position: absolute; inset: 64px 0 0; z-index: 30; display: grid; place-content: center; gap: 18px; text-align: center; background: #100c1aee; color: #e4d4b4; font-size: 18px; }
 .craft-loading::before { content: ''; width: 36px; height: 36px; margin: 0 auto; border: 2px solid #a58b522b; border-top-color: #dfc58e; border-radius: 50%; animation: craft-load 1s linear infinite; }
 .bench[data-thermal-band='optimal'] .thermal-label { color: #ebd4ff; }
@@ -181,17 +198,16 @@
 .bench-progress-track:has(> .bench-phase:nth-child(6)) .bench-phase-copy b { font-size: 14px; }
 @keyframes craft-load { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) {
-  .tournament-board *, .result-table *, .nagumo-cut *, .count-screen .rc-card, .count-screen::before, .nc-rays, .rt-rays, .craft-loading::before, .tournament-live::before { animation: none !important; transition: none !important; }
+  .tournament-board *, .result-table *, .sui-cut *, .count-screen .rc-card, .count-screen::before, .nc-rays, .rt-rays, .craft-loading::before, .tournament-live::before { animation: none !important; transition: none !important; }
   .rc-ring-progress { transition: none; }
   .nico { animation: none; left: 25%; transform: none; font-size: 19px; opacity: .6; }
 }
-
 
 /* #2359 CUI08: 大会の中継面を制作と同じ夜紫へ。配置・得点表示は維持。 */
 .tournament-heading { color: #f6f1fa; }
 .tournament-eyebrow, .tournament-heading p, .judge-legend, .judge-left { color: #c9a7e6; }
 .tournament-face { background: #2e1d45; border-color: #5a4475; }
-.standings.tournament-board, .result-table, .count-screen, .nagumo-cut {
+.standings.tournament-board, .result-table, .count-screen, .sui-cut {
   background: #150d22 url('../img/ui/craft-night/backdrop.webp') center / cover no-repeat;
   color: #f6f1fa;
 }
@@ -236,3 +252,23 @@
 .rank-medal, [data-rank] > .rank-medal, .rank-medal.gold {
   clip-path: none; background-position: center; background-size: contain; background-repeat: no-repeat;
 }
+
+.result-table .rt-save { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.result-table .rt-save .btn { min-height: 44px; max-width: 100%; }
+
+/* ================================================================ スマホ規格の大会画面（#2851・#2729 B班）
+   ワイドで左右まで広げる・文字の下限を上げるのは wide-craft.css（#2983）。ここは欄の並びと押す所だけを足す。 */
+/* 最終結果: 「あなたの一台」の欄の下の補足（効いたもの・良かった点・次の練習）を規格の文字に。
+   下段の行の高さ（「……結果を受け止める」が --phone-tap になる分）は phone-density.css（#2976）で決める。 */
+html:root[data-density="phone"] body:not(:root) .result-table .rt-detail-scroll > small { font-size: var(--phone-sub); }
+/* 中間投票: 審査員の欄と名前の列を広げる（文字を大きくしても持ち点の行・名前が詰まらないように） */
+html:root[data-density="phone"] body:not(:root) .standings .sd-main { grid-template-columns: 1fr 380px; }
+html:root[data-density="phone"] body:not(:root) .standings .sd-row { grid-template-columns: 40px 48px 150px 1fr 72px; }
+html:root[data-density="phone"] body:not(:root) .standings .sd-recognition { font-size: var(--phone-sub); }
+/* 入場の紹介カード: 少し広げて、スミさんのひと言を文節で2行までにそろえる */
+html:root[data-density="phone"] body:not(:root) .ent-card { width: 960px; }
+html:root[data-density="phone"] body:not(:root) .ent-note { line-height: 1.45; word-break: auto-phrase; text-wrap: balance; }
+/* GAME OVER: ワイドでは左右の余白を地の色で塗る（会場の絵が覗いていた）。「初回は時間制限なし」の注記を規格の文字に */
+body:not(:root) #stage[data-wide] .end-screen.gameover { box-shadow: 0 0 0 var(--stage-gutter) #120a1c; }
+/* 注記は横持ちスマホでも実寸12px以上（#2190 P24 の下限）。補助文の規格（実寸11.5px）だけだと下回るため、大きい方を取る */
+html:root[data-density="phone"] body:not(:root) .gameover .go-limit-note { font-size: max(var(--phone-sub), calc(12.5px / var(--k, 1))); }

@@ -5,13 +5,15 @@ import { el, yen } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { storeLogo } from "../core/store-logos.js";
 import { state, save, requestResumeOnBoot } from "../core/state.js";
-import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
-import { layers, showScreen, setBg, imageReady, chapterTitle, toast, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { chapterDay } from "../core/chapter-clock.js";
+import { layers, showScreen, setBg, enterScene, imageReady, chapterTitle, toast, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { chapterTitleEntry } from "../core/chapter-title-art.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { showHud } from "../daily/hud.js";
 import { openMenu } from "../daily/menu.js";
 import { openLime, unreadCount } from "../daily/phone.js";
 import { play } from "../vn/engine.js";
+import { playChapterPoem } from "../scenes/chapter-poem.js";
 import { MAP, STATION, STOPS, ROOMS, loadChapterTwoDialogues, loadPreparationDialogues } from "./ch2-city-data.js";
 import { trainRide } from "../core/scene-motions.js";
 import { cueTransition } from "../core/transitions.js";
@@ -109,7 +111,7 @@ async function scene(id, background, dialogue = id, place = null) {
   owner.scene = id;
   if (background) {
     if (place) cueTransition("place", { spotId: place.id, label: place.name, area: CH2_CITY_NAME });
-    await withScenePreparation(setBg(background, { instant: !place }));
+    await withScenePreparation(enterScene(background));
   }
   if (!current(owner)) return false;
   playBgm(background?.includes("bg_tonari_inside") ? "tonari" : CITY_BGM);
@@ -117,7 +119,8 @@ async function scene(id, background, dialogue = id, place = null) {
   layers.hud.replaceChildren();
   const controller = new AbortController();
   owner.controller = controller;
-  const result = await play(dialogue, { signal: controller.signal });
+  const affinityKnown = id === "ch2_city_arrival" && state.flags._ch1_cleared ? ["dr_kemuri"] : [];
+  const result = await play(dialogue, { signal: controller.signal, affinityKnown });
   if (owner.controller === controller) owner.controller = null;
   if (!current(owner)) return false;
   layers.hud.replaceChildren();
@@ -129,7 +132,7 @@ async function mapBackground() {
   const ready = await withScenePreparation(imageReady(MAP.day, 15000));
   if (!current(owner)) return false;
   owner.mapAvailable = ready;
-  await withScenePreparation(setBg(ready ? MAP.day : null, { instant: true }));
+  await withScenePreparation(setBg(ready ? MAP.day : null, { brief: true }));
   if (!current(owner)) return false;
   playBgm(CITY_BGM);
   return true;
@@ -143,7 +146,8 @@ async function continueDayOne() {
     if (stage === "departure") {
       if (!progress().titleSeen) {
         await setBg(bgUrl("bg_tonari_inside", "day"), { instant: true });
-        await chapterTitle({ no: "第二章", name: "才能の壁", read: "ホロウ・クラウン ── Hollow Crown", sub: "HAZE: OPEN CLOUD 編" });
+        if (!await playChapterPoem(2, { owner, current })) return; // 章タイトルの前の巻頭ポエム
+        await chapterTitle(chapterTitleEntry(2)); // 登録済みの章題（#2688 F6）
         if (!current(owner)) return;
         progress().titleSeen = true;
         save();
@@ -357,7 +361,7 @@ function renderMap() {
   showScreen("map", root);
   layers.hud.replaceChildren(el("div.hud", [
     el("div.hud-card", [el("div.dc-main", [el("div.dc-area", { text: CH2_CITY_EN }), el("div.dc-day", [el("b", { text: chapterDay(state) }), el("small", { text: "/14" })]), el("div.dc-slot", { text: "配達" })]),
-      el("div.dc-meta", [el("div.dc-row.money", [el("span", { text: "所持金" }), el("b", { text: yen(state.money) })]), el("div.dc-row", [el("span", { text: "次の大会まで" }), el("b", { text: `あと${chapterDaysLeft(state)}日` })])])]),
+      el("div.dc-meta", [el("div.dc-row.money", [el("span", { text: "所持金" }), el("b", { text: yen(state.money) })])])]),
     el("div.hud-right", [
       el("button.hud-lime", { type: "button", title: "LIME", dataset: { test: test("lime") }, onclick: () => perform(openLimeFromMap) }, [el("span", { text: "LIME" }), el(`em.badge${unreadCount() ? ".single" : ""}`, unreadCount() ? [el("b.badge-number", { text: String(Math.min(unreadCount(), 99)) })] : [])]),
       el("button.hud-menu", { type: "button", dataset: { test: test("menu") }, onclick: () => perform(openMapMenu) }, [el("i"), el("span", { text: "MENU" })])]),

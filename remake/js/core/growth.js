@@ -3,14 +3,18 @@
 // 開発中は URL の ?growth=1（または __remake.dev.growth(true)）でこの端末だけ有効にできる。
 // 無効時は旧成長、有効時は経験値へ置き換える。通常マスの恩恵は旧能力由来の効き目へ加算する（保存値へは書き戻さない）。
 // 第2版（SPEC 2026-10-30）: 能力は3つ（才能・感覚・理論）、火種はレベル1つで2つ、色つきの火種は才・感・理。
+// 2026-11-11 オーナー「寝る前のレベルアップは不要」（SBD108）「一気にリザルトみたいに見せるのはいらない。都度経験値もらって達したらレベルアップがいい」（SBD122）:
+// 経験値が入ったその場でレベルが上がり、火種は手持ちに入る。画面はその場で短い演出を出す（操作は止めない）。火種を盤に灯すのは観音堂などで振り返った時。
 import { state, save } from "./state.js";
-import { emit } from "./bus.js";
+import { emit, on } from "./bus.js";
 import { setExpHooks, affinityLevel, AFFINITY_RANK_PTS } from "./stats.js";
 import { BOARD_KEYS, BOARD_PREFIX, BOARD_SHAPES, STAT_SQUARES, SKILLS, STAT_UPGRADES, LESSONS, CHAR_TYPE, PLAY_REWARDS, KUJI_LAST_ONE_GIFT } from "./growth-board-data.js";
 import { GROWTH_BOARD, growthEnabled, PREVIEW_KEY } from "./growth-mode.js";
 import { growthPerks, growthSkill, growthLesson, SKILL_TUNING, LESSON_TUNING } from "./growth-effects.js";
 import { masteryHooks } from "./flavor-mastery.js";
 import { syncRespecOpportunity, closeRespecOpportunity } from "./growth-respec.js";
+import { KUJI_LIMITED_GRADES } from "./rules.js";
+import { syncPlayMastery, masteryRecord, masteryLine, PLAY_MASTERY } from "./play-mastery.js";
 export { GROWTH_BOARD, growthEnabled } from "./growth-mode.js";
 
 export function setGrowthPreview(on) {
@@ -36,10 +40,22 @@ export const BOARD_VERSION = 13; // 4: 授業の小道、5: 授業20、6: 1レ�
  */
 export const HIDANE_PER_LEVEL = 2;
 export const hidaneForLevel = () => HIDANE_PER_LEVEL;
-export const COLORED_GIFT = 2;      // 節目・大会・♥5の色つきの火種（1.5）
+export const COLORED_GIFT = 2;      // 各章の大会の色つきの火種（1.5）
+/**
+ * 節目のレベルと♥5の贈り物は「色の火1＋白火1」（2026-11-11 オーナーが推奨を採用。SBD109）。
+ * 色の火でしか開かない色の台座は12個なのに、色の火2つずつでは最大65も入って余っていた。色の火を鍵として希少にし、数は白火で保つ。
+ */
+export const KEY_GIFT = Object.freeze({ color: 1, any: 1 });
+/** 大会で優勝した時の白火（章ごとに一度。2026-11-11 オーナー「大会の優勝でも火種ボーナスで欲しい」SBD110） */
+export const WIN_HIDANE = 3;
 export const MILESTONE_LEVELS = [10, 20, 30, 40, 50, 60, 70, 80, 90];
 export const CHAPTER_MULT = { 1: 1, 2: 1.25, 3: 1.5, 4: 1.75, 5: 2 };
 export const EXP = { action: 30, firstPerson: 40, firstPlace: 40, affinityStep: 30, recipe: 30, golden: 20, scene: 20 };
+/**
+ * 絆の深い相手（恋人・締めくくりを読んだ相手）からの誘いに乗った行動の倍率（LM11・2026-11-12 オーナー
+ * 「絆深い相手の誘いは経験値多い」）。新鮮さでは減らさず、同じ相手の店へ通う回数にも数えない。
+ */
+export const BOND_INVITE_MULT = 1.5;
 /** その章で同じ鍵の 1・2回目 ×1.0、3回目 ×0.8、4回目 ×0.6、5回目以降 ×0.4（1.3） */
 export const FRESHNESS = [1, 1, 0.8, 0.6, 0.4];
 export const freshness = (count) => FRESHNESS[Math.min(FRESHNESS.length, Math.max(1, count)) - 1];
@@ -77,6 +93,7 @@ export function newGrowth() {
     settledXp: 0,          // 最後に寝た時点の累計（ゲージの濃い金）
     hidane: Object.fromEntries(HIDANE_KEYS.map((k) => [k, 0])), // 未使用の火種（万能と系統限定）
     earned: 0,             // これまでに受け取った火種の総数
+    starterAccounted: false, // 初回の白火を earned に計上済みか（旧SAVEの一度だけの補正）
     milestones: [],        // 2つ目を渡した節目のレベル（重複防止）
     fresh: { chapter: 1, counts: {} }, // 新鮮さの鍵 -> その章の回数
     firsts: { people: [], places: [] }, // 周回内の「はじめて」
@@ -86,7 +103,8 @@ export function newGrowth() {
     tournamentXp: {},      // 章 -> 大会の参加・最高順位・色の火種（再挑戦で戻さない）
     cleared: [],           // X10/X11を精算した章（周回ごと）
     memory: { lastMix: null, crafts: {} }, // 配合と一台の成績。能力と一緒に周回へ持ち越す
-    today: { xp: 0, learned: {}, gifts: [] }, // 寝る時までの分。learned は鍵 -> 経験値（「今日学んだこと」）、gifts は♥5の贈り物
+    // 寝るまでの分の覚え（xp・learned＝鍵 -> 経験値）。レベルと火種はその場で入るので、演出には使わない（SBD122）。gifts は前の保存の形のために残す
+    today: newDay(),
     seen: { fullLevelUp: false },      // フル演出を一度見たか（初回の判定）
     nodes: [],             // 盤で灯したマスID（確定済みだけ。紋は数えない。取った授業も入る）
     paid: {},              // マスID -> 払った火種 { any: n, body: n, … }（組み直しで同じ種類に戻す）
@@ -101,9 +119,11 @@ export function newGrowth() {
     boardVersion: BOARD_VERSION, // 盤の型の版（v2→v3 で灯し方を返す）
     respec: null,            // 実際の章／周回の変更後、最初の日常だけの組み直し機会
     chapterStart: null,      // その章で最初に読んだ時の盤（章末の「この章で伸びたもの」の淡い面。SBD97）
+    chapterNotice: null,     // 章はじめの盤の知らせを出した章 { key: 周回:章, ring }（growth-chapter-notice.js。C10）
   };
 }
 
+const newDay = () => ({ xp: 0, learned: {}, gifts: [] });
 const num = (v, min = 0) => Number.isFinite(v) && v >= min ? v : min;
 const strings = (list) => [...new Set((Array.isArray(list) ? list : []).filter((v) => typeof v === "string" && v))];
 
@@ -154,6 +174,7 @@ export function ensureGrowth(s = state) {
   g.today.xp = num(g.today.xp);
   if (!g.today.learned || typeof g.today.learned !== "object") g.today.learned = {};
   if (!Array.isArray(g.today.gifts)) g.today.gifts = [];
+  g.today = { xp: g.today.xp, learned: g.today.learned, gifts: g.today.gifts };
   g.seen = { fullLevelUp: g.seen?.fullLevelUp === true };
   if (!g.paid || typeof g.paid !== "object" || Array.isArray(g.paid)) g.paid = {};
   if (g.boardVersion !== BOARD_VERSION) refundOldBoard(g);
@@ -191,7 +212,15 @@ function syncLessonFlags(g, s) {
     }
     // 習得した授業はフラグを立てる（周回で消えても戻す）
     if (g.learned.includes(lesson.id)) for (const f of unlocks) s.flags[f] = true;
+    // 習得で渡される機材（M-W9「博士の試作HMD」）は、習得済みの旧セーブ・周回の引き継ぎでも所持へ戻す
+    if (g.learned.includes(lesson.id)) grantLessonEquipment(lesson, s);
   }
+}
+
+/** 授業の習得で渡される機材を所持へ入れる（二重には入れない）。 */
+export function grantLessonEquipment(lesson, s) {
+  if (!lesson || !Array.isArray(s?.owned)) return;
+  for (const id of lesson.grants || []) if (!s.owned.includes(id)) s.owned.push(id);
 }
 
 // 点灯だけを持ち越した授業は、今の周で好感度を上げ直してから相談する。
@@ -223,6 +252,7 @@ export function learnLesson(id, s = state) {
   if (!g.nodes.includes(id) || g.learned.includes(id) || !lessonHeartReady(lesson, s)) return false;
   g.learned.push(id);
   for (const f of lesson.unlocks || []) s.flags[f] = true;
+  grantLessonEquipment(lesson, s);
   return true;
 }
 
@@ -284,6 +314,7 @@ export function foldFullBoards(g) {
 }
 
 export const hidaneTotal = (g = state?.growth) => g ? HIDANE_KEYS.reduce((n, k) => n + (g.hidane?.[k] || 0), 0) : 0;
+/** まだレベルにしていない分（経験値が入ったその場で上げるので、ふだんは0。古いセーブを読んだ直後だけ残る） */
 export const pendingLevels = (g = state?.growth) => g ? levelForExp(g.xp) - g.level : 0;
 
 // ---------------------------------------------------------------- 通知チップ（1行動につき1枚・REPORT R7）
@@ -323,8 +354,8 @@ export function holdExpChip() {
 // ---------------------------------------------------------------- 経験値の入口
 
 /**
- * 経験値の唯一の入口（4.1 の gainExp）。章倍率を掛けて累計と「今日」に足す。
- * レベルはまだ上げない（寝る時に精算する。1.7）。戻り値=入った量。
+ * 経験値の唯一の入口（4.1 の gainExp）。章倍率を掛けて累計に足す。
+ * レベルはその場で上がり、火種は手持ちに入る（SBD108・SBD122。その場で短い演出を出す）。戻り値=入った量。
  */
 export function gainExp(base, { key = null, tag = null, silent = false, source = null, first = false } = {}) {
   // 恋人イベントだけは通常プレイでも貯める。精算・火種・盤の公開条件は変えない。
@@ -338,6 +369,8 @@ export function gainExp(base, { key = null, tag = null, silent = false, source =
   g.today.xp += amount;
   if (key) g.today.learned[key] = (g.today.learned[key] || 0) + amount;
   if (!silent) addToChip(amount, tag, source); // silent: 呼び出し側が自分の通知で見せる（スロットの結果カード）
+  // 盤が有効な時だけ、その場でレベルと火種にする（恋人EXPの先行保存だけの時は貯めるだけ）
+  if (growthEnabled()) applyLevels(g);
   emit("hud");
   return amount;
 }
@@ -355,20 +388,40 @@ export function awardSlotExp(role) {
  * 体力を使った自由行動1回の経験値（X1〜X3）。
  * @param target.key 新鮮さの鍵（相手のキャラID、スポットID、行動の種類）
  * @param target.person はじめての相手（X2）／ target.place はじめての場所・遊び（X3）
+ * @param target.bond 絆の深い相手からの誘い（LM11）。新鮮さで減らさず BOND_INVITE_MULT 倍。鍵の回数にも数えない
  */
-export function awardActionExp(target) {
+export function awardActionExp(target, actionTime = null) {
   if (!growthEnabled() || !state) return 0;
   const g = ensureGrowth();
   closeRespecOpportunity(g); // expの鍵が無い行動でも、実際に確定した最初の自由行動で閉じる。
   if (!target?.key) return 0;
   if (g.fresh.chapter !== state.chapter) g.fresh = { chapter: state.chapter, counts: {} };
-  const count = (g.fresh.counts[target.key] = (Number(g.fresh.counts[target.key]) || 0) + 1);
+  const count = target.bond ? 0 : (g.fresh.counts[target.key] = (Number(g.fresh.counts[target.key]) || 0) + 1);
   let log = g.chapterLog[state.chapter];
   if (!log || typeof log !== "object" || Array.isArray(log)) log = g.chapterLog[state.chapter] = { people: [], places: [] };
   log.people = strings(log.people); log.places = strings(log.places);
   const collection = target.person ? log.people : log.places, id = target.person || target.place || target.key;
   if (!collection.includes(id)) collection.push(id);
-  let got = gainExp(EXP.action * freshness(count), { key: target.key, tag: count >= 3 ? "なじみ" : null });
+  // 絆の深い相手からの誘い（LM11）は新鮮さで減らさない（倍率は第5章の底上げの後に掛ける）
+  let base = target.bond ? EXP.action : EXP.action * freshness(count);
+  // 第5章の決戦前: 一日に最初の2枠だけ、確定した日常の学びを180XPまで底上げ。
+  // 同じ枠の再通知・無料リトライは補助を増やさない。章1〜4と決戦後は従来どおり。
+  let practice = false;
+  // TRPG・移動など自分で時間を進める行動も、開始時の枠で数える。
+  const at = actionTime || { ...state, chapterFive: !!state.flags?._ch5, matchDay: state.flags?._ch5?.matchDay };
+  if (state.chapter === 5 && at.chapter === 5 && at.phase === "daily" && at.chapterFive && !at.matchDay
+      && Number.isInteger(at.day) && Number.isInteger(at.slot) && [0, 1].includes(at.slot)) {
+    const day = `${at.cycle || 1}:${at.day}`;
+    const ledger = g.practiceDay?.day === day ? g.practiceDay : { day, slots: [] };
+    if (!Array.isArray(ledger.slots)) ledger.slots = [];
+    if (!ledger.slots.includes(at.slot)) {
+      ledger.slots.push(at.slot); base = Math.max(base, 90); practice = true;
+    }
+    g.practiceDay = ledger;
+  }
+  // 絆の深い相手からの誘いは、その行動の基本量（第5章の決戦前は底上げ後）の BOND_INVITE_MULT 倍
+  if (target.bond) base *= BOND_INVITE_MULT;
+  let got = gainExp(base, { key: target.key, tag: target.bond ? "絆" : practice ? "日々の学び" : count >= 3 ? "なじみ" : null });
   if (target.person && !g.firsts.people.includes(target.person)) {
     g.firsts.people.push(target.person);
     got += gainExp(EXP.firstPerson, { key: target.key, tag: "はじめて", first: true });
@@ -439,8 +492,14 @@ export function awardTournamentExp(rank, craft) {
       const color = colors.reduce((best, key) => boardFill(g, key) < boardFill(g, best) ? key : best);
       entry.gifted = true;
       const gift = giveColored(g, color);
-      if (gift.n > 0) g.today.gifts.push({ label: "大会の学び", parts: [gift] });
+      if (gift.n > 0) announceGift({ label: "大会の学び", parts: [gift] });
     }
+  }
+  // 優勝のご褒美（SBD110）: その章で初めて1位になった時に白火。再挑戦で優勝しても一度だけ
+  if (rank === 1 && entry.winGift !== true) {
+    entry.winGift = true;
+    const bonus = giveColored(g, "any", WIN_HIDANE);
+    if (bonus.n > 0) announceGift({ label: "大会で優勝", parts: [bonus] });
   }
   return got;
 }
@@ -464,23 +523,33 @@ export function awardAffinityStepExp(id, steps) {
   return got;
 }
 
-/** ♥5になった人から、その人のタイプの色の火種2つ（1.5・2.7）。周回ごとに1回 */
+/** ♥5になった人から、その人のタイプの色の火1つと白火1つ（1.5・2.7・SBD109）。周回ごとに1回。戻り値=渡した内訳 */
 export function giftAtMaxHeart(id) {
   const color = CHAR_TYPE[id];
   if (!growthEnabled() || !state || !color || affinityLevel(id) < 5) return null;
   const g = ensureGrowth();
   if (g.gifted[id]) return null;
   g.gifted[id] = true;
-  const got = giveColored(g, color);
-  // 寝る前のレベルアップでまとめて知らせる（会話の途中に割り込まない）
-  if (got.n > 0) { g.today.gifts.push({ who: id, parts: [got] }); emit("hud"); }
-  return got;
+  const parts = giveSet(g, { [color]: KEY_GIFT.color, any: KEY_GIFT.any });
+  if (parts.length) announceGift({ who: id, parts });
+  return parts;
 }
 
-/** 色つきの火種のセットを渡す。戻り値=実際に渡した内訳 */
+/** ご褒美の火種が届いたことを、その場の短い演出で知らせる（火種そのものは渡し済み。操作は止めない） */
+function announceGift(gift) {
+  emit("hud");
+  emit("hidane-gift", { who: gift.who || null, label: gift.label || "", parts: gift.parts.map((part) => ({ ...part })) });
+}
+
+/** 色つきの火種のセットを渡す。戻り値=実際に渡した内訳（盤が埋まって白火に変わった分は白火にまとめる） */
 function giveSet(g, set) {
   const parts = [];
-  for (const [kind, n] of Object.entries(set)) { const got = giveColored(g, kind, n); if (got.n > 0) parts.push(got); }
+  for (const [kind, n] of Object.entries(set)) {
+    const got = giveColored(g, kind, n);
+    if (!(got.n > 0)) continue;
+    const same = parts.find((p) => p.kind === got.kind);
+    if (same) same.n += got.n; else parts.push(got);
+  }
   return parts;
 }
 
@@ -501,6 +570,7 @@ function bestAxeRank(s) {
   return best;
 }
 function playRewardMet(reward, s) {
+  if (reward.master) return masteryRecord(s, reward.game).done;
   if (reward.game === "axe") { const rank = bestAxeRank(s); return !!rank && atLeast(rank, reward.rank); }
   if (reward.game === "trpg") {
     const cleared = Object.values(s.trpg?.cleared || {});
@@ -508,7 +578,7 @@ function playRewardMet(reward, s) {
     return cleared.length >= reward.clears;
   }
   if (reward.game === "dj") { const rank = s.dj?.bestRank; return typeof rank === "string" && atLeast(rank, reward.rank); }
-  if (reward.game === "camel") { if (reward.master) return s.flags?._camel_cups?.standard?.mastered === true; const plays = s.flags?._ch4_camel?.plays; return Number.isInteger(plays) && plays >= (reward.clears || 1); }
+  if (reward.game === "camel") { const plays = s.flags?._ch4_camel?.plays; return Number.isInteger(plays) && plays >= (reward.clears || 1); }
   if (reward.game === "desert") { const rank = s.desert?.bestRank; return typeof rank === "string" && atLeast(rank, reward.rank); }
   return false;
 }
@@ -518,6 +588,7 @@ function playRewardMet(reward, s) {
  * 戻り値: [{ label, parts: [{ kind, n }] }]
  */
 export function claimPlayRewards(g, s = state) {
+  syncPlayMastery(s);
   const out = [];
   for (const reward of PLAY_REWARDS) {
     if (g.rewards[reward.id] || !playRewardMet(reward, s)) continue;
@@ -525,9 +596,14 @@ export function claimPlayRewards(g, s = state) {
     out.push({ label: reward.label, parts: giveSet(g, reward.gift) });
   }
   for (const [grade, box] of Object.entries(s.kuji || {})) {
+    // 第5章の限定台くじ（KJ05）は引き切っても火種を付けない。運とお金で盤を伸ばさない（#2455）
+    if (KUJI_LIMITED_GRADES.includes(grade)) continue;
     if (!box || !Array.isArray(box.order) || box.drawn < box.order.length || box.emptyDay == null) continue;
     const key = `kuji:${grade}:${s.chapter}:${box.emptyDay}`;
-    if (g.rewards[key]) continue;
+    // 同じ箱（同じ引き切りの日）は、章が変わっても一度だけ。くじは店ごとに1種類なので（KJ11）、
+    // 行かなくなった街の店の箱は空のまま残る。記録の形（章つきのキー）は今までのセーブと同じ
+    const sameBox = (k) => { const [kind, id, , day] = k.split(":"); return kind === "kuji" && id === grade && day === String(box.emptyDay); };
+    if (g.rewards[key] || Object.keys(g.rewards).some(sameBox)) continue;
     g.rewards[key] = true;
     const low = BOARD_KEYS.reduce((best, k) => boardFill(g, k) < boardFill(g, best) ? k : best, BOARD_KEYS[0]);
     out.push({ label: "くじのラストワン賞", parts: giveSet(g, { [low]: KUJI_LAST_ONE_GIFT }) });
@@ -535,7 +611,7 @@ export function claimPlayRewards(g, s = state) {
   return out;
 }
 
-// ---------------------------------------------------------------- 寝る時の精算（6.3）
+// ---------------------------------------------------------------- その場のレベルアップ（SBD122。前は「寝る時の精算」6.3）
 
 /** 盤の伸び（灯した能力のマスの割合）。規則の growth-board.js と同じ数え方を、循環させずに持つ（段は SBD63 でなくした） */
 function boardFill(g, board) {
@@ -557,60 +633,72 @@ export function milestoneSystem(g = ensureGrowth()) {
 }
 
 /**
- * その日の分を精算する。上がったレベルの数だけ火種を渡し、「今日」を空にする。
- * 何度呼んでも、同じ経験値で二重に渡さない（level と milestones で判定）。
+ * 経験値の分だけレベルを上げ、火種を手持ちに入れる。遊びのご褒美・くじの火種もここで拾う。
+ * 2026-11-11 オーナー「一気にリザルトみたいに見せるのはいらない。都度経験値もらって達したらレベルアップがいい」（SBD122）:
+ * 経験値が届いたその場で上がり、"level-up"（ご褒美は "hidane-gift"）を知らせる。画面は短い演出を出すだけで、操作は止めない。
+ * 何度呼んでも、同じ経験値で二重に渡さない（level と milestones で判定）。戻り値={ from, to, parts, milestone }
+ */
+function applyLevels(g, s = state) {
+  const from = g.level, to = levelForExp(g.xp);
+  const parts = [];
+  const note = (kind, n) => { const same = parts.find((p) => p.kind === kind); if (same) same.n += n; else parts.push({ kind, n }); };
+  let milestone = false;
+  for (let level = from + 1; level <= to; level++) {
+    const n = Math.min(hidaneForLevel(level), BOARD_TOTAL - g.earned);
+    if (n > 0) { g.hidane.any += n; g.earned += n; note("any", n); }
+    if (MILESTONE_LEVELS.includes(level) && !g.milestones.includes(level)) {
+      g.milestones.push(level);
+      milestone = true;
+      // 節目は色の火1＋白火1（SBD109）。色は前の節目からいちばん灯した盤。その盤が埋まっていれば白火で渡す
+      const color = giveColored(g, milestoneSystem(g), KEY_GIFT.color), white = giveColored(g, "any", KEY_GIFT.any);
+      g.litSince = Object.fromEntries(BOARD_KEYS.map((k) => [k, 0]));
+      if (color.n > 0) note(color.kind, color.n);
+      if (white.n > 0) note("any", white.n);
+    }
+  }
+  const claimed = claimPlayRewards(g, s).filter((x) => x.parts.length);
+  foldFullBoards(g);
+  g.level = to;
+  g.settledXp = g.xp;
+  if (to > from || claimed.length) emit("hud");
+  // capped: 盤の全部のぶんを受け取り終えていて、火種が増えないレベルアップ（SBD105。理由を黙らせない）
+  if (to > from) emit("level-up", { from, to, parts: parts.map((part) => ({ ...part })), milestone, capped: !parts.length && g.earned >= BOARD_TOTAL, boardFull: boardAllLit(g) });
+  for (const gift of claimed) announceGift(gift);
+  return { from, to, parts, milestone };
+}
+
+/**
+ * たまっている分をいま精算する（寝る前・章の区切り・前の保存を読んだ直後・遊びのご褒美の受け取り）。
+ * ふだんは経験値が届いたその場で済んでいるので、何も起きない（from＝to）。
+ * 戻り値={ from, to, parts, milestone, boardFull }（盤が無効なら null）
  */
 export function settleGrowth() {
   if (!growthEnabled() || !state) return null;
   const g = ensureGrowth();
-  // 無料LIME・物語で♥5になった場合も、未受領分を夜に回収する。EXPは付けない。
-  // giftedは周回ごとの台帳なので、旧セーブ・再精算・LOADでも二重付与しない。
+  // 無料LIME・物語（強制イベント）で♥5になった場合も、未受領の♥5の贈り物をここで回収する。EXPは付けない。
+  // gifted は周回ごとの台帳なので、旧セーブ・再精算・LOADでも二重に渡さない。
   for (const id of Object.keys(CHAR_TYPE)) giftAtMaxHeart(id);
-  const from = g.level, to = levelForExp(g.xp);
-  const xpFrom = g.settledXp;
-  const learned = Object.entries(g.today.learned).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([key]) => key);
-  const gains = { any: 0, limited: [] };
-  for (let level = from + 1; level <= to; level++) {
-    const n = Math.min(hidaneForLevel(level), BOARD_TOTAL - g.earned);
-    if (n > 0) { g.hidane.any += n; g.earned += n; gains.any += n; }
-    if (MILESTONE_LEVELS.includes(level) && !g.milestones.includes(level)) {
-      g.milestones.push(level);
-      const system = milestoneSystem(g);
-      const got = giveColored(g, system);
-      g.litSince = Object.fromEntries(BOARD_KEYS.map((k) => [k, 0]));
-      if (got.n > 0) gains.limited.push({ level, system: got.kind, n: got.n });
-    }
-  }
-  const gifts = [...g.today.gifts, ...claimPlayRewards(g)].filter((x) => x.parts.length);
-  foldFullBoards(g);
-  g.level = to;
-  g.settledXp = g.xp;
-  g.today = { xp: 0, learned: {}, gifts: [] };
-  if (to > from || gifts.length) emit("hud");
-  const milestone = gains.limited.length > 0 || MILESTONE_LEVELS.some((l) => l > from && l <= to);
-  const full = to > from && (!g.seen.fullLevelUp || milestone || to - from >= 2);
-  if (full) g.seen.fullLevelUp = true;
-  return { from, to, xpFrom, xpTo: g.xp, gains, gifts, learned, milestone, full, boardFull: boardAllLit(g) };
+  return { ...applyLevels(g), boardFull: boardAllLit(g) };
 }
 
 /**
- * 寝る直前の精算と演出。無効のときは何もしない（演出の画面は使う時だけ読む）。
- * evePlace（大会前夜）があれば、精算のあと火種が残っている時だけ内省の場面で盤を開く（2.8・#1690）。
+ * 寝る直前の区切り。寝る前のレベルアップ演出は無い（SBD108）。レベルと火種は経験値が届いたその場で入っている（SBD122）。
+ * ここでは、前の保存に残っていた分と遊びのご褒美・くじの火種を拾い、今日の覚えを空にして保存する。
+ * evePlace（大会前夜）があれば、火種が残っている時だけ内省の場面で盤を開く（2.8・#1690）。
+ * 戻り値=settleGrowth の結果（この時に上がった分。ふつうは from＝to）
  */
 export async function presentNight({ evePlace = null } = {}) {
   if (!growthEnabled()) return null;
   const owner = state;
-  // 進行と一緒に先に保存する。演出の途中のLOADでも火種を失わず、別ownerを精算しない。
-  const report = settleGrowth();
+  // 進行と一緒に先に保存する。内省の途中のLOADでも火種を失わず、別ownerを触らない。
+  const result = settleGrowth();
+  ensureGrowth().today = newDay();
   save();
-  const { presentNightGrowth } = await import("../daily/levelup.js");
-  if (state !== owner) return report;
-  const result = await presentNightGrowth(report);
   if (evePlace && state === owner) {
     const { eveReflection } = await import("../daily/reflection.js");
     if (state === owner) await eveReflection(evePlace);
   }
-  return result;
+  return state === owner ? result : null;
 }
 
 /**
@@ -692,3 +780,9 @@ setExpHooks({ enabled: growthEnabled, hold: holdExpChip, action: awardActionExp,
 masteryHooks.multiplier = s => (1 + (growthPerks(s)?.tongue || 0) / 100)
   * (growthSkill(s, "K09") ? 1 + SKILL_TUNING.mastery : 1);
 
+// 確定した遊びの認定をその場で精算。上限後も称号は通知し、架空の+1は出さない。
+on("play-mastery", ({ state: owner, game, newly }) => {
+  if (owner !== state) return;
+  settleGrowth();
+  emit("notice", { text: newly ? `認定：${PLAY_MASTERY[game].title}` : masteryLine(owner, game) });
+});

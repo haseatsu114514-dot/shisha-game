@@ -1,5 +1,7 @@
 // 画面の土台: 背景・画面切替・煙ワイプ・トースト・ステ通知・モーダル・カウントダウン・スタンプ。
 import { $, el, sleep, nextFrame } from "./util.js";
+import { setData } from "./dom-write.js";
+import { syncBackdrop } from "./stage-fit.js";
 import { on } from "./bus.js";
 import { SE, setRainAmbience } from "./audio.js";
 import { state, STAT_KEYS, config } from "./state.js";
@@ -10,7 +12,8 @@ import { gainSeenKey, bannerHold } from "./gain-notice.js";
 import { nextStepProgress } from "./stat-progress.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
-import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival } from "./transitions.js";
+import { syncShopHaze } from "./shop-haze.js";
+import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival, takeParkedCover } from "./transitions.js";
 import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
 import { uiThemeFrame } from "./ui-theme.js";
@@ -42,6 +45,7 @@ export function initLayers() {
       bond: !!bond,
       face: faceIconUrl(id, state, { context: bond ? "private" : null }),
       badge: [...displayName(id, state, { context: bond ? "private" : null })][0],
+      chime: levelUp ? "up" : "",
       top: bond ? (levelUp ? "BOND UP" : "BOND") : levelUp ? "AFFINITY UP" : "AFFINITY",
       main: displayName(id, state, { context: bond ? "private" : null }), // 恋人の絆は私的な場面でだけ深まる
       sub: bond
@@ -54,38 +58,75 @@ export function initLayers() {
   });
   on("notice", ({ text }) => toast(text, { ms: 3000 }));
   on("lovers", ({ id }) => {
-    gainCard({ kind: "affinity", bond: true, face: faceIconUrl(id, state, { context: "private" }), badge: "♥", top: "NEW RELATIONSHIP", main: displayName(id, state, { context: "private" }), sub: "恋人になった" });
+    gainCard({ kind: "affinity", bond: true, face: faceIconUrl(id, state, { context: "private" }), badge: "♥", top: "NEW RELATIONSHIP", chime: "up", main: displayName(id, state, { context: "private" }), sub: "恋人になった" });
   });
 }
 
 // ---------------------------------------------------------------- 背景（クロスフェード）
 
 let bgNow = "";
+let bgShown = ""; // 実際に #bg へ出した背景（読めずに見送った指定は含まない）
 let bgTask = Promise.resolve();
 let bgAssetsReady = Promise.resolve();
 let activeCurtain = null;
 let weatherBg = "";
 let weatherTint = "";
 let weatherKey = "";
-const bgReady = new Map(); // url -> Promise（一度読んだ絵は即座に出す）
+const bgReady = new Map(); // url -> { promise, image, keep }（一度読んだ絵は即座に出す）
+// Retain only a bounded decoded working set. CSS/DOM own visible images separately.
+const IMAGE_CACHE_ENTRIES = 128, KEPT_IMAGE_BYTES = 48 * 1024 * 1024;
+// pin（制作画面の素材。craft/readiness.js）は、この上限にも件数の上限にも数えず、手放さない。
+// 制作画面を開き直すたびに素材を取り直すと準備の幕が出てしまうため（test/browser/craft_readiness.mjs）。
+// 数は工程ごとの素材（高々百枚ほど）に限られる。ほかの絵は今までどおり上限の中で保つ。
+function trimImages() {
+  let bytes = 0, count = 0;
+  for (const entry of bgReady.values()) {
+    if (entry.pin) continue;
+    bytes += entry.bytes || 0;
+    count++;
+  }
+  for (const [url, entry] of bgReady) {
+    if (!entry.done || entry.pin) continue; // never evict shared in-flight requests
+    if (entry.image && bytes > KEPT_IMAGE_BYTES) {
+      bytes -= entry.bytes || 0;
+      entry.image = null; entry.bytes = 0;
+    }
+    if (count > IMAGE_CACHE_ENTRIES) {
+      bytes -= entry.bytes || 0;
+      count--;
+      bgReady.delete(url);
+    }
+  }
+}
 const expiredImageWaits = new WeakMap(); // 同じ通信に対し、使い切った待ち時間を繰り返さない
 
-const keptImages = []; // 何度も出るUIの小さな絵は Image を持ち続ける（デコード済みのまま置いておく）
-
 /** 画像を読み込み＋デコードし終えるまで待つ（最大 ms）。成功時 true、失敗・時間切れは false。 */
-export function imageReady(url, ms = 1500, { keep = false } = {}) {
+export function imageReady(url, ms = 1500, { keep = false, pin = false } = {}) {
   if (!url) return Promise.resolve(false);
-  let p = bgReady.get(url);
-  if (!p) {
-    p = new Promise((resolve) => {
-      const i = new Image();
-      if (keep) keptImages.push(i);
-      i.onload = () => (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(() => resolve(true));
-      i.onerror = () => { bgReady.delete(url); resolve(false); };
+  let entry = bgReady.get(url);
+  if (entry) { bgReady.delete(url); bgReady.set(url, entry); }
+  // 通常の場面で読んだ後に固定UIの先読みへ昇格する場合も、Image 自体を保持する。
+  // すでに手放していたらここで読み直し、制作画面を開く前にデコードまで待つ。
+  if (!entry || (keep && !entry.image)) {
+    entry = { promise: null, image: new Image(), keep, pin };
+    bgReady.set(url, entry);
+    entry.promise = new Promise((resolve) => {
+      const i = entry.image;
+      i.onload = () => (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(() => {
+        entry.done = true;
+        if (!entry.keep) entry.image = null;
+        else entry.bytes = (i.naturalWidth || 0) * (i.naturalHeight || 0) * 4;
+        trimImages();
+        resolve(true);
+      });
+      i.onerror = () => { bgReady.delete(url); entry.image = null; resolve(false); };
       i.src = url;
     });
-    bgReady.set(url, p);
+  } else {
+    if (keep) entry.keep = true;
+    if (pin) entry.pin = true;
   }
+  const p = entry.promise;
   if (expiredImageWaits.has(p) && expiredImageWaits.get(p) >= ms) return Promise.resolve(false);
   return new Promise((resolve) => {
     const timer = setTimeout(() => {
@@ -141,7 +182,25 @@ function deferStoreLogos() {
 function warmCoreArt() {
   if (!uiArt) {
     const urls = [...LOUNGE_ART, ...PAPER_ART, ...SLOT_ART, chapterTitleArt("第一章"), ...allFaceIconUrls()];
-    uiArt = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true }))).then(() => { uiArtDone = true; });
+    // Two workers instead of launching every icon/texture together. Foreground
+    // imageReady calls bypass this list and share any request already in flight.
+    let index = 0;
+    // Preserve the old batch's 15s ceiling: serial timeouts must not multiply it.
+    const deadline = Date.now() + 15000;
+    const worker = async () => {
+      let ok = true;
+      while (index < urls.length) {
+        const remaining = deadline - Date.now();
+        if (remaining <= 0) return false;
+        const url = urls[index++];
+        if (!await imageReady(url, remaining, { keep: true })) ok = false;
+      }
+      return ok;
+    };
+    uiArt = Promise.all([worker(), worker()]).then(results => {
+      uiArtDone = results.every(Boolean);
+      if (!uiArtDone) uiArt = null; // retry failed assets at the next entrance
+    });
   }
   // 選ばれた会話枠も先読みする。設定変更後は新しい枠だけを追加で読む。
   return Promise.all([uiArt, imageReady(uiThemeFrame(document.documentElement.dataset.uiTheme), 15000, { keep: true })]);
@@ -165,6 +224,8 @@ export function uiArtReady(ms = 2000) {
   return Promise.race([warmCoreArt(), sleep(ms)]);
 }
 
+// 余白のぼかし（#backdrop）の差し替えは共通部品 core/stage-fit.js の syncBackdrop（#3076 で共通化）。
+
 /**
  * 背景を差し替える。新しい絵が読み込めてからクロスフェードする（読み込み中に黒や前の絵のまま
  * 新しい場面が始まって見えるのを防ぐ）。戻り値は画像の用意と幕が開き終わるまで待つ。
@@ -175,30 +236,53 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
   const art = { homeRigs };
   const key = `${url}|${tint || ""}|${sceneArtUrls(url, art).join("|")}`;
   const sceneArrival = takeSceneArrival(); // consume even on redraw; never carry an entry into a later scene
+  // 時間が過ぎる波（transitions.waveBeat）が覆ったまま預けた幕。新しい背景を描いてから開く（#2688 F3）
+  const handoff = takeParkedCover();
   if (key === bgNow) {
     refreshWeather();
     const assetsReady = Promise.all([bgAssetsReady, ...ready.map((u) => imageReady(u, 15000))]);
-    return Object.assign(Promise.all([bgTask, assetsReady]), { assetsReady });
+    const same = Promise.all([bgTask, assetsReady]).then(async (values) => { if (handoff) await handoff(); return values; });
+    return Object.assign(same, { assetsReady, covered: activeCurtain?.covered || Promise.resolve() });
   }
   const coveredElsewhere = layers.wipe?.classList.contains("black") || layers.wipe?.classList.contains("cover") || isCovering();
   const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: brief || document.body.classList.contains("vn-skip"), sceneArrival }) : null;
   if (curtain) activeCurtain = curtain;
   bgNow = key;
   bgAssetsReady = Promise.all([...sceneArtUrls(url, art), ...ready].map((u) => imageReady(u, 15000)));
-  bgTask = Promise.all([curtain?.covered, bgAssetsReady]).then(() => {
+  bgTask = Promise.all([curtain?.covered, bgAssetsReady]).then(([, loaded]) => {
     if (bgNow !== key) return; // 待っている間に別の背景が指定された
-    const next = el("div.bg-img");
-    renderSceneArt(next, url, art);
-    if (!url) next.classList.add("black");
-    if (fast) next.classList.add("fast");
-    if (tint) next.dataset.tint = tint;
-    host.append(next);
+    // 背景の絵そのもの（先頭）が読めなかった（通信失敗・時間切れ）ときは、前の背景を残す。読めない絵の層を重ねて
+    // 前の背景を片付けると、黒一色の画面になる（#3203）。同じ背景をもう一度指定したら読み直すよう、記録は今出ている背景に戻す。
+    // 背景を消す指定（url なし＝暗転）と、まだ何も出ていない最初の背景は、これまでどおり差し替える。
+    const keep = !!url && loaded[0] === false && host.children.length > 0;
+    const next = keep ? null : el("div.bg-img");
+    if (keep) bgNow = bgShown;
+    else {
+      bgShown = key;
+      renderSceneArt(next, url, art);
+      if (!url) next.classList.add("black");
+      if (fast) next.classList.add("fast");
+      if (tint) next.dataset.tint = tint;
+      host.append(next);
+      syncBackdrop(url, tint, instant);
+    }
+    // 場面はここで確定する。絵が読めず前の背景を残したときも、入店の合図は落とさない（進行は止めない）。
     curtain?.commitArrival?.(url);
     if (!curtain) sceneArrival.commitArrival(url);
+    if (keep) return; // 背景・余白のぼかし・雨は前の場面のまま
     weatherBg = url || "";
     weatherTint = tint || "";
     refreshWeather();
     const olds = [...host.children].slice(0, -1);
+    if (curtain?.dissolve) {
+      // 煙のにじみ（TMG44）: 次の背景を前の背景の下にすぐ置き、前の背景は curtain.release() で煙の形にほどく
+      next.style.transition = "none";
+      next.classList.add("show");
+      host.insertBefore(next, olds[0] || null);
+      // 前の切り替えでほどけている途中の絵は、その幕に任せる（その下にある今の背景から次の背景へほどく）
+      curtain.dissolve(olds.filter((o) => !o.dataset.dissolving));
+      return;
+    }
     if (instant || curtain || coveredElsewhere) {
       next.classList.add("show");
       olds.forEach((o) => o.remove());
@@ -211,18 +295,36 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
       try { await curtain.release(); }
       finally { if (activeCurtain === curtain) activeCurtain = null; }
     }
+    if (handoff) await handoff();
   });
-  return Object.assign(bgTask, { assetsReady: bgAssetsReady });
+  return Object.assign(bgTask, { assetsReady: bgAssetsReady, covered: curtain?.covered || Promise.resolve() });
+}
+
+/**
+ * 章の場面を替える（#2688 F2）。第1章の会話の背景替えと同じ標準の幕（一筆）で覆い、覆ったところで前の画面を片付けて開く。
+ * 地図・メニューへ戻るときは map: true で短い幕。幕の要らない所（同じ部屋の昼夜差分・別の演出が覆っている間）は setBg(..., { instant: true })。
+ * 選択肢を選んで会話へ入る所は、覆うまで古いカードを残さない（押せる・同じ画面と誤認される）。先に showScreen("none") してから setBg で替える。
+ */
+export async function enterScene(url, { map = false, clear = true, ...opts } = {}) {
+  const task = setBg(url, { brief: map, ...opts });
+  if (clear) {
+    await task.covered;
+    showScreen("none", null);
+  }
+  return task;
 }
 
 /** 背景だけに雨を重ねる。窓は1280×720の背景座標に限定する。 */
 export function refreshWeather() {
   if (!layers.weather) return;
+  // シーシャ屋の店内には、うっすら煙を漂わせる（KMR21）。背景・画面が替わるたびに、雨と同じ所で合わせる
+  syncShopHaze(weatherBg, document.body.dataset.screen, weatherTint);
   const scene = document.hidden ? null : rainScene(weatherBg, document.body.dataset.screen);
   const sky = scene ? weatherSkyTone(weatherBg, weatherTint) : "none";
   const view = scene ? weatherViewKind(weatherBg, scene) : "none";
-  document.body.dataset.weather = scene?.mode || "none";
-  document.body.dataset.weatherSky = sky;
+  // 画面を出し入れするたびに呼ばれる。body の属性は、値が変わった時だけ書く（#3500 B-6）。
+  setData(document.body, "weather", scene?.mode || "none");
+  setData(document.body, "weatherSky", sky);
   setRainAmbience(scene?.mode || null);
   const key = scene ? JSON.stringify({ scene, sky, view }) : "";
   if (key === weatherKey) return;
@@ -301,7 +403,8 @@ export async function fadeBlack(mid, ms = 500) {
 
 // ---------------------------------------------------------------- トースト／通知
 
-export function toast(text, { ms = 2600, kind = "" } = {}) {
+export function toast(text, { ms = 2600, kind = "", se = "" } = {}) {
+  if (se) SE[se]?.(); // 通知と一緒に鳴らす効果音（「お金が足りない」のブザーなど）
   const effect = { "charm-bonus": ["魅", "魅力"], "insight-hint": ["察", "洞察"] }[kind];
   const t = el(`div.toast${kind ? "." + kind : ""}`, effect
     ? [el("span.toast-badge", { text: effect[0], "aria-label": `${effect[1]}の効果` }), el("span", { text })]
@@ -318,7 +421,13 @@ export function toast(text, { ms = 2600, kind = "" } = {}) {
  */
 export function loadingNotice(label = "読み込んでいます…") {
   const notice = el("div.vn-loading", { role: "status", "aria-live": "polite", text: label, dataset: { test: "module-loading" } });
-  return { onShow: () => layers.fx.append(notice), onHide: () => notice.remove() };
+  let hideComic, closed = false;
+  return { onShow: () => {
+    layers.fx.append(notice);
+    if (typeof window !== "undefined") void import("./loading-comic-notice.js").then(({ attachLoadingComic }) => {
+      if (!closed && notice.isConnected) hideComic = attachLoadingComic(notice);
+    }).catch(() => { /* The plain notice remains available if the comic module fails. */ });
+  }, onHide: () => { closed = true; hideComic?.(); notice.remove(); } };
 }
 
 /** VN開始前などの画像待ちにだけ添える通知。play()自体は包まない。 */
@@ -363,10 +472,24 @@ export function heartRow(values, { className = "gc-hearts", label = "好感度",
     values.map((fill) => el("i.ui-heart", { "aria-hidden": "true", style: { "--fill": `${fill}%` } })));
 }
 
+/**
+ * 絵の印（o.icon。心得の盤のアイコン・火種など。SBD125②）: 顔の印と同じ暗い丸に絵を載せる。
+ * 絵が読めるまで・読めない時は、字の印（o.badge）のまま見える。
+ */
+function artBadge(src, text) {
+  const badge = el("div.gc-badge.face.art", [el("span", { text: text || "+" })]);
+  const img = el("img", { src, alt: "", draggable: "false" });
+  img.addEventListener("load", () => badge.classList.add("has-img"));
+  img.addEventListener("error", () => img.remove());
+  badge.append(img);
+  return badge;
+}
+
 export function statBadge(key, className = "gc-badge") {
   return el(`div.${className}`, { text: STAT_BADGE[key], "aria-hidden": "true" });
 }
 
+let lastAffinityChime = -Infinity;
 function pumpBanners() {
   while (bannerBusy < 3 && bannerQueue.length) {
     const o = bannerQueue.shift();
@@ -375,7 +498,7 @@ function pumpBanners() {
     const hearts = o.hearts ? heartRow(o.hearts.from, { bond: !!o.bond, label: o.bond ? "恋人（♥5）" : "好感度" }) : null;
     const heading = o.top || (o.kind === "stat" ? "STATUS UP" : "");
     const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}${o.evolution ? ".evolved" : ""}${o.source === "slot" ? ".slot-bonus" : ""}`, [
-      o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : el("div.gc-badge", { text: o.badge || "+" }),
+      o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : o.icon ? artBadge(o.icon, o.badge) : el("div.gc-badge", { text: o.badge || "+" }),
       el("div.gc-meta", [
         heading ? el("span.gc-top", { text: heading, "aria-hidden": o.top ? "false" : "true" }) : null,
         el("div.gc-title", [el("span.gc-main", { text: o.main }),
@@ -400,6 +523,12 @@ function pumpBanners() {
     if (o.kind === "stat") {
       if (o.source === "slot") SE.slotBonus();
       else SE.select();
+    }
+    // 好感度・恋人の絆: ハートが動くのに合わせてベル。段階が上がった時と恋人になった時は2回（SE.affinityUp）。
+    // 何枚か同時に出る時は1回だけ（0.3秒あける）。
+    else if (o.kind === "affinity" && performance.now() - lastAffinityChime > 300) {
+      lastAffinityChime = performance.now();
+      (o.chime === "up" ? SE.affinityUp : SE.affinity)();
     }
     requestAnimationFrame(() => {
       b.classList.add("show");
@@ -462,6 +591,59 @@ export async function bannersIdle() {
 }
 
 // ---------------------------------------------------------------- モーダル
+
+/**
+ * 閉じた画面の出口（MENU の閉じ・#2688 A13）。閉じる箱と同じ位置・形・紙の色の面だけを短く残して薄れさせる。
+ * 文字・ボタン・クラス名は写さないので、次の画面・入力・テストの判定は本物だけを見る。
+ * 箱がまだ見えている間（#modal を空にする前）に呼ぶ。面は #modal の一つ下に置き、続けて開いた画面より前へ出ない。
+ * origin: 縮む起点（#modal 内の座標）。box: 面にする箱のセレクタ（省略時は一番大きく塗られた箱）。
+ * 動きを減らす設定では何も出さずに閉じる。
+ */
+export function ghostOut(nodes, frames, ms = 180, { origin = null, box: pick = null } = {}) {
+  const frame = layers.modal, host = frame?.parentElement;
+  if (!host || !frame.offsetWidth || reducedMotion() || !nodes.length) return;
+  const f = frame.getBoundingClientRect(), k = f.width / frame.offsetWidth;
+  if (!k) return;
+  const shapes = [];
+  for (const node of nodes) {
+    const box = !(node instanceof Element) ? null : pick ? (node.matches(pick) ? node : node.querySelector(pick)) : paintedBox(node);
+    const r = box?.getBoundingClientRect();
+    if (!r?.width || !r.height) continue;
+    const cs = getComputedStyle(box), left = (r.left - f.left) / k, top = (r.top - f.top) / k;
+    const shape = el("div.modal-ghost-box");
+    Object.assign(shape.style, {
+      left: `${left}px`, top: `${top}px`, width: `${r.width / k}px`, height: `${r.height / k}px`,
+      backgroundColor: cs.backgroundColor, backgroundImage: cs.backgroundImage, backgroundSize: cs.backgroundSize,
+      backgroundPosition: cs.backgroundPosition, backgroundRepeat: cs.backgroundRepeat,
+      borderStyle: cs.borderStyle, borderWidth: cs.borderWidth, borderColor: cs.borderColor, borderRadius: cs.borderRadius,
+      borderImageSource: cs.borderImageSource, borderImageSlice: cs.borderImageSlice, borderImageWidth: cs.borderImageWidth,
+      borderImageOutset: cs.borderImageOutset, borderImageRepeat: cs.borderImageRepeat,
+      boxShadow: cs.boxShadow, transformOrigin: origin ? `${origin.x - left}px ${origin.y - top}px` : "50% 50%",
+    });
+    shapes.push(shape);
+  }
+  if (!shapes.length) return;
+  const ghost = el("div.modal-ghost", { "aria-hidden": "true" }, shapes);
+  ghost.inert = true;
+  host.append(ghost);
+  Promise.all(shapes.map((shape) => shape.animate(frames, { duration: ms, easing: "cubic-bezier(.2,.7,.3,1)", fill: "forwards" }).finished))
+    .catch(() => {}).finally(() => ghost.remove());
+}
+
+/** 見た目の紙・枠を持つ箱（自分が塗られていなければ、中で一番大きく塗られた箱） */
+function paintedBox(node) {
+  const painted = (n) => {
+    const cs = getComputedStyle(n);
+    return cs.backgroundImage !== "none" || cs.borderImageSource !== "none" || !/^(transparent|rgba\(0, 0, 0, 0\))$/.test(cs.backgroundColor);
+  };
+  if (painted(node)) return node;
+  let best = null, area = 0;
+  for (const n of [...node.querySelectorAll("*")].slice(0, 60)) {
+    const r = n.getBoundingClientRect(), a = r.width * r.height;
+    if (a > area && painted(n)) { best = n; area = a; }
+  }
+  return best;
+}
 
 /** 選択肢つきのモーダル。options: [{label, value, primary, test}] */
 export function modal({ title = "", body = "", options = [{ label: "OK", value: true, primary: true }], className = "" }) {
@@ -546,7 +728,7 @@ export function shake(target = document.getElementById("stage"), ms = 380) {
   setTimeout(() => target.classList.remove("shake"), ms);
 }
 
-/** 章タイトル（煙の中から浮かぶ） */
+/** 章タイトル（採用画像1枚＋共通の出現演出。表示時間・送り入力ガードは維持） */
 export async function chapterTitle({ no, name, read, sub }) {
   // 読込中も前場面を見せたまま、クリック・タップ・会話送りキーを吸収する。
   const swallow = event => { event.preventDefault(); event.stopPropagation(); };
@@ -569,25 +751,22 @@ export async function chapterTitle({ no, name, read, sub }) {
       el("div.cc-read", { text: read }),
       sub ? el("div.cc-sub", { text: sub }) : null,
     ]);
-    const card = el("div.chapter-card", { dataset: { chapter: no, art: "text" } }, [copy]);
-    // 動き（motions/chapter-title.js）が読めなければ、従来の静止表示のまま進める。
-    const motion = await import("../motions/chapter-title.js").catch(() => null);
-    let play = null;
+    const card = el("div.chapter-card.static-title", { dataset: { chapter: no, art: "text" } }, [copy]);
+    let hold = 3200;
     // 画像が準備できるまでは本編の上に空白のカードを出さない。
     // 失敗・タイムアウト時は既存の文字表示で章進行を続ける。
     if (art && await imageReady(art, 15000)) {
       copy.hidden = true; // 章名は採用画像に含まれているため重ねて描かない。
-      card.classList.add("illustrated");
+      // 出現は共通の .ct-reveal（css/motions/chapter-title.css）。画像は動かさず、もやが晴れて現れる。
+      card.classList.add("illustrated", "ct-reveal");
       card.dataset.art = "ready";
       const full = el("img.cc-art", { src: art, alt: [no, name, read, sub].filter(Boolean).join("　") });
       card.append(full);
-      // 分けたレイヤーが一枚でも欠けたら、採用画像の静止表示にする。
-      const extra = motion?.chapterArtUrls(no) || [];
-      if (extra.length && (await Promise.all(extra.map(url => imageReady(url, 15000)))).every(Boolean)) {
-        play = motion.mountChapterTitle(card, { no, full });
-      }
-    } else if (motion) {
-      play = motion.mountChapterTitle(card, { no });
+      // 採用画像1枚のみ。旧演出の表示時間は保ち、分割・寄り・光の追加画像は読まない。
+      if (!reducedMotion()) hold = no === "第一章" ? 5800 : 4400;
+    } else if (!reducedMotion()) {
+      // 採用画像のない章は、既存の文字フォールバックを静止表示する。
+      hold = 3600;
     }
     shield.append(card);
     // 単一rAFだけでは追加とshowが同じ初回描画にまとまり、画像が突然現れる。
@@ -596,9 +775,7 @@ export async function chapterTitle({ no, name, read, sub }) {
     SE.jingle();
     await nextFrame();
     card.classList.add("show");
-    // 動きは退場してよい時刻まで待つ。動きの不具合で章進行を止めない。
-    if (play) await Promise.race([play().catch(() => {}), sleep(7000)]);
-    else await sleep(3200);
+    await sleep(hold);
     card.classList.add("out");
     // タイマーだけで消すと最後の描画より先にremoveされる。動き軽減や背景タブでも待ち続けない。
     await Promise.race([
@@ -618,6 +795,7 @@ export async function dayCard(title, sub, { ms = 1900, weather = null, forecast 
   const card = el("div.day-card", [el("div.dc-title", { text: title }), sub ? el("div.dc-sub", [sub, wx?.badge]) : null]);
   if (forecast) card.append(el("small.dc-sub", { text: `明日は${forecast}`, dataset: { test: "day-forecast" } }));
   layers.fx.append(card);
+  SE.card();
   await nextFrame();
   card.classList.add("show");
   await sleep(ms);
@@ -626,9 +804,9 @@ export async function dayCard(title, sub, { ms = 1900, weather = null, forecast 
   card.remove();
 }
 
-/** 中央の見出し帯（「ROUND 2」など） */
+/** 中央の見出し帯（「ROUND 2」など）。登場カットインと同じ生成りの帯を大きく（TMG59） */
 export async function roundCut(text, sub = "") {
-  const c = el("div.round-cut", [el("b", { text }), sub ? el("small", { text: sub }) : null]);
+  const c = el("div.round-cut", [el("div.round-cut-band", [sub ? el("small", { text: sub }) : null, el("b", { text })])]);
   layers.fx.append(c);
   SE.whoosh();
   await nextFrame();
@@ -643,4 +821,6 @@ export async function roundCut(text, sub = "") {
 export function dayTurn(mid) {
   return nightToMorning(layers.fx, mid);
 }
+
+
 

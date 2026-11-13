@@ -20,11 +20,11 @@ const dialogues = Object.fromEntries(["ch1_tournament", "ch1_interval", "ch1_nar
   .flatMap(name => JSON.parse(fs.readFileSync(path.join(root, "data/dialogue", `${name}.json`), "utf8")).dialogues)
   .map(dialogue => [dialogue.dialogue_id, dialogue]));
 const manifest = JSON.parse(fs.readFileSync(path.join(root, "remake/data/manifest.json"), "utf8"));
-const real = new Set(["chapters/ch1.js", "core/state.js", "core/data.js", "core/rules.js", "core/flavor-mastery.js"]);
+const real = new Set(["chapters/ch1.js", "core/state.js","core/portrait-style.js", "core/data.js", "core/rules.js", "core/flavor-mastery.js"]);
 const SLOT = "suien_remake_slot1";
 const OTHER_SLOT = "suien_remake_slot2";
 const startingMoney = 45813;
-const prize = 30000;
+const prize = 50000;
 const sceneNames = ["bg_c_station_lobby", "bg_c_station_lobby", "bg_tonari_inside_night",
   "bg_tonari_inside_night", "bg_tonari_inside_night", "bg_tonari_inside_night",
   "bg_home_day", "kemurikusa", "kemurikusa", "kemurikusa", "bg_tonari_inside_night"];
@@ -101,7 +101,8 @@ async function harness({ step = 0, paid = true, revealed = true, snapshot = null
     gainStat: (stat, amount) => {
       awards.push({ stat, amount }); current().stats[stat] += amount; observe("ability", { stat, amount });
     },
-    nagumoCutin: async rank => { cutins.push(rank); observe("cutin", { rank }); await pause("cutin"); },
+    suiCutin: async rank => { cutins.push(rank); observe("cutin", { rank }); await pause("cutin"); },
+    sceneMoment: async () => {}, // 章の要所の一度きりの演出（#2688 A6）。見た目だけなので進行には関わらない
     openPhone: async (messages, options) => {
       assert.equal(titlePresent, false, "LOAD's title screen must be removed before phone content appears");
       observe("phone", { title: options.title, ids: messages.map(message => message.id) });
@@ -248,6 +249,12 @@ for (let step = 0; step <= 10; step++) for (const paid of [false, true]) for (co
 }
 
 // Reopen checkpoints actually written by the runner, not only constructed current-schema inputs.
+const legacyWinner = await harness({ paid: true });
+legacyWinner.current().money = startingMoney + 30000;
+await legacyWinner.run();
+assert.equal(legacyWinner.current().money, startingMoney + 30000, "old paid save receives no retroactive difference");
+assert.deepEqual(legacyWinner.money, [], "old paid save is not paid again");
+
 const complete = await harness({ paid: false, revealed: false });
 await checkRun(complete);
 const checkpointByStep = new Map(complete.writes.filter(saved => saved.tournament.victory?.paid)
@@ -259,15 +266,16 @@ for (let step = 0; step <= 10; step++) {
   cases++;
 }
 
+// 4つ目の値は、元の一文を分けた行数。アダムのLIMEは、続きの釣り針の一文を台本から削ったので1行（2026-11-11 全体講評 C9）。
 const sentenceCases = [
-  ["ch1_tournament_judging", "チャコール博士の評価も、", "チャコール博士の評価も、はじめとなるへ割れて入っていく。はじめの棒が、アダムを抜いて頭ひとつ前に出た。"],
-  ["interval_day2_adam_lime", "アダムからはそれきりで、", "アダムからはそれきりで、こちらの返信にも既読がつかなかった。……何か、大きなことが動いている気がする。"],
+  ["ch1_tournament_judging", "チャコール博士も、", "チャコール博士も、炭の出来と調整後の味を見て票を投じる。スクリーンに並ぶ4台の票を見つめた。", 2],
+  ["interval_day2_adam_lime", "アダムからはそれきりで、", "アダムからはそれきりで、こちらの返信にも既読がつかなかった。", 1],
 ];
-for (const [id, start, original] of sentenceCases) {
+for (const [id, start, original, count] of sentenceCases) {
   const lines = dialogues[id].lines;
   const at = lines.findIndex(line => line.text?.startsWith(start));
   assert(at >= 0);
-  const split = lines.slice(at, at + 2);
+  const split = lines.slice(at, at + count);
   assert(split.every(line => line.speaker === "" && !line.type), `${id}: preserve narration semantics`);
   assert.equal(split.map(line => line.text).join(""), original, `${id}: splitting must preserve the exact original text`);
   for (const line of split) {

@@ -58,14 +58,21 @@ assert.equal(storeLogo('unknown'), null);
 const { hasStoreLogo, storeLogoUrl } = logos.namespace;
 for (const [spot, store] of [['ch3_tokyo_mukai', 'ch3_mukai'], ['ch3_tokyo_enmaku', 'ch3_enmaku'], ['ch3_tokyo_steve', 'ch3_steve'],
   ['ch3_tokyo_volk', 'ch3_volk'], ['ch3_tokyo_club', 'ch3_club'], ['ch3_tokyo_shop', 'shop'], ['ch5_tokyo_mukai', 'ch3_mukai'],
-  ['ch5_tokyo_steve', 'ch3_steve'], ['ch5_tokyo_volk', 'ch3_volk'], ['ch5_tokyo_shop', 'shop'], ['ch4_dubai_festa', 'ch4_festa'],
-  ['ch4_dubai_shop', 'shop'], ['ch5_dubai_shop', 'shop']]) {
+  ['ch5_tokyo_steve', 'ch3_steve'], ['ch5_tokyo_volk', 'ch3_volk'], ['ch5_tokyo_shop', 'shop'], ['ch5_tokyo_club', 'ch3_club'], ['ch4_dubai_festa', 'ch4_festa'],
+  ['ch4_dubai_shop', 'shop'], ['ch5_dubai_shop', 'shop'],
+  ['ch4_center_cafe', 'ch4_dubai_cafe'], ['ch4_alley_cafe', 'ch4_dubai_alley'], ['ch5_dubai_alley', 'ch4_dubai_alley']]) {
   assert.ok(hasStoreLogo(spot), spot);
   assert.equal(Object.hasOwn(STORE_LOGOS, spot), false, `${spot}: an alias, not a second logo entry`);
   assert.equal(storeLogoUrl(spot), storeLogoUrl(store));
   const node = storeLogo(spot, { width: 82, height: 46 });
   assert.equal(node.attrs['aria-label'], `${STORE_LOGOS[store].name}のロゴ`);
   assert.equal(node.dataset.storeLogo, spot);
+}
+// 盾のままだった3店のロゴ（2026-11-07 採用。SLG01〜SLG03）: SHISHARK・ドバイの中心地のカフェ・路地裏のカフェ。
+for (const [id, file] of [['shishark', 'shishark'], ['ch4_dubai_cafe', 'ch4-dubai-center-cafe'], ['ch4_dubai_alley', 'ch4-dubai-alley-cafe']]) {
+  assert.ok(hasStoreLogo(id), id);
+  assert.match(storeLogoUrl(id), new RegExp(`${file}\\.webp`), `${id} は ${file}.webp`);
+  assert.equal(storeLogo(id).classList.contains('on-dark'), false, `${id} は明るい札のまま`);
 }
 // 配送便の行き来（FIN13）は Dr.fookah の店と見分けるため、店のロゴを付けない。
 for (const id of ['ch3_tokyo_park', 'ch3_tokyo_room', 'ch4_dubai_souq', 'ch5_tokyo_attic', 'ch5_call', 'ch5_to_tokyo', 'ch5_tokyo_home']) assert.equal(hasStoreLogo(id), false, id);

@@ -67,7 +67,7 @@ try {
   // 現在遊べる第1章の6人。誰か一人だけを選んでも、その相手の記憶が戻る。
   const firstScenes = {
     sumi: "ch1_sumi_basics", naru: "ch1_naru_first", adam: "ch1_adam_first",
-    minto: "ch1_minto_first", tsumugi: "ch1_tsumugi_first", rin: "ch1_rin_first",
+    minto: "ch1_minto_first", tsumugi: "ch1_tsumugi_first", rio: "ch1_rio_first",
   };
   for (const [character, scene] of Object.entries(firstScenes)) {
     const result = await page.evaluate(async ({ scene }) => {
@@ -178,7 +178,7 @@ try {
     };
     core.newGame();
     Object.assign(core.state, { chapter: 3, phase: "daily" });
-    for (const id of ["mashiro_pace", "kuze_decide", "steve_wait", "volk_measure"]) relationships.rememberRelationship(id);
+    for (const id of ["mashiro_pace", "saku_decide", "steve_wait", "volk_measure"]) relationships.rememberRelationship(id);
     const ch3 = await read("ch3_tournament_eve");
     core.newGame();
     Object.assign(core.state, { chapter: 4, phase: "daily" });
@@ -201,7 +201,7 @@ try {
   const after = (lines, text) => lines.slice(lines.indexOf(text) + 1);
   const ch3Eve = after(eves.ch3, "店に並べてきた道具を思い出す。炭の置き方も、待つ間も、誰かの手から来たものだ。");
   assert.deepEqual(ch3Eve.slice(0, 6), [
-    "（久世さんは「決めるのは君」と言った。炭を外すかは、俺が決める）",
+    "（綾取さんは「決めるのは君」と言った。炭を外すかは、俺が決める）",
     "（スティーブのタイマーと、二口目の前の客の顔。待ち方を借りている）",
     "（ヴォルクさんに言われて、昨日のままの炭を疑うようになった）",
     "……俺の作り方、誰かに教わったことばっかりです。どこからが俺のなのか、ずっと分からなかった",

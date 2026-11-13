@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import { TrpgSession, STATS, phasesOf, checkKindsOf, pickCompanions } from "../remake/js/trpg/session.js";
 import { materializeTrpgCast } from "../remake/js/trpg/campaign.js";
+import { isTrpgRegular } from "../remake/js/trpg/regulars.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = rel => JSON.parse(fs.readFileSync(path.join(root, rel), "utf8"));
@@ -40,7 +41,7 @@ function validate(rel) {
   const gms = s.cast.filter(c => c.part === "GM");
   need(gms.length === 1, "GMはちょうど1人");
   const gm = gms[0]?.id;
-  need(MEMBERS.has(gm), "GM '" + gm + "' は部員（catalog.participants）から選ぶ");
+  need(MEMBERS.has(gm) || s.zeroMemberCast?.includes(gm), "GM '" + gm + "' は部員か常連卓の配役から選ぶ");
   const player = s.cast.find(c => c.id === "hajime");
   need(player?.sheet && player.abilityType === "reroll", "はじめ（PL・切り札は振り直し）が必要");
   const seats = s.cast.filter(c => c.part !== "GM" && c.id !== "hajime");
@@ -58,7 +59,8 @@ function validate(rel) {
   // Builder and companions.
   const b = s.builder;
   need(b.seat === "hajime" && b.points === 11 && b.min === 1 && b.max === 5, "builder: seat hajime / points 11 / min 1 / max 5");
-  need(b.looks?.length === 4 && b.looks.every(l => l.id && l.label && l.detail && l.color), "builder.looks は4つ（id/label/detail/color）");
+  // #3050: the look is not chosen. The player's character wears the player's own face.
+  need(b.looks === undefined, "builder.looks は廃止（#3050）。見た目は選ばず、本人の立ち絵を使う");
   need(b.archetypes?.length === 3 && b.archetypes[0].recommended === true, "builder.archetypes は3つ、1つ目に recommended:true");
   for (const a of b.archetypes || []) need(Object.values(a.stats).reduce((n, v) => n + v, 0) === 11 && a.name && a.title && a.trait, "出自 " + a.id + " は合計11点・name/title/trait");
   need(JSON.stringify(b.archetypes?.[0]?.stats) === JSON.stringify(player?.sheet?.stats) && b.archetypes?.[0]?.name === player?.sheet?.name, "はじめの sheet は出自1つ目と同じ");
@@ -81,7 +83,8 @@ function validate(rel) {
   // Campaign seats.
   const cs = s.campaign.seats;
   need(cs.find(x => x.actor === gm)?.required === true && cs.find(x => x.actor === "hajime")?.required === true, "campaign.seats: GMとはじめは required");
-  for (const x of cs) need(x.candidates.every(id => MEMBERS.has(id) || id === "hajime") && !x.candidates.some(id => ["sumi", "naru"].includes(id)), "seat " + x.actor + " の候補は部員だけ");
+  for (const x of cs) need(x.candidates.every(id => MEMBERS.has(id) || id === "hajime" || isTrpgRegular(id) || s.zeroMemberCast?.includes(id))
+    && !x.candidates.some(id => id === "naru" || id === "sumi" && !s.zeroMemberCast?.includes(id)), "seat " + x.actor + " の候補は部員か常連卓の配役だけ");
   need(cs.length === s.cast.length, "campaign.seats は cast と同じ席数");
   // Flow and checks.
   need(JSON.stringify(Object.keys(s.flow).sort()) === JSON.stringify(["prepare", "serve", "twist"]) && s.flow.prepare.length === 2 && s.flow.serve.length === 1 && s.flow.twist.length === 1,
@@ -122,6 +125,8 @@ function validate(rel) {
     endings.add(p.ending);
     need(p.arrival, p.id + ".arrival");
     for (const f of [...s.flow.prepare, ...s.flow.serve]) need(p.likes?.[f]?.length >= 1 && p.likes[f].every(v => s.options[f].some(o => o.id === v)), p.id + ".likes." + f);
+    // GMのヒント（TRF02）は「合わない選択肢」に印をつける。どの項目にも、合わない選択肢が1つは要る。
+    for (const f of [...s.flow.prepare, ...s.flow.serve]) need((p.likes?.[f]?.length || 0) < s.options[f].length, p.id + ".likes." + f + " が全部の選択肢を含んでいる（GMのヒントが出せない）");
     for (const spot of s.spots) { const e = p.evidence?.[spot.id]; if (need(e?.title && e.text, p.id + " の手がかり " + spot.id)) ref(e.lines, p.id + "/" + spot.id); }
     for (const t of s.interview.topics) { const a = p.answers?.[t.id]; if (need(a?.title && a.text, p.id + " の答え " + t.id)) ref(a.lines, p.id + "/ask " + t.id); }
   }
@@ -146,9 +151,10 @@ function validate(rel) {
     for (const [field, row] of Object.entries(pr.choiceArt.rows || {})) need(Number.isInteger(row) && row < pr.choiceArt.rowCount, "choiceArt.rows." + field);
   }
   for (const phase of phasesOf(s)) need(pr.phases?.[phase]?.kicker && pr.phases[phase].title, "presentation.phases." + phase);
-  const faces = [...(s.builder?.looks || []), ...Object.values(s.companionBuilds || {}).flatMap(seat => Object.values(seat).flat()),
-    ...s.cast.map(c => c.sheet).filter(Boolean)].map(x => x.portrait).filter(Boolean);
-  for (const url of new Set(faces)) need(shipped(url), "人物シートの顔 " + url + " が存在しない");
+  // #3050: every seat shows whoever plays it, so no sheet or companion build carries its own role picture.
+  const sheetsWithArt = [...Object.values(s.companionBuilds || {}).flatMap(seat => Object.values(seat).flat()),
+    ...s.cast.map(c => c.sheet).filter(Boolean)].filter(x => x.portrait !== undefined || x.color !== undefined);
+  for (const x of sheetsWithArt) need(false, "人物シート " + (x.id || x.name) + " に portrait/color がある（#3050: 顔は演じる本人の立ち絵）");
   // Lines: speakers, faces, width, punctuation, tokens.
   const seatsAll = new Set(s.cast.map(c => c.id));
   for (const d of s.dialogues) {
@@ -156,7 +162,7 @@ function validate(rel) {
     for (const l of d.lines || []) {
       const where = d.dialogue_id + ": " + (l.text || "").slice(0, 20);
       need(people.has(l.speaker), where + " 話者 '" + l.speaker + "' が characters.json にない");
-      const faces = manifest.portraits[l.speaker]?.faces || [];
+      const faces = isTrpgRegular(l.speaker) ? ["normal"] : manifest.portraits[l.speaker]?.faces || [];
       need(faces.includes(l.face || "normal"), where + " 表情 '" + l.face + "' は " + l.speaker + " にない（" + faces.join("/") + "）");
       need(typeof l.text === "string" && !l.text.includes("\n"), where + " 改行を入れない");
       need(width(l.text.replace(/\{pc(:[a-z]+)?\}|\{pcTitle\}/g, "あああああ").replace("{gm}", "サメちゃん")) <= 48, where + " 全角48字（{pc}は5字で計算）を超える");
@@ -224,7 +230,11 @@ function validate(rel) {
   if (entry) {
     need(entry.id === s.id, "catalog の id と scenario.id が違う");
     need(Number.isInteger(entry.price) && entry.price >= 300 && entry.price <= 1500, "catalog.price は300〜1500円");
-    need(entry.stockRequires?.includes(gm) && entry.stockRequires.every(id => MEMBERS.has(id)), "catalog.stockRequires にGMを含める");
+    need(s.zeroMemberCast ? gm === "sai" && (entry.zeroMemberCast?.includes(gm) || entry.member === "ageha")
+      : entry.stockRequires?.includes(gm) && entry.stockRequires.every(id => MEMBERS.has(id)), "catalog の入荷条件とGM");
+    need(!s.campaign.seats.some(seat => seat.candidates.some(id => ["salaryman", "sumi", "naru"].includes(id))), "鉄仮面・スミ・なるをTRPGの配役に含めない");
+    if (entry.finale) need(entry.clearRequires?.length === MEMBERS.size
+      && entry.clearRequires.every(id => catalog.scenarios.some(b => b.id === id && MEMBERS.has(b.member))), "最終シナリオは全員の物語を遊び終えてから");
   } else warn("catalog に未登録");
   return { errors, warns, total };
 }

@@ -55,7 +55,8 @@ await suite("samechan-confession", async check => {
           K.vn.vnTest.choose = id => id === "samechan_shop_bond_question" ? 1 - q1
             : id === "samechan_bond_finale" ? 1 - q2 : id === "confession_samechan" ? reply : 0;
           const start = K.samechan.samechanVisitDialogue();
-          await K.visit(0); await K.visit(1); await K.visit(0);
+          await K.visit(0); await K.visit(1);
+          // The closing visit now includes the question before the free cinema introduction.
           // ♥4・♥5の来店会話（#2025）を読んでから締めくくり。
           const beforeHearts = K.samechan.samechanVisitDialogue(); await K.visit(0); await K.visit(0);
           const beforeFinale = K.snap();
@@ -70,7 +71,7 @@ await suite("samechan-confession", async check => {
         }, { q1, q2, reply });
         assert.equal(r.start, "samechan_shop_quiet_seat");
         assert.deepEqual(r.events.slice(0, 7), ["samechan_shop_quiet_seat", "samechan_shop_closing_check",
-          "samechan_cinema_introduction", "samechan_shop_bond_question", "samechan_shop_heart4",
+          "samechan_shop_bond_question", "samechan_cinema_introduction", "samechan_shop_heart4",
           "samechan_shop_heart5", "samechan_bond_finale"]);
         assert.equal(r.beforeHearts, "samechan_shop_heart4");
         assert(r.beforeFinale.flags._samechan_heart4_done && r.beforeFinale.flags._samechan_heart5_done);
@@ -81,7 +82,7 @@ await suite("samechan-confession", async check => {
         assert.equal(r.finale.finales.samechan.route, q1 && q2 ? "romance" : "friend");
         assert.equal(r.finale.romanceChoices.bond_q2_samechan?.value ?? null, q1 ? q2 : null);
         assert(r.sameVisit); assert.deepEqual(r.repeated, r.finale);
-        assert.equal(r.finale.money, 100000 - 6 * 3000);
+        assert.equal(r.finale.money, 100000 - 5 * 3000);
         assert.equal(r.final.owned.filter(x => x === "suyaki_samechan").length, 1);
         assert.equal(r.confessed, !!(q1 && q2)); assert.equal(r.again, false);
         const lover = !!(q1 && q2 && !reply);
@@ -90,12 +91,12 @@ await suite("samechan-confession", async check => {
         if (lover) {
           assert.equal(r.final.loveLevel.samechan, 1); assert.equal(r.final.lovePts.samechan, 12);
           assert(r.final.loverEventsSeen.includes("lover_samechan_lv1"));
-          assert.equal(r.final.loverSince.samechan, 21);
+          assert.equal(r.final.loverSince.samechan, 20); // One fewer visit/day before the same-night confession.
         }
         assert.deepEqual(r.loaded.lovers, r.final.lovers);
         assert.deepEqual(r.loaded.finales, r.final.finales);
         assert.deepEqual(r.loaded.romanceChoices, r.final.romanceChoices);
-        assert(!/波多野|泳/.test(r.log)); assert(!r.final.flags._samechan_name_known);
+        assert(!/暑海|泳/.test(r.log)); assert(!r.final.flags._samechan_name_known);
       }, options);
     }
 
@@ -107,8 +108,8 @@ await suite("samechan-confession", async check => {
         K.vn.vnTest.choose = () => 1;
         const defer = await K.romance.maybeConfession(async () => {}), deferred = K.snap();
         s.day++; const wait = await K.romance.maybeConfession(async () => {});
-        s.day++; s.lovers.push("rin"); s.loveLevel.rin = 3; s.lovePts.rin = 34;
-        s.loverSince.rin = 4; s.loveCarry.rin = 0.5;
+        s.day++; s.lovers.push("rio"); s.loveLevel.rio = 3; s.lovePts.rio = 34;
+        s.loverSince.rio = 4; s.loveCarry.rio = 0.5;
         const stay = await K.romance.maybeConfession(async () => {}), stayed = K.snap();
         s.day += 3; K.vn.vnTest.choose = () => 0;
         const accept = await K.romance.maybeConfession(async () => {}), accepted = K.snap();
@@ -123,13 +124,13 @@ await suite("samechan-confession", async check => {
       });
       assert(!r.busy && r.defer && !r.wait && r.stay && r.accept);
       assert.equal(r.deferred.flags._confession_due, "samechan"); assert.deepEqual(r.deferred.lovers, []);
-      assert.equal(r.stayed.guilt, 0); assert.deepEqual(r.stayed.lovers, ["rin"]);
-      assert.deepEqual(r.accepted.lovers, ["rin", "samechan"]); assert.equal(r.accepted.guilt, 3);
-      assert.equal(r.accepted.loveLevel.rin, 3); assert.equal(r.accepted.lovePts.rin, 34);
-      assert.equal(r.accepted.loveCarry.rin, 0.5); assert.equal(r.accepted.loverSince.rin, 4);
+      assert.equal(r.stayed.guilt, 0); assert.deepEqual(r.stayed.lovers, ["rio"]);
+      assert.deepEqual(r.accepted.lovers, ["rio", "samechan"]); assert.equal(r.accepted.guilt, 3);
+      assert.equal(r.accepted.loveLevel.rio, 3); assert.equal(r.accepted.lovePts.rio, 34);
+      assert.equal(r.accepted.loveCarry.rio, 0.5); assert.equal(r.accepted.loverSince.rio, 4);
       assert(!r.shuraba); assert.deepEqual(r.afterShuraba, r.accepted);
       assert(r.ch1Pair && !r.repeat); assert.equal(r.ch1Guilt, 4);
-      assert.deepEqual(r.loaded.lovers, ["rin", "samechan", "tsumugi"]);
+      assert.deepEqual(r.loaded.lovers, ["rio", "samechan", "tsumugi"]);
     }, options);
 
     await check(`${mode}-legacy-and-existing-relationship-preservation`, async page => {
@@ -149,8 +150,8 @@ await suite("samechan-confession", async check => {
           localStorage.setItem(K.core.SAVE_KEY, JSON.stringify(saved)); K.core.load();
           const before = K.snap(), first = K.samechan.samechanVisitDialogue();
           await K.visit(0); await K.visit(1); const next = K.samechan.samechanVisitDialogue();
-          // 未回答の旧セーブは問いかけ→♥4→♥5の来店会話を読んでから締めくくり（#2025）。着地済みには出さない。
-          if (kind === "unanswered") { await K.visit(0); await K.visit(0); await K.visit(0); }
+          // 未回答の旧セーブは片付けの同訪問で問いかけ、その後♥4→♥5を読んでから締めくくり。着地済みには出さない。
+          if (kind === "unanswered") { await K.visit(0); await K.visit(0); }
           await K.visit(1); out.push({ kind, before, first, next, after: K.snap() });
         }
         return out;
@@ -158,7 +159,7 @@ await suite("samechan-confession", async check => {
       for (const x of r) {
         assert.deepEqual(x.before.romanceChoices, {}); assert.deepEqual(x.before.finales, {});
         assert.equal(x.first, "samechan_shop_quiet_seat"); assert(x.after.affinity.samechan >= 72);
-        assert.equal(x.next, x.kind === "unanswered" ? "samechan_shop_bond_question" : "samechan_bond_finale");
+        assert.equal(x.next, x.kind === "unanswered" ? "samechan_shop_heart4" : "samechan_bond_finale");
         assert.equal(x.after.owned.filter(x => x === "suyaki_samechan").length, 1);
         assert.equal(x.after.finales.samechan.route, x.kind === "unanswered" ? "romance" : x.kind);
         if (x.kind !== "unanswered") assert.deepEqual(x.after.romanceChoices, {});
@@ -216,12 +217,16 @@ await suite("samechan-confession", async check => {
         s.lovers = []; s.flags._friend_samechan = true;
         K.romance.onDialogueEnter("confession_samechan_accept", K.data.DB.dialogues.confession_samechan_accept);
         const friend = K.snap(); delete s.flags._friend_samechan;
-        s.chapter = 4; const tooLate = K.romance.romanceRouteOpen("samechan");
+        // IR36: 第2・3章で迎えた締めくくりの告白は持ち越す。判断は締めくくりの章で、第4章以降に初めて迎えた分は閉じる
+        s.chapter = 4; const heldLater = K.romance.romanceRouteOpen("samechan");
+        const finale = s.finales.samechan; s.finales.samechan = { ...finale, chapter: 4 };
+        const tooLate = K.romance.romanceRouteOpen("samechan"); s.finales.samechan = finale;
         s.chapter = 2; delete s.romanceChoices.bond_q1_samechan;
         const fabricated = K.romance.romanceRouteOpen("samechan");
-        return { chapter1, unread, missing, before, sharkLime, otherLime, friend, tooLate, fabricated };
+        return { chapter1, unread, missing, before, sharkLime, otherLime, friend, heldLater, finaleChapter: finale?.chapter, tooLate, fabricated };
       });
       assert(!r.chapter1 && !r.unread && !r.missing && !r.tooLate && !r.fabricated);
+      assert.equal(r.finaleChapter, 2); assert(r.heldLater, "第2章で迎えた締めくくりの告白は第4章でも持ち越す（IR36）");
       assert.deepEqual(r.before.lovers, ["samechan"]);
       assert.equal(r.sharkLime.length, 1); assert.equal(r.sharkLime[0].id, "_lover_private_account_samechan");
       assert(r.otherLime.some(m => m.accept_event === "date_mashiro"));
@@ -296,3 +301,4 @@ await suite("samechan-confession", async check => {
     }, options);
   }
 });
+

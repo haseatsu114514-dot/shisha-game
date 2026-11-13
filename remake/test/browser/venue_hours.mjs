@@ -47,18 +47,18 @@ await suite("venue-hours", async runCheck => {
       await setup(page); const before = await snapshot(page);
       const blocked = await page.evaluate(async () => ({
         axe: await (await import("./js/daily/axe-bar.js")).visitAxeBar(),
-        rin: await V.shop.visitRin(),
+        rio: await V.shop.visitRio(),
         axeMap: V.access.spotAvailability(V.spots.spotById("axe_bar")),
         cafe: V.access.spotAvailability(V.spots.spotById("cafe")),
       }));
-      assert.equal(blocked.axe, false); assert.equal(blocked.rin, false);
+      assert.equal(blocked.axe, false); assert.equal(blocked.rio, false);
       assert(!blocked.axeMap.ok && blocked.cafe.ok); assert.match(blocked.axeMap.why, /夜/);
       assert.equal(await snapshot(page), before);
       await page.evaluate(async () => { void (await import("./js/daily/map.js")).chooseSpot(); });
       await hit(page, "pin-axe_bar");
       assert.equal(await page.locator(t("map-go")).count(), 0);
-      assert.match(await page.locator(".mi-no").innerText(), /夜/);
-      await assertFits(page, ".mi-no");
+      assert.match(await page.locator(".map-info").getAttribute("aria-label"), /夜/);
+      await assertFits(page, ".map-info");
     }, options);
 
     await check(label + "-night-maki-and-day-cafe-closed", async page => {
@@ -91,13 +91,14 @@ await suite("venue-hours", async runCheck => {
       assert.match(await page.locator(t("venue-host-line")).innerText(), /越えましたね/);
       await assertFits(page, ".venue-host, .trpg-trial-actions button");
       assert.equal(await snapshot(page), before);
-      await hit(page, "trpg-trial-back"); await hit(page, "trpg-club-choice-time");
+      await hit(page, "trpg-trial-back");
+      // Founding is now the VN played on entry, before the trial shelf opens.
       assert(await page.evaluate(() => !!V.core.state.trpg.club.founded));
       await hit(page, "trpg-trial-open");
     }, options);
   }
 
-  await check("rin-night-floor-and-day-shopping", async page => {
+  await check("rio-night-floor-and-day-shopping", async page => {
     await setup(page);
     await page.evaluate(() => { V.shop.openShop().then(r => { V.destination = r; }); });
     assert(await page.locator(t("shop-upstairs")).isDisabled());
@@ -107,17 +108,18 @@ await suite("venue-hours", async runCheck => {
     await hit(page, "shop-leave"); assert.equal(await snapshot(page), before);
     await page.evaluate(() => { V.core.state.slot = 1; V.destination = null; V.shop.openShop().then(r => { V.destination = r; }); });
     assert(!await page.locator(t("shop-upstairs")).isDisabled());
-    await hit(page, "shop-upstairs"); await page.waitForFunction(() => V.destination === "rin");
-    assert(await page.evaluate(() => V.shop.visitRin()));
+    await hit(page, "shop-upstairs"); await page.waitForFunction(() => V.destination === "rio");
+    assert(await page.evaluate(() => V.shop.visitRio()));
     assert.equal(await page.evaluate(() => V.core.state.stamina), 66);
     const after = await snapshot(page);
-    assert.equal(await page.evaluate(() => V.shop.visitRin()), false);
+    assert.equal(await page.evaluate(() => V.shop.visitRio()), false);
     assert.equal(await snapshot(page), after);
   });
 
   await check("night-cafe-has-no-free-day-trial", async page => {
     await setup(page, { chapter: 2, slot: 1 }); await page.evaluate(() => V.openCafe());
-    await portraitReady(page, "sai"); await page.locator(t("trpg-club-choice-time")).waitFor();
+    await portraitReady(page, "sai"); await page.locator(t("trpg-campaign-notice")).waitFor();
+    assert(await page.evaluate(() => !!V.core.state.trpg.club.founded));
     assert.equal(await page.locator(t("trpg-trial-open")).count(), 0);
     assert.match(await page.locator(t("venue-host-line")).innerText(), /今夜/);
   });

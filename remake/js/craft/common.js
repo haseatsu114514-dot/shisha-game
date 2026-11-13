@@ -7,7 +7,9 @@ import { craftCondition } from "../core/condition.js";
 import { state } from "../core/state.js";
 import { growthPerks } from "../core/growth-effects.js";
 
-export const gradeOf = (s) => (s >= 90 ? "S" : s >= 80 ? "A" : s >= 65 ? "B" : s >= 50 ? "C" : "D");
+// #2533 オーナー承認「ランクは仮置きでそのポイントでいい」。仮置きの閾値で、調整可能。
+export const CRAFT_RANK_THRESHOLDS = Object.freeze([0, 50, 65, 80, 90, 95, 98]);
+export const gradeOf = (s) => (s >= CRAFT_RANK_THRESHOLDS[4] ? "S" : s >= CRAFT_RANK_THRESHOLDS[3] ? "A" : s >= CRAFT_RANK_THRESHOLDS[2] ? "B" : s >= CRAFT_RANK_THRESHOLDS[1] ? "C" : "D");
 export const autoSkill = () => craftTest.auto; // "good" | "bad" | null
 
 /** 吸いすぎ・熱すぎで溜まった疲れ（TH29）。針が速く、成功帯が狭くなる。3回分で頭打ち。 */

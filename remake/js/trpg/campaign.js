@@ -1,7 +1,9 @@
+import { recordPlayMastery, syncPlayMastery } from "../core/play-mastery.js";
 import { spendableMoney } from "../core/travel-budget.js";
+import { isTrpgRegular } from "./regulars.js";
 // Campaign rules only. All mutations are explicit; this module has no DOM/storage.
 const clone = value => JSON.parse(JSON.stringify(value));
-const excluded = new Set(["sumi", "naru"]);
+const excluded = new Set(["sumi", "naru", "salaryman"]);
 export const emptyTrpgProgress = () => ({ stock: [], owned: [], cleared: {}, club: { founded: null, members: {} } });
 
 export function foundTrpgClub(state, catalog) {
@@ -12,16 +14,15 @@ export function foundTrpgClub(state, catalog) {
 }
 
 /** Recruitment requires a real conversation; work schedules only affect the later table. */
-export function recruitmentStatus(state, person, catalog) {
+export function recruitmentStatus(state, person, catalog, { allowUnheard = false } = {}) {
   if (!state || state.chapter < catalog.unlockChapter) return { ok: false, reason: "第2章から勧誘できる" };
   if (state.phase !== "daily") return { ok: false, reason: "街で会った時に誘おう" };
   if (!state.trpg?.club?.founded) return { ok: false, reason: "バーで部活を作ろう" };
   if (!person || excluded.has(person.id) || person.interested !== true) return { ok: false, reason: "参加対象外" };
   if (state.trpg.club.members?.[person.id]) return { ok: false, reason: "入部済み" };
   if (!state.met?.[person.id]) return { ok: false, reason: "まだ知り合っていない" };
-  if (!(state.lovers || []).includes(person.id) && (state.affinity?.[person.id] || 0) < person.maxAffinity) {
-    return { ok: false, reason: "好感度MAXになったら誘おう" };
-  }
+  if (!allowUnheard && !state.flags?.[`_trpg_topic_${person.id}`]
+    && !(person.id === "rei" && state.flags?._rei_trpg_introduced)) return { ok: false, reason: "会って部活の話を聞こう" };
   return { ok: true, reason: "会った時に、部活へ誘える" };
 }
 
@@ -58,9 +59,10 @@ export function tableStatus(state, catalog, { nightBusy = false } = {}) {
     return { ok: false, reason: "今夜は先に決まった予定がある" };
   }
   // #1045 B03: 卓は開けるが、仲間か本が欠けていると遊べない。今の不足と次の目標を一行で示す。
-  const hasCompanion = (catalog?.participants || []).some(p => participantStatus(state, p).ok);
-  const hasBook = (catalog?.scenarios || []).some(b => !state.trpg.cleared?.[b.id]
-    && (state.trpg.owned?.includes(b.id) || state.trpg.stock?.includes(b.id)));
+  const hasCompanion = (catalog?.participants || []).some(p => participantStatus(state, p).ok)
+    || (catalog?.scenarios || []).some(b => b.zeroMemberCast && (state.trpg.owned?.includes(b.id) || state.trpg.stock?.includes(b.id)));
+  // 遊び終えた本も、もう一度遊べる（TMX14）。
+  const hasBook = (catalog?.scenarios || []).some(b => state.trpg.owned?.includes(b.id) || state.trpg.stock?.includes(b.id));
   if (!hasCompanion && !hasBook) return { ok: true, reason: "今は招集できる仲間／遊べる本がない。知り合いとの交流を深めよう" };
   if (!hasCompanion) return { ok: true, reason: "今夜来られる部員がいない。知り合いとの交流を深めよう" };
   if (!hasBook) return { ok: true, reason: "今は遊べる本がない。部員が増えると入荷する" };
@@ -77,14 +79,22 @@ export function syncTrpgStock(state, catalog) {
       const p = catalog.participants.find(p => p.id === id);
       return p && !excluded.has(id) && p.interested === true && !!state.trpg.club.members?.[id];
     });
-    if (ready && !state.trpg.stock.includes(book.id)) { state.trpg.stock.push(book.id); changed = true; }
+    if (ready && trpgBookProgress(state, book).ok && !state.trpg.stock.includes(book.id)) { state.trpg.stock.push(book.id); changed = true; }
   }
   return changed;
 }
 
+/** The final book follows the six members' stories, even in saves that bought its earlier edition. */
+export function trpgBookProgress(state, book) {
+  const required = book.clearRequires || [];
+  const done = required.filter(id => typeof state?.trpg?.cleared?.[id]?.ending === "string").length;
+  return { ok: done === required.length,
+    reason: done === required.length ? "" : `部員の物語を遊ぼう（${done}／${required.length}冊）` };
+}
+
 export function buyTrpgBook(state, catalog, id) {
   const book = catalog.scenarios.find(b => b.id === id);
-  if (!book || state.chapter < catalog.unlockChapter || !state.trpg?.stock.includes(id)
+  if (!book || !trpgBookProgress(state, book).ok || state.chapter < catalog.unlockChapter || !state.trpg?.stock.includes(id)
     || state.trpg.owned.includes(id) || !Number.isInteger(book.price) || book.price < 0 || spendableMoney(state) < book.price) return false;
   state.money -= book.price;
   state.trpg.owned.push(id);
@@ -95,19 +105,36 @@ export function buyTrpgBook(state, catalog, id) {
 export function castTrpgTable(state, catalog, scenario, options = {}) {
   const ready = tableStatus(state, catalog, options);
   if (!ready.ok) return ready;
-  if (state.trpg?.cleared?.[scenario.id]) return { ok: false, reason: "遊び終えた物語" };
-  if (!state.trpg?.owned?.includes(scenario.id)) return { ok: false, reason: "本棚に加えると遊べる" };
+  const book = catalog.scenarios.find(b => b.id === scenario.id);
+  if (!book) return { ok: false, reason: "今の本棚にはない物語" };
+  const progress = trpgBookProgress(state, book);
+  if (!progress.ok) return progress;
+  // onShelf: 入荷済みでまだ買っていない本も、顔ぶれが成り立つかだけを見る（tablePlayableTonight）
+  if (!options.onShelf && !state.trpg?.owned?.includes(scenario.id)) return { ok: false, reason: "本棚に加えると遊べる" };
   const available = new Set(catalog.participants.filter(p => participantStatus(state, p).ok).map(p => p.id));
+  if (book?.zeroMemberCast) for (const id of book.zeroMemberCast) available.add(id);
+  for (const id of catalog.regulars || []) if (isTrpgRegular(id)) available.add(id);
   available.add("hajime");
   const used = new Set();
   const assignments = {};
   for (const seat of scenario.campaign.seats) {
-    const id = seat.candidates.find(id => available.has(id) && !used.has(id) && !excluded.has(id));
-    if (!id && seat.required) return { ok: false, reason: "今夜はGMの都合がつかない" };
+    const id = seat.candidates.find(id => available.has(id) && !used.has(id)
+      && !excluded.has(id));
+    if (!id && seat.required) return { ok: false, reason: "今夜は必要な部員の都合がつかない" };
     assignments[seat.actor] = id || null;
     if (id) used.add(id);
   }
   return { ok: true, assignments, participants: [...used], gm: assignments[scenario.cast.find(c => c.part === "GM").id] };
+}
+
+/**
+ * 今夜、棚の本（入荷済みを含む・まだ結末を見ていない本）のどれかで卓を囲めるか。本棚の画面の「今は遊べる本と仲間が
+ * 揃っていません」と同じ見方で、来店のやり取りの出し分けに使う（daily/trpg.js）。状態は変えない。
+ */
+export function tablePlayableTonight(state, catalog, scenarios, options = {}) {
+  const shelved = id => state?.trpg?.owned?.includes(id) || state?.trpg?.stock?.includes(id);
+  return (scenarios || []).some(scenario => shelved(scenario.id) && !state.trpg.cleared?.[scenario.id]
+    && castTrpgTable(state, catalog, scenario, { ...options, onShelf: true }).ok);
 }
 
 /** Authored alternatives are required for any replacement actor; never reuse another person's voice. */
@@ -155,21 +182,89 @@ export function materializeTrpgCast(scenario, assignments) {
   return table;
 }
 
-/** Commits once, after all ending dialogue is read; includes the action in the same save. */
+/**
+ * 部の実績とランク（TRF13）。本棚の記録から数えるので、保存は増やさない: 周回の引き継ぎも、記録と一緒に付いてくる。
+ * 1冊につき 遊び終えた＋2・見た結末1つにつき＋1・星1つにつき＋1（1冊で最大 2＋4＋3＝9）。同じ結末を繰り返しても増えない。
+ * ランクが上がると、はじめの役の能力に成長点（growth）が付く。
+ */
+export const CLUB_RANKS = Object.freeze([
+  { at: 0, name: "かけだしの部", growth: 0 },
+  { at: 6, name: "なじみの部", growth: 1 },
+  { at: 16, name: "評判の部", growth: 1 },
+  { at: 30, name: "名物の部", growth: 2 },
+  { at: 50, name: "伝説の部", growth: 2 },
+]);
+const ENDINGS_PER_BOOK = 4;
+export function bookPoints(memory) {
+  if (!memory || typeof memory.ending !== "string") return 0;
+  const seen = Array.isArray(memory.endingsSeen) ? new Set(memory.endingsSeen).size : 1;
+  const stars = Number.isInteger(memory.stars) ? Math.max(0, Math.min(3, memory.stars)) : 0;
+  return 2 + Math.max(1, Math.min(ENDINGS_PER_BOOK, seen)) + stars;
+}
+export function clubRecord(state, catalog) {
+  const cleared = state?.trpg?.cleared || {};
+  const books = new Set([...(catalog?.scenarios || []).map(book => book.id), ...(catalog?.retiredScenarios || [])]);
+  const points = [...books].reduce((n, id) => n + bookPoints(cleared[id]), 0);
+  const index = CLUB_RANKS.reduce((best, rank, i) => points >= rank.at ? i : best, 0);
+  const rank = CLUB_RANKS[index], next = CLUB_RANKS[index + 1] || null;
+  return { points, rank: index + 1, ranks: CLUB_RANKS.length, name: rank.name, growth: rank.growth, floor: rank.at,
+    next: next ? { rank: index + 2, name: next.name, at: next.at, need: next.at - points, growth: next.growth } : null };
+}
+/** What one finished table added to the club: for the ending screen and the note on the shelf. */
+export function clubGain(before, after) {
+  return { gained: after.points - before.points, points: after.points, rank: after.rank, name: after.name, growth: after.growth,
+    rankUp: after.rank > before.rank, growthUp: after.growth - before.growth, next: after.next };
+}
+
+/** A play beats the kept memory when it earns more stars, or as many stars with a livelier table. */
+function betterPlay(next, kept) {
+  if (!kept) return true;
+  const stars = r => Number.isInteger(r.stars) ? r.stars : -1, heat = r => Number.isInteger(r.heat) ? r.heat : -1;
+  return stars(next) > stars(kept) || stars(next) === stars(kept) && heat(next) > heat(kept);
+}
+
+/** Commits once, after all ending dialogue is read; includes the action in the same save.
+ *  Replaying a finished book (TMX14) also uses the night, keeps the better memory and adds to the endings seen. */
 export function completeTrpgTable(state, catalog, scenario, ticket, result, options = {}) {
   if (result?.cancelled || result?.scenarioId !== scenario.id || !scenario.endings[result?.ending]
     || state.chapter !== ticket.chapter || state.day !== ticket.day || state.slot !== ticket.slot) return false;
   const current = castTrpgTable(state, catalog, scenario, options);
   if (!current.ok || JSON.stringify(current.assignments) !== JSON.stringify(ticket.assignments)) return false;
-  state.trpg.cleared[scenario.id] = {
+  syncPlayMastery(state);
+  const kept = state.trpg.cleared[scenario.id] || null;
+  const seen = [...new Set([...(Array.isArray(kept?.endingsSeen) ? kept.endingsSeen : kept ? [kept.ending] : []), result.ending])];
+  const plays = (Number.isInteger(kept?.plays) ? kept.plays : kept ? 1 : 0) + 1;
+  const memory = {
     chapter: state.chapter, day: state.day, gm: current.gm, participants: [...current.participants],
     ending: result.ending, endingTitle: scenario.endings[result.ending].title,
     variant: result.variant, plan: clone(result.plan), version: scenario.version,
     ...(Number.isInteger(result.rating?.stars) ? { stars: result.rating.stars } : {}),
     ...(Number.isInteger(result.heat?.value) ? { heat: result.heat.value, night: result.heat.night } : {}),
-    // The player's own character, as built for this table: name, origin, look and stats.
+    // The player's own character, as built for this table: name, origin and stats (older saves may also carry a look).
     ...(result.pc && typeof result.pc.name === "string" ? { pc: clone(result.pc) } : {}),
   };
+  state.trpg.cleared[scenario.id] = { ...(betterPlay(memory, kept) ? memory : kept), endingsSeen: seen, plays };
+  if (state.trpg.bookmark?.id === scenario.id) delete state.trpg.bookmark;
   state.slot++;
+  recordPlayMastery(state, "trpg", result, `${state.cycle || 1}:${scenario.id}:${plays}`);
   return true;
+}
+
+/** しおり（TMX13）: one table in progress at a time. It stores what was pressed, not the screen; nothing is spent. */
+export function keepTrpgBookmark(state, scenario, ticket, mark) {
+  if (!state?.trpg || !scenario || !ticket || !Array.isArray(mark?.actions) || !mark.actions.length) return false;
+  state.trpg.bookmark = { id: scenario.id, version: scenario.version, chapter: ticket.chapter, day: ticket.day,
+    seed: ticket.seed, assignments: clone(ticket.assignments), pc: mark.pc ? clone(mark.pc) : null,
+    actions: clone(mark.actions), phase: mark.phase, title: mark.title || "",
+    // 成長点（TRF13）: 続きから遊ぶ時は、しおりを挟んだ時と同じ能力で始める（押した順番の再生が同じ結果になる）。
+    ...(Number.isInteger(ticket.growth) && ticket.growth > 0 ? { growth: ticket.growth } : {}) };
+  return true;
+}
+
+/** The bookmark this table can continue from: same story and version, and tonight's seats match the bookmarked ones. */
+export function trpgBookmarkFor(state, scenario, assignments) {
+  const mark = state?.trpg?.bookmark;
+  if (!mark || mark.id !== scenario.id || mark.version !== scenario.version) return { mark: null };
+  if (JSON.stringify(mark.assignments) !== JSON.stringify(assignments)) return { mark, ok: false, reason: "今夜は顔ぶれが違うので、最初から" };
+  return { mark, ok: true };
 }

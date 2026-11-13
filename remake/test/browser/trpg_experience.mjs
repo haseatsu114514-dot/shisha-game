@@ -107,7 +107,8 @@ async function forecast(page, supported = false, conditional = false) {
     const counts = { success: 0, mixed: 0, trouble: 0 };
     for (let a = 1; a <= 20; a++) for (let b = 1; b <= 20; b++) {
       const total = a + b + bonus + extra;
-      counts[total >= 30 ? "success" : total >= 19 ? "mixed" : "trouble"]++;
+      // A 20 on either die is a critical and always a success (TRF01).
+      counts[a === 20 || b === 20 || total >= 30 ? "success" : total >= 19 ? "mixed" : "trouble"]++;
     }
     return Object.fromEntries(Object.entries(counts).map(([grade, count]) => [grade, Math.round(count / 4)]));
   };

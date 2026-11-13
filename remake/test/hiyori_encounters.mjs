@@ -23,7 +23,7 @@ async function setup(page) {
       Object.assign(s, { phase: "daily", day: 4, slot: 0, money: 90000, seed: 131 });
       Object.assign(s.flags, { _errand_scout_done: true, _delivery_adam_done: true,
         _delivery_minto_done: true, _lime_tut: true, _morning_4: true });
-      s.met.naru = s.met.adam = s.met.minto = s.met.rin = s.met.sumi = true;
+      s.met.naru = s.met.adam = s.met.minto = s.met.rio = s.met.sumi = true;
       s.flags._spot_guide_naru = s.flags._spot_guide_adam = s.flags._spot_guide_minto = true;
       H.core.config.textSpeed = 4; H.vn.vnTest.turbo = true; H.vn.vnTest.choose = () => 0;
       return s;
@@ -97,7 +97,7 @@ await suite("hiyori-encounters", async (check) => {
       for (let seed = 0; seed < 100; seed++) {
         const s = H.fresh(); s.seed = seed;
         Object.assign(s.flags, { _hiyori_meeting_done: true, _hiyori_sumi_message_done: true,
-          _hiyori_message_delivered: true, _hiyori_cracks_done: true });
+          _hiyori_message_delivered: true, _hiyori_cracks_done: true, _hiyori_clockout_done: true });
         const before = JSON.stringify(s);
         if (!await H.visit("minto")) { missed = { before, unchanged: JSON.stringify(s) === before }; break; }
       }

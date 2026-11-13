@@ -1,3 +1,4 @@
+/* body:not(:root)／.title:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds)／:not([data-layout="ds"]) と同じ詳細度を保つための置き換え。 */
 /* ============================================================
    会話（VN）レイヤー
    ============================================================ */
@@ -5,6 +6,12 @@
 #vn.active { opacity: 1; }
 /* 会話終了と同時に次画面が見えるため、前の文字と操作欄は残像にしない。 */
 #vn:not(.active) :is(.vn-box, .vn-choices, .vn-controls, .vn-log) { visibility: hidden; }
+/* 登場変形中は直前の台詞を読み終えた画面を片付け、カットイン後に会話へ戻す。 */
+#vn :is(.vn-box, .vn-choices, .vn-controls) { transition: opacity 0.18s ease; }
+#vn.intro-morph-dialog-hidden :is(.vn-box, .vn-choices, .vn-controls) {
+  opacity: 0;
+  pointer-events: none;
+}
 
 .vn-loading { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); z-index: 101;
   display: flex; align-items: center; gap: 14px; padding: 16px 24px; border: 1px solid #b59d7166; border-radius: 8px;
@@ -13,6 +20,22 @@
   border-radius: 50%; animation: vn-loading-turn 1s linear infinite; }
 @keyframes vn-loading-turn { to { transform: rotate(1turn); } }
 @media (prefers-reduced-motion: reduce) { .vn-loading::before { animation: none; } }
+.vn-loading.has-comic { top: 50%; width: min(92%, 720px); max-height: 92%; box-sizing: border-box;
+  flex-direction: column; gap: 8px; padding: 12px 16px; overflow: hidden; }
+.vn-loading.has-comic::before { position: absolute; top: 15px; left: 16px; width: 16px; height: 16px; }
+.vn-loading-comic { width: 100%; min-height: 0; text-align: center; }
+.vn-loading-comic h2 { margin: 0 0 6px; font-size: 18px; font-weight: 700; }
+.vn-loading-comic-panels { display: flex; gap: 8px; justify-content: center; }
+.vn-loading-comic-panels figure { flex: 1; min-width: 0; margin: 0; }
+.vn-loading-comic-art { position: relative; width: 100%; aspect-ratio: 3 / 2; overflow: hidden; container-type: inline-size; background: #eee7d7; }
+.vn-loading-comic-art img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.vn-loading-comic-bubble { position: absolute; margin: 0; color: #201919; line-height: 1.2; font-weight: 700; }
+.vn-loading-comic-caption { margin: 6px 0 0; font-size: 13px; }
+@media (max-aspect-ratio: 3/4) {
+  .vn-loading.has-comic { width: min(94%, 420px); max-height: 96%; }
+  .vn-loading-comic-panels { flex-direction: column; align-items: center; gap: 4px; }
+  .vn-loading-comic-panels figure { flex: none; width: min(100%, 270px); }
+}
 
 .vn-cg {
   position: absolute;
@@ -71,20 +94,32 @@
     radial-gradient(ellipse 40% 50% at 30% 80%, rgba(240, 236, 248, 0.22), transparent 70%),
     radial-gradient(ellipse 35% 45% at 70% 70%, rgba(240, 236, 248, 0.18), transparent 70%);
   filter: blur(20px);
-  animation: drift 14s ease-in-out infinite alternate;
+  animation: smoke-drift 14s ease-in-out infinite alternate;
 }
 .vn-effect[data-effect="smoke"]::after { animation-duration: 19s; animation-direction: alternate-reverse; opacity: 0.7; }
-@keyframes drift {
+@keyframes smoke-drift {
   from { transform: translateX(-6%) translateY(0); }
   to { transform: translateX(6%) translateY(-6%); }
 }
 
 #vn.sepia .vn-portraits, #vn.sepia .vn-cg { filter: sepia(0.75) contrast(0.95) brightness(0.92); }
 body.in-vn #bg { transition: filter 0.4s; }
+/* #2447 item10: 寝る前の家シーシャなど metadata.lift_scene_props の場面だけ、卓上・床の台を
+   本文ボックスの上辺まで持ち上げ、台の下半分が会話ウィンドウに隠れないよう全体を見せる。
+   対象は家の台（data-home-rig）のみで、他の背景・場面は従来どおり机へ接地させる。 */
+body.vn-lift-props #bg .scene-prop[data-home-rig] {
+  transform: translateY(-78px);
+  transform-box: view-box;
+  transition: transform 0.25s ease;
+}
 #vn.sepia ~ #bg, body.in-vn:has(#vn.sepia) #bg { filter: sepia(0.8) brightness(0.9); }
 #vn.flashback .vn-portraits, #vn.flashback .vn-cg,
 body.in-vn:has(#vn.flashback) #bg { filter: grayscale(1) contrast(.92); }
 #vn.flashback::after { content: "回想"; position: absolute; top: 36px; left: 50%; transform: translateX(-50%); padding: 8px 24px; color: #eee; background: #19151bd9; border: 1px solid #aaa; font-size: 24px; letter-spacing: .25em; pointer-events: none; }
+/* 修羅場の空気（core/scene-mood.js の "dread"）。会話をまたいで背景の色を落とし、四隅を沈める。立ち絵と台詞欄は変えない */
+body[data-scene-mood="dread"] #bg { filter: saturate(.4) brightness(.62) contrast(1.06); transition: filter .5s ease; }
+body[data-scene-mood="dread"] #bg::after { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 40%, #0b081400 30%, #05030ad1 100%); }
 
 .vn-portraits { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; }
 .portrait {
@@ -102,7 +137,7 @@ body.in-vn:has(#vn.flashback) #bg { filter: grayscale(1) contrast(.92); }
 .portrait[data-pos="left"] { left: 30%; }
 .portrait[data-pos="right"] { left: 70%; }
 .portrait.enter { opacity: 0; translate: 0 24px; }
-.vn-skip .portrait { transition-duration: .12s; }
+.vn-skip .portrait { transition: none; }
 
 .vn-scent {
   position: absolute;
@@ -206,6 +241,13 @@ body.in-vn:has(#vn.flashback) #bg { filter: grayscale(1) contrast(.92); }
 .tx-red { color: #ff7a7a; }
 .tx-blue { color: #8fb8ff; }
 .tx-sub { font-size: 0.8em; color: var(--text-dim); }
+/* 会話演出（#2828）: 「（」で始まる心の声は薄墨・少し小さく。震え文字は行ごとに小刻みに揺らし、
+   設定「揺れ・閃光を減らす」・端末の「動きを減らす」・SKIP中は止める。 */
+.tx-voice { color: #9aa0b8; font-size: 0.9em; text-shadow: none; }
+.tx-shiver { display: inline-block; animation: tx-shiver 0.08s steps(2) infinite; }
+@keyframes tx-shiver { 0% { translate: -1px 0; } 50% { translate: 1px 1px; } 100% { translate: 0 -1px; } }
+body:is(.reduce-shake, .vn-skip) .tx-shiver { animation: none; }
+@media (prefers-reduced-motion: reduce) { .tx-shiver { animation: none; } }
 .vn-next {
   position: absolute;
   right: 34px;
@@ -256,8 +298,25 @@ body.in-vn:has(#vn.flashback) #bg { filter: grayscale(1) contrast(.92); }
   gap: 14px;
 }
 .vn-choices.show { display: flex; }
-/* 2択は質問・操作札から離して上へ寄せる。 */
+/* 2択は質問・操作札から少し離して上へ寄せる（3択以上は 262px、2択は 338px）。
+   オーナー「2択が上すぎる」「もう少し上」（2026-11-13・YHK14）: #3499 の 386px は高すぎ、3択以上と同じ高さは低すぎたので、#3499 の前の 338px に戻した。 */
 .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: 338px; }
+/* 6択以上は画面上端と操作欄の間でスクロールさせる。短い選択肢の配置は維持する。 */
+body:not(:root) .vn-choices:has(> .vn-choice:nth-child(6)) {
+  top: 16px;
+  left: 50%;
+  right: auto;
+  width: 760px;
+  max-width: 100%;
+  transform: translateX(-50%);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  padding: 2px 12px;
+}
+body:not(:root) .vn-choices:has(> .vn-choice:nth-child(6)) > .vn-choice {
+  flex-shrink: 0;
+}
 .vn-choice {
   width: 720px;
   padding: 16px 30px;
@@ -380,4 +439,13 @@ body.in-vn:has(#vn.flashback) #bg { filter: grayscale(1) contrast(.92); }
  .cutin .ci-band {transform:rotate(-7deg)!important;}
  .cutin .ci-left-field {clip-path:polygon(0 0,558px 0,410px 720px,0 720px)!important;}
 }
-.vn-choice:disabled { opacity: .38; cursor: default; }
+.vn-choice[aria-disabled="true"] { opacity: .85; cursor: default; }
+.vn-choice[aria-disabled="true"]:hover { transform: none; }
+.vn-choice-reason {
+  display: block;
+  margin-top: 3px;
+  font-size: 15px;
+  line-height: 1.35;
+  letter-spacing: 0;
+  font-weight: 700;
+}

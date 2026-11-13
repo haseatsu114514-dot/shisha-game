@@ -81,11 +81,13 @@ for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
     restingToday: () => false, bannersIdle: async () => {},
     runNightPlan: async () => { trace.push('night'); return 0; },
     maybeConfession: async () => { trace.push('confession'); return false; },
+    strainMorning: () => 0, maybeStrainTalk: async () => false, maybeStrainReunion: async () => false, // すれ違い（恋人の裏の数値）は remake/test/lover_strain.mjs。この検査では動かない
     maybeSamechanEncounter: async () => { trace.push('encounter'); },
     play: async id => { trace.push(id); return {}; }, beat() {},
     showSumiRigAtHome: async () => { trace.push('rig-homecoming'); return false; },
     runHomeShisha: async () => { trace.push('home-shisha'); return false; },
     presentNight: async () => { trace.push('night-growth'); return null; },
+    takeChapterBoardNotice: () => null, chapterBoardCards: () => [], respecMapNotice: () => "", // 章はじめの盤の知らせ（#1801 C10）。盤が無効な時と同じく何もしない
     conditionForRatio: () => ({ health: 'healthy' }), staminaRatio: () => fixture.stamina / 100,
     addStamina: n => { fixture.stamina += n; trace.push('recovery'); },
     daysLeft: () => 28 - fixture.day, updateHud() {},
@@ -177,6 +179,7 @@ const invitationContext = vm.createContext({
   addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; },
   playHiyoriHangout: async () => { log.push('meeting:' + state.flags._ch2_region); },
   consultLessons: async () => [], // 心得の盤の授業の相談（SBD70）。盤が無効な時と同じく何もしない
+  takeChapterBoardNotice: () => null, chapterBoardCards: () => [], respecMapNotice: () => "", // 章はじめの盤の知らせ（#1801 C10）
   bgRef: id => id, VISIT_BG: { hiyori: 'shop' },
   completeInvitation: inv => { state.pendingInvite = null; rewardTrace.push('complete:' + inv.sender); },
   paidAction: async fn => { rewardTrace.push('paidAction'); const value = await fn(); if (value) rewardTrace.push('reward'); return { value, spent: 1 }; },
@@ -185,6 +188,7 @@ const invitationContext = vm.createContext({
   save: () => saves++, restingToday: () => restedForInvite,
   runNightPlan: async () => 0, bannersIdle: async () => {}, beat: async () => log.push('beat'),
   maybeConfession: async () => { throw appointmentStop; },
+  maybeStrainTalk: async () => false, maybeStrainReunion: async () => false,
 });
 Object.defineProperty(invitationContext, 'state', { configurable: true, get: () => state });
 const invitationStats = fixed(['earnStat'], { earnStat: (key, amount) => rewardTrace.push(`stat:${key}:${amount}`) });

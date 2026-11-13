@@ -98,15 +98,6 @@ function extendDown(alpha, w, h, row) {
   return alpha;
 }
 
-/** 距離場の傾き（中央差分）。混ぜた距離場の縁の太さを、本当の距離に直すのに使う */
-function gradient(sd, w, h) {
-  const gx = new Float32Array(w * h), gy = new Float32Array(w * h);
-  for (let y = 1; y < h - 1; y++) for (let x = 1, i = y * w + 1; x < w - 1; x++, i++) {
-    gx[i] = (sd[i + 1] - sd[i - 1]) * .5; gy[i] = (sd[i + w] - sd[i - w]) * .5;
-  }
-  return [gx, gy];
-}
-
 const hex = (c) => {
   const m = /^#?([0-9a-f]{6})$/i.exec(String(c || "").trim());
   const n = m ? parseInt(m[1], 16) : 0xe8c27a;
@@ -120,7 +111,7 @@ const hex = (c) => {
  * @param colors { color, secondary }
  * @returns { canvas, draw(t, glow) } t=0 で立ち絵の影、t=1 でカットインの人物の影
  */
-export function prepareShapeMorph(from, to, colors, { scale = 0.5, field = 2, reach = 18, soften = 1, region = { x: -360, y: -100, w: 1680, h: 1220 } } = {}) {
+export function prepareShapeMorph(from, to, colors, { scale = 0.75, field = 1.5, reach = 18, soften = 1, region = { x: -360, y: -100, w: 1680, h: 1220 } } = {}) {
   // 描く解像度（scale）の 1/field で距離場を作り、描く解像度へ補間で広げる
   const W = Math.round(region.w * scale), H = Math.round(region.h * scale);
   const fs = scale / field, w = Math.round(region.w * fs), h = Math.round(region.h * fs);
@@ -149,7 +140,6 @@ export function prepareShapeMorph(from, to, colors, { scale = 0.5, field = 2, re
   const alphaB = extendDown(alphaOf(() => g.drawImage(to.img, bx, by, bs, bs)), w, h, Math.floor(by + bs) - 3);
   const dA = softField(upsample(signedDistance(alphaA, w, h), w, h, W, H, field), reach);
   const dB = softField(upsample(signedDistance(alphaB, w, h), w, h, W, H, field), reach);
-  const [gxA, gyA] = gradient(dA, W, H), [gxB, gyB] = gradient(dB, W, H);
   // 毎フレーム全画素を回さないよう、どちらかの影がある範囲だけを描く
   let x0 = W, y0 = H, x1 = 0, y1 = 0;
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
@@ -180,7 +170,14 @@ export function prepareShapeMorph(from, to, colors, { scale = 0.5, field = 2, re
           // 縁の近くだけ傾きで割って本当の距離に直し、縁を常に細く保つ
           if (d < -3) { data[o + 3] = 0; continue; }
           if (d < 3) {
-            const gx = gxA[i] + (gxB[i] - gxA[i]) * t, gy = gyA[i] + (gyB[i] - gyA[i]) * t;
+            // 輪郭付近だけ傾きを求め、全画素4枚の傾き配列を保持しない。
+            let gx = 0, gy = 0;
+            if (x > 0 && x < W - 1 && y > 0 && y < H - 1) {
+              const ax = (dA[i + 1] - dA[i - 1]) * .5;
+              const ay = (dA[i + W] - dA[i - W]) * .5;
+              gx = ax + ((dB[i + 1] - dB[i - 1]) * .5 - ax) * t;
+              gy = ay + ((dB[i + W] - dB[i - W]) * .5 - ay) * t;
+            }
             d /= Math.max(.25, Math.sqrt(gx * gx + gy * gy));
             if (d < -1) { data[o + 3] = 0; continue; }
           }

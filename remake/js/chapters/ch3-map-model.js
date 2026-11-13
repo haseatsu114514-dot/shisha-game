@@ -36,7 +36,7 @@ const scenePlace = scene => {
   if (scene.location === "mukai") return "mukai";
   if (["ch3_individuality_doubt", "ch3_naru_contact_before_tournament", "ch3_tournament_eve"].includes(scene.id)) return "street";
   if (scene.id === "ch3_tokyo_shop_gap") return "shop";
-  if (["ch3_kuze_first", "ch3_kuze_advice"].includes(scene.id)) return "enmaku";
+  if (["ch3_saku_first", "ch3_saku_advice"].includes(scene.id)) return "enmaku";
   if (scene.id === "ch3_steve_low_heat") return "steve";
   if (scene.id === "ch3_volk_first") return "volk";
   return null;

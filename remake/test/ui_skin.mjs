@@ -1,8 +1,20 @@
-// 簡潔な能力通知と5色・所持金の桁・体力に応じて伸びるHUDを実ブラウザで確認。
+// 簡潔な能力通知と5色・所持金の桁・経験値と共通の固定長の体力ゲージを持つHUDを実ブラウザで確認。
 // サーバーを8123で起動後: node remake/test/ui_skin.mjs（SHOTSで確認画像の保存先）
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { createRequire } from "node:module";
+// 画面の大きさを変えたら、main.js の fitStage（resize で動く）がステージの倍率とスマホ規格（data-density）を
+// 置き直すまで待ってから測る。待たないと、前の大きさのスマホ規格のまま文字の大きさを読むことがある（CI で 21.23px になった）。
+async function setViewportAndFit(page, viewport) {
+  await page.setViewportSize(viewport);
+  await page.waitForFunction(({ width, height }) => {
+    const k = Math.min(width / 1280, height / 720);
+    const now = parseFloat(getComputedStyle(document.getElementById("stage")).getPropertyValue("--k"));
+    const phone = document.documentElement.dataset.density === "phone";
+    return Math.abs(now - k) < 1e-6 && phone === (k < 0.62 && width > height);
+  }, viewport);
+}
+
 const { chromium } = createRequire(import.meta.url)("playwright");
 const shots = process.env.SHOTS;
 if (shots) fs.mkdirSync(shots, { recursive: true });
@@ -24,7 +36,7 @@ try {
     const stats = await import("./js/core/stats.js");
     window.T = { core, hud, ui, map, stats };
     core.state.phase = "daily";
-    for (const id of ["minto", "naru", "adam", "tsumugi", "rin"]) core.state.met[id] = true;
+    for (const id of ["minto", "naru", "adam", "tsumugi", "rio"]) core.state.met[id] = true;
     hud.initHud({}); hud.showHud();
     window.previewMap = map.chooseSpot();
     await Promise.all(["panel", "button", "map-pin", "heart", "reward-clean", "gauge-frame", "gauge-fill"].map(async (name) => {
@@ -39,7 +51,7 @@ try {
   await page.waitForFunction(() => document.body.dataset.screen === "map"
     && document.querySelector(".hud-stamina")?.getBoundingClientRect().width > 0, null, { timeout: 30000 });
   for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
-    await page.setViewportSize(viewport);
+    await setViewportAndFit(page, viewport);
     const geometry = await page.evaluate(() => {
       document.querySelector(".hud-bar").style.transition = "none";
       const snapshot = () => [".hud-card", ".hud-stamina", ".hud-lime", ".hud-menu"].map((selector) => {
@@ -57,7 +69,7 @@ try {
           const time = document.querySelector(".dc-slot");
           result.push({ money, day, rects: snapshot(), barWidth: parseFloat(document.querySelector(".hud-bar").style.width), visible: amount.scrollWidth <= amount.clientWidth,
             timeFits: time.scrollWidth <= time.clientWidth,
-            countdown: countdown.textContent, countdownFits: countdown.scrollWidth <= countdown.clientWidth });
+            countdown: countdown ? countdown.textContent : null });
         }
       }
       return result;
@@ -68,16 +80,15 @@ try {
       assert.deepEqual([result.rects[0], ...result.rects.slice(2)], [geometry[0].rects[0], ...geometry[0].rects.slice(2)], "Capacity change moved the other HUD controls");
       assert(result.visible, `Money was clipped: ${result.money}`);
       assert(result.timeFits, "Time/weather label overlapped the money column");
-      assert(result.countdownFits, "Next tournament countdown was clipped");
-      assert.equal(result.countdown, `次の大会まであと${14 - result.day}日`);
+      assert.equal(result.countdown, null, "残り日数の行が左上カードに残っている（#3033で削除済みのはず）");
     }
-    // 統合HUDではカード幅が固定でバーが列幅いっぱいに広がるため、器の伸びは
-    // バーに指定された幅（updateHud が最大体力から決める）で見る。
-    assert(geometry[1].barWidth > geometry[0].barWidth, "Stamina window did not grow with maximum capacity");
+    // バーの長さは最大体力によらず経験値ゲージと共通の固定長（#3034）。指定幅が最大体力で変わらないことを見る。
+    assert.equal(geometry[1].barWidth, geometry[0].barWidth, "Stamina window length changed with maximum capacity");
+    assert.equal(geometry[0].barWidth, 120, "Stamina window is not the shared gauge length");
     if (shots) await page.screenshot({ path: `${shots}/fixed-hud-${viewport.width}.png` });
   }
-  console.log("[ui skin] PASS: 7 generated images, stable money/controls and growing stamina window at desktop and mobile sizes");
-  await page.setViewportSize({ width: 1280, height: 720 });
+  console.log("[ui skin] PASS: 7 generated images, stable money/controls and fixed stamina window at desktop and mobile sizes");
+  await setViewportAndFit(page, { width: 1280, height: 720 });
   const moneyAndSave = await page.evaluate(() => {
     T.core.state.money = 999990;
     T.stats.addMoney(20);
@@ -103,15 +114,15 @@ try {
     const centered = Math.abs(inner.x + inner.width / 2 - outer.x - outer.width / 2) < .5
       && Math.abs(glyphs.x + glyphs.width / 2 - inner.x - inner.width / 2) < .5;
     const readable = getComputedStyle(document.querySelector(".dc-row.money b")).fontSize;
-    const onDayText = document.querySelector(".dc-meta .dc-row:not(.money)").textContent;
-    return { capped, spent, minimum, migrated, countdowns, centered, readable, onDayText };
+    const goalRow = document.querySelector(".dc-meta .dc-row:not(.money)");
+    return { capped, spent, minimum, migrated, countdowns, centered, readable, onDayText: goalRow ? goalRow.textContent : null };
   });
   assert.deepEqual([moneyAndSave.capped, moneyAndSave.spent, moneyAndSave.minimum], [999999, 999874, 0]);
   assert.deepEqual(moneyAndSave.migrated, { money: 999999, day: 14, phase: "tournament", attempts: 2, lastNight: true });
   assert.deepEqual(moneyAndSave.countdowns, Array.from({length: 14}, (_, i) => 13 - i));
-  assert.equal(moneyAndSave.onDayText, "次の大会まであと0日");
+  assert.equal(moneyAndSave.onDayText, null, "大会当日でも残り日数の行は出さない（#3033）");
   assert(moneyAndSave.centered, "LIME label or glyphs were off center");
-  assert.equal(moneyAndSave.readable, "20px");
+  assert.equal(moneyAndSave.readable, "24px"); // #2853: ラベルを ¥ の印にした分、数値を24pxへ
   console.log("[ui skin] PASS: six-digit cap, spending, zero, old DAY15 save, countdown, centered LIME, readable money");
   const stamina = await page.evaluate(() => {
     const out = [];
@@ -126,7 +137,7 @@ try {
         out.push({ ratio: T.core.state.stamina / maximum, maximum, // 丸めた実際の体力で境界を判定する（最大154は割り切れない）
            health: holder.dataset.health, color: getComputedStyle(holder.querySelector("b")).backgroundColor,
           width: holder.querySelector("b").style.width, windowWidth: holder.clientWidth, barWidth: bar.clientWidth, barSpecifiedWidth: parseFloat(bar.style.width),
-          // 育成で最大体力が伸びるとバーが長くなる。右の余白は伸びる先（DUI13）で、最大でも行からはみ出さない。
+          // バーの長さは最大体力によらず経験値ゲージと共通の固定長（#3034）。行からはみ出さない。
           inside: bar.getBoundingClientRect().right <= holder.getBoundingClientRect().right + .5 });
       }
     }
@@ -141,9 +152,9 @@ try {
   for (const maximum of [100, 154]) {
     assert.equal(new Set(stamina.filter((value) => value.maximum === maximum).map((value) => value.windowWidth)).size, 1, "Losing stamina changed the capacity window");
   }
-  assert.equal(stamina[0].barSpecifiedWidth, 92);
-  assert.equal(stamina[7].barSpecifiedWidth, 142); // 92px × 154/100
-  console.log("[ui skin] PASS: green/yellow/red, exact boundaries, zero/full, expanded stamina capacity");
+  assert.equal(stamina[0].barSpecifiedWidth, 120);
+  assert.equal(stamina[7].barSpecifiedWidth, 120); // 最大体力154でも長さは経験値ゲージと同じ固定長（#3034）
+  console.log("[ui skin] PASS: green/yellow/red, exact boundaries, zero/full, fixed gauge length shared with exp");
   const sessions = await page.evaluate(async () => {
     const { newSession } = await import("./js/craft/session.js"), { skill } = await import("./js/craft/common.js");
     const out = [];

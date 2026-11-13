@@ -47,7 +47,7 @@ async function seed(page, adjust = null) {
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
       _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
-    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "nagumo", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
     Object.assign(value.met, { naru: true });
     if (!progress.advanceToChapterFour(value)) throw new Error("Chapter boundary failed");
     value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
@@ -64,6 +64,79 @@ async function seed(page, adjust = null) {
 }
 
 await suite("ch4-dubai-daily", async check => {
+  for (const [device, options] of [
+    ["pc", {}],
+    ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+  ]) await check(`revisit-new-markers-${device}`, async page => {
+    const spots = ["ch4_dubai_souq", "ch4_dubai_festa", "ch4_dubai_cafe", "ch4_dubai_alley"];
+    const prepare = (completed, chains = null) => seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      for (const id of ["ch4_festa", "ch4_dubai_souq", "ch4_stranger_first", "ch4_stranger_second", "ch4_dubai_cafe", "ch4_inn_tool_care"]) p.read[id] = true;
+      p.firstDay = 1; p.secondDay = 3;
+      value.day = p.startDay + 4; value.slot = 0; p.day = 5;
+      value.met.da_silva = true;
+    }).then(async () => {
+      if (completed) await page.evaluate(async chains => {
+        const core = await import("./js/core/state.js");
+        core.state.flags._ch4_dubai_talks = { souq: 4, festa: 4, center_cafe: 6, alley_cafe: 5 };
+        if (chains) core.state.flags._visit_chains = chains;
+        core.save();
+      }, chains);
+    });
+    await prepare(false);
+    await loadSlot(page, 0);
+    await dubaiMap(page);
+    for (const id of spots)
+      assert.equal(await page.locator(`${dt(`pin-${id}`)} .evt-badge.story`).count(), 1, `${id}: new revisit after first scene`);
+    // 中心地のカフェは、再訪の会話を一巡した後に通いの続き（#2020 D・chapters/visit-chains.js）の段が新しく出る
+    await prepare(true);
+    await loadSlot(page, 0);
+    await dubaiMap(page);
+    for (const id of spots)
+      assert.equal(await page.locator(`${dt(`pin-${id}`)} .evt-badge.story`).count(), id === "ch4_dubai_cafe" ? 1 : 0,
+        `${id}: after all revisits, only the cafe's visit chain is new`);
+    // 通いの続きも読み終えたら、一巡した行き先に「！」は残らない
+    await prepare(true, { ch4_second_bowl: { done: 3, day: 1, picks: {} } });
+    await loadSlot(page, 0);
+    await dubaiMap(page);
+    for (const id of spots)
+      assert.equal(await page.locator(`${dt(`pin-${id}`)} .evt-badge.story`).count(), 0, `${id}: no marker after all revisits`);
+  }, options);
+
+  await check("day-three-inn-trial", async page => {
+    await seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      for (const id of ["ch4_festa", "ch4_dubai_souq", "ch4_stranger_first", "ch4_inn_tool_care"]) p.read[id] = true;
+      p.firstDay = 1;
+      value.day = p.startDay + 2; value.slot = 0; p.day = 3; value.stamina = 80;
+      value.stats.guts = 10; // 根性の軽減なしで、試作の基本消費16を確かめる。
+    });
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 51, slot: 0 });
+    const before = await get(page);
+    await go(page, "ch4_dubai_inn");
+    await page.locator(dt("ch4-inn-trial")).waitFor();
+    assert.equal((await get(page)).flags._ch4_inn_trial, undefined);
+    await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = "good"; });
+    await page.locator(dt("ch4-inn-trial")).click();
+    await dubaiMap(page, { day: 51, slot: 1 });
+    const after = await get(page);
+    assert.equal(after.flags._ch4_inn_trial?.feedbackRead, true);
+    assert(["good", "rough"].includes(after.flags._ch4_inn_trial.result));
+    assert.equal(after.flags._craft_practice_runs.at(-1).kind, "ch4_inn_trial");
+    assert.equal(after.stamina, before.stamina - 16);
+    assert.equal(after.money, before.money);
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 51, slot: 1 });
+    const due = await page.evaluate(async () => {
+      const { innTrialDue } = await import("./js/chapters/ch4-inn-trial.js");
+      return innTrialDue(window.__remake.state);
+    });
+    assert.equal(due, false);
+  });
+
   await check("dubai-days-run-on-the-daily-loop", async page => {
     await seed(page);
     await loadSlot(page, 0);
@@ -143,7 +216,7 @@ await suite("ch4-dubai-daily", async check => {
       p.firstDay = 1;
       value.day = p.startDay + 2; value.slot = 0; p.day = 3;
       value.money = 50000;
-      value.flags._ch4_dubai_talks = { alley_cafe: 2 }; // 次の路地裏の再訪は、素焼きのボウルの話（吸いながら聞く）
+      value.flags._ch4_dubai_talks = { alley_cafe: 1 }; // 次の路地裏の再訪は、素焼きのボウルの話（吸いながら聞く）
     });
     await loadSlot(page, 0);
     await dubaiMap(page, { day: 51, slot: 0 });
@@ -164,7 +237,7 @@ await suite("ch4-dubai-daily", async check => {
     await dubaiMap(page, { day: 52, slot: 0 });
     state = await get(page);
     assert.deepEqual(state.flags._ch4_cafe_orders, { grape_mint: 1, mint: 1 });
-    assert.equal(state.flags._ch4_dubai_talks.alley_cafe, 3, "The clay bowl talk was read");
+    assert.equal(state.flags._ch4_dubai_talks.alley_cafe, 2, "The clay bowl talk was read");
     assert.equal(state.money, money - 6000, "One shisha at the alley cafe is 3,000 yen too");
     // 翌日の昼: もう一度中心地のカフェ。再訪の会話（窓際の席）の後に、おまかせ → まだ頼んでいないダブルアップル。
     await go(page, "ch4_dubai_cafe");
@@ -191,11 +264,11 @@ await suite("ch4-dubai-daily", async check => {
     });
     await loadSlot(page, 0);
     await dubaiMap(page, { day: 51, slot: 0 });
-    const desc = async pin => { await page.locator(dt(`pin-${pin}`)).click(); return page.locator(".mi-desc").first().innerText(); };
-    assert.match(await desc("ch4_dubai_souq"), /屋台で軽いものも買える。昼は暑く、いつもより体力を使う。/);
-    assert.match(await desc("ch4_dubai_creek"), /昼は日差しが強く、夜ほどは休まらない。/);
-    assert.match(await desc("ch4_dubai_festa"), /一台6,000円（約140ディルハム）。夜がにぎわう。/);
-    assert.match(await desc("ch4_dubai_cafe"), /一台3,000円（約70ディルハム）。夜がにぎわう。/);
+    for (const pin of ["ch4_dubai_souq", "ch4_dubai_creek", "ch4_dubai_festa", "ch4_dubai_cafe"]) {
+      await page.locator(dt(`pin-${pin}`)).click();
+      assert.equal(await page.locator(".map-info .mi-desc").count(), 0);
+      assert(await page.locator(".map-info .mi-banner").isVisible());
+    }
     let state = await get(page);
     const money = state.money;
     // 昼のスーク → 屋台
@@ -255,9 +328,13 @@ await suite("ch4-dubai-daily", async check => {
     await dubaiMap(page, { day: 60, slot: 1 });
     assert.equal(await page.locator(dt("pin-ch4_dubai_alley")).count(), 1, "The alley is open after the promise");
     await go(page, "ch4_dubai_inn");
+    // DAY12 の宿では前日リハーサルの申し出が先に出る。このケースは受けずに「いつもの宿」を選び、従来どおり前夜へ進む。
+    await page.locator(dt("ch4-rehearsal-rest")).waitFor();
+    await page.locator(dt("ch4-rehearsal-rest")).click();
     // DAY12 の夜を越えると DAY13（前夜祭の日）の前夜の流れ。前夜祭の繋ぎ場面から。
     await page.locator(`${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`).waitFor({ timeout: 60000 });
     const state = await get(page);
+    assert.equal(state.flags._ch4_rehearsal, undefined, "Skipping the rehearsal leaves no rehearsal record");
     assert.equal(state.flags._ch4.part, "eve");
     assert.equal(state.flags._ch4.day, 13);
     assert.equal(state.day, 61);
@@ -270,7 +347,42 @@ await suite("ch4-dubai-daily", async check => {
     assert(!lines.some(text => text.includes("店の時より")), "No shop acquaintance without a visit");
     const after = await get(page);
     assert.equal(after.met.master_hookah, true);
+    // 前夜祭や強制イベントでは好感度は上がらない。初対面の♥1（#2615）も通常の出会いだけに付く（2026-11-06 オーナー決定）。
     assert.equal(after.affinity.master_hookah || 0, 0, "The reception itself gives no affection");
+  });
+
+  // DAY12 の宿の前日リハーサルを受ける側: 本番と同じ一台（調整2回）を作って講評まで読むと記録が残り、
+  // 1行動・体力16を使う。お金は減らない。宿は一日一度きりなので、夜は別の行き先で一日を終えて前夜祭へ進む。
+  await check("day-twelve-inn-rehearsal-runs-a-full-practice-into-the-eve", async page => {
+    await seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      for (const id of ["ch4_dubai_souq", "ch4_stranger_first", "ch4_festa", "ch4_inn_tool_care"]) p.read[id] = true;
+      p.firstDay = 1;
+      value.day = p.startDay + 11; value.slot = 0; p.day = 12;
+      p.read.ch4_stranger_second = true;
+      value.stats.guts = 10; // 根性の軽減なしで、リハーサルの基本消費16を確かめる。
+    });
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 60, slot: 0 });
+    const before = await get(page);
+    await go(page, "ch4_dubai_inn");
+    await page.locator(dt("ch4-rehearsal")).waitFor();
+    await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = "good"; });
+    await page.locator(dt("ch4-rehearsal")).click();
+    await dubaiMap(page, { day: 60, slot: 1 });
+    const state = await get(page);
+    assert.equal(state.flags._ch4_rehearsal?.feedbackRead, true, "The rehearsal feedback was read");
+    assert(["great", "good", "rough", "burnt"].includes(state.flags._ch4_rehearsal?.result), "The rehearsal result is recorded");
+    assert.equal(state.flags._craft_practice_runs.at(-1).kind, "rehearsal");
+    assert.equal(state.stamina, before.stamina - 16, "The rehearsal costs 16 stamina");
+    assert.equal(state.money, before.money, "The rehearsal is free");
+    // 宿は一日一度きり（リハーサルで使ったので夜は「今日はもう行った」）。別の行き先で一日を終えると前夜祭の流れへ。
+    await go(page, "ch4_dubai_creek");
+    await page.locator(`${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`).waitFor({ timeout: 60000 });
+    const eve = await get(page);
+    assert.equal(eve.flags._ch4.part, "eve");
+    assert.equal(eve.flags._ch4.day, 13);
   });
 
   // 龍龍水煙所: 最初から地図にあり、初来店で王煙楼が名乗る（面識・一台6,000円・好感度）。SAVE/LOAD をはさんでも
@@ -316,6 +428,46 @@ await suite("ch4-dubai-daily", async check => {
     assert(!(await backlog(page)).filter(text => text.includes("王煙楼だ。")).slice(1).length, "No second self-introduction");
   });
 
+  // 無料の締めくくりは所持金に関係なく読める。翌日の普通の一台は6,000円に戻る。
+  for (const money of [0, 5999]) await check(`longlong-free-finale-with-${money}-yen`, async page => {
+    await seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      p.read.ch4_inn_tool_care = true;
+      value.day = p.startDay + 1; value.slot = 0; p.day = 2;
+      value.met.master_hookah = true; value.affinity.master_hookah = 66;
+      value.flags._intro_master_hookah = true;
+      value.flags._ch4_longlong = { read: Object.fromEntries([
+        "ch4_longlong_first", "ch4_longlong_second", "ch4_longlong_third", "ch4_longlong_fourth", "ch4_longlong_fifth",
+      ].map(id => [id, true])), talks: 0 };
+    });
+    await page.evaluate(async money => {
+      const core = await import("./js/core/state.js"); core.state.money = money; core.save();
+    }, money);
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 50, slot: 0 });
+    await page.locator(dt("pin-ch4_dubai_longlong")).click();
+    assert.equal(await page.locator(dt("map-go")).isEnabled(), true, "map lets a free finale through the affordability gate");
+    await page.locator(dt("map-go")).click();
+    await dubaiMap(page, { day: 50, slot: 1 });
+    let state = await get(page);
+    assert.equal(state.money, money);
+    assert(state.finales.master_hookah, "actual bonds runner recorded the completed finale");
+    assert(state.owned.includes("suyaki_master_hookah"));
+    assert.equal(state.flags._ch4_longlong.talks, 0, "a free finale is not an ordinary paid revisit");
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 50, slot: 1 });
+    state = await get(page);
+    assert.equal(state.money, money); assert(state.finales.master_hookah);
+    await go(page, "ch4_dubai_creek");
+    await dubaiMap(page, { day: 51, slot: 0 });
+    await page.locator(dt("pin-ch4_dubai_longlong")).click();
+    assert.equal(await page.locator(`${dt("pin-ch4_dubai_longlong")}.off`).count(), 1, "the next ordinary visit is unavailable");
+    assert.match(await page.locator(".map-info").getAttribute("aria-label"), /お金が足りない.*6,000/, "blocked by the restored 6,000-yen price, not a daily visit lock");
+    assert.equal(await page.locator(dt("map-go")).count(), 0, "unavailable destinations do not expose the map-go action");
+    assert.equal((await get(page)).money, money);
+  });
+
   // 先に龍龍水煙所で会っていれば（面識）、前夜祭の王煙楼は顔見知りとして迎え、初対面の地の文・名乗りを繰り返さない。
   await check("eve-reception-greets-wang-as-an-acquaintance-after-the-shop", async page => {
     await seed(page, (value, progress) => {
@@ -333,6 +485,9 @@ await suite("ch4-dubai-daily", async check => {
     await loadSlot(page, 0);
     await dubaiMap(page, { day: 60, slot: 1 });
     await go(page, "ch4_dubai_inn");
+    // 前日リハーサルは受けずに「いつもの宿」で前夜へ進む（DAY12 の宿の申し出）。
+    await page.locator(dt("ch4-rehearsal-rest")).waitFor();
+    await page.locator(dt("ch4-rehearsal-rest")).click();
     await page.locator(`${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`).waitFor({ timeout: 60000 });
     await page.locator(dt("ch4-continue")).click();
     await page.locator(`${dt("ch4-eve")}[data-scene="ch4_stranger_third"]`).waitFor({ timeout: 60000 });
@@ -344,9 +499,9 @@ await suite("ch4-dubai-daily", async check => {
     assert.equal(state.flags._ch4.read.ch4_wang_reception, true);
   });
 
-  // 同行なしで、凛（恋人）とましろ（第3章クリア）が別便で応援に来る。前夜祭の日に凛→ましろちゃんの到着を読み、
-  // 前夜祭の後、到着した凛を前夜に誘える。到着の場面を読む途中でロードしても、同じ到着から読み直し二重に確定しない。
-  // 2人目の到着カードは「もう一人」の文になる。
+  // 同行なしで、凛想（恋人）とましろ（第3章クリア）が別便で応援に来る。前夜祭の日に凛想→ましろちゃんの到着を読み、
+  // 前夜祭の後、到着した凛想を前夜に誘える。到着の場面を読む途中でロードしても、同じ到着から読み直し二重に確定しない。
+  // 2人目の到着カードは「もう一人」の文になる。到着の後・前夜祭の前は、二人と夕方を過ごせる（#3097）。
   await check("a-separate-flight-lover-arrives-on-the-festival-day-and-can-be-invited", async page => {
     await seed(page, (value, progress) => {
       const p = value.flags._ch4;
@@ -354,14 +509,17 @@ await suite("ch4-dubai-daily", async check => {
       for (const id of ["ch4_dubai_souq", "ch4_stranger_first", "ch4_festa", "ch4_inn_tool_care", "ch4_stranger_second"]) p.read[id] = true;
       p.firstDay = 1;
       value.day = p.startDay + 11; value.slot = 1; p.day = 12;
-      value.lovers = ["rin"]; value.met.rin = true; value.contacts.push("rin");
-      value.flags._overseas_companion = { decided: true, companion: null, supports: ["rin", "mashiro"] };
+      value.lovers = ["rio"]; value.met.rio = true; value.contacts.push("rio");
+      value.flags._overseas_companion = { decided: true, companion: null, supports: ["rio", "mashiro"] };
     });
     await loadSlot(page, 0);
     await dubaiMap(page, { day: 60, slot: 1 });
     await go(page, "ch4_dubai_inn");
+    // 前日リハーサルは受けずに「いつもの宿」で前夜へ進む（DAY12 の宿の申し出）。
+    await page.locator(dt("ch4-rehearsal-rest")).waitFor();
+    await page.locator(dt("ch4-rehearsal-rest")).click();
     const arrival = id => `${dt("ch4-arrival")}[data-scene="${id}"]`;
-    await page.locator(arrival("ch4_rin_dubai_girlfriend")).waitFor({ timeout: 60000 });
+    await page.locator(arrival("ch4_rio_dubai_girlfriend")).waitFor({ timeout: 60000 });
     assert.match(await page.locator(dt("ch4-arrival")).innerText(), /DAY 13・前夜祭の日/);
     assert.match(await page.locator(dt("ch4-arrival")).innerText(), /ドバイに着いたらしい/);
     assert.equal((await get(page)).flags._ch4.part, "eve");
@@ -370,24 +528,37 @@ await suite("ch4-dubai-daily", async check => {
     await page.locator(dt("ch4-continue")).click();
     await page.locator("#vn.active").waitFor();
     await loadSlot(page, 0);
-    await page.locator(arrival("ch4_rin_dubai_girlfriend")).waitFor({ timeout: 60000 });
-    assert.equal((await get(page)).flags._ch4.read.ch4_rin_dubai_girlfriend, undefined, "A read cut off by LOAD commits nothing");
+    await page.locator(arrival("ch4_rio_dubai_girlfriend")).waitFor({ timeout: 60000 });
+    assert.equal((await get(page)).flags._ch4.read.ch4_rio_dubai_girlfriend, undefined, "A read cut off by LOAD commits nothing");
     await page.locator(dt("ch4-continue")).click();
     await page.locator(arrival("ch4_mashiro_dubai_friend")).waitFor();
-    assert.equal((await get(page)).flags._ch4.read.ch4_rin_dubai_girlfriend, true);
+    assert.equal((await get(page)).flags._ch4.read.ch4_rio_dubai_girlfriend, true);
     assert.match(await page.locator(dt("ch4-arrival")).innerText(), /もう一人着いたらしい/);
     await page.locator(dt("ch4-continue")).click();
-    for (const id of ["ch4_wang_reception", "ch4_stranger_third"]) {
-      await page.locator(`${dt("ch4-eve")}[data-scene="${id}"]`).waitFor();
-      await page.locator(dt("ch4-continue")).click();
-    }
+    // #3097: 到着した凛想（恋人版）と、視察で来たましろちゃん（友人版）とも、前夜祭の前に夕方を一度ずつ過ごせる。
+    const eveCard = `${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`;
+    await page.locator(eveCard).waitFor({ timeout: 60000 });
+    assert.equal(await page.locator(dt("ch4-arrival-evening-rio")).innerText(), "凛想と夕方を過ごす");
+    assert.equal(await page.locator(dt("ch4-arrival-evening-mashiro")).innerText(), "ましろちゃんと夕方を過ごす");
+    await page.locator(dt("ch4-arrival-evening-mashiro")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch4.read.ch4_mashiro_dubai_friend_evening === true, null, { timeout: 60000 });
+    await page.locator(eveCard).waitFor({ timeout: 60000 });
+    assert.equal(await page.locator(dt("ch4-arrival-evening-mashiro")).count(), 0, "The friend evening is read once");
+    assert.equal(await page.locator(dt("ch4-arrival-evening-rio")).count(), 1, "Rio's evening stays optional");
+    assert((await backlog(page)).some(text => text.includes("食べ物の写真が多い")), "The friend evening scene was played");
+    assert.equal((await get(page)).flags._ch4.read.ch4_mashiro_dubai_evening, undefined, "No lover evening for a friend");
+    await page.locator(dt("ch4-continue")).click();
+    await page.locator(`${dt("ch4-eve")}[data-scene="ch4_stranger_third"]`).waitFor();
+    assert.equal(await page.locator(dt("ch4-arrival-evening-rio")).count(), 0, "The evening ends when the festival starts");
+    await page.locator(dt("ch4-continue")).click();
     await page.locator(dt("ch4-evening")).waitFor();
     assert.match(await page.locator(dt("ch4-evening")).innerText(), /と過ごす時間がある/);
     await page.locator(dt("ch4-evening-date")).click();
     await page.waitForFunction(() => !!window.__remake.state.flags._ch4_evening, null, { timeout: 60000 });
     const state = await get(page);
-    assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["rin"] });
+    assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["rio"] }, "The friend evening is not the eve date");
     assert.equal(state.flags._ch4.read.ch4_mashiro_dubai_friend, true);
+    assert.equal(state.flags._ch4.read.ch4_rio_dubai_evening, undefined, "An unread evening stays unread");
   });
 
   // IR18: 別便で着いたサメちゃん（恋人）とは、到着の後、前夜祭の前に夕方を任意で一度過ごせる。読むと同じカードに戻り、
@@ -405,6 +576,9 @@ await suite("ch4-dubai-daily", async check => {
     await loadSlot(page, 0);
     await dubaiMap(page, { day: 60, slot: 1 });
     await go(page, "ch4_dubai_inn");
+    // 前日リハーサルは受けずに「いつもの宿」で前夜へ進む（DAY12 の宿の申し出）。
+    await page.locator(dt("ch4-rehearsal-rest")).waitFor();
+    await page.locator(dt("ch4-rehearsal-rest")).click();
     await page.locator(`${dt("ch4-arrival")}[data-scene="ch4_samechan_dubai_girlfriend"]`).waitFor({ timeout: 60000 });
     const evening = dt("ch4-arrival-evening-samechan");
     assert.equal(await page.locator(evening).count(), 0, "The arrival comes first");
@@ -433,3 +607,4 @@ await suite("ch4-dubai-daily", async check => {
     assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["samechan"] });
   });
 });
+

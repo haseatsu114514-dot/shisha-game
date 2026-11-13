@@ -1,4 +1,4 @@
-// 採用した登場イラスト・DAY4の未知アゲハ・新人物PNG・昼夜マップの本編接続。
+// 採用した登場イラスト・DAY4の未知あげは・新人物PNG・昼夜マップの本編接続。
 // 8123でpreviewを起動後: CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/intro_art.mjs
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
@@ -28,7 +28,7 @@ try {
     }))).observe(document.querySelector("#fx"), { childList: true });
     assertArt();
     function assertArt() {
-      const missing = ["hajime", "sumi", "tsumugi", "oneesan", "naru", "adam", "minto", "rin", "samechan", "nagumo", "maezono", "dr_kemuri", "pakki", "ageha", "hiyori", "kumicho", "rei"].filter(id => !DB.manifest.introArt[id]);
+      const missing = ["hajime", "sumi", "tsumugi", "oneesan", "naru", "adam", "minto", "rio", "samechan", "sui", "maezono", "dr_kemuri", "pakki", "ageha", "hiyori", "kumicho", "rei"].filter(id => !DB.manifest.introArt[id]);
       if (missing.length) throw new Error(`採用済みの登場背景がない: ${missing.join(", ")}`);
     }
     return Object.fromEntries(["hajime", "adam", "naru", "dr_kemuri", "samechan"].map((id) => [id, DB.manifest.portraits[id].faces]));

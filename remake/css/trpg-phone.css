@@ -1,0 +1,148 @@
+/* TRPGの卓: スマホ横持ちの読みやすさ（#3199・TMX01 の A）。
+   本編の画面当て（core/stage-fit.js）が立てる html[data-density="phone"] のときだけ効く。PCの見た目は変えない。
+   文字は規格の変数（css/phone-density.css）: --phone-text（本文・実寸 約12px）／--phone-sub（補足・実寸 11.5px）／--phone-tap（押す所・実寸 39px）。
+   進行・判定・台詞・セーブには触れない。 */
+
+/* ---- 聞き込み: 題と説明を読める大きさに。前置きの一文は「あと N つ」と同じ内容なので出さない ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-selection-title > small { font-size: var(--phone-sub); margin-bottom: 2px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-interview-prompt { display: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-topic-list { top: 232px; grid-template-columns: repeat(2, 440px); gap: 14px 18px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-topic { min-height: 108px; gap: 4px; padding: 12px 20px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-topic strong { font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-topic small { font-size: var(--phone-sub); line-height: 1.35; }
+
+/* ---- 場面の主ボタン（仮説を話す・この手で切り抜ける・この卓を振り返る…） ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-action .trpg-button { min-height: var(--phone-tap); font-size: var(--phone-text); }
+
+/* ---- 探索: 案内・相談・メモの札の文字。調べる場所の名前はタッチでは出せないので、いつも出す ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-cue { width: 820px; max-width: 820px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-cue h2 { font-size: var(--phone-text); margin: 4px 0 2px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-cue :is(.trpg-stage-investigation, .trpg-investigation strong) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-companions button > span,
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-pockets button.trpg-notebook { font-size: var(--phone-sub); }
+/* visibility は inherit（#3199）: visible にすると、台詞の間・宣言・判定・見立ての画面で印（.trpg-spot）を隠しても名前だけが
+   絵の上に薄く残っていた（子の visible は親の hidden を上書きする）。印が見えている時は今までどおりいつも出る。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot > span {
+  opacity: 1; visibility: inherit; transform: translate(-50%, 0); top: 50px;
+  padding: 3px 12px; border-radius: 999px; font-size: var(--phone-sub); line-height: 1.4; background: #0b1420d9;
+}
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot[data-label-side="above"] > span { top: auto; bottom: 50px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot.checked > span { opacity: .72; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-spot i { font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-spot:not(.checked) { background: #0b142099; border-color: #ffeac1; }
+
+/* ---- 盛り上がりの知らせ・振り直しの札 ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-heat-pop strong { font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-heat-pop span { font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-reroll-choice .trpg-seat-mark { font-size: var(--phone-sub); }
+
+/* ---- 選ぶ画面: 絵の説明・準備の項目タブ・選んだ項目の札 ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-object-choice .trpg-object-label { font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-object-choice .trpg-object-detail { font-size: var(--phone-sub); line-height: 1.4; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-choice-tabs { gap: 14px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-choice-tabs button.trpg-choice-tab { flex-direction: row; align-items: center; gap: 10px; min-height: var(--phone-tap); padding: 4px 22px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-choice-tab :is(small, span),
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-choice-tabs .trpg-choice-token { font-size: var(--phone-sub); }
+
+/* ---- 結末 ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-ending .trpg-kicker,
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-ending-heat span,
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-ending-rating small { font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-ending-heat strong { font-size: var(--phone-text); }
+
+/* ---- チュートリアルの図 ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-tutorial-panel :is(i, span, small, dt, dd) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-tutorial-sheet > strong { font-size: var(--phone-text); }
+
+/* ---- 紙の画面（メモ・遊び方・ログ・振り返り）: 箱を画面いっぱいまで広げ、文字を読める大きさに ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-overlay:not(:has(.trpg-roll-stage, .trpg-builder-stage)) { padding: 22px 34px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-modal:not(.trpg-roll-stage, .trpg-hypothesis-stage, .trpg-declare-stage, .trpg-sheet-stage, .trpg-builder-stage) {
+  width: 1200px; max-height: 676px; padding: 18px 28px 16px;
+}
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-modal:not(.trpg-roll-stage, .trpg-hypothesis-stage, .trpg-declare-stage, .trpg-sheet-stage, .trpg-builder-stage) .trpg-modal-body
+  :is(p, li, dd, dt, span, em, strong, small, summary, h3, h4, div) { font-size: var(--phone-sub); line-height: 1.5; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-modal .trpg-modal-body :is(.trpg-note-card h3, .trpg-recap-heading h3, .trpg-recap-grid h3, .trpg-recap-check > strong, .trpg-recap-rating h3, .trpg-help-head) { font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-modal .trpg-modal-actions { margin-top: 10px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-modal:not(.trpg-roll-stage) .trpg-modal-actions .trpg-button { min-height: var(--phone-tap); font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-hypothesis-stage .trpg-evidence-fold > summary { font-size: var(--phone-sub); min-height: var(--phone-tap); }
+
+/* ---- キャラクターシート: 3枚を横に詰めず、1人ずつ大きく見せて横に送る ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-modal.trpg-sheet-stage { width: 1200px; max-height: 690px; padding: 6px 10px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet-grid {
+  display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 150px 10px; scrollbar-width: none;
+}
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet-grid::-webkit-scrollbar { display: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet {
+  flex: 0 0 860px; scroll-snap-align: center;
+  display: grid; grid-template-columns: 400px 1fr; column-gap: 28px; align-content: start;
+}
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet > .trpg-sheet-head { grid-column: 1; grid-row: 1; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet > .trpg-sheet-stats { grid-column: 1; grid-row: 2 / span 4; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet > :is(p, small) { grid-column: 2; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet :is(small, span, dt, dd, p, strong, em) { font-size: var(--phone-sub); line-height: 1.45; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet .trpg-sheet-head strong { font-size: calc(var(--phone-text) * 1.25); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot > span { top: 60px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot[data-label-side="above"] > span { top: auto; bottom: 60px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-plan-summary .chosen small { white-space: nowrap; }
+
+/* ---- 判定の卓: 縦に積むと下が切れるので、左にダイスと合計、右に「誰が・何で」「札」「見込み」「振り直し」を置く ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div { position: relative; min-height: 340px; padding-left: 50%; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene { position: absolute; left: 0; top: 4px; width: 47%; margin: 0; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total { position: absolute; left: 0; top: 196px; width: 47%; margin: 0; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details { position: absolute; left: 0; top: 236px; width: 47%; margin: 0; }
+/* 成功の見込み（補正込み・#3199）はトレイの下。詳細を開くと、その下に3つの見込みの表だけを出す。表の題の式と下の注記は、
+   この1行（何が込みか・見立ての一言）と題の行の「30以上で成功」に同じことが書いてあるので出さない。
+   開いたままでも表が下の「サイコロを振る」に隠れず、本文の箱に縦スクロールが出ない。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > p.trpg-roll-chance { position: absolute; left: 0; top: 176px; width: 47%; margin: 0; gap: 0 14px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-chance > strong { font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-chance > small { font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage :is(.trpg-forecast-head, .trpg-forecast > p) { display: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-declare-prompt > small.trpg-declare-included { font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details > p { display: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details > summary { min-height: calc(44px / var(--k, 1)); height: calc(44px / var(--k, 1)); padding-block: 0; margin: 0; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div { display: flow-root; min-height: 400px; }
+/* ↑ #3199: 本文の箱（約410px）より高い 418px だと、振る前から縦スクロールが出ていた。振った後は右の列の先頭（目標までの帯）の
+   上の余白が箱の外へ抜けて（マージンの相殺）全体が 16px 下がり、さらに伸びていた。flow-root で余白を箱の中に留める。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-forecast { margin-top: 0; padding: 2px 15px 0; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-forecast-head > strong,
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-odds small { display: none; } /* 「30以上で成功」は右の説明と同じ */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-forecast-head { margin-bottom: 2px; justify-content: center; }
+
+/* ---- 役衣装の姿（TMX04）: シートは 姿｜顔書きと能力｜特徴と切り札 の3列 ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] { grid-template-columns: 196px 330px 1fr; column-gap: 24px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > .trpg-sheet-costume { grid-column: 1; grid-row: 1 / span 6; width: 196px; height: 262px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > .trpg-sheet-head { grid-column: 2; grid-row: 1; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > .trpg-sheet-stats { grid-column: 2; grid-row: 2 / span 5; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > :is(p, small) { grid-column: 3; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-origin:has(.trpg-builder-origin-art) { padding-left: 104px; min-height: 104px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-origin-art { width: 82px; }
+
+/* ---- 判定に賭けるもの（TRF02）: 成功のごほうびの札は1行。右の列で切り札の札を押し下げない ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-stake { margin: 0 auto 4px; padding-block: 2px; white-space: nowrap; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-reward { margin: 4px auto; padding-block: 2px; }
+/* 判定の決まりの一文は題の行の右へ。本文の先頭の一文は出さない（Safari のバーが出ている 844×340 でも、切り札の札の2行目まで見える）。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage > h2 { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 20px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage > h2 .trpg-roll-rule {
+  display: inline; font-size: var(--phone-sub); font-weight: 400; letter-spacing: 0; color: #c6d4cb; white-space: nowrap;
+}
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > p.trpg-roll-instruction { display: none; }
+
+/* ---- 演出（TRF08〜10）: スマホの判定の卓では、目標までの帯を右の列のいちばん上に置く ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-gauge { width: 94%; margin: 16px auto 12px; }
+
+/* ---- メモを読み比べる（#3199・TRF24）: 3列にして、6枚（手がかり3＋聞いた話2〜3）までスクロールなしで見渡せる。
+   「卓に戻る」は題の行の右へ上げて、本文に高さを譲る。前置きの一文は出さない（調べ直しに回数を使わないことは「？」に）。 ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-modal.trpg-notes-stage { position: relative; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage > h2 { min-height: var(--phone-tap); display: flex; align-items: center; padding-right: 260px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-modal-actions { position: absolute; top: 18px; right: 28px; margin: 0; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-modal-intro { display: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-notes-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 12px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-note-card { padding: 8px 14px 10px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-note-card h3 { margin: 0 0 2px; }
+
+/* ---- 判定の卓: Safari のバーが出た低い画面（844×340）でも下へ送らない（#3199・TRF24） ----
+   中身の箱は、左の列（トレイ〜合計）が収まる 380px で足りる（400px だと、低い画面では本文の箱 391px を少し超えていた）。
+   「判定の詳細」を開いた時は、見込みの行の「何が込みか」を畳んで（表に同じ数字が出る）、表を少し上へ寄せる。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div { min-height: 380px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) > p.trpg-roll-chance > small { display: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) > .trpg-roll-details { top: 208px; }

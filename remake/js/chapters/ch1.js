@@ -6,8 +6,11 @@ import { playEntrance, CH1_EVE_NOTES } from "./tournament-entrance.js";
 import { playTournamentArrival } from "./ch1-arrival.js";
 import { DB, bgUrl, faceIconUrl, realName, displayName, loadTournamentCraftDialogue } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
+import { playChapterPoem } from "../scenes/chapter-poem.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice } from "../core/ui.js";
+import { sceneMoment } from "../core/scene-motions.js";
+import { defeatFade, retryStroke } from "../core/transitions.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { state, save, markMet, setFlag, flag, requestResumeOnBoot } from "../core/state.js";
 import { addMoney, maxStamina, addStamina, gainStat } from "../core/stats.js";
@@ -47,11 +50,12 @@ import { warmCraftAssets } from "../craft/readiness.js";
 import { playTsumugiStory, playTsumugiSketch } from "./tsumugi-story.js";
 import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
-import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } from "../craft/result.js";
-import { playChapterPreview } from "./ch1-preview.js";
+import { outcomeOf, showStandings, resultCountdown, suiCutin, resultTable } from "../craft/result.js";
+import { beginCh1Votes, castCh1Votes } from "../craft/ch1-votes.js";
 import { craftRecognition } from "../craft/recognition.js";
 import { playCh1Title } from "./ch1-title-motion.js";
 import { giveSumiRig, giveEarlyHomeRig } from "../daily/home-rig.js";
+import { judgeNaruMatch, naruMatchReviewLines } from "./naru-match.js";
 import { configureFirstBrew, firstBrewOrder, rememberFirstBrew, serveFirstBrew } from "./first-brew.js";
 import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
 
@@ -59,7 +63,7 @@ const BG = (name) => `res://assets/backgrounds/${name}.png`;
 const TONARI = BG("bg_tonari_inside");
 const TONARI_N = BG("bg_tonari_inside_night");
 const STAGE = BG("bg_tournament_stage");
-const PRIZE = 30000;
+const PRIZE = 50000;
 
 // ---------------------------------------------------------------- 会話フック
 
@@ -154,6 +158,7 @@ async function openingPart() {
     await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
     scene.stop();
     await sleep(600);
+    if (!await playChapterPoem(1) || state !== owner) return false; // 章タイトルの前の巻頭ポエム（序詩を兼ねる。brand/chant_poems.md）
     const titleResult = await playCh1Title();
     if (titleResult.cancelled || state !== owner) return false;
     playBgm("tonari");
@@ -198,12 +203,16 @@ async function openingPart() {
 
 export async function resumeGame() {
   setupHooks();
+  // タイトルの #screen を残したまま、会話より先に出るモーダル（今日の注文・初回パッキー・受け取り）が重なると
+  // ぼかした背後にタイトルが透ける。新規開始（openingPart）と同じく、再開の入口で先に片付ける。
+  clearScreen();
   if (state.chapter === 2) return resumeChapterModule(() => import("./ch2.js"), m => m.resumeChapterTwo(), "第2章の街へ戻っています…");
   if (state.chapter === 3) return resumeChapterModule(() => import("./ch3.js"), m => m.resumeChapterThree(), "第3章へ戻っています…");
   if (state.chapter === 4) return resumeChapterModule(() => import("./ch4.js"), m => m.resumeChapterFour(), "第4章へ戻っています…");
   if (state.chapter === 5) return resumeChapterModule(() => import("./ch5.js"), m => m.resumeChapterFive(), "第5章へ戻っています…");
   if (state.phase === "cleared") return showClear();
   if (state.phase === "aftermath") return finishAfterTournament();
+  // 第1章の制作途中は保存しない。大会本体のLOADは当日冒頭から入場と一台をやり直す。
   if (state.phase === "tournament" && state.tournament?.victory) return resumeVictory();
   if (state.phase === "tournament") return tournamentDay();
   if (state.phase === "opening" && await openingPart() === false) return;
@@ -456,8 +465,12 @@ function earlyPractice() {
   return task;
 }
 
+// #1089: 新しく始めたDAY7は、なるとの一台勝負（スミ審査）。仕入れだけの選択肢は出さない。
+// 旧版で導入を読み終えていた保存（introRead）は、従来の中間準備（仕入れだけ／通し）をそのまま続ける。
 async function midPreparation() {
   const progress = state.flags._ch1_mid ||= {};
+  if (!progress.introRead && !progress.naruMatch) { progress.naruMatch = true; save(); }
+  if (progress.naruMatch) return naruMatch(progress);
   if (!progress.introRead) {
     await play("remake_midcheck_intro", { bg: TONARI_N });
     progress.introRead = true;
@@ -494,6 +507,56 @@ async function midPreparation() {
   }
   // 家シーシャ（#638）: 中盤の修行のあと、スミさんが「これやる」とミャアの卓上台を譲る（一度だけ・途中から再開しても渡す）
   await giveSumiRig({ bg: TONARI_N });
+}
+
+// なるの一台は操作させず、工程の節目に短い一言だけ並べる（二台目の作業台は作らない）。
+const NARU_MATCH_ASIDES = {
+  mix: "なる「俺はいつもの線でいく。崩れねえのが取り柄だ」",
+  heat: "なる「立ち上がりの三分は我慢だ。そこ越えたら化ける」",
+  pull: "なる「……っし、出した。お前は？」",
+};
+
+async function naruMatch(progress) {
+  const owner = state, chapter = owner.chapter, day = owner.day, slot = owner.slot;
+  const requireCurrent = () => {
+    if (state !== owner || owner.chapter !== chapter || owner.day !== day || owner.slot !== slot || owner.flags._ch1_mid !== progress) {
+      throw new DOMException("DAY7 naru match interrupted", "AbortError");
+    }
+  };
+  const read = async (scene) => {
+    requireCurrent();
+    const result = await play(scene, { bg: TONARI_N });
+    requireCurrent();
+    if (!result || result.cancelled) throw new DOMException("DAY7 naru match dialogue interrupted", "AbortError");
+  };
+  if (!progress.inviteRead) {
+    await read("remake_naru_match_invite");
+    progress.inviteRead = true;
+    save();
+  }
+  if (!progress.stockDone) { await prepareFlavorStock(); requireCurrent(); progress.stockDone = true; save(); }
+  if (!progress.practiceDone) {
+    beginEvePractice(progress);
+    const cs = await runFullPractice({ kind: "midcheck", note: "なるとの一台勝負（スミさん審査）",
+      onStep: (step) => { if (NARU_MATCH_ASIDES[step]) toast(NARU_MATCH_ASIDES[step], { ms: 3200 }); },
+      isCurrent: () => { requireCurrent(); return true; } });
+    requireCurrent();
+    if (!cs || cs.cancelled) throw new DOMException("DAY7 naru match interrupted", "AbortError");
+    // 提供前に崩れても勝負は講評まで進む（負け扱い）。結果は保存して、LOAD後も同じ講評を読む。
+    progress.failed = cs.failed || null;
+    progress.match = judgeNaruMatch(cs, cs.failed ? null : computeShisha(cs));
+    progress.practiceDone = true;
+    save();
+  }
+  if (!progress.feedbackRead) {
+    if (progress.failed) await read("remake_preparation_failed");
+    const review = DB.dialogues.remake_naru_match_review;
+    await read({ ...review, lines: naruMatchReviewLines(review, progress.match || { result: "draw", heat: "naru", served: "unknown" }), branches: {} });
+    progress.feedbackRead = true;
+    save();
+  }
+  await giveSumiRig({ bg: TONARI_N });
+  requireCurrent();
 }
 
 // 前日リハーサルは本番と同じ一台＋2回の調整。旧セーブにも仕入れの機会を用意する。
@@ -534,6 +597,42 @@ const STEPS_ALL = CRAFT_STEPS;
 // 中間順位の出来栄えは、ある工程の点だけで平均する（ロートスでアルミを飛ばすと穴あけの点が無い）。
 const avgScore = (...values) => { const f = values.filter(Number.isFinite); return f.length ? f.reduce((a, b) => a + b, 0) / f.length : 0; };
 
+// 入場の確定地点。初回だけ phase=tournament と当日の資源を保存する。
+async function enterTournamentDay() {
+  state.phase = "tournament";
+  state.tournament.rulesVersion = 2;
+  state.day = TOURNAMENT_DAY;
+  state.slot = 0;
+  showHud(true);
+  playBgm("kansetsu_shomei_to_black_coffee");
+  await dayCard(`DAY ${TOURNAMENT_DAY}`, "SMOKE CROWN CUP 当日");
+  const cheers = morningMessages({ tournamentDay: true });
+  if (cheers.length) await openPhone(cheers, { time: "AM 7:40" });
+  captureEntryResources(state); // 初回制作前に一度だけ。在庫と体力を同じ境界で保存。
+  save();
+  toast("大会直前のデータをセーブした");
+}
+
+// 入場後の一台に備える試行境界。現行順どおり、資源・試行・票は入場演出前に確定する。
+function prepareTournamentAttempt(newTournament) {
+  restoreEntryResources(state);
+  applyAssistRecovery(state, state.tournament.retryAssist, maxStamina());
+  // 版の無い旧SAVEは旧配点で完走。敗北後の再挑戦は新しい試合として始める。
+  if (!newTournament && state.tournament.rulesVersion == null) state.tournament.rulesVersion = state.tournament.lastRank == null ? 1 : 2;
+  if (state.tournament.lastRank != null) state.tournament.rulesVersion = 2;
+  state.tournament.attempts++;
+  state.tournament.voteAttempt = state.tournament.rulesVersion >= 2 ? null : undefined;
+  if (state.tournament.rulesVersion >= 2) beginCh1Votes(state.tournament);
+  save();
+}
+
+// 入場演出の後、一台の制作を始める。制作中の工程状態はSAVEに持たない。
+function startTournamentCraft() {
+  const cs = newSession("tournament");
+  cs.retryAssist = state.tournament.retryAssist === true;
+  return cs;
+}
+
 async function tournamentDay() {
   await loadTournamentCraftDialogue();
   // DAY14から再開しても、実際に延期した準備だけを本番の前に救済する。
@@ -548,29 +647,17 @@ async function tournamentDay() {
   const assetsReady = warmCraftAssets("tournament");
   clearScreen();
   initHud({});
-  if (state.phase !== "tournament") {
-    state.phase = "tournament";
-    state.day = TOURNAMENT_DAY;
-    state.slot = 0;
-    showHud(true);
-    playBgm("kansetsu_shomei_to_black_coffee");
-    await dayCard(`DAY ${TOURNAMENT_DAY}`, "SMOKE CROWN CUP 当日");
-    const cheers = morningMessages({ tournamentDay: true });
-    if (cheers.length) await openPhone(cheers, { time: "AM 7:40" });
-    captureEntryResources(state); // 初回制作前に一度だけ。在庫と体力を同じ境界で保存。
-    save();
-    toast("大会直前のデータをセーブした");
-  }
+  const newTournament = state.phase !== "tournament";
+  if (newTournament) await enterTournamentDay();
   showHud(false);
-  restoreEntryResources(state);
-  applyAssistRecovery(state, state.tournament.retryAssist, maxStamina());
-  state.tournament.attempts++;
-  for (const id of ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"]) markMet(id);
-  void preloadBgm("bgm_tournament_edm");
-  void preloadBgm("bgm_tournament_craft");
+  prepareTournamentAttempt(newTournament);
+  for (const id of ["naru", "adam", "minto", "sui", "maezono", "dr_kemuri"]) markMet(id);
+  const openingBgmReady = preloadBgm("bgm_tournament_edm");
+  const craftBgmReady = preloadBgm("bgm_tournament_craft");
   void warmGameOver();
   await smokeWipe(() => playBgm("bgm_tournament_wait"), { color: "dark" });
   await playTournamentArrival();
+  await withLoadingNotice(openingBgmReady, loadingNotice("音楽を準備しています…"));
   playBgm("bgm_tournament_edm");
   await play("ch1_tournament_opening", { bg: STAGE });
   const regulation = regulationFor({ mode: "tournament" });
@@ -579,13 +666,14 @@ async function tournamentDay() {
   await play({ dialogue_id: "ch1_tournament_rule_recap", lines: [
     { speaker: "pakki", face: "excited", text: `本日の課題はッ！ ${challenge}を2g以上！ ${source}` },
   ] }, { bg: STAGE });
-  await withLoadingNotice(assetsReady, loadingNotice("大会の準備をしています…"));
+  await withLoadingNotice(Promise.all([assetsReady, craftBgmReady]), loadingNotice("大会の準備をしています…"));
   await entrance();
 
   // ROUND 1 ── 準備
   playBgm("bgm_tournament_craft");
-  const cs = newSession("tournament");
-  cs.retryAssist = state.tournament.retryAssist === true;
+  const cs = startTournamentCraft();
+  // 開始前の掛け合い（#3060）。入場のあと、4台の前で合図を待つ。
+  await playTournamentEvent(cs, "prestart", { bg: STAGE });
   await roundCut("ROUND 1", "準備");
   await play("remake_round1_intro", { bg: STAGE });
   await playTournamentEvent(cs, "opening", { bg: STAGE });
@@ -615,7 +703,8 @@ async function tournamentDay() {
   bc.clearComments();
   await play("ch1_tournament_match", { bg: STAGE });
   await play("ch1_tournament_r1_end", { bg: STAGE });
-  await showStandings(1, avgScore(cs.holes.score, cs.heat.score), cs);
+  await showStandings(1, avgScore(cs.holes.score, cs.heat.score), cs, state.tournament);
+  save();
   await playTournamentEvent(cs, "interlude1", { bg: STAGE });
 
   // ROUND 2 ── 吸い出し・提供
@@ -634,9 +723,12 @@ async function tournamentDay() {
   bc.burst(cs, "serve", 1);
   await sleep(900);
   bc.clearComments();
+  // 審査員への提供開始の掛け合い（#3060）。4台が審査席に並び、一口目を待つ間。
+  await playTournamentEvent(cs, "serve", { bg: STAGE });
   await play("ch1_tournament_r2_end", { bg: STAGE });
   cs.stats = computeShisha(cs);
-  await showStandings(2, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality), cs);
+  await showStandings(2, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality), cs, state.tournament);
+  save();
   await playTournamentEvent(cs, "interlude2", { bg: STAGE });
 
   // ROUND 3・4 ── 同じ一台を2回調整する。温度・炭交換・葉の持ちは連続する。
@@ -651,7 +743,7 @@ async function tournamentDay() {
     bc.clearComments();
     cs.stats = null;
     await play(round === 1 ? "ch1_tournament_r3_end" : "remake_round4_end", { bg: STAGE });
-    if (round === 1) await showStandings(3, avgScore(cs.holes.score, cs.heat.score, computeShisha(cs).craftQuality, cs.care.score), cs);
+    if (round === 1) { cs.stats = computeShisha(cs); await showStandings(3, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality, cs.care.score), cs, state.tournament); save(); }
   }
 
   await playTournamentEvent(cs, "interlude3", { bg: STAGE });
@@ -661,7 +753,10 @@ async function tournamentDay() {
   await play("remake_judging_intro", { bg: STAGE });
   finalize(cs);
   await playTournamentEvent(cs, "tasting", { bg: STAGE });
-  const out = outcomeOf(cs.total);
+  // 最終工程と試飲の表示後に4回目を確定。最後の1点・同点規則はVOTE01に委ねる。
+  if (state.tournament.rulesVersion >= 2) castCh1Votes(state.tournament, 3, cs);
+  const rank = state.tournament.rulesVersion >= 2 ? state.tournament.voteAttempt.result.rank : outcomeOf(cs.total).rank;
+  const out = state.tournament.rulesVersion >= 2 ? { rank, kind: rank === 1 ? "win" : rank === 2 || rank === 3 ? "close" : "lose" } : outcomeOf(cs.total);
   state.tournament.lastRank = out.rank;
   state.tournament.lastTotal = cs.total;
   awardTournamentExp(out.rank, cs);
@@ -670,26 +765,30 @@ async function tournamentDay() {
   if (out.rank === 1) {
     state.tournament.victory = { step: 0, revealed: false };
     save();
-    // 南雲の二口 →「もうだめだ」→ 10カウント → プチュン → 南雲の持ち点10が先頭のはじめへ入り、優勝を締める（逆転ではない・#1282）
+    // 千須の二口 →「もうだめだ」→ 10カウント → プチュン → 千須の持ち点10が先頭のはじめへ入り、優勝を締める（逆転ではない・#1282）
     // 審査待ちのなるの一言は、実際の調整実績（安定／立て直し／終盤帯外／記録不足）に合わせて差し替える。
     const judging = DB.dialogues.ch1_tournament_judging;
     const judgingLines = judging.lines.map(line =>
       line.cue === "naru_tasting" ? { ...line, text: naruTastingLine(cs) } : line);
     await play({ ...judging, lines: judgingLines }, { bg: STAGE });
-    await resultCountdown(cs, out.kind);
+    // 結果発表前の掛け合い（#3060）。会長の二口と選手席の待ち時間の後、みんととアダムが集計を待つ。
+    await playTournamentEvent(cs, "preresult", { bg: STAGE, context: { win: true } });
+    await resultCountdown(cs, out.kind, state.tournament);
     retireScreen(); // カウント画面は次の場面で片付く
     playBgm("bgm_aftermath");
-    await nagumoCutin(1);
+    await suiCutin(1, state.tournament);
     await play("ch1_tournament_reveal", { bg: STAGE });
-    await resultTable(cs, 1);
+    await resultTable(cs, 1, state.tournament);
     state.tournament.victory.revealed = true;
     save();
     await victory(cs);
   } else {
-    await resultCountdown(cs, out.kind);
+    // 結果発表前の掛け合い（#3060）。届かなかった流れは講評の直後、選手席で集計を待つ。
+    await playTournamentEvent(cs, "preresult", { bg: STAGE });
+    await resultCountdown(cs, out.kind, state.tournament);
     retireScreen();
-    await nagumoCutin(out.rank);
-    await resultTable(cs, out.rank);
+    await suiCutin(out.rank, state.tournament);
+    await resultTable(cs, out.rank, state.tournament);
     await play("ch1_tournament_defeat", { bg: STAGE });
     await play("remake_defeat_follow", { bg: TONARI_N });
     await showGameOver({ rank: out.rank, cs });
@@ -741,13 +840,14 @@ async function victory(cs) {
     inScene(TONARI_N, () => play("interval_day1_naru_lime")),
     inScene(TONARI_N, () => gainStat("guts", 1)),
     // 優勝の夜。記録を続ける博士の伏線へ。
-    inScene(TONARI_N, () => openPhone([
+    // 横線のノイズで見出しが「???」に置き換わってから文面が出る（#2688 A6。第5章の挑戦状と9000の伏線）
+    inScene(TONARI_N, async () => { await sceneMoment("scanGlitch", { from: "LIME", to: "???" }); return openPhone([
       {
         id: "_sys_unknown_recorded", sender: "???", messages: [
           "本日のあなたの試合データは、すべて記録させていただきました。",
         ], close_label: "……誰？",
       },
-    ], { time: "PM 11:47", title: "優勝の夜" })),
+    ], { time: "PM 11:47", title: "優勝の夜" }); }),
     inScene(BG("bg_home_day"), () => play("interval_day1_morning_win")),
     inScene(BG("kemurikusa"), () => play("ch1_naru_promise")),
     inScene(BG("kemurikusa"), () => play("interval_day2_adam_lime")),
@@ -775,7 +875,7 @@ async function resumeVictory() {
   playBgm("bgm_aftermath");
   const v = owner.tournament.victory;
   if (!v.revealed) {
-    await nagumoCutin(1);
+    await suiCutin(1, state.tournament);
     if (state !== owner) return;
     await play("ch1_tournament_reveal", { bg: STAGE });
     if (state !== owner) return;
@@ -813,14 +913,13 @@ export async function showClear() {
   let playing = false;
   const next = el("button.btn.primary", { text: "第2章へ進む", dataset: { test: "end-chapter2" }, onclick: async () => {
     if (playing || !root.isConnected || state !== owner) return;
-    playing = true; next.disabled = true; replay.disabled = true;
+    playing = true; next.disabled = true;
     try {
       const chapter = await withLoadingNotice(import("./ch2.js"), loadingNotice("第2章の街へ向かっています…"));
       if (root.isConnected && state === owner) await chapter.beginChapterTwo();
     } catch { toast("第2章を読み込めなかった。通信を確認して、もう一度試してください"); }
-    finally { playing = false; next.disabled = false; replay.disabled = false; }
+    finally { playing = false; next.disabled = false; }
   } });
-  const replay = el("button.btn.primary", { text: "次回予告をもう一度", dataset: { test: "end-preview" } });
   const root = el("div.end-screen.clear", [
     el("div.end-title", { text: "第1章 クリア" }),
     el("div.end-sub", { text: "SMOKE CROWN CUP 優勝 ── 勝ちは、始まりだった。" }),
@@ -832,30 +931,9 @@ export async function showClear() {
       ]),
     ]),
     el("p.clear-last-line", { text: "あなたの煙は、誰に届いている？" }),
-    el("div.end-actions", [next, replay, el("button.btn", { text: "タイトルへ", dataset: { test: "end-title" }, onclick: () => location.reload() })]),
+    el("div.end-actions", [next, el("button.btn", { text: "タイトルへ", dataset: { test: "end-title" }, onclick: () => location.reload() })]),
   ]);
   showScreen("end", root);
-  async function preview(first = false) {
-    if (playing || !root.isConnected) return;
-    playing = true; replay.disabled = true; next.disabled = true;
-    const controller = new AbortController();
-    const observer = new MutationObserver(() => { if (!root.isConnected) controller.abort(); });
-    observer.observe(layers.screen, { childList: true });
-    let result;
-    try { result = await playChapterPreview({ signal: controller.signal }); }
-    finally { observer.disconnect(); }
-    if (first && root.isConnected && ["completed", "skipped"].includes(result) && state === owner && state.phase === "cleared") {
-      state.flags._ch1_preview_seen = true;
-      save();
-    }
-    playing = false; replay.disabled = false; next.disabled = false;
-    if (root.isConnected) {
-      playBgm("bgm_aftermath");
-      replay.focus({ preventScroll: true });
-    }
-  }
-  replay.addEventListener("click", () => preview(false));
-  if (!flag("_ch1_preview_seen")) await preview(true);
 }
 
 /** 一台を焦がした大会は、審査を待たずにその場でGAME OVER（TH06）。再挑戦は通常の敗北と同じ。 */
@@ -864,7 +942,8 @@ async function failedOut(reason, cs) {
   bc.clearComments();
   awardTournamentExp(4, cs);
   save();
-  await smokeWipe(() => showGameOver({ reason, cs }), { color: "dark" });
+  // 色が抜けて一筋の煙が途切れる入り（showGameOver・#2688 A19）。暗い煙ワイプはタイトル→開始と会場入りだけ（F4）
+  await showGameOver({ reason, cs });
 }
 
 /**
@@ -895,11 +974,16 @@ async function showGameOver({ rank = 0, reason = "rank", variant = null, cs = nu
       if (state !== owner || !root.isConnected) return;
       save();
       retire(root);
-      smokeWipe(() => { if (state === owner) tournamentDay(); }, { color: "dark" });
+      // 再挑戦は、一筆を逆向きに流して色を戻す（#2688 A19・F4。暗い煙ワイプはタイトル→開始と会場入りだけ）
+      retryStroke(() => { if (state === owner) tournamentDay(); });
     },
     onTitle: () => location.reload(),
   });
+  // 敗北から GAME OVER へ: 中心から色が抜けて一筋の煙が途切れ、灰色が晴れると画面が出ている（#2688 A19）
+  const fade = (!preview && await defeatFade()) || (async () => {});
+  if (state !== owner) { await fade(); return; }
   showScreen("end", root);
+  await fade();
 }
 
 /** 開発用: 大会当日から始める（__remake.dev.tournament()） */
@@ -922,3 +1006,4 @@ export function devGameOver(reason = "burnt", rank = 2, variant = null) {
   setupHooks();
   return showGameOver({ reason, rank, variant, preview: true });
 }
+

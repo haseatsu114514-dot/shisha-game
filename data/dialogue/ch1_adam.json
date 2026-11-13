@@ -13,7 +13,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "木製の重厚なドアを開けた瞬間、暴力的なまでの甘さとアニスの香りが壁のように押し寄せてきた。"
+          "text": "木製の重厚なドアを開けた。暴力的なまでの甘さとアニスの香りが、壁のように押し寄せてくる。"
         },
         {
           "speaker": "",
@@ -120,7 +120,12 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "無論。世界はリンゴに始まり、リンゴに帰する。……これぞ真理。存分に味わうがいい"
+          "text": "無論。世界はリンゴに始まり、リンゴに帰する"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "……これぞ真理。存分に味わうがいい"
         },
         {
           "speaker": "hajime",
@@ -245,12 +250,22 @@
           {
             "speaker": "adam",
             "face": "normal",
-            "text": "煙の求道者よ。リンゴの導きで出会った縁だ。LIME、交換しておこう"
+            "text": "……お前は、リンゴの話を最後まで聞いた。そういう者は、多くない"
+          },
+          {
+            "speaker": "adam",
+            "face": "intense",
+            "text": "真理（リンゴ）の啓示は、時を選ばず降りてくる。LIME、交換しておこう"
           },
           {
             "speaker": "hajime",
             "face": "normal",
             "text": "あ、はい……"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（啓示って……たぶん、ふつうの連絡のことだよな）"
           },
           {
             "speaker": "adam",
@@ -294,6 +309,10 @@
             "text": "ようこそ、迷える旅人。俺はアダム。エデンの園の主にして、禁断の果実（ダブルアップル）の守護者だ"
           },
           {
+            "type": "set_flag",
+            "flag": "known_name_adam"
+          },
+          {
             "speaker": "adam",
             "face": "normal",
             "text": "……お前も、甘き誘惑に囚われに来たか？"
@@ -335,7 +354,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "あ、俺、tonariの蒸野と言います。勉強のために……"
+            "text": "あ、俺、tonariの逢縁と言います。勉強のために……"
           }
         ],
         "study_known": [
@@ -349,7 +368,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "あ、俺、tonariの蒸野です。スミさんから、届け物を……"
+            "text": "あ、俺、tonariの逢縁です。スミさんから、届け物を……"
           }
         ],
         "dl_can_known": [
@@ -541,6 +560,7 @@
         {
           "speaker": "adam",
           "face": "normal",
+          "duck": true,
           "text": "……本当は、器用ではないだけだ。一つを続けることしか、俺にはできなかった"
         },
         {
@@ -681,7 +701,7 @@
         {
           "speaker": "adam",
           "face": "smile",
-          "text": "……いい問いだ。俺にはもう１つ、極めし道がある。ナイフ投げよ"
+          "text": "……いい問いだ。俺にはもう1つ、極めし道がある。ナイフ投げよ"
         },
         {
           "speaker": "hajime",
@@ -701,7 +721,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "壁際に置かれた１個のリンゴに、ナイフが寸分違わず突き立っていた。"
+          "text": "壁際に置かれた1個のリンゴに、ナイフが寸分違わず突き立っていた。"
         },
         {
           "speaker": "hajime",
@@ -832,6 +852,10 @@
             "speaker": "adam",
             "face": "normal",
             "text": "……そうか。では、戻して確かめよう"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_adam_fifth_strong"
           }
         ],
         "taste_after": [
@@ -844,6 +868,10 @@
             "speaker": "adam",
             "face": "normal",
             "text": "……ふむ。俺はさっきの濃さも残したいところだが"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_adam_fifth_light"
           }
         ],
         "greeting_before": [
@@ -1098,7 +1126,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜の商店街に、ちょっとだけ普通の光景が広がっていた。"
+          "text": "街灯の下で、アダムのシャツが裏返しだと気づいた。今夜は、黙っておいた。"
         }
       ]
     },

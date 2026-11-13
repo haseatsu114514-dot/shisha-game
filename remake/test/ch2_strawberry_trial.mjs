@@ -1,3 +1,4 @@
+import * as shiftPay from "../js/core/shift-pay.js";
 // 第2章の苺の試作（#1650）: 試煙会の帰りに試供品→tonariで熱だけを試す→スミさんの感想。
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -11,9 +12,10 @@ const text = id => main[id].lines.map(l => l.text || "").join("\n");
 
 // DAY9の試煙会の直後に、試供品を受け取る場面を読む
 const day9 = CH2_NIGHTS.find(n => n.day === 9).steps;
-assert.deepEqual(day9.map(s => s.id), ["remake_ch2_ageha_tasting", "ch2_strawberry_sample"]);
-assert.equal(day9[1].file, "ch2_main");
-assert.equal(day9[1].sample, true);
+assert.deepEqual(day9.map(s => s.id), ["ch2_kemuri_thermometer", "remake_ch2_ageha_tasting", "ch2_strawberry_sample"]);
+assert.equal(day9[2].file, "ch2_main");
+assert.equal(day9[2].sample, true);
+assert(!day9[0].sample && !day9[1].sample, "試供品は試煙会の帰り際の場面だけで渡す");
 assert.match(text("ch2_strawberry_sample"), /熱だけ/);
 assert.match(text("ch2_strawberry_sample"), /まかない練習/, "次に何をすればいいかを渡す");
 
@@ -130,6 +132,7 @@ const el = (tag, props = {}, children = []) => {
 };
 const buttons = node => [node?.dataset?.test ? node : null, ...(node?.children || []).flatMap(buttons)].filter(Boolean);
 const tonariPorts = {
+  ...shiftPay,
   ...calendarPorts, el, DB: { dialogues: {}, baito: [], flavorById: {} }, config: {},
   SE: { select() {}, cancel() {} }, CHARM_BONUS: [0], step: () => 1,
   currentCondition: () => ({ bonusRate: 1, shiftBonus: 0, health: "green" }),
@@ -228,3 +231,4 @@ assert.equal(makanaiOffered(), true);
 assert.equal(learned(), 0, "報酬がない時は成長通知を出さない");
 
 console.log("[ch2 strawberry trial] PASS: tasting sample, feedback, shared makanai day (after-shift makanai), both orders, legacy visit, reward notice");
+

@@ -1,10 +1,13 @@
 // 全画面MENU（DUI03・#2097）: 実際の日常ループ（runDaily）の HUD から開く4タブ。
 // 読むだけで保存データを変えないこと・キー操作・レシピ／チェキの戻り方・盤への入口・手動セーブ・
-// 1280×720／横持ちタッチ／DS風（縦持ち 390×844・320×568）で紙が舞台に収まりタブに届くことを確かめる。
+// 1280×720／横持ちタッチ（844×390・568×320）で紙が舞台に収まりタブに届くことと、
+// スマホの縦持ち（390×844・320×568）は回転ガードが HUD・MENU への入力を止め、横へ戻すと同じ状態から続くこと（#2789）を確かめる。
+// DS風（2画面）は廃止した（横画面一本化）。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { suite } from "./support.mjs";
+import { rotateThroughGuard } from "./rotate_guard.mjs";
 
 const out = path.resolve(process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser");
 fs.mkdirSync(out, { recursive: true });
@@ -20,7 +23,7 @@ async function setup(page, { growth = false } = {}) {
     Object.assign(s, { phase: "daily", chapter: 1, day: 5, slot: 0, money: 42000, stamina: 80, weatherSeed: 1234 });
     Object.assign(s.flags, { _morning_5: true, _errand_scout_done: true, _delivery_adam_done: true, _delivery_minto_done: true,
       _lime_tut: 1, _lime_opened: true, _intro_minto: true, known_name_minto: true });
-    for (const id of ["minto", "naru", "adam", "tsumugi", "rin"]) s.met[id] = true;
+    for (const id of ["minto", "naru", "adam", "tsumugi", "rio"]) s.met[id] = true;
     s.contacts.push("minto", "naru", "tsumugi");
     Object.assign(s.affinity, { minto: 40, sumi: 22, naru: 12, tsumugi: 66 });
     s.lovers = ["tsumugi"];
@@ -75,6 +78,35 @@ async function assertLayout(page, label) {
   }
 }
 
+/** 体力の横の「?」（#2859・2026-11-08 オーナー指摘）: 見た目は帯の文字に合う小さな丸で、体力の文字と中心線がそろい、
+ *  帯の高さを押し広げない。押せる範囲は透明な余白で実寸 38px 以上。押すと説明が開き、もう一度で閉じる。 */
+async function assertConditionHelp(page, label, press) {
+  const help = page.locator(t("menu-condition-help"));
+  const g = await help.evaluate((node) => {
+    const k = parseFloat(getComputedStyle(document.getElementById("stage")).getPropertyValue("--k")) || 1;
+    const r = node.getBoundingClientRect(), value = node.parentElement.querySelector(":scope > b").getBoundingClientRect();
+    const hit = getComputedStyle(node, "::before"), w = parseFloat(hit.width) * k, h = parseFloat(hit.height) * k;
+    const cx = (r.left + r.right) / 2, cy = (r.top + r.bottom) / 2;
+    const reach = [[cx - w / 2 + 1, cy], [cx + w / 2 - 1, cy], [cx, cy - h / 2 + 1], [cx, cy + h / 2 - 1]]
+      .every(([x, y]) => document.elementFromPoint(x, y) === node);
+    return { stage: r.width / k, real: [w, h], dy: Math.abs(cy - (value.top + value.bottom) / 2), tallerThanValue: r.height - value.height, gap: r.left - value.right, reach };
+  });
+  assert(g.stage >= 24 && g.stage <= 32, `${label}: the ? circle should be a small 26–30px mark on the stage ${JSON.stringify(g)}`);
+  assert(g.real.every((v) => v >= 38), `${label}: the ? must stay tappable over 38px real ${JSON.stringify(g)}`);
+  assert(g.reach, `${label}: the transparent tap area reaches the button ${JSON.stringify(g)}`);
+  assert(g.dy <= 2, `${label}: the ? sits on the same centre line as the condition ${JSON.stringify(g)}`);
+  assert(g.tallerThanValue <= 0.5, `${label}: the ? must not make the summary band taller ${JSON.stringify(g)}`);
+  assert(g.gap >= 0 && g.gap <= 12, `${label}: the ? sits right after the condition ${JSON.stringify(g)}`);
+  const tip = page.locator(t("menu-condition"));
+  assert(await tip.isHidden());
+  await press(help);
+  assert(await tip.isVisible(), `${label}: the ? opens the condition note`);
+  assert.equal(await help.getAttribute("aria-expanded"), "true");
+  await press(help);
+  assert(await tip.isHidden(), `${label}: the ? closes the condition note`);
+  assert.equal(await help.getAttribute("aria-expanded"), "false");
+}
+
 async function visitTabs(page, label, press) {
   for (const tab of TABS) {
     await press(t(`menu-tab-${tab}`));
@@ -97,6 +129,7 @@ await suite("daily-menu", async (check) => {
     assert.equal(await page.locator(".dmenu").getAttribute("data-tab"), "status");
     const summary = await page.locator(t("menu-summary")).innerText();
     assert.match(summary, /DAY\s*5\s*\/14/); assert.match(summary, /あと9日/); assert.match(summary, /42,000円/);
+    await assertConditionHelp(page, "pc", (n) => n.click());
     // 盤の公開前は旧5能力の行。三角・五角形のグラフは出さない（DUI03・04）
     assert.equal(await page.locator(".dmenu .dm-stat").count(), 5);
     assert.equal(await page.locator(".dmenu svg, .dmenu .radar").count(), 0);
@@ -157,7 +190,7 @@ await suite("daily-menu", async (check) => {
     await settle(page);
     assert.match(await page.locator(t("menu-level")).innerText(), /Lv\.\s*3[\s\S]*EXP 110/);
     assert.match(await page.locator(t("menu-hidane")).innerText(), /2\s*火種/);
-    assert.match(await page.locator(t("menu-board-body")).innerText(), /才能[\s\S]*2 \/ 26/);
+    assert.match(await page.locator(t("menu-board-body")).innerText(), /才能[\s\S]*2 \/ 27/);
     assert.equal(await page.locator(".dmenu svg, .dmenu .radar").count(), 0, "no triangle graph (DUI03)");
     await assertLayout(page, "pc-growth");
     await page.screenshot({ path: path.join(out, "daily-menu-pc-growth-status.png") });
@@ -196,34 +229,50 @@ await suite("daily-menu", async (check) => {
     await page.locator(t("hud-menu")).tap();
     await page.locator(".dmenu").waitFor();
     await settle(page);
+    // 固定ステージ（2026-11-09 オーナー決定・#3035）: 844×390 でもステージは 1280×720 の固定構図で、
+    // 紙は PC と同じくステージの端から 24px まで広がる。ワイド拡張（#2861）は廃止した。
+    const wide = await page.evaluate(() => {
+      const stage = document.getElementById("stage"), k = parseFloat(getComputedStyle(stage).getPropertyValue("--k")) || 1;
+      const s = document.querySelector(".dmenu .dm-sheet").getBoundingClientRect(), r = stage.getBoundingClientRect();
+      return { wide: stage.hasAttribute("data-wide"), left: Math.round((s.left - r.left) / k), right: Math.round((r.right - s.right) / k) };
+    });
+    assert.deepEqual(wide, { wide: false, left: 24, right: 24 });
+    // タブの説明は常に出さず、見出し横の「?」で開く（2026-11-08 オーナー指示「説明の分量を減らす」）。行の効き目は行を押した時だけ出す
+    assert.equal(await page.locator(".dmenu .dm-panel > .dm-note").isVisible(), false);
+    assert(await page.locator(t("menu-help-text-status")).isHidden());
+    await page.locator(t("menu-help-status")).tap();
+    assert.match(await page.locator(t("menu-help-text-status")).innerText(), /項目をタップすると/);
+    assert.equal(await page.locator(t("menu-help-status")).getAttribute("aria-expanded"), "true");
+    await page.locator(t("menu-help-status")).tap();
+    assert(await page.locator(t("menu-help-text-status")).isHidden());
+    await assertConditionHelp(page, "landscape", (n) => n.tap());
     await visitTabs(page, "landscape", (sel) => page.locator(sel).tap());
     await page.getByRole("button", { name: "閉じる", exact: true }).tap();
     await page.locator(".dmenu").waitFor({ state: "detached" });
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
 
-  for (const [label, width, height] of [["ds-portrait", 390, 844], ["ds-small", 320, 568]]) {
+  // 縦持ちで始める（#2789・#2794: スマホの縦持ちは回転ガードで止める）。ガード越しの操作が届かないことを見てから、
+  // 横持ち（small は 568×320）へ戻して MENU の配置を検査し、開いたまま縦へ回してもう一度止まることを見る。
+  for (const [label, portrait, landscape] of [
+    ["portrait-rotate", { width: 390, height: 844 }, { width: 844, height: 390 }],
+    ["small-rotate", { width: 320, height: 568 }, { width: 568, height: 320 }],
+  ]) {
     await check(label, async (page) => {
-      // DS風（上下2画面）。タイトルの表示設定を切り替えて読み直す。
-      await page.evaluate(() => localStorage.setItem("suien_title_layout", "ds"));
-      await page.reload();
-      await page.locator(t("title-new")).waitFor({ timeout: 30000 });
-      await page.locator("#boot").waitFor({ state: "detached" });
       await setup(page);
-      await page.locator("body.game-ds").waitFor();
+      assert.equal(await page.locator("body.game-ds").count(), 0);
+      const state = async () => ({ menu: await page.locator(".dmenu").count(),
+        tab: await page.evaluate(() => document.querySelector(".dmenu")?.dataset.tab || null), progress: await progress(page) });
+      await rotateThroughGuard(page, { portrait, landscape, targets: [page.locator(t("hud-menu"))], state, label: `${label}/hud` });
       await page.locator(t("hud-menu")).tap();
       await page.locator(".dmenu").waitFor();
       await settle(page);
-      // タブは下の帯（下画面の一番下）に横並び
-      const bar = await page.evaluate(() => {
-        const tabs = [...document.querySelectorAll(".dmenu .dm-tab")].map((n) => n.getBoundingClientRect());
-        const panel = document.querySelector(".dmenu .dm-panel").getBoundingClientRect();
-        return { sameRow: tabs.every((r) => Math.abs(r.top - tabs[0].top) < 1), belowPanel: tabs[0].top >= panel.bottom - 1,
-          labelsFit: [...document.querySelectorAll(".dmenu .dm-tab .dm-label")].every((n) => n.scrollWidth <= n.parentElement.clientWidth + 1) };
-      });
-      assert.deepEqual(bar, { sameRow: true, belowPanel: true, labelsFit: true });
+      await assertLayout(page, `${label}/landscape`);
       await visitTabs(page, label, (sel) => page.locator(sel).tap());
+      await rotateThroughGuard(page, { portrait, landscape, state, label: `${label}/menu`,
+        targets: [page.locator(t("menu-tab-status")), page.locator(t("menu-tab-items")), page.locator(t("menu-close"))] });
+      await assertLayout(page, `${label}/after-rotation`);
       await page.locator(t("menu-close")).tap();
       await page.locator(".dmenu").waitFor({ state: "detached" });
-    }, { viewport: { width, height }, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
+    }, { viewport: portrait, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
   }
 });

@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, assertFits, storageSnapshot } from "./support.mjs";
+import { rotateThroughGuard } from "./rotate_guard.mjs";
 
 const out = process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser";
 fs.mkdirSync(out, { recursive: true });
@@ -26,7 +27,7 @@ async function offer(page) {
 
 await suite("home-shisha", async check => {
   await check("all-discovered-recipe-details", async page => {
-    assert.equal(recipes.length, 13, "Current regular recipe catalog has 13 entries");
+    assert.equal(recipes.length, 19, "Current regular recipe catalog has 19 entries, including the six later discoveries");
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js");
       const { DB } = await import("./js/core/data.js");
@@ -51,16 +52,12 @@ await suite("home-shisha", async check => {
     await page.locator(t("status-close")).click();
   });
   // #1906: 家で発見した配合を、在庫や保存内容を変えずにレシピ帳で読み返す。
+  // portrait は縦持ちから始める（#2789・#2794: スマホの縦持ちは回転ガードで止める）。ガードがレシピ帳の操作を
+  // 止め、保存も変えないことを確かめてから、横（844×390）へ戻して同じ帳面を読み返す。
   for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
     ["portrait", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }]]) {
     await check(`${label}-discovered-recipe-details`, async page => {
-      const before = await page.evaluate(async portrait => {
-        if (portrait) {
-          const layout = await import("./js/scenes/title-layout.js");
-          localStorage.setItem(layout.TITLE_LAYOUT_KEY, "ds");
-          (await import("./js/core/ui.js")).showScreen("home", document.createElement("div"));
-          window.dispatchEvent(new Event("display-layout-change"));
-        }
+      const before = await page.evaluate(async () => {
         const core = await import("./js/core/state.js"), s = core.newGame();
         s.recipes = { ice_lemonade: { day: 3, home: true }, sumi_basic: true, secret_probe: { day: 1 } };
         s.flavorStock = {}; // 閲覧には材料の在庫を要求しない。
@@ -68,8 +65,12 @@ await suite("home-shisha", async check => {
         window.recipeClosed = false;
         void (await import("./js/daily/status.js")).openStatus().then(() => { recipeClosed = true; });
         return JSON.stringify(core.state);
-      }, label === "portrait");
+      });
       const storage = await storageSnapshot(page);
+      if (label === "portrait") await rotateThroughGuard(page, { portrait: options.viewport, landscape: { width: 844, height: 390 },
+        label: "portrait/recipe-book", targets: [page.locator('[data-tab="items"]'), page.locator(t("status-close"))],
+        state: async () => ({ tab: await page.locator(".st-tabs .on").getAttribute("data-tab"), closed: await page.evaluate(() => recipeClosed),
+          state: await page.evaluate(() => JSON.stringify(__remake.state)), storage: await storageSnapshot(page) }) });
       await page.locator('[data-tab="items"]').click();
       assert.equal(await page.locator('[data-recipe]').count(), 2);
       assert.equal(await page.locator(t("recipe-peach_sorbet")).count(), 0, "未発見は名前も操作も出さない");
@@ -88,7 +89,9 @@ await suite("home-shisha", async check => {
       assert.doesNotMatch(await detail.innerText(), /白桃ソルベ|secret_probe/);
       await assertFits(page, '[data-test="recipe-detail"]');
       const text = detail.locator('.recipe-detail-text');
-      assert(await text.evaluate(node => node.clientHeight >= Math.min(96, node.scrollHeight)), "詳細本文に読める高さを確保する");
+      // 詳細本文に読める高さ（#1906）。DS風は廃止したので、どの横画面でも同じ基準で測る。
+      const textBox = await text.evaluate(node => ({ client: node.clientHeight, scroll: node.scrollHeight }));
+      assert(textBox.client >= Math.min(96, textBox.scroll), `詳細本文に読める高さを確保する（${label}: ${textBox.client}px / 内容${textBox.scroll}px）`);
       await assertFits(page, '[data-test="recipe-back"]');
       for (const paragraph of await text.locator('p').all()) {
         await paragraph.scrollIntoViewIfNeeded();

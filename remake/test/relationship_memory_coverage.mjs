@@ -1,6 +1,7 @@
 // #1898: 回想の対象と後日談・敗北台本の文言を、データだけで確認する（ブラウザ不要）。
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { AFFINITY_CHARACTERS } from '../js/core/state.js';
 const root = new URL('../../', import.meta.url);
 const readJson = (path) => JSON.parse(fs.readFileSync(new URL(path, root), 'utf8'));
 const memories = readJson('data/relationship_memories.json').memories;
@@ -31,13 +32,13 @@ for (const [sceneId, scene] of scenes) {
   for (const id of rememberIds(scene)) assert(ids.has(id), `${sceneId}: unknown memory ${id}`);
 }
 
-// サメちゃん・ひより（恋人候補）は第5章の回想に、久世・スティーブ（第4章正本の調整の記憶）は第3章の前夜の回想に浮かぶ。
+// サメちゃん・ひより（恋人候補）は第5章の回想に、綾取・スティーブ（第4章正本の調整の記憶）は第3章の前夜の回想に浮かぶ。
 const byChar = {};
 for (const m of memories) (byChar[m.char_id] ||= []).push(m);
 const expected = {
   samechan: { scenes: ['samechan_shop_closing_check', 'samechan_bond_finale'], name: 'サメちゃん' },
   hiyori: { scenes: ['hiyori_work_talk', 'hiyori_axe_reveal_close'], name: 'ひより' },
-  kuze: { scenes: ['ch3_kuze_advice'], name: '久世' },
+  saku: { scenes: ['ch3_saku_advice'], name: '綾取' },
   steve: { scenes: ['ch3_steve_low_heat'], name: 'スティーブ' },
 };
 for (const [charId, spec] of Object.entries(expected)) {
@@ -73,16 +74,17 @@ for (const [, scene] of scenes) {
   }
 }
 // 第5章の回想は、交流した相手（人物タブの顔ぶれ）だけ。未交流でもスミさんで成立する（正本: 第5章「回想は本当にプレイした交流だけ」）。
-const statusSource = fs.readFileSync(new URL('remake/js/daily/status.js', root), 'utf8');
-const peopleMatch = statusSource.match(/^const PEOPLE = (\[[^\]]*\]);/m);
-assert(peopleMatch, 'status.js PEOPLE not found (keep it a one-line array)');
-const people = JSON.parse(peopleMatch[1]);
+const people = AFFINITY_CHARACTERS;
 const ch5Reflection = reflections(scenes.get(eveScenes[5]))[0];
-assert.deepEqual(ch5Reflection.chars, people, 'ch5 reflection must recall the People tab cast (status.js PEOPLE)');
+// 人物タブに出ても、第3・4章の前夜に浮かんだ大会の相手は第5章で繰り返さない（ch5_main.json の reflection の comment）。
+// スティーブ（#2028）は♥5の締めくくりがあるので人物タブに出るが、記憶は第3章の前夜に浮かぶ低温の話だけ。
+const eveRivals = ['saku', 'steve', 'volk', 'da_silva', 'sheikh', 'master_hookah'];
+assert.deepEqual(ch5Reflection.chars, people.filter((id) => !eveRivals.includes(id)),
+  'ch5 reflection must recall the People tab cast (status.js PEOPLE) except the chapter 3/4 eve rivals');
 assert(people.includes('sumi'), 'ch5 reflection falls back to Sumi');
 const routes = readJson('data/story_routes.json').chapters;
 const chapterCast = {
-  3: ['kuze', 'steve', 'volk', 'mashiro', 'mukai_master'],
+  3: ['saku', 'steve', 'volk', 'mashiro', 'mukai_master'],
   4: ['da_silva', 'sheikh', 'master_hookah'],
 };
 for (const [chapter, cast] of Object.entries(chapterCast)) {
@@ -129,7 +131,7 @@ assert.deepEqual(texts({}), ['トングを持つ。誰かと過ごした時間�
 Object.assign(reflectionState, { chapter: 3 });
 for (const id of routes[3].before_eve) rememberAll(sceneMemories(id));
 const ch3Eve = texts(lineOf(3));
-assert.deepEqual(ch3Eve, ['kuze_decide', 'steve_wait', 'volk_measure'].map((id) => echoOf[id]),
+assert.deepEqual(ch3Eve, ['saku_decide', 'steve_wait', 'volk_measure'].map((id) => echoOf[id]),
   'ch3 eve: only the three newest echoes (the narration leads in, Hajime\'s spoken doubt follows)');
 Object.assign(reflectionState, { chapter: 4 });
 for (const id of routes[4].before_eve) rememberAll(sceneMemories(id));

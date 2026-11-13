@@ -69,15 +69,15 @@ await suite("ch4-camel-race", async check => {
     state = await get(page);
     assert.equal(state.flags._ch4_camel.meetDay, startDay);
     assert.equal(state.slot, 0, "a conversation does not spend the daytime slot");
-    assert.equal(state.met.saif, true);
+    assert.equal(state.met.faris, true);
     await assert.rejects(() => camel.click({ timeout: 1500 }), /not enabled|disabled|Timeout/i, "no second talk on the same day");
     // DAY2: 誘われる。レースは翌朝なのでまだ行けない。
     await endDay(page, 2);
-    await expectLabel(camel, /サイフとまた話す/);
+    await expectLabel(camel, /ファーリスとまた話す/);
     await camel.click();
     await page.waitForFunction(() => window.__remake.state.flags._ch4_camel?.stage === 2);
     await page.locator(dt("ch4-free")).waitFor();
-    assert.equal((await get(page)).met.rashid, undefined, "Rashid appears at the track, not in the shop");
+    assert.equal((await get(page)).met.khalil, undefined, "Khalil appears at the track, not in the shop");
     await assert.rejects(() => camel.click({ timeout: 1500 }), /not enabled|disabled|Timeout/i, "the race is tomorrow morning");
     // DAY3: 本番を見て、レースを途中でやめる → 消費なし・見学は既読のまま。
     await endDay(page, 3);
@@ -94,7 +94,7 @@ await suite("ch4-camel-race", async check => {
     assert.equal(state.flags._ch4_camel.plays, 0);
     assert.equal(state.flags._ch4_camel.stage, 2);
     assert.equal(state.slot, 0, "quitting mid-race spends nothing");
-    assert.equal(state.met.rashid, true);
+    assert.equal(state.met.khalil, true);
     // 同じ日にもう一度: 見学は繰り返さず、すぐチュートリアル→レース（自動操作で完走）→結果の会話。
     await camelTest(page, { pilot: "perfect", timeScale: 8 });
     const before = await get(page);
@@ -102,7 +102,7 @@ await suite("ch4-camel-race", async check => {
     const enteredBefore = (await entered(page)).length;
     await page.locator(dt("camel-tutorial")).waitFor({ timeout: 20000 });
     assert.equal((await entered(page)).length, enteredBefore, "the watched scene must not replay");
-    for (let i = 0; i < 3; i++) await page.locator(dt("camel-tutorial-next")).click();
+    assert.equal(await readTutorial(page), 4, "the how-to has four pages (the fourth is the tactics page)");
     await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
     const result = await page.locator(dt("camel-result")).evaluate(node => ({ ...node.dataset }));
     assert.equal(result.rank, "1"); assert.equal(result.grade, "S");
@@ -139,9 +139,11 @@ await suite("ch4-camel-race", async check => {
     await endDay(page, 4);
     assert.equal((await get(page)).slot, 0);
     await camelTest(page, { pilot: "none", timeScale: 8 });
+    const replayEnteredBefore = (await entered(page)).length;
     await camel.click();
     await page.locator(dt("camel-game")).waitFor({ timeout: 60000 });
     assert.equal(await page.locator(dt("camel-tutorial")).count(), 0, "no tutorial after the first run");
+    assert.equal((await entered(page)).length, replayEnteredBefore, "a repeat visit starts directly without dialogue");
     await page.locator('[data-test="camel-cup"][data-cup="practice"]').click();
     await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
     const second = await page.locator(dt("camel-result")).evaluate(node => ({ ...node.dataset }));
@@ -149,8 +151,8 @@ await suite("ch4-camel-race", async check => {
     await page.locator(dt("camel-finish")).click();
     await page.waitForFunction(() => window.__remake.state.flags._ch4_camel?.plays === 2);
     await page.locator(dt("ch4-free")).waitFor({ timeout: 60000 });
-    const replayScenes = (await entered(page)).slice(-2);
-    assert.deepEqual(replayScenes, ["ch4_camel_replay", "ch4_camel_replay_usual"]);
+    const replayScenes = (await entered(page)).slice(replayEnteredBefore);
+    assert.deepEqual(replayScenes, ["ch4_camel_replay_usual"]);
     state = await get(page);
     assert.equal(state.flags._ch4_camel.best.total, Number(result.total), "a worse run keeps the best");
     assert.equal(state.slot, 1);
@@ -186,7 +188,7 @@ async function seedDaily(page, camel = null) {
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
       _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
-    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "nagumo", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
     Object.assign(value.met, { naru: true });
     if (!progress.advanceToChapterFour(value)) throw new Error("Chapter boundary failed");
     value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
@@ -219,7 +221,7 @@ await suite("ch4-camel-race-daily", async check => {
     await dubaiMap(page, { day, slot: 0 });
     state = await get(page);
     assert.deepEqual({ stamina: state.stamina, money: state.money, slot: state.slot }, before);
-    assert.equal(state.met.saif, true);
+    assert.equal(state.met.faris, true);
     assert.equal(state.visitedDay.ch4_dubai_camel, undefined, "a conversation is not a visit");
   });
 
@@ -232,7 +234,7 @@ await suite("ch4-camel-race-daily", async check => {
     await camelTest(page, { pilot: "perfect", timeScale: 8 });
     await go(page, "ch4_dubai_camel");
     await page.locator(dt("camel-tutorial")).waitFor({ timeout: 60000 });
-    for (let i = 0; i < 3; i++) await page.locator(dt("camel-tutorial-next")).click();
+    await readTutorial(page);
     await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
     await page.locator(dt("camel-finish")).click();
     // 昼の枠は一度だけ使い、同じ日の夜の地図へ（日常ループと二重に進めない）。
@@ -245,10 +247,10 @@ await suite("ch4-camel-race-daily", async check => {
     assert.equal(state.flags._ch4_camel.lastPlayDay, day);
     assert.equal(state.visitedDay.ch4_dubai_camel, day);
     assert.equal(state.stats.technique, 60, "no direct stat reward");
-    assert.equal(state.met.rashid, true);
+    assert.equal(state.met.khalil, true);
     // 夜はレースへ行けない（案内に理由を出し、「ここへ行く」は出さない）。
     await page.locator(dt("pin-ch4_dubai_camel")).click();
-    await page.locator(".mi-no").filter({ hasText: /今日はもう走った|レースは昼だけ|今日はもう行った/ }).waitFor();
+    await page.locator('.map-info[aria-label*="今日はもう走った"], .map-info[aria-label*="レースは昼だけ"], .map-info[aria-label*="今日はもう行った"]').waitFor();
     assert.equal(await page.locator(dt("map-go")).count(), 0, "no race at night");
   });
 });
@@ -262,6 +264,8 @@ await suite("ch4-camel-cups", async check => {
     const before = await get(page);
     await go(page, "ch4_dubai_camel");
     await page.locator(dt("camel-cups")).waitFor();
+    // 大会の札の紋章（CR-WD08・#3217）は4枚とも読めている。
+    await page.waitForFunction(() => [...document.querySelectorAll('[data-test="camel-cup-badge"]')].filter(img => img.complete && img.naturalWidth > 0).length === 4);
     const cup = id => page.locator(`[data-test="camel-cup"][data-cup="${id}"]`);
     assert.equal(await cup("standard").isDisabled(), true);
     assert.equal(await cup("expert").isDisabled(), true);
@@ -292,6 +296,21 @@ await suite("ch4-camel-cups", async check => {
   });
 });
 
+// 遊び方を最後のページまで「次へ」で読み、閉じたらページ数を返す。どのページの絵も読めている（4ページ目は駆け引きの絵 CR-WD07）。
+async function readTutorial(page) {
+  let pages = 0;
+  while (await page.locator(dt("camel-tutorial")).count()) {
+    assert(pages < 8, "the how-to ends");
+    await page.waitForFunction(() => {
+      const art = document.querySelector('[data-test="camel-tutorial-art"]');
+      return art?.complete && art.naturalWidth > 0;
+    });
+    pages += 1;
+    await page.locator(dt("camel-tutorial-next")).click();
+  }
+  return pages;
+}
+
 async function expectLabel(locator, pattern) {
   await locator.waitFor();
   assert.match(await locator.textContent(), pattern);
@@ -305,6 +324,18 @@ await suite("ch4-camel-race-controls", async check => {
     const game = page.locator(dt("camel-game"));
     await page.waitForFunction(() => document.querySelector('[data-test="camel-game"]')?.dataset.phase === "race", null, { timeout: 15000 });
     assert.equal(await game.getAttribute("data-art"), "sprites");
+    assert.equal(await game.getAttribute("data-dust"), "sprites", "the dust art (CR-WD03) is loaded");
+    assert.equal(await game.getAttribute("data-gate"), "sprites", "the start/finish post art (CR-WD01) is loaded");
+    assert.equal(await game.getAttribute("data-convoy"), "sprites", "the rival trainers' SUV art (CR-WD05) is loaded");
+    assert.equal(await game.getAttribute("data-road"), "sprites", "the service road art (CR-WD04) is loaded");
+    assert.equal(await game.getAttribute("data-marker"), "sprites", "the distance board art (CR-WD02) is loaded");
+    // 手描きの字（CR-UI14・#3217）: 判定・カウントダウン・バナー・題名の字の絵がすべて読めている。
+    await page.waitForFunction(words => words.every(word => document.querySelector('[data-test="camel-game"]').classList.contains(`cr-word-${word}`)),
+      ["perfect", "good", "miss", "go", "3", "2", "1", "last-spurt", "goal", "title"]);
+    // 2〜4位のメダル（CR-UI03）と進み具合の横木（CR-UI06）の絵も読めている（#3328）。操作ボタンのリモコンの4枚（CR-UI07・#3227）も。
+    await page.waitForFunction(names => names.every(name => document.querySelector('[data-test="camel-game"]').classList.contains(name)),
+      ["cr-medal-gold", "cr-medal-silver", "cr-medal-bronze", "cr-medal-plain", "cr-rail", "cr-remote"]);
+    const remoteArt = () => page.$$eval(".camel-control", buttons => buttons.map(button => getComputedStyle(button).borderImageSource.match(/remote-[a-z-]+/)?.[0]));
     const whip = page.locator(dt("camel-signal"));
     const stamina = async () => Number(await page.locator(".camel-stamina b").textContent());
     const full = await stamina();
@@ -313,10 +344,12 @@ await suite("ch4-camel-race-controls", async check => {
     await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.state === "whipping");
     await page.waitForTimeout(700);
     assert.equal(await page.locator(".camel-speed").getAttribute("data-state"), "whip");
+    assert.deepEqual(await remoteArt(), ["remote-voice-normal", "remote-whip-pressed"], "the whip button shows the pressed remote while held");
     const pressed = await stamina();
     assert(pressed < full - 5, `holding X spends stamina (${full} → ${pressed})`);
     await page.keyboard.up("x");
     await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.state !== "whipping");
+    assert.deepEqual(await remoteArt(), ["remote-voice-normal", "remote-whip-normal"], "releasing raises the whip button again");
     const released = await stamina();
     await page.waitForTimeout(500);
     assert(await stamina() >= released - 1, "releasing stops the drain");
@@ -333,6 +366,44 @@ await suite("ch4-camel-race-controls", async check => {
     assert.match(await page.locator(".camel-feedback").textContent(), /PERFECT|GOOD|無駄な声|連打/);
     await page.locator(dt("camel-close")).click();
     await page.locator(dt("camel-menu-quick")).waitFor();
+  });
+  // 砂煙の絵（CR-WD03）とスタート・ゴールの柱の絵（CR-WD01）、ほかの調教師の車の絵（CR-WD05）、距離板と道の絵（CR-WD02・CR-WD04）、
+  // リモコンの絵（CR-UI07）が読めない環境: ラクダ・自分の車の絵はそのまま、砂煙は従来のぼかしの円、門は従来の木の柱2本と布の幕に戻り、
+  // ほかの車は走らず、距離板と道はコードの描画、操作ボタンは従来の CSS のまま、レースは進む。
+  const dustArt = /\/ui\/camel_race\/(world\/(dust-\d|post-(start|finish)-near|suv-rival-[ab]|marker-board|ground-road)|ui\/remote-[a-z-]+)\.webp/;
+  await check("dust-and-gate-fall-back-to-drawn-shapes-without-the-art", async page => {
+    await page.route(dustArt, route => route.abort());
+    await page.goto(new URL("camel-race.html?pilot=perfect", baseURL).href);
+    await page.locator(dt("camel-menu-quick")).click();
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-game"]')?.dataset.phase === "race", null, { timeout: 15000 });
+    const game = page.locator(dt("camel-game"));
+    assert.equal(await game.getAttribute("data-art"), "sprites");
+    assert.equal(await game.getAttribute("data-dust"), "canvas");
+    assert.equal(await game.getAttribute("data-gate"), "canvas");
+    assert.equal(await game.getAttribute("data-convoy"), "none");
+    assert.equal(await game.getAttribute("data-road"), "canvas");
+    assert.equal(await game.getAttribute("data-marker"), "canvas");
+    assert.equal(await game.evaluate(node => node.classList.contains("cr-remote")), false, "the controls keep the CSS look without the remote art");
+    await page.waitForFunction(() => Number(document.querySelector(".camel-clock-time")?.textContent.slice(2)) > 3, null, { timeout: 15000 });
+    await page.locator(dt("camel-close")).click();
+    await page.locator(dt("camel-menu-quick")).waitFor();
+  }, { ignoreFailedResource: failure => dustArt.test(failure) });
+  // 始める前のロード（2026-11-11 オーナー「加速すると処理重い。ゲーム開始前に漫画付きロードとか挟んでもいい」）:
+  // 絵の読み込みが遅いと、作業台と同じ漫画つきのロード画面が出て、読み終えて進むと（テストは自動で読む）絵がそろった状態で走り出す。
+  await check("slow-art-waits-behind-the-comic-loading-screen", async page => {
+    await page.addInitScript(() => {
+      window.__comicTitles = [];
+      new MutationObserver(() => {
+        for (const node of document.querySelectorAll(".loading-comic-title")) if (!window.__comicTitles.includes(node.textContent)) window.__comicTitles.push(node.textContent);
+      }).observe(document, { childList: true, subtree: true });
+    });
+    await page.route(url => /\/img\/ui\/camel_race\/.+\.webp/.test(url.href), async route => { await new Promise(resolve => setTimeout(resolve, 1500)); await route.continue(); });
+    await page.goto(new URL("camel-race.html?pilot=perfect", baseURL).href, { waitUntil: "domcontentloaded" });
+    await page.locator(dt("camel-menu-quick")).click();
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-game"]')?.dataset.phase === "race", null, { timeout: 15000 });
+    assert.equal((await page.evaluate(() => window.__comicTitles)).length, 1, "one comic was shown while the art loaded");
+    assert.equal(await page.locator(".loading-gate").count(), 0, "the loading screen is gone");
+    assert.equal(await page.locator(dt("camel-game")).getAttribute("data-art"), "sprites", "the race starts with the art ready");
   });
 }, { entry: new URL("camel-race.html", baseURL).href, readySelector: '[data-test="camel-menu-quick"]' });
 

@@ -37,7 +37,9 @@ try {
   await page.clock.pauseAt(new Date(Date.now() + 1000));
   await page.evaluate(() => window.__remake.dev.gameOver('rank', 0));
   await page.clock.runFor(1000);
-  assert.equal(await page.locator('.go-title').textContent(), 'コンティニューする？');
+  // 2026-11-07 オーナー決定（#2524）: 本編の既定は前バージョンの neon（筆文字・円形HUD）。見出しは読み上げ名で照合する。
+  assert.equal(await page.locator('.gameover').getAttribute('data-layout'), 'neon');
+  assert.equal(await page.locator('.go-title').getAttribute('aria-label'), 'コンティニューする？');
   await page.clock.runFor(19050);
   assert.equal(await page.locator('.gameover').getAttribute('data-phase'), 'speaking');
   assert.equal(await page.locator('.go-count').textContent(), '∞');
@@ -52,7 +54,7 @@ try {
   await page.evaluate(() => { window.__remake.craftTest.auto = 'burn'; window.__run = window.__remake.dev.tournament(); });
   await page.waitForSelector('.bench[data-thermal-band="burnt"]', { timeout: 240000 });
   await page.waitForSelector('.end-screen.gameover', { timeout: 60000 });
-  assert.equal(await page.locator('.end-screen.gameover .go-title').textContent(), 'コンティニューする？');
+  assert.equal(await page.locator('.end-screen.gameover .go-title').getAttribute('aria-label'), 'コンティニューする？');
   assert.equal(await page.locator('.end-screen.gameover img[src*="bg_game_over"]').count(), 0, 'GAME OVER is drawn without an image');
   assert.equal(await page.locator('.end-screen.gameover .go-sumi-img').count(), 1, 'Sumi uses the canon portrait');
   assert.equal(await page.locator('[data-test="continue-caption"]').count(), 1);
@@ -96,9 +98,11 @@ try {
     window.__remake.craftTest.auto = 'burn';
     window.__run = ch1.devRehearsal().then(() => { window.__done = true; });
   });
-  // 新規保存には持込在庫がない。旧セーブ救済の仕入れを実操作してから制作へ進む。
-  // 第1章はレモン課題の仕入れ（12g以上）を済ませないと店を出られない（#1018）。1箱でその香りの準備も揃う。
-  await page.locator('[data-test="buy-lemon"]').click();
+  // 新規保存には持込在庫がない。前夜の「大会に持っていく香り」を選んで実際に仕入れてから制作へ進む。
+  // #2213 B08（a5e7e8a22）でレモン立て替えを撤廃し、課題のレモンは大会支給に。前夜はブルーベリー／レモン／
+  // グレープから選ぶ形になり、auto では先頭のブルーベリーが選ばれる。errand の香り（ブルーベリー・12g以上）を
+  // 仕入れないと店を出られないので、1箱（50g）のブルーベリーを買う。
+  await page.locator('[data-test="buy-blueberry"]').click();
   await page.locator('[data-test="shop-checkout"]').click();
   await page.locator('[data-test="shop-leave"]').click();
   await page.waitForFunction(() => window.__done, null, { timeout: 180000 });

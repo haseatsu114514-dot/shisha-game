@@ -8,7 +8,7 @@ export const relationshipDayTotal = () => relationshipElapsedDay(state);
 export const relationshipDayOf = (day, chapter) => relationshipElapsedDay({ flags: state.flags, chapter, day });
 
 export function dateVenue(id, savedId = null) {
-  const exclude = { minto: "pepermint", rin: "drfookah", samechan: "shishark" }[id];
+  const exclude = { minto: "pepermint", rio: "drfookah", samechan: "shishark" }[id];
   const venues = (DB.lover?.venues || []).filter(v => v.id !== exclude);
   return venues.find(v => v.id === savedId)
     || venues[((state.loveLevel[id] || 1) + (state.lastDate[id] || 0)) % venues.length];
@@ -33,7 +33,7 @@ export function dateScene(id, venue, { choice = null, choiceFlags = null, growth
     lines: [
       { speaker: "", text: `${state.slot === 0 ? "定休日の午後。" : "それぞれの仕事を終えてから。"}約束の店——『${venue.name}』。${venue.note}。店先で、${name}が待っていた。` },
       { speaker: id, face: sc.arrive.face, text: sc.arrive.text, inner: sc.arrive.inner },
-      { speaker: "", text: "２人で１台を頼んで、向かい合う。よその店の煙を、よその客として吸う時間。" },
+      { speaker: "", text: "2人で1台を頼んで、向かい合う。よその店の煙を、よその客として吸う時間。" },
       { speaker: id, face: sc.mid.face, text: sc.mid.text, inner: sc.mid.inner },
       { speaker: "", text: sc.choiceQ },
       ...(choice ? branches[choice] : [{ type: "choice", choices: [

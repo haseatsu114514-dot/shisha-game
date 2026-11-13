@@ -1,0 +1,2139 @@
+{
+  "comment": "第5章の出張シーシャの依頼（DLV・2026-11-07 司令塔／ミューズの仮判断。オーナーが後から変えられる）。chapters/ch5-catering.js が読む。依頼はスミさんのLIMEで届き、引き受けると地元の地図に「出張シーシャ」が出る。_intro＝現地の様子（読み終えたら葉の組み合わせを三つから選ぶ）、_best／_ok／_off＝選んだ組み合わせの合い方ごとの結果。結果のあとに ch5_catering_close_*（tonariへ道具を返しに寄って、スミさんの一言。合い方ごとに2本を巡回）を続けて読む。依頼主・客は名前の無い客（speaker customer）で、新しい人物は作らない。手取り・くじ券・体力・経験値は現地の台詞に書かず、コードが付ける（チップは描かない）。本人の出張とつむぎへの委託があり、委託後の報告は依頼別のLIMEで届く。固有20件を実際に完了した後は、同じ会場の予約をrepeatの短い汎用会話で続ける。背景は既存の絵の仮置き（chapters/ch5-catering-model.js の bg）。結論を言い換える独白は入れず、客の言葉と手元で書く。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch5_catering_wedding_party_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "駅前のレストランは、二次会の飾りつけの途中だった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "来てくれて助かります。幹事の者です"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "新婦がミントだけはだめで。あと、甘いのが苦手な友だちが多くて"
+        },
+        {
+          "speaker": "",
+          "text": "店の人に聞くと、換気の許しはもう取ってあった。窓ぎわに台を据える。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "吸ってみたいって声は多いんです。ただ、みんな初めてで"
+        },
+        {
+          "speaker": "",
+          "text": "席を見回すと、ホースの持ち方から聞いてくる人が半分ほどいる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（初めての人が多い。一口目で、驚かせたくない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_wedding_party_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "紅茶の渋みを、オレンジで丸めた。使い捨ての吸い口を配って、台を回していく。"
+        },
+        {
+          "speaker": "",
+          "text": "いちばん不安そうな友人が、恐る恐る一口吸った。目が少し開く。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "甘くないのに、ちゃんとおいしい……"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "紅茶の匂いがする。これなら、私も吸える"
+        },
+        {
+          "speaker": "",
+          "text": "甘いのが苦手な席から、こっちにも、と声がかかった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "新婦、二回もおかわりしてました。ありがとうございます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（乾杯のたびに、ホースが回ってくる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_wedding_party_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "柑橘を二つ重ねた。さっぱりした煙が、窓の外へ流れていく。"
+        },
+        {
+          "speaker": "",
+          "text": "初めての人たちが顔を寄せ合って、吸う順番を決め始めた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "すっきりしてて、好きです。……ちょっと、酸っぱいかな"
+        },
+        {
+          "speaker": "",
+          "text": "奥の席で、一口吸った誰かがむせて、笑いながら隣へホースを回している。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "初めての子は、一口目で目を丸くしてましたけど。楽しかったって"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "二口目からは、みんな普通に吸ってました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（初めての人には、もう少し角を落とせたな）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_wedding_party_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "台を回し始めて、すぐに気づいた。新婦が、ホースを受け取らずに首を振っている。"
+        },
+        {
+          "speaker": "",
+          "text": "葉の袋を見直すと、底にミントの緑が混じっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……ミントは抜いてくれって、言われてたのに）"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あ、新婦はジュースで大丈夫です。ほかのみんなは、すっきりしたって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "すみません。次は、最初に葉の確認をします"
+        },
+        {
+          "speaker": "",
+          "text": "新婦はグラスを持ったまま、気にしないで、と小さく手を振った。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "いえいえ。来てくれて、場が明るくなりました"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_office_wrapup_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "駅裏のラウンジに、設計事務所の人たちが集まっていた。"
+        },
+        {
+          "speaker": "",
+          "text": "大きな仕事が、今日終わったらしい。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "甘いの派と、さっぱり派で揉めてて。どっちも納得するのって、ありますか"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あと、コーヒーとかの苦いのは、今日はもういいです……"
+        },
+        {
+          "speaker": "",
+          "text": "何人かは、まだ図面の話をしている。目の下に、うっすら隈があった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（甘さも、すっきりも欲しい。苦いのは、なし）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_office_wrapup_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "桃の甘さに、ミントを少しだけ重ねた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "甘いのに、頭がすっと冷える。どっちの派も黙ったな"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "締め切り明けの頭に、ちょうどいいです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（図面の話が止んで、みんな背もたれに沈んでいく）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_office_wrapup_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "レモンとミントで、すっきりにまとめた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "目が覚める。……これは、さっぱり派の勝ちだな"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "甘いのも、ちょっと欲しかったかも。でも、うまいです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（甘い派の人にも、一口ぶん残せたらよかった）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_office_wrapup_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "エスプレッソとダークチョコの、深い一台にした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……うん、大人の味。今日はちょっと、重いかな"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "でも、話のネタにはなりました。来てくれてよかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（苦いのはもういいって、言ってたのに。次は最初の一言を拾おう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_birthday_home_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "友だちの部屋のテーブルに、ケーキの箱が置いてあった。主役の三十歳の誕生日らしい。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "主役、ストロベリーが大好きなんです。あ、ケーキのあとに吸います"
+        },
+        {
+          "speaker": "",
+          "text": "窓を開けて、換気扇を回してもらった。六畳ほどの部屋で、香りがこもりやすい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ケーキの甘さのあと。部屋に匂いが残りすぎないように）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_birthday_home_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "苺に、レモンを少しだけ足した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "苺だ！ ケーキのあとなのに、口がさっぱりする"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "部屋も、甘ったるくならない。すごい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（ろうそくの匂いと、苺の煙が混ざっている）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_birthday_home_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "苺にバニラを重ねて、ショートケーキみたいな一台にした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "苺だ！ ……ケーキのあとだと、ちょっと甘すぎるかも"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "でも主役、ずっと笑ってました。ありがとう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（好きな味は合ってた。ケーキのあとの口まで、考えるべきだった）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_birthday_home_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "シナモンとクローブの、温かい一台にした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……スパイシーだね。苺じゃないんだ"
+        },
+        {
+          "speaker": "",
+          "text": "窓を開けていても、香りが部屋の奥まで残った。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "でも、珍しいのが吸えて楽しかったよ。来てくれてありがとう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（主役の好きな味を、聞いていたのに）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_housewarming_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "新しい部屋のベランダに、折りたたみの椅子が並んでいた。"
+        },
+        {
+          "speaker": "",
+          "text": "部屋の隅には、段ボールがまだ積んである。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "今日は両親も来るんです。二人とも、甘い匂いが好きで"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "父が、混ぜすぎた味は分からなくなるって。葉は三種までにしてほしいそうです"
+        },
+        {
+          "speaker": "",
+          "text": "ベランダには、ときどき強い風が吹きこむ。煙の香りは、すぐに流れていきそうだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（甘くて、風に負けない香り。混ぜるのは三種まで）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_housewarming_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "マンゴーに、パッションフルーツを重ねた。風が吹いても、甘い香りが残る。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "南の国の匂いだって、母が喜んでます"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "父も、もう一口って。新しい部屋の、最初のお客さんですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（段ボールの前で、家族がホースを回している）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_housewarming_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ジャスミンに桃を合わせた、やさしい一台にした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "いい匂い……でも、外だとすぐ消えちゃいますね"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "吸うと、ちゃんと甘いです。両親も、おいしいって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（外で吸うなら、もっと香りの強い葉がよかったな）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_housewarming_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "甘い葉を四種、混ぜた一台にした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……甘いね。でも、何の味か、ちょっと分からないな"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "父が言ってた三種までって、このことかも。でも、楽しかったです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（頼まれてたのに、欲張った。次は、言われた数を守ろう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_festival_rest_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "観音堂の境内に、お祭りの休憩所のテントが張ってあった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "吸うのは大人だけです。年の確認は、受付でこっちがやりますから"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "年寄りが多くてね。昔、旅先で吸ったって人もいるんですよ"
+        },
+        {
+          "speaker": "",
+          "text": "台は一台だけ。順番に、一口ずつ回していくらしい。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あ、ミントは入れないでください。喉に来るって、前に言われてね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一口で分かる、昔ながらの味。ミントはなし）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_festival_rest_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ダブルアップルだけを、12グラム詰めた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "おお、これこれ。アニスの匂いがする"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "一口で分かるな。昔、旅先で吸ったのと同じだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（テントの下で、年配の人たちが順番を譲り合っている）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_festival_rest_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ダブルアップルに、オレンジを少し足した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "うん、うまい。……昔のとは、ちょっと違うな"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "若い人には、こっちの方がいいかもしれん。ありがとね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一口目で分かる方が、ここには合っていた）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_festival_rest_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ダブルアップルに、ミントを少し重ねた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……おっと、喉にすうっと来た。ミントだね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（入れないでくれって、言われてたのに）"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "まあまあ、お祭りだから。休まず回してくれて、助かったよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_shotengai_cleanup_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "商店街の大掃除が、ちょうど終わったところだった。路地に、ほうきとバケツが並んでいる。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "汗かいたんで、すっきりしたいんです。あ、八百屋の大将は甘いのが好きで"
+        },
+        {
+          "speaker": "",
+          "text": "通りには、ときどき風が抜けていく。香りの弱い葉だと、すぐに散ってしまいそうだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（すっきり。でも、甘いのが好きな人もいる。風に負けない香り）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_shotengai_cleanup_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "スイカに、ミントを少しだけ重ねた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "子どもの頃の、縁側の匂いだ。汗がすっとひく"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "大将も、甘くていいって。風が吹いても、ちゃんと香る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（路地のベンチに、店の人たちが並んで座っている）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_shotengai_cleanup_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "レモンとミントで、すっきりにまとめた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "汗が一気にひきます。これはいい"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "大将は、もうちょい甘いのがよかったって。わがままでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（甘いのが好きな人の分も、考えられたな）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_shotengai_cleanup_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ラベンダーとカモミールの、落ち着いた一台にした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "いい匂い……あ、風で飛んじゃった"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "でも、ほっとしました。掃除のあとに一服って、いいもんですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（すっきりしたいって言ってたな。次は、言葉をそのまま拾おう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_retirement_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "駅向こうの喫茶店を、昼だけ借りたらしい。テーブルに、花束が置いてある。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "父は、四十年ずっとコーヒー党で。家族はみんな、シーシャは初めてです"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "世界大会の人に来てもらえるなんて、父がそわそわしてて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、tonariの出張です。いつもどおりに作ります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（初めての家族と、コーヒー好きのお父さん。重すぎない一台）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_retirement_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "カプチーノに、ヘーゼルナッツを重ねた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "……コーヒーの匂いがする。これは、いいなあ"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "父が、また来年もって。私たちも、初めてなのにむせなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（花束の横で、お父さんがゆっくり煙を吐いている）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_retirement_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "コーヒーに、ダークチョコを重ねた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "父は、これだって喜んでます。……私たちには、ちょっと重いかも"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "弟は、一口でむせてました。でも、いい記念になりました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（お父さんに合わせすぎた。家族みんなの一台にすればよかった）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_retirement_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ブルーベリーとミントの、すっきりした一台にした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "吸いやすいですね。……父は、コーヒーの方が好きかな"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "でも、家族で同じホースを回すなんて、初めてでした"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（コーヒー党だって、最初に聞いてたのに）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_stargazing_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "観音堂の裏の高台。灯りを消すと、町の明かりの上に星が出てきた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "今夜が流星群のピークなんです。明け方まで粘るつもりで"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "先輩が解説係で、一晩しゃべりっぱなしなんですよ。去年は声が枯れてました"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あと、みんな眠いのをごまかしたくて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "わかりました。ここで一台、作ります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（長く回せて、眠気が飛ぶ。でも、しゃべり通しの喉にきつくない一台）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_stargazing_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "グレープに、ミントを少しだけ重ねた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "……あ、すっとする。でも、喉は痛くならない"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "先輩、ずっとしゃべってるのにホースを離さないんですよ。あ、今の見ました？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（みんなが同じ方を見上げて、ホースだけが手から手へ回っていく）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_stargazing_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "レモンティーに、ハニーを重ねた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "やさしい味ですね。これなら先輩の声、最後まで持ちそうです"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……ただ、ちょっと眠くなってきたかも。三時くらいが山なんですけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（喉は守れた。眠気の方を、置いてきてしまった）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_stargazing_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "デスバイアイスに、クールミントを重ねた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "うわ、目が覚める。いや、覚めすぎるかも"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "先輩、一口でむせて解説が止まっちゃいました。星は、ちゃんと流れてましたけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（眠気のことだけ見て、喉のことを忘れてた）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_close_best_a",
+      "lines": [
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        },
+        {
+          "speaker": "",
+          "text": "道具を返しに、tonariへ寄った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "おう、おかえり。向こうから、もう礼の連絡が来てたぞ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "仕入れで溜まったDr.fookahの券だ。持ってけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_close_best_b",
+      "lines": [
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        },
+        {
+          "speaker": "",
+          "text": "道具を返しに、tonariへ寄った。スミさんが、炭の箱を受け取る。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "いい顔して帰ってきたな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ほら、券だ。くじは、好きに引け"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。……また、行ってきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_close_ok_a",
+      "lines": [
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        },
+        {
+          "speaker": "",
+          "text": "道具を返しに、tonariへ寄った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "向こう、喜んでたってよ。上出来だ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "券、持ってけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。次は、もう一つ聞いてから作ります"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_close_ok_b",
+      "lines": [
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        },
+        {
+          "speaker": "",
+          "text": "道具を返しに、tonariへ寄った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "客は、満足して帰ったか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。……でも、もう少し合わせられた気がします"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "それが分かってりゃ十分だ。ほら、券な"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_close_off_a",
+      "lines": [
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        },
+        {
+          "speaker": "",
+          "text": "道具を返しに、tonariへ寄った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "向こうから連絡があった。来てくれて助かった、だとよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "頼まれてたこと、一つ落としました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "そういう日もある。次に何を聞くか、分かったならいい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_close_off_b",
+      "lines": [
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        },
+        {
+          "speaker": "",
+          "text": "道具を返しに、tonariへ寄った。スミさんは、洗った炭の箱を棚に戻している。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "今日の一台、合わせきれませんでした"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "客は、怒って帰ったか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いえ。楽しかったって、言ってくれました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "なら、それでいい。次は、もう一口ぶん客の話を聞け"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_seaside_sunset_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "海沿いのテラスには、低い風よけがあった。"
+        },
+        {
+          "speaker": "",
+          "text": "板張りの床の向こうは、もう海だ。潮の匂いが椅子の脚の間を抜けていく。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ここなら台を置いていいって、管理の方にも聞いてあります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。炭は風よけの内側で起こします"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "今日は柑橘で。甘くない、冷たすぎない感じがいいな"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "日が落ちると、ここは急に冷えるんですよ。口の中まで冷えるのは、ちょっとね"
+        },
+        {
+          "speaker": "",
+          "text": "台を置く場所を決めて、風が来る向きに手をかざした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "わかりました。風の当たり方も見ておきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_seaside_sunset_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "レモンにライムを重ねる。客が目を細めた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "これこれ。皮をむいた時みたいな香り"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "甘さは乗せていません。後味は軽いはずです"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "うん、冷たすぎないのがいい。ちょうど夕方の温度だ"
+        },
+        {
+          "speaker": "",
+          "text": "ホースが席を順に回っていく。誰かが、レモンの匂いがすると笑った。"
+        },
+        {
+          "speaker": "",
+          "text": "誰かが海を指すと、椅子が少しずつ同じ方を向いた。"
+        },
+        {
+          "speaker": "",
+          "text": "水平線に、日が触れかけていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_seaside_sunset_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "オレンジに、少しだけミントを添えた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "さっぱりするね。もう少し酸っぱい香りでもよかったかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "オレンジが前に出ましたね。酸味は、もう一歩足せたかもしれません"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "いやいや、飲みやすいよ。ほら、みんなの手も止まらない"
+        },
+        {
+          "speaker": "",
+          "text": "ホースは席を順に回り、誰からも文句は出なかった。"
+        },
+        {
+          "speaker": "",
+          "text": "日が傾くにつれ、話す声もゆっくりになった。"
+        },
+        {
+          "speaker": "",
+          "text": "空の端が、オレンジ色に染まっていく。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_seaside_sunset_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "バニラとキャラメルの甘い香りが立った。"
+        },
+        {
+          "speaker": "",
+          "text": "風がそれを、客の席のほうへ運んでいく。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ああ、今日はこういう甘さじゃなかったんだよね"
+        },
+        {
+          "speaker": "",
+          "text": "客は笑っていたが、ホースを持つ手が少し止まっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません。次は柑橘を中心にします"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "いいよ。これはこれで、夜のお供にもらうから"
+        },
+        {
+          "speaker": "",
+          "text": "日が海へ沈むまで、客は少しずつ吸い続けていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_beach_house_closing_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "海の家の看板が裏返され、店員たちがテラスに出てきた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "換気と火の扱いは、店の決まりをここに書いておきました"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "今日はココナッツがいいな。果物も合わせて、ミントはなしで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "皆さんが座ってから、お持ちします"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_beach_house_closing_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "パイナップルの酸味に、ココナッツの甘さを重ねた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "あ、休暇ってこういう味かも"
+        },
+        {
+          "speaker": "",
+          "text": "エプロンを外した店員が、ようやく背もたれに体を預けた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_beach_house_closing_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "マンゴーとココナッツの、丸い甘さが広がった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "おいしい。酸っぱい感じがもう少しあってもいいね"
+        },
+        {
+          "speaker": "",
+          "text": "注文を取る人のいない席で、店員たちは長話をした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_beach_house_closing_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "レモンとミントを出すと、店主が缶を見直した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "頼んだココナッツは、入ってないのかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません。確認が抜けていました"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_local_dj_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "音の響く扉の外に、休憩用のラウンジがあった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "台はこっちの席だけで。踊る所には持ち込まないようにしてます"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "果物に少しミントかな。甘ったるいのも苦いのも、今日はなしで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "では、ここで一息つける味にします"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_local_dj_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "グレープフルーツに、少量のミントを重ねた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "口の中まで曲が切り替わった感じ"
+        },
+        {
+          "speaker": "",
+          "text": "客は一息ついてから、次の曲を待つ列へ戻っていった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_local_dj_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "桃の甘さを、少しのミントで整えた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "吸いやすいね。もっと甘さ控えめでもよかったかも"
+        },
+        {
+          "speaker": "",
+          "text": "ラウンジの客が、さっき流れた曲の名前を教え合った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_local_dj_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "コーヒーとチョコの濃い香りが出た。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "今日は、その苦い感じを避けたかったんだけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません。果物の方を選ぶべきでした"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_live_house_wrapup_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "演奏が終わり、控室には畳んだ譜面が積まれていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ここは喫煙できる控室です。換気も回しておきます"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "冷たいのは控えたいな。甘さが少しある紅茶ってできる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。紅茶の香りを中心にします"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_live_house_wrapup_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "紅茶にハニーを少し足すと、客がうなずいた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "あ、ちょうどいい。もう今日は歌わずに聴いていたい"
+        },
+        {
+          "speaker": "",
+          "text": "誰かが録音を流すと、全員が自分の出番に耳を澄ませた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_live_house_wrapup_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "レモンティーの香りが、譜面の並ぶ机を抜けた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "さっぱりしてるね。少し甘くてもよかったかな"
+        },
+        {
+          "speaker": "",
+          "text": "客は録音に合わせ、指先だけで机をたたいた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_live_house_wrapup_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "強いミントを吸った客が、すぐにホースを置いた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "今日は冷たいの、やめておきたかったんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません。無理に吸わないでください"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_photo_exhibition_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "写真の展示室とは別に、換気のできる談話室があった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "作品に煙が行かないように、扉はこちらで閉めますね"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "柑橘に、ほんの少しだけ花の香りってできますか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。甘くなりすぎない組み合わせにします"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_photo_exhibition_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "レモンの奥に、ジャスミンがほのかに残った。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "これくらいがいいね。花だって、近寄ると香るものね"
+        },
+        {
+          "speaker": "",
+          "text": "一枚の写真を囲んで、撮影の裏話が続いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_photo_exhibition_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "オレンジと紅茶の香りが、談話室に広がった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "これも好きです。花の香りはないんですね"
+        },
+        {
+          "speaker": "",
+          "text": "客は写真集を開き、お気に入りのページを隣へ見せた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_photo_exhibition_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ローズとバニラの香りが、はっきりと立った。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "花は、もう少し控えめがよかったかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません。柑橘を中心にすればよかったです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_pottery_kiln_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "工房の作業場を離れ、休憩室へ案内された。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "今日は窯を開けたところで。作業はもうおしまいです"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ナッツみたいに香ばしくて、甘いのがいいな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "酸っぱい果物は使わずに、合わせてみます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_pottery_kiln_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ヘーゼルナッツの香ばしさを、ミルクで丸めた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "この香り、持って帰った器と一緒に覚えてそう"
+        },
+        {
+          "speaker": "",
+          "text": "机の上の器を手に取るたび、持ち主が嬉しそうに説明した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_pottery_kiln_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "バニラにキャラメルを重ね、甘い一台にした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "甘さは好き。香ばしさがもう少しあってもいいね"
+        },
+        {
+          "speaker": "",
+          "text": "客は器の底を見せながら、釉薬の話を続けた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_pottery_kiln_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "柑橘を重ねた香りに、主宰者が少し首をかしげた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "酸っぱい感じは、避けてほしいって話したんだけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません。ナッツの方を用意します"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_record_listening_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "レコード店の奥には、喫煙用の小さな客席があった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "盤のある売り場とは、ここで仕切っています"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "コーヒーにチョコを少し。苦すぎない感じで頼める？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。甘さも少し残しておきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_record_listening_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "カプチーノに、チョコレートの甘さを添えた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "いいね。この曲が終わるまで、ゆっくり吸おう"
+        },
+        {
+          "speaker": "",
+          "text": "針が盤の端へ届くまで、誰も次の曲を頼まなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_record_listening_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "カプチーノのまろやかな香りを、そのまま出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "飲み慣れた感じがする。チョコも少し欲しかったかな"
+        },
+        {
+          "speaker": "",
+          "text": "客はジャケットを並べ、次の一枚を相談し始めた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_record_listening_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "濃いコーヒーと苦いチョコを合わせた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "おっと、これは苦いね。もう少し丸い方が好みだな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません。濃い方へ寄せすぎました"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_reading_circle_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "貸切の喫茶店で、本を閉じた客たちが顔を上げた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "休憩中だけ、喫煙できるこの席を借りています"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "お菓子を食べたから、紅茶系で軽い感じがいいな"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ミントは抜いてもらえると嬉しいです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_reading_circle_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "レモンティーを単体で出すと、客が本を脇へ置いた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "うん、お菓子のあとにちょうどいい"
+        },
+        {
+          "speaker": "",
+          "text": "話が結末に届くと、同じページが一斉に開かれた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_reading_circle_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "紅茶にバニラを少し合わせた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "紅茶の香り、好きです。甘さはなくてもよかったかも"
+        },
+        {
+          "speaker": "",
+          "text": "客はしおりを抜き、気に入った一節を読み上げた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_reading_circle_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "桃とミントの香りに、一人の客が手を止めた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あ、ミントが入ってるんですね。今回は遠慮しておきます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません。抜くように伺っていましたね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_film_discussion_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "上映室の照明が点き、客たちは喫煙できる談話室へ移った。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "映画を見るのは終わり。ここからが長いんです"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ポップコーンってあるんですよね。甘すぎないのがいいな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "香ばしいものを、少し重ねてみます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_film_discussion_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ポップコーンにヘーゼルナッツを重ねた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "食べてないのに、あの場面を思い出すな"
+        },
+        {
+          "speaker": "",
+          "text": "一人が真似した台詞で、談話室に笑いが起きた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_film_discussion_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ポップコーンに、バニラの甘さを添えた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "これは甘い方のポップコーンだね。次は香ばしいのも試したい"
+        },
+        {
+          "speaker": "",
+          "text": "客はパンフレットを開き、背景にいた人物を指さした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_film_discussion_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "綿菓子とキャラメルの甘い香りが広がった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あれ、ポップコーンは入ってないんですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません。試したい味を外してしまいました"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_florist_anniversary_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "売り場から離れた中庭に、花屋の常連が集まっていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "火を使う場所は、鉢から離してこちらにお願いします"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "桃に、花の香りをほんの少し。花ばかりにはしないでね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "桃を主役にして、合わせてみます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_florist_anniversary_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "桃の甘さのあとに、ローズがかすかに残った。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "こういう花束なら、毎日飾れそう"
+        },
+        {
+          "speaker": "",
+          "text": "店主は笑って、隣の客の胸元の花を直した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_florist_anniversary_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "桃にレモンを添え、甘酸っぱく仕上げた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "桃はわかるね。花の香りも少しあると嬉しかったな"
+        },
+        {
+          "speaker": "",
+          "text": "客たちは、店を初めて訪れた日の話を持ち寄った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_florist_anniversary_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "二つの花の香りが、はっきりと重なった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "桃がほしかったんだけど、花だけになってるかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません。主役を取り違えました"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_rooftop_reunion_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "屋上の貸切テラスから、地元の商店街が見えた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "管理の方に、喫煙はこの囲いの中だけって言われてます"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ぶどうに少し紅茶を。ミントは苦手な人がいるんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "わかりました。冷たい味は入れずに作ります"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_rooftop_reunion_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ぶどうの甘さに、紅茶の渋みを少し合わせた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "これ、ずっと吸っていられそう"
+        },
+        {
+          "speaker": "",
+          "text": "昔のあだ名が飛び交い、席の距離が近くなった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_rooftop_reunion_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ぶどうを中心に、レモンで後味を整えた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "すっきりしてる。紅茶の方も、今度試してみたいな"
+        },
+        {
+          "speaker": "",
+          "text": "客が遠くの校舎を指すと、皆が席を立った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_rooftop_reunion_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ぶどうのあとに、強いミントの冷たさが来た。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "冷たいのは苦手だって、伝わってなかったかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "伺っていました。すみません、俺の選び間違いです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_game_watch_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "イベント会場の喫煙休憩室にも、試合の映像が流れていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ここは大人の観戦者だけ。選手は試合が終わるまで来ません"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "コーラに柑橘を合わせたいな。ミントは抜きで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。試合を見ながら、ゆっくりどうぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_game_watch_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "コーラの甘さに、ライムを重ねた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "あ、これ好き。飲み物の注文まで変えたくなる"
+        },
+        {
+          "speaker": "",
+          "text": "決着がつくと、客はホースを置いて両手で拍手した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_game_watch_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "コーラにバニラを少し添えた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "甘くておいしい。柑橘のすっきりした感じも欲しいね"
+        },
+        {
+          "speaker": "",
+          "text": "隣り合った客が、今の試合の場面を手ぶりで再現した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_game_watch_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "レモンとミントを吸った客が、画面から目を戻した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "コーラじゃないんだね。ミントも抜いてほしかったな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません。注文を確認し直します"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_repeat_intro",
+      "lines": [
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "またお願いしました。来てくれてありがとう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "こちらこそ、またご予約ありがとうございます"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "今日は集まったみんなで、のんびり楽しみたくて"
+        },
+        {
+          "speaker": "",
+          "text": "客の好みを聞き直し、持ってきた葉を並べた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_repeat_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "一口吸った客が、隣の席へ嬉しそうに顔を向けた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "うん、今日も頼んでよかった"
+        },
+        {
+          "speaker": "",
+          "text": "おしゃべりが続き、帰り支度の時間が少しだけ延びた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_repeat_ok",
+      "lines": [
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "こういう味もいいね。次は少し変えてみようかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。好みを教えてもらえれば、また考えます"
+        },
+        {
+          "speaker": "",
+          "text": "客たちはゆっくり過ごしてから、笑顔で席を立った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_repeat_off",
+      "lines": [
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "今日は、もう少し違う感じを想像してたかも"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません。次のために、好みをもう一度聞かせてください"
+        },
+        {
+          "speaker": "",
+          "text": "片付けの間も、客たちは楽しそうに話していた。"
+        }
+      ]
+    }
+  ]
+}

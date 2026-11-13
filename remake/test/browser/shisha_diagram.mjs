@@ -17,7 +17,7 @@ const stepText = {
 async function selectScene(page) {
   await page.selectOption("#preview-scene", "shisha");
   await page.waitForFunction(() =>
-    document.querySelector(".vn-text")?.textContent.includes("落ち着いた時間"));
+    document.querySelector(".vn-text")?.textContent.includes("客足の引いた店内"));
 }
 
 // 目的の台詞まで会話を送る（打ち切り・連打でも図は1つだけ）。
@@ -142,7 +142,7 @@ await suite("shisha-diagram", async check => {
     // 「もう一度」で再生し直す＝play()の入口で前の図を消す（LOADと同じ経路）
     await page.locator("#preview-restart").click();
     await page.waitForFunction(() =>
-      document.querySelector(".vn-text")?.textContent.includes("落ち着いた時間"));
+      document.querySelector(".vn-text")?.textContent.includes("客足の引いた店内"));
     assert.equal(await count(page), 0, "restart starts with no stale diagram");
     await advanceTo(page, stepText.heat);
     assert.equal(await stepOf(page), "heat");

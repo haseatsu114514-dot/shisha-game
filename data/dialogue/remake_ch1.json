@@ -337,7 +337,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "うまくなりたいなら、全部見てけ"
+          "text": "俺の台は丸見えだ"
         },
         {
           "speaker": "hajime",
@@ -877,7 +877,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "工程は繋がってる。どれか１つ雑にやると、全部に響く"
+          "text": "工程は繋がってる。どれか1つ雑にやると、全部に響く"
         },
         {
           "speaker": "hajime",
@@ -927,7 +927,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "葉は詰め直して、熱も回しておく。吸い出しから、もう１回だ"
+          "text": "葉は詰め直して、熱も回しておく。吸い出しから、もう1回だ"
         }
       ]
     },
@@ -1182,7 +1182,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "……使い切るほど触ったなら上等だ。レモン、１回分だ。足りる範囲でやりくりして、行ってこい"
+          "text": "……使い切るほど触ったなら上等だ。レモン、1回分だ。足りる範囲でやりくりして、行ってこい"
         },
         {
           "speaker": "hajime",
@@ -1230,7 +1230,7 @@
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "（……今日は届かなかった。でも、帰ってこられた。もう１回、あの舞台で）"
+          "text": "（……今日は届かなかった。でも、帰ってこられた。もう1回、あの舞台で）"
         },
         {
           "type": "apply",
@@ -1434,12 +1434,12 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "はじめ。練習用のレモン、まだ仕入れてないだろ"
+          "text": "はじめ。Dr.fookahまで、仕入れを頼めるか"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "Dr.fookahでレモンを仕入れてこい。大会の課題フレーバーだ"
+          "text": "レモンを1箱だ。大会の課題フレーバーでもある"
         },
         {
           "speaker": "hajime",
@@ -1603,7 +1603,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "カウンターの横に、業務用のミントの大袋が３つ積まれていた。"
+          "text": "カウンターの横に、業務用のミントの大袋が3つ積まれていた。"
         },
         {
           "type": "condition",
@@ -1615,12 +1615,12 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "これ全部ですか？ ３袋もありますけど"
+          "text": "これ全部ですか？ 3袋もありますけど"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "３つとも、繁華街のPEPPERMINTの分だ。注文どおりだよ"
+          "text": "3つとも、繁華街のPEPPERMINTの分だ。注文どおりだよ"
         },
         {
           "type": "condition",
@@ -1707,7 +1707,7 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "急に悪いな、助かる。今日の分は色をつけとくぞ"
+          "text": "急に悪いな、助かった。今日の分は色をつけといたぞ"
         }
       ]
     },
@@ -1720,7 +1720,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "お疲れさん。あとは任せて、もう上がれ"
+          "text": "お疲れさん。今日はここまでだ"
         }
       ]
     },
@@ -1809,7 +1809,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "レモンの葉にミントを少し重ねて量る。火を整え、涼しさを添えた一台を客へ出した"
+          "text": "レモンの葉にミントを少し重ねて量る。火を整え、涼しさを添えた一台を客へ出した。"
         },
         {
           "speaker": "customer",
@@ -1832,7 +1832,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "オレンジにレモンを合わせて葉を量る。火を整え、柑橘の香りを確かめて客へ出した"
+          "text": "オレンジにレモンを合わせて葉を量る。火を整え、柑橘の香りを確かめて客へ出した。"
         },
         {
           "speaker": "customer",
@@ -1855,7 +1855,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ブルーベリーにピーチを重ねて葉を量る。ミントは入れず、火を整えて客へ出した"
+          "text": "ブルーベリーにピーチを重ねて葉を量る。ミントは入れず、火を整えて客へ出した。"
         },
         {
           "speaker": "customer",
@@ -1878,7 +1878,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "グレープにオレンジを合わせて葉を量る。果実の香りを確かめ、火を整えて客へ出した"
+          "text": "グレープにオレンジを合わせて葉を量る。果実の香りを確かめ、火を整えて客へ出した。"
         },
         {
           "speaker": "customer",
@@ -1901,7 +1901,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "バニラにココナッツを添えて葉を量る。甘い香りが立つよう火を整え、客へ出した"
+          "text": "バニラにココナッツを添えて葉を量る。甘い香りが立つよう火を整え、客へ出した。"
         },
         {
           "speaker": "customer",
@@ -1924,7 +1924,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ピーチにバニラを重ねて葉を量る。丸い甘さを確かめてから、客へ出した"
+          "text": "ピーチにバニラを重ねて葉を量る。丸い甘さを確かめてから、客へ出した。"
         },
         {
           "speaker": "customer",
@@ -1947,7 +1947,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ダブルアップルにミントを少しだけ混ぜる。火を整え、香りを確かめて客へ出した"
+          "text": "ダブルアップルにミントを少しだけ混ぜる。火を整え、香りを確かめて客へ出した。"
         },
         {
           "speaker": "customer",
@@ -1970,7 +1970,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ダブルアップルだけで葉を量る。アニスの香りを逃さないよう火を整え、客へ出した"
+          "text": "ダブルアップルだけで葉を量る。アニスの香りを逃さないよう火を整え、客へ出した。"
         },
         {
           "speaker": "customer",
@@ -2097,7 +2097,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "グレープフルーツの葉にミントを重ねて量る。火は低めに整え、苦みの抜けた一台を客へ出した"
+          "text": "グレープフルーツの葉にミントを重ねて量る。火は低めに整え、苦みの抜けた一台を客へ出した。"
         },
         {
           "speaker": "customer",
@@ -2120,7 +2120,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "キウイにレモンを合わせて葉を量る。酸味が立ちすぎない火に整え、客へ出した"
+          "text": "キウイにレモンを合わせて葉を量る。酸味が立ちすぎない火に整え、客へ出した。"
         },
         {
           "speaker": "customer",
@@ -2169,7 +2169,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "苺にレモンを少し足して葉を量る。甘さの後ろに酸味が残る火に整え、客へ出した"
+          "text": "苺にレモンを少し足して葉を量る。甘さの後ろに酸味が残る火に整え、客へ出した。"
         },
         {
           "speaker": "customer",
@@ -2192,7 +2192,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "苺にピーチを重ねて葉を量る。やわらかい熱で、果物の甘さを引き出して客へ出した"
+          "text": "苺にピーチを重ねて葉を量る。やわらかい熱で、果物の甘さを引き出して客へ出した。"
         },
         {
           "speaker": "customer",
@@ -2241,7 +2241,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "紅茶の葉にレモンを少し添えて量る。熱を落ち着けて、香りの底を残して客へ出した"
+          "text": "紅茶の葉にレモンを少し添えて量る。熱を落ち着けて、香りの底を残して客へ出した。"
         },
         {
           "speaker": "customer",
@@ -2264,7 +2264,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "キャラメルに紅茶を重ねて葉を量る。甘さを抑える火に整え、客へ出した"
+          "text": "キャラメルに紅茶を重ねて葉を量る。甘さを抑える火に整え、客へ出した。"
         },
         {
           "speaker": "customer",
@@ -2313,7 +2313,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "マンゴーにパッションフルーツを重ねて葉を量る。熱を上げすぎずに香りを立たせ、客へ出した"
+          "text": "マンゴーにパッションフルーツを重ねて葉を量る。熱を上げすぎずに香りを立たせ、客へ出した。"
         },
         {
           "speaker": "customer",
@@ -2336,7 +2336,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スイカにミントを足して葉を量る。火を整え、軽さを残して客へ出した"
+          "text": "スイカにミントを足して葉を量る。火を整え、軽さを残して客へ出した。"
         },
         {
           "speaker": "customer",
@@ -2377,6 +2377,953 @@
       ]
     },
     {
+      "dialogue_id": "shift_flavor_ch3_cant_say_lemon_ginger",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……駅前のジンジャーエールかな。ピリッとするやつ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レモンの葉にジンジャーを少し重ねて量る。辛さが前に出すぎない火に整え、客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "あ、これだ。うまく言えなかったのに、ちゃんと出てきた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（舌で確かめられない分、聞けることは聞いておく）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch3_cant_say_peach_black_tea",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "甘ったるいのと、ミントの強いのは苦手かな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ピーチに紅茶を合わせて葉を量る。甘さを紅茶の渋みで締めて、客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "甘いのに、しつこくない。苦手なものが入ってないの、分かるな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（好きなものは言えなくても、避けたいものは言える）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch3_cant_say_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（好みをうまく言えない人に、一つ聞いて作る注文だ。前と同じことを聞こう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch3_cant_say_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（好みをうまく言えない人に、一つ聞いて作る注文だ。今日は、前と違うことを聞く）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch3_prefectural_fan_strawberry_lime",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "苺にライムを少し添えて量る。大会の一台より熱を抑え、長く吸える軽さで客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "苺だ。……でも大会のより、ずっと軽いね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大会のは、審査の席のための一台だったので。ここでは、最後まで吸える方に"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "へえ。同じ苺でも、出す場所で変えるんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch3_prefectural_fan_lychee_jasmine",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "苺がお好きなら、甘酸っぱい方向で。今日は、別の葉にしてみませんか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ライチにジャスミンを少し重ねて量る。香りが先に立つ火に整え、客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "……あれ、これも好きだ。苺じゃないのに"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "大会の人のおすすめって、こういう感じなんだね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch3_prefectural_fan_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（県大会を見た人に、苺の一台を頼まれる注文だ。前と同じ出し方でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch3_prefectural_fan_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（県大会を見た人に、苺の一台を頼まれる注文だ。今日は、前と違う方を勧める）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch3_send_off_double_apple_cardamom",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ダブルアップルにカルダモンを少し添えて量る。スミさんがよく組む配合で、客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "……これだよ。この店に来たって感じがする"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "東京でも、この店のこと忘れないでくれよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（忘れない。持っていくのは、この店で覚えた手順だ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch3_send_off_black_tea_honey",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日、少し疲れてますよね。軽めにしておきます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紅茶にハニーを少し合わせて量る。熱は低めに整え、ゆっくり吸える一台を客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "……ばれたか。今週、ずっと残業でさ"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "送り出すつもりで来たのに、こっちが労われちゃったな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch3_send_off_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（東京へ発つ前に、一台を任される注文だ。前と同じ受け取り方でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch3_send_off_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（東京へ発つ前に、一台を任される注文だ。今日は、前と違う受け取り方をする）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch4_saw_nationals_chocolate_orange",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "チョコにオレンジを合わせて量る。大会より熱を落とし、重くならない一台を客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "配信で見たのより、軽い。……でも、ちゃんとチョコだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "あの日のは、一口目で勝負する一台でした。今日のは、長く吸ってもらう一台です"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "なるほどね。同じチョコでも、役目が違うんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch4_saw_nationals_pistachio_vanilla",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "チョコは大会でたくさん作ったので。今日は、別の甘いのはどうですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ピスタチオにバニラを少し重ねて量る。香ばしさが先に来る火に整え、客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "……ナッツか。チョコじゃないのに、これはこれで好きだ"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "配信の一台より、俺はこっちかもしれないな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch4_saw_nationals_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（全国大会を見た人に、チョコの一台を頼まれる注文だ。前と同じ出し方でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch4_saw_nationals_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（全国大会を見た人に、チョコの一台を頼まれる注文だ。今日は、前と違う方を勧める）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_return_ch4_returning_citrus_0",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……柑橘の注文。前に、レモンとミントで出した人だ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_return_ch4_returning_citrus_1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……柑橘の注文。前に、オレンジとレモンで出した人だ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch4_returning_citrus_kiwi_mint",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "キウイにミントを重ねて量る。酸味は残して、柑橘とは違う青さが出る火に整えた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "さっぱりしてるのに、前のとは違う。キウイか"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "前のと被らないように、選んでくれたんだね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（同じ『さっぱり』でも、出し方は一つじゃない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch4_returning_citrus_jasmine_peach",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "さっぱりがお好きなら、今日は香りの軽いのはどうですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ジャスミンにピーチを少し合わせて量る。花の香りが軽く立つ火に整え、客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "花の香りなのに、重くない。柑橘のときと同じ軽さだ"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "次も、違うのを頼んでみようかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch4_returning_citrus_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前に柑橘を吸った人が、違う一台を頼む注文だ。前と同じ方でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch4_returning_citrus_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前に柑橘を吸った人が、違う一台を頼む注文だ。今日は、前と違う方を勧める）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_return_ch4_returning_after_work_0",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……仕事帰りの人だ。前は、グレープフルーツとミントで出した）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_return_ch4_returning_after_work_1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……仕事帰りの人だ。前は、キウイとレモンで出した）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch4_returning_after_work_black_tea_vanilla",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紅茶にバニラを合わせて葉を量る。熱は低く整え、時間をかけて吸える一台を客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "ミルクティーみたいだ。仕事の日には、頼まない味だな"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "休みの日の一台って、こういうのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（頭を冴えさせる日と、ほどく日。同じ人でも、今日の一台は違う）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch4_returning_after_work_rose_lychee",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は急がなくていい日なので。香りを楽しむ一台にしてみます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ローズにライチを少し添えて量る。香りがゆっくり開く火に整え、客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "……花だ。仕事帰りの俺なら、絶対に選ばない"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "でも今日は、これがいい。休みだって、やっと思えた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch4_returning_after_work_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（仕事帰りだった人の、休みの日の注文だ。前と同じ方でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch4_returning_after_work_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（仕事帰りだった人の、休みの日の注文だ。今日は、前と違う方を勧める）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch5_tsumugi_explain_image",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "果物の林檎じゃなくて、香りで作った林檎。そう言えば、だいたい伝わる"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……香りで作った、林檎"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは客席へ戻り、同じ言葉をゆっくり繰り返した。客が、ホースを受け取る。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "ほんとだ。林檎っぽいのに、果物の味とは違う"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "……シーシャにしかない林檎、です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（最後の一言は、つむぎが自分で足した）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch5_tsumugi_explain_spices",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "アニスとリコリス。二つのスパイスの香りで、林檎を作ってる"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_surprise",
+          "text": "……スパイスで、林檎"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "だから一口で分かる。シーシャにしかない味だよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは客席へ戻り、指を二本立てて説明した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "スパイスで林檎……あ、ほんとだ。不思議な味"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "一口で、覚えられる味です"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch5_tsumugi_explain_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前にも、つむぎにダブルアップルのことを聞かれた。同じ言い方で渡そう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch5_tsumugi_explain_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前にも、つむぎにダブルアップルのことを聞かれた。今日は、違う言い方で渡す）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch5_tsumugi_advise_remove_coal",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎの隣に立って、炭の上を指した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "熱が先に走ってる。炭を一つ、下ろそう"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_serious",
+          "text": "……はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎがトングで炭を一つ外す。次の一口には、煙の角が取れていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "あ、楽になった。これなら最後まで吸える"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "しばらくしたら熱が落ちてくる。そのとき、戻せばいい"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……下ろした炭を戻す時間も、見ておきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch5_tsumugi_advise_edge_wait",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭を縁に寄せて、二口だけ待ってもらおう。葉を焦がさずに済む"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_serious",
+          "text": "縁に……はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎがトングで炭を外側へずらし、客に少し待ってもらうよう頼んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……あ、さっきより柔らかい。香りも残ってる"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "待ってもらって、よかったです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（減らすより、逃がす。今日の葉には、そっちが合った）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch5_tsumugi_advise_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前にも、つむぎの台を見て声をかけた。同じ直し方を伝えよう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch5_tsumugi_advise_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前にも、つむぎの台を見て声をかけた。今日は、違う直し方を伝える）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch5_tsumugi_sumi_words_wait",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "足す前に、一回だけ待とう。熱は、足すより戻す方が難しいから"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……一回だけ、待つ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎはトングを置いて、客の次の一口を待った。煙は、ちゃんと太く戻ってきた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "うん、ちょうどいい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "……俺なら『焦るな』の一言で済ませるとこだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "それだと、つむぎが固まるんで"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ふん。……今のは、お前の言い方だな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch5_tsumugi_sumi_words_face",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭より先に、吸ってる人を見よう。話に夢中なら、細いままでいい時もある"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_surprise",
+          "text": "……あ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎが客席を振り返る。二人連れは話し込んでいて、ホースは置かれたままだった。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……今は、足さないでおきます。手が伸びたら、行きます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "……『顔を見てから煙を作れ』か。ずいぶん噛み砕いたな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も、最初はそのままじゃ分からなかったんで"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "……はじめさんの言い方で、覚えました"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch5_tsumugi_sumi_words_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前にも、つむぎが炭に手を伸ばしてた。同じ言い方で渡そう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch5_tsumugi_sumi_words_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前にも、つむぎが炭に手を伸ばしてた。今日は、違う言い方で渡す）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch5_world_viewer_same_direction",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あの日と同じ方向で葉を量る。会場より熱を落とし、店の席で長く吸える一台にした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "……動画で見てたのだ。思ってたより、ずっと優しい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "会場のは、あの日の審査席の一台でした。今日のは、ここで吸う人の一台です"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "……同じ人が作っても、変わるんですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch5_world_viewer_todays_face",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "遠くから来てくれたんですよね。今日は、肩の力が抜ける方を作らせてください"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ピーチにカモミールを少し重ねて量る。熱は低めに整え、ゆっくり吸える一台を客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "……動画のとは違うのに。来てよかったって、思えます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（あの日の一台は、あの日の席のもの。今日の一人には、今日の一台だ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch5_world_viewer_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（世界大会の動画を見て来た人の注文だ。前と同じ出し方でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch5_world_viewer_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（世界大会の動画を見て来た人の注文だ。今日は、前と違う方を勧める）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_fortune_first",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_day.png"
@@ -2395,7 +3342,7 @@
         {
           "speaker": "uranaishi",
           "face": "normal",
-          "text": "……ヒヒ。いい煙の匂いを連れて歩く子だ。お座り"
+          "text": "……ヒヒ。いい煙の匂いを連れて歩く子だ。お座り。……アタシは出たり出なかったりさ"
         },
         {
           "speaker": "hajime",
@@ -2405,7 +3352,7 @@
         {
           "speaker": "uranaishi",
           "face": "smile",
-          "text": "アタシは出たり出なかったりさ。縁があれば、また会える"
+          "text": "次はどこで顔を合わせるかね。……ヒヒ、楽しみにしておこうか"
         },
         {
           "type": "apply",
@@ -2523,7 +3470,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "皺だらけの指がカードを３枚、布の上に滑らせる。……長い沈黙。"
+          "text": "皺だらけの指がカードを3枚、布の上に滑らせる。……長い沈黙。"
         },
         {
           "type": "motion",
@@ -2532,7 +3479,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "１枚めくった瞬間、フードの奥で笑った気配がした。"
+          "text": "1枚めくった瞬間、フードの奥で笑った気配がした。"
         },
         {
           "speaker": "uranaishi",
@@ -2542,7 +3489,7 @@
         {
           "speaker": "uranaishi",
           "face": "normal",
-          "text": "次に会ったとき、いつもより素直に話せるだろうさ。……効き目は一度きりだよ"
+          "text": "{fortuneName}と次に会ったとき、いつもより素直に話せるだろうさ。……効き目は一度きりだよ"
         },
         {
           "speaker": "hajime",
@@ -2565,7 +3512,7 @@
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "（周りは見ない。いつもの手順で、１つずつ）"
+          "text": "（周りは見ない。いつもの手順で、1つずつ）"
         }
       ]
     },
@@ -2641,6 +3588,11 @@
           "text": "……はい。……ちゃんと、見てます、……ぜんぶ"
         },
         {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
@@ -2659,7 +3611,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_shuraba_rin_tsumugi",
+      "dialogue_id": "remake_shuraba_rio_tsumugi",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
       },
@@ -2670,12 +3622,12 @@
           "text": "受付を済ませてロビーに戻ると、見知った顔がふたつ、同じ柱の前に立っていた。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "おはよう、モルモットくん。最重要サンプルの品質管理に来たよ"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "……予定、ずらしてきた"
         },
@@ -2685,7 +3637,7 @@
           "text": "……はじめさん、……応援、来ました"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "……あら。tonariの常連の子よね。いつも奥の席で描いてる"
         },
@@ -2695,7 +3647,7 @@
           "text": "……はい。……あなたは、問屋街の。……はじめさんの、なんですか"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "私？ ……そうね。彼の、いちばん大事なサンプルの管理者、かな"
         },
@@ -2710,9 +3662,9 @@
           "text": "（やめてくれ、その「その」の続きは今じゃない！）"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "serious",
-          "text": "……なるほど。データが１件、合わないね、……モルモットくん？"
+          "text": "……なるほど。データが1件、合わないね、……モルモットくん？"
         },
         {
           "speaker": "pakki",
@@ -2725,7 +3677,7 @@
           "text": "は、はい！ 今行きます！"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "……逃げたね。いいよ、検証は結果が出てからにしてあげる"
         },
@@ -2733,6 +3685,11 @@
           "speaker": "tsumugi",
           "face": "evil",
           "text": "……がんばって、ください。……それから、あとで、お話を"
+        },
+        {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
         },
         {
           "speaker": "",
@@ -2753,7 +3710,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_shuraba_minto_rin",
+      "dialogue_id": "remake_shuraba_minto_rio",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
       },
@@ -2769,7 +3726,7 @@
           "text": "はじめくーん！ おはよっ♡ 今日は出場者同士、ライバルだね！ ……推し活もやめないけど♡"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "おはよう、モルモットくん。……予定をずらして、今日は品質管理の立ち会いだよ"
         },
@@ -2779,7 +3736,7 @@
           "text": "……品質管理？ ……あ、Dr.fookahの2階のお姉さん、ですよね"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "うん。そっちはPEPPERMINTの店長さんだよね。……ずいぶん親しげだね、彼と"
         },
@@ -2789,7 +3746,7 @@
           "text": "えへへ、みんとの大事な人なので♡ ……そちらこそ、朝からご熱心で"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "大事なサンプルなの。……あら、奇遇。私にとっても「大事」みたい"
         },
@@ -2814,9 +3771,14 @@
           "text": "はーい♡ はじめくん、一緒に行こ？ ……終わったら、ちゃんと説明してね？"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "結果が出たら、次は君の検証の番、……逃げないように"
+        },
+        {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
         },
         {
           "speaker": "",
@@ -2845,7 +3807,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "受付を済ませて控室の前まで来ると、見知った顔が３つ、扉の前で鉢合わせていた。"
+          "text": "受付を済ませて控室の前まで来ると、見知った顔が3つ、扉の前で鉢合わせていた。"
         },
         {
           "speaker": "minto",
@@ -2858,24 +3820,24 @@
           "text": "……はじめさん。……応援、来ました、……みなさんも？"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "おはよう、モルモットくん。……ずいぶん賑やかな応援団ね"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "……予定、ずらしてきた。見ないわけにいかないでしょ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "３人の視線が、俺を通り越して、ゆっくりと互いに向いた。"
+          "text": "3人の視線が、俺を通り越して、ゆっくりと互いに向いた。"
         },
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "……みんとは応援団じゃなくて出場者だけど。ねえ、もしかして３人とも、はじめくんの「その」だったり……する？"
+          "text": "……みんとは応援団じゃなくて出場者だけど。ねえ、もしかして3人とも、はじめくんの「その」だったり……する？"
         },
         {
           "speaker": "tsumugi",
@@ -2883,9 +3845,9 @@
           "text": "……その、です"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "serious",
-          "text": "……その、ね。……データが３件、きれいに衝突してる"
+          "text": "……その、ね。……データが3件、きれいに衝突してる"
         },
         {
           "speaker": "hajime",
@@ -2905,10 +3867,10 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "……うん。じゃ、みんとも控室いこっと♡ お話は、あとで。３人で、ゆっくりね"
+          "text": "……うん。じゃ、みんとも控室いこっと♡ お話は、あとで。3人で、ゆっくりね"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "結果を出してきなさい。……言い訳は、そのあとで聞く"
         },
@@ -2916,6 +3878,11 @@
           "speaker": "tsumugi",
           "face": "normal",
           "text": "……がんばって、ください。……それは、本当、です"
+        },
+        {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
         },
         {
           "speaker": "",
@@ -2970,7 +3937,7 @@
         {
           "speaker": "hiyori",
           "face": "sad",
-          "text": "……朝霧ひより。はじめくんとは、煙の中で出会ったの",
+          "text": "……泡沫ひより。はじめくんとは、煙の中で出会ったの",
           "inner": "誰！？ 距離近くない！？ 出場者の子！？"
         },
         {
@@ -3021,6 +3988,11 @@
           "inner": "味玉は、はじめくんのおごり"
         },
         {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
@@ -3039,7 +4011,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_shuraba_hiyori_rin",
+      "dialogue_id": "remake_shuraba_hiyori_rio",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
       },
@@ -3050,7 +4022,7 @@
           "text": "受付を済ませてロビーに戻ると、窓際のベンチに、見知った顔がふたつ並んでいた。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "おはよう、モルモットくん。最重要サンプルの品質管理に来たよ"
         },
@@ -3061,17 +4033,17 @@
           "inner": "有休取った。朝ごはんもしっかり食べた"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "……隣、お知り合い？ さっきから、ずっと入口の方を見てたよ"
         },
         {
           "speaker": "hiyori",
           "face": "sad",
-          "text": "……朝霧ひより。はじめくんとは、ただの、煙の縁……"
+          "text": "……泡沫ひより。はじめくんとは、ただの、煙の縁……"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "serious",
           "text": "煙の縁。……いい言い回しだね。それで、実際のところは？"
         },
@@ -3082,7 +4054,7 @@
           "inner": "呼び方の距離が近すぎる。何者！？"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "うん。私の、いちばん大事なサンプル"
         },
@@ -3097,9 +4069,9 @@
           "text": "（その先は言わないでください。ここ、ロビーです！）"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "serious",
-          "text": "……そう。同じ値が２つ。偶然にしては、きれいすぎるね"
+          "text": "……そう。同じ値が2つ。偶然にしては、きれいすぎるね"
         },
         {
           "speaker": "pakki",
@@ -3112,7 +4084,7 @@
           "text": "は、はい！ 今行きます！"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "……逃げたね。いいよ、検証は結果が出てからにしてあげる"
         },
@@ -3121,6 +4093,11 @@
           "face": "smile",
           "text": "……いってらっしゃい。儚く、待ってるね",
           "inner": "待つ。待つけど、終わったら全部聞く"
+        },
+        {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
         },
         {
           "speaker": "",
@@ -3231,6 +4208,11 @@
           "inner": "三人で、って言っちゃった。どういう会になるの、それ"
         },
         {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
@@ -3275,8 +4257,8 @@
         {
           "type": "condition",
           "condition_type": "lover",
-          "char_id": "rin",
-          "next_true": "ah_rin_hello"
+          "char_id": "rio",
+          "next_true": "ah_rio_hello"
         },
         {
           "speaker": "hiyori",
@@ -3309,8 +4291,8 @@
         {
           "type": "condition",
           "condition_type": "lover",
-          "char_id": "rin",
-          "next_true": "ah_rin_sono"
+          "char_id": "rio",
+          "next_true": "ah_rio_sono"
         },
         {
           "speaker": "hiyori",
@@ -3342,8 +4324,8 @@
         {
           "type": "condition",
           "condition_type": "lover",
-          "char_id": "rin",
-          "next_true": "ah_rin_bye"
+          "char_id": "rio",
+          "next_true": "ah_rio_bye"
         },
         {
           "type": "condition",
@@ -3355,6 +4337,11 @@
           "speaker": "hiyori",
           "face": "smile",
           "text": "……がんばってね。これは、儚くない方の私から"
+        },
+        {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
         },
         {
           "speaker": "",
@@ -3388,9 +4375,9 @@
             "text": "……はじめさん。……応援、来ました、……みなさんも？"
           }
         ],
-        "ah_rin_hello": [
+        "ah_rio_hello": [
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
             "text": "おはよう、モルモットくん。……ずいぶん賑やかな応援団ね"
           }
@@ -3409,9 +4396,9 @@
             "text": "……その、です"
           }
         ],
-        "ah_rin_sono": [
+        "ah_rio_sono": [
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "serious",
             "text": "……その、ね。……データが、きれいに衝突してる"
           }
@@ -3423,9 +4410,9 @@
             "text": "……うん。じゃ、みんとも控室いこっと♡ お話は、あとで。みんなで、ゆっくりね"
           }
         ],
-        "ah_rin_bye": [
+        "ah_rio_bye": [
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
             "text": "結果を出してきなさい。……言い訳は、そのあとで聞く"
           }
@@ -3489,7 +4476,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "１つずつ手を動かして覚えろ。練習は店でやる。ここの葉を使っていい"
+          "text": "1つずつ手を動かして覚えろ。練習は店でやる。ここの葉を使っていい"
         }
       ]
     },
@@ -3568,7 +4555,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。tonariでバイトしている蒸野はじめです。ご注文のミントを届けに来ました"
+          "text": "はい。tonariでバイトしている逢縁はじめです。ご注文のミントを届けに来ました"
         },
         {
           "speaker": "minto",
@@ -3585,7 +4572,7 @@
         },
         {
           "speaker": "",
-          "text": "３袋をカウンター脇の台車へ置くと、みんとは伝票に丸い字で「みんと♡」とサインした。"
+          "text": "3袋をカウンター脇の台車へ置くと、みんとは伝票に丸い字で「みんと♡」とサインした。"
         },
         {
           "speaker": "hajime",
@@ -3682,6 +4669,304 @@
       "branches": {
         "stock": [],
         "full": []
+      }
+    },
+    {
+      "dialogue_id": "remake_naru_match_invite",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のtonari。閉店の札を出したところで、ドアが開いた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_naru",
+          "next_true": "known",
+          "next_false": "new"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "俺が呼んだ。大会まであと{daysLeft}日だ。今夜は、二人で一台ずつ作れ"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "スミさんに吸い比べてもらおうぜ。同じ日に同じ人が吸えば、違いがはっきりする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "勝負、ってことですか"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "そう硬くなるな。まあ、俺は負ける気ねえけどな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（気さくな人だ。でも、ここで引き下がりたくない）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "よろしくお願いします。本気で作ります"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "おう。持っていく香りを選んだら、あとは手だけ動かせ"
+        }
+      ],
+      "branches": {
+        "new": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "おー、ここがtonariか。スミさん、来たよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（スミさんの知り合い……？）"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "俺はなる。KEMURIKUSAってとこでやってる。SMOKE CROWN CUP、俺も出る。……まず、俺の作り方、見ていくか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "tonariでバイトしてる逢縁はじめです。大会、俺も出ます"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_naru"
+          }
+        ],
+        "known": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "よう、はじめ。スミさんに呼ばれてさ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_naru_match_review",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……あいつと並べると、自分の煙がよく見えるだろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。どこを詰めればいいか、分かった気がします"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "大会まであと{daysLeft}日だ。どこを磨くかは、お前が決めろ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ただし、寝ること。それも仕込みのうちだ"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 2
+          }
+        }
+      ],
+      "branches": {
+        "open": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "二人の一台が、カウンターに並んだ。スミさんが、順に吸い比べる。"
+          },
+          {
+            "speaker": "sumi",
+            "face": "serious",
+            "text": "……よし。まず熱だ"
+          }
+        ],
+        "open_failed": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カウンターに残ったのは、なるの一台だけだった。スミさんが、ゆっくり吸う。"
+          },
+          {
+            "speaker": "sumi",
+            "face": "serious",
+            "text": "最後まで仕上げて、初めて客に出せる一台だ"
+          }
+        ],
+        "heat_hajime": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "なるのは芯が据わってる。崩れがない"
+          },
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "はじめ、お前も今日は熱を詰めてきたな。芯で負けてない"
+          }
+        ],
+        "heat_naru": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "なるのは芯が据わってる。崩れがない"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "はじめ、熱がまだ揺れてる。芯はなるが上だ"
+          }
+        ],
+        "heat_failed": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "はじめ、まずは一台を最後まで保つことだ。なるは、そこが堅い"
+          }
+        ],
+        "served_ideal": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "出した時の温度は、どっちも落ち着いてた。客を待たせねえ温度だ"
+          }
+        ],
+        "served_hot": [
+          {
+            "speaker": "sumi",
+            "face": "serious",
+            "text": "はじめ、出した時に熱が前へ出た。最初の一口が痛い"
+          }
+        ],
+        "served_cold": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "はじめ、出した時は香りがまだ遠かった。もう一段、立たせたかったな"
+          }
+        ],
+        "served_unknown": [],
+        "result_win": [
+          {
+            "speaker": "sumi",
+            "face": "serious",
+            "beat": 600,
+            "text": "……今日の一台は、はじめだ"
+          }
+        ],
+        "result_draw": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "beat": 600,
+            "text": "……決めきれねえな。今日は引分けだ"
+          }
+        ],
+        "result_lose": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "beat": 600,
+            "text": "今日の一台は、なるだ。基礎の堅さで、まだ差がある"
+          }
+        ],
+        "naru_win": [
+          {
+            "speaker": "naru",
+            "face": "surprise",
+            "text": "……マジか"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "へえ、やるじゃねえか。悔しいけど、今日のお前の一台はもう一口吸いたくなる"
+          },
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "text": "次は負けねえ。本番まで覚えとけよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "……はい。本番でも、負けません"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なるは片手を上げて、店を出ていった。"
+          }
+        ],
+        "naru_draw": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "引分けかよ。……張り合いが出てきたじゃねえか"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "決着は本番だな。それまでに、もっと詰めてこい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "はい。次は、はっきり勝ちます"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なるは片手を上げて、店を出ていった。"
+          }
+        ],
+        "naru_lose": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "まあ、まだ俺の方が堅いな。でも、伸びてるのは分かった"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "本番までに詰めてこい。張り合いがねえと困る"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……はい。次は、もっといい煙を出します"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "なるは片手を上げて、店を出ていった。"
+          }
+        ]
       }
     },
     {
@@ -3864,7 +5149,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "葉は詰め直して、熱も回しておく。吸い出しから、もう１回だ"
+          "text": "葉は詰め直して、熱も回しておく。吸い出しから、もう1回だ"
         }
       ]
     },

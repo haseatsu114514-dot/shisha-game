@@ -32,7 +32,7 @@ function resetPreview() {
   scratch.chapter = 2;
   scratch.phase = "opening";
   // 第1章を終えた主人公の既知の顔。第2章の新しい訪問先の相手は名乗るまで未知。
-  for (const id of ["hajime", "sumi", "naru", "adam", "minto", "tsumugi", "rin", "dr_kemuri", "pakki", "nagumo"]) {
+  for (const id of ["hajime", "sumi", "naru", "adam", "minto", "tsumugi", "rio", "dr_kemuri", "pakki", "sui"]) {
     scratch.met[id] = true;
     scratch.flags[`_intro_${id}`] = true;
   }

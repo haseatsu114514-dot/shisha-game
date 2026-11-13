@@ -76,10 +76,18 @@ await suite('tournament-story',async check=>{
       vn.vnTest.turbo=true;vn.vnTest.choose=()=>0;
       session.craftTest.auto='good';
       window.events=[];
-      vn.hooks.onLine=id=>{if(id.startsWith('tournament_craft_')&&events.at(-1)!==id)events.push(id);};
+      window.scenes=[];
+      vn.hooks.onLine=(id,line)=>{if(id.startsWith('tournament_craft_')&&events.at(-1)!==id)events.push(id);if(/^(tournament_craft_1_preresult|ch1_tournament_judging)$/.test(id)&&scenes.at(-1)?.id!==id)scenes.push({id,first:line?.text});};
       window.tournamentRun=chapter.devTournament();
     });
     await page.waitForFunction(()=>events.includes('tournament_craft_1_tasting'),null,{timeout:60000});
-    assert.deepEqual(await page.evaluate(()=>events),['opening','packed','waiting','interlude1','interlude2','interlude3','tasting'].map(e=>`tournament_craft_1_${e}`));
+    assert.deepEqual(await page.evaluate(()=>events),['prestart','opening','packed','waiting','interlude1','serve','interlude2','interlude3','tasting'].map(e=>`tournament_craft_1_${e}`));
+    // #3060（オーナー 2026-11-10「全部推奨で」）: 結果発表前は勝敗どちらの流れでも読む。優勝の流れは会長の二口（judging）の後に、みんととアダムの待ち時間。
+    await page.waitForFunction(()=>events.includes('tournament_craft_1_preresult'),null,{timeout:60000});
+    const {rank,scenes}=await page.evaluate(()=>({rank:window.tournamentFixture.core.state.tournament.lastRank,scenes:window.scenes}));
+    const craftScenes=JSON.parse(fs.readFileSync(new URL('../../../data/dialogue/tournament_craft.json',import.meta.url),'utf8')).dialogues;
+    const first=id=>craftScenes.find(d=>d.dialogue_id===id).lines[0].text;
+    if(rank===1)assert.deepEqual(scenes,[{id:'ch1_tournament_judging',first:scenes[0]?.first},{id:'tournament_craft_1_preresult',first:first('tournament_craft_preresult_1_win')}]);
+    else assert.deepEqual(scenes,[{id:'tournament_craft_1_preresult',first:first('tournament_craft_preresult_1')}]);
   });
 });

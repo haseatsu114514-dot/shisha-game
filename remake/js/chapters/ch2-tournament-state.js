@@ -1,13 +1,14 @@
 import { finishTournamentStep } from "./tournament-finish-step.js";
-import { tournamentResources, restoreTournamentResources } from "./tournament-resource-snapshot.js";
+import { tournamentResources, restoreTournamentResources, recoverTournamentResources } from "./tournament-resource-snapshot.js";
 import { tournamentStandings } from "./tournament-standings.js";
+import { initialBaseVotes } from "./tournament-base-votes.js";
 // 第2章の保存境界と持ち点。第1章のstate.tournament/固定逆転票には触れない。
-import { MAX_MONEY } from "../core/rules.js";
+import { payTournamentPrize } from "./tournament-prize.js";
 
-// 大会賞金（2026-10-30 決定の階段式: 第1章30,000円／第2章50,000円／第3章100,000円／第4章200,000円／第5章は賞金なし）。
-export const CH2_PRIZE = 50000;
+// 新規優勝のみ: 第1章50,000円／第2章100,000円／第3章200,000円／第4章500,000円／第5章は賞金なし。
+export const CH2_PRIZE = 100000;
 export const CONTESTANTS = ["hajime", "ageha", "kumicho", "rei"];
-export const JUDGES = ["maezono", "dr_kemuri", "nagumo"];
+export const JUDGES = ["maezono", "dr_kemuri", "sui"];
 export const SPEND = [2, 3, 2, 3];
 // 初期調整値。章2の比較用の出来であり、キャラクターの能力値ではない。
 // あげは77は上園の好み補正(+4)で81となり、神崎80・REI79を上回る（#1649）。はじめがどの出来でも
@@ -18,7 +19,7 @@ export const RIVAL_QUALITY = { ageha: 77, kumicho: 80, rei: 78 };
 // maxPrefDelta は設定パラメータではなく、BASE_PREF_SCALE * prefWeight から一意に導出する。
 export const BASE_PREF_SCALE = 20;
 export const JUDGE_PROFILES = Object.freeze({
-  nagumo: Object.freeze({ id: "nagumo", label: "南雲", qualityWeight: 0.90, prefWeight: 0.10 }),
+  sui: Object.freeze({ id: "sui", label: "千須", qualityWeight: 0.90, prefWeight: 0.10 }),
   dr_kemuri: Object.freeze({ id: "dr_kemuri", label: "チャコール博士", qualityWeight: 0.85, prefWeight: 0.15 }),
   maezono: Object.freeze({ id: "maezono", label: "上園", qualityWeight: 0.78, prefWeight: 0.22 }),
 });
@@ -29,7 +30,7 @@ const boundedPref = value => Math.max(-1, Math.min(1, Number(value) || 0));
 
 /** 審査員 j の最大好み振れ幅（派生値: BASE_PREF_SCALE * prefWeight） */
 export function judgeMaxPrefDelta(judgeId, profiles = JUDGE_PROFILES) {
-  const prof = profiles[judgeId] || JUDGE_PROFILES.nagumo;
+  const prof = profiles[judgeId] || JUDGE_PROFILES.sui;
   return Math.round(BASE_PREF_SCALE * prof.prefWeight * 1000) / 1000;
 }
 
@@ -40,7 +41,7 @@ export function judgeMaxPrefDelta(judgeId, profiles = JUDGE_PROFILES) {
  * 二重乗算や未使用パラメータを生まない。
  */
 export function evaluateJudgeScore(judgeId, quality, prefNorm = 0, profiles = JUDGE_PROFILES) {
-  const prof = profiles[judgeId] || JUDGE_PROFILES.nagumo;
+  const prof = profiles[judgeId] || JUDGE_PROFILES.sui;
   const q = bounded(quality);
   const p = boundedPref(prefNorm);
   const prefAdjusted = bounded(q + BASE_PREF_SCALE * p);
@@ -72,14 +73,13 @@ export function startAttempt(value, craft) {
   p.attempts++;
   Object.assign(p, { stage: "craft", step: 0, craft: copy(craft), rollback: null,
     votes: Object.fromEntries(JUDGES.map(id => [id, Object.fromEntries(CONTESTANTS.map(c => [c, 0]))])),
-    voted: 0, result: null, failure: null });
+    baseVotes: initialBaseVotes(CONTESTANTS), voted: 0, result: null, failure: null });
   value.phase = "tournament";
   return p;
 }
 export function recoverStep(value) {
   const p = tournamentProgress(value);
-  if (p.rollback) { restoreResources(value, p.rollback); p.rollback = null; }
-  return p;
+  return recoverTournamentResources(value, p);
 }
 export function beginStep(value) {
   const p = tournamentProgress(value);
@@ -127,12 +127,10 @@ export function recordResult(value, total) {
   if (p.voted !== 4 || p.craft?.careHistory?.length !== 2) throw new Error("提供と2回の調整が未完了です");
   const rows = standings(p);
   p.result = { attempt: p.attempts, total, rank: rows.find(row => row.id === "hajime").rank,
-    rows, votes: copy(p.votes), careHistory: copy(p.craft.careHistory) };
+    rows, votes: copy(p.votes), baseVotes: copy(p.baseVotes || {}), careHistory: copy(p.craft.careHistory) };
   // 賞金は優勝の確定と同じ更新で一度だけ渡す（再挑戦・LOADで二重に付けない）。
-  if (p.result.rank === 1 && !p.prizePaid) {
-    p.prizePaid = true;
-    value.money = Math.min(MAX_MONEY, Math.max(0, Math.round((value.money || 0) + CH2_PRIZE)));
-  }
+  payTournamentPrize(value, p, p.result.rank, CH2_PRIZE);
   p.history.push(copy(p.result));
   return p.result;
 }
+

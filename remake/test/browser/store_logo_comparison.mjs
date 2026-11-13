@@ -15,7 +15,7 @@ try {
   await p.evaluate(async()=>{
    const core=await import('./js/core/state.js'),ui=await import('./js/core/ui.js'),map=await import('./js/daily/map.js'),hud=await import('./js/daily/hud.js');
    core.newGame();Object.assign(core.state,{phase:'daily',day:4,slot:0,money:30000,seed:574});
-   for(const id of ['naru','adam','minto','rin','tsumugi']) core.state.met[id]=true;
+   for(const id of ['naru','adam','minto','rio','tsumugi']) core.state.met[id]=true;
    hud.initHud({});hud.showHud();await ui.warmUiArt();
    window.T={core,ui,map};
   });

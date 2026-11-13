@@ -8,12 +8,16 @@ const cases = [
   ["bg_c_station_overcast_day", "day", "naru", "ch1_meet_rivals"],
   ["bg_c_station_overcast_night", "night", "naru", "ch1_meet_rivals"],
   ["bg_c_station_lobby", "day", "pakki", "ch1_tournament_opening"],
-  ["bg_fookah_showroom", "day", "rin", "ch1_rin_first"],
-  ["bg_shop", "day", "rin", "ch1_rin_first"],
+  ["bg_fookah_showroom", "day", "rio", "ch1_rio_first"],
+  ["bg_shop", "day", "rio", "ch1_rio_first"],
   ["kemurikusa", "night", "naru", "ch1_naru_first"],
   ["peppermint", "night", "minto", "ch1_minto_first"],
   ["bg_tournament_stage", "night", "pakki", "ch1_tournament_opening"],
 ];
+
+// 背景の規格は 1920×1080。大会会場だけは、オーナーが全採用した描き直し（#3282 B10）が Codex の内蔵生成の上限 1672×941 の原寸
+// （拡大しない。data/background_catalog.json の accepted）なので、その大きさを期待する。ほかの絵は今までどおり 1920×1080。
+const EXPECTED_SIZE = { bg_tournament_stage: [1672, 941] };
 
 await suite("ch1-facility-art", async check => {
   for (const [device, viewport] of [["pc", { width: 1920, height: 1080 }], ["touch", { width: 844, height: 390 }]]) {
@@ -37,7 +41,7 @@ await suite("ch1-facility-art", async check => {
         }, { id, time, speaker, dialogue });
         assert.equal(result.url, `img/backgrounds/${id}.webp`);
         assert.equal(result.tint, null);
-        assert.deepEqual(result.size, [1920, 1080]);
+        assert.deepEqual(result.size, EXPECTED_SIZE[id] || [1920, 1080]);
         await page.locator(".vn-text").waitFor();
         await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent.length > 0 && Number(getComputedStyle(document.getElementById("vn")).opacity) >= .99);
         assert.equal(await page.locator(`.portrait[data-speaker="${speaker}"]`).evaluate(im => im.complete && im.naturalWidth > 0), true);

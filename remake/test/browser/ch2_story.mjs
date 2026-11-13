@@ -139,7 +139,13 @@ await suite('ch2-story', async check => {
     await page.locator(end).waitFor(); const s = await state(page);
     assert.equal(s.day, 28); assert.equal(s.slot, 0); assert.equal(s.chapter, 2);
     assert.equal(s.money, before.money); assert.deepEqual(s.stats, before.stats); assert.equal(s.reel.count, before.reel.count);
-    for (const key of ['lovers','loverSince','lastDate','affinity','keepsakes','relationshipMemories']) assert.deepEqual(s[key], before[key], key);
+    for (const key of ['lovers','loverSince','lastDate','keepsakes','relationshipMemories']) assert.deepEqual(s[key], before[key], key);
+    assert.deepEqual(s.affinity, { ...before.affinity, ageha: 9, kumicho: 9, rei: 9 }, 'Only the three completed first meetings earn exactly heart1');
+    assert.deepEqual(s.affinityCarry, { ...before.affinityCarry, ageha: 0, kumicho: 0, rei: 0 }, 'No first-meeting reward leaks fractional carry');
+    for (const id of ['ageha', 'kumicho', 'rei']) {
+      assert(!before.met[id]); assert.equal(s.met[id], true);
+      assert.equal(s.flags[`_affinity_first_meeting_pending_${id}`], undefined);
+    }
     assert.deepEqual(s.flavorStock, withStrawberrySample(before.flavorStock), 'flavorStock');
     assert(s.flags._ch2_taste_distant); assert(s.flags._ch2_eve_done); assert(!s.flags.ch2_taste_recovered);
     assert(s.met.ageha); assert(!s.contacts.includes('ageha')); assert(!s.visits.ageha); assert(!s.met.volk);
@@ -151,7 +157,7 @@ await suite('ch2-story', async check => {
     assert.deepEqual(trace.filter(id => expected.includes(id)), expected);
     const texts = await page.evaluate(() => window.__storyTexts.join('\n'));
     assert(!/ヴォルク|組長の|鉄の煙/.test(texts));
-    // #929: DAY9はC.STATION柚ヶ谷店のアフサール新作試煙会。未対面の神崎・REIはそこで名乗り、面識が残る
+    // #929: DAY9はC.STATION柚ヶ谷店のアフサール新作試煙会。未対面の神崎・レヰはそこで名乗り、面識が残る
     assert.match(texts, /アフサール新作 先行試煙会/); assert(!/店長同士の試飲会/.test(texts));
     assert(s.met.kumicho && s.met.rei); assert(s.flags._ch2_afsahr_tasting);
     assert(s.flags._ch2_scout_seen && !s.met.volk); // #929: 名乗らない偵察の男を見た記録だけ残す
@@ -216,7 +222,7 @@ await suite('ch2-story', async check => {
     assert.deepEqual((await page.locator('.spot-pin').evaluateAll(nodes=>nodes.map(n=>n.dataset.test))).sort(),
       ['pin-ch2_ageha','pin-ch2_kumicho','pin-ch2_rei','pin-ch2_shop','pin-ch2_c_station','station-open'].sort());
     assert.equal(await page.locator(t('pin-ch2_volk')).count(), 0);
-    assert.equal(await page.locator(t('pin-trpg_bar')).count(), 0, 'TRPG bar waits for REI introduction');
+    assert.equal(await page.locator(t('pin-trpg_bar')).count(), 0, 'TRPG bar waits for レヰ introduction');
     const logos = await page.locator('.store-logo img').evaluateAll(async imgs => {
       await Promise.all(imgs.map(i => i.decode())); return imgs.map(i => i.naturalWidth);
     }); assert.equal(logos.length, 5); assert(logos.every(width => width > 0), "All five adopted store logos must decode");
@@ -297,8 +303,8 @@ await suite('ch2-story', async check => {
     assert.equal(after.flags._ch2_tournament.history.length, 1);
     // 大会の正規の効果以外で、蓄積した記録が欠落・巻き戻りしない。
     for (const key of ['stats', 'statXp', 'lovers', 'loverSince']) assert.deepEqual(after[key], eve[key], key);
-    // 大会の正規の効果として、優勝賞金50,000円が一度だけ入る。
-    assert.equal(after.money, eve.money + 50000, 'money は優勝賞金50,000円だけ増える');
+    // 大会の正規の効果として、優勝賞金100,000円が一度だけ入る。
+    assert.equal(after.money, eve.money + 100000, 'money は優勝賞金100,000円だけ増える');
     // 大会の制作は持ち込み在庫を消費するのが正規の効果（craft/steps.js の consumes）。
     // 記録された配合の分だけ減り、それ以外の欠落・巻き戻しがないことを確かめる。
     const usedMix = after.flags._ch2_tournament.craft.mix || {};

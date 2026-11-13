@@ -15,6 +15,10 @@
     python3 tools/portrait_metrics.py overlay [<id>..] [--out OUT]   # 記録した点を重ねた確認図
     python3 tools/portrait_metrics.py stamp <id>         # 確認図で点が合っているのを見た後、今の立ち絵の版を記録する
 
+設定の「会話の立ち絵」で選べる別の画風（新バージョン＝new）の通常絵も、同じ測り方で data/portrait_metrics.json の
+styles.<画風> に記録する（2026-11-06 顔アイコンを新バージョンの立ち絵に合わせる）。どのコマンドも --style new を付けると
+assets/sprites/character_variants/new/<id>/chr_<id>_normal.png を測る・確かめる。check は記録のある画風を全部調べる。
+
 測り方（座標は立ち絵 PNG の画素。左上が 0,0）:
     eyes   : 両目の黒目の中心（画面の左の目が先）。閉じた目は線の中央
     chin   : あごの先（いちばん下）
@@ -33,10 +37,13 @@ METRICS = ROOT / "data" / "portrait_metrics.json"
 MANIFEST = ROOT / "remake" / "data" / "manifest.json"
 CHARACTERS = ROOT / "data" / "characters.json"
 SPRITES = ROOT / "assets" / "sprites" / "characters"
+VARIANTS = ROOT / "assets" / "sprites" / "character_variants"
+CLASSIC = "classic"
 SHEET = ROOT / "asset_sources" / "reference-sheets" / "face-size-ingame.png"
 STAGE_H = 720           # 1280x720 の会話画面
-FRAMING_TARGET = 1.36   # remake/js/vn/engine.js の FRAMING.target（本体の高さ＝画面の高さ×1.36×spriteScale）
+FRAMING_TARGET = 1.675  # remake/js/vn/engine.js の FRAMING.target（本体の高さ＝画面の高さ×1.675×spriteScale）
 PAKKI_TARGET = 0.94     # 同 FRAMING.pakkiTarget
+CAT_TARGET = 0.34       # 同 FRAMING.catTarget（てつこは人間用の寄りにしない）
 
 
 # ---------------------------------------------------------------- 読み書き
@@ -63,9 +70,13 @@ def git_blob(rel: str) -> str | None:
     return out[1] if len(out) >= 2 else None
 
 
-def tracked_normals() -> dict[str, str]:
+def sprite_dir(style: str = CLASSIC) -> str:
+    return "assets/sprites/characters" if style == CLASSIC else f"assets/sprites/character_variants/{style}"
+
+
+def tracked_normals(style: str = CLASSIC) -> dict[str, str]:
     """登録されている通常の立ち絵 {キャラID: パス}"""
-    out = subprocess.run(["git", "ls-files", "--", "assets/sprites/characters/*/chr_*_normal.png"],
+    out = subprocess.run(["git", "ls-files", "--", f"{sprite_dir(style)}/*/chr_*_normal.png"],
                          cwd=ROOT, capture_output=True, text=True).stdout.split()
     found = {}
     for rel in out:
@@ -75,29 +86,48 @@ def tracked_normals() -> dict[str, str]:
     return found
 
 
-def default_sprite(cid: str) -> str:
-    return f"assets/sprites/characters/{cid}/chr_{cid}_normal.png"
+def default_sprite(cid: str, style: str = CLASSIC) -> str:
+    return f"{sprite_dir(style)}/{cid}/chr_{cid}_normal.png"
+
+
+def entries(data: dict, style: str = CLASSIC) -> dict:
+    """その画風の記録 {キャラID: 記録}。現行は characters、ほかの画風は styles.<画風>"""
+    return data["characters"] if style == CLASSIC else data.setdefault("styles", {}).setdefault(style, {})
+
+
+def styles(data: dict) -> list[str]:
+    """記録のある画風（現行が先）"""
+    return [CLASSIC, *sorted(data.get("styles", {}))]
+
+
+def manifest_portraits(manifest: dict, style: str = CLASSIC) -> dict:
+    return manifest["portraits"] if style == CLASSIC else manifest.get("portraitVariants", {}).get(style, {})
+
+
+def sprite_scale(chars: dict, folder: str, style: str = CLASSIC) -> float:
+    c = chars.get(folder) or {}
+    return (c.get("spriteScaleVariants") or {}).get(style) or c.get("spriteScale") or 1
 
 
 # ---------------------------------------------------------------- 計算
 
-def game_factor(entry: dict, cid: str, manifest: dict, chars: dict) -> float | None:
+def game_factor(entry: dict, cid: str, manifest: dict, chars: dict, style: str = CLASSIC) -> float | None:
     """立ち絵の1画素が、1280x720 の会話画面で何画素になるか（engine.js の frame() と同じ計算）"""
     folder = entry.get("folder", cid)
-    p = manifest["portraits"].get(folder)
+    p = manifest_portraits(manifest, style).get(folder)
     if not p:
         return None
-    scale = (chars.get(folder) or {}).get("spriteScale") or 1
-    target = (PAKKI_TARGET if folder == "pakki" else FRAMING_TARGET) * scale
+    scale = sprite_scale(chars, folder, style)
+    target = (CAT_TARGET if folder == "tetsuko" else PAKKI_TARGET if folder == "pakki" else FRAMING_TARGET) * scale
     return min(target / p["h"], 2.4) * STAGE_H / 1200
 
 
-def measure(entry: dict, cid: str, manifest: dict, chars: dict) -> dict | None:
+def measure(entry: dict, cid: str, manifest: dict, chars: dict, style: str = CLASSIC) -> dict | None:
     """記録した点から、規格で見る値を出す"""
     if not all(k in entry for k in ("eyes", "chin", "crown", "cheeks")):
         return None
-    k = game_factor(entry, cid, manifest, chars)
-    p = manifest["portraits"].get(entry.get("folder", cid))
+    k = game_factor(entry, cid, manifest, chars, style)
+    p = manifest_portraits(manifest, style).get(entry.get("folder", cid))
     if k is None or p is None:
         return None
     (lx, ly), (rx, ry) = entry["eyes"]
@@ -162,56 +192,62 @@ def context():
 
 def cmd_check() -> int:
     data, manifest, chars = context()
-    spec, entries = data["spec"], data["characters"]
+    spec = data["spec"]
     errors, warns = [], []
-    normals = tracked_normals()
-    for cid, rel in sorted(normals.items()):
-        if cid not in entries:
-            errors.append(f"{cid}: 顔の位置の記録が無い → python3 tools/portrait_metrics.py grid {cid} で測り、set で書く（docs/portrait_standard.md）")
-    for cid, e in sorted(entries.items()):
-        rel = e.get("sprite") or default_sprite(cid)
-        now = git_blob(rel)
-        if now is None:
-            errors.append(f"{cid}: 立ち絵 {rel} が無い")
-            continue
-        if e.get("blob") != now:
-            errors.append(f"{cid}: 立ち絵 {rel} が描き直されたのに、顔の位置の記録が古い → 測り直して set（位置が変わっていなければ overlay で確かめて stamp）")
-        if e.get("class", "standard") not in spec["classes"]:
-            errors.append(f"{cid}: 体型の区分 {e.get('class')} が spec.classes に無い")
-        if "head_body" in spec["classes"].get(e.get("class", "standard"), {}) or "eyes" in e:
-            missing = [k for k in ("eyes", "chin", "crown", "cheeks") if k not in e]
-            if missing:
-                errors.append(f"{cid}: {', '.join(missing)} が記録されていない")
+    total = 0
+    for style in styles(data):
+        found = entries(data, style)
+        total += len(found)
+        tag = "" if style == CLASSIC else f"[{style}] "
+        opt = "" if style == CLASSIC else f" --style {style}"
+        normals = tracked_normals(style)
+        for cid, rel in sorted(normals.items()):
+            if cid not in found:
+                errors.append(f"{tag}{cid}: 顔の位置の記録が無い → python3 tools/portrait_metrics.py grid {cid}{opt} で測り、set{opt} で書く（docs/portrait_standard.md）")
+        for cid, e in sorted(found.items()):
+            rel = e.get("sprite") or default_sprite(cid, style)
+            now = git_blob(rel)
+            if now is None:
+                errors.append(f"{tag}{cid}: 立ち絵 {rel} が無い")
                 continue
-        if "eyes" in e:
-            (lx, ly), (rx, ry) = e["eyes"]
-            if not (e["crown"][1] < min(ly, ry) and max(ly, ry) < e["chin"][1]):
-                errors.append(f"{cid}: 目が頭頂とあごの間に無い（点の取り違え）")
-            if not (e["cheeks"][0] < min(lx, rx) and max(lx, rx) < e["cheeks"][1] + 20):
-                warns.append(f"{cid}: 目が頬の幅の外にある（横顔なら問題ない）")
-        m = measure(e, cid, manifest, chars)
-        st, why = status(e, m, spec)
-        if st == "warn":
-            warns.append(f"{cid}: 規格外 {why}")
-        same = e.get("same_person")
-        if same and m and same in entries:
-            m2 = measure(entries[same], same, manifest, chars)
-            if m2 and abs(m["head_game"] / m2["head_game"] - 1) > spec["same_person_tolerance"]:
-                warns.append(f"{cid}: 同じ人物の {same} と会話画面での頭の大きさが {abs(m['head_game'] / m2['head_game'] - 1) * 100:.0f}% 違う")
+            if e.get("blob") != now:
+                errors.append(f"{tag}{cid}: 立ち絵 {rel} が描き直されたのに、顔の位置の記録が古い → 測り直して set{opt}（位置が変わっていなければ overlay{opt} で確かめて stamp{opt}）")
+            if e.get("class", "standard") not in spec["classes"]:
+                errors.append(f"{tag}{cid}: 体型の区分 {e.get('class')} が spec.classes に無い")
+            if "head_body" in spec["classes"].get(e.get("class", "standard"), {}) or "eyes" in e:
+                missing = [k for k in ("eyes", "chin", "crown", "cheeks") if k not in e]
+                if missing:
+                    errors.append(f"{tag}{cid}: {', '.join(missing)} が記録されていない")
+                    continue
+            if "eyes" in e:
+                (lx, ly), (rx, ry) = e["eyes"]
+                if not (e["crown"][1] < min(ly, ry) and max(ly, ry) < e["chin"][1]):
+                    errors.append(f"{tag}{cid}: 目が頭頂とあごの間に無い（点の取り違え）")
+                if not (e["cheeks"][0] < min(lx, rx) and max(lx, rx) < e["cheeks"][1] + 20):
+                    warns.append(f"{tag}{cid}: 目が頬の幅の外にある（横顔なら問題ない）")
+            m = measure(e, cid, manifest, chars, style)
+            st, why = status(e, m, spec)
+            if st == "warn":
+                warns.append(f"{tag}{cid}: 規格外 {why}")
+            same = e.get("same_person")
+            if same and m and same in found:
+                m2 = measure(found[same], same, manifest, chars, style)
+                if m2 and abs(m["head_game"] / m2["head_game"] - 1) > spec["same_person_tolerance"]:
+                    warns.append(f"{tag}{cid}: 同じ人物の {same} と会話画面での頭の大きさが {abs(m['head_game'] / m2['head_game'] - 1) * 100:.0f}% 違う")
     for w in warns:
         print(f"WARN: {w}")
     if errors:
         print("顔の位置の記録に問題がある:\n  " + "\n  ".join(errors))
         return 1
-    print(f"portrait metrics: {len(entries)} entries match their current portraits ({len(warns)} warnings; 規格外は描き直しの候補で、CI は止めない)")
+    print(f"portrait metrics: {total} entries match their current portraits ({len(warns)} warnings; 規格外は描き直しの候補で、CI は止めない)")
     return 0
 
 
-def rows():
+def rows(style: str = CLASSIC):
     data, manifest, chars = context()
     out = []
-    for cid, e in data["characters"].items():
-        m = measure(e, cid, manifest, chars)
+    for cid, e in entries(data, style).items():
+        m = measure(e, cid, manifest, chars, style)
         st, why = status(e, m, data["spec"])
         folder = e.get("folder", cid)
         name = (chars.get(folder) or {}).get("display_name") or (chars.get(folder) or {}).get("name") or cid
@@ -220,8 +256,8 @@ def rows():
     return data, out
 
 
-def cmd_report() -> int:
-    data, rs = rows()
+def cmd_report(style: str = CLASSIC) -> int:
+    data, rs = rows(style)
     spec = data["spec"]
     print("| キャラ | 区分 | 頭身 | 会話画面の頭の高さ | 頬の幅 | 判定 |")
     print("|---|---|---:|---:|---:|---|")
@@ -239,21 +275,21 @@ def cmd_report() -> int:
 
 # ---------------------------------------------------------------- 画像（立ち絵の実体が要る）
 
-def sprite_image(cid: str, entry: dict):
+def sprite_image(cid: str, entry: dict, style: str = CLASSIC):
     from PIL import Image
-    path = ROOT / (entry.get("sprite") or default_sprite(cid))
+    path = ROOT / (entry.get("sprite") or default_sprite(cid, style))
     if path.read_bytes()[:7] == b"version":
         raise SystemExit(f"{path} は Git LFS のポインタ。git lfs pull --include=\"{path.relative_to(ROOT)}\" で実体を取る")
     return Image.open(path).convert("RGBA")
 
 
-def cmd_sheet(k: float = 2.0) -> int:
+def cmd_sheet(k: float = 2.0, style: str = CLASSIC) -> int:
     """会話画面と同じ倍率（の k 倍）で、目の高さをそろえて全員の顔を並べる"""
     from PIL import Image, ImageDraw
     sys.path.insert(0, str(ROOT / "tools"))
     from make_reference_sheet import BG, PANEL, SUB, TEXT, font  # noqa: E402
 
-    data, rs = rows()
+    data, rs = rows(style)
     spec = data["spec"]
     _, manifest, chars = context()
     order = {c: i for i, c in enumerate(spec["classes"])}
@@ -283,8 +319,8 @@ def cmd_sheet(k: float = 2.0) -> int:
             if i and i % cols == 0:
                 y += th + 110
             e, m = r["entry"], r["m"]
-            im = sprite_image(r["id"], e)
-            f = game_factor(e, r["id"], manifest, chars) * k
+            im = sprite_image(r["id"], e, style)
+            f = game_factor(e, r["id"], manifest, chars, style) * k
             big = im.resize((round(im.width * f), round(im.height * f)), Image.LANCZOS)
             cx = (e["cheeks"][0] + e["cheeks"][1]) / 2 * f
             ey = (e["eyes"][0][1] + e["eyes"][1][1]) / 2 * f
@@ -298,9 +334,10 @@ def cmd_sheet(k: float = 2.0) -> int:
             d.text((x + tw // 2, y + th + 46), f"{m['head_game']:.0f}px・{m['head_body']:.2f}頭身", font=font("medium", 22), fill=col, anchor="ma")
         y += th + 110 + 10
     sheet = sheet.crop((0, 0, width, y)).quantize(256, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.FLOYDSTEINBERG)  # 確認用の図なので256色で軽くする
-    SHEET.parent.mkdir(parents=True, exist_ok=True)
-    sheet.save(SHEET, optimize=True)
-    print(SHEET.relative_to(ROOT), sheet.size)
+    out = SHEET if style == CLASSIC else SHEET.with_name(f"{SHEET.stem}-{style}{SHEET.suffix}")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    sheet.save(out, optimize=True)
+    print(out.relative_to(ROOT), sheet.size)
     return 0
 
 
@@ -330,15 +367,15 @@ def cmd_faces(ids: list[str]) -> int:
     return 0
 
 
-def cmd_grid(cid: str, out: Path, image: Path | None = None) -> int:
+def cmd_grid(cid: str, out: Path, image: Path | None = None, style: str = CLASSIC) -> int:
     """測るための拡大図。10px ごとの目盛りに座標を書く（黄色は 50px ごと）"""
     from PIL import Image, ImageDraw
     sys.path.insert(0, str(ROOT / "tools"))
     from make_reference_sheet import font  # noqa: E402
 
     data = load()
-    e = data["characters"].get(cid, {})
-    im = Image.open(image).convert("RGBA") if image else sprite_image(cid, e)
+    e = entries(data, style).get(cid, {})
+    im = Image.open(image).convert("RGBA") if image else sprite_image(cid, e, style)
     a = im.getchannel("A")
     left, top, right, bottom = a.getbbox()
     head = a.crop((left, top, right, top + int((bottom - top) * 0.14)))
@@ -370,20 +407,21 @@ def cmd_grid(cid: str, out: Path, image: Path | None = None) -> int:
     return 0
 
 
-def cmd_overlay(ids: list[str], out: Path) -> int:
+def cmd_overlay(ids: list[str], out: Path, style: str = CLASSIC) -> int:
     """記録した点を重ねた確認図。赤丸＝目、緑＝あご、紫＝頭頂、黄＝頬の幅"""
     from PIL import Image, ImageDraw
     sys.path.insert(0, str(ROOT / "tools"))
     from make_reference_sheet import font  # noqa: E402
 
     data = load()
-    ids = ids or [c for c, e in data["characters"].items() if "eyes" in e]
+    found = entries(data, style)
+    ids = ids or [c for c, e in found.items() if "eyes" in e]
     tiles = []
     for cid in ids:
-        e = data["characters"][cid]
+        e = found[cid]
         if "eyes" not in e:
             continue
-        im = sprite_image(cid, e)
+        im = sprite_image(cid, e, style)
         ex = (e["eyes"][0][0] + e["eyes"][1][0]) / 2
         cy = (e["crown"][1] + e["chin"][1]) / 2
         side = int((e["chin"][1] - e["crown"][1]) * 1.5)
@@ -424,6 +462,9 @@ def cmd_overlay(ids: list[str], out: Path) -> int:
 def parse_points(e: dict, args: list[str]) -> dict:
     for a in args:
         key, _, val = a.partition("=")
+        if key == "class":
+            e["class"] = val
+            continue
         nums = [int(round(float(v))) for v in val.split(",")]
         if key == "eyes" and len(nums) == 4:
             e["eyes"] = [nums[:2], nums[2:]]
@@ -431,18 +472,16 @@ def parse_points(e: dict, args: list[str]) -> dict:
             e[key] = nums
         elif key == "cheeks" and len(nums) == 3:
             e["cheeks"] = nums
-        elif key == "class":
-            e["class"] = val
         else:
             raise SystemExit(f"読めない指定: {a}")
     return e
 
 
-def cmd_calc(cid: str, args: list[str]) -> int:
+def cmd_calc(cid: str, args: list[str], style: str = CLASSIC) -> int:
     """記録を書き換えずに、測った点から頭身と会話画面での頭の高さを出す（fit_portrait.py のプレビューは全身の高さが同じ）"""
     data, manifest, chars = context()
-    e = parse_points(dict(data["characters"].get(cid, {})), args)
-    m = measure(e, cid, manifest, chars)
+    e = parse_points(dict(entries(data, style).get(cid, {})), args)
+    m = measure(e, cid, manifest, chars, style)
     if not m:
         raise SystemExit("eyes・chin・crown・cheeks を全部書く")
     st, why = status(e, m, data["spec"])
@@ -450,20 +489,20 @@ def cmd_calc(cid: str, args: list[str]) -> int:
     return 0
 
 
-def cmd_set(cid: str, args: list[str]) -> int:
+def cmd_set(cid: str, args: list[str], style: str = CLASSIC) -> int:
     data = load()
-    e = parse_points(data["characters"].setdefault(cid, {}), args)
-    rel = e.get("sprite") or default_sprite(cid)
+    e = parse_points(entries(data, style).setdefault(cid, {}), args)
+    rel = e.get("sprite") or default_sprite(cid, style)
     e["blob"] = git_blob(rel)
     save(data)
     print(f"{cid}: 記録した（{rel} の版 {e['blob'][:10]}）。overlay で点が合っているか確かめる")
     return 0
 
 
-def cmd_stamp(cid: str) -> int:
+def cmd_stamp(cid: str, style: str = CLASSIC) -> int:
     data = load()
-    e = data["characters"][cid]
-    rel = e.get("sprite") or default_sprite(cid)
+    e = entries(data, style)[cid]
+    rel = e.get("sprite") or default_sprite(cid, style)
     e["blob"] = git_blob(rel)
     save(data)
     print(f"{cid}: 今の立ち絵の版 {e['blob'][:10]} を記録した")
@@ -476,6 +515,13 @@ def main(argv: list[str]) -> int:
         return 0
     cmd, rest = argv[0], argv[1:]
     out = image = None
+    style = CLASSIC
+    if "--style" in rest:
+        i = rest.index("--style")
+        style = rest[i + 1]
+        rest = rest[:i] + rest[i + 2:]
+        if style != CLASSIC and not (VARIANTS / style).is_dir() and not tracked_normals(style):
+            raise SystemExit(f"画風 {style} の立ち絵が無い（{sprite_dir(style)}）")
     if "--image" in rest:
         i = rest.index("--image")
         image = Path(rest[i + 1])
@@ -487,23 +533,24 @@ def main(argv: list[str]) -> int:
     if cmd == "check":
         return cmd_check()
     if cmd == "report":
-        return cmd_report()
+        return cmd_report(style)
     if cmd == "sheet":
-        return cmd_sheet()
+        return cmd_sheet(style=style)
     if cmd == "faces":
         return cmd_faces(rest)
     if cmd == "grid":
-        return cmd_grid(rest[0], Path(rest[1]) if len(rest) > 1 else Path(f"portrait-grid-{rest[0]}.jpg"), image)
+        return cmd_grid(rest[0], Path(rest[1]) if len(rest) > 1 else Path(f"portrait-grid-{rest[0]}.jpg"), image, style)
     if cmd == "calc":
-        return cmd_calc(rest[0], rest[1:])
+        return cmd_calc(rest[0], rest[1:], style)
     if cmd == "overlay":
-        return cmd_overlay(rest, out or Path("portrait-overlay.jpg"))
+        return cmd_overlay(rest, out or Path("portrait-overlay.jpg"), style)
     if cmd == "set":
-        return cmd_set(rest[0], rest[1:])
+        return cmd_set(rest[0], rest[1:], style)
     if cmd == "stamp":
-        return cmd_stamp(rest[0])
+        return cmd_stamp(rest[0], style)
     raise SystemExit(f"知らないコマンド: {cmd}")
 
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
+

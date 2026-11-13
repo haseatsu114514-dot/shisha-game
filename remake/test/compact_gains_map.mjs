@@ -20,7 +20,7 @@ try {
     const vn = await import("./js/vn/engine.js");
     window.T = { core, stats, ui, hud, map, spots, vn };
     core.newGame(); Object.assign(core.state, { phase: "daily", day: 4, slot: 1 });
-    for (const id of ["naru", "minto", "adam", "tsumugi", "rin"]) core.state.met[id] = true;
+    for (const id of ["naru", "minto", "adam", "tsumugi", "rio"]) core.state.met[id] = true;
     for (const s of spots.SPOTS) if (s.requiresMet) core.state.flags[`_spot_guide_${s.requiresMet}`] = true;
     core.state.flags._cafe_introduced = true;
     hud.initHud({}); hud.showHud(); await ui.warmUiArt();
@@ -64,7 +64,7 @@ try {
         gym: document.querySelector('[data-test="pin-choizap"] .facility-icon img').src,
         leakedShark: !!document.querySelector('[data-test="pin-shishark"], [data-test="pin-samechan"]') };
     });
-    assert.deepEqual(map.labels, ["tonariへ行く","KEMURIKUSAへ行く","EDENへ行く","PEPPERMINTへ行く","Dr.fookahへ行く","喫茶こはく","観音堂","CHOI-ZAP","C.STATION","家"]);
+    assert.deepEqual(map.labels, ["tonari","KEMURIKUSA","EDEN","PEPPERMINT","Dr.fookah","喫茶こはく","観音堂","CHOI-ZAP","C.STATION","家"]);
     assert(map.faces.every(f => f.width === (f.owner ? 32 : 52) && f.loaded), JSON.stringify(map.faces));
     assert(map.icons.every(i => (i.vector || i.logo || i.facility) && i.below && !i.oldGlyph));
     assert(map.badges.length >= 5 && map.badges.every(b => b.text === "!" && b.radius === "50%" && b.width === b.height));
@@ -117,38 +117,53 @@ try {
   assert.equal(await page.locator('[data-test="pin-cafe"] .evt-badge').count(),0, await page.locator('[data-test="pin-cafe"]').evaluate(n=>n.outerHTML));
   assert.equal(await page.locator('[data-test="pin-cafe"] .sub-label').textContent(),"喫茶こはく");
 
-  // 通常会話の後でも、凛の未回答の質問が残っていれば印を残す。
+  // 通常会話の後でも、凛想の未回答の質問が残っていれば印を残す。
   await page.evaluate(async () => {
     for(const [id,seq] of Object.entries(T.spots.VISIT_SEQ)) T.core.state.story[id]=seq.length;
-    T.core.state.affinity={rin:T.stats.AFFINITY_RANK_PTS[3]}; T.core.state.flags._gym_member=true;
+    T.core.state.affinity={rio:T.stats.AFFINITY_RANK_PTS[3]}; T.core.state.flags._gym_member=true;
     T.core.state.spotVisits={cafe:1,kannon:1,choizap:1,c_station:1}; await T.openMap();
   });
   await page.waitForSelector('[data-test="pin-naru"]');
   assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').textContent(), "!");
-  // 質問・締めくくりの読了後も、凛の試作品イベントが未読なら印を残す。
+  // 質問・締めくくりの読了後も、凛想の試作品イベントが未読なら印を残す。
   await page.evaluate(async () => {
     T.core.state.finales=Object.fromEntries(Object.keys(T.spots.VISIT_SEQ).map(id => [id,{day:3,chapter:1,route:"friend"}]));
     await T.openMap();
   });
   await page.locator('.map:not(.done) [data-test="pin-shop"]').waitFor();
-  assert.equal(await page.evaluate(() => T.spots.rinPrototypeDue()), true);
+  assert.equal(await page.evaluate(() => T.spots.rioPrototypeDue()), true);
   assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').count(),1);
-  // 試作品も読了した状態では、全店舗の新規印が消える。
+  // 試作品の次はブルーベリーの土産話、その次は物語系の一度きり。全部読むまで印は残る（#3081）。
   await page.evaluate(async () => {
-    T.core.state.flags._spot_seen_ch1_rin_prototype_night=true;
+    T.core.state.flags._spot_seen_ch1_rio_prototype_night=true;
     await T.openMap();
   });
   await page.locator('.map:not(.done) [data-test="pin-shop"]').waitFor();
-  assert.equal(await page.evaluate(() => T.spots.rinPrototypeDue()), false);
+  assert.equal(await page.evaluate(() => T.spots.rioPrototypeDue()), false);
+  assert.equal(await page.evaluate(() => T.spots.rioBlueberryDue()), true);
+  assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').count(),1);
+  await page.evaluate(async () => {
+    T.core.state.flags._spot_seen_ch1_rio_blueberry_report=true;
+    await T.openMap();
+  });
+  await page.locator('.map:not(.done) [data-test="pin-shop"]').waitFor();
+  assert.equal(await page.evaluate(() => T.spots.rioStoryExtraDue()), "ch1_rio_lot_return");
+  assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge.story').count(),1);
+  await page.evaluate(async () => {
+    for (const id of T.spots.RIO_STORY_EXTRAS) T.core.state.flags[`_spot_seen_${id}`] = true;
+    await T.openMap();
+  });
+  await page.locator('.map:not(.done) [data-test="pin-shop"]').waitFor();
+  assert.equal(await page.evaluate(() => T.spots.rioStoryExtraDue()), null);
   assert.equal(await page.locator(".evt-badge.story").count(),0);
 
   // 店名は閉店日も残す。臨時休暇は別の札で伝え、訪問できない理由も一致する。
   await page.evaluate(async () => { T.core.state.flags._temporary_closed_naru="1:4"; await T.openMap(); });
   await page.waitForSelector('[data-test="pin-naru"] .pin-status');
-  assert.equal(await page.locator('[data-test="pin-naru"] .sub-label').textContent(),"KEMURIKUSAへ行く");
+  assert.equal(await page.locator('[data-test="pin-naru"] .sub-label').textContent(),"KEMURIKUSA");
   assert.equal(await page.locator('[data-test="pin-naru"] .pin-status').textContent(),"本日臨時休業");
   await page.locator('[data-test="pin-naru"]').click();
-  assert.equal(await page.locator(".mi-no").textContent(),"本日臨時休業");
+  assert.match(await page.locator(".map-info").getAttribute("aria-label"), /本日臨時休業/);
   assert.equal(await page.locator('[data-test="map-go"]').count(),0);
   await page.evaluate(async () => { T.core.state.day=5; await T.openMap(); });
   await page.waitForSelector('[data-test="pin-naru"]');
@@ -156,7 +171,7 @@ try {
   await page.locator('[data-test="pin-naru"]').click(); await page.locator('[data-test="map-go"]').click();
   assert.equal(await page.evaluate(() => T.mapPromise),"naru");
 
-  // 凛がいない日は買い物を開けても新規印を付けない。顔・施設の未解放も漏らさない。
+  // 凛想がいない日は買い物を開けても新規印を付けない。顔・施設の未解放も漏らさない。
   await page.evaluate(async () => {
     T.core.newGame(); Object.assign(T.core.state,{phase:"daily",day:2}); await T.openMap();
   });
@@ -164,10 +179,10 @@ try {
   assert.equal(await page.locator('[data-test="pin-shop"] .evt-badge').count(),0);
   assert.equal(await page.locator('[data-test="pin-choizap"]').count(),0);
   assert.equal(await page.locator('[data-test="pin-naru"] .pin-face').count(),0);
-  assert.equal(await page.locator('[data-test="pin-naru"] .sub-label').textContent(),"KEMURIKUSAへ行く");
+  assert.equal(await page.locator('[data-test="pin-naru"] .sub-label').textContent(),"KEMURIKUSA");
   await page.evaluate(async () => { T.core.state.chapter=2; await T.openMap(); });
   await page.waitForSelector('[data-test="pin-shishark"]');
-  assert.equal(await page.locator('[data-test="pin-shishark"] .sub-label').textContent(),"SHISHARKへ行く");
+  assert.equal(await page.locator('[data-test="pin-shishark"] .sub-label').textContent(),"SHISHARK");
   assert.doesNotMatch(await page.locator('[data-test="pin-shishark"]').textContent(),/2章|準備中/);
   assert.deepEqual(errors,[]);
   console.log("[compact map] PASS: three sizes, true 1P, STATUS UP and smoke-free metal frame, store logos and owner badges, facility symbols, round new-event marks, read events, closures, navigation, hidden chapter-2 shop");

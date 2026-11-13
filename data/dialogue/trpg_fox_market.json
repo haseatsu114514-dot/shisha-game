@@ -43,23 +43,22 @@
     {
       "id": "hiyori",
       "part": "PLAYER",
-      "role": "{pc:hiyori}／霞の灯り番",
+      "role": "{pc:hiyori}／呼び込みの灯り番",
       "color": "#dab978",
       "ability": "屋台の段取り",
       "abilityText": "道すじを準備するとき、判定に一度だけ＋7",
       "abilityType": "prepare",
       "sheet": {
         "name": "カスミ",
-        "title": "霞の灯り番",
+        "title": "呼び込みの灯り番",
         "stats": {
           "eye": 3,
           "hand": 4,
           "talk": 2,
           "nerve": 2
         },
-        "trait": "夜風にも消えそうな灯り番……のはず。ラーメンの匂いには負けない",
-        "likes": "屋台のラーメン。湯気の向こうの提灯",
-        "portrait": "../../img/ui/trpg/pc-kasumi.webp"
+        "trait": "『灯りが通りまーす』が口ぐせ。人波も、声でかき分ける",
+        "likes": "屋台のはしご。たこ焼きは二舟"
       }
     },
     {
@@ -80,8 +79,7 @@
           "nerve": 4
         },
         "trait": "腕っぷしと度胸は一人前。暗いところは、ちと苦手",
-        "likes": "サメ柄の手ぬぐい。夜の海のサメ映画",
-        "portrait": "../../img/ui/trpg/pc-namimaru.webp"
+        "likes": "サメ柄の手ぬぐい。夜の海のサメ映画"
       }
     }
   ],
@@ -220,7 +218,7 @@
           "sheet": "hiyori",
           "stat": "hand",
           "label": "手早く、火打ち道具を使う",
-          "detail": "{pc:hiyori}が袖から火打ち道具を出し、手近な提灯から",
+          "detail": "{pc:hiyori}が袖から火打ち道具を出し、手近な提灯から火を入れる",
           "declare": "trpg_fox_market_declare_twist_flint"
         },
         {
@@ -667,26 +665,56 @@
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
-          "face": "normal",
-          "text": "……私はカスミ。夜風ひとつで消えてしまいそうな、灯り番よ"
+          "face": "smile",
+          "text": "私はカスミ。灯り番よ。……夜市でいちばん、声が大きいの"
         },
         {
           "speaker": "hiyori",
-          "role": "PL／卓の会話",
-          "face": "sad",
-          "text": "好きなものは、屋台のラーメン。湯気の向こうなら、消えずにいられるの"
+          "role": "{pc:hiyori}／物語",
+          "face": "surprise",
+          "text": "灯りが通りまーす！ 道あけてー！ あ、たこ焼き二舟くださーい！"
         },
         {
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "……儚いのに、ラーメンには強いんですね"
+          "text": "……灯りより先に、声が届きそうです"
         },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "見回りのついでに、買い食いしてる……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_aside_hiyori_hiyori_kasumi",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "{pc:hiyori}／物語",
+          "face": "smile",
+          "text": "コン！ 迷子は恥ずかしくないよー！ 私なんて、毎日ちょっと迷子なんだから！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_after_hiyori_hiyori_kasumi",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
-          "face": "surprise",
-          "text": "替え玉までが一杯よ！ ……あ、いえ、儚いの"
+          "face": "normal",
+          "text": "……カスミの声、夜市が終わっても、まだお腹の底で鳴ってるわ"
         }
       ]
     },
@@ -843,7 +871,7 @@
           "speaker": "tsumugi",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc:hiyori}は灯りの見回り……のはずが、ラーメンの屋台の前にいる"
+          "text": "{pc:hiyori}は灯りの見回り……のはずが、屋台の前で立ち止まっている"
         },
         {
           "speaker": "tsumugi",
@@ -1441,7 +1469,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "入ってないの！？ ……い、いいの。儚く諦めるわ"
+          "text": "入ってないの！？ ……い、いいの。帰りに寄るわ"
         }
       ]
     },
@@ -2147,7 +2175,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……綿あめ、気になるのね。わかるわ。私もラーメンの前だとそうなるもの"
+          "text": "……綿あめ、気になるのね。わかるわ。甘い匂いって、足が止まるもの"
         }
       ]
     },
@@ -2461,19 +2489,19 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "灯りを一つと、寄る屋台を一つ……。ラーメンは、寄る屋台に入るかしら"
+          "text": "灯りを一つと、寄る屋台を一つ……。一つだけって、決めなきゃだめかしら"
         },
         {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "入らんじゃろ。それは、食べたいだけじゃ"
+          "text": "だめじゃろ。全部寄ったら、朝になるのじゃ"
         },
         {
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "evil",
-          "text": "……入りません"
+          "text": "……一つです"
         }
       ]
     },
@@ -2543,7 +2571,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "綿あめに寄るのね。……ついでにラーメンも、だめ？"
+          "text": "綿あめに寄るのね。……あの子より先に、私がはしゃぎそう"
         }
       ]
     },
@@ -2554,7 +2582,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "金魚すくい……。ラーメンの屋台の隣だから、ちょうどいいわ"
+          "text": "金魚すくい……。おきくさんの屋台ね。あそこは、いつもにぎやかだわ"
         }
       ]
     },
@@ -2900,7 +2928,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……私の役、ほとんどラーメンの屋台の前にいた気がするわ"
+          "text": "……私の役、気づいたら屋台を全部のぞいてた気がするわ"
         },
         {
           "speaker": "samechan",
@@ -3099,41 +3127,7 @@
     "max": 5,
     "nameMax": 6,
     "title": "あなたのキャラクターを作る",
-    "intro": "この物語で演じる灯り番を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
-    "looks": [
-      {
-        "id": "indigo",
-        "label": "紺の法被の灯り番",
-        "detail": "短い黒髪に、紺の法被",
-        "color": "#2c3566",
-        "accent": "#e0913a",
-        "portrait": "../../img/ui/trpg/look-fox-market-indigo.webp"
-      },
-      {
-        "id": "ash",
-        "label": "灰色の髪の灯り番",
-        "detail": "伸びた灰色の髪を、手ぬぐいでまとめる",
-        "color": "#6b6a72",
-        "accent": "#d9cdb6",
-        "portrait": "../../img/ui/trpg/look-fox-market-ash.webp"
-      },
-      {
-        "id": "rust",
-        "label": "赤茶の髪の灯り番",
-        "detail": "日に焼けた肌と、赤茶の癖毛に鉢巻き",
-        "color": "#7a4a37",
-        "accent": "#e3b27a",
-        "portrait": "../../img/ui/trpg/look-fox-market-rust.webp"
-      },
-      {
-        "id": "moss",
-        "label": "眼鏡の灯り番",
-        "detail": "丸眼鏡と、苔色の浴衣",
-        "color": "#4c5f49",
-        "accent": "#bcd3a8",
-        "portrait": "../../img/ui/trpg/look-fox-market-moss.webp"
-      }
-    ],
+    "intro": "この物語で演じる灯り番を決めよう。出自・能力値は、卓のあいだずっと使う",
     "archetypes": [
       {
         "id": "apprentice",
@@ -3186,9 +3180,9 @@
         {
           "id": "kasumi",
           "name": "カスミ",
-          "title": "霞の灯り番",
-          "trait": "夜風にも消えそうな灯り番……のはず。ラーメンの匂いには負けない",
-          "likes": "屋台のラーメン。湯気の向こうの提灯",
+          "title": "呼び込みの灯り番",
+          "trait": "『灯りが通りまーす』が口ぐせ。人波も、声でかき分ける",
+          "likes": "屋台のはしご。たこ焼きは二舟",
           "stats": {
             "eye": 3,
             "hand": 4,
@@ -3196,7 +3190,8 @@
             "nerve": 2
           },
           "making": "trpg_fox_market_make_hiyori_hiyori_kasumi",
-          "portrait": "../../img/ui/trpg/pc-kasumi.webp"
+          "aside": "trpg_fox_market_aside_hiyori_hiyori_kasumi",
+          "after": "trpg_fox_market_after_hiyori_hiyori_kasumi"
         },
         {
           "id": "shizuku",
@@ -3210,8 +3205,7 @@
             "talk": 1,
             "nerve": 2
           },
-          "making": "trpg_fox_market_make_hiyori_hiyori_shizuku",
-          "portrait": "../../img/ui/trpg/pc-shizuku.webp"
+          "making": "trpg_fox_market_make_hiyori_hiyori_shizuku"
         }
       ]
     },
@@ -3229,8 +3223,7 @@
             "talk": 3,
             "nerve": 4
           },
-          "making": "trpg_fox_market_make_samechan_samechan_namimaru",
-          "portrait": "../../img/ui/trpg/pc-namimaru.webp"
+          "making": "trpg_fox_market_make_samechan_samechan_namimaru"
         },
         {
           "id": "fukajiro",
@@ -3244,8 +3237,7 @@
             "talk": 2,
             "nerve": 3
           },
-          "making": "trpg_fox_market_make_samechan_samechan_fukajiro",
-          "portrait": "../../img/ui/trpg/pc-fukajiro.webp"
+          "making": "trpg_fox_market_make_samechan_samechan_fukajiro"
         }
       ]
     }

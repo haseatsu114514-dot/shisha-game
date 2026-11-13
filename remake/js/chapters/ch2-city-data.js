@@ -1,6 +1,6 @@
 // 本編の初日と独立試遊が使う同じ街・同じ台本。セーブ操作を含めない。
 import { DB } from "../core/data.js";
-// 台本の読み込みは core/chapter-data.js（#2035）。既存の呼び出し元のために再エクスポートする。
+// 台本の読み込みは core/chapter-data.js（#2035）。この章の読み込みでも使う。
 import { readDialogues } from "../core/chapter-data.js";
 export { readDialogues };
 import { CH2_NIGHTS, AGEHA_VISITS, AGEHA_BADDAY, STRAWBERRY_TRIAL_IDS } from "./ch2-story-data.js";
@@ -24,7 +24,7 @@ export const ROOMS = Object.fromEntries(["ageha", "kumicho", "rei"].map((id) => 
 const PURIKURA_IDS = ["remake_ch2_ryuji_melty_greeting", "remake_ch2_purikura_ryuji", "remake_ch2_ageha_purikura", ...["invite", "solo", "pair", "guest"].map(id => `remake_ch2_purikura_${id}`)];
 const DISCOVERY_IDS = ["remake_ch2_rei_trpg", "remake_ch2_ageha_aquarium", "remake_ch2_kumicho_sento"];
 export const CH2_HOME_IDS = Object.freeze(["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze",
-  "ch2_rin_taste", "ch2_rin_strawberry",
+  "ch2_rio_taste", "ch2_rio_strawberry",
   // tonariの大会準備で一台作る場面（ch2-craft-prep.js の CH2_CRAFT_PREP_IDS と同じ。読み込みを軽くするため名前を並べる）
   "ch2_prep_basics_intro", "ch2_prep_basics_end", "ch2_prep_basics_failed",
   "ch2_prep_midcheck_intro", "ch2_prep_midcheck_good", "ch2_prep_midcheck_rough", "ch2_prep_midcheck_failed", "ch2_prep_rehearsal_intro",
@@ -50,26 +50,30 @@ export async function loadChapterTwoDialogues() {
 export async function loadPreparationDialogues() {
   const required = ["ageha", "kumicho", "rei"].flatMap(id => ["chat", "followup", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
   required.push(...["kumicho", "rei"].map(id => `remake_ch2_${id}_revisit`));
-  // 神崎・REIの通い訪問の小会話（#2027）
+  // 神崎・レヰの通い訪問の小会話（#2027）
   required.push(...["kumicho", "rei"].flatMap(id => ["b", "c", "d"].map(suffix => `remake_ch2_${id}_repeat_${suffix}`)));
+  // 店の手入れ・出前・CDの入れ替え。大会の前後を問わない通いの日常（#3097）。
+  required.push(...["ageha", "kumicho", "rei"].map(id => `remake_ch2_${id}_repeat_e`));
   // 好感度MAXの締めくくり（daily/bonds.js の BOND_FINALES・#2027）
   const files = { ch2_preparation: required, ch2_deliveries: [...PURIKURA_IDS, ...DISCOVERY_IDS, ...OUTING_IDS],
-    ch2_kumicho: ["ch2_kumicho_bond_finale"], ch2_rei: ["ch2_rei_bond_finale"] };
+    ch2_kumicho: ["ch2_kumicho_bond_finale"],
+    // レヰのライブの夜（第3章の出発前の準備期間だけ。ch2-preparation.js の reiLiveDue・RVE07）
+    ch2_rei: ["ch2_rei_bond_finale", "ch3_prep_rei_live"] };
   for (const step of CH2_NIGHTS.flatMap(night => night.steps)) (files[step.file] ||= []).push(step.id);
-  // 神崎・REIの長い段階会話（味の学習を含む）も通常訪問列として公開する（#1648）。
+  // 神崎・レヰの長い段階会話（味の学習を含む）も通常訪問列として公開する（#1648）。
   for (const entry of Object.values(CH2_VISIT_STORIES).flat()) if (entry.file) (files[entry.file] ||= []).push(entry.scene);
   // 店に通う回（#626）と♥3の質問（#1988）、♥5の締めくくり（#2023）、通い訪問の小会話 b〜d（VOL13）
   const agehaVisits = [...(AGEHA_VISITS || []), AGEHA_BADDAY?.id, "ch2_ageha_bond_question", "ch2_ageha_bond_finale",
     ...["b", "c", "d"].map(suffix => `remake_ch2_ageha_repeat_${suffix}`)].filter(Boolean);
   if (agehaVisits.length) (files.ch2_ageha_story ||= []).push(...agehaVisits);
   if (STRAWBERRY_TRIAL_IDS.length) (files.ch2_main ||= []).push(...STRAWBERRY_TRIAL_IDS); // まかないの苺の試作（#1650）
-  // 地元の施設の第2章の寄り道（daily/spot-encounters.js）と凛の会話（daily/spots.js の CHAPTER_TALKS）（VOL13）
+  // 地元の施設の第2章の寄り道（daily/spot-encounters.js）と凛想の会話（daily/spots.js の CHAPTER_TALKS）（VOL13）
   files.ch2_home = [...CH2_HOME_IDS];
   // 全台本を検証してから、接続するIDだけ公開。旧導入・大会結果は日常へ混ぜない。
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => {
     const dialogues = await readDialogues(file, ids);
     if (file === "ch2_preparation") {
-      for (const id of ids.filter(id => /_(followup|revisit)$/.test(id))) {
+      for (const id of ids.filter(id => /_(followup|revisit|repeat_e)$/.test(id))) {
         if (!dialogues[id].lines.every(line => line && !line.type && typeof line.text === "string"
           && line.text.length > 0 && typeof line.speaker === "string" && typeof line.face === "string")) {
           throw new Error(`${file}: 続編・再訪台本の形式を確認してください ${id}`);
@@ -80,3 +84,4 @@ export async function loadPreparationDialogues() {
   }));
   Object.assign(DB.dialogues, ...groups);
 }
+

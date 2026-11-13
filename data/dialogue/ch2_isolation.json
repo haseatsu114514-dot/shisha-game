@@ -10,7 +10,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜、KEMURIKUSAに寄った。ドアを開けた瞬間、なるさんが両手を上げた。"
+          "text": "夜、KEMURIKUSAに寄った。ドアを開けた瞬間、なるが両手を上げた。"
         },
         {
           "speaker": "naru",
@@ -23,14 +23,81 @@
           "text": "ほら座れ。祝いの一台は……今日は、負けた俺が作ってやる"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "なるはチョコとバニラの葉を広げた。俺の前にも、空のボウルを一つ置く。"
+        },
+        {
           "speaker": "naru",
           "face": "smile",
-          "text": "お前も隣で一台作れ。俺の店の葉、好きに使え"
+          "text": "お前からも、俺に一台。今日は客席で、並んで吸おうぜ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、なるさんが吸いたいやつを。先に聞いてもいいですか？"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_naru_warm_flavor",
+          "next_true": "warm_flavor",
+          "next_false": "warm_customer_check"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "笑いながら、二人で一台ずつ作った。なるさんは吸うたび、大げさに悔しがってみせた。"
+          "text": "なるの隣で、俺も葉をほぐす。バニラの量を見せると、なるがうなずいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水を確かめ、HMDを載せた。赤くなった炭を置き、二台のタイマーを並べる。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "俺の分まで大会仕様にすんなよ。今夜は、ゆっくり吸いたいんだから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "分かってます。……でも、ちょっと緊張しますね"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "それ、俺もだわ。さっきから葉、二回も量ってる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "タイマーが鳴り、一台ずつ吸い出した。互いの煙を確かめてから、同じ客席へ運ぶ。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "お、軽い。バニラ、あとからちゃんと来るな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "なるさんのは、チョコのあとに甘さが残ります。もう一口、吸いたくなる"
+        },
+        {
+          "speaker": "naru",
+          "face": "excited",
+          "text": "よし。祝いの一台、合格。……俺が決める方でいいんだよな？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。俺の分も、なるさんに決めてもらってますし"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるが俺の台を指して、悔しそうに笑った。俺もつられて笑い、水を飲んだ。"
         },
         {
           "speaker": "naru",
@@ -53,11 +120,116 @@
           "text": "その代わり、大会が済んだら店の話も聞けよ。最近、いい常連がついたんだ"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大会の話ばかり、先に聞こうとしてました。店の話も、聞かせてください"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "じゃあ、次の仕入れの相談な。俺の店の葉、けっこう減ったし"
+        },
+        {
           "speaker": "",
           "face": "",
-          "text": "この頃はまだ、二人で笑っていた。"
+          "text": "二台の間に、水を二つ並べた。片づけの時間まで、なるの店の話を聞いていた。"
         }
-      ]
+      ],
+      "comment": "DAY3の祝い。味か客の話を一つ選んでから、なるへ実際に一台を返す。質問の記録と本編の読了は別。途中保存からは同じ質問を再生し、DAY11の決裂の選択は変更しない。",
+      "branches": {
+        "warm_customer_check": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_naru_warm_customers",
+            "next_true": "warm_customers",
+            "next_false": "warm_question"
+          }
+        ],
+        "warm_question": [
+          {
+            "type": "choice",
+            "id": "ch2_naru_warm_question",
+            "choices": [
+              {
+                "text": "今いちばん試したい香りは？",
+                "next": "warm_flavor"
+              },
+              {
+                "text": "次はどんなお客さんに？",
+                "next": "warm_customers"
+              }
+            ]
+          }
+        ],
+        "warm_flavor": [
+          {
+            "type": "set_flag",
+            "flag": "_ch2_naru_warm_flavor"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今、いちばん試したい香りってありますか？"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "バニラ。甘いまま、最後まで軽く吸えるやつにしたい"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "最初に喜んでもらっても、後半ずっと重たいんじゃ、もったいねえだろ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "じゃあ今日は、軽めのバニラを。あとに甘さが残るくらいを試してもいいですか？"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "おう。俺が吸いたかったやつ、先に出されるかもな"
+          }
+        ],
+        "warm_customers": [
+          {
+            "type": "set_flag",
+            "flag": "_ch2_naru_warm_customers"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "次は、どんなお客さんに作るつもりですか？"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "娘さんが二十歳になってから、親子で来てくれる常連がいてさ"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "お母さんの誕生日に、苺で作ってくれって。まだ、店で試してるとこ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "楽しみですね。じゃあ今日は、なるさんが休む一台にしてもいいですか？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "バニラを軽めに。店が終わってからも、ゆっくり吸えるように"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "いいな、それ。今日は俺が、客でいられるやつ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch2_naru_confrontation",
@@ -90,6 +262,12 @@
           "speaker": "naru",
           "face": "smile",
           "text": "今日、あの常連の親子が来たんだ。娘さんに頼まれてた苺の一台、お母さんの誕生日に出したよ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_read_ch2_naru_warm",
+          "next_true": "warm_memory"
         },
         {
           "speaker": "naru",
@@ -129,6 +307,7 @@
         {
           "speaker": "naru",
           "face": "normal",
+          "beat": 600,
           "text": "……今の話、点になるのか？"
         },
         {
@@ -176,7 +355,7 @@
           {
             "speaker": "hajime",
             "face": "sad",
-            "text": "すみません。スマホ、置きます。……続き、聞かせてください"
+            "text": "すみません。……続き、聞かせてください"
           },
           {
             "speaker": "",
@@ -216,7 +395,12 @@
           {
             "speaker": "",
             "face": "",
-            "text": "帰り際、なるは見送りに出てこなかった。カウンターの奥に、口の開いた旅行鞄が置いてあった。灯りだけが、まだ点いていた。"
+            "text": "帰り際、なるは見送りに出てこなかった。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カウンターの奥に、口の開いた旅行鞄が置いてあった。店の灯りだけが、まだ点いていた。"
           },
           {
             "type": "set_flag",
@@ -242,6 +426,7 @@
           {
             "speaker": "naru",
             "face": "serious",
+            "duck": true,
             "text": "……でも、勝ち負けの話はしてない"
           },
           {
@@ -262,6 +447,37 @@
           {
             "type": "set_flag",
             "flag": "_ch2_naru_hurt"
+          }
+        ],
+        "warm_memory": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_naru_warm_flavor",
+            "next_true": "warm_flavor_memory",
+            "next_false": "warm_customer_memory_check"
+          }
+        ],
+        "warm_customer_memory_check": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_naru_warm_customers",
+            "next_true": "warm_customer_memory"
+          }
+        ],
+        "warm_flavor_memory": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "最後まで軽く吸えるバニラ。祝いの夜、なるに聞いた希望が、ふと浮かんだ。"
+          }
+        ],
+        "warm_customer_memory": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "お母さんの誕生日に、苺の一台。祝いの夜に聞いた注文の、その後の話だった。"
           }
         ]
       }
@@ -290,24 +506,14 @@
           "text": "今日は熱を少し変えた。どうだ"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……大会なら、何点くらいになりますか"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "点は聞いてない。お前がどう感じたか、聞いてる"
+          "speaker": "",
+          "face": "",
+          "text": "一口吸う。熱は前より低い。煙は細い。そこから先を、舌が拾わない。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
           "text": "すみません。今は、うまく言えなくて"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "アダムはホースを台に戻した。"
         },
         {
           "speaker": "adam",
@@ -317,7 +523,27 @@
         {
           "speaker": "",
           "face": "",
-          "text": "次に差し出されたのは、水の入ったグラスだった。"
+          "text": "アダムはホースを台に戻し、自分で一口吸って、炭を少しだけ外へ寄せた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……前と、炭の置き方が違いますね"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "昨日うまくいった置き方は、今朝やめた。同じ果実を、そうやって詰めてきた"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "昨日の正解をそのまま置いた日は、たいてい焦がした"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店を出て、ノートを開いた。優勝した日の炭の置き方に、今日も丸をつけた。"
         }
       ]
     },
@@ -350,7 +576,7 @@
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "最近のLIME、何送っても『大会前なので』で返ってくるよ？"
+          "text": "ね〜え。いま、『ミント祭り』のとこ、素通りしたでしょ？"
         },
         {
           "speaker": "hajime",
@@ -360,12 +586,12 @@
         {
           "speaker": "minto",
           "face": "sad",
-          "text": "別に、責めてるんじゃないよ？　勝負の世界だもん。勝ってるはじめくんは、何も悪くない"
+          "text": "ほんとはね、祭りの日のお手伝い、頼みたかったの。でも、言い出せなくて"
         },
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "ただ……はじめくん自身が、ちょっとしんどそうに見えるの。わたしは、それがいちばん心配"
+          "text": "今のはじめくんに頼んだら、断らせちゃいそうで。それが、ちょっとさみしい"
         },
         {
           "speaker": "hajime",
@@ -375,7 +601,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "何があっても、わたしはここにいるから。疲れたら、いつでも吸いに来な。ね？"
+          "text": "何があっても、わたしはここにいるから。疲れたら、いつでも吸いにおいで。ね？"
         },
         {
           "speaker": "",
@@ -409,7 +635,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "扉には、しばらく休業します、とだけ書かれた紙。再開日も、なるの行き先もない。紙の端に、小さな字で一行。「また来ると言ってくれた方へ。戻ったら、必ず作ります」"
+          "text": "扉には、しばらく休業します、とだけ書かれた紙。再開日も、なるの行き先もない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙の端に、小さな字で一行。「また来ると言ってくれた方へ。戻ったら、必ず作ります」"
         },
         {
           "type": "condition",
@@ -584,6 +815,31 @@
           "speaker": "",
           "face": "",
           "text": "つむぎは色の名前を決めず、コップをこちらへ寄せた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん、いつも言ってますよね。客の顔を見るって"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "今日は、私が、はじめさんの顔を見てました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……俺の？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。……お水が要る顔でした"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受け取ったコップは、少しだけ冷たかった。言い返す言葉は、見つからなかった。"
         }
       ]
     }

@@ -4,7 +4,7 @@ const STORE_EVENTS = new Set(["interaction_naru_night_01", "interaction_minto_no
 export function invitationCost(event) {
   if (event === "ch1_minto_fifth") return 800;
   if (STORE_EVENTS.has(event) || event === "__hiyori_shop__" || /^date_/.test(event)) return STORE_INVITE_COST;
-  if (/^friend_/.test(event) && !["friend_sumi", "friend_rin"].includes(event)) return STORE_INVITE_COST;
+  if (/^friend_/.test(event) && !["friend_sumi", "friend_rio"].includes(event)) return STORE_INVITE_COST;
   return 0;
 }
 export const invitationGrowth = (event) => event === "__sumi_baito__" || event === "__mukai_baito__" ? { points: 1 } : { budget: 1, points: 2 };
@@ -42,5 +42,7 @@ export function invitationVisitSpot(invite, source) {
 export const immediateInvitation = (invite, save) => !!invite && !invite.afterClose
   && (invite.day ?? save.day) === save.day && invite.slot === save.slot;
 
+// 再案内へ戻した予約（旧セーブ救済を含む）と、実際に送った返信の履歴は隠さない。
 export const missedInvitationNote = item => item.msg?.type === "invitation"
-  && item.result === "expired" ? "返信するタイミングを逃した" : null;
+  && item.result === "expired" && !item.needsResend && !item.log?.some((entry) => entry.me) ? "返信するタイミングを逃した" : null;
+

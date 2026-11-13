@@ -1,20 +1,23 @@
 // 遠出する章（第3章の東京・第4章のドバイ）の、出発前に地元で過ごす準備期間（VOL02・2026-11-02 オーナー指示
 // 「3も4も14日　ただ遠出する章は3日前に準備期間をあげたい(実質17日)」）。
 // 第2章と同じ日常ループ（daily/calendar.js の runDaily）で、地元・橙須と隣町・柚ヶ谷を行き来できる。
-// 柚ヶ谷の店は第2章の通い訪問そのもの（神崎・REI・あげはの段階会話の続き・締めくくりも読める）。
+// 柚ヶ谷の店は第2章の通い訪問そのもの（神崎・レヰ・あげはの段階会話の続き・締めくくりも読める）。
 // 準備の最後の日の夜を越えると出発の朝になり、ループが終わって章の側（出発の場面）へ戻る。
 // 保存: 第3章は flags._ch3_prep、第4章は flags._ch4_prep = { startDay, days, step, departed }。日付の数え方は core/chapter-clock.js の departurePrep。
 import { state, save, timeOfDay } from "../core/state.js";
-import { bgUrl } from "../core/data.js";
+import { DB, bgUrl } from "../core/data.js";
+import { readDialogues } from "../core/chapter-data.js";
 import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 import { DEPARTURE_PREP_DAYS } from "../core/chapter-clock.js";
 import { runDaily } from "../daily/calendar.js";
-import { allSpots } from "../daily/spots.js";
+import { ensureRioBeforeTokyo } from "../daily/shop-greeting.js";
+import { allSpots, CHAPTER_TALKS } from "../daily/spots.js";
+import { SAMECHAN_PREP_TALKS } from "../daily/samechan.js";
 import { trpgSpot } from "../daily/trpg.js";
 import { MAP, loadChapterTwoDialogues, loadPreparationDialogues } from "./ch2-city-data.js";
 import { CITY_SHOP, knownCityOutings } from "./ch2-outings.js";
 import { returnCityHome } from "./ch2-commute.js";
-import { PREPARATION_SPOTS, visitPreparationSpot } from "./ch2-preparation.js";
+import { PREPARATION_SPOTS, visitPreparationSpot, reiLiveDue } from "./ch2-preparation.js";
 
 const PREP_KEYS = Object.freeze({ 3: "_ch3_prep", 4: "_ch4_prep" });
 export const prepKey = chapter => PREP_KEYS[chapter];
@@ -49,7 +52,9 @@ export function markDeparted(value = state) {
   return true;
 }
 
-const cityRegion = () => [...PREPARATION_SPOTS, CITY_SHOP, ...knownCityOutings(state).filter(spot => spot.kind !== "trpg"), trpgSpot()].filter(Boolean);
+// レヰのライブの夜が待っている間は、零-ZERO- に「！」（chapters/ch2-preparation.js の reiLiveDue・RVE07）
+const withReiLive = spot => spot.charId === "rei" ? { ...spot, hasNew: () => reiLiveDue(state) || !!spot.hasNew?.() } : spot;
+const cityRegion = () => [...PREPARATION_SPOTS.map(withReiLive), CITY_SHOP, ...knownCityOutings(state).filter(spot => spot.kind !== "trpg"), trpgSpot()].filter(Boolean);
 const atHome = spot => (spot?.region || "home") === "home";
 
 /**
@@ -92,9 +97,33 @@ export function departurePrepDefinition({ destination, nightEvents = {}, morning
   };
 }
 
-/** 準備期間を日常ループで回す。出発の朝（または LOAD）で戻る。柚ヶ谷の台本を先に読み込む。 */
+/**
+ * 地元の常連（アダム・みんと・凛想・サメちゃん）が、準備期間の来店で一度だけ話す送り出しの会話（N3a）
+ * （daily/spots.js の CHAPTER_TALKS の prep と daily/samechan.js の SAMECHAN_PREP_TALKS）。台本は data/dialogue/ch3_ch4_home.json。
+ */
+export const departureTalkScenes = () => [
+  ...Object.values(CHAPTER_TALKS).flat().filter(talk => talk.prep).map(talk => talk.scene),
+  ...Object.values(SAMECHAN_PREP_TALKS),
+];
+/** 送り出しの会話は寄り道なので、読み込めなくても準備期間は始める（会話が出ないだけ）。 */
+async function loadDepartureTalks() {
+  const ids = departureTalkScenes();
+  try {
+    const dialogues = await readDialogues("ch3_ch4_home", ids);
+    Object.assign(DB.dialogues, Object.fromEntries(ids.map(id => [id, dialogues[id]])));
+  } catch (error) {
+    console.warn("[departure-prep] 地元の送り出しの会話を読み込めませんでした", error);
+  }
+}
+
+/** 準備期間を日常ループで回す。出発の朝（または LOAD）で戻る。柚ヶ谷の台本と地元の送り出しの会話を先に読み込む。 */
 export async function runDeparturePrep(opts) {
-  await Promise.all([loadChapterTwoDialogues(), loadPreparationDialogues()]);
+  const owner = state;
+  await Promise.all([loadChapterTwoDialogues(), loadPreparationDialogues(), loadDepartureTalks()]);
+  if (state !== owner) return;
+  // 東京へ発つ前、まだ名乗り合っていない周回・旧保存だけ、tonariへの納品で紹介する。
+  if (state.chapter === 3 && !await ensureRioBeforeTokyo({ bg: bgUrl(`bg_tonari_inside${state.slot >= 1 ? "_night" : ""}`) })) return;
+  if (state !== owner) return;
   state.phase = "daily";
   save();
   await runDaily(departurePrepDefinition(opts));

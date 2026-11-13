@@ -134,10 +134,10 @@ console.log("PASS: outgoing BGM obeys mute/zero volume immediately, stale frames
 {
   const f = await audioFixture(); f.rejectPlay(true);
   f.audio.playBgm("title"); f.audio.unlockAudio(); f.finishResume(); await flush();
-  assert.equal(f.audio.currentBgm(), null);
+  assert.equal(f.audio.currentBgm(), "title", "rejected start retains the requested track and media");
   f.rejectPlay(false); f.audio.unlockAudio(); await flush();
   assert.equal(f.audio.currentBgm(), "title");
-  assert.equal(f.media.length, 2); assert.equal(f.media[1].plays, 1);
+  assert.equal(f.media.length, 1, "retry reuses the original media"); assert.equal(f.media[0].plays, 2);
 }
 console.log("PASS: first gesture, deferred/rejected resume, stop/replacement races, deduplication, mute/volume and autoplay retry");
 
@@ -167,12 +167,13 @@ const title = await load(await read("../js/scenes/title.js"), {
   playBgm: k => events.push(k), stopBgm: fade => events.push(`stop:${fade}`),
   SE: { select() {} }, smokeWipe: fn => fn(),
   modal: options => options.title === "設定" ? new Promise(resolve => configCloses.push(resolve)) : Promise.resolve(confirm),
-  loadFlow: async () => selectedSlot, loadFromSlot: () => true,
+  loadWithRecovery: async () => !!selectedSlot,
   wipeSave: () => wipes++,
   resumeGame: () => events.push("resume"), startNewGame: () => events.push("new"),
   openGallery: () => new Promise(resolve => galleryCloses.push(resolve)),
   pickTitleArt: () => ({ ready: true, file: `art-${++picks}`, character: `character-${picks}`, url: "test" }),
   createUiThemeSelect: () => el("select"),
+  LOOKS: [{ id: "classic", label: "現行" }, { id: "neo", label: "新版" }, { id: "retro", label: "DS風" }], normalizeLook: (value) => value || "classic", setLook() {},
   config: {},
 }, { document: { body }, performance: { now: () => 0 }, window: {} });
 const art = { ready: true, file: "test", character: "test", url: "test" };

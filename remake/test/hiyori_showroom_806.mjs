@@ -53,7 +53,7 @@ const mocks = {
     isUnlocked: spot => !spot.locked,
     shortNormalVisit: () => false,
   },
-  "daily/spot-hours.js": { rinUnavailable: () => state.slot === 1 ? "" : "夜から" },
+  "daily/spot-hours.js": { rioUnavailable: () => state.slot === 1 ? "" : "夜から" },
   "daily/hiyori-axe.js": { hiyoriAxeAffordable: () => false, playHiyoriAxeSequence: async () => false },
   "daily/trpg.js": { maybeRecruitTrpgMember: async () => false },
 };
@@ -89,7 +89,7 @@ function calcRoll(spotId, seed, slot, day = 1, chapter = 1) {
 
 // hiyori_frequency.mjs と同一の前提（met: { hiyori: true } により hiyoriFirstMeetingReady を成立させる）
 function reset(seed = 0, flags = { _hiyori_meeting_done: true, _hiyori_sumi_message_done: true,
-  _hiyori_message_delivered: true, _hiyori_cracks_done: true }) {
+  _hiyori_message_delivered: true, _hiyori_cracks_done: true, _hiyori_clockout_done: true }) {
   Object.keys(state).forEach(k => delete state[k]);
   Object.assign(state, {
     seed,
@@ -274,7 +274,7 @@ console.log("5. 相席（repeat）: ショールームは選ばれず他店が�
           _hiyori_meeting_done: true,
           _hiyori_sumi_message_done: true,
           _hiyori_message_delivered: true,
-          _hiyori_cracks_done: true,
+          _hiyori_cracks_done: true, _hiyori_clockout_done: true,
           _hiyori_repeat_count: 0,
         });
         state.day = day;
@@ -297,7 +297,7 @@ console.log("5. 相席（repeat）: ショールームは選ばれず他店が�
     _hiyori_meeting_done: true,
     _hiyori_sumi_message_done: true,
     _hiyori_message_delivered: true,
-    _hiyori_cracks_done: true,
+    _hiyori_cracks_done: true, _hiyori_clockout_done: true,
     _hiyori_repeat_count: 1,
   });
   assert.equal(await visitHiyoriAtShop(showroom, { scheduledSpot: "shop" }), false);

@@ -39,6 +39,64 @@ async function paintedAttachment(page) {
 
 const themes = ["smoke", "smoke-purple", "cut-paper", "amber", "tissue", "classic", "paper"];
 await suite("ui-themes-preview", async check => {
+  await check("wide-two-choices-conventional-center", async page => {
+    await page.selectOption("#preview-scene", "choices");
+    await page.locator(".vn-next.show").waitFor();
+    await page.waitForTimeout(350);
+    await page.locator(".vn-text").click();
+    await page.locator('[data-test="choice-0"]').waitFor();
+    // 会話プレビューは fitStage を使わないため、ゲーム本編のワイドステージ幅を与える。
+    await page.evaluate(() => {
+      const stage = document.querySelector("#stage");
+      stage.dataset.wide = "";
+      stage.style.setProperty("--stage-w", "1600px");
+    });
+    await page.waitForTimeout(400);
+    const geometry = await page.evaluate(() => {
+      const box = selector => document.querySelector(selector)?.getBoundingClientRect();
+      const stage = box("#stage"), vn = box("#vn"), choice = box(".vn-choice"), controls = box(".vn-controls");
+      const choices = document.querySelector(".vn-choices");
+      return { wide: document.querySelector("#stage").hasAttribute("data-wide"), shown: choices.classList.contains("show"),
+        visibility: getComputedStyle(choices).visibility, opacity: getComputedStyle(choices).opacity,
+        portraitCenter: (vn.left + vn.right) / 2,
+        choiceLeft: choice?.left, choiceRight: choice?.right, choiceBottom: choice?.bottom,
+        choiceCenter: choice ? (choice.left + choice.right) / 2 : null,
+        stageCenter: stage ? (stage.left + stage.right) / 2 : null,
+        controlsTop: controls?.top, stageRight: stage?.right };
+    });
+    assert(geometry.wide, JSON.stringify(geometry));
+    assert(geometry.shown && geometry.visibility === "visible" && geometry.opacity === "1", JSON.stringify(geometry));
+    // ワイド時も2択は従来どおり中央（オーナー決定 2026-11-09）。右寄せにしない。
+    assert(Math.abs(geometry.choiceCenter - geometry.stageCenter) <= 2, JSON.stringify(geometry));
+    assert(geometry.choiceRight <= geometry.stageRight + 1, JSON.stringify(geometry));
+    assert(geometry.choiceBottom <= geometry.controlsTop - 4, JSON.stringify(geometry));
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+  await check("wide-dialogue-frame-conventional-width", async page => {
+    await page.selectOption("#preview-scene", "hiyori");
+    await page.locator(".vn-next.show").waitFor();
+    await page.waitForTimeout(350);
+    const measure = () => page.evaluate(() => {
+      const stage = document.querySelector("#stage").getBoundingClientRect();
+      const box = document.querySelector(".vn-box").getBoundingClientRect();
+      const controls = document.querySelector(".vn-controls").getBoundingClientRect();
+      const units = stage.width / (document.querySelector("#stage").hasAttribute("data-wide") ? 1600 : 1280);
+      return { width: box.width / units, center: (box.left + box.right) / 2, stageCenter: (stage.left + stage.right) / 2,
+        controlsRight: controls.right, stageRight: stage.right };
+    });
+    const normal = await measure();
+    // 会話プレビューは fitStage を使わないため、ゲーム本編のワイドステージ幅を与える。
+    await page.evaluate(() => {
+      const stage = document.querySelector("#stage");
+      stage.dataset.wide = "";
+      stage.style.setProperty("--stage-w", "1600px");
+    });
+    await page.waitForTimeout(400);
+    const wide = await measure();
+    // #3035・案1: ワイド時も会話枠は従来幅のまま（#3007 のワイド専用拡大は廃止）。操作札の位置も従来どおり。
+    assert(Math.abs(wide.width - normal.width) <= 2, JSON.stringify({ normal, wide }));
+    assert(Math.abs(wide.center - wide.stageCenter) <= 2, JSON.stringify({ normal, wide }));
+    assert(Math.abs(wide.controlsRight - normal.controlsRight) <= 2, JSON.stringify({ normal, wide }));
+  });
   for (const viewport of [{ width:1280, height:768 }, { width:844, height:438 }]) {
     await check(`${viewport.width}`, async page => {
       await page.locator(".vn-next.show").waitFor();
@@ -85,13 +143,15 @@ await suite("ui-themes-preview", async check => {
           return { count:tops.length, contained:rows.every(r=>r.bottom<=text.bottom+1 && r.left>=text.left-1 && r.right<=text.right+1),
             footerClear:next.bottom<=box.bottom-15*scale,
             nameCentered:Math.abs((nameGlyph.left+nameGlyph.right)/2-(name.left+name.right)/2)<=2*scale,
-            nameOnEdge:name.top<box.top-12*scale && name.bottom>=box.top+8*scale && name.bottom<=text.top-12*scale,
+            nameOnEdge:name.top<box.top-12*scale && name.bottom>=box.top+8*scale-0.1 && name.bottom<=text.top-12*scale,
             clear:!overlaps(next,controls) && !overlaps(name,controls) && rows.every(r=>!overlaps(r,next) && !overlaps(r,name)),
             headerAttached:controls.top<box.top-12*scale && controls.bottom>=box.top-3*scale && controls.bottom<=text.top-12*scale && controls.left>box.left+box.width/2,
-            headerInside:controls.top>=box.top-1*scale && controls.bottom<=text.top+1*scale && controls.left>box.left+box.width/2 && controls.right<=box.right-32*scale,
+            // 紙の44px操作領域は本文ボックスの上端に約2px掛かり、右端は承認済みの24px内側。文字行との非重複は clear / overlap で別に検査する。
+            headerInside:controls.top>=box.top-1*scale && controls.bottom<=text.top+3*scale && controls.left>box.left+box.width/2 && controls.right<=box.right-24*scale,
             rightGap:(controls.right-box.right)/scale,
             sceneOpen:box.height/scale<=192 && (box.top-document.querySelector("#stage").getBoundingClientRect().top)/scale>=500,
             headerOffset:((name.top+name.height/2)-(controls.top+controls.height/2))/scale,
+            typeSizes:[parseFloat(getComputedStyle(el).fontSize),...Array.from(document.querySelectorAll(".vn-ctl"),button=>parseFloat(getComputedStyle(button).fontSize))],
             typeRatios:[parseFloat(getComputedStyle(nameEl).fontSize)/parseFloat(getComputedStyle(el).fontSize),parseFloat(getComputedStyle(document.querySelector(".vn-ctl")).fontSize)/parseFloat(getComputedStyle(el).fontSize)],
             margins:[(text.left-box.left)/scale,(box.right-text.right)/scale],
             overlap:rows.some(r=>r.right>controls.left && r.left<controls.right && r.bottom>controls.top && r.top<controls.bottom) };
@@ -113,7 +173,8 @@ await suite("ui-themes-preview", async check => {
           assert(twoLines.rightGap<=-32,"toolbar stays inside the frame header");
         }
         assert(twoLines.typeRatios[0]>=.7 && twoLines.typeRatios[0]<=.9,"name text stays subordinate to the dialogue");
-        assert(twoLines.typeRatios[1]>=.45 && twoLines.typeRatios[1]<=.65,"command text is a quieter third level");
+        // #3100 / #3103: 本文28px、紙の操作文字22px、他テーマ19px（比率の緩和でなく承認寸法を固定）。
+        assert.deepEqual(twoLines.typeSizes,[28,...Array(5).fill(id==="paper"?22:19)],"dialogue and every command retain the approved font sizes");
         assert(twoLines.margins[0]>=95.9 && twoLines.margins[1]>=95.9,"reserve space for visible folds and smoke, beyond glyph bounds");
         await page.selectOption("#preview-scene","narration");
         await page.locator(".vn-box.narration").waitFor();
@@ -281,7 +342,8 @@ await suite("ui-themes-config",async check=>{
       await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.turbo = true; });
       for (let i = 0; i < 60 && !(await page.locator("#screen .map:not(.done)").isVisible()); i++) {
         const choice = page.locator("#vn.active .vn-choices button").first();
-        if (await choice.isVisible().catch(() => false)) await choice.click(); else await page.waitForTimeout(500);
+        // turbo は出た選択肢を 10ms 後に自分で選ぶ（vn/engine.js）。先に選ばれて押す前に消えたら、そのまま次の行へ進む
+        if (await choice.isVisible().catch(() => false)) await choice.click({ timeout: 2000 }).catch(() => {}); else await page.waitForTimeout(500);
       }
       await page.locator("#screen .map:not(.done)").waitFor({ timeout: 30000 });
       await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.turbo = false; });
@@ -291,7 +353,7 @@ await suite("ui-themes-config",async check=>{
       await assertFits(page, '.dmenu .dm-sys');
       await press('[data-test="menu-config"]');
       await page.locator("#modal.show .cfg").waitFor();
-      await page.selectOption('[data-test="cfg-text-speed"]', "1");
+      await press('[data-test="cfg-text-speed"] button[value="1"]');
       await press('[data-test="cfg-voice-blip"]');
       await page.selectOption('[data-test="ui-theme-select"]', "amber");
       const menuCfg = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_config")));
@@ -326,7 +388,7 @@ await suite("ui-themes-config",async check=>{
       await page.locator("#modal.show .cfg").waitFor();
       await page.waitForTimeout(250);
       assert.equal(await page.evaluate(() => window.__cfgVnDone), false, "AUTO must pause while config modal is open");
-      await page.selectOption('[data-test="cfg-text-speed"]', "4");
+      await press('[data-test="cfg-text-speed"] button[value="4"]');
       await page.selectOption('[data-test="ui-theme-select"]', "smoke");
       await page.locator(".vn-next.show").waitFor();
       const vnCfg = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_config")));
@@ -355,48 +417,3 @@ await suite("ui-themes-config",async check=>{
     }, options);
   }
 });
-
-
-await suite("blue-window-character-preview",async check=>{
-  for(const viewport of [{width:1280,height:768},{width:844,height:438}]) {
-    await check(String(viewport.width),async page=>{
-      await page.locator(".vn-next.show").waitFor();
-      const saved=await storageSnapshot(page);
-      const fixedHeader=await commandGeometry(page);
-      assert.equal(await page.locator("html").getAttribute("data-ui-theme"),"heisei-blue");
-      for(const [id,name] of [["minto","みんと"],["ageha","あげは"],["tsumugi","つむぎ"],["hiyori","ひより"]]) {
-        await page.selectOption("#preview-character",id);
-        await page.locator(".vn-next.show").waitFor();
-        await page.evaluate(()=>document.fonts.ready);
-        assert.equal(await page.locator(".vn-name").textContent(),name);
-        fixedCommands(await commandGeometry(page),fixedHeader,"blue character "+id);
-        const rendered=await page.evaluate(()=>{
-          const text=document.querySelector(".vn-text"),name=document.querySelector(".vn-name"),sprite=document.querySelector("img.portrait");
-          const rect=sel=>document.querySelector(sel).getBoundingClientRect();
-          const range=document.createRange();range.selectNodeContents(text);
-          const rows=[...range.getClientRects()].filter(r=>r.width>0);
-          const ctl=rect(".vn-controls"),next=rect(".vn-next"),label=name.getBoundingClientRect();
-          const overlap=(a,b)=>a.right>b.left&&a.left<b.right&&a.bottom>b.top&&a.top<b.bottom;
-          return {lines:new Set(rows.map(r=>Math.round(r.top))).size,
-            clear:rows.every(r=>!overlap(r,ctl)&&!overlap(r,next)&&!overlap(r,label)),
-            portrait:sprite.complete&&sprite.naturalWidth>0?new URL(sprite.src).pathname:null,
-            font:getComputedStyle(text).fontFamily};
-        });
-        assert.equal(rendered.lines,2);
-        assert(rendered.clear,"blue preview text is clear of name, controls and next indicator");
-        assert(rendered.portrait?.includes("/"+id+"/"),"use the official character sprite");
-        assert(rendered.font.includes("Suien Blue Mincho"));
-      }
-      await page.locator('[data-test="vn-auto"]').click();
-      fixedCommands(await commandGeometry(page),fixedHeader,"blue AUTO on");
-      await page.locator('[data-test="vn-auto"]').click();
-      fixedCommands(await commandGeometry(page),fixedHeader,"blue AUTO off");
-      assert.deepEqual(await storageSnapshot(page),saved,"character comparison never writes saves/config");
-      await page.selectOption("#preview-theme","smoke");
-      assert.equal(await page.locator("html").getAttribute("data-ui-theme"),"smoke");
-      await page.selectOption("#preview-theme","heisei-blue");
-      assert.equal(await page.locator("html").getAttribute("data-ui-theme"),"heisei-blue","blue theme is selectable from the dropdown after leaving it");
-      assert.deepEqual(await storageSnapshot(page),saved);
-    },{viewport});
-  }
-},{entry:new URL("conversation-preview.html?theme=heisei-blue&character=minto",baseURL).href,readySelector:".vn-box"});

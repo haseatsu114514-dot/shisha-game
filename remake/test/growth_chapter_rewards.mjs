@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
+import { chapterFiveUnrecordedDialogue } from "../js/chapters/ch5-unrecorded.js";
 globalThis.document = { addEventListener() {} }; globalThis.window = {};
 const storage = new Map();
 globalThis.localStorage = { getItem: k => storage.get(k) ?? null, setItem: (k,v) => storage.set(k,String(v)), removeItem: k => storage.delete(k) };
@@ -23,11 +24,11 @@ const syncBindings=()=>stateBindings.forEach(m=>m.setExport("state",core.state))
 async function runner(name,progress,exposed){
   let owner,screen,cancel=false,swap=false,craft,snapshots=[],replacement,nightBefore,pauseAtSave=true;
   const noop=()=>{};
-  const ports={...progress,...growth,el:node,DB:{dialogues},bgUrl:x=>x,
-    chapterFourMapModel:map4.chapterFourMapModel,canReflect:()=>false,paidAction:stats.paidAction,
+  const ports={chapterFiveUnrecordedDialogue,createChapterMenu: () => () => {}, ...progress,...growth,el:node,DB:{dialogues},bgUrl:x=>x,
+    chapterFourMapModel:map4.chapterFourMapModel,canReflect:()=>false,loverMilestonesDue:()=>[],readLoverMilestone:async()=>false,paidAction:stats.paidAction,
     chapterDay:()=>core.state.day,chapterGrowthNight:async()=>true,createChapterActions:opts=>actions.createChapterActions(opts),
     layers:{hud:{replaceChildren:noop,classList:{remove:noop}}},showScreen:(_id,n)=>{screen=n;},
-    setBg:async()=>{},playBgm:noop,toast:noop,hooks:{},
+    setBg:async()=>{},enterScene:async()=>{},playBgm:noop,toast:noop,hooks:{},
     save:()=>{snapshots.push(JSON.parse(JSON.stringify(core.state)));if(pauseAtSave)owner.active=false;},
     presentNight:async()=>{nightBefore=JSON.parse(JSON.stringify(core.state));growth.settleGrowth();},
     play:async()=>{if(swap){core.newGame();syncBindings();replacement=JSON.stringify(core.state);}return {id:"fixture",visited:[],cancelled:cancel};},
@@ -42,6 +43,17 @@ async function runner(name,progress,exposed){
   source+=`\nexport function testOwner(o){session=o;}\nexport {${exposed.join(",")}};`;
   const module=new vm.SourceTextModule(source,{context});
   await module.link(async spec=>{
+    if (spec === "../core/chapter-card.js") {
+      const helper = new vm.SourceTextModule(fs.readFileSync(new URL("../js/core/chapter-card.js", import.meta.url), "utf8"), { context });
+      await helper.link(dependency => {
+        const names = dependency === "./util.js" ? ["el"] : ["showScreen"];
+        return new vm.SyntheticModule(names, function () {
+          for (const name of names) this.setExport(name, ports[name]);
+        }, { context });
+      });
+      return helper;
+    }
+
     const matches=[...source.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)];
     const names=matches.filter(m=>m[2]===spec).flatMap(m=>m[1].split(",").map(x=>x.trim()));
     const stub=new vm.SyntheticModule(names,function(){
@@ -193,3 +205,4 @@ console.log("PASS: actual chapter 3/4/5 runner commit boundaries save clear/brea
   const stamp=owner.growthDay;value.day=12;assert.equal(await run(),false);assert.equal(owner.growthDay,stamp);
 }
 console.log("PASS: chapter night boundary detects real date advance once, preserves reload/redraw and stops after owner replacement");
+

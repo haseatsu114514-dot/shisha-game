@@ -1,0 +1,103 @@
+{
+  "base_main": "e0276b016",
+  "scope": "Only owner-approved new/nanami doctor normal; all expressions, classic, frames and scales retained",
+  "items": [
+    {
+      "style": "new",
+      "library_file_id": "libfile_3b9ae4752f5881919a8e13972e68a5b0",
+      "source_sha256": "acf415fe05253212b78a13b472cd815174b81435b36d353e22ab2cfeb502c09a",
+      "source_size_bytes": 836925,
+      "source_pixels": [
+        1054,
+        1493
+      ],
+      "source": "asset_sources/portraits/doctor-normal-balance-20261105/new/normal-source.png",
+      "runtime": "assets/sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_normal.png",
+      "previous_runtime_sha256": "f8a81dd66551117c1326bc4ddbc886491f016bc0019557501a726f0db1520352",
+      "runtime_sha256": "66d8f7612ced6a2a445319b63853cef607451472f6f9bfaac3639443d2cf908a",
+      "webp_sha256": "ec16862139e9f8398de64ed0b7854129aae7a75f3e0a57c307f9346e34bb6665",
+      "scale": 0.789627465303141,
+      "offset": [
+        7,
+        3
+      ],
+      "previous_bbox": [
+        246,
+        60,
+        634,
+        1141
+      ],
+      "bbox": [
+        240,
+        60,
+        634,
+        1141
+      ],
+      "previous_feet_x": 447.7955711327067,
+      "feet_x": 448.10631716572595,
+      "raw_unchanged": true,
+      "operation": "Uniform LANCZOS resize and translation only; no color/alpha/head edits",
+      "runtime_qa": "PASS desktop/touch, all five expressions and normal return",
+      "independent_review": "Tracked on associated PR"
+    },
+    {
+      "style": "nanami",
+      "library_file_id": "libfile_ca20962e1db88191b3904ac77a3f0c78",
+      "source_sha256": "1e174de20ec87fdd67f3f71f7c3e7748389bf35650fe5db4bf468c094e5698e6",
+      "source_size_bytes": 984911,
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "source": "asset_sources/portraits/doctor-normal-balance-20261105/nanami/normal-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/dr_kemuri/chr_dr_kemuri_normal.png",
+      "previous_runtime_sha256": "577556b43daa7f03482088d69363f2f043be31dc02bcd7f7fb5b86bfd11ddc36",
+      "runtime_sha256": "c93f5e33d1c822f1e6870abd6c529e26dbf8416fa4a7ddc533c6531411a1ac51",
+      "webp_sha256": "0ccbf50e9b6c1b36757e4556daaba6f1c35135ed2ef1b7530ea905584aadc94e",
+      "scale": 0.7994078460399704,
+      "offset": [
+        -20,
+        20
+      ],
+      "previous_bbox": [
+        240,
+        60,
+        632,
+        1140
+      ],
+      "bbox": [
+        245,
+        60,
+        627,
+        1140
+      ],
+      "previous_feet_x": 447.75528389898665,
+      "feet_x": 447.45649272654475,
+      "raw_unchanged": true,
+      "operation": "Uniform LANCZOS resize and translation only; no color/alpha/head edits",
+      "runtime_qa": "PASS desktop/touch, all five expressions and normal return",
+      "independent_review": "Tracked on associated PR"
+    }
+  ],
+  "runtime_validation": {
+    "production_data_and_engine": true,
+    "desktop_viewport": [
+      1280,
+      720
+    ],
+    "touch_viewport": [
+      844,
+      390
+    ],
+    "stable_full_expression_style_displays": 36,
+    "live_normal_return_and_companion_setting_observations": 46,
+    "normal_returns": 20,
+    "unchanged_manifest_and_scales": true,
+    "checks": {
+      "portrait_style": 20,
+      "portrait_framing": 504,
+      "portrait_variants": 3,
+      "check_agent_docs": "PASS"
+    }
+  }
+}

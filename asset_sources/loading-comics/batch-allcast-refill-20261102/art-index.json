@@ -32,7 +32,7 @@
     "何の幹部…？",
     "全員ぬいぐるみ。"
    ],
-   "caption": "久世は、自分の店の噂を大げさに盛るのが好きな店主。",
+   "caption": "綾取は、自分の店の噂を大げさに盛るのが好きな店主。",
    "current": "allcast-kuze-plush-board-c.png",
    "files": [
     {
@@ -68,7 +68,7 @@
     "じゃあ、どうぞ。",
     "全部出てきた。"
    ],
-   "caption": "久世は客の好みを予想するのが好き。ときどき、ずるい。",
+   "caption": "綾取は客の好みを予想するのが好き。ときどき、ずるい。",
    "current": "allcast-kuze-every-order-b.png",
    "files": [
     {
@@ -99,7 +99,7 @@
     "あるよ、待って。",
     "どこに入ってた？"
    ],
-   "caption": "腰のポーチは久世の目印。中身はノートのはず。",
+   "caption": "腰のポーチは綾取の目印。中身はノートのはず。",
    "current": "allcast-kuze-pouch.png",
    "files": [
     {
@@ -123,9 +123,9 @@
    "dialogue": [
     "奥に誰かいます？",
     "さあ、どうかな。",
-    "全部久世さんだ。"
+    "全部綾取さんだ。"
    ],
-   "caption": "久世の店は、仕切りと鏡で奥が見えない作り。",
+   "caption": "綾取の店は、仕切りと鏡で奥が見えない作り。",
    "current": "allcast-kuze-mirror-room.png",
    "files": [
     {
@@ -147,11 +147,11 @@
    ],
    "minChapter": 1,
    "dialogue": [
-    "久世さん、すごい！",
+    "綾取さん、すごい！",
     "え、僕？",
     "小さくなった。"
    ],
-   "caption": "軽口の多い久世だけど、ほめられるのは苦手。",
+   "caption": "軽口の多い綾取だけど、ほめられるのは苦手。",
    "current": "allcast-kuze-praise-shrink.png",
    "files": [
     {
@@ -177,7 +177,7 @@
     "何か仕掛けが…？",
     "普通の麦茶だ。"
    ],
-   "caption": "久世の笑顔は意味ありげ。でも親切は本物です。",
+   "caption": "綾取の笑顔は意味ありげ。でも親切は本物です。",
    "current": "allcast-kuze-plain-tea.png",
    "files": [
     {
@@ -203,7 +203,7 @@
     "転びませんよ。",
     "クッションがある。"
    ],
-   "caption": "久世は、相手の次の動きを読むのがとても得意。",
+   "caption": "綾取は、相手の次の動きを読むのがとても得意。",
    "current": "allcast-kuze-cushion-forecast-b.png",
    "files": [
     {
@@ -234,7 +234,7 @@
     "かわいく頼むよ。",
     "悪役の顔だ。"
    ],
-   "caption": "片側だけ上がる久世の笑顔は、写真だと少し怪しい。",
+   "caption": "片側だけ上がる綾取の笑顔は、写真だと少し怪しい。",
    "current": "allcast-kuze-photo-face-b.png",
    "files": [
     {
@@ -265,7 +265,7 @@
     "うーん、右！",
     "外れたのに優勝？"
    ],
-   "caption": "久世は、予想が外れたときの答えが一番うれしい。",
+   "caption": "綾取は、予想が外れたときの答えが一番うれしい。",
    "current": "allcast-kuze-wrong-guess.png",
    "files": [
     {
@@ -291,7 +291,7 @@
     "全然。平気だよ。",
     "ノート逆さです。"
    ],
-   "caption": "久世は、大会の始まりだけは少し緊張しやすい。",
+   "caption": "綾取は、大会の始まりだけは少し緊張しやすい。",
    "current": "allcast-kuze-brave-face.png",
    "files": [
     {
@@ -317,7 +317,7 @@
     "一言で済む。",
     "一言じゃない。"
    ],
-   "caption": "審査員長の南雲会長は、口数より感想が多い人。",
+   "caption": "審査員長の須井会長は、口数より感想が多い人。",
    "current": "allcast-nagumo-long-review.png",
    "files": [
     {
@@ -343,7 +343,7 @@
     "何もない。",
     "はみ出てます。"
    ],
-   "caption": "いかつい南雲会長にも、かわいい戦利品があります。",
+   "caption": "いかつい須井会長にも、かわいい戦利品があります。",
    "current": "allcast-nagumo-hidden-prize.png",
    "files": [
     {
@@ -369,7 +369,7 @@
     "は、はい……",
     "なぜここで？"
    ],
-   "caption": "南雲会長の大事な話は、場所を選ばない……？",
+   "caption": "須井会長の大事な話は、場所を選ばない……？",
    "current": "allcast-nagumo-teacup.png",
    "files": [
     {

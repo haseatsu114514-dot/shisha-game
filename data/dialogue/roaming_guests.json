@@ -1,5 +1,5 @@
 {
-  "comment": "よその店にふらっと居合わせる人（2026-11-02 オーナー「ひよりみたいに別スポットに現れるキャラを他にも」「女性ももう少し。店を持っていない人」）。daily/roamers.js が、時間帯の4回に1回ほど、一人をどこかの店に置く。来店の一服の後に roam_<id>_first → _a → _b → _c → _a … の順で読む。どの店でも成り立つよう店名を出さない（上園・つむぎは喫茶こはくにもいるので、ホース・炭を前提にしない）。審査員は大会で名前を知るまで met で分岐し、名前を出さない（上園・博士・南雲は第1章、エミルは第3章の全国大会）。第3章の東京ではヴォルク・ましろちゃん・エミルが東京の店にいる。好感度（アダム・凛・つむぎ）と回数はコードが付ける。 てつこ（mukai の看板猫）は、裏口で一度構った後、東京の公園やよその店の帰り道で見かける。",
+  "comment": "よその店にふらっと居合わせる人（2026-11-02 オーナー「ひよりみたいに別スポットに現れるキャラを他にも」「女性ももう少し。店を持っていない人」）。daily/roamers.js が、時間帯の4回に1回ほど、一人をどこかの店に置く。来店の一服の後に roam_<id>_first → _a → _b → _c → _a … の順で読む。どの店でも成り立つよう店名を出さない（上園・つむぎは喫茶こはくにもいるので、ホース・炭を前提にしない）。審査員は大会で名前を知るまで met で分岐し、名前を出さない（上園・博士・千須は第1章、エミルは第3章の全国大会）。第3章の東京ではヴォルク・ましろちゃん・エミルが東京の店にいる。好感度（アダム・凛想・つむぎ）と回数はコードが付ける。 てつこ（mukai の看板猫）は、裏口で一度構った後、東京の公園やよその店の帰り道で見かける。",
   "dialogues": [
     {
       "dialogue_id": "roam_maezono_first",
@@ -22,7 +22,7 @@
           {
             "speaker": "maezono",
             "face": "smile",
-            "text": "おや、蒸野くん。奇遇だねえ"
+            "text": "おや、逢縁くん。奇遇だねえ"
           },
           {
             "speaker": "hajime",
@@ -145,7 +145,7 @@
           {
             "speaker": "maezono",
             "face": "normal",
-            "text": "蒸野くん、ちょうどいいところに。これ、おいしそうに見える？"
+            "text": "逢縁くん、ちょうどいいところに。これ、おいしそうに見える？"
           },
           {
             "speaker": "hajime",
@@ -258,7 +258,7 @@
           {
             "speaker": "maezono",
             "face": "normal",
-            "text": "そうなんです。ねえ蒸野くん、楽しそうな煙って、どんな煙だと思う？"
+            "text": "そうなんです。ねえ逢縁くん、楽しそうな煙って、どんな煙だと思う？"
           },
           {
             "speaker": "hajime",
@@ -371,7 +371,7 @@
           {
             "speaker": "maezono",
             "face": "smile",
-            "text": "ああ、蒸野くん。昨日のラーメンの写真が、シーシャの写真より人気でねえ"
+            "text": "ああ、逢縁くん。昨日のラーメンの写真が、シーシャの写真より人気でねえ"
           },
           {
             "speaker": "",
@@ -489,7 +489,7 @@
           {
             "speaker": "dr_kemuri",
             "face": "smile",
-            "text": "やあ、蒸野くん。今日は、この店の空気を測りにね"
+            "text": "やあ、逢縁くん。今日は、この店の空気を測りにね"
           },
           {
             "speaker": "dr_kemuri",
@@ -519,7 +519,7 @@
           {
             "speaker": "dr_kemuri",
             "face": "smile",
-            "text": "どうぞ、ごゆっくり。蒸野くんは、いい間隔で吸うね"
+            "text": "どうぞ、ごゆっくり。逢縁くんは、いい間隔で吸うね"
           }
         ],
         "not_met": [
@@ -597,7 +597,7 @@
           {
             "speaker": "dr_kemuri",
             "face": "smile",
-            "text": "やあ、蒸野くん。今日の一台、何と何を合わせたのか聞いてもいいかな"
+            "text": "やあ、逢縁くん。今日の一台、何と何を合わせたのか聞いてもいいかな"
           },
           {
             "speaker": "hajime",
@@ -626,18 +626,23 @@
           },
           {
             "speaker": "dr_kemuri",
-            "face": "evil",
-            "text": "大丈夫。痛いことは、何もしないよ"
+            "face": "normal",
+            "text": "眠れた時間で、吸う間隔が変わる人がいる。それだけ、知りたくてね"
           },
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（博士、今のは冗談……ですよね？）"
+            "text": "……あんまり、覚えてなくて"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "smile",
+            "text": "だいたいでいいよ。五時間かな、六時間かな"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "博士は、楽しそうにキーを叩き続けていた。"
+            "text": "六時間、と答えるまで、博士の指はキーの上で待っていた。"
           }
         ],
         "not_met": [
@@ -678,18 +683,23 @@
           },
           {
             "speaker": "dr_kemuri",
-            "face": "evil",
-            "text": "大丈夫。痛いことは、何もしないよ"
+            "face": "normal",
+            "text": "眠れた時間で、吸う間隔が変わる人がいる。それだけ、知りたくてね"
           },
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（痛いことって……。いや、聞かないでおこう）"
+            "text": "……あんまり、覚えてなくて"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "smile",
+            "text": "だいたいでいいよ。五時間かな、六時間かな"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "白衣の客は、楽しそうにキーを叩き続けていた。"
+            "text": "六時間、と答えるまで、白衣の客の指はキーの上で待っていた。"
           }
         ]
       }
@@ -715,7 +725,7 @@
           {
             "speaker": "dr_kemuri",
             "face": "smile",
-            "text": "蒸野くんは、炭を見る人だね。吸う前と吸った後に、必ず一度"
+            "text": "逢縁くんは、炭を見る人だね。吸う前と吸った後に、必ず一度"
           },
           {
             "speaker": "",
@@ -823,7 +833,7 @@
           {
             "speaker": "dr_kemuri",
             "face": "smile",
-            "text": "やあ、蒸野くん。今日も、いい記録が取れたよ"
+            "text": "やあ、逢縁くん。今日も、いい記録が取れたよ"
           },
           {
             "speaker": "hajime",
@@ -833,12 +843,12 @@
           {
             "speaker": "dr_kemuri",
             "face": "normal",
-            "text": "空気と、それから蒸野くんの吸う間隔。いつも一緒に入ってしまってね"
+            "text": "空気と、それから逢縁くんの吸う間隔。いつも一緒に入ってしまってね"
           },
           {
             "speaker": "dr_kemuri",
             "face": "smile",
-            "text": "消してほしいなら、消すよ。蒸野くんが決めていい"
+            "text": "消してほしいなら、消すよ。逢縁くんが決めていい"
           },
           {
             "speaker": "hajime",
@@ -847,13 +857,13 @@
           },
           {
             "speaker": "dr_kemuri",
-            "face": "evil",
-            "text": "……よかった。消すのは、もったいないから"
+            "face": "smile",
+            "text": "ありがとう。気が変わったら、いつでも言って。その日のうちに消す"
           },
           {
             "speaker": "hajime",
-            "face": "surprise",
-            "text": "（今、一瞬だけ……笑い方が違った）"
+            "face": "normal",
+            "text": "（消すかどうかは、俺が決めていい。……測るかどうかは、聞かれなかった）"
           },
           {
             "speaker": "dr_kemuri",
@@ -899,13 +909,13 @@
           },
           {
             "speaker": "dr_kemuri",
-            "face": "evil",
-            "text": "……よかった。消すのは、もったいないから"
+            "face": "smile",
+            "text": "ありがとう。気が変わったら、いつでも言って。その日のうちに消す"
           },
           {
             "speaker": "hajime",
-            "face": "surprise",
-            "text": "（今、一瞬だけ……笑い方が違った）"
+            "face": "normal",
+            "text": "（消すかどうかは、俺が決めていい。……測るかどうかは、聞かれなかった）"
           },
           {
             "speaker": "dr_kemuri",
@@ -921,12 +931,12 @@
       }
     },
     {
-      "dialogue_id": "roam_nagumo_first",
+      "dialogue_id": "roam_sui_first",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "nagumo",
+          "char_id": "sui",
           "next_true": "met",
           "next_false": "not_met"
         }
@@ -941,17 +951,17 @@
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "南雲さん？ どうして、ここに……"
+            "text": "会長？ どうして、ここに……"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "声が大きい。今日は、ただの客だ"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "南雲さんはほとんど吸わず、店の人の手元ばかりを見ている。"
+            "text": "会長はほとんど吸わず、店の人の手元ばかりを見ている。"
           },
           {
             "speaker": "",
@@ -959,12 +969,12 @@
             "text": "常連らしい客が入ってくると、店の人は何も聞かずに、いつもの席を空けた。"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "……ほう"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "serious",
             "text": "何も聞かずに、席を空けた。あれはマニュアルには書けない"
           },
@@ -976,7 +986,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "南雲さんはそれだけ言うと、静かに席を立った。"
+            "text": "会長はそれだけ言うと、静かに席を立った。"
           }
         ],
         "not_met": [
@@ -1001,7 +1011,7 @@
             "text": "常連らしい客が入ってくると、店の人は何も聞かずに、いつもの席を空けた。"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "……ほう"
           },
@@ -1011,12 +1021,12 @@
             "text": "あの、何か……？"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "いや。いい店だと思っただけだ"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "serious",
             "text": "何も聞かずに、席を空けた。あれはマニュアルには書けない"
           },
@@ -1029,12 +1039,12 @@
       }
     },
     {
-      "dialogue_id": "roam_nagumo_a",
+      "dialogue_id": "roam_sui_a",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "nagumo",
+          "char_id": "sui",
           "next_true": "met",
           "next_false": "not_met"
         }
@@ -1044,12 +1054,12 @@
           {
             "speaker": "",
             "face": "",
-            "text": "一服を終えると、カウンターの端に、南雲さんの姿があった。"
+            "text": "一服を終えると、カウンターの端に、会長の姿があった。"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
-            "text": "蒸野くん。この店は、誰のための店だと思う"
+            "text": "逢縁くん。この店は、誰のための店だと思う"
           },
           {
             "speaker": "hajime",
@@ -1057,7 +1067,7 @@
             "text": "えっと……ここに来る人のため、ですかね"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "答えになっていないな"
           },
@@ -1072,14 +1082,14 @@
             "text": "だから、目の前の一人のための店、だと思います"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "smile",
             "text": "……悪くはない"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "南雲さんは小さくうなずいて、また店の奥へ目を戻した。"
+            "text": "会長は小さくうなずいて、また店の奥へ目を戻した。"
           },
           {
             "speaker": "hajime",
@@ -1094,7 +1104,7 @@
             "text": "一服を終えると、カウンターの端に、またあの紺のスーツの男がいた。"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "君。この店は、誰のための店だと思う"
           },
@@ -1104,7 +1114,7 @@
             "text": "えっと……ここに来る人のため、ですかね"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "答えになっていないな"
           },
@@ -1119,7 +1129,7 @@
             "text": "だから、目の前の一人のための店、だと思います"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "smile",
             "text": "……悪くはない"
           },
@@ -1137,12 +1147,12 @@
       }
     },
     {
-      "dialogue_id": "roam_nagumo_b",
+      "dialogue_id": "roam_sui_b",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "nagumo",
+          "char_id": "sui",
           "next_true": "met",
           "next_false": "not_met"
         }
@@ -1152,7 +1162,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "一服を終えるころ、店が急に混みはじめた。カウンターの端には、南雲さんがいる。"
+            "text": "一服を終えるころ、店が急に混みはじめた。カウンターの端には、会長がいる。"
           },
           {
             "speaker": "",
@@ -1160,9 +1170,9 @@
             "text": "店の人は、注文を急ぐ客より先に、黙って待っていた一人に声をかけた。"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
-            "text": "……見たか、蒸野くん"
+            "text": "……見たか、逢縁くん"
           },
           {
             "speaker": "hajime",
@@ -1170,17 +1180,17 @@
             "text": "今の、声をかける順番ですか"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "混んだ時に、誰から声をかけるか。そこに店が出る"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "thinking",
             "text": "空いている時は、どの店も同じ顔をする"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "……それと。私がここにいたことは、スミさんには言わなくていい"
           },
@@ -1190,14 +1200,14 @@
             "text": "え、どうしてですか？"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "smile",
             "text": "話が長くなる"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "南雲さんはそれ以上何も言わず、店の人に軽く頭を下げて出ていった。"
+            "text": "会長はそれ以上何も言わず、店の人に軽く頭を下げて出ていった。"
           }
         ],
         "not_met": [
@@ -1212,7 +1222,7 @@
             "text": "店の人は、注文を急ぐ客より先に、黙って待っていた一人に声をかけた。"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "……見たか"
           },
@@ -1222,12 +1232,12 @@
             "text": "え？ 今の、声をかける順番ですか"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "混んだ時に、誰から声をかけるか。そこに店が出る"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "thinking",
             "text": "空いている時は、どの店も同じ顔をする"
           },
@@ -1245,12 +1255,12 @@
       }
     },
     {
-      "dialogue_id": "roam_nagumo_c",
+      "dialogue_id": "roam_sui_c",
       "lines": [
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "nagumo",
+          "char_id": "sui",
           "next_true": "met",
           "next_false": "not_met"
         }
@@ -1260,7 +1270,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "一服を終えると、カウンターの端で、南雲さんが珍しくホースを手にしていた。"
+            "text": "一服を終えると、カウンターの端で、会長が珍しくホースを手にしていた。"
           },
           {
             "speaker": "",
@@ -1268,22 +1278,22 @@
             "text": "ゆっくり一口吸って、しばらく煙の行方を見ている。"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "thinking",
             "text": "……昔、こういう店に世話になった"
           },
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "南雲さんが、ですか"
+            "text": "会長が、ですか"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "小さくて、帰ってきた客の顔を覚えている店だ"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "私の店は、入り口でいい。帰ってくる場所は、こういう店にある"
           },
@@ -1293,14 +1303,14 @@
             "text": "tonariも、そういう店だと思います"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "smile",
             "text": "……知っている"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "南雲さんは残りの煙を惜しむように吸ってから、静かに席を立った。"
+            "text": "会長は残りの煙を惜しむように吸ってから、静かに席を立った。"
           }
         ],
         "not_met": [
@@ -1315,7 +1325,7 @@
             "text": "ゆっくり一口吸って、しばらく煙の行方を見ている。"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "thinking",
             "text": "……昔、こういう店に世話になった"
           },
@@ -1325,7 +1335,7 @@
             "text": "こういう店、ですか"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "小さくて、帰ってきた客の顔を覚えている店だ"
           },
@@ -1335,7 +1345,7 @@
             "text": "……分かる気がします"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "分かるなら、忘れないことだ"
           },
@@ -1558,30 +1568,30 @@
       ]
     },
     {
-      "dialogue_id": "roam_rin_first",
+      "dialogue_id": "roam_rio_first",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "カウンターの端に、黒い鞄とクリップボードを置いた女性がいた。凛さんだ。"
+          "text": "カウンターの端に、黒い鞄とクリップボードを置いた女性がいた。凛想さんだ。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "surprise",
           "text": "あれ、モルモットくん。……こんなとこで会うとはね"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "凛さん？ 問屋街の外で会うの、なんか新鮮です"
+          "text": "凛想さん？ 問屋街の外で会うの、なんか新鮮です"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "営業回り。うちの葉を置いてる店と、置いてほしい店にね"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "店の人に、どう使ってるか聞いて回るのも仕事のうち"
         },
@@ -1591,29 +1601,29 @@
           "text": "ずっと2階にいる人だと思ってました"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "smug",
           "text": "失礼だな。ちゃんと表の道も歩いてるよ"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "……商談はさっき終わったから。ここからは一服だけ、ただの客"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんはクリップボードを裏返して、テーブルの端に置いた。"
+          "text": "凛想さんはクリップボードを裏返して、テーブルの端に置いた。"
         }
       ]
     },
     {
-      "dialogue_id": "roam_rin_a",
+      "dialogue_id": "roam_rio_a",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんが、カウンター越しに店員さんと話し込んでいた。"
+          "text": "凛想さんが、カウンター越しに店員さんと話し込んでいた。"
         },
         {
           "speaker": "",
@@ -1621,12 +1631,12 @@
           "text": "「例の新しいの、少しだけ置いていけません？」と、店員さんが声をひそめる。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "発売前のは無理。書類のない葉は、お客さんの前に出させない"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "smile",
           "text": "出たら、真っ先に持ってくる。それは約束するよ"
         },
@@ -1636,7 +1646,7 @@
           "text": "店員さんは残念そうに、それでも少しほっとした顔でうなずいた。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "smug",
           "text": "……あ、モルモットくん。今の、聞いてた？"
         },
@@ -1646,29 +1656,29 @@
           "text": "はい。断り方まで、筋が通ってるなって"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "怪しく見られる仕事ほど、断るとこはきっちり断るの"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "serious",
           "text": "一回でも線を越えたら、次から誰も私の葉を信用しないから"
         }
       ]
     },
     {
-      "dialogue_id": "roam_rin_b",
+      "dialogue_id": "roam_rio_b",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんの前に、この店で頼んだらしい一台が置かれていた。"
+          "text": "凛想さんの前に、この店で頼んだらしい一台が置かれていた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんは吸う前に、立ちのぼる煙を軽く手であおいで嗅いでいた。"
+          "text": "凛想さんは吸う前に、立ちのぼる煙を軽く手であおいで嗅いでいた。"
         },
         {
           "speaker": "hajime",
@@ -1676,17 +1686,17 @@
           "text": "よその店でも、まず匂いからなんですね"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "癖だね。口に入れる前に、鼻で一回確かめる"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "一口吸って、凛さんは小さくうなずいた。"
+          "text": "一口吸って、凛想さんは小さくうなずいた。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "smile",
           "text": "……熱の入り方に、迷いがない。ここ、いい店だね"
         },
@@ -1701,19 +1711,19 @@
           "text": "休憩中なのに、仕事してますね"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "smug",
           "text": "休憩中だよ。これは趣味のメモ、……たぶん"
         }
       ]
     },
     {
-      "dialogue_id": "roam_rin_c",
+      "dialogue_id": "roam_rio_c",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんの足元に、小さな段ボール箱が三つ積んであった。"
+          "text": "凛想さんの足元に、小さな段ボール箱が三つ積んであった。"
         },
         {
           "speaker": "hajime",
@@ -1721,17 +1731,17 @@
           "text": "その箱、全部持って回ってるんですか？"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "うちで扱ってるHMDの見本。触ってもらわないと、売れないから"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "重さも、熱の持ち方も、写真じゃ分からないでしょ"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "本国の上司にも、日本の店は手で選ぶって何度も書いてるの"
         },
@@ -1741,19 +1751,19 @@
           "text": "次の店まで、持ちましょうか？"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "smile",
           "text": "……ありがと。気持ちだけもらっとく"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "その一言で、次の店まで歩けそう"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんは残りの煙をゆっくり味わってから、箱を抱え直して席を立った。"
+          "text": "凛想さんは残りの煙をゆっくり味わってから、箱を抱え直して席を立った。"
         }
       ]
     },
@@ -1858,7 +1868,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "描かれた俺の手の指先に、葉っぱの耳の猫が、あごをのせていた。"
+          "text": "描かれた手の指先に、葉っぱの耳の猫が、あごをのせていた。"
         },
         {
           "speaker": "tsumugi",
@@ -1958,7 +1968,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（行った場所が、少しずつ残る。……俺の一台も、そうなのかな）"
+          "text": "（花の明かり。……言われるまで、天井を見てなかった）"
         },
         {
           "speaker": "tsumugi",
@@ -2063,7 +2073,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（やり方は違っても、見ている先は同じなんだ）"
+          "text": "（次は、奥の席で吸ってみよう。炭の減り方、比べたい）"
         },
         {
           "speaker": "",
@@ -2083,7 +2093,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "はじめがホースを置くと、ヴォルクさんのペンが止まった。"
+          "text": "俺がホースを置くと、ヴォルクさんのペンが止まった。"
         },
         {
           "speaker": "volk",
@@ -2153,22 +2163,27 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "いつもは、祖母のジャムを舐めながら飲む。その量もだ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "ヴォルクさんにも、測らないものがあるんですね"
-        },
-        {
-          "speaker": "volk",
-          "face": "normal",
-          "text": "一つだけだ。……足りない日は、二杯目を頼む"
+          "text": "いつもは、祖母のジャムを舐めながら飲む。……ここには、それがない"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ヴォルクさんは計器を鞄にしまい、店の紅茶をゆっくり飲んだ。"
+          "text": "ヴォルクさんのカップは、もう底が見えかけていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ジャムがないと、減るのが早いんですね"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "測ってはいない。……足りない日は、二杯目を頼む"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクさんは計器を鞄にしまい、店員さんに二杯目を頼んだ。"
         }
       ]
     },
@@ -2423,7 +2438,7 @@
           {
             "speaker": "emil",
             "face": "normal",
-            "text": "蒸野くんか、……いい店だ"
+            "text": "逢縁くんか、……いい店だ"
           },
           {
             "speaker": "hajime",
@@ -2539,9 +2554,9 @@
             "text": "エミルさんは吸い口をハンドルの先に付けて、ゆっくり一口吸った。"
           },
           {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（一本の吸い口に、何人もの手が入ってるんだ）"
+            "speaker": "",
+            "face": "",
+            "text": "継ぎ目の輪が、店の明かりを一度だけ返した。"
           }
         ],
         "not_met": [
@@ -2614,7 +2629,7 @@
           {
             "speaker": "emil",
             "face": "thinking",
-            "text": "蒸野くん。日本の店は、どこもこの蓋を使うな"
+            "text": "逢縁くん。日本の店は、どこもこの蓋を使うな"
           },
           {
             "speaker": "hajime",
@@ -2821,9 +2836,18 @@
           "text": "……にゃ"
         },
         {
+          "speaker": "",
+          "text": "塀の上を、迷いのない足取りで歩いていく。人の通らない道ばかりだ。"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（mukaiから、けっこう歩くのに）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（塀の上なら、車も来ないしな）"
         },
         {
           "speaker": "",
@@ -2845,6 +2869,10 @@
         },
         {
           "speaker": "",
+          "text": "返事はない。濡らした前足で、耳の後ろを丁寧に、何度も何度もなでている。"
+        },
+        {
+          "speaker": "",
           "text": "てつこは前足を止めて、こちらをじっと見た。"
         },
         {
@@ -2855,6 +2883,11 @@
         {
           "speaker": "",
           "text": "それだけ言うと、また顔を洗いはじめた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "邪魔したな。気にせず、そのままゆっくり洗ってくれ"
         },
         {
           "speaker": "hajime",
@@ -2875,6 +2908,10 @@
           "text": "しゃがんでのぞくと、てつこが丸くなって眠っていた。"
         },
         {
+          "speaker": "",
+          "text": "耳が、夢でも見ているみたいに、ときどきぴくりと動く。"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "ここも、お前の場所なのか"
@@ -2883,6 +2920,15 @@
           "speaker": "tetsuko",
           "face": "sleep",
           "text": "……ん"
+        },
+        {
+          "speaker": "",
+          "text": "薄目も開けない。お腹がゆっくり上下するだけだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いい場所、見つけたな。人も来ないし、静かだ"
         },
         {
           "speaker": "hajime",
@@ -2903,9 +2949,17 @@
           "text": "角を曲がるたびに、ちらりと振り返る。"
         },
         {
+          "speaker": "",
+          "text": "ついて来ているか確かめるように、そのたびに足を緩める。"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "……案内してくれてるのか？"
+        },
+        {
+          "speaker": "",
+          "text": "迷いのない足取りに、なんとなくついていった。"
         },
         {
           "speaker": "",
@@ -2920,6 +2974,185 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "（送ってもらったのは、俺のほうだな）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "roam_hiyori_first",
+      "comment": "第5章の居合わせ（BLC08・daily/roamers.js の hiyori）。よその店で一服を終えた後に読む。世界大会の後・博士との勝負の前。どの店でも合うよう、店の人には触れない。恋人でも友人でも読める言い方にする。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服を終えると、カウンターの端で、ひよりさんがメニューに顔を半分隠していた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……世界一の人が、私の隣に座っていいのかしら",
+          "inner": "来た！ 有名人来た！ 記事、三回読んだ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "隣、空いてるなら座ります"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "今日は早上がりなの。月末じゃないから、まだ儚くないわ",
+          "inner": "月末だったら溶けてた"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "この前、tonariの前を通ったの。灯りが点いてて、少し安心した",
+          "inner": "外から見るだけで帰った。入ればよかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今度は入ってください。一台、作ります"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……うん。ピーチでね。炭は、物足りないくらいで"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "roam_hiyori_a",
+      "comment": "第5章の居合わせ（BLC08・daily/roamers.js の hiyori）。よその店で一服を終えた後に読む。世界大会の後・博士との勝負の前。どの店でも合うよう、店の人には触れない。恋人でも友人でも読める言い方にする。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の席から、小さなため息が聞こえた。ひよりさんのスマホに、仕事の通知が並んでいる。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……今、魂が少しだけ体から離れてるの",
+          "inner": "課長、なんで定時五分前に送ってくるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "返信、ここでしちゃいますか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "しない。今日はもう閉店。総務の私は、明日まで留守です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面を伏せて、ひよりさんはホースを手に取った。一口目のあとで、肩が一段下がる。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……生き返った。煙って、こういう日のためにあるのね",
+          "inner": "儚いの、三分ももたなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "三分もったほうだと思います"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "roam_hiyori_b",
+      "comment": "第5章の居合わせ（BLC08・daily/roamers.js の hiyori）。よその店で一服を終えた後に読む。世界大会の後・博士との勝負の前。どの店でも合うよう、店の人には触れない。恋人でも友人でも読める言い方にする。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんの人差し指に、絆創膏が一枚巻いてあった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "指、どうしたんですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……ちょっとした、運命の傷",
+          "inner": "斧の柄のささくれ。先週、ブル三本出した日"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "斧投げ、続けてるんですね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "頭が静かになるから。……勝負の前の日に投げると、いいわよ",
+          "inner": "誘ってるみたいになった。いや、誘ってる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "前の日は、店で練習してると思います"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "そう。……じゃあ、終わったあとね。勝っても、負けても"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "roam_hiyori_c",
+      "comment": "第5章の居合わせ（BLC08・daily/roamers.js の hiyori）。よその店で一服を終えた後に読む。世界大会の後・博士との勝負の前。どの店でも合うよう、店の人には触れない。恋人でも友人でも読める言い方にする。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんが、メニューの果物の欄を指でなぞっていた。tonariでも見た癖だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "今日も、ピーチですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "迷ってるふり。……迷ってる私、儚いでしょう",
+          "inner": "最初から決めてる。ピーチ一択"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "迷ってる時間も、楽しそうですね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……見抜かないで",
+          "inner": "やめて、急にそういうの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "今日も残業を切り抜けました。ほめて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "お疲れさまです。よく切り抜けました"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……受理します",
+          "inner": "今日いちばんの報酬、もらった"
         }
       ]
     }

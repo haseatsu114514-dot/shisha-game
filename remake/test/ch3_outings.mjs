@@ -40,8 +40,8 @@ const ids = (value, window) => chapterThreeOutings(value, window.id).map(item =>
   }
   assert.deepEqual(Object.keys(seen), ["d5-noon", "d6-night", "d8-night", "d9-night", "d10-noon", "d12-noon"]);
   for (const list of Object.values(seen)) assert(list.includes("mukai_help") && list.includes("park_walk") && list.includes("tetsuko"));
-  // 久世は初対面の後、助言の前後で別の理由。スティーブは店を訪ねた後だけ。
-  assert(!seen["d6-night"].includes("enmaku_notes"), "Kuze's shop before meeting him");
+  // 綾取は初対面の後、助言の前後で別の理由。スティーブは店を訪ねた後だけ。
+  assert(!seen["d6-night"].includes("enmaku_notes"), "Ayatori's shop before meeting him");
   assert(seen["d8-night"].includes("enmaku_notes"));
   assert(!seen["d8-night"].includes("steve_timer"));
   assert(!seen["d12-noon"].includes("enmaku_notes"));
@@ -82,7 +82,7 @@ const ids = (value, window) => chapterThreeOutings(value, window.id).map(item =>
   assert(claimChapterThreeOuting(value, window.id, "enmaku_notes"));
   let next = nextWindow(value);
   const visit = chapterThreeOutings(value, next.id).find(item => item.id === "enmaku_visit");
-  assert(visit, "Kuze's shop becomes a regular after the notes");
+  assert(visit, "Ayatori's shop becomes a regular after the notes");
   assert.equal(outingDialogueId(value, visit, next), "ch3_outing_enmaku_visit");
   assert(claimChapterThreeOuting(value, next.id, "enmaku_visit"));
   next = nextWindow(value);
@@ -92,6 +92,25 @@ const ids = (value, window) => chapterThreeOutings(value, window.id).map(item =>
   const late = at("d12-noon");
   for (const [once, regular] of [["enmaku_answer", "enmaku_visit"], ["steve_timer", "steve_visit"]])
     assert(ids(late.value, late.window).includes(once) && !ids(late.value, late.window).includes(regular), `${regular} waits for ${once}`);
+}
+
+// RVE07: 鉄の煙にも通える。初来店（DAY12夜の ch3_volk_first）の後から、何度でも・3本を巡回・好感度は通いの値
+{
+  const volk = TOKYO_OUTINGS.find(item => item.id === "volk_visit");
+  assert.deepEqual([volk.place, volk.after, volk.affinityWith, volk.repeat, volk.regular, volk.talks.length],
+    ["volk", "ch3_volk_first", "volk", true, true, 3]);
+  for (const id of volk.talks) assert(OUTING_DIALOGUE_IDS.includes(id), `${id} is loaded`);
+  const before = at("d12-noon");
+  assert(!ids(before.value, before.window).includes("volk_visit"), "Not before the first visit to Iron Smoke");
+  const talkAfter = n => outingDialogueId({ ...before.value, flags: { ...before.value.flags, [OUTINGS_FLAG]: { volk_visit: n } } }, volk, before.window);
+  assert.deepEqual([0, 1, 2, 3, 4].map(talkAfter),
+    ["ch3_outing_volk_visit", "ch3_outing_volk_visit_b", "ch3_outing_volk_visit_c", "ch3_outing_volk_visit_b", "ch3_outing_volk_visit_c"]);
+  assert.deepEqual(outingAffinity(before.value, volk), { volk: 16 }, "The first visit gains like a stage talk");
+  const regulars = { ...before.value, flags: { ...before.value.flags, [OUTINGS_FLAG]: { volk_visit: 1 } } };
+  assert.deepEqual(outingAffinity(regulars, volk), { volk: 8 }, "Later visits gain like a small talk");
+  const after = { ...before.value, flags: { ...before.value.flags, _ch3_intro: { ...before.value.flags._ch3_intro,
+    stage: chapterThreeScenes(before.value).findIndex(scene => scene.id === "ch3_volk_first") + 1 } } };
+  assert(chapterThreeOutingCandidates(after).some(item => item.id === "volk_visit"), "Open after the first visit");
 }
 
 // 旧ルートの非会員は従来どおり空き時間を増やさない。
@@ -141,6 +160,7 @@ function nextWindow(value) {
   const next = nextWindow(value);
   assert.equal(next.id, "d9-night");
   assert(!ids(value, next).includes("enmaku_notes"), "A one-time visit repeated");
+  assert.equal(chapterThreeOutings(value, next.id).find(item => item.id === "mukai_help").money, 10000, "mukai and tonari share the chapter 3 wage");
   assert(claimChapterThreeOuting(value, next.id, "mukai_help"));
   const later = nextWindow(value);
   assert(claimChapterThreeOuting(value, later.id, "mukai_help"));
@@ -207,9 +227,9 @@ function nextWindow(value) {
   assert.equal(TOKYO_OUTINGS.find(item => item.id === "steve_timer").affinityWith, "steve");
   // 好感度の付く外出は、一度きりの話か、通うたびに台本が変わる行き先（AFB02）。
   assert(TOKYO_OUTINGS.filter(item => item.affinityWith).every(item => !item.repeat || item.talks?.length >= 2), "Repeated affinity outings rotate talks");
-  // 久世（#2028・AFB02）: 好感度は煙幕への外出の確定時（一度きりの話は段階会話の +16）。台本には報酬行を置かない。
+  // 綾取（#2028・AFB02）: 好感度は煙幕への外出の確定時（一度きりの話は段階会話の +16）。台本には報酬行を置かない。
   for (const id of ["enmaku_notes", "enmaku_answer"]) {
-    assert.deepEqual(outingAffinity(newState(), TOKYO_OUTINGS.find(item => item.id === id)), { kuze: 16 });
+    assert.deepEqual(outingAffinity(newState(), TOKYO_OUTINGS.find(item => item.id === id)), { saku: 16 });
     assert(!JSON.stringify(byId[`ch3_outing_${id}`]).includes("affinity"));
   }
   // てつこの世話は撫でる／餌の2択。どちらの枝も次の行へ戻り、報酬行を持たない。
@@ -234,7 +254,7 @@ function nextWindow(value) {
   assert(!plain.pins.some(item => item.id === "park"));
 }
 
-// 久世のLIME交換と締めくくり（#2028）: 助言の後、煙幕への再訪で♥1になった時だけ場面カードに出る。
+// 綾取のLIME交換と締めくくり（#2028）: 助言の後、煙幕への再訪で♥1になった時だけ場面カードに出る。
 // 好感度は任意の場面だけで付き、必須場面（本編・後日談の片づけ）では付かない。
 {
   const routes = JSON.parse(fs.readFileSync(new URL("../../data/story_routes.json", import.meta.url)));
@@ -242,35 +262,193 @@ function nextWindow(value) {
   const scene = id => [...read("ch3_rivals"), ...read("ch3_main")].find(dialogue => dialogue.dialogue_id === id);
   const offered = value => availableOptionalScenes(routes, value).map(item => item.id);
   const early = at("d8-night");
-  early.value.affinity.kuze = AFFINITY_RANK_PTS[5];
-  assert(!offered(early.value).includes("ch3_kuze_lime"), "Kuze's LIME before his advice");
+  early.value.affinity.saku = AFFINITY_RANK_PTS[5];
+  assert(!offered(early.value).includes("ch3_saku_lime"), "Ayatori's LIME before his advice");
   const { value } = at("d12-noon");
-  assert(!offered(value).includes("ch3_kuze_lime"), "Kuze's LIME without affinity");
-  value.affinity.kuze = AFFINITY_RANK_PTS[1] - 1;
-  assert(!offered(value).includes("ch3_kuze_lime"), "Kuze's LIME below ♥1");
-  value.affinity.kuze = AFFINITY_RANK_PTS[1];
-  assert(offered(value).includes("ch3_kuze_lime"));
-  commitOptionalRead(value, "ch3_kuze_lime");
-  assert(!offered(value).includes("ch3_kuze_lime"), "Kuze's LIME read twice");
-  const lime = scene("ch3_kuze_lime").lines;
-  assert(lime.some(line => line.type === "set_flag" && line.flag === "_lime_contact_kuze"));
-  assert.deepEqual(lime.filter(line => line.type === "apply").map(line => line.affinity), [{ kuze: 2 }]);
-  assert.equal(classifyFlag("_lime_contact_kuze"), "person");
-  for (const id of ["ch3_kuze_first", "ch3_kuze_mukai_visit", "ch3_kuze_advice", "ch3_enmaku_cleanup"]) {
+  assert(!offered(value).includes("ch3_saku_lime"), "Ayatori's LIME without affinity");
+  value.affinity.saku = AFFINITY_RANK_PTS[1] - 1;
+  assert(!offered(value).includes("ch3_saku_lime"), "Ayatori's LIME below ♥1");
+  value.affinity.saku = AFFINITY_RANK_PTS[1];
+  assert(offered(value).includes("ch3_saku_lime"));
+  commitOptionalRead(value, "ch3_saku_lime");
+  assert(!offered(value).includes("ch3_saku_lime"), "Ayatori's LIME read twice");
+  const lime = scene("ch3_saku_lime").lines;
+  assert(lime.some(line => line.type === "set_flag" && line.flag === "_lime_contact_saku"));
+  assert.deepEqual(lime.filter(line => line.type === "apply").map(line => line.affinity), [{ saku: 2 }]);
+  assert.equal(classifyFlag("_lime_contact_saku"), "person");
+  for (const id of ["ch3_saku_first", "ch3_saku_mukai_visit", "ch3_saku_advice", "ch3_enmaku_cleanup"]) {
     const dialogue = scene(id);
     const lines = [...dialogue.lines, ...Object.values(dialogue.branches || {}).flat()];
-    assert(!dialogue.metadata?.add_affinity && !lines.some(line => line.affinity?.kuze), `${id}: mandatory scenes give no affinity`);
+    assert(!dialogue.metadata?.add_affinity && !lines.some(line => line.affinity?.saku), `${id}: mandatory scenes give no affinity`);
   }
   const cleanup = scene("ch3_enmaku_cleanup");
-  const gate = cleanup.lines.find(line => line.type === "condition" && line.flag === "_lime_contact_kuze");
-  assert(gate && !gate.next_false && cleanup.branches[gate.next_true].some(line => line.speaker === "kuze"));
+  const gate = cleanup.lines.find(line => line.type === "condition" && line.flag === "_lime_contact_saku");
+  assert(gate && !gate.next_false && cleanup.branches[gate.next_true].some(line => line.speaker === "saku"));
   // CI の quick は立ち絵を取得しないため、画像がある環境だけ表情を照合する（表情の登録は lint_dialogue でも検査）。
-  const spriteDir = new URL("../img/sprites/characters/kuze/", import.meta.url);
+  const spriteDir = new URL("../img/sprites/characters/saku/", import.meta.url);
   if (fs.existsSync(spriteDir)) {
-    const faces = new Set(fs.readdirSync(spriteDir).map(name => name.replace(/^chr_kuze_|\.webp$/g, "")));
-    for (const line of [...lime, ...cleanup.branches[gate.next_true]]) if (line.speaker === "kuze") assert(faces.has(line.face), line.face);
+    const faces = new Set(fs.readdirSync(spriteDir).map(name => name.replace(/^chr_saku_|\.webp$/g, "")));
+    for (const line of [...lime, ...cleanup.branches[gate.next_true]]) if (line.speaker === "saku") assert(faces.has(line.face), line.face);
+  }
+}
+
+// スティーブのLIME交換（#2028）: 配達で面識があり、♥2で、mukai の店番の3回目（客の顔の回 _c）の後に mukai の寄り道に出る
+// （締めくくりの前提）。店番の通いは1回目で♥1、2回目で♥2。顔の回より先に頼みごとを読むと、話の順が逆になる。
+// 低温の話の後は店番の通いが終わるので、♥2だけで開く。好感度は任意の場面だけで付き、必須の低温の話では付かない。
+{
+  const routes = JSON.parse(fs.readFileSync(new URL("../../data/story_routes.json", import.meta.url)));
+  const read = name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))).dialogues;
+  const scene = id => read("ch3_rivals").find(dialogue => dialogue.dialogue_id === id);
+  const offered = value => availableOptionalScenes(routes, value).map(item => item.id);
+  const { value } = at("d8-night");
+  value.affinity.steve = AFFINITY_RANK_PTS[5];
+  assert(!offered(value).includes("ch3_steve_lime"), "Steve's LIME before meeting him");
+  value.met.steve = true;
+  const visits = TOKYO_OUTINGS.find(item => item.id === "mukai_steve");
+  value.affinity.steve = outingAffinity(newState(), visits).steve;
+  assert(value.affinity.steve < AFFINITY_RANK_PTS[2], "one customer visit is ♥1");
+  assert(!offered(value).includes("ch3_steve_lime"), "Steve's LIME below ♥2");
+  value.affinity.steve += outingAffinity({ ...value, flags: { ...value.flags, [OUTINGS_FLAG]: { mukai_steve: 1 } } }, visits).steve;
+  assert(value.affinity.steve >= AFFINITY_RANK_PTS[2], "the second customer visit reaches ♥2");
+  value.flags[OUTINGS_FLAG] = { mukai_steve: 2 };
+  assert(!offered(value).includes("ch3_steve_lime"), "Steve's LIME before the face-reading visit");
+  assert.equal(outingDialogueId(value, visits), "ch3_outing_mukai_steve_c", "the third visit is the face-reading talk");
+  value.flags[OUTINGS_FLAG] = { mukai_steve: 3 };
+  const entry = availableOptionalScenes(routes, value).find(item => item.id === "ch3_steve_lime");
+  assert(entry, "Steve's LIME opens at ♥2 after the face-reading visit");
+  assert.equal(entry.label, "スティーブの頼みごと", "the mukai entry names Steve");
+  assert.deepEqual([entry.location, entry.host], ["mukai", "steve"], "read at mukai, the action's person is Steve");
+  commitOptionalRead(value, "ch3_steve_lime");
+  assert(!offered(value).includes("ch3_steve_lime"), "Steve's LIME read twice");
+  // 低温の話の後は店番の通い（mukai_steve）が出ないので、回数を問わず♥2で開く（Smoke & Glory の通いでも♥は上がる）。
+  {
+    const late = departure();
+    const stop = chapterThreeScenes(late).findIndex(item => item.id === "ch3_steve_low_heat");
+    for (let guard = 0; late.flags._ch3_intro.stage <= stop && guard < 80; guard++) {
+      const window = chapterThreeFreeTime(late);
+      if (window) { assert(completeChapterThreeFreeTime(late, window.id)); continue; }
+      assert(completeChapterThreeScene(late, chapterThreeScenes(late)[late.flags._ch3_intro.stage].id));
+    }
+    late.met.steve = true;
+    late.affinity.steve = AFFINITY_RANK_PTS[2];
+    assert(!chapterThreeOutingCandidates(late).some(item => item.id === "mukai_steve"), "the customer visits end at the low-heat talk");
+    assert(offered(late).includes("ch3_steve_lime"), "after the low-heat talk, ♥2 alone opens Steve's LIME");
+    late.affinity.steve = AFFINITY_RANK_PTS[2] - 1;
+    assert(!offered(late).includes("ch3_steve_lime"), "still ♥2 after the low-heat talk");
+  }
+  const lime = scene("ch3_steve_lime").lines;
+  assert(lime.some(line => line.type === "set_flag" && line.flag === "_lime_contact_steve"));
+  assert.deepEqual(lime.filter(line => line.type === "apply").map(line => line.affinity), [{ steve: 2 }]);
+  assert.equal(classifyFlag("_lime_contact_steve"), "person");
+  assert.equal(classifyFlag("_ch3_read_ch3_steve_lime"), "progression");
+  const low = scene("ch3_steve_low_heat");
+  assert(!low.metadata?.add_affinity && !low.lines.some(line => line.affinity?.steve), "the mandatory low-heat scene gives no affinity");
+  // 日常ループでは昼にも夜にも読むので、時間帯を言わない（締めくくりも同じ）。
+  const finale = scene("ch3_steve_bond_finale");
+  const texts = [...lime, ...finale.lines, ...Object.values(finale.branches).flat()].map(line => line.text || "").join("\n");
+  assert.doesNotMatch(texts, /今夜|閉店後|昼の/, "no time of day in Steve's LIME and finale");
+  const spriteDir = new URL("../img/sprites/characters/steve/", import.meta.url);
+  if (fs.existsSync(spriteDir)) {
+    const faces = new Set(fs.readdirSync(spriteDir).map(name => name.replace(/^chr_steve_|\.webp$/g, "")));
+    for (const line of [...lime, ...finale.lines, ...Object.values(finale.branches).flat()])
+      if (line.speaker === "steve") assert(faces.has(line.face), line.face);
+  }
+}
+
+// ヴォルクのLIME交換（#2028）: 鉄の煙の四度目の来店（「次は、俺のメモも持ってきます」）の後、面識と♥2で鉄の煙の寄り道に出る
+// （締めくくりの前提）。版3の日常ループでは初来店から大会まで行動が一つしかないので、大会後の寄り道にも同じ条件で出す
+// （ch3_aftermath.mjs）。好感度は任意の場面だけで付く。昼にも夜にも読むので、LIME交換と締めくくりは時間帯を言わない。
+{
+  const routes = JSON.parse(fs.readFileSync(new URL("../../data/story_routes.json", import.meta.url)));
+  const volk = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_volk.json", import.meta.url))).dialogues;
+  const scene = id => volk.find(dialogue => dialogue.dialogue_id === id);
+  const offered = value => availableOptionalScenes(routes, value).map(item => item.id);
+  const late = departure();
+  const first = chapterThreeScenes(late).findIndex(item => item.id === "ch3_volk_first");
+  for (let guard = 0; late.flags._ch3_intro.stage <= first && guard < 80; guard++) {
+    const window = chapterThreeFreeTime(late);
+    if (window) { assert(completeChapterThreeFreeTime(late, window.id)); continue; }
+    assert(completeChapterThreeScene(late, chapterThreeScenes(late)[late.flags._ch3_intro.stage].id));
+  }
+  late.met.volk = true;
+  late.affinity.volk = AFFINITY_RANK_PTS[5];
+  assert(offered(late).includes("ch3_volk_second") && !offered(late).includes("ch3_volk_lime"), "the visits come first");
+  for (const id of ["ch3_volk_second", "ch3_volk_third"]) {
+    commitOptionalRead(late, id);
+    assert(!offered(late).includes("ch3_volk_lime"), `not right after ${id}`);
+  }
+  commitOptionalRead(late, "ch3_volk_fourth");
+  const entry = availableOptionalScenes(routes, late).find(item => item.id === "ch3_volk_lime");
+  assert(entry, "Volk's LIME opens after the fourth visit");
+  assert.deepEqual([entry.label, entry.location, entry.bg], ["持ってきたメモ", "鉄の煙", "bg_volk_shop"]);
+  late.affinity.volk = AFFINITY_RANK_PTS[2] - 1;
+  assert(!offered(late).includes("ch3_volk_lime"), "below ♥2");
+  late.affinity.volk = AFFINITY_RANK_PTS[2];
+  assert(offered(late).includes("ch3_volk_lime"), "at ♥2");
+  late.met.volk = false;
+  assert(!offered(late).includes("ch3_volk_lime"), "only once met");
+  late.met.volk = true;
+  commitOptionalRead(late, "ch3_volk_lime");
+  assert(!offered(late).includes("ch3_volk_lime"), "read once");
+  const lime = scene("ch3_volk_lime").lines;
+  assert(lime.some(line => line.type === "set_flag" && line.flag === "_lime_contact_volk"));
+  assert.deepEqual(lime.filter(line => line.type === "apply").map(line => line.affinity), [{ volk: 2 }]);
+  assert.equal(classifyFlag("_lime_contact_volk"), "person");
+  assert.equal(classifyFlag("_ch3_read_ch3_volk_lime"), "progression");
+  const finale = scene("ch3_volk_bond_finale");
+  const rows = [...lime, ...finale.lines, ...Object.values(finale.branches).flat()];
+  assert.doesNotMatch(rows.map(line => line.text || "").join("\n"), /今夜|閉店後|昼の|夜の/, "no time of day in Volk's LIME and finale");
+  const spriteDir = new URL("../img/sprites/characters/volk/", import.meta.url);
+  if (fs.existsSync(spriteDir)) {
+    const faces = new Set(fs.readdirSync(spriteDir).map(name => name.replace(/^chr_volk_|\.webp$/g, "")));
+    for (const line of rows) if (line.speaker === "volk") assert(faces.has(line.face), line.face);
   }
 }
 
 assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
 console.log("ch3 outings: ok");
+
+
+// #3097: park revisits vary by visit count and actual slot without changing state or recovery.
+{
+  const park = TOKYO_OUTINGS.find(item => item.id === "park_walk");
+  const value = at("d5-noon").value;
+  assert.equal(park.stamina, 20);
+  assert.equal(park.stat, undefined);
+  assert.equal(park.affinityWith, undefined);
+  for (const slot of [0, 1]) {
+    const base = `ch3_outing_park_walk_${slot ? "night" : "day"}`;
+    for (const count of [0, 1, 2, 3, 4, 81]) {
+      value.flags[OUTINGS_FLAG] = { park_walk: count };
+      value.slot = 1 - slot;
+      const before = structuredClone(value);
+      assert.equal(outingDialogueId(value, park, { slot }), count ? `${base}_${count % 2 ? "b" : "c"}` : base);
+      assert.deepEqual(value, before, "Selecting a park revisit must not mark a visit or change the save");
+      value.slot = slot;
+      assert.equal(outingDialogueId(value, park), count ? `${base}_${count % 2 ? "b" : "c"}` : base);
+    }
+  }
+  const data = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_outings.json", import.meta.url)));
+  const byId = Object.fromEntries(data.dialogues.map(scene => [scene.dialogue_id, scene]));
+  const newIds = ["enmaku_visit_d", "steve_visit_c", ...["day", "night"].flatMap(time => ["b", "c"].map(suffix => `park_walk_${time}_${suffix}`))].map(id => `ch3_outing_${id}`);
+  for (const id of newIds) {
+    assert(OUTING_DIALOGUE_IDS.includes(id), `${id}: real loader requests the new scene`);
+    assert(byId[id].lines.length >= 8);
+    assert(byId[id].lines.every(line => !line.type && typeof line.text === "string" && line.text.length > 0));
+    assert.equal(byId[id].metadata, undefined, `${id}: no extra reward, flavor lesson or background override`);
+  }
+  for (const [id, expected] of [
+    ["enmaku_visit", ["b", "c", "d", "b", "c", "d"]],
+    ["steve_visit", ["b", "c", "b", "c", "b", "c"]],
+  ]) {
+    const outing = TOKYO_OUTINGS.find(item => item.id === id);
+    for (let count = 1; count <= expected.length; count++) {
+      value.flags[OUTINGS_FLAG] = { [id]: count };
+      const before = structuredClone(value);
+      assert.equal(outingDialogueId(value, outing), `ch3_outing_${id}_${expected[count - 1]}`);
+      assert.deepEqual(outingAffinity(value, outing), { [outing.affinityWith]: 8 });
+      assert.deepEqual(value, before);
+    }
+  }
+}
+console.log("PASS: six everyday scenes load and rotate; park recovery and ordinary visit affinity remain unchanged");

@@ -33,7 +33,7 @@
 | 1 | 開幕（コールドオープン→章タイトル→tonari開店→つむぎ取材・連絡先交換、一台チュートリアル） | おつかい①：Dr.fookah でレモン仕入れ（経費・贈られる） | おつかい②：KEMURIKUSA 偵察（なる、行動1回＋交通費）→ 退勤帰宅 | なし | `day1Errands`（`calendar.js:259-298`）。`remake_lemon_gift` でレモン支給。偵察後 `slot=2` で終了 |
 | 2 | DAYカード・LIME。tonari で2軒分の配達を一括受注（`briefDeliveryBatch`） | みんと配達（PEPPERMINT、`remake_delivery_minto`） | アダム配達（EDEN、`remake_delivery_eden`）→ tonari へ報告 | 常連さんの話（`ch1_salaryman_regular`、schedule=regular） | 無料の大会登録＋**規則提示**（`registerTournament` `:300-312`／`_ch1_rules_read`）。配達手当 `DELIVERY_PAY=2000`（`:328`）。帰宅前に**スミさんが卓上台＋ダブルアップル50g を譲る**（`giveEarlyHomeRig`＝`ch1.js:202`→`home-rig.js:giveSumiRig`、`RIG_SCENE="ch1_sumi_home_rig"`） |
 | 3 | DAYカード・LIME | 自由行動 | 自由行動 | 基礎の確認（`_ev_first_practice`、`earlyPractice`、deadline6） | つむぎの途中の絵→通し練習（調整なし、`runFullPractice{adjustments:false}`、`ch1.js:364`） |
-| 4 | 〃 | 自由行動 | 自由行動 | なし | バイト上がりに `ch1_ageha_encounter`（`tonari.js:132-138`）。アゲハ初遭遇は day≥4 |
+| 4 | 〃 | 自由行動 | 自由行動 | なし | バイト上がりに `ch1_ageha_encounter`（`tonari.js:132-138`）。あげは初遭遇は day≥4 |
 | 5 | 〃 | 自由行動 | 自由行動 | スミさんの話（`ch1_day5_sumi_story`、regular） | — |
 | 6 | 〃 | 自由行動 | 自由行動 | なし | 覆面客（上園）cameo はバイト n≥4・day≥6（`tonari.js:103-107`） |
 | 7 | 〃 | 自由行動 | 自由行動 | 中間準備（`_ev_midcheck`、`midPreparation`、deadline12） | intro→**レモン仕入れ**（`prepareFlavorStock` `ch1.js:392`）→調整練習→講評→**スミさんが卓上台を譲る**（未受領セーブのフォールバック `giveSumiRig` `ch1.js:411`） |

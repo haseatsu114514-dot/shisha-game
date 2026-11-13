@@ -10,7 +10,7 @@ const evidence = path.join(root, "docs/qa/ch2-preview");
 const route = new URL("chapter2-preview.html", baseURL).href;
 const test = name => `[data-test="ch2-preview-${name}"]`;
 const pins = ["ageha", "kumicho", "rei", "c_station"];
-const names = { ageha: "あげは", kumicho: "神崎竜二", rei: "零", volk: "ヴォルク" };
+const names = { ageha: "あげは", kumicho: "神崎竜二", rei: "レヰ", volk: "ヴォルク" };
 fs.mkdirSync(evidence, { recursive: true });
 
 async function seedAndOpen(page, prepare = null) {
@@ -333,7 +333,7 @@ await suite("ch2-preview", async check => {
 
   await check("return-remembers-only-completed-visits", async page => {
     const before = await seedAndOpen(page);
-    const people = { ageha: 'あげはさん', kumicho: '神崎さん', rei: 'REIさん', volk: 'ヴォルクさん' };
+    const people = { ageha: 'あげは', kumicho: '神崎さん', rei: 'レヰ', volk: 'ヴォルクさん' };
     for (const itinerary of [[], ['c_station'], ['ageha']]) {
       await launch(page);
       for (const id of itinerary) await visit(page, id);
@@ -343,7 +343,7 @@ await suite("ch2-preview", async check => {
       const text = await page.evaluate(async () => (await import('./js/vn/engine.js')).backlog().map(line => line.text).join('\n'));
       for (const [id, name] of Object.entries(people)) assert.equal(text.includes(name), itinerary.includes(id), `Unvisited person appeared in return: ${text}`);
       assert.equal(text.includes('会場、分かりました'), itinerary.includes('c_station'));
-      assert.equal(text.includes('入口で挨拶した'), itinerary.some(id => id !== 'c_station'));
+      assert.equal(text.includes('挨拶を交わしただけ'), itinerary.some(id => id !== 'c_station'));
       await preserved(page, before);
       await page.locator(test('restart')).click();
       await page.locator(test('start')).waitFor();

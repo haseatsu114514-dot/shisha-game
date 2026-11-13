@@ -10,7 +10,7 @@ import { coalWarmth } from "./coals.js";
 import { temperatureBands, temperatureFitness, isIdealTemperature, isOptimalTemperature } from "./temperature-model.js";
 import { BURST_TEMP, COLD_OUT } from "./temperature-model.js";
 
-export { IDEAL, OPTIMAL, DANGER_TEMP, BURST_TEMP, COLD_OUT, temperatureBands, isIdealTemperature, isOptimalTemperature, visualTemperature } from "./temperature-model.js";
+export { IDEAL, OPTIMAL, DANGER_TEMP, BURST_TEMP, COLD_OUT, temperatureBands, isIdealTemperature, isOptimalTemperature, isRainbowTemperature, visualTemperature } from "./temperature-model.js";
 // 熱い構成・長い蒸らしは過熱する。吸い出しで実温度を見て調整する。
 export const STEAM_LIMIT = .88;
 /** 温度計の一番上に届くと爆発して焦げる。 */

@@ -1,3 +1,4 @@
+import { shiftBasePay, shiftPayNote } from "../core/shift-pay.js";
 import { CHARM_BONUS } from "../core/stat-step-tables.js";
 import { chapterFeatureEnabled } from "../core/chapter-features.js";
 import { callingSalesBonus } from "../core/growth-effects.js";
@@ -26,6 +27,13 @@ import { canStudyCubeCoals, studyCubeCoals } from "./coal-lesson.js";
 import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
+// カードゲーム「一台勝負」の入口の切替（ICG12）。入・切は daily/ichidai-table.js が起動時に端末へ書き、ここは読むだけにする
+// （このメニューの取り込みを増やさない。既定で出すと決まったら、この2つの関数ごと外す）。
+const ichidaiOn = () => { try { return globalThis.localStorage?.getItem("suien_ichidai") === "1"; } catch { return false; } };
+const ichidaiNote = () => {
+  const r = state.ichidai, n = (v) => (Number.isInteger(v) && v > 0 ? v : 0);
+  return n(r?.plays) ? `スミさんと卓を囲む。時間は進まない。${n(r.wins)}勝${n(r.losses)}敗` : "スミさんと卓を囲む。時間は進まない";
+};
 
 /** tonari に入ったときのサブメニュー。戻るなら null */
 // ch2-story-data.js の strawberryTrialReady と同じ条件。日常の共通画面へ第2章の台本データを読み込ませない。
@@ -38,6 +46,7 @@ export function tonariMenu() {
     playBgm("tonari");
     const tsumugiKnown = !!(state.met.tsumugi || state.flags._met_tsumugi || (state.story.tsumugi || 0) > 0);
     const tsumugiPresent = tsumugiAtTonari(state);
+    const manager = state.chapter >= 5;
     const customerStory = state.visitedDay.tonari_customer !== state.day && tsumugiPresent && hasNewStory("tsumugi");
     const shiftStory = state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi");
     const pickIt = (value) => { retire(root); resolve(value); };
@@ -47,17 +56,19 @@ export function tonariMenu() {
       ]);
     const root = showScreen("tonari", el("div.sub-menu", [
       el("h2.sub-title", { text: "tonari" }),
-      el("p.sub-lead", { text: state.slot === 0 ? "昼のtonari。窓際でスミさんが道具を整えている。今日はどうする？" : "夜のtonari。客席から常連の笑い声が聞こえる。今日はどうする？" }),
+      el("p.sub-lead", { text: manager ? "店長として任されたtonari。出かける時は、人手に合わせてスミさんが店に立ってくれる。今日はどうする？" : state.slot === 0 ? "昼のtonari。窓際でスミさんが道具を整えている。今日はどうする？" : "夜のtonari。客席から常連の笑い声が聞こえる。今日はどうする？" }),
       el("div.sub-choices", [
         opt("お客さんとして一服", `${customerStory ? "【新しい話】" : ""}${!tsumugiPresent ? "客席でゆっくり一服する"
-          : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる"}`, "customer", "tonari-customer"),
+          : manager ? "客席でゆっくり。つむぎが接客をしている" : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる"}`, "customer", "tonari-customer"),
         // #2213 B04: 「まかないで練習」はシフト上がりのメニューへ移した（独立の行動にしない）
         // #1650: 第2章の試煙会のあと、一度だけ。試供品の苺で熱を確かめ、スミさんに吸ってもらう
         strawberryTrialOpen() ? opt("苺を試す（まかない）", "体力を使う・1行動。試煙会の苺で一台。確かめるのは熱だけ", "strawberry", "tonari-strawberry") : null,
-        opt("シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}接客で稼ぐ。上がったあとはスミさんと話せる。まかないで練習もできる`, "baito", "tonari-baito"),
+        opt(manager ? "店長として店に立つ" : "シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}${manager ? "今日の営業を引き受ける。仕事終わりにはスミさんと話せる" : "接客で稼ぐ。上がったあとはスミさんと話せる。まかないで練習もできる"}。${shiftPayNote(state)}＋各種ボーナス`, "baito", "tonari-baito"),
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
+        // カードゲーム「一台勝負」（ICG12）。時間・お金・体力を使わない。?ichidai=1 で入れた端末にだけ出す
+        ichidaiOn() ? opt("カードで一勝負（一台勝負）", ichidaiNote(), "ichidai", "tonari-ichidai") : null,
       ]),
       el("button.btn.ghost.small.sub-back", { text: "← マップに戻る", dataset: { test: "sub-back" }, onclick: () => { SE.cancel(); pickIt(null); } }),
     ]));
@@ -150,11 +161,17 @@ async function baitoShift({ called, story, owner, signal }) {
   const bonus = Math.round(CHARM_BONUS[step("charm") - 1] * condition.bonusRate);
   const extra = called ? CALLED_BONUS : 0;
   const rainPay = rainy ? RAIN_BAITO_BONUS : 0; // 雨の日は長居客の追加注文ぶん
-  const pay = 8000 + bonus + extra + rainPay + condition.shiftBonus + callingBonus;
+  const basePay = shiftBasePay(owner);
+  const pay = basePay + bonus + extra + rainPay + condition.shiftBonus + callingBonus;
   await shiftClose();
-  if (!current() || !await read("remake_baito_end", { bg: TONARI_BG })) return false;
+  const closing = state.chapter >= 5 ? { lines: [
+    { speaker: "", face: "", text: "今日の仕事を終えて、手取りを帳面に記した。" },
+    { speaker: "", face: "", text: "片付けの手伝いに来たスミさんが、カウンターの内側へ回る。" },
+  ] } : "remake_baito_end";
+  if (!current() || !await read(closing, { bg: TONARI_BG })) return false;
   if (called && !await read("remake_sumi_call_thanks", { bg: TONARI_BG })) return false;
   addMoney(pay);
+  toast(`シフトの日当 +${pay.toLocaleString("ja-JP")}円（${shiftPayNote(owner)}・各種ボーナス込み）`, { kind: "good" });
   if (callingBonus) owner.flags._minto_calling_paid = shiftKey; // 同じ行動枠の再開・再入力で上乗せを重ねない。
   if (callingBonus) toast(`呼び込みの追加注文。店からの売上ボーナス +${callingBonus.toLocaleString()}円`, { kind: "good" });
   if (bonus) toast(`指名ボーナス（魅力）＋${bonus.toLocaleString()}円`, { kind: config.statEffectColors !== false ? "charm-bonus" : "good" });
@@ -179,15 +196,18 @@ async function afterShiftErrand() {
   await setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
 }
 
-// home-shisha.js の tasteDistant と同じ条件。shop.js などを連れてくるので import せずに複製する。
-const ch2TasteAway = () => state.chapter === 2 && !!state.flags?._ch2_taste_distant;
+// home-shisha.js の tasteDistant と同じ時期（第2章DAY5〜第3章の東京で味が戻るまで）。shop.js などを連れてくるので
+// import せずに複製する。tonari に立てるのは地元にいる間だけなので、第3章は東京へ発つ前の準備の3日
+// （ch3_prep_opening「無理に吸って確かめるな」）。味が戻るのは発った後の東京。
+const tasteAway = () => !!state.flags?._ch2_taste_distant && (state.chapter === 2
+  || state.chapter === 3 && !!state.flags._ch3_prep && !state.flags._ch3_prep.departed);
 
 /** 台本の条件は、初回でも再来店でも守る。名前を知る条件には旧セーブの進行も使う */
 function customerEligible(event, rainy) {
   if (event.chapter && event.chapter !== state.chapter) return false;
-  // 第2章の味の不調中は、はじめが自分で吸って味を確かめる回（self_taste）を出さない（ch2_lingering_smell「吸って確かめ続けるのはやめた」）。
+  // 味の不調中は、はじめが自分で吸って味を確かめる回（self_taste）を出さない（ch2_lingering_smell「吸って確かめ続けるのはやめた」）。
   // 吸っても味を判じない回（煙の輪など）は対象外。
-  if (event.self_taste && ch2TasteAway()) return false;
+  if (event.self_taste && tasteAway()) return false;
   if ((customerFamilies(event).includes("tsumugi") || event.id.startsWith("baito_tsumugi_"))
     && !tsumugiAtTonari(state)) return false;
   const flagKnown = (flag) => flag === "ch1_tsumugi_regular"
@@ -363,6 +383,49 @@ const SHIFT_ORDERS = [
     reactions: ["shift_flavor_ch2_night_deep_black_tea_lemon", "shift_flavor_ch2_night_deep_caramel_black_tea"] },
   { id: "ch2_tropical_compare", chapter: 2, text: "柚ヶ谷で濃いのを飲んできた。ここは、違う良さがほしい", mixes: [{ mango: 8, passion_fruit: 4 }, { watermelon: 9, mint: 3 }], labels: ["マンゴー＋パッションフルーツ", "スイカ＋ミント"],
     reactions: ["shift_flavor_ch2_tropical_compare_mango_passion_fruit", "shift_flavor_ch2_tropical_compare_watermelon_mint"] },
+  // #2020 E: 第3章以降は、任される中身も変える。二択の選び方は第2章と同じで、選ぶものが配合から
+  // 「何を聞くか」「どう受け取るか」「どう伝えるか」へ広がる（labels がその言葉。mixes は出来上がった一台）。
+  // 任意の項目: title＝窓の見出し、lead＝注文の前の一文、ask＝注文の後の問い。
+  // 第3章（東京へ発つ前の3日）。県大会のあとで、舌はまだ遠い。確かめられない分、聞いてから組み立てる。
+  { id: "ch3_cant_say", chapter: 3, text: "好みを聞かれても、うまく言えないんだよな", ask: "作る前に、一つ聞いてみる。",
+    mixes: [{ lemon: 9, ginger: 3 }, { peach: 8, black_tea: 4 }], labels: ["最近おいしかった飲み物を聞く", "苦手な味を聞く"],
+    reactions: ["shift_flavor_ch3_cant_say_lemon_ginger", "shift_flavor_ch3_cant_say_peach_black_tea"] },
+  { id: "ch3_prefectural_fan", chapter: 3, text: "県大会、見に行ったよ。優勝した苺の一台、ここでも頼める？", ask: "どの一台を勧める？",
+    mixes: [{ strawberry: 8, lime: 4 }, { lychee: 9, jasmine: 3 }], labels: ["苺は残して、店の席向けに軽く", "苺から離れて、今日の一台を"],
+    reactions: ["shift_flavor_ch3_prefectural_fan_strawberry_lime", "shift_flavor_ch3_prefectural_fan_lychee_jasmine"] },
+  { id: "ch3_send_off", chapter: 3, text: "東京、行くんだって？ 行く前に一台、任せるよ", ask: "「任せる」を、どう受け取る？",
+    mixes: [{ double_apple: 10, cardamom: 2 }, { black_tea: 8, honey: 4 }], labels: ["tonariらしい一台で応える", "今日の顔に合わせて軽くする"],
+    reactions: ["shift_flavor_ch3_send_off_double_apple_cardamom", "shift_flavor_ch3_send_off_black_tea_honey"] },
+  // 第4章（ドバイへ発つ前の3日）。全国大会を見た客、前に接客した客に、違う一台を勧める。
+  // returning＝その客が前に頼んだ注文。その注文を受けた記録（_shift_mix_）があれば、反応の前に何を出したかを思い出す。
+  { id: "ch4_saw_nationals", chapter: 4, text: "全国大会の配信、見たよ。チョコの一台、ここでも頼める？", ask: "どの一台を勧める？",
+    mixes: [{ chocolate: 8, orange: 4 }, { pistachio: 8, vanilla: 4 }], labels: ["チョコは残して、店の席向けに", "チョコから離れて、別の一台を"],
+    reactions: ["shift_flavor_ch4_saw_nationals_chocolate_orange", "shift_flavor_ch4_saw_nationals_pistachio_vanilla"] },
+  { id: "ch4_returning_citrus", chapter: 4, returning: "citrus", text: "前にここで、柑橘のさっぱりしたのを吸ったんだ。今日は、違うのがいいな", ask: "どの一台を勧める？",
+    mixes: [{ kiwi: 8, mint: 4 }, { jasmine: 8, peach: 4 }], labels: ["さっぱりは残して、果物を変える", "香りの軽い一台を勧める"],
+    reactions: ["shift_flavor_ch4_returning_citrus_kiwi_mint", "shift_flavor_ch4_returning_citrus_jasmine_peach"] },
+  { id: "ch4_returning_after_work", chapter: 4, returning: "ch2_after_work", text: "前に、仕事帰りに軽いのを作ってもらった。今日は休みなんだ", ask: "どの一台を勧める？",
+    mixes: [{ black_tea: 8, vanilla: 4 }, { rose: 8, lychee: 4 }], labels: ["休みの日らしく、ゆっくり甘く", "休みの日らしく、香りを楽しむ"],
+    reactions: ["shift_flavor_ch4_returning_after_work_black_tea_vanilla", "shift_flavor_ch4_returning_after_work_rose_lychee"] },
+  // 第5章（店長として立つtonari）。後輩のつむぎ（#2606。プロローグで店に立っている）へ短く説明する・つむぎの一台を見て
+  // 助言する・スミさんの教えを自分の言い方で渡す。世界大会を見て来た客には、違う一台を勧める
+  // （「あの日の方向」は第4章の作戦しだいなので、台詞では葉の名を出さない。mixes の一つ目は代表の形）。
+  { id: "ch5_tsumugi_explain", chapter: 5, title: "つむぎの相談", lead: "注文を取ったつむぎが、炭場へ戻ってきた。",
+    text: "初めての方に『ダブルアップルって、林檎の味？』って聞かれました", ask: "短く、どう伝える？",
+    mixes: [{ double_apple: 12 }, { double_apple: 12 }], labels: ["「果物じゃなく、香りの林檎」", "「アニスとリコリスの香り」"],
+    reactions: ["shift_flavor_ch5_tsumugi_explain_image", "shift_flavor_ch5_tsumugi_explain_spices"] },
+  { id: "ch5_tsumugi_advise", chapter: 5, title: "つむぎの相談", lead: "つむぎの作った一台を、炭場から見ていた。客が、小さく咳をした。",
+    text: "……ちょっと、喉にくるかも", ask: "つむぎに、何を伝える？",
+    mixes: [{ grape: 8, mint: 4 }, { grape: 8, mint: 4 }], labels: ["「炭を一つ、下ろそう」", "「炭を縁に寄せて、少し待とう」"],
+    reactions: ["shift_flavor_ch5_tsumugi_advise_remove_coal", "shift_flavor_ch5_tsumugi_advise_edge_wait"] },
+  { id: "ch5_tsumugi_sumi_words", chapter: 5, title: "つむぎの相談", lead: "煙の細くなった台の前で、つむぎがトングを握っていた。",
+    text: "……炭、足したほうがいいですよね", ask: "スミさんの教えを、どう渡す？",
+    mixes: [{ black_tea: 8, lemon: 4 }, { black_tea: 8, lemon: 4 }], labels: ["「足す前に、一回だけ待とう」", "「先に、吸ってる人を見よう」"],
+    reactions: ["shift_flavor_ch5_tsumugi_sumi_words_wait", "shift_flavor_ch5_tsumugi_sumi_words_face"] },
+  { id: "ch5_world_viewer", chapter: 5, lead: "キャリーケースを横に置いた客が、少し緊張した顔で座っていた。",
+    text: "世界大会の動画を見て、来ました。優勝した一台を、お願いできますか", ask: "どの一台を勧める？",
+    mixes: [{ sakura: 8, black_tea: 4 }, { peach: 8, chamomile: 4 }], labels: ["あの日の方向で、店の席向けに", "今日の顔を見て、別の一台を"],
+    reactions: ["shift_flavor_ch5_world_viewer_same_direction", "shift_flavor_ch5_world_viewer_todays_face"] },
 ];
 async function serveShiftOrder() {
   const owner = state;
@@ -370,20 +433,28 @@ async function serveShiftOrder() {
   if (state.flags[key]) return;
   const seed = (state.weatherSeed || 0) ^ Math.imul(state.day + state.chapter * 31, 0x45d9f3b);
   // 章付きの注文はその章だけ。章付きが無い章は、章指定なしの4種から出す。
-  const pool = SHIFT_ORDERS.filter((o) => o.chapter === state.chapter);
+  const pool = SHIFT_ORDERS.filter((o) => o.chapter === state.chapter
+    && (!o.id.startsWith("ch5_tsumugi_") || tsumugiAtTonari(state)));
   const orders = pool.length ? pool : SHIFT_ORDERS.filter((o) => !o.chapter);
   const order = orders[((seed ^ (seed >>> 16)) >>> 0) % orders.length];
-  const index = await modal({ title: "今日の注文", body: `前のお客さんを見送って、次の卓につく。<br>「${order.text}」 店の葉で一台を作る。`,
+  const index = await modal({ title: order.title || "今日の注文",
+    body: `${order.lead || "前のお客さんを見送って、次の卓につく。"}<br>「${order.text}」 ${order.ask || "店の葉で一台を作る。"}`,
     options: order.labels.map((label, i) => ({ label, value: i, test: `shift-order-${i}` })) });
   if (state !== owner || !Number.isInteger(index) || !order.mixes[index]) return;
   // 注文と配合に対応した客の反応を返す（#1073）。給料・行動消費は従来どおり後続のcalendarで確定。
   // 同じ注文が前にもあったら、反応の前にはじめが前回の配合を思い出す（前回と同じか違うかで一行を変える・#1415）。
   const prev = state.flags[`_shift_mix_${order.id}`];
   const recall = Number.isInteger(prev) && order.mixes[prev] ? DB.dialogues[`shift_recall_${order.id}_${prev === index ? "same" : "diff"}`] : null;
+  // 前に接客した客（#2020 E）: その客の前の注文を受けた記録があれば、何を出したかを思い出す。今日の注文そのものを
+  // 前にも受けていれば、そちらの一行（recall）を優先して二行重ねない。
+  const before = order.returning ? state.flags[`_shift_mix_${order.returning}`] : null;
+  const welcome = !recall && Number.isInteger(before) ? DB.dialogues[`shift_return_${order.id}_${before}`] : null;
+  const opening = recall || welcome;
   const scene = DB.dialogues[order.reactions[index]];
-  const result = await play(recall && scene ? { ...scene, lines: [...recall.lines, ...scene.lines] } : order.reactions[index], { bg: TONARI_BG });
+  const result = await play(opening && scene ? { ...scene, lines: [...opening.lines, ...scene.lines] } : order.reactions[index], { bg: TONARI_BG });
   if (state !== owner || result?.cancelled) return;
   // お客さんへの提供は業務。自分の熟練度を稼ぐ対象にはしない。
   state.flags[key] = true; // シフトの給料・行動消費と一緒にcalendarで保存する。
   state.flags[`_shift_mix_${order.id}`] = index;
 }
+

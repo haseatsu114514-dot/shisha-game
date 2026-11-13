@@ -1,7 +1,7 @@
 [
   {
     "id": "rei",
-    "name": "零（REI）",
+    "name": "鴉葬レヰ（あそう れい）",
     "source": "rei/normal-source.png",
     "source_sha256": "eed0fb938b4e341afd0052e1104884863e0a8fbfbb30332e59f63388d5831797",
     "references": [
@@ -49,7 +49,7 @@
   },
   {
     "id": "uranaishi",
-    "name": "路上占い師",
+    "name": "辻占のオババ",
     "source": "uranaishi/normal-source.png",
     "source_sha256": "e90a9461ad6d65246e4d5a715ecb50e7bce06d383fbfea670a7fae9c7048bc62",
     "references": [

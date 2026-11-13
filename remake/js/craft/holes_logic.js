@@ -42,6 +42,46 @@ export const minimumRingComplete = (rings) => {
   return !!outer && outer.targets > 0 && outer.taken.length === outer.targets && outer.taken.every(Boolean);
 };
 export const templateComplete = (rings) => rings.length > 0 && rings.every((ring) => ring.taken.every(Boolean));
+/**
+ * 針は狙う目印の前後の短い弧だけを動く（#2937 案1）。弧の半幅は目印の間隔の半分、上限15°。
+ * 手前の端から奥の端までを sweep 秒で動き、奥の端で rest 秒止まってから手前の端へ戻る。
+ */
+export const NEEDLE = Object.freeze({ maxHalfArc: 15 * DEG, sweep: 0.8, rest: 0.2 });
+export const needleHalfArc = (targets) => Math.min(NEEDLE.maxHalfArc, Math.PI / Math.max(1, targets));
+/** 弧の始まりからの経過秒 → 目印からのずれ（ラジアン、負が手前）。休みの間は奥の端に置く */
+export function needleOffset(seconds, halfArc, slow = 1) {
+  const sweep = NEEDLE.sweep * slow, cycle = sweep + NEEDLE.rest * slow;
+  const t = ((seconds % cycle) + cycle) % cycle;
+  return { offset: -halfArc + (2 * halfArc * Math.min(t, sweep)) / sweep, resting: t > sweep };
+}
+/** ずれの角度を、弧15°の縮尺の基準角へ直す。判定幅（度）はリングの弧の大きさによらず同じ時間幅になる */
+export const referenceDegrees = (offset, halfArc) => Math.abs(offset) / DEG * (NEEDLE.maxHalfArc / halfArc);
+
+/**
+ * 押し加減（#2937 案5、#3026）。押していた秒数で刺し加減が決まる。浅い穴も低評価で成立する。
+ * 上限側だけ slow 倍で伸ばす。large に達したら離さなくても刺し抜ける。
+ */
+export const PRESS = Object.freeze({ shallow: 0.12, small: 0.5, large: 0.85 });
+export const HOLE_SIZES = Object.freeze({ shallow: 0.2, small: 1, wide: 1.35, large: 1.7 });
+export const pressLimit = (slow = 1) => PRESS.large * slow;
+export function pressDepth(seconds, slow = 1) {
+  if (seconds < PRESS.shallow) return "shallow";
+  if (seconds < PRESS.small * slow) return "small";
+  return seconds < PRESS.large * slow ? "wide" : "large";
+}
+/** 穴サイズ安定: 実穴径のそろい方と、標準（小穴）への近さを半々。径の記録が無い穴は標準扱い */
+export function holeSizeStability(rings) {
+  const sizes = rings.flatMap((ring) => ring.holes.map((hole) => Number.isFinite(hole.size) ? hole.size : HOLE_SIZES.small));
+  if (!sizes.length) return 0;
+  const mean = sizes.reduce((sum, size) => sum + size, 0) / sizes.length;
+  const sd = Math.sqrt(sizes.reduce((sum, size) => sum + (size - mean) ** 2, 0) / sizes.length);
+  const uniform = clamp(1 - (sd / mean) / 0.25, 0, 1);
+  const span = HOLE_SIZES.large - HOLE_SIZES.small;
+  const standard = sizes.reduce((sum, size) => sum + (size === HOLE_SIZES.shallow ? 0 : clamp((HOLE_SIZES.large - size) / span, 0, 1)), 0) / sizes.length;
+  return uniform * 0.5 + standard * 0.5;
+}
+const sizeName = (size) => Object.entries(HOLE_SIZES).find(([, value]) => value === size)?.[0] || "small";
+
 /** 外周だけの12穴は1.35倍、全24穴は1倍。途中の密度は連続的に変わる */
 export const timingToleranceFor = (count) => 1 + clamp((24 - count) / 12, 0, 1) * 0.35;
 export function foilDensityProfile(rings) {
@@ -69,7 +109,7 @@ export function foilHeatProfile(holes) {
   };
 }
 
-/** 均等度50 / タイミング精度30 / 穴サイズ15 / 手際5。未着手リングや空き目印は減点しない */
+/** 均等度50 / タイミング精度30 / 穴サイズ安定15（実穴径） / 手際5。未着手リングや空き目印は減点しない */
 export function evaluateFoil(rings, tally, timeRatio, goodWin) {
   const profile = foilDensityProfile(rings);
   const tolerance = timingToleranceFor(profile.count);
@@ -84,7 +124,8 @@ export function evaluateFoil(rings, tally, timeRatio, goodWin) {
       const deviation = Math.sqrt(gaps.reduce((sum, gap) => sum + (gap - ideal) ** 2, 0) / count) / ideal;
       even = clamp(1 - deviation * 1.1, 0, 1);
     }
-    const precision = count ? ring.holes.reduce((sum, hole) => sum + clamp(1 - hole.d / timingWindow, 0, 1), 0) / count : 0;
+    // 精度はズレに対してなだらかに落ちる（#3023: 二値ではなくグラデーション。判定幅の2倍のズレで0）。
+    const precision = count ? ring.holes.reduce((sum, hole) => sum + (hole.size === HOLE_SIZES.shallow ? 0 : clamp(1 - hole.d / (timingWindow * 2), 0, 1)), 0) / count : 0;
     return { id: ring.id, count, even, precision, taken: ring.taken.filter(Boolean).length, targets: ring.targets, weight: ring.weight };
   });
   // 開けたリングだけで重みを正規化。内側を開けない選択を品質不足にしない。
@@ -93,12 +134,17 @@ export function evaluateFoil(rings, tally, timeRatio, goodWin) {
   const precision = activeWeight ? per.reduce((sum, ring) => sum + ring.precision * ring.weight, 0) / activeWeight : 0;
   const targets = per.reduce((sum, ring) => sum + ring.targets, 0);
   const completion = targets ? per.reduce((sum, ring) => sum + ring.taken, 0) / targets : 0;
-  const sizeStab = clamp(0.92 - (tally.tooClose || 0) * 0.08 - (tally.miss || 0) * 0.03, 0.4, 1);
-  const score = profile.count ? Math.round(100 * (evenness * 0.5 + precision * 0.3 + sizeStab * 0.15 + clamp(timeRatio * 2.5, 0, 1) * 0.05)) : 0;
+  // 実際に開いた穴の大きさで評価する（旧式のミス回数からの推定は使わない）。
+  const sizeStab = holeSizeStability(rings);
+  const holeSizes = { small: 0, wide: 0, large: 0, shallow: 0 };
+  rings.forEach((ring) => ring.holes.forEach((hole) => { holeSizes[sizeName(Number.isFinite(hole.size) ? hole.size : HOLE_SIZES.small)]++; }));
+  // 浅い穴は配置として残すが、針が通りにくい分を1穴ごとに大きく減点する。
+  const shallowPenalty = holeSizes.shallow * 8;
+  const score = profile.count ? Math.max(0, Math.round(100 * (evenness * 0.5 + precision * 0.3 + sizeStab * 0.15 + clamp(timeRatio * 2.5, 0, 1) * 0.05) - shallowPenalty)) : 0;
   const ringOf = (id) => per.find((ring) => ring.id === id);
   const dots = rings.flatMap((ring) => ring.holes.map((hole) => [Math.cos(hole.a) * ring.r, Math.sin(hole.a) * ring.r * 0.34]));
   return {
-    score, evenness, precision, completion, sizeStab, timeRatio,
+    score, evenness, precision, completion, sizeStab, holeSizes, timeRatio,
     outer: profile.outer, middle: profile.middle, inner: profile.inner, total: profile.count,
     innerExcess: Math.max(0, profile.inner - 4), outerEven: ringOf("outer")?.even || 0,
     tally: { ...tally }, dots, minimumComplete: minimumRingComplete(rings), densityProfile: profile, timingTolerance: tolerance,

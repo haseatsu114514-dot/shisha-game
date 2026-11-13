@@ -11,9 +11,9 @@
     {
       "chapter": 1,
       "title": "煙がつなぐ街",
-      "path": "asset_sources/chapter-title/ch1-white-walk-385-20261013/selected-D/D-title.png",
-      "sha256": "8ee5076b1429b376d542727a2c96ea691e2eeada913b315990da6661486cf972",
-      "variant": "selected-D typography 02",
+      "path": "asset_sources/chapter-title/ch1-white-walk-385-20261013/remake-b-20261106/title.png",
+      "sha256": "3f73ee754c8b72ca23fb04a2bbbda9760b34a6a96c6689febb2063513bf89f6b",
+      "variant": "2026-11-06 remake B: アダム／なるの服装を現行化、オーナー採用（旧: selected-D typography 02）",
       "palette": "white / walking pixel art"
     },
     {
@@ -27,9 +27,9 @@
     {
       "chapter": 3,
       "title": "嘘つきたちの夜",
-      "path": "asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/images/default-ch3.png",
-      "sha256": "15068735e34b21a52987c6fdfa1c94b0efa7a3bd60b96267a2e328e13f164574",
-      "variant": "ch3-01-rain-mincho",
+      "path": "asset_sources/chapter-title/ch2-5-style-studies-385-20261013/type-polish/remake-e-20261106/E-divergent-gaze.png",
+      "sha256": "86f7da9742b8f659bb14681894e5bab751a64cce092d00cf92f19fa1a7ec6cd2",
+      "variant": "2026-11-06 正式採用 E「交わらない視線」（選別カタログ No.5）。経緯: E4（路地の陰）仮採用 → M4改「すれ違いと雨」へ一度決定 → 最終的に E へ変更・確定（いずれもオーナー決定 2026-11-06）",
       "palette": "silver grey / worn antique gold"
     },
     {

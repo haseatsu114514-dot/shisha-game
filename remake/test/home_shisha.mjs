@@ -59,7 +59,7 @@ assert.equal(kuji.prizes.find((p) => p.rank === "S").equipId, rig.PRO_RIG);
 const sumiScene = read("../../data/dialogue/ch1_sumi.json").dialogues.find((d) => d.dialogue_id === rig.RIG_SCENE);
 assert(sumiScene?.lines.some((l) => l.text?.includes("ミャア")), "スミさんがミャアの卓上台を譲る場面");
 assert.equal(sumiScene.lines.find((l) => l.speaker === "sumi").text, "これやる", "スミさんの最初の一言は「これやる」");
-assert.match(sumiScene.lines.map(l => l.text || "").join(" "), /一酸化炭素.*中毒.*命.*室内で炭を焚くな.*窓を開けても、安全とは言えない/);
+assert.match(sumiScene.lines.map(l => l.text || "").join(" "), /一酸化炭素.*中毒.*命.*窓は少し開けとけ.*閉め切った部屋で炭を焚くと、頭が痛くなる/);
 // 中盤の修行（DAY7 の中間準備）の最後に渡す
 const ch1Source = fs.readFileSync(new URL("../js/chapters/ch1.js", import.meta.url), "utf8");
 const midPrep = ch1Source.slice(ch1Source.indexOf("async function midPreparation"), ch1Source.indexOf("async function rehearsal"));
@@ -195,6 +195,7 @@ for (const schema of [14, SCHEMA]) for (const [label, patch, grant] of [
   store.set(key, original);
   const expected = JSON.parse(original);
   expected.schema = SCHEMA;
+  if (schema < 27) expected.affinity.sumi = Math.max(expected.affinity.sumi || 0, 9);
   if (schema < 19) expected.flags._sumi_double_apple_received = true;
   if (schema < 16) expected.flags._axe_bar_legacy_access = true; // #577の旧保存互換だけを追加。資源の厳密比較は維持
   if (schema < 25) expected.flags._dense_pack_legacy = true;
@@ -376,7 +377,19 @@ for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, ri
   assert.equal(home.tasteDistant(s), false, "Chapter 1 never");
   s.chapter = 2; assert.equal(home.tasteDistant(s), false, "Before the DAY5 slump");
   s.flags._ch2_taste_distant = true; assert.equal(home.tasteDistant(s), true, "During the chapter 2 slump");
-  s.chapter = 3; assert.equal(home.tasteDistant(s), false, "Later chapters own their own recovery scenes");
+  // 第3章: 東京へ発つ前の3日と東京の前半は不調のまま。東京で ch3_taste_return を読んだら戻る（保存は変えない）。
+  s.chapter = 3; s.flags._ch3_prep = { startDay: s.day, days: 3, step: 0, departed: false };
+  s.flags._ch3_intro = { startDay: s.day + 3, stage: 0, titleSeen: false, routeVersion: 3 };
+  assert.equal(home.tasteDistant(s), true, "Departure prep days: taste is still distant");
+  s.flags._ch3_prep.departed = true; s.flags._ch3_intro.stage = 13;
+  assert.equal(home.tasteDistant(s), true, "Tokyo before ch3_taste_return");
+  s.flags._ch3_intro.stage = 14; assert.equal(home.tasteDistant(s), false, "ch3_taste_return has been read");
+  assert.equal(s.flags._ch3_intro.stage, 14, "Reading the taste state does not move the chapter");
+  const legacy = { chapter: 3, flags: { _ch2_taste_distant: true, _ch3_intro: { startDay: 1, stage: 8, titleSeen: true } } };
+  assert.equal(home.tasteDistant(legacy), true, "Legacy Tokyo route: before its ch3_taste_return");
+  legacy.flags._ch3_intro.stage = 9; assert.equal(home.tasteDistant(legacy), false, "Legacy Tokyo route: after its ch3_taste_return");
+  assert.equal(home.tasteDistant({ chapter: 3, flags: { _ch3_prep: { departed: false } } }), false, "No slump record, no distant taste");
+  s.chapter = 4; s.flags._ch3_intro.stage = 0; assert.equal(home.tasteDistant(s), false, "Chapter 4 and later: taste has returned");
 }
 // P18: 本物の選択フローと消費APIで、確認前・取消・資源変更・LOADの境界を検査する。
 {

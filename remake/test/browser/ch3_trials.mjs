@@ -47,11 +47,11 @@ async function finishTrial(page) {
 
 await suite("ch3-trials", async check => {
   await check("before-recovery-has-no-trial", async page => {
-    await seed(page, "ch3_kuze_advice");
+    await seed(page, "ch3_saku_advice");
     assert.equal(await page.locator(t("ch3-intro-trial-open")).count(), 0);
   });
 
-  for (const [id, auto] of [["steve", "good"], ["kuze", "good"]]) await check(`trial-${id}-${auto}`, async page => {
+  for (const [id, auto] of [["steve", "good"], ["saku", "good"]]) await check(`trial-${id}-${auto}`, async page => {
     await seed(page, "ch3_volk_first");
     const before = await get(page);
     assert.match(await page.locator(t("ch3-intro-trial-open")).innerText(), /（2）/);
@@ -71,9 +71,65 @@ await suite("ch3-trials", async check => {
     assert.equal(after.flags._craft_practice_runs.at(-1).kind, id === "steve" ? "ch3_trial_care" : "ch3_trial");
     assert.match(await page.locator(t("ch3-intro-trial-open")).innerText(), /（1）/, "A finished trial stayed on the card");
     await page.locator(t("ch3-intro-trial-open")).click();
-    await page.locator(t(`ch3-intro-trial-${id === "kuze" ? "steve" : "kuze"}`)).waitFor();
+    await page.locator(t(`ch3-intro-trial-${id === "saku" ? "steve" : "saku"}`)).waitFor();
     assert.equal(await page.locator(t(`ch3-intro-trial-${id}`)).count(), 0);
     await page.locator(t("ch3-intro-trial-back")).click();
     await page.locator(t("ch3-intro-scene")).waitFor();
+  });
+
+  for (const auto of ["good", "bad"]) await check(`mandatory-service-${auto}-finishes-without-private-resources`, async page => {
+    await seed(page, "ch3_saku_mukai_visit");
+    await page.evaluate(async auto => {
+      const core = await import("./js/core/state.js");
+      Object.assign(core.state, { money: 0, stamina: 1, flavorStock: {}, staffStock: {} });
+      const vn = await import("./js/vn/engine.js");
+      vn.vnTest.turbo = true; vn.vnTest.choose = () => 1;
+      (await import("./js/craft/session.js")).craftTest.auto = auto;
+    }, auto);
+    const before = await get(page);
+    await page.locator(t("ch3-intro-continue")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch3_intro.work?.service?.feedbackRead, null, { timeout: 60000 });
+    const after = await get(page);
+    assert.equal(after.flags._ch3_intro.work.service.order, "pace");
+    assert.equal(after.flags._ch3_intro.work.service.careDone, true);
+    assert.equal(after.flags._ch3_intro.work.service.result, auto === "bad" ? "rough" : "good");
+    for (const key of ["money", "stamina", "flavorStock", "staffStock", "stats", "affinity", "flavorMastery"])
+      assert.deepEqual(after[key], before[key], `Mandatory service changed ${key}`);
+    assert.equal(after.flags._craft_practice_runs?.length, before.flags._craft_practice_runs?.length);
+    assert.equal(after.flags._ch3_intro.stage, before.flags._ch3_intro.stage + 1);
+  });
+
+  await check("mandatory-service-feedback-reloads-without-repeating-the-adjustment", async page => {
+    await seed(page, "ch3_saku_mukai_visit");
+    await page.evaluate(async () => {
+      const vn = await import("./js/vn/engine.js");
+      vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
+      (await import("./js/craft/session.js")).craftTest.auto = "good";
+      const previous = vn.hooks.onEnter;
+      vn.hooks.onEnter = (id, dialogue) => {
+        previous?.(id, dialogue);
+        if (id === "ch3_saku_mukai_served") vn.vnTest.turbo = false;
+      };
+    });
+    await page.locator(t("ch3-intro-continue")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch3_intro.work?.service?.careDone, null, { timeout: 60000 });
+    const before = await get(page);
+    assert.equal(before.flags._ch3_intro.work.service.feedbackRead, undefined);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"); core.save(); core.requestResumeOnBoot();
+    });
+    await page.reload();
+    await page.locator(t("ch3-intro-scene")).waitFor();
+    await page.evaluate(async () => {
+      const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true;
+      const previous = vn.hooks.onEnter; window.__serviceReads = [];
+      vn.hooks.onEnter = (id, dialogue) => { window.__serviceReads.push(id); previous?.(id, dialogue); };
+    });
+    await page.locator(t("ch3-intro-continue")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch3_intro.work?.service?.feedbackRead);
+    const after = await get(page);
+    assert.deepEqual(after.flags._ch3_intro.work.service.adjustment, before.flags._ch3_intro.work.service.adjustment);
+    assert.deepEqual(await page.evaluate(() => window.__serviceReads), ["ch3_saku_mukai_served"]);
+    assert.equal(await page.locator(".bench:not(.done)").count(), 0);
   });
 });

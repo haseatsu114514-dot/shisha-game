@@ -1,13 +1,17 @@
+import { INCH } from "./axe-model.js";
+import { AXE_FEEL } from "./axe-feel.js";
 // First-person camera, looking along +Z. +Y points down; the board is in the distance.
 // This is presentation only. The saved shot and score still come from axe-model.js.
 export const TARGET = { x: 330, y: 245, radius: 164 };
 export const CAMERA = { focal: 700, boardDepth: 650 };
 // A 16in hatchet against a 48in board: the mesh is drawn at this scale so the axe reads at its real size.
-export const AXE_SCALE = 1.6;
+// The scale is in board inches (1.6 when the 1 ring was 14.75 in), so the hatchet keeps its size when the rings follow the stencil.
+export const AXE_SCALE = 23.6 * INCH;
 export const AXE = { blade: { x: 0, y: -28 * AXE_SCALE, z: 62 * AXE_SCALE }, handleTip: { x: 0, y: 160 * AXE_SCALE, z: -3 * AXE_SCALE } };
 // Shared presentation clock for solo and versus; scoring/rotation stay in the model.
 // slowFrom: a called throw (killshot or sudden death) plays the last part of its flight at half speed.
-export const FLIGHT = { travel: 600, fall: 300, slowFrom: .6, slowRate: .5 };
+// 数値は axe-feel.js の flight（開発時は ?feel=flight.travel:700 などで上書きできる）。
+export const FLIGHT = AXE_FEEL.flight;
 /** Display clock for the flight. Slow motion stretches only the approach; the shot itself never changes. */
 export function flightTime(milliseconds, slow = false) {
   const t = Math.max(0, milliseconds);
@@ -46,14 +50,15 @@ export function impactPose(shot) {
 export const poseTransform = pose => `translate(${pose.pixelX} ${pose.pixelY})`;
 export function flightPose(shot, milliseconds) {
   const t = Math.min(1, Math.max(0, milliseconds / FLIGHT.travel)), end = impactPose(shot);
-  // Overhead release, just to the right of the player's eyes. Gravity bends the world path.
-  const start = { x: 105 * 780 / 700, y: -125 * 780 / 700, z: 80 };
+  // Overhead release from the thrower's own hand: the blade starts where the first-person hand holds it at the top of the swing
+  // (2026-11-13 手応えレビュー指摘2「斧が手から出ていない」). Gravity bends the world path.
+  const P = AXE_FEEL.path, start = { x: P.startX, y: P.startY, z: P.startZ };
   const pose = t === 1 ? { ...end } : {
     x: start.x + (end.x - start.x) * t,
-    y: start.y + (end.y - start.y) * t - 48 * 4 * t * (1 - t),
+    y: start.y + (end.y - start.y) * t - P.arc * t * (1 - t),
     z: start.z + (end.z - start.z) * t, pitch: -shot.rotation * t, opacity: 1,
   };
   const fall = !shot.stuck ? Math.min(1, Math.max(0, (milliseconds - FLIGHT.travel) / FLIGHT.fall)) : 0;
-  if (fall) { pose.y += 260 * fall * fall; pose.pitch -= 75 * fall; pose.opacity = 1 - fall; }
+  if (fall) { pose.y += P.fallDrop * fall * fall; pose.pitch -= P.fallPitch * fall; pose.opacity = 1 - fall; }
   return { ...decorate(pose), contact: t === 1, done: t === 1 && (shot.stuck || fall === 1) };
 }

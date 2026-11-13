@@ -1,7 +1,7 @@
 // VOL13: 第2章の地元の会話を足す。
 // ① 施設の寄り道（実 spot-encounters.js）: 喫茶こはく・観音堂・CHOI-ZAP・C.STATIONに第2章だけの回。第1章・第3章では出ない
-// ② Dr.fookah 2階の凛（実 spots.js の visitChar）: 第2章だけの会話2本。味の不調に気づく回を先に、一来店一本・一度だけ
-// ③ あげはの通い訪問（実 ch2-preparation.js）: 小会話4種を巡回し、昼夜の店のあいさつを挟む
+// ② Dr.fookah 2階の凛想（実 spots.js の visitChar）: 第2章だけの会話2本。味の不調に気づく回を先に、一来店一本・一度だけ
+// ③ あげはの通い訪問（実 ch2-preparation.js）: 小会話5種を巡回し、昼夜の店のあいさつを挟む
 // ④ 台本: 大会を前提にする台詞には大会後の分岐、第2章の水族館の再訪は数行
 // node --experimental-vm-modules remake/test/ch2_home_talks.mjs
 import assert from "node:assert/strict";
@@ -43,6 +43,22 @@ assert.equal(encounters.spotEncounterDue("cafe", 5, save(2, { _spot_seen_cafe_ch
 assert.equal(encounters.spotEncounterDue("kannon", 5, save(2, {}, { slot: 1 }), all) === "kannon_ch2_wish", false);
 // 台本が読み込まれていない（第2章の準備期間の外）なら出さない
 assert.equal(encounters.spotEncounterDue("cafe", 5, save(2), {}), null);
+// #2090・RVE: なるとの決裂（第2章の対峙）以降は、店を閉めて修行に出ているので、喫茶こはく・ジムでもなるに会わない
+{
+  const ch2Seen = Object.fromEntries(Object.values(CH2).flat().map(id => [`_spot_seen_${id}`, true]));
+  const rifts = ["_ch2_read_ch2_naru_confrontation", "_ch2_night_11_done", "_ch2_naru_listened", "_ch2_naru_hurt"];
+  for (const [spot, id] of [["cafe", "cafe_naru_break"], ["choizap", "choizap_naru"]]) {
+    assert.equal(encounters.spotEncounterDue(spot, 5, save(1, ch2Seen), all), id, `${id}: chapter 1`);
+    assert.equal(encounters.spotEncounterDue(spot, 5, save(2, ch2Seen), all), id, `${id}: chapter 2 before the rift`);
+    for (const rift of rifts) {
+      for (const chapter of [2, 3, 5]) {
+        assert.notEqual(encounters.spotEncounterDue(spot, 5, save(chapter, { ...ch2Seen, [rift]: true }), all), id, `${id}: not during the rift (${rift}, chapter ${chapter})`);
+      }
+    }
+    // 第1章ではまだ決裂していない（同じ保存値でも章が1なら出る）
+    assert.equal(encounters.spotEncounterDue(spot, 5, save(1, { ...ch2Seen, _ch2_naru_hurt: true }), all), id, `${id}: chapter 1 is never a rift`);
+  }
+}
 
 // ---- 実モジュールを、名前付き import だけ差し替えて読み込む --------------------------------
 function namedImports(src) {
@@ -73,7 +89,7 @@ async function loadWithStubs(file, overrides, context) {
   return { ns: mod.namespace, set: (spec, name, value) => synthetic.get(spec).setExport(name, value) };
 }
 
-// ---- ② 凛の第2章の会話（実 spots.js の visitChar） --------------------------------------
+// ---- ② 凛想の第2章の会話（実 spots.js の visitChar） --------------------------------------
 let state, played, affinity, playMode = "ok";
 const DB = { dialogues: all, manifest: {} };
 const context = vm.createContext({ console, AbortController, setTimeout, clearTimeout });
@@ -83,7 +99,7 @@ const spotsModule = await loadWithStubs("remake/js/daily/spots.js", {
   "../core/stats.js": { gainAffinity: (id, n) => affinity.push([id, n]), visitAffinity: kind => ({ story: 16, talk: 8 })[kind], affinityLevel: () => 5, releaseAffinity: () => 0,
     AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], earnStat: () => {}, addStamina: () => {}, addMoney: () => {} },
   "../vn/engine.js": { play: async (id) => { played.push(id); return playMode === "cancel" ? { cancelled: true } : { id }; } },
-  "../core/affinity-stages.js": { VISIT_SEQ: { rin: ["ch1_rin_first", "ch1_rin_second", "ch1_rin_third", "ch1_rin_fourth"] } },
+  "../core/affinity-stages.js": { VISIT_SEQ: { rio: ["ch1_rio_first", "ch1_rio_second", "ch1_rio_third", "ch1_rio_fourth"] } },
   "./weather.js": { isRainy: () => false, RAIN_SPOT_TEXTS: {} },
   "./bonds.js": { questionVisitDue: () => false, finaleAtVisit: () => false, afterStory: async () => true },
   "./spot-encounters.js": { spotFollowupDue: () => null },
@@ -91,48 +107,48 @@ const spotsModule = await loadWithStubs("remake/js/daily/spots.js", {
   "./axe-bar-data.js": { AXE_BAR: { id: "axe_bar" } },
 }, context);
 const spots = spotsModule.ns;
-function rinSave(patch = {}) {
-  const value = { chapter: 2, phase: "daily", day: 20, slot: 1, story: { rin: 4 }, visits: { rin: 6 }, met: { rin: true }, contacts: [],
-    affinity: { rin: 40 }, lovers: [], flags: {}, ...patch };
+function rioSave(patch = {}) {
+  const value = { chapter: 2, phase: "daily", day: 20, slot: 1, story: { rio: 4 }, visits: { rio: 6 }, met: { rio: true }, contacts: [],
+    affinity: { rio: 40 }, lovers: [], flags: {}, ...patch };
   spotsModule.set("../core/state.js", "state", value);
   return value;
 }
-async function visitRin(patch) {
-  if (patch) state = rinSave(patch);
+async function visitRio(patch) {
+  if (patch) state = rioSave(patch);
   played = []; affinity = [];
-  return spots.visitChar("rin");
+  return spots.visitChar("rio");
 }
-state = rinSave(); played = []; affinity = [];
-assert.equal(spots.chapterTalkDue("rin"), "ch2_rin_strawberry", "Before the taste trouble, the strawberry talk");
-assert.equal(spots.hasNewStory("rin"), true, "地図の Dr.fookah に「！」");
-assert.equal(await visitRin(), true);
-assert.deepEqual(played, ["ch2_rin_strawberry"]);
-assert.deepEqual(plain(affinity), [["rin", 8]]); // 来店の通いの値（AFB01）
-assert.equal(state.flags._talk_seen_ch2_rin_strawberry, true);
-await visitRin();
-assert(!played.includes("ch2_rin_strawberry"), "read once");
+state = rioSave(); played = []; affinity = [];
+assert.equal(spots.chapterTalkDue("rio"), "ch2_rio_strawberry", "Before the taste trouble, the strawberry talk");
+assert.equal(spots.hasNewStory("rio"), true, "地図の Dr.fookah に「！」");
+assert.equal(await visitRio(), true);
+assert.deepEqual(played, ["ch2_rio_strawberry"]);
+assert.deepEqual(plain(affinity), [["rio", 8]]); // 来店の通いの値（AFB01）
+assert.equal(state.flags._talk_seen_ch2_rio_strawberry, true);
+await visitRio();
+assert(!played.includes("ch2_rio_strawberry"), "read once");
 // 味の不調の後は、気づく回を先に
-await visitRin({ flags: { _ch2_taste_distant: true } });
-assert.deepEqual(played, ["ch2_rin_taste"]);
-await visitRin(); assert.deepEqual(played, ["ch2_rin_strawberry"]);
-await visitRin(); assert(!played.some(id => id.startsWith("ch2_rin_")), "both read");
+await visitRio({ flags: { _ch2_taste_distant: true } });
+assert.deepEqual(played, ["ch2_rio_taste"]);
+await visitRio(); assert.deepEqual(played, ["ch2_rio_strawberry"]);
+await visitRio(); assert(!played.some(id => id.startsWith("ch2_rio_")), "both read");
 // 中断したら既読にしない
-state = rinSave({ flags: { _ch2_taste_distant: true } }); playMode = "cancel";
+state = rioSave({ flags: { _ch2_taste_distant: true } }); playMode = "cancel";
 played = []; affinity = [];
-assert.equal(await spots.visitChar("rin"), false);
-assert(!state.flags._talk_seen_ch2_rin_taste); assert.deepEqual(plain(affinity), []);
+assert.equal(await spots.visitChar("rio"), false);
+assert(!state.flags._talk_seen_ch2_rio_taste); assert.deepEqual(plain(affinity), []);
 playMode = "ok";
 // 段階会話がまだなら、第2章の会話を先に一本（段階は次の来店）
-state = rinSave({ story: { rin: 2 } }); played = []; affinity = [];
-await spots.visitChar("rin"); assert.deepEqual(played, ["ch2_rin_strawberry"]); assert.equal(state.story.rin, 2);
-// 凛と初めて話す前（固有会話0本）は、呼び名や面識を前提にする第2章の会話を出さない（先に初対面）
-state = rinSave({ story: {} }); assert.equal(spots.chapterTalkDue("rin"), null, "first meeting comes first");
+state = rioSave({ story: { rio: 2 } }); played = []; affinity = [];
+await spots.visitChar("rio"); assert.deepEqual(played, ["ch2_rio_strawberry"]); assert.equal(state.story.rio, 2);
+// 凛想と初めて話す前（固有会話0本）は、呼び名や面識を前提にする第2章の会話を出さない（先に初対面）
+state = rioSave({ story: {} }); assert.equal(spots.chapterTalkDue("rio"), null, "first meeting comes first");
 // 第1章・第3章、台本が無い時は出さない
-for (const chapter of [1, 3]) { state = rinSave({ chapter }); assert.equal(spots.chapterTalkDue("rin"), null, `chapter ${chapter}`); }
-state = rinSave(); const saved = DB.dialogues; DB.dialogues = {}; assert.equal(spots.chapterTalkDue("rin"), null); DB.dialogues = saved;
+for (const chapter of [1, 3]) { state = rioSave({ chapter }); assert.equal(spots.chapterTalkDue("rio"), null, `chapter ${chapter}`); }
+state = rioSave(); const saved = DB.dialogues; DB.dialogues = {}; assert.equal(spots.chapterTalkDue("rio"), null); DB.dialogues = saved;
 assert.equal(spots.chapterTalkDue("adam"), null);
 
-// ---- ③ あげはの通い訪問の小会話4種と昼夜のあいさつ（実 ch2-preparation.js） --------------------
+// ---- ③ あげはの通い訪問の小会話5種と昼夜のあいさつ（実 ch2-preparation.js） --------------------
 let prepState, prepPlayed, slotOfDay = "day";
 const prepContext = vm.createContext({ console, AbortController, setTimeout, clearTimeout });
 const ROOMS = { ageha: "room_ageha", kumicho: "room_kumicho", rei: "room_rei" };
@@ -152,7 +168,7 @@ const prepModule = await loadWithStubs("remake/js/chapters/ch2-preparation.js", 
   "./ch2-city-data.js": { MAP: { day: "map", night: "night" }, STOPS: Object.keys(ROOMS).map(id => ({ id, name: id })), ROOMS },
   "./ch2-progress.js": { dayOneProgress: () => ({ startDay: 15 }) },
   "./ch2-story.js": { chapterTwoNights: () => ({}), storyVisitDue: () => null },
-  "./ch2-story-data.js": { agehaStoryScene: () => null, syncAgehaVibes: () => 0 },
+  "./ch2-story-data.js": { agehaStoryScene: () => null, agehaLaterScene: () => null, AGEHA_LATER_SCENES: [], syncAgehaVibes: () => 0 },
   "../core/affinity-stages.js": { CH2_VISIT_STORIES: {} },
   "../core/growth.js": { consultLessons: async () => [] },
   "./ch2-purikura.js": { offerAgehaPurikura: async () => true },
@@ -164,29 +180,30 @@ prepModule.set("../core/state.js", "state", prepState);
 await prep.runChapterTwoPreparation();
 const agehaShop = prep.PREPARATION_SPOTS.find(spot => spot.charId === "ageha");
 const seen = [];
-for (let n = 0; n < 4; n++) {
+for (let n = 0; n < 5; n++) {
   slotOfDay = n % 2 ? "night" : "day"; prepPlayed = [];
   const result = await prepState.def.performSpot(agehaShop, { staminaGuard: async () => true });
   assert.equal(result.used, true);
   assert.equal(prepPlayed[0], `venue_ageha_${slotOfDay}`, "昼夜の店のあいさつを先に");
   seen.push(prepPlayed[1]);
 }
-assert.deepEqual(seen.slice().sort(), ["remake_ch2_ageha_repeat", "remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d"],
-  "四回通えば、小会話4種を一巡する");
+assert.deepEqual(seen.slice().sort(), ["remake_ch2_ageha_repeat", "remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d", "remake_ch2_ageha_repeat_e"],
+  "五回通えば、小会話5種を一巡する");
 
 // ---- ④ 台本 ----------------------------------------------------------------------
 const tournamentSafe = id => JSON.stringify(all[id]).includes('"tournament_finished"');
-for (const id of ["cs_ch2_haze", "ch2_rin_strawberry"]) assert(tournamentSafe(id), `${id} has an after-tournament branch`);
-// あげはの小会話・あいさつ・凛の味の回・施設の回は、大会の前後どちらでも成り立つ（出発前の準備期間でも読む）
+for (const id of ["cs_ch2_haze", "ch2_rio_strawberry"]) assert(tournamentSafe(id), `${id} has an after-tournament branch`);
+// あげはの小会話・あいさつ・凛想の味の回・施設の回は、大会の前後どちらでも成り立つ（出発前の準備期間でも読む）
 for (const id of ["remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d", "venue_ageha_day", "venue_ageha_night",
-  "ch2_rin_taste", "cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers"]) {
+  "ch2_rio_taste", "cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers"]) {
   assert(!/大会|本番|県大会|優勝/.test(JSON.stringify(all[id])), `${id} does not presuppose the tournament`);
 }
-// 凛の味の回は、原因を決めつけず、吸って確かめ続けない（物語の正本「味の不調と受診」）
-const taste = all.ch2_rin_taste.lines.map(line => line.text || "").join("\n");
+// 凛想の味の回は、原因を決めつけず、吸って確かめ続けない（物語の正本「味の不調と受診」）
+const taste = all.ch2_rio_taste.lines.map(line => line.text || "").join("\n");
 assert(/煙の褒め方が嘘だね/.test(taste)); assert(!/心因|気のせい|ストレス/.test(taste)); assert(/確かめ続けるのはやめ/.test(taste));
 // 水族館の再訪（1,800円）は各4行以上
 for (const id of ["remake_ch2_aquarium_repeat", "remake_ch2_aquarium_repeat_b", "remake_ch2_aquarium_repeat_c"]) {
   assert(all[id].lines.length >= 4, `${id} has a few more lines`);
 }
-console.log("PASS ch2 home talks: chapter 2 facility encounters, Rin's two talks, Ageha's four small talks with greetings, tournament-safe scripts, aquarium revisits");
+console.log("PASS ch2 home talks: chapter 2 facility encounters, Rio's two talks, Ageha's five small talks with greetings, tournament-safe scripts, aquarium revisits");
+

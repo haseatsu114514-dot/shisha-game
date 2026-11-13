@@ -99,6 +99,10 @@
 .loading-card::after { content: ""; position: absolute; inset: calc(7 * var(--loading-unit)); z-index: -1; border: 1px solid #3b1f3f2b; border-radius: calc(1.5 * var(--loading-unit)); pointer-events: none; }
 /* With no decoded comic, the intermission remains just the ink and its mark. */
 .loading-card:has(.loading-comic:empty) { visibility: hidden; }
+/* A chosen comic whose art is still decoding: the sheet already has its full size but stays hidden, so the
+   logo and gauge do not jump when the panels arrive. Removing .is-waiting starts the entrance animations. */
+.loading-card.is-waiting { visibility: hidden; animation: none; }
+.loading-card.is-waiting figure { animation: none; }
 /* Title row: a lavender ink tab, the episode title, and a double rule (ink + faint echo). One line in landscape. */
 .loading-comic-title { display: flex; align-items: center; gap: calc(10 * var(--loading-unit)); margin: 0 0 calc(12 * var(--loading-unit)); padding: 0 calc(2 * var(--loading-unit)) calc(7 * var(--loading-unit)); color: #2e1a33; font-size: calc(28 * var(--loading-unit)); font-weight: 900; line-height: 1.2; letter-spacing: .06em; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   background: linear-gradient(var(--loading-ink-soft), var(--loading-ink-soft)) left bottom / 100% 2px no-repeat, linear-gradient(#4a2c4455, #4a2c4455) left calc(100% - 4px) / 100% 1px no-repeat; }
@@ -195,8 +199,41 @@
   .loading-proceed { margin: .6cqh 0 2cqh; min-height: 1.3em; font-size: clamp(14px, 3.6cqw, 16px); }
 }
 
+/* Phone held sideways (a short landscape screen). The gate leaves the letterboxed #stage like portrait does
+   (core/loading.js adds .is-viewport), so cq units are the real screen. The logo gives its height to the
+   panels, the sheet may use the full width between the safe areas, and the small texts get a floor in real
+   pixels (note / prompt 12px, status 13px, title 16px) instead of shrinking with the 1280x720 unit.
+   Fixed height around the panels: 119u + 1.2*title + 1.4*note + 1.6*status + 1.3*prompt (+ bottom safe area). */
+@media (orientation: landscape) and (max-height: 500px) {
+  .loading-gate.is-viewport {
+    --loading-title-size: max(calc(28 * var(--loading-unit)), 16px);
+    --loading-note-size: max(calc(15 * var(--loading-unit)), 12px);
+    --loading-status-size: max(calc(20 * var(--loading-unit)), 13px);
+    --loading-proceed-size: max(calc(14 * var(--loading-unit)), 12px);
+    --loading-side: max(12px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+    --loading-foot: env(safe-area-inset-bottom, 0px);
+    --loading-fixed: calc(119 * var(--loading-unit) + 1.2 * var(--loading-title-size) + 1.4 * var(--loading-note-size) + 1.6 * var(--loading-status-size) + 1.3 * var(--loading-proceed-size) + var(--loading-foot) + 6px);
+    padding-bottom: var(--loading-foot);
+  }
+  .loading-gate.is-viewport .loading-logo { display: none; }
+  .loading-gate.is-viewport .loading-card {
+    width: min(calc(100cqw - 2 * var(--loading-side)), calc(2 * (var(--loading-panel-ratio)) * (100cqh - var(--loading-fixed)) + 60 * var(--loading-unit)));
+    margin-top: calc(10 * var(--loading-unit));
+  }
+  .loading-gate.is-viewport .loading-comic-title { font-size: var(--loading-title-size); }
+  .loading-gate.is-viewport .loading-comic-caption { font-size: var(--loading-note-size); }
+  .loading-gate.is-viewport .loading-gauge { margin-top: calc(12 * var(--loading-unit)); }
+  .loading-gate.is-viewport .loading-status { margin-top: calc(6 * var(--loading-unit)); font-size: var(--loading-status-size); }
+  .loading-gate.is-viewport .loading-proceed { margin: calc(4 * var(--loading-unit)) 0 calc(8 * var(--loading-unit)); min-height: 0; padding: calc(3 * var(--loading-unit)) calc(16 * var(--loading-unit)); font-size: var(--loading-proceed-size); line-height: 1.3; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .loading-gate, .loading-gate::before, .loading-logo::before, .loading-logo::after, .loading-card, .loading-panels figure, .loading-emblem path, .loading-bar::after, .loading-bar-fill, .loading-proceed { animation: none; }
   .loading-emblem .emblem-glow, .loading-gate.is-ready .emblem-glow { animation: none; opacity: .7; }
   .loading-gate.is-ready .loading-proceed { opacity: .92; }
 }
+
+/* ロード画面の出口（core/loading.js leaveLoading・#2688 A14）。同じ下地と背景の絵の面が、もやの晴れるように薄れる */
+.loading-exit-haze { position: absolute; inset: 0; z-index: 110; pointer-events: none;
+  background: radial-gradient(ellipse 70% 60% at 50% 70%, #dcd1f433, transparent 70%), url("../img/ui/loading/loading_bg.webp") center / cover no-repeat, #100b18; }
+.loading-exit-haze.is-viewport { position: fixed; z-index: 900; }

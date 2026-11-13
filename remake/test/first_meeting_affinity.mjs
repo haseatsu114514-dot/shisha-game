@@ -1,5 +1,5 @@
 // Actual state/stats/public callers; VN and presentation are controlled ports, not browser acceptance.
-// node --experimental-vm-modules remake/test/affinity_stages.mjs
+// node --experimental-vm-modules remake/test/first_meeting_affinity.mjs
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -8,8 +8,8 @@ import { fileURLToPath } from 'node:url';
 const root = process.env.HEART1_ROOT || fileURLToPath(new URL('../js/', import.meta.url));
 const sourceRoot = process.env.HIYORI_SOURCE_ROOT || root;
 const supportRoot = process.env.HIYORI_SUPPORT_ROOT || root;
-const realPaths = ['core/util.js','core/axe-bar-discovery.js','daily/hiyori.js','daily/spot-encounters.js','core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
-const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rin','ch1_bonds','samechan','hiyori','lover_events','cinema','remake_ch1','ch1_spots'];
+const realPaths = ['core/util.js','core/axe-bar-discovery.js','daily/hiyori.js','daily/spot-encounters.js','core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
+const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rio','ch1_bonds','samechan','hiyori','lover_events','cinema','remake_ch1','ch1_spots'];
 const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))));
 const clone = value => JSON.parse(JSON.stringify(value));
 async function fixture() {
@@ -50,7 +50,7 @@ async function fixture() {
   await entry.evaluate();
   const ns = p => modules.get(p).namespace;
   const core=ns('core/state.js'), stats=ns('core/stats.js');
-  const fresh=() => { const s=core.newGame(); Object.assign(s,{phase:'daily',day:8,slot:0,seed:4}); Object.assign(s.met,{hiyori:true,naru:true,adam:true,minto:true}); Object.assign(s.flags,{_hiyori_meeting_done:true,_hiyori_sumi_message_done:true,_hiyori_message_delivered:true,_hiyori_cracks_done:true}); return s; };
+  const fresh=() => { const s=core.newGame(); Object.assign(s,{phase:'daily',day:8,slot:0,seed:4}); Object.assign(s.met,{hiyori:true,naru:true,adam:true,minto:true}); Object.assign(s.flags,{_hiyori_meeting_done:true,_hiyori_sumi_message_done:true,_hiyori_message_delivered:true,_hiyori_cracks_done:true,_hiyori_clockout_done:true}); return s; };
   fresh();
   return { core, stats, fresh, db, plays, events, memory, stages: ns('core/affinity-stages.js'), spots: ns('daily/spots.js'), hiyori: ns('daily/hiyori.js'), util: ns('core/util.js'), bonds: ns('daily/bonds.js'), samechan: ns('daily/samechan.js'), romance: ns('daily/romance.js'), sharkBond: ns('daily/samechan-bonds.js'), setRain: value => rainy=value, setPlay: fn => playImpl=fn, setRecruit: fn => recruitImpl=fn,
     tick: () => { for (const [id,fn] of [...timers]) { timers.delete(id); fn(); } },
@@ -61,15 +61,66 @@ async function fixture() {
 let failures=0,groups=0;
 async function check(name,fn){try{await fn(await fixture());groups++;console.log(`PASS ${name}`);}catch(e){failures++;console.error(`FAIL ${name}: ${e.stack}`);}}
 const done={id:'controlled-complete',visited:[]};
-// 来店の好感度（台帳 AFB01）: 段階会話 16×0.85=13.6、通い 8×0.85=6.8。端数は相手ごとに持ち越す。
-const FIRST_VISIT=13,TWO_VISITS=27,REPEAT_VISIT=6;
+// 初対面は9点・端数0。2回目以降は台帳 AFB01 の段階会話 16×0.85=13.6、通い 8×0.85=6.8。
+const FIRST_VISIT=9,TWO_VISITS=22,REPEAT_VISIT=6;
 const first=(f,id)=>{const s=f.fresh();delete s.met[id];s.story[id]=0;s.affinity[id]=0;s.flags._cafe_introduced=true;return s;};
-for(const id of ['naru','adam','minto','rin','tsumugi','sumi'])await check(`${id} first complete guarantees displayed heart1 without reading next scene`,async f=>{
+await check('known legacy identity repair never creates or keeps first-meeting pending',async f=>{
+ const s=first(f,'dr_kemuri');s.affinityCarry.dr_kemuri=.25;s.flags._affinity_first_meeting_pending_dr_kemuri=true;
+ f.core.markMet('dr_kemuri',{known:true});assert.equal(s.met.dr_kemuri,true);
+ assert.equal(s.flags._affinity_first_meeting_pending_dr_kemuri,undefined);assert.equal(s.affinity.dr_kemuri,0);assert.equal(s.affinityCarry.dr_kemuri,.25);
+ const loaded=f.roundTrip();assert.equal(loaded.flags._affinity_first_meeting_pending_dr_kemuri,undefined);assert.equal(loaded.affinity.dr_kemuri,0);assert.equal(loaded.affinityCarry.dr_kemuri,.25);
+});
+for(const id of ['naru','adam','minto','rio','tsumugi','sumi'])await check(`${id} first complete guarantees displayed heart1 without reading next scene`,async f=>{
  const s=first(f,id);assert.equal(f.stats.affinityLevel(id),0);
  assert.equal(await f.spots.visitChar(id),true);assert.equal(f.stats.affinityLevel(id),1);
- assert.equal(s.affinity[id],FIRST_VISIT);assert(s.affinity[id]>=f.stats.AFFINITY_RANK_PTS[1]);assert.equal(s.story[id],1);assert.equal(s.met[id],true);
+ assert.equal(s.affinity[id],FIRST_VISIT);assert.equal(s.affinityCarry[id]||0,0);assert.equal(s.story[id],1);assert.equal(s.met[id],true);
  const after=JSON.parse(JSON.stringify(s)),loaded=f.roundTrip(),copy=JSON.parse(JSON.stringify(loaded));delete after.savedAt;delete copy.savedAt;assert.deepEqual(copy,after);
  assert.equal(f.stats.affinityLevel(id),1);assert.equal(loaded.story[id],1);
+});
+await check('first face meeting ignores charm, board and fortune and discards fractional visit rewards', async f=>{
+ const s=first(f,'naru');s.stats.charm=100;s.fortune={char:'naru'};
+ f.stats.setExpHooks({enabled:()=>true,perks:()=>({charm:100}),affinity(){}});
+ const levels=[];
+ await f.stats.paidAction(async()=>{
+  f.core.markMet('naru');
+  f.stats.gainAffinity('naru',12,{firstMeeting:true});
+  await f.stats.paidAction(async()=>{f.stats.gainAffinity('naru',16);});
+  f.stats.gainAffinity('naru',16);levels.push(s.affinity.naru);
+ });
+ assert.deepEqual(levels,[9]);assert.equal(s.affinity.naru,9);assert.equal(s.affinityCarry.naru,0);
+ assert.equal(s.fortune.char,'naru','first meeting does not consume a multiplier without a real gain');
+ f.tick();assert.equal(f.events.filter(event=>event.type==='affinity-gain').length,1,'dialogue and visit must share one first-meeting card');
+ await f.stats.paidAction(async()=>{f.stats.gainAffinity('naru',16);});
+ assert(s.affinity.naru>9,'second actual meeting earns normal points');assert.equal(s.fortune,undefined);
+});
+await check('already met first shop visit gains normally and does not reset old points or carry', async f=>{
+ const s=first(f,'adam');s.met.adam=true;s.affinity.adam=9;s.affinityCarry.adam=.4;
+ await f.spots.visitChar('adam');assert(s.affinity.adam>9);assert(s.affinityCarry.adam>=0);
+});
+await check('stale first action after LOAD cannot hold back a new state or replay a first reward',async f=>{
+ const s=first(f,'naru');
+ await f.stats.paidAction(async()=>{
+  f.core.markMet('naru');f.stats.gainAffinity('naru',16);assert.equal(s.affinity.naru,9);
+  const loaded=f.roundTrip();f.stats.gainAffinity('naru',16);assert.equal(loaded.affinity.naru,22);
+ });
+ assert.equal(f.core.state.affinity.naru,22);assert.equal(s.affinity.naru,9);
+});
+await check('name learned before cancelled first VN stays pending across SAVE/LOAD, then grants exactly heart1 once',async f=>{
+ let s=first(f,'adam');
+ f.setPlay(async()=>{f.core.markMet('adam');return {cancelled:true};});
+ assert.equal(await f.spots.visitChar('adam'),false);assert.equal(s.met.adam,true);assert.equal(s.affinity.adam,0);
+ assert.equal(s.flags._affinity_first_meeting_pending_adam,true);
+ s=f.roundTrip();f.setPlay(async()=>done);
+ assert.equal(await f.spots.visitChar('adam'),true);assert.equal(s.affinity.adam,9);assert.equal(s.affinityCarry.adam||0,0);
+ assert.equal(s.flags._affinity_first_meeting_pending_adam,undefined);
+ await f.spots.visitChar('adam');assert.equal(s.affinity.adam,22);
+});
+await check('LIME while a named first encounter is pending keeps its old formula and does not settle the face meeting',async f=>{
+ let s=first(f,'adam');f.core.markMet('adam');
+ f.stats.gainAffinity('adam',2,{remote:true});assert.equal(s.affinity.adam,1);assert.equal(s.flags._affinity_first_meeting_pending_adam,true);
+ f.stats.gainAffinity('adam',1,{source:'lime'});assert.equal(s.affinity.adam,1);assert.equal(s.flags._affinity_first_meeting_pending_adam,true);
+ s=f.roundTrip();f.setPlay(async()=>done);await f.spots.visitChar('adam');
+ assert.equal(s.affinity.adam,9);assert.equal(s.affinityCarry.adam,0);assert.equal(s.flags._affinity_first_meeting_pending_adam,undefined);
 });
 await check('high value is not reduced; a later visit does not repeat the first-visit floor',async f=>{
  let s=first(f,'naru');s.affinity.naru=40;await f.spots.visitChar('naru');assert(s.affinity.naru>=40);assert.equal(s.story.naru,1);
@@ -101,8 +152,45 @@ for(const outcome of ['cancel','missing','throw','abort','load'])await check(`Hi
 });
 await check('Samechan reuses existing first-encounter guarantee without another implementation',async f=>{
  const s=f.fresh();s.chapter=2;delete s.flags._samechan_first_encounter;s.affinity.samechan=0;
- assert.equal(await f.samechan.playSamechanEncounter(),true);assert.equal(f.stats.affinityLevel('samechan'),1);
+ assert.equal(await f.samechan.playSamechanEncounter(),true);assert.equal(f.stats.affinityLevel('samechan'),1);assert.equal(s.affinity.samechan,9);assert.equal(s.affinityCarry.samechan||0,0);
  const after=JSON.stringify(s);assert.equal(await f.samechan.playSamechanEncounter(),false);assert.equal(JSON.stringify(s),after);
+});
+// Current samechan ID only. The retired-name migration was removed in #2469.
+// Low-level LIME without a reply callback reports integer gains; reply feedback also sees carry.
+const close = (actual, expected) => assert(Math.abs(actual-expected)<1e-8, `${actual} != ${expected}`);
+const heartEvents = f => f.events.filter(event => event.type === 'affinity-gain');
+await check('Samechan LIME without onGain stays quiet until the first integer heart gain', async f => {
+ let s=f.fresh();s.chapter=2;s.affinity.samechan=8;
+ for(let i=1;i<=4;i++){
+  assert.equal(f.stats.gainAffinity('samechan',1,{source:'lime'}),0);
+  assert.equal(s.affinity.samechan,8);close(s.affinityCarry.samechan,i*.2125);
+  f.tick();assert.equal(heartEvents(f).length,0,'carry alone must not queue a heart card');
+ }
+ assert.equal(f.stats.gainAffinity('samechan',1,{source:'lime'}),1);
+ assert.equal(s.affinity.samechan,9);close(s.affinityCarry.samechan,.0625);
+ assert.equal(heartEvents(f).length,0,'integer gain uses the normal notification batch');
+ f.tick();assert.deepEqual(clone(heartEvents(f).map(event=>event.payload)),[
+  {id:'samechan',level:1,levelUp:true,prevPts:8,pts:9},
+ ]);
+ f.tick();assert.equal(heartEvents(f).length,1,'flushing twice cannot repeat the notification');
+});
+await check('Samechan LIME onGain retains fractional feedback across SAVE/LOAD without heart cards', async f => {
+ let s=f.fresh();s.chapter=2;s.affinity.samechan=8;
+ const deltas=[],opts={source:'lime',onGain:delta=>deltas.push(delta)};
+ for(let i=1;i<=5;i++){
+  assert.equal(f.stats.gainAffinity('samechan',1,opts),i<5?0:1);
+  assert.equal(deltas.length,i);close(deltas.at(-1),.2125);
+  // Flush before LOAD too: changing owner must not hide an incorrectly queued duplicate card.
+  f.tick();assert.equal(heartEvents(f).length,0,'reply feedback replaces the heart card');
+  s=f.roundTrip();
+  assert.equal(s.affinity.samechan,i<5?8:9);
+  close(s.affinityCarry.samechan,i*.2125-(i<5?0:1));
+  f.tick();assert.equal(deltas.length,i,'LOAD cannot replay reply feedback');
+  assert.equal(heartEvents(f).length,0);
+ }
+ close(deltas.reduce((sum,delta)=>sum+delta,0),1.0625);
+ assert.equal(s.story.samechan||0,0,'numeric progress does not read an introduction or story');
+ assert.equal(s.flags._samechan_first_encounter,undefined);
 });
 // The initial VN commit is real; only the unrelated recruitment UI is a controlled deferred port.
 for (const route of ['ordinary','hiyori']) for (const interruption of ['abort','load']) {

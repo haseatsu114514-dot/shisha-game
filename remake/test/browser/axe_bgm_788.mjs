@@ -1,17 +1,28 @@
 // #788: 斧投げBARとひよりの斧投げで、開始時に斧投げ曲、終了・中断で元の曲へ戻る。再入場で二重に鳴らさない。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
+import { flickFromHandle } from "./axe_flick_input.mjs";
 const t = id => `[data-test="${id}"]`;
 const bgm = page => page.evaluate(() => A.audio.currentBgm());
+const waitPlaying = (page, key) => page.waitForFunction(key => window.__axeMedia?.some(({ track, audio }) =>
+  track === key && audio.src.startsWith("blob:") && !audio.paused && audio.currentTime > .05), key);
 
 async function setup(page) {
   await page.mouse.click(4, 4); // 実ブラウザの自動再生制限を、プレイヤーの操作と同じく解除する
   await page.evaluate(async () => {
     window.A = { core: await import("./js/core/state.js"), audio: await import("./js/core/audio.js"),
       bar: await import("./js/daily/axe-bar.js"), daily: await import("./js/daily/hiyori.js") };
+    // 初回の斧投げBARは、マキが名乗るまでの会話 → 登場カットイン → 決まりと案内を読む（#2605・VAR01）。曲の検査なので会話は早送りで読む。
+    (await import("./js/vn/engine.js")).vnTest.turbo = true;
     A.audio.unlockAudio();
     await new Promise(r => setTimeout(r, 100));
     A.core.config.bgmVolume = 0;
+    window.__axeMedia = [];
+    const play = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function (...args) {
+      window.__axeMedia.push({ track: A.audio.currentBgm(), audio: this });
+      return play.apply(this, args);
+    };
   });
 }
 async function waitBgm(page, key) {
@@ -30,6 +41,7 @@ await suite("axe-bgm-788", async check => {
     await page.evaluate(() => { A.flow = A.bar.visitAxeBar(); });
     await page.locator(t("axe-bar-back")).waitFor();
     assert.equal(await bgm(page), "bgm_axe");
+    await waitPlaying(page, "bgm_axe");
     assert.equal(await page.evaluate(() => A.bar.visitAxeBar()), false, "re-entry while open is refused");
     assert.equal(await bgm(page), "bgm_axe");
     await page.locator(t("axe-bar-back")).click();
@@ -61,10 +73,19 @@ await suite("axe-bgm-788", async check => {
     await page.evaluate(() => { A.run = A.daily.playHiyoriEvent("axe_reveal"); });
     await phase(page, "choice");
     assert.equal(await bgm(page), "bgm_axe");
+    await waitPlaying(page, "bgm_axe");
     assert.equal(await page.evaluate(() => A.daily.playHiyoriEvent("axe_reveal")), false, "second start must not overlap");
     assert.equal(await bgm(page), "bgm_axe");
-    for (let n = 0; n < 3; n++) for (const p of ["choice", "horizontal", "vertical", "power", "result"]) {
-      await phase(page, p); await page.locator('[data-test="axe-action"]:not([disabled])').click();
+    for (let n = 0; n < 3; n++) {
+      await phase(page, "choice");
+      const target = await page.locator('.axe-target').evaluate(node => {
+        const point = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
+        return { x: point.x, y: point.y };
+      });
+      await page.mouse.click(target.x, target.y); await phase(page, "power");
+      // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、適正の速さで弾く
+      await flickFromHandle(page, { power: .62 }); await phase(page, "result");
+      await page.locator('[data-test="axe-action"]:not([disabled])').click();
     }
     await phase(page, "summary"); await page.locator('[data-test="axe-action"]:not([disabled])').click();
     assert.equal(await page.evaluate(() => A.run), true);

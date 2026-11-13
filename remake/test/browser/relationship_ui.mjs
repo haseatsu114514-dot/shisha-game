@@ -64,13 +64,13 @@ async function choicesFit(page, expected) {
 
 const questions = {
   tsumugi: ["絵の話がなくても、つむぎちゃんに会いたいよ", "描けない日も、ここでゆっくりしていって"], // #2221 の添削に合わせる
-  rin: ["用事がなくても、凛さんに会いに来ます", "次の試香も、俺に手伝わせてください"],
-  minto: ["栞さんと２人だと、ちょっと緊張する", "また話そう。愚痴でも聞くよ"], // #1730 で栞へはタメ口に統一
+  rio: ["用事がなくても、凛想さんに会いに来ます", "次の試香も、俺に手伝わせてください"],
+  minto: ["栞さんと2人だと、ちょっと緊張する", "また話そう。愚痴でも聞くよ"], // #1730 で栞へはタメ口に統一
 };
 const reactions = {
-  tsumugi: [/絵じゃなくて、私に/, /この席は、描かなくても/],
-  rin: [/今日は、何を話してもレポートにしない/, /向こうの机まで届かない感想/],
-  minto: [/私も。お店の外だと、ちょっと緊張する/, /お店の話、気楽にできる人/],
+  tsumugi: [/絵じゃなくて、私を、ですか/, /この席は、描かなくても/],
+  rio: [/今日は、何を話してもレポートにはしない/, /向こうの机まで届かない感想/],
+  minto: [/私も。お店の外だと、ちょっと緊張しちゃう/, /お店の話を気楽にできる人/],
 };
 
 await suite("relationship-ui", async check => {
@@ -86,6 +86,7 @@ await suite("relationship-ui", async check => {
         Object.assign(R.data.DB.dialogues, await city.readDialogues("ch3_double_apple", ["ch3_mukai_arrival"]));
       });
       // 好感度・連絡先・思い出だけでは、未対面の人物を明かさない。
+      // 開始時から知っているスミさん・つむぎ（#2750）は、新しいゲームの最初から♥1で並ぶ。
       await page.evaluate(() => {
         const s = R.fresh(); s.chapter = 5;
         for (const id of ["kumicho", "rei", "mashiro"]) {
@@ -94,7 +95,11 @@ await suite("relationship-ui", async check => {
         s.relationshipMemories = ["kumicho_hands", "rei_listen", "mashiro_pace"];
       });
       await status(page);
-      assert.deepEqual(await page.locator(".pp-row").evaluateAll(rows => rows.map(r => r.dataset.person)), ["sumi"]);
+      assert.deepEqual(await page.locator(".pp-row").evaluateAll(rows => rows.map(r => r.dataset.person)), ["sumi", "tsumugi"]);
+      for (const id of ["sumi", "tsumugi"]) {
+        assert.deepEqual(await page.locator(`[data-person="${id}"] .ui-heart`).evaluateAll(hearts => hearts.map(h => h.style.getPropertyValue("--fill"))),
+          ["100%", "0%", "0%", "0%", "0%"], `${id}: starts at ♥1`);
+      }
       await closeStatus(page);
 
       // 本編の名乗り・記憶記録を通す。ましろは好感度0でも面識と記憶を表示する。
@@ -120,7 +125,7 @@ await suite("relationship-ui", async check => {
             R.core.save(); R.core.load();
           }, { id, points, phase, laterChapter });
           await status(page);
-          assert.deepEqual(await page.locator(".pp-row").evaluateAll(rows => rows.map(r => r.dataset.person)), ["sumi", id]);
+          assert.deepEqual(await page.locator(".pp-row").evaluateAll(rows => rows.map(r => r.dataset.person)), ["sumi", "tsumugi", id]);
           const row = page.locator(`[data-person="${id}"]`);
           assert.equal(await row.locator(".pp-name").textContent(), await page.evaluate(id => R.data.displayName(id, R.core.state), id));
           assert.equal(await row.locator(".pp-memory").textContent(), await page.evaluate(memoryId => R.data.DB.relationshipMemories[memoryId].echo, memoryId));
@@ -139,10 +144,10 @@ await suite("relationship-ui", async check => {
 
     await check(`${device}-actual-questions-and-status`, async page => {
       await setup(page);
-      for (const id of ["tsumugi", "minto", "rin"]) for (const route of ["romance", "friend"]) {
+      for (const id of ["tsumugi", "minto", "rio"]) for (const route of ["romance", "friend"]) {
         await page.evaluate(id => {
           const s = R.fresh(); s.met[id] = true; s.flags[`_intro_${id}`] = true;
-          s.affinity[id] = 33; s.story[id] = id === "tsumugi" ? 4 : id === "rin" ? 3 : 6;
+          s.affinity[id] = 33; s.story[id] = id === "tsumugi" ? 4 : id === "rio" ? 3 : 6;
           if (id === "minto") Object.assign(s.flags, { _minto_identity_revealed: true, _minto_name_known: true, _minto_private_done: true });
           R.vn.vnTest.turbo = false;
           R.logStart = R.vn.backlog().length;
@@ -175,10 +180,10 @@ await suite("relationship-ui", async check => {
       }
       // 最終画像は、数値を満たしただけでは告白にならない♥3の待機導線。
       await page.evaluate(() => {
-        const s = R.fresh(); s.met.rin = true; s.affinity.rin = 33; s.story.rin = 3; R.core.save();
+        const s = R.fresh(); s.met.rio = true; s.affinity.rio = 33; s.story.rio = 3; R.core.save();
       });
       await status(page);
-      assert.match(await page.locator('[data-person="rin"] .pp-next').textContent(), /Dr\.fookahの2階/);
+      assert.match(await page.locator('[data-person="rio"] .pp-next').textContent(), /Dr\.fookahの2階/);
     }, { ...options, reducedMotion: "reduce" });
 
     await check(`${device}-hiyori-and-samechan-questions`, async page => {
@@ -225,20 +230,23 @@ await suite("relationship-ui", async check => {
         ["unanswered-old-finale", { points: 66, finale: "romance" }, "交流の節目", /見届けた/],
         ["legacy-final-answer", { points: 66, finalAnswer: 1, finale: "romance" }, "告白を選べる", /帰り道/],
         ["held-confession", { points: 66, answer: 1, finalAnswer: 1, finale: "romance", wait: true }, "告白を選べる", /後日の夜/],
+        // 東京・ドバイにいる間は帰り道の告白を始めない（IR33）。帰ってからだと案内する
+        ["away-confession", { points: 66, answer: 1, finalAnswer: 1, finale: "romance", region: "tokyo" }, "告白を選べる", /帰ってから、夜の帰り道/],
       ]) {
         await page.evaluate(f => {
-          const s = R.fresh(); s.met.rin = true; s.affinity.rin = f.points; s.story.rin = 4; // 固有会話4本を読了（#1696で4本目を追加）
-          if (f.points === 66 && f.answer !== undefined && f.finalAnswer === undefined && !f.finale) s.flags._rin_affinity_question_done = true;
-          if (f.answer !== undefined) s.romanceChoices.bond_q1_rin = { char: "rin", value: f.answer, day: 7 };
-          if (f.finalAnswer !== undefined) s.romanceChoices.bond_q2_rin = { char: "rin", value: f.finalAnswer, day: 8 };
-          if (f.finale) s.finales.rin = { route: f.finale, chapter: 1, day: 8 };
-          if (f.friendFlag) s.flags._friend_rin = true;
+          const s = R.fresh(); s.met.rio = true; s.affinity.rio = f.points; s.story.rio = 6; // 固有会話6本を読了（#1696で4本目、#2025で♥4・♥5の5・6本目を追加）
+          if (f.points === 66 && f.answer !== undefined && f.finalAnswer === undefined && !f.finale) s.flags._rio_affinity_question_done = true;
+          if (f.answer !== undefined) s.romanceChoices.bond_q1_rio = { char: "rio", value: f.answer, day: 7 };
+          if (f.finalAnswer !== undefined) s.romanceChoices.bond_q2_rio = { char: "rio", value: f.finalAnswer, day: 8 };
+          if (f.finale) s.finales.rio = { route: f.finale, chapter: 1, day: 8 };
+          if (f.friendFlag) s.flags._friend_rio = true;
           if (f.wait) s.flags._confession_wait = 14;
-          if (f.hiddenRomance) s.romance.rin = f.hiddenRomance;
+          if (f.region) s.flags._ch2_region = f.region;
+          if (f.hiddenRomance) s.romance.rio = f.hiddenRomance;
           R.core.save(); R.core.load();
         }, fixture);
         await status(page);
-        const row = page.locator('[data-person="rin"]');
+        const row = page.locator('[data-person="rio"]');
         assert.equal(await row.locator(".pp-relation").textContent(), label, name);
         if (hint) assert.match(await row.locator(".pp-next").textContent(), hint, name);
         else assert.equal(await row.locator(".pp-next").count(), 0, name);
@@ -274,15 +282,15 @@ await suite("relationship-ui", async check => {
 
       await page.evaluate(() => {
         const s = R.fresh();
-        for (const id of ["sumi", "tsumugi", "naru", "adam", "minto", "rin", "hiyori", "samechan", "ageha"]) {
+        for (const id of ["sumi", "tsumugi", "naru", "adam", "minto", "rio", "hiyori", "samechan", "ageha"]) {
           s.met[id] = true; s.affinity[id] = 66;
         }
         s.flags._samechan_nickname_known = true;
         s.flags._hiyori_tonari_return_done = true;
         s.finales.sumi = { route: "friend", day: 7, chapter: 1 };
-        s.lovers = ["tsumugi", "rin"];
-        s.finales.rin = { route: "friend", day: 7, chapter: 1 }; s.flags._friend_rin = true;
-        s.loveLevel = { tsumugi: 2, rin: 4 }; s.lovePts = { tsumugi: 20, rin: 48 }; R.core.save();
+        s.lovers = ["tsumugi", "rio"];
+        s.finales.rio = { route: "friend", day: 7, chapter: 1 }; s.flags._friend_rio = true;
+        s.loveLevel = { tsumugi: 2, rio: 4 }; s.lovePts = { tsumugi: 20, rio: 48 }; R.core.save();
       });
       await status(page);
       assert.equal(await page.locator(".pp-row.lover").count(), 2);
@@ -299,10 +307,10 @@ await suite("relationship-ui", async check => {
       assert.equal(await page.locator('[data-person="ageha"]').count(), 0);
       await closeStatus(page);
       await page.evaluate(() => {
-        const s = R.fresh(); s.met.rin = true; s.affinity.rin = 66; s.story.rin = 3;
-        s.romanceChoices.bond_q1_rin = { char: "rin", value: 1, day: 7 };
-        s.romanceChoices.bond_q2_rin = { char: "rin", value: 1, day: 8 };
-        s.finales.rin = { route: "romance", chapter: 1, day: 8 }; R.core.save();
+        const s = R.fresh(); s.met.rio = true; s.affinity.rio = 66; s.story.rio = 3;
+        s.romanceChoices.bond_q1_rio = { char: "rio", value: 1, day: 7 };
+        s.romanceChoices.bond_q2_rio = { char: "rio", value: 1, day: 8 };
+        s.finales.rio = { route: "romance", chapter: 1, day: 8 }; R.core.save();
       });
       await status(page);
     }, { ...options, reducedMotion: "reduce" });
@@ -329,9 +337,89 @@ await suite("relationship-ui", async check => {
       await closeStatus(page);
     }, { ...options, reducedMotion: "reduce" });
 
+    // #2028: スティーブは♥5の締めくくりがあるので、会った後は人間関係に出る（STATUS_PEOPLE）。
+    // 「次にSmoke & Gloryで会うと」は第3章の東京で会える間だけ。東京を離れた後・第5章では約束しない。
+    if (device === "pc") await check("pc-steve-row-promises-only-while-he-can-be-met", async page => {
+      await setup(page);
+      await page.evaluate(async () => {
+        const city = await import("./js/chapters/ch2-city-data.js");
+        Object.assign(R.data.DB.dialogues, await city.readDialogues("ch3_rivals", ["ch3_steve_bond_finale"]));
+        const s = R.fresh(); s.chapter = 3;
+        s.met.steve = true; s.affinity.steve = 66; s.contacts.push("steve");
+        Object.assign(s.flags, { _lime_contact_steve: true, _ch3_read_ch3_steve_lime: true, _ch3_read_ch3_steve_two_timers: true, _ch3_read_ch3_steve_empty_seat: true, _ch3_read_ch3_steve_tongs: true, _ch3_read_ch3_steve_watch: true, _ch3_outings: { steve_timer: 1 } });
+        R.core.save();
+      });
+      await status(page);
+      const row = page.locator('[data-person="steve"]');
+      assert.equal(await row.count(), 1, "Steve is listed once met");
+      assert.equal(await row.locator(".pp-relation").textContent(), "交流中");
+      assert.equal(await row.locator(".pp-next").textContent(), "次にSmoke & Gloryで会うと、特別なイベントへ。");
+      assert.equal(await row.locator(".ui-heart").evaluateAll(hearts => hearts.filter(h => h.style.getPropertyValue("--fill") === "100%").length), 5);
+      await row.scrollIntoViewIfNeeded();
+      await assertFits(page, '[data-person="steve"], [data-person="steve"] .pp-next');
+      await closeStatus(page);
+      for (const later of [
+        s => { s.flags._ch3_aftermath = { version: 3, winDay: 40, stage: R.bonds.STEVE_LAST_AFTERMATH_STAGE + 1 }; },
+        s => { s.chapter = 5; delete s.flags._ch3_aftermath; },
+      ]) {
+        await page.evaluate(src => { (0, eval)(src)(R.core.state); R.core.save(); }, later.toString());
+        await status(page);
+        assert.equal(await row.count(), 1, "still listed after Tokyo");
+        assert.equal(await row.locator(".pp-next").count(), 0, "no promise once he cannot be met");
+        await closeStatus(page);
+      }
+      await page.evaluate(() => {
+        const s = R.core.state; s.chapter = 3;
+        s.finales.steve = { route: "friend", day: 40, chapter: 3 }; s.owned.push("suyaki_steve"); R.core.save();
+      });
+      await status(page);
+      assert.equal(await row.locator(".pp-relation").textContent(), "友達", "after the finale he is a settled friend");
+      await closeStatus(page);
+    }, { ...options, reducedMotion: "reduce" });
+
+    // #2028: 綾取・ヴォルクも♥5の締めくくりがあるので人間関係に出る。「次に〜で会うと」は東京の店に会える間だけ。
+    // 綾取は大会後の煙幕の片づけの朝から（店を畳む）、ヴォルクは帰郷の夜から（鉄の煙の寄り道と同じ）約束しない。
+    // 第3章の後に♥5へ届いた時も、もう会えない店の「話を進めると、特別なイベントへ」は出さない。
+    if (device === "pc") await check("pc-saku-and-volk-rows-promise-only-while-they-can-be-met", async page => {
+      await setup(page);
+      await page.evaluate(async () => {
+        const city = await import("./js/chapters/ch2-city-data.js");
+        Object.assign(R.data.DB.dialogues, await city.readDialogues("ch3_rivals", ["ch3_saku_bond_finale"]),
+          await city.readDialogues("ch3_volk", ["ch3_volk_bond_finale"]));
+        const s = R.fresh(); s.chapter = 3;
+        for (const id of ["saku", "volk"]) { s.met[id] = true; s.affinity[id] = 66; s.contacts.push(id); }
+        Object.assign(s.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_read_ch3_saku_missed: true, _ch3_read_ch3_saku_cleanup: true, _ch3_read_ch3_saku_liar: true, _ch3_read_ch3_saku_first_reply: true, _ch3_outings: { enmaku_answer: 1 },
+          _lime_contact_volk: true, _ch3_read_ch3_volk_lime: true, _ch3_read_ch3_volk_second: true,
+          _ch3_read_ch3_volk_third: true, _ch3_read_ch3_volk_fourth: true, _ch3_read_ch3_volk_fifth: true, _ch3_read_ch3_volk_revisit: true });
+        R.core.save();
+      });
+      const next = async id => {
+        const row = page.locator(`[data-person="${id}"]`);
+        assert.equal(await row.count(), 1, `${id} is listed once met`);
+        return await row.locator(".pp-next").count() ? await row.locator(".pp-next").textContent() : null;
+      };
+      await status(page);
+      assert.equal(await next("saku"), "次に煙幕で会うと、特別なイベントへ。");
+      assert.equal(await next("volk"), "次に鉄の煙で会うと、特別なイベントへ。");
+      await page.locator('[data-person="volk"]').scrollIntoViewIfNeeded();
+      await assertFits(page, '[data-person="saku"] .pp-next, [data-person="volk"] .pp-next');
+      await closeStatus(page);
+      for (const [later, saku, volk] of [
+        [s => { s.flags._ch3_aftermath = { version: 3, winDay: 40, stage: R.bonds.VOLK_LAST_AFTERMATH_STAGE }; }, null, "次に鉄の煙で会うと、特別なイベントへ。"],
+        [s => { s.flags._ch3_aftermath.stage += 1; }, null, null],
+        [s => { s.chapter = 5; delete s.flags._ch3_aftermath; delete s.flags._lime_contact_volk; }, null, null],
+      ]) {
+        await page.evaluate(src => { (0, eval)(src)(R.core.state); R.core.save(); }, later.toString());
+        await status(page);
+        assert.equal(await next("saku"), saku, later.toString());
+        assert.equal(await next("volk"), volk, later.toString());
+        await closeStatus(page);
+      }
+    }, { ...options, reducedMotion: "reduce" });
+
     await check(`${device}-final-choices-and-ordinary-dialogue`, async page => {
       await setup(page);
-      for (const id of ["tsumugi", "minto", "rin", "samechan", "hiyori"]) {
+      for (const id of ["tsumugi", "minto", "rio", "samechan", "hiyori"]) {
         const replies = await page.evaluate(id => {
           R.fresh(); R.vn.vnTest.turbo = false;
           const scene = R.data.DB.dialogues[R.bonds.BOND_FINALES[id].dialogue];

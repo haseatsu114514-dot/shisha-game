@@ -20,12 +20,37 @@ export const DESERT_ART = Object.freeze({
   riderJump: Object.freeze({ file: "ui/desert_ride/rider_jump.webp", size: Object.freeze([537, 670]), anchor: Object.freeze({ x: 0.5761, y: 0.8388 }) }),
   riderBrace: Object.freeze({ file: "ui/desert_ride/rider_brace.webp", size: Object.freeze([561, 644]), anchor: Object.freeze({ x: 0.558, y: 0.8198 }) }),
   riderFall: Object.freeze({ file: "ui/desert_ride/rider_fall.webp", size: Object.freeze([554, 655]), anchor: Object.freeze({ x: 0.5256, y: 0.9569 }) }),
+  // ヌールの背面6ポーズ。既存 rider_* と同じキャンバス寸法と板の基準点を使う。
+  noorRider: Object.freeze({ file: "ui/desert_ride/rider_noor_ride.webp", size: Object.freeze([489, 768]), anchor: Object.freeze({ x: 0.6125, y: 0.833 }) }),
+  noorRiderLeft: Object.freeze({ file: "ui/desert_ride/rider_noor_lean_left.webp", size: Object.freeze([536, 724]), anchor: Object.freeze({ x: 0.6294, y: 0.8209 }) }),
+  noorRiderRight: Object.freeze({ file: "ui/desert_ride/rider_noor_lean_right.webp", size: Object.freeze([542, 771]), anchor: Object.freeze({ x: 0.5103, y: 0.8261 }) }),
+  noorRiderJump: Object.freeze({ file: "ui/desert_ride/rider_noor_jump.webp", size: Object.freeze([537, 670]), anchor: Object.freeze({ x: 0.5761, y: 0.8388 }) }),
+  noorRiderBrace: Object.freeze({ file: "ui/desert_ride/rider_noor_brace.webp", size: Object.freeze([561, 644]), anchor: Object.freeze({ x: 0.558, y: 0.8198 }) }),
+  noorRiderFall: Object.freeze({ file: "ui/desert_ride/rider_noor_fall.webp", size: Object.freeze([554, 655]), anchor: Object.freeze({ x: 0.5256, y: 0.9569 }) }),
+  // なる（好敵手）の背面6ポーズ（Issue #3222・Codex。2026-11-11 新バージョンの服装に描き直し #3306・PR #3309）。主人公の背面と同じ縮尺に作り直し、基準点は板の中心（転倒は主人公と同じ位置関係）。
+  // 寸法・基準点は asset_sources/desert-ride-naru-3222/adoption.json（build.py が書き出す）と同じ値。身長の差は描く時に掛ける（desert-ride.js の RIVAL_ART_SCALE）
+  naruRider: Object.freeze({ file: "ui/desert_ride/rider_naru_ride.webp", size: Object.freeze([503, 774]), anchor: Object.freeze({ x: 0.5692, y: 0.8226 }) }),
+  naruRiderLeft: Object.freeze({ file: "ui/desert_ride/rider_naru_lean_left.webp", size: Object.freeze([544, 725]), anchor: Object.freeze({ x: 0.5868, y: 0.8137 }) }),
+  naruRiderRight: Object.freeze({ file: "ui/desert_ride/rider_naru_lean_right.webp", size: Object.freeze([567, 773]), anchor: Object.freeze({ x: 0.4855, y: 0.8134 }) }),
+  naruRiderJump: Object.freeze({ file: "ui/desert_ride/rider_naru_jump.webp", size: Object.freeze([534, 673]), anchor: Object.freeze({ x: 0.5564, y: 0.828 }) }),
+  naruRiderBrace: Object.freeze({ file: "ui/desert_ride/rider_naru_brace.webp", size: Object.freeze([647, 640]), anchor: Object.freeze({ x: 0.489, y: 0.8224 }) }),
+  naruRiderFall: Object.freeze({ file: "ui/desert_ride/rider_naru_fall.webp", size: Object.freeze([656, 652]), anchor: Object.freeze({ x: 0.5266, y: 0.9582 }) }),
   rockLarge: Object.freeze({ file: "ui/desert_ride/rock_large.webp", size: Object.freeze([512, 280]) }),
   rockSmall: Object.freeze({ file: "ui/desert_ride/rock_small.webp", size: Object.freeze([384, 211]) }),
   // 旗竿（Codex A）。foot は竿の足（画像に対する比率）
   flag: Object.freeze({ file: "ui/desert_ride/flag_pole.webp", size: Object.freeze([110, 512]), foot: Object.freeze({ x: 0.0591, y: 1 }) }),
   goal: Object.freeze({ file: "ui/desert_ride/goal_banner.webp", size: Object.freeze([1024, 132]) }),
   puff: Object.freeze({ file: "ui/desert_ride/sand_puff.webp", size: Object.freeze([256, 141]) }),
+  curveLeft: Object.freeze({ file: "ui/desert_ride_controls/curve_left.webp", size: Object.freeze([512, 560]) }),
+  curveRight: Object.freeze({ file: "ui/desert_ride_controls/curve_right.webp", size: Object.freeze([512, 560]) }),
+});
+// Issue #3175 でオーナーが A 系を採用。画像の読み込みが終わるまでは操作名を表示する。スティックは 2026-11-11 に外した（画像は asset_sources に残す）。
+export const DESERT_CONTROL_ART = Object.freeze({
+  left: "ui/desert_ride_controls/steer_left.webp",
+  right: "ui/desert_ride_controls/steer_right.webp",
+  boost: "ui/desert_ride_controls/boost.webp",
+  jump: "ui/desert_ride_controls/jump.webp",
+  land: "ui/desert_ride_controls/land.webp",
 });
 // 会話の背景（Codex C を 1280×720 に）と、同じ構図の夕方（夕日の場面）
 export const DESERT_BG = "bg_dubai_dunes_day";
@@ -50,22 +75,34 @@ export function riderPose(game, previous = "rider") {
 }
 
 let images = null;
-/** 絵を読み始め、{ get(name) } を返す。get は読み終えた画像か null。何度呼んでも同じものを使い回す。 */
-export function loadDesertArt() {
-  if (!images) {
-    images = new Map();
-    if (typeof Image !== "undefined") {
-      for (const [name, def] of Object.entries(DESERT_ART)) {
-        if (!def.file) continue;
-        const image = new Image();
-        image.decoding = "async";
-        const entry = { image, ready: false };
-        image.onload = () => { (image.decode ? image.decode().catch(() => {}) : Promise.resolve()).then(() => { entry.ready = true; }); };
-        image.onerror = () => { entry.ready = false; };
-        image.src = imgFileUrl(def.file);
-        images.set(name, entry);
-      }
+/**
+ * 共通画像と選んだ相手だけを準備する。rivals省略時は従来どおり全画像。
+ * Mapは共有し、後から相手を替えても取得・decodeを重複させない。
+ */
+export function loadDesertArt({ rivals = null } = {}) {
+  images ||= new Map();
+  const names = Object.entries(DESERT_ART).filter(([name, def]) => def.file
+    && (rivals === null || !/^(noor|naru)Rider/.test(name) || rivals.some(who => name.startsWith(who + "Rider")))).map(([name]) => name);
+  if (typeof Image !== "undefined") {
+    for (const name of names) {
+      if (images.has(name)) continue;
+      const image = new Image();
+      image.decoding = "async";
+      const entry = { image, ready: false, pending: true };
+      entry.done = new Promise(resolve => {
+        image.onload = () => { (image.decode ? image.decode().catch(() => {}) : Promise.resolve()).then(() => {
+          entry.ready = true; entry.pending = false; resolve();
+        }); };
+        image.onerror = () => { entry.ready = false; entry.pending = false; resolve(); };
+      });
+      images.set(name, entry);
+      image.src = imgFileUrl(DESERT_ART[name].file);
     }
   }
-  return { get: name => { const entry = images.get(name); return entry?.ready ? entry.image : null; } };
+  const entries = names.map(name => images.get(name)).filter(Boolean);
+  return {
+    get: name => { const entry = images.get(name); return entry?.ready ? entry.image : null; },
+    whenReady: () => Promise.all(entries.map(entry => entry.done)),
+    pending: () => entries.some(entry => entry.pending),
+  };
 }

@@ -1,12 +1,15 @@
-// セーブ／ロードの枠選び（オートセーブ＋手動3枠）。タイトルの「ロード」と、日常の MENU から開く。
+// セーブ／ロードの枠選び（オートセーブ＋手動1枠）。タイトルの「ロード」と、日常の MENU から開く。
 import { el, yen } from "../core/util.js";
 import { layers, modal, toast } from "../core/ui.js";
-import { SCHEMA, SAVE_SLOTS, STAT_KEYS, STAT_JA, readSlot, saveToSlot, state } from "../core/state.js";
+import { SCHEMA, SAVE_SLOTS, STAT_KEYS, STAT_JA, readSlot, saveToSlotResult, loadFromSlot, state } from "../core/state.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { cycleBadgeText, overwriteCycleNote } from "../core/cycle-display.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { SE } from "../core/audio.js";
 import { stepOfValue } from "../core/stat-progress.js";
+import { growthEnabled } from "../core/growth-mode.js";
+import { HIDANE_KEYS } from "../core/growth.js";
+import { BOARD_KEYS, BOARD_JA, statCount, statTotal } from "../core/growth-board.js";
 
 const PHASE_LABEL = { opening: "プロローグ", daily: "日常", tournament: "大会当日", aftermath: "大会後" };
 const MAX_FACES = 8;
@@ -42,6 +45,24 @@ function statGauges(stats) {
   }));
 }
 
+/** 盤がある枠は、保存済みの育成だけを読む。旧能力や保存データは更新しない。 */
+function growthSummary(data) {
+  const g = data.growth;
+  if (!growthEnabled() || !g || typeof g !== "object" || Array.isArray(g)) return statGauges(data.stats);
+  const lit = new Set(Array.isArray(g.nodes) ? g.nodes : []);
+  const level = Number.isInteger(g.level) && g.level > 0 ? g.level : 1;
+  const hidane = HIDANE_KEYS.reduce((sum, key) => sum +
+    (Number.isFinite(g.hidane?.[key]) ? Math.max(0, Math.floor(g.hidane[key])) : 0), 0);
+  const items = [
+    ["Lv.", String(level)],
+    ["火種", String(hidane)],
+    ...BOARD_KEYS.map((key) => [BOARD_JA[key], `${statCount(key, lit)}/${statTotal(key)}`]),
+  ];
+  return el("span.ss-stats.ss-growth", items.map(([label, value]) => el("span.ss-stat", {
+    title: `${label}${value}`, "aria-label": `${label}${value}`,
+  }, [el("small", { text: label }), el("strong", { text: value, style: { whiteSpace: "nowrap" } })])));
+}
+
 /** 出会ったキャラの顔アイコン。アイコンが無いキャラ・重複・ネタバレになる private 顔（oneesan）は出さない */
 function metFaces(data) {
   const seen = new Set();
@@ -70,7 +91,7 @@ function slotBody(data) {
   return [
     el("span.ss-info", [
       el("b", [el("em.ss-chapter", { text: info.chapter }), el("span", { text: info.day }), info.phase ? el("em.ss-phase", { text: info.phase }) : null]),
-      statGauges(data.stats),
+      growthSummary(data),
       el("small", { text: `${info.money}${info.when ? `　${info.when}` : ""}` }),
     ]),
     metFaces(data),
@@ -107,7 +128,7 @@ function pickSlot(mode) {
     });
     const box = el("div.modal-box.saveload-modal", [
       el("h3", { text: mode === "save" ? "セーブ" : "ロード" }),
-      el("p.ss-note", { text: mode === "save" ? "書き込む枠を選ぶ。オートセーブは行動のたびに自動で更新される。" : "読み込むデータを選ぶ。" }),
+      el("p.ss-note", { text: mode === "save" ? "書き込む枠を選ぶ（オートは行動のたびに自動で更新）" : "読み込むデータを選ぶ" }),
       el("div.ss-list", rows),
       el("div.modal-actions", [el("button.btn", { text: "やめる", dataset: { test: "slot-cancel" }, onclick: () => { SE.cancel(); close(null); } })]),
     ]);
@@ -133,8 +154,11 @@ export async function saveFlow() {
       });
       if (!ok) continue;
     }
-    if (saveToSlot(key)) { SE.money(); toast(`${slot.label} にセーブした`, { kind: "good" }); }
-    else toast("セーブできなかった（ブラウザの保存領域がいっぱいかも）", { kind: "warn" });
+    const { autoSaved, manualSaved } = saveToSlotResult(key);
+    if (manualSaved && autoSaved) { SE.save(); toast(`${slot.label} と AUTO に保存した`, { kind: "good", ms: 4000 }); }
+    else if (manualSaved) { SE.save(); toast(`${slot.label} は保存済み。AUTO 更新は失敗`, { kind: "warn", ms: 5000 }); }
+    else if (autoSaved) toast(`${slot.label} は前のまま。AUTO は保存済み`, { kind: "warn", ms: 5000 });
+    else toast(`${slot.label} は前のまま。AUTO も保存できませんでした`, { kind: "warn", ms: 5000 });
     return true;
   }
 }
@@ -155,4 +179,19 @@ export async function loadFlow({ inGame = false } = {}) {
     if (!ok) return null;
   }
   return key;
+}
+
+/** 取消は静かに閉じ、読込失敗時だけ別の枠へ戻れるようにする。 */
+export async function loadWithRecovery({ inGame = false } = {}) {
+  for (;;) {
+    const key = await loadFlow({ inGame });
+    if (!key) return false;
+    if (loadFromSlot(key)) return true;
+    const retry = await modal({
+      title: "ロードできませんでした",
+      body: "この枠を読み込めませんでした。別のセーブ枠を試してください。",
+      options: [{ label: "やめる", value: false }, { label: "別の枠を選ぶ", value: true, primary: true, test: "retry-load" }],
+    });
+    if (!retry) return false;
+  }
 }

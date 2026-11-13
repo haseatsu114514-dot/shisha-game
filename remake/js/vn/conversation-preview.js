@@ -1,5 +1,5 @@
 // 本編と同じエンジン・CSSで会話UIを試す。保存済みゲームは読み書きしない。
-import { loadAll, loadDeferredDialogues, DB } from "../core/data.js";
+import { loadAll, loadDeferredDialogues, portraitInfo, DB } from "../core/data.js";
 import { newGame, state, config } from "../core/state.js";
 import { initLayers } from "../core/ui.js";
 import { play } from "./engine.js";
@@ -10,20 +10,16 @@ const selector = document.querySelector("#preview-scene");
 const status = document.querySelector("#preview-status");
 const stage = document.querySelector("#stage");
 const previewQuery = new URL(location.href).searchParams;
-function applyPreviewTheme(value) {
-  if(value === "heisei-blue") { document.documentElement.dataset.uiTheme=value; return value; }
-  return applyUiTheme(value);
-}
-const theme = applyPreviewTheme(previewQuery.get("theme"));
+const theme = applyUiTheme(previewQuery.get("theme"));
 const themeSelect=document.createElement("select");
 themeSelect.className="ui-theme-select";
 themeSelect.setAttribute("aria-label","UIデザイン");
-for(const {id,label} of [...UI_THEMES,{id:"heisei-blue",label:"R2 平成の青いADV（比較用）"}]) {
+for(const {id,label} of UI_THEMES) {
   const option=document.createElement("option"); option.value=id; option.textContent=label; themeSelect.append(option);
 }
 themeSelect.value=theme;
 themeSelect.disabled=true;
-themeSelect.addEventListener("change",()=>{applyPreviewTheme(themeSelect.value);start();});
+themeSelect.addEventListener("change",()=>{applyUiTheme(themeSelect.value);start();});
 themeSelect.id = "preview-theme";
 document.querySelector("#preview-restart").before(themeSelect);
 const characterSelect=document.createElement("select");
@@ -37,6 +33,29 @@ if(previewQuery.has("character")) selector.value="characters";
 characterSelect.hidden=selector.value!=="characters";
 characterSelect.disabled=true;
 themeSelect.after(characterSelect);
+const portraitStyleSelect=document.createElement("select");
+portraitStyleSelect.id="preview-portrait-style";
+portraitStyleSelect.setAttribute("aria-label","立ち絵の画風");
+for(const [value,label] of [["new","新バージョン"],["classic","現行"]]) {
+  const option=document.createElement("option");option.value=value;option.textContent=label;portraitStyleSelect.append(option);
+}
+portraitStyleSelect.value=previewQuery.get("portraitStyle")==="classic"?"classic":"new";
+portraitStyleSelect.disabled=true;
+portraitStyleSelect.addEventListener("change",start);
+characterSelect.after(portraitStyleSelect);
+const faceSelect=document.createElement("select");
+faceSelect.id="preview-face";faceSelect.setAttribute("aria-label","表情・衣装");
+faceSelect.disabled=true;faceSelect.addEventListener("change",start);portraitStyleSelect.after(faceSelect);
+const artworkStatus=document.createElement("span");artworkStatus.id="preview-artwork-status";
+artworkStatus.setAttribute("role","status");artworkStatus.style.fontSize="12px";
+faceSelect.after(artworkStatus);
+function updateFaces() {
+  const selected=faceSelect.value;faceSelect.replaceChildren();
+  for(const face of DB.manifest.portraits[characterSelect.value]?.faces || []) {
+    const option=document.createElement("option");option.value=face;option.textContent=face;faceSelect.append(option);
+  }
+  faceSelect.value=[...faceSelect.options].some(o=>o.value===selected)?selected:"normal";
+}
 const backgroundSelect=document.createElement("select");
 backgroundSelect.id="preview-background";
 backgroundSelect.setAttribute("aria-label","比較する背景");
@@ -116,7 +135,10 @@ async function start() {
     state.met[id] = true;
     markIntroSeen(id);
   }
-  Object.assign(config, { textSpeed: 4, mute: true });
+  Object.assign(config, { textSpeed: 4, mute: true, portraitStyle: portraitStyleSelect.value });
+  faceSelect.hidden=selector.value!=="characters";
+  const info=portraitInfo(characterSelect.value,faceSelect.value);
+  artworkStatus.textContent=selector.value!=="characters"?"":info?.style==="classic"&&config.portraitStyle!=="classic"?"この衣装・人物は未導入：現行を表示":info?.face!==faceSelect.value?"この表情は未制作：同画風の通常を表示":config.portraitStyle==="classic"?"現行":characterSelect.value==="ageha"?"新バージョン・通常1枚／原画人物高1185px":"新バージョン";
   characterSelect.hidden=selector.value!=="characters";
   const characterLines = {
     hiyori:{speaker:"hiyori",face:"smile",text:"今日はここで、ゆっくりしていってね。\nお茶も用意するから、少しだけ待っていてね。"},
@@ -125,7 +147,7 @@ async function start() {
     tsumugi:{speaker:"tsumugi",face:"normal",text:"……今日は、見せられる絵がなくて。\nすみません"},
   };
   const scenes = {
-    characters:{dialogue_id:"ui-preview-characters",lines:[characterLines[characterSelect.value]]},
+    characters:{dialogue_id:"ui-preview-characters",lines:[{...(characterLines[characterSelect.value] || {text:"立ち絵と会話ウインドウの配置確認。"}),speaker:characterSelect.value,face:faceSelect.value}]},
     hiyori: { ...DB.dialogues.hiyori_shop_repeat_0, lines: DB.dialogues.hiyori_shop_repeat_0.lines.slice(1) },
     twolines: { dialogue_id: "ui-preview-two-lines", lines: [
       { speaker: "hiyori", face: "smile", text: "今日はここで、ゆっくりしていってね。\nお茶も用意するから、少しだけ待っていてね。" },
@@ -152,19 +174,27 @@ async function start() {
   if (!signal.aborted) status.textContent = "会話終了 ·「もう一度」で再生できます";
 }
 selector.addEventListener("change", start);
-characterSelect.addEventListener("change", start);
+characterSelect.addEventListener("change", () => {updateFaces();start();});
 document.querySelector("#preview-restart").addEventListener("click", start);
 try {
   await loadAll();
   await Promise.all([document.fonts.load('700 24px "Suien Name"', "ひよりアダム"), document.fonts.load('500 32px "Suien Gothic"')]);
+  characterSelect.replaceChildren();
+  for(const id of Object.keys(DB.manifest.portraits)) {
+    const option=document.createElement("option");option.value=id;option.textContent=DB.characters[id]?.name || id;characterSelect.append(option);
+  }
+  characterSelect.value=DB.manifest.portraits[previewQuery.get("character")]?previewQuery.get("character"):"hiyori";
+  updateFaces();
+  if([...faceSelect.options].some(o=>o.value===previewQuery.get("face"))) faceSelect.value=previewQuery.get("face");
+  portraitStyleSelect.disabled=false;faceSelect.disabled=false;
   selector.disabled = false;
   characterSelect.disabled = false;
   themeSelect.disabled = false;
   backgroundSelect.disabled = false;
-  if(theme==="heisei-blue") await document.fonts.load('400 32px "Suien Blue Mincho"',"みんとあげはつむぎ時間帯");
   document.querySelector("#preview-restart").disabled = false;
   await start();
 } catch (error) {
   status.textContent = "読み込みに失敗しました。再読み込みしてください。";
   console.error(error);
 }
+

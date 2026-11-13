@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { suite, assertFits } from "./support.mjs";
+import { flickFromHandle } from "./axe_flick_input.mjs";
 const required=["_hiyori_cracks_done","_hiyori_tonari_return_done","_hiyori_tonari_followup_done","_hiyori_tonari_afterwork_done"];
 async function setup(page) {
   await page.evaluate(async required=>{
@@ -24,8 +25,25 @@ async function action(page,touch=false) {
   const button=page.locator('[data-test="axe-action"]:not([disabled])');await button.waitFor();
   if(touch)await button.tap();else await button.click();
 }
+// Drive the new default with real board taps and a real mouse/touch drag; never inject scores.
+async function aimAxe(page, touch = false) {
+  assert.equal(await page.locator('[data-test="axe-game"]').getAttribute('data-input-mode'), 'tap-pull');
+  const point = await page.locator('[data-test="axe-target"]').evaluate(node => {
+    const p = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
+    return { x: p.x, y: p.y };
+  });
+  if (touch) await page.touchscreen.tap(point.x, point.y); else await page.mouse.click(point.x, point.y);
+  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'power');
+}
+async function pullAxe(page, touch = false, power = .62) {
+  // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、power になる速さで弾く（axe_flick_input.mjs）。
+  await flickFromHandle(page, { touch, power });
+  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'result');
+  const actual = Number(await page.locator('[data-test="axe-game"]').getAttribute('data-power'));
+  assert(Math.abs(actual - power) < .06, `actual flick power ${actual} must match the gesture ${power}`);
+}
 async function finish(page,touch=false) {
-  for(let n=0;n<3;n++) for(const p of ["choice","horizontal","vertical","power","result"]){await phase(page,p);await action(page,touch);}
+  for(let n=0;n<3;n++){await phase(page,"choice");await aimAxe(page,touch);await pullAxe(page,touch);await action(page,touch);}
   await phase(page,"summary");await action(page,touch);
 }
 async function start(page){await page.evaluate(()=>{S.started=S.before();S.run=S.daily.playHiyoriEvent("axe_reveal");});await phase(page,"choice");}
@@ -52,10 +70,10 @@ await suite("hiyori-axe-story",async check=>{
   await check("read-gates-and-legacy-do-not-infer",async page=>{
     await setup(page);
     const result=await page.evaluate(required=>{
-      const s=S.core.state;s.affinity.hiyori=100;s.lovers=["hiyori","rin"];s.flags._friend_hiyori=true;
+      const s=S.core.state;s.affinity.hiyori=100;s.lovers=["hiyori","rio"];s.flags._friend_hiyori=true;
       const gates=required.map(f=>{delete s.flags[f];const status=S.route.hiyoriEventStatus("axe_reveal");s.flags[f]=true;return status;});
       s.chapter=3;const chapter=S.route.hiyoriEventStatus("axe_reveal");s.chapter=1;s.slot=0;const time=S.route.hiyoriEventStatus("axe_reveal");s.slot=1;
-      s.lovers=["rin"];s.affinity.hiyori=20;const low=S.route.hiyoriEventStatus("axe_reveal");s.affinity.hiyori=51;
+      s.lovers=["rio"];s.affinity.hiyori=20;const low=S.route.hiyoriEventStatus("axe_reveal");s.affinity.hiyori=51;
       const saved=S.data.DB.dialogues.hiyori_axe_reveal_close;delete S.data.DB.dialogues.hiyori_axe_reveal_close;
       const missing=S.route.hiyoriEventStatus("axe_reveal");S.data.DB.dialogues.hiyori_axe_reveal_close={...saved,metadata:{preview_only:true}};
       const preview=S.route.hiyoriEventStatus("axe_reveal");S.data.DB.dialogues.hiyori_axe_reveal_close=saved;
@@ -120,17 +138,17 @@ await suite("hiyori-axe-story",async check=>{
     await setup(page);
     const result=await page.evaluate(async()=>{
       const s=S.core.state;s.money=2999;const poor=JSON.stringify(s),paid=await S.daily.playHiyoriEvent("axe_reveal"),poorSame=JSON.stringify(s)===poor;
-      s.money=90000;s.pendingInvite={sender:"rin",day:s.day,slot:1,event:"date_rin"};const booked=JSON.stringify(s),play=await S.daily.playHiyoriEvent("axe_reveal");
+      s.money=90000;s.pendingInvite={sender:"rio",day:s.day,slot:1,event:"date_rio"};const booked=JSON.stringify(s),play=await S.daily.playHiyoriEvent("axe_reveal");
       return {paid,poorSame,play,bookedSame:JSON.stringify(s)===booked};
     });assert(!result.paid&&result.poorSame&&!result.play&&result.bookedSame);
-    await page.evaluate(()=>{S.core.state.pendingInvite.day++;S.core.state.inbox=[{id:"keep",read:false,msg:{sender:"rin"},log:["keep"]}];S.booked=JSON.stringify(S.core.state.pendingInvite);S.inbox=JSON.stringify(S.core.state.inbox);});
+    await page.evaluate(()=>{S.core.state.pendingInvite.day++;S.core.state.inbox=[{id:"keep",read:false,msg:{sender:"rio"},log:["keep"]}];S.booked=JSON.stringify(S.core.state.pendingInvite);S.inbox=JSON.stringify(S.core.state.inbox);});
     await start(page);await finish(page);assert(await page.evaluate(()=>S.run));
     assert(await page.evaluate(()=>JSON.stringify(S.core.state.pendingInvite)===S.booked&&JSON.stringify(S.core.state.inbox)===S.inbox));
   });
   for(const relationship of ["friend","lovers"]) await check("existing-"+relationship+"-never-reclassified",async page=>{
     await setup(page);await page.evaluate(relationship=>{
       const s=S.core.state;s.finales.hiyori={route:relationship==="friend"?"friend":"romance",day:3,chapter:1};
-      s.flags._friend_hiyori=relationship==="friend";s.lovers=relationship==="friend"?["rin"]:["hiyori","rin"];
+      s.flags._friend_hiyori=relationship==="friend";s.lovers=relationship==="friend"?["rio"]:["hiyori","rio"];
       s.affinity.hiyori=88;s.lovePts.hiyori=12;s.loveLevel.hiyori=2;s.romanceChoices.bond_q1_hiyori={char:"hiyori",value:0,day:3};
       S.relationship=JSON.stringify({finales:s.finales,lovers:s.lovers,friend:s.flags._friend_hiyori,lovePts:s.lovePts,loveLevel:s.loveLevel,choices:s.romanceChoices});
     },relationship);await start(page);await finish(page);assert(await page.evaluate(()=>S.run));
@@ -158,3 +176,4 @@ await suite("hiyori-axe-story",async check=>{
     assert.equal(result.snapshot.money,90000);assert.equal(result.snapshot.stamina,80);assert.equal(result.snapshot.slot,1);assert(!result.snapshot.known&&!result.visited);
   });
 });
+

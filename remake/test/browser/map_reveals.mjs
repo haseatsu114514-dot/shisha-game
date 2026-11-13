@@ -7,16 +7,15 @@ fs.mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_EXECUTABLE_PATH || '/usr/bin/chromium' });
 const results = [];
 try {
-  for (const [name, viewport, layout, reducedMotion] of [
-    ['pc', { width: 1280, height: 900 }, 'normal', 'no-preference'],
-    ['landscape', { width: 844, height: 390 }, 'normal', 'no-preference'],
-    ['ds-portrait', { width: 390, height: 844 }, 'ds', 'no-preference'],
-    ['ds-reduced', { width: 844, height: 390 }, 'ds', 'reduce'],
+  // DS風は廃止（横画面一本化）。以前の DS風2件のうち、動きを減らす設定の横持ちは通常表示で残す。
+  for (const [name, viewport, reducedMotion] of [
+    ['pc', { width: 1280, height: 900 }, 'no-preference'],
+    ['landscape', { width: 844, height: 390 }, 'no-preference'],
+    ['landscape-reduced', { width: 844, height: 390 }, 'reduce'],
   ]) {
     const context = await browser.newContext({ viewport, reducedMotion, hasTouch: name !== 'pc' });
     const page = await context.newPage(), errors = [];
     page.on('pageerror', e => errors.push(e.message));
-    await page.addInitScript(layout => localStorage.setItem('suien_title_layout', layout), layout);
     await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
     await page.locator('[data-test="title-new"]').waitFor();
     await page.locator('#boot').waitFor({ state: 'detached' });
@@ -49,6 +48,7 @@ try {
       void reopen();
     });
     await page.locator('.map:not(.done)').waitFor();
+    if (name !== 'pc') assert.equal(await page.locator('#rotate-hint').isVisible(), false, `${name}: 横持ちに回転ガードは出ない`);
     assert.equal(await page.locator('.newly-revealed').count(), 0, 'first map must not celebrate existing places');
     assert.equal(await page.evaluate(() => R.shown), 1);
     const saved = await page.evaluate(async () => {

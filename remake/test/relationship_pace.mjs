@@ -1,13 +1,13 @@
 // New-game UI measurement. Never inject day, affinity, story, flags, or lovers.
-// PACE_TARGET=rin|tsumugi|minto PACE_MODE=fast|usual|friend|hold|boost|fortune PACE_TOUCH=1
+// PACE_TARGET=rio|tsumugi|minto PACE_MODE=fast|usual|friend|hold|boost|fortune PACE_TOUCH=1
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 const { chromium } = createRequire(new URL("./browser/package.json", import.meta.url))("playwright");
 import { installLoadingComicReader } from "./browser/loading_reader.mjs";
-const target = process.env.PACE_TARGET || "rin", mode = process.env.PACE_MODE || "fast", touch = process.env.PACE_TOUCH === "1";
-assert(["rin", "tsumugi", "minto"].includes(target)); assert(["fast", "usual", "friend", "hold", "boost", "fortune"].includes(mode));
+const target = process.env.PACE_TARGET || "rio", mode = process.env.PACE_MODE || "fast", touch = process.env.PACE_TOUCH === "1";
+assert(["rio", "tsumugi", "minto"].includes(target)); assert(["fast", "usual", "friend", "hold", "boost", "fortune"].includes(mode));
 const base = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
 const dir = path.resolve(process.env.ARTIFACT_DIR || ".codex/artifacts/relationship-pace"); fs.mkdirSync(dir, { recursive: true });
 const label = `${target}-${mode}-${touch ? "touch" : "pc"}`;
@@ -36,7 +36,7 @@ try {
     P.vn.hooks.onEnter = (id, dlg) => { enter?.(id, dlg); P.events.push({ id, day: P.core.state.day, slot: P.core.state.slot }); };
     P.vn.hooks.onChoice = (...args) => { choose?.(...args); P.choices.push({ scene: args[0], choice: args[1], branch: args[2], next: args[3], text: args[4]?.text, day: P.core.state.day }); };
     P.vn.vnTest.choose = (scene, labels) => {
-      if (scene === "remake_fortune_pick_live") return Math.max(0, labels.findIndex(t => ({ rin: /凛/, tsumugi: /つむぎ/, minto: /みんと|栞/ })[target].test(t)));
+      if (scene === "remake_fortune_pick_live") return Math.max(0, labels.findIndex(t => ({ rio: /凛想/, tsumugi: /つむぎ/, minto: /みんと|栞/ })[target].test(t)));
       if (mode === "friend" && scene === `ch1_${target}_bond_question`) return 1;
       if (mode === "hold" && scene === `remake_confession_gate_${target}` && !P.held) { P.held = true; return 1; }
       return 0;
@@ -60,8 +60,8 @@ try {
         day: s.day, slot: s.slot, phase: s.phase, money: s.money, stamina: s.stamina,
         stats: s.stats, points: s.affinity[target] || 0, level, story: s.story[target] || 0, finale: s.finales[target] || null,
         lover: s.lovers.includes(target), ranks: { ...P.ranks }, visited: s.visitedDay[target] === s.day,
-        // 2F (Rin) follows the game rule: night only, not on her away day, once per day.
-        rinClosed: !!P.hours.rinUnavailable(s),
+        // 2F (Rio) follows the game rule: night only, not on her away day, once per day.
+        rioClosed: !!P.hours.rioUnavailable(s),
         met: !!s.met[target], fortuneDay: s.fortuneDay ?? null,
         visitedTsumugi: s.visitedDay.tonari_customer === s.day, baito: s.visitedDay.tonari_baito === s.day,
         sub: document.querySelector(".sub-title")?.textContent || "",
@@ -117,8 +117,8 @@ try {
         await press('[data-test="pin-fortune"]'); await press('[data-test="map-go"]'); continue;
       }
       const visited = target === "tsumugi" ? snap.visitedTsumugi : snap.visited;
-      const pin = target === "rin" ? "shop" : target === "tsumugi" ? "tonari" : target;
-      const available = (target !== "rin" || !snap.rinClosed) && !!await page.locator(`[data-test="pin-${pin}"]:not(.off)`).count();
+      const pin = target === "rio" ? "shop" : target === "tsumugi" ? "tonari" : target;
+      const available = (target !== "rio" || !snap.rioClosed) && !!await page.locator(`[data-test="pin-${pin}"]:not(.off)`).count();
       let action = !visited && available && !snap.targetNight && (mode !== "usual" || snap.day % 2 === 0) ? target : "rest";
       if (snap.stamina < 30) action = "rest";
       if (action === "rest" && snap.stamina >= 38 && !snap.baito && snap.money < 7000) action = "baito";
@@ -134,7 +134,7 @@ try {
       continue;
     }
     if (snap.screen === "shop-entry") {
-      if (actions.at(-1)?.action === "rin" && await press('[data-test="shop-upstairs"]')) continue;
+      if (actions.at(-1)?.action === "rio" && await press('[data-test="shop-upstairs"]')) continue;
       await press('[data-test="shop-enter"]'); continue;
     }
     if (snap.screen === "shop") {

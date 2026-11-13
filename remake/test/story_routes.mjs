@@ -18,8 +18,13 @@ for (const id of all) {
   assert.equal(selectStoryEvening(routes, state, {...ctx, accepted: []}).kind, 'rest');
   assert.equal(selectStoryEvening(routes, state, {...ctx, unresolved: [id]}).kind, 'rest');
   assert.equal(selectStoryEvening(routes, {...state, flags: {_story_shuraba_unresolved: true}}, ctx).kind, 'rest');
-  assert.equal(selectStoryEnding(routes, state, ctx)[1], routes.romance[id].epilogue);
-  assert.equal(selectStoryEnding(routes, state, {...ctx, present: []})[1], routes.ending.normal);
+  // 共通の賄い（ending.normal）は置き換えず、読んでからその人の後日談へ進む（全体講評 S11・STK11）。
+  assert.deepEqual(selectStoryEnding(routes, state, ctx),
+    [routes.ending.start, routes.ending.normal, routes.romance[id].epilogue, routes.ending.daily]);
+  assert.deepEqual(selectStoryEnding(routes, state, {...ctx, present: []}),
+    [routes.ending.start, routes.ending.normal, routes.ending.daily]);
+  assert.deepEqual(selectStoryEnding(routes, {...state, flags: {_story_shuraba_unresolved: true}}, ctx),
+    [routes.ending.start, routes.ending.normal, routes.ending.daily]);
   assert.equal(selectPostEndingConflict(routes, state, ctx).kind, 'none');
 }
 assert.equal(selectStoryEvening(routes, {chapter: 3, lovers: ['ageha']}, {...context, selected: 'ageha'}).kind, 'rest');
@@ -35,7 +40,7 @@ for (let n = 2; n <= all.length; n++) {
   assert.deepEqual(result.talks, lovers.map(id => routes.romance[id].talk), 'one talk per hurt lover, in order');
   result.scenes.forEach(id => assert.ok(scenes.has(id), id));
   assert.equal(selectStoryEvening(routes, state, {present: [lovers[0]]}).kind, 'rest');
-  assert.equal(selectStoryEnding(routes, state, context)[1], routes.ending.normal);
+  assert.deepEqual(selectStoryEnding(routes, state, context), [routes.ending.start, routes.ending.normal, routes.ending.daily]);
   assert.equal(selectPostEndingConflict(routes, state, {present: [lovers[0]]}).kind, 'pending');
 
   const tokyo = {chapter: 3, lovers};
@@ -51,10 +56,10 @@ for (let n = 2; n <= all.length; n++) {
   assert.equal(selectStoryEvening(routes, tokyo, context).kind, 'overlap', 'no absent Steve');
   assert(!selectStoryEnding(routes, tokyo, context).includes(routes.conflict.open));
 }
-const pair = {chapter: 4, lovers: ['minto', 'rin']};
-assert.equal(selectStoryEvening(routes, pair, {present: ['minto', 'rin', 'steve']}).kind, 'overlap', 'no Tokyo gag in Dubai');
-const partial = selectPostEndingConflict(routes, {...pair, lovers: all}, {present: ['minto', 'rin', 'steve']});
-assert.deepEqual(partial.participants, ['minto', 'rin'], 'only present lovers confront him');
+const pair = {chapter: 4, lovers: ['minto', 'rio']};
+assert.equal(selectStoryEvening(routes, pair, {present: ['minto', 'rio', 'steve']}).kind, 'overlap', 'no Tokyo gag in Dubai');
+const partial = selectPostEndingConflict(routes, {...pair, lovers: all}, {present: ['minto', 'rio', 'steve']});
+assert.deepEqual(partial.participants, ['minto', 'rio'], 'only present lovers confront him');
 assert(!partial.scenes.flatMap(id => sceneData.get(id).lines).some(row => row.speaker === 'steve'), 'no comic interruption after the ending');
 // #1716: 各人の反応ははじめの個別の返答で閉じる。話し直しは一人ずつで、許しや未解決の解除を決めない。
 for (const id of all) {
@@ -71,16 +76,16 @@ assert.equal(selectPostEndingConflict(routes, {}, context).kind, 'none');
 assert.deepEqual(selectPostEndingConflict(routes, {}, context).talks, []);
 // IR32: 先に修羅場を済ませた恋人（context.unresolved）は反応を繰り返さず、話し直しの決意と一人ずつの話し直しだけ。
 {
-  const done = selectPostEndingConflict(routes, {lovers: ['minto', 'rin'], flags: {_story_shuraba_unresolved: true}},
-    {present: [], unresolved: ['minto', 'rin']});
+  const done = selectPostEndingConflict(routes, {lovers: ['minto', 'rio'], flags: {_story_shuraba_unresolved: true}},
+    {present: [], unresolved: ['minto', 'rio']});
   assert.deepEqual([done.kind, done.scenes, done.unresolved, done.talks],
-    ['pending', [routes.conflict.pending_ending], ['minto', 'rin'], [routes.romance.minto.talk, routes.romance.rin.talk]]);
-  const more = selectPostEndingConflict(routes, {lovers: ['minto', 'rin', 'ageha']}, {present: ['rin', 'ageha'], unresolved: ['minto']});
-  assert.deepEqual(more.participants, ['rin', 'ageha']);
-  assert.deepEqual(more.unresolved, ['minto', 'rin', 'ageha'], 'earlier hurt lovers stay unresolved first');
-  assert.deepEqual(more.talks, ['minto', 'rin', 'ageha'].map(id => routes.romance[id].talk));
+    ['pending', [routes.conflict.pending_ending], ['minto', 'rio'], [routes.romance.minto.talk, routes.romance.rio.talk]]);
+  const more = selectPostEndingConflict(routes, {lovers: ['minto', 'rio', 'ageha']}, {present: ['rio', 'ageha'], unresolved: ['minto']});
+  assert.deepEqual(more.participants, ['rio', 'ageha']);
+  assert.deepEqual(more.unresolved, ['minto', 'rio', 'ageha'], 'earlier hurt lovers stay unresolved first');
+  assert.deepEqual(more.talks, ['minto', 'rio', 'ageha'].map(id => routes.romance[id].talk));
 }
-assert.equal(selectStoryEvening(routes, {chapter: 4, lovers: ['rin', 'rin', 'unknown']}, {present: ['rin']}).kind, 'rest');
+assert.equal(selectStoryEvening(routes, {chapter: 4, lovers: ['rio', 'rio', 'unknown']}, {present: ['rio']}).kind, 'rest');
 assert.equal(selectStoryEvening(routes, {}).kind, 'rest');
 const mintoCall = 'ch3_minto_small_lies';
 const heard = {completedScenes: ['ch3_double_apple_incident', 'confession_minto']};
@@ -89,6 +94,18 @@ assert(!canReadOptionalStory(routes, {}, mintoCall, heard));
 assert(canReadOptionalStory(routes, {contacts: ['minto']}, mintoCall, heard));
 assert(!canReadOptionalStory(routes, {}, 'ch3_cigarman_trace', {completedScenes: ['ch3_cigarman_rumor']}));
 assert(!canReadOptionalStory(routes, {}, 'unknown'));
+// #3081: 第4章のヌールの物語は既存カフェに登録し、該当する段階を読む前に公開しない。
+{
+  const ids = routes.chapters['4'].optional.filter(id => id.startsWith('ch4_noor_story_'));
+  assert.equal(ids.length, 16);
+  for (const id of ids) {
+    assert(scenes.has(id), id);
+    const [stage] = routes.optional_requirements[id]?.seen || [];
+    assert(stage?.startsWith('ch4_noor_'), id);
+    assert(!canReadOptionalStory(routes, {}, id));
+    assert(canReadOptionalStory(routes, {}, id, {completedScenes: [stage]}));
+  }
+}
 
 // --- #1176 GAP 3-B: 第3章の任意場面・前夜の配線（ch3-story-wiring.js）。ブラウザ不要の純粋ロジック。
 const wiring = await import(new URL('remake/js/chapters/ch3-story-wiring.js', root));
@@ -201,8 +218,9 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert(!offered(value).includes('confession_mashiro'), 'read once only');
   // あげは（#1988）: 第3章の後日談を読み終え、♥3の分岐で恋愛寄り・♥5の保存だけ。未回答・友情・♥4・着地済み・第4章では出さない。
   const romance = {bond_q1_ageha: {char: 'ageha', value: 1, day: 20}};
-  const cleared = {chapter: 3, lovers: [], flags: {_ch3_cleared: true, _ch3_aftermath: {version: 3, winDay: 42, stage: 7}},
-    romanceChoices: romance, affinity: {ageha: 66}, day: 45, slot: 0};
+  // STK23: 再会は帰郷した夜（優勝2日後）。第3章はその夜で終わる。
+  const cleared = {chapter: 3, lovers: [], flags: {_ch3_cleared: true, _ch3_aftermath: {version: 4, winDay: 42, stage: 7}},
+    romanceChoices: romance, affinity: {ageha: 66}, day: 44, slot: 1};
   assert.equal(entry.agehaConfessionDue(cleared), true);
   assert.equal(entry.agehaConfessionDue({...cleared, flags: {}}), false, 'not before the reunion');
   assert.equal(entry.agehaConfessionDue({...cleared, romanceChoices: {}}), false, 'no ♥3 answer: no confession');
@@ -214,17 +232,17 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.equal(entry.agehaConfessionDue({...cleared, flags: {...cleared.flags, _friend_ageha: true}}), false);
   assert.equal(entry.agehaConfessionDue({...cleared, chapter: 4}), false);
   assert.equal(entry.AGEHA_ROUTE_CHOICE, 'bond_q1_ageha');
-  // 告白は再会（優勝3日後）の翌日。進んだ時計は戻さず、条件を満たさない保存の時計には触れない。
+  // 告白は再会（帰郷した夜）の翌日の昼。進んだ時計は戻さず、条件を満たさない保存の時計には触れない。
   const timed = structuredClone(cleared);
   assert.equal(entry.beginAgehaConfessionDay(timed), true);
-  assert.deepEqual([timed.day, timed.slot], [46, 0]);
+  assert.deepEqual([timed.day, timed.slot], [45, 0]);
   assert.equal(entry.beginAgehaConfessionDay(timed), false, 'idempotent');
   const late = {...structuredClone(cleared), day: 47, slot: 1};
   assert.equal(entry.beginAgehaConfessionDay(late), false);
   assert.deepEqual([late.day, late.slot], [47, 1], 'never rewinds');
   const friend = {...structuredClone(cleared), romanceChoices: {}};
   assert.equal(entry.beginAgehaConfessionDay(friend), false);
-  assert.equal(friend.day, 45);
+  assert.equal(friend.day, 44);
   assert.equal(sceneData.get('confession_ageha_accept').metadata.set_romance, 'ageha');
   for (const id of entry.AGEHA_CONFESSION_SCENES) assert(sceneData.get(id)?.lines?.length, id);
 }
@@ -310,15 +328,39 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   }
 }
 {
-  // 久世とましろの任意場面: 煙幕の初訪問の後にましろ側、mukaiの客として来た後に久世側。
+  // #3081: ましろの物語系は約束・練習・ブラックティーのあと、mukaiで一本ずつ。大会の言葉は足さない。
+  const extras = [...wiring.MASHIRO_STORY_EXTRAS];
+  assert.deepEqual(extras, ['ch3_mashiro_timer_side', 'ch3_mashiro_cup_warm', 'ch3_mashiro_glass_cloth',
+    'ch3_mashiro_leaf_rest', 'ch3_mashiro_bench_tea']);
   const value = tokyo();
-  readUntil(value, 'ch3_kuze_first');
-  assert(!offered(value).some(id => id.startsWith('ch3_kuze_mashiro_')), 'no childhood scenes before meeting kuze');
-  readUntil(value, 'ch3_kuze_mukai_visit');
-  assert(offered(value).includes('ch3_kuze_mashiro_tea_tin'));
-  assert(!offered(value).includes('ch3_kuze_mashiro_soon_back'), 'kuze talks after visiting mukai');
+  assert(!extras.some(id => offered(value).includes(id)), 'the existing visits stay ahead');
+  for (const id of ['ch3_mashiro_play_3', 'ch3_mashiro_practice', 'ch3_mashiro_black_tea']) wiring.commitOptionalRead(value, id);
+  assert.deepEqual(offered(value).filter(id => extras.includes(id)), [extras[0]]);
+  for (const id of extras) {
+    const place = wiring.CH3_OPTIONAL_SCENES[id];
+    assert.equal(place.location, 'mukai', id);
+    assert.equal(place.bg, 'bg_mukai_shop', id);
+    assert.equal(place.file, 'ch3_mashiro', id);
+    const text = sceneData.get(id).lines.map(row => row.text || '').join('');
+    assert(!/大会|本番|いよいよ|明日|ましろさん|テツコ|ヤニ/.test(text), id);
+    assert(sceneData.get(id).lines.some(row => row.type === 'apply' && row.affinity?.mashiro > 0), id);
+    assert.deepEqual(offered(value).filter(item => extras.includes(item)), [id]);
+    wiring.commitOptionalRead(value, id);
+    assert.equal(value.flags[wiring.optionalReadFlag(id)], true);
+    assert(!offered(value).includes(id), 'read once');
+  }
+  assert(!extras.some(id => offered(value).includes(id)));
+}
+{
+  // 綾取とましろの任意場面: 煙幕の初訪問の後にましろ側、mukaiの客として来た後に綾取側。
+  const value = tokyo();
+  readUntil(value, 'ch3_saku_first');
+  assert(!offered(value).some(id => id.startsWith('ch3_saku_mashiro_')), 'no childhood scenes before meeting saku');
+  readUntil(value, 'ch3_saku_mukai_visit');
+  assert(offered(value).includes('ch3_saku_mashiro_tea_tin'));
+  assert(!offered(value).includes('ch3_saku_mashiro_soon_back'), 'saku talks after visiting mukai');
   readUntil(value, 'ch3_taste_return');
-  assert(offered(value).includes('ch3_kuze_mashiro_soon_back'));
+  assert(offered(value).includes('ch3_saku_mashiro_soon_back'));
 }
 {
   // 前夜: location_contract どおり、実際に滞在中の人物と会う約束だけが根拠。
@@ -348,7 +390,7 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.equal(pick(eve(['minto'], {contacts: []})).kind, 'rest', 'no accepted invitation without a contact');
   value = eve(['minto']); value.flags._story_shuraba_unresolved = true;
   assert.equal(pick(value).kind, 'rest');
-  value = eve([], {lovers: ['minto', 'rin']}); value.affinity = {minto: 100, rin: 100};
+  value = eve([], {lovers: ['minto', 'rio']}); value.affinity = {minto: 100, rio: 100};
   assert.equal(pick(value).kind, 'rest', 'lovers who never arrived');
   // 二人以上が実際に同じ東京にいる前夜: スティーブに面識があれば茶化しで保留、なければ重なった予定。
   value = eve(['tsumugi', 'minto', 'ageha'], {lovers: ['minto', 'tsumugi', 'ageha']});
@@ -424,10 +466,18 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.deepEqual(result, {kind: 'date', participants: ['ageha'], scenes: ['tournament_date_ageha']});
   assert.deepEqual(ch4.chapterFourEveningRecord(result), {kind: 'date', participants: ['ageha']});
   for (const id of all) {
-    value = dubaiEve([id], id);
+    // ドバイに住むヌール（resident）は同行を選ばない。恋人なら前夜も同じ街にいる（DSR20）
+    value = dubaiEve([id], routes.romance[id].resident ? null : id);
     assert.equal(ch4.chapterFourEveningPartner(routes, value), id, `${id} can be invited in Dubai`);
     assert.deepEqual(ch4.selectChapterFourEvening(routes, value, id).scenes, [routes.romance[id].date]);
   }
+  // ヌールと同行の恋人がどちらもいれば、重なった予定の保留。恋人でなければ前夜にはいない
+  value = dubaiEve(['noor', 'tsumugi'], 'tsumugi');
+  assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, ['tsumugi', 'noor']);
+  assert.equal(ch4.selectChapterFourEvening(routes, value).kind, 'overlap');
+  assert.equal(ch4.chapterFourEveningPartner(routes, value), null);
+  value = dubaiEve(['tsumugi'], 'tsumugi');
+  assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, ['tsumugi'], 'Noor is not on the eve unless she is a lover');
   // 同行なし: 別便の恋人も、到着の記録が無ければその場にいない。到着場面を読み終えた人だけ。
   value = dubaiEve(['minto'], null);
   assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, []);
@@ -448,10 +498,10 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.equal(ch4.chapterFourEveningPartner(routes, value), 'minto');
   assert.deepEqual(ch4.selectChapterFourEvening(routes, value, 'minto').scenes, [routes.romance.minto.date]);
   // 友人として来るましろ（友人版の到着を読了）は恋人ではないので誘えず、その場の人数にも入らない。
-  value = dubaiEve(['rin'], 'rin');
+  value = dubaiEve(['rio'], 'rio');
   value.flags._ch4.read.ch4_mashiro_dubai_friend = true;
-  assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, ['rin']);
-  assert.equal(ch4.chapterFourEveningPartner(routes, value), 'rin');
+  assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, ['rio']);
+  assert.equal(ch4.chapterFourEveningPartner(routes, value), 'rio');
   // 同じ場所の恋人が二人以上: 第4章ではスティーブの茶化しを出さず、重なった予定を保留する。誘いの選択は出さない。
   value = dubaiEve(['tsumugi', 'ageha'], 'tsumugi', {arrived: ['ageha']});
   value.met = {steve: true};
@@ -490,7 +540,7 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   const allHiyori = sceneData.get('remake_shuraba_all_hiyori');
   assert(ch1.scenes.includes('remake_shuraba_all_hiyori') && allHiyori, 'chapter 1 shuraba with Hiyori and 2+ others');
   assert(allHiyori.lines.some(row => row.speaker === 'hiyori'), 'Hiyori always speaks');
-  for (const who of ['minto', 'rin', 'tsumugi']) {
+  for (const who of ['minto', 'rio', 'tsumugi']) {
     assert(!allHiyori.lines.some(row => row.speaker === who), `${who} is not in the unconditional lines`);
     const gated = allHiyori.lines.filter(row => row.type === 'condition' && row.condition_type === 'lover' && row.char_id === who);
     const own = new Set(gated.map(row => row.next_true));
@@ -499,4 +549,4 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   }
 }
 
-console.log('OK: seven routes, 0–7 lovers, Tokyo near-conflict, post-ending conflict, location, old saves, chapter 3 optional/eve wiring, chapter 4 eve wiring, chapter 1 shuraba recall');
+console.log('OK: eight routes, 0–8 lovers, Tokyo near-conflict, post-ending conflict, location, old saves, chapter 3 optional/eve wiring, chapter 4 eve wiring, chapter 1 shuraba recall');

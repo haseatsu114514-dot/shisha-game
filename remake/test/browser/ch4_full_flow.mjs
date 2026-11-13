@@ -45,6 +45,7 @@ async function seed(page) {
     // 予告2の自動再生は chapter_preview.mjs が専任で検証する。ここでは既読にして第4章本体に集中する。
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true,
       _ch3_preview_seen: true, _friend_ageha: true, // あげはの告白（#1930）は友達のままで着地済み
+      _lime_tut: 1, _lime_opened: true, // 第3章クリア済みなら初回LIME案内は済んでいる（ch5_full_flow と同じ）
       _ch3_tournament_won: true, _ch3_japan_first_representative: true,
       _ch3_intro: { startDay: 29, stage: 18, titleSeen: true, routeVersion: 2 },
       _ch3_tournament: { stage: "complete", attempts: 1, voted: 4, history: [{ rank: 1, total: 88 }],
@@ -52,9 +53,9 @@ async function seed(page) {
       _ch3_aftermath: { version: 2, winDay: 42, stage: 6 } };
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
     value.tournament.lastRank = 1; value.tournament.lastTotal = 88;
-    for (const who of ["ageha", "kumicho", "rei", "pakki", "maezono", "dr_kemuri", "nagumo", "hajime", "sumi", "naru"])
+    for (const who of ["ageha", "kumicho", "rei", "pakki", "maezono", "dr_kemuri", "sui", "hajime", "sumi", "naru"])
       value.flags[`_intro_${who}`] = true;
-    // 路上占い師（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、第4章（出発前の準備）の出現は済んだことにする。
+    // 辻占のオババ（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、第4章（出発前の準備）の出現は済んだことにする。
     const fortune = await import("./js/daily/fortune-schedule.js");
     const fortunePlan = fortune.fortunePlan({ seed: value.seed, chapter: 4 });
     value.flags._fortune_wander = { chapter: 4, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
@@ -272,7 +273,7 @@ await suite("ch4-full-flow", async check => {
     await page.evaluate(() => window.__ch4Observer.disconnect());
     assert.equal(state.flags._ch4.part, "resolution");
     assert.equal(state.flags._ch4_cleared, undefined);
-    const resolution = ["ch4_result", "ch4_nagumo_old_rival", "ch4_ending", "ch4_sumi_return", "ch4_two_tables"];
+    const resolution = ["ch4_result", "ch4_sui_old_rival", "ch4_ending", "ch4_sumi_return", "ch4_two_tables"];
     for (const id of resolution) {
       await page.locator(scene(id)).waitFor();
       await page.locator(dt("ch4-continue")).click();
@@ -333,9 +334,13 @@ await suite("ch4-full-flow", async check => {
     await observeTournament(page);
     await page.locator(dt("ch4-start")).click();
     // 焦げる工程より前に票が動いた場合だけ、途中順位を送る（#2031）。
-    const verdictOrStandings = page.locator(`${dt("ch4-verdict-continue")}, ${dt("ch4-standings-continue")}`);
-    for (let i = 0; i < 4; i++) {
+    // 蒸らしの揺らぎ（steamVariation）が冷たい側だと、吸う工程の5回では焦げきらず、調整の工程で焦げる。
+    // そのときは調整前の問い（吸い心地を聞くか）に、温度を見る方で答えて進める。
+    const ask = dt("ch4-customer-temperature");
+    const verdictOrStandings = page.locator(`${dt("ch4-verdict-continue")}, ${dt("ch4-standings-continue")}, ${ask}`);
+    for (let i = 0; i < 6; i++) {
       await verdictOrStandings.first().waitFor({ timeout: 180000 });
+      if (await page.locator(ask).count()) { await page.locator(ask).click(); continue; }
       if (!await page.locator(dt("ch4-standings-continue")).count()) break;
       await page.locator(dt("ch4-standings-continue")).click();
     }
@@ -379,9 +384,12 @@ await suite("ch4-full-flow", async check => {
     assert.equal(value.flags._ch4.match.craft.mix.black_tea, 12);
     await page.locator(dt("ch4-verdict-continue")).click();
     await page.locator(scene("ch4_result")).waitFor();
-    assert.equal((await get(page)).money, before.money + 200000);
+    assert.equal((await get(page)).money, before.money + 500000);
     await loadSlot(page, 0);
     await page.locator(scene("ch4_result")).waitFor({ timeout: 60000 });
-    assert.equal((await get(page)).money, before.money + 200000, "LOAD must not pay the prize twice");
+    assert.equal((await get(page)).money, before.money + 500000, "LOAD must not pay the prize twice");
   }, { reducedMotion: "reduce" });
 });
+
+// ドバイ14日ルートの必須の仕事も、同じCI入口から確認する。
+await import("./ch4_staff_work.mjs");

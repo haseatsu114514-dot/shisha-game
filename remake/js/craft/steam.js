@@ -3,6 +3,7 @@
 import { state } from "../core/state.js";
 import { hasAttackTraining } from "./attack-training.js";
 import { el, sleep, clamp, rand, pick } from "../core/util.js";
+import { setText, setAttr, setData, setFlag } from "../core/dom-write.js";
 import { createCraftClock } from "./clock.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
@@ -22,6 +23,8 @@ import { buildMentalTrace } from "./mental.js";
 import { craftCondition } from "../core/condition.js";
 import { SLASH_ART, SLASH_RECHARGE_SECONDS, slashProfile, slashAngle, slashTouchesBullet, buildSlashFx, buildWordCutFx, buildSharkFx, sharkPulseTouchesBullet } from "./steam-slash.js";
 import { HEART_SIZE, heartHitRadius, heartTouchesBullet } from "./steam-heart.js";
+import { STEAM_STAGES, steamStageOf, steamTableFor, steamPace, pickWave, planWave, waveBullets } from "./steam-patterns.js";
+import { MIND_LEVELS } from "./steam-mind.js";
 import { effectVisible, effectBadge, effectLine } from "./effect-visual.js";
 
 // 雑念ははじめ自身の内心。自主練でも、その場に他の人物がいる前提にしない。
@@ -37,7 +40,14 @@ const OBJECTS = ["coal", "orb", "orb", "smoke"];
 // SF63: 一度に1回分を持ち、使用後8秒でリチャージ。根性は範囲と回復に効く。
 export const REFRESH_RECHARGE_SECONDS = 8;
 // dodge枠は784×414px。根性1段の半径90pxから10段の画面全体まで広がる。
-export function refreshStock() { return growthSkill(state, "K06") ? 2 : 1; }
+// SB01: 基本1回。根性★4（内部値61〜・7段）と★5（81〜・9段）で1回ずつ増え、盤のK06の1回と合算する。
+// 第1章は根性の上限48なので★では増えない。回数が多すぎればバランス再測定で調整する（オーナー仮判断・合算案）。
+export function refreshStock() {
+  const guts = step("guts"); // 7段＝★4（61〜）、9段＝★5（81〜）
+  return 1 + (guts >= 7 ? 1 : 0) + (guts >= 9 ? 1 : 0) + (growthSkill(state, "K06") ? 1 : 0);
+}
+/** K06で増えた1回は範囲が半分。合算時は最後の1回がその分（根性★で増えた分は全範囲）。 */
+const halfLastRefresh = (stock) => stock > 1 && growthSkill(state, "K06");
 export function refreshEffect(cs = null) {
   const level = step("guts");
   return { radius: REFRESH_RADII[level - 1] + (growthPerks(state)?.breath || 0),
@@ -61,6 +71,8 @@ export async function runSteamDodge(cs) {
   const effect = refreshEffect(cs);
   const tutorial = cs.mode === "tutorial";
   const eased = tutorial || cs.retryAssist;
+  // #2519: 舞台の格で弾幕の難度表を選ぶ。練習と第1章の大会は導入前と同じ calm。
+  const stage = steamStageOf(cs), table = steamTableFor(stage), pace = steamPace(table, eased);
   const seconds = steamSecondsOf(cs), min = seconds / 60;
   const rainy = craftConditions(cs).rainy;
   if (seconds === 0 && cs.zeroSteam === true && !tutorial && growthLesson(state,"M-W4")) {
@@ -76,7 +88,7 @@ export async function runSteamDodge(cs) {
   const panel = stepPanel("steam", "蒸らし", "雑念を避けよう。被弾するたび蒸らしの評価が下がり、アタックのコンボも途切れる。蒸らし後の温度は被弾では変わらない。アタックはZ／ボタンで上側の前方を斬る。移動中も向きは変わらない。コンボが3・6になると刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。空振り・リフレッシュでは維持し、次の蒸らしでは0から始まる。", { brief: "" });
   const isCurrent = () => state === owner && benchRoot(cs) === root && panel.dataset.step === "steam";
   const W = 784, H = 414;
-  const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius) } });
+  const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius), stage, table: table.id } });
   const heart = el(`div.dodge-heart${effectVisible("guts") ? ".guts-visible" : ""}`, { role: "img", "aria-label": "心。中央の白丸が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core"), effectBadge("guts", "根")]);
   const clock = buildDigitalClock("dodge-timer", { label: "蒸らしの残り時間", test: "steam-clock" });
   const knob = el("i.dodge-knob");
@@ -104,11 +116,16 @@ export async function runSteamDodge(cs) {
   ]);
   const thermometer = buildSteamTemperature(cs);
   const heatJitter = cs.steamVariation ?? { offset: rand(-.065, .065), transfer: rand(.9, 1.1) };
-  const mental = buildMentalTrace(W, H);
-  const world = buildSteamWorld(W, H);
+  // 心の重圧は舞台の格・直前の炭・救済から。演出だけに使い、採点と温度へは渡さない。
+  const mental = buildMentalTrace(W, H, { stagePressure: STEAM_STAGES[stage].pressure, heatScore: cs.heat?.score, retryAssist: cs.retryAssist === true });
+  const initialMind = mental.update(0, 0);
+  box.dataset.mental = initialMind;
+  setPlayerMental(cs, initialMind);
+  const world = buildSteamWorld(W, H, initialMind);
+  const vignette = el("i.dodge-vignette", { "aria-hidden": "true" });
   const renderTemperature = (temp) => { thermometer.update(temp); setBenchTemperature(cs, temp); };
   renderTemperature(temperatureAfterSteam(cs, 0, heatJitter));
-  box.append(world.root, clock.root, mental.root, heart);
+  box.append(world.root, vignette, clock.root, mental.root, heart);
   const steamRoot = el("div.steam", [
     el("div.steam-play", [box]),
     el("div.dodge-controls", [refreshBtn, slashControl, precisionBtn, pad]),
@@ -123,13 +140,14 @@ export async function runSteamDodge(cs) {
   const hitR = steamHeartRadius(focus);
   heart.style.setProperty("--heart-size", `${HEART_SIZE}px`);
   heart.style.setProperty("--hit-diameter", `${hitR * 2}px`);
-  const spawnEvery = (eased ? 0.85 : 0.46) * (1 + 0.25 * tier01("insight")) * focus;
+  const spawnEvery = pace.spawnEvery * (1 + 0.25 * tier01("insight")) * focus;
   let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
   let refreshesUsed = 0, refreshReadyAt = 0, slashesUsed = 0, slashReadyAt = 0;
   let wordsCut = 0, totalWordsCut = 0, maxCombo = 0, slashCooldown = SLASH_RECHARGE_SECONDS;
   let afterglowUntil = 0, afterglows = 0, sharkPulses = 0;
   const shark = hasAttackTraining(state.flags) && growthLesson(state,"M-W7");
-  let running = false, precise = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
+  let running = false, precise = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : table.waveEvery;
+  let peakMind = initialMind, clearSeconds = 0;
   let warning = null, spawnCount = 0, raf = 0;
   const bullets = [], keysDown = new Set();
   const transients = [];
@@ -188,48 +206,51 @@ export async function runSteamDodge(cs) {
     return cleared;
   };
   const clearBullets = (radius = Infinity) => removeBullets(b => Math.hypot(hx - clamp(hx, b.x, b.x + b.w), hy - clamp(hy, b.y, b.y + b.h)) <= radius);
+  // ボタンの表示は毎フレーム組み立てるが、DOM へは値が変わった所だけ書く（#3500 F-4）。
+  const shownRecharge = new WeakMap(); // ボタンごとに、最後に書いた --recharge
   const rechargeLabel = (button, caption, remaining, duration, label) => {
     const rounded = Math.ceil(remaining * 10) / 10;
-    button.dataset.cooldown = rounded.toFixed(1);
-    button.dataset.cooling = String(running && remaining > 0);
-    button.style.setProperty("--recharge", String(1 - remaining / duration));
-    caption.textContent = running && rounded > 0 ? `${rounded.toFixed(1)}秒` : "";
-    button.setAttribute("aria-label", `${label}。${!running ? "操作停止中" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
-    button.disabled = !running || remaining > 0;
+    setData(button, "cooldown", rounded.toFixed(1));
+    setData(button, "cooling", running && remaining > 0);
+    const recharge = String(1 - remaining / duration);
+    if (shownRecharge.get(button) !== recharge) { shownRecharge.set(button, recharge); button.style.setProperty("--recharge", recharge); }
+    setText(caption, running && rounded > 0 ? `${rounded.toFixed(1)}秒` : "");
+    setAttr(button, "aria-label", `${label}。${!running ? "操作停止中" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
+    setFlag(button, "disabled", !running || remaining > 0);
   };
   const refreshLabel = () => {
-    refreshBtn.dataset.remaining = String(refreshes);
-    refreshCopy.textContent = stock > 1 ? `リフレッシュ ×${refreshes}` : "リフレッシュ";
+    setData(refreshBtn, "remaining", refreshes);
+    setText(refreshCopy, stock > 1 ? `リフレッシュ ×${refreshes}` : "リフレッシュ");
     rechargeLabel(refreshBtn, refreshCharge, refreshes > 0 ? 0 : Math.max(0, refreshReadyAt - time), REFRESH_RECHARGE_SECONDS,
-      `リフレッシュ。${effect.label}の雑念を消す${stock > 1 && refreshes === 1 ? "。2回目は半分の範囲" : ""}`);
+      `リフレッシュ。${effect.label}の雑念を消す${halfLastRefresh(stock) && refreshes === 1 ? `。${stock === 2 ? "2回目" : "最後の1回"}は半分の範囲` : ""}`);
   };
   const slashLabel = () => {
     const profile = slashProfile(wordsCut), remaining = Math.max(0, slashReadyAt - time);
     rechargeLabel(slashBtn, slashCharge, remaining, slashCooldown,
       `アタック。上側の前方の雑念を斬る。移動中も方向は固定。Zキーでも使用。コンボ${wordsCut}。射程${profile.reach}px、リチャージ${profile.recharge}秒`);
     const learned = hasAttackTraining(state.flags);
-    slashBtn.dataset.locked = String(!learned);
-    slashLock.hidden = learned;
-    slashBtn.title = learned ? "Z／ボタン／標準ゲームパッド下ボタンでアタック" : "アタック：使用不可";
+    setData(slashBtn, "locked", !learned);
+    setFlag(slashLock, "hidden", learned);
+    setAttr(slashBtn, "title", learned ? "Z／ボタン／標準ゲームパッド下ボタンでアタック" : "アタック：使用不可");
     if (!learned) {
-      slashBtn.disabled = true;
-      slashBtn.setAttribute("aria-label", "アタック。使用不可");
+      setFlag(slashBtn, "disabled", true);
+      setAttr(slashBtn, "aria-label", "アタック。使用不可");
     }
-    slashBtn.dataset.cutWords = String(wordsCut);
-    slashBtn.dataset.totalWordsCut = String(totalWordsCut);
-    slashBtn.dataset.maxCombo = String(maxCombo);
-    slashBtn.dataset.reach = String(profile.reach);
-    slashBtn.dataset.recharge = String(profile.recharge);
-    slashBtn.dataset.tier = String(profile.tier);
-    slashCount.textContent = `×${wordsCut}`;
-    slashCharge.textContent = running && remaining > 0 ? (Math.ceil(remaining * 10) / 10).toFixed(1) : "";
+    setData(slashBtn, "cutWords", wordsCut);
+    setData(slashBtn, "totalWordsCut", totalWordsCut);
+    setData(slashBtn, "maxCombo", maxCombo);
+    setData(slashBtn, "reach", profile.reach);
+    setData(slashBtn, "recharge", profile.recharge);
+    setData(slashBtn, "tier", profile.tier);
+    setText(slashCount, `×${wordsCut}`);
+    setText(slashCharge, running && remaining > 0 ? (Math.ceil(remaining * 10) / 10).toFixed(1) : "");
   };
   const refresh = () => {
     if (!running || refreshes === 0) return;
     refreshes--; refreshesUsed++; refreshReadyAt = time + REFRESH_RECHARGE_SECONDS;
     const festa = growthLesson(state, "M-B6") && !cs.festaRefreshUsed;
     if (festa) cs.festaRefreshUsed = true;
-    const radius = festa ? Infinity : stock > 1 && refreshes === 0
+    const radius = festa ? Infinity : halfLastRefresh(stock) && refreshes === 0
       ? (Number.isFinite(effect.radius) ? effect.radius : Math.hypot(W, H)) / 2 : effect.radius;
     world.dissolve(time, clearBullets(radius));
     if (effect.mentalRecovery) setPlayerMental(cs, mental.recoverStep(time, hits));
@@ -263,6 +284,7 @@ export async function runSteamDodge(cs) {
     }
     const beforeCuts = wordsCut;
     wordsCut += cutWords; totalWordsCut += cutWords; maxCombo = Math.max(maxCombo, wordsCut);
+    if (cutWords) setPlayerMental(cs, mental.cut(time, hits, cutWords)); // 雑念を断つと少し落ち着く
     if (growthSkill(state,"K22") && Math.floor(wordsCut/3) > Math.floor(beforeCuts/3)) {
       afterglowUntil = time + SKILL_TUNING.afterglowSeconds; afterglows++;
     }
@@ -316,21 +338,18 @@ export async function runSteamDodge(cs) {
     const side = Math.floor(rand(0, 4));
     const x = side === 0 ? -24 : side === 1 ? W + 24 : rand(20, W - 20);
     const y = side === 2 ? -24 : side === 3 ? H + 24 : rand(20, H - 20);
-    const angle = Math.atan2(hy - y, hx - x), speed = rand(140, 190) * (eased ? 0.7 : 1);
+    const angle = Math.atan2(hy - y, hx - x), speed = rand(140, 190) * pace.speedScale;
     const isWord = spawnCount++ % 5 !== 4;
     if (isWord) addBullet("word", x, y, angle, speed * 0.8);
     else {
-      const count = eased ? 1 : 2;
+      const count = pace.objects;
       const type = pick(OBJECTS);
       for (let i = 0; i < count; i++) addBullet(type, x, y, angle + (i - (count - 1) / 2) * 0.24, speed);
     }
   };
-  const launchWave = ({ side, gap }) => {
-    const lanes = 9;
-    for (let i = 0; i < lanes; i++) {
-      if (Math.abs(i - gap) <= 1) continue; // 予告を見て移動できる広さの安全な通り道
-      addBullet(i % 2 ? "word" : "orb", side ? W + 20 : -20, (i + 0.5) * H / lanes, side ? Math.PI : 0, eased ? 140 : 205);
-    }
+  // 波の形と安全な通り道は steam-patterns.js。横なぎは導入前と同じ順で同じ弾を出す。
+  const launchWave = (plan) => {
+    for (const b of waveBullets(plan, { width: W, height: H, speed: pace.waveSpeed })) addBullet(b.type, b.x, b.y, b.angle, b.speed);
     box.classList.remove("warning");
   };
 
@@ -376,9 +395,11 @@ export async function runSteamDodge(cs) {
         moveTo(hx + x / length * speed * dt, hy + y / length * speed * dt);
         if (time >= nextSpawn && time < dur - 0.8) { spawn(); nextSpawn = time + spawnEvery * rand(0.8, 1.15) * (1 - 0.2 * time / dur); }
         if (time >= nextWave && time < dur - 2) {
-          warning = { side: Math.round(rand(0, 1)), gap: Math.floor(rand(2, 7)), due: time + 0.75 };
-          box.classList.add("warning"); box.dataset.side = warning.side ? "right" : "left";
-          nextWave = time + (eased ? 4 : 2.8);
+          const random = () => rand(0, 1);
+          warning = { ...planWave(pickWave(table, random), { width: W, height: H, hx, hy, random }), due: time + pace.warn };
+          box.classList.add("warning"); box.dataset.wave = warning.kind;
+          box.dataset.side = typeof warning.side === "number" ? (warning.side ? "right" : "left") : warning.side;
+          nextWave = time + pace.waveEvery;
         }
         if (warning && time >= warning.due) { launchWave(warning); warning = null; }
         inv = Math.max(0, inv - dt); heart.classList.toggle("shield", inv > 0);
@@ -395,7 +416,7 @@ export async function runSteamDodge(cs) {
             wordsCut = 0;
             slashFeedback.textContent = "被弾。コンボが途切れた";
             slashLabel();
-            setPlayerMental(cs, mental.hit(time, hits));
+            setPlayerMental(cs, cs.dragonCalm ? mental.update(time, hits) : mental.hit(time, hits)); // 龍の煙(M-S7)の後は心が乱れない
             reactAudience(cs, "miss");
             heart.classList.remove("hit"); void heart.offsetWidth; heart.classList.add("hit");
             SE.hit(); shake(box, 180);
@@ -406,6 +427,8 @@ export async function runSteamDodge(cs) {
         clock.update(Math.max(0, Math.ceil((dur - time) * seconds / dur)));
         const level = mental.update(time, hits);
         setPlayerMental(cs, level); box.dataset.mental = level;
+        if (MIND_LEVELS.indexOf(level) > MIND_LEVELS.indexOf(peakMind)) peakMind = level;
+        if (level === "clear") clearSeconds += dt;
         world.draw(time, hx, hy, bullets, warning, level);
         for (let i = transients.length - 1; i >= 0; i--) {
           if (time >= transients[i].until) { transients[i].node.remove(); transients.splice(i, 1); }
@@ -431,6 +454,7 @@ export async function runSteamDodge(cs) {
   clock.update(0);
   const temp = temperatureAfterSteam(cs, seconds, heatJitter);
   renderTemperature(temp);
+  // 舞台・難度表・心の経過はこの実行のローカル値だけ。保存される制作結果には加えない。
   cs.steam = { min, seconds, temp, hits, score, refreshesUsed, slashesUsed, wordsCut: totalWordsCut, combo: wordsCut, maxCombo, afterglows, sharkPulses, warmingFactor: steamClimate(cs.environment).transfer };
   settleGrowthPhase(state, cs, "steam", cs.steam, hits === 0);
   scoreStep(cs, "steam", cs.steam.score, "蒸らし");
@@ -446,6 +470,7 @@ export async function runSteamDodge(cs) {
       cs.steam.refreshesUsed ? `リフレッシュで${cs.steam.refreshesUsed}回、雑念を吹き払った` : "",
       effectLine("insight", "察", "洞察で雑念が少し減っていた"),
       hits === 0 ? "呼吸が整った。吸い出しも落ち着いて取りかかれそう" : "気が少し急いている。吸い出しは手元をよく見よう",
+      clearSeconds >= 2 ? "途中から雑念が遠のいて、無心で待てた" : peakMind === "shaken" && STEAM_STAGES[stage].pressure >= .15 ? "舞台の大きさに、心が呑まれかけた" : "",
       "蒸らしで入った熱を、吸い出しで適温へ整える",
       min >= 8 ? "じっくり待った分、熱が入り、吸い出しに余裕ができる" : min <= 3 ? "早めの立ち上げ。温度合わせは忙しくなる" : "香りの輪郭を残した。吸い出しでしっかり熱を入れよう",
     ],

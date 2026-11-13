@@ -1,0 +1,124 @@
+{
+  "checks": {
+    "dimensions_all11": true,
+    "transparent_rgb_zero_all11": true,
+    "housing_window_alpha_zero": true,
+    "capsule_inside_alpha_zero": true,
+    "dial_arc_full_alpha_zero": true,
+    "dial_radii_0.53_to_0.945": true,
+    "lamp_brightness_order": [
+      47.054421768707485,
+      57.8469387755102,
+      183.33333333333334,
+      216.90816326530611,
+      236.40136054421768
+    ],
+    "lamp_common_ring_center": [
+      511.5,
+      511.5
+    ],
+    "lamp_common_ring_outer_diameter": 574,
+    "lamp_all_edge_alpha_zero": true
+  },
+  "files": [
+    {
+      "file": "processed/counter-mat.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "bytes": 2003384,
+      "sha256": "64f367ebce801a9a05c97981e868f0035f5ed73e53e24ea5e1ed269a81a5d28e"
+    },
+    {
+      "file": "processed/dial-bezel.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "bytes": 444816,
+      "sha256": "730846102733e81cde544c6b8aea0870d9589f93fea740618b9c982dd1b81456"
+    },
+    {
+      "file": "processed/lamp-faint.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 155650,
+      "sha256": "580fd98222f907e8d2b370d6311fd47de6f5e2377abb9a3eb9cd5126b2170327"
+    },
+    {
+      "file": "processed/lamp-fair.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 169355,
+      "sha256": "f1b4e4b484f8daf1528f5321365a1c3dc8caad6348c557a7a8e69795b667cb37"
+    },
+    {
+      "file": "processed/lamp-good.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 206452,
+      "sha256": "676c02decb39a558d76ad4fe052000840c0e96f1099bd9da974fbdcf63a422e5"
+    },
+    {
+      "file": "processed/lamp-off.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 151972,
+      "sha256": "d4010fbe0dc01bb8fe7195f43cf238d856ed1fae6d1ab049df95a7d38148e0a2"
+    },
+    {
+      "file": "processed/lamp-shine.png",
+      "size": [
+        1024,
+        1024
+      ],
+      "bytes": 222996,
+      "sha256": "883b4c2e5ae397b4bbebcc1e5ee0c7865a768f563f917fd152bdfa72a945f6c0"
+    },
+    {
+      "file": "processed/rail-now.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "bytes": 684332,
+      "sha256": "6d9e745591e193f27fbbb2fe25a0d978d25d1122ced675330a414e1461f1e803"
+    },
+    {
+      "file": "processed/spine-housing.png",
+      "size": [
+        1024,
+        1536
+      ],
+      "bytes": 218991,
+      "sha256": "677523e5687637907d03fd89b41624289b435505b1f62af101d42ea89ee9b8c3"
+    },
+    {
+      "file": "processed/spine-plate.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "bytes": 15685,
+      "sha256": "0a8cb221a7fb8cd0afeed6e16c655f8212064058114d0244a9f600401ae4e217"
+    },
+    {
+      "file": "processed/voice-plate.png",
+      "size": [
+        1536,
+        1024
+      ],
+      "bytes": 426689,
+      "sha256": "438a9fbeb1f7fc4971c81075742c62559dfde11f9945aa9b8322617051ff0e1d"
+    }
+  ]
+}

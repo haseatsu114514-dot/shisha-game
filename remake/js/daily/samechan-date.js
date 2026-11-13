@@ -6,6 +6,7 @@ import { play, isPlaying } from "../vn/engine.js";
 import { dateVenue, dateScene, relationshipDayTotal, relationshipDayOf } from "./date-scene.js";
 import { playSamechanMilestone } from "./samechan-bonds.js";
 import { growthEnabled, awardActionExp } from "../core/growth.js";
+import { petitAfterDate } from "./petit-shuraba.js";
 
 let playing = false;
 export function samechanDateReady() {
@@ -56,7 +57,8 @@ export async function playSamechanDate({ invite = null, cost = 0, advanceSlot = 
     // 旧しくみ（?growth=0）は選んだ答えの能力に2P。心得の盤（通常プレイの既定・SBD97）はほかのデートと同じ自由行動の経験値
     // （SPEC 4.1。鍵はサメちゃん、新鮮さ・はじめての相手も同じ）。デートは自由行動の精算を通らないので、ここで入れる
     if (spent > 0) {
-      if (growthEnabled()) awardActionExp({ key: "samechan", person: "samechan" });
+      // 恋人のデートは、絆の深い相手からの誘い（LM11。ほかの恋人のデートは calendar.js の invitationExp が同じ印を付ける）
+      if (growthEnabled()) awardActionExp({ key: "samechan", person: "samechan", bond: true });
       else gainStat(DB.lover.dates.samechan[selected].stat, 2);
     }
     gainAffinity("samechan", 10);
@@ -68,6 +70,7 @@ export async function playSamechanDate({ invite = null, cost = 0, advanceSlot = 
     state.flags._samechan_date.complete = true;
     save(); // 日付・支払・選択・成長・行動まで一緒に確定。後続の絆の中断でデートを失わない。
     bond.private = previousPrivate;
+    await petitAfterDate("samechan"); // プチ修羅場（恋人が2人以上・一度きり）。デートは確定済みで、報酬は無い
     await playSamechanMilestone();
     return { done: true, spent };
   } finally { bond.private = previousPrivate; playing = false; }

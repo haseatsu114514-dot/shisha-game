@@ -368,3 +368,152 @@ export async function b(mid, bgUrl) {
     if (drawn) URL.revokeObjectURL(drawn);
   });
 }
+
+// ---------------------------------------------------------------- c: 作り直し（TMG56・見本の表「スケッチ」）
+// 線画と、寄ると色がにじんで本当の店になる流れ（b）は残す。紙のスケッチブックと図形のペンをやめ、
+// 台本どおりつむぎのタブレット（#3254 で Codex が描いたタブレットとペン）の画面に線画を描く。
+// 机は紫の面ではなく、今の場面の絵をぼかして暗くした写し（覆っている間に裏で背景を替える）。
+
+const TABLET = new URL("../../img/ui/transitions/sketch/tablet.webp", import.meta.url).href;
+const STYLUS = new URL("../../img/ui/transitions/sketch/stylus.webp", import.meta.url).href;
+// タブレットの絵（1536×1024）の画面 x132〜1404・y115〜904。横幅を 1280 にそろえ、縦の余り（約37）は上下へはみ出す
+const TAB_K = 1280 / 1272;
+const TAB_BOX = { left: -132 * TAB_K, top: (H - 789 * TAB_K) / 2 - 115 * TAB_K, width: 1536 * TAB_K, height: 1024 * TAB_K };
+const SCREEN = "#f5efe8"; // 絵の画面の色（線画の紙もこの色）
+// ペンの絵（1254×1254）のペン先と、軸の向き（ペン先から後ろの端へ）
+const STYLUS_TIP = [144, 1160], STYLUS_AXIS = (Math.atan2(106 - 1160, 1122 - 144) * 180) / Math.PI;
+const STYLUS_SCALE = 1000 / Math.hypot(1122 - 144, 1160 - 106); // 画面の座標でペンの長さ 1000（タブレットの幅の約2/3）
+
+/** 今見えている背景の写し（#bg のいちばん上の絵）。机としてぼかして暗くする。無ければ暗い面 */
+function deskFromScene() {
+  const host = document.getElementById("bg");
+  const top = host ? [...host.children].filter((n) => n.classList?.contains("bg-img")).at(-1) : null;
+  const desk = top?.cloneNode ? top.cloneNode(true) : el("div");
+  desk.className = "mo-tab-desk";
+  desk.style.transition = "none";
+  desk.style.opacity = "1";
+  return desk;
+}
+
+/** ペンの絵。set(x, y, 角度, lift) でペン先を (x, y)（画面の座標）に置く。lift は画面から浮いている度合い（影が離れる） */
+function stylusArt() {
+  const img = el("img.mo-tab-pen", { src: STYLUS, alt: "", draggable: false });
+  img.style.transformOrigin = `${STYLUS_TIP[0]}px ${STYLUS_TIP[1]}px`;
+  img.style.visibility = "hidden";
+  return {
+    img,
+    show: () => { img.style.visibility = "visible"; },
+    set(x, y, angle, lift = 0) {
+      const s = STYLUS_SCALE * (1 + 0.05 * lift);
+      img.style.transform = `translate(${(x - STYLUS_TIP[0]).toFixed(1)}px, ${(y - STYLUS_TIP[1]).toFixed(1)}px) rotate(${(angle - STYLUS_AXIS).toFixed(2)}deg) scale(${s.toFixed(3)})`;
+      img.style.setProperty("--lift", `${(4 + lift * 26).toFixed(1)}px`);
+    },
+  };
+}
+
+export async function c(mid, bgUrl) {
+  const P = BOOK; // 紫1色にしない（ゲームの絵で作る型）
+  const img = new Image();
+  img.src = bgUrl;
+  const art = [TABLET, STYLUS].map((u) => { const i = new Image(); i.src = u; return i.decode().catch(() => {}); });
+  await Promise.race([Promise.all([img.decode().catch(() => {}), ...art]), sleep(1500)]);
+  const { defs, id: ink } = sketchFilter(P.deep, { clear: true });
+  document.body.append(defs);
+  const drawn = await renderLines(img, ink).catch(() => null);
+  await stagePlay("sketch", async (node) => {
+    node.dataset.sketch = "tablet";
+    const id = `mo-tab-${++serial}`;
+    const route = strokeRoute();
+    const reveal = svg("path", { d: route.d, fill: "none", stroke: "#fff", "stroke-width": 270, "stroke-linecap": "round", "stroke-linejoin": "round", "stroke-dasharray": `${route.total} ${route.total + 600}`, "stroke-dashoffset": route.total, visibility: "hidden" });
+    node.append(defs);
+    const holes = svg("g");
+    const wash = svg("g");
+    const paperGroup = svg("g", { mask: `url(#${id}-hole)` }, [svg("rect", { x: -40, y: -40, width: W + 80, height: H + 80, fill: SCREEN }), wash]);
+    const lineArt = svg("image", { href: drawn || bgUrl, x: 0, y: 0, width: W, height: H, preserveAspectRatio: "xMidYMid slice", mask: `url(#${id}-draw)` });
+    const box = { maskUnits: "userSpaceOnUse", x: -300, y: -300, width: W + 600, height: H + 600 };
+    const page = stageSvg([
+      svg("defs", {}, [
+        svg("mask", { id: `${id}-hole`, ...box }, [svg("rect", { ...box, fill: "#fff" }), holes]),
+        svg("mask", { id: `${id}-draw`, ...box }, [reveal]),
+      ]),
+      paperGroup, lineArt,
+    ]);
+    page.classList.add("mo-tab-page");
+    if (!drawn) lineArt.setAttribute("filter", `url(#${ink})`);
+    const frame = el("img.mo-tab-frame", { src: TABLET, alt: "", draggable: false, style: { left: `${TAB_BOX.left}px`, top: `${TAB_BOX.top}px`, width: `${TAB_BOX.width}px`, height: `${TAB_BOX.height}px` } });
+    const pen = stylusArt();
+    const tablet = el("div.mo-tab", [frame, page, pen.img]);
+    const desk = deskFromScene();
+    const dim = el("div.mo-tab-dim");
+    node.append(desk, dim, tablet);
+    const at = (y, s, r = 0) => ({ transform: `translateY(${y}px) scale(${s}) rotate(${r}deg)` });
+    const S = 0.62;
+    // 1. 場面がぼけて暗くなり（机）、タブレットが少し傾いて下から置かれる（机で覆いきったら裏で背景を替えはじめる）
+    move(desk, [{ opacity: 0, filter: "blur(0px) brightness(1)" }, { opacity: 1, filter: "blur(14px) brightness(.5)" }], 260, { easing: "ease-out" });
+    move(dim, [{ opacity: 0 }, { opacity: 1 }], 260, { easing: "ease-out" });
+    move(tablet, [at(760, S, -6), at(0, S, 0)], 560, { easing: E.out });
+    await sleep(280);
+    const swapped = mid ? mid() : null;
+    // 2. ペンが左下から浮いたまま入ってくる
+    await sleep(120);
+    SE.whoosh();
+    pen.show();
+    const start = route.at(0);
+    await timeline(380, (t) => {
+      const k = easeOut(t / 380);
+      pen.set(mix(-420, start.x, k), mix(H + 300, start.y, k), mix(-62, -44, k), 1 - k);
+    });
+    // 3. 3段を往復しながら線画を描いていく（折り返しは画面の外で浮く）
+    const draw = 1200;
+    let tip = { x: start.x, y: start.y, a: -44 };
+    let lean = 0;
+    await timeline(draw, (t) => {
+      const k = t / draw;
+      const e = k - Math.sin(2 * Math.PI * k) / (2 * Math.PI) * 0.6;
+      const head = e * route.total;
+      const p = route.at(head);
+      lean += (p.dx - lean) * 0.25;
+      const off = Math.max(0, -p.x, p.x - W) / 70;
+      tip = { x: p.x, y: p.y, a: -44 - 6 * lean };
+      reveal.setAttribute("stroke-dashoffset", String(route.total - head));
+      reveal.setAttribute("visibility", head > 1 ? "visible" : "hidden");
+      pen.set(tip.x, tip.y, tip.a, Math.min(1, off));
+    });
+    // 4. ペンが持ち上がって右上へ抜け、画面へ寄る（タブレットの画面が場面いっぱいになる）。寄りながら色がにじむ
+    timeline(360, (t) => {
+      const k = easeIn(t / 360);
+      pen.set(mix(tip.x, W + 360, k), mix(tip.y, -420, k), mix(tip.a, -64, k), Math.min(1, (t / 360) * 2.5));
+    });
+    const pushed = move(tablet, [at(0, S), at(0, 1)], 560, { easing: E.inOut });
+    const spots = [[640, 380, 430], [250, 230, 470], [1040, 210, 470], [1070, 600, 450], [210, 600, 450], [640, 80, 340], [640, 690, 330]];
+    const blobs = spots.map(([x, y, R], i) => {
+      const shape = blobPath(R);
+      const color = P.pig[i % P.pig.length];
+      const tint = svg("path", { d: shape, fill: color, "fill-opacity": 0.5, stroke: color, "stroke-width": 10, "stroke-opacity": 0.85, class: "tr-scale" });
+      const hole = svg("path", { d: shape, fill: "#000", transform: `translate(${x} ${y}) scale(0)` });
+      wash.append(svg("g", { transform: `translate(${x} ${y})` }, [tint]));
+      holes.append(hole);
+      tint.style.transform = "scale(0)";
+      return { tint, hole, x, y, spin: (i % 2 ? 1 : -1) * 14 };
+    });
+    blobs.forEach(({ tint, spin }, i) => move(tint, [{ transform: "scale(.04) rotate(0deg)" }, { transform: `scale(1.04) rotate(${spin}deg)` }], 1000, { easing: "cubic-bezier(.2,.75,.3,1)", delay: 280 + i * 70 }));
+    SE.pour();
+    await pushed;
+    await swapped;
+    // 寄りきったらタブレットの縁は場面の外。机と縁を外し、色の染みた穴から本当の店（#bg）が見えるようにする
+    desk.remove();
+    dim.remove();
+    frame.remove();
+    // 5. 色の染みたところから、本当の店の色が出てくる
+    const opened = timeline(760 + blobs.length * 50, (t) => blobs.forEach(({ hole, x, y, spin }, i) => {
+      const k = easeOut(Math.min(1, Math.max(0, (t - i * 50) / 760)));
+      hole.setAttribute("transform", `translate(${x} ${y}) rotate(${spin * k}) scale(${k > 0 ? 0.02 + 0.95 * k : 0})`);
+    }));
+    // 6. 穴が広がるのに合わせて画面の白が薄れ、最後に線画が引いて元の場面に戻る
+    move(paperGroup, [{ opacity: 1 }, { opacity: 0 }], 520, { easing: "ease-in", delay: 200 });
+    await Promise.all([opened, move(lineArt, [{ opacity: 1 }, { opacity: 0 }], 520, { easing: "ease-in-out", delay: 320 })]);
+  }, { cover: true }).finally(() => {
+    defs.remove();
+    if (drawn) URL.revokeObjectURL(drawn);
+  });
+}

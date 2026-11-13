@@ -24,7 +24,7 @@
 | 5 | `cg_mashiro_double_apple` | ch3 | ch3_double_apple_incident | 制作・接続済み。閉店後のmukaiで、ましろがハンドルを差し出す一人称の近景。顔・吸い口・握る手を会話枠より上へ置く。種明かし前なので缶・味名・果物は写さない。[原画・生成指示・検品](../../asset_sources/ch3-mashiro-handoff/README.md) |
 | 6 | `cg_tsumugi_confession` | 告白 | confession_tsumugi_accept | 服の裾をぎゅっと掴む潤み目の上目遣い |
 | 7 | `cg_minto_confession` | 告白 | confession_minto_accept | 素の栞の顔で泣き笑い |
-| 8 | `cg_ageha_confession` | 告白 | confession_ageha_accept | いつも強気なアゲハが目を逸らして頬を掻く |
+| 8 | `cg_ageha_confession` | 告白 | confession_ageha_accept | いつも強気なあげはが目を逸らして頬を掻く |
 | 9 | `cg_mashiro_confession` | 告白 | confession_mashiro_accept | ふにゃっと崩れた満面の笑み（ダウナーが解ける瞬間） |
 | 10 | `cg_tsumugi_epilogue` | 結 | epilogue_tsumugi | 夜の公園。絡めた指、肩に頭。吐息が白い |
 | 11 | `cg_minto_epilogue` | 結 | epilogue_minto | 仕事終わりの裏口で、私服（ura）の栞が胸に飛び込む。素の照れ笑い。黒髪のストレートロングと緑の瞳を維持し、コンカフェ衣装・ツノや羽のアクセサリーは描かない |
@@ -33,6 +33,10 @@
 | 14 | `cg_shuraba` | 結 | ending_shuraba | ギャグスチル。無言で隣の席をアピールする4人の圧と、固まるはじめ視点 |
 | 15 | `cg_ageha_first_purikura` | ch2 | remake_ch2_ageha_gyaru のプリクラ（`motions/purikura.js` の最後に出てくるシール） | #921 で作った4コマのシール（960x1440・ギャル文字と落書き入り）。演出では真ん中で左右に切って見せる。撮影から落書きまでは立ち絵で写す（2026-10-24 オーナー決定・#939）。無い環境では立ち絵の2×2で代用 |
 | 16 | `cg_ch2_ageha_purikura_strip` | ch2 | ✅ #947・同上（#15 より優先） | 半分こ用の縦長シール1列分（640x1080・不透明）。同じ絵を2枚並べて中央を切り、文字・装飾を左右端から24px以上内側に収めた。上は寄って笑うあげはと驚くはじめ、下は二人の笑顔。「ハジメっち♡」「答え合わせ係」「あげ↑」を各1回。原画・生成指示・仕上げ手順・PC/横タッチ確認は `asset_sources/purikura-939/`。旧4コマと旧候補は保全 |
+| 17 | `cg_ch4_dubai_arrival` | ch4 | `ch4_opening` の第1行後から最終行まで | ドバイ到着。なると一人称のはじめが機材ケースを運ぶ。正規なる立ち絵・ドバイ色調を参照。原画と実際のプロンプトは `asset_sources/ch5-smoke-lab-and-cgs-20261102/README.md` |
+| 18 | `cg_ch4_world_handshake` | ch4 | `ch4_result` の握手描写からシェイク登場直前まで | 世界大会後のなるとの握手。遠景に王煙楼・シェイクと完成状態の台2台。正規立ち絵参照。原画・機材構成・プロンプトは同README |
+| 19 | `cg_ch5_shisha_9000` | ch5 | `ch5_match_day_arrival` の機体発見から9000の台詞直前まで | SMOKE LABで9000と博士に対面。未装着の同型台2台。正規立ち絵参照。原画・機材構成・プロンプトは同README |
+| 20 | `cg_ending_tonari_night` | ending | `ending_start` の閉店後描写から場面末尾まで | 恋人の有無に依存しないtonari閉店後。スミが洗ったグラスを伏せる。原画とプロンプトは同README |
 
 ## 生成プロンプト案（image-to-image、立ち絵参照前提・英語）
 

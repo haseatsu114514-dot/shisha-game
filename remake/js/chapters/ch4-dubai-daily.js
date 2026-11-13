@@ -11,13 +11,13 @@
 //     オーナー「カフェで吸えたりとかにしよう」）。ドバイで一台吸う来店は現地の相場をきりよく（2026-11-02 オーナー「シーシャは6000 カフェは3000 できりよくいく」）:
 //     専門店（FESTA）6,000円・カフェ（中心地・路地裏）3,000円。調べた相場（1ディルハム≒43.5円）は
 //     専門のラウンジ 100〜150ディルハム、モール・中心地のカフェ 65〜75ディルハム、下町の小さなカフェ 30〜70ディルハム
-//   - ラクダレース（任意・ch4-camel-race.js）: 店先でサイフと知り合う→誘い→昼にレース場。行き先は段階で変わる
+//   - ラクダレース（任意・ch4-camel-race.js）: 店先でファーリスと知り合う→誘い→昼にレース場。行き先は段階で変わる
 //   - 街の手触り（ch4-dubai-local.js。2026-11-02 オーナー「2以外は採用」）: 昼の屋外（スーク・クリーク沿い）は暑さで体力を多めに
 //     使い、カフェ・専門店は夜がにぎわう（夜の一行。初めての夜は短い場面）。スークの後に屋台で軽く買える（体力が少し戻る）。
 //     ドバイの値段には約何ディルハムかを添える
 // 読了の確定は ch4-progress.js の completeChapterFourScene だけ（本筋の場面）。現在地は flags._ch2_region = "dubai"。
 import { state, save, timeOfDay } from "../core/state.js";
-import { DB, bgUrl } from "../core/data.js";
+import { DB, bgUrl, displayName } from "../core/data.js";
 import { layers, setBg, toast, modal } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
@@ -33,13 +33,23 @@ import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_DAILY_EVE_DAY, CH4_FREE_SCENE_IDS, chap
   chapterFourSecondAvailable } from "./ch4-progress.js";
 import { CAMEL_DAILY_SPOT_ID, camelDailySpot, camelSceneBg } from "./ch4-camel-progress.js";
 import { overseasCompanion } from "../core/overseas-companion.js";
+import { chainStageAt } from "./visit-chains.js";
+import { chainVisitDue, playChainStage } from "./visit-chain-play.js";
 import { visitCamelRace } from "./ch4-camel-race.js";
 import { desertDailySpots, desertDailySpotById } from "./ch4-desert-progress.js";
 import { CAFE_MENU, CAFE_PLACES, CAFE_TASTE_IDS, OMAKASE, OMAKASE_LINE, SMOKED_IN_SCENE, TALKS_AFTER_ORDER,
   resolveCafeOrder, tasteScene, recordCafeOrder } from "./ch4-dubai-cafe.js";
-import { LONGLONG_BG, LONGLONG_CHAR, LONGLONG_IDS, nextLonglongVisit, longlongHasNew, recordLonglongVisit } from "./ch4-longlong.js";
+import { LONGLONG_BG, LONGLONG_CHAR, LONGLONG_IDS, LONGLONG_LOAD_IDS, nextLonglongVisit, longlongHasNew, recordLonglongVisit } from "./ch4-longlong.js";
+import { finaleAtVisit, playFinale } from "../daily/bonds.js";
+import { FESTA_BOND_IDS, nextDubaiBondStory, recordDubaiBondRead } from "./dubai-bonds.js";
 import { NIGHT_SCENE_IDS, STALL_NONE, STALL_PLACE, STALL_SCENE_IDS, dubaiSpotAt, nightVisit, recordNightVisit, priceText,
   stallChoices, stallItem, stallLabel, stallSceneId } from "./ch4-dubai-local.js";
+import { runFullPractice } from "../craft/practice.js";
+import { computeShisha } from "../craft/score.js";
+import { INN_TRIAL_FLAG, INN_TRIAL_IDS, innTrialDue, innTrialResult } from "./ch4-inn-trial.js";
+import { REHEARSAL_FLAG, REHEARSAL_IDS, rehearsalDue, rehearsalResult } from "./ch4-rehearsal.js";
+import { COMPANION_TIME_FILE, COMPANION_TIME_IDS, companionLover, companionTimeOpen, spendCompanionTime } from "./companion-time.js";
+import { chapterFourStaffNightEvent } from "./ch4-staff-work.js";
 
 export const DUBAI = "dubai";
 const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと）
@@ -53,7 +63,7 @@ const TALKS = Object.freeze({
   souq: ["ch4_dubai_souq_revisit", "ch4_souq_talk_b", "ch4_souq_talk_c", "ch4_souq_talk_d"],
   festa: ["ch4_festa_revisit", "ch4_festa_talk_b", "ch4_festa_talk_c", "ch4_festa_talk_d"],
   center_cafe: ["ch4_dubai_cafe_revisit", "ch4_cafe_talk_b", "ch4_cafe_culture_hose", "ch4_cafe_talk_c", "ch4_cafe_culture_coffee", "ch4_cafe_talk_d"],
-  alley_cafe: ["ch4_alley_cafe_quiet", "ch4_alley_talk_b", "ch4_alley_culture_clay", "ch4_alley_talk_c", "ch4_alley_culture_majlis"],
+  alley_cafe: ["ch4_alley_cafe_quiet", "ch4_alley_culture_clay", "ch4_alley_talk_c", "ch4_alley_culture_majlis"],
   naru: ["ch4_naru_dubai_1", "ch4_naru_dubai_2", "ch4_naru_dubai_3"],
   practice: ["ch4_practice_hall_1", "ch4_practice_hall_2"],
 });
@@ -64,7 +74,7 @@ const TALK_BG = Object.freeze({
 });
 export const DUBAI_DAILY_IDS = Object.freeze([
   ...["souq", "festa", "center_cafe", "alley_cafe", "naru", "practice"].flatMap(id => TALKS[id].filter(scene => /_(talk_[b-d]|dubai_\d|hall_\d|culture_[a-z]+)$/.test(scene))),
-  "ch4_creek_walk_day", "ch4_creek_walk_night", "ch4_inn_rest", ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
+  "ch4_creek_walk_day", "ch4_creek_walk_night", "ch4_inn_rest", ...INN_TRIAL_IDS, ...REHEARSAL_IDS, ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
 ]);
 
 const read = id => chapterFourProgress(state).read[id] === true;
@@ -101,14 +111,20 @@ export const CH4_DUBAI_SPOTS = Object.freeze([
     preview: CH4_PLACE_BG.inn, stamina: 55, desc: "部屋で休む。体力が大きく戻る。" }),
 ].map(entry => Object.freeze({ ...entry, hasNew: () => spotHasNew(entry) })));
 
+/** FESTAで次に読む太陽の段階（初対面の ch4_festa の後・必要ハートに届いた最古の未読）。無ければ null。 */
+const festaBondDue = () => read("ch4_festa") ? nextDubaiBondStory(state, "da_silva", "festa", affinityLevel("da_silva")) : null;
+
 function spotHasNew(entry) {
-  if (entry.place === "souq") return !read("ch4_dubai_souq") || !read("ch4_stranger_first");
-  if (entry.place === "festa") return !read("ch4_festa");
-  if (entry.place === "center_cafe") return !read("ch4_dubai_cafe");
-  if (entry.place === "alley_cafe") return !read("ch4_stranger_second") || !read("ch4_alley_cafe_quiet");
+  if (chainStageAt(state, entry.place)) return true; // 通いの続きの次の段（chapters/visit-chains.js。中心地のカフェ・宿）
+  // 訪問時と同じ初回条件・巡回記録を見る。一巡後は会話を続けても新着にはしない。
+  if (entry.place === "festa" && festaBondDue()) return true;
+  if (["souq", "festa", "center_cafe", "alley_cafe"].includes(entry.place))
+    return firstScenes(entry.place).length > 0 || nextTalk(entry.place, { once: true }) !== null;
   if (entry.place === "naru") return nextTalk("naru", { once: true }) !== null;
   if (entry.place === "practice") return nextTalk("practice", { once: true }) !== null;
-  if (entry.place === "longlong") return longlongHasNew(state, affinityLevel(LONGLONG_CHAR));
+  if (entry.place === "longlong") return longlongHasNew(state, affinityLevel(LONGLONG_CHAR)) || finaleAtVisit(LONGLONG_CHAR);
+  if (entry.place === "inn") return (dubaiDay() >= 2 && !read("ch4_inn_tool_care")) || innTrialDue(state) || rehearsalDue(state)
+    || companionTimeOpen(state); // 同行した恋人と過ごせる日（BLC08）
   return false;
 }
 
@@ -116,7 +132,12 @@ function spotHasNew(entry) {
 const camelSpot = () => camelDailySpot(state, { region: DUBAI, kind: "ch4_dubai", stamina: 0 });
 
 /** 今の時間（昼の暑さ）に合わせた行き先（ch4-dubai-local.js）。 */
-const spotNow = entry => dubaiSpotAt(entry, state.slot);
+const spotNow = entry => {
+  const current = dubaiSpotAt(entry, state.slot);
+  // 締めくくりは一台を頼む来店ではない。地図の所持金判定にも無料を伝える。
+  return current?.place === "longlong" && finaleAtVisit(LONGLONG_CHAR)
+    ? { ...current, cost: 0, desc: "王煙楼との締めくくり。今回は一台を頼まないので無料。" } : current;
+};
 
 /** 今の時間・物語の時点で地図に出す行き先。 */
 export function chapterFourDubaiSpots() {
@@ -164,7 +185,7 @@ async function readPlain(id, bg, owner, { growthScene = false } = {}) {
   const dialogue = typeof id === "string" ? DB.dialogues[id] : id;
   if (!dialogue?.lines?.length) return false;
   const url = bgUrl(bg);
-  await setBg(url, { instant: true });
+  await setBg(url);
   if (state !== owner) return false;
   const result = await play(dialogue, { bg: url, ...(growthScene ? { growthScene: true } : {}) });
   return state === owner && !!result && !result.cancelled;
@@ -187,7 +208,7 @@ export function chapterFourDubaiDefinition(io) {
     // 夜は宿で寝る（地元の帰り道の一言・道での出会いは出さない）。宿でも寝る前の家シーシャを選べる。
     beforeHomecoming: async () => {
       state.flags._home_tonight = true;
-      await setBg(bgUrl("bg_dubai_inn_night"), { instant: true });
+      await setBg(bgUrl("bg_dubai_inn_night"));
       return true;
     },
     beforeInvitation: () => true,
@@ -206,7 +227,13 @@ export function chapterFourDubaiDefinition(io) {
 /** ドバイの日常（DAY1〜12）を回す。前夜祭の日（DAY13）の朝か LOAD で戻る。 */
 export async function runChapterFourDubai(io) {
   const owner = state;
-  Object.assign(DB.dialogues, await readDialogues("ch4_dubai_daily", DUBAI_DAILY_IDS), await readDialogues("ch4_longlong", LONGLONG_IDS));
+  Object.assign(DB.dialogues, await readDialogues("ch4_dubai_daily", DUBAI_DAILY_IDS), await readDialogues("ch4_longlong", LONGLONG_LOAD_IDS),
+    await readDialogues("taiyo_bond", FESTA_BOND_IDS));
+  // 同行した恋人と宿で過ごす場面（BLC08・companion-time.js）。読めなくても地図は開き、宿の選択肢に出ないだけ
+  if (companionLover(owner)) await readDialogues(COMPANION_TIME_FILE, COMPANION_TIME_IDS).then(found => Object.assign(DB.dialogues, found)).catch(() => {});
+  // LOAD・再開でも最初の地図から、ヌールの MENU の案内（♥5の締めくくり・告白を選べる）を合わせる。どちらも台詞が読み込まれているかを見る
+  // （daily/bonds.js の finaleDue・daily/romance.js の romanceRouteOpen。第5章は ch5-dubai.js の preloadNoorScenes）。読めなくても地図は開く
+  if (owner.met?.noor) await import("./ch4-desert.js").then(desert => desert.loadDesertDialogues()).catch(() => {});
   if (state !== owner) return;
   state.flags._ch2_region = DUBAI;
   state.phase = "daily";
@@ -228,6 +255,8 @@ function dueMandatory() {
 }
 
 function dubaiNightEvent(io) {
+  const staff = chapterFourStaffNightEvent();
+  if (staff) return { ...staff, run: () => keepDailyHud(() => staff.run()) };
   const due = dueMandatory();
   if (!due) return null;
   const last = due[due.length - 1];
@@ -262,30 +291,53 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
     return unused;
   }
   if (entry.place === "camel") return visitCamel(owner);
-  if ((entry.cost || 0) > spendableMoney(state)) { toast(`お金が足りない（${priceText(entry.cost)}）`); return unused; }
+  if (entry.place === "inn") { const chain = await visitInnChain(owner, staminaGuard); if (chain) return chain; }
+  // 読了・LOADなどで地図の無料表示が古くなっても、通常の一台を無料にしない。
+  if (entry.place === "longlong") entry = spotNow(CH4_DUBAI_SPOTS.find(spot => spot.place === "longlong"));
+  if ((entry.cost || 0) > spendableMoney(state)) { toast(`お金が足りない（${priceText(entry.cost)}）`, { se: "error" }); return unused; }
   if (entry.stamina < 0 && !(await staminaGuard(entry.stamina))) return unused;
   // 夜がにぎわう店（ch4-dubai-local.js）: 先に店の夜を読む。初めての夜は短い場面、二度目からは最初の一行だけ。
   const night = nightVisit(state, entry.place);
   if (night && !await readNight(night, entry, owner)) return unused;
-  let done = false, longlong = null;
-  if (entry.place === "inn") done = await restAtInn(io, owner);
+  let done = false, longlong = null, innTrial = false, festaBond = null, withCompanion = false;
+  if (entry.place === "inn") {
+    const visit = await visitInn(io, owner, staminaGuard);
+    done = visit.done; innTrial = visit.trial; withCompanion = !!visit.companion;
+  }
   else if (entry.place === "creek") done = await readPlain(state.slot ? "ch4_creek_walk_night" : "ch4_creek_walk_day", "bg_dubai_street_night", owner);
   else if (entry.place === "longlong") {
+    // ♥5の締めくくりが来ていれば、段階や小会話より先に一度だけ読む（客の一台ではないので代金は取らない）。
+    if (finaleAtVisit(LONGLONG_CHAR)) {
+      await setBg(bgUrl(LONGLONG_BG));
+      if (state !== owner) return unused;
+      done = !!(await playFinale(LONGLONG_CHAR, { bg: bgUrl(LONGLONG_BG) }));
+      if (!done || state !== owner) return unused;
+      addStamina(entry.stamina || 0);
+      if (entry.stat) earnStat(entry.stat, 4);
+      return { used: true, exerted: (entry.stamina || 0) < 0, exp: { key: LONGLONG_CHAR, person: LONGLONG_CHAR } };
+    }
     // 必要ハートに届いた最古の未読の段階、無ければ小会話（ch4-longlong.js）。読み終えた時だけ記録する。
     longlong = nextLonglongVisit(state, affinityLevel(LONGLONG_CHAR));
     done = await readPlain(longlong.id, LONGLONG_BG, owner);
+  }
+  else if (entry.place === "festa" && (festaBond = festaBondDue())) {
+    // 太陽の段階の会話（chapters/dubai-bonds.js）。初対面の後、必要ハートに届いた最古の未読を、小会話の代わりに一本読む。
+    done = await readPlain(festaBond, entry.preview, owner);
   }
   else done = await visitPlace(entry, io, owner);
   if (!done || state !== owner) return unused;
   if (night) recordNightVisit(state, entry.place);
   if (longlong) recordLonglongVisit(state, longlong);
+  if (festaBond) recordDubaiBondRead(state, festaBond);
   if (entry.cost) addMoney(-entry.cost);
-  addStamina(entry.stamina || 0);
+  // 同行者と過ごした回は、休んだ扱いにしない（体力は戻らない）
+  addStamina(innTrial || withCompanion ? 0 : entry.stamina || 0);
   if (entry.heat) toast(entry.heat); // 昼の屋外（暑さで多めに使った・夜ほど休まらない）
   // スークの後は屋台で軽く買える（時間は使わない・体力が少し戻る）。体力を使った後に戻すので、上限で消えにくい。
   if (entry.place === STALL_PLACE && state === owner) await visitStall(owner);
-  if (entry.stat) earnStat(entry.stat, 4);
-  if (entry.place === "festa") gainAffinity("da_silva", visitAffinity("talk")); // 太陽: 来店ごとに通いの小会話と同じ +8（IR23）
+  if (entry.stat && !innTrial) earnStat(entry.stat, 4);
+  // 太陽: 来店ごとに通いの小会話と同じ +8（IR23）。段階の会話を読んだ来店は、ほかの店の段階と同じ +16
+  if (entry.place === "festa") gainAffinity("da_silva", visitAffinity(festaBond ? "story" : "talk"));
   if (entry.place === "naru") gainAffinity("naru", 5);
   // 龍龍水煙所: ほかの章のライバルの店と同じ値（段階の会話 +16・通いの小会話 +8。core/stats.js の visitAffinity）
   if (longlong) gainAffinity(LONGLONG_CHAR, visitAffinity(longlong.kind === "story" ? "story" : "talk"));
@@ -293,7 +345,7 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   // 路地裏のカフェの日常の会話で話すのは店員で、シェイクの授業は大会で名を明かすまで伏せる。シェイクへの相談は第5章の屋敷（ch5-dubai.js）。
   const teacher = { festa: "da_silva" }[entry.place];
   if (teacher && state === owner) await keepDailyHud(() => consultLessons(teacher));
-  return { used: true, exerted: (entry.stamina || 0) < 0 };
+  return { used: true, exerted: innTrial || (entry.stamina || 0) < 0 };
 }
 
 /**
@@ -309,10 +361,70 @@ async function visitCamel(owner) {
   return result.used && state === owner ? { used: true, exerted: false, slotsUsed: 0 } : unused;
 }
 
-/** 宿で休む。2日目以降の最初の一回は、道具の手入れ（本筋の場面）を先に読む。 */
-async function restAtInn(io, owner) {
-  if (dubaiDay() >= 2 && !read("ch4_inn_tool_care")) return keepDailyHud(() => io.readAndCommit("ch4_inn_tool_care"));
-  return readPlain("ch4_inn_rest", "bg_dubai_inn_night", owner);
+/** 宿で休むか、持ってきた葉で一台試すかを選ぶ。最初の道具の手入れは従来どおり先に読む。 */
+async function visitInn(io, owner, staminaGuard) {
+  if (rehearsalDue(state)) return visitRehearsal(owner, staminaGuard);
+  if (dubaiDay() >= 2 && !read("ch4_inn_tool_care"))
+    return { done: await keepDailyHud(() => io.readAndCommit("ch4_inn_tool_care")), trial: false };
+  const pending = state.flags[INN_TRIAL_FLAG]?.result;
+  // 同じ便で来た恋人と過ごす（BLC08・一日に一度・体力は戻らない）。試作の講評の途中（pending）は、先に講評を読む。
+  const companion = !pending && companionTimeOpen(state) ? companionLover(state) : null;
+  if (!innTrialDue(state) && !companion) return { done: await readPlain("ch4_inn_rest", "bg_dubai_inn_night", owner), trial: false };
+  if (!pending) {
+    const trialOpen = innTrialDue(state);
+    const choice = await modal({ title: trialOpen ? "宿の作業台" : "宿",
+      body: trialOpen ? "持ってきた葉で一台試せる。試作は1行動・体力16。休むなら体力が戻る。" : "今日は、どう過ごそう。休むなら体力が戻る。",
+      options: [
+        ...(companion ? [{ label: `${displayName(companion, state, { context: "private" })}と過ごす（同行）`, value: "companion", test: "ch4-inn-companion", primary: true }] : []),
+        ...(trialOpen ? [{ label: "一台試作する", value: "trial", test: "ch4-inn-trial", primary: !companion }] : []),
+        { label: "休む", value: "rest", test: "ch4-inn-rest" },
+        { label: "戻る", value: "cancel", test: "ch4-inn-cancel" },
+      ] });
+    if (state !== owner || !choice || choice === "cancel") return { done: false, trial: false };
+    if (choice === "rest") return { done: await readPlain("ch4_inn_rest", "bg_dubai_inn_night", owner), trial: false };
+    if (choice === "companion") {
+      const bg = timeOfDay() === "night" ? "bg_dubai_inn_night" : "bg_dubai_inn_day";
+      return { done: await spendCompanionTime({ read: id => readPlain(id, bg, owner) }), trial: false, companion: true };
+    }
+    if (!(await staminaGuard(-16)) || state !== owner) return { done: false, trial: false };
+    if (!await readPlain("ch4_inn_trial_intro", "bg_dubai_inn_night", owner)) return { done: false, trial: false };
+    const cs = await runFullPractice({ kind: "ch4_inn_trial", adjustments: false, note: "宿での試作", isCurrent: () => state === owner });
+    if (state !== owner || !cs || cs.cancelled || !cs.pullDone && !cs.failed) return { done: false, trial: false };
+    const result = innTrialResult(cs, cs.failed ? null : computeShisha(cs).craftQuality);
+    owner.flags[INN_TRIAL_FLAG] = { result, feedbackRead: false, day: dubaiDay() };
+    addStamina(-16);
+    save(); // 講評中のLOADでも完成した一台を作り直させない
+  }
+  const result = owner.flags[INN_TRIAL_FLAG].result;
+  const done = await readPlain(`ch4_inn_trial_${result}`, "bg_dubai_inn_night", owner);
+  if (done) owner.flags[INN_TRIAL_FLAG].feedbackRead = true;
+  return { done, trial: done };
+}
+
+/** 前日の一台は独立した一度きりの行動。完成直後に保存して講評だけ再開できるようにする。 */
+async function visitRehearsal(owner, staminaGuard) {
+  const bg = "bg_dubai_inn_night";
+  if (!owner.flags[REHEARSAL_FLAG]?.result) {
+    const choice = await modal({ title: "前日リハーサル", body: "本番と同じ手順で一台作り、調整を2回まで通す。1行動・体力16。葉は減らず、能力値は増えない。",
+      options: [
+        { label: "リハーサルをする", value: "rehearsal", test: "ch4-rehearsal", primary: true },
+        { label: "いつもの宿", value: "rest", test: "ch4-rehearsal-rest" },
+        { label: "戻る", value: "cancel", test: "ch4-rehearsal-cancel" },
+      ] });
+    if (state !== owner || !choice || choice === "cancel") return { done: false, trial: false };
+    if (choice === "rest") return { done: await readPlain("ch4_inn_rest", bg, owner), trial: false };
+    if (!(await staminaGuard(-16)) || state !== owner) return { done: false, trial: false };
+    if (!await readPlain("ch4_rehearsal_intro", bg, owner)) return { done: false, trial: false };
+    const cs = await runFullPractice({ kind: "rehearsal", isCurrent: () => state === owner });
+    if (state !== owner || !cs || cs.cancelled || !cs.pullDone && !cs.failed) return { done: false, trial: false };
+    owner.flags[REHEARSAL_FLAG] = { result: rehearsalResult(cs, computeShisha), feedbackRead: false };
+    addStamina(-16);
+    save();
+  }
+  const progress = owner.flags[REHEARSAL_FLAG];
+  const done = await readPlain(`ch4_rehearsal_${progress.result}`, bg, owner);
+  if (done) progress.feedbackRead = true;
+  return { done, trial: done };
 }
 
 /**
@@ -326,6 +438,10 @@ async function visitPlace(entry, io, owner) {
     for (const id of first) if (!await keepDailyHud(() => io.readAndCommit(id)) || state !== owner) return false;
     return cafe && !first.some(id => SMOKED_IN_SCENE.includes(id)) ? orderAtCafe(entry, owner) : true;
   }
+  // 再訪の会話を3本読んだ後は、通いの続き（chapters/visit-chains.js）の段を読む（巡回は進めない）
+  const chain = cafe ? await chainVisitDue(entry.place) : null;
+  if (state !== owner) return false;
+  if (chain) return readCafeChain(entry, chain, owner);
   const talk = nextTalk(entry.place);
   if (!talk) return false;
   const orderFirst = cafe && TALKS_AFTER_ORDER.includes(talk);
@@ -356,6 +472,42 @@ async function orderAtCafe(entry, owner) {
   if (!await readPlain({ ...scene, lines }, entry.preview, owner)) return false;
   recordCafeOrder(state, id);
   return true;
+}
+
+/**
+ * 通いの続き（chapters/visit-chains.js）のカフェの段。吸いながら話すので、先に一台頼む（代金・体力・能力はいつもの来店と同じ）。
+ * 宿の試作（ch4-inn-trial.js）の結果を、台本の条件 chain_fact inn_trial で読む（作っていなければ "none"）。
+ */
+async function readCafeChain(entry, due, owner) {
+  if (!await orderAtCafe(entry, owner)) return false;
+  const facts = { inn_trial: state.flags[INN_TRIAL_FLAG]?.result || "none" };
+  return await playChainStage(due, id => readPlain(id, entry.preview, owner), { facts }) && state === owner;
+}
+
+/**
+ * 通いの続きの宿の段: 中心地のカフェで知った「ボウルだけ替える」吸い方を、持ってきた台で試す（1行動・体力10・技術）。
+ * 道具の手入れ（DAY2）・前日リハーサル・試作の講評の途中はそちらが先。「いつもの宿」を選ぶと null（休む・試作などの、いつもの宿へ）。
+ */
+async function visitInnChain(owner, staminaGuard) {
+  const trial = state.flags[INN_TRIAL_FLAG];
+  if (!chainStageAt(state, "inn") || rehearsalDue(state) || dubaiDay() >= 2 && !read("ch4_inn_tool_care")
+    || trial?.result && !trial.feedbackRead) return null;
+  const due = await chainVisitDue("inn");
+  if (!due || state !== owner) return null;
+  const pick = await modal({ title: "宿", body: "カフェで見た、ボウルだけを替える吸い方を試せる。1行動・体力10。<br>いつもの宿なら、休むこともできる。",
+    options: [
+      { label: due.stage.label, value: "chain", test: "ch4-inn-chain", primary: true },
+      { label: "いつもの宿", value: "inn", test: "ch4-inn-chain-skip" },
+      { label: "戻る", value: null, test: "ch4-inn-chain-cancel" },
+    ] });
+  if (state !== owner || !pick) return unused;
+  if (pick === "inn") return null;
+  if (!(await staminaGuard(-10)) || state !== owner) return unused;
+  const bg = timeOfDay() === "night" ? "bg_dubai_inn_night" : "bg_dubai_inn_day";
+  if (!await playChainStage(due, id => readPlain(id, bg, owner)) || state !== owner) return unused;
+  addStamina(-10);
+  earnStat("technique", 4);
+  return { used: true, exerted: true };
 }
 
 /** 夜の店の場面。初めての夜は全部（スポット固有の場面の経験値の候補）、二度目からは最初の一行だけ。 */
@@ -392,3 +544,4 @@ function firstScenes(place) {
   if (place === "alley_cafe") return read("ch4_stranger_second") ? [] : chapterFourSecondAvailable(state) ? ["ch4_stranger_second"] : [];
   return [];
 }
+

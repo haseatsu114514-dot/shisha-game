@@ -33,6 +33,13 @@ export function installTimeWarp() {
   window.setTimeout = (fn, ms = 0, ...args) => real.setTimeout(fn, Math.max(0, Number(ms) || 0) / rate, ...args);
   window.setInterval = (fn, ms = 0, ...args) => real.setInterval(fn, Math.max(1, (Number(ms) || 0) / rate), ...args);
   window.requestAnimationFrame = callback => real.raf(() => callback(virtualNow()));
+  // スクリプトで作るアニメーションにも、生成直後に同じ速さを当てる
+  const animate = Element.prototype.animate;
+  Element.prototype.animate = function (...args) {
+    const animation = animate.apply(this, args);
+    if (rate !== 1) animation.playbackRate = rate;
+    return animation;
+  };
   // 新しく始まった CSS のアニメーション・トランジションにも、すぐ同じ速さを当てる
   const fresh = event => applyAnimations(event.target?.getAnimations?.() || []);
   for (const type of ["animationstart", "transitionrun"]) document.addEventListener(type, fresh, true);

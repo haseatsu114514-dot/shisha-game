@@ -25,13 +25,15 @@ const catalog = await json("../../data/trpg_catalog.json");
 const club = await json("../../data/dialogue/trpg_club.json");
 const ordinary = await json("../../data/dialogue/trpg_ordinary.json");
 const shark = await json("../../data/dialogue/trpg_shark.json");
+const regulars = [await json("../../data/dialogue/trpg_regular_harbor.json"),
+  await json("../../data/dialogue/trpg_regular_mail.json")];
 function state() {
   return { chapter: 2, phase: "daily", day: 3, slot: 1, money: 3000, lovers: [], affinity: {}, met: {}, flags: {},
     trpg: { ...rules.emptyTrpgProgress(), shifts: [] } };
 }
 function friends(s, ids = catalog.participants.map(p => p.id)) {
   rules.foundTrpgClub(s, catalog);
-  for (const id of ids) { s.met[id] = true; s.affinity[id] = 66; rules.joinTrpgClub(s, catalog, id); }
+  for (const id of ids) { s.met[id] = true; s.flags[`_trpg_topic_${id}`] = true; s.affinity[id] = 66; rules.joinTrpgClub(s, catalog, id); }
   return s;
 }
 function own(s, id) { rules.syncTrpgStock(s, catalog); assert(rules.buyTrpgBook(s, catalog, id)); return s; }
@@ -46,6 +48,106 @@ function finish(scenario) {
   }
   return session.result();
 }
+
+test("zero-member tables with Sai and his regulars finish and save both stories", () => {
+  const s = state();
+  assert(rules.foundTrpgClub(s, catalog));
+  assert.deepEqual(s.trpg.club.members, {});
+  assert(rules.syncTrpgStock(s, catalog));
+  for (const story of regulars) {
+    assert(rules.buyTrpgBook(s, catalog, story.id));
+    const cast = rules.castTrpgTable(s, catalog, story);
+    assert(cast.ok, cast.reason);
+    assert.deepEqual(new Set(cast.participants), new Set(["sai", "hajime", "regulara", "regularb"]));
+    const table = rules.materializeTrpgCast(story, cast.assignments);
+    const ticket = { ...cast, chapter: s.chapter, day: s.day, slot: s.slot };
+    const result = finish(table);
+    assert(rules.completeTrpgTable(s, catalog, story, ticket, result));
+    assert.equal(s.trpg.cleared[story.id].gm, story.cast.find(c => c.part === "GM").id);
+    s.slot = 1; s.day++;
+  }
+  assert.deepEqual(s.trpg.club.members, {});
+});
+
+test("the shelf has one story per member, two generic books and Sai's finale", () => {
+  assert.equal(catalog.scenarios.length, 9);
+  const members = catalog.scenarios.filter(b => b.member);
+  assert.deepEqual(members.map(b => b.member).sort(), catalog.participants.map(p => p.id).sort());
+  assert.deepEqual(catalog.scenarios.filter(b => !b.stockRequires.length && !b.finale).map(b => b.id), regulars.map(s => s.id));
+  const finale = catalog.scenarios.filter(b => b.finale);
+  assert.equal(finale.length, 1);
+  assert.deepEqual(finale[0].clearRequires.slice().sort(), members.map(b => b.id).sort());
+});
+
+test("Sai's finale waits for all six members' stories, including on older saves", async () => {
+  const book = catalog.scenarios.find(b => b.finale);
+  const story = await json("../../data/" + book.file);
+  const s = friends(state());
+  rules.syncTrpgStock(s, catalog);
+  assert(!s.trpg.stock.includes(book.id));
+  for (const id of book.clearRequires.slice(0, -1)) s.trpg.cleared[id] = { ending: "memory" };
+  rules.syncTrpgStock(s, catalog);
+  assert(!rules.buyTrpgBook(s, catalog, book.id));
+  // This title used to be a Hiyori book: owning the old edition must not bypass the finale.
+  s.trpg.stock.push(book.id); s.trpg.owned.push(book.id);
+  assert(!rules.castTrpgTable(s, catalog, story).ok);
+  const before = structuredClone(s.trpg);
+  s.trpg.cleared[book.clearRequires.at(-1)] = { ending: "memory" };
+  const cast = rules.castTrpgTable(s, catalog, story);
+  assert(cast.ok, cast.reason); assert.equal(cast.gm, "sai");
+  const table = rules.materializeTrpgCast(story, cast.assignments);
+  assert.equal(finish(table).scenarioId, story.id);
+  assert.deepEqual(s.trpg.owned, before.owned);
+});
+
+test("a member's own book needs that member; only companion seats use Sai's regulars", async () => {
+  for (const book of catalog.scenarios.filter(b => b.member)) {
+    const story = await json("../../data/" + book.file);
+    const s = own(friends(state(), [book.member]), book.id);
+    const cast = rules.castTrpgTable(s, catalog, story);
+    assert(cast.ok, book.id + ": " + cast.reason);
+    assert(cast.participants.includes(book.member));
+    assert(cast.participants.some(id => catalog.regulars.includes(id)), book.id);
+    assert(!cast.participants.some(id => ["sumi", "salaryman", "naru"].includes(id)));
+    assert.equal(finish(rules.materializeTrpgCast(story, cast.assignments)).scenarioId, story.id);
+    s.trpg.shifts = [{ id: book.member, chapter: s.chapter, day: s.day, slot: s.slot, busy: true }];
+    assert(!rules.castTrpgTable(s, catalog, story).ok, book.id + " never replaces its required member");
+  }
+});
+
+test("retired books keep saved records but cannot start a table; Salaryman cannot enter a forged guest list", async () => {
+  const s = friends(state());
+  s.trpg.stock.push("shark-island"); s.trpg.owned.push("shark-island");
+  s.trpg.cleared["shark-island"] = { ending: "old-ending", stars: 3 };
+  const record = structuredClone(s.trpg.cleared);
+  const points = rules.clubRecord(s, catalog).points;
+  assert.equal(points, 6, "the retired book's earned club progress is kept");
+  assert(!rules.castTrpgTable(s, catalog, { id: "shark-island" }).ok);
+  rules.syncTrpgStock(s, catalog);
+  assert.deepEqual(s.trpg.cleared, record);
+  assert.equal(rules.clubRecord(s, catalog).points, points);
+  assert(s.trpg.owned.includes("shark-island"));
+  const forged = structuredClone(regulars[0]);
+  forged.zeroMemberCast.push("salaryman");
+  const assignments = Object.fromEntries(forged.campaign.seats.map(seat => [seat.actor, seat.candidates[0]]));
+  assignments.regulara = "salaryman";
+  assert.throws(() => rules.materializeTrpgCast(forged, assignments), /Excluded TRPG participant/);
+});
+
+test("each candidate needs their own club talk, regardless of affinity", () => {
+  for (const person of catalog.participants) {
+    const s = state(); rules.foundTrpgClub(s, catalog);
+    s.met[person.id] = true; s.affinity[person.id] = 0;
+    assert.equal(rules.recruitmentStatus(s, person, catalog).reason, "会って部活の話を聞こう");
+    assert(!rules.joinTrpgClub(s, catalog, person.id));
+    s.flags[`_trpg_topic_${person.id}`] = true;
+    assert(rules.recruitmentStatus(s, person, catalog).ok);
+    assert(rules.joinTrpgClub(s, catalog, person.id));
+  }
+  const rei = state(); rules.foundTrpgClub(rei, catalog);
+  rei.met.rei = true; rei.flags._rei_trpg_introduced = true;
+  assert(rules.joinTrpgClub(rei, catalog, "rei"), "レヰの既存TRPG会話を数える");
+});
 
 test("chapter two club meets after ordinary shifts; DAY8 compatibility override preserves existing saves", () => {
   const s = own(friends(state()), shark.id); s.day = 22;
@@ -102,22 +204,24 @@ test("chapter one cannot stock, buy or call a table", () => {
   assert(!rules.castTrpgTable(s, catalog, ordinary).ok);
   assert.deepEqual(s, before);
 });
-test("MAX is recruitment eligibility, never automatic membership or stocking", () => {
+test("hearing the club topic permits low-affinity recruitment without automatic membership", () => {
   const s = state(); s.met.hiyori = true; s.affinity.hiyori = 66;
   assert(!rules.joinTrpgClub(s, catalog, "hiyori"));
   assert(rules.foundTrpgClub(s, catalog)); assert(!rules.foundTrpgClub(s, catalog));
+  assert(!rules.recruitmentStatus(s, catalog.participants[0], catalog).ok);
+  s.affinity.hiyori = 0; s.flags._trpg_topic_hiyori = true;
   assert(rules.recruitmentStatus(s, catalog.participants[0], catalog).ok);
   assert(!rules.participantStatus(s, catalog.participants[0]).ok);
-  assert(!rules.syncTrpgStock(s, catalog)); assert.deepEqual(s.trpg.stock, []);
+  assert(rules.syncTrpgStock(s, catalog)); assert.deepEqual(s.trpg.stock, ["regular-harbor", "regular-mail"]);
   assert(rules.joinTrpgClub(s, catalog, "hiyori")); assert(!rules.joinTrpgClub(s, catalog, "hiyori"));
   // A book is stocked once its GM has joined: each GM brings their own shelf of stories.
-  const stockedBy = members => catalog.scenarios.filter(b => b.stockRequires.every(id => members.includes(id))).map(b => b.id);
+  const stockedBy = members => catalog.scenarios.filter(b => !b.finale && b.stockRequires.every(id => members.includes(id))).map(b => b.id);
   assert(rules.syncTrpgStock(s, catalog)); assert.deepEqual(s.trpg.stock, stockedBy(["hiyori"]));
-  assert.equal(s.trpg.stock[0], ordinary.id); assert(!s.trpg.stock.includes(shark.id));
-  s.met.samechan = true; s.affinity.samechan = 66;
+  assert(s.trpg.stock.includes(ordinary.id)); assert(!s.trpg.stock.includes(shark.id));
+  s.met.samechan = true; s.flags._trpg_topic_samechan = true; s.affinity.samechan = 0;
   assert(!rules.syncTrpgStock(s, catalog));
   assert(rules.joinTrpgClub(s, catalog, "samechan")); assert(rules.syncTrpgStock(s, catalog));
-  assert.deepEqual(s.trpg.stock, [...stockedBy(["hiyori"]), ...stockedBy(["samechan"])]);
+  assert.deepEqual(s.trpg.stock, [...stockedBy(["hiyori"]), ...stockedBy(["samechan"]).filter(id => !stockedBy(["hiyori"]).includes(id))]);
   assert(s.trpg.stock.includes(shark.id));
 });
 test("known MAX friends or lovers may join; work does not prevent face-to-face recruitment", () => {
@@ -125,8 +229,9 @@ test("known MAX friends or lovers may join; work does not prevent face-to-face r
   s.met.hiyori = true; s.affinity.hiyori = 65;
   assert(!rules.joinTrpgClub(s, catalog, "hiyori"));
   s.lovers = ["hiyori"]; s.loveLevel = { hiyori: 1 };
-  assert(rules.joinTrpgClub(s, catalog, "hiyori"));
-  s.met.adam = true; s.affinity.adam = 66; // His shop closes before the club meets.
+  assert(!rules.joinTrpgClub(s, catalog, "hiyori"));
+  s.flags._trpg_topic_hiyori = true; assert(rules.joinTrpgClub(s, catalog, "hiyori"));
+  s.met.adam = true; s.flags._trpg_topic_adam = true; s.affinity.adam = 0; // His shop closes before the club meets.
   assert(rules.joinTrpgClub(s, catalog, "adam"));
   assert(rules.participantStatus(s, catalog.participants.find(p => p.id === "adam")).ok);
   const before = structuredClone(s);
@@ -169,15 +274,15 @@ test("noon, story nights, pending appointments and non-daily phases cannot start
   s.pendingInvite.day = 4; assert(rules.castTrpgTable(s, catalog, ordinary).ok);
   s.phase = "tournament"; assert(!rules.castTrpgTable(s, catalog, ordinary).ok);
 });
-test("REI and Ageha join from their own chapter-two shop visits and never take an unwritten seat", async () => {
+test("レヰ and Ageha join from their own chapter-two shop visits and never take an unwritten seat", async () => {
   for (const id of ["rei", "ageha"]) {
     const s = state(); rules.foundTrpgClub(s, catalog);
     const person = catalog.participants.find(p => p.id === id);
     assert(person?.interested, id + " is a club candidate");
     assert(!rules.recruitmentStatus(s, person, catalog).ok, "Not before meeting");
-    s.met[id] = true; s.affinity[id] = 65;
-    assert(!rules.joinTrpgClub(s, catalog, id), "Not before MAX");
-    s.affinity[id] = 66;
+    s.met[id] = true; s.affinity[id] = 0;
+    assert(!rules.joinTrpgClub(s, catalog, id), "Not before club talk");
+    s.flags[`_trpg_topic_${id}`] = true;
     assert(rules.joinTrpgClub(s, catalog, id));
     assert.equal(club.branches["invite_" + id][0].speaker, "hajime");
     assert(club.branches["invite_" + id][0].text.endsWith("どうですか？"), "Hajime speaks politely to " + id);
@@ -186,14 +291,14 @@ test("REI and Ageha join from their own chapter-two shop visits and never take a
   const s = own(friends(state()), ordinary.id);
   const cast = rules.castTrpgTable(s, catalog, ordinary);
   assert(cast.ok); assert(!cast.participants.includes("rei")); assert(!cast.participants.includes("ageha"));
-  // A book written in their voices seats them: REI as GM, Ageha as a player, and every line keeps a present speaker.
+  // A book written in their voices seats them: レヰ as GM, Ageha as a player, and every line keeps a present speaker.
   const encore = await json("../../data/dialogue/trpg_moonflower_encore.json");
   const night = own(friends(state()), encore.id);
   const seated = rules.castTrpgTable(night, catalog, encore);
   assert(seated.ok); assert.equal(seated.gm, "rei"); assert(seated.participants.includes("ageha"));
   const table = rules.materializeTrpgCast(encore, seated.assignments);
   assert(table.dialogues.flatMap(b => b.lines).every(l => seated.participants.includes(l.speaker)));
-  // Without REI in the club, his books are never stocked.
+  // Without レヰ in the club, his books are never stocked.
   const noRei = state(); friends(noRei, catalog.participants.map(p => p.id).filter(id => id !== "rei")); rules.syncTrpgStock(noRei, catalog);
   assert(!noRei.trpg.stock.includes(encore.id));
   // The neighbouring town's shop visit offers the same face-to-face recruitment as the home town.
@@ -201,11 +306,12 @@ test("REI and Ageha join from their own chapter-two shop visits and never take a
   assert.match(source, /await maybeRecruitTrpgMember\(id\);\n  return \{ used: true, exerted: true \};/);
 });
 
-test("Sumi/Naru never join; unrecruited companions are not invited", () => {
-  const s = own(friends(state(), ["hiyori", "sumi", "naru"]), ordinary.id);
+test("Sumi/Naru/Salaryman never join; Sai’s regulars fill unrecruited seats", () => {
+  const s = own(friends(state(), ["hiyori", "sumi", "naru", "salaryman"]), ordinary.id);
   const result = rules.castTrpgTable(s, catalog, ordinary);
-  assert.deepEqual(result.participants, ["hiyori", "hajime"]);
-  assert(!rules.participantStatus(s, { id: "sumi", maxAffinity: 66 }).ok);
+  assert.deepEqual(result.participants, ["hiyori", "hajime", "regulara", "regularb"]);
+  assert(!rules.participantStatus(s, { id: "salaryman" }).ok);
+  assert(!rules.participantStatus(s, { id: "sumi" }).ok);
 });
 test("a required shark GM cannot be replaced, while Adam fills Hiyori's optional seat with authored lines", () => {
   const s = own(friends(state()), shark.id);
@@ -251,7 +357,111 @@ test("reading an ending records its cast and advances exactly one action; cancel
   assert.equal(s.slot, 2); assert.deepEqual(s.trpg.cleared[ordinary.id].participants, cast.participants);
   assert.deepEqual(s.trpg.cleared[ordinary.id].pc, result.pc, "the memory keeps the character the player built");
   assert(!rules.completeTrpgTable(s, catalog, ordinary, ticket, result)); assert.equal(s.slot, 2);
-  s.day = 5; s.slot = 1; assert(!rules.castTrpgTable(s, catalog, ordinary).ok);
+  // TMX14 (owner 2026-11-11): a finished book can be played again on a later night.
+  s.day = 5; s.slot = 1; assert(rules.castTrpgTable(s, catalog, ordinary).ok);
+});
+
+test("replaying a finished book uses the night, keeps the better memory and counts the endings seen (TMX14)", () => {
+  const s = own(friends(state()), ordinary.id);
+  const night = () => { const cast = rules.castTrpgTable(s, catalog, ordinary); return { cast, ticket: { ...cast, chapter: s.chapter, day: s.day, slot: s.slot } }; };
+  const result = finish(rules.materializeTrpgCast(ordinary, night().cast.assignments));
+  let { ticket } = night();
+  assert(rules.completeTrpgTable(s, catalog, ordinary, ticket, { ...result, rating: { stars: 2 }, heat: { value: 3, night: "和やかな夜" } }));
+  assert.equal(s.trpg.cleared[ordinary.id].plays, 1);
+  assert.deepEqual(s.trpg.cleared[ordinary.id].endingsSeen, [result.ending]);
+  const other = Object.keys(ordinary.endings).find(id => id !== result.ending);
+  // A worse play on the next night still spends the night and adds the ending, but the 2-star memory stays.
+  s.day = 4; s.slot = 1; ({ ticket } = night());
+  assert(rules.completeTrpgTable(s, catalog, ordinary, ticket, { ...result, ending: other, rating: { stars: 1 }, heat: { value: 8, night: "大盛況の夜" } }));
+  assert.equal(s.slot, 2);
+  assert.equal(s.trpg.cleared[ordinary.id].stars, 2); assert.equal(s.trpg.cleared[ordinary.id].ending, result.ending);
+  assert.equal(s.trpg.cleared[ordinary.id].plays, 2);
+  assert.deepEqual(new Set(s.trpg.cleared[ordinary.id].endingsSeen), new Set([result.ending, other]));
+  // A better play replaces the memory (same stars, livelier table).
+  s.day = 5; s.slot = 1; ({ ticket } = night());
+  assert(rules.completeTrpgTable(s, catalog, ordinary, ticket, { ...result, ending: other, rating: { stars: 2 }, heat: { value: 6, night: "沸いた夜" } }));
+  assert.equal(s.trpg.cleared[ordinary.id].ending, other); assert.equal(s.trpg.cleared[ordinary.id].heat, 6);
+  assert.equal(s.trpg.cleared[ordinary.id].day, 5); assert.equal(s.trpg.cleared[ordinary.id].plays, 3);
+});
+
+test("the club's rank is counted from the shelf: finished books, endings seen and stars; it grows the player's character (TRF13)", () => {
+  const s = own(friends(state()), ordinary.id);
+  assert.deepEqual(rules.clubRecord(s, catalog), { points: 0, rank: 1, ranks: rules.CLUB_RANKS.length, name: rules.CLUB_RANKS[0].name, growth: 0, floor: 0,
+    next: { rank: 2, name: rules.CLUB_RANKS[1].name, at: rules.CLUB_RANKS[1].at, need: rules.CLUB_RANKS[1].at, growth: 1 } });
+  assert.equal(rules.bookPoints(null), 0); assert.equal(rules.bookPoints({}), 0, "a record without an ending is no record");
+  assert.equal(rules.bookPoints({ ending: "rain" }), 3, "an old record without stars: finished +2, one ending +1");
+  assert.equal(rules.bookPoints({ ending: "rain", stars: 3, endingsSeen: ["rain", "home", "company", "discovery"] }), 9);
+  assert.equal(rules.bookPoints({ ending: "rain", stars: 9, endingsSeen: ["rain", "rain", "a", "b", "c", "d", "e"] }), 9, "stars and endings are capped; a repeated ending counts once");
+  // One table: finished +2, the ending +1, two stars +2.
+  const night = () => { const cast = rules.castTrpgTable(s, catalog, ordinary); return { ...cast, chapter: s.chapter, day: s.day, slot: s.slot }; };
+  const result = finish(rules.materializeTrpgCast(ordinary, night().assignments));
+  const before = rules.clubRecord(s, catalog);
+  assert(rules.completeTrpgTable(s, catalog, ordinary, night(), { ...result, rating: { stars: 2 }, heat: { value: 3, night: "和やかな夜" } }));
+  const after = rules.clubRecord(s, catalog);
+  assert.equal(after.points, 5); assert.equal(after.rank, 1); assert.equal(after.next.need, rules.CLUB_RANKS[1].at - 5);
+  assert.deepEqual(rules.clubGain(before, after), { gained: 5, points: 5, rank: 1, name: after.name, growth: 0, rankUp: false, growthUp: 0, next: after.next });
+  // The same ending again adds nothing; a new ending adds one and reaches rank 2, which grows the player's character.
+  s.day = 4; s.slot = 1;
+  assert(rules.completeTrpgTable(s, catalog, ordinary, night(), { ...result, rating: { stars: 1 }, heat: { value: 2, night: "静かな夜" } }));
+  assert.equal(rules.clubRecord(s, catalog).points, 5, "replaying into the same ending earns nothing");
+  s.day = 5; s.slot = 1;
+  const other = Object.keys(ordinary.endings).find(id => id !== result.ending), mid = rules.clubRecord(s, catalog);
+  assert(rules.completeTrpgTable(s, catalog, ordinary, night(), { ...result, ending: other, rating: { stars: 1 }, heat: { value: 2, night: "静かな夜" } }));
+  const grown = rules.clubRecord(s, catalog), gain = rules.clubGain(mid, grown);
+  assert.equal(grown.points, 6); assert.equal(grown.rank, 2); assert.equal(grown.growth, 1); assert.equal(grown.floor, rules.CLUB_RANKS[1].at);
+  assert.equal(gain.gained, 1); assert.equal(gain.rankUp, true); assert.equal(gain.growthUp, 1);
+  // Ranks only rise with the points, growth never passes two, and books outside the catalog are not counted.
+  for (let i = 1; i < rules.CLUB_RANKS.length; i++) {
+    assert(rules.CLUB_RANKS[i].at > rules.CLUB_RANKS[i - 1].at); assert(rules.CLUB_RANKS[i].growth >= rules.CLUB_RANKS[i - 1].growth);
+    assert(rules.CLUB_RANKS[i].growth <= 2);
+  }
+  const full = state();
+  for (const book of catalog.scenarios) full.trpg.cleared[book.id] = { ending: "x", stars: 3, endingsSeen: ["a", "b", "c", "d"] };
+  full.trpg.cleared["not-a-book"] = { ending: "x", stars: 3 };
+  const top = rules.clubRecord(full, catalog);
+  assert.equal(top.points, catalog.scenarios.length * 9); assert.equal(top.rank, rules.CLUB_RANKS.length); assert.equal(top.next, null); assert.equal(top.growth, 2);
+  assert.equal(rules.clubRecord({}, catalog).rank, 1, "a save without TRPG progress is rank one");
+  // The save gains no field: the rank is read from the records that were already there.
+  assert.deepEqual(Object.keys(s.trpg).sort(), Object.keys(own(friends(state()), ordinary.id).trpg).sort());
+});
+
+test("a bookmark remembers the growth it was started with (TRF13)", () => {
+  const s = own(friends(state()), ordinary.id), cast = rules.castTrpgTable(s, catalog, ordinary);
+  const ticket = { ...cast, chapter: s.chapter, day: s.day, slot: s.slot, seed: 7 };
+  assert(rules.keepTrpgBookmark(s, ordinary, { ...ticket, growth: 1 }, { actions: [["start"]], pc: null, phase: "listen", title: "" }));
+  assert.equal(s.trpg.bookmark.growth, 1);
+  assert(rules.keepTrpgBookmark(s, ordinary, ticket, { actions: [["start"]], pc: null, phase: "listen", title: "" }));
+  assert.equal("growth" in s.trpg.bookmark, false, "no growth, no field: older bookmarks keep their shape");
+});
+
+test("a bookmark continues only the same story with tonight's same seats, and finishing clears it (TMX13)", () => {
+  const s = own(friends(state()), ordinary.id);
+  const cast = rules.castTrpgTable(s, catalog, ordinary), ticket = { ...cast, chapter: 2, day: 3, slot: 1, seed: 77 };
+  assert(!rules.keepTrpgBookmark(s, ordinary, ticket, { actions: [] }), "nothing pressed, nothing kept");
+  assert(rules.keepTrpgBookmark(s, ordinary, ticket, { actions: [["start"]], pc: null, phase: "listen", title: "話を聞く" }));
+  assert.equal(s.slot, 1, "a bookmark spends nothing");
+  assert.equal(rules.trpgBookmarkFor(s, ordinary, cast.assignments).ok, true);
+  assert.equal(rules.trpgBookmarkFor(s, shark, cast.assignments).mark, null, "another book starts from its cover");
+  const other = Object.fromEntries(Object.entries(cast.assignments).map(([seat, id]) => [seat, seat === "hajime" ? id : null]));
+  assert.equal(rules.trpgBookmarkFor(s, ordinary, other).ok, false, "different seats start again");
+  assert.equal(rules.trpgBookmarkFor(s, { ...ordinary, version: "older" }, cast.assignments).mark, null, "an edited story starts again");
+  const result = finish(rules.materializeTrpgCast(ordinary, cast.assignments));
+  assert(rules.completeTrpgTable(s, catalog, ordinary, ticket, result));
+  assert.equal(s.trpg.bookmark, undefined, "a finished table removes its bookmark");
+});
+
+test("replaying the recorded presses on the same seed lands on the same scene, dice included (TMX13)", () => {
+  const table = rules.materializeTrpgCast(ordinary, rules.castTrpgTable(own(friends(state()), ordinary.id), catalog, ordinary).assignments);
+  const played = new TrpgSession(table, { seed: 31 }), log = [];
+  const press = (key, ...args) => { played[key](...args); log.push([key, ...JSON.parse(JSON.stringify(args))]); };
+  press("start"); press("beginCheck", "listen", { support: false, approach: null }); press("reroll", 0); press("settleCheck");
+  for (const topic of table.interview.topics.slice(0, 2)) press("ask", topic.id);
+  press("endInterview");
+  for (const spot of table.spots.slice(0, 2)) press("inspect", spot.id);
+  press("consult", Object.keys(table.consult)[0]);
+  const again = new TrpgSession(table, { seed: 31 });
+  for (const [key, ...args] of log) again[key](...args);
+  assert.deepEqual(again.snapshot(), played.snapshot());
 });
 test("alternate dialogue, small-table intro and cast have canonical actors and fit the line limits", () => {
   for (const scenario of [ordinary, shark]) for (const block of scenario.dialogues) for (const line of block.lines) {
@@ -280,13 +490,61 @@ test("club copy fits dialogue limits and the catalog explicitly marks interest",
     lines.push(invite[0].text);
   }
   for (const p of catalog.participants) {
-    assert.equal(typeof p.interested, "boolean"); assert(Number.isInteger(p.maxAffinity));
+    assert.equal(typeof p.interested, "boolean"); assert(!("maxAffinity" in p));
+    assert.equal(club.branches["topic_" + p.id]?.[0]?.speaker, p.id);
     if (p.interested) { assert(club.branches[p.id].length >= 2); assert(club.branches[p.id].every(l => l.speaker === p.id)); lines.push(...club.branches[p.id].map(l => l.text)); }
     assert(!["sumi", "naru"].includes(p.id));
   }
   for (const text of lines) {
     assert(!text.includes("\n")); assert([...text].reduce((n, c) => n + (c.codePointAt(0) <= 255 ? .5 : 1), 0) <= 48, text);
   }
+});
+
+// 試遊は本編から起動する（TRF21）: 始め方ごとの状態は、本編と同じ決まり（入荷・所持・招集・勧誘）でそのまま遊べる。
+test("the trial presets are ordinary game states: books in stock, tables that can be cast, people who can be invited (TRF21)", async () => {
+  const { TRPG_TRIAL_PRESETS, trpgTrialState } = await module("../js/trpg/trial-state.js");
+  assert.deepEqual(TRPG_TRIAL_PRESETS.map(p => p.id), ["ready", "fresh", "finale", "noon"]);
+  for (const preset of TRPG_TRIAL_PRESETS) { assert(preset.label && preset.note); assert(Object.isFrozen(TRPG_TRIAL_PRESETS)); }
+  const fresh = () => ({ chapter: 1, phase: "title", day: 1, slot: 0, money: 0, lovers: [], affinity: {}, met: {}, flags: {},
+    trpg: { ...rules.emptyTrpgProgress(), shifts: [] } });
+  const interested = catalog.participants.filter(p => p.interested === true).map(p => p.id).sort();
+  const books = id => catalog.scenarios.find(b => b.id === id);
+  const stories = [ordinary, shark, ...regulars];
+
+  // 夜・部員がそろっている: 部員の本は買ってあり、すぐ卓を囲める。最後の一冊はまだ。
+  const ready = trpgTrialState(fresh(), catalog, "ready");
+  assert.equal(ready.chapter, Math.max(2, catalog.unlockChapter)); assert.equal(ready.phase, "daily"); assert.equal(ready.slot, 1);
+  assert.deepEqual(Object.keys(ready.trpg.club.members).sort(), interested);
+  assert.deepEqual(ready.trpg.owned, ready.trpg.stock);
+  const finale = catalog.scenarios.find(b => b.finale);
+  assert.deepEqual(ready.trpg.stock.slice().sort(), catalog.scenarios.filter(b => b !== finale).map(b => b.id).sort());
+  assert.equal(rules.tableStatus(ready, catalog).reason, "今夜の卓を囲もう");
+  for (const story of stories) assert(rules.castTrpgTable(ready, catalog, story).ok, story.id);
+  assert.equal(rules.clubRecord(ready, catalog).rank, 1, "a new club: nothing cleared yet");
+
+  // 夜・部を作ったばかり: 部員なし。店の常連と遊ぶ本だけがあり、知り合いは誘える。
+  const founded = trpgTrialState(fresh(), catalog, "fresh");
+  assert.deepEqual(founded.trpg.club.members, {});
+  assert.deepEqual(founded.trpg.stock.slice().sort(), catalog.scenarios.filter(b => !b.stockRequires.length && !b.clearRequires).map(b => b.id).sort());
+  assert(founded.trpg.stock.length > 0);
+  for (const story of regulars) assert(rules.castTrpgTable(founded, catalog, story).ok, story.id);
+  assert(!rules.castTrpgTable(founded, catalog, ordinary).ok, "a member's book waits for that member");
+  for (const id of interested) assert(rules.recruitmentStatus(founded, catalog.participants.find(p => p.id === id), catalog).ok, id);
+
+  // 夜・部員の物語を遊び終えた: 最後の一冊が入荷して、買ってある。部の実績も付く。
+  const last = trpgTrialState(fresh(), catalog, "finale");
+  assert.deepEqual(Object.keys(last.trpg.cleared).sort(), finale.clearRequires.slice().sort());
+  assert(rules.trpgBookProgress(last, finale).ok); assert(last.trpg.owned.includes(finale.id));
+  assert(rules.clubRecord(last, catalog).rank >= 3, "six finished books raise the club");
+
+  // 昼・本選び: 卓は夜。本は入荷しているだけで、買える。
+  const noon = trpgTrialState(fresh(), catalog, "noon");
+  assert.equal(noon.slot, 0); assert.deepEqual(noon.trpg.owned, []); assert(noon.trpg.stock.length > 0);
+  assert.equal(rules.tableStatus(noon, catalog).ok, false);
+  const cheapest = noon.trpg.stock.map(books).sort((a, b) => a.price - b.price)[0];
+  assert(rules.buyTrpgBook(noon, catalog, cheapest.id)); assert.equal(noon.money, 5000 - cheapest.price);
+  // 知らない始め方は「そろっている夜」。
+  assert.deepEqual(trpgTrialState(fresh(), catalog, "unknown").trpg.owned, ready.trpg.owned);
 });
 
 test("table status guides player when companions and books are not yet ready (#1045 B03)", () => {
@@ -298,7 +556,7 @@ test("table status guides player when companions and books are not yet ready (#1
   assert.equal(initial.reason, "今は招集できる仲間／遊べる本がない。知り合いとの交流を深めよう");
 
   // Having a companion ready
-  s.met.hiyori = true; s.affinity.hiyori = 66;
+  s.met.hiyori = true; s.flags._trpg_topic_hiyori = true; s.affinity.hiyori = 0;
   rules.joinTrpgClub(s, catalog, "hiyori");
   const withMember = rules.tableStatus(s, catalog);
   assert(withMember.ok);

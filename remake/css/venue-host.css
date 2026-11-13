@@ -1,3 +1,4 @@
+/* body:not(:root)／.title:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds)／:not([data-layout="ds"]) と同じ詳細度を保つための置き換え。 */
 .venue-host { display: flex; align-items: center; gap: 18px; min-height: 112px; padding: 8px 18px 0 8px; border: 1px solid #99816188; border-radius: 9px; background: linear-gradient(110deg, #493526dd, #18171ddb); text-align: left; color: #f4ead6; }
 .venue-host-portrait { position: relative; flex: 0 0 110px; height: 112px; overflow: hidden; }
 .venue-host-portrait img { position: absolute; left: 50%; width: 260px; height: auto; max-width: none; }
@@ -39,5 +40,33 @@
 .axe-bar-menu .axe-bar-records { margin-top: 8px; padding-top: 8px; }
 .axe-bar-menu .axe-bar-career { color: #ffe1a7; }
 html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-divisions .btn[aria-pressed="true"] { color: #fff; background: var(--lavender); border-color: var(--lavender); }
+html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-division-label { color: var(--lavender); }
 html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-division-note { color: var(--paper-muted); }
 html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-career { color: var(--lavender); }
+/* #2834 本編の斧投げBarメニュー: スマホ横持ち（0.47〜0.54倍）でも読める大きさ。文字は 24px 以上、押す部品は 82px 以上。
+   店名は見出しにあるので案内役の札の店名は外し、読み上げにも二重に出さない。 */
+.sub-menu.axe-bar-menu { width: 1040px; max-height: 96%; padding: 20px 32px; }
+.axe-bar-menu .sub-title { font-size: 34px; }
+.axe-bar-menu .venue-host { min-height: 0; margin: 8px auto; max-width: none; }
+.axe-bar-menu .venue-host-copy small { display: none; }
+.axe-bar-menu .venue-host-copy strong { margin: 0 0 4px; font-size: 26px; }
+.axe-bar-menu .venue-host-copy p { font-size: 24px; line-height: 1.45; }
+.axe-bar-menu .sub-lead { margin: 6px 0 12px; font-size: 24px; line-height: 1.45; }
+.axe-bar-menu .axe-bar-tools .btn { min-height: 82px; padding: 8px 22px; font-size: 24px; }
+.axe-bar-menu .big-choice { min-height: 82px; padding: 12px 20px; }
+.axe-bar-menu .big-choice b { font-size: 28px; }
+.axe-bar-menu .big-choice small { font-size: 24px; }
+.axe-bar-menu .axe-bar-divisions { gap: 8px 12px; max-width: none; font-size: 24px; }
+.axe-bar-menu .axe-bar-divisions .btn { min-width: 120px; min-height: 82px; padding: 6px 18px; font-size: 26px; }
+.axe-bar-menu :is(.axe-bar-division-label, .axe-bar-division-note) { font-size: 24px; }
+.axe-bar-menu .axe-bar-records { font-size: 24px; line-height: 1.45; }
+.axe-bar-menu .sub-back { min-height: 82px; padding: 8px 26px; font-size: 24px; }
+.axe-bar-menu .axe-bar-tools p.gear-offer { font-size: 24px; }
+/* 上の大きさにすると中身がステージの高さ（720px）を越え、最後にあった「← マップに戻る」は PC でもスクロールしないと見えなかった。
+   戻るボタンは見出しの行の右に置き（ボドゲカフェの「閉じる」と同じく上の列）、レッスンとマイ斧は最初の意図どおり1行に収める。
+   押す部品はすべて最初の画面に出し、記録・部門の説明の文だけが下へ続く（play_spots・venue_hours の検査）。 */
+body:not(:root) .axe-bar-menu .sub-title { display: flex; align-items: center; min-height: 82px; }
+body:not(:root) .axe-bar-menu .sub-back { position: absolute; top: 20px; right: 32px; margin: 0; }
+body:not(:root) .axe-bar-menu .axe-bar-tools { flex-wrap: nowrap; column-gap: 10px; }
+body:not(:root) .axe-bar-menu .axe-bar-tools > .axe-bar-lesson { flex: none; }
+body:not(:root) .axe-bar-menu .axe-bar-tools > .gear-offer { flex: 0 1 auto; min-width: 0; } /* 幅が足りない時はマイ斧の札の中で折り返す */

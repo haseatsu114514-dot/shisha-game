@@ -1,0 +1,410 @@
+{
+  "issue": 3281,
+  "adopted": "2026-11-11 19:22 JST オーナー決定「全採用」",
+  "method": "頭頂〜足元の高さを新版の通常にそろえて LANCZOS で縮小し、足元の下端と頭の横位置（上12%の不透明部分の重心）を通常に合わせて 896x1200 に配置。描き直し・色の調整はしていない",
+  "items": [
+    {
+      "character_id": "ageha",
+      "expression": "sad",
+      "source": "asset_sources/portraits/ageha-new-expressions-20261111/sad-untouched.png",
+      "source_sha256": "1dbbdd5d1c969cd4518820829d1f4dcdc45aa79f3cabc4b2615eedcdc3d680d3",
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "normal_reference": "assets/sprites/character_variants/new/ageha/chr_ageha_normal.png",
+      "normal_sha256": "b02292b268fb524daf4f248aad164b7a491236a28cea0fa3bbce7b72e22de368",
+      "scale": 0.82458,
+      "offset": [
+        -1,
+        1
+      ],
+      "bbox_alpha32_normal": [
+        297,
+        203,
+        680,
+        1176
+      ],
+      "bbox_alpha32_result": [
+        314,
+        203,
+        688,
+        1176
+      ],
+      "runtime": "assets/sprites/character_variants/new/ageha/chr_ageha_sad.png",
+      "clipped": false
+    },
+    {
+      "character_id": "mashiro",
+      "expression": "serious",
+      "source": "asset_sources/portraits/mashiro-new-expressions-20261111/serious-untouched.png",
+      "source_sha256": "11e6851e357f9c8bf987746d60a26dfd268fd98979d2b9a672751e34003e196d",
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "normal_reference": "assets/sprites/character_variants/new/mashiro/chr_mashiro_normal.png",
+      "normal_sha256": "32a3938f9d01ccd7504b4ca3b705262a8184c39426033eac87e12517fe15ab4f",
+      "scale": 0.82254,
+      "offset": [
+        1,
+        0
+      ],
+      "bbox_alpha32_normal": [
+        252,
+        60,
+        648,
+        1140
+      ],
+      "bbox_alpha32_result": [
+        253,
+        60,
+        657,
+        1140
+      ],
+      "runtime": "assets/sprites/character_variants/new/mashiro/chr_mashiro_serious.png",
+      "clipped": false
+    },
+    {
+      "character_id": "mashiro",
+      "expression": "surprise",
+      "source": "asset_sources/portraits/mashiro-new-expressions-20261111/surprise-untouched.png",
+      "source_sha256": "7624b8d3095c8e087dfe09932634768edd018e9ceaaa06b84af2288e268461f3",
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "normal_reference": "assets/sprites/character_variants/new/mashiro/chr_mashiro_normal.png",
+      "normal_sha256": "32a3938f9d01ccd7504b4ca3b705262a8184c39426033eac87e12517fe15ab4f",
+      "scale": 0.82632,
+      "offset": [
+        -2,
+        -1
+      ],
+      "bbox_alpha32_normal": [
+        252,
+        60,
+        648,
+        1140
+      ],
+      "bbox_alpha32_result": [
+        250,
+        59,
+        655,
+        1140
+      ],
+      "runtime": "assets/sprites/character_variants/new/mashiro/chr_mashiro_surprise.png",
+      "clipped": false
+    },
+    {
+      "character_id": "minto",
+      "expression": "smile",
+      "source": "asset_sources/portraits/minto-new-expressions-20261111/smile-untouched.png",
+      "source_sha256": "3089869fb15dfa90d7188311a2218fa25d45ec8e7b4ecbe6fe6e90bd06ad1309",
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "normal_reference": "assets/sprites/character_variants/new/minto/chr_minto_normal.png",
+      "normal_sha256": "a2858d52a200b441a7b55221efb10bfb882a604e3bcd74c4efa75dac220dac60",
+      "scale": 0.82143,
+      "offset": [
+        1,
+        3
+      ],
+      "bbox_alpha32_normal": [
+        255,
+        60,
+        630,
+        1141
+      ],
+      "bbox_alpha32_result": [
+        257,
+        60,
+        634,
+        1141
+      ],
+      "runtime": "assets/sprites/character_variants/new/minto/chr_minto_smile.png",
+      "clipped": false
+    },
+    {
+      "character_id": "minto",
+      "expression": "wink",
+      "source": "asset_sources/portraits/minto-new-expressions-20261111/wink-untouched.png",
+      "source_sha256": "38f864cf295e87a9cc63f8d32391906eb5642b3752f881fe3ac119d973c9f77c",
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "normal_reference": "assets/sprites/character_variants/new/minto/chr_minto_normal.png",
+      "normal_sha256": "a2858d52a200b441a7b55221efb10bfb882a604e3bcd74c4efa75dac220dac60",
+      "scale": 0.81832,
+      "offset": [
+        2,
+        5
+      ],
+      "bbox_alpha32_normal": [
+        255,
+        60,
+        630,
+        1141
+      ],
+      "bbox_alpha32_result": [
+        256,
+        60,
+        636,
+        1141
+      ],
+      "runtime": "assets/sprites/character_variants/new/minto/chr_minto_wink.png",
+      "clipped": false
+    },
+    {
+      "character_id": "minto",
+      "expression": "sad",
+      "source": "asset_sources/portraits/minto-new-expressions-20261111/sad-untouched.png",
+      "source_sha256": "7fe3fb4f2cdaa4e120a1bf5434e1e848f63f5ce9b4cbd9a09a1c341e658b1fc2",
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "normal_reference": "assets/sprites/character_variants/new/minto/chr_minto_normal.png",
+      "normal_sha256": "a2858d52a200b441a7b55221efb10bfb882a604e3bcd74c4efa75dac220dac60",
+      "scale": 0.8208,
+      "offset": [
+        0,
+        5
+      ],
+      "bbox_alpha32_normal": [
+        255,
+        60,
+        630,
+        1141
+      ],
+      "bbox_alpha32_result": [
+        256,
+        60,
+        634,
+        1141
+      ],
+      "runtime": "assets/sprites/character_variants/new/minto/chr_minto_sad.png",
+      "clipped": false
+    },
+    {
+      "character_id": "minto",
+      "expression": "surprise",
+      "source": "asset_sources/portraits/minto-new-expressions-20261111/surprise-untouched.png",
+      "source_sha256": "ef358483e16288eb9bd59e97e14eb266a6258081a3805bf1006e7127bf3b4ccb",
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "normal_reference": "assets/sprites/character_variants/new/minto/chr_minto_normal.png",
+      "normal_sha256": "a2858d52a200b441a7b55221efb10bfb882a604e3bcd74c4efa75dac220dac60",
+      "scale": 0.82331,
+      "offset": [
+        -2,
+        1
+      ],
+      "bbox_alpha32_normal": [
+        255,
+        60,
+        630,
+        1141
+      ],
+      "bbox_alpha32_result": [
+        256,
+        59,
+        633,
+        1141
+      ],
+      "runtime": "assets/sprites/character_variants/new/minto/chr_minto_surprise.png",
+      "clipped": false
+    },
+    {
+      "character_id": "pakki",
+      "expression": "excited",
+      "source": "asset_sources/portraits/pakki-new-expressions-20261111/excited-untouched.png",
+      "source_sha256": "2a01fa53a5d6a1945d414152d823d5c7bcaeb91e4b25a46b8f8d9c905535749b",
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "normal_reference": "assets/sprites/character_variants/new/pakki/chr_pakki_normal.png",
+      "normal_sha256": "f26ee66371ce45599605b309074468dc18e20ff5c3a65e0b44f4a6175caeb17c",
+      "scale": 0.82569,
+      "offset": [
+        -2,
+        0
+      ],
+      "bbox_alpha32_normal": [
+        193,
+        240,
+        773,
+        1140
+      ],
+      "bbox_alpha32_result": [
+        191,
+        240,
+        775,
+        1140
+      ],
+      "runtime": "assets/sprites/character_variants/new/pakki/chr_pakki_excited.png",
+      "clipped": false
+    },
+    {
+      "character_id": "faris",
+      "expression": "smile",
+      "source": "asset_sources/portraits/faris-new-expressions-20261111/smile-untouched.png",
+      "source_sha256": "f5a3beaddebd61b97056cb7f19ea9185468072c09f68bb630d2c48be57bf4606",
+      "source_pixels": [
+        1054,
+        1492
+      ],
+      "normal_reference": "assets/sprites/character_variants/new/faris/chr_faris_normal.png",
+      "normal_sha256": "a4c150ba92b36894f586033b0836a1a15463bcba906d42caff45fd0ac4bdb357",
+      "scale": 0.75843,
+      "offset": [
+        29,
+        31
+      ],
+      "bbox_alpha32_normal": [
+        234,
+        60,
+        585,
+        1140
+      ],
+      "bbox_alpha32_result": [
+        230,
+        60,
+        588,
+        1140
+      ],
+      "runtime": "assets/sprites/character_variants/new/faris/chr_faris_smile.png",
+      "clipped": false
+    },
+    {
+      "character_id": "faris",
+      "expression": "excited",
+      "source": "asset_sources/portraits/faris-new-expressions-20261111/excited-untouched.png",
+      "source_sha256": "3269aa6669db9675823bda6967a5a5909df16602f8b5e0d56a1c5c669fb216aa",
+      "source_pixels": [
+        1054,
+        1492
+      ],
+      "normal_reference": "assets/sprites/character_variants/new/faris/chr_faris_normal.png",
+      "normal_sha256": "a4c150ba92b36894f586033b0836a1a15463bcba906d42caff45fd0ac4bdb357",
+      "scale": 0.75314,
+      "offset": [
+        47,
+        47
+      ],
+      "bbox_alpha32_normal": [
+        234,
+        60,
+        585,
+        1140
+      ],
+      "bbox_alpha32_result": [
+        271,
+        59,
+        597,
+        1140
+      ],
+      "runtime": "assets/sprites/character_variants/new/faris/chr_faris_excited.png",
+      "clipped": false
+    },
+    {
+      "character_id": "faris",
+      "expression": "wink",
+      "source": "asset_sources/portraits/faris-new-expressions-20261111/wink-untouched.png",
+      "source_sha256": "bd2b5a4c1a15ce940f92e3ffb64a24a646eba481b5a8a823fe03dc52b4fd3468",
+      "source_pixels": [
+        1054,
+        1492
+      ],
+      "normal_reference": "assets/sprites/character_variants/new/faris/chr_faris_normal.png",
+      "normal_sha256": "a4c150ba92b36894f586033b0836a1a15463bcba906d42caff45fd0ac4bdb357",
+      "scale": 0.75366,
+      "offset": [
+        37,
+        41
+      ],
+      "bbox_alpha32_normal": [
+        234,
+        60,
+        585,
+        1140
+      ],
+      "bbox_alpha32_result": [
+        249,
+        61,
+        595,
+        1140
+      ],
+      "runtime": "assets/sprites/character_variants/new/faris/chr_faris_wink.png",
+      "clipped": false
+    },
+    {
+      "character_id": "faris",
+      "expression": "surprise",
+      "source": "asset_sources/portraits/faris-new-expressions-20261111/surprise-untouched.png",
+      "source_sha256": "da4dc282969625ad51e5d8ee393af6d2fb7e0b53c6509977c461dbfd511ac395",
+      "source_pixels": [
+        1054,
+        1492
+      ],
+      "normal_reference": "assets/sprites/character_variants/new/faris/chr_faris_normal.png",
+      "normal_sha256": "a4c150ba92b36894f586033b0836a1a15463bcba906d42caff45fd0ac4bdb357",
+      "scale": 0.76814,
+      "offset": [
+        26,
+        33
+      ],
+      "bbox_alpha32_normal": [
+        234,
+        60,
+        585,
+        1140
+      ],
+      "bbox_alpha32_result": [
+        226,
+        61,
+        586,
+        1140
+      ],
+      "runtime": "assets/sprites/character_variants/new/faris/chr_faris_surprise.png",
+      "clipped": false
+    },
+    {
+      "character_id": "khalil",
+      "expression": "smile",
+      "source": "asset_sources/portraits/khalil-new-expressions-20261111/smile-untouched.png",
+      "source_sha256": "adf2635cbdaa18df3791945a7b463520fca894f9d38f6cf5ed16aa876ae20220",
+      "source_pixels": [
+        1054,
+        1492
+      ],
+      "normal_reference": "assets/sprites/character_variants/new/khalil/chr_khalil_normal.png",
+      "normal_sha256": "ab4d302cc64f198d7fd2902dcc18c9eae5391f3274cb93f472394cf4dd51f2c5",
+      "scale": 0.7781,
+      "offset": [
+        35,
+        14
+      ],
+      "bbox_alpha32_normal": [
+        238,
+        60,
+        662,
+        1140
+      ],
+      "bbox_alpha32_result": [
+        237,
+        59,
+        666,
+        1140
+      ],
+      "runtime": "assets/sprites/character_variants/new/khalil/chr_khalil_smile.png",
+      "clipped": false
+    }
+  ]
+}

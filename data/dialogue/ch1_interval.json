@@ -32,7 +32,7 @@
           "type": "condition",
           "condition_type": "flag",
           "flag": "_shuraba_ch1",
-          "next_true": "mw_shuraba_rin"
+          "next_true": "mw_shuraba_rio"
         },
         {
           "speaker": "hajime",
@@ -51,12 +51,12 @@
         }
       ],
       "branches": {
-        "mw_shuraba_rin": [
+        "mw_shuraba_rio": [
           {
             "type": "condition",
             "condition_type": "lover",
-            "char_id": "rin",
-            "next_true": "mw_shuraba_rin_lover"
+            "char_id": "rio",
+            "next_true": "mw_shuraba_rio_lover"
           },
           {
             "type": "condition",
@@ -65,19 +65,19 @@
             "next_true": "mw_shuraba_hiyori_lover"
           }
         ],
-        "mw_shuraba_rin_lover": [
+        "mw_shuraba_rio_lover": [
           {
             "speaker": "",
             "face": "",
-            "text": "その下に、凛さんからも一件。夜のうちに届いていたらしい。"
+            "text": "その下に、凛想さんからも一件。夜のうちに届いていたらしい。"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "smile",
             "text": "優勝おめでとう、モルモットくん。データは、ちゃんと取らせてもらったよ"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
             "text": "朝の件は、まだ保留。……結果は出たから、次は君の検証の番だね"
           },
@@ -213,11 +213,6 @@
         {
           "speaker": "",
           "face": "",
-          "text": "……何か、大きなことが動いている気がする。"
-        },
-        {
-          "speaker": "",
-          "face": "",
           "text": "……【洞察】が少し上がった。"
         }
       ],
@@ -331,11 +326,6 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんの目が、少しだけ柔らかくなった気がした。県大会。会場エリア。"
-        },
-        {
-          "speaker": "",
-          "face": "",
           "text": "次の戦いが、もう始まっている。"
         },
         {
@@ -371,11 +361,6 @@
           "text": "この町で学んだこと。スミさんに教わったこと。ライバルたちと競い合ったこと。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "バイトで磨いた接客。練習で染み込ませた技術。全部が、次のステージへの糧になる。"
-        },
-        {
           "speaker": "hajime",
           "face": "normal",
           "text": "……よし。行くか"
@@ -384,6 +369,13 @@
           "speaker": "",
           "face": "",
           "text": "店の電気を消して、夜の街に出た。駅の方から、遅い電車の音がぼんやりと聞こえた気がした。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_stk_title_customer_met",
+          "next_true": "",
+          "next_false": "eve_title_customer"
         }
       ],
       "branches": {
@@ -391,7 +383,37 @@
           {
             "speaker": "",
             "face": "",
-            "text": "この数日で、tonariに「配信で見ました」という新規のお客さんが２人来た。"
+            "text": "この数日で、tonariに「配信で見ました」という新規のお客さんが2人来た。"
+          }
+        ],
+        "eve_title_customer": [
+          {
+            "type": "bg",
+            "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "翌日。初めて見る客が、奥の席に座った。いつもは鉄仮面さんが座る席だ。"
+          },
+          {
+            "speaker": "customer",
+            "face": "normal",
+            "text": "ここ、優勝した人の店だよね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "はい、……俺です"
+          },
+          {
+            "speaker": "customer",
+            "face": "normal",
+            "text": "じゃあ、メニューはいいや。優勝の一台を"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_stk_title_customer_met"
           }
         ]
       }

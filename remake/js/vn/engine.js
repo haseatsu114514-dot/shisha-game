@@ -4,10 +4,12 @@ import { awardLoverSceneExp } from "../core/lover-rewards.js";
 import { growthChoiceIndex } from "../core/growth-effects.js";
 import { tournamentFinished } from "../core/story-context.js";
 import { basicsExperienced } from "../craft/practice-history.js";
+import { romanceIntent, createRomanceHesitation } from "../core/romance-hesitation.js";
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
 import { createNameFit } from "./name-fit.js";
+import { conversationCutinCue, conversationCutinAllowed, createConversationCutin } from "./conversation-cutin.js";
 import { uiThemeFrame } from "../core/ui-theme.js";
 import { fortuneChoiceIndex } from "../core/fortune-effects.js";
 import { el, sleep, fitOneLine, nextFrame } from "../core/util.js";
@@ -16,23 +18,28 @@ import { loadVnFonts } from "../core/vn-fonts.js";
 import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
 import { applyStats, gainAffinity, addMoney, affinityLevel, earnSceneCompletion } from "../core/stats.js";
 import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady } from "../core/ui.js";
-import { SE, playSe, playBgm, currentBgm } from "../core/audio.js";
-import { formatHtml, sliceHtml, visibleLength, stripTags } from "./text.js";
+import { SE, playSe, playBgm, preloadBgm, currentBgm, duckBgm } from "../core/audio.js";
+import { formatHtml, sliceHtml, visibleLength, stripTags, pausePoints } from "./text.js";
 import { playerInner } from "./inner.js";
 import { dialoguePages } from "./layout.js";
 import { glossaryPanel } from "./glossary.js";
 import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
 import { needsIntro, playIntro, markIntroSeen, introSeenKey } from "./intro.js";
 import { buyKeepsake } from "../core/keepsakes.js";
-import { chekiShot, tarotFlip, limeExchange, purikuraShot } from "../core/scene-motions.js";
+import { chekiShot, tarotFlip, limeExchange, purikuraShot, sceneMoment, gazeCutin } from "../core/scene-motions.js";
 import { showShishaDiagram, hideShishaDiagram } from "./shisha-diagram.js";
 import { reducedMotion } from "../core/transition-kit.js";
+import { attachLoadingComic } from "../core/loading-comic-notice.js";
+import { vnBreath } from "./breath.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man", "traveler"]);
-// 立ち絵の枠（ステージ高さに対する本体の高さ・足元の沈み込み）
+// 主人公も台本が明示した立ち絵だけは出す。通常の発話では一人称視点を保つ。
+const canShowPortrait = (speaker, explicit = false) => !NO_PORTRAIT.has(speaker || "") || (speaker === "hajime" && (explicit || running?.previewProtagonist));
+// 会話の寄り。1280×720の参考プレビュー（本体約1085px、頭頂y52px）を
+// 新版つむぎの身長倍率0.9で再現する。画像の余白・個々の身長は frame() で保つ。
 // てつこ（猫）は人と同じ高さに引き伸ばさず、会話の枠の上に座っている大きさで出す（catLift＝下から持ち上げる割合）
-const FRAMING = { target: 1.36, sink: 0.4, pakkiTarget: 0.94, pakkiSink: 0.08, catTarget: 0.34, catLift: 0.3 };
+const FRAMING = { target: 1.675, sink: 0.58, pakkiTarget: 0.94, pakkiSink: 0.08, catTarget: 0.34, catLift: 0.3 };
 
 /** 章の台本側が差し込むフック（特定の会話の選択肢で状態を変える等） */
 export const hooks = {
@@ -60,6 +67,7 @@ function warnVn(kind, detail) {
 const log = [];
 let dom = null;
 let nameFit = null;
+let cutin = null; // 会話カットイン（立ち絵版・#2990）
 let settingsReady = null;
 let openVnConfig = null;
 let running = null;     // 再生中の会話の状態
@@ -67,6 +75,7 @@ let autoMode = false;
 let skipMode = false;
 let autoFxGap = 0;
 let sequenceDepth = 0;
+let sequenceMetBefore = null;
 const SEEN_LINES_KEY = "suien_remake_seen_dialogue_lines";
 let seenLines;
 function readSeenLines() {
@@ -94,9 +103,10 @@ function insertBranch(r, key) {
 
 /** 一続きの会話（バイト開始→接客→終了）の間だけSKIPを維持。選択肢は自分で選び、行動の終わりに解除する。 */
 export async function dialogueSequence(run) {
+  if (!sequenceDepth) sequenceMetBefore = { owner: state, met: affinityMetBefore() };
   sequenceDepth++;
   try { return await run(); }
-  finally { if (--sequenceDepth === 0) setSkip(false); }
+  finally { if (--sequenceDepth === 0) { sequenceMetBefore = null; setSkip(false); } }
 }
 
 export const vnTest = { turbo: false, choose: null }; // テスト用: 瞬時表示＋自動送り・選択肢の方針
@@ -110,6 +120,7 @@ function buildDom() {
     effect: el("div.vn-effect"),
     cg: el("div.vn-cg"),
     portraits: el("div.vn-portraits"),
+    cutin: el("div.vn-cutin-layer", { "aria-hidden": "true" }),
     name: el("div.vn-name"),
     text: el("div.vn-text", { "aria-live": "polite" }),
     inner: el("div.vn-inner", { hidden: true, "aria-live": "polite", "aria-label": "ひよりの本心（はじめには聞こえない）" }),
@@ -125,7 +136,8 @@ function buildDom() {
   dom.autoBtn.setAttribute("aria-pressed", "false");
   dom.skipBtn.setAttribute("aria-pressed", "false");
   dom.controls.append(dom.autoBtn, dom.skipBtn, ctl("LOG", openLog, "vn-log"), ctl("用語", openGlossary, "vn-glossary"), ctl("設定", openSettings, "vn-config"));
-  host.replaceChildren(dom.effect, dom.cg, dom.portraits, dom.box, dom.choices, dom.controls, dom.log);
+  host.replaceChildren(dom.effect, dom.cg, dom.portraits, dom.cutin, dom.box, dom.choices, dom.controls, dom.log);
+  cutin = createConversationCutin(dom.cutin);
   nameFit = createNameFit(dom.name);
   host.addEventListener("pointerup", (e) => {
     if (!running || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
@@ -142,14 +154,14 @@ function buildDom() {
     }
     if (e.key === "Control") { setSkip(true); return; }
     if (running.waitingChoice) {
-      const choices = [...dom.choices.querySelectorAll(".vn-choice:not(:disabled)")];
+      const choices = [...dom.choices.querySelectorAll('.vn-choice:not([aria-disabled="true"])')];
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         e.preventDefault();
         const current = choices.indexOf(document.activeElement);
         choices[(current + (e.key === "ArrowDown" ? 1 : choices.length - 1)) % choices.length]?.focus();
       } else if (/^[1-3]$/.test(e.key) && !e.repeat && !e.target?.closest?.("input, select, textarea, [contenteditable]")) {
         const choice = dom.choices.querySelectorAll(".vn-choice")[Number(e.key) - 1];
-        if (choice && !choice.disabled) { e.preventDefault(); choice.click(); }
+        if (choice && choice.getAttribute("aria-disabled") !== "true") { e.preventDefault(); choice.click(); }
       } else if (e.key === "Enter" && !e.target?.closest?.("button, a[href], input, select, textarea, [contenteditable]")) {
         e.preventDefault(); (choices.includes(document.activeElement) ? document.activeElement : choices[0])?.click();
       }
@@ -165,6 +177,19 @@ function buildDom() {
   window.addEventListener("keyup", (e) => { if (e.key === "Control") setSkip(false); });
 }
 
+/**
+ * 左右の余白の「次へ」（core/side-area.js・YHK）。会話の面を押した時と同じ送りをする。送れたら true。
+ * 面を押せない間（用語・設定などのモーダル、LOG、会話を開いた直後の誤送り防止の間）は何もしない。
+ */
+export function tapAdvance() {
+  if (!running || !dom || !layers.vn.classList.contains("active")) return false;
+  if (layers.modal.classList.contains("show") || dom.log.classList.contains("show")) return false;
+  if (performance.now() < running.openLockUntil) return false;
+  if (autoMode || skipMode) { setAuto(false); setSkip(false); }
+  advance();
+  return true;
+}
+
 function setAuto(v) {
   if (v) setSkip(false);
   autoMode = v;
@@ -176,7 +201,7 @@ function setAuto(v) {
 function setSkip(v) {
   if (v && running?.cancelOnSkip) return finish(true);
   if (v && config.skipSeenOnly && running?.activeSeenKey && !readSeenLines().has(running.activeSeenKey)) return;
-  if (v) setAuto(false);
+  if (v) { cutin?.clear(); setAuto(false); }
   skipMode = v;
   document.body.classList.toggle("vn-skip", v);
   dom?.skipBtn.classList.toggle("on", v);
@@ -212,14 +237,15 @@ function kickAuto() {
 
 /** 同じ背景へ続く会話でも、長い素材待ちには案内を出す。既存のreadyガードで操作を保護する。 */
 function waitSceneAssets(task, owner = running, assets = task.assetsReady || task) {
-  let notice = null;
+  let notice = null, hideComic;
   const timer = setTimeout(() => {
     if (running !== owner) return;
     notice = el("div.vn-loading", { role: "status", "aria-live": "polite",
       text: "場面を準備しています…", dataset: { test: "vn-loading" } });
     layers.fx.append(notice);
+    if (typeof attachLoadingComic === "function") hideComic = attachLoadingComic(notice);
   }, 500);
-  const loaded = Promise.resolve(assets).finally(() => { clearTimeout(timer); notice?.remove(); });
+  const loaded = Promise.resolve(assets).finally(() => { clearTimeout(timer); hideComic?.(); notice?.remove(); });
   // 場面転換の演出は最後まで待つが、取得・デコード済みなら読み込み表示を延長しない。
   return Promise.all([task, loaded]).then(([value]) => value);
 }
@@ -233,8 +259,18 @@ function waitSceneAssets(task, owner = running, assets = task.assetsReady || tas
  * @param opts.fromLine 主列の開始位置（含む）。既読キーは元の行位置を保つ
  * @param opts.toLine 主列の終了位置（含まない）。分岐は通常どおり再生する
  * @param opts.growthScene 自分で選んだ固有場面。全編の正常完読を自由行動の経験値候補にする
+ * @param opts.previewProtagonist 比較プレビューでだけ主人公の立ち絵も表示する（本編は非表示）
  * 範囲指定でも各playの終了時に台本の報酬を処理する。報酬つき台本を分割する用途には使わない。
  */
+function affinityMetBefore(known = [], before = state?.met) {
+  const met = { ...before };
+  // タイトル画面の検査・プレビューなどセーブの無い再生では保留も無い
+  const flags = state?.flags || {};
+  for (const key of Object.keys(flags)) if (key.startsWith("_affinity_first_meeting_pending_") && flags[key]) delete met[key.slice("_affinity_first_meeting_pending_".length)];
+  for (const id of known) met[id] = true;
+  return met;
+}
+
 export function play(idOrDlg, opts = {}) {
   if (!dom) buildDom();
   const dlg = typeof idOrDlg === "string" ? DB.dialogues[idOrDlg] : idOrDlg;
@@ -244,10 +280,19 @@ export function play(idOrDlg, opts = {}) {
     return Promise.resolve();
   }
   if (!(dlg.lines || []).length) warnVn("dialogue-empty", dlg.dialogue_id || "");
+  // 章側が保証する既知の相手。表示・台詞の分岐を変えず、面識欠損の修復を初対面報酬へ混ぜない。
+  const affinityKnown = new Set(opts.affinityKnown || []);
+  if (state) for (const id of affinityKnown) delete state.flags[`_affinity_first_meeting_pending_${id}`];
   return new Promise((resolve) => {
     layers.fx.querySelector(".vn-loading")?.remove();
     running = {
       owner: state,
+      romanceWarningGuilt: opts.romanceWarningGuilt === true, // 夜の告白の旧警告goと同じ罪悪感。承認読了後だけ
+      metAtStart: { ...state?.met },
+      encountered: new Set(),
+      affinityKnown,
+      metBefore: affinityMetBefore(affinityKnown, sequenceMetBefore?.owner === state ? sequenceMetBefore.met : state?.met),
+      firstAffinity: new Set(),
       id: dlg.dialogue_id || "", // 開始台本。finish() の報酬と play() の解決値はこの台本に属する（仕様・#1362）
       currentId: dlg.dialogue_id || "", // 表示中の台本。jumpTo で jump 先へ進む
       dlg,
@@ -256,6 +301,8 @@ export function play(idOrDlg, opts = {}) {
       branches: dlg.branches || {},
       resolve,
       cancelOnSkip: !!opts.cancelOnSkip,
+      cast: Array.isArray(opts.cast) ? opts.cast : null, // motion "gaze" に出す人（その場にいる恋人）
+      previewProtagonist: opts.previewProtagonist === true,
       waitingChoice: false,
       typing: false,
       pages: null,
@@ -274,6 +321,7 @@ export function play(idOrDlg, opts = {}) {
       spoken: new Set(),
     };
     autoFxGap = 0;
+    cutin?.clear();
     dom.portraits.replaceChildren();
     dom.choices.replaceChildren();
     dom.text.innerHTML = "";
@@ -289,7 +337,10 @@ export function play(idOrDlg, opts = {}) {
     const portraitsReady = firstPortraits(dlg);
     const bgReady = bg ? sceneSetBg(bg, portraitsReady) : Promise.resolve();
     dom.effect.dataset.effect = meta.effect || "";
-    sceneBgm(meta);
+    // #2447 item10: metadata.lift_scene_props の場面だけ、背景の台（卓上・床）を本文ボックスの
+    // 上辺まで持ち上げて、下半分が会話ウィンドウに隠れないようにする。既定の家の場面には付けない。
+    document.body.classList.toggle("vn-lift-props", !!meta.lift_scene_props);
+    const bgmReady = preloadBgm(meta.bgm || currentBgm());
     if (hooks.onEnter) hooks.onEnter(dlg.dialogue_id || "", dlg);
     dropRetired(); // 選び終えた前の画面（マップ等）を会話の後ろに残さない
     // 会話の間は、まだ片付いていない画面（大会の作業台・結果表など）も後ろに見せない（会話が終われば戻る）
@@ -306,9 +357,10 @@ export function play(idOrDlg, opts = {}) {
     // 画像の待ち時間は場面転換の幕で覆う。短い固定待ちで読み込みを打ち切らない。
     // 最初の行を出す前に名前欄と本文の明朝を待つ。失敗時は代替書体で続ける。
     const fontsReady = loadVnFonts().catch(() => []);
-    const assetsReady = Promise.all([settingsReady, fontsReady, bgReady.assetsReady || bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]);
+    const assetsReady = Promise.all([settingsReady, fontsReady, bgReady.assetsReady || bgReady, bgmReady, ...portraitsReady.map((u) => imageReady(u, 15000))]);
     waitSceneAssets(bgReady, me, assetsReady).then(() => {
       if (running !== me) return;
+      sceneBgm(meta);
       me.ready = true;
       layers.vn.classList.add("active");
       document.body.classList.add("in-vn");
@@ -349,7 +401,7 @@ function lineDisplayName(line, r) {
 /** 実際にこの行に出す立ち絵。無言の同席者と話者が別なら両方待つ。 */
 function linePortraits(line) {
   return [...new Set([
-    line.portrait !== false && !NO_PORTRAIT.has(line.speaker || "") ? portraitInfo(line.speaker, line.face)?.src : null,
+    line.portrait !== false && canShowPortrait(line.speaker) ? portraitInfo(line.speaker, line.face)?.src : null,
     line.portrait ? portraitInfo(line.portrait, line.portrait_face || "normal")?.src : null,
   ].filter(Boolean))];
 }
@@ -376,7 +428,7 @@ function prefetch(dlg) {
   const collect = (lines) => {
     for (const l of lines || []) {
       const character = l.portrait === false ? null : l.portrait || l.speaker;
-      if (character && !NO_PORTRAIT.has(character)) {
+      if (character && canShowPortrait(character, !!l.portrait)) {
         const p = portraitInfo(character, l.portrait_face || l.face);
         if (p) urls.add(p.src);
       }
@@ -390,6 +442,29 @@ function prefetch(dlg) {
 
 // 仕様（#1362）: 報酬（metadata / growth_stats）と解決値の id は開始台本（running.id / running.dlg）に属し、
 // jump 先の台本へは差し替えない。表示中の台本 ID は running.currentId が持つ。
+function dialogueAffinity(r, id, pts, remote = (r.currentId && r.currentId !== r.id ? DB.dialogues[r.currentId] : r.dlg)?.metadata?.contact_channel === "lime") {
+  if (!id || !(pts > 0)) return;
+  // 強制イベント（前夜祭など）では好感度を上げない（2026-11-06 オーナー決定）。
+  if (r.dlg?.metadata?.forced_event) return;
+  if (remote) { gainAffinity(id, pts, { remote: true }); return; }
+  // 初対面の行・選択肢の報酬は読了まで保留。中断では♥1の保証も確定しない。
+  if (!r.metBefore[id] && !(state.lovers || []).includes(id)) { r.firstAffinity.add(id); return; }
+  gainAffinity(id, pts);
+}
+
+function completeDialogueAffinity(r) {
+  if (!state || state !== r.owner) return;
+  const meta = r.dlg.metadata || {};
+  // 強制イベントでの出会いは、初対面の♥1も付けない。面識の保留はそのまま残し、次の通常の出会いで♥1にする。
+  if (meta.forced_event) { r.firstAffinity.clear(); return; }
+  if (meta.add_affinity) for (const [id, n] of Object.entries(meta.add_affinity)) dialogueAffinity(r, id, n * 6, meta.contact_channel === "lime");
+  if (meta.contact_channel !== "lime") {
+    for (const id of Object.keys(state.met || {})) if (state.met[id] && !r.metBefore[id] && id !== "hajime"
+      && (!r.metAtStart[id] || r.encountered.has(id))) r.firstAffinity.add(id);
+    for (const id of r.firstAffinity) gainAffinity(id, 1, { firstMeeting: true });
+  }
+}
+
 function finish(cancelled = false) {
   const r = running;
   running = null;
@@ -399,19 +474,21 @@ function finish(cancelled = false) {
   const meta = r.dlg.metadata || {};
   // metadata / growth_stats の報酬（会話の最後にまとめて付く）
   if (!cancelled && meta.add_stat) applyStats(meta.add_stat);
-  if (!cancelled && meta.add_affinity) for (const [id, n] of Object.entries(meta.add_affinity)) gainAffinity(id, n * 6);
+  if (!cancelled) completeDialogueAffinity(r);
   if (!cancelled && r.dlg.growth_stats) applyStats(r.dlg.growth_stats);
   if (!cancelled && meta.flavor_lesson) notifyMastery(learnFlavorStory(state, r.dlg, DB.flavorById));
   if (!cancelled) awardLoverSceneExp(r.id, r.owner);
   if (!cancelled && r.growthScene) earnSceneCompletion(r.id, r.owner);
   layers.vn.classList.remove("active");
-  document.body.classList.remove("in-vn", "vn-open");
+  document.body.classList.remove("in-vn", "vn-open", "vn-lift-props");
   dom.cg.classList.remove("show");
   dom.portraits.replaceChildren();
+  cutin?.clear();
   hideShishaDiagram(); // 会話終了（SKIP/キャンセル含む）で図解を片付ける（#1128）
   dom.effect.dataset.effect = "";
   layers.vn.classList.remove("sepia", "flashback");
   if (!sequenceDepth) setSkip(false);
+  releaseDuck(r);
   if (r.bgmSwitched) playBgm(r.bgmBefore);
   r.resolve({ id: r.id, visited: r.visited, ...(cancelled ? { cancelled: true } : {}) });
 }
@@ -430,8 +507,12 @@ function advance() {
 function next() {
   const r = running;
   if (!r) return;
+  if (r.hesitation && !r.hesitation.model.current(state)) return finish(true);
   if (!skipMode && !vnTest.turbo) markSeenLine(r.activeSeenKey);
   r.activeSeenKey = null;
+  cutin?.leave({ still: reducedMotion() });
+  // BGMの息継ぎは、その行を読み終えて次へ進むところで戻す。すぐ次の台詞行も duck なら下げたまま渡す（戻して下げ直すと音量が波打つ）。
+  if (!r.queue[0]?.duck || r.queue[0].type) releaseDuck(r);
   // 読み終えた行の合図を、次の行の画像待ち・制御行へ持ち越さない。
   dom.next.classList.remove("show");
   r.pages = null;
@@ -440,8 +521,13 @@ function next() {
     const line = r.queue.shift();
     if (line === undefined) return introThenShow();
     const type = line.type || "";
+    if (type === "romance_hesitation") { resumeRomanceHesitation(line.action); return; }
+    if (type === "romance_memory") {
+      dom.portraits.replaceChildren(); r.slots = {};
+      continue;
+    }
     if (!type) return introThenShow(line);
-    if (type === "choice") return showChoices(line);
+    if (type === "choice") return introThenShow(line, showChoices);
     if (type === "game_over") return finish();
     if (type === "condition") { if (handleCondition(line)) return; continue; }
     if (type === "jump") { if (!line.next_id) warnVn("jump-missing-next-id", r.currentId || r.id); else if (jumpTo(line.next_id)) return; continue; }
@@ -451,7 +537,7 @@ function next() {
       state.flags[line.flag] = true;
       const m = /^_met_(.+)$/.exec(line.flag || "");
       if (m) {
-        markMet(m[1]);
+        markMet(m[1], { known: r.affinityKnown.has(m[1]) });
         if (needsIntro(m[1])) queueIntro({ id: m[1] });
       }
       if (contact && !alreadyConnected && !vnTest.turbo) {
@@ -474,7 +560,11 @@ function next() {
     // 一度きりのモーショングラフィックス（core/scene-motions.js）。終わるまで次の行へ進まない
     if (type === "motion") {
       if (vnTest.turbo) continue;
-      const run = { tarot: () => tarotFlip(), lime: () => limeExchange(line.char_id, line.context), purikura: () => purikuraShot() }[line.id];
+      const run = { tarot: () => tarotFlip(), lime: () => limeExchange(line.char_id, line.context), purikura: () => purikuraShot(),
+        dragon: () => sceneMoment("dragonSmoke"), // dragon: 第4章 前夜祭の龍の煙（#2688 A5）
+        // gaze: 修羅場で恋人たちの視線が刺さる。その場にいる恋人は呼び出し側が play の cast で渡す（無ければ会ったことのある恋人全員）。
+        // "brief": true はプチ修羅場の短い版
+        gaze: () => gazeCutin(r.cast || (state.lovers || []).filter((id) => state.met?.[id]), { brief: line.brief === true }) }[line.id];
       if (!run) continue;
       if (line.id === "lime") {
         const key = `_lime_exchange_shown_${line.char_id}_${line.context || "work"}`;
@@ -528,6 +618,15 @@ function next() {
       return;
     }
     if (type === "sfx") { playSe(line.id); continue; }
+    // 一服の「間」（KMR11）: 口元から煙を吐き、煙が顔の前に広がるまで短く待ってから次の行へ（晴れると表情が変わっている）。
+    // 早送り中は煙も間も出さない
+    if (type === "fx" && line.id === "exhale") {
+      const hold = skipMode || vnTest.turbo ? 0 : vnBreath(line, { host: layers.vn, portraits: dom.portraits });
+      if (!hold) continue;
+      r.ready = false;
+      sleep(hold).then(() => { if (running === r) { r.ready = true; next(); } });
+      return;
+    }
     if (type === "fx") { runFx(line); continue; }
     // 未知の行タイプは黙って飛ばす（データ先行で書けるように）
   }
@@ -546,13 +645,13 @@ function jumpTo(id) {
     running.slots = {};
   }
   running.visited.push(id);
-  sceneBgm(target.metadata);
+  const bgmReady = target.metadata?.bgm ? preloadBgm(target.metadata.bgm) : Promise.resolve();
   if (hooks.onEnter) hooks.onEnter(id, target);
   prefetch(target);
-  if (target.metadata?.bg) {
+  if (target.metadata?.bg || target.metadata?.bgm) {
     const r = running;
     r.ready = false;
-    waitSceneAssets(sceneSetBg(target.metadata.bg, firstPortraits(target)), r).then(() => { if (running === r) { r.ready = true; next(); } });
+    waitSceneAssets(Promise.all([sceneSetBg(target.metadata.bg, firstPortraits(target)), bgmReady]), r).then(() => { if (running === r) { sceneBgm(target.metadata); r.ready = true; next(); } });
     return true;
   }
   return false;
@@ -576,6 +675,12 @@ function handleCondition(line) {
     ok = (Number(state.flags[line.flag]) || 0) >= Number(line.threshold === 0 ? 0 : (line.threshold || 1)); // 数値0だけ既定1に化かさない（文字列 "0" と結果をそろえる。#1362）
   } else if (kind === "met") {
     ok = !!state.met[line.char_id];
+  } else if (kind === "contact") {
+    // 連絡先を交換済みか。spots.js の hasContact と同じ判定を、保存値を書き換えずに読むだけ（旧セーブ互換）。
+    // threshold は LIME_EXCHANGE と同じ「固有会話の消化数」。
+    const id = line.char_id;
+    ok = (state.contacts || []).includes(id) || !!state.flags[`_lime_contact_${id}`]
+      || (!!line.threshold && (state.story?.[id] || 0) >= Number(line.threshold));
   } else if (kind === "affinity") {
     ok = affinityLevel(line.char_id) >= Number(line.threshold || 0);
   } else {
@@ -593,7 +698,7 @@ function handleCondition(line) {
 function applyLine(line) {
   if (line.stats) applyStats(line.stats);
   if (line.money) addMoney(line.money);
-  if (line.affinity) for (const [id, n] of Object.entries(line.affinity)) gainAffinity(id, n * 6);
+  if (line.affinity) for (const [id, n] of Object.entries(line.affinity)) dialogueAffinity(running, id, n * 6);
 }
 
 function onNote(line) {
@@ -603,10 +708,13 @@ function onNote(line) {
 
 function runFx(line) {
   const id = line.id;
+  // 早送りでは一瞬の装飾を積まない。セピア等の場面状態と解除は通常どおり適用する。
+  if ((skipMode || vnTest.turbo) && ["shake", "flash", "imp", "gold", "cutin", "scent"].includes(id)) return;
   autoFxGap = 6;
   if (id === "shake") { shake(); SE.hit(); }
   else if (id === "flash" || id === "imp") flash(id === "imp" ? "gold" : "white");
-  else if (id === "cutin") { flash("gold"); SE.just(); }
+  // 金の閃光＋決めの音。旧名 cutin は登場カットインと紛らわしいので gold に改めた（#2688 F8。古い台本の cutin も同じ動き）
+  else if (id === "gold" || id === "cutin") { flash("gold"); SE.just(); }
   else if (id === "sepia") layers.vn.classList.add("sepia");
   else if (id === "sepia_off") layers.vn.classList.remove("sepia");
   else if (id === "flashback") layers.vn.classList.add("flashback");
@@ -665,21 +773,23 @@ function queueIntro(cue) {
 }
 
 // 読み進めた時点で、本人の立ち絵と発話を見た紹介だけを出す。
-function introThenShow(line) {
+function introThenShow(line, show = showLine) {
   const r = running;
+  // 回想は面識・紹介・相手の発話を発生させない。
+  if (line?._romanceTransient) return show(line);
   const due = r.pendingIntros.filter(({ id, variant }) => r.spoken.has(id) && !state.flags[introSeenKey(id, variant || "")]);
   r.pendingIntros = r.pendingIntros.filter((cue) => !due.includes(cue));
-  if (!due.length) return line ? showLine(line) : finish();
+  if (!due.length) return line ? show(line) : finish();
   if (vnTest.turbo) {
     due.forEach(({ id, variant }) => markIntroSeen(id, variant || ""));
-    return line ? showLine(line) : finish();
+    return line ? show(line) : finish();
   }
   r.ready = false;
   (async () => {
     for (const { id, variant, override } of due) await playIntro(id, { variant, override, onAppear: () => speakerBgm(id) });
     if (running !== r) return;
     r.ready = true;
-    if (line) showLine(line); else finish();
+    if (line) show(line); else finish();
   })();
 }
 
@@ -689,6 +799,9 @@ async function showLine(line) {
   r.ready = false;
   clearTimeout(autoTimer);
   const images = linePortraits(line);
+  const cutinCue = line._romanceTransient || skipMode || vnTest.turbo ? null : conversationCutinCue(r.currentId || r.id, line);
+  const cutinSrc = cutinCue ? portraitInfo("hajime", cutinCue.face, "new")?.src : null;
+  if (cutinSrc) images.push(cutinSrc);
   // 選択したUIの書体で折り返す。初回だけ代替フォントでページを決めない。
   const fontReady = Promise.all([dom.text, dom.name].map(node => {
     const type = getComputedStyle(node);
@@ -699,24 +812,31 @@ async function showLine(line) {
   const frameReady = imageReady(uiThemeFrame(document.documentElement.dataset.uiTheme), 15000, { keep:true });
   await waitSceneAssets(Promise.all([fontReady, frameReady, ...images.map((url) => imageReady(url, 15000))]), r);
   if (running !== r) return;
-  if (hooks.onLine) hooks.onLine(r.currentId || r.id, line);
+  if (line._romanceTransient && !r.hesitation?.model.current(state)) return finish(true);
+  if (!line._romanceTransient && hooks.onLine) hooks.onLine(r.currentId || r.id, line);
   const speaker = String(line.speaker || "");
   const face = String(line.face || "");
   r.speaker = speaker;
+  const scene = r.currentId && r.currentId !== r.id ? DB.dialogues[r.currentId] : r.dlg;
+  if (speaker && speaker !== "hajime" && scene?.metadata?.contact_channel !== "lime") r.encountered.add(speaker);
   const name = lineDisplayName(line, r);
   // A line can retain its speaker/voice while using a dedicated cut instead of a portrait.
   const entrances = [updatePortraits(line.portrait === false ? "" : speaker, face)];
   // 無言の常連も会釈だけで場面に参加できる。名乗り・好感度の処理は発話と独立。
   if (line.portrait) {
-    entrances.push(updatePortraits(line.portrait, line.portrait_face || "normal"));
+    entrances.push(updatePortraits(line.portrait, line.portrait_face || "normal", true));
   }
   if (!vnTest.turbo) await Promise.all(entrances);
   if (running !== r) return;
   r.ready = true;
-  speakerBgm(speaker);
+  if (!line._romanceTransient) speakerBgm(speaker);
   // 行付き演出（"fx":"shake" 等）／自動の軽演出（驚き・叫び）
   if (line.fx) runFx({ id: line.fx });
   else autoFx(line);
+  // BGMの息継ぎ（#2828 採用29）: duck の行だけ今の曲を約 −6dB へ落とす。SKIP中・高速送りでは省く。
+  if (line.duck && !skipMode && !vnTest.turbo) { r.ducked = true; duckBgm(DUCK_LEVEL, DUCK_IN_MS); }
+  else releaseDuck(r);
+  r.beat = beatMs(line.beat);
   // シーシャの仕組み解説の図解（#1128）。段階は絶対指定なのでSKIP・連打・LOADでも重ならない。
   if (line.diagram) showShishaDiagram(line.diagram, { still: reducedMotion() || skipMode || vnTest.turbo });
   let text = String(line.text || "");
@@ -755,6 +875,8 @@ async function showLine(line) {
   }
   dom.box.classList.toggle("narration", !speaker);
   dom.box.classList.toggle("thought", speaker === "hajime" && /^（/.test(line.text || ""));
+  // 心の声の薄墨（#2828 採用7）: 「（」で始まる行は誰の行でも薄墨・少し小さく出し、文字送りの音を鳴らさない。
+  r.innerVoice = /^（/.test(stripTags(text));
   dom.box.classList.toggle("has-inner", !!inner);
   r.pages = dialoguePages(text, inner, dom.text, dom.inner);
   r.pageIdx = 0;
@@ -762,7 +884,28 @@ async function showLine(line) {
     r.spoken.add(speaker);
     if (needsIntro(speaker)) queueIntro({ id: speaker });
   }
+  if (line.intro_on_portrait && line.portrait && Object.hasOwn(r.slots, line.portrait)) {
+    markMet(line.portrait);
+    r.spoken.add(line.portrait);
+    if (needsIntro(line.portrait)) queueIntro({ id: line.portrait });
+  }
+  if (cutinSrc) showCutin(r, cutinCue, cutinSrc);
   renderPage();
+}
+
+/** 会話カットイン（#2990）。台本で決めた行だけ、出せる条件（1会話1回・相手の立ち絵の枚数）を満たす時に出す */
+function showCutin(r, cue, src) {
+  const shown = [...dom.portraits.querySelectorAll("img")];
+  const ok = conversationCutinAllowed(cue, {
+    shown: r.cutinShown, skip: skipMode, turbo: vnTest.turbo,
+    cg: dom.cg.classList.contains("show"), log: dom.log.classList.contains("show"), choices: !!r.waitingChoice,
+    intro: r.pendingIntros.some(({ id, variant }) => r.spoken.has(id) && !state.flags[introSeenKey(id, variant || "")]),
+    protagonistVisible: shown.some((img) => img.dataset.speaker === "hajime"),
+    portraits: shown.length, portraitSpeakers: shown.map((img) => img.dataset.speaker),
+  });
+  if (!ok) return;
+  r.cutinShown = true;
+  cutin?.show(cue, src, { still: reducedMotion() });
 }
 
 // 報酬キュー: 「……【技術】と【センス】が少し上がった。」の規定フレーズを読んで加算する
@@ -782,11 +925,12 @@ function parseCue(text) {
 function applyCue(gains) {
   for (const [ja, amt] of Object.entries(gains)) {
     if (CUE_STAT[ja]) applyStats({ [CUE_STAT[ja]]: amt });
-    else if (ja === "好感度" && hooks.contextChar) gainAffinity(hooks.contextChar, amt * 3);
+    else if (ja === "好感度" && hooks.contextChar) dialogueAffinity(running, hooks.contextChar, amt * 3);
   }
 }
 
 function autoFx(line) {
+  if (skipMode || vnTest.turbo) return;
   if (autoFxGap > 0) { autoFxGap--; return; }
   const t = String(line.text || "");
   let id = null;
@@ -798,15 +942,32 @@ function autoFx(line) {
   else shake(document.getElementById("stage"), 300);
 }
 
+// 会話演出（#2828。#2732 の選別で採用）。どれも台本の印がある行だけで動き、SKIP・高速送り・瞬間表示では省く。
+const PAUSE_MS = 400;                                  // [pause] で止まる長さ
+const DUCK_LEVEL = 0.5, DUCK_IN_MS = 150, DUCK_OUT_MS = 400; // duck: 約 −6dB へ0.15秒で落とし、0.4秒で戻す
+/** beat: true は0.5秒。数値（ms）は0.3〜0.8秒に収める */
+function beatMs(beat) {
+  if (beat === true) return 500;
+  const ms = Number(beat);
+  return Number.isFinite(ms) && ms > 0 ? Math.min(800, Math.max(300, ms)) : 0;
+}
+function releaseDuck(r) {
+  if (!r?.ducked) return;
+  r.ducked = false;
+  duckBgm(1, DUCK_OUT_MS);
+}
+
 function renderPage() {
   const r = running;
   const page = r.pages[r.pageIdx];
   const raw = page.text;
-  r.fullHtml = formatHtml(raw);
+  r.fullHtml = r.innerVoice ? `<span class="tx-voice">${formatHtml(raw)}</span>` : formatHtml(raw);
   r.fullInnerHtml = page.inner ? formatHtml(page.inner) : "";
   r.spokenLength = visibleLength(r.fullHtml);
   const total = r.spokenLength + visibleLength(r.fullInnerHtml);
   r.totalLength = total;
+  // 文中ポーズ（#2828 採用3）: [pause] の位置で文字送りを止める。続きのページは発言を出し終えた所から始まる。
+  r.pauses = page.continuation ? [] : pausePoints(raw).filter((at) => at > 0 && at < r.spokenLength);
   clearInterval(r.typeTimer);
   clearTimeout(r.typeTimer);
   dom.next.classList.remove("show");
@@ -819,8 +980,8 @@ function renderPage() {
     kickAuto();
     return;
   }
-  // 重要行（[imp]）は一拍の「溜め」を置いてから出す
-  const hold = raw.includes("[imp]") && r.pageIdx === 0 ? 380 : 0;
+  // 重要行（[imp]）は一拍の「溜め」を置いてから出す。beat の行（#2828 採用1）は台詞欄を空けたまま長めに溜める。
+  const hold = r.pageIdx === 0 ? Math.max(raw.includes("[imp]") ? 380 : 0, r.beat || 0) : 0;
   r.typing = true;
   r.shown = page.continuation ? r.spokenLength : 0;
   renderTyped(r.shown);
@@ -842,10 +1003,17 @@ function startTypingInterval(r = running) {
   const total = r.totalLength ?? (r.spokenLength + visibleLength(r.fullInnerHtml));
   const step = Math.max(1, Math.round(total / 90));
   r.typeTimer = setInterval(() => {
-    r.shown = (r.shown || 0) + step;
+    const from = r.shown || 0;
+    const pause = r.pauses?.find((at) => at > from && at <= from + step);
+    r.shown = pause ?? from + step;
     renderTyped(r.shown);
-    if (r.shown <= r.spokenLength && r.shown % 3 < step) SE.blip(r.speaker);
-    if (r.shown >= total) completeTyping();
+    if (r.shown <= r.spokenLength && r.shown % 3 < step && !r.innerVoice) SE.blip(r.speaker);
+    if (r.shown >= total) return completeTyping();
+    // ▼は出さずに一拍止まり、続きを送る。止まっている間のクリックは本文を最後まで出す（typing のまま）。
+    if (pause !== undefined) {
+      clearInterval(r.typeTimer);
+      r.typeTimer = setTimeout(() => startTypingInterval(r), PAUSE_MS);
+    }
   }, interval);
 }
 
@@ -872,10 +1040,10 @@ function completeTyping() {
 
 // ---------------------------------------------------------------- 立ち絵
 
-function updatePortraits(speaker, face) {
+function updatePortraits(speaker, face, explicit = false) {
   const r = running;
   let entrance = Promise.resolve();
-  const info = speaker && !NO_PORTRAIT.has(speaker) ? portraitInfo(speaker, face) : null;
+  const info = speaker && canShowPortrait(speaker, explicit) ? portraitInfo(speaker, face) : null;
   if (info) {
     let img = dom.portraits.querySelector(`img[data-speaker="${speaker}"]`);
     if (!img) {
@@ -888,16 +1056,18 @@ function updatePortraits(speaker, face) {
         dom.portraits.querySelector(`img[data-speaker="${oldest}"]`)?.remove();
       }
       r.slots[speaker] = slot;
-      img = el("img.portrait.enter", { alt: "", dataset: { speaker, slot: String(slot) }, draggable: "false" });
+      img = el(skipMode || vnTest.turbo ? "img.portrait" : "img.portrait.enter", { alt: "", dataset: { speaker, slot: String(slot) }, draggable: "false" });
       img.onerror = () => { img.remove(); delete r.slots[speaker]; layoutPortraits(); };
       dom.portraits.append(img);
-      entrance = (async () => {
+      // SKIP中は入場のためのフレーム待ちとアニメーションを作らず、名前・本文と一緒に出す。
+      if (!skipMode && !vnTest.turbo) entrance = (async () => {
         await nextFrame(); await nextFrame();
         if (running !== r || !img.isConnected) return;
         img.classList.remove("enter");
         await visualSettled(img);
       })();
     }
+    img.dataset.face = face || "normal";
     if (img.getAttribute("src") !== info.src) img.src = info.src;
     frame(img, info);
   }
@@ -912,7 +1082,7 @@ function frame(img, p) {
   const target = (cat ? FRAMING.catTarget : pakki ? FRAMING.pakkiTarget : FRAMING.target) * p.scale;
   const sink = cat ? -FRAMING.catLift : pakki ? FRAMING.pakkiSink : FRAMING.sink;
   const hPct = Math.min(target / p.h, 2.4) * 100;             // 画像の高さ（ステージ高さ比 %）
-  const contentTop = p.h * hPct - sink * 100;                // 本体上端（下からの %）
+  const contentTop = (p.h + (p.topOverhang || 0)) * hPct - sink * 100; // 小物も含む上端。人物の倍率は通常基準。
   const extra = Math.max(0, contentTop - 97);                // 頭が見切れないように沈める
   img.style.height = `${hPct}%`;
   img.style.bottom = `${-(p.b * hPct + sink * 100 + extra)}%`;
@@ -933,22 +1103,36 @@ function layoutPortraits() {
 function showChoices(line) {
   const r = running;
   r.waitingChoice = true;
+  r.choiceLine = line;
   // 実回答の記録はpickChoiceのフックへ。占いは対象/期限/台詞照合済みの2択だけ示す。
   const fortuneHint = fortuneChoiceIndex(state, r.id, line, DB.fortuneHints);
   const growthHint = growthChoiceIndex(state, r.currentId || r.id, line, DB.fortuneHints, r.growthScene);
-  const buttons = (line.choices || []).map((c, i) => el(`button.vn-choice${i === fortuneHint ? ".fortune-hint" : ""}${i === growthHint ? ".growth-hint" : ""}`, {
-    html: formatHtml(c.text || "……"),
-    "aria-label": i === fortuneHint ? `${c.text}（占いの予感）` : i === growthHint ? `${c.text}（会話の気配）` : null,
-    disabled: c.condition_type === "money" && state.money < Number(c.threshold || 0),
-    style: { animationDelay: `${i * 80}ms` },
-    dataset: { test: `choice-${i}` },
-    onclick: (e) => { e.stopPropagation(); pickChoice(line, c); },
-  }));
+  const reasons = [];
+  const buttons = (line.choices || []).map((c, i) => {
+    const shortfall = c.condition_type === "money" ? Number(c.threshold || 0) - state.money : 0;
+    const hint = i === fortuneHint ? "占いの予感" : i === growthHint ? "会話の気配" : null;
+    const reasonId = `vn-choice-money-reason-${i}`;
+    const button = el(`button.vn-choice${i === fortuneHint ? ".fortune-hint" : ""}${i === growthHint ? ".growth-hint" : ""}`, {
+      html: formatHtml(c.text || "……"),
+      "aria-label": shortfall > 0 ? `${c.text || "……"}${hint ? `（${hint}）` : ""}` : hint ? `${c.text}（${hint}）` : null,
+      "aria-describedby": shortfall > 0 ? reasonId : null,
+      "aria-disabled": shortfall > 0 ? "true" : null,
+      style: { animationDelay: `${i * 80}ms` },
+      dataset: { test: `choice-${i}` },
+      onclick: (e) => { e.stopPropagation(); if (shortfall <= 0) pickChoice(line, c); },
+    });
+    reasons.push(shortfall > 0 ? el("span.vn-choice-reason", { id: reasonId, text: `所持金不足（あと${shortfall.toLocaleString("ja-JP")}円）` }) : null);
+    return button;
+  });
   dom.choices.replaceChildren(...buttons);
   dom.choices.classList.add("show");
-  buttons.find((button) => !button.disabled)?.focus();
+  buttons.find((button) => button.getAttribute("aria-disabled") !== "true")?.focus();
   // 選択肢は1行（GUI22）。文言は全角26字以内で書く。差し込みで長くなったときだけ字を縮める
-  buttons.forEach((b) => fitOneLine(b, 18));
+  buttons.forEach((b, i) => {
+    // 本文だけ従来の下限で測り、補足によって本文の字が縮まないようにする。
+    fitOneLine(b, 18);
+    if (reasons[i]) b.append(reasons[i]);
+  });
   kickAuto();
 }
 
@@ -962,10 +1146,87 @@ function autoChoose() {
 
 function pickChoice(line, c) {
   const r = running;
+  // 取り外したボタンの二度押しも、LOAD前の選択も適用しない。
+  if (!r || !r.waitingChoice || r.choiceLine !== line || !line.choices?.includes(c)) return;
+  if (r.owner !== state) return finish(true);
   SE.select();
   r.waitingChoice = false;
   dom.choices.classList.remove("show");
   dom.choices.replaceChildren();
+  if (line._romanceTransient) return resumeRomanceHesitation(c.action);
+  const model = createRomanceHesitation(state, romanceIntent(state, r.currentId || r.id, line, c, DB.dialogues));
+  if (model) {
+    setAuto(false); setSkip(false);
+    r.hesitation = {
+      model, line, choice: c, queue: r.queue,
+      slots: { ...r.slots }, portraits: [...dom.portraits.childNodes],
+      boxClass: dom.box.className,
+      display: [dom.name, dom.text, dom.inner, dom.next].map(node => ({
+        node, html: node.innerHTML, className: node.className, style: node.style.cssText, title: node.title,
+      })),
+    };
+    // 元の立ち絵ノードは退避したまま保ち、回想中のactive/表情更新を当てない。
+    dom.portraits.replaceChildren(); r.slots = {};
+    return showRomanceHesitation();
+  }
+  applyChoice(line, c);
+}
+
+// 同じ running の中に一時的な行だけを差し込む。play() をネストせず、保存も会話フックも呼ばない。
+function showRomanceHesitation() {
+  const r = running;
+  const view = r.hesitation.model.view();
+  const transient = line => ({ ...line, _romanceTransient: true });
+  r.queue = [
+    ...view.lines.map(transient),
+    ...(view.memories || []).flatMap(memory => [
+      { type: "romance_memory" },
+      transient({ ...memory.line, ...(memory.portrait ? { portrait: memory.portrait.id, portrait_face: memory.portrait.face } : {}) }),
+    ]),
+    transient({ type: "choice", choices: view.choices }),
+  ];
+  next();
+}
+
+function restoreRomanceHesitation() {
+  const r = running, saved = r.hesitation;
+  r.queue = saved.queue;
+  r.slots = saved.slots;
+  dom.portraits.replaceChildren(...saved.portraits);
+  refreshPortraits(); // 回想中に画風を変えていたら、元の相手も現在の設定へ合わせる。
+  layoutPortraits();
+  dom.box.className = saved.boxClass;
+  for (const { node, html, className, style, title } of saved.display) {
+    node.innerHTML = html; node.className = className; node.style.cssText = style; node.title = title;
+  }
+  r.hesitation = null;
+  return saved;
+}
+
+function resumeRomanceHesitation(action) {
+  const r = running, saved = r?.hesitation;
+  if (!saved) return;
+  if (r.owner !== state || !saved.model.current(state)) return finish(true);
+  if (action === "apply") {
+    restoreRomanceHesitation();
+    if (saved.model.kind === "commit" && r.romanceWarningGuilt && !r.romanceWarningGuiltPaid) {
+      state.guilt = (state.guilt || 0) + 1;
+      r.romanceWarningGuiltPaid = true;
+    }
+    return applyChoice(saved.line, saved.choice);
+  }
+  const result = saved.model.choose(action, state);
+  if (result.status === "pending") return showRomanceHesitation();
+  if (result.status === "accepted") {
+    r.queue = [...result.apology.map(line => ({ ...line, _romanceTransient: true })), { type: "romance_hesitation", action: "apply" }];
+    return next();
+  }
+  restoreRomanceHesitation();
+  showChoices(saved.line);
+}
+
+function applyChoice(line, c) {
+  const r = running;
   const key = String(c.next || "");
   let waitForScene = false;
   if (key && r.branches[key]) insertBranch(r, key);
@@ -985,6 +1246,7 @@ function closeLog() {
 }
 
 function openLog() {
+  cutin?.clear();
   SE.select();
   clearTimeout(autoTimer);
   const list = el("div.log-list", log.slice(-120).map((l) => el("div.log-row", [
@@ -1023,6 +1285,7 @@ async function openSettings() {
   try {
     await openVnConfig({
       onChange(key) {
+        if (key === "portraitStyle") refreshPortraits();
         if (key === "uiTheme") nameFit?.fit();
         if (key === "textSpeed" && running?.typing && config.textSpeed >= 4) completeTyping();
       },
@@ -1033,7 +1296,22 @@ async function openSettings() {
   kickAuto();
 }
 
+/** 設定とDBG共通。会話の進行・LOG・人物の並びは変えず、表示中の画風だけ更新する。 */
+function refreshPortraits() {
+  if (!running) return;
+  for (const image of dom.portraits.querySelectorAll("img")) {
+    const info = portraitInfo(image.dataset.speaker, image.dataset.face);
+    if (!info) continue;
+    image.src = info.src;
+    frame(image, info);
+  }
+}
+
 export const isPlaying = () => !!running;
+export { refreshPortraits };
 export const backlog = () => log;
 /** タイトルからの「はじめから」「LOAD」で前の周の会話LOGを消す（#1912）。 */
 export function clearLog() { log.length = 0; }
+
+
+

@@ -5,7 +5,6 @@
 
 /* The 108px shield centers its artwork on the background landmark, independently of labels/status. */
 .map .spot-pin.facility-location { transform: translate(-50%, -54px); }
-body.game-ds .map .spot-pin.facility-location { transform: none; }
 
 /* Only revealed facilities use the alpha-contour sticker; existing logos/locked pins keep their skin. */
 .map .spot-pin.facility-location .shield { width: 120px; min-width: 120px; min-height: 108px; padding: 6px 12px; }
@@ -13,19 +12,12 @@ body.game-ds .map .spot-pin.facility-location { transform: none; }
 .map .spot-pin.facility-pin .shield::before, .map .spot-pin.facility-pin .shield::after { content: none; }
 .map .spot-pin.facility-location .ico { width: 96px; height: 96px; }
 .map .spot-pin.facility-pin.sel .facility-icon { filter: drop-shadow(0 0 5px #ffe9a8); }
-body.game-ds .map .spot-pin.facility-location .shield { width: 64px; min-width: 64px; min-height: 64px; padding: 4px; }
-body.game-ds .map .spot-pin.facility-location .ico { width: 56px; height: 56px; }
-body.game-ds .map .spot-pin.facility-pin .facility-icon { zoom: .5833333333; }
 
 /* Per-art alpha-contour anchors keep marks touching the illustration, not transparent corners. */
 .map .spot-pin.facility-pin .evt-badge {
   top: calc(6px + (96px - var(--facility-art-height)) / 2 + var(--facility-badge-y) - 13.5px);
   left: calc(12px + (96px - var(--facility-art-width)) / 2 + var(--facility-badge-x) - 2.5px);
   right: auto;
-}
-body.game-ds .map .spot-pin.facility-pin .evt-badge {
-  top: calc(4px + (56px - var(--facility-art-height) * .5833333333) / 2 + var(--facility-badge-y) * .5833333333 - 13.5px);
-  left: calc(4px + (56px - var(--facility-art-width) * .5833333333) / 2 + var(--facility-badge-x) * .5833333333 - 2.5px);
 }
 
 /* Standalone comparison using the same artwork as the map. */

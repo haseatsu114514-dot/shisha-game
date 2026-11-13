@@ -1,11 +1,11 @@
 {
-  "comment": "帰国後のtonariの打ち上げ（オーナー指定 2026-11-02「帰ってきてTonariで打ち上げ」）。第5章の自由行動の始めに一度だけ。誰の隣に座るかを選び、その場にいる恋人が2人以上なら浮気がばれて修羅場（恋人ごとの反応は relationship_conflicts.json の shuraba_*、謝罪は shuraba_accountability を使う）。恋人が1人ならその人の隣で穏やかに、別の人の隣なら視線だけ。席の選択と振り分けは chapters/ch5-party.js。",
+  "comment": "帰国後のtonariの打ち上げ（オーナー指定 2026-11-02「帰ってきてTonariで打ち上げ」）。第5章の自由行動の始めに一度だけ。誰の隣に座るかを選び、その場にいる恋人が2人以上なら浮気がばれて修羅場（恋人ごとの反応は relationship_conflicts.json の shuraba_*、謝罪は shuraba_accountability を使う）。恋人が1人ならその人の隣で穏やかに、別の人の隣なら視線だけ。席の選択と振り分けは chapters/ch5-party.js。修羅場の演出（2026-11-11）: 席ごとの引き金 ch5_party_trigger_* → 曲が止まる → 視線のカットイン → 打ち明け（ch5_party_shuraba_open）→ 反応 → 謝罪 → お開き（ch5_party_shuraba_close）。",
   "dialogues": [
     {
       "dialogue_id": "ch5_party_open",
       "lines": [
         { "speaker": "", "face": "", "text": "週末、tonariは早めに看板を下ろした。店の中に、知った顔が集まっていた。" },
-        { "speaker": "sumi", "face": "normal", "text": "主役が来たぞ。……世界一、おめでとう" },
+        { "speaker": "sumi", "face": "normal", "beat": 600, "text": "主役が来たぞ。……世界一、おめでとう" },
         { "speaker": "", "face": "", "text": "グラスが鳴って、拍手が起きた。誰かが、世界大会の動画をまた流そうとして止められた。" },
         { "speaker": "naru", "face": "smile", "text": "今日だけは、お前の一台の話を聞いてやる" },
         { "speaker": "hajime", "face": "smile", "text": "今日だけなんだ" },
@@ -31,10 +31,193 @@
     },
     {
       "dialogue_id": "ch5_party_seat_lover",
+      "comment": "その場の恋人がちょうど1人で、その人の隣に座った時（ch5-party-plan.js）。恋人ごとの席は branches に書き、会ったことがある（met）→恋人（lover）の順に一人ずつ確かめる。まだ席の無い人は default。恋人なら告白は読み終えている。ドバイへ同行したか、恋人の節目を読んだかには触れない（#2665）。みんと: 面識・本名・『お姉さん』の正体は確定している（bonds.js の締めくくり条件）。つむぎ: 第4章ラストの面接の後、tonariで働いている（#2637）。今日は休みで客の側。",
       "lines": [
-        { "speaker": "", "face": "", "text": "隣に座ると、グラスが小さく触れ合った。" },
-        { "speaker": "", "face": "", "text": "何も言わなくても、今日はそれで十分だった。" }
-      ]
+        { "type": "condition", "condition_type": "met", "char_id": "minto", "next_true": "check_minto", "next_false": "met_tsumugi" }
+      ],
+      "branches": {
+        "check_minto": [
+          { "type": "condition", "condition_type": "lover", "char_id": "minto", "next_true": "minto", "next_false": "met_tsumugi" }
+        ],
+        "minto": [
+          { "speaker": "", "face": "", "text": "栞さんが座っていたのは、カウンターのいちばん端の席だった。" },
+          { "speaker": "minto", "face": "ura_smile", "text": "……主役がこっちに来ちゃって、いいの？" },
+          { "speaker": "hajime", "face": "normal", "text": "ここがいい" },
+          { "speaker": "minto", "face": "ura_normal", "text": "……この席ね、私の指定席だったの。誰にも言ってないけど" },
+          { "speaker": "", "face": "", "text": "知っている。tonariの隅で、静かに一台を吸っていた『お姉さん』の席だ。" },
+          { "speaker": "hajime", "face": "normal", "text": "俺が、初めて栞さんに一台出した席だ" },
+          { "speaker": "minto", "face": "ura_smug", "text": "偵察のつもりで座ったのにね。……その新人くんが、世界一だって" },
+          { "speaker": "minto", "face": "ura_smile", "text": "おめでとう、はじめくん。……これは、ここで言いたかったの" },
+          { "speaker": "", "face": "", "text": "向こうのテーブルから、「みんとちゃん、乾杯の写真！」と声が飛んだ。" },
+          { "speaker": "minto", "face": "ura_smile", "text": "はーい♡ かわいく撮ってねー" },
+          { "speaker": "", "face": "", "text": "店の声で手を振ってから、栞さんはこっちへ向き直った。声が、すっと小さくなる。" },
+          { "speaker": "minto", "face": "ura_normal", "text": "……前はね、ここから見てるだけだったの。はじめくんが、誰かに一台出すとこ" },
+          { "speaker": "minto", "face": "ura_normal", "text": "今日は、隣に座っていいんだよね" },
+          { "speaker": "hajime", "face": "normal", "text": "うん。……今日だけじゃなくて" },
+          { "speaker": "minto", "face": "ura_surprise", "text": "……っ。そういうの、みんながいるとこで言わないで" },
+          { "speaker": "", "face": "", "text": "栞さんはグラスで顔を半分隠した。耳まで赤いのは、照明のせいじゃなさそうだった。" },
+          { "speaker": "", "face": "", "text": "スミさんが通りがかりに、ミントの一台をカウンターの端へ置いていった。何も言わずに。" },
+          { "speaker": "minto", "face": "ura_smug", "text": "……スミさん、全部お見通しだね" },
+          { "speaker": "hajime", "face": "smile", "text": "昔から、ああいう人だから" },
+          { "speaker": "", "face": "", "text": "一本のホースを、二人で回した。ミントの煙が、カウンターの端でゆっくりほどけていく。" },
+          { "speaker": "minto", "face": "ura_smile", "text": "……また、ここで一台作ってね。この席、空けとくから" },
+          { "speaker": "hajime", "face": "smile", "text": "うん。いつでも" }
+        ],
+        "met_tsumugi": [
+          { "type": "condition", "condition_type": "met", "char_id": "tsumugi", "next_true": "check_tsumugi", "next_false": "met_rio" }
+        ],
+        "check_tsumugi": [
+          { "type": "condition", "condition_type": "lover", "char_id": "tsumugi", "next_true": "tsumugi", "next_false": "met_rio" }
+        ],
+        "tsumugi": [
+          { "speaker": "", "face": "", "text": "今日のつむぎは、エプロンをしていなかった。いつもの紫のパーカーだ。" },
+          { "speaker": "tsumugi", "face": "normal", "text": "……お疲れさまです、店長" },
+          { "speaker": "hajime", "face": "surprise", "text": "今日は、店長も休み" },
+          { "speaker": "tsumugi", "face": "smile", "text": "……じゃあ、はじめさん。隣、どうぞ" },
+          { "speaker": "", "face": "", "text": "そう言いながら、つむぎの目は三番の席の炭を追っていた。" },
+          { "speaker": "hajime", "face": "normal", "text": "気になる？" },
+          { "speaker": "tsumugi", "face": "normal", "text": "……煙、少し細いです。すみません、つい" },
+          { "speaker": "hajime", "face": "smile", "text": "今日は客でしょ。スミさんが見てるよ" },
+          { "speaker": "", "face": "", "text": "カウンターの向こうで、スミさんが黙って炭を寄せた。つむぎが、小さく息をついた。" },
+          { "speaker": "", "face": "", "text": "膝の上のタブレットは、閉じたままだった。" },
+          { "speaker": "hajime", "face": "normal", "text": "描かないの？ 今日、いい顔の人ばっかりだよ" },
+          { "speaker": "tsumugi", "face": "normal", "text": "……今日は、描かないで覚えておきます" },
+          { "speaker": "tsumugi", "face": "smile", "text": "手が、ふさがってるので" },
+          { "speaker": "", "face": "", "text": "カウンターの下で、つむぎの指が俺の指をつまんだ。誰にも見えない高さだった。" },
+          { "speaker": "hajime", "face": "normal", "text": "それ、前にも聞いた" },
+          { "speaker": "tsumugi", "face": "surprise", "text": "……覚えてたんですね" },
+          { "speaker": "tsumugi", "face": "normal", "text": "世界一の絵は、きっと、みんなが撮ったり描いたりしてくれます" },
+          { "speaker": "tsumugi", "face": "smile", "text": "私は、今日のはじめさんの隣がいいです。特等席なので" },
+          { "speaker": "hajime", "face": "smile", "text": "うん。特等席" },
+          { "speaker": "", "face": "", "text": "煙の向こうで、誰かが笑った。つままれた指は、グラスが空になっても離れなかった。" }
+        ],
+        "met_rio": [
+          { "type": "condition", "condition_type": "met", "char_id": "rio", "next_true": "check_rio", "next_false": "met_ageha" }
+        ],
+        "check_rio": [
+          { "type": "condition", "condition_type": "lover", "char_id": "rio", "next_true": "rio", "next_false": "met_ageha" }
+        ],
+        "rio": [
+          { "speaker": "", "face": "", "text": "凛想さんは、カウンターの端で一人、グラスを傾けていた。" },
+          { "speaker": "hajime", "face": "normal", "text": "隣、いいですか" },
+          { "speaker": "rio", "face": "smug", "text": "同意書は？" },
+          { "speaker": "hajime", "face": "normal", "text": "……いりますか" },
+          { "speaker": "rio", "face": "smile", "text": "いらない。最初から、空けといた" },
+          { "speaker": "", "face": "", "text": "店の中には、持ち寄られたフレーバーの匂いが混ざっていた。テーブルごとに、全部違う。" },
+          { "speaker": "rio", "face": "normal", "text": "今日は、鼻を休ませに来たの。仕事の匂いは、全部向こうのテーブル" },
+          { "speaker": "hajime", "face": "normal", "text": "凛想さんでも、休むんですね" },
+          { "speaker": "rio", "face": "normal", "text": "休むよ。……君の隣は、知ってる匂いだから" },
+          { "speaker": "", "face": "", "text": "凛想さんの前のボウルからは、ブルーベリーの煙が上がっていた。" },
+          { "speaker": "hajime", "face": "normal", "text": "それ、いつものですね" },
+          { "speaker": "rio", "face": "normal", "text": "世界中の限定品を吸っても、結局これに帰ってくるの" },
+          { "speaker": "rio", "face": "smile", "text": "君も、帰ってきたね。世界一になっても、ちゃんとここに" },
+          { "speaker": "hajime", "face": "normal", "text": "ここが、俺の帰る店なんで" },
+          { "speaker": "rio", "face": "smile", "text": "いい答え。……じゃあ私も、帰る場所を一つ増やそうかな" },
+          { "speaker": "", "face": "", "text": "凛想さんの指が、カウンターの上で俺の指に重なった。冷たかったのは、最初だけだった。" },
+          { "speaker": "rio", "face": "normal", "text": "……明日も、用もないのに連絡してね" },
+          { "speaker": "hajime", "face": "smile", "text": "はい。今夜の分も、送ります" }
+        ],
+        "met_ageha": [
+          { "type": "condition", "condition_type": "met", "char_id": "ageha", "next_true": "check_ageha", "next_false": "met_mashiro" }
+        ],
+        "check_ageha": [
+          { "type": "condition", "condition_type": "lover", "char_id": "ageha", "next_true": "ageha", "next_false": "met_mashiro" }
+        ],
+        "ageha": [
+          { "speaker": "", "face": "", "text": "あげはは、さっきまで向こうのテーブルで一番大きな声を出していた。" },
+          { "speaker": "", "face": "", "text": "隣に座ると、その声がすっと小さくなった。" },
+          { "speaker": "ageha", "face": "surprise", "text": "え、ハジメっち、こっち来んの？ 主役なのに？" },
+          { "speaker": "hajime", "face": "normal", "text": "うん。こっちがいい" },
+          { "speaker": "ageha", "face": "smile", "text": "……やば。それ、うちが言ってほしかったやつ" },
+          { "speaker": "ageha", "face": "normal", "text": "てか聞いて。ハジメっちの動画、もう何回も見返してんの" },
+          { "speaker": "ageha", "face": "normal", "text": "炭置くとこで毎回止めて、毎回ちょっと泣いてる。うけるでしょ" },
+          { "speaker": "hajime", "face": "normal", "text": "うけないよ。うれしい" },
+          { "speaker": "ageha", "face": "smile", "text": "……そうやって、ちゃんと返してくれんの、好き" },
+          { "speaker": "", "face": "", "text": "向こうのテーブルから、あげはを呼ぶ声がした。あげはは手だけ振って、立たなかった。" },
+          { "speaker": "ageha", "face": "normal", "text": "盛り上げ係、今日は向こうに任せた" },
+          { "speaker": "ageha", "face": "normal", "text": "……ね、一個お願いしていい？ 察してじゃなくて、ちゃんと言うから" },
+          { "speaker": "hajime", "face": "smile", "text": "どうぞ" },
+          { "speaker": "ageha", "face": "normal", "text": "乾杯、もっかいしたい。今度は、二人だけで" },
+          { "speaker": "", "face": "", "text": "グラスを寄せると、あげはは少しだけ迷ってから、こつんと当てた。" },
+          { "speaker": "ageha", "face": "smile", "text": "……世界一、おめでと。うちの彼氏、まじで最強" },
+          { "speaker": "", "face": "", "text": "言ってから照れたのか、あげはは俺の肩に額を押しつけて、しばらく顔を上げなかった。" }
+        ],
+        "met_mashiro": [
+          { "type": "condition", "condition_type": "met", "char_id": "mashiro", "next_true": "check_mashiro", "next_false": "met_samechan" }
+        ],
+        "check_mashiro": [
+          { "type": "condition", "condition_type": "lover", "char_id": "mashiro", "next_true": "mashiro", "next_false": "met_samechan" }
+        ],
+        "mashiro": [
+          { "speaker": "", "face": "", "text": "ましろは、カウンターの端で頬杖をついていた。東京から、電車で来てくれたらしい。" },
+          { "speaker": "mashiro", "face": "yawn", "text": "……ふぁ。はじめくん、おつかれさまぁ" },
+          { "speaker": "hajime", "face": "normal", "text": "遠いのに、来てくれたんだ" },
+          { "speaker": "mashiro", "face": "normal", "text": "ん、世界一のお祝いだもん。……電車で、ちょっと寝てきた" },
+          { "speaker": "mashiro", "face": "normal", "text": "人がいっぱいだと、僕、すぐ眠くなるの。……ここ、座ってていい？" },
+          { "speaker": "hajime", "face": "smile", "text": "もちろん。ましろちゃんの席" },
+          { "speaker": "", "face": "", "text": "ましろは鞄から水筒を出して、紅茶を二つのカップに分けた。" },
+          { "speaker": "mashiro", "face": "normal", "text": "半分こ。……みんな、ジュースとかお酒ばっかりだから" },
+          { "speaker": "hajime", "face": "normal", "text": "ずっと喋ってたから、ちょうど欲しかった" },
+          { "speaker": "mashiro", "face": "smile", "text": "でしょ。お世話係は、ちゃんと見てるんだよぉ" },
+          { "speaker": "", "face": "", "text": "テーブルの煙は、甘くて軽い。ましろの好みより、ずっと薄いはずだ。" },
+          { "speaker": "hajime", "face": "normal", "text": "今日の煙、ましろちゃんには軽すぎない？" },
+          { "speaker": "mashiro", "face": "normal", "text": "ん、軽い。……でも、はじめくんの隣だと、ちょうどいいの" },
+          { "speaker": "mashiro", "face": "yawn", "text": "……あ、だめ。安心したら、また眠くなってきちゃった" },
+          { "speaker": "", "face": "", "text": "肩に、ことんと頭が乗った。紅茶が冷めるまで、そのままにしておいた。" }
+        ],
+        "met_samechan": [
+          { "type": "condition", "condition_type": "met", "char_id": "samechan", "next_true": "check_samechan", "next_false": "met_hiyori" }
+        ],
+        "check_samechan": [
+          { "type": "condition", "condition_type": "lover", "char_id": "samechan", "next_true": "samechan", "next_false": "met_hiyori" }
+        ],
+        "samechan": [
+          { "speaker": "", "face": "", "text": "サメちゃんは、カウンターの端で、コロちゃんにグラスを持たせようとしていた。" },
+          { "speaker": "samechan", "face": "ventriloquism", "text": "勇者はじめよ、よくぞ戻った。世界の王の座、大儀であった" },
+          { "speaker": "samechan", "face": "normal", "text": "……コロちゃん。王はお主ではなく、はじめじゃ" },
+          { "speaker": "samechan", "face": "ventriloquism", "text": "余の側近は、朝から祝いの言葉を練習しておったぞ" },
+          { "speaker": "samechan", "face": "surprise", "text": "そ、それは言わぬ約束じゃ！" },
+          { "speaker": "hajime", "face": "smile", "text": "練習したの、聞かせてください" },
+          { "speaker": "samechan", "face": "normal", "text": "……うむ。ならば、コロちゃんは少し休んでおれ" },
+          { "speaker": "", "face": "", "text": "サメちゃんは右手からコロちゃんを外して、膝に座らせた。" },
+          { "speaker": "samechan", "face": "normal", "text": "……世界一、おめでとう。これは、わしの口から言うのじゃ" },
+          { "speaker": "hajime", "face": "normal", "text": "ありがとうございます。……練習した甲斐、ありました？" },
+          { "speaker": "samechan", "face": "surprise", "text": "か、甲斐があったかは、お主が決めることじゃ" },
+          { "speaker": "hajime", "face": "smile", "text": "すごく、うれしかったです" },
+          { "speaker": "samechan", "face": "smile", "text": "……うむ。なら、よい" },
+          { "speaker": "", "face": "", "text": "膝の上のコロちゃんは、こちらを向いたまま、口を閉じていた。" },
+          { "speaker": "samechan", "face": "normal", "text": "次は、シーシャークでも祝うのじゃ。お主の席、空けておく" },
+          { "speaker": "hajime", "face": "smile", "text": "はい。必ず行きます" },
+          { "speaker": "", "face": "", "text": "グラスを置いたサメちゃんの手が、俺の手をきゅっと握った。今度は、自分の手で。" }
+        ],
+        "met_hiyori": [
+          { "type": "condition", "condition_type": "met", "char_id": "hiyori", "next_true": "check_hiyori", "next_false": "default" }
+        ],
+        "check_hiyori": [
+          { "type": "condition", "condition_type": "lover", "char_id": "hiyori", "next_true": "hiyori", "next_false": "default" }
+        ],
+        "hiyori": [
+          { "speaker": "", "face": "", "text": "ひよりさんは、カウンターの端で、物憂げに窓の外を見ていた。" },
+          { "speaker": "hiyori", "face": "normal", "text": "……世界一の光って、私には少し眩しすぎるね", "inner": "本物来た。近い。世界一が近い" },
+          { "speaker": "hajime", "face": "normal", "text": "窓の外、真っ暗ですよ" },
+          { "speaker": "hiyori", "face": "sad", "text": "……闇に、溶けていたかったの", "inner": "ツッコミが的確すぎる" },
+          { "speaker": "", "face": "", "text": "そう言いながら、ひよりさんは俺の空いたグラスに、さっと氷を足した。" },
+          { "speaker": "hajime", "face": "surprise", "text": "早い" },
+          { "speaker": "hiyori", "face": "smile", "text": "製氷機の場所、変わってないんだもん。元バイトの手は、覚えてるの" },
+          { "speaker": "", "face": "", "text": "奥で、スミさんがこっちを見た。何か言いかけて、やめたらしい。" },
+          { "speaker": "hiyori", "face": "normal", "text": "……私がいた頃のtonariから、世界一が出たんだね", "inner": "スミさん、絶対ちょっと泣いた。私も泣きそう" },
+          { "speaker": "hiyori", "face": "normal", "text": "後輩が世界一なんて、先輩としては、すごく誇らしいです" },
+          { "speaker": "hajime", "face": "normal", "text": "先輩にそう言われると、照れます" },
+          { "speaker": "hiyori", "face": "love_blush", "text": "……彼氏としても、誇らしいよ。儚くないほうの声で、言っとくね" },
+          { "speaker": "hajime", "face": "smile", "text": "俺も、ひよりさんが隣にいてくれて、うれしいです" },
+          { "speaker": "hiyori", "face": "smile", "text": "じゃあ、今夜は消えないでおいてあげる", "inner": "終電まで、絶対ここにいる" },
+          { "speaker": "", "face": "", "text": "ひよりさんが、カウンターの下で俺の袖をつまんだ。捕まえていてほしい時の、つまみ方だった。" }
+        ],
+        "default": [
+          { "speaker": "", "face": "", "text": "隣に座ると、グラスが小さく触れ合った。" },
+          { "speaker": "", "face": "", "text": "何も言わなくても、今日はそれで十分だった。" }
+        ]
+      }
     },
     {
       "dialogue_id": "ch5_party_seat_away",
@@ -44,21 +227,214 @@
       ]
     },
     {
-      "dialogue_id": "ch5_party_shuraba_open",
+      "dialogue_id": "ch5_party_noor_call",
+      "comment": "DSR20 打ち上げの途中、ドバイのヌールからお祝いのテレビ電話（恋人が遠くに住むヌールの時。席には座らない）。ヌールと別の恋人がいれば修羅場（shuraba_noor もテレビ電話）。",
       "lines": [
-        { "speaker": "", "face": "", "text": "隣に座った、その時だった。グラスを置く音が、いくつも重なった。" },
-        { "speaker": "", "face": "", "text": "笑い声が止んで、誰からともなく、俺との関係を尋ねた。" },
-        { "speaker": "hajime", "face": "normal", "text": "……付き合ってます。一人だけじゃ、ありません" },
-        { "speaker": "hajime", "face": "normal", "text": "黙ってたのは、俺です" },
-        { "speaker": "", "face": "", "text": "打ち上げの席が、静かになった。" }
+        { "speaker": "", "face": "", "text": "ポケットのスマホが震えた。画面には、ドバイの夕方と、ヌールさんの顔。" },
+        { "speaker": "noor", "face": "smile", "text": "ハジメ、おめでとう！ ……あ、うるさいところにかけちゃった？" },
+        { "speaker": "hajime", "face": "smile", "text": "大丈夫です。みんなに、見せてもいいですか" },
+        { "speaker": "noor", "face": "surprise", "text": "……え、待って、髪、今……" },
+        { "speaker": "", "face": "", "text": "画面を店の中へ向けると、誰かが手を振り、ヌールさんも慌てて手を振り返した。" }
       ]
     },
     {
-      "dialogue_id": "ch5_party_shuraba_close",
+      "dialogue_id": "ch5_party_trigger_sumi",
+      "comment": "修羅場の引き金（2026-11-11 オーナー「最後の修羅場は演出をしっかり・やってしまった感」）。恋人が2人以上いる打ち上げで、選んだ席ごとに一つ読む（ch5-party-plan.js の partyTrigger）。ここまでは店の曲のまま。次の ch5_party_shuraba_open で曲が止まる。恋人の隣の場面（ch5_party_trigger_<ID>）の甘い行は、恋人が1人の時の ch5_party_seat_lover から引いていて、最後の地の文で「見られた・聞かれた」と気づく。報酬行は置かない。",
       "lines": [
+        { "speaker": "sumi", "face": "normal", "text": "主役が、こっちに座ってどうする" },
+        { "speaker": "hajime", "face": "smile", "text": "ここが一番、落ち着くので" },
+        { "speaker": "", "face": "", "text": "本当は、どの席も選べなかっただけだ。" },
+        { "speaker": "", "face": "", "text": "スミさんが、俺のグラスに水を足そうとした。その手が、止まった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_trigger_friend",
+      "comment": "修羅場の引き金。恋人ではないヒロインの隣に座った時。誰の隣でも同じ文面（名前を出さない）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "隣の席で、世界大会の話を少しだけした。" },
+        { "speaker": "", "face": "", "text": "うなずきながら、目だけが、別の席を数えていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……大丈夫。今日は、ただの打ち上げだ）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_trigger_minto",
+      "comment": "修羅場の引き金。恋人のみんと（栞）の隣。恋人なら面識・本名・『お姉さん』の正体は確定している（ch5_party_seat_lover と同じ前提）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "栞さんが座っていたのは、カウンターのいちばん端の席だった。" },
+        { "speaker": "minto", "face": "ura_smile", "text": "……主役がこっちに来ちゃって、いいの？" },
+        { "speaker": "hajime", "face": "normal", "text": "ここがいい" },
+        { "speaker": "minto", "face": "ura_normal", "text": "今日は、隣に座っていいんだよね" },
+        { "speaker": "hajime", "face": "normal", "text": "うん。……今日だけじゃなくて" },
+        { "speaker": "", "face": "", "text": "言ってから、気づいた。店の中は、思っていたより静かだった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_trigger_tsumugi",
+      "comment": "修羅場の引き金。恋人のつむぎの隣。第4章ラストの面接の後、tonariで働いている（#2637）。今日は休みで客の側。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "今日のつむぎは、エプロンをしていなかった。いつもの紫のパーカーだ。" },
+        { "speaker": "tsumugi", "face": "smile", "text": "……はじめさん。隣、どうぞ" },
+        { "speaker": "", "face": "", "text": "カウンターの下で、つむぎの指が俺の指をつまんだ。" },
+        { "speaker": "tsumugi", "face": "smile", "text": "私は、今日のはじめさんの隣がいいです。特等席なので" },
+        { "speaker": "", "face": "", "text": "誰にも見えない高さの、はずだった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_trigger_rio",
+      "comment": "修羅場の引き金。恋人の凛想の隣。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "凛想さんは、カウンターの端で一人、グラスを傾けていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "隣、いいですか" },
+        { "speaker": "rio", "face": "smug", "text": "同意書は？" },
+        { "speaker": "hajime", "face": "normal", "text": "……いりますか" },
+        { "speaker": "rio", "face": "smile", "text": "いらない。最初から、空けといた" },
+        { "speaker": "", "face": "", "text": "凛想さんの指が、カウンターの上で俺の指に重なった。" },
+        { "speaker": "", "face": "", "text": "カウンターの上は、店のどこからでも見える。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_trigger_ageha",
+      "comment": "修羅場の引き金。恋人のあげはの隣。",
+      "lines": [
+        { "speaker": "ageha", "face": "surprise", "text": "え、ハジメっち、こっち来んの？ 主役なのに？" },
+        { "speaker": "hajime", "face": "normal", "text": "うん。こっちがいい" },
+        { "speaker": "ageha", "face": "smile", "text": "……やば。それ、うちが言ってほしかったやつ" },
+        { "speaker": "", "face": "", "text": "グラスを寄せると、あげはは少しだけ迷ってから、こつんと当てた。" },
+        { "speaker": "ageha", "face": "smile", "text": "……世界一、おめでと。うちの彼氏、まじで最強" },
+        { "speaker": "", "face": "", "text": "あげはの声は、よく通る。向こうのテーブルまで、きれいに届いた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_trigger_mashiro",
+      "comment": "修羅場の引き金。恋人のましろの隣。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ましろは、カウンターの端で頬杖をついていた。" },
+        { "speaker": "mashiro", "face": "yawn", "text": "……ふぁ。はじめくん、おつかれさまぁ" },
+        { "speaker": "mashiro", "face": "normal", "text": "人がいっぱいだと、僕、すぐ眠くなるの。……ここ、座ってていい？" },
+        { "speaker": "hajime", "face": "smile", "text": "もちろん。ましろちゃんの席" },
+        { "speaker": "", "face": "", "text": "肩に、ことんと頭が乗った。" },
+        { "speaker": "", "face": "", "text": "世界一の肩を枕にする人は、どうしても目立つ。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_trigger_samechan",
+      "comment": "修羅場の引き金。恋人のサメちゃんの隣。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "サメちゃんは、カウンターの端で、コロちゃんにグラスを持たせようとしていた。" },
+        { "speaker": "samechan", "face": "ventriloquism", "text": "勇者はじめよ、よくぞ戻った。世界の王の座、大儀であった", "voice": "korochan" },
+        { "speaker": "", "face": "", "text": "サメちゃんは右手からコロちゃんを外して、膝に座らせた。" },
+        { "speaker": "samechan", "face": "normal", "text": "……世界一、おめでとう。これは、わしの口から言うのじゃ" },
+        { "speaker": "", "face": "", "text": "サメちゃんの手が、俺の手をきゅっと握った。今度は、自分の手で。" },
+        { "speaker": "", "face": "", "text": "コロちゃんのいない手は、隠してくれるものが何もなかった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_trigger_hiyori",
+      "comment": "修羅場の引き金。恋人のひよりの隣。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ひよりさんは、カウンターの端で、物憂げに窓の外を見ていた。" },
+        { "speaker": "hiyori", "face": "normal", "text": "……世界一の光って、私には少し眩しすぎるね", "inner": "本物来た。近い。世界一が近い" },
+        { "speaker": "hiyori", "face": "love_blush", "text": "……彼氏としても、誇らしいよ。儚くないほうの声で、言っとくね" },
+        { "speaker": "", "face": "", "text": "ひよりさんが、カウンターの下で俺の袖をつまんだ。" },
+        { "speaker": "", "face": "", "text": "儚くないほうの声は、店の奥まで、よく通った。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_party_shuraba_open",
+      "comment": "修羅場の開始（2026-11-11 演出の作り直し）。直前に ch5-party.js が店の曲を止め、背景の色を落とす。motion gaze は、その場にいる恋人たちの目元の帯が差し込まれるカットイン（motions/gaze.js）。選択肢はどれを選んでも同じ打ち明けに着く（ごまかす・黙るは通じない。今度は誰も話を流してくれない）。先頭の選択肢が、そのまま打ち明ける道。第1章の大会当日か第3章の前夜に一度流してもらった保存だけ、その一行を足す。petit_recall_* は、読んだプチ修羅場（core/petit-shuraba.js の _petit_seen_*）が一行ずつ返る枝で、スタッフロール後の shuraba_open と同じ並び（ch5_party.mjs が一致を確かめる）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "その時だった。俺の名前を呼ぶ声がした。隣からじゃ、なかった。", "fx": "shake" },
+        { "speaker": "", "face": "", "text": "グラスを置く音が、いくつも重なった。笑い声が、引いていった。", "beat": 400 },
+        { "type": "motion", "id": "gaze" },
+        { "speaker": "hajime", "face": "surprise", "text": "（……あ）", "beat": 500 },
+        { "type": "condition", "condition_type": "flag", "flag": "_ch3_shuraba_deferred", "next_true": "saved_before", "next_false": "check_ch1" },
+        { "type": "condition", "condition_type": "flag_count", "flag": "_petit_count", "threshold": 1, "next_true": "petit_recall_open" },
+        { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_date_call", "next_true": "petit_recall_date_call" },
+        { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_lime_misfire", "next_true": "petit_recall_lime_misfire" },
+        { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_notice", "next_true": "petit_recall_notice" },
+        { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_cross", "next_true": "petit_recall_cross" },
+        { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_sumi", "next_true": "petit_recall_sumi" },
+        { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_cinema", "next_true": "petit_recall_cinema" },
+        { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_naru", "next_true": "petit_recall_naru" },
+        { "type": "condition", "condition_type": "flag_count", "flag": "_petit_count", "threshold": 1, "next_true": "petit_recall_close" },
+        { "speaker": "", "face": "", "text": "誰からともなく、俺との関係を尋ねた。", "beat": 300 },
+        {
+          "type": "choice",
+          "id": "ch5_party_shuraba_answer",
+          "choices": [
+            { "text": "正直に言う" },
+            { "text": "笑ってごまかす", "next": "dodge" },
+            { "text": "何も言わない", "next": "silent" }
+          ]
+        },
+        { "speaker": "hajime", "face": "serious", "text": "……付き合ってます。一人だけじゃ、ありません", "beat": 700, "duck": true },
+        { "speaker": "hajime", "face": "serious", "text": "黙ってたのは、俺です", "duck": true },
+        { "speaker": "", "face": "", "text": "打ち上げの席が、静かになった。", "beat": 600 },
+        { "speaker": "hajime", "face": "sad", "text": "（……言った。もう、言う前には戻れない）" }
+      ],
+      "branches": {
+        "check_ch1": [
+          { "type": "condition", "condition_type": "flag", "flag": "_shuraba_ch1", "next_true": "saved_before" }
+        ],
+        "petit_recall_open": [
+          { "speaker": "", "face": "", "text": "ごまかした日のことが、順番に浮かんだ。", "beat": 400 }
+        ],
+        "petit_recall_date_call": [
+          { "speaker": "", "face": "", "text": "鳴りやまなかった、あの着信。" }
+        ],
+        "petit_recall_lime_misfire": [
+          { "speaker": "", "face": "", "text": "送り先を間違えた、あの一通。" }
+        ],
+        "petit_recall_notice": [
+          { "speaker": "", "face": "", "text": "気づきかけて、聞かないでくれた顔。" }
+        ],
+        "petit_recall_cross": [
+          { "speaker": "", "face": "", "text": "同じ店で、背中に受けた二人ぶんの視線。" }
+        ],
+        "petit_recall_sumi": [
+          { "speaker": "", "face": "", "text": "スミさんが、端と端に離してくれた二つの席。" }
+        ],
+        "petit_recall_cinema": [
+          { "speaker": "", "face": "", "text": "映画館で、振り向かなかった二つの後ろ姿。" }
+        ],
+        "petit_recall_naru": [
+          { "speaker": "", "face": "", "text": "「言うのは、俺じゃないだろ」という、なるの声。" }
+        ],
+        "petit_recall_close": [
+          { "speaker": "", "face": "", "text": "どれも、うまく切り抜けたつもりだった。" },
+          { "speaker": "", "face": "", "text": "全部、今日に続いていた。", "beat": 500 }
+        ],
+        "saved_before": [
+          { "speaker": "", "face": "", "text": "前は、誰かが話を流してくれた。今日は、誰も流してくれない。" }
+        ],
+        "dodge": [
+          { "speaker": "hajime", "face": "smile", "text": "あ、いや、これはその……みんな、仲が良くて" },
+          { "speaker": "", "face": "", "text": "笑ってくれる人は、いなかった。自分の声だけが、店に残った。", "beat": 500 },
+          { "speaker": "hajime", "face": "sad", "text": "（……だめだ。もう、ごまかせる場所じゃない）" }
+        ],
+        "silent": [
+          { "speaker": "", "face": "", "text": "何も言わなかった。氷の溶ける音だけがした。", "beat": 500 },
+          { "speaker": "", "face": "", "text": "黙っているのが、いちばん長い返事になった。", "beat": 500 },
+          { "speaker": "hajime", "face": "sad", "text": "（……これ以上黙るのは、もっとひどい）" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch5_party_shuraba_close",
+      "comment": "修羅場のお開き（2026-11-11 演出の作り直し）。恋人たちが店を出て、祝いの席だけが残る。ドアベルの回数は書かない（席にいた恋人が1人でテレビ電話のヌールと2人、という組もある）。この後、話し直しが済むまで恋人からの連絡は届かない（daily/romance.js）。許し・別れは決めない。",
+      "lines": [
+        { "type": "sfx", "id": "doorbell" },
+        { "speaker": "", "face": "", "text": "椅子を引く音がした。ドアベルが鳴るたびに、店が広くなった。", "beat": 400 },
+        { "speaker": "", "face": "", "text": "テーブルには、乾杯の途中のグラスが、人数ぶん残っていた。" },
+        { "speaker": "", "face": "", "text": "壁の「世界一おめでとう」の紙が、空調で揺れていた。" },
         { "speaker": "", "face": "", "text": "スミさんが、黙って炭を替えた。" },
         { "speaker": "sumi", "face": "serious", "text": "……今日は、ここまでだ。片付けは、明日でいい" },
-        { "speaker": "", "face": "", "text": "打ち上げは、そこでお開きになった。" }
+        { "speaker": "hajime", "face": "sad", "text": "……いえ。やらせてください" },
+        { "speaker": "", "face": "", "text": "スミさんは何も言わずに、流しの前を空けた。" },
+        { "speaker": "", "face": "", "text": "グラスを一つずつ洗った。誰がどの席にいたか、全部覚えていた。" },
+        { "speaker": "", "face": "", "text": "打ち上げは、そこでお開きになった。" },
+        { "speaker": "", "face": "", "text": "その夜、スマホは一度も鳴らなかった。", "beat": 500 },
+        { "speaker": "hajime", "face": "sad", "text": "（世界一になって、最初にやったのが、これだ）" }
       ]
     },
     {

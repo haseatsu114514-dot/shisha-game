@@ -1,7 +1,7 @@
 // リメイク版 第1章の通しテスト。
 //   1) 新規ゲーム → コールドオープン → チュートリアル → DAY1〜13の日常 → DAY14の大会
 //   2) 大会1回目は「下手」で挑んで GAME OVER になること
-//   3) 「もう一度挑戦する」→「上手」で南雲の最後の一票による優勝 → 第1章クリアになること
+//   3) 「もう一度挑戦する」→「上手」で千須の最後の一票による優勝 → 第1章クリアになること
 // 使い方: リポジトリのルートで `python3 -m http.server 8123` を起動してから
 //         node remake/test/playthrough.mjs
 import { enterPlannedShop, purchasePlannedFlavor } from "./playthrough-shopping.mjs";
@@ -319,7 +319,7 @@ for (;;) {
   // LIME: 朝は通知だけ。はじめて届いた日はアイコンが照らされる（案内）→ 以後は赤丸があれば自分で開く
   if (snap.screen === "map" && (await click('[data-test="coach-lime"]'))) { limeCoach++; continue; }
   if (snap.screen === "map" && snap.rain) rainMaps++;
-  // 路上占い師（週2日だけ出る）: 見かけたら一度だけ占ってもらう（時間は使わない）
+  // 辻占のオババ（週2日だけ出る）: 見かけたら一度だけ占ってもらう（時間は使わない）
   if (snap.screen === "map" && !fortuneTried && snap.money >= 3000 && (await page.$('[data-test="pin-fortune"]:not(.off)'))) {
     if (!await click('[data-test="pin-fortune"]') || !await click('[data-test="map-go"]'))
       throw new Error("Fortune input failed before visiting");
@@ -346,7 +346,7 @@ for (;;) {
       await click('[data-test="pin-tonari"]'); await click('[data-test="map-go"]');
       await page.waitForSelector('[data-test="tonari-baito"]', { timeout: 5000 }).catch(() => {});
       await click(kind === "baito" ? '[data-test="tonari-baito"]' : '[data-test="tonari-customer"]');
-    } else if (kind === "shop" || kind === "rin") {
+    } else if (kind === "shop" || kind === "rio") {
       pendingShopBuy = kind === "shop" ? arg : "__upstairs";
       log("shopping-plan", JSON.stringify({ planIdx, pendingShopBuy, state: await shoppingSnapshot() }));
       await shoppingRequired('[data-test="pin-shop"]');
@@ -387,7 +387,7 @@ for (;;) {
     if (!kujiDrawn) {
       await shoppingRequired('.shop-tab[data-tab="kuji"]');
       const before = await shoppingSnapshot();
-      await shoppingRequired('[data-test="kuji-g500"]');
+      await shoppingRequired('[data-test="kuji-g1000"]');
       const after = await shoppingSnapshot();
       log("shopping-kuji", JSON.stringify({ planIdx, pendingShopBuy, before, after }));
       if (firstErrandVisit) {
@@ -395,7 +395,7 @@ for (;;) {
           throw new Error("First lemon errand allowed a kuji purchase");
         firstKujiBlocked = true;
       } else {
-        if (after.kuji.g500.drawn !== before.kuji.g500.drawn + 1 || after.money !== before.money - 500)
+        if (after.kuji.g1000.drawn !== before.kuji.g1000.drawn + 1 || after.money !== before.money - 500)
           throw new Error("Kuji input did not produce expected draw/payment");
         kujiDrawn = true;
         await page.waitForSelector('.kuji-card.reveal', { timeout: 5000 });
@@ -505,7 +505,7 @@ for (const id of new Set([...Object.keys(stock0), ...Object.keys(s.flavorStock)]
   if (!["double_apple", "lemon"].includes(id) && (s.flavorStock[id] || 0) !== (stock0[id] || 0)) throw new Error(`unused ${id} should not be consumed`);
 // くじ: 1枚引いて箱が減っている
 if (!firstKujiBlocked) throw new Error("First lemon errand kuji refusal not verified");
-if (!(s.kuji.g500 && s.kuji.g500.drawn === 1)) throw new Error(`kuji not drawn: ${JSON.stringify(s.kuji)}`);
+if (!(s.kuji.g1000 && s.kuji.g1000.drawn === 1)) throw new Error(`kuji not drawn: ${JSON.stringify(s.kuji)}`);
 // ch1 のソフトキャップ（48）を超えていない
 for (const [k, v] of Object.entries(s.stats)) if (v > 48) throw new Error(`stat ${k}=${v} exceeds ch1 soft cap`);
 if (errors.length) { console.error(errors.join("\n")); throw new Error(`${errors.length} page errors`); }

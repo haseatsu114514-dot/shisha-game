@@ -8,6 +8,8 @@ import { on } from "./bus.js";
 const HOME_SCENE_PROPS = [
   { owned: "home_rig_set", file: "shisha_home_tabletop.png", x: 563, y: 552, h: 126, ratio: 648 / 1048, crop: [286, 181, 648, 1048], size: [1222, 1287] },
   { owned: "home_rig_pro", file: "shisha_home_pro.png", x: 914, y: 563, h: 236, ratio: 464 / 1489, crop: [280, 21, 464, 1489], size: [1024, 1536] },
+  { owned: "stand_walnut", file: "shisha_home_stand_walnut.png", x: 760, y: 563, h: 236, ratio: 1024 / 1536, crop: [0, 0, 1024, 1536], size: [1024, 1536] },
+  { owned: "stand_custom", file: "shisha_home_stand_custom.png", x: 1090, y: 563, h: 236, ratio: 1024 / 1536, crop: [0, 0, 1024, 1536], size: [1024, 1536] },
 ];
 const isHome = (url) => /^bg_home(?:_(?:overcast_)?(?:day|night))?\.png$/.test(sceneFile(url));
 
@@ -22,15 +24,18 @@ const C_STATION_SCENE_PROPS = [
   { file: "shisha_c_station.png", x: 1180, y: 438, h: 275, ratio: 491 / 768 },
 ];
 export const SCENE_PROPS = {
+  // 隠れ家（#3282 B6・2026-11-13 に描き直した絵）: 台を描いていない絵なので、中央の卓・中の卓・右の卓の天板へ重ねる。
+  // x は台の中心、y は台の底（卓の天板の中ほど）、h は高さ。奥の卓ほど小さく、手前の卓ほど大きい。
   "bg_hideaway.png": [
-    { file: "shisha_hideaway.png", x: 422, y: 529, h: 290, ratio: 515 / 768 },
-    { file: "shisha_hideaway.png", x: 691, y: 371, h: 140, ratio: 515 / 768 },
-    { file: "shisha_hideaway.png", x: 1146, y: 511, h: 252, ratio: 515 / 768 },
+    { file: "shisha_hideaway.png", x: 805, y: 398, h: 140, ratio: 368 / 768 },
+    { file: "shisha_hideaway.png", x: 925, y: 492, h: 152, ratio: 368 / 768 },
+    { file: "shisha_hideaway.png", x: 1165, y: 520, h: 172, ratio: 368 / 768 },
   ],
   "bg_c_station_day.png": C_STATION_SCENE_PROPS,
   "bg_c_station_night.png": C_STATION_SCENE_PROPS,
-  "bg_tournament_stage.png": [242, 510, 770, 1038].map((x) => ({
-    file: "shisha_c_station.png", x, y: 303, h: 124, ratio: 491 / 768,
+  // 大会会場（#3282 B10・2026-11-13 に描き直した絵）: 4つの作業台の天板（y≈347）の中央へ重ねる。台の中心は x=274・509・765・1003。
+  "bg_tournament_stage.png": [274, 509, 765, 1003].map((x) => ({
+    file: "shisha_c_station.png", x, y: 347, h: 124, ratio: 424 / 768,
   })),
   "bg_fookah_showroom.png": [
     { file: "shisha_fookah.png", x: 300, y: 462, h: 230, ratio: 522 / 768 },

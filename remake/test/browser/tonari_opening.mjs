@@ -41,6 +41,83 @@ async function assertClean(page) {
 }
 
 await suite("tonari-opening", async check => {
+
+  for (const [label, options] of [["desktop", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await check(`${label}-hajime-standing-before-intro-only`, async page => {
+      await setup(page);
+      await page.evaluate(() => {
+        O531.core.state.flags._intro_hajime = false;
+        const source = O531.data.DB.dialogues.ch1_opening;
+        const start = source.lines.findIndex(line => line.shot === "empty");
+        const intro = source.lines.findIndex(line => line.type === "intro" && line.char_id === "hajime");
+        O531.excerpt = { ...source, lines: source.lines.slice(start, intro + 3), branches: {} };
+        O531.launch({ dialogue: O531.excerpt });
+      });
+      const standing = page.locator('.vn-portraits img[data-speaker="hajime"]');
+      await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent.includes("ドアが閉まる"));
+      assert.equal(await standing.count(), 0, "The earlier first-person scene stays portrait-free");
+      await page.waitForTimeout(350);
+      await page.locator(".vn-text").click();
+      await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent.includes("いただきました"));
+      await page.locator(".vn-next.show").waitFor();
+      assert.equal(await standing.getAttribute("data-face"), "smile");
+      assert(await standing.evaluate(image => image.complete && image.naturalWidth > 0));
+      await assertFits(page, ".vn-box, .vn-controls");
+      const text = await page.locator(".vn-text").textContent();
+      await page.locator('[data-test="vn-config"]').click();
+      for (const style of ["new", "classic"]) {
+        await page.locator(`[data-test="cfg-portrait-style"] button[value="${style}"]`).click();
+        await page.waitForFunction(() => {
+          const image = document.querySelector('.vn-portraits img[data-speaker="hajime"]');
+          return image.complete && image.naturalWidth > 0;
+        });
+        assert.equal(await standing.getAttribute("src"),
+          await page.evaluate(() => O531.data.portraitInfo("hajime", "smile").src));
+        assert.equal(await page.locator(".vn-text").textContent(), text, "Art switching does not advance the scene");
+      }
+      await page.locator('[data-test="cfg-close"]').click();
+      await page.locator("#modal.show").waitFor({ state: "hidden" });
+      await page.screenshot({ path: path.join(captures, `${label}-hajime-before-intro.png`) });
+      // The long thought has two pages on some layouts. Advance only until the actual cut-in begins.
+      for (let n = 0; n < 5 && !await page.locator('.cutin[data-char="hajime"]').count(); n++) {
+        const previousText = await page.locator(".vn-text").textContent();
+        await page.locator(".vn-text").click();
+        await page.waitForFunction(previous => document.querySelector('.cutin[data-char="hajime"]')
+          || document.querySelector(".vn-text")?.textContent !== previous, previousText);
+        if (await standing.count() && !await page.locator('.cutin[data-char="hajime"]').count()) {
+          assert.equal(await standing.getAttribute("data-face"), "normal");
+        }
+      }
+      await page.locator('.cutin[data-char="hajime"]').waitFor();
+      assert.equal(await standing.count(), 1, "The standing portrait supplies the cut-in transition");
+      await page.waitForFunction(() => !document.querySelector('.cutin[data-char="hajime"]')
+        && document.querySelector(".vn-text")?.textContent.includes("店の名前は"));
+      assert.equal(await standing.count(), 0, "After the cut-in, return immediately to first-person view");
+      // Replaying a saved/seen introduction must still clear the portrait when the intro is skipped.
+      await page.evaluate(() => { O531.controller.abort(); });
+      await page.waitForFunction(() => O531.done);
+      await page.evaluate(() => { O531.done = false; O531.launch({ dialogue: O531.excerpt }); });
+      await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent.includes("ドアが閉まる"));
+      await page.locator('[data-test="vn-skip"]').click();
+      await page.waitForFunction(() => O531.done);
+      assert.equal(await standing.count(), 0);
+      assert.equal(await page.locator('.cutin[data-char="hajime"]').count(), 0);
+      await assertClean(page);
+      // Ordinary lines in another scene must not inherit the one-off exception.
+      await page.evaluate(() => {
+        O531.follow = O531.vn.play({ dialogue_id: "__after_hajime_intro", lines: [
+          { speaker: "hajime", face: "normal", text: "いつもの一人称視点。" },
+        ] });
+      });
+      await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent === "いつもの一人称視点。");
+      assert.equal(await standing.count(), 0);
+      await page.waitForTimeout(350);
+      await page.locator(".vn-text").click();
+      await page.evaluate(() => O531.follow);
+    }, options);
+  }
+
+
   for (const [label, options] of [["desktop", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
     await check(`${label}-normal-cuts`, async page => {
       await setup(page);

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { mkdir } from "node:fs/promises";
 const { chromium } = createRequire(import.meta.url)("playwright");
-const ids = ["kuze", "steve", "volk", "mashiro", "maki", "sai", "uranaishi"];
+const ids = ["saku", "steve", "volk", "mashiro", "maki", "sai", "uranaishi"];
 const shots = process.env.ARTIFACT_DIR || "work/recent-intros";
 await mkdir(shots, { recursive: true });
 const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_EXECUTABLE_PATH || "/usr/bin/chromium" });
@@ -33,7 +33,6 @@ try {
       const c = T.data.DB.characters[id];
       return {
         name: host.querySelector(".ci-name").textContent,
-        expectedName: T.data.realName(id),
         title: host.querySelector(".ci-title").textContent,
         quote: host.querySelector(".ci-line").textContent,
         expectedTitle: c.intro_cutin.title, expectedQuote: `「${c.intro_cutin.line.replaceAll("／", "")}」`,
@@ -48,7 +47,9 @@ try {
         }),
       };
     }, id);
-    assert.equal(result.name, result.expectedName);
+    // NAMES-1106「カットインの名前表示ルール」: 本名タイプはフルネーム、占い師は「占いオババ」
+    assert.equal(result.name, { saku: "綾取陣", steve: "スティーブ・A・アッシュ", volk: "ヴォルク・イヴァノフ", mashiro: "黒葉ましろ",
+      maki: "斧崎マキ", sai: "六角サイ", uranaishi: "占いオババ" }[id]);
     assert.equal(result.title, result.expectedTitle);
     assert.equal(result.quote, result.expectedQuote);
     assert(result.images && result.fits, `${id}: 画像未読込または文字のはみ出し ${result.images} ${result.boxes.join(" / ")}`);
@@ -85,16 +86,37 @@ try {
       const s = T.core.newGame();
       Object.assign(s, { chapter: 2, day: 16, slot: id === "maki" ? 1 : 0, phase: "daily", money: 15000, stamina: 80 });
       Object.assign(s.flags, { _axe_bar_rumor_done: true, _axe_bar_sighting_done: true, _rei_trpg_introduced: true });
+      // 入店後の紹介検査。部活設立の会話は #3135 / trpg_main の範囲なので、既に設立済みとして棚と店主を出す。
+      if (id === "sai") s.trpg.club.founded = { chapter: 2, day: 16 };
       T.before = [s.money, s.stamina, s.slot, s.day];
       T.open = async () => id === "maki"
         ? (await import("./js/daily/axe-bar.js")).visitAxeBar()
         : (await import("./js/daily/trpg.js")).openTrpgBar();
       T.visit = T.open();
     }, id);
-    await page.locator(`.cutin.in[data-char="${id}"]`).waitFor();
+    // 初めての来店の場面（VAR01・VAR02）: 店に入って店主が名乗るまで → 登場カットイン → 店の案内 → メニュー。
+    // 名乗るまでは名前が「？？？」。会話は一行ずつ読み進める。
+    const readUntil = async (selector) => {
+      const names = [], deadline = Date.now() + 40000;
+      while (!await page.locator(selector).count()) {
+        assert(Date.now() < deadline, `会話を読み進めても ${selector} が出ない`);
+        if (await page.locator("#vn.active .vn-box").count() && !await page.locator(".cutin").count()) {
+          const name = await page.locator("#vn.active .vn-name").textContent().catch(() => "");
+          if (name) names.push(name);
+          await page.locator("#vn.active .vn-box").click({ timeout: 1000 }).catch(() => {});
+        }
+        await page.waitForTimeout(180);
+      }
+      return names;
+    };
+    const before = await readUntil(`.cutin.in[data-char="${id}"]`);
+    assert(before.includes("？？？"), "名乗るまでは名前を伏せる");
+    assert(!before.includes(id === "maki" ? "斧崎マキ" : "六角サイ"), "紹介の前に名前を出さない");
     assert.equal(await page.locator(".cutin .ci-name").textContent(), id === "maki" ? "斧崎マキ" : "六角サイ");
     await page.locator(".cutin").waitFor({ state: "detached" });
     const host = `[data-test="venue-host-${id}"]`;
+    const after = await readUntil(host);
+    assert(after.includes(id === "maki" ? "斧崎マキ" : "六角サイ"), "紹介の後は名前で話す");
     await page.locator(host).waitFor();
     assert(await page.evaluate(id => {
       const s = T.core.state;

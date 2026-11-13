@@ -1,10 +1,14 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
-import { visitAffinity } from '../js/core/stats.js';
+// Registered by the existing quick suite, without adding or bypassing any CI checks.
+await import('./affinity_visit_pacing.mjs');
 
 const read = path => fs.readFile(new URL('../'+path,import.meta.url),'utf8');
 const story = JSON.parse(await fs.readFile(new URL('../../data/dialogue/samechan.json',import.meta.url),'utf8'));
+const characters = JSON.parse(await fs.readFile(new URL('../../data/characters.json',import.meta.url),'utf8'));
+const samechanProfile = characters.find(c => c.id === 'samechan');
+assert(samechanProfile);
 const lime = JSON.parse(await fs.readFile(new URL('../../data/lime_messages.json',import.meta.url),'utf8'));
 const manifest = JSON.parse(await read('data/manifest.json'));
 const state = {chapter:1,day:8,phase:'daily',slot:2,flags:{},contacts:[],met:{},story:{},limeRead:[]};
@@ -13,7 +17,7 @@ const context=vm.createContext({AbortController,setTimeout,clearTimeout,Promise,
   fetch:async path=>({ok:true,json:async()=>{
     if(path==='data/manifest.json')return manifest;
     if(path.endsWith('/dialogue/samechan.json'))return story;
-    if(path.endsWith('/characters.json'))return [{id:'hajime',display_name:'はじめ'}];
+    if(path.endsWith('/characters.json'))return characters;
     if(path.endsWith('/relationship_memories.json'))return {memories:[]};
     if(path.endsWith('/flavors.json'))return {flavors:[]};
     if(path.endsWith('/equipment.json'))return {equipment:[]};
@@ -23,7 +27,23 @@ const context=vm.createContext({AbortController,setTimeout,clearTimeout,Promise,
     return {dialogues:[]};
   }})});
 const dataModule=new vm.SourceTextModule(await read('js/core/data.js'),{context});
-await dataModule.link(spec=>{assert.equal(spec,'./fortune-effects.js','unexpected data import');return new vm.SyntheticModule(['registerFortuneReadings'],function(){this.setExport('registerFortuneReadings',()=>{});},{context});});await dataModule.evaluate();
+await dataModule.link(async spec => {
+  if (spec === './portrait-resolver.js') {
+    const module = new vm.SourceTextModule(await read('js/core/portrait-resolver.js'), { context });
+    await module.link(() => { throw Error('unexpected portrait-resolver import'); });
+    return module;
+  }
+  if (spec === './portrait-style.js') {
+    const module = new vm.SourceTextModule(await read('js/core/portrait-style.js'), { context });
+    await module.link(() => { throw Error('unexpected portrait-style import'); });
+    return module;
+  }
+  assert.equal(spec, './fortune-effects.js', 'unexpected data import');
+  return new vm.SyntheticModule(['registerFortuneReadings'], function () {
+    this.setExport('registerFortuneReadings', () => {});
+  }, { context });
+});
+await dataModule.evaluate();
 const data=dataModule.namespace;await data.loadAll();
 assert.equal(data.DB.samechan.spot.label,'SHISHARK');assert.equal(data.DB.characters.samechan.id,'samechan');
 const firstShop = story.dialogues.find(d=>d.dialogue_id==='samechan_shop_first');
@@ -37,7 +57,8 @@ for (const [name, lines] of Object.entries(firstShop.branches)) {
 }
 assert.deepEqual(JSON.parse(JSON.stringify(data.DB.lime)),lime.messages);assert(data.DB.dialogues.samechan_first_encounter);
 assert.equal(data.displayName('samechan',state),'？？？');
-for(const face of ['normal','smile','surprise','serious'])assert.equal(data.portraitInfo('samechan',face).src,`img/sprites/characters/samechan/chr_samechan_${face}.webp`);
+for(const face of ['normal','smile','surprise','serious'])assert.equal(data.portraitInfo('samechan',face,'classic').src,`img/sprites/characters/samechan/chr_samechan_${face}.webp`);
+assert.equal(data.portraitInfo('samechan','normal').src,'img/sprites/character_variants/new/samechan/chr_samechan_normal.webp');
 assert.equal(data.sceneBg('bg_shishark_preparing_night','night').tint,null);
 assert.equal(data.sceneBg('bg_shishark_preparing_night','night').url,'img/backgrounds/bg_shishark_preparing_night.webp');
 assert.equal(data.sceneBg('bg_shishark','night').tint,'night');
@@ -49,9 +70,9 @@ const deps={
  '../core/ui.js':{withScenePreparation: task => task, imageReady:async()=>false,toast:()=>{},setBg:async()=>{}},
  '../core/travel-budget.js':{spendableMoney:s=>s.money||0},
  '../core/scene-motions.js':{sharkSwim:async swap=>{await swap();}},
- '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),affinityLevel:()=>heart,releaseAffinity:()=>0,ensureAffinityLevel:()=>{},earnStat:()=>{},addMoney:()=>{},addStamina:()=>{},STAMINA_LOW:25,visitAffinity:kind=>visitAffinity(kind,state)},
+ '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),visitAffinity:kind=>({story:16,talk:8})[kind],affinityLevel:()=>heart,releaseAffinity:()=>0,ensureAffinityLevel:()=>{},earnStat:()=>{},addMoney:()=>{},addStamina:()=>{},STAMINA_LOW:25},
  '../vn/engine.js':{play:async id=>{played.push(id);return {id,visited:[]};},isPlaying:()=>false},
- './bonds.js':{finaleAtVisit:()=>false,playFinale:async()=>false},
+ './bonds.js':{finaleAtVisit:()=>false,playFinale:async()=>false,BOND_FINALES:{samechan:{dialogue:"samechan_bond_finale"}}},
  './trpg.js':{maybeRecruitTrpgMember:async()=>false},
 };
 const samechanModule=new vm.SourceTextModule(await read('js/daily/samechan.js'),{context});
@@ -81,10 +102,11 @@ assert.equal(await k.visitSamechan(null),false);
 state.limeRead.push(k.SAMECHAN_NICKNAME_TOPIC);k.syncSamechanKnowledge();assert.equal(data.displayName('samechan',state),'サメちゃん');assert(state.met.samechan);
 state.chapter=2;k.syncSamechanKnowledge();const open=k.samechanSpot();assert.equal(open.unavailable,undefined);assert.equal(open.preview,'bg_shishark');assert.equal(state.flags._shishark_opened,true);
 const contacts=state.contacts;state.contacts=[];delete state.flags._lime_contact_samechan;assert(k.samechanSpot(),'章2では未交換でも店が開く');state.contacts=contacts;
-await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_first');assert.equal(state.story.samechan,1);assert.deepEqual(rewards.at(-1),['samechan',16]);
-const earnedCount=rewards.length;await k.visitSamechan(open);assert.equal(rewards.length,earnedCount,'同じ行動への再入で加算しない');
+await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_first');assert.equal(state.story.samechan,1);
+// 来店の好感度はほかの店と同じ（BLC01）: 初来店・段階の会話は16、いつもの来店・感想・不調は8。
+assert.deepEqual([...rewards.at(-1)],['samechan',16],'初来店は段階の会話と同じ');
 state.day++;
-await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_repeat_0');assert.deepEqual(rewards.at(-1),['samechan',8]);
+await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_repeat_0');assert.deepEqual([...rewards.at(-1)],['samechan',8],'いつもの来店は小会話と同じ');
 // 路地裏シネマを観た後の来店で、感想を一度だけ聞く（#1718）。
 state.day++;state.spotVisits={...(state.spotVisits||{}),rojiura_cinema:1};assert.equal(k.samechanVisitDialogue(),'samechan_shop_cinema_impression');
 await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_cinema_impression');assert.equal(state.flags._samechan_cinema_impression_done,true);
@@ -99,27 +121,43 @@ assert.equal(k.samechanVisitDialogue(),'samechan_shop_bond_question','♥4・♥
 state.flags._samechan_bond_question_done=true;heart=3;assert.notEqual(k.samechanVisitDialogue(),'samechan_shop_heart4');
 heart=4;assert.equal(k.samechanVisitDialogue(),'samechan_shop_heart4');
 state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_heart4');assert.equal(state.flags._samechan_heart4_done,true);
+assert.deepEqual([...rewards.at(-1)],['samechan',16],'♥4の来店会話は段階の会話');
 assert.notEqual(k.samechanVisitDialogue(),'samechan_shop_heart5','♥5に届くまで待つ');assert.notEqual(k.samechanVisitDialogue(),'samechan_shop_heart4','♥4は一度だけ');
 heart=5;assert.equal(k.samechanVisitDialogue(),'samechan_shop_heart5');
-state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_heart5');assert.equal(state.flags._samechan_heart5_done,true);assert.deepEqual(rewards.at(-1),['samechan',16]);
+state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_heart5');assert.equal(state.flags._samechan_heart5_done,true);
 assert(!/samechan_shop_heart/.test(k.samechanVisitDialogue()),'♥5は一度だけ');
 // 締めくくり済み・恋人の旧セーブには後から出さない。
 delete state.flags._samechan_heart4_done;delete state.flags._samechan_heart5_done;state.finales={samechan:{chapter:2,day:3,route:'friend'}};
 assert(!/samechan_shop_heart/.test(k.samechanVisitDialogue()),'締めくくり後は出さない');delete state.finales;
 state.lovers=['samechan'];assert(!/samechan_shop_heart/.test(k.samechanVisitDialogue()),'恋人には出さない');delete state.lovers;
 state.flags._samechan_heart4_done=true;state.flags._samechan_heart5_done=true;heart=0;
+// 片付けの夜のあと、優先イベントが無い来店で一度ずつ（#3081）。
+assert.equal(k.samechanVisitDialogue(),'samechan_shop_own_seat');
+state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_own_seat');
+assert.equal(state.flags._samechan_own_seat_done,true);
+assert.equal(k.samechanVisitDialogue(),'samechan_shop_look_away');
+state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_look_away');
+assert.equal(state.flags._samechan_look_away_done,true);assert.deepEqual([...rewards.at(-1)],['samechan',16],'一度きりの来店の話も段階の会話と同じ');
+assert.match(k.samechanVisitDialogue(),/^samechan_shop_repeat_/);
+// みんとの開店祝い（REL03）: みんとと面識がある時だけ、いつもの来店の代わりに一度。既読の旗は、ぺぱーみんとでの続きが読む。
+state.met.minto=true;assert.equal(k.samechanVisitDialogue(),'samechan_shop_minto_gift');
+state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_minto_gift');
+assert.equal(state.flags._spot_seen_samechan_shop_minto_gift,true);assert.deepEqual([...rewards.at(-1)],['samechan',8],'開店祝いの話はいつもの来店と同じ');
+assert.match(k.samechanVisitDialogue(),/^samechan_shop_repeat_/,'開店祝いの話は一度だけ');
+for(const id of ['samechan_shop_first','samechan_shop_quiet_seat','samechan_shop_closing_check','samechan_shop_heart4','samechan_shop_heart5','samechan_shop_own_seat','samechan_shop_look_away','samechan_bond_finale'])assert.equal(k.samechanVisitAffinityKind(id),'story',id);
+for(const id of ['samechan_shop_bond_question','samechan_shop_repeat_0','samechan_shop_repeat_1','samechan_shop_cinema_impression','samechan_shop_unwell','samechan_shop_minto_gift','ch3_prep_samechan','ch4_prep_samechan'])assert.equal(k.samechanVisitAffinityKind(id),'talk',id);
 for(const id of ['samechan_shop_heart4','samechan_shop_heart5']){const scene=story.dialogues.find(d=>d.dialogue_id===id);
  assert(scene.lines.some(l=>l.condition_type==='romance_open'&&l.char_id==='samechan'),`${id}: ♥3の答えで恋愛/友人の分岐`);
  assert(scene.branches.romance&&scene.branches.friend,id);
  const rows=[...scene.lines,...Object.values(scene.branches).flat()];
  assert(!rows.some(r=>r.type==='choice'&&r.romance_char),`${id}: 隠し恋愛値を増やす新しい問いは置かない`);
- assert(!JSON.stringify(scene).includes(story.profile.full_name)&&!JSON.stringify(scene).includes('なぎさ'),`${id}: 本名は恋人絆Lv4まで伏せる`);}
-state.flags._samechan_name_known=true;assert.equal(data.displayName('samechan',state),'波多野なぎさ');
+ assert(!JSON.stringify(scene).includes(samechanProfile.full_name)&&!JSON.stringify(scene).includes('なぎさ'),`${id}: 本名は恋人絆Lv4まで伏せる`);}
+state.flags._samechan_name_known=true;assert.equal(data.displayName('samechan',state),'暑海なぎさ');
 // 表示名は台詞の正本を参照し、名乗る前に本名を漏らさない。
 const encounter=story.dialogues.find(d=>d.dialogue_id==='samechan_first_encounter');
 const aliasAt=encounter.lines.findIndex(l=>l.text==='強いていうなら、サメちゃんと呼ばれておる');
 assert(aliasAt>=0);assert.equal(encounter.lines[aliasAt+1].flag,'_samechan_nickname_known');
-assert(!JSON.stringify(encounter).includes(story.profile.full_name));
+assert(!JSON.stringify(encounter).includes(samechanProfile.full_name));
 assert(!encounter.lines.some(l=>l.flag==='_samechan_name_known'));
 const privateName=story.dialogues.find(d=>d.dialogue_id==='samechan_future_private_name');
 assert.equal(privateName.metadata.future_only,false,'本名は恋人絆Lv4の正式原稿へ接続済み');
@@ -133,6 +171,6 @@ for(const scene of story.dialogues){
 assert(story.dialogues[0].lines.some(l=>l.text==='お主、サメは好きか？'));
 assert(data.DB.lime.find(m=>m.id==='lime_samechan_preparing_thanks').chapter===1);
 assert(data.DB.lime.find(m=>m.id==='lime_samechan_opening').chapter===2);
-assert.equal(story.profile.romance_available,true);
+assert.equal(samechanProfile.romance_available,true);
 console.log('[SHISHARK] live data load / 4 portraits / construction tint / one-time quiet-night encounter / name knowledge / chapter boundary / visit branches / heart4-5 visits: PASS');
 

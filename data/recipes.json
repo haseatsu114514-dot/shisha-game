@@ -1,5 +1,5 @@
 {
-  "_comment": "配合レシピ帳（S1/W2・2026-07-16 全面書き換え。旧内容はGodot時代の遺物で、廃止済みプレゼン仕様を参照しており未使用だった。復元はgit履歴から）。flavors はフレーバーIDの完全一致セット（順不同・他の葉が混ざると成立しない）。ミックス確定時に一致すると発見＝レシピ帳に登録される。hint_note は会話の type:\"note\" 行の note_id と対応し、未発見でも聞いた話としてヒント表示される。名前に「ミント」「ストロベリー」を含めない（テストドライバが .mix-total の文字列で課題フレーバーを判定するため）。golden は黄金比（#627・オーナー確定分だけ）: キーは flavors と同じ系統ID、値は正の整数の比。割合の差が±5ポイント以内（境界を含む）で黄金比、±12ポイント以内で惜しい。配合点には足さない",
+  "_comment": "配合レシピ帳（S1/W2・2026-07-16 全面書き換え。旧内容はGodot時代の遺物で、廃止済みプレゼン仕様を参照しており未使用だった。復元はgit履歴から）。flavors はフレーバーIDの完全一致セット（順不同・他の葉が混ざると成立しない）。ミックス確定時に一致すると発見＝レシピ帳に登録される。hint_note は会話の type:\"note\" 行の note_id と対応し、未発見でも聞いた話としてヒント表示される。名前に「ミント」「ストロベリー」を含めない（テストドライバが .mix-total の文字列で課題フレーバーを判定するため）。golden は黄金比（#627・オーナー確定分だけ）: キーは flavors と同じ系統ID、値は正の整数の比。割合の差が±5ポイント以内（境界を含む）で黄金比、±12ポイント以内で惜しい。配合点には足さない。find は第3章以降の「ヒントを聞く→自分で試す→名前のある発見→相手に返す」連鎖（#2020 G・daily/recipe-finds.js）: person＝ヒントをくれて一台を返す相手、chapters＝出る章、at＝返す店（地図の行き先ID）、hint_at＝ヒントを聞く店（省略時は at）、heart＝ヒントに要る好感度。台詞は data/dialogue/recipe_finds.json の recipe_find_<id>_hint / _return",
   "recipes": [
     {
       "id": "sumi_basic",
@@ -40,9 +40,9 @@
       "name": "香水の記憶",
       "flavors": ["rose", "lychee"],
       "hint_note": "recipe_hint_perfume",
-      "hint_text": "凛さん「ローズにライチ。香水みたいでしょ」",
-      "memo": "凛さん仕込み。薔薇とライチの含み香が、香水のように長く残る。",
-      "recall": ["（凛さんが言ってた、ローズにライチ）", "（香水みたいに長く残る一台……今度、試してみよう）"]
+      "hint_text": "凛想さん「ローズにライチ。香水みたいでしょ」",
+      "memo": "凛想さん仕込み。薔薇とライチの含み香が、香水のように長く残る。",
+      "recall": ["（凛想さんが言ってた、ローズにライチ）", "（香水みたいに長く残る一台……今度、試してみよう）"]
     },
     {
       "id": "berry_milk",
@@ -106,6 +106,66 @@
       "memo": "ぶどうと柑橘にスパイスをひと振り。三種を揃える手間のぶん、贅沢。",
       "idea": {"lines": ["（マスターの後ろの棚に、果実酒の瓶が並んでる）", "（ぶどうとオレンジにシナモン。三種そろえたら、贅沢な一台になりそうだ）"]},
       "idea_hint": "こはくの棚から浮かんだ「ぶどう・オレンジ・シナモン」"
+    },
+    {
+      "id": "lime_second_puff",
+      "name": "二口目のライム",
+      "flavors": ["lemon", "lime"],
+      "hint_note": "recipe_hint_lime_second_puff",
+      "hint_text": "スティーブ「レモンを主役に、ライムを少しだけ。ライムは後から来る」",
+      "memo": "スティーブ直伝。レモンの立ち上がりに、ライムが二口目から追いついてくる。熱を急がない一台。",
+      "recall": ["（そういえば、スティーブさんが言ってたな）", "（レモンを主役に、ライムを少し。ライムは後から来る。今度、試してみよう）"],
+      "find": {"person": "steve", "chapters": [3, 5], "at": ["ch3_tokyo_steve", "ch5_tokyo_steve"], "heart": 2}
+    },
+    {
+      "id": "weekend_citron",
+      "name": "ウィークエンド・シトロン",
+      "flavors": ["frozen_citrus", "black_tea"],
+      "hint_note": "recipe_hint_weekend_citron",
+      "hint_text": "綾取「シトラスを先に立たせて、ブラックティーで追いかける」",
+      "memo": "綾取の話から。凍った柑橘の後に紅茶が追いかけて、入れていない焼き菓子の香りが立つ。",
+      "recall": ["（綾取さんの、入れてないお菓子の話を思い出す）", "（フローズンシトラスの後に、ブラックティー。今度、試してみよう）"],
+      "find": {"person": "saku", "chapters": [3], "at": ["ch3_tokyo_enmaku"], "heart": 2}
+    },
+    {
+      "id": "lychee_jasmine_tea",
+      "name": "ライチ茉莉花茶",
+      "flavors": ["lychee", "jasmine"],
+      "hint_note": "recipe_hint_lychee_jasmine_tea",
+      "hint_text": "王煙楼「ライチを主にして、ジャスミンは控えめに」",
+      "memo": "王煙楼の話から。ライチの甘さを、ジャスミンの花が上から包む。花は控えめに。",
+      "recall": ["（王煙楼さんの、茉莉花の茶を思い出す）", "（ライチを主にして、ジャスミンは控えめに。今度、試してみよう）"],
+      "find": {"person": "master_hookah", "chapters": [4], "at": ["ch4_dubai_longlong"], "heart": 2}
+    },
+    {
+      "id": "festa_punch",
+      "name": "フェスタ・パンチ",
+      "flavors": ["pineapple", "passion_fruit"],
+      "hint_note": "recipe_hint_festa_punch",
+      "hint_text": "太陽「パイナップルに、パッションフルーツを少し。フェスタの味だ」",
+      "memo": "太陽のお祭りミックス。パイナップルの明るさに、強いパッションフルーツを少しだけ。",
+      "recall": ["（太陽さんの、お祭りの一台を思い出す）", "（パイナップルに、パッションフルーツを少し。今度、試してみよう）"],
+      "find": {"person": "da_silva", "chapters": [4, 5], "hint_at": ["ch4_dubai_festa"], "at": ["ch4_dubai_festa", "ch5_dubai_taiyo"], "heart": 2}
+    },
+    {
+      "id": "russian_tea",
+      "name": "ロシアンティー",
+      "flavors": ["black_tea", "raspberry"],
+      "hint_note": "recipe_hint_russian_tea",
+      "hint_text": "ヴォルク「ブラックティーに、ラズベリーを少し。量は測るな」",
+      "memo": "ヴォルクの祖母の紅茶と、赤いジャム。ブラックティーにラズベリーの甘酸っぱさを添える。量は測らない。",
+      "recall": ["（ヴォルクさんの、祖母のジャムを思い出す）", "（ブラックティーに、ラズベリーを少し。量は測らずに、今度試そう）"],
+      "find": {"person": "volk", "chapters": [5], "at": ["ch5_tokyo_volk"], "heart": 2}
+    },
+    {
+      "id": "luqaimat",
+      "name": "ルカイマット",
+      "flavors": ["honey", "cardamom"],
+      "hint_note": "recipe_hint_luqaimat",
+      "hint_text": "なる「ハニーを主役に、カルダモンをひとつまみ」",
+      "memo": "なると煙にしたドバイの屋台の菓子。ハニーの蜜に、生地のカルダモンが香る。",
+      "recall": ["（なるが言ってた、ルカイマットの話）", "（ハニーにカルダモンをひとつまみ。今度、試してみよう）"],
+      "find": {"person": "naru", "chapters": [5], "at": ["naru"], "heart": 2}
     }
   ]
 }

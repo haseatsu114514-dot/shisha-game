@@ -1,0 +1,48 @@
+{
+  "base_main": "5dfdcdd146f9bcaf3e85ad3320fb96d79f348dc2",
+  "character_id": "saku",
+  "display_name": "綾取",
+  "style": "nanami",
+  "expression": "wild",
+  "source_library_file_id": "libfile_c72746d8dffc8191ae6eead5a2c6d390",
+  "source_file_id": "file_00000000d1d881f5aad6af28006ce3a2",
+  "source_host": "sdmntprcentralus.oaiusercontent.com",
+  "source_sha256": "d8822212f63b28edefd6004b3d42cc79094237e3121e3f48b2422363bba5fb91",
+  "source_bytes": 1122127,
+  "source_pixels": [
+    1036,
+    1518
+  ],
+  "source_mode": "RGBA",
+  "source_native_subject_height": 1368,
+  "replaced_runtime_sha256": "e908368f3475804bbfa8f8cecafb8c1190c64e54ee8b5dee8b07ff69415d5296",
+  "normal_reference": "assets/sprites/character_variants/nanami/saku/chr_saku_normal.png",
+  "normal_sha256": "eed9a47c26515501fb8eabddc52fd23a251085d672f86f745cc355595b650407",
+  "runtime": "assets/sprites/character_variants/nanami/saku/chr_saku_wild.png",
+  "runtime_sha256": "d77535d9969fbbc13c6faa4e879103cabf54633941719dfd32d963e9aae7f91a",
+  "export": {
+    "canvas": [
+      896,
+      1200
+    ],
+    "scale": 0.7894736842105263,
+    "offset": [
+      44,
+      -12
+    ],
+    "bbox_alpha24": [
+      191,
+      60,
+      723,
+      1140
+    ],
+    "normal_top_bottom": [
+      60,
+      1140
+    ],
+    "normal_feet_centroid_x": 447.89944486919524,
+    "rule": "Raw unchanged; LANCZOS uniform shrink; same-normal body height and feet centroid. Sparse low-alpha residue outside3px visible band trimmed in derivative only. No face/head/body/color/line edits."
+  },
+  "owner_selection": "right candidate; Nanami wicked-face repair selected; no instruction inferred for new/classic",
+  "protected": "Classic/new wild and all normal images unchanged. Original previous Nanami wild retained in existing source history."
+}

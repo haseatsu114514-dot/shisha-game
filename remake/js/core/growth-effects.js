@@ -1,15 +1,15 @@
 // 通常のマス・色の台座の実効値。仮置きは含めず、確定した有効なIDを一度だけ数える。
 import { growthEnabled } from "./growth-mode.js";
 import { NODE_BY_ID } from "./growth-board-layout.js";
-import { SQUARE_PERKS, PERK_TIERS, GATE_TIER, NOTABLES, SKILLS, LESSONS } from "./growth-board-data.js";
+import { SQUARE_PERKS, PERK_TIERS, GATE_TIER, NOTABLES, SKILLS, LESSONS, FEATURES } from "./growth-board-data.js";
 import { STAMINA_CONDITIONS } from "./condition.js";
 
 /** 調整用の初期値。通常マスの百分率とは別に重ねる（SPEC 2.5）。 */
 export const SKILL_TUNING = Object.freeze({ sleep: .1, first: .2, mastery: .2, leaf: .2, holesSeconds: 6, strain: .75,
-  coalReplacement: .2, forecastRead: .15, bargain: .1, critical: 1.5, criticalCap: 3, momentum: 2, smokeRing: 1, afterglowSeconds: 3, afterglowSpeed: .65 });
+  forecastRead: .15, bargain: .1, critical: 1.5, criticalCap: 3, momentum: 2, smokeRing: 1, afterglowSeconds: 3, afterglowSpeed: .65 });
 const skillIds = new Set(SKILLS.map(s => s.id));
 const lessonIds = new Set(LESSONS.map(s => s.id));
-export const LESSON_TUNING = Object.freeze({ stamina: 20, mix: 4, cardamomPenalty: .5, lavenderSleep: .2, single: 4, flowerLayer: 2, blindSwing: 3, deepHeat: .27, sharkRadius: 1.5, climateVariation: .5, callingSales: 1000, grapeReception: 2 });
+export const LESSON_TUNING = Object.freeze({ stamina: 20, mix: 4, cardamomPenalty: .5, lavenderSleep: .2, single: 4, flowerLayer: 2, blindSwing: 3, dragonStreak: 3, deepHeat: .27, sharkRadius: 1.5, climateVariation: .5, callingSales: 1000, grapeReception: 2 });
 /** 授業は盤に灯すだけでは発動しない。対面で相談を終えた記録も必要。 */
 export const growthLesson = (s, id) => growthEnabled() && lessonIds.has(id)
   && Array.isArray(s?.growth?.nodes) && s.growth.nodes.includes(id)
@@ -62,7 +62,7 @@ export function growthCraftCondition(s, mode, condition) {
 
 /** 表示と処理が共有する帯・要の倍率。 */
 export const perkMultiplier = node => (node.kind === "gate" ? GATE_TIER.mult : PERK_TIERS[node.band]?.mult || 1)
-  * (node.notable ? NOTABLES[node.notable]?.bonus || 1 : 1);
+  * (node.notable ? NOTABLES[node.notable]?.bonus || 1 : 1) * (node.worth || 1);
 
 export function boardPerks(nodes = []) {
   const sums = { stamina: 0, sleep: 0, charm: 0, stage: 0, heat: 0, pull: 0,
@@ -71,6 +71,8 @@ export function boardPerks(nodes = []) {
     if (typeof id !== "string" || !Object.hasOwn(NODE_BY_ID, id)) continue;
     const node = NODE_BY_ID[id];
     if (!node || !["stat", "gate"].includes(node.kind)) continue;
+    // 舞台映えの✦は人柄とは別の加点。既存の華マスの加点・人柄を置き換えない。
+    if (node.feature === "stage") sums.stage += FEATURES.stage.bonus;
     const def = SQUARE_PERKS[node.board], perk = !node.peak && def.perks[node.perk];
     if (perk) {
       const unit = Number(/\{([\d.]+)\}/.exec(perk.text)?.[1] || 0);
@@ -130,3 +132,5 @@ export function floralLayers(s,cs,flavors) {
   }
   return flowers.size>=2?[...flowers.values()].sort((a,b)=>b.grams-a.grams||a.id.localeCompare(b.id)):[];
 }
+
+

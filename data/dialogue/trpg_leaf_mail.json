@@ -1,6 +1,6 @@
 {
   "id": "leaf-mail",
-  "version": 1,
+  "version": 2,
   "title": "葉っぱ耳の郵便猫",
   "subtitle": "時計坂の町と、宛名のにじんだ手紙",
   "author": "灯森こはる",
@@ -42,45 +42,55 @@
     {
       "id": "hiyori",
       "part": "PLAYER",
-      "role": "{pc:hiyori}／灯りともし",
+      "role": "{pc:hiyori}／早口の灯りともし",
       "color": "#dab978",
       "ability": "灯りの段取り",
       "abilityText": "配達の支度をするとき、判定に一度だけ＋7",
       "abilityType": "prepare",
       "sheet": {
         "name": "ユラ",
-        "title": "灯りともし",
+        "title": "早口の灯りともし",
         "stats": {
           "eye": 3,
           "hand": 4,
           "talk": 2,
           "nerve": 2
         },
-        "trait": "か細い声の灯りともし。梯子をのぼるのは町一番速い",
-        "likes": "屋台の夜鳴きラーメン",
-        "portrait": "../../img/ui/trpg/pc-yura.webp"
+        "trait": "梯子をのぼりながら、町の噂を全部しゃべる。口も足も町一番速い",
+        "likes": "焼きいもの屋台。両手に一本ずつ"
+      },
+      "alternatives": {
+        "regulara": {
+          "role": "{pc:hiyori}／早口の灯りともし",
+          "color": "#bb9c72"
+        }
       }
     },
     {
       "id": "adam",
       "part": "PLAYER",
-      "role": "{pc:adam}／鐘つき",
+      "role": "{pc:adam}／無口な鐘つき",
       "color": "#c9463a",
       "ability": "鐘の口上",
       "abilityText": "手紙を渡すとき、判定に一度だけ＋7",
       "abilityType": "serve",
       "sheet": {
         "name": "レオン",
-        "title": "鐘つき",
+        "title": "無口な鐘つき",
         "stats": {
           "eye": 2,
           "hand": 2,
           "talk": 4,
           "nerve": 3
         },
-        "trait": "時計塔の鐘をつく。鐘の音と同じくらい、言葉も大きい",
-        "likes": "林檎の砂糖煮。甘さの原点",
-        "portrait": "../../img/ui/trpg/pc-leaf-mail-leon.webp"
+        "trait": "鐘の数でしか返事をしない。たまの一言は、よく通る",
+        "likes": "町が眠ったあとの鐘楼。鐘の掃除"
+      },
+      "alternatives": {
+        "regularb": {
+          "role": "{pc:adam}／無口な鐘つき",
+          "color": "#8faeaa"
+        }
       }
     }
   ],
@@ -117,7 +127,7 @@
           "actor": "adam",
           "sheet": "adam",
           "stat": "talk",
-          "label": "大げさに、郵便猫を歓迎する",
+          "label": "帽子を取って、郵便猫を迎える",
           "detail": "{pc:adam}が帽子を取り、ミトンを詰所へ迎え入れる",
           "declare": "trpg_leaf_mail_declare_listen_greet"
         }
@@ -632,7 +642,7 @@
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……物語の前に、キャラ作りの時間です。役は、決まりましたか"
+          "text": "物語の前に、役を決めましょう。どんな夜番にしますか？"
         }
       ]
     },
@@ -652,7 +662,7 @@
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "……そろいました。では、最初のページをめくります"
+          "text": "役がそろいましたね。最初のページを開きましょう"
         }
       ]
     },
@@ -666,26 +676,56 @@
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
-          "face": "normal",
-          "text": "……私はユラ。町の灯りをともして回る、か弱い夜番よ"
-        },
-        {
-          "speaker": "hiyori",
-          "role": "PL／卓の会話",
-          "face": "sad",
-          "text": "夜風に吹かれたら、灯りと一緒に消えてしまいそうで……"
-        },
-        {
-          "speaker": "hiyori",
-          "role": "PL／卓の会話",
           "face": "smile",
-          "text": "でも、屋台のラーメンの湯気が見えたら走るわ。全力で"
+          "text": "私はユラ。灯りをともして回る夜番よ。……とにかく、すっごく早口なの"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "{pc:hiyori}／物語",
+          "face": "surprise",
+          "text": "はい点いた！ 次！ パン屋のおばあちゃん、腰どう？ 橋の猫、また太った？"
         },
         {
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……ひよりさん、息、続いてますか"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……ラーメンで元気になる夜番さん。いいと思います"
+          "text": "灯りより先に、噂が町を回りそうだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_aside_hiyori_hiyori_yura",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "{pc:hiyori}／物語",
+          "face": "surprise",
+          "text": "毎晩点けてる灯りに『ありがとう』なんて、言われたことないよ！ 言われたら泣くよ！？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_after_hiyori_hiyori_yura",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ユラの『泣くよ！？』、半分くらい本気だったかも、……秘密よ"
         }
       ]
     },
@@ -733,25 +773,55 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "俺の役はレオン。時計塔で鐘をつく夜番だ"
+          "text": "俺の役はレオン。時計塔の鐘つきだ。……ただし、ひどく無口でな"
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
-          "face": "intense",
-          "text": "鐘は一つ。だが、その響きは町じゅうの窓に届く"
+          "face": "normal",
+          "text": "返事は鐘の数で決めた。一つは『はい』、二つは『いいえ』だ"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "鐘の音みたいに、声も大きそうだな"
+          "face": "surprise",
+          "text": "アダムさんの役が、しゃべらない……！"
         },
         {
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "……頼もしいです。夜の町に、ぴったり"
+          "text": "……鐘の数、ちゃんと数えておきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_aside_adam_adam_leon",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "{pc:adam}／物語",
+          "face": "normal",
+          "text": "……鐘、毎晩ついてる。誰も聞いてないと、思ってた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_after_adam_adam_leon",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "レオンの鐘、俺の店にも一つ欲しくなった。……鳴らすのは、たまにでいい"
         }
       ]
     },
@@ -798,7 +868,7 @@
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……今夜は、私がGMです。絵本みたいな物語を、一冊だけ"
+          "text": "今夜は、この店の常連さんたちと郵便猫の物語を遊びましょう"
         },
         {
           "speaker": "hajime",
@@ -818,13 +888,27 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "夜の見回りね。……私、夜風には弱いのだけど"
+          "text": "夜の見回りね。……私、夜風には弱いのだけど",
+          "variants": {
+            "regulara": {
+              "text": "夜の見回りね。……私、夜風には弱いのだけど",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "月の下の夜番か。幕を上げるには、最高の夜だ"
+          "text": "月の下の夜番か。幕を上げるには、最高の夜だ",
+          "variants": {
+            "regularb": {
+              "text": "月の下の夜番か。幕を上げるには、最高の夜だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
@@ -860,19 +944,26 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "猫！？ ……あ、いえ。かわいい猫ね"
+          "text": "猫！？ ……あ、いえ。かわいい猫ね",
+          "variants": {
+            "regulara": {
+              "text": "猫！？ ……あ、いえ。かわいい猫ね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "あれ、この猫……つむぎがよく描いてる子？"
+          "text": "葉っぱの耳に、煙のしっぽ。変わった郵便屋さんですね"
         },
         {
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "……はい。いつも描いてる子です。今夜は、町の郵便屋さん"
+          "text": "今夜の郵便屋さんです。どんな配達になるでしょうね"
         },
         {
           "speaker": "tsumugi",
@@ -898,7 +989,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "宛先の分からない手紙か。物語は、いつも謎から始まる"
+          "text": "宛先の分からない手紙か。物語は、いつも謎から始まる",
+          "variants": {
+            "regularb": {
+              "text": "宛先の分からない手紙か。物語は、いつも謎から始まる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -950,13 +1048,20 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……あら。でも、まだ読める字もあるわ"
+          "text": "……あら。でも、まだ読める字もあるわ",
+          "variants": {
+            "regulara": {
+              "text": "……あら。でも、まだ読める字もあるわ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……大丈夫です。話の続きは、ちゃんと聞けます"
+          "text": "大丈夫ですよ。物語の続きは聞けます"
         }
       ]
     },
@@ -1016,7 +1121,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:hiyori}は灯りを寄せて、にじんだ宛名をよく見るわ"
+          "text": "{pc:hiyori}は灯りを寄せて、にじんだ宛名をよく見るわ",
+          "variants": {
+            "regulara": {
+              "text": "{pc:hiyori}は灯りを寄せて、にじんだ宛名をよく見るわ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
@@ -1036,7 +1148,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "{pc:adam}は帽子を取って一礼。『ようこそ、月夜の郵便屋さん』"
+          "text": "{pc:adam}は帽子を取って一礼。『ようこそ、月夜の郵便屋さん』",
+          "variants": {
+            "regularb": {
+              "text": "{pc:adam}は帽子を取って一礼。『ようこそ、月夜の郵便屋さん』",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
@@ -1088,7 +1207,7 @@
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "……葉っぱがない日も、ミトンはミトンです"
+          "text": "耳の葉がなくても、ミトンはミトンですね"
         }
       ]
     },
@@ -1148,7 +1267,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:hiyori}は、縄と網を手早くみんなに配るわ"
+          "text": "{pc:hiyori}は、縄と網を手早くみんなに配るわ",
+          "variants": {
+            "regulara": {
+              "text": "{pc:hiyori}は、縄と網を手早くみんなに配るわ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
@@ -1168,7 +1294,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "{pc:adam}は窓という窓に呼びかける。『手紙を見た者はいないか！』"
+          "text": "{pc:adam}は窓という窓に呼びかける。『手紙を見た者はいないか！』",
+          "variants": {
+            "regularb": {
+              "text": "{pc:adam}は窓という窓に呼びかける。『手紙を見た者はいないか！』",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
@@ -1194,7 +1327,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "完璧ね。……私が儚く消える前に、出発しましょう"
+          "text": "完璧ね。……私が儚く消える前に、出発しましょう",
+          "variants": {
+            "regulara": {
+              "text": "完璧ね。……私が儚く消える前に、出発しましょう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1220,7 +1360,7 @@
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……月は、まだ待ってくれます"
+          "text": "月はまだ空にあります。配達を続けましょう"
         }
       ]
     },
@@ -1240,7 +1380,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "えっ、暗い！？ ……あ、ううん。闇も儚くて素敵ね"
+          "text": "えっ、暗い！？ ……あ、ううん。月明かりで、十分よ",
+          "variants": {
+            "regulara": {
+              "text": "えっ、暗い！？ ……あ、ううん。月明かりで、十分よ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
@@ -1280,7 +1427,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "{pc:hiyori}が支度するわ。こう見えて、段取りは得意なの"
+          "text": "{pc:hiyori}が支度するわ。こう見えて、段取りは得意なの",
+          "variants": {
+            "regulara": {
+              "text": "{pc:hiyori}が支度するわ。こう見えて、段取りは得意なの",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
@@ -1300,7 +1454,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:adam}は、届ける道をひと足先に見てこよう"
+          "text": "{pc:adam}は、届ける道をひと足先に見てこよう",
+          "variants": {
+            "regularb": {
+              "text": "{pc:adam}は、届ける道をひと足先に見てこよう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
@@ -1326,7 +1487,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "見事な幕引きだ。拍手は、月がしてくれる"
+          "text": "見事な幕引きだ。拍手は、月がしてくれる",
+          "variants": {
+            "regularb": {
+              "text": "見事な幕引きだ。拍手は、月がしてくれる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1406,7 +1574,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:hiyori}は窓の灯りを見て、渡す時を待つわ"
+          "text": "{pc:hiyori}は窓の灯りを見て、渡す時を待つわ",
+          "variants": {
+            "regulara": {
+              "text": "{pc:hiyori}は窓の灯りを見て、渡す時を待つわ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
@@ -1426,7 +1601,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "{pc:adam}が口上を添えよう。月にふさわしい一言を"
+          "text": "{pc:adam}が口上を添えよう。月にふさわしい一言を",
+          "variants": {
+            "regularb": {
+              "text": "{pc:adam}が口上を添えよう。月にふさ私い一言を",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
@@ -1446,13 +1628,27 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……宛名が半分なら、残りの半分は町が知ってるはずよ"
+          "text": "……宛名が半分なら、残りの半分は町が知ってるはずよ",
+          "variants": {
+            "regulara": {
+              "text": "……宛名が半分なら、残りの半分は町が知ってるはずよ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "におい、字の跡、町のうわさ。小さなものほど、行き先を教えてくれるわ"
+          "text": "におい、字の跡、町のうわさ。小さなものほど、行き先を教えてくれるわ",
+          "variants": {
+            "regulara": {
+              "text": "におい、字の跡、町のうわさ。小さなものほど、行き先を教えてくれるわ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1472,13 +1668,27 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "宛先探しは、結末探しと同じだ。まず登場人物をそろえよう"
+          "text": "宛先探しは、結末探しと同じだ。まず登場人物をそろえよう",
+          "variants": {
+            "regularb": {
+              "text": "宛先探しは、結末探しと同じだ。まず登場人物をそろえよう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "誰が書き、誰が待つか。それが分かれば、道は自然に決まる"
+          "text": "誰が書き、誰が待つか。それが分かれば、道は自然に決まる",
+          "variants": {
+            "regularb": {
+              "text": "誰が書き、誰が待つか。それが分かれば、道は自然に決まる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1498,19 +1708,33 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "毎晩の灯りに、町からのお礼……。素敵ね"
+          "text": "毎晩の灯りに、町からのお礼……。素敵ね",
+          "variants": {
+            "regulara": {
+              "text": "毎晩の灯りに、町からのお礼……。素敵ね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "照らす者は、照らされることが少ない。今夜は逆の幕だ"
+          "text": "照らす者は、照らされることが少ない。今夜は逆の幕だ",
+          "variants": {
+            "regularb": {
+              "text": "照らす者は、照らされることが少ない。今夜は逆の幕だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "……いい読みです。その線で、行ってみましょう"
+          "text": "では、その見立てで進めましょう"
         }
       ]
     },
@@ -1524,19 +1748,33 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "sad",
-          "text": "遠くへ越した子に……。同じ月を、見てるといいわね"
+          "text": "遠くへ越した子に……。同じ月を、見てるといいわね",
+          "variants": {
+            "regulara": {
+              "text": "遠くへ越した子に……。同じ月を、見てるといいわね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "別れは幕間にすぎない。手紙が、次の幕を開ける"
+          "text": "別れは幕間にすぎない。手紙が、次の幕を開ける",
+          "variants": {
+            "regularb": {
+              "text": "別れは幕間にすぎない。手紙が、次の幕を開ける",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "……はい。遠い窓まで、届けましょう"
+          "text": "遠い窓まで届けるのですね。では、その見立てで"
         }
       ]
     },
@@ -1550,19 +1788,33 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "ミトンが自分で書いたの！？ ……かわいすぎない？"
+          "text": "ミトンが自分で書いたの！？ ……かわいすぎない？",
+          "variants": {
+            "regulara": {
+              "text": "ミトンが自分で書いたの！？ ……かわいすぎない？",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "描かれた者から、描いた者へ。まさに、原点への手紙だ"
+          "text": "描かれた者から、描いた者へ。……物語が、作者に礼を言うのか",
+          "variants": {
+            "regularb": {
+              "text": "描かれた者から、描いた者へ。……物語が、作者に礼を言うのか",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "bow",
-          "text": "……そういう読みも、あると思います"
+          "text": "なるほど。では、その見立てで"
         }
       ]
     },
@@ -1594,7 +1846,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "sad",
-          "text": "……風。私も、飛ばされちゃう……"
+          "text": "……風。私も、飛ばされちゃう……",
+          "variants": {
+            "regulara": {
+              "text": "……風。私も、飛ばされちゃう……",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1606,7 +1865,7 @@
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "evil",
-          "text": "……さあ、夜番さん。どうしますか"
+          "text": "では、夜番の皆さん。どうしますか？"
         }
       ]
     },
@@ -1646,7 +1905,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "凧揚げなら任せて！ ……じゃなくて、儚く任せて"
+          "text": "凧揚げなら任せて！ ……じゃなくて、儚く任せて",
+          "variants": {
+            "regulara": {
+              "text": "凧揚げなら任せて！ ……じゃなくて、儚く任せて",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1680,7 +1946,7 @@
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……届ける道と、手紙の包み方を決めてください"
+          "text": "届ける道と、手紙の包み方を決めましょう"
         },
         {
           "speaker": "hajime",
@@ -1692,7 +1958,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "支度なら任せて。……か弱いけど、段取りは得意なの"
+          "text": "支度なら任せて。……か弱いけど、段取りは得意なの",
+          "variants": {
+            "regulara": {
+              "text": "支度なら任せて。……か弱いけど、段取りは得意なの",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1718,7 +1991,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "渡し方ひとつで、手紙の意味は変わる。最後の幕だ"
+          "text": "渡し方ひとつで、手紙の意味は変わる。最後の幕だ",
+          "variants": {
+            "regularb": {
+              "text": "渡し方ひとつで、手紙の意味は変わる。最後の幕だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1738,7 +2018,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "屋根の上こそ、月にいちばん近い舞台だ"
+          "text": "屋根の上こそ、月にいちばん近い舞台だ",
+          "variants": {
+            "regularb": {
+              "text": "屋根の上こそ、月にいちばん近い舞台だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1758,7 +2045,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "川は、遠くの町まで流れているのよね"
+          "text": "川は、遠くの町まで流れているのよね",
+          "variants": {
+            "regulara": {
+              "text": "川は、遠くの町まで流れているのよね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1798,7 +2092,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "きちんとした手紙ね。背すじが伸びるわ"
+          "text": "きちんとした手紙ね。背すじが伸びるわ",
+          "variants": {
+            "regulara": {
+              "text": "きちんとした手紙ね。背すじが伸びるわ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1818,7 +2119,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "花の色って、遠くからでも思い出せるのよね"
+          "text": "花の色って、遠くからでも思い出せるのよね",
+          "variants": {
+            "regulara": {
+              "text": "花の色って、遠くからでも思い出せるのよね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1838,7 +2146,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "かわいい……！ あ、ううん。素敵ね"
+          "text": "かわいい……！ あ、ううん。素敵ね",
+          "variants": {
+            "regulara": {
+              "text": "かわいい……！ あ、ううん。素敵ね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1920,7 +2235,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "坂の上……。あそこには、何があったかしら"
+          "text": "坂の上……。あそこには、何があったかしら",
+          "variants": {
+            "regulara": {
+              "text": "坂の上……。あそこには、何があったかしら",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1940,7 +2262,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "船頭の手紙が、川に宛名を消されたか。皮肉な幕開けだ"
+          "text": "船頭の手紙が、川に宛名を消されたか。皮肉な幕開けだ",
+          "variants": {
+            "regularb": {
+              "text": "船頭の手紙が、川に宛名を消されたか。皮肉な幕開けだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2020,7 +2349,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "sad",
-          "text": "……大事な手紙なのね"
+          "text": "……大事な手紙なのね",
+          "variants": {
+            "regulara": {
+              "text": "……大事な手紙なのね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2106,7 +2442,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "前足で？ 待て、それはつまり……"
+          "text": "前足で？ 待て、それはつまり……",
+          "variants": {
+            "regularb": {
+              "text": "前足で？ 待て、それはつまり……",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2126,7 +2469,7 @@
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "……ミトン、少し誇らしそうです"
+          "text": "ミトンも、少し誇らしそうですね"
         }
       ]
     },
@@ -2220,7 +2563,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "遠くても、同じ月……。いいお話ね"
+          "text": "遠くても、同じ月……。いいお話ね",
+          "variants": {
+            "regulara": {
+              "text": "遠くても、同じ月……。いいお話ね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2276,7 +2626,7 @@
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "bow",
-          "text": "……物語の中の、お話です"
+          "text": "物語の中のお話ですよ"
         }
       ]
     },
@@ -2320,7 +2670,7 @@
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "……続きは、また今度。きっと見つかります"
+          "text": "続きは、また今度。次の配達も楽しみですね"
         }
       ]
     },
@@ -2334,7 +2684,7 @@
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "……みんな、まっすぐ届けてくれました。ミトン、喜んでます"
+          "text": "まっすぐ届けられましたね。ミトンも喜んでいます"
         },
         {
           "speaker": "hajime",
@@ -2354,13 +2704,20 @@
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……寄り道も、配達のうちです。ミトンも、よく寄り道します"
+          "text": "寄り道も配達のうちですね。いろいろな道を通りました"
         },
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "寄り道したぶん、町に詳しくなったわね"
+          "text": "寄り道したぶん、町に詳しくなったわね",
+          "variants": {
+            "regulara": {
+              "text": "寄り道したぶん、町に詳しくなったわね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2374,31 +2731,45 @@
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……これで、おしまいです。配達、手伝ってくれてありがとうございました"
+          "text": "これでおしまいです。配達を手伝ってくださって、ありがとうございました"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "ミトン、いい猫だったな。つむぎの絵の中でも、あんなふうに走ってるの？"
+          "text": "ミトン、いい猫だったな。配達の続きも見たくなった"
         },
         {
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "……たぶん。いつも描いてる子なので、走るところも見せたくて"
+          "text": "皆さんの想像の中で、元気に走っていましたね"
         },
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "ミトンのぬいぐるみが出たら、三つ買う……じゃなくて、ほしいかしら"
+          "text": "ミトンのぬいぐるみが出たら、三つ買う……じゃなくて、ほしいかしら",
+          "variants": {
+            "regulara": {
+              "text": "ミトンのぬいぐるみが出たら、三つ買う……じゃなくて、ほしいかしら",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "描いた者が語る物語。それは林檎が林檎を語るような、原点の物語だ"
+          "text": "描いた者が語る物語。それは林檎が林檎を語るような、原点の物語だ",
+          "variants": {
+            "regularb": {
+              "text": "描いた者が語る物語。それは林檎が林檎を語るような、原点の物語だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2410,13 +2781,13 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "つむぎのGM、静かなのに、ちゃんとどきどきした"
+          "text": "サイさんのGM、静かなのに、ちゃんとどきどきした"
         },
         {
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "bow",
-          "text": "……光栄です。次の物語も、描いておきます"
+          "text": "ありがとうございます。次の物語もご用意しておきます"
         }
       ]
     },
@@ -2468,7 +2839,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "鐘と灯りの合図か。毎晩欠かさない舞台は、本物だけだ"
+          "text": "鐘と灯りの合図か。毎晩欠かさない舞台は、本物だけだ",
+          "variants": {
+            "regularb": {
+              "text": "鐘と灯りの合図か。毎晩欠かさない舞台は、本物だけだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2494,7 +2872,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "高いところの窓……。月がよく見えそうね"
+          "text": "高いところの窓……。月がよく見えそうね",
+          "variants": {
+            "regulara": {
+              "text": "高いところの窓……。月がよく見えそうね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2546,7 +2931,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "sad",
-          "text": "毎晩、一人きり……。誰かが来たら、きっと嬉しいわね"
+          "text": "毎晩、一人きり……。誰かが来たら、きっと嬉しいわね",
+          "variants": {
+            "regulara": {
+              "text": "毎晩、一人きり……。誰かが来たら、きっと嬉しいわね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2572,7 +2964,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "封蝋……。きちんとした手紙が好きな人なのね"
+          "text": "封蝋……。きちんとした手紙が好きな人なのね",
+          "variants": {
+            "regulara": {
+              "text": "封蝋……。きちんとした手紙が好きな人なのね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2598,7 +2997,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "押し花を入れた手紙……。思い出を一緒に送りたいのね"
+          "text": "押し花を入れた手紙……。思い出を一緒に送りたいのね",
+          "variants": {
+            "regulara": {
+              "text": "押し花を入れた手紙……。思い出を一緒に送りたいのね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2650,7 +3056,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "同じ月が、二つの町を照らす。遠い窓も、同じ舞台の上だ"
+          "text": "同じ月が、二つの町を照らす。遠い窓も、同じ舞台の上だ",
+          "variants": {
+            "regularb": {
+              "text": "同じ月が、二つの町を照らす。遠い窓も、同じ舞台の上だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2676,7 +3089,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "sad",
-          "text": "……振り返りながら、行ったのね"
+          "text": "……振り返りながら、行ったのね",
+          "variants": {
+            "regulara": {
+              "text": "……振り返りながら、行ったのね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2702,7 +3122,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "焼きたての林檎パイの匂い……。いや、今は手紙だ。窓辺、覚えておこう"
+          "text": "焼きたての林檎パイの匂い……。いや、今は手紙だ。窓辺、覚えておこう",
+          "variants": {
+            "regularb": {
+              "text": "焼きたての林檎パイの匂い……。いや、今は手紙だ。窓辺、覚えておこう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2780,7 +3207,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "壁に残る一匹の猫。すべての物語には、最初の一筆がある"
+          "text": "壁に残る一匹の猫。すべての物語には、最初の一筆がある",
+          "variants": {
+            "regularb": {
+              "text": "壁に残る一匹の猫。すべての物語には、最初の一筆がある",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2806,7 +3240,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "屋根づたいでしか来られない窓……。まるで猫の道ね"
+          "text": "屋根づたいでしか来られない窓……。まるで猫の道ね",
+          "variants": {
+            "regulara": {
+              "text": "屋根づたいでしか来られない窓……。まるで猫の道ね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2858,7 +3299,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "林檎パイの隣に、同じ猫。……林檎と猫、どちらが原点か悩ましいな"
+          "text": "パン屋の看板にも、同じ猫。この町は、あの絵描きの線でつながっているな",
+          "variants": {
+            "regularb": {
+              "text": "パン屋の看板にも、同じ猫。この町は、あの絵描きの線でつながっているな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2885,6 +3333,86 @@
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "鈴の猫って、ミトンのことだよな。描いた人が、探してる？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_make_hiyori_hiyori_yura_regulara",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regulara",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はユラ。早口の灯りともしを演じます"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_make_hiyori_hiyori_neri_regulara",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regulara",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はネリ。風見の見習いを演じます"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_make_adam_adam_leon_regularb",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はレオン。無口な鐘つきを演じます"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_make_adam_adam_gran_regularb",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はグラン。旅の天文学者を演じます"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
         }
       ]
     }
@@ -2928,7 +3456,17 @@
     "genre": "絵本ファンタジー",
     "tagline": "宛名のにじんだ手紙を、月の下で届ける。",
     "image": "../../img/backgrounds/trpg_leaf-mail_room.webp",
-    "choiceArt": {"src": "../../img/ui/trpg/choices-leaf-mail.webp", "rowCount": 5, "rows": {"route": 0, "wrap": 1, "handover": 2, "tactic": 3, "hypotheses": 4}},
+    "choiceArt": {
+      "src": "../../img/ui/trpg/choices-leaf-mail.webp",
+      "rowCount": 5,
+      "rows": {
+        "route": 0,
+        "wrap": 1,
+        "handover": 2,
+        "tactic": 3,
+        "hypotheses": 4
+      }
+    },
     "sceneAlt": "大きな月の下の坂の町。郵便鞄、時計塔、屋根の上、川の橋、パン屋の窓、掲示板。",
     "location": "時計坂の町 / 月夜の大通り",
     "atmosphere": "大きな月。石畳に、猫の足音がひとつ。",
@@ -3039,14 +3577,16 @@
       {
         "actor": "hiyori",
         "candidates": [
-          "hiyori"
+          "hiyori",
+          "regulara"
         ],
         "required": false
       },
       {
         "actor": "adam",
         "candidates": [
-          "adam"
+          "adam",
+          "regularb"
         ],
         "required": false
       }
@@ -3059,41 +3599,7 @@
     "max": 5,
     "nameMax": 6,
     "title": "あなたのキャラクターを作る",
-    "intro": "この物語で演じる夜番を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
-    "looks": [
-      {
-        "id": "lantern",
-        "label": "ランタンの夜番",
-        "detail": "短い黒髪に、紺の外套とランタン",
-        "color": "#2c3a5a",
-        "accent": "#e8c56a",
-        "portrait": "../../img/ui/trpg/look-leaf-mail-lantern.webp"
-      },
-      {
-        "id": "scarf",
-        "label": "マフラーの夜番",
-        "detail": "長いマフラーと、星柄の手袋",
-        "color": "#5a3c4a",
-        "accent": "#d9a7b8",
-        "portrait": "../../img/ui/trpg/look-leaf-mail-scarf.webp"
-      },
-      {
-        "id": "cap",
-        "label": "帽子の夜番",
-        "detail": "つばの広い帽子に、月の徽章",
-        "color": "#3e4b3a",
-        "accent": "#c9d6a3",
-        "portrait": "../../img/ui/trpg/look-leaf-mail-cap.webp"
-      },
-      {
-        "id": "glasses",
-        "label": "眼鏡の夜番",
-        "detail": "丸眼鏡と、地図の入った肩かけ鞄",
-        "color": "#4a4038",
-        "accent": "#e3c9a0",
-        "portrait": "../../img/ui/trpg/look-leaf-mail-glasses.webp"
-      }
-    ],
+    "intro": "この物語で演じる夜番を決めよう。出自・能力値は、卓のあいだずっと使う",
     "archetypes": [
       {
         "id": "watch",
@@ -3146,9 +3652,9 @@
         {
           "id": "yura",
           "name": "ユラ",
-          "title": "灯りともし",
-          "trait": "か細い声の灯りともし。梯子をのぼるのは町一番速い",
-          "likes": "屋台の夜鳴きラーメン",
+          "title": "早口の灯りともし",
+          "trait": "梯子をのぼりながら、町の噂を全部しゃべる。口も足も町一番速い",
+          "likes": "焼きいもの屋台。両手に一本ずつ",
           "stats": {
             "eye": 3,
             "hand": 4,
@@ -3156,7 +3662,8 @@
             "nerve": 2
           },
           "making": "trpg_leaf_mail_make_hiyori_hiyori_yura",
-          "portrait": "../../img/ui/trpg/pc-yura.webp"
+          "aside": "trpg_leaf_mail_aside_hiyori_hiyori_yura",
+          "after": "trpg_leaf_mail_after_hiyori_hiyori_yura"
         },
         {
           "id": "neri",
@@ -3170,8 +3677,37 @@
             "talk": 1,
             "nerve": 4
           },
-          "making": "trpg_leaf_mail_make_hiyori_hiyori_neri",
-          "portrait": "../../img/ui/trpg/pc-neri.webp"
+          "making": "trpg_leaf_mail_make_hiyori_hiyori_neri"
+        }
+      ],
+      "regulara": [
+        {
+          "id": "yura",
+          "name": "ユラ",
+          "title": "早口の灯りともし",
+          "trait": "梯子をのぼりながら、町の噂を全部しゃべる。口も足も町一番速い",
+          "likes": "焼きいもの屋台。両手に一本ずつ",
+          "stats": {
+            "eye": 3,
+            "hand": 4,
+            "talk": 2,
+            "nerve": 2
+          },
+          "making": "trpg_leaf_mail_make_hiyori_hiyori_yura_regulara"
+        },
+        {
+          "id": "neri",
+          "name": "ネリ",
+          "title": "風見の見習い",
+          "trait": "風が吹くと倒れそう。……斧投げで鍛えた腕は、びくともしない",
+          "likes": "斧投げ。ゆるい顔の猫のお守り",
+          "stats": {
+            "eye": 3,
+            "hand": 3,
+            "talk": 1,
+            "nerve": 4
+          },
+          "making": "trpg_leaf_mail_make_hiyori_hiyori_neri_regulara"
         }
       ]
     },
@@ -3180,9 +3716,9 @@
         {
           "id": "leon",
           "name": "レオン",
-          "title": "鐘つき",
-          "trait": "時計塔の鐘をつく。鐘の音と同じくらい、言葉も大きい",
-          "likes": "林檎の砂糖煮。甘さの原点",
+          "title": "無口な鐘つき",
+          "trait": "鐘の数でしか返事をしない。たまの一言は、よく通る",
+          "likes": "町が眠ったあとの鐘楼。鐘の掃除",
           "stats": {
             "eye": 2,
             "hand": 2,
@@ -3190,7 +3726,8 @@
             "nerve": 3
           },
           "making": "trpg_leaf_mail_make_adam_adam_leon",
-          "portrait": "../../img/ui/trpg/pc-leaf-mail-leon.webp"
+          "aside": "trpg_leaf_mail_aside_adam_adam_leon",
+          "after": "trpg_leaf_mail_after_adam_adam_leon"
         },
         {
           "id": "gran",
@@ -3204,8 +3741,37 @@
             "talk": 3,
             "nerve": 2
           },
-          "making": "trpg_leaf_mail_make_adam_adam_gran",
-          "portrait": "../../img/ui/trpg/pc-gran.webp"
+          "making": "trpg_leaf_mail_make_adam_adam_gran"
+        }
+      ],
+      "regularb": [
+        {
+          "id": "leon",
+          "name": "レオン",
+          "title": "無口な鐘つき",
+          "trait": "鐘の数でしか返事をしない。たまの一言は、よく通る",
+          "likes": "町が眠ったあとの鐘楼。鐘の掃除",
+          "stats": {
+            "eye": 2,
+            "hand": 2,
+            "talk": 4,
+            "nerve": 3
+          },
+          "making": "trpg_leaf_mail_make_adam_adam_leon_regularb"
+        },
+        {
+          "id": "gran",
+          "name": "グラン",
+          "title": "旅の天文学者",
+          "trait": "月を測りに来た。宇宙の話は、必ず林檎から始まる",
+          "likes": "二つ並んだ林檎。宇宙の原点",
+          "stats": {
+            "eye": 4,
+            "hand": 2,
+            "talk": 3,
+            "nerve": 2
+          },
+          "making": "trpg_leaf_mail_make_adam_adam_gran_regularb"
         }
       ]
     }

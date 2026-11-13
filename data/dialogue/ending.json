@@ -10,9 +10,13 @@
           "text": "9000との二本勝負から、何日かたった。"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_ending_tonari_night"
+        },
+        {
           "speaker": "",
           "face": "",
-          "text": "tonariの閉店後。スミさんが、洗い終えたグラスを伏せる。"
+          "text": "tonariの閉店後。顔を出したスミさんが、洗い終えたグラスを勝手に伏せていく。"
         },
         {
           "speaker": "sumi",
@@ -22,7 +26,10 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。今日は俺も作ります"
+          "text": "はい。今日は俺が作ります"
+        },
+        {
+          "type": "hide_cg"
         }
       ]
     },
@@ -37,12 +44,12 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "明日、仕込み頼めるか"
+          "text": "来週の仕込みは、もう決めたのか"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。買い足すもの、書いておきます"
+          "text": "はい。つむぎのシフトに合わせて、買い足すものも"
         },
         {
           "speaker": "",
@@ -55,24 +62,40 @@
           "text": "裏返して、店の名前を書きかけたところで、ペンを止めた。"
         },
         {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "明日から、店はお前が回せ"
+          "speaker": "",
+          "face": "",
+          "text": "三ヶ月目に決めた名前は、もう書けなかった。あれは、俺ひとりの城の名前だった。"
         },
         {
           "speaker": "sumi",
-          "face": "normal",
-          "text": "tonariを任せる。お前の店の名前は、その先まで取っとけ"
+          "face": "smile",
+          "text": "店はもう、お前が回してる。俺が言うことも、だいぶ減ったな"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……はい"
+          "text": "スミさん。tonariって、どうしてこの名前なんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "客の隣に座れる店にしたかった、……それだけだ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "duck": true,
+          "text": "tonariは任せた。お前の店の名前は、その先まで取っとけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。いつか、ちゃんと看板にします"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "店を出る前に、明日のシフトを確かめる。"
+          "text": "店を出る前に、明日のシフトを確かめる。俺の名前の隣に、つむぎの名前が並んでいた。"
         }
       ]
     },
@@ -128,12 +151,42 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "うん。どっちの話も聞きたいです"
+          "text": "うん。どっちの話も聞きたい"
         },
         {
           "speaker": "minto",
           "face": "ura_smile",
           "text": "じゃあ、まず今日のお客さんの話からね"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "三番の席の人、初めての来店で、ずっとメニューを見てたの"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "ミントが苦手かもって顔だったから、ピーチを薄く足して出した"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その人、最後まで吸えた？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "うん。帰りに、次は友達を連れてくるって。……はじめくんの今日は？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "鉄仮面さんが、二口目でホースを置かなかった"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……ふふ。じゃあ二人とも、今日はいい日だったね"
         }
       ],
       "metadata": {
@@ -146,7 +199,22 @@
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎのスケッチブックに、新しい猫が増えていた。"
+          "text": "シフト明け。つむぎのスケッチブックに、新しい猫が増えていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店先のメニュー板には、つむぎの描いた猫が、今日もおすすめの横に座っていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……消されてませんでした。スミさん、毎朝見てるって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "消さないよ。常連さんも、あの猫で注文決めてるから"
         },
         {
           "speaker": "hajime",
@@ -219,7 +287,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "好きだよ。……急に照れるな"
+          "text": "好きだよ。……口にすると、照れるもんだな"
         },
         {
           "speaker": "ageha",
@@ -245,6 +313,21 @@
           "speaker": "",
           "face": "",
           "text": "彼女は頷いて、俺の肩に頭を預けた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……明日、手の調子がよかったら、店で一台作る。ハジメっち、客で来て"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "行く。開店前から並ぶ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "並ばなくていいって。……いちばん奥の席、空けとくから"
         }
       ],
       "metadata": {
@@ -287,7 +370,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も。次は一緒に何も作らなくてもいいね"
+          "text": "俺も。次も、二人で何も作らない日にしよう"
         },
         {
           "speaker": "mashiro",
@@ -298,6 +381,16 @@
           "speaker": "",
           "face": "",
           "text": "伸びてきた手を握った。どちらも道具を持っていない手だった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……手、あったかいねぇ。今日は、これだけで十分"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マグカップの紅茶が冷めるまで、二人とも、その手を離さなかった。"
         }
       ],
       "metadata": {
@@ -305,12 +398,12 @@
       }
     },
     {
-      "dialogue_id": "epilogue_rin",
+      "dialogue_id": "epilogue_rio",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "ショールームを閉めたあと、凛さんが小さな紙を差し出した。"
+          "text": "ショールームを閉めたあと、凛想さんが小さな紙を差し出した。"
         },
         {
           "speaker": "hajime",
@@ -318,7 +411,7 @@
           "text": "今日も同意書ですか"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "違う。指輪のサイズ、測ってきた"
         },
@@ -328,7 +421,7 @@
           "text": "……俺、何て返せばいいんだろう"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "今決めなくていい。渡したかっただけ"
         },
@@ -340,22 +433,37 @@
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんは予定表を開き、ひとつの午後を指した。"
+          "text": "凛想さんは予定表を開き、ひとつの午後を指した。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "ここ。仕事は入れない"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も、店に話しておきます"
+          "text": "俺も、その日はシフトを空けておきます"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "……うん。楽しみにしてる"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "あ、それと。指輪のお店、香りの強いところはやめてね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どうしてですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "君の匂いが、分からなくなるから"
         }
       ],
       "metadata": {
@@ -410,6 +518,32 @@
           "speaker": "samechan",
           "face": "normal",
           "text": "見ておらぬなら、喋らぬのじゃ！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "映画が終わっても、札は「店主休憩中」のままだった。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "次の休みは、わしがお主の店へ行くのじゃ。客としてな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いちばんいい席、空けておきます"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、通路の幅を測りに行くつもりだ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コロちゃん！　……それは、言わぬ約束じゃ"
         }
       ],
       "metadata": {
@@ -422,58 +556,138 @@
         {
           "speaker": "",
           "face": "",
-          "text": "別の日。ひよりさんが鞄を置き、ソファに深く沈んだ。"
+          "text": "別の日。部屋に来たひよりさんが、買ってきた夕飯をテーブルに並べた。"
         },
         {
           "speaker": "hiyori",
-          "face": "normal",
-          "text": "今日の総務、閉店しました。私も半透明になります"
+          "face": "sad",
+          "text": "今夜の迷える魂は……こっちかな",
+          "inner": "いつもの返事がない。まだ仕事の中にいる"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ご飯、先に温めますね"
+          "text": "すみません。明日の段取り、考えてました"
         },
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "うん。……あ、肩、五分だけ借りたい"
+          "text": "私も仕事の続き、気になった。でも、今日は置いてきた。明日の私に任せる"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "今、相談したい？ それとも、ご飯にする？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ご飯にします。続きは、食べてから決めます"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ひよりさんは俺の肩に頬を寄せて、息をついた。"
+          "text": "メモを伏せると、ひよりさんは袋から箸を二膳取り出した。"
         },
         {
           "speaker": "hiyori",
           "face": "smile",
-          "text": "捕まえてくれたから、今日は消えません",
-          "inner": "明日も会社に行く。その前に、もう少しここにいたい"
+          "text": "食べたあとの片づけは、二人でね",
+          "inner": "急がせたくない。でも、隣には座ってほしい"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "五分過ぎましたよ"
+          "face": "smile",
+          "text": "今日は俺が、見つけてもらう番ですね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "ふふ。見つける役も……たまにはね"
         },
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "延長申請、……だめ？"
+          "text": "……来週は締め日だから、迎えはお願い。ラーメン屋の前で"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "ご飯が冷めるまでなら"
+          "face": "smile",
+          "text": "はい。味玉は、二つですね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "予約成立。……今日のご飯も、隣で食べてね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "顔を見合わせて笑う。彼女はもう少しだけ、肩の上に残った。"
+          "text": "ひよりさんが隣の座面をぽんと叩いた。メモは伏せたまま、二人でいただきますを言った。"
         }
       ],
       "metadata": {
         "private_scene": true
       }
+    },
+    {
+      "dialogue_id": "epilogue_noor",
+      "comment": "DSR20 ヌールの後日談。恋人がヌール一人の時だけ（selectStoryEnding）。ヌールが日本へ来て、今度ははじめがガイドをする（ch4_noor_cafe_4 の約束）。大会の結果には触れない。能力値は上げない。",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕方のtonari。扉が開いて、大きなスーツケースが先に入ってきた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ハジメ！ 来ちゃった。……ほんとに来ちゃった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いらっしゃい、ヌールさん。長旅、お疲れさまでした"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "約束、覚えてる？ 今度は、ハジメがガイドの番"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "もちろん。行きたい場所のリスト、全部回りましょう"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "全部は無理。……一日一か所にして、何回も来るから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの奥で、スミさんが黙って炭を起こし始めた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……ここが、ハジメの煙の始まりの場所？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。今日は、俺が一台作ります。ダブルアップルで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "もらった素焼きのハガルを出すと、ヌールさんは小さく笑って、俺の手を握った。"
+        }
+      ]
     },
     {
       "dialogue_id": "ending_daily_smoke",
@@ -499,6 +713,11 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "いらっしゃいませ。お好きな席へどうぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言い終わる前に、つむぎが水のグラスを二つ運んでいった。"
         },
         {
           "speaker": "",
@@ -583,7 +802,27 @@
         {
           "speaker": "dr_kemuri",
           "face": "normal",
+          "beat": 500,
           "text": "いえ。今日は、客です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "博士は胸ポケットへ手をやりかけて、やめた。ペンは、白衣に挿したままだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を遠めに置いた一台を出す。博士は一口吸って、ホースを膝に置いた。"
+        },
+        {
+          "type": "sfx",
+          "id": "bubbling"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "泡の音と、グラスの触れる音。博士はしばらく、何もせずに聞いていた。"
         },
         {
           "speaker": "",
@@ -598,7 +837,7 @@
         {
           "speaker": "customer",
           "face": "normal",
-          "text": "はじめくん、あとで友達が来るんだけど、もう一台お願いしてもいい？"
+          "text": "はじめさん、あとでもう一人来るんですけど、もう一台お願いできますか？"
         },
         {
           "speaker": "hajime",
@@ -609,11 +848,19 @@
           "speaker": "",
           "face": "",
           "text": "返事を聞きながら、もう一つボウルを出す。"
-        },
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ending_salaryman_name",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "閉店の少し前。奥まった席に、いつものサラリーマンが座った。"
+          "text": "閉店の少し前。奥まった席に、いつもの鉄仮面さんが座った。"
         },
         {
           "speaker": "hajime",
@@ -623,18 +870,29 @@
         {
           "speaker": "",
           "face": "",
-          "text": "やがて、ホースの持ち手をそっとテーブルに置く。会計を済ませ、帰り際にポツリと。"
+          "text": "ホースを置く手が、いつもよりゆっくり動く。会計を済ませたあと、口元がほんの少し緩んだ。"
         },
         {
           "speaker": "salaryman",
           "face": "normal",
-          "text": "……今日の、良かったよ",
+          "text": "……今日の、[pause]良かったよ",
           "portrait": false
         },
         {
           "speaker": "hajime",
+          "face": "surprise",
+          "text": "……笑いました？"
+        },
+        {
+          "speaker": "salaryman",
           "face": "smile",
-          "text": "ありがとうございます。……また明日"
+          "duck": true,
+          "text": "……表です。表克己。いつも、ありがとうございます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます……また明日"
         },
         {
           "speaker": "",

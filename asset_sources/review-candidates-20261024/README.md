@@ -78,9 +78,9 @@
 |[SCORE-03](./tournament-ui/originals/SCORE-03.png)|要修正|縦3審査員と品質欄を分離。2/8と今回配分は確認。|炭ボウルの新規描写と架空工程名あり。配分脇の順位風数字も曖昧。|
 |[SCORE-04](./tournament-ui/originals/SCORE-04.png)|比較候補|斜めに品質85/100と投票+3を分離。工程名と2/8、配分を確認。|投入/保留の繰返しが多い。小文字と斜め境界の狭い表示は未検証。|
 |[SCORE-05](./tournament-ui/originals/SCORE-05.png)|比較候補|白地で85/100対+3pt。80/90と審査員2/8を確認。|細い罫線や脚注の縮小可読性、コントラストは未測定。|
-|[RANK-01](./tournament-ui/originals/RANK-01.png)|要修正|4行順位9/4/2/0、提供後2/4、合計15を確認。|南雲→はじめ4は2回の投入2/3で一人最大3の実経路と不整合。合計一致だけでは合格不可。|
+|[RANK-01](./tournament-ui/originals/RANK-01.png)|要修正|4行順位9/4/2/0、提供後2/4、合計15を確認。|須井→はじめ4は2回の投入2/3で一人最大3の実経路と不整合。合計一致だけでは合格不可。|
 |[RANK-02](./tournament-ui/originals/RANK-02.png)|比較候補|浅い表彰台3枠＋4位行。9/4/2/0、2/4、各投入5/保留5。|途中なのに月桂冠と表彰台が確定優勝に見える懸念。総計15の独立表示なし。|
-|[RANK-03](./tournament-ui/originals/RANK-03.png)|要修正|2x2人物名カード＋審査員sidebar。合計順位9/4/2/0と工程を確認。|内訳列計は上園5/博士4/南雲6でsidebar各5と不一致。南雲→はじめ4も不可能。|
+|[RANK-03](./tournament-ui/originals/RANK-03.png)|要修正|2x2人物名カード＋審査員sidebar。合計順位9/4/2/0と工程を確認。|内訳列計は上園5/博士4/須井6でsidebar各5と不一致。須井→はじめ4も不可能。|
 |[RANK-04](./tournament-ui/originals/RANK-04.png)|要修正|左から0/2/4/9、右ほど上位。途中2/4、各5/5を確認。|棒高が得点比例でなく0にも高さあり。審査員脇1/2/3が順位に見える。|
 |[RANK-05](./tournament-ui/originals/RANK-05.png)|比較候補|左に首位9、右に4/2/0。工程と投入/保留5/5を確認。|大きい冠が途中首位を優勝と誤認させる懸念。総計15欄なし。MENUは機能未実装。|
 |[FINAL-01](./tournament-ui/originals/FINAL-01.png)|比較候補|優勝章＋一覧18/8/4/0。審査員6/4/0/0、6/4/0/0、6/0/4/0と各10/0は一致。|審査員内訳の1〜4徽章は総合順位か個別順位か曖昧。情報繰返しが多い。|
@@ -390,7 +390,7 @@
 | [採用済みハンドル2点・短いチップ2点](https://github.com/haseatsu114514-dot/shisha-game/blob/main/asset_sources/shisha-hardware-reference/skin-candidates-issue374/README.md) | 原画4点は採用済み。外観選択・実装受入は #437 の別工程。 |
 | [スミ登場カットインの制作履歴](https://github.com/haseatsu114514-dot/shisha-game/blob/main/asset_sources/character-intros/sumi-coal-issue750/README.md) | 過去候補と修正経緯の参照。今回の未採用スチルとは別。全受入完了を意味しない。 |
 | [制作UIの既存実画面](https://github.com/haseatsu114514-dot/shisha-game/blob/main/asset_sources/craft-ui-20261010/README.md) | 過去の実装・画面記録。新しい16工程×3方向のAI比較48案とは別資料。新比較はローカル保存35/48の記録があり、今回のGitHub30画像には含めていない。 |
-| [90年代OVAスタディと旧タイトル試作](https://github.com/haseatsu114514-dot/shisha-game/blob/main/asset_sources/retro-ova-study-519/README.md) | 履歴。最新の「人物は元の既存デザイン、背景の90年代方向は維持」という本人方針に従う。旧キャラ案を新しい採用案とは扱わない。 |
+| 90年代OVAスタディと旧タイトル試作（`retro-ova-study-519`） | 2026-11-08 削除。90年代風（OVA・セル画）の画風は使わない方針になった（要望台帳 RX01）。 |
 | [ショップ画像の既存採用・旧候補](https://github.com/haseatsu114514-dot/shisha-game/blob/main/asset_sources/shop-art-issue586/README.md) | 現行採用と旧Draftの履歴が同居。実在アマボーストを参考にする新版は未生成で、この一覧から代替採用しない。 |
 
 会話ウインドウ15案は本ページの上段にあります。Rei新3案は未生成。#947は2候補を本ページへ追加しましたが、規格未達・受入合格0です。既存4コマ参照CG自体を新作として掲載していません。

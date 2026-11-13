@@ -11,6 +11,22 @@ const ngCase = ng => Object.fromEntries(ng.flavors.map(family => [
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
 const click = (page, selector, touch) => touch ? page.locator(selector).tap() : page.locator(selector).click();
+async function demoKeyboardLoop(page) {
+  await page.waitForFunction(() => document.activeElement?.classList.contains("bench-demo-skip"));
+  await page.keyboard.press("Shift+Tab");
+  assert.equal(await page.locator(".bench-demo-finish").evaluate(n => n === document.activeElement), true);
+  await page.keyboard.press("Tab");
+  assert.equal(await page.locator(".bench-demo-skip").evaluate(n => n === document.activeElement), true);
+  // Include native video controls when present, the text disclosure, and both close buttons.
+  for (const key of ["Tab", "Shift+Tab"]) for (let i = 0; i < 16; i++) {
+    await page.keyboard.press(key);
+    const focus = await page.locator(".bench-demo-sheet").evaluate(n => {
+      const a = document.activeElement;
+      return { inside: n.contains(a), at: a ? `${a.tagName}.${a.className}${a.closest?.(".bench") ? " (bench)" : ""}` : "none" };
+    });
+    assert.equal(focus.inside, true, `${key} #${i}: focus left the demo sheet to ${focus.at}`);
+  }
+}
 async function setup(page) {
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"); core.newGame();
@@ -197,42 +213,58 @@ await suite("craft-materials", async check => {
       await capture(page, `${device}-foil-template`);
       await click(page, '[data-test="hole-start"]', touch);
       await page.locator(".countdown").waitFor(); await page.locator(".countdown").waitFor({ state: "detached" });
-      await assertFits(page, ".foil, .foil-legend, .hr-side, .hr-punch, .hr-row");
-      const turnTo = async (ring, k, turn = 0) => {
-        await page.evaluate(async ({ ring, k, turn }) => {
-          const period = F.holes.RINGS.find(r => r.id === ring).period * F.common.skill.slow(F.cs) * 1.3;
-          F.clock = 1000 + period * (turn + k / 12) * 1000;
-          await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
-        }, { ring, k, turn });
+      await assertFits(page, ".foil, .hr-side, .hr-punch, .hr-row");
+      // #2937: 凡例・集計・採点の説明は「?」へ。基本画面には置かない。
+      assert.equal(await page.locator(".foil-legend, .hr-score, .hr-combo, .hr-role").count(), 0, "Foil base screen must stay uncluttered");
+      assert.equal(await page.locator('.bench-guide-extra[data-test="hole-guide"] li').count(), 6);
+      // 針は狙う目印の手前の端から 0.4秒×slow で重なる。押して、時計を進めてから離す。
+      const slow = await page.evaluate(() => F.common.skill.slow(F.cs) * 1.3);
+      const advance = ms => page.evaluate(async ms => {
+        F.clock += ms;
+        await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+      }, ms);
+      const pressHold = async (selector, ms, key = false) => {
+        if (touch) {
+          await page.locator(selector).dispatchEvent("pointerdown", { pointerType: "touch", isPrimary: true });
+          await advance(ms);
+          await page.locator(selector).dispatchEvent("pointerup", { pointerType: "touch", isPrimary: true });
+        } else if (key) {
+          await page.keyboard.down("Space"); await advance(ms); await page.keyboard.up("Space");
+        } else {
+          const box = await page.locator(selector).boundingBox();
+          await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+          await page.mouse.down(); await advance(ms); await page.mouse.up();
+        }
       };
       for (let k = 0; k < 12; k++) {
-        await turnTo("outer", k);
+        await advance(400 * slow);
         assert.equal(await page.locator(".foil-markers .foil-marker.next").count(), 1);
         const gap = await page.evaluate(() => {
           const a = document.querySelector(".foil-markers .next").getBoundingClientRect(), b = document.querySelector("[data-test=foil] .foil-cursor").getBoundingClientRect();
           return Math.hypot((a.left + a.right - b.left - b.right) / 2, (a.top + a.bottom - b.top - b.bottom) / 2);
         });
         assert(gap < 1, `Next marker disagrees with the scoring target: ${gap}px`);
-        if (touch) await click(page, '[data-test="hole-punch"]', true); else await page.keyboard.press("Space");
+        await pressHold('[data-test="hole-punch"]', 250, true);
       }
       assert.equal(await page.locator(".foil-holes .foil-hole.perfect").count(), 12);
+      assert.equal(await page.locator(".foil-holes .foil-hole.small").count(), 12, "A moderate press must leave the standard small hole");
       assert(await page.locator('[data-test="hole-punch"]').isDisabled());
       assert(await page.locator('[data-test="foil"] .foil-cursor').isHidden());
       const locations = await page.locator(".foil-holes .foil-hole").evaluateAll(ns => ns.map(n => [n.style.left, n.style.top]));
       await capture(page, `${device}-foil-outer-complete`);
       await click(page, '[data-test="hole-next"]', touch);
       assert.deepEqual(await page.locator(".foil-holes .foil-hole").evaluateAll(ns => ns.map(n => [n.style.left, n.style.top])), locations);
-      await turnTo("middle", .48, 2);
-      await click(page, '[data-test="foil"]', touch); // Off-target puncture: its mark must remain too.
-      assert.equal(await page.locator(".foil-holes .foil-hole.miss").count(), 1);
+      await advance(900 * slow); // 弧の奥の端で休んでいる針
+      await pressHold('[data-test="foil"]', 250); // Off-target puncture: it stands as that mark's hole (#3023).
+      assert.equal(await page.locator(".foil-holes .foil-hole.rough").count(), 1);
       for (let k = 1; k <= 12; k++) {
-        await turnTo("middle", k, 2);
-        await click(page, '[data-test="hole-punch"]', touch);
+        await advance(400 * slow);
+        await pressHold('[data-test="hole-punch"]', 250);
         if (k === 3) await capture(page, `${device}-foil-punches`);
       }
-      assert.equal(await page.locator(".foil-holes .foil-hole").count(), 25);
+      assert.equal(await page.locator(".foil-holes .foil-hole").count(), 24);
       assert.equal(await page.locator(".foil-markers .next").count(), 0);
-      assert.equal(await page.locator(".worker-punch-dots ellipse").count(), 25, "Hand illustration lost the real holes");
+      assert.equal(await page.locator(".worker-punch-dots ellipse").count(), 24, "Hand illustration lost the real holes");
       assert(!await page.locator('[data-test="hole-done"]').isDisabled());
       const finalBar = await page.locator('.hr-time-bar b').evaluate(n=>n.style.width);
       await page.evaluate(async () => {
@@ -245,7 +277,7 @@ await suite("craft-materials", async check => {
       await click(page, '[data-test="hole-done"]', touch);
       await page.waitForFunction(() => F.cs.holes !== null);
       const result = await page.evaluate(() => ({ template: F.cs.holes.templateId, outer: F.cs.holes.outer, middle: F.cs.holes.middle, inner: F.cs.holes.inner }));
-      assert.deepEqual(result, { template: "outer12-middle12", outer: 12, middle: 13, inner: 0 });
+      assert.deepEqual(result, { template: "outer12-middle12", outer: 12, middle: 12, inner: 0 });
       await click(page, '[data-test="step-next"]', touch);
       await page.evaluate(()=>F.running);
     }, options);
@@ -268,11 +300,155 @@ await suite("craft-materials", async check => {
       await capture(page, `${device}-preview`);
     }, options);
   }
+  await check("demo-reopen-keyboard-background", async page => {
+    await page.route("**/media/demo-holes.mp4", route => route.fulfill({ contentType: "video/mp4", body: "invalid video fixture" }));
+    await setup(page);
+    await page.evaluate(() => { F.running = F.holes.runHoles(F.cs); });
+    await page.locator(".bench-demo-skip").click();
+    await page.locator('[data-test="hole-start"]').waitFor();
+    await page.locator(".bench-guide > summary").click();
+    await page.locator(".bench-demo-link").click();
+    await page.waitForFunction(() => document.activeElement?.classList.contains("bench-demo-skip"));
+    await page.keyboard.press("Shift+Tab");
+    const escaped = await page.evaluate(() => !document.querySelector(".bench-demo-sheet").contains(document.activeElement));
+    const target = await page.evaluate(() => document.activeElement?.getAttribute("data-test"));
+    if (escaped && target === "bench-guide-close") {
+      await page.keyboard.press("Enter");
+      await page.waitForFunction(() => !document.querySelector(".bench-guide").open && !document.querySelector(".bench-panel").inert);
+    }
+    if (escaped) await page.locator(".bench-demo-skip").click();
+    else {
+      assert.equal(await page.locator(".bench-demo-finish").evaluate(n => n === document.activeElement), true);
+      await page.keyboard.press("Enter");
+    }
+    await page.locator(".bench-demo-sheet").waitFor({ state: "detached" });
+    const state = await page.evaluate(escaped => ({ escaped, guideOpen: document.querySelector(".bench-guide").open,
+      panelInert: document.querySelector(".bench-panel").inert }), escaped);
+    console.log("demo keyboard restoration", JSON.stringify({ target, ...state }));
+    assert.equal(escaped, false, "Shift+Tab must not reach the background guide");
+    assert.equal(state.guideOpen, true);
+    assert.equal(state.panelInert, true, "The still-open guide keeps the work panel paused");
+    await page.locator('[data-test="bench-guide-close"]').click();
+    await page.waitForFunction(() => !document.querySelector(".bench-panel").inert);
+  });
+  // #2447: failure simulation is separate from verifying the packaged video's contents.
+  for (const [device, touch, options] of [["pc", false, {}], ["touch", true,
+    { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await check(`demo-decode-error-${device}`, async page => {
+      // A successful HTTP response with undecodable media exercises the real media error event.
+      await page.route("**/media/demo-holes.mp4", route => route.fulfill({ contentType: "video/mp4", body: "invalid video fixture" }));
+      await setup(page);
+      await page.evaluate(() => { F.running = F.holes.runHoles(F.cs); });
+      const sheet = page.locator(".bench-demo-sheet");
+      await sheet.waitFor();
+      await page.waitForFunction(() => document.querySelector(".bench-demo-stage")?.hidden);
+      await demoKeyboardLoop(page);
+      assert.match(await page.locator(".bench-demo-status").innerText(), /動画を再生できません/);
+      assert.equal(await page.locator(".bench-demo-instructions").evaluate(n => n.open), true);
+      const expected = await page.evaluate(async () => (await import("./js/craft/demo.js")).STEP_DEMOS.holes.cues.map(c => c.text));
+      assert.deepEqual(await page.locator(".bench-demo-instructions li").allTextContents(), expected);
+      const contrasts = await page.locator(".bench-demo-card").evaluate(card => {
+        const luma = css => css.match(/[\d.]+/g).slice(0, 3).map(Number).map(n => {
+          const c = n / 255; return c <= .04045 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4;
+        }).reduce((sum, c, i) => sum + c * [.2126, .7152, .0722][i], 0);
+        const bg = luma(getComputedStyle(card).backgroundColor);
+        return [...card.querySelectorAll(".bench-demo-status, .bench-demo-instructions summary, .bench-demo-instructions li")].map(n => {
+          const fg = luma(getComputedStyle(n).color);
+          return { text: n.textContent, ratio: (Math.max(fg, bg) + .05) / (Math.min(fg, bg) + .05) };
+        });
+      });
+      assert.equal(contrasts.length, 8);
+      assert(contrasts.every(row => row.ratio >= 4.5), JSON.stringify(contrasts));
+      await page.locator(".bench-demo-instructions summary").scrollIntoViewIfNeeded();
+      await assertFits(page, ".bench-demo-instructions summary");
+      await capture(page, `2447-demo-error-${device}`);
+      await click(page, ".bench-demo-finish", touch);
+      await sheet.waitFor({ state: "detached" });
+      await page.locator('[data-test="hole-start"]').waitFor();
+      assert.equal(await page.locator(".bench-panel").evaluate(n => n.inert), false);
+      assert.equal(await page.locator(".bench").getAttribute("data-demo-paused"), null);
+      // Reopen through the real help entry; skipping remains available after another error.
+      await click(page, ".bench-guide > summary", touch);
+      await click(page, ".bench-guide .bench-demo-link", touch);
+      await sheet.waitFor();
+      await demoKeyboardLoop(page);
+      await click(page, ".bench-demo-skip", touch);
+      await sheet.waitFor({ state: "detached" });
+      assert.equal(await page.locator(".bench-demo-link").evaluate(n => n === document.activeElement), true);
+      await click(page, '[data-test="bench-guide-close"]', touch);
+      await page.waitForFunction(() => !document.querySelector(".bench-panel").inert);
+    }, options);
+    await check(`demo-stall-and-interrupt-${device}`, async page => {
+      const pending = [];
+      await page.route("**/media/demo-holes.mp4", route => { pending.push(route); });
+      await setup(page);
+      await page.evaluate(async () => {
+        F.demo = await import("./js/craft/demo.js");
+        F.beforeDemo = JSON.stringify(F.core.state);
+        F.beforeDemoInert = [...document.querySelector(".bench").children].map(n => n.inert);
+        F.plays = [];
+        // Controlled promises/events test autoplay and delayed callbacks without relying on network timing.
+        HTMLMediaElement.prototype.play = function () { return new Promise((resolve, reject) => F.plays.push({ resolve, reject })); };
+        F.startDemo = () => F.demo.openDemoSheet(document.querySelector(".bench"), "holes");
+        F.demoTask = F.startDemo();
+      });
+      await page.locator(".bench-demo-sheet").waitFor();
+      await demoKeyboardLoop(page);
+      assert.equal(await page.locator(".bench-demo-instructions li").count(), 6, "Instructions exist before any media event");
+      await page.evaluate(() => F.plays[0].reject(new DOMException("fixture autoplay policy", "NotAllowedError")));
+      await page.waitForFunction(() => document.querySelector(".bench-demo-status")?.textContent.includes("自動再生できません"));
+      assert.equal(await page.locator(".bench-demo-stage").evaluate(n => n.hidden), false, "Manual video controls stay available");
+      for (const type of ["stalled", "waiting"]) {
+        await page.evaluate(type => document.querySelector(".bench-demo-stage video").dispatchEvent(new Event(type)), type);
+        assert.match(await page.locator(".bench-demo-status").innerText(), /読み込みが止まっています/);
+        assert.equal(await page.locator(".bench-demo-instructions").evaluate(n => n.open), true);
+      }
+      await page.evaluate(() => document.querySelector(".bench-demo-stage video").dispatchEvent(new Event("playing")));
+      assert.match(await page.locator(".bench-demo-status").innerText(), /再生中/);
+      await page.locator(".bench-demo-finish").scrollIntoViewIfNeeded();
+      await assertFits(page, ".bench-demo-finish");
+      await capture(page, `2447-demo-steps-${device}`);
+      await page.evaluate(() => { F.oldFinish = document.querySelector(".bench-demo-finish"); });
+      await click(page, ".bench-demo-finish", touch);
+      assert.equal(await page.evaluate(() => F.demoTask), true);
+      assert.deepEqual(await page.evaluate(() => [...document.querySelector(".bench").children].map(n => n.inert)),
+        await page.evaluate(() => F.beforeDemoInert), "Restore every background element's previous inert state");
+      await page.evaluate(() => { F.oldFinish.click(); F.oldFinish.click(); F.demoTask = F.startDemo(); });
+      await page.locator(".bench-demo-sheet").waitFor();
+      // Replacing the scene (as on LOAD) cancels the old sheet and its late promise safely.
+      await page.evaluate(() => document.querySelector(".bench").remove());
+      assert.equal(await page.evaluate(() => F.demoTask), false);
+      await page.evaluate(() => F.plays[1].reject(new DOMException("late rejection", "NotAllowedError")));
+      assert.equal(await page.locator(".bench-demo-sheet").count(), 0);
+      assert.equal(await page.evaluate(() => JSON.stringify(F.core.state)), await page.evaluate(() => F.beforeDemo));
+      for (const route of pending) await route.abort("aborted").catch(() => {});
+    }, options);
+  }
   await check("automatic-packing", async page => {
     await setup(page);
     await page.evaluate(async () => { F.session.craftTest.auto = "good"; await F.steps.stepPack(F.cs); F.session.craftTest.auto = null; });
     assert.equal(await page.evaluate(() => F.cs.pack), "normal");
   });
+  await check("fixed-stage-packing-rows-3035", async page => {
+    await setup(page);
+    await page.evaluate(() => { F.running = F.steps.stepPack(F.cs); });
+    await page.locator('[data-test="pack-confirm"]').waitFor();
+    const layout = await page.evaluate(() => {
+      const rect = selector => {
+        const r = document.querySelector(selector).getBoundingClientRect();
+        return { top: r.top, bottom: r.bottom, width: r.width, right: r.right };
+      };
+      return { wide: document.querySelector("#stage").hasAttribute("data-wide"),
+        choice: rect(".pack-choices"), confirm: rect(".pack-confirm"),
+        description: rect(".pack-caption p"), pane: rect(".bench-right") };
+    });
+    // 固定ステージ（2026-11-09 オーナー決定・#3035）: スマホ横持ちでもワイド拡張せず 1280×720 の構図で収まる。
+    // 選択肢の説明文はボタン内ではなく、選んだ詰め方の説明としてキャプションに出る（craft-landscape.css）。
+    assert(!layout.wide, "phone landscape must use the fixed 1280 stage");
+    assert(layout.choice.bottom <= layout.confirm.top + 1, JSON.stringify(layout));
+    assert(layout.description.width >= 65, JSON.stringify(layout));
+    assert(layout.confirm.right <= layout.pane.right + 1, JSON.stringify(layout));
+  }, { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
   // #2359: 実際の制作処理と素材で3サイズを撮影。縦長はデスクトップ窓で確認し、回転案内は改変しない。
   for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }, { width: 390, height: 844 }]) {
     for (const step of ["pack", "holes", "heat"]) await check(`night-${step}-${viewport.width}x${viewport.height}`, async page => {
@@ -285,13 +461,32 @@ await suite("craft-materials", async check => {
       await page.locator(step === "pack" ? '[data-test="pack-confirm"]' : step === "holes" ? '[data-test="hole-start"]' : '.heat[aria-busy="false"]').waitFor();
       if (step === "pack") {
         const paint = await page.locator('[data-test="pack-confirm"]').evaluate(n => {
-          const s = getComputedStyle(n); return { background: s.backgroundColor, image: s.borderImageSource, width: s.borderTopWidth };
+          const s = getComputedStyle(n); return { background: s.backgroundColor, clip: s.backgroundClip, image: s.borderImageSource, width: s.borderTopWidth };
         });
-        assert.deepEqual(paint, { background: "rgb(227, 189, 110)", image: paint.image, width: "14px" });
-        assert.match(paint.image, /button-gold\.webp/);
+        // 金の地は画像が読めない時の下地。透明な枠の内側だけに塗り、丸い角の外へ四角く出さない（#2359 最終QA）。
+        assert.deepEqual(paint, { background: "rgb(227, 189, 110)", clip: "padding-box", image: paint.image, width: "14px" });
+        // 金のボタンの絵: 旧配置は夜紫の金の札、新しい配置（既定）は CSL18 ガラスと革の琥珀の鍵。
+        assert.match(paint.image, /craft-night\/button-gold\.webp|craft-glass\/key-amber\.webp/);
+        // 作業台の上の通知は日常の紙の札ではなく夜紫の窓で出す（#2359 最終QA）。
+        const note = await page.evaluate(async () => {
+          const { toast } = await import("./js/core/ui.js");
+          toast("ステムが水に届いていない。煙が冷えないぞ", { ms: 60000, kind: "warn" });
+          const n = document.querySelector("#toasts .toast.warn:last-child"), s = getComputedStyle(n);
+          return { screen: document.body.dataset.screen, image: s.backgroundImage, color: s.color, border: s.borderImageSource };
+        });
+        assert.equal(note.screen, "bench");
+        assert.match(note.image, /craft-night\/window\.webp/);
+        assert.equal(note.border, "none");
+        assert.equal(note.color, "rgb(255, 163, 172)");
       }
       if (step === "holes") {
-        assert.equal(await page.locator('.ht-option[aria-pressed="true"]').evaluate(n => getComputedStyle(n).color), "rgb(46, 29, 69)");
+        // 選んでいる型の字: 旧配置は白い札に濃い字、新しい配置（既定）は CSL18 の紫に灯るガラスの札に明るい字。
+        const craftStage = await page.evaluate(() => document.body.classList.contains("craft-stage"));
+        assert.equal(await page.locator('.ht-option[aria-pressed="true"]').evaluate(n => getComputedStyle(n).color), craftStage ? "rgb(246, 241, 250)" : "rgb(46, 29, 69)");
+        // 白いボタン（選択中の型・穴あけ開始）も、地の色は透明な枠の内側だけ。
+        for (const selector of ['.ht-option[aria-pressed="true"]', '[data-test="hole-start"]']) {
+          assert.equal(await page.locator(selector).evaluate(n => getComputedStyle(n).backgroundClip), "padding-box", selector);
+        }
       }
       assert.equal(await page.locator('.bench-worker-name').evaluate(n => getComputedStyle(n).backgroundImage), "none");
       // 外部画像が全て実画像としてデコード済みであることを確認する（placeholderは不可）。

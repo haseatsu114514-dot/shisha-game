@@ -1,5 +1,5 @@
 {
-  "comment": "第3・4章の任意前夜デート。story_routes.jsonとstory-routes.jsの条件を通して呼ぶ。第3章はch3.js、第4章はch4.jsの前夜に接続済み（実際に同じ場所にいる恋人だけ）。stayの帰り道は第3章の大会が終わったか（tournament_finished 3）で、東京前夜のmukaiの裏口と、ドバイ前夜の宿のロビーに分ける。あげはは第4章だけなので宿のロビー。能力・大会加点なし。",
+  "comment": "第3・4章の任意前夜デート。story_routes.jsonとstory-routes.jsの条件を通して呼ぶ。第3章はch3.js、第4章はch4.jsの前夜に接続済み（実際に同じ場所にいる恋人だけ）。stayの帰り道は第3章の大会が終わったか（tournament_finished 3）で、東京前夜のmukaiの裏口と、ドバイ前夜の宿のロビーに分ける。あげはは第4章だけなので宿のロビー。能力・大会加点なし。homeの別れ際は人ごとに書き分ける。凛想・サメちゃん・ひよりは持ち物が章で違うので、stayと同じ条件で東京（home_tokyo）とドバイ（home_dubai）に分ける。",
   "dialogues": [
     {
       "dialogue_id": "tournament_date_tsumugi",
@@ -117,7 +117,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "つむぎは描きかけのページの角を小さく折って、握っていたほうの手を振った。"
           }
         ],
         "stay_tokyo": [
@@ -257,7 +257,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "角まで、栞さんは俺の袖をつまんで歩いた。離す時は、指を一本ずつだった。"
           }
         ],
         "stay_tokyo": [
@@ -277,7 +277,7 @@
       }
     },
     {
-      "dialogue_id": "tournament_date_rin",
+      "dialogue_id": "tournament_date_rio",
       "lines": [
         {
           "type": "condition",
@@ -288,7 +288,7 @@
         },
         {
           "type": "choice",
-          "id": "tournament_date_choice_rin",
+          "id": "tournament_date_choice_rio",
           "choices": [
             {
               "text": "もう少し一緒にいよう",
@@ -309,10 +309,10 @@
           {
             "speaker": "",
             "face": "",
-            "text": "凛さんは買い物袋を下げていた。中身は新商品のサンプルではなかった。"
+            "text": "凛想さんは買い物袋を下げていた。中身は新商品のサンプルではなかった。"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
             "text": "足、痛くない？　絆創膏。あと水"
           },
@@ -322,7 +322,7 @@
             "text": "品質管理ですか"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
             "text": "そういう口実も、今日は休み"
           },
@@ -332,53 +332,53 @@
             "text": "じゃあ、少し手をつないで歩きませんか"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
             "text": "……申請が遅い"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "差し出した手を取ってから、凛さんが笑った。"
+            "text": "差し出した手を取ってから、凛想さんが笑った。"
           }
         ],
         "eve_dubai": [
           {
             "speaker": "",
             "face": "",
-            "text": "凛さんは、宿の売店の袋を下げていた。中身は水と、のど飴だった。"
+            "text": "凛想さんは、宿の売店の袋を下げていた。中身は水と、のど飴だった。"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
             "text": "こっちは乾くから、喉からやられるよ。明日、声が出ないと困るでしょ"
           },
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "凛さんこそ、昼はずっと香水の店を見てましたね"
+            "text": "凛想さんこそ、昼はずっと香水の店を見てましたね"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
             "text": "仕入れの下見。……って言うつもりだったけど、今日は嘘"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "smile",
             "text": "君の隣で、知らない匂いを嗅ぎたかっただけ"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "歩き出すと、凛さんの方から指を絡めてきた。"
+            "text": "歩き出すと、凛想さんの方から指を絡めてきた。"
           }
         ],
         "stay": [
           {
             "speaker": "",
             "face": "",
-            "text": "凛さんが買ってきた水を、二人で半分ずつ飲んだ。"
+            "text": "凛想さんが買ってきた水を、二人で半分ずつ飲んだ。"
           },
           {
             "type": "condition",
@@ -395,9 +395,25 @@
             "text": "会えて、うれしかったです"
           },
           {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 3,
+            "next_true": "home_dubai",
+            "next_false": "home_tokyo"
+          }
+        ],
+        "home_tokyo": [
+          {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "別れ際、凛想さんは絆創膏をもう一枚、俺の鞄の外ポケットに差し込んだ。"
+          }
+        ],
+        "home_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "別れ際、凛想さんはのど飴をひと粒、黙って俺の手のひらに置いた。"
           }
         ],
         "stay_tokyo": [
@@ -455,6 +471,41 @@
           "text": "つないだ指先が少し震えていた。二人の歩く速さが揃った。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "屋台の灯りの前で、あげはが空いているほうの手を開いて見せた。指先が、細かく揺れている。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "今日、[pause]震える日なんだ。飛行機、長かったし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "言ってくれて、ありがと。……明日、客席にいてくれる？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "いる。うちが吸うんじゃないけど、ちゃんと見てる"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっちが炭置くとこ。震えてても、それはちゃんと見えるから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ明日は、あげはに見えるように置く"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……それ、うちが言いたかったやつ"
+        },
+        {
           "type": "choice",
           "id": "tournament_date_choice_ageha",
           "choices": [
@@ -494,7 +545,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "あげはは手を離す前に、一度だけ強く握った。震えたままの指で、ピースを作って見せた。"
           }
         ]
       }
@@ -625,7 +676,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "ましろちゃんは空いたカップを二つ重ねて持ち、もう片方の手をゆっくり振った。"
           }
         ],
         "stay_tokyo": [
@@ -770,9 +821,25 @@
             "text": "お土産、大事にします。会えてよかったです"
           },
           {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 3,
+            "next_true": "home_dubai",
+            "next_false": "home_tokyo"
+          }
+        ],
+        "home_tokyo": [
+          {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "サメちゃんが手を離すと、コロちゃんが先にお辞儀をした。本人は、少し遅れて手を振った。"
+          }
+        ],
+        "home_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "サメちゃんは紙袋の底を一度確かめて、口を折り直した。それから、自分の手を振った。"
           }
         ],
         "stay_tokyo": [
@@ -917,9 +984,25 @@
             "text": "会えて、うれしかったです"
           },
           {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 3,
+            "next_true": "home_dubai",
+            "next_false": "home_tokyo"
+          }
+        ],
+        "home_tokyo": [
+          {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "ひよりさんは旅程表の空いた枠に小さく丸を付けてから、儚くない速さで手を振った。"
+          }
+        ],
+        "home_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ひよりさんは俺に着せた上着の袖口を整えてから、儚くない速さで手を振った。"
           }
         ],
         "stay_tokyo": [
@@ -934,6 +1017,104 @@
             "speaker": "",
             "face": "",
             "text": "約束した時間に、宿のロビーまで二人で歩いた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "tournament_date_noor",
+      "comment": "DSR20 第4章ドバイの前夜デート。ヌールはドバイに住む恋人なので、到着場面なしで前夜の街にいる（ch4-story-wiring.js）。大会の中身には踏み込まず、説教もしない。能力値は上げない。",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前夜の街。カフェ・オアシスの裏口で、ヌールさんがミントティーを二つ持って待っていた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "お疲れさま、ハジメ。今日は店、父に任せてきた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いいんですか、抜けてきて"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "いいの。父も「今夜は行ってこい」って。バレてるみたい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で、夜の路地をゆっくり歩く。昼の砂ぼこりが、うそみたいに静かだ。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "明日のこと、聞かない方がいい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……少しだけなら"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "じゃあ、少しだけ。私は、ハジメの煙がもう好き。それは明日も変わらないよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（それだけで、肩の力が抜けた）"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "もう少し一緒にいよう",
+              "next": "stay"
+            },
+            {
+              "text": "明日のために、そろそろ帰ろう",
+              "next": "home"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "stay": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "広場のベンチで、ぬるくなったミントティーを最後まで分け合った。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、宿のロビーまで二人で戻った。"
+          }
+        ],
+        "home": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "会えてよかった。ミントティー、ごちそうさまです"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "どういたしまして。おやすみ、ハジメ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "宿の前で手を振ると、ヌールさんは路地の角で二回振り返った。"
           }
         ]
       }

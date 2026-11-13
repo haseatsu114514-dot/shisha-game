@@ -11,11 +11,11 @@ const node = (spec, attrs = {}, children = []) => Array.isArray(attrs)
 let state, owner, screen, cancel = false, saves = 0;
 const notices = [], comparisons = [];
 const dialogues = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch4_main.json", import.meta.url))).dialogues;
-const values = {
+const values = {createChapterMenu: () => () => {},
   DB: { dialogues: Object.fromEntries(dialogues.map(d => [d.dialogue_id, d])) },
   bgUrl: id => id, el: node, save: () => saves++,
   layers: { hud: { replaceChildren() {}, classList: { remove() {} } } },
-  showScreen: (_, tree) => { screen = tree; }, setBg: async () => {},
+  showScreen: (_, tree) => { screen = tree; }, setBg: async () => {}, enterScene: async () => {},
   playBgm() {}, toast: text => notices.push(text), hooks: {},
   awardChapterClearExp() {},
   play: async () => ({ cancelled: cancel }),
@@ -27,6 +27,17 @@ source += '\nexport function testOwner(value) { session = value; }\nexport { rea
 const modules = new Map();
 const module = new vm.SourceTextModule(source, { context });
 await module.link(async spec => {
+    if (spec === "../core/chapter-card.js") {
+      const helper = new vm.SourceTextModule(fs.readFileSync(new URL("../js/core/chapter-card.js", import.meta.url), "utf8"), { context });
+      await helper.link(dependency => {
+        const names = dependency === "./util.js" ? ["el"] : ["showScreen"];
+        return new vm.SyntheticModule(names, function () {
+          for (const name of names) this.setExport(name, values[name]);
+        }, { context });
+      });
+      return helper;
+    }
+
   if (spec === "../core/chapter-actions.js") {
     const dep = new vm.SourceTextModule(fs.readFileSync(new URL("../js/core/chapter-actions.js", import.meta.url), "utf8"), { context });
     await dep.link(() => new vm.SyntheticModule(["el"], function () { this.setExport("el", node); }, { context }));
@@ -103,3 +114,4 @@ delete state.statsAtChapterStart;
 runner.renderComplete(owner);
 assert.equal(comparisons.at(-1).value, state);
 console.log("PASS: Chapter 4 rewards separate learning, revisit unlock, recognition and actual growth comparison (VM)");
+

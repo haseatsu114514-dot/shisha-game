@@ -3,17 +3,23 @@
 import { DB, bgUrl } from "../core/data.js";
 import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
+import { createChapterCard } from "../core/chapter-card.js";
+import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardChapterClearExp, awardTournamentExp, awardSceneExp, presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
 import { canReflect } from "../daily/reflection.js";
-import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, chapterTitle, modal } from "../core/ui.js";
-import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
+import { state, save } from "../core/state.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, modal } from "../core/ui.js";
+import { sceneMoment } from "../core/scene-motions.js";
+import { saveFlow } from "../scenes/saves.js";
 import { play, hooks, vnTest } from "../vn/engine.js";
+import { playChapterPoem } from "../scenes/chapter-poem.js";
 import { stopBgm, playBgm } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { selectStoryEnding } from "../core/story-routes.js";
 import { playStaffRoll } from "../scenes/staff-roll.js";
+import { playResult } from "../scenes/result.js";
 import { chapterGrowthChart } from "../daily/status.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { newSession, openBench, waitBenchReady } from "../craft/session.js";
@@ -29,8 +35,9 @@ import { servedEvaluationLines } from "../craft/served-eval.js";
 import { craftReviewLines } from "../craft/advice.js";
 import { craftReviewBlock } from "../craft/tournament-graphics.js";
 import { naruTastingCategory } from "../craft/naru-tasting.js";
-import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_AFTERMATH, CH5_SCENE_FILES, CH5_PREP_TRIALS,
-  chapterFivePrepScene, chapterFivePreparation, chapterFivePrepPending, chapterFivePrepEcho,
+import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_SCENES, CH5_SCENE_FILES, CH5_PREP_TRIALS,
+  chapterFiveAftermathScene, chapterFiveSceneTail,
+  chapterFivePrepScene, chapterFivePreparation, chapterFivePrepPending, chapterFivePrepEcho, chapterFiveLoverEcho,
   recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
   canAdvanceToChapterFive, advanceToChapterFive, chapterFiveProgress, chapterFiveRead,
   chapterFiveTimeoutPending, recordChapterFiveScheduleDecision,
@@ -38,8 +45,10 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_S
   chapterFiveEndingContext, beginChapterFiveFinale, completeChapterFiveScene, CH5_LIME_MILESTONES, chapterFiveLimeDue,
   chapterFiveCreditsPending, recordChapterFiveCredits, chapterFiveTrueEndReached, chapterFiveFreeRemaining,
   chapterFivePostEndingPlan, chapterFivePostEndingUndecided, beginChapterFivePostEnding, chapterFivePostEndingNext,
-  completeChapterFivePostEnding } from "./ch5-progress.js";
+  completeChapterFivePostEnding, CH5_POST_ENDING, chapterFivePostEndingCast, chapterFivePostEndingTense } from "./ch5-progress.js";
+import { setSceneMood } from "../core/scene-mood.js";
 import { readCycleMeta, recordTrueEndForRun } from "../core/cycle-meta.js";
+import { chapterFiveUnrecordedDialogue } from "./ch5-unrecorded.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -54,6 +63,10 @@ const MATCH_CARDS = {
 const MATCH_ORDER = ["arrival", "firstCup", "beforeSecond"];
 // 二本目の前の場面のうち、この cue の行は制作後に回し、実際の調整実績で差し替える。
 const ADJUST_CUE = "second_cup_adjust";
+// この cue の行（初めて会う客に尋ね、先に吸ってもらう。STK02）も制作後に回し、調整の行に続けて台本のまま読む。
+// 提供できなかった一台（failed）では読まない。
+const NEWCOMER_CUE = "second_cup_newcomer";
+const HELD_CUES = [ADJUST_CUE, NEWCOMER_CUE];
 // 調整の区分（naruTastingCategory と同じ土台）→ 制作直後の地の文。steady / unknown は台本の本文のまま。
 const ADJUST_LINES = {
   recovered: "一度、熱が揺れた。炭を一つ離して、戻す。客がもう一度ホースを持つまで、待った。",
@@ -68,56 +81,14 @@ function menuButton(owner) {
     onclick: () => openMenu(owner) });
 }
 
-async function openMenu(owner) {
-  if (!current(owner) || owner.menuBusy) return;
-  owner.menuBusy = true;
-  try {
-    const choice = await modal({ title: "第五章 MENU", body: "読み終えた場面から再開できます。", options: [
-      { label: "セーブ", value: "save", test: test("save") },
-      { label: "ロード", value: "load", test: test("load") },
-      { label: "設定", value: "config", test: test("config") },
-      { label: "タイトルへ戻る", value: "title", test: test("title") },
-      { label: "閉じる", value: null, primary: true },
-    ] });
-    if (!current(owner)) return;
-    if (choice === "save") await saveFlow();
-    if (choice === "config") await (await import("../scenes/title.js")).openConfig();
-    if (choice === "load") {
-      const key = await loadFlow({ inGame: true });
-      if (key && loadFromSlot(key)) {
-        owner.active = false;
-        owner.controller?.abort();
-        requestResumeOnBoot();
-        location.reload();
-      }
-    }
-    if (choice === "title") {
-      save();
-      owner.active = false;
-      owner.controller?.abort();
-      location.reload();
-    }
-  } finally { owner.menuBusy = false; }
-}
+const openMenu = createChapterMenu({ current, test, title: "第五章 MENU" });
 
 function hud() {
   layers.hud.replaceChildren();
   layers.hud.classList.remove("show");
 }
 
-function card(owner, name, title, description, actions = [], note = "", sceneId = "", extra = []) {
-  hud();
-  showScreen("ch5", el("main.ch2-contest", { dataset: { test: test(name), scene: sceneId } }, [
-    el("header.ch2-contest-header", [
-      el("div", [el("p", { text: "第五章 ／ 機械仕掛けの神" }), el("h1", { text: title })]),
-      menuButton(owner),
-    ]),
-    el("p.ch2-contest-description", { text: description }),
-    note ? el("p.ch2-contest-note", { text: note }) : null,
-    ...extra,
-    el("div.ch2-contest-actions", actions),
-  ]));
-}
+const card = createChapterCard({ hud, screen: "ch5", test, heading: "第五章 ／ 機械仕掛けの神", menuButton });
 
 /** 必要な台本をすべて確認してから DB に公開する。欠けていれば状態を進めない。 */
 async function loadDialogues() {
@@ -138,7 +109,8 @@ function loadEndingRoutes() {
       if (!response.ok) throw new Error(`story_routes: HTTP ${response.status}`);
       const routes = await response.json();
       if (typeof routes.ending?.start !== "string" || typeof routes.ending?.normal !== "string"
-        || typeof routes.ending?.daily !== "string" || !Array.isArray(routes.heroine_ids)
+        || typeof routes.ending?.daily !== "string" || typeof routes.ending?.salaryman_name !== "string"
+        || !Array.isArray(routes.heroine_ids)
         || !routes.romance || typeof routes.romance !== "object"
         || typeof routes.conflict?.open !== "string" || typeof routes.conflict?.pending_ending !== "string") {
         throw new Error("story_routes: 形式を確認してください");
@@ -186,6 +158,7 @@ async function openChapter(advance) {
     if (progress.part === "prologue" && !progress.titleSeen) {
       await setBg(bgUrl(CH5_SCENE_BG[CH5_PROLOGUE[0].id]), { instant: true });
       if (!current(owner)) return;
+      if (!await playChapterPoem(5, { owner, current })) return; // 章タイトルの前の巻頭ポエム
       await chapterTitle(CHAPTER_TITLE_ART.find(entry => entry.chapter === 5));
       if (!current(owner)) return;
       progress.titleSeen = true;
@@ -197,20 +170,26 @@ async function openChapter(advance) {
 
 async function readScene(owner, id, { keepHud = false } = {}) {
   if (!current(owner)) return false;
-  const source = DB.dialogues[id];
+  const source = chapterFiveUnrecordedDialogue(state, DB.dialogues[id]);
   if (!source) throw new Error(`台本がありません: ${id}`);
   // 台本の metadata.bg は持ち込まず、ch5-progress.js の対応表（仮置き）で背景を決める。
-  // 二本目の調整の行は、制作の後で実績に合わせて読む（ここでは外す）。
-  const lines = id === CH5_MATCH_SCENES.beforeSecond ? source.lines.filter(line => line.cue !== ADJUST_CUE) : source.lines;
+  // 二本目の調整の行と、そのあとの初めて会う客の行は、制作の後で読む（ここでは外す）。
+  const lines = id === CH5_MATCH_SCENES.beforeSecond ? source.lines.filter(line => !HELD_CUES.includes(line.cue)) : source.lines;
   // 試作の返り（#1666）は同じ場面の末尾に続けて読み、読了の確定も親場面と一緒にする。
-  const echo = chapterFivePrepEcho(state, id).map(echoId => {
+  // 恋人のましろの訪問（#2024 A2）も同じく末尾に続け、親場面と一緒に確定する。
+  // 勝負のあと・前半（勝敗で台本が分かれる）の末尾には、勝敗共通の千須への返事を続ける（STK05）。
+  const loverEcho = chapterFiveLoverEcho(state, id, { milestoneDue: loverMilestonesDue(["mashiro"]).length > 0 });
+  const echo = [...chapterFiveSceneTail(id), ...chapterFivePrepEcho(state, id), ...loverEcho].map(echoId => {
     if (!DB.dialogues[echoId]) throw new Error(`台本がありません: ${echoId}`);
     return DB.dialogues[echoId].lines;
   });
   const dialogue = { ...source, lines: [...lines, ...echo.flat()], metadata: { ...source.metadata, bg: "" } };
   showScreen("none", null);
   if (!keepHud) hud(); // 日常ループ（#2033）の途中では、日常のHUDを消さない
-  await setBg(bgUrl(CH5_SCENE_BG[id]), { instant: true });
+  await setBg(bgUrl(CH5_SCENE_BG[id]));
+  // 挑戦状と9000の登場は、第1章の優勝の夜の「???」と同じ横線のノイズで見出しが置き換わる（#2688 A6）。初めて読むときだけ
+  const scan = SCAN_SCENES[id];
+  if (scan && !chapterFiveRead(state, id)) { await sceneMoment("scanGlitch", scan); if (!current(owner)) return false; }
   if (!current(owner)) return false;
   // 節目だけ既存曲へ切り替える（#1668 2-7）。表に無い場面は tonari。
   playBgm(CH5_SCENE_BGM[id] || CH5_DEFAULT_BGM);
@@ -225,7 +204,9 @@ async function readScene(owner, id, { keepHud = false } = {}) {
   } : null;
   if (choiceHook) hooks.onChoice = choiceHook;
   try {
-    const result = await play(dialogue, { signal: controller.signal });
+    // スタッフロールの後の修羅場の開始は、同席している恋人だけを視線のカットインに出す（motion gaze）
+    const cast = id === CH5_POST_ENDING.open ? chapterFivePostEndingCast(state) : null;
+    const result = await play(dialogue, { signal: controller.signal, ...(cast?.length ? { cast } : {}) });
     const finished = current(owner) && !controller.signal.aborted && !!result && !result.cancelled;
     if (finished && id === "ch5_schedule_contact") {
       // ※捕捉できなかった場合は安全側（先送り）に倒す。日程を誤って確定させない。
@@ -236,6 +217,17 @@ async function readScene(owner, id, { keepHud = false } = {}) {
     if (choiceHook && hooks.onChoice === choiceHook) hooks.onChoice = previousOnChoice;
     if (owner.controller === controller) owner.controller = null;
   }
+}
+
+/**
+ * 会えた恋人の未読の節目（lover_events.json）を一つだけ読む（#2024 A2。第3章の readLoverMilestoneAt と同じ形）。
+ * 読了と既読の保存は romance.js が持つ。中断すれば未読のまま残る。
+ */
+async function readLoverMilestoneAt(owner, id) {
+  if (!current(owner) || !loverMilestonesDue([id]).length) return false;
+  const controller = owner.controller = new AbortController();
+  try { return await readLoverMilestone(id, { signal: controller.signal }); }
+  finally { if (owner.controller === controller) owner.controller = null; }
 }
 
 // 節目の LIME の画面表記（#1668 2-8）。
@@ -297,7 +289,8 @@ async function renderStage(owner) {
   if (progress.part === "match") return renderMatch(owner);
   if (progress.part === "aftermath") {
     if (!await deliverLime(owner, CH5_LIME_MILESTONES.afterMatch)) return;
-    return renderScene(owner, CH5_AFTERMATH[progress.aftermath], "");
+    // 勝負のあと・前半は、勝敗（と実際の挙手）に合う台本を読む
+    return renderScene(owner, chapterFiveAftermathScene(state), "");
   }
   if (progress.part === "finale") return renderFinale(owner);
   // スタッフロールを流し終えた後、恋人が2人以上なら修羅場と話し直し（IR32）。済んでいれば完了カード。
@@ -310,10 +303,10 @@ async function renderStage(owner) {
 }
 
 /** 読んだ後にその場にいる人へ、心得の盤で灯した授業を相談できる場面（SBD91。灯していなければ何も起きない） */
-const LESSON_AFTER_SCENE = Object.freeze({ ch5_doctor_after_match: "dr_kemuri" });
+const LESSON_AFTER_SCENE = Object.freeze({ ch5_doctor_cocreation: "dr_kemuri" });
 
 async function renderScene(owner, scene, dayLabel) {
-  await setBg(bgUrl(CH5_SCENE_BG[scene.id]), { instant: true });
+  await enterScene(bgUrl(CH5_SCENE_BG[scene.id]));
   if (!current(owner)) return;
   card(owner, "scene", `${dayLabel ? `${dayLabel}・` : ""}${scene.label}`, `${scene.location}で、次の話を読む。`, [
     button(owner, "続きを読む", "continue", async () => {
@@ -327,9 +320,19 @@ async function renderScene(owner, scene, dayLabel) {
   ], "", scene.id);
 }
 
+// 走査の見出し（#2688 A6）
+const SCAN_SCENES = Object.freeze({ ch5_opening: { from: "???", to: "挑戦状" }, [CH5_MATCH_SCENES.arrival]: { from: "???", to: "SHISHA-9000" } });
+
+/** これまでに会った人の登場カットインの色（スタッフロール前の煙・#2688 A8）。主な人から最大8色 */
+function metColors() {
+  const art = DB.manifest?.introArt || {};
+  const order = ["sumi", "naru", "tsumugi", "minto", "adam", "ageha", "mashiro", "saku", "hiyori", "samechan", "noor", "sheikh", "dr_kemuri"];
+  return order.filter(id => state.met?.[id] && art[id]?.color).map(id => art[id].color).slice(0, 8);
+}
+
 /** 先送りを選んだ直後の復帰先。timeout を読むまで自由行動のカードは出さない。 */
 async function renderTimeoutCard(owner) {
-  await setBg(bgUrl(CH5_SCENE_BG.ch5_timeout), { instant: true });
+  await enterScene(bgUrl(CH5_SCENE_BG.ch5_timeout));
   if (!current(owner)) return;
   card(owner, "scene", "日程は先送り", "tonariで、次の話を読む。", [
     button(owner, "続きを読む", "continue", async () => {
@@ -341,7 +344,7 @@ async function renderTimeoutCard(owner) {
 
 /** 閉店後の試作（#1666）: 何を試すか → スミさんが吸って返す → 直すか、そのまま覚えるか。 */
 async function renderPrep(owner) {
-  await setBg(bgUrl(CH5_SCENE_BG.ch5_free_tonari_practice), { instant: true });
+  await enterScene(bgUrl(CH5_SCENE_BG.ch5_free_tonari_practice));
   if (!current(owner)) return;
   const prep = chapterFivePreparation(state);
   if (!prep) {
@@ -382,7 +385,8 @@ async function renderFree(owner) {
   if (!current(owner)) return;
   await runAfterParty();
   if (!current(owner)) return;
-  const io = { readAndCommit: id => readAndCommit(owner, id, { keepHud: true }), readScene: id => readScene(owner, id, { keepHud: true }) };
+  const io = { readAndCommit: id => readAndCommit(owner, id, { keepHud: true }), readScene: id => readScene(owner, id, { keepHud: true }),
+    readLoverMilestone: id => readLoverMilestoneAt(owner, id) };
   await runChapterFiveDaily(io);
   if (!current(owner)) return;
   hud();
@@ -390,7 +394,7 @@ async function renderFree(owner) {
 }
 
 async function renderScheduled(owner) {
-  await setBg(bgUrl(CH5_SCENE_BG.ch5_schedule_contact), { instant: true });
+  await enterScene(bgUrl(CH5_SCENE_BG.ch5_schedule_contact));
   if (!current(owner) || !await deliverLime(owner, CH5_LIME_MILESTONES.prep)) return;
   card(owner, "scheduled", "勝負の日程が決まった", "店の休業日。博士との勝負は、その日になった。", [
     button(owner, "会場へ行く", "go-venue", async () => {
@@ -420,7 +424,7 @@ async function renderMatch(owner) {
   if (key) {
     const id = CH5_MATCH_SCENES[key];
     const text = MATCH_CARDS[key];
-    await setBg(bgUrl(CH5_SCENE_BG[id]), { instant: true });
+    await enterScene(bgUrl(CH5_SCENE_BG[id]));
     if (!current(owner)) return;
     card(owner, "match", text.title, text.description, [
       button(owner, "続きを読む", "continue", async () => {
@@ -435,13 +439,13 @@ async function renderMatch(owner) {
     ], "", id);
     return;
   }
-  // 二本目: はじめが同じダブルアップル12gで実際に作り、その出来で観客の挙手が動く。
+  // 一本目は台本の固定票。二本目だけ実制作し、確定後は保存済みの挙手と結果を表示する。
   const outcome = chapterFiveMatchOutcome(state);
   if (outcome === null) return renderSecondCupReady(owner);
   const sequence = outcome === "win"
     ? [CH5_MATCH_SCENES.win, CH5_MATCH_SCENES.afterglow] : [CH5_MATCH_SCENES.loss];
   const first = sequence.find(id => !chapterFiveRead(state, id)) ?? sequence[0];
-  await setBg(bgUrl(CH5_SCENE_BG[first]), { instant: true });
+  await enterScene(bgUrl(CH5_SCENE_BG[first]));
   if (!current(owner)) return;
   const tally = chapterFiveVoteTally(state);
   card(owner, "match", "二台分の挙手", "同じ観客が、二台とも吸った。合計で決まる。", [
@@ -464,7 +468,7 @@ function voteNote(tally) {
 }
 
 async function renderSecondCupReady(owner) {
-  await setBg(bgUrl(CH5_SCENE_BG[CH5_MATCH_SCENES.beforeSecond]), { instant: true });
+  await enterScene(bgUrl(CH5_SCENE_BG[CH5_MATCH_SCENES.beforeSecond]));
   if (!current(owner)) return;
   const tally = `一台目の挙手は はじめ ${CH5_FIRST_CUP_VOTES.hajime}／9000 ${CH5_FIRST_CUP_VOTES.machine}。`;
   card(owner, "second-cup", "二台目", "同じダブルアップル12g。今度は、目の前の客を待つ一台を作る。", [
@@ -472,8 +476,10 @@ async function renderSecondCupReady(owner) {
   ], `${tally}二台目は提供のあと、同じ一台を二度調整する。`, CH5_MATCH_SCENES.beforeSecond);
 }
 
-/** 二本目の制作。作り終えるまで保存しない（途中で離れたら二本目の作り直しから）。 */
+/** U1 の制作開始境界。入場後、二本目だけ実制作する。U5: セッション途中は保存・工程 rollback しない。 */
 async function craftSecondCup(owner) {
+  // 途中離脱・再読込では secondCup が null のままなので、二本目の前から丸ごと作り直す。
+  playBgm("bgm_ch5_duel");
   const cs = newSession("tournament");
   cs.eventTitle = "EXHIBITION MATCH";
   cs.eventNote = "SHISHA-9000 戦・二台目";
@@ -505,13 +511,17 @@ async function craftSecondCup(owner) {
   const failed = !!cs.failed;
   if (!failed) finalize(cs);
   const category = failed ? "failed" : naruTastingCategory(cs);
+  // 完成した実績から観客票を一度だけ確定。再表示・再読込では保存済みの secondCup を読む。
   if (!recordChapterFiveSecondCup(state, { total: cs.total, category, failed, review: craftReviewLines(cs) })) throw new Error("二本目の記録を確定できません");
   // 報酬表への対応（仮）: 一対一の勝利側は1位、既存の敗北側（同数を含む）は2位相当。挙手・勝敗は変えない。
   awardTournamentExp(chapterFiveMatchOutcome(state) === "win" ? 1 : 2, cs);
   save();
-  const source = DB.dialogues[CH5_MATCH_SCENES.beforeSecond]?.lines.find(line => line.cue === ADJUST_CUE);
-  const text = ADJUST_LINES[category] || source?.text;
-  if (text && !await playLines(owner, "ch5_second_cup_adjust", [{ speaker: "", face: "", text }])) return;
+  const held = DB.dialogues[CH5_MATCH_SCENES.beforeSecond]?.lines || [];
+  const text = ADJUST_LINES[category] || held.find(line => line.cue === ADJUST_CUE)?.text;
+  // 調整の行に続けて、初めて会う客に尋ねる行を台本のまま読む。提供できなかった一台では読まない（先に吸ってもらえない）。
+  const after = [...(text ? [{ speaker: "", face: "", text }] : []),
+    ...(failed ? [] : held.filter(line => line.cue === NEWCOMER_CUE))];
+  if (after.length && !await playLines(owner, "ch5_second_cup_adjust", after)) return;
   await renderStage(owner);
 }
 
@@ -520,7 +530,7 @@ async function playLines(owner, id, lines) {
   if (!current(owner)) return false;
   showScreen("none", null);
   hud();
-  await setBg(bgUrl(CH5_SCENE_BG[CH5_MATCH_SCENES.beforeSecond]), { instant: true });
+  await setBg(bgUrl(CH5_SCENE_BG[CH5_MATCH_SCENES.beforeSecond]));
   if (!current(owner)) return false;
   const controller = new AbortController();
   owner.controller = controller;
@@ -533,25 +543,33 @@ async function playLines(owner, id, lines) {
 async function renderFinale(owner) {
   let progress = chapterFiveProgress(state);
   if (!progress.finaleScenes) {
-    // 恋人がちょうど1人なら中間がその人の後日談（epilogue_*）、それ以外は ending_normal（#517）。
+    // 中間は共通の賄い（ending_normal）。恋人がちょうど1人なら、賄いの後にその人の後日談（epilogue_*）を続ける（#517・STK11）。
     // 読み終えたらスタッフロール（renderStaffRoll）。恋人が2人以上なら、その後に修羅場と話し直し（renderPostEnding）。
     const routes = await loadEndingRoutes();
     if (!current(owner)) return;
-    const scenes = selectStoryEnding(routes, state, chapterFiveEndingContext(routes, state));
+    const scenes = [...selectStoryEnding(routes, state, chapterFiveEndingContext(routes, state)), routes.ending.salaryman_name];
     if (!beginChapterFiveFinale(state, scenes)) throw new Error("フィナーレを開始できません");
     save();
     progress = chapterFiveProgress(state);
   }
   const scene = { id: progress.finaleScenes[progress.finale], label: "フィナーレ", location: "tonari" };
-  await setBg(bgUrl(CH5_SCENE_BG[scene.id]), { instant: true });
+  await enterScene(bgUrl(CH5_SCENE_BG[scene.id]));
   if (!current(owner)) return;
   card(owner, "scene", scene.label, "物語の締めくくりを読む。", [
     button(owner, "続きを読む", "continue", async () => {
       if (!await readAndCommit(owner, scene.id)) return;
+      // 日常の場面の次が名乗りなら、カードを挟まずに続けて読む。確定と保存は場面ごと。
+      const following = FINALE_CONTINUES[scene.id];
+      const { finaleScenes, finale } = chapterFiveProgress(state);
+      if (following && finaleScenes?.[finale] === following && !await readAndCommit(owner, following)) return;
       await renderStage(owner);
     }, true),
   ], "", scene.id);
 }
+
+// 終幕を何度も閉じない（全体講評 C9・STK27）: 日常の場面を読み終えたら、同じ日の閉店前として、鉄仮面さんの名乗りまで続けて読む。
+// 間で閉じた保存は、名乗りの場面のカードから再開する。
+const FINALE_CONTINUES = Object.freeze({ ending_daily_smoke: "ending_salaryman_name" });
 
 /** タイトル画面へ戻る（起動し直してタイトルを出す）。 */
 function backToTitle() {
@@ -560,16 +578,32 @@ function backToTitle() {
 }
 
 /**
- * フィナーレの後のスタッフロール（#517）。初めて流し終えたら記録してタイトルへ戻る。
+ * スタッフロールの後のリザルト（#2902）。初回の締め（そのままか、話し直しを全部読んだ後）はタイトルへ、
+ * 完了カードからの見直しはカードへ戻る。勝負の結果は保存済みの won と挙手だけを読む。
+ */
+async function showResult(owner, { toTitle = true } = {}) {
+  hud();
+  const progress = chapterFiveProgress(state);
+  const tally = chapterFiveVoteTally(state);
+  await playResult(state, { match: { won: progress.won, tally: tally?.total || null }, next: toTitle ? "タイトルへ" : "もどる" });
+  if (!current(owner)) return;
+  if (toTitle) return backToTitle();
+  return renderComplete(owner);
+}
+
+/**
+ * フィナーレの後のスタッフロール（#517）。初めて流し終えたら記録し、リザルト（#2902）を見せてタイトルへ戻る。
  * 途中で閉じたら、次に再開したとき完了カードから流し直す（一度も最後まで見ていない端末では飛ばせない）。
- * 見終えた保存からの見直しはいつでも飛ばせて、終わったら完了カードへ戻る。
+ * 見終えた保存からの見直しはいつでも飛ばせて、リザルトの後に完了カードへ戻る。
  */
 async function renderStaffRoll(owner) {
   const first = chapterFiveCreditsPending(state);
   hud();
+  // 出会った人の色の煙が絡んで一本になり、スタッフロールへ（#2688 A8）。初めて流すときだけ
+  if (first) { await sceneMoment("mixedSmoke", metColors()); if (!current(owner)) return; }
   await playStaffRoll({ ...(first ? {} : { skippable: true }), ...(vnTest.turbo ? { durationMs: 1500 } : {}) });
   if (!current(owner)) return;
-  if (!first) return renderComplete(owner);
+  if (!first) return showResult(owner, { toTitle: false });
   if (!recordChapterFiveCredits(state)) throw new Error("スタッフロールの記録を確定できません");
   noteTrueEnd({ justFinished: true }); // 戻った先のタイトルに NEXT CYCLE が出る
   save();
@@ -577,7 +611,7 @@ async function renderStaffRoll(owner) {
   const due = await preparePostEnding(owner);
   if (!current(owner)) return;
   if (due) return renderPostEnding(owner);
-  backToTitle();
+  await showResult(owner);
 }
 
 /**
@@ -604,22 +638,28 @@ async function preparePostEnding(owner) {
 async function renderPostEnding(owner) {
   const next = chapterFivePostEndingNext(state);
   if (!next) return renderComplete(owner);
-  await setBg(bgUrl(CH5_SCENE_BG[next.id]), { instant: true });
+  await enterScene(bgUrl(CH5_SCENE_BG[next.id]));
   if (!current(owner)) return;
   const [title, description, note] = next.talk
     ? ["話し直し", "本人が決めた日に、一人ずつ会って話す。", `${next.index}人目／${next.total}人`]
-    : ["後日のtonari", "閉店後のtonariで、次の話を読む。", ""];
+    : next.id === CH5_POST_ENDING.aftercare
+      ? ["閉店後のtonari", "最後の一人と話した夜。店に戻る。", ""]
+      : ["後日のtonari", "閉店後のtonariで、次の話を読む。", ""];
   card(owner, "scene", title, description, [
     button(owner, "続きを読む", "continue", async () => {
-      for (;;) {
-        const scene = chapterFivePostEndingNext(state);
-        if (!scene || !await readScene(owner, scene.id)) return;
-        if (!completeChapterFivePostEnding(state, scene.id)) return;
-        save();
-        const following = chapterFivePostEndingNext(state);
-        if (!following) return backToTitle();
-        if (following.talk) break;
-      }
+      // 修羅場（開始・反応・謝罪）の間は、場面をまたいで背景の色を落とす。抜ける時は必ず戻す
+      try {
+        for (;;) {
+          const scene = chapterFivePostEndingNext(state);
+          setSceneMood(scene && chapterFivePostEndingTense(scene.id) ? "dread" : "");
+          if (!scene || !await readScene(owner, scene.id)) return;
+          if (!completeChapterFivePostEnding(state, scene.id)) return;
+          save();
+          const following = chapterFivePostEndingNext(state);
+          if (!following) { setSceneMood(""); return showResult(owner); } // 話し直しまで読み終えたら、締めのリザルトからタイトルへ
+          if (following.talk || following.id === CH5_POST_ENDING.aftercare) break; // 場所が変わるので、カードと背景を出し直す
+        }
+      } finally { setSceneMood(""); }
       await renderStage(owner);
     }, true),
   ], note, next.id);
@@ -682,3 +722,4 @@ function renderError(owner) {
     button(owner, "もう一度読み込む", "retry", () => state.chapter === 5 ? resumeChapterFive() : beginChapterFive(), true),
   ]);
 }
+

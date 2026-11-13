@@ -2,3 +2,10 @@
 /* a: がぶっ！の文字（上あごの上に出る） */
 .mo-gabu { position: absolute; left: 50%; top: 128px; transform: translateX(-50%) rotate(-6deg); display: flex; gap: 0.02em; font-size: 108px; font-weight: 900; line-height: 1; white-space: nowrap; text-shadow: 0 8px 0 var(--o); }
 .mo-gabu-ch { display: inline-block; transform: scale(0); }
+/* c: サメちゃんの絵柄と店の青（TMG52）。舞台はサメちゃんの登場カットインの背景 */
+.mo-shark.at-c { background: transparent; }
+.mo-sk-band { position: absolute; inset: 0; clip-path: polygon(0 0, 0 0, -30% 100%, -30% 100%); }
+.mo-sk-set { position: absolute; inset: 0; clip-path: polygon(0 0, 0 0, -30% 100%, -30% 100%); }
+.mo-sk-set > i { position: absolute; inset: 0; }
+.mo-sk-art { background: center / cover no-repeat; transform-origin: 50% 50%; }
+.mo-sk-shade { background: linear-gradient(105deg, #0b1a3a33 0%, transparent 40%, #0b1a3a40 100%); }

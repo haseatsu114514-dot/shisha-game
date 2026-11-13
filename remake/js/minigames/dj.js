@@ -1,3 +1,4 @@
+import { recordPlayMastery, syncPlayMastery } from "../core/play-mastery.js";
 // DJ ミニゲームを本編から開く部品（2026-11-01 DJS10・クラブSEAM DJS12）。遊びの本体は remake/previews/dj/ をそのまま同じ画面に重ねて使う。
 // ミニゲームは時間を使わない（#2113）: 行動・日付・お金・体力は変えない。記録は state.dj に残し、
 // 心得の盤の「遊びのご褒美」（SBD39・growth.js の claimPlayRewards）が state.dj.bestRank を読んで、寝る前に感覚の火種を1つ渡す。
@@ -45,6 +46,7 @@ export function djSetOpen(s, id) {
 export function recordDjResult(s, data) {
   const result = readDjResult(data);
   if (!s || typeof s !== "object" || !result) return null;
+  syncPlayMastery(s);
   const before = djRecords(s), previous = before.sets[result.set];
   const entry = { rank: result.rank, total: result.total, floor: result.floor,
     chapter: Number.isInteger(s.chapter) ? s.chapter : null, day: Number.isInteger(s.day) ? s.day : null };
@@ -53,6 +55,7 @@ export function recordDjResult(s, data) {
   sets[result.set] = { plays: previous.plays + 1, best: newBest ? entry : previous.best };
   const after = djRecords({ dj: { sets } });
   s.dj = { sets, bestRank: after.bestRank };
+  recordPlayMastery(s, "dj", result, `${s.cycle || 1}:${result.set}:${sets[result.set].plays}`);
   return { entry, newBest, rankUp: before.bestRank === null || rankIndex(after.bestRank) > rankIndex(before.bestRank) };
 }
 
@@ -70,13 +73,14 @@ export function djNightChoices(value, window) {
 }
 
 /** 本編の音量設定と、自分のモニターヘッドホン（VOL07・▶の判定が10ms広い）を DJ へ渡す URL。 */
-export function djUrl(set, { muted = false, volume = 0.5, phones = false } = {}) {
+export function djUrl(set, { muted = false, volume = 0.5, phones = false, phone = false } = {}) {
   const url = new URL("../../previews/dj/index.html", import.meta.url);
   url.searchParams.set("set", String(set));
   url.searchParams.set("embed", "1");
   if (muted) url.searchParams.set("mute", "1");
   if (Number.isFinite(volume)) url.searchParams.set("vol", String(Math.max(0, Math.min(1, volume))));
   if (phones === true) url.searchParams.set("phones", "1");
+  if (phone === true) url.searchParams.set("phone", "1"); // スマホ密度（表示だけ。判定・採点は変わらない）
   return url.href;
 }
 
@@ -85,7 +89,7 @@ export function djUrl(set, { muted = false, volume = 0.5, phones = false } = {})
  * セットを回しきるたびに onResult(result) を呼ぶ（もう一度遊べば何度でも）。
  * 戻り値: { results: [...] }。閉じたら iframe は片付ける。
  */
-export function runDjSet({ host, set = 1, signal = null, muted = false, volume = 0.5, phones = false, onResult = null } = {}) {
+export function runDjSet({ host, set = 1, signal = null, muted = false, volume = 0.5, phones = false, phone = typeof document !== "undefined" && document.documentElement.dataset.density === "phone", onResult = null } = {}) {
   if (!host || !DJ_SETS.some(item => item.id === set)) return Promise.reject(new Error("DJ set unavailable"));
   return new Promise(resolve => {
     const results = [];
@@ -95,7 +99,9 @@ export function runDjSet({ host, set = 1, signal = null, muted = false, volume =
     frame.title = `DJ ${DJ_SETS[set - 1].name}`;
     frame.dataset.test = "dj-frame";
     frame.setAttribute("allow", "autoplay");
-    Object.assign(frame.style, { position: "absolute", left: "0", top: "0", width: "1280px", height: "720px", border: "0", zIndex: "60", background: "#0b0812" });
+    // ステージいっぱいに重ねる（ワイドステージでは 1280 より広い）。DJ の板は中で枠の横幅に合わせて最大1600まで広がる（controller-fx.mjs）。
+    // iframe の中には safe-area（iPhone 横持ちのノッチ）が届かないので、ノッチの分だけ枠を内側に寄せ、端のデッキが欠けないようにする（base.css の --stage-safe-l/r）
+    Object.assign(frame.style, { position: "absolute", left: "var(--stage-safe-l, 0px)", top: "0", width: "calc(100% - var(--stage-safe-l, 0px) - var(--stage-safe-r, 0px))", height: "100%", border: "0", zIndex: "60", background: "#0b0812" });
     let done = false;
     const finish = () => {
       if (done) return;
@@ -117,7 +123,7 @@ export function runDjSet({ host, set = 1, signal = null, muted = false, volume =
     window.addEventListener("message", listen);
     signal?.addEventListener("abort", finish, { once: true });
     frame.addEventListener("load", () => { try { frame.contentWindow?.focus(); } catch { /* same origin only */ } }, { once: true });
-    frame.src = djUrl(set, { muted, volume, phones });
+    frame.src = djUrl(set, { muted, volume, phones, phone });
     host.append(frame);
   });
 }

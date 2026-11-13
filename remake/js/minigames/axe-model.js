@@ -10,33 +10,61 @@ export const DIVISIONS = {
   am: { name: "アマ", short: "AM", note: "当てた赤・5はその半分（5投）のあいだ閉じる。閉じた赤は5点、閉じた5は外側のリング点" },
   pro: { name: "プロ", short: "PRO", note: "当てた5の円は丸ごと閉じる。同じ半分で2度目は0点。5つの赤を順に回る" },
 };
-// Normalized board units: 1 = radius of the 1 ring (14.75 in). Sizes are the official inches.
-export const INCH = 1 / 14.75;
+// Normalized board units: 1 = radius of the 1 ring (18 in). Sizes are the official inches.
+export const INCH = 1 / 18;
+/** Line-centre radii. Bull 1.5 in and five ring 3.5 in follow the 2026 text. The 4/3/2/1 rings follow the 2024 WATL stencil
+ *  ("2026 Target Note: Use 2024 stencil"): its black-line slots sit every 4 1/8 in, i.e. 5.625 / 9.75 / 13.875 / 18 in
+ *  (diameters 11.25 / 19.5 / 27.75 / 36 in). Measured on worldaxethrowingleague.com/wp-content/uploads/2024/12/stencil-graphic.png
+ *  with the 1.5 in, 0.75 in and 2 in holes as the scale; owner: "公式に合わせて" (2026-11-08, #2729). */
 export const RINGS = [
-  { radius: .75 * INCH, score: 6 }, { radius: 1.75 * INCH, score: 5 }, { radius: 5.375 * INCH, score: 4 },
-  { radius: 8.5 * INCH, score: 3 }, { radius: 11.625 * INCH, score: 2 }, { radius: 14.75 * INCH, score: 1 },
+  { radius: .75 * INCH, score: 6 }, { radius: 1.75 * INCH, score: 5 }, { radius: 5.625 * INCH, score: 4 },
+  { radius: 9.75 * INCH, score: 3 }, { radius: 13.875 * INCH, score: 2 }, { radius: 18 * INCH, score: 1 },
 ];
 /** The painted 20 mm black lines score the lower zone: a ring counts only strictly inside its line. */
 export const LINE = .3937 * INCH;
 /** A 4 in cutting edge, vertical when stuck. The highest zone it touches scores. */
 export const BLADE = { halfLength: 2 * INCH };
+/** Middle of the band between two ring lines, and the side offset that puts a mark at a given height on that circle. */
+const bandMiddle = (inner, outer) => (RINGS[inner].radius + RINGS[outer].radius) / 2;
+const sideAt = (radius, height) => Math.sqrt(radius ** 2 - height ** 2);
+/** The 4 outer bulls and five rings are "centered within the 3 ring", 3.5 in above and below the centre (56.5 / 63.5 in from the
+ *  ground): on the stencil the outer-bull hole sits halfway between the 4 and 3 ring slots, so about 6.85 in to the side. */
+export const OUTER_RADIUS = bandMiddle(2, 3);
+export const OUTER_HEIGHT = 3.5 * INCH;
 export const CLUSTERS = [
   { id: "center", x: 0, y: 0, ring: 4 },
-  ...[-1, 1].flatMap(y => [-1, 1].map(x => ({ id: (y < 0 ? "u" : "l") + (x < 0 ? "l" : "r"), x: x * 6 * INCH, y: y * 3.5 * INCH, ring: 3 }))),
+  ...[-1, 1].flatMap(y => [-1, 1].map(x => ({ id: (y < 0 ? "u" : "l") + (x < 0 ? "l" : "r"), x: x * sideAt(OUTER_RADIUS, OUTER_HEIGHT), y: y * OUTER_HEIGHT, ring: 3 }))),
 ];
 export const BULLS = CLUSTERS.slice(1).map(c => ({ x: c.x, y: c.y, outer: RINGS[1].radius, inner: RINGS[0].radius }));
+/** Killshots (checked 2026-11-08 against worldaxethrowingleague.com/axe-throwing-rules and the 2024/2025 rule pages):
+ *  outer 1.5 in / inner 0.75 in, lower 48 in / upper 72 in on centre (target centre 60 in, i.e. 12 in up and down), "centered in the 1 ring".
+ *  On the stencil the kill hole sits halfway between the 2 and 1 ring slots; at 12 in up that is about 10.49 in to the side
+ *  (about 41 degrees from vertical, "Blue zones in 1-ring corners"), where the stencil's board-alignment arrow also points. */
+export const KILL_RADIUS = bandMiddle(4, 5);
+export const KILL_HEIGHT = 12 * INCH;
 export const KILLS = [-1, 1].flatMap(y => [-1, 1].map(x => ({
-  id: (y < 0 ? "upper" : "lower") + (x < 0 ? "-left" : "-right"),
-  row: y < 0 ? "upper" : "lower", x: x * 7 * INCH, y: y * 12 * INCH, outer: .75 * INCH, inner: .375 * INCH,
+  id: (y < 0 ? "upper" : "lower") + (x < 0 ? "-left" : "-right"), row: y < 0 ? "upper" : "lower",
+  x: x * sideAt(KILL_RADIUS, KILL_HEIGHT), y: y * KILL_HEIGHT, outer: .75 * INCH, inner: .375 * INCH,
 })));
 /** Clockwise sudden-death rotation, starting upper-left. */
 export const KILL_ROTATION = ["upper-left", "upper-right", "lower-right", "lower-left"];
-export const POWER = { ideal: .62, sweetMin: .54, sweetMax: .70, stickMin: .42, stickMax: .82 };
+/** lift / liftOutside: how far the cut drops (power below ideal) or rises (above) per unit of power, in board units.
+ *  Inside the green band it is the gentle .28 of the original game; outside the band it is steeper, so the band the UI asks for
+ *  actually pays: a throw at the edge of the stick window lands about 2.8 in off, enough to lose a bull through the 4 in blade
+ *  (2026-11-13 手応えレビュー指摘7・桜井 #236). */
+export const POWER = { ideal: .62, sweetMin: .54, sweetMax: .70, stickMin: .42, stickMax: .82, lift: .28, liftOutside: 1.1 };
+/** Vertical shift of the cut for this rotation power: positive is down (under-rotated), negative is up. */
+export function liftFor(power) {
+  const inside = Math.max(POWER.sweetMin, Math.min(POWER.sweetMax, power)), outside = power - inside;
+  return (POWER.ideal - inside) * POWER.lift - outside * POWER.liftOutside;
+}
 /** Five 2x10 planks (46.25 in) by 48 in, centred on the bullseye. Outside is air. */
 export const BOARD = { left: -23.125 * INCH, right: 23.125 * INCH, top: -24 * INCH, bottom: 24 * INCH };
 /** Gauges sweep this far from the centre, so misses into plain wood exist. */
 export const AIM_RANGE = 1.2;
-export const SWAY = { min: .03, max: .17, fatigueStart: 1500, fatigueFull: 8000, focusDuration: 1200, focusScale: .18 };
+/** strain: how much a rotation outside the green band shakes the arm (power off the band by .12, the stick window's edge, sways 1.48x).
+ *  Visible on the white blade marker while the power is live (2026-11-13 指摘7: 「帯内＝揺れが収まる」). */
+export const SWAY = { min: .03, max: .17, fatigueStart: 1500, fatigueFull: 8000, focusDuration: 1200, focusScale: .18, strain: 4 };
 export const CALLS = 2;
 export function finite(...values) {
   if (!values.every(Number.isFinite)) throw new RangeError("Finite gauge values required");
@@ -56,7 +84,7 @@ export function swayAt(milliseconds, power = POWER.ideal, throwIndex = 0, focuse
     throw new RangeError("Invalid stance values");
   const fatigue = Math.min(1, Math.max(0, (milliseconds - SWAY.fatigueStart) / (SWAY.fatigueFull - SWAY.fatigueStart)));
   const strain = Math.max(0, POWER.sweetMin - power, power - POWER.sweetMax);
-  const amplitude = (SWAY.min + (SWAY.max - SWAY.min) * fatigue) * (1 + strain) * (focused ? SWAY.focusScale : 1) * steady;
+  const amplitude = (SWAY.min + (SWAY.max - SWAY.min) * fatigue) * (1 + strain * SWAY.strain) * (focused ? SWAY.focusScale : 1) * steady;
   const t = milliseconds / 1000, offset = throwIndex * 1.73;
   return { x: amplitude * (.75 * Math.sin(t * 4.7 + offset) + .25 * Math.sin(t * 10.3 + offset)),
     y: amplitude * (.75 * Math.cos(t * 3.9 + offset) + .25 * Math.sin(t * 8.1 - offset)), amplitude, fatigue, focused };
@@ -137,7 +165,7 @@ export function resolveThrow({ x, y, power, called = null }, history = [], optio
   if (suddenDeath ? !KILLS.some(k => k.id === called) : called !== null && !canCall(called, history, throws))
     throw new RangeError("Unavailable Killshot call");
   const index = history.length, half = halfOf(index, throws);
-  const landing = { x, y: y + (POWER.ideal - power) * .28 };
+  const landing = { x, y: y + liftFor(power) };
   const onBoard = landing.x >= BOARD.left && landing.x <= BOARD.right && landing.y >= BOARD.top && landing.y <= BOARD.bottom;
   const validPower = power >= POWER.stickMin && power <= POWER.stickMax;
   const stuck = validPower && onBoard;

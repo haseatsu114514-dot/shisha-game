@@ -16,17 +16,17 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……いつも、絵の話ばかりで。すみません"
+          "text": "……いつも、絵の話ばっかりで。すみません"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……でも今日は、もう少しここにいたくて"
+          "text": "……でも今日は、もう少しだけ、ここにいたくて"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（タブレットの向こうじゃなく、今日は俺を見ている）"
+          "text": "（今日は、タブレットの向こうじゃなく、俺を見ている）"
         },
         {
           "type": "choice",
@@ -56,7 +56,7 @@
           {
             "speaker": "tsumugi",
             "face": "normal",
-            "text": "……絵じゃなくて、私に、ですか"
+            "text": "……絵じゃなくて、私を、ですか"
           },
           {
             "speaker": "hajime",
@@ -66,7 +66,7 @@
           {
             "speaker": "tsumugi",
             "face": "smile",
-            "text": "……そう言われたの、初めてです。少し、困ります"
+            "text": "……そんなこと言われたの、初めてです、……少し、困ります"
           },
           {
             "speaker": "",
@@ -83,12 +83,12 @@
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "煙だけ吸いに来る日があってもいいよ"
+            "text": "煙を吸いに来るだけの日があっても、いいんだよ"
           },
           {
             "speaker": "tsumugi",
             "face": "smile",
-            "text": "……はい。そういう日も、来ます"
+            "text": "……はい。そういう日も、来ますね"
           },
           {
             "speaker": "",
@@ -99,10 +99,10 @@
       }
     },
     {
-      "dialogue_id": "ch1_rin_bond_question",
+      "dialogue_id": "ch1_rio_bond_question",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
-        "bond_question": "rin"
+        "bond_question": "rio"
       },
       "lines": [
         {
@@ -113,22 +113,22 @@
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんは報告書を送信すると、椅子をこちらへ向けた。"
+          "text": "凛想さんは報告書を送信すると、椅子をこちらへ向けた。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "今日の便、終わり。モニター料が出る仕事も、もうないよ"
+          "text": "今日の便、終わり。モニター料が出るような仕事も、もうないよ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "じゃあ、邪魔じゃなければ少しだけ"
+          "text": "じゃあ、邪魔じゃなければ、少しだけ"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "君、帰ってからでも感想を送れるでしょ。わざわざ階段を上がってくるの、何で？"
+          "text": "感想なら、帰ってからでも送れるでしょ。わざわざ階段を上がってくるの、なんで？"
         },
         {
           "speaker": "",
@@ -143,11 +143,11 @@
         },
         {
           "type": "choice",
-          "id": "bond_q1_rin",
-          "romance_char": "rin",
+          "id": "bond_q1_rio",
+          "romance_char": "rio",
           "choices": [
             {
-              "text": "「用事がなくても、凛さんに会いに来ます」",
+              "text": "「用事がなくても、凛想さんに会いに来ます」",
               "next": "personal",
               "romance": 1
             },
@@ -164,37 +164,37 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "サンプルが欲しい日と、凛さんに会いたい日は、別です"
+            "text": "サンプルが欲しい日と、凛想さんに会いたい日は、別です"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "surprise",
             "text": "……へえ"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "凛さんは机の端に指を置いたまま、少し考えた。"
+            "text": "凛想さんは机の端に指を置いたまま、少し考えた。"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
-            "text": "じゃあ今日は、何を話してもレポートにしない"
+            "text": "じゃあ今日は、何を話してもレポートにはしない"
           },
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "凛さん、仕事が終わると何してるんですか"
+            "text": "凛想さんって、仕事が終わったら何してるんですか"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
             "text": "遅い夕飯。たいてい、同じ店で同じもの"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "smile",
-            "text": "……今度、別のもの頼んでみようかな。君が向かいに座るなら"
+            "text": "……今度、違うもの頼んでみようかな。君が向かいに座るなら"
           },
           {
             "speaker": "",
@@ -204,7 +204,7 @@
         ],
         "work": [
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
             "text": "頼もしいね。じゃあ、結果がよくなかった時も、そのまま教えて"
           },
@@ -214,9 +214,9 @@
             "text": "はい。tonariで試した話も、持ってきます"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
-            "text": "助かる。向こうの机まで届かない感想って、結構あるから"
+            "text": "助かる。向こうの机まで届かない感想って、けっこうあるから"
           },
           {
             "speaker": "",
@@ -248,7 +248,7 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "……次に会うのも、お店の外でいい？"
+          "text": "……次に会うのも、お店の外がいいな、……だめ？"
         },
         {
           "speaker": "hajime",
@@ -261,7 +261,7 @@
           "romance_char": "minto",
           "choices": [
             {
-              "text": "「栞さんと２人だと、ちょっと緊張する」",
+              "text": "「栞さんと2人だと、ちょっと緊張する」",
               "next": "close",
               "romance": 1
             },
@@ -283,24 +283,24 @@
           {
             "speaker": "minto",
             "face": "ura_normal",
-            "text": "……私も。お店の外だと、ちょっと緊張する"
+            "text": "……私も。お店の外だと、ちょっと緊張しちゃう"
           },
           {
             "speaker": "minto",
             "face": "ura_smug",
-            "text": "でも……また、２人で会いたい。今日は、ここまで"
+            "text": "でも……また、2人で会いたい。……今日は、ここまでね"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "小さく手を振って、栞さんは駅の方へ歩いていった。何度か、振り返りながら。"
+            "text": "小さく手を振って、栞さんは駅のほうへ歩いていった。何度も、振り返りながら。"
           }
         ],
         "friend": [
           {
             "speaker": "minto",
             "face": "ura_smile",
-            "text": "……うん。お店の話、気楽にできる人がいると助かる"
+            "text": "……うん。お店の話を気楽にできる人がいると、助かるな"
           },
           {
             "speaker": "minto",
@@ -368,12 +368,22 @@
         {
           "speaker": "",
           "face": "",
+          "text": "炭を置く前に、一度だけ息を吐いた。トングの先が、すっと止まる。"
+        },
+        {
+          "type": "fx",
+          "id": "exhale",
+          "who": "sumi"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "ホースを渡す。スミさんは黙って一口吸い、長く煙を吐いた。"
         },
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "……詰めが半歩ゆるい。炭を置くのも、一拍遅い"
+          "text": "……詰めが半歩甘い。炭を置くのも、一拍遅い"
         },
         {
           "speaker": "hajime",
@@ -413,6 +423,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
+          "beat": 600,
           "text": "……持ってけ"
         },
         {
@@ -468,7 +479,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "２人分の煙が、暖かな灯りの下で重なり、ゆっくり消えていった。"
+          "text": "2人分の煙が、暖かな灯りの下で重なり、ゆっくり消えていった。"
         },
         {
           "type": "apply",
@@ -505,7 +516,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "なるさんはカウンターの下をごそごそ漁って、素焼きのボウルをごとんと置いた。"
+          "text": "親父さんの店の話をした日より、「潰れねえ」の声が少しだけ軽かった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるはカウンターの下をごそごそ漁って、素焼きのボウルをごとんと置いた。"
         },
         {
           "speaker": "",
@@ -520,7 +536,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "ノートは見せた。技も教えた。……あとは、これかなって"
+          "text": "台は丸見えにした。ノートも見せた。……あとは、これかなって"
         },
         {
           "speaker": "hajime",
@@ -535,6 +551,7 @@
         {
           "speaker": "naru",
           "face": "serious",
+          "duck": true,
           "text": "教える側と教わる側は、今日でおしまいだ"
         },
         {
@@ -646,7 +663,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "鼻を近づけると、確かに香る。アニスとリコリス、２つのスパイスが重なった、あの独特な匂い。"
+          "text": "鼻を近づけると、確かに香る。アニスとリコリス、2つのスパイスが重なった、あの独特な匂い。"
         },
         {
           "speaker": "adam",
@@ -681,7 +698,22 @@
         {
           "speaker": "",
           "face": "",
-          "text": "「欠けた縁は削るな。そこが一番よく香る」。最後の頁だけ、日付と小さな失敗談だった。"
+          "text": "「欠けた縁は削るな、そこが一番よく香る」。最後の頁だけ、日付と一行の走り書きだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「手を滑らせて、縁を欠いた。捨てずに、明日も詰める」。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "思わず、ボウルの欠けた縁に指を当てた。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……器用ではないと、言ったろう"
         },
         {
           "speaker": "hajime",
@@ -691,7 +723,35 @@
         {
           "speaker": "adam",
           "face": "smile",
+          "duck": true,
           "text": "年月は、手入れの積み重ねでしか宿らぬ。それが継承の正体よ"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……お前と悩んだ日から、常連にも聞くようになった"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "さっきと今、どちらが好きだ、とな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "アダムさんが、お客さんに聞くんですか"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "答えは結局、ダブルアップルだがな"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_adam_fifth_strong",
+          "next_true": "fifth_strong",
+          "next_false": "fifth_other"
         },
         {
           "speaker": "adam",
@@ -721,7 +781,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "紙の束と素焼きを抱えて、店を出た。腕の中から、ずっとあの匂いがしていた。"
+          "text": "紙の束と素焼きを抱えて、店を出た。帰りの信号待ちで、七頁目まで読んだ。"
         },
         {
           "type": "apply",
@@ -729,7 +789,41 @@
             "guts": 2
           }
         }
-      ]
+      ],
+      "branches": {
+        "fifth_strong": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "お前は、さっきの濃い方を選んだな。あの日、炭を戻した一台だ"
+          },
+          {
+            "speaker": "adam",
+            "face": "smile",
+            "text": "常連の半分も、同じ方を選ぶ。ふっ、お前の舌はリンゴに素直だ"
+          }
+        ],
+        "fifth_other": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_adam_fifth_light",
+            "next_true": "fifth_light"
+          }
+        ],
+        "fifth_light": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "お前は、軽い後味の方を選んだな。俺は、濃さを残したかったが"
+          },
+          {
+            "speaker": "adam",
+            "face": "smile",
+            "text": "今は、炭を一つ外へ寄せる日もある。軽い方を待つ常連も、案外いるのだ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_tsumugi_bond_finale",
@@ -751,7 +845,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "描き終わった絵、最初に見てほしくて"
+          "text": "描き終わった絵、いちばん最初に見てほしくて"
         },
         {
           "type": "condition",
@@ -763,7 +857,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "傷のある画面に、１枚の絵が開かれた。"
+          "text": "傷のある画面に、1枚の絵が開かれた。"
         },
         {
           "speaker": "",
@@ -793,7 +887,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……いい絵だね。この子、ここで寝てるのが一番似合う"
+          "text": "……いい絵だね。この子、ここで寝てるのがいちばん似合う"
         },
         {
           "speaker": "tsumugi",
@@ -813,6 +907,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
+          "beat": 500,
           "text": "……絵の煙は、この素焼きから上ってた煙です。スミさんに預けてた、私の一台"
         },
         {
@@ -828,7 +923,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "絵は、画面の中にしか残らないので。……匂いの方は、持って帰ってほしくて"
+          "text": "絵は、画面の中にしか残らないので。……匂いのほうは、持って帰ってほしくて"
         },
         {
           "speaker": "tsumugi",
@@ -841,11 +936,6 @@
           "char_id": "tsumugi",
           "next_true": "lover",
           "next_false": "check"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "タブレットの画面が、ふっと暗くなった。手の中の包みからは、まだラベンダーの匂いがしていた。"
         },
         {
           "type": "apply",
@@ -868,7 +958,7 @@
           {
             "speaker": "tsumugi",
             "face": "smile",
-            "text": "……家でもこの匂いがしたら、会えない日も少し近い気がして"
+            "text": "……家でもこの匂いがしたら、会えない日も、少し近い気がして"
           },
           {
             "speaker": "hajime",
@@ -898,7 +988,7 @@
             "romance_char": "tsumugi",
             "choices": [
               {
-                "text": "「今度は２人で、この香りを吸いたい」",
+                "text": "「今度は2人で、この香りを吸いたい」",
                 "next": "close",
                 "romance": 1
               },
@@ -919,7 +1009,7 @@
           {
             "speaker": "tsumugi",
             "face": "normal",
-            "text": "……２人で、ですか"
+            "text": "……2人で、ですか"
           },
           {
             "speaker": "tsumugi",
@@ -929,7 +1019,7 @@
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "うん。描いてない日のつむぎちゃんとも"
+            "text": "うん。描いてない日のつむぎちゃんとも、会いたい"
           },
           {
             "speaker": "",
@@ -975,7 +1065,7 @@
           {
             "speaker": "tsumugi",
             "face": "normal",
-            "text": "コンテストの絵とは、別の１枚です。……今日、描きたくなって"
+            "text": "コンテストの絵とは、別の1枚です。……今日、描きたくなって"
           }
         ],
         "finale_no_contest": []
@@ -997,7 +1087,7 @@
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "……来てくれた。今日は、渡したいものがあって"
+          "text": "……来てくれた。今日はね、渡したいものがあって"
         },
         {
           "speaker": "",
@@ -1007,7 +1097,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "布の端をめくると、飴色に焼けた素焼きのボウル。鼻を近づけると、ミントが香った。"
+          "text": "布の端をめくると、手のひらに収まるくらいの素焼きのボウルだった。"
         },
         {
           "speaker": "minto",
@@ -1017,12 +1107,12 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "お店のとは別。１人の時に、ずっとこれで吸ってた"
+          "text": "お店のとは別。ひとりの時に、ずっとこれで吸ってた"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "そんな大事なもの、いいの？"
+          "text": "そんな大事なもの、もらっていいの？"
         },
         {
           "speaker": "minto",
@@ -1037,12 +1127,17 @@
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "きみの一台を待つ時間とか。こうして外で話す時間とか"
+          "text": "きみの一台を待つ時間とか。こうして、外で話す時間とか"
         },
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "だから、これは預けるんじゃなくて、あげる、……お礼、かな"
+          "text": "だから、これは預けるんじゃなくて、あげる、[pause]……お礼、かな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "布の中から、すっとしたミントの匂いがした。店で嗅ぐより、少しだけやわらかい匂いだった。"
         },
         {
           "type": "condition",
@@ -1050,11 +1145,6 @@
           "char_id": "minto",
           "next_true": "lover",
           "next_false": "check"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "布の中から、すっとしたミントの匂いがした。店で嗅ぐより、少しだけやわらかい匂いだった。"
         },
         {
           "type": "apply",
@@ -1077,12 +1167,12 @@
           {
             "speaker": "minto",
             "face": "ura_smug",
-            "text": "……恋人に渡すの、ちょっと照れるね。でも、きみに持っててほしい"
+            "text": "……恋人に渡すの、ちょっと照れるね。でも、きみに持っててほしいの"
           },
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "うん。２人で吸う時も、これで作るよ"
+            "text": "うん。2人で吸う時も、これで作るよ"
           },
           {
             "speaker": "",
@@ -1094,7 +1184,7 @@
           {
             "speaker": "minto",
             "face": "ura_normal",
-            "text": "……ね。お店のみんとじゃない私と、これからも会ってくれる？"
+            "text": "……ね。お店のみんとじゃない私とも、これからも会ってくれる？"
           },
           {
             "speaker": "hajime",
@@ -1107,7 +1197,7 @@
             "romance_char": "minto",
             "choices": [
               {
-                "text": "「栞さんのことを、もっと知りたい。２人で」",
+                "text": "「栞さんのことを、もっと知りたい。2人で」",
                 "next": "close",
                 "romance": 1
               },
@@ -1128,7 +1218,7 @@
           {
             "speaker": "minto",
             "face": "ura_smug",
-            "text": "……そういうの、ずるい。でも、うれしい"
+            "text": "……そういうの、ずるい、……でも、うれしい"
           },
           {
             "speaker": "minto",
@@ -1145,7 +1235,7 @@
           {
             "speaker": "minto",
             "face": "ura_smile",
-            "text": "……うん。友達、いい言葉だね"
+            "text": "……うん。友達って、いい言葉だね"
           },
           {
             "speaker": "minto",
@@ -1178,21 +1268,21 @@
       }
     },
     {
-      "dialogue_id": "ch1_rin_bond_finale",
+      "dialogue_id": "ch1_rio_bond_finale",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
-        "bond_finale": "rin"
+        "bond_finale": "rio"
       },
       "lines": [
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "来たね、モルモットくん。今日は試香じゃないよ"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "代わりに、これ。ラベルも同意書もないやつ"
+          "text": "代わりに、これ。ラベルも同意書もついてないやつ"
         },
         {
           "speaker": "",
@@ -1202,26 +1292,27 @@
         {
           "speaker": "",
           "face": "",
-          "text": "縁から、濃い果実の香りがした。ショールームの隅で、凛さんがいつも吸っていた匂いだ。"
+          "text": "縁から、濃い果実の香りがした。ショールームの隅で、凛想さんがいつも吸っていた匂いだ。"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "これ、凛さんの私物のブルーベリー……"
+          "text": "これ、凛想さんの私物のブルーベリー……"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "そう。試験品じゃないよ。レポートも要らない"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "仕事柄、預かり物ばかり人に渡してるからさ。たまには自分のを渡したくて"
+          "text": "仕事柄、預かり物ばっかり人に渡してるからさ。たまには、自分のを渡したくて"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
+          "beat": 500,
           "text": "……個人から、君へのプレゼント。それだけ"
         },
         {
@@ -1235,7 +1326,7 @@
           "text": "前に話した常連さん、ローズとライチで、二口目に笑ってました"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "……へえ。笑ったんだ。どっちの香りで？"
         },
@@ -1245,19 +1336,19 @@
           "text": "ライチの方です。ローズが少し引いたところで、ふっと"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "smile",
           "text": "それ、レポートには書けないやつだね。……もう一回、聞かせて"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "同じ話をもう一度すると、凛さんは今度は目を閉じて聞いていた。"
+          "text": "同じ話をもう一度すると、凛想さんは今度は目を閉じて聞いていた。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "それと、課題のブルーベリーも試しました。……なんだか、落ち着く味でした"
+          "text": "それと、課題のブルーベリーも試しました。……なんだか、ほっとする味でした"
         },
         {
           "speaker": "hajime",
@@ -1265,14 +1356,14 @@
           "text": "これを使ってた日の話も、聞いていいですか"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "初めて日本の担当を任された日。説明は覚えたのに、誰も何も聞いてくれなくてさ"
+          "text": "初めて日本の担当を任された日。説明は完璧なのに、誰も何も聞いてくれなくてさ"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "閉めてから、これでブルーベリーを吸った。そういう日の道具"
+          "text": "閉めてから、これでブルーベリーを吸った、……そういう日の道具"
         },
         {
           "speaker": "hajime",
@@ -1280,21 +1371,16 @@
           "text": "売ってるものの説明とは、違いますね"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "説明じゃないから。君に渡す理由、ちゃんと言っておこうと思って"
+          "text": "説明じゃないからね。君に渡す理由、ちゃんと言っておこうと思って"
         },
         {
           "type": "condition",
           "condition_type": "lover",
-          "char_id": "rin",
+          "char_id": "rio",
           "next_true": "lover",
           "next_false": "check"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "包みを抱えて階段を降りる。夜の側の匂いの中に、ひとつだけ甘い香りが混ざっていた。"
         },
         {
           "type": "apply",
@@ -1308,46 +1394,46 @@
           {
             "type": "condition",
             "condition_type": "romance_open",
-            "char_id": "rin",
+            "char_id": "rio",
             "next_true": "ask",
             "next_false": "friend"
           }
         ],
         "lover": [
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "smile",
             "text": "恋人に私物を渡すの、なんか照れるね。業務連絡じゃ、ごまかせないや"
           },
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "大事にします。凛さんの匂いごと"
+            "text": "大事にします。凛想さんの匂いごと"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
             "text": "……そういうとこだよ、君"
           }
         ],
         "ask": [
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
             "text": "君がこれで作った一台、いつか吸わせてね、……仕事じゃない日に"
           },
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（モニターでも、手伝いでもない日。凛さんの予定表に、俺はどう書かれたいんだろう）"
+            "text": "（モニターでも、手伝いでもない日。凛想さんの予定表に、俺はどう書かれたいんだろう）"
           },
           {
             "type": "choice",
-            "id": "bond_q2_rin",
-            "romance_char": "rin",
+            "id": "bond_q2_rio",
+            "romance_char": "rio",
             "choices": [
               {
-                "text": "「仕事じゃない日に、２人で吸いましょう」",
+                "text": "「仕事じゃない日に、2人で吸いましょう」",
                 "next": "close",
                 "romance": 1
               },
@@ -1361,14 +1447,14 @@
         ],
         "close": [
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "surprise",
             "text": "二人で、ね"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "smile",
-            "text": "じゃあ、空いてる日を送る。仕事の予定とは別に"
+            "text": "じゃあ、空いてる日を送る。仕事の予定とは別にね"
           },
           {
             "speaker": "hajime",
@@ -1376,31 +1462,31 @@
             "text": "俺もシフトを確かめて、返します"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
-            "text": "約束したからね。便が増えたから中止、はやめる"
+            "text": "約束したからね。便が増えたから中止、はナシ"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "凛さんは仕事用の予定表を閉じ、スマホの方へ日付を入れた。"
+            "text": "凛想さんは仕事用の予定表を閉じ、スマホの方へ日付を入れた。"
           }
         ],
         "ask_friend": [
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
             "text": "試香の日に、ね。君らしい、……楽しみにしてる"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
-            "text": "じゃあ試香の欄に、一行足しとく。「はじめの一台」って"
+            "text": "じゃあ、試香の欄に一行足しとく。「はじめの一台」って"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "凛さんはクリップボードを引き寄せて、本当に試香の欄へ一行書き込んだ。"
+            "text": "凛想さんはクリップボードを引き寄せて、本当に試香の欄へ一行書き込んだ。"
           }
         ],
         "friend": [
@@ -1410,14 +1496,14 @@
             "text": "ありがとうございます。大事に使います"
           },
           {
-            "speaker": "rin",
+            "speaker": "rio",
             "face": "normal",
-            "text": "うん。仕事仲間からのプレゼントってことで。大事に使って"
+            "text": "うん。仕事仲間からのプレゼントってことで。大事に使ってね"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "凛さんはクリップボードを抱えて、口の端だけで笑った。"
+            "text": "凛想さんはクリップボードを抱えて、口の端だけで笑った。"
           }
         ]
       }

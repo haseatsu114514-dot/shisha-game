@@ -47,7 +47,7 @@
       "buy_price": 1000,
       "sell_price": 500,
       "price": 1000,
-      "value": "suyaki",
+      "value": "suyaki_hagal",
       "description": "同じ味を使うほど育つ。最初は土の味が少しする。大容量20g。",
       "capacity": 20
     },
@@ -71,6 +71,7 @@
       "sell_price": 1000,
       "price": 2000,
       "value": "tanukish_lid",
+      "art": "tanukish_lid",
       "description": "使いやすく癖が少ない。素焼きサイズには使えない。"
     },
     {
@@ -81,7 +82,8 @@
       "buy_price": 1500,
       "sell_price": 750,
       "price": 1500,
-      "value": "amaburst",
+      "value": "amaburst_hms",
+      "art": "amaburst_hms",
       "description": "素焼きハガルにも装着可能。温度が上がりやすく、直炭に近い高火力を出しやすい。"
     },
     {
@@ -93,7 +95,7 @@
       "sell_price": 300,
       "price": 600,
       "value": "flat_charcoal",
-      "description": "安定して熱を入れやすい。有効範囲が広く扱いやすい。"
+      "description": "平たい分、キューブより小さい。熱の持ちは短めで、燃焼時間も短い。"
     },
     {
       "id": "cube_charcoal",
@@ -104,7 +106,7 @@
       "sell_price": 500,
       "price": 1000,
       "value": "cube_charcoal",
-      "description": "火力を上げる時に有効。重たい煙が好きな層に刺さるが有効範囲は狭い。"
+      "description": "角型でフラットより大きい。熱の持ちが長く、燃焼時間も長い。"
     },
     {
       "id": "harry_the_moon",
@@ -167,6 +169,7 @@
       "sell_price": 1500,
       "price": 3000,
       "value": "winkwink_hagal",
+      "art": "winkwink_hagal",
       "description": "素焼きなど大きいハガル向け。熱持ちは良いが熱が入りづらい。"
     },
     {
@@ -287,21 +290,21 @@
       }
     },
     {
-      "id": "suyaki_rin",
+      "id": "suyaki_rio",
       "type": "bowl",
-      "name": "凛が育てたブルーベリー専用ハガル",
+      "name": "凛想が育てたブルーベリー専用ハガル",
       "chapter_min": 99,
       "buy_price": 0,
       "sell_price": 0,
       "price": 0,
-      "value": "suyaki_rin",
-      "description": "凛が私物で使い込んだ素焼き。ブルーベリーの香りが土まで染み付いている。試験品ではない。容量20g。",
+      "value": "suyaki_rio",
+      "description": "凛想が私物で使い込んだ素焼き。ブルーベリーの香りが土まで染み付いている。試験品ではない。容量20g。",
       "capacity": 20,
       "art": "suyaki_hagal",
       "not_for_sale": true,
       "unsellable": true,
       "gift": {
-        "from": "rin",
+        "from": "rio",
         "reason": "個人からのプレゼント",
         "flavor": "blueberry",
         "min_grams": 3,
@@ -454,13 +457,13 @@
     {
       "id": "suyaki_rei",
       "type": "bowl",
-      "name": "REIが育てたローズ専用ハガル",
+      "name": "レヰが育てたローズ専用ハガル",
       "chapter_min": 99,
       "buy_price": 0,
       "sell_price": 0,
       "price": 0,
       "value": "suyaki_rei",
-      "description": "REIが店を始めた頃からローズだけを詰めてきた素焼き。薔薇の香りが土まで染み付いている。容量20g。",
+      "description": "レヰが店を始めた頃からローズだけを詰めてきた素焼き。薔薇の香りが土まで染み付いている。容量20g。",
       "capacity": 20,
       "art": "suyaki_hagal",
       "not_for_sale": true,
@@ -476,23 +479,166 @@
       }
     },
     {
-      "id": "suyaki_kuze",
+      "id": "suyaki_saku",
       "type": "bowl",
-      "name": "久世が育てたアールグレイ専用ハガル",
+      "name": "綾取が育てたアールグレイ専用ハガル",
       "chapter_min": 99,
       "buy_price": 0,
       "sell_price": 0,
       "price": 0,
-      "value": "suyaki_kuze",
-      "description": "久世が福岡から持ってきて、煙幕の閉店後に客の答えを確かめるたび使い込んだ素焼き。アールグレイの柑橘と紅茶の香りが土まで染み付いている。容量20g。",
+      "value": "suyaki_saku",
+      "description": "綾取が福岡から持ってきて、煙幕の閉店後に客の答えを確かめるたび使い込んだ素焼き。アールグレイの柑橘と紅茶の香りが土まで染み付いている。容量20g。",
       "capacity": 20,
       "art": "suyaki_hagal",
       "not_for_sale": true,
       "unsellable": true,
       "gift": {
-        "from": "kuze",
+        "from": "saku",
         "reason": "返事の欄の続きを、別の台で",
         "flavor": "absal_earlgrey",
+        "leaf_grams": 50,
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
+      "id": "suyaki_noor",
+      "type": "bowl",
+      "name": "ヌールが育てたダブルアップル専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_noor",
+      "description": "ヌールが十四歳で父に一台を教わってから、ダブルアップルだけを詰めてきた素焼き。りんごとアニスの甘い香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "noor",
+        "reason": "ドバイを思い出すための宝物",
+        "flavor": "double_apple",
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
+      "id": "suyaki_steve",
+      "type": "bowl",
+      "name": "スティーブが育てたマウンテンミスト専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_steve",
+      "description": "スティーブが急いで柑橘を飛ばした日から、マウンテンミストを低い熱で待つ練習に使い込んだ素焼き。縁が少し欠け、レモンとライムの香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "steve",
+        "reason": "待つ練習台を、顔を見る手に",
+        "flavor": "mountain_mist",
+        "leaf_grams": 50,
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
+      "id": "suyaki_volk",
+      "type": "bowl",
+      "name": "ヴォルクが育てたブラストミント専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_volk",
+      "description": "ヴォルクがナイトサイド ブラストミントの発売前、配合を変えるたびに火の強さを測った素焼き。外側に配合を変えた回数の刻みが並び、冷たいミントの香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "volk",
+        "reason": "測ってきた火を、頷く手に",
+        "flavor": "nightside_blast_mint",
+        "leaf_grams": 50,
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
+      "id": "suyaki_master_hookah",
+      "type": "bowl",
+      "name": "王煙楼が育てたブラックティー専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_master_hookah",
+      "description": "王煙楼が旅先の店で、見せるための器ではなく静かな一台を渡すために使い込んだ素焼き。紅茶の葉と少しの木の香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "master_hookah",
+        "reason": "見せ物ではない一台を、残る息に",
+        "flavor": "black_tea",
+        "leaf_grams": 50,
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
+      "id": "suyaki_da_silva",
+      "type": "bowl",
+      "name": "太陽が育てたパッションフルーツ専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_da_silva",
+      "description": "太陽がFESTAの閉店後、手拍子の止んだ店で、帰りそびれた一人のために詰めてきた素焼き。甘酸っぱい南国の香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "da_silva",
+        "reason": "祭りのあとの一台を、次の客に",
+        "flavor": "passion_fruit",
+        "leaf_grams": 50,
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
+      "id": "suyaki_sheikh",
+      "type": "bowl",
+      "name": "シェイクが育てたグレープ専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_sheikh",
+      "description": "シェイクが旅装で路地裏のカフェへ来る時だけ使い、店の棚に預けてきた素焼き。王族の顔を外した夜の、熟したぶどうの香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "sheikh",
+        "reason": "ただの客でいられた夜を、友に",
+        "flavor": "grape",
         "leaf_grams": 50,
         "min_grams": 3,
         "aroma": 4,
@@ -508,7 +654,7 @@
       "sell_price": 4900,
       "price": 9800,
       "value": "kumogama_phunnel",
-      "art": "hagal_80beat",
+      "art": "kumogama_phunnel",
       "capacity": 16,
       "description": "窯元が一つずつ挽いた釉薬のファンネル。中央の筒が高く、シロップが葉の下へ落ちにくい。容量16g。"
     },
@@ -521,8 +667,21 @@
       "sell_price": 7000,
       "price": 14000,
       "value": "lotos_plus",
-      "art": "lotos_hagal",
+      "art": "lotos_plus",
       "description": "ロートスHMDの上位モデル。ボウルに直接のせて使い、アルミは張らない。厚い蓋で熱がぶれにくい。"
+    },
+    {
+      "id": "dr_kemuri_proto_hmd",
+      "type": "hms",
+      "name": "博士の試作HMD",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "dr_kemuri_proto_hmd",
+      "not_for_sale": true,
+      "unsellable": true,
+      "description": "チャコール博士が直し続けている試作の銀の蓋。熱を蓋全体に回して均一に落とし、適温帯がやや広い。炭を替えても適温帯が狭まりにくい。全ボウル対応。"
     },
     {
       "id": "dense_flat_charcoal",
@@ -533,7 +692,7 @@
       "sell_price": 1200,
       "price": 2400,
       "value": "dense_flat_charcoal",
-      "art": "flat_charcoal",
+      "art": "dense_flat_charcoal",
       "description": "ココナッツ殻を固く詰めて焼いた上位のフラット炭。灰が少なく、熱の入り方が揺れにくい。"
     },
     {
@@ -557,6 +716,7 @@
       "sell_price": 50000,
       "price": 100000,
       "value": "stand_walnut",
+      "art": "stand_walnut",
       "home_xp": 8,
       "description": "真鍮のステムをくるみ材で包み、厚いガラスのベースに差した台。煙がなめらかに通り、香りの違いを確かめやすい。"
     },
@@ -569,8 +729,60 @@
       "sell_price": 150000,
       "price": 300000,
       "value": "stand_custom",
+      "art": "stand_custom",
       "home_xp": 9,
       "description": "職人が一台ずつ仕立てる真鍮のステムと、手吹きガラスのベース。受け皿の高さやホースポートの向きまで手に合わせてある。"
+    },
+    {
+      "id": "stand_custom_melty",
+      "type": "homeware",
+      "name": "MELTY PUFF柄の特注台",
+      "chapter_min": 5,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "unsellable": true,
+      "not_for_sale": true,
+      "kuji_only": true,
+      "base": "stand_custom",
+      "value": "stand_custom_melty",
+      "art": "stand_custom_melty",
+      "home_xp": 9,
+      "description": "職人仕立ての特注台を、柚ヶ谷のMELTY PUFFと同じピンクとレオパード柄に塗った台。Dr.fookahの限定台くじだけで当たる。仕立てと煙の通りは特注台と同じ。"
+    },
+    {
+      "id": "stand_custom_tosu",
+      "type": "homeware",
+      "name": "橙須限定色の特注台",
+      "chapter_min": 5,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "unsellable": true,
+      "not_for_sale": true,
+      "kuji_only": true,
+      "base": "stand_custom",
+      "value": "stand_custom_tosu",
+      "art": "stand_custom_tosu",
+      "home_xp": 9,
+      "description": "地元・橙須の「橙」の色を、手吹きガラスのベースに溶かし込んだ限定色の特注台。Dr.fookahの限定台くじだけで当たる。仕立てと煙の通りは特注台と同じ。"
+    },
+    {
+      "id": "stand_custom_engraved",
+      "type": "homeware",
+      "name": "名入れの特注台（逢縁）",
+      "chapter_min": 5,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "unsellable": true,
+      "not_for_sale": true,
+      "kuji_only": true,
+      "base": "stand_custom",
+      "value": "stand_custom_engraved",
+      "art": "stand_custom_engraved",
+      "home_xp": 9,
+      "description": "当たった人の名前を真鍮のステムに彫って渡す、名入れの特注台。はじめの台には「逢縁」と小さく入っている。Dr.fookahの限定台くじだけで当たる。仕立てと煙の通りは特注台と同じ。"
     }
   ]
 }

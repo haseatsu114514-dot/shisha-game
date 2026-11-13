@@ -3,10 +3,10 @@
 // 書き換えるのはシステムタブの操作（セーブ・ロード・タイトルへ戻る）だけ。
 // 日常パート（calendar.js の runDaily）の HUD の MENU から開く。章別のMENUもここへ寄せていく。
 import { el, yen } from "../core/util.js";
-import { layers, modal, toast, heartRow, statBadge } from "../core/ui.js";
+import { layers, modal, toast, heartRow, statBadge, ghostOut } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { DB, displayName, faceIconUrl, cgUrl } from "../core/data.js";
-import { state, save, loadFromSlot, requestResumeOnBoot, STAT_KEYS, STAT_JA } from "../core/state.js";
+import { state, save, requestResumeOnBoot, STAT_KEYS, STAT_JA } from "../core/state.js";
 import { step, RANK_LABELS, affinityLevel, currentCondition, staminaRatio } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
 import { nextStepProgress } from "../core/stat-progress.js";
@@ -16,25 +16,41 @@ import { masteryLevel } from "../core/flavor-mastery.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
 import { HOBBY_GEAR } from "../core/hobby-gear.js";
 import { growthEnabled, gaugeAt, hidaneTotal, openGrowthBoard } from "../core/growth.js";
-import { BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, STAT_SQUARES, statCount, perkTotals } from "../core/growth-board.js";
-import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, statTotal, statCount, perkTotals } from "../core/growth-board.js";
+import { saveFlow, loadWithRecovery } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { isRainy } from "./weather.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
 import { relationshipStatus, recentMemoryEcho } from "./relationship-status.js";
 import { triedLater, comboName } from "./cafe-ideas.js";
 import { tierFx, STATUS_PEOPLE, giftNote, recipeDetails } from "./status.js";
+import { fullscreenButton } from "../scenes/save-transfer.js";
 
 export const MENU_TABS = Object.freeze([
-  { id: "status", en: "STATUS", label: "ステータス" },
-  { id: "people", en: "PEOPLE", label: "人間関係" },
-  { id: "items", en: "ITEMS", label: "持ち物" },
-  { id: "system", en: "SYSTEM", label: "システム" },
+  { id: "status", icon: "👤", label: "ステータス" },
+  { id: "people", icon: "💬", label: "人間関係" },
+  { id: "items", icon: "🎒", label: "持ち物" },
+  { id: "system", icon: "⚙", label: "システム" },
 ]);
 
 const SAVE_RULE = "手動セーブは、地図で行き先を選んでいる時にできる。";
 let busy = false;
 
+/** タブの見出し。常に出していた説明・注意書きは見出し横の「?」に寄せ、押した時だけ見出しの下に開く（#2717〜#2719 の方針・2026-11-08 オーナー指示「説明の分量を減らす」）。
+ *  lines が空なら「?」は出さない。開閉は体力の「?」と同じ（Esc でも閉じる）。 */
+function tabHeading(title, lines, id) {
+  const shown = lines.filter(Boolean);
+  if (!shown.length) return [el("div.dm-heading", [el("h3", { text: title })])];
+  const tip = el("div.dm-tab-help", { id: `dm-help-${id}`, hidden: true, dataset: { test: `menu-help-text-${id}` } }, shown.map((text) => el("p", { text })));
+  const help = el("button.dm-help", { type: "button", text: "?", "aria-label": `${title}の説明`, "aria-expanded": "false", "aria-controls": `dm-help-${id}`,
+    dataset: { test: `menu-help-${id}` }, onclick: () => {
+      const open = tip.hidden;
+      SE.click();
+      tip.hidden = !open;
+      help.setAttribute("aria-expanded", String(open));
+    } });
+  return [el("div.dm-heading", [el("h3", { text: title }), help]), tip];
+}
 const pct = (v) => `${Math.round(Math.max(0, Math.min(1, v)) * 1000) / 10}%`;
 const pips = (n, total, label) => el("span.dm-pips", { role: "img", "aria-label": label },
   Array.from({ length: total }, (_, i) => el(`i${i < n ? ".on" : ""}`, { "aria-hidden": "true" })));
@@ -67,8 +83,7 @@ async function runAction(action, { canSave, leave }) {
     await saveFlow();
   }
   if (action === "load") {
-    const key = await loadFlow({ inGame: true });
-    if (key && loadFromSlot(key)) { leave(); requestResumeOnBoot(); location.reload(); }
+    if (await loadWithRecovery({ inGame: true })) { leave(); requestResumeOnBoot(); location.reload(); }
   }
   if (action === "board") await openGrowthBoard();
   if (action === "config") await (await import("../scenes/title.js")).openConfig();
@@ -76,6 +91,16 @@ async function runAction(action, { canSave, leave }) {
   if (action === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
   // タイトルへ戻る時も、手動セーブと同じ時だけ保存する。途中の状態は残さず、行動前のオートセーブへ戻す（#638）。
   if (action === "title") { if (canSave()) save(); leave(); location.reload(); }
+}
+
+/** MENUボタンの中心（#modal の座標）。開閉の小さな開口の起点（#2688 A13）。ボタンが見えない画面では null */
+function menuOrigin() {
+  const button = layers.hud?.querySelector(".hud-menu"), host = layers.modal;
+  if (!button || !host?.offsetWidth) return null;
+  const b = button.getBoundingClientRect(), h = host.getBoundingClientRect();
+  if (!b.width || !h.width) return null;
+  const k = h.width / host.offsetWidth;
+  return { x: Math.round((b.left + b.width / 2 - h.left) / k), y: Math.round((b.top + b.height / 2 - h.top) / k) };
 }
 
 function showMenu(initial, { saveOk }) {
@@ -88,6 +113,9 @@ function showMenu(initial, { saveOk }) {
 
     const finish = (value) => {
       window.removeEventListener("keydown", onKey, true);
+      // 閉じるときは、紙の面がMENUボタンへ縮みながら消える（開いたときの逆）。ボタンが無い画面ではふつうに消える
+      const origin = menuOrigin();
+      ghostOut([...layers.modal.childNodes], origin ? [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(.82)" }] : [{ opacity: 1 }, { opacity: 0 }], origin ? 200 : 160, { origin, box: ".dm-sheet" });
       layers.modal.classList.remove("show");
       layers.modal.replaceChildren();
       if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
@@ -106,7 +134,7 @@ function showMenu(initial, { saveOk }) {
         button.tabIndex = on ? 0 : -1;
       }
       panel.setAttribute("aria-labelledby", `dm-tab-${id}`);
-      panel.replaceChildren(...render(id));
+      panel.replaceChildren(...render(id).filter(Boolean));
       panel.scrollTop = 0;
       if (focus) tabs.get(id)?.focus({ preventScroll: true });
     };
@@ -138,7 +166,7 @@ function showMenu(initial, { saveOk }) {
           type: "button", role: "tab", id: `dm-tab-${t.id}`, "aria-controls": "dm-panel",
           title: `${t.label}（${i + 1}）`, dataset: { tab: t.id, test: `menu-tab-${t.id}` },
           onclick: () => { if (active !== t.id) { SE.click(); show(t.id); } },
-        }, [el("span.dm-en", { text: t.en, "aria-hidden": "true" }), el("span.dm-label", { text: t.label })]);
+        }, [el("span.dm-icon", { text: t.icon, "aria-hidden": "true" }), el("span.dm-label", { text: t.label })]);
         tabs.set(t.id, button);
         return button;
       }));
@@ -151,6 +179,8 @@ function showMenu(initial, { saveOk }) {
         e.preventDefault(); e.stopPropagation();
         if (e.repeat) return;
         if (viewer) { viewer.click(); return; }
+        const help = root.querySelector('.dm-help[aria-expanded="true"]');
+        if (help && e.key === "Escape") { help.click(); return; }
         const back = panel.querySelector('[data-test="recipe-back"]');
         if (back && e.key === "Escape") { back.click(); return; }
         close();
@@ -188,12 +218,24 @@ function showMenu(initial, { saveOk }) {
     );
     layers.modal.replaceChildren(root);
     layers.modal.classList.add("show");
+    // MENUボタンの位置から広がって開く（#2688 A13）。押し判定と見た目がずれないよう、切り抜きではなく拡大で見せる。
+    // 動きを減らす設定・2画面表示では、紙のシートの短いフェード（css/daily-menu.css）だけ
+    const origin = menuOrigin();
+    const sheet = root.querySelector(".dm-sheet");
+    if (origin && sheet && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      // 起点はシートの座標に直す（#modal 全体の座標 − シートの位置）
+      const host = layers.modal.getBoundingClientRect(), box = sheet.getBoundingClientRect(), k = host.width / layers.modal.offsetWidth || 1;
+      sheet.style.transformOrigin = `${origin.x - (box.left - host.left) / k}px ${origin.y - (box.top - host.top) / k}px`;
+      sheet.animate([{ opacity: 0, transform: "scale(.82)" }, { opacity: 1, transform: "none" }], { duration: 240, easing: "cubic-bezier(.16,1,.3,1)" });
+    }
     window.addEventListener("keydown", onKey, true);
     show(initial, { focus: true });
   });
 }
 
 // ---------------------------------------------------------------- 上の帯（HUDと同じ値の要約）
+// MENU を開いている間は HUD を隠し、この帯だけで日付・残り日数・体力・所持金を見せる（#2859。css/daily-menu.css）。
+// 体力の説明は常に出さず、横の「?」を押した時だけ帯の下に開く。
 
 function summary() {
   const finalDay = chapterFinalDay(state);
@@ -201,33 +243,45 @@ function summary() {
   const night = state.slot >= 1;
   const slot = state.phase === "tournament" ? "大会当日" : state.slot >= 2 ? "帰宅" : `${night ? "夜" : "昼"}${isRainy() ? "・雨" : ""}`;
   const condition = conditionForRatio(staminaRatio());
-  const item = (label, value, cls = "") => el(`span.dm-sum${cls}`, [el("small", { text: label }), value]);
+  const now = currentCondition();
+  const item = (label, value, cls = "", extra = null) => el(`span.dm-sum${cls}`, [el("small", { text: label }), value, extra]);
+  const tip = el("p.dm-health-tip", { id: "dm-health-tip", hidden: true, dataset: { test: "menu-condition" } }, [
+    el("b", { text: `体力 ${now.label}` }),
+    ` ── ${now.hint}。眠ると回復し、外出すると行き先に応じて疲れる。`,
+  ]);
+  const help = el("button.dm-help", { type: "button", text: "?", "aria-label": "体力の説明", "aria-expanded": "false", "aria-controls": "dm-health-tip",
+    dataset: { test: "menu-condition-help" }, onclick: () => {
+      const open = tip.hidden;
+      SE.click();
+      tip.hidden = !open;
+      help.setAttribute("aria-expanded", String(open));
+    } });
   return el("div.dm-summary", { dataset: { test: "menu-summary" } }, [
     item("DAY", el("b", [String(chapterDay(state)), finalDay === null ? null : el("small", { text: `/${finalDay}` })])),
     el("span.dm-sum.dm-slot", { text: slot }),
     item(chapterGoalLabel(state), el("b.dm-amber", { text: left === null ? "未定" : `あと${left}日` })),
-    item("体力", el("b", { text: currentCondition().label }), `.dm-health.h-${condition.health}`),
+    item("体力", el("b", { text: now.label }), `.dm-health.h-${condition.health}`, help),
     item("所持金", el("b", { text: yen(state.money) })),
+    tip,
   ]);
 }
 
 // ---------------------------------------------------------------- ステータス
 
 function statusTab(choose) {
-  const note = el("p.dm-note", { text: "項目をタップすると、何に効くかが分かる。" });
+  // 行をタップした時だけ、何に効くかをここに出す（タップの案内は「?」へ）
+  const note = el("p.dm-note", { hidden: true });
   const select = (row, text) => {
+    SE.click();
     row.parentNode.querySelectorAll(".dm-row").forEach((r) => r.classList.toggle("sel", r === row));
     note.textContent = text;
+    note.hidden = false;
   };
-  const condition = currentCondition();
   return [
-    el("div.dm-heading", [el("h3", { text: "ステータス" }),
-      el("span.dm-sub", { text: growthEnabled() ? "経験値は寝る前に精算する。レベルが上がると火種が届く" : "↑はこの章のはじめから伸びた能力" })]),
+    ...tabHeading("ステータス", growthEnabled()
+      ? ["経験値は寝る前に精算する。ゲージの濃い紫が精算済み、薄い紫が今日の分。", "レベルが上がると火種が届く。灯すと才能・感覚・理論の盤が広がる。", "項目をタップすると、何に効くかが分かる。"]
+      : ["↑はこの章のはじめから伸びた能力。", "項目をタップすると、何に効くかが分かる。"], "status"),
     ...(growthEnabled() ? growthCards(choose, select) : [statRows(select)]),
-    el("p.dm-condition", { dataset: { test: "menu-condition" } }, [
-      el("b", { text: `体力 ${condition.label}` }),
-      ` ── ${condition.hint}。眠ると回復し、外出すると行き先に応じて疲れる。`,
-    ]),
     note,
   ];
 }
@@ -238,26 +292,21 @@ function growthCards(choose, select) {
   const gauge = g ? gaugeAt(g.level, g.settledXp, g.xp) : gaugeAt(1, 0, 0);
   const hidane = hidaneTotal(g);
   const lit = new Set(Array.isArray(g?.nodes) ? g.nodes : []);
-  const left = gauge.max ? "MAX" : gauge.pending > 0 ? `今夜 Lv UP${gauge.pending > 1 ? ` ×${gauge.pending}` : ""}` : `次のレベルまで EXP ${gauge.left}`;
+  const left = gauge.max ? "MAX" : `次のレベルまで EXP ${gauge.left}`;
   return [
     el("div.dm-grid.dm-grid-2", [
       el("section.dm-card.dm-level", { dataset: { test: "menu-level" } }, [
-        el("span.dm-en", { text: "LEVEL" }),
         el("div.dm-level-line", [el("span.dm-lv", [el("small", { text: "Lv." }), el("b", { text: String(gauge.level) })]), el("span.dm-level-left", { text: left })]),
         el("i.dm-gauge.dm-exp", { "aria-hidden": "true" }, [el("b.today", { style: { width: pct(gauge.now) } }), el("b.settled", { style: { width: pct(gauge.settled) } })]),
-        el("span.dm-sub", { text: "濃い紫が精算済み、薄い紫が今日の分" }),
       ]),
       el("section.dm-card.dm-hidane", { dataset: { test: "menu-hidane" } }, [
-        el("span.dm-en", { text: "HIDANE" }),
         el("div.dm-hidane-line", [el("b.dm-big.dm-amber", { text: String(hidane) }), el("span.dm-strong", { text: "火種" }),
           hidane > 0 ? el("span.dm-chip.new", { text: "心得の盤に灯せる" }) : null]),
-        el("span.dm-sub", { text: hidane > 0 ? "灯すと才能・感覚・理論の盤が広がる" : "レベルが上がると届く" }),
       ]),
     ]),
     el("section.dm-card.dm-board", [
-      el("span.dm-en", { text: "BOARD" }),
       ...BOARD_KEYS.map((k) => {
-        const count = statCount(k, lit), total = STAT_SQUARES[k] || 1;
+        const count = statCount(k, lit), total = statTotal(k) || 1;
         const sums = perkTotals(k, lit).filter((p) => p.sum);
         const row = el(`button.dm-row.dm-board-row.b-${k}`, { type: "button", dataset: { test: `menu-board-${k}` },
           onclick: () => select(row, `【${BOARD_JA[k]}】${BOARD_WHERE[k]}`) }, [
@@ -347,10 +396,13 @@ function peopleTab() {
     return el("div.dm-person-item", { role: "listitem" }, [row, detail]);
   });
   return [
-    el("div.dm-heading", [el("h3", { text: "人間関係" }), el("span.dm-sub", { text: "行をタップすると、直近の思い出と贈り物が分かる" })]),
+    ...tabHeading("人間関係", [
+      "行をタップすると、直近の思い出と贈り物が分かる。",
+      "♥は親しさ。交流の進み方は相手によって異なる。恋愛・友情の分岐がある相手は♥3で方向を選ぶ。特別なイベントと贈り物がある相手は♥5でその節目へ（恋愛・友情のどちらでも受け取れる）。",
+      "恋愛ルートはまだ交際前で、付き合うと「恋人」に変わる。LIMEの連絡先があれば、友達・恋人になった後も交流は続く。",
+    ], "people"),
     el("section.dm-card.dm-people", { role: "list", dataset: { test: "menu-people" } },
       rows.length ? rows : [el("p.dm-empty", { text: "まだ誰とも親しくなっていない。" })]),
-    el("p.dm-note", { text: "♥は親しさ。交流の進み方は相手によって異なる。恋愛・友情の分岐がある相手は♥3で方向を選ぶ。特別なイベントと贈り物がある相手は♥5でその節目へ（恋愛・友情のどちらでも受け取れる）。恋愛ルートはまだ交際前で、付き合うと「恋人」に変わる。LIMEの連絡先があれば、友達・恋人になった後も交流は続く。" }),
   ];
 }
 
@@ -365,12 +417,16 @@ function itemsTab(openRecipe) {
   const recipes = DB.recipes.filter((r) => state.recipes?.[r.id]);
   const later = triedLater(state, DB.recipes);
   const keepsakes = (state.keepsakes || []).filter((id) => KEEPSAKES[id]);
-  const card = (en, title, children, test) => el("section.dm-card", { dataset: test ? { test } : {} }, [
-    el("div.dm-card-head", [el("span.dm-en", { text: en }), el("span.dm-strong", { text: title })]), ...children]);
+  const card = (title, children, test) => el("section.dm-card", { dataset: test ? { test } : {} }, [
+    el("div.dm-card-head", [el("span.dm-strong", { text: title })]), ...children]);
   return [
-    el("div.dm-heading", [el("h3", { text: "持ち物" })]),
+    ...tabHeading("持ち物", [
+      "フレーバーは1箱50g。自宅の試作・店への持ち込み・大会の課題以外の葉で消費。大会の課題フレーバーは支給され、本番中は好きなだけ使える（在庫は減らない）。熟練度はLv.5まで。",
+      "機材は紫の札が今使っているもの。点線の札は贈り物。",
+      recipes.length ? "レシピ帳は名前をタップすると、材料・黄金比・発見日を確認できる。" : null,
+    ], "items"),
     el("div.dm-grid.dm-items", [
-      card("FLAVOR", "フレーバー", [
+      card("フレーバー", [
         el("div.dm-flavors", flavors.length ? flavors.map((f) => {
           const level = masteryLevel(state, f.id, DB.flavorById);
           return el("div.dm-flavor", { dataset: { test: `menu-flavor-${f.id}` } }, [
@@ -380,26 +436,23 @@ function itemsTab(openRecipe) {
             el("span.dm-mastery", { text: level >= 5 ? "MAX" : `Lv.${level}` }),
           ]);
         }) : [el("p.dm-empty", { text: "まだ持っていない" })]),
-        el("p.dm-note", { text: "1箱50g。自宅の試作・店への持ち込み・大会の課題以外の葉で消費。大会の課題フレーバーは支給され、本番中は好きなだけ使える（在庫は減らない）。熟練度はLv.5まで。" }),
       ], "menu-flavors"),
       el("div.dm-col", [
-        card("EQUIPMENT", "機材", [
+        card("機材", [
           el("div.dm-chips", equipment.length ? equipment.map((e) => el(`span.dm-chip${inUse.has(e.id) ? ".on" : ""}${e.gift ? ".gift" : ""}`, { text: e.name })) : [el("span.dm-empty", { text: "まだ持っていない" })]),
-          el("p.dm-sub", { text: "紫の札が今使っている機材。点線の札は贈り物" }),
           gifts.length ? el("div.dm-gifts", gifts.map(giftNote)) : null,
         ], "menu-equipment"),
-        gear.length ? card("HOBBY", "遊びの道具", [
+        gear.length ? card("遊びの道具", [
           el("div.dm-chips", { dataset: { test: "menu-hobby-gear" } }, gear.map((g) => el("span.dm-chip", [g.short, el("small", { text: g.effect })]))),
         ]) : null,
-        card("RECIPES", "レシピ帳", [
+        card("レシピ帳", [
           el("div.dm-chips", recipes.length ? recipes.map((r) => el("button.dm-chip.recipe", {
             type: "button", text: r.name, dataset: { recipe: r.id, test: `recipe-${r.id}` }, onclick: () => { SE.click(); openRecipe(r.id); },
           })) : [el("span.dm-empty", { text: "まだ白紙" })]),
-          recipes.length ? el("p.dm-sub", { text: "名前をタップすると、材料・黄金比・発見日を確認できる" }) : null,
           later.length ? el("div.dm-later", [el("span.dm-strong", { text: "試したい配合" }),
             el("div.dm-chips", later.map((r) => el("span.dm-chip", { text: comboName(r, DB.flavors) })))]) : null,
         ], "menu-recipes"),
-        card("KEEPSAKES", "記念品", [
+        card("記念品", [
           el("div.dm-keepsakes", keepsakes.length ? keepsakes.map((id) => {
             const item = KEEPSAKES[id];
             const opener = el("button.dm-keepsake", { type: "button", dataset: { test: `keepsake-${id}` }, onclick: () => {
@@ -431,14 +484,14 @@ const SYSTEM = [
 
 function systemTab(choose, saveOk) {
   return [
-    el("div.dm-heading", [el("h3", { text: "システム" })]),
+    ...tabHeading("システム", ["行動のたびに自動でセーブされている。", SAVE_RULE, "タイトルへ戻ると、行動前のオートセーブから再開する。"], "system"),
     el("div.dm-system", SYSTEM.map((s) => el(`button.dm-btn.dm-sys${s.primary ? ".primary" : ""}`, {
       type: "button", text: s.label, dataset: { test: `menu-${s.id}` },
       disabled: s.id === "save" && !saveOk,
       onclick: () => choose(s.id),
-    }))),
-    el("p.dm-note", { dataset: { test: "menu-save-note" } , text: saveOk
-      ? `行動のたびに自動でセーブされている。${SAVE_RULE}`
-      : `今はセーブできない。${SAVE_RULE}タイトルへ戻ると、行動前のオートセーブから再開する。` }),
+    })).concat(fullscreenButton() || [])),
+    // セーブできない時だけ理由を出す（いつも自動で保存されている説明は「?」へ）
+    saveOk ? null : el("p.dm-note", { dataset: { test: "menu-save-note" }, text: `今はセーブできない。${SAVE_RULE}` }),
   ];
 }
+

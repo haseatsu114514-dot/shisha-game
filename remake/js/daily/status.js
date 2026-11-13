@@ -3,7 +3,7 @@ import { masteryLabel } from "../core/flavor-mastery.js";
 import { el, yen } from "../core/util.js";
 import { DB, displayName, faceIconUrl, cgUrl } from "../core/data.js";
 import { modal, heartRow, statBadge, layers } from "../core/ui.js";
-import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
+import { state, STAT_KEYS, STAT_JA, AFFINITY_CHARACTERS } from "../core/state.js";
 import { cycleBadgeText } from "../core/cycle-display.js";
 import { step, RANK_LABELS, affinityLevel, currentCondition } from "../core/stats.js";
 import { nextStepProgress, stepOfValue } from "../core/stat-progress.js";
@@ -201,7 +201,7 @@ function meTab() {
   ]);
 }
 
-const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rin", "hiyori", "samechan", "ageha", "kumicho", "rei", "mashiro", "kuze", "steve", "volk", "master_hookah", "da_silva", "sheikh"];
+const PEOPLE = AFFINITY_CHARACTERS;
 function peopleTab() {
   const rows = PEOPLE.filter((id) => state.met[id] || id === "sumi").map((id) => {
     const lv = affinityLevel(id);
@@ -325,4 +325,3 @@ function itemsTab(showRecipe) {
 
 // 全画面MENU（daily/menu.js・DUI03）の人間関係・持ち物タブも、同じ並び順・贈り物の札・レシピの詳細を使う。
 export { PEOPLE as STATUS_PEOPLE, giftNote, recipeDetails };
-

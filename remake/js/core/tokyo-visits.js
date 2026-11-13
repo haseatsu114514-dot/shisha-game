@@ -1,5 +1,5 @@
 // 訪問の正本。人物の常住地・恋愛・能力・旧pendingInviteは変更しない。
-import { tokyoFreeTimes, tokyoTime, timeNumber } from "./tokyo-clock.js";
+import { tokyoFreeTimes, tokyoTime, timeNumber, TOKYO_EVE_WINDOW } from "./tokyo-clock.js";
 
 import { emptyTokyoVisits } from "./state.js";
 export const tokyoVisitState = value => value.tokyoVisits ||= emptyTokyoVisits();
@@ -59,7 +59,10 @@ export function proposeTokyoVisit(value, definitions, id) {
     const returnDay = meetup.day + definitions.stayDays;
     if (visits.plans.some(plan => plan.status !== "returned"
       && meetup.day < plan.returnDay && plan.arrivalDay < returnDay)) continue;
-    const date = windows.find(window => timeNumber(window) > timeNumber(meetup) && window.day < returnDay);
+    const stay = windows.filter(window => timeNumber(window) > timeNumber(meetup) && window.day < returnDay);
+    // 滞在が大会前夜にかかる時は、散歩を前夜に置く（前夜デート・BLC02）。版3で12日目の夜が空き時間に入ってから、
+    // 散歩が必ず12日目に決まり、前夜デートへ届く約束が作れなくなっていた。
+    const date = stay.find(window => window.id === TOKYO_EVE_WINDOW) || stay[0];
     if (!date) continue;
     return { characterId: id, arrivalDay: meetup.day, returnDay, meetup: { id: meetup.id, day: meetup.day, slot: meetup.slot },
       date: { id: date.id, day: date.day, slot: date.slot } };

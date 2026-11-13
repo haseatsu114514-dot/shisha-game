@@ -2,6 +2,8 @@
 // 第4章で世界王者になって帰ってきた後、第5章の自由行動の始めに一度だけ。誰の隣に座るかを選ぶ。
 //   - その場にいる恋人が2人以上: 隣に座った時に浮気がばれて修羅場。恋人ごとの反応（routes.romance[id].conflict）と
 //     謝罪（routes.conflict.close＝shuraba_accountability。未解決の印 _story_shuraba_unresolved を立てる）を続けて読む
+//     演出（2026-11-11）: 席ごとの引き金の場面（店の曲のまま）→ 声がかかった瞬間に曲が止まり、背景の色が落ちる →
+//     恋人たちの視線のカットイン（台本の motion "gaze"）→ 打ち明け → 最初の反応から沈んだ曲 → お開きの後に店の曲へ戻す
 //   - 恋人が1人: その人の隣なら穏やかに。別の人の隣なら、離れた席から視線を感じる（修羅場にはしない）
 //   - 恋人がいない: そのまま打ち上げを楽しむ
 // その場にいるのは、会ったことのあるヒロイン全員（地元の店に集まる。第3章の東京・第4章のドバイの所在の規則とは別）。
@@ -10,12 +12,18 @@
 import { state, save } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";
 import { modal, setBg, toast } from "../core/ui.js";
+import { playBgm, stopBgm } from "../core/audio.js";
+import { STORY_BGM } from "../core/story-audio.js";
+import { setSceneMood } from "../core/scene-mood.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
-import { partyGuests, partyScenes, SEAT_LABELS } from "./ch5-party-plan.js";
+import { partyBeforeSeat, partyGuests, partyScenes, SEAT_LABELS } from "./ch5-party-plan.js";
 
 export const PARTY_FLAG = "_ch5_after_party"; // 打ち上げを読み終えた
 export const PARTY_SEAT_FLAG = "_ch5_party_seat"; // 隣に座った人（"sumi" かヒロインのID）
+// 打ち上げの修羅場で反応まで読んだ恋人（IDの配列。#2815）。スタッフロールの後（ch5-progress.js）は、この人たちだけを
+// 反応済みとして話し直しへ送り、打ち上げの後に恋人になった相手とは区別する。修羅場にならなかった打ち上げでは立てない。
+export const PARTY_CONFLICT_FLAG = "_ch5_party_conflict";
 const BG = "bg_tonari_inside_night";
 let routesTask = null;
 function loadRoutes() {
@@ -30,12 +38,15 @@ function loadRoutes() {
 }
 
 const PARTY_SCENES = ["ch5_party_open", "ch5_party_seat_sumi", "ch5_party_seat_friend", "ch5_party_seat_lover",
-  "ch5_party_seat_away", "ch5_party_shuraba_open", "ch5_party_shuraba_close", "ch5_party_close"];
+  "ch5_party_seat_away", "ch5_party_noor_call", "ch5_party_shuraba_open", "ch5_party_shuraba_close", "ch5_party_close"];
 async function loadScenes(routes) {
   const conflicts = [routes.conflict.close, ...Object.values(routes.romance).map(entry => entry.conflict)].filter(Boolean);
-  const missing = [...PARTY_SCENES, ...conflicts].filter(id => !DB.dialogues[id]?.lines?.length);
+  // 修羅場の引き金（席ごと）。席に座る恋人の分と、スミさんの隣・友人の隣
+  const triggers = ["sumi", "friend", ...routes.heroine_ids.filter(id => !routes.romance[id]?.resident)].map(id => `ch5_party_trigger_${id}`);
+  const scenes = [...PARTY_SCENES, ...triggers];
+  const missing = [...scenes, ...conflicts].filter(id => !DB.dialogues[id]?.lines?.length);
   if (!missing.length) return;
-  const [party, shuraba] = await Promise.all([readDialogues("ch5_party", PARTY_SCENES), readDialogues("relationship_conflicts", conflicts)]);
+  const [party, shuraba] = await Promise.all([readDialogues("ch5_party", scenes), readDialogues("relationship_conflicts", conflicts)]);
   Object.assign(DB.dialogues, party, shuraba);
 }
 
@@ -48,18 +59,20 @@ export async function runAfterParty() {
     routes = await loadRoutes();
     await loadScenes(routes);
   } catch {
-    toast("打ち上げの会話を読み込めませんでした。次に地図を開く時に、もう一度");
+    toast("打ち上げの会話を読み込めませんでした。次に地図を開く時に、もう一度お試しください。");
     return false;
   }
   if (state !== owner) return false;
   const { url, tint } = sceneBg(BG, "night");
-  await setBg(url, { instant: true, tint });
-  const read = async id => {
+  await setBg(url, { tint });
+  const read = async (id, options = {}) => {
     if (state !== owner) return false;
-    const result = await play(id);
+    const result = await play(id, options);
     return state === owner && !!result && !result.cancelled;
   };
   if (!await read("ch5_party_open")) return false;
+  // 修羅場になる打ち上げでは、遠くの恋人のテレビ電話を席の前につなぐ（反応が「聞こえてた」と受ける・#2815）
+  for (const id of partyBeforeSeat(routes, state)) if (!await read(id)) return false;
   const { present } = partyGuests(routes, state);
   const seat = present.length ? await modal({
     title: "誰の隣に座る？", body: "打ち上げの席。空いている席は、いくつかある。",
@@ -68,9 +81,29 @@ export async function runAfterParty() {
   }) : "sumi";
   if (!seat || state !== owner) return false;
   const plan = partyScenes(routes, state, seat);
-  for (const id of plan.scenes) if (!await read(id)) return false;
+  const conflict = plan.kind === "conflict";
+  // 視線のカットインに出す人（その場にいる恋人。テレビ電話のヌールは画面越し）
+  const options = conflict ? { cast: plan.participants.map(id => ({ id, remote: plan.remote.includes(id) })) } : {};
+  try {
+    for (const id of plan.scenes) {
+      // 声がかかった瞬間に店の曲を止め、背景の色を落とす。最初の反応から沈んだ曲を流す
+      if (conflict && id === "ch5_party_shuraba_open") { stopBgm(0.2); setSceneMood("dread"); }
+      if (conflict && id === plan.reactions[0]) playBgm(STORY_BGM.tasteDistant);
+      if (!await read(id, options)) return false;
+    }
+  } finally {
+    if (conflict) {
+      setSceneMood("");
+      if (state === owner) playBgm(STORY_BGM.shopHome); // 中断（LOAD）した時は、読み込んだ側の曲に任せる
+    }
+  }
   state.flags[PARTY_FLAG] = true;
   state.flags[PARTY_SEAT_FLAG] = seat;
+  if (conflict) {
+    state.flags[PARTY_CONFLICT_FLAG] = [...plan.participants];
+    // 話し直しが済むまで、恋人からの朝のLIME・誘いは届かない（daily/romance.js の loverMessages）
+    toast("恋人たちからの連絡が、止まった。", { ms: 4200 });
+  }
   save();
   return true;
 }

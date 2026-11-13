@@ -85,8 +85,43 @@
       "speaker": "sai",
       "role": "店長／はじめての人へ",
       "face": "normal",
+      "text": "19〜29ならひと手間、18以下は思わぬ出来事。どれでも物語は続きます",
+      "panel": "roll"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "20の目が出たら、クリティカル。合計にかかわらず、必ず成功です",
+      "panel": "roll"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "成功には、小さなごほうび。何がもらえるかは、GMが先に告げます",
+      "panel": "roll"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
       "text": "計算は画面がします。数字が苦手でも、大丈夫ですよ",
       "panel": "roll"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "仲間の切り札は、判定に＋7。あなたの切り札は、サイコロの振り直しです",
+      "panel": "aid"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "切り札は一人一度。使うたび、連携札を1枚使います",
+      "panel": "aid"
     },
     {
       "speaker": "sai",

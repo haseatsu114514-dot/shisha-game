@@ -23,12 +23,21 @@ export const canReflect = (s = state) => !!s && growthEnabled() && hasUsableHida
 /** その場所で振り返れるか。観音堂だけは、最初の火種をまだ渡していなければ火種が0でも開ける（はじめての案内・growth-board-tutorial.js） */
 export const canReflectAt = (place, s = state) => canReflect(s) || (place === "kannon" && !!s && growthEnabled() && starterPending(s));
 
+/**
+ * 大会前夜の内省の導入。地元の観音堂へは帰宅（または前夜の早寝）のあとに出かけ直すので、その流れに合わせる（#2775）。
+ * 宿の窓辺や遠征先は従来の導入のまま。
+ */
+function eveOpening(place) {
+  if (place !== "kannon") return "reflect_eve";
+  return state.flags._eve_slept === state.day ? "reflect_eve_slept" : "reflect_eve_home";
+}
+
 /** 内省の場面 → 盤（灯せる）。戻り値=灯したマス（やめたら空） */
 export async function reflectAt(place, { eve = false } = {}) {
   const spot = REFLECT_PLACES[place];
   if (!spot || !canReflectAt(place) || !openingStatus(spot, state).ok) return [];
   const owner = state;
-  if (eve) await play("reflect_eve", { bg: spot.bg });
+  if (eve) await play(eveOpening(place), { bg: spot.bg });
   if (state !== owner) return [];
   await play(spot.scene, { bg: spot.bg });
   if (state !== owner || !canReflectAt(place) || !openingStatus(spot, state).ok) return [];
@@ -38,7 +47,7 @@ export async function reflectAt(place, { eve = false } = {}) {
 }
 
 /**
- * 大会前夜の内省（寝る前の精算のあと）。火種が残っていれば一度だけ強制で開く。
+ * 大会前夜の内省（寝る前）。火種が残っていれば一度だけ強制で開く。
  * 地元は観音堂、遠征先は宿の窓辺（2.8）。
  */
 export async function eveReflection(place) {

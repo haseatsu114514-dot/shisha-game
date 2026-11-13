@@ -145,14 +145,15 @@ for (const k of board.BOARD_KEYS) {
   // 紋の場所は盤ごとに違う（SBD65）
   assert.equal(new Set(Object.values(board.HUB_AT)).size, 3, "紋の場所は3枚とも違う");
 }
-// 恩恵は帯の倍率（近く×1・中ほど×2・関門の先×3）
+// 恩恵は帯の倍率（近く×2・中ほど×2・関門の先×3。近くは 2026-11-11 に ×1 → ×2。SBD111）
 {
-  // 帯の倍率: 同じ恩恵（要のマスでない）が 近く・中ほど・関門の先 にあれば ×1・×2・×3
-  const plain = board.boardNodes("body").filter((n) => n.kind === "stat" && !n.peak && !n.notable);
+  assert.deepEqual(board.PERK_TIERS.slice(1).map((t) => t.mult), [2, 2, 3], "近く×2・中ほど×2・台座の先×3");
+  // 帯の倍率: 同じ恩恵（要のマスでない）が 近く・中ほど・関門の先 にあれば、1マスの単位にその帯の倍率が掛かる
+  const plain = board.boardNodes("body").filter((n) => n.kind === "stat" && !n.peak && !n.notable && !n.worth);
   const sample = plain.find((n) => [1, 2, 3].every((b) => plain.some((m) => m.perk === n.perk && m.band === b)));
   assert(sample, "3つの帯にまたがる恩恵がある");
-  const unit = Number(/[\d.]+/.exec(board.perkOf(plain.find((m) => m.perk === sample.perk && m.band === 1)).text)[0]);
-  for (const b of [1, 2, 3]) assert.equal(Number(/[\d.]+/.exec(board.perkOf(plain.find((m) => m.perk === sample.perk && m.band === b)).text)[0]), unit * b, `帯${b}は×${b}`);
+  const unit = Number(/[\d.]+/.exec(board.SQUARE_PERKS.body.perks[sample.perk].text)[0]);
+  for (const b of [1, 2, 3]) assert.equal(Number(/[\d.]+/.exec(board.perkOf(plain.find((m) => m.perk === sample.perk && m.band === b)).text)[0]), unit * board.PERK_TIERS[b].mult, `帯${b}は×${board.PERK_TIERS[b].mult}`);
   assert.equal(board.perkOf(plain.find((m) => m.band === 3)).tierName, "台座の先");
   // 色の台座（SBD89）: 色の火をはめると先へ進めて、台座の能力も手に入る。各盤の4つの台座に、その盤の4つの能力を1つずつ。台座1つ＝台座の先のマス×4/3
   for (const k of board.BOARD_KEYS) {
@@ -171,7 +172,7 @@ for (const k of board.BOARD_KEYS) {
   assert.equal(board.perkOf(board.boardNodes("body").find((n) => n.peak)).name, "基礎", "極みは基礎");
   const notable = board.boardNodes("body").find((n) => n.notable === "ironsleep");
   assert.equal(board.perkOf(notable).notable.name, "不眠の体");
-  assert.equal(board.perkOf(notable).text, "寝た時の体力の回復 ＋9%", "要のマスは帯の倍率×1.5（SBD73）。眠りの単位は2%（2026-11-02 補正）");
+  assert.equal(board.perkOf(notable).text, "寝た時の体力の回復 ＋9%（端数は次の睡眠へ）", "要のマスは帯の倍率×1.5（SBD73）。眠りの単位は2%（2026-11-02 補正）");
   for (const n of board.NODES.filter((x) => x.kind === "stat" && !x.peak)) assert(board.SQUARE_PERKS[n.board].perks[n.perk], `${n.id}: 恩恵が決まっている`);
 }
 assert.deepEqual(board.HIDANE_NAME, { any: "白火", body: "紅火", sense: "蒼火", wisdom: "翠火" }, "火種の名前（SBD62）");
@@ -182,7 +183,7 @@ assert.deepEqual([N["M-W2"].ring, N["M-W6"].ring], [2, 2], "スミさんの四�
 for (const item of [...board.SKILLS, ...board.STAT_UPGRADES, ...board.LESSONS]) assert(N[item.id].ring <= (item.ring ?? 1), `${item.id} の章`);
 assert.equal(board.SKILLS.length, 23, "K20は通常マスへ変更（2026-11-01 オーナー指示）");
 assert.equal(N.K20.kind,"stat");assert.equal(N.K20.perk,"charm");assert.equal(N.K20.cost,2);
-assert.equal(board.perkOf(N.K20).text,"好感度が上がりやすく（＋2%）");
+assert.equal(board.perkOf(N.K20).text,"好感度が上がりやすく（＋4%）","火種2のマスは恩恵も2マス分（SBD112）");
 for (const k of board.BOARD_KEYS) {
   const sk = [...board.SKILLS,...board.STAT_UPGRADES].filter((x) => x.board === k);
   assert.equal(sk.reduce((n, x) => n + x.cost, 0), 36, `${k}: スキルの火種は各36`);
@@ -194,7 +195,7 @@ assert.equal(board.BOARD_TOTAL_COST, 198, "盤の全部で198（1レベル2つ�
 assert(140 >= 0.7 * board.BOARD_TOTAL_COST, "中央の1周目の火種（約140）で、3つの盤をどれも7割まで開ける");
 assert.equal(board.BOARD_TOTAL_COST, growth.BOARD_TOTAL, "盤の全部と火種の上限が同じ");
 const cumulative = [1, 2, 3, 4, 5].map((r) => board.NODES.filter((n) => n.ring <= r).reduce((a, n) => a + n.cost, 0));
-const received = [26, 52, 78, 104, 140]; // 中央の遊び方で章末までに受け取る火種（1.6。1レベル2つ）
+const received = [29, 58, 87, 116, 155]; // 中央の遊び方で章末までに受け取る火種（1.6。1レベル2つ）に、各章の大会の優勝の白火3つ（SBD110）を足した上振れ
 cumulative.forEach((c, i) => assert(c > received[i], `第${i + 1}章: 開く範囲（${c}）が受け取る火種（${received[i]}）より多い`));
 for (let i = 1; i < 5; i++) assert(cumulative[i] > cumulative[i - 1], `第${i + 1}章で新しい範囲が開く`);
 assert(board.LESSONS.every((l) => N[l.id].cost === 0), "授業は火種いらず");
@@ -255,6 +256,9 @@ assert.deepEqual(board.paymentFor(N.K03, { any: 2, body: 3 }, { reserve: 1 }), {
 assert.equal(board.paymentFor(N.K03, { any: 2, body: 3 }, { reserve: 2 }), null, "色3のうち2を残すと4に足りない");
 assert.deepEqual(board.paymentFor(N.K03, { any: 0, body: 4 }, { reserve: 0 }), { body: 4 });
 assert.equal(board.paymentFor(N.B1, { any: 0, body: 1, sense: 1 }, { reserve: 2 }), null, "色は全部関門の予約");
+assert.equal(board.spendableHidane(N.B3, { any: 0, body: 2, sense: 0, wisdom: 0 }, { reserve: 12 }), 0, "不足表示にも使う数は予約後の0");
+assert.equal(board.spendableHidane(N.B3, { any: 0, body: 0, sense: 13, wisdom: 0 }, { reserve: 12, capped: true }), 1, "上限後は予約を越えた他盤の色が使える");
+assert.deepEqual(board.paymentFor(N.B3, { any: 0, body: 0, sense: 13, wisdom: 0 }, { reserve: 12, capped: true }), { sense: 1 });
 // 関門: 色つきの火種でだけ越える。その盤の色が先、無ければほかの色（SBD53）
 assert.deepEqual(board.paymentFor(N.BG1, { any: 9, body: 1, sense: 1 }), { body: 1 });
 assert.deepEqual(board.paymentFor(N.BG1, { any: 9, sense: 1 }), { sense: 1 }, "ほかの色でも越えられる");
@@ -356,7 +360,7 @@ core.state.affinity.adam = 0;
   const gg = growth.ensureGrowth();
   const known = (id) => board.lessonKnown(N[id], gg);
   assert.equal(board.lessonShown(N["M-B2"], gg), true, "授業のマスはいつも盤に出る");
-  assert.equal(known("M-B2"), false, "まだ会っていない零の授業は伏せる");
+  assert.equal(known("M-B2"), false, "まだ会っていないレヰの授業は伏せる");
   assert.equal(board.nodeStatus(N["M-B2"], gg, board.replay(gg, [])), "locked", "第1章では第2章の授業は封");
   assert.equal(board.NODES.filter((n) => n.trail).length, 0, "授業だけにつながる小道のマスは無い");
   assert.equal(known("M-S1"), true, "スミさんは最初から");
@@ -455,7 +459,7 @@ core.state.affinity.adam = 0;
   const gg = growth.ensureGrowth();
   const keep = { nodes: [...gg.nodes], learned: [...gg.learned] };
   gg.nodes.push("M-B2", "M-S2");
-  assert.deepEqual(growth.readyLessons("rei").map((l) => l.id), ["M-B2"], "零の授業も会った時に相談できる（SBD70）");
+  assert.deepEqual(growth.readyLessons("rei").map((l) => l.id), ["M-B2"], "レヰの授業も会った時に相談できる（SBD70）");
   assert.deepEqual(growth.readyLessons("adam").map((l) => l.id), ["M-S2"], "場面がある授業は会った時に相談できる");
   Object.assign(gg, keep);
 }
@@ -667,3 +671,77 @@ respecG.respec=null;core.state.chapter=3;growth.ensureGrowth();
 assert.equal(respec.canRespec(respecG,core.state),false,"既存セーブの表示だけで旧移行特典を作らない");
 growth.setGrowthPreview(false);
 console.log("[respec] PASS: exact payments, lessons retained, no shortcut/duplicate refund, draft/commit, SAVE/LOAD, old owner, action/day/NG+ windows and legacy no-grant");
+
+// 探索を共有しても、同額時の選択順・経路・費用を変えない。
+function referencePathTo(id, unlocked) {
+  const goal = board.NODE_BY_ID[id];
+  if (!goal) return { cost: 0, path: [] };
+  // 極みは道でなく「その盤の能力のマスを全部」: 残りの能力のマスへの道を近い順につないで、最後に極み
+  if (goal.peak) {
+    const have = new Set(unlocked), path = [];
+    for (;;) {
+      const rest = board.boardNodes(goal.board).filter((n) => n.kind === "stat" && !n.peak && !have.has(n.id));
+      if (!rest.length) break;
+      const next = rest.map((n) => referencePathTo(n.id, have)).sort((a, b) => a.cost - b.cost)[0];
+      for (const step of next.path) { have.add(step); path.push(step); }
+    }
+    if (!unlocked.has(id)) path.push(id);
+    return { cost: path.reduce((n, step) => n + board.NODE_BY_ID[step].cost, 0), path };
+  }
+  const nodes = board.boardNodes(goal.board);
+  const dist = { [board.HUB]: 0 }, prev = {}, done = new Set(), queue = [board.HUB];
+  const linksOf = (u) => u === board.HUB ? nodes.filter((n) => n.links.includes(board.HUB)).map((n) => n.id) : board.NODE_BY_ID[u].links;
+  while (queue.length) {
+    queue.sort((a, b) => dist[a] - dist[b]);
+    const u = queue.shift();
+    if (done.has(u)) continue;
+    done.add(u);
+    for (const v of linksOf(u)) {
+      if (v === board.HUB) continue;
+      const w = unlocked.has(v) ? 0 : board.NODE_BY_ID[v].cost;
+      if (dist[u] + w < (dist[v] ?? Infinity)) { dist[v] = dist[u] + w; prev[v] = u; queue.push(v); }
+    }
+  }
+  const path = [];
+  for (let c = id; c && c !== board.HUB; c = prev[c]) if (!unlocked.has(c)) path.unshift(c);
+  return { cost: dist[id] ?? 0, path };
+}
+
+let routeSeed = 0x31415926;
+const routeRandom = () => { routeSeed = (Math.imul(routeSeed, 1664525) + 1013904223) >>> 0; return routeSeed / 2 ** 32; };
+let routeCases = 0;
+for (const key of board.BOARD_KEYS) {
+  const nodes = board.boardNodes(key);
+  const sets = [new Set(), new Set(nodes.map(n => n.id))];
+  for (let i = 0; i < 20; i++) sets.push(new Set(nodes.filter(() => routeRandom() < i / 20).map(n => n.id)));
+  for (const unlocked of sets) for (const node of nodes) {
+    const before = [...unlocked];
+    assert.deepEqual(board.pathTo(node.id, unlocked), referencePathTo(node.id, unlocked), `${node.id}: cost and exact tie-broken path`);
+    assert.deepEqual([...unlocked], before, "path lookup does not mutate unlocked nodes");
+    routeCases++;
+  }
+}
+assert.deepEqual(board.pathTo("missing", new Set()), { cost: 0, path: [] });
+console.log(`[growth routes] PASS: ${routeCases} reference-equivalent routes, including empty/full/partial boards and peaks`);
+
+// 任意の比較計測。時間で合否を決めず、Node内の経路計算だけを測る（描画FPSではない）。
+if (process.env.GROWTH_ROUTE_BENCH === "1") {
+  const median = (values) => values.sort((a, b) => a - b)[Math.floor(values.length / 2)];
+  for (const key of board.BOARD_KEYS) {
+    const id = board.boardNodes(key).find((n) => n.peak).id;
+    const unlocked = new Set();
+    const ms = {};
+    for (const [name, lookup] of [["before", referencePathTo], ["after", board.pathTo]]) {
+      for (let i = 0; i < 8; i++) lookup(id, unlocked);
+      const times = [];
+      for (let i = 0; i < 41; i++) {
+        const start = performance.now();
+        lookup(id, unlocked);
+        times.push(performance.now() - start);
+      }
+      ms[name] = median(times);
+    }
+    console.log(`[growth route benchmark] ${key}: ${JSON.stringify(ms)} ms (median of 41)`);
+  }
+}
+

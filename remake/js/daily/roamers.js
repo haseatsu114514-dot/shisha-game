@@ -45,15 +45,18 @@ export const ROAMERS = Object.freeze([
   { id: "maezono", chapters: [1, 2], at: spot => shishaShop(spot) || spot.id === "cafe", ready: () => true },
   { id: "dr_kemuri", chapters: [1, 2], at: shishaShop, ready: () => true },
   // 自分のチェーン（C.STATION）ではなく、地元の小さな店をお忍びで見る
-  { id: "nagumo", chapters: [1, 2], at: spot => shishaShop(spot) && spot.id !== "c_station", ready: () => true },
+  { id: "sui", chapters: [1, 2], at: spot => shishaShop(spot) && spot.id !== "c_station", ready: () => true },
   { id: "adam", chapters: [1, 2], at: spot => shishaShop(spot) && !ownShop("adam")(spot), ready: metStory("adam"), bond: true },
-  { id: "rin", chapters: [1, 2], at: shishaShop, ready: metStory("rin"), bond: true },
+  { id: "rio", chapters: [1, 2], at: shishaShop, ready: metStory("rio"), bond: true },
   { id: "tsumugi", chapters: [1, 2], at: spot => shishaShop(spot) || spot.id === "cafe", ready: metStory("tsumugi"), bond: true },
   // 第3章の東京。ヴォルクは市場調査（自分の店「鉄の煙」には出ない）、ましろちゃんは休日（働いている mukai には出ない）、
   // エミルは全国大会で名前を知るまで伏せる（台詞は met で分岐）
   { id: "volk", chapters: [3], at: spot => tokyoShop(spot) && spot.place !== "volk", ready: metStory("volk"), bond: true },
   { id: "mashiro", chapters: [3], at: spot => tokyoShop(spot) && spot.place !== "mukai", ready: metStory("mashiro"), bond: true },
   { id: "emil", chapters: [3], at: tokyoShop, ready: () => true },
+  // 第5章の地元。ひよりは自分の店を持たないので、仕事帰りによその店に居合わせる（BLC08。第1・2章の相席 daily/hiyori.js の続き）。
+  // tonari での再会（_hiyori_tonari_return_done）を読んだ後だけ。恋人でも友人でも読める会話にしてある。
+  { id: "hiyori", chapters: [5], at: shishaShop, ready: value => metStory("hiyori")(value) && !!value.flags?._hiyori_tonari_return_done, bond: true },
   // mukai の看板猫。裏口で一度構った後は、公園やよその店の帰り道で見かけることがある（2026-11-02 オーナー「てつこは作って」）
   { id: "tetsuko", chapters: [3], at: spot => spot.region === "tokyo" && (spot.place === "park" || tokyoShop(spot) && spot.place !== "mukai"),
     ready: value => (value.flags?._ch3_outings?.tetsuko || 0) >= 1 },

@@ -18,7 +18,7 @@ async function seed(page, auto = "good", overrides = {}) {
       _ch3_intro: { startDay: 29, stage: CH3_INTRO_SCENES.length, titleSeen: true, routeVersion: 2 } };
     value.tournament.lastRank = 1; value.tournament.lastTotal = 88;
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
-    for (const who of ["hajime", "pakki", "kuze", "steve", "volk", "dr_kemuri", "nagumo"])
+    for (const who of ["hajime", "pakki", "saku", "steve", "volk", "dr_kemuri", "sui"])
       value.met[who] = true;
     for (const who of Object.keys(value.met)) value.flags[`_intro_${who}`] = true;
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
@@ -87,7 +87,10 @@ await suite("ch3-tournament", async check => {
     assert.equal(after.day, before.day);
     assert.equal(after.slot, before.slot);
     assert.deepEqual(p.votes, before.flags._ch3_tournament.votes);
-    assert.deepEqual(p.craft, before.flags._ch3_tournament.craft);
+    // 吸い出しの前の掛け合い（#3060）は読み終えた分だけ制作保存に残る。それ以外の制作記録は変わらない。
+    const beforeStory = before.flags._ch3_tournament.craft.tournamentStory;
+    assert.deepEqual(p.craft.tournamentStory.seen, [...beforeStory.seen, "serve"]);
+    assert.deepEqual({ ...p.craft, tournamentStory: beforeStory }, before.flags._ch3_tournament.craft);
     assert.equal(p.rollback, null);
     assert.equal(after.stamina, before.stamina);
     assert.deepEqual(after.flavorStock, before.flavorStock);
@@ -160,13 +163,13 @@ await suite("ch3-tournament", async check => {
       assert.equal(state.flags._ch3_tournament.voted, round);
       assert.equal(state.flags._ch3_tournament.history.length, 0);
       assert.deepEqual(await page.locator("[data-contestant]").evaluateAll(nodes =>
-        nodes.map(node => node.dataset.contestant).sort()), ["hajime", "kuze", "steve", "volk"]);
+        nodes.map(node => node.dataset.contestant).sort()), ["hajime", "saku", "steve", "volk"]);
       assert.deepEqual(await page.locator(".judge-chip").evaluateAll(nodes =>
-        nodes.map(node => node.dataset.judge).sort()), ["dr_kemuri", "emil", "nagumo"]);
+        nodes.map(node => node.dataset.judge).sort()), ["dr_kemuri", "emil", "sui"]);
       assert.match(await page.locator(".ch2-contest-judges").textContent(), /エミル|Emil/);
       const explanation = await page.locator(t("vote-reason")).innerText();
       if (round === 1) assert.doesNotMatch(explanation, /鋭い苦みの余韻/, "No tasting effect before service");
-      if (round === 2) assert.match(explanation, /南雲は水を飲んだ.*久世の直後にはじめを試喫.*比較-2/s,
+      if (round === 2) assert.match(explanation, /千須は水を飲んだ.*綾取の直後にはじめを試喫.*比較-2/s,
         "Show the actual palate trap that affected Hajime");
       if (round === 3) assert.match(explanation, /鋭い苦みは直後の比較に残らなかった/,
         "Show when the same tactic failed because of order and water");
@@ -190,10 +193,42 @@ await suite("ch3-tournament", async check => {
         assert.deepEqual(resumed.flags._ch3_tournament.votes, first);
         assert.equal(resumed.flags._ch3_tournament.history.length, 0);
       }
+      if (round === 3) await page.evaluate(() => {
+        // Capture the real auto-save immediately after final care, before tasting commentary.
+        const setItem = Storage.prototype.setItem;
+        Storage.prototype.setItem = function (key, raw) {
+          if (key === "suien_remake_save" && !window.finalCareSave
+            && JSON.parse(raw).flags?._ch3_tournament?.stage === "tasting") window.finalCareSave = raw;
+          return setItem.call(this, key, raw);
+        };
+      });
       await page.locator(t("continue")).click();
     }
     await page.locator(t("result")).waitFor();
+    const continuous = await get(page);
+    const reasons = await page.locator(".judge-deduction").allTextContents();
+    assert.equal(reasons.length, 3);
+    const finalCare = await page.evaluate(() => JSON.parse(window.finalCareSave));
+    assert.equal(finalCare.flags._ch3_tournament.stage, "tasting");
+    assert.deepEqual(finalCare.flags._ch3_tournament.craft.parts, continuous.flags._ch3_tournament.craft.parts,
+      "Final care must save the finalized parts before tasting starts");
+    assert.equal(finalCare.flags._ch3_tournament.craft.total, continuous.flags._ch3_tournament.craft.total);
+    await page.evaluate(() => localStorage.setItem("suien_remake_slot1", window.finalCareSave));
+    await page.reload();
+    await page.locator('[data-test="title-load"]').click();
+    await page.evaluate(async () => {
+      const vn = await import("./js/vn/engine.js");
+      vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
+      (await import("./js/craft/session.js")).craftTest.auto = "good";
+    });
+    await page.locator('[data-test="slot-1"]').click();
+    await page.locator(t("result")).waitFor();
+    assert.deepEqual(await page.locator(".judge-deduction").allTextContents(), reasons,
+      "Loading the final-care save must preserve all three deduction reasons");
     state = await get(page);
+    assert.deepEqual(state.flags._ch3_tournament.craft.parts, continuous.flags._ch3_tournament.craft.parts);
+    assert.deepEqual(state.flags._ch3_tournament.votes, continuous.flags._ch3_tournament.votes);
+    assert.deepEqual(state.flags._ch3_tournament.result, continuous.flags._ch3_tournament.result);
     const result = state.flags._ch3_tournament.result;
     assert.equal(state.flags._ch3_tournament.voted, 4);
     assert.equal(state.flags._ch3_tournament.history.length, 1);
@@ -217,12 +252,12 @@ await suite("ch3-tournament", async check => {
     assert.equal(state.tournament.lastRank, before.tournament.lastRank);
     assert.equal(state.tournament.lastTotal, before.tournament.lastTotal);
     assert.equal(state.flags._ch3_cleared, undefined, "Post-win Tokyo scenes still remain");
-    assert.equal(state.money, before.money + 100000, "Chapter 3 prize is paid once on the win");
+    assert.equal(state.money, before.money + 200000, "Chapter 3 prize is paid once on the win");
     assert.deepEqual(state.lovers, before.lovers);
     await page.locator(t("aftermath")).click();
     const aftermath = scene => `[data-test="ch3-aftermath-scene"][data-scene="${scene}"]`;
     const scenes = ["ch3_abyss_hotel", "ch3_mashiro_recovery", "ch3_naru_reconcile", "ch3_enmaku_cleanup",
-      "ch3_home_customer", "ch3_tsumugi_result", "ch3_ageha_reunion"];
+      "ch3_ageha_reunion", "ch3_tsumugi_result", "ch3_home_customer"]; // STK23: 帰郷した夜の最後が帰郷の客
     for (const [index, scene] of scenes.entries()) {
       await page.locator(aftermath(scene)).waitFor();
       if (index === 0) assert(await page.locator('#bg > .bg-img').last().evaluate(node =>
@@ -254,7 +289,8 @@ await suite("ch3-tournament", async check => {
     assert.equal(state.flags._ch3_tournament.history.length, 1);
     await page.reload();
     await page.locator('[data-test="title-load"]').click();
-    assert.match(await page.locator('[data-test="slot-0"]').innerText(), /第3章\s*DAY 17[\s\S]*第3章クリア/);
+    // STK23: あげはの再会を帰郷した夜へ移したので、第3章は帰郷した夜（DAY 16）で終わる。
+    assert.match(await page.locator('[data-test="slot-0"]').innerText(), /第3章\s*DAY 16[\s\S]*第3章クリア/);
   }, { reducedMotion: "reduce" });
   await check("actual-losing-rank-reads-defeat-and-retries-without-win", async page => {
     await seed(page);
@@ -265,8 +301,8 @@ await suite("ch3-tournament", async check => {
       const p = model.tournamentProgress(core.state);
       p.stage = "result"; p.step = 11; p.voted = 4; p.attempts = 1;
       p.votes = Object.fromEntries(model.JUDGES.map(judge => [judge,
-        { hajime: 0, kuze: 3, steve: 2, volk: 5 }]));
-      p.quality = { hajime: 40, kuze: 82, steve: 80, volk: 84 };
+        { hajime: 0, saku: 3, steve: 2, volk: 5 }]));
+      p.quality = { hajime: 40, saku: 82, steve: 80, volk: 84 };
       const rows = model.standings(p);
       p.result = { attempt: 1, total: 40, rank: rows.find(row => row.id === "hajime").rank,
         win: false, rows, votes: structuredClone(p.votes), careHistory: [{ score: 40 }, { score: 40 }] };

@@ -41,7 +41,7 @@ async function timerFixture(mode, experienced=false) {
     ['core/growth-effects.js',port('growth',{growthLesson:()=>false})],
     ['core/util.js',port('util',{el,clamp:(n,a,b)=>Math.max(a,Math.min(b,n))})],
     ['core/audio.js',port('audio',{SE:{click(){},select(){}}})],
-    ['craft/session.js',port('session',{stepPanel:()=>node()})],
+    ['craft/session.js',port('session',{stepPanel:()=>node(),explainStepOnce:async()=>true})],
     ['craft/common.js',port('common',{autoSkill:()=>false})],
     ['craft/art.js',port('art',{artImg:()=>node()})],
     ['craft/digital-clock.js',port('clock',{buildDigitalClock:()=>({root:node(),update(){}})})],
@@ -54,6 +54,9 @@ async function timerFixture(mode, experienced=false) {
   await entry.evaluate();
   const cs={mode,untouched:'temperature/score ports are not modified'},before={...cs};
   const pending=entry.namespace.runSteamTimer(cs);
+  // runSteamTimer は冒頭の説明（#3028）を await する非同期関数になったため、
+  // 操作部の構築が終わるまでマイクロタスクを流してから返す。
+  await Promise.resolve(); await Promise.resolve(); await Promise.resolve();
   return {cs,before,pending,get:test=>nodes.find(n=>n.dataset?.test===test)};
 }
 for(const mode of ['practice','tutorial']) {

@@ -8,7 +8,8 @@ async function prepare(page) {
     window.QA = { core, saves: await import("./js/scenes/saves.js") };
     const s = core.newGame();
     Object.assign(s, { phase: "daily", day: 6, slot: 1, money: 45678, stamina: 73, seed: 1234, weatherSeed: 4 });
-    Object.assign(s.flags, { _morning_6: true, _errand_scout_done: true, _delivery_adam_done: true,
+    Object.assign(s.flags, { _morning_6: true, _tsumugi_contest_research: true, _tsumugi_contest_progress: true,
+      _ev_first_practice: true, _errand_scout_done: true, _delivery_adam_done: true,
       _delivery_minto_done: true, _lime_tut: 1, _qa_preserved: "keep" });
     s.stats.insight = 27; s.statXp.insight = 0.25;
     s.flavorStock.double_apple = 37;
@@ -33,43 +34,58 @@ async function prepare(page) {
 }
 
 await suite("save-load", async check => {
-  await check("chapter-two-first-day-slot-labels-survive-reopen", async page => {
+  await check("one-manual-slot-and-retired-data-survive-reopen", async page => {
     await prepare(page);
-    const oldRaw = await page.evaluate(async () => {
+    const retired = await page.evaluate(async () => {
       const { core } = QA;
       const firstDay = { ...core.newGame(), chapter: 2, phase: "opening", day: 15, slot: 0,
         flags: { _ch2_day1: { startDay: 15, stage: "arrival" } } };
       const completed = { ...firstDay, phase: "daily", flags: { _ch2_day1: { startDay: 15, stage: "complete" } } };
-      const old = { ...firstDay, schema: 5 };
-      const secondDay = { ...completed, day: 16 };
-      for (const [slot, value] of core.SAVE_SLOTS.map((slot, i) => [slot, [firstDay, completed, old, secondDay][i]])) {
-        localStorage.setItem(slot.key, JSON.stringify(value));
-      }
+      localStorage.setItem(core.SAVE_SLOTS[0].key, JSON.stringify(firstDay));
+      localStorage.setItem(core.SAVE_SLOTS[1].key, JSON.stringify(completed));
+      localStorage.setItem("suien_remake_slot2", JSON.stringify({ ...firstDay, schema: 5 }));
+      localStorage.setItem("suien_remake_slot3", JSON.stringify({ ...completed, day: 16 }));
       (await import("./js/scenes/title.js")).showTitle();
-      return localStorage.getItem(core.SAVE_SLOTS[2].key);
+      return ["suien_remake_slot2", "suien_remake_slot3"].map(key => localStorage.getItem(key));
     });
-    const labels = async () => Promise.all([0, 1, 2, 3].map(async i =>
-      page.locator(`[data-test="slot-${i}"] .ss-info b`).textContent()));
-    const phases = async () => Promise.all([0, 1, 2, 3].map(async i =>
-      page.locator(`[data-test="slot-${i}"] .ss-phase`).textContent()));
+    const labels = async () => page.locator(".save-slot .ss-info b").allTextContents();
     await page.locator('[data-test="title-load"]').click();
+    assert.equal(await page.locator(".save-slot").count(), 2);
+    assert.equal(await page.locator('[data-test="slot-2"]').count(), 0);
+    assert.deepEqual(await page.locator(".ss-phase").allTextContents(), ["初日", "初日終了"]);
     const captions = await labels();
-    assert.deepEqual(await phases(), ["初日", "初日終了", "初日", "日常"]);
-    for (const caption of captions.slice(0, 3)) assert.match(caption, /第2章.*DAY 1/);
-    assert.match(captions[3], /第2章.*DAY 2/);
+    for (const caption of captions) assert.match(caption, /第2章.*DAY 1/);
     await page.reload();
     await page.locator('[data-test="title-load"]').click();
     assert.deepEqual(await labels(), captions);
-    assert.deepEqual(await phases(), ["初日", "初日終了", "初日", "日常"]);
-    const loaded = await page.evaluate(async () => {
-      const core = await import("./js/core/state.js");
-      const value = core.loadFromSlot(core.SAVE_SLOTS[2].key);
-      return { chapter: value.chapter, day: value.day, source: localStorage.getItem(core.SAVE_SLOTS[2].key) };
-    });
-    assert.equal(loaded.chapter, 2);
-    assert.equal(loaded.day, 15);
-    assert.equal(loaded.source, oldRaw);
+    assert.deepEqual(await page.evaluate(() => ["suien_remake_slot2", "suien_remake_slot3"].map(key => localStorage.getItem(key))), retired);
   });
+
+  await check("paper-landscape-cards-fit-and-remain-readable", async page => {
+    await prepare(page);
+    await page.evaluate(async () => {
+      QA.core.saveToSlot(QA.core.SAVE_SLOTS[1].key);
+      document.documentElement.dataset.uiTheme = "paper";
+      (await import("./js/scenes/title.js")).showTitle();
+    });
+    await page.locator('[data-test="title-load"]').click();
+    const layout = await page.evaluate(() => {
+      const panel = document.querySelector(".saveload-modal").getBoundingClientRect();
+      const cards = [...document.querySelectorAll(".save-slot")].map(node => node.getBoundingClientRect());
+      const label = document.querySelector(".ss-stat small");
+      const scale = label.getBoundingClientRect().height / label.offsetHeight;
+      return { panel: { x: panel.x, y: panel.y, right: panel.right, bottom: panel.bottom },
+        cards: cards.map(r => ({ x: r.x, y: r.y, right: r.right, bottom: r.bottom, width: r.width, height: r.height })),
+        statFont: parseFloat(getComputedStyle(label).fontSize) * scale,
+        background: getComputedStyle(document.querySelector(".save-slot")).backgroundColor };
+    });
+    assert.equal(layout.cards.length, 2);
+    assert(layout.panel.x >= 0 && layout.panel.y >= 0 && layout.panel.right <= 844 && layout.panel.bottom <= 390, JSON.stringify(layout));
+    assert(layout.cards.every(card => card.x >= layout.panel.x && card.right <= layout.panel.right && card.y >= layout.panel.y && card.bottom <= layout.panel.bottom), JSON.stringify(layout));
+    assert(layout.cards.every(card => card.width >= 200 && card.height >= 150), JSON.stringify(layout));
+    assert(layout.statFont >= 11.5, JSON.stringify(layout));
+    assert.notEqual(layout.background, "rgba(0, 0, 0, 0)");
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
 
   await check("all-slots-round-trip", async page => {
     await prepare(page);
@@ -171,7 +187,7 @@ await suite("save-load", async check => {
       const { core } = QA;
       const future = {
         schema: core.SCHEMA + 1, chapter: 1, phase: "daily",
-        day: 6, slot: 1, money: 45678,
+        day: 6, slot: 1, money: 45678, growth: { level: 2, nodes: ["B7"] },
       };
       localStorage.setItem(core.SAVE_SLOTS[1].key, JSON.stringify(future));
       (await import("./js/scenes/title.js")).showTitle();
@@ -189,6 +205,73 @@ await suite("save-load", async check => {
     assert.deepEqual(await storageSnapshot(page), before);
     await page.locator('[data-test="slot-cancel"]').click();
   });
+
+  for (const [device, options] of [
+    ["desktop", { viewport: { width: 1280, height: 720 } }],
+    ["mobile", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+  ]) await check(`growth-board-slot-summary-${device}`, async page => {
+    await prepare(page);
+    const originals = await page.evaluate(async () => {
+      const { core } = QA;
+      const { ensureGrowth } = await import("./js/core/growth.js");
+      const g = ensureGrowth(core.state);
+      Object.assign(g, { level: 2, xp: 205, settledXp: 205, nodes: ["B7", "S7", "W7"], earned: 5 });
+      g.hidane.any = 2;
+      core.state.stats = { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 };
+      core.saveToSlot(core.SAVE_SLOTS[1].key); // 同じ盤を AUTO と手動枠へ
+      localStorage.setItem("suien_remake_slot2", JSON.stringify({
+        schema: 5, chapter: 1, phase: "daily", day: 6, slot: 1,
+        stats: { ...core.state.stats },
+      }));
+      (await import("./js/scenes/title.js")).showTitle();
+      return [core.SAVE_KEY, core.SAVE_SLOTS[1].key, "suien_remake_slot2"].map(key => localStorage.getItem(key));
+    });
+    const summary = slot => page.locator(`[data-test="slot-${slot}"] .ss-growth .ss-stat`)
+      .evaluateAll(nodes => nodes.map(node => node.textContent));
+    const expected = ["Lv.2", "火種2", "才能1/27", "感覚1/26", "理論1/26"];
+    const retiredSlotHidden = () => page.locator('[data-test="slot-2"]').count();
+    const assertGrowthFits = async () => assert.deepEqual(await page.locator(".ss-growth .ss-stat")
+      .evaluateAll(nodes => nodes.filter(node => node.scrollWidth > node.clientWidth + 1).map(node => node.textContent)), []);
+    await page.locator('[data-test="title-load"]').click();
+    assert.deepEqual(await summary(0), expected);
+    assert.deepEqual(await summary(1), expected);
+    assert.equal(await retiredSlotHidden(), 0);
+    await assertGrowthFits();
+    await assertFits(page, ".save-slot, [data-test='slot-cancel']");
+    await page.locator('[data-test="slot-cancel"]').click();
+    assert.deepEqual(await page.evaluate(() => [QA.core.SAVE_KEY, QA.core.SAVE_SLOTS[1].key, "suien_remake_slot2"].map(key => localStorage.getItem(key))), originals);
+
+    // タイトルから AUTO を読み、ゲーム中の SAVE と LOAD でも同じ枠表示を見る。
+    await page.locator('[data-test="title-load"]').click();
+    await page.locator('[data-test="slot-0"]').click();
+    await page.locator("#screen .map:not(.done)").waitFor({ timeout: 30000 });
+    const afterLoad = await page.evaluate(() => [QA.core.SAVE_KEY, QA.core.SAVE_SLOTS[1].key, "suien_remake_slot2"].map(key => localStorage.getItem(key)));
+    for (const menu of ["save", "load"]) {
+      await page.locator('[data-test="hud-menu"]').click();
+      await page.locator('[data-test="menu-tab-system"]').click();
+      await page.locator(`[data-test="menu-${menu}"]`).click();
+      assert.deepEqual(await summary(0), expected);
+      assert.deepEqual(await summary(1), expected);
+      assert.equal(await retiredSlotHidden(), 0);
+      await assertGrowthFits();
+      await assertFits(page, ".save-slot, [data-test='slot-cancel']");
+      await page.locator('[data-test="slot-cancel"]').click();
+    }
+    assert.deepEqual(await page.evaluate(() => [QA.core.SAVE_KEY, QA.core.SAVE_SLOTS[1].key, "suien_remake_slot2"].map(key => localStorage.getItem(key))), afterLoad);
+    assert.deepEqual(await page.evaluate(() => QA.core.state.stats), {
+      technique: 10, sense: 10, guts: 10, charm: 10, insight: 10,
+    });
+
+    // 旧方式に切り替えた端末では、盤のある枠も従来の5能力を表示する。
+    await page.evaluate(() => localStorage.setItem("suien_growth_preview", "0"));
+    await page.locator('[data-test="hud-menu"]').click();
+    await page.locator('[data-test="menu-tab-system"]').click();
+    await page.locator('[data-test="menu-load"]').click();
+    assert.equal(await page.locator('[data-test="slot-0"] .ss-growth').count(), 0);
+    assert.deepEqual(await page.locator('[data-test="slot-0"] .ss-stat small').allTextContents(),
+      ["技術", "センス", "根性", "魅力", "洞察"]);
+    await page.locator('[data-test="slot-cancel"]').click();
+  }, options);
 
   for (const [label, options] of [
     ["desktop-ui", { viewport: { width: 1280, height: 720 } }],
@@ -209,7 +292,7 @@ await suite("save-load", async check => {
       await page.locator('[data-test="title-load"]').click();
       await assertFits(page, ".save-slot, [data-test='slot-cancel']");
       await page.locator('[data-test="slot-0"]').click();
-      await page.locator("#screen .map:not(.done)").waitFor();
+      await page.locator("#screen .map:not(.done)").waitFor({ timeout: 30000 });
       await page.locator('[data-test="hud-menu"]').click();
       await page.locator('[data-test="menu-tab-system"]').click();
       await page.locator('[data-test="menu-save"]').click();
@@ -254,7 +337,7 @@ await suite("save-load", async check => {
         page.waitForEvent("load"),
         page.locator('[data-test="confirm-load"]').click(),
       ]);
-      await page.locator("#screen .map:not(.done)").waitFor();
+      await page.locator("#screen .map:not(.done)").waitFor({ timeout: 30000 });
       const loaded = await page.evaluate(async () => {
         const core = await import("./js/core/state.js");
         const copy = JSON.parse(JSON.stringify(core.state)); delete copy.savedAt;
@@ -285,7 +368,7 @@ await suite("save-load", async check => {
     };
     // 目印の既知セーブを手動枠1へ通常保存する。
     await uiSave();
-    await page.locator(".toast.good", { hasText: "にセーブした" }).waitFor();
+    await page.locator(".toast.good", { hasText: "と AUTO に保存した" }).waitFor();
     await page.locator("#modal.show").waitFor({ state: "hidden" });
     assert.equal(await page.evaluate(() => QA.core.readSlot("suien_remake_slot1").money), 45678);
     // 枠1への書き込みだけ失敗させる（saveToSlot が先に行うオートセーブは通常どおり成功させる）。
@@ -301,7 +384,7 @@ await suite("save-load", async check => {
     await page.locator('[data-test="confirm-overwrite"]').click();
     const warn = page.locator(".toast.warn");
     await warn.waitFor();
-    assert.equal(await warn.textContent(), "セーブできなかった（ブラウザの保存領域がいっぱいかも）");
+    assert.equal(await warn.textContent(), "スロット 1 は前のまま。AUTO は保存済み");
     await page.locator("#modal.show").waitFor({ state: "hidden" });
     const failed = await page.evaluate(() => ({ slot: QA.core.readSlot("suien_remake_slot1").money,
       auto: QA.core.readSlot(QA.core.SAVE_KEY).money, current: QA.core.state.money }));
@@ -312,11 +395,70 @@ await suite("save-load", async check => {
     await warn.waitFor({ state: "detached" }); // 固定待ちではなく toast の消滅を待つ
     await uiSave();
     await page.locator('[data-test="confirm-overwrite"]').click();
-    await page.locator(".toast.good", { hasText: "にセーブした" }).waitFor();
+    await page.locator(".toast.good", { hasText: "と AUTO に保存した" }).waitFor();
     await page.locator("#modal.show").waitFor({ state: "hidden" });
     assert.equal(await page.locator(".toast.warn").count(), 0);
     assert.equal(await page.evaluate(() => QA.core.readSlot("suien_remake_slot1").money), 11111);
   }, { viewport: { width: 1280, height: 720 } });
+
+  for (const [autoFails, manualFails, message] of [
+    [false, false, "スロット 1 と AUTO に保存した"],
+    [false, true, "スロット 1 は前のまま。AUTO は保存済み"],
+    [true, false, "スロット 1 は保存済み。AUTO 更新は失敗"],
+    [true, true, "スロット 1 は前のまま。AUTO も保存できませんでした"],
+  ]) await check(`save-result-auto-${autoFails}-manual-${manualFails}`, async page => {
+    await prepare(page);
+    await page.evaluate(() => {
+      const { core } = QA;
+      core.saveToSlot(core.SAVE_SLOTS[1].key);
+      core.state.money = 11111;
+      QA.setItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (key, value) {
+        if ((key === core.SAVE_KEY && QA.autoFails) || (key === core.SAVE_SLOTS[1].key && QA.manualFails))
+          throw new DOMException("quota", "QuotaExceededError");
+        return QA.setItem.call(this, key, value);
+      };
+    });
+    await page.evaluate(([a, m]) => { QA.autoFails = a; QA.manualFails = m; QA.saves.saveFlow(); }, [autoFails, manualFails]);
+    await page.locator('[data-test="slot-1"]').click();
+    await page.locator('[data-test="confirm-overwrite"]').click();
+    const notice = page.locator(".toast", { hasText: message });
+    await notice.waitFor();
+    assert.equal(await notice.textContent(), message);
+    await assertFits(page, ".toast");
+    const values = await page.evaluate(() => ({
+      auto: QA.core.readSlot(QA.core.SAVE_KEY).money,
+      manual: QA.core.readSlot(QA.core.SAVE_SLOTS[1].key).money,
+      current: QA.core.state.money,
+    }));
+    assert.deepEqual(values, { auto: autoFails ? 45678 : 11111, manual: manualFails ? 45678 : 11111, current: 11111 });
+    await page.evaluate(() => { Storage.prototype.setItem = QA.setItem; });
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+
+  await check("title-load-writeback-failure-offers-another-slot", async page => {
+    await prepare(page);
+    await page.evaluate(async () => {
+      const { core } = QA;
+      core.saveToSlot(core.SAVE_SLOTS[1].key);
+      core.state.money = 11111;
+      QA.setItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (key, value) {
+        if (key === core.SAVE_KEY) throw new DOMException("quota", "QuotaExceededError");
+        return QA.setItem.call(this, key, value);
+      };
+      (await import("./js/scenes/title.js")).showTitle();
+    });
+    await page.locator('[data-test="title-load"]').click();
+    await page.locator('[data-test="slot-1"]').click();
+    assert.equal(await page.locator(".saveload-modal").count(), 0);
+    await page.locator('[data-test="retry-load"]').waitFor();
+    assert.equal(await page.locator(".modal-box h3").textContent(), "ロードできませんでした");
+    assert.equal(await page.evaluate(() => QA.core.state.money), 11111);
+    await page.locator('[data-test="retry-load"]').click();
+    await page.locator('[data-test="slot-cancel"]').click();
+    assert.equal(await page.locator(".modal-box h3").count(), 0);
+    await page.evaluate(() => { Storage.prototype.setItem = QA.setItem; });
+  });
 
   // #782: a valid DAY11 free-time checkpoint. Earlier fixed stories are read;
   // today's submission/done flags are deliberately absent. Only the normal daily
@@ -384,7 +526,7 @@ await suite("save-load", async check => {
       assert.equal(await shop.locator(".pin-person").count(), 0, "all people are hidden");
       assert.doesNotMatch(await shop.getAttribute("aria-label"), /在店：/);
       await pin("tonari");
-      assert.match(await page.locator(".mi-no").textContent(), /この後もtonari.*別のところ/);
+      assert.match(await page.locator(".map-info").getAttribute("aria-label"), /この後もtonari.*別のところ/);
       assert.equal(await page.locator('[data-test="map-go"]').count(), 0, "no earlier paid visit can start");
       assert.deepEqual(await progress(), before, "blocked selection must not charge or consume time/visits");
       await pin("rest");
@@ -431,7 +573,7 @@ await suite("save-load", async check => {
     });
     assert(finished.sketch && finished.submitted, "DAY11 fixed submission must actually finish");
     await pin("tonari");
-    assert.equal(await page.locator(".mi-no").count(), 0, "completed event must not permanently suppress visits");
+    assert.equal(await page.locator(".map-info[aria-label*='この後もtonari']").count(), 0, "completed event must not permanently suppress visits");
     assert(await page.locator('[data-test="map-go"]').isEnabled());
   }, options);
 

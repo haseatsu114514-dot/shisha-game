@@ -32,14 +32,14 @@ try {
     ['pc', { width: 1280, height: 900 }, false],
     ['landscape', { width: 844, height: 390 }, true],
     ['portrait', { width: 390, height: 844 }, true],
-  ]) for (const layout of ['normal', 'ds']) {
+  ]) for (const layout of ['normal']) { // DS風は廃止（横画面一本化）。名前と画像のファイル名は従来どおり layout を含める
     if (process.env.QA_DEVICE && process.env.QA_DEVICE !== device) continue;
     const context = await browser.newContext({ viewport, isMobile: touch, hasTouch: touch, reducedMotion: 'reduce' });
     const page = await context.newPage(), errors = [], resources = [];
     page.setDefaultTimeout(15000);
     page.on('pageerror', e => errors.push(e.message));
     page.on('response', r => { if (r.status() >= 400) resources.push(`${r.status()} ${r.url()}`); });
-    await page.addInitScript(layout => { localStorage.setItem('suien_title_layout', layout); localStorage.setItem('qa-facility-sentinel', '579'); }, layout);
+    await page.addInitScript(() => { localStorage.setItem('qa-facility-sentinel', '579'); });
     await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
     await page.locator('[data-test="title-new"]').waitFor({ timeout: 45000 });
     await page.locator('#boot').waitFor({ state: 'detached' });
@@ -58,7 +58,7 @@ try {
           slot: ['night', 'legacy'].includes(scenario) ? 1 : 0, seed: 131, weatherSeed: 4, money: 90000, stamina: 90 });
         if (scenario === 'chapter2') s.flags._rei_trpg_introduced = true;
         if (scenario !== 'locked') {
-          for (const id of ['sumi', 'tsumugi', 'naru', 'adam', 'minto', 'rin', 'uranaishi']) s.met[id] = true;
+          for (const id of ['sumi', 'tsumugi', 'naru', 'adam', 'minto', 'rio', 'uranaishi']) s.met[id] = true;
           s.flags._spot_guide_naru = s.flags._spot_guide_adam = s.flags._spot_guide_minto = true;
           s.flags._cafe_introduced = true; // #780: 喫茶店は紹介後に地図へ出る
           s.flags._fortune_rumor_heard=true; // #780: 対面の噂を完読済みの表示fixture
@@ -123,7 +123,7 @@ try {
       const wanted = { ...expected };
       if (scenario === 'chapter2') {
         const trpg = pins.find(p => p.id === 'trpg_bar');
-        assert(trpg, 'REI-introduced TRPG bar must appear');
+        assert(trpg, 'レヰ-introduced TRPG bar must appear');
         assert.equal(trpg.logo, 'trpg_bar', 'TRPG bar uses the adopted store logo');
         assert.equal(trpg.facility, null, 'store logo replaces the generic facility sticker');
       }
@@ -153,8 +153,15 @@ try {
         assert(pins.filter(p => p.id !== 'trpg_bar').every(({ target: b }) =>
           a.x+a.width <= b.x || b.x+b.width <= a.x || a.y+a.height <= b.y || b.y+b.height <= a.y), 'board-game cafe overlaps another destination');
       }
-      const rotates = device === 'portrait' && layout === 'normal';
-      if (rotates) assert(await page.locator('#rotate-hint').isVisible());
+      // #2789（#2794）: 縦持ちは回転ガードで画面を覆い、地図のピンは操作させない。
+      const rotates = device === 'portrait';
+      if (rotates) {
+        assert(await page.locator('#rotate-hint').isVisible());
+        assert(await page.evaluate(() => {
+          const guard = document.querySelector('#rotate-hint'), hit = document.elementFromPoint(innerWidth / 2, innerHeight / 2);
+          return hit === guard || guard.contains(hit);
+        }), `${device}/${layout}/${scenario}: rotate guard must intercept map input`);
+      }
       if (scenario === 'day' || device === 'pc' && layout === 'normal') {
         await page.screenshot({ path: path.join(out, `${phase}-${device}-${layout}-${scenario}.jpg`), type: 'jpeg', quality: 80 });
       }
@@ -176,7 +183,7 @@ try {
       }
       cases.push({ scenario, pins, stateUnchanged: true, rotateHint: rotates });
     }
-    if (!(device === 'portrait' && layout === 'normal')) {
+    if (device !== 'portrait') { // 縦持ちは回転ガードの下なので操作しない（上で遮ることを確認済み）
       const restPin = page.locator('[data-test="pin-rest"]'); await restPin.scrollIntoViewIfNeeded();
       await selectVisiblePin(page, restPin, touch);
       assert.equal(await restPin.evaluate(p => p.classList.contains('sel')), true, `${device}/${layout}/rest failed to select via user interaction`);

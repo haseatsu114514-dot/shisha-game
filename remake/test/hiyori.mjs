@@ -199,7 +199,7 @@ try {
         delete reveal.slot; delete reveal.outro; delete reveal.minAffinity;
         data.DB.hiyori.route.storyEvents = data.DB.hiyori.route.storyEvents.map(id => id === "axe_reveal" ? "fixture_reveal" : id);
         for (const e of route.hiyoriRoute().events) add(e.dialogue,
-          e.id === "meeting" ? [{ speaker: "hiyori", text: "朝霧ひよりです" }, { type: "set_flag", flag: "_met_hiyori" },
+          e.id === "meeting" ? [{ speaker: "hiyori", text: "泡沫ひよりです" }, { type: "set_flag", flag: "_met_hiyori" },
             { type: "set_flag", flag: "_lime_contact_hiyori" }] : [{ speaker: "hiyori", text: "テスト用の正式台本", inner: "表示だけで正体フラグは立てない" }]);
         const workTooEarly = await daily.playHiyoriEvent("work_talk");
         await daily.playHiyoriEvent("meeting");
@@ -286,14 +286,14 @@ try {
       const s = QA.fresh();
       s.met.hiyori = true; s.contacts = ["sumi", "hiyori"]; s.affinity.hiyori = 30;
       s.flags._hiyori_real_self_known = true; s.flags._hiyori_work_talk_done = true;
-      s.flags._preserve_other_character = true; s.lovers = ["rin", "hiyori"];
-      s.loveLevel = { rin: 3, hiyori: 2 }; s.lovePts = { rin: 33, hiyori: 20 };
+      s.flags._preserve_other_character = true; s.lovers = ["rio", "hiyori"];
+      s.loveLevel = { rio: 3, hiyori: 2 }; s.lovePts = { rio: 33, hiyori: 20 };
       s.romanceChoices.bond_q1_hiyori = { char: "hiyori", value: 1, day: 4 };
       core.saveToSlot("suien_remake_slot2");
       const expected = JSON.stringify(s);
       const automatic = JSON.stringify(core.load()) === expected;
       const manualState = core.loadFromSlot("suien_remake_slot2");
-      const manual = manualState.flags._hiyori_real_self_known && manualState.lovePts.rin === 33 && manualState.lovePts.hiyori === 20;
+      const manual = manualState.flags._hiyori_real_self_known && manualState.lovePts.rio === 33 && manualState.lovePts.hiyori === 20;
       const original = JSON.parse(JSON.stringify(data.DB.hiyori));
       data.DB.hiyori.route.enabled = true;
       // #1434 決定B: tokyo_contact と feelings_spoken は本番の route.events を使う。未制作の第4〜5章は、
@@ -316,11 +316,11 @@ try {
         else delete data.DB.dialogues[event.dialogue];
       }
       data.DB.hiyori = original;
-      const old = core.newState(); old.schema = 7; old.affinity.rin = 42; old.money = 12345;
+      const old = core.newState(); old.schema = 7; old.affinity.rio = 42; old.money = 12345;
       delete old.romance; delete old.romanceChoices; delete old.finales;
       localStorage.setItem(core.SAVE_KEY, JSON.stringify(old));
       const migrated = core.load();
-      return { automatic, manual, statuses, old: { money: migrated.money, rin: migrated.affinity.rin,
+      return { automatic, manual, statuses, old: { money: migrated.money, rio: migrated.affinity.rio,
         hiyoriMet: !!migrated.met.hiyori, hiyoriKnown: !!migrated.flags._hiyori_real_self_known,
         hiyoriRomance: migrated.romance.hiyori || 0, schema: migrated.schema }, schema: core.SCHEMA };
     });
@@ -330,7 +330,7 @@ try {
     assert.deepEqual(result.statuses.map((s) => s.feelings), ["ready", "ready", "ready", "chapter", "chapter"]);
     assert.equal(result.statuses[3].dubai, "ready"); assert.equal(result.statuses[4].lover, "ready");
     assert.equal(result.statuses[4].friend, "relationship");
-    assert.deepEqual(result.old, { money: 12345, rin: 42, hiyoriMet: false, hiyoriKnown: false, hiyoriRomance: 0, schema: result.schema });
+    assert.deepEqual(result.old, { money: 12345, rio: 42, hiyoriMet: false, hiyoriKnown: false, hiyoriRomance: 0, schema: result.schema });
   });
 
   await check("standalone preview preserves every storage key", async () => {

@@ -40,7 +40,7 @@ export function actualExpressionCard(cs, temp) {
   return el("section.flavor-actual", { dataset: { test: "actual-flavor", zone: expression.zone } }, [
     el("b", { text: `今回の仕上がり · ${expression.label}` }),
     layers.length?el("p.flavor-guide-caption",{dataset:{test:"floral-layer"},text:round===2?"重なった花の余韻が立つ":`${layers[round%layers.length].name}の層が立つ`}):null,
-    flavorAxes([["sweetness", "甘い印象"], ["cooling", "清涼感"], ["body", "煙の厚み"]].map(([key, label]) =>
+    flavorAxes([["sweetness", "甘い印象"], ["cooling", "清涼感"], ["body", "煙の量"]].map(([key, label]) =>
       ({ key, label, value: expression.values[key] }))),
     el("small.flavor-guide-caption", { text: "提供時の味の傾向。強さと品質は別です。" }),
   ]);
@@ -63,7 +63,7 @@ export function flavorFeatureCard(flavor, { description = "", makerLabel = "" } 
   ]);
 }
 
-export function mixForecastCard(cs, { precision = 0, mastery, aroma, compact = false } = {}) {
+export function mixForecastCard(cs, { precision = 0, mastery, aroma } = {}) {
   const forecast = forecastExpression(cs, { precision });
   // 配合の加重平均は表示時だけ切り捨て、次の段階やMAXを先取りしない。
   // 全葉MAXの平均が5未満になるような、整数境界の浮動小数誤差だけを補う。
@@ -90,9 +90,8 @@ export function mixForecastCard(cs, { precision = 0, mastery, aroma, compact = f
       mastery ? el("p", { text: "熟練は使った量の比率で、香りの再現・予測・大会点に効きます。葉の基本情報は最初から見られます。" }) : null,
     ]),
   ];
-  return el(`div.flavor-forecast${compact ? ".is-compact" : ""}`, { dataset: { test: "mix-forecast", precision: format(precision), expressive: String(forecast.expressive) } },
-    compact ? [el("details.flavor-forecast-compact", [el("summary", { text: `仕上がりの目安 · ${aroma?.headline || "予想を見る"}` }), ...content])]
-      : [title, ...content]);
+  return el("div.flavor-forecast", { dataset: { test: "mix-forecast", precision: format(precision), expressive: String(forecast.expressive) } },
+    [title, ...content]);
 }
 
 // 文言は現行の計算に効く性能に限る。HMDの未接続の温まり方・蓄熱は説明しない。
@@ -109,6 +108,7 @@ const EQUIPMENT_USE = {
   cube_charcoal: ["大容量・デンスにも熱を入れやすい", "温度の上がりすぎに注意"],
   kumogama_phunnel: ["最大16g。適温幅がやや広い器", "多く詰めるほど蒸らしは長め"],
   lotos_plus: ["アルミ不要の全サイズ対応。熱が安定しやすい", "適温幅はタヌキッシュリッドより狭い"],
+  dr_kemuri_proto_hmd: ["全サイズ対応。適温幅がやや広く、葉が傷んでも帯が狭まりにくい", "店では売っていない博士の試作品"],
   dense_flat_charcoal: ["フラット炭より適温幅が少し広い", "炭を選べるのはキューブ炭を覚えてから"],
 };
 

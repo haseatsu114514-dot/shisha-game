@@ -3,7 +3,7 @@ import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay } from "../core/chapter-clock.js";
-import { layers, showScreen, setBg, modal, loadingNotice } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, modal, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
@@ -13,7 +13,6 @@ import { readDialogues } from "../core/chapter-data.js";
 import { onDialogueEnter } from "../daily/romance.js";
 import { AGEHA_CONFESSION_SCENES, agehaConfessionDue, beginAgehaConfessionDay, confessionAnswer } from "./ch3-romance-entry.js";
 import { chapterGrowthChart } from "../daily/status.js";
-import { playChapterPreview } from "./chapter-preview.js";
 import { shinkansenRide } from "../core/scene-motions.js";
 import { syncTokyoVisits } from "../core/tokyo-visits.js";
 import { growthLesson } from "../core/growth-effects.js";
@@ -211,7 +210,7 @@ async function readAftermathFinale(owner, who) {
   if (!entry || !live(owner)) return;
   const scene = CH3_AFTERMATH_SCENES[chapterThreeAftermathProgress(state).stage];
   const background = bgUrl(entry.bg, scene?.slot ? "night" : "day");
-  await setBg(background, { instant: true });
+  await enterScene(background);
   if (!live(owner)) return;
   showScreen("none", null);
   layers.hud.replaceChildren();
@@ -232,7 +231,7 @@ async function consultAftermathLesson(owner, who) {
   if (!entry || !live(owner)) return;
   const scene = CH3_AFTERMATH_SCENES[chapterThreeAftermathProgress(state).stage];
   const background = bgUrl(entry.bg, scene?.slot ? "night" : "day");
-  await setBg(background, { instant: true });
+  await enterScene(background);
   if (!live(owner)) return;
   showScreen("none", null);
   layers.hud.replaceChildren();
@@ -247,15 +246,23 @@ async function readScene(owner, scene) {
   return live(owner) && !!result && !result.cancelled;
 }
 
+/**
+ * 新幹線で帰る場面か。帰郷の夜を読みかけの版3の保存（読み終えた場面が skip にある）は、もう地元にいるので出さない。
+ * 告白の場面などの後日談の外の場面には homecoming が無い。
+ */
+function homecomingRide(scene) {
+  return !!scene.homecoming && !chapterThreeAftermathProgress(state).skip?.length;
+}
+
 async function playScene(owner, scene) {
   const source = DB.dialogues[scene.id];
   if (!source) throw new Error(`台本がありません: ${scene.id}`);
-  if (scene.id === "ch3_home_customer") {
-    // 東京→地元の復路。帰郷した夜の場面へ入る直前だけ新幹線の車窓を見せる（#1059）。
+  if (homecomingRide(scene)) {
+    // 東京→地元の復路。帰郷した夜の最初の場面へ入る直前だけ新幹線の車窓を見せる（#1059）。
     await shinkansenRide(async () => { await setBg(scene.bg ? bgUrl(scene.bg) : null, { instant: true }); },
       { from: "tokyo", to: "home" });
   } else {
-    await setBg(scene.bg ? bgUrl(scene.bg) : null, { instant: true });
+    await enterScene(scene.bg ? bgUrl(scene.bg) : null);
   }
   if (!live(owner)) return false;
   showScreen("none", null);
@@ -309,7 +316,7 @@ async function renderStage(owner) {
       if (!completeChapterThreeAftermathScene(state, scene.id)) return;
       save(); await renderStage(owner);
     }, !actions.length));
-    await setBg(bgUrl("bg_mukai_shop", "night"), { instant: true });
+    await enterScene(bgUrl("bg_mukai_shop", "night"));
     if (!live(owner)) return;
     card(owner, "party-night", `DAY ${chapterDay(state)}・夜 ／ 帰郷の前に`,
       state.flags._ch3_pizza_party ? "仲間と過ごした夜の話を胸に、明日の帰り支度をする。"
@@ -318,7 +325,8 @@ async function renderStage(owner) {
     return;
   }
   if (!scene) {
-    await setBg(bgUrl("bg_ageha_shop"), { instant: true });
+    // 第3章の最後は帰郷の客の場面（tonari・STK23）。あげはの告白は翌日の場面カードから。
+    await enterScene(bgUrl("bg_tonari_inside_night"));
     if (!live(owner)) return;
     // 恋愛ルート（♥3で恋愛寄り・♥5）だけ、再会の翌日に告白へ。それ以外は再会のまま第3章完（#1988）。
     if (agehaConfessionDue(state)) { renderAgehaConfession(owner); return; }
@@ -327,40 +335,8 @@ async function renderStage(owner) {
       const mod = await withLoadingNotice(import("./ch4.js"), loadingNotice("第4章のドバイへ向かっています…"));
       await mod.beginChapterFour();
     }, true);
-    const replay = button(owner, "次回予告をもう一度", "complete-preview", () => preview(false));
-    // 外側の busy(false) は data-locked を見て disabled を再設定するため、両方を連動させる。
-    const lock = (btn, locked) => { if (btn.dataset) btn.dataset.locked = String(locked); btn.disabled = locked; };
-    lock(next, !state.flags._ch3_preview_seen);
-    // 予告2（第3章末→第4章）。第1章と同じ挙動: 再生中は第4章ボタンを押せず、
-    // 完走/明示スキップのときだけ既読を保存し、中断・別画面への遷移では何も残さない。
-    const preview = async (first) => {
-      const controller = new AbortController();
-      // MutationObserver の無い環境（Node VM の単体テスト等）では監視なしで再生だけを試みる。
-      let observer;
-      if (typeof MutationObserver !== "undefined") {
-        observer = new MutationObserver(() => { if (!next.isConnected) controller.abort(); });
-        observer.observe(layers.screen, { childList: true });
-      }
-      lock(next, true); lock(replay, true);
-      try {
-        const result = await playChapterPreview("ch4", { signal: controller.signal });
-        if (first && (result === "completed" || result === "skipped") && live(owner)) {
-          state.flags._ch3_preview_seen = true;
-          save();
-        }
-      } catch { /* 次回予告は任意演出。失敗しても完了画面はそのまま使える。 */ }
-      finally {
-        observer?.disconnect();
-        lock(next, !state.flags._ch3_preview_seen); lock(replay, false);
-        if (next.isConnected) {
-          playBgm("bgm_aftermath");
-          replay.focus();
-        }
-      }
-    };
     card(owner, "complete", "第三章・完", "全国大会を終え、帰る場所にも新しい約束ができた。", [
       next,
-      replay,
       button(owner, "ここまでをセーブ", "complete-save", () => saveFlow(), true),
       button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
     ], "第四章・ドバイ編へ進めます。", "", [
@@ -370,12 +346,11 @@ async function renderStage(owner) {
         el("p.ch2-contest-note", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
       ]),
     ]);
-    if (!state.flags._ch3_preview_seen) void preview(true);
     return;
   }
-  // 帰郷の夜(#1059)は、新幹線の車窓が覆うまで東京側の背景のままにし、tonariを先見せしない。
-  const preBg = scene.id === "ch3_home_customer" ? "bg_mukai_shop" : scene.bg;
-  await setBg(preBg ? bgUrl(preBg) : null, { instant: true });
+  // 帰郷の夜(#1059)は、新幹線の車窓が覆うまで東京側の背景のままにし、地元の店を先見せしない。
+  const preBg = homecomingRide(scene) ? "bg_mukai_shop" : scene.bg;
+  await enterScene(preBg ? bgUrl(preBg) : null);
   if (!live(owner)) return;
   card(owner, "scene", `DAY ${chapterDay(state)}・${scene.slot ? "夜" : "昼"} ／ ${scene.label}`,
     `${scene.location}で、次の話を聞く。`, [
@@ -395,7 +370,14 @@ async function renderStage(owner) {
 }
 
 function renderError(owner) {
-  card(owner, "error", "第3章の後日談を再開できませんでした", "通信と保存地点を確認して、もう一度お試しください。", [
-    button(owner, "もう一度読み込む", "retry", () => runChapterThreeAftermath(), true),
+  card(owner, "error", "第3章の後日談を再開できませんでした", "通信を確認してください。ページを読み直し、直前のオートセーブから再開します。", [
+    button(owner, "もう一度読み込む", "retry", () => {
+      // importの失敗は文書内でキャッシュされる。同じURLの再importでは復帰できない。
+      // 途中のstateは保存せず、最後に正常完了したcheckpointから新しい文書で再開する。
+      owner.active = false;
+      owner.controller?.abort();
+      requestResumeOnBoot();
+      location.reload();
+    }, true),
   ]);
 }

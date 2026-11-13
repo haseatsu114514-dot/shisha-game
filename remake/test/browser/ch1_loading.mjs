@@ -41,7 +41,7 @@ try { await suite('ch1-loading',async check=>{
         await L.ui.warmUiArt();
         const bgs=['bg_osu_map_day','bg_osu_map_night','bg_tonari_inside_day','bg_tonari_inside_night',
           'bg_home_day','bg_home_night','bg_shop','bg_tournament_stage'];
-        const faces=['sumi','tsumugi','naru','adam','minto','rin','pakki'];
+        const faces=['sumi','tsumugi','naru','adam','minto','rio','pakki'];
         const urls=[...bgs.map(id=>L.data.bgUrl(id)),...faces.map(id=>L.data.portraitInfo(id,'normal').src),
           ...['bench_base.png','stove_coil.png','hookah_base.png'].map(id=>L.data.makingUrl(id))];
         await Promise.all(urls.map(url=>L.ui.imageReady(url,15000)));
@@ -196,6 +196,8 @@ try { await suite('ch1-loading',async check=>{
       await page.evaluate(async()=>{
         L.session=await import('./js/craft/session.js');L.cs=L.session.newSession('tutorial');
         await L.session.openBench(L.cs).ready;
+        // Finish the title's deferred stage prefetch before measuring this bench.
+        await L.ui.imageReady(L.data.bgUrl('bg_tournament_stage'),15000);
         await L.ui.setBg(L.data.bgUrl('bg_home_day'),{instant:true});
         // instant setBg resolves after inserting the CSS background, before paint.
         // Let that intervening scene render before measuring the cached bench's
@@ -203,6 +205,9 @@ try { await suite('ch1-loading',async check=>{
         await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
         L.events=[];
       });
+      // Decoded images must survive GC while the bench is off screen, including
+      // backgrounds first loaded without keep and the CORS smoke masks.
+      await page.requestGC();
       const requests=[];page.on('request',r=>{if(/\.(webp|png)(\?|$)/.test(r.url()))requests.push(r.url());});
       await page.evaluate(()=>{L.start=performance.now();const b=L.session.openBench(L.cs);L.bench=b;
         L.ready=b.ready.then(()=>{L.done=performance.now();});});

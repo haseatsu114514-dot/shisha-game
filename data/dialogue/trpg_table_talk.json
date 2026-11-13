@@ -1,5 +1,5 @@
 {
-  "_comment": "短編TRPG共通の卓のざわめき。ゾロ目の判定直後と、盛り上がりが「沸いてきた」「最高潮」に届いた時に流す。話者はGMと必須参加のはじめだけ。物語・関係・報酬は進めない。",
+  "_comment": "短編TRPG共通の卓のざわめき。判定直後の出目の出来事（クリティカル＝20の目・ファンブル＝1の目で思わぬ出来事・ゾロ目・あと1／あと2）、成功のごほうびの一言（reward_question／reward_hint／reward_finale）、盛り上がりが「沸いてきた」「最高潮」に届いた時に流す。話者はGMと必須参加のはじめだけ。物語・関係・報酬は進めない。",
   "dialogues": [
     {
       "dialogue_id": "trpg_talk_hiyori_critical",
@@ -8,13 +8,13 @@
           "speaker": "hiyori",
           "role": "GM／卓の会話",
           "face": "surprise",
-          "text": "うそ、20のゾロ目！？ ……こほん。クリティカル、です"
+          "text": "うそ、20が出た！？ ……こほん。クリティカル、です"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "20が二つ……！ 卓の空気が変わったな"
+          "text": "20の目は必ず成功……！ 卓の空気が変わったな"
         },
         {
           "speaker": "hiyori",
@@ -31,13 +31,13 @@
           "speaker": "hiyori",
           "role": "GM／卓の会話",
           "face": "surprise",
-          "text": "うそ、20のゾロ目！？ ……こほん。クリティカル、です"
+          "text": "うそ、20が出た！？ ……こほん。クリティカル、です"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "20が二つ……！ 卓の空気が変わったな"
+          "text": "20の目は必ず成功……！ 卓の空気が変わったな"
         },
         {
           "speaker": "hiyori",
@@ -54,7 +54,7 @@
           "speaker": "hiyori",
           "role": "GM／卓の会話",
           "face": "surprise",
-          "text": "……1ゾロ。ファンブル、だね"
+          "text": "……1が出ちゃった。ファンブル、だね"
         },
         {
           "speaker": "hajime",
@@ -94,7 +94,7 @@
           "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "excited",
-          "text": "20のゾロ目じゃと！？ クリティカルじゃ、クリティカル！"
+          "text": "20が出おった！ クリティカルじゃ、クリティカル！"
         },
         {
           "speaker": "hajime",
@@ -117,7 +117,7 @@
           "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "excited",
-          "text": "20のゾロ目じゃと！？ クリティカルじゃ、クリティカル！"
+          "text": "20が出おった！ クリティカルじゃ、クリティカル！"
         },
         {
           "speaker": "hajime",
@@ -140,7 +140,7 @@
           "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "surprise",
-          "text": "1ゾロ……ファンブルじゃな。サメが笑っておるぞ"
+          "text": "1が出おったな……ファンブルじゃ。サメが笑っておるぞ"
         },
         {
           "speaker": "hajime",
@@ -251,7 +251,7 @@
           "speaker": "adam",
           "role": "GM／卓の会話",
           "face": "intense",
-          "text": "20のゾロ目だと……！ 林檎が二つ、宇宙が祝福している"
+          "text": "20の目だと……！ 林檎が実った。宇宙が祝福している"
         },
         {
           "speaker": "hajime",
@@ -277,7 +277,7 @@
           "speaker": "adam",
           "role": "GM／卓の会話",
           "face": "intense",
-          "text": "20のゾロ目だと……！ 林檎が二つ、宇宙が祝福している"
+          "text": "20の目だと……！ 林檎が実った。宇宙が祝福している"
         },
         {
           "speaker": "hajime",
@@ -303,7 +303,7 @@
           "speaker": "adam",
           "role": "GM／卓の会話",
           "face": "surprise",
-          "text": "1ゾロ……ファンブルか。だが、悲劇は名作の香りだ"
+          "text": "1の目か……ファンブルだ。だが、悲劇は名作の香りだ"
         },
         {
           "speaker": "hajime",
@@ -389,7 +389,7 @@
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "surprise",
-          "text": "……20のゾロ目。クリティカル、です"
+          "text": "……20が出ました。クリティカル、です"
         },
         {
           "speaker": "hajime",
@@ -415,7 +415,7 @@
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "surprise",
-          "text": "……20のゾロ目。クリティカル、です"
+          "text": "……20が出ました。クリティカル、です"
         },
         {
           "speaker": "hajime",
@@ -441,7 +441,7 @@
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "surprise",
-          "text": "……1ゾロ。ファンブル、です"
+          "text": "……1が出ました。ファンブル、です"
         },
         {
           "speaker": "hajime",
@@ -524,13 +524,13 @@
           "speaker": "rei",
           "role": "GM／卓の会話",
           "face": "surprise",
-          "text": "……20のゾロ目。クリティカルだ"
+          "text": "……20が出た。クリティカルだ"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "REIさん、今ちょっと声が上ずりました？"
+          "text": "レヰさん、今ちょっと声が上ずりました？"
         },
         {
           "speaker": "rei",
@@ -547,13 +547,13 @@
           "speaker": "rei",
           "role": "GM／卓の会話",
           "face": "surprise",
-          "text": "……20のゾロ目。クリティカルだ"
+          "text": "……20が出た。クリティカルだ"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "REIさん、今ちょっと声が上ずりました？"
+          "text": "レヰさん、今ちょっと声が上ずりました？"
         },
         {
           "speaker": "rei",
@@ -570,7 +570,7 @@
           "speaker": "rei",
           "role": "GM／卓の会話",
           "face": "serious",
-          "text": "……1ゾロ。ファンブルだ"
+          "text": "……1が出た。ファンブルだ"
         },
         {
           "speaker": "hajime",
@@ -616,7 +616,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "REIさん、GMだと別人みたいに喋りますね"
+          "text": "レヰさん、GMだと別人みたいに喋りますね"
         }
       ]
     },
@@ -634,6 +634,740 @@
           "role": "PL／卓の会話",
           "face": "excited",
           "text": "この空気なら、次のサイコロも味方してくれそうです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sumi_critical",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "お、20が出たか。クリティカルだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "スミさん、今ちょっと嬉しそうでしたよね"
+        },
+        {
+          "speaker": "sumi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "ご褒美だ。連携札を1枚、返してやる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sumi_critical_full",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "お、20が出たか。クリティカルだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "スミさん、今ちょっと嬉しそうでしたよね"
+        },
+        {
+          "speaker": "sumi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "札は満タンか。なら、拍手だけ贈っとく"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sumi_fumble",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "1が出たな、……ファンブルだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "うわ、ここでですか……"
+        },
+        {
+          "speaker": "sumi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "気にすんな。転んだ夜の方が、あとで何度も話すもんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sumi_double",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "ゾロ目か。卓が少しざわついたな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "揃うと、なんか嬉しいですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sumi_heat_up",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "卓が温まってきたな。語る方も、楽しくなってきた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "みんなノッてきましたね。次、いける気がします"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sumi_heat_max",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "おいおい、盛り上がりすぎだ。最高潮だな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "この空気なら、次のサイコロも味方してくれそうです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_hiyori_near1",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "合計29……。ほんとに、あと1だったね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "1足りない……！ いちばん悔しいやつだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_hiyori_near2",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "あと2……。惜しいね、すごく惜しい"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "届きそうで届かないのが、サイコロだな……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_samechan_near1",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "あと1じゃと！？ 惜しいのう、実に惜しい"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "1足りない……！ いちばん悔しいやつだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_samechan_near2",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "あと2じゃ。サメの背びれが、かすめていったのう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "もうひと押しだったのに……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_adam_near1",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "あと1……。届かぬ林檎ほど、甘く見えるものだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "1足りない……！ いちばん悔しいやつですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_adam_near2",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "あと2か。惜しい。だが、余白のある舞台も悪くない"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "前向きですね……。次は届かせます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_tsumugi_near1",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……あと1、でした。惜しいです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "1足りない……！ いちばん悔しいやつだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_tsumugi_near2",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……あと2。もう少しで、届きました"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "惜しかったな。次は届かせる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_rei_near1",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……あと1。卓では『妖怪いちたりない』って呼ぶ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "妖怪のしわざなんですか、これ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_rei_near2",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……あと2。半拍、遅れただけだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "惜しかったですね。次は合わせます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sumi_near1",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "あと1か。……惜しいな、こういうのがいちばん残る"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "1足りない……！ いちばん悔しいやつです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sumi_near2",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "あと2だ。惜しい。だが、悪い出目じゃない"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "もうひと押しでしたね……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_hiyori_reward_question",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "いい出目。もう少し話してくれそうだから、質問を一つ増やすね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "聞けることが増えた。何を聞くか、迷うな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_hiyori_reward_hint",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "うまくいったから、GMからひとつだけ。合わなそうなものに印をつけるね"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ヒントは助かる。あとは、俺たちの読みしだいだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_hiyori_reward_finale",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……今の、会心のクライマックスだったね。結末に印をつけておく"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_samechan_reward_question",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "見事じゃ。褒美に、聞ける質問を一つ増やしてやろう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "助かる。聞きたいこと、まだあったんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_samechan_reward_hint",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "褒美じゃ。次の選択で、合わぬものに印をつけてやろう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ヒントは助かる。あとは、俺たちの読みしだいだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_samechan_reward_finale",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "決まったのう！ 会心のクライマックスじゃ。結末に印をつけておくぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_adam_reward_question",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "見事だ。褒美として、質問の幕をもう一つ上げよう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ありがとうございます。もう一つ、聞けますね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_adam_reward_hint",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "褒美だ。次の選択で、舞台に合わぬものへ印をつけよう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "助かります。あとは、俺たちの読みしだいですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_adam_reward_finale",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "見事な幕切れだ。会心のクライマックスとして、結末に刻もう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_tsumugi_reward_question",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……うまくいきました。質問を、一つ増やします"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "助かる。聞きたいこと、まだあったんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_tsumugi_reward_hint",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……ごほうびです。次の選択で、合わなそうなものに印をつけます"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ヒントは助かる。あとは、俺たちの読みしだいだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_tsumugi_reward_finale",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……きれいに決まりました。会心のクライマックス、です"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_rei_reward_question",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……いい出目だ。質問は、もう一つ聞いていい"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ありがとうございます。もう一つ、聞けますね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_rei_reward_hint",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……ご褒美だ。次の選択で、合わないものに印をつける"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "助かります。あとは、俺たちの読みしだいですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_rei_reward_finale",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……決まった。会心のクライマックスだ。結末に印をつける"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sumi_reward_question",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "うまくいったな。なら、質問をもう一つ聞いていいぞ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ありがとうございます。じゃあ、もう一つ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sumi_reward_hint",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "ご褒美だ。次の選択で、合わなそうなものに印をつけとく"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "助かります。あとは、俺たちの読みしだいですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sumi_reward_finale",
+      "lines": [
+        {
+          "speaker": "sumi",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "決まったな。会心のクライマックスだ。結末に印をつけとく"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_critical",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "20です。見事な成功ですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_critical_full",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "20です。切り札も、よいところで効きましたね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_fumble",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "思わぬ出来事ですね。では、この先を見てみましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_double",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "同じ目がそろいましたね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_heat_up",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "皆さん、役がなじんできましたね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_heat_max",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "よい卓になりましたね。続きをどうぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_near1",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "あと1でしたね。惜しい出目です"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_near2",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "あと2でしたね。惜しい出目です"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_reward_question",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "成功です。もう一つ、質問できますよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_reward_hint",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "成功です。次の選択の手がかりをお渡しします"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_reward_finale",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "成功です。今夜の結末に、よい余韻が残りますね"
         }
       ]
     }

@@ -35,7 +35,16 @@ import { warmCraftAssets } from "./readiness.js";
 import { prepareBenchEntry } from "./loading.js";
 import { applyCoalTraining } from "./coals.js";
 import { attachBenchAppearance } from "../appearance/bench.js";
+import { mountCraftRank, craftRankProgress } from "./rank-hud.js";
+import { CRAFT_RANK_THRESHOLDS } from "./common.js";
+import { provisionalCraftScore } from "./score.js";
+import { buildRigRecord } from "./rig-record.js";
+import { buildRivalWindows } from "./rival-windows.js";
 import { demoFor, openDemoSheet } from "./demo.js";
+import { craftStageEnabled } from "./stage-layout.js";
+
+// ライバルの顔アイコンを読むまでの間（作業台の準備が済んでから）
+const RIVAL_FACE_DELAY_MS = 1200;
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -138,6 +147,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
       Promise.all([bench.ready.assetsReady, background.assetsReady]));
     return bench;
   }
+  bench?.disposeRank?.();
   const worker = buildWorkerScene(cs);
   const audience = buildAudience(cs);
   const title = el("div.bench-title");
@@ -163,12 +173,45 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   showScreen("bench", root);
   bench = { cs, owner:state, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf,
     sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
+  // 固定レッスンと単工程ドリルには総合評価を出さない。
+  if (cs.mode !== "tutorial" && cs.mode !== "drill") {
+    bench.rankHud = mountCraftRank(root.querySelector(".bench-top"), null, { preserveMode: true });
+    const b = bench;
+    const observer = new MutationObserver(() => {
+      if (!root.isConnected || root.classList.contains("done")) b.disposeRank();
+    });
+    b.disposeRank = () => { observer.disconnect(); b.rankHud.dispose(); };
+    observer.observe(layers.screen, { childList: true });
+    observer.observe(root, { attributes: true, attributeFilter: ["class"] });
+    updateBenchRank();
+    // 一台の記録（CFX03）: ランクと同じ場面だけ、作業風景の隅に工程の灯を並べる
+    bench.record = buildRigRecord();
+    // 新しい配置（CSL）では、灯とライバルの小窓を作業風景の上ではなく上のレールへ置く（気配の光は作業風景に残す）
+    const workerStage = worker.root.querySelector(".bench-worker-stage");
+    const railHost = craftStageEnabled() ? root.querySelector(".bench-top") : workerStage;
+    workerStage?.append(bench.record.aura);
+    railHost?.append(bench.record.root);
+    bench.record.restore(cs);
+    // ライバルの小窓（CFX04）: 大会だけ。隣の台の進み具合を工程ごとの灯で見せる
+    bench.rivals = buildRivalWindows(cs);
+    if (bench.rivals) {
+      railHost?.append(bench.rivals.root);
+      bench.rivals.restore(bench.record);
+      const dispose = b.disposeRank;
+      b.disposeRank = () => { dispose(); b.rivals?.dispose(); };
+    }
+  }
   attachBenchAppearance(bench, cs);
   const background = bg();
   // A missing entryAssets is an already completed fourth step in the loading count.
   const preparationSteps = [background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready, entryAssets];
   const assets = Promise.all(preparationSteps);
-  bench.ready = prepareBenchEntry(waitForBenchAssets(bench, Promise.all([background, assets]), assets, false), cs.chapter, preparationSteps);
+  bench.ready = prepareBenchEntry(waitForBenchAssets(bench, Promise.all([background, assets]), assets, false), cs.chapter, preparationSteps, { preview: !!cs.preview });
+  // ライバルの顔は飾り。作業台の準備が済んでから少し間を置いて読む（工程の開始に要る画像と通信を取り合わない）
+  if (bench.rivals) {
+    const rivals = bench.rivals, later = () => setTimeout(() => rivals.showFaces(), RIVAL_FACE_DELAY_MS);
+    bench.ready.then(later, later);
+  }
   renderFatigue();
   return bench;
 }
@@ -199,16 +242,8 @@ export function benchRoot(cs) {
   return bench?.cs === cs && bench.root.isConnected && !bench.root.classList.contains("done") ? bench.root : null;
 }
 
-/** 初回の操作説明を、時計・カウントダウンを始める前に既存ガイドで読む。 */
-export async function explainTutorialStep(cs, id) {
-  const b = bench, owner = state;
-  const current = () => bench === b && state === owner && benchRoot(cs) === b?.root && b.panel.dataset.step === id;
-  if (!current()) return false;
-  if (cs.mode !== "tutorial") return true;
-  const lesson = cs.lessonHelp?.[id] || TUTORIAL_STEP_HELP[id];
-  b.explainedLessons ??= new Set();
-  if (!lesson || b.explainedLessons.has(id)) return true;
-  if (b.pendingHelp?.id === id) return (await b.pendingHelp.promise) && current();
+/** ガイドを開いて説明文を先に読み、閉じられるまで操作を止めて待つ。閉じたら true、画面が差し替わったら false。 */
+function waitGuideRead(b, current, panelId, text) {
   const guide = b.guide.root, note = b.guide.note, fullNote = note.textContent;
   const tip = guide.querySelector(".bench-guide-tip"), summary = guide.querySelector("summary");
   // 固定作業台の縮小後も、初回説明は読める文字と押せる閉じ口を保つ。
@@ -221,14 +256,14 @@ export async function explainTutorialStep(cs, id) {
   ].map(([node, values]) => ({ node, values, previous: Object.fromEntries(Object.keys(values).map(key => [key, node.style[key]])) }));
   styles.forEach(({ node, values }) => Object.assign(node.style, values));
   // 最初はスミの既存説明だけ。詳しい操作は従来の「?」に残す。
-  note.textContent = lesson.detail;
-  const pending = new Promise(resolve => {
+  note.textContent = text;
+  return new Promise(resolve => {
     const finish = ok => {
       guide.removeEventListener("toggle", closed);
       observer.disconnect();
       styles.forEach(({ node, previous }) => Object.assign(node.style, previous));
-      if (current() || note.textContent === lesson.detail) note.textContent = fullNote;
-      if (b.panel.dataset.step === id) {
+      if (current() || note.textContent === text) note.textContent = fullNote;
+      if (b.panel.dataset.step === panelId) {
         guide.open = false;
         b.panel.inert = false;
         b.root.dataset.helpPaused = "false";
@@ -246,11 +281,56 @@ export async function explainTutorialStep(cs, id) {
     // 既存の自動操作フックも、表示してからガイドを閉じて進む。
     if (craftTest.auto) sleep(120).then(() => { if (current()) guide.open = false; });
   });
+}
+
+/** 初回の操作説明を、時計・カウントダウンを始める前に既存ガイドで読む。 */
+export async function explainTutorialStep(cs, id) {
+  const b = bench, owner = state;
+  const current = () => bench === b && state === owner && benchRoot(cs) === b?.root && b.panel.dataset.step === id;
+  if (!current()) return false;
+  if (cs.mode !== "tutorial") return true;
+  const lesson = cs.lessonHelp?.[id] || TUTORIAL_STEP_HELP[id];
+  b.explainedLessons ??= new Set();
+  if (!lesson || b.explainedLessons.has(id)) return true;
+  if (b.pendingHelp?.id === id) return (await b.pendingHelp.promise) && current();
+  const pending = waitGuideRead(b, current, id, lesson.detail);
   b.pendingHelp = { id, promise: pending };
   const acknowledged = await pending;
   b.pendingHelp = null;
   if (!acknowledged || !current()) return false;
   b.explainedLessons.add(id);
+  return true;
+}
+
+/**
+ * 選ぶ工程（機材・配合・詰め・配置・蒸らし時間）は、セーブ内で初回だけ、
+ * 操作の前に説明をガイドで読む（オーナー指示 2026-11-09「説明の次にボタン」）。
+ * 既読は state.flags.seenStepIntro に残し、2回目以降は直接操作できる。
+ * 読み返しは従来どおり「?」ガイドからできる。panelId はパネルの工程IDが
+ * 説明のキーと違う場合（蒸らし時間はパネルが steam でキーが timer）に渡す。
+ */
+// ブラウザテストの既定は、よその店の人（suien_roamers）と同じ流儀で案内を止める。
+const stepIntroOff = () => { try { return globalThis.localStorage?.getItem("suien_step_intro") === "off"; } catch { return false; } };
+
+export async function explainStepOnce(cs, id, panelId = id) {
+  const b = bench, owner = state;
+  const current = () => bench === b && state === owner && benchRoot(cs) === b?.root && b.panel.dataset.step === panelId;
+  if (!current()) return false;
+  if (craftTest.auto || cs.preview || stepIntroOff()) return true;
+  const seen = state.flags.seenStepIntro ||= {};
+  if (seen[id]) return true;
+  if (b.pendingIntro?.id === id) return (await b.pendingIntro.promise) && current();
+  // 大会の配合は練習用の固定文（ダブルアップル9g…）ではなく、当日の課題・在庫に合う本日の条件文を読む。
+  const tournamentMix = id === "mix" && cs.mode === "tournament" && !cs.lessonHelp?.[id]?.detail;
+  const text = cs.lessonHelp?.[id]?.detail || (tournamentMix ? "" : TUTORIAL_STEP_HELP[id]?.detail) || b.guide.note.textContent;
+  if (!text) { seen[id] = true; return true; }
+  const pending = waitGuideRead(b, current, panelId, text);
+  b.pendingIntro = { id, promise: pending };
+  const acknowledged = await pending;
+  b.pendingIntro = null;
+  if (!acknowledged || !current()) return false;
+  seen[id] = true;
+  save();
   return true;
 }
 
@@ -261,12 +341,15 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   const lesson = b.cs.mode === "tutorial" ? b.cs.lessonHelp?.[lessonStep] || TUTORIAL_STEP_HELP[lessonStep] : null;
   b.title.textContent = titleText;
   b.hint.textContent = lesson?.brief || brief;
+  b.guide.root.querySelector(".bench-demo-link")?.remove();
+  b.guide.root.querySelector(".bench-guide-extra")?.remove(); // 前の工程が「?」へ足した補足（詰め方の一覧など）
   if (demoFor(lessonStep)) {
     const link = el("button.bench-demo-link", { type: "button", text: "お手本を見る" });
     link.addEventListener("click", () => {
       if (bench === b && b.panel.dataset.step === id && !b.root.dataset.demoPaused) openDemoSheet(b.root, lessonStep);
     });
-    b.hint.append(" ", link);
+    // 工程名の旧見出しは非表示。再表示の入口は、操作できる「?」説明内へ置く。
+    b.guide.note.after(link);
   }
   b.guide.root.open = false;
   b.guide.root.hidden = !hintText && !lesson;
@@ -407,6 +490,13 @@ export function scoreStep(cs, key, score) {
   const cleanScore = Number.isFinite(numericScore) ? Math.min(100, Math.max(0, numericScore)) : 0;
   cs.arcade.parts[key] = Math.round(cleanScore * (SCORE_WEIGHT[step] ?? 0));
   cs.arcade.total = Object.values(cs.arcade.parts).reduce((a, b) => a + b, 0);
+  if (!key.includes(":")) {
+    updateBenchRank();
+    if (bench?.cs === cs) {
+      bench.record?.mark(step, cleanScore); // care1/care2 は「整」の灯にまとまる
+      bench.rivals?.mark(step);
+    }
+  }
   // 旧保存と記録の互換用。制作中や結果画面には表示しない。
   return cs.arcade.total;
 }
@@ -439,9 +529,45 @@ export async function failBench(cs, kind) {
   await sleep(reduced ? 300 : 1200);
 }
 
+/** 採点状態から表示だけを更新する。 */
+// ランクの絵（D〜SSS・CSL10）。帯の中では大きな文字だけが読める大きさなので、
+// ランクが変わった瞬間に舞台へ大きく出して補助名（Smokin' など）まで読ませ、帯の定位置へ縮めて収める。
+const rankArt = grade => `img/ui/craft-rank/rank-${grade}.webp`;
+function burstRank(b, grade) {
+  const root = b.root, hud = b.rankHud?.root;
+  if (!hud || !root.isConnected || craftTest.auto || document.hidden) return;
+  if (globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+  root.querySelector(":scope > .craft-rank-burst")?.remove();
+  const box = root.getBoundingClientRect(), k = box.width / 1280 || 1, target = hud.getBoundingClientRect();
+  const burst = el("img.craft-rank-burst", { src: rankArt(grade), alt: "", draggable: false, dataset: { grade } });
+  // 着地点（帯のランク）の中心と大きさを、作業台の座標で渡す。
+  burst.style.setProperty("--to-x", `${((target.left + target.width / 2) - box.left) / k}px`);
+  burst.style.setProperty("--to-y", `${((target.top + target.height / 2) - box.top) / k}px`);
+  burst.style.setProperty("--to-s", String(Math.max(.08, (target.height / k) / 300)));
+  root.append(burst);
+  burst.addEventListener("animationend", () => burst.remove(), { once: true });
+  setTimeout(() => burst.remove(), 2600);
+}
+
+function updateBenchRank() {
+  if (!bench?.rankHud) return;
+  const cs = bench.cs;
+  const final = !!cs.parts && Number.isFinite(cs.total);
+  const score = final ? cs.total : provisionalCraftScore(cs);
+  const progress = score === null ? null : craftRankProgress(score, CRAFT_RANK_THRESHOLDS);
+  const before = bench.rankGrade ?? null;
+  bench.rankHud.update(progress && { ...progress, artwork: { wide: rankArt(progress.grade), compact: rankArt(progress.grade) } });
+  bench.rankGrade = progress?.grade ?? null;
+  if (progress?.grade && progress.grade !== before) burstRank(bench, progress.grade);
+  bench.rankHud.root.dataset.provisional = String(!final);
+  bench.rankHud.root.setAttribute("aria-label", final ? "制作ランク" : "制作ランク（暫定）");
+  bench.rankHud.root.querySelector(".craft-rank-caption").textContent = final ? "RANK" : "RANK（暫定）";
+}
+
 /** 左側の工程キャプションを更新。今後の作業アニメーションもここで同期する。 */
 export function refreshBench() {
   if (!bench) return;
+  updateBenchRank();
   bench.worker.root.dataset.ready = String(!!(bench.cs.pullDone || bench.cs.practiceSource));
   // pullDoneは失敗時にも立つので、成功した提供だけを現在地にする。
   // panelの工程IDは結果評価が参照するためpullのまま保持する。

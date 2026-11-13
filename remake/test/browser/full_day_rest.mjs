@@ -71,9 +71,19 @@ await suite("full-day-rest", async check => {
       await page.evaluate(() => R.core.requestResumeOnBoot()); await page.reload({ waitUntil: "load" });
       await mapAt(page, 3, 0); await setup(page);
       assert.equal(await page.evaluate(() => R.core.state.deferredNightEvents.length), 1);
+      // Keep the reminder fixture independent of which ordinary Sumi chat
+      // arrived before the save. An unread chat correctly prevents a new
+      // invitation from arriving, so the morning scheduler is not the fixture.
+      await page.evaluate(async () => {
+        const { DB } = await import("./js/core/data.js");
+        const s = R.core.state;
+        const msg = { ...DB.limeTemplates.sumi_baito, id: "rest-save-defer-sumi-invite", time_slot: "noon" };
+        s.inbox.push({ id: msg.id, originId: msg.id, day: s.day, chapter: s.chapter,
+          msg, read: false, done: false, log: [] });
+      });
       await goHome(page, touch);
-      // The resumed day has Sumi's unanswered daytime invitation. Dismiss the
-      // deadline reminder explicitly before checking the original rest flow.
+      // Dismiss the explicit daytime invitation's deadline reminder before
+      // checking the original rest flow.
       await page.locator('[data-test="venue-invite-go"]').click();
       await mapAt(page, 3, 1);
       assert.equal(await page.locator('[data-test="rest-full"]').count(), 0, "健康時の休養は既存1行動");

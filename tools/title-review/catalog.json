@@ -1,12 +1,12 @@
 {
   "version": 1,
   "characters": {
-    "ageha": "アゲハ",
+    "ageha": "あげは",
     "hiyori": "ひより",
-    "samechan": "サメちゃん／波多野なぎさ",
+    "samechan": "サメちゃん／暑海なぎさ",
     "mashiro": "ましろ",
     "minto": "みんと",
-    "rin": "凛",
+    "rio": "凛想",
     "tsumugi": "つむぎ",
     "sumi": "スミ",
     "naru": "なる",
@@ -709,14 +709,14 @@
     {
       "id": "308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18",
       "sha256": "308e64e8957852ecd85fba38f0f9732e9a9b816720de46186c4eefb5cb077b18",
-      "character": "rin",
-      "label": "title_art_rin_04_rainy_neon_umbrella",
+      "character": "rio",
+      "label": "title_art_rio_04_rainy_neon_umbrella",
       "size": [
         1024,
         1536
       ],
       "sources": [
-        "assets/ui/title_arts/title_art_rin_04_rainy_neon_umbrella.png"
+        "assets/ui/title_arts/title_art_rio_04_rainy_neon_umbrella.png"
       ],
       "groups": [
         "正式タイトル"
@@ -733,14 +733,14 @@
     {
       "id": "952c856b89c0bd39413d5692dfe2a8b52f1afbad46457778a7531769c84ff73f",
       "sha256": "952c856b89c0bd39413d5692dfe2a8b52f1afbad46457778a7531769c84ff73f",
-      "character": "rin",
-      "label": "title_art_rin_05_blend_library_command",
+      "character": "rio",
+      "label": "title_art_rio_05_blend_library_command",
       "size": [
         1024,
         1536
       ],
       "sources": [
-        "assets/ui/title_arts/title_art_rin_05_blend_library_command.png"
+        "assets/ui/title_arts/title_art_rio_05_blend_library_command.png"
       ],
       "groups": [
         "正式タイトル"
@@ -757,14 +757,14 @@
     {
       "id": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
       "sha256": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
-      "character": "rin",
+      "character": "rio",
       "label": "深夜の窓辺",
       "size": [
         1024,
         1536
       ],
       "sources": [
-        "assets/ui/title_arts/title_art_rin_03_late_coffee.png",
+        "assets/ui/title_arts/title_art_rio_03_late_coffee.png",
         "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/03-late-coffee.png"
       ],
       "groups": [
@@ -788,14 +788,14 @@
     {
       "id": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
       "sha256": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
-      "character": "rin",
+      "character": "rio",
       "label": "黒い試香室",
       "size": [
         1024,
         1536
       ],
       "sources": [
-        "assets/ui/title_arts/title_art_rin_01_night_tasting.png",
+        "assets/ui/title_arts/title_art_rio_01_night_tasting.png",
         "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting.png"
       ],
       "groups": [
@@ -1165,7 +1165,7 @@
         "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-04-selfie-face.png"
       ],
       "groups": [
-        "アゲハ修正"
+        "あげは修正"
       ],
       "history": [
         "候補保存のみ・オーナー承認待ち：生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。"
@@ -1193,7 +1193,7 @@
         "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-02-grocery-face.png"
       ],
       "groups": [
-        "アゲハ修正"
+        "あげは修正"
       ],
       "history": [
         "候補保存のみ・オーナー承認待ち：生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。"
@@ -1221,7 +1221,7 @@
         "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-03-studio-face.png"
       ],
       "groups": [
-        "アゲハ修正"
+        "あげは修正"
       ],
       "history": [
         "候補保存のみ・オーナー承認待ち：生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。"
@@ -1249,7 +1249,7 @@
         "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-01-professional-face.png"
       ],
       "groups": [
-        "アゲハ修正"
+        "あげは修正"
       ],
       "history": [
         "候補保存のみ・オーナー承認待ち：生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。"
@@ -1277,7 +1277,7 @@
         "asset_sources/heroine-title-candidates-20261009/review-issue375/ageha-identity/ageha-05-closing-rack.png"
       ],
       "groups": [
-        "アゲハ修正"
+        "あげは修正"
       ],
       "history": [
         "候補保存のみ・オーナー承認待ち：生成編集では顔以外の細部・画素も変化し得る。全体の正式置換ではない。"
@@ -1977,7 +1977,7 @@
         "別タイトル候補"
       ],
       "history": [
-        "要修正：v2ではホースは側面ポート→一つのたるみ→硬質ハンドルでY字なし。顔・営業衣装の同一性は維持。奥の室内鉢植えはCI97に照らして除去候補。短いボウル脚は具体モデルとの再照合を承認前に行う（凛NGと同一とは断定しない）。"
+        "要修正：v2ではホースは側面ポート→一つのたるみ→硬質ハンドルでY字なし。顔・営業衣装の同一性は維持。奥の室内鉢植えはCI97に照らして除去候補。短いボウル脚は具体モデルとの再照合を承認前に行う（凛想NGと同一とは断定しない）。"
       ],
       "prompts": [
         "asset_sources/heroine-title-candidates-20261009/minto/minto_01_afterhours_smoke.prompt.txt"
@@ -2330,6 +2330,57 @@
       "thumbnail": "media/27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f-thumb.webp"
     },
     {
+      "id": "d3b5e4b9518bf465ef13bded2dbf88176da8edb69d8e92b9c634ce95a8f469ab",
+      "sha256": "d3b5e4b9518bf465ef13bded2dbf88176da8edb69d8e92b9c634ce95a8f469ab",
+      "character": "other",
+      "label": "rin-short-bowl-20261009",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/shisha-hardware-reference/ng-examples/rin-short-bowl-20261009.png"
+      ],
+      "groups": [
+        "過去NG"
+      ],
+      "history": [
+        "要修正：CI98のオーナーNG。承認できる修正版なし。",
+        "機材・ホースの過去NG原画。再採用にはオーナー判断と修正確認が必要。"
+      ],
+      "prompts": [],
+      "current": false,
+      "related": [],
+      "image": "media/d3b5e4b9518bf465ef13bded2dbf88176da8edb69d8e92b9c634ce95a8f469ab.webp",
+      "thumbnail": "media/d3b5e4b9518bf465ef13bded2dbf88176da8edb69d8e92b9c634ce95a8f469ab-thumb.webp"
+    },
+    {
+      "id": "bf1e264c45715f934461c93d3bd0c1d4fb55dc881850445456ea4d42d1bc31b7",
+      "sha256": "bf1e264c45715f934461c93d3bd0c1d4fb55dc881850445456ea4d42d1bc31b7",
+      "character": "other",
+      "label": "title_art_rin_01_showroom_smoke",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_rin_01_showroom_smoke.png"
+      ],
+      "groups": [
+        "過去NG"
+      ],
+      "history": [
+        "縮尺の初版NG履歴。採用された修正版と区別して比較する。"
+      ],
+      "prompts": [
+        "asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_rin_01_showroom_smoke.prompt.txt"
+      ],
+      "current": false,
+      "related": [],
+      "image": "media/bf1e264c45715f934461c93d3bd0c1d4fb55dc881850445456ea4d42d1bc31b7.webp",
+      "thumbnail": "media/bf1e264c45715f934461c93d3bd0c1d4fb55dc881850445456ea4d42d1bc31b7-thumb.webp"
+    },
+    {
       "id": "79b2508dbda9b0118e145ec320e1899eb9dc6c0b0b5a381fc904206f79458789",
       "sha256": "79b2508dbda9b0118e145ec320e1899eb9dc6c0b0b5a381fc904206f79458789",
       "character": "other",
@@ -2355,7 +2406,7 @@
       "id": "b6e04364664131f296533f830b5750da64bf39bbbc066b4b574a749b366738f0",
       "sha256": "b6e04364664131f296533f830b5750da64bf39bbbc066b4b574a749b366738f0",
       "character": "rin",
-      "label": "深夜のコーヒー",
+      "label": "rin_c_midnight_coffee",
       "size": [
         1024,
         1536
@@ -2381,7 +2432,7 @@
       "id": "b692bf4b82e27dfa7479489fccc50bec7c0114eeb9a36258731b60c439285ffe",
       "sha256": "b692bf4b82e27dfa7479489fccc50bec7c0114eeb9a36258731b60c439285ffe",
       "character": "rin",
-      "label": "香りのブレンド",
+      "label": "title_art_rin_02_aroma_blend",
       "size": [
         1024,
         1536
@@ -2393,7 +2444,7 @@
         "別タイトル候補"
       ],
       "history": [
-        "候補保存のみ：長いウルフ・半目・白シャツ・フープ・無色爪を維持。鼻へ近づける缶と机上のボウルは別小物。炭・完成台なし。正式系の凛02（葉の色修正待ち）とは別ファイル。"
+        "候補保存のみ：長いウルフ・半目・白シャツ・フープ・無色爪を維持。鼻へ近づける缶と机上のボウルは別小物。炭・完成台なし。正式系の凛想02（葉の色修正待ち）とは別ファイル。"
       ],
       "prompts": [
         "asset_sources/heroine-title-candidates-20261009/rin/title_art_rin_02_aroma_blend.prompt.txt"
@@ -2402,81 +2453,6 @@
       "related": [],
       "image": "media/b692bf4b82e27dfa7479489fccc50bec7c0114eeb9a36258731b60c439285ffe.webp",
       "thumbnail": "media/b692bf4b82e27dfa7479489fccc50bec7c0114eeb9a36258731b60c439285ffe-thumb.webp"
-    },
-    {
-      "id": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
-      "sha256": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
-      "character": "rin",
-      "label": "01-night-tasting-first",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-first.png"
-      ],
-      "groups": [
-        "新版19案",
-        "途中履歴"
-      ],
-      "history": [],
-      "prompts": [],
-      "current": false,
-      "related": [
-        "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19"
-      ],
-      "image": "media/7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360.webp",
-      "thumbnail": "media/7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360-thumb.webp"
-    },
-    {
-      "id": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
-      "sha256": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
-      "character": "rin",
-      "label": "01-night-tasting-revision-1",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-revision-1.png"
-      ],
-      "groups": [
-        "新版19案",
-        "途中履歴"
-      ],
-      "history": [],
-      "prompts": [],
-      "current": false,
-      "related": [
-        "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19"
-      ],
-      "image": "media/519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4.webp",
-      "thumbnail": "media/519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4-thumb.webp"
-    },
-    {
-      "id": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
-      "sha256": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
-      "character": "rin",
-      "label": "01-night-tasting-revision-2",
-      "size": [
-        1024,
-        1536
-      ],
-      "sources": [
-        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-revision-2.png"
-      ],
-      "groups": [
-        "新版19案",
-        "途中履歴"
-      ],
-      "history": [],
-      "prompts": [],
-      "current": false,
-      "related": [
-        "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19"
-      ],
-      "image": "media/7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20.webp",
-      "thumbnail": "media/7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20-thumb.webp"
     },
     {
       "id": "abaa15b9ffbe0cba763862d49b8e3023408a4d7b4f84420c79844496d248ea82",
@@ -2593,55 +2569,79 @@
       "thumbnail": "media/a4a542ac461374247f54df7a71f8772b17b820cef8a7516df14124a65d03b553-thumb.webp"
     },
     {
-      "id": "d3b5e4b9518bf465ef13bded2dbf88176da8edb69d8e92b9c634ce95a8f469ab",
-      "sha256": "d3b5e4b9518bf465ef13bded2dbf88176da8edb69d8e92b9c634ce95a8f469ab",
-      "character": "rin",
-      "label": "rin-short-bowl-20261009",
+      "id": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
+      "sha256": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
+      "character": "rio",
+      "label": "01-night-tasting-first",
       "size": [
         1024,
         1536
       ],
       "sources": [
-        "asset_sources/shisha-hardware-reference/ng-examples/rin-short-bowl-20261009.png"
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-first.png"
       ],
       "groups": [
-        "過去NG"
+        "新版19案",
+        "途中履歴"
       ],
-      "history": [
-        "要修正：CI98のオーナーNG。承認できる修正版なし。",
-        "機材・ホースの過去NG原画。再採用にはオーナー判断と修正確認が必要。"
-      ],
+      "history": [],
       "prompts": [],
       "current": false,
-      "related": [],
-      "image": "media/d3b5e4b9518bf465ef13bded2dbf88176da8edb69d8e92b9c634ce95a8f469ab.webp",
-      "thumbnail": "media/d3b5e4b9518bf465ef13bded2dbf88176da8edb69d8e92b9c634ce95a8f469ab-thumb.webp"
+      "related": [
+        "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19"
+      ],
+      "image": "media/7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360.webp",
+      "thumbnail": "media/7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360-thumb.webp"
     },
     {
-      "id": "bf1e264c45715f934461c93d3bd0c1d4fb55dc881850445456ea4d42d1bc31b7",
-      "sha256": "bf1e264c45715f934461c93d3bd0c1d4fb55dc881850445456ea4d42d1bc31b7",
-      "character": "rin",
-      "label": "title_art_rin_01_showroom_smoke",
+      "id": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
+      "sha256": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
+      "character": "rio",
+      "label": "01-night-tasting-revision-1",
       "size": [
         1024,
         1536
       ],
       "sources": [
-        "asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_rin_01_showroom_smoke.png"
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-revision-1.png"
       ],
       "groups": [
-        "過去NG"
+        "新版19案",
+        "途中履歴"
       ],
-      "history": [
-        "縮尺の初版NG履歴。採用された修正版と区別して比較する。"
-      ],
-      "prompts": [
-        "asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_rin_01_showroom_smoke.prompt.txt"
-      ],
+      "history": [],
+      "prompts": [],
       "current": false,
-      "related": [],
-      "image": "media/bf1e264c45715f934461c93d3bd0c1d4fb55dc881850445456ea4d42d1bc31b7.webp",
-      "thumbnail": "media/bf1e264c45715f934461c93d3bd0c1d4fb55dc881850445456ea4d42d1bc31b7-thumb.webp"
+      "related": [
+        "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19"
+      ],
+      "image": "media/519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4.webp",
+      "thumbnail": "media/519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4-thumb.webp"
+    },
+    {
+      "id": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
+      "sha256": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
+      "character": "rio",
+      "label": "01-night-tasting-revision-2",
+      "size": [
+        1024,
+        1536
+      ],
+      "sources": [
+        "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-revision-2.png"
+      ],
+      "groups": [
+        "新版19案",
+        "途中履歴"
+      ],
+      "history": [],
+      "prompts": [],
+      "current": false,
+      "related": [
+        "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19"
+      ],
+      "image": "media/7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20.webp",
+      "thumbnail": "media/7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20-thumb.webp"
     },
     {
       "id": "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
@@ -3102,16 +3102,16 @@
         "url": "../../assets/sprites/characters/minto/chr_minto_ura_normal.png"
       }
     ],
-    "rin": [
+    "rio": [
       {
-        "path": "assets/sprites/characters/rin/chr_rin_normal.png",
+        "path": "assets/sprites/characters/rio/chr_rio_normal.png",
         "label": "正式立ち絵",
-        "url": "../../assets/sprites/characters/rin/chr_rin_normal.png"
+        "url": "../../assets/sprites/characters/rio/chr_rio_normal.png"
       },
       {
-        "path": "assets/ui/face_icons/face_rin.png",
+        "path": "assets/ui/face_icons/face_rio.png",
         "label": "正式顔",
-        "url": "../../assets/ui/face_icons/face_rin.png"
+        "url": "../../assets/ui/face_icons/face_rio.png"
       }
     ],
     "tsumugi": [

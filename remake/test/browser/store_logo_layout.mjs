@@ -14,7 +14,7 @@ await suite('store-logo-layout', async check => {
         const map = await import('./js/daily/map.js'), hud = await import('./js/daily/hud.js');
         const fixture = core.newState();
         Object.assign(fixture, { schema: 11, phase: 'daily', day: 4, slot, money: 30000, seed: 574 });
-        for (const id of ['naru', 'adam', 'minto', 'rin', 'tsumugi']) fixture.met[id] = true;
+        for (const id of ['naru', 'adam', 'minto', 'rio', 'tsumugi']) fixture.met[id] = true;
         Object.assign(fixture.flags, { _spot_guide_naru: true, _spot_guide_adam: true, _spot_guide_minto: true });
         localStorage.setItem(core.SAVE_KEY, JSON.stringify(fixture));
         core.load(); // Synthetic pre-schema12 save, through the real migration path.

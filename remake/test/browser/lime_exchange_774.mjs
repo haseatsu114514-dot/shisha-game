@@ -38,17 +38,17 @@ const browser = await chromium.launch({ headless: true, // CIランナーではC
   ...(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {}) });
 const results = [];
 try {
-  for (const [label, viewport, id, ds] of [
+  for (const [label, viewport, id, touch] of [
     ['pc', { width: 1280, height: 720 }, 'naru', false],
     ['touch', { width: 844, height: 390 }, 'adam', true],
   ].filter(([label]) => !process.env.QA_ONLY || process.env.QA_ONLY === label)) {
-    const context = await browser.newContext({ viewport, hasTouch: ds, isMobile: ds });
+    const context = await browser.newContext({ viewport, hasTouch: touch, isMobile: touch });
     const page = await context.newPage();
     const errors = [], failed = [];
     page.on('pageerror', e => errors.push(String(e)));
     page.on('response', r => { if (r.status() >= 400) failed.push(new URL(r.url()).pathname); });
     await page.goto(base + '/remake/qa-lime.html');
-    await page.evaluate(async ({ id, ds }) => {
+    await page.evaluate(async ({ id }) => {
       document.querySelector('#boot').remove();
       document.body.dataset.screen = 'daily';
       document.querySelector('#stage').style.setProperty('--k', String(Math.min(innerWidth / 1280, innerHeight / 720)));
@@ -57,16 +57,12 @@ try {
       const ui = await import('./js/core/ui.js');
       const vn = await import('./js/vn/engine.js');
       const saves = await import('./js/scenes/saves.js');
-      const layout = await import('./js/scenes/game-layout.js');
-      const titleLayout = await import('./js/scenes/title-layout.js');
       const chars = await (await fetch('../data/characters.json')).json();
       data.DB.characters = Object.fromEntries(chars.map(c => [c.id, c]));
       data.DB.manifest = await (await fetch('./data/manifest.json')).json();
       const talks = await (await fetch(`../data/dialogue/ch1_${id}.json`)).json();
       const first = talks.dialogues.find(d => d.branches?.early_lime_exchange);
       ui.initLayers();
-      localStorage.setItem(titleLayout.TITLE_LAYOUT_KEY, ds ? 'ds' : 'normal');
-      layout.initGameLayout();
       const s = core.newGame(); s.phase = 'daily';
       s.met[id] = true; s.flags[`known_name_${id}`] = true; s.flags[`_intro_${id}`] = true;
       window.QA = { core, vn, saves, id, count: 0, first, done: false };
@@ -80,7 +76,7 @@ try {
         QA.run = vn.play({ dialogue_id: first.dialogue_id + '_qa_exchange',
           lines: first.branches.early_lime_exchange }).then(() => { QA.done = true; });
       };
-    }, { id, ds });
+    }, { id });
     // Real SAVE and LOAD slot clicks, with an empty/new state between them.
     async function saveLoad() {
       await page.evaluate(() => { QA.saved = structuredClone(QA.core.state); QA.flow = QA.saves.saveFlow(); });
@@ -93,10 +89,14 @@ try {
       await page.locator('[data-test="confirm-load"]').click();
       const same = await page.evaluate(async () => {
         await QA.flow;
-        const actual = { ...QA.core.state, savedAt: QA.saved.savedAt };
-        return JSON.stringify(actual) === JSON.stringify(QA.saved);
+        // 保存のたびに変わる記録は比べない: 保存の日時（savedAt）と、保存の直前に経過分を足し込むプレイ時間（playMs・#2902）。
+        // プレイ時間は、保存した時より減っていないことだけを別に確かめる。
+        const actual = { ...QA.core.state, savedAt: QA.saved.savedAt, playMs: QA.saved.playMs };
+        return { equal: JSON.stringify(actual) === JSON.stringify(QA.saved),
+          playMs: Number.isFinite(QA.core.state.playMs) && QA.core.state.playMs >= QA.saved.playMs };
       });
-      assert(same, label + ': real slot UI must restore the state');
+      assert(same.equal, label + ': real slot UI must restore the state');
+      assert(same.playMs, label + ': play time survives the slot save/load and never goes back');
     }
     await saveLoad();
     await page.evaluate(() => QA.exchange());
@@ -117,7 +117,7 @@ try {
       assert(r.x + r.w <= boxes.stage.x + boxes.stage.w + 1);
       assert(r.y + r.h <= boxes.stage.y + boxes.stage.h + 1);
     }
-    assert.equal(Math.round(boxes.stage.h), ds ? 390 : 720);
+    assert.equal(Math.round(boxes.stage.h), touch ? 390 : 720); // 横持ち 844×390 は 1280×720 の固定ステージを高さに合わせて縮める
     await page.waitForFunction(() => QA.done);
     assert.equal(await page.evaluate(() => QA.count), 1);
     await saveLoad();

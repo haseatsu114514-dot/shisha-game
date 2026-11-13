@@ -1,0 +1,136 @@
+{
+  "request_library_file_id": "libfile_df27f90a85d88191a1f46f0226eaf697",
+  "count": 9,
+  "total_bytes": 5270262,
+  "source_only": true,
+  "no_new_style_expression_generated": true,
+  "library_write": "not executed: hosted apps tools/list network failure",
+  "items": [
+    {
+      "character_id": "rei",
+      "expression": "sad",
+      "sha256": "d9f22c35556854a62b45c18a08d0064bdca4c0fa1812f3e8e46f30360e95f97b",
+      "size_bytes": 626169,
+      "pixels": [
+        896,
+        1200
+      ],
+      "mode": "RGBA",
+      "main_sha": "7e14bd0d4452e65e69302079551ce92a743506e2",
+      "pointer_blob": "576550241fe3d34a7ddb2bc05bb1329c68b44190",
+      "repository_path": "assets/sprites/characters/rei/chr_rei_sad.png"
+    },
+    {
+      "character_id": "rei",
+      "expression": "serious",
+      "sha256": "6270a726ecf8f64aa18bdf17c1d0cf33b57aba14c15d6dd15b5efd359bc99c7e",
+      "size_bytes": 610747,
+      "pixels": [
+        896,
+        1200
+      ],
+      "mode": "RGBA",
+      "main_sha": "7e14bd0d4452e65e69302079551ce92a743506e2",
+      "pointer_blob": "ced3b7eb8aca73036cb30076cf42b642d10d4381",
+      "repository_path": "assets/sprites/characters/rei/chr_rei_serious.png"
+    },
+    {
+      "character_id": "rei",
+      "expression": "smile",
+      "sha256": "4dc14dc5b09778308de8ff1a264f06c8522e5cdf23e7fc12f3439162c522347a",
+      "size_bytes": 622986,
+      "pixels": [
+        896,
+        1200
+      ],
+      "mode": "RGBA",
+      "main_sha": "7e14bd0d4452e65e69302079551ce92a743506e2",
+      "pointer_blob": "793eb08b159861a6299fad3590a460c2109c63b7",
+      "repository_path": "assets/sprites/characters/rei/chr_rei_smile.png"
+    },
+    {
+      "character_id": "rei",
+      "expression": "surprise",
+      "sha256": "d787e8a3505f4665aff9f7c1a19c32f346d28a636b4352a8c52cbf843aa1d911",
+      "size_bytes": 639403,
+      "pixels": [
+        896,
+        1200
+      ],
+      "mode": "RGBA",
+      "main_sha": "7e14bd0d4452e65e69302079551ce92a743506e2",
+      "pointer_blob": "aee66e5318bee3a61df237134e285f86a57eadff",
+      "repository_path": "assets/sprites/characters/rei/chr_rei_surprise.png"
+    },
+    {
+      "character_id": "kumicho",
+      "expression": "sad",
+      "sha256": "c46c2d9950f3fe8b2c61c56a3e2eac3c42e48936c5f971cdb8b935c331bbce6d",
+      "size_bytes": 545577,
+      "pixels": [
+        896,
+        1200
+      ],
+      "mode": "RGBA",
+      "main_sha": "7e14bd0d4452e65e69302079551ce92a743506e2",
+      "pointer_blob": "89d6161e351386684912b14d99735aa9c0d5b115",
+      "repository_path": "assets/sprites/characters/kumicho/chr_kumicho_sad.png"
+    },
+    {
+      "character_id": "kumicho",
+      "expression": "serious",
+      "sha256": "7849374e2b1f30c12701aa9184c64bf86dfb9321408ededcd51360ffdb7f31fd",
+      "size_bytes": 537805,
+      "pixels": [
+        896,
+        1200
+      ],
+      "mode": "RGBA",
+      "main_sha": "7e14bd0d4452e65e69302079551ce92a743506e2",
+      "pointer_blob": "c5a6b0115e894b8073be01658ee11ce386f10fd2",
+      "repository_path": "assets/sprites/characters/kumicho/chr_kumicho_serious.png"
+    },
+    {
+      "character_id": "kumicho",
+      "expression": "smile",
+      "sha256": "6797bda5613dfd6ae48b22284e0c4398e225559bb0c3acc1dc164044510054cf",
+      "size_bytes": 563144,
+      "pixels": [
+        896,
+        1200
+      ],
+      "mode": "RGBA",
+      "main_sha": "7e14bd0d4452e65e69302079551ce92a743506e2",
+      "pointer_blob": "ba7eefe65d768e6bc429fc4610fa1cb99a0f58e3",
+      "repository_path": "assets/sprites/characters/kumicho/chr_kumicho_smile.png"
+    },
+    {
+      "character_id": "kumicho",
+      "expression": "smug",
+      "sha256": "9a9fa5e197822b96b18f973b84f8f75f05922f5415c0cb5eac1ee89a8e6cbd45",
+      "size_bytes": 547083,
+      "pixels": [
+        896,
+        1200
+      ],
+      "mode": "RGBA",
+      "main_sha": "7e14bd0d4452e65e69302079551ce92a743506e2",
+      "pointer_blob": "d0668f5f7686ee59dfee4aac8a92657aa701290a",
+      "repository_path": "assets/sprites/characters/kumicho/chr_kumicho_smug.png"
+    },
+    {
+      "character_id": "kumicho",
+      "expression": "surprise",
+      "sha256": "e6ffac44b6c5379a2d51d031a0cd4f2f14346d13ebd5a823d4ed8ba7be43ccd6",
+      "size_bytes": 577348,
+      "pixels": [
+        896,
+        1200
+      ],
+      "mode": "RGBA",
+      "main_sha": "7e14bd0d4452e65e69302079551ce92a743506e2",
+      "pointer_blob": "53e8e02420b6af4edd4433ebbffd93931438a5d5",
+      "repository_path": "assets/sprites/characters/kumicho/chr_kumicho_surprise.png"
+    }
+  ]
+}

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import fs from "node:fs";
 import { KILLS, BULLS, resolveThrow } from "../js/minigames/axe-model.js";
-import { CHALLENGES, pickChallenges, evaluateChallenges, heatOf, rankOf, titleOf } from "../js/minigames/axe-challenges.js";
+import { CHALLENGES, pickChallenges, evaluateChallenges, heatOf, rankOf, titleOf, rankTargets } from "../js/minigames/axe-challenges.js";
 import { COMPANIONS, reaction, matchReaction } from "../js/minigames/axe-companions.js";
 import { createMatch, takeTurn } from "../js/minigames/axe-match.js";
 
@@ -53,9 +53,21 @@ test("heat counts the current run of 5+ points; rank and title read the whole se
   assert.equal(titleOf([], 22), "見学者");
   assert.equal(typeof titleOf([low, shot(0, 0, .95)], 22), "string");
 });
+// 2026-11-13 指摘12: 次のランクまでの残り点を、近い順に
+test("rank targets list the higher ranks nearest first with the points still needed", () => {
+  assert.deepEqual(rankTargets(14, 22), [{ rank: "S", need: 4 }]);
+  assert.deepEqual(rankTargets(0, 22).map(t => t.rank), ["C", "B", "A", "S"]);
+  assert.deepEqual(rankTargets(18, 22), []);
+  for (let total = 0; total <= 64; total++) for (const t of rankTargets(total, 64)) {
+    assert.equal(rankOf(total + t.need, 64) <= t.rank || rankOf(total + t.need, 64) === "S", true);
+    assert.notEqual(rankOf(total + t.need - 1, 64), t.rank, "need is the least");
+  }
+  assert.deepEqual(rankTargets(5, 0), []);
+});
 
 test("companion lines stay in voice, fit one bubble and react to streaks and the last throw", () => {
   for (const [id, c] of Object.entries(COMPANIONS)) {
+    if (id === "adam") continue; // アダムは対戦専用で、反応は axe_versus.json に置く。
     const all = [...Object.entries(c).filter(([k]) => !["name", "portraitKey", "titleSuffix", "faces", "focus", "summary"].includes(k)).flatMap(([, v]) => v),
       ...Object.values(c.summary)];
     for (const text of all) { assert.equal(typeof text, "string"); assert(text.length <= 32, text); assert(!text.endsWith("。"), text); }
@@ -64,6 +76,16 @@ test("companion lines stay in voice, fit one bubble and react to streaks and the
     assert(c.streak.includes(reaction(id, "result", [bull, bull], null, { heat: 2 }).text));
     assert(c.last.includes(reaction(id, "choice", [bull, bull], null, { last: true }).text));
     assert.equal(reaction(id, "summary", [], null, { grade: "great" }).text, c.summary.great);
+  }
+  // 2026-11-13 指摘5: 練習相手の一言は操作の種類に依らない（旧ゲージの「横、縦、回転の順」「緑の帯で待つ・止める」を言わない）。落下は理由で選ぶ
+  for (const id of ["hiyori", "shark"]) {
+    const c = COMPANIONS[id], words = [...c.before, ...c.drop, ...c.dropWeak, ...c.dropSpin];
+    for (const text of words) assert.doesNotMatch(text, /横、縦|縦、回転|緑の帯|帯に合わせ|止めて|止める/, text);
+    const weak = { outcome: "drop", dropReason: "weak", score: 0 }, spin = { outcome: "drop", dropReason: "rotation", score: 0 };
+    assert(c.dropWeak.includes(reaction(id, "result", [weak], null).text));
+    assert(c.dropSpin.includes(reaction(id, "result", [spin], null).text));
+    assert(c.drop.includes(reaction(id, "result", [{ outcome: "drop", score: 0 }], null).text));
+    assert(c.bonus.includes(reaction(id, "result", [weak], null, { bonus: true }).text), "the bonus line still wins");
   }
   // The first result always uses the first, canonical outcome line.
   assert.match(reaction("shark", "result", [{ outcome: "killshot", score: 8 }], null).text, /小さい的/);

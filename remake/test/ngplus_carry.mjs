@@ -34,9 +34,9 @@ assert.equal(carry.flagVerdict("seenDemo"), "carry");
 const root = new URL("../../", import.meta.url);
 const copy = (v) => JSON.parse(JSON.stringify(v));
 
-// ---------------------------------------------------------------- A. SCHEMA 25 と後方互換
+// ---------------------------------------------------------------- A. SCHEMA 28 と後方互換
 {
-  assert.equal(SCHEMA, 25);
+  assert.equal(SCHEMA, 28);
   const fresh = newState();
   assert.equal(fresh.cycle, 1);
   assert.equal(typeof fresh.cycleId, "string");
@@ -73,7 +73,7 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
     return s;
   };
   const checkMigrated = (s) => {
-    assert.equal(s.schema, 25);
+    assert.equal(s.schema, SCHEMA);
     assert.equal(s.cycle, 1);
     assert.ok(typeof s.cycleId === "string" && s.cycleId.length > 0);
     assert.deepEqual(s.cycleStartStats, { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 });
@@ -81,7 +81,7 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
     assert.equal(s.money, 12345);
     assert.equal(s.stats.technique, 42);
     assert.equal(s.flags._ch1_mid, true);
-    assert.deepEqual(s.affinity, { minto: 7 });
+    assert.deepEqual(s.affinity, { minto: 7, sumi: 9, tsumugi: 9 });
     assert.deepEqual(s.lovers, ["minto"]);
     assert.equal(s.chapter, 2);
     assert.equal(s.day, 5);
@@ -116,7 +116,7 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   prior.flavorMastery = { vanilla: 12 };
   localStorage.setItem(SAVE_KEY, JSON.stringify(prior));
   const upgraded = load();
-  assert.equal(upgraded.schema, 25);
+  assert.equal(upgraded.schema, SCHEMA);
   assert.equal(upgraded.cycle, 2);
   assert.equal(upgraded.cycleId, "kept-cycle-2");
   assert.equal(upgraded.cycleStartStats.technique, 19);
@@ -233,7 +233,7 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   s.owned = ["hagal_80beat", "lotos_hagal", "suyaki_minto"];
   s.equip = { bowl: "suyaki_minto", hms: "lotos_hagal" };
   s.keepsakes = ["ryuji_purikura", "minto_first_cheki"];
-  s.trpg = { ...(s.trpg ?? {}), stock: ["x"], club: { founded: { chapter: 2, day: 3 }, members: { rin: { chapter: 2, day: 4 } } } };
+  s.trpg = { ...(s.trpg ?? {}), stock: ["x"], club: { founded: { chapter: 2, day: 3 }, members: { rio: { chapter: 2, day: 4 } } } };
   s.flags = { _gym_member: true, _motion_seen_intro: true, _flavor_grape: true, _ch1_cleared: true,
     _brand_new_unclassified: true, _kuji_seen: false };
   s.affinity = { minto: 9 };
@@ -278,11 +278,32 @@ const copy = (v) => JSON.parse(JSON.stringify(v));
   assert.deepEqual(s, before);
 }
 
+// ---------------------------------------------------------------- D2. くじ限定の台・限定台くじ・くじ券（KJ05）は持ち越さない
+{
+  const { KUJI_ONLY_EQUIPMENT, KUJI_LIMITED_GRADES } = await import("../js/core/rules.js");
+  const s = newState();
+  s.owned = [...s.owned, "stand_custom", ...KUJI_ONLY_EQUIPMENT];
+  s.kuji = { g10000: { order: [0, 1], drawn: 1, emptyDay: null }, g20000: { order: [0, 1, 2], drawn: 2, emptyDay: null } };
+  s.kujiTickets = 4;
+  const before = copy(s);
+  const pkg = buildCarryPackage(s);
+  for (const id of KUJI_ONLY_EQUIPMENT) assert.ok(!pkg.owned.includes(id), `${id} は持ち越さない`);
+  assert.ok(pkg.owned.includes("stand_custom"), "店で買える台は従来どおり持ち越す");
+  assert.deepEqual(Object.keys(pkg.kuji), ["g10000"]);
+  for (const grade of KUJI_LIMITED_GRADES) assert.ok(!(grade in pkg.kuji), `${grade} の箱は持ち越さない`);
+  assert.ok(!("kujiTickets" in pkg), "くじ券はパッケージに入れない");
+  assert.equal(STATE_KEY_RULES.kujiTickets.verdict, "reset");
+  assert.equal(STATE_KEY_RULES.kuji.verdict, "conditional");
+  assert.deepEqual(s, before, "抽出で元の state を変えない");
+}
+
 // ---------------------------------------------------------------- E. データとの照合
 {
   const equipment = JSON.parse(fs.readFileSync(new URL("data/equipment.json", root), "utf8")).equipment;
   const giftIds = equipment.filter((e) => e.gift).map((e) => e.id).sort();
   assert.deepEqual([...GIFT_EQUIPMENT_IDS].sort(), giftIds);
+  const { KUJI_ONLY_EQUIPMENT } = await import("../js/core/rules.js");
+  assert.deepEqual([...KUJI_ONLY_EQUIPMENT].sort(), equipment.filter((e) => e.kuji_only).map((e) => e.id).sort(), "くじ限定の台の一覧が data と一致");
 
   const src = fs.readFileSync(new URL("remake/js/core/keepsakes.js", root), "utf8");
   const ids = [...src.matchAll(/([a-z0-9_]+): \{ name:/g)].map((m) => m[1]).sort();

@@ -39,7 +39,7 @@ function stringify(value) {
   return JSON.stringify(value);
 }
 assert.equal(createHash('sha256').update(stringify(sortKeys(sumi))).digest('hex'),
-  '186935cd6f1ee864150edb8d3d9d415a98ecd2871fcc2a67dbcd4e41f5616465');
+  'e69ed71a60c2f82aae8c6d0cfd90f89713ec3c90a19697b819ef4c9016b01af4');
 
 const data = read('remake/js/core/data.js');
 const files = data.match(/const DIALOGUE_FILES = \[([\s\S]*?)\];/);
@@ -95,6 +95,20 @@ assert.match(chapter, /import \{[^}]*\bgainStat\b[^}]*\} from "\.\.\/core\/stats
 const morning = scenes.find(scene => scene.dialogue_id === 'interval_day1_morning_win');
 assert.equal(morning.lines[0].text, '大会で優勝した翌朝。目が覚めて、まずトロフィーを探した。');
 assert.equal(morning.lines[1].text, '……そうだ、店のカウンターに飾ったんだった。現実感が、まだ追いつかない。');
+// 全体講評（2026-11-11）S6・C9: 章末は総括で閉じず、優勝を目当てに来た初めての客の注文で切る。
+// 読み終えたら _stk_title_customer_met を立て、一度だけ読む（第2章の台本が同じ名前を読む）。報酬は付けない。
+const closing = scenes.find(scene => scene.dialogue_id === 'interval_day5_eve');
+assert(!closing.lines.some(line => line.text?.includes('糧になる')), 'the summary line stays removed');
+assert.deepEqual(closing.lines.at(-1), { type: 'condition', condition_type: 'flag', flag: '_stk_title_customer_met', next_true: '', next_false: 'eve_title_customer' });
+const titleCustomer = closing.branches.eve_title_customer;
+assert.deepEqual(titleCustomer.at(-1), { type: 'set_flag', flag: '_stk_title_customer_met' }, 'seen only after the whole scene is read');
+const spoken = titleCustomer.filter(line => typeof line.text === 'string');
+assert(spoken.length >= 3 && spoken.length <= 6);
+assert.equal(spoken.at(-1).speaker, 'customer', 'the scene stops at the order');
+assert(spoken.at(-1).text.includes('優勝の一台'));
+assert(titleCustomer.every(line => !['apply', 'choice'].includes(line.type) && !/上がった/.test(line.text || '')), 'the forced scene carries no reward');
+const adamLime = scenes.find(scene => scene.dialogue_id === 'interval_day2_adam_lime');
+assert(!adamLime.lines.some(line => line.text?.includes('大きなことが動いている')), 'one hook stays with the ??? message');
 console.log('PASS: interval IDs, unchanged Sumi hash, legacy entries, loader, victory order, rewards and trophy continuity');
 const remaining = [];
 function scan(directory) {

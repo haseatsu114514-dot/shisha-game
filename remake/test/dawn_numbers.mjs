@@ -70,6 +70,7 @@ async function checkDawn(info, { reduced = false, cancel = false, failMid = fals
   assert.equal(midCalls, 1); assert.equal(host.children.length, 0);
   assert.equal(mod.namespace.isCovering(), false); assert.equal(keyHandlers.size, 0);
   if (failMid) return;
+  if (info.eve) { assert.equal(card, undefined, "大会前夜の当日版は日付のカードを出さない（#2688 A10）"); return; }
   assert(snapshots.length > 0);
   for (const snapshot of snapshots) {
     assert(snapshot[0].every(value => value === String(info.day)), "朝のカードに前日のDAYが見える");
@@ -91,4 +92,6 @@ for (const info of [
   await checkDawn(info, { cancel: true });
 }
 await checkDawn({}, { failMid: true });
-console.log("[dawn numbers] PASS: current day/countdown from first display, reduced motion, cancelled flips, undated/sick mornings and cleanup");
+await checkDawn({ eve: true });
+await checkDawn({ eve: true }, { reduced: true });
+console.log("[dawn numbers] PASS: current day/countdown from first display, reduced motion, cancelled flips, undated/sick mornings, the eve without a date card, and cleanup");

@@ -2,14 +2,29 @@
 // 旧版と localStorage を共有しないよう、キーはリメイク専用。
 // 状態の形を変えたら SCHEMA を上げ、migrate() に1段足す（互換コードはここだけに置く）。
 
-import { MAX_MONEY, TOURNAMENT_DAY } from "./rules.js";
+import { setPortraitStyleSource } from "./portrait-style.js";
+import { MAX_MONEY, TOURNAMENT_DAY, KUJI_TICKET_MAX } from "./rules.js";
 import { MASTERY_THRESHOLDS, learnFlavorStory } from "./flavor-mastery.js";
 import { emit } from "./bus.js";
 import { recordGalleryProgress } from "./gallery-progress.js";
+import { STARTER_HIDANE, STARTER_FLAG } from "./growth-starter.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 25; // 25: 盤のデンスパック制限から旧セーブの選択肢を保護 / 24: 凛の味の話を第4回へ移し、旧セーブの不足分を補う / 23: 味の話を第4回へ移し、読了済みセーブの不足分を補う / 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 28; // 28: 初回の白火6を累計獲得へ計上 / 27: 好感度名簿と既知キャラの初期♥1 / 26: キャラID改名（IDREN01）の旧セーブ付け替え / 25: 盤のデンスパック制限から旧セーブの選択肢を保護 / 24: 凛想の味の話を第4回へ移し、旧セーブの不足分を補う / 23: 味の話を第4回へ移し、読了済みセーブの不足分を補う / 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+
+// 実際の任意交流で好感度を育てられる人物。占い・STATUS・初対面報酬で共用する。
+// ひよりは交流機会が少なくても対象に残す（Issue #2750）。
+export const AFFINITY_CHARACTERS = Object.freeze([
+  "sumi", "tsumugi", "naru", "adam", "minto", "rio", "hiyori", "samechan",
+  "ageha", "kumicho", "rei", "mashiro", "saku", "steve", "volk",
+  "da_silva", "master_hookah", "sheikh", "noor",
+]);
+const affinitySet = new Set(AFFINITY_CHARACTERS);
+export const hasAffinity = id => affinitySet.has(id);
+// 開始時点でスミさんは上司、つむぎは顔見知り。初対面報酬を出さない。
+export const KNOWN_AT_START = Object.freeze(["sumi", "tsumugi"]);
+export const FIRST_HEART_POINTS = 9;
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -45,11 +60,12 @@ export function newState() {
     flags: {},
     restDay: null,             // {chapter, day, fullDay, illnessHealth}: 発病日の状態は当日だけ維持
     deferredNightEvents: [],   // {id, chapter, originalDay, deferredOn, reason, prerequisites, doneKeys}
-    met: {},                   // 名乗りを受けたキャラ（名前表示の解禁）
+    met: Object.fromEntries(KNOWN_AT_START.map(id => [id, true])), // 開始時から知る相手
+    // 名乗りを受けたキャラ（名前表示の解禁）
     affinityCarry: {}, // 普通の好感度の小数分。既存ポイントは減らさない
     loveCarry: {}, // 恋人の絆の半ポイントを持ち越す
     baitoRecent: [], // 直近4回の接客の客・日付
-    affinity: {},              // キャラ -> 好感度ポイント（段階は stats.js で換算）
+    affinity: Object.fromEntries(KNOWN_AT_START.map(id => [id, FIRST_HEART_POINTS])), // キャラ -> 好感度ポイント（段階は stats.js で換算）
     story: {},                 // キャラ -> 固有会話の消化数
     visits: {},                // スポット -> 訪問回数
     visitedDay: {},            // スポット -> 最後に訪れた日（同じ店は1日1回）
@@ -94,6 +110,7 @@ export function newState() {
       settingGuideDone: false, // 設定のシステム説明を見た（新規は初回説明の中、旧セーブは一度だけの通知）
     },
     kuji: {},                  // くじの箱（grade -> {order, drawn, emptyDay}）
+    kujiTickets: 0,            // くじ券（KJ05）。第5章の限定台くじを1枚で1回引ける。周回には持ち越さない
     goods: [],                 // くじ等で得た売れる小物 [{name, sell}]
     // 恋人（master_spec #24）: 好感度MAX→告白→付き合う/友達のまま。恋人の絆はデート等でだけ深まる
     lovers: [],
@@ -103,29 +120,122 @@ export function newState() {
     lastDate: {},              // 恋人 -> 最後にデートした日
     loverEventsSeen: [],       // 見た恋愛イベント（lover_events.json）
     guilt: 0,                  // うしろめたさ（非表示）。2人以上と付き合うと積もる
+    loverStrain: {},           // すれ違い（非表示・core/lover-strain.js）。雑に扱うと溜まり、別れ話になる。欠けた保存は空から
     // 交友の締めくくり（daily/bonds.js）。恋愛の答えは実際に選んだものだけ。好感度・訪問回数から推測しない
     romance: {},               // 隠し恋愛値（キャラ -> 恋愛寄りに答えた数）。プレイヤーには見せない
     romanceChoices: {},        // 答えた質問（選択肢 id -> {char, value, day}）。同じ id は一度だけ数える
     finales: {},               // 読んだ好感度MAXの締めくくり（キャラ -> {day, chapter, route: lover|romance|friend}）
     friendHangouts: {},        // 友人とのシーシャのお誘いに乗った回数（キャラ -> 回数）
     seed: Math.floor(Math.random() * 1e6),
-    playMs: 0,
+    playMs: 0,                 // この周回のプレイ時間（画面が見えている間だけ数え、保存のたびに足し込む。#2902）
+    playMsFull: true,          // playMs を周回の最初から数えているか（記録を始める前の保存は false）
   };
 }
 
-/** スキーマ12以前のキャラIDを、予約内の台本・選択肢・読了記録も含めて引き継ぐ。 */
-function migrateSamechanIdentity(value) {
-  // 旧名はこのセーブ互換処理だけで扱う。新しく届く台本や素材には使わない。
-  const rename = text => text.replace(/kafuka/g, "samechan").replace(/Kafuka/g, "Samechan")
-    .replace(/KAFUKA/g, "SAMECHAN").replace(/カフカ|かふか/g, "サメちゃん");
-  if (typeof value === "string") return rename(value);
-  if (Array.isArray(value)) return value.map(migrateSamechanIdentity);
-  if (!value || typeof value !== "object") return value;
-  const entries = Object.entries(value);
-  // 移行途中のデータに新旧キーが同居していても、明示された現行キーを優先する。
-  const legacy = entries.filter(([key]) => rename(key) !== key);
-  const current = entries.filter(([key]) => rename(key) === key);
-  return Object.fromEntries([...legacy, ...current].map(([key, item]) => [rename(key), migrateSamechanIdentity(item)]));
+// スキーマ26（IDREN01・2026-11-05 オーナー決定）: キャラIDを現名に合わせて改名。
+// 旧IDで保存されたセーブは、読み込み時にここで新IDへ付け替える（移行処理以外では旧IDを使わない）。
+export const CHAR_ID_RENAMES = { nagumo: "sui", rin: "rio", kuze: "saku", saif: "faris", rashid: "khalil" };
+const CHAR_ID_TOKEN = /(?<![A-Za-z0-9])(nagumo|rin|kuze|saif|rashid)(?![A-Za-z0-9])/g;
+const renameIdToken = (v) => (typeof v === "string" ? v.replace(CHAR_ID_TOKEN, (m) => CHAR_ID_RENAMES[m]) : v);
+const renameExactId = (v) => (typeof v === "string" && CHAR_ID_RENAMES[v] ? CHAR_ID_RENAMES[v] : v);
+// マップのキーの付け替え。付け替え先（新ID側）に既存値がある場合はそちらを優先し、旧値では上書きしない。
+function renameIdKeys(obj) {
+  if (!obj || typeof obj !== "object" || Array.isArray(obj)) return obj;
+  const out = {};
+  for (const [k, v] of Object.entries(obj)) if (renameIdToken(k) === k) out[k] = v;
+  for (const [k, v] of Object.entries(obj)) {
+    const nk = renameIdToken(k);
+    if (nk !== k && !(nk in out)) out[nk] = v;
+  }
+  return out;
+}
+// IDの配列の付け替え。exact=true は要素そのものがキャラIDのもの、token は台詞ID等の複合ID。
+function renameIdList(list, token = false) {
+  return [...new Set((Array.isArray(list) ? list : [])
+    .map((v) => (token ? renameIdToken(v) : renameExactId(v)))
+    .filter((v) => typeof v === "string" && v))];
+}
+
+function renameCharIdsInSave(s) {
+  // キャラIDをキーにするマップ（面識・好感度・固有会話・恋人の絆・締めくくり等）
+  for (const k of ["met", "affinity", "affinityCarry", "loveCarry", "story",
+    "loveLevel", "lovePts", "loverSince", "lastDate", "romance", "finales", "friendHangouts"]) {
+    if (s[k] && typeof s[k] === "object") s[k] = renameIdKeys(s[k]);
+  }
+  // フラグはキーにキャラID・台詞IDを含む（例: _rio_sample）。値には触れない
+  if (s.flags && typeof s.flags === "object") s.flags = renameIdKeys(s.flags);
+  // キャラIDそのものの配列（LIME連絡先・恋人）
+  s.contacts = renameIdList(s.contacts);
+  s.lovers = renameIdList(s.lovers);
+  // 複合IDの配列（LIME既読・フレーバー会話・交流の記憶・恋愛イベント・接客記録）
+  s.limeRead = renameIdList(s.limeRead, true);
+  s.flavorLessons = renameIdList(s.flavorLessons, true);
+  s.relationshipMemories = renameIdList(s.relationshipMemories, true);
+  s.loverEventsSeen = renameIdList(s.loverEventsSeen, true);
+  s.usedBaito = renameIdList(s.usedBaito, true);
+  // 恋愛の答えは値側にキャラIDを持つ
+  if (s.romanceChoices && typeof s.romanceChoices === "object") {
+    for (const ans of Object.values(s.romanceChoices)) {
+      if (ans && typeof ans.char === "string") ans.char = renameExactId(ans.char);
+    }
+  }
+  // 接客履歴の客
+  if (Array.isArray(s.baitoRecent)) {
+    for (const entry of s.baitoRecent) {
+      if (entry && Array.isArray(entry.customers)) entry.customers = renameIdList(entry.customers);
+    }
+  }
+  // LIME受信箱（送信者・メッセージID・約束イベント）と予約
+  // 付け替えは文字列の値がある時だけ行う。無い項目へ undefined を代入するとキーが生えてしまい、
+  // セーブ（JSON化で undefined キーが落ちる）の前後で受信箱の形が変わってしまう。
+  if (Array.isArray(s.inbox)) {
+    for (const item of s.inbox) {
+      if (!item || typeof item !== "object") continue;
+      if (typeof item.id === "string") item.id = renameIdToken(item.id);
+      if (typeof item.originId === "string") item.originId = renameIdToken(item.originId);
+      if (item.msg && typeof item.msg === "object") {
+        if (typeof item.msg.sender === "string") item.msg.sender = renameExactId(item.msg.sender);
+        if (typeof item.msg.accept_event === "string") item.msg.accept_event = renameIdToken(item.msg.accept_event);
+        if (typeof item.msg.origin_id === "string") item.msg.origin_id = renameIdToken(item.msg.origin_id);
+      }
+    }
+  }
+  if (s.pendingInvite && typeof s.pendingInvite === "object") {
+    if (typeof s.pendingInvite.sender === "string") s.pendingInvite.sender = renameExactId(s.pendingInvite.sender);
+    if (typeof s.pendingInvite.event === "string") s.pendingInvite.event = renameIdToken(s.pendingInvite.event);
+    if (typeof s.pendingInvite.originId === "string") s.pendingInvite.originId = renameIdToken(s.pendingInvite.originId);
+  }
+  // 延期した夜の予定（イベントID）
+  if (Array.isArray(s.deferredNightEvents)) {
+    for (const entry of s.deferredNightEvents) {
+      if (entry && typeof entry === "object" && typeof entry.id === "string") entry.id = renameIdToken(entry.id);
+    }
+  }
+  // TRPG（部員・卓のGMと参加者）
+  if (s.trpg && typeof s.trpg === "object") {
+    if (s.trpg.club && typeof s.trpg.club === "object") s.trpg.club.members = renameIdKeys(s.trpg.club.members);
+    if (s.trpg.cleared && typeof s.trpg.cleared === "object") {
+      for (const rec of Object.values(s.trpg.cleared)) {
+        if (!rec || typeof rec !== "object") continue;
+        if (typeof rec.gm === "string") rec.gm = renameExactId(rec.gm);
+        if (Array.isArray(rec.participants)) rec.participants = renameIdList(rec.participants);
+      }
+    }
+  }
+  // 東京訪問（同行者）
+  if (s.tokyoVisits && typeof s.tokyoVisits === "object") {
+    if (Array.isArray(s.tokyoVisits.plans)) {
+      for (const plan of s.tokyoVisits.plans) {
+        if (plan && typeof plan === "object" && typeof plan.characterId === "string") plan.characterId = renameExactId(plan.characterId);
+      }
+    }
+    if (s.tokyoVisits.offers && typeof s.tokyoVisits.offers === "object") {
+      s.tokyoVisits.offers = renameIdKeys(s.tokyoVisits.offers);
+      for (const offer of Object.values(s.tokyoVisits.offers)) {
+        if (offer && typeof offer === "object" && typeof offer.characterId === "string") offer.characterId = renameExactId(offer.characterId);
+      }
+    }
+  }
 }
 
 /** 旧スキーマのセーブを現行の形にそろえる（互換処理はここに集約） */
@@ -156,10 +266,25 @@ function migrate(s) {
     if (s.stats && !Number.isFinite(s.stats[key])) s.stats[key] = fresh.stats[key];
     if (s.statsAtChapterStart && !Number.isFinite(s.statsAtChapterStart[key])) s.statsAtChapterStart[key] = fresh.statsAtChapterStart[key];
   }
-  if (oldSchema < 13) {
-    s = migrateSamechanIdentity(s);
-    for (const key of ["contacts", "lovers", "limeRead", "loverEventsSeen", "relationshipMemories"]) {
-      if (Array.isArray(s[key])) s[key] = [...new Set(s[key])];
+  // スキーマ26: キャラID改名（IDREN01）。後段の移行処理が新IDで読めるよう、最初に付け替える。
+  if (oldSchema < 26) renameCharIdsInSave(s);
+  if (oldSchema < 27) {
+    s.met ||= {};
+    s.affinity ||= {};
+    for (const id of KNOWN_AT_START) {
+      s.met[id] = true;
+      s.affinity[id] = Math.max(Number(s.affinity[id]) || 0, FIRST_HEART_POINTS);
+      delete s.flags?.[`_affinity_first_meeting_pending_${id}`];
+    }
+    for (const id of Object.keys(s.affinity)) if (!hasAffinity(id)) delete s.affinity[id];
+    for (const id of Object.keys(s.affinityCarry || {})) if (!hasAffinity(id)) delete s.affinityCarry[id];
+    if (s.fortune && !hasAffinity(s.fortune.char)) delete s.fortune;
+    if (s.flags) {
+      if (!hasAffinity(s.flags._fortune_choice_sight?.char)) delete s.flags._fortune_choice_sight;
+      for (const key of Object.keys(s.flags)) {
+        const pending = key.match(/^_affinity_first_meeting_pending_(.+)$/);
+        if (pending && !hasAffinity(pending[1])) delete s.flags[key];
+      }
     }
   }
   if (oldSchema < 9) {
@@ -174,6 +299,13 @@ function migrate(s) {
   }
   if (!s.flags || typeof s.flags !== "object" || Array.isArray(s.flags)) s.flags = {};
   delete s.notes; // 常連ノートは廃止。旧セーブの残存キーを捨てる
+  // ヌールの友情着地でも LIME を交換する。告白で断った旧セーブと、締めくくりで友情に着地した旧セーブに連絡先を補う。
+  if ((s.flags._friend_noor || s.finales?.noor?.route === "friend") && !(s.lovers || []).includes("noor")) {
+    s.flags._friend_noor = true;
+    s.flags._lime_contact_noor = true;
+    if (!Array.isArray(s.contacts)) s.contacts = [];
+    if (!s.contacts.includes("noor")) s.contacts.push("noor");
+  }
   // #577: 旧保存は未訪問でもBAR利用と従来の初対面を維持する。噂・目撃・面識は補わない。
   // 現行schemaで再保存してもこの許可を保持し、新規ゲームには付けない。
   if (oldSchema < 16) s.flags._axe_bar_legacy_access = true;
@@ -258,7 +390,7 @@ function migrate(s) {
   // グラム在庫の導入前のセーブ: 持っていたフレーバーは1箱（50g）ぶんとして引き継ぐ
   if (!s.flavorStock) {
     s.flavorStock = Object.fromEntries((s.flavors || ["double_apple"]).map((id) => [id, 50]));
-    if (s.flags?._rin_sample) s.flavorStock.nightside_earlgrey = 50;
+    if (s.flags?._rio_sample) s.flavorStock.nightside_earlgrey = 50;
   }
   // スキーマ14。旧無料プレビューの試遊から購入・クリアを推測しない。
   const trpg = record(s.trpg);
@@ -271,6 +403,10 @@ function migrate(s) {
     cleared: Object.fromEntries(Object.entries(record(trpg.cleared)).filter(([, v]) => v && typeof v.ending === "string"
       && Number.isInteger(v.chapter) && v.chapter >= 2 && Number.isInteger(v.day) && v.day > 0
       && typeof v.gm === "string" && Array.isArray(v.participants))),
+    // しおり（TMX13）: 途中の卓は1つだけ。形が崩れたものは捨て、最初から遊び直せばよい。
+    ...(trpg.bookmark && typeof trpg.bookmark.id === "string" && Array.isArray(trpg.bookmark.actions) && trpg.bookmark.actions.length
+      && trpg.bookmark.actions.every(a => Array.isArray(a) && typeof a[0] === "string") && trpg.bookmark.assignments
+      && typeof trpg.bookmark.assignments === "object" && Number.isInteger(trpg.bookmark.seed) ? { bookmark: trpg.bookmark } : {}),
     shifts: (Array.isArray(trpg.shifts) ? trpg.shifts : []).filter(v => v && typeof v.id === "string"
       && Number.isInteger(v.chapter) && Number.isInteger(v.day) && [0, 1].includes(v.slot) && typeof v.busy === "boolean"),
     club: { founded, members: founded ? Object.fromEntries(Object.entries(record(club.members))
@@ -310,6 +446,9 @@ function migrate(s) {
   // 家シーシャ（#638）: スミさんが卓上台を譲る中間準備（第1章 DAY7）を終えた旧セーブにも台を渡す（能力はさかのぼらない）
   const midDone = !!(s.flags?._ev_midcheck || s.flags?._ch1_mid?.feedbackRead) || (Number(s.chapter) || 1) >= 2;
   if (midDone && Array.isArray(s.owned) && !s.owned.includes("home_rig_set")) s.owned.push("home_rig_set");
+  // 博士の試作HMD（授業 M-W9）: 機材の接続より前に習得していたセーブにも、習得の記録があれば試作HMDを渡す（未習得には渡さない）
+  if (Array.isArray(s.owned) && Array.isArray(s.growth?.learned) && s.growth.learned.includes("M-W9")
+    && !s.owned.includes("dr_kemuri_proto_hmd")) s.owned.push("dr_kemuri_proto_hmd");
   // 以前のDAY15大会セーブも、進行状況を保って正しい大会日に揃える。
   if (s.chapter === 1 && s.day > TOURNAMENT_DAY) s.day = TOURNAMENT_DAY;
   s.tournament ||= { attempts: 0, lastRank: null };
@@ -344,9 +483,9 @@ function migrate(s) {
     }
   }
   // 第4回読了済みの旧セーブは再生できない。第2回・反復回で受け取った分を除き、未取得分だけ補う。
-  if (oldSchema < 24 && (s.story?.rin || 0) >= 4) {
+  if (oldSchema < 24 && (s.story?.rio || 0) >= 4) {
     learnFlavorStory(s, {
-      dialogue_id: "ch1_rin_fourth",
+      dialogue_id: "ch1_rio_fourth",
       metadata: { flavor_lesson: { rose: 1, lychee: 1, blueberry: 1 } },
     }, {}, { growth: false });
   }
@@ -370,12 +509,44 @@ function migrate(s) {
     s.cycleStartStats = Object.fromEntries(STAT_KEYS.map((k) => [k, 10]));
   }
   if (s.carryOptions !== null && (typeof s.carryOptions !== "object" || Array.isArray(s.carryOptions))) s.carryOptions = null;
+  // くじ券（KJ05）。無い・壊れた・負の値は0、上限より多い分は捨てる（スキーマは変えない。欠けていれば0から）。
+  s.kujiTickets = Number.isInteger(s.kujiTickets) && s.kujiTickets > 0 ? Math.min(KUJI_TICKET_MAX, s.kujiTickets) : 0;
+  // プレイ時間（#2902）。数え始める前の保存は 0 から数え、最初からの時間ではないことを残す。
+  if (!Number.isFinite(s.playMs) || s.playMs < 0) s.playMs = 0;
+  if (s.playMsFull !== true) s.playMsFull = false;
+  // schema27以前は初回の白火6を所持にだけ加算した。実際に渡した印がある保存だけ、
+  // 所持・支払を動かさず累計へ一度だけ足す。すでに198を通常獲得した保存も没収しない。
+  if (oldSchema < 28 && s.flags[STARTER_FLAG] === true && s.growth && typeof s.growth === "object"
+    && !Array.isArray(s.growth) && s.growth.starterAccounted !== true) {
+    const earned = s.growth.earned;
+    s.growth.earned = (Number.isFinite(earned) && earned > 0 ? Math.floor(earned) : 0) + STARTER_HIDANE;
+    s.growth.starterAccounted = true;
+  }
   s.schema = SCHEMA;
   return s;
 }
 
+// ---------------------------------------------------------------- プレイ時間（#2902）
+// タイトルにいる間と、タブが隠れている間は数えない。保存の直前に、前に数えた時刻からの分を playMs へ足す。
+let playClockAt = null;
+// 実際のブラウザで表示中のときだけ数える（document の無い・表示状態を持たない node の検査では数えない）。
+const pageVisible = () => typeof document !== "undefined" && document.visibilityState === "visible";
+/** タブの表示が切り替わったら呼ぶ（main.js の起動で visibilitychange に登録する）。隠れている間の時間は数えない */
+export function tickPlayTime() {
+  const now = Date.now();
+  if (state && playClockAt !== null && now > playClockAt) state.playMs = (Number.isFinite(state.playMs) ? state.playMs : 0) + now - playClockAt;
+  playClockAt = state && pageVisible() ? now : null;
+}
+
+/** いまのプレイ時間（ms）。まだ保存していない分も含める */
+export function playTimeMs(value = state) {
+  const saved = Number.isFinite(value?.playMs) ? value.playMs : 0;
+  return value === state && playClockAt !== null ? saved + Math.max(0, Date.now() - playClockAt) : saved;
+}
+
 export function setState(s) {
   state = s;
+  playClockAt = s && pageVisible() ? Date.now() : null;
   emit("hud"); // ロード・はじめからでも、前の残量と通知を画面に持ち越さない。
   return state;
 }
@@ -398,6 +569,7 @@ function writeSave(target = state) {
     }
   } catch { /* 旧記録の補完失敗で現在の保存を妨げない */ }
   recordGalleryProgress(target);
+  if (target === state) tickPlayTime();
   target.savedAt = Date.now();
   let raw = null;
   try {
@@ -435,13 +607,11 @@ export function load() {
   return migrated ? setState(migrated) : null;
 }
 
-// ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に3枠）
+// ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に1枠）
 
 export const SAVE_SLOTS = [
   { key: SAVE_KEY, label: "オートセーブ", auto: true },
   { key: "suien_remake_slot1", label: "スロット 1" },
-  { key: "suien_remake_slot2", label: "スロット 2" },
-  { key: "suien_remake_slot3", label: "スロット 3" },
 ];
 const BOOT_LOAD_KEY = "suien_remake_boot_load";
 
@@ -453,6 +623,10 @@ export function readSlot(key) {
   } catch {
     return null;
   }
+}
+/** 外から受け取ったセーブが、読み込みと同じ移行を通せるか（保存はしない。形式は変えない） */
+export function isLoadableSave(s) {
+  try { return !!migrate(s); } catch { return false; }
 }
 /** 全枠のうち savedAt が最新のセーブ（同点・欠落は SAVE_SLOTS 順で先のもの）。無ければ null */
 export function peekLatestSave() {
@@ -469,23 +643,30 @@ export const anySlotSaved = () => SAVE_SLOTS.some((s) => readSlot(s.key));
 
 /** 今の状態を手動の枠に書く（オートセーブも同時に更新） */
 export function saveToSlot(key) {
-  const { raw } = writeSave();
+  return saveToSlotResult(key).manualSaved;
+}
+
+/** 手動枠と AUTO それぞれの実際の書き込み結果。既存の保存順序は維持する。 */
+export function saveToSlotResult(key) {
+  const { raw, saved: autoSaved } = writeSave();
   try {
     localStorage.setItem(key, raw === null ? JSON.stringify(state) : raw);
-    return true;
+    return { autoSaved, manualSaved: true };
   } catch {
-    return false;
+    return { autoSaved, manualSaved: false };
   }
 }
 
 /** 枠から読み込んで今の状態にする。以後のオートセーブもこのデータから続く */
-export function loadFromSlot(key) {
+export function loadFromSlot(key, { validate } = {}) {
   const s = readSlot(key);
   if (!s) return null;
   // 移行で想定外の例外が出ても、進行中の状態と保存元を保ったまま読み込み失敗にする。
   let migrated = null;
   try { migrated = migrate(s); } catch { migrated = null; }
   if (!migrated) return null;
+  // 外部JSONなどの候補は、移行後の形を検証してから保存・公開する。
+  try { if (validate && validate(migrated) === false) return null; } catch { return null; }
   // 保存の成否が決まるまで候補を公開しない。hud購読者は旧画面を破棄しうる。
   const { saved } = writeSave(migrated);
   // 手動枠を書き継げないと、再起動後に古いオートセーブへ戻ってしまう。
@@ -514,7 +695,10 @@ export function wipeSave() {
 
 // ---------------------------------------------------------------- 設定（セーブとは別）
 export const config = {
+  portraitStyle: "new", // 採用済みの新版が既定。現行も設定で選べる
+  portraitStyleVersion: 1, // 旧版の既定値・廃止画風を一度だけ新版へ移行
   uiTheme: "paper",    // 会話枠と共通UI。ゲームの進行とは別の端末設定（既定は紙とラベンダー・DUI08）。
+  look: "classic",     // 見た目の様式（新版／旧版／DS風・core/look.js）。ここは保存が無い時の素の値で、既定（新版）は起動時に main.js の migrateLook が決める（LK09）。
   mute: false,       // すべての音を一時的に消す（旧キー muted は読み込み時に mute へ統一）
   bgmVolume: 0.5,
   seVolume: 0.7,
@@ -530,13 +714,22 @@ export const config = {
   introArtStyle: "graphic", // 登場カットインの絵柄。"classic" で旧（立ち絵）に戻す（2026-10-31）
   introTransition: "morph", // 立ち絵からカットインへの変身のつなぎ: morph（2026-11-02 オーナー採用）/ none。card / slash は比較用に残す
   staffRollSeen: false, // スタッフロールを一度最後まで見たか。見た端末では2回目から飛ばせる（#517）
+  // 左右の余白（横長のスマホでステージの外に余る所・YHK）。"full"＝煙と縁・縦書きの帯・親指ボタン／"plain"＝これまでどおり、ぼかしだけ
+  sideArea: "full",
 };
 
+setPortraitStyleSource(() => config.portraitStyle);
+
 export function loadConfig() {
+  let savedPortraitVersion;
   try {
-    Object.assign(config, JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}"));
+    const saved = JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}");
+    Object.assign(config, saved);
+    savedPortraitVersion = saved?.portraitStyleVersion;
   } catch { /* noop */ }
   if ("muted" in config) { config.mute = !!(config.mute || config.muted); delete config.muted; }
+  if (savedPortraitVersion !== 1 || config.portraitStyle !== "classic") config.portraitStyle = "new";
+  config.portraitStyleVersion = 1;
   return config;
 }
 
@@ -547,7 +740,17 @@ export function saveConfig() {
 // ---------------------------------------------------------------- 小さな共通操作
 export const flag = (name) => !!(state && state.flags[name]);
 export const setFlag = (name, v = true) => { if (state) state.flags[name] = v; };
-export const markMet = (id) => { if (state && id) state.met[id] = true; };
+export const markMet = (id, { known = false } = {}) => {
+  if (!state || !id) return;
+  const pending = `_affinity_first_meeting_pending_${id}`;
+  // 名乗りの直後に中断しても、再開した初対面で♥1の精算を失わない。
+  // 既に読んだ会話・来店のある旧セーブは、面識の欠損だけで初対面へ戻さない。
+  if (known) delete state.flags[pending];
+  else if (hasAffinity(id) && !state.met[id] && !state.story[id] && !state.visits[id]) {
+    state.flags[pending] = true;
+  }
+  state.met[id] = true;
+};
 export const timeOfDay = () => (state && state.slot >= 1 ? "night" : "day");
 
 export const emptyTokyoVisits = () => ({ version: 1, plans: [], offers: {}, closedSlots: [], chats: {} });
@@ -584,3 +787,4 @@ function restoreTokyoVisits(raw) {
   }
   return restored;
 }
+

@@ -80,7 +80,7 @@ await suite("samechan-dates", async check => {
         assert.deepEqual(r.s.stats, before.s.stats); assert((r.s.growth?.xp || 0) > (before.s.growth?.xp || 0), "The date earns EXP");
       } else assert.equal(r.s.stats[choice ? "sense" : "insight"], before.s.stats[choice ? "sense" : "insight"] + 2);
       assert.equal(r.s.lovePts.samechan, before.s.lovePts.samechan + 5); assert.equal(r.s.loverSince.samechan, 17);
-      assert(r.log.includes("わし") && r.log.includes("のじゃ")); assert(!/波多野|泳/.test(r.log));
+      assert(r.log.includes("わし") && r.log.includes("のじゃ")); assert(!/暑海|泳/.test(r.log));
       await page.reload({ waitUntil: "load" }); await page.locator('[data-test="title-new"]').waitFor();
       await page.locator("#boot").waitFor({ state: "detached" }); await setup(page, true);
       const loaded = await page.evaluate(() => K.snap());

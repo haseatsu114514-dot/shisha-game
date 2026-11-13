@@ -1,12 +1,39 @@
 import { el } from "./util.js";
+import { buildVersioned } from "./asset-version.js";
 import { prepareImage } from "./loading-prefetch.js";
 import { LOADING_COMICS, eligibleLoadingComics } from "./loading-comics.js";
 
-let active = false, previousComic = null;
+let active = false, previousComic = null, upcomingComic = null, lastReadAt = -Infinity;
+// Reading hold: a tap or key is accepted only after the art has been on screen this long and this long
+// after preparation finished, so taps left over from the previous screen cannot skip an unread comic.
+const READ_GUARD_SHOWN_MS = 700, READ_GUARD_READY_MS = 250;
+// A fixed point right after another comic was read (a LOAD that reloads the page and resumes, a chapter
+// that opens its bench at once) does not stack a second comic: within this gap it waits only when needed.
+const FIXED_GAP_MS = 2000;
+// Comic art is given this long. Missing or slower art leaves the plain gate, which never holds.
+const COMIC_ART_TIMEOUT_MS = 4000;
+const LOADING_COMICS_MODE_KEY = "suien_loading_comics";
+// The next comic's art is fetched this long after a gate closes, behind the scene that just opened.
+const WARM_DELAY_MS = 1500;
+
+/**
+ * 決まった場面（作業台に入る・ミニゲームの前・章の始め・セーブからの再開・起動）で、待ちがなくても漫画のロード画面を毎回出すか
+ * （2026-11-12 オーナー「漫画はマストで出して欲しい」「決まった場面は毎回出す」）。出したロード画面には必ず漫画を載せる。
+ * 自動操作のブラウザ（navigator.webdriver。既存のブラウザ検査）は従来どおり、待ちが長いときだけ出す（core/look.js・side-area.js と同じ扱い）。
+ * 検査は localStorage の suien_loading_comics に "always"（毎回）／"wait"（待ちのときだけ）を入れて切り替える。
+ */
+export function comicLoadingRequired() {
+  try {
+    const mode = localStorage.getItem(LOADING_COMICS_MODE_KEY);
+    if (mode === "always") return true;
+    if (mode === "wait") return false;
+  } catch { /* 保存を読めない環境はプレイヤーの既定で動く */ }
+  return !(typeof navigator !== "undefined" && navigator.webdriver === true);
+}
 let stylesheet;
 function loadStyle() {
   if (!stylesheet) stylesheet = new Promise((resolve, reject) => {
-    const link = el("link", { rel: "stylesheet", href: new URL("../../css/loading.css", import.meta.url).href });
+    const link = el("link", { rel: "stylesheet", href: buildVersioned(new URL("../../css/loading.css", import.meta.url).href) });
     link.onload = resolve;
     link.onerror = () => { link.remove(); stylesheet = null; reject(new Error("Loading stylesheet failed")); };
     document.head.append(link);
@@ -22,16 +49,40 @@ function validPanel(panel) {
     r.x + r.width <= r.sourceWidth && r.y + r.height <= r.sourceHeight;
 }
 
-export function selectLoadingComic(comics, { context = "default", chapter = 1, isMet = null } = {}) {
+function comicPool(comics, { context = "default", chapter = 1, isMet = null, isRead = null } = {}) {
   // isMet(id): the player has met that character. Comics list their cast; one is shown only after
   // meeting everyone in it (loading-comics.js). Without isMet (previews) the cast is not checked.
+  // isRead(id): the player has already read that comic. Unread ones come first, so every episode is
+  // seen once before any repeats; with everything read (or no isRead) the draw is over all of them.
   const eligible = eligibleLoadingComics(comics, { context, chapter, isMet }).filter(comic => comic.panels.every(validPanel));
-  const fresh = eligible.filter(comic => comic.id !== previousComic);
-  const pool = fresh.length ? fresh : eligible;
-  // Presentation uses its own entropy; do not consume gameplay Math.random().
-  const chosen = pool.length ? pool[crypto.getRandomValues(new Uint32Array(1))[0] % pool.length] : null;
+  const unread = isRead ? eligible.filter(comic => !isRead(comic.id)) : [];
+  const candidates = unread.length ? unread : eligible;
+  const fresh = candidates.filter(comic => comic.id !== previousComic);
+  return fresh.length ? fresh : candidates;
+}
+// Presentation uses its own entropy; do not consume gameplay Math.random().
+const draw = pool => pool.length ? pool[crypto.getRandomValues(new Uint32Array(1))[0] % pool.length] : null;
+
+export function selectLoadingComic(comics, options = {}) {
+  const pool = comicPool(comics, options);
+  // The comic whose art was fetched in advance (warmNextLoadingComic) is used while it is still a fair pick.
+  const chosen = pool.find(comic => comic.id === upcomingComic) || draw(pool);
+  upcomingComic = null;
   if (chosen) previousComic = chosen.id;
   return chosen;
+}
+
+/**
+ * 次に出す漫画を先に決めて、2コマの絵を裏で取得しておく（デコードした絵は持たない。取得だけなので軽い）。
+ * 決まった場面のロード画面は待ちがなくても出るので、絵が先に届いていれば、出た瞬間から漫画が読める。
+ */
+export function warmNextLoadingComic(comics = LOADING_COMICS, options = {}) {
+  const comic = draw(comicPool(comics, options));
+  upcomingComic = comic?.id ?? null;
+  for (const panel of comic?.panels || []) {
+    try { const img = new Image(); img.decoding = "async"; img.src = panel.src; } catch { /* 先読みだけ。失敗してもよい */ }
+  }
+  return comic;
 }
 
 /**
@@ -42,12 +93,17 @@ export function selectLoadingComic(comics, { context = "default", chapter = 1, i
 export async function withLoading(prepare, {
   host = document.querySelector("#stage"), label = "場面を準備しています…",
   delayMs = 220, context = "default", chapter = 1, comics = LOADING_COMICS, isMet = null,
-  signal,
+  isRead = null, onRead = null, onProceed = null, fixed = false, signal,
 } = {}) {
   if (!host) throw new Error("Loading host is missing");
   if (active) throw new Error("A loading gate is already active");
   signal?.throwIfAborted();
   active = true;
+  // required: a shown gate always carries its comic (it waits for the art, then holds for reading).
+  // forced: a fixed point shows the gate at once even when nothing needs loading.
+  const required = comicLoadingRequired();
+  const forced = fixed && required && performance.now() - lastReadAt > FIXED_GAP_MS;
+  if (forced) delayMs = 0;
   const controller = new AbortController();
   const focus = document.activeElement;
   const locked = [...host.children].map(node => [node, node.inert]);
@@ -70,24 +126,35 @@ export async function withLoading(prepare, {
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
     path.setAttribute("class", cls); path.setAttribute("d", d); emblem.append(path);
   }
-  status.append(emblem, el("span", { text: "LOADING…" }));
+  const statusText = el("span", { text: "LOADING…" });
+  status.append(emblem, statusText);
   const logo = el("div.loading-logo", { "aria-hidden": "true" });
   const bar = el("div.loading-bar", { "aria-hidden": "true" }, [el("div.loading-bar-fill")]);
   // The gauge wrapper only carries the decorative smoke flourishes at both ends (css/loading.css).
   const gauge = el("div.loading-gauge", { "aria-hidden": "true" }, [bar]);
-  const proceed = el("p.loading-proceed", { "aria-hidden": "true", text: "タップ・クリック・キーで進む" });
+  // The prompt names only what this device can do (a touch screen has no click or Enter key to offer).
+  const touchFirst = !!window.matchMedia?.("(pointer: coarse)").matches;
+  const proceed = el("p.loading-proceed", { "aria-hidden": "true", text: touchFirst ? "タップで進む" : "クリック・Enter で進む" });
   const content = el("div.loading-comic");
   overlay.classList.add("has-logo");
-  overlay.append(logo, el("div.loading-card", [content]), gauge, status, proceed);
-  let settled = false, comicShown = false, awaitingProceed = false, resolveProceed;
+  const card = el("div.loading-card", [content]);
+  overlay.append(logo, card, gauge, status, proceed);
+  let settled = false, comicShown = false, comicShownAt = 0, guardTimer = null, awaitingProceed = false, resolveProceed;
   const proceeded = new Promise(resolve => { resolveProceed = resolve; });
+  // Runs inside the tap or key event itself, so it may start sound that needs a user gesture (boot).
+  const proceedNow = () => {
+    if (!awaitingProceed) return;
+    awaitingProceed = false;
+    try { onProceed?.(); } catch { /* Display only. */ }
+    resolveProceed();
+  };
   const abort = () => controller.abort(signal.reason);
   signal?.addEventListener("abort", abort, { once: true });
   // Block gameplay input even before the overlay becomes visible. Once preparation is done and a
   // comic is on screen, Enter/Space advance past the reading hold (pointer handled below).
   const guard = event => {
     event.preventDefault(); event.stopImmediatePropagation();
-    if (awaitingProceed && event.type === "keydown" && (event.key === "Enter" || event.key === " " || event.key === "Spacebar")) resolveProceed();
+    if (awaitingProceed && event.type === "keydown" && (event.key === "Enter" || event.key === " " || event.key === "Spacebar")) proceedNow();
   };
   const focusGuard = event => { if (!overlay.contains(event.target)) overlay.focus(); };
   window.addEventListener("keydown", guard, true);
@@ -98,16 +165,26 @@ export async function withLoading(prepare, {
   for (const type of ["pointerdown", "pointerup", "click"]) {
     overlay.addEventListener(type, event => {
       event.stopPropagation();
-      if (awaitingProceed && type === "pointerdown") resolveProceed();
+      if (awaitingProceed && type === "pointerdown") proceedNow();
     });
   }
-  const comic = selectLoadingComic(comics, { context, chapter, isMet });
+  const comic = selectLoadingComic(comics, { context, chapter, isMet, isRead });
+  // The sheet (title, two 3:2 frames, note) is laid out as soon as a comic is chosen and kept hidden
+  // (.is-waiting) until the art is decoded: the logo and gauge then never jump when the panels arrive.
+  const frames = comic ? comic.panels.map(() => el("div.loading-panel-art")) : [];
+  if (comic) {
+    card.classList.add("is-waiting");
+    content.setAttribute("role", "group");
+    content.setAttribute("aria-label", comic.title);
+    content.append(el("h2.loading-comic-title", { text: comic.title }), el("div.loading-panels", frames.map(art => el("figure", [art]))));
+    if (comic.caption) content.append(el("p.loading-comic-caption", { text: comic.caption }));
+  }
   const comicReady = comic ? Promise.all(comic.panels.map(panel => prepareImage(panel.src, {
-    timeoutMs: 4000, signal: controller.signal,
+    timeoutMs: COMIC_ART_TIMEOUT_MS, signal: controller.signal,
   }))).then(images => {
     if (settled || controller.signal.aborted) return;
-    const panels = el("div.loading-panels", images.map((img, i) => {
-      const panel = comic.panels[i], region = panel.region;
+    images.forEach((img, i) => {
+      const panel = comic.panels[i], region = panel.region, art = frames[i];
       img.alt = panel.alt;
       const crop = el("div.loading-panel-crop", [img]);
       if (region) {
@@ -123,7 +200,7 @@ export async function withLoading(prepare, {
       } else {
         crop.style.width = "100%"; crop.style.height = "100%";
       }
-      const art = el("div.loading-panel-art", [crop]);
+      art.append(crop);
       // Live text bubbles: shape is drawn in the art, words are DOM text so typos can be fixed.
       for (const bubble of panel.bubbles || []) {
         const node = el("p.loading-bubble", { text: bubble.text });
@@ -132,28 +209,32 @@ export async function withLoading(prepare, {
         if (bubble.fontSize != null) node.style.fontSize = `${bubble.fontSize}cqw`;
         art.append(node);
       }
-      return el("figure", [art]);
-    }));
-    content.setAttribute("role", "group");
-    content.setAttribute("aria-label", comic.title);
-    content.append(el("h2.loading-comic-title", { text: comic.title }), panels);
-    if (comic.caption) content.append(el("p.loading-comic-caption", { text: comic.caption }));
-    comicShown = true;
-  }).catch(() => {}) : Promise.resolve();
+    });
+    card.classList.remove("is-waiting");
+    comicShown = true; comicShownAt = performance.now();
+  }).catch(() => {
+    // Missing art: fall back to the plain gate (no sheet, no reading hold).
+    card.classList.remove("is-waiting");
+    content.replaceChildren(); content.removeAttribute("role"); content.removeAttribute("aria-label");
+  }) : Promise.resolve();
   // A quick task never flashes a loading screen. Styles are loaded only on use.
   const styleReady = loadStyle();
   styleReady.catch(error => controller.abort(error));
   // Portrait phones/tablets scale #stage down so far that comic text is unreadable. There, show the
   // overlay at true viewport scale (outside the scaled stage) and stack the panels large instead.
-  const portraitMq = window.matchMedia?.("(orientation: portrait)");
-  const portraitHost = () => (portraitMq?.matches ? document.body : host);
+  // A phone held sideways (a short landscape screen) leaves the stage too: the 16:9 stage is letterboxed
+  // on a wider screen, and the sheet can use that width and real-pixel text sizes (css/loading.css).
+  const viewportMqs = ["(orientation: portrait)", "(orientation: landscape) and (max-height: 500px)"]
+    .map(query => window.matchMedia?.(query)).filter(Boolean);
+  const atViewportScale = () => viewportMqs.some(mq => mq.matches);
   const placeOverlay = () => {
-    overlay.classList.toggle("is-viewport", !!portraitMq?.matches);
-    const parent = portraitHost();
+    const viewport = atViewportScale();
+    overlay.classList.toggle("is-viewport", viewport);
+    const parent = viewport ? document.body : host;
     if (overlay.parentNode !== parent) parent.append(overlay);
   };
   const onOrient = () => { if (overlay.isConnected) { placeOverlay(); overlay.focus(); } };
-  portraitMq?.addEventListener?.("change", onOrient);
+  for (const mq of viewportMqs) mq.addEventListener?.("change", onOrient);
   const show = async () => {
     try { await styleReady; } catch { return; }
     if (settled || controller.signal.aborted) return;
@@ -181,21 +262,34 @@ export async function withLoading(prepare, {
       aborted,
     ]);
     host.setAttribute("aria-busy", "false");
+    // A shown gate always carries its comic: when preparation ends before the art arrives, wait for it
+    // (at most COMIC_ART_TIMEOUT_MS from the start; missing art leaves the plain gate, which never holds).
+    if (required && overlay.isConnected && !controller.signal.aborted) await Promise.race([comicReady, aborted]);
     // Only when a comic is actually on screen, hold for the reader: advance on tap/click/key.
     // No comic / failure / instant task returns immediately, exactly like before.
     if (comicShown && overlay.isConnected && !controller.signal.aborted) {
+      bar.classList.add("is-determinate");
       overlay.style.setProperty("--loading-progress", "1");
+      // Input is accepted only after the reading guard. The ready look (準備完了 and the prompt) appears
+      // at that same moment, so what the screen says always matches what a tap does.
+      const wait = Math.max(READ_GUARD_READY_MS, comicShownAt + READ_GUARD_SHOWN_MS - performance.now());
+      await Promise.race([new Promise(resolve => { guardTimer = setTimeout(resolve, wait); }), aborted]);
       overlay.classList.add("is-ready");
+      statusText.textContent = "準備完了";
+      status.setAttribute("aria-label", "準備完了");
       proceed.setAttribute("aria-hidden", "false");
       awaitingProceed = true;
       await Promise.race([proceeded, aborted]);
+      lastReadAt = performance.now();
+      // The reader moved on by their own tap or key: that comic counts as read (record keeping only).
+      try { onRead?.(comic); } catch { /* A failed record must not break the game. */ }
     }
     return result;
   } finally {
-    settled = true; clearTimeout(timer); controller.abort();
+    settled = true; clearTimeout(timer); clearTimeout(guardTimer); controller.abort();
     void comicReady;
-    portraitMq?.removeEventListener?.("change", onOrient);
-    overlay.remove();
+    for (const mq of viewportMqs) mq.removeEventListener?.("change", onOrient);
+    leaveLoading(overlay, { cancelled: !!signal?.aborted });
     signal?.removeEventListener("abort", abort);
     window.removeEventListener("keydown", guard, true);
     window.removeEventListener("keyup", guard, true);
@@ -204,5 +298,22 @@ export async function withLoading(prepare, {
     if (wasBusy === null) host.removeAttribute("aria-busy"); else host.setAttribute("aria-busy", wasBusy);
     active = false;
     if (focus?.isConnected) focus.focus();
+    // The next fixed point shows its comic at once: fetch that comic's art while the scene settles.
+    if (required && comic) setTimeout(() => warmNextLoadingComic(comics, { context, chapter, isMet, isRead }), WARM_DELAY_MS);
   }
+}
+
+/**
+ * ロード画面の出口（#2688 A14）。本物はすぐ外し、同じ色の霞の面（背景の絵つき）を残して、もやが晴れるように上へ薄れさせる。
+ * 表示していなかった・中断された・動きを減らす設定では、今までどおりそのまま外す。
+ */
+function leaveLoading(overlay, { cancelled = false } = {}) {
+  const parent = overlay.parentNode;
+  const visible = !!parent && !cancelled && typeof matchMedia === "function" && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!visible) { overlay.remove(); return; }
+  const haze = el("div.loading-exit-haze", { "aria-hidden": "true" });
+  if (overlay.classList.contains("is-viewport")) haze.classList.add("is-viewport");
+  overlay.replaceWith(haze);
+  haze.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-3%)" }],
+    { duration: 300, easing: "cubic-bezier(.4,0,.2,1)", fill: "forwards" }).finished.catch(() => {}).finally(() => haze.remove());
 }

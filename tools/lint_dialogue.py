@@ -42,7 +42,7 @@ MOB_SPEAKERS = {"", "???", "customer", "everyone", "old_man", "shop_clerk",
 BANNED_ERROR = ["にしお", "ましろさん", "シーシャ・ステーション", "シーシャステーション",
                 "地方予選", "第12回", "ドクター・ケムリ", "煙の向こう側",
                 "技術力", "洞察力", "チュートリアル",
-                "チャド", "SHOWTIME",  # チャドはダ・シルヴァ太陽に完全統合済み（2026-07-18）
+                "SHOWTIME",  # 第4章の見せ方はダ・シルヴァ太陽の FESTA に一本化（2026-07-18）
                 "ヤニネコ", "ヤニ猫", "テツコ"]  # mukaiの看板猫は「てつこ」（2026-10-31 #1993）
 BANNED_WARN = ["メンタル", "集中力"]  # 文脈次第。ステ名として使っていないか目視
 
@@ -85,10 +85,6 @@ def load_speaker_whitelist() -> set:
     data = json.loads(CHARS.read_text(encoding="utf-8"))
     chars = data if isinstance(data, list) else data.get("characters", [])
     ids = {c["id"] for c in chars if isinstance(c, dict) and "id" in c}
-    # remake/core/data.js と同じ独立profileのoverlay。告白等の他ファイルでも本人を話者に使う。
-    overlay = json.loads((DLG_DIR / "samechan.json").read_text(encoding="utf-8"))
-    if overlay.get("profile", {}).get("id"):
-        ids.add(overlay["profile"]["id"])
     return ids | MOB_SPEAKERS
 
 
@@ -180,9 +176,7 @@ def main() -> int:
             errors.append(f"{rel}: JSON parse error: {e}")
             continue
 
-        profile = data.get("profile") or {}
-        local_id = profile.get("id") if isinstance(profile, dict) else None
-        file_whitelist = whitelist | ({local_id} if isinstance(local_id, str) and local_id else set())
+        file_whitelist = whitelist
 
         for dlg in data.get("dialogues", []) or []:
             did = dlg.get("dialogue_id", "?")

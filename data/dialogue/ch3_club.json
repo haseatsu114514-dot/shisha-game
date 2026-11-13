@@ -11,13 +11,28 @@
         { "speaker": "yoru", "face": "normal", "text": "……あ、mukaiの新しい子だ" },
         { "speaker": "hajime", "face": "surprise", "text": "え、俺のこと、知ってるんですか？" },
         { "speaker": "yoru", "face": "smile", "text": "開店前に、ムカイと甘いお茶を飲みに行くからね。カウンターの奥で見てた" },
-        { "speaker": "yoru", "face": "normal", "text": "針間ヨル。この下で、SEAMってクラブをやってる" }
+        { "speaker": "yoru", "face": "normal", "text": "針間ヨル。この下で、SEAMってクラブをやってる。……今夜の選曲は、もう決めてるんだ" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_club_first",
+      "comment": "第5章の東京で初めてクラブSEAMに入る夜（第3章でヨルに会っていない人だけ）。第3章を思い出す形にしない（2026-11-07 オーナー判断）。はじめはmukaiの屋根裏に泊まっているので、ヨルは「mukaiの屋根裏の子」と声をかける。名乗りの後は dj-club.js が登場カットインを出し、章を問わない ch3_club_first_after（DJの教え方）へ続く。",
+      "lines": [
+        { "speaker": "", "text": "屋根裏に戻る前に、夜の路地を少し歩いた。足元から、低い音が上がってくる。" },
+        { "speaker": "", "text": "地下へ続く細い階段。小さな看板に、縫い目のような線で「SEAM」とある。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……店の下から、音が出てる？）" },
+        { "speaker": "", "text": "階段の上で、ヘッドフォンを首にかけた女の人が、紙コップを傾けていた。" },
+        { "speaker": "yoru", "face": "normal", "text": "……あ、mukaiの屋根裏の子だ" },
+        { "speaker": "hajime", "face": "surprise", "text": "え、俺のこと、知ってるんですか？" },
+        { "speaker": "yoru", "face": "smile", "text": "開店前に、ムカイと甘いお茶を飲みに行くからね。屋根裏に若いのを泊めてるって。窓から顔も見えてた" },
+        { "speaker": "hajime", "face": "smile", "text": "はい。しばらく、屋根裏でお世話になってます" },
+        { "speaker": "yoru", "face": "normal", "text": "針間ヨル。この下で、SEAMってクラブをやってる。……今夜の選曲は、もう決めてるんだ" }
       ]
     },
     {
       "dialogue_id": "ch3_club_first_after",
       "lines": [
-        { "speaker": "hajime", "face": "normal", "text": "蒸野はじめです。えっと……クラブって、踊るところですよね" },
+        { "speaker": "hajime", "face": "normal", "text": "逢縁はじめです。えっと……クラブって、踊るところですよね" },
         { "speaker": "yoru", "face": "smile", "text": "踊ってもいいし、聴いてるだけでもいい。今夜はオープンデッキの日" },
         { "speaker": "yoru", "face": "normal", "text": "誰が回してもいい夜。はじめくんも、一回やっていきなよ" },
         { "speaker": "hajime", "face": "surprise", "text": "DJですか？　俺、やったことないです" },
@@ -50,6 +65,33 @@
         { "speaker": "yoru", "face": "smile", "text": "うん。でも今の八小節は、はじめくんにしか作れなかった" },
         { "speaker": "hajime", "face": "normal", "text": "（誰かの曲と、誰かの曲のあいだ。そこにいたのは、確かに俺だった）" },
         { "speaker": "yoru", "face": "normal", "text": "またおいで。デッキはいつでも空けとく" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_club_floor_edge",
+      "comment": "（#3097・未接続原稿）フロアの端で踊らずに聴いている客。ヨルはフロアを見て次の曲を決める。再訪の夜に読む想定の小会話だが、クラブには再訪で回す仕組みがまだ無いので dj-club.js からは読まない。時間・お金・体力・好感度・EXP は変えない。",
+      "lines": [
+        { "speaker": "", "text": "フロアの端に、壁にもたれたまま動かない人がいた。グラスの氷だけが、ときどき鳴る。" },
+        { "speaker": "hajime", "face": "normal", "text": "ヨルさん、あの人、ずっと踊ってないですね" },
+        { "speaker": "yoru", "face": "normal", "text": "うん。でも、曲が変わるたびに、靴の先だけ拍を取ってる" },
+        { "speaker": "hajime", "face": "surprise", "text": "……ほんとだ" },
+        { "speaker": "yoru", "face": "smile", "text": "ああいう人がいる夜は、ブースから見てて安心する。踊らなくても、ちゃんと聴いてるから" },
+        { "speaker": "yoru", "face": "normal", "text": "手が上がるのも、靴の先が動くのも、あたしには同じ合図" },
+        { "speaker": "hajime", "face": "normal", "text": "（お客さんの吸う間隔で、だいたいの具合がわかる。あれと似てる）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_club_low_corner",
+      "comment": "（#3097・未接続原稿）まだ客の少ない時間、ヨルが低い音の溜まる場所を歩いて確かめる。再訪の夜に読む想定の小会話だが、クラブには再訪で回す仕組みがまだ無いので dj-club.js からは読まない。時間・お金・体力・好感度・EXP は変えない。",
+      "lines": [
+        { "speaker": "", "text": "まだ客の少ない時間。フロアの照明は、半分しか点いていない。" },
+        { "speaker": "", "text": "ヨルさんが低い音を一つ鳴らしては、隅のほうへ歩いていく。" },
+        { "speaker": "hajime", "face": "normal", "text": "何してるんですか？" },
+        { "speaker": "yoru", "face": "normal", "text": "音の溜まり場を探してる。部屋の隅は、低い音が膨らみやすいの" },
+        { "speaker": "hajime", "face": "normal", "text": "（店の席ごとに、煙の流れ方が違うのと同じかもしれない）" },
+        { "speaker": "yoru", "face": "smile", "text": "はじめくん、そこの柱の陰に立ってみて" },
+        { "speaker": "hajime", "face": "surprise", "text": "うわ、ここだけ床が震えてます" },
+        { "speaker": "yoru", "face": "smile", "text": "でしょ。今夜は、そこを荷物置き場にしよう" }
       ]
     },
     { "dialogue_id": "venue_yoru_greet", "lines": [{ "speaker": "yoru", "face": "smile", "text": "好きなセットを選んで。最初はSET 1からね" }] },

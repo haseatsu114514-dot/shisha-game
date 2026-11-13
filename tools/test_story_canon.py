@@ -81,7 +81,7 @@ class CanonRegressionTests(unittest.TestCase):
 
     def test_r3_confirmed_character_fields(self):
         old = [
-            {'id': 'nagumo', 'affiliation': 'シーステーション会長',
+            {'id': 'sui', 'affiliation': 'シーステーション会長',
              'description': 'シーステーションを築いた'},
             {'id': 'adam', 'affiliation': 'Eden', 'description': 'Edenに所属する'},
         ]
@@ -89,7 +89,7 @@ class CanonRegressionTests(unittest.TestCase):
         self.assertEqual(len(errors), 4)
         self.assertTrue(all('characters.json:' in error for error in errors))
         current = [
-            {'id': 'nagumo', 'affiliation': 'C.STATION会長',
+            {'id': 'sui', 'affiliation': 'C.STATION会長',
              'description': 'C.STATIONを築いた'},
             {'id': 'adam', 'affiliation': 'EDEN', 'description': 'EDENに所属する',
              'visual_concepts': ['Eden shop outfit']},

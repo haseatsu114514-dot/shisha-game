@@ -22,6 +22,11 @@
         "{reason}",
         "……代わりと言っちゃなんだが、給料は弾むぞ"
       ],
+      "repeat_messages": [
+        "またで悪い。今日の昼、入れるか？",
+        "{reason}",
+        "前に頼んだ分も含めて、きっちり色はつける"
+      ],
       "decline_response": {
         "text": "……そうか。なら、こっちで回す"
       },
@@ -39,7 +44,7 @@
       "accept_text": "入ります",
       "accept_reply": {
         "sender": "mukai_master",
-        "text": "助かる。待ってる"
+        "stamp": "st_mukai_master_ack"
       },
       "hint": "乗るとそのまま昼のmukaiのシフトへ（行動を1回使う）。いつもの日当に上乗せがつく",
       "messages": [
@@ -87,7 +92,7 @@
         },
         {
           "sender": "naru",
-          "text": "火入れから立ち上がりまで、うまくなりたいなら全部見てけ。こいよ"
+          "text": "火入れから立ち上がりまで、全部丸見えだ。来いよ"
         }
       ],
       "accept_event": "interaction_naru_night_01",
@@ -184,7 +189,7 @@
       ],
       "accept_event": "ch1_adam_outing_dagurikura",
       "accept_text": "閉店後、お供します",
-      "reminder_text": "先日のリンゴの探求、まだ道は開かれている。今夜、閉店後ならどうだ。",
+      "reminder_text": "先日のリンゴの探求、まだ道は開かれている。今夜、閉店後ならどうだ",
       "decline_response": {
         "sender": "adam",
         "text": "そうか。疲れた夜もあろう、……また日を改めよう"
@@ -215,13 +220,13 @@
       },
       "after_close": true,
       "accept_text": "仕事後、同行します",
-      "reminder_text": "観音の夜は、まだ逃げておらん。それぞれの仕事を終えたあとなら、どうだ。"
+      "reminder_text": "観音の夜は、まだ逃げておらん。それぞれの仕事を終えたあとなら、どうだ"
     },
     {
       "id": "lime_outing_minto_1",
       "important": true,
       "closed_on": 6,
-      "reminder_text": "フレーバー、まだ買えてないの。今日はお店がお休みだから、選ぶの付き合ってくれたら嬉しいな。",
+      "reminder_text": "フレーバー、まだ買えてないの。今日はお店がお休みだから、選ぶの付き合ってくれたら嬉しいな",
       "sender": "minto",
       "trigger_condition": "affinity_level",
       "trigger_value": 3,
@@ -235,7 +240,7 @@
         },
         {
           "sender": "minto",
-          "text": "フレーバーを買い足したくて。お店用じゃなくて、自分で吸う、強すぎるって言われるくらいのミント。……はじめくんの意見も聞けたら、嬉しいな"
+          "text": "フレーバーを買い足したくて。お店用じゃなくて、私用の、強すぎるって言われるくらいのミント。……はじめくんの意見も聞けたら、嬉しいな"
         }
       ],
       "accept_event": "outing_minto_1",
@@ -278,7 +283,7 @@
     {
       "id": "lime_outing_minto_2",
       "important": true,
-      "reminder_text": "前の話、急がなくていいからね。{privateContext}、気が向いたらでいいよ。",
+      "reminder_text": "前の話、急がなくていいからね。{privateContext}、気が向いたらでいいよ",
       "sender": "minto",
       "trigger_condition": "flag",
       "trigger_flag": "_minto_fifth_done",
@@ -296,7 +301,7 @@
       "accept_event": "ch1_minto_private_1",
       "decline_response": {
         "sender": "minto",
-        "text": "そっか、忙しいよね、……また誘う、かも"
+        "text": "そっか、忙しいよね。……また、誘ってもいい？"
       },
       "private_schedule": "holiday_or_after_close",
       "accept_text": "{privateWhen}、会おう",
@@ -464,6 +469,27 @@
       ]
     },
     {
+      "id": "encourage_ch2_minto",
+      "sender": "minto",
+      "chapter": 2,
+      "trigger_condition": "tournament_day",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "はじめくん、今日は県大会だねっ！"
+        },
+        {
+          "sender": "minto",
+          "text": "みんとはお店から配信で見てるよ♪ 応援は任せてっ"
+        },
+        {
+          "sender": "minto",
+          "text": "……手元、慌てないでね。終わったら、どんな一台だったか聞かせて"
+        }
+      ]
+    },
+    {
       "id": "encourage_tsumugi",
       "sender": "tsumugi",
       "chapter": 1,
@@ -476,7 +502,11 @@
         },
         {
           "sender": "tsumugi",
-          "text": "会場にいます。……今日の空気、私には少し橙色です。緊張したら、深呼吸。……終わったら、感想を聞いてください"
+          "text": "会場にいます。……今日の空気は、私には少し橙色です"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "緊張したら、深呼吸。……終わったら、感想を聞かせてください"
         }
       ]
     },
@@ -627,22 +657,22 @@
       ]
     },
     {
-      "id": "encourage_rin",
-      "sender": "rin",
+      "id": "encourage_rio",
+      "sender": "rio",
       "trigger_condition": "tournament_day",
       "type": "chat",
       "messages": [
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "おはよ、モルモットくん。今日が本番でしょ"
         },
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "会場には行けない。こっちは朝から入荷の検品"
         },
         {
-          "sender": "rin",
-          "text": "……いつもの舌で吸って、いつもの手で作りなさい。結果は、あとで2階で聞く"
+          "sender": "rio",
+          "text": "……いつもの舌と、いつもの手で作りなさい。結果は、あとで2階で聞く"
         }
       ]
     },
@@ -659,7 +689,7 @@
         },
         {
           "sender": "hiyori",
-          "text": "私は会社だけど、窓の外に向かって応援しておくね。スミさんに教わった手なんだもの、大丈夫"
+          "text": "私は会社だけど、給湯室から儚く念を送っとく。スミさん仕込みの手なんだから、大丈夫"
         },
         {
           "sender": "hiyori",
@@ -805,7 +835,7 @@
         },
         {
           "sender": "ageha",
-          "text": "うちも店の営業終わってからギャル友と集まるんだけど、一緒にシーシャ吸いに行かない？"
+          "text": "うちも店の営業終わってからギャル友と集まるんだけど、一緒にシーシャ屋いかない？"
         },
         {
           "sender": "ageha",
@@ -872,7 +902,7 @@
         },
         {
           "sender": "ageha",
-          "text": "今日はガチで敵同士だし、うちも手加減しないからね。でも、うちの見込んだ男なんだから、無様な真似はマジ許さないし"
+          "text": "今日はガチで敵同士だし、うちも手加減しないからね。でも、うちが見込んだ男なんだから、ダサい負け方したらマジ許さないし"
         },
         {
           "sender": "ageha",
@@ -938,7 +968,7 @@
         },
         {
           "sender": "kumicho",
-          "text": "知り合いの若いのがmukaiに行ったらしいんだが、そこで見たこともねえ煙にやられて、震えてやがるんでさ"
+          "text": "知り合いの若いのがmukaiに行ったらしいんですがね、そこで見たこともねえ煙にやられて、震えてやがるんでさ"
         },
         {
           "sender": "kumicho",
@@ -1212,7 +1242,7 @@
       "messages": [
         {
           "sender": "rei",
-          "text": "……REI"
+          "text": "……レヰ"
         },
         {
           "sender": "rei",
@@ -1385,7 +1415,7 @@
           "affinity": 2
         },
         {
-          "text": "REIさんの煙だからです",
+          "text": "レヰさんの煙だからです",
           "response": "……お前は、すぐそういうことを言う",
           "affinity": 1
         }
@@ -1414,13 +1444,77 @@
       ],
       "replies": [
         {
-          "text": "REIさんのおすすめを",
+          "text": "レヰさんのおすすめを",
           "response": "……なら、明日の朝に送る。静かなやつ",
           "affinity": 2
         },
         {
           "text": "店の音を思い出します",
           "response": "……それも、いい。いつもの音は、手を戻してくれる",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_rei_bond_a",
+      "sender": "rei",
+      "chapter": 2,
+      "type": "chat",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch2_read_ch2_rei_third",
+      "messages": [
+        {
+          "sender": "rei",
+          "text": "……健太"
+        },
+        {
+          "sender": "rei",
+          "text": "試しに、こっちで名乗ってみた"
+        },
+        {
+          "sender": "rei",
+          "text": "……変なら、戻す"
+        }
+      ],
+      "replies": [
+        {
+          "text": "変じゃないです",
+          "response": "……そうか。店では、レヰのままでいい",
+          "affinity": 2
+        },
+        {
+          "text": "どっちで呼べばいいですか",
+          "response": "……どっちでも。どっちで呼ばれても、振り向く",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_rei_bond_b",
+      "sender": "rei",
+      "chapter": 2,
+      "type": "chat",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch2_rei_ticket",
+      "messages": [
+        {
+          "sender": "rei",
+          "text": "……チケットの端、折れてた。ごめん"
+        },
+        {
+          "sender": "rei",
+          "text": "渡すか迷って、ポケットの中で何回も握ってた"
+        }
+      ],
+      "replies": [
+        {
+          "text": "折れてても大事にします",
+          "response": "……うん。入口では、それで通れる",
+          "affinity": 2
+        },
+        {
+          "text": "迷ってたんですね",
+          "response": "……三回しまった。四回目で、出せた",
           "affinity": 1
         }
       ]
@@ -1450,7 +1544,7 @@
         },
         {
           "sender": "naru",
-          "text": "まあ南雲会長の旧知だから問題ないんだろうけどさ。たぶん"
+          "text": "まあ千須会長の旧知だから問題ないんだろうけどさ。たぶん"
         }
       ],
       "trigger_day": 3,
@@ -1525,7 +1619,7 @@
         },
         {
           "sender": "ageha",
-          "text": "ムカイさんとこで見たって話もあるんだけど。うちのバイブスで感じるのは"
+          "text": "ムカイさんとこで見たって話もあるんだけど……うちのバイブス的にはさ"
         },
         {
           "sender": "ageha",
@@ -1603,7 +1697,11 @@
         },
         {
           "sender": "naru",
-          "text": "立ち上がりの3分だけ計っといて。カラメルと一緒で、そこ急ぐと甘さが苦さに化けるから。新作と旧型で体感どれくらい違うか、お前の手応えを聞きたい"
+          "text": "立ち上がりの3分だけ計っといて。カラメルと一緒で、そこを急ぐと甘さが苦さに化けるから"
+        },
+        {
+          "sender": "naru",
+          "text": "新作と旧型で体感がどれくらい違うか、お前の手応えを聞きたい"
         }
       ],
       "replies": [
@@ -1639,7 +1737,7 @@
         },
         {
           "sender": "adam",
-          "text": "この前、一緒に見た月だ、……良い夜だった"
+          "text": "この前、共に見た月だ、……良い夜だった"
         }
       ],
       "replies": [
@@ -1657,6 +1755,72 @@
           "text": "リンゴに見えますね",
           "response": "……気づいたか。そうだ、あの夜の月は熟れていた。お前も、ようやく見える目になってきたな",
           "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_adam_bond_a",
+      "sender": "adam",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "はじめよ。今、湯を沸かしている"
+        },
+        {
+          "sender": "adam",
+          "text": "カップの蓋に『三分』とある。……炭が赤くなるまでより、短いのか"
+        },
+        {
+          "sender": "adam",
+          "text": "待つ間、蓋の上に何か載せるべきか。ボウルのように"
+        }
+      ],
+      "replies": [
+        {
+          "text": "炭は載せないでくださいね",
+          "response": "……載せぬ。今、トングを置いたところだ",
+          "affinity": 2
+        },
+        {
+          "text": "割り箸を載せれば十分です",
+          "response": "割り箸か。……なるほど、軽い重しだな。覚えておこう",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_adam_bond_b",
+      "sender": "adam",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 4,
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "はじめよ。今朝の一台目を、焦がした"
+        },
+        {
+          "sender": "adam",
+          "text": "客に出す前に、自分で吸って分かった。客は知らぬ。……だが、俺は知っている"
+        },
+        {
+          "sender": "adam",
+          "text": "何年やっても、焦がす朝はある。二台目は、炭を一つ外へ寄せた"
+        }
+      ],
+      "replies": [
+        {
+          "text": "俺も、昨日焦がしました",
+          "response": "そうか。……ならば同志よ、今日の一台目は、昨日より一拍遅く置け",
+          "affinity": 2
+        },
+        {
+          "text": "二台目は、どうでした？",
+          "response": "甘さが戻った。……焦がした朝のことほど、よく覚えている",
+          "affinity": 1
         }
       ]
     },
@@ -1773,29 +1937,29 @@
       ]
     },
     {
-      "id": "lime_rin_report",
-      "sender": "rin",
+      "id": "lime_rio_report",
+      "sender": "rio",
       "trigger_condition": "flag",
-      "trigger_flag": "_ev_rin_monitor",
+      "trigger_flag": "_ev_rio_monitor",
       "type": "chat",
       "messages": [
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "おはよ、モルモットくん。昨日のB-7、本国がレポート気に入ったって"
         },
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "『日本の若い舌は正直だ』だってさ。ふふ、私の見立て通り"
         },
         {
-          "sender": "rin",
-          "stamp": "st_rin_smug",
+          "sender": "rio",
+          "stamp": "st_rio_smug",
           "media_chapters": [
             1
           ]
         },
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "次の便も近いうちに入る。……気が向いたら2階においで"
         }
       ],
@@ -1811,7 +1975,7 @@
           "affinity": 2
         },
         {
-          "text": "凛さんの見立て、外れないんですね",
+          "text": "凛想さんの見立て、外れないんですね",
           "response": "外すよ、たまに。……君のことは、外してない気がするけど。さ、業務連絡おわり",
           "affinity": 2
         }
@@ -1858,6 +2022,84 @@
         {
           "text": "お互い少し休もう",
           "response": "……そうですね。今日は、描かずに吸う時間も作ります",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_tsumugi_low_water",
+      "sender": "tsumugi",
+      "trigger_condition": "flag",
+      "trigger_flag": "_spot_seen_ch1_tsumugi_low_water",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おはようございます"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……昨日は、水が少なくなるまで、窓の席にいました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "ペンは、吸ってからにしました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "描きながらだと、煙が少し強かったので"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "ひびの線は、直していません"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "今日の尾は、その線より細く引きました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "葉っぱの耳は、昨日のままです"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "席は、また空けてあります"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……また、同じ席で待っています"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "ラベンダーは、いつもの色でした。縁だけ、細かったです"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "はじめさんの煙を見てから、線を一本だけ足します"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "描かない日も、来ます。水が減ったら、帰ります"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……画面のひびは、今日も、同じ場所にありました"
+        }
+      ],
+      "replies": [
+        {
+          "text": "席は空けておくね",
+          "response": "……はい。描かない日も、そこにいます",
+          "affinity": 1
+        },
+        {
+          "text": "線は、そのままで",
+          "response": "……ひびも、尾も、今日のままにします",
+          "affinity": 1
+        },
+        {
+          "text": "水が減るまでいるね",
+          "response": "……少なくなったら、帰ります。また同じ席で",
           "affinity": 1
         }
       ]
@@ -1991,32 +2233,32 @@
     },
     {
       "id": "lime_fookah_promo_1",
-      "sender": "rin",
+      "sender": "rio",
       "trigger_condition": "lime_exchanged",
       "trigger_day": 4,
       "type": "chat",
       "messages": [
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "【Dr.fookah 入荷情報】新しいロット、棚に並べたよ"
         },
         {
-          "sender": "rin",
-          "image": "im_rin_stock",
+          "sender": "rio",
+          "image": "im_rio_stock",
           "media_chapters": [
             1
           ]
         },
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "今期のイチ推しは『AF グレープ』。素直に旨い、迷ったらこれ。くじにも何袋か紛れてるらしい"
         },
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "同じグレープでも、今回のロットは汁気が多め"
         },
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "……モルモットくんの舌なら、違いが分かるでしょ。2階の試香、いつでもどうぞ"
         }
       ],
@@ -2035,21 +2277,21 @@
     },
     {
       "id": "lime_fookah_promo_2",
-      "sender": "rin",
+      "sender": "rio",
       "trigger_condition": "lime_exchanged",
       "trigger_day": 9,
       "type": "chat",
       "messages": [
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "モルモットくん、今いい？ これは業務連絡じゃないやつ"
         },
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "昨日の昼も、結局ブルーベリーを吸ってた。限定品の試香で鼻を使い切った日は、ここに帰ってくるんだよね"
         },
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "……で、ふと思った。これ、君の吸い方で一回吸ってみてほしい。仕事抜きで。感想もレポートにはしないから"
         }
       ],
@@ -2122,6 +2364,39 @@
         {
           "text": "教えてもらったこと、試してみます",
           "response": "え、うちちゃんと教えられてた？笑 なんとなくでやってるから、言葉にすると逃げちゃう気がしてさ。……ハジメっちの店でどうなったか、教えて！",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ageha_bear_seat",
+      "sender": "ageha",
+      "type": "chat",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ageha_bear_seat_done",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "ハジメっち、白いクマの隣、今日も空けておいたよ"
+        },
+        {
+          "sender": "ageha",
+          "text": "朝に指を確かめたあと、その席だと落ち着くよ"
+        },
+        {
+          "sender": "ageha",
+          "text": "次もそこに、座ってほしいな"
+        }
+      ],
+      "replies": [
+        {
+          "text": "またその席に座ります",
+          "response": "おっけー、ある日の煙、用意しとく",
+          "affinity": 1
+        },
+        {
+          "text": "ある日も、ない日も行きます",
+          "response": "……ない日は、席だけ空けとくね",
           "affinity": 2
         }
       ]
@@ -2323,6 +2598,47 @@
       ]
     },
     {
+      "id": "lime_samechan_after_seat",
+      "sender": "samechan",
+      "trigger_condition": "flag",
+      "trigger_flag": "_samechan_look_away_done",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "samechan",
+          "text": "この前は、隣に座ってくれてありがとうなのじゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "水が空くまで、わしは立たなかった。久しぶりに、店の音がよく聞こえたのじゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "サメの話は、次にお主が来たときの続きじゃ。歯の場面は、まだ飛ばすのじゃぞ"
+        },
+        {
+          "sender": "samechan",
+          "text": "通り道は、お主の肩が通れた幅のまま残しておく。また、その席で待つぞ"
+        },
+        {
+          "sender": "samechan",
+          "text": "次も、隣の席を空けて待っておくのじゃ。コロちゃんが何度もしつこく申しておるのじゃ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "また隣に座ります",
+          "response": "うむ。その席は、空けておくのじゃ",
+          "affinity": 2
+        },
+        {
+          "text": "続き、聞きに行きます",
+          "response": "歯のところは、まだ飛ばすぞ",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_naru_samechan_nickname",
       "sender": "naru",
       "trigger_condition": "flag",
@@ -2332,15 +2648,15 @@
       "messages": [
         {
           "sender": "naru",
-          "text": "路地のSHISHARKの店主に会ったんだって？ 俺はサメちゃんって呼んでる。"
+          "text": "路地のSHISHARKの店主に会ったんだって？ 俺はサメちゃんって呼んでる"
         },
         {
           "sender": "naru",
-          "text": "映画の話になると長いけど、店のことは本当に真面目に考えてる。"
+          "text": "映画の話になると長いけど、店のことは本当に真面目に考えてる"
         },
         {
           "sender": "naru",
-          "text": "大会の勝ち負けには興味ないってさ。俺も客として遊びに行きたい。"
+          "text": "大会の勝ち負けには興味ないってさ。俺も今度、客として遊びに行くわ"
         }
       ],
       "replies": [
@@ -2366,11 +2682,11 @@
       "messages": [
         {
           "sender": "samechan",
-          "text": "先日は箱を運んでくれて、ありがとうなのじゃ。あれから椅子の位置を決め直した。"
+          "text": "先日は箱を運んでくれて、ありがとうなのじゃ。あれから椅子の位置を決め直した"
         },
         {
           "sender": "samechan",
-          "text": "コロちゃんの玉座は、客の通り道をふさがぬ場所になったぞ。開店の日が決まったら、また知らせるのじゃ。"
+          "text": "コロちゃんの玉座は、客の通り道をふさがぬ場所になったぞ。開店の日が決まったら、また知らせるのじゃ"
         }
       ],
       "replies": [
@@ -2398,7 +2714,7 @@
       "messages": [
         {
           "sender": "samechan",
-          "text": "SHISHARK、いよいよオープンじゃ！ 大会おつかれさま。コロちゃんと、はじめが来るのを待っておるぞ。"
+          "text": "SHISHARK、いよいよオープンじゃ！ 大会もおつかれさまなのじゃ。コロちゃんと、はじめが来るのを待っておるぞ"
         }
       ],
       "replies": [
@@ -2454,7 +2770,7 @@
       "messages": [
         {
           "sender": "samechan",
-          "text": "この前はつき合うてくれて、ありがとうなのじゃ。五本は、さすがに目がしょぼしょぼする"
+          "text": "この前はつき合うてくれて、ありがとうなのじゃ。五本は、さすがに目がしょぼしょぼするのう"
         },
         {
           "sender": "samechan",
@@ -2480,48 +2796,48 @@
       ]
     },
     {
-      "id": "lime_outing_rin_1",
+      "id": "lime_outing_rio_1",
       "important": true,
-      "sender": "rin",
+      "sender": "rio",
       "trigger_condition": "affinity_level",
       "trigger_value": 3,
       "type": "invitation",
       "time_slot": "noon",
       "messages": [
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "おはよ、モルモットくん。今日のお昼、少し借りていい？"
         },
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "豆の仕入れ。ショールームに置いてるコーヒー豆、切らしちゃってさ"
         },
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "荷物持ちと、鼻がもう一つ要る。……業務、ってことにしとく"
         }
       ],
-      "accept_event": "outing_rin_1",
+      "accept_event": "outing_rio_1",
       "accept_text": "お昼、行きます",
       "decline_response": {
-        "sender": "rin",
+        "sender": "rio",
         "text": "了解。豆は一人で嗅いでくる。君の鼻は、また借りにいくね"
       },
       "reminder_text": "この前の仕入れの話、まだ有効。豆屋は逃げないけど、私の昼休みは逃げる"
     },
     {
-      "id": "lime_after_outing_rin",
-      "sender": "rin",
+      "id": "lime_after_outing_rio",
+      "sender": "rio",
       "trigger_condition": "flag",
-      "trigger_flag": "_outing_done_rin",
+      "trigger_flag": "_outing_done_rio",
       "type": "chat",
       "messages": [
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "おはよ。この前の豆、もう半分減った"
         },
         {
-          "sender": "rin",
+          "sender": "rio",
           "text": "試香の合間に嗅ぐたび、豆屋での君の顔を思い出す。……仕事の邪魔なんだけど"
         }
       ],
@@ -2606,6 +2922,2574 @@
           "affinity": 1
         }
       ]
+    },
+    {
+      "id": "lime_hiyori_charm",
+      "sender": "hiyori",
+      "trigger_condition": "flag",
+      "trigger_flag": "_hiyori_charm_done",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "hiyori",
+          "text": "おはよう、はじめくん。この前の席、悪くなかった"
+        },
+        {
+          "sender": "hiyori",
+          "text": "紅茶、急がせてもらえなくて助かった。通知は、今日の私に回してある"
+        },
+        {
+          "sender": "hiyori",
+          "text": "……隣だと、消えなくていい気がする。また席、分けて"
+        },
+        {
+          "sender": "hiyori",
+          "text": "会社では、ちゃんとした顔に戻ってるよ"
+        },
+        {
+          "sender": "hiyori",
+          "text": "それでも、あの席のことは覚えてるから"
+        }
+      ],
+      "replies": [
+        {
+          "text": "また席、分けます",
+          "response": "……うん。急がない席で、待ってる",
+          "affinity": 2
+        },
+        {
+          "text": "今日もおつかれさまです",
+          "response": "ありがとう。消えずに、定時で帰るね",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_hiyori_peach",
+      "sender": "hiyori",
+      "trigger_condition": "flag",
+      "trigger_flag": "_hiyori_peach_talk_done",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "hiyori",
+          "text": "おはよう。この前の桃、まだ指に残ってる気がする"
+        },
+        {
+          "sender": "hiyori",
+          "text": "しぶとい果物、って自分で言っちゃった。でも、あれが本音"
+        },
+        {
+          "sender": "hiyori",
+          "text": "今日は紅茶でもいいかな。甘い日と、そうじゃない日と、両方ほしい"
+        }
+      ],
+      "replies": [
+        {
+          "text": "桃、覚えてます",
+          "response": "……覚えててくれたんだ。次は、またあの待ち方で",
+          "affinity": 2
+        },
+        {
+          "text": "紅茶の日も、いいです",
+          "response": "ふふ。どっちの日も、隣は君がいい",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_ch3_sumi_tokyo_settle",
+      "sender": "sumi",
+      "chapter": 3,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 2,
+      "region": "tokyo",
+      "priority": 1,
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "ムカイから、着いたって聞いた"
+        },
+        {
+          "sender": "sumi",
+          "text": "向こうの飯は食えてるか。寝る時間だけは削るなよ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ちゃんと食べてます",
+          "response": "おう。それならいい",
+          "affinity": 1
+        },
+        {
+          "text": "ムカイさん、よくしてくれてます",
+          "response": "あいつは面倒見がいい。甘えすぎるなよ",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_sumi_settle",
+      "sender": "sumi",
+      "chapter": 4,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 2,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "そっちは暑いだろ。水は多めに持って歩け"
+        },
+        {
+          "sender": "sumi",
+          "text": "時差で眠れなくても、横にはなっとけ"
+        },
+        {
+          "sender": "sumi",
+          "text": "店のことは気にすんな。こっちは回ってる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "水、多めに持ち歩きます",
+          "response": "おう。喉が渇く前に飲めよ",
+          "affinity": 1
+        },
+        {
+          "text": "スミさんも、無理しないでください",
+          "response": "俺の心配はいらん。お前は自分の台のことだけ考えろ",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_tsumugi_counter",
+      "sender": "tsumugi",
+      "chapter": 4,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 3,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "……おはようございます。昨日も、tonariのカウンターにいました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "ほかの常連さんに、はじめさんはいつ帰ってくるのか聞かれました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……世界大会が終わったら、と答えておきました"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ちゃんと帰るって伝えて",
+          "response": "……はい。お土産話も付きます、と言っておきます",
+          "affinity": 2
+        },
+        {
+          "text": "スミさん、一人で大変そう？",
+          "response": "……いえ。いつもどおり、静かな色の煙です",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_mashiro_mukai",
+      "sender": "mashiro",
+      "chapter": 4,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 5,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mashiro",
+          "text": "はじめくん、おはよぉ。こっちは、もうお昼過ぎだよぉ"
+        },
+        {
+          "sender": "mashiro",
+          "text": "ムカイさんが新しい豆を試してて、お店じゅうコーヒーの匂い。僕は、いつもの紅茶"
+        },
+        {
+          "sender": "mashiro",
+          "text": "……応援してるよぉ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ムカイさんらしいね",
+          "response": "うん。最後は甘いラテにしてたぁ",
+          "affinity": 1
+        },
+        {
+          "text": "ましろちゃんも、無理しないでね",
+          "response": "ふふ。はじめくんこそ、だよぉ",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_ageha_melty",
+      "sender": "ageha",
+      "chapter": 4,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 7,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "ハジメっち〜！ ドバイどう？ 暑すぎて溶けてない？笑"
+        },
+        {
+          "sender": "ageha",
+          "text": "ギャル友と、向こうのシーシャ屋の動画見てた。お客さん、みんなゆったり吸ってて、いいな〜って"
+        },
+        {
+          "sender": "ageha",
+          "text": "空の写真、撮れたら送って！ うちの待ち受けにする笑"
+        }
+      ],
+      "replies": [
+        {
+          "text": "撮れたら送ります",
+          "response": "やった！ 一番きれいなやつね",
+          "affinity": 1
+        },
+        {
+          "text": "帰ったら、向こうの話をします",
+          "response": "絶対ね！ 白いクマの席、空けとくから",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_saku_stream",
+      "sender": "saku",
+      "chapter": 4,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 9,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "世界大会の配信、福岡で見るよ"
+        },
+        {
+          "sender": "saku",
+          "text": "僕が言うのも変だけど、隣の台の香りが強い時は、確かめる前に水を一口"
+        },
+        {
+          "sender": "saku",
+          "text": "鼻が前の香りに慣れたままだと、自分の台を読み違えるから"
+        }
+      ],
+      "replies": [
+        {
+          "text": "水、用意しておきます",
+          "response": "うん。それだけで、少し戻るから",
+          "affinity": 1
+        },
+        {
+          "text": "綾取さんが言うと、重みが違いますね",
+          "response": "でしょ。仕掛けた側だからね",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_saku_steve_note",
+      "sender": "saku",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch3_read_ch3_saku_steve_notes",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "福岡で、東京のノートを開いた"
+        },
+        {
+          "sender": "saku",
+          "text": "端に黒い三角が一つ。横に僕の字で「置いた炭。スティーブさんの」って書いてあった"
+        },
+        {
+          "sender": "saku",
+          "text": "一台だけ、内から待つ順番で試した。感想を字で送ったら、返事が来た。最後の一行だけ、三角だった"
+        }
+      ],
+      "replies": [
+        {
+          "text": "その三角、読めました？",
+          "response": "半分。残りは、次に会った時に手でやってもらう",
+          "affinity": 0
+        },
+        {
+          "text": "綾取さんも、低温に寄せるんですか",
+          "response": "寄せない。僕は先に立たせる方。ただ、二口目は少し軽かった。それも書いておいた",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_ch4_sumi_eve",
+      "sender": "sumi",
+      "chapter": 4,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 11,
+      "region": "dubai",
+      "priority": 1,
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "そろそろ本番だな"
+        },
+        {
+          "sender": "sumi",
+          "text": "出発前に言ったこと、覚えてるか。葉より先に、顔を見ろ"
+        },
+        {
+          "sender": "sumi",
+          "text": "誰に出す一台か、答えは当日の台で見せればいい"
+        }
+      ],
+      "replies": [
+        {
+          "text": "はい、当日の台で見せます",
+          "response": "おう。こっちは店で見てる",
+          "affinity": 2
+        },
+        {
+          "text": "顔を見るの、忘れません",
+          "response": "それでいい。あとは、よく寝ろ",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_saku_title",
+      "sender": "saku",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 2,
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "福岡の店で、決勝の配信を見てたよ"
+        },
+        {
+          "sender": "saku",
+          "text": "最後の調整、君が自分で決めたのが、画面越しでも分かった"
+        },
+        {
+          "sender": "saku",
+          "text": "優勝おめでとう。こっちも、熱の順番を一から見直してる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "見ててくれたんですね",
+          "response": "うん。閉店後に、もう一回見た",
+          "affinity": 1
+        },
+        {
+          "text": "今度、福岡の店に行かせてください",
+          "response": "いいよ。伏せたままの一台、用意しとく",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_kumicho_title",
+      "sender": "kumicho",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 3,
+      "region": "home",
+      "exclude_flag": "ch2_kumicho_after_ch2_done",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "kumicho",
+          "text": "あんちゃん、世界一の知らせ、こっちにも届いてやすぜ"
+        },
+        {
+          "sender": "kumicho",
+          "text": "店の前を通る連中まで、あんちゃんの名を口にしてやしてね"
+        },
+        {
+          "sender": "kumicho",
+          "text": "柚ヶ谷に来るついでがありゃ、一服つけていきなせえ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "近いうちに伺います",
+          "response": "おう。炭を起こして待ってやす",
+          "affinity": 2
+        },
+        {
+          "text": "なんだか照れますね",
+          "response": "照れるこたぁねえ。胸を張りなせえ",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_ch5_rei_title",
+      "sender": "rei",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 5,
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "rei",
+          "text": "……世界大会、おめでとう"
+        },
+        {
+          "sender": "rei",
+          "text": "何て送るか、ずっと考えてた。……短いのしか、残らなかった"
+        }
+      ],
+      "replies": [
+        {
+          "text": "十分、伝わりました",
+          "response": "……そう。なら、よかった",
+          "affinity": 2
+        },
+        {
+          "text": "今度、お店に行きます",
+          "response": "……うん。流す曲、選んどく",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_wang_01",
+      "sender": "master_hookah",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_master_hookah",
+      "priority": 1,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "王煙楼だ。届いているかな"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "この画面を開くのは、店の仕入れの連絡くらいでね"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "茶の話なら、いつでも送っていい"
+        }
+      ],
+      "replies": [
+        {
+          "text": "届いてます！",
+          "response": "よかった。仕入れ以外の連絡が、一つ増えた",
+          "affinity": 1
+        },
+        {
+          "text": "茶の話、たくさん聞きたいです",
+          "response": "いい。では、明日の一杯から書こう",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_wang_02",
+      "sender": "master_hookah",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_master_hookah",
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "ドバイの客は、夜が遅い。日付が変わる頃に、いちばん混む"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "本店は、朝の茶の客が多い。同じ店の名でも、街で顔が変わる"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "君の店の客は、何時ごろに来る"
+        }
+      ],
+      "replies": [
+        {
+          "text": "仕事帰りの人が多いです",
+          "response": "なら、疲れた息の客だ。軽い一台から始めなさい",
+          "affinity": 2
+        },
+        {
+          "text": "昼の常連さんもいます",
+          "response": "昼の客は、話が長い。茶を多めに用意しておくといい",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_wang_03",
+      "sender": "master_hookah",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_master_hookah",
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "閉店後、店員にせがまれて、龍を一つだけ出した"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "ここは本店より提灯が低い。龍の頭が、ちょうど提灯に当たって崩れた"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "本店の癖で、高く上げすぎた"
+        }
+      ],
+      "replies": [
+        {
+          "text": "見たかったです、それ",
+          "response": "見せない。……次は、首を低くして出そう",
+          "affinity": 2
+        },
+        {
+          "text": "店員さん、笑ってました？",
+          "response": "笑っていた。私も、少し笑った",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_wang_04",
+      "sender": "master_hookah",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_master_hookah",
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "日本の店で覚えた言葉で、今も毎日使うのは「いただきます」だ"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "茶の前に、手を合わせる。店員にも移って、今では私より先に言う"
+        }
+      ],
+      "replies": [
+        {
+          "text": "tonariでも言ってます",
+          "response": "いい店だ。一台の前にも、よく合う言葉だよ",
+          "affinity": 2
+        },
+        {
+          "text": "店員さん、覚えが早いですね",
+          "response": "若い人は早い。私は、口に馴染むまでかかった",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_wang_05",
+      "sender": "master_hookah",
+      "chapter": 4,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "今日は砂の強い日だった"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "入口に、靴の砂を払う布を置いた。座る前に、一息つける"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "君の店の入口には、何がある"
+        }
+      ],
+      "replies": [
+        {
+          "text": "特に何も置いてないです",
+          "response": "なら、一日だけ客の足もとを見てみなさい。置く物が分かる",
+          "affinity": 2
+        },
+        {
+          "text": "雨の日は、床が大変です",
+          "response": "雨も砂も同じだ。座る前の一息を、作ってあげなさい",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_wang_06",
+      "sender": "master_hookah",
+      "chapter": 4,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 4,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "近くの道具屋で、シリコンのボウルを一つ買った。落としても割れない"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "本店の古い職人に見せたら、きっと渋い顔をする"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "君と話すようになってから、どうも新しい物に手が伸びる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "渋い顔、見てみたいです",
+          "response": "見せない。……私が先に笑ってしまう",
+          "affinity": 1
+        },
+        {
+          "text": "使い心地、どうでした？",
+          "response": "悪くない。古い配合にも、すぐ馴染んだ",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_wang_07",
+      "sender": "master_hookah",
+      "chapter": 4,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 4,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "店員が、初めて一人で客の一台を作った"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "炭を置く前に、客の顔を見ていた。私が何度言っても、直らなかった所だ"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "君の真似だそうだ。店で、君の手を見ていたらしい"
+        }
+      ],
+      "replies": [
+        {
+          "text": "俺の真似ですか！？",
+          "response": "そうだ。私の言葉より、覚えが早かった",
+          "affinity": 2
+        },
+        {
+          "text": "店員さんに、よろしく",
+          "response": "伝えた。照れて、炭を落としかけていた",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_wang_08",
+      "sender": "master_hookah",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 4,
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "本店に戻った。店の者に、ドバイの話を三日続けている"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "日本の若い職人の話になると、皆が茶を淹れ直す。長くなると知っているからだ"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "遅くなったが、おめでとう。tonariへ寄る日を、そろそろ考えよう"
+        }
+      ],
+      "replies": [
+        {
+          "text": "いつでも待ってます",
+          "response": "ありがとう。最初の火種は、君に頼もう",
+          "affinity": 2
+        },
+        {
+          "text": "三日も話してたんですか",
+          "response": "今日で四日目だ。今も、茶を淹れ直している",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_wang_09",
+      "sender": "master_hookah",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 9,
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "大会の日、シェイクが私を先生と呼んだとき、君の息が一つ止まっていた"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "店で言わなかったのは、本人が名乗る日を待っていたからだ"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "教えたのは昔のことだ。炭の起こし方と、客を待つことくらいだよ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "息、止まってましたか",
+          "response": "止まっていた。二口ぶんくらいね",
+          "affinity": 2
+        },
+        {
+          "text": "全然、気づきませんでした",
+          "response": "隠れるのは、昔から上手かった。それは私が教えていない",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_taiyo_01",
+      "sender": "da_silva",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_da_silva",
+      "priority": 1,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "da_silva",
+          "text": "太陽だ！　届いてるか？"
+        },
+        {
+          "sender": "da_silva",
+          "text": "裏の椅子の写真、見たな。あそこ座ると、みんな寝る"
+        },
+        {
+          "sender": "da_silva",
+          "text": "次、お前の店の椅子な。忘れるなよ！"
+        }
+      ],
+      "replies": [
+        {
+          "text": "届いてます！",
+          "response": "よし！　椅子の写真、待ってるぞ",
+          "affinity": 1
+        },
+        {
+          "text": "前に撮った写真、探します",
+          "response": "おう！　椅子だけ写ってれば、いい",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_taiyo_02",
+      "sender": "da_silva",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_da_silva",
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "da_silva",
+          "text": "壁のコースター、今日、日本の客が見つけた"
+        },
+        {
+          "sender": "da_silva",
+          "text": "「はじめ」って、声に出して読んでたぞ"
+        },
+        {
+          "sender": "da_silva",
+          "text": "お前、FESTAの有名人だな！"
+        }
+      ],
+      "replies": [
+        {
+          "text": "恥ずかしいです……",
+          "response": "いいだろ。次に来たら、俺が一番でかい声で呼ぶ",
+          "affinity": 1
+        },
+        {
+          "text": "太陽さんのも、隣ですよね",
+          "response": "当たり前だ。一番明るいとこに、二枚並んでる",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_taiyo_03",
+      "sender": "da_silva",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_da_silva",
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "da_silva",
+          "text": "今日の閉店、床拭き、店員に負けた"
+        },
+        {
+          "sender": "da_silva",
+          "text": "俺が行ったら、もうぴかぴか。最後の角だけ、残ってた"
+        },
+        {
+          "sender": "da_silva",
+          "text": "俺のぶん、残してくれたって。……やさしいな、あいつら"
+        }
+      ],
+      "replies": [
+        {
+          "text": "いい店員さんですね",
+          "response": "おう。明日は、俺が先に拭く",
+          "affinity": 1
+        },
+        {
+          "text": "最後の角、大事です",
+          "response": "分かってるな！　角が汚いと、全部汚く見える",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_taiyo_04",
+      "sender": "da_silva",
+      "chapter": 4,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "da_silva",
+          "text": "今日、帰りぎわの客が、俺のグラスに水を注いでった"
+        },
+        {
+          "sender": "da_silva",
+          "text": "頼んでねえのに。……ちょっと、泣きそうになった"
+        },
+        {
+          "sender": "da_silva",
+          "text": "注がれるの、慣れてねえんだ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "いつも注ぐ側ですもんね",
+          "response": "そう。たまには、注がれるのも、いいな",
+          "affinity": 1
+        },
+        {
+          "text": "その人、また来ますよ",
+          "response": "……おう。来たら、今度は俺が先に注ぐ",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_taiyo_05",
+      "sender": "da_silva",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 7,
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "da_silva",
+          "text": "ハジメ！　大会の動画、店の連中に送った"
+        },
+        {
+          "sender": "da_silva",
+          "text": "俺が手振るとこ、何回も巻き戻されたって"
+        },
+        {
+          "sender": "da_silva",
+          "text": "お前の驚いた顔のとこで、止めてるやつもいたぞ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "止めないでください……",
+          "response": "無理だ。いい顔だからな",
+          "affinity": 1
+        },
+        {
+          "text": "太陽さん、手を振りすぎです",
+          "response": "言った、だろ？　会おうって。だから、全力で振った",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_taiyo_06",
+      "sender": "da_silva",
+      "chapter": 5,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 4,
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "da_silva",
+          "text": "今日、年寄りの客に、静かな一台作った。手拍子なし"
+        },
+        {
+          "sender": "da_silva",
+          "text": "そしたら、じいさん、寝た"
+        },
+        {
+          "sender": "da_silva",
+          "text": "一台で客を寝かせたの、初めてだ。……悪くねえな"
+        }
+      ],
+      "replies": [
+        {
+          "text": "最高の感想ですね",
+          "response": "だな。起きたら、もう一台って言われた",
+          "affinity": 2
+        },
+        {
+          "text": "起こさないであげてください",
+          "response": "起こさねえ。肩に、布かけといた",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_noor_after_sunset",
+      "sender": "noor",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_noor",
+      "type": "chat",
+      "route": "romance",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "砂丘の帰り道、車の窓に映った顔を思い出してた。夕日の前と後で、私、全然違う顔をしてたよね"
+        },
+        {
+          "sender": "noor",
+          "text": "行きはガイドの顔をしてたのに、帰りはハジメのほうばかり見てた気がする"
+        },
+        {
+          "sender": "noor",
+          "text": "あの時、言わずに帰したら後悔するって思った。言えてよかった。本当に、よかった"
+        },
+        {
+          "sender": "noor",
+          "text": "店の地図には、戻る場所に小さな丸を書いてる。出る道は風で変わっても、そこだけは消さない"
+        },
+        {
+          "sender": "noor",
+          "text": "ハジメと話す時間も、そんな丸みたいになってきたよ。離れている日も、声を聞けたら戻ってこられる"
+        },
+        {
+          "sender": "noor",
+          "text": "連絡する時、元気な話を用意しなくていいからね。今日は何もなかった、でも私は聞きたい"
+        },
+        {
+          "sender": "noor",
+          "text": "次に会う日を急いで決めなくても、会いたいって言うのはやめない。ハジメも、遠慮しないで"
+        },
+        {
+          "sender": "noor",
+          "text": "いつか二人で写真を撮ろう。ガイドの顔じゃなくて、今の私で。変な顔になっても、きっと笑えるから"
+        }
+      ],
+      "replies": [
+        {
+          "text": "俺も、会いたい時は言います",
+          "response": "うん。私も、その言葉を待ってる",
+          "affinity": 2
+        },
+        {
+          "text": "次は一緒に写真を撮りましょう",
+          "response": "約束。もし変な顔になっても、二人なら笑えるね",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_mashiro_glass_cloth",
+      "sender": "mashiro",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch3_read_ch3_mashiro_glass_cloth",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mashiro",
+          "text": "はじめくん。閉店のあと、布巾をカウンターに畳んでおいたよ"
+        },
+        {
+          "sender": "mashiro",
+          "text": "朝、まだ少し湿ってたら、僕が先にいた印だと思って"
+        },
+        {
+          "sender": "mashiro",
+          "text": "乾いてても席は空けてあるから、来た日にお茶をいれるね"
+        },
+        {
+          "sender": "mashiro",
+          "text": "タイマーは端と端。僕の時間は僕が見て、はじめくんのは横で鳴る"
+        },
+        {
+          "sender": "mashiro",
+          "text": "音が鳴っても、話の途中なら葉は置いたままでいいから"
+        },
+        {
+          "sender": "mashiro",
+          "text": "カップの底が冷えてたら、注ぐ前に温めておくね"
+        },
+        {
+          "sender": "mashiro",
+          "text": "味が驚かないように。同じ棚の、別の席のままで"
+        },
+        {
+          "sender": "mashiro",
+          "text": "湯気は混ざらなくていいよ。となりにいるのは、人の方だから"
+        },
+        {
+          "sender": "mashiro",
+          "text": "……急がなくていい。軽い葉も、重いやつも、隣で待ってる"
+        },
+        {
+          "sender": "mashiro",
+          "text": "布巾の横に、はじめくんの印も置いといたよ"
+        },
+        {
+          "sender": "mashiro",
+          "text": "来たときに見つけてね。席は、空けたまま"
+        }
+      ],
+      "replies": [
+        {
+          "text": "湿ってたら、会いに行く",
+          "response": "うん。湿ってる方が、僕は少しうれしいかも",
+          "affinity": 2
+        },
+        {
+          "text": "乾いてても、行くよ",
+          "response": "ふふ。乾いてても、席はあるよ",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "sender": "volk",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_volk",
+      "priority": 1,
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "記録。番号は届いた。"
+        },
+        {
+          "sender": "volk",
+          "text": "誤字は、後で直す。今は、届いただけを残す。"
+        },
+        {
+          "sender": "volk",
+          "text": "お前からも、届いたと書け。欄が空だと、後で分からなくなる。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "届いてます。これから使います",
+          "response": "そうか。これでいい。",
+          "affinity": 1
+        },
+        {
+          "text": "誤字、気にしなくていいですよ",
+          "response": "気にする。記録だからな。",
+          "affinity": 2
+        }
+      ],
+      "id": "L01",
+      "type": "chat"
+    },
+    {
+      "sender": "volk",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_volk",
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "記録。炭を乗せる前に、表面が灰をかぶるまで置いた。四分。"
+        },
+        {
+          "sender": "volk",
+          "text": "灰の前に乗せると、最初の熱が寄る。香りが先に立つ。"
+        },
+        {
+          "sender": "volk",
+          "text": "今日は、灰のあとで乗せた。最初の口が、穏やかだった。"
+        },
+        {
+          "sender": "volk",
+          "text": "お前は、何分置いてから乗せる。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "そんなに計ってませんでした",
+          "response": "計れ。四分から始めろ。",
+          "affinity": 1
+        },
+        {
+          "text": "だいたい四分くらいです",
+          "response": "そうか。同じなら、条件を揃えやすい。",
+          "affinity": 2
+        }
+      ],
+      "id": "L02",
+      "type": "chat"
+    },
+    {
+      "sender": "volk",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_volk",
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "客に、写真を頼まれた。俺が写れ、と。"
+        },
+        {
+          "sender": "volk",
+          "text": "笑ってはいない。記録に残した。「写真、あり。笑顔、なし」。"
+        },
+        {
+          "sender": "volk",
+          "text": "店員が笑う欄は、元々無い。今日、作らなかった。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "次は、少しだけ笑ってみてください",
+          "response": "……欄は、まだ増やさない。",
+          "affinity": 1
+        },
+        {
+          "text": "その欄、俺は好きです",
+          "response": "そうか。お前が好きなら、残しておく。",
+          "affinity": 2
+        }
+      ],
+      "id": "L03",
+      "type": "chat"
+    },
+    {
+      "sender": "volk",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "七年、空白の日は少ない。"
+        },
+        {
+          "sender": "volk",
+          "text": "今日は、書けなかった。客の顔は覚えてる。数字だけが、残らなかった。"
+        },
+        {
+          "sender": "volk",
+          "text": "後から埋めるのは、記録じゃない。空欄のまま残す。"
+        },
+        {
+          "sender": "volk",
+          "text": "測っていないものを、測ったように書くのは、一番よくない。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "空欄のまま残すんですね",
+          "response": "ああ。忘れないための、空欄だ。",
+          "affinity": 2
+        },
+        {
+          "text": "客の顔は、俺も覚えておきます",
+          "response": "そうか。それは、お前の欄へ書け。",
+          "affinity": 1
+        }
+      ],
+      "id": "L04",
+      "type": "chat"
+    },
+    {
+      "sender": "volk",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_volk",
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "記録。室温24度、湿度61。夏の店だ。"
+        },
+        {
+          "sender": "volk",
+          "text": "煙の量は変わらない。口当たりだけが、重く残る。"
+        },
+        {
+          "sender": "volk",
+          "text": "加湿で増やすな。窓を少し開けた。数字は、そのまま書け。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "量より、口当たりを見ます",
+          "response": "それでいい。量だけ追うな。",
+          "affinity": 2
+        },
+        {
+          "text": "湿度、何度から気にしますか",
+          "response": "決めていない。今日の61を、書いておけ。",
+          "affinity": 1
+        }
+      ],
+      "id": "L05",
+      "type": "chat"
+    },
+    {
+      "sender": "volk",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_volk",
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "午後、室温が上がった。中央の熱が、寄ってきた。"
+        },
+        {
+          "sender": "volk",
+          "text": "炭を端へ広げた。詰めは、触っていない。"
+        },
+        {
+          "sender": "volk",
+          "text": "寄ったままにすると、真ん中だけが先行する。端の葉が、置いていかれる。"
+        },
+        {
+          "sender": "volk",
+          "text": "お前の店も、午後はどうしてる。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "俺も、炭だけ端に広げます",
+          "response": "そうしろ。詰めをほぐすな。",
+          "affinity": 2
+        },
+        {
+          "text": "熱が寄る前に、一度見ます",
+          "response": "見ろ。数字より先に、真ん中を触れ。",
+          "affinity": 1
+        }
+      ],
+      "id": "L06",
+      "type": "chat"
+    },
+    {
+      "sender": "volk",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 2,
+      "region": "home",
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "タイトルのあとでも、欄は同じだ。室温、湿度、口数、休み。"
+        },
+        {
+          "sender": "volk",
+          "text": "増えたのは、「見ていた」の一行だけだ。"
+        },
+        {
+          "sender": "volk",
+          "text": "お前が決めた調整は、画面では数字にならない。だから、言葉で残した。"
+        },
+        {
+          "sender": "volk",
+          "text": "おめでとう。記録の最後に、書いてある。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "見ててくれたんですね",
+          "response": "ああ。数字にならないものも、残す。",
+          "affinity": 2
+        },
+        {
+          "text": "ありがとうございます",
+          "response": "礼はいい。次も、自分の数字を書け。",
+          "affinity": 1
+        }
+      ],
+      "id": "L07",
+      "type": "chat"
+    },
+    {
+      "sender": "steve",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_steve",
+      "priority": 1,
+      "messages": [
+        {
+          "sender": "steve",
+          "text": "ヘイ、ハジメ。届いたか。"
+        },
+        {
+          "sender": "steve",
+          "text": "こっちのタイマーは、まだ鳴らしていない。今は、番号の確認だけだ。"
+        },
+        {
+          "sender": "steve",
+          "text": "返事が来たら、カードの一番上に書く。名前は、ハジメでいいな。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "届いてます。ハジメでいいです",
+          "response": "オーケー。一番上に書いた。スペルは、これで固定だ。",
+          "affinity": 1
+        },
+        {
+          "text": "スティーブさんの名前も、書きました",
+          "response": "イエス。……変な字だったら、後で直せ。俺も直す。",
+          "affinity": 2
+        }
+      ],
+      "id": "L08",
+      "type": "chat"
+    },
+    {
+      "sender": "steve",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_steve",
+      "messages": [
+        {
+          "sender": "steve",
+          "text": "ヘイ。今日は、タイマーを押し忘れた。"
+        },
+        {
+          "sender": "steve",
+          "text": "灰の様子を見て、たぶん十五分だと思った。カードには「たぶんな」と書いた。"
+        },
+        {
+          "sender": "steve",
+          "text": "推測を、秒の欄に入れるな。……自分でも分かってる。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "次は、先に押せばいいですよ",
+          "response": "イエス。ポケットを、二回確認する。たぶんな。",
+          "affinity": 1
+        },
+        {
+          "text": "「たぶんな」の欄、残しときましょう",
+          "response": "……残すか。余白の、一番下だな。",
+          "affinity": 2
+        }
+      ],
+      "id": "L09",
+      "type": "chat"
+    },
+    {
+      "sender": "steve",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "messages": [
+        {
+          "sender": "steve",
+          "text": "今日は、待ちすぎた。レモンの立ち上がりを、逃した。"
+        },
+        {
+          "sender": "steve",
+          "text": "タイマーは正しく鳴った。鳴ったあと、まだ動かなかった。慎重が、遅さになった。"
+        },
+        {
+          "sender": "steve",
+          "text": "客は、二口目の軽いところを笑ってた。秒の欄じゃなくて、余白にその顔を書いた。"
+        },
+        {
+          "sender": "steve",
+          "text": "ハジメが言う、知らせの顔って、たぶんこれだ。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "その余白の方が、大事だと思います",
+          "response": "……そう、かもな。次も、逃げないで書く。",
+          "affinity": 2
+        },
+        {
+          "text": "次は、鳴ったら一度動かしませんか",
+          "response": "オーケー。鳴ったら、ミリだけ動かす。逃げない。",
+          "affinity": 1
+        }
+      ],
+      "id": "L10",
+      "type": "chat"
+    },
+    {
+      "sender": "steve",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_steve",
+      "messages": [
+        {
+          "sender": "steve",
+          "text": "隣の台が、盛りあがってた。トングへ、手が伸びた。"
+        },
+        {
+          "sender": "steve",
+          "text": "タイマーを見て、置き直した。まだ早かった。レモンは、これからだった。"
+        },
+        {
+          "sender": "steve",
+          "text": "急がないためのタイマーなのに、急がなくなる前に、手が動く。"
+        },
+        {
+          "sender": "steve",
+          "text": "ハジメは、そういう時、どうしてる。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "一度、手を膝に戻します",
+          "response": "膝か。試す。カードの裏に、書く。",
+          "affinity": 2
+        },
+        {
+          "text": "タイマーを、もう一回見ます",
+          "response": "イエス。俺も、今日はそれで助かった。",
+          "affinity": 1
+        }
+      ],
+      "id": "L11",
+      "type": "chat"
+    },
+    {
+      "sender": "steve",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_steve",
+      "messages": [
+        {
+          "sender": "steve",
+          "text": "カードの裏を、空にしてある。表は秒。裏は、顔を書く面だ。"
+        },
+        {
+          "sender": "steve",
+          "text": "今日は、裏に一つ書けた。二口目で、目が細くなった客だ。"
+        },
+        {
+          "sender": "steve",
+          "text": "表と裏が、同じカードにあるのがいい。秒だけ残すと、顔が消える。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "表と裏、両方残してください",
+          "response": "残す。ハジメの分の裏も、一枚空けてある。",
+          "affinity": 2
+        },
+        {
+          "text": "目が細くなったタイミング、覚えてます？",
+          "response": "二口目の、終わり。ライムが残る前だ。",
+          "affinity": 1
+        }
+      ],
+      "id": "L12",
+      "type": "chat"
+    },
+    {
+      "sender": "steve",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_steve",
+      "messages": [
+        {
+          "sender": "steve",
+          "text": "実験だ。タイマーを、ポケットに入れたまま一台作った。"
+        },
+        {
+          "sender": "steve",
+          "text": "イエス……途中で不安になった。灰は見ていた。でも、秒が恋しかった。"
+        },
+        {
+          "sender": "steve",
+          "text": "最後にポケットを撫でた。鳴らしてないのに、居るだけで落ち着いた。変だな。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "居るだけでいい道具、いいですね",
+          "response": "……そう、言うか。なら、変でも残す。",
+          "affinity": 2
+        },
+        {
+          "text": "次は、半分だけ使ってみますか",
+          "response": "半分。試す。たぶんな。",
+          "affinity": 1
+        }
+      ],
+      "id": "L13",
+      "type": "chat"
+    },
+    {
+      "sender": "steve",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 3,
+      "region": "home",
+      "messages": [
+        {
+          "sender": "steve",
+          "text": "ヘイ、ハジメ。決勝、見てた。"
+        },
+        {
+          "sender": "steve",
+          "text": "タイマーは止めた。頭の中で、数えていた。お前が動かしたタイミングと、近かった。"
+        },
+        {
+          "sender": "steve",
+          "text": "おめでとう。カードの余白に、書いた。秒の欄じゃない。こっちの方が、正しい。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "見ててくれたんですね",
+          "response": "イエス。頭の中の秒は、少し速かった。お前の方が、正しかった。",
+          "affinity": 2
+        },
+        {
+          "text": "また一緒に、秒を数えましょう",
+          "response": "オーケー。次は、並んで数える。逃げない。",
+          "affinity": 1
+        }
+      ],
+      "id": "L14",
+      "type": "chat"
+    },
+    {
+      "sender": "saku",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_saku",
+      "priority": 1,
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "届いた。僕の番号、変じゃなかった？"
+        },
+        {
+          "sender": "saku",
+          "text": "材料の写真は、送らないよ。残したいことは、文字で書く癖があって。"
+        },
+        {
+          "sender": "saku",
+          "text": "君も、見てほしい台があったら、先に言葉で聞かせて。写真より、順番が知りたい。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "届いてます。文字で十分です",
+          "response": "よかった。僕も、そっちの方が落ち着く。",
+          "affinity": 1
+        },
+        {
+          "text": "順番の話、また聞かせてください",
+          "response": "いいよ。ただし種明かしは、まだしない。理由だけね。",
+          "affinity": 2
+        }
+      ],
+      "id": "L15",
+      "type": "chat"
+    },
+    {
+      "sender": "saku",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_saku",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "予想、当たった。"
+        },
+        {
+          "sender": "saku",
+          "text": "君は、夜の方が返事を書きそうだなって。ノートの端に、先に書いてあった。"
+        },
+        {
+          "sender": "saku",
+          "text": "当たっても、褒めてはいけないやつ。ただ、少し嬉しい。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "でしょ、って顔が目に浮かびます",
+          "response": "見えてるの？　……まあ、でしょ。",
+          "affinity": 2
+        },
+        {
+          "text": "昼に送ったら、予想外れですか",
+          "response": "外れた報告、待ってる。そっちの方が、ノートが面白い。",
+          "affinity": 1
+        }
+      ],
+      "id": "L16",
+      "type": "chat"
+    },
+    {
+      "sender": "saku",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_saku",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "今日の客が、「煙、濃いね。上手いね」って言った。"
+        },
+        {
+          "sender": "saku",
+          "text": "ありがとう、とは言ったよ。でも濃さは、上手さの印じゃない。薄くても、順番が正しければ残る。"
+        },
+        {
+          "sender": "saku",
+          "text": "種はまだ言わない。ただ、量を追いかけるのは、おすすめしない。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "量より、順番を見ます",
+          "response": "それがいい。君なら、すぐ分かると思う。",
+          "affinity": 2
+        },
+        {
+          "text": "薄くても残る、って少し安心しました",
+          "response": "でしょ。濃い煙に、急がなくていい。",
+          "affinity": 1
+        }
+      ],
+      "id": "L17",
+      "type": "chat"
+    },
+    {
+      "sender": "saku",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "福岡の店、もう閉店した。片付けのあと、一台だけやり直してる。"
+        },
+        {
+          "sender": "saku",
+          "text": "東京の煙幕で覚えた、熱の順番。あれを、誰もいない店で確かめてる。"
+        },
+        {
+          "sender": "saku",
+          "text": "種は、まだ伏せたまま。理由だけ先に言うね。急いだ熱は、最初だけ強くて、あとが続かない。"
+        },
+        {
+          "sender": "saku",
+          "text": "君が自分の順番を決めた日のこと、こっちでも思い出してる。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "いつか、伏せたまま吸わせてください",
+          "response": "いいよ。その前に、君の順番も聞かせて。交換しよう。",
+          "affinity": 2
+        },
+        {
+          "text": "急がない熱、俺も大切にします",
+          "response": "うん。それだけで、続きが変わるから。",
+          "affinity": 1
+        }
+      ],
+      "id": "L18",
+      "type": "chat"
+    },
+    {
+      "sender": "saku",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_saku",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "胸のカード、また白紙を一枚足した。"
+        },
+        {
+          "sender": "saku",
+          "text": "先に材料を見せるか、名前を伏せるか。今日の客は、伏せる方を選んだ。"
+        },
+        {
+          "sender": "saku",
+          "text": "僕が決めるより、選んでもらう方が、あとの感想が面白い。君は、どっちが好き。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "俺は、伏せてもらう方が好きです",
+          "response": "だと思った。次、福岡に来たら、その一枚を用意する。",
+          "affinity": 2
+        },
+        {
+          "text": "材料を先に見たい日もあります",
+          "response": "それも正解だよ。日によって選んでいい。カードは、どちらも空きがある。",
+          "affinity": 1
+        }
+      ],
+      "id": "L19",
+      "type": "chat"
+    },
+    {
+      "sender": "saku",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 6,
+      "region": "home",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "前に、熱の順番を一から見直してるって言ったでしょ。"
+        },
+        {
+          "sender": "saku",
+          "text": "メモの一行目だけ、シェアする。『最初を強くしない。比較の基準を、客に渡さない』。"
+        },
+        {
+          "sender": "saku",
+          "text": "自分に書いた行だよ。君に教えるための種じゃない。同じ失敗を、したくなくて。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "一行目、俺もノートに書きます",
+          "response": "うん。書くと、手が少し遅くなる。それがいい。",
+          "affinity": 2
+        },
+        {
+          "text": "失敗も、残すんですね",
+          "response": "残すよ。当たった予想より、こっちの方が役に立つ。",
+          "affinity": 1
+        }
+      ],
+      "id": "L20",
+      "type": "chat"
+    },
+    {
+      "sender": "sumi",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 1,
+      "priority": 1,
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "灰、捨てたか。"
+        },
+        {
+          "sender": "sumi",
+          "text": "返事は、それだけでいい。長い報告はいらん。"
+        },
+        {
+          "sender": "sumi",
+          "text": "残して朝を迎えるなよ。湿気を吸う。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "さっき捨てました",
+          "response": "おう。それならいい。",
+          "affinity": 1
+        },
+        {
+          "text": "今から捨てます",
+          "response": "急げ。終わるまで、寝るなよ。",
+          "affinity": 2
+        }
+      ],
+      "id": "L21",
+      "type": "chat"
+    },
+    {
+      "sender": "sumi",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 1,
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "今日、客がお前の礼を言いに来たぞ。"
+        },
+        {
+          "sender": "sumi",
+          "text": "俺のところへ来るな、とは言わなかった。次は自分の耳で聞け。"
+        },
+        {
+          "sender": "sumi",
+          "text": "お前から礼が来ても、返さんからな。礼はいい。次の灰を捨てろ。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "次は、自分でお礼を受けます",
+          "response": "それでいい。浮かれるなよ。",
+          "affinity": 2
+        },
+        {
+          "text": "スミさんに伝えてもらえて、助かりました",
+          "response": "……だから、礼はいいと言った。",
+          "affinity": 1
+        }
+      ],
+      "id": "L22",
+      "type": "chat"
+    },
+    {
+      "sender": "sumi",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "今日は雨だ。炭を、搬入口に出すなよ。"
+        },
+        {
+          "sender": "sumi",
+          "text": "湿気を吸った炭は、火のつきが揃わない。乾いた棚へ上げろ。"
+        },
+        {
+          "sender": "sumi",
+          "text": "香りより先に、火が揃うかどうかを見ろ。そこが雑だと、あとは全部ずれる。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "棚へ上げておきます",
+          "response": "おう。袋の口も、しっかり閉めろ。",
+          "affinity": 2
+        },
+        {
+          "text": "火が揃うか、先に見ます",
+          "response": "それでいい。焦がしてからでは遅い。",
+          "affinity": 1
+        }
+      ],
+      "id": "L23",
+      "type": "chat"
+    },
+    {
+      "sender": "sumi",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "閉店後に、ラベンダーを少し残してある。"
+        },
+        {
+          "sender": "sumi",
+          "text": "俺の分じゃない。お前が、一度ゆっくり吸え。"
+        },
+        {
+          "sender": "sumi",
+          "text": "感想は、明日でいい。今日は吸ったら寝ろ。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "残してくれたんですね。吸ったら寝ます",
+          "response": "おう。残したことを、昼間の客に話すなよ。",
+          "affinity": 2
+        },
+        {
+          "text": "スミさんこそ、先に休んでください",
+          "response": "……生意気を。俺の店だ。残るのは俺でいい。",
+          "affinity": 1
+        }
+      ],
+      "id": "L24",
+      "type": "chat"
+    },
+    {
+      "sender": "sumi",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "今日は残業するな。残るのは、俺だ。"
+        },
+        {
+          "sender": "sumi",
+          "text": "体が資本だ。お前が倒れたら、店の意味が無い。"
+        },
+        {
+          "sender": "sumi",
+          "text": "明日の朝、普通の顔で来い。それが仕事だ。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "分かりました。先に上がります",
+          "response": "おう。ちゃんと食えよ。",
+          "affinity": 2
+        },
+        {
+          "text": "少しだけ手伝ってから帰ります",
+          "response": "いらん。鍵は、俺が閉める。",
+          "affinity": 1
+        }
+      ],
+      "id": "L25",
+      "type": "chat"
+    },
+    {
+      "sender": "noor",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_noor",
+      "route": "romance",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "今日は風が強くて、カフェを少し早く閉めた。席の砂を払って、やっと座ったところ"
+        },
+        {
+          "sender": "noor",
+          "text": "元気な報告を用意しようとしたら、風の音しか残らなかった。それでも送りたかった"
+        },
+        {
+          "sender": "noor",
+          "text": "ハジメの声が聞けたら、今日はそれで足りる。短い返事でいいからね"
+        }
+      ],
+      "replies": [
+        {
+          "text": "俺も、今の声が聞けて安心した",
+          "response": "うん。それだけで、風の音が少し優しくなった",
+          "affinity": 2
+        },
+        {
+          "text": "早く閉めたなら、今日は休んでください",
+          "response": "休む。ハジメがそう言うなら、ちゃんと休むよ",
+          "affinity": 1
+        }
+      ],
+      "id": "L26",
+      "type": "chat"
+    },
+    {
+      "sender": "noor",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_noor",
+      "route": "romance",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "今日、お客に『二人は一緒に働いてるの？』って聞かれた。ハジメの話をした直後で"
+        },
+        {
+          "sender": "noor",
+          "text": "ガイドの顔で答えようとして、今の私の顔が先に出て、少し詰まった"
+        },
+        {
+          "sender": "noor",
+          "text": "『大切な人』って言ったよ。正しく訳せたか、あとで少し笑った。変な顔、してたかも"
+        }
+      ],
+      "replies": [
+        {
+          "text": "正しく届いてる。俺もそう思ってる",
+          "response": "……よかった。今度は、詰まらずに言えるように練習しておく",
+          "affinity": 2
+        },
+        {
+          "text": "変な顔でも、俺は見たいです",
+          "response": "じゃあ次、写真の約束、忘れないで。ガイドの顔じゃない方で",
+          "affinity": 1
+        }
+      ],
+      "id": "L27",
+      "type": "chat"
+    },
+    {
+      "sender": "noor",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 4,
+      "region": "dubai",
+      "route": "romance",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "カフェ・オアシスの、ガイドの席が今朝は空いていた。私が座る場所なのに、少し広く見えた"
+        },
+        {
+          "sender": "noor",
+          "text": "ハジメの店のことは、地図の話じゃなくて、席の話として思い出してた"
+        },
+        {
+          "sender": "noor",
+          "text": "次に会う日は、急いで決めなくていい。でも会いたいとは、ちゃんと言う。ハジメも、遠慮しないで"
+        }
+      ],
+      "replies": [
+        {
+          "text": "俺も、会いたい。日はあとで決めよう",
+          "response": "うん。その言葉を、空いていた席に置いておく",
+          "affinity": 2
+        },
+        {
+          "text": "席が広く見えた日も、聞かせてください",
+          "response": "聞かせる。元気な日ばかりじゃないことも、隠さないから",
+          "affinity": 1
+        }
+      ],
+      "id": "L28",
+      "type": "chat"
+    },
+    {
+      "sender": "noor",
+      "trigger_condition": "flag",
+      "trigger_flag": "_friend_noor",
+      "priority": 1,
+      "route": "friend",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "ハジメ。番号、届いた？　友だちの連絡として、送ってる"
+        },
+        {
+          "sender": "noor",
+          "text": "ガイドの用件だけじゃなくて、店が終わったあとの話もしていい？　私は、してほしい"
+        },
+        {
+          "sender": "noor",
+          "text": "元気な話題を用意しなくてもいいからね。今日の風向きだけでも、送りたくなる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "俺も、用件以外も送ります",
+          "response": "うん。それなら、交換した意味がある",
+          "affinity": 2
+        },
+        {
+          "text": "今日の風向き、よかったら教えてください",
+          "response": "朝は東から。ハジメの店の話も、あとで聞かせて",
+          "affinity": 1
+        }
+      ],
+      "id": "L29",
+      "type": "chat"
+    },
+    {
+      "sender": "noor",
+      "trigger_condition": "flag",
+      "trigger_flag": "_friend_noor",
+      "route": "friend",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "テラスのメニューが、風で全部飛んだ。私が追いかけて、砂を払って、普通の顔で戻った"
+        },
+        {
+          "sender": "noor",
+          "text": "お客は笑ってた。ガイドの顔、少し崩れてたかも。それでも注文は取れたから、勝ちだと思う"
+        },
+        {
+          "sender": "noor",
+          "text": "ハジメの店でも、こんな日ある？　あったら聞かせて。笑っていいから"
+        }
+      ],
+      "replies": [
+        {
+          "text": "俺の店でも、メニューが飛びました",
+          "response": "同じだね。次は写真、間に合わなかったって後悔してる",
+          "affinity": 2
+        },
+        {
+          "text": "普通の顔で戻るの、想像したら笑いました",
+          "response": "いいよ、笑って。ガイドの顔より、その方が私らしい気がする",
+          "affinity": 1
+        }
+      ],
+      "id": "L30",
+      "type": "chat"
+    },
+    {
+      "sender": "noor",
+      "trigger_condition": "flag",
+      "trigger_flag": "_friend_noor",
+      "route": "friend",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "店の地図に、小さな丸を増やした。ハジメの店の場所だよ"
+        },
+        {
+          "sender": "noor",
+          "text": "恋人の印じゃない。友だちが待ってる場所、って書いてある。出る道は風で変わっても、そこは消さない"
+        },
+        {
+          "sender": "noor",
+          "text": "離れている日も、元気ならそれでいい。でも丸を見た日は、声を聞きたくなる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "俺の地図にも、カフェ・オアシスがある",
+          "response": "それ、すごく嬉しい。次会う時、互いの地図を見せよう",
+          "affinity": 2
+        },
+        {
+          "text": "丸を見た日は、連絡してください",
+          "response": "する。短い『今日は丸を見た』だけでも、送るね",
+          "affinity": 1
+        }
+      ],
+      "id": "L31",
+      "type": "chat"
+    },
+    {
+      "sender": "noor",
+      "trigger_condition": "flag",
+      "trigger_flag": "_friend_noor",
+      "route": "friend",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "今日はツアーが少なくて、カフェ・オアシスで父の店を手伝った。ダブルアップルの一台"
+        },
+        {
+          "sender": "noor",
+          "text": "ガイドの説明じゃなくて、客の顔を見て熱を待った。ハジメがしてるのと、近い気がした"
+        },
+        {
+          "sender": "noor",
+          "text": "うまく言えないけど、同じ香りでも、誰の席で吸うかで残るものが違う。そう思った"
+        }
+      ],
+      "replies": [
+        {
+          "text": "その待ち方、俺も大切にしてる",
+          "response": "なら、正解に近かったんだ。次、日本でその話の続きをしよう",
+          "affinity": 2
+        },
+        {
+          "text": "父さんの店の一台、俺も吸いたいです",
+          "response": "案内する。ガイドの顔と、店の顔、どっちで出るかは当日のお楽しみ",
+          "affinity": 1
+        }
+      ],
+      "id": "L32",
+      "type": "chat"
+    },
+    {
+      "sender": "noor",
+      "trigger_condition": "flag",
+      "trigger_flag": "_friend_noor",
+      "route": "friend",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "日本語の練習、今日は新しい語録を増やさなかった。ハジメに注意されたやつ、まだ大事に温存してる"
+        },
+        {
+          "sender": "noor",
+          "text": "覚えたのは、『お疲れ』だけ。店が終わったあとに、父と客に言ってみた"
+        },
+        {
+          "sender": "noor",
+          "text": "ハジメにも、お疲れ。今日が普通の日でも、これだけは送っていい？"
+        }
+      ],
+      "replies": [
+        {
+          "text": "もちろんいい。お疲れ、ヌール",
+          "response": "うん、届いた。普通の日の終わりって、悪くないね",
+          "affinity": 2
+        },
+        {
+          "text": "語録を増やさないの、偉いです",
+          "response": "褒められた。明日も、普通の言葉で送るね",
+          "affinity": 1
+        }
+      ],
+      "id": "L33",
+      "type": "chat"
+    },
+    {
+      "sender": "noor",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 3,
+      "region": "dubai",
+      "route": "friend",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "ハジメ。決勝、ドバイで見てた。ガイドの仕事が終わるのを、少し急いじゃった"
+        },
+        {
+          "sender": "noor",
+          "text": "画面の向こうの調整が、ハジメの顔をしてた。私は友だちとして、それを見ていたよ"
+        },
+        {
+          "sender": "noor",
+          "text": "優勝おめでとう。次に会う時は、砂漠の話より先に、その一台の話を聞かせて"
+        }
+      ],
+      "replies": [
+        {
+          "text": "見ててくれてありがとう。俺も会いたい",
+          "response": "うん。友人の席、空けておく。急がなくていいから",
+          "affinity": 2
+        },
+        {
+          "text": "砂漠の話も、そのあとぜひ",
+          "response": "両方聞く。それが、私の勝ちだと思う",
+          "affinity": 1
+        }
+      ],
+      "id": "L34",
+      "type": "chat"
+    },
+    {
+      "sender": "volk",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_volk",
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "記録。袋の数字は、揃っていた。客が、途中で置いた。"
+        },
+        {
+          "sender": "volk",
+          "text": "熱いかと聞いた。違う、と言った。話が、一段落しただけだ。"
+        },
+        {
+          "sender": "volk",
+          "text": "言葉を書いてから、計器を見た。順番を、逆にするな。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "先に聞く、ですね",
+          "response": "ああ。数字は、そのあとだ。",
+          "affinity": 2
+        },
+        {
+          "text": "置いた理由、聞けてよかったです",
+          "response": "聞け。推測で、休みと書くな。",
+          "affinity": 1
+        }
+      ],
+      "id": "L35",
+      "type": "chat"
+    },
+    {
+      "sender": "volk",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_volk",
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "今夜、記録を閉じる前だ。"
+        },
+        {
+          "sender": "volk",
+          "text": "お前の店の今日は、書けたか。"
+        },
+        {
+          "sender": "volk",
+          "text": "空なら、明日書け。今、推測で埋めるな。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "書きました。あとで送ります",
+          "response": "送れ。測ったものだけを、書け。",
+          "affinity": 2
+        },
+        {
+          "text": "まだ空です。明日書きます",
+          "response": "それがいい。空欄のまま、今夜は閉じろ。",
+          "affinity": 1
+        }
+      ],
+      "id": "L36",
+      "type": "chat"
+    },
+    {
+      "sender": "steve",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_steve",
+      "messages": [
+        {
+          "sender": "steve",
+          "text": "ヘイ。今日のマウンテンミストは、最後まで動かなかった。"
+        },
+        {
+          "sender": "steve",
+          "text": "レモンが立ってから、ライムの後味まで。手は、ミリも動かしていない。"
+        },
+        {
+          "sender": "steve",
+          "text": "客は、最後まで笑ってた。タイマーは鳴った。でも、動かす理由が無かった。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "動かない判断も、いいですね",
+          "response": "イエス。動かす勇気と、同じくらい、大事だと思う。",
+          "affinity": 2
+        },
+        {
+          "text": "レモンからライムまで、残りました？",
+          "response": "残った。それが、俺の一番好きな繋がりだ。",
+          "affinity": 1
+        }
+      ],
+      "id": "L37",
+      "type": "chat"
+    },
+    {
+      "sender": "sumi",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "ホースの水は、毎日換えろ。"
+        },
+        {
+          "sender": "sumi",
+          "text": "昨日の水で、今日の香りを測るな。水が古ければ、葉のせいじゃない。"
+        },
+        {
+          "sender": "sumi",
+          "text": "換えられない日は、俺に言え。言わなくていいのは、換えたあとの報告だけだ。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "今から換えます",
+          "response": "おう。瓶の縁も、拭け。",
+          "affinity": 2
+        },
+        {
+          "text": "今朝、換えました",
+          "response": "ならいい。それが普通だ。",
+          "affinity": 1
+        }
+      ],
+      "id": "L38",
+      "type": "chat"
+    },
+    {
+      "sender": "sumi",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 1,
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "お前のタオルが、カウンターにいる。"
+        },
+        {
+          "sender": "sumi",
+          "text": "名前は書いてないが、俺のじゃない。取りに来い。"
+        },
+        {
+          "sender": "sumi",
+          "text": "明日まで置かないぞ。店の物と、混ぜるな。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "今から取りに行きます",
+          "response": "おう。二度目は、捨てるぞ。",
+          "affinity": 1
+        },
+        {
+          "text": "すみません。印を付けます",
+          "response": "付けろ。字は、読めればいい。",
+          "affinity": 2
+        }
+      ],
+      "id": "L39",
+      "type": "chat"
+    },
+    {
+      "sender": "sumi",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "昼間の練習、見ていた。口は、出さん。"
+        },
+        {
+          "sender": "sumi",
+          "text": "両手の位置は、悪くなかった。そこだけ、覚えておけ。"
+        },
+        {
+          "sender": "sumi",
+          "text": "褒め言葉じゃない。次も、同じ位置で作れ。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ありがとうございます。次も同じ位置で",
+          "response": "おう。礼はいい。作れ。",
+          "affinity": 2
+        },
+        {
+          "text": "他にも気になったところは、ありましたか",
+          "response": "今は無い。あれば、口を出す。出せてないなら、大丈夫だ。",
+          "affinity": 1
+        }
+      ],
+      "id": "L40",
+      "type": "chat"
+    },
+    {
+      "sender": "noor",
+      "trigger_condition": "flag",
+      "trigger_flag": "_friend_noor",
+      "route": "friend",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "こっちは、カフェの仕込みの時間。ハジメの店は、もう客が来てる頃だと思う"
+        },
+        {
+          "sender": "noor",
+          "text": "音は聞こえないけど、開いてると思うと、手元が少し速くなる。不思議だね"
+        },
+        {
+          "sender": "noor",
+          "text": "今日が普通の日なら、それでいい。終わったら、『開いてたよ』って、あとで聞かせて"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ちょうど開いたところ。あとでまた書く",
+          "response": "うん。その一言で、仕込みが終わる",
+          "affinity": 2
+        },
+        {
+          "text": "普通の日の報告、待ってます",
+          "response": "待ってる。ハジメの普通も、私の普通も、交換しよう",
+          "affinity": 1
+        }
+      ],
+      "id": "L41",
+      "type": "chat"
+    },
+    {
+      "sender": "noor",
+      "trigger_condition": "flag",
+      "trigger_flag": "_friend_noor",
+      "route": "friend",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "サンドボードの生徒が転んで、ガイドの声より先に、私が笑った"
+        },
+        {
+          "sender": "noor",
+          "text": "あとで謝ったよ。そしたら生徒も笑って、『先生が先に笑ったから大丈夫』だって"
+        },
+        {
+          "sender": "noor",
+          "text": "プロの顔、少し負けた。でも、転んだあとの砂を払う手は、丁寧だったから許してほしい"
+        }
+      ],
+      "replies": [
+        {
+          "text": "その順番、とてもヌールらしいです",
+          "response": "そう言われると、負けてもいいかなってなる。ハジメにだけ話すね",
+          "affinity": 2
+        },
+        {
+          "text": "丁寧に払ってたら、十分プロです",
+          "response": "ありがとう。次、転ぶのは私の番かもしれない。その時は笑っていいよ",
+          "affinity": 1
+        }
+      ],
+      "id": "L42",
+      "type": "chat"
+    },
+    {
+      "sender": "volk",
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_volk",
+      "messages": [
+        {
+          "sender": "volk",
+          "text": "お前の記録を見た。数字はある。単位が、無い。"
+        },
+        {
+          "sender": "volk",
+          "text": "度を書け。パーセントを書け。数字だけ残すと、後で読めなくなる。"
+        },
+        {
+          "sender": "volk",
+          "text": "直せ。直したら、送れ。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "直しました。これから単位も書きます",
+          "response": "そうしろ。読めない記録は、記録じゃない。",
+          "affinity": 2
+        },
+        {
+          "text": "すみません。今から直します",
+          "response": "急げ。今夜は、閉じる前に直せ。",
+          "affinity": 1
+        }
+      ],
+      "id": "L43",
+      "type": "chat"
     }
   ]
 }

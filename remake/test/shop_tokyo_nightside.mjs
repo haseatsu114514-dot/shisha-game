@@ -32,7 +32,7 @@ const ch3 = (flags = {}) => ({ chapter: 3, flags });
 const hasNightside = value => NIGHTSIDE.every(id => tokyoShopFlavors(value).includes(id));
 const noNightside = value => NIGHTSIDE.every(id => !tokyoShopFlavors(value).includes(id));
 // 東京に着いたばかり（配達前）は並ばない。ほかの品目はそのまま。
-for (const value of [ch3(), ch3({ _ch3_intro: { stage: 0, routeVersion: 3 } }), ch3({ _ch3_intro: { stage: 2, routeVersion: 3 }, _ch3_delivery_kuze: true, _ch3_delivery_steve: true })]) {
+for (const value of [ch3(), ch3({ _ch3_intro: { stage: 0, routeVersion: 3 } }), ch3({ _ch3_intro: { stage: 2, routeVersion: 3 }, _ch3_delivery_saku: true, _ch3_delivery_steve: true })]) {
   assert.equal(nightsideOnSale(value), false);
   assert(noNightside(value), '配達前の東京店にナイトサイドは無い');
   assert.deepEqual(tokyoShopFlavors(value), TOKYO_FLAVORS.filter(id => !NIGHTSIDE.includes(id)), '残りの品目と並び順は変えない');

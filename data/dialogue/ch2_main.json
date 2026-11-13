@@ -15,12 +15,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "焦げたソファにカバーをかける。手の中のノートには、目標にしたい数字ばかりが並んでいた。"
+          "text": "焦げたソファにカバーをかける。ノートを開くと、欲しい点数ばかりが並んでいた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "鞄の底には、地元大会の採点表が入ったままだ。南雲さんの一行は、あれから読んでいない。"
+          "text": "鞄の底には、地元大会の採点表が入ったままだ。会長の一行は、あれから読んでいない。"
         },
         {
           "speaker": "hajime",
@@ -50,6 +50,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
+          "beat": 600,
           "text": "……今日は上がれ"
         },
         {
@@ -95,7 +96,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "自分用にシーシャを作ってみた。レシピも手順も、いつもどおりのはずだった。"
+          "text": "自分用に一台作った。配合も手順も、いつもどおりのはずだった。"
         },
         {
           "speaker": "",
@@ -105,7 +106,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ホースを洗ったものに替えて、ボウルの葉も確かめた。焦げてはいない。"
+          "text": "洗ったホースに替えて、ボウルの葉も確かめた。焦げてはいない。"
         },
         {
           "speaker": "",
@@ -115,7 +116,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "……普通にいつものお前の煙だぞ"
+          "text": "……いつものお前の煙だぞ"
         },
         {
           "speaker": "hajime",
@@ -130,27 +131,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんがカウンター越しに、じっと俺の顔を見た。"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "最近、ちゃんと寝てるか。飯は"
-        },
-        {
-          "speaker": "hajime",
-          "face": "sad",
-          "text": "……練習の後は、あんまり"
+          "text": "スミさんがカウンター越しに、じっと俺の顔を見た。目の下で、視線が一度止まった。"
         },
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "同じ一台でも、吸う日の体で味は変わる。葉より先に、お前を見ろ"
+          "text": "同じ一台でも、吸う体が違えば味は変わる。葉より先に、自分を見ろ"
         },
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "俺には原因までは分からん。今日は切り上げろ。続くなら、ちゃんと診てもらえ"
+          "text": "原因までは、俺には分からねえ。続くなら、医者に診てもらえ"
         },
         {
           "speaker": "hajime",
@@ -158,14 +149,14 @@
           "text": "でも、大会が……"
         },
         {
-          "speaker": "sumi",
-          "face": "serious",
-          "text": "休むのも仕事だ"
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは答えずに、俺の鞄をカウンターへ置いた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "片づけようとしても、手が止まる。休むという言葉を、今夜の俺はうまく受け取れなかった。"
+          "text": "片づけようとしても、手が止まる。置かれた鞄を、今夜の俺はうまく受け取れなかった。"
         },
         {
           "speaker": "",
@@ -191,9 +182,15 @@
           "text": "夜。閉店前のtonariで、シフトに入っていた。"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_stk_title_customer_half",
+          "next_true": "half_practice"
+        },
+        {
           "speaker": "sumi",
           "face": "normal",
-          "text": "はじめ、最後の3卓だけ、炭替えを手伝ってくれるか"
+          "text": "はじめ。最後の3卓だけ、炭替えを頼む"
         },
         {
           "speaker": "",
@@ -253,7 +250,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "常連のサラリーマンが、離れた席から小さく頭を下げた。"
+          "text": "離れた席の、常連の鉄仮面さんだった。それだけ言って、小さく頭を下げた。"
         },
         {
           "speaker": "hajime",
@@ -266,7 +263,16 @@
           "text": "一つ間違えば、誰かがやけどをしていた。黒い焼け跡は、ソファに残ったままだ。"
         }
       ],
-      "comment": "DAY4夜の固定場面。自由行動のバイトとは別に閉店前の手伝いを頼まれる。一度の事故からch2_abyss_baitoへ続く。自己否定の独白はch2_abyss_baitoに任せ、ここは事故の事実と重さで閉じる（#1652）。"
+      "branches": {
+        "half_practice": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ゆうべは日付が変わるまで残って、半分残された一台を組み直していた。"
+          }
+        ]
+      },
+      "comment": "DAY4夜の固定場面。自由行動のバイトとは別に閉店前の手伝いを頼まれる。一度の事故からch2_abyss_baitoへ続く。自己否定の独白はch2_abyss_baitoに任せ、ここは事故の事実と重さで閉じる（#1652）。DAY3に優勝の一台を半分残された保存（_stk_title_customer_half）だけ、前夜の居残り練習を一行で受ける。"
     },
     {
       "dialogue_id": "ch2_kumicho_greeting",
@@ -345,7 +351,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……はい。黒いところが消えるまで焼いて、疲れてる日は声をかけます"
+          "text": "……はい。黒いとこが消えるまで焼きます。疲れてる日は、声をかけます"
         },
         {
           "speaker": "sumi",
@@ -430,30 +436,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "笑おうとして、うまく笑えなかった。あげはが缶のお茶を隣に置く。"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "搬入口に、背の高い外国の人いたでしょ。あの人、うちの店にも来てた"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "何も頼まないで、メモだけ取って帰ったの。誰なんだろね"
-        },
-        {
-          "type": "condition",
-          "condition_type": "flag",
-          "flag": "_ch2_scout_tasting",
-          "next_true": "ageha_scout_link"
-        },
-        {
-          "type": "condition",
-          "condition_type": "flag",
-          "flag": "_ch2_scout_tasting",
-          "next_true": "scout_tasting",
-          "next_false": "scout_plain"
+          "text": "笑おうとして、うまく笑えなかった。あげはは一人分あけて、ベンチに座った。"
         },
         {
           "speaker": "ageha",
@@ -478,7 +461,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "あげはは何か言いかけて、冷えた缶を両手で包んだ。"
+          "text": "あげはは何か言いかけて、冷えた指先を袖の中へ引っ込めた。"
         },
         {
           "speaker": "ageha",
@@ -515,7 +498,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "送信済みの文字を見つめる。味の輪郭は、まだ遠かった。"
+          "text": "送信済みの文字を見つめる。あげはが言いかけたことを、聞き返さなかった。"
         },
         {
           "type": "hide_portrait",
@@ -542,7 +525,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "じゃあ、今からの一口を直します。最初から作り直して、ごまかすんじゃなくて"
+          "text": "じゃあ、この一台のまま直します。作り直してごまかすんじゃなくて"
         },
         {
           "speaker": "",
@@ -552,7 +535,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "予定より長い沈黙のあと、ようやく小さくうなずきが返る。"
+          "text": "長い沈黙のあと、ようやく小さなうなずきが返ってきた。"
         },
         {
           "speaker": "",
@@ -605,36 +588,262 @@
             "type": "set_flag",
             "flag": "_ch2_audience_welcome"
           }
-        ],
-        "ageha_scout_link": [
-          {
-            "speaker": "ageha",
-            "face": "normal",
-            "text": "試煙会にもいたかも。吸わないで、みんなの顔ばっか見てた気がする"
-          }
-        ],
-        "scout_tasting": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（さっきの人だ。試煙会の客席の奥にもいた。神崎さんが「人を見る訓練を受けた目」と言っていた人）"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（……でも今は、考える余裕がない）"
-          }
-        ],
-        "scout_plain": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（さっきの人だ。……でも今は、考える余裕がない）"
-          }
         ]
       },
       "metadata": {
         "bg": "res://assets/backgrounds/bg_ch2_venue_bench_night.png"
+      }
+    },
+    {
+      "dialogue_id": "ch2_coal_together",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店の少し前。ドアベルが鳴った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉄仮面さんだった。あの夜のあと、初めて見る顔だ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもの席に座り、無言でメニューを指差す。いつもの一台。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（……来てくれたんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが葉を詰める。炭を取りに行こうとして、カバーの下の焦げ跡が目に入った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トングへ伸ばした手が、そこで止まる。スミさんは金属の皿を出した。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "炭替えは、二人でやる。決めたとおりだ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "炭を見るか、皿を持つか。今、引き受けられる方を言ってくれ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_coal_role_coals",
+          "next_true": "role_coals",
+          "next_false": "role_plate_check"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭は、どこにも落ちなかった。スミさんが煙を確かめ、二人で客席へ運んだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉄仮面さんは一口吸って、長く吐いた。それから、いつもの顔で煙を見ていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "途中の炭替えも、同じ役でやった。皿の位置と、互いの手元を声に出して確かめる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会計のとき、鉄仮面さんがレシートを受け取りながら、ポツリと。"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "……炭、[pause]きれいだった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それだけ言って、鉄仮面さんはドアの向こうへ消えた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "聞いたか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。聞きました"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_coal_role_coals",
+          "next_true": "coals_after",
+          "next_false": "plate_after"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "甘さはまだ遠い。焦げ跡を見ると、手も固くなる。それでも、頼んだ声には返事があった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートの端に、数字じゃない一行を書いた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_coal_role_coals",
+          "next_true": "coals_note",
+          "next_false": "plate_note"
+        }
+      ],
+      "comment": "事故後の既存DAY6準備（翌日まで延期可）。炭か皿の分担を自分で頼み、同じ役で提供まで行う。選んだ役の旗だけでは成功・読了にしない。DAY10は読了と実際の役がそろう保存だけで返す。",
+      "branches": {
+        "role_plate_check": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_coal_role_plate",
+            "next_true": "role_plate",
+            "next_false": "role_question"
+          }
+        ],
+        "role_question": [
+          {
+            "type": "choice",
+            "id": "ch2_coal_shared_role",
+            "choices": [
+              {
+                "text": "炭を確認して、皿を頼む",
+                "next": "role_coals"
+              },
+              {
+                "text": "皿を持ち、炭の確認を頼む",
+                "next": "role_plate"
+              }
+            ]
+          }
+        ],
+        "role_coals": [
+          {
+            "type": "set_flag",
+            "flag": "_ch2_coal_role_coals"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "炭は、俺が確認します。皿を持ってもらえますか"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "分かった。動かす前に、声をかけてくれ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "コンロの炭を一つずつ返す。裏も、側面も。黒いところが消えるまで待った。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "三つとも赤くなりました、……皿、お願いします"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スミさんが俺の手の下に皿を構える。その位置を確かめてから、トングで炭を持ち上げた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一つ。二つ。三つ。HMDの中に三角に置いて、蓋を閉めた。"
+          }
+        ],
+        "role_plate": [
+          {
+            "type": "set_flag",
+            "flag": "_ch2_coal_role_plate"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今日は、皿を持ちます。炭の確認は、お願いしてもいいですか"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "おう。手元の下まで頼む。止めたい時は、そう言ってくれ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スミさんが炭を一つずつ返す。俺は金属の皿を持ち、トングの下へ入れた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "少し待ってください。……はい、ここで止めます"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "皿を止めると、スミさんがうなずいた。赤い炭が、皿の上をゆっくり通る。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一つ。二つ。三つ。HMDの三角と、蓋が閉まるのを見届けてから、皿を下ろした。"
+          }
+        ],
+        "coals_after": [
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "黒いところ、ちゃんと待てたな。味は俺が見とく"
+          }
+        ],
+        "plate_after": [
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "皿、最後まで止まってたな。味は俺が見とく"
+          }
+        ],
+        "coals_note": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「炭は俺。皿はスミさん。声をかけてから動かす」"
+          }
+        ],
+        "plate_note": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「皿は俺。炭はスミさん。待ってほしい時は伝える」"
+          }
+        ]
       }
     },
     {
@@ -677,6 +886,26 @@
         {
           "speaker": "",
           "face": "",
+          "text": "洗い物が終わると、スミさんが鍋から二人分をよそった。俺は水を二つ、カウンターへ運ぶ。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "米もある。明日の分は、冷蔵庫に入れといてくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。洗った皿が乾いたら、その棚に戻しておきます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "向かい合って夕飯を食べた。片づけを分け、スミさんが先に店を出るのを見送った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "灯りを落とすと、店はゆっくりと「tonariの匂い」に戻っていく。蜜の甘さ。炭の名残。"
         },
         {
@@ -709,6 +938,12 @@
       },
       "lines": [
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_read_ch2_coal_together",
+          "next_true": "coal_work_memory"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "あげはを駅まで送った。終電には、まだ間に合った。"
@@ -716,12 +951,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "店へ戻ると、裏口の鍵はまだ開いていた。フロアの灯りは半分落ちて、カウンターにだけ明かりが残っている。"
+          "text": "店へ戻ると、裏口の鍵はまだ開いていた。灯りは落ちて、カウンターにだけ明かりが残っている。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんと、終電を逃したらしいサラリーマンさんだ。"
+          "text": "スミさんと、終電を逃したらしい鉄仮面さんだ。"
         },
         {
           "speaker": "",
@@ -761,6 +996,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
+          "duck": true,
           "text": "……あの顔の男に効いた言葉を、俺はひとつも知らねえ"
         },
         {
@@ -793,7 +1029,50 @@
           "face": "",
           "text": "ノートは、取らずに帰った。あの明かりの輪の中に、入っていける気がしなかった。"
         }
-      ]
+      ],
+      "branches": {
+        "coal_work_memory": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_coal_role_coals",
+            "next_true": "coals_return",
+            "next_false": "plate_return_check"
+          }
+        ],
+        "plate_return_check": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_coal_role_plate",
+            "next_true": "plate_return"
+          }
+        ],
+        "coals_return": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "駅へ送る前、片づけを手伝った。俺が炭を確認し、スミさんが手元の下に皿を構える。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "目が合い、皿が止まる。声をかけてから炭を移した。分担を決め直す必要はなかった。"
+          }
+        ],
+        "plate_return": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "駅へ送る前、片づけを手伝った。スミさんが炭を見る隣で、俺は金属の皿を構える。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "目が合い、皿を止める。炭が移るまで、その位置で待った。分担を決め直す必要はなかった。"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch2_strawberry_sample",
@@ -858,7 +1137,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "まかないの支度をしながら、鞄から銀色の小袋を出した。試煙会でもらった、アフサールの新作ストロベリーだ。"
+          "text": "鞄から銀色の小袋を出す。試煙会でもらった、アフサールの新作ストロベリーだ。"
         },
         {
           "speaker": "hajime",
@@ -924,7 +1203,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スマホのメモに「苺：炭は急がない」と打ち込んだ。それだけで、画面を握る指がゆるんだ。"
+          "text": "スマホのメモに「苺：炭は急がない」と打ち込んだ。握っていた指が、少しゆるんだ。"
         }
       ]
     },
@@ -1025,6 +1304,312 @@
           "text": "袋はまだあるだろ。次のまかないで、もう一度やれ"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch2_title_customer_half",
+      "comment": "DAY3夜の最後（全体講評S6）。優勝目当ての客が大会の一台を頼み、半分残して帰る。はじめは理由を聞かず、練習が足りないと受け取って居残りを始める（DAY4の炭の事故へ）。第1章末（ch1_interval / interval_day5_eve の eve_title_customer）を見た保存（_stk_title_customer_met）は二度目の来店で、前回は帰ったあとの台を見ていなかったと一行で受ける。無い保存は初めての客として読む。読了で _stk_title_customer_half（ch2-story-data.js）。後の ch3_home_customer と同じ客（短いため口・一人称なし）。強制場面なので報酬なし。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはを見送ってすぐ、ドアベルがもう一度鳴った。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_stk_title_customer_met",
+          "next_true": "known",
+          "next_false": "first"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。あの日と、同じに作ります"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "葉の量も、蒸らしの分数も、炭の置き方も、大会のノートのとおりに揃えた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は一口吸って、うなずいた。それから、腕時計を二度見た。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を替える前に、客は財布を出した。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_stk_title_customer_met",
+          "next_true": "known_table"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "灰皿の横で、ホースが冷めていた。葉は、半分残っている。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……すごいのは、分かるんだけど"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その先を、客は言わなかった。俺も、聞かなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（練習が足りないんだ。優勝を、まぐれにしたくない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんに頼んで、閉店後の台を一つ借りた。大会の手順を、最初から組み直す。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートには、あの日の点を写した。その横に、次に欲しい点を書き足していく。"
+        }
+      ],
+      "branches": {
+        "known": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「優勝した人の店だよね」と言った人だ。今夜は奥の席ではなく、カウンターの端に座った。"
+          },
+          {
+            "speaker": "customer",
+            "face": "normal",
+            "text": "この前の、もう一回頼める？ 優勝のやつ"
+          }
+        ],
+        "first": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "初めて見る顔だった。カウンターの端に座って、俺の手元を見ている。"
+          },
+          {
+            "speaker": "customer",
+            "face": "normal",
+            "text": "地元の大会で勝ったの、きみだよね"
+          },
+          {
+            "speaker": "customer",
+            "face": "normal",
+            "text": "大会のやつ、頼める？ 優勝したときの"
+          }
+        ],
+        "known_table": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "この前は、帰ったあとの台を見ていなかった。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_title_customer_back",
+      "comment": "DAY6夜の最初（全体講評S6）。DAY3に半分残した客が、普通の軽い一台を最後まで吸う。はじめは客の顔を見ずに、点としてノートへ書く。_stk_title_customer_half がある保存だけ、二人の炭替え（ch2_coal_together）の前に読む。読了で _stk_title_customer_back（ch2-story-data.js）。味は遠いので、はじめは煙の量と温度しか確かめない。強制場面なので報酬なし。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariのカウンターの端に、あの客がまた座った。優勝の一台を、半分残した人だ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "今日は、普通のでいいや。軽めにできる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。軽めに、作ります"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "葉を少なめに、ふわっと詰めた。炭は、スミさんが黙って載せてくれた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "味は確かめられない。吸い出しで、煙の量と温度だけを見て出した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は一度も時計を見なかった。炭が小さくなるまで、ホースを置かなかった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "うん。今日のは、最後までいけた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会計の横で、もうノートを開いていた。「大会の一台、半分。軽い一台、最後まで」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その下に、点をつけた。五点と、十点。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "顔を上げたときには、ドアベルはもう鳴り終わっていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_kemuri_thermometer",
+      "comment": "DAY9夜の最初・試煙会の開場前（全体講評S13）。味が遠くなったはじめに、博士が吸う間隔の記録から気づき、温度計を貸そうとする。借りたら _stk_kemuri_thermo_borrowed、断ったら _stk_kemuri_thermo_declined（第5章で参照する記録だけ。ゲーム上の効果なし）。博士は吸わず、味の感想も自分の舌の事情も言わない（第5章で明かす）。強制場面なので報酬なし。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "試煙会の開場まで、少し時間があった。C.STATION柚ヶ谷店の端の席で、軽い一台を頼む。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（確かめるのは、やめたはずだ。でも、みんなの前で吸う前に、一度だけ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口。煙は濃い。熱も低い。甘さだけが、来ない。次の一口まで、長く待った。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "吸う間隔が、地元大会より長い。……味を、探していますね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の席に、チャコール博士がいた。台は頼まず、膝の上の小さな機械を見ている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "博士、……どうして、それを"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "記録と比べただけです。理由までは、数字に出ません"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "博士は白衣の胸ポケットから、細い温度計を抜いた。三色のペンの隣に、挿してあった。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "smile",
+          "text": "逢縁くん。舌が遠い日は、温度計が代わりになります。貸しましょうか"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_stk_kemuri_thermo_borrowed",
+          "next_true": "borrow",
+          "next_false": "declined_check"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開場を知らせる声がした。博士は機械を閉じて、ホールの階へ上がっていった。"
+        }
+      ],
+      "branches": {
+        "declined_check": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_stk_kemuri_thermo_declined",
+            "next_true": "decline",
+            "next_false": "thermo_question"
+          }
+        ],
+        "thermo_question": [
+          {
+            "type": "choice",
+            "id": "ch2_kemuri_thermo",
+            "choices": [
+              {
+                "text": "温度計を借りる",
+                "next": "borrow"
+              },
+              {
+                "text": "今は、借りずにおく",
+                "next": "decline"
+              }
+            ]
+          }
+        ],
+        "borrow": [
+          {
+            "type": "set_flag",
+            "flag": "_stk_kemuri_thermo_borrowed"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……お借りします"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "受け取った温度計は、軽かった。金属の先だけが、指より冷たい。"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "返すのは、いつでも。数字は、舌の調子に左右されませんから"
+          }
+        ],
+        "decline": [
+          {
+            "type": "set_flag",
+            "flag": "_stk_kemuri_thermo_declined"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……いえ。今は、自分の舌で確かめたいです"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "そうですか。要る日が来たら、言ってください"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "博士は温度計をポケットへ戻して、機械の数字に目を落とした。"
+          }
+        ]
+      }
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "comment": "第5章の地元の店（#2033 F）。なるはKEMURIKUSAを再開している（第4章 ch4_naru_dubai_3）。はじめは第4章の世界大会の後の新しい王者。C.STATIONの常連（old_man）は第1章の cs_regular_chat の人。ヒロインの店（PEPPERMINT・SHISHARK・MELTY PUFF）は、恋人でも友人でも不自然にならない店での会話にする（オーナー指定 2026-11-02）。好感度・代金・体力は台詞に書かず、chapters/ch5-shops.js が付ける。",
+  "comment": "第5章の地元の店（#2033 F）。なるはKEMURIKUSAを再開している（第4章 ch4_naru_dubai_3）。はじめは第4章の世界大会の後の新しい王者。C.STATIONの常連（old_man）は第1章の cs_regular_chat の人。ヒロインの店（PEPPERMINT・SHISHARK・MELTY PUFF）は、恋人でも友人でも不自然にならない店での会話にする（オーナー指定 2026-11-02）。アダム（EDEN）とレヰ（零-ZERO-）の ch5_adam_shop・ch5_rei_shop は、通い店ではない常連の店で第5章に一度だけ読む会話（chapters/ch5-first-talks.js）。好感度・代金・体力は台詞に書かず、chapters/ch5-shops.js が付ける。",
   "dialogues": [
     {
       "dialogue_id": "ch5_naru_shop",
@@ -11,7 +11,8 @@
         { "speaker": "", "face": "", "text": "バニラの甘さの奥に、焼いたパンのような香ばしさが残る一台だった。" },
         { "speaker": "naru", "face": "normal", "text": "前は甘さだけで押してた。今は、二口目に客が息をつける所を作ってる" },
         { "speaker": "hajime", "face": "normal", "text": "……吸ってる人の速さ、まだ数えてるんだ" },
-        { "speaker": "naru", "face": "smile", "text": "癖になった。お前のせいだぞ" }
+        { "speaker": "naru", "face": "smile", "text": "癖になった。……お前も、まだ数えてんだろ" },
+        { "speaker": "hajime", "face": "smile", "text": "……バレてた" }
       ]
     },
     {
@@ -22,17 +23,22 @@
         { "speaker": "hajime", "face": "normal", "text": "うん。準備ができたら、こっちから連絡する" },
         { "speaker": "naru", "face": "serious", "text": "急かすやつがいたら言え。俺が代わりに文句を言ってやる" },
         { "speaker": "hajime", "face": "smile", "text": "なるが一番、急かしそうだけど" },
-        { "speaker": "naru", "face": "smile", "text": "……否定はしねえ" }
+        { "speaker": "naru", "face": "smile", "text": "……否定はしねえ" },
+        { "speaker": "naru", "face": "normal", "text": "閉店後なら、台は空いてる。練習するなら使え" },
+        { "speaker": "hajime", "face": "smile", "text": "……それ、急かしてない？" },
+        { "speaker": "naru", "face": "smile", "text": "貸すだけだ。使うかどうかは、お前が決めろ" }
       ]
     },
     {
       "dialogue_id": "ch5_naru_shop_c",
       "lines": [
         { "speaker": "", "face": "", "text": "KEMURIKUSAの作業台。なるが、炭の置き方を一つずつ変えて試していた。" },
-        { "speaker": "naru", "face": "normal", "text": "見るなら、全部見てけ。うまくいかなかった方もな" },
+        { "speaker": "naru", "face": "normal", "text": "俺の台は丸見えだ。うまくいかなかった方もな" },
         { "speaker": "hajime", "face": "normal", "text": "前も、そう言ってたよね" },
         { "speaker": "naru", "face": "smile", "text": "言ってた。言った本人が、今やっと分かってきた" },
-        { "speaker": "", "face": "", "text": "うまくいかなかった一台の灰を、なるは捨てずに小皿へ取っておいた。" },
+        { "speaker": "hajime", "face": "normal", "text": "今の、何を変えたの" },
+        { "speaker": "naru", "face": "normal", "text": "炭を指一本ぶん、奥へ。外れた方も、その差は見える" },
+        { "speaker": "", "face": "", "text": "うまくいかなかった一台の灰を、なるは捨てずに小皿に取っておいた。" },
         { "speaker": "hajime", "face": "normal", "text": "（うまくいかなかった方も、ちゃんと残すんだ）" }
       ]
     },
@@ -42,7 +48,10 @@
         { "speaker": "", "face": "", "text": "C.STATIONに入ると、受付のスタッフが目を丸くした。" },
         { "speaker": "shop_clerk", "face": "", "text": "あっ、世界大会の……！　席、すぐご用意します" },
         { "speaker": "hajime", "face": "surprise", "text": "（ここでも、顔を覚えられてる）" },
+        { "speaker": "shop_clerk", "face": "", "text": "炭、いちばんいいのを用意しますね。お水もすぐ！" },
         { "speaker": "", "face": "", "text": "案内された席の壁に、世界大会の記事の切り抜きが貼ってあった。" },
+        { "speaker": "", "face": "", "text": "一台を吸うあいだも、切り抜きの中の自分と目が合う気がした。" },
+        { "speaker": "hajime", "face": "normal", "text": "（味はいつもと変わらないのに）" },
         { "speaker": "hajime", "face": "normal", "text": "（……ちょっと、落ち着かないな）" }
       ]
     },
@@ -50,10 +59,11 @@
       "dialogue_id": "ch5_c_station_b",
       "lines": [
         { "speaker": "", "face": "", "text": "C.STATIONのカウンター。隣の常連の男性が、こちらに気づいて片手を上げた。" },
-        { "speaker": "old_man", "face": "", "text": "よう。今日は客か。……なるの一台の話、覚えてるか" },
-        { "speaker": "hajime", "face": "normal", "text": "覚えてます。吸い終わっても、ホースを置かなかったって" },
+        { "speaker": "old_man", "face": "", "text": "よう。今日は客か。……ここの客席で、昔から言われてる話があってな" },
+        { "speaker": "old_man", "face": "", "text": "いい一台は、吸い終わってもホースがなかなか置けなくなる。なるの一台がそうだった、ってな" },
+        { "speaker": "hajime", "face": "normal", "text": "ホースを、置けなくなる……" },
         { "speaker": "old_man", "face": "", "text": "今は、お前の一台でも同じ話をしてるよ" },
-        { "speaker": "hajime", "face": "smile", "text": "（……あの時の話が、こっちに回ってきたんだ）" }
+        { "speaker": "hajime", "face": "smile", "text": "（……なるさんの話が、こっちにも回ってきたんだ）" }
       ]
     },
     {
@@ -64,6 +74,8 @@
         { "speaker": "shop_clerk", "face": "", "text": "……出ないですよね？" },
         { "speaker": "hajime", "face": "smile", "text": "出ません。でも、見には来ます" },
         { "speaker": "shop_clerk", "face": "", "text": "よかった。出られたら、みんな困っちゃうので" },
+        { "speaker": "shop_clerk", "face": "", "text": "でも、見に来てくれるなら、ポスターは一番目立つ所に貼らないと" },
+        { "speaker": "hajime", "face": "normal", "text": "……目立たない所で、お願いします" },
         { "speaker": "", "face": "", "text": "新しいポスターには、去年より大きな字で「初出場歓迎」と書いてあった。" }
       ]
     },
@@ -75,6 +87,8 @@
         { "speaker": "hajime", "face": "normal", "text": "その紹介、やめてほしいんだけど" },
         { "speaker": "minto", "face": "wink", "text": "だめー。今日だけ、みんとの店の自慢にさせて" },
         { "speaker": "", "face": "", "text": "カウンターの端に、世界大会の記事が小さく貼ってあった。" },
+        { "speaker": "hajime", "face": "normal", "text": "……いつの間に貼ったの、それ" },
+        { "speaker": "minto", "face": "smile", "text": "昨日の閉店のあとに、背伸びして貼ったの" },
         { "speaker": "minto", "face": "smile", "text": "……ちゃんと、おかえりも言わせてね。おかえり、はじめくん" }
       ]
     },
@@ -86,6 +100,8 @@
         { "speaker": "hajime", "face": "smile", "text": "キャスト、ずっと一人だよね" },
         { "speaker": "minto", "face": "wink", "text": "だから、ずっとNo.1なの" },
         { "speaker": "", "face": "", "text": "ミントの奥に、ほんのり柑橘が立つ一台だった。" },
+        { "speaker": "hajime", "face": "normal", "text": "ミントが先で、あとから柑橘が来る。二口目がやわらかい" },
+        { "speaker": "minto", "face": "smile", "text": "でしょ？　辛口のお客さまにも、帰りは笑ってほしくて" },
         { "speaker": "minto", "face": "normal", "text": "感想、正直にね。世界一の舌でしょ？" }
       ]
     },
@@ -96,6 +112,9 @@
         { "speaker": "minto", "face": "smile", "text": "ごめんね、今日ちょっと混んでて。カウンターの端でいい？" },
         { "speaker": "hajime", "face": "normal", "text": "うん。……みんな、誰かと話しに来てるんだね" },
         { "speaker": "minto", "face": "normal", "text": "そうだよ。一人ひとり、来た理由が違うの" },
+        { "speaker": "minto", "face": "normal", "text": "煙を吸いに来る人より、お話しに来る人のほうが多いかも" },
+        { "speaker": "", "face": "", "text": "奥のテーブルでは、二人連れが小さな声で笑っていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "理由か、……うまく言えるかな" },
         { "speaker": "minto", "face": "smile", "text": "はじめくんの理由は、あとで聞かせてね" }
       ]
     },
@@ -105,6 +124,8 @@
         { "speaker": "", "face": "", "text": "SHISHARK。水槽の青い光の中で、サメちゃんがグラスを磨いていた。" },
         { "speaker": "samechan", "face": "smile", "text": "おお、お主。世界から戻ったのじゃな" },
         { "speaker": "hajime", "face": "smile", "text": "戻りました。しばらくは、こっちにいます" },
+        { "speaker": "samechan", "face": "normal", "text": "世界一の席の座り心地は、どうじゃ" },
+        { "speaker": "hajime", "face": "normal", "text": "まだ実感がないです。朝になると、いつもの店の掃除をしているので" },
         { "speaker": "samechan", "face": "ventriloquism", "text": "側近も、土産話を待っていたのである" },
         { "speaker": "samechan", "face": "smile", "text": "座るがよい。今日は、海の一台を出そう" }
       ]
@@ -116,6 +137,8 @@
         { "speaker": "samechan", "face": "excited", "text": "来週、路地裏シネマでサメ映画の二本立てなのじゃ！" },
         { "speaker": "hajime", "face": "normal", "text": "二本とも、サメですか" },
         { "speaker": "samechan", "face": "smile", "text": "当然じゃ。一本目で泣いて、二本目で笑うのが通の見方よ" },
+        { "speaker": "hajime", "face": "normal", "text": "二本目は、どんなサメなんですか。笑うほうだと聞きましたけど" },
+        { "speaker": "samechan", "face": "excited", "text": "空を飛ぶのじゃ。理屈は考えてはならぬ、心で観るものよ" },
         { "speaker": "samechan", "face": "ventriloquism", "text": "側近は、一本目で寝るのである" }
       ]
     },
@@ -125,6 +148,9 @@
         { "speaker": "", "face": "", "text": "客の引いたSHISHARK。サメちゃんが、水槽の前でゆっくり煙を吐いていた。" },
         { "speaker": "samechan", "face": "normal", "text": "……世界一になっても、お主は変わらぬのう" },
         { "speaker": "hajime", "face": "normal", "text": "そうですか？" },
+        { "speaker": "samechan", "face": "normal", "text": "ここの客は、肩書きでは座らぬ。お主は、初めて来た日の顔のままじゃ" },
+        { "speaker": "hajime", "face": "smile", "text": "ここの水槽を見ると、落ち着くので" },
+        { "speaker": "samechan", "face": "smile", "text": "魚も毎日同じ水を泳ぐが、飽きぬ。水が澄んでおるからじゃ" },
         { "speaker": "samechan", "face": "smile", "text": "変わらぬのが、よい。この店も、変わらぬように続けるつもりじゃ" }
       ]
     },
@@ -135,6 +161,8 @@
         { "speaker": "ageha", "face": "smile", "text": "ハジメっち！　世界一おめでと！　うち、記事めっちゃ保存した" },
         { "speaker": "hajime", "face": "smile", "text": "ありがとう。……そんなに保存するもの？" },
         { "speaker": "ageha", "face": "smile", "text": "するでしょ。ギャル友にも全員送ったし" },
+        { "speaker": "hajime", "face": "normal", "text": "全員って、何人に送ったの" },
+        { "speaker": "ageha", "face": "smile", "text": "二十人くらい。「もう見た」って返ってくるたびに、うちが誇らしくなった" },
         { "speaker": "ageha", "face": "normal", "text": "……で、今日はうちの一台、吸ってく？" }
       ]
     },
@@ -145,6 +173,8 @@
         { "speaker": "ageha", "face": "normal", "text": "……今日は、ちゃんと感覚ある日" },
         { "speaker": "hajime", "face": "normal", "text": "よかった" },
         { "speaker": "ageha", "face": "smile", "text": "でしょ。こういう日は、全力でバイブス出すって決めてんの" },
+        { "speaker": "", "face": "", "text": "ホースの継ぎ目を指でなぞって、フォイルの端を一つずつ確かめる。急がない手つきだった。" },
+        { "speaker": "ageha", "face": "normal", "text": "出すのは、うちの手が納得した一台だけ。そこは譲んない" },
         { "speaker": "", "face": "", "text": "出てきた一台は、甘さが軽くて、最後まで香りが続いた。" }
       ]
     },
@@ -154,9 +184,256 @@
         { "speaker": "", "face": "", "text": "MELTY PUFFは、今日もギャルとオタクで席が半分ずつ埋まっていた。" },
         { "speaker": "ageha", "face": "smile", "text": "見て見て。客層、相変わらずカオスでしょ" },
         { "speaker": "hajime", "face": "smile", "text": "みんな、楽しそうだね" },
+        { "speaker": "", "face": "", "text": "奥の席では、ギャルの子がオタクの子の推しの話に身を乗り出していた。" },
+        { "speaker": "ageha", "face": "smile", "text": "あの二人、さっき会ったばっか。うちの店だと、だいたい一本目で友達になってる" },
         { "speaker": "ageha", "face": "normal", "text": "それが一番。カワイイは最強、楽しいはもっと最強" },
         { "speaker": "ageha", "face": "smile", "text": "ハジメっちも、楽しい顔して帰ってよね" }
       ]
+    },
+    {
+      "dialogue_id": "ch5_adam_shop",
+      "comment": "第5章の一度だけの会話（N3・chapters/ch5-first-talks.js）。EDENの最初の来店は任意場面 ch5_free_eden_adam（二つのダブルアップル）なので、その次の来店で読む。世界大会の後・博士との勝負の前。葉の今日に加えて、吸う客の今日にも合わせるようになったアダム（characters.json の growth_stats）。札は表向きの品書きで、勧めるのは結局ダブルアップル（EDENの営業設定）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "EDENの壁に、新しい札が一枚増えていた。『本日のおすすめ　ダブルアップル』。" },
+        { "speaker": "hajime", "face": "normal", "text": "……いつもと、同じですよね" },
+        { "speaker": "adam", "face": "serious", "text": "下を読め" },
+        { "speaker": "", "face": "", "text": "札の隅に、小さな字で『世界一の同志も吸った林檎』と書き足してあった。" },
+        { "speaker": "hajime", "face": "surprise", "text": "……俺のこと、勝手に看板にしてません？" },
+        { "speaker": "adam", "face": "normal", "text": "名前は書いていない。同志と書いた" },
+        { "speaker": "hajime", "face": "normal", "text": "同じことだと思います" },
+        { "speaker": "", "face": "", "text": "常連らしい客が入ってくると、アダムはタッパーに手を伸ばす前に、その顔をのぞき込んだ。" },
+        { "speaker": "adam", "face": "normal", "text": "……寝不足だな。今日は、アニスを控えめにしておく" },
+        { "speaker": "hajime", "face": "surprise", "text": "（葉を選ぶ前に、客の顔を見てる）" },
+        { "speaker": "adam", "face": "smile", "text": "葉の今日は、ずっと見てきた。……近ごろは、吸う奴の今日も見る" },
+        { "speaker": "adam", "face": "serious", "text": "言っておくが、お前の真似ではない" },
+        { "speaker": "hajime", "face": "smile", "text": "分かってます" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_rei_shop",
+      "comment": "第5章の一度だけの会話（N3・chapters/ch5-first-talks.js）。零-ZERO-の第5章の最初の来店で読む。世界大会の後・博士との勝負の前。レヰは客と自分から曲の話をするようになっている（characters.json の growth_stats）。『終わったあとの三秒』は第2章の大会（ch2_tournament）でレヰが言った言葉。博士は第2章の大会の審査員。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "零-ZERO-のカウンターで、レヰが常連の客にCDのジャケットを見せていた。" },
+        { "speaker": "rei", "face": "normal", "text": "……この曲、二番のあとで音が全部止まる。そこが、好きで" },
+        { "speaker": "customer", "face": "normal", "text": "分かります、あそこ。息止めて聴いちゃうんですよね" },
+        { "speaker": "rei", "face": "smile", "text": "……うん。俺も" },
+        { "speaker": "", "face": "", "text": "客が席へ戻るのを待って、レヰがこちらに気づいた。耳が、少し赤い。" },
+        { "speaker": "hajime", "face": "smile", "text": "レヰさん、お客さんと曲の話をしてましたね" },
+        { "speaker": "rei", "face": "normal", "text": "……前より、少しだけ出る。言葉が" },
+        { "speaker": "rei", "face": "normal", "text": "世界大会の動画、店で流した。常連と、黙って観た" },
+        { "speaker": "rei", "face": "normal", "text": "最後の調整のあと、お前が手を離してから三秒。……誰も、しゃべらなかった" },
+        { "speaker": "hajime", "face": "surprise", "text": "（終わったあとの三秒。レヰさんが、県大会の日に言ってた）" },
+        { "speaker": "rei", "face": "smile", "text": "……いい終わり方だった。曲みたいに" },
+        { "speaker": "hajime", "face": "normal", "text": "次の相手は、博士の作った機械なんです。ダブルアップルで勝負します" },
+        { "speaker": "rei", "face": "normal", "text": "……県大会の、審査員の人か" },
+        { "speaker": "rei", "face": "normal", "text": "終わったら、また来て。どんな音だったか、聞かせて" },
+        { "speaker": "rei", "face": "smile", "text": "感想は、急がなくていい" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_rio_shop",
+      "comment": "第5章の通いの小会話（BLC08・chapters/ch5-shops.js の chapterFiveShowroom）。Dr.fookah の2階・夜だけ。世界大会の後・博士との勝負の前。恋人でも友人でも読めるよう、呼び方だけ恋人で分ける。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "Dr.fookahの2階。黒いフィルム越しに、問屋街の灯りがにじんでいた。"},
+        {"type": "condition", "condition_type": "lover", "char_id": "rio", "next_true": "lover", "next_false": "friend"},
+        {"speaker": "", "face": "", "text": "机の上に、日本語の書いていない袋が三つ並んでいた。"},
+        {"speaker": "rio", "face": "normal", "text": "NIGHTSIDEの新作。世界大会のあと、問い合わせが三倍になったの"},
+        {"speaker": "rio", "face": "normal", "text": "でも今日は、売れる話はしない。疲れた日に吸いたいのはどれか、それだけ教えて"},
+        {"speaker": "", "face": "", "text": "一つずつ、袋の口から香りを確かめる。三つ目で、手が止まった。"},
+        {"speaker": "hajime", "face": "normal", "text": "これです。最初の一口が、急かさない"},
+        {"speaker": "rio", "face": "smile", "text": "……うん。私も、それに丸を付けてた"}
+      ],
+      "branches": {
+        "lover": [
+          {"speaker": "rio", "face": "smug", "text": "いらっしゃい、はじめくん。……世界一の人を、ここでは名前で呼ぶね"},
+          {"speaker": "hajime", "face": "smile", "text": "いつもどおりで、いいですよ"},
+          {"speaker": "rio", "face": "smile", "text": "いつもどおりだよ。二人の時は、ずっとこう"}
+        ],
+        "friend": [
+          {"speaker": "rio", "face": "smug", "text": "いらっしゃい、世界一のモルモットくん。……肩書きが長くなったね"},
+          {"speaker": "hajime", "face": "smile", "text": "モルモットは、取れないんですね"},
+          {"speaker": "rio", "face": "smile", "text": "取らないよ。肩書きが増えても、君の鼻は私の検品係"}
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch5_rio_shop_b",
+      "comment": "第5章の通いの小会話（BLC08・chapters/ch5-shops.js の chapterFiveShowroom）。Dr.fookah の2階・夜だけ。世界大会の後・博士との勝負の前。恋人でも友人でも読めるよう、呼び方だけ恋人で分ける。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "夜の2階。凛想さんは、窓際の椅子で目を閉じて座っていた。"},
+        {"speaker": "rio", "face": "normal", "text": "……あ。寝てないよ。鼻を休ませてたの"},
+        {"speaker": "hajime", "face": "surprise", "text": "鼻を、休ませる？"},
+        {"speaker": "rio", "face": "normal", "text": "一日に嗅げる香りには、上限があるの。超えると、全部同じ匂いに聞こえる"},
+        {"speaker": "hajime", "face": "normal", "text": "今度の相手は、上限がないかもしれません。機械なので"},
+        {"speaker": "rio", "face": "serious", "text": "ふうん。……なら、上限のあるほうの強さを持っていけばいい"},
+        {"speaker": "rio", "face": "normal", "text": "休ませた鼻は、一口目をちゃんと覚えてる。疲れた鼻には、それができないの"},
+        {"speaker": "rio", "face": "smug", "text": "覚えなくていいよ。今夜は君も、鼻を休ませて帰って"}
+      ]
+    },
+    {
+      "dialogue_id": "ch5_rio_shop_c",
+      "comment": "第5章の通いの小会話（BLC08・chapters/ch5-shops.js の chapterFiveShowroom）。Dr.fookah の2階・夜だけ。世界大会の後・博士との勝負の前。恋人でも友人でも読めるよう、呼び方だけ恋人で分ける。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "2階の机に、書類が一枚だけ置いてあった。見覚えのある、同意書の様式だった。"},
+        {"speaker": "hajime", "face": "surprise", "text": "また、新しいサンプルですか"},
+        {"speaker": "rio", "face": "smug", "text": "違う。読んでみて"},
+        {"speaker": "", "face": "", "text": "「試香モルモット契約　満了」。下の欄には、凛想さんの字で日付だけが入っていた。"},
+        {"speaker": "rio", "face": "normal", "text": "世界大会の前に作った書類。出しそびれてたの"},
+        {"speaker": "hajime", "face": "normal", "text": "満了、ってことは"},
+        {"speaker": "rio", "face": "smile", "text": "契約は、ここで終わり。その先は、書類なしで頼みたいの"},
+        {"type": "condition", "condition_type": "lover", "char_id": "rio", "next_true": "lover", "next_false": "friend"},
+        {"speaker": "hajime", "face": "smile", "text": "はい。書類なしで、また来ます"}
+      ],
+      "branches": {
+        "lover": [
+          {"speaker": "rio", "face": "smug", "text": "……恋人の分は、最初から書類にしてないけどね"}
+        ],
+        "friend": [
+          {"speaker": "rio", "face": "smile", "text": "友だちに同意書は、要らないでしょ"}
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch5_rio_naru_tea",
+      "metadata": {
+        "setting": "なる→凛想の続き（REL06）。第5章のDr.fookahの2階で、通いの小会話の代わりに一度だけ（chapters/ch5-shops.js の extras）。第1章の喫茶こはくの場面（cafe_naru_rio）と2階の続き（cafe_naru_rio_followup_rio「次は、お茶でも出そうか」）の回収。"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "2階に上がると、先客がいた。応接の椅子で、なるが背すじを伸ばしている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前には、湯気の立つ湯のみ。注文書の控えを、膝の上で握ったままだ。"
+        },
+        {
+          "speaker": "naru",
+          "face": "surprise",
+          "text": "……よう、はじめ"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "いらっしゃい。今日は、ケムリクサさんを帰さなかったの"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "納品の確認だけで、すぐ帰ろうとするから。お茶くらい、飲んでいきなって"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "……いただいてます、円頓寺さん"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_spot_follow_rio_naru",
+          "next_true": "heard"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは湯のみを両手で包んで、少しずつ飲んでいる。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "旅先の店の話を聞いてたの。客の吸う速さに合わせて、甘さを組み直す話"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "……いい仕事だね。数字より先に、人の顔を見てる"
+        },
+        {
+          "speaker": "naru",
+          "face": "surprise",
+          "text": "……っ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるの耳の先が、少し赤くなった。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "ご、ごちそうさまでした。店に戻ります"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "rio",
+          "next_true": "naru_lover"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは湯のみを置いて頭を下げると、早足で階段を降りていった。"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "今日は、六分もった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……数えてたんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "数えるのは、仕事だから"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "rio",
+          "next_true": "lover",
+          "next_false": "friend"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "机の上の湯のみは、きれいに空になっていた。"
+        }
+      ],
+      "branches": {
+        "heard": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（前に聞いた時は、三分で帰るって話だった）"
+          }
+        ],
+        "naru_lover": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "……はじめ。ちゃんと、大事にしろよ"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "次は、十分を目指してもらおうかな"
+          }
+        ],
+        "lover": [
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "……君を待つ時間は、数えてないけどね"
+          }
+        ]
+      }
     }
   ]
 }

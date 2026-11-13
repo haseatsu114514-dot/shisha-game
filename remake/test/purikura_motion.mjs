@@ -9,7 +9,7 @@ const source = read("../js/motions/purikura.js");
 
 async function fixture({ variant = "a", width = 1280, height = 720, cg = null, loadDuring = false, interruptMusic = false, throwDuring = false, random = 0, imageFails = false, loadBeforePrint = false } = {}) {
   const context = vm.createContext({ console, Math: Object.assign(Object.create(Math), { random: () => random }) });
-  const made = [], anims = [], sounds = {}, music = [], queried = [], images = [], recorded = [];
+  const made = [], anims = [], sounds = {}, music = [], queried = [], images = [], recorded = [], portraitCalls = [];
   let elapsed = 0;
   let musicNow = "sweets_or_sweets", during = false;
   let disconnected = false, staged = 0, root = null;
@@ -30,7 +30,7 @@ async function fixture({ variant = "a", width = 1280, height = 720, cg = null, l
     } },
     "state.js": { state: owner },
     "gallery.js": { recordCg: (id) => recorded.push({ id, elapsed }) },
-    "data.js": { cgUrl: (id) => (queried.push(id), typeof cg === "object" && cg ? cg[id] ?? null : id === "cg_ageha_first_purikura" ? cg : null), portraitInfo: (id, face) => ({ src: `${id}_${face}.webp` }) },
+    "data.js": { cgUrl: (id) => (queried.push(id), typeof cg === "object" && cg ? cg[id] ?? null : id === "cg_ageha_first_purikura" ? cg : null), portraitInfo: (id, face, style) => (portraitCalls.push([id, face, style]), { src: `${style ?? "default"}_${id}_${face}.webp` }) },
     "ui.js": { imageReady: async (url) => { images.push(url); if (loadDuring) stateModule.setExport("state", loaded); return !imageFails; } },
     "audio.js": { preloadBgm: async () => true, currentBgm: () => musicNow, playBgm: (key) => { music.push(key); musicNow = key; during = key?.startsWith("bgm_purikura"); }, SE: new Proxy({}, { get: (_, name) => () => { sounds[name] = (sounds[name] || 0) + 1; } }) },
     "transition-kit.js": { svg: el, move: async (node, frames, ms, opt = {}) => { anims.push({ node, frames, ms, ...opt }); } },
@@ -58,7 +58,7 @@ async function fixture({ variant = "a", width = 1280, height = 720, cg = null, l
   let error;
   try { await module.namespace[variant](); } catch (e) { if (!throwDuring) throw e; error = e; }
   const find = (selector) => made.filter((n) => n.selector === selector);
-  return { queried, images, recorded, made, anims, sounds, music, musicNow, error, disconnected, staged, root, find, plans: module.namespace.PLANS };
+  return { queried, images, recorded, portraitCalls, made, anims, sounds, music, musicNow, error, disconnected, staged, root, find, plans: module.namespace.PLANS };
 }
 
 // a: 毎回3・2・1、盛りを選ぶ／b: 撮影はさっと、スタンプ多め
@@ -78,6 +78,9 @@ for (const [variant, ticks, menu] of [["a", 9, 3], ["b", 3, 0]]) {
   // 撮った3枚・写真の窓・印刷4枚に、ふたりの立ち絵が入る（文字は画像に焼き込まない）
   const sprites = f.find("img.mo-pk-sprite.hajime").length;
   assert.equal(sprites, 3 + 3 + 4, "poses, thumbs and printed copies use sprites while the CG is missing");
+  assert(f.portraitCalls.length > 6 && f.portraitCalls.every(([, , style]) => style === "classic"), "preloads and every photo use the artwork measured for SPRITE");
+  const photoUrls = f.made.filter((n) => n.selector.startsWith("img.mo-pk-sprite.")).map((n) => n.attrs.src);
+  assert.deepEqual([...new Set(photoUrls)].sort(), [...f.images].sort(), "all photo expressions match their preloaded classic images");
   const words = f.made.filter((n) => n.selector === "text").map((n) => n.children.join(""));
   for (const w of ["ハジメっち♡", "答え合わせ係", "あげ↑"]) assert(words.includes(w), `doodle word ${w}`);
   // 手の震え: あげはのハートは途中（1 - 0.58）で止まり、はじめの星は最後まで描く

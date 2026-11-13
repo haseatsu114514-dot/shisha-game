@@ -16,10 +16,10 @@ const g = growth.ensureGrowth(); g.hidane.any=3;
 const before = { day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,stats:{...core.state.stats} };
 assert.equal(stats.maxStamina(),100);
 assert.equal(board.commitPending(["B1"]).length,1);
-assert.equal(stats.maxStamina(),104,"B1の表示どおり最大体力+4");
+assert.equal(stats.maxStamina(),108,"B1の表示どおり最大体力+8（近くの帯は×2。SBD111）");
 assert.equal(board.commitPending(["B1"]).length,0);
 core.save(); core.load();
-assert.equal(stats.maxStamina(),104); assert.equal(core.state.growth.hidane.any,2);
+assert.equal(stats.maxStamina(),108); assert.equal(core.state.growth.hidane.any,2);
 assert.deepEqual({ day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,stats:core.state.stats },before);
 growth.setGrowthPreview(false); assert.equal(stats.maxStamina(),100);
 growth.setGrowthPreview(true);
@@ -27,23 +27,23 @@ for (const raw of [10,21,48,80,100]) {
   for (const key of core.STAT_KEYS) core.state.stats[key]=raw;
   growth.setGrowthPreview(false); const legacy={ maximum:stats.maxStamina(),slow:skill.slow({}),window:skill.window({}) };
   growth.setGrowthPreview(true);
-  assert.equal(stats.maxStamina(),legacy.maximum+4,"旧能力が高くてもB1の+4を加算する");
+  assert.equal(stats.maxStamina(),legacy.maximum+8,"旧能力が高くてもB1の+8を加算する");
   assert.equal(skill.slow({}),legacy.slow); assert.equal(skill.window({}),legacy.window);
 }
 const legacyStats = JSON.stringify(core.state.stats);
 core.state.stamina=81;
-assert.equal(stats.maxStamina(),164);
+assert.equal(stats.maxStamina(),168);
 assert.equal(stats.currentCondition().health,"green","容量を増やしただけで旧体調を悪化させない");
 assert.equal(stats.maxStamina({forCondition:true}),160);
 for (let i=0;i<3;i++) {
   core.save(); core.load();
-  assert.equal(stats.maxStamina(),164,"LOADのたびに効果を積み増さない");
+  assert.equal(stats.maxStamina(),168,"LOADのたびに効果を積み増さない");
   assert.equal(JSON.stringify(core.state.stats),legacyStats); assert.equal(core.state.stamina,81);
 }
 core.state.growth.nodes=board.NODES.filter(n=>["stat","gate"].includes(n.kind)).map(n=>n.id);
-assert.equal(stats.maxStamina(),215,"旧最大体力160に盤の55を加算できる（SPEC 3.2 の上限 +60 に近づけた補正）");
-core.state.stamina=215; core.save(); core.load();
-assert.equal(core.state.stamina,215); assert.equal(stats.maxStamina(),215);
+assert.equal(stats.maxStamina(),227,"旧最大体力160に盤の67を加算できる（近くの帯×2で55→67。SBD111）");
+core.state.stamina=227; core.save(); core.load();
+assert.equal(core.state.stamina,227); assert.equal(stats.maxStamina(),227);
 for (const schema of [8,21,23,core.SCHEMA]) {
   const old=core.newState(); old.schema=schema;
   for (const key of core.STAT_KEYS) old.stats[key]=100;
@@ -53,7 +53,7 @@ for (const schema of [8,21,23,core.SCHEMA]) {
   growth.ensureGrowth().hidane.any=1; board.commitPending(["B1"]);
   for (let i=0;i<2;i++) {
     core.save(); core.load();
-    assert.equal(stats.maxStamina(),164); assert.equal(core.state.stamina,81);
+    assert.equal(stats.maxStamina(),168); assert.equal(core.state.stamina,81);
     assert.equal(core.state.growth.hidane.any,0);
     assert.equal(core.state.growth.nodes.filter(id=>id==="B1").length,1);
     for (const key of core.STAT_KEYS) assert.equal(core.state.stats[key],100);
@@ -76,14 +76,19 @@ core.state.growth.nodes=[nodeFor("gauge").id]; assert(skill.slow({})>1.18);
 core.state.growth.nodes=[nodeFor("heat").id]; assert(skill.window({})>1.45);
 core.state.growth.nodes=[nodeFor("dodge").id]; assert(steamHeartRadius()<3.2);
 core.state.growth.nodes=["B4"]; core.state.fortune={char:"adam"};
-stats.gainAffinity("adam",1,{source:"lime",onGain(){}});
 const totalAffinity = () => (core.state.affinity.adam||0)+(core.state.affinityCarry.adam||0);
-// 占いの倍率は本体の値を読む（2026-11-02 に ×1.5 → ×2）。旧報酬は丸めた2、盤の人柄1%に占いを一度だけ掛ける
-const F=stats.FORTUNE_AFFINITY_MULT, legacyFortune=Math.round(1*1.2*F);
-assert(Math.abs(totalAffinity()-(legacyFortune+.01*F)*.85*.25)<1e-10,"旧報酬と盤の端数へ占いを一度だけ適用");
-assert.equal(core.state.fortune,undefined);
+// LIMEは会っていないので占いを使わない（台帳 URA07）。倍にならず、効果も残る
 stats.gainAffinity("adam",1,{source:"lime",onGain(){}});
-assert(Math.abs(totalAffinity()-((legacyFortune+.01*F)+(1+.01))*.85*.25)<1e-10);
+const limeOnly=(1+.02)*.85*.25; // B4（近くの人柄）は＋2%（近くの帯×2。SBD111）
+assert(Math.abs(totalAffinity()-limeOnly)<1e-10,"LIMEで占いが発動した");
+assert.deepEqual(core.state.fortune,{char:"adam"});
+// 占いの倍率は本体の値を読む（2026-11-02 に ×1.5 → ×2）。会ったとき、旧報酬は丸めた2、盤の人柄2%に占いを一度だけ掛ける
+const F=stats.FORTUNE_AFFINITY_MULT, legacyFortune=Math.round(1*1.2*F);
+stats.gainAffinity("adam",1);
+assert(Math.abs(totalAffinity()-limeOnly-(legacyFortune+.02*F)*.85)<1e-10,"旧報酬と盤の端数へ占いを一度だけ適用");
+assert.equal(core.state.fortune,undefined);
+stats.gainAffinity("adam",1);
+assert(Math.abs(totalAffinity()-limeOnly-((legacyFortune+.02*F)+(1+.02))*.85)<1e-10);
 core.newGame(); growth.ensureGrowth();
 const cs={ mix:{ lemon:12 },steamSeconds:360 };
 const baseDamage=leafDamagePerPull(cs,{ lemon:{mix_life:1} });
@@ -93,7 +98,7 @@ core.state.growth.nodes=[nodeFor("tongue").id];
 gainFlavorExperience(core.state,{ lemon:12 },10);
 assert(core.state.flavorMastery.lemon>10);
 // 旧セーブの不足補完は、今の盤の熟練度倍率で過去の報酬を増やさない。
-core.state.schema=23; core.state.story.rin=4;
+core.state.schema=23; core.state.story.rio=4;
 core.save(); core.load();
 assert.equal(core.state.flavorMastery.rose,6); assert.equal(core.state.flavorMastery.lychee,6);
 assert.equal(core.state.flavorMastery.blueberry,12);
@@ -232,7 +237,7 @@ growth.ensureGrowth().nodes=["K18"];assert(effects.densePackAvailable(core.state
 core.newGame();const oldDense=core.newState();oldDense.schema=24;
 for(const key of core.STAT_KEYS) oldDense.stats[key]=100;
 stored.set(core.SAVE_KEY,JSON.stringify(oldDense));core.load();
-assert.equal(core.state.schema,25);assert(effects.densePackAvailable(core.state));
+assert.equal(core.state.schema,core.SCHEMA);assert(effects.densePackAvailable(core.state));
 core.save();core.load();assert(effects.densePackAvailable(core.state));
 for(const key of core.STAT_KEYS) assert.equal(core.state.stats[key],100);
 assert.equal(buildCarryPackage(core.state).flags._dense_pack_legacy,true);
@@ -309,19 +314,19 @@ insured=JSON.parse(JSON.stringify(insured));assert.equal(effects.useGrowthInsura
 assert.equal(insured.growthInsuranceKind,"leaf");assert.equal(effects.useGrowthInsurance(core.state,{mode:"rehearsal"},"leaf"),false);
 assert.equal(effects.useGrowthInsurance(core.state,{mode:"tournament"},"invalid"),false);
 growth.setGrowthPreview(false);assert.equal(effects.useGrowthInsurance(core.state,{mode:"tournament"},"leaf"),false);
-// 廃止した差し入れのK20は同じ開放ID・支払のまま人柄+2%になる。
+// 廃止した差し入れのK20は同じ開放ID・支払のまま人柄のマスになる。火種2のマスなので恩恵も2マス分の+4%（SBD112）。
 growth.setGrowthPreview(true);core.newGame();const replacement=growth.ensureGrowth();
 Object.assign(replacement,{nodes:["K20"],paid:{K20:{any:1,body:1}},hidane:{any:3,body:4,sense:0,wisdom:0}});
 const replacementBefore=JSON.stringify(replacement),rawBefore=JSON.stringify(core.state.stats);
 core.save();core.load();assert.equal(JSON.stringify(growth.ensureGrowth()),replacementBefore);
-assert.deepEqual(board.NODE_BY_ID.K20.links,["B9"]);assert.equal(effects.boardPerks(["K20","K20"]).charm,2);
+assert.deepEqual(board.NODE_BY_ID.K20.links,["B9"]);assert.equal(effects.boardPerks(["K20","K20"]).charm,4);
 assert.equal(effects.growthSkill(core.state,"K20"),false);assert.equal(JSON.stringify(core.state.stats),rawBefore);
 core.state.growth.nodes=[];stats.gainAffinity("naru",5,{onGain(){}});
 const withoutK20=(core.state.affinity.naru||0)+(core.state.affinityCarry.naru||0);
 core.state.affinity.naru=0;core.state.affinityCarry.naru=0;core.state.growth.nodes=["K20"];
 stats.gainAffinity("naru",5,{onGain(){}});
 const withK20=(core.state.affinity.naru||0)+(core.state.affinityCarry.naru||0);
-assert(Math.abs(withK20-withoutK20-.085)<1e-10,"5ポイントの通常交流へ2%を端数込みで加え、既存の0.85ペースを一度掛ける");
+assert(Math.abs(withK20-withoutK20-.17)<1e-10,"5ポイントの通常交流へ4%を端数込みで加え、既存の0.85ペースを一度掛ける");
 // 花の授業は異なる二系統と、実際に終えた調整で層を重ねる。
 growth.setGrowthPreview(true);core.newGame();Object.assign(growth.ensureGrowth(),{nodes:["M-B2","M-B3"],learned:["M-B2","M-B3"]});
 const flowerCs={mode:"tournament",chapter:2,mix:{rose:6,lavender:6},careHistory:[]};
@@ -336,17 +341,17 @@ assert.equal(bonusOf({...blindCs,blindVariance:-3}).bonus,-3);assert.equal(bonus
 assert.equal(bonusOf({...blindCs,pullDone:false}).bonus,0);assert.equal(bonusOf({...blindCs,failed:true}).bonus,0);
 assert.equal(bonusOf(JSON.parse(JSON.stringify(blindCs))).bonus,2.4,"セッション保存の振れ幅を再抽選しない");
 growth.setGrowthPreview(false);assert.equal(bonusOf(blindCs).bonus,0);assert.deepEqual(effects.floralLayers(core.state,flowerCs,DB.flavorById),[]);
-console.log("[growth effects] PASS: additive legacy growth, 160+55=215, no resource use or repeated LOAD gain, condition boundaries, fractional affinity/fortune, UI totals, leaf/mastery/gauge/heat/pull/stage and mode off");
+console.log("[growth effects] PASS: additive legacy growth, 160+67=227, no resource use or repeated LOAD gain, condition boundaries, fractional affinity/fortune, UI totals, leaf/mastery/gauge/heat/pull/stage and mode off");
 // 集団交流は一行動。各人の初回・交流の幅だけを重複なく数える（SPEC X1/X2/X3/X11）。
 growth.setGrowthPreview(true);core.newGame();
 const group = growth.ensureGrowth();
-assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["kuze","volk","kuze"]}),150);
+assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["saku","volk","saku"]}),150);
 assert.equal(group.fresh.counts["group-test"],1);
-assert.deepEqual(group.firsts.people,["kuze","volk"]);assert.deepEqual(group.chapterLog[1].people,["kuze","volk"]);
-assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["volk","kuze"]}),30);
+assert.deepEqual(group.firsts.people,["saku","volk"]);assert.deepEqual(group.chapterLog[1].people,["saku","volk"]);
+assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["volk","saku"]}),30);
 assert.equal(group.fresh.counts["group-test"],2);
 assert.deepEqual(group.firsts.places,["party"]);
-assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["volk","kuze"]}),24);
+assert.equal(growth.awardActionExp({key:"group-test",place:"party",people:["volk","saku"]}),24);
 growth.setGrowthPreview(false);
 console.log("[growth effects] PASS: group action XP occurs once; first-person and breadth ledgers count unique real guests");
 growth.setGrowthPreview(true);core.newGame();
@@ -392,7 +397,7 @@ stacked.nodes=["M-W8"];stacked.learned=["M-W8"];
 growth.setGrowthPreview(false);assert.equal(finalize(grapeCup()).total,85);growth.setGrowthPreview(true);
 assert.equal(effects.LESSON_TUNING.grapeReception,2);assert(effects.LESSON_TUNING.grapeReception<2*effects.LESSON_TUNING.flowerLayer);
 const voteImpact=[];
-for(const base of [50,80,82,83,84,85,88,90,98]){
+for(const base of [50,80,82,83,84,85,86,87,88,90,98]){
  const evaluate=createCh3TournamentEvaluate({performanceOf:(scenario)=>({rounds:[base,base,base,scenario.final],processScores:[]})});
  const tally={base,boosted:base+2,seeds:200,baselineWins:0,boostedWins:0,rankChanged:0,votesChanged:0};
  for(let seed=1;seed<=200;seed++){
@@ -404,9 +409,149 @@ for(const base of [50,80,82,83,84,85,88,90,98]){
  voteImpact.push(tally);
 }
 assert.equal(voteImpact[0].boostedWins,0,"授業を覚えても低い制作点は勝利にならない");
-const boundaryVote=createCh3TournamentEvaluate({performanceOf:s=>({rounds:[80,84,80,s.final]})});
+// 版1の旧保存の境界は旧期待値のまま残す。計測アダプターは新規挑戦なので、ここだけ実投票を版1で使う。
+const legacyTournament=await import("../js/chapters/ch3-tournament-state.js");
+const boundaryVote=(scenario,seed,{p})=>{
+ const value={chapter:3,day:42,weatherSeed:seed,flags:{}};
+ const progress=legacyTournament.startAttempt(value,{careHistory:[]});delete progress.rulesVersion;delete progress.baseVotes;
+ for(const [round,performance]of [80,84,80,scenario.final].entries()) assert(legacyTournament.castVotes(progress,round,performance,null,p));
+ const rows=legacyTournament.standings(progress);
+ return {rank:rows.find(r=>r.id==="hajime").rank,votes:Object.fromEntries(rows.map(r=>[r.id,r.points]))};
+};
 const withoutGrape=boundaryVote({id:"without",final:82},1,{p:0}),withGrape=boundaryVote({id:"with",final:84},1,{p:0});
 assert.equal(withoutGrape.rank,2);assert.equal(withGrape.rank,1,"既存の総票・同点規則のまま境界例では勝敗が変わる");
 assert.equal(withoutGrape.votes.hajime,9);assert.equal(withGrape.votes.hajime,11);
-console.log("[grape lesson] PASS: family/unique-most, learned/off/failure, +2 once/cap/SAVE/LOAD, existing C3 votes unchanged rules",JSON.stringify(voteImpact));
+// 版2の新規挑戦にも同じ+2の境界効果がある。敵値やassertを下げず、明示的な新基準を別に固定する。
+const currentBoundary=createCh3TournamentEvaluate({performanceOf:s=>({rounds:[84,88,84,s.final]})});
+const currentWithout=currentBoundary({id:"without",final:86},1,{p:0}),currentWith=currentBoundary({id:"with",final:88},1,{p:0});
+assert.equal(currentWithout.rank,2);assert.equal(currentWith.rank,1);
+assert.equal(currentWithout.votes.hajime,10);assert.equal(currentWith.votes.hajime,12);
+console.log("[grape lesson] PASS: family/unique-most, learned/off/failure, +2 once/cap/SAVE/LOAD, legacy/current C3 rules and exact +2 boundaries",JSON.stringify(voteImpact));
+{
+ // #2213・オーナー判断 2026-11-04 案1: K11「火の番」は、熱管理の交換でトングで持ってくる焼き炭の焼け具合を1段よくする。
+ const { replacementCoals, FIRE_KEEPER_STEP, HEAT_GRADES } = await import("../js/craft/heat_logic.js");
+ assert.deepEqual(Object.keys(FIRE_KEEPER_STEP).sort(), Object.keys(HEAT_GRADES).sort(), "全ての焼け具合に1段上が決まっている");
+ assert.deepEqual(FIRE_KEEPER_STEP, { raw:"early", early:"pre", pre:"just", just:"just", hot:"just", over:"hot" });
+ const rank = g => HEAT_GRADES[g].hp + HEAT_GRADES[g].hs;
+ for (const [from, to] of Object.entries(FIRE_KEEPER_STEP)) assert(rank(to) >= rank(from), `${from}→${to}: 熱の戻り・持ちが悪くならない`);
+ assert.deepEqual(replacementCoals(["pre","over","just"], 4), { batch:["pre","over","just"], picks:["pre","over","just","pre"] }, "K11なしは最初の炭焼きそのまま");
+ assert.deepEqual(replacementCoals(["pre","over","just"], 2, { fireKeeper:true }), { batch:["just","hot","just"], picks:["just","hot"] }, "K11ありは1段だけ上がる（二重に上がらない）");
+ assert.deepEqual(replacementCoals(undefined, 2, { fireKeeper:true }), { batch:null, picks:[] }, "焼いた記録が無い台は標準の焼き炭のまま");
+ assert.equal(effects.SKILL_TUNING.coalReplacement, undefined, "旧効果（交換の炭焼きのジャスト幅×1.2）は残さない");
+ console.log("[K11 fire keeper] PASS: tong-fetched coals step one grade toward just, no double step, standard coals without a record");
+}
 growth.setGrowthPreview(false);
+
+
+// #3116: named squares describe their real perk; stage feature adds its own score.
+{
+ growth.setGrowthPreview(true); core.newGame(); growth.ensureGrowth();
+ const { FEATURES, NOTABLES } = await import("../js/core/growth-board-data.js");
+ // 近くの帯の要のマス（B3・S5・W9）は 単位×2×1.5（近くの帯は×2。SBD111）
+ const expected = { B3:{charm:3}, B19:{charm:3,stage:.3}, B21:{sleep:9},
+  S5:{dodge:3}, S21:{breath:18}, S25:{breath:27}, W9:{leaf:3}, W14:{tongue:3}, W24:{coal:4.5} };
+ assert.equal(board.NODES.filter(n=>n.notable).length,9);
+ for(const [id, perks] of Object.entries(expected)) {
+  assert.deepEqual(Object.fromEntries(Object.entries(effects.boardPerks([id])).filter(([,v])=>v!==0)),perks,id);
+  assert.deepEqual(effects.boardPerks([id,id]),effects.boardPerks([id]),`${id}: duplicate IDs do not stack`);
+ }
+ for(const feature of Object.keys(FEATURES)) {
+  const nodes=board.NODES.filter(n=>n.feature===feature); assert.equal(nodes.length,1,feature);
+  core.state.growth.nodes=[nodes[0].id]; assert(effects.growthFeature(core.state,feature),feature);
+  core.state.growth.nodes=[]; assert(!effects.growthFeature(core.state,feature),feature);
+ }
+ assert.match(NOTABLES.friendly.text,/交流/); assert.match(NOTABLES.friendly.text,/固定分は除く/);
+ assert.match(NOTABLES.ironsleep.text,/回復/); assert.match(NOTABLES.fire_eye.text,/蒸らし/);
+ assert.match(NOTABLES.hairbreadth.text,/リフレッシュ/); assert.match(NOTABLES.leaf_eye.text,/吸いすぎ/);
+ assert.match(FEATURES.stage.text,/0\.3/);
+ core.state.chapter=3;
+ const route=["B1","B4","B7","B18"];
+ const cup=()=>({mode:"tournament",chapter:3,pullDone:true,mix:{},holes:{score:80},heat:{score:80},
+  stats:{craftQuality:80},careHistory:[{score:80},{score:80}]});
+ const { finalize: score }=await import("../js/craft/score.js");
+ core.state.growth.nodes=route;
+ assert.equal(bonusOf(cup()).bonus,.6,"B18 keeps its existing score before stage feature");
+ const before=score(cup()).total;
+ core.state.growth.nodes=[...route,"B19"];
+ assert(Math.abs(bonusOf(cup()).bonus-.9)<1e-9);
+ const after=Math.round((before+.3)*10)/10;
+ assert.equal(score(cup()).total,after,"B19 alone increases actual final score by 0.3");
+ assert(Math.abs(effects.boardPerks(board.NODES.map(n=>n.id)).stage-5.1)<1e-9);
+ const capped=cup(); capped.holes.score=capped.heat.score=capped.stats.craftQuality=100; capped.careHistory.forEach(c=>c.score=100);
+ assert.equal(score(capped).total,100,"B19 does not exceed the score cap");
+ assert.equal(effects.boardPerks(["B19"]).charm,3,"keep existing charm instead of replacing it");
+ const once=score(cup()); for(let i=0;i<3;i++)assert.equal(score(once).total,after);
+ core.save(); core.load(); assert.equal(score(cup()).total,after,"SAVE/LOAD does not multiply stage bonus");
+ core.state.growth.nodes=["B19"];
+ assert.equal(bonusOf(cup()).bonus,.3,"stage also works on an old save without its approach route");
+ assert.equal(bonusOf({...cup(),mode:"practice"}).bonus,0);
+ growth.setGrowthPreview(false); assert.equal(bonusOf(cup()).bonus,0);
+ console.log("[notable contracts] PASS: all 9 named squares, 6 features, B19 +0.3 actual score, repeats/LOAD/off");
+}
+// #3117: 眠り1マスの+2%を端数として保存し、睡眠を重ねた時の実回復へ返す。
+{
+  const { buildCarryPackage } = await import("../js/core/carry.js");
+  const { startNextCycle } = await import("../js/core/cycle-start.js");
+  const sleepNodes = board.NODES.filter(n => n.kind === "stat" && n.perk === "sleep" && n.band === 1).slice(0, 2).map(n => n.id);
+  assert.equal(sleepNodes.length, 2);
+  const resetSleep = (count) => {
+    growth.setGrowthPreview(true); core.newGame();
+    growth.ensureGrowth().nodes = sleepNodes.slice(0, count);
+  };
+  const night = (amount = 14) => { core.state.stamina = 50; return stats.addStamina(amount, { sleep: true }); };
+  // 近くの眠りのマスは1つ＋4%（単位2%×近くの帯2。SBD111）。14回復の＋4%は一晩0.56で、2晩に1回ほど追加1になる
+  for (const [count, expected] of [[0, [14,14,14,14]], [1, [14,15,14,15]], [2, [15,15,15,15]]]) {
+    resetSleep(count);
+    assert.deepEqual(Array.from({ length: 4 }, () => night()), expected, `${count}マス: 毎晩増えたとは扱わず、整数になった夜だけ返す`);
+  }
+  resetSleep(1);
+  assert.equal(Array.from({ length: 100 }, () => night()).reduce((a,b) => a+b, 0), 1456, "100晩の+4%は合計56。丸めの積み増しをしない");
+  resetSleep(2);
+  assert.equal(Array.from({ length: 100 }, () => night()).reduce((a,b) => a+b, 0), 1512, "+8%も元の割合を維持");
+  resetSleep(1); night(); night(); night();
+  assert(Math.abs(core.state.growth.sleepCarry - .68) < 1e-9);
+  core.save(); core.load();
+  assert.equal(night(), 15, "SAVE/LOAD後も端数が実回復になる");
+  assert(Math.abs(core.state.growth.sleepCarry - .24) < 1e-9);
+  core.save(); core.load(); core.save(); core.load();
+  assert(Math.abs(core.state.growth.sleepCarry - .24) < 1e-9, "読み直すだけでは端数を増やさない");
+  resetSleep(1); night(); night(); night();
+  startNextCycle(buildCarryPackage(core.state));
+  assert.equal(night(), 15, "NG+の能力引継ぎで端数も一度だけ引き継ぐ");
+  resetSleep(1); night();
+  const carry = core.state.growth.sleepCarry;
+  assert.equal(stats.addStamina(0, { sleep: true }), 0);
+  assert.equal(core.state.growth.sleepCarry, carry, "回復0の前夜に端数を払い出さない");
+  core.state.stamina = 50; assert.equal(stats.addStamina(14), 14);
+  assert.equal(core.state.growth.sleepCarry, carry, "休憩では睡眠端数を使わない");
+  stats.addStamina(-4, { sleep: true });
+  assert.equal(core.state.growth.sleepCarry, carry, "消耗では端数を触らない");
+  growth.setGrowthPreview(false); assert.equal(night(), 14);
+  assert.equal(core.state.growth.sleepCarry, carry, "盤無効時は端数も凍結");
+  growth.setGrowthPreview(true); core.state.growth.nodes = [];
+  assert.equal(night(), 14); assert.equal(core.state.growth.sleepCarry, carry, "組み直して眠り無しの間は端数を払い出さない");
+  core.state.growth.nodes = sleepNodes.slice(0, 1);
+  core.state.stamina = stats.maxStamina(); assert.equal(stats.addStamina(14, { sleep: true }), 0);
+  assert.equal(core.state.growth.sleepCarry, 0, "満タンの余りは貯めない");
+  core.state.stamina = stats.maxStamina() - 1; assert.equal(stats.addStamina(14, { sleep: true }), 1);
+  assert.equal(core.state.growth.sleepCarry, 0, "上限に切られた回復の端数も残さない");
+  for (const invalid of [undefined, NaN, Infinity, -1, 1, "0.9"]) {
+    core.state.growth.sleepCarry = invalid;
+    assert.equal(night(), 14);
+    assert(Math.abs(core.state.growth.sleepCarry - .56) < 1e-9, "旧保存の欠落/不正な端数は0から始める");
+  }
+  for (const [nodes, lavender, base] of [[[], false, 14], [["K03"], false, 15.4], [["M-S3"], true, 16.8], [["K03", "M-S3"], true, 18.48]]) {
+    resetSleep(1); core.state.growth.nodes.push(...nodes);
+    core.state.growth.learned = nodes.filter(id => id === "M-S3");
+    if (lavender) core.state.flags._home_lavender_sleep = `${core.state.chapter}:${core.state.day}`;
+    const sum = Array.from({ length: 100 }, () => night()).reduce((a,b) => a+b, 0);
+    assert.equal(sum, Math.round(base) * 100 + Math.floor(base * .04 * 100 + 1e-9), "K03/ラベンダーの基礎回復丸めは維持、盤の上乗せ（近くの眠り1マス＝＋4%）だけ蓄積");
+  }
+  resetSleep(1); night();
+  startNextCycle(buildCarryPackage(core.state), {groups:{stats:false}});
+  assert.equal(core.state.growth?.sleepCarry, undefined, "能力を引き継がないNG+では睡眠端数も渡さない");
+  core.newGame(); assert.equal(core.state.growth, undefined, "NEW GAMEに前の保存の端数を漏らさない");
+  growth.setGrowthPreview(false);
+  console.log("[sleep carry] PASS: 0/1/2 nodes, repeated nights, SAVE/LOAD/NG+, cap, off, respec and K03/lavender");
+}
+

@@ -1,10 +1,11 @@
 // 初登場カットイン: キャラが名乗って名前が出たあと、最初に一度だけ「名前・二つ名・一言」を全画面で出す。
-// 文言の正本は data/characters.json の intro_cutin（なぎさは samechan.json の profile）。
+// 文言の正本は data/characters.json の intro_cutin。
 //   { title: 二つ名, line: 一言（「／」は2行にする時の改行位置）, face: 立ち絵の表情, color: 差し色,
-//     motion: 動きの型 sharp/soft/still/bounce, name: "alias"=フルネームを伏せる（ネタバレになる相手） }
-// 載せる言葉は呼び名・二つ名・一言＋小さく好きなフレーバー。初対面の顔だけを書く（2026-10-31）
-// 名前の出し方（オーナー指定・2026-10-08）: 会話の名前欄と同じ呼び名だけを表示する。
-// 括弧付きの本名は全員で廃止。本名はストーリーの名乗りで扱う
+//     motion: 動きの型 sharp/soft/still/bounce, name: "alias"=フルネームを伏せる（ネタバレになる相手）, display_name: 名前（下記） }
+// 載せる言葉は名前・二つ名・一言＋小さく好きなフレーバー。初対面の顔だけを書く（2026-10-31）
+// 名前の出し方（NAMES-1106「カットインの名前表示ルール」2026-11-06 オーナー策定）: intro_cutin.display_name に書く。
+//   本名タイプはフルネーム（あだ名がある人は「本名（あだ名）」）、通り名タイプは通り名。漢字には「漢字《よみ》」でふりがな。
+//   display_name_after: { flag, display_name } は、その到達フラグが立った後の名前（みんとは本名を聞いた後に木成頼栞）
 // 既読は flags._intro_<id>。明示的な未知版は _intro_<id>_<variant> へ分ける。
 import { el, sleep } from "../core/util.js";
 import { DB, displayName, portraitInfo, img } from "../core/data.js";
@@ -15,7 +16,7 @@ import { SE } from "../core/audio.js";
 import { mountIntro } from "./intro-fit.js";
 
 import { motifs } from "./intro-motifs.js";
-import { illustratedIntro, layoutIntro, animateIntro, exitIntro, flavorTag, plainLine, motionOf, MOTIONS } from "./intro-art.js";
+import { illustratedIntro, layoutIntro, animateIntro, exitIntro, flavorTag, plainLine, motionOf, MOTIONS, nameNode, plainName } from "./intro-art.js";
 import { introFlavor } from "./intro-flavors.js";
 import { graphicIntro } from "./intro-graphic.js";
 import { createTransition, measureStanding } from "./intro-transition.js";
@@ -35,9 +36,15 @@ export function markIntroSeen(id, variant = "") {
   if (introOf(id, variant)) state.flags[introSeenKey(id, variant)] = true;
 }
 
-/** カットインに出す名前。呼び名のみ、本名は表示しない */
-export function introName(id) {
-  return { main: displayName(id, state), full: "" };
+/**
+ * カットインに出す名前。source はふりがな・空き入りの書き方、main は文字だけ。
+ * データに名前の無い人（パッキー・SHISHA-9000 など）は会話の名前欄と同じ呼び名
+ */
+export function introName(id, variant = "", override = {}) {
+  const intro = { ...introOf(id, variant), ...override };
+  const after = intro.display_name_after;
+  const source = (after?.flag && state.flags[after.flag] && after.display_name) || intro.display_name || displayName(id, state);
+  return { source, main: plainName(source) };
 }
 
 /** 1行に収める字の大きさ（半角は約半分の幅で数える） */
@@ -64,9 +71,10 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
   if (!introOf(id, variant)) return;
   if (variant !== "unknown") markMet(id);
   markIntroSeen(id, variant);
-  const main = intro.display_name || introName(id).main;
-  let p = portraitInfo(id, intro.face || "normal");
-  const standingInfo = p;
+  const { source: nameSource, main } = introName(id, variant, override);
+  const standingInfo = portraitInfo(id, intro.face || "normal");
+  // 登場カットインの配置は現行原画用。会話の画風設定と独立して選ぶ。
+  let p = portraitInfo(id, intro.face || "normal", "classic");
   let art = DB.manifest.introArt?.[id];
   const graphic = art && p ? graphicIntro(id, config.introArtStyle) : null;
   if (graphic) {
@@ -79,9 +87,9 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
     await Promise.all([
       imageReady(p.src, 15000), imageReady(background, 15000),
       document.fonts.load('900 150px "Intro Gothic"', main).catch(() => []),
-      document.fonts.load('700 38px "Intro Gothic"', `${intro.title}${intro.line}`).catch(() => []),
+      document.fonts.load('700 38px "Intro Gothic"', `${intro.title}${intro.line}${nameSource}`).catch(() => []),
     ]);
-    const host = illustratedIntro(id, variant, intro, main, p, art, background);
+    const host = illustratedIntro(id, variant, intro, nameSource, p, art, background);
     host.dataset.art = graphic ? "graphic" : "classic"; // ひより専用の明るい配色は旧絵柄（白い背景）だけ
     const motion = motionOf(intro);
     // 立ち絵からの「変身」のつなぎ（グラフィック絵柄のときだけ。既定 none は今まで通り）
@@ -114,7 +122,7 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
     framePortrait(portrait, p);
     await imageReady(p.src, 15000);
   }
-  const motif = { hajime: "smoke", adam: "duality", naru: "stripes", dr_kemuri: "science", samechan: "shark", nagumo: "stripes", maezono: "duality", pakki: "duality" }[id] || "smoke";
+  const motif = { hajime: "smoke", adam: "duality", naru: "stripes", dr_kemuri: "science", samechan: "shark", sui: "stripes", maezono: "duality", pakki: "duality" }[id] || "smoke";
   const pattern = el("div.ci-motif", { "aria-hidden": "true" });
   pattern.innerHTML = `<svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">${motifs[motif]}</svg>`;
   const host = el("div.cutin", { dataset: { char: id }, style: `--ci: ${intro.color || "var(--gold)"}` }, [
@@ -128,7 +136,7 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
     portrait,
     el("div.ci-meta", [
       el("div.ci-title", { text: intro.title || "" }),
-      el("div.ci-name", { text: main, style: `font-size: ${fitSize(main, 570, 116)}px` }),
+      nameNode("div.ci-name", nameSource, { style: `font-size: ${fitSize(main, 570, 116)}px` }),
     ].filter(Boolean)),
     intro.line ? el("div.ci-line", { text: `「${plainLine(intro.line)}」`, style: `font-size: ${fitSize(`「${plainLine(intro.line)}」`, 575, 30)}px` }) : null,
   ].filter(Boolean));

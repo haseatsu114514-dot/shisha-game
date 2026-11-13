@@ -75,6 +75,9 @@ assert(Math.abs(media[0].volume - .6 * .68 * .5) < 1e-9, "reaction ducks the act
 config.bgmVolume = .2; audio.applyVolumes();
 assert(Math.abs(media[0].volume - .2 * .68 * .5) < 1e-9, "settings must retain the reaction duck");
 session.pause(); assert.equal(media[0].paused, true);
+media[0].readyState = 3;
+audio.unlockAudio(); await Promise.resolve();
+assert.equal(media[0].paused, true, "次の操作でCONTINUEの意図した一時停止を解除しない");
 const pausedSources = sources.length;
 session.tick(); session.count(3); session.voice("sumi"); session.title();
 assert.equal(sources.length, pausedSources, "rotation/menu pause also prevents new SE while document is visible");
@@ -135,7 +138,7 @@ config.seVolume = 1; config.bgmVolume = 0; config.voiceBlip = true;
 audio.applyVolumes();
 const talking = audio.createContinueAudio();
 const oldPitches = { naru: 420, adam: 330, minto: 1350, oneesan: 980, tsumugi: 1100,
-  rin: 760, pakki: 900, nagumo: 280, maezono: 380, dr_kemuri: 520, salaryman: 360,
+  rio: 760, pakki: 900, sui: 280, maezono: 380, dr_kemuri: 520, salaryman: 360,
   ageha: 1200, mashiro: 880, samechan: 1250, unknown: 600 };
 function blip(play, speaker, random) {
   const oldRandom = Math.random;

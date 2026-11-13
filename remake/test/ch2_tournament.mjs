@@ -44,13 +44,17 @@ for (const [round, quality] of [95,30,98,96].entries()) {
   p = JSON.parse(JSON.stringify(p)); s.flags._ch2_tournament = p;
 }
 for(const judge of JUDGES) assert.equal(Object.values(p.votes[judge]).reduce((a,b)=>a+b,0),10);
+assert(standings(p).every(row => row.points >= 1));
+assert.equal(standings(p).reduce((sum, row) => sum + row.points, 0), 34);
+const legacyRows = standings({ ...p, baseVotes: undefined });
+assert.deepEqual(standings(p).map(row => [row.id, row.rank]), legacyRows.map(row => [row.id, row.rank]));
 assert.throws(()=>recordResult(s,96),/2回/);
 p.craft.careHistory = [{score:91},{score:99}];
 const result = recordResult(s,96); assert.deepEqual(recordResult(s,96),result); assert.equal(p.history.length,1);
 assert.equal(result.careHistory.length,2);
 startAttempt(s,craft); assert.equal(p.attempts,2); assert.equal(p.history.length,1);
 assert.deepEqual(s.flavorStock,before.flavorStock); assert.equal(s.stamina,79);
-assert.equal(CH2_PRIZE,50000,'decided chapter 2 prize');
+assert.equal(CH2_PRIZE,100000,'decided chapter 2 prize');
 assert.equal(s.money, before.money + (result.rank === 1 ? CH2_PRIZE : 0), 'prize follows the recorded result and survives retry');
 for(const key of ['tournament','lovers','loverSince','lastDate','inbox','contacts','keepsakes','relationshipMemories']) assert.deepEqual(s[key],before[key],key);
 for(const [quality,expected] of [[98,1],[20,4]]) {

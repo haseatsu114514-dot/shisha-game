@@ -167,7 +167,7 @@ await suite("ch1-tournament", async check => {
         if (variant === "current-read") state.flags._ev_first_practice = true;
         if (baselineArrival) T.data.DB.dialogues.ch1_tournament_arrival = baselineArrival;
         // 初登場カットインは3.6秒固定。既読セーブを想定し、会話のSKIPだけを検証する。
-        for (const id of ["sumi", "pakki", "nagumo", "maezono", "dr_kemuri", "naru", "adam", "minto"]) intro.markIntroSeen(id);
+        for (const id of ["sumi", "pakki", "sui", "maezono", "dr_kemuri", "naru", "adam", "minto"]) intro.markIntroSeen(id);
         vn.vnTest.turbo = false;
         window.openingRead = false;
         window.skipTrace = [];
@@ -317,7 +317,7 @@ await suite("ch1-tournament", async check => {
   ]) await check(`results-${label}`, async page => {
     await init(page);
     await page.evaluate(() => {
-      ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"].forEach(T.core.markMet);
+      ["naru", "adam", "minto", "sui", "maezono", "dr_kemuri"].forEach(T.core.markMet);
       window.cs = { mix: { blueberry: 10, mint: 2 }, total: 84.4, parts: { holes: 95, heat: 100, shisha: 78, care1: 86, care2: 91 }, arcade: { total: 92340 }, bonusNotes: ["前日リハーサルの手応え"] };
     });
     if (label === "desktop") {
@@ -342,7 +342,7 @@ await suite("ch1-tournament", async check => {
     assert.deepEqual(interim.judges, {
       maezono:{spent:7,left:'投入 7 ／ 残り 3'},
       dr_kemuri:{spent:6,left:'投入 6 ／ 残り 4'},
-      nagumo:{spent:0,left:'10点を保留中'},
+      sui:{spent:0,left:'10点を保留中'},
     });
     assert.deepEqual(interim.points,{adam:5,naru:3,minto:2,hajime:3});
     // The second feed line starts after a 0.5s delay and slides in for 0.5s.
@@ -387,16 +387,33 @@ await suite("ch1-tournament", async check => {
     await page.evaluate(() => window.standings);
     assert.equal(await page.locator('[data-test="standings"], .fx-dim').count(), 0);
     if (label === "portrait") await page.setViewportSize(viewport);
-    await page.evaluate(() => { window.cut = T.result.nagumoCutin(1); });
+    await page.evaluate(() => { window.cut = T.result.suiCutin(1); });
     await page.locator('.nc-cut.show').waitFor();
     await page.waitForTimeout(550);
-    await assertFits(page, '.nagumo-cut, .nc-row, .nc-cut');
-    await capture(page, `nagumo-${label}`);
+    await assertFits(page, '.sui-cut, .nc-row, .nc-cut');
+    await capture(page, `sui-${label}`);
     await page.evaluate(() => window.cut);
     await page.evaluate(() => { window.finalResult = T.result.resultTable(cs, 1); });
     await page.locator('[data-test="result-next"]').waitFor();
     await page.waitForTimeout(550);
     await assertFits(page, '.result-table, .rt-layout, .rt-row, .rt-detail, [data-test="result-next"]');
+    await capture(page, `result-${label}-top`);
+    const scroll = page.locator('.rt-detail-scroll');
+    assert.equal(await scroll.getAttribute("tabindex"), "0");
+    const deductions = page.locator('.rt-judge-deduction');
+    assert.equal(await deductions.count(), 3);
+    for (const line of await deductions.all()) {
+      await line.scrollIntoViewIfNeeded();
+      await assertFits(page, `.rt-judge-deduction[data-judge="${await line.getAttribute("data-judge")}"]`);
+      assert(await line.evaluate(node => {
+        const card = node.closest('.rt-detail-scroll').getBoundingClientRect();
+        const text = node.getBoundingClientRect();
+        return text.top >= card.top - 1 && text.bottom <= card.bottom + 1;
+      }), "Each deduction must be readable inside the scroll area");
+    }
+    await page.locator('.rt-detail-scroll button').last().scrollIntoViewIfNeeded();
+    await assertFits(page, '.rt-detail, .rt-detail-scroll button');
+    await capture(page, `result-${label}-bottom`);
     const labels = await page.locator('.rt-part > span').allTextContents();
     assert.deepEqual(labels, ["穴あけ", "炭焼き", "完成品", "調整1回目", "調整2回目", "総合"]);
     assert.match(await page.locator('.rt-judge-comment').innerText(), /上園「.+」/);
@@ -405,10 +422,10 @@ await suite("ch1-tournament", async check => {
     const finalVotes = await page.locator('.rt-row').evaluateAll(rows => Object.fromEntries(rows.map(row =>
       [row.dataset.id,{points:parseInt(row.querySelector('.rt-pt').textContent,10),votes:row.querySelector('.rt-votes').textContent}])));
     assert.deepEqual(finalVotes,{
-      naru:{points:5,votes:'上園 2 · 博士 3 · 南雲 0'},
-      adam:{points:5,votes:'上園 2 · 博士 3 · 南雲 0'},
-      minto:{points:3,votes:'上園 2 · 博士 1 · 南雲 0'},
-      hajime:{points:17,votes:'上園 4 · 博士 3 · 南雲 10'},
+      naru:{points:5,votes:'上園 2 · 博士 3 · 千須 0'},
+      adam:{points:5,votes:'上園 2 · 博士 3 · 千須 0'},
+      minto:{points:3,votes:'上園 2 · 博士 1 · 千須 0'},
+      hajime:{points:17,votes:'上園 4 · 博士 3 · 千須 10'},
     });
     for(const [id,points] of Object.entries(interim.points))assert(finalVotes[id].points>=points,`${id}: displayed allocated points returned`);
     await assertFits(page,'.rt-name, .rt-votes, .rt-pt');

@@ -16,7 +16,9 @@ globalThis.localStorage = { getItem: key => storage.get(key) ?? null,
 const copy = value => structuredClone(value);
 const definitions = JSON.parse(fs.readFileSync(new URL("../../data/tokyo_visits.json", import.meta.url)));
 const data = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_activities.json", import.meta.url)));
-assert.deepEqual(data.dialogues.map(scene => scene.dialogue_id), ["ch3_choizap_day", "ch3_choizap_night"]);
+// 再訪で巡回する想定の小品（#3097。未接続の原稿）も同じ制約で読む
+assert.deepEqual(data.dialogues.map(scene => scene.dialogue_id),
+  ["ch3_choizap_day", "ch3_choizap_night", "ch3_choizap_app", "ch3_choizap_lunch", "ch3_choizap_locker"]);
 for (const scene of data.dialogues) {
   assert(scene.lines.length >= 3);
   assert(scene.lines.every(line => !line.type && ["", "hajime"].includes(line.speaker)),
@@ -186,9 +188,9 @@ const synthetic = (names, values) => new vm.SyntheticModule(names, function () {
 }, { context });
 const stateModule = synthetic(["state", "save"], { state: null, save: () => { saves++; } });
 const dataModule = synthetic(["DB", "bgUrl"], { DB: { dialogues: {} }, bgUrl: id => id });
-const uiModule = synthetic(["layers", "showScreen", "setBg", "toast"], {
+const uiModule = synthetic(["layers", "showScreen", "setBg", "enterScene", "toast"], {
   layers: { hud: { replaceChildren() {}, classList: { remove() {} } } },
-  showScreen() {}, setBg: async () => {}, toast() {},
+  showScreen() {}, setBg: async () => {}, enterScene: async () => {}, toast() {},
 });
 const vnModule = synthetic(["play"], { play: (_dialogue, { signal }) => {
   playCalls++;

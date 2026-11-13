@@ -3,16 +3,23 @@ import vm from "node:vm";
 import fs from "node:fs";
 import { weakestPart } from "../js/craft/advice.js";
 import { normalizeContinueContext, prepareContinueScript, craftContinueContext, recordContinueContext, clearContinueHistory } from "../js/chapters/continue-context.js";
-import { PREMIUM_CONTINUE_SCRIPTS } from "../js/chapters/continue-premium.js";
+import { LOVER_CONTINUE_SCRIPTS } from "../js/chapters/continue-lovers.js";
 const sample = { duration: 20, cues: Array.from({ length: 7 }, (_, i) => ({ at: [0,1.8,4.2,7,10.3,13.6,16.5][i], text: `line${i}`, face: "normal" })) };
-for (const [reason, word, tip] of [["burnt","熱","熱を逃がす吸い"],["cold","冷え","炭"],["leaf","香り","葉"],["rank","届か","一つ"]]) {
-  const ctx = normalizeContinueContext({ reason });
+// 2026-11-07 オーナー指示（#2524）: 台詞は敗因・順位・弱点に絡めない。どの負け方でも台本の文をそのまま使う。
+for (const reason of ["burnt","cold","leaf","rank","unknown"]) for (const rank of [null, 2, 3]) {
+  const ctx = normalizeContinueContext({ reason, rank, parts:{ heat:42, holes:60 }, completedParts:["holes","heat"] });
   const first = prepareContinueScript(sample, ctx);
-  assert.match(first.cues[0].text, new RegExp(word)); assert.match(first.cues[1].text, new RegExp(tip));
-  const repeat = prepareContinueScript(sample, normalizeContinueContext({ reason, lossOrdinal:2, sameReasonOrdinal:2 }));
-  assert.deepEqual(repeat.cues.map(c => c.at), [0,2.2,4.6,7]);
-  assert.notEqual(repeat.cues[1].text,first.cues[1].text); assert.equal(repeat.duration,20);
+  assert.deepEqual(first.cues.map(c => c.text), sample.cues.map(c => c.text), `${reason}/${rank}: no reason-specific rewrite`);
+  for (const sameReasonOrdinal of [1, 2]) {
+    const repeat = prepareContinueScript(sample, normalizeContinueContext({ reason, rank, lossOrdinal:2, sameReasonOrdinal }));
+    assert.deepEqual(repeat.cues.map(c => c.at), [0,2.2,4.6,7]); assert.equal(repeat.duration,20);
+    assert.deepEqual(repeat.cues.map(c => c.text), [0,2,5,6].map(i => sample.cues[i].text), "default short keeps lines 0,2,5,6");
+  }
 }
+// スミさんの台本は short で残す行を持つ（掛け合いの芯 [2,3,5,6]）。
+const shortSample = { ...sample, short: [2,3,5,6] };
+assert.deepEqual(prepareContinueScript(shortSample, normalizeContinueContext({ lossOrdinal:3 })).cues.map(c => c.text), ["line2","line3","line5","line6"]);
+assert.deepEqual(prepareContinueScript(shortSample, normalizeContinueContext({ lossOrdinal:1 })).cues.map(c => c.text), sample.cues.map(c => c.text));
 assert.equal(weakestPart({heat:1,holes:1,care2:0},["holes","heat"]),"holes");
 assert.equal(weakestPart({heat:NaN,holes:Infinity,unknown:-1}),null);
 const partial = craftContinueContext({parts:{shisha:0,care2:0},holes:{score:60},heat:{score:45}});
@@ -28,7 +35,7 @@ assert.equal(recordContinueContext(owner,match,3,{reason:"burnt"}).sameReasonOrd
 assert.equal(recordContinueContext(owner,{},4,ctx).lossOrdinal,1);
 assert.equal(recordContinueContext({},match,4,ctx).lossOrdinal,1);
 clearContinueHistory(owner);assert.equal(recordContinueContext(owner,match,5,ctx).lossOrdinal,1);
-for(const script of Object.values(PREMIUM_CONTINUE_SCRIPTS)) {
+for(const script of Object.values(LOVER_CONTINUE_SCRIPTS)) {
   const short=prepareContinueScript(script,normalizeContinueContext({lossOrdinal:2}));
   assert.deepEqual(short.cues.map(c=>c.text),[0,2,5,6].map(i=>script.cues[i].text));
   assert.deepEqual(script.cues.map(c=>c.at),[0,1.8,4.2,7,10.3,13.6,16.5]);

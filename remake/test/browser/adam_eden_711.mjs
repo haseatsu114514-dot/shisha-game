@@ -15,7 +15,7 @@ const CASES = ['expressions', 'intro', 'map-and-entry', 'eden-visit', 'tournamen
 // preserve them. A future intentional adoption must update this baseline.
 const PRESERVED = {
   '/assets/ui/store_logos/eden.png': '68b3102129af4c1f8c3bc218c9a03ffa7216483285c62bbd227f62aa062ca2a6',
-  '/remake/img/ui/chapters/ch1-title.webp': '39dd98c35a3394985f847adecf2884108acd2ae559507aa0879914e7ce341c44',
+  '/remake/img/ui/chapters/ch1-title.webp': 'e9f022529f26e2240025a6056f53f117a5c1c47ff018a5102b124702e9708559',
 };
 fs.mkdirSync(OUT, { recursive: true });
 const report = { test: 'adam-eden-711', ref: process.env.TEST_REF || null, prHeadSHA: process.env.PR_HEAD_SHA || null, baseURL: BASE,
@@ -37,7 +37,7 @@ async function setup(page) {
     core.newGame();
     Object.assign(core.state, { phase: 'daily', day: 4, slot: 0, money: 30000, weatherSeed: 2 });
     Object.assign(core.config, { bgmVolume: 0, seVolume: 0, voiceBlip: false, textSpeed: 4 });
-    for (const id of ['adam', 'hajime', 'naru', 'minto', 'rin', 'sumi', 'tsumugi', 'pakki']) {
+    for (const id of ['adam', 'hajime', 'naru', 'minto', 'rio', 'sumi', 'tsumugi', 'pakki']) {
       core.state.met[id] = true; core.state.flags['_intro_' + id] = true;
     }
     vn.vnTest.turbo = false;
@@ -273,12 +273,13 @@ async function runScene(page, row, touch) {
     row.preservedTitleSHA256 = await assertPreserved(page, '/remake/img/ui/chapters/ch1-title.webp');
     await page.evaluate(async () => { A711.task = (await import('./js/chapters/ch1-title-motion.js')).playCh1Title(); });
     await page.locator('.ch1-title-motion[data-phase="playing"]').waitFor();
-    await page.waitForFunction(() => Number(document.querySelector('.ch1-title-motion')?.dataset.elapsed) >= 3150);
-    row.title = await page.locator('.ch1-title-motion canvas').evaluate(async canvas => {
+    row.title = await page.locator('.ch1-title-motion img').evaluate(async shown => {
+      await shown.decode();
+      const canvas=document.createElement('canvas');canvas.width=1280;canvas.height=720;canvas.getContext('2d').drawImage(shown,0,0);
       const image = new Image(); image.src = 'img/ui/chapters/ch1-title.webp'; await image.decode();
       const c = document.createElement('canvas'); c.width = 1280; c.height = 720; c.getContext('2d').drawImage(image, 0, 0);
-      const r = canvas.getBoundingClientRect();
-      return { originalPixels: canvas.toDataURL() === c.toDataURL(), fit: getComputedStyle(canvas).objectFit,
+      const r = shown.getBoundingClientRect();
+      return { originalPixels: canvas.toDataURL() === c.toDataURL(), fit: getComputedStyle(shown).objectFit,
         fits: r.left >= -.5 && r.top >= -.5 && r.right <= innerWidth + .5 && r.bottom <= innerHeight + .5 };
     });
     assert(row.title.originalPixels && row.title.fits && row.title.fit === 'contain', JSON.stringify(row.title));

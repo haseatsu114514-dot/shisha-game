@@ -62,6 +62,10 @@ async function go(page, id, touch = false) {
   if(touch) await pin.tap(); else await pin.click();
   await settled(page);
   const button=page.locator(t('map-go'));
+  if (touch) {
+    assert(await page.locator('.map-info.spot-selected .mi-preview').isVisible());
+    assert.equal(await page.locator('.map-info .mi-desc, .map-info .mi-go').count(), 0);
+  }
   if(touch) await button.tap(); else await button.click();
 }
 async function act(page,id,{touch=false}={}) {
@@ -105,8 +109,11 @@ await suite('ch2-daily',async check=>{
       const { MAP } = await import('./js/chapters/ch2-city-data.js');
       const s = core.newGame();
       Object.assign(s, { chapter: 2, phase: 'daily', day: 22, slot: 0, money: 30000 });
+      s.trpg.club.founded = { chapter: 2, day: 15 };
       Object.assign(s.flags, { _rei_trpg_introduced: true, _intro_sai: true,
         _ch2_day1: { startDay: 15, stage: 'complete', titleSeen: true } });
+      // #3135 以降、未設立の入店は設立会話が先に立つ。この検査は地図プレビューなので、既に設立済みにする。
+      s.trpg.club.founded = { chapter: 2, day: 1 };
       hud.initHud({}); hud.showHud(true); await ui.warmUiArt();
       const destination = trpg.trpgSpot();
       window.__b02 = { selected: null, before: JSON.stringify(s) };
@@ -128,8 +135,8 @@ await suite('ch2-daily',async check=>{
     assert(await preview.isVisible());
     assert.doesNotMatch(await page.locator('.map-info').innerText(), /画像を表示できませんでした|読込失敗|読み込みに失敗/);
     if (failImage) {
-      assert.equal(await preview.innerText(), `${spot.label} — ${spot.area}`);
-      assert.match(await preview.getAttribute('aria-label'), /詳細と入店条件/);
+      assert.equal(await preview.innerText(), '');
+      assert.match(await preview.getAttribute('aria-label'), /写真を表示できませんでした/);
       assert.equal(await preview.evaluate(node => getComputedStyle(node).backgroundImage), 'none');
     } else {
       assert.equal(await preview.innerText(), '');
@@ -139,8 +146,8 @@ await suite('ch2-daily',async check=>{
         await image.decode(); return image.naturalWidth > 0;
       }, spot.previewUrl));
     }
-    assert.equal(await page.locator('.map-info .mi-desc').innerText(), spot.desc);
-    assert.match(await page.locator('.map-info [data-test="spot-note"]').innerText(), /入店・部活設立は無料/);
+    assert.equal(await page.locator('.map-info .mi-banner').innerText(), spot.label);
+    assert.equal(await page.locator('.map-info .mi-desc, .map-info .mi-go, .map-info .mi-note').count(), 0);
     assert.equal(await page.evaluate(() => JSON.stringify(window.__remake.state)), await page.evaluate(() => __b02.before));
     const enter = page.locator(t('map-go'));
     assert(await enter.isVisible() && await enter.isEnabled());
@@ -154,7 +161,7 @@ await suite('ch2-daily',async check=>{
   await check('city-guest-paid-visit-and-reload',async page=>{
     await setup(page,{guest:'ageha'}); await begin(page); await settled(page);
     const guestNames=await page.locator(t('pin-minto')).locator('.pin-person').evaluateAll(nodes=>nodes.map(n=>n.getAttribute('title')));
-    assert(guestNames.some(name=>name?.includes('アゲハ')||name?.includes('あげは')), `Missing guest marker: ${guestNames}`);
+    assert(guestNames.some(name=>name?.includes('あげは')||name?.includes('あげは')), `Missing guest marker: ${guestNames}`);
     const before=await value(page);
     // 通常の初回訪問には有料チェキの選択もある。今回は見送り、基本の一服だけを比較する。
     await page.evaluate(()=>{ window.__remake.vnTest.choose=(_id,choices)=>Math.max(0,choices.indexOf('今日は見送る')); });
@@ -198,7 +205,7 @@ await suite('ch2-daily',async check=>{
   await check('next-day-region-switch-and-autosave',async page=>{
     await setup(page,{reel:true}); await begin(page);
     let v=await value(page); assert.equal(v.day,16); assert.equal(v.slot,0); assert.equal(v.stamina,114); // 根性31＝4段（10段表 GUTS_STAMINA_BONUS）
-    assert.match(await page.locator('.dc-day').textContent(),/^2\/14$/); assert.match(await page.locator('.dc-row').allTextContents().then(a=>a.join(' ')),/あと12日/);
+    assert.match(await page.locator('.dc-day').textContent(),/^2\/14$/); assert.doesNotMatch(await page.locator('.dc-row').allTextContents().then(a=>a.join(' ')),/あと\d+日/, '大会までの残り日数は左上カードに出さない（#3033）');
     await capture(page,'day2-home.png'); await wide(page);
     await assertFits(page,'.spot-pin');
     const overlaps=await page.evaluate(()=>{
@@ -239,7 +246,7 @@ await suite('ch2-daily',async check=>{
     const board=await page.evaluate(async()=>(await import('./js/core/growth-mode.js')).growthEnabled());
     if(board){assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),155);assert((v.growth?.xp||0)>0,'The paid talk earns EXP');}
     else assert.equal(Object.values(v.stats).reduce((a,b)=>a+b,0),157); // 2 normal points, not old 4-point amounts
-    await settled(page);await page.locator(t('pin-ch2_ageha')).click();assert.match(await page.locator('.mi-no').textContent(),/今日はもう行った/);
+    await settled(page);await page.locator(t('pin-ch2_ageha')).click();assert.match(await page.locator('.map-info').getAttribute('aria-label'),/今日はもう行った/);
     assert.equal(await page.locator(t('map-go')).count(),0);
     await travelToCity(page,'home');await act(page,'rest');
     v=await value(page);assert.equal(v.day,17);assert.equal(v.slot,0);
@@ -303,7 +310,8 @@ await suite('ch2-daily',async check=>{
   });
   await check('unaffordable-city-visit-spends-nothing',async page=>{
     await setup(page,{money:2000});await begin(page);await wide(page);await settled(page);await page.locator(t('pin-ch2_rei')).click();
-    assert.match(await page.locator('.mi-no').textContent(),/お金が足りない/);assert.equal(await page.locator(t('map-go')).count(),0);
+    assert.match(await page.locator('.map-info').getAttribute('aria-label'),/お金が足りない/);assert.equal(await page.locator(t('map-go')).count(),0);
+    const before = await value(page); await page.locator('.map-info').click(); assert.deepEqual(await value(page), before);
     const v=await value(page);assert.equal(v.money,2000-stationFares(page));assert.equal(v.slot,0);assert(Object.values(v.stats).every(n=>n===31));
   });
   await check('room-image-failure-preserves-cost-and-action',async page=>{

@@ -10,7 +10,7 @@ async function setup(page) {
     H.ch1.setupHooks(); H.vn.vnTest.turbo = true;
     H.fresh = () => {
       const s = H.core.newGame(); Object.assign(s, { phase: "daily", day: 8, slot: 1 });
-      for (const id of ["tsumugi", "minto", "rin", "hiyori", "naru"]) s.met[id] = true;
+      for (const id of ["tsumugi", "minto", "rio", "hiyori", "naru"]) s.met[id] = true;
       s.flags._minto_name_known = true; return s;
     };
   });
@@ -51,9 +51,9 @@ await suite("lover-hidden-growth", async check => {
       await setup(page);
       for (const level of [1, 2, 3, 4, 5]) {
         await page.evaluate(level => {
-          const s = H.fresh(); s.lovers = ["tsumugi", "rin"];
-          s.loveLevel = { tsumugi: level, rin: 6 - level }; s.lovePts = { tsumugi: level * 12, rin: 74 };
-          s.loveCarry = { tsumugi: .5, rin: .25 }; s.loverSince = { tsumugi: 3, rin: 6 };
+          const s = H.fresh(); s.lovers = ["tsumugi", "rio"];
+          s.loveLevel = { tsumugi: level, rio: 6 - level }; s.lovePts = { tsumugi: level * 12, rio: 74 };
+          s.loveCarry = { tsumugi: .5, rio: .25 }; s.loverSince = { tsumugi: 3, rio: 6 };
           s.loverEventsSeen = ["lover_tsumugi_lv2"]; s.owned.push("suyaki_tsumugi");
           s.finales.tsumugi = { route: "lover", day: 3, chapter: 1 };
           s.finales.minto = { route: "romance", day: 7, chapter: 1 }; // pending is not a lover
@@ -89,16 +89,16 @@ await suite("lover-hidden-growth", async check => {
       await setup(page);
       for (const [points, level] of [[9, 1], [19, 1], [66, 5]]) {
         const before = await page.evaluate(({ points, level }) => {
-          const s = H.fresh(); s.lovers = ["rin"]; s.lovePts.rin = points; s.loveLevel.rin = level;
-          s.loveCarry.rin = .5; s.loverSince.rin = 3;
+          const s = H.fresh(); s.lovers = ["rio"]; s.lovePts.rio = points; s.loveLevel.rio = level;
+          s.loveCarry.rio = .5; s.loverSince.rio = 3;
           // 成長通知の対象レベルより前の恋人会話は実際に読了済み。
           s.loverEventsSeen = Array.from({ length: points === 19 ? 1 : points === 66 ? 4 : 0 }, (_, i) => i + 1)
-            .flatMap(n => [`lover_rin_lv${n}`, `lover_rin_lv${n}_b`]);
-          H.stats.bond.private = false; H.stats.gainAffinity("rin", 10);
-          const publicPts = s.lovePts.rin;
-          H.stats.bond.private = true; H.stats.gainAffinity("rin", 10); H.stats.bond.private = false;
+            .flatMap(n => [`lover_rio_lv${n}`, `lover_rio_lv${n}_b`]);
+          H.stats.bond.private = false; H.stats.gainAffinity("rio", 10);
+          const publicPts = s.lovePts.rio;
+          H.stats.bond.private = true; H.stats.gainAffinity("rio", 10); H.stats.bond.private = false;
           H.core.save();
-          return { publicPts, privatePts: s.lovePts.rin, privateLevel: s.loveLevel.rin, carry: s.loveCarry.rin };
+          return { publicPts, privatePts: s.lovePts.rio, privateLevel: s.loveLevel.rio, carry: s.loveCarry.rio };
         }, { points, level });
         await page.locator(".gain-card.bond").waitFor();
         // Entrance begins outside the stage; check the settled position.
@@ -121,18 +121,18 @@ await suite("lover-hidden-growth", async check => {
         await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/${mode}-bond-${points}.png` });
         const loaded = await page.evaluate(async () => {
           await H.ui.bannersIdle(); H.core.newGame(); H.core.load();
-          return { pts: H.core.state.lovePts.rin, level: H.core.state.loveLevel.rin, carry: H.core.state.loveCarry.rin,
-            since: H.core.state.loverSince.rin, lovers: H.core.state.lovers };
+          return { pts: H.core.state.lovePts.rio, level: H.core.state.loveLevel.rio, carry: H.core.state.loveCarry.rio,
+            since: H.core.state.loverSince.rio, lovers: H.core.state.lovers };
         });
-        assert.deepEqual(loaded, { pts: before.privatePts, level: before.privateLevel, carry: .5, since: 3, lovers: ["rin"] });
+        assert.deepEqual(loaded, { pts: before.privatePts, level: before.privateLevel, carry: .5, since: 3, lovers: ["rio"] });
       }
     }, { ...options, reducedMotion: "reduce" });
 
     await check(`${mode}-milestone-rewards-and-multiple-lovers`, async page => {
       await setup(page);
       const result = await page.evaluate(async () => {
-        const s = H.fresh(); s.lovers = ["minto", "rin"]; s.loveLevel.minto = 1; s.lovePts.minto = 19;
-        s.loverEventsSeen = ["lover_minto_lv1"]; s.loverSince = { minto: 2, rin: 5 }; s.guilt = 3;
+        const s = H.fresh(); s.lovers = ["minto", "rio"]; s.loveLevel.minto = 1; s.lovePts.minto = 19;
+        s.loverEventsSeen = ["lover_minto_lv1"]; s.loverSince = { minto: 2, rio: 5 }; s.guilt = 3;
         const played = [], enter = H.vn.hooks.onEnter;
         H.vn.hooks.onEnter = (id, dlg) => { enter?.(id, dlg); played.push(id); };
         const before = s.stats.charm, xpBefore = s.growth?.xp || 0;
@@ -151,7 +151,7 @@ await suite("lover-hidden-growth", async check => {
       else assert(result.s.stats.charm >= result.before + 2);
       assert.equal(result.s.lastDate.minto, 8);
       assert(result.first && !result.repeated); assert.equal(result.guilt, 4); assert.equal(result.s.guilt, 4);
-      assert.deepEqual(result.s.lovers, ["minto", "rin"]); assert.deepEqual(result.s.loverSince, { minto: 2, rin: 5 });
+      assert.deepEqual(result.s.lovers, ["minto", "rio"]); assert.deepEqual(result.s.loverSince, { minto: 2, rio: 5 });
     }, { ...options, reducedMotion: "reduce" });
   }
 });

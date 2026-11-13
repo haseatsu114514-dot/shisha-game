@@ -17,11 +17,11 @@ export const ENTRANCE_CARDS = Object.freeze({
   2: [
     { id: "ageha", ring: "MELTY PUFF の直感", note: "あげはは理屈より先に手が動く。あれを真似しようとするな" },
     { id: "kumicho", ring: "スジを通す煙", note: "神崎さんの煙は穏やかだ。派手さで勝とうとしたら負ける" },
-    { id: "rei", ring: "薔薇の余韻", note: "REIは間で聴かせる。お前は自分の拍で作れ" },
+    { id: "rei", ring: "薔薇の余韻", note: "レヰは間で聴かせる。お前は自分の拍で作れ" },
     { id: "hajime", ring: "県大会の挑戦者", note: "前の大会の自分と比べろ。隣は見なくていい" },
   ],
   3: [
-    { id: "kuze", ring: "煙幕の勝負師", note: "久世は相手の判断を動かしてくる。味の名前に釣られるな" },
+    { id: "saku", ring: "煙幕の勝負師", note: "綾取は相手の判断を動かしてくる。味の名前に釣られるな" },
     { id: "steve", ring: "低温の研究家", note: "スティーブは熱を急がない。最後の一口まで崩れないぞ" },
     { id: "volk", ring: "鉄の煙", note: "ヴォルクの精度は本物だ。数字で張り合っても仕方ない" },
     { id: "hajime", ring: "柚ヶ谷の代表", note: "全国だろうが、やることは一台だ。いつもどおり作ってこい" },
@@ -38,11 +38,12 @@ const NAME = { master_hookah: "王 煙楼" };
 
 // 第1章: 前夜の過ごし方（ch1_day7_last_night の4択）を、はじめの入場カードのスミの一言で受ける（#2091）。
 // 旧セーブや未選択は ENTRANCE_CARDS の一言のまま。
+// どの一言も、正本の入場メッセージ「目の前の一人に届けてこい」で締める（優勝の場面 ch1_tournament_reveal がこの言葉を回収する）。
 export const CH1_EVE_NOTES = Object.freeze({
-  practice: "昨日の最後の一台どおりにやれ。手はもう覚えてる",
-  talk_sumi: "決められるのは、どういう煙を出すかだけだ。行ってこい",
-  sleep_early: "いい顔だ。よく眠れたみたいだな。行ってこい",
-  drill: "昨夜さらった工程、焦るなよ。あとは目の前の一人だ",
+  practice: "手はもう覚えてる。目の前の一人に届けてこい",
+  talk_sumi: "決められるのは、出す煙だけだ。目の前の一人に届けてこい",
+  sleep_early: "いい顔だ。よく眠れたな。目の前の一人に届けてこい",
+  drill: "昨夜さらった工程、焦るなよ。目の前の一人に届けてこい",
 });
 
 function faceOf(card) {

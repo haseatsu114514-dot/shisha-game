@@ -11,8 +11,9 @@ import { HEAT_GRADES, HEAT_TUNING, phaseOf, evaluateCoalTiming, formatTimingErro
 export { HEAT_GRADES } from "./heat_logic.js";
 import { coalCount, coalTypes } from "./coals.js";
 import { createCraftClock } from "./clock.js";
+import { impact, fxHolding } from "./fx.js";
 import { state } from "../core/state.js";
-import { growthSkill, growthCritical, settleGrowthPhase, SKILL_TUNING } from "../core/growth-effects.js";
+import { growthCritical, settleGrowthPhase, SKILL_TUNING } from "../core/growth-effects.js";
 import { coalJustSeconds } from "./heat_logic.js";
 import { effectVisible, effectBadge, senseBand, effectTier } from "./effect-visual.js";
 
@@ -57,12 +58,11 @@ function heatAdvice(res) {
   return early ? "早く取り出した炭がある。次は黒い面が消えるまで待とう" : "";
 }
 
-// 1〜4個の炭を焼く本体。最初の炭焼きと、熱管理で消耗した炭を交換するときの両方で使う（TH39）。
-export async function burnCoals(cs, panel, { count = 3, compact = false, onPick = null, replacement = false } = {}) {
+// 1〜4個の炭を焼く本体。熱管理の交換では焼き直さず、焼いておいた炭をトングで持ってくる（#2213。K11 もそちらで効く）。
+export async function burnCoals(cs, panel, { count = 3, compact = false, onPick = null } = {}) {
   const tutorial = cs.mode === "tutorial";
   const types = coalTypes(cs, count);
-  const multiplier = replacement && !tutorial && growthSkill(state, "K11") ? 1 + SKILL_TUNING.coalReplacement : 1;
-  const justSec = coalJustSeconds(skill.window(cs) * multiplier, tutorial, state?.goods || []);
+  const justSec = coalJustSeconds(skill.window(cs), tutorial, state?.goods || []);
   const baseJustSec = coalJustSeconds(skill.window(cs) / (1 + 0.45 * effectTier("sense")), tutorial, state?.goods || []);
   const plainBase = coalJustSeconds(skill.window(cs) / (1 + 0.45 * effectTier("sense")), tutorial, []);
   const clarity = skill.clarity(cs);
@@ -102,13 +102,14 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
     c.node.classList.add("picked", `g-${g}`);
     c.node.classList.remove("pikan", "soon");
     c.node.disabled = true;
-    c.pickButton.disabled = true;
-    c.pickButton.dataset.phase = "picked";
-    c.status.textContent = "回収済み";
     c.node.dataset.phase = g;
     if (g === "just") { SE.just(); tickerSay("パッキー「出たーッ！ EXCELLENT！ 全面が真っ赤だーッ！」"); }
     else if (g === "pre" || g === "hot") SE.good();
     else SE.miss();
+    if (g === "just" || g === "pre" || g === "hot") {
+      impact(view.root, g === "just" ? (c.timing.critical ? "big" : "perfect") : "good",
+        { at: c.node, zoomNode: view.root.querySelector(".stove") || view.root });
+    }
     SE.coalSnip();
     onPick?.(c.timing, index, coals.length);
     if (coals.every((x) => x.picked)) finish();
@@ -132,11 +133,9 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
       const jw = justSec / c.tj;
       const ph = phaseOf(c.p, jw);
       const n = c.node;
-      paint(c, c.p);
+      // ヒットストップ中は焼け色の絵だけ止める（焼け具合と判定の時間は進む）
+      if (!fxHolding(view.root)) paint(c, c.p);
       n.dataset.phase = ph;
-      const secondsLeft = Math.max(0, c.tj - t);
-      c.status.textContent = ph === "just" ? "いま取り頃！" : secondsLeft > 0 ? `あと${secondsLeft.toFixed(1)}秒` : "取り頃を過ぎた";
-      c.pickButton.dataset.phase = ph;
       // 洞察★: ジャスト直前にかすかな揺らぎ（読みやすさ）
       n.classList.toggle("soon", clarity > 0 && ph === "pre" && c.p > 1 - 0.1 * clarity);
       if (effectVisible("insight") && n.classList.contains("soon") && !n.querySelector(".effect-badge")) n.append(effectBadge("insight", "察"));
@@ -158,14 +157,11 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
   coals.forEach((c) => {
     c.node.addEventListener("pointerdown", e => { e.preventDefault(); pick(c); });
     c.node.addEventListener("click", e => { if (e.detail === 0) pick(c); });
-    c.pickButton.addEventListener("pointerdown", e => { e.preventDefault(); pick(c); });
-    c.pickButton.addEventListener("click", e => { if (e.detail === 0) pick(c); });
   });
 
   await countdown();
   SE.crackle();
   t0 = gameClock.now();
-  coals.forEach(c => { c.pickButton.disabled = false; });
   view.root.setAttribute("aria-busy", "false");
   raf = requestAnimationFrame(loop);
 

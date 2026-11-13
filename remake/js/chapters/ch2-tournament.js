@@ -1,11 +1,14 @@
 import { playEntrance } from "./tournament-entrance.js";
+import { defeatFade } from "../core/transitions.js";
+import { advanceTournamentCraft } from "./tournament-craft-runner.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 // HAZE: OPEN CLOUD。一試合の制作と、各工程の確定済み状態だけを保存する。
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FILES, loadTournamentCraftDialogue } from "../core/data.js";
 import { el, yen } from "../core/util.js";
+import { createChapterActions } from "../core/chapter-actions.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, modal, imageReady, loadingNotice } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, modal, imageReady, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { maxStamina } from "../core/stats.js";
@@ -32,12 +35,11 @@ import { voteStack, judgePanel, judgeLegend, craftReviewBlock } from "../craft/t
 import { craftReviewLines } from "../craft/advice.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
-import { readDialogues } from "./ch2-city-data.js";
+import { readDialogues } from "../core/chapter-data.js";
 import { chapterTwoCheers, chapterTwoCongratulations, recordSentLime } from "./ch2-lime.js";
-import { playChapterPreview } from "./chapter-preview.js";
 import { CH2_SCENE_BACKGROUNDS } from "../core/city-locations.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
-  startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult, CH2_PRIZE } from "./ch2-tournament-state.js";
+  startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch2-tournament-state.js";
 
 const REQUIRED = ["lobby", "entrance", "stations", "rules", "verdict", "farewell", "tasteless", "ageha_heart"].map(id => `ch2_tournament_${id}`);
 // SETUPの確定境界に水を含める。途中LOADはSETUP先頭から、確定後はMIXから。
@@ -45,24 +47,15 @@ const setupWithWater = async cs => { await stepSetup(cs); await stepWater(cs); }
 const STEPS = [setupWithWater, stepMix, stepPack, runHoles, stepPlace, runHeat,
   stepSteamTime, runSteamDodge, runPull, cs => runCare(cs, { round: 1 }), cs => runCare(cs, { round: 2 })];
 const STEP_IDS = ["setup", "mix", "pack", "foil", "place", "coalfire", "steam", "steam", "pull", "adjust", "adjust"];
-const MILESTONES = new Map([[8, 0], [9, 1], [10, 2], [11, 3]]);
+// 第2章の4票は各工程の確定直後に投入する（第3章の台詞読了待ちとは異なる）。
+const VOTE_BOUNDARIES = new Map([[8, 0], [9, 1], [10, 2], [11, 3]]);
 const clone = value => JSON.parse(JSON.stringify(value));
 const id = name => `ch2-tournament-${name}`;
 let session;
 const live = owner => session === owner && owner.active && owner.state === state;
 const progress = () => tournamentProgress(state);
 
-function button(owner, text, name, action, primary = false) {
-  return el(`button.btn${primary ? ".primary" : ""}`, { type: "button", text,
-    dataset: { test: id(name) }, onclick: () => perform(owner, action) });
-}
-async function perform(owner, action) {
-  if (!live(owner) || owner.busy) return;
-  owner.busy = true;
-  try { await action(); }
-  catch (error) { if (live(owner)) { console.error("[ch2 tournament]", error); renderError(owner); } }
-  finally { owner.busy = false; }
-}
+const { button, perform } = createChapterActions({ current: live, test: id, logName: "[ch2 tournament]", renderError });
 function menuButton(owner) {
   return el("button.btn.ch2-tournament-menu", { type: "button", text: "MENU", dataset: { test: id("menu") }, onclick: () => openMenu(owner) });
 }
@@ -152,13 +145,13 @@ export async function runChapterTwoTournament() {
     Object.assign(DB.dialogues, Object.fromEntries(REQUIRED.map(key => [key, dialogues[key]])));
     recoverStep(state);
     save();
-    await setBg(bgUrl("bg_tournament_stage", "day"), { instant: true });
+    await enterScene(bgUrl("bg_tournament_stage", "day"));
     if (live(owner)) await drive(owner);
   });
 }
 
 function renderEntry(owner) {
-  card(owner, "entry", "県大会の朝。", "はじめ・あげは・神崎竜二・REI。4人一斉、一台を仕上げる一発勝負。", [
+  card(owner, "entry", "県大会の朝。", "はじめ・あげは・神崎竜二・レヰ。4人一斉、一台を仕上げる一発勝負。", [
     button(owner, "LIMEを読んで会場へ", "start", async () => { checkpoint("morning"); await drive(owner); }, true),
   ], [el("p.ch2-contest-note", { text: "課題はストロベリー。アフサールの新作を主催者が支給。制作から提供、その後の調整まで同じ一台で行います。" })]);
 }
@@ -237,7 +230,7 @@ function renderVotes(owner, final = false) {
     el("strong", [String(value.points), el("small", { text: "pt" })]),
   ]);
   const judgeFace = judge => { const face = contestantAvatar(judge); face.classList.add("judge-face"); return face; };
-  const judges = judgePanel(p.votes, JUDGES, { cls: ".ch2-contest-judges", face: judgeFace });
+  const judges = judgePanel(p.votes, JUDGES, { cls: ".ch2-contest-judges", face: judgeFace, craft: final ? craft : null });
   card(owner, final ? "result" : "votes", final ? "県大会の結果" : "いま、動いた持ち点。",
     final ? `はじめは${p.result.rank}位。審査員3人、それぞれの10点が出揃いました。` : ["制作が終わり、次は吸い出しと提供。", "提供を終えた一台。次は客席での調整。", "一度目の調整を終え、同じ一台をもう一度確かめます。"][p.voted - 1], [
       button(owner, final ? "結果を受け止める" : "続きを作る", "continue", async () => {
@@ -245,6 +238,7 @@ function renderVotes(owner, final = false) {
         checkpoint(final ? p.result.rank === 1 ? "farewell" : "defeat" : "craft"); await drive(owner);
       }, true),
     ], [reason ? el("div.ch2-contest-reason", { dataset: { test: id("vote-reason") } }, [el("b.ch2-contest-reason-tag", { text: "解説" }), ...reason.map(text => el("p", { text }))]) : null, review,
+      p.baseVotes ? el("p.ch2-contest-note", { text: "全出場者に基礎票1点" }) : null,
       el("section.ch2-contest-board", [judgeLegend(JUDGES), el("ol.ch2-contest-ranking", rows.map(row))]), judges,
       el("p.ch2-contest-note", { text: "投入された点は戻りません。同点の場合は一台の出来栄えで順位を決めます。" })]);
 }
@@ -271,31 +265,26 @@ async function renderDefeat(owner, variant = null) {
   owner.continueRoot = root;
   root.dataset.test = id("defeat");
   root.querySelector(".go-retry").dataset.test = id("retry");
+  // この場で負けが決まった時だけ、色が抜けて煙が途切れる入り（#2688 A19）。再表示・LOAD後は出さない
+  const fade = (owner.resultShown && !owner.defeatFaded && (owner.defeatFaded = true) && await defeatFade()) || (async () => {});
+  if (!live(owner)) { await fade(); return; }
   showScreen("end", root);
+  await fade();
 }
 function renderComplete(owner) {
-  // 第2章の外側の perform() は終了時に画面内ボタンを再設定する。
-  // その処理にも予告中の操作禁止を伝えるため、disabled と locked を一緒に更新する。
-  const lock = (button, locked) => {
-    if (button.dataset) button.dataset.locked = String(locked);
-    button.disabled = locked;
-  };
   const next = button(owner, "第三章・東京へ", "chapter-three", async () => {
-    if (owner.previewing) return;
     const mod = await withLoadingNotice(import("./ch3.js"), loadingNotice("第3章の東京へ向かっています…"));
     await mod.beginChapterThree();
   }, true);
-  // 初回の予告が終わるまで、完了カードの導線を最初から無効にしておく。
-  lock(next, !state.flags._ch2_preview_seen);
-  const replay = button(owner, "次回予告をもう一度", "complete-preview", () => preview(false));
   card(owner, "complete", "第二章・完", "優勝トロフィーと、東京行きの切符。味のしない舌は、そのままだった。", [
     next,
-    replay,
     button(owner, "ここまでをセーブ", "complete-save", () => saveFlow()),
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
   ], [
     // 賞金は recordResult で優勝確定時に一度だけ加算済み。ここでは受け取ったことだけを見せる。
-    state.flags._ch2_tournament?.prizePaid ? el("p.ch2-contest-note", { dataset: { test: id("prize") }, text: `優勝賞金 ${yen(CH2_PRIZE)} を受け取った。` }) : null,
+    state.flags._ch2_tournament?.prizePaid ? el("p.ch2-contest-note", { dataset: { test: id("prize") }, text: Number.isFinite(state.flags._ch2_tournament.prizeReceived)
+      ? state.flags._ch2_tournament.prizeReceived > 0 ? `優勝賞金 ${yen(state.flags._ch2_tournament.prizeReceived)} を受け取った。` : "優勝賞金は所持金の上限に達したため加算されなかった。"
+      : "優勝賞金を受け取った。" }) : null,
     // 第1章のクリア画面と同じ成長レーダー。淡い面が章のはじめ、明るい面がいま。
     el("div.ch2-contest-growth", { dataset: { test: id("growth") } }, [
       chapterGrowthChart(state, 220),
@@ -303,42 +292,6 @@ function renderComplete(owner) {
     ]),
     el("p.ch2-contest-note", { text: "出会い、約束、恋人と過ごした日々は、記録に残っています。" }),
   ]);
-  // 第1章と同じ挙動: 未視聴なら完了カードで自動再生し、再生中は「次章へ」を押せない。
-  // 完走/明示スキップのときだけ既読（_ch2_preview_seen）を保存する（DESIGN 7-4）。
-  async function preview(first = false) {
-    if (!live(owner) || owner.previewing) return;
-    owner.previewing = true;
-    lock(next, true); lock(replay, true);
-    const controller = new AbortController();
-    // MutationObserver の無い環境（Node VM の単体テスト等）では監視なしで再生だけを試みる。
-    let observer;
-    if (typeof MutationObserver !== "undefined") {
-      // showScreen は幕の切替中、カードの DOM への接続を遅らせることがある。
-      // 初回の未接続を離脱と誤認せず、一度表示されたカードが外れたときだけ中断する。
-      let mounted = next.isConnected;
-      observer = new MutationObserver(() => {
-        if (next.isConnected) mounted = true;
-        else if (mounted) controller.abort();
-      });
-      observer.observe(layers.screen, { childList: true });
-    }
-    let result;
-    try { result = await playChapterPreview("ch3", { signal: controller.signal }); }
-    catch { /* 次回予告は任意演出。失敗しても完了画面はそのまま使える。 */ }
-    finally { observer?.disconnect(); }
-    if (first && ["completed", "skipped"].includes(result) && live(owner) && state.phase === "cleared") {
-      state.flags._ch2_preview_seen = true;
-      save();
-    }
-    owner.previewing = false;
-    lock(next, !state.flags._ch2_preview_seen);
-    lock(replay, false);
-    if (live(owner) && next.isConnected) {
-      playBgm("bgm_aftermath");
-      replay.focus({ preventScroll: true });
-    }
-  }
-  if (!state.flags._ch2_preview_seen) preview(true);
 }
 function renderError(owner) {
   broadcast.clearComments();
@@ -384,6 +337,8 @@ async function drive(owner) {
       // 1回目の票の後は、提供前の4人の心の声（第2章だけ）。
       const interlude = p.step === 8 ? "interlude_pull" : p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
       if (interlude && !await commentary(owner, interlude)) return;
+      // 心の声の後、審査員への提供開始を声に出す掛け合い（#3060）。
+      if (p.step === 8 && !await commentary(owner, "serve")) return;
       const event = TOURNAMENT_STORY_STEPS.get(p.step);
       if (event && !await commentary(owner, event)) return;
       hud(owner); openBench(cs, { steps: CRAFT_STEPS }); await waitBenchReady(cs);
@@ -402,32 +357,30 @@ async function drive(owner) {
         renderError(owner);
         return;
       }
-      if (p.step === 8 && !cs.failed) {
-        cs.tournamentStory ||= { seen: [] };
-        cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
-      }
-      finishStep(state, cs);
-      if (cs.failed) { awardTournamentExp(4, cs); save(); continue; }
-      if (MILESTONES.has(p.step)) {
-        broadcast.clearComments();
-        const round = MILESTONES.get(p.step), quality = partialQuality(cs, round);
+      if (!advanceTournamentCraft({ state, progress: p, craft: cs, finishStep, milestones: VOTE_BOUNDARIES, onMilestone: round => {
+        const quality = partialQuality(cs, round);
         // finalizeの完成品と2回のcareを同じcsに残し、追加投票だけを確定する。
         p.craft = clone(cs); castVotes(p, round, quality);
         p.stage = p.step === STEPS.length ? "tasting" : "votes";
         if (p.stage === "tasting") { const result = recordResult(state, cs.total); awardTournamentExp(result.rank, cs); }
-      }
-      save();
+      } })) continue;
     } else if (p.stage === "tasting") {
       owner.cs ||= clone(p.craft);
       playBgm("bgm_judging");
       // 講評の前に、手を離した4人の待ち時間（第1章の interlude3 に対応）。
       if (!await commentary(owner, "interlude3")) return;
       if (!await commentary(owner, "tasting")) return;
+      // 結果発表前の掛け合い（#3060）。開始前は stations が受け持つ。
+      if (!await commentary(owner, "preresult")) return;
       // 優勝のときだけ、結果カードの前に決着の間を置く。歓声より先に、口の中の空白を見せる。
       if (p.result?.rank === 1 && !await read(owner, "verdict")) return;
       checkpoint("result");
     } else if (p.stage === "votes") { renderVotes(owner); return; }
-    else if (p.stage === "result") { playBgm("bgm_judging"); renderVotes(owner, true); return; }
+    else if (p.stage === "result") {
+      // この場で結果を出したことを覚える。敗北の入り（#2688 A19）は、この場で負けが決まった時だけ出す
+      if (p.result) owner.resultShown = true;
+      playBgm("bgm_judging"); renderVotes(owner, true); return;
+    }
     else if (p.stage === "defeat") { await renderDefeat(owner); return; }
     else if (p.stage === "farewell") {
       playBgm("bgm_aftermath");
@@ -451,7 +404,7 @@ async function drive(owner) {
       // 完了カードも閉店後のMELTY PUFFのまま出す（昼の大会ステージへ戻さない）。
       const closedRoom = bgUrl(CH2_SCENE_BACKGROUNDS.agehaClosed);
       if (!await imageReady(closedRoom, 15000)) throw new Error("閉店後のMELTY PUFFを読み込めませんでした");
-      await setBg(closedRoom, { instant: true });
+      await enterScene(closedRoom);
       if (!state.flags._ch2_read_ch2_tournament_ageha_heart) {
         if (!await read(owner, "ageha_heart")) return;
         state.flags._ch2_read_ch2_tournament_ageha_heart = true; save();
@@ -461,4 +414,5 @@ async function drive(owner) {
     else throw new Error(`不明な県大会の保存地点: ${p.stage}`);
   }
 }
+
 

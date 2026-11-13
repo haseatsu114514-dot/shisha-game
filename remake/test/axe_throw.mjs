@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { RINGS, BULLS, KILLS, CLUSTERS, MODES, POWER, LINE, BLADE, INCH, AIM_RANGE, BOARD, DIVISIONS, scoreAt, scoreBlade, resolveThrow, gaugeAt, axisAt, swayAt, releaseAimAt, totalOf, gradeOf, canCall, killState, closuresOf, halfOf, bladeDistance } from "../js/minigames/axe-model.js";
+import { RINGS, BULLS, KILLS, CLUSTERS, MODES, POWER, LINE, BLADE, INCH, AIM_RANGE, BOARD, DIVISIONS, scoreAt, scoreBlade, resolveThrow, gaugeAt, axisAt, swayAt, releaseAimAt, totalOf, gradeOf, canCall, killState, closuresOf, halfOf, bladeDistance, liftFor } from "../js/minigames/axe-model.js";
 import { reaction } from "../js/minigames/axe-companions.js";
 import { TARGET, CAMERA, AXE, AXE_SCALE, FLIGHT, flightPose, flightTime, flightDuration, impactPose, projectAxePoint, worldPoint } from "../js/minigames/axe-flight.js";
 import { projectedAxe } from "../js/minigames/axe-geometry.js";
@@ -8,13 +8,24 @@ const shot = (x = 0, y = 0, power = POWER.ideal, called = null, history = [], op
 const league = { throws: 10 };
 const near = (a, b, tolerance = 1e-9) => assert(Math.abs(a - b) <= tolerance, `${a} ≠ ${b}`);
 
-test("target follows the WATL 2026 Hatchet sheet: 1.5in bulls, 3.5in five rings, 20mm lines, 4in blade, outer zones at 56.5/63.5in and killshots at 48/72in", () => {
+test("target follows the WATL 2026 Hatchet sheet and the 2024 stencil: 1.5in bulls, 3.5in five rings, 4 1/8in ring steps, 20mm lines, 4in blade, outer zones at 56.5/63.5in and killshots at 48/72in in the middle of the 1 ring", () => {
   assert.deepEqual(RINGS.map(r => r.score), [6, 5, 4, 3, 2, 1]);
   near(RINGS[0].radius, .75 * INCH); near(RINGS[1].radius, 1.75 * INCH); near(RINGS[5].radius, 1);
+  // #2729 (owner, 2026-11-08 "公式に合わせて"): the 4/3/2/1 line centres of the 2024 stencil, 36in across the 1 ring.
+  for (const [i, inches] of [[2, 5.625], [3, 9.75], [4, 13.875], [5, 18]]) near(RINGS[i].radius, inches * INCH);
   near(LINE, .3937 * INCH, 1e-6); near(BLADE.halfLength, 2 * INCH);
   assert.equal(CLUSTERS.length, 5); assert.equal(BULLS.length, 4);
-  for (const b of BULLS) { near(Math.abs(b.y), 3.5 * INCH); near(b.outer, RINGS[1].radius); near(b.inner, RINGS[0].radius); }
-  for (const k of KILLS) { near(Math.abs(k.y), 12 * INCH); near(k.outer, .75 * INCH); near(k.inner, .375 * INCH); assert(Math.hypot(k.x, k.y) + k.outer < 1, "killshots sit inside the 1 ring"); }
+  for (const b of BULLS) { near(Math.abs(b.y), 3.5 * INCH); near(b.outer, RINGS[1].radius); near(b.inner, RINGS[0].radius);
+    near(Math.hypot(b.x, b.y), (RINGS[2].radius + RINGS[3].radius) / 2, 1e-12); near(Math.abs(b.x), 6.845 * INCH, .001 * INCH); }
+  assert.deepEqual(KILLS.map(k => k.id), ["upper-left", "upper-right", "lower-left", "lower-right"]);
+  for (const k of KILLS) {
+    near(k.outer, .75 * INCH); near(k.inner, .375 * INCH);
+    assert.equal(Math.sign(k.x), k.id.endsWith("left") ? -1 : 1); assert.equal(Math.sign(k.y), k.row === "upper" ? -1 : 1);
+    // #2729: the official 48/72in heights in the middle of the 1 ring (about 10.49in across, 41 degrees), the whole blue clear of both black lines.
+    const r = Math.hypot(k.x, k.y);
+    near(Math.abs(k.y), 12 * INCH); near(r, (RINGS[4].radius + RINGS[5].radius) / 2, 1e-12); near(Math.abs(k.x), 10.488 * INCH, .001 * INCH);
+    assert(r - k.outer > RINGS[4].radius + LINE && r + k.outer < RINGS[5].radius - LINE, "the blue sits between the 2 and 1 ring lines, touching neither");
+  }
   near(BOARD.right - BOARD.left, 46.25 * INCH); near(BOARD.bottom - BOARD.top, 48 * INCH);
   assert.deepEqual(Object.keys(DIVISIONS), ["rec", "am", "pro"]);
 });
@@ -49,6 +60,23 @@ test("three independently stopped gauges determine aim and rotation deterministi
   assert.deepEqual(resolveThrow(input), resolveThrow(input)); assert.equal(resolveThrow(input).score, 6);
   assert.equal(shot(1, 1).score, 0); assert.notEqual(shot(0, .25, .45).landing.y, shot(0, .25, .7).landing.y);
   assert.notEqual(shot(0, 0, .45).rotation, shot(0, 0, .7).rotation);
+});
+// 2026-11-13 手応えレビュー指摘7（桜井 #236）: 緑の帯の内側は今までどおりの小さなずれ、外側は急に大きくずれる。
+// 刺さる窓の端では約2インチ（4インチの刃でも区画をまたぎ得る大きさ）。
+test("the green band pays: the cut barely moves inside it and drops or rises about 2in at the edge of the stick window", () => {
+  assert.equal(liftFor(POWER.ideal), 0);
+  near(liftFor(POWER.sweetMin), (POWER.ideal - POWER.sweetMin) * POWER.lift); near(liftFor(POWER.sweetMax), (POWER.ideal - POWER.sweetMax) * POWER.lift);
+  assert(liftFor(POWER.sweetMin) / INCH < .5 && -liftFor(POWER.sweetMax) / INCH < .5, "inside the band the shift stays under half an inch");
+  for (const edge of [POWER.stickMin, POWER.stickMax]) assert(Math.abs(liftFor(edge)) / INCH > 2.75, "edge " + edge + ": " + liftFor(edge) / INCH);
+  assert(liftFor(POWER.stickMin) > 0 && liftFor(POWER.stickMax) < 0, "under-rotation cuts low, over-rotation cuts high");
+  for (let p = 0; p < 1; p += .01) assert(liftFor(p) >= liftFor(p + .01), "monotone");
+  assert.equal(shot(0, 0, .5).landing.y, liftFor(.5));
+  // 刺さる窓の端の投は、中心を狙っても刃（4インチ）が赤に届かない
+  assert.equal(shot(0, 0, .62).score, 6);
+  for (const edge of [POWER.stickMin, POWER.stickMax]) assert(shot(0, 0, edge).stuck && shot(0, 0, edge).score < 6, String(edge));
+  // 帯の外は腕も揺れる（力み）。帯の中は今までどおり
+  assert.equal(swayAt(4000, POWER.sweetMin).amplitude, swayAt(4000, POWER.ideal).amplitude);
+  assert(swayAt(4000, POWER.stickMin).amplitude > swayAt(4000, POWER.ideal).amplitude * 1.4);
 });
 test("under-rotated and over-rotated axes drop rather than earning centre points", () => {
   for (const [power, reason] of [[0, "weak"], [.41999, "weak"], [.82001, "rotation"], [1, "rotation"]]) {
@@ -110,7 +138,7 @@ test("Rec never closes; Am closes each bull and five for the half; Pro closes th
   const proBull = shot(0, 0, .62, null, [], { division: "pro", ...league });
   const reuse = shot(0, 0, .62, null, [proBull], { division: "pro", ...league });
   assert.equal(reuse.score, 0); assert.equal(reuse.outcome, "miss"); assert.equal(reuse.zone.kind, "closed");
-  assert.equal(shot(.3, 0, .62, null, [proBull], { division: "pro", ...league }).score, 4, "the 4 ring stays open");
+  assert.equal(shot((RINGS[1].radius + RINGS[2].radius) / 2, 0, .62, null, [proBull], { division: "pro", ...league }).score, 4, "the 4 ring stays open");
   const closed = closuresOf([proBull], 1, 10, "pro"); assert(closed.cluster.has("center"));
   assert.equal(closuresOf([proBull], 5, 10, "pro").cluster.size, 0);
   const killed = shot(KILLS[0].x, KILLS[0].y, .62, KILLS[0].id, [proBull], { division: "pro", ...league });
@@ -142,7 +170,7 @@ test("companion reacts to actual result, with canonical voice and distinct expre
     assert.match(reaction(id, "result", [{ outcome: "drop" }], null, { bonus: true }).text, /宣言|青/);
   }
   assert.match(reaction("shark", "summary", [], null).text, /お主/);
-  assert.doesNotMatch(reaction("shark", "summary", [], null).text, /波多野|なぎさ|泳/);
+  assert.doesNotMatch(reaction("shark", "summary", [], null).text, /暑海|なぎさ|泳/);
 });
 test("invalid input cannot produce NaN or illegally call a closed target", () => {
   for (const input of [{ x: NaN, y: 0, power: .6 }, { x: 0, y: Infinity, power: .6 }, { x: 0, y: 0, power: 2 }, { x: 2, y: 0, power: .6 }, { x: 0, y: 0, power: .6, called: "fake" }])
@@ -184,10 +212,11 @@ test("throws arrive in 0.6s and drops finish in 0.9s without changing the shot; 
     assert.equal(flightPose(result, 900).done, true);
     assert.deepEqual(result, before);
   }
-  // A 16in hatchet on a 48in board: the embedded axe spans about a third of the board height.
-  const end = impactPose(shot()), length = projectAxePoint(end, AXE.handleTip).y - projectAxePoint(end, AXE.blade).y;
-  assert(length > TARGET.radius * .9 && length < TARGET.radius * 1.4, "embedded axe length " + length);
-  assert.equal(AXE_SCALE, 1.6);
+  // A 16in hatchet on a 48in board: the embedded axe spans about a third of the board height, measured in board inches
+  // (13.3 to 20.7in, the former 0.9 to 1.4 ring radii at 14.75in), so the hatchet keeps its real size when the rings follow the stencil.
+  const end = impactPose(shot()), length = projectAxePoint(end, AXE.handleTip).y - projectAxePoint(end, AXE.blade).y, inches = length / TARGET.radius / INCH;
+  assert(inches > .9 * 14.75 && inches < 1.4 * 14.75, "embedded axe length " + inches + "in");
+  near(AXE_SCALE, 1.6 * 14.75 * INCH);
 });
 test("a called throw slows only its approach; the display clock is continuous and lands on the same contact", () => {
   assert.equal(flightTime(0, true), 0); assert.equal(flightTime(200, true), 200);

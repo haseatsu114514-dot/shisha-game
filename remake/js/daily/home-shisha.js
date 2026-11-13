@@ -18,6 +18,7 @@ import { flavorStock, addFlavorStock, ownedFlavorIds } from "./shop.js";
 import { evaluateMix, goldenLabel } from "../craft/steps.js";
 import { mixPercents } from "../craft/mix-ratio.js";
 import { homeRig, homeRigXp } from "./home-rig.js";
+import { chapterThreeScenes } from "../chapters/ch3-scenes.js";
 
 export const HOME_GRAMS = 12;
 export const HOME_STAMINA = -24;
@@ -185,12 +186,24 @@ const FLAVOR_IMPRESSIONS = {
   lime: "レモンより青くて、後味が短いんだな",
   biscuit: "焼いた小麦の香ばしさに、バターの甘さがある",
 };
-/** 物語の味覚不調（DAY5で始まり、第2章の間は戻らない）。第3章以降の扱いはその章の物語に任せる */
-export const tasteDistant = (s = state) => s.chapter === 2 && !!s.flags?._ch2_taste_distant;
+/**
+ * 物語の味覚不調（第2章DAY5で始まる）。第3章の東京で「ダブルアップルの輪郭」（ch3_taste_return）を読むまで戻らない。
+ * 東京へ発つ前の地元の3日（ch3_prep_opening「無理に吸って確かめるな」）と東京の前半も不調のまま。第4章以降は戻った後。
+ * 保存は変えない（第3章の進み具合は flags._ch3_intro.stage を読むだけ）。
+ */
+export function tasteDistant(s = state) {
+  if (!s?.flags?._ch2_taste_distant) return false;
+  if (s.chapter === 2) return true;
+  if (s.chapter !== 3) return false;
+  const stage = s.flags._ch3_intro?.stage;
+  const returned = chapterThreeScenes(s).findIndex((scene) => scene.id === "ch3_taste_return");
+  return !(Number.isInteger(stage) && returned >= 0 && stage > returned);
+}
 
 /** 場面の台本（地の文＋はじめの心の声）。全角48字以内・手動改行なし */
 export function homeShishaDialogue(result, rig, random = Math.random, { distant = false } = {}) {
-  const intros = INTROS[rig.id] || INTROS.home_rig_set;
+  // くじ限定の台（KJ05）は元の台（base）の地の文を使う
+  const intros = INTROS[rig.id] || INTROS[DB.equipById?.[rig.id]?.base] || INTROS.home_rig_set;
   const impressions = distant ? ["（……香りが遠い。今は味の輪郭をうまく受け取れない）"]
     : Object.entries(result.mix || {}).filter(([, g]) => Number.isFinite(g) && g > 0)
       .map(([id]) => `（${leafName(id)}。${FLAVOR_IMPRESSIONS[id] || "どんな味か、またゆっくり確かめたい"}）`);
@@ -204,7 +217,9 @@ export function homeShishaDialogue(result, rig, random = Math.random, { distant 
     : "（この味の感触、覚えておこう。片付けたら今日は寝よう）" });
   // 会話の間だけ夜の曲に替え、終わったら元の曲へ戻る。味覚不調の章は ch2 の既存曲に合わせる
   const bgm = distant ? "bgm_taste_distant" : "kansetsu_shomei_to_black_coffee";
-  return { dialogue_id: "home_shisha_night", metadata: { bg: HOME_BG, bgm }, lines };
+  // #2447 item10: この場面だけ、卓上・床の台を本文ボックスの上辺まで持ち上げて全体を見せる
+  // （台の下半分が会話ウィンドウに隠れないように）。他の家の場面は従来どおり机へ接地させる。
+  return { dialogue_id: "home_shisha_night", metadata: { bg: HOME_BG, bgm, lift_scene_props: true }, lines };
 }
 
 /** 自分で配合する（合計12gちょうど）。決めたら mix、やめたら null */

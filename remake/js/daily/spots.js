@@ -23,7 +23,7 @@ import { trpgSpot, maybeRecruitTrpgMember } from "./trpg.js";
 import { AXE_BAR } from "./axe-bar-data.js";
 import { axeBarDiscovered } from "../core/axe-bar-discovery.js";
 import { fortuneHere, fortunePosition } from "./fortune-schedule.js";
-import { openingStatus, rinUnavailable } from "./spot-hours.js";
+import { openingStatus, rioUnavailable } from "./spot-hours.js";
 
 import { spotEncounterDue, quietSpotPool, recordSpotEncounter, spotFollowupDue } from "./spot-encounters.js";
 
@@ -33,22 +33,22 @@ export const VISIT_COST = 3000;
 export const TOKYO_VISIT_COST = 4000;
 
 // キャラ別の「通うと伸びる」主要ステ（ch1の6人で5種を一通りカバー）
-export const CHAR_STAT = { sumi: "technique", tsumugi: "sense", naru: "insight", adam: "guts", minto: "charm", rin: "sense" };
+export const CHAR_STAT = { sumi: "technique", tsumugi: "sense", naru: "insight", adam: "guts", minto: "charm", rio: "sense" };
 
 // 固有会話の順番。特別回（常連回・総督回など）は関係ができた頃合いに一度だけ挟む
 export { VISIT_SEQ } from "../core/affinity-stages.js";
 import { VISIT_SEQ, visitStorySkipped } from "../core/affinity-stages.js";
 const REPEAT_POOL = {
-  rin: ["ch1_rin_repeat", "ch1_rin_repeat_b", "ch1_rin_repeat_c"],
+  rio: ["ch1_rio_repeat", "ch1_rio_repeat_b", "ch1_rio_repeat_c"],
 };
 // 固有会話をいくつ見たら LIME を交換済みとみなすか（交換シーンは固有会話の中にある）
 // アダムは総督回を挟むので、交換の場面（ch1_adam_third）は4本目
-const LIME_EXCHANGE = { naru: 2, adam: 4, minto: 1, tsumugi: 2, sumi: 1, rin: 2 };
+const LIME_EXCHANGE = { naru: 2, adam: 4, minto: 1, tsumugi: 2, sumi: 1, rio: 2 };
 
 // 背景（訪問先）
 export const VISIT_BG = {
   sumi: "bg_tonari_inside", tsumugi: "bg_tonari_inside",
-  naru: "kemurikusa", adam: "bg_eden_shop", minto: "peppermint", rin: "bg_fookah_showroom",
+  naru: "kemurikusa", adam: "bg_eden_shop", minto: "peppermint", rio: "bg_fookah_showroom",
 };
 
 /**
@@ -83,7 +83,7 @@ export const SPOTS = [
     nightPool: ["venue_choizap_night", "venue_choizap_night_b"],
     desc: "昼夜使える無人ジム。入会はアプリから。" },
   { id: "c_station", kind: "spot", label: "C.STATION", area: "大会運営", x: 54, y: 66, theme: "stadium", glyph: "C", cost: 2500, requiresMet: "naru", stat: "insight", stamina: -16,
-    first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_nagumo_glimpse", "cs_kemuri_solo", "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
+    first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_sui_glimpse", "cs_kemuri_solo", "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
     desc: "大会を運営するチェーン店。噂も集まる。" },
   { id: "rest", kind: "rest", label: "家", area: "自宅", x: 89, y: 44, theme: "rest", glyph: "休", stamina: 55,
     desc: "体を休める。体力が大きく戻る。" },
@@ -101,7 +101,7 @@ export const FACILITY_GROWTH_SPOTS = Object.freeze(["kannon", "choizap", "cafe",
 export const facilityGrowth = (spot) => FACILITY_GROWTH_SPOTS.includes(spot?.id)
   ? { budget: 1, points: 2, primary: spot.stat || null } : {};
 /**
- * 路上占い師（旧版 F11）: 章ごとに1〜2回、予定の無い昼か夜に、街のどこかへ現れる（daily/fortune-schedule.js・台帳 URA）。
+ * 辻占のオババ（旧版 F11）: 章ごとに1〜2回、予定の無い昼か夜に、街のどこかへ現れる（daily/fortune-schedule.js・台帳 URA）。
  * 時間を使わない・相性占い3,000円。現れている時間帯だけ、その回の場所に出す。未対面の人物情報は引き続き伏せる。
  * @param where 地図の地域（"home" | "tokyo"）
  */
@@ -157,10 +157,71 @@ function storyOpenByHeart(id) {
 export const mintoIdentityRevealDue = () => !state.flags._minto_identity_revealed
   && storyCount("minto") >= 2 && affinityLevel("minto") >= 3;
 /** 夜の2階で試作品を確かめる一度きりの回（#1696）。固有会話3本目の後、新しい話が無い来店で読む。 */
-const RIN_PROTOTYPE = "ch1_rin_prototype_night";
-const RIN_PROTOTYPE_SEEN = `_spot_seen_${RIN_PROTOTYPE}`;
-export const rinPrototypeDue = () => !state.flags[RIN_PROTOTYPE_SEEN]
-  && storyCount("rin") >= 3 && !!DB.dialogues[RIN_PROTOTYPE]?.lines?.length;
+const RIO_PROTOTYPE = "ch1_rio_prototype_night";
+const RIO_PROTOTYPE_SEEN = `_spot_seen_${RIO_PROTOTYPE}`;
+export const rioPrototypeDue = () => !state.flags[RIO_PROTOTYPE_SEEN]
+  && storyCount("rio") >= 3 && !!DB.dialogues[RIO_PROTOTYPE]?.lines?.length;
+/** ブルーベリーの土産話（#3081）。固有会話6本と試作回を読み終えた後、新しい話が無い来店で一度だけ読む。
+ * 4本目「客の顔」（吸ってる人の顔を知らない・ブルーベリーの話）の後日談だが、♥4・♥5の段階会話（#2025）を
+ * 飛ばさないよう、出すのは全て読み終えてからにする。 */
+const RIO_BLUEBERRY = "ch1_rio_blueberry_report";
+const RIO_BLUEBERRY_SEEN = `_spot_seen_${RIO_BLUEBERRY}`;
+export const rioBlueberryDue = () => !state.flags[RIO_BLUEBERRY_SEEN]
+  && storyCount("rio") >= 6 && !!state.flags[RIO_PROTOTYPE_SEEN] && !!DB.dialogues[RIO_BLUEBERRY]?.lines?.length;
+/** #3081 物語系の一度きり。土産話のあと、夜の2階の来店で一本ずつ。繰り返しの小品には入れない。 */
+export const RIO_STORY_EXTRAS = Object.freeze([
+  "ch1_rio_lot_return",
+  "ch1_rio_name_blank",
+  "ch1_rio_unsigned",
+  "ch1_rio_practice_note",
+  "ch1_rio_strip_spill",
+  "ch1_rio_tired_nose",
+  "ch1_rio_recheck",
+]);
+export const rioStoryExtraDue = () => {
+  if (storyCount("rio") < 6 || !state.flags[RIO_PROTOTYPE_SEEN] || !state.flags[RIO_BLUEBERRY_SEEN]) return null;
+  return RIO_STORY_EXTRAS.find((id) => !state.flags[`_spot_seen_${id}`] && DB.dialogues[id]?.lines?.length) || null;
+};
+/** #3081 物語系の一度きり。締めくくりのあと、tonariの来店で一本ずつ。繰り返しの小品には入れない。 */
+export const TSUMUGI_STORY_EXTRAS = Object.freeze([
+  "ch1_tsumugi_one_ear",
+  "ch1_tsumugi_short_tail",
+  "ch1_tsumugi_window_line",
+  "ch1_tsumugi_pen_down",
+  "ch1_tsumugi_low_water",
+]);
+export const tsumugiStoryExtraDue = () => {
+  if (!state.finales?.tsumugi || storyCount("tsumugi") < (VISIT_SEQ.tsumugi?.length || 0)) return null;
+  return TSUMUGI_STORY_EXTRAS.find((id) => !state.flags[`_spot_seen_${id}`] && DB.dialogues[id]?.lines?.length) || null;
+};
+/** 端の席（#3081）。固有会話を読み終え、店で正体がつながったあと、新しい話が無い来店で一度。
+ * 正面の映え席と、カウンター横の席。大会の前後どちらでも、今の店の話だけにする。 */
+const MINTO_SIDE_SEAT = "ch1_minto_side_seat";
+const MINTO_SIDE_SEAT_SEEN = "_minto_side_seat_done";
+const MINTO_QUIET_HELLO = "ch1_minto_quiet_hello";
+const MINTO_QUIET_HELLO_SEEN = "_minto_quiet_hello_done";
+export const mintoSideSeatDue = () => !state.flags[MINTO_SIDE_SEAT_SEEN]
+  && storyCount("minto") >= VISIT_SEQ.minto.length
+  && !!state.flags._minto_identity_revealed
+  && !!DB.dialogues[MINTO_SIDE_SEAT]?.lines?.length;
+/** 端の席の次の来店で、店の声と小さい声を一度だけ聞き分ける（#3081）。 */
+export const mintoQuietHelloDue = () => !state.flags[MINTO_QUIET_HELLO_SEEN]
+  && !!state.flags[MINTO_SIDE_SEAT_SEEN]
+  && !!DB.dialogues[MINTO_QUIET_HELLO]?.lines?.length;
+/** 蒸らしのタイマーを預ける（#3081）。固有会話のあと、正体がつながった来店で一度。
+ * #3093 の端の席とは別の旗。同じ「繰り返しの前」に入るので、合流時は分岐の順で前後が決まる。 */
+const MINTO_TIMER_HAND = "ch1_minto_timer_hand";
+const MINTO_TIMER_HAND_SEEN = "_minto_timer_hand_done";
+const MINTO_CHEKI_KEEP = "ch1_minto_cheki_keep";
+const MINTO_CHEKI_KEEP_SEEN = "_minto_cheki_keep_done";
+export const mintoTimerHandDue = () => !state.flags[MINTO_TIMER_HAND_SEEN]
+  && storyCount("minto") >= VISIT_SEQ.minto.length
+  && !!state.flags._minto_identity_revealed
+  && !!DB.dialogues[MINTO_TIMER_HAND]?.lines?.length;
+/** タイマーの次の来店で、上げないチェキを一度だけ（#3081）。 */
+export const mintoChekiKeepDue = () => !state.flags[MINTO_CHEKI_KEEP_SEEN]
+  && !!state.flags[MINTO_TIMER_HAND_SEEN]
+  && !!DB.dialogues[MINTO_CHEKI_KEEP]?.lines?.length;
 /**
  * 章が明けて最初の来店で一度だけ読む後日談（#2026）。第1章で実際に通った店主だけ（regulars は
  * 章の切り替え時の記録。ch2-progress.js）。既読は台本末尾の set_flag。第2章の地元の地図だけが入口。
@@ -180,21 +241,43 @@ export function afterChapterVisitDue(charId, s = state) {
     && DB.dialogues[entry.scene]?.lines?.length ? entry.scene : null;
 }
 /**
- * その章の間だけ店で読める短い会話（第2章の凛・VOL13）。段階会話より先に、一来店に一本ずつ・一度だけ。
+ * その章の間だけ店で読める短い会話（第2章の凛想・VOL13）。段階会話より先に、一来店に一本ずつ・一度だけ。
  * flag は読める時期（味の不調の後など）。台本は章の準備期間に読み込む（data/dialogue/ch2_home.json）ので、未読込なら出さない。
  * 初対面の固有会話（VISIT_SEQ の1本目）を読んだ相手だけ（呼び名・面識を前提にするため）。
  * 既読は `_talk_seen_<scene>`。好感度は通い訪問と同じ+5。
+ * prep は、東京・ドバイへ発つ前の地元の準備3日（chapters/departure-prep.js）だけ読む送り出しの会話（第3・4章・N3a）。
+ * 出発後（その章の大会の前後とも）には出ないので、大会後の分岐は持たない。台本は data/dialogue/ch3_ch4_home.json を準備期間に読み込む。
+ * サメちゃんの店（SHISHARK）は来店の処理が別なので、同じ扱いの会話を daily/samechan.js の SAMECHAN_PREP_TALKS に持つ。
  */
 export const CHAPTER_TALKS = Object.freeze({
-  rin: Object.freeze([
-    // 「……君、今日は煙の褒め方が嘘だね」（characters.json の凛）。味の不調に誰より早く気づく
-    { chapter: 2, scene: "ch2_rin_taste", flag: "_ch2_taste_distant" },
-    { chapter: 2, scene: "ch2_rin_strawberry" },
+  rio: Object.freeze([
+    // 「……君、今日は煙の褒め方が嘘だね」（characters.json の凛想）。味の不調に誰より早く気づく
+    { chapter: 2, scene: "ch2_rio_taste", flag: "_ch2_taste_distant" },
+    { chapter: 2, scene: "ch2_rio_strawberry" },
+    { chapter: 3, scene: "ch3_prep_rio", prep: true },
+    { chapter: 4, scene: "ch4_prep_rio", prep: true },
+  ]),
+  adam: Object.freeze([
+    { chapter: 3, scene: "ch3_prep_adam", prep: true },
+    { chapter: 4, scene: "ch4_prep_adam", prep: true },
+  ]),
+  minto: Object.freeze([
+    { chapter: 3, scene: "ch3_prep_minto", prep: true },
+    { chapter: 4, scene: "ch4_prep_minto", prep: true },
   ]),
 });
+/**
+ * 出発前の地元の準備期間か。判定は core/chapter-clock.js の departurePrep と同じ
+ * （この画面を単体で読み込むテストが多いので import しない。core/travel-budget.js と同じ扱い）。
+ */
+const inDeparturePrep = (s = state) => {
+  const prep = s?.chapter === 3 ? s.flags?._ch3_prep : s?.chapter === 4 ? s.flags?._ch4_prep : null;
+  return !!prep && !prep.departed && Number.isInteger(prep.startDay);
+};
 export function chapterTalkDue(charId, s = state) {
   if (!((s?.story?.[charId] || 0) >= 1)) return null;
   return (CHAPTER_TALKS[charId] || []).find(talk => (s?.chapter || 1) === talk.chapter && s.phase === "daily"
+    && (!talk.prep || inDeparturePrep(s))
     && !s.flags?.[`_talk_seen_${talk.scene}`] && (!talk.flag || s.flags?.[talk.flag])
     && DB.dialogues[talk.scene]?.lines?.length)?.scene || null;
 }
@@ -210,7 +293,11 @@ export function hasNewStory(charId) {
   if (afterChapterVisitDue(charId)) return true;
   if (charId === "minto" && mintoIdentityRevealDue()) return true;
   if (questionVisitDue(charId)) return true;
-  if (charId === "rin" && rinPrototypeDue()) return true;
+  if (charId === "rio" && rioPrototypeDue()) return true;
+  if (charId === "rio" && rioBlueberryDue()) return true;
+  if (charId === "rio" && rioStoryExtraDue()) return true;
+  if (charId === "tsumugi" && tsumugiStoryExtraDue()) return true;
+  if (charId === "minto" && (mintoSideSeatDue() || mintoQuietHelloDue() || mintoTimerHandDue() || mintoChekiKeepDue())) return true;
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
   if (id && !visitStorySkipped(state, charId, id)) return storyAvailable(id);
   return questionVisitDue(charId) || finaleAtVisit(charId);
@@ -263,7 +350,7 @@ export function hasNewEvent(spot) {
   if (typeof spot.hasNew === "function") return !!spot.hasNew();
   if (spot.kind === "tonari") return state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi")
     || state.visitedDay.tonari_customer !== state.day && tsumugiAtTonari(state) && hasNewStory("tsumugi");
-  if (spot.kind === "shop") return !rinUnavailable(state) && hasNewStory("rin");
+  if (spot.kind === "shop") return !rioUnavailable(state) && hasNewStory("rio");
   if (spot.charId === "samechan") {
     const scene = samechanVisitDialogue();
     return !!scene && !scene.startsWith("samechan_shop_repeat_") && !!DB.dialogues[scene]?.lines?.length;
@@ -338,7 +425,7 @@ export const bgRef = (name) => `res://assets/backgrounds/${name}.png`;
 /**
  * キャラに会う。固有会話が残っていれば次の1本（読んだ直後に途中の質問があれば続けて）。
  * 尽きたら、途中の質問の訪問 → 好感度MAXの締めくくり（一度だけ・専用ハガル）→ 通い訪問の小会話の順。
- * 報酬: 固有会話・締めくくり=好感度+16／通い=好感度+8（第5章は+10／+5。core/stats.js の visitAffinity）。通常の主要能力は1P。
+ * 初対面は♥1ちょうど。2回目以降の報酬: 固有会話・締めくくり=好感度+16／通い=好感度+8（第5章は+10／+5。core/stats.js の visitAffinity）。通常の主要能力は1P。
  */
 const visitsInFlight = new WeakMap();
 export async function visitChar(charId, { welcome = null, signal = null } = {}) {
@@ -347,6 +434,8 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
   const active = visitsInFlight.get(owner) || new Set();
   if (active.has(charId) || signal?.aborted) return false;
   visitsInFlight.set(owner, active); active.add(charId);
+  const affinityOptions = { firstMeeting: !!owner.flags[`_affinity_first_meeting_pending_${charId}`]
+    || !owner.met[charId] && !owner.story[charId] && !owner.visits[charId] };
   try {
     const live = () => state === owner && !signal?.aborted;
     const read = async (scene, opts = {}) => {
@@ -369,52 +458,85 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     const followup = spotFollowupDue(charId, state, DB.dialogues);
     if (followup && !await read(followup, { bg })) return false;
     const afterChapter = afterChapterVisitDue(charId);
-    const chapterTalk = afterChapter ? null : chapterTalkDue(charId);
-    // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。章明けの再訪は自前の来店描写があるので挨拶を挟まない。
-    if (welcome && state === owner && idx > 0 && !afterChapter && DB.dialogues[welcome]) {
+    // 正体がつながる回・途中の質問を読む来店では、章の間だけの会話は次の来店へ残す（下の分岐の順と同じ）。
+    const mintoReveal = charId === "minto" && mintoIdentityRevealDue() && !!DB.dialogues.ch1_minto_identity_reveal;
+    const chapterTalk = afterChapter || mintoReveal || questionVisitDue(charId) ? null : chapterTalkDue(charId);
+    // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。章明けの再訪・章の間だけの会話は自前の来店描写があるので挨拶を挟まない。
+    if (welcome && state === owner && idx > 0 && !afterChapter && !chapterTalk && DB.dialogues[welcome]) {
       if (!await read(welcome, { bg })) return false;
     }
     if (afterChapter) {
       // 既読フラグは台本末尾の set_flag。中断では立たず、次の来店で読み直せる。
       if (!await read(afterChapter, DB.dialogues[afterChapter].metadata?.bg ? {} : { bg })) return false;
-      gainAffinity(charId, visitAffinity("talk"));
-    } else if (charId === "minto" && mintoIdentityRevealDue() && DB.dialogues.ch1_minto_identity_reveal) {
+      gainAffinity(charId, visitAffinity("talk"), affinityOptions);
+    } else if (mintoReveal) {
       // 正体がつながる日の照れた接客を最後まで見せ、通常回は次の来店へ残す。
       if (!await read("ch1_minto_identity_reveal")) return false;
-      gainAffinity(charId, visitAffinity("story"));
+      gainAffinity(charId, visitAffinity("story"), affinityOptions);
     } else if (questionVisitDue(charId)) {
       // 節目を先に読んだ旧セーブ・♥3未満で外出した場合も、次の実対面で分岐を受け取る。
       if (!await playQuestionVisit(charId, { bg, signal, deferSave: true }) || !live()) return false;
-      gainAffinity(charId, visitAffinity("talk"));
+      gainAffinity(charId, visitAffinity("talk"), affinityOptions);
     } else if (chapterTalk) {
       // 章の間だけの会話（VOL13）。完読してから既読にする。中断なら次の来店で読み直せる。
       if (!await read(chapterTalk, DB.dialogues[chapterTalk].metadata?.bg ? {} : { bg })) return false;
       state.flags[`_talk_seen_${chapterTalk}`] = true;
-      gainAffinity(charId, visitAffinity("talk"));
+      gainAffinity(charId, visitAffinity("talk"), affinityOptions);
     } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx]) && !visitStorySkipped(state, charId, seq[idx])) {
       const opts = DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg };
       // 試供品は完読で受領する。SKIPでは進行を確定せず、次回読み直せるようにする。
-      if (charId === "rin" && seq[idx] === "ch1_rin_third") opts.cancelOnSkip = true;
+      if (charId === "rio" && seq[idx] === "ch1_rio_third") opts.cancelOnSkip = true;
       if (!await read(seq[idx], opts)) return false;
       state.story[charId] = idx + 1;
-      gainAffinity(charId, visitAffinity("story"));
+      gainAffinity(charId, visitAffinity("story"), affinityOptions);
       // 初回読了と通常獲得はここで確定する。後続の質問・勧誘の中断で保証だけを失わない。
       if (idx === 0) ensureAffinityLevel(charId, 1);
       if (await afterStory(seq[idx], { bg, signal, deferSave: true }) === false || !live()) return false;
     } else if (finaleAtVisit(charId)) {
       if (!await playFinale(charId, { bg, signal, deferSave: true }) || !live()) return false;
-      gainAffinity(charId, visitAffinity("story"));
-    } else if (charId === "rin" && rinPrototypeDue()) {
-      if (!await read(RIN_PROTOTYPE, {})) return false;
-      state.flags[RIN_PROTOTYPE_SEEN] = true;
-      gainAffinity(charId, visitAffinity("talk"));
+      gainAffinity(charId, visitAffinity("story"), affinityOptions);
+    } else if (charId === "rio" && rioPrototypeDue()) {
+      if (!await read(RIO_PROTOTYPE, {})) return false;
+      state.flags[RIO_PROTOTYPE_SEEN] = true;
+      gainAffinity(charId, visitAffinity("talk"), affinityOptions);
+    } else if (charId === "rio" && rioBlueberryDue()) {
+      if (!await read(RIO_BLUEBERRY, {})) return false;
+      state.flags[RIO_BLUEBERRY_SEEN] = true;
+      gainAffinity(charId, visitAffinity("talk"), affinityOptions);
+    } else if (charId === "rio" && rioStoryExtraDue()) {
+      const scene = rioStoryExtraDue();
+      if (!await read(scene, {})) return false;
+      state.flags[`_spot_seen_${scene}`] = true;
+      gainAffinity(charId, visitAffinity("talk"), affinityOptions);
+    } else if (charId === "tsumugi" && tsumugiStoryExtraDue()) {
+      const scene = tsumugiStoryExtraDue();
+      if (!await read(scene, { bg })) return false;
+      state.flags[`_spot_seen_${scene}`] = true;
+      gainAffinity(charId, visitAffinity("talk"), affinityOptions);
+    } else if (charId === "minto" && mintoSideSeatDue()) {
+      // 完読してから既読。中断では旗を残さず、次の来店で読み直せる。
+      if (!await read(MINTO_SIDE_SEAT, DB.dialogues[MINTO_SIDE_SEAT].metadata?.bg ? {} : { bg })) return false;
+      state.flags[MINTO_SIDE_SEAT_SEEN] = true;
+      gainAffinity(charId, visitAffinity("story"), affinityOptions);
+    } else if (charId === "minto" && mintoQuietHelloDue()) {
+      if (!await read(MINTO_QUIET_HELLO, DB.dialogues[MINTO_QUIET_HELLO].metadata?.bg ? {} : { bg })) return false;
+      state.flags[MINTO_QUIET_HELLO_SEEN] = true;
+      gainAffinity(charId, visitAffinity("story"), affinityOptions);
+    } else if (charId === "minto" && mintoTimerHandDue()) {
+      if (!await read(MINTO_TIMER_HAND, DB.dialogues[MINTO_TIMER_HAND].metadata?.bg ? {} : { bg })) return false;
+      state.flags[MINTO_TIMER_HAND_SEEN] = true;
+      gainAffinity(charId, visitAffinity("story"), affinityOptions);
+    } else if (charId === "minto" && mintoChekiKeepDue()) {
+      if (!await read(MINTO_CHEKI_KEEP, DB.dialogues[MINTO_CHEKI_KEEP].metadata?.bg ? {} : { bg })) return false;
+      state.flags[MINTO_CHEKI_KEEP_SEEN] = true;
+      gainAffinity(charId, visitAffinity("story"), affinityOptions);
     } else {
       const rainy = isRainy();
       const id = repeatVisitDialogue(charId);
       const dlg = DB.dialogues[id];
       const opener = rainy && dlg ? DB.dialogues.remake_rain_opener?.lines || [] : [];
       if (!await read(opener.length ? { ...dlg, lines: [...opener, ...(dlg?.lines || [])] } : id, { bg })) return false;
-      gainAffinity(charId, visitAffinity("talk"));
+      gainAffinity(charId, visitAffinity("talk"), affinityOptions);
     }
     if (!live()) return false;
     // 回数は紹介を出す条件だけ。実際の紹介を完読するまで喫茶店を解放しない。
@@ -442,7 +564,7 @@ export async function visitRival(spot) {
   refreshPlaceCue(spot.id);
   addMoney(-(spot.cost || 0));
   addStamina(spot.stamina || -16);
-  playBgm("tonari");
+  playBgm("bgm_rival_shop");
   // 相席予定の日には「一人占め」の昼挨拶を出さない。台詞正本・実遭遇の処理は維持する。
   const welcome = spot.charId === "minto" && state.slot === 0 && hiyoriShopEncounterDue(spot)
     ? null : `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;

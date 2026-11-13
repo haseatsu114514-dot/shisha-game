@@ -101,11 +101,11 @@
 - つなぎの間の Enter・クリックで、カットインが短くならない。
 - `SHOTS=<フォルダ>` で、80ms・240ms・400ms の3コマを保存し、オーナー確認用の連続画像にする。
 
-関連する回帰: `intro_art.mjs`（旧絵柄）、`browser/recent_intros.mjs`、DS の `browser/ds_overlay_layers.mjs`。
+関連する回帰: `intro_art.mjs`（旧絵柄）、`browser/recent_intros.mjs`（DS の `browser/ds_overlay_layers.mjs` は 2026-11-10 に DS風ごと削除）。
 
 ## 6. 進め方
 
-1. 試作: `character-intros-preview.html` で、なる（sharp）・凛（soft）・南雲（still）・パッキー（bounce）の4人を再生できるようにし、連続画像と動画でオーナーに見せる。
+1. 試作: `character-intros-preview.html` で、なる（sharp）・凛想（soft）・千須（still）・パッキー（bounce）の4人を再生できるようにし、連続画像と動画でオーナーに見せる。
 2. 採用後に本実装とテスト。1つのPRにまとめる（`intro-transition.js`・`intro.js`・`intro.css`・テスト）。
 
 ## 7. 未決事項（オーナー確認）

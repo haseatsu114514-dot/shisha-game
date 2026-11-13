@@ -1,0 +1,67 @@
+// 実画面で加速/息の警告/回復/再挑戦。観客ティッカーは廃止。競走モデルは自然に進める。
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+const artifacts = process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser';
+const capture = async (page, name) => { fs.mkdirSync(artifacts, { recursive: true }); await page.screenshot({ path: path.join(artifacts, `camel-stamina-${name}.png`) }); };
+import { suite, baseURL } from './support.mjs';
+
+async function launch(page, { reduced = false } = {}) {
+  await page.evaluate(async ({ reduced }) => {
+    const { runCamelRace } = await import('./js/minigames/camel-race.js');
+    const { activeCue } = await import('./js/minigames/camel-race-model.js');
+    window.__whipTest = true;
+    window.__warningStates = [];
+    const policy = race => {
+      const cue = activeCue(race);
+      return { voice: !!cue && Math.abs(cue.dt) < .02, whip: window.__whipTest };
+    };
+    window.__racePromise = runCamelRace({ host: document.getElementById('stage'), tutorial: false,
+      seed: 4, pilot: policy, timeScale: 4, reducedMotion: reduced });
+    const node = document.querySelector('[data-test="camel-pacing"]');
+    new MutationObserver(() => {
+      if (!window.__warningStates.includes(node.dataset.state)) window.__warningStates.push(node.dataset.state);
+    }).observe(node, { attributes: true });
+  }, { reduced });
+  await page.waitForFunction(() => document.querySelector('[data-test="camel-game"]')?.dataset.phase === 'race');
+}
+
+await suite('camel-stamina-feedback', async check => {
+  for (const mobile of [false, true]) await check(mobile ? 'touch-width-warning-recovery' : 'desktop-warning-recovery', async page => {
+    await launch(page);
+    await page.locator('[data-test="camel-boost-label"]').waitFor({ state: 'visible' });
+    await capture(page, mobile ? 'touch-boost' : 'desktop-boost');
+    assert.equal(await page.locator('[data-test="camel-spectators"]').count(), 0);
+    assert.ok((await page.locator('.camel-call-text').textContent()).length > 0, '上の実況は残す');
+    await page.waitForFunction(() => window.__warningStates.includes('spent'));
+    assert.ok(await page.evaluate(() => window.__warningStates.includes('low') && window.__warningStates.includes('tired')));
+    await page.locator('[data-test="camel-boost-label"]').waitFor({ state: 'hidden' });
+    assert.match(await page.locator('[data-test="camel-pacing"]').textContent(), /再使用まで/);
+    await capture(page, mobile ? 'touch-spent' : 'desktop-spent');
+    await page.evaluate(() => { window.__whipTest = false; });
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-pacing"]')?.dataset.state !== 'spent', null, { timeout: 20000 });
+    assert.equal(await page.locator('[data-test="camel-boost-label"]').isVisible(), false);
+    const boxes = await page.evaluate(() => Object.fromEntries(['.camel-pacing','.camel-voice','.camel-signal','.camel-call','.camel-banner'].map(s => {
+      const b = document.querySelector(s).getBoundingClientRect();
+      return [s, { x:b.x, y:b.y, right:b.right, bottom:b.bottom }];
+    })));
+    assert.ok(Object.values(boxes).every(b => b.x >= 0 && b.y >= 0 && b.right <= (mobile ? 844 : 1280) + 1 && b.bottom <= (mobile ? 390 : 720) + 1));
+    const overlaps = (a, b) => a.x < b.right && a.right > b.x && a.y < b.bottom && a.bottom > b.y;
+    assert.equal(overlaps(boxes['.camel-pacing'], boxes['.camel-voice']), false);
+    assert.equal(overlaps(boxes['.camel-pacing'], boxes['.camel-signal']), false);
+    await page.locator('[data-test="camel-close"]').click();
+    await page.locator('[data-test="camel-game"]').waitFor({ state: 'detached' });
+    await page.locator('[data-test="camel-menu-quick"]').click();
+    assert.match(await page.locator('[data-test="camel-pacing"]').textContent(), /回復/);
+    assert.equal(await page.locator('[data-test="camel-spectators"]').count(), 0);
+  }, mobile ? { viewport: { width:844, height:390 }, hasTouch:true, isMobile:true } : {});
+
+  await check('reduced-motion-keeps-readable-state', async page => {
+    await launch(page, { reduced: true });
+    await page.locator('[data-test="camel-boost-label"]').waitFor({ state: 'visible' });
+    assert.equal(await page.locator('[data-test="camel-spectators"]').count(), 0);
+    assert.equal(await page.locator('[data-test="camel-game"]').getAttribute('data-reduced-motion'), 'true');
+    await page.locator('[data-test="camel-close"]').click();
+    await page.locator('[data-test="camel-game"]').waitFor({ state:'detached' });
+  }, { reducedMotion:'reduce' });
+}, { entry:new URL('camel-race.html',baseURL).href, readySelector:'[data-test="camel-menu-quick"]' });

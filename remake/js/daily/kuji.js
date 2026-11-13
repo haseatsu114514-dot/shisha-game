@@ -2,27 +2,37 @@ import { spendableMoney } from "../core/travel-budget.js";
 // シーシャくじ（master_spec #25）。正本データは data/kuji.json（旧版と共通）。
 // ボックス制・上位集約。リセマラ防止: 箱の並びは作った時点で確定して保存し、引くたびに先頭から出す。
 // 引いた直後に保存するので、結果を見てからのロードでは変わらない。
-import { el, yen, sleep, shuffle } from "../core/util.js";
+import { el, yen, shuffle } from "../core/util.js";
 import { DB, displayName } from "../core/data.js";
-import { layers, toast } from "../core/ui.js";
+import { layers, modal } from "../core/ui.js";
 import { state, save } from "../core/state.js";
 import { addMoney } from "../core/stats.js";
 import { SE } from "../core/audio.js";
-import { vnTest } from "../vn/engine.js";
 import { addFlavorStock, FLAVOR_BOX_GRAMS } from "./shop.js";
-import { RIN_AWAY_DAY } from "../core/rules.js";
+import { RIO_AWAY_DAY, KUJI_TICKET_MAX } from "../core/rules.js";
+import { kujiTickets, grantKujiTickets, spendKujiTicket } from "./kuji-tickets.js";
+import { reveal, revealMany } from "./kuji-reveal.js";
+import { prizeArt } from "./kuji-prize-art.js";
 
 // 全等級で購入を共有ロック。表示・セーブには保存しない。
 let purchaseLock = null, currentRows = null;
 
-const grades = () => Object.entries(DB.kuji?.grades || {})
-  .filter(([, g]) => (g.chapterMin || 1) <= (state.chapter || 1))
+/** その店で今引けるくじ。くじは店ごとに1種類で、章が進むと新しい街の店に上位のくじがある（KJ11）。
+ * shop は置いてある店: "home"（地元の本店）・"widehanga"（柚ヶ谷店）・"tokyo"（東京店）・"dubai"（ドバイ店）。
+ * 本店は第5章になると、シーシャくじが限定台くじに入れ替わる（data/kuji.json の chapterMin〜chapterMax） */
+const grades = (shop = "home") => Object.entries(DB.kuji?.grades || {})
+  .filter(([, g]) => (g.shop || "home") === shop && (g.chapterMin || 1) <= (state.chapter || 1) && (state.chapter || 1) <= (g.chapterMax || Infinity))
   .map(([id, g]) => ({ id, ...g }));
+/** その店に今くじが置いてあるか（ショップの「シーシャくじ」タブを出すか） */
+export const hasKuji = (shop = "home") => grades(shop).length > 0;
+/** その店のくじの抽選器の見た目（演出の絵を先に読み込むのに使う） */
+export const kujiLooks = (shop = "home") => grades(shop).map((g) => g.machine || "walnut");
 
 function newBox(g) {
   const order = [];
   g.prizes.forEach((p, i) => { for (let k = 0; k < p.count; k++) order.push(i); });
-  return { order: shuffle(order), drawn: 0, emptyDay: null,
+  // 箱は、作った時の景品と1回の値段を持つ（price）。あとで値段や中身を変えても、引き途中の箱はそのまま引き切れる
+  return { order: shuffle(order), drawn: 0, emptyDay: null, price: g.price,
     version: DB.kuji.meta.version, prizes: structuredClone(g.prizes), lastOne: structuredClone(g.lastOne) };
 }
 
@@ -32,7 +42,12 @@ function boxOf(g) {
   const refill = DB.kuji.meta?.refillDays || 3;
   // 既存セーブの20/12枚箱は順番も景品もそのまま。引き切った次の補充から50枚へ。
   if (b && b.drawn >= b.order.length && b.emptyDay != null && state.day - b.emptyDay >= refill) b = null;
+  // 値段と中身を変える前（KJ17・2026-11-11 より前）に作った箱は price を持たない。まだ1枚も引いていなければ今の箱に入れ替え、
+  // 引き途中なら、その箱の景品と当時の値段（priceWas）のまま引き切る（安くなった値段で前の中身を引いて、お金が増えないように）。
+  // もっと古い箱（景品の控えを持たない12枚・20枚の箱）は今までどおりそのまま残し、値段だけ当時のものにする
+  if (b && b.price == null && b.prizes && g.priceWas && g.priceWas !== g.price && b.drawn === 0) b = null;
   if (!b) { b = state.kuji[g.id] = newBox(g); save(); }
+  if (b.price == null) { b.price = g.priceWas || g.price; save(); }
   if (!b.prizes) {
     const original = DB.kuji.legacyGrades?.[g.id] || g;
     b.prizes = structuredClone(original.prizes);
@@ -45,11 +60,13 @@ function boxOf(g) {
 
 /** 景品を実体化。goods は売れる小物、flavor は手持ちに加わる、台・機材（equipId）は持ち物に入る、consumable（旧箱）は演出のみ。
  * 機材は同じ物を二つ持てないので、持っている物が当たったら中古買い取りの額をお金で渡す（非売品で買い取りの無い台は景品評価の半額）。
- * 戻り値はその時に渡した額（持っていなかった・機材でない景品は null） */
+ * くじ限定の台（kuji_only・KJ05）は売れないので、持っていたらお金ではなくくじ券1枚に替える（上限なら0枚）。
+ * 戻り値はその時に渡した額か { dupTicket: 枚数 }（持っていなかった・機材でない景品は null） */
 function grant(prize) {
   if (prize.equipId) {
     if (!state.owned.includes(prize.equipId)) { state.owned.push(prize.equipId); return null; }
     const gear = DB.equipById?.[prize.equipId];
+    if (gear?.kuji_only) return { dupTicket: grantKujiTickets(1, "kuji_dupe") };
     const cash = gear && !gear.unsellable && gear.sell_price > 0 ? gear.sell_price : Math.round((prize.sell || 0) * 0.5);
     if (cash) addMoney(cash);
     return cash;
@@ -65,12 +82,38 @@ function grant(prize) {
   if ((prize.type === "goods" || prize.type === "stand") && prize.sell) state.goods.push({ name: prize.name, sell: prize.sell });
   return null;
 }
-/** 持っていた機材をお金に替えた時は、結果のカードにその額を出す */
-const withDupe = (prize, cash) => cash == null ? prize : { ...prize, dupCash: cash };
-const dupeText = (prize) => `持っているので、中古買い取りの${yen(prize.dupCash)}を受け取った`;
+/** 持っていた機材をお金に替えた時は、結果の札にその額を出す */
+const yen2 = (n) => `¥${Math.round(n).toLocaleString("ja-JP")}`;
+const withDupe = (prize, cash) => cash == null ? prize : typeof cash === "object" ? { ...prize, ...cash } : { ...prize, dupCash: cash };
+/** 結果の札に出す重複の文を賞に添える（dupText＝1回引きの札の文、dupShort＝連続の小さい札の短い表記。見せ方は kuji-reveal.js） */
+const noted = (prize) => prize.dupCash == null && prize.dupTicket == null ? prize : { ...prize,
+  dupText: prize.dupTicket == null ? `持っているので、中古買い取りの${yen(prize.dupCash)}を受け取った`
+    : prize.dupTicket > 0 ? "持っているので、くじ券を1枚受け取った" : `持っている（くじ券は${KUJI_TICKET_MAX}枚まで）`,
+  dupShort: prize.dupTicket == null ? yen(prize.dupCash) : `券+${prize.dupTicket}` };
 
-/** ショップの「くじ」タブの中身 */
-export function kujiRows(rerender) {
+const RANK_NAME = { S: "S賞", A: "A賞", B: "B賞", C: "C賞", LAST: "ラストワン賞" };
+/** 景品の一覧（棚の案内・GCH13）。その箱の景品を賞の順に並べ、絵とのこり枚数を出す。くじは店ごとに1種類なので、行の下の空いた所に置く。
+ * 引き途中の箱は、その箱を作った時の景品（box.prizes）で数える。ラストワン賞は今までどおり中身を伏せる（獲得してから） */
+function lineup(g, box) {
+  const left = box.prizes.map(() => 0);
+  for (const i of box.order.slice(box.drawn)) left[i] += 1;
+  // count が空（もう残っていない）の景品は薄くする（data-out）
+  const item = (rank, art, name, count) => el("li.kuji-lineup-item", { dataset: count ? { rank } : { rank, out: "1" } }, [
+    el("span.kuji-lineup-art", art ? [art] : []),
+    el("span.kuji-lineup-main", [el("b.kuji-lineup-rank", { text: RANK_NAME[rank] || `${rank}賞` }), el("span.kuji-lineup-name", { text: name })]),
+    el("span.kuji-lineup-left", { text: count }),
+  ]);
+  const items = box.prizes.map((p, i) => item(p.rank, prizeArt(p, 56), p.name, left[i] > 0 ? `のこり ${left[i]} / ${p.count}` : ""));
+  if (box.lastOne) items.push(item("LAST", el("span.kuji-lineup-secret", { text: "？" }),
+    "最後の1枚に付く・中身は秘密", box.drawn < box.order.length ? "のこり 1 / 1" : ""));
+  return el("section.kuji-lineup", { dataset: { test: `kuji-lineup-${g.id}` }, "aria-label": "この箱の景品" }, [
+    el("h4.kuji-lineup-head", [el("span", { text: "この箱の景品" }), el("small", { text: "当たった分だけ、のこりが減る" })]),
+    el("ul.kuji-lineup-list", items),
+  ]);
+}
+
+/** ショップの「くじ」タブの中身。shop はその店（grades を参照） */
+export function kujiRows(rerender, shop = "home") {
   const view = currentRows = {};
   const session = state, boxes = state.kuji;
   const { chapter, day, slot, phase } = state;
@@ -78,39 +121,52 @@ export function kujiRows(rerender) {
   const live = button => currentRows === view && state === session && state.kuji === boxes
     && state.chapter === chapter && state.day === day && state.slot === slot && state.phase === phase
     && button.isConnected && !button.closest(".done");
-  const list = grades();
+  const list = grades(shop);
   if (!list.length) return [el("p.shop-empty", { text: "くじはまだ入荷していない" })];
   const rows = [];
-  if (!state.flags._kuji_seen) {
-    state.flags._kuji_seen = true;
-    const staffed = state.slot === 1 && state.day % 7 !== RIN_AWAY_DAY && state.met.rin;
-    rows.push(el("p.kuji-note", { text: staffed
-      ? `${displayName("rin", state)}「これ、実は在庫しょぶ……なんでもない。引きは引き。直感で行きなさい」`
-      : "棚の案内には、残り枚数と景品が書かれている。くじは1階で昼夜とも引ける。" }));
-  }
+  const guide = "棚の案内には、残り枚数と景品が書かれている。くじは1階で昼夜とも引ける。置いてあるくじは店ごとに1種類で、ほかの街の Dr.fookah には別のくじがある。";
+  const staffed = state.slot === 1 && state.day % 7 !== RIO_AWAY_DAY && state.met.rio;
+  const firstSeen = !state.flags._kuji_seen;
+  state.flags._kuji_seen = true;
+  // 初回にリオが居る時のひと言は台詞なのでそのまま出し、棚の案内は「?」を押して開く。
+  if (firstSeen && staffed) rows.push(el("p.kuji-note", { text: `${displayName("rio", state)}「これ、実は在庫しょぶ……なんでもない。引きは引き。直感で行きなさい」` }));
+  // 「?」は専用の行を作らず、最初のくじの見出しの横に小さく置く（行を押した時の詳細は開かない）。
+  let help = el("button.kuji-help", {
+    text: "?", "aria-label": "くじの案内", dataset: { test: "kuji-help" },
+    onclick: (event) => { event.stopPropagation(); SE.select(); modal({ title: "くじの案内", className: "shop-dialog", body: guide, options: [{ label: "閉じる", value: null, primary: true, test: "kuji-help-close" }] }); },
+  });
   const refill = DB.kuji.meta?.refillDays || 3;
   for (const g of list) {
     const box = boxOf(g);
     const size = box.order.length;
     const left = size - box.drawn;
     const empty = left <= 0;
-    const top = box.prizes.filter((p) => p.rank === "S").map((p) => p.name).join("・");
+    // 引き途中の旧箱は、枚数も1回の値段も作った時のまま。名前の「1回◯円」もその箱の値段で出す
+    const price = box.price ?? g.price;
+    const old = size !== g.boxSize || price !== g.price;
+    const label = price === g.price ? g.label : g.label.replace(/1回[\d,]+円/, `1回${yen(price)}`);
+    const tops = box.prizes.filter((p) => p.rank === "S").map((p) => p.name);
+    // 限定台くじ（KJ05）はS賞が3種あるので、行には種類の数だけ出し、名前は行を押した案内に載せる（行を横にはみ出させない）
+    const top = g.limited ? `くじ限定の台${tops.length}種` : tops.join("・");
     const drawn = box.drawn, order = box.order;
-    const buyButton = (count, label, test) => {
+    // pay: "money"＝1回の値段を払う、"ticket"＝くじ券1枚で1回（限定台くじだけ。お金は使わない）
+    const affordable = (count, pay) => pay === "ticket" ? !!g.limited && count === 1 && kujiTickets() >= 1
+      : spendableMoney(state) >= price * count;
+    const buyButton = (count, label, test, pay = "money") => {
       const button = el("button.btn.small", {
         text: label,
-        disabled: empty || count > left || spendableMoney(state) < g.price * count || null,
+        disabled: empty || count > left || !affordable(count, pay) || null,
         dataset: { test },
         onclick: async () => {
           if (!live(button) || boxes[g.id] !== box || box.order !== order || box.drawn !== drawn
-            || count > left || spendableMoney(state) < g.price * count || layers.modal.classList.contains("show")) return;
+            || count > left || !affordable(count, pay) || layers.modal.classList.contains("show")) return;
           if (purchaseLock?.session === session
             && (purchaseLock.committing || purchaseLock.overlay?.isConnected)) return;
           const lock = purchaseLock = { session, committing: true, overlay: null };
           // Enterのrepeatも含め、演出中は背後の購入ボタンへ再入力させない。
           buttons.forEach(b => { b.disabled = true; });
           try {
-            const pending = count === 1 ? draw(g, box) : drawMany(g, box, count);
+            const pending = count === 1 ? draw(g, box, pay) : drawMany(g, box, count);
             lock.overlay = layers.modal.firstElementChild;
             lock.committing = false;
             await pending;
@@ -123,30 +179,59 @@ export function kujiRows(rerender) {
       buttons.push(button);
       return button;
     };
-    const actions = [buyButton(1, empty ? "売り切れ" : `${yen(g.price)}で引く`, `kuji-${g.id}`)];
+    const actions = [buyButton(1, empty ? "売り切れ" : `×1 ${yen2(price)}`, `kuji-${g.id}`)];
     for (const target of [5, 10]) {
       const count = Math.min(target, left);
       if (count < 2 || (target === 10 && count <= 5)) continue;
-      actions.push(buyButton(count, `${count === 10 ? "10連" : `${count}回まとめて`}で引く（${yen(g.price * count)}）`, `kuji-${g.id}-${target}`));
+      actions.push(buyButton(count, `×${count} ${yen2(price * count)}`, `kuji-${g.id}-${target}`));
     }
-    rows.push(el("div.shop-row.kuji-row", [
-      el("span.shop-cat.kuji-cat", { text: "くじ" }),
+    const secret = el("small.kuji-secret", { hidden: true, text: left === 1 ? "次が最後の1枚！ ラストワン賞・シークレットつき" : "ラストワン賞・シークレット（中身は獲得してから）" });
+    const detailBody = () => g.limited ? el("div.kuji-detail", [
+      el("p", { text: `S賞（くじ限定の台。店では売っていない）: ${tops.join("・")}` }),
+      el("p", { text: "持っている限定の台が当たったら、お金ではなくくじ券1枚に替わる。くじ券1枚で、このくじを1回引ける。" }),
+      el("p", { text: secret.textContent }),
+    ]) : secret.textContent;
+    const openDetail = () => { SE.select(); modal({ title: label, className: "shop-dialog", body: detailBody(), options: [{ label: "閉じる", value: null, primary: true, test: "kuji-detail-close" }] }); };
+    rows.push(el("div.shop-row.kuji-row", { dataset: { test: `kuji-row-${g.id}` }, onclick: (e) => { if (!e.target.closest(".kuji-actions")) openDetail(); } }, [
+      el("span.shop-cat.kuji-cat", { text: "🎫", "aria-label": "くじ" }),
       el("div.shop-main", [
-        el("b", { text: g.label }),
+        help ? el("span.kuji-title", [el("b", { text: label }), help]) : el("b", { text: label }),
         el("small", { text: empty
           ? `売り切れ（あと${Math.max(0, refill - (state.day - box.emptyDay))}日で新しい箱）`
-          : `のこり ${left} / ${size} 枚 ・ S賞: ${top}${size !== g.boxSize ? `（旧箱・次回は${g.boxSize}枚）` : ""}` }),
-        el("small", { text: left === 1 ? "次が最後の1枚！ ラストワン賞・シークレットつき" : "ラストワン賞・シークレット（中身は獲得してから）" }),
+          : `のこり ${left} / ${size} 枚 ・ S賞: ${top}${old ? `（旧箱・次回は${g.boxSize}枚${price !== g.price ? `で1回${yen(g.price)}` : ""}）` : ""}` }),
+        secret,
       ]),
       el("div.kuji-actions", actions),
     ]));
+    help = null;
+    // くじ券（KJ05）: 限定台くじの行のすぐ下に、残りの枚数と「くじ券で引く」を置く。0枚・売り切れでは押せない
+    if (g.limited) {
+      const tickets = kujiTickets();
+      rows.push(el("div.shop-row.kuji-ticket-row", { dataset: { test: `kuji-ticket-row-${g.id}` } }, [
+        el("span.shop-cat.kuji-cat", { text: "券", "aria-label": "くじ券" }),
+        el("div.shop-main", [
+          el("b", { text: `くじ券 ${tickets}枚` }),
+          el("small", { text: "1枚で、お金を使わずに限定台くじを1回引ける" }),
+        ]),
+        el("div.kuji-actions", [buyButton(1, `くじ券で引く（残り${tickets}枚）`, `kuji-${g.id}-ticket`, "ticket")]),
+      ]));
+    }
+    rows.push(lineup(g, box));
   }
   return rows;
 }
 
-function takeTicket(g, box) {
-  if (box.drawn >= box.order.length || spendableMoney(state) < g.price) return;
-  addMoney(-g.price);
+function takeTicket(g, box, pay = "money") {
+  if (box.drawn >= box.order.length) return;
+  if (pay === "ticket") {
+    // くじ券は限定台くじだけに使える。1枚減らし、お金は動かさない（0枚なら引かない）
+    if (!g.limited || !spendKujiTicket()) return;
+  } else {
+    // 1回の値段はその箱のもの（引き途中の旧箱は当時の値段）
+    const price = box.price ?? g.price;
+    if (spendableMoney(state) < price) return;
+    addMoney(-price);
+  }
   const prize = box.prizes[box.order[box.drawn]];
   box.drawn += 1;
   const last = box.drawn >= box.order.length;
@@ -157,9 +242,12 @@ function takeTicket(g, box) {
   return { prize: shown, extras };
 }
 
-async function draw(g, box) {
-  const result = takeTicket(g, box);
-  if (result) await reveal(result.prize, result.extras);
+/** そのくじの抽選器（見た目と、黒板に書く名前）。演出へ渡す */
+export const machineOf = (g) => ({ look: g?.machine || "walnut", title: String(g?.label || "シーシャくじ").replace(/（.*$/, "") });
+
+async function draw(g, box, pay = "money") {
+  const result = takeTicket(g, box, pay);
+  if (result) await reveal(noted(result.prize), result.extras.map(noted), machineOf(g));
 }
 
 async function drawMany(g, box, count) {
@@ -167,125 +255,33 @@ async function drawMany(g, box, count) {
   for (let i = 0; i < count; i++) {
     const result = takeTicket(g, box);
     if (!result) break;
-    results.push(result.prize, ...result.extras);
+    results.push(noted(result.prize), ...result.extras.map(noted));
   }
-  if (results.length) await revealMany(results, count);
-}
-
-function revealMany(results, count) {
-  return new Promise(resolve => {
-    const close = el("button.btn", { text: "結果を閉じる", onclick: () => {
-      layers.modal.classList.remove("show");
-      layers.modal.replaceChildren();
-      resolve();
-    } });
-    // 10連ガチャ風: 裏向きのカードを1枚ずつめくる。「すべてめくる」かSKIP中・テスト高速送りでは即座に全部出す（#1905 オーナー要望）。
-    const instant = vnTest.turbo || document.body.classList.contains("vn-skip");
-    const cards = results.map(prize => el(`div.kuji-card.kuji-short.rank-${prize.rank}${instant ? "" : ".kuji-facedown"}`, [
-      el("div.kuji-rank", { text: prize.rank === "LAST" ? "ラストワン賞" : `${prize.rank}賞` }),
-      el("div.kuji-name", { text: prize.rank === "LAST" ? prize.name.replace(/^ラストワン賞・/, "") : prize.name }),
-      ...(prize.dupCash != null ? [el("div.kuji-dupe", { text: `持っている → ${yen(prize.dupCash)}` })] : []),
-    ]));
-    layers.modal.replaceChildren(el("div.kuji-overlay.kuji-multi", { dataset: { test: "kuji-multi-reveal" } }, [
-      el("div.kuji-multi-panel", [
-        el("h2", { text: `${count}回の結果` }),
-        el("div.kuji-multi-cards", cards),
-        close,
-      ]),
-    ]));
-    layers.modal.classList.add("show");
-    if (instant) return;
-    let index = 0, timer = 0;
-    const flipAll = () => { clearTimeout(timer); cards.forEach(c => c.classList.remove("kuji-facedown")); flipBtn.remove(); };
-    const flipBtn = el("button.btn.small.kuji-flip-all", { text: "すべてめくる", dataset: { test: "kuji-flip-all" }, onclick: flipAll });
-    close.before(flipBtn);
-    const step = () => {
-      if (!cards[index]?.isConnected) return;
-      cards[index].classList.remove("kuji-facedown");
-      index += 1;
-      if (index < cards.length) timer = setTimeout(step, results[index - 1].rank === "S" || results[index - 1].rank === "LAST" ? 650 : 220);
-      else flipBtn.remove();
-    };
-    timer = setTimeout(step, 300);
-  });
-}
-
-// 引き演出: ガラガラ（福引きの回転抽選器）を回し、賞の色の玉が出る → 賞のカードが開く。上位賞は係の人が鐘を鳴らす。
-// 箱の最後の1枚なら、カードを閉じたあとにもう一度ガラガラを回し、ラストワン賞の黒い玉とカードを見せる（extras）。
-// （motions/garagara.js。SKIP中とテストの高速送りでは回さずにカードだけ出し、ラストワン賞はトーストで知らせる）
-function reveal(prize, extras = []) {
-  return new Promise((resolve) => {
-    const ov = el("div.kuji-overlay", { dataset: { test: "kuji-reveal" } });
-    layers.modal.replaceChildren(ov);
-    layers.modal.classList.add("show");
-    const skip = vnTest.turbo || document.body.classList.contains("vn-skip");
-    const queue = skip ? [prize] : [prize, ...extras];
-    let open = false;
-    const next = async () => {
-      const p = queue.shift();
-      if (!p) {
-        layers.modal.classList.remove("show");
-        layers.modal.replaceChildren();
-        resolve();
-        return;
-      }
-      await revealOne(ov, p, skip);
-      open = true;
-      if (skip) for (const ex of extras) {
-        await sleep(500);
-        toast(ex.dupCash != null ? `${ex.name} は${dupeText(ex)}` : `${ex.name} を手に入れた！`, { kind: "good" });
-      }
-    };
-    ov.onclick = () => {
-      if (!open) return;
-      open = false;
-      SE.click();
-      next();
-    };
-    next();
-  });
-}
-
-/** 1つの賞を引いて見せる。カードが開いたら解決する */
-function revealOne(ov, prize, skip) {
-  return new Promise((done) => {
-    const card = el("div.kuji-card.drawing", [el("div.kuji-label", { text: prize.rank === "LAST" ? "ラストワン賞！" : "ガラガラ……" })]);
-    // 前のカードが残っていれば、ガラガラが上に重なり切ってから入れ替える（いきなり消えて背景だけになる間を作らない）
-    const prev = [...ov.children];
-    if (skip || !prev.length) ov.replaceChildren(card);
-    else setTimeout(() => { prev.forEach((n) => n.remove()); ov.prepend(card); }, 360);
-    SE.select();
-    let shown = false;
-    const show = () => {
-      if (shown) return;
-      shown = true;
-      card.style.visibility = "";
-      const last = prize.rank === "LAST";
-      card.className = `kuji-card reveal rank-${prize.rank}`;
-      card.replaceChildren(
-        el("div.kuji-rank", { text: last ? "ラストワン賞" : `${prize.rank}賞` }),
-        el("div.kuji-name", { text: last ? prize.name.replace(/^ラストワン賞・/, "") : prize.name }),
-        el("div.kuji-desc", { text: prize.desc || "" }),
-        ...(prize.dupCash != null ? [el("div.kuji-dupe", { text: dupeText(prize) })] : []),
-        el("div.kuji-tap", { text: "タップで閉じる" }),
-      );
-      SE.stamp();
-      if (prize.rank === "S" || last) SE.fanfare();
-      done();
-    };
-    // ガラガラが消え始めたところでカードを下で開き、重ねて受け渡す（回っているあいだ札は隠す）
-    if (!skip) card.style.visibility = "hidden";
-    (skip ? sleep(300) : import("../motions/garagara.js").then((m) => m.garagara(ov, prize.rank, { onHandoff: show })).catch((e) => console.error(e))).then(show);
-  });
+  if (results.length) await revealMany(results, count, machineOf(g));
 }
 
 /** 開発用: 景品を渡さずに、指定の賞で引く演出だけ見る（__remake.dev.motion("garagara-S") など）。
- * "LAST" はラストワン賞の場面だけ、"C+LAST" のように書くと C賞のカードを閉じたあとにラストワン賞へ続く */
-export function previewReveal(rank = "S") {
-  const g = grades()[0];
+ * "LAST" はラストワン賞の場面だけ、"C+LAST" のように書くと C賞の札を閉じたあとにラストワン賞へ続く。
+ * 数字で始めると連続の演出: "10"（B・C賞だけ）・"10A"・"10S"（その賞が1つ入る）・"10LAST"（最後にラストワン賞が付く）・"5S" など。
+ * 後ろに "@g5000" のようにくじの id（data/kuji.json）を付けると、そのくじの抽選器と景品で見る（"S@g5000"・"10S@g10000"） */
+export function previewReveal(spec = "S") {
+  const [rank, gradeId] = String(spec).split("@");
+  const g = DB.kuji?.grades?.[gradeId] || Object.values(DB.kuji?.grades || {})[0];
+  const machine = machineOf(g);
   const find = (r) => (r === "LAST" ? g?.lastOne : g?.prizes.find((p) => p.rank === r)) || { rank: r, name: r === "LAST" ? "ラストワン賞" : `${r}賞`, desc: "" };
+  const many = /^(\d+)(.*)$/.exec(String(rank));
+  if (many) {
+    const count = Math.max(2, Math.min(10, Number(many[1]))), best = many[2] || "";
+    const pool = (r) => g?.prizes.filter((p) => p.rank === r) || [];
+    const some = (r, i) => pool(r)[i % (pool(r).length || 1)] || find(r);
+    const results = [...Array(count)].map((_, i) => (i % 3 === 1 ? some("C", i) : some("B", i)));
+    if (best === "A" || best === "S") results[Math.floor(count * 0.6)] = some("A", 0);
+    if (best === "S") results[count - 2] = find("S");
+    if (best === "LAST") results.push(find("LAST"));
+    return revealMany(results, count, machine);
+  }
   const [main, extra] = String(rank).split("+");
-  return reveal(find(main), extra ? [find(extra)] : []);
+  return reveal(find(main), extra ? [find(extra)] : [], machine);
 }
 
 /** 売れる小物（くじの景品など）の買い取り行 */

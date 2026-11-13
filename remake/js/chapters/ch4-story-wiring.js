@@ -7,8 +7,9 @@ import { chapterFourProgress } from "./ch4-progress.js";
 // loadDialogues が読む追加分（ファイル→場面ID）。第4章で再生しうる前夜デート（全員）と、重なった予定の保留。
 // 第3章のスティーブの茶化し（near_conflict）は第4章では選ばれないので読まない。
 export const CH4_EVENING_DIALOGUE_FILES = Object.freeze({
-  tournament_dates: Object.freeze(["tournament_date_tsumugi", "tournament_date_minto", "tournament_date_rin",
-    "tournament_date_ageha", "tournament_date_mashiro", "tournament_date_samechan", "tournament_date_hiyori"]),
+  tournament_dates: Object.freeze(["tournament_date_tsumugi", "tournament_date_minto", "tournament_date_rio",
+    "tournament_date_ageha", "tournament_date_mashiro", "tournament_date_samechan", "tournament_date_hiyori",
+    "tournament_date_noor"]),
   relationship_conflicts: Object.freeze(["tournament_evening_overlap"]),
 });
 
@@ -22,11 +23,13 @@ export const CH4_EVENING_BG = "bg_dubai_street_night";
  *   読む（ch4-progress.js の chapterFourArrivalsDue）。友人版で来たましろは視察の別行動なので数えない。
  * - selected/accepted: 前夜の約束。第4章にはLIMEの予約が無いので、前夜カードで本人を誘った時だけ渡す。
  * - unresolved: 常に空。重なった予定は保留し、本格的な修羅場はエンディング後（第3章と同じ）。
+ * - ドバイに住む恋人（ヌール・romance[id].resident === "dubai"・DSR20）は到着場面なしで、前夜も同じ街にいる。
  */
 export function chapterFourEveningContext(routes, value, selected = null) {
   const { companion, supports } = overseasCompanion(value);
   const { read } = chapterFourProgress(value);
-  const present = [companion, ...supports.filter(id => read[routes.romance[id]?.arrival] === true)]
+  const residents = (value.lovers || []).filter(id => routes.romance[id]?.resident === "dubai");
+  const present = [companion, ...supports.filter(id => read[routes.romance[id]?.arrival] === true), ...residents]
     .filter((id, index, all) => id && all.indexOf(id) === index);
   return { present, selected, accepted: selected ? [selected] : [], unresolved: [] };
 }

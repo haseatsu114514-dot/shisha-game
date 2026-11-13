@@ -1,3 +1,5 @@
+import { growthEnabled } from "../core/growth-mode.js";
+import { naruFinishBonus } from "../core/naru-finish.js";
 import { mixMasteryProfile } from "../core/flavor-mastery.js";
 // 完成品の性能と総合評価。
 //   穴あけ・炭焼き・配合・蒸らし・吸い出し・熱管理 → 完成品ステータス（shishaStats）
@@ -7,18 +9,19 @@ import { DB } from "../core/data.js";
 import { state } from "../core/state.js";
 import { growthPerks, growthSkill, growthLesson, floralLayers, grapeReceptionBonus, LESSON_TUNING, SKILL_TUNING } from "../core/growth-effects.js";
 import { rememberGrowthCraft } from "../core/growth-memory.js";
+import { refreshBench } from "./session.js";
 import { gradeOf } from "./common.js";
 import { steamSecondsOf, steamOpening, steamBurnRisk } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
-import { temperatureBands, makerMixProfile } from "./temperature-model.js";
+import { temperatureBands, makerMixProfile, equipSpecOf } from "./temperature-model.js";
 import { coalWarmth } from "./coals.js";
 import { waterComfort } from "./water.js";
 
 const WATER_TASTE_FACTOR = .5;
 
 export const WEIGHTS = { holes: .2, heat: .2, shisha: .2, care1: .2, care2: .2 };
-/** 南雲が持ち点を動かす基準（これ未満なら南雲票は入らず、普通に負ける） */
-export const NAGUMO_BAR = 90.8; // MEASURE.md: 第1章・mid 初回突破率 74.2%（742/1000）。
+/** 千須が持ち点を動かす基準（これ未満なら千須票は入らず、普通に負ける） */
+export const SUI_BAR = 90.8; // MEASURE.md: 第1章・mid 初回突破率 74.2%（742/1000）。
 
 /** 同系統フレーバー（AF/ドバジ/アフサールのミント・ダブルアップル等）の合計グラム数 */
 export function flavorFamilyGrams(mix, family, flavorById = DB.flavorById) {
@@ -57,7 +60,8 @@ export function computeShisha(cs) {
   const grams = m.total || 12;
   const packDraw = { fluffy: 12, normal: 0, firm: -12 }[cs.pack] || 0;
   const four = cs.place === "four";
-  const hms = { lotos_hagal: 2, tanukish_lid: 5, winkwink_hagal: 4, amaburst_hms: 0, lotos_plus: 4 }[cs.equip?.hms] || 0;
+  // HMDの熱安定は性能表（equipSpecOf の stabilityBonus）を正とする。表示と採点で値をずらさない。
+  const hms = equipSpecOf(cs.equip?.hms)?.stabilityBonus || 0;
   const steamSeconds = steamSecondsOf(cs);
   const opening = steamOpening(steamSeconds);
 
@@ -94,6 +98,8 @@ export function computeShisha(cs) {
 export function bonusOf(cs = null) {
   let b = 0;
   const notes = [];
+  const naru = growthEnabled() ? naruFinishBonus(cs) : 0;
+  if (naru) { b += naru; notes.push(`焼き際の見極め +${naru.toFixed(1)}`); }
   const grape = grapeReceptionBonus(state, cs, DB.flavorById);
   if (grape) { b += grape; notes.push(`グレープの王道・受け止め +${grape.toFixed(1)}`); }
   if (cs?.mode === "tournament" && !cs.failed && cs.pullDone && cs.pull?.smokeRings > 0 && growthSkill(state,"K21")) { b += SKILL_TUNING.smokeRing; notes.push("スモークリングの余韻"); }
@@ -125,6 +131,34 @@ export function bonusOf(cs = null) {
   return { bonus: b, notes };
 }
 
+/** 最終採点と暫定表示で同じ重みを使う。 */
+export function scoreWeights(cs) {
+  // アルミ穴あけを飛ばした一台は穴あけの重みを外す。第1章大会だけ完成品を40%にする。
+  const foilSkipped = !!cs.holes?.skipped;
+  const weights = { ...WEIGHTS };
+  if (foilSkipped) {
+    delete weights.holes;
+    if ((cs?.chapter ?? state?.chapter) === 1 && cs.mode === "tournament") {
+      Object.assign(weights, { heat: .2, shisha: .4, care1: .2, care2: .2 });
+    }
+  }
+  return weights;
+}
+
+/** 確定した項目だけの暫定平均。未実施項目と完成時のボーナスは含めない。状態は変更しない。 */
+export function provisionalCraftScore(cs) {
+  const parts = {
+    holes: cs.holes?.skipped ? undefined : cs.holes?.score,
+    heat: cs.heat?.score,
+    shisha: cs.pullDone ? (cs.stats || computeShisha(cs)).craftQuality : undefined,
+    care1: cs.careHistory?.[0]?.score,
+    care2: cs.careHistory?.[1]?.score,
+  };
+  const entries = Object.entries(scoreWeights(cs)).filter(([key]) => Number.isFinite(parts[key]));
+  const weight = entries.reduce((sum, [, w]) => sum + w, 0);
+  return weight ? clamp(entries.reduce((sum, [key, w]) => sum + parts[key] * (w / weight), 0), 0, 100) : null;
+}
+
 export function finalize(cs) {
   cs.stats = cs.stats || computeShisha(cs);
   const { bonus, notes } = bonusOf(cs);
@@ -135,15 +169,8 @@ export function finalize(cs) {
     care1: cs.careHistory?.[0]?.score ?? 0,
     care2: cs.careHistory?.[1]?.score ?? 0,
   };
-  // アルミ穴あけを飛ばした一台は穴あけの重みを外す。第1章大会だけ完成品を40%にする。
+  const weights = scoreWeights(cs);
   const foilSkipped = !!cs.holes?.skipped;
-  const weights = { ...WEIGHTS };
-  if (foilSkipped) {
-    delete weights.holes;
-    if ((cs?.chapter ?? state?.chapter) === 1 && cs.mode === "tournament") {
-      Object.assign(weights, { heat: .2, shisha: .4, care1: .2, care2: .2 });
-    }
-  }
   const wsum = Object.values(weights).reduce((sum, w) => sum + w, 0) || 1;
   const total = clamp(Object.entries(weights).reduce((s, [k, w]) => s + parts[k] * (w / wsum), 0) + bonus, 0, 100);
   cs.total = Math.round(total * 10) / 10;
@@ -152,5 +179,6 @@ export function finalize(cs) {
   cs.foilSkipped = foilSkipped;
   cs.bonusNotes = notes;
   rememberGrowthCraft(state, cs);
+  refreshBench();
   return cs;
 }

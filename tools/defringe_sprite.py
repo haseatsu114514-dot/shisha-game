@@ -14,8 +14,8 @@
 - 半透明の輪郭画素(0<a<255)は判定に関係なく内部色へ寄せる（標準的なデフリンジ）。
 
 使い方:
-  python3 tools/defringe_sprite.py assets/sprites/characters/rin --dry-run
-  python3 tools/defringe_sprite.py assets/sprites/characters/rin
+  python3 tools/defringe_sprite.py assets/sprites/characters/rio --dry-run
+  python3 tools/defringe_sprite.py assets/sprites/characters/rio
 
 ⚠️ portrait-fix スキルの教訓: 一括適用しない。1キャラ処理→目視→次のキャラ。
 """

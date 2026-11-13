@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
+import { hasAffinity } from "../js/core/state.js";
 import { coldRisk, catchesCold, fitActive, FIT_DAYS, FIT_RISK } from "../js/core/illness.js";
 const risks = [0.25, 0.2, 0.1, 0.01, 0].map(coldRisk);
 assert(risks.every((value, i) => !i || value > risks[i - 1]));
@@ -28,19 +29,23 @@ const noop = () => {}, elem = () => ({ classList: { add: noop, remove: noop, con
 const db = { dialogues: {}, statusTexts: {}, lime: [] };
 const values = {
   "growth-respec.js": { syncRespecOpportunity() {}, closeRespecOpportunity() {} },
+  "growth-chapter-notice.js": { takeChapterBoardNotice: () => null, chapterBoardCards: () => [], respecMapNotice: () => "", takeRespecCloseWarning: () => "" }, // 章はじめの盤の知らせ（#1801 C10）。この検査では盤が無効
   "growth-mode.js": { growthEnabled: () => false, GROWTH_BOARD: false, PREVIEW_KEY: "suien_growth_preview" },
   "growth-effects.js": { useGrowthInsurance: () => false, growthCritical: () => false, settleGrowthPhase: (_s,_cs,_key,result) => result?.score, growthPerks: () => null, growthSkill: () => false, growthFeature: () => false, growthLesson: () => false, LESSON_TUNING: {}, growthCraftCondition: (_s,_m,c) => c, SKILL_TUNING: {} },
   "flavor-mastery.js": { masteryHooks: { multiplier: () => 1 } },
   "city-guests.js": { cityGuestAtShop: () => null, visitCityGuestAtShop: async () => false },
   "roamers.js": { roamerAt: () => null, meetRoamer: async () => false }, // よその店に居合わせる人。この検査では居合わせない
+  "recipe-finds.js": { recipeFindAfterVisit: async () => false }, // 第3章以降のレシピの連鎖（#2020 G）。この検査では話さない
+  "petit-shuraba.js": { petitAfterVisit: async () => false, petitAfterDate: async () => false }, // プチ修羅場（恋人が2人以上の時の寄り道）。この検査では起きない
+  "lover-strain.js": { strainMorning: () => 0, maybeStrainTalk: async () => false, maybeStrainReunion: async () => false, strainAfterVisit() {}, strainOf: () => 0, STRAIN_SIGN2: 7 }, // すれ違い（恋人の裏の数値）は remake/test/lover_strain.mjs。この検査では動かない
   "hiyori.js": { hiyoriShopEncounterDue: () => false, visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
-  "state.js": { state, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,
+  "state.js": { state, hasAffinity, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,
     visitedDay: { ...state.visitedDay }, stamina: state.stamina, rest: state.restDay ? { ...state.restDay } : null,
     queue: JSON.parse(JSON.stringify(state.deferredNightEvents || [])), appointment: state.pendingInvite ? { ...state.pendingInvite } : null }),
     STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"], STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" },
     markMet: (id) => state.met[id] = true, loadFromSlot: () => false, requestResumeOnBoot: noop },
-  "ui.js": { withScenePreparation: task => task, imageReady: async () => false, layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, dayCard: async () => {}, modal: async (opts) => { guards.push(state.stamina); guardBodies.push(opts.body); return decisions.length ? decisions.shift() : true; },
+  "ui.js": { withScenePreparation: task => task, imageReady: async () => false, layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, gainCard: noop, dayCard: async () => {}, modal: async (opts) => { guards.push(state.stamina); guardBodies.push(opts.body); return decisions.length ? decisions.shift() : true; },
     toast: noop, fadeBlack: async (mid) => mid?.(), dayTurn: async (mid) => { const info = await mid?.(); dawns.push({ ...info, absoluteDay: state.day, hudLeft: values["hud.js"].daysLeft() }); }, bannersIdle: async () => {}, setBg: noop, refreshWeather: noop },
   "transitions.js": { refreshPlaceCue: noop },
   "data.js": { sceneBg: () => ({}), DB: db, loadCinemaDialogue: async () => db, bgUrl: (ref) => ref, displayName: id => id }, "saves.js": { saveFlow: async () => {}, loadFlow: async () => {} },
@@ -53,7 +58,7 @@ const values = {
   // 家シーシャ（#638）: 寝る前の一服はこのテストの対象外（home_shisha.mjs で確かめる）
   "home-shisha.js": { runHomeShisha: async () => false },
   "home-rig.js": { showSumiRigAtHome: async () => false },
-  "shop.js": { openShop: async () => null, visitRin: async () => {}, ownsFlavor: () => true },
+  "shop.js": { openShop: async () => null, visitRio: async () => {}, ownsFlavor: () => true },
   "fortune.js": { doFortune: async () => {} },
   "phone.js": { deliverMorning: () => 0, pushNotice: noop, hasUnread: () => false, unreadCount: () => 0,
     actionInviteNeedingReply: () => null, openLime: async () => {}, limeCoach: noop, expireInvitations: noop,
@@ -65,7 +70,7 @@ const values = {
     questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false },
   "samechan.js": { syncSamechanKnowledge: noop, maybeSamechanEncounter: async opts => { homecomingChecks.push({ day: state.day, ...opts }); return false; }, visitSamechan: async () => false, samechanSpot: () => null, samechanVisitDialogue: () => null },
 };
-const files = { "chapter-features.js": "core", "stat-step-tables.js": "core", "cinema.js": "daily", "cinema-discovery.js": "core", "affinity-stages.js": "core", "fortune-schedule.js": "daily", "travel-budget.js": "core", "city-locations.js": "core", "trpg-discovery.js": "core", "ryuji-visit.js": "core", "tsumugi-schedule.js": "daily", "axe-bar-discovery.js": "core", "cafe-ideas.js": "daily", "spot-hours.js": "daily", "axe-bar-data.js": "daily", "chapter-clock.js": "core", "stats.js": "core", "growth.js": "core", "growth-board-data.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "trpg.js": "daily", "spots.js": "daily", "spot-encounters.js": "daily", "calendar.js": "daily", "invitations.js": "daily", "night-events.js": "daily" };
+const files = { "chapter-features.js": "core", "stat-step-tables.js": "core", "cinema.js": "daily", "cinema-discovery.js": "core", "affinity-stages.js": "core", "fortune-schedule.js": "daily", "travel-budget.js": "core", "city-locations.js": "core", "trpg-discovery.js": "core", "ryuji-visit.js": "core", "tsumugi-schedule.js": "daily", "axe-bar-discovery.js": "core", "cafe-ideas.js": "daily", "spot-hours.js": "daily", "axe-bar-data.js": "daily", "chapter-clock.js": "core", "stats.js": "core", "growth.js": "core", "growth-board-data.js": "core", "play-mastery.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "trpg.js": "daily", "spots.js": "daily", "spot-encounters.js": "daily", "calendar.js": "daily", "invitations.js": "daily", "lime-pacing.js": "daily", "night-events.js": "daily" };
 
 const modules = new Map(), pending = new Map();
 function load(name) {

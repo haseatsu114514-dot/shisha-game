@@ -11,16 +11,18 @@ import { openPhone } from "../daily/phone.js";
  * いま届く恋人LIME（私用アカウントの最初のひとこと・記念日・朝のひとこと）。
  * @param opts.senders この相手からだけ（省略時は恋人全員）
  * @param opts.exclude その場に一緒にいて、LIMEを送ってこない恋人
+ * @param opts.home はじめが地元にいるか。離れた街では地元で会う前提の文面を送ってこない（#2024）。
+ *   場面カードでは現在地の印が場面と合わないことがあるので、場面の側が分かる時は渡す（省略時は印から）
  */
-export function pendingLoverLime({ senders = null, exclude = [] } = {}) {
+export function pendingLoverLime({ senders = null, exclude = [], home } = {}) {
   const delivered = new Set((state.inbox || []).map(item => item.id));
-  return loverMessages({ invitations: false }).filter(m => (!senders || senders.includes(m.sender))
+  return loverMessages({ invitations: false, home }).filter(m => (!senders || senders.includes(m.sender))
     && !exclude.includes(m.sender) && !delivered.has(m.id));
 }
 
 /** 届いている恋人LIMEを既存の端末で読む。返信の絆・既読は phone.js（runItem）が付ける。 */
-export async function readLoverLime({ senders = null, exclude = [], title = "恋人からのLIME", time = null } = {}) {
-  const due = pendingLoverLime({ senders, exclude });
+export async function readLoverLime({ senders = null, exclude = [], home, title = "恋人からのLIME", time = null } = {}) {
+  const due = pendingLoverLime({ senders, exclude, home });
   if (!due.length) return false;
   await openPhone(due, { title, time: time || (state.slot ? "夜" : "昼") });
   save();
@@ -41,12 +43,15 @@ export async function readTournamentCheers({ away = [], time = "AM 7:40" } = {})
   return true;
 }
 
-/** 節目を読める恋人。ids=その場で会える恋人に絞る（遠くにいる恋人の節目は、会えた時まで待つ）。 */
-export const loverMilestonesDue = (ids = state.lovers || []) =>
-  [...new Set(ids)].filter(id => (state.lovers || []).includes(id) && !!loverMilestoneDue(id));
+/**
+ * 節目を読める恋人。ids=その場で会える恋人に絞る（遠くにいる恋人の節目は、会えた時まで待つ）。
+ * @param opts.home はじめが地元にいるか。地元が舞台の節目は、東京・ドバイでは読まない（#2024）。省略時は現在地の印から
+ */
+export const loverMilestonesDue = (ids = state.lovers || [], { home } = {}) =>
+  [...new Set(ids)].filter(id => (state.lovers || []).includes(id) && !!loverMilestoneDue(id, { home }));
 
 /** 会えた恋人の未読の節目を一つだけ読む。読了と既読は romance.js が保存する。 */
-export async function readLoverMilestone(id, { signal = null } = {}) {
-  if (!loverMilestonesDue([id]).length) return false;
-  return playLoverMilestone(id, { signal });
+export async function readLoverMilestone(id, { signal = null, home } = {}) {
+  if (!loverMilestonesDue([id], { home }).length) return false;
+  return playLoverMilestone(id, { signal, home });
 }

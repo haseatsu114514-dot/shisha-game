@@ -1,0 +1,27 @@
+[
+  {
+    "file": "stand-russian-03.jpg",
+    "sha256": "a46c01fb85d71861c6cabbe5710a93cb13a815f3c07e898a459a219ba355319d",
+    "source": "private siryou/shisha-hardware-reference/web-refs/images/stand-russian-03.jpg"
+  },
+  {
+    "file": "hmd-lotus-open-01.jpg",
+    "sha256": "77cb9824d0884195fc6c7df7417d0954abe37fd6455b3810d0b91d3d6ffea813",
+    "source": "private siryou/shisha-hardware-reference/web-refs/images/hmd-lotus-open-01.jpg"
+  },
+  {
+    "file": "bowl-silicone-black-01.jpg",
+    "sha256": "44a0eb72e5cf41ca8e281a8f3784ecd776b8f6092809571a6db10c314ceeb00d",
+    "source": "private siryou/shisha-hardware-reference/web-refs/images/bowl-silicone-black-01.jpg"
+  },
+  {
+    "file": "hmd-lotus-shopVideo-01.jpg",
+    "sha256": "fd692e63fce67f9e006c3b75ac9b4c107789c930174e8e890980f5ea86083ff6",
+    "source": "private siryou/shisha-hardware-reference/web-refs/images/hmd-lotus-shopVideo-01.jpg"
+  },
+  {
+    "file": "title_art_keyvisual_01.png",
+    "sha256": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+    "source": "game canonical title texture"
+  }
+]

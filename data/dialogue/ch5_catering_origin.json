@@ -1,0 +1,181 @@
+{
+  "comment": "第5章・世界大会優勝後の地元出張新事業。自由行動開始時に無料・一度だけ。既存出張履歴のある旧セーブには回顧版。進行はch5-catering-origin.jsの読了flagのみ。能力・好感度・金銭報酬なし。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch5_catering_business",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariで、スミさんが新しい申込用紙をカウンターに広げた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "出張シーシャ、ですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ああ。店の新しい仕事にしようと思ってな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "世界大会で優勝した奴がいる店だ。今なら、話を聞いてもらえる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……ちゃっかりしてますね、スミさん"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "おう。商売だからな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺が行く前に、もう用紙まで作ってるし"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "まだ返事はしてねえよ。お前にも話を聞いてからだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "用紙の端には、橙須の店や、近所の集まりの名前が並んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "遠くの大会じゃなくて、この辺なんですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店で吸った客が、自分たちの集まりにもってよ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "看板で呼んでもらっても、出すのは、その場の客の一台だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……それなら、俺もやりたいです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "会場で何を食べるかとか、誰が初めて吸うかとか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "先に聞いておきましょう。用紙、もう一枚もらえますか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は椅子を寄せ、申込用紙の空いた欄にペンを置いた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "乗ってくれると思ってたよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "乗せられたんじゃなくて、俺も乗ったんです"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "依頼は店のLIMEで受けて、俺から回す"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "お前が行っても、つむぎに任せてもいい。予定を見て決めてくれ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店の分も引いた手取りを伝える。受けるかは、それを見てからだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "店の予約と、つむぎの予定も一緒に見ますね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "手が足りなきゃ俺が店に立つ。どっちも閉める話じゃねえぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。帰ってきたら、向こうの話もします"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新しい用紙を、いつもの予約帳の隣に重ねた。"
+        }
+      ],
+      "metadata": {
+        "forced_event": true
+      }
+    },
+    {
+      "dialogue_id": "ch5_catering_business_recall",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出張の用紙を整理しながら、スミさんと最初の相談を思い出した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "世界大会で優勝した店の新事業って、最初はちゃっかりしてるなって"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "今ごろ言うな。お前も自分から用紙を足してただろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "そうでしたね。俺も一緒にやりたくなったんで"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "肩書きで呼ばれても、向こうにいるのは地元の客だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "次も、何の集まりか聞くところからですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次の連絡を書き留める場所を空け、予約帳を開き直した。"
+        }
+      ],
+      "metadata": {
+        "forced_event": true
+      }
+    }
+  ]
+}

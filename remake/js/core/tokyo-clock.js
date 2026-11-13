@@ -2,22 +2,25 @@
 export const TOKYO_FREE_TIMES = Object.freeze([
   { id: "d5-noon", before: "ch3_taste_return", day: 5, slot: 0 },
   { id: "d6-night", before: "ch3_naru_contact_before_tournament", day: 6, slot: 1 },
-  { id: "d8-night", before: "ch3_kuze_advice", day: 8, slot: 1 },
-  { id: "d9-noon", before: "ch3_kuze_advice", day: 9, slot: 0 },
-  { id: "d9-night", before: "ch3_kuze_advice", day: 9, slot: 1 },
-  { id: "d10-noon", before: "ch3_kuze_advice", day: 10, slot: 0 },
-  { id: "d10-night", before: "ch3_kuze_advice", day: 10, slot: 1 },
+  { id: "d8-night", before: "ch3_saku_advice", day: 8, slot: 1 },
+  { id: "d9-noon", before: "ch3_saku_advice", day: 9, slot: 0 },
+  { id: "d9-night", before: "ch3_saku_advice", day: 9, slot: 1 },
+  { id: "d10-noon", before: "ch3_saku_advice", day: 10, slot: 0 },
+  { id: "d10-night", before: "ch3_saku_advice", day: 10, slot: 1 },
   { id: "d12-noon", before: "ch3_volk_first", day: 12, slot: 0 },
   { id: "d13-night", before: "tournament", day: 13, slot: 1 },
 ]);
 const TOKYO_FREE_TIMES_V2 = Object.freeze(TOKYO_FREE_TIMES.map(window => ({ ...window, before: ({
   "d5-noon": "ch3_work_without_taste",
-  "d8-night": "ch3_kuze_mukai_visit",
+  "d8-night": "ch3_saku_mukai_visit",
   "d9-noon": "ch3_taste_return",
   "d9-night": "ch3_taste_return",
   "d10-noon": "ch3_taste_return",
   "d10-night": "ch3_taste_return",
 })[window.id] || window.before })));
+
+/** 大会前夜の空き時間（前夜の過ごし方を選ぶ窓）。訪問の散歩がここに当たると前夜デートになる。 */
+export const TOKYO_EVE_WINDOW = "d13-night";
 
 // 東京も日常ループで遊ぶ行程（版3・VOL03）の空き時間。昼の行動を使う場面の無い時間帯すべて。
 // 恋人の東京訪問（合流・散歩）はこの中から選ぶ。d13-night は前夜（大会前夜の場面の後に過ごし方を選ぶ）。

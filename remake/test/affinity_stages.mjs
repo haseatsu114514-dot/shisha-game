@@ -7,8 +7,8 @@ import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../js/', import.meta.url));
 const sourceRoot = process.env.AFFINITY_SOURCE_ROOT || root;
-const realPaths = ['core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/phone.js','daily/invitations.js','core/chapter-clock.js','core/chapter-features.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
-const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rin','ch1_bonds','samechan','hiyori','lover_events','confession','cinema'];
+const realPaths = ['core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/stat-step-tables.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/phone.js','daily/lime-pacing.js','daily/invitations.js','core/chapter-clock.js','core/chapter-features.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js','chapters/ch4-desert-progress.js','minigames/desert-ride-model.js'];
+const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rio','ch1_bonds','samechan','hiyori','lover_events','confession','cinema'];
 const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))));
 const clone = value => JSON.parse(JSON.stringify(value));
 const limeData = JSON.parse(fs.readFileSync(new URL('../../data/lime_messages.json', import.meta.url)));
@@ -76,6 +76,14 @@ await check('five social shop routes: ordinary gains are independent of every un
     assert.equal(s.flags[`_${id}_affinity_waiting_pts`]||0,0);
   }
 });
+await check('#2035 Row6/7: samechan の締めくくりIDは BOND_FINALES の単一の正本（保存互換の samechan_bond_finale）', async f => {
+  // samechan.js は締めくくりの台本IDを二重定義せず BOND_FINALES.samechan.dialogue を参照する（挙動不変の正本化）。
+  assert.equal(f.bonds.BOND_FINALES.samechan.dialogue, 'samechan_bond_finale');
+  // 参照先が実在する台本であること（保存・台本IDの不変を保証）。
+  assert.ok(f.db.dialogues['samechan_bond_finale'], 'finale dialogue exists in samechan.json');
+  // samechanVisitDialogue が壊れていないこと（モジュールが読み込める）。
+  assert.equal(typeof f.samechan.samechanVisitDialogue, 'function');
+});
 await check('Sumi lessons remain outside social heart caps', async f => {
   const s=f.fresh(); s.affinity.sumi=0;
   assert.equal(f.stages.pendingAffinityStage(s,'sumi'),null);
@@ -118,35 +126,121 @@ await check('visitChar normal completion, same-owner concurrent entry and heart 
   f.setPlay(() => new Promise(r=>resolve=r));
   const pending=f.spots.visitChar('naru'); assert.equal(await f.spots.visitChar('naru'),false);
   assert.equal(s.story.naru||0,0); resolve(done); assert.equal(await pending,true);
-  assert.equal(s.story.naru,1); assert.equal(s.visits.naru,1); assert.equal(s.affinity.naru,13); // 来店の段階会話 16×0.85（AFB01）
+  assert.equal(s.story.naru,1); assert.equal(s.visits.naru,1); assert.equal(s.affinity.naru,9);assert.equal(s.affinityCarry.naru||0,0); // 初対面は♥1ちょうど
   assert.equal(f.stats.affinityLevel('naru'),1); assert.equal(f.spots.hasNewStory('naru'),true);
   f.setPlay(async()=>done); await f.spots.visitChar('naru'); // next visit reads only the newly eligible second scene
-  assert.equal(s.story.naru,2); assert.equal(s.affinity.naru,27); assert.equal(f.stats.affinityLevel('naru'),2); assert.equal(f.spots.hasNewStory('naru'),true); // ♥2で3本目が開く
+  assert.equal(s.story.naru,2); assert.equal(s.affinity.naru,22); assert.equal(f.stats.affinityLevel('naru'),2); assert.equal(f.spots.hasNewStory('naru'),true); // ♥2で3本目が開く
 });
 await check('question selected then cancelled: retain answer, resume reaction and complete once', async f => {
-  const s=f.core.state; s.story.rin=3; s.affinity.rin=33;
-  f.stats.gainAffinity('rin',40);
-  f.setPlay(async () => { f.bonds.recordRomanceChoice({id:'bond_q1_rin',romance_char:'rin'},{romance:0}); return {cancelled:true}; });
-  assert.equal(await f.bonds.playQuestionVisit('rin'),false); assert.equal(f.stats.affinityGateWaiting('rin'),true);
-  assert.equal(s.flags[f.stages.questionDoneKey('rin')],undefined); assert.equal(s.romanceChoices.bond_q1_rin.value,0);
-  f.roundTrip(); f.setPlay(async scene => { assert(!scene.lines.some(l=>l.type==='choice'&&l.id==='bond_q1_rin')); return done; });
-  assert.equal(await f.bonds.playQuestionVisit('rin'),true); assert.equal(f.stats.affinityGateWaiting('rin'),false);
-  const after=clone(f.core.state); assert.equal(await f.bonds.playQuestionVisit('rin'),false);
-  assert.deepEqual(clone(f.core.state),after); assert.equal(f.core.state.romance.rin||0,0);
+  const s=f.core.state; s.story.rio=3; s.affinity.rio=33;
+  f.stats.gainAffinity('rio',40);
+  f.setPlay(async () => { f.bonds.recordRomanceChoice({id:'bond_q1_rio',romance_char:'rio'},{romance:0}); return {cancelled:true}; });
+  assert.equal(await f.bonds.playQuestionVisit('rio'),false); assert.equal(f.stats.affinityGateWaiting('rio'),true);
+  assert.equal(s.flags[f.stages.questionDoneKey('rio')],undefined); assert.equal(s.romanceChoices.bond_q1_rio.value,0);
+  f.roundTrip(); f.setPlay(async scene => { assert(!scene.lines.some(l=>l.type==='choice'&&l.id==='bond_q1_rio')); return done; });
+  assert.equal(await f.bonds.playQuestionVisit('rio'),true); assert.equal(f.stats.affinityGateWaiting('rio'),false);
+  const after=clone(f.core.state); assert.equal(await f.bonds.playQuestionVisit('rio'),false);
+  assert.deepEqual(clone(f.core.state),after); assert.equal(f.core.state.romance.rio||0,0);
 });
 for (const outcome of ['missing','abort','load','throw']) await check(`question public caller ${outcome} does not commit`, async f => {
-  const s=f.core.state; s.story.rin=3;s.affinity.rin=33; const controller=new AbortController();
+  const s=f.core.state; s.story.rio=3;s.affinity.rio=33; const controller=new AbortController();
   f.setPlay(async()=> { if(outcome==='throw')throw Error('expected'); if(outcome==='load')f.core.newGame(); if(outcome==='abort')controller.abort(); return outcome==='missing'?undefined:done; });
-  const p=f.bonds.playQuestionVisit('rin',{signal:controller.signal});
+  const p=f.bonds.playQuestionVisit('rio',{signal:controller.signal});
   if(outcome==='throw')await assert.rejects(p,/expected/); else assert.equal(await p,false);
-  assert.equal(s.flags[f.stages.questionDoneKey('rin')],undefined);
+  assert.equal(s.flags[f.stages.questionDoneKey('rio')],undefined);
 });
-await check('Rin third story completes at heart2 and reaches heart3; question is due only at heart3',async f=>{
-  const s=f.core.state;s.story.rin=2;s.affinity.rin=20;
-  f.setPlay(async()=>done);assert.equal(await f.spots.visitChar('rin'),true);
-  assert.equal(s.story.rin,3);assert.equal(s.affinity.rin,33);assert.equal(f.bonds.questionVisitDue('rin'),true);
-  s.affinity.rin=32;assert.equal(f.bonds.questionVisitDue('rin'),false);
-  f.stats.gainAffinity('rin',2);assert.equal(s.affinity.rin,34);assert.equal(f.bonds.questionVisitDue('rin'),true);
+await check('Rio third story at heart2 reaches heart3 and asks in the same visit, with one normal reward',async f=>{
+  const s=f.core.state;s.story.rio=2;s.affinity.rio=20;s.met.rio=true;
+  f.setPlay(async scene=>{
+    if((typeof scene==='string'?scene:scene.dialogue_id)==='ch1_rio_bond_question') {
+      assert.equal(s.affinity.rio,33,'ordinary story reward opens the question before it is played');
+      f.bonds.recordRomanceChoice({id:'bond_q1_rio',romance_char:'rio'},{romance:1});
+    }
+    return done;
+  });
+  assert.equal(await f.spots.visitChar('rio'),true);
+  assert.equal(s.story.rio,3);assert.equal(s.affinity.rio,33);assert.equal(s.visits.rio,1);
+  close(s.affinityCarry.rio,.6);
+  assert.equal(f.bonds.questionVisitDue('rio'),false);
+  assert(s.flags[f.stages.questionDoneKey('rio')]);
+  assert.deepEqual(f.plays.map(([x])=>typeof x==='string'?x:x.dialogue_id),['ch1_rio_third','ch1_rio_bond_question']);
+  const loaded=f.roundTrip();assert.equal(loaded.affinity.rio,33);assert.equal(loaded.romanceChoices.bond_q1_rio.value,1);
+});
+for(const outcome of ['cancel','missing','throw','abort','load']) await check(`Rio joined question ${outcome}: no second story reward or invented answer`,async f=>{
+  const s=f.core.state;s.story.rio=2;s.affinity.rio=20;s.met.rio=true;const controller=new AbortController();
+  f.setPlay(async scene=>{
+    const id=typeof scene==='string'?scene:scene.dialogue_id;
+    if(id==='ch1_rio_third')return done;
+    if(outcome==='throw')throw Error('expected joined failure');
+    if(outcome==='abort')controller.abort();
+    if(outcome==='load')f.core.newGame();
+    return outcome==='missing'?undefined:outcome==='cancel'?{cancelled:true}:done;
+  });
+  const p=f.spots.visitChar('rio',{signal:controller.signal});
+  if(outcome==='throw')await assert.rejects(p,/expected joined failure/);else assert.equal(await p,false);
+  // The completed sample retains the existing afterStory boundary, also used by Tsumugi.
+  assert.equal(s.story.rio,3);assert.equal(s.affinity.rio,33);close(s.affinityCarry.rio,.6);
+  assert(!s.flags[f.stages.questionDoneKey('rio')]);assert(!s.romanceChoices.bond_q1_rio);assert.equal(s.visits.rio||0,0);
+  if(outcome!=='load'){
+    f.roundTrip();const before=f.core.state.affinity.rio;
+    f.setPlay(async()=>{f.bonds.recordRomanceChoice({id:'bond_q1_rio',romance_char:'rio'},{romance:0});return done;});
+    assert.equal(await f.spots.visitChar('rio'),true);
+    assert.equal(f.core.state.story.rio,3,'old unfinished question resumes without repeating the sample');
+    assert.equal(f.core.state.affinity.rio-before,7,'the retry is the existing standalone talk, not another story reward');
+    assert.equal(f.core.state.romanceChoices.bond_q1_rio.value,0);
+  }
+});
+await check('Rio joined question: below heart3 waits, old completed question never reopens',async f=>{
+  const s=f.core.state;s.story.rio=3;s.affinity.rio=32;
+  assert.equal(await f.bonds.afterStory('ch1_rio_third'),true);assert.equal(f.plays.length,0);
+  f.stats.gainAffinity('rio',2);assert.equal(f.bonds.questionVisitDue('rio'),true);
+  s.flags[f.stages.questionDoneKey('rio')]=true;s.romanceChoices.bond_q1_rio={char:'rio',value:0};
+  assert.equal(await f.bonds.afterStory('ch1_rio_third'),true);assert.equal(f.plays.length,0);
+});
+for(const value of [0,1]) await check(`Rio neutral route ${value}: six stories and finale take seven interactions`,async f=>{
+  const s=f.core.state;s.met.rio=true;s.affinity.rio=9;s.stats.charm=10;f.db.equipById.suyaki_rio={name:'gift'};
+  f.setPlay(async scene=>{
+    const id=typeof scene==='string'?scene:scene.dialogue_id;
+    if(id==='ch1_rio_bond_question')f.bonds.recordRomanceChoice({id:'bond_q1_rio',romance_char:'rio'},{romance:value});
+    if(id==='ch1_rio_bond_finale')f.bonds.recordRomanceChoice({id:'bond_q2_rio',romance_char:'rio'},{romance:value});
+    return done;
+  });
+  let visits=0;
+  while(!s.finales.rio&&visits<10){s.day++;assert.equal(await f.spots.visitChar('rio'),true);visits++;}
+  assert.equal(visits,7);assert.equal(s.story.rio,6);assert.equal(s.visits.rio,7);
+  assert.equal(s.finales.rio.route,value?'romance':'friend');assert.equal(s.owned.filter(x=>x==='suyaki_rio').length,1);
+  assert.equal(s.romanceChoices.bond_q1_rio.value,value);
+});
+await check('Rio actual shop: interrupted joined question keeps the visit boundary; next-day saved answer grants one sample',async f=>{
+  let s=f.core.state;Object.assign(s,{phase:'daily',day:5,slot:1,money:10000,stamina:100});
+  s.met.rio=true;s.story.rio=2;s.affinity.rio=20;
+  const context=vm.createContext({console,visitChar:f.spots.visitChar,addStamina:f.stats.addStamina,cueTransition:()=>{},toast:()=>{},RIO_AWAY_DAY:1,FLAVOR_BOX_GRAMS:50});
+  Object.defineProperty(context,'state',{get:()=>f.core.state});
+  const hours=fs.readFileSync(path.join(sourceRoot,'daily/spot-hours.js'),'utf8');
+  const a=hours.indexOf('export function rioUnavailable(save)'),b=hours.indexOf('export function spotTimeNote',a);
+  vm.runInContext(hours.slice(a,b).replace('export ','').replace('rioUnavailable(save)','rioVisitReason(save)')+'\nthis.rioUnavailable=()=>rioVisitReason(state);',context);
+  const source=fs.readFileSync(path.join(sourceRoot,'daily/shop.js'),'utf8');
+  const stock=source.slice(source.indexOf('export function addFlavorStock('),source.indexOf('export const ownsFlavor'));
+  const visit=source.slice(source.indexOf('export async function visitRio('));
+  vm.runInContext((stock+visit).replace(/\bexport /g,'')+'\nthis.visit=visitRio;',context);
+  f.setPlay(async scene=>{
+    const id=typeof scene==='string'?scene:scene.dialogue_id;
+    if(id==='ch1_rio_third'){s.flags._rio_sample=true;return done;}
+    f.bonds.recordRomanceChoice({id:'bond_q1_rio',romance_char:'rio'},{romance:0});return {cancelled:true};
+  });
+  assert.equal(await context.visit(),false);
+  assert.equal(s.stamina,86);assert.equal(s.visitedDay.rio,5);assert.equal(s.story.rio,3);assert.equal(s.affinity.rio,33);
+  assert.equal(s.romanceChoices.bond_q1_rio.value,0);assert(!s.flags._rio_sample_received);assert(!s.flavorStock.nightside_earlgrey);
+  f.roundTrip();s=f.core.state;const saved=clone(s);
+  assert.equal(await context.visit(),false);assert.deepEqual(clone(s),saved,'same-day retry is unavailable, not charged twice');
+  s.day=6;
+  f.setPlay(async scene=>{assert.equal(scene.dialogue_id,'ch1_rio_bond_question');assert(!scene.lines.some(x=>x.type==='choice'&&x.id==='bond_q1_rio'));return done;});
+  assert.equal(await context.visit(),true);
+  assert.equal(s.stamina,72);assert.equal(s.money,10000);assert.equal(s.story.rio,3);
+  assert.equal(s.affinity.rio,40);assert(s.flags._rio_affinity_question_done&&s.flags._rio_sample_received);
+  assert.equal(s.flavorStock.nightside_earlgrey,50);assert.equal(s.romanceChoices.bond_q1_rio.value,0);
+  f.roundTrip();s=f.core.state;s.day=7;f.setPlay(async()=>done);
+  assert.equal(await context.visit(),true);assert.equal(s.flavorStock.nightside_earlgrey,50,'later visits cannot refill the sample');
 });
 await check('legacy current/carry/history stay intact; deferred ordinary credit releases once without reading stages across SAVE/LOAD', async f => {
   let s=f.core.state;s.affinity.tsumugi=66;s.affinityCarry.tsumugi=.7;
@@ -165,9 +259,14 @@ await check('LIME .25/carry crosses unread hearts; old credit releases once with
   f.tick();assert.equal(f.events.filter(e=>e.type==='affinity-gain').length,1);
   s.flags._naru_affinity_waiting_pts=1;s.fortune={char:'naru'};
   assert.equal(f.stats.releaseAffinity('naru'),1);assert(s.fortune);assert.equal(f.stats.releaseAffinity('naru'),0);
-  f.stats.gainAffinity('naru',2,{source:'lime'});assert.equal(s.fortune,undefined);assert.equal(s.affinity.naru,10);
-  // 占いの相手は ×2（2026-11-02 台帳 URA。旧 ×1.5 の .7 から）: round(2×2)×.25×.85 + .0625
-  close(s.affinityCarry.naru,.9125);assert.equal(s.story.naru,0);
+  // 占いは会ったときだけ（台帳 URA07）。LIMEの返信・読むだけの連絡では倍にならず、効果も残る: round(2)×.25×.85 + .0625
+  f.stats.gainAffinity('naru',2,{source:'lime'});assert.deepEqual(s.fortune,{char:'naru'});assert.equal(s.affinity.naru,10);
+  close(s.affinityCarry.naru,.4875);
+  f.stats.gainAffinity('naru',2,{remote:true});assert.deepEqual(s.fortune,{char:'naru'},'read-only LIME consumed the fortune');
+  s.affinityCarry.naru=0;const metBefore=s.affinity.naru;
+  // 占いの相手は ×2（2026-11-02 台帳 URA。旧 ×1.5 から）: 会って +5 → round(10)×.85 = 8.5
+  f.stats.gainAffinity('naru',5);assert.equal(s.fortune,undefined);assert.equal(s.affinity.naru,metBefore+8);close(s.affinityCarry.naru,.5);
+  assert.equal(s.story.naru,0);
 });
 await check('LIME reply feedback follows actual fractional progress without ordinary story caps, SAVE/LOAD and integer rollover', async f => {
   let s = f.core.state; s.story.naru = 1; s.affinity.naru = 9;
@@ -365,7 +464,7 @@ await check('lover points wait for both connected scripts; private scale/carry a
   f.setPlay(async()=>done);assert.equal(await f.romance.playLoverMilestone('tsumugi'),true);
   assert.equal(s.lovePts.tsumugi,19);assert.equal(f.romance.loverMilestoneDue('tsumugi'),'lover_tsumugi_lv1_b');
   assert.equal(await f.romance.playLoverMilestone('tsumugi'),true);assert.equal(s.lovePts.tsumugi,32);assert.equal(s.loveLevel.tsumugi,2);
-  assert.equal(f.stats.affinityLevel('tsumugi'),5);assert.equal(s.affinity.tsumugi||0,0);
+  assert.equal(f.stats.affinityLevel('tsumugi'),5);assert.equal(s.affinity.tsumugi,9);
   f.roundTrip();assert.equal(f.stats.releaseLoveAffinity('tsumugi'),0);assert.equal(f.core.state.lovePts.tsumugi,32);
 });
 await check('all romanceable casts: unread lover stage holds next level; normal completion releases to that next stage', async f => {
@@ -389,18 +488,23 @@ await check('hiyori lover Lv1-5 use the common ladder; the preview is not a stag
   f.stats.bond.private=true;f.stats.gainAffinity('hiyori',30);f.stats.bond.private=false;
   assert.equal(s.loveLevel.hiyori,1,'unread Lv1 must hold the bond');
   f.setPlay(async()=>done);assert.equal(await f.romance.playLoverMilestone('hiyori'),true);
-  assert.equal(s.loverEventsSeen.join(),'lover_hiyori_lv1');assert.equal(s.loveLevel.hiyori,2);
+  assert.equal(s.loverEventsSeen.join(),'lover_hiyori_lv1');
+  assert.equal(s.loveLevel.hiyori,1,'unread lv1_b holds the bond');
+  assert.equal(f.romance.loverMilestoneDue('hiyori'),'lover_hiyori_lv1_b');
+  assert.equal(await f.romance.playLoverMilestone('hiyori'),true);
+  assert.equal(s.loverEventsSeen.join(),'lover_hiyori_lv1,lover_hiyori_lv1_b');
+  assert.equal(s.loveLevel.hiyori,2);
   assert.ok(f.plays.every(([scene])=>!/preview/.test(typeof scene==='string'?scene:scene?.dialogue_id)));
 });
 await check('LOAD during old private scope cannot leak into new public gain or close new private scope',async f=>{
   const old=f.core.state;old.lovers=['tsumugi'];old.loveLevel.tsumugi=1;old.lovePts.tsumugi=9;
   let resolve; f.setPlay(()=>new Promise(r=>resolve=r));
   const pending=f.romance.playLoverMilestone('tsumugi');
-  const s=f.fresh();s.lovers=['rin'];s.loveLevel.rin=1;s.lovePts.rin=9;
-  f.stats.gainAffinity('rin',10);assert.equal(s.lovePts.rin,9,'old private context leaked across LOAD');
+  const s=f.fresh();s.lovers=['rio'];s.loveLevel.rio=1;s.lovePts.rio=9;
+  f.stats.gainAffinity('rio',10);assert.equal(s.lovePts.rio,9,'old private context leaked across LOAD');
   const restore=f.stats.privateBondScope();resolve(done);assert.equal(await pending,false);
   assert.equal(f.stats.bond.private,true,'old finally closed new context');
-  f.stats.gainAffinity('rin',10);assert.equal(s.lovePts.rin,14);restore();assert.equal(f.stats.bond.private,false);
+  f.stats.gainAffinity('rio',10);assert.equal(s.lovePts.rio,14);restore();assert.equal(f.stats.bond.private,false);
 });
 await check('privateBondScope: nested scopes restore fully in LIFO order (#1361)',async f=>{
   assert.equal(f.stats.bond.private,false);
@@ -433,10 +537,10 @@ await check('privateBondScope: LOAD-stale scope cannot close a scope on the new 
   live();assert.equal(f.stats.bond.private,false);
 });
 await check('question pending public caller rejects duplicate entry without a second play',async f=>{
-  const s=f.core.state;s.affinity.rin=33;s.story.rin=3;let resolve;
-  f.setPlay(()=>new Promise(r=>resolve=r));const p=f.bonds.playQuestionVisit('rin');
-  assert.equal(await f.bonds.playQuestionVisit('rin'),false);assert.equal(f.plays.length,1);
-  f.bonds.recordRomanceChoice({id:'bond_q1_rin',romance_char:'rin'},{romance:1});resolve(done);assert.equal(await p,true);
+  const s=f.core.state;s.affinity.rio=33;s.story.rio=3;let resolve;
+  f.setPlay(()=>new Promise(r=>resolve=r));const p=f.bonds.playQuestionVisit('rio');
+  assert.equal(await f.bonds.playQuestionVisit('rio'),false);assert.equal(f.plays.length,1);
+  f.bonds.recordRomanceChoice({id:'bond_q1_rio',romance_char:'rio'},{romance:1});resolve(done);assert.equal(await p,true);
 });
 for (const chapter of [1,2]) for (const points of [32,33,34]) await check(`chapter-spanning visit at ${points} points in chapter${chapter}: one eligible stage or daily talk`,async f=>{
   const s=f.core.state;s.chapter=chapter;s.story.naru=3;s.affinity.naru=points;s.flags._cafe_introduced=true;
@@ -622,46 +726,343 @@ await check('Mashiro (#2022): chapter 3 optional reads are the ladder, ♥3 ques
   assert.equal(after.flags._confession_due, undefined);
   assert.equal(beat, null);
 });
-await check('Kuze (#2028): chapter 3 finale after the LIME detour and the answer outing, friendship only, hagal once, then friend LIME', async f => {
+await check('Ayatori (#2028): chapter 3 finale after the LIME detour and the answer outing, friendship only, hagal once, then friend LIME', async f => {
   const rivals = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_rivals.json', import.meta.url))).dialogues;
   for (const d of rivals) f.db.dialogues[d.dialogue_id] = d;
-  const gear = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json', import.meta.url))).equipment.find(e => e.id === 'suyaki_kuze');
-  assert.equal(gear.gift.from, 'kuze');
-  f.db.equipById.suyaki_kuze = gear;
+  const gear = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json', import.meta.url))).equipment.find(e => e.id === 'suyaki_saku');
+  assert.equal(gear.gift.from, 'saku');
+  f.db.equipById.suyaki_saku = gear;
   f.db.flavorById.absal_earlgrey = { id: 'absal_earlgrey' };
   f.db.friends = JSON.parse(fs.readFileSync(new URL('../data/friends.json', import.meta.url)));
-  assert.equal(f.bonds.BOND_FINALES.kuze.gift, 'suyaki_kuze');
+  assert.equal(f.bonds.BOND_FINALES.saku.gift, 'suyaki_saku');
   // IR22: 煙幕に何度でも通えて♥5に届く（AFB02）ので、仮の♥1をやめてほかの人物と同じ♥5
-  assert.equal(f.bonds.finaleHeart('kuze'), 5, 'the same ♥5 gate as everyone else');
-  assert.equal(f.bonds.BOND_FINALES.kuze.heart, undefined);
-  const s = f.core.state; s.chapter = 3; s.met.kuze = true; s.affinity.kuze = 66;
-  assert.equal(f.bonds.finaleDue('kuze'), false, 'affinity alone does not open the finale');
-  s.flags._lime_contact_kuze = true; s.flags._ch3_read_ch3_kuze_lime = true;
-  assert.equal(f.bonds.finaleDue('kuze'), false, 'the answer outing comes first');
+  assert.equal(f.bonds.finaleHeart('saku'), 5, 'the same ♥5 gate as everyone else');
+  assert.equal(f.bonds.BOND_FINALES.saku.heart, undefined);
+  const s = f.core.state; s.chapter = 3; s.met.saku = true; s.affinity.saku = 66;
+  assert.equal(f.bonds.finaleDue('saku'), false, 'affinity alone does not open the finale');
+  s.flags._lime_contact_saku = true; s.flags._ch3_read_ch3_saku_lime = true;
+  assert.equal(f.bonds.finaleDue('saku'), false, 'the answer outing comes first');
   s.flags._ch3_outings = { enmaku_answer: 1 };
+  assert.equal(f.bonds.finaleDue('saku'), false, 'the later Enmaku visits come first');
+  for (const scene of ['ch3_saku_missed', 'ch3_saku_cleanup', 'ch3_saku_liar', 'ch3_saku_first_reply']) s.flags[`_ch3_read_${scene}`] = true;
   for (const pts of [9, 33, 48, 65]) {
-    s.affinity.kuze = pts;
-    assert.equal(f.bonds.finaleDue('kuze'), false, `${pts}pt (below ♥5) keeps the finale closed`);
-    assert.equal(f.bonds.finaleAtVisit('kuze'), false);
+    s.affinity.saku = pts;
+    assert.equal(f.bonds.finaleDue('saku'), false, `${pts}pt (below ♥5) keeps the finale closed`);
+    assert.equal(f.bonds.finaleAtVisit('saku'), false);
   }
-  s.affinity.kuze = 66; assert.equal(f.bonds.finaleAtVisit('kuze'), true, '♥5 opens it on the next visit');
-  s.chapter = 4; assert.equal(f.bonds.finaleDue('kuze'), false, 'only on the chapter 3 cards');
-  assert.equal(await f.bonds.playFinale('kuze'), false); s.chapter = 3;
+  s.affinity.saku = 66; assert.equal(f.bonds.finaleAtVisit('saku'), true, '♥5 opens it on the next visit');
+  s.chapter = 4; assert.equal(f.bonds.finaleDue('saku'), false, 'only on the chapter 3 cards');
+  assert.equal(await f.bonds.playFinale('saku'), false); s.chapter = 3;
   f.setPlay(async () => ({ cancelled: true }));
-  assert.equal(await f.bonds.playFinale('kuze'), false, 'cancel records nothing');
-  assert(!s.finales?.kuze); assert(!s.owned.includes('suyaki_kuze'));
+  assert.equal(await f.bonds.playFinale('saku'), false, 'cancel records nothing');
+  assert(!s.finales?.saku); assert(!s.owned.includes('suyaki_saku'));
   f.setPlay(async () => done);
-  assert.equal(await f.bonds.playFinale('kuze'), true);
+  assert.equal(await f.bonds.playFinale('saku'), true);
   const after = f.roundTrip();
-  assert.equal(after.finales.kuze.route, 'friend');
+  assert.equal(after.finales.saku.route, 'friend');
   assert.equal(after.flags._confession_due, undefined);
-  assert.equal(after.owned.filter(id => id === 'suyaki_kuze').length, 1);
+  assert.equal(after.owned.filter(id => id === 'suyaki_saku').length, 1);
   assert.equal(after.flavorStock.absal_earlgrey, 50);
-  assert.equal(await f.bonds.playFinale('kuze'), false, 'once');
-  assert.equal(f.bonds.settledFriend('kuze'), true);
+  assert.equal(await f.bonds.playFinale('saku'), false, 'once');
+  assert.equal(f.bonds.settledFriend('saku'), true);
   after.day += 10;
   const lime = f.bonds.friendMessages({ sceneChapter: true });
-  assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['kuze', 'chat']], 'chat only on the scene-card chapters');
+  assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['saku', 'chat']], 'chat only on the scene-card chapters');
+});
+await check('Steve (#2028): ♥5 finale after the LIME detour and the timer outing, only while he can be met in Tokyo, hagal once, then friend LIME', async f => {
+  const rivals = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_rivals.json', import.meta.url))).dialogues;
+  for (const d of rivals) f.db.dialogues[d.dialogue_id] = d;
+  const gear = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json', import.meta.url))).equipment.find(e => e.id === 'suyaki_steve');
+  assert.deepEqual([gear.gift.from, gear.gift.flavor, gear.type, gear.not_for_sale], ['steve', 'mountain_mist', 'bowl', true]);
+  f.db.equipById.suyaki_steve = gear;
+  f.db.flavorById.mountain_mist = { id: 'mountain_mist' };
+  f.db.friends = JSON.parse(fs.readFileSync(new URL('../data/friends.json', import.meta.url)));
+  assert.equal(f.bonds.BOND_FINALES.steve.gift, 'suyaki_steve');
+  assert.equal(f.bonds.finaleHeart('steve'), 5, 'the same ♥5 gate as Ayatori');
+  const s = f.core.state; s.chapter = 3; s.met.steve = true; s.affinity.steve = 66;
+  assert.equal(f.bonds.finaleDue('steve'), false, 'affinity alone does not open the finale');
+  s.flags._lime_contact_steve = true; s.flags._ch3_read_ch3_steve_lime = true;
+  assert.equal(f.bonds.finaleDue('steve'), false, 'the timer outing comes first');
+  s.flags._ch3_outings = { steve_timer: 1 };
+  assert.equal(f.bonds.finaleDue('steve'), false, 'the later Smoke & Glory visits come first');
+  for (const scene of ['ch3_steve_two_timers', 'ch3_steve_empty_seat', 'ch3_steve_tongs', 'ch3_steve_watch']) s.flags[`_ch3_read_${scene}`] = true;
+  for (const pts of [9, 33, 48, 65]) {
+    s.affinity.steve = pts;
+    assert.equal(f.bonds.finaleDue('steve'), false, `${pts}pt (below ♥5) keeps the finale closed`);
+  }
+  s.affinity.steve = 66; assert.equal(f.bonds.finaleAtVisit('steve'), true, '♥5 opens it on the next visit, day or night');
+  // Smoke & Glory で会える間だけ: 東京へ発つ前・後日談で東京を発つ支度の朝から・第3章の後は開かず、MENU も約束しない。
+  s.flags._ch3_prep = { departed: false };
+  assert.equal(f.bonds.finaleDue('steve'), false, 'not before leaving for Tokyo');
+  s.flags._ch3_prep.departed = true;
+  assert.equal(f.bonds.finaleDue('steve'), true);
+  s.flags._ch3_aftermath = { version: 3, winDay: 40, stage: f.bonds.STEVE_LAST_AFTERMATH_STAGE };
+  assert.equal(f.bonds.finaleDue('steve'), true, 'the day after the win, before the cleanup morning');
+  // なるへの報告の後にピザとシーシャの夜が開く時、その夜の画面には寄り道が無いので、締めくくりも MENU の約束も出さない。
+  s.flags._ch3_naru_party_ready = true;
+  assert.equal(f.bonds.finaleDue('steve'), false, 'the party night has no detour to Smoke & Glory');
+  assert.equal(f.bonds.finaleReachable('steve'), false);
+  delete s.flags._ch3_naru_party_ready;
+  s.flags._ch3_aftermath.stage += 1;
+  assert.equal(f.bonds.finaleDue('steve'), false, 'from the cleanup morning he cannot be met');
+  assert.equal(f.bonds.finaleReachable('steve'), false);
+  // 綾取も同じ窓（煙幕の片づけの朝からは店を畳む）。ヴォルクだけは鉄の煙の寄り道と同じく、片づけの朝まで会える。
+  assert.equal(f.bonds.finaleReachable('saku'), false, 'Ayatori shares the window: packing the shop that morning');
+  assert.equal(f.bonds.finaleReachable('volk'), true, 'Volk can still be met at Iron Smoke on the cleanup morning');
+  delete s.flags._ch3_aftermath;
+  s.flags._ch3_cleared = true; assert.equal(f.bonds.finaleDue('steve'), false); delete s.flags._ch3_cleared;
+  for (const chapter of [1, 2, 4, 5, '3']) {
+    s.chapter = chapter;
+    assert.equal(f.bonds.finaleDue('steve'), false, `chapter ${chapter}`);
+    assert.equal(f.bonds.finaleReachable('steve'), false);
+  }
+  assert.equal(await f.bonds.playFinale('steve'), false); s.chapter = 3;
+  f.setPlay(async () => ({ cancelled: true }));
+  assert.equal(await f.bonds.playFinale('steve'), false, 'cancel records nothing');
+  assert(!s.finales?.steve); assert(!s.owned.includes('suyaki_steve'));
+  f.setPlay(async () => done);
+  assert.equal(await f.bonds.playFinale('steve'), true);
+  const after = f.roundTrip();
+  assert.equal(after.finales.steve.route, 'friend');
+  assert.equal(after.flags._confession_due, undefined);
+  assert.equal(after.owned.filter(id => id === 'suyaki_steve').length, 1);
+  assert.equal(after.flavorStock.mountain_mist, 50);
+  assert.equal(await f.bonds.playFinale('steve'), false, 'once');
+  assert.equal(f.bonds.settledFriend('steve'), true);
+  after.day += 10;
+  const lime = f.bonds.friendMessages({ sceneChapter: true });
+  assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['steve', 'chat']], 'chat only on the scene-card chapters');
+  assert.deepEqual(clone(lime[0].messages), f.db.friends.friends.steve.chats[0].m);
+});
+await check('Volk (#2028): ♥5 finale after the three Iron Smoke visits and the LIME detour, until the cleanup morning, hagal once, then friend LIME', async f => {
+  const volk = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_volk.json', import.meta.url))).dialogues;
+  for (const d of volk) f.db.dialogues[d.dialogue_id] = d;
+  const gear = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json', import.meta.url))).equipment.find(e => e.id === 'suyaki_volk');
+  assert.deepEqual([gear.gift.from, gear.gift.flavor, gear.gift.leaf_grams, gear.type, gear.not_for_sale, gear.chapter_min],
+    ['volk', 'nightside_blast_mint', 50, 'bowl', true, 99]);
+  f.db.equipById.suyaki_volk = gear;
+  f.db.flavorById.nightside_blast_mint = { id: 'nightside_blast_mint' };
+  f.db.friends = JSON.parse(fs.readFileSync(new URL('../data/friends.json', import.meta.url)));
+  assert.equal(f.bonds.BOND_FINALES.volk.gift, 'suyaki_volk');
+  assert.equal(f.bonds.finaleHeart('volk'), 5, 'the same ♥5 gate as Ayatori and Steve');
+  const s = f.core.state; s.chapter = 3; s.met.volk = true; s.affinity.volk = 66;
+  assert.equal(f.bonds.finaleDue('volk'), false, 'affinity alone does not open the finale');
+  s.flags._lime_contact_volk = true; s.flags._ch3_read_ch3_volk_lime = true;
+  for (const scene of ['ch3_volk_second', 'ch3_volk_third', 'ch3_volk_fourth', 'ch3_volk_fifth', 'ch3_volk_revisit']) {
+    assert.equal(f.bonds.finaleDue('volk'), false, `${scene} comes first`);
+    s.flags[`_ch3_read_${scene}`] = true;
+  }
+  delete s.flags._lime_contact_volk;
+  assert.equal(f.bonds.finaleDue('volk'), false, 'the LIME exchange comes first');
+  s.flags._lime_contact_volk = true;
+  for (const pts of [9, 33, 48, 65]) {
+    s.affinity.volk = pts;
+    assert.equal(f.bonds.finaleDue('volk'), false, `${pts}pt (below ♥5) keeps the finale closed`);
+  }
+  s.affinity.volk = 66; assert.equal(f.bonds.finaleAtVisit('volk'), true, '♥5 opens it on the next visit, day or night');
+  assert.equal(f.bonds.finaleReachable('volk'), true);
+  s.flags._ch3_prep = { departed: false };
+  assert.equal(f.bonds.finaleDue('volk'), false, 'not before leaving for Tokyo');
+  s.flags._ch3_prep.departed = true;
+  // 大会後: なるへの報告の夜（ピザとシーシャの夜を開く時は寄り道が無い）を除き、煙幕の片づけの朝まで。
+  s.flags._ch3_aftermath = { version: 3, winDay: 40, stage: 1 };
+  assert.equal(f.bonds.finaleDue('volk'), true, 'the day after the win');
+  s.flags._ch3_aftermath.stage = 2; s.flags._ch3_naru_party_ready = true;
+  assert.equal(f.bonds.finaleDue('volk'), false, 'the party night has no detour to Iron Smoke');
+  assert.equal(f.bonds.finaleReachable('volk'), false);
+  s.flags._ch3_aftermath.stage = f.bonds.VOLK_LAST_AFTERMATH_STAGE;
+  assert.equal(f.bonds.finaleDue('volk'), true, 'the cleanup morning after the party night: Iron Smoke is open again');
+  delete s.flags._ch3_naru_party_ready;
+  s.flags._ch3_aftermath.stage += 1;
+  assert.equal(f.bonds.finaleDue('volk'), false, 'back home from that night');
+  assert.equal(f.bonds.finaleReachable('volk'), false, 'the MENU does not promise a visit that cannot happen');
+  delete s.flags._ch3_aftermath;
+  s.flags._ch3_cleared = true; assert.equal(f.bonds.finaleDue('volk'), false); delete s.flags._ch3_cleared;
+  for (const chapter of [1, 2, 4, 5, '3']) {
+    s.chapter = chapter;
+    assert.equal(f.bonds.finaleDue('volk'), false, `chapter ${chapter}`);
+    assert.equal(f.bonds.finaleReachable('volk'), false);
+  }
+  assert.equal(await f.bonds.playFinale('volk'), false); s.chapter = 3;
+  f.setPlay(async () => ({ cancelled: true }));
+  assert.equal(await f.bonds.playFinale('volk'), false, 'cancel records nothing');
+  assert(!s.finales?.volk); assert(!s.owned.includes('suyaki_volk'));
+  f.setPlay(async () => done);
+  assert.equal(await f.bonds.playFinale('volk'), true);
+  const after = f.roundTrip();
+  assert.equal(after.finales.volk.route, 'friend');
+  assert.equal(after.flags._confession_due, undefined);
+  assert.equal(after.owned.filter(id => id === 'suyaki_volk').length, 1);
+  assert.equal(after.flavorStock.nightside_blast_mint, 50);
+  assert.equal(await f.bonds.playFinale('volk'), false, 'once');
+  assert.equal(f.bonds.settledFriend('volk'), true);
+  after.day += 10;
+  const lime = f.bonds.friendMessages({ sceneChapter: true });
+  assert.deepEqual(clone(lime.map(m => [m.sender, m.type])), [['volk', 'chat']], 'chat only on the scene-card chapters');
+  assert.deepEqual(clone(lime[0].messages), f.db.friends.friends.volk.chats[0].m);
+});
+// 2026-11-07 オーナー指示「ヴォルク♥5エンディングも第5章東京『鉄の煙』で出す（スティーブと揃える）」。スティーブ（#2705）と同じく、
+// 第5章の東京では第3章の再訪・LIME交換を求めず♥5だけで、第5章用の書き出しを一度だけ。第3章で見た人には出さない。
+await check('Volk and Steve (#2705・2026-11-07): chapter 5 Tokyo finale on ♥5 alone, only while in Tokyo, chapter 5 text, once', async f => {
+  const scripts = name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))).dialogues;
+  for (const name of ['ch5_tokyo', 'ch3_volk', 'ch3_rivals']) for (const d of scripts(name)) f.db.dialogues[d.dialogue_id] = d;
+  const equipment = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json', import.meta.url))).equipment;
+  for (const id of ['suyaki_volk', 'suyaki_steve']) f.db.equipById[id] = equipment.find(e => e.id === id);
+  f.db.flavorById.nightside_blast_mint = { id: 'nightside_blast_mint' };
+  f.db.flavorById.mountain_mist = { id: 'mountain_mist' };
+  f.db.friends = JSON.parse(fs.readFileSync(new URL('../data/friends.json', import.meta.url)));
+  const { bonds } = f;
+  assert.equal(bonds.BOND_FINALES.volk.tokyoDialogue, 'ch5_volk_bond_finale');
+  assert.equal(bonds.isFinaleEvent('ch5_volk_bond_finale'), true);
+  assert.equal(f.db.dialogues.ch5_volk_bond_finale?.metadata?.bond_finale, 'volk');
+  // 第3章の再訪・LIME交換の寄り道を一つも読んでいない保存。東京にいない間は開かず、MENU も約束しない
+  let s = f.core.state; s.chapter = 5; s.met.volk = true; s.affinity.volk = 66;
+  for (const region of [undefined, 'home', 'dubai']) {
+    s.flags._ch2_region = region;
+    assert.equal(bonds.finaleDue('volk'), false, `not while away from Tokyo (${region})`);
+    assert.equal(bonds.finaleReachable('volk'), false, `no MENU promise of Iron Smoke (${region})`);
+  }
+  s.flags._ch2_region = 'tokyo';
+  assert.equal(bonds.finaleReachable('volk'), true);
+  for (const pts of [48, 65]) {
+    s.affinity.volk = pts;
+    assert.equal(bonds.finaleDue('volk'), false, `${pts}pt (below ♥5) keeps the finale closed`);
+  }
+  s.affinity.volk = 66;
+  for (const slot of [0, 1]) { s.slot = slot; assert.equal(bonds.finaleAtVisit('volk'), true, `slot ${slot}: day or night`); }
+  // 第5章用の台詞が読み込まれていなければ始めない
+  const tokyoScene = f.db.dialogues.ch5_volk_bond_finale;
+  delete f.db.dialogues.ch5_volk_bond_finale;
+  assert.equal(bonds.finaleDue('volk'), false, 'the chapter 5 text has to be loaded');
+  f.db.dialogues.ch5_volk_bond_finale = tokyoScene;
+  // 第3章の条件はそのまま（再訪三つとLIME交換の寄り道が要る）
+  s.chapter = 3;
+  assert.equal(bonds.finaleDue('volk'), false, 'chapter 3 still needs the three revisits and the LIME detour');
+  s.chapter = 5;
+  f.setPlay(async () => ({ cancelled: true }));
+  assert.equal(await bonds.playFinale('volk'), false, 'cancel records nothing');
+  assert(!s.finales?.volk); assert(!s.owned.includes('suyaki_volk'));
+  f.setPlay(async () => done);
+  assert.equal(await bonds.playFinale('volk'), true);
+  assert.equal(f.plays.at(-1)[0], 'ch5_volk_bond_finale', 'the chapter 5 text, not the chapter 3 one');
+  const after = f.roundTrip();
+  assert.deepEqual([after.finales.volk.chapter, after.finales.volk.route], [5, 'friend']);
+  assert.equal(after.flags._confession_due, undefined);
+  assert.equal(after.owned.filter(id => id === 'suyaki_volk').length, 1);
+  assert.equal(after.flavorStock.nightside_blast_mint, 50);
+  assert.equal(await bonds.playFinale('volk'), false, 'once');
+  assert.equal(bonds.finaleAtVisit('volk'), false);
+  // 友人のLIMEは #2705 と同じくLIMEを交換した人だけ（第3章の寄り道か、第5章の締めくくりのその場で）。第5章の朝は雑談だけ
+  after.day += 10; after.phase = 'daily';
+  assert.deepEqual(clone(bonds.friendMessages()), [], 'no friend LIME without a LIME exchange');
+  after.flags._lime_contact_volk = true;
+  assert.deepEqual(clone(bonds.friendMessages().map(m => [m.sender, m.type])), [['volk', 'chat']], 'chapter 5 mornings: chats only');
+  // 第3章で締めくくりを見た保存には、第5章の東京でも二度は出さない
+  s = f.fresh(); s.chapter = 5; s.met.volk = true; s.affinity.volk = 66; s.flags._ch2_region = 'tokyo';
+  s.finales.volk = { day: 40, chapter: 3, route: 'friend' };
+  assert.equal(bonds.finaleAtVisit('volk'), false, 'seen in chapter 3');
+  // スティーブも同じ形のまま（ch5-tokyo.js の締めくくりの分岐を二人で共有する）
+  s.met.steve = true; s.affinity.steve = 66;
+  assert.equal(bonds.finaleAtVisit('steve'), true, 'Steve: ♥5 alone in chapter 5 Tokyo');
+  assert.equal(await bonds.playFinale('steve'), true);
+  assert.equal(f.plays.at(-1)[0], 'ch5_steve_bond_finale');
+  assert.equal(s.finales.steve.chapter, 5);
+  // 第5章の締めくくりの文と連絡先をそろえる。第5章は第3章のLIME交換を前提にしないので、まだ交換していない人だけがその場で交換する
+  // （contact の分岐の中だけで交換を記録する）。スティーブは「顔の知らせをくれ」に「送ります」と答える前に、ヴォルクは「書いたら、送れ」と
+  // 頼まれて「また来い」の前に（2026-11-07 オーナー判断「ヴォルクの第5章♥5エンディングでの LIME 即時交換は付与する」）。
+  for (const [id, before] of [['steve', /送ります/], ['volk', /また来い/]]) {
+    const scene = f.db.dialogues[`ch5_${id}_bond_finale`];
+    const contactAt = scene.lines.findIndex(l => l.type === 'condition' && l.condition_type === 'contact' && l.char_id === id);
+    assert(contactAt >= 0, `${id}: the finale branches on the LIME contact`);
+    assert(contactAt < scene.lines.findIndex(l => before.test(l.text || '')), `${id}: the exchange comes before ${before}`);
+    assert(scene.branches?.[scene.lines[contactAt].next_false]?.some(l => l.type === 'set_flag' && l.flag === `_lime_contact_${id}`),
+      `${id}: no LIME yet: exchange it on the spot`);
+    assert.equal(scene.lines[contactAt].next_true, undefined, `${id}: already exchanged: straight on`);
+    assert(!scene.lines.some(l => l.type === 'set_flag'), `${id}: never re-exchanged in the main text`);
+    assert.doesNotMatch(scene.lines.map(l => l.text || '').join('\n'), /LIME|連絡先/, `${id}: the main text reads the same with a chapter 3 LIME`);
+  }
+  // 友人のLIMEは交換した後だけ（第5章の朝は雑談だけ）
+  s.day += 10; s.phase = 'daily';
+  assert.deepEqual(clone(bonds.friendMessages()), [], 'no friend LIME from Steve or Volk without a LIME contact');
+  s.flags._lime_contact_steve = true;
+  assert.deepEqual(clone(bonds.friendMessages().map(m => [m.sender, m.type])), [['steve', 'chat']]);
+});
+await check('Ayatori (#2028): the finale and the MENU promise only while 煙幕 can be visited', async f => {
+  const rivals = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_rivals.json', import.meta.url))).dialogues;
+  for (const d of rivals) f.db.dialogues[d.dialogue_id] = d;
+  const s = f.core.state; s.chapter = 3; s.met.saku = true; s.affinity.saku = 66;
+  Object.assign(s.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_read_ch3_saku_missed: true, _ch3_read_ch3_saku_cleanup: true, _ch3_read_ch3_saku_liar: true, _ch3_read_ch3_saku_first_reply: true, _ch3_outings: { enmaku_answer: 1 } });
+  assert.equal(f.bonds.finaleDue('saku'), true);
+  assert.equal(f.bonds.finaleReachable('saku'), true);
+  s.flags._ch3_prep = { departed: false };
+  assert.equal(f.bonds.finaleDue('saku'), false, 'not before leaving for Tokyo');
+  s.flags._ch3_prep.departed = true;
+  s.flags._ch3_aftermath = { version: 3, winDay: 40, stage: f.bonds.SAKU_LAST_AFTERMATH_STAGE };
+  assert.equal(f.bonds.finaleDue('saku'), true, 'the day after the win');
+  s.flags._ch3_naru_party_ready = true;
+  assert.equal(f.bonds.finaleDue('saku'), false, 'the party night has no detour');
+  delete s.flags._ch3_naru_party_ready;
+  s.flags._ch3_aftermath.stage += 1;
+  assert.equal(f.bonds.finaleDue('saku'), false, 'the cleanup morning: packing the shop');
+  assert.equal(f.bonds.finaleReachable('saku'), false);
+  delete s.flags._ch3_aftermath;
+  for (const chapter of [4, 5]) {
+    s.chapter = chapter;
+    assert.equal(f.bonds.finaleReachable('saku'), false, `chapter ${chapter}: no MENU promise of 煙幕`);
+  }
+  // 日常ループでは昼にも夜にも読むので、LIME交換と締めくくりの入りで時間帯を言わない。
+  const texts = ['ch3_saku_lime', 'ch3_saku_bond_finale'].flatMap(id => {
+    const d = f.db.dialogues[id]; return [...d.lines, ...Object.values(d.branches || {}).flat()];
+  }).map(line => line.text || '').join('\n');
+  assert.doesNotMatch(texts, /今夜|閉店後の煙幕/, 'no time of day in the openings');
+});
+await check('Noor (DSR20): chapter 4 cafe finale after the cafe stages and the ♥3 question, then her own sunset confession', async f => {
+  const desert = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch4_desert.json', import.meta.url))).dialogues;
+  for (const d of desert) f.db.dialogues[d.dialogue_id] = d;
+  const gear = JSON.parse(fs.readFileSync(new URL('../../data/equipment.json', import.meta.url))).equipment.find(e => e.id === 'suyaki_noor');
+  assert.equal(gear.gift.from, 'noor');
+  assert.equal(gear.gift.flavor, 'double_apple');
+  f.db.equipById.suyaki_noor = gear;
+  f.db.flavorById.double_apple = { id: 'double_apple' };
+  const { bonds, romance } = f;
+  assert.equal(bonds.BOND_FINALES.noor.gift, 'suyaki_noor');
+  assert.equal(bonds.BOND_FINALES.noor.question, 'bond_q2_noor');
+  assert.equal(bonds.BOND_FINALES.noor.ownConfession, true);
+  const s = f.core.state; s.chapter = 4; s.met.noor = true; s.affinity.noor = 66;
+  assert.equal(bonds.finaleDue('noor'), false, 'the cafe stages come first');
+  s.flags._ch4_desert = { v: 2, talks: 6, chats: 0, lastTalkDay: 3, outings: 1, lastOutingDay: 2 };
+  assert.equal(bonds.finaleDue('noor'), false, 'the ♥3 question comes first');
+  s.romanceChoices.bond_q1_noor = { char: 'noor', value: 1, day: 3 };
+  s.flags._noor_affinity_question_done = true;
+  s.affinity.noor = 65; assert.equal(bonds.finaleDue('noor'), false, 'needs ♥5');
+  s.affinity.noor = 66; assert.equal(bonds.finaleDue('noor'), true);
+  s.chapter = 5; assert.equal(bonds.finaleDue('noor'), true, 'Cafe Oasis is on the chapter 5 Dubai map too (owner 2026-11-07)');
+  s.chapter = 3; assert.equal(bonds.finaleDue('noor'), false, 'no Cafe Oasis outside chapters 4-5');
+  assert.equal(await bonds.playFinale('noor'), false); s.chapter = 4;
+  assert.equal(bonds.romanceOpen('noor'), true, 'the last question is asked only while every answer leans romantic');
+  // 最後の問いで「二人で」を選ぶ（engine の onChoice → recordRomanceChoice）
+  f.setPlay(async () => { bonds.recordRomanceChoice({ id: 'bond_q2_noor', romance_char: 'noor' }, { romance: 1 }); return done; });
+  assert.equal(await bonds.playFinale('noor'), true);
+  assert.equal(s.finales.noor.route, 'romance');
+  assert.equal(s.flags._confession_due, undefined, 'no night-walk reservation: the sunset dunes carry the confession');
+  assert.equal(s.owned.filter(id => id === 'suyaki_noor').length, 1);
+  assert.equal(romance.romanceRouteOpen('noor'), true);
+  // 告白の返事は選択肢の next_id で入る場面（romance.js の onDialogueEnter が confession_<id>_accept で付き合う）
+  const choice = f.db.dialogues.confession_noor.lines.find(line => line.type === 'choice');
+  assert.deepEqual(clone(choice.choices.map(c => c.next_id)), ['confession_noor_accept', 'confession_noor_reject']);
+  assert.equal(f.db.dialogues.confession_noor_accept.metadata.set_romance, 'noor');
+  s.lovers.push('noor');
+  assert.equal(romance.romanceRouteOpen('noor'), false);
+  assert.equal(await bonds.playFinale('noor'), false, 'once');
+  // 友情寄りに答えた相手は、最後の問いを出さず友人の着地
+  const g = f.fresh(); g.chapter = 4; g.affinity.noor = 66;
+  g.flags._ch4_desert = { v: 2, talks: 6, chats: 0, lastTalkDay: 3, outings: 0, lastOutingDay: null };
+  g.romanceChoices.bond_q1_noor = { char: 'noor', value: 0, day: 3 }; g.flags._noor_affinity_question_done = true;
+  assert.equal(bonds.romanceOpen('noor'), false);
+  f.setPlay(async () => done);
+  assert.equal(await bonds.playFinale('noor'), true);
+  assert.equal(g.finales.noor.route, 'friend');
+  assert.equal(romance.romanceRouteOpen('noor'), false);
 });
 
 // IR23: ヴォルク・シェイク・太陽も通って♥5に届く（授業 M-W5・M-W8・M-B6 の♥5は下げない）。値は各行き先と同じ
@@ -684,68 +1085,232 @@ await check('IR23: Volk, the Sheikh and Taiyo reach ♥5 by visiting, with the s
   s.chapter = 5; assert.equal(visitsTo5('volk'), 5, 'then 5 visits to Iron Smoke in chapter 5');
 });
 
-// #2025: 凛の♥4・♥5。既存4本の後ろに足し、♥3の質問の後・締めくくりの前に一本ずつ読む。
-const RIN_LATE = ['ch1_rin_fifth', 'ch1_rin_sixth'];
-const rinAt = (f, story, heart = 5) => {
-  const s = f.fresh(); s.story.rin = story; s.affinity.rin = f.stats.AFFINITY_RANK_PTS[heart]; s.met.rin = true;
-  s.flags[f.stages.questionDoneKey('rin')] = true; s.flags._spot_seen_ch1_rin_prototype_night = true;
-  s.romanceChoices.bond_q1_rin = { char: 'rin', value: 1, day: 5 };
+// #2028: 第3章のヴォルクのLIME交換（♥2）と締めくくり（♥5）に、実際の報酬で届くか。好感度を直接書かず、初対面の♥1、
+// 台本の報酬（apply の volk×6。vn/engine.js と同じ）、居合わせる会話（visitAffinity('talk')）、ピザの夜で数える。魅力は最低。
+// 鉄の煙の場面をすべて読むだけでは♥4で止まる（PRのオーナー判断）。居合わせる会話1回か、ピザの夜で♥5に届く。
+await check('#2028: Volk reaches the LIME scene (♥2) and the finale (♥5) in chapter 3 with the real rewards', async f => {
+  const { gainAffinity, visitAffinity, affinityLevel } = f.stats;
+  const engine = fs.readFileSync(path.join(root, 'vn/engine.js'), 'utf8');
+  assert.match(engine, /if \(line\.affinity\) for \(const \[id, n\] of Object\.entries\(line\.affinity\)\) dialogueAffinity\(running, id, n \* 6\)/);
+  const party = Number(fs.readFileSync(path.join(root, 'chapters/ch3-party-progress.js'), 'utf8').match(/PARTY_AFFINITY = (\d+);/)?.[1]);
+  const scripts = Object.fromEntries(JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_volk.json', import.meta.url))).dialogues
+    .map(d => [d.dialogue_id, d]));
+  const reward = id => scripts[id].lines.filter(line => line.type === 'apply' && line.affinity?.volk)
+    .reduce((sum, line) => sum + line.affinity.volk * 6, 0);
+  const run = ({ roams = 0, withParty = false } = {}) => {
+    const g = f.fresh(); g.chapter = 3; g.stats.charm = 0;
+    gainAffinity('volk', 1, { firstMeeting: true });
+    assert.equal(affinityLevel('volk'), 1, 'the first visit to Iron Smoke is exactly ♥1');
+    for (let i = 0; i < roams; i++) gainAffinity('volk', visitAffinity('talk'));
+    for (const id of ['ch3_volk_second', 'ch3_volk_third', 'ch3_volk_fourth']) gainAffinity('volk', reward(id));
+    const atLime = affinityLevel('volk');
+    for (const id of ['ch3_volk_lime', 'ch3_volk_after_ch3']) gainAffinity('volk', reward(id));
+    if (withParty) gainAffinity('volk', party);
+    return { atLime, end: affinityLevel('volk'), pts: f.core.state.affinity.volk };
+  };
+  const alone = run();
+  assert(alone.atLime >= 2, `the LIME scene (♥2) opens right after the fourth visit (♥${alone.atLime})`);
+  assert.equal(alone.end, 4, `every Iron Smoke scene alone stops at ♥4 at the lowest charm (${alone.pts}pt)`);
+  assert.equal(run({ roams: 1 }).end, 5, 'one roaming talk with Volk closes the gap');
+  assert.equal(run({ withParty: true }).end, 5, 'so does the pizza night');
+});
+
+// #2025: 凛想の♥4・♥5。既存4本の後ろに足し、♥3の質問の後・締めくくりの前に一本ずつ読む。
+const RIO_LATE = ['ch1_rio_fifth', 'ch1_rio_sixth'];
+const rioAt = (f, story, heart = 5) => {
+  const s = f.fresh(); s.story.rio = story; s.affinity.rio = f.stats.AFFINITY_RANK_PTS[heart]; s.met.rio = true;
+  s.flags[f.stages.questionDoneKey('rio')] = true; s.flags._spot_seen_ch1_rio_prototype_night = true;
+  s.romanceChoices.bond_q1_rio = { char: 'rio', value: 1, day: 5 };
   return s;
 };
 const sceneIds = f => f.plays.map(([scene]) => typeof scene === 'string' ? scene : scene.dialogue_id);
-await check('Rin #2025: heart4/5 follow the fourth, one per visit, before the finale', async f => {
-  assert.deepEqual(Array.from(f.spots.VISIT_SEQ.rin).slice(4), RIN_LATE);
-  for (const [story, scene] of [[4, RIN_LATE[0]], [5, RIN_LATE[1]], [6, null]]) {
-    const s = rinAt(f, story);
-    assert.equal(f.stages.pendingAffinityStage(s, 'rin')?.scene ?? null, scene);
-    assert.equal(f.bonds.finaleDue('rin'), story === 6, `finale at story ${story}`);
+await check('Rio #2025: heart4/5 follow the fourth, one per visit, before the finale', async f => {
+  assert.deepEqual(Array.from(f.spots.VISIT_SEQ.rio).slice(4), RIO_LATE);
+  for (const [story, scene] of [[4, RIO_LATE[0]], [5, RIO_LATE[1]], [6, null]]) {
+    const s = rioAt(f, story);
+    assert.equal(f.stages.pendingAffinityStage(s, 'rio')?.scene ?? null, scene);
+    assert.equal(f.bonds.finaleDue('rio'), story === 6, `finale at story ${story}`);
   }
-  const s = rinAt(f, 4);
-  assert.equal(await f.spots.visitChar('rin'), true); assert.deepEqual(sceneIds(f), [RIN_LATE[0]]);
-  assert.equal(s.story.rin, 5); assert.equal(f.bonds.finaleDue('rin'), false);
-  assert.equal(await f.spots.visitChar('rin'), true); assert.deepEqual(sceneIds(f), RIN_LATE);
-  assert.equal(s.story.rin, 6); assert.equal(f.bonds.finaleDue('rin'), true);
-  assert.equal(f.roundTrip().story.rin, 6);
+  const s = rioAt(f, 4);
+  assert.equal(await f.spots.visitChar('rio'), true); assert.deepEqual(sceneIds(f), [RIO_LATE[0]]);
+  assert.equal(s.story.rio, 5); assert.equal(f.bonds.finaleDue('rio'), false);
+  assert.equal(await f.spots.visitChar('rio'), true); assert.deepEqual(sceneIds(f), RIO_LATE);
+  assert.equal(s.story.rio, 6); assert.equal(f.bonds.finaleDue('rio'), true);
+  assert.equal(f.roundTrip().story.rio, 6);
 });
-await check('Rin #2025: heart4 needs ♥4 and heart5 needs ♥5; the ♥3 question still comes first', async f => {
+await check('Rio #2025: heart4 needs ♥4 and heart5 needs ♥5; the ♥3 question still comes first', async f => {
   for (const [story, heart, reads] of [[4, 3, false], [4, 4, true], [5, 4, false], [5, 5, true]]) {
-    f.plays.length = 0; const s = rinAt(f, story, heart);
-    assert.equal(f.spots.hasNewStory('rin'), reads, `story ${story} heart ${heart}`);
-    assert.equal(await f.spots.visitChar('rin'), true);
-    assert.equal(sceneIds(f).some(id => RIN_LATE.includes(id)), reads); assert.equal(s.story.rin, story + Number(reads));
+    f.plays.length = 0; const s = rioAt(f, story, heart);
+    assert.equal(f.spots.hasNewStory('rio'), reads, `story ${story} heart ${heart}`);
+    assert.equal(await f.spots.visitChar('rio'), true);
+    assert.equal(sceneIds(f).some(id => RIO_LATE.includes(id)), reads); assert.equal(s.story.rio, story + Number(reads));
   }
-  const s = rinAt(f, 4); delete s.flags[f.stages.questionDoneKey('rin')]; delete s.romanceChoices.bond_q1_rin;
-  assert.equal(f.stages.pendingAffinityStage(s, 'rin').scene, 'ch1_rin_bond_question');
-  assert.equal(f.bonds.questionVisitDue('rin'), true, 'unanswered question is offered before the new stages');
+  const s = rioAt(f, 4); delete s.flags[f.stages.questionDoneKey('rio')]; delete s.romanceChoices.bond_q1_rio;
+  assert.equal(f.stages.pendingAffinityStage(s, 'rio').scene, 'ch1_rio_bond_question');
+  assert.equal(f.bonds.questionVisitDue('rio'), true, 'unanswered question is offered before the new stages');
 });
-await check('Rin #2025: a cancelled heart4/5 read keeps the stage for the next visit', async f => {
+await check('Rio #2025: a cancelled heart4/5 read keeps the stage for the next visit', async f => {
   for (const story of [4, 5]) {
-    const s = rinAt(f, story); f.setPlay(async () => ({ cancelled: true }));
-    assert.equal(await f.spots.visitChar('rin'), false);
-    assert.equal(s.story.rin, story); assert.equal(s.visits.rin || 0, 0);
+    const s = rioAt(f, story); f.setPlay(async () => ({ cancelled: true }));
+    assert.equal(await f.spots.visitChar('rio'), false);
+    assert.equal(s.story.rio, story); assert.equal(s.visits.rio || 0, 0);
   }
 });
-await check('Rin #2025: saves already landed (finale, friend, lover) are not sent back to heart4/5', async f => {
-  for (const settle of [s => { s.finales.rin = { day: 9, chapter: 1, route: 'friend' }; s.flags._friend_rin = true; },
-    s => { s.finales.rin = { day: 9, chapter: 1, route: 'lover' }; s.lovers = ['rin']; }, s => { s.flags._friend_rin = true; }]) {
-    f.plays.length = 0; const s = rinAt(f, 4); settle(s);
-    assert.equal(f.stages.pendingAffinityStage(s, 'rin'), null);
-    assert.equal(f.spots.hasNewStory('rin'), false);
-    assert.equal(await f.spots.visitChar('rin'), true);
-    assert(!sceneIds(f).some(id => RIN_LATE.includes(id)), JSON.stringify(sceneIds(f)));
-    assert.equal(s.story.rin, 4, 'the skipped stages are not written back');
+await check('Rio #2025: saves already landed (finale, friend, lover) are not sent back to heart4/5', async f => {
+  for (const settle of [s => { s.finales.rio = { day: 9, chapter: 1, route: 'friend' }; s.flags._friend_rio = true; },
+    s => { s.finales.rio = { day: 9, chapter: 1, route: 'lover' }; s.lovers = ['rio']; }, s => { s.flags._friend_rio = true; }]) {
+    f.plays.length = 0; const s = rioAt(f, 4); settle(s);
+    assert.equal(f.stages.pendingAffinityStage(s, 'rio'), null);
+    assert.equal(f.spots.hasNewStory('rio'), false);
+    assert.equal(await f.spots.visitChar('rio'), true);
+    assert(!sceneIds(f).some(id => RIO_LATE.includes(id)), JSON.stringify(sceneIds(f)));
+    assert.equal(s.story.rio, 4, 'the skipped stages are not written back');
   }
 });
-await check('Rin #2025: heart4/5 branch on the ♥3 answer and carry no new romance question', async f => {
-  for (const id of RIN_LATE) {
+await check('Rio #2025: heart4/5 branch on the ♥3 answer and carry no new romance question', async f => {
+  for (const id of RIO_LATE) {
     const scene = f.db.dialogues[id], rows = [...scene.lines, ...Object.values(scene.branches).flat()];
-    assert.equal(scene.metadata.flavor_lesson, undefined, 'the taste talk stays in ch1_rin_fourth');
+    assert.equal(scene.metadata.flavor_lesson, undefined, 'the taste talk stays in ch1_rio_fourth');
     const cond = rows.find(l => l.type === 'condition');
-    assert.equal(cond.condition_type, 'romance_open'); assert.equal(cond.char_id, 'rin');
+    assert.equal(cond.condition_type, 'romance_open'); assert.equal(cond.char_id, 'rio');
     assert(scene.branches[cond.next_true]?.length && scene.branches[cond.next_false]?.length);
     assert(rows.filter(l => l.type === 'choice').every(l => !l.romance_char && l.choices.every(c => c.romance === undefined)));
     assert(!rows.some(l => l.type === 'set_flag'), 'read state stays in the story counter');
   }
 });
 
+await check('Rio #3081: seven story scenes follow the blueberry report, once each, at the showroom', async f => {
+  const scenes = f.spots.RIO_STORY_EXTRAS;
+  assert.deepEqual([...scenes], [
+    'ch1_rio_lot_return', 'ch1_rio_name_blank', 'ch1_rio_unsigned',
+    'ch1_rio_practice_note', 'ch1_rio_strip_spill', 'ch1_rio_tired_nose', 'ch1_rio_recheck',
+  ]);
+  const early = rioAt(f, 6);
+  assert.equal(f.spots.rioStoryExtraDue(), null, 'the blueberry report stays ahead of the new scenes');
+  assert.equal(f.spots.rioBlueberryDue(), true);
+  early.flags._spot_seen_ch1_rio_blueberry_report = true;
+  early.finales.rio = { day: 9, chapter: 1, route: 'friend' };
+  early.flags._friend_rio = true;
+  assert.equal(f.spots.rioStoryExtraDue(), scenes[0]);
+  assert.equal(f.spots.hasNewStory('rio'), true);
+  for (const id of scenes) {
+    f.plays.length = 0;
+    assert.equal(await f.spots.visitChar('rio'), true);
+    assert.deepEqual(sceneIds(f), [id]);
+    assert.equal(f.db.dialogues[id].metadata.bg.includes('bg_fookah_showroom'), true);
+    assert.equal(early.flags[`_spot_seen_${id}`], true);
+  }
+  f.plays.length = 0;
+  assert.equal(f.spots.rioStoryExtraDue(), null);
+  assert.equal(f.spots.hasNewStory('rio'), false);
+  assert.equal(await f.spots.visitChar('rio'), true);
+  assert.equal(sceneIds(f)[0], 'ch1_rio_repeat_b');
+  const cancelled = rioAt(f, 6);
+  cancelled.flags._spot_seen_ch1_rio_blueberry_report = true;
+  cancelled.finales.rio = { day: 9, chapter: 1, route: 'friend' };
+  f.plays.length = 0;
+  f.setPlay(async () => ({ cancelled: true }));
+  assert.equal(await f.spots.visitChar('rio'), false);
+  assert.equal(cancelled.flags._spot_seen_ch1_rio_lot_return, undefined);
+  assert.equal(f.spots.rioStoryExtraDue(), scenes[0]);
+});
+
+
+await check('Tsumugi #3081: five story scenes follow the finale, once each, at tonari', async f => {
+  const scenes = f.spots.TSUMUGI_STORY_EXTRAS;
+  assert.deepEqual([...scenes], [
+    'ch1_tsumugi_one_ear', 'ch1_tsumugi_short_tail',
+    'ch1_tsumugi_window_line', 'ch1_tsumugi_pen_down', 'ch1_tsumugi_low_water',
+  ]);
+  const early = f.fresh();
+  early.met.tsumugi = true;
+  early.story.tsumugi = 6;
+  early.affinity.tsumugi = 90;
+  early.day = 12;
+  early.slot = 0;
+  early.flags._tsumugi_contest_submitted = true;
+  early.flags[f.stages.questionDoneKey('tsumugi')] = true;
+  assert.equal(f.spots.tsumugiStoryExtraDue(), null, 'the finale stays ahead of the new scenes');
+  assert.equal(f.bonds.finaleAtVisit('tsumugi'), false, 'the finale stays a night visit');
+  assert.equal(f.spots.hasNewStory('tsumugi'), false, 'noon before the finale does not offer the extras');
+  early.slot = 1;
+  assert.equal(f.spots.hasNewStory('tsumugi'), true, 'night still offers the finale first');
+  assert.equal(f.spots.tsumugiStoryExtraDue(), null);
+  early.finales.tsumugi = { day: 12, chapter: 1, route: 'friend' };
+  early.flags._friend_tsumugi = true;
+  assert.equal(f.spots.tsumugiStoryExtraDue(), scenes[0]);
+  assert.equal(f.spots.hasNewStory('tsumugi'), true);
+  for (const id of scenes) {
+    f.plays.length = 0;
+    assert.equal(await f.spots.visitChar('tsumugi'), true);
+    assert.deepEqual(sceneIds(f), [id]);
+    assert.equal(String(f.plays[0][1]?.bg || '').includes('bg_tonari_inside'), true);
+    assert.equal(early.flags[`_spot_seen_${id}`], true);
+    assert.equal(f.db.dialogues[id].lines.some(line => line.speaker === 'tsumugi'), true);
+  }
+  f.plays.length = 0;
+  assert.equal(f.spots.tsumugiStoryExtraDue(), null);
+  assert.equal(f.spots.hasNewStory('tsumugi'), false);
+  assert.equal(await f.spots.visitChar('tsumugi'), true);
+  assert.equal(sceneIds(f)[0], 'remake_repeat_tsumugi_1');
+  const cancelled = f.fresh();
+  cancelled.met.tsumugi = true;
+  cancelled.story.tsumugi = 6;
+  cancelled.finales.tsumugi = { day: 12, chapter: 1, route: 'friend' };
+  f.plays.length = 0;
+  f.setPlay(async () => ({ cancelled: true }));
+  assert.equal(await f.spots.visitChar('tsumugi'), false);
+  assert.equal(cancelled.flags._spot_seen_ch1_tsumugi_one_ear, undefined);
+  assert.equal(f.spots.tsumugiStoryExtraDue(), scenes[0]);
+});
+
+await check('Issue #2750: known characters begin at ♥1 and excluded characters never earn hearts', async f => {
+  const s = f.core.newGame();
+  for (const id of ['sumi', 'tsumugi']) {
+    assert.equal(s.met[id], true);
+    assert.equal(s.affinity[id], 9);
+    assert.equal(f.stats.affinityLevel(id), 1);
+  }
+  const before = f.events.filter(event => event.type === 'affinity-gain').length;
+  for (const id of ['sui', 'maezono', 'dr_kemuri', 'emil', 'mukai_master', 'uranaishi']) {
+    f.core.markMet(id);
+    assert.equal(f.stats.gainAffinity(id, 100, { firstMeeting: true }), undefined);
+    assert.equal(f.stats.ensureAffinityLevel(id, 5), 0);
+    assert.equal(f.stats.affinityLevel(id), 0);
+    assert.equal(s.affinity[id], undefined);
+  }
+  assert.equal(f.events.filter(event => event.type === 'affinity-gain').length, before);
+  assert.equal(f.stats.affinityLevel('hiyori'), 0);
+  assert.equal(f.stats.gainAffinity('hiyori', 1, { firstMeeting: true }), 9);
+  assert.equal(f.stats.affinityLevel('hiyori'), 1);
+});
+
+await check('Issue #2750: schema 26 save migrates without losing earned hearts', async f => {
+  const old = f.core.newGame();
+  old.schema = 26;
+  old.met = { sui: true, mukai_master: true, hiyori: true };
+  old.affinity = { sumi: 48, sui: 33, mukai_master: 20, hiyori: 9 };
+  old.affinityCarry = { sui: 0.5, hiyori: 0.25 };
+  old.flags._affinity_first_meeting_pending_tsumugi = true;
+  old.flags._affinity_first_meeting_pending_sui = true;
+  old.flags._fortune_choice_sight = { char: 'sui', chapter: 1, from: 1, until: 3 };
+  old.fortune = { char: 'sui' };
+  f.memory.set(f.core.SAVE_KEY, JSON.stringify(old));
+  assert(f.core.load());
+  const s = f.core.state;
+  assert.equal(s.affinity.sumi, 48);
+  assert.equal(s.affinity.tsumugi, 9);
+  assert.equal(s.affinity.hiyori, 9);
+  assert.equal(s.affinity.sui, undefined);
+  assert.equal(s.affinity.mukai_master, undefined);
+  assert.equal(s.affinityCarry.sui, undefined);
+  assert.equal(s.affinityCarry.hiyori, 0.25);
+  assert.equal(s.met.tsumugi, true);
+  assert.equal(s.flags._affinity_first_meeting_pending_tsumugi, undefined);
+  assert.equal(s.flags._affinity_first_meeting_pending_sui, undefined);
+  assert.equal(s.flags._fortune_choice_sight, undefined);
+  assert.equal(s.fortune, undefined);
+});
+
 console.log(`affinity stages: ${count} PASS; browser/real LOAD not executed`);
+

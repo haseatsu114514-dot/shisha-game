@@ -6,6 +6,8 @@ import { advanceToChapterThree, departChapterThree, CH3_INTRO_SCENES, completeCh
 import { proposeTokyoVisit, bookTokyoVisit, syncTokyoVisits, characterRegion, playerRegion,
   completeTokyoVisitAction, visitContacts, dueTokyoVisit } from "../js/core/tokyo-visits.js";
 import { completeChapterThreeAftermathScene, beginChapterThreeAftermath, CH3_AFTERMATH_SCENES } from "../js/chapters/ch3-aftermath-progress.js";
+import { tokyoTime, TOKYO_FREE_TIMES_V3, TOKYO_EVE_WINDOW } from "../js/core/tokyo-clock.js";
+import { selectChapterThreeEvening, EVENING_WINDOW } from "../js/chapters/ch3-story-wiring.js";
 const definitions = JSON.parse(readFileSync(new URL("../../data/tokyo_visits.json", import.meta.url)));
 const scenes = JSON.parse(readFileSync(new URL("../../data/dialogue/ch3_visits.json", import.meta.url))).dialogues;
 const heroineIds = JSON.parse(readFileSync(new URL("../../data/story_routes.json", import.meta.url))).heroine_ids;
@@ -41,8 +43,8 @@ const memory = new Map();
 globalThis.localStorage = { getItem: key => memory.get(key) ?? null, setItem: (key, value) => memory.set(key, String(value)) };
 function departure() {
   const value = newState();
-  Object.assign(value, { chapter: 2, day: 25, /* 準備3日の後の東京DAY1が従来どおり通算29日になる */ phase: "cleared", lovers: ["tsumugi", "minto", "rin", "samechan", "hiyori"],
-    contacts: ["sumi", "tsumugi", "minto", "rin", "samechan", "hiyori"], money: 23456, stamina: 45 });
+  Object.assign(value, { chapter: 2, day: 25, /* 準備3日の後の東京DAY1が従来どおり通算29日になる */ phase: "cleared", lovers: ["tsumugi", "minto", "rio", "samechan", "hiyori"],
+    contacts: ["sumi", "tsumugi", "minto", "rio", "samechan", "hiyori"], money: 23456, stamina: 45 });
   value.owned.push("home_rig_set");
   value.flags = { _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true, _ch2_tournament: { stage: "complete" } };
   assert(advanceToChapterThree(value));
@@ -53,7 +55,7 @@ function departure() {
 }
 const keptKeys = ["lovers", "contacts", "loverSince", "loveLevel", "lovePts", "affinity", "stats", "statXp", "stamina", "money", "owned", "equip", "goods", "keepsakes", "relationshipMemories", "pendingInvite", "guilt"];
 const kept = value => Object.fromEntries(keptKeys.map(key => [key, structuredClone(value[key])]));
-for (const id of ["tsumugi", "minto", "rin", "samechan", "hiyori"]) {
+for (const id of ["tsumugi", "minto", "rio", "samechan", "hiyori"]) {
   const value = departure(), before = kept(value);
   const proposal = proposeTokyoVisit(value, definitions, id);
   assert(proposal && proposal.arrivalDay >= value.day + 2);
@@ -173,3 +175,52 @@ console.log("PASS: sequential visitors, stale/conflicting offers, missed arrival
   assert.doesNotThrow(() => proposeTokyoVisit(restored, definitions, "tsumugi"));
 }
 console.log("PASS: malformed travel records are discarded without changing the valid save");
+
+// 版3（東京も日常ループ）の前夜デート（BLC02）。12日目の夜が空き時間に入ってから、散歩が必ず12日目に決まり、
+// 前夜（13日目の夜）に会う約束が作れなくなっていた。滞在が前夜にかかる訪問は、散歩を前夜に置く。
+{
+  const routes = JSON.parse(readFileSync(new URL("../../data/story_routes.json", import.meta.url)));
+  assert.equal(EVENING_WINDOW, TOKYO_EVE_WINDOW);
+  const tokyo = (day, slot = 0, lovers = ["tsumugi"]) => {
+    const value = departure();
+    value.flags._ch3_intro.routeVersion = 3;
+    value.lovers = lovers; value.contacts = ["sumi", ...lovers];
+    value.day = value.flags._ch3_intro.startDay + day - 1; value.slot = slot;
+    return value;
+  };
+  const ids = proposal => proposal && [proposal.meetup.id, proposal.date.id];
+  assert.deepEqual(ids(proposeTokyoVisit(tokyo(10), definitions, "tsumugi")), ["d12-noon", "d13-night"], "10日目の相談は前夜の散歩になる");
+  assert.deepEqual(ids(proposeTokyoVisit(tokyo(10, 1), definitions, "tsumugi")), ["d12-noon", "d13-night"]);
+  assert.deepEqual(ids(proposeTokyoVisit(tokyo(9), definitions, "tsumugi")), ["d11-night", "d12-noon"], "滞在が前夜にかからない訪問は今までどおり");
+  assert.deepEqual(ids(proposeTokyoVisit(tokyo(1), definitions, "tsumugi")), ["d3-night", "d4-night"]);
+  assert.equal(proposeTokyoVisit(tokyo(11), definitions, "tsumugi"), null, "二日前を過ぎたら約束できない");
+  // 約束 → 合流 → 前夜。前夜の相手はその恋人ひとりで、前夜デートの台本が選ばれる。
+  const eve = value => tokyoTime(value, TOKYO_FREE_TIMES_V3.find(window => window.id === TOKYO_EVE_WINDOW));
+  {
+    const value = tokyo(10);
+    const proposal = proposeTokyoVisit(value, definitions, "tsumugi");
+    assert(bookTokyoVisit(value, definitions, proposal));
+    value.day = proposal.meetup.day; value.slot = proposal.meetup.slot;
+    assert(completeTokyoVisitAction(value, definitions, value.tokyoVisits.plans[0].id, tokyoTime(value, TOKYO_FREE_TIMES_V3.find(window => window.id === "d12-noon"))));
+    value.day = proposal.date.day; value.slot = proposal.date.slot;
+    assert.equal(characterRegion(value, definitions, "tsumugi"), "tokyo", "前夜も東京にいる");
+    const result = selectChapterThreeEvening(routes, value, definitions, eve(value));
+    assert.equal(result.kind, "date"); assert.deepEqual(result.scenes, ["tournament_date_tsumugi"]);
+    // 東京に住むましろも恋人なら、同じ場所に恋人が二人いる前夜になる（スティーブに面識が無ければ予定の重なり）。
+    value.lovers.push("mashiro"); value.met = { ...value.met, mashiro: true };
+    assert.equal(selectChapterThreeEvening(routes, value, definitions, eve(value)).kind, "overlap");
+  }
+  // 東京に住む恋人（ましろ）は、訪問の約束なしで前夜を一緒に過ごせる。恋人でなければ休む。
+  {
+    const value = tokyo(13, 1, ["mashiro"]);
+    value.met = { ...value.met, mashiro: true };
+    const result = selectChapterThreeEvening(routes, value, definitions, eve(value));
+    assert.equal(result.kind, "date"); assert.deepEqual(result.scenes, ["tournament_date_mashiro"]);
+    assert.equal(selectChapterThreeEvening(routes, value, definitions).kind, "rest", "前夜の窓の外では選ばない");
+    value.lovers = [];
+    assert.equal(selectChapterThreeEvening(routes, value, definitions, eve(value)).kind, "rest", "友人のましろとは前夜デートにならない");
+    value.lovers = ["mashiro"]; value.flags._story_shuraba_unresolved = true;
+    assert.equal(selectChapterThreeEvening(routes, value, definitions, eve(value)).kind, "rest", "話し合いが済むまでは誘えない");
+  }
+}
+console.log("PASS: route v3 books an eve date when the stay covers the eve; a Tokyo-resident lover shares the eve without a visit plan");

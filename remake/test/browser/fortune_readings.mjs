@@ -5,10 +5,9 @@ const { chromium }=createRequire(import.meta.url)('playwright');
 const out=process.env.ARTIFACT_DIR||'docs/qa/hud-fortune-682';fs.mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_EXECUTABLE_PATH||'/usr/bin/chromium'}),results=[];
 try{
- for(const [name,viewport,layout] of [['pc',{width:1280,height:900},'normal'],['touch',{width:844,height:390},'normal'],['ds',{width:390,height:844},'ds']]){
+ for(const [name,viewport] of [['pc',{width:1280,height:900}],['touch',{width:844,height:390}]]){ // DS風（ds）は廃止（横画面一本化）
   const ctx=await browser.newContext({viewport,hasTouch:name!=='pc',reducedMotion:'reduce'}),page=await ctx.newPage(),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
-  await page.addInitScript(layout=>localStorage.setItem('suien_title_layout',layout),layout);
   await page.goto(process.env.BASE_URL||'http://127.0.0.1:8123/remake/');await page.locator('[data-test="title-new"]').waitFor({timeout:45000});await page.locator('#boot').waitFor({state:'detached'});
   await page.evaluate(async()=>{
    window.Q={core:await import('./js/core/state.js'),data:await import('./js/core/data.js'),vn:await import('./js/vn/engine.js'),chapter:await import('./js/chapters/ch1.js'),fortune:await import('./js/daily/fortune.js'),effects:await import('./js/core/fortune-effects.js'),stats:await import('./js/core/stats.js'),access:await import('./js/daily/spot-access.js'),spots:await import('./js/daily/spots.js'),schedule:await import('./js/daily/fortune-schedule.js')};
@@ -49,7 +48,7 @@ try{
   assert.equal(bonus.increase,3);assert(Math.abs(bonus.carry-.4)<1e-9);assert(bonus.consumed&&bonus.sight);
   const persisted=await page.evaluate(()=>{Q.core.save();Q.core.newGame();Q.core.load();return Q.effects.activeFortuneSight(Q.core.state);});assert.equal(persisted.char,'naru');assert.equal(persisted.until,5);
   async function choices(day,target,id){return page.evaluate(async({day,target,id})=>{
-   Q.core.state.day=day;if(target==='rin')Q.effects.grantFortuneReading(Q.core.state,'rin',Q.data.DB.fortuneTrivia);
+   Q.core.state.day=day;if(target==='rio')Q.effects.grantFortuneReading(Q.core.state,'rio',Q.data.DB.fortuneTrivia);
    Q.core.state.met[target]=true;const shown=[];
    Q.vn.vnTest.choose=(did,texts)=>{shown.push({id:did,marked:[...document.querySelectorAll('.vn-choice')].map(n=>n.classList.contains('fortune-hint'))});return 0;};
    await Q.vn.play(id);Q.vn.vnTest.choose=null;return shown;
@@ -57,10 +56,10 @@ try{
   const today=await choices(3,'naru','ch1_naru_first');assert(today.some(x=>x.marked[0]&&!x.marked[1]),'target conversation not marked');
   const last=await choices(5,'naru','ch1_naru_first');assert(last.some(x=>x.marked[0]));
   const expired=await choices(6,'naru','ch1_naru_first');assert(expired.every(x=>x.marked.every(v=>!v)),'hint survived fourth day');
-  const second=await choices(3,'rin','ch1_rin_first');assert(second.some(x=>!x.marked[0]&&x.marked[1]),'hint blindly favors first option');
+  const second=await choices(3,'rio','ch1_rio_first');assert(second.some(x=>!x.marked[0]&&x.marked[1]),'hint blindly favors first option');
   const riftAndTrivia=await page.evaluate(async()=>{
    const snap=JSON.stringify(Q.core.state);
-   // Legacy mask 31 on naru draws from the newly added readings (naru_9 / naru_12 / naru_15) in live doFortune.
+   // Legacy mask 31 on naru draws from readings added after the 5-bit mask (naru_9 onward, incl. the 2026-11-06 naru_16-20) in live doFortune.
    Object.assign(Q.core.state,{chapter:1,day:6,slot:0,fortuneDay:0,money:13000,met:{naru:true},affinity:{naru:10}});
    Q.core.state.flags._fortune_trivia_seen_naru=31;Q.here();
    const newDone=await Q.fortune.doFortune();
@@ -110,7 +109,7 @@ try{
    };
   });
   assert(riftAndTrivia.newDone);
-  assert(riftAndTrivia.newMatched.some(id=>['naru_9','naru_12','naru_15'].includes(id)),'legacy mask 31 did not advance to new naru trivia');
+  assert(riftAndTrivia.newMatched.some(id=>['naru_9','naru_12','naru_15','naru_16','naru_17','naru_18','naru_19','naru_20'].includes(id)),'legacy mask 31 did not advance to new naru trivia');
   assert(riftAndTrivia.beforeRiftOpen);
   assert.equal(riftAndTrivia.beforeRiftHoliday,'本日定休日');
   assert(riftAndTrivia.midTransitionSafe,'mid-selection rift transition charged or granted reading');
@@ -125,8 +124,8 @@ try{
   // Capture real choice DOM before selecting; this scene is authored data, not a synthetic quiz.
   await page.evaluate(()=>{
    Q.vn.vnTest.turbo=false;Q.vn.vnTest.choose=null;
-   const d=Q.data.DB.dialogues.ch1_rin_first,choice=d.lines.find(x=>x.type==='choice'&&x.id==='rin_first_pen');
-   window.preview=Q.vn.play({...d,lines:[{speaker:'rin',face:'normal',text:'……どこを見てたの？'},choice]},{bg:'bg_fookah_showroom'});
+   const d=Q.data.DB.dialogues.ch1_rio_first,choice=d.lines.find(x=>x.type==='choice'&&x.id==='rio_first_pen');
+   window.preview=Q.vn.play({...d,lines:[{speaker:'rio',face:'normal',text:'……どこを見てたの？'},choice]},{bg:'bg_fookah_showroom'});
   });
   await page.waitForFunction(()=>document.querySelector('.vn-text')?.textContent.includes('どこを見てたの'));
   await page.keyboard.press('Enter');await page.waitForTimeout(100);

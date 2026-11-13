@@ -5,13 +5,15 @@
 //   prologue   : 橋渡し → 帰郷 → 自由行動へ
 //   free       : tonari の自由場面（任意）→「博士に連絡する」で日程の場面へ
 //     prep     : 「閉店後の練習」のあと、試作→スミさんの返答→再調整の選択（#1666。結果は試合と後日談に返る）
+//     trial    : prep を終えた夜の tonari で、任意で一度だけ本物の一台を作ってスミさんに吸ってもらう
+//                （#2020 F・ch5-sumi-trial.js。進行は止めない。講評は二杯目の前の試作の返りの後に一行で返る）
 //     decide   : 日程が決まる → scheduled へ（自由行動の日は挟まない。Q15）
 //     defer    : ch5_timeout を読んで free に戻る（日程は未定のまま）
 //   scheduled  : 「会場へ行く」の確認でだけ試合へ。取り消しは ch5_timeout を読んで free へ戻る
 //   match      : 会場入り → 一杯目 → 二杯目の前 → 二本目の制作（recordChapterFiveSecondCup）
 //                → 観客の挙手の合計で勝敗 →（勝ち）余韻／（負け・同数）そのまま後日談へ
-//   aftermath  : 博士の後日談 → tonari へ戻る
-//   finale     : ending の3場面（開始 → 中間 → 日常）→ cleared
+//   aftermath  : 勝負のあと・前半（勝敗で台本が分かれる＋千須への返事）→ 後半（検品札〜一緒に作る一台）→ tonari へ戻る
+//   finale     : ending の場面（開始 → 賄い →（恋人が一人ならその人の後日談）→ 日常 → 鉄仮面さんの名乗り）→ cleared
 //   cleared    : スタッフロール（#517）を最後まで流したら _ch5_staff_roll_done → 周回を解放してタイトルへ。以後の再開は完了カード
 //     post-ending: 恋人が2人以上なら、スタッフロールの後に修羅場→一人ずつの話し直しを読んでからタイトルへ（IR32。postEnding）
 //
@@ -22,9 +24,11 @@
 //   ch5_dream_in / ch5_dream_out は挿入位置が未決のため接続しない（対象外）。
 //   ch5_reflection_placeholder はテスト専用なので接続しない。
 import { selectPostEndingConflict } from "../core/story-routes.js";
+import { STORY_BGM } from "../core/story-audio.js";
+import { SUMI_TRIAL_IDS, sumiTrialRecall } from "./ch5-sumi-trial.js";
 
 // ---- 背景の対応表（1か所に集約）----------------------------------------------------
-// 第5章専用の背景が無いので、全て既存 bg の流用。素材が届いたらこの表だけ直す。
+// 第5章の勝負会場は SMOKE LAB。その他は既存 bg を使用する。
 export const CH5_SCENE_BG = Object.freeze({
   ch5_bridge_after_return: "bg_tonari_inside_night", // 仮置き bg
   ch5_opening: "bg_osu_map_finale",                  // #1177 選定マップ（ch5_osu_07・夜／帰郷場面）
@@ -33,6 +37,14 @@ export const CH5_SCENE_BG = Object.freeze({
   ch5_free_mashiro_visit: "bg_tonari_inside_day",    // 仮置き bg（台本コメント: tonari・昼）
   ch5_free_first_visitor: "bg_tonari_inside",        // 仮置き bg（台本コメント: tonari・夕）
   ch5_free_tonari_practice: "bg_tonari_inside_night", // 仮置き bg（台本コメント: tonari・夜）
+  ch5_tsumugi_serving: "bg_tonari_inside",           // #2606 つむぎの接客（tonari・夕）
+  ch5_tsumugi_makes_for_hajime: "bg_tonari_inside_day", // #2606 休みの日に客として来店（tonari・昼）
+  ch5_tsumugi_busy_night: "bg_tonari_inside_night",  // #2606 満席の夜に働くつむぎ（tonari・夜）
+  ch5_tsumugi_little_notes: "bg_tonari_inside_day",  // #2606 開店前のあいさつの練習（tonari・昼）
+  ch5_tsumugi_counsel: "bg_tonari_inside_night",     // #2606 客の相談に乗る（tonari・夜）
+  ch5_tsumugi_menu_board: "bg_tonari_inside_night",  // #2606 店先の黒板の相談（閉店後→翌朝は台本の bg 行）
+  ch5_free_mashiro_visit_lover: "bg_tonari_inside_day",        // ましろの訪問の末尾に続く（表示は親場面の bg）
+  ch5_free_mashiro_visit_lover_memory: "bg_tonari_inside_day",
   ch5_free_eden_adam: "bg_eden_shop",                // #1588 EDENの任意場面（第1・2章のEDENと同じ背景）
   ch5_prep_trial_heat: "bg_tonari_inside_night",     // 仮置き bg（閉店後の試作。以下 ch5_prep_* も同じ）
   ch5_prep_trial_pack: "bg_tonari_inside_night",
@@ -41,21 +53,28 @@ export const CH5_SCENE_BG = Object.freeze({
   ch5_prep_adjust_pack: "bg_tonari_inside_night",
   ch5_prep_adjust_aroma: "bg_tonari_inside_night",
   ch5_prep_keep: "bg_tonari_inside_night",
+  // 決戦前の実制作練習（#2020 F・ch5-sumi-trial.js）: 閉店後の tonari。二台目の前に続く返りは親場面の bg で表示する
+  ...Object.fromEntries(SUMI_TRIAL_IDS.map(id => [id, id.includes("_recall_") ? "bg_tournament_stage" : "bg_tonari_inside_night"])),
   ch5_schedule_contact: "bg_tonari_inside_night",    // 仮置き bg（閉店後の場面）
   ch5_timeout: "bg_tonari_inside_night",             // 仮置き bg
   ch5_match_day_arrival: "bg_tonari_inside_day",      // 休業日の朝の店から始まる場面なので tonari・昼（会場 SMOKE LAB の背景と切り替えは #2222 待ち）
-  ch5_copy_first_cup: "bg_tournament_stage",         // 仮置き bg
-  ch5_relationship_before_second_cup: "bg_tournament_stage", // 仮置き bg
-  ch5_second_cup_result: "bg_tournament_stage",      // 仮置き bg
-  ch5_second_cup_result_afterglow: "bg_tournament_stage", // 仮置き bg
-  ch5_second_cup_defeat: "bg_tournament_stage",      // 仮置き bg
+  ch5_copy_first_cup: "bg_smoke_lab",
+  ch5_relationship_before_second_cup: "bg_smoke_lab",
+  ch5_second_cup_result: "bg_smoke_lab",
+  ch5_second_cup_result_afterglow: "bg_smoke_lab",
+  ch5_second_cup_defeat: "bg_smoke_lab",
   ch5_prep_recall_heat_adjusted: "bg_tournament_stage", // 二杯目の前の末尾に続く（表示は親場面の bg）
   ch5_prep_recall_heat_kept: "bg_tournament_stage",
   ch5_prep_recall_pack_adjusted: "bg_tournament_stage",
   ch5_prep_recall_pack_kept: "bg_tournament_stage",
   ch5_prep_recall_aroma_adjusted: "bg_tournament_stage",
   ch5_prep_recall_aroma_kept: "bg_tournament_stage",
-  ch5_doctor_after_match: "bg_tournament_stage",     // 仮置き bg
+  ch5_doctor_after_match: "bg_smoke_lab",
+  ch5_doctor_after_match_loss: "bg_smoke_lab",        // 勝負のあと・前半（負け。挙手に合わせて2通り）
+  ch5_doctor_after_match_loss_close: "bg_smoke_lab",
+  ch5_doctor_after_match_tie: "bg_smoke_lab",         // 勝負のあと・前半（同数）
+  ch5_sui_after_match: "bg_smoke_lab",                // 前半の末尾に続く千須への返事（表示は親場面の bg）
+  ch5_doctor_cocreation: "bg_smoke_lab",              // 勝負のあと・後半（検品札→一緒に作る一台。勝敗共通）
   ch5_return_to_tonari: "bg_tonari_inside_night",    // 仮置き bg
   ch5_prep_answer_heat_adjusted: "bg_tonari_inside_night", // 帰店後の末尾に続く（表示は親場面の bg）
   ch5_prep_answer_heat_kept: "bg_tonari_inside_night",
@@ -67,51 +86,70 @@ export const CH5_SCENE_BG = Object.freeze({
   ending_normal: "bg_tonari_inside_night",           // 仮置き bg
   epilogue_tsumugi: "bg_tonari_inside_night",        // 仮置き bg
   epilogue_minto: "bg_tonari_inside_night",          // 仮置き bg
-  epilogue_rin: "bg_tonari_inside_night",            // 仮置き bg
+  epilogue_rio: "bg_tonari_inside_night",            // 仮置き bg
   epilogue_ageha: "bg_tonari_inside_night",          // 仮置き bg
   epilogue_mashiro: "bg_tonari_inside_night",        // 仮置き bg
   epilogue_samechan: "bg_tonari_inside_night",       // 仮置き bg
   epilogue_hiyori: "bg_tonari_inside_night",         // 仮置き bg
+  epilogue_noor: "bg_tonari_inside",                 // 台本の「夕方のtonari」
   ending_daily_smoke: "bg_tonari_inside",            // 台本メタデータの指定（bg_tonari_inside）に一致
+  ending_salaryman_name: "bg_tonari_inside_night",
   // スタッフロールの後の修羅場（IR32）。台本の「後日のtonari。閉店後の店」に合わせて夜の tonari。
+  shuraba_noor_call: "bg_tonari_inside_night",       // 店に入る前に、ドバイのヌールからテレビ電話（#2815）
   shuraba_open: "bg_tonari_inside_night",
   shuraba_tsumugi: "bg_tonari_inside_night",
   shuraba_minto: "bg_tonari_inside_night",
-  shuraba_rin: "bg_tonari_inside_night",
+  shuraba_rio: "bg_tonari_inside_night",
   shuraba_ageha: "bg_tonari_inside_night",
   shuraba_mashiro: "bg_tonari_inside_night",
   shuraba_samechan: "bg_tonari_inside_night",
   shuraba_hiyori: "bg_tonari_inside_night",
+  shuraba_noor: "bg_tonari_inside_night",            // ヌールはテレビ電話で加わる（店のカウンターのスマホ）
   shuraba_accountability: "bg_tonari_inside_night",
   ending_relationship_pending: "bg_tonari_inside_night",
   // 一人ずつの話し直し。台本の書き出しの場所に近い既存 bg（専用素材が無いものは仮置き）。
   shuraba_talk_tsumugi: "bg_cafe_day",               // 仮置き bg（窓際の席）
   shuraba_talk_minto: "bg_cafe_night",               // 仮置き bg（場所の指定なし）
-  shuraba_talk_rin: "bg_fookah_showroom",            // Dr.fookahの2階
+  shuraba_talk_rio: "bg_fookah_showroom",            // Dr.fookahの2階
   shuraba_talk_ageha: "bg_street_night",             // 閉店後の自販機の前
   shuraba_talk_mashiro: "bg_cafe_day",               // 仮置き bg（お茶を頼んで待つ席）
   shuraba_talk_samechan: "bg_street_night",          // 仮置き bg（閉めた後の店先）
   shuraba_talk_hiyori: "bg_street_night",            // 仮置き bg（仕事帰り）
+  shuraba_talk_noor: "bg_home_night",                // 部屋からドバイへのテレビ電話
+  shuraba_sumi_cover: "bg_tonari_inside_night",      // 話し直しの後、閉店後のtonariでスミさんが待っている（STK12）
 });
 
-// ---- BGM の対応表（節目だけ切り替える。無い場面は tonari）---------------------------
-// 第5章専用曲が無いので既存曲の流用（#1668 2-7）。専用曲が入ったらこの表だけ直す。
-export const CH5_DEFAULT_BGM = "tonari";
+// ---- BGM の対応表（差し替えは remake/js/core/story-audio.js の STORY_BGM）------------
+// 店と自由行動の既定は tonari。SMOKE LAB・9000戦・エンディングは仮曲。専用曲が届いたら STORY_BGM だけ直す。
+export const CH5_DEFAULT_BGM = STORY_BGM.shopHome;
 export const CH5_SCENE_BGM = Object.freeze({
-  ch5_match_day_arrival: "bgm_tournament_wait",
-  ch5_copy_first_cup: "bgm_tournament_craft",
-  ch5_relationship_before_second_cup: "bgm_tournament_wait",
-  ch5_second_cup_result: "bgm_judging",
-  ch5_second_cup_result_afterglow: "bgm_aftermath",
-  ch5_second_cup_defeat: "bgm_aftermath",
-  ch5_doctor_after_match: "bgm_aftermath",
+  ch5_match_day_arrival: STORY_BGM.smokeLab,
+  ch5_copy_first_cup: STORY_BGM.ch5Duel,
+  ch5_relationship_before_second_cup: STORY_BGM.smokeLab,
+  ch5_second_cup_result: STORY_BGM.judging,
+  ch5_second_cup_result_afterglow: STORY_BGM.aftermath,
+  ch5_second_cup_defeat: STORY_BGM.aftermath,
+  // 勝負のあと（前半は勝敗で台本が分かれる。後半は共通）
+  ...Object.fromEntries([
+    "ch5_doctor_after_match", "ch5_doctor_after_match_loss", "ch5_doctor_after_match_loss_close",
+    "ch5_doctor_after_match_tie", "ch5_doctor_cocreation",
+  ].map(id => [id, STORY_BGM.aftermath])),
+  // エンディングの会話（スタッフロール前）。修羅場は沈んだ既存曲のまま。
+  ...Object.fromEntries([
+    "ending_start", "ending_normal",
+    "epilogue_tsumugi", "epilogue_minto", "epilogue_rio", "epilogue_ageha",
+    "epilogue_mashiro", "epilogue_samechan", "epilogue_hiyori", "epilogue_noor",
+    "ending_daily_smoke", "ending_salaryman_name",
+  ].map(id => [id, STORY_BGM.ending])),
   // スタッフロールの後の修羅場と話し直し（IR32）は、店の曲を流さず沈んだ既存曲（仮置き）。
   ...Object.fromEntries([
-    "shuraba_open", "shuraba_tsumugi", "shuraba_minto", "shuraba_rin", "shuraba_ageha", "shuraba_mashiro",
-    "shuraba_samechan", "shuraba_hiyori", "shuraba_accountability", "ending_relationship_pending",
-    "shuraba_talk_tsumugi", "shuraba_talk_minto", "shuraba_talk_rin", "shuraba_talk_ageha", "shuraba_talk_mashiro",
-    "shuraba_talk_samechan", "shuraba_talk_hiyori",
-  ].map(id => [id, "bgm_taste_distant"])),
+    "shuraba_noor_call", "shuraba_open", "shuraba_tsumugi", "shuraba_minto", "shuraba_rio", "shuraba_ageha", "shuraba_mashiro",
+    "shuraba_samechan", "shuraba_hiyori", "shuraba_noor", "shuraba_accountability", "ending_relationship_pending",
+    "shuraba_talk_tsumugi", "shuraba_talk_minto", "shuraba_talk_rio", "shuraba_talk_ageha", "shuraba_talk_mashiro",
+    "shuraba_talk_samechan", "shuraba_talk_hiyori", "shuraba_talk_noor",
+  ].map(id => [id, STORY_BGM.tasteDistant])),
+  // 話し直しの後のスミさんの締め（STK12）は、いつもの店の曲に戻す。
+  shuraba_sumi_cover: STORY_BGM.shopHome,
 });
 
 // ---- 場面表 -------------------------------------------------------------------------
@@ -123,13 +161,27 @@ export const CH5_PROLOGUE = Object.freeze([
 ].map(scene => Object.freeze(scene)));
 
 // 自由行動で再生する場面。tonari の3件は昼→夕→夜の順に1回ずつ（台本コメントの時間帯に合わせる）。
+// そのあと、後輩スタッフのつむぎの6場面（接客→はじめに作る→満席の夜→開店前の練習→相談相手→店先の黒板）を順に1回ずつ（#2606）。
+// 閉店後の練習（試作）より後に置き、勝負までの流れを遅らせない。
 // EDEN の任意場面（#1588）は tonari の並びとは別の入口から、いつでも1回だけ読める。
 export const CH5_FREE_SCENES = Object.freeze([
   { id: "ch5_free_mashiro_visit", label: "ましろの訪問", location: "tonari" },
   { id: "ch5_free_first_visitor", label: "初めての客", location: "tonari" },
   { id: "ch5_free_tonari_practice", label: "閉店後の練習", location: "tonari" },
+  { id: "ch5_tsumugi_serving", label: "つむぎの接客", location: "tonari" },
+  { id: "ch5_tsumugi_makes_for_hajime", label: "つむぎの一台", location: "tonari" },
+  { id: "ch5_tsumugi_busy_night", label: "満席の夜", location: "tonari" },
+  { id: "ch5_tsumugi_little_notes", label: "開店前の練習", location: "tonari" },
+  { id: "ch5_tsumugi_counsel", label: "つむぎの相談相手", location: "tonari" },
+  { id: "ch5_tsumugi_menu_board", label: "店先の黒板", location: "tonari" },
   { id: "ch5_free_eden_adam", label: "二つのダブルアップル", location: "EDEN" },
 ].map(scene => Object.freeze(scene)));
+
+// 恋人のましろの来訪で、訪問の末尾に続ける台本（#2024 A2。使い方は下の chapterFiveLoverEcho）。
+export const CH5_MASHIRO_LOVER_ECHO = Object.freeze({
+  visit: "ch5_free_mashiro_visit_lover",
+  memory: "ch5_free_mashiro_visit_lover_memory",
+});
 
 // 閉店後の試作（#1666）。「閉店後の練習」を読んだあと、何を試すか→スミさんが吸って返す→
 // 直すか、そのまま手に覚えさせるかを選ぶ。能力値・日・体力は動かさない（成長は自由行動のみ。
@@ -157,36 +209,64 @@ export const CH5_MATCH_SCENES = Object.freeze({
   loss: "ch5_second_cup_defeat",
 });
 
-// 後日談（story_routes の after_match と同じ順）。
+// 後日談（story_routes の after_match と同じ順）。「勝負のあと」は前半（尋ねる・票が割れる・9000は止めない）と
+// 後半（検品札・エンコード・博士の過去・一緒に作る一台）の二場面（STK04）。
+// 前半は勝敗で台本が分かれる（下の CH5_AFTER_MATCH_OPENINGS）。この表の先頭は勝ったときの台本。
 export const CH5_AFTERMATH = Object.freeze([
   { id: "ch5_doctor_after_match", label: "勝負のあと", location: "会場" },
+  { id: "ch5_doctor_cocreation", label: "片づけのあと", location: "会場" },
   { id: "ch5_return_to_tonari", label: "tonariへ戻る", location: "tonari" },
 ].map(scene => Object.freeze(scene)));
+// 「勝負のあと」を二つに分ける前は、後日談が2場面だった。読み終えた旧保存の aftermath: 2 はそのまま受け入れる。
+// 旧保存が「tonariへ戻る」の手前（aftermath: 1）で止まっていた場合だけ、後半をもう一度読んでから戻る。
+const LEGACY_AFTERMATH_LENGTH = 2;
+
+// 「勝負のあと」前半の台本（story_routes の after_match[0] と after_match_loss_or_tie）。
+// 負け・同数では、勝った博士を折れさせない（STK03）。博士の最初の一言は実際の挙手に合わせる:
+// 二台目で9000の挙手が一台目より減った負けは「票が減りました」、減っていない負けは「票が割れました」。
+export const CH5_AFTER_MATCH_OPENINGS = Object.freeze({
+  win: "ch5_doctor_after_match",
+  loss: "ch5_doctor_after_match_loss",
+  lossClose: "ch5_doctor_after_match_loss_close",
+  tie: "ch5_doctor_after_match_tie",
+});
+// 前半の末尾に、勝敗共通で続ける千須への返事（STK05。読了の確定は親場面と一緒）。
+export const CH5_AFTER_MATCH_TAIL = "ch5_sui_after_match";
 
 // フィナーレで再生しうる ending の全場面。ending_relationship_pending は
 // スタッフロール後段（Q20）側なので含めない。
 export const CH5_ENDING_IDS = Object.freeze([
   "ending_start", "ending_normal",
-  "epilogue_tsumugi", "epilogue_minto", "epilogue_rin", "epilogue_ageha",
-  "epilogue_mashiro", "epilogue_samechan", "epilogue_hiyori",
-  "ending_daily_smoke",
+  "epilogue_tsumugi", "epilogue_minto", "epilogue_rio", "epilogue_ageha",
+  "epilogue_mashiro", "epilogue_samechan", "epilogue_hiyori", "epilogue_noor",
+  "ending_daily_smoke", "ending_salaryman_name",
 ]);
 
 // スタッフロールの後（IR32）: 修羅場の開始・謝罪・話し直しの決意と、恋人ごとの反応・話し直し。
 // data/story_routes.json の conflict と romance[id].conflict / talk と同じ（ch5_progress.mjs が一致を確認）。
 export const CH5_POST_ENDING = Object.freeze({
   open: "shuraba_open", close: "shuraba_accountability", pending: "ending_relationship_pending",
+  // 一人ずつの話し直しを全員読み終えた後に一度だけ読む締め（2026-11-11 オーナー指示・STK12）。
+  // スミさんが裏で一人ずつ話を聞き「本命はあんた一人だ」と説得していたと明かし、「……気をつけろよ」と言う。
+  aftercare: "shuraba_sumi_cover",
 });
 export const CH5_CONFLICT_SCENES = Object.freeze({
-  tsumugi: "shuraba_tsumugi", minto: "shuraba_minto", rin: "shuraba_rin", ageha: "shuraba_ageha",
+  tsumugi: "shuraba_tsumugi", minto: "shuraba_minto", rio: "shuraba_rio", ageha: "shuraba_ageha",
   mashiro: "shuraba_mashiro", samechan: "shuraba_samechan", hiyori: "shuraba_hiyori",
+  noor: "shuraba_noor", // ドバイからテレビ電話で（DSR20）
 });
 export const CH5_TALK_SCENES = Object.freeze({
-  tsumugi: "shuraba_talk_tsumugi", minto: "shuraba_talk_minto", rin: "shuraba_talk_rin", ageha: "shuraba_talk_ageha",
+  tsumugi: "shuraba_talk_tsumugi", minto: "shuraba_talk_minto", rio: "shuraba_talk_rio", ageha: "shuraba_talk_ageha",
   mashiro: "shuraba_talk_mashiro", samechan: "shuraba_talk_samechan", hiyori: "shuraba_talk_hiyori",
+  noor: "shuraba_talk_noor",
 });
+// 遠くに住む恋人（ドバイのヌール）が修羅場に加わる時、開始より前に読むテレビ電話の接続（#2815）。
+// 反応（shuraba_noor）は「つながったまま」「聞こえてた」と、はじめの打ち明けを聞いていた前提で書かれている。
+// 打ち上げ（ch5-party.js）は、お祝いの着信 ch5_party_noor_call を席を選ぶ前に読む。
+export const CH5_CALL_SCENES = Object.freeze({ noor: "shuraba_noor_call" });
 const TALK_OWNER = Object.freeze(Object.fromEntries(Object.entries(CH5_TALK_SCENES).map(([id, scene]) => [scene, id])));
 const CONFLICT_REACTIONS = Object.values(CH5_CONFLICT_SCENES);
+const CONFLICT_CALLS = Object.values(CH5_CALL_SCENES);
 
 // 台本の読み込み対象（ch5.js が FILES に使う）。夢の2場面とテスト専用場面は接続しない。
 export const CH5_SCENE_FILES = Object.freeze({
@@ -195,23 +275,25 @@ export const CH5_SCENE_FILES = Object.freeze({
     "ch5_unrecorded_day",
     ...CH5_FREE_SCENES.map(scene => scene.id),
     ...PREP_TRIAL_IDS.flatMap(trial => [chapterFivePrepScene("trial", trial), chapterFivePrepScene("adjust", trial)]),
-    chapterFivePrepScene("keep"), ...PREP_ECHO_IDS,
+    chapterFivePrepScene("keep"), ...PREP_ECHO_IDS, ...SUMI_TRIAL_IDS,
+    ...Object.values(CH5_MASHIRO_LOVER_ECHO),
     "ch5_schedule_contact", "ch5_timeout",
     ...Object.values(CH5_MATCH_SCENES),
     ...CH5_AFTERMATH.map(scene => scene.id),
+    ...Object.values(CH5_AFTER_MATCH_OPENINGS), CH5_AFTER_MATCH_TAIL,
   ].filter((id, index, all) => all.indexOf(id) === index)),
   ending: Object.freeze([...CH5_ENDING_IDS, CH5_POST_ENDING.pending]),
-  relationship_conflicts: Object.freeze([CH5_POST_ENDING.open, ...CONFLICT_REACTIONS, CH5_POST_ENDING.close,
-    ...Object.values(CH5_TALK_SCENES)]),
+  relationship_conflicts: Object.freeze([...CONFLICT_CALLS, CH5_POST_ENDING.open, ...CONFLICT_REACTIONS, CH5_POST_ENDING.close,
+    ...Object.values(CH5_TALK_SCENES), CH5_POST_ENDING.aftercare]),
 });
 
 const PARTS = Object.freeze(["prologue", "free", "scheduled", "match", "aftermath", "finale", "cleared"]);
 const SCHEDULE_BRANCHES = Object.freeze(["decide", "defer"]);
-const FINALE_LENGTH = 3;
+const FINALE_LENGTH = 4;
 
 /**
  * スタッフロールの後の並びとして正しいか（IR32）。空（何も読まない）か、
- * ［開始→反応2人以上→謝罪］（打ち上げで済んでいれば無し）→ 話し直しの決意 → 話し直し1人以上。
+ * ［（遠くの恋人のテレビ電話の接続）→開始→反応2人以上→謝罪］（打ち上げで済んでいれば無し）→ 話し直しの決意 → 話し直し1人以上。
  * unresolved は、まだ読んでいない話し直しの本人と同じ順（話し直しを読み終えた人から外れる）。
  */
 function isValidPostEnding(post) {
@@ -221,8 +303,11 @@ function isValidPostEnding(post) {
     || step < 0 || step > scenes.length || new Set(scenes).size !== scenes.length) return false;
   if (!scenes.length) return step === 0 && !unresolved.length;
   const at = scenes.indexOf(CH5_POST_ENDING.pending);
-  const head = scenes.slice(0, Math.max(at, 0));
-  const talks = scenes.slice(at + 1);
+  const calls = scenes.slice(0, Math.max(at, 0)).findIndex(id => !CONFLICT_CALLS.includes(id));
+  const head = scenes.slice(Math.max(calls, 0), Math.max(at, 0));
+  // 末尾の締め（aftercare）は任意。足す前に並びを固定した旧保存にはない。
+  const tail = scenes.at(-1) === CH5_POST_ENDING.aftercare ? 1 : 0;
+  const talks = scenes.slice(at + 1, scenes.length - tail);
   const conflict = !head.length || (head[0] === CH5_POST_ENDING.open && head.at(-1) === CH5_POST_ENDING.close
     && head.length >= 4 && head.slice(1, -1).every(id => CONFLICT_REACTIONS.includes(id)));
   if (at < 0 || !conflict || !talks.length || !talks.every(id => TALK_OWNER[id])) return false;
@@ -230,11 +315,21 @@ function isValidPostEnding(post) {
   return unresolved.length === ahead.length && unresolved.every((id, index) => id === ahead[index]);
 }
 
-/** フィナーレの3場面として正しい並びか（先頭は開始、末尾は日常、全て既知の場面）。 */
+const EPILOGUE_IDS = Object.freeze(CH5_ENDING_IDS.filter(id => id.startsWith("epilogue_")));
+
+/**
+ * フィナーレの並び: 開始 → 中間 → 日常 → 鉄仮面さんの名乗り。
+ * 中間は共通の賄い（ending_normal）。恋人が一人なら、賄いを読んでからその人の後日談を続ける（置き換えない。STK11）。
+ * 旧保存の並び（名乗りの無い3場面、賄いを読まずに後日談だけを挟む並び）も引き続き読める。
+ */
 function isValidFinaleScenes(scenes) {
-  return Array.isArray(scenes) && scenes.length === FINALE_LENGTH
-    && scenes.every(id => CH5_ENDING_IDS.includes(id))
-    && scenes[0] === "ending_start" && scenes[FINALE_LENGTH - 1] === "ending_daily_smoke";
+  if (!Array.isArray(scenes) || new Set(scenes).size !== scenes.length
+    || !scenes.every(id => CH5_ENDING_IDS.includes(id)) || scenes[0] !== "ending_start") return false;
+  const body = scenes.at(-1) === "ending_salaryman_name" ? scenes.slice(1, -1) : scenes.slice(1);
+  if (body.at(-1) !== "ending_daily_smoke") return false;
+  const middle = body.slice(0, -1);
+  if (middle.length === 1) return middle[0] === "ending_normal" || EPILOGUE_IDS.includes(middle[0]);
+  return middle.length === 2 && middle[0] === "ending_normal" && EPILOGUE_IDS.includes(middle[1]);
 }
 
 // ---- 章の入口 -----------------------------------------------------------------------
@@ -261,7 +356,7 @@ export function advanceToChapterFive(value) {
   return true;
 }
 
-/** 保存の形と、part と各種フラグの整合を確認する。不正な保存は throw（状態は変更しない）。 */
+/** 章別 SAVE（part/read/secondCup）の形と確定済み進行を検証する。不正な保存は throw。 */
 export function chapterFiveProgress(value) {
   if (value?.chapter !== 5) throw new Error("第5章の保存ではありません");
   const progress = value.flags?._ch5;
@@ -276,10 +371,11 @@ export function chapterFiveProgress(value) {
     && (progress.scheduleDecision === null || SCHEDULE_BRANCHES.includes(progress.scheduleDecision))
     && integer(progress.aftermath, 0, CH5_AFTERMATH.length)
     && (progress.part === "aftermath" ? progress.aftermath < CH5_AFTERMATH.length
-      : !["finale", "cleared"].includes(progress.part) || progress.aftermath === CH5_AFTERMATH.length)
-    && integer(progress.finale, 0, FINALE_LENGTH)
-    && (progress.part !== "finale" || progress.finale < FINALE_LENGTH)
-    && (progress.part !== "cleared" || progress.finale === FINALE_LENGTH)
+      : !["finale", "cleared"].includes(progress.part)
+        || [LEGACY_AFTERMATH_LENGTH, CH5_AFTERMATH.length].includes(progress.aftermath))
+    && integer(progress.finale, 0, progress.finaleScenes?.length ?? FINALE_LENGTH)
+    && (progress.part !== "finale" || progress.finale < (progress.finaleScenes?.length ?? FINALE_LENGTH))
+    && (progress.part !== "cleared" || progress.finale === progress.finaleScenes?.length)
     && (["prologue", "free", "scheduled", "match", "aftermath"].includes(progress.part)
       || progress.finaleScenes !== null || progress.finale === 0)
     && (progress.finaleScenes === null || isValidFinaleScenes(progress.finaleScenes))
@@ -287,8 +383,10 @@ export function chapterFiveProgress(value) {
     && (progress.part !== "cleared" || isValidFinaleScenes(progress.finaleScenes))
     && (progress.part !== "finale" || progress.finaleScenes !== null || progress.finale === 0)
     && (progress.won === null || progress.won === true || progress.won === false)
-    // 二本目の記録より前の保存（勝ち固定だった頃）には secondCup が無い。無い／null は未制作として読む。
+    // U5: 二本目の制作途中は保存しない。無い／null は未制作として読み、二本目の前から作り直す。
+    // 勝ち固定だった頃の旧保存にも secondCup が無い。
     && (progress.secondCup == null || isValidSecondCup(progress.secondCup))
+    // 確定済みの挙手から得る勝敗と won の食い違いだけを拒否し、読込時に票や結果を更新しない。
     && (progress.secondCup == null || progress.won === null
       || progress.won === (secondCupOutcome(progress.secondCup) === "win"))
     && (!["aftermath", "finale", "cleared"].includes(progress.part) || progress.won !== null)
@@ -360,9 +458,21 @@ export function recordChapterFivePrepAdjustment(value, adjusted) {
 export function chapterFivePrepEcho(value, id) {
   const { prep } = chapterFiveProgress(value);
   if (!prep || prep.adjusted === null) return [];
-  if (id === CH5_MATCH_SCENES.beforeSecond) return [prepEchoId("recall", prep)];
+  // 決戦前の実制作練習（#2020 F）で講評まで読んだ一台は、試作の返りの後に一行続ける
+  if (id === CH5_MATCH_SCENES.beforeSecond) return [prepEchoId("recall", prep), ...sumiTrialRecall(value)];
   if (id === CH5_AFTERMATH[CH5_AFTERMATH.length - 1].id) return [prepEchoId("answer", prep)];
   return [];
+}
+
+// ---- 恋人のましろの来訪（#2024 A2・2026-11-05 オーナー決定 (B)）---------------------------
+// ましろは東京に住むので第5章の地元のデートに誘わず、第5章の東京にも出ない（FIN10）。恋人の節目（lover_events の
+// lover_mashiro_lv*）は、第5章で一度だけ会える tonari の訪問（ch5_free_mashiro_visit）につなぐ。
+// 恋人のときだけ訪問の末尾に続きを読み（読了の確定は親場面と一緒）、未読の節目があれば思い出す一拍を足す。
+// 節目そのものは読了・確定の後に ch5-daily.js が readLoverMilestone で一つだけ読む。フラグ・保存項目は増やさない。
+/** 場面の末尾に続ける恋人の台本。milestoneDue＝ましろに未読の節目がある（romance.js の loverMilestoneDue）。 */
+export function chapterFiveLoverEcho(value, id, { milestoneDue = false } = {}) {
+  if (id !== "ch5_free_mashiro_visit" || !(value?.lovers || []).includes("mashiro")) return [];
+  return milestoneDue ? [CH5_MASHIRO_LOVER_ECHO.visit, CH5_MASHIRO_LOVER_ECHO.memory] : [CH5_MASHIRO_LOVER_ECHO.visit];
 }
 
 // ---- 節目の LIME（#1668 2-8）--------------------------------------------------------
@@ -371,7 +481,7 @@ export function chapterFivePrepEcho(value, id) {
 export const CH5_LIME_CONDITION = "ch5_milestone";
 export const CH5_LIME_MILESTONES = Object.freeze({
   prep: "prep",               // 日程が決まった夜（scheduled のカード）
-  afterMatch: "after_match",  // 勝負のあと、tonari へ戻る前（後日談の2場面目のカード）
+  afterMatch: "after_match",  // 勝負のあと、tonari へ戻る前（後日談の最後の場面のカード）
 });
 
 function limeMilestoneOpen(progress, milestone) {
@@ -412,7 +522,7 @@ export function recordChapterFiveScheduleDecision(value, branch) {
   return true;
 }
 
-/** 会場入りの確認で「向かう」が選ばれたときに runner が呼ぶ。状態遷移はここだけ。 */
+/** U1 の入場境界。会場入り確認で part=match に進める。二本目の制作開始とは別。 */
 export function beginChapterFiveMatch(value) {
   const progress = chapterFiveProgress(value);
   if (progress.part !== "scheduled") return false;
@@ -425,7 +535,7 @@ export function beginChapterFiveMatch(value) {
 // ---- 試合 ---------------------------------------------------------------------------
 // 正本（brand/story_and_structure.md「同じ葉で二本」）: 同じ観客が一本目・二本目の両方を吸い、それぞれ良かった方へ
 // 挙手する。二本の合計票で勝敗を決める。審査員の採点や恋愛人数の加点は持ち込まない。
-// 一本目は台本どおり 9000 が僅かに先取（固定）。二本目は、はじめが実際に作った一台の出来で挙手が動く。
+// 一本目は台本で確定する固定票（実制作なし）。二本目だけ、はじめが実際に作った一台の出来で挙手が動く。
 export const CH5_AUDIENCE = 40;
 export const CH5_FIRST_CUP_VOTES = Object.freeze({ hajime: 19, machine: 21 });
 // 9000 も吸う速さに合わせて調整するので、どれだけ良い一台でも二本目の挙手は一方的にならない。
@@ -463,7 +573,7 @@ function secondCupOutcome(cup) {
   return tally.hajime > tally.machine ? "win" : tally.hajime === tally.machine ? "tie" : "loss";
 }
 
-/** 二本の挙手（一本目・二本目・合計）。二本目が未制作なら null。 */
+/** 保存済みの二本の挙手（一本目・二本目・合計）を読む。二本目が未制作なら null。 */
 export function chapterFiveVoteTally(value) {
   const cup = chapterFiveProgress(value).secondCup;
   if (cup == null) return null;
@@ -471,7 +581,8 @@ export function chapterFiveVoteTally(value) {
 }
 
 /**
- * 二本目を作り終えたときに runner が呼ぶ。二本目の前の場面を読み終え、まだ記録が無い試合だけ受け付ける。
+ * 二本目の投票確定境界。制作完了後、一度だけ観客の挙手を secondCup に記録する。
+ * 二本目の前の場面を読み終え、まだ記録が無い試合だけ受け付ける。
  * total は finalize の総合、category は調整実績の区分（naruTastingCategory と同じ土台）か "failed"。
  */
 export function recordChapterFiveSecondCup(value, { total, category, failed = false, review = [] }) {
@@ -501,6 +612,34 @@ export function chapterFiveMatchOutcome(value) {
   return null;
 }
 
+// ---- 勝負のあと（後日談）-------------------------------------------------------------
+/** 「勝負のあと」前半の台本。勝敗と、二台目で9000の挙手が一台目より減ったかで決まる（保存済みの挙手を読むだけ）。 */
+function afterMatchOpening(progress) {
+  const cup = progress.secondCup;
+  // 二本目の記録が無いのは勝ち固定の頃の旧保存だけ（負け・同数は記録なしでは確定できない）。
+  const outcome = cup != null ? secondCupOutcome(cup) : progress.won === false ? "loss" : "win";
+  if (outcome === "win") return CH5_AFTER_MATCH_OPENINGS.win;
+  if (outcome === "tie") return CH5_AFTER_MATCH_OPENINGS.tie;
+  return cup != null && cup.votes.machine < CH5_FIRST_CUP_VOTES.machine
+    ? CH5_AFTER_MATCH_OPENINGS.lossClose : CH5_AFTER_MATCH_OPENINGS.loss;
+}
+
+function aftermathScene(progress) {
+  const scene = CH5_AFTERMATH[progress.aftermath];
+  return progress.aftermath === 0 ? Object.freeze({ ...scene, id: afterMatchOpening(progress) }) : scene;
+}
+
+/** 後日談で今読む場面（{ id, label, location }）。前半は勝敗に合う台本のID。後日談の外では null。 */
+export function chapterFiveAftermathScene(value) {
+  const progress = chapterFiveProgress(value);
+  return progress.part === "aftermath" ? aftermathScene(progress) : null;
+}
+
+/** 場面の末尾に必ず続ける台本（勝敗で分かれる「勝負のあと」前半の、共通の締め）。読了の確定は親場面と一緒。 */
+export function chapterFiveSceneTail(id) {
+  return Object.values(CH5_AFTER_MATCH_OPENINGS).includes(id) ? [CH5_AFTER_MATCH_TAIL] : [];
+}
+
 // ---- フィナーレ ---------------------------------------------------------------------
 /**
  * エンディングの context（story_routes の location_contract 準拠。#517）。runner はこれで selectStoryEnding を呼ぶ。
@@ -517,7 +656,7 @@ export function chapterFiveEndingContext(routes, value) {
 }
 
 /**
- * エンディングの3場面を受け取り、finale の再生順として固定する。
+ * エンディングの再生順を固定する。旧保存の3場面も引き続き読める。
  * runner は chapterFiveEndingContext で selectStoryEnding を呼び、その結果をここへ渡す。
  * 一度固定した順は保存に残るので、恋人の状態が後から変わっても読みかけのフィナーレは差し替えない。
  */
@@ -554,23 +693,34 @@ export function recordChapterFiveCredits(value) {
 // 許した・別れたことにはしない（台本どおり返事は本人に残る）。一人の甘い後日談（epilogue_*）へは進まない。
 // 並びはスタッフロールを流し終えた後に一度だけ保存へ固定する（postEnding）。読んでいる途中のLOADは同じ場面から。
 const PARTY_DONE_FLAG = "_ch5_after_party"; // ch5-party.js の PARTY_FLAG（打ち上げを読み終えた）
+const PARTY_CONFLICT_FLAG = "_ch5_party_conflict"; // ch5-party.js の PARTY_CONFLICT_FLAG（打ち上げで反応まで読んだ恋人）
 
 /**
  * スタッフロールの後の context。第5章は全員が帰郷後なので、恋人は全員「後日のtonari」に来られる（chapterFiveEndingContext と同じ）。
- * 打ち上げ（ch5-party.js）で修羅場が起きていれば、恋人はその席で全員聞いている（会ったヒロインは全員出席。PTY03）。
- * その時は修羅場を二度起こさず（PTY04）、全員を未解決として話し直しだけへ進む。
+ * 打ち上げ（ch5-party.js）で修羅場が起きていれば、その席で反応まで読んだ恋人は、修羅場を二度起こさず（PTY04）
+ * 未解決として話し直しだけへ進む。打ち上げの後に恋人になった相手（持ち越しの告白・IR33）は反応を読んでいないので
+ * 反応済みにはせず、ふつうのスタッフロールの後と同じく「その場の恋人」として数える（#2815。2人以上なら修羅場から、
+ * 1人なら反応も話し直しも読まない＝読んでいない反応を話し直しで引用しない）。
+ * 旧保存（反応まで読んだ恋人の記録 _ch5_party_conflict が無い打ち上げ済みの修羅場）は区別できないので、
+ * 従来どおり現在の恋人全員を反応済みとする（反応を二度読ませない側に倒す）。
  */
 export function chapterFivePostEndingContext(routes, value) {
   const lovers = [...new Set(value.lovers || [])].filter(id => routes.heroine_ids.includes(id));
   const confronted = value.flags?.[PARTY_DONE_FLAG] === true && value.flags?._story_shuraba_unresolved === true;
-  return confronted ? { present: [], unresolved: lovers } : { present: lovers, unresolved: [] };
+  if (!confronted) return { present: lovers, unresolved: [] };
+  const record = value.flags?.[PARTY_CONFLICT_FLAG];
+  const reacted = Array.isArray(record) ? new Set(record) : new Set(lovers);
+  return { present: lovers.filter(id => !reacted.has(id)), unresolved: lovers.filter(id => reacted.has(id)) };
 }
 
 /** スタッフロールの後に読む並び（{ kind, scenes, unresolved }）。話し直す相手がいなければ空（kind "none"）。 */
 export function chapterFivePostEndingPlan(routes, value) {
   const result = selectPostEndingConflict(routes, value, chapterFivePostEndingContext(routes, value));
   if (!result.talks?.length) return { kind: "none", scenes: [], unresolved: [] };
-  return { kind: result.kind, scenes: [...result.scenes, ...result.talks], unresolved: [...result.unresolved] };
+  // 遠くの恋人は、修羅場の開始（はじめの打ち明け）より前にテレビ電話をつなぐ（反応が「聞こえてた」と受ける）
+  const calls = result.kind === "conflict" ? result.participants.map(id => CH5_CALL_SCENES[id]).filter(Boolean) : [];
+  return { kind: result.kind, scenes: [...calls, ...result.scenes, ...result.talks, CH5_POST_ENDING.aftercare],
+    unresolved: [...result.unresolved] };
 }
 
 /** スタッフロールを流し終え、スタッフロールの後の並びをまだ決めていないか。 */
@@ -596,6 +746,19 @@ export function chapterFivePostEndingNext(value) {
   const talks = post.scenes.filter(scene => TALK_OWNER[scene]);
   return { id, talk: TALK_OWNER[id] || null, index: talks.indexOf(id) + 1, total: talks.length };
 }
+
+/**
+ * スタッフロールの後の修羅場に同席している恋人（反応の場面が並びにある人。修羅場が無い並びでは空）。
+ * 視線のカットイン（motions/gaze.js）に出す人。遠くの恋人（ヌール）はテレビ電話の画面越し（remote）。
+ */
+export function chapterFivePostEndingCast(value) {
+  const scenes = chapterFiveProgress(value).postEnding?.scenes || [];
+  return Object.entries(CH5_CONFLICT_SCENES).filter(([, scene]) => scenes.includes(scene))
+    .map(([id]) => ({ id, remote: !!CH5_CALL_SCENES[id] }));
+}
+
+/** 修羅場の空気（core/scene-mood.js の "dread"）で読む場面: 開始・恋人ごとの反応・謝罪。 */
+export const chapterFivePostEndingTense = (id) => id === CH5_POST_ENDING.open || id === CH5_POST_ENDING.close || CONFLICT_REACTIONS.includes(id);
 
 /** まだ話し直していない恋人（location_contract.unresolved）。並びを決める前は空。 */
 export function chapterFivePostEndingUnresolved(value) {
@@ -727,7 +890,8 @@ export function completeChapterFiveScene(value, id) {
     return false;
   }
   if (part === "aftermath") {
-    if (CH5_AFTERMATH[progress.aftermath]?.id !== id) return false;
+    // 前半は勝敗に合う台本だけを確定できる（負けた保存で勝ちの台本を読んだことにしない）。
+    if (aftermathScene(progress).id !== id) return false;
     progress.read[id] = true;
     progress.aftermath += 1;
     if (progress.aftermath === CH5_AFTERMATH.length) {
@@ -740,7 +904,7 @@ export function completeChapterFiveScene(value, id) {
     if (!progress.finaleScenes || progress.finaleScenes[progress.finale] !== id) return false;
     progress.read[id] = true;
     progress.finale += 1;
-    if (progress.finale === FINALE_LENGTH) {
+    if (progress.finale === progress.finaleScenes.length) {
       progress.part = "cleared";
       value.flags._ch5_cleared = true;
       value.phase = "cleared";

@@ -1,10 +1,10 @@
 import { storeLogo } from "../core/store-logos.js";
 import { spendableMoney } from "../core/travel-budget.js";
 // Dr.fookah（問屋街の卸直営店）。フレーバー・機材の売り買いは時間を使わない。
-// 2階のショールーム（凛）へ上がると1行動使う。
+// 2階のショールーム（凛想）へ上がると1行動使う。
 import { CITY_BACKGROUNDS } from "../core/city-locations.js";
 import { WIDEHANGA_FLAVORS, WIDEHANGA_SHOP_NAME, TOKYO_FLAVORS, TOKYO_SHOP_NAME, DUBAI_SHOP_NAME, tokyoShopFlavors } from "./shop-catalogs.js";
-import { el, yen } from "../core/util.js";
+import { el, yen, sleep } from "../core/util.js";
 import { shopText, shopProductName, groupShopFlavors } from "./shop-display.js";
 import { DB, bgUrl } from "../core/data.js";
 import { showScreen, setBg, toast, modal, retire } from "../core/ui.js";
@@ -13,21 +13,23 @@ import { growthSkill, SKILL_TUNING } from "../core/growth-effects.js";
 import { cueTransition, refreshPlaceCue, cancelPlaceCue } from "../core/transitions.js";
 import { artImg } from "../craft/art.js";
 import { addMoney, addStamina } from "../core/stats.js";
-import { SE, playBgm } from "../core/audio.js";
+import { SE, playBgm, currentBgm } from "../core/audio.js";
 import { visitChar } from "./spots.js";
-import { RIN_AWAY_DAY } from "../core/rules.js";
-import { rinUnavailable as rinVisitReason } from "./spot-hours.js";
-import { kujiRows, goodsSellRows } from "./kuji.js";
+import { RIO_AWAY_DAY } from "../core/rules.js";
+import { rioUnavailable as rioVisitReason } from "./spot-hours.js";
+import { kujiRows, hasKuji, kujiLooks, goodsSellRows } from "./kuji.js";
 import { SHOP_ART } from "./shop-art.js";
 import { AF_VANILLA_ART } from "./shop-art-af-vanilla.js";
 import { REMAINING_SHOP_ART } from "./shop-art-remaining.js";
 import { LIMITED_FLAVOR_ART } from "./shop-art-limited.js";
 import { NEW_FLAVOR_ART } from "./shop-art-new-flavors.js";
+import { FLAVOR_CARTONS_3287_ART } from "./shop-art-flavor-cartons-3287.js";
 import { CHARACTER_FLAVOR_ART } from "./shop-art-character-flavors.js";
 import { SHOP_EQUIPMENT_ART } from "./shop-equipment-art.js";
 import { flavorThermalGuide } from "../craft/temperature-model.js";
 import { flavorFeatureCard, flavorTags, equipmentUse, equipmentGuide } from "../craft/flavor-guide.js";
 import { homeRig } from "./home-rig.js";
+import { greetHomeShop } from "./shop-greeting.js";
 
 // 店頭に並ぶフレーバー（ch1）。定番＋レシピ帳のヒントで出てくる組み合わせの材料
 export const SHOP_FLAVORS = [
@@ -44,7 +46,7 @@ export const releasedFlavor = (id, chapter = state?.chapter) => !!DB.flavorById[
 const SHOP_EQUIP_TYPES = ["bowl", "hms", "charcoal"];
 const CAT_LABEL = { cooling: "清涼", sweet: "スイート", fruit: "フルーツ", spice: "スパイス", floral: "フローラル" };
 const TYPE_LABEL = { bowl: "ボウル", hms: "HMD", charcoal: "炭", homeware: "シーシャ台" };
-export { RIN_AWAY_DAY };
+export { RIO_AWAY_DAY };
 
 // フレーバーは1箱50g（旧版 N3）。買う＝在庫+50g。自宅の試作・店への持ち込み・大会の課題以外の葉で減る（課題フレーバーは大会が支給＝減らない）
 export const FLAVOR_BOX_GRAMS = 50;
@@ -115,7 +117,7 @@ function windowArt(item, url, box, dimensions, size, kind, fallback) {
   return root;
 }
 const generatedFlavorArt = (id) => AF_VANILLA_ART[id] || SHOP_ART[id] || REMAINING_SHOP_ART[id] || LIMITED_FLAVOR_ART[id]
-  || NEW_FLAVOR_ART[id] || CHARACTER_FLAVOR_ART[id];
+  || NEW_FLAVOR_ART[id] || CHARACTER_FLAVOR_ART[id] || FLAVOR_CARTONS_3287_ART[id];
 /** 制作の葉選びも、ショップで採用済みの商品パッケージを使う。未収録・配信失敗は文字へ。 */
 export function flavorPackageArt(id, size = 54) {
   const item = { id };
@@ -140,72 +142,106 @@ function productArt(item, flavor, size = 66) {
 function shopHeader(sub, money, name = "Dr.fookah", branded = false) {
   return el("header.shop-head", [branded ? el("h2.shop-brand", [storeLogo("shop", { width: 100, height: 44 }), el("span", { text: name })]) : el("h2", { text: name }), el("span.shop-sub", { text: sub }), money]);
 }
-const rinUnavailable = () => rinVisitReason(state);
+const rioUnavailable = () => rioVisitReason(state);
+const homeShopInFlight = new WeakSet();
 
 /** 入店前に行き先を選ぶ。買い出し・大会準備の案内では、そのまま1Fへ進む。戻り値は従来どおり。 */
 export async function openShop(opts = {}) {
   if (opts.branch === "tokyo") {
     // 第3章の東京と、第5章に東京へ来た時（#2033）。品ぞろえは第3章の東京店と同じ（ナイトサイドはヴォルクへの配達の後から。#1657）。
     if (![3, 5].includes(state.chapter)) return null;
-    return openCounter({ flavorIds: tokyoShopFlavors(state), stockChapter: 3, shopName: TOKYO_SHOP_NAME });
+    return openCounter({ flavorIds: tokyoShopFlavors(state), stockChapter: 3, shopName: TOKYO_SHOP_NAME, kujiShop: "tokyo" });
   }
   if (opts.branch === "dubai") {
     // 第4章のドバイと、第5章にドバイへ来た時（#2033 E）。シーシャくじもほかの店と同じく引ける（2026-11-02 オーナー
-    // 「お金の使い道としてドクターフーカーくじを各地で」。箱は地元・柚ヶ谷・東京と共通）。
+    // 「お金の使い道としてドクターフーカーくじを各地で」）。くじは店ごとに1種類で、ドバイ店は特注台くじ（KJ11）。
     if (![4, 5].includes(state.chapter)) return null;
     return openCounter({ flavorIds: DUBAI_FLAVORS, stockChapter: 4, shopName: DUBAI_SHOP_NAME,
-      subtitle: "日本で出た葉がそろう", branded: true });
+      subtitle: "日本で出た葉がそろう", branded: true, kujiShop: "dubai" });
   }
   if (opts.branch === "widehanga") {
     if (state.chapter < 2) return null;
-    return openCounter({ flavorIds: WIDEHANGA_FLAVORS, stockChapter: 2, shopName: WIDEHANGA_SHOP_NAME, background: CITY_BACKGROUNDS.shop });
+    return openCounter({ flavorIds: WIDEHANGA_FLAVORS, stockChapter: 2, shopName: WIDEHANGA_SHOP_NAME, background: CITY_BACKGROUNDS.shop, kujiShop: "widehanga" });
   }
-  if (!opts.errand) {
-    const destination = await chooseShopFloor();
-    if (destination !== "shop") return destination;
-  }
-  refreshPlaceCue("shop");
-  return openCounter(opts);
+  const owner = state;
+  if (homeShopInFlight.has(owner)) return null;
+  homeShopInFlight.add(owner);
+  try {
+    const greeted = await greetHomeShop(opts);
+    // LOAD・タイトルで捨てた買い出しの呼出し元を再開しない。旧counter/入口と同じ境界。
+    if (state !== owner) return new Promise(() => {});
+    if (!greeted) return null;
+    if (!opts.errand && !opts.direct) {
+      const destination = await chooseShopFloor();
+      if (destination !== "shop") return destination;
+    }
+    refreshPlaceCue("shop");
+    return await openCounter(opts);
+  } finally { homeShopInFlight.delete(owner); }
 }
+// 入口の写真は、入口を出す前に読み込みとデコードを待つ（#3203: 地図から入った直後のフレームで写真の枠が空白だった）。
+// 通信が遅くても入口は上限で出し、写真が届くまでは枠に下地を見せる（届いたら外す）。
+const FLOOR_PHOTO_WAIT_MS = 1500;
 function chooseShopFloor() {
   return new Promise((resolve) => {
     const session = state;
     let finished = false;
+    const photos = [];
     const finish = (destination) => {
       if (finished || state !== session || !root.isConnected) return;
-      if (destination === "rin" && rinUnavailable()) return;
+      if (destination === "rio" && rioUnavailable()) return;
       finished = true;
-      // 2Fは呼び出し側の体力確認後にvisitRinで予約する。見送り時に演出を残さない。
+      // 2Fは呼び出し側の体力確認後にvisitRioで予約する。見送り時に演出を残さない。
       if (destination === "shop") refreshPlaceCue("shop"); else cancelPlaceCue("shop");
       destination ? SE.select() : SE.cancel();
       retire(root); resolve(destination);
     };
-    const unavailable = rinUnavailable();
-    const card = (floor, title, desc, bg, destination, disabled = false) => el(`button.shop-floor${floor === "2F" ? ".showroom" : ""}`, {
-      disabled, dataset: { test: destination === "rin" ? "shop-upstairs" : "shop-enter" }, onclick: () => finish(destination),
-    }, [
-      el("span.shop-floor-picture", [el("img", { src: bgUrl(bg), alt: "", decoding: "async" }), el("span.shop-floor-number", { text: floor })]),
-      el("span.shop-floor-caption", [el("b", { text: title }), el("small", { text: desc }), el("span.shop-floor-arrow", { text: "↗", "aria-hidden": "true" })]),
-    ]);
-    const root = showScreen("shop-entry", el("section.shop-paper.shop-entry", { "aria-label": "Dr.fookahの行き先" }, [
+    const unavailable = rioUnavailable();
+    const card = (floor, title, desc, bg, destination, disabled = false, label = "") => {
+      const photo = el("img", { src: bgUrl(bg), alt: "", decoding: "async" });
+      const picture = el("span.shop-floor-picture", { dataset: { loading: "true" } }, [photo, el("span.shop-floor-number", { text: floor })]);
+      const shown = () => { delete picture.dataset.loading; };
+      // 読めなかった写真は下地のまま残す（空白の枠にしない）。
+      photos.push(photo.decode().then(shown, () => { if (photo.complete && photo.naturalWidth) shown(); }));
+      return el(`button.shop-floor${floor === "2F" ? ".showroom" : ""}`, {
+        disabled, ...(label ? { "aria-label": `${title}・${label}` } : {}), dataset: { test: destination === "rio" ? "shop-upstairs" : "shop-enter" }, onclick: () => finish(destination),
+      }, [
+        picture,
+        el("span.shop-floor-caption", [el("b", { text: title }), el("small.shop-badge", { text: desc }), el("span.shop-floor-arrow", { text: "↗", "aria-hidden": "true" })]),
+      ]);
+    };
+    const root = el("section.shop-paper.shop-entry", { "aria-label": "Dr.fookahの行き先" }, [
+      // 入口では HUD の札を隠すので、所持金はヘッダーに出す（#2958）。
       shopHeader("卸直営店", el("div.shop-money", [el("small", { text: "所持金" }), el("span", { text: priceText(state.money) })])),
       el("h3", { text: "今日は、どちらへ？" }),
       el("div.shop-floors", [
-        card("1F", "買い物", "時間消費なし", "bg_shop", "shop"),
-        card("2F", "夜のショールーム", unavailable || "相談受付中・1行動消費", "bg_fookah_showroom", "rin", !!unavailable),
+        card("1F", "買い物", "⏱ 0", "bg_shop", "shop", false, "時間消費なし"),
+        card("2F", "夜のショールーム", unavailable === "2階の相談は夜から" ? "🌙 夜" : unavailable || "相談受付中・1行動消費", "bg_fookah_showroom", "rio", !!unavailable, unavailable === "2階の相談は夜から" ? unavailable : ""),
       ]),
       el("footer.shop-entry-foot", [el("button.shop-back", { text: "← 街に戻る", dataset: { test: "shop-entry-back" }, onclick: () => finish(null) })]),
-    ]));
+    ]);
+    // 待っている間に別のセーブ・タイトルへ移ったら、古い入口は出さない（finish と同じく解決もしない）。
+    Promise.race([Promise.all(photos), sleep(FLOOR_PHOTO_WAIT_MS)]).then(() => {
+      if (state === session) showScreen("shop-entry", root);
+    });
   });
 }
 
 /** 1階物販。数量選択だけでは支払わず、確定時に価格・在庫・経費を再確認する。 */
 function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag = "_errand_mint_expensed", flavorIds = SHOP_FLAVORS, stockChapter = 1, shopName = "Dr.fookah", background = null,
-  subtitle = stockChapter === 2 ? "柚ヶ谷店・県大会の仕入れ" : "1F ショップ", branded = stockChapter === 2, kuji = true } = {}) {
+  subtitle = stockChapter === 2 ? "柚ヶ谷店・県大会の仕入れ" : "1F ショップ", branded = stockChapter === 2, kuji = true, kujiShop = "home" } = {}) {
   return new Promise((resolve) => {
     const session = state;
     let finished = false, confirming = false, tab = "flavor", category = "all";
+    let kujiBgmBefore = null, kujiBgmActive = false;
+    const restoreKujiBgm = () => {
+      if (kujiBgmActive && currentBgm() === "bgm_ethnic09") playBgm(kujiBgmBefore);
+      kujiBgmBefore = null; kujiBgmActive = false;
+    };
     const cart = new Map();
+    // 買い出しはフレーバーID（文字列）の時だけ。真偽値などの誤用は「指定なし」として扱い、
+    // 在庫の無いIDへの退出条件で店を出られなくなる事故を防ぐ。
+    if (typeof errand !== "string") errand = null;
     const firstErrand = ["mint", "lemon"].includes(errand) && expense && ["_errand_mint_expensed", "_errand_lemon_expensed"].includes(expenseFlag) && !session.flags._errand_shop_done;
     setBg(background || bgUrl("bg_shop"), { fast: true, ready: [FLAVOR_ART, ...Object.values(SHOP_ART).map(art => art.url), ...new Set(Object.values(CHARACTER_FLAVOR_ART).map(art => art.url))] });
     playBgm("kansetsu_shomei_to_black_coffee");
@@ -309,7 +345,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const sellRows = () => {
       const rows = state.owned.map((id) => DB.equipById[id]).filter((e) => e && !Object.values(state.equip).includes(e.id)).map((e) =>
         el("div.shop-row", [productArt(e, false),
-          el("div.shop-main", [el("b", { text: e.name }), el("small", { text: e.unsellable ? "贈り物なので売れない" : "中古買い取り" })]),
+          el("div.shop-main", [el("b", { text: e.name }), el("small", { text: e.kuji_only ? "くじ限定の台なので売れない" : e.unsellable ? "贈り物なので売れない" : "中古買い取り" })]),
           e.unsellable ? el("span.shop-owned", { text: "売却不可", dataset: { test: `sell-locked-${e.id}` } }) : el("button.btn.small", {
             text: `${yen(e.sell_price)}で売る`, dataset: { test: `sell-${e.id}` }, onclick: async () => {
               if (!await confirmSale(e.name, e.sell_price)) return;
@@ -351,7 +387,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       const items = groupShopFlavors(flavorIds.filter(listed).map((id) => DB.flavorById[id]).filter((f) => f && (category === "all" || category === f.category)));
       if (firstErrand) items.sort((a, b) => Number(b.id === errand) - Number(a.id === errand));
       body.replaceChildren(...(tab === "flavor" ? items.map((f) => productRow(f, true))
-        : tab === "equip" ? DB.equipment.filter(item => forSale(item, stockChapter)).map((e) => productRow(e, false)) : tab === "kuji" ? kujiRows(() => { if (live()) render(); }) : sellRows()));
+        : tab === "equip" ? DB.equipment.filter(item => forSale(item, stockChapter)).map((e) => productRow(e, false)) : tab === "kuji" ? kujiRows(() => { if (live()) render(); }, kujiShop) : sellRows()));
       body.scrollTop = scroll;
       summary.replaceChildren(el("small", { text: "合計" }), el("strong", { text: priceText(total) }), el("span", { text: spendableMoney(state) >= total ? `購入後 ${priceText(state.money - total)}` : `あと ${priceText(total - spendableMoney(state))}` }));
       summary.disabled = !count;
@@ -394,7 +430,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const leave = async () => {
       if (!live() || confirming) return;
       if (errand && flavorStock(errand) < minStock) {
-        SE.error(); tab = "flavor"; category = "all"; render();
+        SE.error(); restoreKujiBgm(); tab = "flavor"; category = "all"; render();
         body.querySelector(".errand")?.scrollIntoView({ block: "nearest" });
         toast(`${errandName}を購入してから戻ろう`, { kind: "warn" }); return;
       }
@@ -406,10 +442,21 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
         confirming = false;
         if (!ok || !live()) return;
       }
+      restoreKujiBgm();
       finished = true; SE.cancel(); retire(root); resolve(null);
     };
-    for (const [id, label] of [["flavor", "フレーバー"], ["equip", "機材"], ...(kuji ? [["kuji", "シーシャくじ"]] : []), ["sell", "売却"]]) {
-      tabs.append(el("button.shop-tab", { text: label, dataset: { tab: id }, onclick: () => { if (!live()) return; tab = id; body.scrollTop = 0; SE.click(); render(); } }));
+    for (const [id, label] of [["flavor", "フレーバー"], ["equip", "機材"], ...(kuji && hasKuji(kujiShop) ? [["kuji", "シーシャくじ"]] : []), ["sell", "売却"]]) {
+      tabs.append(el("button.shop-tab", { text: label, dataset: { tab: id }, onclick: () => {
+        if (!live()) return;
+        if (tab !== "kuji" && id === "kuji") {
+          kujiBgmBefore = currentBgm(); kujiBgmActive = true; playBgm("bgm_ethnic09");
+          // 引く前に、演出の絵（その店のくじの抽選器・玉・札）を読み込んでおく（初めて回すときに部品が欠けないように）
+          import("../motions/kuji-art.js").then((art) => kujiLooks(kujiShop).forEach((look) => art.warmKujiArt(look))).catch(() => {});
+          import("../motions/garagara.js").catch(() => {}); // 演出のコードと、後ろの光の下ごしらえも先に済ませる
+        }
+        else if (tab === "kuji" && id !== "kuji") restoreKujiBgm();
+        tab = id; body.scrollTop = 0; SE.click(); render();
+      } }));
     }
     for (const [id, label] of [["all", "すべて"], ["cooling", "清涼"], ["fruit", "フルーツ"], ["sweet", "スイート"], ["spice", "スパイス"], ["floral", "フローラル"]]) {
       filters.append(el("button.shop-filter", { text: label, dataset: { category: id }, onclick: () => { if (!live()) return; category = id; body.scrollTop = 0; SE.click(); render(); } }));
@@ -424,7 +471,8 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     root.addEventListener("click", (event) => {
       if (!live()) { event.preventDefault(); event.stopImmediatePropagation(); return; }
       // くじの表示・既存担当のdraw処理はそのまま、初回だけ購入入力を手前で断る。
-      if (firstErrand && event.target.closest?.(".kuji-row button")) {
+      // 「?」（案内）は買い物ではないので断らない。
+      if (firstErrand && event.target.closest?.(".kuji-row button:not(.kuji-help)")) {
         event.preventDefault(); event.stopImmediatePropagation(); refuseOtherPurchase();
       }
     }, true);
@@ -432,20 +480,20 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
   });
 }
 
-export async function visitRin() {
-  if (state.phase !== "daily" || rinUnavailable()) return false;
+export async function visitRio() {
+  if (state.phase !== "daily" || rioUnavailable()) return false;
   cueTransition("place", { spotId: "shop", label: "Dr.fookah", area: "問屋街" });
   addStamina(-14);
-  state.visitedDay.rin = state.day;
+  state.visitedDay.rio = state.day;
   const owner = state;
-  const completed = await visitChar("rin");
+  const completed = await visitChar("rio");
   if (!completed || state !== owner) return false;
   // 3回目で限定フレーバー（NIGHTSIDE アールグレイ試作）を分けてもらえる
-  if ((state.story.rin || 0) >= 3 && state.flags._rin_sample && !state.flags._rin_sample_received) {
+  if ((state.story.rio || 0) >= 3 && state.flags._rio_sample && !state.flags._rio_sample_received) {
     // 旧セーブも、0gのキー／所持履歴があれば受領済み。使い切った葉を補充しない。
     const received = Object.hasOwn(state.flavorStock || {}, "nightside_earlgrey")
       || state.flavors.includes("nightside_earlgrey");
-    state.flags._rin_sample_received = true;
+    state.flags._rio_sample_received = true;
     if (!received) {
       addFlavorStock("nightside_earlgrey", FLAVOR_BOX_GRAMS);
       toast("限定フレーバー「NS アールグレイ（試作）」を手に入れた", { kind: "good" });

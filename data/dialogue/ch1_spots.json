@@ -123,7 +123,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "アプリを閉じる。会員登録しないと入れない仕組みのようだ。また今度考えよう。"
+            "text": "アプリは開かずに、スマホをしまう。会員登録しないと入れない仕組みのようだ。また今度考えよう。"
           }
         ]
       },
@@ -218,7 +218,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "使い込まれたメニューには、昔ながらのコーヒーに混じって、ハーブティーやスパイスラテも並んでいる。"
+          "text": "使い込まれたメニューには、昔ながらのコーヒーと、ハーブティーやスパイスラテが並ぶ。"
         },
         {
           "speaker": "hajime",
@@ -238,17 +238,17 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……美味しい。これ、シーシャのフレーバーの感覚に近いかも）"
+          "text": "（……美味しい。飲み込んだ後に、鼻へ抜ける）"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "甘さの後にスパイスが来る。そしてミルクの余韻。一杯の飲み物の中に、ちゃんと「構造」がある。"
+          "text": "甘さの後にスパイスが来る。最後に、ミルクの余韻が残った。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（味の重なりを、一つずつ追ってみる。舌が鍛えられる感じがする）"
+          "text": "（もう一口。……今度は、カルダモンが先に来た）"
         },
         {
           "speaker": "",
@@ -349,7 +349,7 @@
           {
             "speaker": "dr_kemuri",
             "face": "smile",
-            "text": "でしょ？ それ作ったの、俺だもん"
+            "text": "どうだい、この装置。自信作なんだ"
           },
           {
             "speaker": "hajime",
@@ -383,11 +383,11 @@
           {
             "speaker": "hajime",
             "face": "surprise",
-            "text": "（もう１人は……南雲会長？）"
+            "text": "（もう1人は……千須会長？）"
           },
           {
             "type": "set_flag",
-            "flag": "_met_nagumo"
+            "flag": "_met_sui"
           },
           {
             "speaker": "",
@@ -397,7 +397,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "俺は受付の列に並びながら、聞こえてくる話に耳を傾けた。"
+            "text": "受付の列に並びながら、聞こえてくる話に耳を傾けた。"
           },
           {
             "speaker": "dr_kemuri",
@@ -410,17 +410,17 @@
             "text": "同じ手順で、どこまで味を再現できるか。温度と配合を記録したい"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
-            "text": "火浦くんは相変わらずだな。私が見るのは、味や技術の正確さではない"
+            "text": "火浦くんは相変わらずだな。私の審査は、数値じゃ測れない"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "作り手が何を背負い、誰のために煙を作っているか"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "それが煙に出ているか。それだけだ"
           },
@@ -430,27 +430,27 @@
             "text": "物語、ですか。それは数値化が難しい"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "だから見る価値がある。良い煙は、吸った人の顔を変える"
           },
           {
             "speaker": "dr_kemuri",
             "face": "normal",
-            "text": "……なるほど。南雲さんの評価に『顔色』の項目を加えると、データが豊かになりますね。記録します"
+            "text": "……なるほど。会長の評価に『顔色』の項目を加えると、データが豊かになりますね。記録します"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "生き方も、迷いもだ"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "本人が無自覚でも、煙に出る"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "煙は嘘をつかない"
           },
@@ -465,17 +465,17 @@
             "text": "SMOKE CROWN CUPに出たいんです。参加登録をお願いします"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "tonariの新人か。話はスミさんから聞いている"
           },
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "蒸野はじめです。なるさんに教えてもらって来ました"
+            "text": "逢縁はじめです。なるさんに教えてもらって来ました"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "見学と参加登録は無料だ。こちらに記入を"
           },
@@ -485,14 +485,14 @@
             "text": "受付票に名前を書き、参加者の登録を済ませた。"
           },
           {
-            "speaker": "nagumo",
+            "speaker": "sui",
             "face": "normal",
             "text": "公式アプリを入れておくように。会場の案内はそこに届く"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "案内のコードを読み取ると、大会のマスコット『パッキー』の顔がスマホに現れた。"
+            "text": "案内のコードを読み取ると、スマホに大会のマスコット『パッキー』の顔が現れた。"
           },
           {
             "speaker": "",
@@ -526,9 +526,9 @@
             "text": "スタッフは空いたグラスを下げながら、客の手元へさりげなく目を配っている。"
           },
           {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（広い店でも、一人ずつ見てるんだな）"
+            "speaker": "",
+            "face": "",
+            "text": "目が合うと、スタッフは会釈だけして、こちらのグラスに水を足していった。"
           }
         ]
       }
@@ -647,7 +647,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "もう１人が口を挟む。"
+            "text": "もう1人が口を挟む。"
           },
           {
             "speaker": "old_man",
@@ -662,7 +662,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "自分の名前は聞こえなかった。でも、ここにいる意味はある。"
+            "text": "自分の名前は、最後まで出なかった。置いていたホースを、もう一度手に取った。"
           }
         ],
         "rumor_after": [
@@ -694,7 +694,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（誰かの帰り道に残る店か。tonariも、そういう場所でありたいな）"
+            "text": "（「また吸いたい」、か。……tonariの名前は、出なかったな）"
           }
         ]
       }
@@ -711,8 +711,8 @@
         },
         {
           "type": "note",
-          "note_id": "nagumo_style",
-          "label": "南雲会長は別枠の10点を持ち、基準を超えた1人にだけ入れる"
+          "note_id": "sui_style",
+          "label": "千須会長は別枠の10点を持ち、基準を超えた1人にだけ入れる"
         },
         {
           "type": "condition",
@@ -752,7 +752,7 @@
           {
             "speaker": "staff_choizap",
             "face": "",
-            "text": "審査席は正面。南雲会長がいつも一番端。会長の10点は別枠で、基準に届かなければ誰にも入らないんですよ"
+            "text": "審査席は正面。千須会長がいつも一番端。会長の10点は別枠で、基準に届かなければ誰にも入らないんですよ"
           },
           {
             "speaker": "hajime",
@@ -774,12 +774,12 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（あの作業台も、こういう準備に支えられていたんだな）"
+            "text": "（あの日の作業台も、トングの向きまで揃ってた）"
           },
           {
             "speaker": "staff_choizap",
             "face": "",
-            "text": "南雲会長の10点は別枠なんです。基準を超えた1人にしか入らないんですよ"
+            "text": "千須会長の10点は別枠なんです。基準を超えた1人にしか入らないんですよ"
           }
         ],
         "closing_before": [
@@ -873,7 +873,7 @@
       }
     },
     {
-      "dialogue_id": "cs_nagumo_glimpse",
+      "dialogue_id": "cs_sui_glimpse",
       "lines": [
         {
           "speaker": "",
@@ -883,7 +883,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "南雲会長。１人で静かにシーシャを吸っている。"
+          "text": "千須会長。1人で静かにシーシャを吸っている。"
         },
         {
           "speaker": "",
@@ -893,7 +893,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（あの人も、こうやって１人で吸いに来るんだ……。普通の客なんだよな、本当は）"
+          "text": "（あの人も、こうやって1人で吸いに来るんだ……。普通の客なんだよな、本当は）"
         },
         {
           "speaker": "",
@@ -993,7 +993,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "は、はい。tonariの蒸野です"
+            "text": "は、はい。tonariの逢縁です"
           },
           {
             "speaker": "dr_kemuri",
@@ -1005,7 +1005,7 @@
           {
             "speaker": "dr_kemuri",
             "face": "normal",
-            "text": "おや、蒸野くん。優勝の一台のデータ、なかなか興味深かったよ"
+            "text": "おや、逢縁くん。優勝の一台のデータ、なかなか興味深かったよ"
           },
           {
             "speaker": "hajime",
@@ -1140,14 +1140,14 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "は、はい。蒸野です"
+            "text": "は、はい。逢縁です"
           }
         ],
         "notice_after": [
           {
             "speaker": "dr_kemuri",
             "face": "smile",
-            "text": "おや、はじめくん。見ていたね"
+            "text": "おや、逢縁くん。見ていたね"
           },
           {
             "speaker": "hajime",
@@ -1270,7 +1270,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（冷めるにつれて、ミントが前に出てくる。温度で香りの順番が変わるのか）"
+          "text": "（冷めてきたら、ミントの方が元気になってきた）"
         },
         {
           "speaker": "",
@@ -1364,7 +1364,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（呼吸か……煙を扱う仕事なのに、普段意識してなかったな）"
+          "text": "（……息、止めてた。画面に言われるまで、気づかなかった）"
         },
         {
           "speaker": "",
@@ -1566,6 +1566,16 @@
           "text": "大会の連絡が来るからな。……だが、これがなかなか光らん"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……待ってるの、連絡じゃなくて大当たりですよね"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "チェリーは出るのに、リンゴの絵柄がない。設計が甘い"
+        },
+        {
           "speaker": "adam",
           "face": "normal",
           "text": "……ここでまで画面をにらんでいては、休まらんな"
@@ -1734,7 +1744,22 @@
         {
           "speaker": "",
           "face": "",
-          "text": "注文した菓子が届くと、なるはスプーンを取った。仕事の話はしないまま、休憩が終わった。"
+          "text": "注文した菓子が届くと、なるはスプーンを取った。一口目で、目つきが変わった。"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "……卵、いいの使ってるな。甘さが引いたあとに、香りが残る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……試食じゃ、なかったんですよね？"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "今のは、ただの感想だ"
         },
         {
           "speaker": "",
@@ -1881,7 +1906,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（湿度で香りの立ち方が変わる……）"
+          "text": "（……雨、もう少しやまなくてもいいな）"
         },
         {
           "speaker": "",
@@ -2149,7 +2174,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "吸う人の顔まで含めて一台なんだと、なんとなく分かった気がした。"
+          "text": "気づくと、自分のホースを口へ運んでいた。"
         }
       ],
       "branches": {
@@ -2220,7 +2245,7 @@
           {
             "speaker": "pakki",
             "face": "normal",
-            "text": "泣いても笑っても、勝者はたった１人ッ！ ……うーん、もう一声ほしいなあ"
+            "text": "泣いても笑っても、勝者はたった1人ッ！ ……うーん、もう一声ほしいなあ"
           },
           {
             "speaker": "",
@@ -2277,7 +2302,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（自分の道具を大事にする。そこは、同じなんだな）"
+            "text": "（……トング、最後に磨いたのはいつだっけ）"
           }
         ]
       }
@@ -2308,12 +2333,12 @@
         {
           "speaker": "staff_choizap",
           "face": "",
-          "text": "ふふ。うちに来て「自分の店の意味」を考え始めた人は、強くなりますよ"
+          "text": "昨日入った新人が詰めても、常連さんは気づきませんでした"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（揃える強さと、揃えない強さ。……tonariの一台は、どっちだ）"
+          "text": "（tonariは、スミさんと俺で、もう味が違う）"
         },
         {
           "speaker": "",
@@ -2384,12 +2409,12 @@
           {
             "speaker": "maezono",
             "face": "normal",
-            "text": "どうも、上園です。HOOKAH PRESSって雑誌で、編集をやってまして"
+            "text": "どうも、上園です。HOOKAH PRESSって雑誌で、編集をやってまして。各地の店を取材してるんですがね"
           },
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "蒸野です。tonariでバイトしてます"
+            "text": "逢縁です。tonariでバイトしてます"
           }
         ],
         "known": [
@@ -2440,7 +2465,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "二人とも速度を落とした。パン屋の看板が、少し気になる。"
+          "text": "二人とも速度を落とした。パン屋の看板が、少し気になっていた。"
         },
         {
           "type": "set_flag",
@@ -2589,6 +2614,415 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "cafe_naru_rio",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓際の席で、なるが伝票を広げていた。足元に、Dr.fookahの紙袋が二つ。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "よう。仕入れの帰りでさ。数を合わせてから、店に戻ろうと思って"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入口のベルが鳴った。白いシャツの人が、持ち帰りのコーヒーを頼んでいる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（凛想さんだ。こはくにも、コーヒーを買いに来るんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるの背筋が、すっと伸びた。伝票の角を、指でそろえ直している。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "あら、ケムリクサさん。バニラの追加、次の便で入るよ"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "は、はい。……ありがとうございます、円頓寺さん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは、俺にも小さく手を上げた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "夜、またおいで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙のカップを受け取って、凛想さんは通りへ出ていった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なるさん。今、敬語でしたね"
+        },
+        {
+          "speaker": "naru",
+          "face": "surprise",
+          "text": "……取引先だぞ。普通だろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "伝票、さっきから同じ一枚をそろえてます"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……お前、そういうとこだけ、よく見てんな"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cafe_naru_rio"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cafe_naru_rio_followup",
+      "metadata": {
+        "private_scene": false
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "rio",
+          "next_true": "lover",
+          "next_false": "plain"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_follow_naru_rio"
+        }
+      ],
+      "branches": {
+        "plain": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "こはくの件、……誰にも言うなよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "言いませんよ。敬語だった、ってだけですし"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "あの人さ。袋を開けた瞬間に、ロットの違いを言い当てるんだ"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "爪も、何も塗ってない。香りの邪魔になるから、ってさ"
+          },
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "text": "……大人って、ああいう人のことを言うんだろうな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "なるさん、よく見てますね"
+          },
+          {
+            "speaker": "naru",
+            "face": "surprise",
+            "text": "仕事の話だ、……仕事の"
+          }
+        ],
+        "lover": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "こはくの件。……お前、あの人と付き合ってんだろ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "え、……分かりますか"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "あの人、お前を見る時だけ、目尻がゆるむんだよ"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "仕事のできる大人だ。俺も、ちょっと憧れてた、……ちょっとな"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "泣かすなよ。次の仕入れで、俺が気まずいから"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "cafe_naru_rio_followup_rio",
+      "metadata": {
+        "private_scene": false
+      },
+      "lines": [
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "こはくで会ったね。……ケムリクサの子、私の前だと固まるでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "気づいてたんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "納品の確認に来ても、伝票だけ置いて三分で帰るの"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "魔女なんて呼ばれてるし、怖いのかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（たぶん、逆です）"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "注文書の字は、あんなに丁寧なのにね。次は、お茶でも出そうか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（なるさんが、三分もたなくなる）"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_follow_rio_naru"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kannon_adam_lunch",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "境内のベンチに、アダムが座っていた。膝の上に、ふたを開けた弁当箱。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その前で、なるが腕を組んでいる。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "野菜から食えって。今日は残すなよ"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "……緑は、俺の髪の半分で足りている"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "足りてねえよ。いいから食え"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なるさんが、作ったんですか？"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "試作の余りだよ。この人、放っとくと昼がカップ麺でさ"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "しかも、湯を入れ忘れる"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "あれは、一度だけだ"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "三回見た"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは観念したように、ピーマンを口へ運んだ。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……鳴切の飯は、うまい。ダブルアップルの、次に"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "それ、この人の最高の褒め言葉だからな"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_kannon_adam_lunch"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kannon_adam_lunch_followup",
+      "metadata": {
+        "private_scene": false
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの隅に、洗った弁当箱が伏せてあった。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "鳴切の箱だ。洗い方は、三度目で覚えた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "二度目までは、どうしてたんですか"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "……泡が、残っていたそうだ"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_follow_adam_lunch"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "samechan_minto_followup",
+      "metadata": {
+        "private_scene": false
+      },
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "サメちゃんのお店、行ったんだって？ 通路、広くなってた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。お盆を持っても、すれ違えたよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "でしょ♡ ひとりのお店はね、自分が転ばない道から作るの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "明るい声のまま、みんとは自分の店の通路を、一度だけ目でなぞった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_follow_minto_samechan"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_minto_seat_followup",
+      "metadata": {
+        "private_scene": false,
+        "setting": "ひより×みんと（Issue #3468 B案）の後日の一言。hiyori_shop_minto_seat の後、次のぺぱーみんとの来店の冒頭で一度だけ（daily/spot-encounters.js の FOLLOWUPS）。ひよりが自分から同じ奥の席を選んでいる。みんとは種明かしをしない。"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ぺぱーみんとのドアを開けると、奥のソファのランプが、もう落としてあった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その席で、ひよりが紅茶を両手で包んでいる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺に気づくと、物憂げに小さく手を上げて、また煙のほうへ目を戻した。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……今夜は、ここで少しだけ、溶けていくから",
+          "inner": "はじめくんだ。ごめん、今日は充電中。話すのは次ね"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "あ、はじめくん♡ 奥は今、予約席なの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "予約してたんだ"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "ううん、してないよ。ドア開けたら、まっすぐあそこ♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとはそれ以上何も言わずに、奥のテーブルへ二杯目の紅茶を運んでいった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_follow_minto_hiyori"
+        }
+      ]
     }
   ]
 }
