@@ -54,6 +54,9 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rival-window
 /* 「外観を選ぶ」は機材を選ぶ工程だけ */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .bench-appearance-button { order: 9; }
 html body.craft-stage:not(.game-ds) .bench[data-mode]:not([data-step="setup"]) .bench-top > .bench-appearance-button { display: none !important; }
+/* 機材を選ぶ工程は工程の灯もライバルの灯もまだ1つも点かない。大会ではライバル・ランクで行が溢れ、「外観を選ぶ」が
+   「?」の裏・画面外へ押し出されるので、この工程だけ灯と小窓を隠して場所を空ける（#3516）。 */
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="setup"] .bench-top > :is(.rig-record, .rival-windows) { display: none; }
 
 /* ---------- はじめ: 作業風景を枠から出し、ひとまとまりのまま拡大する（中の位置合わせは今のまま） ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-left {

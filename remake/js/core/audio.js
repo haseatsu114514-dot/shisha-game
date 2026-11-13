@@ -675,7 +675,8 @@ export function preloadAxeSe() {
 }
 /** 検査用: 鳴らした音の数（id → { recorded, synth }）。音が出せない環境でも、鳴らすつもりの音が分かる。 */
 export const axeSePlayed = () => JSON.parse(JSON.stringify(axePlayed));
-export function playAxeSe(id, { scored = true } = {}) {
+// rate: 録音の再生の速さ（斧ごとの刺さり音の高さ。2026-11-13 斧投げ手応えレビュー指摘11）。合成音では使わない。
+export function playAxeSe(id, { scored = true, rate = 1 } = {}) {
   if (!seEnabled()) return;
   const cue = AXE_SE[id], weight = id === "stick" && !scored ? .75 : 1;
   const ready = cue?.files.filter(file => seBuffers.has(file)) || [];
@@ -686,7 +687,7 @@ export function playAxeSe(id, { scored = true } = {}) {
       const choices = ready.filter(file => file !== lastVariant.get("axe:" + id));
       const file = (choices.length ? choices : ready)[Math.floor(Math.random() * (choices.length || ready.length))];
       lastVariant.set("axe:" + id, file);
-      recordedVoice(file, { gain: cue.gain * weight });
+      recordedVoice(file, { gain: cue.gain * weight, rate: Number.isFinite(rate) && rate > 0 ? rate : 1 });
     }
     count.recorded++;
     return;
