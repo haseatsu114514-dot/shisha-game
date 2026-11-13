@@ -66,9 +66,10 @@ const BUILD = {
         svg("feComposite", { in: "core", in2: "SourceAlpha", operator: "in" }),
       ]),
     ]);
-    back.append(core, el("i.go-ember-tint"), el("i.go-ember-backlight"), el("i.go-ember-coal"), sparks);
+    back.append(core, el("i.go-ember-tint"), el("i.go-ember-backlight"), sparks);
     root.querySelector(".go-clock").prepend(el("i.go-ember-ring", [el("i")]), el("i.go-ember-spark"));
-    fore.append(el("i.go-ember-flare"));
+    // 人物の胸元に下の帯を敷いてからセリフと2択を置く。足元の火は帯の手前、画面の下の縁だけで灯る。
+    fore.append(el("i.go-ember-shade"), el("i.go-ember-coal"), el("i.go-ember-flare"));
     portraitLight(root);
   },
   // C 漫画の大ゴマ: 紙・集中線の大ゴマ・コマ枠・ギザギザの残り秒数・吹き出しと名札。

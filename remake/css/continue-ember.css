@@ -3,13 +3,17 @@
    時計は燃え尽きていく炭の輪。火の粉が上がり、残り時間とともに足元の火が弱まる。時間切れは火が消えて灰色。 */
 /* 暗がりは冷たい炭色、火の色は題字・時計・ボタン・足元の火と人物の縁だけ（全部を橙にすると見分けにくい）。 */
 .end-screen.gameover[data-layout="ember"] { background: #06070c; --go-ink: #1c0a02; }
-.end-screen.gameover[data-layout="ember"] .go-veil { background: linear-gradient(0deg, #0a030066, transparent 30%), radial-gradient(ellipse 60% 70% at 50% 36%, #ff8a2a1c, transparent 70%), radial-gradient(ellipse at 50% 50%, transparent 52%, #000000a8 100%); }
-/* 人物の箱を左右対称に画面幅まで広げる（大きい衣装・小物が横で切れないように）。中央は元のまま。 */
-.end-screen.gameover[data-layout="ember"] .go-portrait { inset: 0 -170px; }
+/* 四隅を暗く絞らない（圧迫感が出る）。人物の後ろだけを少し温める。 */
+.end-screen.gameover[data-layout="ember"] .go-veil { background: radial-gradient(ellipse 60% 70% at 50% 36%, #ff8a2a14, transparent 70%); }
+/* 人物の箱を左右対称に画面幅まで広げる（大きい衣装・小物が横で切れないように）。中央は元のまま。
+   neon より一回り小さくして頭の上に余白を作る（顔が画面いっぱいだと圧迫感が出る）。縮める基準は顔の下端（y=535）で、
+   neon と同じく「顔の下端＝セリフの上端」のまま。顔の中心は (640, 273) → (640, 323)、大きさは 0.81 倍。
+   顔に掛かる反応の演出も同じだけ動かす（下の「反応の演出」）。 */
+.end-screen.gameover[data-layout="ember"] .go-portrait { inset: 0 -170px; transform: scale(.81); transform-origin: 50% 535px; }
 /* 暗い会場の絵を炭の色へ寄せて敷く（画面全体を橙に塗らない。明るいのは足元の火だけ）。 */
 .end-screen.gameover[data-layout="ember"] .go-ember-tint {
   position: absolute; inset: 0; background: var(--go-backdrop) center / cover no-repeat;
-  filter: saturate(.3) brightness(.68) contrast(1.05); opacity: .9;
+  filter: saturate(.3) brightness(.84) contrast(1.04); opacity: .9;
 }
 /* 人物の背中側だけを温める（暗い帽子・服の輪郭を背景から浮かせる）。 */
 .end-screen.gameover[data-layout="ember"] .go-ember-backlight {
@@ -17,10 +21,16 @@
   background: radial-gradient(ellipse closest-side, #ff8a2a52 0, #ff6a1428 48%, transparent 100%);
   opacity: calc(1 - var(--go-look-p) * .45);
 }
+/* 下の帯: セリフと2択の後ろだけを沈める（顔の下端 y=535 より上には掛けない）。 */
+.end-screen.gameover[data-layout="ember"] .go-ember-shade {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 232px;
+  background: linear-gradient(0deg, #07080cf5 0, #07080ceb 58%, #07080cc4 78%, #07080c55 92%, transparent 100%);
+}
+/* 足元の火: 帯の手前で、画面の下の縁だけを灯す（セリフの後ろには届かせない）。 */
 .end-screen.gameover[data-layout="ember"] .go-ember-coal {
-  position: absolute; left: -14%; right: -14%; bottom: -250px; height: 560px; mix-blend-mode: screen;
-  background: radial-gradient(ellipse at 50% 100%, #ffc27a 0, #ff7a1ad0 20%, #c4370e70 42%, #5a160830 60%, transparent 72%);
-  opacity: calc(1 - var(--go-look-p) * .6); animation: go-ember-breathe 2.6s ease-in-out infinite alternate;
+  position: absolute; left: -10%; right: -10%; bottom: -300px; height: 400px; mix-blend-mode: screen;
+  background: radial-gradient(ellipse at 50% 100%, #ffc27a 0, #ff7a1ad0 26%, #c4370e66 52%, transparent 76%);
+  opacity: calc(.85 - var(--go-look-p) * .5); animation: go-ember-breathe 2.6s ease-in-out infinite alternate;
 }
 .end-screen.gameover[data-layout="ember"] .go-ember-sparks { position: absolute; inset: 0; opacity: calc(1 - var(--go-look-p) * .5); }
 .end-screen.gameover[data-layout="ember"] .go-ember-sparks i {
@@ -32,29 +42,29 @@
 .end-screen.gameover[data-layout="ember"] .go-look-light {
   position: absolute; translate: -50% 0; pointer-events: none; mix-blend-mode: screen;
   -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
-  background: linear-gradient(0deg, #ff7a1ae0 0, #ff5a1470 16%, #ff5a1422 30%, transparent 44%);
+  background: linear-gradient(0deg, #ff7a1a99 0, #ff5a1444 16%, #ff5a1414 30%, transparent 44%);
   opacity: calc(1 - var(--go-look-p) * .55); animation: go-portrait-enter .55s .25s var(--ease-out) both;
 }
 .end-screen.gameover[data-layout="ember"] .go-look-light.go-beat { animation: go-portrait-beat .38s var(--ease-out) both; }
 .end-screen.gameover[data-layout="ember"][data-effect="shark"] .go-look-light { animation: go-plush-nod .6s .4s ease-out both; }
 .end-screen.gameover[data-layout="ember"] .go-count-back:not([hidden]) { display: grid; inset: 0; height: auto; grid-template-rows: minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); }
-.end-screen.gameover[data-layout="ember"] .go-count-echo { font-size: 1000px; color: #ff7a1a; opacity: .05; }
+.end-screen.gameover[data-layout="ember"] .go-count-echo { font-size: 1000px; color: #ff9a4a; opacity: .035; }
 /* 筆文字は同じ絵を炭火の色へ（h1 に掛ける。絵自身の入場の動きは filter を none に戻すため）。 */
 /* 筆文字は白い芯を残し、光だけを炭火の色にする（芯まで橙に染めると輪郭がにじむ）。
    h1 に掛ける（絵自身の入場の動きは filter を none に戻すため）。#go-ember-core は continue-looks.js。 */
 .end-screen.gameover[data-layout="ember"] .go-title {
   left: 196px; top: 20px; width: 752px; height: 178px; transform: rotate(-2deg);
-  filter: url(#go-ember-core) drop-shadow(0 0 2px #ffcf8a) drop-shadow(0 0 9px #ff7a1a) drop-shadow(0 0 26px #ff4d00aa) drop-shadow(0 3px 2px #1a0700);
+  filter: url(#go-ember-core) drop-shadow(0 0 2px #ffcf8a) drop-shadow(0 0 7px #ff7a1a) drop-shadow(0 0 16px #ff4d0080) drop-shadow(0 3px 2px #1a0700);
 }
 /* 輪郭に細い火の縁を入れる（暗い背景に溶けないように）。 */
 .end-screen.gameover[data-layout="ember"] .go-sumi-img { filter: drop-shadow(0 0 1.5px #ffc27acc) drop-shadow(0 0 12px #ff7a1a55) drop-shadow(5px 4px 0 #1408009c); }
 .end-screen.gameover[data-layout="ember"] .go-clock { left: 966px; top: -2px; width: 218px; height: 218px; animation: go-look-enter .7s .18s ease-out both; }
-.end-screen.gameover[data-layout="ember"] .go-ember-ring { position: absolute; inset: 20px; filter: drop-shadow(0 0 7px #ff7a1acc) drop-shadow(0 0 20px #ff4d0066); }
+.end-screen.gameover[data-layout="ember"] .go-ember-ring { position: absolute; inset: 20px; filter: drop-shadow(0 0 5px #ff7a1aaa) drop-shadow(0 0 12px #ff4d0044); }
 .end-screen.gameover[data-layout="ember"] .go-ember-ring > i {
   position: absolute; inset: 0; border-radius: 50%;
   background: conic-gradient(from 0deg, #4a3a33 0 calc(var(--go-look-p) * 360deg), #ffd58a calc(var(--go-look-p) * 360deg), #ff8a2a 62%, #ff5a1f 100%);
-  -webkit-mask: radial-gradient(circle closest-side, transparent 0 84%, #000 86% 96%, transparent 98%);
-  mask: radial-gradient(circle closest-side, transparent 0 84%, #000 86% 96%, transparent 98%);
+  -webkit-mask: radial-gradient(circle closest-side, transparent 0 88%, #000 89.5% 95.5%, transparent 97%);
+  mask: radial-gradient(circle closest-side, transparent 0 88%, #000 89.5% 95.5%, transparent 97%);
 }
 .end-screen.gameover[data-layout="ember"] .go-ember-spark { position: absolute; inset: 20px; transform: rotate(calc(var(--go-look-p) * 360deg)); }
 .end-screen.gameover[data-layout="ember"] .go-ember-spark::before {
@@ -78,13 +88,10 @@
   content: ""; flex: 1 1 0; min-width: 44px; height: 1px; background: linear-gradient(90deg, transparent, #ffd9a0); box-shadow: 0 0 5px #ff8a2a88; pointer-events: none;
 }
 .end-screen.gameover[data-layout="ember"] .go-dialogue::after { background: linear-gradient(90deg, #ffd9a0, transparent); }
-/* 台詞の後ろだけ炭の黒を薄く敷く（白い衣装の上でも読めるように）。 */
+/* セリフは下の帯の上。一回り大きく、縁取りをはっきり。 */
 .end-screen.gameover[data-layout="ember"] .go-speech-text {
-  padding: 3px 26px 5px; border-radius: 30px;
-  background: radial-gradient(ellipse 60% 100% at 50% 50%, #0a0402d9 0, #0a0402b3 60%, transparent 100%);
-}
-.end-screen.gameover[data-layout="ember"] .go-speech-text {
-  flex: 0 0 auto; font-size: 32px; letter-spacing: .035em; -webkit-text-stroke: .65px #1c0a02; text-shadow: 0 2px 3px #0a0300, 0 0 14px #2a0d00;
+  flex: 0 0 auto; font-size: 35px; letter-spacing: .04em; color: #fffaf2;
+  -webkit-text-stroke: 1px #07080c; text-shadow: 0 2px 4px #000, 0 0 12px #07080c;
 }
 .end-screen.gameover[data-layout="ember"] mark.go-letter { color: #ffe9b8; }
 .end-screen.gameover[data-layout="ember"] .end-actions { left: 194px; right: 194px; top: calc(699px - var(--go-look-tap, 106px)); gap: 28px; z-index: 1; --go-look-tap: max(106px, calc(44.1px / var(--k, 1))); }
@@ -122,12 +129,21 @@
 /* 残り5秒: 火が消えかけて脈を打つ。 */
 .end-screen.gameover[data-layout="ember"].go-urgent .go-ember-coal { animation: go-ember-gasp .5s ease-in-out infinite alternate; }
 .end-screen.gameover[data-layout="ember"].go-urgent .go-count { background-image: linear-gradient(180deg, #ffffff 26%, #ffd0bc 58%, #ff6a4a 92%); filter: drop-shadow(0 0 2px #ff5a3a) drop-shadow(0 0 12px #ff3d1fcc) drop-shadow(0 3px 2px #1a0700); }
-.end-screen.gameover[data-layout="ember"].go-urgent .go-veil { box-shadow: inset 0 0 110px #ff3d1f2e; }
+.end-screen.gameover[data-layout="ember"].go-urgent .go-veil { box-shadow: inset 0 0 80px #ff3d1f24; }
 /* 時間切れ: 火が消える。灰色の文字に、最後の残り火だけがしばらく灯る。 */
-.end-screen.gameover[data-layout="ember"][data-timed-out="true"] :is(.go-ember-coal, .go-ember-sparks) { opacity: 0; transition: opacity .5s; }
+.end-screen.gameover[data-layout="ember"][data-timed-out="true"] :is(.go-ember-coal, .go-ember-sparks, .go-ember-shade) { opacity: 0; transition: opacity .5s; }
 .end-screen.gameover[data-layout="ember"][data-timed-out="true"] .go-ember-tint { filter: grayscale(1) brightness(.4); transition: filter .5s; }
 .end-screen.gameover[data-layout="ember"][data-timed-out="true"] .go-title { filter: none; }
 .end-screen.gameover[data-layout="ember"][data-timed-out="true"] .go-title-art { filter: grayscale(1) brightness(.9); animation: go-ember-last 1.5s ease-out both; }
+/* 反応の演出: 顔が小さく下がった分（中心 (640, 273) → (640, 323)、0.81 倍）だけ動かす。.go-effect の上端は 150。 */
+.end-screen.gameover[data-layout="ember"][data-effect="pencil"] .go-pencil { left: 482px; top: 93px; width: 316px; height: 166px; }
+.end-screen.gameover[data-layout="ember"][data-effect="canvas"] .go-pencil { left: 510px; top: 93px; width: 260px; height: 162px; }
+.end-screen.gameover[data-layout="ember"][data-effect="scan"] .go-scan { left: 510px; top: 89px; width: 260px; height: 162px; }
+.end-screen.gameover[data-layout="ember"][data-effect="shark"][data-choice="retry"] .go-wave { left: 421px; top: 227px; width: 438px; height: 81px; }
+.end-screen.gameover[data-layout="ember"][data-effect="stars"] .go-stars { left: 765px; top: 207px; }
+.end-screen.gameover[data-layout="ember"] .go-effect-word { left: 810px; top: 275px; }
+.end-screen.gameover[data-layout="ember"][data-effect="scan"] .go-effect-word { left: 818px; top: 283px; }
+.end-screen.gameover[data-layout="ember"][data-effect="vote"][data-choice="retry"] .go-approval { left: 818px; top: 235px; width: 210px; }
 @keyframes go-ember-last {
   from { filter: grayscale(.2) sepia(1) saturate(3) hue-rotate(-16deg) drop-shadow(0 0 22px #ff5a1f); }
   to { filter: grayscale(1) brightness(.9) drop-shadow(0 0 0 #ff5a1f00); }
