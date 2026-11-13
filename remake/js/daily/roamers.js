@@ -18,7 +18,7 @@ import { on } from "../core/bus.js";
 import { allSpots, isUnlocked, isClosed } from "./spots.js";
 import { hiyoriShopLocation } from "./hiyori.js";
 import { cityGuestVisit } from "./city-guests.js";
-import { ryujiAtMeltyPuff } from "../core/ryuji-visit.js";
+import { ryujiAtMeltyPuff, reiGreetingDue } from "../core/ryuji-visit.js";
 
 /** 人ごとの、読み終えた回数（数）。台本の flag_count 条件で読める（第5章の博士の「記録」など）。 */
 export const roamSeenFlag = id => `_roam_seen_${id}`;
@@ -94,6 +94,7 @@ function busySpots(value) {
   try { const hiyori = hiyoriShopLocation(); if (hiyori) busy.add(hiyori); } catch {}
   try { const city = cityGuestVisit(); if (city?.spotId) busy.add(city.spotId); } catch {}
   if (ryujiAtMeltyPuff(value)) busy.add("ch2_ageha"); // 組長が MELTY PUFF に来ている時間帯
+  if (reiGreetingDue(value)) busy.add("ch2_ageha"); // レヰが MELTY PUFF へ挨拶に来る回（#3468）
   return busy;
 }
 

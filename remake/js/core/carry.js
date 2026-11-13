@@ -489,6 +489,8 @@ export const FLAG_EXACT_RULES = [
   ["_prep_lemon_expensed", "progression"],
   ["_private_night_char", "progression"],
   ["_private_night_day", "progression"],
+  ["_rei_melty_greeting", "person"],
+  ["_rei_purikura_after", "person"],
   ["_rei_trpg_introduced", "person"],
   ["_rest_after_tournament", "progression"],
   ["_rio_sample", "person"],
