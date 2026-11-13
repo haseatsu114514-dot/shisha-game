@@ -220,7 +220,9 @@ function bindTitleKeys() {
       const active = document.activeElement;
       if (active && active !== document.body && active.matches?.("button, a, input, select, textarea")) return;
       e.preventDefault();
-      usable[at].click();
+      // 押すのはこのキーの処理が済んでから。その場で押すと、開いた小窓が同じキーを受け取ってすぐ閉じる。
+      const row = usable[at];
+      setTimeout(() => { if (titleLive() && row.isConnected && !document.querySelector("#modal.show")) row.click(); }, 0);
     }
   });
 }
