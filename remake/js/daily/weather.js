@@ -52,8 +52,8 @@ export function tomorrowForecast(s = state) {
   return WEATHER_LABEL[rain ? (inDryRegion(s, day) ? "sun" : "rain") : rollsCloud(s.weatherSeed, day) ? "cloud" : "sun"];
 }
 
-/** 雨の日だけ出す回（晴れの日はローテーションに出さない＝天気と文が食い違わない） */
-export const RAIN_SPOT_TEXTS = { kannon: "kannon_rain", cafe: "cafe_window_rain" };
+/** 雨の日だけ出す回（晴れの日はローテーションに出さない＝天気と文が食い違わない）。施設ごとに順番に読む（daily/spots.js の quietTurn） */
+export const RAIN_SPOT_TEXTS = { kannon: ["kannon_rain", "kannon_rain_drops"], cafe: ["cafe_window_rain", "cafe_rain_full"] };
 export const RAIN_BAITO = ["baito_rainy_day", "baito_tsumugi_rain"];
 export const RAIN_BAITO_BONUS = 500;
 

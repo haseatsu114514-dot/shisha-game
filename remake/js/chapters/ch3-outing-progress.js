@@ -75,8 +75,8 @@ export function outingDialogueId(value, outing, window = null) {
   if (outing.id === "mukai_help") return tasteRecovered(value) ? "ch3_outing_mukai_help" : "ch3_outing_mukai_help_lost";
   if (outing.id === "park_walk") {
     const base = `ch3_outing_park_walk_${(window?.slot ?? value.slot) ? "night" : "day"}`;
-    const count = outingCounts(value)[outing.id] || 0;
-    // 初回の散歩は残し、再訪は昼夜それぞれの小さな日常2本を巡回する（#3097）。
+    const count = outingCounts(value)[`park_walk_${(window?.slot ?? value.slot) ? "night" : "day"}`] || 0;
+    // 昼夜を別に数える。旧セーブの合計から時間帯を推測せず、それぞれの初回から読む（SPV04）。
     return count ? `${base}_${count % 2 ? "b" : "c"}` : base;
   }
   return `ch3_outing_${outing.id}`;
@@ -112,6 +112,17 @@ export function outingCounts(value) {
   return record && typeof record === "object" && !Array.isArray(record) ? record : {};
 }
 
+/** 完読した外出の回数。日常ループと旧行程の両方で、確定境界を通ってから呼ぶ。 */
+export function recordChapterThreeOuting(value, id, slot = value.slot) {
+  const counts = outingCounts(value);
+  const next = { ...counts, [id]: (counts[id] || 0) + 1 };
+  if (id === "park_walk") {
+    const key = `park_walk_${slot ? "night" : "day"}`;
+    next[key] = (counts[key] || 0) + 1;
+  }
+  value.flags[OUTINGS_FLAG] = next;
+}
+
 export const outingReason = (value, outing) => outing.reasonAgain && outingCounts(value)[outing.id] ? outing.reasonAgain
   : typeof outing.reason === "string" ? outing.reason : outing.reason[tasteRecovered(value) ? "back" : "lost"];
 
@@ -142,7 +153,7 @@ export function chapterThreeOutings(value, windowId) {
 export function claimChapterThreeOuting(value, windowId, id) {
   const outing = chapterThreeOutings(value, windowId).find(item => item.id === id);
   if (!outing?.ok || !completeChapterThreeFreeTime(value, windowId)) return null;
-  value.flags[OUTINGS_FLAG] = { ...outingCounts(value), [id]: (outingCounts(value)[id] || 0) + 1 };
+  recordChapterThreeOuting(value, id, outing.window.slot);
   return outing;
 }
 

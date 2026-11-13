@@ -540,6 +540,24 @@
         { "speaker": "hajime", "face": "smile", "text": "はい。……今度は、一回も転ばずに登ります" },
         { "speaker": "", "face": "", "text": "太陽が砂丘の向こうへ沈みきるまで、くだらない話をした。砂は、まだ温かかった。" }
       ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_guest_rest_b",
+      "lines": [
+        {"speaker": "", "face": "", "text": "客間の椅子に座って、冷たい水を飲んだ。コップの外側に、小さな雫がついている。"},
+        {"speaker": "", "face": "", "text": "テーブルに輪を残さないよう、コップを布の敷物の上へ移した。"},
+        {"speaker": "hajime", "face": "normal", "text": "（静かだな。もう少し、ここにいよう）"},
+        {"speaker": "", "face": "", "text": "背もたれに体を預けた。噴水の音を聞いているうちに、まぶたが重くなってきた。"}
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_guest_rest_c",
+      "lines": [
+        {"speaker": "", "face": "", "text": "客間の寝台には、薄い掛け布がきれいに折ってあった。"},
+        {"speaker": "", "face": "", "text": "端を広げて足に掛ける。ひんやりした布が、少しずつ体になじんでいく。"},
+        {"speaker": "hajime", "face": "normal", "text": "（起きたら、ちゃんとたたんでおこう）"},
+        {"speaker": "", "face": "", "text": "窓の方を向いて横になった。閉じたカーテンの向こうで、水の音だけが続いていた。"}
+      ]
     }
   ]
 }
