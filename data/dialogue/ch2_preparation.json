@@ -378,6 +378,21 @@
         {
           "speaker": "ageha",
           "face": "normal",
+          "text": "ずっと見られてたら、お客さんも落ち着かないしね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは、クマの耳を指でつまんで笑った。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そ。それでいいと思う"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
           "text": "うちも全部分かるわけじゃないよ。話してみたら、違ったりするし"
         },
         {
@@ -401,6 +416,11 @@
           "text": "物を置く場所は、だいぶ決まってきました。次は片付けの順番です"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは、棚の端を指で軽く叩いた。"
+        },
+        {
           "speaker": "kumicho",
           "face": "normal",
           "text": "使わなきゃ分かんねえもんでさ。動かして、また確かめな"
@@ -409,6 +429,16 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "はい。決めた場所も、使いながら直していきます"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "それでいい。無理に一度で決めなさんな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい、気長にやります"
         },
         {
           "speaker": "",
@@ -473,6 +503,11 @@
           "text": "お茶を出してくれるのは、そのためだったんですね"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "湯呑みを両手で持つと、番茶の香りがふわりと上がった。"
+        },
+        {
           "speaker": "kumicho",
           "face": "normal",
           "text": "甘い葉の前に甘い飲み物じゃ、舌が先にくたびれちまう"
@@ -481,6 +516,16 @@
           "speaker": "kumicho",
           "face": "smile",
           "text": "……まあ、俺が飲みてえだけって日もありやすがね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、ありがたくいただきます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは、自分の湯呑みを傾けて目を細めた。"
         }
       ]
     },
