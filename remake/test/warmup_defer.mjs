@@ -253,14 +253,25 @@ console.log("[warmup defer] PASS: store logos defer to idle only on the title pa
     await new Promise(r => setImmediate(r));
   }
 }
-// Four 16MiB images exceed the 48MiB decoded budget: only the oldest is released.
+// Eleven 16MiB images exceed the 160MiB decoded budget: only the oldest is released.
+// (The budget holds one tournament craft bench, about 141MiB with the title UI art.)
 {
   const { ui, requested } = await loadUi({ imageSize: 2048 });
-  for (const u of ['a', 'b', 'c', 'd']) await ui.imageReady(u, 100, { keep: true });
-  await ui.imageReady('d', 100, { keep: true });
-  assert.equal(requested.length, 4, 'recent kept art is still reused');
+  const names = 'abcdefghijk'.split('');
+  for (const u of names) await ui.imageReady(u, 100, { keep: true });
+  await ui.imageReady('k', 100, { keep: true });
+  await ui.imageReady('b', 100, { keep: true });
+  assert.equal(requested.length, 11, 'recent kept art is still reused');
   await ui.imageReady('a', 100, { keep: true });
-  assert.equal(requested.length, 5, 'oldest decoded reference was released');
+  assert.equal(requested.length, 12, 'oldest decoded reference was released');
+}
+// Ten 16MiB images (160MiB) stay within the budget: nothing is released.
+{
+  const { ui, requested } = await loadUi({ imageSize: 2048 });
+  const names = 'abcdefghij'.split('');
+  for (const u of names) await ui.imageReady(u, 100, { keep: true });
+  for (const u of names) await ui.imageReady(u, 100, { keep: true });
+  assert.equal(requested.length, 10, 'a bench-sized working set is reused without refetching');
 }
 {
   const { ui, requested } = await loadUi();

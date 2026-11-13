@@ -102,13 +102,36 @@ await suite("visual-continuity-3203", async check => {
 
   await check("slow-photo-entry-not-blank", async page => {
     await setup(page);
-    const photos = await holdFloorPhotos(page);
+    // 入口の前に店頭の応対（shop-greeting.js）を読む。応対の背景は1階の写真と同じ bg_shop なので、
+    // 写真を止めるのは応対の背景が出た後（入口の準備の間）だけにする。時間は応対を読み終えた時から測る。
+    let holding = false, release;
+    const held = new Promise(resolve => { release = resolve; });
+    await page.route(FLOOR_PHOTOS, async route => {
+      if (holding) await held;
+      await route.continue().catch(() => {});
+    });
     await watchEntry(page);
-    await page.evaluate(() => { S.openedAt = performance.now(); S.result = "pending"; S.shop.openShop().then(r => { S.result = r; }); });
+    await page.evaluate(() => {
+      S.result = "pending"; S.greetedAt = null;
+      let sawGreeting = false;
+      const watch = () => {
+        const open = document.body.classList.contains("vn-open");
+        if (open) sawGreeting = true;
+        else if (sawGreeting) { S.greetedAt = performance.now(); return; }
+        requestAnimationFrame(watch);
+      };
+      watch();
+      S.shop.openShop().then(r => { S.result = r; });
+    });
+    // 応対の背景（bg_shop）が届いてから止め始める（応対そのものは写真の遅れを待たない）。
+    await page.waitForFunction(() => performance.getEntriesByType("resource")
+      .some(entry => /\/img\/backgrounds\/bg_shop\.webp(?:[?#]|$)/.test(entry.name)));
+    holding = true;
+    await page.waitForFunction(() => S.greetedAt != null, null, { timeout: 20000 });
     // 調査の再現と同じ 3000ms の遅れ。入口は上限で出て、写真が届くまでは枠に下地が見える。
-    setTimeout(photos.release, 3000);
+    setTimeout(release, 3000);
     const entry = await firstEntry(page);
-    const waited = entry.at - await page.evaluate(() => S.openedAt);
+    const waited = entry.at - await page.evaluate(() => S.greetedAt);
     assert(waited >= 1400 && waited < 2600, `entry should wait for the photos up to the limit: ${Math.round(waited)}ms`);
     assert.equal(entry.pictures.length, 2);
     for (const picture of [...entry.pictures, ...entry.frame]) assert(visible(picture), `blank photo frame: ${JSON.stringify(picture)}`);

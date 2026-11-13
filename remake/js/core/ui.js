@@ -73,7 +73,11 @@ let weatherTint = "";
 let weatherKey = "";
 const bgReady = new Map(); // url -> { promise, image, keep }（一度読んだ絵は即座に出す）
 // Retain only a bounded decoded working set. CSS/DOM own visible images separately.
-const IMAGE_CACHE_ENTRIES = 128, KEPT_IMAGE_BYTES = 48 * 1024 * 1024;
+// The budget must hold the largest single screen: the tournament craft bench (eight people's
+// portraits + bench art) plus the title UI art measured 141 MiB decoded (2026-11-13). At 48 MiB the
+// bench evicted its own early art while loading and re-requested 8 images on every reopen
+// (craft_readiness.mjs "cached reopen"). Before #3500 retention was unbounded.
+const IMAGE_CACHE_ENTRIES = 128, KEPT_IMAGE_BYTES = 160 * 1024 * 1024;
 function trimImages() {
   let bytes = [...bgReady.values()].reduce((n, e) => n + (e.bytes || 0), 0);
   for (const [url, entry] of bgReady) {
