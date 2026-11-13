@@ -6,6 +6,9 @@
 //   C 親指ボタン … 会話の AUTO／SKIP／LOG／用語／設定／「次へ」、地図の LIME／MENU。余白 118px 以上のタッチ端末だけ。
 // 寸法は主流のスマホ（19:9〜20:9。余白はステージ上で片側 120〜160px）に合わせてある。余白が足りない端末・PC・
 // 16:9 の画面では C を出さず、ステージの中のボタンを今までどおり使う。
+// 試遊ページ（camel-race.html など。共通の画面当て core/stage-fit.js を使う単体ページ）は standalone で呼び、A だけ出す
+// （ゲームの状態・会話・HUD が無いので、帯とボタンは出さない）。設定「左右の余白」と「揺れ・閃光を減らす」は端末の保存を読む
+// （readSettings: false なら読まない。TRPG の試遊ページは、保存領域に一切触れない決まりなので、既定の見た目で出す）。
 //
 // C の作り: 余白のボタンは、ステージの中の元のボタン（.vn-ctl・.hud-lime・.hud-menu）を代わりに押すだけ。
 // 余白へ出している間、元のボタンは CSS（side-area.css）で隠す。元のボタンが押せない場面（モーダル・LOG・
@@ -13,7 +16,7 @@
 import { el } from "./util.js";
 import { on } from "./bus.js";
 import { onStageFit } from "./stage-fit.js";
-import { state, config } from "./state.js";
+import { state, config, CONFIG_KEY } from "./state.js";
 import { chapterDay, departurePrep } from "./chapter-clock.js";
 import { currentCity } from "./city-locations.js";
 
@@ -62,6 +65,7 @@ const coarsePointer = () => typeof matchMedia === "function" && matchMedia("(poi
 const html = () => document.documentElement;
 let dom = null;      // { l, r, strip, chapter, city, when, pads: { id: button } }
 let deps = {};
+let standalone = false; // 試遊ページ: 煙と縁だけ
 let geom = { k: 1, g: 0, tier: "none", key: "" };
 let syncTimer = 0;
 
@@ -105,8 +109,8 @@ function build(viewport) {
 
 // ---------------------------------------------------------------- 置き場所と段
 
-function layout({ stage, k, region }) {
-  if (!dom || region) return;
+function layout({ stage, k }) {
+  if (!dom) return;
   const frame = stage.parentElement.getBoundingClientRect(), box = stage.getBoundingClientRect();
   const left = Math.max(0, box.left - frame.left), right = Math.max(0, frame.right - box.right);
   // 画面の当て直しは同じ寸法で何度も来る（ブラウザのバーの出し入れ・スクロール）。変わった時だけ置き直す。
@@ -131,7 +135,7 @@ function applyMode() {
   // DS風（retro）は自前の操作の面を持ち、ぼかし・グラデーションを使わない様式なので、余白は今までどおりにする。
   const enabled = config.sideArea !== "plain" && root.dataset.look !== "retro" && geom.tier !== "none";
   root.dataset.side = enabled ? geom.tier : "off";
-  root.dataset.sidePad = enabled && geom.tier === "wide" && coarsePointer() && padAllowed() ? "on" : "off";
+  root.dataset.sidePad = enabled && !standalone && geom.tier === "wide" && coarsePointer() && padAllowed() ? "on" : "off";
   sync();
 }
 
@@ -142,7 +146,7 @@ export function refreshSideArea() { applyMode(); }
 
 function setText(node, text) { if (node.textContent !== text) node.textContent = text; }
 function updateStrip() {
-  const info = html().dataset.side === "off" ? null : stripInfo(state, document.body.dataset.screen);
+  const info = standalone || html().dataset.side === "off" ? null : stripInfo(state, document.body.dataset.screen);
   if (dom.strip.hidden !== !info) dom.strip.hidden = !info;
   if (!info) return;
   setText(dom.chapter, info.chapter);
@@ -229,16 +233,29 @@ function scheduleSync(delay = 80) {
   syncTimer = setTimeout(sync, delay);
 }
 
+/** 端末に保存した設定の読み取り（試遊ページは本編の起動を通らないので、必要な2つだけを自分で読む）。 */
+function savedConfig() {
+  try { return JSON.parse(globalThis.localStorage?.getItem(CONFIG_KEY) || "{}") || {}; } catch { return {}; }
+}
+
 /**
- * 余白の層を作り、画面の当て直し・場面の変化へ追随させる。本編（index.html）だけで呼ぶ。
- * advance は会話の「次へ」（vn/engine.js の tapAdvance）。
+ * 余白の層を作り、画面の当て直し・場面の変化へ追随させる。
+ * 本編（index.html）は advance（会話の「次へ」・vn/engine.js の tapAdvance）を渡す。
+ * 試遊ページは standalone: true で、煙と縁だけ出す。端末の保存（設定）を読みたくないページは readSettings: false。
  */
-export function initSideArea({ stage, advance } = {}) {
+export function initSideArea({ stage, advance, standalone: alone = false, readSettings = true } = {}) {
   if (dom || !stage?.parentElement) return;
+  standalone = alone;
   deps = { advance };
+  if (standalone && readSettings) {
+    const saved = savedConfig();
+    if (saved.sideArea === "plain") config.sideArea = "plain";
+    html().dataset.sideCalm = saved.reduceShake ? "on" : "off";
+  }
   dom = build(stage.parentElement);
   onStageFit(layout);
-  layout({ stage, k: Number(stage.style.getPropertyValue("--k")) || 1, region: null });
+  layout({ stage, k: Number(stage.style.getPropertyValue("--k")) || 1 });
+  if (standalone) return; // 帯・ボタンの追随（HUD・会話・場面の監視）は本編だけ
   on("hud", () => scheduleSync());
   document.addEventListener("lookchange", applyMode);
   // 場面の変化（会話の開始・終了、モーダル、HUD の出し入れ、選択肢、AUTO／SKIP の切り替え）で合わせ直す。

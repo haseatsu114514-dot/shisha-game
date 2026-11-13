@@ -27,6 +27,7 @@ async function fixture() {
     // サメちゃんのデート（samechan-date.js）が読む心得の盤。誘いの検査なので旧しくみ（盤は無効）の代役にする
     growthEnabled: () => false, awardActionExp: () => 0,
     petitAfterDate: async () => false, // プチ修羅場（デートの後の寄り道）は remake/test/petit_shuraba.mjs
+    strainOf: () => 0, STRAIN_SIGN2: 7, // すれ違い（恋人の裏の数値）は remake/test/lover_strain.mjs。この検査では動かない
     // phone.js の openPhone（runItem）と同じく、読んだ通は既読と受信箱の履歴に残る。
     openPhone: async messages => {
       phones.push(messages.map(m => m.id));

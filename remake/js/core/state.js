@@ -120,6 +120,7 @@ export function newState() {
     lastDate: {},              // 恋人 -> 最後にデートした日
     loverEventsSeen: [],       // 見た恋愛イベント（lover_events.json）
     guilt: 0,                  // うしろめたさ（非表示）。2人以上と付き合うと積もる
+    loverStrain: {},           // すれ違い（非表示・core/lover-strain.js）。雑に扱うと溜まり、別れ話になる。欠けた保存は空から
     // 交友の締めくくり（daily/bonds.js）。恋愛の答えは実際に選んだものだけ。好感度・訪問回数から推測しない
     romance: {},               // 隠し恋愛値（キャラ -> 恋愛寄りに答えた数）。プレイヤーには見せない
     romanceChoices: {},        // 答えた質問（選択肢 id -> {char, value, day}）。同じ id は一度だけ数える

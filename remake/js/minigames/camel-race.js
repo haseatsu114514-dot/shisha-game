@@ -194,7 +194,8 @@ export function loadCamelArt() {
     .catch(() => null);
   return artTask;
 }
-if (typeof Image !== "undefined" && typeof document !== "undefined") void loadCamelArt();
+// 読み始めはレースの入口（本編は chapters/ch4-camel-race.js の visitCamelRace、試遊ページは開いた時）。
+// import しただけでは読まない（第4章へ入っただけで25枚の取得・デコードと約25MBの常駐が乗っていた・#3500 E-2）。
 
 /** 4頭それぞれの4コマに、毛色（AI）と色の幕・番号を塗った絵を作り置く。{ id: [canvas×4] } */
 function camelSkins(frames) {

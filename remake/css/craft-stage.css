@@ -41,6 +41,9 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .b
   background: linear-gradient(180deg, #4a2f6b, #2e1d45); color: #f6f1fa; box-shadow: 0 0 18px #c9a7e655;
 }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-phase.now .bench-phase-copy b { font-size: 23px; font-weight: 800; letter-spacing: .06em; }
+/* 見出しの中の、いまの作業名（水入れ・配合・詰め・通気） */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-phase-step { display: none; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-phase.now .bench-phase-step:not(:empty) { display: block; flex: none; align-self: center; width: auto; height: auto; margin: 0 0 0 12px; padding: 0 0 0 12px; border: 0; border-left: 2px solid #c9a7e666; background: none; box-shadow: none; line-height: 1.2; font-size: 19px; font-weight: 700; letter-spacing: .06em; white-space: nowrap; color: #e7dbf3; }
 /* 工程の灯（一台の記録）とライバルの小窓は、レールに並べる */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record { position: static; flex: none; gap: 6px; margin-left: 4px; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp { width: 30px; height: 30px; }
@@ -225,6 +228,8 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals { flex: 1; jus
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix { height: 100% !important; display: grid !important; grid-template-columns: 250px minmax(0, 1fr) !important; grid-template-rows: minmax(0, 1fr) 100px !important; gap: 10px 16px !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-side { grid-column: 1; grid-row: 1; min-height: 0; overflow: hidden auto !important; gap: 6px !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-vessel { width: 250px !important; height: 190px !important; }
+/* 器の絵は箱の底に合わせ、底を基準に縮めて、上端（縁）が切れないようにする */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-vessel-art { inset: auto 0 0 0 !important; height: 100% !important; transform: scale(.55) !important; transform-origin: 50% 100% !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list { grid-column: 2; grid-row: 1; min-height: 0; overflow-y: auto; gap: 10px !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head { display: none !important; }
 /* 心得の「単体で勝負」と「香りの記憶」だけは一覧の頭に残す（見出しの文と助言は隠したまま）。
@@ -240,7 +245,7 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .fr-name { min-width: 0; f
 html body.craft-stage:not(.game-ds) .bench[data-mode] .fr-name .fr-feature b { font-size: 22px; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .fr-name small { font-size: 18px; line-height: 1.3; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .fr-btn { width: 64px !important; height: 64px !important; font-size: 30px !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .fr-g { min-width: 52px; text-align: center; font-size: 24px; font-weight: 800; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .fr-g { width: 52px !important; min-width: 52px; text-align: center; font-size: 24px; font-weight: 800; } /* 葉が2種のときの「幅100%」（craft.css）で名前の欄がつぶれないように */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-footer { grid-column: 1 / -1; grid-row: 2; display: grid !important; grid-template-columns: minmax(0, 1fr) 300px !important; gap: 16px; align-items: stretch; margin: 0 !important; padding: 0 !important; border: 0 !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-footer > .btn { height: 100px; min-height: 0; margin: 0; font-size: 26px; }
 /* スマホ: 左の列は器を小さくして予想を全部見せる。葉の行は名前を一行で読めるよう、−／＋を名前の下の段へ。
@@ -248,7 +253,7 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-footer > .btn { heigh
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix { grid-template-columns: 300px minmax(0, 1fr) !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-side, html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .packing { padding-top: 0 !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-vessel { width: 300px !important; height: 64px !important; }
-html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-vessel-art { transform: scale(.2) !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-vessel-art { transform: scale(.2) !important; transform-origin: 50% 100% !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-taste :is(b, small, p, summary, .flavor-axis, .flavor-heat-choices, .flavor-heat-choices span) { font-size: 22px !important; line-height: 1.3 !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-taste .flavor-axis { min-height: 0 !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview > .mix-temperature-legend { left: auto !important; right: 408px !important; top: 0 !important; width: auto; flex-direction: column; gap: 0; align-items: flex-end; }
@@ -382,6 +387,11 @@ html body.craft-stage:not(.game-ds) .bench[data-mode]:is([data-step="setup"], [d
   background:
     repeating-linear-gradient(0deg, #0000 0 11px, #1a0f2a55 11px 12px) 27.1px 38.6px / 25.8px 420px no-repeat,
     linear-gradient(0deg, #6a6a68, #56585a 40%, #4a524e 44%, #525a56 64%, #55504c 71%, #3c3838 90%, #262224) 27.1px 38.6px / 25.8px 420px no-repeat;
+}
+/* 消灯の柱には何の柱かを縦書きで添える（ラベル無しの灰色の帯に見えないように） */
+html body.craft-stage:not(.game-ds) .bench[data-mode]:is([data-step="setup"], [data-step="place"], [data-step="holes"], [data-step="heat"]) .bench-right::before {
+  content: "温度計はお休み"; display: flex; align-items: center; justify-content: center; box-sizing: border-box; padding: 38px 0 44px;
+  writing-mode: vertical-rl; font-size: 19px; font-weight: 800; letter-spacing: .14em; color: #cdbfe0; text-shadow: 0 1px 4px #000, 0 0 2px #000;
 }
 /* ---------- 小さな札（銅の縁のガラスの札）: 柱の上の状態の札・「温度帯」の札・針の現在位置。両端の丸を残して横に伸ばす ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo.mix-temperature::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read {
@@ -519,3 +529,12 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .dodge {
   border-style: solid; border-color: transparent !important;
   border-image: url("../img/ui/craft-glass/frame.webp") 50 60 50 60 / 20px 24px 20px 24px / 8px stretch !important;
 }
+
+/* ---------- 蓋の通気: 作業面に蓋の絵と、いま見ている通気の状態（選択ボタンの下の空きを埋める） ---------- */
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="holes"] .vent-preview {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; margin: 14px auto 0; max-height: calc(100% - 100px); min-height: 0;
+}
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="holes"] .vent-preview svg { width: min(440px, 100%); max-height: 330px; height: auto; min-height: 0; flex: 0 1 auto; filter: drop-shadow(0 8px 10px #0008); }
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="holes"] .vent-preview p { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; color: #f6f1fa; text-shadow: 0 1px 4px #000; }
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="holes"] .vent-preview p b { font-size: 24px; letter-spacing: .06em; }
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="holes"] .vent-preview p span { font-size: 18px; color: #e7dbf3; }

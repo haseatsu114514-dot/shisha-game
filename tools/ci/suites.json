@@ -711,8 +711,8 @@
       "id": "desert-ride",
       "title": "DESERT RIDE on PC and touch, reduced motion, and the chapter 4 outing with save/load and interruption",
       "kind": "browser",
-      "weight": 1.5,
-      "timeout": 5,
+      "weight": 3.5,
+      "timeout": 8,
       "paths": [
         "remake/js/core/stage-fit.js",
         "remake/js/minigames/desert-ride.js",
@@ -732,6 +732,26 @@
         "remake/test/browser/desert_ride.mjs"
       ],
       "run": ["node remake/test/browser/desert_ride.mjs"]
+    },
+    {
+      "id": "desert-ride-feel",
+      "title": "DESERT RIDE feel: hit stops, recover cue, instant lean, squash and stretch, goal afterglow, short restart, next goal, reduced motion",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/stage-fit.js",
+        "remake/js/minigames/desert-ride.js",
+        "remake/js/minigames/desert-ride-model.js",
+        "remake/js/minigames/desert-ride-art.js",
+        "remake/js/minigames/minigame-loading.js",
+        "remake/img/ui/desert_ride/**",
+        "remake/js/desert-ride-page.js",
+        "remake/desert-ride.html",
+        "remake/css/desert-ride.css",
+        "remake/test/browser/desert_ride_feel.mjs"
+      ],
+      "run": ["node remake/test/browser/desert_ride_feel.mjs"]
     },
     {
       "id": "minigame-bgm-input",
@@ -969,6 +989,8 @@
         "node remake/test/ch5_sumi_trial.mjs",
         "node remake/test/ch5_party.mjs",
         "node remake/test/petit_shuraba.mjs",
+        "node remake/test/lover_strain.mjs",
+        "node remake/test/lime_names.mjs",
         "node remake/test/ch5_travel.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
@@ -1961,6 +1983,26 @@
       ],
       "run": [
         "node remake/test/browser/petit_shuraba.mjs"
+      ]
+    },
+    {
+      "id": "lover-strain",
+      "title": "Lover strain: the hidden number's morning signs (LIME and monologue), the breakup talk on the way home with its three answers, and going back to friends",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 8,
+      "paths": [
+        "remake/js/core/lover-strain.js",
+        "remake/js/daily/lover-strain.js",
+        "data/dialogue/lover_strain.json",
+        "remake/data/lover.json",
+        "remake/js/daily/romance.js",
+        "remake/js/daily/phone.js",
+        "remake/js/daily/petit-shuraba.js",
+        "remake/test/browser/lover_strain.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/lover_strain.mjs"
       ]
     },
     {
@@ -4299,11 +4341,11 @@
     },
     {
       "id": "side-area",
-      "title": "左右の余白（YHK）: 煙と縁・縦書きの帯・親指ボタン（会話の AUTO／SKIP／LOG／次へ、地図の LIME／MENU）。主流のスマホの置き場所、モーダルの下では効かないこと、狭い画面・PC・DS風・設定「ぼかしだけ」・自動操作の既定は今までどおり",
+      "title": "左右の余白（YHK）: 煙と縁・縦書きの帯・親指ボタン（会話の AUTO／SKIP／LOG／次へ、地図の LIME／MENU）。主流のスマホの置き場所、モーダルの下では効かないこと、狭い画面・PC・DS風・設定「ぼかしだけ」・自動操作の既定は今までどおり。試遊ページ7つは煙と縁だけ",
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
-      "paths": ["remake/js/core/side-area.js", "remake/css/side-area.css", "remake/js/core/stage-fit.js", "remake/js/main.js", "remake/js/vn/engine.js", "remake/js/daily/hud.js", "remake/js/core/city-locations.js", "remake/js/scenes/title.js", "remake/css/look-neo.css", "remake/test/browser/side_area.mjs"],
+      "paths": ["remake/js/core/side-area.js", "remake/css/side-area.css", "remake/js/core/stage-fit.js", "remake/js/main.js", "remake/js/vn/engine.js", "remake/js/daily/hud.js", "remake/js/core/city-locations.js", "remake/js/scenes/title.js", "remake/css/look-neo.css", "remake/axe-throw.html", "remake/camel-race.html", "remake/desert-ride.html", "remake/ichidai.html", "remake/trpg-preview.html", "remake/trpg-campaign-preview.html", "remake/craft-preview.html", "remake/js/axe-throw-page.js", "remake/js/camel-race-page.js", "remake/js/desert-ride-page.js", "remake/js/ichidai-page.js", "remake/js/trpg/preview.js", "remake/js/trpg/campaign-preview.js", "remake/js/craft/preview.js", "remake/test/browser/side_area.mjs"],
       "run": ["node remake/test/browser/side_area.mjs"]
     },
     {
@@ -4384,6 +4426,24 @@
       ],
       "run": [
         "node remake/test/conversation_effects_demo.mjs"
+      ]
+    },
+    {
+      "id": "continue-looks",
+      "title": "Continue look candidates (#2524 CV58): A ember / C manga, touch sizes, retry, timeout, ?continueLook switch",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 5,
+      "paths": [
+        "remake/test/continue_looks.mjs",
+        "remake/js/chapters/continue-looks.js",
+        "remake/js/chapters/continue-view.js",
+        "remake/js/chapters/gameover.js",
+        "remake/css/continue*.css",
+        "remake/continue-preview.html"
+      ],
+      "run": [
+        "node remake/test/continue_looks.mjs"
       ]
     },
     {
