@@ -44,7 +44,7 @@ const values = {
   "chapter-features.js": { chapterFeatureEnabled },
   "hiyori-route.js": { hiyoriEventStatus: () => "disabled", hiyoriRoute: () => ({}), hiyoriFinaleReady: () => false },
   "util.js": { el, clamp, sleep: async () => {}, fitOneLine: () => {}, yen: (n) => `¥${n}` },
-  "data.js": { DB: db, displayName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
+  "data.js": { DB: db, displayName: (id) => id, limeAccountName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
   "lime-icons.js": { customLimeIconUrl: () => null },
   "ui.js": { layers, toast: noop }, "state.js": { state, save: noop, STAT_JA, hasAffinity, STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"] },
   "stats.js": { setStoryAffinityCap() {}, affinityGateWaiting: () => false, gainStat: noop, addMoney: noop, gainAffinity: (id, pts) => gains.push({ id, pts }),
