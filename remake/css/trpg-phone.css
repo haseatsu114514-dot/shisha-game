@@ -20,8 +20,10 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-cue h2 { f
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-cue :is(.trpg-stage-investigation, .trpg-investigation strong) { font-size: var(--phone-sub); }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-companions button > span,
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-pockets button.trpg-notebook { font-size: var(--phone-sub); }
+/* visibility は inherit（#3199）: visible にすると、台詞の間・宣言・判定・見立ての画面で印（.trpg-spot）を隠しても名前だけが
+   絵の上に薄く残っていた（子の visible は親の hidden を上書きする）。印が見えている時は今までどおりいつも出る。 */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot > span {
-  opacity: 1; visibility: visible; transform: translate(-50%, 0); top: 50px;
+  opacity: 1; visibility: inherit; transform: translate(-50%, 0); top: 50px;
   padding: 3px 12px; border-radius: 999px; font-size: var(--phone-sub); line-height: 1.4; background: #0b1420d9;
 }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot[data-label-side="above"] > span { top: auto; bottom: 50px; }

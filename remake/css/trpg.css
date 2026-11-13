@@ -267,6 +267,10 @@
 @keyframes trpg-breathe { to { opacity: .5; } }
 @media (prefers-reduced-motion: reduce) {
   .trpg-root *, .trpg-root *::before, .trpg-root *::after { animation: none !important; transition: none !important; }
+  /* 盛り上がりの知らせは、動かさずに消えるだけの trpg-heat-fade（trpg-stage.css）を残す（#3199）。上の一括停止で消えなくなり、
+     animationend が来ないので知らせが卓の上に残り続け、判定の卓や結末に重なって、使い終えた勢いを「次の判定 ＋4」と出し続けていた。 */
+  .trpg-root .trpg-heat-pop { animation: trpg-heat-fade 1.5s ease-out both !important; }
+  .trpg-root .trpg-heat-pop:not([data-tier="0"]) { animation-duration: 2.2s !important; }
 }
 
 /* The campaign shelf is a quiet shop, with tonight's party and lasting book memories. */
