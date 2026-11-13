@@ -170,7 +170,22 @@ await suite("ichidai-modes", async (check) => {
     // 自分の番まで自動で進め、相手を1人ねらうカードを使う: だれに使うかを選べる
     await page.evaluate(() => { const h = window.__ichidai; h.autoplay(4); const id = setInterval(() => { const G = h.game; if (G && G.phase === "serve" && G.round >= 1 && G.wait?.player === 0 && G.wait.type === "main") { h.manual(); clearInterval(id); window.__stopped = true; } }, 1); });
     await page.waitForFunction(() => window.__stopped, null, { timeout: 120000 });
-    await page.evaluate(() => { const G = window.__ichidai.game, me = G.P[0]; me.hand[0] = "hype"; me.cardsUsed = 0; me.zone = [{ id: "cube", up: true, f: 3 }, { id: "cube", up: true, f: 3 }]; window.__ichidai.manual(); });
+    await page.evaluate(() => { const G = window.__ichidai.game, me = G.P[0]; me.hand[0] = "hype"; me.cardsUsed = 0; me.heat = 6; me.zone = [{ id: "cube", up: true, f: 3 }, { id: "cube", up: true, f: 2 }, { id: "flat", up: true, f: 1 }]; me.stove = [{ id: "flat", stage: 0 }, { id: "cube", stage: 1 }, { id: "flat", stage: 2 }];
+      for (const i of [1, 2, 3]) G.P[i].zone = [{ id: "cube", up: true, f: 3 }, { id: "flat", up: true, f: 1 }, { id: "read", up: false, f: 1 }]; window.__ichidai.manual(); });
+    // 炭の焼け具合（2026-11-13 オーナー「炭が焼けても色変わらないの気になる」）: 札の上に、いまの状態の炭の絵が重なる。
+    // 自分の火力ゾーン（新品＝hot・弱った＝warm・火1＝ember）・炭焼き場（置いたばかり＝cold・火がまわる＝warm・焼けた＝hot）・相手の小さな札。
+    // 絵は札に収まる大きさ（相手の小さな札で、絵が元の大きさのまま出て卓を覆ったことがある）
+    await page.waitForFunction(() => { const list = [...document.querySelectorAll(".ichi-coal-sprite")]; return list.length >= 12 && list.every((i) => i.complete && i.naturalWidth > 0); }, null, { timeout: 15000 });
+    const sprites = await page.locator(".ichi-coal-sprite").evaluateAll((list) => list.map((n) => {
+      const b = n.getBoundingClientRect(), box = n.parentElement.getBoundingClientRect(), k = document.querySelector("#stage").getBoundingClientRect().width / 1280;
+      return { state: [...n.classList].find((c) => c.startsWith("is-")).slice(3), file: n.getAttribute("src").split("/").pop().split("?")[0], w: Math.round(b.width / k), fits: b.width <= box.width + 2,
+        where: n.closest(".ichi-stove-coal") ? "stove" : n.closest('[data-test="ichi-zone"]') ? "zone" : "rival" };
+    }));
+    const of = (where) => sprites.filter((x) => x.where === where).map((x) => `${x.state}:${x.file}`);
+    assert.deepEqual(of("zone"), ["hot:coal_just.webp", "warm:coal_red.webp", "ember:coal_flat_white.webp"], "火力ゾーン: 新品のキューブ炭・弱ったキューブ炭・火1のフラット炭");
+    assert.deepEqual(of("stove"), ["cold:coal_flat_cold.webp", "warm:coal_red.webp", "hot:coal_flat_just.webp"], "炭焼き場: 置いたばかり・火がまわる・焼けた");
+    assert.equal(of("rival").length, 6, "相手3人の表向きの炭（2つずつ）にも絵が重なる。種火は札の裏のまま");
+    assert.ok(sprites.every((x) => x.fits && x.w >= 16 && x.w <= 64), `炭の絵は札に収まる大きさ: ${JSON.stringify(sprites.map((x) => `${x.where}:${x.w}`))}`);
     // 第0.5版: このラウンドの審査カードは、はじめにめくってある。左上と卓の山の横に出て、「ねらい」の熱にも入る
     const nowJudge = await page.locator(t("ichi-now-judge")).evaluate((n) => ({ dh: n.dataset.dh, text: n.innerText.replace(/\s+/g, "") }));
     assert.match(nowJudge.text, /^.+吸う[±+−]\d$|^温度を測る[±+−]\d$/, "吸い方と、熱の変化だけ（見出しは出さない）");

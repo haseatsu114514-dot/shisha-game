@@ -1165,7 +1165,8 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-result-row > small.ichi-result-wear.is-scorch { color: #ffb4a6; }
 
 /* ── 炭の焼け具合（2026-11-13 オーナー「炭が焼けても色変わらないの気になる」）: 札の上に、いまの状態の炭の絵を重ねる ── */
-.ichi-coal-sprite { position: absolute; left: 50%; top: 56%; z-index: 2; width: calc(var(--cw) * 0.86); height: auto; translate: -50% -50%; pointer-events: none; transition: filter 0.3s ease; }
+/* 大きさは、重ねる札（親）の幅に対する割合で決める（--cw は札そのものに付いていて、親からは読めないことがある） */
+.ichi-coal-sprite { position: absolute; left: 50%; top: 56%; z-index: 2; width: 86%; max-width: 64px; height: auto; translate: -50% -50%; pointer-events: none; transition: filter 0.3s ease; }
 /* 炭焼き場: 黒い → 赤くなりかけ → 焼けて光る */
 .ichi-stove-coal .ichi-coal-sprite.is-cold { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.8)); }
 .ichi-stove-coal .ichi-coal-sprite.is-warm { filter: drop-shadow(0 0 5px rgba(200, 64, 47, 0.8)); }
@@ -1174,7 +1175,7 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-stove-coal.st-1 .ichi-card { filter: brightness(0.72) saturate(0.8); box-shadow: 0 0 0 1px #b4501c, 0 0 9px rgba(200, 64, 47, 0.6), 0 3px 0 #0b0612, 0 9px 12px rgba(0, 0, 0, 0.6); }
 @keyframes ichi-coal-breathe { 0%, 100% { filter: drop-shadow(0 0 5px rgba(255, 176, 92, 0.8)) brightness(1); } 50% { filter: drop-shadow(0 0 11px rgba(255, 210, 122, 1)) brightness(1.18); } }
 /* 火力ゾーン: 新品の火＝赤く光る → 弱った＝赤黒い → 火1＝白く灰をかぶる。札は横向き、炭の絵はまっすぐ */
-.ichi-coal-btn > .ichi-coal-sprite { top: 50%; z-index: 3; width: auto; height: min(150%, calc(var(--cw) * 0.92)); }
+.ichi-coal-btn > .ichi-coal-sprite { top: 50%; z-index: 3; width: auto; max-width: none; height: min(150%, calc(var(--cw, 54px) * 0.92)); }
 .ichi-coal-btn > .ichi-coal-sprite.is-hot { filter: drop-shadow(0 0 7px rgba(255, 190, 100, 0.95)); animation: ichi-coal-breathe 1.6s ease-in-out infinite; }
 .ichi-coal-btn > .ichi-coal-sprite.is-warm { filter: drop-shadow(0 0 5px rgba(200, 64, 47, 0.85)); }
 .ichi-coal-btn > .ichi-coal-sprite.is-ember { filter: drop-shadow(0 0 3px rgba(190, 190, 200, 0.6)) brightness(0.92); }
@@ -1186,7 +1187,7 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-on.s-warm .ichi-card { filter: brightness(0.78) saturate(0.9); }
 .ichi-on.s-ember .ichi-card { filter: brightness(0.6) saturate(0.35); box-shadow: 0 0 0 1px #9a94a0, 0 3px 0 #0b0612, 0 9px 12px rgba(0, 0, 0, 0.6); }
 /* 4人対戦の相手の炭（卓の奥の小さな札）にも、同じ絵を重ねる */
-.ichi-on > .ichi-coal-sprite { top: 58%; width: calc(var(--cw) * 0.9); }
+.ichi-on > .ichi-coal-sprite { top: 58%; width: 90%; }
 @media (prefers-reduced-motion: reduce) { .ichi-coal-sprite, .ichi-fire-gauge i.is-next { animation: none !important; } }
 /* 葉の盆をしまう（準備で、このターンは炭だけ触りたいとき） */
 .ichi-market-close { margin-left: auto; padding: 2px 10px; border-radius: 12px; border: 1px solid rgba(227, 189, 110, 0.6); background: rgba(21, 13, 34, 0.7); color: var(--ichi-text); font-size: 13px; font-weight: 800; cursor: pointer; white-space: nowrap; }
