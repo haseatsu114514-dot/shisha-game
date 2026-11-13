@@ -9,14 +9,16 @@
 // 含めた期待点で決める。rules.reactAfterReveal のときは、めくったあとに一口のカードを選ぶ（取っておく値打ちと比べる）。
 import { CARD, FLAVOR, FLAVORS, BOWL, JUDGE, PUFFS } from "./ichidai-data.js";
 import { RANK, heatOf, coalHeat, coalRoom, coalMaxOf, leavesOf, coolStepsOf, judgedHeat, scorePuff, impressionOf, unseenPuffs,
-  canPlay, canCharge, canPlace, canAsh, canPack, canSteam, packLimit, roundsOf, isLastSession, isLastOfSession, puffPreview, rivalsOf } from "./ichidai-rules.js";
+  canPlay, canCharge, canPlace, canAsh, canPack, canSteam, packLimit, roundsOf, isLastSession, isLastOfSession, puffPreview, rivalsOf, votePtsOf, voteScore } from "./ichidai-rules.js";
 
 const cnt = (p, id) => p.hand.filter((x) => x === id).length;
 const idx = (p, id) => p.hand.indexOf(id);
 const isCoal = (id) => CARD[id].type === "coal";
 const slotFree = (G, p) => (p.cardsUsed || 0) < G.R.cardsPerRound;
 const REACT = ["heat_in", "heat_out", "blow", "all_in", "show_smoke", "duel", "encore"];
-const IMP_W = 0.45; // 先読みでの印象1点の値打ち（一票に届く見込み）
+const IMP_W = 0.45; // 先読みでの印象1点の値打ち（一票に届く見込み）。一票が2点のときの値
+/** 印象1点の値打ち。第0.6版の先行分では一票の点が立場で変わる（負けていれば3点・ふつうは2点）ので、それに比例させる */
+const impW = (G, p) => (G.R.useVote ? (IMP_W * votePtsOf(G, p)) / 2 : 0); // 一票が無い対戦（入門）では、印象に値打ちは無い
 const CARDV = 0.6; // 手札1枚の値打ち（点。チャージすれば熱1になる）
 
 // 手元での値打ち（低いものから種火にする・捨てる）
@@ -69,9 +71,10 @@ function reactionValue(G, p, heat, q, id, opp) {
   const good = s.zone === "just" || s.zone === "band";
   let pts = s.pts + (id === "heat_out" && good ? 1 : 0) + (id === "all_in" && s.zone === "just" ? 3 : 0);
   if (id === "encore") pts *= 2;
-  const imp = impressionOf(p, s, (id === "show_smoke" ? 4 : 0) + (id === "all_in" && s.zone === "just" ? 2 : 0) + (id === "heat_in" && good ? 1 : 0) + (p.sessImp || 0), G.R.impress);
-  const vote = opp == null ? IMP_W * imp + (id === "duel" ? 0.8 : 0) : (imp > opp ? G.R.vote + (id === "duel" ? 3 : 0) : 0);
-  const v = pts + vote - (s.zone === "scorch" ? 4 : 0) - (s.usedSilicone ? 2.5 : 0) - (s.usedLotus ? 0.8 : 0)
+  const imp = voteScore(G, p, s, pts, (id === "show_smoke" ? 4 : 0) + (id === "all_in" && s.zone === "just" ? 2 : 0) + (id === "heat_in" && good ? 1 : 0) + (p.sessImp || 0));
+  const vote = opp == null ? impW(G, p) * Math.max(-3, imp) + (id === "duel" && G.R.useVote ? 0.8 : 0) : (G.R.useVote && imp > opp ? votePtsOf(G, p) + (id === "duel" ? 3 : 0) : 0);
+  // 焦げの重さ: 0点になるうえ、主役の葉を失う（1枚ぶんを2点と見る。失う枚数は規則の scorchLoss）
+  const v = pts + vote - (s.zone === "scorch" ? 2 + 2 * G.R.scorchLoss : 0) - (s.usedSilicone ? 2.5 : 0) - (s.usedLotus ? 0.8 : 0)
     - (id ? 0.5 : 0) - (id === "show_smoke" ? 0.6 : 0) - (blow && !s.saved ? 1 : 0) - 0.35 * paid;
   return { v, id, s, pts, imp };
 }
@@ -214,7 +217,9 @@ function coalMove(G, p, { prep = false, turnsLeft = 0 } = {}) {
   if (p.turn.ai?.heatDone) return null;
   const h0 = heatOf(p), ready = p.stove.map((c, i) => ({ f: CARD[c.id].heat, i })).filter((x) => p.stove[x.i].stage === 2);
   const later = p.stove.filter((c) => c.stage === 1).map((c) => CARD[c.id].heat); // 次の自分のターンに焼ける炭
-  const cmax = coalMaxOf(p), chargesLeft = Math.max(0, Math.min(3, G.R.chargePerTurn - (p.turn.charges || 0)));
+  // 炭を足す手（のせる・チャージ）の残り。第0.7版は合わせて1ターンに1つ（coalAdds）
+  const addsLeft = Math.max(0, G.R.coalAdds - (p.turn.adds || 0));
+  const cmax = coalMaxOf(p), chargesLeft = Math.max(0, Math.min(3, addsLeft, G.R.chargePerTurn - (p.turn.charges || 0)));
   const canAshNow = canAsh(G, p).ok, canChargeNow = canCharge(G, p).ok || (!coalRoom(p) && p.hand.length > 0 && canAshNow && chargesLeft > 0);
   const guess = prep ? null : puffGuess(G, p), slot = slotFree(G, p);
   const lastRound = !prep && G.round === roundsOf(G) - 1;
@@ -228,9 +233,9 @@ function coalMove(G, p, { prep = false, turnsLeft = 0 } = {}) {
     if (ai >= 0) { ashCost = 0.25 + 0.3 * fires[ai]; fires.splice(ai, 1); }
     for (let mask = 0; mask < (1 << ready.length); mask++) {
       const on = ready.filter((_, k) => mask & (1 << k));
-      if (fires.length + on.length > cmax) continue;
+      if (fires.length + on.length > cmax || on.length > addsLeft) continue;
       const room = cmax - fires.length - on.length;
-      for (let ch = 0; ch <= Math.min(canChargeNow ? room : 0, p.hand.length, chargesLeft); ch++) {
+      for (let ch = 0; ch <= Math.min(canChargeNow ? room : 0, p.hand.length, chargesLeft, addsLeft - on.length); ch++) {
         const now = [...fires, ...on.map((x) => x.f), ...Array(ch).fill(1)], h1 = now.reduce((a, b) => a + b, 0);
         if (h1 > G.R.heatMax) continue;
         // チャージの値段: 手札1枚ぶん。そのターン最初のチャージは1枚引ける（チャージ＆ドロー）ので、ほぼただ
@@ -247,8 +252,18 @@ function coalMove(G, p, { prep = false, turnsLeft = 0 } = {}) {
           const left = after.filter((f) => f > 0), hNext = h1 - lost;
           const stock = [...ready.filter((x) => !on.includes(x)).map((x) => x.f), ...later].sort((a, b) => b - a);
           let roomNext = cmax - left.length, reach = hNext;
-          for (const f of stock) if (roomNext > 0) { reach += f; roomNext--; }
-          reach += Math.min(roomNext, Math.max(0, p.hand.length - ch), G.R.chargePerTurn) * 0.8;
+          if (Number.isFinite(G.R.coalAdds)) {
+            // 次のターンに足せるのは coalAdds 個まで。枠が無ければ、いちばん弱い炭を外して入れ替える（外すのは1つ）
+            const adds = [...stock, ...Array(Math.min(Math.max(0, p.hand.length - ch), G.R.chargePerTurn)).fill(0.8)].sort((a, b) => b - a).slice(0, G.R.coalAdds);
+            const weak = left.length ? Math.min(...left) : 0; let swapped = false;
+            for (const f of adds) {
+              if (roomNext > 0) { reach += f; roomNext--; }
+              else if (!swapped && G.R.ashPerTurn > 0 && f > weak) { reach += f - weak; swapped = true; }
+            }
+          } else {
+            for (const f of stock) if (roomNext > 0) { reach += f; roomNext--; }
+            reach += Math.min(roomNext, Math.max(0, p.hand.length - ch), G.R.chargePerTurn) * 0.8;
+          }
           const big = left.length ? Math.max(...left) : 0;
           v -= 1.4 * Math.max(0, want - reach) + 0.5 * Math.max(0, hNext - big - want);
           if (prep) v -= 0.35 * Math.abs(hNext - want) + (turnsLeft > 0 ? 0.3 * ch : 0); // 準備: 提供の最初のターンにちょうど合う熱へ。種火は急がない
@@ -313,7 +328,7 @@ function turnCard(G, p) {
     const sessLeft = 3 - (G.round % 3);
     const bestE = (pp) => { let b = -Infinity; for (let h = 0; h <= G.R.heatMax; h++) b = Math.max(b, expected(G, pp, h, guess0, true)); return b; };
     // 内寄せ: このセッションの残りの一口すべての印象+1（一票に届く見込み）
-    if (sessLeft >= 2 || !lastOfSession) add("inner", IMP_W * 1.6 * sessLeft);
+    if (sessLeft >= 2 || !lastOfSession) add("inner", impW(G, p) * 1.6 * sessLeft);
     for (const [id, d] of [["outer", -1]]) {
       if (sessLeft <= 1 || !cnt(p, id)) continue;
       const view = { ...p, sessMod: p.sessMod + d };
