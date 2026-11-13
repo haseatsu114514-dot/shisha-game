@@ -931,8 +931,7 @@
         "remake/js/minigames/minigame-loading.js",
         "remake/js/main.js",
         "remake/js/core/ui.js",
-        "remake/js/core/module-loading.js",
-        "remake/index.html"
+        "remake/js/core/module-loading.js"
       ],
       "run": ["node remake/test/browser/loading_gate.mjs", "node remake/test/browser/loading_craft.mjs", "node remake/test/browser/loading_game.mjs"]
     },
