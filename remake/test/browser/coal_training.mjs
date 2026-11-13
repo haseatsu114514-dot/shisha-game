@@ -219,14 +219,18 @@ try {
       assert.equal(await page.locator(".coal .c-core").first().evaluate(n => getComputedStyle(n).opacity), "0");
       await page.evaluate(() => { Q.now += 2; });
       await page.waitForFunction(() => document.querySelector('[data-test="coal-0"]').dataset.phase === "just");
-      assert.equal(await page.locator(".coal.pikan").count(), count);
+      // CRN09: 同じ秒に抽選された炭も、取り頃は readyGap ずつずれて開く。今光るのは最初の炭だけ
+      assert.equal(await page.locator(".coal.pikan").count(), 1);
       assert.equal(await page.locator(".coal .c-core").first().evaluate(n => getComputedStyle(n).opacity), "1");
       // .525 seconds into the ordinary just window: without tongs it has ended; with tongs it remains lit.
       await page.evaluate(() => { Q.now += 524; });
       await page.waitForFunction(expected => document.querySelector('[data-test="coal-0"]').dataset.phase === expected, count === 1 ? "hot" : "just");
-      assert.equal(await page.locator(".coal.pikan").count(), count === 1 ? 0 : count);
+      assert.equal(await page.locator(".coal.pikan").count(), count === 1 ? 0 : 1);
       assert.equal(await page.locator(".coal .c-core").first().evaluate(n => getComputedStyle(n).opacity), count === 1 ? "0" : "1");
+      const gap = await page.evaluate(async () => (await import("./js/craft/heat_logic.js")).HEAT_TUNING.readyGap);
       for (let i = 0; i < count; i++) {
+        // 炭 i も、自分の取り頃の窓の同じ位置（開いてから .525 秒）で取る
+        if (i > 0) await page.evaluate(({ i, gap }) => { Q.now = 1000 + (5.8 + i * gap + .525) * 1000; }, { i, gap });
         const node = page.locator(`[data-test="coal-${i}"]`);
         if (count === 4 && i === 3) { await node.focus(); await page.keyboard.press("Enter"); }
         else if (touch) await node.tap(); else await node.click();
