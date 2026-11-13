@@ -51,7 +51,7 @@ export function tonariMenu() {
     const shiftStory = state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi");
     const pickIt = (value) => { retire(root); resolve(value); };
     // 今日もう済ませた行動は押せない札にして理由を見せる（押すとメニューが閉じて地図へ戻っていた・#3555）。
-    // 体力を使う行動は、使う量を説明の末尾に添える（行動前に分かるように・#3555。値は calendar.js の staminaGuard と同じ）。
+    // 体力の消費は数字で見せない（ゲージでなんとなく把握するゲーム性・MAP04）。
     const today = state.visitedDay;
     const makanaiDone = today.tonari_practice === state.day || today.tonari_strawberry === state.day;
     const DONE = {
@@ -59,14 +59,12 @@ export function tonariMenu() {
       baito: today.tonari_baito === state.day ? "今日のシフトはもう終わった" : null,
       strawberry: makanaiDone ? "今日はもうまかないで練習した" : null,
     };
-    const STAMINA = { customer: 16, baito: 24, strawberry: 16, hiyori_axe: 10 };
     const opt = (title, desc, value, test) => {
       const done = DONE[value] || null;
-      const cost = STAMINA[value] ? `（体力 −${STAMINA[value]}）` : "";
       return el(`button.big-choice${done ? ".done" : ""}`, { dataset: { test }, disabled: !!done || (value === "hiyori_axe" && !hiyoriAxeAffordable()),
         onclick: () => { SE.select(); pickIt(value); } }, [
         // 済んだ行動も、店の様子（つむぎがいる 等）の説明は残し、その後ろに理由を添える。
-        el("b", { text: title }), el("small", { text: done ? `${desc} ── ${done}` : `${desc}${cost}` }),
+        el("b", { text: title }), el("small", { text: done ? `${desc} ── ${done}` : desc }),
       ]);
     };
     const root = showScreen("tonari", el("div.sub-menu", [

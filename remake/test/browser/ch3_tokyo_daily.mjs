@@ -313,7 +313,8 @@ await suite("ch3-tokyo-daily", async check => {
     await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.state.money = 10000; });
     await page.locator(dt("pin-ch3_tokyo_mukai")).click();
     await page.locator(dt("pin-ch3_tokyo_enmaku")).click();
-    await page.locator(dt("pin-ch3_tokyo_enmaku")).locator(".pin-cost", { hasText: "4,000" }).waitFor();
+    // 料金はピンではなく、右下のプレビューの札で見る（MAP05）。
+    await page.locator(dt("map-cost"), { hasText: "4,000" }).waitFor();
     await page.locator(dt("map-go")).click();
     const pick = page.locator(dt("tokyo-enmaku-0"));
     await pick.or(page.locator(".vn")).first().waitFor();

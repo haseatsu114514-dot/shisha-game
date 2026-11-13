@@ -733,10 +733,10 @@
   pointer-events: none;
 }
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .hud-card::after { content: none; }
-/* 日付: 街の名前の下に「5/14」、右に今日の残りの行動の札。 */
+/* 日付: 街の名前の下に「5/14」。右にあった今日の残りの行動の札（☀残り2）は出さない（MAP06）。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .dc-main {
   display: grid;
-  grid-template-columns: auto auto;
+  grid-template-columns: auto;
   grid-template-rows: auto auto;
   align-content: center;
   align-items: center;
@@ -760,21 +760,11 @@
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .dc-day { grid-column: 1; grid-row: 2; line-height: 1; white-space: nowrap; }
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .dc-day b { font-size: calc(var(--neo-hud-num) + 2px); font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; }
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .dc-day small { margin-left: 2px; font-size: max(13px, var(--neo-hud-sub)); font-weight: 700; color: var(--neo-ui-dim); }
+/* 時間帯と残りの行動回数の札（☀残り2・☂・大会当日 など）は画面に出さない（MAP06・2026-11-13 オーナー「よくわからないから消して、
+   その分UIのスペースをコンパクトに」）。読み上げ用に要素と文は残す。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .dc-slot {
-  grid-column: 2;
-  grid-row: 1 / 3;
-  margin: 0;
-  padding: 4px 10px;
-  font-size: var(--neo-hud-sub);
-  font-weight: 700;
-  line-height: 1.2;
-  white-space: nowrap;
-  color: var(--neo-ui-gold-hi);
-  background: rgba(227, 189, 110, .1);
-  border: 1px solid rgba(227, 189, 110, .42);
-  border-radius: 999px;
+  position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
 }
-:root[data-look="neo"] body:not(.game-ds) #stage #hud .dc-slot[data-slot="night"] { color: #d2ceff; background: rgba(184, 180, 255, .12); border-color: rgba(184, 180, 255, .5); }
 /* 所持金・（出発まで）・体力・Lv を横に並べ、金の細い縦線で区切る。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .dc-meta {
   display: flex;

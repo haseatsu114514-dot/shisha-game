@@ -2206,3 +2206,7 @@ body:not(:root) .map .mi-tag {
 }
 body:not(:root) .map .mi-tag.mi-why { background: #a8343a; }
 html:root[data-density="phone"] body:not(:root) .map .mi-tag { font-size: var(--phone-sub); }
+
+/* 時間帯と残りの行動回数の札（☀残り2・☂・大会当日 など）は画面に出さない（MAP06・2026-11-13 オーナー「よくわからないから消して、
+   その分UIのスペースをコンパクトに」）。読み上げ用に要素と文は残す（昼夜はマップの絵で分かる）。 */
+body:not(:root) #hud .dc-slot { position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

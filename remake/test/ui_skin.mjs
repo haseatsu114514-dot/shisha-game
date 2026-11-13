@@ -68,7 +68,8 @@ try {
           const countdown = amount.closest(".dc-meta").querySelector(".dc-row:not(.money)");
           const time = document.querySelector(".dc-slot");
           result.push({ money, day, rects: snapshot(), barWidth: parseFloat(document.querySelector(".hud-bar").style.width), visible: amount.scrollWidth <= amount.clientWidth,
-            timeFits: time.scrollWidth <= time.clientWidth,
+            // 時間帯・残りの行動の札は画面に出さない（MAP06）。読み上げ用の要素は残し、見た目は1px以下に畳む。
+            timeHidden: time.getBoundingClientRect().width <= 1 && time.getBoundingClientRect().height <= 1 && !!time.getAttribute("aria-label"),
             countdown: countdown ? countdown.textContent : null });
         }
       }
@@ -79,7 +80,7 @@ try {
       assert.deepEqual(result.rects, sameCapacity.rects, `HUD moved: money=${result.money}, day=${result.day}`);
       assert.deepEqual([result.rects[0], ...result.rects.slice(2)], [geometry[0].rects[0], ...geometry[0].rects.slice(2)], "Capacity change moved the other HUD controls");
       assert(result.visible, `Money was clipped: ${result.money}`);
-      assert(result.timeFits, "Time/weather label overlapped the money column");
+      assert(result.timeHidden, "時間帯・残りの行動の札（☀残り2）は画面に出さず、読み上げ用にだけ残す（MAP06）");
       assert.equal(result.countdown, null, "残り日数の行が左上カードに残っている（#3033で削除済みのはず）");
     }
     // バーの長さは最大体力によらず経験値ゲージと共通の固定長（#3034）。指定幅が最大体力で変わらないことを見る。
