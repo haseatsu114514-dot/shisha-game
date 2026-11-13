@@ -1,10 +1,9 @@
 import assert from 'node:assert/strict';
 import { suite } from './support.mjs';
 
-// 横持ちスマホ（#3517・#3518）: 一枚の舞台は --k（0.47〜0.54）で縮むので、ステージ寸法の px のままだと実効 6〜10px になる。
-// 工程の上のレール・見守る人の札・結果カード・結果表の文字は実効 11.4px 以上、結果の根拠を開く「詳しく見る」は実効の高さ 30px 以上。
+// 横持ちスマホ（#3517）: 一枚の舞台は --k（0.47〜0.54）で縮むので、ステージ寸法の px のままだと実効 6〜10px になる。
+// 工程の上のレール・見守る人の札・結果カード・結果表の文字は実効 11.4px 以上。
 const MIN_FONT = 11.4;
-const MIN_TAP = 30;
 const scan = minFont => {
   const stage = document.querySelector('#stage');
   const k = stage.getBoundingClientRect().width / stage.offsetWidth;
@@ -49,13 +48,6 @@ await suite('craft-phone-text', async check => {
     await page.locator('[data-test="step-details"]').waitFor();
     await page.waitForTimeout(500);
     assert.deepEqual(await page.evaluate(scan, MIN_FONT), [], 'result card: small text');
-    const details = await page.evaluate(() => {
-      const stage = document.querySelector('#stage');
-      const k = stage.getBoundingClientRect().width / stage.offsetWidth;
-      const box = document.querySelector('[data-test="step-details"]').getBoundingClientRect();
-      return { height: box.height, width: box.width, k };
-    });
-    assert(details.height >= MIN_TAP, `「詳しく見る」の高さ ${details.height}px`);
     await page.locator('[data-test="step-details"]').click({ trial: true });
     await page.locator('[data-test="step-next"]').click();
     await page.evaluate(() => window.card);

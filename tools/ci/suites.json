@@ -184,7 +184,7 @@
     },
     {
       "id": "craft-phone-text-browser",
-      "title": "Landscape phone craft stage text size and tap target",
+      "title": "Landscape phone craft stage text size",
       "kind": "browser",
       "weight": 1,
       "timeout": 5,

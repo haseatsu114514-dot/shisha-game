@@ -111,14 +111,10 @@ html:root[data-density="phone"] body #stage .bench :is(
   .pull-zone-label span, .pull-current-zone small, .pull-life-label, .pull-count-num
 ) { font-size: var(--wide-small); }
 
-/* 工程の結果カードと見守る人の札（#3517）。実寸 11.5px 以上。
-   「詳しく見る」「お手本を見る」は採点の根拠を開く入口なので、実寸の高さ 32px 以上の押せる箱にする（#3518） */
+/* 工程の結果カードと見守る人の札（#3517）。実寸 11.5px 以上 */
 html:root[data-density="phone"] body #stage .bench :is(.audience-caption, .audience-rating) { font-size: max(var(--wide-small), 1em); }
 html:root[data-density="phone"] body #stage .bench .result-card :is(.rc-title, .rc-summary, .rc-details) { font-size: var(--wide-text); }
 html:root[data-density="phone"] body #stage .bench .result-card .rc-lines { font-size: var(--wide-text); line-height: 1.6; }
-html:root[data-density="phone"] body #stage .bench :is(.rc-details > summary, .bench-demo-link) {
-  display: inline-flex; align-items: center; min-height: calc(32px / var(--k, 1)); padding-inline: calc(8px / var(--k, 1));
-}
 
 /* 大会: 中間投票 */
 html:root[data-density="phone"] body #stage :is(.standings, .count-screen, .sui-cut, .result-table) :is(
