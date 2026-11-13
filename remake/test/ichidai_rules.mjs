@@ -565,6 +565,19 @@ function autoplay(cfg) {
     basic++;
     for (const p of K.P) assert.ok(!p.person && p.tools.every((id) => BASIC_CARDS.includes(id)), "基本の一式に、人物と上級の器具は出ない");
   }
+  // 焦げ: 0点のうえ、主役の葉を2枚失う（scorchLoss。2026-11-13 オーナー「焦げたらのやつもっと減らしたりリスキーにしていいかも」）。主役が1枚しか無ければ1枚
+  for (const [have, lose] of [[8, 2], [1, 1]]) {
+    const S = createGame({ seed: 12, tournament: "practice", first: 0, players: [{ kit: "s1", ai: true, level: 1 }, { kit: "s2", ai: true, level: 1 }] });
+    while (!(S.phase === "serve" && S.wait.type === "main" && S.wait.player === 0)) assert.ok(act(S, aiAct(S, S.wait.player)).ok);
+    const p = S.P[0];
+    p.usedSilicone = true; p.bowl = { blueberry: have, ice_grape: 4 }; p.main = "blueberry"; p.hand = [];
+    p.zone = [{ id: "cube", up: true, f: 3 }, { id: "cube", up: true, f: 3 }, { id: "cube", up: true, f: 3 }]; // 熱9。ブルーベリーの焦げは7
+    assert.equal(RULES.scorchLoss, 2);
+    assert.ok(act(S, { type: "end" }).ok);
+    while (!S.events.some((e) => e.t === "score")) assert.ok(act(S, aiAct(S, S.wait.player)).ok);
+    const r = S.events.find((e) => e.t === "score").res[0];
+    assert.deepEqual([r.zone, r.pts, r.lost, r.lostN, p.bowl.blueberry ?? 0, p.scorchCount], ["scorch", 0, "blueberry", lose, have - lose, 1], `焦げたら主役の葉を${lose}枚失う`);
+  }
   // 入門の一局: 一台は詰めてあり、種火3つも置いてある。準備は炭を焼く2ターンだけ（蒸らすのは自動）、提供は6ラウンド。一票と決め手は無い
   const cfg = (seed, la = 1, lb = 0) => ({ seed, tournament: INTRO.tournament.id, rules: INTRO.rules, first: seed % 2, players: [{ kit: INTRO.kit, ai: true, level: la }, { kit: INTRO.kit, ai: true, level: lb }] });
   const G = createGame(cfg(2));
