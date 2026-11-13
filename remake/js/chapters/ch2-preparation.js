@@ -24,6 +24,7 @@ import { CH2_VISIT_STORIES, ch2VisitDone, ch2VisitReady } from "../core/affinity
 import { BOND_QUESTIONS, BOND_FINALES, playQuestionVisit, questionVisitDue, finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { consultLessons } from "../core/growth.js";
 import { readDialogues } from "../core/chapter-data.js";
+import { reiStickerDue } from "../core/ryuji-visit.js";
 
 const stat = { ageha: "sense", kumicho: "guts", rei: "charm" };
 // day % 7（1=月曜）。第2章の準備期間（通算16〜27日）では各店とも1日だけ休む（#2027）。
@@ -38,6 +39,8 @@ const REPEAT_POOL = {
 };
 /** レヰのライブの夜（RVE07）。台本は data/dialogue/ch2_rei.json（柚ヶ谷の台本と一緒に ch2-city-data.js が読み込む）。 */
 export const REI_LIVE_SCENE = "ch3_prep_rei_live";
+/** レヰのプリクラのシールの後日（#3468 A案）。台本は data/dialogue/ch2_deliveries.json。 */
+const REI_STICKER_SCENE = "remake_ch2_rei_purikura_after";
 /**
  * 第3章の東京へ発つ前の準備期間（core/chapter-clock.js の departurePrep と同じ判定）の夜に、チケットを受け取っていて、まだ読んでいない。
  * 場面は終演後の夜なので、昼の来店では出さない（その日の夜にまた寄れば読める）。
@@ -203,8 +206,10 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   const later = id === "ageha" && !first && !pendingFollowup && !story && !stage && !finale
     ? agehaLaterScene(state, DB.dialogues) : null;
   const repeat = !first && !followup && !story && !stage && !finale && !later && !live;
+  // MELTY PUFFでの挨拶回を読んだ日より後に一度だけ、いつもの小会話の代わりにシールの後日（#3468 A案）。好感度・能力は小会話と同じ。
+  const sticker = id === "rei" && repeat && reiStickerDue(state) && DB.dialogues[REI_STICKER_SCENE]?.lines?.length ? REI_STICKER_SCENE : null;
   const scene = live || story || stage?.scene || (finale ? BOND_FINALES[id].dialogue
-    : first ? `remake_ch2_${id}_chat` : followup ? `remake_ch2_${id}_followup` : later || repeatScene(id));
+    : first ? `remake_ch2_${id}_chat` : followup ? `remake_ch2_${id}_followup` : later || sticker || repeatScene(id));
   const dialogue = DB.dialogues[scene];
   const followupDialogue = followup ? DB.dialogues[`remake_ch2_${id}_followup`] : null;
   if (!dialogue?.lines?.length || (followup || stage?.done) && !(followupDialogue || dialogue)?.lines?.every(line => line && !line.type
@@ -269,6 +274,7 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   else if (stage) state.flags[`_ch2_read_${stage.scene}`] = true;
   if (story) { state.flags[`_ch2_read_${story}`] = true; syncAgehaVibes(state.flags); }
   if (live) state.flags[`_talk_seen_${live}`] = true;
+  if (sticker) state.flags._rei_purikura_after = true;
   if (later) {
     const extra = AGEHA_LATER_SCENES.find(item => item.id === later);
     if (extra) state.flags[extra.flag] = true;
