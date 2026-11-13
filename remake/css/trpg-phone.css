@@ -20,8 +20,10 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-cue h2 { f
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-cue :is(.trpg-stage-investigation, .trpg-investigation strong) { font-size: var(--phone-sub); }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-companions button > span,
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-stage-pockets button.trpg-notebook { font-size: var(--phone-sub); }
+/* visibility は inherit（#3199）: visible にすると、台詞の間・宣言・判定・見立ての画面で印（.trpg-spot）を隠しても名前だけが
+   絵の上に薄く残っていた（子の visible は親の hidden を上書きする）。印が見えている時は今までどおりいつも出る。 */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot > span {
-  opacity: 1; visibility: visible; transform: translate(-50%, 0); top: 50px;
+  opacity: 1; visibility: inherit; transform: translate(-50%, 0); top: 50px;
   padding: 3px 12px; border-radius: 999px; font-size: var(--phone-sub); line-height: 1.4; background: #0b1420d9;
 }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-room.interactive .trpg-spot[data-label-side="above"] > span { top: auto; bottom: 50px; }
@@ -87,10 +89,20 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-plan-summary .ch
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div { position: relative; min-height: 340px; padding-left: 50%; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene { position: absolute; left: 0; top: 4px; width: 47%; margin: 0; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total { position: absolute; left: 0; top: 196px; width: 47%; margin: 0; }
-html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details { position: absolute; left: 0; top: 166px; width: 47%; margin: 0; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details { position: absolute; left: 0; top: 236px; width: 47%; margin: 0; }
+/* 成功の見込み（補正込み・#3199）はトレイの下。詳細を開くと、その下に3つの見込みの表だけを出す。表の題の式と下の注記は、
+   この1行（何が込みか・見立ての一言）と題の行の「30以上で成功」に同じことが書いてあるので出さない。
+   開いたままでも表が下の「サイコロを振る」に隠れず、本文の箱に縦スクロールが出ない。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > p.trpg-roll-chance { position: absolute; left: 0; top: 176px; width: 47%; margin: 0; gap: 0 14px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-chance > strong { font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-chance > small { font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage :is(.trpg-forecast-head, .trpg-forecast > p) { display: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-declare-prompt > small.trpg-declare-included { font-size: var(--phone-sub); }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details > p { display: none; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details > summary { min-height: calc(44px / var(--k, 1)); height: calc(44px / var(--k, 1)); padding-block: 0; margin: 0; }
-html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div { min-height: 418px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div { display: flow-root; min-height: 400px; }
+/* ↑ #3199: 本文の箱（約410px）より高い 418px だと、振る前から縦スクロールが出ていた。振った後は右の列の先頭（目標までの帯）の
+   上の余白が箱の外へ抜けて（マージンの相殺）全体が 16px 下がり、さらに伸びていた。flow-root で余白を箱の中に留める。 */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-forecast { margin-top: 0; padding: 2px 15px 0; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-forecast-head > strong,
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-odds small { display: none; } /* 「30以上で成功」は右の説明と同じ */
@@ -117,3 +129,20 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg
 
 /* ---- 演出（TRF08〜10）: スマホの判定の卓では、目標までの帯を右の列のいちばん上に置く ---- */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-gauge { width: 94%; margin: 16px auto 12px; }
+
+/* ---- メモを読み比べる（#3199・TRF24）: 3列にして、6枚（手がかり3＋聞いた話2〜3）までスクロールなしで見渡せる。
+   「卓に戻る」は題の行の右へ上げて、本文に高さを譲る。前置きの一文は出さない（調べ直しに回数を使わないことは「？」に）。 ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-modal.trpg-notes-stage { position: relative; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage > h2 { min-height: var(--phone-tap); display: flex; align-items: center; padding-right: 260px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-modal-actions { position: absolute; top: 18px; right: 28px; margin: 0; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-modal-intro { display: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-notes-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 12px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-note-card { padding: 8px 14px 10px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-note-card h3 { margin: 0 0 2px; }
+
+/* ---- 判定の卓: Safari のバーが出た低い画面（844×340）でも下へ送らない（#3199・TRF24） ----
+   中身の箱は、左の列（トレイ〜合計）が収まる 380px で足りる（400px だと、低い画面では本文の箱 391px を少し超えていた）。
+   「判定の詳細」を開いた時は、見込みの行の「何が込みか」を畳んで（表に同じ数字が出る）、表を少し上へ寄せる。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div { min-height: 380px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) > p.trpg-roll-chance > small { display: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) > .trpg-roll-details { top: 208px; }

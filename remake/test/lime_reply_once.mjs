@@ -30,7 +30,7 @@ async function fixture({ lover = false, reply = response, invitation = false, co
   const noop = () => {};
   const imports = {
     'util.js': { el: element, sleep: async () => {}, fitOneLine: noop, yen: String },
-    'data.js': { DB: { lime: [], limeTemplates, manifest: { limeMedia: mediaCatalog } }, displayName: String, faceIconUrl: noop },
+    'data.js': { DB: { lime: [], limeTemplates, manifest: { limeMedia: mediaCatalog } }, displayName: String, limeAccountName: String, faceIconUrl: noop },
     'lime-icons.js': { customLimeIconUrl: () => null },
     'ui.js': { layers: { modal: element('modal') }, toast: noop }, 'tsumugi-schedule.js': { tsumugiAtTonari: () => false, tsumugiMessages: () => [], TSUMUGI_STORY: [] }, 'casual-lime.js': { casualMessages: () => [] }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
     'chapter-clock.js': { chapterDay: () => 5 },

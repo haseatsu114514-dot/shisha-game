@@ -1,4 +1,5 @@
-// REL01〜03: 街の人同士のつながり（なる→凛想、なる→アダム、みんと→サメちゃん）の寄り道会話。
+// REL01〜03・06・07: 街の人同士のつながり（なる→凛想とその第5章の続き、なる→アダム、みんと→サメちゃん、ひより×みんと）の寄り道会話。
+// #3468 B案: ひより×みんとの続き（ぺぱーみんとの夜の相席と、次の来店での後日の一言）。
 // 出る条件（面識・順番・一度きり・なるの修行中は出ない・凛想の出張の日は出ない）と、台本の決まりを検査する。
 // 相関の正本は brand/character_profiles.md「キャラ同士のつながり」。
 // node remake/test/town_ties.mjs
@@ -9,7 +10,7 @@ import { RIO_AWAY_DAY } from "../js/core/rules.js";
 
 const read = (url) => JSON.parse(fs.readFileSync(new URL(url, import.meta.url), "utf8"));
 const byId = (file) => Object.fromEntries(read(`../../data/dialogue/${file}.json`).dialogues.map((d) => [d.dialogue_id, d]));
-const dialogues = { ...byId("ch1_spots"), ...byId("samechan") };
+const dialogues = { ...byId("ch1_spots"), ...byId("samechan"), ...byId("ch5_shops"), ...byId("hiyori") };
 // 立ち絵はLFSでCIのquickには無いため、表情の一覧はmanifestを正とする。
 const portraits = read("../data/manifest.json").portraits;
 const AWAY = RIO_AWAY_DAY, IN = RIO_AWAY_DAY + 1;
@@ -30,6 +31,11 @@ const SCENES = {
   kannon_adam_lunch_followup: { cast: ["adam"], end: "_spot_follow_adam_lunch" },
   samechan_shop_minto_gift: { cast: ["samechan"], end: null }, // 既読は daily/samechan.js が来店の精算で付ける
   samechan_minto_followup: { cast: ["minto"], end: "_spot_follow_minto_samechan" },
+  // 既読は呼び出し側（chapters/ch5-shops.js・daily/hiyori.js）が来店の精算で付ける
+  ch5_rio_naru_tea: { cast: ["naru", "rio"], end: null },
+  hiyori_shop_minto: { cast: ["hiyori", "minto"], end: null },
+  hiyori_shop_minto_seat: { cast: ["hiyori", "minto"], end: null },
+  hiyori_minto_seat_followup: { cast: ["hiyori", "minto"], end: "_spot_follow_minto_hiyori" },
 };
 
 check("the away day copied into spot-encounters.js matches the rule", () => {
@@ -68,6 +74,50 @@ check("the secrets stay secret: no age, no confession, and Rio never learns why 
   const follow = dialogues.cafe_naru_rio_followup;
   assert.deepEqual(follow.lines[0], { type: "condition", condition_type: "lover", char_id: "rio", next_true: "lover", next_false: "plain" });
   assert(follow.branches.lover.length && follow.branches.plain.length);
+  // 第5章の続きも、恋人の時の分岐を持ち、なるは何も言わずに帰る。
+  const tea = dialogues.ch5_rio_naru_tea;
+  const lovers = tea.lines.filter((l) => l.condition_type === "lover");
+  assert.equal(lovers.length, 2, "Naru's parting line and Rio's last line both change for a lover");
+  assert(lovers.every((l) => l.char_id === "rio" && tea.branches[l.next_true]?.length));
+  assert(!/好き|告白|惚れ/.test(text("ch5_rio_naru_tea")));
+  assert(text("ch5_rio_naru_tea").includes("ケムリクサさん") && text("ch5_rio_naru_tea").includes("円頓寺さん"));
+});
+
+check("Hiyori and Minto: Minto plays along and never says so to her; her own age stays a joke", () => {
+  const dlg = dialogues.hiyori_shop_minto;
+  // みんとの店なので、名前欄は営業の「みんと」のまま（本名を知っていても）
+  assert.equal(dlg.metadata.private_scene, false);
+  const rows = dlg.lines.filter((l) => !l.type);
+  const whole = rows.map((l) => l.text).join("");
+  assert(!/29|二十九|アラサー|年上|演技|芝居/.test(whole), "nothing gives either of them away");
+  // ひよりの本心はプレイヤーだけに見える inner で。みんとが気づいたことは、ひよりの前では言わない
+  assert(rows.filter((l) => l.speaker === "hiyori").every((l) => l.inner), "each of Hiyori's lines carries her inner voice");
+  const leftAt = rows.findIndex((l) => l.text.includes("ひよりが帰ったあと"));
+  assert(leftAt > 0 && rows.slice(leftAt).every((l) => l.speaker !== "hiyori"), "Minto's remark comes after Hiyori has gone");
+});
+
+check("Hiyori and Minto, the back seat (#3468 B): Minto lets her keep the mood and never explains; no secrets shared", () => {
+  const seat = dialogues.hiyori_shop_minto_seat, follow = dialogues.hiyori_minto_seat_followup;
+  for (const dlg of [seat, follow]) {
+    // みんとの店なので、名前欄は営業の「みんと」のまま。本名・私服の呼び名は出さない
+    assert.equal(dlg.metadata.private_scene, false);
+    const rows = dlg.lines.filter((l) => !l.type);
+    const whole = rows.map((l) => `${l.text}${l.inner || ""}`).join("");
+    assert(!/29|二十九|アラサー|年上|二十歳|栞|お姉さん|演技|芝居|恋人|彼氏|スミ|tonari/.test(whole), dlg.dialogue_id);
+    // ひよりの本心は inner だけ。みんとの台詞は inner を持たない
+    assert(rows.every((l) => l.speaker === "hiyori" || !l.inner), dlg.dialogue_id);
+  }
+  const rows = seat.lines.filter((l) => !l.type);
+  // 入口は窓際、勧めるのは暗くできる奥の席（雰囲気の希望は残す）
+  assert(rows[0].text.includes("窓際") && rows.some((l) => l.speaker === "minto" && l.text.includes("暗く")));
+  // 手元の手際（荷物とコースター）と、その上に温かい飲み物
+  const hands = rows.findIndex((l) => l.text.includes("バッグ")), cup = rows.findIndex((l) => l.text.includes("コースターの上"));
+  assert(hands > 0 && cup > hands);
+  // はじめが聞いても、ひよりが帰った後に、はぐらかすだけ
+  const leftAt = rows.findIndex((l) => l.text.includes("ひよりが帰ったあと"));
+  assert(leftAt > cup && rows.slice(leftAt).every((l) => l.speaker !== "hiyori"));
+  // 後日は、ひよりが自分から同じ席にいる
+  assert(follow.lines.some((l) => l.text?.includes("まっすぐあそこ")));
 });
 
 check("Naru and Rio at the cafe: after the pudding visit, with both met, on a day Rio is in town, never once Naru has left", () => {
@@ -124,6 +174,11 @@ check("follow-ups at each shop: one per visit, each read once, the older ones un
   assert.equal(spotFollowupDue("minto", m, dialogues), "samechan_minto_followup");
   m.flags._spot_follow_minto_samechan = true;
   assert.equal(spotFollowupDue("minto", m, dialogues), null);
+  m.flags._spot_seen_hiyori_shop_minto_seat = true;
+  assert.equal(spotFollowupDue("minto", m, dialogues), "hiyori_minto_seat_followup", "after the night Hiyori was shown the back seat");
+  assert.equal(spotFollowupDue("minto", save({ flags: { _spot_seen_hiyori_shop_minto_seat: true } }), dialogues), "hiyori_minto_seat_followup");
+  m.flags._spot_follow_minto_hiyori = true;
+  assert.equal(spotFollowupDue("minto", m, dialogues), null, "once");
   assert.equal(spotFollowupDue("sumi", save(), dialogues), null, "shops without follow-ups");
 });
 

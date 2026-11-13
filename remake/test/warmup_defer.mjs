@@ -94,6 +94,7 @@ async function loadUi({ loadImage = image => image.onload?.(), imageSize = 0, no
     "loading.js": { withLoading: (prepare) => Promise.resolve().then(() => prepare({})), comicLoadingRequired: () => false },
     "loading-context.js": { gameLoadingOptions: () => ({}) },
     "stage-fit.js": { syncBackdrop: () => {} },
+    "dom-write.js": await import("../js/core/dom-write.js"), // 変化時だけ書く部品は、本物をそのまま使う（#3500）
     "loading-prefetch.js": {
       prepareImage: (url) => new Promise((resolve) => {
         const image = new Image();

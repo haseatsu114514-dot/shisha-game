@@ -1,5 +1,6 @@
 // 画面の土台: 背景・画面切替・煙ワイプ・トースト・ステ通知・モーダル・カウントダウン・スタンプ。
 import { $, el, sleep, nextFrame } from "./util.js";
+import { setData } from "./dom-write.js";
 import { syncBackdrop } from "./stage-fit.js";
 import { on } from "./bus.js";
 import { SE, setRainAmbience } from "./audio.js";
@@ -323,8 +324,9 @@ export function refreshWeather() {
   const scene = document.hidden ? null : rainScene(weatherBg, document.body.dataset.screen);
   const sky = scene ? weatherSkyTone(weatherBg, weatherTint) : "none";
   const view = scene ? weatherViewKind(weatherBg, scene) : "none";
-  document.body.dataset.weather = scene?.mode || "none";
-  document.body.dataset.weatherSky = sky;
+  // 画面を出し入れするたびに呼ばれる。body の属性は、値が変わった時だけ書く（#3500 B-6）。
+  setData(document.body, "weather", scene?.mode || "none");
+  setData(document.body, "weatherSky", sky);
   setRainAmbience(scene?.mode || null);
   const key = scene ? JSON.stringify({ scene, sky, view }) : "";
   if (key === weatherKey) return;

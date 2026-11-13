@@ -61,7 +61,7 @@ export function playIncarnation(root, { cards = [], kicker = "物語の中へ", 
   const veil = el("div.trpg-incarnate-veil"), head = el("p.trpg-incarnate-kicker", { text: kicker });
   const row = el("div.trpg-incarnate-cards", cardNodes);
   const placeNode = el("div.trpg-incarnate-place", [el("small", { text: "物語の舞台" }), el("strong", { text: place }),
-    teller ? el("span", { text: "語り手 " + teller }) : null].filter(Boolean));
+    teller ? el("span", { text: teller }) : null].filter(Boolean));
   const flash = el("div.trpg-incarnate-flash");
   const node = el("div.trpg-incarnate", { "aria-hidden": "true" }, [veil, head, row, placeNode, flash]);
   const fx = overlay(root, node);
@@ -148,7 +148,8 @@ export function playResultCut(root, { figure = null, who = "", how = "", label =
   if (!live(root) || !label) return IDLE;
   const node = el("div.trpg-cutin", { "aria-hidden": "true", dataset: { grade, special } }, [
     el("i.trpg-cutin-band"),
-    figure ? el("span.trpg-cutin-figure", figure) : null,
+    // 役衣装の絵がある役は、札ではなく人物として立たせる（TRF19）。絵の無い役（顔の丸）は札のまま。
+    figure ? el("span.trpg-cutin-figure", { dataset: { cutout: String(!!figure.classList?.contains("trpg-costume")) } }, figure) : null,
     el("span.trpg-cutin-copy", [el("small", { text: [who, how].filter(Boolean).join(" · ") }), el("strong", { text: label })]),
   ].filter(Boolean));
   const fx = overlay(root, node);

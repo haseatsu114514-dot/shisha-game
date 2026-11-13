@@ -545,12 +545,12 @@
    "time": "",
    "weather": "",
    "size": [
-    1280,
-    720
+    1672,
+    941
    ],
-   "luma": 92,
-   "blob": "0484e2fc350bc66839aadc2cbd162146c4019c88",
-   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+   "luma": 64,
+   "blob": "952f4b9c79362cbaaac18044614b52a4bee50e9e",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う。台は描かれておらず、ゲームが scene-art.js の SCENE_PROPS で重ねる（2026-11-13）"
   },
   "bg_home.png": {
    "place": "home",
@@ -1106,11 +1106,12 @@
    "time": "",
    "weather": "",
    "size": [
-    1920,
-    1080
+    1672,
+    941
    ],
-   "luma": 42,
-   "blob": "19fa1ee9a44e5bfc5e31abfc70c71ac55b24a35b"
+   "luma": 61,
+   "blob": "9115bd165d68ad0eb3a8966bbef6ef42c9ded0ed",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う。台は描かれておらず、ゲームが scene-art.js の SCENE_PROPS で重ねる（2026-11-13）"
   },
   "bg_volk_shop.png": {
    "place": "volk_shop",

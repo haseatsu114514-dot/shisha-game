@@ -2,11 +2,12 @@ import { el } from "../core/util.js";
 import { TrpgSession, HEAT, heatTier, DICE, STATS, PLAYER_SEAT, approachesOf, approachBase, buildPc, randomPc, grownStats, phasesOf, checkKindsOf, rewardKindOf, nearMissOf } from "./session.js";
 import { displayName, portraitUrl, portraitAx, portraitHeadTop, portraitTop as topFor, sceneUrl } from "./presentation.js";
 import { costumeUrl } from "./costumes.js";
-import { faceIconStyle } from "./face-crops.js";
+import { BUST, bustCheekWidth, bustTypicalWidths, faceIconStyle } from "./face-crops.js";
 import { createTrpgAudio } from "./audio.js";
 import { checkForecast, rerollOdds, rollOdds } from "./feedback.js";
 import { playTrpgEntrance } from "./entrance.js";
 import { playIncarnation, playSceneCard, playResultCut, playClueCard, impact } from "./stage-fx.js";
+import { autoWrap } from "../vn/text.js";
 
 // 調べる場所の印の半径（見える輪。スマホでは押せる範囲が広いが、輪は同じ大きさ）。ワイドでの上下の切り方に使う
 const ROOM_SPOT_REACH = 28;
@@ -79,10 +80,9 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   // The role costume (same person, dressed as the PC) where we have one: sheets, cover, origins and declaration cards (TMX04).
   // "bust" zooms on the upper body for small cards; "full" shows the whole figure. Falls back to the round face.
-  // Bust framing shared by every costume card: cheek-to-cheek width as a share of the box width, eye line as a share of its height.
-  const BUST = { face: 0.26, eye: 0.36 };
-  // 頬の幅の測定に、頬へかかる青い髪まで入ってしまう2人（全身の絵と見比べて決めた補正・2026-11-11）。
-  const FACE_FIX = { samechan: 0.86, rei: 0.8 };
+  // Bust framing shared by every costume card (face-crops.js の BUST): cheek width as a share of the box width, eye line as a share of its height.
+  // 頬の幅は、そのキャラの中央値へ寄せて使う（絵ごとの測定のぶれで、顔の大きさが札ごとに変わらないように）。
+  const bustTypical = bustTypicalWidths(costumeFrames);
   function pcFigure(seat, playerId, { role = sheets[seat]?.archetype || sheets[seat]?.option || null, shape = "bust" } = {}) {
     const url = costumeUrl(scenario.id, playerId, role);
     if (!url) return pcFace(seat, playerId);
@@ -91,7 +91,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     // the measured cheek width and eye line of each costume picture (img/ui/trpg/costumes/frames.json) set the zoom and the offset.
     const face = costumeFrames?.[scenario.id + "/" + playerId + "/" + role]?.face;
     if (face?.w > 0) {
-      const [W, H] = [896, 1200], width = BUST.face * W / (face.w * (FACE_FIX[playerId] || 1)) * 100;
+      const [W, H] = [896, 1200], width = BUST.face * W / bustCheekWidth(face, playerId, bustTypical[playerId]) * 100;
       return el("span.trpg-costume", { dataset: { shape, framed: "face" } }, el("i", { style: { backgroundImage: `url("${url}")`,
         width: width + "%", top: BUST.eye * 100 + "%", transform: `translate(-${face.cx / W * 100}%, -${face.eye_y / H * 100}%)` } }));
     }
@@ -296,9 +296,11 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     shownTeamwork = state.teamwork;
     table.replaceChildren(...scenario.cast.map(c => {
       const pc = c.part === "GM" ? null : pcOf(c.id);
-      return el("span.trpg-table-person", { dataset: { speaker: c.id, part: c.part === "GM" ? "gm" : "pl" } }, [
+      return el("span.trpg-table-person", { dataset: { speaker: c.id, part: c.part === "GM" ? "gm" : "pl" }, title: c.part === "GM" ? GM_TITLE + " " + name(c.id) : null }, [
         // 座席は顔＋名前だけ。PL/GMの英字・席番号・能力値はキャラクターシートに任せ、話者だけ光らせる（#2839）。
-        el("span.trpg-seat-face", { "aria-hidden": "true" }, el("img", { src: portrait(c.id), alt: "", style: circleStyle(c.id, 160, 6) })),
+        // GMの席は顔を出さず、「GM」と書いたゲームマスターの印（TRF20）。
+        el("span.trpg-seat-face", { "aria-hidden": "true", dataset: c.part === "GM" ? { gm: "true", test: "trpg-seat-gm" } : { gm: "false" } },
+          c.part === "GM" ? gmMark(true) : el("img", { src: portrait(c.id), alt: "", style: circleStyle(c.id, 160, 6) })),
         el("span.trpg-seat-head", [el("span.trpg-seat-name", { text: name(c.id) }), el("small.trpg-seat-speaking")]),
         pc ? el("span.trpg-seat-pc", { dataset: { test: "trpg-seat-pc-" + c.id } }, [el("strong", { text: pc.name })]) : null,
         c.part === "GM" && npcSeats.length ? el("span.trpg-seat-pc", { dataset: { test: "trpg-seat-npc" } },
@@ -408,6 +410,12 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     root.dataset.layer = layer; root.dataset.kind = kind;
     dock.dataset.layer = layer === "fiction" ? "fiction" : "table"; dock.dataset.kind = kind;
   }
+  // ゲームマスターの印（TRF20）: GMは卓で顔を出さない。衝立（GMスクリーン）とダイスの印と、「ゲームマスター（名前）」の名札で話す。
+  const GM_TITLE = "ゲームマスター";
+  const GM_MARK = '<svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><path d="M20 15 6 21v33l14-5ZM44 15l14 6v33l-14-5Z"/><path d="M20 15h24v34H20Z"/><path class="die" d="m32 23 8 4.6v9.2L32 41.4l-8-4.6v-9.2Z"/><path class="die-line" d="M32 23v6.4m0 0-8 7.4m8-7.4 8 7.4m-16 0h16" fill="none"/></svg>';
+  const gmMark = (lettered = false) => el("span.trpg-gm-mark", { html: GM_MARK + (lettered ? "<b>GM</b>" : ""), "aria-hidden": "true", dataset: { lettered: String(lettered) } });
+  /** GMが自分の声で話す行（卓の会話・語り）。店長のチュートリアルは店長本人として話すので含めない。 */
+  const gmVoice = frame => frame.speaker === gm && !/はじめての人へ/.test(String(frame.role ?? ""));
   const NPC_FIGURE = '<svg viewBox="0 0 120 150" aria-hidden="true" focusable="false"><path d="M60 12c-17 0-29 13-29 31 0 10 4 18 9 24-17 6-30 20-33 41l-2 42h110l-2-42c-3-21-16-35-33-41 5-6 9-14 9-24 0-18-12-31-29-31Z"/></svg>';
   // 人物ではないもの（予告状・招待状・手紙・貼り紙）を読む時は、紙の札。
   const NPC_PAPER = '<svg viewBox="0 0 120 150" aria-hidden="true" focusable="false"><path d="M22 18h60l22 22v92H22Z"/><path d="M82 18v22h22M38 62h48M38 80h48M38 98h34" fill="none"/></svg>';
@@ -419,13 +427,17 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     // はじめて物語の中へ入る瞬間に、みんなが役の姿になる（TRF08）。送りの1押しめは、この演出を閉じるだけ。
     if (kind !== "table" && !incarnated && session.snapshot().phase !== "cover") { incarnated = true; incarnate(); }
     if (frame.fx) stageCue(frame.fx);
+    const asGm = gmVoice(frame) && (kind === "table" || kind === "narration");
     if (kind === "npc") {
-      // GMが演じる物語の人物: 立ち絵は出さず、人影の札と名前。語っているGMは小さく添える。
+      // GMが演じる物語の人物: 立ち絵は出さず、人影の札と名前。演じているのがゲームマスターだと名札に添える。
       const who = roleLabel(frame).replace(/／物語$/, "");
-      art.replaceChildren(el("span.trpg-npc-figure", { html: isPaper(who) ? NPC_PAPER : NPC_FIGURE, dataset: { shape: isPaper(who) ? "paper" : "person" } }),
-        el("span.trpg-npc-gm", { title: "GM " + name(gm) }, el("img", { src: portrait(gm, frame.face), alt: "", style: circleStyle(gm, 150, 6) })));
+      art.replaceChildren(el("span.trpg-npc-figure", { html: isPaper(who) ? NPC_PAPER : NPC_FIGURE, dataset: { shape: isPaper(who) ? "paper" : "person" } }));
       speaker.textContent = who;
-      role.textContent = "GM " + name(gm);
+      role.textContent = GM_TITLE + " " + name(gm);
+    } else if (asGm) {
+      // GM自身の声（卓の会話・場面の語り）: 顔は出さず、印と「ゲームマスター（名前）」。語りは中央に寄せる（印も出さない）。
+      art.replaceChildren(...(kind === "narration" ? [] : [gmMark()]));
+      speaker.textContent = GM_TITLE; role.textContent = name(gm);
     } else if (kind === "narration") {
       art.replaceChildren();
       speaker.textContent = "語り"; role.textContent = name(frame.speaker);
@@ -443,14 +455,15 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     }
     art.style.backgroundColor = person?.color || "#566053";
     setLayer(kind);
-    speech.textContent = pcText(frame.text);
+    dock.dataset.gm = String(asGm);
+    setSpeech(pcText(frame.text));
     // 一行ごとに短く現れる（字は最初から全部入っている。読み上げと検査は待たない）。
     speech.dataset.tick = String(cursor % 2);
     showPanel(frame.panel || null);
     next.textContent = cursor + 1 < frames.length ? "次へ" : "続ける";
     syncSpeaker(frame.speaker);
     // 台詞の肩書きは場面の種類（「場面」「物語」）だけ。「GM／卓の会話」「PL／卓の会話」は出さない（#2839）。
-    log.push({ speaker: frame.speaker, role: roleLabel(frame), text: pcText(frame.text) });
+    log.push({ speaker: frame.speaker, gm: frame.speaker === gm && gmVoice(frame), role: roleLabel(frame), text: pcText(frame.text) });
   }
   /** 転生の演出（TRF08）: 卓の顔ぶれの札が裏返り、本人から役の姿へ。操作は塞がず、送りの1押しで閉じられる。 */
   function incarnate() {
@@ -459,7 +472,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       return { real: { name: name(c.id), face: pcFace(seat, c.id) }, role: { name: pc.name, title: pc.title || "", figure: pcFigure(seat, c.id) } };
     });
     audio.play("open");
-    staging = playIncarnation(root, { cards, place: presentation.location || scenario.title, teller: name(gm),
+    staging = playIncarnation(root, { cards, place: presentation.location || scenario.title, teller: GM_TITLE + " " + name(gm),
       onFlip: () => audio.play("card"), onArrive: () => { audio.play("page"); stageFx(impact(root, "arrive")); } });
     stageFx(staging);
   }
@@ -507,7 +520,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       const frame = frames[cursor];
       // 飛ばした会話の中で物語に入っていたら、転生の演出は出さずに済ませる（後の場面で遅れて出さない）。
       if (lineKind(frame) !== "table" && session.snapshot().phase !== "cover") incarnated = true;
-      log.push({ speaker: frame.speaker, role: roleLabel(frame), text: pcText(frame.text) });
+      log.push({ speaker: frame.speaker, gm: frame.speaker === gm && gmVoice(frame), role: roleLabel(frame), text: pcText(frame.text) });
     }
     finishTalk();
   }
@@ -520,15 +533,41 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (callback) callback(); else renderBody();
     if (!overlay && !busy) (focusTest && root.querySelector('[data-test="' + focusTest + '"]') || root).focus({ preventScroll: true });
   }
+  /**
+   * 台詞の折り返し（#3199）: 本編の会話と同じ組版（vn/text.js の autoWrap＝文節・禁則・語の保護）で、台詞欄の幅が全角何字分かに
+   * 合わせて折る位置を決め、そこに <br> を入れる。ブラウザ任せ（文節折り＋balance）では、2行をそろえるために1行目が文の途中で
+   * 早く切れ（「世界一普通の／一台を」）、文節折りの無い Safari では語の途中でも切れていた。文字は足さない・消さない
+   * （textContent は台詞のまま）。測れない時（欄が隠れている・試験の仮のDOM）はブラウザの折り返しのまま。
+   */
+  function setSpeech(text) {
+    delete speech.dataset.wrapped;
+    speech.dataset.raw = text;
+    speech.textContent = text;
+    if (!wrapSpeech() && typeof requestAnimationFrame === "function") requestAnimationFrame(() => { if (!disposed) wrapSpeech(); });
+  }
+  function wrapSpeech() {
+    const raw = speech.dataset.raw;
+    if (raw == null || typeof getComputedStyle !== "function" || !speech.clientWidth) return false;
+    const style = getComputedStyle(speech), size = parseFloat(style.fontSize);
+    if (!(size > 0)) return false;
+    const limit = Math.max(6, Math.floor(speech.clientWidth / (size + (parseFloat(style.letterSpacing) || 0))));
+    if (speech.dataset.wrapped === raw && speech.dataset.limit === String(limit)) return true;
+    let lines;
+    try { lines = autoWrap(raw, limit).split("\n"); } catch { return false; }
+    speech.dataset.wrapped = raw; speech.dataset.limit = String(limit);
+    speech.replaceChildren(...lines.flatMap((line, i) => i ? [el("br"), line] : [line]));
+    return true;
+  }
   function idle(text) {
     if (busy) return;
-    art.replaceChildren(el("img", { src: speakerPortrait(gm), alt: name(gm),
-      style: portraitFrame(gm, 410, 16) }));
+    art.replaceChildren(gmMark());
     art.style.backgroundColor = cast[gm].color;
-    speaker.textContent = name(gm); role.textContent = ""; speech.textContent = text;
+    speaker.textContent = GM_TITLE; role.textContent = name(gm);
     setLayer("idle");
+    dock.dataset.gm = "true";
     syncSpeaker(gm);
     root.classList.add("trpg-idle"); next.hidden = true;
+    setSpeech(text); // 待機の一言は字が小さい（.trpg-idle）ので、その大きさで測る
   }
   function start() {
     if (busy || overlay || session.snapshot().phase !== "cover") return;
@@ -726,7 +765,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       ].filter(Boolean)),
       el("div.trpg-cover-party", scenario.cast.map(c => el("div.trpg-cover-person", [
         el("span.trpg-cover-person-art", el("img", { src: portrait(c.id), alt: "", style: circleStyle(c.id, 150, 6) })),
-        el("strong", { text: name(c.id) }), c.part === "GM" ? null : el("small", { text: pcOf(c.id) ? pcOf(c.id).name : pcText(c.role).split("／")[0] }),
+        el("strong", { text: name(c.id) }),
+        el("small", { dataset: { part: c.part === "GM" ? "gm" : "pl" }, text: c.part === "GM" ? GM_TITLE : pcOf(c.id) ? pcOf(c.id).name : pcText(c.role).split("／")[0] }),
       ]))),
     ]));
   }
@@ -916,7 +956,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     return el("div.trpg-roll-actor", { dataset: { test: "trpg-roll-actor", actor, npc: String(!!approach.npc) } }, [
       el("span.trpg-roll-actor-face", { "aria-hidden": "true" }, pcFace(approach.sheet || approach.actor, actor)),
       el("span.trpg-roll-actor-copy", [
-        el("small", { text: (approach.npc ? "GM" : name(actor)) + " · " + (pc?.name || "") }),
+        el("small", { text: (approach.npc ? GM_TITLE : name(actor)) + " · " + (pc?.name || "") }),
         el("strong", { text: pcText(approach.label) }),
         compact ? null : el("span.trpg-roll-actor-stat", { text: statLabel(approach.stat) + " ＋" + (Number.isInteger(rating) ? rating : DICE.base) }),
       ].filter(Boolean)),
@@ -926,6 +966,11 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function interviewCopy(text) {
     const base = scenario.interview?.picks || 2, picks = session.interviewPicks(), kanji = ["", "一", "二", "三", "四", "五"];
     return picks === base || !kanji[base] || !kanji[picks] ? text || "" : String(text || "").replace(kanji[base] + "つ", kanji[picks] + "つ");
+  }
+  /** 見込みに入っている補正の内訳（能力・選んだ助力・勢い）。checkForecast の baseBonus と同じ足し方。 */
+  function bonusParts(predicted, approach, supported = false) {
+    return [(approach ? statLabel(approach.stat) : "基本") + "＋" + predicted.base, supported ? "助力＋" + DICE.support : null,
+      predicted.momentum ? "勢い＋" + predicted.momentum * DICE.momentum : null].filter(Boolean);
   }
   /** The GM names the stake before the dice (TRF02): what a success on this check buys. */
   function stakeLine(kind) {
@@ -962,7 +1007,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       }, [
         el("span.trpg-approach-face", { "aria-hidden": "true", dataset: { costume: String(hasFigure(approach.sheet || approach.actor, approach.actor)) } }, pcFigure(approach.sheet || approach.actor, approach.actor)),
         el("span.trpg-approach-copy", [
-          el("small", { text: (approach.npc ? "GM" : name(approach.actor)) + " · " + (pc?.name || "") }),
+          el("small", { text: (approach.npc ? GM_TITLE : name(approach.actor)) + " · " + (pc?.name || "") }),
           el("strong", { text: pcText(approach.label) }),
         ]),
         el("span.trpg-approach-meta", [
@@ -975,8 +1020,14 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         ].filter(Boolean)),
       ]);
     });
+    // 札の「成功 N%」には、どの札にも同じく入る勢いが含まれている。札の能力の数字だけでは分からないので、題の行に書き添える（#3199）。
+    const shared = checkForecast(scenario, state, kind, { approach: approaches[0].id, sheets });
+    const included = [shared.momentum ? "見込みは勢い＋" + shared.momentum * DICE.momentum + "込み" : null,
+      shared.potentialBonus ? "見立てが合えば さらに＋" + shared.potentialBonus : null].filter(Boolean);
     pop = modal(presentation.declareTitle || "どうする？", el("div.trpg-declare-board", [
-      el("div.trpg-declare-prompt", [el("strong", { text: check.title }), stakeLine(kind), helpToggle("宣言のしかた", "trpg-declare-help", [
+      el("div.trpg-declare-prompt", [el("strong", { text: check.title }), stakeLine(kind),
+        included.length ? el("small.trpg-declare-included", { text: included.join("・"), dataset: { test: "trpg-declare-included" } }) : null,
+        helpToggle("宣言のしかた", "trpg-declare-help", [
         el("span", { text: presentation.declareHint || "" }),
         el("span.trpg-declare-rule", { text: presentation.target || ("目標値" + DICE.success) }),
         el("span.trpg-declare-rule", { text: "20の目が出たらクリティカル。必ず成功" }),
@@ -993,9 +1044,17 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const body = el("div", [el("p.trpg-roll-instruction", { text: DICE.success + "以上で成功" }), stakeLine(kind), actorPanel(declared), el("div.trpg-roll-scene",
       el("div.trpg-dice-row", [die(1), die(1), el("span.trpg-dice-bonus", { text: "＋" + DICE.base, dataset: { test: "trpg-bonus" } })]))].filter(Boolean));
     const forecast = el("div.trpg-forecast", { dataset: { test: "trpg-forecast" }, "aria-live": "polite" });
+    // 成功の見込みは、詳細を開かなくても補正込みで1行出す（#3199）。数字は詳細の見通しと同じ checkForecast から取り、
+    // 助力を付け外しすると一緒に変わる。見立ての正誤は振るまで分からないので、合っていた場合は「〜」の上限にだけ入れる。
+    const chance = el("p.trpg-roll-chance", { dataset: { test: "trpg-roll-chance" }, "aria-live": "polite" });
+    body.append(chance);
     function updateForecast() {
       const predicted = checkForecast(scenario, session.snapshot(), kind, { support: !!support?.checked, approach: declared?.id || null, sheets });
       body.querySelector(".trpg-dice-bonus").textContent = "＋" + predicted.baseBonus;
+      const lo = Math.min(predicted.odds.success, predicted.bestOdds.success), hi = Math.max(predicted.odds.success, predicted.bestOdds.success);
+      chance.replaceChildren(el("strong", { text: "成功 約" + lo + (predicted.potentialBonus ? "〜" + hi : "") + "%" }),
+        el("small", { text: bonusParts(predicted, declared, !!support?.checked).join("・") + " 込み"
+          + (predicted.potentialBonus ? "（見立てが合えば＋" + predicted.potentialBonus + "）" : "") }));
       forecast.replaceChildren(el("div.trpg-forecast-head", [
         el("strong", { text: "この判定の見通し" }), el("small", { text: "2d20 ＋ " + (declared ? statLabel(declared.stat) : "基本") + predicted.base + (support?.checked ? " ＋ 助力" + DICE.support : "") + (predicted.momentum ? " ＋ 勢い" + predicted.momentum * DICE.momentum : "") }),
       ]), el("div.trpg-odds", [
@@ -1085,7 +1144,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const receipts = el("div.trpg-roll-receipts");
     body.append(receipts);
     if (result.approach) {
-      const pc = sheets[result.sheet], actorText = (result.actor && cast[result.actor] ? name(result.actor) : "GM") + (pc ? "の" + pc.name : "");
+      const pc = sheets[result.sheet], actorText = (result.actor && cast[result.actor] ? name(result.actor) : GM_TITLE) + (pc ? "の" + pc.name : "");
       receipts.append(el("p.trpg-ability-receipt.trpg-actor-receipt", { dataset: { test: "trpg-actor-receipt" }, title: actorText },
         [(pc?.name || actorText) + " · " + statLabel(result.stat) + " ＋" + result.base]));
     }
@@ -1199,7 +1258,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     pop = modal("調査メモを読み比べる", [
       el("p.trpg-modal-intro", { text: "何を見て、何に気づいた？ メモの再読は調査回数も危機も使いません。" }),
       el("div.trpg-notes-grid", noteCards()),
-    ], [button("卓に戻る", "trpg-notes-close", () => pop.close(), { class: "primary" })], { wide: true });
+    ], [button("卓に戻る", "trpg-notes-close", () => pop.close(), { class: "primary" })], { wide: true, skin: "trpg-notes-stage" });
   }
   function noteCards() {
     const { clues, asked } = session.snapshot();
@@ -1282,7 +1341,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     table: () => [el("div.trpg-tutorial-seats", scenario.cast.map(c => el("div", { dataset: { part: c.part === "GM" ? "gm" : "pl" } }, [
       el("span.trpg-tutorial-face", el("img", { src: portrait(c.id), alt: "", style: circleStyle(c.id, 150, 6) })),
       el("b", { text: c.part === "GM" ? "GM" : "PL" }), el("small", { text: name(c.id) })]))),
-      el("p", { text: "GM＝お話を進める語り手 · PL＝役を演じて遊ぶ人" })],
+      el("p", { text: "GM＝ゲームマスター。お話を進める語り手 · PL＝役を演じて遊ぶ人" })],
     sheet: () => {
       const me = sheets[PLAYER_SEAT];
       return me ? [el("div.trpg-tutorial-sheet", [el("strong", { text: "PC ＝ " + me.name }), el("small", { text: me.title || "" }),
@@ -1413,7 +1472,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       figure ? el("span.trpg-sheet-costume", { "aria-hidden": "true" }, pcFigure(seat, portraitId, { shape: "full" })) : null,
       el("div.trpg-sheet-head", [
         el("span.trpg-sheet-face", { "aria-hidden": "true" }, pcFace(seat, portraitId)),
-        el("div", [el("small", { text: player ? "PL " + name(player.id) : "GM " + name(gm) + " が兼任" }),
+        el("div", [el("small", { text: player ? "PL " + name(player.id) : GM_TITLE + "（" + name(gm) + "）が兼任" }),
           el("h3", { text: pc.name }), el("span", { text: pc.title || "" })]),
       ]),
       el("dl.trpg-sheet-stats", STATS.flatMap(k => [el("dt", { text: statLabel(k) }), el("dd", { dataset: { value: String(pc.stats[k]) } }, [
@@ -1435,7 +1494,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   function openLog() {
     const rows = log.length ? log.map(line => el("p.trpg-log-line", [
-      el("strong", { text: name(line.speaker) + " · " + line.role }), line.text,
+      el("strong", { text: (line.gm ? GM_TITLE + "（" + name(line.speaker) + "）" : name(line.speaker)) + " · " + line.role }), line.text,
     ])) : [el("p", { text: "卓を始めると、ここに会話が残ります。" })];
     let pop;
     pop = modal("卓のログ", rows, [button("卓に戻る", "trpg-log-close", () => pop.close(), { class: "primary" })]);
@@ -1447,7 +1506,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     pop = modal("この卓の遊び方", [
       head("用語"),
       el("dl.trpg-help-glossary", [
-        el("dt", { text: "GM" }), el("dd", { text: "お話を進める語り手。場面を説明し、登場人物を演じる" }),
+        el("dt", { text: "GM" }), el("dd", { text: "ゲームマスター。お話を進める語り手。場面を説明し、登場人物を演じる。卓では顔を出さず、衝立の印と「ゲームマスター（名前）」の名札で話す" }),
         el("dt", { text: "PL" }), el("dd", { text: "遊ぶ人。物語の中の役を一人ずつ演じる" }),
         el("dt", { text: "PC" }), el("dd", { text: "PLが演じる役。得意・不得意はキャラクターシートの能力値" }),
         el("dt", { text: "判定" }), el("dd", { text: "サイコロ二つ＋能力値。30以上で成功。失敗しても物語は続く" }),
@@ -1511,7 +1570,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (providedAudio) audio.silence(); else audio.destroy();
     document.removeEventListener("visibilitychange", visibility);
     root.removeEventListener("keydown", keys);
-    if (typeof window !== "undefined") window.removeEventListener?.("resize", fitRoomCrop);
+    if (typeof window !== "undefined") { window.removeEventListener?.("resize", fitRoomCrop); window.removeEventListener?.("resize", wrapSpeech); }
     root.remove();
   }
   function keys(event) {
@@ -1543,7 +1602,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   root.addEventListener("keydown", keys);
   function visibility() { root.dataset.paused = String(document.hidden); }
   document.addEventListener("visibilitychange", visibility);
-  if (typeof window !== "undefined") window.addEventListener?.("resize", fitRoomCrop);
+  // 画面の向き・スマホ用の文字拡大が変わると台詞欄の字数も変わるので、折り直す（stage-fit が先に data-density を立てる）。
+  if (typeof window !== "undefined") { window.addEventListener?.("resize", fitRoomCrop); window.addEventListener?.("resize", wrapSpeech); }
   visibility();
   renderBody(); root.focus({ preventScroll: true });
   if (resumed) log.push({ speaker: gm, text: "（しおりから、前回の続き）" });
