@@ -7,6 +7,9 @@ const desktop = { width: 1280, height: 720 }, mobile = { width: 844, height: 390
 async function prepare(page) {
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"); core.newGame(); core.state.day = 4;
+    // 晴れの日に固定する。雨の日は家で休む場面が雨の回になり（SPV03）、背景もくもり・雨の絵に替わるため
+    const weather = await import("./js/daily/weather.js");
+    for (let seed = 0; seed < 200 && weather.weatherOf() !== "sun"; seed++) core.state.weatherSeed = seed;
     const ui = await import("./js/core/ui.js");
     const data = await import("./js/core/data.js");
     const map = await import("./js/daily/map.js");
@@ -115,9 +118,10 @@ await suite("navigation-transitions", async (check) => {
       const selector = spot === "rest" ? "#vn.active .vn-text" : spot === "tonari" ? '[data-test="tonari-customer"]' : ".shop-tabs";
       await arm(page, selector);
       await page.locator('[data-test="map-go"]').click();
-      if (spot === "shop") await page.locator('[data-test="shop-enter"]').click();
+      // 店は地図から寄る演出のあと、凛想の店頭の応対（#3491）を経て入口（1F・2F）を選ぶ。演出は入口より先
       await page.locator(".scene-curtain").waitFor();
       await page.keyboard.press("Enter");
+      if (spot === "shop") await page.locator('[data-test="shop-enter"]').click();
       if (spot === "rest") assert.equal(await page.locator(".vn-text").textContent(), "");
       const audit = await verify(page, selector, spot === "rest" ? "move-lights" : "move-zoom");
       assert.equal(audit.purple, false, "The move drew purple shapes");
