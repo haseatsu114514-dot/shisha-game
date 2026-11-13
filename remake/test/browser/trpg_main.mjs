@@ -5,7 +5,29 @@ import { suite, storageSnapshot, assertFits, baseURL } from "./support.mjs";
 const book = name => JSON.parse(fs.readFileSync(new URL("../../../data/dialogue/" + name + ".json", import.meta.url), "utf8"));
 const ordinary = book("trpg_ordinary"), shark = book("trpg_shark");
 
-// 店長の案内を加えた本棚はスクロール可能。各操作へ実際に到達できることを調べる。
+// 1画面で見渡す本棚（#3199・TRF25）: 画面そのものも本の並びも下へ送らず、本の札とそのボタンが全部見えている。
+// allowSideScroll は、行が増える状態（まだ誘っていない人がいる・昼の試遊）で左の列だけ中を送れることを許す。
+async function assertShelfAtAGlance(page, { allowSideScroll = false } = {}) {
+  const shelf = await page.evaluate(() => {
+    const root = document.querySelector(".trpg-campaign"), side = root.querySelector(".trpg-campaign-side"), books = root.querySelector(".trpg-campaign-books");
+    const stage = (document.querySelector("#stage") || document.documentElement).getBoundingClientRect();
+    const inside = n => { const r = n.getBoundingClientRect(), b = books.getBoundingClientRect();
+      return r.width > 0 && r.height > 0 && r.top >= b.top - 1 && r.bottom <= b.bottom + 1 && r.left >= b.left - 1 && r.right <= b.right + 1 && r.bottom <= stage.bottom + 1; };
+    const cards = [...books.querySelectorAll(".trpg-campaign-book")];
+    return { view: root.dataset.view, root: [root.clientHeight, root.scrollHeight], side: [side.clientHeight, side.scrollHeight], books: [books.clientHeight, books.scrollHeight],
+      // 札の中身（題・今夜の卓・ボタン）が、札の上や下へはみ出して切れていない。表紙の絵は札いっぱいに敷いてあるので数えない。
+      cards: cards.length, cut: cards.filter(card => { const c = card.getBoundingClientRect(), t = card.querySelector(".trpg-campaign-book-copy").getBoundingClientRect();
+        return !inside(card) || t.top < c.top - 1 || t.bottom > c.bottom + 1; }).map(card => card.dataset.test),
+      buttons: cards.flatMap(card => [...card.querySelectorAll("button")]).filter(node => !inside(node)).map(node => node.dataset.test) };
+  });
+  assert.equal(shelf.view, "shelf");
+  assert(shelf.root[1] <= shelf.root[0] + 1, "The shelf screen does not scroll " + JSON.stringify(shelf));
+  assert(shelf.books[1] <= shelf.books[0] + 1, "All the books are in view without scrolling " + JSON.stringify(shelf));
+  assert.deepEqual([shelf.cut, shelf.buttons], [[], []], "Every book card and its buttons are whole " + JSON.stringify(shelf));
+  if (!allowSideScroll) assert(shelf.side[1] <= shelf.side[0] + 1, "The members, the rank and the gear are in view without scrolling " + JSON.stringify(shelf));
+  return shelf;
+}
+// 左の列は、行が増える状態では中を送れる。各操作へ実際に到達できることを調べる。
 async function assertShelfControls(page) {
   for (const control of await page.locator(".trpg-campaign button").all()) {
     await control.scrollIntoViewIfNeeded();
@@ -197,6 +219,7 @@ await suite("trpg-main", async check => {
     }, { memories, last });
     await open(page);
     assert.equal(await page.locator(".trpg-campaign-book").count(), 9);
+    await assertShelfAtAGlance(page, { allowSideScroll: true }); // PCでも、遊び終えた本・未解放の本を含む9冊が1画面
     assert.match(await button(page, "trpg-book-" + finale.id).innerText(), /5／6/);
     assert.equal(await button(page, "trpg-buy-" + finale.id).count(), 0);
     await hit(page, "trpg-campaign-close");
@@ -590,8 +613,12 @@ await suite("trpg-main", async check => {
     assert(await button(page, "trpg-play-ordinary-cup").isEnabled());
     assert.equal(await button(page, "trpg-campaign-close").textContent(), "試遊の設定へ");
     assert.equal(await page.locator('[data-test^="trpg-demo-meet-"]').count(), 0, "Everyone has joined: nobody left to invite");
-    // 6人の部員は、横持ちスマホでも切れずに並ぶ（3人ずつ2段）。
+    // 6人の部員は、横持ちスマホでも切れずに並ぶ（2人ずつ3段）。
     await assertFits(page, ".trpg-campaign-person");
+    // 部員・ランク・マイダイス・本9冊が、横持ちスマホの1画面に収まる（#3199・TRF25）。Safari のバーが出た低い画面でも同じ。
+    assert.equal((await assertShelfAtAGlance(page)).cards, 9);
+    await page.setViewportSize({ width: 844, height: 340 }); await assertShelfAtAGlance(page);
+    await page.setViewportSize({ width: 844, height: 390 });
     await assertShelfControls(page);
     // 卓は本編と同じもの: 始めて、しおりを挟んで本棚へ戻れる。
     await hit(page, "trpg-play-ordinary-cup");
