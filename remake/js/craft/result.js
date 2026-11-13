@@ -400,11 +400,12 @@ export function resultTable(cs, rank, attempt = null) {
       // 完成品の中身（P7）。攻めた構成（4点置き・詰め方など）の見返り（煙・味）と代償（焦げやすさ）が読めるように
       cs.stats && renewalCraft(cs) ? el("small.rt-shisha-stats", { dataset: { test: "result-shisha-stats" }, text: `完成品の中身：煙${cs.stats.smoke}・吸い心地の軽さ${cs.stats.draw}・熱の安定${cs.stats.heatStability}・香り${cs.stats.aroma}・味の濃さ${cs.stats.taste}・持ち${cs.stats.duration}・焦げやすさ${cs.stats.burnRisk}` }) : null,
       el("div.rt-part.total", [el("span", { text: "総合" }), evaluation(cs.total), el("b", { text: craftRankProgress(cs.total, craftRankThresholds(cs)).grade, dataset: { test: "craft-final-rank" }, "aria-label": "制作ランク" })]),
-      el("small.rt-judge-comment", { text: `上園「${judgeComment(cs)}」` }),
-      el("div.rt-deductions", JUDGES.map(judge => el("small.rt-judge-deduction", { text: `${judgeName(judge.id)}：${judgeDeductionReason(cs, judge.id).text}`, dataset: { judge: judge.id } }))),
-      cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
+      // 学びに当たる項目（次に変える一つ・今回よかったこと）は審査員の講評より先に置き、枠が収まらなくても最初から見える（#3554）。
       goodPointOf(cs) ? el("small.rt-good-point", { text: goodPointOf(cs), dataset: { test: "result-good-point" } }) : null,
       el("small.rt-next-tip", { text: improvementOf(cs) }),
+      cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
+      el("small.rt-judge-comment", { text: `上園「${judgeComment(cs)}」` }),
+      el("div.rt-deductions", JUDGES.map(judge => el("small.rt-judge-deduction", { text: `${judgeName(judge.id)}：${judgeDeductionReason(cs, judge.id).text}`, dataset: { judge: judge.id } }))),
       resultSaveButton(cs),
     ])]);
     const btn = el("button.btn.primary", { dataset: { test: "result-next" }, onclick: () => { SE.select(); retireScreen(); resolve(); } }, [

@@ -3,9 +3,12 @@
 import { el } from "./core/util.js";
 import { imgFileUrl } from "./core/img-file.js";
 import { initStageFit } from "./core/stage-fit.js";
+import { initSideArea } from "./core/side-area.js";
 initStageFit(document.getElementById("stage")); // 画面の当て方は本編と同じ共通部品（#3076）
+initSideArea({ stage: document.getElementById("stage"), standalone: true }); // 左右の余白の煙と縁（YHK）
 import { runCamelRace } from "./minigames/camel-race.js";
 import { SE, unlockAudio } from "./core/audio.js";
+import { loadCamelArt } from "./minigames/camel-race.js";
 // 本編（main.js）と同じく、最初のユーザー操作で音を解禁する（自動再生制限・#3065）。
 // これが無いと試遊ページでは BGM・SE が一切鳴らなかった。
 window.addEventListener("pointerdown", unlockAudio);
@@ -19,7 +22,7 @@ function menu(result = null) {
     buttons.forEach(button => { button.disabled = true; });
     try {
       const outcome = await runCamelRace({ host, tutorial, pilot: pilot || params.get("pilot") || null,
-        timeScale: Number(params.get("speed")) || 1, best });
+        timeScale: Number(params.get("speed")) || 1, best, debugTools: true }); // 確認用の道具は試遊ページだけ（__camelRace.debug）
       if (outcome.best && (!best || outcome.best.total > best.total)) best = outcome.best;
       menu(outcome);
     } catch (error) { console.error(error); menu(null); }
@@ -39,3 +42,5 @@ function menu(result = null) {
   ]));
 }
 menu();
+// 試遊ページはレースのための画面なので、開いた時点でレースの絵を読み始める（本編はレースへ進む訪問の入口で読む・#3500 E-2）。
+void loadCamelArt();

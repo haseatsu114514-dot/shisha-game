@@ -6,6 +6,7 @@ import { newGame, state, config } from "../core/state.js";
 import { CRAFT_VERSIONS, craftVersionFrom } from "../core/craft-version.js";
 import { initLayers, layers } from "../core/ui.js";
 import { initStageFit } from "../core/stage-fit.js";
+import { initSideArea } from "../core/side-area.js";
 import { unlockAudio, SE } from "../core/audio.js";
 import { installRotateGuard } from "../core/rotate-guard.js";
 import { el } from "../core/util.js";
@@ -73,6 +74,7 @@ function applyTune(text) {
 
 export async function boot() {
   initStageFit(document.getElementById("stage"), document.getElementById("viewport"));
+  initSideArea({ stage: document.getElementById("stage"), standalone: true }); // 左右の余白の煙と縁（YHK）
   window.addEventListener("pointerdown", unlockAudio); window.addEventListener("keydown", unlockAudio);
   installRotateGuard(); // 縦持ちの回転ガード中は、制作の時計と音を止める（#2941）
   initLayers();

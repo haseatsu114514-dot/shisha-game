@@ -41,6 +41,9 @@ async function harness({ manual = false, craft = {} } = {}) {
     './effect-visual.js': { effectVisible: () => false, effectBadge: () => null, effectLine: () => null },
     '../core/state.js': { state: owner },
     '../core/growth-effects.js': { useGrowthInsurance: () => false, growthCritical: () => false, settleGrowthPhase: (_s,_cs,_key,result) => result?.score, growthPerks: () => null, growthSkill: () => false, growthFeature: () => false, growthLesson: () => false, LESSON_TUNING: {}, growthCraftCondition: (_s,_m,c) => c, SKILL_TUNING: {} },
+    // 変化時だけ書く部品（#3500）。偽の要素では、書く側の挙動をそのまま写す。
+    '../core/dom-write.js': { setText: (node, text) => { node.textContent = text; }, setAttr: (node, name, value) => node.setAttribute(name, value),
+      setData: (node, key, value) => { node.dataset[key] = String(value); }, setFlag: (node, key, value) => { node[key] = value; } },
     '../core/util.js': { el: (selector, attrs) => { const node = new Node(); Object.assign(node.dataset, attrs?.dataset); nodes.set(selector, node); return node; }, sleep: ms => { const d = deferred(); sleeps.push({ ms, ...d }); return d.promise; }, clamp: (x, a, b) => Math.max(a, Math.min(b, x)), rand: () => .5, pick: a => a[0] },
     '../core/ui.js': { countdown: () => { metrics.countdown++; return countdown.promise; }, shake: noop },
     '../core/audio.js': { SE: new Proxy({}, { get: () => noop }) },

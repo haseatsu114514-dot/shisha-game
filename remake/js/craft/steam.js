@@ -3,6 +3,7 @@
 import { state } from "../core/state.js";
 import { hasAttackTraining } from "./attack-training.js";
 import { el, sleep, clamp, rand, pick } from "../core/util.js";
+import { setText, setAttr, setData, setFlag } from "../core/dom-write.js";
 import { createCraftClock } from "./clock.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
@@ -213,25 +214,22 @@ export async function runSteamDodge(cs) {
     return cleared;
   };
   const clearBullets = (radius = Infinity) => removeBullets(b => Math.hypot(hx - clamp(hx, b.x, b.x + b.w), hy - clamp(hy, b.y, b.y + b.h)) <= radius);
-  // ボタンの表示は毎フレーム呼ばれる。値が変わった時だけ DOM に書く（同じ値でも書くとページ全体の再計算が走って重い・CRN）
-  const setD = (node, key, value) => { if (node.dataset[key] !== value) node.dataset[key] = value; };
-  const setT = (node, text) => { if (node.textContent !== text) node.textContent = text; };
-  const setA = (node, name, value) => { if (node.getAttribute?.(name) !== value) node.setAttribute(name, value); };
-  const setP = (node, key, value) => { if (node[key] !== value) node[key] = value; };
-  const setV = (node, name, value) => { if (node.style.getPropertyValue?.(name) !== value) node.style.setProperty(name, value); };
+  // ボタンの表示は毎フレーム組み立てるが、DOM へは値が変わった所だけ書く（#3500 F-4）。
+  const shownRecharge = new WeakMap(); // ボタンごとに、最後に書いた --recharge
   const rechargeLabel = (button, caption, remaining, duration, label, locked = false) => {
     const rounded = Math.ceil(remaining * 10) / 10;
-    setD(button, "cooldown", rounded.toFixed(1));
-    setD(button, "cooling", String(running && remaining > 0));
-    setV(button, "--recharge", String(1 - remaining / duration));
-    setT(caption, running && rounded > 0 ? `${rounded.toFixed(1)}秒` : "");
+    setData(button, "cooldown", rounded.toFixed(1));
+    setData(button, "cooling", running && remaining > 0);
+    const recharge = String(1 - remaining / duration);
+    if (shownRecharge.get(button) !== recharge) { shownRecharge.set(button, recharge); button.style.setProperty("--recharge", recharge); }
+    setText(caption, running && rounded > 0 ? `${rounded.toFixed(1)}秒` : "");
     // 使えない（未習得の）ボタンは、ここで一度に「使用不可」と書く（いったん使用可能と書いてから戻すと毎フレーム2回書き換わる）
-    setA(button, "aria-label", locked ? "アタック。使用不可" : `${label}。${!running ? "操作停止中" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
-    setP(button, "disabled", locked || !running || remaining > 0);
+    setAttr(button, "aria-label", locked ? "アタック。使用不可" : `${label}。${!running ? "操作停止中" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
+    setFlag(button, "disabled", locked || !running || remaining > 0);
   };
   const refreshLabel = () => {
-    setD(refreshBtn, "remaining", String(refreshes));
-    setT(refreshCopy, stock > 1 ? `リフレッシュ ×${refreshes}` : "リフレッシュ");
+    setData(refreshBtn, "remaining", refreshes);
+    setText(refreshCopy, stock > 1 ? `リフレッシュ ×${refreshes}` : "リフレッシュ");
     rechargeLabel(refreshBtn, refreshCharge, refreshes > 0 ? 0 : Math.max(0, refreshReadyAt - time), REFRESH_RECHARGE_SECONDS,
       `リフレッシュ。${effect.label}の雑念を消す${halfLastRefresh(stock) && refreshes === 1 ? `。${stock === 2 ? "2回目" : "最後の1回"}は半分の範囲` : ""}`);
   };
@@ -240,17 +238,17 @@ export async function runSteamDodge(cs) {
     const learned = hasAttackTraining(state.flags);
     rechargeLabel(slashBtn, slashCharge, remaining, slashCooldown,
       `アタック。上側の前方の雑念を斬る。移動中も方向は固定。Zキーでも使用。コンボ${wordsCut}。射程${profile.reach}px、リチャージ${profile.recharge}秒`, !learned);
-    setD(slashBtn, "locked", String(!learned));
-    setP(slashLock, "hidden", learned);
-    setP(slashBtn, "title", learned ? "Z／ボタン／標準ゲームパッド下ボタンでアタック" : "アタック：使用不可");
-    setD(slashBtn, "cutWords", String(wordsCut));
-    setD(slashBtn, "totalWordsCut", String(totalWordsCut));
-    setD(slashBtn, "maxCombo", String(maxCombo));
-    setD(slashBtn, "reach", String(profile.reach));
-    setD(slashBtn, "recharge", String(profile.recharge));
-    setD(slashBtn, "tier", String(profile.tier));
-    setT(slashCount, `×${wordsCut}`);
-    setT(slashCharge, running && remaining > 0 ? (Math.ceil(remaining * 10) / 10).toFixed(1) : "");
+    setData(slashBtn, "locked", !learned);
+    setFlag(slashLock, "hidden", learned);
+    setAttr(slashBtn, "title", learned ? "Z／ボタン／標準ゲームパッド下ボタンでアタック" : "アタック：使用不可");
+    setData(slashBtn, "cutWords", wordsCut);
+    setData(slashBtn, "totalWordsCut", totalWordsCut);
+    setData(slashBtn, "maxCombo", maxCombo);
+    setData(slashBtn, "reach", profile.reach);
+    setData(slashBtn, "recharge", profile.recharge);
+    setData(slashBtn, "tier", profile.tier);
+    setText(slashCount, `×${wordsCut}`);
+    setText(slashCharge, running && remaining > 0 ? (Math.ceil(remaining * 10) / 10).toFixed(1) : "");
   };
   const refresh = () => {
     if (!running || refreshes === 0) return;
@@ -414,9 +412,9 @@ export async function runSteamDodge(cs) {
         if (!inv) unhitTime += dt;
         if (renewal && time - rankTick >= .25) { rankTick = time; cs.steamLive = { progress: Math.min(1, unhitTime / dur) }; refreshBench(); }
         const afterglow = time < afterglowUntil;
-        setD(box, "afterglow", String(afterglow));
+        setData(box, "afterglow", afterglow);
         if (box.classList.contains?.("afterglow") !== afterglow) box.classList.toggle("afterglow",afterglow);
-        setD(box, "bulletSpeed", String(afterglow ? SKILL_TUNING.afterglowSpeed : 1));
+        setData(box, "bulletSpeed", afterglow ? SKILL_TUNING.afterglowSpeed : 1);
         const bulletDt = dt * (afterglow ? SKILL_TUNING.afterglowSpeed : 1);
         for (let i = bullets.length - 1; i >= 0; i--) {
           const b = bullets[i]; b.x += b.vx * bulletDt; b.y += b.vy * bulletDt;
@@ -436,7 +434,7 @@ export async function runSteamDodge(cs) {
         }
         clock.update(Math.max(0, Math.ceil((dur - time) * seconds / dur)));
         const level = mental.update(time, hits);
-        setPlayerMental(cs, level); setD(box, "mental", level);
+        setPlayerMental(cs, level); setData(box, "mental", level);
         if (MIND_LEVELS.indexOf(level) > MIND_LEVELS.indexOf(peakMind)) peakMind = level;
         if (level === "clear") clearSeconds += dt;
         world.draw(time, hx, hy, bullets, warning, level);

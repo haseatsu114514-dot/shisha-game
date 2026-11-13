@@ -500,6 +500,53 @@ test("club copy fits dialogue limits and the catalog explicitly marks interest",
   }
 });
 
+// 試遊は本編から起動する（TRF21）: 始め方ごとの状態は、本編と同じ決まり（入荷・所持・招集・勧誘）でそのまま遊べる。
+test("the trial presets are ordinary game states: books in stock, tables that can be cast, people who can be invited (TRF21)", async () => {
+  const { TRPG_TRIAL_PRESETS, trpgTrialState } = await module("../js/trpg/trial-state.js");
+  assert.deepEqual(TRPG_TRIAL_PRESETS.map(p => p.id), ["ready", "fresh", "finale", "noon"]);
+  for (const preset of TRPG_TRIAL_PRESETS) { assert(preset.label && preset.note); assert(Object.isFrozen(TRPG_TRIAL_PRESETS)); }
+  const fresh = () => ({ chapter: 1, phase: "title", day: 1, slot: 0, money: 0, lovers: [], affinity: {}, met: {}, flags: {},
+    trpg: { ...rules.emptyTrpgProgress(), shifts: [] } });
+  const interested = catalog.participants.filter(p => p.interested === true).map(p => p.id).sort();
+  const books = id => catalog.scenarios.find(b => b.id === id);
+  const stories = [ordinary, shark, ...regulars];
+
+  // 夜・部員がそろっている: 部員の本は買ってあり、すぐ卓を囲める。最後の一冊はまだ。
+  const ready = trpgTrialState(fresh(), catalog, "ready");
+  assert.equal(ready.chapter, Math.max(2, catalog.unlockChapter)); assert.equal(ready.phase, "daily"); assert.equal(ready.slot, 1);
+  assert.deepEqual(Object.keys(ready.trpg.club.members).sort(), interested);
+  assert.deepEqual(ready.trpg.owned, ready.trpg.stock);
+  const finale = catalog.scenarios.find(b => b.finale);
+  assert.deepEqual(ready.trpg.stock.slice().sort(), catalog.scenarios.filter(b => b !== finale).map(b => b.id).sort());
+  assert.equal(rules.tableStatus(ready, catalog).reason, "今夜の卓を囲もう");
+  for (const story of stories) assert(rules.castTrpgTable(ready, catalog, story).ok, story.id);
+  assert.equal(rules.clubRecord(ready, catalog).rank, 1, "a new club: nothing cleared yet");
+
+  // 夜・部を作ったばかり: 部員なし。店の常連と遊ぶ本だけがあり、知り合いは誘える。
+  const founded = trpgTrialState(fresh(), catalog, "fresh");
+  assert.deepEqual(founded.trpg.club.members, {});
+  assert.deepEqual(founded.trpg.stock.slice().sort(), catalog.scenarios.filter(b => !b.stockRequires.length && !b.clearRequires).map(b => b.id).sort());
+  assert(founded.trpg.stock.length > 0);
+  for (const story of regulars) assert(rules.castTrpgTable(founded, catalog, story).ok, story.id);
+  assert(!rules.castTrpgTable(founded, catalog, ordinary).ok, "a member's book waits for that member");
+  for (const id of interested) assert(rules.recruitmentStatus(founded, catalog.participants.find(p => p.id === id), catalog).ok, id);
+
+  // 夜・部員の物語を遊び終えた: 最後の一冊が入荷して、買ってある。部の実績も付く。
+  const last = trpgTrialState(fresh(), catalog, "finale");
+  assert.deepEqual(Object.keys(last.trpg.cleared).sort(), finale.clearRequires.slice().sort());
+  assert(rules.trpgBookProgress(last, finale).ok); assert(last.trpg.owned.includes(finale.id));
+  assert(rules.clubRecord(last, catalog).rank >= 3, "six finished books raise the club");
+
+  // 昼・本選び: 卓は夜。本は入荷しているだけで、買える。
+  const noon = trpgTrialState(fresh(), catalog, "noon");
+  assert.equal(noon.slot, 0); assert.deepEqual(noon.trpg.owned, []); assert(noon.trpg.stock.length > 0);
+  assert.equal(rules.tableStatus(noon, catalog).ok, false);
+  const cheapest = noon.trpg.stock.map(books).sort((a, b) => a.price - b.price)[0];
+  assert(rules.buyTrpgBook(noon, catalog, cheapest.id)); assert.equal(noon.money, 5000 - cheapest.price);
+  // 知らない始め方は「そろっている夜」。
+  assert.deepEqual(trpgTrialState(fresh(), catalog, "unknown").trpg.owned, ready.trpg.owned);
+});
+
 test("table status guides player when companions and books are not yet ready (#1045 B03)", () => {
   const s = state();
   rules.foundTrpgClub(s, catalog);
