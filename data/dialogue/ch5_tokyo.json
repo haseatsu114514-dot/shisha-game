@@ -313,18 +313,18 @@
       "dialogue_id": "ch5_tokyo_attic_rest_b",
       "lines": [
         {"speaker": "", "face": "", "text": "屋根裏の窓を少し開けると、細い風が入ってきた。"},
-        {"speaker": "", "face": "", "text": "脱いだ靴をそろえて、壁にもたれる。靴下の跡が足首に残っていた。"},
-        {"speaker": "hajime", "face": "normal", "text": "（ずいぶん歩いたな。今日はここまででいいか）"},
+        {"speaker": "", "face": "", "text": "布団の端に座って、壁にもたれる。ふくらはぎが、じんわり重い。"},
+        {"speaker": "hajime", "face": "normal", "text": "（ずいぶん歩いたな。少しだけ横になろう）"},
         {"speaker": "", "face": "", "text": "階下から椅子を引く音がした。返事をする用事はないので、そのまま目を閉じた。"}
       ]
     },
     {
       "dialogue_id": "ch5_tokyo_attic_rest_c",
       "lines": [
-        {"speaker": "", "face": "", "text": "屋根裏に戻り、枕元に置いていた本を開いた。"},
-        {"speaker": "", "face": "", "text": "同じ行を二度読んで、しおりを挟む。まだ半ページも進んでいない。"},
-        {"speaker": "hajime", "face": "normal", "text": "（続きは、起きてからでいいや）"},
-        {"speaker": "", "face": "", "text": "本を伏せずに脇へ置いた。横になると、肩がゆっくり布団に沈んだ。"}
+        {"speaker": "", "face": "", "text": "屋根裏の隅に、段ボールが積んである。一番上の箱に「冬物」と書いてあった。"},
+        {"speaker": "hajime", "face": "normal", "text": "（ムカイさんの荷物だよな。……冬のムカイさんって、どんな格好なんだろう）"},
+        {"speaker": "", "face": "", "text": "想像しようとしたけれど、いつもの深い帽子しか浮かばなかった。"},
+        {"speaker": "", "face": "", "text": "布団に横になる。階下の物音が、床板ごしに小さく聞こえていた。"}
       ]
     }
   ]
