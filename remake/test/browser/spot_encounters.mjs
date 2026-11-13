@@ -185,6 +185,68 @@ await suite("spot-encounters", async check => {
     assert.deepEqual(r.next, ["choizap_minto"]); assert(r.unchanged);
   });
 
+  // SPV02: 静かな回は、束（昼・夜・雨）ごとに一本ずつ順番に読む。昼・夜・雨を混ぜて通っても、一巡するまで同じ文に戻らない。
+  await run("quiet-visits-read-every-piece-before-repeating", async page => {
+    await setup(page);
+    const r = await page.evaluate(async () => {
+      const s = E.core.state, out = {};
+      // 寄り道会話は読み終えた後にして、静かな回だけを見る
+      for (const id of ["cafe_naru_break", "cafe_maezono_break", "cafe_master_quiz", "kannon_adam", "kannon_oldman",
+        "kannon_adam_pakki", "choizap_naru", "choizap_oldman", "choizap_minto"]) s.flags[`_spot_seen_${id}`] = true;
+      s.spotVisits = { cafe: 1, kannon: 1, choizap: 1 };
+      const visit = async (id, { night = false, rain = false } = {}) => {
+        Object.assign(s, { slot: night ? 1 : 0, stamina: 70, money: 30000 });
+        if (rain) E.rain(); else E.sunny();
+        E.clear(); await E.facility(id); return E.trace[0];
+      };
+      for (const id of ["cafe", "kannon", "choizap"]) {
+        const spot = E.spots.spotById(id);
+        const pools = { day: E.encounters.quietSpotPool(spot, 0), night: spot.nightPool ? E.encounters.quietSpotPool(spot, 1) : [],
+          rain: E.weather.RAIN_SPOT_TEXTS[id] || [] };
+        const seen = { day: [], night: [], rain: [] };
+        for (let i = 0; i <= pools.day.length; i++) {
+          seen.day.push(await visit(id));
+          if (pools.night.length && i <= pools.night.length) seen.night.push(await visit(id, { night: true }));
+          if (pools.rain.length && i <= pools.rain.length) seen.rain.push(await visit(id, { rain: true }));
+        }
+        out[id] = { pools, seen };
+      }
+      E.core.saveToSlot("suien_remake_slot1"); E.core.newGame(); E.core.loadFromSlot("suien_remake_slot1");
+      const kannon = E.spots.spotById("kannon");
+      E.sunny(); E.core.state.slot = 0; E.clear(); await E.facility("kannon");
+      return { out, afterLoad: E.trace[0], second: E.encounters.quietSpotPool(kannon, 0)[1] };
+    });
+    for (const [id, { pools, seen }] of Object.entries(r.out)) for (const kind of ["day", "night", "rain"]) {
+      if (!pools[kind].length) continue;
+      assert.equal(new Set(pools[kind]).size, pools[kind].length, `${id} ${kind}`);
+      assert.deepEqual(seen[kind].slice(0, pools[kind].length), pools[kind], `${id} ${kind}: 束の順に一本ずつ読む`);
+      assert.equal(seen[kind].at(-1), pools[kind][0], `${id} ${kind}: 一巡してから先頭へ戻る`);
+    }
+    const count = (id, kind) => r.out[id].pools[kind].length;
+    assert(count("cafe", "day") >= 7 && count("kannon", "day") >= 6 && count("choizap", "day") >= 6, "昼の静かな回は6本以上");
+    assert(count("kannon", "night") >= 4 && count("choizap", "night") >= 4, "夜の静かな回は4本以上");
+    assert(count("cafe", "rain") >= 2 && count("kannon", "rain") >= 2, "雨の回は2本以上");
+    assert.equal(r.afterLoad, r.second, "読んだ本数は保存され、LOAD後は続きから読む");
+  });
+
+  // SPV03: 家で休む小品も順番に読む。雨の日は雨の回、体調を崩した日の「残りを全部休む」は今までの一本。
+  await run("home-rest-reads-each-piece-in-turn", async page => {
+    await setup(page);
+    const r = await page.evaluate(async () => {
+      const rest = async (options) => { E.clear(); await E.spots.restAtHome({ stamina: 10 }, options); return E.trace[0]; };
+      const seen = [];
+      for (let i = 0; i <= E.spots.REST_SCENES.length; i++) { E.sunny(); seen.push(await rest()); }
+      E.rain(); const rain = await rest();
+      E.sunny(); const next = await rest(), full = await rest({ fullDay: true }), afterFull = await rest();
+      return { seen, rain, next, full, afterFull, pool: [...E.spots.REST_SCENES], rainPool: [...E.spots.REST_RAIN_SCENES] };
+    });
+    assert(r.pool.length >= 5 && new Set(r.pool).size === r.pool.length);
+    assert.deepEqual(r.seen.slice(0, r.pool.length), r.pool, "休む小品を順に一本ずつ読む");
+    assert.equal(r.seen.at(-1), r.pool[0], "一巡してから先頭へ戻る");
+    assert.equal(r.rain, r.rainPool[0]); assert.equal(r.next, r.pool[1], "雨の回は晴れの日の順番を進めない");
+    assert.equal(r.full, "remake_rest_day"); assert.equal(r.afterFull, r.pool[2], "全部休む日は順番を進めない");
+  });
+
   const examples = [
     { spot: "cafe", char: "naru", source: "cafe_naru_break", follow: "cafe_naru_followup", positive: "_spot_choice_naru_cafe_share", reply: ["結局俺の方", "まだ食べてない"] },
     { spot: "kannon", char: "adam", source: "kannon_adam", follow: "kannon_adam_followup", positive: "_spot_choice_adam_pray", reply: ["お願いした甲斐", "代わりがきかない"] },

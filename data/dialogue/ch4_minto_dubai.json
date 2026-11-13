@@ -97,13 +97,18 @@
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "どっちの栞さんでも、心強いよ"
+          "face": "smile",
+          "text": "結び目、曲がってたら言うよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "曲がらないよ。何年結んでると思ってるの、……あ、今のなし"
         },
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "……ふふ。今夜は、はじめくんの好きに過ごしてね。私は、ここにいるから"
+          "text": "……今夜は、はじめくんの好きに過ごしてね。私は、ここにいるから"
         },
         {
           "speaker": "",

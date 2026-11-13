@@ -398,7 +398,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "軽くして、熱を抑えた。客の顔を見て作った一台だ"
+          "text": "軽くして、熱を抑えた。……今日は、これが吸いたかった"
         },
         {
           "speaker": "",
@@ -504,9 +504,11 @@
           "tournament_chapter": 1
         },
         {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "すみません。また吸いたくなって"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "next_true": "reconciled_again",
+          "next_false": "keigo_again",
+          "tournament_chapter": 3
         },
         {
           "speaker": "naru",
@@ -549,10 +551,11 @@
           "text": "勘違いすんなよ。弟子に譲るんじゃねえ"
         },
         {
-          "speaker": "naru",
-          "face": "serious",
-          "duck": true,
-          "text": "教える側と教わる側は、今日でおしまいだ"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "next_true": "reconciled_equal",
+          "next_false": "keigo_equal",
+          "tournament_chapter": 3
         },
         {
           "speaker": "naru",
@@ -560,9 +563,11 @@
           "text": "次はお前の煙を吸わせろ。こいつで作った、お前の一台をな"
         },
         {
-          "speaker": "hajime",
-          "face": "serious",
-          "text": "……はい。なるさんの煙も、また確かめに来ます"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "next_true": "reconciled_promise",
+          "next_false": "keigo_promise",
+          "tournament_chapter": 3
         },
         {
           "speaker": "naru",
@@ -580,9 +585,11 @@
           "text": "あ、手入れは水洗いだけな。洗剤使ったら、二度と口きかねえから"
         },
         {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "それ、冗談ですよね"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "next_true": "reconciled_joke",
+          "next_false": "keigo_joke",
+          "tournament_chapter": 3
         },
         {
           "speaker": "naru",
@@ -609,6 +616,64 @@
             "speaker": "naru",
             "face": "smile",
             "text": "お、来たな。……また一服したくなったか？"
+          }
+        ],
+        "keigo_again": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "すみません。また吸いたくなって"
+          }
+        ],
+        "reconciled_again": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "悪い。また吸いたくなって"
+          }
+        ],
+        "keigo_equal": [
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "duck": true,
+            "text": "教える側と教わる側は、今日でおしまいだ"
+          }
+        ],
+        "reconciled_equal": [
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "duck": true,
+            "text": "さん付けは、とっくにやめさせたろ。これは、その続きだ"
+          }
+        ],
+        "keigo_promise": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "……はい。なるさんの煙も、また確かめに来ます"
+          }
+        ],
+        "reconciled_promise": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "……うん。なるの煙も、また確かめに来る"
+          }
+        ],
+        "keigo_joke": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "それ、冗談ですよね"
+          }
+        ],
+        "reconciled_joke": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "それ、冗談だよな"
           }
         ]
       }
@@ -663,7 +728,48 @@
         {
           "speaker": "",
           "face": "",
-          "text": "鼻を近づけると、確かに香る。アニスとリコリス、2つのスパイスが重なった、あの独特な匂い。"
+          "text": "アダムはその素焼きに葉を詰め、炭を載せた。渡す前に、最後の一台を作るらしい。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸う。アニスとリコリスの奥、吐き終わる間際に、もう一つ何かがいる。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……どの顔だった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "最後に、煎ったコーヒー豆みたいな匂いがします。仕込みの朝の、tonariみたいな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺なら、コーヒーと合わせます。その顔が、真ん中に来るように"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムの指から、トングが滑り落ちかけた。"
+        },
+        {
+          "speaker": "adam",
+          "face": "surprise",
+          "duck": true,
+          "text": "……千の夜を吸って、その顔は初めて聞いた"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "一つを愛すると、一つでは済まなくなる。……リンゴの、唯一の欠点だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（欠点と言うわりに、声がうれしそうだ）"
         },
         {
           "speaker": "adam",
@@ -717,19 +823,13 @@
         },
         {
           "speaker": "hajime",
-          "face": "smile",
-          "text": "……継承って、手入れのことだったんですね"
-        },
-        {
-          "speaker": "adam",
-          "face": "smile",
-          "duck": true,
-          "text": "年月は、手入れの積み重ねでしか宿らぬ。それが継承の正体よ"
+          "face": "normal",
+          "text": "……次の日も、詰めたんですね"
         },
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "……お前と悩んだ日から、常連にも聞くようになった"
+          "text": "詰めた。……近ごろは、常連に聞きながら詰めている"
         },
         {
           "speaker": "adam",
@@ -744,7 +844,7 @@
         {
           "speaker": "adam",
           "face": "smile",
-          "text": "答えは結局、ダブルアップルだがな"
+          "text": "お前と悩んだ日からだ。答えは結局、ダブルアップルだがな"
         },
         {
           "type": "condition",
@@ -756,12 +856,12 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "俺は一点を掘る。お前は全方向を受け入れる。だが、土を育てる手間は同じだ"
+          "text": "俺は奥から、お前は隣から。……同じ一個を、反対の側から齧っていたらしい"
         },
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "……大事に育てます。アダムさん、ありがとうございます"
+          "text": "……大事に詰めます。アダムさん、ありがとうございます"
         },
         {
           "speaker": "adam",
@@ -800,7 +900,7 @@
           {
             "speaker": "adam",
             "face": "smile",
-            "text": "常連の半分も、同じ方を選ぶ。ふっ、お前の舌はリンゴに素直だ"
+            "text": "常連の半分も、同じ方を選ぶ。お前の舌はリンゴに素直だ"
           }
         ],
         "fifth_other": [
@@ -1481,7 +1581,7 @@
           {
             "speaker": "rio",
             "face": "normal",
-            "text": "じゃあ、試香の欄に一行足しとく。「はじめの一台」って"
+            "text": "じゃあ、試香の欄に一行足しとく。「モルモットくんの一台」って"
           },
           {
             "speaker": "",

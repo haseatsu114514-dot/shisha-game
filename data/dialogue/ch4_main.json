@@ -2581,7 +2581,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "印をつけておいたのじゃ。夕飯はここ、明日の朝はここじゃ"
+          "text": "印をつけておいた。夕飯はここ、明日の朝はここじゃ"
         },
         {
           "speaker": "hajime",
@@ -2591,7 +2591,18 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "旅先では、まず腹を整えるのじゃ。……昼は、何を食べたのじゃ"
+          "text": "どちらも、席の間が広い店を選んだ。お主が、肘を張らずに食える"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は窓の外から、三軒のぞいた",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……客の顔を見れば、店は分かるのじゃ。で、昼は何を食べた"
         },
         {
           "speaker": "hajime",
@@ -2601,7 +2612,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "うむ。では今夜は、しっかり食べてもらうのじゃ"
+          "text": "うむ。では今夜は、わしの隣で、皿が空くまで座っておれ"
         },
         {
           "speaker": "hajime",
@@ -2610,8 +2621,8 @@
         },
         {
           "speaker": "samechan",
-          "face": "normal",
-          "text": "よい返事じゃ。明日のことは、明日の朝に考えればよいのじゃ"
+          "face": "smile",
+          "text": "よい返事じゃ。明日のことは、明日の朝の席で考えればよい"
         },
         {
           "speaker": "",
@@ -2632,17 +2643,18 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜、LIMEが届いた。「起きました」とだけあった。"
+          "text": "夜、LIMEが届いた。「三回目で、起きました」とだけあった。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ロビーに下りると、ひよりは窓際の椅子に座っていた。"
+          "text": "ロビーに下りると、ひよりさんは窓際の椅子で、外の灯りを見ていた。"
         },
         {
           "speaker": "hiyori",
-          "face": "normal",
-          "text": "おはようございます……って、夜ですけど"
+          "face": "sad",
+          "text": "……おはよう。夜だけど。私だけ、まだ朝の中にいるの",
+          "inner": "寝癖は直した。三回確認した"
         },
         {
           "speaker": "hajime",
@@ -2651,18 +2663,8 @@
         },
         {
           "speaker": "hiyori",
-          "face": "normal",
-          "text": "はい。ちゃんと、儚くならずに済みました"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "よかった。夕飯、近くでいいですか"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "normal",
-          "text": "うん。静かなところがいいな"
+          "face": "smile",
+          "text": "うん。溶ける前に、ちゃんと寝た。……お腹のほうは、起きてる"
         },
         {
           "speaker": "hajime",
@@ -2671,8 +2673,14 @@
         },
         {
           "speaker": "hiyori",
-          "face": "normal",
-          "text": "じゃあ、そこで。……明日、会場に行く前に、少しだけ散歩しない？"
+          "face": "smile",
+          "text": "じゃあ、そこ。静かなところで、ちゃんと食べたい",
+          "inner": "この国にラーメンはあるのか。調べるのは明日"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "……ねえ。明日、会場に行く前に、少しだけ歩かない？"
         },
         {
           "speaker": "hajime",
@@ -2681,13 +2689,14 @@
         },
         {
           "speaker": "hiyori",
-          "face": "normal",
-          "text": "うん。約束"
+          "face": "smile",
+          "text": "約束。歩く道は、もう調べてあるから",
+          "inner": "日陰の多いほう。地図の下見は、機内で済ませた"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "並んで歩き出す。ひよりの歩幅に合わせて、少しだけ足をゆるめた。"
+          "text": "並んで歩き出す。ひよりさんの歩幅に合わせて、少しだけ足をゆるめた。"
         }
       ],
       "comment": "接続済み（IR18）。前夜祭の日、ch4_hiyori_dubai_girlfriend（別便の到着）を読んだ後、前夜祭が始まる前に任意で一度読める（remake/js/chapters/ch4-progress.js の chapterFourArrivalEveningsDue、ch4.js の renderEve）。同行者には到着場面が無いので出ない。出典: 第4章新規ドラフト NEW-TEXT.md §6。話者IDは ch4_visitors.json の hiyori に合わせた。到着は前夜祭の日なので、散歩の約束は「会場に行く前」。結果には触れず、はじめからひよりへの呼びかけを使わずに会話を完結させている。"

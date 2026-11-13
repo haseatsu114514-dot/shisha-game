@@ -86,8 +86,9 @@ function build(viewport) {
     type: "button", "aria-label": name, dataset: { pad: id, test: `side-${id}`, live: "false" },
     onclick: (event) => press(id, event),
   }, children);
+  // SKIP は右の親指（「次へ」の上）、AUTO は左（2026-11-13 オーナー「スキップボタンは右側に入れたい」・YHK16）。
   l.inner.append(el("div.side-pad.bottom", [
-    button("skip", "SKIP", [el("span", { text: "SKIP" })]),
+    button("auto", "AUTO", [el("span", { text: "AUTO" })]),
     button("log", "LOG", [el("span", { text: "LOG" })]),
   ]));
   r.inner.append(
@@ -98,7 +99,7 @@ function build(viewport) {
       button("menu", "MENU", [el("i.side-bars"), el("span", { text: "MENU" }), el("em.side-badge.fire", { hidden: true }), el("i.side-dot", { hidden: true })]),
     ]),
     el("div.side-pad.bottom", [
-      button("auto", "AUTO", [el("span", { text: "AUTO" })]),
+      button("skip", "SKIP", [el("span", { text: "SKIP" })]),
       button("next", "次へ", [el("span", { text: "次へ" })]),
     ]),
   );

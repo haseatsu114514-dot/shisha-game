@@ -6,6 +6,7 @@ import vm from "node:vm";
 globalThis.document = { addEventListener() {} };
 globalThis.window = {};
 const naru = await import("../js/core/naru-finish.js");
+const attackBand = await import("../js/craft/attack-band.js");
 const { craftContext } = await import("../js/craft/context.js");
 const [{ DB }, conditions, life, coals, model, water, waterText, { judgeComment }, { improvementOf }, { gradeOf }] = await Promise.all([
   import("../js/core/data.js"), import("../js/craft/conditions.js"), import("../js/craft/flavor-life.js"),
@@ -75,7 +76,7 @@ async function harness({ learned = false, noWobble = false } = {}) {
     "../core/audio.js": { SE: new Proxy({}, { get: () => noop }), startBubbling: () => noop },
     "./session.js": { stepPanel: () => (panel = new Node()), refreshBench: noop, tickerSay: noop, reactAudience: noop,
       setBenchTemperature: (_cs, temp) => { metrics.temperature = temp; }, setBenchDraw: noop, failBench: async () => {}, setBenchLeaf: noop, dockBenchLeaf: noop,
-      strainBench: () => false, scoreStep: noop, waitBenchReady: async () => {} },
+      strainBench: () => false, scoreStep: noop, waitBenchReady: async () => {}, craftTest: { auto: null, aim: null } },
     "./common.js": { gradeOf, autoSkill: () => null, skill: { slow: () => 1, window: () => 1, clarity: () => noWobble ? 1 / .7 : 1 },
       resultCard: async () => { metrics.results++; }, keys: () => noop },
     "./heat.js": { burnCoals: () => { throw Error("This fixture selects no replacement coals"); }, HEAT_GRADES: {} },
@@ -85,6 +86,8 @@ async function harness({ learned = false, noWobble = false } = {}) {
     "./fx.js": { impact: noop, exhale: async () => false, smokeRing: () => false },
     "./art.js": { mixColor: () => "#d9d2e6" },
     "./thermometer.js": { buildThermometer: () => ({ root: new Node(), update: noop, preview: noop, pop: noop }) },
+    // 桜井式の攻めの帯（SKR04）。この一台は練習なので帯は出ないが、読み込みは本物を使う。
+    "./attack-band.js": attackBand,
     "./flavor-life.js": life, "./coals.js": coals, "./temperature-model.js": model,
     "./flavor-guide.js": { actualExpressionCard: () => "Recorded expression" },
     "./clock.js": { createCraftClock: () => ({ now: () => now, paused: false, dispose: noop }) },

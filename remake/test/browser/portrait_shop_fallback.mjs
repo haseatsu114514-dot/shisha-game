@@ -38,6 +38,10 @@ await suite("portrait-shop-rotate-guard", async check => {
     assert.equal(await page.locator('[data-test="buy-lemon"]').count(), 1);
     await page.evaluate(async () => {
       const ui = await import("./js/core/ui.js");
+      // 1つ目の店（買い出し）は開いたままなので、同じ保存では二重に開かない（shop.js の homeShopInFlight）。
+      // 入口のガードは、新しい保存で開き直して確かめる。
+      const core = await import("./js/core/state.js");
+      Object.assign(core.newGame(), { phase: "daily", day: 1, slot: 1, money: 12800, stamina: 100 });
       ui.showScreen("none", document.createElement("section"));
       openTestShop();
     });

@@ -519,6 +519,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "島の主・ノコギリ丸は、余の親戚である。丁重に挨拶せよ"
         },
         {
@@ -715,6 +716,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "ふはは。余の親戚が、歓迎の雨を降らせたのである"
         },
         {
@@ -1047,6 +1049,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "おお、親戚よ！ 余である！ ……返事がないのである"
         },
         {
@@ -1085,6 +1088,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "照れ屋なのである。一族の血である"
         },
         {
@@ -1115,6 +1119,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余より大きな王は、認めぬのである"
         }
       ]
@@ -1607,6 +1612,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余の親戚に会いに行く者たちである。心して役を作るがよい"
         }
       ]
@@ -1673,6 +1679,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "玉座に冠なし。これは一族の一大事である"
         }
       ]
@@ -1793,6 +1800,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "王の頭には冠がいるのである。余も、欲しい"
         }
       ]
@@ -1919,6 +1927,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "我が一族は、拍子にうるさいのである"
         }
       ]
@@ -2225,6 +2234,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "金貨の寝床。王族にふさわしい昼寝である"
         }
       ]
@@ -2541,6 +2551,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "見よ、あの冠の似合いぶり。さすが余の一族である"
         },
         {
@@ -2591,6 +2602,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余の一族は、音楽を愛するのである。しかと記憶せよ"
         },
         {
@@ -2635,6 +2647,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "親戚の昼寝を守った者たちよ。余から勲章をやろう"
         },
         {
@@ -2685,6 +2698,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "親戚の家は、二度目の訪問が肝心である"
         }
       ]

@@ -592,7 +592,7 @@ await suite("ch4-dubai-daily", async check => {
     await page.locator(eveCard).waitFor({ timeout: 60000 });
     assert.equal(await page.locator(evening).count(), 0, "The evening is read once");
     assert.match(await page.locator(dt("ch4-eve")).innerText(), /夜になった/);
-    assert((await backlog(page)).some(text => text.includes("印をつけておいたのじゃ")), "The evening scene was played");
+    assert((await backlog(page)).some(text => text.includes("印をつけておいた。夕飯はここ")), "The evening scene was played");
     let state = await get(page);
     assert.equal(state.flags._ch4.read.ch4_wang_reception, undefined, "The evening does not move the eve");
     assert.equal(state.flags._ch4.part, "eve");

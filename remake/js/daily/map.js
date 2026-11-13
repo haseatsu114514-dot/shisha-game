@@ -2,7 +2,9 @@
 // 見た目は旧版を踏襲: 橙須の街マップ／看板型のピン（面識のある相手は顔ドット絵）／右下の墨×金パネル。
 import { el, yen } from "../core/util.js";
 import { bgUrl, sceneBg, faceIconUrl } from "../core/data.js";
-import { showScreen, setBg, retire, uiArtReady, storeLogosReady, imageReady, layers, toast } from "../core/ui.js";
+import { showScreen, setBg, retire, uiArtReady, storeLogosReady, imageReady, layers, toast, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice } from "../core/module-loading.js";
+import { comicLoadingRequired } from "../core/loading.js";
 import { cueTransition } from "../core/transitions.js";
 import { trainRide } from "../core/scene-motions.js";
 import { TRAIN_ICON_SVG } from "../core/train-icon.js";
@@ -14,6 +16,8 @@ import { allSpots, SPOT_PREVIEW, isUnlocked, hasNewEvent, spotDetailLabel } from
 import { updateHud } from "./hud.js";
 import { mountReel } from "./reel.js";
 import { isRainy, tomorrowForecast } from "./weather.js";
+// 行き先の人物の立ち絵を、地図を見ている間に読んでおく（入店直後の「場面を準備しています…」を減らす・LD05）
+import { portraitInfo } from "../core/data.js";
 import { fortuneToday } from "./fortune.js";
 import { spotVisible, spotAvailability, freeGuide as isFreeGuide } from "./spot-access.js";
 import { spotPeople } from "./spot-people.js";
@@ -33,6 +37,8 @@ function peopleRow(people) {
   }));
 }
 const knowsOwner = (s) => !s.charId || !!state.met[s.charId];
+/** その場所で会う人物の立ち絵（通常の表情。会話で出す画風と同じ）。人物のいない場所は null */
+const spotPortrait = (s) => (s.charId ? portraitInfo(s.charId, "normal")?.src || null : null);
 
 // 施設は大きな記号、その下に名前。顔のある店は同じ場所に店主の顔を置く。
 const POND_HALL = '<path d="M2 10 12 4l10 6M5 10v8M19 10v8M9 18v-5h6v5M2 21c2.5-1.5 4.5 1.5 7 0s4.5 1.5 7 0 4.5 1.5 6 0"/>';
@@ -90,13 +96,19 @@ const backgroundOf = (region) => typeof region?.background === "function" ? regi
  */
 export async function chooseSpot(opts = {}) {
   // 初回だけ: 看板の顔とスロットの図柄が読めてから地図を出す（遅い回線でも最大2秒・GUI20・21）
+  const ready = () => Promise.all([uiArtReady(), storeLogosReady(), imageReady(FACILITY_SHEET, 2000, { keep: true }), setBg(backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
+  // プレイヤーの既定では、0.5秒を超えた待ちに作業台と同じ漫画つきのロード画面を出す（core/ui.js の loadingNotice）。
+  if (comicLoadingRequired()) {
+    await withLoadingNotice(ready(), loadingNotice("マップを準備しています…"));
+    return await openMap(opts);
+  }
   let notice = null;
   const timer = setTimeout(() => {
     notice = el("div.vn-loading", { role: "status", text: "マップを準備しています…" });
     layers.fx.append(notice);
   }, 500);
   try {
-    await Promise.all([uiArtReady(), storeLogosReady(), imageReady(FACILITY_SHEET, 2000, { keep: true }), setBg(backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
+    await ready();
   } finally { clearTimeout(timer); notice?.remove(); }
   return await openMap(opts);
 }
@@ -220,6 +232,9 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
     const renderInfo = (s) => {
       const av = availability(s);
       const known = knowsOwner(s);
+      // 選んだ行き先の人物を、裏の準備より先に読み始める（もう一度押して入店するまでの間に届くように）
+      const portrait = av.ok ? spotPortrait(s) : null;
+      if (portrait) void imageReady(portrait, 15000);
       const label = av.why === "locked" ? "？？？" : known ? spotDetailLabel(s) : s.unknownLabel || s.label;
       info.classList.add("spot-selected");
       info.setAttribute("role", "button");
@@ -280,6 +295,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
     const stationActive = () => state === owner && root.isConnected && !root.classList.contains("done") && !document.hidden;
     const openStation = () => {
       if (moving || revealing || !stationActive() || !stationDestinations(state, regions || [], region?.id).length) return;
+      SE.click(); // ほかのピンと同じ押した音
       clearSpotInfo();
       stationTrip?.cancel(); stationTrip = null; selected = null;
       pins.querySelectorAll(".spot-pin").forEach(p => p.classList.remove("sel"));
@@ -441,6 +457,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
         };
         stopReveal = startSpotReveal({
           pop: () => {
+            if (freshPins.length) SE.pon?.(); // 新しい店のピンが現れる
             for (const { btn, index } of freshPins) {
               btn.style.visibility = "";
               btn.classList.add("newly-revealed");
@@ -486,8 +503,12 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
     mapShown = true;
     showPrompts();
     // 今行ける場所だけを2通信ずつ準備。マップ表示やボタン操作は待たせない。
-    const previews = [...new Set(mapSpots().filter(isUnlocked)
-      .flatMap((spot) => sceneArtUrls(spot.previewUrl || sceneBg(spot.preview || SPOT_PREVIEW[spot.id], tod).url)))];
+    // 先に行き先の写真（入店した場面の背景）、続けてその場所の人物の立ち絵（通常の表情）を読む（LD05）。
+    const open = mapSpots().filter(isUnlocked);
+    const previews = [...new Set([
+      ...open.flatMap((spot) => sceneArtUrls(spot.previewUrl || sceneBg(spot.preview || SPOT_PREVIEW[spot.id], tod).url)),
+      ...open.map(spotPortrait).filter(Boolean),
+    ])];
     let at = 0;
     const warm = async () => {
       while (root.isConnected && !root.classList.contains("done") && at < previews.length) {

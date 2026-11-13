@@ -8,8 +8,7 @@ import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FIL
 import { el, yen } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, enterScene, modal, imageReady, loadingNotice } from "../core/ui.js";
-import { withLoadingNotice } from "../core/module-loading.js";
+import { layers, showScreen, setBg, enterScene, modal, imageReady, withChapterLoading } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { maxStamina } from "../core/stats.js";
 import { awardTournamentExp, awardChapterClearExp } from "../core/growth.js";
@@ -17,7 +16,7 @@ import { recordTournamentLoss, chooseRetryAssist } from "./retry-assist.js";
 import { applyAssistRecovery } from "./tournament-resources.js";
 import { play } from "../vn/engine.js";
 import { openPhone, openLime } from "../daily/phone.js";
-import { playBgm } from "../core/audio.js";
+import { playBgm, SE } from "../core/audio.js";
 import { newSession, openBench, waitBenchReady, benchRoot } from "../craft/session.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
 import { stepWater } from "../craft/water-view.js";
@@ -219,6 +218,9 @@ export function voteReason(p, cs, final = false) {
 }
 function renderVotes(owner, final = false) {
   playBgm("bgm_judging");
+  // 途中の持ち点は判の一打、最終結果は会場の拍手（1位はファンファーレも）。第1章の結果発表（craft/result.js）とそろえる。
+  if (final) { SE.crowd?.(2.4); if (progress().result?.rank === 1) SE.fanfare?.(); }
+  else SE.stamp?.();
   const p = progress(), rows = final ? p.result.rows : standings(p);
   const craft = owner.cs || (p.craft ? clone(p.craft) : null);
   const reason = voteReason(p, craft, final);
@@ -273,7 +275,7 @@ async function renderDefeat(owner, variant = null) {
 }
 function renderComplete(owner) {
   const next = button(owner, "第三章・東京へ", "chapter-three", async () => {
-    const mod = await withLoadingNotice(import("./ch3.js"), loadingNotice("第3章の東京へ向かっています…"));
+    const mod = await withChapterLoading(() => import("./ch3.js"), "第3章の東京へ向かっています…");
     await mod.beginChapterThree();
   }, true);
   card(owner, "complete", "第二章・完", "優勝トロフィーと、東京行きの切符。味のしない舌は、そのままだった。", [

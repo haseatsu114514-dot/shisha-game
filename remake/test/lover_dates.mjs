@@ -132,5 +132,5 @@ assert.match(sceneText(mashiroLv2), /タイマーなしで借りる/);
 assert.match(sceneText(mashiroLv3), /どんな重さが好き.*教えてくれる/);
 assert.match(sceneText(mashiroLv3), /重ければ、何でもいいわけじゃない/);
 assert.match(sceneText(mashiroLv3), /紅茶も残るのが好き/);
-assert.match(sceneText(mashiroLv3), /もう少し付き合ってくれる/);
+assert.match(sceneText(mashiroLv3), /一緒に来てくれる.*僕が重いのを頼むお店/);
 console.log("OK: Mashiro keeps her tea preferences and speaks about her own taste");

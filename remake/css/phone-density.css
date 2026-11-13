@@ -82,8 +82,10 @@ html:root[data-density="phone"] body:not(:root) #hud .hud-card :is(.hud-stamina 
 
 /* ---------------------------------------------------------------- 会話の操作ボタン・選択肢 */
 /* 会話ウインドウの下端: 横持ちの iPhone は下にホームバーの領域があり、端ぎりぎりだと欠けて見える（オーナー指摘 2026-11-08）。
-   safe-area の下端＋少しの余白ぶん持ち上げる。safe-area が無い画面でも実寸 16px 前後は空ける。 */
-html:root[data-density="phone"] body:not(:root) .vn-box { bottom: max(30px, calc((env(safe-area-inset-bottom, 0px) + 8px) / var(--k, 1))); }
+   safe-area の下端（ホームバーの領域の上）にそろえる。2026-11-13 オーナー「セリフウインドウをほんと少しだけ下げたい」で、
+   上乗せの余白を 8px→2px、safe-area が無い画面の下限を 30px→20px にした（どちらも実寸で約6px下がる・DUI20）。
+   紙の枠の絵は箱より少し下へはみ出すが、iPhone 横でもホームバーの上に実寸約17px残る。PC は変えない。 */
+html:root[data-density="phone"] body:not(:root) .vn-box { bottom: max(20px, calc((env(safe-area-inset-bottom, 0px) + 2px) / var(--k, 1))); }
 html:root[data-density="phone"] body:not(:root) .vn-controls { gap: var(--phone-gap); }
 html:root[data-density="phone"] body:not(:root) .vn-ctl,
 html:root[data-density="phone"] body:not(:root) .vn-controls .vn-ctl {

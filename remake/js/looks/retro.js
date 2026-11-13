@@ -225,11 +225,21 @@ function start({ paint = "dot", mode = "retro" } = {}) {
 
   // 現行の DOM の変化を見張る。自分の外枠の中の変化は数えない。会話の文字送りだけの変化では場面の確認を急がない。
   const observer = new MutationObserver((records) => {
+    let typed = false;
     for (const record of records) {
       const target = record.target.nodeType === 1 ? record.target : record.target.parentElement;
       if (!target || own.some((mine) => mine.contains(target))) continue;
       dirty = true;
-      if (!target.closest?.(".vn-text, .vn-inner")) detectSoon = true;
+      if (target.closest?.(".vn-text, .vn-inner")) typed = true;
+      else detectSoon = true;
+    }
+    // 文字送りは requestAnimationFrame の中で進む（vn/engine.js・#3500 C-22）。写しを次のフレームの tick まで待たせると、
+    // 下画面の本文が1フレーム遅れて最後の字が欠けて見える。本文が変わった時は、同じフレームのうちにここで写す（回数は今までと同じ）。
+    if (typed && scene && !stopped) {
+      dirty = false;
+      lastSync = performance.now();
+      scenes[scene].sync({ pressable, gap, hold });
+      syncNotices();
     }
   });
   observer.observe(document.documentElement, {

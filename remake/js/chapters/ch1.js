@@ -6,13 +6,14 @@ import { playEntrance, CH1_EVE_NOTES } from "./tournament-entrance.js";
 import { playTournamentArrival } from "./ch1-arrival.js";
 import { DB, bgUrl, faceIconUrl, realName, displayName, loadTournamentCraftDialogue } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
-import { playChapterPoem } from "../scenes/chapter-poem.js";
+import { playChapterPoem, preparePoemPanel } from "../scenes/chapter-poem.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
-import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice } from "../core/ui.js";
+import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice, withChapterLoading } from "../core/ui.js";
 import { sceneMoment } from "../core/scene-motions.js";
 import { defeatFade, retryStroke } from "../core/transitions.js";
 import { withLoadingNotice } from "../core/module-loading.js";
-import { state, save, markMet, setFlag, flag, requestResumeOnBoot } from "../core/state.js";
+import { state, save, markMet, setFlag, flag, requestResumeOnBoot, config } from "../core/state.js";
+import { voteStyleFrom } from "../core/vote-style.js";
 import { addMoney, maxStamina, addStamina, gainStat } from "../core/stats.js";
 import { awardTournamentExp, awardChapterClearExp } from "../core/growth.js";
 import { playBgm, preloadBgm, stopBgm, SE } from "../core/audio.js";
@@ -51,7 +52,7 @@ import { playTsumugiStory, playTsumugiSketch } from "./tsumugi-story.js";
 import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { outcomeOf, showStandings, resultCountdown, suiCutin, resultTable } from "../craft/result.js";
-import { beginCh1Votes, castCh1Votes } from "../craft/ch1-votes.js";
+import { beginCh1Votes, castCh1Votes, isSakuraiVotes } from "../craft/ch1-votes.js";
 import { craftRecognition } from "../craft/recognition.js";
 import { playCh1Title } from "./ch1-title-motion.js";
 import { giveSumiRig, giveEarlyHomeRig } from "../daily/home-rig.js";
@@ -148,6 +149,7 @@ async function openingPart() {
   clearScreen();
   if (!progress.introDone) {
     stopBgm();
+    void preparePoemPanel(1); // コールドオープンを読んでいる間に、続く巻頭ポエムの横長の漫画を読んでおく（OSP20）
     await setBg(null, { instant: true }); // 先に暗転を置いてから場面を重ねる（後から来た暗転に場面が隠れないように）
     // コールドオープン: 1年後の世界大会の決勝の一瞬（顔も会場の全景も見せない）。
     // 場面は背景レイヤーに置く＝会話の文字より奥（手前に置くと文字が隠れて真っ暗に見えていた）
@@ -210,6 +212,8 @@ export async function resumeGame() {
   if (state.chapter === 3) return resumeChapterModule(() => import("./ch3.js"), m => m.resumeChapterThree(), "第3章へ戻っています…");
   if (state.chapter === 4) return resumeChapterModule(() => import("./ch4.js"), m => m.resumeChapterFour(), "第4章へ戻っています…");
   if (state.chapter === 5) return resumeChapterModule(() => import("./ch5.js"), m => m.resumeChapterFive(), "第5章へ戻っています…");
+  // 第1章の保存からの再開も決まった場面: プレイヤーの既定では漫画のロード画面を出してから続ける（core/ui.js）。
+  await withChapterLoading(() => null, "続きを準備しています…");
   if (state.phase === "cleared") return showClear();
   if (state.phase === "aftermath") return finishAfterTournament();
   // 第1章の制作途中は保存しない。大会本体のLOADは当日冒頭から入場と一台をやり直す。
@@ -219,11 +223,12 @@ export async function resumeGame() {
   await dailyPart();
 }
 
-// SAVEからの再開で、次章モジュールの動的 import を軽いロード表示付きで待つ（A-1）。
+// SAVEからの再開で、次章モジュールの動的 import をロード表示付きで待つ（A-1）。セーブからの再開は決まった場面で、
+// プレイヤーの既定では待ちがなくても漫画のロード画面を出す（core/ui.js の withChapterLoading）。
 // 取得に失敗（通信断・デプロイ直後のキャッシュ不整合）しても無反応で止めず、
 // 「もう一度試す／タイトルへ戻る」で操作可能に戻す。章の中身の失敗は各章側が扱う。
 async function resumeChapterModule(load, run, label) {
-  try { return await run(await withLoadingNotice(load(), loadingNotice(label))); }
+  try { return await run(await withChapterLoading(load, label)); }
   catch { return showResumeError(); }
 }
 
@@ -627,7 +632,8 @@ function prepareTournamentAttempt(newTournament) {
   const resumedSameAttempt = !newTournament && t.attempts > 0 && t.lastLossAttempt !== undefined && t.lastLossAttempt !== t.attempts;
   if (!resumedSameAttempt) t.attempts++;
   state.tournament.voteAttempt = state.tournament.rulesVersion >= 2 ? null : undefined;
-  if (state.tournament.rulesVersion >= 2) beginCh1Votes(state.tournament);
+  // 審査の方式（いままで／桜井式・SKR04）は、この試合を始める時の設定で決め、試合の途中では変えない。
+  if (state.tournament.rulesVersion >= 2) beginCh1Votes(state.tournament, { style: voteStyleFrom(config) });
   save();
 }
 
@@ -635,6 +641,8 @@ function prepareTournamentAttempt(newTournament) {
 function startTournamentCraft() {
   const cs = newSession("tournament");
   cs.retryAssist = state.tournament.retryAssist === true;
+  // 桜井式の試合だけ、吸い出し・調整の温度計に「攻めの帯」を出す（craft/attack-band.js）。
+  if (isSakuraiVotes(state.tournament.voteAttempt)) cs.voteStyle = "sakurai";
   return cs;
 }
 
@@ -670,6 +678,8 @@ async function tournamentDay() {
   const source = regulation?.supply ? `${challenge}は主催者が支給！ 他の葉は持ち込みです！` : "葉は自分で持ち込むこと！";
   await play({ dialogue_id: "ch1_tournament_rule_recap", lines: [
     { speaker: "pakki", face: "excited", text: `本日の課題はッ！ ${challenge}を2g以上！ ${source}` },
+    // 桜井式の試合だけ、票の取り方を先に伝える（SKR04・#171 How to Play）。
+    ...(isSakuraiVotes(state.tournament.voteAttempt) ? SAKURAI_RULE_LINES : []),
   ] }, { bg: STAGE });
   await withLoadingNotice(Promise.all([assetsReady, craftBgmReady]), loadingNotice("大会の準備をしています…"));
   await entrance();
@@ -800,6 +810,13 @@ async function tournamentDay() {
   }
 }
 
+// 桜井式の審査（SKR04）の説明。審査員の見る所は craft/ch1-votes.js の SAKURAI.focus と同じ言葉にする。
+const SAKURAI_RULE_LINES = Object.freeze([
+  { speaker: "pakki", face: "excited", text: "今日の票は、毎回その工程だけで勝負ッ！ 出だしでつまずいても、取り返せますよ〜♪" },
+  { speaker: "pakki", face: "excited", text: "提供の一台は、上園さんが味、博士が火、千須会長が煙を見るッ！ 3人のうち2人を取れば勝ちが見えるッ！" },
+  { speaker: "pakki", face: "excited", text: "温度計の桃色の帯は『攻めの帯』ッ！ そこで出せば審査がグッと伸びる！ ただし越えたら味が崩れるッ！" },
+]);
+
 /** 入場（ライバル → 主人公）。スミさんの一言つき。共有部品 tournament-entrance.js（#2031） */
 const entrance = () => playEntrance(1, { heroNote: CH1_EVE_NOTES[state.flags._last_night] || null });
 
@@ -920,7 +937,7 @@ export async function showClear() {
     if (playing || !root.isConnected || state !== owner) return;
     playing = true; next.disabled = true;
     try {
-      const chapter = await withLoadingNotice(import("./ch2.js"), loadingNotice("第2章の街へ向かっています…"));
+      const chapter = await withChapterLoading(() => import("./ch2.js"), "第2章の街へ向かっています…");
       if (root.isConnected && state === owner) await chapter.beginChapterTwo();
     } catch { toast("第2章を読み込めなかった。通信を確認して、もう一度試してください"); }
     finally { playing = false; next.disabled = false; }

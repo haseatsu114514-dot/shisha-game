@@ -62,6 +62,18 @@
         { "speaker": "hajime", "face": "normal", "text": "（頭より、体の方が覚えてたな）" },
         { "speaker": "", "text": "上着を羽織って外へ出ると、高架の上を最終に近い電車が通っていった。" }
       ]
+    },
+    {
+      "dialogue_id": "ch3_choizap_train",
+      "lines": [
+        { "speaker": "", "text": "高架下のCHOI-ZAP。頭の上を電車が通るたび、ダンベルの棚がかすかに鳴る。" },
+        { "speaker": "hajime", "face": "normal", "text": "（次の電車が通るまで、プランクを続けてみるか）" },
+        { "speaker": "", "text": "肘をついて、体をまっすぐに保つ。十秒、二十秒。線路は静かなままだ。" },
+        { "speaker": "hajime", "face": "serious", "text": "（……来ない。さっきまで、あんなに通ってたのに）" },
+        { "speaker": "", "text": "腕が震えはじめたころ、遠くで音がした。各駅停車が、ゆっくり近づいてくる。" },
+        { "speaker": "hajime", "face": "smile", "text": "（……急行を待てばよかった）" },
+        { "speaker": "", "text": "床に伸びたまま、通り過ぎる音を最後まで聞いた。" }
+      ]
     }
   ]
 }

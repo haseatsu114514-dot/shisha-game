@@ -1,14 +1,16 @@
 // 巻頭ポエム（序詩と第1〜5章の章頭詩）。会話ウインドウではなく、専用の「読ませる」画面で出す。
 // 詩の本文と意図は brand/chant_poems.md、台本は data/dialogue/chapter_poems.json（1行 = 詩の1行。gap:true は連の切れ目）。
 // 置き場所: 各章の詩＝その章の章タイトルの直前（第1章の詩は序詩を兼ねる。コールドオープンの後）。
-// 見せ方: 詩の上に、横長の漫画風のコマ絵（metadata.panel。img/ui/poems/）を細い枠つきで出す。絵が無い・読めない詩は、詩だけを全面に出す。
+// 見せ方: 詩の上に、横長の漫画風のコマ絵（metadata.panel。img/ui/poems/）を細い枠つきで出す（必ず出す。届くまで待つ）。
+//        絵の指定が無い・壊れていて読めない詩だけは、詩だけを全面に出す。
 //        詩を連ごとの「場面」に分け、1場面ずつ読ませる。暗い面に縦書きの明朝で、右の行から1行ずつ、ぼかしが晴れて浮かぶ。
 //        読み終えた場面は消え、次の連が浮かぶ。最後の連を読み終えたら全体が暗く閉じ、続けて章タイトルが出る。
 //        漢字には「漢字《よみ》」のふりがな。タップ／Enter／Space で、読んでいる途中なら その場面の残りを出し、読み終えていれば次の場面へ。
 import { silenceBgm } from "../core/audio.js";
 import { DB } from "../core/data.js";
 import { el, nextFrame, sleep } from "../core/util.js";
-import { layers, clearScreen, imageReady } from "../core/ui.js";
+import { layers, clearScreen, imageReady, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice } from "../core/module-loading.js";
 import { reducedMotion } from "../core/transition-kit.js";
 import { chapterTitleEntry } from "../core/chapter-title-art.js";
 import { vnTest } from "../vn/engine.js";
@@ -23,6 +25,37 @@ export const poemTest = { shown: [] };
 
 /** 詩の上に出す横長のコマ絵（img/ui/poems/）。本物の絵に差し替えるときは、台本の metadata.panel のファイル名を替える */
 const panelUrl = (name) => new URL(`../../img/ui/poems/${name}`, import.meta.url).href;
+/**
+ * コマ絵は必ず出す（2026-11-13 オーナー「ブリーチ風を大事にしてるから横長の漫画はマストで出したい」・OSP20）。
+ * 以前は2.5秒で読めなければ詩だけにしていたため、回線が混んでいると絵が出なかった。
+ * 今は届くまで待つ（0.5秒を超えたら、ほかの待ちと同じロード表示 loadingNotice。LDC40 でそろえた漫画つきの画面）。
+ * 読めなかった（通信の失敗）ときは1回だけ読み直す。
+ * それでも読めない（壊れた絵・つながらない）ときだけ、詩だけを全面に出す（ゲームを止めない）。
+ */
+const PANEL_WAITS = Object.freeze([30000, 60000]);
+const poemPanelUrl = (key) => {
+  const name = DB.dialogues[CHAPTER_POEM_IDS[key]]?.metadata?.panel;
+  return name ? panelUrl(name) : null;
+};
+
+/** 詩のコマ絵を先に読み始める（取得とデコード）。詩を出す前の、余裕のあるところで呼ぶ。進行は変えない。 */
+export function preparePoemPanel(key) {
+  const url = poemPanelUrl(key);
+  return url ? imageReady(url, PANEL_WAITS[0]) : Promise.resolve(false);
+}
+
+/** コマ絵が届くまで待つ（0.5秒を超えたら、ほかの待ちと同じロード表示）。読めたら true。 */
+function waitPoemPanel(url, aborted) {
+  const load = (async () => {
+    for (const ms of PANEL_WAITS) {
+      const loaded = await Promise.race([imageReady(url, ms), aborted.then(() => null)]);
+      if (loaded !== false) return loaded === true;
+    }
+    return false;
+  })();
+  return withLoadingNotice(load, loadingNotice("詩を準備しています…"));
+}
+
 /** コマ絵の比率の範囲（横:縦）。範囲の内なら絵の比率のまま、外なら端の比率の枠に収める（tools/poem_panel_cut.py と同じ） */
 export const PANEL_RATIO = Object.freeze({ min: 4, max: 5.6, fallback: 16 / 3 });
 
@@ -53,20 +86,23 @@ export function poemPages(lines = []) {
   return pages;
 }
 
-// 時間の決まり（ms）。短い詩を、急かさず・長引かせずに読ませる。
+// 時間の決まり（ms）。短い詩を、急かさずに読ませる。
+// 2026-11-13 オーナー「詩のスピードが早くて読みづらかった」で全体を約1.5倍ゆっくりに（1章ぶん 約10〜12秒→約15〜19秒・OSP21）。
+// 行の出方・場面の分け方・タップで先へ進めることは変えていない。
 const FADE_IN = 700;         // 暗い面が現れる
 const FADE_OUT = 900;        // 最後の場面のあと、全体が暗く閉じる（続けて章タイトル）
-const PANEL_BEAT = 800;      // コマ絵が浮かんでから、詩の最初の行が出るまで
-const TURN = 650;            // 場面から場面へ（消えて、次が浮かぶ）
-const LINE_BASE = 460;       // 1行ぶんの間（基本）
-const LINE_PER_CHAR = 26;    // 字数に応じた読みの間
-const HOLD_MID = 1100;       // 読み終えてから次の場面へ進むまで（基本）
-const HOLD_LAST = 2000;      // 最後の場面は長めに余韻を置く
-const HOLD_PER_CHAR = 40;
+const PANEL_BEAT = 1200;     // コマ絵が浮かんでから、詩の最初の行が出るまで
+const TURN = 900;            // 場面から場面へ（消えて、次が浮かぶ）
+const LINE_BASE = 760;       // 1行ぶんの間（基本）
+const LINE_PER_CHAR = 42;    // 字数に応じた読みの間
+const LINE_MIN = 1050, LINE_MAX = 1900; // 1行ぶんの間の下限・上限
+const HOLD_MID = 1800;       // 読み終えてから次の場面へ進むまで（基本）
+const HOLD_LAST = 3200;      // 最後の場面は長めに余韻を置く
+const HOLD_PER_CHAR = 65;
 const GUARD = 280;           // 段の切り替え直後の誤タップで飛ばさない
 
 const charsOf = (line) => [...plainPoemLine(line.text).replaceAll(" ", "")].length;
-const lineDelay = (line) => Math.min(1200, Math.max(650, LINE_BASE + LINE_PER_CHAR * charsOf(line)));
+const lineDelay = (line) => Math.min(LINE_MAX, Math.max(LINE_MIN, LINE_BASE + LINE_PER_CHAR * charsOf(line)));
 const holdFor = (group, last) => (last ? HOLD_LAST : HOLD_MID) + HOLD_PER_CHAR * group.reduce((sum, line) => sum + charsOf(line), 0);
 
 /**
@@ -98,12 +134,13 @@ async function showChapterPoem(key, { owner = null, current = () => true } = {})
   const controller = new AbortController();
   if (owner) owner.controller = controller;
   const { signal } = controller;
+  const aborted = new Promise((resolve) => signal.addEventListener("abort", resolve, { once: true }));
   const lines = poem.lines;
-  // コマ絵: 読み込んで・デコードし終えたものだけを出す。読めなければ（失敗・時間切れ）詩だけを全面に出す。
+  // コマ絵: 届くまで待ち、デコードし終えたものを出す（必ず出す・OSP20）。読めない絵のときだけ詩だけを全面に出す。
   let panel = null;
   if (poem.metadata?.panel) {
     const url = panelUrl(poem.metadata.panel);
-    if (await imageReady(url, 2500) && !signal.aborted) {
+    if (await waitPoemPanel(url, aborted) && !signal.aborted) {
       const img = el("img", { src: url, alt: poem.metadata.panel_alt || "", draggable: false });
       await img.decode?.().catch(() => {});
       // 枠は絵の比率のまま（生成AIの絵は 16:3 から縦に少し伸びることがあり、切ると顔や小物が欠ける）
@@ -112,6 +149,8 @@ async function showChapterPoem(key, { owner = null, current = () => true } = {})
       panel = el("figure.cp-panel", { "data-test": "chapter-poem-panel", style: { aspectRatio: String(ratio) } }, [img]);
     }
   }
+  // 次の章の詩の絵も、いまのうちにブラウザへ取っておく（次の章の始まりで待たせない）。
+  if (typeof key === "number" && CHAPTER_POEM_IDS[key + 1]) void preparePoemPanel(key + 1);
   if (signal.aborted || (owner && !current(owner))) {
     if (owner && owner.controller === controller) owner.controller = null;
     return false;
@@ -134,7 +173,6 @@ async function showChapterPoem(key, { owner = null, current = () => true } = {})
   let skipReveal = () => {}, turnPage = () => {}, fastNow = () => {};
   let fast = false;
   const fastSignal = new Promise((resolve) => { fastNow = resolve; });
-  const aborted = new Promise((resolve) => signal.addEventListener("abort", resolve, { once: true }));
   const linesOf = (page) => [...page.querySelectorAll(".cp-line")];
   const showAllIn = (page) => linesOf(page).forEach((node) => node.classList.add("on"));
   // 読んでいる途中ならその場面の残りの行を出し、読み終えていれば次の場面へ（直後の誤タップは無視）。

@@ -87,6 +87,8 @@ async function harness({ step = 0, paid = true, revealed = true, snapshot = null
   };
   const ports = {
     CRAFT_STEPS: [], hooks: {}, emit() {}, recordGalleryProgress() {},
+    // core/ui.js: resuming a save opens the comic loading screen for players before the chapter continues.
+    withChapterLoading: async load => load(),
     // 心得の盤の章クリアの経験値（#2166）。この検査は背景と報酬の順番だけを見るので、経験値は記録だけ。
     awardChapterClearExp: () => observe("chapter-clear-exp"),
     play, setBg: setBackground,

@@ -308,6 +308,10 @@ const BG_ALIASES = {
 
 // 昼夜の差分がある場所（無印・_day は時間帯で切り替える。明示の _night は演出なのでそのまま）
 const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home", "bg_c_station", "bg_cafe", "bg_street", "bg_kannon", "bg_choizap", "bg_tokyo_park", "bg_mukai_backdoor", "bg_shiori_room"]); // bg_mukai_backdoor: てつこといっしょの裏口（TKT01・未着。届くまでは sceneBg が null を返し、画面は bg_street に戻る）
+// 昼の版だけが別にある店（第3章の東京の4店。#3282 B3・B4・B8・B9）。無印の絵は窓の外が夕方〜夜で、そのまま夜に使う。
+// 昼の版を使うのは、時間帯が「昼」と**明示された**時だけ（時間帯を渡さない呼び出しは今までどおり無印の絵）:
+//   時間帯を渡さない呼び出しは、昼か夜かを知らないまま呼んでいる（第3章の夜の場面にも使われる）。昼の絵へ替えると夜の場面が昼になる。
+const BG_DAY_VARIANT = new Set(["bg_mukai_shop", "bg_yohaku_shop", "bg_volk_shop", "bg_steve_shop"]);
 // 窓の無い店内は外光が入らない＝夜も昼の絵のまま（オーナー指定・旧版と同じ）
 // bg_ageha_shop.png は 2026-11-12 に窓から昼の光が入る絵へ描き直した（#3282 B7）ので、ここから外した（夜は色調補正が掛かる）。
 const BG_NO_NIGHT_TINT = new Set([
@@ -321,7 +325,10 @@ const BG_NO_NIGHT_TINT = new Set([
  * 背景の参照（"res://assets/backgrounds/x.png" / "x.png" / "bg_x"）→ { url, tint }。
  * 昼夜差分があれば時間帯で選び、差分の無い外光のある場所だけ夜に色調補正（tint="night"）を掛ける
  */
-export function sceneBg(ref, timeOfDay = "day") {
+export function sceneBg(ref, time) {
+  // time は "day"／"night"。省くと従来どおり昼として扱うが、昼の版だけの店（BG_DAY_VARIANT）は昼と明示された時だけ昼の絵にする。
+  const explicitDay = time === "day";
+  const timeOfDay = time === undefined ? "day" : time;
   if (!ref) return { url: null, tint: null };
   let name = String(ref).split("/").pop();
   if (!name.endsWith(".png")) name += ".png";
@@ -333,6 +340,7 @@ export function sceneBg(ref, timeOfDay = "day") {
     const variant = `${base}_${timeOfDay}.png`;
     if (list.includes(variant)) name = variant;
   }
+  if (BG_DAY_VARIANT.has(base) && !m[2] && explicitDay && list.includes(`${base}_day.png`)) name = `${base}_day.png`;
   if (!list.includes(name)) return { url: null, tint: null };
   // 曇り・雨は同じ曇天画。雨粒は既存weatherレイヤーだけが描く。
   // 差分の用意された場所だけ切り替え、未制作の場所は従来の絵を維持する。
@@ -345,7 +353,7 @@ export function sceneBg(ref, timeOfDay = "day") {
   return { url: img(`backgrounds/${name}`), tint };
 }
 
-export const bgUrl = (ref, timeOfDay = "day") => sceneBg(ref, timeOfDay).url;
+export const bgUrl = (ref, timeOfDay) => sceneBg(ref, timeOfDay).url;
 
 export function portraitInfo(speaker, face, style = portraitStyle()) {
   const resolved = resolvePortrait(DB.manifest, speaker, face, style);
@@ -419,9 +427,56 @@ export function assetUrl(rel) {
   return img(rel.replace(/^res:\/\//, "").replace(/^assets\//, ""));
 }
 
-/** 画像を先読みする（遷移の前に読み込み待ちを挟んで、白飛び・ちらつきを防ぐ） */
+/**
+ * 待たない先読み（preload の timeoutMs 0。会話の立ち絵・CG）の列。
+ * 一度に全部を頼むと、スマホの回線では十数枚（立ち絵は1枚約300KB）が帯域を分け合い、すぐ次の行で要る1枚や、
+ * 会話の入口で待っている背景・最初の立ち絵が遅れて「場面を準備しています…」が出ていた（2026-11-13 オーナー指摘）。
+ * そこで、頼まれた順に1枚ずつ読む（2枚ずつより、次に要る1枚が早く届く。スマホ相当の回線で会話の入口の待ちが
+ * 約0.35秒→約0.1秒）。新しく頼まれた組（新しい会話・jump 先）を、前の会話の読み残しより先にする。
+ * 実際に表示する行は ui.js の imageReady が直接読むので、この列の順番を待たない。
+ */
+const BACKGROUND_PRELOAD = { concurrency: 1, pendingMax: 32, rememberMax: 256 };
+const backgroundPending = [];
+const backgroundLoaded = new Set();
+const backgroundLoading = new Set();
+
+function pumpBackgroundPreload() {
+  while (backgroundLoading.size < BACKGROUND_PRELOAD.concurrency && backgroundPending.length) {
+    const url = backgroundPending.shift();
+    backgroundLoading.add(url);
+    const image = new Image();
+    image.onload = image.onerror = () => {
+      image.onload = image.onerror = null;
+      backgroundLoading.delete(url);
+      backgroundLoaded.add(url);
+      if (backgroundLoaded.size > BACKGROUND_PRELOAD.rememberMax) backgroundLoaded.delete(backgroundLoaded.values().next().value);
+      pumpBackgroundPreload();
+    };
+    image.src = url;
+  }
+}
+
+function queueBackgroundPreload(list) {
+  const fresh = [...new Set(list)].filter((url) => !backgroundLoaded.has(url) && !backgroundLoading.has(url));
+  if (!fresh.length) return;
+  const queued = new Set(fresh);
+  // 同じ絵がもう列にあれば、新しい組の位置へ移す（今の会話の順番で読む）。
+  const rest = backgroundPending.filter((url) => !queued.has(url));
+  backgroundPending.splice(0, backgroundPending.length, ...fresh, ...rest);
+  backgroundPending.length = Math.min(backgroundPending.length, BACKGROUND_PRELOAD.pendingMax); // 古い読み残しから捨てる
+  pumpBackgroundPreload();
+}
+
+/**
+ * 画像を先読みする（遷移の前に読み込み待ちを挟んで、白飛び・ちらつきを防ぐ）。
+ * timeoutMs が 0 のときは待たない先読み: 上の列に入れて順に読み、すぐ解決する。
+ */
 export function preload(urls, timeoutMs = 4000) {
   const list = urls.filter(Boolean);
+  if (timeoutMs === 0) {
+    queueBackgroundPreload(list);
+    return Promise.resolve();
+  }
   return Promise.race([
     Promise.all(list.map((u) => new Promise((r) => { const i = new Image(); i.onload = i.onerror = r; i.src = u; }))),
     new Promise((r) => setTimeout(r, timeoutMs)),

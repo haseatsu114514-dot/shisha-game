@@ -4,6 +4,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
+import * as voteStyle from "../js/core/vote-style.js";
 
 const read = (path) => fs.readFile(new URL(path, import.meta.url), "utf8");
 const flush = async () => { for (let i = 0; i < 6; i++) await new Promise((r) => setTimeout(r, 0)); };
@@ -106,7 +107,7 @@ function makeFixture(opts = {}) {
       layers: { hud: { classList: { remove() {} } } },
       showScreen: (name, root) => { screens.push({ name, root }); document.body.dataset.screen = name; },
       setBg() {},
-      smokeWipe: (fn) => { calls.smokeWipe++; fn(); },
+      smokeWipe: (fn) => { calls.smokeWipe++; fn(); }, toast: () => {},
       modal: (args) => new Promise((resolve) => modalCalls.push({ args, resolve })),
     },
     "../core/state.js": {
@@ -126,6 +127,7 @@ function makeFixture(opts = {}) {
     "../core/ngplus-difficulty.js": { difficultyForRun },
     "../core/ui-theme.js": { createUiThemeSelect: () => el("select") },
     "../core/look.js": { LOOKS: [{ id: "classic", label: "現行" }, { id: "neo", label: "新版" }, { id: "retro", label: "DS風" }], normalizeLook: (value) => value || "classic", setLook() {} },
+    "../core/vote-style.js": { VOTE_STYLES: voteStyle.VOTE_STYLES, normalizeVoteStyle: voteStyle.normalizeVoteStyle },
     "../core/side-area.js": { refreshSideArea() {} },
     "./save-transfer.js": { fullscreenButton: () => null, saveTransferRow: () => el("div") },
     "../chapters/ch1.js": { startNewGame: () => { calls.startNewGame++; }, resumeGame() {} },

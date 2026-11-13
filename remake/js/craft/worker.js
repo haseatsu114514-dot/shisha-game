@@ -99,7 +99,7 @@ export function buildWorkerScene(cs) {
     ...["serious", "normal", "sad", "surprise"].map(face => portraitInfo("hajime", face, "classic")?.src),
   ].filter(Boolean))];
   const warmFaces = Promise.all(faceUrls.map(async url => {
-    if (await imageReady(url, 15000, { keep: true })) usableFaces.add(url);
+    if (await imageReady(url, 15000, { keep: true, pin: true })) usableFaces.add(url);
   }));
   const usable = url => url && (!facesChecked || usableFaces.has(url));
   const applyFace = () => {
@@ -140,7 +140,7 @@ export function buildWorkerScene(cs) {
       key === "holes" ? holes.prepare() : null,
       ["steam", "timer"].includes(step) ? (async () => {
         const url = makingUrl("hajime_steam_wait.png");
-        if (url && await imageReady(url, 15000, { keep: true })) usableFaces.add(url);
+        if (url && await imageReady(url, 15000, { keep: true, pin: true })) usableFaces.add(url);
       })() : null,
       ["pull", "care"].includes(step) ? actions.prepare("inhale") : null,
     ]);

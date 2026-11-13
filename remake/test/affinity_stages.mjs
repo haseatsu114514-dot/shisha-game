@@ -826,7 +826,8 @@ await check('Steve (#2028): ♥5 finale after the LIME detour and the timer outi
   assert.equal(after.finales.steve.route, 'friend');
   assert.equal(after.flags._confession_due, undefined);
   assert.equal(after.owned.filter(id => id === 'suyaki_steve').length, 1);
-  assert.equal(after.flavorStock.mountain_mist, 50);
+  // 2026-11-13 オーナー訂正: ハガルは預けるが、看板のマウンテンミストの葉は付けない（data/equipment.json の leaf_grams: 0）
+  assert.equal(after.flavorStock?.mountain_mist || 0, 0, 'no box of the signature Mountain Mist comes with the hagal');
   assert.equal(await f.bonds.playFinale('steve'), false, 'once');
   assert.equal(f.bonds.settledFriend('steve'), true);
   after.day += 10;

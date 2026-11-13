@@ -19,7 +19,7 @@ import { buildGameOver, warmGameOver } from "./gameover.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 import { applyAssistRecovery } from "./tournament-resources.js";
 import { play } from "../vn/engine.js";
-import { playBgm } from "../core/audio.js";
+import { playBgm, SE } from "../core/audio.js";
 import { newSession, openBench, waitBenchReady, benchRoot } from "../craft/session.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
 import { stepWater } from "../craft/water-view.js";
@@ -320,6 +320,9 @@ function voteReason(p, cs, final = false) {
 
 function renderVotes(owner, final = false) {
   playBgm("bgm_judging");
+  // 途中の持ち点は判の一打、最終結果は会場の拍手（1位はファンファーレも）。第1章の結果発表（craft/result.js）とそろえる。
+  if (final) { SE.crowd?.(2.4); if (progress().result?.rank === 1) SE.fanfare?.(); }
+  else SE.stamp?.();
   const p = progress(), rows = final ? p.result.rows : standings(p);
   const craft = owner.cs || (p.craft ? clone(p.craft) : null);
   const reason = voteReason(p, craft, final);
