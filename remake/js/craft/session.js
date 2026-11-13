@@ -206,7 +206,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   // A missing entryAssets is an already completed fourth step in the loading count.
   const preparationSteps = [background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready, entryAssets];
   const assets = Promise.all(preparationSteps);
-  bench.ready = prepareBenchEntry(waitForBenchAssets(bench, Promise.all([background, assets]), assets, false), cs.chapter, preparationSteps);
+  bench.ready = prepareBenchEntry(waitForBenchAssets(bench, Promise.all([background, assets]), assets, false), cs.chapter, preparationSteps, { preview: !!cs.preview });
   // ライバルの顔は飾り。作業台の準備が済んでから少し間を置いて読む（工程の開始に要る画像と通信を取り合わない）
   if (bench.rivals) {
     const rivals = bench.rivals, later = () => setTimeout(() => rivals.showFaces(), RIVAL_FACE_DELAY_MS);
