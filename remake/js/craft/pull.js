@@ -654,8 +654,12 @@ async function pullGame(cs, mode) {
   if (auto && !failed) {
     (async () => {
       await sleep(60);
-      const times = auto === "good" ? (mode.drift ? 2 : 3) : auto === "burn" ? 5 : mode.drift ? 1 : 5;
+      // テスト用に攻めの帯を狙う時（craftTest.aim = "attack"）は、帯に入るまで最大2口多く吸い、入ったらそこで出す。
+      // 決まった3口だけだと、蒸らし後の温度しだいで帯に届かない回があり、検査が揺れていた（SKR04）
+      const aimAttack = auto === "good" && attacking && craftTest.aim === "attack";
+      const times = auto === "good" ? (mode.drift ? 2 : 3) + (aimAttack ? 2 : 0) : auto === "burn" ? 5 : mode.drift ? 1 : 5;
       for (let i = 0; i < times && running; i++) {
+        if (aimAttack && pulls >= mode.min && inAttackRange(T, attackRange(bands))) break;
         let at;
         if (auto === "good") {
           const goal = autoGoal(), diff = goal - T, response = Math.abs(heatDelta(cs, .18));
