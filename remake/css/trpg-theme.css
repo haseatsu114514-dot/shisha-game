@@ -431,6 +431,16 @@ html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > p.
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage :is(.trpg-roll-context, .trpg-roll-insight, .trpg-roll-consequence, .trpg-roll-trump, .trpg-reroll-warning, .trpg-actor-receipt, .trpg-roll-equation) { font-size: max(13px, calc(11 * var(--roll-unit))); }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage :is(.trpg-forecast-head small, .trpg-odds span, .trpg-odds small, .trpg-forecast > p) { font-size: max(12px, calc(11 * var(--roll-unit))); }
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage :is(.trpg-aid small, .trpg-reroll-choice small) { font-size: max(12px, calc(12 * var(--roll-unit))); }
+/* 成功の見込み（補正込み・#3199）: ダイスのトレイのすぐ下に1行。数字は大きく、何が込みかは横に小さく。 */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > p.trpg-roll-chance {
+  display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: 0 12px; margin: 8px auto 0; text-align: center; line-height: 1.35;
+}
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-chance > strong { font-size: max(18px, calc(14 * var(--roll-unit))); font-weight: 700; color: #ffe2a6; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-chance > small { font-size: max(13px, calc(11 * var(--roll-unit))); color: #c6d4cb; }
+/* PCで詳細を開いた時は、同じ数字と式が見通しの表に出るので1行を外す（表の分だけ本文が伸びるのを増やさない）。スマホは trpg-phone.css */
+html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div:has(> .trpg-roll-details[open]) > p.trpg-roll-chance { display: none; }
+/* 宣言の題の行: 札の見込みに入っている勢い・入っていない見立ての一言 */
+html:root .trpg-root.trpg-cinematic .trpg-declare-prompt > small.trpg-declare-included { font-size: max(13px, var(--tt-min, 13px)); color: #ffd9a2; }
 
 /* 宣言の画面・「？」の中身も、実寸11px未満にしない（カードの並びと数は変えない）。 */
 html:root .trpg-root.trpg-cinematic .trpg-declare-stage :is(.trpg-approach-copy small, .trpg-approach-copy span, .trpg-approach-meta :is(b, small, i)) { font-size: max(18px, var(--tt-min)); line-height: 1.35; }
