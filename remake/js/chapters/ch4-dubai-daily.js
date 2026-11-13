@@ -43,7 +43,8 @@ import { LONGLONG_BG, LONGLONG_CHAR, LONGLONG_IDS, LONGLONG_LOAD_IDS, nextLonglo
 import { finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { FESTA_BOND_IDS, nextDubaiBondStory, recordDubaiBondRead } from "./dubai-bonds.js";
 import { NIGHT_SCENE_IDS, STALL_NONE, STALL_PLACE, STALL_SCENE_IDS, dubaiSpotAt, nightVisit, recordNightVisit, priceText,
-  stallChoices, stallItem, stallLabel, stallSceneId } from "./ch4-dubai-local.js";
+  stallChoices, stallItem, stallLabel, stallSceneId, CREEK_SCENES, CREEK_SPOT_IDS, CREEK_TURN, creekSpotScenes } from "./ch4-dubai-local.js";
+import { quietTurn } from "../daily/spots.js";
 import { runFullPractice } from "../craft/practice.js";
 import { computeShisha } from "../craft/score.js";
 import { INN_TRIAL_FLAG, INN_TRIAL_IDS, innTrialDue, innTrialResult } from "./ch4-inn-trial.js";
@@ -52,6 +53,7 @@ import { COMPANION_TIME_FILE, COMPANION_TIME_IDS, companionLover, companionTimeO
 import { chapterFourStaffNightEvent } from "./ch4-staff-work.js";
 
 export const DUBAI = "dubai";
+const INN_REST_SCENES = ["ch4_inn_rest", "ch4_inn_rest_b", "ch4_inn_rest_c"];
 const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと）
 
 // 必須の出会いの期限（ドバイDAY。この日の夜までに寄らなければ、その夜に読む）。路地裏は出会いの2日後から。
@@ -74,7 +76,7 @@ const TALK_BG = Object.freeze({
 });
 export const DUBAI_DAILY_IDS = Object.freeze([
   ...["souq", "festa", "center_cafe", "alley_cafe", "naru", "practice"].flatMap(id => TALKS[id].filter(scene => /_(talk_[b-d]|dubai_\d|hall_\d|culture_[a-z]+)$/.test(scene))),
-  "ch4_creek_walk_day", "ch4_creek_walk_night", "ch4_inn_rest", ...INN_TRIAL_IDS, ...REHEARSAL_IDS, ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
+  "ch4_creek_walk_day", "ch4_creek_walk_night", ...INN_REST_SCENES, ...INN_TRIAL_IDS, ...REHEARSAL_IDS, ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
 ]);
 
 const read = id => chapterFourProgress(state).read[id] === true;
@@ -228,7 +230,7 @@ export function chapterFourDubaiDefinition(io) {
 export async function runChapterFourDubai(io) {
   const owner = state;
   Object.assign(DB.dialogues, await readDialogues("ch4_dubai_daily", DUBAI_DAILY_IDS), await readDialogues("ch4_longlong", LONGLONG_LOAD_IDS),
-    await readDialogues("taiyo_bond", FESTA_BOND_IDS));
+    await readDialogues("taiyo_bond", FESTA_BOND_IDS), creekSpotScenes(await readDialogues("ch4_spots", CREEK_SPOT_IDS)));
   // 同行した恋人と宿で過ごす場面（BLC08・companion-time.js）。読めなくても地図は開き、宿の選択肢に出ないだけ
   if (companionLover(owner)) await readDialogues(COMPANION_TIME_FILE, COMPANION_TIME_IDS).then(found => Object.assign(DB.dialogues, found)).catch(() => {});
   // LOAD・再開でも最初の地図から、ヌールの MENU の案内（♥5の締めくくり・告白を選べる）を合わせる。どちらも台詞が読み込まれているかを見る
@@ -304,7 +306,12 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
     const visit = await visitInn(io, owner, staminaGuard);
     done = visit.done; innTrial = visit.trial; withCompanion = !!visit.companion;
   }
-  else if (entry.place === "creek") done = await readPlain(state.slot ? "ch4_creek_walk_night" : "ch4_creek_walk_day", "bg_dubai_street_night", owner);
+  else if (entry.place === "creek") {
+    // 昼・夜それぞれの場面を順番に読む（SPV03）
+    const turn = quietTurn(CREEK_TURN, CREEK_SCENES[state.slot ? "night" : "day"], state.slot ? "night" : "");
+    done = await readPlain(turn?.id || (state.slot ? "ch4_creek_walk_night" : "ch4_creek_walk_day"), "bg_dubai_street_night", owner);
+    if (done && turn) state.flags[turn.key] = turn.count + 1;
+  }
   else if (entry.place === "longlong") {
     // ♥5の締めくくりが来ていれば、段階や小会話より先に一度だけ読む（客の一台ではないので代金は取らない）。
     if (finaleAtVisit(LONGLONG_CHAR)) {
@@ -361,6 +368,14 @@ async function visitCamel(owner) {
   return result.used && state === owner ? { used: true, exerted: false, slotsUsed: 0 } : unused;
 }
 
+// 通常・試作メニュー・前日リハーサルの「休む」は同じ巡回を使う。中断やLOADでは進めない。
+async function readInnRest(bg, owner) {
+  const turn = quietTurn("ch4_dubai_inn", INN_REST_SCENES);
+  if (!turn || !await readPlain(turn.id, bg, owner)) return false;
+  owner.flags[turn.key] = turn.count + 1;
+  return true;
+}
+
 /** 宿で休むか、持ってきた葉で一台試すかを選ぶ。最初の道具の手入れは従来どおり先に読む。 */
 async function visitInn(io, owner, staminaGuard) {
   if (rehearsalDue(state)) return visitRehearsal(owner, staminaGuard);
@@ -369,7 +384,7 @@ async function visitInn(io, owner, staminaGuard) {
   const pending = state.flags[INN_TRIAL_FLAG]?.result;
   // 同じ便で来た恋人と過ごす（BLC08・一日に一度・体力は戻らない）。試作の講評の途中（pending）は、先に講評を読む。
   const companion = !pending && companionTimeOpen(state) ? companionLover(state) : null;
-  if (!innTrialDue(state) && !companion) return { done: await readPlain("ch4_inn_rest", "bg_dubai_inn_night", owner), trial: false };
+  if (!innTrialDue(state) && !companion) return { done: await readInnRest("bg_dubai_inn_night", owner), trial: false };
   if (!pending) {
     const trialOpen = innTrialDue(state);
     const choice = await modal({ title: trialOpen ? "宿の作業台" : "宿",
@@ -381,7 +396,7 @@ async function visitInn(io, owner, staminaGuard) {
         { label: "戻る", value: "cancel", test: "ch4-inn-cancel" },
       ] });
     if (state !== owner || !choice || choice === "cancel") return { done: false, trial: false };
-    if (choice === "rest") return { done: await readPlain("ch4_inn_rest", "bg_dubai_inn_night", owner), trial: false };
+    if (choice === "rest") return { done: await readInnRest("bg_dubai_inn_night", owner), trial: false };
     if (choice === "companion") {
       const bg = timeOfDay() === "night" ? "bg_dubai_inn_night" : "bg_dubai_inn_day";
       return { done: await spendCompanionTime({ read: id => readPlain(id, bg, owner) }), trial: false, companion: true };
@@ -412,7 +427,7 @@ async function visitRehearsal(owner, staminaGuard) {
         { label: "戻る", value: "cancel", test: "ch4-rehearsal-cancel" },
       ] });
     if (state !== owner || !choice || choice === "cancel") return { done: false, trial: false };
-    if (choice === "rest") return { done: await readPlain("ch4_inn_rest", bg, owner), trial: false };
+    if (choice === "rest") return { done: await readInnRest(bg, owner), trial: false };
     if (!(await staminaGuard(-16)) || state !== owner) return { done: false, trial: false };
     if (!await readPlain("ch4_rehearsal_intro", bg, owner)) return { done: false, trial: false };
     const cs = await runFullPractice({ kind: "rehearsal", isCurrent: () => state === owner });

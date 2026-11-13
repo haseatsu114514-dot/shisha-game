@@ -16,9 +16,12 @@ globalThis.localStorage = { getItem: key => storage.get(key) ?? null,
 const copy = value => structuredClone(value);
 const definitions = JSON.parse(fs.readFileSync(new URL("../../data/tokyo_visits.json", import.meta.url)));
 const data = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_activities.json", import.meta.url)));
-// 再訪で巡回する想定の小品（#3097。未接続の原稿）も同じ制約で読む
+// 再訪で順番に読む小品（#3097 の3本と SPV03 の1本）も同じ制約で読む。昼・夜の束（TOKYO_GYM_SCENES）は台本と過不足が無い
 assert.deepEqual(data.dialogues.map(scene => scene.dialogue_id),
-  ["ch3_choizap_day", "ch3_choizap_night", "ch3_choizap_app", "ch3_choizap_lunch", "ch3_choizap_locker"]);
+  ["ch3_choizap_day", "ch3_choizap_night", "ch3_choizap_app", "ch3_choizap_lunch", "ch3_choizap_locker", "ch3_choizap_train"]);
+assert.deepEqual([...activity.TOKYO_GYM_IDS].sort(), data.dialogues.map(scene => scene.dialogue_id).sort());
+assert.equal(activity.TOKYO_GYM_SCENES.day[0], "ch3_choizap_day"); assert.equal(activity.TOKYO_GYM_SCENES.night[0], "ch3_choizap_night");
+assert(activity.TOKYO_GYM_SCENES.day.length >= 3 && activity.TOKYO_GYM_SCENES.night.length >= 3);
 for (const scene of data.dialogues) {
   assert(scene.lines.length >= 3);
   assert(scene.lines.every(line => !line.type && ["", "hajime"].includes(line.speaker)),
@@ -182,6 +185,7 @@ for (const legacy of [false, true]) {
 
 // Runtime adapter: real stats/paidAction, with only the VN and display surface controlled.
 let selected = null, saves = 0, playCalls = 0, finishPlay = null;
+const played = [];
 const context = vm.createContext({ AbortController, window: new EventTarget() });
 const synthetic = (names, values) => new vm.SyntheticModule(names, function () {
   for (const name of names) this.setExport(name, values[name]);
@@ -192,8 +196,8 @@ const uiModule = synthetic(["layers", "showScreen", "setBg", "enterScene", "toas
   layers: { hud: { replaceChildren() {}, classList: { remove() {} } } },
   showScreen() {}, setBg: async () => {}, enterScene: async () => {}, toast() {},
 });
-const vnModule = synthetic(["play"], { play: (_dialogue, { signal }) => {
-  playCalls++;
+const vnModule = synthetic(["play"], { play: (dialogue, { signal }) => {
+  playCalls++; played.push(dialogue?.dialogue_id);
   return new Promise(resolve => {
     finishPlay = resolve;
     signal.addEventListener("abort", () => resolve({ cancelled: true }), { once: true });
@@ -205,9 +209,13 @@ const deps = {
   "../core/stats.js": synthetic(["addStamina", "earnStat", "paidAction", "earnSceneCompletion"], stats),
   "../core/ui.js": uiModule,
   "../vn/engine.js": vnModule,
-  "../daily/spots.js": synthetic(["facilityGrowth"], { facilityGrowth: spot => {
+  "../daily/spots.js": synthetic(["facilityGrowth", "quietTurn"], { facilityGrowth: spot => {
     assert.equal(spot.id, "choizap"); assert.equal(spot.stat, "charm");
     return { budget: 1, points: 2, primary: spot.stat };
+  // daily/spots.js の quietTurn と同じ決め方（束ごとに、読み終えた本数で次の一本）
+  }, quietTurn: (spotId, ids, bundle = "") => {
+    const key = `_spot_turn_${spotId}${bundle ? `_${bundle}` : ""}`, count = Number(selected.flags[key]) || 0;
+    return { id: ids[count % ids.length], key, count };
   } }),
   "../core/chapter-data.js": synthetic(["readDialogues"], { readDialogues: async () =>
     Object.fromEntries(data.dialogues.map(scene => [scene.dialogue_id, scene])) }),
@@ -236,8 +244,22 @@ const ready = async () => { for (let i = 0; i < 10 && !finishPlay; i++) await ne
   assert.equal(selected.flags._gym_member, true);
   assert.deepEqual(selected.flags._fit_since, { chapter: 3, day: window.day });
   assert.equal(saves, 1);
+  // SPV03: 一本目は今までの昼の場面。読み終えた回だけ、昼の束を次へ送る
+  assert.equal(played.at(-1), "ch3_choizap_day");
+  assert.equal(selected.flags._spot_turn_ch3_tokyo_gym, 1);
+  assert.equal(selected.flags._spot_turn_ch3_tokyo_gym_night, undefined);
   const once = copy(selected); assert.equal(await visit(window.id), false);
   assert.deepEqual(selected, once);
+}
+
+// SPV03: 二度目からは同じ時間帯の続きの小品を読む（中断した回は送らない。下の取消の検査）
+{
+  choose(firstWindow()); selected.flags._spot_turn_ch3_tokyo_gym = 1;
+  const window = chapterThreeFreeTime(selected);
+  finishPlay = null;
+  const pending = visit(window.id); await ready(); finishPlay({ cancelled: false }); assert.equal(await pending, true);
+  assert.equal(played.at(-1), activity.TOKYO_GYM_SCENES.day[1]);
+  assert.equal(selected.flags._spot_turn_ch3_tokyo_gym, 2);
 }
 
 for (const cancellation of ["abort", "cancelled", "load"]) {
