@@ -137,3 +137,8 @@ html:root[data-density="phone"] body #stage[data-wide] .entrance .ent-note { fon
 /* 844×340（Safari のバーあり）で 11px を割る見出し・通知 */
 html:root[data-density="phone"] body #stage[data-wide] .bench :is(.ht-title, .pull-current-zone b) { font-size: max(var(--wide-small), 1em); }
 html:root[data-density="phone"] body #stage[data-wide] #toasts .toast { font-size: var(--wide-text); }
+
+/* 「詳しく見る」「お手本を見る」は採点の根拠・手本を開く入口。横持ちスマホでは実寸の高さ 32px 以上の押せる箱にする（#3518） */
+html:root[data-density="phone"] body #stage .bench :is(.rc-details > summary, .bench-demo-link) {
+  display: inline-flex; align-items: center; min-height: calc(32px / var(--k, 1)); padding-inline: calc(8px / var(--k, 1));
+}

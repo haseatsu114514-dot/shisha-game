@@ -426,7 +426,7 @@ async function pullGame(cs, mode) {
             position: "absolute", left: "40%", top: "35%", width: "120px", height: "120px", border: "4px solid #f6dcaf", borderRadius: "50%", pointerEvents: "none", filter: "blur(1px)",
           } });
           play.append(dragon);
-          // 金色がかった大きな煙の輪を昇らせる。煙で描けたら、線の輪は見せない（位置の目印として残す）
+          // 金色がかった大きな煙の輪を、はじめの口元から吹く。煙で描けたら、線の輪は見せない（検査の目印として残す）
           if (smokeRing(dragon, { color: "#f6dcaf", big: true })) dragon.style.visibility = "hidden";
           const calm = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
           dragon.animate(calm ? [{opacity:.9},{opacity:0}] : [{opacity:.9,transform:"scale(.5)"},{opacity:0,transform:"translateY(-120px) scale(1.8)"}], {duration:calm?400:1600}).finished.then(()=>dragon.remove(),()=>dragon.remove());
@@ -441,7 +441,7 @@ async function pullGame(cs, mode) {
           position: "absolute", left: "55%", top: "30%", width: "60px", height: "60px", border: "6px solid #e4dff0", borderRadius: "50%", pointerEvents: "none", filter: "blur(1px)",
         } });
         play.append(ring);
-        // 煙の輪を昇らせる。煙で描けたら、線の輪は見せない（位置の目印として残す）
+        // 煙の輪を、はじめの口元から吹く。煙で描けたら、線の輪は見せない（検査の目印として残す）
         if (smokeRing(ring)) ring.style.visibility = "hidden";
         const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
         const animation = ring.animate(reduced ? [{opacity:.8},{opacity:0}] : [{opacity:.8,transform:"scale(.4)"},{opacity:0,transform:"translateY(-60px) scale(1.7)"}], {duration:reduced?300:1000});
@@ -651,9 +651,9 @@ async function pullGame(cs, mode) {
     const naruFinished = recordNaruFinish(cs, bands, { automatic: !!autoSkill() });
     refreshBench();
     tickerSay(inZone ? "パッキー「きた〜！ 煙の立ち方が変わりましたよ〜♪」" : "パッキー「おっと、ちょっと温度が怪しいか〜！？」");
-    // 山場（CFX03・KMR11）: 吐いた煙が画面を満たして晴れる。煙の姿が出来を語る:
-    // 適温はまとまった煙、最適温・会心は大きく長く残って煙の輪も昇る。ぬるいと薄く小さく、熱すぎるとちぎれてすぐ消える。
-    // 待たない: 結果は煙の下で出て、煙が晴れると見えてくる（重ね層は操作を通すので、結果の確認を遅らせない）
+    // 山場（CFX03・KMR11）: 作業風景のはじめが、口元から煙を吐く。煙の姿が出来を語る:
+    // 適温はまとまった煙、最適温・会心はたっぷり長く残って煙の輪もひとつ。ぬるいと薄く小さく、熱すぎるとむせてちぎれる。
+    // 煙は作業風景の窓の中だけで、計器や結果の札には掛けない。待たない（結果の確認を遅らせない）
     exhale(panel.closest?.(".bench") || panel, { color: mixColor(cs.mix), grand: inZone && (optimal || criticals > 0), quality: inZone ? "good" : T > ideal[1] ? "harsh" : "thin" });
     await resultCard(panel, {
       title: context.title,
