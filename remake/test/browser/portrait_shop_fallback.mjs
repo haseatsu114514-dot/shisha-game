@@ -37,11 +37,6 @@ await suite("portrait-shop-rotate-guard", async check => {
     await assertGuard(page, "shop");
     assert.equal(await page.locator('[data-test="buy-lemon"]').count(), 1);
     await page.evaluate(async () => {
-      // 入店中の店は二重に開かない（#3491）。買い出しを済ませた扱いで店を出てから、入口を開き直す。
-      const core = await import("./js/core/state.js");
-      core.state.flavorStock = { ...core.state.flavorStock, lemon: 50 };
-      document.querySelector('[data-test="shop-leave"]').click();
-      await window.shopResult;
       const ui = await import("./js/core/ui.js");
       // 1つ目の店（買い出し）は開いたままなので、同じ保存では二重に開かない（shop.js の homeShopInFlight）。
       // 入口のガードは、新しい保存で開き直して確かめる。
