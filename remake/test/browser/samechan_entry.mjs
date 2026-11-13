@@ -21,7 +21,10 @@ async function setup(page, { restore = false } = {}) {
       Object.assign(s.flags, { _intro_samechan: true, _samechan_first_encounter: true, _samechan_nickname_known: true });
     }
     K.ch1.setupHooks(); K.vn.vnTest.turbo = true;
-    K.vn.vnTest.choose = () => 0;
+    // ふだんは最初の選択肢。恋人がいる時に別の相手へ気持ちを向けると出る迷い（core/romance-hesitation.js）は、
+    // 最初の選択肢が「飲み込む／元の選択に戻る」で問いへ戻るので、いつも最初を選ぶと同じ問いを繰り返す。
+    // 迷いでは「それでも」を選び、元の選択をそのまま通す。
+    K.vn.vnTest.choose = (id, texts) => texts.some(text => /言葉を飲み込む|元の選択に戻る/.test(text)) ? 1 : 0;
     K.snapshot = () => structuredClone(K.core.state);
     K.visit = async (slot = 0) => {
       const s = K.core.state;
