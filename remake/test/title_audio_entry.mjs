@@ -150,7 +150,7 @@ const body = { dataset: { screen: "title" } };
 function el(selector, attrs = {}, children = []) {
   if (Array.isArray(attrs)) { children = attrs; attrs = {}; }
   const node = { selector, children: [...children], ...attrs, dataset: attrs.dataset || {}, style: {},
-    classList: { add() {} }, complete: true, naturalWidth: 1,
+    classList: { add() {}, toggle() {} }, complete: true, naturalWidth: 1,
     append(...nodes) { this.children.push(...nodes); }, addEventListener() {},
     querySelector(sel) {
       const match = n => sel.startsWith(".") ? n.selector?.split(".").includes(sel.slice(1)) : n.selector?.split(".")[0] === sel;

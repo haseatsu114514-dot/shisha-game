@@ -253,18 +253,20 @@ export function showTitle(preparedArt = null) {
   const saved = peekSave();
   const cyclePkg = startPackageFromMeta(cycleMetaSeen);
   const menu = el("nav.title-menu");
+  const rows = []; // メニューの行（作った順）
   // 押した行は一瞬光らせる（.is-picked。確認や煙の幕が出る前から、押せたことが分かる）。
   const item = (en, ja, fn, test, disabled = false, note = "") => {
     const node = el("button.title-item", {
       disabled: disabled || null, dataset: { test },
-      onclick: () => { SE.select(); setCursor(menu.querySelectorAll(".title-item"), node); node.classList.add("is-picked"); fn(); },
-      onpointerenter: (e) => { if (e.pointerType !== "touch") setCursor(menu.querySelectorAll(".title-item"), node); },
-      onfocus: () => setCursor(menu.querySelectorAll(".title-item"), node),
+      onclick: () => { SE.select(); setCursor(rows, node); node.classList.add("is-picked"); fn(); },
+      onpointerenter: (e) => { if (e.pointerType !== "touch") setCursor(rows, node); },
+      onfocus: () => setCursor(rows, node),
     }, [
       el("span.ti-en", { text: en }),
       el("span.ti-ja", { text: ja }),
-      note ? el("span.ti-note", { text: note }) : null,
+      ...(note ? [el("span.ti-note", { text: note })] : []),
     ]);
+    rows.push(node);
     return node;
   };
 
@@ -305,7 +307,6 @@ export function showTitle(preparedArt = null) {
   );
 
   // カーソルの初期位置。決定を押すだけで本編へ入れるよう、いちばん使う行に置く。
-  const rows = [...menu.querySelectorAll(".title-item")];
   const byTest = (test) => rows.find((n) => n.dataset.test === test && !n.disabled);
   const remembered = keepCursor ? byTest(cursorTest) : null;
   keepCursor = false;
