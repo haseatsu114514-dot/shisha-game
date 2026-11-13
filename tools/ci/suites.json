@@ -197,6 +197,23 @@
       ]
     },
     {
+      "id": "craft-phone-text-browser",
+      "title": "Landscape phone craft stage text size",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "asset_sources/ui/craft-stage-20261110/stage_src.css",
+        "remake/css/craft-stage.css",
+        "remake/css/wide-craft.css",
+        "remake/test/browser/craft_phone_text.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/craft_phone_text.mjs"
+      ],
+      "chrome": "playwright"
+    },
+    {
       "id": "craft-phone-detail-links-browser",
       "title": "Landscape phone detail links tap target",
       "kind": "browser",
