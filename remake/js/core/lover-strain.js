@@ -98,8 +98,11 @@ export function strainCause(value, id) {
 
 /** その恋人からのLIMEを、届いてから STRAIN_UNREAD_DAYS 日以上開いていないか */
 export function strainUnread(value, id) {
+  const today = relationshipElapsedDay(value);
+  // 届いた日も今日と同じ数え方の通算日にそろえる（章をまたいだ翌朝を「何日も放ってある」と数えない）
+  const arrived = item => relationshipElapsedDay({ flags: value.flags, chapter: item.chapter ?? value.chapter, day: item.day });
   return (value?.inbox || []).some(item => item && !item.read && item.msg?.lover && item.msg.sender === id
-    && (item.chapter != null && item.chapter !== value.chapter || value.day - item.day >= STRAIN_UNREAD_DAYS));
+    && Number.isFinite(item.day) && today - arrived(item) >= STRAIN_UNREAD_DAYS);
 }
 
 const dateInvite = m => m?.type === "invitation" && /^date_/.test(m.accept_event || "");

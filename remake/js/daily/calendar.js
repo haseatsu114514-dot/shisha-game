@@ -972,10 +972,11 @@ async function endDay({ returnedToTonari = false } = {}) {
   const confessed = chapterDef.confessions === false ? false
     : await maybeConfession(beat, { busyNight: metTonight || rested || state.flags._eve_slept === state.day, companion });
   if (confessed) { delete state.flags._home_tonight; await bannersIdle(); }
-  // 別れ話（すれ違いが溜まりきった恋人が帰り道で待っている。daily/lover-strain.js）。告白・約束・休養・夜の予定・大会前夜の夜には重ねない
+  // 別れ話（すれ違いが溜まりきった恋人が帰り道で待っている。daily/lover-strain.js）。告白・約束・休養・夜の予定・大会前夜の夜と、
+  // 夜を家で過ごした日（帰り道が無い）には重ねない
   const strainOwner = state;
   const talked = await maybeStrainTalk(beat, { busyNight: confessed || metTonight || rested || nightCount > 0
-    || state.flags._eve_slept === state.day || tournamentEve() || finalEve() });
+    || !!state.flags._home_tonight || state.flags._eve_slept === state.day || tournamentEve() || finalEve() });
   if (state !== strainOwner) return;
   if (talked) { delete state.flags._home_tonight; await bannersIdle(); }
   await chapterDef.beforeHomecoming?.();

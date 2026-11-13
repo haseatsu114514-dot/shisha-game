@@ -67,6 +67,11 @@ ghost.inbox.push(morning("hiyori", 1));
 assert.equal(strainUnread(ghost, "hiyori"), false, "The day it arrives is not neglect");
 ghost.day = 1 + STRAIN_UNREAD_DAYS;
 assert.equal(strainUnread(ghost, "hiyori"), true);
+// 章をまたいでも、届いた日からの通算日で数える（第1章 DAY 14 に届いた分は、第2章 DAY 1 の朝にはまだ1日）
+const border = { ...save(["hiyori"], { chapter: 2, day: 1 }), inbox: [{ ...morning("hiyori", 14), chapter: 1 }] };
+assert.equal(strainUnread(border, "hiyori"), false);
+border.day = 2;
+assert.equal(strainUnread(border, "hiyori"), true);
 ghost.day = 1;
 const ghostEvents = run(ghost, 23);
 assert.equal(strainOf(ghost, "hiyori"), 10.5, "Half a point for each morning the message stays unopened");

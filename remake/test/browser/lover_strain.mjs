@@ -87,7 +87,7 @@ await suite("lover-strain", async check => {
       return out;
     });
     assert.equal(result.ok, true);
-    assert.equal(result.beat, "——店を出ると、栞さんが待っていた。");
+    assert.equal(result.beat, "——帰り道、栞さんが待っていた。");
     const at = (read, needle) => read.findIndex(text => text.includes(needle));
     assert(at(result.read, "栞|早めに閉めたの") >= 0, `She speaks as Shiori in a private scene: ${result.read.slice(0, 5).join(" / ")}`);
     assert(at(result.read, "誘うたびに、断られるでしょ") > at(result.read, "早めに閉めたの"), "The reason comes after the opening");

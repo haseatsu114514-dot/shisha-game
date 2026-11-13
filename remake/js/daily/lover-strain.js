@@ -81,7 +81,7 @@ export async function maybeStrainTalk(beat, { busyNight = false } = {}) {
   if (!dialogue) return false;
   const flags = Object.values(STRAIN_OUTCOME_FLAGS);
   for (const flag of flags) delete state.flags[flag];
-  await beat(`——店を出ると、${name(pick.id)}が待っていた。`);
+  await beat(`——帰り道、${name(pick.id)}が待っていた。`);
   if (state !== owner) return false;
   const result = await play(dialogue, { bg: STREET_NIGHT });
   if (state !== owner) return false;
