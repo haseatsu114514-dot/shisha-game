@@ -115,9 +115,11 @@ await suite("navigation-transitions", async (check) => {
       const selector = spot === "rest" ? "#vn.active .vn-text" : spot === "tonari" ? '[data-test="tonari-customer"]' : ".shop-tabs";
       await arm(page, selector);
       await page.locator('[data-test="map-go"]').click();
-      if (spot === "shop") await page.locator('[data-test="shop-enter"]').click();
       await page.locator(".scene-curtain").waitFor();
       await page.keyboard.press("Enter");
+      // 店は、幕のあとにリオの紹介（#3491・読み取りは support.mjs の installShopGreetingReader）が入ってから入口が出る。
+      // 入口を先に待つと、その頃には幕が終わっていて、幕を待って時間切れになる
+      if (spot === "shop") await page.locator('[data-test="shop-enter"]').click();
       if (spot === "rest") assert.equal(await page.locator(".vn-text").textContent(), "");
       const audit = await verify(page, selector, spot === "rest" ? "move-lights" : "move-zoom");
       assert.equal(audit.purple, false, "The move drew purple shapes");

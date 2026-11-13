@@ -13,7 +13,7 @@ for (const id of ["hiyori", "samechan", "tsumugi", "adam"]) {
 }
 let controller, saves = 0, nightBusy = false;
 function fit() { fitStage(stage); } // 本編と同じ画面当て（スマホ横持ちの文字拡大も同じ）
-fit(); initSideArea({ stage, standalone: true }); // 左右の余白の煙と縁（YHK）
+fit(); initSideArea({ stage, standalone: true, readSettings: false }); // 左右の余白の煙と縁（YHK）。この試遊ページは保存領域に触れない決まりなので設定は読まない
 window.addEventListener("resize", fit);
 function mount() {
   controller?.destroy();

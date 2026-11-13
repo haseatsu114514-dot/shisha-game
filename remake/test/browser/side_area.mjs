@@ -367,6 +367,8 @@ await suite("side-area-trial-pages", async check => {
       assert.equal(s.strip, false, `${file}: 帯は出さない`);
       assert.equal(s.live, 0, `${file}: ボタンは出さない`);
       assert.equal(s.smoke, "side-drift", file);
+      // TRPG の試遊ページは、保存領域に一切触れない決まり（trpg.mjs）。余白の部品も設定を読まない
+      if (file.startsWith("trpg-")) assert.deepEqual(await page.evaluate(() => window.__storageTouches), [], `${file}: 保存領域に触れた`);
     }, { ...PHONE, ...trialEntry(file) });
 
     await check(`${file}-desktop-16x9`, async page => {
@@ -396,4 +398,14 @@ await suite("side-area-trial-pages", async check => {
     assert.equal(s.calm, "on");
     assert.equal(s.smoke, "none");
   }, { ...PHONE, ...trialEntry("camel-race.html") });
-}, { readLoadingComics: false });
+}, {
+  readLoadingComics: false,
+  // 保存領域への接触を記録する（support.mjs の準備が済んだ後に入れる）
+  initScript: () => {
+    window.__storageTouches = [];
+    for (const key of ["getItem", "setItem", "removeItem", "clear"]) {
+      const original = Storage.prototype[key];
+      Storage.prototype[key] = function (...args) { window.__storageTouches.push([key, ...args]); return original.apply(this, args); };
+    }
+  },
+});

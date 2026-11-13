@@ -7,7 +7,8 @@
 // 寸法は主流のスマホ（19:9〜20:9。余白はステージ上で片側 120〜160px）に合わせてある。余白が足りない端末・PC・
 // 16:9 の画面では C を出さず、ステージの中のボタンを今までどおり使う。
 // 試遊ページ（camel-race.html など。共通の画面当て core/stage-fit.js を使う単体ページ）は standalone で呼び、A だけ出す
-// （ゲームの状態・会話・HUD が無いので、帯とボタンは出さない）。設定「左右の余白」と「揺れ・閃光を減らす」は端末の保存を読む。
+// （ゲームの状態・会話・HUD が無いので、帯とボタンは出さない）。設定「左右の余白」と「揺れ・閃光を減らす」は端末の保存を読む
+// （readSettings: false なら読まない。TRPG の試遊ページは、保存領域に一切触れない決まりなので、既定の見た目で出す）。
 //
 // C の作り: 余白のボタンは、ステージの中の元のボタン（.vn-ctl・.hud-lime・.hud-menu）を代わりに押すだけ。
 // 余白へ出している間、元のボタンは CSS（side-area.css）で隠す。元のボタンが押せない場面（モーダル・LOG・
@@ -240,13 +241,13 @@ function savedConfig() {
 /**
  * 余白の層を作り、画面の当て直し・場面の変化へ追随させる。
  * 本編（index.html）は advance（会話の「次へ」・vn/engine.js の tapAdvance）を渡す。
- * 試遊ページは standalone: true で、煙と縁だけ出す。
+ * 試遊ページは standalone: true で、煙と縁だけ出す。端末の保存（設定）を読みたくないページは readSettings: false。
  */
-export function initSideArea({ stage, advance, standalone: alone = false } = {}) {
+export function initSideArea({ stage, advance, standalone: alone = false, readSettings = true } = {}) {
   if (dom || !stage?.parentElement) return;
   standalone = alone;
   deps = { advance };
-  if (standalone) {
+  if (standalone && readSettings) {
     const saved = savedConfig();
     if (saved.sideArea === "plain") config.sideArea = "plain";
     html().dataset.sideCalm = saved.reduceShake ? "on" : "off";

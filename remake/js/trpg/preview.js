@@ -29,7 +29,7 @@ function boot() {
     get ready() { return collection.loaded; } });
 }
 fit();
-initSideArea({ stage, standalone: true }); // 左右の余白の煙と縁（YHK）
+initSideArea({ stage, standalone: true, readSettings: false }); // 左右の余白の煙と縁（YHK）。この試遊ページは保存領域に触れない決まりなので設定は読まない
 window.addEventListener("resize", fit);
 window.visualViewport?.addEventListener("resize", fit);
 window.addEventListener("pagehide", () => collection?.destroy());

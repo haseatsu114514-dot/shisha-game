@@ -48,6 +48,7 @@
 
 - 対象（7ページ）: `camel-race.html`・`axe-throw.html`・`desert-ride.html`・`ichidai.html`・`trpg-preview.html`・`trpg-campaign-preview.html`・`craft-preview.html`。各ページが `css/side-area.css` を読み、起動スクリプトから呼ぶ。
 - 本編の設定を読む: 本編の起動（`main.js`）を通らないので、端末に保存した「左右の余白」（ぼかしだけ）と「揺れ・閃光を減らす」（煙を止める）を `localStorage` から直接読む。
+  ただし TRPG の試遊ページ2つ（`trpg-preview.html`・`trpg-campaign-preview.html`）は、保存領域に一切触れない決まり（`test/browser/trpg.mjs`・`trpg_experience.mjs` が接触を検査する）なので、`readSettings: false` で呼び、設定は読まず既定の見た目で出す。
 - 制作の試遊ページ（`craft-preview.html`）は舞台が上のナビの下の `#viewport` に収まる。余白はその枠の左右に取る（1280×720 の窓でも、ナビのぶん舞台が縮み、左右に約46pxの余白ができて A が出る）。
 - 対象外: 画面当てが別実装の開発用プレビュー（`conversation-preview.html`・`chapter2-preview.html`・`opening-preview.html` など。余白のぼかしも無い）。
 
