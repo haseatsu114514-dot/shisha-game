@@ -1,7 +1,7 @@
 // DESERT RIDE（第4章ドバイ・サンドボード）の規則: コースの決定性と公平さ、ジャンプ・着地・転倒、採点と評価の境目。
 import assert from "node:assert/strict";
 import test from "node:test";
-import { CHARGE, COURSE, LAYOUT, NEAR, PRACTICE_WALL, PLAYER, nearReward, recoverWindow, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, DISPLAY, toKmh, toMeters, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
+import { CHARGE, COURSE, LAYOUT, NEAR, GATE, SLALOM, PRACTICE_WALL, PLAYER, nearReward, recoverWindow, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, DISPLAY, toKmh, toMeters, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
   summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing, RIVALS, jumpPeak, jumpHeight } from "../js/minigames/desert-ride-model.js";
 
 const DT = 1 / 60;
@@ -33,11 +33,15 @@ test("the course is deterministic per seed, sorted, fair: rocks leave a gap and 
   for (const bump of bumps) {
     for (const rock of rocks) assert(rock.z <= bump.z || rock.z - bump.z >= 50, `no rock in the landing zone after the bump at ${bump.z}`);
   }
-  // 同じ z の岩の組は、板（0.2）の3倍以上の隙間を残す
+  // 同じ z の岩の列は、コースの中（端の深い砂の内側）のどこか1か所に、板（0.2）の2倍以上の隙間を必ず残す
+  // （2026-11-13 の「門」は、空いた1か所以外を岩でふさぐ。それまでの2つ岩は、間も外側も通れる）
   for (const rock of rocks) {
-    const row = rocks.filter(r => Math.abs(r.z - rock.z) < 1 && r !== rock);
-    for (const other of row) assert(Math.abs(other.x - rock.x) - other.w - rock.w >= 0.4, "a rock pair leaves a passable gap");
     assert(Math.abs(rock.x) + rock.w <= 1, "rocks stay inside the course");
+    const row = rocks.filter(r => Math.abs(r.z - rock.z) < 1).sort((a, b) => a.x - b.x);
+    const edges = [-EDGE, ...row.flatMap(r => [r.x - r.w, r.x + r.w]), EDGE];
+    let widest = 0;
+    for (let i = 0; i < edges.length; i += 2) widest = Math.max(widest, edges[i + 1] - edges[i]);
+    assert(widest >= 0.4, `the row at ${rock.z} leaves a passable gap (${widest.toFixed(2)})`);
   }
   // 岩は見てから避けられる間隔（連なる小岩も 30m 以上）
   const zs = [...new Set(rocks.map(r => r.z))].sort((p, q) => p - q);
@@ -271,6 +275,54 @@ test("boost has a price: every smashed rock shortens it, and the deep sand at th
   for (const pack of COURSE_PACKS) for (const skill of ["expert", "perfect"]) assert.equal(play(buildCourse({ id: pack.id }), skill).stats.boostsLost, 0, `${pack.id} ${skill} keeps its boosts`);
 });
 
+test("courses are longer and more varied: gates, slaloms and S-bends, every row still passable (2026-11-13)", () => {
+  assert.equal(COURSE.length, 2000);
+  let gates = 0, slaloms = 0;
+  const all = [...COURSE_PACKS.map(pack => buildCourse({ id: pack.id })), ...Array.from({ length: 30 }, (_, i) => generateCourse(i + 1))];
+  for (const course of all) {
+    const rocks = course.features.filter(f => f.kind === "rock");
+    const rows = [...new Set(rocks.map(r => r.z))].map(z => rocks.filter(r => r.z === z));
+    const gateRows = rows.filter(row => row.length === GATE.slots.length - 1 && row.every(r => r.size === "small" && GATE.slots.includes(r.x)));
+    const slalomRuns = rows.filter((row, i) => row.length === 1 && Math.abs(row[0].x) === SLALOM.x
+      && Array.from({ length: SLALOM.count }, (_, k) => rows.find(o => o.length === 1 && Math.abs(o[0].z - (row[0].z + SLALOM.gap * k)) < 1e-9 && Math.abs(o[0].x - row[0].x * (k % 2 ? -1 : 1)) < 1e-9)).every(Boolean));
+    gates += gateRows.length; slaloms += slalomRuns.length;
+    // 門の空きは、板が余裕を持って抜けられる幅（空いた所の両隣の岩の間）
+    for (const row of gateRows) {
+      const xs = row.map(r => r.x).sort((a, b) => a - b), open = GATE.slots.find(x => !xs.includes(x));
+      const left = Math.max(-EDGE, ...xs.filter(x => x < open).map(x => x + 0.11)), right = Math.min(EDGE, ...xs.filter(x => x > open).map(x => x - 0.11));
+      assert(right - left >= 0.4, `${course.id}: the gate at ${row[0].z} leaves room (${(right - left).toFixed(2)})`);
+    }
+    if (COURSE_PACKS.some(pack => pack.id === course.id)) {
+      assert(gateRows.length + slalomRuns.length >= 1, `${course.id} has a gate or a slalom`);
+      // S字: 左右の曲がりが2回以上入れ替わる
+      const turns = course.curves.map(p => Math.sign(p.c)).filter(Boolean);
+      const flips = turns.filter((sign, i) => i && sign !== turns[i - 1]).length;
+      assert(flips >= 2, `${course.id} bends both ways more than once (${flips})`);
+    }
+  }
+  assert(gates >= 10 && slaloms >= 5, `gates (${gates}) and slaloms (${slaloms}) appear across the courses`);
+});
+
+test("rivals boost often and the race stays close, without changing who can win (2026-11-13)", () => {
+  const starts = run => run.samples.filter((s, i) => i && s.boostT > 0 && run.samples[i - 1].boostT <= 0).length;
+  for (const pack of COURSE_PACKS) {
+    const course = buildCourse({ id: pack.id });
+    const noor = rivalRun(course), naru = rivalRun(course, { who: "naru" });
+    assert(starts(noor) >= 5, `${pack.id}: Noor boosts often (${starts(noor)})`);
+    assert(starts(naru) >= 5, `${pack.id}: Naru boosts often (${starts(naru)})`);
+  }
+  assert(RIVALS.noor.boostAt < 0.5 && RIVALS.naru.boostAt < 0.5, "rivals do not wait for a full gauge");
+  // 接戦: 着地を決める滑りとヌール、理想の滑りとなるは、差 15m 以内で滑る時間が半分以上
+  const course = buildCourse({ id: "ridge" });
+  for (const [who, skill] of [["noor", "perfect"], ["naru", "expert"]]) {
+    const rival = rivalRun(course, { who }), game = createGame(course, { rival }), memo = {};
+    let close = 0, all = 0;
+    while (!game.finished && game.t < 200) { botStep(game, skill, memo, DT); all++; if (Math.abs(game.z - rivalAt(rival, game.rivalClock).z) < 15) close++; }
+    assert(close / all > 0.5, `${who} vs ${skill}: close for ${Math.round(100 * close / all)}% of the run`);
+    assert.equal(game.race.won, true, `${skill} still beats ${who}`);
+  }
+});
+
 test("the boost gauge charges a little slower everywhere, and drains slowly when it is not used (2026-11-13)", () => {
   // 溜まり方: 滑りの中で貯まる分には一律に CHARGE を掛ける（練習の説明が渡す量には掛けない）
   assert(CHARGE >= 0.8 && CHARGE < 0.95, "a little slower, not a lot");
@@ -310,7 +362,7 @@ test("Naru is a real final rival: only the ideal spinning run beats him, by a sm
   for (const pack of COURSE_PACKS) {
     const course = buildCourse({ id: pack.id }), naru = rivalRun(course, { who: "naru" }), noor = rivalRun(course);
     assert.equal(naru.easeOff, false); assert.equal(noor.easeOff, true);
-    assert(naru.finishTime < noor.finishTime - 2.5, `${pack.id}: Naru is well ahead of Noor (${naru.finishTime.toFixed(1)} vs ${noor.finishTime.toFixed(1)})`);
+    assert(naru.finishTime < noor.finishTime - 1.5, `${pack.id}: Naru is well ahead of Noor (${naru.finishTime.toFixed(1)} vs ${noor.finishTime.toFixed(1)})`);
     const expert = play(course, "expert"), perfect = play(course, "perfect");
     const margin = naru.finishTime - expert.finishTime;
     assert(margin > 0 && margin < 1.6, `${pack.id}: the ideal spinning run wins, but only just (${margin.toFixed(2)}s)`);
@@ -370,7 +422,7 @@ test("the single course rates S / A / B / C by skill: spins = S, clean landings 
   const expert = run("expert"), perfect = run("perfect"), good = run("good"), none = run("none"), lazy = run("lazy");
   for (const result of [expert, perfect, good, none, lazy]) {
     assert.equal(result.finished, true);
-    assert(result.time >= 45 && result.time <= 75, `a run takes about a minute (${result.time}s)`);
+    assert(result.time >= 50 && result.time <= 85, `a run takes about a minute (${result.time}s; 2026-11-13 に 2,000m へ延ばした)`);
   }
   assert.equal(expert.falls, 0, "the course can be finished without any fall, spinning on every jump");
   assert.equal(perfect.falls, 0);
@@ -988,7 +1040,8 @@ test("the autopilot looks ahead: it holds its line through curves, never dithers
 test("rivals: Noor starts a touch quicker than the rider, Naru boosts and spins in the recorded run", () => {
   assert(RIVALS.noor.startSpeed > SPEED.start && RIVALS.noor.startSpeed < SPEED.start + 1.5);
   // 2026-11-13 オーナー「なるが弱かった」: なるは 720 まで回る腕前。出だしだけ少し遅くして、理想の滑りでやっと勝てる差にした
-  assert(RIVALS.naru.startSpeed < SPEED.start && RIVALS.naru.startSpeed >= SPEED.start - 2);
+  // 2026-11-13「ライバルももっとブースト使って」: こまめに使う分だけ速くなるので、出だしをもう少し遅くした
+  assert(RIVALS.naru.startSpeed < SPEED.start && RIVALS.naru.startSpeed >= SPEED.start - 3);
   assert.equal(RIVALS.naru.only360, false, "Naru spins up to 720");
   const course = generateCourse(DEFAULT_SEED), noor = rivalRun(course), naru = rivalRun(course, { who: "naru" });
   assert(rivalAt(noor, 1).z > rivalAt(naru, 1).z, "Noor is ahead of Naru off the line");

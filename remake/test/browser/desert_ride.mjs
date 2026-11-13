@@ -165,12 +165,12 @@ await suite("desert-ride", async check => {
     assert.equal(await page.locator(".dr-cutin-rider").count() <= 1, true);
     const text = await resultText(page);
     assert.match(text, /RESULT/); assert.match(text, /転倒 0 回/); assert.match(text, /自己ベスト更新/);
-    // 2026-11-13 にコースを組み替えた（最初の起伏・連続起伏3つ）ので、コースAの大ジャンプは 7 → 10 回
-    assert.match(text, /大ジャンプ 10 回/);
-    assert.match(text, /トリック 10 回（最高 720）/);
+    // 2026-11-13 にコースを組み替えた（最初の起伏・連続起伏3つ → 2,000m・門・スラローム）ので、コースAの大ジャンプは 7 → 10 → 8 回
+    assert.match(text, /大ジャンプ 8 回/);
+    assert.match(text, /トリック 8 回（最高 720）/);
     // 勝った時の加点は、結果のカードにも出る。S なので「次の評価まで」は出ない
     assert.equal(await page.locator(t("desert-race-points")).innerText(), "+600点");
-    assert.equal(await page.locator(t("desert-next-rank")).count(), 0, "nothing above S to aim for"); assert.match(text, /ブースト [2-9] 回/);
+    assert.equal(await page.locator(t("desert-next-rank")).count(), 0, "nothing above S to aim for"); assert.match(text, /ブースト ([2-9]|1[0-5]) 回/); // 2026-11-13 から減る前に使うので回数が増えた
     assert.equal(await page.locator(t("desert-race")).getAttribute("data-won"), "true");
     assert.match(await page.locator(t("desert-race")).innerText(), /ヌールに勝った！/);
     assert.equal(await page.locator(t("desert-result")).getAttribute("data-rank"), "S", "the ideal run is S on the fixed course");
@@ -268,19 +268,20 @@ await suite("desert-ride", async check => {
     const jump = await ride(page, async () => {
       const d = window.__desertRide, g = d.game;
       d.feel.stopPerfect = 30;
+      const stretchLife = d.feel.stretchJump; d.feel.stretchJump = [stretchLife[0], stretchLife[1], 0.5]; // 伸びを長くして、コマの速さに左右されずに見る
       g.boostT = 0; g.speed = 30; d.autoplay("perfect");
       const perfectBefore = g.stats.perfect; let stretch = null, half = null, late = null;
       await new Promise(resolve => { const timer = setInterval(() => {
         if (g.air > 0 && g.airKind === "big") {
           const progress = 1 - g.air / g.airTotal, fx = d.fx;
-          if (progress < 0.04 && !stretch) stretch = fx.squash;
+          if (!stretch && g.airTotal - g.air < 0.25) stretch = fx.squash;
           if (Math.abs(progress - 0.5) < 0.03) half = fx.shownHeight / g.airPeak;
           if (Math.abs(progress - d.feel.jumpApex) < 0.03) late = fx.shownHeight / g.airPeak;
         }
         if (g.stats.perfect > perfectBefore && d.fx.hitStop > 0) { clearInterval(timer); resolve(); }
       }, 2); });
       const landed = { squash: d.fx.squash, rings: d.fx.rings, lastLand: d.fx.lastLand, apex: d.feel.jumpApex };
-      d.endHitStop(); d.feel.stopPerfect = 0.06;
+      d.endHitStop(); d.feel.stopPerfect = 0.06; d.feel.stretchJump = stretchLife;
       return { stretch, half, late, landed };
     });
     assert(jump.stretch && jump.stretch[0] < 1 && jump.stretch[1] > 1, `take-off stretches tall (${jump.stretch})`);
@@ -312,7 +313,7 @@ await suite("desert-ride", async check => {
     await autoplayToResult(page, "good");
     assert.equal(await page.locator(t("desert-result")).getAttribute("data-rank"), "B");
     const total = Number((await page.locator(t("desert-total")).locator("strong").innerText()).replace(/[^\d]/g, ""));
-    assert.equal(await page.locator(t("desert-next-rank")).innerText(), `次の評価 A まで あと ${(6000 - total).toLocaleString("ja-JP")}点`);
+    assert.equal(await page.locator(t("desert-next-rank")).innerText(), `次の評価 A まで あと ${(7000 - total).toLocaleString("ja-JP")}点`); // A の境目（2026-11-13 に 2,000m へ延ばして 6,000 → 7,000）
     assert.match(await page.locator(t("desert-tip")).innerText(), /空中で ← か → を押し続けると回転/);
     assert.equal(await ride(page, () => window.__desertRide.results.length), 2);
     // 結果のカードは舞台の中に収まる（行が増えても、上が切れない）
@@ -546,21 +547,24 @@ await suite("desert-ride", async check => {
     assert(await ride(page, () => window.__desertRide.rival.samples.some(s => s.boostT > 0) && window.__desertRide.rival.samples.some(s => Math.abs(s.rot) > 0.25)), "Naru's boosts and spins are in the playback");
     // なるの滑る絵（#3222）を読みに行っている（読めない時は図形で描く）
     assert(await page.evaluate(() => performance.getEntriesByType("resource").some(entry => /\/rider_naru_ride\.webp$/.test(entry.name))), "Naru's rider art is requested");
-    // 最初のカーブ: 一度だけ案内が出る。曲がる向きへ切り込むとカービング（ゲージが貯まり、印が出る）
-    assert.equal(await page.locator(t("desert-caption")).innerText(), "", "no caption on the straight");
-    await ride(page, () => { const r = window.__desertRide; while (r.game.z < 340) r.advance(1 / 60, {}); r.game.x = 0; r.game.vx = 0; });
-    await page.waitForFunction(() => /カーブ！/.test(document.querySelector('[data-test="desert-caption"]').textContent));
-    assert.equal(await page.locator(t("desert-caption")).getAttribute("data-kind"), "tip");
-    const tip = await page.evaluate(() => {
-      const rect = selector => document.querySelector(selector).getBoundingClientRect();
-      return { tip: rect('[data-test="desert-caption"]'), course: rect('[data-test="desert-course"]'), left: rect(".dr-hud-left"), right: rect(".dr-hud-right") };
-    });
-    assert(tip.tip.top >= tip.course.bottom && tip.tip.left >= tip.left.right && tip.tip.right <= tip.right.left, "the tip clears the course name and both HUD panels");
+    // カーブ（2026-11-13 オーナー「カービングの説明が長い。文字で説明するよりエフェクトで」）: 文字の案内は出さない。
+    // 切り込んでいない間は人物の横に切り込む向きの矢印、切り込むと「+30」とゲージへ飛ぶ光の粒、粒が届くとゲージが光る
+    await ride(page, () => { const r = window.__desertRide; while (r.game.z < 470) r.advance(1 / 60, {}); r.game.x = 0; r.game.vx = 0; });
+    await page.waitForFunction(() => window.__desertRide.fx.curveCue);
+    assert.equal(await page.locator(t("desert-caption")).innerText(), "", "no text tip in the curve");
+    assert.equal(await ride(page, () => window.__desertRide.fx.orbs), 0, "no orbs before anything is earned");
     await ride(page, () => window.__desertRide.setInput(true, false)); // 左カーブへ左へ切り込む
     await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]').dataset.carve === "on");
+    await page.waitForFunction(() => window.__desertRide.fx.orbs > 0, null, { timeout: 5000 });
+    assert.equal(await ride(page, () => window.__desertRide.fx.curveCue), false, "the arrows go away once carving");
+    await page.waitForFunction(() => document.querySelector('[data-test="desert-gauge"]').dataset.gain === "on", null, { timeout: 5000 });
     await page.waitForFunction(() => { const g = window.__desertRide.game; if (Math.abs(g.x) > 0.6) { g.x = 0; g.vx = 0; } return g.stats.carves >= 1; });
     const carved = await ride(page, () => { const g = window.__desertRide.game; window.__desertRide.setInput(false, false); return { gauge: g.gauge, event: g.events.some(e => e.kind === "carve" && e.points > 0), falls: g.falls }; });
     assert(carved.event && carved.gauge > 0.05, `carving charges the gauge (${carved.gauge})`);
+    // 一度切り込めたら、もう矢印は出ない
+    await ride(page, () => { const g = window.__desertRide.game; g.x = 0; g.vx = 0; });
+    await page.waitForTimeout(150);
+    assert.equal(await ride(page, () => window.__desertRide.fx.curveCue), false, "no arrows after the first carve");
     await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]').dataset.carve === "");
     // ブースト中・終了後・メニューへ戻った後も曲は通常の速さ
     const audioUrl = new URL("js/core/audio.js", page.url()).href;

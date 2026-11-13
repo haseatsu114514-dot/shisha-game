@@ -4,13 +4,17 @@
 // 2026-11-02 オーナー「もっとスピード感・ゲーム性を」: 空中トリック（大ジャンプ中に ← → で回転）、ブースト（ゲージ満タンで超加速・岩を砕く）、
 // ヌールとの競走（同じコースを自動で滑るヌールより先にゴールすれば勝ち）を足した。
 
-export const COURSE = Object.freeze({ length: 1700, practiceLength: 800, laneHalf: 1 });
+// 2026-11-13 オーナー「もっとコースを複雑にしたり少し長くしたい」で 1,700 → 2,000m（1本 約50秒 → 約55〜58秒）。
+export const COURSE = Object.freeze({ length: 2000, practiceLength: 800, laneHalf: 1 });
 // コースの山と平地（2026-11-13 オーナー「手応えレビューの内容を実装して、より面白く」。docs/spec/desert_ride.md「山と平地」）:
 // firstBump: 最初の要素は岩の無い起伏（走り出して約5秒で最初の「跳ぶ」）。start: 乱数の配置が始まる距離。
 // gapFrom→gapTo: 要素の間隔（進むほど詰まる）。
 // chainFrom: この進み具合を過ぎた最初の所に、岩の無い起伏を chainCount 個・chainGap m おきに並べる（稼ぎ場＝平地）。
 // chainGap は「大ジャンプの飛距離（通常の最高速で約50m）＋次を押す間（約0.6秒）」。landing は起伏の先の、岩を置かない距離。
 // 連続起伏の先（置けない短いコースでは lastStretch から先）は終盤の山: 間隔は gapLast、岩の無い起伏だけが出る割合を bumpOnly → bumpOnlyLast に下げて岩を増やす。
+// 門: 4つの位置のうち3つに小岩（1つだけ空く）。スラローム: 小岩 count 個を gap m おきに、左右 ±x で互い違いに。
+export const GATE = Object.freeze({ slots: Object.freeze([-0.66, -0.22, 0.22, 0.66]) });
+export const SLALOM = Object.freeze({ count: 4, gap: 36, x: 0.2 });
 export const LAYOUT = Object.freeze({ firstBump: 90, start: 160, gapFrom: 60, gapTo: 38, gapLast: 34, lastStretch: 0.88, chainFrom: 0.45, chainCount: 3, chainGap: 72, landing: 52,
   bumpOnly: 0.34, bumpOnlyLast: 0.12 });
 export const PLAYER = Object.freeze({ half: 0.1 });
@@ -35,7 +39,8 @@ export const STEER = Object.freeze({ accel: 4.6, damping: 4.0, curveDrift: 1 });
 // カービング: カーブ（|c| >= minCurve）の地上で、曲がる向きへ切り込んでいる間だけブーストのゲージが貯まり、tickSec ごとに少し得点。
 // 端の深い砂・空中・転倒中は貯まらない。押し込みの強さ（スティックの倒し量）に比例する。
 export const CARVE = Object.freeze({ minCurve: 0.4, gaugePerSec: 0.1, tickSec: 0.8, points: 30 });
-export const SCORE = Object.freeze({ finish: 1200, timePar: 72, timeBonusPerSec: 30, perfect: 250, good: 120, comboStep: 0.15, comboMax: 3,
+export const SCORE = Object.freeze({ finish: 1200, timePar: 85, // 時間ボーナスの基準（秒）。コースを長くした分だけ延ばした（1,700m の時は 72）
+  timeBonusPerSec: 30, perfect: 250, good: 120, comboStep: 0.15, comboMax: 3,
   smash: 100, raceWin: 600, raceWinNaru: 1500 });
 // かすめ（2026-11-13 段階制に。それまでは幅の中ならどこでも 60点・ゲージ 0.12 で、2つ岩の真ん中＝いちばん安全な線で2回もらえた）:
 // 岩の当たり判定のすぐ外側 width（レーン）の帯。当たる寸前ほど大きく、帯の外寄りほど小さい（closeness 1→0 で max→min）。
@@ -47,8 +52,10 @@ export const NEAR = Object.freeze({ width: 0.22, minPoints: 30, maxPoints: 90, m
 // 720 まで回る（主人公の理想の滑りと同じ腕前）。出だしだけ少し遅く（startSpeed −1.5）、回って着地も決める理想の滑りでやっと勝てる差にした。
 // easeOff: 大きく離した時の手加減（RUBBER）。なるは手加減しない（追いつかれたら追い返すのは同じ）。
 export const RIVALS = Object.freeze({
-  noor: Object.freeze({ skill: "rival", startX: -0.42, only360: false, startSpeed: SPEED.start + 0.6 }),
-  naru: Object.freeze({ skill: "expert", startX: 0.42, only360: false, startSpeed: SPEED.start - 1.5, easeOff: false }),
+// charge・boostAt（2026-11-13 オーナー「ライバルももっとブースト使って接戦っぽくしたい」）: 貯まる量の倍率と、使い始めるゲージの量。
+// 満タンまで待たず小刻みに使うので、ブーストの回数が増えて目に入る。速くなりすぎる分は出だし（startSpeed）で合わせた。
+  noor: Object.freeze({ skill: "rival", startX: -0.42, only360: false, startSpeed: SPEED.start + 0.6, charge: 1.15, boostAt: 0.3 }),
+  naru: Object.freeze({ skill: "expert", startX: 0.42, only360: false, startSpeed: SPEED.start - 2.6, easeOff: false, charge: 1, boostAt: 0.3 }),
 });
 // 空中トリック: 大ジャンプ中に ← か → を押している間だけ回る（rate 回転/秒）。離すと次の半回転まで finishRate で回り切る。
 // 着地の瞬間に半回転の区切りから tolerance（回転）以上ずれていると転倒。points は半回転の数ごとの得点（180, 360, 540 …）。
@@ -62,7 +69,8 @@ export const SPIN = Object.freeze({ rate: 1.7, finishRate: 3.2, tolerance: 0.1, 
 // ずれ（rivalClock − t）の上限は進み具合で変える: 追いついた分は lead 秒まで。holdUntil（6割）を過ぎたら、ゴールの少し手前（settleAt）で
 // 0 になるまで返す（終盤に相手がバテて引き離せる。勝ちは腕前のまま奪わない）。手加減は lag 秒まで、終盤（lastStretch）から keep 秒まで戻す（大きく離された時だけ少し勝ちやすい）。
 // 上限を超えた分は settle 秒/秒までの速さで戻す。
-export const RUBBER = Object.freeze({ gap: 20, span: 50, catchUp: 1.25, easeOff: 0.75, lead: 3, lag: 3, keep: 0.5, holdUntil: 0.6, settleAt: 0.95, lastStretch: 0.3, settle: 0.3, ease: 6 });
+// 2026-11-13 オーナー「接戦っぽくしたい」で gap 20 → 12・span 50 → 40（近くで競り合う時間を長く）。
+export const RUBBER = Object.freeze({ gap: 12, span: 40, catchUp: 1.25, easeOff: 0.75, lead: 3, lag: 3, keep: 0.5, holdUntil: 0.6, settleAt: 0.95, lastStretch: 0.3, settle: 0.3, ease: 6 });
 // ブーストの代償（2026-11-13。それまでは純粋な得で、突っ込むほど良かった）: 岩を砕くたびに残り時間が smashCost 秒減る
 // （smashFloor 秒までは残す＝砕いた直後に切れて次の岩で転ばない）。端の深い砂（|x|>EDGE）に入ると、その場でブーストが切れる。
 // practiceRecoverWindow: 練習の立て直しの猶予（初めてでも間に合う長さ）。
@@ -83,17 +91,22 @@ export const CURVE_SCALE = 0.0045; // c=1 のとき、1m あたりの向きの�
 // 本番のコース。seed は配置、curves があればカーブだけ差し替える（コースA＝ridge は従来の seed 7 のまま）。
 export const COURSE_PACKS = Object.freeze([
   Object.freeze({ id: "ridge", name: "コースA", seed: 7 }),
+  // B・C: 大きく左（右）へ回り込んでから、S字で切り返す。D: 細かい切り返しが続く（2026-11-13 に 2,000m へ延ばしてS字を足した）
   Object.freeze({ id: "left-bowl", name: "コースB", seed: 19, curves: Object.freeze([
-    { z: 0, c: 0 }, { z: 240, c: 0 }, { z: 480, c: -0.9 }, { z: 820, c: -1 }, { z: 1100, c: -0.35 }, { z: 1380, c: 0.45 },
+    { z: 0, c: 0 }, { z: 220, c: 0 }, { z: 420, c: -0.9 }, { z: 700, c: -1 }, { z: 880, c: -0.2 }, { z: 1040, c: 0.85 }, { z: 1220, c: 0.6 },
+    { z: 1400, c: -0.75 }, { z: 1580, c: -1 }, { z: 1760, c: 0.4 },
   ]) }),
   Object.freeze({ id: "right-crest", name: "コースC", seed: 23, curves: Object.freeze([
-    { z: 0, c: 0 }, { z: 240, c: 0 }, { z: 480, c: 0.9 }, { z: 820, c: 1 }, { z: 1100, c: 0.35 }, { z: 1380, c: -0.45 },
+    { z: 0, c: 0 }, { z: 220, c: 0 }, { z: 420, c: 0.9 }, { z: 700, c: 1 }, { z: 880, c: 0.2 }, { z: 1040, c: -0.85 }, { z: 1220, c: -0.6 },
+    { z: 1400, c: 0.75 }, { z: 1580, c: 1 }, { z: 1760, c: -0.4 },
   ]) }),
   Object.freeze({ id: "switchback", name: "コースD", seed: 11, curves: Object.freeze([
-    { z: 0, c: 0 }, { z: 200, c: 0 }, { z: 400, c: 0.95 }, { z: 620, c: 0 }, { z: 900, c: -0.95 }, { z: 1120, c: 0 }, { z: 1360, c: 0.85 },
+    { z: 0, c: 0 }, { z: 180, c: 0 }, { z: 340, c: 0.95 }, { z: 500, c: -0.6 }, { z: 680, c: -1 }, { z: 840, c: 0.2 }, { z: 1000, c: 1 },
+    { z: 1160, c: -0.3 }, { z: 1340, c: -0.95 }, { z: 1520, c: 0.6 }, { z: 1700, c: 0.9 },
   ]) }),
 ]);
-export const RANKS = Object.freeze([["S", 12000], ["A", 6000], ["B", 3500], ["C", 0]]);
+// 2026-11-13 にコースを 2,000m へ延ばした分、境目も同じ割合で上げた（1,700m の時は S 12,000・A 6,000・B 3,500）。どの腕前がどの評価かは変わらない
+export const RANKS = Object.freeze([["S", 14000], ["A", 7000], ["B", 4000], ["C", 0]]);
 export const RANK_ORDER = Object.freeze(["C", "B", "A", "S"]);
 
 /** 決定的な乱数（mulberry32）。同じ seed なら同じコース。 */
@@ -139,17 +152,27 @@ export function generateCourse(seed = 1, { length = COURSE.length } = {}) {
       // 起伏: ジャンプの見せ場。着地帯（52m）に岩を置かない
       features.push(bump(z));
       z += L.landing;
-    } else if (roll < 0.52) {
+    } else if (roll < 0.46) {
       features.push(rock(z, side())); // 終盤の山では、起伏だけの分もここ（岩1つ）になる
-    } else if (roll < 0.66) {
+    } else if (roll < 0.58) {
       // 2つの岩の間を抜ける。間隔は必ず板の幅の3倍以上
       const center = (random() - 0.5) * 0.7;
       features.push(rock(z, center - 0.42), rock(z, center + 0.42));
-    } else if (roll < 0.82 && progress > 0.25) {
+    } else if (roll < 0.7 && progress > 0.25) {
       // ジグザグの小岩3つ。ひとつずつ見える距離を置く
       const dir = random() < 0.5 ? -1 : 1;
       features.push(rock(z, dir * 0.4, "small"), rock(z + 34, -dir * 0.3, "small"), rock(z + 68, dir * 0.15, "small"));
       z += 68;
+    } else if (roll < 0.8 && progress > 0.2) {
+      // 門（2026-11-13）: 横に4つ並ぶ所の1つだけが空いた小岩の列。空いた所を抜けるか、跳ぶか（ホップで越えられる）、
+      // 端の深い砂へ回り込む（遅くなる）か。空きの幅は板の2倍強
+      const open = Math.floor(random() * GATE.slots.length);
+      for (const [i, x] of GATE.slots.entries()) if (i !== open) features.push(rock(z, x, "small"));
+    } else if (roll < 0.9 && progress > 0.35) {
+      // スラローム（2026-11-13）: 小岩が左右互い違いに並ぶ。まっすぐでも抜けられるが、寄せて縫うほど「かすめ」が稼げる
+      const dir = random() < 0.5 ? -1 : 1;
+      for (let i = 0; i < SLALOM.count; i++) features.push(rock(z + SLALOM.gap * i, dir * (i % 2 ? -1 : 1) * SLALOM.x, "small"));
+      z += SLALOM.gap * (SLALOM.count - 1);
     } else if (progress > 0.3) {
       // 起伏の先に岩: 着地してから曲がる時間（64m 以上）を取る
       features.push(bump(z), rock(z + 64, side()));
@@ -159,10 +182,14 @@ export function generateCourse(seed = 1, { length = COURSE.length } = {}) {
     }
     z += minGap(progress) + random() * 26;
   }
+  // カーブ（2026-11-13 S字を多く）: 130〜270m おきに要所。前と逆向きへ切り返す（S字）ことが多く、たまにまっすぐ
   const curves = [{ z: 0, c: 0 }];
-  for (let at = 220; at < length - 120; at += 170 + random() * 150) {
-    const c = [-1, -0.6, 0, 0.6, 1][Math.floor(random() * 5)];
-    curves.push({ z: at, c });
+  let lastC = 0;
+  for (let at = 200; at < length - 120; at += 130 + random() * 140) {
+    const size = [0.6, 0.85, 1][Math.floor(random() * 3)];
+    const turn = random() < 0.15 ? 0 : lastC !== 0 && random() < 0.6 ? -Math.sign(lastC) : (random() < 0.5 ? -1 : 1);
+    lastC = turn * size;
+    curves.push({ z: at, c: lastC });
   }
   curves.push({ z: length - 60, c: 0 }, { z: length + 400, c: 0 });
   features.sort((a, b) => a.z - b.z);
@@ -277,9 +304,9 @@ export function pickCourse(runSeed) {
 }
 
 /** rival: rivalRun() の結果（本番のヌール）。あれば、ゴールの順を競い、先着で加点する。 */
-export function createGame(course, { rival = null } = {}) {
+export function createGame(course, { rival = null, charge = 1 } = {}) {
   return {
-    course, rival, t: 0, z: 0, x: 0, vx: 0, speed: SPEED.start, rivalClock: 0, rivalRate: 1, rivalFinishT: null,
+    course, rival, chargeRate: charge, t: 0, z: 0, x: 0, vx: 0, speed: SPEED.start, rivalClock: 0, rivalRate: 1, rivalFinishT: null,
     air: 0, airTotal: 0, airPeak: 0, airKind: null, landingPress: null, lastJumpT: -9,
     rot: 0, spinDir: 0, spinHold: false, spinArmed: null, lastTrick: null,
     gauge: 0, chargedAt: -9, boostT: 0, carving: false, carveT: 0,
@@ -320,7 +347,7 @@ export function chargeBoost(game, amount) {
 /** 立て直しの猶予（秒）。練習では長い。 */
 export const recoverWindow = game => game.course?.practice ? BOOST.practiceRecoverWindow : BOOST.recoverWindow;
 /** 滑りの中で貯まる分（かすめ・着地・トリック・カービング）。CHARGE を掛ける。 */
-const earn = (game, amount) => chargeBoost(game, amount * CHARGE);
+const earn = (game, amount) => chargeBoost(game, amount * CHARGE * (game.chargeRate ?? 1));
 
 /** 転倒からブーストで立て直せるか（岩に当たった直後の短い間だけで、ゲージが必要）。 */
 export function canRecover(game) {
@@ -701,6 +728,8 @@ export function readResult(value) {
     tricks: Math.round(n(value.tricks) ?? 0), bestTrick: Math.round(n(value.bestTrick) ?? 0), boosts: Math.round(n(value.boosts) ?? 0), race };
 }
 
+// 自動操作がブーストを使い始めるゲージの量。2026-11-13 にゲージが「使わないと減る」ようになったので、満タンまで待たずに使う（減る前に使い切る）
+const BOT_BOOST_AT = 0.35;
 const BOT_PLANS = Object.freeze([[0, 0], ...[-1, 1].flatMap(dir => [0.2, 0.45, 0.8, 1.4].map(hold => [dir, hold]))]);
 const BOT_LOOK = Object.freeze({ horizon: 2.2, dt: 1 / 20, every: 3, commit: 0.35 });
 /**
@@ -793,7 +822,7 @@ export function botControl(game, skill = "perfect", memo = {}) {
   else if (jumps && game.fallT <= 0) {
     // ゲージを無駄にしない使い方: 満タンで使う／加速中は、あふれない分だけ継ぎ足す／ゴールが近づいたら残りを使い切る
     const remaining = game.course.length - game.z, room = 1 - game.boostT / BOOST.duration;
-    if (game.boostT <= 0 ? game.gauge >= 1 || (game.gauge >= 0.15 && remaining <= SPEED.boost * BOOST.duration * game.gauge + 20)
+    if (game.boostT <= 0 ? game.gauge >= (memo.boostAt ?? BOT_BOOST_AT) || (game.gauge >= 0.15 && remaining <= SPEED.boost * BOOST.duration * game.gauge + 20)
       : game.gauge >= 0.3 && game.gauge <= room) action = "boost";
   }
   return { input, action };
@@ -814,8 +843,8 @@ const RIVAL_SAMPLE = 1 / 30;
  * 同じコースなら毎回同じ（決定的）。人物とは当たらない（並んで滑るだけ）。
  */
 export function rivalRun(course, { who = "noor", maxTime = 200 } = {}) {
-  const { skill, startX, only360, startSpeed, easeOff = true } = RIVALS[who] || RIVALS.noor;
-  const game = createGame(course), memo = { lane: startX, only360 }, samples = [];
+  const { skill, startX, only360, startSpeed, easeOff = true, charge = 1, boostAt = 1 } = RIVALS[who] || RIVALS.noor;
+  const game = createGame(course, { charge }), memo = { lane: startX, only360, boostAt }, samples = [];
   game.x = startX; game.speed = startSpeed;
   const snap = () => samples.push({ t: game.t, z: game.z, x: game.x, vx: game.vx, air: game.air, airTotal: game.airTotal, airPeak: game.airPeak, airKind: game.airKind,
     landingPress: game.landingPress, fallT: game.fallT, landedAt: game.landedAt, rot: game.rot, boostT: game.boostT });
