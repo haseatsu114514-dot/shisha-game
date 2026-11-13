@@ -298,12 +298,12 @@ html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch { width
 html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-boost,
 html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-jump { width: 176px; height: 176px; }
 
-/* ---- 2026-11-11: カービングの印・最初のカーブの案内・裏の相手の名乗り ---- */
+/* ---- 2026-11-11: カービングの印・最初のカーブの案内・なるの名乗り ---- */
 /* カーブへ切り込んでいる間は、BOOST のゲージの縁が光る（貯まっていることが分かる） */
 .desert-ride[data-carve="on"] .dr-gauge { box-shadow: 0 0 0 2px rgba(255, 226, 150, .95), 0 0 14px rgba(255, 180, 70, .85); }
 /* 本番の案内は、進み具合・相手との差・コース名の下に出す（練習の案内は上のまま） */
 .dr-caption[data-kind="tip"] { top: 150px; width: auto; max-width: min(720px, calc(100% - 620px)); padding: 8px 22px; font-size: 22px; }
-/* 裏の相手との勝負: スタートの合図の間、画面の下（左右の操作の間）に名乗りを出す。人物と数字には重ねない */
+/* なるとの勝負: スタートの合図の間、画面の下（左右の操作の間）に名乗りを出す。人物と数字には重ねない */
 .dr-versus { position: absolute; left: 50%; top: 84%; transform: translate(-50%, -50%) skewX(-8deg); display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 54px 14px; background: linear-gradient(100deg, rgba(24, 18, 30, 0) 0, rgba(24, 18, 30, .9) 14%, rgba(24, 18, 30, .9) 86%, rgba(24, 18, 30, 0) 100%); color: #f4f0ff; text-align: center; opacity: 0; pointer-events: none; white-space: nowrap; }
 .dr-versus small { font-size: 20px; font-weight: 800; letter-spacing: .5em; text-indent: .5em; color: #c9b8ff; }
 .dr-versus b { font-size: 60px; line-height: 1.05; font-weight: 900; letter-spacing: .08em; text-shadow: 0 0 22px rgba(150, 120, 255, .85); }

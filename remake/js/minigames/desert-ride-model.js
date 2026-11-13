@@ -41,11 +41,14 @@ export const SCORE = Object.freeze({ finish: 1200, timePar: 72, timeBonusPerSec:
 // 岩の当たり判定のすぐ外側 width（レーン）の帯。当たる寸前ほど大きく、帯の外寄りほど小さい（closeness 1→0 で max→min）。
 // 2つ岩の真ん中（余白 0.15）は 1つ 約49点・ゲージ 約0.07。跳び越えた岩は横の危険を取っていないので真ん中の値（airCloseness）。
 export const NEAR = Object.freeze({ width: 0.22, minPoints: 30, maxPoints: 90, minGauge: 0.04, maxGauge: 0.14, airCloseness: 0.5 });
-// 競走の相手。ヌールは着地が少し遅い滑り（ブーストは使う）。なる（裏の相手・ヌールに勝った後）は 360 を決めて着地も完璧、ブーストも使う。
+// 競走の相手。ヌールは着地が少し遅い滑り（ブーストは使う）。なる（ヌールに勝った後に来る強敵）は 720 まで回って着地も完璧、ブーストも使う。
 // startSpeed: スタートの速さ。ヌールは砂丘のガイドなので、出だしが少しだけうまい（同じ滑りでは並べない）。
+// なるは 2026-11-13 オーナー「なるが弱かった」で強くした（それまでは 360 止まり・出だしは主人公と同じで、理想の滑りに 0.6〜2.2秒差で負けていた）:
+// 720 まで回る（主人公の理想の滑りと同じ腕前）。出だしだけ少し遅く（startSpeed −1.5）、回って着地も決める理想の滑りでやっと勝てる差にした。
+// easeOff: 大きく離した時の手加減（RUBBER）。なるは手加減しない（追いつかれたら追い返すのは同じ）。
 export const RIVALS = Object.freeze({
   noor: Object.freeze({ skill: "rival", startX: -0.42, only360: false, startSpeed: SPEED.start + 0.6 }),
-  naru: Object.freeze({ skill: "expert", startX: 0.42, only360: true, startSpeed: SPEED.start }),
+  naru: Object.freeze({ skill: "expert", startX: 0.42, only360: false, startSpeed: SPEED.start - 1.5, easeOff: false }),
 });
 // 空中トリック: 大ジャンプ中に ← か → を押している間だけ回る（rate 回転/秒）。離すと次の半回転まで finishRate で回り切る。
 // 着地の瞬間に半回転の区切りから tolerance（回転）以上ずれていると転倒。points は半回転の数ごとの得点（180, 360, 540 …）。
@@ -63,8 +66,13 @@ export const RUBBER = Object.freeze({ gap: 20, span: 50, catchUp: 1.25, easeOff:
 // ブーストの代償（2026-11-13。それまでは純粋な得で、突っ込むほど良かった）: 岩を砕くたびに残り時間が smashCost 秒減る
 // （smashFloor 秒までは残す＝砕いた直後に切れて次の岩で転ばない）。端の深い砂（|x|>EDGE）に入ると、その場でブーストが切れる。
 // practiceRecoverWindow: 練習の立て直しの猶予（初めてでも間に合う長さ）。
+// 溜まり方（2026-11-13 オーナー「ブーストの溜まり具合をもう少しだけゆるやかに全体で」）: かすめ・着地・トリック・カービングで貯まる量に
+// CHARGE を一律に掛ける（0.85＝それまでの約15%ゆるやか）。練習の説明が渡す量（chargeBoost の直呼び）には掛けない。
+// 使わないと減る（同「ブーストは使わないとじわじわ減ってく仕様も欲しい」）: 最後に貯まってから decayDelay 秒たつと、毎秒 decay ずつ減る
+// （満タンから空まで約30秒。ブースト中・ゴール後は減らない）。
+export const CHARGE = 0.85;
 export const BOOST = Object.freeze({ duration: 3, land: 0.05, perfect: 0.22, good: 0.1, trickPerHalf: 0.1, fallLoss: 0.3, recoverWindow: 0.45, practiceRecoverWindow: 0.9,
-  smashCost: 0.35, smashFloor: 0.2 });
+  smashCost: 0.35, smashFloor: 0.2, decay: 0.033, decayDelay: 2.5 });
 // 評価の境目は DEFAULT_SEED（コース「稜線」）で合わせた: 空中で回って着地も決める＝S、回らないが着地を決めてブーストも使う＝A、
 // 着地が「良い」止まり＝B、ジャンプを使わず避けるだけ＝C（remake/test/desert_ride.mjs のボットで照合）。
 // 本番は COURSE_PACKS から1本を選ぶ（同じ長さ・難易度帯で、カーブと配置だけが違う）。
@@ -274,7 +282,7 @@ export function createGame(course, { rival = null } = {}) {
     course, rival, t: 0, z: 0, x: 0, vx: 0, speed: SPEED.start, rivalClock: 0, rivalRate: 1, rivalFinishT: null,
     air: 0, airTotal: 0, airPeak: 0, airKind: null, landingPress: null, lastJumpT: -9,
     rot: 0, spinDir: 0, spinHold: false, spinArmed: null, lastTrick: null,
-    gauge: 0, boostT: 0, carving: false, carveT: 0,
+    gauge: 0, chargedAt: -9, boostT: 0, carving: false, carveT: 0,
     fallT: 0, fallAt: -9, fallReason: null, preFallSpeed: SPEED.start, preFallCombo: 0, preFallGauge: 0,
     falls: 0, combo: 0, maxCombo: 0, score: 0,
     stats: { bigJumps: 0, hops: 0, perfect: 0, good: 0, plain: 0, nearMiss: 0, edgeTime: 0, bounces: 0, airTime: 0,
@@ -299,17 +307,21 @@ function award(game, kind, base, { combo = true, at = {} } = {}) {
   return points;
 }
 
-/** ブーストのゲージを貯める（0〜1）。満タンになった瞬間に gaugeFull を知らせる。練習の説明でも使う。 */
+/** ブーストのゲージを貯める（0〜1）。満タンになった瞬間に gaugeFull を知らせる。練習の説明でも使う（その時は CHARGE を掛けない）。 */
 export function chargeBoost(game, amount) {
   if (game.finished || !(amount > 0)) return game.gauge;
   const before = game.gauge;
   game.gauge = Math.min(1, before + amount);
+  game.chargedAt = game.t;
   if (before < 1 && game.gauge >= 1) game.events.push({ kind: "gaugeFull", t: game.t });
   return game.gauge;
 }
 
 /** 立て直しの猶予（秒）。練習では長い。 */
 export const recoverWindow = game => game.course?.practice ? BOOST.practiceRecoverWindow : BOOST.recoverWindow;
+/** 滑りの中で貯まる分（かすめ・着地・トリック・カービング）。CHARGE を掛ける。 */
+const earn = (game, amount) => chargeBoost(game, amount * CHARGE);
+
 /** 転倒からブーストで立て直せるか（岩に当たった直後の短い間だけで、ゲージが必要）。 */
 export function canRecover(game) {
   return !game.finished && (game.preFallGauge ?? 0) > 0 && game.fallT > 0 && game.fallReason === "rock"
@@ -427,7 +439,7 @@ function land(game) {
       game.stats.bestTrick = Math.max(game.stats.bestTrick, spun.degrees);
       game.lastTrick = { ...spun, t: game.t };
       award(game, "trick", SPIN.points[Math.min(half, SPIN.points.length - 1)], { at: spun });
-      chargeBoost(game, BOOST.trickPerHalf * half);
+      earn(game, BOOST.trickPerHalf * half);
     }
   }
   // 平地のホップは回避用。連打で得点・コンボ・加速・回復を稼がせない。
@@ -436,7 +448,7 @@ function land(game) {
     game.events.push({ kind: "land", grade: "hop", t: game.t });
     return;
   }
-  chargeBoost(game, BOOST.land); // 離陸ではなく、転ばず大ジャンプを着地した時だけ回復
+  earn(game, BOOST.land); // 離陸ではなく、転ばず大ジャンプを着地した時だけ回復
   const remaining = game.landingPress;
   let grade = "plain";
   if (remaining !== null && remaining <= JUMP.landingWindow) grade = "perfect";
@@ -444,11 +456,11 @@ function land(game) {
   if (grade === "perfect") {
     game.stats.perfect += 1;
     game.speed = Math.max(game.speed, Math.min(speedCap(game), game.speed + SPEED.landingBoost));
-    chargeBoost(game, BOOST.perfect);
+    earn(game, BOOST.perfect);
     award(game, "land", SCORE.perfect, { at: { grade, gaugeGained: game.gauge - gaugeBefore } });
   } else if (grade === "good") {
     game.stats.good += 1;
-    chargeBoost(game, BOOST.good);
+    earn(game, BOOST.good);
     award(game, "land", SCORE.good, { at: { grade, gaugeGained: game.gauge - gaugeBefore } });
   } else {
     game.stats.plain += 1;
@@ -500,6 +512,8 @@ export function step(game, input, dt) {
   if (game.boostT > 0) {
     game.boostT = Math.max(0, game.boostT - dt);
     if (game.boostT === 0) game.events.push({ kind: "boostEnd", t: game.t });
+  } else if (game.gauge > 0 && game.t - game.chargedAt > BOOST.decayDelay) {
+    game.gauge = Math.max(0, game.gauge - BOOST.decay * dt); // 使わないと、じわじわ減る
   }
   if (Math.abs(game.x) > EDGE && (game.air <= 0 || game.airKind === "hop")) {
     game.speed = Math.max(SPEED.min, game.speed - SPEED.edgeDrag * dt);
@@ -528,7 +542,7 @@ export function step(game, input, dt) {
   game.carving = carve > 0;
   if (carve > 0) {
     game.stats.carveTime += dt;
-    chargeBoost(game, CARVE.gaugePerSec * carve * dt);
+    earn(game, CARVE.gaugePerSec * carve * dt);
     game.carveT += carve * dt;
     if (game.carveT >= CARVE.tickSec) {
       game.carveT -= CARVE.tickSec;
@@ -586,7 +600,7 @@ export function step(game, input, dt) {
       const near = nearReward(closeness);
       game.stats.nearMiss += 1;
       award(game, "near", near.points, { at: { dx, closeness } });
-      chargeBoost(game, near.gauge);
+      earn(game, near.gauge);
     }
   }
   if (game.rival) stepRival(game, dt);
@@ -606,7 +620,7 @@ function stepRival(game, dt) {
   const caps = rubberCaps(Math.max(game.z, rivalZ) / game.course.length);
   let target = 1;
   if (lead > R.gap) target = 1 + (R.catchUp - 1) * Math.min(1, (lead - R.gap) / R.span);
-  else if (lead < -R.gap) target = 1 - (1 - R.easeOff) * Math.min(1, (-lead - R.gap) / R.span);
+  else if (lead < -R.gap && rival.easeOff !== false) target = 1 - (1 - R.easeOff) * Math.min(1, (-lead - R.gap) / R.span);
   // 前後が入れ替わったら、追い上げ（dev > 0）・手加減（dev < 0）の分はすぐ返す（記録より先へ逃げない・抜いた後まで手加減しない）
   if (lead < 0 && dev > 0) target = Math.min(target, 1 - Math.min(R.settle, dev * 2));
   else if (lead > 0 && dev < 0) target = Math.max(target, 1 + Math.min(R.settle, -dev * 2));
@@ -800,7 +814,7 @@ const RIVAL_SAMPLE = 1 / 30;
  * 同じコースなら毎回同じ（決定的）。人物とは当たらない（並んで滑るだけ）。
  */
 export function rivalRun(course, { who = "noor", maxTime = 200 } = {}) {
-  const { skill, startX, only360, startSpeed } = RIVALS[who] || RIVALS.noor;
+  const { skill, startX, only360, startSpeed, easeOff = true } = RIVALS[who] || RIVALS.noor;
   const game = createGame(course), memo = { lane: startX, only360 }, samples = [];
   game.x = startX; game.speed = startSpeed;
   const snap = () => samples.push({ t: game.t, z: game.z, x: game.x, vx: game.vx, air: game.air, airTotal: game.airTotal, airPeak: game.airPeak, airKind: game.airKind,
@@ -811,7 +825,7 @@ export function rivalRun(course, { who = "noor", maxTime = 200 } = {}) {
     botStep(game, skill, memo, 1 / 60);
     if (game.t >= next - 1e-9 || game.finished) { snap(); next += RIVAL_SAMPLE; }
   }
-  return Object.freeze({ who: RIVALS[who] ? who : "noor", finishTime: game.finishTime ?? game.t, samples, falls: game.falls });
+  return Object.freeze({ who: RIVALS[who] ? who : "noor", finishTime: game.finishTime ?? game.t, samples, falls: game.falls, easeOff });
 }
 
 /** 時刻 t のヌール（rivalRun の結果）。ゴールの後は旗の先で止まる。 */

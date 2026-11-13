@@ -1,10 +1,12 @@
 // DESERT RIDE（第4章ドバイ・サンドボード）の規則: コースの決定性と公平さ、ジャンプ・着地・転倒、採点と評価の境目。
 import assert from "node:assert/strict";
 import test from "node:test";
-import { COURSE, LAYOUT, NEAR, PRACTICE_WALL, PLAYER, nearReward, recoverWindow, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, DISPLAY, toKmh, toMeters, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
+import { CHARGE, COURSE, LAYOUT, NEAR, PRACTICE_WALL, PLAYER, nearReward, recoverWindow, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, DISPLAY, toKmh, toMeters, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
   summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing, RIVALS, jumpPeak, jumpHeight } from "../js/minigames/desert-ride-model.js";
 
 const DT = 1 / 60;
+/** ゲージを置く（使わないと減る仕組みを止めて、量そのものを確かめる）。 */
+const hold = (game, gauge) => { game.gauge = gauge; game.chargedAt = Infinity; };
 function play(course, skill, { maxTime = 200, race = false } = {}) {
   const game = createGame(course, { rival: race ? rivalRun(course) : null }), memo = {};
   while (!game.finished && game.t < maxTime) botStep(game, skill, memo, DT);
@@ -199,7 +201,7 @@ test("near misses are graded: closer to the rock pays more, and the safe middle 
   assert(shave.score > mid.score && mid.score > wide.score, `closer pays more (${shave.score} > ${mid.score} > ${wide.score})`);
   assert(shave.gauge > mid.gauge && mid.gauge > wide.gauge, "and charges more boost");
   assert(shave.score >= NEAR.maxPoints - 5 && wide.score <= NEAR.minPoints + 5);
-  assert(Math.abs(shave.gauge - NEAR.maxGauge) < 0.01 && Math.abs(wide.gauge - NEAR.minGauge) < 0.01);
+  assert(Math.abs(shave.gauge - NEAR.maxGauge * CHARGE) < 0.01 && Math.abs(wide.gauge - NEAR.minGauge * CHARGE) < 0.01, "the band's gauge, scaled by CHARGE");
   assert.deepEqual(nearReward(1), { points: NEAR.maxPoints, gauge: NEAR.maxGauge });
   assert.deepEqual(nearReward(0), { points: NEAR.minPoints, gauge: NEAR.minGauge });
   // 2つ岩の真ん中（いちばん安全な線）: 2つ合わせても、1つをぎりぎりでかすめた時のゲージに届かない程度
@@ -267,6 +269,53 @@ test("boost has a price: every smashed rock shortens it, and the deep sand at th
   assert(air.boostT > 1.9, "airborne over the edge keeps the boost");
   // 理想の滑りは、どのコースでも端でブーストを失わない（切り込めば流されない）
   for (const pack of COURSE_PACKS) for (const skill of ["expert", "perfect"]) assert.equal(play(buildCourse({ id: pack.id }), skill).stats.boostsLost, 0, `${pack.id} ${skill} keeps its boosts`);
+});
+
+test("the boost gauge charges a little slower everywhere, and drains slowly when it is not used (2026-11-13)", () => {
+  // 溜まり方: 滑りの中で貯まる分には一律に CHARGE を掛ける（練習の説明が渡す量には掛けない）
+  assert(CHARGE >= 0.8 && CHARGE < 0.95, "a little slower, not a lot");
+  const game = createGame(generateCourse(DEFAULT_SEED));
+  chargeBoost(game, 0.5);
+  assert.equal(game.gauge, 0.5, "a direct charge (the practice lesson) is not scaled");
+  // 使わないと減る: 最後に貯まってから decayDelay 秒は減らず、その後は毎秒 decay ずつ
+  const fresh = createGame(generateCourse(DEFAULT_SEED));
+  chargeBoost(fresh, 1);
+  for (let i = 0; i < Math.round((BOOST.decayDelay - 0.1) / DT); i++) step(fresh, {}, DT);
+  assert.equal(fresh.gauge, 1, "a fresh charge waits before it drains");
+  for (let i = 0; i < 60; i++) step(fresh, {}, DT);
+  assert(fresh.gauge < 1 && fresh.gauge > 1 - BOOST.decay * 1.2, `then it drains slowly (${fresh.gauge})`);
+  const full = 1 / BOOST.decay + BOOST.decayDelay;
+  assert(full > 25 && full < 45, `a full gauge lasts about half a run if never used (${full.toFixed(0)}s)`);
+  // 貯まるたびに、減り始めるまでの間がやり直しになる
+  const topped = createGame(generateCourse(DEFAULT_SEED));
+  chargeBoost(topped, 0.5);
+  for (let i = 0; i < Math.round((BOOST.decayDelay + 1) / DT); i++) step(topped, {}, DT);
+  const before = topped.gauge;
+  chargeBoost(topped, 0.1);
+  for (let i = 0; i < Math.round((BOOST.decayDelay - 0.1) / DT); i++) step(topped, {}, DT);
+  assert(Math.abs(topped.gauge - (before + 0.1)) < 1e-9, "charging again resets the wait");
+  // ブースト中は減らない（貯めた分は次に回せる）
+  const boosting = createGame(generateCourse(DEFAULT_SEED));
+  boosting.boostT = 10; boosting.gauge = 0.4; boosting.chargedAt = -100;
+  for (let i = 0; i < 120; i++) step(boosting, {}, DT);
+  assert.equal(boosting.gauge, 0.4, "no drain while boosting");
+  // 空になったら止まる（負にならない）
+  const empty = createGame(generateCourse(DEFAULT_SEED));
+  empty.gauge = 0.01; empty.chargedAt = -100;
+  for (let i = 0; i < 120; i++) step(empty, {}, DT);
+  assert.equal(empty.gauge, 0);
+});
+
+test("Naru is a real final rival: only the ideal spinning run beats him, by a small margin, and he never eases off (2026-11-13)", () => {
+  for (const pack of COURSE_PACKS) {
+    const course = buildCourse({ id: pack.id }), naru = rivalRun(course, { who: "naru" }), noor = rivalRun(course);
+    assert.equal(naru.easeOff, false); assert.equal(noor.easeOff, true);
+    assert(naru.finishTime < noor.finishTime - 2.5, `${pack.id}: Naru is well ahead of Noor (${naru.finishTime.toFixed(1)} vs ${noor.finishTime.toFixed(1)})`);
+    const expert = play(course, "expert"), perfect = play(course, "perfect");
+    const margin = naru.finishTime - expert.finishTime;
+    assert(margin > 0 && margin < 1.6, `${pack.id}: the ideal spinning run wins, but only just (${margin.toFixed(2)}s)`);
+    assert(perfect.finishTime > naru.finishTime + 1, `${pack.id}: clean landings without spins lose clearly`);
+  }
 });
 
 test("practice gives a longer window to recover after hitting the wall; the main run keeps the short one (2026-11-13)", () => {
@@ -399,7 +448,7 @@ test("air spins: hold ← or → in a big jump to rotate, letting go finishes th
   assert.equal(game.rot, 0, "the board faces forward again");
   // 着地の直前に回り始めると回り切れずに転倒（ゲージも減る）
   game = createGame(course);
-  game.gauge = 0.5;
+  hold(game, 0.5);
   jumpAtNextBump(game);
   step(game, {}, DT);
   while (game.air > 0.2) step(game, {}, DT);
@@ -449,7 +498,7 @@ test("boost: the gauge fills from near misses, successful big landings and spins
   while (fill.air > JUMP.landingWindow * 0.5) step(fill, {}, DT);
   press(fill);
   while (fill.air > 0) step(fill, {}, DT);
-  assert(Math.abs(fill.gauge - BOOST.land - BOOST.perfect) < 1e-9);
+  assert(Math.abs(fill.gauge - (BOOST.land + BOOST.perfect) * CHARGE) < 1e-9);
 });
 
 test("boost spends any stocked gauge proportionally, even during recovery or an active boost", () => {
@@ -604,7 +653,7 @@ test("repeated flat hops cannot farm score, combo, speed or gauge, including the
 });
 
 test("landing recovery is capped, awarded once and absent on a failed spin or bounce", () => {
-  for (const [grade, braceAt, gain] of [["plain", null, BOOST.land], ["good", 0.45, BOOST.land + BOOST.good]]) {
+  for (const [grade, braceAt, gain] of [["plain", null, BOOST.land * CHARGE], ["good", 0.45, (BOOST.land + BOOST.good) * CHARGE]]) {
     const game = createGame(generateCourse(DEFAULT_SEED));
     jumpAtNextBump(game);
     if (braceAt !== null) { while (game.air > braceAt) step(game, {}, DT); press(game); }
@@ -614,12 +663,12 @@ test("landing recovery is capped, awarded once and absent on a failed spin or bo
   }
   for (const initial of [0, 0.99, 1]) {
     const game = createGame(generateCourse(DEFAULT_SEED));
-    game.gauge = initial; jumpAtNextBump(game);
+    hold(game, initial); jumpAtNextBump(game);
     assert.equal(game.gauge, initial);
     while (game.air > JUMP.landingWindow * 0.5) step(game, {}, DT);
     press(game); press(game);
     while (game.air > 0) step(game, {}, DT);
-    const expected = Math.min(1, initial + BOOST.land + BOOST.perfect);
+    const expected = Math.min(1, initial + (BOOST.land + BOOST.perfect) * CHARGE);
     assert(Math.abs(game.gauge - expected) < 1e-9);
     const landing = game.events.find(e => e.kind === "land" && e.grade === "perfect");
     assert(Math.abs(landing.gaugeGained - (expected - initial)) < 1e-9);
@@ -880,10 +929,10 @@ test("carving: steering into a curve on the ground charges the boost gauge and s
   const carve = start(1);
   for (let i = 0; i < 30; i++) step(carve, { steer: 0.5 }, DT);
   assert.equal(carve.carving, true);
-  assert(Math.abs(carve.gauge - CARVE.gaugePerSec * 0.5 * 0.5) < 1e-6, `half tilt for half a second charges a quarter of the rate (${carve.gauge})`);
+  assert(Math.abs(carve.gauge - CARVE.gaugePerSec * CHARGE * 0.5 * 0.5) < 1e-6, `half tilt for half a second charges a quarter of the rate (${carve.gauge})`);
   const full = start(1);
   for (let i = 0; i < 30; i++) step(full, { right: true }, DT);
-  assert(Math.abs(full.gauge - CARVE.gaugePerSec * 0.5) < 1e-6, "full tilt charges at the full rate");
+  assert(Math.abs(full.gauge - CARVE.gaugePerSec * CHARGE * 0.5) < 1e-6, "full tilt charges at the full rate");
   // 0.8秒ぶん切り込むごとに少し得点（コンボは増やさない）
   const scored = start(1);
   while (scored.stats.carves < 1) { scored.x = 0; step(scored, { right: true }, DT); }
@@ -938,7 +987,9 @@ test("the autopilot looks ahead: it holds its line through curves, never dithers
 
 test("rivals: Noor starts a touch quicker than the rider, Naru boosts and spins in the recorded run", () => {
   assert(RIVALS.noor.startSpeed > SPEED.start && RIVALS.noor.startSpeed < SPEED.start + 1.5);
-  assert.equal(RIVALS.naru.startSpeed, SPEED.start);
+  // 2026-11-13 オーナー「なるが弱かった」: なるは 720 まで回る腕前。出だしだけ少し遅くして、理想の滑りでやっと勝てる差にした
+  assert(RIVALS.naru.startSpeed < SPEED.start && RIVALS.naru.startSpeed >= SPEED.start - 2);
+  assert.equal(RIVALS.naru.only360, false, "Naru spins up to 720");
   const course = generateCourse(DEFAULT_SEED), noor = rivalRun(course), naru = rivalRun(course, { who: "naru" });
   assert(rivalAt(noor, 1).z > rivalAt(naru, 1).z, "Noor is ahead of Naru off the line");
   assert(naru.samples.some(s => s.boostT > 0), "the playback knows when Naru is boosting (aura)");
@@ -1002,6 +1053,8 @@ test("a close race: the rival eases off when far ahead and catches up when far b
         // 終盤は keep 秒まで返すので、いちばん離れた所（相手がゴールした後を含む）でも keep 秒ぶんは待つ。
         // 2026-11-13: 起伏が増えて跳ばない人がなるから 250m 以上離されるようになり、いちばん離れた所が「相手のゴール後」になった。
         // そこは設計上 keep 秒ぶん（最高速で約17m〜ブーストで約23m）なので、25m は持ち分が満額の区間で確かめる
+        // なる（2026-11-13 オーナー「なるが弱かった」）は手加減しない: 大きく離されても待たない
+        if (rival.easeOff === false) { assert(behind - behindRaw < 3, `${label}: Naru never waits (${behind.toFixed(0)} vs ${behindRaw.toFixed(0)} m)`); continue; }
         if (earlyRaw < -80) assert(early - earlyRaw >= 25, `${label}: a rider left far behind sees the rival wait (${early.toFixed(0)} vs ${earlyRaw.toFixed(0)} m)`);
         if (behindRaw < -80) assert(behind - behindRaw >= RUBBER.keep * SPEED.max - 1, `${label}: even at the widest gap the rival keeps its last allowance (${behind.toFixed(0)} vs ${behindRaw.toFixed(0)} m)`);
       }
@@ -1024,7 +1077,7 @@ test("rock and spin falls retain positive gauge without refilling an empty gauge
   const rock = course.features.find(f => f.kind === "rock");
   for (const initial of [0, 0.01, 0.15, 0.3, 0.6, 1]) {
     const game = createGame(course);
-    game.gauge = initial;
+    hold(game, initial);
     while (!game.passed.has(rock)) { game.x = rock.x; step(game, {}, DT); }
     assert.equal(game.falls, 1);
     assert.equal(game.gauge, Math.max(initial * 0.5, initial - BOOST.fallLoss));
@@ -1033,7 +1086,7 @@ test("rock and spin falls retain positive gauge without refilling an empty gauge
     jumpAtNextBump(spin);
     step(spin, {}, DT);
     while (spin.air > 0.2) step(spin, {}, DT);
-    spin.gauge = initial;
+    hold(spin, initial);
     while (spin.air > 0) step(spin, { left: true }, DT);
     assert.equal(spin.events.at(-1).reason, "spin");
     assert.equal(spin.gauge, Math.max(initial * 0.5, initial - BOOST.fallLoss));

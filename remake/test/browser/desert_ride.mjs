@@ -190,7 +190,7 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-page-best")).waitFor();
     assert.equal(await page.locator(t("desert-ride")).count(), 0, "the game cleans itself up");
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_desert_ride_preview")).rank), "S");
-    // ヌールに勝ったので、単体ページでもなる（裏の相手）と勝負できる
+    // ヌールに勝ったので、単体ページでもなる（好敵手）と勝負できる
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_desert_ride_preview")).beatNoor), true);
     await page.locator(t("desert-page-naru")).waitFor();
     await page.locator(t("desert-page-start")).click();
@@ -437,7 +437,7 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-page-best")).waitFor();
   }, { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
 
-  // 2026-11-11: カーブの案内とカービング、ブースト中の曲の速さ、裏の相手（なる）の名乗り
+  // 2026-11-11: カーブの案内とカービング、ブースト中の曲の速さ、なるの名乗り
   // 2026-11-11 オーナー「ジャンプ中にタイミングよく押すと着地が決まる仕様が気づきづらい」「ブーストは溜まるとどんどん放電みたいな演出」
   await check("landing-cue-on-the-jump-button-and-boost-discharge-grows-with-the-gauge", async page => {
     await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
@@ -527,10 +527,10 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-help")).click();
     assert.match(await page.locator(t("desert-help-panel")).innerText(), /カーブでは外へ流される。曲がる向きへ切り込むと踏ん張れて、ブーストも貯まる/);
     await page.locator(t("desert-help-close")).click();
-    // 裏の相手: スタートの合図の間だけ、人物と数字に重ならない画面の下に名乗りが出る
+    // なるとの勝負: スタートの合図の間だけ、人物と数字に重ならない画面の下に名乗りが出る
     await page.locator(t("desert-start-naru")).click();
     await phase(page, "run");
-    assert.equal((await page.locator(t("desert-versus")).innerText()).replace(/\s+/g, " "), "裏ボス VS なる");
+    assert.equal((await page.locator(t("desert-versus")).innerText()).replace(/\s+/g, " "), "好敵手 VS なる"); // 2026-11-13 オーナー「裏ボスなる　とかシステム的な書き方はしないで」
     await page.waitForFunction(() => {
       const node = document.querySelector('[data-test="desert-versus"]');
       return window.__desertRide.countdown > 0 && node.classList.contains("show") && Number(getComputedStyle(node).opacity) > 0;
