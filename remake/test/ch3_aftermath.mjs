@@ -125,8 +125,10 @@ const MASHIRO_EXTRAS = ["ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_m
 const detourIds = ["ch3_mukai_after_tournament", "ch3_cigarman_trace", "ch3_emil_workshop", ...VOLK_VISITS, "ch3_volk_after_ch3",
   "ch3_volk_lime", "ch3_volk_fifth", "ch3_volk_revisit",
   "ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_first_reply",
-  "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch",
-  ...MASHIRO_EXTRAS, "ch3_mukai_yoru_playlist"];
+  "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch", "ch3_saku_steve_notes",
+  ...MASHIRO_EXTRAS];
+// #3468 G案（ムカイさん×ヨルの曲順）は mukai の寄り道の末尾
+detourIds.push("ch3_mukai_yoru_playlist");
 const openFirst = ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_second", "ch3_volk_after_ch3"];
 assert.deepEqual(CH3_AFTERMATH_DETOURS.map(scene => scene.id), detourIds);
 for (const scene of CH3_AFTERMATH_DETOURS) {
@@ -249,6 +251,40 @@ assert(!mukaiAfter.lines.some(line => /屋根裏|鍵/.test(line.text || "")), "t
   assert.deepEqual(volkOpen(), ["ch3_volk_after_ch3"]);
 }
 console.log("PASS: Chapter 3 aftermath reopens Volk's unread visits in order, each with the same optional-scene affinity");
+// #3468 C案: スティーブ×綾取の差し入れ。二人に面識があり、綾取の帰り支度が始まった頃（優勝の翌日〜なるへの報告）だけ。
+// 煙幕の片づけの朝（帰郷の日）からは出さない。好感度は動かさず、ピザは入口の小道具でタイマーのオチを繰り返さない。
+{
+  const notes = CH3_AFTERMATH_DETOURS.find(scene => scene.id === "ch3_saku_steve_notes");
+  assert.deepEqual([notes.file, notes.location, notes.met, notes.to], ["ch3_rivals", "煙幕", ["saku", "steve"], "ch3_naru_reconcile"]);
+  const script = readData("dialogue/ch3_rivals").dialogues.find(row => row.dialogue_id === "ch3_saku_steve_notes");
+  assert(!script.lines.some(line => line.type === "apply" || line.affinity), "no affinity change");
+  assert(!JSON.stringify(script.lines).includes("タイマー"), "the timer joke of ch3_steve_two_timers is not repeated");
+  assert(script.lines.some(line => line.speaker === "saku") && script.lines.some(line => line.speaker === "steve"));
+  const open = value => availableAftermathDetours(value).some(scene => scene.id === "ch3_saku_steve_notes");
+  const save = winningSave();
+  save.met = { saku: true, steve: true };
+  beginChapterThreeAftermath(save);
+  assert(!open(save), "not on the victory night");
+  completeChapterThreeAftermathScene(save, "ch3_abyss_hotel");
+  assert(open(save), "the day after the win");
+  const onlySaku = structuredClone(save);
+  onlySaku.met = { saku: true };
+  assert(!open(onlySaku), "only when hajime has met both");
+  completeChapterThreeAftermathScene(save, "ch3_mashiro_recovery");
+  assert(open(save), "still open until the report to Naru is read");
+  const unread = structuredClone(save);
+  completeChapterThreeAftermathScene(unread, "ch3_naru_reconcile");
+  assert(!open(unread), "closed on the cleanup morning (the day Ayatori goes home)");
+  assert.equal(completeAftermathDetour(unread, "ch3_saku_steve_notes"), false);
+  assert.equal(completeAftermathDetour(save, "ch3_saku_steve_notes"), true);
+  assert(!open(save), "read once");
+  // 後日の一言は第4章のLIME（綾取の連絡先がある時だけ届く）。差し入れの既読を字面で待つ。
+  const note = readData("lime_messages").messages.find(message => message.id === "lime_ch4_saku_steve_note");
+  assert.deepEqual([note.sender, note.chapter, note.trigger_condition, note.trigger_flag],
+    ["saku", 4, "flag", "_ch3_read_ch3_saku_steve_notes"]);
+  assert(note.replies.every(reply => !reply.affinity), "the follow-up does not move affinity");
+}
+console.log("PASS: Steve and Ayatori's notes visit opens only before Ayatori packs up, with a chapter-4 LIME follow-up");
 // IR22: 綾取の締めくくり（♥5）は、大会前の来店で読めなかった時だけ大会後の寄り道から。煙幕の片づけの前まで。
 {
   assert.deepEqual(CH3_AFTERMATH_FINALES.map(entry => [entry.who, entry.dialogue]),
@@ -439,7 +475,9 @@ console.log("PASS: Chapter 3 aftermath offers Volk's LIME (after the fourth visi
   lessonSave.affinity.saku = AFFINITY_RANK_PTS[4];
   lessonSave.affinity.steve = AFFINITY_RANK_PTS[4];
   for (const id of ["ch3_mashiro_play_3", "ch3_mashiro_practice", "ch3_mashiro_black_tea"]) lessonSave.flags[`_ch3_read_${id}`] = true;
-  for (const id of detourIds) assert.equal(completeAftermathDetour(lessonSave, id), true, id);
+  // 窓の短い寄り道（to）は片づけの朝には閉じている（#3468 C案）
+  const untilCleanup = detourIds.filter(id => !CH3_AFTERMATH_DETOURS.find(scene => scene.id === id).to);
+  for (const id of untilCleanup) assert.equal(completeAftermathDetour(lessonSave, id), true, id);
   assert.deepEqual(availableAftermathDetours(lessonSave), []);
   assert.deepEqual(who(lessonSave), ["volk"], "lessons stay open after every detour is read");
   for (const id of ["ch3_enmaku_cleanup", "ch3_ageha_reunion", "ch3_tsumugi_result"]) {

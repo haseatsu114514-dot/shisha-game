@@ -48,7 +48,7 @@ async function fixture({ waitAt = null, faceReady = true } = {}) {
   const values = {
     'state.js': { state: original, config: { shortSeen: false } },
     'util.js': { el, sleep: async () => {}, nextFrame: async () => wait('frame') },
-    'data.js': { DB: {}, displayName: () => 'なる', faceIconUrl: () => 'existing-face' },
+    'data.js': { DB: {}, displayName: () => 'なる', limeAccountName: () => 'なる', faceIconUrl: () => 'existing-face' },
     'lime-icons.js': { customLimeIconUrl: () => null },
     'ui.js': { imageReady: async () => { counters.images++; await wait('image'); return faceReady; }, loadingNotice: () => ({}) },
     'module-loading.js': { withLoadingNotice: async (task, _opts) => await task },

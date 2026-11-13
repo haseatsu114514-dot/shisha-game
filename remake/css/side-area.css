@@ -59,7 +59,7 @@
 #backdrop[data-tint="dim"] ~ .side .side-smoke.a { opacity: .32; }
 #backdrop[data-tint="dim"] ~ .side .side-smoke.b { opacity: .2; }
 /* 設定「揺れ・閃光を減らす」と端末の「動きを減らす」では流さない（煙は止まった絵として残る） */
-body.reduce-shake .side-smoke { animation: none; }
+body.reduce-shake .side-smoke, :root[data-side-calm="on"] .side-smoke { animation: none; }
 @media (prefers-reduced-motion: reduce) { .side-smoke { animation: none; } }
 
 /* ---------------------------------------------------------------- B 縦書きの帯（左の余白の上から、ステージの端に沿った1列） */
@@ -130,4 +130,13 @@ body.reduce-shake .side-smoke { animation: none; }
 /* 隠した LOG の次に並ぶ「用語」の左の区切り線は要らない（旧版・紙のテーマで線だけ残るため） */
 :root[data-side-pad="on"] #vn .vn-controls > .vn-ctl[data-test="vn-glossary"]::before { content: none !important; }
 :root[data-side-pad="on"] #hud .hud-right > :is(.hud-lime, .hud-menu) { visibility: hidden !important; }
+/* 会話の操作を余白へ出している間は、会話欄の上に伸びる操作札（phone-density.css の --phone-tap）の分を空けない。
+   選択肢を PC と同じ高さ（3択以上は会話欄の上 62px、2択は 94px）へ下げる（オーナー「2択が上すぎる」「もう少し上」2026-11-13・YHK14）。
+   新版（look-neo.css）は帯のすぐ上に自分で置くので、ここでは触らない（#stage #vn の規則が勝つ）。 */
+html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:root) .vn-choices {
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px);
+}
+html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 94px);
+}
 :root[data-side-pad="on"].side-probe #hud .hud-right > :is(.hud-lime, .hud-menu) { visibility: inherit !important; }

@@ -34,7 +34,8 @@ export function openGallery() {
   const announceComplete = shouldAnnounceCompletion(stats, progress);
   if (announceComplete) markCompletionAnnounced();
   const fraction = s => `${s.unlocked} / ${s.total}（${s.rate}%）`;
-  const tabCount = s => `${s.unlocked}/${s.total}`;
+  // 中身が1つも無い札（採用前の漫画・ムービー）は「0/0」でなく「準備中」と読ませる
+  const tabCount = s => s.total === 0 ? "準備中" : `${s.unlocked}/${s.total}`;
   return new Promise(resolve => {
     let tab = "all", closed = false, active = null, page = 0, trigger = null;
     let video = null, movieBgm = null, observer;

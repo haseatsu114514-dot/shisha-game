@@ -2969,6 +2969,60 @@
           "flag": "_spot_follow_minto_samechan"
         }
       ]
+    },
+    {
+      "dialogue_id": "hiyori_minto_seat_followup",
+      "metadata": {
+        "private_scene": false,
+        "setting": "ひより×みんと（Issue #3468 B案）の後日の一言。hiyori_shop_minto_seat の後、次のぺぱーみんとの来店の冒頭で一度だけ（daily/spot-encounters.js の FOLLOWUPS）。ひよりが自分から同じ奥の席を選んでいる。みんとは種明かしをしない。"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ぺぱーみんとのドアを開けると、奥のソファのランプが、もう落としてあった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その席で、ひよりが紅茶を両手で包んでいる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺に気づくと、物憂げに小さく手を上げて、また煙のほうへ目を戻した。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……今夜は、ここで少しだけ、溶けていくから",
+          "inner": "はじめくんだ。ごめん、今日は充電中。話すのは次ね"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "あ、はじめくん♡ 奥は今、予約席なの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "予約してたんだ"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "ううん、してないよ。ドア開けたら、まっすぐあそこ♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとはそれ以上何も言わずに、奥のテーブルへ二杯目の紅茶を運んでいった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_follow_minto_hiyori"
+        }
+      ]
     }
   ]
 }

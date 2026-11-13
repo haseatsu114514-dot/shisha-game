@@ -3205,6 +3205,40 @@
       ]
     },
     {
+      "id": "lime_ch4_saku_steve_note",
+      "sender": "saku",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch3_read_ch3_saku_steve_notes",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "saku",
+          "text": "福岡で、東京のノートを開いた"
+        },
+        {
+          "sender": "saku",
+          "text": "端に黒い三角が一つ。横に僕の字で「置いた炭。スティーブさんの」って書いてあった"
+        },
+        {
+          "sender": "saku",
+          "text": "一台だけ、内から待つ順番で試した。感想を字で送ったら、返事が来た。最後の一行だけ、三角だった"
+        }
+      ],
+      "replies": [
+        {
+          "text": "その三角、読めました？",
+          "response": "半分。残りは、次に会った時に手でやってもらう",
+          "affinity": 0
+        },
+        {
+          "text": "綾取さんも、低温に寄せるんですか",
+          "response": "寄せない。僕は先に立たせる方。ただ、二口目は少し軽かった。それも書いておいた",
+          "affinity": 0
+        }
+      ]
+    },
+    {
       "id": "lime_ch4_sumi_eve",
       "sender": "sumi",
       "chapter": 4,

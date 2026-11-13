@@ -3,7 +3,9 @@
 import { el } from "./core/util.js";
 import { imgFileUrl } from "./core/img-file.js";
 import { initStageFit } from "./core/stage-fit.js";
+import { initSideArea } from "./core/side-area.js";
 initStageFit(document.getElementById("stage")); // 画面の当て方は本編と同じ共通部品（#3076）
+initSideArea({ stage: document.getElementById("stage"), standalone: true }); // 左右の余白の煙と縁（YHK）
 import { runCamelRace } from "./minigames/camel-race.js";
 import { SE, unlockAudio } from "./core/audio.js";
 import { loadCamelArt } from "./minigames/camel-race.js";
