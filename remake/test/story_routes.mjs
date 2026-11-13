@@ -363,6 +363,27 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert(offered(value).includes('ch3_saku_mashiro_soon_back'));
 }
 {
+  // #3468 H案: ましろ×ムカイさん。mukaiの二日目の後に棚整理、その後に札が残る後日の一言を一度ずつ。
+  const value = tokyo();
+  const shelf = v => offered(v).filter(id => id.startsWith('ch3_mashiro_mukai_'));
+  readUntil(value, 'ch3_mukai_intro');
+  assert.deepEqual(shelf(value), [], 'not before the second day at mukai');
+  readUntil(value, 'ch3_rest_before_recovery');
+  assert.deepEqual(shelf(value), ['ch3_mashiro_mukai_syrup_shelf'], 'the shelf comes before its follow-up');
+  for (const id of ['ch3_mashiro_mukai_syrup_shelf', 'ch3_mashiro_mukai_shelf_tags']) {
+    const place = wiring.CH3_OPTIONAL_SCENES[id];
+    assert.deepEqual([place.file, place.location, place.bg], ['ch3_mashiro', 'mukai', 'bg_mukai_shop'], id);
+    const lines = sceneData.get(id).lines;
+    assert(!lines.some(row => row.type), `${id}: no affinity, stats, memory or flag rows`);
+    assert(lines.some(row => row.speaker === 'mashiro') && lines.some(row => row.speaker === 'mukai_master'), id);
+    assert(!/大会|優勝|本番|シガーマン|猫|写真|ましろさん|経費/.test(lines.map(row => row.text || '').join('')), id);
+  }
+  wiring.commitOptionalRead(value, 'ch3_mashiro_mukai_syrup_shelf');
+  assert.deepEqual(shelf(value), ['ch3_mashiro_mukai_shelf_tags']);
+  wiring.commitOptionalRead(value, 'ch3_mashiro_mukai_shelf_tags');
+  assert.deepEqual(shelf(value), [], 'read once');
+}
+{
   // 前夜: location_contract どおり、実際に滞在中の人物と会う約束だけが根拠。
   const window = value => clock.tokyoTime(value, clock.TOKYO_FREE_TIMES.find(time => time.id === wiring.EVENING_WINDOW));
   const eve = (visitors, {lovers = visitors, met = ['steve'], status = 'staying', contacts = lovers} = {}) => {

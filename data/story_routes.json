@@ -130,6 +130,8 @@
         "ch3_mashiro_black_tea",
         "ch3_saku_mashiro_tea_tin",
         "ch3_saku_mashiro_soon_back",
+        "ch3_mashiro_mukai_syrup_shelf",
+        "ch3_mashiro_mukai_shelf_tags",
         "ch3_saku_lime",
         "ch3_saku_missed",
         "ch3_saku_cleanup",
@@ -526,6 +528,18 @@
       "seen": [
         "ch3_saku_mukai_visit"
       ]
+    },
+    "ch3_mashiro_mukai_syrup_shelf": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "#3468 H案: mukaiの棚整理で、ムカイさんの試飲の瓶とましろの休憩用の缶にそれぞれ本人用の札を付ける（ましろ×ムカイさん）。ムカイさんの甘いラテとましろの重い葉が出たmukaiの二日目の後。大会後は ch3-aftermath-progress.js の寄り道から。"
+    },
+    "ch3_mashiro_mukai_shelf_tags": {
+      "seen": [
+        "ch3_mashiro_mukai_syrup_shelf"
+      ],
+      "comment": "#3468 H案の後日の一言: 二人の本人用の札が同じ棚の別の場所に残っている。"
     },
     "ch3_saku_lime": {
       "seen": [
