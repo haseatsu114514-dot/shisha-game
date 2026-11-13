@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { suite, storageSnapshot } from "./support.mjs";
-import { flickFromHandle } from "./axe_flick_input.mjs";
+import { flickFromHandle, stanceAt } from "./axe_flick_input.mjs";
 
 const game = page => page.locator('[data-test="axe-game"]');
 const coach = (page, kind) => page.locator(`[data-test="axe-coach"][data-kind="${kind}"]`);
@@ -101,21 +101,22 @@ async function completeTapPullLesson(page) {
   assert.match(await coach(page, "welcome").innerText(), /お金も体力も使わない/);
   assert.match(await coach(page, "welcome").innerText(), /上へ弾いて投げる/);
   assert.doesNotMatch(await coach(page, "welcome").innerText(), /横、縦、回転/);
-  // 2026-11-13 手応えレビュー指摘13: 弾いて投げるレッスンは4枚。先に投げ、刺さった所の点を見てから得点の決まりを聞く
+  // 2026-11-13: 弾いて投げるレッスンは6枚（あいさつ→横→縦→上へ弾く→今の一投と得点→終わり）。
+  // 狙いは横・縦の針を的のタップで止める（オーナー「縦横の軸は最初のに戻してもいい、投げる時だけ」）。得点の決まりは1投目の後
   await guide(page, "welcome", false, false);
   assert.equal(await coach(page, "target").count(), 0, "the scoring talk waits until after the first throw");
-  const target = await page.locator('.axe-target').evaluate(node => {
-    const point = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
-    return { x: point.x, y: point.y };
-  });
-  await page.mouse.click(target.x, target.y); await phase(page, "power");
+  await stanceAt(page); await coach(page, "horizontal").waitFor();
+  assert.match(await coach(page, "horizontal").innerText(), /2 \/ 6/);
+  await guide(page, "horizontal", false, false);
+  assert.equal(await page.locator('.axe-aim-guide[data-guide="horizontal"]').getAttribute("opacity"), "1", "the gold mark shows where to stop");
+  await stanceAt(page); await coach(page, "vertical").waitFor();
+  await guide(page, "vertical", false, false);
+  await stanceAt(page); await phase(page, "power");
   await coach(page, "power").waitFor();
-  assert.match(await coach(page, "power").innerText(), /2 \/ 4/);
+  assert.match(await coach(page, "power").innerText(), /4 \/ 6/);
   assert(await page.locator('[data-test="axe-coach-line"]').evaluate(n => n.textContent.split("。").filter(Boolean).length <= 2), "two sentences only");
   await guide(page, "power", false, false);
   assert.equal(await page.locator('[data-test="axe-flick-hint"]').getAttribute("opacity"), "1", "the small hand shows the flick instead of words");
-  assert.equal(await coach(page, "horizontal").count(), 0);
-  assert.equal(await coach(page, "vertical").count(), 0);
   // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、適正の速さで弾く
   await flickFromHandle(page, { power: .62 }); await page.clock.runFor(1200);
   await coach(page, "target").waitFor();
@@ -130,7 +131,7 @@ async function completeTapPullLesson(page) {
   await guide(page, "finish", false, false);
   const result = await page.evaluate(() => window.lessonPromise);
   assert(result.completed && !result.cancelled && result.tutorial);
-  assert.equal(result.inputVersion, "tap-flick-v1");
+  assert.equal(result.inputVersion, "gauge-flick-v1");
   assert.equal(result.throws.length, 1); assert.equal(result.maximum, 8);
   return result;
 }

@@ -1,7 +1,7 @@
 // VOL07: 斧投げBar・クラブSEAM・ボドゲカフェで自分の道具を一度だけ買い、ミニゲームの画面で効き目が見える。
 import assert from "node:assert/strict";
 import { suite, assertFits } from "./support.mjs";
-import { flickFromHandle } from "./axe_flick_input.mjs";
+import { flickFromHandle, stanceAt } from "./axe_flick_input.mjs";
 const t = id => `[data-test="${id}"]`;
 
 async function setup(page, values, flags = {}) {
@@ -44,10 +44,8 @@ async function closeGear(page) {
 }
 async function axeThrow(page) {
   await axePhase(page, "choice");
-  const point = await page.locator('.axe-target').evaluate(node => {
-    const p = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM()); return {x:p.x,y:p.y};
-  });
-  await page.mouse.click(point.x, point.y); await axePhase(page, "power");
+  // 2026-11-13: 狙いは的のタップで横→縦の針を止める（投げる時だけ上へ弾く）
+  await stanceAt(page); await axePhase(page, "power");
   // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、適正の速さで弾く
   await flickFromHandle(page, { power: .62 });
   await axePhase(page, "result"); await page.locator(t('axe-action') + ':not([disabled])').click();
@@ -79,7 +77,7 @@ await suite("hobby-gear", async check => {
     await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === "choice");
     await page.waitForTimeout(350);
     await page.locator('[data-test="axe-action"]:not([disabled])').click();
-    await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === "power");
+    await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === "horizontal");
     await page.waitForFunction(() => /マイ斧で揺れ−10%/.test(document.querySelector('[data-test="axe-steadiness"]')?.textContent || ""));
     await page.evaluate(() => G.abort.abort());
     await page.evaluate(() => G.flow);
@@ -109,7 +107,7 @@ await suite("hobby-gear", async check => {
     assert.equal(finished.records.practice.plays, 1);
     assert.equal(finished.records.career.games, 1);
     assert.equal(finished.records.practice.last.equipment.id, 'gear_hatchet_precision');
-    assert.equal(finished.records.practice.last.inputVersion, 'tap-flick-v1');
+    assert.equal(finished.records.practice.last.inputVersion, 'gauge-flick-v1');
     assert.equal(finished.records.practice.last.throws.length, 3);
     assert.equal(finished.owned.filter(id => id === 'gear_hatchet').length, 1);
     assert.equal(finished.owned.filter(id => id === 'gear_hatchet_precision').length, 1);

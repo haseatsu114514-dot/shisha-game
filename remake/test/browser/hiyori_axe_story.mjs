@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { suite, assertFits } from "./support.mjs";
-import { flickFromHandle } from "./axe_flick_input.mjs";
+import { flickFromHandle, stanceAt } from "./axe_flick_input.mjs";
 const required=["_hiyori_cracks_done","_hiyori_tonari_return_done","_hiyori_tonari_followup_done","_hiyori_tonari_afterwork_done"];
 async function setup(page) {
   await page.evaluate(async required=>{
@@ -28,12 +28,9 @@ async function action(page,touch=false) {
 // Drive the new default with real board taps and a real mouse/touch drag; never inject scores.
 async function aimAxe(page, touch = false) {
   assert.equal(await page.locator('[data-test="axe-game"]').getAttribute('data-input-mode'), 'tap-pull');
-  const point = await page.locator('[data-test="axe-target"]').evaluate(node => {
-    const p = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
-    return { x: p.x, y: p.y };
-  });
-  if (touch) await page.touchscreen.tap(point.x, point.y); else await page.mouse.click(point.x, point.y);
-  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'power');
+  // 2026-11-13: 狙いは的のタップで横→縦の針を止める（投げる時だけ上へ弾く）。レッスンの説明が開いたらそこで止まる
+  await stanceAt(page, { touch });
+  if (!await page.locator('[data-test="axe-coach"]').count()) await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'power');
 }
 async function pullAxe(page, touch = false, power = .62) {
   // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、power になる速さで弾く（axe_flick_input.mjs）。
