@@ -50,7 +50,7 @@ const RIVAL_FACE_DELAY_MS = 1200;
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
  * その腕前相当の結果を出して進む（UIの流れ自体は通常どおり通る）。
  */
-export const craftTest = { auto: null }; // "good" / "bad" / "burn"（温度を上げ続けて焦がす）
+export const craftTest = { auto: null, aim: null }; // auto: "good" / "bad" / "burn"（温度を上げ続けて焦がす）。aim: "attack" で上手な自動操作が攻めの帯を狙う（桜井式の大会だけ）
 
 export const MODE_LABEL = { tutorial: "LESSON", drill: "PRACTICE", rehearsal: "REHEARSAL", tournament: "SMOKE CROWN CUP" };
 const MODE_NOTE = { tutorial: "レッスン", drill: "練習モード", rehearsal: "リハーサル", tournament: "大会" };

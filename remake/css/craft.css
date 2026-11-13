@@ -1061,6 +1061,8 @@
 .pull-read[data-tone="danger"] .pull-state { color: #ff5a3a; animation: thermal-warn .45s ease-in-out infinite alternate; }
 .pull-read[data-tone="cold"] .pull-state { color: #eef3f6; animation: thermal-warn .45s ease-in-out infinite alternate; }
 .pull-read[data-tone="cool"] .pull-state { color: #c4bcb2; }
+/* 桜井式の大会の「攻めの帯」（SKR04） */
+.pull-read[data-tone="attack"] .pull-state { color: #ff5cb4; }
 .pull-drift { font-size: 22px; font-weight: 800; color: #d6e4f2; animation: drift-fall 1.2s ease-in infinite; }
 @keyframes drift-fall { 0% { transform: translateY(-5px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(7px); opacity: 0; } }
 /* 回数の点は廃止（TH80）。炭・雨・少穴は短い札。 */
@@ -1404,6 +1406,7 @@ body:not(:root) .bench[data-step="pack"] .mix-temperature-preview {
 .pull-current-zone .pull-destination[data-tone="hot"] { color: #ffb88a; }
 .pull-current-zone .pull-destination[data-tone="danger"] { color: #ff7a6a; }
 .pull-current-zone .pull-destination[data-tone="cool"], .pull-current-zone .pull-destination[data-tone="cold"] { color: #a9d6ff; }
+.pull-current-zone .pull-destination[data-tone="attack"] { color: #ff8fce; } /* 桜井式の攻めの帯（SKR04） */
 /* CRN10: 蒸らしの集中の札 */
 html .bench[data-mode] .pull-tag.focus[data-tone="calm"] { color: #d9f6ff; border-color: #8fd0ff99; background: #2a4a6a55; }
 html .bench[data-mode] .pull-tag.focus[data-tone="rush"] { color: #ffd2b8; border-color: #ff9a6a99; background: #6a2a2a55; }
