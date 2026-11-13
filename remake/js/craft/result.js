@@ -16,7 +16,7 @@ import { SUI_BAR } from "./score.js";
 import { castCh1Votes, isSakuraiVotes, SAKURAI, sakuraiFocusOf, ch1RoundPoints } from "./ch1-votes.js";
 import { evaluationOf, judgeComment, judgeDeductionReason } from "./feedback.js";
 import { craftRecognition } from "./recognition.js";
-import { VOTE_SCALE, voteStack as stackOf, judgePanel as panelOf, judgeLegend as legendOf, countUp } from "./tournament-graphics.js";
+import { VOTE_SCALE, voteStack as stackOf, judgePanel as panelOf, judgeLegend as legendOf, countUp, JUDGE_LOOK } from "./tournament-graphics.js";
 
 export const CONTESTANTS = ["naru", "adam", "minto", "hajime"];
 const RIVAL_COLOR = { naru: "#f0d8a0", adam: "#c9463a", minto: "#7fe0c2" };
@@ -187,8 +187,10 @@ function sakuraiBoard(p, index) {
   const info = SAKURAI.rounds[index], next = SAKURAI.rounds[index + 1];
   const points = ch1RoundPoints("maezono", index);
   const views = p.views?.[index] || {}, picks = p.picks?.[index] || {};
-  const mine = JUDGES.map(({ id }) => `${judgeName(id).replace("チャコール", "")} ${Number(views[id]?.hajime ?? 0).toFixed(1)}`).join(" ／ ");
-  const nextNote = index === 0 ? `次は提供の一台。${Object.entries(SAKURAI.focus).map(([id, f]) => `${judgeName(id).replace("チャコール", "")}は${f.label}`).join("・")}を見る`
+  // 速報の行は凡例と同じ短い呼び名（上園・博士・千須）にそろえる。
+  const short = (id) => JUDGE_LOOK[id]?.short || judgeName(id);
+  const mine = JUDGES.map(({ id }) => `${short(id)} ${Number(views[id]?.hajime ?? 0).toFixed(1)}`).join(" ／ ");
+  const nextNote = index === 0 ? `次は提供の一台。${Object.entries(SAKURAI.focus).map(([id, f]) => `${short(id)}は${f.label}`).join("・")}を見る`
     : index === 1 ? "次は1回目の調整。温度計の攻めの帯で整え終えると、審査が伸びる"
       : "次は2回目の調整。最後はみんとが攻めてくる。千須の最後の1点もここで決まる";
   return {
