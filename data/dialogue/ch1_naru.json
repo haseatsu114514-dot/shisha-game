@@ -981,6 +981,11 @@
           "speaker": "",
           "face": "",
           "text": "昨日までより、少しだけ言いにくかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（──多分、気のせいだ）"
         }
       ],
       "branches": {
