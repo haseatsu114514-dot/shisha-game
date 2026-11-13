@@ -305,6 +305,7 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
    - 生放送レイヤー（`craft/broadcast.js`・旧版 #24/#20/#26）: 工程の頭でパッキーが前振り＋ライバルの進行実況、
      出来に応じてニコ動風のコメントが流れる。点数は作業台右上の SCORE（全モード共通・工程ごとに加算・結果表にも載る）に一本化（TH42）。文面は `remake/data/broadcast.json`
    - 審査 → RESULT 10 COUNT（プチュン＝1位確定／パリン＝敗北）→ 千須の持ち点10一括投入
+   - **桜井式の審査（試作・SKR04）**: 設定の「大会の審査（第1章）」で、いままでの審査と切り替えられる（プレイヤーの既定は桜井式・`?vote=sakurai|classic`）。各回をその回の工程だけで決め、提供の回は審査員ごとに見る所が違い、吸い出し・調整の温度計に「攻めの帯」（+4）が出る。仕様は `docs/master_spec.md` の 2026-11-13 の節、検証は `remake/test/ch1_votes_sakurai.mjs`・`browser/ch1_vote_style.mjs`
    - 優勝: 表彰 → `ch1_tournament_after`（会場まで） → スミさんの祝福LIME → `ch1_tournament_after`（閉店後のtonariの祝杯・採点表の走り書き） → なるのLIME・「???」の記録LIME → `ch1_naru_promise` → 採点表を気にし始める章末 → 90年代風の次回予告 → 第1章クリア
    - 敗北: `ch1_tournament_defeat` → GAME OVER（大会の頭から再挑戦／タイトルへ）
 

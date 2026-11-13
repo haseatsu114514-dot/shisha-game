@@ -12,7 +12,8 @@ import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, t
 import { sceneMoment } from "../core/scene-motions.js";
 import { defeatFade, retryStroke } from "../core/transitions.js";
 import { withLoadingNotice } from "../core/module-loading.js";
-import { state, save, markMet, setFlag, flag, requestResumeOnBoot } from "../core/state.js";
+import { state, save, markMet, setFlag, flag, requestResumeOnBoot, config } from "../core/state.js";
+import { voteStyleFrom } from "../core/vote-style.js";
 import { addMoney, maxStamina, addStamina, gainStat } from "../core/stats.js";
 import { awardTournamentExp, awardChapterClearExp } from "../core/growth.js";
 import { playBgm, preloadBgm, stopBgm, SE } from "../core/audio.js";
@@ -51,7 +52,7 @@ import { playTsumugiStory, playTsumugiSketch } from "./tsumugi-story.js";
 import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { outcomeOf, showStandings, resultCountdown, suiCutin, resultTable } from "../craft/result.js";
-import { beginCh1Votes, castCh1Votes } from "../craft/ch1-votes.js";
+import { beginCh1Votes, castCh1Votes, isSakuraiVotes } from "../craft/ch1-votes.js";
 import { craftRecognition } from "../craft/recognition.js";
 import { playCh1Title } from "./ch1-title-motion.js";
 import { giveSumiRig, giveEarlyHomeRig } from "../daily/home-rig.js";
@@ -626,7 +627,8 @@ function prepareTournamentAttempt(newTournament) {
   if (state.tournament.lastRank != null) state.tournament.rulesVersion = 2;
   state.tournament.attempts++;
   state.tournament.voteAttempt = state.tournament.rulesVersion >= 2 ? null : undefined;
-  if (state.tournament.rulesVersion >= 2) beginCh1Votes(state.tournament);
+  // 審査の方式（いままで／桜井式・SKR04）は、この試合を始める時の設定で決め、試合の途中では変えない。
+  if (state.tournament.rulesVersion >= 2) beginCh1Votes(state.tournament, { style: voteStyleFrom(config) });
   save();
 }
 
@@ -634,6 +636,8 @@ function prepareTournamentAttempt(newTournament) {
 function startTournamentCraft() {
   const cs = newSession("tournament");
   cs.retryAssist = state.tournament.retryAssist === true;
+  // 桜井式の試合だけ、吸い出し・調整の温度計に「攻めの帯」を出す（craft/attack-band.js）。
+  if (isSakuraiVotes(state.tournament.voteAttempt)) cs.voteStyle = "sakurai";
   return cs;
 }
 
@@ -669,6 +673,8 @@ async function tournamentDay() {
   const source = regulation?.supply ? `${challenge}は主催者が支給！ 他の葉は持ち込みです！` : "葉は自分で持ち込むこと！";
   await play({ dialogue_id: "ch1_tournament_rule_recap", lines: [
     { speaker: "pakki", face: "excited", text: `本日の課題はッ！ ${challenge}を2g以上！ ${source}` },
+    // 桜井式の試合だけ、票の取り方を先に伝える（SKR04・#171 How to Play）。
+    ...(isSakuraiVotes(state.tournament.voteAttempt) ? SAKURAI_RULE_LINES : []),
   ] }, { bg: STAGE });
   await withLoadingNotice(Promise.all([assetsReady, craftBgmReady]), loadingNotice("大会の準備をしています…"));
   await entrance();
@@ -798,6 +804,13 @@ async function tournamentDay() {
     await showGameOver({ rank: out.rank, cs });
   }
 }
+
+// 桜井式の審査（SKR04）の説明。審査員の見る所は craft/ch1-votes.js の SAKURAI.focus と同じ言葉にする。
+const SAKURAI_RULE_LINES = Object.freeze([
+  { speaker: "pakki", face: "excited", text: "今日の票は、毎回その工程だけで勝負ッ！ 出だしでつまずいても、取り返せますよ〜♪" },
+  { speaker: "pakki", face: "excited", text: "提供の一台は、上園さんが味、博士が火、千須会長が煙を見るッ！ 3人のうち2人を取れば勝ちが見えるッ！" },
+  { speaker: "pakki", face: "excited", text: "温度計の桃色の帯は『攻めの帯』ッ！ そこで出せば審査がグッと伸びる！ ただし越えたら味が崩れるッ！" },
+]);
 
 /** 入場（ライバル → 主人公）。スミさんの一言つき。共有部品 tournament-entrance.js（#2031） */
 const entrance = () => playEntrance(1, { heroNote: CH1_EVE_NOTES[state.flags._last_night] || null });

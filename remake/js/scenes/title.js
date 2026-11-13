@@ -15,6 +15,7 @@ import { loadWithRecovery } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
 import { createUiThemeSelect } from "../core/ui-theme.js";
 import { LOOKS, normalizeLook, setLook } from "../core/look.js";
+import { VOTE_STYLES, normalizeVoteStyle } from "../core/vote-style.js";
 import { refreshSideArea } from "../core/side-area.js";
 import { fullscreenButton, saveTransferRow } from "./save-transfer.js";
 
@@ -351,6 +352,9 @@ export async function openConfig(opts = {}) {
   // 見た目の様式（LK01）。既定は新版（LK09）。新版・旧版・DS風のどれも、すべての章でいつでも切り替えられる（LK13・LK21）。
   const look = segRow("見た目", "cfg-look", LOOKS.map(({ id, label }) => [id, label]),
     normalizeLook(config.look), (v) => { setConfig("look", v); setLook(v); });
+  // 第1章の大会の審査（SKR04）。桜井式（試作）が既定。いままでの審査へいつでも戻せる。次に始める試合から効く。
+  const voteStyle = segRow("大会の審査（第1章）", "cfg-vote-style", VOTE_STYLES.map(({ id, label }) => [id, label]),
+    normalizeVoteStyle(config.voteStyle), (v) => setConfig("voteStyle", v));
   const portraits = segRow("会話の立ち絵", "cfg-portrait-style", [["classic", "旧"], ["new", "新"]],
     config.portraitStyle === "classic" ? "classic" : "new", (v) => setConfig("portraitStyle", v));
   const introArt = segRow("登場カットインの絵柄", "cfg-intro-art", [["classic", "旧"], ["graphic", "新"]],
@@ -410,6 +414,7 @@ export async function openConfig(opts = {}) {
       introArt,
       introTransition,
       sideArea,
+      voteStyle,
       row("揺れ・閃光を減らす", reduceShake),
       row("文字送りの声", blip),
       row("見た演出を短く", shortSeen),

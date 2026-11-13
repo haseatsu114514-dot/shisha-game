@@ -338,6 +338,8 @@ html .bench[data-mode] .pull-read[data-tone="hot"] .pull-state { color: var(--wa
 html .bench[data-mode] .pull-read[data-tone="danger"] .pull-state { color: var(--bad-ink); }
 html .bench[data-mode] .pull-read[data-tone="cold"] .pull-state { color: var(--cool-ink); }
 html .bench[data-mode] .pull-read[data-tone="cool"] .pull-state { color: var(--paper-muted); }
+html .bench[data-mode] .pull-read[data-tone="attack"] .pull-state { color: #c2186b; }
+html .bench[data-mode] .pull > .thermo .pull-read[data-tone="attack"] { border-color: #c2186b; }
 html .bench[data-mode] .pull-drift { color: var(--cool-ink); }
 html .bench[data-mode] .pull-tag { color: var(--lavender); background: var(--paper-card); border-color: var(--lavender-line); }
 html .bench[data-mode] .pull-summary { border: 1px solid var(--paper-line); background: var(--paper-card); }

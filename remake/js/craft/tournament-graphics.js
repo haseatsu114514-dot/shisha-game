@@ -31,7 +31,7 @@ export function voteStack(table, contestant, cls, judges, upto = judges.length) 
 }
 
 /** 審査員の持ち点（10点を10粒で）。投入済みは点灯、held の審査員は保留中として鍵を付ける。 */
-export function judgePanel(table, judges, { held = [], name = (j) => displayName(j, state), face = null, cls = "", craft = null } = {}) {
+export function judgePanel(table, judges, { held = [], name = (j) => displayName(j, state), face = null, cls = "", craft = null, extra = null } = {}) {
   return el(`div.judge-panel${cls}`, { dataset: { test: "judge-panel" } }, judges.map((judge) => {
     const used = givenBy(table, judge), waiting = held.includes(judge);
     return el(`div.judge-chip${waiting ? ".held" : ""}`, { dataset: { judge, spent: String(used) }, style: { "--c": look(judge).color } }, [
@@ -40,6 +40,7 @@ export function judgePanel(table, judges, { held = [], name = (j) => displayName
       el("i.judge-pips", { "aria-hidden": "true" }, Array.from({ length: 10 }, (_, k) => el(k < used ? "b.on" : "b"))),
       el("small.judge-left", { text: waiting ? "10点を保留中" : used >= 10 ? "全10点 投入済み" : `投入 ${used} ／ 残り ${10 - used}` }),
       craft ? el("small.judge-deduction", { text: judgeDeductionReason(craft, judge).text, dataset: { judge } }) : null,
+      ...(extra ? extra(judge) : []),
     ]);
   }));
 }
