@@ -3,10 +3,33 @@ import { buildVersioned } from "./asset-version.js";
 import { prepareImage } from "./loading-prefetch.js";
 import { LOADING_COMICS, eligibleLoadingComics } from "./loading-comics.js";
 
-let active = false, previousComic = null;
+let active = false, previousComic = null, upcomingComic = null, lastReadAt = -Infinity;
 // Reading hold: a tap or key is accepted only after the art has been on screen this long and this long
 // after preparation finished, so taps left over from the previous screen cannot skip an unread comic.
 const READ_GUARD_SHOWN_MS = 700, READ_GUARD_READY_MS = 250;
+// A fixed point right after another comic was read (a LOAD that reloads the page and resumes, a chapter
+// that opens its bench at once) does not stack a second comic: within this gap it waits only when needed.
+const FIXED_GAP_MS = 2000;
+// Comic art is given this long. Missing or slower art leaves the plain gate, which never holds.
+const COMIC_ART_TIMEOUT_MS = 4000;
+const LOADING_COMICS_MODE_KEY = "suien_loading_comics";
+// The next comic's art is fetched this long after a gate closes, behind the scene that just opened.
+const WARM_DELAY_MS = 1500;
+
+/**
+ * 決まった場面（作業台に入る・ミニゲームの前・章の始め・セーブからの再開・起動）で、待ちがなくても漫画のロード画面を毎回出すか
+ * （2026-11-12 オーナー「漫画はマストで出して欲しい」「決まった場面は毎回出す」）。出したロード画面には必ず漫画を載せる。
+ * 自動操作のブラウザ（navigator.webdriver。既存のブラウザ検査）は従来どおり、待ちが長いときだけ出す（core/look.js・side-area.js と同じ扱い）。
+ * 検査は localStorage の suien_loading_comics に "always"（毎回）／"wait"（待ちのときだけ）を入れて切り替える。
+ */
+export function comicLoadingRequired() {
+  try {
+    const mode = localStorage.getItem(LOADING_COMICS_MODE_KEY);
+    if (mode === "always") return true;
+    if (mode === "wait") return false;
+  } catch { /* 保存を読めない環境はプレイヤーの既定で動く */ }
+  return !(typeof navigator !== "undefined" && navigator.webdriver === true);
+}
 let stylesheet;
 function loadStyle() {
   if (!stylesheet) stylesheet = new Promise((resolve, reject) => {
@@ -26,7 +49,7 @@ function validPanel(panel) {
     r.x + r.width <= r.sourceWidth && r.y + r.height <= r.sourceHeight;
 }
 
-export function selectLoadingComic(comics, { context = "default", chapter = 1, isMet = null, isRead = null } = {}) {
+function comicPool(comics, { context = "default", chapter = 1, isMet = null, isRead = null } = {}) {
   // isMet(id): the player has met that character. Comics list their cast; one is shown only after
   // meeting everyone in it (loading-comics.js). Without isMet (previews) the cast is not checked.
   // isRead(id): the player has already read that comic. Unread ones come first, so every episode is
@@ -35,11 +58,31 @@ export function selectLoadingComic(comics, { context = "default", chapter = 1, i
   const unread = isRead ? eligible.filter(comic => !isRead(comic.id)) : [];
   const candidates = unread.length ? unread : eligible;
   const fresh = candidates.filter(comic => comic.id !== previousComic);
-  const pool = fresh.length ? fresh : candidates;
-  // Presentation uses its own entropy; do not consume gameplay Math.random().
-  const chosen = pool.length ? pool[crypto.getRandomValues(new Uint32Array(1))[0] % pool.length] : null;
+  return fresh.length ? fresh : candidates;
+}
+// Presentation uses its own entropy; do not consume gameplay Math.random().
+const draw = pool => pool.length ? pool[crypto.getRandomValues(new Uint32Array(1))[0] % pool.length] : null;
+
+export function selectLoadingComic(comics, options = {}) {
+  const pool = comicPool(comics, options);
+  // The comic whose art was fetched in advance (warmNextLoadingComic) is used while it is still a fair pick.
+  const chosen = pool.find(comic => comic.id === upcomingComic) || draw(pool);
+  upcomingComic = null;
   if (chosen) previousComic = chosen.id;
   return chosen;
+}
+
+/**
+ * 次に出す漫画を先に決めて、2コマの絵を裏で取得しておく（デコードした絵は持たない。取得だけなので軽い）。
+ * 決まった場面のロード画面は待ちがなくても出るので、絵が先に届いていれば、出た瞬間から漫画が読める。
+ */
+export function warmNextLoadingComic(comics = LOADING_COMICS, options = {}) {
+  const comic = draw(comicPool(comics, options));
+  upcomingComic = comic?.id ?? null;
+  for (const panel of comic?.panels || []) {
+    try { const img = new Image(); img.decoding = "async"; img.src = panel.src; } catch { /* 先読みだけ。失敗してもよい */ }
+  }
+  return comic;
 }
 
 /**
@@ -50,12 +93,17 @@ export function selectLoadingComic(comics, { context = "default", chapter = 1, i
 export async function withLoading(prepare, {
   host = document.querySelector("#stage"), label = "場面を準備しています…",
   delayMs = 220, context = "default", chapter = 1, comics = LOADING_COMICS, isMet = null,
-  isRead = null, onRead = null, signal,
+  isRead = null, onRead = null, onProceed = null, fixed = false, signal,
 } = {}) {
   if (!host) throw new Error("Loading host is missing");
   if (active) throw new Error("A loading gate is already active");
   signal?.throwIfAborted();
   active = true;
+  // required: a shown gate always carries its comic (it waits for the art, then holds for reading).
+  // forced: a fixed point shows the gate at once even when nothing needs loading.
+  const required = comicLoadingRequired();
+  const forced = fixed && required && performance.now() - lastReadAt > FIXED_GAP_MS;
+  if (forced) delayMs = 0;
   const controller = new AbortController();
   const focus = document.activeElement;
   const locked = [...host.children].map(node => [node, node.inert]);
@@ -93,13 +141,20 @@ export async function withLoading(prepare, {
   overlay.append(logo, card, gauge, status, proceed);
   let settled = false, comicShown = false, comicShownAt = 0, guardTimer = null, awaitingProceed = false, resolveProceed;
   const proceeded = new Promise(resolve => { resolveProceed = resolve; });
+  // Runs inside the tap or key event itself, so it may start sound that needs a user gesture (boot).
+  const proceedNow = () => {
+    if (!awaitingProceed) return;
+    awaitingProceed = false;
+    try { onProceed?.(); } catch { /* Display only. */ }
+    resolveProceed();
+  };
   const abort = () => controller.abort(signal.reason);
   signal?.addEventListener("abort", abort, { once: true });
   // Block gameplay input even before the overlay becomes visible. Once preparation is done and a
   // comic is on screen, Enter/Space advance past the reading hold (pointer handled below).
   const guard = event => {
     event.preventDefault(); event.stopImmediatePropagation();
-    if (awaitingProceed && event.type === "keydown" && (event.key === "Enter" || event.key === " " || event.key === "Spacebar")) resolveProceed();
+    if (awaitingProceed && event.type === "keydown" && (event.key === "Enter" || event.key === " " || event.key === "Spacebar")) proceedNow();
   };
   const focusGuard = event => { if (!overlay.contains(event.target)) overlay.focus(); };
   window.addEventListener("keydown", guard, true);
@@ -110,7 +165,7 @@ export async function withLoading(prepare, {
   for (const type of ["pointerdown", "pointerup", "click"]) {
     overlay.addEventListener(type, event => {
       event.stopPropagation();
-      if (awaitingProceed && type === "pointerdown") resolveProceed();
+      if (awaitingProceed && type === "pointerdown") proceedNow();
     });
   }
   const comic = selectLoadingComic(comics, { context, chapter, isMet, isRead });
@@ -125,7 +180,7 @@ export async function withLoading(prepare, {
     if (comic.caption) content.append(el("p.loading-comic-caption", { text: comic.caption }));
   }
   const comicReady = comic ? Promise.all(comic.panels.map(panel => prepareImage(panel.src, {
-    timeoutMs: 4000, signal: controller.signal,
+    timeoutMs: COMIC_ART_TIMEOUT_MS, signal: controller.signal,
   }))).then(images => {
     if (settled || controller.signal.aborted) return;
     images.forEach((img, i) => {
@@ -207,6 +262,9 @@ export async function withLoading(prepare, {
       aborted,
     ]);
     host.setAttribute("aria-busy", "false");
+    // A shown gate always carries its comic: when preparation ends before the art arrives, wait for it
+    // (at most COMIC_ART_TIMEOUT_MS from the start; missing art leaves the plain gate, which never holds).
+    if (required && overlay.isConnected && !controller.signal.aborted) await Promise.race([comicReady, aborted]);
     // Only when a comic is actually on screen, hold for the reader: advance on tap/click/key.
     // No comic / failure / instant task returns immediately, exactly like before.
     if (comicShown && overlay.isConnected && !controller.signal.aborted) {
@@ -222,6 +280,7 @@ export async function withLoading(prepare, {
       proceed.setAttribute("aria-hidden", "false");
       awaitingProceed = true;
       await Promise.race([proceeded, aborted]);
+      lastReadAt = performance.now();
       // The reader moved on by their own tap or key: that comic counts as read (record keeping only).
       try { onRead?.(comic); } catch { /* A failed record must not break the game. */ }
     }
@@ -239,6 +298,8 @@ export async function withLoading(prepare, {
     if (wasBusy === null) host.removeAttribute("aria-busy"); else host.setAttribute("aria-busy", wasBusy);
     active = false;
     if (focus?.isConnected) focus.focus();
+    // The next fixed point shows its comic at once: fetch that comic's art while the scene settles.
+    if (required && comic) setTimeout(() => warmNextLoadingComic(comics, { context, chapter, isMet, isRead }), WARM_DELAY_MS);
   }
 }
 

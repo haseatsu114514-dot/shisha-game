@@ -36,13 +36,6 @@
   .vn-loading-comic-panels { flex-direction: column; align-items: center; gap: 4px; }
   .vn-loading-comic-panels figure { flex: none; width: min(100%, 270px); }
 }
-/* スマホを横にしたとき: 画面全体が 1280×720 の半分ほどに縮むので、漫画つきの案内を横いっぱい近くまで広げ、字も大きくする
-   （844×390 で1コマの幅 184px → 約290px、解説 7px → 約12px）。漫画のない案内とPC・タブレットは変えない。 */
-@media (orientation: landscape) and (max-height: 500px) {
-  .vn-loading.has-comic { width: min(96%, 1120px); max-height: 96%; font-size: 24px; }
-  .vn-loading-comic h2 { font-size: 28px; }
-  .vn-loading-comic-caption { font-size: 22px; }
-}
 
 .vn-cg {
   position: absolute;

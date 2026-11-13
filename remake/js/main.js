@@ -9,7 +9,7 @@ import { initIchidaiSwitch } from "./daily/ichidai-table.js";
 import { loadAll, loadDeferredDialogues, DB, bgUrl } from "./core/data.js";
 import { loadVnFonts } from "./core/vn-fonts.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
-import { loadConfig, saveConfig, state, load, consumeResumeOnBoot, tickPlayTime } from "./core/state.js";
+import { loadConfig, saveConfig, state, load, peekSave, consumeResumeOnBoot, tickPlayTime } from "./core/state.js";
 import { unlockAudio, preloadBgm } from "./core/audio.js";
 import { applyUiTheme } from "./core/ui-theme.js";
 import { initLook, migrateLook, normalizeLook } from "./core/look.js";
@@ -17,7 +17,8 @@ import { installLooks } from "./looks/index.js";
 import { installRotateGuard } from "./core/rotate-guard.js";
 import { imgFileUrl } from "./core/img-file.js";
 import { warmInBackground } from "./core/loading-prefetch.js";
-import { withLoading } from "./core/loading.js";
+import { withLoading, comicLoadingRequired } from "./core/loading.js";
+import { gameLoadingOptions } from "./core/loading-context.js";
 import { vnTest, enableSeenLinePersistence, tapAdvance } from "./vn/engine.js";
 import { initSideArea } from "./core/side-area.js";
 import { createDevInspector } from "./core/dev-inspector.js";
@@ -69,7 +70,13 @@ export async function boot() {
 
   // 起動の待ち時間も、ゲーム内と同じ共通ロード画面（背景イラスト案B・ロゴ・発光ゲージ）で見せる。
   // 静的な #boot はモジュール読込前と起動失敗時の受け皿として残し、ゲートが閉じた後に役目を終える。
-  // 漫画は boot 文脈の登録がないため表示されず、読了待ちも入らない（起動に追加の待ちを足さない）。
+  // 起動も「決まった場面」（2026-11-12 オーナー「漫画はマストで出して欲しい」「決まった場面は毎回出す」）: 毎回漫画を載せ、
+  // 読み終えてタップ・キーで進むとタイトルが開く。そのタップで音も鳴らせるようにする（ブラウザは最初の操作まで音を止める）。
+  // 漫画は続きのセーブで会った人の話から選ぶ（セーブがなければ新しいゲームの開始時に会っている人だけ。core/loading-context.js）。
+  // 自動操作のブラウザ（既存の検査）では、従来どおり漫画のない起動画面（boot 文脈には登録がない）で、読む待ちも入らない。
+  const bootComic = comicLoadingRequired()
+    ? { ...gameLoadingOptions(peekSave()), fixed: true, onProceed: unlockAudio }
+    : { context: "boot", chapter: 1 };
   let titleArt;
   await withLoading(async ({ report }) => {
     // データと一緒に書体も待つ（読み込み前の代わりの字で一瞬崩れて見えないように）。遅い回線では4秒で先へ
@@ -86,7 +93,7 @@ export async function boot() {
       imageReady(imgFileUrl("ui/ui_title_logo_rich.webp"), 3000),
       ...FRAME_ART.map((u) => imageReady(u, 3000, { keep: true })),
     ])]);
-  }, { label: "ゲームを準備しています…", context: "boot", chapter: 1 });
+  }, { label: "ゲームを準備しています…", ...bootComic });
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
   const resumeRequested = consumeResumeOnBoot();
   if (resumeRequested && load()) resumeGame();

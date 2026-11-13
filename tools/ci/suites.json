@@ -807,7 +807,7 @@
     },
     {
       "id": "loading-gate",
-      "title": "Loading gate and two-panel comic lifecycle",
+      "title": "Loading gate, two-panel comic lifecycle and fixed points (bench, minigame, boot)",
       "kind": "browser",
       "weight": 0.5,
       "timeout": 3,
@@ -822,9 +822,12 @@
         "remake/js/craft/session.js",
         "remake/js/craft/preview.js",
         "remake/craft-preview.html",
-        "remake/img/loading/*"
+        "remake/img/loading/*",
+        "remake/test/browser/loading_boot.mjs",
+        "remake/js/minigames/minigame-loading.js",
+        "remake/js/main.js"
       ],
-      "run": ["node remake/test/browser/loading_gate.mjs", "node remake/test/browser/loading_craft.mjs"]
+      "run": ["node remake/test/browser/loading_gate.mjs", "node remake/test/browser/loading_craft.mjs", "node remake/test/browser/loading_boot.mjs"]
     },
     {
       "id": "slim-deploy",

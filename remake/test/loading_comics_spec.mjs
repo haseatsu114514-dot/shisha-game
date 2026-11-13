@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { LOADING_COMICS, eligibleLoadingComics } from '../js/core/loading-comics.js';
 import { hasMetCharacter } from '../js/core/title-art-unlock.js';
 import { minigameLoadingOptions } from '../js/minigames/minigame-loading.js';
+import { gameLoadingOptions } from '../js/core/loading-context.js';
+import { KNOWN_AT_START } from '../js/core/state.js';
 
 // Registration guard: every comic offered to the loading screen must fit the fixed
 // display frame (3:2, css/loading.css --loading-panel-ratio; authoring spec:
@@ -89,27 +91,15 @@ for (const comic of LOADING_COMICS) {
 }
 assert.equal(new Set(LOADING_COMICS.map(c => c.id)).size, LOADING_COMICS.length, 'comic ids are unique');
 
-// Where a comic appears: the bench loading screen ("craft") and the small notice of long scene waits,
-// which offers the bench comics too (core/loading-comic-notice.js NOTICE_COMIC_CONTEXTS) and any comic
-// registered for "scene" only. contexts is required: a comic without it would also be offered at
-// boot, where no comic may add its own image downloads to the start-up.
-const CONTEXTS = ['craft', 'scene', 'minigame'];
-const SCENE_WAIT = ['scene', 'craft'];
+// Where a comic appears: every game loading screen draws from the bench registrations ("craft";
+// core/loading-context.js), the minigame-only ones add "minigame". contexts is required: a comic without
+// it would also be offered at boot's plain gate, which must stay comic-free in the automated tests.
+const CONTEXTS = ['craft', 'minigame'];
 for (const comic of LOADING_COMICS) {
-  assert(Array.isArray(comic.contexts) && comic.contexts.length > 0, `${comic.id}: contexts is required (["craft"])`);
+  assert(Array.isArray(comic.contexts) && comic.contexts.includes('craft'), `${comic.id}: contexts must include "craft"`);
   assert(comic.contexts.every(context => CONTEXTS.includes(context)), `${comic.id}: unknown context in ${JSON.stringify(comic.contexts)}`);
 }
-assert.equal(eligibleLoadingComics(LOADING_COMICS, { context: 'boot', chapter: 9 }).length, 0, 'no comic is offered at boot');
-assert.equal(eligibleLoadingComics(LOADING_COMICS, { context: SCENE_WAIT, chapter: 9 }).length, LOADING_COMICS.length, 'every registered comic is offered to scene waits');
-{
-  const base = { id: 'x', title: 'x', minChapter: 1, panels: [{}, {}] };
-  const pick = (contexts, context) => eligibleLoadingComics([{ ...base, contexts }], { context }).length;
-  assert.equal(pick(['scene'], 'craft'), 0, 'a scene-only comic stays off the bench');
-  assert.equal(pick(['scene'], SCENE_WAIT), 1);
-  assert.equal(pick(['craft'], SCENE_WAIT), 1);
-  assert.equal(pick(['craft'], 'scene'), 0, 'a single context still matches exactly');
-  assert.equal(pick(['craft'], []), 0);
-}
+assert.equal(eligibleLoadingComics(LOADING_COMICS, { context: 'boot', chapter: 9 }).length, 0, 'no comic is registered for the boot context');
 
 // Unlock: only comics whose whole cast the player has met. A fresh game has met only sumi
 // (LIME contact from the start), so the bench shows sumi's comics until others are met.
@@ -143,9 +133,14 @@ for (const comic of spoilers) {
 }
 assert.equal(eligibleLoadingComics(LOADING_COMICS, { context: 'craft', chapter: 9 }).length, LOADING_COMICS.length, 'without isMet (previews) the cast is not checked');
 
-const scene = (chapter, save) => eligibleLoadingComics(LOADING_COMICS, { context: SCENE_WAIT, chapter, isMet: id => hasMetCharacter(save, id) }).map(c => c.id);
-assert.deepEqual(scene(1, fresh), freshIds, 'scene waits offer the same unlocked comics as the bench');
-assert.deepEqual(scene(9, everyone), craft(9, everyone), 'scene waits follow the same cast and chapter unlock');
+// Every game loading screen (bench, minigame, chapter, resume, boot) uses the same rules.
+const game = (save, chapter) => eligibleLoadingComics(LOADING_COMICS, gameLoadingOptions(save, { chapter })).map(c => c.id);
+assert.deepEqual(game(null), craft(1, { ...fresh, met: { tsumugi: true } }), 'without a save (first boot), only the people a new game has met');
+assert.deepEqual(game(null), craft(1, { met: Object.fromEntries(KNOWN_AT_START.map(id => [id, true])), flags: {}, contacts: ['sumi'], story: {} }));
+assert(game(null).length > 0, 'a first boot has a comic to show');
+assert.deepEqual(game({ ...everyone, chapter: 3 }), craft(3, everyone), 'a save uses its own chapter and the people met');
+assert.deepEqual(game({ ...everyone, chapter: 3 }, 5), craft(5, everyone), 'the bench passes its own chapter');
+assert.equal(gameLoadingOptions(fresh, { record: false }).onRead, null, 'preview pages never write the reading record');
 
 // Reading record (core/loading-comic-log.js): ids in reading order, outside the save slots.
 {

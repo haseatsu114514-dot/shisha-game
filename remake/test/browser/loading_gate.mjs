@@ -251,16 +251,10 @@ await suite("loading-gate", async check => {
       } }).observe(document.body, { subtree: true, childList: true });
       await run(50);
       const fast = seen.length === 0;
-      // The notice shows after 500 ms; a comic joins it only 700 ms later. A wait that ends in between
-      // keeps the plain notice, so no comic flashes for a moment and disappears unread.
-      await run(950);
-      const brief = seen.join();
-      seen.length = 0;
-      window.__finishSceneNotice = run(2400);
-      return { fast, brief };
+      window.__finishSceneNotice = run(2000);
+      return { fast, seen };
     });
     assert.equal(setup.fast, true, 'A short wait must not show a notice or comic');
-    assert.equal(setup.brief, 'notice', 'A wait that ends soon after the notice shows no comic');
     await page.locator('.vn-loading-comic-panels img').first().waitFor();
     assert.equal(await page.locator('.vn-loading-comic-panels img').count(), 2);
     await page.evaluate(() => window.__finishSceneNotice);
@@ -270,42 +264,13 @@ await suite("loading-gate", async check => {
       const { LOADING_COMICS } = await import('./js/core/loading-comics.js');
       const notice = document.createElement('div');
       document.body.append(notice);
-      const hide = attachLoadingComic(notice, { comics: LOADING_COMICS, context: 'boot', chapter: 9, isMet: null });
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const hide = attachLoadingComic(notice, { comics: LOADING_COMICS, context: 'scene', chapter: 1 });
+      await new Promise(resolve => setTimeout(resolve, 50));
       const plain = notice.isConnected && !notice.querySelector('.vn-loading-comic');
       hide();
       return plain;
     });
     assert.equal(fallback, true, 'A context without registered comics keeps the plain notice');
-    // Registered comics are offered to scene waits: unread ones first, and showing one here is not a read.
-    const registered = await page.evaluate(async () => {
-      const { attachLoadingComic, NOTICE_COMIC_CONTEXTS } = await import('./js/core/loading-comic-notice.js');
-      const { LOADING_COMICS } = await import('./js/core/loading-comics.js');
-      const { LOADING_COMICS_READ_KEY } = await import('./js/core/loading-comic-log.js');
-      const met = id => id === 'sumi';
-      const own = LOADING_COMICS.filter(comic => comic.minChapter <= 1 && comic.cast.every(met));
-      const before = localStorage.getItem(LOADING_COMICS_READ_KEY);
-      const titles = [];
-      for (let round = 0; round < 3; round++) {
-        const notice = document.createElement('div');
-        notice.className = 'vn-loading';
-        document.body.append(notice);
-        const hide = attachLoadingComic(notice, { chapter: 1, isMet: met, isRead: id => id !== own[1].id });
-        await new Promise(resolve => {
-          const started = performance.now();
-          const poll = () => notice.querySelector('.vn-loading-comic h2') || performance.now() - started > 6000 ? resolve() : setTimeout(poll, 50);
-          poll();
-        });
-        titles.push(notice.querySelector('.vn-loading-comic h2')?.textContent ?? null);
-        hide();
-      }
-      return { titles, expected: own[1].title, candidates: own.length, contexts: NOTICE_COMIC_CONTEXTS.join(),
-        unchanged: localStorage.getItem(LOADING_COMICS_READ_KEY) === before };
-    });
-    assert(registered.candidates >= 2, 'The check needs two registered comics for a fresh game');
-    assert.equal(registered.contexts, 'scene,craft', 'Scene waits offer the scene comics and the bench comics');
-    assert.deepEqual(registered.titles, Array(3).fill(registered.expected), 'Scene waits show a registered comic, the unread one first');
-    assert.equal(registered.unchanged, true, 'A comic shown in a scene notice is not recorded as read');
   });
   await check("unread-first-and-read-record", async page => {
     const result = await page.evaluate(async () => {
@@ -347,6 +312,95 @@ await suite("loading-gate", async check => {
       return { allOnce, lastUnread, repeatsAvoided, beforeProceed, afterProceed, survived, aborted, total: calls.join() };
     });
     assert.deepEqual(result, { allOnce: true, lastUnread: 'c,c,c', repeatsAvoided: true, beforeProceed: 0, afterProceed: 'a', survived: true, aborted: true, total: 'a' });
+  });
+  // Fixed points (bench entry, minigame start, chapter start, resume, boot; core/loading.js comicLoadingRequired):
+  // for players the comic gate shows every time, even with nothing to load. Automated browsers keep the
+  // old rule (only when a wait occurs); suien_loading_comics = "always" / "wait" switches it for checks.
+  await check("fixed-points-show-the-comic", async page => {
+    const result = await page.evaluate(async () => {
+      const { withLoading, comicLoadingRequired } = await import('./js/core/loading.js');
+      const host = document.querySelector('#loading-demo');
+      const src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"/>';
+      const comics = [{ id: 'fixed-a', title: 'fixed-a', minChapter: 1, panels: [{ src, alt: 'one' }, { src, alt: 'two' }] }];
+      const ready = () => new Promise(resolve => { const poll = () => host.querySelector('.loading-gate.is-ready') ? resolve() : setTimeout(poll, 20); poll(); });
+      let shown = false;
+      const observer = new MutationObserver(() => { if (host.querySelector('.loading-gate')) shown = true; });
+      observer.observe(host, { childList: true, subtree: true });
+      const automated = comicLoadingRequired();
+      localStorage.setItem('suien_loading_comics', 'wait');
+      const waitMode = comicLoadingRequired();
+      await withLoading(async () => {}, { host, comics, fixed: true });
+      const waitShown = shown;
+      localStorage.setItem('suien_loading_comics', 'always');
+      shown = false;
+      const calls = [];
+      const first = withLoading(async () => 'done', { host, comics, fixed: true,
+        onRead: comic => calls.push('read:' + comic.id), onProceed: () => calls.push('proceed') });
+      await ready();
+      const holding = !!host.querySelector('.loading-panels img') && calls.length === 0;
+      host.querySelector('.loading-gate').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      const value = await first;
+      // A fixed point right after a read comic (a LOAD that reloads and resumes) does not stack a second one.
+      shown = false;
+      await withLoading(async () => {}, { host, comics, fixed: true });
+      const stacked = shown;
+      await new Promise(resolve => setTimeout(resolve, 2100));
+      const again = withLoading(async () => {}, { host, comics, fixed: true });
+      await ready();
+      const againShown = shown;
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      await again;
+      observer.disconnect();
+      return { automated, waitMode, waitShown, holding, value, calls: calls.join(), stacked, againShown };
+    });
+    assert.deepEqual(result, { automated: false, waitMode: false, waitShown: false, holding: true, value: 'done',
+      calls: 'proceed,read:fixed-a', stacked: false, againShown: true });
+  });
+  await check("shown-gate-waits-for-its-comic", async page => {
+    await page.route('**/late-fixed-*.svg', async route => {
+      await new Promise(resolve => setTimeout(resolve, 600));
+      await route.fulfill({ status: 200, contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"/>' });
+    });
+    const result = await page.evaluate(async () => {
+      const { withLoading } = await import('./js/core/loading.js');
+      const host = document.querySelector('#loading-demo');
+      const comic = n => [{ id: 'late-' + n, title: 'late', minChapter: 1, panels: ['a', 'b'].map(side =>
+        ({ src: new URL(`late-fixed-${n}${side}.svg`, location.href).href, alt: side })) }];
+      const run = async (mode, n) => {
+        localStorage.setItem('suien_loading_comics', mode);
+        let ready = false;
+        const observer = new MutationObserver(() => {
+          const gate = host.querySelector('.loading-gate.is-ready');
+          if (gate && !ready) { ready = true; gate.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); }
+        });
+        observer.observe(host, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
+        const started = performance.now();
+        await withLoading(() => new Promise(resolve => setTimeout(resolve, 100)), { host, delayMs: 0, comics: comic(n) });
+        observer.disconnect();
+        return { ready, ms: Math.round(performance.now() - started) };
+      };
+      return { wait: await run('wait', 1), always: await run('always', 2) };
+    });
+    assert.equal(result.wait.ready, false, 'Automated default: preparation that ends before the art closes the plain gate');
+    assert.equal(result.always.ready, true, 'A shown gate waits for its comic and holds for reading');
+    assert(result.always.ms >= 1250, `The hold starts after the late art (600 ms) plus the reading guard, got ${result.always.ms} ms`);
+  });
+  await check("next-comic-is-fetched-ahead", async page => {
+    const result = await page.evaluate(async () => {
+      const { warmNextLoadingComic, selectLoadingComic } = await import('./js/core/loading.js');
+      const src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="20"/>';
+      const comics = ['p', 'q', 'r', 's'].map(id => ({ id, title: id, minChapter: 1, panels: [{ src, alt: 'one' }, { src, alt: 'two' }] }));
+      const rounds = [];
+      for (let i = 0; i < 8; i++) {
+        const warmed = warmNextLoadingComic(comics, { isRead: id => id === 'p' });
+        rounds.push(warmed.id !== 'p' && selectLoadingComic(comics, { isRead: id => id === 'p' }).id === warmed.id);
+      }
+      // A warmed comic that is no longer a fair pick (read since) is not forced.
+      const warmed = warmNextLoadingComic(comics, {});
+      const later = selectLoadingComic(comics, { isRead: id => id === warmed.id });
+      return { rounds: rounds.every(Boolean), skipped: later.id !== warmed.id };
+    });
+    assert.deepEqual(result, { rounds: true, skipped: true });
   });
   await check("slow-comic-does-not-delay", async page => {
     await page.route('**/slow-panel.svg', async route => {

@@ -131,6 +131,9 @@ await suite('loading-craft', async check => {
     // moves on from a comic, never by the preview. Unread comics are shown before any repeat.
     const KEY = 'suien_remake_loading_comics_read';
     const record = () => page.evaluate(key => JSON.parse(localStorage.getItem(key) || 'null'), KEY);
+    // The record belongs to the player default (comics at every fixed point); automated browsers keep the
+    // old behaviour and write nothing, which the pc/mobile cases above confirm.
+    await page.evaluate(() => localStorage.setItem('suien_loading_comics', 'always'));
     const readShown = async () => {
       await page.locator('.loading-gate.is-ready').waitFor();
       const title = await page.locator('.loading-comic-title').innerText();
