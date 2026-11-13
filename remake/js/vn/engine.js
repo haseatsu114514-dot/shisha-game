@@ -1308,8 +1308,6 @@ function refreshPortraits() {
 }
 
 export const isPlaying = () => !!running;
-/** いま読んでいる台本のID（分岐先へ移ったらその台本。会話が無い間は null）。読むだけで、会話の進みには触れない。 */
-export const playingDialogueId = () => running ? running.currentId || running.id || null : null;
 export { refreshPortraits };
 export const backlog = () => log;
 /** タイトルからの「はじめから」「LOAD」で前の周の会話LOGを消す（#1912）。 */

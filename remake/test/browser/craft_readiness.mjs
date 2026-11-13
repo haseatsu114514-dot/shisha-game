@@ -16,12 +16,12 @@ async function init(page) {
 
 await suite("craft-readiness", async check => {
   await check("unrelated-art-and-cached-reopen", async page => {
-    // main.warmUp() runs its jobs one by one and ends with this background (chapter 1 at the title).
-    // Wait for it so that warmUp's own requests (face icons in warmUiArt, etc.) are not attributed
-    // to the bench that this case has not opened yet. Since #3500 warmUp no longer touches the
-    // making art (hookah_base / stove_coil) or the tournament stage bg.
+    // main.warmUp() ends with this image. Do not attribute its background
+    // stove_coil request to the bench that this case has not opened yet.
+    // (The tournament stage bg is idle-deferred by warmUp and may arrive later;
+    // it is part of the allowed bench set below, so it is never held here.)
     await page.waitForFunction(() => performance.getEntriesByType("resource")
-      .some(entry => /\/bg_home_day\.(png|webp)(\?|$)/.test(entry.name)));
+      .some(entry => /\/ui\/making\/hookah_base\.(png|webp)(\?|$)/.test(entry.name)));
     await init(page);
     const scope = await page.evaluate(() => {
       const { DB, img, makingUrl, faceIconUrl, portraitInfo, bgUrl } = T.data;

@@ -112,10 +112,10 @@ await suite("navigation-transitions", async (check) => {
       });
       await page.locator(`[data-test="pin-${spot}"]`).click();
       await page.waitForFunction(() => !document.querySelector(".scene-curtain"));
-      const selector = spot === "rest" ? "#vn.active .vn-text" : spot === "tonari" ? '[data-test="tonari-customer"]' : ".shop-tabs";
+      // 店は入口の前に店頭の応対（shop-greeting.js）を読むので、地図からの移動は応対の背景で起きる。行き先は応対の台詞。
+      const selector = spot === "tonari" ? '[data-test="tonari-customer"]' : "#vn.active .vn-text";
       await arm(page, selector);
       await page.locator('[data-test="map-go"]').click();
-      if (spot === "shop") await page.locator('[data-test="shop-enter"]').click();
       await page.locator(".scene-curtain").waitFor();
       await page.keyboard.press("Enter");
       if (spot === "rest") assert.equal(await page.locator(".vn-text").textContent(), "");
@@ -126,6 +126,12 @@ await suite("navigation-transitions", async (check) => {
       if (spot === "rest") {
         assert.ok(audit.ended - audit.started < 1800, "The warmed-up home transition still feels too long");
         await page.waitForFunction(() => document.querySelector(".vn-text").textContent.includes("今日は早めに家へ帰った"));
+      }
+      if (spot === "shop") {
+        // 応対の後は入口→1階の売り場。移動の演出は応対の前の一度だけで、売り場で出し直さない。
+        await page.locator('[data-test="shop-enter"]').click();
+        await page.locator(".shop-tabs").waitFor();
+        assert.equal(await page.locator(".scene-curtain").count(), 0, "The move replayed at the counter");
       }
     }, { viewport });
   }
