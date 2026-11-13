@@ -221,6 +221,74 @@ try {
     }));
     assert(subs.length === 4 && subs.every(t => t.px === 15 && t.gap === 16 && t.sameLine && t.w > 0), JSON.stringify(subs));
   });
+  // 2026-11-13「タイトル画面のクオリティを上げたい」: 構図・カーソル・キー操作・「つづきから」の添え書き。
+  // 台（背景の x=880）は、ロゴと人物の絵の間に見える。カーソルは開いた時からおすすめの行に1つだけ付く。
+  for (const [device, options] of Object.entries(sizes)) await check(`${device}-cursor-and-composition`, options, async p => {
+    const cursor = () => p.evaluate(() => [...document.querySelectorAll(".title-item.is-current")].map(n => n.dataset.test));
+    await p.locator(".title-art.ready").waitFor(); await p.waitForTimeout(1300); // 人物の絵の出現（1秒）が済んでから測る
+    const layout = await p.evaluate(() => {
+      const stage = document.querySelector("#stage").getBoundingClientRect(), k = stage.height / 720;
+      const px = n => { const r = n.getBoundingClientRect(); return { left: (r.left - stage.left) / k, right: (r.right - stage.left) / k }; };
+      const bg = document.querySelector(".title-bg"), style = getComputedStyle(bg);
+      return { image: style.backgroundImage, rig: 880 + parseFloat(style.backgroundPositionX), width: parseFloat(style.backgroundSize),
+        art: px(document.querySelector(".title-art")), logo: px(document.querySelector(".title-logo")), menu: px(document.querySelector(".title-menu")) };
+    });
+    assert(layout.image.includes("bg_title") && layout.width === 1280, JSON.stringify(layout));
+    assert(layout.logo.right < layout.rig && layout.rig + 70 < layout.art.left + 60 && layout.art.right <= 1280.5, `台はロゴと人物の絵の間 ${JSON.stringify(layout)}`);
+    assert(layout.menu.right < layout.art.left, "メニューは人物の絵に掛からない");
+    // セーブが無い: おすすめは「はじめから」。添え書きは出ない。
+    assert.deepEqual(await cursor(), ["title-new"]);
+    assert.equal(await p.locator(".ti-note").count(), 0);
+    if (device === "pc") {
+      // ↑↓は押せない行（LOAD）を飛ばして一巡し、Home／End で端へ。動かした行にフォーカスも移る。
+      const focused = () => p.evaluate(() => document.activeElement?.dataset?.test ?? null);
+      await p.keyboard.press("ArrowDown"); assert.deepEqual([await cursor(), await focused()], [["title-gallery"], "title-gallery"]);
+      await p.keyboard.press("ArrowDown"); assert.deepEqual(await cursor(), ["title-config"]);
+      await p.keyboard.press("ArrowDown"); assert.deepEqual(await cursor(), ["title-new"]);
+      await p.keyboard.press("ArrowUp"); assert.deepEqual(await cursor(), ["title-config"]);
+      await p.keyboard.press("Home"); assert.deepEqual(await cursor(), ["title-new"]);
+      await p.keyboard.press("End"); assert.deepEqual([await cursor(), await focused()], [["title-config"], "title-config"]);
+      // どこにもフォーカスが無くても、決定キーは選んでいる行を押す。小窓を開いている間はカーソルを動かさない。
+      await p.evaluate(() => document.activeElement?.blur());
+      await p.keyboard.press("Enter"); await p.locator("#modal.show .cfg").waitFor();
+      await p.keyboard.press("ArrowUp"); assert.deepEqual(await cursor(), ["title-config"]);
+      await button(p, "cfg-close").click(); await p.waitForFunction(() => !document.querySelector("#modal.show"));
+      assert.deepEqual(await cursor(), ["title-config"], "閉じたあとも、選んでいた行のまま");
+      // マウスを乗せた行へカーソルが移り、離しても残る（光る行はいつも1つ）。
+      await button(p, "title-gallery").hover(); assert.deepEqual(await cursor(), ["title-gallery"]);
+      await p.mouse.move(1100, 60); assert.deepEqual(await cursor(), ["title-gallery"]);
+    }
+    // セーブがある: おすすめは「つづきから」。いちばん新しいセーブの章と日付を、主文の下の行に添える。
+    await seed(p);
+    assert.deepEqual(await cursor(), ["title-load"]);
+    const note = await p.evaluate(() => {
+      const k = document.querySelector("#stage").getBoundingClientRect().height / 720;
+      const row = document.querySelector('[data-test="title-load"]'), n = row.querySelector(".ti-note"), en = row.querySelector(".ti-en");
+      const r = n.getBoundingClientRect(), box = row.getBoundingClientRect(), a = en.getBoundingClientRect();
+      return { text: n.textContent, count: document.querySelectorAll(".ti-note").length, real: parseFloat(getComputedStyle(n).fontSize) * k, enReal: parseFloat(getComputedStyle(en).fontSize) * k,
+        below: r.top >= a.bottom - 1, alignedWithMain: Math.abs(r.left - a.left) < 1, inRow: r.left >= box.left - .5 && r.right <= box.right + .5 && r.bottom <= box.bottom + .5,
+        height: box.height / k, oneLine: r.height < parseFloat(getComputedStyle(n).fontSize) * k * 1.6 };
+    });
+    assert.match(note.text, /^第1章　DAY 6・(昼|夜)$/);
+    assert(note.count === 1 && note.real >= 11 - 1e-6 && note.real < note.enReal && note.below && note.alignedWithMain && note.inRow && note.oneLine, JSON.stringify(note));
+    if (device === "pc") {
+      // 何も触らずに決定キーだけで「つづきから」の枠選びが開く。
+      await p.keyboard.press("Enter"); await button(p, "slot-cancel").waitFor(); await button(p, "slot-cancel").click();
+      await p.waitForFunction(() => !document.querySelector("#modal.show"));
+      assert.deepEqual(await cursor(), ["title-load"]);
+    } else {
+      // スマホ（タッチ）: 押した行にカーソルが移る。添え書きが入っても行の高さと間隔は変わらない（72px以上・16px）。
+      await button(p, "title-config").tap(); await p.locator("#modal.show .cfg").waitFor();
+      await button(p, "cfg-close").tap(); await p.waitForFunction(() => !document.querySelector("#modal.show"));
+      assert.deepEqual(await cursor(), ["title-config"]);
+      const rows = await p.evaluate(() => {
+        const stage = document.querySelector("#stage").getBoundingClientRect(), k = stage.height / 720;
+        const items = [...document.querySelectorAll(".title-item")].map(n => n.getBoundingClientRect());
+        return { heights: items.map(r => r.height / k), gaps: items.slice(1).map((r, i) => (r.top - items[i].bottom) / k), bottom: Math.max(...items.map(r => r.bottom)) <= stage.bottom + 1 };
+      });
+      assert(rows.heights.every(v => v >= 72 - .5) && rows.gaps.every(v => Math.abs(v - 16) < .5) && rows.bottom, JSON.stringify(rows));
+    }
+  });
   await check("new-game-stays-landscape", sizes.pc, async p => {
     await button(p, "title-new").click();
     await p.locator("body.vn-open").waitFor(); await landscapeOnly(p); await noDisplaySwitch(p);

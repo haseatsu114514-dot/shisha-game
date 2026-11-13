@@ -1860,27 +1860,29 @@
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item .ti-en { color: inherit; }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item .ti-en::before { content: none; }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item .ti-ja { color: var(--neo-ui-dim); }
-:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(:hover, :focus-visible):not(:disabled) {
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item .ti-note { color: var(--neo-ui-gold); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled) {
   color: #fff;
   background: linear-gradient(to right, rgba(58, 38, 88, .86), rgba(46, 29, 69, .5) 68%, rgba(46, 29, 69, 0));
   transform: translateX(8px);
   outline: none;
 }
-:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(:hover, :focus-visible):not(:disabled)::before {
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled)::before {
   width: 4px;
   background: var(--neo-ui-gold);
   box-shadow: 0 0 14px rgba(227, 189, 110, .8);
 }
-:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(:hover, :focus-visible):not(:disabled)::after { opacity: 1; }
-:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(:hover, :focus-visible):not(:disabled) .ti-en { color: var(--neo-ui-gold-hi); }
-:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(:hover, :focus-visible):not(:disabled) .ti-ja { color: var(--neo-ui-ink); }
-:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 3px; }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled)::after { opacity: 1; }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled) .ti-en { color: var(--neo-ui-gold-hi); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled) .ti-ja { color: var(--neo-ui-ink); }
+/* 枠線はキーボードで動かしている間だけ（選んでいる行は金の線と明るい札で分かる。マウスを動かすと消える）。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .title[data-nav="key"]:not([data-layout="ds"]) .title-item:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 3px; }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:disabled { opacity: .42; }
 :root[data-look="neo"] body.reduce-shake:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item { transition: color .2s ease; }
-:root[data-look="neo"] body.reduce-shake:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(:hover, :focus-visible):not(:disabled) { transform: none; }
+:root[data-look="neo"] body.reduce-shake:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled) { transform: none; }
 @media (prefers-reduced-motion: reduce) {
   :root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item { transition: color .2s ease; }
-  :root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(:hover, :focus-visible):not(:disabled) { transform: none; }
+  :root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(.is-current, :hover, :focus-visible):not(:disabled) { transform: none; }
 }
 
 /* ---------------------------------------------------------------- 13. 獲得の通知（能力・好感度・お知らせのカード）: 紙から夜紫の札へ。意味の色（能力の色・好感度の桃）は左の線と数字に残す */
