@@ -107,7 +107,8 @@ for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
   }), error => error === stop);
   assert.equal(fixture.day, 16); assert.equal(fixture.slot, 0); assert.equal(fixture.stamina, 74); assert.equal(fixture.money, 1000);
   assert.deepEqual(trace.filter(x => !x.startsWith('save:')), [
-    'night', 'confession', 'return-home', 'encounter', 'remake_homecoming_0', 'rig-homecoming', 'home-shisha',
+    // 帰り道の前に店の曲を止めて街の曲へ（店の曲を家に持ち帰らない）
+    'night', 'confession', 'return-home', chapter === 2 ? 'bgm_yuzugaya' : 'kansetsu_shomei_to_black_coffee', 'encounter', 'remake_homecoming_0', 'rig-homecoming', 'home-shisha',
     'night-growth', 'dawn', 'recovery', 'weather:16', 'bg_home:day', 'recovery-ui',
     'weather:16', chapter === 2 ? 'bgm_yuzugaya' : 'kansetsu_shomei_to_black_coffee', 'lime', 'notice', // 朝の曲: 第2章は柚ヶ谷
   ]);

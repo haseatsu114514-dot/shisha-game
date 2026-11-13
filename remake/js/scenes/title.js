@@ -5,13 +5,13 @@ import { DB, bgUrl } from "../core/data.js";
 import { readGalleryProgress } from "../core/gallery-progress.js";
 import { galleryEntries, galleryStats } from "../core/gallery-catalog.js";
 import { layers, showScreen, setBg, smokeWipe, modal, toast } from "../core/ui.js";
-import { peekSave, newGame, wipeSave, config, saveConfig, anySlotSaved, readSlot, SAVE_SLOTS } from "../core/state.js";
+import { peekSave, peekLatestSave, newGame, wipeSave, config, saveConfig, anySlotSaved, readSlot, SAVE_SLOTS } from "../core/state.js";
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
 import { playBgm, stopBgm, SE, applyVolumes } from "../core/audio.js";
 import { startNewGame, resumeGame } from "../chapters/ch1.js";
 import { clearLog } from "../vn/engine.js";
 import { openGallery } from "./gallery.js";
-import { loadWithRecovery } from "./saves.js";
+import { loadWithRecovery, saveHeadline } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
 import { createUiThemeSelect } from "../core/ui-theme.js";
 import { LOOKS, normalizeLook, setLook } from "../core/look.js";
@@ -206,6 +206,64 @@ export async function openNextCycleOptions(meta) {
   }
 }
 
+// ---------------------------------------------------------------- メニューのカーソル（選んでいる行）
+// 目立たせる行はいつも1つ（.is-current）。開いた時はおすすめの行（セーブがあれば「つづきから」、無ければ
+// 「はじめから」）に置き、マウスを乗せる・Tab・↑↓で動く。Enter／Space はその行を決定する。
+// メニューを閉じて描き直した時は、直前に選んでいた行へ戻す（設定を閉じたら CONFIG のまま）。
+let cursorTest = null;
+let keepCursor = false;
+let keysBound = false;
+let titleLive = () => false; // いま出ているタイトルが操作を受け付けているか（showTitle が差し替える）
+
+const liveItems = () => [...document.querySelectorAll("#screen > .title .title-menu > .title-item")];
+
+function setCursor(nodes, node, { focus = false } = {}) {
+  if (!node || node.disabled) return;
+  for (const n of nodes) n.classList.toggle("is-current", n === node);
+  cursorTest = node.dataset.test;
+  if (focus) node.focus?.({ preventScroll: true });
+}
+
+function bindTitleKeys() {
+  if (keysBound || typeof document.addEventListener !== "function") return;
+  keysBound = true;
+  document.addEventListener("keydown", (e) => {
+    if (!titleLive() || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+    // 確認・設定などの小窓や会話を開いている間は、そちらの操作（タイトルの上に重なる画面へ行くはずのキーを奪わない）
+    if (document.querySelector("#modal.show") || document.body.classList.contains("vn-open")) return;
+    const nodes = liveItems();
+    const usable = nodes.filter((n) => !n.disabled);
+    if (!usable.length) return;
+    // 上に何か（起動の幕・煙の幕・DS風の外枠・回転の案内など）が掛かっていて行を押せない時は、キーでも動かさない。
+    const probe = usable[0].getBoundingClientRect();
+    if (!usable[0].contains(document.elementFromPoint(probe.left + probe.width / 2, probe.top + probe.height / 2))) return;
+    if (e.key === "Tab") { nodes[0].closest(".title")?.setAttribute("data-nav", "key"); return; }
+    const at = usable.findIndex((n) => n.classList.contains("is-current"));
+    const step = { ArrowDown: 1, ArrowUp: -1 }[e.key];
+    const edge = { Home: 0, End: usable.length - 1 }[e.key];
+    if (step || edge != null) {
+      e.preventDefault();
+      const next = usable[edge ?? (at < 0 ? 0 : (at + step + usable.length) % usable.length)];
+      if (next !== usable[at]) SE.click?.();
+      nodes[0].closest(".title")?.setAttribute("data-nav", "key");
+      setCursor(nodes, next, { focus: true });
+    } else if ((e.key === "Enter" || e.key === " ") && !e.repeat && at >= 0) {
+      // ボタンにフォーカスがある時はブラウザが押してくれる。どこにも無い時だけ代わりに押す。
+      const active = document.activeElement;
+      if (active && active !== document.body && active.matches?.("button, a, input, select, textarea")) return;
+      e.preventDefault();
+      // 押すのはこのキーの処理が済んでから。その場で押すと、開いた小窓が同じキーを受け取ってすぐ閉じる。
+      const row = usable[at];
+      setTimeout(() => { if (titleLive() && row.isConnected && !document.querySelector("#modal.show")) row.click(); }, 0);
+    }
+  });
+}
+
+/** 「つづきから」に添える1行（いちばん新しいセーブの章・日付）。読めない時は出さない。 */
+function latestSaveNote() {
+  try { return saveHeadline(peekLatestSave()) || ""; } catch { return ""; }
+}
+
 function galleryLabel() {
   try {
     const value = JSON.parse(localStorage.getItem("suien_remake_gallery") || "[]");
@@ -219,18 +277,30 @@ export function showTitle(preparedArt = null) {
   const revision = ++titleRevision;
   let leaving = false;
   const current = () => !leaving && revision === titleRevision && document.body.dataset.screen === "title";
-  const refresh = () => { if (current()) showTitle(); };
+  const refresh = () => { if (current()) { keepCursor = true; showTitle(); } };
+  titleLive = current;
   layers.hud.classList.remove("show");
   setBg(bgUrl("bg_title"), { instant: true });
   playBgm("title");
   const saved = peekSave();
   const cyclePkg = startPackageFromMeta(cycleMetaSeen);
   const menu = el("nav.title-menu");
-  const item = (en, ja, fn, test, disabled = false) =>
-    el("button.title-item", { disabled: disabled || null, dataset: { test }, onclick: () => { SE.select(); fn(); } }, [
+  const rows = []; // メニューの行（作った順）
+  // 押した行は一瞬光らせる（.is-picked。確認や煙の幕が出る前から、押せたことが分かる）。
+  const item = (en, ja, fn, test, disabled = false, note = "") => {
+    const node = el("button.title-item", {
+      disabled: disabled || null, dataset: { test },
+      onclick: () => { SE.select(); setCursor(rows, node); node.classList.add("is-picked"); fn(); },
+      onpointerenter: (e) => { if (e.pointerType !== "touch") setCursor(rows, node); },
+      onfocus: () => setCursor(rows, node),
+    }, [
       el("span.ti-en", { text: en }),
       el("span.ti-ja", { text: ja }),
+      ...(note ? [el("span.ti-note", { text: note })] : []),
     ]);
+    rows.push(node);
+    return node;
+  };
 
   menu.append(
     item("NEW GAME", "はじめから", async () => {
@@ -263,16 +333,26 @@ export function showTitle(preparedArt = null) {
       clearLog();
       leaving = true;
       smokeWipe(() => { stopBgm(0); resumeGame(); }, { color: "dark" });
-    }, "title-load", !anySlotSaved()),
+    }, "title-load", !anySlotSaved(), anySlotSaved() ? latestSaveNote() : ""),
     item(galleryLabel(), "ギャラリー", () => openGallery().then(refresh), "title-gallery"),
     item("CONFIG", "設定", () => openConfig().then(refresh), "title-config"),
   );
+
+  // カーソルの初期位置。決定を押すだけで本編へ入れるよう、いちばん使う行に置く。
+  const byTest = (test) => rows.find((n) => n.dataset.test === test && !n.disabled);
+  const remembered = keepCursor ? byTest(cursorTest) : null;
+  keepCursor = false;
+  setCursor(rows, remembered || byTest("title-load") || byTest("title-new"));
+  bindTitleKeys();
 
   const art = preparedArt || currentArt || pickTitleArt();
   // メニューを閉じただけの再描画（同じ絵の使い回し）は、フェードを繰り返さずそのまま置く。
   const reused = art === currentArt;
   const artNode = el("div.title-art", { "aria-hidden": "true", dataset: { character: art.character } });
-  const root = el("div.title", [
+  // 背景は title が自分で描く（.title-bg）。シーシャの台をメニューと人物の絵の間に見せるため、左へ寄せて置く。
+  // 共通の背景層（#bg）は、DS風の上画面が読むのでそのまま残す（通常の表示では、この絵の下に隠れる）。
+  const root = el("div.title", { onpointermove: () => root.removeAttribute?.("data-nav") }, [
+    el("div.title-bg", { "aria-hidden": "true", style: { backgroundImage: `url("${bgUrl("bg_title")}")` } }, [el("i.title-ember")]),
     artNode,
     el("div.title-smoke", [el("i"), el("i"), el("i")]),
     el("div.title-left", [
@@ -284,6 +364,7 @@ export function showTitle(preparedArt = null) {
     ]),
     el("div.title-ver", { text: buildLabel() }),
   ]);
+  if (!reused) root.classList.add("enter"); // 入ってきた時だけメニューを順に出す（閉じて描き直す時は動かさない）
   debugTapToggle(root.querySelector(".title-ver"));
   showScreen("title", root);
   const brand = root.querySelector(".title-brand");

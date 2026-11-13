@@ -112,6 +112,7 @@ function makeFixture(opts = {}) {
     },
     "../core/state.js": {
       peekSave: () => opts.save ?? null,
+      peekLatestSave: () => opts.save ?? null,
       newGame: () => { calls.newGame++; },
       wipeSave: () => { calls.wipeSave++; },
       config: {}, saveConfig() {},
@@ -133,7 +134,7 @@ function makeFixture(opts = {}) {
     "../chapters/ch1.js": { startNewGame: () => { calls.startNewGame++; }, resumeGame() {} },
     "../vn/engine.js": { clearLog() {} },
     "./gallery.js": { openGallery: async () => {} },
-    "./saves.js": { loadWithRecovery: async () => false },
+    "./saves.js": { loadWithRecovery: async () => false, saveHeadline: () => "" },
     "./title-art.js": {
       pickTitleArt: () => ({ character: "sumi", file: "sumi.webp", url: "blob:sumi", ready: true }),
       prepareTitleArt: async (art) => art,

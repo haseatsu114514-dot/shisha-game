@@ -1136,6 +1136,8 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     };
     place();
     if (!quick()) setTimeout(place, 420);
+    // 葉の盆は出るとき（0.4秒）に動くので、収まった時にも合わせ直す（重い端末では 420ms では足りず、矢印が札の下や見出しへずれる・#3557）
+    root.querySelector(".ichi-market")?.addEventListener("animationend", (e) => { if (e.target === e.currentTarget) place(); });
   }
   /** いま何をすればよいか（短い一文）と、できることのボタン */
   function guide(me, op, w) {

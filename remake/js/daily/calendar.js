@@ -988,6 +988,8 @@ async function endDay({ returnedToTonari = false } = {}) {
   await chapterDef.beforeHomecoming?.();
   const athome = !!state.flags._home_tonight;
   delete state.flags._home_tonight;
+  // 帰り道と家では、店の曲（tonari・ライバル店など）を持ち帰らない。朝の曲と同じ街の曲へ戻す（第5章も家では店の曲にしない）。
+  playBgm(state.chapter === 2 ? "bgm_yuzugaya" : state.chapter === 4 ? "bgm_dubai" : "kansetsu_shomei_to_black_coffee");
   if (!athome) {
     await maybeSamechanEncounter({ hasNightEvent: nightCount > 0 || !!chapterDef.nightEvents[state.day]
       || state.flags._night_event_day === `${state.chapter}:${state.day}`,
