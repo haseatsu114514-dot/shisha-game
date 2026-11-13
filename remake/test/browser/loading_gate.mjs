@@ -251,10 +251,16 @@ await suite("loading-gate", async check => {
       } }).observe(document.body, { subtree: true, childList: true });
       await run(50);
       const fast = seen.length === 0;
-      window.__finishSceneNotice = run(2000);
-      return { fast, seen };
+      // The notice shows after 500 ms; a comic joins it only 700 ms later. A wait that ends in between
+      // keeps the plain notice, so no comic flashes for a moment and disappears unread.
+      await run(950);
+      const brief = seen.join();
+      seen.length = 0;
+      window.__finishSceneNotice = run(2400);
+      return { fast, brief };
     });
     assert.equal(setup.fast, true, 'A short wait must not show a notice or comic');
+    assert.equal(setup.brief, 'notice', 'A wait that ends soon after the notice shows no comic');
     await page.locator('.vn-loading-comic-panels img').first().waitFor();
     assert.equal(await page.locator('.vn-loading-comic-panels img').count(), 2);
     await page.evaluate(() => window.__finishSceneNotice);
@@ -264,13 +270,83 @@ await suite("loading-gate", async check => {
       const { LOADING_COMICS } = await import('./js/core/loading-comics.js');
       const notice = document.createElement('div');
       document.body.append(notice);
-      const hide = attachLoadingComic(notice, { comics: LOADING_COMICS, context: 'scene', chapter: 1 });
-      await new Promise(resolve => setTimeout(resolve, 50));
+      const hide = attachLoadingComic(notice, { comics: LOADING_COMICS, context: 'boot', chapter: 9, isMet: null });
+      await new Promise(resolve => setTimeout(resolve, 1000));
       const plain = notice.isConnected && !notice.querySelector('.vn-loading-comic');
       hide();
       return plain;
     });
     assert.equal(fallback, true, 'A context without registered comics keeps the plain notice');
+    // Registered comics are offered to scene waits: unread ones first, and showing one here is not a read.
+    const registered = await page.evaluate(async () => {
+      const { attachLoadingComic, NOTICE_COMIC_CONTEXTS } = await import('./js/core/loading-comic-notice.js');
+      const { LOADING_COMICS } = await import('./js/core/loading-comics.js');
+      const { LOADING_COMICS_READ_KEY } = await import('./js/core/loading-comic-log.js');
+      const met = id => id === 'sumi';
+      const own = LOADING_COMICS.filter(comic => comic.minChapter <= 1 && comic.cast.every(met));
+      const before = localStorage.getItem(LOADING_COMICS_READ_KEY);
+      const titles = [];
+      for (let round = 0; round < 3; round++) {
+        const notice = document.createElement('div');
+        notice.className = 'vn-loading';
+        document.body.append(notice);
+        const hide = attachLoadingComic(notice, { chapter: 1, isMet: met, isRead: id => id !== own[1].id });
+        await new Promise(resolve => {
+          const started = performance.now();
+          const poll = () => notice.querySelector('.vn-loading-comic h2') || performance.now() - started > 6000 ? resolve() : setTimeout(poll, 50);
+          poll();
+        });
+        titles.push(notice.querySelector('.vn-loading-comic h2')?.textContent ?? null);
+        hide();
+      }
+      return { titles, expected: own[1].title, candidates: own.length, contexts: NOTICE_COMIC_CONTEXTS.join(),
+        unchanged: localStorage.getItem(LOADING_COMICS_READ_KEY) === before };
+    });
+    assert(registered.candidates >= 2, 'The check needs two registered comics for a fresh game');
+    assert.equal(registered.contexts, 'scene,craft', 'Scene waits offer the scene comics and the bench comics');
+    assert.deepEqual(registered.titles, Array(3).fill(registered.expected), 'Scene waits show a registered comic, the unread one first');
+    assert.equal(registered.unchanged, true, 'A comic shown in a scene notice is not recorded as read');
+  });
+  await check("unread-first-and-read-record", async page => {
+    const result = await page.evaluate(async () => {
+      const { withLoading, selectLoadingComic } = await import('./js/core/loading.js');
+      const host = document.querySelector('#loading-demo');
+      const src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"/>';
+      const comics = ['a', 'b', 'c', 'd'].map(id => ({ id, title: id, minChapter: 1, panels: [{ src, alt: 'one' }, { src, alt: 'two' }] }));
+      // Unread comics are drawn until none is left; then every comic is offered again.
+      const read = new Set();
+      const order = [];
+      for (let i = 0; i < comics.length; i++) { const comic = selectLoadingComic(comics, { isRead: id => read.has(id) }); order.push(comic.id); read.add(comic.id); }
+      const allOnce = new Set(order).size === comics.length;
+      const lastUnread = [1, 2, 3].map(() => selectLoadingComic(comics, { isRead: id => id !== 'c' }).id).join();
+      const afterAll = [1, 2, 3, 4].map(() => selectLoadingComic(comics, { isRead: () => true }).id);
+      const repeatsAvoided = afterAll.every((id, i) => i === 0 || id !== afterAll[i - 1]);
+      // onRead: only when a shown comic is passed by the reader's own tap or key.
+      const calls = [];
+      const gate = (prepareMs, options = {}) => withLoading(() => new Promise(resolve => setTimeout(resolve, prepareMs)), {
+        host, delayMs: 0, comics: [comics[0]], onRead: comic => calls.push(comic.id), ...options });
+      const pending = gate(300);
+      await new Promise(resolve => { const poll = () => host.querySelector('.loading-gate.is-ready') ? resolve() : setTimeout(poll, 20); poll(); });
+      const beforeProceed = calls.length;
+      host.querySelector('.loading-gate').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      await pending;
+      const afterProceed = calls.join();
+      // A failing record must not break the gate.
+      const throwing = gate(300, { onRead: () => { throw new Error('storage full'); } });
+      await new Promise(resolve => { const poll = () => host.querySelector('.loading-gate.is-ready') ? resolve() : setTimeout(poll, 20); poll(); });
+      host.querySelector('.loading-gate').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      const survived = await throwing.then(() => true, () => false);
+      // Leaving the scene during the reading hold is not a read.
+      const controller = new AbortController();
+      const left = gate(300, { signal: controller.signal });
+      await new Promise(resolve => { const poll = () => host.querySelector('.loading-gate.is-ready') ? resolve() : setTimeout(poll, 20); poll(); });
+      controller.abort();
+      const aborted = await left.then(() => false, error => error.name === 'AbortError');
+      // No comic on screen (broken art): nothing to record.
+      await gate(300, { comics: [{ ...comics[0], panels: [{ src, alt: 'one' }, { src: 'data:image/png,invalid', alt: 'two' }] }] });
+      return { allOnce, lastUnread, repeatsAvoided, beforeProceed, afterProceed, survived, aborted, total: calls.join() };
+    });
+    assert.deepEqual(result, { allOnce: true, lastUnread: 'c,c,c', repeatsAvoided: true, beforeProceed: 0, afterProceed: 'a', survived: true, aborted: true, total: 'a' });
   });
   await check("slow-comic-does-not-delay", async page => {
     await page.route('**/slow-panel.svg', async route => {

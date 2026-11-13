@@ -126,6 +126,40 @@ await suite('loading-craft', async check => {
     await page.locator('.loading-gate').waitFor({ state: 'detached' });
     await page.waitForFunction(() => document.querySelector('.bench-panel')?.childElementCount > 0);
   }, { viewport: { width: 390, height: 844 } });
+  await check('read-record', async page => {
+    // The reading record (core/loading-comic-log.js) is written by the real bench entry when the player
+    // moves on from a comic, never by the preview. Unread comics are shown before any repeat.
+    const KEY = 'suien_remake_loading_comics_read';
+    const record = () => page.evaluate(key => JSON.parse(localStorage.getItem(key) || 'null'), KEY);
+    const readShown = async () => {
+      await page.locator('.loading-gate.is-ready').waitFor();
+      const title = await page.locator('.loading-comic-title').innerText();
+      await page.keyboard.press('Enter');
+      await page.locator('.loading-gate').waitFor({ state: 'detached' });
+      return eligibleComics.find(comic => comic.title === title)?.id ?? `unknown title: ${title}`;
+    };
+    const enter = options => page.evaluate(async options => {
+      const { prepareBenchEntry } = await import('./js/craft/loading.js');
+      window.__benchEntry = prepareBenchEntry(new Promise(resolve => setTimeout(resolve, 1200)), 1, [], options);
+      window.__benchEntry.catch(() => {});
+    }, options);
+    await readShown();
+    assert.equal(await record(), null, 'The bench preview never writes the reading record');
+    await enter({ preview: true });
+    await readShown();
+    assert.equal(await record(), null, 'A preview entry never writes the reading record');
+    const seen = [];
+    for (let round = 0; round < eligibleComics.length; round++) {
+      await enter();
+      seen.push(await readShown());
+      assert.deepEqual(await record(), seen, 'Each comic the player moves on from is recorded, in reading order');
+    }
+    assert.deepEqual([...seen].sort(), eligibleComics.map(comic => comic.id).sort(), 'Every unlocked comic is shown once before any repeat');
+    await enter();
+    assert(seen.includes(await readShown()), 'With everything read, the comics come round again');
+    assert.deepEqual(await record(), seen, 'Reading a comic again adds nothing');
+    assert.equal(await page.evaluate(() => localStorage.getItem('suien_remake_save')), 'untouched-loading-preview', 'The save slot is never touched');
+  }, { viewport: { width: 1280, height: 720 } });
 }, {
   readLoadingComics: false,
   entry: new URL('craft-preview.html?loading=comic', baseURL).href,

@@ -26,12 +26,16 @@ function validPanel(panel) {
     r.x + r.width <= r.sourceWidth && r.y + r.height <= r.sourceHeight;
 }
 
-export function selectLoadingComic(comics, { context = "default", chapter = 1, isMet = null } = {}) {
+export function selectLoadingComic(comics, { context = "default", chapter = 1, isMet = null, isRead = null } = {}) {
   // isMet(id): the player has met that character. Comics list their cast; one is shown only after
   // meeting everyone in it (loading-comics.js). Without isMet (previews) the cast is not checked.
+  // isRead(id): the player has already read that comic. Unread ones come first, so every episode is
+  // seen once before any repeats; with everything read (or no isRead) the draw is over all of them.
   const eligible = eligibleLoadingComics(comics, { context, chapter, isMet }).filter(comic => comic.panels.every(validPanel));
-  const fresh = eligible.filter(comic => comic.id !== previousComic);
-  const pool = fresh.length ? fresh : eligible;
+  const unread = isRead ? eligible.filter(comic => !isRead(comic.id)) : [];
+  const candidates = unread.length ? unread : eligible;
+  const fresh = candidates.filter(comic => comic.id !== previousComic);
+  const pool = fresh.length ? fresh : candidates;
   // Presentation uses its own entropy; do not consume gameplay Math.random().
   const chosen = pool.length ? pool[crypto.getRandomValues(new Uint32Array(1))[0] % pool.length] : null;
   if (chosen) previousComic = chosen.id;
@@ -46,7 +50,7 @@ export function selectLoadingComic(comics, { context = "default", chapter = 1, i
 export async function withLoading(prepare, {
   host = document.querySelector("#stage"), label = "場面を準備しています…",
   delayMs = 220, context = "default", chapter = 1, comics = LOADING_COMICS, isMet = null,
-  signal,
+  isRead = null, onRead = null, signal,
 } = {}) {
   if (!host) throw new Error("Loading host is missing");
   if (active) throw new Error("A loading gate is already active");
@@ -109,7 +113,7 @@ export async function withLoading(prepare, {
       if (awaitingProceed && type === "pointerdown") resolveProceed();
     });
   }
-  const comic = selectLoadingComic(comics, { context, chapter, isMet });
+  const comic = selectLoadingComic(comics, { context, chapter, isMet, isRead });
   // The sheet (title, two 3:2 frames, note) is laid out as soon as a comic is chosen and kept hidden
   // (.is-waiting) until the art is decoded: the logo and gauge then never jump when the panels arrive.
   const frames = comic ? comic.panels.map(() => el("div.loading-panel-art")) : [];
@@ -218,6 +222,8 @@ export async function withLoading(prepare, {
       proceed.setAttribute("aria-hidden", "false");
       awaitingProceed = true;
       await Promise.race([proceeded, aborted]);
+      // The reader moved on by their own tap or key: that comic counts as read (record keeping only).
+      try { onRead?.(comic); } catch { /* A failed record must not break the game. */ }
     }
     return result;
   } finally {

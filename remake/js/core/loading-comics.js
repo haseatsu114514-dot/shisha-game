@@ -4,7 +4,10 @@ import { imgFileUrl } from "./img-file.js";
 // 制作規格: asset_sources/loading-comics/README.md。
 //
 // 形式:
-//   id / title / minChapter（必須）, contexts?（省略時はどこでも）, note?（素材台帳メモ）, caption?（コマの下の一行解説）
+//   id / title / minChapter / contexts（必須）, note?（素材台帳メモ）, caption?（コマの下の一行解説）
+//   contexts : 出す場面。["craft"] と書けば、作業台に入るときのロード画面（読み終えるまで待つ）と、章の開始・セーブからの再開・
+//              場面の切り替えなどの待ちが長いときの小さな案内（core/loading-comic-notice.js）の両方に出る。
+//              案内だけに出す話は ["scene"]。起動時（"boot"）には出さないので、contexts は省かない（省くと起動時にも出る）。
 //   cast     : 出てくるキャラの id（はじめ以外。data/characters.json の id）。全員と「会った」後にだけ出る。
 //              会ったかどうかは core/title-art-unlock.js の hasMetCharacter（state.met と等価の既存記録）で判定する。
 //   panels[2]: { src, alt, region?, bubbles? }（region は原画シートの一部を切り出すとき。現在の登録は使っていない）
@@ -501,9 +504,11 @@ export const LOADING_COMICS = [
  * isMet を渡さなければキャラの条件は見ない（プレビュー用）。
  */
 export function eligibleLoadingComics(comics, { context = "default", chapter = 1, isMet = null } = {}) {
+  // context は1つか、どれかに当てはまればよい配列（場面の案内は ["scene", "craft"] で作業台用の話も出す）。
+  const wanted = [].concat(context);
   return comics.filter(comic => comic && comic.id && comic.title &&
     Number.isInteger(comic.minChapter) && comic.minChapter <= chapter &&
-    (!comic.contexts || comic.contexts.includes(context)) &&
+    (!comic.contexts || comic.contexts.some(name => wanted.includes(name))) &&
     comic.panels?.length === 2 &&
     (!isMet || !Array.isArray(comic.cast) || comic.cast.every(id => isMet(id))));
 }
