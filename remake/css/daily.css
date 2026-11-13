@@ -1927,7 +1927,10 @@ html:root[data-density="phone"] body:not(:root) .gfx-cutin-count { font-size: 16
 /* 右のパネルの立ち絵（SBD82）: 授業は教える人、スキルははじめ。顔の幅と目の高さをそろえ、胸から上だけ見せる */
 .gb-art.has-skill-art { overflow: hidden; border: 1px solid #f4f1eb; background: #fff; }
 .gb-art.has-skill-art > span { display: none; }
-.gb-skill-art { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; pointer-events: none; user-select: none; }
+/* コマは絵の欄（PC 150px・スマホ横 84px）いっぱいに敷き、中央で切り抜く。欄は grid なので height: 100% が効かず、
+   コマが元の比（960×360）の高さのまま上に寄って下が切れていた（スマホ横では顔の上半分だけになった）。
+   顔と動きは原画の高さの 25〜75% に描いてある（asset_sources/ui/growth-board-skill-manga-20261112/README.md）ので、中央で切ればスマホ横でも見える */
+.gb-skill-art { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; pointer-events: none; user-select: none; }
 .gb-art.shadow .gb-skill-art { filter: brightness(0.13) contrast(1.2); }
 .gb-art.has-portrait { overflow: hidden; }
 .gb-art.has-portrait > span { display: none; }
