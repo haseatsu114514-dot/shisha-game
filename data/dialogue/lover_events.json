@@ -418,12 +418,22 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "栞さんがいい。年齢なんて、関係ない"
+          "text": "知ってたよ。最初に身分証を見たの、俺だから"
         },
         {
           "speaker": "minto",
           "face": "ura_surprise",
-          "text": "……っ。……もう。そういうこと、真顔で言うの、ずるい……"
+          "text": "……そうだった。いちばん最初に、ばれてたんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "知ってて通ってた。年齢なんて、関係なかったよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "……あの年齢確認、ちょっと嬉しかったのは、内緒ね"
         },
         {
           "speaker": "minto",
@@ -468,37 +478,57 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "……前に話した、喫茶店のこと。ここから見ると、今も昔の看板を思い出すの"
+          "text": "お休みの日にね、ときどき外から見に来るの。お客さんの目で"
         },
         {
           "speaker": "minto",
-          "face": "ura_sad",
-          "text": "……チョコミントのパフェが名物でね。……手放したとき、私、なんにもできなくて"
+          "face": "ura_smug",
+          "text": "……はじめくん、半歩こっち。そこだと、街灯が看板にかぶるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "休みの日でも、立つ場所まで決まってるんだ"
         },
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "ミントで上書きしてた頃も、あの看板だけは忘れられなかったの"
+          "text": "決めてるよ。ここは、昔の看板が重ならない場所"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "一歩ずれると、喫茶店の頃の看板が、先に見えちゃうの"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "手放した日は、そこに立って、見てるしかできなかったから"
         },
         {
           "speaker": "hajime",
-          "face": "serious",
-          "text": "……今度は、栞さんのこの店で、一緒に思い出を作っていきたい"
+          "face": "normal",
+          "text": "……今日は、そっちに立ってみる？ 俺も行く"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……うん。隣に誰かいるなら、平気かも"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞さんは一歩、自分の足でずれた。俺も隣へ並ぶ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自分で掛け直した看板を、二人でそっと見上げた。"
         },
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "……うん。私も、そうしたい、……一緒に、ね"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "静かなお店の前で、栞さんは少しだけ長く立ち止まった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "自分で掛け直した看板を、そっと見上げる。"
+          "text": "……ふふ。ただの看板だね。ちょっと、右に傾いてるけど"
         }
       ]
     },
@@ -558,7 +588,7 @@
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "今日、ずっと立ちっぱなしだったでしょ。……ここでは、お客さんの顔しなくていいよ"
+          "text": "今日、ずっと立ちっぱなしだったでしょ。……ここでは、お店の顔、置いていいよ"
         },
         {
           "speaker": "",
@@ -577,8 +607,18 @@
         },
         {
           "speaker": "hajime",
+          "face": "normal",
+          "text": "……たぶん、もう見つけてる。あの、傷だらけの一本でしょ"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_surprise",
+          "text": "……見てたんだ。お店の飾りに合わないって、思わなかった？"
+        },
+        {
+          "speaker": "hajime",
           "face": "smile",
-          "text": "笑わないよ。今度、こっそり見せて"
+          "text": "一番よく動いてたから、あれが主役だと思ってた"
         }
       ]
     },
@@ -608,7 +648,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "これ、全部量ったんですか"
+          "text": "これ、全部量ったの？"
         },
         {
           "speaker": "minto",
@@ -669,6 +709,21 @@
           "speaker": "",
           "face": "",
           "text": "家でゆっくり過ごす時間。栞さんは、となりで笑っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "冷蔵庫の扉に、あのパフェのメモ。「もう一口」が三つ並び、下に「来月から店頭」。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "三つ目、いつの間に"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "先週の。……自分で言ったの、覚えてないでしょ"
         },
         {
           "speaker": "minto",
@@ -733,7 +788,22 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "どっちの声でも、ちゃんと届いてる"
+          "text": "……今の、もう一回聞きたい"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "……欲ばり。お店でも、めったに二回は言わないのに"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……今日も、お疲れさまでした"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二回目は、店では出さない、小さいほうの声だった。"
         },
         {
           "speaker": "hajime",

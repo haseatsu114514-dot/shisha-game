@@ -136,7 +136,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "来てくれて、ありがとうございます。荷物、持ちますよ"
+          "text": "来てくれて、ありがとう。荷物、持つよ"
         },
         {
           "speaker": "minto",
@@ -146,7 +146,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "休みの札を書くの、久しぶりじゃないですか"
+          "text": "休みの札を書くの、久しぶりじゃない？"
         },
         {
           "speaker": "minto",
@@ -161,7 +161,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "まずは、宿までの道を確かめましょう"
+          "text": "まずは、宿までの道を確かめよう。地図は俺が見る"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "……お願い。私が見ると、反対側に着いちゃうから"
         },
         {
           "speaker": "",
@@ -189,7 +194,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "休みの日でも、見るところは店主ですね"
+          "text": "休みの日でも、見るところは店主だね"
         },
         {
           "speaker": "minto",
@@ -199,7 +204,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "いえ。今日は、栞さんが気になった方へ行きましょう"
+          "text": "ううん。今日は、栞さんが気になった方へ行こう"
         },
         {
           "speaker": "",

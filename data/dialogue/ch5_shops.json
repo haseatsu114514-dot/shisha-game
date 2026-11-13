@@ -95,14 +95,14 @@
     {
       "dialogue_id": "ch5_minto_shop_b",
       "lines": [
-        { "speaker": "", "face": "", "text": "PEPPERMINTのカウンター。みんとが、新しいメニュー表を差し出した。" },
-        { "speaker": "minto", "face": "smile", "text": "じゃーん。人気No.1キャストの新作、試してくれる？" },
-        { "speaker": "hajime", "face": "smile", "text": "キャスト、ずっと一人だよね" },
-        { "speaker": "minto", "face": "wink", "text": "だから、ずっとNo.1なの" },
-        { "speaker": "", "face": "", "text": "ミントの奥に、ほんのり柑橘が立つ一台だった。" },
-        { "speaker": "hajime", "face": "normal", "text": "ミントが先で、あとから柑橘が来る。二口目がやわらかい" },
-        { "speaker": "minto", "face": "smile", "text": "でしょ？　辛口のお客さまにも、帰りは笑ってほしくて" },
-        { "speaker": "minto", "face": "normal", "text": "感想、正直にね。世界一の舌でしょ？" }
+        { "speaker": "", "face": "", "text": "PEPPERMINT。メニュー表のいちばん下に、手書きの一行が増えていた。" },
+        { "speaker": "minto", "face": "wink", "text": "じゃーん。人気No.1キャストの新作、『チョコミント』でーすっ♡" },
+        { "speaker": "hajime", "face": "surprise", "text": "……載せたんだ、これ" },
+        { "speaker": "minto", "face": "smile", "text": "載せたの。お手本は昔の喫茶店のパフェ。まだ届いてないけどね" },
+        { "speaker": "minto", "face": "normal", "text": "届くまで出さないの、やめたんだ。お客さんと直すほうが、早いもん" },
+        { "speaker": "", "face": "", "text": "一口目はチョコで、三口目でもミントは尖らない。奥に、少しだけ苦みが残った。" },
+        { "speaker": "hajime", "face": "normal", "text": "三口目まで、ちゃんとチョコが前にいる" },
+        { "speaker": "minto", "face": "smile", "text": "でしょ？　苦いとこは宿題♡　感想、正直にね。世界一の舌でしょ？" }
       ]
     },
     {
