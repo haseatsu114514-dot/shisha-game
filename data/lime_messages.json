@@ -3868,6 +3868,86 @@
       ]
     },
     {
+      "id": "lime_noor_missed_call",
+      "sender": "noor",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 3,
+      "region": "home",
+      "type": "chat",
+      "route": "romance",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "ハジメ、起きてた？ ……かけてから気づいた。そっちは朝の五時"
+        },
+        {
+          "sender": "noor",
+          "text": "夜の着信、お盆を持ってて出られなかったの。すぐ切れたから、怒らせたかと思って"
+        },
+        {
+          "sender": "noor",
+          "text": "かけ直すか迷ってたら、こんな時間。……迷ってる時間が、いちばんもったいない"
+        },
+        {
+          "sender": "noor",
+          "text": "だから決めた！ デスクを開ける前の三十分、ハジメの分に空けとく。そっちはお昼でしょ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "声が聞きたかっただけです",
+          "response": "……そういうのは、切る前に言って。お昼、ちゃんと聞くから",
+          "affinity": 2
+        },
+        {
+          "text": "怒ってないです。遠慮しただけです",
+          "response": "遠慮！ ……二人で遠慮してたら、ずっとつながらないね。お昼は遠慮なし",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_noor_noon_call",
+      "sender": "noor",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 7,
+      "region": "home",
+      "type": "chat",
+      "route": "romance",
+      "messages": [
+        {
+          "sender": "noor",
+          "text": "お昼の三十分、短かった！ 言いたいことの半分も言えなかった"
+        },
+        {
+          "sender": "noor",
+          "text": "ハジメの後ろ、お昼の光でまぶしかった。こっちは、影がまだ長い朝"
+        },
+        {
+          "sender": "noor",
+          "text": "父が黙って、カップをもう一つ置いていったの。画面の前に"
+        },
+        {
+          "sender": "noor",
+          "text": "朝の地図を見るのは、電話のあとにした。今日の線、いつもより迷わなかった"
+        }
+      ],
+      "replies": [
+        {
+          "text": "残りの半分、次に聞かせてください",
+          "response": "うん！ ……でも次も、半分しか言えない気がする。あはは",
+          "affinity": 2
+        },
+        {
+          "text": "お父さんに、お礼を伝えてください",
+          "response": "伝えた。返事は、うなずき一回。……あれ、すごく喜んでるの",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_mashiro_glass_cloth",
       "sender": "mashiro",
       "trigger_condition": "flag",
@@ -5328,7 +5408,7 @@
       ],
       "replies": [
         {
-          "text": "その順番、とてもヌールらしいです",
+          "text": "その順番、とてもヌールさんらしいです",
           "response": "そう言われると、負けてもいいかなってなる。ハジメにだけ話すね",
           "affinity": 2
         },

@@ -282,6 +282,36 @@
         {
           "speaker": "",
           "face": "",
+          "text": "腕に置かれた手の袖口から、煙じゃない匂いがした。日なたに干した洗濯物みたいな、明るい匂いだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……凛想さん、袖から、お日さまの匂いがします"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "気づくの、早いね。連休だけの柔軟剤。袖から抜けるのに、二日かかるから"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "休暇の申請理由、「洗濯」で通ったよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……試香、させてもらえますか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "宿に着いてからね。ここ、改札の前だよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "駅を出て、二人で宿へ向かった。"
         }
       ]

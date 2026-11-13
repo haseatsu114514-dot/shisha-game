@@ -92,22 +92,23 @@ assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 const limeMessages = realJSON("../data/lime_messages.json").messages;
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.lime)), limeMessages);
 assert.equal(new Set(all.DB.lime.map(m => m.id)).size, all.DB.lime.length);
-assert.deepEqual(Array.from(all.DB.lime.slice(-79, -70), m => m.id), [
+assert.deepEqual(Array.from(all.DB.lime.slice(-81, -72), m => m.id), [
   "lime_samechan_opening",
   "lime_outing_samechan_1", "lime_after_outing_samechan", "lime_outing_rio_1", "lime_after_outing_rio",
   "lime_outing_hiyori_1", "lime_after_outing_hiyori", "lime_hiyori_charm", "lime_hiyori_peach",
 ]);
-// 第3〜5章の物語のLIME（東京・ドバイ・帰郷後。#2024）は L01 の直前に残る。王煙楼（龍龍水煙所で交換）の9通・太陽（FESTAで交換）の6通もここ
-assert.deepEqual(Array.from(all.DB.lime.slice(-70, -43), m => m.id), [
+// 第3〜5章の物語のLIME（東京・ドバイ・帰郷後。#2024）は L01 の直前に残る。王煙楼（龍龍水煙所で交換）の9通・太陽（FESTAで交換）の6通、
+// ヌールの帰国後の時差の2通（第5章の地元・恋人だけ）もここ
+assert.deepEqual(Array.from(all.DB.lime.slice(-72, -43), m => m.id), [
   "lime_ch3_sumi_tokyo_settle", "lime_ch4_sumi_settle", "lime_ch4_tsumugi_counter", "lime_ch4_mashiro_mukai",
   "lime_ch4_ageha_melty", "lime_ch4_saku_stream", "lime_ch4_sumi_eve", "lime_ch5_saku_title", "lime_ch5_kumicho_title",
   "lime_ch5_rei_title", ...Array.from({ length: 9 }, (_, i) => `lime_wang_0${i + 1}`), ...Array.from({ length: 6 }, (_, i) => `lime_taiyo_0${i + 1}`),
-  "lime_noor_after_sunset", "lime_mashiro_glass_cloth",
+  "lime_noor_after_sunset", "lime_noor_missed_call", "lime_noor_noon_call", "lime_mashiro_glass_cloth",
 ]);
 // L01〜L43 の増量候補を末尾に足した（番号は固定）
 assert.deepEqual(Array.from(all.DB.lime.slice(-43), m => m.id), Array.from({ length: 43 }, (_, i) => `L${String(i + 1).padStart(2, "0")}`));
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.limeTemplates)), realJSON("../data/lime_messages.json").templates);
-assert.equal(all.DB.lime.length, 158); // 139 + 王煙楼8・アダム2・レヰ2（好感度キャラのLIMEをそろえる）+ 太陽6（RVE03）+ 王煙楼の大会後1（RVE07）
+assert.equal(all.DB.lime.length, 160); // 139 + 王煙楼8・アダム2・レヰ2（好感度キャラのLIMEをそろえる）+ 太陽6（RVE03）+ 王煙楼の大会後1（RVE07）+ ヌールの帰国後の時差2
 assert(!all.DB.lime.some(m => m.accept_event === "__hiyori_shop__"));
 assert.equal(all.DB.samechan.lime, undefined);
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
