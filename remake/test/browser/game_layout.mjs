@@ -257,7 +257,9 @@ try {
     });
     await p.reload();await p.locator("#boot").waitFor({state:"detached",timeout:35000});
     await p.waitForFunction(()=>document.body.classList.contains("in-vn") && !!document.querySelector(".vn-text")?.textContent);
-    await normalGeometry(p);assert.equal(await p.locator("body").getAttribute("data-screen"),"boot");
+    await normalGeometry(p);
+    // 再開の入口（resumeGame）が最初にタイトルの画面を片付けるようになった（#3527・#3514）ので、会話に入った後の画面名は起動時の "boot" ではなく "none"。タイトルが残っていないことは変えずに確かめる
+    assert.equal(await p.locator("body").getAttribute("data-screen"),"none");
     assert.equal(await p.evaluate(()=>localStorage.getItem("suien_title_layout")),null,"legacy display preference is cleared");
     const loaded=await state(p);assert.equal(loaded.money,45678);assert.equal(loaded.slot,0);
     assert.equal(loaded.marker,"preserved");assert.deepEqual(loaded.memory,["actually-read"]);
