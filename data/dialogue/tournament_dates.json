@@ -807,6 +807,21 @@
             "text": "土産袋の中身を、サメちゃんが一つずつ説明してくれた。"
           },
           {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "これは、いちばん静かな席の客にじゃ。甘いものを、最後まで取っておく者での"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "お客さんの食べる順番まで、覚えてるんですね"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "覚えておる。……お主が、水を先に飲み干すのもな"
+          },
+          {
             "type": "condition",
             "condition_type": "tournament_finished",
             "tournament_chapter": 3,

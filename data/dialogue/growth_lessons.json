@@ -978,7 +978,8 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "側近よ、肝心な話が抜けている。三つ噛んだ後だ"
+          "text": "側近よ、肝心な話が抜けている。三つ噛んだ後だ",
+          "voice": "korochan"
         },
         {
           "speaker": "samechan",
@@ -1013,7 +1014,8 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "よかろう。勇者はじめに、余の牙を貸してやる"
+          "text": "よかろう。勇者はじめに、余の牙を貸してやる",
+          "voice": "korochan"
         }
       ]
     },

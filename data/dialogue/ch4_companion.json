@@ -557,8 +557,14 @@
         },
         {
           "speaker": "samechan",
-          "face": "surprise",
-          "text": "コロちゃん！ それは、言わぬ約束じゃ！"
+          "face": "serious",
+          "text": "……測った。湯船の縁の高さもじゃ。よい宿は、またぎやすい"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近が開き直った。余は驚いている",
+          "voice": "korochan"
         },
         {
           "speaker": "",
@@ -609,7 +615,7 @@
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "……という側近の願いじゃ。わしは、お主と砂浜を歩きたいだけじゃ"
+          "text": "……というのは、王の願いじゃ。わしは、お主と砂浜を歩きたいだけじゃ"
         },
         {
           "speaker": "hajime",

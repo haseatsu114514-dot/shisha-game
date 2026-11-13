@@ -547,8 +547,18 @@
         },
         {
           "speaker": "samechan",
-          "face": "surprise",
-          "text": "コロちゃん！　……それは、言わぬ約束じゃ"
+          "face": "normal",
+          "text": "……測る。じゃが、座って、目で測るだけじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "メジャーは、置いてきてくださいね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……小さいのなら、よいじゃろう"
         }
       ],
       "metadata": {

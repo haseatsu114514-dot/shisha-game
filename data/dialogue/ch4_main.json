@@ -2581,7 +2581,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "印をつけておいたのじゃ。夕飯はここ、明日の朝はここじゃ"
+          "text": "印をつけておいた。夕飯はここ、明日の朝はここじゃ"
         },
         {
           "speaker": "hajime",
@@ -2591,7 +2591,18 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "旅先では、まず腹を整えるのじゃ。……昼は、何を食べたのじゃ"
+          "text": "どちらも、席の間が広い店を選んだ。お主が、肘を張らずに食える"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は窓の外から、三軒のぞいた",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……客の顔を見れば、店は分かるのじゃ。で、昼は何を食べた"
         },
         {
           "speaker": "hajime",
@@ -2601,7 +2612,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "うむ。では今夜は、しっかり食べてもらうのじゃ"
+          "text": "うむ。では今夜は、わしの隣で、皿が空くまで座っておれ"
         },
         {
           "speaker": "hajime",
@@ -2610,8 +2621,8 @@
         },
         {
           "speaker": "samechan",
-          "face": "normal",
-          "text": "よい返事じゃ。明日のことは、明日の朝に考えればよいのじゃ"
+          "face": "smile",
+          "text": "よい返事じゃ。明日のことは、明日の朝の席で考えればよい"
         },
         {
           "speaker": "",

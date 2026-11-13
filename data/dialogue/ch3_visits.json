@@ -367,14 +367,19 @@
         },
         {
           "speaker": "samechan",
+          "face": "normal",
+          "text": "……と言いたいが、先に白状する。三度、別人に手を振った"
+        },
+        {
+          "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "側近は三度、別人に手を振った",
+          "text": "それは余の台詞である",
           "voice": "korochan"
         },
         {
           "speaker": "samechan",
-          "face": "surprise",
-          "text": "コロちゃん！　それは言わぬ約束じゃ！"
+          "face": "smile",
+          "text": "言われる前に言えば、恥は半分じゃ"
         },
         {
           "speaker": "hajime",

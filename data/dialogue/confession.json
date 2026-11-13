@@ -1174,7 +1174,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。手伝いたいから来る日と、会いたいから来る日があって"
+          "text": "はい。一服したくて来る日と、サメちゃんに会いたくて来る日があって"
         },
         {
           "speaker": "hajime",
@@ -1335,17 +1335,28 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "SHISHARKで過ごした時間は、俺の宝物です"
+          "text": "あの奥の席で過ごす時間が、好きです"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "でも、今の気持ちは、友達としてのものです"
+          "text": "でも今は、友達として、あの席に座っていたいです"
         },
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "……正直に言うてくれて、ありがとの。今は、少しだけ寂しいのじゃ"
+          "text": "……正直に言うてくれて、ありがとの"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は今、笑っている。余が保証する",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……うむ。今夜だけ、そういうことにしておいてくれ"
         },
         {
           "speaker": "samechan",
@@ -1355,7 +1366,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "はい。また、顔を出しに行きます"
+          "text": "はい。また、座りに行きます"
         },
         {
           "speaker": "",
