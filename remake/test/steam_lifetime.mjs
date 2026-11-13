@@ -1,5 +1,6 @@
 // Real steam module; deferred asset/help/countdown/timer and DOM ports isolate lifetime boundaries.
 import assert from 'node:assert/strict';
+import * as craftVersion from '../js/core/craft-version.js';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { test } from 'node:test';
@@ -64,6 +65,8 @@ async function harness({ manual = false, craft = {} } = {}) {
     './steam-patterns.js': { ...patterns },
     './steam-mind.js': { ...mind },
     './clock.js': { createCraftClock: () => ({ now: () => 0, paused: true, dispose: () => metrics.clockDisposed++ }) },
+    // シーシャ作りの版（CRN16）は本物を使う。この一台は版を持たないのでリニューアル
+    '../core/craft-version.js': { ...craftVersion },
   };
   const mod = new vm.SourceTextModule(source, { context });
   const link = spec => {

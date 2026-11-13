@@ -25,6 +25,7 @@ import { replacementCoals } from "./heat_logic.js";
 import { craftConditions, heatDelta, pullResult, isIdealTemperature, isRainbowTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, steamFocusNote, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
 import { attackGuide, attackRange, inAttackRange, attackScore, ATTACK_BAND } from "./attack-band.js";
+import { renewalCraft } from "../core/craft-version.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
 import { impact, exhale, smokeRing } from "./fx.js";
 import { mixColor } from "./art.js";
@@ -153,6 +154,9 @@ async function pullGame(cs, mode) {
   const safeLimit = mode.safe + (maker.safePullsBonus || 0);
   // 熱すぎる吸引のペナルティも、緑上端〜危険帯の中の同じ相対位置で始める。
   const harshTemp = visualTemperature(PULL_TUNING.harshAt, bands);
+  // リニューアル（CRN03・04・06・10）: 止めた瞬間の光りと音・行き先・吸っている間の弧・良くなった一口の手応え・集中の札・結果の一語。
+  // 桜井版（CRN16）はリニューアル前のとおり（芯に入った一口だけ手応え）。
+  const renewal = renewalCraft(cs);
   // 桜井式の大会だけ（SKR04）: 温度計の上の端に「攻めの帯」。ここで終えると、その回の審査に上積み。
   const attacking = attackGuide(cs);
   // テスト用（craftTest.aim = "attack"）: 上手な自動操作が中心ではなく攻めの帯のまん中を狙う。
@@ -205,7 +209,7 @@ async function pullGame(cs, mode) {
     ${[ZONES[0].to, ZONES[1].to].map((p) => `<path class="pg-divider" d="M${dialPoint(p, DIAL.r0 - 4)}L${dialPoint(p, DIAL.r1 + 2)}"/>`).join("")}
     ${ZONES.map((z) => `<g class="pg-zone z-${z.id}"><path class="pg-sense-extra"/><path class="pg-just"/></g>`).join("")}
     <path class="dial-rim" d="${dialSector(0, 1)}"/>
-    <path class="pg-draw-arc" pathLength="1" d="M${dialPoint(0, DIAL.r1 + 12)}A${DIAL.r1 + 12} ${DIAL.r1 + 12} 0 0 1 ${dialPoint(1, DIAL.r1 + 12)}"/>
+    ${renewal ? `<path class="pg-draw-arc" pathLength="1" d="M${dialPoint(0, DIAL.r1 + 12)}A${DIAL.r1 + 12} ${DIAL.r1 + 12} 0 0 1 ${dialPoint(1, DIAL.r1 + 12)}"/>` : ""}
     <g class="pg-needle" data-test="pull-needle">
       <path class="needle-trail" d="M${DIAL.cx} ${DIAL.cy - 9}V${DIAL.cy - DIAL.r1 + 7}"/>
       <path class="needle-body" d="M${DIAL.cx - 3} ${DIAL.cy}L${DIAL.cx - 1.5} ${DIAL.cy - DIAL.r1 + 5}L${DIAL.cx + 1.5} ${DIAL.cy - DIAL.r1 + 5}L${DIAL.cx + 3} ${DIAL.cy}Z"/>
@@ -225,7 +229,7 @@ async function pullGame(cs, mode) {
   // CRN06: 止めたらどこへ行くかを、針のそばでも読めるように（温度計の点線と同じ予告）
   const destination = el("span.pull-destination", { dataset: { test: "pull-destination" } });
   const currentZone = el("div.pull-current-zone", { dataset: { test: "pull-current-zone" } }, [
-    el("small", { text: "針の現在位置" }), currentZoneLabel, destination,
+    el("small", { text: "針の現在位置" }), currentZoneLabel, renewal ? destination : null,
   ]);
   const dialRow = el("div.pull-dial-row", [dial, labels, currentZone]);
   const needle = dial.querySelector(".pg-needle");
@@ -294,7 +298,7 @@ async function pullGame(cs, mode) {
     return optimal ? [expressive ? goodLabel : "最適温", "optimal"] : inZone ? [goodLabel, "ok"] : temp >= DANGER_TEMP ? ["焦げる寸前！", "danger"]
       : temp > ideal[1] ? ["熱い", "hot"] : mode.drift && temp <= COLD_OUT + 0.08 ? ["冷え切りそう！", "cold"] : ["ぬるい", "cool"];
   };
-  const focusNote = mode.store === "pull" ? steamFocusNote(cs) : null;
+  const focusNote = renewal && mode.store === "pull" ? steamFocusNote(cs) : null;
   // 毎フレームの描画は、値が変わった時だけ DOM に書く（同じ値でも書くとページ全体の再計算が毎フレーム走って重い・CRN）
   const putText = (node, text) => { if (node.textContent !== text) node.textContent = text; };
   const putData = (node, key, value) => { if (node.dataset[key] !== value) node.dataset[key] = value; };
@@ -419,10 +423,12 @@ async function pullGame(cs, mode) {
     cancelAnimationFrame(raf);
     moveNeedle(landed);
     // CRN06: 押した瞬間に返す。針先と止めた帯が光り、芯ならその帯の芯が強く光る（判定の文字は出さない・TH36）
-    delete play.dataset.stopped; void play.offsetWidth;
-    play.dataset.stopped = isJust ? "just" : "plain";
-    play.dataset.stopZone = z.id;
-    SE.click?.();
+    if (renewal) {
+      delete play.dataset.stopped; void play.offsetWidth;
+      play.dataset.stopped = isJust ? "just" : "plain";
+      play.dataset.stopZone = z.id;
+      SE.click?.();
+    }
     pulls++;
     const duration = autoSkill() ? 120 : DRAW_MS[z.id] * (deep ? 1.5 : 1);
     const heat = pullHeat(delta);
@@ -477,7 +483,9 @@ async function pullGame(cs, mode) {
       if (critical) { criticals++; drawStatus.textContent = "会心の一服"; }
       // CRN06: 吸い終わりの手応えは「温度が良くなった」一口に付ける。最適温（虹）へ入った・会心は大きく、
       // 適温へ入った一口は中くらい、中心へ近づいた一口は火の粉だけ。離れた一口には何も出さない。
-      {
+      // 桜井版は、リニューアル前のとおり狙いどおりの一吸い（芯）に手応え。会心は大きく
+      if (!renewal) { if (isJust) impact(play, critical ? "big" : "perfect", { at: dial, color: "#b48cff" }); }
+      else {
         const pointer = thermometer.root.querySelector(".thermo-pointer") || dial;
         const host = panel.querySelector(":scope > .pull") || play;
         const rainbowNow = isRainbowTemperature(T, bands), idealNow = isIdealTemperature(T, bands);
@@ -723,7 +731,7 @@ async function pullGame(cs, mode) {
     await resultCard(panel, {
       title: context.title,
       // 攻めの帯の上積み（桜井式）は、畳まれた「詳しく見る」ではなくカードの表に出す（#095 ほめてやれ）。
-      summary: [context.summary, `${servedWord}（${pulls}回吸った）${careFollows ? "。この温度から調整が始まる" : ""}`, ...(attackLine ? [attackLine] : [])],
+      summary: [context.summary, ...(renewal ? [`${servedWord}（${pulls}回吸った）${careFollows ? "。この温度から調整が始まる" : ""}`] : []), ...(attackLine ? [attackLine] : [])],
       lines: [
         ...(naruFinished ? ["焼き際を見極めた。仕上げの評価に小さな手応え"] : []),
         inZone && bands.expressionWeight >= .999 ? "適温で、味の表情を整えられた" : optimal ? "最適温に合わせられた" : inZone ? "適温に整えられた" : T > ideal[1] ? "少し熱いままだった" : "まだぬるかった",
@@ -738,7 +746,7 @@ async function pullGame(cs, mode) {
   const [keptWord] = temperatureWord(T);
   await resultCard(panel, {
     title: `${mode.title} 結果`,
-    summary: [`${keptWord}で整え終えた（${coals ? `炭×${coals}` : "炭そのまま"}・${pulls}回吸った）`, ...(attackLine ? [attackLine] : [])],
+    summary: [...(renewal ? [`${keptWord}で整え終えた（${coals ? `炭×${coals}` : "炭そのまま"}・${pulls}回吸った）`] : []), ...(attackLine ? [attackLine] : [])],
     lines: [
       inZone ? `適温に整えて、${context.returned}` : T > ideal[1] ? cs.mode==="tournament"?"熱いまま審査員に任せてしまった":"まだ熱い。次は炭を減らすか、外寄りに置こう" : cs.mode==="tournament"?"冷めたまま審査員に任せてしまった":"まだぬるい。次は炭を多めに替えるか、内寄りに寄せよう",
       tasteCard,

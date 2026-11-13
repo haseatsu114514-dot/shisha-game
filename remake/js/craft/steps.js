@@ -22,6 +22,7 @@ import { cafeNoted } from "../daily/cafe-ideas.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK, applyCoalTraining } from "./coals.js";
 import { buildMixTemperatureGauge } from "./thermometer.js";
 import { flavorFamilyGrams, configEffectLabel } from "./score.js";
+import { renewalCraft } from "../core/craft-version.js";
 import { FOIL_FREE_HMS } from "./holes_logic.js";
 import { mixPercents } from "./mix-ratio.js";
 import { makerMixProfile } from "./temperature-model.js";
@@ -69,7 +70,8 @@ const LESSON = {
  * 押し続けると繰り返す（配合の ＋／−・CRN・P9）。0.4秒押したら0.12秒ごとに繰り返す。
  * 1回押しは従来どおり click で1回。繰り返した後の click は数えない。
  */
-function holdRepeat(button, step) {
+function holdRepeat(button, step, enabled = true) {
+  if (!enabled) return button; // 桜井版（リニューアル前）は1回押しだけ（CRN16）
   let wait = 0, every = 0, repeated = false;
   const stop = () => { clearTimeout(wait); clearInterval(every); wait = every = 0; };
   button.addEventListener("pointerdown", () => {
@@ -441,9 +443,9 @@ export async function stepMix(cs) {
         cs.staffPractice ? el("small.fr-stock", { text: `まかない ${staffStock(state, id)}g ／ 私物 ${flavorStock(id)}g（まかない優先）` }) : null,
         ratio,
       ]),
-      holdRepeat(el("button.fr-btn", { text: "−", "aria-label": `${f?.short_name || f?.name || id}を1g減らす`, dataset: { test: `mix-minus-${id}` }, onclick: () => change(-1) }), () => change(-1)),
+      holdRepeat(el("button.fr-btn", { text: "−", "aria-label": `${f?.short_name || f?.name || id}を1g減らす`, dataset: { test: `mix-minus-${id}` }, onclick: () => change(-1) }), () => change(-1), renewalCraft(cs)),
       g,
-      holdRepeat(el("button.fr-btn", { text: "＋", "aria-label": `${f?.short_name || f?.name || id}を1g足す`, dataset: { test: `mix-plus-${id}` }, onclick: () => change(1) }), () => change(1)),
+      holdRepeat(el("button.fr-btn", { text: "＋", "aria-label": `${f?.short_name || f?.name || id}を1g足す`, dataset: { test: `mix-plus-${id}` }, onclick: () => change(1) }), () => change(1), renewalCraft(cs)),
     ]);
     return { id, g, ratio, row };
   });
@@ -591,7 +593,7 @@ export async function stepPack(cs) {
     vessel.dataset.pack = selected.value;
     vessel.setAttribute("aria-label", `${DB.equipById[cs.equip.bowl]?.name || "ハガル"}：${selected.label}。${selected.surface}`);
     vessel.replaceChildren(packingBowlPreview(cs, selected.value));
-    const effect = configEffectLabel("pack", selected.value);
+    const effect = renewalCraft(cs) ? configEffectLabel("pack", selected.value) : ""; // 完成品への効果の札はリニューアルだけ（CRN16）
     caption.replaceChildren(...[el("b", { text: selected.label }), el("p", { text: selected.desc }),
       effect && el("small.pack-effect", { text: `完成品：${effect}`, dataset: { test: "pack-effect" } })].filter(Boolean));
     choices.forEach((button, i) => button.setAttribute("aria-pressed", String(options[i] === selected)));
@@ -666,7 +668,7 @@ export async function stepPlace(cs) {
   const layouts = availableCoalLayouts(cs.mode === "tutorial" ? {} : state.flags);
   cs.place = await choose(panel, layouts.map(value => value === "triangle"
     ? { value, label: "トライアングル（3個）", desc: "三角に置いて、熱を均等に届ける", auto: true }
-    : { value, label: "4点置き（4個）", desc: "熱が強く入る配置。温度を見て調整する", badge: configEffectLabel("place", "four") }));
+    : { value, label: "4点置き（4個）", desc: "熱が強く入る配置。温度を見て調整する", badge: renewalCraft(cs) ? configEffectLabel("place", "four") : undefined }));
   cs.coalTypes = coalTypes({ ...cs, coalTypes: null });
   if (cs.mode !== "tutorial" && state.flags[COAL_UNLOCK.mixed] && state.owned.includes("flat_charcoal") && state.owned.includes("cube_charcoal")) {
     const n = coalCount(cs);

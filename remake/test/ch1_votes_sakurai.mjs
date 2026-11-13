@@ -3,7 +3,8 @@ import assert from "node:assert/strict";
 import { beginCh1Votes, castCh1Votes, isSakuraiVotes, sakuraiMine, sakuraiRival, SAKURAI,
   CH1_JUDGES, CH1_CONTESTANTS, CH1_VOTE_VERSION, CH1_SAKURAI_VERSION } from "../js/craft/ch1-votes.js";
 import { ATTACK_BAND, attackGuide, attackRange, inAttackRange, attackScore } from "../js/craft/attack-band.js";
-import { defaultVoteStyle, normalizeVoteStyle, voteStyleFrom, PLAYER_DEFAULT_VOTE_STYLE } from "../js/core/vote-style.js";
+import { voteStyleFrom, voteStyleForCraftVersion } from "../js/core/vote-style.js";
+import { craftVersionFrom, normalizeCraftVersion, renewalCraft, PLAYER_DEFAULT_CRAFT_VERSION } from "../js/core/craft-version.js";
 import { temperatureBands } from "../js/craft/temperature-model.js";
 
 const BASE_STATS = { aroma: 98, taste: 46, heatStability: 73, burnRisk: 25, draw: 80, smoke: 62, craftQuality: 79 };
@@ -135,24 +136,26 @@ for (const base of [70, 80, 90]) {
   assert.equal(attackGuide({ mode: "drill", voteStyle: "sakurai" }), false, "練習では出さない");
 }
 
-// 方式の選び方: プレイヤーの既定は桜井式、自動操作のブラウザはいままで。?vote= は設定より優先。
+// 方式の選び方（CRN16）: 審査の方式はシーシャ作りの版で決まる（桜井版＝桜井式・リニューアル＝いままで）。
+// 何も選んでいない端末はリニューアル。?craft= は設定より、?vote= は版より優先する（どちらも保存しない）。
 {
-  const realNavigator = Object.getOwnPropertyDescriptor(globalThis, "navigator");
-  try {
-    Object.defineProperty(globalThis, "navigator", { value: { webdriver: false }, configurable: true });
-    assert.equal(defaultVoteStyle(), PLAYER_DEFAULT_VOTE_STYLE);
-    assert.equal(PLAYER_DEFAULT_VOTE_STYLE, "sakurai");
-    assert.equal(normalizeVoteStyle(null), "sakurai");
-    Object.defineProperty(globalThis, "navigator", { value: { webdriver: true }, configurable: true });
-    assert.equal(defaultVoteStyle(), "classic");
-    assert.equal(normalizeVoteStyle("nonsense"), "classic");
-  } finally {
-    if (realNavigator) Object.defineProperty(globalThis, "navigator", realNavigator); else delete globalThis.navigator;
-  }
-  assert.equal(voteStyleFrom({ voteStyle: "classic" }, ""), "classic");
-  assert.equal(voteStyleFrom({ voteStyle: "classic" }, "?vote=sakurai"), "sakurai");
-  assert.equal(voteStyleFrom({ voteStyle: "sakurai" }, "?vote=classic&look=neo"), "classic");
-  assert.equal(voteStyleFrom({ voteStyle: "sakurai" }, "?vote=oops"), "sakurai");
+  assert.equal(PLAYER_DEFAULT_CRAFT_VERSION, "renewal");
+  assert.equal(normalizeCraftVersion(null), "renewal");
+  assert.equal(normalizeCraftVersion("nonsense"), "renewal");
+  assert.equal(craftVersionFrom({ craftVersion: "sakurai" }, ""), "sakurai");
+  assert.equal(craftVersionFrom({ craftVersion: "sakurai" }, "?craft=renewal"), "renewal");
+  assert.equal(craftVersionFrom({}, "?craft=sakurai&look=neo"), "sakurai");
+  assert.equal(craftVersionFrom({ craftVersion: "renewal" }, "?craft=oops"), "renewal");
+  assert.equal(renewalCraft({ craftVersion: "sakurai" }), false);
+  assert.equal(renewalCraft({}), true, "版の無い一台（古いSAVE・部品だけのテスト）はリニューアル");
+  assert.equal(voteStyleForCraftVersion("sakurai"), "sakurai");
+  assert.equal(voteStyleForCraftVersion("renewal"), "classic");
+  assert.equal(voteStyleFrom({}, ""), "classic");
+  assert.equal(voteStyleFrom({ craftVersion: "sakurai" }, ""), "sakurai");
+  assert.equal(voteStyleFrom({ craftVersion: "renewal" }, "?craft=sakurai"), "sakurai");
+  assert.equal(voteStyleFrom({ craftVersion: "renewal" }, "?vote=sakurai"), "sakurai");
+  assert.equal(voteStyleFrom({ craftVersion: "sakurai" }, "?vote=classic&look=neo"), "classic");
+  assert.equal(voteStyleFrom({ craftVersion: "sakurai" }, "?vote=oops"), "sakurai");
 }
 
 console.log("PASS: Chapter 1 Sakurai-style votes (per-round, judge focus, attack band, last point, style switch)");

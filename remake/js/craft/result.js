@@ -9,7 +9,8 @@ import { layers, showScreen, flash, shake, retireScreen } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { on } from "../core/bus.js";
 import { SE, stopBgm } from "../core/audio.js";
-import { autoSkill, CRAFT_RANK_THRESHOLDS } from "./common.js";
+import { autoSkill, craftRankThresholds } from "./common.js";
+import { renewalCraft } from "../core/craft-version.js";
 import { craftRankProgress } from "./rank-hud.js";
 import { mixColor } from "./art.js";
 import { SUI_BAR } from "./score.js";
@@ -397,8 +398,8 @@ export function resultTable(cs, rank, attempt = null) {
         .filter(([k]) => !(k === "穴あけ" && cs.foilSkipped)).map(([k, v]) =>
         el("div.rt-part", [el("span", { text: k }), evaluation(v), el("small", { text: evaluationOf(v || 0).label })])),
       // 完成品の中身（P7）。攻めた構成（4点置き・詰め方など）の見返り（煙・味）と代償（焦げやすさ）が読めるように
-      cs.stats ? el("small.rt-shisha-stats", { dataset: { test: "result-shisha-stats" }, text: `完成品の中身：煙${cs.stats.smoke}・吸い心地の軽さ${cs.stats.draw}・熱の安定${cs.stats.heatStability}・香り${cs.stats.aroma}・味の濃さ${cs.stats.taste}・持ち${cs.stats.duration}・焦げやすさ${cs.stats.burnRisk}` }) : null,
-      el("div.rt-part.total", [el("span", { text: "総合" }), evaluation(cs.total), el("b", { text: craftRankProgress(cs.total, CRAFT_RANK_THRESHOLDS).grade, dataset: { test: "craft-final-rank" }, "aria-label": "制作ランク" })]),
+      cs.stats && renewalCraft(cs) ? el("small.rt-shisha-stats", { dataset: { test: "result-shisha-stats" }, text: `完成品の中身：煙${cs.stats.smoke}・吸い心地の軽さ${cs.stats.draw}・熱の安定${cs.stats.heatStability}・香り${cs.stats.aroma}・味の濃さ${cs.stats.taste}・持ち${cs.stats.duration}・焦げやすさ${cs.stats.burnRisk}` }) : null,
+      el("div.rt-part.total", [el("span", { text: "総合" }), evaluation(cs.total), el("b", { text: craftRankProgress(cs.total, craftRankThresholds(cs)).grade, dataset: { test: "craft-final-rank" }, "aria-label": "制作ランク" })]),
       el("small.rt-judge-comment", { text: `上園「${judgeComment(cs)}」` }),
       el("div.rt-deductions", JUDGES.map(judge => el("small.rt-judge-deduction", { text: `${judgeName(judge.id)}：${judgeDeductionReason(cs, judge.id).text}`, dataset: { judge: judge.id } }))),
       cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,

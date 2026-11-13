@@ -1421,3 +1421,15 @@ html .bench[data-mode] .pull-tag.focus[data-tone="rush"] { color: #ffd2b8; borde
 .heat-feedback .stamp { animation: heat-stamp-in .22s ease-out !important; }
 @keyframes heat-stamp-in { from { filter: brightness(2.2) drop-shadow(0 0 6px #ffd27a); } }
 @media (prefers-reduced-motion: reduce) { .coal.ready-cue .coal-corners, .heat-feedback .stamp { animation: none !important; } }
+
+/* ---------- 桜井版（リニューアル前の作業台・CRN16）: 作業台の data-craft-version="sakurai" で、リニューアルの見た目を前に戻す ----------
+   穴の大きさと縁（CRN05）・炭の判定文字の光り（CRN09）。吸い出しの光り・行き先・弧、穴のそばの判定、炭の構えは、桜井版では JS が出さない。
+   片方の版に決めたら、このまとまりごと消す（リニューアルを残すとき）か、上のリニューアルの規則を前の値へ戻す（桜井版を残すとき）。 */
+.bench[data-craft-version="sakurai"] .foil-hole { width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; background: radial-gradient(ellipse at 65% 25%, #060509 45%, #34313a 75%, #89828b); box-shadow: -1px 1px 1px 1px #f6f0debd, 1px -1px 2px 2px #332f386b; animation: hole-pop-classic .2s var(--ease-out); }
+.bench[data-craft-version="sakurai"] .foil-hole::after { top: 4px; }
+.bench[data-craft-version="sakurai"] :is(.foil-hole.perfect, .foil-hole.good) { box-shadow: -1px 1px 1px 1px #f6f0debd, 1px -1px 2px 2px #332f386b; }
+.bench[data-craft-version="sakurai"] .foil-hole.shallow { width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; opacity: .75; box-shadow: -1px 1px 1px 1px #f6f0debd, 1px -1px 2px 2px #332f386b; }
+.bench[data-craft-version="sakurai"] .foil-hole.wide { width: 12px; height: 12px; margin: -6px 0 0 -6px; }
+.bench[data-craft-version="sakurai"] .foil-hole.large { width: 15px; height: 15px; margin: -7.5px 0 0 -7.5px; }
+@keyframes hole-pop-classic { from { transform: scale(2); } }
+.bench[data-craft-version="sakurai"] .heat-feedback .stamp { animation: none !important; }

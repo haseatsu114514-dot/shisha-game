@@ -49,7 +49,7 @@ const mods = new Map();
 async function load(name) {
   if (mods.has(name)) return mods.get(name);
   const mod = values[name] ? new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name })
-    : new vm.SourceTextModule(await fs.readFile(new URL(["condition.js", "flavor-mastery.js", "smoke.js"].includes(name) ? `../core/${name}` : name, craftRoot), "utf8"), { context, identifier: name });
+    : new vm.SourceTextModule(await fs.readFile(new URL(["condition.js", "flavor-mastery.js", "smoke.js", "craft-version.js"].includes(name) ? `../core/${name}` : name, craftRoot), "utf8"), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod;
 }
 const holesModule = await load("holes.js"); await holesModule.evaluate();

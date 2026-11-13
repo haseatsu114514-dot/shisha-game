@@ -691,20 +691,24 @@ export function modal({ title = "", body = "", options = [{ label: "OK", value: 
  * 3-2-1-GO! のカウントダウン（制作のミニゲーム）。
  * CRN07: 同じ作業台で2回目以降（レッスンを除く）は「GO!」だけにする。short で明示もできる。
  * カウント中のタップ・キーで残りを飛ばして、すぐ GO! へ進める。
+ * シーシャ作りの桜井版（作業台の data-craft-version="sakurai"・CRN16）は、リニューアル前のとおり毎回 3・2・1 で飛ばさない。
  */
 export async function countdown(host = layers.fx, { short } = {}) {
   const bench = globalThis.document?.querySelector?.(".bench:not(.done)");
   const seen = Number(bench?.dataset.countdowns || 0);
   if (bench) bench.dataset.countdowns = String(seen + 1);
-  const quick = short ?? (!!bench && bench.dataset.mode !== "tutorial" && seen > 0);
+  const renewal = bench?.dataset.craftVersion !== "sakurai";
+  const quick = short ?? (renewal && !!bench && bench.dataset.mode !== "tutorial" && seen > 0);
   const c = el("div.countdown");
   host.append(c);
   let skip;
   const skipped = new Promise((resolve) => { skip = resolve; });
   const onSkip = () => skip();
   const opts = { capture: true, once: true };
-  globalThis.window?.addEventListener?.("pointerdown", onSkip, opts);
-  globalThis.window?.addEventListener?.("keydown", onSkip, opts);
+  if (renewal) {
+    globalThis.window?.addEventListener?.("pointerdown", onSkip, opts);
+    globalThis.window?.addEventListener?.("keydown", onSkip, opts);
+  }
   let cut = false;
   skipped.then(() => { cut = true; });
   try {

@@ -42,6 +42,8 @@ async function harness(mode = "tutorial", override = null) {
     if (spec === "../core/state.js") { values.state = statePort.state; values.save = () => { saved++; }; }
     if (spec === "./demo.js") { values.demoFor = step => step === "holes" ? {} : null; values.openDemoSheet = async (_, step) => { demos.push(step); }; }
     if (spec === "../core/util.js") values.sleep = () => new Promise(resolve => sleepers.push(resolve));
+    // シーシャ作りの版（CRN16）は本物を使う（版の無い一台はリニューアル）
+    if (spec === "../core/craft-version.js") Object.assign(values, { craftVersionFrom: () => "renewal", renewalCraft: (cs) => cs?.craftVersion !== "sakurai" });
     const dep = new vm.SyntheticModule(Object.keys(values), function () {
       for (const [key, value] of Object.entries(values)) this.setExport(key, value);
     }, { context });

@@ -60,7 +60,7 @@ mukaiで行動を使った帰りの裏口では、ふれあいの画面「てつ
 中央のボウルで3種類の詰め方を見比べ、「この詰め方で決める」で穴配置へ進む。
 `?step=holes` で穴あけから開始できる。二重のひし形が次の目標、水色の輪が針先、黒い小さな凹みが開いた穴。針は光る目印の近くの短い弧だけを動き、押し始めで位置が決まり、押していた長さで穴の大きさが変わる（#2937）。
 タップ／Spaceで穴を開け、リングが埋まると次のリング（最後なら結果）へ自動で進む。本番と同じ工程を呼び、本編セーブは読み書きしない。
-`?step=steam|pull|care` で蒸らし・吸い出し・調整を単体で、`?step=full` で機材選びから調整2回目までの通しの一台を遊べる（`&mode=tournament` で大会の見え方、`&tune=heat.readyGap:1,pull.period:1.2,holes.goodDeg:14,steam.hitPenalty:10` でこの試遊の間だけ手触りの値を差し替え）。リニューアルの計画と実装状況は [docs/design/craft-renewal-plan.md](../docs/design/craft-renewal-plan.md)。
+`?step=steam|pull|care` で蒸らし・吸い出し・調整を単体で、`?step=full` で機材選びから調整2回目までの通しの一台を遊べる（`&mode=tournament` で大会の見え方、`&tune=heat.readyGap:1,pull.period:1.2,holes.goodDeg:14,steam.hitPenalty:10` でこの試遊の間だけ手触りの値を差し替え）。リニューアルの計画と実装状況は [docs/design/craft-renewal-plan.md](../docs/design/craft-renewal-plan.md)。`&craft=sakurai` で桜井版（リニューアル前の作業台）、`&craft=renewal` でリニューアル（上の帯の「版：」からも切り替えられる。本編は設定の「シーシャ作りの版」・CRN16）。
 回帰テストは `node remake/test/browser/craft_materials.mjs`（PC／横持ちタッチ）と `node --experimental-vm-modules remake/test/foil_holes.mjs`。
 シーシャ作りのレイアウト「一枚の舞台」（2026-11-10 採用・本編へ組み込み中）の見本（静止モック）は `http://127.0.0.1:8123/remake/previews/craft-stage-layout/`。本編の工程は呼ばず、絵を新しい配置に並べただけ（[設計の要点](../docs/design/craft-stage-layout.md)）。
 
@@ -297,7 +297,7 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
    - 生放送レイヤー（`craft/broadcast.js`・旧版 #24/#20/#26）: 工程の頭でパッキーが前振り＋ライバルの進行実況、
      出来に応じてニコ動風のコメントが流れる。点数は作業台右上の SCORE（全モード共通・工程ごとに加算・結果表にも載る）に一本化（TH42）。文面は `remake/data/broadcast.json`
    - 審査 → RESULT 10 COUNT（プチュン＝1位確定／パリン＝敗北）→ 千須の持ち点10一括投入
-   - **桜井式の審査（試作・SKR04）**: 設定の「大会の審査（第1章）」で、いままでの審査と切り替えられる（プレイヤーの既定は桜井式・`?vote=sakurai|classic`）。各回をその回の工程だけで決め、提供の回は審査員ごとに見る所が違い、吸い出し・調整の温度計に「攻めの帯」（+4）が出る。仕様は `docs/master_spec.md` の 2026-11-13 の節、検証は `remake/test/ch1_votes_sakurai.mjs`・`browser/ch1_vote_style.mjs`
+   - **桜井式の審査（試作・SKR04）**: 設定の「シーシャ作りの版」で桜井版を選ぶと桜井式、リニューアル（既定）だといままでの審査（CRN16・`?craft=sakurai|renewal`。審査だけを確かめる時は `?vote=sakurai|classic`）。各回をその回の工程だけで決め、提供の回は審査員ごとに見る所が違い、吸い出し・調整の温度計に「攻めの帯」（+4）が出る。仕様は `docs/master_spec.md` の 2026-11-13 の節、検証は `remake/test/ch1_votes_sakurai.mjs`・`browser/ch1_vote_style.mjs`
    - 優勝: 表彰 → `ch1_tournament_after`（会場まで） → スミさんの祝福LIME → `ch1_tournament_after`（閉店後のtonariの祝杯・採点表の走り書き） → なるのLIME・「???」の記録LIME → `ch1_naru_promise` → 採点表を気にし始める章末 → 90年代風の次回予告 → 第1章クリア
    - 敗北: `ch1_tournament_defeat` → GAME OVER（大会の頭から再挑戦／タイトルへ）
 

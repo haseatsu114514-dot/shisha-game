@@ -2,7 +2,8 @@
 // ?step= pack（既定）/holes/heat/water/steam/pull/care/full。full は機材選びから調整2回目までの通しの一台（CRN・P0）。
 // ?mode=rehearsal|tournament で場面（ランク・ライバルの小窓の出方）を切り替える（既定はリハーサル。pack〜heat・water は従来どおりレッスン）。
 import { loadAll } from "../core/data.js";
-import { newGame, state } from "../core/state.js";
+import { newGame, state, config } from "../core/state.js";
+import { CRAFT_VERSIONS, craftVersionFrom } from "../core/craft-version.js";
 import { initLayers, layers } from "../core/ui.js";
 import { initStageFit } from "../core/stage-fit.js";
 import { unlockAudio, SE } from "../core/audio.js";
@@ -21,7 +22,7 @@ import { newCarePracticeSession, CRAFT_STEPS } from "./practice.js";
 import { mountWaterPour } from "./water-pour-view.js";
 import { initCraftStage } from "./stage-layout.js";
 import { craftRankProgress } from "./rank-hud.js";
-import { CRAFT_RANK_THRESHOLDS } from "./common.js";
+import { craftRankThresholds } from "./common.js";
 
 const STEPS = ["pack", "holes", "heat", "water", "steam", "pull", "care", "full"];
 // 1工程だけ遊ぶときに、前の工程の結果として置く値（session.js の drill() と同じ前提）
@@ -29,10 +30,22 @@ const AFTER_HEAT = { place: "triangle", heat: { score: 80, heatPower: 60, heatSt
 const AFTER_HOLES = { holes: { score: 85, total: 24, outer: 12, middle: 12, inner: 0, evenness: .85, outerEven: .85, precision: .85, completion: 1, innerExcess: 0, minimumComplete: true } };
 
 function activeStep(step) {
+  const version = craftVersionFrom(config);
   document.querySelectorAll("[data-preview-step]").forEach(link => {
     if (link.dataset.previewStep === step) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
+    // 工程のリンクも、いま選んでいる版のまま開く
+    if (version !== "renewal") { const url = new URL(link.getAttribute("href"), location.href); url.searchParams.set("craft", version); link.setAttribute("href", `${url.pathname.split("/").pop()}${url.search}`); }
   });
+  // シーシャ作りの版（CRN16）: 同じ工程を、もう片方の版で開き直す
+  const nav = document.querySelector(".craft-preview-nav");
+  if (nav && !nav.querySelector("[data-test='preview-craft-version']")) {
+    const links = CRAFT_VERSIONS.map(({ id, label }) => {
+      const url = new URL(location.href); url.searchParams.set("craft", id);
+      return el("a", { text: label, href: `${url.pathname.split("/").pop()}${url.search}`, "aria-current": id === version ? "page" : null, dataset: { previewCraft: id } });
+    });
+    nav.querySelector("small")?.before(el("span.craft-preview-version", { dataset: { test: "preview-craft-version" } }, [el("span", { text: "版：" }), ...links]));
+  }
 }
 
 function endCard(title, links, grade = null) {
@@ -136,7 +149,7 @@ export async function boot() {
       await runPull(cs);
       for (const round of [1, 2]) { if (cs.failed) break; await runCare(cs, { round }); }
       finalize(cs);
-      const grade = craftRankProgress(cs.total, CRAFT_RANK_THRESHOLDS).grade;
+      const grade = craftRankProgress(cs.total, craftRankThresholds(cs)).grade;
       endCard(`一台、できあがり。総合 ${cs.total}`, [["もう一台", location.search], ["大会の雰囲気で", "craft-preview.html?step=full&mode=tournament"]], grade);
       return;
     }

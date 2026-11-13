@@ -97,8 +97,8 @@ const context = vm.createContext({
   showHud: stub, playBgm: stub, dayCard: stub, morningMessages: () => [], openPhone: stub,
   play: id => played.push(id),
   captureEntryResources, restoreEntryResources, applyAssistRecovery, beginCh1Votes, maxStamina: () => 130, regulationFor,
-  // 審査の方式（SKR04）は試合を始める時の設定で決まる。ここでは桜井式を選んだ端末として流す。
-  voteStyleFrom, config: { voteStyle: "sakurai" }, isSakuraiVotes, SAKURAI_RULE_LINES: [],
+  // 審査の方式（SKR04）は試合を始める時のシーシャ作りの版で決まる（CRN16）。ここでは桜井版を選んだ端末として流す。
+  voteStyleFrom: (config) => voteStyleFrom(config, ""), config: { craftVersion: "sakurai" }, isSakuraiVotes, SAKURAI_RULE_LINES: [],
   save: () => saves.push(copy(entrant)), toast: stub,
   markMet: stub, preloadBgm: stub, warmGameOver: stub, smokeWipe: fn => fn(),
   playTournamentArrival: () => played.push("arrival-sequence"),
@@ -115,6 +115,7 @@ assert(!played.includes("remake_flavor_rescue") && !played.includes("remake_flav
 assert.equal(sessions[0].stamina, 52);
 assert.equal(entrant.tournament.voteAttempt.style, "sakurai", "試合を始める時の設定の方式で票の記録を始める");
 assert.equal(session.voteStyle, "sakurai", "桜井式の試合の一台には攻めの帯の印が付く");
+assert.equal(session.craftVersion, "sakurai", "桜井式の試合の一台は桜井版の作業台（試合の途中で設定を変えても混ざらない・CRN16）");
 entrant.stamina = 48; entrant.flavorStock.lemon = 0;
 await vm.runInContext("tournamentDay()", context);
 // #2536: 再挑戦でも版確定と票の初期化を保存するようになったため、保存回数ではなく
