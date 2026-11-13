@@ -1030,3 +1030,65 @@ html:root[data-density="phone"] .trpg-tryout-preset { min-height: var(--phone-ta
 html:root[data-density="phone"] .trpg-tryout-preset strong { font-size: var(--phone-text); }
 html:root[data-density="phone"] .trpg-tryout-preset small { font-size: var(--phone-sub); }
 html:root[data-density="phone"] .trpg-tryout-actions .trpg-button { min-height: var(--phone-tap); padding: 0 24px; font-size: var(--phone-text); }
+
+/* ---- 成功の見込みは補正込みで、いつも見える所に（#3199・TRF23）: ダイストレイのすぐ下に、帯と数字と「何が込みか」の札 ---- */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-odds {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 14px;
+  width: min(560px, 100%); margin: 4px auto 0;
+}
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-odds .trpg-odds-bar {
+  flex: 0 0 132px; height: 12px; border-radius: 999px; border: 1px solid #d8c18a99; box-shadow: inset 0 1px 2px #0006;
+  background: linear-gradient(90deg, #e0b03e 0 var(--success), #6f9c7c var(--success) calc(var(--success) + var(--mixed)), #14231f calc(var(--success) + var(--mixed)));
+}
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-odds > strong { font-size: 18px; font-weight: 700; color: #ffe3a1; white-space: nowrap; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-odds > span:not(.trpg-odds-bar) { font-size: 14px; font-weight: 700; color: #b9d7c2; white-space: nowrap; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-odds > small {
+  flex: 1 0 100%; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 6px; font-size: 12px; font-weight: 700; line-height: 1.5;
+}
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-odds > small > b { color: #aebfb5; font-weight: 700; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-odds > small > i {
+  font-style: normal; padding: 0 8px; border-radius: 999px; border: 1px solid #d8ccaa66; color: #e6dcc0; background: #0000002e; white-space: nowrap;
+}
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-odds > small > i:is([data-part="support"], [data-part="momentum"]) { color: #2a1d06; background: #e3c172; border-color: #e3c172; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-odds > small > i[data-part="hypothesis"] { border-style: dashed; }
+/* 行動宣言: 勢いが乗っている時は、題の行に「勢い ＋4 込み」（札の見込みに入っている） */
+html:root .trpg-root.trpg-cinematic .trpg-declare-prompt .trpg-declare-momentum {
+  padding: 1px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; color: #2a1d06; background: #e3c172; white-space: nowrap;
+}
+/* PCの判定の卓: 見込みの行を足しても「判定の詳細」まで1画面に収まるよう、ダイストレイの余白を詰め、見込みと補正の札を1行に並べる。
+   小さい画面（max-width: 1000px / max-height: 600px）とスマホ横持ちは、それぞれの決まり（trpg-stage.css・trpg-phone.css）のまま。 */
+@media (min-width: 1001px) and (min-height: 601px) {
+  html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene { min-height: 132px; }
+  html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene .trpg-dice-row { margin: 8px 0; }
+  html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-odds { width: min(800px, 100%); margin-bottom: 14px; } /* 下の余白は、切り札の札の「場に出した」の印と重ならない分 */
+  html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-odds > small { flex: 0 1 auto; }
+  /* 「30以上で成功」は題のすぐ右へ。本文の1行ぶんを、見込みの行に譲る（右端は「沸いてきた！」の知らせが出る所なので空けておく）。 */
+  html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage > h2 { display: flex; align-items: baseline; justify-content: flex-start; gap: 0 24px; }
+  html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage > h2 .trpg-roll-rule { display: inline; font-size: 16px; font-weight: 400; letter-spacing: 0; color: #c6d4cb; white-space: nowrap; }
+  html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > p.trpg-roll-instruction { display: none; }
+}
+
+/* ---- 「判定の詳細」を開いても下へ伸びない（#3199・TRF24）: 内訳は、ダイストレイの位置に同じフェルトの札として重ねる。
+   位置と大きさは view.js がトレイを測って --tray-* に渡す（測れるまでは、これまでどおり見出しの下に出る）。 ---- */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details { position: relative; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details[data-placed][open] > .trpg-forecast {
+  position: absolute; z-index: 2; box-sizing: border-box; left: var(--tray-left); top: var(--tray-top); width: var(--tray-width); min-height: var(--tray-height);
+  margin: 0; padding: 12px 20px; display: flex; flex-direction: column; justify-content: center; gap: 4px; border-radius: 16px;
+  background: linear-gradient(160deg, #2f4a46, #1d3331 70%);
+  box-shadow: inset 0 0 0 7px #6e4a2c, inset 0 0 0 9px #3a2414, inset 0 0 0 10px #a07a4f55, 0 10px 20px #0005;
+}
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details[data-placed][open] > .trpg-forecast { max-height: var(--tray-room); overflow: hidden; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details[data-tight="true"] > .trpg-forecast > p,
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details[data-tight="true"] > .trpg-forecast .trpg-forecast-head > strong,
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details[data-tight="true"] > .trpg-forecast .trpg-odds small { display: none; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details[data-tight="true"] > .trpg-forecast { justify-content: flex-start; padding: 10px 14px; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details[data-tight="true"] > .trpg-forecast .trpg-forecast-head { justify-content: center; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-forecast > p { margin: 0; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-forecast > .trpg-forecast-hint { color: #e6dcc0; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details[data-placed][open] > .trpg-forecast .trpg-forecast-head { margin-bottom: 0; }
+
+/* ---- メモを読み比べる（#3199・TRF24）: PCも3列。手がかり3＋聞いた話2〜3の6枚までは、スクロールなしで見渡せる。 ---- */
+html:root .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-notes-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 12px; }
+html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-note-card { padding: 10px 14px 12px; }
+html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-note-card p { font-size: 15px; line-height: 1.6; }
+html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-note-card h3 { font-size: 17px; margin: 2px 0 4px; }

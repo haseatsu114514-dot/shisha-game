@@ -88,7 +88,6 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene { position: absolute; left: 0; top: 4px; width: 47%; margin: 0; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total { position: absolute; left: 0; top: 196px; width: 47%; margin: 0; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details { position: absolute; left: 0; top: 166px; width: 47%; margin: 0; }
-html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details > p { display: none; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details > summary { min-height: calc(44px / var(--k, 1)); height: calc(44px / var(--k, 1)); padding-block: 0; margin: 0; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div { min-height: 418px; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-forecast { margin-top: 0; padding: 2px 15px 0; }
@@ -117,3 +116,27 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg
 
 /* ---- 演出（TRF08〜10）: スマホの判定の卓では、目標までの帯を右の列のいちばん上に置く ---- */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-gauge { width: 94%; margin: 16px auto 12px; }
+
+/* ---- 成功の見込み（#3199・TRF23）: 左の列で、ダイストレイのすぐ下。「判定の詳細」はその下へ ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-odds { position: absolute; left: 0; top: 172px; width: 47%; margin: 0; gap: 2px 12px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-odds .trpg-odds-bar { flex-basis: 110px; height: 14px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-odds > strong { font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-odds > span:not(.trpg-odds-bar),
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-odds > small,
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-declare-prompt .trpg-declare-momentum { font-size: var(--phone-sub); }
+/* ---- 判定の卓を1画面に（#3199・TRF24）: 振る前・「判定の詳細」を開いた時・結果、どれも下へスクロールしない ----
+   中身の箱の高さは、左の列（トレイ〜合計）が収まる分だけ。最初の子の上の余白が外へ抜けて全体が下がらないよう flow-root にする。
+   「判定の詳細」の見出しは左の列の下端に固定（見込みの札が3行になっても重ならない）。開いた内訳はトレイの位置に出る（trpg-theme.css）。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div { display: flow-root; min-height: 380px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details { top: auto; bottom: 0; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details > .trpg-forecast > p { display: none; } /* 文は「？」に。見立ての加点は見込みの札に出ている */
+
+/* ---- メモを読み比べる（#3199・TRF24）: 3列にして、6枚（手がかり3＋聞いた話2〜3）までスクロールなしで見渡せる。
+   「卓に戻る」は題の行の右へ上げて、本文に高さを譲る。前置きの一文は出さない（調べ直しに回数を使わないことは「？」に）。 ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-modal.trpg-notes-stage { position: relative; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage > h2 { min-height: var(--phone-tap); display: flex; align-items: center; padding-right: 260px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-modal-actions { position: absolute; top: 18px; right: 28px; margin: 0; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-modal-intro { display: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-notes-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 12px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-note-card { padding: 8px 14px 10px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-notes-stage .trpg-note-card h3 { margin: 0 0 2px; }
