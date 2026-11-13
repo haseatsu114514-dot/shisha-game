@@ -65,7 +65,8 @@ export function tonariMenu() {
       const cost = STAMINA[value] ? `（体力 −${STAMINA[value]}）` : "";
       return el(`button.big-choice${done ? ".done" : ""}`, { dataset: { test }, disabled: !!done || (value === "hiyori_axe" && !hiyoriAxeAffordable()),
         onclick: () => { SE.select(); pickIt(value); } }, [
-        el("b", { text: title }), el("small", { text: done || `${desc}${cost}` }),
+        // 済んだ行動も、店の様子（つむぎがいる 等）の説明は残し、その後ろに理由を添える。
+        el("b", { text: title }), el("small", { text: done ? `${desc} ── ${done}` : `${desc}${cost}` }),
       ]);
     };
     const root = showScreen("tonari", el("div.sub-menu", [
