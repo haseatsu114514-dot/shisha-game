@@ -59,7 +59,7 @@
 #backdrop[data-tint="dim"] ~ .side .side-smoke.a { opacity: .32; }
 #backdrop[data-tint="dim"] ~ .side .side-smoke.b { opacity: .2; }
 /* 設定「揺れ・閃光を減らす」と端末の「動きを減らす」では流さない（煙は止まった絵として残る） */
-body.reduce-shake .side-smoke { animation: none; }
+body.reduce-shake .side-smoke, :root[data-side-calm="on"] .side-smoke { animation: none; }
 @media (prefers-reduced-motion: reduce) { .side-smoke { animation: none; } }
 
 /* ---------------------------------------------------------------- B 縦書きの帯（左の余白の上から、ステージの端に沿った1列） */

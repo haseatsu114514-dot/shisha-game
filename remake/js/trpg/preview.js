@@ -1,5 +1,6 @@
 import { mountTrpgCollection } from "./collection.js";
 import { fitStage } from "../core/stage-fit.js";
+import { initSideArea } from "../core/side-area.js";
 
 const host = document.getElementById("trpg-app");
 const stage = document.getElementById("stage");
@@ -28,6 +29,7 @@ function boot() {
     get ready() { return collection.loaded; } });
 }
 fit();
+initSideArea({ stage, standalone: true }); // 左右の余白の煙と縁（YHK）
 window.addEventListener("resize", fit);
 window.visualViewport?.addEventListener("resize", fit);
 window.addEventListener("pagehide", () => collection?.destroy());
