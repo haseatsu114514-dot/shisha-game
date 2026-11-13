@@ -501,4 +501,68 @@ await suite("ichidai", async (check) => {
     assert.deepEqual(after.saved, after.rec, "保存にも同じ戦績が残る");
     assert.deepEqual([after.day, after.slot, after.money, after.stamina], [before.day, before.slot, before.money, before.stamina], "日付・時間・お金・体力は変わらない");
   }, { pageEntry: `${baseURL}?ichidai=1` });
+
+  // 本編（index.html）の一台勝負でも、札は A 案の組み（ichidai-skin-signs.css）で出る。拡大札の人物は顔が欄に収まり、文は切れない。
+  // 準備の場の葉の名前は2行まで・長音や小さい字で行を始めない・右上の残り枚数の丸に隠れない（2026-11-13 #3257 第2段階の確かめ直し）
+  await check("in-game-cards-use-the-adopted-design", async (page) => {
+    await page.evaluate(async () => {
+      const { runIchidai } = await import("./js/minigames/ichidai.js");
+      window.__run = runIchidai({ host: document.getElementById("stage"), config: { kit: "a", tournament: "practice", level: 1 }, seed: 7, opponent: { id: "sumi", name: "スミさん" } });
+    });
+    await page.locator(`${t("ichi-hand")} .ichi-card .ichi-gem`).first().waitFor({ timeout: 15000 });
+    const signs = await page.evaluate(() => ({
+      sheet: [...document.styleSheets].some((s) => /\/css\/ichidai-skin-signs\.css(\?|$)/.test(s.href || "")),
+      mark: getComputedStyle(document.querySelector('[data-test="ichi-hand"] .ichi-card .ichi-gem'), "::before").maskImage,
+    }));
+    assert.ok(signs.sheet, "本編も ichidai-skin-signs.css を読む");
+    assert.match(signs.mark, /img\/ui\/ichidai\/signs\/\w+\.svg/, "左上の印に、しるしが重なる");
+    // 拡大札（相手が使った札の見せ方と同じ組み）: 人物の顔は欄の中に全部入る。どの札も文が切れない
+    const big = await page.evaluate(async () => {
+      const { tcg } = await import("./js/minigames/ichidai.js");
+      const D = await import("./js/minigames/ichidai-data.js");
+      const root = document.querySelector('[data-test="ichi-game"]'), shelf = document.createElement("div");
+      shelf.className = "ichi-played"; root.append(shelf);
+      const sumi = tcg("card", "sumi", { size: "big" }); shelf.append(sumi);
+      const img = sumi.querySelector(".ichi-card-art img");
+      if (!img.complete) await new Promise((r) => { img.addEventListener("load", r, { once: true }); img.addEventListener("error", r, { once: true }); });
+      const a = sumi.querySelector(".ichi-card-art").getBoundingClientRect(), b = img.getBoundingClientRect();
+      const face = { fit: getComputedStyle(img).objectFit, loaded: img.naturalWidth > 0, inside: b.top >= a.top - 1 && b.bottom <= a.bottom + 1 && b.left >= a.left - 1 && b.right <= a.right + 1 };
+      const cut = [];
+      for (const [kind, list] of [["card", D.CARDS], ["flavor", D.FLAVORS], ["bowl", D.BOWLS], ["hmd", D.HMDS]]) for (const { id } of list) {
+        const c = tcg(kind, id, { size: "big" }); shelf.replaceChildren(c);
+        const text = c.querySelector(".ichi-card-text"), foot = c.querySelector(".ichi-card-foot").getBoundingClientRect(), card = c.getBoundingClientRect();
+        if (text.scrollHeight > text.clientHeight + 3 || foot.bottom > card.bottom) cut.push(`${kind}:${id}`);
+      }
+      shelf.remove();
+      return { face, cut };
+    });
+    assert.deepEqual(big.face, { fit: "contain", loaded: true, inside: true }, "拡大札の人物の顔は、絵の欄からはみ出さない（帽子と目元だけにならない）");
+    assert.deepEqual(big.cut, [], "拡大札の文が切れない");
+    // 準備の場（CPU に最初の火を任せてから、人の手に戻す）
+    await page.evaluate(() => window.__ichidai.autoplay(30));
+    await page.waitForFunction(() => document.querySelector('[data-test="ichi-game"]')?.dataset.phase === "prep", null, { timeout: 60000 });
+    await page.evaluate(() => window.__ichidai.manual());
+    await page.locator(`${t("ichi-market")} .ichi-pile-card`).first().waitFor({ timeout: 30000 });
+    // 盆は奥へ傾けて出す（遠近）。字と丸の重なりは、傾きと出てくる動きを外した盆の面で測る
+    const names = await page.evaluate(() => [...document.querySelectorAll('[data-test="ichi-market"] .ichi-pile-card')].map((pile, i, all) => {
+      if (i === 0) Object.assign(all[0].closest('[data-test="ichi-market"]').style, { transform: "none", animation: "none" });
+      const n = pile.querySelector(".ichi-card-name"), lines = [];
+      let line = "", top = null, firstRight = 0;
+      for (const node of n.childNodes) for (let i = 0; node.nodeType === 3 && i < node.length; i++) {
+        if (node.data[i] === "​") continue;
+        const r = document.createRange(); r.setStart(node, i); r.setEnd(node, i + 1);
+        const box = r.getClientRects()[0]; if (!box) continue;
+        if (top !== null && box.top > top + 3) { lines.push(line); line = ""; }
+        if (!line) top = box.top;
+        line += node.data[i];
+        if (lines.length === 0) firstRight = Math.max(firstRight, box.right);
+      }
+      lines.push(line);
+      return { name: n.getAttribute("aria-label"), lines, firstRight, badge: pile.querySelector(".ichi-count").getBoundingClientRect().left };
+    }));
+    assert.ok(names.length >= 10, `準備の場に葉が並ぶ: ${names.length}`);
+    const bad = names.filter((x) => x.lines.length > 2 || x.lines.slice(1).some((l) => /^[ーッャュョァィゥェォ]/.test(l)) || x.firstRight > x.badge + 2)
+      .map((x) => `${x.lines.join("／")}${x.firstRight > x.badge + 2 ? `（丸の下 ${Math.round(x.firstRight - x.badge)}px）` : ""}`);
+    assert.deepEqual(bad, [], "準備の場の葉の名前");
+  });
 });

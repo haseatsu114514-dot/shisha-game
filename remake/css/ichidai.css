@@ -80,17 +80,22 @@
 .ichi-card.t-bowl { --tc: #d98a5f; --tc2: #6b3a22; } .ichi-card.t-hmd { --tc: #c9d2dc; --tc2: #47505c; }
 .ichi-card.t-flavor { --tc: var(--kc); --tc2: color-mix(in srgb, var(--kc) 55%, #150d22); }
 .ichi-card-head { position: relative; z-index: 1; display: flex; align-items: center; gap: calc(var(--cw) * 0.04); min-height: calc(var(--cw) * 0.2); min-width: 0; }
-.ichi-gem { display: grid; place-items: center; width: calc(var(--cw) * 0.22); height: calc(var(--cw) * 0.22); min-width: 20px; min-height: 20px; border-radius: 50%; flex: none;
+/* 左上の印。position: relative は、右上の小さなしるし（ichidai-skin-signs.css の ::before）の基準。場の葉・中くらいの札は下の節で absolute に置き直す
+   （しるしの CSS 側で relative を付けると、後から読むぶん absolute を上書きして印が名前の行に戻り、名前が押し出されていた） */
+.ichi-gem { position: relative; display: grid; place-items: center; width: calc(var(--cw) * 0.22); height: calc(var(--cw) * 0.22); min-width: 20px; min-height: 20px; border-radius: 50%; flex: none;
   background: radial-gradient(circle at 35% 30%, #5d4488, #221534 70%); border: 1.5px solid var(--ichi-gold); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
 .ichi-gem b { font-size: max(13px, calc(var(--cw) * 0.14)); font-weight: 900; line-height: 1; color: var(--ichi-ember-hi); }
 .ichi-gem.is-heat { border-radius: 28%; background: radial-gradient(circle at 35% 30%, #ffb05c, #b4501c 75%); border-color: #2a1206; } .ichi-gem.is-heat b { color: #2a1206; }
 .ichi-gem.is-taste { background: radial-gradient(circle at 35% 30%, #fff3d0, #e3bd6e 75%); border-color: #2a1a05; } .ichi-gem.is-taste b { color: #2a1a05; }
 .ichi-gem.is-cap { border-radius: 28%; background: radial-gradient(circle at 35% 30%, #f1c3a6, #a85f3c 75%); border-color: #2a1206; } .ichi-gem.is-cap b { color: #2a1206; font-size: max(12px, calc(var(--cw) * 0.12)); font-weight: 900; }
-.ichi-card-name { flex: 1; min-width: 0; font-size: 13px; font-weight: 900; line-height: 1.15; overflow: hidden; display: block; max-height: calc(1.2em * 3 + 2px); text-wrap: balance; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7); }
+.ichi-card-name { flex: 1; min-width: 0; font-size: 13px; font-weight: 900; line-height: 1.15; overflow: hidden; display: block; max-height: calc(1.2em * 3 + 2px); text-wrap: balance; line-break: strict; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7); }
+/* line-break: strict＝長音（ー）や小さい字（ッ・ュ など）で行を始めない（ブル／ーベリー のように折れない） */
 .ichi-card-art { position: relative; z-index: 1; display: grid; place-items: center; min-height: 0; border-radius: calc(var(--cw) * 0.04); overflow: hidden;
   background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--tc) 40%, #2e1d45), #120a1d 82%); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.75), inset 0 0 calc(var(--cw) * 0.16) rgba(0, 0, 0, 0.6); }
 .ichi-artimg { display: block; }
-.ichi-card-art .m-art, .ichi-card-art .m-face { width: 100%; height: 100%; object-fit: cover; }
+/* 絵の欄いっぱいの絵（カードの絵・人物の顔）は欄に重ねて置く。欄の中の行の高さは中身で決まるので、ふつうに置くと height: 100% が効かず、
+   幅と同じ高さの正方形になって上半分しか見えなかった（拡大札の人物で、帽子と目元だけ出ていた） */
+.ichi-card-art .m-art, .ichi-card-art .m-face { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .ichi-card-art .m-sprite { width: 86%; height: 86%; object-fit: contain; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.65)); }
 .ichi-card-art .m-icon { width: 58%; height: auto; aspect-ratio: 1; object-fit: contain; filter: drop-shadow(0 0 6px color-mix(in srgb, var(--tc) 80%, transparent)); }
 .ichi-card-art .ichi-boxart { height: 92%; }
@@ -571,9 +576,12 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 /* 札の下の行（適温・相性）: 1列の幅に収まらないときは2行に折る（横へ押し広げて、右端の札が盆からはみ出さないように） */
 .ichi-pile-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0 5px; width: 100%; min-width: 0; }
 .ichi-pile-card { min-width: 0; max-width: 100%; }
+/* 右上の残り枚数の丸は、札の名前の1行目の右端にかかる。1行目だけ丸のぶん（14px）を空けて、字が丸の下に隠れないようにする（2行目は幅いっぱい）。
+   86px の札で1行目は全角5字（60px）まで、2行目は6字まで入る */
+.ichi-pile-main .ichi-card.s-pile .ichi-card-name::before { content: ""; float: right; width: 14px; height: 1em; }
 .ichi-pile-foot small { font-size: 12px; font-weight: 700; white-space: nowrap; color: var(--ichi-text); text-shadow: 0 1px 2px #000; }
 .ichi-pile-foot .ichi-kind { width: 18px; height: 18px; }
-.ichi-pile-foot .ichi-count { position: absolute; right: -4px; top: -8px; z-index: 3; min-width: 24px; height: 24px; font-size: 13px; font-weight: 900; }
+.ichi-pile-foot .ichi-count { position: absolute; right: -6px; top: -8px; z-index: 3; min-width: 24px; height: 24px; font-size: 13px; font-weight: 900; }
 .ichi-pair { display: inline-flex; align-items: center; gap: 3px; }
 /* 選んだ枚数と「戻す」: 札の下の行に出す。選んでいるあいだは、その行の文字（適温・相性）を隠して重ならないようにする */
 .ichi-pile-card.is-on .ichi-pile-foot small { visibility: hidden; }
@@ -1055,8 +1063,9 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-game:not([data-skin]) .ichi-card::before { inset: calc(var(--cw) * .035); border-color: color-mix(in srgb, var(--tc) 80%, #f8f2e6); border-width: 1px; opacity: .85; }
 .ichi-game:not([data-skin]) .ichi-card-head { padding: 1px 2px; border-bottom: 1px solid color-mix(in srgb, var(--tc) 70%, #fff); background: linear-gradient(90deg, #08070bbd, color-mix(in srgb, var(--tc) 20%, #16121e) 65%, #08070b8a); }
 .ichi-game:not([data-skin]) .ichi-card-name { color: #fffaf6; text-shadow: 0 1px 2px #000; letter-spacing: .02em; }
-.ichi-game:not([data-skin]) .ichi-card.s-mid .ichi-card-name { max-height: none; overflow: visible; letter-spacing: 0; }
-.ichi-game:not([data-skin]) .ichi-card.s-mid.t-bowl .ichi-card-name { position: relative; left: -6px; }
+/* 場の葉（準備の盆）と中くらいの札（マットのボウルとHMD・一式の見本）は幅が狭い。名前の帯の左右の余白と字間を詰め、葉の名前を2行までに収める */
+.ichi-game:not([data-skin]) .ichi-card:is(.s-pile, .s-mid) .ichi-card-head { padding-left: 0; padding-right: 0; }
+.ichi-game:not([data-skin]) .ichi-card:is(.s-pile, .s-mid) .ichi-card-name { letter-spacing: 0; }
 .ichi-game:not([data-skin]) .ichi-card-art { border: 1px solid color-mix(in srgb, var(--tc) 70%, #f8efd8); background: radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--tc) 38%, #4b3a58), #101019 85%); box-shadow: inset 0 0 0 2px #100d1a, inset 0 0 15px #050309bd; }
 .ichi-game:not([data-skin]) .ichi-card-line { border-color: color-mix(in srgb, var(--tc) 75%, #fff); background: #0a0911e8; border-radius: 2px; }
 .ichi-game:not([data-skin]) .ichi-line-type { color: #fff; }

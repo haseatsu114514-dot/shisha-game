@@ -632,11 +632,11 @@
     },
     {
       "id": "ichidai",
-      "title": "Card game Ichidai Shobu: standalone page (setup, embers, prep, serve, judge, help, quit, touch) and the in-game tonari entry (off by default, record saved, no time used) (ICG)",
+      "title": "Card game Ichidai Shobu: standalone page (setup, embers, prep, serve, judge, help, quit, touch) and the in-game tonari entry (off by default, record saved, no time used, cards in the adopted design: signs, big-card face, leaf names) (ICG)",
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
-      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/daily/ichidai-table.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/css/ichidai-lines.css", "remake/js/daily/tonari.js", "remake/test/browser/ichidai.mjs", "remake/test/browser/ichidai_support.mjs"],
+      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/daily/ichidai-table.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/css/ichidai-skin-signs.css", "remake/css/ichidai-lines.css", "remake/js/daily/tonari.js", "remake/test/browser/ichidai.mjs", "remake/test/browser/ichidai_support.mjs"],
       "run": ["node remake/test/browser/ichidai.mjs"]
     },
     {
@@ -645,7 +645,7 @@
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
-      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/css/ichidai-lines.css", "data/dialogue/ichidai_lines.json", "remake/test/browser/ichidai_modes.mjs", "remake/test/browser/ichidai_support.mjs"],
+      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/css/ichidai-skin-signs.css", "remake/css/ichidai-lines.css", "data/dialogue/ichidai_lines.json", "remake/test/browser/ichidai_modes.mjs", "remake/test/browser/ichidai_support.mjs"],
       "run": ["node remake/test/browser/ichidai_modes.mjs"]
     },
     {
