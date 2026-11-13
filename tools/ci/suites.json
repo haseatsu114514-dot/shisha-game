@@ -3467,7 +3467,9 @@
         "remake/test/browser/home_practice_leaves.mjs",
         "remake/js/daily/practice*.js",
         "remake/test/ui_polish.mjs",
-        "remake/css/wide-screens.css"
+        "remake/css/wide-screens.css",
+        "remake/css/vn-composition.css",
+        "remake/css/vn.css"
       ],
       "run": [
         "node remake/test/browser/title_layout.mjs",
