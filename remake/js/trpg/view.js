@@ -296,9 +296,11 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     shownTeamwork = state.teamwork;
     table.replaceChildren(...scenario.cast.map(c => {
       const pc = c.part === "GM" ? null : pcOf(c.id);
-      return el("span.trpg-table-person", { dataset: { speaker: c.id, part: c.part === "GM" ? "gm" : "pl" } }, [
+      return el("span.trpg-table-person", { dataset: { speaker: c.id, part: c.part === "GM" ? "gm" : "pl" }, title: c.part === "GM" ? GM_TITLE + " " + name(c.id) : null }, [
         // 座席は顔＋名前だけ。PL/GMの英字・席番号・能力値はキャラクターシートに任せ、話者だけ光らせる（#2839）。
-        el("span.trpg-seat-face", { "aria-hidden": "true" }, el("img", { src: portrait(c.id), alt: "", style: circleStyle(c.id, 160, 6) })),
+        // GMの席は顔を出さず、「GM」と書いたゲームマスターの印（TRF20）。
+        el("span.trpg-seat-face", { "aria-hidden": "true", dataset: c.part === "GM" ? { gm: "true", test: "trpg-seat-gm" } : { gm: "false" } },
+          c.part === "GM" ? gmMark(true) : el("img", { src: portrait(c.id), alt: "", style: circleStyle(c.id, 160, 6) })),
         el("span.trpg-seat-head", [el("span.trpg-seat-name", { text: name(c.id) }), el("small.trpg-seat-speaking")]),
         pc ? el("span.trpg-seat-pc", { dataset: { test: "trpg-seat-pc-" + c.id } }, [el("strong", { text: pc.name })]) : null,
         c.part === "GM" && npcSeats.length ? el("span.trpg-seat-pc", { dataset: { test: "trpg-seat-npc" } },
@@ -408,6 +410,12 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     root.dataset.layer = layer; root.dataset.kind = kind;
     dock.dataset.layer = layer === "fiction" ? "fiction" : "table"; dock.dataset.kind = kind;
   }
+  // ゲームマスターの印（TRF20）: GMは卓で顔を出さない。衝立（GMスクリーン）とダイスの印と、「ゲームマスター（名前）」の名札で話す。
+  const GM_TITLE = "ゲームマスター";
+  const GM_MARK = '<svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><path d="M20 15 6 21v33l14-5ZM44 15l14 6v33l-14-5Z"/><path d="M20 15h24v34H20Z"/><path class="die" d="m32 23 8 4.6v9.2L32 41.4l-8-4.6v-9.2Z"/><path class="die-line" d="M32 23v6.4m0 0-8 7.4m8-7.4 8 7.4m-16 0h16" fill="none"/></svg>';
+  const gmMark = (lettered = false) => el("span.trpg-gm-mark", { html: GM_MARK + (lettered ? "<b>GM</b>" : ""), "aria-hidden": "true", dataset: { lettered: String(lettered) } });
+  /** GMが自分の声で話す行（卓の会話・語り）。店長のチュートリアルは店長本人として話すので含めない。 */
+  const gmVoice = frame => frame.speaker === gm && !/はじめての人へ/.test(String(frame.role ?? ""));
   const NPC_FIGURE = '<svg viewBox="0 0 120 150" aria-hidden="true" focusable="false"><path d="M60 12c-17 0-29 13-29 31 0 10 4 18 9 24-17 6-30 20-33 41l-2 42h110l-2-42c-3-21-16-35-33-41 5-6 9-14 9-24 0-18-12-31-29-31Z"/></svg>';
   // 人物ではないもの（予告状・招待状・手紙・貼り紙）を読む時は、紙の札。
   const NPC_PAPER = '<svg viewBox="0 0 120 150" aria-hidden="true" focusable="false"><path d="M22 18h60l22 22v92H22Z"/><path d="M82 18v22h22M38 62h48M38 80h48M38 98h34" fill="none"/></svg>';
@@ -419,13 +427,17 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     // はじめて物語の中へ入る瞬間に、みんなが役の姿になる（TRF08）。送りの1押しめは、この演出を閉じるだけ。
     if (kind !== "table" && !incarnated && session.snapshot().phase !== "cover") { incarnated = true; incarnate(); }
     if (frame.fx) stageCue(frame.fx);
+    const asGm = gmVoice(frame) && (kind === "table" || kind === "narration");
     if (kind === "npc") {
-      // GMが演じる物語の人物: 立ち絵は出さず、人影の札と名前。語っているGMは小さく添える。
+      // GMが演じる物語の人物: 立ち絵は出さず、人影の札と名前。演じているのがゲームマスターだと名札に添える。
       const who = roleLabel(frame).replace(/／物語$/, "");
-      art.replaceChildren(el("span.trpg-npc-figure", { html: isPaper(who) ? NPC_PAPER : NPC_FIGURE, dataset: { shape: isPaper(who) ? "paper" : "person" } }),
-        el("span.trpg-npc-gm", { title: "GM " + name(gm) }, el("img", { src: portrait(gm, frame.face), alt: "", style: circleStyle(gm, 150, 6) })));
+      art.replaceChildren(el("span.trpg-npc-figure", { html: isPaper(who) ? NPC_PAPER : NPC_FIGURE, dataset: { shape: isPaper(who) ? "paper" : "person" } }));
       speaker.textContent = who;
-      role.textContent = "GM " + name(gm);
+      role.textContent = GM_TITLE + " " + name(gm);
+    } else if (asGm) {
+      // GM自身の声（卓の会話・場面の語り）: 顔は出さず、印と「ゲームマスター（名前）」。語りは中央に寄せる（印も出さない）。
+      art.replaceChildren(...(kind === "narration" ? [] : [gmMark()]));
+      speaker.textContent = GM_TITLE; role.textContent = name(gm);
     } else if (kind === "narration") {
       art.replaceChildren();
       speaker.textContent = "語り"; role.textContent = name(frame.speaker);
@@ -443,6 +455,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     }
     art.style.backgroundColor = person?.color || "#566053";
     setLayer(kind);
+    dock.dataset.gm = String(asGm);
     speech.textContent = pcText(frame.text);
     // 一行ごとに短く現れる（字は最初から全部入っている。読み上げと検査は待たない）。
     speech.dataset.tick = String(cursor % 2);
@@ -450,7 +463,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     next.textContent = cursor + 1 < frames.length ? "次へ" : "続ける";
     syncSpeaker(frame.speaker);
     // 台詞の肩書きは場面の種類（「場面」「物語」）だけ。「GM／卓の会話」「PL／卓の会話」は出さない（#2839）。
-    log.push({ speaker: frame.speaker, role: roleLabel(frame), text: pcText(frame.text) });
+    log.push({ speaker: frame.speaker, gm: frame.speaker === gm && gmVoice(frame), role: roleLabel(frame), text: pcText(frame.text) });
   }
   /** 転生の演出（TRF08）: 卓の顔ぶれの札が裏返り、本人から役の姿へ。操作は塞がず、送りの1押しで閉じられる。 */
   function incarnate() {
@@ -459,7 +472,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       return { real: { name: name(c.id), face: pcFace(seat, c.id) }, role: { name: pc.name, title: pc.title || "", figure: pcFigure(seat, c.id) } };
     });
     audio.play("open");
-    staging = playIncarnation(root, { cards, place: presentation.location || scenario.title, teller: name(gm),
+    staging = playIncarnation(root, { cards, place: presentation.location || scenario.title, teller: GM_TITLE + " " + name(gm),
       onFlip: () => audio.play("card"), onArrive: () => { audio.play("page"); stageFx(impact(root, "arrive")); } });
     stageFx(staging);
   }
@@ -507,7 +520,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       const frame = frames[cursor];
       // 飛ばした会話の中で物語に入っていたら、転生の演出は出さずに済ませる（後の場面で遅れて出さない）。
       if (lineKind(frame) !== "table" && session.snapshot().phase !== "cover") incarnated = true;
-      log.push({ speaker: frame.speaker, role: roleLabel(frame), text: pcText(frame.text) });
+      log.push({ speaker: frame.speaker, gm: frame.speaker === gm && gmVoice(frame), role: roleLabel(frame), text: pcText(frame.text) });
     }
     finishTalk();
   }
@@ -522,11 +535,11 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   function idle(text) {
     if (busy) return;
-    art.replaceChildren(el("img", { src: speakerPortrait(gm), alt: name(gm),
-      style: portraitFrame(gm, 410, 16) }));
+    art.replaceChildren(gmMark());
     art.style.backgroundColor = cast[gm].color;
-    speaker.textContent = name(gm); role.textContent = ""; speech.textContent = text;
+    speaker.textContent = GM_TITLE; role.textContent = name(gm); speech.textContent = text;
     setLayer("idle");
+    dock.dataset.gm = "true";
     syncSpeaker(gm);
     root.classList.add("trpg-idle"); next.hidden = true;
   }
@@ -726,7 +739,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       ].filter(Boolean)),
       el("div.trpg-cover-party", scenario.cast.map(c => el("div.trpg-cover-person", [
         el("span.trpg-cover-person-art", el("img", { src: portrait(c.id), alt: "", style: circleStyle(c.id, 150, 6) })),
-        el("strong", { text: name(c.id) }), c.part === "GM" ? null : el("small", { text: pcOf(c.id) ? pcOf(c.id).name : pcText(c.role).split("／")[0] }),
+        el("strong", { text: name(c.id) }),
+        el("small", { dataset: { part: c.part === "GM" ? "gm" : "pl" }, text: c.part === "GM" ? GM_TITLE : pcOf(c.id) ? pcOf(c.id).name : pcText(c.role).split("／")[0] }),
       ]))),
     ]));
   }
@@ -916,7 +930,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     return el("div.trpg-roll-actor", { dataset: { test: "trpg-roll-actor", actor, npc: String(!!approach.npc) } }, [
       el("span.trpg-roll-actor-face", { "aria-hidden": "true" }, pcFace(approach.sheet || approach.actor, actor)),
       el("span.trpg-roll-actor-copy", [
-        el("small", { text: (approach.npc ? "GM" : name(actor)) + " · " + (pc?.name || "") }),
+        el("small", { text: (approach.npc ? GM_TITLE : name(actor)) + " · " + (pc?.name || "") }),
         el("strong", { text: pcText(approach.label) }),
         compact ? null : el("span.trpg-roll-actor-stat", { text: statLabel(approach.stat) + " ＋" + (Number.isInteger(rating) ? rating : DICE.base) }),
       ].filter(Boolean)),
@@ -962,7 +976,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       }, [
         el("span.trpg-approach-face", { "aria-hidden": "true", dataset: { costume: String(hasFigure(approach.sheet || approach.actor, approach.actor)) } }, pcFigure(approach.sheet || approach.actor, approach.actor)),
         el("span.trpg-approach-copy", [
-          el("small", { text: (approach.npc ? "GM" : name(approach.actor)) + " · " + (pc?.name || "") }),
+          el("small", { text: (approach.npc ? GM_TITLE : name(approach.actor)) + " · " + (pc?.name || "") }),
           el("strong", { text: pcText(approach.label) }),
         ]),
         el("span.trpg-approach-meta", [
@@ -1085,7 +1099,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const receipts = el("div.trpg-roll-receipts");
     body.append(receipts);
     if (result.approach) {
-      const pc = sheets[result.sheet], actorText = (result.actor && cast[result.actor] ? name(result.actor) : "GM") + (pc ? "の" + pc.name : "");
+      const pc = sheets[result.sheet], actorText = (result.actor && cast[result.actor] ? name(result.actor) : GM_TITLE) + (pc ? "の" + pc.name : "");
       receipts.append(el("p.trpg-ability-receipt.trpg-actor-receipt", { dataset: { test: "trpg-actor-receipt" }, title: actorText },
         [(pc?.name || actorText) + " · " + statLabel(result.stat) + " ＋" + result.base]));
     }
@@ -1282,7 +1296,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     table: () => [el("div.trpg-tutorial-seats", scenario.cast.map(c => el("div", { dataset: { part: c.part === "GM" ? "gm" : "pl" } }, [
       el("span.trpg-tutorial-face", el("img", { src: portrait(c.id), alt: "", style: circleStyle(c.id, 150, 6) })),
       el("b", { text: c.part === "GM" ? "GM" : "PL" }), el("small", { text: name(c.id) })]))),
-      el("p", { text: "GM＝お話を進める語り手 · PL＝役を演じて遊ぶ人" })],
+      el("p", { text: "GM＝ゲームマスター。お話を進める語り手 · PL＝役を演じて遊ぶ人" })],
     sheet: () => {
       const me = sheets[PLAYER_SEAT];
       return me ? [el("div.trpg-tutorial-sheet", [el("strong", { text: "PC ＝ " + me.name }), el("small", { text: me.title || "" }),
@@ -1413,7 +1427,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       figure ? el("span.trpg-sheet-costume", { "aria-hidden": "true" }, pcFigure(seat, portraitId, { shape: "full" })) : null,
       el("div.trpg-sheet-head", [
         el("span.trpg-sheet-face", { "aria-hidden": "true" }, pcFace(seat, portraitId)),
-        el("div", [el("small", { text: player ? "PL " + name(player.id) : "GM " + name(gm) + " が兼任" }),
+        el("div", [el("small", { text: player ? "PL " + name(player.id) : GM_TITLE + "（" + name(gm) + "）が兼任" }),
           el("h3", { text: pc.name }), el("span", { text: pc.title || "" })]),
       ]),
       el("dl.trpg-sheet-stats", STATS.flatMap(k => [el("dt", { text: statLabel(k) }), el("dd", { dataset: { value: String(pc.stats[k]) } }, [
@@ -1435,7 +1449,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   function openLog() {
     const rows = log.length ? log.map(line => el("p.trpg-log-line", [
-      el("strong", { text: name(line.speaker) + " · " + line.role }), line.text,
+      el("strong", { text: (line.gm ? GM_TITLE + "（" + name(line.speaker) + "）" : name(line.speaker)) + " · " + line.role }), line.text,
     ])) : [el("p", { text: "卓を始めると、ここに会話が残ります。" })];
     let pop;
     pop = modal("卓のログ", rows, [button("卓に戻る", "trpg-log-close", () => pop.close(), { class: "primary" })]);
@@ -1447,7 +1461,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     pop = modal("この卓の遊び方", [
       head("用語"),
       el("dl.trpg-help-glossary", [
-        el("dt", { text: "GM" }), el("dd", { text: "お話を進める語り手。場面を説明し、登場人物を演じる" }),
+        el("dt", { text: "GM" }), el("dd", { text: "ゲームマスター。お話を進める語り手。場面を説明し、登場人物を演じる。卓では顔を出さず、衝立の印と「ゲームマスター（名前）」の名札で話す" }),
         el("dt", { text: "PL" }), el("dd", { text: "遊ぶ人。物語の中の役を一人ずつ演じる" }),
         el("dt", { text: "PC" }), el("dd", { text: "PLが演じる役。得意・不得意はキャラクターシートの能力値" }),
         el("dt", { text: "判定" }), el("dd", { text: "サイコロ二つ＋能力値。30以上で成功。失敗しても物語は続く" }),

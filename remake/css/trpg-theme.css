@@ -734,10 +734,10 @@ html:root .trpg-root.trpg-cinematic:not(.trpg-idle) .trpg-selection .trpg-object
 
 /* 役として話す時は、役衣装の姿が帯の上まで立つ（部屋の中に居る）。 */
 html:root .trpg-root.trpg-cinematic .trpg-dock[data-layer="fiction"] { overflow: visible; }
-/* 役衣装の絵は生成りの台紙つきなので、宣言のカードと同じ「役の札」として立てる（縁と影）。 */
+/* 役衣装の絵は台紙を抜いた人物だけ（TRF19）。札にせず、人物がそのまま部屋に立つ（縁の影だけ）。 */
 html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="pc"] .trpg-speaker-art {
   width: 232px; height: 318px; margin: -104px 6px 16px 0; flex: 0 0 232px; align-self: flex-end; overflow: hidden;
-  border: 3px solid #f4dda4; border-radius: 12px; background: #efe6d0 !important; box-shadow: 0 0 0 1px #8a6524, 0 14px 30px #000b;
+  filter: drop-shadow(0 8px 14px #000b) drop-shadow(0 0 1px #000);
   animation: trpg-figure-in .32s ease-out both;
 }
 html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="pc"] .trpg-speaker-art img { width: 520px !important; filter: none; }
@@ -756,8 +756,6 @@ html:root .trpg-root.trpg-cinematic .trpg-npc-figure svg { width: 100%; height: 
 html:root .trpg-root.trpg-cinematic .trpg-npc-figure[data-shape="paper"] svg { fill: #efe6d0e6; stroke: #8a6524; }
 html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="npc"] .trpg-speaker-art { position: relative; }
 /* 演じているGMの顔を、人影の脇に小さく（声の主）。表情は台本のまま。 */
-html:root .trpg-root.trpg-cinematic .trpg-npc-gm { position: absolute; right: 2px; bottom: 14px; width: 70px; height: 70px; overflow: hidden; border-radius: 50%; border: 2px solid #ebd9a8; background: #2c4a4a; box-shadow: 0 3px 8px #000a; }
-html:root .trpg-root.trpg-cinematic .trpg-npc-gm img { position: absolute; left: 50%; max-width: none; }
 html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="npc"] .trpg-speaker-label strong { color: #fff1c8; }
 html:root .trpg-root.trpg-cinematic .trpg-dock:is([data-kind="npc"], [data-kind="pc"]) .trpg-speaker-label span { font-size: max(18px, var(--tt-min)); color: #b9c4b6; }
 html:root .trpg-root.trpg-cinematic .trpg-dock:is([data-kind="npc"], [data-kind="pc"]) .trpg-speaker-label span::before { content: "（"; }
@@ -987,3 +985,34 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-search-result { 
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-search-die { width: 52px; height: 56px; font-size: var(--phone-text); }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-search-result strong { font-size: var(--phone-text); }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-search-result small { font-size: var(--phone-sub); }
+
+/* ---- ゲームマスターは顔を出さない（TRF20）---- */
+/* 卓が始まったら、GMは衝立（GMスクリーン）とダイスの印と「ゲームマスター（名前）」の名札で話す。表紙の顔ぶれでは本人の顔に「ゲームマスター」と添える。 */
+html:root .trpg-root.trpg-cinematic .trpg-gm-mark { position: relative; display: block; }
+html:root .trpg-root.trpg-cinematic .trpg-gm-mark svg { display: block; width: 100%; height: 100%; fill: #12302f; stroke: #d2ae66; stroke-width: 1.8; stroke-linejoin: round; }
+html:root .trpg-root.trpg-cinematic .trpg-gm-mark svg .die { fill: #e7c56f; stroke: #8a6524; stroke-width: 1.2; }
+html:root .trpg-root.trpg-cinematic .trpg-gm-mark svg .die-line { stroke: #8a6524; stroke-width: 1.1; }
+/* 台詞: GMの声は、立ち絵の代わりに印。語り（場面の説明）は印も出さず中央に寄せる。 */
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-gm="true"]:not([data-kind="narration"]) .trpg-speaker-art { display: grid; place-items: center; width: 150px; flex: 0 0 150px; height: 150px; margin: 0 8px 22px 4px; overflow: visible; }
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-gm="true"] .trpg-speaker-art .trpg-gm-mark { width: 124px; height: 124px; filter: drop-shadow(0 4px 10px #000b); animation: trpg-figure-in .32s ease-out both; }
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-gm="true"] .trpg-speaker-label span { font-size: max(20px, var(--tt-min)); color: #cfd8c8; }
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-gm="true"] .trpg-speaker-label span::before { content: "（"; }
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-gm="true"] .trpg-speaker-label span::after { content: "）"; }
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="narration"][data-gm="true"] .trpg-speaker-label strong { letter-spacing: .12em; padding: 1px 12px; }
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="narration"][data-gm="true"] .trpg-speaker-label span { font-size: max(16px, var(--tt-min)); }
+/* 座席: GMの丸は印と「GM」。 */
+html:root .trpg-root.trpg-cinematic .trpg-seat-face[data-gm="true"] { display: grid; place-items: center; background: #0b2326; }
+html:root .trpg-root.trpg-cinematic .trpg-seat-face[data-gm="true"] .trpg-gm-mark { width: 100%; height: 100%; }
+html:root .trpg-root.trpg-cinematic .trpg-seat-face[data-gm="true"] .trpg-gm-mark svg { position: absolute; left: 22%; top: 4%; width: 56%; height: 56%; }
+html:root .trpg-root.trpg-cinematic .trpg-seat-face[data-gm="true"] .trpg-gm-mark b { position: absolute; left: 0; right: 0; bottom: 5%; text-align: center; font-size: max(17px, var(--tt-min)); line-height: 1; font-weight: 700; color: #f4dda4; }
+/* 表紙の顔ぶれ: GMの役どころは「ゲームマスター」。 */
+html:root .trpg-root.trpg-cinematic .trpg-cover-person small[data-part="gm"] { color: #f4dda4; }
+@media (prefers-reduced-motion: reduce) { html:root .trpg-root.trpg-cinematic .trpg-dock[data-gm="true"] .trpg-speaker-art .trpg-gm-mark { animation: none; } }
+
+/* ---- 役の絵は札ではなく人物として立たせる（TRF19）---- */
+/* 判定のカットイン: 証明写真のような札をやめ、腰から上の人物が帯から頭ひとつ抜けて立つ。絵の無い役（顔の丸）は札のまま。 */
+html:root .trpg-root.trpg-cinematic .trpg-cutin-figure[data-cutout="true"] {
+  flex: 0 0 270px; height: 270px; align-self: flex-end; margin-bottom: 12px; border: 0; border-radius: 0; background: none; box-shadow: none;
+  filter: drop-shadow(0 8px 14px #000c) drop-shadow(0 0 1px #000);
+}
+html:root .trpg-root.trpg-cinematic .trpg-cutin-figure[data-cutout="true"] .trpg-costume { background-color: transparent; }
