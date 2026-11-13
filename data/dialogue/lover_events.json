@@ -1567,17 +1567,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "休みの夜。ソファに並んで、映画を観ていた。"
+          "text": "休みの夜。ソファに並んで、ましろちゃんの選んだ映画を観ていた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "いつの間にか、ましろちゃんが肩にもたれている。"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "smile",
-          "text": "……あったかいねぇ……ぽかぽかだぁ"
+          "text": "列車が草原を走るだけの、静かな映画だ。十分もたたずに、肩に重みが来た。"
         },
         {
           "speaker": "hajime",
@@ -1586,18 +1581,23 @@
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
-          "text": "寝てないよぉ。……はじめくんの匂い、かいでるだけ"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "yawn",
-          "text": "……ただいま、充電中……"
+          "face": "sleep",
+          "text": "寝てないよぉ。……目を閉じて、音を聴いてるだけ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "映画、まだ半分残ってるよ"
+          "text": "選んだの、ましろちゃんだよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。これね、途中で寝ても、起きたらまだ同じ景色なの。だから好き"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ、映画としてどうなんだろう"
         },
         {
           "speaker": "mashiro",
@@ -1607,7 +1607,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "結末、言っちゃうかもよ"
+          "text": "「ずっと草原だった」で終わるよ"
         },
         {
           "speaker": "mashiro",
@@ -1617,17 +1617,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ましろちゃんがゆっくり目を閉じた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "呼吸が穏やかになっていく。"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "sleep",
-          "text": "……はじめくんのそば、いちばん安心する……えへへ"
+          "text": "呼吸が、列車の音と同じ速さになっていく。"
         },
         {
           "speaker": "",
@@ -1788,29 +1778,44 @@
           "text": "うん、話すよぉ。重ければ、何でもいいわけじゃないの"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "てつこが小さく鳴いた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "差し出された手を握ると、ましろちゃんは俺の肩に、こつんと肩を合わせた。"
-        },
-        {
           "speaker": "mashiro",
           "face": "normal",
           "text": "重さのあとに、紅茶も残るのが好き。好きな味は、消したくないんだぁ"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "てつこが小さく鳴いた。話の長さに、文句があるらしい。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……ねぇ。今度のお休み、一緒に来てくれる？　僕が重いのを頼むお店"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
-          "text": "うん。その違い、もう少し聞かせて"
+          "text": "俺は、隣で何をすればいい？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "何も。普通の顔で、自分の軽いのを頼んでて"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "隣が普通にしてたら、お店の人も、僕をちゃんと見る気がするの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "普通の顔なら、得意だよ"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "ふふ。長くなるよぉ。今日は、もう少し付き合ってくれる？"
+          "text": "ふふ。知ってる、……約束ねぇ"
         },
         {
           "speaker": "",
@@ -1829,72 +1834,77 @@
         {
           "speaker": "",
           "face": "",
-          "text": "閉店後のmukai。ましろちゃんが、めずらしく真剣な顔をしていた。"
+          "text": "閉店後のmukai。ましろちゃんは、洗い終えたボウルを一つ、まだ手に持っていた。"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "……僕ね。重いのが好きなのは、昔からなんだぁ"
+          "text": "……今日ね。初めてのお客さんに「一番重いの」って言われたの"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "理由はないの。ただ、好きなだけ"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "smile",
-          "text": "シガーリーフはね、僕の言葉なの"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "でもね、軽いのが好きなはじめくんと過ごす時間も、好き"
+          "text": "少し軽くして出した。初めての人の喉には、あれは、まだ早いから"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺、いつもお茶ばっかり飲んでない？"
+          "text": "何か、言われた？"
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
-          "text": "いいんだよぉ。ホース置いて、はじめくんの話を聞く時間も欲しいの"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "じゃあ、今日は俺から、話してもいい？"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "smile",
-          "text": "うん、……聞かせて"
+          "face": "sad",
+          "text": "「もっと重いのが来ると思った」って。……断るの、僕、苦手なんだぁ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "その夜は、tonariのこと、スミさんのこと、まだうまく作れなかった頃の一台のことを話した。"
+          "text": "眠たげな声のまま、ボウルを拭く手だけが、いつもより遅い。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "ましろちゃんは頬杖をついて、ひとつも急かさずに聞いていた。"
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その人、帰る時どんな顔してた？"
         },
         {
           "speaker": "mashiro",
-          "face": "smile",
-          "text": "……はじめくんの話、軽いのに、ちゃんと残るねぇ。はじめくんの煙みたい"
+          "face": "normal",
+          "text": "……笑ってた。「次は、もう一段重いのを」って"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "それ、褒めてる？"
+          "text": "じゃあ、次も来るんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "……あ。ほんとだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんは、やっとボウルを棚に置いた。"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "褒めてるよぉ。僕、重いのが好きだけど、はじめくんのは別腹なの"
+          "text": "はじめくん、すぐ顔の話にするねぇ。……でも、今のは助かった"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "重いのは、僕の好きなもの。出す重さは、相手の喉が決めるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺のは、いちばん軽いやつだけど"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "いいんだよぉ。僕、重いのが好きだけど、はじめくんのは別腹なの"
         },
         {
           "speaker": "mashiro",
@@ -1971,9 +1981,19 @@
           "text": "うなずくと、ましろちゃんが少し身を乗り出した。唇が離れても、手はつながったままだった。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "彼女はもう一度椅子を寄せて、俺の肩にそっと額をつけた。"
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……今の、タイマーなしで借りたねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "返さなくていいよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……うん。返さない"
         }
       ]
     },

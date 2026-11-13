@@ -714,6 +714,7 @@
     },
     {
       "dialogue_id": "confession_mashiro",
+      "comment": "第3章の寄り道（ch3-story-wiring.js）。締めくくり（ch3_mashiro_bond_finale）の後に読み、そこで部屋での一台の誘いを受けていた時だけ（finale_seen かつ romance_open）、もらったハガルと約束のお茶に触れる2行（invited）を読む。締めくくりの前に読む場合は読まない。",
       "lines": [
         {
           "speaker": "",
@@ -733,12 +734,18 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "うん。問屋で、ましろちゃんに似合いそうなのを選んだ"
+          "text": "うん。俺の手に合うやつを、ひとつ"
         },
         {
           "speaker": "",
           "face": "",
           "text": "ローテーブルに、形の違うカップが二つ並ぶ。ましろちゃんが、ゆっくり紅茶を注いだ。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "finale_seen",
+          "char_id": "mashiro",
+          "next_true": "finale_read"
         },
         {
           "speaker": "mashiro",
@@ -808,7 +815,29 @@
             }
           ]
         }
-      ]
+      ],
+      "branches": {
+        "finale_read": [
+          {
+            "type": "condition",
+            "condition_type": "romance_open",
+            "char_id": "mashiro",
+            "next_true": "invited"
+          }
+        ],
+        "invited": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "鞄には、ましろちゃんにもらった素焼きのハガルを入れてきた。約束の一台のために。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "約束のお茶。僕のいちばん好きなやつ。……一台は、話のあとにしよ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "confession_mashiro_accept",

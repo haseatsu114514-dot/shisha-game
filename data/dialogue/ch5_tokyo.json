@@ -82,8 +82,9 @@
         { "speaker": "", "face": "", "text": "閉店の前。ムカイさんがハットを壁に掛けた。" },
         { "speaker": "mukai_master", "face": "normal", "text": "勝負が近いんだってな。スミから聞いた" },
         { "speaker": "hajime", "face": "normal", "text": "はい。日は、まだ決めてないんですけど" },
-        { "speaker": "mukai_master", "face": "normal", "text": "決まる前に、ここで一服していけばいい" },
-        { "speaker": "hajime", "face": "smile", "text": "はい。ここは、変わらないので落ち着きます" },
+        { "speaker": "mukai_master", "face": "normal", "text": "決まる前でも後でも、ここで一服していけばいい" },
+        { "speaker": "hajime", "face": "normal", "text": "……負けて来ても、ですか" },
+        { "speaker": "mukai_master", "face": "normal", "text": "棚の場所は、勝ち負けで変えない" },
         { "speaker": "", "face": "", "text": "ムカイさんはそれだけ言って、コーヒーの豆を量りに載せた。" },
         { "speaker": "", "face": "", "text": "閉めた戸の向こうを、電車が通る。グラスは、全部いつもの棚に収まっていた。" }
       ]

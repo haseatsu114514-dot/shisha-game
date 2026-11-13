@@ -25,7 +25,12 @@
         {
           "speaker": "mukai_master",
           "face": "normal",
-          "text": "俺はムカイ。うちも皿洗いからだ、分からないことは聞いてくれ。……まあ、まずは一杯やってけ"
+          "text": "俺はムカイ。うちも皿洗いからだ。分からないことは聞いてくれ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……まあ、まずコーヒーでも飲んでいけ"
         },
         {
           "type": "set_flag",
