@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { LOADING_COMICS, eligibleLoadingComics } from '../js/core/loading-comics.js';
 import { hasMetCharacter } from '../js/core/title-art-unlock.js';
 import { minigameLoadingOptions } from '../js/minigames/minigame-loading.js';
+import { gameLoadingOptions } from '../js/core/loading-context.js';
+import { KNOWN_AT_START } from '../js/core/state.js';
 
 // Registration guard: every comic offered to the loading screen must fit the fixed
 // display frame (3:2, css/loading.css --loading-panel-ratio; authoring spec:
@@ -89,6 +91,16 @@ for (const comic of LOADING_COMICS) {
 }
 assert.equal(new Set(LOADING_COMICS.map(c => c.id)).size, LOADING_COMICS.length, 'comic ids are unique');
 
+// Where a comic appears: every game loading screen draws from the bench registrations ("craft";
+// core/loading-context.js), the minigame-only ones add "minigame". contexts is required: a comic without
+// it would also be offered at boot's plain gate, which must stay comic-free in the automated tests.
+const CONTEXTS = ['craft', 'minigame'];
+for (const comic of LOADING_COMICS) {
+  assert(Array.isArray(comic.contexts) && comic.contexts.includes('craft'), `${comic.id}: contexts must include "craft"`);
+  assert(comic.contexts.every(context => CONTEXTS.includes(context)), `${comic.id}: unknown context in ${JSON.stringify(comic.contexts)}`);
+}
+assert.equal(eligibleLoadingComics(LOADING_COMICS, { context: 'boot', chapter: 9 }).length, 0, 'no comic is registered for the boot context');
+
 // Unlock: only comics whose whole cast the player has met. A fresh game has met only sumi
 // (LIME contact from the start), so the bench shows sumi's comics until others are met.
 const craft = (chapter, save) => eligibleLoadingComics(LOADING_COMICS, { context: 'craft', chapter, isMet: id => hasMetCharacter(save, id) }).map(c => c.id);
@@ -120,6 +132,51 @@ for (const comic of spoilers) {
   assert(craft(comic.minChapter, everyone).includes(comic.id), `${comic.id}: shown from chapter ${comic.minChapter} once met`);
 }
 assert.equal(eligibleLoadingComics(LOADING_COMICS, { context: 'craft', chapter: 9 }).length, LOADING_COMICS.length, 'without isMet (previews) the cast is not checked');
+
+// Every game loading screen (bench, minigame, chapter, resume, boot) uses the same rules.
+const game = (save, chapter) => eligibleLoadingComics(LOADING_COMICS, gameLoadingOptions(save, { chapter })).map(c => c.id);
+assert.deepEqual(game(null), craft(1, { ...fresh, met: { tsumugi: true } }), 'without a save (first boot), only the people a new game has met');
+assert.deepEqual(game(null), craft(1, { met: Object.fromEntries(KNOWN_AT_START.map(id => [id, true])), flags: {}, contacts: ['sumi'], story: {} }));
+assert(game(null).length > 0, 'a first boot has a comic to show');
+assert.deepEqual(game({ ...everyone, chapter: 3 }), craft(3, everyone), 'a save uses its own chapter and the people met');
+assert.deepEqual(game({ ...everyone, chapter: 3 }, 5), craft(5, everyone), 'the bench passes its own chapter');
+assert.equal(gameLoadingOptions(fresh, { record: false }).onRead, null, 'preview pages never write the reading record');
+
+// Reading record (core/loading-comic-log.js): ids in reading order, outside the save slots.
+{
+  const store = new Map();
+  let failing = false;
+  globalThis.localStorage = {
+    getItem: key => { if (failing) throw new Error('blocked'); return store.has(key) ? store.get(key) : null; },
+    setItem: (key, value) => { if (failing) throw new Error('blocked'); store.set(key, String(value)); },
+  };
+  const log = await import('../js/core/loading-comic-log.js');
+  const KEY = log.LOADING_COMICS_READ_KEY;
+  assert.equal(KEY, 'suien_remake_loading_comics_read');
+  assert.deepEqual(log.readLoadingComicsRead(), [], 'no record reads as nothing read');
+  log.recordLoadingComicRead('sumi-cold-tea');
+  log.recordLoadingComicRead('restored-17');
+  log.recordLoadingComicRead('sumi-cold-tea');
+  assert.deepEqual(JSON.parse(store.get(KEY)), ['sumi-cold-tea', 'restored-17'], 'reading order, no duplicates');
+  assert.equal(log.hasReadLoadingComic('restored-17'), true);
+  assert.equal(log.hasReadLoadingComic('sumi-cloth-fold'), false);
+  for (const bad of [undefined, null, 7, '', 'Has Space', '<img>', 'x'.repeat(65)]) log.recordLoadingComicRead(bad);
+  assert.deepEqual(JSON.parse(store.get(KEY)), ['sumi-cold-tea', 'restored-17'], 'only id-shaped strings are recorded');
+  assert.deepEqual(log.normalizeLoadingComicsRead(['a', 'a', 3, null, 'b', '../x']), ['a', 'b']);
+  assert.deepEqual(log.normalizeLoadingComicsRead({ a: true }), []);
+  store.set(KEY, '{broken');
+  assert.deepEqual(log.readLoadingComicsRead(), [], 'a broken record reads as nothing read');
+  log.recordLoadingComicRead('sumi-cloth-fold');
+  assert.deepEqual(JSON.parse(store.get(KEY)), ['sumi-cloth-fold'], 'recording again repairs a broken record');
+  // Another tab (or a save transfer) may rewrite the record: the next read must see it.
+  store.set(KEY, JSON.stringify(['restored-17']));
+  assert.deepEqual(log.readLoadingComicsRead(), ['restored-17']);
+  failing = true;
+  assert.deepEqual(log.readLoadingComicsRead(), [], 'blocked storage reads as nothing read');
+  assert.doesNotThrow(() => log.recordLoadingComicRead('sumi-cold-tea'), 'blocked storage never breaks the game');
+  failing = false;
+  delete globalThis.localStorage;
+}
 
 // Before a minigame starts (sandboard, camel race; 2026-11-11 owner "ゲーム開始前に漫画付きロードとか挟んでもいい"),
 // the same loading screen picks comics by the same rules: in the game, the save's chapter and the people met;
