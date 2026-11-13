@@ -64,6 +64,8 @@ async function startScene(page, privateOutfit = false) {
   await page.waitForFunction(() => document.querySelector(".vn-text").textContent === "二人目の台詞です");
   await decoded(page);
   assert.equal(await page.locator(portraits).count(), 2);
+  // 既読印はまとめて保存する（#3500 C-1）。保存の中身を前後で比べる確認の前に、読んだ行の分を書き終えておく。
+  await page.evaluate(async () => (await import("./js/vn/engine.js")).flushSeenLines());
 }
 
 await suite("portrait-style", async check => {

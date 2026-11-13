@@ -123,11 +123,15 @@ const VOLK_VISITS = ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth"];
 const MASHIRO_EXTRAS = ["ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_mashiro_glass_cloth",
   "ch3_mashiro_leaf_rest", "ch3_mashiro_bench_tea"];
 const detourIds = ["ch3_mukai_after_tournament", "ch3_cigarman_trace", "ch3_emil_workshop", ...VOLK_VISITS, "ch3_volk_after_ch3",
-  "ch3_volk_lime", "ch3_volk_fifth", "ch3_volk_revisit",
+  "ch3_volk_lime", "ch3_volk_fifth", "ch3_volk_revisit", "ch3_rival_volk_steve_greeting", "ch3_rival_volk_steve_seat",
   "ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_first_reply",
   "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch", "ch3_saku_steve_notes",
+  "ch3_mashiro_mukai_syrup_shelf", "ch3_mashiro_mukai_shelf_tags",
   ...MASHIRO_EXTRAS];
-const openFirst = ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_second", "ch3_volk_after_ch3"];
+// #3468 G案（ムカイさん×ヨルの曲順）は mukai の寄り道の末尾
+detourIds.push("ch3_mukai_yoru_playlist");
+const openFirst = ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_second", "ch3_volk_after_ch3",
+  "ch3_mashiro_mukai_syrup_shelf"];
 assert.deepEqual(CH3_AFTERMATH_DETOURS.map(scene => scene.id), detourIds);
 for (const scene of CH3_AFTERMATH_DETOURS) {
   const row = readData(`dialogue/${scene.file}`).dialogues.find(dialogue => dialogue.dialogue_id === scene.id);
@@ -179,10 +183,11 @@ assert(!mukaiAfter.lines.some(line => /屋根裏|鍵/.test(line.text || "")), "t
   assert.deepEqual(detour.flags._ch3_aftermath, progress, "a detour does not advance the aftermath");
   assert.deepEqual([detour.day, detour.slot], date, "a detour does not spend time");
   const reloaded = JSON.parse(JSON.stringify(detour));
-  assert.deepEqual(availableAftermathDetours(reloaded).map(scene => scene.id), ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_second"]);
+  assert.deepEqual(availableAftermathDetours(reloaded).map(scene => scene.id), ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_second",
+    "ch3_mashiro_mukai_syrup_shelf"]);
   // 帰郷の日の朝（煙幕の片づけ）まで東京で読める。帰郷の夜からは出さない。
   for (const id of ["ch3_mashiro_recovery", "ch3_naru_reconcile"]) assert.equal(completeChapterThreeAftermathScene(detour, id), true);
-  assert.equal(availableAftermathDetours(detour).length, 3, "still open on the morning of the cleanup");
+  assert.equal(availableAftermathDetours(detour).length, 4, "still open on the morning of the cleanup");
   assert.equal(completeChapterThreeAftermathScene(detour, "ch3_enmaku_cleanup"), true);
   assert.equal(playerRegion(detour), "home");
   assert.deepEqual(availableAftermathDetours(detour), [], "no Tokyo detours after going home");
@@ -191,7 +196,7 @@ assert(!mukaiAfter.lines.some(line => /屋根裏|鍵/.test(line.text || "")), "t
   stranger.met = {};
   beginChapterThreeAftermath(stranger);
   completeChapterThreeAftermathScene(stranger, "ch3_abyss_hotel");
-  assert.deepEqual(availableAftermathDetours(stranger).map(scene => scene.id), ["ch3_mukai_after_tournament"]);
+  assert.deepEqual(availableAftermathDetours(stranger).map(scene => scene.id), ["ch3_mukai_after_tournament", "ch3_mashiro_mukai_syrup_shelf"]);
   assert.equal(completeAftermathDetour(stranger, "ch3_emil_workshop"), false);
   // 大会前に体験会を読んだ保存（同じ既読フラグ）は、大会後にもう一度出さない。
   const readBefore = winningSave();
@@ -312,6 +317,44 @@ console.log("PASS: Steve and Ayatori's notes visit opens only before Ayatori pac
   assert.deepEqual(open(loser), [], "a non-winning save has no aftermath finale");
 }
 console.log("PASS: Chapter 3 aftermath offers Ayatori's ♥5 finale until the cleanup morning, read-only");
+// #3468 H案: ましろ×ムカイさん。大会前に読めなかった時だけ、優勝の翌日から帰郷の日の朝まで mukai で棚整理→札の後日の一言の順に一度ずつ。
+// 二人とはmukaiの到着で面識があるので met は問わない。台本は大会に触れず、好感度・フラグを動かさない。
+{
+  const [shelf, tags] = ["ch3_mashiro_mukai_syrup_shelf", "ch3_mashiro_mukai_shelf_tags"]
+    .map(id => CH3_AFTERMATH_DETOURS.find(scene => scene.id === id));
+  assert.deepEqual([shelf.file, shelf.location, shelf.met, shelf.after], ["ch3_mashiro", "mukai", undefined, undefined]);
+  assert.deepEqual([tags.file, tags.location, tags.met, tags.after], ["ch3_mashiro", "mukai", undefined, [shelf.id]]);
+  const scripts = readData("dialogue/ch3_mashiro").dialogues;
+  for (const id of [shelf.id, tags.id]) {
+    const lines = scripts.find(row => row.dialogue_id === id).lines;
+    assert(!lines.some(line => line.type || line.affinity), `${id}: no affinity, stats, memory or flag rows`);
+    assert(lines.some(line => line.speaker === "mashiro") && lines.some(line => line.speaker === "mukai_master"), id);
+    assert(!lines.some(line => /大会|優勝|本番|シガーマン|猫|写真|経費/.test(line.text || "")), `${id}: no tournament timing, no cigarman or cat-latte punchline`);
+    assert(!lines.some(line => line.speaker && /。$/.test(line.text || "")), `${id}: spoken lines end without 。`);
+  }
+  const open = value => availableAftermathDetours(value).map(scene => scene.id).filter(id => id.startsWith("ch3_mashiro_mukai_"));
+  const save = winningSave();
+  beginChapterThreeAftermath(save);
+  assert.deepEqual(open(save), [], "not on the victory night");
+  completeChapterThreeAftermathScene(save, "ch3_abyss_hotel");
+  assert.deepEqual(open(save), [shelf.id], "the shelf comes first");
+  const affinity = structuredClone(save.affinity);
+  assert.equal(completeAftermathDetour(save, tags.id), false, "the follow-up waits for the shelf");
+  assert.equal(completeAftermathDetour(save, shelf.id), true);
+  assert.deepEqual(open(save), [tags.id]);
+  for (const id of ["ch3_mashiro_recovery", "ch3_naru_reconcile"]) completeChapterThreeAftermathScene(save, id);
+  assert.deepEqual(open(save), [tags.id], "still open on the cleanup morning, like the other mukai detours");
+  assert.equal(completeAftermathDetour(save, tags.id), true);
+  assert.deepEqual(open(save), [], "read once");
+  assert.deepEqual(save.affinity, affinity, "reading does not change affinity");
+  const before = winningSave();
+  before.flags._ch3_read_ch3_mashiro_mukai_syrup_shelf = true;
+  before.flags._ch3_read_ch3_mashiro_mukai_shelf_tags = true;
+  beginChapterThreeAftermath(before);
+  completeChapterThreeAftermathScene(before, "ch3_abyss_hotel");
+  assert.deepEqual(open(before), [], "scenes read before the tournament are not offered again");
+}
+console.log("PASS: Mashiro and Mukai's shelf and its follow-up open once each at mukai after the win, read-only");
 // #2028: スティーブの締めくくり（♥5）も、大会前に Smoke & Glory で読めなかった時だけ大会後の寄り道から。窓は綾取と同じ。
 {
   const entry = CH3_AFTERMATH_FINALES.find(item => item.who === "steve");
@@ -338,6 +381,38 @@ console.log("PASS: Chapter 3 aftermath offers Ayatori's ♥5 finale until the cl
   assert.deepEqual(open(window), [], "the cleanup morning: packing to go home that night");
 }
 console.log("PASS: Chapter 3 aftermath offers Steve's ♥5 finale with the same window, read-only");
+// #3468 G案: ムカイさん×針間ヨル。大会前に読めなかった時だけ、ヨルと面識があれば優勝の翌日から帰郷の日の朝まで mukai で一度。
+// 台本は大会に触れず（前後どちらでも読める）、好感度・フラグを動かさない。実在曲名やDJの操作説明は出さない。
+{
+  const playlist = CH3_AFTERMATH_DETOURS.find(scene => scene.id === "ch3_mukai_yoru_playlist");
+  assert.deepEqual([playlist.file, playlist.location, playlist.met, playlist.after], ["ch3_mukai", "mukai", ["yoru"], undefined]);
+  const lines = readData("dialogue/ch3_mukai").dialogues.find(row => row.dialogue_id === playlist.id).lines;
+  assert(!lines.some(line => line.type || line.affinity), "no affinity, stats, memory or flag rows");
+  assert(lines.some(line => line.speaker === "yoru") && lines.some(line => line.speaker === "mukai_master"));
+  assert(!lines.some(line => /大会|優勝|PITCH|SYNC|フェーダー|▶|小節/.test(line.text || "")), "no tournament timing, no DJ how-to");
+  assert(!lines.some(line => line.speaker && /。$/.test(line.text || "")), "spoken lines end without 。");
+  const open = value => availableAftermathDetours(value).some(scene => scene.id === playlist.id);
+  const save = winningSave();
+  save.met = { yoru: true };
+  beginChapterThreeAftermath(save);
+  assert(!open(save), "not on the victory night");
+  completeChapterThreeAftermathScene(save, "ch3_abyss_hotel");
+  assert(open(save), "the day after the win");
+  assert(!open({ ...structuredClone(save), met: {} }), "only when hajime has met Yoru");
+  for (const id of ["ch3_mashiro_recovery", "ch3_naru_reconcile"]) completeChapterThreeAftermathScene(save, id);
+  assert(open(save), "still open on the cleanup morning, like the other mukai detours");
+  const affinity = structuredClone(save.affinity);
+  assert.equal(completeAftermathDetour(save, playlist.id), true);
+  assert(!open(save), "read once");
+  assert.deepEqual(save.affinity, affinity, "reading does not change affinity");
+  const before = winningSave();
+  before.met = { yoru: true };
+  before.flags._ch3_read_ch3_mukai_yoru_playlist = true;
+  beginChapterThreeAftermath(before);
+  completeChapterThreeAftermathScene(before, "ch3_abyss_hotel");
+  assert(!open(before), "a playlist read before the tournament is not offered again");
+}
+console.log("PASS: Mukai and Yoru's opening playlist opens once at mukai after the win for hajime who has met Yoru, read-only");
 // #2028: ヴォルクのLIME交換は、鉄の煙の四度目の後・♥2で大会後の寄り道にも出る（大会前の寄り道と同じ条件）。
 // 締めくくり（♥5）の窓は、鉄の煙の寄り道・授業と同じく煙幕の片づけの朝まで。
 {
@@ -402,6 +477,46 @@ console.log("PASS: Chapter 3 aftermath offers Steve's ♥5 finale with the same 
   assert.deepEqual(open(window), [], "back home from the night of the cleanup");
 }
 console.log("PASS: Chapter 3 aftermath offers Volk's LIME (after the fourth visit, ♥2) and ♥5 finale until the cleanup morning");
+// #3468 F案: ヴォルク×スティーブ。二人と面識がある時だけ、鉄の煙の挨拶→ Smoke & Glory の後日の一言の順に一度ずつ。
+// 好感度・大会結果は動かさず、タイマー・ジャム・ピザのオチを出さない。台本は大会に触れない（前後どちらでも読める）。
+{
+  const [greeting, seat] = ["ch3_rival_volk_steve_greeting", "ch3_rival_volk_steve_seat"]
+    .map(id => CH3_AFTERMATH_DETOURS.find(scene => scene.id === id));
+  assert.deepEqual([greeting.file, greeting.location, greeting.met, greeting.after], ["ch3_volk", "鉄の煙", ["volk", "steve"], undefined]);
+  assert.deepEqual([seat.file, seat.location, seat.met, seat.after], ["ch3_volk", "Smoke & Glory", ["volk", "steve"], [greeting.id]]);
+  const scripts = readData("dialogue/ch3_volk").dialogues;
+  for (const id of [greeting.id, seat.id]) {
+    const lines = scripts.find(row => row.dialogue_id === id).lines;
+    assert(!lines.some(line => line.type === "apply" || line.type === "set_flag" || line.affinity), `${id}: no affinity or flag change`);
+    assert(!lines.some(line => /タイマー|ジャム|ピザ|大会|優勝/.test(line.text || "")), `${id}: no timer/jam/pizza joke, no tournament timing`);
+    assert(lines.some(line => line.speaker === "volk") && lines.some(line => line.speaker === "steve"), id);
+    assert(!lines.some(line => line.speaker && /。$/.test(line.text || "")), `${id}: spoken lines end without 。`);
+  }
+  const open = value => availableAftermathDetours(value).map(scene => scene.id).filter(id => id.startsWith("ch3_rival_volk_steve"));
+  const save = winningSave();
+  save.met = { volk: true, steve: true };
+  beginChapterThreeAftermath(save);
+  assert.deepEqual(open(save), [], "not on the victory night");
+  completeChapterThreeAftermathScene(save, "ch3_abyss_hotel");
+  assert.deepEqual(open(save), [greeting.id], "the greeting comes first");
+  for (const met of [{ volk: true }, { steve: true }]) assert.deepEqual(open({ ...structuredClone(save), met }), [], "only when hajime has met both");
+  const affinity = structuredClone(save.affinity);
+  assert.equal(completeAftermathDetour(save, seat.id), false, "the follow-up waits for the greeting");
+  assert.equal(completeAftermathDetour(save, greeting.id), true);
+  assert.deepEqual(open(save), [seat.id], "then the follow-up at Smoke & Glory");
+  for (const id of ["ch3_mashiro_recovery", "ch3_naru_reconcile"]) completeChapterThreeAftermathScene(save, id);
+  assert.deepEqual(open(save), [seat.id], "still open on the cleanup morning, like the other Iron Smoke detours");
+  assert.equal(completeAftermathDetour(save, seat.id), true);
+  assert.deepEqual(open(save), [], "each is read once");
+  assert.deepEqual(save.affinity, affinity, "reading does not change affinity");
+  const before = winningSave();
+  before.met = { volk: true, steve: true };
+  before.flags._ch3_read_ch3_rival_volk_steve_greeting = true;
+  beginChapterThreeAftermath(before);
+  completeChapterThreeAftermathScene(before, "ch3_abyss_hotel");
+  assert.deepEqual(open(before), [seat.id], "a greeting read before the tournament is not offered again");
+}
+console.log("PASS: Volk and Steve's greeting and Smoke & Glory follow-up open once each, in order, for hajime who has met both");
 // 大会後の東京で、灯した授業を相談できる（SPEC 2.6・SBD61）。窓は場面idで決まり、保存は変更しない。
 {
   assert.deepEqual(CH3_AFTERMATH_LESSONS.map(entry => entry.who), ["saku", "steve", "volk", "mashiro"]);
@@ -434,7 +549,7 @@ console.log("PASS: Chapter 3 aftermath offers Volk's LIME (after the fourth visi
   completeChapterThreeAftermathScene(lessonSave, "ch3_naru_reconcile");
   assert.deepEqual(who(lessonSave), ["volk"], "the cleanup morning: Ayatori is packing the shop, only Volk is left");
   // 寄り道を全部読んでも、授業だけで寄り道の入口が開く（ch3-aftermath.js は寄り道と授業の合計で入口を出す）
-  lessonSave.met = { ...lessonSave.met, emil: true, volk: true, steve: true };
+  lessonSave.met = { ...lessonSave.met, emil: true, volk: true, steve: true, yoru: true };
   lessonSave.flags._ch3_read_ch3_cigarman_rumor = true;
   lessonSave.flags._ch3_read_ch3_saku_lime = true;
   lessonSave.affinity.volk = AFFINITY_RANK_PTS[4]; // 五度目は♥4、LIME交換は♥2から

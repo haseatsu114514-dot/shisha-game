@@ -1,9 +1,15 @@
 /* 章の要所の演出（motions/moments.js・#2688 A3・A5・A6・A8） */
 .mo-moment { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; font-family: var(--font); }
-.mo-leaves-cover { position: absolute; inset: 0; background: #34246a; }
+/* A3 回想 → 現在（TMG60）: 回想の絵の写しが灰色になり、煙のにじみでほどける */
+.mo-recall-past { position: absolute; inset: 0; background-size: cover; background-position: center; background-color: #0b0814; }
+.mo-recall-veil { position: absolute; inset: 0; background: #0b0814; opacity: 0; }
+.mo-haze { position: absolute; left: -4%; right: -4%; top: 125%; height: 50%; background: center / 100% 100% no-repeat; opacity: 0; mix-blend-mode: screen; pointer-events: none; }
 .mo-dragon-dim { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 55%, transparent 30%, #0b081499 100%); }
 .mo-scan-slice { position: absolute; left: 0; right: 0; background: #dcd1f41a; mix-blend-mode: screen; }
 .mo-scan-lines { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, #0000 0 3px, #dcd1f41f 3px 4px); mix-blend-mode: screen; }
 .mo-scan-bar { position: absolute; left: 0; right: 0; height: 10%; background: linear-gradient(transparent, #9fd8ff55, transparent); }
 .mo-scan-label { position: absolute; left: 50%; top: 24%; transform: translate(-50%, -50%); color: #fff; font-size: 40px; font-weight: 900; letter-spacing: .2em; text-shadow: 0 2px 0 #150f26; }
 .mo-mixed-dark { position: absolute; inset: 0; background: #0b0814; opacity: 0; }
+/* A8 混ざる煙（TMG60）: 煙の絵（smoke/haze）を人ごとの色で塗った煙。縦に立てて昇らせ、重なりは足し合わせて明るく混ざる */
+.mo-mixed-plume { position: absolute; left: 260px; top: 170px; width: 760px; height: 420px; opacity: 0; mix-blend-mode: screen;
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; filter: blur(1.5px); }

@@ -499,14 +499,14 @@ export async function stepMix(cs) {
   const discovered = r && !state.recipes[r.id];
   if (discovered) {
     state.recipes[r.id] = { day: state.day };
-    toast(`📖 レシピ帳に書き加えた「${r.name}」`, { kind: "good" });
+    toast(`📖 レシピ帳に書き加えた「${r.name}」`, { kind: "good", se: "page" });
     if (cs.mode !== "tournament") earnStat("sense", 1);
   }
   if (r && !["tutorial", "tournament", "home"].includes(cs.mode)) {
     earnRecipeDiscovery(r.id, { discovered, golden: cs.mixInfo.golden === "hit" });
   }
   // 黄金比（#627）: 配合中は出さず、確定したあとだけ知らせる（＋−を押すだけで答えが探せないように）
-  if (cs.mixInfo.golden === "hit") toast(`✨ 黄金比！ ${r.name}は ${goldenLabel(r)}`, { kind: "good" });
+  if (cs.mixInfo.golden === "hit") toast(`✨ 黄金比！ ${r.name}は ${goldenLabel(r)}`, { kind: "good", se: "twinkle" });
   else if (cs.mixInfo.golden === "near") {
     const short = (canSeeGoldenShort(step("insight")) || growthFeature(state, "golden")) && cs.mixInfo.goldenShort;
     toast(short ? `黄金比まで、あと少し。もう少し${leafName(short)}を` : "黄金比まで、あと少し",

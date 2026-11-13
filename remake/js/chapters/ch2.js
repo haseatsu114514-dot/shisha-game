@@ -6,7 +6,7 @@ import { createChapterActions } from "../core/chapter-actions.js";
 import { storeLogo } from "../core/store-logos.js";
 import { state, save, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay } from "../core/chapter-clock.js";
-import { layers, showScreen, setBg, enterScene, imageReady, chapterTitle, toast, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, imageReady, chapterTitle, toast, withScenePreparation, loadingNotice, withSceneLoading } from "../core/ui.js";
 import { chapterTitleEntry } from "../core/chapter-title-art.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { showHud } from "../daily/hud.js";
@@ -33,8 +33,8 @@ let watchingHistory = false;
 const current = owner => !!owner && session === owner && owner.active && state === owner.state;
 const test = name => `ch2-main-${name}`;
 const progress = () => dayOneProgress(state);
-// 通常の日常・買物と同じ既存曲。J04の街用新曲選定とは分ける。
-const CITY_BGM = "kansetsu_shomei_to_black_coffee";
+// 柚ヶ谷の街の曲（J04。今は CC0 の仮曲。core/story-audio.js の STORY_BGM.yuzugaya と同じキー）。
+const CITY_BGM = "bgm_yuzugaya";
 
 function focus(name) { requestAnimationFrame(() => layers.screen.querySelector(`[data-test="${test(name)}"]`)?.focus()); }
 function setBusy(owner, value) {
@@ -80,7 +80,8 @@ async function openChapter(advance) {
     if (!advance && state.chapter === 2 && (chapterDay(state) >= 14 || state.flags._ch2_tournament)) {
       await tournament(); return;
     }
-    await loadChapterTwoDialogues();
+    // 文字だけの画面の待ち。プレイヤーの既定では、長いと漫画のロード画面にする（core/ui.js の withSceneLoading）。
+    await withSceneLoading(loadChapterTwoDialogues(), "街の台本を準備しています…");
     if (!current(owner)) return;
     // 必要台本を読み込めた後で初めて保存を次章へ進める。通信失敗でクリア記録を失わない。
     if (advance) {

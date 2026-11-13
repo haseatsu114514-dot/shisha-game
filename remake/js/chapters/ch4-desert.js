@@ -16,18 +16,18 @@ export * from "./ch4-desert-progress.js";
 import { addMoney, gainAffinity, visitAffinity, privateBondScope } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
-import { DESERT_TALKS, DESERT_INVITE_STAGE, NOOR_QUESTION_CHOICE, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, NOOR_VISIT_CONFESSION_FLAG, noorConfessionWaiting, noorStoryDue, completeNoorStory, DESERT_SCENES, DESERT_CAFE_PRICE, desertCafeVisit, completeDesertCafeVisit, DESERT_RACE_WIN_LINE, DESERT_NARU_LINES, DESERT_DIALOGUE_IDS, NOOR_STORY_FILE, NOOR_STORY_DIALOGUE_IDS, NOOR_CONFESSION_DIALOGUE_IDS, desertRivals, markNaruMet, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
+import { DESERT_TALKS, DESERT_INVITE_STAGE, NOOR_QUESTION_CHOICE, NOOR_FARIS_SCENES, noorFarisDue, completeNoorFaris, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, NOOR_VISIT_CONFESSION_FLAG, noorConfessionWaiting, noorStoryDue, completeNoorStory, DESERT_SCENES, DESERT_CAFE_PRICE, desertCafeVisit, completeDesertCafeVisit, DESERT_RACE_WIN_LINE, DESERT_NARU_LINES, DESERT_DIALOGUE_IDS, NOOR_STORY_FILE, NOOR_STORY_DIALOGUE_IDS, NOOR_CONFESSION_DIALOGUE_IDS, desertRivals, markNaruMet, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
   desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertProgress } from "./ch4-desert-progress.js";
 
 let dialogueTask = null;
 export function loadDesertDialogues() {
   if (!dialogueTask) dialogueTask = Promise.all([
     readDialogues(DESERT_DIALOGUE_FILE, DESERT_DIALOGUE_IDS),
-    readDialogues(NOOR_STORY_FILE, NOOR_STORY_DIALOGUE_IDS),
+    readDialogues(NOOR_STORY_FILE, [...NOOR_STORY_DIALOGUE_IDS, ...Object.values(NOOR_FARIS_SCENES)]),
     readDialogues("confession", NOOR_CONFESSION_DIALOGUE_IDS),
   ]).then(([dialogues, stories, confession]) => {
     for (const id of DESERT_DIALOGUE_IDS) DB.dialogues[id] = dialogues[id];
-    for (const id of NOOR_STORY_DIALOGUE_IDS) DB.dialogues[id] = stories[id];
+    for (const id of [...NOOR_STORY_DIALOGUE_IDS, ...Object.values(NOOR_FARIS_SCENES)]) DB.dialogues[id] = stories[id];
     for (const id of NOOR_CONFESSION_DIALOGUE_IDS) DB.dialogues[id] = confession[id];
     return { ...dialogues, ...stories, ...confession };
   }).catch(error => { dialogueTask = null; throw error; });
@@ -94,6 +94,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
         return changed;
       }
       const id = visit.id;
+      // #3468 D案: ヌール×ファーリス。名乗りの来店では出さないよう、来店の前に決める。♥3の問いの日は重ねない
+      const pair = id === "ch4_noor_bond_question" ? null : noorFarisDue(owner, day);
       if (!await read(scene(id), bgUrl("bg_dubai_cafe_salim_day"))) return false;
       if (!completeDesertCafeVisit(owner, visit, day, { legacy })) return false;
       if (paid) addMoney(-DESERT_CAFE_PRICE);
@@ -107,7 +109,9 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
         if (current()) await playIntro(DESERT_GUIDE);
       }
       if (id === DESERT_TALKS[DESERT_INVITE_STAGE - 1] && current()) toast("昼の行き先に「ヌールと砂丘へ」が加わった", { kind: "good" });
-      await readStories();
+      if (!await readStories() || !pair || !current()) return changed;
+      // 段階の物語の後に、その日の数分の休憩として一度。好感度は動かさない
+      if (await read(pair, bgUrl("bg_dubai_cafe_salim_day")) && completeNoorFaris(owner, pair, day)) save();
       return changed;
     }
     if (destination.kind !== "desert") return false;

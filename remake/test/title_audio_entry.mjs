@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
+import * as voteStyle from "../js/core/vote-style.js";
 const read = path => fs.readFile(new URL(path, import.meta.url), "utf8");
 const flush = async () => { for (let i = 0; i < 8; i++) await Promise.resolve(); };
 async function load(code, values, globals = {}) {
@@ -165,7 +166,7 @@ const title = await load(await read("../js/scenes/title.js"), {
   el, bgUrl: () => "title-bg", layers: { hud: { classList: { remove: k => hudClasses.delete(k) } } },
   showScreen: name => { body.dataset.screen = name; renders++; }, peekSave: () => ({}), anySlotSaved: () => true,
   playBgm: k => events.push(k), stopBgm: fade => events.push(`stop:${fade}`),
-  SE: { select() {} }, smokeWipe: fn => fn(),
+  SE: { select() {} }, smokeWipe: fn => fn(), toast: () => {},
   modal: options => options.title === "設定" ? new Promise(resolve => configCloses.push(resolve)) : Promise.resolve(confirm),
   loadWithRecovery: async () => !!selectedSlot,
   wipeSave: () => wipes++,
@@ -174,6 +175,7 @@ const title = await load(await read("../js/scenes/title.js"), {
   pickTitleArt: () => ({ ready: true, file: `art-${++picks}`, character: `character-${picks}`, url: "test" }),
   createUiThemeSelect: () => el("select"),
   LOOKS: [{ id: "classic", label: "現行" }, { id: "neo", label: "新版" }, { id: "retro", label: "DS風" }], normalizeLook: (value) => value || "classic", setLook() {},
+  VOTE_STYLES: voteStyle.VOTE_STYLES, normalizeVoteStyle: voteStyle.normalizeVoteStyle,
   config: {},
 }, { document: { body }, performance: { now: () => 0 }, window: {} });
 const art = { ready: true, file: "test", character: "test", url: "test" };

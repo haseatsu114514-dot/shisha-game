@@ -142,12 +142,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "住宅街の奥。長い石段を上りきると、木々の間から街が見下ろせた。空気が澄んでいる。"
+          "text": "古町の通りを抜けると、急に空が広くなった。朱塗りの大きなお堂が、石段の上に建っている。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "その先に、古い木造のお堂がひっそりと建っている。線香の匂いが微かに漂っている。"
+          "text": "石畳の両脇で、白いのぼりが揺れている。線香の匂いが、微かに漂ってきた。"
         },
         {
           "speaker": "",
@@ -162,7 +162,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "賽銭箱の前に立ち、手を合わせる。"
+          "text": "石段を上り、賽銭箱の前で手を合わせる。"
         },
         {
           "type": "condition",
@@ -213,7 +213,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "商店街の中にある、レトロな純喫茶。飴色のカウンターに、赤いビロード張りの椅子。ステンドグラス越しに、午後の光が差し込んでいる。"
+          "text": "商店街の中にある、レトロな純喫茶。飴色のカウンターに、赤いビロード張りのソファ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大きな窓の外はテラス席。木の葉ごしに、午後の光が差し込んでいる。"
         },
         {
           "speaker": "",
@@ -228,7 +233,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "出てきたのは、シナモンとカルダモンが効いた温かいラテ。"
+          "text": "シナモンとカルダモンが効いた、温かいラテが来た。"
         },
         {
           "speaker": "",
@@ -1166,7 +1171,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "観音堂。今日も住宅街の物音が遠い。"
+          "text": "観音堂。境内に入ると、通りの物音が遠くなる。"
         },
         {
           "speaker": "",
@@ -1247,6 +1252,158 @@
       ]
     },
     {
+      "dialogue_id": "kannon_pigeons",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "観音堂の石畳に、鳩が集まっていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "真ん中を通ろうとしても、一羽も飛ばない。歩いて、少しだけ道を空ける。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……慣れてるな。飛ぶまでもないってことか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "石段に座って眺める。鳩たちは、のぼりが鳴るたびに首だけ動かした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（動じないって、ああいうことかもしれない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰るころも、鳩はまだ同じ場所を歩いていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kannon_incense",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お堂の前の香炉から、線香の煙が上がっている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "風のない日だった。煙は細いまま、まっすぐ軒の高さまで昇っていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（シーシャの煙と、全然違う。細くて、軽い）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "参拝の人が手であおいで、煙を肩へ寄せた。煙は逆らわずに、形を変える。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……気づいたら、煙ばっかり見てるな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "苦笑いして、自分も手を合わせた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kannon_steps",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今日は石段を、数えながら上ってみた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……二十三、二十四。二十四段か）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お堂の前で手を合わせる。帰りも、なんとなく数えながら下りた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……二十三？　一段、どこ行った）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "振り返っても、石段は黙ってそこにあるだけだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（まあいいか。次に来る理由ができた）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kannon_banners",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "風の強い日だった。観音堂ののぼりが、そろって同じ方へなびいている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "布がはためく音と、紐が竿に当たる乾いた音が、境内じゅうに響いていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（こんなに鳴ってるのに、うるさくないんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "石段の途中で立ち止まって、しばらく聞いていた。風がやむと、音も一緒にやんだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……静かって、音が無いことじゃないのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次の風が来る前に、手を合わせた。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "cafe_herb_tea",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_cafe_day.png"
@@ -1255,7 +1412,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "カフェに来た。今日は「季節のハーブティー」が黒板に出ている。"
+          "text": "喫茶こはく。今日は入口の黒板に、「季節のハーブティー」と出ている。"
         },
         {
           "speaker": "hajime",
@@ -1293,7 +1450,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "カフェのカウンター席で、マスターの手元を眺める。"
+          "text": "こはくのカウンター席で、マスターの手元を眺める。"
         },
         {
           "speaker": "",
@@ -1303,7 +1460,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（……マスター、待ってる間ずっとポットの湯気を見てるな）"
+          "text": "（……待ってる間、ずっとポットの湯気を見てるな）"
         },
         {
           "speaker": "",
@@ -1326,7 +1483,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "カフェは今日は混んでいた。窓際の席で、周りの注文に耳をすます。"
+          "text": "今日のこはくは混んでいた。窓際の席で、周りの注文に耳をすます。"
         },
         {
           "speaker": "",
@@ -1342,6 +1499,153 @@
           "speaker": "",
           "face": "",
           "text": "……【洞察】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cafe_baked",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつものラテに、今日は焼き菓子を付けた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "小皿にフィナンシェがひとつ。温め直してあって、焦がしバターの匂いがする。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（先にラテか、先に菓子か……）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "菓子を先にかじる。あとから飲んだラテは、スパイスがくっきりしていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（順番を変えるだけで、こんなに違うのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "皿に落ちたかけらまで、指で集めて食べた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cafe_terrace",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "こはくは満席で、今日はテラスの席になった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "頭の上で木の葉が鳴る。風が吹くたび、ラテの湯気が横へ流れていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（外だと、香りがすぐ逃げるな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カップに顔を近づけて、逃げる前にひと口飲む。店の中より、少し軽い味がした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（風のある日は、濃いめで頼むのがよさそうだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "飛びかけた紙ナプキンを、受け皿の下に挟んだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cafe_record",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "喫茶こはく。奥の棚でレコードが回っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ピアノの曲だった。針が溝をなぞる小さな音まで、店の中に聞こえる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "曲が終わると、マスターは手を拭いてから、ゆっくり盤を裏返した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（急がないんだな。……曲の無い間も、店の音だ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次の曲が始まるまで、カップを置いて待った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cafe_cold_brew",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "こはくで、水出しのアイスコーヒーを頼んだ。背の高いグラスに、大きな氷がひとつ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひと口目は、丸くてやさしい。苦みが角を立てずに、のどを通っていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ひと晩かけて落とすって、書いてあったな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "氷が小さくなるにつれて、味が少しずつほどけていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（時間をかけた味は、薄まっても崩れないんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "グラスの底の最後のひと口まで、ちゃんとコーヒーだった。"
         }
       ]
     },
@@ -1387,7 +1691,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "鏡の前でフォームを確認していると、隣のお客さんと目が合って会釈した。"
+          "text": "鏡でフォームを確かめる。隣の人と目が合って、会釈した。"
         },
         {
           "speaker": "hajime",
@@ -1403,6 +1707,158 @@
           "speaker": "",
           "face": "",
           "text": "……【魅力】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "choizap_scenery",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ランニングマシンの画面に、見慣れないボタン。「景色モード」。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "押してみると、海沿いの道の映像が流れ始めた。走る速さに合わせて、景色も進む。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（おお、海だ。……ここ、商店街の角なんだけどな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "五分ほど走ると、画面の道が上り坂になった。マシンの傾きは、変わらない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（坂なのに楽だ。……得してるのか、損してるのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "海が見えなくなるまで走って、マシンを降りた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "choizap_dumbbell",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ダンベルの棚の前。いつもの重さの隣に、ひとつ重いのがある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……今日は、こっちでいけるんじゃないか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "持ち上げてみる。三回目で腕が震えて、四回目は上がらなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……はい。戻します）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そっと棚へ戻して、いつもの重さを取る。こちらは、最後まできれいに上がった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（見栄を張るより、ちゃんと上がる方がかっこいいよな）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "choizap_stretch",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ジムの隅にマットを敷いて、アプリのストレッチ動画を開いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面の人は、笑顔のまま、ぺたりと前へ倒れていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……え、そこまで行くの？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "真似をしてみる。指先は、すねの真ん中で止まった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（立ち仕事ばっかりで、こんなに固まってたのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「痛くない所で止めましょう」。声に従って、そこでゆっくり息を吐いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "choizap_posture",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トレーニングの合間、鏡に自分の立ち姿が映った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……俺、こんなに肩が前に出てたのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭をのぞき込む時の姿勢が、そのまま残っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アプリで背中の動画を選んで、肩甲骨を寄せる動きをゆっくり繰り返した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "もう一度、鏡の前に立つ。さっきより、目線が少し高い。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（お客さんの前に立つ時も、これでいこう）"
         }
       ]
     },
@@ -1612,7 +2068,7 @@
         { "speaker": "", "face": "", "text": "境内に入ると、街のざわめきが遠のいた。" },
         { "speaker": "hajime", "face": "normal", "text": "（ここまで、いろんなことを教わったな）" },
         { "speaker": "hajime", "face": "normal", "text": "（うまくいったことも、失敗したことも。次の一服につなげたい）" },
-        { "speaker": "", "face": "", "text": "積み重ねた経験は、眠る前にレベルと火種になる。" },
+        { "speaker": "", "face": "", "text": "積み重ねた経験は、その場でレベルと火種になる。" },
         { "speaker": "", "face": "", "text": "火種は、才能・感覚・理論の三つの盤へ灯せる。" },
         { "speaker": "", "face": "", "text": "ここで振り返り、盤に灯すだけなら、時間も体力も使わない。" },
         { "speaker": "hajime", "face": "normal", "text": "（今日は、どの道を伸ばしてみようか）" }
@@ -1705,6 +2161,44 @@
           "speaker": "",
           "face": "",
           "text": "……【根性】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kannon_rain_drops",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨の観音堂。のぼりが濡れて、重く垂れている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "傘をたたんで軒下に入ると、屋根の端から、雨だれが同じ間隔で落ちていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……一、二、三。ずっと同じ速さだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "数えているうちに、呼吸が雨だれにそろっていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（こっちが急いでも、雨は急いでくれないもんな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "小降りになってから、手を合わせて石段を下りた。"
         }
       ]
     },
@@ -1896,7 +2390,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "小雨の日のカフェは静かだった。窓際の席で、温かいラテを頼む。"
+          "text": "小雨の日のこはくは静かだった。窓際の席で、温かいラテを頼む。"
         },
         {
           "speaker": "",
@@ -1917,6 +2411,44 @@
           "speaker": "",
           "face": "",
           "text": "……【センス】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cafe_rain_full",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨の日の喫茶こはく。入口の傘立てが、今日はいっぱいになっていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨宿りの客で、席はほとんど埋まっている。それでも店の中は、いつもより静かだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんな窓の方を向いて、黙ってカップを持っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（雨の日は、話すより眺めるんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ラテが半分になったころ、屋根の雨音が弱くなった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（やんだら出よう。……やまないなら、もう一杯だ）"
         }
       ]
     },

@@ -4,13 +4,13 @@
          python3 remake/tools/build_images.py    （WebP だけ作り直すとき）
 - 対象: remake/data/manifest.json に載っている 背景・CG・立ち絵・作業台素材 ＋ タイトル絵・ロゴ
 - 1枚ずつ「可逆（ドット絵の輪郭がにじまない）」と「非可逆 q90」を作り、小さいほうを採る
+- 会話の立ち絵は「可逆」と「非可逆 q92＋劣化なしの透明」の小さいほう（2026-11-13・LD03）
 - 作業台素材は長辺 1280px まで縮める（画面上の最大表示より大きい分は通信の無駄）
 - 変換済みで元より新しいファイルは作り直さない。作った一覧は manifest.json の "webp" に書く
   （ゲームは一覧にある画像だけ WebP を使い、無いものは assets/ の PNG を読む）
 """
 import io
 import json
-import re
 from pathlib import Path
 
 from PIL import Image
@@ -44,6 +44,14 @@ def targets(m):
     return [r for r in rel if (ASSETS / r).exists()]
 
 
+PORTRAIT_QUALITY = 92
+
+
+def is_portrait(rel: str) -> bool:
+    """会話で出す立ち絵（旧画風と新画風）。比較用の画風（nanami など）は含めない。"""
+    return rel.startswith("sprites/characters/") or rel.startswith("sprites/character_variants/new/")
+
+
 def encode(src: Path, rel: str) -> bytes:
     im = Image.open(src)
     has_alpha = im.mode in ("RGBA", "LA") or (im.mode == "P" and "transparency" in im.info)
@@ -52,31 +60,19 @@ def encode(src: Path, rel: str) -> bytes:
         if rel.startswith(prefix) and max(im.size) > edge:
             k = edge / max(im.size)
             im = im.resize((round(im.width * k), round(im.height * k)), Image.LANCZOS)
-    # 清書版の細かな輪郭・アルファと、チェキの手書き文字は再ビルド時も可逆で保つ。
+    # 会話の立ち絵（旧画風・新画風）は、品質92の非可逆＋劣化なしの透明（輪郭の抜けはそのまま）。
+    # 劣化なしの約3割の大きさで、スマホの回線でも表情の差し替えが間に合う（2026-11-13 オーナー「品質92に落とすの試してみたい」・LD03）。
+    # 元の PNG（assets/）は劣化なしのまま残すので、戻すときはここを外して作り直せばよい。
+    if is_portrait(rel):
+        best = None
+        for opts in ({"lossless": True, "method": 6, "exact": True}, {"quality": PORTRAIT_QUALITY, "alpha_quality": 100, "method": 6}):
+            b = io.BytesIO()
+            im.save(b, "WEBP", **opts)
+            if best is None or len(b.getvalue()) < len(best):
+                best = b.getvalue()
+        return best
+    # 比較用の画風（nanami）・地図・チェキの手書き文字・斧投げの絵は、再ビルド時も可逆で保つ。
     if (rel.startswith("sprites/character_variants/")
-            or rel.startswith("sprites/characters/samechan/")
-            or rel.startswith("sprites/characters/hiyori/")
-            or rel.startswith("sprites/characters/ageha/")
-            or rel.startswith("sprites/characters/minto/")
-            or rel.startswith("sprites/characters/rio/")
-            or rel.startswith("sprites/characters/tsumugi/")
-            or rel.startswith("sprites/characters/sumi/")
-            or rel.startswith("sprites/characters/mashiro/")
-            or rel.startswith("sprites/characters/sui/")
-            or rel.startswith("sprites/characters/maezono/")
-            or rel.startswith("sprites/characters/pakki/")
-            or rel.startswith("sprites/characters/hajime/")
-            or rel.startswith("sprites/characters/adam/")
-            or rel.startswith("sprites/characters/naru/")
-            or rel.startswith("sprites/characters/dr_kemuri/")
-            or rel.startswith("sprites/characters/kumicho/")
-            or rel.startswith("sprites/characters/rei/")
-            or rel.startswith("sprites/characters/volk/")
-            or rel.startswith("sprites/characters/salaryman/")
-            or re.fullmatch(r"sprites/characters/emil/chr_emil_(smile|serious|surprise|thinking)\.png", rel)
-            or re.fullmatch(r"sprites/characters/maki/chr_maki_(smile|serious|surprise|excited)\.png", rel)
-            or re.fullmatch(r"sprites/characters/sai/chr_sai_(smile|serious|surprise|thinking)\.png", rel)
-            or re.fullmatch(r"sprites/characters/uranaishi/chr_uranaishi_(serious|surprise|sad)\.png", rel)
             or rel in ("backgrounds/bg_osu_map_day.png", "backgrounds/bg_osu_map_night.png")
             or rel == "cgs/cg_minto_first_cheki.png"
             or rel.startswith("ui/axe_throw/")):

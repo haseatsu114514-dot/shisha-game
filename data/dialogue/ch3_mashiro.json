@@ -1610,6 +1610,339 @@
       }
     },
     {
+      "dialogue_id": "ch3_mashiro_mukai_syrup_shelf",
+      "comment": "#3468 H案。ましろ×ムカイさん「店用、と書いた新しい瓶」。mukaiの棚整理で、届いたシロップの置き場所を二人で一つずつ決める。ムカイさんは店のメニューの話から自分が飲みたいことまで認め、試飲の瓶に「ムカイ用」。続けてムカイさんが、ましろが自分で買って分けた葉の缶を示し、そちらにも「ましろ用」。本人用は試飲（自分で払う）と私物として区別し、店の在庫・経費の話にはしない。ましろは説教役にせず、双方に返しがある。シガーマン・猫ラテの撮影はオチにしない。はじめは居合わせるだけ。mukaiの二日目（ch3_mukai_intro）の後に一度。大会前は寄り道（ch3-story-wiring.js）、大会後は ch3-aftermath-progress.js の寄り道から同じ既読で読む。台本は大会・恋愛に触れない。好感度・フラグは動かさない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の客が引いたmukai。カウンターの奥に、届いたばかりの段ボールが一つ置いてあった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんが箱を開けると、シロップの瓶が一本出てきた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ラベルの横に、太いペンで「店用」と書いてある。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "棚、少し空けてくれ。新しいのが来た"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はぁい。……ムカイさん、その段、もう満員だよぉ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは棚の二段目を指でなぞった。同じ形の瓶が、肩を並べて五本。どれも、まだ半分ほど残っている。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……全部、使ってる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん、知ってる。だから、場所を決めよ。一個ずつ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "責める声ではなかった。ましろは瓶を一本ずつ取って、カウンターに並べはじめた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "これは、ラテの。毎日出るから、手前"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "ああ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "これは、ソーダの。たまに出るやつ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……週に二回は出てる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "じゃあ、手前から二番目ねぇ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は空いた段を拭いた。手前から順に、瓶の居場所が埋まっていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この新しいのは、どこに置きます？"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "店のメニュー用だ。ラテに足せば、客の選べる甘さが一つ増える"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "ソーダにも合う。少なめなら、シーシャの後の口にも残らない"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。それで？"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……それで、だな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんはハットのつばを少し下げた。低い声が、もう一段低くなる。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……俺が、飲んでみたかった"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "知ってたよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（知ってたんだ）"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "じゃあ、メニューに出す前の試飲。試飲のは、ここ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは棚のいちばん端に、グラスの陰になる小さな隙間を空けた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "メモ用紙を一枚ちぎって、瓶の首に巻く。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ムカイ用。こうしとけば、お客さんの分と混ざらないでしょ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……試飲の分は、俺が払っておく"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。レシートは、いつもの引き出しね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新しい瓶は、端の隙間に収まった。首には、ましろの丸い字で「ムカイ用」。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "これで、全部片付きましたね"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "いや。もう一つある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは、棚のいちばん下の段にしゃがんだ。奥から出てきたのは、ラベルの無い小さな缶だった。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "これは、何用だ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……それは、えっと"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "蓋の隙間から、濃い葉の匂いがした。重い、ダークの匂いだ。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕の、休憩用。自分で買ったやつだよぉ。お店のには、混ぜてない"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "分かってる。うちの棚に、こんな重いのは置いてない"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "奥の方が、落ち着くの。……ムカイさんの瓶だって、端っこでしょ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "俺のは、札が付いてる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんはメモ用紙を一枚取って、ペンと一緒にましろへ渡した。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "名前を書いておけ。俺のだけ札付きじゃ、割に合わない"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……はぁい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは少し口をとがらせて、「ましろ用」と書いた。字は、さっきより小さかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "二人とも、自分用があったんですね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "これで、ムカイさんも僕に言えないねぇ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "ましろもな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "棚の端に「ムカイ用」、いちばん下の奥に「ましろ用」。二つの札は、同じ棚の離れた場所に収まった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは小さくあくびをして、空になった段ボールを畳みはじめた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは、手前の瓶の向きを一本だけ直した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_mashiro_mukai_shelf_tags",
+      "comment": "#3468 H案の後日の一言。棚整理（ch3_mashiro_mukai_syrup_shelf）の後、mukaiで。二人の本人用の札が同じ棚の別の場所に残っていて、互いに小さく突っ込む。店の在庫・経費の話にはしない。大会・恋愛に触れない。好感度・フラグは動かさない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開店前のmukai。拭いたグラスを、決めた段へ戻していく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "棚の端には「ムカイ用」の瓶。いちばん下の奥には「ましろ用」の缶。札は、あの日のまま付いていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "瓶、ちょっと減ってますね"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "試飲だ。メニューの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ラテに入れて、三日続けてだよぉ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……試飲は、続けないと分からない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは笑って、下の段にしゃがんだ。缶の蓋が、小さく鳴る。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "そっちも、減ってるな"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "休憩、だもん。続けないと分からないの"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……真似するな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二つの札は、同じ棚の端と端で、どちらも外されずにいた。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "mashiro_time_counter",
       "comment": "BLC03。恋人のましろとmukaiで過ごす時間（一日に一度・巡回）。第3章の東京と第5章の東京の両方で読むので、大会・味・滞在の長さには触れない。",
       "metadata": {

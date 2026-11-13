@@ -10,7 +10,7 @@ import { awardChapterClearExp, awardTournamentExp, awardSceneExp, presentNight, 
 import { canReflect } from "../daily/reflection.js";
 import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
 import { state, save } from "../core/state.js";
-import { layers, showScreen, setBg, enterScene, chapterTitle, modal } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, modal, withSceneLoading } from "../core/ui.js";
 import { sceneMoment } from "../core/scene-motions.js";
 import { saveFlow } from "../scenes/saves.js";
 import { play, hooks, vnTest } from "../vn/engine.js";
@@ -144,8 +144,8 @@ async function openChapter(advance) {
   ]));
   window.addEventListener("pagehide", () => { owner.active = false; owner.controller?.abort(); }, { once: true });
   await perform(owner, async () => {
-    // 台本不足のまま第4章のクリアセーブを進めない。
-    await loadDialogues();
+    // 台本不足のまま第4章のクリアセーブを進めない。文字だけの画面の待ちは、長いと漫画のロード画面にする（core/ui.js）。
+    await withSceneLoading(loadDialogues(), "橙須の場面を準備しています…");
     if (!current(owner)) return;
     if (advance) {
       if (!advanceToChapterFive(state)) return;

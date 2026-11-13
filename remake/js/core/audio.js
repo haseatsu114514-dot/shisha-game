@@ -48,6 +48,11 @@ const RECORDED_SE = {
   crackle: { files: ["fire_crackle_01.wav", "fire_crackle_02.wav", "fire_crackle_03.wav"], gain: 1 },
   affinity: { files: ["heart_bell.wav"], gain: 1 },
   save: { files: ["ui_save.wav"], gain: 1 },
+  // 2026-11-13 第2弾（同じ台帳）。扉＝地図から店へ入る時、get＝手に入れた通知、birds＝晴れた朝、page＝レシピ帳・メモ（TRPGのページめくりと同じ録音）。
+  door: { files: ["door_open.wav"], gain: 1 },
+  get: { files: ["item_get.wav"], gain: 1, minGap: .25 },
+  birds: { files: ["morning_birds.mp3"], gain: 1 },
+  page: { files: ["trpg/page_flip_01.wav", "trpg/page_flip_02.wav"], gain: 1, minGap: .25 },
 };
 const WATER_LOOP = "water_loop.wav", WATER_END = "water_end.wav";
 
@@ -311,7 +316,9 @@ export function preloadCamelRaceSe() {
   const files = Object.values(CAMEL_RACE_SE).flatMap(cue => cue.files);
   return Promise.all(files.map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
 }
-export function playCamelRaceSe(id) {
+// gain・rate: 同じ録音を出来事ごとに鳴らし分ける倍率（音量と再生の速さ。2026-11-13 ラクダレース手応え CRF07）。合成の代用音では使わない。
+// cut: 鳴らし始めてからこの秒数で音を切る（長い録音の頭だけを使う。0 は切らない。2026-11-13 CRF24）。
+export function playCamelRaceSe(id, { gain = 1, rate = 1, cut = 0 } = {}) {
   const cue = CAMEL_RACE_SE[id];
   if (!cue || !seEnabled()) return;
   const ready = cue.files.filter(file => seBuffers.has(file));
@@ -319,7 +326,8 @@ export function playCamelRaceSe(id) {
   const choices = ready.filter(file => file !== lastVariant.get("camel:" + id));
   const file = (choices.length ? choices : ready)[Math.floor(Math.random() * (choices.length || ready.length))];
   lastVariant.set("camel:" + id, file);
-  recordedVoice(file, { gain: cue.gain });
+  const voice = recordedVoice(file, { gain: cue.gain * (Number.isFinite(gain) && gain >= 0 ? gain : 1), rate: Number.isFinite(rate) && rate > 0 ? rate : 1 });
+  if (voice && Number.isFinite(cut) && cut > 0) setTimeout(() => voice.stop(0.12), cut * 1000);
 }
 
 function syncPulls() { activePulls.forEach(pull => pull.sync()); }
@@ -661,6 +669,11 @@ export const SE = {
   // 好感度が上がった時のベル（録音が無ければ短い一音）と、セーブ完了（同じく短い二音）。
   affinity: () => tone({ freq: 1319, type: "sine", dur: 0.3, vol: 0.1 }),
   save: () => { tone({ freq: 784, type: "triangle", dur: 0.08, vol: 0.1 }); tone({ freq: 1175, type: "triangle", dur: 0.14, vol: 0.1, delay: 0.07 }); },
+  // 第2弾の音の、録音が読めない時の代わり（扉の低い一打・入手の二音・小鳥の短い三声・紙のこすれ）。
+  door: () => { tone({ freq: 180, to: 90, type: "triangle", dur: 0.16, vol: 0.12 }); noise({ dur: 0.1, vol: 0.06, filter: 900 }); },
+  get: () => { tone({ freq: 1568, type: "sine", dur: 0.12, vol: 0.1 }); tone({ freq: 2093, type: "sine", dur: 0.3, vol: 0.09, delay: 0.09 }); },
+  birds: () => [0, .28, .5].forEach((delay, i) => tone({ freq: 2600 + i * 300, to: 3400 + i * 200, type: "sine", dur: 0.09, vol: 0.04, delay })),
+  page: () => noise({ dur: 0.16, vol: 0.07, filter: 2400, sweepTo: 5200, q: 0.7 }),
   // シーシャくじのガラガラ（motions/garagara.js）と賞の札（daily/kuji-reveal.js）
   kujiCharge: (sec = 1.4) => { tone({ freq: 196, to: 740, type: "triangle", dur: sec, vol: 0.05, attack: sec * 0.5 }); noise({ dur: sec, vol: 0.05, filter: 500, q: 0.7, sweepTo: 4200 }); },
   kujiShimmer: (n = 8) => { for (let i = 0; i < n; i++) tone({ freq: 2100 + Math.random() * 2600, type: "sine", dur: 0.2, vol: 0.045, delay: i * 0.05 + Math.random() * 0.03 }); },
