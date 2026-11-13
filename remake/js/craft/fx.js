@@ -7,7 +7,7 @@
 // ・「揺れ・閃光を減らす」または端末の「動きを減らす」では寄り（ズーム）と輪を省き、
 //   「動きを減らす」では火の粉も省く。時間を止めるだけの部分は動きが無いので残す。
 import { el, rand } from "../core/util.js";
-import { smokeLayer, smokeAllowed, smokeTint, firstPersonBreath, ringBreath } from "../core/smoke.js";
+import { smokeLayer, smokeAllowed, smokeTint, workerBreath, ringBreath } from "../core/smoke.js";
 
 /** 判定ごとの強さ。ms＝止める長さ、zoom＝寄りの倍率、sparks＝火の粉の数 */
 export const IMPACT = Object.freeze({
@@ -156,40 +156,70 @@ export function impact(host, kind, { x = "50%", y = "50%", color, zoomNode = hos
   sparks(host, { x, y, n: spec.sparks, color, spread: kind === "big" ? 160 : 110 });
 }
 
+// 作業風景のはじめの口の位置（絵の幅・高さに対する割合）。吸い出しの絵（craft/worker-scenes.js の pull＝構えている姿・
+// inhale＝吸っている姿。assets/ui/making/hajime_craft_pull_rest.png・hajime_craft_pull.png）で測った値。絵を差し替えたら測り直す
+const WORKER_MOUTH = Object.freeze({ pull: [.457, .39], inhale: [.46, .392] });
+
 /**
- * 吐いた煙が画面を満たして晴れる（CFX03・吸い出しの山場）。一人称なので、画面の下中央（口元）から
- * もこもこの煙（core/smoke.js）が満ちて上へ抜ける。色は配合の色をうっすら。
- * 煙の姿が出来を語る（KMR11）: quality "good"＝適温 ／ "thin"＝ぬるい（薄く小さい）／ "harsh"＝熱すぎ（ちぎれてすぐ消える）。
- * grand（最適温・会心）は大きくまとまって長く残り、晴れ際に煙の輪が昇る。
- * 自動操作・「動きを減らす」では出さずにすぐ返す。戻り値は煙が晴れるまで待つ Promise。
+ * 作業風景のはじめの口元。見えている工程の絵（.worker-action。data-scene が工程の名前）と、上の口の位置から出す。
+ * 戻り値は { x, y（作業台に対する 0〜1）, stage（作業風景の窓） }。口の位置を持つ絵が出ていない・窓が見えていないときは null
+ */
+export function workerMouth(bench) {
+  const img = [...(bench?.querySelectorAll?.(".bench-worker-stage .worker-action:not([hidden])") || [])].find((i) => WORKER_MOUTH[i.dataset?.scene]);
+  const stage = img?.closest?.(".bench-worker-stage");
+  if (!stage || !img.naturalWidth || !img.naturalHeight) return null;
+  const [mx, my] = WORKER_MOUTH[img.dataset.scene];
+  const box = img.getBoundingClientRect(), b = bench.getBoundingClientRect(), w = stage.getBoundingClientRect();
+  if (!box.width || !box.height || !b.width || !b.height || !w.width || !w.height) return null;
+  // 絵は枠の中に全体が収まるように置かれている（object-fit: contain）。枠の中での絵の位置を出す
+  const k = Math.min(box.width / img.naturalWidth, box.height / img.naturalHeight);
+  const pos = String(getComputedStyle(img).objectPosition || "").split(/\s+/).map((v) => parseFloat(v) / 100);
+  const ox = Number.isFinite(pos[0]) ? pos[0] : .5, oy = Number.isFinite(pos[1]) ? pos[1] : .5;
+  const px = box.left + (box.width - img.naturalWidth * k) * ox + img.naturalWidth * k * mx;
+  const py = box.top + (box.height - img.naturalHeight * k) * oy + img.naturalHeight * k * my;
+  if (px < w.left || px > w.right || py < w.top || py > w.bottom) return null;
+  return { x: (px - b.left) / b.width, y: (py - b.top) / b.height, stage };
+}
+
+/** はじめの口元の煙の層（作業風景の窓の中に1枚。窓で切り抜かれ、升目は作業台と同じ細かさ） */
+const workerSmoke = (bench, mouth) => smokeLayer(mouth.stage, { zIndex: 3, className: "fx-exhale", cover: bench });
+
+/**
+ * 吸い出しを終えたはじめが、煙を吐く（CFX03・吸い出しの山場）。作業風景のはじめの口元から、顔の向きへ細く出て昇る。
+ * 煙は作業風景の窓の中だけ（計器・結果の札には掛けない）。色は配合の色をうっすら。
+ * 煙の姿が出来を語る（KMR11）: quality "good"＝適温 ／ "thin"＝ぬるい（薄く小さい）／ "harsh"＝熱すぎ（むせて、ちぎれる）。
+ * grand（最適温・会心）はたっぷり長く残り、吐き終わりに煙の輪をひとつ吹く。
+ * 自動操作・「動きを減らす」・はじめの絵が出ていないときは出さずにすぐ返す。戻り値は煙が晴れるまで待つ Promise。
  */
 export function exhale(host, { color = "#d9d2e6", grand = false, quality = "good" } = {}) {
   const mode = fxMode();
   if (mode === "off" || mode === "still" || !host || !smokeAllowed()) return Promise.resolve(false);
-  // 煙は画面の外から立ちのぼるので、専用の層で切り抜く（下の結果の札は、この層の下で先に出ている）
-  const layer = el("div.fx-exhale", { "aria-hidden": "true", dataset: { quality: grand ? "best" : quality, ...(grand ? { ring: "1" } : {}) },
-    style: { position: "absolute", inset: "0", pointerEvents: "none", overflow: "hidden", zIndex: "30" } });
-  host.append(layer);
+  const mouth = workerMouth(host);
+  if (!mouth) return Promise.resolve(false);
   const colors = [smokeTint(hex6(color), .3)];
-  const breaths = firstPersonBreath(grand ? "best" : quality, colors);
-  // 輪は、煙が晴れてきたころに昇らせる（煙のかたまりの中だと埋もれて見えない）。煙より白く、はっきり見せる
-  if (grand) breaths.push(...ringBreath({ x: .5, y: .66, radius: .11, size: .03, colors: [smokeTint(hex6(color), .08)], delay: 2.9, rise: .16, grow: .06, life: 2.3 }));
-  // 万一アニメが終わらない環境でも先へ進める（いちばん長い「最適温＋輪」で6秒ほど）
-  return Promise.race([smokeLayer(layer, { zIndex: 0 }).breathe(breaths), new Promise((r) => setTimeout(r, 9000))])
-    .then(() => { layer.remove(); return true; });
+  const breaths = workerBreath(grand ? "best" : quality, { x: mouth.x, y: mouth.y, colors });
+  // 輪は、吐き終わってから口元の少し先へひとつ（煙のかたまりの中だと埋もれて見えない）。煙より白く、はっきり見せる
+  if (grand) breaths.push(...ringBreath({ ...RING, x: mouth.x + .035, y: mouth.y - .012, colors: [smokeTint(hex6(color), .08)], delay: 1.9 }));
+  const layer = workerSmoke(host, mouth);
+  Object.assign(layer.canvas.dataset, { quality: grand ? "best" : quality, ring: grand ? "1" : "" });
+  // 万一アニメが終わらない環境でも先へ進める（いちばん長い「最適温＋輪」で5秒ほど）
+  return Promise.race([layer.breathe(breaths), new Promise((r) => setTimeout(r, 8000))]).then(() => true);
 }
 
+// 口元から吹く輪: 顔の向き（右）へ進みながら、ゆっくり広がって昇る。横へ吹いた輪なので縦長
+const RING = { radius: .03, size: .012, squash: [.55, 1], grow: .03, drift: .085, rise: .05, life: 1.7 };
+
 /**
- * 煙の輪（スモークリング K21・龍の煙 M-S7）を、anchor（輪を出す位置に置いた要素）の中心から昇らせる。
- * 描けたら true。描けないとき（自動操作・「動きを減らす」）は false を返すので、呼び出し側は従来の輪を見せる。
+ * 煙の輪（スモークリング K21・龍の煙 M-S7）を、はじめの口元から吹く。anchor は作業台の中の要素（どの作業台かを知るため）。
+ * 描けたら true。描けないとき（自動操作・「動きを減らす」・はじめの絵が出ていない）は false を返すので、呼び出し側は従来の輪を見せる。
  */
 export function smokeRing(anchor, { color = "#e4dff0", big = false } = {}) {
   const host = anchor?.closest?.(".bench"), mode = fxMode();
   if (!host || mode === "off" || mode === "still" || !smokeAllowed()) return false;
-  const a = anchor.getBoundingClientRect(), b = host.getBoundingClientRect();
-  if (!b.width || !b.height) return false;
-  const x = (a.left + a.width / 2 - b.left) / b.width, y = (a.top + a.height / 2 - b.top) / b.height;
+  const mouth = workerMouth(host);
+  if (!mouth) return false;
   const colors = [smokeTint(hex6(color), big ? .5 : .2)];
-  smokeLayer(host, { zIndex: 29 }).breathe(ringBreath(big ? { x, y, radius: .09, size: .028, rise: .15, grow: .06, life: 2.2, colors } : { x, y, radius: .045, size: .017, rise: .14, grow: .04, life: 1.4, colors }));
+  const at = { x: mouth.x + .035, y: mouth.y - .012, colors };
+  workerSmoke(host, mouth).breathe(ringBreath(big ? { ...RING, ...at, radius: .046, size: .017, grow: .04, drift: .07, rise: .075, life: 2.3 } : { ...RING, ...at }));
   return true;
 }

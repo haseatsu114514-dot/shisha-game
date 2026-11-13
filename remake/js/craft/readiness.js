@@ -41,5 +41,6 @@ export function craftAssetUrls(mode = "tournament", { step = "setup", cs = null,
   ].filter(Boolean))];
 }
 export function warmCraftAssets(mode, options) {
-  return Promise.all(craftAssetUrls(mode, options).map(url => imageReady(url, 15000, { keep: true })));
+  // pin: 開き直しで取り直さない（core/ui.js の画像保持の上限に数えない）。
+  return Promise.all(craftAssetUrls(mode, options).map(url => imageReady(url, 15000, { keep: true, pin: true })));
 }

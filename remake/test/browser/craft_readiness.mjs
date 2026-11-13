@@ -16,11 +16,14 @@ async function init(page) {
 
 await suite("craft-readiness", async check => {
   await check("unrelated-art-and-cached-reopen", async page => {
-    // main.warmUp() ends with this image on the chapter 1 title (#3500 no longer warms
-    // craft art there). Wait for it so that warm-up requests (UI art and face icons)
-    // are not attributed to the bench that this case has not opened yet.
+    // main.warmUp() ends with this image: since #3500 the title warm-up is one bounded job at a time
+    // (fonts, dialogues, UI art, then the chapter-1 backgrounds), and bg_home_day is the last of them.
+    // It no longer loads the craft art (hookah_base, stove_coil, portraits) or the tournament stage,
+    // so those are not warm-up traffic any more. Wait for the tail so no warm-up request is
+    // attributed to the bench that this case has not opened yet. Slower than before: two UI-art
+    // workers instead of one parallel batch, hence the longer limit.
     await page.waitForFunction(() => performance.getEntriesByType("resource")
-      .some(entry => /\/backgrounds\/bg_home_day\.(png|webp)(\?|$)/.test(entry.name)));
+      .some(entry => /\/backgrounds\/bg_home_day\.(png|webp)(\?|$)/.test(entry.name)), null, { timeout: 45000 });
     await init(page);
     const scope = await page.evaluate(() => {
       const { DB, img, makingUrl, faceIconUrl, portraitInfo, bgUrl } = T.data;

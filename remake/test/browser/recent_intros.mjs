@@ -94,14 +94,29 @@ try {
         : (await import("./js/daily/trpg.js")).openTrpgBar();
       T.visit = T.open();
     }, id);
-    await page.waitForFunction(text => document.querySelector("#vn.active .vn-text")?.textContent === text,
-      id === "maki" ? "あの、ここで投げてみたくて" : "こんばんは。遊べる卓を探していて");
-    assert.equal(await page.locator("#vn.active .vn-text").textContent(), id === "maki" ? "あの、ここで投げてみたくて" : "こんばんは。遊べる卓を探していて");
-    await page.locator("#vn.active .vn-box").click();
-    await page.locator(`.cutin.in[data-char="${id}"]`).waitFor();
+    // 初めての来店の場面（VAR01・VAR02）: 店に入って店主が名乗るまで → 登場カットイン → 店の案内 → メニュー。
+    // 名乗るまでは名前が「？？？」。会話は一行ずつ読み進める。
+    const readUntil = async (selector) => {
+      const names = [], deadline = Date.now() + 40000;
+      while (!await page.locator(selector).count()) {
+        assert(Date.now() < deadline, `会話を読み進めても ${selector} が出ない`);
+        if (await page.locator("#vn.active .vn-box").count() && !await page.locator(".cutin").count()) {
+          const name = await page.locator("#vn.active .vn-name").textContent().catch(() => "");
+          if (name) names.push(name);
+          await page.locator("#vn.active .vn-box").click({ timeout: 1000 }).catch(() => {});
+        }
+        await page.waitForTimeout(180);
+      }
+      return names;
+    };
+    const before = await readUntil(`.cutin.in[data-char="${id}"]`);
+    assert(before.includes("？？？"), "名乗るまでは名前を伏せる");
+    assert(!before.includes(id === "maki" ? "斧崎マキ" : "六角サイ"), "紹介の前に名前を出さない");
     assert.equal(await page.locator(".cutin .ci-name").textContent(), id === "maki" ? "斧崎マキ" : "六角サイ");
     await page.locator(".cutin").waitFor({ state: "detached" });
     const host = `[data-test="venue-host-${id}"]`;
+    const after = await readUntil(host);
+    assert(after.includes(id === "maki" ? "斧崎マキ" : "六角サイ"), "紹介の後は名前で話す");
     await page.locator(host).waitFor();
     assert(await page.evaluate(id => {
       const s = T.core.state;
