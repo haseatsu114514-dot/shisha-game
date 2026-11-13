@@ -266,7 +266,7 @@ await suite("ch4-dubai-daily", async check => {
     await dubaiMap(page, { day: 51, slot: 0 });
     for (const pin of ["ch4_dubai_souq", "ch4_dubai_creek", "ch4_dubai_festa", "ch4_dubai_cafe"]) {
       await page.locator(dt(`pin-${pin}`)).click();
-      assert.equal(await page.locator(".map-info .mi-desc").count(), 0);
+      assert.equal(await page.locator(".map-info .mi-desc:not(.mi-stamina, .mi-reason)").count(), 0); // #3555 の体力の減りの一行は除く
       assert(await page.locator(".map-info .mi-banner").isVisible());
     }
     let state = await get(page);

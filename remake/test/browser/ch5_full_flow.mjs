@@ -400,7 +400,7 @@ await suite("ch5-full-flow", async check => {
     const toTokyo = dt("pin-ch5_to_tokyo");
     await assertVanSticker("ch5_to_tokyo");
     await page.locator(toTokyo).click();
-    assert.equal(await page.locator(".map-info .mi-desc").count(), 0);
+    assert.equal(await page.locator(".map-info .mi-desc:not(.mi-stamina, .mi-reason)").count(), 0); // #3555 の体力の減りの一行は除く
     assert(await page.locator(dt("map-go")).isVisible());
     // 昼: 配送便で東京へ → 最初は Dr.fookah の店員に乗せてもらう話 → 夜に着いてムカイさんに屋根裏を借りる → 屋根裏で寝る。
     await page.locator(dt("map-go")).click();

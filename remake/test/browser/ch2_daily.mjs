@@ -64,7 +64,9 @@ async function go(page, id, touch = false) {
   const button=page.locator(t('map-go'));
   if (touch) {
     assert(await page.locator('.map-info.spot-selected .mi-preview').isVisible());
-    assert.equal(await page.locator('.map-info .mi-desc, .map-info .mi-go').count(), 0);
+    // 説明文と別の「行く」ボタンは出さない。#3555 の体力の減り・行けない理由の一行（.mi-stamina／.mi-reason）だけは出す
+    assert.equal(await page.locator('.map-info .mi-desc:not(.mi-stamina, .mi-reason), .map-info .mi-go').count(), 0);
+    for (const cost of await page.locator('.map-info .mi-stamina').allInnerTexts()) assert.match(cost, /^体力 -\d+$/);
   }
   if(touch) await button.tap(); else await button.click();
 }
@@ -147,7 +149,7 @@ await suite('ch2-daily',async check=>{
       }, spot.previewUrl));
     }
     assert.equal(await page.locator('.map-info .mi-banner').innerText(), spot.label);
-    assert.equal(await page.locator('.map-info .mi-desc, .map-info .mi-go, .map-info .mi-note').count(), 0);
+    assert.equal(await page.locator('.map-info .mi-desc:not(.mi-stamina, .mi-reason), .map-info .mi-go, .map-info .mi-note').count(), 0);
     assert.equal(await page.evaluate(() => JSON.stringify(window.__remake.state)), await page.evaluate(() => __b02.before));
     const enter = page.locator(t('map-go'));
     assert(await enter.isVisible() && await enter.isEnabled());

@@ -142,11 +142,13 @@ html:root[data-density="phone"] body:not(:root) :is(.btn.xfer-btn, .xfer-box .mo
 html:root[data-density="phone"] body:not(:root) .xfer-btns { gap: var(--phone-gap); }
 
 /* ---------------------------------------------------------------- LIME（#3555・#3556）
-   スマホ横持ちでは、LIME の文字が 14px×0.54≒7.6px まで縮んでいた。幅を広げ、文字は実寸 11.5px 以上、返信は押せる高さにする。 */
-html:root[data-density="phone"] body:not(:root) .phone { width: 520px; height: 690px; }
+   スマホ横持ちでは、LIME の文字が 14px×0.54≒7.6px まで縮んでいた。幅を広げ、文字は実寸 11.5px 以上、返信は押せる高さにする。
+   高さは PC と同じ 640px のまま（690px だと開く動き（translateY 46px）の間に下端の「スマホを閉じる」が画面の外へ出る） */
+html:root[data-density="phone"] body:not(:root) .phone { width: 520px; }
 html:root[data-density="phone"] body:not(:root) :is(.phone-status, .lime-unread, .lime-hint, .lime-note, .lime-face.sm, .lcr-side small, .lcr-tag, .lcr-preview, .lcr-name, .lime-empty, .lime-tip, .lime-tip b, .lime-bubble, .lime-logo) { font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) :is(.lime-name, .lime-title) { font-size: var(--phone-text); }
-html:root[data-density="phone"] body:not(:root) .lime-back { width: var(--phone-tap); height: var(--phone-tap); font-size: var(--phone-tap); line-height: 1; }
+/* 戻る「‹」: 押せる大きさは --phone-tap。字は本文の大きさ（押す所と同じ大きさの字では字形が枠からはみ出す） */
+html:root[data-density="phone"] body:not(:root) .lime-back { width: var(--phone-tap); height: var(--phone-tap); font-size: var(--phone-text); line-height: 1; }
 /* 返信は fitOneLine が字を縮めても下限（--phone-sub）を割らない。入りきらない時は折り返す */
 html:root[data-density="phone"] body:not(:root) .lime-reply { min-height: var(--phone-tap); font-size: var(--phone-sub) !important; white-space: normal; line-height: 1.35; }
 html:root[data-density="phone"] body:not(:root) .lime-chat-row { min-height: var(--phone-tap); }

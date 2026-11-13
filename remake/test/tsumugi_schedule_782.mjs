@@ -128,7 +128,7 @@ console.log("[782] 昼夜/固定日/延期/旧セーブ/一度きり/既存文�
   await menu.link((specifier, ref) => modules.get(path.posix.normalize(path.posix.join(path.posix.dirname(ref.identifier), specifier))));
   await menu.evaluate();
   const flatten = node => [node, ...(node.children || []).flatMap(flatten)];
-  async function inspect({ sumi = false, tsumugi = false, night = false, known = false, choose = null } = {}) {
+  async function inspect({ sumi = false, tsumugi = false, night = false, known = false, done = false, choose = null } = {}) {
     const before = JSON.stringify(menuState);
     const pending = menu.namespace.tonariMenu();
     const nodes = flatten(screen);
@@ -137,7 +137,13 @@ console.log("[782] 昼夜/固定日/延期/旧セーブ/一度きり/既存文�
     assert.equal(desc("tonari-baito").includes("新しい話"), sumi);
     assert.equal(desc("tonari-customer").includes("新しい話"), tsumugi);
     assert.equal(desc("tonari-baito").includes("夜のシフト後"), night);
-    assert.equal(desc("tonari-customer").includes("つむぎ"), known);
+    if (done) {
+      // #3555: 今日済ませた一服・シフトは押せず、説明は「今日はもう済んだ」に置き換わる
+      for (const test of ["tonari-customer", "tonari-baito"]) {
+        assert.equal(button(test).attrs.disabled, true, `${test} は今日はもう選べない`);
+        assert.equal(desc(test), "今日はもう済んだ");
+      }
+    } else assert.equal(desc("tonari-customer").includes("つむぎ"), known);
     assert.equal(button("tonari-practice"), undefined, "#2213 B04: まかない練習はシフト上がりで選ぶ（独立の行動にしない）");
     button(choose ? `tonari-${choose}` : "sub-back").attrs.onclick();
     assert.equal(await pending, choose);
@@ -147,7 +153,7 @@ console.log("[782] 昼夜/固定日/延期/旧セーブ/一度きり/既存文�
   menuState.met.tsumugi = true;
   await inspect({ sumi: true, tsumugi: true, night: true, known: true, choose: "baito" });
   menuState.visitedDay = { tonari_customer: 6, tonari_baito: 6 };
-  await inspect({ known: true });
+  await inspect({ done: true });
   menuState.visitedDay = {}; menuState.slot = 0;
   await inspect({ sumi: true }); // 昼でも読める序盤のスミ会話
   menuState.story.sumi = 2;
