@@ -4496,6 +4496,7 @@
       "sender": "saku",
       "trigger_condition": "affinity_level",
       "trigger_value": 3,
+      "chapter": 4,
       "messages": [
         {
           "sender": "saku",
