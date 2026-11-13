@@ -41,6 +41,12 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
     after: ["ch3_volk_lime"], heart: { volk: 4 } },
   { id: "ch3_volk_revisit", file: "ch3_volk", label: "残した一項", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"],
     after: ["ch3_volk_fifth"], heart: { volk: 4 } },
+  // #3468 F案。ヴォルク×スティーブの挨拶と、Smoke & Glory での後日の一言。大会前の寄り道と同じ既読で、読めなかった分を順に。
+  // 台本は大会に触れない。好感度は動かさない。
+  { id: "ch3_rival_volk_steve_greeting", file: "ch3_volk", label: "長い別れ際", location: "鉄の煙", bg: "bg_volk_shop",
+    met: ["volk", "steve"] },
+  { id: "ch3_rival_volk_steve_seat", file: "ch3_volk", label: "先に座る客", location: "Smoke & Glory", bg: "bg_steve_shop",
+    met: ["volk", "steve"], after: ["ch3_rival_volk_steve_greeting"] },
   // 好感度補充。大会前に読めなかった煙幕・Smoke & Glory の段階を、帰郷前に順に読める。
   { id: "ch3_saku_missed", file: "ch3_rivals", label: "外れた予想", location: "煙幕", bg: "bg_yohaku_shop",
     after: ["ch3_saku_lime"], heart: { saku: 2 } },

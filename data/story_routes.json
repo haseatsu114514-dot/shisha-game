@@ -149,6 +149,8 @@
         "ch3_volk_lime",
         "ch3_volk_fifth",
         "ch3_volk_revisit",
+        "ch3_rival_volk_steve_greeting",
+        "ch3_rival_volk_steve_seat",
         "ch3_mashiro_timer_side",
         "ch3_mashiro_cup_warm",
         "ch3_mashiro_glass_cloth",
@@ -749,6 +751,18 @@
         "ch3_volk_fifth"
       ],
       "comment": "好感度補充（A28）: 五度目のあと、残した一項の短い再訪（♥4）。"
+    },
+    "ch3_rival_volk_steve_greeting": {
+      "seen": [
+        "ch3_volk_first"
+      ],
+      "comment": "#3468 F案: スティーブが新しく開いた鉄の煙へ挨拶に寄る（ヴォルク×スティーブ）。初来店の後。両者との面識は場面カードの置き方（ch3-story-wiring.js の met）。大会後は ch3-aftermath-progress.js の寄り道から。"
+    },
+    "ch3_rival_volk_steve_seat": {
+      "seen": [
+        "ch3_rival_volk_steve_greeting"
+      ],
+      "comment": "#3468 F案の後日の一言: 挨拶で「続きはうちで」と約束した後の Smoke & Glory。"
     }
   },
   "near_conflict": {

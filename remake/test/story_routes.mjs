@@ -291,6 +291,28 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   }
 }
 {
+  // #3468 F案: ヴォルク×スティーブ。初来店の後、二人と面識がある時に鉄の煙の挨拶→ Smoke & Glory の後日の一言。
+  const value = tokyo();
+  value.met.volk = value.met.steve = true;
+  const pair = v => offered(v).filter(id => id.startsWith('ch3_rival_volk_steve'));
+  readUntil(value, 'ch3_volk_first');
+  assert.deepEqual(pair(value), [], 'not before the first visit to Iron Smoke');
+  readUntil(value, 'ch3_strategy');
+  assert.deepEqual(pair(value), ['ch3_rival_volk_steve_greeting']);
+  assert.deepEqual(pair({...value, met: {volk: true}}), [], 'needs to have met steve');
+  assert.deepEqual(pair({...value, met: {steve: true}}), [], 'needs to have met volk');
+  const places = Object.fromEntries(['ch3_rival_volk_steve_greeting', 'ch3_rival_volk_steve_seat']
+    .map(id => [id, wiring.CH3_OPTIONAL_SCENES[id].location]));
+  assert.deepEqual(places, {ch3_rival_volk_steve_greeting: '鉄の煙', ch3_rival_volk_steve_seat: 'Smoke & Glory'});
+  wiring.commitOptionalRead(value, 'ch3_rival_volk_steve_greeting');
+  assert.deepEqual(pair(value), ['ch3_rival_volk_steve_seat']);
+  wiring.commitOptionalRead(value, 'ch3_rival_volk_steve_seat');
+  assert.deepEqual(pair(value), [], 'each is read once');
+  for (const id of ['ch3_rival_volk_steve_greeting', 'ch3_rival_volk_steve_seat']) {
+    assert(!sceneData.get(id).lines.some(row => row.type), `${id}: no affinity, stats, memory or flag rows`);
+  }
+}
+{
   // #2026: つむぎの不調の通話。第2章の煙の線・水を読み、味が戻った後、つむぎが東京に来ていない間だけ。
   const value = tokyo();
   value.met.tsumugi = true; value.contacts.push('tsumugi');
