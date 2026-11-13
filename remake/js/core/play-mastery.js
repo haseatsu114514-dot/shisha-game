@@ -60,6 +60,9 @@ export function recordPlayMastery(s, game, result, token) {
   const r = masteryRecord(s, game);
   if (r.last === token) return false;
   const before = r.done;
+  // 進み具合（回数・集めたもの・お世話・認定）が変わった時だけ知らせる。3投練習など、数えない記録のたびに出さない
+  const progress = (x) => JSON.stringify([x.count, x.items, x.bond, x.done]);
+  const was = progress(r);
   r.last = token;
   if (game === 'axe' && result.throwCount === 10 && result.throws?.length === 10 && result.maximum > 0) {
     const ratio = result.total / result.maximum;
@@ -76,7 +79,8 @@ export function recordPlayMastery(s, game, result, token) {
   r.done ||= r.count >= PLAY_MASTERY[game].goal && (game !== 'tetsuko' || r.bond >= 4);
   put(s, game, r);
   syncPlayMastery(s);
-  emit('play-mastery', { state: s, game, newly: !before && masteryRecord(s, game).done });
+  const now = masteryRecord(s, game);
+  if (progress(now) !== was) emit('play-mastery', { state: s, game, newly: !before && now.done });
   return true;
 }
 export function masteryLine(s, game) {
