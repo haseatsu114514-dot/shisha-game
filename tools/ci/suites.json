@@ -951,6 +951,12 @@
       "run": ["node remake/test/visit_chains.mjs", "node --experimental-vm-modules remake/test/visit_chains_wiring.mjs"]
     },
     {
+      "id": "vn-preload-queue",
+      "title": "会話の立ち絵・CGの待たない先読み: 1枚ずつ・新しい会話を先に・重複なし・読み残しの上限（LD02）",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/vn_preload_queue.mjs"]
+    },
+    {
       "id": "manifest-dependencies",
       "title": "Manifest generator required dependency diagnostics",
       "kind": "quick",
