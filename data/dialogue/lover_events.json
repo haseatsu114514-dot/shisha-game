@@ -2092,11 +2092,14 @@
           "text": "入った！ ……あ、今のは、木霊が喜んだだけ……"
         },
         {
-          "type": "condition",
-          "condition_type": "met",
-          "char_id": "maki",
-          "next_true": "maki",
-          "next_false": ""
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの奥から、店主の「青、入ったね！ もっと出しな」という声が飛んできた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "office_mukii",
+          "text": "今は儚い時間なんです！"
         },
         {
           "speaker": "hajime",
@@ -2139,21 +2142,7 @@
           "face": "axe_normal",
           "text": "……惜しい。でも、今日いちばん好きな音だった"
         }
-      ],
-      "branches": {
-        "maki": [
-          {
-            "speaker": "maki",
-            "face": "excited",
-            "text": "青、入ったね！　今日もいい声だ。もっと出しな"
-          },
-          {
-            "speaker": "hiyori",
-            "face": "office_mukii",
-            "text": "マキさん！　今は儚い時間なんです！"
-          }
-        ]
-      }
+      ]
     },
     {
       "dialogue_id": "lover_hiyori_lv1_b",
