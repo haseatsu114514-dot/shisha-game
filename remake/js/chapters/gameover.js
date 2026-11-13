@@ -1,5 +1,6 @@
 // 大会コンティニュー: スミさん（または成立済みの恋人）がプレイヤーに直接語りかける。
-// 2026-11-07 オーナー決定（#2524）: 見た目と台本は前バージョン（筆文字・円形HUDの neon 配置）に戻し、立ち絵だけ新バージョンにする。
+// 2026-11-07 オーナー決定（#2524）: 台本は前バージョンに戻し、立ち絵だけ新バージョンにする。
+// 見た目は 2026-11-13 オーナー決定（CV61）で C 漫画の大ゴマ（manga）が既定。前の版の neon と A 熾火（保留）は continueLayoutSetting() で選べる。
 // 台詞は敗因・順位・弱点で差し替えない（どの負け方でも同じ台本）。出演者はスミさんか成立済みの恋人（continue-lovers.js）。
 // タイムラインと音声を分離し、後から録音音声・口パク素材に差し替えられる。
 import { prepareContinueScript, normalizeContinueContext } from "./continue-context.js";
@@ -10,6 +11,7 @@ import { createContinueAudio, preloadBgm } from "../core/audio.js";
 import { DB, img, portraitInfo } from "../core/data.js";
 import { imageReady } from "../core/ui.js";
 import { createContinueView, continuePortraitStyle } from "./continue-view.js";
+import { continueLayoutSetting } from "./continue-looks.js";
 
 
 // at = 開始からの秒数。全体の台詞表示は約20秒。テロップは1キュー1行（全角22字以内）に小分けする。
@@ -97,7 +99,7 @@ let nextScript = 0;
 let previousContinueSpeaker = null;
 // 初回はカウント演出だけを見せ、選択期限を設けない。再挑戦以降は20秒で終了する。
 export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRetry, onTitle,
-  soundEffects = true, reducedMotion = false, layout = "neon", background = "stage", context = null } = {}) {
+  soundEffects = true, reducedMotion = false, layout = continueLayoutSetting(), background = "stage", context = null } = {}) {
   // variant: 整数=スミさんの台本番号、"lover:<id>"=その恋人、null=通常（スミさんか恋人を同じ確率で選ぶ）。
   const forced = typeof variant === "string" && variant.startsWith("lover:") ? LOVER_CONTINUE_SCRIPTS[variant.slice(6)] : null;
   const chosen = !forced && variant == null

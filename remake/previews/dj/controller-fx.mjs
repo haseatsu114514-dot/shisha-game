@@ -6,6 +6,10 @@ const stage = document.getElementById('dj-stage');
 function fit() {
   const width = Math.min(STAGE_MAX_W, Math.max(STAGE_W, Math.floor(innerWidth / innerHeight * STAGE_H)));
   stage.style.width = `${width}px`;
+  // 2026-11-13 DJG「皿を大きく」: PITCH の列が無くなった分、デッキの列を広げて皿を大きくする（1280 で 356px、広い画面で 366px まで。以前は 308px）。
+  // 皿は外側の上、▶ は内側の下の角、曲名は皿の下。▶ の丸が皿の丸に重ならない大きさにしてある（列の幅 362 → 皿 356、378 → 366）。
+  const deck = Math.max(362, Math.min(378, Math.floor((width - 72 - 484) / 2)));
+  stage.style.setProperty('--deck-w', `${deck}px`); stage.style.setProperty('--jog', `${Math.min(366, 356 + Math.floor((deck - 362) * .625))}px`);
   stage.style.setProperty('--s', String(Math.min(innerWidth / width, innerHeight / STAGE_H)));
 }
 fit(); addEventListener('resize', fit);
@@ -14,6 +18,8 @@ const buzz = ms => { if (coarse.matches && navigator.vibrate) try { navigator.vi
 document.addEventListener('pointerdown', e => {
   const b = e.target.closest('button');
   if (b && !b.disabled) { b.classList.add('hit'); buzz(8); setTimeout(() => b.classList.remove('hit'), 140); }
+  // 押しても何も起きないボタンを作らない（DJG08）: いまは押せない ▶（もう鳴っている・曲が載っていない）も、首を振って鈍い音で返す
+  else if (b && b.classList.contains('deck-play')) { b.classList.remove('nope'); void b.offsetWidth; b.classList.add('nope'); buzz(14); document.dispatchEvent(new CustomEvent('dj-nope', { detail: b.id })); }
   const r = e.target.closest('input[type=range]');
   if (r) { r.classList.add('dragging'); buzz(5); }
 });

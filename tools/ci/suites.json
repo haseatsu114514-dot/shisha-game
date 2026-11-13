@@ -4418,6 +4418,24 @@
       ]
     },
     {
+      "id": "continue-looks",
+      "title": "Continue look candidates (#2524 CV58): A ember / C manga, touch sizes, retry, timeout, ?continueLook switch",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 5,
+      "paths": [
+        "remake/test/continue_looks.mjs",
+        "remake/js/chapters/continue-looks.js",
+        "remake/js/chapters/continue-view.js",
+        "remake/js/chapters/gameover.js",
+        "remake/css/continue*.css",
+        "remake/continue-preview.html"
+      ],
+      "run": [
+        "node remake/test/continue_looks.mjs"
+      ]
+    },
+    {
       "id": "conversation-effects",
       "title": "Conversation effects in the main VN engine (#2828): beat, BGM duck, [pause], inner voice, [shiver]",
       "kind": "browser",
