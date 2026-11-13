@@ -2092,14 +2092,21 @@
           "text": "入った！ ……あ、今のは、木霊が喜んだだけ……"
         },
         {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "maki",
+          "next_true": "maki",
+          "next_false": ""
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
-          "text": "隠さなくていいですよ。もう、知ってますから"
+          "text": "木霊、今日もいい声でしたね"
         },
         {
           "speaker": "hiyori",
           "face": "axe_normal",
-          "text": "……そっか。前は、見られたら終わりだと思ってたのにな"
+          "text": "……前は、見られたら終わりだと思ってたのにな"
         },
         {
           "speaker": "hiyori",
@@ -2132,7 +2139,21 @@
           "face": "axe_normal",
           "text": "……惜しい。でも、今日いちばん好きな音だった"
         }
-      ]
+      ],
+      "branches": {
+        "maki": [
+          {
+            "speaker": "maki",
+            "face": "excited",
+            "text": "青、入ったね！　今日もいい声だ。もっと出しな"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "office_mukii",
+            "text": "マキさん！　今は儚い時間なんです！"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "lover_hiyori_lv1_b",
@@ -2146,12 +2167,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "斧投げの店を出て、夜の道を並んで歩く"
+          "text": "斧投げの店を出て、夜の道を並んで歩く。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ひよりさんのお腹が、小さく鳴った"
+          "text": "ひよりさんのお腹が、小さく鳴った。"
         },
         {
           "speaker": "hiyori",
@@ -2166,23 +2187,8 @@
         },
         {
           "speaker": "hiyori",
-          "face": "surprise",
-          "text": "止んでても、夜風はあるの！"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "あります。でも、お腹の音のほうが大きく聞こえました"
-        },
-        {
-          "speaker": "hiyori",
           "face": "love_blush",
-          "text": "……もう、隠すのやめる"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "normal",
-          "text": "お腹、すいた。斧で、声と一緒に体力も使った",
+          "text": "……お腹、すいた。斧で、声と一緒に体力も使った",
           "inner": "言えた。普通に、言えた"
         },
         {
@@ -2192,23 +2198,24 @@
         },
         {
           "speaker": "hiyori",
-          "face": "smile",
-          "text": "今日は座って食べる元気が、的に全部持っていかれた"
+          "face": "serious",
+          "text": "今日はだめ。この手でレンゲを持ったら、スープをこぼす"
         },
         {
           "speaker": "hiyori",
-          "face": "normal",
-          "text": "小さいのでいい。あったかい紅茶があれば、それで"
+          "face": "smile",
+          "text": "ラーメンは、ちゃんと座れる日に。味玉つきで",
+          "inner": "味玉は先に言っちゃった。隠し味にするつもりだったのに"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "自販機の明かりの前で、ひよりさんが足を止めた"
+          "text": "自販機の明かりの前で、ひよりさんが足を止めた。"
         },
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "これ。甘くないほう"
+          "text": "これ。甘くないほうの紅茶"
         },
         {
           "speaker": "hiyori",
@@ -2218,69 +2225,29 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺が買います。ひよりさんは、その缶で"
+          "text": "じゃあ、同じのを二つ買います"
         },
         {
           "speaker": "hiyori",
           "face": "smile",
-          "text": "うん。おそろいにして"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "normal",
-          "text": "ひとりで選ぶと、また夜風のふりしちゃうから",
+          "text": "……うん。おそろいにして",
           "inner": "おそろい、って自分から言った。照れる"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "熱い紅茶、二つですね"
-        },
-        {
           "speaker": "",
           "face": "",
-          "text": "缶を二つ受け取って、また歩き出す"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ひよりさんの肩が、こちらの腕に軽く触れた"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "手、痛くないですか。俺も、何投か握ってました"
+          "text": "缶を二つ受け取って、また歩き出す。ひよりさんの肩が、こちらの腕に軽く触れた。"
         },
         {
           "speaker": "hiyori",
           "face": "serious",
-          "text": "見せて。うん、赤くなってる。私より正直",
+          "text": "手、見せて。……うん、赤くなってる。私より正直",
           "inner": "触りたい。でも缶があるから、今日はこれで我慢"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "ひよりさんのほうは、大丈夫ですか"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "smile",
-          "text": "大丈夫。声を出した分、肩の力が抜けた"
-        },
-        {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "会社だと、この抜け方はできないから。ここまでの道で、やっと"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "smile",
-          "text": "斧、今日も楽しかった"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "normal",
-          "text": "声、大きくなってない？ 店の中、静かだったし"
+          "text": "……声、大きくなってなかった？　店の中、静かだったし"
         },
         {
           "speaker": "hajime",
@@ -2290,39 +2257,13 @@
         {
           "speaker": "hiyori",
           "face": "smile",
-          "text": "……じゃあ、次も連れてって"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "normal",
-          "text": "儚い女の、夜の運動ってことにする",
+          "text": "……じゃあ、次も連れてって。儚い女の、夜の運動ってことにする",
           "inner": "運動って言うと、総務の自分が出る。まあいいか"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "はい。お腹が鳴る前に、何か食べられるところも探します"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "smile",
-          "text": "約束ね。ラーメンは、ちゃんと座れる日に"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "smile",
-          "text": "味玉つきで。今日は、紅茶だけで許して",
-          "inner": "味玉は先に言っちゃった。隠し味にするつもりだったのに"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "許します。今日は、このままもう少し歩きましょう"
         },
         {
           "speaker": "hiyori",
           "face": "love_blush",
-          "text": "……うん。帰りたくない、までは言わない"
+          "text": "……帰りたくない、までは言わない"
         },
         {
           "speaker": "hiyori",
@@ -2331,29 +2272,9 @@
           "inner": "本当は角の先だ。今日は、これで十分"
         },
         {
-          "speaker": "hiyori",
-          "face": "normal",
-          "text": "缶、あったかい。手は、これで十分"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "冷えてきたら、言ってください"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "smile",
-          "text": "言う。夜風のふりは、もう一回で打ち止め"
-        },
-        {
           "speaker": "",
           "face": "",
-          "text": "夜の道に、紅茶の湯気が小さく立った"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ひよりさんは缶を両手で包んだまま、隣を離れなかった"
+          "text": "角に着いても、ひよりさんは缶を両手で包んだまま、隣を離れなかった。"
         }
       ]
     },
@@ -2665,7 +2586,12 @@
         {
           "speaker": "hiyori",
           "face": "smile",
-          "text": "今は、閉店したらここに来ればいいって分かってる。……それだけで、明日も頑張れる"
+          "text": "今は、閉店したらここに来ればいいって分かってる"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……開店時間まで、ここが私の休憩室"
         },
         {
           "speaker": "hajime",
@@ -2676,7 +2602,12 @@
           "speaker": "hiyori",
           "face": "love_blush",
           "duck": true,
-          "text": "……うん。好きだよ、はじめくん。儚くないほうの声で、言っとくね"
+          "text": "……好きだよ、はじめくん"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "今のは、儚いほうの声。……こっちで言っても、本当だからね"
         },
         {
           "speaker": "hajime",

@@ -280,7 +280,7 @@
       "id": "hiyori_boundary",
       "char_id": "hiyori",
       "dialogue_id": "hiyori_work_talk",
-      "echo": "（ひよりさんと決めた「今日はここまで」が、俺の手も止めてくれる）"
+      "echo": "（ひよりさんと話した「閉店時間」が、俺の手も止めてくれる）"
     },
     {
       "id": "hiyori_shout",

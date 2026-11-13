@@ -69,11 +69,23 @@ for (const scene of hiyori) {
     assert.ok(assetExists(rel), `${scene.dialogue_id}: bg exists`);
   }
   assert.ok(!scene.metadata.preview_only && !scene.metadata.min_chapter, `${scene.dialogue_id}: playable in chapters 1-3`);
-  assert.ok(!scene.branches, `${scene.dialogue_id}: no timeline branch needed`);
+  // 分岐は Lv1 の斧投げBarで、はじめが店主マキと面識のある時だけ入る一言だけ（時系列の分岐ではない・2026-11-13 ひよりの添削）。
+  const maki = scene.dialogue_id === "lover_hiyori_lv1" ? scene.branches?.maki : null;
+  assert.deepEqual(Object.keys(scene.branches || {}), maki ? ["maki"] : [], `${scene.dialogue_id}: no timeline branch needed`);
+  for (const line of maki || []) {
+    assert.ok(["maki", "hiyori"].includes(line.speaker), `${scene.dialogue_id}: Maki branch speaker ${line.speaker}`);
+    assert.ok(assetExists(`assets/sprites/characters/${line.speaker}/chr_${line.speaker}_${line.face}.png`), `${scene.dialogue_id}: Maki branch face ${line.face}`);
+    assert.ok(!line.inner, `${scene.dialogue_id}: no inner in the Maki branch`);
+  }
   for (const line of scene.lines) {
     // 場面の途中の背景の切り替え（lv2 の暖簾の前 → ラーメン屋の店内・#3285 C5）は台詞ではない。絵が実在することだけ確かめる。
     if (line.type === "bg") {
       assert.ok(assetExists(String(line.bg).replace("res://", "")), `${scene.dialogue_id}: bg line ${line.bg}`);
+      continue;
+    }
+    if (maki && line.type === "condition") {
+      assert.deepEqual([line.condition_type, line.char_id, line.next_true, line.next_false], ["met", "maki", "maki", ""],
+        `${scene.dialogue_id}: Maki speaks only after Hajime has met her`);
       continue;
     }
     assert.ok(["", "hiyori", "hajime"].includes(line.speaker), `${scene.dialogue_id}: speaker ${line.speaker}`);
@@ -83,7 +95,7 @@ for (const scene of hiyori) {
     } else assert.ok(!line.inner, `${scene.dialogue_id}: only Hiyori has inner lines`);
     if (line.speaker === "hajime") assert.doesNotMatch(line.text, /ひより(?!さん)/, `${scene.dialogue_id}: Hajime says ひよりさん`);
   }
-  const text = sceneText(scene);
+  const text = [sceneText(scene), ...(maki ? [sceneText({ lines: maki })] : [])].join("\n");
   // 大会前後どちらで読んでも成立させる（交流の時系列ルール）。
   assert.doesNotMatch(text, /大会|予選|本番|決勝|ドバイ|東京/, `${scene.dialogue_id}: timeline-neutral`);
   const inner = scene.lines.filter(line => line.inner).length;
