@@ -152,7 +152,10 @@ await suite("shop-ui", async check => {
       const expected = JSON.parse(before);
       expected.met = { ...expected.met, rio: true };
       expected.flags = { ...expected.flags, _met_rio: true, _affinity_first_meeting_pending_rio: true };
-      assert.deepStrictEqual(JSON.parse(await page.evaluate(() => JSON.stringify(S.core.state))), expected);
+      const actual = JSON.parse(await page.evaluate(() => JSON.stringify(S.core.state)));
+      // 名乗った後の登場カットイン（vn/intro.js）は、応対を読み進める速さによって出たり出なかったりする。出た時だけ見た印が付く。
+      if (actual.flags?._intro_rio === true) expected.flags._intro_rio = true;
+      assert.deepStrictEqual(actual, expected);
       assert(await page.evaluate(() => localStorage.getItem(S.core.SAVE_KEY) === S.legacyRaw));
       await page.locator('[data-tab="flavor"]').click();
       if (platform === 'touch') {
