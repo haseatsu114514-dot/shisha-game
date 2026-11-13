@@ -27,6 +27,20 @@ export const priceText = yen => `${Number(yen).toLocaleString("ja-JP")}円（${d
 export const dubaiDaytime = slot => (slot ?? 0) === 0;
 
 /**
+ * クリーク沿いの場面（SPV03）。昼・夜それぞれを順番に読む（daily/spots.js の quietTurn。鍵は CREEK_TURN。第5章のドバイも同じ）。
+ * 岸から眺める場面だけ。渡し舟に乗る `ch4_creek_abra` は、渡し舟で渡る案が不採用（DBS12）なのでつながない。
+ * 歩く場面は ch4_dubai_daily.json、荷積みと釣りは ch4_spots.json（CREEK_SPOT_IDS）。
+ */
+export const CREEK_SCENES = Object.freeze({
+  day: Object.freeze(["ch4_creek_walk_day", "ch4_creek_dhow"]),
+  night: Object.freeze(["ch4_creek_walk_night", "ch4_creek_fishing"]),
+});
+export const CREEK_SPOT_IDS = Object.freeze(["ch4_creek_dhow", "ch4_creek_fishing"]);
+export const CREEK_TURN = "dubai_creek";
+/** ch4_spots.json から、クリーク沿いの場面だけを取り出す（本筋のスーク・カフェの台本を上書きしない）。 */
+export const creekSpotScenes = rows => Object.fromEntries(CREEK_SPOT_IDS.map(id => [id, rows[id]]));
+
+/**
  * 昼の屋外の行き先（place）。extra は昼に足す体力（スーク -10→-15、クリーク沿い +20→+12）。
  * desc は地図の説明に足す一文、note は行った後に出す一言。
  */

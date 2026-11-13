@@ -57,6 +57,7 @@ const mocks = {
   "remake/js/chapters/ch2-lime.js": { recordSentLime: () => false },
   "remake/js/core/growth.js": { consultLessons: async id => { lessons.push(id); return []; } },
   "remake/js/core/chapter-data.js": { readDialogues: async () => ({}) },
+  "remake/js/core/ryuji-visit.js": { reiStickerDue: () => false },
   "remake/js/core/affinity-stages.js": { AGEHA_AFFINITY_VISITS: [], CH2_VISIT_STORIES: {}, ch2VisitDone: () => false, ch2VisitReady: () => true },
   "remake/js/chapters/ch2-craft-prep.js": { craftPrepDue: () => prepDue, offerCraftPrep: async () => ({ used: true, exerted: true }) },
 };

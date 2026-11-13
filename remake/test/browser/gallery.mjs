@@ -323,6 +323,10 @@ try {
     await page.locator("#boot").waitFor({ state: "detached" });
     await open(page);
     assert.equal(await page.locator('[role="tab"]').count(), 6);
+    // 中身が無い札は「0/0」でなく「準備中」と出す（#3519）。ある札は従来どおり解放数/総数。
+    assert.equal((await page.locator(t("gallery-tab-comic")).textContent()).trim(), "漫画 準備中");
+    assert.equal((await page.locator(t("gallery-tab-movie")).textContent()).trim(), "ムービー 準備中");
+    assert.match(await page.locator(t("gallery-tab-all")).textContent(), /\d+\/\d+$/);
     await page.locator(t("gallery-tab-comic")).click();
     assert.match(await page.locator(".gal-empty").textContent(), /準備中/);
     await page.screenshot({ path: path.join(out, name + "-comics-unadopted.png") });

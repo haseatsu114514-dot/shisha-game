@@ -13,6 +13,8 @@ await suite('tournament-story',async check=>{
       const vn=await import('./js/vn/engine.js');
       const session=await import('./js/craft/session.js');
       const story=await import('./js/craft/tournament-story.js');
+      // 大会の掛け合いの台本は大会の入口で読む（タイトルの先読みはしない・#3500）。本編の入口と同じく先に読む
+      await (await import('./js/core/data.js')).loadTournamentCraftDialogue();
       const cs=window.cs=session.newSession('tournament');
       cs.mix={mint:12};cs.pack='fluffy';cs.steam={temp:.52,score:85};
       for(const id of ['hajime','pakki','dr_kemuri','maezono'])core.state.flags[`_intro_${id}`]=true;

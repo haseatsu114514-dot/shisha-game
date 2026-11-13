@@ -7,6 +7,9 @@ const desktop = { width: 1280, height: 720 }, mobile = { width: 844, height: 390
 async function prepare(page) {
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"); core.newGame(); core.state.day = 4;
+    // 晴れの日に固定する。雨の日は家で休む場面が雨の回になり（SPV03）、背景もくもり・雨の絵に替わるため
+    const weather = await import("./js/daily/weather.js");
+    for (let seed = 0; seed < 200 && weather.weatherOf() !== "sun"; seed++) core.state.weatherSeed = seed;
     const ui = await import("./js/core/ui.js");
     const data = await import("./js/core/data.js");
     const map = await import("./js/daily/map.js");
@@ -112,10 +115,11 @@ await suite("navigation-transitions", async (check) => {
       });
       await page.locator(`[data-test="pin-${spot}"]`).click();
       await page.waitForFunction(() => !document.querySelector(".scene-curtain"));
-      const selector = spot === "rest" ? "#vn.active .vn-text" : spot === "tonari" ? '[data-test="tonari-customer"]' : ".shop-tabs";
+      // 店（Dr.fookah）は 2026-11-12（a389db22f）から、入口の前に店頭の応対（daily/shop-greeting.js）を読む。
+      // 地図からの移動の幕が明けて最初に出るのは応対の台詞で、入口（shop-enter）と売り場はその後に出る。
+      const selector = spot === "tonari" ? '[data-test="tonari-customer"]' : "#vn.active .vn-text";
       await arm(page, selector);
       await page.locator('[data-test="map-go"]').click();
-      if (spot === "shop") await page.locator('[data-test="shop-enter"]').click();
       await page.locator(".scene-curtain").waitFor();
       await page.keyboard.press("Enter");
       if (spot === "rest") assert.equal(await page.locator(".vn-text").textContent(), "");
@@ -126,6 +130,13 @@ await suite("navigation-transitions", async (check) => {
       if (spot === "rest") {
         assert.ok(audit.ended - audit.started < 1800, "The warmed-up home transition still feels too long");
         await page.waitForFunction(() => document.querySelector(".vn-text").textContent.includes("今日は早めに家へ帰った"));
+      }
+      if (spot === "shop") {
+        // 応対を読み終えると入口が出て、入ると売り場が開く（買い物そのものは変わらない）。
+        // この組は応対の自動送り（support.mjs）を切ってあり、幕の後に台詞が出たのを確かめてから送る
+        await page.evaluate(() => { T.engine.vnTest.turbo = true; });
+        await page.locator('[data-test="shop-enter"]').click();
+        await page.locator(".shop-tabs").waitFor();
       }
     }, { viewport });
   }
@@ -184,4 +195,6 @@ await suite("navigation-transitions", async (check) => {
     const audit = await verify(page, "#vn.active .vn-text");
     assert.deepEqual(audit.types, ["fade"], "Reduced motion played the full move instead of a fade");
   }, { reducedMotion: "reduce" });
-});
+// 店の応対（daily/shop-greeting.js）は shop-mobile の中で自分で送る。自動送りを入れると、幕の後に出る台詞を
+// 確かめる前に読み進めてしまい、入口のボタンの操作ともぶつかる
+}, { readShopGreeting: false });
