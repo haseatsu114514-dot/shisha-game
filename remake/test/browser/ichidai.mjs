@@ -65,8 +65,8 @@ async function stepMine(page, plan, got) {
       for (let k = 0; k < 5 && await page.locator(`${t("ichi-stove")} button.can`).count(); k++) await page.locator(`${t("ichi-stove")} button.can`).first().click();
     }
     await page.locator(t("ichi-end")).click();
-  } else if (wait === "cool" || wait === "weaken") {
-    await page.locator(`${t("ichi-zone")} .ichi-coal-btn.can`).first().click();
+  } else if (wait === "cool" || wait === "weaken" || wait === "wear") {
+    await page.waitForTimeout(150); // 冷める・すきま風・葉が減るのは、自動で進む（ガイドを切っていても）
   } else if (wait === "main") {
     await placeCoals(page);
     for (let k = 0; k < 5 && await page.locator(`${t("ichi-stove")} button.can`).count(); k++) await page.locator(`${t("ichi-stove")} button.can`).first().click();
@@ -76,9 +76,6 @@ async function stepMine(page, plan, got) {
     await page.locator(t("ichi-discard")).click();
   } else if (wait === "react") {
     await page.locator(t("ichi-pass")).click();
-  } else if (wait === "wear") {
-    for (let k = 0; k < 4 && !(await has(page, "ichi-wear")); k++) await page.locator(`${t("ichi-wear-picker")} button.ichi-leaf.can`).first().click();
-    await page.locator(t("ichi-wear")).click();
   } else await page.waitForTimeout(120);
   return false;
 }
@@ -231,8 +228,8 @@ await suite("ichidai", async (check) => {
         assert.equal(scene.foeCard, "180deg", "相手の札は向こう向き");
         assert.ok(await page.locator(`${t("ichi-hand")} .ichi-card.s-hand`).count() >= 3, "手札はトレカの札");
         assert.equal(await page.locator(`${t("ichi-market")} .ichi-card.t-flavor`).count(), 10, "場の葉も札");
-        // 右下は審査員の声の掲示板。まだ審査が無いあいだは、審査員の紹介（決め手）が貼ってある
-        assert.equal(await page.locator(`${t("ichi-forecast")} ${t("ichi-post-intro")}`).count(), 3, "審査員3人の紹介");
+        // 右下は審査員の声の掲示板。まだ審査が無いあいだは、審査員3人の顔だけ（文字を減らした。決め手は審査の山を押すと見られる）
+        assert.deepEqual([await page.locator(`${t("ichi-forecast")} ${t("ichi-post-intro")}`).count(), await page.locator(`${t("ichi-forecast")} ${t("ichi-post-intro")} .ichi-face`).count()], [1, 3], "審査員3人の顔");
         assert.match(await page.locator(t("ichi-forecast")).innerText(), /審査員の声[\s\S]*決め手/);
         assert.match(await page.locator(t("ichi-tips")).innerText(), /いまの熱3。レモンの適温は\d+〜\d+/, "案内に、いまの熱と葉の適温が出る");
         assert.deepEqual(await overflowed(page), [], "準備の画面で、文字が枠からはみ出していない");
@@ -284,7 +281,8 @@ await suite("ichidai", async (check) => {
         assert.ok(coals.every((c) => Math.abs(c.h - unit * c.fire) < 3), "炭は火の段数ぶんの高さ");
         // 第0.5版: 審査カードはラウンドのはじめに1枚めくってある（山は11枚）。今回の吸い方は左上に出る
         assert.equal(await page.locator(t("ichi-pile")).getAttribute("data-left"), "11");
-        assert.match(await page.locator(t("ichi-now-judge")).innerText(), /今回の審査/);
+        assert.match(await page.locator(t("ichi-now-judge")).getAttribute("aria-label"), /^今回の審査 /, "見出しは出さず、読み上げに残す");
+        assert.match((await page.locator(t("ichi-now-judge")).innerText()).replace(/\s+/g, ""), /^.+[±+−]\d$/);
         // 提供に入ったら場は出さない。葉の札の束と体力は出し続ける（相手の束も卓の奥に。HUD の相手の札には主役と体力）
         assert.equal(await page.locator(t("ichi-market")).count(), 0);
         const bowl = (await page.locator(t("ichi-bowl")).getAttribute("data-leaves")).split(",").map((x) => x.split(":")), leaves = bowl.reduce((a, [, n]) => a + Number(n), 0);
@@ -383,7 +381,9 @@ await suite("ichidai", async (check) => {
     const post = page.locator(`${t("ichi-forecast")} ${t("ichi-post")}`);
     await post.first().waitFor();
     assert.deepEqual([await post.count(), await post.first().getAttribute("data-round"), await post.first().getAttribute("data-zone")], [1, "1", myZone]);
-    assert.match(await post.first().innerText(), /1口目[\s\S]*吸う[\s\S]*「[^」]+」[\s\S]*\+\d+[\s\S]*(一票は|票なし)/);
+    // 文字を減らした書き込み: 何口目・吸い方／自分の帯と点（直すところがあれば一言）／相手の帯と点（一票が入れば、だれに）
+    assert.match(await post.first().innerText(), /1口目[\s\S]*吸う[\s\S]*(ジャスト|適温|ズレ|外れ|焦げ)[\s\S]*\+\d+[\s\S]*スミさん (ジャスト|適温|ズレ|外れ|焦げ) \+\d+/);
+    assert.ok((await page.locator(t("ichi-forecast")).innerText()).replace(/\s+/g, "").length < 90, "審査員の声は短い");
     assert.equal(await page.locator(`${t("ichi-forecast")} ${t("ichi-post-intro")}`).count(), 0, "書き込みが入ったら、紹介は外す");
     // 相手は、手を動かすとき（炭を置く・のせる・チャージ・カードを使う・番のはじめ）と、審査の結果に反応して動く
     await page.waitForFunction(() => ["joy", "shock", "down", "nod"].some((k) => window.__ichiMotion.has(k)), null, { timeout: 5000 });
