@@ -183,6 +183,22 @@
       ]
     },
     {
+      "id": "craft-phone-detail-links-browser",
+      "title": "Landscape phone detail links tap target",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/css/wide-craft.css",
+        "remake/js/craft/common.js",
+        "remake/test/browser/craft_phone_detail_links.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/craft_phone_detail_links.mjs"
+      ],
+      "chrome": "playwright"
+    },
+    {
       "id": "craft-rank-wire-browser",
       "title": "Craft rank during real sessions and cleanup",
       "kind": "browser",
