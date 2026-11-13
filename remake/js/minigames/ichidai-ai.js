@@ -240,7 +240,7 @@ function coalMove(G, p, { prep = false, turnsLeft = 0 } = {}) {
         if (!lastRound) {
           // 次の自分のターン: 冷めて（火の小さい炭から、規則の段階ぶん）、空いた枠に残りの炭と種火を足す。狙いに届くか・熱すぎないか
           const skipCool = prep && p.hmd === "big_tanukish";
-          const solo = p.hmd === "one_coal" && now.length === 1; // ワンコールリッド: 炭が1つだけなら冷めない
+          const solo = p.hmd === "one_coal" && now.length === 1; // C1: 炭が1つだけなら冷めない
           const steps = skipCool || solo ? 0 : Math.max(0, Math.min(G.R.cool, now.length) - p.wind);
           const after = [...now].sort((a, b) => a - b); let lost = 0;
           for (let k = 0; k < steps && k < after.length; k++) { after[k]--; lost++; }

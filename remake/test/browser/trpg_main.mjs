@@ -70,16 +70,38 @@ async function prepare(page, options = {}) {
     localStorage.setItem("qa_unrelated", "keep"); sessionStorage.setItem("qa_unrelated", "keep");
   }, options);
 }
-// 初回入店ではサイの紹介前に主人公の VN 1 行を読み進める。
+// 初めての来店（VAR02）: 店に入ってサイが名乗るまで → 登場カットイン → 店の案内。部活の提案の一行目か、本棚の手前まで読み進める。
 // 実際の入店経路を検査するため、既読フラグを立てて省略しない。
 async function advanceSaiIntro(page) {
   if (await page.evaluate(() => __remake.state.flags._intro_sai)) return;
-  await page.waitForFunction(() => document.querySelector("#vn.active .vn-text")?.textContent === "こんばんは。遊べる卓を探していて");
-  // VN 開始から 320ms は入力が無視される。表示だけで直ちに押すと会話が進まない。
-  await page.waitForTimeout(350);
-  await page.locator("#vn.active .vn-box").click();
-  await page.locator('.cutin.in[data-char="sai"]').waitFor();
-  await page.locator(".cutin").waitFor({ state: "detached" });
+  await page.evaluate(async () => {
+    const { hooks } = await import("./js/vn/engine.js");
+    const visit = window.__saiVisit = { ids: [], speakers: [], previous: hooks.onLine };
+    hooks.onLine = (id, line) => { visit.ids.push(id); visit.speakers.push(line.speaker || ""); visit.previous?.(id, line); };
+  });
+  const deadline = Date.now() + 45000;
+  let cutin = false;
+  for (;;) {
+    assert(Date.now() < deadline, "サイの初めての来店の場面を読み終えられない");
+    const now = await page.evaluate(async () => ({
+      playing: (await import("./js/vn/engine.js")).isPlaying(), last: __saiVisit.ids.at(-1),
+      cutin: !!document.querySelector('.cutin[data-char="sai"]'),
+      shelf: !!document.querySelector('[data-test="trpg-campaign-notice"], [data-test="trpg-campaign-retry"]'),
+    }));
+    cutin ||= now.cutin;
+    if (now.last === "trpg_club_founding" || now.shelf) break;
+    // VN 開始から 320ms は入力が無視される。カットインの間は押さない。
+    if (now.playing && !now.cutin) await page.locator("#vn.active .vn-box").click({ timeout: 1000 }).catch(() => {});
+    await page.waitForTimeout(200);
+  }
+  const visit = await page.evaluate(async () => {
+    const { hooks } = await import("./js/vn/engine.js");
+    hooks.onLine = __saiVisit.previous;
+    return { ids: [...new Set(__saiVisit.ids)], speakers: [...new Set(__saiVisit.speakers)], introduced: !!__remake.state.flags._intro_sai };
+  });
+  assert(cutin && visit.introduced, "サイの登場カットインが出て、既読になる");
+  assert.match(visit.ids[0], /^trpg_cafe_first_visit_(day|night)$/);
+  assert(visit.ids.includes("trpg_cafe_first_visit_after") && visit.speakers.includes("sai"), "名乗った後に店の案内を読む");
 }
 // 本編の設立は本棚の操作ではなく、入店時の通常会話で最後まで読む。
 async function finishClubFounding(page, choice = 0) {

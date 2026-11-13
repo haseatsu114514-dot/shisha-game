@@ -167,6 +167,16 @@
           "text": "紅茶ばっかりです。コーヒーは、苦くて"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "紅茶なら、ピーチの香りのものは飲みますか"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "はい、ピーチティーは好きです。冷たいのも、あったかいのも"
+        },
+        {
           "speaker": "",
           "text": "紅茶の葉にピーチを少し合わせて、一台を客席へ運んだ。"
         },
@@ -174,6 +184,11 @@
           "speaker": "customer",
           "face": "smile",
           "text": "知ってる香りだ。……初めてなのに、怖くない"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "煙って聞くと身構えてたんですけど、いつもの紅茶の延長みたいで"
         },
         {
           "speaker": "mukai_master",
@@ -196,6 +211,16 @@
           "text": "友達が吸ってるのが、大人っぽくて、……ちょっと憧れて"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "初めてだと、煙が強そうで不安になりますよね"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "はい。むせたら恥ずかしいな、って。友達には言ってないんですけど"
+        },
+        {
           "speaker": "",
           "text": "アールグレイにレモンを添えて、軽めの一台を客席へ運んだ。"
         },
@@ -203,6 +228,11 @@
           "speaker": "customer",
           "face": "smile",
           "text": "大人っぽい香りなのに、むせない"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "これなら、今度は友達と並んで吸えるかもしれません"
         },
         {
           "speaker": "hajime",
@@ -223,6 +253,21 @@
           "speaker": "customer",
           "face": "normal",
           "text": "……会社に戻るんです。まだ、仕事が残ってて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "味の好みは、何かありますか"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "何でもいいです。考える余裕も、あんまりなくて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "戻る前に、頭を切り替えられる一台にします"
         },
         {
           "speaker": "",
@@ -254,6 +299,16 @@
           "text": "一日、立ちっぱなしで。もう足が棒です"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "足は、今日はずっと休めなかったんですか"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "昼も立ったまま食べました。座るのは、これが今日初めてです"
+        },
+        {
           "speaker": "",
           "text": "カモミールにハニーを合わせて、柔らかい一台を客席へ運んだ。"
         },
@@ -261,6 +316,11 @@
           "speaker": "customer",
           "face": "smile",
           "text": "……座って吸ってるだけで、ほどけていく"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "膝の裏まで、じんわりあったかくなってきました"
         },
         {
           "speaker": "mukai_master",

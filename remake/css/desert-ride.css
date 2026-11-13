@@ -298,12 +298,12 @@ html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch { width
 html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-boost,
 html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-jump { width: 176px; height: 176px; }
 
-/* ---- 2026-11-11: カービングの印・最初のカーブの案内・裏の相手の名乗り ---- */
+/* ---- 2026-11-11: カービングの印・最初のカーブの案内・なるの名乗り ---- */
 /* カーブへ切り込んでいる間は、BOOST のゲージの縁が光る（貯まっていることが分かる） */
 .desert-ride[data-carve="on"] .dr-gauge { box-shadow: 0 0 0 2px rgba(255, 226, 150, .95), 0 0 14px rgba(255, 180, 70, .85); }
 /* 本番の案内は、進み具合・相手との差・コース名の下に出す（練習の案内は上のまま） */
 .dr-caption[data-kind="tip"] { top: 150px; width: auto; max-width: min(720px, calc(100% - 620px)); padding: 8px 22px; font-size: 22px; }
-/* 裏の相手との勝負: スタートの合図の間、画面の下（左右の操作の間）に名乗りを出す。人物と数字には重ねない */
+/* なるとの勝負: スタートの合図の間、画面の下（左右の操作の間）に名乗りを出す。人物と数字には重ねない */
 .dr-versus { position: absolute; left: 50%; top: 84%; transform: translate(-50%, -50%) skewX(-8deg); display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 54px 14px; background: linear-gradient(100deg, rgba(24, 18, 30, 0) 0, rgba(24, 18, 30, .9) 14%, rgba(24, 18, 30, .9) 86%, rgba(24, 18, 30, 0) 100%); color: #f4f0ff; text-align: center; opacity: 0; pointer-events: none; white-space: nowrap; }
 .dr-versus small { font-size: 20px; font-weight: 800; letter-spacing: .5em; text-indent: .5em; color: #c9b8ff; }
 .dr-versus b { font-size: 60px; line-height: 1.05; font-weight: 900; letter-spacing: .08em; text-shadow: 0 0 22px rgba(150, 120, 255, .85); }
@@ -381,3 +381,30 @@ html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-jump
 .desert-ride .dr-course { transition: opacity .6s ease; }
 .desert-ride .dr-course[data-fade="out"] { opacity: 0; }
 .desert-ride[data-reduced-motion="true"] .dr-course { transition: none; }
+
+/* 2026-11-13 手応えレビューの反映（docs/spec/desert_ride.md「手応え」）。 */
+/* 立て直せる間（岩に当たった直後）は、押すボタンそのものを緑に光らせる。札ではなく押す物を目立たせる */
+.desert-ride[data-recover="ready"] .dr-touch.dr-boost { opacity: 1; border-color: #b8ffc8; box-shadow: 0 0 26px rgba(120, 255, 160, .95); }
+.desert-ride[data-recover="ready"] .dr-touch.dr-boost.art-ready { opacity: 1; box-shadow: none; filter: brightness(1.18) drop-shadow(0 0 8px #ffffff) drop-shadow(0 0 22px rgba(110, 250, 150, 1)); animation: dr-recover-ready .12s steps(2) infinite; }
+@keyframes dr-recover-ready { from { transform: scale(1); } to { transform: scale(1.06); } }
+.desert-ride[data-reduced-motion="true"][data-recover="ready"] .dr-touch.dr-boost.art-ready { animation: none; }
+@media (prefers-reduced-motion: reduce) { .desert-ride[data-recover="ready"] .dr-touch.dr-boost.art-ready { animation: none; } }
+/* 結果: 勝った時の加点、次の評価までの点、今回いちばん伸びる所のひとこと */
+.dr-race-result em { font-style: normal; font-size: 18px; font-weight: 900; color: #7a2a08; font-variant-numeric: tabular-nums; }
+.dr-next-rank { display: inline-block; margin-left: 16px; padding: 2px 14px; border-radius: 999px; background: rgba(212, 82, 31, .14); color: #a23c12; font-size: 17px; font-variant-numeric: tabular-nums; white-space: nowrap; vertical-align: middle; }
+.dr-next { margin: 0 auto 8px; max-width: 680px; font-size: 17px; font-weight: 700; line-height: 1.35; color: #4a3a34; }
+/* 行が増えたぶん、結果のカードを詰めて舞台の高さに収める（値は折り返さない） */
+.dr-card.dr-result { padding-top: 16px; padding-bottom: 18px; }
+.dr-result .dr-rank b { font-size: 96px; }
+.dr-result .dr-total { margin-bottom: 6px; }
+.dr-result .dr-rows { max-width: 680px; }
+.dr-result .dr-row { font-size: 18px; }
+.dr-result .dr-row strong { white-space: nowrap; }
+.dr-result .dr-best { margin: 4px 0 10px; }
+html:root[data-density="phone"] .desert-ride .dr-next, html:root[data-density="phone"] .desert-ride .dr-next-rank, html:root[data-density="phone"] .desert-ride .dr-race-result em { font-size: 24px; }
+html:root[data-density="phone"] .desert-ride .dr-next { max-width: 920px; margin: 0 auto 6px; }
+html:root[data-density="phone"] .desert-ride .dr-card.dr-result { padding-top: 12px; padding-bottom: 14px; }
+html:root[data-density="phone"] .desert-ride .dr-result .dr-rank b { font-size: 72px; }
+html:root[data-density="phone"] .desert-ride .dr-result .dr-rows { max-width: 920px; }
+html:root[data-density="phone"] .desert-ride .dr-result .dr-row { font-size: 24px; }
+html:root[data-density="phone"] .desert-ride .dr-result .dr-total, html:root[data-density="phone"] .desert-ride .dr-result .dr-best { margin-bottom: 6px; }

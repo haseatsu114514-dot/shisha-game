@@ -17,7 +17,7 @@ function menu(message = "狙いは、S。") {
   reduceBox.checked = reduce;
   const start = tutorial => async () => {
     app.hidden = true;
-    // ヌールに一度勝つと、なる（裏の相手）とも勝負できる
+    // ヌールに一度勝つと、なる（好敵手）とも勝負できる
     const rivals = best?.beatNoor ? ["noor", "naru"] : ["noor"];
     const params = new URLSearchParams(location.search);
     const courseId = params.get("course") || undefined;

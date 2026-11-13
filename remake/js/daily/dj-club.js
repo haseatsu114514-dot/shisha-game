@@ -8,6 +8,8 @@ import { masteryLine } from "../core/play-mastery.js";
 // 第3章で会っていない人が第5章で初めて入る夜は、第5章の出会い ch5_club_first（はじめは mukai の屋根裏に泊まっている。
 // 第3章を思い出す形にしない・2026-11-07 オーナー判断。旧方針「同じ出会いの場面」#2700 を置き換える）。
 // 名乗った後の続き（DJの教え方）は章を問わず ch3_club_first_after。
+// 二度目からは、メニューの前にヨルとのやり取りを一本読む（VAR03。daily/venue-arrivals.js。同じ夜に入り直した時は読まない）。
+// 店内のひとこま ch3_club_floor_edge・ch3_club_low_corner もその束に入る。
 import { state, save, config } from "../core/state.js";
 import { el } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
@@ -19,11 +21,12 @@ import { play } from "../vn/engine.js";
 import { playIntro } from "../vn/intro.js";
 import { CLUB_MET_FLAG, DJ_SETS, djRecords, djSetOpen, recordDjResult, runDjSet } from "../minigames/dj.js";
 import { gearOffer, ownsGear } from "../core/hobby-gear.js";
+import { arrivalGreeted, markArrival, playArrival } from "./venue-arrivals.js";
 
 export { DJ_NIGHT, DJ_NIGHT_FIRST, djNightChoices, clubKnown } from "../minigames/dj.js";
 export const CLUB_A_TALK_FLAG = "_club_yoru_a_talk";
 const DIALOGUE_IDS = ["ch3_club_first", "ch5_club_first", "ch3_club_first_after", "ch3_club_a_talk", "venue_yoru_greet", "venue_yoru_return",
-  "venue_yoru_set_S", "venue_yoru_set_A", "venue_yoru_set_B", "venue_yoru_set_C"];
+  "venue_yoru_set_S", "venue_yoru_set_A", "venue_yoru_set_B", "venue_yoru_set_C", "ch3_club_floor_edge", "ch3_club_low_corner"];
 /** 初めて入る夜の、ヨルが名乗るまでの場面。第5章で初めて会うなら第5章の場面（2026-11-07 オーナー）。 */
 export const clubFirstScene = value => value?.chapter === 5 ? "ch5_club_first" : "ch3_club_first";
 // 背景（Issue #2199）: 初回の階段の上は入口、名乗った後に階段を下りると店内（台詞の bg 行）、メニューとAの会話は店内。
@@ -62,7 +65,8 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
   const read = async id => {
     showScreen("none", null);
     layers.hud.replaceChildren(); layers.hud.classList.remove("show");
-    const result = await play(dialogues[id], { signal: controller.signal });
+    // 来店のやり取りの台本（venue_arrivals.json）は DB にある
+    const result = await play(dialogues[id] || DB.dialogues[id], { signal: controller.signal });
     return current() && !!result && !result.cancelled;
   };
   const done = flag => { owner.flags[flag] = true; save(); return true; };
@@ -79,14 +83,22 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
     const first = owner.flags[CLUB_MET_FLAG] !== true;
     await setBg(first ? ENTRANCE() : INSIDE(), { fast: true });
     if (!current()) return false;
-    if (first && !await meet()) return false;
+    if (first) {
+      if (!await meet()) return false;
+      markArrival("club_seam", owner);
+    } else {
+      await playArrival("club_seam", { read, save: owner });
+      if (!current()) return false;
+    }
     while (current()) {
       const records = djRecords(owner), played = Object.values(records.sets).some(item => item.plays > 0);
       const host = el("div.sub-menu.dj-club-menu", { dataset: { test: "dj-club-menu" } });
       const pick = await new Promise(resolve => {
         controller.signal.addEventListener("abort", () => resolve(null), { once: true });
         host.append(el("h2.sub-title", { text: "クラブSEAM" }),
-          venueHost("yoru", firstLine(dialogues, played ? "venue_yoru_return" : "venue_yoru_greet"), DB),
+          // さっき話したばかりの夜は「おかえり」を繰り返さず、セットを尋ねる一言にする
+          venueHost("yoru", played && arrivalGreeted("club_seam", owner) && firstLine(DB.dialogues, "venue_yoru_menu")
+            || firstLine(dialogues, played ? "venue_yoru_return" : "venue_yoru_greet"), DB),
           el("p.sub-lead", { text: "今夜はオープンデッキ。▶と横フェーダーで曲をつなぐ。時間は進まない。" }),
           // モニターヘッドホン（VOL07）: ヨルの店で一度だけ買える。▶の判定が10ms広くなる。
           gearOffer(owner, "gear_headphones", { isCurrent: current, onBought: item => {
