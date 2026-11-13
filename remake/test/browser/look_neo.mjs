@@ -1111,8 +1111,8 @@ const MAP_PARTS = [["#hud .hud", [""]], ["#hud .hud-card", ALL], ["#hud .dc-main
   ["#hud .hud-stamina .gauge-track", [""]], ["#hud .hud-stamina .hud-bar b", [""]], ["#hud .hud-exp", [""]], ["#hud .hx-lv", [""]], ["#hud .hx-bar", ALL], ["#hud .hx-settled", [""]],
   ["#hud .hud-right", [""]], ["#hud .hud-lime", ALL], ["#hud .hud-lime span", ALL], ["#hud .hud-lime .badge", [""]], ["#hud .hud-menu", ALL], ["#hud .hud-menu i", ALL],
   ["#screen .map", ALL], ['[data-test="pin-minto"]', [""]], ['[data-test="pin-minto"] .pin-visual', [""]], ['[data-test="pin-minto"] .shield', ALL], ['[data-test="pin-minto"] .ico', [""]],
-  ['[data-test="pin-minto"] .sub-label', [""]], ['[data-test="pin-minto"] .pin-cost', [""]], ['[data-test="pin-minto"] .pin-person', [""]], ['[data-test="pin-minto"] .evt-badge', [""]],
-  ['[data-test="pin-adam"]', [""]], ['[data-test="pin-adam"] .shield', ALL], ['[data-test="pin-adam"] .sub-label', [""]], ['[data-test="pin-adam"] .pin-cost', [""]], ['[data-test="pin-adam"] .pin-status', ALL],
+  ['[data-test="pin-minto"] .sub-label', [""]], ['[data-test="pin-minto"] .pin-person', [""]], ['[data-test="pin-minto"] .evt-badge', [""]],
+  ['[data-test="pin-adam"]', [""]], ['[data-test="pin-adam"] .shield', ALL], ['[data-test="pin-adam"] .sub-label', [""]], ['[data-test="pin-adam"] .pin-status', ALL],
   ['[data-test="pin-rest"]', [""]], ['[data-test="pin-rest"] .shield', ALL], ['[data-test="pin-rest"] .sub-label', [""]], ['[data-test="pin-kannon"] .evt-badge', [""]],
   ['[data-test="pin-tonari"] .shield', ALL], ['[data-test="pin-tonari"] .sub-label', [""]], ["#screen .map .map-info", ALL], ["#screen .map .mi-banner", [""]], ["#screen .map .mi-preview", [""]]];
 // ---------------------------------------------------------------- 第2〜5章（LK13・2026-11-11 オーナー「新版を広げる」）
@@ -1508,7 +1508,7 @@ const CARD_PARTS = [["#screen .ch2-contest", ALL], ["#screen .ch2-contest-header
   ["#screen .ch2-contest-description", [""]], ["#screen .ch2-contest-actions .btn", ALL], ["#screen .ch2-contest-header .btn", ALL]];
 const GOAL_MAP_PARTS = [["#hud .hud-card", ALL], ["#hud .dc-main", [""]], ["#hud .dc-meta", [""]], ["#hud .dc-row.money", ALL], ["#hud .dc-row.goal", ALL], ["#hud .dc-row.goal b", [""]],
   ["#hud .hud-stamina", ALL], ["#hud .hud-stamina .hud-bar", [""]], ["#hud .hud-exp", [""]], ["#hud .hx-lv", [""]], ["#hud .hx-bar", ALL],
-  ['[data-test="pin-c_station"] .sub-label', [""]], ['[data-test="pin-c_station"] .pin-cost', [""]], ['[data-test="pin-ch5_to_dubai"]', [""]], ['[data-test="pin-ch5_to_dubai"] .shield', ALL]];
+  ['[data-test="pin-c_station"] .sub-label', [""]], ['[data-test="pin-ch5_to_dubai"]', [""]], ['[data-test="pin-ch5_to_dubai"] .shield', ALL]];
 
 // ---------------------------------------------------------------- ショップ・LIME・レベルアップ・ギャラリー（LK05 の残り）
 
