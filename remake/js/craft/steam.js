@@ -3,6 +3,7 @@
 import { state } from "../core/state.js";
 import { hasAttackTraining } from "./attack-training.js";
 import { el, sleep, clamp, rand, pick } from "../core/util.js";
+import { setText, setAttr, setData, setFlag } from "../core/dom-write.js";
 import { createCraftClock } from "./clock.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
@@ -205,18 +206,20 @@ export async function runSteamDodge(cs) {
     return cleared;
   };
   const clearBullets = (radius = Infinity) => removeBullets(b => Math.hypot(hx - clamp(hx, b.x, b.x + b.w), hy - clamp(hy, b.y, b.y + b.h)) <= radius);
+  // ボタンの表示は毎フレーム組み立てるが、DOM へは値が変わった所だけ書く（#3500 F-4）。
   const rechargeLabel = (button, caption, remaining, duration, label) => {
     const rounded = Math.ceil(remaining * 10) / 10;
-    button.dataset.cooldown = rounded.toFixed(1);
-    button.dataset.cooling = String(running && remaining > 0);
-    button.style.setProperty("--recharge", String(1 - remaining / duration));
-    caption.textContent = running && rounded > 0 ? `${rounded.toFixed(1)}秒` : "";
-    button.setAttribute("aria-label", `${label}。${!running ? "操作停止中" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
-    button.disabled = !running || remaining > 0;
+    setData(button, "cooldown", rounded.toFixed(1));
+    setData(button, "cooling", running && remaining > 0);
+    const recharge = String(1 - remaining / duration);
+    if (button.style.getPropertyValue("--recharge") !== recharge) button.style.setProperty("--recharge", recharge);
+    setText(caption, running && rounded > 0 ? `${rounded.toFixed(1)}秒` : "");
+    setAttr(button, "aria-label", `${label}。${!running ? "操作停止中" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
+    setFlag(button, "disabled", !running || remaining > 0);
   };
   const refreshLabel = () => {
-    refreshBtn.dataset.remaining = String(refreshes);
-    refreshCopy.textContent = stock > 1 ? `リフレッシュ ×${refreshes}` : "リフレッシュ";
+    setData(refreshBtn, "remaining", refreshes);
+    setText(refreshCopy, stock > 1 ? `リフレッシュ ×${refreshes}` : "リフレッシュ");
     rechargeLabel(refreshBtn, refreshCharge, refreshes > 0 ? 0 : Math.max(0, refreshReadyAt - time), REFRESH_RECHARGE_SECONDS,
       `リフレッシュ。${effect.label}の雑念を消す${halfLastRefresh(stock) && refreshes === 1 ? `。${stock === 2 ? "2回目" : "最後の1回"}は半分の範囲` : ""}`);
   };
@@ -225,21 +228,21 @@ export async function runSteamDodge(cs) {
     rechargeLabel(slashBtn, slashCharge, remaining, slashCooldown,
       `アタック。上側の前方の雑念を斬る。移動中も方向は固定。Zキーでも使用。コンボ${wordsCut}。射程${profile.reach}px、リチャージ${profile.recharge}秒`);
     const learned = hasAttackTraining(state.flags);
-    slashBtn.dataset.locked = String(!learned);
-    slashLock.hidden = learned;
-    slashBtn.title = learned ? "Z／ボタン／標準ゲームパッド下ボタンでアタック" : "アタック：使用不可";
+    setData(slashBtn, "locked", !learned);
+    setFlag(slashLock, "hidden", learned);
+    setAttr(slashBtn, "title", learned ? "Z／ボタン／標準ゲームパッド下ボタンでアタック" : "アタック：使用不可");
     if (!learned) {
-      slashBtn.disabled = true;
-      slashBtn.setAttribute("aria-label", "アタック。使用不可");
+      setFlag(slashBtn, "disabled", true);
+      setAttr(slashBtn, "aria-label", "アタック。使用不可");
     }
-    slashBtn.dataset.cutWords = String(wordsCut);
-    slashBtn.dataset.totalWordsCut = String(totalWordsCut);
-    slashBtn.dataset.maxCombo = String(maxCombo);
-    slashBtn.dataset.reach = String(profile.reach);
-    slashBtn.dataset.recharge = String(profile.recharge);
-    slashBtn.dataset.tier = String(profile.tier);
-    slashCount.textContent = `×${wordsCut}`;
-    slashCharge.textContent = running && remaining > 0 ? (Math.ceil(remaining * 10) / 10).toFixed(1) : "";
+    setData(slashBtn, "cutWords", wordsCut);
+    setData(slashBtn, "totalWordsCut", totalWordsCut);
+    setData(slashBtn, "maxCombo", maxCombo);
+    setData(slashBtn, "reach", profile.reach);
+    setData(slashBtn, "recharge", profile.recharge);
+    setData(slashBtn, "tier", profile.tier);
+    setText(slashCount, `×${wordsCut}`);
+    setText(slashCharge, running && remaining > 0 ? (Math.ceil(remaining * 10) / 10).toFixed(1) : "");
   };
   const refresh = () => {
     if (!running || refreshes === 0) return;
