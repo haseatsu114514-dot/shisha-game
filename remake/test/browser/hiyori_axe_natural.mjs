@@ -5,7 +5,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { installLoadingComicReader } from './loading_reader.mjs';
-import { flickFromHandle } from "./axe_flick_input.mjs";
+import { flickFromHandle, stanceAt } from "./axe_flick_input.mjs";
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(dir, '../../../');
@@ -21,12 +21,9 @@ const workGoal = giftGoal || process.env.GOAL_HIYORI_WORK === '1';
 // Drive the new default with real board taps and a real mouse/touch drag; never inject scores.
 async function aimAxe(page, touch = false) {
   assert.equal(await page.locator('[data-test="axe-game"]').getAttribute('data-input-mode'), 'tap-pull');
-  const point = await page.locator('[data-test="axe-target"]').evaluate(node => {
-    const p = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
-    return { x: p.x, y: p.y };
-  });
-  if (touch) await page.touchscreen.tap(point.x, point.y); else await page.mouse.click(point.x, point.y);
-  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'power');
+  // 2026-11-13: 狙いは的のタップで横→縦の針を止める（投げる時だけ上へ弾く）。レッスンの説明が開いたらそこで止まる
+  await stanceAt(page, { touch });
+  if (!await page.locator('[data-test="axe-coach"]').count()) await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'power');
 }
 async function pullAxe(page, touch = false, power = .62) {
   // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、power になる速さで弾く（axe_flick_input.mjs）。
@@ -142,7 +139,7 @@ try {
           if(await click('[data-test="axe-coach-next"]')) continue;
           const inputPhase = await axe.getAttribute('data-phase');
           // Let each tutorial panel be read above before the next gesture.
-          if (inputPhase === 'choice') await aimAxe(page, label === 'mobile');
+          if (['choice', 'horizontal', 'vertical'].includes(inputPhase)) await aimAxe(page, label === 'mobile');
           else if (inputPhase === 'power') await pullAxe(page, label === 'mobile');
           else {
             const button=page.locator('[data-test="axe-action"]:not([disabled])');

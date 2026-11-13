@@ -1191,7 +1191,7 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-game[data-input-mode="tap-pull"].axe-first-person :is(.axe-target-art, .axe-target) { position: absolute; inset: 0; display: block; width: 100%; height: 100%; max-width: none; max-height: none; aspect-ratio: auto; margin: 0; border: 0; border-radius: 0; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-target { z-index: 1; touch-action: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-target:focus-visible { outline: 2px solid #b4d4c9; outline-offset: -4px; }
-.axe-game[data-input-mode="tap-pull"].axe-first-person :is(.axe-legend, .axe-steps, .axe-gauge-label, .axe-x-needle, .axe-y-needle, .axe-timing .axe-gauge, .axe-power-readout) { display: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person :is(.axe-legend, .axe-steps, .axe-timing .axe-gauge, .axe-power-readout) { display: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-side { position: absolute; z-index: 2; top: auto; left: 2%; bottom: 3%; width: 23%; max-height: 39%; overflow: auto; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-side .axe-challenges { display: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-panel { position: absolute; z-index: 3; right: 2%; bottom: 3%; top: auto; width: 24%; max-height: 44%; padding: 10px; border: 0; background: none; box-shadow: none; overflow: auto; gap: 8px; }
@@ -1278,3 +1278,9 @@ html:root[data-density="phone"] body:not(:root) .axe-bar-menu[data-view="gear"] 
 .axe-flick-hint-motion { animation: axe-flick-hint .4s ease-out 2 both; }
 @keyframes axe-flick-hint { 0% { transform: translateY(18px); opacity: 0; } 25% { opacity: 1; } 80% { transform: translateY(-26px); opacity: 1; } 100% { transform: translateY(-34px); opacity: 0; } }
 .axe-game[data-reduced-motion="true"] .axe-flick-hint-motion { opacity: 1; }
+
+/* 2026-11-13 オーナー「狙いの定め方が分かりずらい」: 弾いて投げる操作でも、狙いは横・縦の針を止めて決める。
+   針と「↔ 横」「↕ 縦」の札は止めている工程だけ出し、金の三角（狙い目の印）は止めたい所を指す（針が重なると緑）。 */
+.axe-game[data-on-target="true"] .axe-aim-guide path { fill: #8ff0a4; }
+/* 横・縦の針を止めている間は「今の刃先」と止めるボタン・息を整えるが並ぶので、右下の枠を上へ広げる（今の刃先が切れないように） */
+.axe-game[data-input-mode="tap-pull"].axe-first-person:is([data-phase="horizontal"],[data-phase="vertical"]) .axe-panel { max-height: 64%; }
