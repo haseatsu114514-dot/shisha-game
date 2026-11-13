@@ -681,6 +681,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "つまり、余が来るということである"
         },
         {
@@ -714,6 +715,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余は、いずれ校舎より大きくなる予定である"
         },
         {
@@ -1484,6 +1486,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "サメも跡で語る。泳いだ跡であるがな"
         }
       ]
@@ -1626,6 +1629,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "ふはは、本の群れか。サメの群れには及ばないのである"
         },
         {
@@ -2082,6 +2086,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "それは試験に出ないのである"
         },
         {
@@ -2172,6 +2177,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余の出番が少なかったのである。続編を要求する"
         },
         {
@@ -2388,6 +2394,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余の鼻によれば、この煙はまだ新しいのである"
         }
       ]
@@ -2678,6 +2685,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余の鼻によれば、この煙はまだ新しいのである"
         }
       ]
@@ -2974,6 +2982,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余の鼻によれば、この煙はまだ新しいのである"
         }
       ]

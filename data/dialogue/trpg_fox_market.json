@@ -774,6 +774,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余は、用心棒の手ぬぐいの柄として出演するのである"
         },
         {
@@ -813,6 +814,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余が水槽に入れば、話は早いのである"
         }
       ]
@@ -1489,6 +1491,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余は鳥居があやしいと見る。暗い石段には、だいたい何かある"
         },
         {
@@ -2940,6 +2943,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余は、金魚すくいの続編を要求する"
         },
         {

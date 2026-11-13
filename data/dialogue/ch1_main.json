@@ -2141,13 +2141,13 @@
             "speaker": "tsumugi",
             "face": "normal",
             "fx": "cg_focus_window",
-            "text": "……ほどけていく煙と猫、残しました。好きって言ってくれたので"
+            "text": "……ほどけていく煙と猫、残しました。私も、残したかったので"
           },
           {
             "speaker": "hajime",
             "face": "normal",
             "fx": "cg_focus_reset",
-            "text": "覚えててくれたんだ。やっぱり、居心地よさそうだ"
+            "text": "あの日のままだ。やっぱり、居心地よさそうだ"
           }
         ],
         "submission_draft_other": [
@@ -2163,12 +2163,12 @@
           {
             "speaker": "tsumugi",
             "face": "normal",
-            "text": "……色のなかった右側、描き込みました。好きって言ってくれたので"
+            "text": "……色のなかった右側、描き込みました。空けてあったとおりに"
           },
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "覚えててくれたんだ。俺の手も、ここの景色になってるね"
+            "text": "何でも入りそうだった所だ。俺の手も、ここの景色になってるね"
           }
         ],
         "submission_draft_neutral": [

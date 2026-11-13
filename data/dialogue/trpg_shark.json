@@ -609,6 +609,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余は続編を要求する"
         },
         {
@@ -2051,6 +2052,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余は言った。続編が必要だ、と"
         },
         {
@@ -3055,6 +3057,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "ふはは、停電と浸水。B級映画の定番である"
         },
         {

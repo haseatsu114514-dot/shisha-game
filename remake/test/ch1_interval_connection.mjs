@@ -39,7 +39,7 @@ function stringify(value) {
   return JSON.stringify(value);
 }
 assert.equal(createHash('sha256').update(stringify(sortKeys(sumi))).digest('hex'),
-  'e69ed71a60c2f82aae8c6d0cfd90f89713ec3c90a19697b819ef4c9016b01af4');
+  '7c1532aa811e94b10787ac79b5108c0a271d0634746fe27c71fae79234fc9af9');
 
 const data = read('remake/js/core/data.js');
 const files = data.match(/const DIALOGUE_FILES = \[([\s\S]*?)\];/);

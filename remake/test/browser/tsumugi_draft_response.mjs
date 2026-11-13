@@ -8,8 +8,8 @@ const baseline = JSON.parse(fs.readFileSync(new URL("../../../docs/qa/issue452-t
 const WIP = "ch1_tsumugi_work_in_progress", ART = "ch1_tsumugi_sketch";
 const KEYS = ["_tsumugi_contest_draft_window", "_tsumugi_contest_draft_hands"];
 const RESPONSES = [
-  "……ほどけていく煙と猫、残しました。好きって言ってくれたので",
-  "……色のなかった右側、描き込みました。好きって言ってくれたので",
+  "……ほどけていく煙と猫、残しました。私も、残したかったので",
+  "……色のなかった右側、描き込みました。空けてあったとおりに",
 ];
 // DAY3の選択肢。baseline は v2（店内の下描き）当時の台本、current は v3（抽象スケッチ）。
 const DRAFT_LABELS = { baseline: ["窓辺の煙と猫", "カウンターの手元"], current: ["ほどけていく煙と猫", "まだ色のない右側"] };

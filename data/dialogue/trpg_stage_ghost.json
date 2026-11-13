@@ -642,6 +642,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余が相棒である。幽霊が出たら、余が追い払ってくれよう"
         },
         {
@@ -675,6 +676,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "台本にサメがおらぬゆえ、余が書き足しておいた"
         },
         {
@@ -736,6 +738,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余は幽霊を恐れぬ。むしろ握手を所望する"
         },
         {
@@ -1156,6 +1159,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余は客席の最前列を推す。特等席である"
         },
         {
@@ -1200,6 +1204,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余は震えておらぬ。影の客人よ、ようこそである"
         },
         {
@@ -1579,6 +1584,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余の拍手は、満員の一人分である"
         },
         {
@@ -1695,6 +1701,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余は見ていた。入口で三分、固まっておった"
         },
         {

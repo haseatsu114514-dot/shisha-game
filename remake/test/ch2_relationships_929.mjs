@@ -63,9 +63,9 @@ for (const id of ["kumicho", "rei", "ageha"]) assert(waiting.some((l) => l.speak
 assert(waiting.some((l) => ["maezono", "dr_kemuri", "sui"].includes(l.speaker)), "審査員の短い反応");
 assert.doesNotMatch(waiting.map((l) => l.text).join("\n"), /やもん|決めてん/);
 
-// レヰ再訪: 曲の感想に具体的に答え、同じ空返事を繰り返さない
+// レヰ再訪: 一回目は分からなかったと言ってから、曲の感想に具体的に答え、同じ空返事を繰り返さない（2026-11-13 はじめは詳しくない）
 const rei = prep.remake_ch2_rei_repeat.lines.filter((l) => l.speaker === "hajime").map((l) => l.text);
-assert.match(rei[0], /サビ|音/); assert.equal(new Set(rei).size, rei.length);
+assert.match(rei[1], /サビ|音/); assert.equal(new Set(rei).size, rei.length);
 
 // 第3章（未接続）: なるへははじめから連絡し、あげはとは和解ではなく続いた友情
 assert.match(ch3.ch3_naru_reconcile.lines[0].text, /自分から/);

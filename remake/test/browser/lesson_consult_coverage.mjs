@@ -311,7 +311,7 @@ await suite("lesson-consult-coverage", async (check) => {
     assert.equal(s.finales.volk.route, "friend");
     assert.equal(s.owned.filter((id) => id === "suyaki_volk").length, 1);
     const backlog = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map((row) => row.text).join("\n"));
-    assert.match(backlog, /計器は、今も先に見る。……その隣で、客の息の間も聞くようにした/, "read after the tournament: the after-tournament branch");
+    assert.match(backlog, /温度計は、今も先に見る。……その隣で、客の息の間も聞くようにした/, "read after the tournament: the after-tournament branch");
     assert.match(backlog, /友人と過ごした時間は、書かなくても覚えている/);
     await page.locator(t("ch3-aftermath-detour-open")).click();
     await page.locator(t("ch3-aftermath-detour")).waitFor();

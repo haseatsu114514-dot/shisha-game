@@ -1036,7 +1036,7 @@
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "鉄の煙の、ヴォルクさんの計器の記録も借りました。君の待ち時間まで、測ってあった"
+          "text": "鉄の煙の、ヴォルクさんの計器の記録も借りました。数字の隣に、客の一言まで書いてあった"
         },
         {
           "speaker": "",
@@ -1313,7 +1313,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "会長ともまたつながったし、俺も外の用事が増えてきた"
+          "text": "千須にも、作る約束がだいぶ溜まってる。俺も外の用事が増えてきた"
         },
         {
           "speaker": "sumi",
@@ -1625,7 +1625,7 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "どうだ"
+          "text": "……どの顔だった"
         },
         {
           "speaker": "hajime",
@@ -3562,6 +3562,16 @@
           "speaker": "tsumugi",
           "face": "baito_normal",
           "text": "初めての人が、あの前で、入るか迷ってるので"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "展示の会場で、絵の前を通る人を、ずっと見てたんです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "止まる人は、その前に一回、迷います。黒板の前と、同じ顔で"
         },
         {
           "speaker": "hajime",

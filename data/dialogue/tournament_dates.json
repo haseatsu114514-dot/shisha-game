@@ -598,7 +598,7 @@
           {
             "speaker": "mashiro",
             "face": "normal",
-            "text": "ん、お世話係、ひとりにしない"
+            "text": "ん、お世話は、順番こ。片方だけだと、疲れちゃうから"
           },
           {
             "speaker": "hajime",
@@ -805,6 +805,21 @@
             "speaker": "",
             "face": "",
             "text": "土産袋の中身を、サメちゃんが一つずつ説明してくれた。"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "これは、いちばん静かな席の客にじゃ。甘いものを、最後まで取っておく者での"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "お客さんの食べる順番まで、覚えてるんですね"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "覚えておる。……お主が、水を先に飲み干すのもな"
           },
           {
             "type": "condition",
@@ -1066,12 +1081,22 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "じゃあ、少しだけ。私は、ハジメの煙がもう好き。それは明日も変わらないよ"
+          "text": "じゃあ、ガイドの質問をひとつだけ、……怖い？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（それだけで、肩の力が抜けた）"
+          "text": "……少し、怖いです"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "よし、合格。そう言える人は、ちゃんと楽しめるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ツアーの客と同じ扱いなのに、肩の力が抜けた）"
         },
         {
           "type": "choice",
