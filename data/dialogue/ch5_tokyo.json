@@ -238,7 +238,7 @@
         { "speaker": "", "text": "紅茶のカップが二つ、カウンターに並んだ。小皿のジャムは、測らずにすくってある。" },
         { "speaker": "hajime", "face": "normal", "text": "これも、測らないんですよね" },
         { "speaker": "volk", "face": "normal", "text": "祖母に言われたことは、国を出ても、店を開いても変えていない" },
-        { "speaker": "volk", "face": "smile", "text": "……お前のページは、まだ余っている。また来い" },
+        { "speaker": "volk", "face": "smile", "text": "……お前の一行の隣は、まだ空いている。また来い" },
         { "speaker": "hajime", "face": "smile", "text": "来ます。次は、俺のお客さんの話も持ってきます" },
         { "speaker": "", "face": "", "text": "木箱の素焼きは、最後の刻みの隣だけ、土がまだ滑らかだった。" },
         { "type": "apply", "stats": { "technique": 2 } }
