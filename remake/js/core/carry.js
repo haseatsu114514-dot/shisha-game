@@ -742,6 +742,10 @@ export function buildCarryPackage(s) {
     g.discoveries = { recipes: [], golden: [] };
     g.read = [];
     g.chapterLog = {}; g.tournamentXp = {}; g.cleared = [];
+    g.giftedAll = Object.fromEntries(Object.entries({
+      ...(s.growth.giftedAll && typeof s.growth.giftedAll === "object" && !Array.isArray(s.growth.giftedAll) ? s.growth.giftedAll : {}),
+      ...(s.growth.gifted && typeof s.growth.gifted === "object" && !Array.isArray(s.growth.gifted) ? s.growth.gifted : {}),
+    }).filter(([, v]) => !!v).map(([id]) => [id, true]));
     g.gifted = {};
     g.today = { xp: Math.max(0, (Number(g.xp) || 0) - (Number(g.settledXp) || 0)), learned: {}, gifts: [] };
     // 新しい周回は第1章から。章のはじめの盤（章末の淡い面）を引き継いだ盤で記録しておく
@@ -780,4 +784,3 @@ export function buildCarryPackage(s) {
     .map(([name, v]) => [name, clone(v)]));
   return data;
 }
-

@@ -16,6 +16,12 @@
       "run": ["node --experimental-vm-modules remake/test/rest_variations.mjs"]
     },
     {
+      "id": "affection-max-heart-gift",
+      "title": "Max-heart gifts reached through free LIME or story are recovered at settle, without EXP or duplicates",
+      "kind": "quick",
+      "run": ["node remake/test/affection_regressions.mjs"]
+    },
+    {
       "id": "play-mastery",
       "title": "Mini-game mastery, cumulative progress, save/NG+ rewards and chapter-five paid growth",
       "kind": "quick",
