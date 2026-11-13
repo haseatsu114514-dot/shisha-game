@@ -125,6 +125,14 @@ await suite('craft-rank-wire', async check => {
     });
     await page.locator('[data-test="craft-final-rank"]').waitFor();
     assert.equal(await page.locator('[data-test="craft-final-rank"]').textContent(), expected);
+    // 総合タイルの評価マークとランク文字は同じ位置に重ならない（#3515）
+    const totalMarks = await page.evaluate(() => {
+      const tile = document.querySelector('.rt-part.total');
+      const rect = node => node.getBoundingClientRect().toJSON();
+      return { mark: rect(tile.querySelector('b.craft-evaluation')), rank: rect(tile.querySelector('[data-test="craft-final-rank"]')) };
+    });
+    assert(totalMarks.mark.width > 0 && totalMarks.rank.width > 0);
+    assert(!overlaps(totalMarks.mark, totalMarks.rank), `Total tile marks overlap: ${JSON.stringify(totalMarks)}`);
     await page.waitForFunction(() => !document.querySelector('.craft-rank'));
     await page.locator('[data-test="result-next"]').click();
     await page.evaluate(() => window.resultRun);
