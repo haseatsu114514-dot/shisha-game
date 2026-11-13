@@ -13,7 +13,7 @@ import { autoSkill, CRAFT_RANK_THRESHOLDS } from "./common.js";
 import { craftRankProgress } from "./rank-hud.js";
 import { mixColor } from "./art.js";
 import { SUI_BAR } from "./score.js";
-import { castCh1Votes } from "./ch1-votes.js";
+import { castCh1Votes, isSakuraiVotes, SAKURAI, sakuraiFocusOf, ch1RoundPoints } from "./ch1-votes.js";
 import { evaluationOf, judgeComment, judgeDeductionReason } from "./feedback.js";
 import { craftRecognition } from "./recognition.js";
 import { VOTE_SCALE, voteStack as stackOf, judgePanel as panelOf, judgeLegend as legendOf, countUp } from "./tournament-graphics.js";
@@ -79,7 +79,7 @@ const header = (eyebrow, title, sub, live = false) => el("header.tournament-head
 const JUDGE_IDS = JUDGES.map((j) => j.id);
 const judgeName = (id) => JUDGES.find((j) => j.id === id)?.label || displayName(id, state);
 const voteStack = (table, id, cls, upto) => stackOf(table, id, cls, JUDGE_IDS, upto);
-const judgePanel = (table, held) => panelOf(table, JUDGE_IDS, { held, name: judgeName, face: (j) => faceOf(j, ".judge-face") });
+const judgePanel = (table, held, extra = null) => panelOf(table, JUDGE_IDS, { held, name: judgeName, face: (j) => faceOf(j, ".judge-face"), extra });
 const judgeLegend = () => legendOf(JUDGE_IDS);
 
 // ---------------------------------------------------------------- 中間発表
@@ -100,6 +100,7 @@ export async function showStandings(round, mine, cs = null, attempt = null) {
     : round === 2
       ? ["チャコール博士、アダムに3点投入！", "千須審査員長、10点まるまる温存"]
       : [`${displayName("maezono", state)}・チャコール博士は、残りの配点を見極めている`, "千須審査員長、依然10点を温存"];
+  const sakurai = isSakuraiVotes(attempt?.voteAttempt) ? sakuraiBoard(attempt.voteAttempt, round - 1) : null;
   const review = evaluationOf(mine);
   const recognition = craftRecognition(cs, { careRounds: Math.max(0, round - 2) });
   const next = el("button.btn.primary", { type: "button", dataset: { test: "standings-next" },
@@ -107,7 +108,7 @@ export async function showStandings(round, mine, cs = null, attempt = null) {
   }, [el("span.btn-label", { text: "次へ" })]);
   next.disabled = true;
   const board = el("div.standings.tournament-board", { dataset: { test: "standings", round }, role: "status" }, [
-    header(`SMOKE CROWN CUP ／ ROUND ${round}`, "中間投票", attempt?.voteAttempt?.baseVotes
+    header(`SMOKE CROWN CUP ／ ROUND ${round}`, "中間投票", sakurai ? sakurai.sub : attempt?.voteAttempt?.baseVotes
       ? "審査員3人が各10点を工程ごとに配分 · 全員に基礎票1点"
       : attempt?.rulesVersion >= 2 ? "審査員3人が各10点を工程ごとに配分。千須は最後の1点を調整後に投じる。"
         : "審査員3人の持ち点（各10点）。千須審査員長は、まだ1点も入れていない。", true),
@@ -122,11 +123,11 @@ export async function showStandings(round, mine, cs = null, attempt = null) {
           el("b.sd-points", [String(values[id]), el("small", { text: "pt" })]),
         ]))),
       ]),
-      judgePanel(table, attempt?.rulesVersion >= 2 ? [] : ["sui"]),
+      judgePanel(table, attempt?.rulesVersion >= 2 ? [] : ["sui"], sakurai?.extra),
     ]),
     el("div.sd-status", [el("span", { text: "ここまでの制作" }), el(`b.craft-evaluation.${review.tone}`, { text: review.mark }), el("span", { text: round === 3 ? "次は2回目の調整" : round === 2 ? "次は1回目の調整" : "次は吸い出し・提供" })]),
     recognition?.summary ? el("p.sd-recognition", { text: recognition.summary, dataset: { test: "standings-recognition" } }) : null,
-    el("div.sd-feed", [el("b.sd-feed-tag", { text: "速報" }), el("div.sd-feed-lines", feed.map((t) => el("div", { text: t }))), next]),
+    el("div.sd-feed", [el("b.sd-feed-tag", { text: "速報" }), el("div.sd-feed-lines", (sakurai ? sakurai.feed : feed).map((t) => el("div", { text: t }))), next]),
   ]);
   const dim = el("div.fx-dim");
   layers.fx.append(dim, board);
@@ -176,6 +177,31 @@ export async function showStandings(round, mine, cs = null, attempt = null) {
       if (autoSkill()) autoTimer = setTimeout(() => next.click(), 300);
     }, 40);
   });
+}
+
+/**
+ * 桜井式（SKR04）の途中経過: その回だけで決まったこと・審査員ごとの見る所と入れ先・はじめの評価・次の回の見どころ。
+ * @param index 0〜2（投票した回。0＝準備）
+ */
+function sakuraiBoard(p, index) {
+  const info = SAKURAI.rounds[index], next = SAKURAI.rounds[index + 1];
+  const points = ch1RoundPoints("maezono", index);
+  const views = p.views?.[index] || {}, picks = p.picks?.[index] || {};
+  const mine = JUDGES.map(({ id }) => `${judgeName(id).replace("チャコール", "")} ${Number(views[id]?.hajime ?? 0).toFixed(1)}`).join(" ／ ");
+  const nextNote = index === 0 ? `次は提供の一台。${Object.entries(SAKURAI.focus).map(([id, f]) => `${judgeName(id).replace("チャコール", "")}は${f.label}`).join("・")}を見る`
+    : index === 1 ? "次は1回目の調整。温度計の攻めの帯で整え終えると、審査が伸びる"
+      : "次は2回目の調整。最後はみんとが攻めてくる。千須の最後の1点もここで決まる";
+  return {
+    sub: `この回は${info.parts}だけで決まる · ${points === 2 ? "1位も2位も1票" : "1位に2票・2位に1票"} · 全員に基礎票1点`,
+    feed: [`はじめの評価（この回）: ${mine}${p.attacks?.[index] ? `（攻めの帯 +${SAKURAI.attackBonus}）` : ""}`, next ? nextNote : ""].filter(Boolean),
+    extra: (judge) => {
+      const pick = picks[judge];
+      return [
+        el("small.judge-focus", { text: `見る所：${sakuraiFocusOf(judge, index)}`, dataset: { test: "judge-focus", judge } }),
+        pick ? el("small.judge-pick", { text: `→ ${nameOf(pick.first)}${pick.points[pick.first]}・${nameOf(pick.second)}1`, dataset: { test: "judge-pick", judge } }) : null,
+      ].filter(Boolean);
+    },
+  };
 }
 
 // ---------------------------------------------------------------- RESULT 10 COUNT

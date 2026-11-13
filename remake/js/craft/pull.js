@@ -17,13 +17,14 @@ import { growthPerks, growthFeature, useGrowthInsurance, growthSkill, growthLess
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE, startBubbling } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, setBenchDraw, failBench, setBenchLeaf, dockBenchLeaf, strainBench, scoreStep, waitBenchReady } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, setBenchDraw, failBench, setBenchLeaf, dockBenchLeaf, strainBench, scoreStep, waitBenchReady, craftTest } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys } from "./common.js";
 import { HEAT_GRADES } from "./heat.js";
 import { replacementCoals } from "./heat_logic.js";
 
 import { craftConditions, heatDelta, pullResult, isIdealTemperature, isRainbowTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
+import { attackGuide, attackRange, inAttackRange, attackScore, ATTACK_BAND } from "./attack-band.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
 import { impact, exhale, smokeRing } from "./fx.js";
 import { mixColor } from "./art.js";
@@ -146,7 +147,12 @@ async function pullGame(cs, mode) {
   const safeLimit = mode.safe + (maker.safePullsBonus || 0);
   // 熱すぎる吸引のペナルティも、緑上端〜危険帯の中の同じ相対位置で始める。
   const harshTemp = visualTemperature(.76, bands);
-  const panel = stepPanel(mode.store, mode.title, tutorial
+  // 桜井式の大会だけ（SKR04）: 温度計の上の端に「攻めの帯」。ここで終えると、その回の審査に上積み。
+  const attacking = attackGuide(cs);
+  // テスト用（craftTest.aim = "attack"）: 上手な自動操作が中心ではなく攻めの帯のまん中を狙う。
+  const autoGoal = () => { const r = attacking && craftTest.aim === "attack" ? attackRange(bands) : null; return r ? (r.low + r.high) / 2 : center; };
+  const attackNote = attacking ? `桃色の「攻めの帯」で${mode.drift ? "整え終える" : "提供する"}と、この回の審査が伸びる（帯の上を越えると味が崩れる）。` : "";
+  const panel = stepPanel(mode.store, mode.title, attackNote ? `${attackNote}${mode.hint}` : tutorial
     ? mode.drift ? "温度を戻すのは炭。交換する数と置き方で決まる。そのあとの吸いは味の確かめで、温度は少ししか動かない。1〜2口で整え終えよう"
     : "中央のキープは左寄りで微減、右寄りで微増。右の熱を入れる吸いは温度を上げ、左の熱を逃がす吸いは温度を下げる。雨の日は熱を入れる吸いを増やそう。吸い終わってから次の針を止める"
     : mode.hint);
@@ -176,7 +182,7 @@ async function pullGame(cs, mode) {
   const wobble = () => (mode.drift ? conditions.sparsity * 0.05 * Math.sin(elapsed * Math.PI * 2 / 2.6) + 0.014 * (1 - 0.7 * clarity) * Math.sin(elapsed * 1.7 + wobblePhase) : 0);
 
   // ---- 画面
-  const thermometer = buildThermometer({ cs, finishGuide: mode.store === "pull", coldLimit: mode.drift ? COLD_OUT : null, height: 360, width: 64 });
+  const thermometer = buildThermometer({ cs, finishGuide: mode.store === "pull", attackGuide: attacking, coldLimit: mode.drift ? COLD_OUT : null, height: 360, width: 64 });
   // SVGの縦横比を保ち、針・リングを同じ中心で回す。
   const id = ++dials;
   const dial = el("div.pull-dial", { html: `<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
@@ -287,7 +293,8 @@ async function pullGame(cs, mode) {
     const position = (T - ideal[0]) / (ideal[1] - ideal[0]);
     const goodLabel = expressive ? position < .35 ? "適温・低" : position > .65 ? "適温・高" : "適温" : "適温";
     // 今の温度を短い一語で。温度計の印と同じ色にする。
-    const [state, tone] = optimal ? [expressive ? goodLabel : "最適温", "optimal"] : inZone ? [goodLabel, "ok"] : T >= DANGER_TEMP ? ["焦げる寸前！", "danger"]
+    const inAttack = attacking && inAttackRange(T, attackRange(bands));
+    const [state, tone] = inAttack ? ["攻めの帯", "attack"] : optimal ? [expressive ? goodLabel : "最適温", "optimal"] : inZone ? [goodLabel, "ok"] : T >= DANGER_TEMP ? ["焦げる寸前！", "danger"]
       : T > ideal[1] ? ["熱い", "hot"] : mode.drift && T <= COLD_OUT + 0.08 ? ["冷え切りそう！", "cold"] : ["ぬるい", "cool"];
     readout.dataset.tone = tone;
     readout.replaceChildren(el("b.pull-state", { text: state }), mode.drift && running && !drawing ? el("span.pull-drift", { text: "↓", title: "炭が燃え進んで、熱が落ちていく" }) : "");
@@ -513,7 +520,7 @@ async function pullGame(cs, mode) {
     const auto = autoSkill();
     if (auto) {
       const plans = options.flatMap((n) => n ? COAL_PLACES.map((p) => [n, p.id]) : [[0, "std"]]);
-      const gap = ([n, id]) => Math.abs(T + heatDelta(cs, swapHeat(n, id)) - center - 0.02);
+      const gap = ([n, id]) => Math.abs(T + heatDelta(cs, swapHeat(n, id)) - autoGoal() - 0.02);
       const [n, id] = auto === "good" ? plans.sort((a, b) => gap(a) - gap(b))[0] : auto === "burn" ? [3, "inner"] : [0, "std"];
       place = id;
       setTimeout(() => pick(n), 60);
@@ -599,10 +606,10 @@ async function pullGame(cs, mode) {
       for (let i = 0; i < times && running; i++) {
         let at;
         if (auto === "good") {
-          const diff = center - T, response = Math.abs(heatDelta(cs, .18));
+          const goal = autoGoal(), diff = goal - T, response = Math.abs(heatDelta(cs, .18));
           const keep = clamp(.5 + diff / response, .341, .659);
           const candidates = [.141, .3, keep, .75, .796];
-          at = candidates.sort((a, b) => Math.abs(T + pullHeat(actionAt(a).delta) - center) - Math.abs(T + pullHeat(actionAt(b).delta) - center))[0];
+          at = candidates.sort((a, b) => Math.abs(T + pullHeat(actionAt(a).delta) - goal) - Math.abs(T + pullHeat(actionAt(b).delta) - goal))[0];
         } else if (auto === "burn") {
           at = .83; // テスト用: 右のジャスト熱を入れる吸いを重ねて焦がす
         } else {
@@ -643,16 +650,25 @@ async function pullGame(cs, mode) {
 
   const result = pullResult(T, pulls, justs, bands, safeLimit);
   const { inZone, optimal } = result;
-  let score = Math.min(100,result.score + (criticals ? Math.min(SKILL_TUNING.criticalCap, criticals * SKILL_TUNING.critical) : 0));
+  // 攻めの帯（桜井式の大会だけ）: 帯の中は温度を満点として扱い、審査の上積みは票の計算（ch1-votes.js）が足す。
+  const attackBand = attacking ? attackRange(bands) : null;
+  const attack = !!attackBand && inAttackRange(T, attackBand);
+  const baseScore = attack ? Math.max(result.score, attackScore(pulls, safeLimit)) : result.score;
+  let score = Math.min(100,baseScore + (criticals ? Math.min(SKILL_TUNING.criticalCap, criticals * SKILL_TUNING.critical) : 0));
   const tasteCard = mode.store==="pull"&&cs.blindService&&growthLesson(state,"M-B3")?"白紙の味カードで提供した。味の名前は伏せ、尋ねられたら答える":actualExpressionCard(cs, T);
-  cs[mode.store] = { score, grade: gradeOf(score), temp: T, startTemp: initialTemp, pulls, justs, criticals, smokeRings, coals, inZone, optimal, over: T > ideal[1], under: T < ideal[0] };
+  cs[mode.store] = { score, grade: gradeOf(score), temp: T, startTemp: initialTemp, pulls, justs, criticals, smokeRings, coals, inZone, optimal, over: T > ideal[1], under: T < ideal[0], ...(attackBand ? { attack } : {}) };
+  const attackLine = attack ? `攻めの帯で${mode.store === "pull" ? "出した" : "整え終えた"}！ 審査員が身を乗り出した（この回の審査 +${ATTACK_BAND.bonus}）` : null;
+  if (attack) {
+    impact(panel, "big", { color: "#ff3fa4" });
+    SE.fanfare();
+  }
   score = settleGrowthPhase(state, cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, cs[mode.store], justs > 0);
   scoreStep(cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, score, mode.title);
   if (mode.store === "pull") {
     cs.pullDone = true;
     const naruFinished = recordNaruFinish(cs, bands, { automatic: !!autoSkill() });
     refreshBench();
-    tickerSay(inZone ? "パッキー「きた〜！ 煙の立ち方が変わりましたよ〜♪」" : "パッキー「おっと、ちょっと温度が怪しいか〜！？」");
+    tickerSay(attack ? "パッキー「攻めたーッ！ 帯のギリギリで出してきたーッ！」" : inZone ? "パッキー「きた〜！ 煙の立ち方が変わりましたよ〜♪」" : "パッキー「おっと、ちょっと温度が怪しいか〜！？」");
     // 山場（CFX03・KMR11）: 作業風景のはじめが、口元から煙を吐く。煙の姿が出来を語る:
     // 適温はまとまった煙、最適温・会心はたっぷり長く残って煙の輪もひとつ。ぬるいと薄く小さく、熱すぎるとむせてちぎれる。
     // 煙は作業風景の窓の中だけで、計器や結果の札には掛けない。待たない（結果の確認を遅らせない）
@@ -661,6 +677,7 @@ async function pullGame(cs, mode) {
       title: context.title,
       summary: [context.summary],
       lines: [
+        ...(attackLine ? [attackLine] : []),
         ...(naruFinished ? ["焼き際を見極めた。仕上げの評価に小さな手応え"] : []),
         inZone && bands.expressionWeight >= .999 ? "適温で、味の表情を整えられた" : optimal ? "最適温に合わせられた" : inZone ? "適温に整えられた" : T > ideal[1] ? "少し熱いままだった" : "まだぬるかった",
         tasteCard,
@@ -670,10 +687,11 @@ async function pullGame(cs, mode) {
     });
     return true;
   }
-  tickerSay(inZone ? "パッキー「最後の一口まで崩れない！ 守り切ったーッ！」" : "パッキー「おっと、熱がぶれているか〜！？」");
+  tickerSay(attack ? "パッキー「攻めの帯で止めたーッ！ 審査員が身を乗り出すーッ！」" : inZone ? "パッキー「最後の一口まで崩れない！ 守り切ったーッ！」" : "パッキー「おっと、熱がぶれているか〜！？」");
   await resultCard(panel, {
     title: `${mode.title} 結果`,
     lines: [
+      ...(attackLine ? [attackLine] : []),
       inZone ? `適温に整えて、${context.returned}` : T > ideal[1] ? cs.mode==="tournament"?"熱いまま審査員に任せてしまった":"まだ熱い。次は炭を減らすか、外寄りに置こう" : cs.mode==="tournament"?"冷めたまま審査員に任せてしまった":"まだぬるい。次は炭を多めに替えるか、内寄りに寄せよう",
       tasteCard,
       waterComfortLine(cs.water),
