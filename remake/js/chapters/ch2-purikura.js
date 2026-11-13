@@ -1,4 +1,4 @@
-import { ryujiGreetingDue, visitStamp as visitorStamp } from "../core/ryuji-visit.js";
+import { ryujiGreetingDue, reiGreetingDue, visitStamp as visitorStamp } from "../core/ryuji-visit.js";
 import { state, save } from "../core/state.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { buyKeepsake } from "../core/keepsakes.js";
@@ -29,6 +29,11 @@ export async function offerAgehaPurikura(background, spot = { id: "ch2_ageha", k
       if (!await read("remake_ch2_ryuji_melty_greeting")) return false;
       state.flags._ryuji_melty_greeting = true;
       state.flags._ryuji_melty_visit = visitorStamp(state);
+      save();
+    } else if (reiGreetingDue(state)) {
+      // レヰの挨拶回（#3468 A案）。二人で撮る場面まで台本の中。料金・思い出の品・好感度は動かさない。
+      if (!await read("remake_ch2_rei_melty_greeting")) return false;
+      state.flags._rei_melty_greeting = state.day;
       save();
     }
     if (state.flags._ageha_first_purikura) return await revisitPurikura(background, spot, { live, read, stamp });

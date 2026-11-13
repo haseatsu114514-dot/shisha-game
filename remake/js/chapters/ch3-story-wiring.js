@@ -74,6 +74,13 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
     after: ["ch3_saku_first"] },
   ch3_saku_mashiro_soon_back: { file: "ch3_saku_mashiro", label: "すぐ戻るの嘘", location: "煙幕", bg: "bg_yohaku_shop",
     after: ["ch3_saku_mukai_visit"] },
+  // #3468 H案。mukaiの棚整理で、ムカイさんの試飲の瓶とましろの休憩用の缶に本人用の札を付ける（ましろ×ムカイさん）。
+  // mukaiの二日目の後。続きは同じ棚に札が残っている後日の一言。台本は大会・恋愛に触れないので、
+  // 大会後は ch3-aftermath-progress.js の寄り道から同じ既読で読む。好感度は動かさない。
+  ch3_mashiro_mukai_syrup_shelf: { file: "ch3_mashiro", label: "店用の瓶", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mukai_intro"] },
+  ch3_mashiro_mukai_shelf_tags: { file: "ch3_mashiro", label: "棚の札", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_mukai_syrup_shelf"] },
   // 綾取とLIMEを交換する（#2028）。助言の後、煙幕への再訪で♥1になってから。後日談の片づけで返事の欄を回収する。
   ch3_saku_lime: { file: "ch3_rivals", label: "返事の欄", location: "煙幕", bg: "bg_yohaku_shop",
     after: ["ch3_saku_advice"], heart: { saku: 1 } },
@@ -126,6 +133,13 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   // 好感度補充（A28）。五度目のあと、残した式の一項を渡す短い再訪（♥4）。
   ch3_volk_revisit: { file: "ch3_volk", label: "残した一項", location: "鉄の煙", bg: "bg_volk_shop",
     met: ["volk"], heart: { volk: 4 }, after: ["ch3_volk_fifth"] },
+  // #3468 F案。スティーブが新しい店へ挨拶に寄り、帰りかけて話が再開する（ヴォルク×スティーブ）。二人と面識があり、
+  // 初来店（DAY12夜）の後。続きは Smoke & Glory で、ヴォルクが先に客席へ座っている後日の一言。好感度は動かさない。
+  // 台本は大会に触れないので、大会後は ch3-aftermath-progress.js の寄り道から同じ既読で読む。
+  ch3_rival_volk_steve_greeting: { file: "ch3_volk", label: "長い別れ際", location: "鉄の煙", bg: "bg_volk_shop",
+    met: ["volk", "steve"], after: ["ch3_volk_first"] },
+  ch3_rival_volk_steve_seat: { file: "ch3_volk", label: "先に座る客", location: "Smoke & Glory", bg: "bg_steve_shop",
+    met: ["volk", "steve"], after: ["ch3_rival_volk_steve_greeting"], host: "steve" },
 });
 
 // loadIntroDialogues が読む追加分（ファイル→場面ID）。routes の全任意場面・前夜場面と一致させる（story_routes.mjs で照合）。
@@ -138,7 +152,7 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   // ♥3の質問と締めくくりは寄り道ではなく、場面カードの「ましろちゃんと話す」から（daily/bonds.js の条件）。
   ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice",
     "ch3_mashiro_black_tea", "ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_mashiro_glass_cloth",
-    "ch3_mashiro_leaf_rest", "ch3_mashiro_bench_tea",
+    "ch3_mashiro_leaf_rest", "ch3_mashiro_bench_tea", "ch3_mashiro_mukai_syrup_shelf", "ch3_mashiro_mukai_shelf_tags",
     "ch3_mashiro_bond_question", "ch3_mashiro_bond_finale",
     // 恋人のましろと過ごす時間（BLC03・chapters/mashiro-time.js の MASHIRO_TIME_SCENES と同じ並び）。
     "mashiro_time_counter", "mashiro_time_train", "mashiro_time_errand", "mashiro_time_braid"],
@@ -146,7 +160,8 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   hiyori: ["hiyori_tokyo_contact"],
   ch3_tsumugi: ["ch3_tsumugi_slump"],
   // ヴォルクの締めくくり（#2028）も寄り道ではなく、鉄の煙を訪ねた時の「ヴォルクに呼ばれる」から（綾取・スティーブと同じ）。
-  ch3_volk: ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_lime", "ch3_volk_fifth", "ch3_volk_revisit", "ch3_volk_bond_finale"],
+  ch3_volk: ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_lime", "ch3_volk_fifth", "ch3_volk_revisit", "ch3_volk_bond_finale",
+    "ch3_rival_volk_steve_greeting", "ch3_rival_volk_steve_seat"],
   // 返事の場面は告白の選択肢の next_id で入る（ch3_read_confession_mashiro は返事まで読んだ時だけ立つ）。
   confession: ["confession_mashiro", "confession_mashiro_accept", "confession_mashiro_reject"],
   // 第3章で再生しうるのは date_min_chapter が3以下の恋人だけ（あげはは第4章から）。

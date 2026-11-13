@@ -212,6 +212,16 @@
 .camel-stats small { font-size: 12px; font-weight: 800; color: var(--cr-dim); white-space: nowrap; flex: none; }
 .camel-stats b { font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; text-align: right; }
 .camel-best { margin-top: 10px; color: #ffe27a; font-weight: 900; letter-spacing: .1em; }
+/* 結果の「次の目標」（CRF10）: 箱にせず、帳面の罫線1本の下に字だけ。次の評価までの点・伸びる所を1つ・大会の条件の ✓／✗ */
+.camel-next { display: grid; gap: 2px; margin-top: 10px; padding-top: 8px; border-top: 1px dashed rgba(255,215,122,.4); font-size: 14px; font-weight: 800; line-height: 1.5; }
+.camel-game .camel-sheet .camel-card .camel-next p { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 14px; margin: 0; font-size: inherit; font-weight: inherit; line-height: inherit; }
+.camel-next b { color: #ffe27a; font-weight: 900; letter-spacing: .04em; }
+.camel-next-cup span[data-ok="true"] { color: #9dffb4; }
+.camel-next-cup span[data-ok="false"] { color: #ffb0a0; }
+.camel-game.cr-card .camel-next { border-top-color: rgba(74,42,14,.35); color: #43301c; }
+.camel-game.cr-card .camel-next b { color: #96690f; }
+.camel-game.cr-card .camel-next-cup span[data-ok="true"] { color: #2f6b3a; }
+.camel-game.cr-card .camel-next-cup span[data-ok="false"] { color: #a13a22; }
 /* 結果・大会選びの右上の「？」: 遊び方を読み直す（#2836） */
 .camel-game .camel-sheet .camel-card .camel-help { position: absolute; right: 14px; top: 14px; display: grid; place-items: center; width: 40px; height: 40px; padding: 0;
   border: 1px solid rgba(255,215,122,.5); border-radius: 50%; background: rgba(0,0,0,.3); color: var(--cr-gold); font: inherit; font-size: 20px; font-weight: 900; cursor: pointer; }
@@ -234,6 +244,7 @@
   .camel-medal { width: 64px; height: 64px; } .camel-medal strong { font-size: 32px; } .camel-medal span { font-size: 13px; }
   .camel-total strong { font-size: 32px; } .camel-grade-letter { width: 60px; height: 60px; } .camel-grade-letter strong { font-size: 30px; }
   .camel-score-row { margin: 4px 0; } .camel-stats { margin-top: 8px; }
+  .camel-next { margin-top: 6px; padding-top: 5px; font-size: 13px; }
 }
 /* コースが小さいとき（スマホ）: 説明の字とキーを隠し、順位は名前と順位だけ */
 @container (max-width: 760px) {
@@ -277,6 +288,7 @@
   .camel-card p, .camel-eyebrow, .camel-time, .camel-total small, .camel-grade-letter small, .camel-medal span, .camel-score-row, .camel-stats small, .camel-stats b { font-size: max(18px, var(--cr-min)); }
   .camel-score-row { grid-template-columns: 5em minmax(0, 1fr) 4.2em; margin: 6px 0; }
   .camel-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .camel-next { font-size: max(18px, var(--cr-min)); }
   .camel-game .camel-sheet .camel-card .camel-card-actions .btn { display: inline-flex; align-items: center; justify-content: center; min-height: max(10cqh, var(--cr-tap)); font-size: max(18px, var(--cr-min)); }
   .camel-medal, .camel-grade-letter { width: max(64px, calc(42px / var(--k, 1))); height: max(64px, calc(42px / var(--k, 1))); }
   .camel-grade-letter strong { font-size: max(30px, calc(17px / var(--k, 1))); }
@@ -639,3 +651,18 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
   .camel-game.cr-remote .camel-voice[data-cue="on"] .camel-control-icon { animation: none; box-shadow: 0 0 0 calc(var(--rh) * 11 / 240) rgba(255,215,122,.9); }
   .camel-game.cr-remote .camel-signal[data-stamina="spent"] { animation: none; --remote-edge: rgba(255,142,122,.85); }
 }
+
+/* ---- 2026-11-13 桜井スキルでの添削（CRF13〜） ---- */
+/* 一時停止のボタン: 「やめる」と同じ板で、その左隣。走っている間と合図の間だけ出る */
+.camel-pause { right: calc(1.6cqw + 3em + 48px); display: grid; place-items: center; min-width: 2.8em; padding-inline: 8px; }
+.camel-pause svg { width: 1.25em; height: 1.25em; display: block; }
+.camel-pause[hidden] { display: none; }
+.camel-game[data-paused="true"] .camel-controls, .camel-game[data-paused="true"] .camel-close { visibility: hidden; }
+.camel-pause-card { width: min(660px, 100%); text-align: center; }
+/* 最初の1本でムチを教える間、ムチのボタンを声の輪の時と同じ金の光で示す */
+.camel-signal[data-coach="on"] { --remote-edge: #ffd77a; border-color: #ffd77a; box-shadow: inset 0 0 0 2px #120b06, 0 0 0 2px rgba(255,215,122,.4), 0 0 20px rgba(255,215,122,.4); }
+.camel-game.cr-remote .camel-signal[data-coach="on"] .camel-control-icon { animation: camel-remote-ring 1.25s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .camel-game.cr-remote .camel-signal[data-coach="on"] .camel-control-icon { animation: none; } }
+/* 結果の「次の目標」に足した行: ほめる言葉（金）・最下位が続いた時の一行 */
+.camel-next-praise b { margin-right: 14px; }
+.camel-next-ease { opacity: .9; }

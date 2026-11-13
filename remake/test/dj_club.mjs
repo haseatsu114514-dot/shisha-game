@@ -175,6 +175,12 @@ check("djUrl passes the set, embed flag and the game's mute / BGM volume", () =>
   assert.deepEqual([url.searchParams.get("set"), url.searchParams.get("embed"), url.searchParams.get("mute"), url.searchParams.get("vol")], ["2", "1", "1", "1"]);
   assert.equal(new URL(dj.djUrl(1)).searchParams.get("mute"), null);
 });
+check("djUrl passes the player's best total for the set only when there is one (DJF07)", () => {
+  assert.equal(new URL(dj.djUrl(1)).searchParams.get("best"), null);
+  assert.equal(new URL(dj.djUrl(1, { best: 82.4 })).searchParams.get("best"), "82");
+  assert.equal(new URL(dj.djUrl(1, { best: 0 })).searchParams.get("best"), "0");
+  for (const bad of [null, undefined, -1, 101, NaN, "x"]) assert.equal(new URL(dj.djUrl(1, { best: bad })).searchParams.get("best"), null, String(bad));
+});
 check("djUrl passes the phone density only when asked", () => {
   assert.equal(new URL(dj.djUrl(1)).searchParams.get("phone"), null);
   assert.equal(new URL(dj.djUrl(1, { phone: true })).searchParams.get("phone"), "1");
