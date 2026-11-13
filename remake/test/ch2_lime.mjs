@@ -32,7 +32,7 @@ const ids = list => Array.from(list, m => m.id);
 for (const id of ['encourage_minto', 'encourage_tsumugi']) assert.equal(lime.find(m => m.id === id).chapter, 1, id);
 const ch2Day = lime.filter(m => m.chapter === 2 && ['tournament_day', 'ch2_victory'].includes(m.trigger_condition));
 assert.deepEqual(ids(ch2Day).sort(), ['ch2_congrats_adam', 'ch2_congrats_minto', 'ch2_congrats_tsumugi_alone', 'ch2_congrats_tsumugi_welcome',
-  'encourage_ch2_samechan', 'encourage_ch2_tsumugi_alone', 'encourage_ch2_tsumugi_welcome']);
+  'encourage_ch2_minto', 'encourage_ch2_samechan', 'encourage_ch2_tsumugi_alone', 'encourage_ch2_tsumugi_welcome']);
 for (const m of ch2Day) {
   for (const line of m.messages) assert(!line.text.includes('\n') && [...line.text].length <= 48, `${m.id}: ${line.text}`);
   for (const r of m.replies || []) assert([...r.text].length <= 19, `${m.id} reply`);
@@ -43,9 +43,9 @@ assert.match(dialogue('ch2_tournament'), /ありがとう、と打ちかけて/)
 assert.doesNotMatch(dialogue('ch2_tournament'), /送信するまで、ずいぶん時間がかかった/);
 
 // 大会の朝: 第1章と同じ収集処理を使い、前夜の返事に応えるつむぎの1通を必ず含める。
-reset({ _ch2_no_audience: true }, { contacts: ['ageha', 'rin', 'hiyori'] });
-cheers = ['encourage_ageha', 'encourage_rin', 'encourage_hiyori'];
-assert.deepEqual(ids(chapterTwoCheers()), ['encourage_ch2_tsumugi_alone', 'encourage_ageha', 'encourage_rin'], '3通まで・前夜の返事を優先');
+reset({ _ch2_no_audience: true }, { contacts: ['ageha', 'rio', 'hiyori'] });
+cheers = ['encourage_ageha', 'encourage_rio', 'encourage_hiyori'];
+assert.deepEqual(ids(chapterTwoCheers()), ['encourage_ch2_tsumugi_alone', 'encourage_ageha', 'encourage_rio'], '3通まで・前夜の返事を優先');
 reset({ _ch2_audience_welcome: true });
 cheers = [];
 assert.deepEqual(ids(chapterTwoCheers()), ['encourage_ch2_tsumugi_welcome']);

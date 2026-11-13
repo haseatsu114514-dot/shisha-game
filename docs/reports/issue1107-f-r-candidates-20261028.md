@@ -153,7 +153,7 @@ FR3・FR4はF+Rなので、F案は味を話題に変えることで日常作業�
 
 ## 確認方法・未実施
 
-- 指定資料：`AGENTS.md`、`docs/pr_change_preflight.md`、`/home/box/repos/logs/common-20261022.md` を読了。現行の人物設定・要望台帳・フレーバー説明を必要箇所だけ参照した。
+- 指定資料：`AGENTS.md`、`docs/tools/pr_change_preflight.md`、`/home/box/repos/logs/common-20261022.md` を読了。現行の人物設定・要望台帳・フレーバー説明を必要箇所だけ参照した。
 - `gh issue view 1107 --comments` と `--json title,body,comments,url`、Issue APIのコメント数、`gh pr view 1103/1160`、Open PR一覧を読み取り確認。指定レポートと同じパスを変更するOpen PRはなかった。
 - リポジトリroot、必須ディレクトリ、旧Godotファイル不在、hooks設定、mainとの共通祖先を確認し、`tools/check_git_safety.sh` は成功。`git lfs install --skip-repo` を実施。画像取得・画像編集はしていない。
 - mainの対象JSONを `git show` で読んで、旧文の有無と現在の行番号を照合。Webは小さな本文だけを取得し、上記の店舗・スタッフ・英語ブランド資料で根拠を確認した。

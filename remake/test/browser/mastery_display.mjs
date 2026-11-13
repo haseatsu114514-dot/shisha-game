@@ -1,11 +1,7 @@
 import assert from 'node:assert/strict';
 import { suite, assertFits } from './support.mjs';
 async function forecastSummary(page) {
- const compact=page.locator('[data-test="mix-taste-compact"]');
- const host=await compact.isVisible()?compact:page.locator('[data-test="mix-taste"]');
- const details=host.locator('.flavor-forecast-compact');
- if (await details.count() && !await details.evaluate(node=>node.open)) await details.locator(':scope > summary').click();
- return host.locator('[data-test="mix-mastery-summary"]');
+ return page.locator('[data-test="mix-taste"]').locator('[data-test="mix-mastery-summary"]');
 }
 await suite('mastery-display', async check => {
  for (const touch of [false,true]) await check(touch?'touch':'pc', async page => {
@@ -32,6 +28,8 @@ await suite('mastery-display', async check => {
   assert.equal(await page.locator('.gain-card').count(),2,'max, no gain, small gain and LOAD do not notify again');
   await page.evaluate(()=>document.querySelector('#banners').replaceChildren());
   await page.evaluate(async()=>{
+   // 能力の通知カード（STEP UP）は旧しくみ（?growth=0）の表示。心得の盤（通常プレイの既定・SBD97）では能力を直接伸ばさないので、この端末を旧しくみにして確かめる
+   (await import('./js/core/growth.js')).setGrowthPreview(false);
    const s=MD.core.state;s.stats.charm=20;
    (await import('./js/core/stats.js')).gainStat('charm',1);
   });

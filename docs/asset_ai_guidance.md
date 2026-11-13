@@ -8,26 +8,26 @@
 
 ## シーシャ台の画像生成リファレンス
 
-**最初に[シーシャ描写の早見表とプロンプト用ルール](../asset_sources/shisha-hardware-reference/drawing-sheet/README.md)を見る**（生成前の構成メモ・貼る文・生成後チェックを使う。早見表と構造図は仕組みの理解・検品用の資料で、**生成ツールには添付しない**。生成時は以下の資料の実物写真を見て添付する）。詳細・根拠は以下。シーシャ台が写る背景・CG・ゲーム素材を新規生成・修正するときは、オーナー提供の9種類の実物参考をまとめた [`asset_sources/shisha-hardware-reference/README.md`](../asset_sources/shisha-hardware-reference/README.md) を最初に読む。**使用中の人物・ホース・煙・HMDや炭が写る素材**は追加の [`asset_sources/shisha-hardware-reference/smoking-and-heat-management-20261009.md`](../asset_sources/shisha-hardware-reference/smoking-and-heat-management-20261009.md) も参照する。**ボウル・ホイル・炭・HMDの近接画**は [`asset_sources/shisha-hardware-reference/heat-management-closeups-20261009.md`](../asset_sources/shisha-hardware-reference/heat-management-closeups-20261009.md) でアルミ直置きとHMDを区別して参照する。[今回追加の使用・アルミ・煙突の9写真](../asset_sources/shisha-hardware-reference/usage-and-installation-20261009.md)と[37写真横断のAI誤描写防止ガイド](../asset_sources/shisha-hardware-reference/ai-generation-structural-pitfalls.md)も必要な画像生成の前に読む。**ホース・マウスピース・人物の吸い方を描く場合**は、追加実物写真6枚と[ホースの接続・使い捨て/首掛けマイマウスピースのルール](../asset_sources/shisha-hardware-reference/hose-and-mouthpieces-20261009.md)および[追加マウスピース3点・ハンドル4点／スキン方針](../asset_sources/shisha-hardware-reference/mouthpiece-handle-skins-20261009.md)を必ず参照。**追加の構造図3点・呼称・空気の通路**は [`asset_sources/shisha-hardware-reference/anatomy-diagrams-20261009.md`](../asset_sources/shisha-hardware-reference/anatomy-diagrams-20261009.md)、**ハガル内部の穴・穴あけ・炭配置と外部リサーチ**は [`asset_sources/shisha-hardware-reference/bowl-interiors-foil-coal-placement-20261009.md`](../asset_sources/shisha-hardware-reference/bowl-interiors-foil-coal-placement-20261009.md) を参照する。実物の構造・素材感を参照し、機種・色・形状・装飾は自由に創作。**喫煙中・制作中のヒロインCGを生成したら、[首掛けマイマウスピース／ホースの必須検品](../asset_sources/shisha-hardware-reference/visual-qa-necklace-hose-20261009.md)を実施する。** 首飾りはチェーンに加えて独立した吸い口本体が必要。ホースは本体の適切なポートから硬質ハンドルの根元まで物理的に続き、画像内で見える接続を途切れさせない（自然な見切れ・遮蔽は許容）。キャラは指定された正規立ち絵・プロフィールを最優先して汎用美少女への置換を避け、ミスが出た画像は再生成する。特定の製品・ロゴの完コピは禁止。シーシャ台を描かない指定を優先する。ボウル未装着の制作画面は従来の小さな凸型金属ポストを維持。
+**最初に[画像生成の必須手順](shisha_reference.md#4-画像生成の必須手順機材の形と構造)（`docs/shisha_reference.md` §4）を実行する**: 機材と内装は日本のシーシャバーを基準にし、海外の写真は構造の確認だけに使う（2026-11-02 オーナー方針）。部位ごとの正解とNG、貼る文、生成前の8行、生成後チェックをそこに1か所でまとめた（2026-11-02）。早見表と構造図は仕組みの理解・検品用の資料で、**生成ツールには添付しない**。参考写真と機材の資料は非公開リポジトリ [`siryou`](https://github.com/haseatsu114514-dot/siryou) の `shisha-hardware-reference/` にある（2026-11-02 にゲームのリポジトリから移した。日本の店・機材の写真116枚、Commons の写真76枚、オーナー提供写真の縮小一覧と説明）。詳細・根拠は以下。シーシャ台が写る背景・CG・ゲーム素材を新規生成・修正するときは、オーナー提供の9種類の実物参考をまとめた [`asset_sources/shisha-hardware-reference/README.md`](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/README.md) を最初に読む。**使用中の人物・ホース・煙・HMDや炭が写る素材**は追加の [`asset_sources/shisha-hardware-reference/smoking-and-heat-management-20261009.md`](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/smoking-and-heat-management-20261009.md) も参照する。**ボウル・ホイル・炭・HMDの近接画**は [`asset_sources/shisha-hardware-reference/heat-management-closeups-20261009.md`](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/heat-management-closeups-20261009.md) でアルミ直置きとHMDを区別して参照する。[今回追加の使用・アルミ・煙突の9写真](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/usage-and-installation-20261009.md)と[37写真横断のAI誤描写防止ガイド](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/ai-generation-structural-pitfalls.md)も必要な画像生成の前に読む。**ホース・マウスピース・人物の吸い方を描く場合**は、追加実物写真6枚と[ホースの接続・使い捨て/首掛けマイマウスピースのルール](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/hose-and-mouthpieces-20261009.md)および[追加マウスピース3点・ハンドル4点／スキン方針](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/mouthpiece-handle-skins-20261009.md)を必ず参照。**追加の構造図3点・呼称・空気の通路**は [`asset_sources/shisha-hardware-reference/anatomy-diagrams-20261009.md`](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/anatomy-diagrams-20261009.md)、**ハガル内部の穴・穴あけ・炭配置と外部リサーチ**は [`asset_sources/shisha-hardware-reference/bowl-interiors-foil-coal-placement-20261009.md`](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/bowl-interiors-foil-coal-placement-20261009.md) を参照する。実物の構造・素材感を参照し、機種・色・形状・装飾は自由に創作。**喫煙中・制作中のヒロインCGを生成したら、[首掛けマイマウスピース／ホースの必須検品](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/visual-qa-necklace-hose-20261009.md)を実施する。** 首飾りはチェーンに加えて独立した吸い口本体が必要。ホースは本体の適切なポートから硬質ハンドルの根元まで物理的に続き、画像内で見える接続を途切れさせない（自然な見切れ・遮蔽は許容）。キャラは指定された正規立ち絵・プロフィールを最優先して汎用美少女への置換を避け、ミスが出た画像は再生成する。特定の製品・ロゴの完コピは禁止。シーシャ台を描かない指定を優先する。ボウル未装着の制作画面は従来の小さな凸型金属ポストを維持。
 
 ---
 
-ヒロインの日常・タイトル用CGは[2026-10-09追加の生成ルール](../asset_sources/shisha-hardware-reference/heroine-title-cg-rules-20261009.md)を必読とする。顔・年齢感・衣装は正規立ち絵、既存タイトル絵は質感の参照にする。完成・喫煙状態はHMDを使い直炭にしない。一枚ごとに具体モデルを選び、少量の色・仕上げ変更に留めて他モデルの部品を混ぜない。ハガル・HMD・炭・手の縮尺とホース接続を生成後に目視検品し、違反は修正・再生成。台・背景・場所・時間帯・行動は候補間で変え、背景植物を必須にしない。一般の実物資料や既存ゲーム工程・採点仕様への変更ではない。
+ヒロインの日常・タイトル用CGは[2026-10-09追加の生成ルール](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/heroine-title-cg-rules-20261009.md)を必読とする。顔・年齢感・衣装は正規立ち絵、既存タイトル絵は質感の参照にする。完成・喫煙状態はHMDを使い直炭にしない。一枚ごとに具体モデルを選び、少量の色・仕上げ変更に留めて他モデルの部品を混ぜない。ハガル・HMD・炭・手の縮尺とホース接続を生成後に目視検品し、違反は修正・再生成。台・背景・場所・時間帯・行動は候補間で変え、背景植物を必須にしない。一般の実物資料や既存ゲーム工程・採点仕様への変更ではない。
 
 
 ---
 
 ## 共通の素材・制作スキル案内
 
-### アゲハの本人性（オーナーの追加指示）
+### あげはの本人性（オーナーの追加指示）
 
-アゲハの全CG・タイトル・今後の生成では、正式 `assets/sprites/characters/ageha/chr_ageha_normal.png` と表情差分を顔・目・輪郭・年齢感の基準にする。22歳の明るく親しみやすい本人を、濃い化粧・細い冷たい目・長い顎・頬の強い陰影で大人びた別人へ寄せない。笑顔は正式smileの閉じ目・口形を参照。髪と豹柄だけが似ていても合格にせず、顔を拡大して比較する。生成用の古い24歳前後・強い化粧指定は正式設定と画像へ合わせて訂正する。正式立ち絵・顔アイコンを独断で再デザインせず、問題のあるCGは原画・比較・指示を保存して個別選定する。
+あげはの全CG・タイトル・今後の生成では、正式 `assets/sprites/characters/ageha/chr_ageha_normal.png` と表情差分を顔・目・輪郭・年齢感の基準にする。22歳の明るく親しみやすい本人を、濃い化粧・細い冷たい目・長い顎・頬の強い陰影で大人びた別人へ寄せない。笑顔は正式smileの閉じ目・口形を参照。髪と豹柄だけが似ていても合格にせず、顔を拡大して比較する。生成用の古い24歳前後・強い化粧指定は正式設定と画像へ合わせて訂正する。正式立ち絵・顔アイコンを独断で再デザインせず、問題のあるCGは原画・比較・指示を保存して個別選定する。
 
 ### フレーバー保管と炭の個数（オーナー採用方針）
 
 **第2章の客席・見学背景の追加指定（2026-10-13）**: 世界観を重視する店が多いため、タッパーを見せない。MELTY PUFF・神崎煙草店・零-ZERO-では、フレーバーをバックヤードや不透明な扉付き収納へ隠し、開いた棚へ容器・缶・葉を並べない。以下の容器形状・整然とした保管の方針は、保管場所を描く場面に適用する。客席へ露出させる要求ではない。旧生成指示より、このオーナー追加指定を優先する。
 
-店の常用フレーバーは丸缶の反復より透明／半透明の角丸矩形タッパーを優先する。オーナー提供の[原本4枚と制作条件](../asset_sources/shisha-hardware-reference/flavor-storage-tubs-issue396/README.md)を参照し、密閉蓋・開閉状態・湿った葉・棚の積み重ねを自然に描く。実在ラベル・ブランドは模写しない。炭は通常2〜3個、4個は稀な構成で、選んだHMDの容量・蓋・炭サイズを優先。準備前／洗浄中には炭を追加しない。この画像方針でゲームの初期装備・炭解放・価格・採点を変更せず、正式採用済み画像も一括置換しない。
+店の常用フレーバーは丸缶の反復より透明／半透明の角丸矩形タッパーを優先する。オーナー提供の[原本4枚と制作条件](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/flavor-storage-tubs-issue396/README.md)を参照し、密閉蓋・開閉状態・湿った葉・棚の積み重ねを自然に描く。実在ラベル・ブランドは模写しない。炭は通常2〜3個、4個は稀な構成で、選んだHMDの容量・蓋・炭サイズを優先。準備前／洗浄中には炭を追加しない。この画像方針でゲームの初期装備・炭解放・価格・採点を変更せず、正式採用済み画像も一括置換しない。
 
 タッパー保管は全キャラ共通で整然とした列・揃った向き／ラベル／間隔を基本にする。棚の奥行きと人物・手を比較し、背景容器を巨大にしない。今回の候補は手前の容器サイズを保ち背景だけを縮小する。規則的な保管は機能に根拠があるため、AI感を減らす目的で無秩序な配置へ変更しない。
 
@@ -40,17 +40,38 @@
 - となりの照明はトルコのモザイクランプ。形、ガラス模様、配色、吊り下げる長さをばらばらにし、同型の均等配置を避ける。夜は通常の店内照明も併用し、人物・机・器具が見える明るさを確保する。
 - 台を置いてあるだけの準備／展示背景では、ホースやハンドルを外してよい。使用中のスチルとは区別し、使用中は既存の接続・HMD・喫煙規則を守る。
 
+## 立ち絵の規格
+
+立ち絵を作る・描き直す・キャラを足すときは [立ち絵の規格](portrait_standard.md) に従う。頭身（標準6.4〜7.7・小柄5.4〜6.2）、顔の位置の記録（`data/portrait_metrics.json`。顔アイコンはここから自動で切り抜く）、画風の言葉と生成用の英文、生成のたびに渡す参照画像4枚（6節）、並べたときの検査（7節）をまとめてある。画風の入口はこの文書だけで、他の資料の「ドット絵調」は旧い言い方。
+
+## 背景の規格
+
+背景を作る・差し替えるときは [背景の規格](background_standard.md) に従う。画素数（1920×1080。生成は2048×1152以上から縮小）、画風の基準画像4枚と生成用の英文、時間帯の命名、記録（`data/background_catalog.json`。足したら `tools/background_catalog.py sync`）、同じ場所の昼夜を並べる比較図をまとめてある。
+
+## 90年代風（OVA・セル画）の画風は使わない（2026-11-08）
+
+オーナー指示「90年代風というコンセプトはもう使わない」。章末予告のスチルや試作で使った「90年代OVA・セル画風」（KITE・BASTARD!! 等の旧OVAを参照した、当時の顔・線・背景美術を再現する方向）は、人物・背景・CG・章タイトルなどのどの絵にも使わない。参照画像にも渡さない。素材・台本・試作は削除済み（要望台帳 RX01）。画風の基準は上の立ち絵・背景の規格だけで、規格にある現行のアニメ塗り（2〜3段のセル影など）はこの対象ではない。
+
 ## キーワードで呼ぶ作業
 
-- **「立ち絵そろえ」**（「立ち絵そろえ 続けて／OK／組み込んで」など）と言われたら [`.agents/skills/portrait-unify/SKILL.md`](../.agents/skills/portrait-unify/SKILL.md) の手順で、立ち絵の画質・顔の大きさ・画風の作り直しを進捗表の続きから進める。
+- **「立ち絵そろえ」**（「立ち絵そろえ 続けて／OK／組み込んで」など）と言われたら [`.agents/skills/portrait-unify/SKILL.md`](../.agents/skills/portrait-unify/SKILL.md) の手順で、立ち絵の頭の大きさ・画風を規格にそろえる作り直しを進捗表の続きから進める。
 
 ## 画像・台詞などのAI生成で不自然さを減らすとき
 
-[AIっぽさを抑える制作・検品メモ](ai_naturalness_guide.md)を必要な箇所だけ参照する。元ツイートの本文・ツリーが完全検証できたものではなく、ゲーム向けの実践メモとして扱う。**正規のキャラ設定と採用済みアセット・機材構造の再現が最優先**。過剰な画風変更や機材の創作改造を勝手にしない。
+[AIっぽさを抑える制作・検品メモ](prompts/ai_naturalness_guide.md)を必要な箇所だけ参照する。元ツイートの本文・ツリーが完全検証できたものではなく、ゲーム向けの実践メモとして扱う。**正規のキャラ設定と採用済みアセット・機材構造の再現が最優先**。過剰な画風変更や機材の創作改造を勝手にしない。
+
+### 納品前「AIっぽさ」排除チェックリスト（#2470）
+
+立ち絵・CG・背景を採用する前に、塗り（テカリ）・顔（量産型）・文字（擬似文字）・小物（崩れ・接続）を自分で潰す。2026年は指の本数では判別できず、見られるのはこの4点（[#2470](https://github.com/haseatsu114514-dot/shisha-game/issues/2470)）。制作を止めない範囲で、**必須**の数項目だけは毎回確認する。
+
+- **必須**（毎回）：①テカリ/エアブラシのグラデがない（影は2〜3段）②正規立ち絵と拡大比較してマスピ顔・汎用美少女に寄っていない ③擬似文字・読めない看板がない ④小物・ホース接続が崩れていない（下の[シーシャCGの出力後必須QA](#シーシャcgの出力後必須qa2つの実例ミス)）⑤既存採用素材と実画面で並べて同じ描き手に見える。
+- **任意**（余裕があれば）：左右対称/正面センターの偏り、リムライト・グロー・光の粒、黄色かぶり、色数・彩度・輪郭線の強弱、意味のない小物・反復、（ドット絵素材のみ）格子・減色・半透明ピクセル。
+
+項目の詳細と全チェックリストは [AIっぽさを抑える制作メモ](prompts/ai_naturalness_guide.md#納品前aiっぽさ排除チェックリスト2470)。SNSに出す画像も同じチェックを通し、投稿方針は [SNS運用ルール](marketing/sns_operation.md) を参照する。
 
 ## 外部素材・効果音・BGMを探すとき
 
-素材サイト集と採用手順は [`docs/external_asset_sources.md`](external_asset_sources.md) を参照。
+素材サイト集と採用手順は [`docs/prompts/external_asset_sources.md`](prompts/external_asset_sources.md) を参照。
 将来「効果音をつけて」「背景を探して」等の依頼があったら、そこに記録された候補を優先して比較し、**採用した個々の素材の配布元・作者・利用規約・クレジット・GitHubへの保管可否**を確認する。
 ゲームへ同梱できることと、元素材をリポジトリに再配布できることは別。ライセンス未確認素材を勝手に保存・実装しない。
 
@@ -58,7 +79,7 @@
 
 ホースは[みんとのY字分岐NG原画と検品メモ](../asset_sources/shisha-hardware-reference/ng-examples/README.md)も参照する。単一ホースの両端だけでなく経路を両方向に追い、分岐・第三の端・前後関係のない交差を除外する。ハガル／HMDの縮尺は単体の商品写真と寸法だけで済ませず、実際の装着状態と、手持ちの場合は掌・指が写る実写を別途参照する。
 
-- [マイマウスピースがチェーンだけになる／ホースが未接続になる失敗例と検品リスト](../asset_sources/shisha-hardware-reference/visual-qa-necklace-hose-20261009.md)を参照。
+- [マイマウスピースがチェーンだけになる／ホースが未接続になる失敗例と検品リスト](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/visual-qa-necklace-hose-20261009.md)を参照。
 - 首掛けタイプは**鎖と実体のある吸い口パーツ**。マイチップ使用時は**硬いハンドル先端に装着**。首掛け携帯中のときとは別状態。
 - ホースは**本体側の正しいポート→柔らかいホース→硬いハンドル**の経路を出力後に実際に目視で追う。途中で消える／接続されない／パージへ挿さる画像は不採用（合理的な遮蔽・見切れは例外）。
 - 指定されたゲームヒロイン本人の正規立ち絵・設定を優先し、**汎用の別人**なら修正・再生成。目視未確認で「確認済み」と書かない。

@@ -1,5 +1,5 @@
 {
-  "comment": "第3章はスティーブの茶化しで曖昧に終わる未遂。shuraba_*の本格的な話し合いはエンディング後のみ。実際の交際と所在を確認し、出席者の反応だけを読む。ch3_shuraba_*とtournament_evening_overlapは第3章前夜（ch3.js）に接続済み。shuraba_*（エンディング後）は未接続。shuraba_talk_*（個別の話し直し）も未接続で、再生時期・解決条件はまだ決めていない。",
+  "comment": "第3章はスティーブの茶化しで曖昧に終わる未遂。shuraba_*の本格的な話し合いはエンディング後のみ。実際の交際と所在を確認し、出席者の反応だけを読む。ch3_shuraba_*とtournament_evening_overlapは第3章前夜（ch3.js）に接続済み。shuraba_*の反応とshuraba_accountabilityは第5章の打ち上げ（ch5-party.js）で接続済み。打ち上げで起きていなければ、第5章のスタッフロールの後にshuraba_openから読む（ch5.js・IR32。ヌールが加わる時はその前にshuraba_noor_callでテレビ電話をつなぐ・#2815）。shuraba_talk_*はその後、未解決の恋人ごとに一人ずつ読む。",
   "dialogues": [
     {
       "dialogue_id": "ch3_shuraba_open",
@@ -7,12 +7,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "大会前夜のロビー。俺を呼ぶ声が重なった。彼女たちが、互いの顔を見た。"
+          "text": "大会前夜のロビー。俺を呼ぶ声が同時に重なって、彼女たちが互いの顔を見た。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あ、えっと……"
+          "text": "あ、えっと……その……"
         }
       ]
     },
@@ -22,7 +22,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "はじめさん。……こちらの方も、お知り合いですか"
+          "text": "はじめさん。……こちらの方も、お知り合い、ですか"
         }
       ]
     },
@@ -32,17 +32,17 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "……ずいぶん、親しそうに呼ぶんだね"
+          "text": "……へえ。ずいぶん、親しそうに呼ぶんだね"
         }
       ]
     },
     {
-      "dialogue_id": "ch3_shuraba_rin",
+      "dialogue_id": "ch3_shuraba_rio",
       "lines": [
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "はじめくん。紹介してくれる？"
+          "text": "はじめくん。……私にも、紹介してくれる？"
         }
       ]
     },
@@ -52,7 +52,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "……はじめくん、顔が赤いね"
+          "text": "……はじめくん、顔、真っ赤だねぇ"
         }
       ]
     },
@@ -62,7 +62,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "む。お主、目が泳いでおるぞ"
+          "text": "む。お主、目が泳いでおるぞ。サメより速く"
         }
       ]
     },
@@ -72,7 +72,7 @@
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "……私、入るタイミング、間違えたかな"
+          "text": "……私、出てくるタイミング、間違えたかな"
         }
       ]
     },
@@ -82,12 +82,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "返事をする前に、ピザの箱が横から差し出された。スティーブだ。"
+          "text": "返事をする前に、横からピザの箱がぬっと差し出された。スティーブだ。"
         },
         {
           "speaker": "steve",
           "face": "smile",
-          "text": "お、ハジメ！　ガール達にモテモテだな！"
+          "text": "ヘイ、ハジメ！　ガール達にモテモテだな！"
         },
         {
           "speaker": "hajime",
@@ -97,22 +97,27 @@
         {
           "speaker": "steve",
           "face": "smile",
-          "text": "こっちはピザ一枚、持て余してるってのに"
+          "text": "ノー、ノー、うらやましいぜ。こっちはピザ一枚と二人きりだってのに"
         },
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "ちょうどいい。切り分けるの、手伝って"
+          "text": "ちょうどいい。全員で切り分けようぜ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "箱が開くと、誰かが小さく笑った。言いかけていた言葉は、皿を配る声に紛れた。"
+          "text": "箱が開くと、誰かが小さく吹き出した。言いかけた言葉は、皿を配る声に紛れた。"
+        },
+        {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
         },
         {
           "speaker": "",
           "face": "",
-          "text": "俺は説明しそびれたまま、紙皿を配った。さっきの視線だけが、まだ少し気になった。"
+          "text": "俺は説明しそびれたまま、紙皿を配った。さっきの視線だけが、背中に残っていた。"
         },
         {
           "type": "set_flag",
@@ -126,7 +131,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "今夜の予定を尋ねる声が重なった。誰と過ごすか、すぐには答えられなかった。"
+          "text": "今夜の予定を尋ねる声が重なった。誰と過ごすのか、すぐには答えられなかった。"
         },
         {
           "speaker": "hajime",
@@ -134,70 +139,276 @@
           "text": "……ごめん。今夜は、一人で戻るよ"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch3_shuraba_deferred",
+          "next_true": "deferred_again",
+          "next_false": "check_ch1"
+        },
+        {
           "speaker": "",
           "face": "",
-          "text": "返事を待っていた顔から目をそらし、ケースを持ち直した。"
+          "text": "返事を待っていた顔から目をそらして、ケースを持ち直した。"
         }
       ],
-      "comment": "スティーブが同席しない前夜の重複予定。ここで本格的な修羅場や和解を再生しない。"
+      "branches": {
+        "check_ch1": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_shuraba_ch1",
+            "next_true": "deferred_again"
+          }
+        ],
+        "deferred_again": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "前にも、同じ顔をさせた。……言い訳だけが、うまくなっていく。"
+          }
+        ]
+      },
+      "comment": "スティーブが同席しない前夜の重複予定。ここで本格的な修羅場や和解を再生しない。第1章の大会当日か第3章の前夜に、すでに一度先送りにした保存だけ一行足す（2026-11-11・STK26）。"
     },
     {
-      "dialogue_id": "shuraba_open",
+      "dialogue_id": "shuraba_noor_call",
+      "comment": "#2815 スタッフロールの後の修羅場にヌール（ドバイ在住・席には座らない）が加わる時、shuraba_open より前に読むテレビ電話の接続。shuraba_noor の「テレビ電話は、つながったまま」「聞こえてた」を受けるため、はじめの打ち明けより前につなぐ。打ち上げ（ch5-party.js）では、お祝いの着信 ch5_party_noor_call を席を選ぶ前に読むので、この場面は使わない。許し・別れは決めない。",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "後日のtonari。閉店後の店に、彼女たちがそれぞれ来ていた。"
+          "text": "後日。閉店後のtonariに入る前に、ポケットのスマホが震えた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "俺を呼ぶ声が重なり、誰からともなく、俺との関係を尋ねた。"
+          "text": "画面には、ドバイの夕方と、ヌールさんの顔。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ハジメ、今いい？ ……なんだか、声が聞きたくなって"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……付き合ってます。一人だけじゃ、ありません"
+          "text": "……ヌールさん。これから、店で大事な話をします"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "黙ってたのは、俺です"
+          "text": "ヌールさんにも、聞いてほしい話です。このまま、つないでいてもらえますか"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……うん。いいよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "笑い話にしてくれる声はなかった。俺も、今度は目をそらせなかった。"
+          "text": "店に入って、スマホをカウンターに立てかけた。画面の中で、ヌールさんは黙ってこっちを見ていた。"
         }
       ]
+    },
+    {
+      "dialogue_id": "shuraba_open",
+      "comment": "スタッフロールの後の修羅場の開始（打ち上げで起きなかった時だけ。ch5.js・IR32）。motion gaze は、その場にいる恋人たちの目元の帯が差し込まれるカットイン（motions/gaze.js。2026-11-11 演出の作り直し）。打ち上げ版（ch5_party_shuraba_open）と違い、はじめが自分から向き合う場面なので、ごまかす選択肢は置かない。 petit_recall_* は、読んだプチ修羅場が一行ずつ返る枝（打ち上げ版と同じ並び）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のtonariで、俺は彼女たちと向き合った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺を呼ぶ声が重なり、誰からともなく、俺との関係を尋ねた。",
+          "beat": 400
+        },
+        {
+          "type": "motion",
+          "id": "gaze"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag_count",
+          "flag": "_petit_count",
+          "threshold": 1,
+          "next_true": "petit_recall_open"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_petit_seen_date_call",
+          "next_true": "petit_recall_date_call"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_petit_seen_lime_misfire",
+          "next_true": "petit_recall_lime_misfire"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_petit_seen_notice",
+          "next_true": "petit_recall_notice"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_petit_seen_cross",
+          "next_true": "petit_recall_cross"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_petit_seen_sumi",
+          "next_true": "petit_recall_sumi"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_petit_seen_cinema",
+          "next_true": "petit_recall_cinema"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_petit_seen_naru",
+          "next_true": "petit_recall_naru"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag_count",
+          "flag": "_petit_count",
+          "threshold": 1,
+          "next_true": "petit_recall_close"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "……付き合ってます。一人だけじゃ、ありません",
+          "beat": 800,
+          "duck": true
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "黙ってたのは、俺です",
+          "duck": true
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "笑い話にしてくれる声は、なかった。俺も、今度は目をそらせなかった。",
+          "beat": 600
+        }
+      ],
+      "branches": {
+        "petit_recall_open": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ごまかした日のことが、順番に浮かんだ。",
+            "beat": 400
+          }
+        ],
+        "petit_recall_date_call": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "鳴りやまなかった、あの着信。"
+          }
+        ],
+        "petit_recall_lime_misfire": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "送り先を間違えた、あの一通。"
+          }
+        ],
+        "petit_recall_notice": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "気づきかけて、聞かないでくれた顔。"
+          }
+        ],
+        "petit_recall_cross": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "同じ店で、背中に受けた二人ぶんの視線。"
+          }
+        ],
+        "petit_recall_sumi": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スミさんが、端と端に離してくれた二つの席。"
+          }
+        ],
+        "petit_recall_cinema": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "映画館で、振り向かなかった二つの後ろ姿。"
+          }
+        ],
+        "petit_recall_naru": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「言うのは、俺じゃないだろ」という、なるの声。"
+          }
+        ],
+        "petit_recall_close": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "どれも、うまく切り抜けたつもりだった。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "全部、今日に続いていた。",
+            "beat": 500
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "shuraba_accountability",
       "lines": [
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "付き合っている人がいるのに、黙ってました"
+          "face": "sad",
+          "text": "付き合っている人がいるのに、黙ってました",
+          "beat": 500
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "隠したまま付き合って、ごめんなさい"
+          "face": "sad",
+          "text": "隠したまま付き合って、本当にごめんなさい",
+          "duck": true
         },
         {
           "speaker": "",
           "face": "",
-          "text": "謝っても、誰も笑わなかった。"
+          "text": "謝っても、誰も笑わなかった。",
+          "beat": 600
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "今、返事は求めません。話せる時に、一人ずつ話したいです"
+          "face": "serious",
+          "text": "今、返事は求めません。話せる時に、一人ずつ、ちゃんと話したいです"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "誰も、いつもの距離には戻らなかった。話を聞いてもらえるかも、俺が決めることではなかった。"
+          "text": "誰も、いつもの距離には戻らなかった。聞いてもらえるかどうかも、俺が決めることじゃない。"
         },
         {
           "type": "set_flag",
@@ -211,127 +422,210 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "私たち、付き合ってるよね"
+          "text": "私たち、付き合ってるよね",
+          "beat": 500
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_petit_seen_notice_minto",
+          "next_true": "petit_noticed"
         },
         {
           "speaker": "minto",
           "face": "ura_sad",
-          "text": "それを、この人には言ってなかったんだ"
+          "text": "……それを、この人たちには、自分の口で言ってなかったんだ"
         },
         {
           "speaker": "minto",
-          "face": "ura_normal",
-          "text": "店で笑うのも、ここで怒るのも私だよ"
+          "face": "ura_sad",
+          "text": "お店で笑うのも、ここで怒るのも、どっちも私だよ"
         },
         {
           "speaker": "minto",
-          "face": "ura_normal",
-          "text": "笑って済ませてあげると思わないで"
+          "face": "ura_sad",
+          "text": "笑って済ませてあげるなんて、思わないで",
+          "beat": 400,
+          "duck": true
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "栞さんなら笑って済ませてくれるって、甘えてた。ごめん"
+          "face": "sad",
+          "text": "栞さんなら笑って許してくれるって、甘えてた、……ごめん"
         }
-      ]
+      ],
+      "branches": {
+        "petit_noticed": [
+          {
+            "speaker": "minto",
+            "face": "ura_sad",
+            "text": "……似た人じゃ、なかったんだね。あの日の、帽子の人"
+          }
+        ]
+      },
+      "comment": "petit_noticed は、この人の「気づきかけ」（petit_notice_minto）を読んだ保存だけに足す一行。"
     },
     {
       "dialogue_id": "shuraba_tsumugi",
       "lines": [
         {
           "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……私、知らなかったです"
+          "face": "evil",
+          "text": "……ちゃんと聞くのは、初めてです",
+          "beat": 500
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_petit_seen_notice_tsumugi",
+          "next_true": "petit_noticed"
         },
         {
           "speaker": "tsumugi",
-          "face": "normal",
-          "text": "今も、一緒に描きたいものを探してました"
+          "face": "sad",
+          "text": "今も、一緒に描きたいもの、探してたのに"
         },
         {
           "speaker": "tsumugi",
-          "face": "normal",
-          "text": "でも、スケッチブックを開く気になれません"
+          "face": "sad",
+          "text": "でも今は、スケッチブックを開く気になれません"
         },
         {
           "speaker": "tsumugi",
-          "face": "normal",
-          "text": "少し、離れます。今は描きたくないです"
+          "face": "sad",
+          "text": "少し、離れます。……今は、描きたくないです",
+          "beat": 400,
+          "duck": true
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "描いてる時間に、隠してた。ごめん"
+          "face": "sad",
+          "text": "……分かった。ごめん"
         }
-      ]
+      ],
+      "branches": {
+        "petit_noticed": [
+          {
+            "speaker": "tsumugi",
+            "face": "sad",
+            "text": "……あの日の、濁った色。疲れのせいじゃ、なかったんですね"
+          }
+        ]
+      },
+      "comment": "petit_noticed は、この人の「気づきかけ」（petit_notice_tsumugi）を読んだ保存だけに足す一行。"
     },
     {
-      "dialogue_id": "shuraba_rin",
+      "dialogue_id": "shuraba_rio",
       "lines": [
         {
-          "speaker": "rin",
-          "face": "normal",
-          "text": "違う店の香りがしたから、気にはなってた"
+          "speaker": "rio",
+          "face": "serious",
+          "text": "違う店の香りがしたから、気にはなってた",
+          "beat": 500
         },
         {
-          "speaker": "rin",
-          "face": "normal",
-          "text": "でも香りだけじゃ決めない。今、本人から聞いた"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_petit_seen_notice_rio",
+          "next_true": "petit_noticed"
         },
         {
-          "speaker": "rin",
-          "face": "normal",
-          "text": "私たちに黙っていたことを、説明して"
+          "speaker": "rio",
+          "face": "serious",
+          "text": "でも、香りだけじゃ決めない。今、本人の口から聞いた"
         },
         {
-          "speaker": "rin",
-          "face": "normal",
-          "text": "試す相手を取り替えるようには、扱わないで"
+          "speaker": "rio",
+          "face": "serious",
+          "text": "私たちに黙っていたこと、ちゃんと説明して"
+        },
+        {
+          "speaker": "rio",
+          "face": "sad",
+          "text": "試す相手を取り替えるみたいに、扱わないで",
+          "beat": 400,
+          "duck": true
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "sad",
           "text": "取り替えるつもりは……いや。そう扱いました"
         }
-      ]
+      ],
+      "branches": {
+        "petit_noticed": [
+          {
+            "speaker": "rio",
+            "face": "serious",
+            "text": "襟の香りのことは、聞かなかった。業務外だと思ったから"
+          }
+        ]
+      },
+      "comment": "petit_noticed は、この人の「気づきかけ」（petit_notice_rio）を読んだ保存だけに足す一行。"
     },
     {
       "dialogue_id": "shuraba_ageha",
       "lines": [
         {
           "speaker": "ageha",
-          "face": "normal",
-          "text": "さっきから変だと思ってた。でも、当てっこはもういい"
+          "face": "serious",
+          "text": "さっきから、なんか変だと思ってた。でも、当てっこはもういい",
+          "beat": 500
         },
         {
           "speaker": "ageha",
-          "face": "normal",
+          "face": "serious",
           "text": "付き合ってるって、今、目の前で聞いた"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_petit_seen_notice_ageha",
+          "next_true": "petit_noticed"
+        },
+        {
           "speaker": "ageha",
-          "face": "normal",
+          "face": "sad",
           "text": "うちには、ちゃんと言葉で言ってよ"
         },
         {
           "speaker": "ageha",
-          "face": "normal",
-          "text": "今、いつもみたいに笑うのは無理"
+          "face": "sad",
+          "text": "今、いつもみたいに笑うのは、無理",
+          "beat": 400,
+          "duck": true
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "察してほしいって、黙ってました"
+          "face": "sad",
+          "text": "……察してほしいって、黙ってた"
         }
-      ]
+      ],
+      "branches": {
+        "petit_noticed": [
+          {
+            "speaker": "ageha",
+            "face": "sad",
+            "text": "プリの話の日も、変だった。信じたいから、聞かなかった"
+          }
+        ]
+      },
+      "comment": "petit_noticed は、この人の「気づきかけ」（petit_notice_ageha）を読んだ保存だけに足す一行。"
     },
     {
       "dialogue_id": "shuraba_mashiro",
       "lines": [
         {
           "speaker": "mashiro",
-          "face": "normal",
-          "text": "……僕だけじゃ、なかったんだね"
+          "face": "sad",
+          "text": "……僕だけじゃ、なかったんだねぇ",
+          "beat": 500
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_petit_seen_notice_mashiro",
+          "next_true": "petit_noticed"
         },
         {
           "speaker": "mashiro",
@@ -340,20 +634,32 @@
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
-          "text": "でも、僕の隣に座る約束は別"
+          "face": "serious",
+          "text": "でも、僕の隣に座る約束は、別",
+          "beat": 400,
+          "duck": true
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
+          "face": "sad",
           "text": "……今日は、ひとりで帰るね"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "座っていいって言葉を、許してもらえたことにしてた"
+          "face": "sad",
+          "text": "……うん。今日は、追いかけない"
         }
-      ]
+      ],
+      "branches": {
+        "petit_noticed": [
+          {
+            "speaker": "mashiro",
+            "face": "sad",
+            "text": "スマホを三回見てた日。四回目は、数えなかったんだよ"
+          }
+        ]
+      },
+      "comment": "petit_noticed は、この人の「気づきかけ」（petit_notice_mashiro）を読んだ保存だけに足す一行。"
     },
     {
       "dialogue_id": "shuraba_samechan",
@@ -361,35 +667,54 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "勇者よ、ほかにも誓いを立てていたのか",
-          "voice": "korochan"
+          "text": "勇者よ、ほかの者にも誓いを立てておったのか",
+          "voice": "korochan",
+          "beat": 500
         },
         {
           "speaker": "",
           "face": "",
-          "text": "サメちゃんは右手からコロちゃんを外し、膝に置いた。"
+          "text": "サメちゃんは右手からコロちゃんを外して、膝に置いた。"
         },
         {
           "speaker": "samechan",
-          "face": "normal",
-          "text": "今は、わしが話すのじゃ"
+          "face": "serious",
+          "text": "今は、わしが話すのじゃ",
+          "beat": 400
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_petit_seen_notice_samechan",
+          "next_true": "petit_noticed"
         },
         {
           "speaker": "samechan",
-          "face": "normal",
+          "face": "serious",
           "text": "お主の言葉を、信じて待っておった"
         },
         {
           "speaker": "samechan",
-          "face": "normal",
-          "text": "冗談にして終わらせることは、できぬ"
+          "face": "serious",
+          "text": "冗談にして終わらせることは、できぬ",
+          "duck": true
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "誓いを隠したまま、隣にいました"
+          "face": "sad",
+          "text": "……信じて待ってくれてたのに、隠してました。ごめんなさい"
         }
-      ]
+      ],
+      "branches": {
+        "petit_noticed": [
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "コロちゃんに言わせた日、わしは答えを聞かなかったのじゃ"
+          }
+        ]
+      },
+      "comment": "petit_noticed は、この人の「気づきかけ」（petit_notice_samechan）を読んだ保存だけに足す一行。"
     },
     {
       "dialogue_id": "shuraba_hiyori",
@@ -397,30 +722,119 @@
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "私にも、好きって言ってくれたよね"
+          "text": "私にも、好きって言ってくれたよね",
+          "beat": 500
         },
         {
           "speaker": "hiyori",
-          "face": "normal",
-          "text": "……大丈夫って、先に言いそうになった"
+          "face": "sad",
+          "text": "……大丈夫って、先に言いそうになっちゃった"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_petit_seen_notice_hiyori",
+          "next_true": "petit_noticed"
         },
         {
           "speaker": "hiyori",
           "face": "serious",
           "text": "大丈夫じゃないよ、今は",
-          "inner": "怒っていい。笑って片付けなくていい"
+          "inner": "怒っていい。笑って片付けなくていい",
+          "beat": 400,
+          "duck": true
         },
         {
           "speaker": "hiyori",
-          "face": "normal",
+          "face": "serious",
           "text": "私が納得したことに、しないでね"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "平気な顔、させようとしてました"
+          "face": "sad",
+          "text": "……平気な顔、させようとしてました"
         }
-      ]
+      ],
+      "branches": {
+        "petit_noticed": [
+          {
+            "speaker": "hiyori",
+            "face": "sad",
+            "text": "伏せたスマホの日は、先に言っちゃったの。大丈夫って"
+          }
+        ]
+      },
+      "comment": "petit_noticed は、この人の「気づきかけ」（petit_notice_hiyori）を読んだ保存だけに足す一行。"
+    },
+    {
+      "dialogue_id": "shuraba_noor",
+      "comment": "DSR20 ヌールの修羅場の反応。ヌールはドバイにいるので、テレビ電話で加わる（オーナー「修羅場イベントではテレビ電話で参戦」）。第5章の打ち上げ（ch5-party-plan.js）とスタッフロールの後（ch5-progress.js）の両方で読む。許し・別れは決めない。 petit_noticed は、この人の「気づきかけ」（petit_notice_noor）を読んだ保存だけに足す一行。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターに立てかけたスマホの画面に、ヌールさんが映っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "テレビ電話は、つながったままだった。",
+          "beat": 400
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……聞こえてたよ、ハジメ。ドバイまで、ちゃんと",
+          "beat": 500
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_petit_seen_notice_noor",
+          "next_true": "petit_noticed"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "こっちは、まだ夕方。……さっきまで、砂がきれいに見えてたのに"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "遠いから、隠せると思った？ それとも、遠いから、言わなくていいと思った？",
+          "duck": true
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……どっちも、です。ごめんなさい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面の中で、ヌールさんは膝を抱えていた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……今日は、切るね。顔を見てると、うまく話せないから",
+          "beat": 400
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……はい。話せる時まで、待ってます"
+        }
+      ],
+      "branches": {
+        "petit_noticed": [
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "あの日の、楽しかった顔。誰と会ってたのか、今、分かった"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "shuraba_talk_minto",
@@ -428,32 +842,32 @@
         {
           "speaker": "",
           "face": "",
-          "text": "栞さんからのLIMEは、お仕事用じゃない方から届いた。"
+          "text": "栞さんからのLIMEは、お仕事用じゃないほうから届いた。"
         },
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "来てくれたんだ。座って"
+          "text": "来てくれたんだ、……座って"
         },
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "先に言っとくね。今日の私は、みんとじゃないよ"
+          "text": "今日は、お店の顔で笑ってあげる余裕、ないからね"
         },
         {
           "speaker": "minto",
           "face": "ura_sad",
-          "text": "お店なら、笑って流すのも仕事だから、できちゃうの"
+          "text": "何もなかったみたいに笑えたら、楽かもしれないけど"
         },
         {
           "speaker": "minto",
           "face": "ura_sad",
-          "text": "だから、はじめくんも、そうしてくれると思った？"
+          "text": "はじめくんも、その方が楽だった？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……思ってた。栞さんが笑ってくれる方に、甘えてた"
+          "text": "……思ってた。栞さんが笑ってくれるほうに、甘えてた"
         },
         {
           "speaker": "hajime",
@@ -468,7 +882,17 @@
         {
           "speaker": "minto",
           "face": "ura_sad",
-          "text": "あれ、私の方だけだったんだね"
+          "text": "……私だけ、そう思ってたのが、悔しい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……栞さんといる時の俺は、嘘じゃなかった"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "本当なら、私の前で言えたよ。年のこと、私は自分の口で言った"
         },
         {
           "speaker": "hajime",
@@ -478,7 +902,7 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "今日は、許すとは言わない。笑ってあげるとも言わない"
+          "text": "今日は、許すとは言わない。笑ってあげるとも、言わない"
         },
         {
           "speaker": "minto",
@@ -488,10 +912,10 @@
         {
           "speaker": "",
           "face": "",
-          "text": "栞さんは、最後まで袖をつままなかった。続きを決めるのは、彼女だった。"
+          "text": "栞さんは、最後まで袖をつままなかった。この先を決めるのは、彼女だった。"
         }
       ],
-      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
     },
     {
       "dialogue_id": "shuraba_talk_tsumugi",
@@ -519,7 +943,7 @@
         {
           "speaker": "tsumugi",
           "face": "sad",
-          "text": "でも、はじめさんが出てくる絵は、描けませんでした"
+          "text": "でも、はじめさんが出てくる絵だけは、描けませんでした"
         },
         {
           "speaker": "tsumugi",
@@ -534,22 +958,32 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……うん。描いてる時間に、隠してた"
+          "text": "……うん。描いてる隣で、隠してた"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "つむぎちゃんは見せてくれたのに、俺は見せなかった。ごめん"
+          "text": "……でも、隣で見てた時の俺は、嘘じゃなかった"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……謝ってくれたことは、覚えておきます。描かないで"
+          "text": "……本当なら、私の前でも言えたはずです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "つむぎちゃんは見せてくれたのに、俺は見せなかった、……ごめん"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "隣に座ってもらうかは、まだ決められません"
+          "text": "……聞きました。……でも、すぐに前と同じには、できません"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "また隣に座ってほしいと思えるか、今はまだ、分からないです"
         },
         {
           "speaker": "tsumugi",
@@ -559,76 +993,86 @@
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎは、スケッチブックを開かずに立ち上がった。俺は、隣の席に座らなかった。"
+          "text": "つむぎは、スケッチブックを開かずに立ち上がった。俺は、隣の席に座れなかった。"
         }
       ],
-      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
     },
     {
-      "dialogue_id": "shuraba_talk_rin",
+      "dialogue_id": "shuraba_talk_rio",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんが指定したのは、Dr.fookahの2階だった。試香の時間は、もう終わっていた。"
+          "text": "凛想さんが指定したのは、Dr.fookahの2階。試香の時間は、もう終わっていた。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "座って。今日は、モニターの話じゃない"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "説明して、って言ったよね。聞く準備はしてきた"
+          "text": "説明して、って言ったよね。聞く準備は、してきた"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "一人を選ぶ話を、先に延ばしてました。誰にも言わないまま"
+          "text": "断られるのが怖くて、ほかに付き合ってる人がいることを隠してました"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "凛さんにも、同意を聞いていません"
+          "text": "凛想さんがどう思うか、聞こうともしませんでした"
         },
         {
-          "speaker": "rin",
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "でも、凛想さんといる時の俺は、どれも嘘じゃなかったです"
+        },
+        {
+          "speaker": "rio",
           "face": "serious",
-          "text": "香りなら、並べて比べるのが私の仕事"
+          "text": "本当なら、先に出せたはずだよ。同意書みたいに、私が読める形で"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "serious",
-          "text": "でも、比べられる側に黙って並べるのは、仕事でもしない"
+          "text": "サンプルなら、並べて確かめることもあるよ"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "でも、私はサンプルじゃない。君の恋人のつもりだった"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……取り替えがきくみたいに、扱いました。ごめんなさい"
+          "text": "……俺が、黙って選べることじゃなかった。ごめんなさい"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "言い訳しなかったのは、聞いた。それで帳消しにはならない"
+          "text": "うん。聞いた。……今日は、それしか返せない"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "次に何か決める時は、決める前に、私に聞いて"
+          "text": "次に会うかは、私から連絡する。少し、考えさせて"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "……今日は、君って呼ぶね"
+          "text": "……名前で呼ぶのは、その時にする"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "試香紙は、最後まで鞄から出てこなかった。返事を決めるのは、凛さんだった。"
+          "text": "試香紙は、最後まで鞄から出てこなかった。返事を決めるのは、凛想さんだった。"
         }
       ],
-      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
     },
     {
       "dialogue_id": "shuraba_talk_ageha",
@@ -656,17 +1100,27 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……思ってました。言わなくても、あげはさんなら分かるって"
+          "text": "……思ってた。言わなくても、あげはなら分かるって"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あげはさんは言葉にする練習をしてたのに、俺は黙ってました"
+          "text": "あげはは言葉にする練習をしてたのに、俺は黙ってた"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ごめんなさい"
+          "text": "……でも、あげはといる時の俺は、嘘じゃなかった"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "嘘じゃないなら、言えたっしょ。うち、手、震えながら言ったよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ごめん"
         },
         {
           "speaker": "ageha",
@@ -686,10 +1140,10 @@
         {
           "speaker": "",
           "face": "",
-          "text": "手をつなぐかどうかは、聞かれなかった。俺からも、聞かなかった。"
+          "text": "手をつなぐかどうかは、聞かれなかった。俺からも、聞けなかった。"
         }
       ],
-      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
     },
     {
       "dialogue_id": "shuraba_talk_mashiro",
@@ -717,7 +1171,7 @@
         {
           "speaker": "mashiro",
           "face": "sad",
-          "text": "でも、はじめくんは、それを全部いいよって意味にしてたのかなぁって"
+          "text": "でも、はじめくんは、それを『全部いいよ』って意味にしてたのかなぁって"
         },
         {
           "speaker": "hajime",
@@ -727,35 +1181,45 @@
         {
           "speaker": "hajime",
           "face": "normal",
+          "text": "でも、ましろちゃんの隣にいた俺は、嘘じゃなかったよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……嘘じゃないなら、隣で言えたよねぇ。黙ってていい席じゃ、ないよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
           "text": "ましろちゃんの優しさに、甘えてた。ごめん"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "……うん。ちゃんと言えたね"
+          "text": "……うん。聞いたよ、……でも、まだ悲しい"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "優しくするのは、やめない。それは僕のことだから"
+          "text": "お茶を頼んだのは、僕が話したかったから。許したからじゃ、ないよ"
         },
         {
           "speaker": "mashiro",
           "face": "serious",
-          "text": "でも、隣に座る約束の方は、もう一回ちゃんと話してから決める"
+          "text": "これからも隣に座りたいかは、まだ、考えてるところ"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "今日はここまで。……眠くなる前に、帰るね"
+          "text": "今日は、ここまでにしたいなぁ。……続きは、僕から連絡するね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ましろちゃんは、自分の分のお茶を最後まで飲んでから席を立った。"
+          "text": "ましろちゃんは、自分のお茶を最後まで飲んでから、席を立った。"
         }
       ],
-      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
     },
     {
       "dialogue_id": "shuraba_talk_samechan",
@@ -774,7 +1238,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "それだけ言って、サメちゃんはコロちゃんを外し、膝に置いた。"
+          "text": "それだけ言うと、サメちゃんはコロちゃんを外して、膝に置いた。"
         },
         {
           "speaker": "samechan",
@@ -784,22 +1248,32 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "毎朝、おはようは届いておった。わしも、毎朝返しておった"
+          "text": "お主からのおはよう、楽しみにしておった。届いた日は、何度も読み返したのじゃ"
         },
         {
           "speaker": "samechan",
           "face": "serious",
-          "text": "その間も、ほかの誓いのことは黙っておったのじゃな"
+          "text": "その時も、ほかの人と付き合っておることは、黙っておったのじゃな"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……はい。誓いを隠したまま、隣にいました"
+          "text": "……はい。サメちゃんには言わないまま、付き合っていました"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "冗談にできる話じゃないのに、言わずに済ませてました。ごめんなさい"
+          "text": "でも、おはようを送った朝の俺は、嘘じゃありませんでした"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "まことなら、わしの前で言えたはずじゃ。隠した誓いを、誓いとは呼ばぬ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "信じてくれてるのに、嫌われるのが怖くて、隠していました。ごめんなさい"
         },
         {
           "speaker": "samechan",
@@ -814,7 +1288,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "……明日も、おはようは送ってよい。返すかは、その朝に決める"
+          "text": "……明日も、おはようは送ってよい。返すかは、その朝に決めるのじゃ"
         },
         {
           "speaker": "",
@@ -822,7 +1296,7 @@
           "text": "コロちゃんは、最後まで膝の上にいた。"
         }
       ],
-      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
     },
     {
       "dialogue_id": "shuraba_talk_hiyori",
@@ -830,7 +1304,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ひよりと会ったのは、仕事帰りの時間だった。儚い微笑みは、していなかった。"
+          "text": "ひよりさんと会ったのは、仕事帰りの時間だった。儚い微笑みは、していなかった。"
         },
         {
           "speaker": "hiyori",
@@ -840,7 +1314,7 @@
         {
           "speaker": "hiyori",
           "face": "serious",
-          "text": "好きって言ってくれた日、儚く待ってるねって言ったでしょ"
+          "text": "好きって言ってくれた日、儚く待ってるねって、言ったでしょ"
         },
         {
           "speaker": "hiyori",
@@ -855,18 +1329,33 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "大丈夫って言わせる方へ、黙って任せてました。ごめんなさい"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "normal",
-          "text": "……うん。言ってくれて、よかった",
-          "inner": "よかった、で終わらせたら、また同じになる"
+          "text": "でも、ひよりさんといた時の俺は、嘘じゃなかったです"
         },
         {
           "speaker": "hiyori",
           "face": "serious",
-          "text": "私、今日は大丈夫って言わない。怒ってるのも、ちゃんと見てて"
+          "text": "私の儚いのはね、聞かれたら種を明かせるの。はじめくんのは、明かせた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……明かせませんでした"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大丈夫って言わせるほうへ、黙って任せてました。ごめんなさい"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……うん。聞いたよ。……今日は、まだ笑えないけど",
+          "inner": "うなずいたら、許したことになるかな。……違う。まだ違う"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "うなずいたの、許したって意味じゃないよ。怒ってるのも、ちゃんと見てて"
         },
         {
           "speaker": "hiyori",
@@ -881,10 +1370,340 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ひよりは、一度も儚い顔をしないまま帰っていった。"
+          "text": "ひよりさんは、一度も儚い顔をしないまま帰っていった。"
         }
       ],
-      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し。許し・別れ・未解決フラグの解除は決めない（解決条件は未採用）。"
+      "comment": "ending_relationship_pending の後、本人が決めた日に一人ずつ会う話し直し（第5章のスタッフロールの後。ch5.js）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。"
+    },
+    {
+      "dialogue_id": "shuraba_talk_noor",
+      "comment": "DSR20 ending_relationship_pending の後、本人が決めた日に一人ずつ話し直す場面のヌール版。ドバイとのテレビ電話（時差五時間）。許し・別れは決めない。読み終えた人の未解決を外すのは runner（IR32）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "約束の夜。部屋でノートパソコンを開くと、時間どおりにヌールさんから着信があった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……こんばんは、ハジメ。こっちは、まだ明るいよ"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "先に言うね。今日は、怒るためにかけたんじゃない"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "砂丘で言ったこと、私は本気だった。ハジメは？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "本気でした。砂丘にいた俺は、嘘じゃなかったです"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "本気なら、画面ごしでも言えたよ。毎日、ちゃんとつながってたのに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。ほかの人のことを言えなかったのは、俺の逃げです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "遠いのを、言わない理由にしてました。ごめんなさい"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……うん。ちゃんと聞いた"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "遠いのは、ハジメのせいじゃない。でも、黙ってたのは、ハジメが決めたこと"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "許すかどうかは、まだ決めない。砂を見るみたいに、もう少し時間をかけたいの"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "次にかけるのは、私から。……それまで、待ってて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通話が切れた画面に、自分の顔だけが映っていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_sumi_cover",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の一人と話した夜。tonariに戻ると、スミさんがカウンターの中で待っていた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "座れ、……ひどい顔だな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水のグラスが、二つ置かれた。スミさんは自分の分を一口飲んで、長く息を吐いた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "この何日か、店に来たぞ。お前の彼女たちが、一人ずつ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……え"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "全員、お前の文句を言いに来た。全員、最後まで聞いた"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "tsumugi",
+          "next_true": "said_tsumugi",
+          "next_false": "check_minto"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "で、一人ずつに言っといた"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "『あいつの本命は、あんた一人だ』ってな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……全員に、ですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "全員にだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは悪びれもせず、グラスを一つ拭き終えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……それ、嘘じゃないですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "duck": true,
+          "text": "俺がついた嘘だ。本当にするか、嘘のまま終わらせるかは、お前が決めろ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……気をつけろよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "頭を下げると、スミさんは鼻で笑って、俺のグラスに水を注ぎ足した。"
+        }
+      ],
+      "branches": {
+        "said_tsumugi": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "つむぎは、スケッチブックを閉じたまま、一杯だけ飲んでった"
+          },
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "minto",
+            "next_true": "said_minto",
+            "next_false": "check_minto"
+          }
+        ],
+        "check_minto": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "minto",
+            "next_true": "said_minto",
+            "next_false": "check_rio"
+          }
+        ],
+        "said_minto": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "みんとは、店の声で三十分怒って、帰り際だけ小さい声だった"
+          },
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "rio",
+            "next_true": "said_rio",
+            "next_false": "check_rio"
+          }
+        ],
+        "check_rio": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "rio",
+            "next_true": "said_rio",
+            "next_false": "check_ageha"
+          }
+        ],
+        "said_rio": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "凛想は、お前の悪いところを箇条書きにして持ってきた"
+          },
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "ageha",
+            "next_true": "said_ageha",
+            "next_false": "check_ageha"
+          }
+        ],
+        "check_ageha": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "ageha",
+            "next_true": "said_ageha",
+            "next_false": "check_mashiro"
+          }
+        ],
+        "said_ageha": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "あげはは、最初の五分泣いて、残りはずっと怒ってた"
+          },
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "mashiro",
+            "next_true": "said_mashiro",
+            "next_false": "check_mashiro"
+          }
+        ],
+        "check_mashiro": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "mashiro",
+            "next_true": "said_mashiro",
+            "next_false": "check_samechan"
+          }
+        ],
+        "said_mashiro": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "ましろは、ムカイの店から電話してきた。ほとんど黙ってたな"
+          },
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "samechan",
+            "next_true": "said_samechan",
+            "next_false": "check_samechan"
+          }
+        ],
+        "check_samechan": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "samechan",
+            "next_true": "said_samechan",
+            "next_false": "check_hiyori"
+          }
+        ],
+        "said_samechan": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "サメちゃんは、コロちゃんに全部言わせて、最後だけ自分の声だった"
+          },
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "hiyori",
+            "next_true": "said_hiyori",
+            "next_false": "check_hiyori"
+          }
+        ],
+        "check_hiyori": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "hiyori",
+            "next_true": "said_hiyori",
+            "next_false": "check_noor"
+          }
+        ],
+        "said_hiyori": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "ひよりは、儚い顔のまま、議事録みたいに怒ってた"
+          },
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "noor",
+            "next_true": "said_noor",
+            "next_false": "check_noor"
+          }
+        ],
+        "check_noor": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "noor",
+            "next_true": "said_noor"
+          }
+        ],
+        "said_noor": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "ドバイの子とは、画面越しに話した。日本語、うまいもんだな"
+          }
+        ]
+      },
+      "comment": "2026-11-11 オーナー指示（STK12）。スタッフロールの後、一人ずつの話し直し（shuraba_talk_*）を全員読み終えた後に一度だけ読む締め。彼女たちに怒られた後、スミさんが裏で一人ずつ話を聞き『本命はあんた一人だ』と説得していたと明かし、『……気をつけろよ』と言う。名前を挙げる行は実際の恋人だけ（condition lover）。ch5-progress.js の chapterFivePostEndingPlan が末尾に足す。"
     }
   ]
 }
+

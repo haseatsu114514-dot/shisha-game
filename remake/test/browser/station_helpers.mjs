@@ -26,6 +26,8 @@ export async function travelToCity(page, destination, { touch } = {}) {
   await page.locator(`.map:not(.done)[data-region="${destination}"]`).waitFor();
   await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'));
   const after = await snapshot();
+  assert(Number.isFinite(after.playMs) && after.playMs >= before.playMs,
+    'Travel keeps the elapsed play time moving forward');
   if (fare) {
     assert(Number.isFinite(after.savedAt) && after.savedAt >= before.savedAt, 'A confirmed trip records its autosave');
     assert.deepEqual(await page.evaluate(async () => {
@@ -34,6 +36,7 @@ export async function travelToCity(page, destination, { touch } = {}) {
     }), after, 'The autosave contains the paid fare and destination together');
   }
   assert.deepEqual(after, { ...before, money: before.money - fare,
+    playMs: after.playMs,
     savedAt: fare ? after.savedAt : before.savedAt,
     flags: { ...before.flags, _ch2_region: destination } },
   'A confirmed trip changes only the city and one fare, preserving actions and progress');

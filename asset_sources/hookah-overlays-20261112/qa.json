@@ -1,0 +1,52 @@
+[
+  {
+    "file": "shisha_hideaway.png",
+    "sha256": "705aa582151ed1ff7a7b8340d28132ad06679eae46ac032464e8a0322777aa5b",
+    "bytes": 1556101,
+    "dimensions": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "transparent_pixel_fraction": 0.7905,
+    "alpha_bbox": [
+      37,
+      57,
+      994,
+      1494
+    ],
+    "manual_measurements_px": {
+      "bowl_hmd_coals_height": 204,
+      "whole_rig_height": 1271,
+      "hmd_width": 157,
+      "tray_width": 419
+    },
+    "head_to_rig_ratio": 0.161,
+    "hmd_to_tray_ratio": 0.375
+  },
+  {
+    "file": "shisha_c_station.png",
+    "sha256": "53b5a2e3eadc250feafde4e96e353b75d4ad23ddfa03210a9a08ae03eaa2a05d",
+    "bytes": 1523303,
+    "dimensions": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "transparent_pixel_fraction": 0.7943,
+    "alpha_bbox": [
+      23,
+      23,
+      1014,
+      1536
+    ],
+    "manual_measurements_px": {
+      "bowl_hmd_coals_height": 180,
+      "whole_rig_height": 1241,
+      "hmd_width": 141,
+      "tray_width": 386
+    },
+    "head_to_rig_ratio": 0.145,
+    "hmd_to_tray_ratio": 0.365
+  }
+]

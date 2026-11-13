@@ -1,0 +1,321 @@
+{
+  "_comment": "カードゲーム「一台勝負」の相手の一言（#3244 項目3）。吹き出し1枚で出す短い台詞。dialogue_id は ichidai_<相手のキャラID>_<場面>。lines はその場面の候補で、出すときに1つだけ選ぶ（続けて読む台本ではない）。場面: start=対戦の始め／play_<種類>=相手がカードを使った（tech・tool・event・person）／play_card_<カードID>=そのカードだけの一言（種類より優先）／foe_just・foe_scorch=相手の一口がジャスト・焦げ／hajime_just・hajime_scorch=はじめの一口がジャスト・焦げ／foe_vote・hajime_vote=一票が相手・はじめに入った／foe_win・foe_lose・draw=相手の勝ち・負け・引き分け。選び方と吹き出しは remake/js/minigames/ichidai-lines.js、確かめ方は remake/test/ichidai_lines.mjs。相手を足すときは、同じ場面をそろえて ichidai_<id>_ で足す",
+  "dialogues": [
+    {
+      "dialogue_id": "ichidai_sumi_start",
+      "lines": [
+        { "speaker": "sumi", "face": "smile", "text": "座れ、はじめ。一台勝負だ" },
+        { "speaker": "sumi", "face": "normal", "text": "札でも炭は炭だ。よく見ろよ" },
+        { "speaker": "sumi", "face": "smile", "text": "手加減はしねえぞ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_sumi_play_tech",
+      "lines": [
+        { "speaker": "sumi", "face": "serious", "text": "ここで吸い方を変える" },
+        { "speaker": "sumi", "face": "normal", "text": "一口の熱は、手で決まる" },
+        { "speaker": "sumi", "face": "normal", "text": "慌てるな。吸い方ひとつだ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_sumi_play_tool",
+      "lines": [
+        { "speaker": "sumi", "face": "normal", "text": "道具は使ってなんぼだ" },
+        { "speaker": "sumi", "face": "normal", "text": "置いとけば、あとが楽になる" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_sumi_play_event",
+      "lines": [
+        { "speaker": "sumi", "face": "smile", "text": "卓の外も勝負のうちだ" },
+        { "speaker": "sumi", "face": "smile", "text": "悪いな。少し揺らすぞ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_sumi_play_person",
+      "lines": [
+        { "speaker": "sumi", "face": "normal", "text": "頼れる相手は頼っとけ" },
+        { "speaker": "sumi", "face": "smile", "text": "一人で作る一台じゃねえ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_sumi_play_card_sumi",
+      "lines": [
+        { "speaker": "sumi", "face": "thinking", "text": "俺が俺を出すのも、妙なもんだな" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_sumi_foe_just",
+      "lines": [
+        { "speaker": "sumi", "face": "smile", "text": "ジャストだ。いい煙だろ" },
+        { "speaker": "sumi", "face": "smile", "text": "この温度だ。覚えとけ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_sumi_foe_scorch",
+      "lines": [
+        { "speaker": "sumi", "face": "surprise", "text": "焦がしたか。俺もまだまだだな" },
+        { "speaker": "sumi", "face": "thinking", "text": "熱を読み違えた。悪い見本だ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_sumi_hajime_just",
+      "lines": [
+        { "speaker": "sumi", "face": "smile", "text": "いい熱だ。その感じを忘れるな" },
+        { "speaker": "sumi", "face": "surprise", "text": "ほう。今のは客に出せる" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_sumi_hajime_scorch",
+      "lines": [
+        { "speaker": "sumi", "face": "serious", "text": "焦げたな。炭の数から見直せ" },
+        { "speaker": "sumi", "face": "serious", "text": "熱が先走ってる。一度落ち着け" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_sumi_foe_vote",
+      "lines": [
+        { "speaker": "sumi", "face": "smile", "text": "この一票はもらった" },
+        { "speaker": "sumi", "face": "normal", "text": "審査員は正直だな" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_sumi_hajime_vote",
+      "lines": [
+        { "speaker": "sumi", "face": "smile", "text": "持ってかれたか。やるじゃねえか" },
+        { "speaker": "sumi", "face": "normal", "text": "今のは、お前の一口が上だ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_sumi_foe_win",
+      "lines": [
+        { "speaker": "sumi", "face": "smile", "text": "俺の勝ちだ。また座れ" },
+        { "speaker": "sumi", "face": "smile", "text": "まだ譲れねえな" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_sumi_foe_lose",
+      "lines": [
+        { "speaker": "sumi", "face": "smile", "text": "負けた。いい一台だったぞ、はじめ" },
+        { "speaker": "sumi", "face": "smile", "text": "やられたな。客が喜ぶ一口だった" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_sumi_draw",
+      "lines": [
+        { "speaker": "sumi", "face": "normal", "text": "引き分けか。もう一回やるか" },
+        { "speaker": "sumi", "face": "thinking", "text": "決着つかずだ。炭がもったいねえな" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_naru_start",
+      "lines": [
+        { "speaker": "naru", "face": "smile", "text": "俺の台は丸見えだ。来い" },
+        { "speaker": "naru", "face": "normal", "text": "手は隠さねえ。勝負だ" },
+        { "speaker": "naru", "face": "smile", "text": "お、はじめ。座れよ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_naru_play_tech",
+      "lines": [
+        { "speaker": "naru", "face": "serious", "text": "吸い方で甘さを立てる" },
+        { "speaker": "naru", "face": "normal", "text": "ここは一口を丁寧にいく" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_naru_play_tool",
+      "lines": [
+        { "speaker": "naru", "face": "normal", "text": "道具は段取りのうちだ" },
+        { "speaker": "naru", "face": "smile", "text": "先に置いとく。あとで効く" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_naru_play_event",
+      "lines": [
+        { "speaker": "naru", "face": "smile", "text": "悪いな。これも勝負だ" },
+        { "speaker": "naru", "face": "serious", "text": "遠慮なしでいくぞ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_naru_play_person",
+      "lines": [
+        { "speaker": "naru", "face": "smile", "text": "一人で作る味じゃねえよ" },
+        { "speaker": "naru", "face": "normal", "text": "助けは借りる主義なんだ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_naru_play_card_naru",
+      "lines": [
+        { "speaker": "naru", "face": "smile", "text": "俺の札か。照れるな、これ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_naru_foe_just",
+      "lines": [
+        { "speaker": "naru", "face": "excited", "text": "よし、甘さが真ん中に来た" },
+        { "speaker": "naru", "face": "smile", "text": "焼き上がり、ぴったりだ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_naru_foe_scorch",
+      "lines": [
+        { "speaker": "naru", "face": "sad", "text": "くそっ、焦がした……" },
+        { "speaker": "naru", "face": "surprise", "text": "熱を入れすぎた。悔しいな" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_naru_hajime_just",
+      "lines": [
+        { "speaker": "naru", "face": "smile", "text": "うまいな。素直にそう思う" },
+        { "speaker": "naru", "face": "surprise", "text": "今の熱、ちゃんと見てたぞ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_naru_hajime_scorch",
+      "lines": [
+        { "speaker": "naru", "face": "serious", "text": "焦げたな。熱を一段落とせ" },
+        { "speaker": "naru", "face": "normal", "text": "急ぐなよ。炭は逃げねえ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_naru_foe_vote",
+      "lines": [
+        { "speaker": "naru", "face": "smile", "text": "一票、ありがたくもらう" },
+        { "speaker": "naru", "face": "excited", "text": "甘さが届いたか。よし" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_naru_hajime_vote",
+      "lines": [
+        { "speaker": "naru", "face": "sad", "text": "持ってかれた。悔しいな" },
+        { "speaker": "naru", "face": "smile", "text": "今のはお前の一口だ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_naru_foe_win",
+      "lines": [
+        { "speaker": "naru", "face": "excited", "text": "勝った。次も本気で来い" },
+        { "speaker": "naru", "face": "smile", "text": "いい勝負だった。またやろう" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_naru_foe_lose",
+      "lines": [
+        { "speaker": "naru", "face": "sad", "text": "負けた……くそ、うまかった" },
+        { "speaker": "naru", "face": "smile", "text": "完敗だ。お前の一台、効いた" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_naru_draw",
+      "lines": [
+        { "speaker": "naru", "face": "normal", "text": "引き分けか。決着は次だな" },
+        { "speaker": "naru", "face": "smile", "text": "並んだな。もう一回やるか" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_adam_start",
+      "lines": [
+        { "speaker": "adam", "face": "smile", "text": "ふっ。原点の煙を見せよう" },
+        { "speaker": "adam", "face": "normal", "text": "卓に着け。真理は一台に宿る" },
+        { "speaker": "adam", "face": "intense", "text": "ダブルアップルが呼んでいる" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_adam_play_tech",
+      "lines": [
+        { "speaker": "adam", "face": "serious", "text": "一口に、アニスを立たせる" },
+        { "speaker": "adam", "face": "normal", "text": "吸い方ひとつで宇宙は変わる" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_adam_play_tool",
+      "lines": [
+        { "speaker": "adam", "face": "normal", "text": "うむ。道具もまた相棒だ" },
+        { "speaker": "adam", "face": "smile", "text": "備えは、煙を裏切らぬ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_adam_play_event",
+      "lines": [
+        { "speaker": "adam", "face": "smile", "text": "ふっ。風向きも味のうちだ" },
+        { "speaker": "adam", "face": "intense", "text": "揺れるがいい。これも試練よ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_adam_play_person",
+      "lines": [
+        { "speaker": "adam", "face": "normal", "text": "縁もまた、一台の一部だ" },
+        { "speaker": "adam", "face": "smile", "text": "頼もしい。共に煙を上げよう" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_adam_play_card_adam",
+      "lines": [
+        { "speaker": "adam", "face": "smile", "text": "俺が俺を呼ぶ。これぞ原点" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_adam_foe_just",
+      "lines": [
+        { "speaker": "adam", "face": "intense", "text": "これぞ真理。完璧な熱だ" },
+        { "speaker": "adam", "face": "smile", "text": "うむ。アニスが歌っている" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_adam_foe_scorch",
+      "lines": [
+        { "speaker": "adam", "face": "surprise", "text": "焦がした……だと……" },
+        { "speaker": "adam", "face": "serious", "text": "昨日の正解に頼りすぎたか" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_adam_hajime_just",
+      "lines": [
+        { "speaker": "adam", "face": "surprise", "text": "ほう……その熱、見事だ" },
+        { "speaker": "adam", "face": "smile", "text": "良い煙だ。認めざるを得ぬ" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_adam_hajime_scorch",
+      "lines": [
+        { "speaker": "adam", "face": "serious", "text": "焦げたな。熱は嘘をつかぬ" },
+        { "speaker": "adam", "face": "normal", "text": "案ずるな。炭を一つ引け" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_adam_foe_vote",
+      "lines": [
+        { "speaker": "adam", "face": "smile", "text": "ふっ。票は原点に集う" },
+        { "speaker": "adam", "face": "intense", "text": "審査員も堕ちたようだな" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_adam_hajime_vote",
+      "lines": [
+        { "speaker": "adam", "face": "serious", "text": "その一票、預けておこう" },
+        { "speaker": "adam", "face": "surprise", "text": "ほう。今のは届いていたか" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_adam_foe_win",
+      "lines": [
+        { "speaker": "adam", "face": "intense", "text": "勝利もまた、原点の導きだ" },
+        { "speaker": "adam", "face": "smile", "text": "良い卓だった。また囲もう" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_adam_foe_lose",
+      "lines": [
+        { "speaker": "adam", "face": "serious", "text": "敗れたか……見事な一台だ" },
+        { "speaker": "adam", "face": "smile", "text": "同じ卓を囲めてよかった" }
+      ]
+    },
+    {
+      "dialogue_id": "ichidai_adam_draw",
+      "lines": [
+        { "speaker": "adam", "face": "normal", "text": "引き分けか。決着は次の煙で" },
+        { "speaker": "adam", "face": "smile", "text": "並び立つ、か。悪くない" }
+      ]
+    }
+  ]
+}

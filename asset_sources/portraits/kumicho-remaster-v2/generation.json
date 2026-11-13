@@ -1,0 +1,163 @@
+{
+ "phase": "立ち絵そろえ 第2期（規格そろえ）TS06",
+ "face": "normal",
+ "chosen": "C",
+ "chosen_by": "2026-11-02 オーナー「1は任せる」により Claude が選定（規格6.4〜7.7頭身の中央に近く、足元の余白がある案）",
+ "candidates": {
+  "a": {
+   "head_body_claude": 7.41,
+   "head_body_codex": 7.17,
+   "sha256": "61a56a48e6c5ec9413c6148abf8bbd0da4fa466573178ae36d72ff4ca954887e"
+  },
+  "b": {
+   "head_body_claude": 7.17,
+   "head_body_codex": 7.45,
+   "sha256": "7555d6e5d406b01ec140330bbe92b8b058c7f55214bd68384d892570a613813a"
+  },
+  "c": {
+   "head_body_claude": 6.75,
+   "head_body_codex": 7.1,
+   "sha256": "649f40006ad7aeeb0c1a71821fe05a8d3872714d812b4fe2a21a4b99a00e804d"
+  }
+ },
+ "source": {
+  "generated_by": "Codex built-in image_gen",
+  "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2330#issuecomment-6573094756",
+  "zip_sha256": "f4c68242905c3d83a9998c463354046dc5ac20a887b9162f1753b2c0ee435fa2",
+  "original_sha256": "649f40006ad7aeeb0c1a71821fe05a8d3872714d812b4fe2a21a4b99a00e804d"
+ },
+ "references": [
+  "/workspace/shared/portrait-standard-2330-trials/refs/kumicho.png",
+  "/workspace/shared/portrait-standard-2330-trials/refs/nagumo.png",
+  "/workspace/shared/portrait-standard-2330-trials/refs/minto.png",
+  "/workspace/shared/portrait-standard-2330-trials/refs/ageha.png"
+ ],
+ "game_integration": "未実施。表情差分を同じ頭の大きさで作ってから、キャラ単位で組み込む（通常だけ先に入れると表情を切り替えたときに頭の大きさが変わるため）",
+ "expressions": {
+  "smile": {
+   "chosen": "kumicho-smile-a",
+   "original_sha256": "7a253aeedb90a3d5a041c4f35410ba5591e8c2c0c5d32f7fb8a8b29199d258f4",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6575006546",
+   "zip_sha256": "5e78ecce094260c63366e7aaa858733e8b339b018d6cca03a15262ec180defb4",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "kumicho-smile-a": {
+     "head_body_codex": 6.84,
+     "disposition": "NOT ADOPTED; candidate only",
+     "sha256": "7a253aeedb90a3d5a041c4f35410ba5591e8c2c0c5d32f7fb8a8b29199d258f4"
+    },
+    "kumicho-smile-b": {
+     "head_body_codex": 6.96,
+     "disposition": "NOT ADOPTED; candidate only",
+     "sha256": "ee6da3c19b398fa7471e3a66769da583b2f625c328b3e7ad637b70ad5991989d"
+    },
+    "kumicho-smile-c": {
+     "head_body_codex": 7.05,
+     "disposition": "NOT ADOPTED; candidate only",
+     "sha256": "580613e5cf6d5ff91d188019d84e53157aba5a4937833d183be5060c65b82630"
+    }
+   }
+  },
+  "serious": {
+   "chosen": "kumicho-serious-c",
+   "original_sha256": "7e7e7a83246aa831ce0076374e8ff7468816d17152306c4792996ecc77f42d9a",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6575006546",
+   "zip_sha256": "5e78ecce094260c63366e7aaa858733e8b339b018d6cca03a15262ec180defb4",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "kumicho-serious-a": {
+     "head_body_codex": 6.53,
+     "disposition": "NOT ADOPTED; candidate only",
+     "sha256": "9c5842905c621a7014462a5fb6c35a61d0e2c098891b6b4bffa310b9f5297e9d"
+    },
+    "kumicho-serious-b": {
+     "head_body_codex": 7.03,
+     "disposition": "NOT ADOPTED; candidate only",
+     "sha256": "f9187197f2582cc77a48090e3aabdbe89143a5261fd60c609e472a6f70fe8086"
+    },
+    "kumicho-serious-c": {
+     "head_body_codex": 6.99,
+     "disposition": "NOT ADOPTED; candidate only",
+     "sha256": "7e7e7a83246aa831ce0076374e8ff7468816d17152306c4792996ecc77f42d9a"
+    }
+   }
+  },
+  "surprise": {
+   "chosen": "kumicho-surprise-a",
+   "original_sha256": "3a5b9448e136d38f10bd4e5656aeb3f78c02b225f255af3e51fcba68ec8b5d46",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6575006546",
+   "zip_sha256": "5e78ecce094260c63366e7aaa858733e8b339b018d6cca03a15262ec180defb4",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "kumicho-surprise-a": {
+     "head_body_codex": 6.81,
+     "disposition": "NOT ADOPTED; candidate only",
+     "sha256": "3a5b9448e136d38f10bd4e5656aeb3f78c02b225f255af3e51fcba68ec8b5d46"
+    },
+    "kumicho-surprise-b": {
+     "head_body_codex": 7.19,
+     "disposition": "NOT ADOPTED; candidate only",
+     "sha256": "f93717551adadbf38b9ae02d2721c133903d721e8d0804312b595de3ddf99cad"
+    },
+    "kumicho-surprise-c": {
+     "head_body_codex": 7.01,
+     "disposition": "NOT ADOPTED; candidate only",
+     "sha256": "769a78ed39538d10a180882cf3c4a5dfd6b64be9f9d136f0f8a779b632e1ecbd"
+    }
+   }
+  },
+  "sad": {
+   "chosen": "kumicho-sad-a",
+   "original_sha256": "4980f61fc1c74d596113c889bdbe7f1e26975a8503696ff909e19e4804e2a92c",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6575006546",
+   "zip_sha256": "5e78ecce094260c63366e7aaa858733e8b339b018d6cca03a15262ec180defb4",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "kumicho-sad-a": {
+     "head_body_codex": 6.67,
+     "disposition": "NOT ADOPTED; candidate only",
+     "sha256": "4980f61fc1c74d596113c889bdbe7f1e26975a8503696ff909e19e4804e2a92c"
+    },
+    "kumicho-sad-b": {
+     "head_body_codex": 6.84,
+     "disposition": "NOT ADOPTED; candidate only",
+     "sha256": "e932c209cceb3ccce1f5e7af3df150b7e14e1c6132c921aab06bdb2eea6d4a5b"
+    },
+    "kumicho-sad-c": {
+     "head_body_codex": 6.79,
+     "disposition": "NOT ADOPTED; candidate only",
+     "sha256": "8b8eda11c987a518bb8f1e56a7757e4aeec7dbee0afbc3ec916a9bfdefb86697"
+    }
+   }
+  },
+  "smug": {
+   "chosen": "kumicho-smug-c",
+   "original_sha256": "6c8b677bdeee1e997383c322f59aa53834776806328e9f1780e50286c8e04076",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6575006546",
+   "zip_sha256": "5e78ecce094260c63366e7aaa858733e8b339b018d6cca03a15262ec180defb4",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "kumicho-smug-a": {
+     "head_body_codex": 7.37,
+     "disposition": "NOT ADOPTED; candidate only",
+     "sha256": "27e7aab11ecacc38a314cfe3739464f3ba1e5a5ac3318df2835ac757c3439525"
+    },
+    "kumicho-smug-b": {
+     "head_body_codex": 7.37,
+     "disposition": "NOT ADOPTED; candidate only",
+     "sha256": "382236983e9423866b4fa913f1038c9bd80d524c93cbf71780178f5c60fd094c"
+    },
+    "kumicho-smug-c": {
+     "head_body_codex": 7.31,
+     "disposition": "NOT ADOPTED; candidate only",
+     "sha256": "6c8b677bdeee1e997383c322f59aa53834776806328e9f1780e50286c8e04076"
+    }
+   }
+  }
+ }
+}

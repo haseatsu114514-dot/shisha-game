@@ -1,0 +1,182 @@
+// DJ を本編から開く部品（DJS10）: 結果の検査・記録・セット解放・東京の地図の行き先・SBD39 の火種・セーブ往復。
+import assert from "node:assert/strict";
+globalThis.document ||= { addEventListener() {} };
+globalThis.window ||= {};
+const storage = new Map();
+globalThis.localStorage = { setItem: (k, v) => storage.set(k, String(v)), getItem: (k) => storage.get(k) ?? null, removeItem: (k) => storage.delete(k) };
+const dj = await import("../js/minigames/dj.js");
+const core = await import("../js/core/state.js");
+const growth = await import("../js/core/growth.js");
+const { chapterThreeMapModel, TOKYO_MAP_PLACES } = await import("../js/chapters/ch3-map-model.js");
+const { hasStoreLogo } = await import("../js/core/store-logos.js");
+const { CH3_TOKYO_SPOTS } = await import("../js/chapters/ch3-tokyo-daily.js");
+const { TOKYO_SPOTS: CH5_TOKYO_SPOTS } = await import("../js/chapters/ch5-tokyo.js");
+const { chapterFiveTokyoSpots } = await import("../js/chapters/ch5-daily.js");
+const { visitDjClub, clubFirstScene } = await import("../js/daily/dj-club.js");
+let groups = 0; const check = (name, fn) => { fn(); groups++; console.log("PASS " + name); };
+const msg = (set, rank, total, floor = 80) => ({ type: "dj-result", set, rank, total, floor });
+
+check("sets mirror the preview's SET list; ranks S > A > B > C", () => {
+  assert.deepEqual(dj.DJ_SETS.map(s => [s.id, s.name]), [[1, "SET 1"], [2, "SET 2"], [3, "SET 3"]]);
+  assert.deepEqual(dj.DJ_SETS.map(s => s.tracks), [3, 4, 4]);
+  assert.deepEqual(dj.DJ_RANKS, ["C", "B", "A", "S"]);
+});
+check("readDjResult accepts only well-formed results for the requested set", () => {
+  assert.deepEqual(dj.readDjResult(msg(1, "A", 82.4, 99.6)), { set: 1, rank: "A", total: 82, floor: 100 });
+  for (const bad of [null, [], "x", { ...msg(1, "A", 80), type: "dj-exit" }, msg(4, "A", 80), msg(0, "A", 80), msg(1, "SS", 80), msg(1, "D", 80),
+    msg(1, "A", 101), msg(1, "A", -1), msg(1, "A", NaN), msg(1, "A", 80, 120), msg(1, "A", "80")]) assert.equal(dj.readDjResult(bad), null, JSON.stringify(bad));
+  assert.equal(dj.readDjResult(msg(2, "A", 80), 1), null, "a result for another set is ignored");
+  const checked = dj.readDjResult(msg(1, "B", 61)); assert.deepEqual(dj.readDjResult(checked), checked, "an already checked result (what onResult receives) stays valid");
+  const s = {}; assert.ok(dj.recordDjResult(s, checked)); assert.equal(s.dj.sets[1].best.total, 61, "runDjSet → onResult → recordDjResult path");
+  assert.ok(dj.readDjResult(msg(2, "A", 80), 2));
+});
+check("records: plays count up, best by points, bestRank over all sets, rankUp only when it rises", () => {
+  const s = { chapter: 3, day: 12, money: 5000, stamina: 40, slot: 1, flags: {} };
+  const before = JSON.stringify({ money: s.money, stamina: s.stamina, day: s.day, slot: s.slot, flags: s.flags });
+  let r = dj.recordDjResult(s, msg(1, "B", 70));
+  assert.ok(r.newBest && r.rankUp); assert.deepEqual(s.dj.sets[1], { plays: 1, best: { rank: "B", total: 70, floor: 80, chapter: 3, day: 12 } }); assert.equal(s.dj.bestRank, "B");
+  r = dj.recordDjResult(s, msg(1, "C", 40));
+  assert.ok(!r.newBest && !r.rankUp); assert.equal(s.dj.sets[1].plays, 2); assert.equal(s.dj.sets[1].best.total, 70); assert.equal(s.dj.bestRank, "B");
+  s.day = 13; r = dj.recordDjResult(s, msg(2, "A", 81));
+  assert.ok(r.newBest && r.rankUp); assert.equal(s.dj.bestRank, "A"); assert.equal(s.dj.sets[2].best.day, 13);
+  r = dj.recordDjResult(s, msg(1, "A", 88));
+  assert.ok(r.newBest && !r.rankUp, "same best rank is not a rank up");
+  assert.equal(dj.recordDjResult(s, msg(1, "S", 120)), null); assert.equal(s.dj.sets[1].plays, 3, "a malformed result is not counted");
+  assert.equal(JSON.stringify({ money: s.money, stamina: s.stamina, day: 13, slot: s.slot, flags: s.flags }), before.replace('"day":12', '"day":13'), "no money, stamina, slot or flags change");
+});
+check("djRecords tolerates missing and broken saves without changing them", () => {
+  assert.deepEqual(dj.djRecords({}).bestRank, null); assert.deepEqual(dj.djRecords(null).sets[1], { plays: 0, best: null });
+  const broken = { dj: { sets: { 1: { plays: -3, best: { rank: "Z", total: 50 } }, 2: "x", 3: { plays: 2, best: { rank: "S", total: 95, floor: "loud" } } }, bestRank: "S" } };
+  const copy = JSON.stringify(broken); const read = dj.djRecords(broken);
+  assert.deepEqual(read.sets[1], { plays: 0, best: null }); assert.deepEqual(read.sets[2], { plays: 0, best: null });
+  assert.deepEqual(read.sets[3].best, { rank: "S", total: 95, floor: 0, chapter: null, day: null }); assert.equal(read.bestRank, "S");
+  assert.equal(JSON.stringify(broken), copy);
+});
+check("SET 1 is always open; SET 2 / 3 open after the previous set is played through once", () => {
+  const s = {};
+  assert.deepEqual([1, 2, 3, 4].map(id => dj.djSetOpen(s, id)), [true, false, false, false]);
+  dj.recordDjResult(s, msg(1, "C", 30));
+  assert.deepEqual([1, 2, 3].map(id => dj.djSetOpen(s, id)), [true, true, false]);
+  dj.recordDjResult(s, msg(2, "C", 20));
+  assert.deepEqual([1, 2, 3].map(id => dj.djSetOpen(s, id)), [true, true, true]);
+});
+check("the old chapter 3 free-time cards offer the club only in chapter 3 night free time (the daily-loop Tokyo map also opens it in chapter 5), unnamed until the first visit, without using the free time", () => {
+  const first = dj.djNightChoices({ chapter: 3, flags: {} }, { id: "d5-1", slot: 1 });
+  assert.deepEqual(first, [{ ...dj.DJ_NIGHT_FIRST, ok: true, consumes: false, dj: true }]);
+  assert.equal(first[0].place, "club_unknown"); assert.doesNotMatch(first[0].label, /SEAM|クラブ/, "the name is learned at the door");
+  const known = dj.djNightChoices({ chapter: 3, flags: { [dj.CLUB_MET_FLAG]: true } }, { id: "d6-1", slot: 1 });
+  assert.deepEqual(known, [{ ...dj.DJ_NIGHT, ok: true, consumes: false, dj: true }]); assert.match(known[0].label, /クラブSEAM/);
+  assert.deepEqual(dj.djNightChoices({ chapter: 3 }, { id: "d5-0", slot: 0 }), []);
+  assert.deepEqual(dj.djNightChoices({ chapter: 3 }, null), []);
+  for (const chapter of [1, 2, 4, 5]) assert.deepEqual(dj.djNightChoices({ chapter }, { slot: 1 }), []);
+  const value = { chapter: 3, slot: 1, flags: { _ch3_intro: { stage: 1 } } }, scenes = [{ id: "ch3_opening" }, { id: "ch3_saku_first" }];
+  const plain = chapterThreeMapModel(value, scenes, { freeTime: true, actions: [] });
+  assert.ok(!plain.pins.some(pin => /^club/.test(pin.id))); assert.ok(plain.landmarks.some(item => item.id === "livehouse"), "the drawn live house stays a landmark"); assert.doesNotMatch(plain.note, /DJ/);
+  const model = chapterThreeMapModel(value, scenes, { freeTime: true, actions: dj.djNightChoices(value, { slot: 1 }) });
+  const pin = model.pins.find(item => item.id === "club_unknown");
+  assert.ok(pin && pin.actions[0].dj && pin.actions[0].consumes === false); assert.equal(pin.label, "地下の店"); assert.ok(!model.pins.some(item => item.id === "club"));
+  assert.ok(model.landmarks.some(item => item.id === "livehouse")); assert.match(model.note, /地下の店のDJは予定を進めません/);
+  value.flags[dj.CLUB_MET_FLAG] = true;
+  const known2 = chapterThreeMapModel(value, scenes, { freeTime: true, actions: dj.djNightChoices(value, { slot: 1 }) });
+  assert.equal(known2.pins.find(item => item.id === "club").label, "クラブSEAM"); assert.ok(!known2.pins.some(item => item.id === "club_unknown"));
+  assert.deepEqual([TOKYO_MAP_PLACES.club.x, TOKYO_MAP_PLACES.club.y], [TOKYO_MAP_PLACES.club_unknown.x, TOKYO_MAP_PLACES.club_unknown.y], "same spot before and after");
+  assert.ok(hasStoreLogo("ch3_club") && !hasStoreLogo("ch3_club_unknown"), "the logo only after the first visit");
+});
+check("the Tokyo daily map (VOL03) also hides the club's name until Yoru is met, and previews the entrance", () => {
+  const spot = CH3_TOKYO_SPOTS.find(item => item.place === "club");
+  assert.ok(spot, "the club is a destination of the Tokyo daily loop");
+  // daily/map.js: a spot with charId shows unknownLabel / unknownDesc until state.met[charId] (set when she names herself).
+  assert.equal(spot.charId, "yoru"); assert.equal(spot.unknownLabel, "地下の店");
+  assert.doesNotMatch(`${spot.unknownLabel}${spot.unknownDesc}`, /SEAM|クラブ|ヨル|DJ/, "the name is learned at the door");
+  assert.match(spot.label, /クラブSEAM/);
+  assert.equal(spot.preview, "bg_club_seam_entrance", "the detail panel shows the alley stairs, which carry no name");
+  const fs = globalThis.process.getBuiltinModule("node:fs");
+  const manifest = JSON.parse(fs.readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8"));
+  assert.ok(manifest.backgrounds.includes(`${spot.preview}.png`), "the preview background exists");
+});
+check("Chapter 5 Tokyo (#2033) has the same club SEAM and CHOI-ZAP as chapter 3: the club only at night and unnamed until Yoru is met, the gym only for members", () => {
+  const fields = ({ id, place, region, kind, night, hasNew, ...rest }) => rest;
+  for (const which of ["club", "gym"]) {
+    const ch3 = CH3_TOKYO_SPOTS.find(item => item.place === which), ch5 = CH5_TOKYO_SPOTS.find(item => item.id === `ch5_tokyo_${which}`);
+    assert.ok(ch3 && ch5, which);
+    assert.deepEqual(fields(ch5), fields(ch3), `${which}: same label, place on the map, preview and costs as chapter 3`);
+    assert.equal(ch5.region, "tokyo"); assert.equal(ch5.kind, "ch5_tokyo");
+  }
+  assert.equal(CH3_TOKYO_SPOTS.find(item => item.place === "gym").gym, true, "the chapter 3 Tokyo gym also grants the FIT days (daily/calendar.js spot.gym)");
+  const park3 = CH3_TOKYO_SPOTS.find(item => item.place === "park"), park5 = CH5_TOKYO_SPOTS.find(item => item.id === "ch5_tokyo_park");
+  assert.equal(park5.preview, "bg_tokyo_park", "the chapter 5 Tokyo park shows the pond park, not the street (ch5-tokyo.js reads the scene on spot.preview)");
+  assert.equal(park5.preview, park3.preview, "same park picture as chapter 3");
+  const ids = () => chapterFiveTokyoSpots().map(item => item.id);
+  core.setState(core.newState());
+  Object.assign(core.state, { chapter: 5, day: 60, slot: 0, phase: "daily" });
+  core.state.flags._ch2_region = "tokyo";
+  assert.ok(!ids().includes("ch5_tokyo_club"), "no club in the daytime");
+  assert.ok(!ids().includes("ch5_tokyo_gym"), "no gym without the CHOI-ZAP membership");
+  core.state.slot = 1;
+  assert.ok(ids().includes("ch5_tokyo_club"), "the club is on the night map before Yoru is met (shown as 地下の店)");
+  assert.ok(!ids().includes("ch5_tokyo_steve"), "other people's shops still wait until they are met");
+  core.state.flags._gym_member = true;
+  assert.ok(ids().includes("ch5_tokyo_gym"), "members can use the Tokyo CHOI-ZAP at night");
+  core.state.slot = 0;
+  assert.ok(ids().includes("ch5_tokyo_gym") && !ids().includes("ch5_tokyo_club"), "members can use it in the daytime too");
+});
+const refused = [];
+for (const chapter of [1, 2, 4]) {
+  core.setState(core.newState()); Object.assign(core.state, { chapter, slot: 1 });
+  refused.push(await visitDjClub()); // 入口の章の確認だけで返る（画面には触れない）
+}
+check("visitDjClub still refuses chapters without the club (1, 2 and 4)", () => assert.deepEqual(refused, [false, false, false]));
+check("the first meeting is chapter 3's scene in chapter 3 and a chapter 5 scene in chapter 5 (2026-11-07 owner: not a memory of chapter 3)", () => {
+  assert.equal(clubFirstScene({ chapter: 3 }), "ch3_club_first");
+  assert.equal(clubFirstScene({ chapter: 5 }), "ch5_club_first");
+  assert.equal(clubFirstScene(null), "ch3_club_first", "unknown chapter falls back to chapter 3 (visitDjClub refuses other chapters anyway)");
+});
+check("the club owner is a venue host with an intro cut-in; the club script names her before her cut-in and has a line per rank", () => {
+  const fs = globalThis.process.getBuiltinModule("node:fs");
+  const yoru = JSON.parse(fs.readFileSync(new URL("../../data/characters.json", import.meta.url), "utf8")).find(c => c.id === "yoru");
+  assert.equal(yoru.role, "venue_host"); assert.equal(yoru.display_name, "針間ヨル"); assert.equal(yoru.affiliation, "クラブSEAM"); assert.ok(yoru.intro_cutin?.title && yoru.intro_cutin.line);
+  const script = Object.fromEntries(JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_club.json", import.meta.url), "utf8")).dialogues.map(d => [d.dialogue_id, d]));
+  for (const id of ["ch3_club_first", "ch5_club_first", "ch3_club_first_after", "ch3_club_a_talk", "venue_yoru_greet", "venue_yoru_return", ...dj.DJ_RANKS.map(rank => `venue_yoru_set_${rank}`)]) assert.ok(script[id]?.lines?.length, id);
+  for (const id of ["ch3_club_first", "ch5_club_first"]) {
+    const before = script[id].lines;
+    assert.match(before.at(-1).text, /針間ヨル/, `${id}: the first part ends with her name; dj-club.js plays her cut-in before the rest`);
+    assert.ok(!before.slice(0, -1).some(line => /針間|ヨル/.test(line.text || "")), `${id}: nobody says her name before she does`);
+  }
+  for (const chapter of [3, 5]) assert.ok(script[clubFirstScene({ chapter })]?.lines?.length, `chapter ${chapter} first scene exists`);
+  const ch5 = script.ch5_club_first.lines.map(line => line.text || "").join("|");
+  assert.match(ch5, /屋根裏/, "chapter 5: Hajime is staying in the attic above mukai");
+  assert.doesNotMatch(ch5, /新しい子|カウンターの奥|久しぶり|あの頃|前にも|覚えて/, "chapter 5: not the chapter 3 framing and not a memory of chapter 3");
+  assert.ok(!JSON.stringify(script).includes("set_flag"), "met and cut-in come from playIntro, not from new literal flags");
+  for (const d of Object.values(script)) for (const line of d.lines) if (line.speaker !== undefined) assert.ok(["", "hajime", "yoru"].includes(line.speaker), line.speaker);
+  assert.doesNotMatch(JSON.stringify(script), /大会|全国|味覚|恋人/, "no tournament, taste or romance assumptions (no before/after branch needed)");
+});
+check("SBD39: an A (or S) best gives one sense ember at bedtime, once; B does not", () => {
+  const s = { chapter: 3, flags: {}, trpg: { cleared: {} }, kuji: {} };
+  const g = growth.newGrowth();
+  dj.recordDjResult(s, msg(1, "B", 70));
+  assert.deepEqual(growth.claimPlayRewards(g, s), []);
+  dj.recordDjResult(s, msg(2, "A", 80));
+  const got = growth.claimPlayRewards(g, s);
+  assert.equal(got.length, 1); assert.equal(got[0].label, "DJで Aランク"); assert.equal(g.rewards["dj-a"], true);
+  assert.deepEqual(growth.claimPlayRewards(g, s), [], "only once");
+  const g2 = growth.newGrowth(), s2 = {}; dj.recordDjResult(s2, msg(1, "S", 95)); assert.equal(growth.claimPlayRewards(g2, { ...s2, flags: {}, kuji: {} }).length, 1);
+});
+check("state.dj survives save and load without a schema change", () => {
+  core.setState(core.newState());
+  dj.recordDjResult(core.state, msg(1, "A", 84));
+  core.save();
+  core.setState(core.newState()); assert.equal(core.state.dj, undefined);
+  assert.ok(core.load());
+  assert.deepEqual(dj.djRecords(core.state).sets[1].best.rank, "A"); assert.equal(core.state.dj.bestRank, "A");
+});
+check("djUrl passes the set, embed flag and the game's mute / BGM volume", () => {
+  const url = new URL(dj.djUrl(2, { muted: true, volume: 1.4 }));
+  assert.ok(url.pathname.endsWith("/remake/previews/dj/index.html"));
+  assert.deepEqual([url.searchParams.get("set"), url.searchParams.get("embed"), url.searchParams.get("mute"), url.searchParams.get("vol")], ["2", "1", "1", "1"]);
+  assert.equal(new URL(dj.djUrl(1)).searchParams.get("mute"), null);
+});
+check("djUrl passes the phone density only when asked", () => {
+  assert.equal(new URL(dj.djUrl(1)).searchParams.get("phone"), null);
+  assert.equal(new URL(dj.djUrl(1, { phone: true })).searchParams.get("phone"), "1");
+});
+console.log(`DJ club: ${groups} groups PASS`);

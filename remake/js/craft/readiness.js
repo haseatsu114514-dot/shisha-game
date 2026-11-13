@@ -31,15 +31,16 @@ export function craftAssetUrls(mode = "tournament", { step = "setup", cs = null,
     const types = cs ? coalTypes(cs, n) : ["flat_charcoal", "cube_charcoal"];
     types.forEach(type => files.push(...Object.values(coalSpriteFiles(type))));
   }
-  const people = cs?.audienceIds || (mode === "tournament" ? ["pakki", "nagumo", "maezono", "dr_kemuri"] : ["hajime", "sumi"]);
+  const people = cs?.audienceIds || (mode === "tournament" ? ["pakki", "sui", "maezono", "dr_kemuri"] : ["hajime", "sumi"]);
   return [...new Set([
     ...files.map(makingUrl),
     bgUrl(cs ? benchBgRef(cs) : mode === "tournament" ? "bg_tournament_stage" : "bg_tonari_inside"), // 家の練習は自宅（#638）
-    portraitInfo("hajime", "serious")?.src,
+    portraitInfo("hajime", "serious", "classic")?.src, // 作業窓の固定配置と同じ版
     ...people.map(faceIconUrl),
     ...audienceAssetUrls(cs || { mode, audienceIds: people }),
   ].filter(Boolean))];
 }
 export function warmCraftAssets(mode, options) {
-  return Promise.all(craftAssetUrls(mode, options).map(url => imageReady(url, 15000, { keep: true })));
+  // pin: 開き直しで取り直さない（core/ui.js の画像保持の上限に数えない）。
+  return Promise.all(craftAssetUrls(mode, options).map(url => imageReady(url, 15000, { keep: true, pin: true })));
 }

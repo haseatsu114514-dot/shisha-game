@@ -21,6 +21,17 @@ export const HEAT_GRADES = {
   over: { label: "待ちすぎ", stamp: "炭が減る", kind: "bad", score: HEAT_TUNING.latePenalty.over, hp: -10, hs: -8, su: -10, br: 4, ar: -2 },
 };
 
+/**
+ * 熱管理の交換で、焼いておいた炭をトングで持ってくる（#2213）。焼け具合は最初の炭焼きの結果を引き継ぐ。
+ * 成長スキル K11「火の番」は、持ってくる炭の焼け具合をジャストへ向けて1段よくする（オーナー判断 2026-11-04 案1）。
+ * 早い側は 生焼け→焼けムラ→焼け上がり前→ジャスト、遅い側は 待ちすぎ→ひと息遅れ→ジャスト。ジャストより上には行かない。
+ */
+export const FIRE_KEEPER_STEP = Object.freeze({ raw: "early", early: "pre", pre: "just", just: "just", hot: "just", over: "hot" });
+export function replacementCoals(batch, count, { fireKeeper = false } = {}) {
+  const graded = batch?.length ? batch.map(g => fireKeeper ? FIRE_KEEPER_STEP[g] ?? g : g) : null;
+  return { batch: graded, picks: graded ? Array.from({ length: count }, (_, i) => graded[i % graded.length]) : [] };
+}
+
 /** 旧goodsの正式名も保持。複数所持で重複せず、通常幅への加算は倍率計算後に1回だけ。 */
 export function coalJustSeconds(windowMultiplier, tutorial = false, goods = []) {
   const superior = goods.some(good => good?.name === "ステンレストング（上物）");

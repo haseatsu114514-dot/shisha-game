@@ -1,0 +1,71 @@
+{
+  "id": "rei-mix-names",
+  "title": "味の名前",
+  "cast": [
+    "rei"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "この味の名前は？",
+    "……月光花。",
+    "全部曲名だ。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "左のはじめがメニューを指して「この味の名前は？」。右のレイが小声で「……月光花。」。",
+  "panel2": "メニューの項目が並ぶ（項目の文字は描かず、薔薇・月・仮面などの小さな絵だけ）。レイが一つずつ指しながら照れている。はじめ「全部曲名だ。」。",
+  "caption": "レイのミックスの名前は、好きなバンドへの贈り物。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v1.png",
+  "source_sha256": "0ecef6512709af6fb524c3e5a55190445acd50ed73f9eb4caa3f69fa615d73ad",
+  "references": [
+    {
+      "path": "references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "references/rei.png",
+      "sha256": "ab89bd5277249c637273f406b48ab7dc9876cfb219ca5e3fb99e2380b17b674f"
+    },
+    {
+      "path": "references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked",
+    "reading_order": "left-to-right; first speaker upper-left; replies below",
+    "identity": "official sprites inspected; same positions and faces in both panels",
+    "prohibited_hardware": "none",
+    "safe_margin": "top speech bubble in one-song close to frame; candidate only",
+    "cut_check": "official tool PASS",
+    "fill": "Official fill applied; filled panels re-inspected, faces/dialogue/gag preserved.",
+    "in_game_pc_phone": "not run; no game registration authorized",
+    "style_alignment": "Compared with early adopted Menu Revision reference: large expressive faces, 2.5-head chibi proportions, warm cel colors and bold clean lines; consistent across both panels.",
+    "selection": "Owner decision pending; not adopted"
+  },
+  "versions": {
+    "source-A-v1.png": "candidate A"
+  },
+  "delivery": [
+    {
+      "file": "panels/rei-mix-names-1.webp",
+      "sha256": "bf1d31efce746ba1bd05e0ddf4523b157358028723b468fa9063286f8de83808",
+      "width": 720,
+      "height": 479
+    },
+    {
+      "file": "panels/rei-mix-names-2.webp",
+      "sha256": "dbed777ca6551238370153fea23b7fe7ec043feda38590fc592f4191d0dc9658",
+      "width": 720,
+      "height": 479
+    }
+  ],
+  "style_reference": {
+    "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+    "role": "early adopted Menu Revision comic, style only",
+    "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+  }
+}

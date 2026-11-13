@@ -3,11 +3,13 @@
 // 実行時に fetch するだけで、書き換えも二重コピーもしない。
 // ページは remake/index.html なので、リポジトリ直下は "../"。
 
+import { portraitStyle } from "./portrait-style.js";
+import { resolvePortrait } from "./portrait-resolver.js";
 import { registerFortuneReadings } from "./fortune-effects.js";
 
 const ROOT = "../";
 // 章の追加台本は必要になった時だけ読み、起動や他章の通信を増やさない。
-export const CHAPTER_DIALOGUE_FILES = { ch2Tournament: "ch2_tournament", cityGuests: "ch2_city_guests" };
+export const CHAPTER_DIALOGUE_FILES = { ch2Tournament: "ch2_tournament", cityGuests: "ch2_city_guests", ch4Staff: "ch4_staff_work" };
 // データローダは状態モジュールを読み込まない。天気側が表示用の読み取り関数を登録する。
 let backgroundWeather = () => null;
 export function setBackgroundWeatherSource(source) { backgroundWeather = source; }
@@ -15,7 +17,7 @@ export function setBackgroundWeatherSource(source) { backgroundWeather = source;
 /** 読み込んだ全データ。起動時に loadAll()、タイトル後に後段ローダが埋める */
 export const DB = {
   characters: {},     // id -> キャラ定義（characters.json）
-  samechan: {},         // シーシャークのprofile・会話・店（独立overlay）
+  samechan: {},         // シーシャークの会話・店
   fortuneTrivia: {},
   fortuneHints: {},
   hiyori: {},         // 登場方法が決まるまで無効のルート定義と、表示確認用台本
@@ -44,7 +46,7 @@ export const DB = {
 
 const DIALOGUE_FILES = [
   "ch1_main", "ch1_tournament", "ch1_sumi", "ch1_naru", "ch1_adam", "ch1_minto",
-  "ch1_tsumugi", "ch1_rin", "ch1_ageha", "ch1_spots", "ch1_events", "ch1_incognito",
+  "ch1_tsumugi", "ch1_rio", "ch1_ageha", "ch1_spots", "ch1_events", "ch1_incognito",
   "confession", "lover_events", // 告白・恋人の節目イベント（正本は旧版と共通）
   "remake_ch1", // リメイク版の進行で使う短い場面（旧版 web/ は読まない）
   "ch1_interval",
@@ -55,12 +57,15 @@ const DIALOGUE_FILES = [
   "axe_bar_discovery", // BARの噂と、正式な初対面とは独立した匿名目撃
   "growth_reflection", // 心得の盤: 参拝の場所での内省と大会前夜の内省（SPEC 2.8）
   "growth_lessons", // 心得の盤: 授業（はじめが相談して話を聞く場面。SPEC 2.6）
+  "chapter_poems", // 巻頭ポエム（序詩と第1〜5章の章頭詩。brand/chant_poems.md・scenes/chapter-poem.js）
 ];
 // ひよりの参照先は DB.hiyori.route が無い間 disabled に倒れるため、タイトル後に読める。
 const DEFERRED_DIALOGUE_FILES = ["hiyori"];
 // 映画館と大会制作会話はタイトル後に先読みし、各入口でも完了を待つ。
 const CINEMA_DIALOGUE_FILE = "cinema";
 const TOURNAMENT_CRAFT_DIALOGUE_FILE = "tournament_craft";
+// 遊び場へ入った時の、店の人とのやり取り（daily/venue-arrivals.js）。タイトルでは先読みせず、店の入口で読む（小さい台本なので待ちは短い）。
+const VENUE_ARRIVAL_DIALOGUE_FILE = "venue_arrivals";
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
 const JSON_TIMEOUT_MS = 15000;
 const JSON_CONCURRENCY = 4;
@@ -119,6 +124,7 @@ function dialogueLoader(file) {
 
 export const loadCinemaDialogue = dialogueLoader(CINEMA_DIALOGUE_FILE);
 export const loadTournamentCraftDialogue = dialogueLoader(TOURNAMENT_CRAFT_DIALOGUE_FILE);
+export const loadVenueArrivals = dialogueLoader(VENUE_ARRIVAL_DIALOGUE_FILE);
 
 export async function loadAll(onProgress = () => {}) {
   globalThis.performance?.setResourceTimingBufferSize?.(1000);
@@ -144,23 +150,30 @@ export async function loadAll(onProgress = () => {}) {
     ["fortuneHints", "data/fortune-choice-hints.json"],
     ...DIALOGUE_FILES.map((f) => [`dlg:${f}`, `${ROOT}data/dialogue/${f}.json`]),
   ];
-  let done = 0;
+  let done = 0, next = 0, failed = false;
   const results = [];
-  // ローカルサーバーの接続待ちを溢れさせない。失敗したら次の組は開始しない。
-  for (let start = 0; start < jobs.length; start += JSON_CONCURRENCY) {
-    const batch = await Promise.all(jobs.slice(start, start + JSON_CONCURRENCY).map(async ([key, path]) => {
-      const v = await getJSON(path);
+  // ローカルサーバーの接続待ちを溢れさせないよう、同時に JSON_CONCURRENCY 本まで。
+  // 組ごとに全員を待たず、1本終わるたびに次の1本を始める（遅い1本が組全体を止めない。#3500 A-18）。
+  // 失敗したら新しい取得は始めない。
+  const worker = async () => {
+    while (!failed && next < jobs.length) {
+      const i = next++;
+      const [key, path] = jobs[i];
+      try {
+        results[i] = [key, await getJSON(path)];
+      } catch (error) {
+        failed = true;
+        throw error;
+      }
       onProgress(++done / jobs.length);
-      return [key, v];
-    }));
-    results.push(...batch);
-  }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(JSON_CONCURRENCY, jobs.length) }, worker));
   const raw = Object.fromEntries(results);
 
   for (const c of raw.characters) DB.characters[c.id] = c;
   DB.samechan = raw["dlg:samechan"] || {};
   DB.hiyori = raw["dlg:hiyori"] || {};
-  if (DB.samechan.profile?.id) DB.characters[DB.samechan.profile.id] = DB.samechan.profile;
   DB.relationshipMemories = Object.fromEntries(raw.relationshipMemories.memories.map((m) => [m.id, m]));
   DB.flavors = raw.flavors.flavors.filter((f) => (f.leaf || "blond") === "blond"); // はじめはブロンドのみ（正史）
   DB.flavorById = Object.fromEntries(raw.flavors.flavors.map((f) => [f.id, f]));
@@ -198,9 +211,10 @@ const ALWAYS_KNOWN = new Set([
   "hajime", "sumi", "tsumugi", "salaryman", "oneesan", "pakki",
   "shop_clerk", "old_man", "customer", "everyone", "staff_choizap", "master_cafe",
   "spice_merchant", "cafe_staff", "traveler",
+  "tetsuko", // mukai の看板猫。地の文で最初から名前で呼ぶ
 ]);
 // 立ち絵フォルダ・別名（oneesan はみんとの私服＝ura_* 差分）
-export const SPEAKER_ALIAS = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", oneesan: "minto" };
+export const SPEAKER_ALIAS = { tumugi: "tsumugi", hazime: "hajime", oneesan: "minto" };
 
 /** characters.json の name からあだ名（短い呼び名）を取り出す（master_spec #8） */
 export function realName(id) {
@@ -246,16 +260,35 @@ export function callName(id, state, opts = {}) {
   return id === "minto" && name === DB.characters.minto?.private_name ? `${name}さん` : name;
 }
 
+/**
+ * LIMEのアカウント名（data/characters.json の lime_name。本人が自分で付けた名前で、LIMEの画面にだけ出す）。
+ * 名乗る前（表示名が「？？？」の間）は、アカウント名でも正体を明かさない。lime_name の無い相手は、私的な場面の呼び名
+ */
+export function limeAccountName(id, state) {
+  const shown = displayName(id, state, { context: "private" });
+  const own = DB.characters?.[id]?.lime_name;
+  return own && shown !== "？？？" ? own : shown;
+}
+
 // ---------------------------------------------------------------- アセット
 
 // 表示用の軽い WebP（remake/img/・tools/build_images.py が作る）。一覧に無い画像は assets/ の PNG を読む
 let WEBP = new Set();
 // #983で採用した顔修正を、同名URLに残った旧画像のキャッシュと区別する。
 // 2026-10-28: #1081 I03 でみんと通常を斜め向きへ復元したため revision を更新。
-const FACE_CORRECTION_REVISION = "face-restore-20261028";
+// 2026-11-02: 立ち絵の規格（TS09）でみんと営業姿の頭を私服の大きさへ作り直したため revision を更新。
+const FACE_CORRECTION_REVISION = "portrait-standard-20261102";
 function faceCorrectionVersion(rel) {
   return /^(sprites\/characters\/(minto\/chr_minto_normal|ageha\/chr_ageha_[a-z]+)\.png|ui\/face_icons\/face_(minto|ageha)\.png)$/.test(rel)
     ? `?v=${FACE_CORRECTION_REVISION}` : "";
+}
+/**
+ * 本編の読み込み（loadAll）を通らない単体のページ（一台勝負の試遊ページなど）が、manifest だけを読み込んで使うとき。
+ * DB.manifest だけを差し替えると WebP の一覧が空のままで、img() が元の PNG を指してしまう（顔アイコンが出ない）ので、一緒にそろえる
+ */
+export function useManifest(manifest) {
+  DB.manifest = manifest;
+  WEBP = new Set(manifest.webp || []);
 }
 /** assets/ からの相対パス（例 "backgrounds/bg_x.png"）→ 実際に読む URL */
 export function img(rel) {
@@ -274,12 +307,13 @@ const BG_ALIASES = {
 };
 
 // 昼夜の差分がある場所（無印・_day は時間帯で切り替える。明示の _night は演出なのでそのまま）
-const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home", "bg_c_station", "bg_cafe", "bg_street", "bg_kannon", "bg_choizap"]);
+const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home", "bg_c_station", "bg_cafe", "bg_street", "bg_kannon", "bg_choizap", "bg_tokyo_park", "bg_mukai_backdoor", "bg_shiori_room"]); // bg_mukai_backdoor: てつこといっしょの裏口（TKT01・未着。届くまでは sceneBg が null を返し、画面は bg_street に戻る）
 // 窓の無い店内は外光が入らない＝夜も昼の絵のまま（オーナー指定・旧版と同じ）
+// bg_ageha_shop.png は 2026-11-12 に窓から昼の光が入る絵へ描き直した（#3282 B7）ので、ここから外した（夜は色調補正が掛かる）。
 const BG_NO_NIGHT_TINT = new Set([
   "bg_rojiura_cinema.png",
   "bg_rojiura_cinema_space.png", "bg_rojiura_cinema_monster.png", "bg_rojiura_cinema_detective.png",
-  "bg_eden_shop.png", "bg_ageha_shop.png", "bg_ryuji_shop.png", "bg_shop.png", "bg_fookah_showroom.png",
+  "bg_eden_shop.png", "bg_ryuji_shop.png", "bg_shop.png", "bg_fookah_showroom.png",
   "bg_hideaway.png", "kemurikusa.png", "peppermint.png", "bg_tournament_stage.png", "bg_c_station_lobby.png",
 ]);
 
@@ -313,25 +347,14 @@ export function sceneBg(ref, timeOfDay = "day") {
 
 export const bgUrl = (ref, timeOfDay = "day") => sceneBg(ref, timeOfDay).url;
 
-export function portraitInfo(speaker, face) {
-  const folder = SPEAKER_ALIAS[speaker] || speaker;
-  const p = DB.manifest.portraits[folder];
-  if (!p) return null;
-  let f = face || "normal";
-  if (speaker === "oneesan") {
-    // 私服のみんと＝ura_* 差分。通常差分で代用すると正体が見た目でバレるので、無ければ出さない
-    f = f.startsWith("ura_") ? f : `ura_${f}`;
-    if (!p.faces.includes(f)) f = "ura_normal";
-    if (!p.faces.includes(f)) return null;
-  } else if (!p.faces.includes(f)) {
-    const near = { excited: "smile", smug: "smile", wink: "smile", evil: "serious", thinking: "serious", intense: "serious" }[f];
-    f = near && p.faces.includes(near) ? near : "normal";
-  }
+export function portraitInfo(speaker, face, style = portraitStyle()) {
+  const resolved = resolvePortrait(DB.manifest, speaker, face, style);
+  if (!resolved) return null;
+  const { folder } = resolved;
   return {
-    folder, face: f,
-    src: img(`sprites/characters/${folder}/chr_${folder}_${f}.png`),
-    h: p.h || 0.85, b: p.b || 0.02, ax: p.ax ?? 0.5, aspect: p.aspect || 0.75,
-    scale: DB.characters[folder]?.spriteScale || DB.characters[speaker]?.spriteScale || 1,
+    ...resolved, src: img(resolved.rel),
+    scale: (resolved.style === "new" ? DB.characters[folder]?.spriteScaleVariants?.new : null)
+      || DB.characters[folder]?.spriteScale || DB.characters[speaker]?.spriteScale || 1,
   };
 }
 
@@ -348,17 +371,34 @@ export function cgThumbUrl(id) {
  * 顔ドット絵アイコン。名前欄と同じ条件で、本名を聞いた後の私的な場面のみんと（栞）は私服の顔
  * （face_minto_private）。私服の「お姉さん」も、営業姿の顔で正体が見た目に出ないよう私服の顔にする
  */
-export function faceIconUrl(id, state = null, { context = null } = {}) {
-  const icons = DB.manifest.faceIcons || [];
+export function faceIconUrl(id, state = null, { context = null, style = portraitStyle() } = {}) {
   const privateMinto = id === "oneesan" || (id === "minto" && context === "private" && state?.flags?._minto_name_known);
-  if (privateMinto) return icons.includes("face_minto_private.png") ? img("ui/face_icons/face_minto_private.png") : null;
   const folder = SPEAKER_ALIAS[id] || id;
-  return icons.includes(`face_${folder}.png`) ? img(`ui/face_icons/face_${folder}.png`) : null;
+  const rel = faceIconRel(privateMinto ? "face_minto_private.png" : `face_${folder}.png`, style);
+  return rel ? img(rel) : null;
 }
 
-/** 顔アイコンの全URL（起動時の先読み用） */
-export function allFaceIconUrls() {
-  return (DB.manifest.faceIcons || []).map((f) => img(`ui/face_icons/${f}`));
+/**
+ * 設定の「会話の立ち絵」の画風に合わせた顔アイコン（assets/ からの相対パス）。
+ * 新バージョンを選んでいて、その人の新バージョンの顔アイコンがあればそれ（立ち絵と同じ絵から作ったもの）。
+ * 無い人（新バージョンの立ち絵が無い人）は、会話でも現行の絵になるので現行の顔アイコン（2026-11-06）
+ */
+function faceIconRel(name, style) {
+  if (style !== "classic" && (DB.manifest.faceIconVariants?.[style] || []).includes(name)) return `ui/face_icons/${style}/${name}`;
+  return (DB.manifest.faceIcons || []).includes(name) ? `ui/face_icons/${name}` : null;
+}
+
+/**
+ * 顔アイコンと同じ顔の枠（tools/make_face_icons.py の frames()。立ち絵 896×1200 の画素）。
+ * { box: [x0, y0, 辺], eye: [頬の中央 x, 目の高さ y], unit: 顔の大きさ }。その画風で測っていなければ null
+ */
+export function faceFrame(folder, style = "classic") {
+  return DB.manifest.faceFrames?.[style]?.[folder] || null;
+}
+
+/** 顔アイコンの全URL（起動時の先読み用）。今の画風で出すものを読む */
+export function allFaceIconUrls(style = portraitStyle()) {
+  return (DB.manifest.faceIcons || []).map((f) => img(faceIconRel(f, style)));
 }
 
 export function makingUrl(name) {
@@ -369,6 +409,9 @@ export function bgmUrl(key) {
   const files = DB.manifest.bgm || [];
   const file = [`${key}.bgm`, `${key}.mp3`].find((name) => files.includes(name));
   if (file) return `${ROOT}assets/audio/bgm/${file}`;
+  // 単独の試遊ページは全データを読まない。そこで使う既知の4曲だけ解決する。
+  if (["bgm_camel_race", "bgm_ethnic05", "bgm_ethnic08", "bgm_ethnic12"].includes(key))
+    return `${ROOT}assets/audio/bgm/${key}.bgm`;
   return null;
 }
 

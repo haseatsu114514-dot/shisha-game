@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { suite, storageSnapshot } from "./support.mjs";
+import { flickFromHandle } from "./axe_flick_input.mjs";
 
 const game = page => page.locator('[data-test="axe-game"]');
 const coach = (page, kind) => page.locator(`[data-test="axe-coach"][data-kind="${kind}"]`);
@@ -18,7 +19,8 @@ async function capture(page, name) {
 async function pauseClock(page) {
   if (!clocked.has(page)) { await page.clock.install(); clocked.add(page); }
   const now = await page.evaluate(() => Date.now());
-  await page.clock.pauseAt(new Date(now + 30));
+  // A generous margin: the fake clock keeps running between the read and the pause, and a past target throws.
+  await page.clock.pauseAt(new Date(now + 500));
 }
 async function hit(page, selector, touch = false) {
   if (touch) await page.locator(selector).tap(); else await page.locator(selector).click();
@@ -58,12 +60,12 @@ async function stop(page, target, cycle, next, touch = false) {
   await gauge(page, target, cycle); await hit(page, ".axe-target", touch); await phase(page, next);
 }
 async function start(page, options = {}) {
-  await page.goto(new URL("axe-throw.html", page.url()).href);
+  await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
   const before = await storageSnapshot(page);
   await page.evaluate(async options => {
     const { runAxeThrow } = await import("./js/minigames/axe.js");
     window.lessonAbort = new AbortController();
-    window.lessonPromise = runAxeThrow({ host: document.getElementById("axe-app"), signal: lessonAbort.signal, ...options });
+    window.lessonPromise = runAxeThrow({ inputMode: "gauges",  host: document.getElementById("axe-app"), signal: lessonAbort.signal, ...options });
   }, options);
   if (options.tutorial) await coach(page, "welcome").waitFor(); else await phase(page, "choice");
   await pauseClock(page);
@@ -74,7 +76,7 @@ async function completeLesson(page, { touch = false, captureName = null, freeze 
   await guide(page, "welcome", touch, freeze); await guide(page, "target", touch, freeze);
   await action(page, touch); await phase(page, "horizontal");
   await guide(page, "horizontal", touch, freeze);
-  await stop(page, .5, 3200, "vertical", touch); await guide(page, "vertical", touch, freeze);
+  await stop(page, .5, 3600, "vertical", touch); await guide(page, "vertical", touch, freeze);
   await stop(page, .5, 3600, "power", touch); await guide(page, "power", touch, freeze);
   await gauge(page, .4, 2400); await game(page).focus(); await page.keyboard.press("f");
   await stop(page, .62, 2400, "flight", touch); await page.clock.runFor(1200);
@@ -93,6 +95,45 @@ async function completeLesson(page, { touch = false, captureName = null, freeze 
   assert.equal(result.throws.length, 1); assert.equal(result.throws[0].score, 6);
   return result;
 }
+// The real bar now teaches tap-pull; the explicitly started cases above preserve legacy-gauge coverage.
+async function completeTapPullLesson(page) {
+  assert.equal(await game(page).getAttribute("data-input-mode"), "tap-pull");
+  assert.match(await coach(page, "welcome").innerText(), /お金も体力も使わない/);
+  assert.match(await coach(page, "welcome").innerText(), /上へ弾いて投げる/);
+  assert.doesNotMatch(await coach(page, "welcome").innerText(), /横、縦、回転/);
+  // 2026-11-13 手応えレビュー指摘13: 弾いて投げるレッスンは4枚。先に投げ、刺さった所の点を見てから得点の決まりを聞く
+  await guide(page, "welcome", false, false);
+  assert.equal(await coach(page, "target").count(), 0, "the scoring talk waits until after the first throw");
+  const target = await page.locator('.axe-target').evaluate(node => {
+    const point = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
+    return { x: point.x, y: point.y };
+  });
+  await page.mouse.click(target.x, target.y); await phase(page, "power");
+  await coach(page, "power").waitFor();
+  assert.match(await coach(page, "power").innerText(), /2 \/ 4/);
+  assert(await page.locator('[data-test="axe-coach-line"]').evaluate(n => n.textContent.split("。").filter(Boolean).length <= 2), "two sentences only");
+  await guide(page, "power", false, false);
+  assert.equal(await page.locator('[data-test="axe-flick-hint"]').getAttribute("opacity"), "1", "the small hand shows the flick instead of words");
+  assert.equal(await coach(page, "horizontal").count(), 0);
+  assert.equal(await coach(page, "vertical").count(), 0);
+  // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、適正の速さで弾く
+  await flickFromHandle(page, { power: .62 }); await page.clock.runFor(1200);
+  await coach(page, "target").waitFor();
+  assert.match(await coach(page, "target").innerText(), /今回は\d+点/);
+  assert.match(await coach(page, "target").innerText(), /刃が触れた一番高いところ/);
+  assert.equal(await page.locator('[data-test="axe-coach-next"]').textContent(), "わかった");
+  await guide(page, "target", false, false); await phase(page, "result");
+  assert.equal(await coach(page, "result").count(), 0);
+  assert.equal(await game(page).getAttribute("data-player-throws"), "1");
+  await action(page); await coach(page, "finish").waitFor();
+  assert.doesNotMatch(await coach(page, "finish").innerText(), /横、縦、回転/);
+  await guide(page, "finish", false, false);
+  const result = await page.evaluate(() => window.lessonPromise);
+  assert(result.completed && !result.cancelled && result.tutorial);
+  assert.equal(result.inputVersion, "tap-flick-v1");
+  assert.equal(result.throws.length, 1); assert.equal(result.maximum, 8);
+  return result;
+}
 async function previewMatchesModel(page) {
   const expected = await game(page).evaluate(async root => {
     const { resolveThrow } = await import("./js/minigames/axe-model.js");
@@ -106,7 +147,6 @@ async function previewMatchesModel(page) {
 await suite("axe-lesson", async check => {
   for (const [label, options, touch] of [
     ["pc", { viewport: { width: 1280, height: 800 } }, false],
-    ["touch-portrait", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }, true],
     ["touch-landscape", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
   ]) await check(`${label}-guided-one-throw-and-no-save`, async page => {
     const before = await start(page, { tutorial: true });
@@ -121,11 +161,11 @@ await suite("axe-lesson", async check => {
     await page.locator('[data-test="axe-rules"]').click();
     const rules = page.locator('[data-test="axe-rules-panel"]');
     assert.equal(await rules.locator(".axe-rules-scroll > .axe-coach-diagram").count(), 1);
-    assert.match(await rules.innerText(), /まずこれだけ/); assert.match(await rules.innerText(), /キルショットとは/);
-    for (const explanation of [/外側は7点.*中心は8点/, /選んだ青以外.*0点/, /宣言なし.*通常リング点/, /1ゲーム2回/, /外れ・落下でも1回/, /左右2つは両方閉じ/])
+    assert.match(await rules.innerText(), /まずこれだけ/); assert.match(await rules.innerText(), /キルショット（青）/);
+    for (const explanation of [/外側の青は7点.*中心は8点/, /その青以外.*0点/, /宣言なしで青に刺さると1のリングの1点/, /1ゲーム2回/, /外れ・落下でも1回/, /左右とも閉じ/, /落下.*宣言が1回増える/, /前半・後半/, /レク.*アマ.*プロ|部門/, /サドンデス/])
       assert.match(await rules.innerText(), explanation);
     await page.locator('[data-test="axe-rules-close"]').click();
-    await action(page); await stop(page, .5, 3200, "vertical"); await stop(page, .5, 3600, "power");
+    await action(page); await stop(page, .5, 3600, "vertical"); await stop(page, .5, 3600, "power");
     await gauge(page, .3, 2400);
     assert.equal((await previewMatchesModel(page)).outcome, "drop");
     await gauge(page, .4, 2400); await game(page).focus(); await page.keyboard.press("f");
@@ -133,13 +173,43 @@ await suite("axe-lesson", async check => {
     await page.locator('[data-test="axe-reaim"]').click(); await phase(page, "choice");
     await page.clock.runFor(300); await page.locator('[data-call="upper-left"]').click();
     assert.match(await page.locator('[data-test="axe-call-status"]').textContent(), /青以外0点/);
-    await action(page); await stop(page, .5, 3200, "vertical"); await stop(page, .5, 3600, "power");
+    await action(page); await stop(page, .5, 3600, "vertical"); await stop(page, .5, 3600, "power");
     await gauge(page, .62, 2400); assert.equal((await previewMatchesModel(page)).outcome, "killshot-miss");
     assert.equal((await previewMatchesModel(page)).score, 0);
     await game(page).focus(); await page.keyboard.press("Escape");
     const result = await page.evaluate(() => window.lessonPromise);
     assert(result.cancelled && !result.completed); assert.equal(result.throws.length, 0);
     assert.deepEqual(await storageSnapshot(page), before);
+  });
+
+  await check("first-play-and-event-contexts-swap-greeting-and-send-off", async page => {
+    for (const [context, greeting, farewell, ahead] of [["first", /斧は初めて/, /ここからが本番/, "本番へ"], ["event", /連れと一緒に/, /連れと楽しんで/, "投げに行く"]]) {
+      if (clocked.has(page)) await page.clock.resume();
+      const before = await start(page, { tutorial: true, opponent: null, lessonContext: context });
+      assert.match(await coach(page, "welcome").innerText(), greeting);
+      assert.equal(await page.locator('[data-test="axe-coach-skip"]').textContent(), "説明をとばす");
+      await guide(page, "welcome", false, true); await guide(page, "target", false, true);
+      assert.match(await page.locator('[data-test="axe-rules"]').textContent(), /ルール/);
+      await action(page); await phase(page, "horizontal"); await guide(page, "horizontal", false, true);
+      await stop(page, .5, 3600, "vertical"); await guide(page, "vertical", false, true);
+      await stop(page, .5, 3600, "power"); await guide(page, "power", false, true);
+      await stop(page, .62, 2400, "flight"); await page.clock.runFor(1200);
+      await coach(page, "result").waitFor(); assert.match(await coach(page, "result").innerText(), /丸い窓/);
+      await guide(page, "result", false, true); await phase(page, "result"); await action(page);
+      await coach(page, "finish").waitFor();
+      assert.match(await coach(page, "finish").innerText(), farewell);
+      assert.equal(await page.locator('[data-test="axe-coach-next"]').textContent(), ahead);
+      await guide(page, "finish", false, true);
+      const result = await page.evaluate(() => window.lessonPromise);
+      assert(result.completed && result.tutorial); assert.equal(result.lessonContext, context);
+      assert.deepEqual(await storageSnapshot(page), before);
+    }
+    const refused = await page.evaluate(async () => {
+      const { runAxeThrow } = await import("./js/minigames/axe.js"), host = document.getElementById("axe-app");
+      return Promise.all([runAxeThrow({ inputMode: "gauges",  host, tutorial: true, opponent: null, lessonContext: "party" }), runAxeThrow({ inputMode: "gauges",  host, mode: "practice", lessonContext: "first" })]
+        .map(p => p.then(() => false, e => e instanceof RangeError)));
+    });
+    assert.deepEqual(refused, [true, true], "an unknown context, or a context outside the lesson, is refused");
   });
 
   await check("skip-abort-and-host-removal-close-coach", async page => {
@@ -175,6 +245,8 @@ await suite("axe-lesson", async check => {
           _axe_bar_sighting_day: state.day - 1, _axe_bar_sighting_chapter: state.chapter });
         if (restriction === "played") state.visitedDay.axe_bar = state.day;
         window.lessonGuardCalls = 0; window.lessonVisitSettled = false;
+        // 初回の斧投げBARは、マキが名乗るまでの会話 → 登場カットイン → 決まりと案内を読む（#2605・VAR01）。会話は早送りで読む（その時間帯に話した印だけが付く）。
+        (await import("./js/vn/engine.js")).vnTest.turbo = true;
         window.visitPromise = (await import("./js/daily/axe-bar.js")).visitAxeBar({
           staminaGuard: async () => { window.lessonGuardCalls++; return true; },
         });
@@ -187,18 +259,26 @@ await suite("axe-lesson", async check => {
       const storageBefore = await storageSnapshot(page);
       await page.locator('[data-test="axe-bar-lesson"]').click(); await coach(page, "welcome").waitFor();
       await page.evaluate(async () => { window.lessonPromise = (await import("./js/minigames/axe.js")).runAxeThrow({ host: document.getElementById("stage") }); });
-      await pauseClock(page); await completeLesson(page, { freeze: false });
+      await pauseClock(page); await completeTapPullLesson(page);
       await page.locator('[data-test="axe-bar-menu"]').waitFor({ state: "visible" });
       assert.equal(await page.evaluate(() => window.lessonGuardCalls), 0);
       assert.equal(await page.evaluate(() => window.lessonVisitSettled), false);
       assert.equal(await page.locator('[data-test="axe-bar-menu"]').evaluate(n => n.inert), false);
       assert.equal(await page.evaluate(() => document.activeElement?.dataset.test), "axe-bar-lesson");
-      assert.equal(await page.evaluate(() => JSON.stringify(lessonCore.state)), stateBefore, restriction);
+      // The only change is the record that the owner's lesson was taken, so the first paid game does not repeat it.
+      const taught = JSON.parse(stateBefore); taught.flags._axe_lesson_done = true;
+      assert.equal(await page.evaluate(() => JSON.stringify(lessonCore.state)), JSON.stringify(taught), restriction);
       assert.deepEqual(await storageSnapshot(page), storageBefore, restriction);
       assert(await page.locator('[data-test="axe-bar-practice"]').isDisabled());
       await page.locator('[data-test="axe-bar-back"]').click();
       assert.equal(await page.evaluate(() => window.visitPromise), false, "A lesson never completes a paid daily action");
-      assert.equal(await page.evaluate(() => JSON.stringify(lessonCore.state)), stateBefore);
+      assert.equal(await page.evaluate(() => JSON.stringify(lessonCore.state)), JSON.stringify(taught));
     }
   });
+await check("touch-portrait-rotate-hint", async page => {
+    // 縦持ちスマホは本編と同じく横向き案内で止める（2026-11-09 オーナー決定・#3035／試遊ページ共通化 #3076）
+    await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
+    await page.locator(".axe-menu").waitFor();
+    assert.equal(await page.locator("#rotate-hint").isVisible(), true);
+  }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 });

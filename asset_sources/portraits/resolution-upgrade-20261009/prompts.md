@@ -1,6 +1,6 @@
 # 立ち絵の作り直し：コピペ用プロンプト（画質・顔の大きさ・画風を1回で）
 
-[調査と方針](README.md)。2026-10-09 オーナー決定：**顔の大きさが中央値から±10%を超える6人だけ直す**／**画風はみんと・アゲハに合わせる**。
+[調査と方針](README.md)。2026-10-09 オーナー決定：**顔の大きさが中央値から±10%を超える6人だけ直す**／**画風はみんと・あげはに合わせる**。
 1回の生成で1人・1表情。各ブロックの英文と、ブロックに書いたリポジトリの参照画像4枚で1回ずつ生成する。全34表情。参照画像は**エージェントがリポジトリから直接読み込む**（オーナーが保存・添付する必要はない）。
 
 > 2026-10-10 最終更新（要望台帳 PU02・PU05）：主目的は画風と解像度をそろえること。つむぎは頭身の変更で印象が変わったため、元絵の頭・胴・脚の比率と小柄な体格へ戻す。7ブロックの10%縮小指定は撤回し、参照②も元の通常絵を使う。みんとからは描画品質だけを参照する。
@@ -10,10 +10,10 @@
 | キャラ | いまの顔の大きさ（中央値比） | 直し方 | 画風の直し | 表情数 |
 |---|---|---|---|---|
 | つむぎ | +18% | 元絵の頭身・胴と脚の長さ・小柄な体格へ戻す。頭の縮小を撤回し、解像度と画風のみ統一（2026-10-10 PU05） | 基準に合わせる | 7 |
-| 前園 | +17% | 頭を約14%小さく | 平たい塗り・太い線を基準へ | 5 |
+| 上園 | +17% | 頭を約14%小さく | 平たい塗り・太い線を基準へ | 5 |
 | スミさん | +15% | 頭（帽子込み）を約13%小さく | 基準に合わせる | 5 |
 | ましろ | +13% | やや大きめの丸い顔と頬の可愛さを優先。8%縮小は強制しない（2026-10-10追記） | 基準に合わせる | 6 |
-| 南雲 | −13% | 頭を約15%大きく | 基準に合わせる | 5 |
+| 須井 | −13% | 頭を約15%大きく | 基準に合わせる | 5 |
 | サメちゃん | −10% | 頭（フード込み）を約11%大きく | つやの強い今風の塗り・大きめの目を基準へ | 6 |
 
 顔の大きさの比較図は [face-size-ingame.png](../../reference-sheets/face-size-ingame.png)（`python3 tools/make_reference_sheet.py facesize` で作り直せる）。
@@ -27,16 +27,16 @@
 **ステップ1：試しの3枚で方向を確かめる**（ここで合格してから量産する）
 1. **#1 つむぎ・normal** … 元絵の頭身・小柄な丸さを保ち、解像度と画風だけを揃える（PU05）
 2. **#29 サメちゃん・normal** … 塗りを寄せても本人に見えるか（採用したばかりのデザイン）
-3. **#8 前園・normal** … 線が細くなり、塗りがみんと・アゲハに近づくか
+3. **#8 上園・normal** … 線が細くなり、塗りがみんと・あげはに近づくか
 
 → 3枚を Claude に見せて確認。直す点があればここでプロンプトを調整する。
 
 **ステップ2：残りの3人の通常**
-4. **#13 スミさん・normal** → 5. **#18 ましろ・normal** → 6. **#24 南雲・normal**
+4. **#13 スミさん・normal** → 5. **#18 ましろ・normal** → 6. **#24 須井・normal**
 
 **ステップ3：各キャラの残りの表情**（キャラごとにまとめて）
 - **②（同じキャラの通常）には、ステップ1・2で合格した「新しい通常」を添付する。** 表情どうしの顔と頭の大きさがそろいやすい。ただし、つむぎはPU05により、体格を変えた候補を引き継がず「元の通常」を添付する。
-- 順番：つむぎ #2〜7 → ましろ #19〜23 → サメちゃん #30〜34 → 前園 #9〜12 → スミさん #14〜17 → 南雲 #25〜28
+- 順番：つむぎ #2〜7 → ましろ #19〜23 → サメちゃん #30〜34 → 上園 #9〜12 → スミさん #14〜17 → 須井 #25〜28
 - 1キャラの全表情がそろったら並べて確認し、`asset_sources/portraits/<id>-remaster-v2/` に置いて commit。キャラ単位で組み込みを頼んでよい。
 
 ## リポジトリに触れないチャット（ChatGPTなど）で手作業で頼むときの手順
@@ -47,7 +47,7 @@ Codex・Claude Code では「立ち絵そろえ」で済むので、この節は
    - ① いま作り直す表情の現行PNG（各ブロックに書いたパス）
    - ② 同じキャラの `chr_<id>_normal.png`（①が通常のときは省略してよい）
    - ③ 頭身の目標：女性は みんと、男性は アダム の normal。ただし、つむぎは①の元の頭身を保ち、③は描画品質だけの参照
-   - ④ 画風の目標：女性は アゲハ、男性は みんと の normal
+   - ④ 画風の目標：女性は あげは、男性は みんと の normal
 2. 新しいチャットで、①→②→③→④の順に添付し、そのキャラ・表情のブロックをそのまま貼って送る。
 3. できた画像を原寸で見て、下のチェックを確認する。ダメなら同じチャットで、直す点だけを伝えて作り直す（例：「顔を画像1にもっと近づけて」「頭をもう少し小さく」「手の位置を画像1と同じに」）。
 4. 1キャラの全表情がそろったら並べて、同じ人物・同じ頭の大きさに見えるか確かめる。
@@ -239,9 +239,9 @@ Owner update 2026-10-10: preserve image 1's original local color palette, percei
 Owner update 2026-10-10, superseding all earlier proportion instructions: the entire HEAD SIZE CORRECTION paragraph and the Minto proportion target are cancelled for Tsumugi; match image 1's original head-to-body ratio and body proportions exactly, restoring her compact petite silhouette, original short legs and torso, soft large rounded head and cheeks, narrow gentle shoulders, and original shoulder, waist, knee and shoe positions. Improve only resolution, line crispness and restrained matte rendering style while keeping image 1's figure proportions, expression, pose, outfit and original color strength unchanged; image 2 is the ORIGINAL normal sprite for identity, and must not introduce a taller, slimmer or fashion-model body.
 ```
 
-## 前園（maezono）
+## 上園（maezono）
 
-### 8. 前園・normal
+### 8. 上園・normal
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -250,7 +250,7 @@ Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution f
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Maezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
+Character: Uezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
 Expression and pose to keep exactly as image 1 (normal): gentle small closed-mouth smile, SCREEN-LEFT hand lifted in a friendly greeting wave, SCREEN-RIGHT hand in the trouser pocket
 
 HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 14% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
@@ -265,7 +265,7 @@ Owner update 2026-10-10: preserve image 1's original local color palette, percei
 Owner update 2026-10-10: Mashiro may retain a slightly oversized, soft round face and head close to image 1 because it looks cuter; prioritize her full cheeks and gentle sleepy expression, and do not force the earlier 8% head reduction.
 ```
 
-### 9. 前園・smile
+### 9. 上園・smile
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/maezono/chr_maezono_smile.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -274,7 +274,7 @@ Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution f
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Maezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
+Character: Uezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
 Expression and pose to keep exactly as image 1 (smile): both eyes closed, joyful open-mouth smile, the same SCREEN-LEFT greeting hand, SCREEN-RIGHT hand in the pocket
 
 HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 14% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
@@ -289,7 +289,7 @@ Owner update 2026-10-10: preserve image 1's original local color palette, percei
 Owner update 2026-10-10: Mashiro may retain a slightly oversized, soft round face and head close to image 1 because it looks cuter; prioritize her full cheeks and gentle sleepy expression, and do not force the earlier 8% head reduction.
 ```
 
-### 10. 前園・serious
+### 10. 上園・serious
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/maezono/chr_maezono_serious.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -298,7 +298,7 @@ Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution f
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Maezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
+Character: Uezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
 Expression and pose to keep exactly as image 1 (serious): thoughtful brows, closed mouth, SCREEN-LEFT hand against the chin, SCREEN-RIGHT hand in the pocket
 
 HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 14% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
@@ -313,7 +313,7 @@ Owner update 2026-10-10: preserve image 1's original local color palette, percei
 Owner update 2026-10-10: Mashiro may retain a slightly oversized, soft round face and head close to image 1 because it looks cuter; prioritize her full cheeks and gentle sleepy expression, and do not force the earlier 8% head reduction.
 ```
 
-### 11. 前園・surprise
+### 11. 上園・surprise
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/maezono/chr_maezono_surprise.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -322,7 +322,7 @@ Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution f
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Maezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
+Character: Uezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
 Expression and pose to keep exactly as image 1 (surprise): round open eyes and a small O-shaped mouth, SCREEN-LEFT palm raised, SCREEN-RIGHT hand in the pocket
 
 HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 14% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
@@ -337,7 +337,7 @@ Owner update 2026-10-10: preserve image 1's original local color palette, percei
 Owner update 2026-10-10: Mashiro may retain a slightly oversized, soft round face and head close to image 1 because it looks cuter; prioritize her full cheeks and gentle sleepy expression, and do not force the earlier 8% head reduction.
 ```
 
-### 12. 前園・excited
+### 12. 上園・excited
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/maezono/chr_maezono_excited.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -346,7 +346,7 @@ Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution f
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Maezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
+Character: Uezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
 Expression and pose to keep exactly as image 1 (excited): both eyes open, big delighted open-mouth grin, SCREEN-LEFT fist near the shoulder, SCREEN-RIGHT fist near the waist, leaning forward slightly
 
 HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 14% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
@@ -609,9 +609,9 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
 ```
 
-## 南雲（nagumo）
+## 須井（nagumo）
 
-### 24. 南雲・normal
+### 24. 須井・normal
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -620,7 +620,7 @@ Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution f
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Nagumo, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
+Character: Sui, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
 Expression and pose to keep exactly as image 1 (normal): authoritative neutral face, both hands down
 
 HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 15% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
@@ -633,7 +633,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
 ```
 
-### 25. 南雲・smile
+### 25. 須井・smile
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_smile.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -642,7 +642,7 @@ Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution f
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Nagumo, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
+Character: Sui, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
 Expression and pose to keep exactly as image 1 (smile): subtle closed-mouth approving smirk with both eyes open, SCREEN-LEFT hand slightly open in welcome
 
 HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 15% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
@@ -655,7 +655,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
 ```
 
-### 26. 南雲・serious
+### 26. 須井・serious
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_serious.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -664,7 +664,7 @@ Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution f
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Nagumo, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
+Character: Sui, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
 Expression and pose to keep exactly as image 1 (serious): furrowed brows and a focused intimidating gaze, small SCREEN-LEFT hand explanatory gesture at the waist
 
 HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 15% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
@@ -677,7 +677,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
 ```
 
-### 27. 南雲・surprise
+### 27. 須井・surprise
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_surprise.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -686,7 +686,7 @@ Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution f
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Nagumo, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
+Character: Sui, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
 Expression and pose to keep exactly as image 1 (surprise): eyes wider, mouth slightly open, SCREEN-RIGHT hand lifted slightly to the chest, no comic symbols
 
 HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 15% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
@@ -699,7 +699,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
 ```
 
-### 28. 南雲・thinking
+### 28. 須井・thinking
 
 参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_thinking.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
@@ -708,7 +708,7 @@ Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution f
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Nagumo, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
+Character: Sui, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
 Expression and pose to keep exactly as image 1 (thinking): SCREEN-LEFT hand under the chin, SCREEN-RIGHT hand in the trouser pocket, slight sideways gaze
 
 HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 15% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.

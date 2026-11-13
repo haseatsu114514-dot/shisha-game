@@ -48,7 +48,7 @@ try {
   const run = (friend) => page.evaluate(async (friend) => {
     const state = T.fresh();
     T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex((l) =>
-      friend ? /愚痴|友達/.test(l) : /２人|想いを伝え|付き合って/.test(l)));
+      friend ? /愚痴|友達/.test(l) : /2人|想いを伝え|付き合って/.test(l)));
     await T.spots.visitChar("minto");
     const first = T.vn.backlog().map((l) => l.text);
     const identity = { known: !!state.flags._minto_identity_revealed, full: !!state.flags._minto_name_known };
@@ -56,9 +56,9 @@ try {
     const afterSecond = !!state.flags._minto_identity_revealed;
     await T.spots.visitChar("minto");
     const afterThird = !!state.flags._minto_identity_revealed;
-    await T.spots.visitChar("minto");
-    // #814: 次の会話は次のハートまで開かないので、♥1を待つ通常訪問が1回入る。
-    if (T.spots.hearts("minto") < 3) await T.spots.visitChar("minto");
+    // #814: 次の会話は次のハートまで開かないので、♥3に届くまでは♥を待つ通常訪問が入る。
+    // 通いの好感度を上げた #2279 からは3回の訪問で♥3に届くので、待つ訪問は入らない。
+    for (let n = 0; T.spots.hearts("minto") < 3 && n < 3; n++) await T.spots.visitChar("minto");
     const heart3Waiting = {
       hearts: T.spots.hearts("minto"),
       known: !!state.flags._minto_identity_revealed,
@@ -116,7 +116,7 @@ try {
   assert(!romance.outing.some((t) => t.includes("お姉、さん") || t.includes("ばれた")), "Already-known identity was revealed again");
   assert.equal(romance.q1.value, 1);
   assert.equal(romance.answerCount, 1, "The private follow-up asked the relationship question twice");
-  assert(!romance.secondOuting.some((t) => t.includes("あらためて。私、緑川栞")), "Already-known real name was introduced again");
+  assert(!romance.secondOuting.some((t) => t.includes("あらためて。私、木成頼栞")), "Already-known real name was introduced again");
   assert.deepEqual(romance.finaleInvite, { slot: "night", after: true });
   assert.deepEqual(romance.holidayFinale, { slot: "noon", after: false });
   assert.equal(romance.before, "romance");

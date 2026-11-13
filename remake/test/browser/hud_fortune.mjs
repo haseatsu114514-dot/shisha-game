@@ -7,10 +7,9 @@ const out = process.env.ARTIFACT_DIR || 'docs/qa/hud-fortune-682'; fs.mkdirSync(
 const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_EXECUTABLE_PATH || '/usr/bin/chromium' });
 const results = [];
 try {
- for (const [device,viewport,touch] of [['pc',{width:1280,height:900},false],['landscape',{width:844,height:390},true],['portrait',{width:390,height:844},true]]) for (const layout of ['normal','ds']) {
+ for (const [device,viewport,touch] of [['pc',{width:1280,height:900},false],['landscape',{width:844,height:390},true],['portrait',{width:390,height:844},true]]) for (const layout of ['normal']) { // DS風は廃止（横画面一本化）
   const context = await browser.newContext({ viewport, isMobile:touch, hasTouch:touch, reducedMotion:'reduce' });
   const page = await context.newPage(), errors=[]; page.on('pageerror', e=>errors.push(e.message));
-  await page.addInitScript(layout=>localStorage.setItem('suien_title_layout',layout),layout);
   await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
   await page.locator('[data-test="title-new"]').waitFor({timeout:45000}); await page.locator('#boot').waitFor({state:'detached'});
   await page.evaluate(async()=>{

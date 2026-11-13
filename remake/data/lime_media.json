@@ -41,10 +41,10 @@
     "preview": "［画像］月の写真",
     "allowed_accounts": null
   },
-  "im_rin_stock": {
+  "im_rio_stock": {
     "kind": "image",
-    "owner": "rin",
-    "src": "img/ui/lime/images/im_rin_stock.webp",
+    "owner": "rio",
+    "src": "img/ui/lime/images/im_rio_stock.webp",
     "width": 960,
     "height": 720,
     "alt": "棚に並ぶ新しい小袋",
@@ -91,10 +91,10 @@
     "preview": "［スタンプ］がんばれ♪",
     "allowed_accounts": null
   },
-  "st_rin_smug": {
+  "st_rio_smug": {
     "kind": "stamp",
-    "owner": "rin",
-    "src": "img/ui/lime/stamps/st_rin_smug.png",
+    "owner": "rio",
+    "src": "img/ui/lime/stamps/st_rio_smug.png",
     "width": 320,
     "height": 320,
     "alt": "試料袋。ふふ",
@@ -141,30 +141,30 @@
     "preview": "［画像］店の道具",
     "allowed_accounts": null
   },
-  "st_nagumo_ack": {
+  "st_sui_ack": {
     "kind": "stamp",
-    "owner": "nagumo",
-    "src": "img/ui/lime/stamps/st_nagumo_ack.png",
+    "owner": "sui",
+    "src": "img/ui/lime/stamps/st_sui_ack.png",
     "width": 320,
     "height": 320,
     "alt": "白い便箋とうなずく煙。承知した",
     "preview": "［スタンプ］承知した",
     "allowed_accounts": null
   },
-  "st_nagumo_cheer": {
+  "st_sui_cheer": {
     "kind": "stamp",
-    "owner": "nagumo",
-    "src": "img/ui/lime/stamps/st_nagumo_cheer.png",
+    "owner": "sui",
+    "src": "img/ui/lime/stamps/st_sui_cheer.png",
     "width": 320,
     "height": 320,
     "alt": "シーシャのボトルと細い煙。健闘を祈る",
     "preview": "［スタンプ］健闘を祈る",
     "allowed_accounts": null
   },
-  "im_nagumo_ready": {
+  "im_sui_ready": {
     "kind": "image",
-    "owner": "nagumo",
-    "src": "img/ui/lime/images/im_nagumo_ready.webp",
+    "owner": "sui",
+    "src": "img/ui/lime/images/im_sui_ready.webp",
     "width": 960,
     "height": 720,
     "alt": "開場前の整った空席と一台のシーシャ",
@@ -289,6 +289,96 @@
     "height": 720,
     "alt": "練習した煙の輪",
     "preview": "［画像］煙の輪",
+    "allowed_accounts": null
+  },
+  "st_mukai_master_ack": {
+    "kind": "stamp",
+    "owner": "mukai_master",
+    "src": "img/ui/lime/stamps/st_mukai_master_ack.png",
+    "width": 320,
+    "height": 320,
+    "alt": "助かる",
+    "preview": "［スタンプ］助かる",
+    "allowed_accounts": null
+  },
+  "st_mukai_master_latte": {
+    "kind": "stamp",
+    "owner": "mukai_master",
+    "src": "img/ui/lime/stamps/st_mukai_master_latte.png",
+    "width": 320,
+    "height": 320,
+    "alt": "まあ、一杯",
+    "preview": "［スタンプ］まあ、一杯",
+    "allowed_accounts": null
+  },
+  "st_steve_ok": {
+    "kind": "stamp",
+    "owner": "steve",
+    "src": "img/ui/lime/stamps/st_steve_ok.png",
+    "width": 320,
+    "height": 320,
+    "alt": "オーケー",
+    "preview": "［スタンプ］オーケー",
+    "allowed_accounts": null
+  },
+  "st_steve_wait": {
+    "kind": "stamp",
+    "owner": "steve",
+    "src": "img/ui/lime/stamps/st_steve_wait.png",
+    "width": 320,
+    "height": 320,
+    "alt": "急ぐなよ",
+    "preview": "［スタンプ］急ぐなよ",
+    "allowed_accounts": null
+  },
+  "st_saku_ack": {
+    "kind": "stamp",
+    "owner": "saku",
+    "src": "img/ui/lime/stamps/st_saku_ack.png",
+    "width": 320,
+    "height": 320,
+    "alt": "了解",
+    "preview": "［スタンプ］了解",
+    "allowed_accounts": null
+  },
+  "st_saku_guess": {
+    "kind": "stamp",
+    "owner": "saku",
+    "src": "img/ui/lime/stamps/st_saku_guess.png",
+    "width": 320,
+    "height": 320,
+    "alt": "予想どおり",
+    "preview": "［スタンプ］予想どおり",
+    "allowed_accounts": null
+  },
+  "st_noor_morning": {
+    "kind": "stamp",
+    "owner": "noor",
+    "src": "img/ui/lime/stamps/st_noor_morning.png",
+    "width": 320,
+    "height": 320,
+    "alt": "おはよう！",
+    "preview": "［スタンプ］おはよう！",
+    "allowed_accounts": null
+  },
+  "st_master_hookah_wait": {
+    "kind": "stamp",
+    "owner": "master_hookah",
+    "src": "img/ui/lime/stamps/st_master_hookah_wait.png",
+    "width": 320,
+    "height": 320,
+    "alt": "待っている",
+    "preview": "［スタンプ］待っている",
+    "allowed_accounts": null
+  },
+  "st_da_silva_great": {
+    "kind": "stamp",
+    "owner": "da_silva",
+    "src": "img/ui/lime/stamps/st_da_silva_great.png",
+    "width": 320,
+    "height": 320,
+    "alt": "最高！",
+    "preview": "［スタンプ］最高！",
     "allowed_accounts": null
   }
 }

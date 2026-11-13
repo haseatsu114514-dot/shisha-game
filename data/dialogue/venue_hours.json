@@ -144,9 +144,9 @@
           "text": "昼のKEMURIKUSA。なるが、メモとボウルを交互に見ている。"
         },
         {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "ちょうど調整してた。気になるところ、見てけよ"
+          "speaker": "",
+          "face": "",
+          "text": "なるはこちらに気づくと、手を止めて顔を上げた。"
         }
       ]
     },
@@ -156,7 +156,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜のKEMURIKUSA。常連がカウンター越しになるへ手を振った。"
+          "text": "夜のKEMURIKUSA。常連がカウンター越しに、なるへ手を振った。"
         },
         {
           "speaker": "naru",
@@ -222,6 +222,36 @@
           "speaker": "minto",
           "face": "normal",
           "text": "はーい♡　はじめくんも座ってて。ちゃんと順番に見てるから♪"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_ageha_day",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼のMELTY PUFF。窓から入る光で、ソファのクマたちがつやつやしている。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、いらっしゃい！ 昼の席、空いてるよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_ageha_night",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のMELTY PUFF。ピンクの照明の下で、プリクラ機の画面だけがちかちか光っている。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "お、夜のハジメっちだ。いらっしゃーい"
         }
       ]
     },

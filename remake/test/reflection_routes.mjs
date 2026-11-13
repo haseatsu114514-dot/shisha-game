@@ -11,7 +11,7 @@ const context = vm.createContext({ console, Math, Map, Set, JSON, Date, structur
 let core, growth, board, mode = "cancel", afterScene = null;
 const scenes = [], opened = [];
 const mocks = {
-  "core/stats.js": { affinityLevel: () => 0, maxStamina: () => 100, setExpHooks() {} },
+  "core/stats.js": { affinityLevel: () => 0, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], maxStamina: () => 100, setExpHooks() {} },
   "vn/engine.js": { play: async id => { scenes.push(id); afterScene?.(); } },
   "daily/growth-board-screen.js": { openBoard: async options => {
     opened.push(options.place);
@@ -143,5 +143,45 @@ for (const chapter of [3, 4]) {
   assert.equal(reflection.canReflect(), false);
   await reflection.reflectAt(chapter === 3 ? "tokyo_shrine" : "dubai_mosque");
   assert.equal(opened.length, 0, "公開フラグは先行ONしない");
+}
+// IR26（SBD98）: 東京の内省の場所は、仮置きの「路地裏の神社」から公園の池に浮かぶ弁天堂へ。昼の地図（bg_tokyo_map_day）の右下の池の
+// 岸にピンの先を置き（お堂は案内パネルの裏になるため）、第3章・第5章とも同じ地点。ほかの行き先・路上占いの出る場所と重ならない。
+// id（tokyo_shrine など）は互換のため変えない。
+{
+  globalThis.document ||= { addEventListener() {} };
+  globalThis.window ||= {};
+  globalThis.localStorage ||= { getItem: () => null, setItem() {}, removeItem() {} };
+  const { CH3_TOKYO_SPOTS } = await import("../js/chapters/ch3-tokyo-daily.js");
+  const { TOKYO_SPOTS } = await import("../js/chapters/ch5-tokyo.js");
+  const { PLACE_JA } = await import("../js/daily/growth-board-screen.js");
+  const fortune = await import("../js/daily/fortune-schedule.js");
+  const benten = [CH3_TOKYO_SPOTS.find(s => s.id === "ch3_tokyo_shrine"), TOKYO_SPOTS.find(s => s.id === "ch5_tokyo_shrine")];
+  for (const spot of benten) {
+    assert.deepEqual([spot.label, spot.area, spot.x, spot.y, spot.preview], ["池の弁天堂", "公園の池", 91, 73, "bg_tokyo_park"], spot.id);
+  }
+  assert.deepEqual([tokyo.TOKYO_MAP_PLACES.shrine.label, tokyo.TOKYO_MAP_PLACES.shrine.x, tokyo.TOKYO_MAP_PLACES.shrine.y], ["池の弁天堂", 91, 73]);
+  assert.equal(reflection.REFLECT_PLACES.tokyo_shrine.label, "池の弁天堂");
+  assert.equal(PLACE_JA.tokyo_shrine, "池の弁天堂");
+  // 背景は届くまで同じ公園の池の絵（昼夜で切り替わる）
+  assert.equal(reflection.REFLECT_PLACES.tokyo_shrine.bg, "bg_tokyo_park");
+  const manifest = JSON.parse(fs.readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8"));
+  for (const name of ["bg_tokyo_park_day.png", "bg_tokyo_park_night.png"]) assert(manifest.backgrounds.includes(name), name);
+  const scene = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/growth_reflection.json", import.meta.url), "utf8"))
+    .dialogues.find(d => d.dialogue_id === reflection.REFLECT_PLACES.tokyo_shrine.scene).lines.map(line => line.text).join("");
+  assert.match(scene, /池/); assert.match(scene, /お堂/); assert.match(scene, /願い事はしない/); assert.doesNotMatch(scene, /神社|鳥居|路地/);
+  // 路上占いの東京の出る場所（種を変えて全部集める）
+  const fortuneSpots = new Map();
+  for (let seed = 1; seed <= 60; seed++) for (const chapter of [3, 5]) {
+    const save = { seed, chapter, day: 40, slot: 0, flags: {} };
+    if (!fortune.placeFortuneNow(save, "tokyo")) continue;
+    const at = fortune.fortunePosition(save);
+    fortuneSpots.set(`${at.x},${at.y}`, { id: `fortune:${at.area}`, ...at });
+  }
+  assert(fortuneSpots.size >= 2, "路上占いの東京の場所を集められる");
+  const others = [...CH3_TOKYO_SPOTS, ...TOKYO_SPOTS, ...Object.values(tokyo.TOKYO_MAP_PLACES), ...tokyo.TOKYO_MAP_LANDMARKS, ...fortuneSpots.values()]
+    .filter(place => !["ch3_tokyo_shrine", "ch5_tokyo_shrine", "shrine", "pond"].includes(place.id));
+  for (const place of others) {
+    assert(Math.abs(place.x - 91) >= 6 || Math.abs(place.y - 73) >= 10, `池の弁天堂と ${place.id}（${place.x},${place.y}）が近すぎる`);
+  }
 }
 console.log("reflection-routes: Tokyo/Dubai entrances, visiting hours, cancel/light, no action/EXP cost, real save/load and stale owner PASS");

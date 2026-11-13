@@ -130,7 +130,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "待っている間も、みんとは客の様子を見ていた。水を足し、煙が熱くないか確かめている。"
+          "text": "待っている間も、みんとは客の様子を見ていた。グラスの水を足し、煙が熱くないか確かめている。"
         },
         {
           "speaker": "",
@@ -184,7 +184,7 @@
         {
           "speaker": "minto",
           "face": "wink",
-          "text": "初ご来店の記念に、みんとのチェキ撮っていく？ １枚1,000円だよっ♡"
+          "text": "初ご来店の記念に、みんとのチェキ撮っていく？ 1枚1,000円だよっ♡"
         },
         {
           "type": "choice",
@@ -235,11 +235,6 @@
           "speaker": "",
           "face": "",
           "text": "『出勤日や、お得なお知らせをお届けします！』"
-        },
-        {
-          "speaker": "minto",
-          "face": "wink",
-          "text": "新作とか、お得なお知らせとか、そこに送るからね〜♡"
         },
         {
           "speaker": "hajime",
@@ -347,7 +342,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（チェキに指名、推しメン……。システムが完成されてる。これも１つの“店”の形か）"
+            "text": "（チェキに指名、推しメン……。システムが完成されてる。これも1つの“店”の形か）"
           },
           {
             "speaker": "",
@@ -462,7 +457,7 @@
           {
             "speaker": "minto",
             "face": "smile",
-            "text": "おかえりなさーいっ♡ はじめまして、みんとです！"
+            "text": "おかえりなさーいっ♡ はじめまして！"
           },
           {
             "type": "set_flag",
@@ -475,7 +470,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "蒸野はじめです。tonariでバイトをしていて……"
+            "text": "逢縁はじめです。tonariでバイトをしていて……"
           },
           {
             "speaker": "minto",
@@ -539,6 +534,11 @@
           "text": "嬉しいなー、常連さんに昇格しちゃうよ〜？"
         },
         {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "あ、敬語はナシね♡ ここではみーんな『みんと』呼びなの！"
+        },
+        {
           "speaker": "hajime",
           "face": "smile",
           "text": "こんにちは、みんと。今日も明るいね"
@@ -563,12 +563,7 @@
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "うちは、お客さんに楽しく過ごしてもらうのが大事なの♡ ……もちろん、これでも商売だからね"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "何がお客さんを『また来たい』にさせるか、みんとなりに全部計算してやってるんだー"
+          "text": "これでも商売だもん。何が『また来たい』にさせるか、全部計算してるんだー"
         },
         {
           "speaker": "minto",
@@ -598,6 +593,11 @@
           "speaker": "minto",
           "face": "smile",
           "text": "お客さんにも大人気なの♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "この『にぃーっ』、真似して撮ったら #みんとポーズ で上げてね♡ 八重歯はなくても大丈夫！"
         },
         {
           "speaker": "minto",
@@ -667,7 +667,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "みんとは、温度ちょい高めの甘いミントが好き♡"
+          "text": "みんとは、温度ひかえめの甘いミントが好き♡ 上げるとキリッてなるの"
         },
         {
           "speaker": "minto",
@@ -805,6 +805,11 @@
           "text": "……キャスト、です"
         },
         {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（キャスト？ ここのキャストは、みんとひとりのはず──）"
+        },
+        {
           "speaker": "oneesan",
           "face": "smile",
           "text": "……はじめくん"
@@ -812,7 +817,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（はじめくん……？ その呼び方、その声）"
+          "text": "（その呼び方、その声。……ミントが好きだって言ってた、あの）"
         },
         {
           "speaker": "hajime",
@@ -874,7 +879,7 @@
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "お、おかえりなさーいっ♡ ……はじめくん"
+          "text": "[shiver]お、おかえりなさーいっ♡[/shiver] ……はじめくん"
         },
         {
           "speaker": "",
@@ -947,6 +952,11 @@
           "text": "みんとの大好きな『チョコミント』の再現ミックスなんだけどー"
         },
         {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "街でミント色のもの見つけたら #みんと色 で上げてね♡ おきゅおわしたら毎晩パトロールするから！"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "チョコミントか。……うん、甘さと清涼感のバランスが絶妙だね。すごく美味しい"
@@ -959,12 +969,12 @@
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "みんとね、甘いミントが好きだから、つい熱めに攻めちゃうの"
+          "text": "チョコのコクを出したくて、つい熱めに攻めちゃうの"
         },
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "でも欲張ると、甘いとこ通り越して、すぐ焦げそうになるっ"
+          "text": "でも欲張ると、ミントはツンと尖るし、チョコは焦げそうになるっ"
         },
         {
           "speaker": "minto",
@@ -984,22 +994,22 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "確かに、チョコみたいな甘い葉は熱に敏感だからね"
+          "text": "三口目あたりから、ミントが先に来る気はした"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "甘いミントって、辛いのと焦げの、ちょうど間なんだよね"
+          "text": "一口目は、ちゃんとチョコが前にいたんだけど"
         },
         {
-          "speaker": "hajime",
+          "speaker": "minto",
           "face": "normal",
-          "text": "ミントを少し減らして、チョコの甘さを前に出したら、無理に熱を攻めなくても甘く決まるんじゃない？"
+          "text": "三口目……うん、やっぱりそこで炭が勝ってるんだ。ありがと、決まった！"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "２人であれこれと調整していると、あっという間に時間が過ぎていった。"
+          "text": "みんとは炭を一つ外へ逃がし、ミントをひとつまみ抜いて混ぜ直す。手に、迷いがない。"
         },
         {
           "speaker": "",
@@ -1014,12 +1024,12 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "はじめくん、すごーいっ♡ さっきより、ずっと安定した煙になったよ！ みんと感動〜っ！"
+          "text": "できたっ♡ はじめくん、三口目まで吸ってみて！ 今度は尖らないはずっ"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "いや、元のミックスのセンスが良いからだよ。みんとの発想、すごく勉強になる"
+          "text": "……ほんとだ。チョコが、最後まで前にいる。直すの、早いな"
         },
         {
           "speaker": "minto",
@@ -1120,16 +1130,6 @@
           "text": "私の人生と、思い出が全部詰まってるお店だから"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（あの明るい接客の裏に、そんな執念があったなんて……）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（ビジネスライクな強かさも、全部この場所を守るためだったんだ）"
-        },
-        {
           "speaker": "minto",
           "face": "smile",
           "text": "……ふふっ、引かないで聞いてくれて、ありがとう、はじめくん"
@@ -1143,11 +1143,6 @@
           "speaker": "",
           "face": "",
           "text": "からかわれているようで、真剣な思いを託された気がする。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "みんとの覚悟の深さに、すっかり引き込まれていた。"
         },
         {
           "speaker": "",
@@ -1197,6 +1192,11 @@
             "text": "看板メニューのチョコミントパフェが大好きで。だから私、今『みんと』って名乗ってるの"
           },
           {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "この前のチョコミントもね、あのパフェの味を煙で出したくて"
+          },
+          {
             "speaker": "hajime",
             "face": "surprise",
             "text": "そういう由来だったんだ……。じゃあ、今のこのお店は……？"
@@ -1237,6 +1237,11 @@
             "speaker": "minto",
             "face": "smile",
             "text": "うん。看板のチョコミントから『みんと』って名乗ったの"
+          },
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "この前のチョコミントもね、あのパフェの味を煙で出したくて"
           },
           {
             "speaker": "hajime",
@@ -1347,7 +1352,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "みんとのシーシャが強いのは、そういうことだったんだな"
+          "text": "……この店のミント、俺は好きだよ。重くなんかない"
         },
         {
           "speaker": "minto",
@@ -1398,6 +1403,7 @@
           {
             "speaker": "minto",
             "face": "sad",
+            "beat": 700,
             "text": "……鼻の奥に、まだあるの。血と肉の匂いが"
           },
           {
@@ -1460,7 +1466,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ベージュのケーブルニットに、落ち着いたロングスカート。薄いメイクに、おとなしく下ろされた髪。"
+          "text": "ベージュのケーブルニットに、落ち着いたロングスカート。薄いメイクで、角も羽の飾りもない。"
         },
         {
           "type": "show_cg",
@@ -1484,12 +1490,7 @@
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "本日も、ご指名ありがとうございますっ♡ ……なんて。今のは、ちょっと冗談"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（いつもの声でひとつ冗談を言ったあと、また小さな声に戻った）"
+          "text": "本日も、ご指名ありがとうございますっ♡ ……なんて。今日は言わないつもりだったのに"
         },
         {
           "speaker": "",
@@ -1502,7 +1503,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "２人で商店街を歩く。みんとは店先の小物の前で、ときどき足を止めた。"
+          "text": "2人で商店街を歩く。みんとは店先の小物の前で、ときどき足を止めた。"
         },
         {
           "speaker": "minto",
@@ -1547,7 +1548,7 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "お店の外だと、こういう話し方なの、……退屈じゃない？"
+          "text": "お店の外だと、私、こういう話し方なの、……退屈じゃない？"
         },
         {
           "type": "condition",
@@ -1559,7 +1560,7 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "……こうやって、２人でゆっくり話せるの、うれしい"
+          "text": "……こうやって、2人でゆっくり話せるの、うれしい"
         },
         {
           "speaker": "hajime",
@@ -1577,19 +1578,13 @@
           "text": "でも今日は、はじめくんとお茶してる時の私でいたいな"
         },
         {
-          "type": "condition",
-          "condition_type": "flag",
-          "flag": "_minto_identity_revealed",
-          "next_true": "id_card_known"
-        },
-        {
           "type": "set_flag",
           "flag": "_minto_identity_revealed"
         },
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "……名前は、緑川栞。お店の外では、栞って呼んでくれたら、うれしい"
+          "text": "……名前は、木成頼栞。[pause]お店の外では、栞って呼んでくれたら、うれしい"
         },
         {
           "speaker": "hajime",
@@ -1613,17 +1608,17 @@
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "私の知ってる美味しいフレーバーの組み合わせとか、ね"
+          "text": "実はね、チョコミントはまだお店に出せてないの。あのパフェに、届かなくて"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "ほんとに？ ありがとう"
+          "text": "じゃあ、届く日まで何回でも通うよ"
         },
         {
           "speaker": "minto",
           "face": "ura_surprise",
-          "text": "……ふふ。そんなに喜んでもらえると、ちょっと照れるね"
+          "text": "……ふふ。それ、ほとんど常連さんの宣言だよ？"
         },
         {
           "type": "remember",
@@ -1708,7 +1703,7 @@
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "道理で、ずっと既視感があったわけだ……。びっくりしたけど、なんか、すっきりした"
+            "text": "どうりで、ずっと見覚えがあったわけだ……。びっくりしたけど、すっきりした"
           }
         ],
         "identity_known": [
@@ -1737,18 +1732,6 @@
             "face": "smile",
             "text": "そう言ってもらえて、俺もうれしい"
           }
-        ],
-        "id_card_known": [
-          {
-            "speaker": "minto",
-            "face": "ura_normal",
-            "text": "……身分証で見たかもしれないけど、ちゃんと言うね"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "……うん。名前は、あの時見てた。でも、俺から呼んでいいのか、分からなくて"
-          }
         ]
       }
     },
@@ -1772,7 +1755,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "うん。でも、会うたびに思うよ。お店の時と全然違うなって"
+          "text": "うん。でも、毎回ちょっとどきっとする。お店の時と全然違うから"
         },
         {
           "type": "condition",
@@ -1794,7 +1777,7 @@
         {
           "speaker": "minto",
           "face": "ura_smug",
-          "text": "……お店では、いつも通り『みんと』って呼んでね。２人の時の名前は、ここだけの内緒"
+          "text": "……お店では、いつも通り『みんと』って呼んでね。2人の時の名前は、ここだけの内緒"
         },
         {
           "speaker": "hajime",
@@ -1829,7 +1812,7 @@
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "お休みの日は、自分用のミントを一台だけ作って、窓を開けて、ぼーっと吸ってる。誰にも見せない一台"
+          "text": "お休みの日はね、自分用のミントを一台だけ作って、窓辺でぼーっとしてるの"
         },
         {
           "speaker": "hajime",
@@ -1852,11 +1835,6 @@
           "text": "小さく笑った彼女につられて、俺も歩く速さを緩めた。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "店のみんとと、２人でいる時の栞さん。どちらも彼女だった。"
-        },
-        {
           "type": "remember",
           "memory_id": "minto_rest"
         },
@@ -1875,7 +1853,7 @@
           {
             "speaker": "minto",
             "face": "ura_normal",
-            "text": "……あらためて。私、緑川栞っていうの。２人の時は、そっちで呼んでもらえたら、嬉しいな"
+            "text": "……あらためて。私、木成頼栞っていうの。2人の時は、そっちで呼んでもらえたら、嬉しいな"
           },
           {
             "speaker": "hajime",
@@ -1953,6 +1931,11 @@
           "text": "実質総合優勝なんだけどねっ♡"
         },
         {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "ちなみに #みんと総選挙 も今月はみんとが1位♡ 自撮り、毎日上げたもんね！"
+        },
+        {
           "speaker": "hajime",
           "face": "smile",
           "text": "……それはちょっと違う気が"
@@ -1960,7 +1943,7 @@
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "じゃあさ、１個だけ聞いていい。はじめくんは、シーシャ続けるの？ 次の大会も出るの？"
+          "text": "じゃあさ、1個だけ聞いていい？ はじめくんは、シーシャ続けるの？ 次の大会も出るの？"
         },
         {
           "speaker": "hajime",
@@ -2000,7 +1983,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "……もう。そういうの、さらっと言うんだから。……はじめくんらしいけど"
+          "text": "……言ったね？ 新作ができたら、いちばんに呼ぶ。逃げちゃだめだよ♡"
         },
         {
           "speaker": "",
@@ -2063,6 +2046,36 @@
           "text": "はいはいっ♡ チェキは別料金だよ〜！ あとで撮ろうね♡ でもちょっと待ってて〜！"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "「そうだ、みんとの絵、描いてきた！」常連のひとりが、スマホの画面を差し出した。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "わーっ、みんとだ！ 二次創作・ファンアート歓迎ですっ♡ どんどん描いて、どんどん上げてね！"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "上げる時は #みんと総選挙 つけてね♡ 1位の人には、みんとの宿題チェキあげちゃう！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「……先月の1位、みんと本人だったよね」「投稿数がケタ違いだったもんな」"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "だって自撮りも立派なエントリーだもんっ♡ 宿題チェキも、ちゃんと自分宛てに書いたよ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（主催者が優勝して、賞品を自分に渡してる……）"
+        },
+        {
           "speaker": "minto",
           "face": "smile",
           "text": "……あっ、おかえりなさーいっ♡ はじめくんっ！ ご指名ありがとっ♡"
@@ -2109,6 +2122,36 @@
         },
         {
           "speaker": "minto",
+          "face": "wink",
+          "text": "いくよ〜っ♡ ミントは〜？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「「「歯みがき粉じゃなーい！」」」常連さんたちが、間髪入れずに声をそろえた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "みんとは〜？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「「「自称はたち、人気No.1！」」」"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "自称じゃないもんっ！ ……No.1は合ってるけど♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……キャスト、みんとひとりだよな）"
+        },
+        {
+          "speaker": "minto",
           "face": "smile",
           "text": "……ねえ、今日はどんな気分？ 甘いの？ すっきりするの？"
         },
@@ -2141,6 +2184,488 @@
           "speaker": "",
           "face": "",
           "text": "……【魅力】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_minto_side_seat",
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今日のPEPPERMINTは正面の席が埋まっていて、カウンターの端だけが空いていた"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくんっ♡ こっちこっち！ 端の席、空けといたよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "正面、さっきまで空いてなかった？"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "空いてたよ？ でもあそこは、写真が映える席なの♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "照明が正面から当たって、みんとの笑顔がいちばん盛れる角度♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "そこまで計算してるんだ"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "とーぜん♡ 人気No.1は、席の向きから作ってるんだから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、端は計算の外？"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……端は、カウンターの横。お客さんの席には、してないの"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくんだけ、特別♡ ……あ、今の、営業に聞こえた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "どっちでもいいよ。座る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "端に座ると、ミントの煙が、正面の席よりずっと近くを通った"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "正面だとね、ずっと「みんと」の顔を作ってなきゃいけないの"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "横なら、手元だけ見てていいから……ちょっとだけ、楽"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、楽なほうでいて。俺は、その手元を見てるから"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "……っ"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……ずるい。端の席だと、からかう言葉が一拍遅れるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "遅れるほうが、なんか可愛いけど"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "か、可愛いは、お店の顔のときに言って……！"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "……決めた。この席、もう戻さない。次も端ね♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "正面の席は、ほかのお客さんのために、明るいまま残された"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_minto_quiet_hello",
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "端の席に座ると、みんとは一度息を吸って、店の声を出した"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "おかえりなさーいっ♡ 端の席、今日もみんとが空けといたよ♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ただいま。今日も元気だな"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……今の、もう一回言っていい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "言い直すの？ 小さい声のほうで？"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "ちがうよ♡ 同じ声で、もう一回"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "おかえりなさーいっ♡ はじめくんっ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……さっきと、同じに聞こえたけど"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "同じだよ？ みんとがいちばん上手に出せる声だもん"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "だいじなおかえりは、いちばん上手な声で二回♡ みんとの決まりっ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ、ほかのお客さんにも言ってる？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の奥で、常連さんがみんとを呼んだ"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はいはーいっ♡ 今行くね〜！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ぱっと笑って奥の席を回る。聞こえてきた「おかえり」は、どの席でも一回だった"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "ただいまっ♡ ……数えてた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "数えてた。どの席も、一回ずつ"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "でしょ？ 二回は端の席だけ。……みんとの声で言ってるんだから、ほんとだよ♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "さっきのが二十歳の声なら、二回目は？"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "みんとは、どっちも二十歳でーす♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……ほんとの数は、この席でも言わないけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何回でも、俺はこの席に座るよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "じゃあ、次も二回。……予約、入れとくね♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとは端の席の隣に、自分用のコップを、そっと一つ置いた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_minto_timer_hand",
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼のPEPPERMINT。カウンターでは、キッチンタイマーが小さく数字を減らしていた"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくんっ♡ ちょうどいいとこに！ これ、預かって！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "タイマー？ 蒸らしの？"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "そ。みんとが、自分で見てるやつ"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "鳴ったら呼んでね。それまで、絶対に触らないこと♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "分かった。触らないで、見てるだけにする"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席から呼ばれて、みんとはタイマーを俺の手のひらに残していった"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "すぐ戻るね♡ はじめくんは、そこから動かないで！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "数字は、思ったよりゆっくり減っていく。小さな機械が、手の中で少し温かい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鳴った時には、みんとはもうカウンターへ戻ってきていた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今、鳴った。……ちゃんと、触ってないよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……うん、見てた"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "足しても、止めてもいない。……数字、ずっと見ててくれたんだ"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "このタイマー、お客さんには渡さないの"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "お店、みんとひとりだから。……数えるのも、自分のお仕事"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、なんで今日は俺に？"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "……はじめくんなら、勝手に足さないでいてくれるって思ったから"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……ちょっとだけ、誰かに預けてみたかったの、……私の手から"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "また預けていいよ。鳴るまで、ちゃんとここにいるから"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "……っ。そ、そういうの、年下が言うセリフじゃないでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "年下？"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "い、今のなし！ みんとは永遠の二十歳だもん♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……時間を決めるのは、みんと。預けるのは、見ててもらうところだけ"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "次も、鳴る前に呼んでね♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとはタイマーを受け取ると、少し名残惜しそうに、自分の手元へ戻した"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_minto_cheki_keep",
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お客さんの少ないPEPPERMINT。みんとがカウンターで、チェキを二山に分けていた"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "こっちは、お客さんに渡す分♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "#みんと総選挙 用の自撮りも、ここからエントリーだよ♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "もう一山は？"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……こっちは、上げない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとは一枚を、トレイの下へすっと滑らせた。シーシャを作る手元だけが写った一枚だった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今の、みんとの顔が写ってなかった"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "顔のない一枚なんて、お店に出せないもん♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "角度も笑顔も、なんにも計算してない。……こういうの、苦手なの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "でも、その手が一番みんとっぽいと思う"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "……っ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとは一度、その一枚を渡す山へ乗せかけて、指を止めた"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……やっぱ、だめ。これ、お店の顔じゃない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "しまっとくなら、俺も見なかったことにする"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "……見せない。でも、捨てもしない"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……「みんとっぽい」って言われたから。……捨てられなくなった"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "……ありがと。お礼に今日は、呼ばれる前に炭替えに来てあげる♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "それ、ほかのお客さんにもやってない？"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "やってなーい♡ ……これは、ほんと"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "あの一枚も、お店の山には、もう戻さないよ♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トレイの下の一枚は、最後まで渡す山へは戻らなかった"
         }
       ]
     }

@@ -5,6 +5,7 @@ import { modal, setBg, showScreen } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { CH2_CITY_NAME, HOME_CITY_NAME, HOME_CITY_READING } from "../core/city-locations.js";
 import { STATION_FARE, prepareStationTrip } from "../daily/station-travel.js";
+import { travelsBetweenCities } from "../core/travel-budget.js";
 const regions = [{ id: "home" }, { id: "widehanga" }];
 
 export function normalizeCommuteState(value) {
@@ -40,7 +41,7 @@ export async function chooseMorningCity() {
 }
 
 export async function returnCityHome() {
-  if (state.chapter !== 2) return true;
+  if (!travelsBetweenCities(state)) return true;
   const owner = state;
   if (state.flags._ch2_region === "widehanga") {
     const trip = prepareStationTrip(state, regions, "home");
@@ -48,7 +49,7 @@ export async function returnCityHome() {
     const result = await play({ dialogue_id: "__ch2_return_train", lines: [{ speaker: "", face: "", text: `${CH2_CITY_NAME}の駅で、${HOME_CITY_NAME}へ戻る片道切符を200円で買った。` }, { speaker: "hajime", face: "normal", text: "今日もいろいろあったな。家に帰ろう" }] });
     if (state !== owner || !result || result.cancelled) return false;
   }
-  await setBg(bgUrl("bg_home", "night"), { instant: true });
+  await setBg(bgUrl("bg_home", "night"));
   return state === owner;
 }
 

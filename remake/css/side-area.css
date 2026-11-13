@@ -1,0 +1,142 @@
+/* 左右の余白の活用（YHK・2026-11-11 オーナー決定）。部品と追随は js/core/side-area.js。
+   ステージ（固定 1280×720）の外・場面背景のぼかし（#backdrop）の上に、左と右の層を1枚ずつ置く。ステージの中は変えない。
+   層の中はステージと同じ倍率（--k）で縮めるので、寸法はステージ上の px で書く。内側（ステージ側）の端にくっつけて置き、
+   余白が広い端末では外側が余る（煙だけになる）。段は <html data-side="narrow|mid|wide|off">、親指ボタンは data-side-pad="on"。
+   寸法の決め方（主流のスマホ＝19:9〜20:9。余白は片側 120〜160px）:
+   - 片側の真ん中にはカメラの切り欠きが来る（iPhone 13 以降・Dynamic Island・穴あきの Android で、縦の 3〜7 割・外側寄り）。
+     ボタンは上と下の端に寄せ、真ん中には置かない。
+   - 縦書きの帯はステージの端から 50px 以内の1列に収める（切り欠きより内側）。
+   - ボタンは 88px（実寸 約48px）。2つ重ねても切り欠きの帯に入らないよう、端から 22px・間 12px（2つで縦の 29.2%）。
+     切り欠きが縦に長い古い iPhone（X〜12）では、切り欠きの側だけ内側のボタンの外の縁が少し隠れる。
+   - 字は実寸 11.5px、帯の日付は 12.5px を下回らないよう --k で割った値を下限にする（スマホ規格 phone-density.css と同じ考え方）。 */
+.side { position: absolute; overflow: hidden; display: none; pointer-events: none; }
+:root:is([data-side="narrow"], [data-side="mid"], [data-side="wide"]) .side { display: block; }
+.side [hidden] { display: none !important; }
+.side-in { position: absolute; top: 0; width: var(--side-g, 0px); height: 720px; transform: scale(var(--k, 1)); }
+.side[data-side="l"] .side-in { right: 0; transform-origin: 100% 0; }
+.side[data-side="r"] .side-in { left: 0; transform-origin: 0 0; }
+.side-in > i { position: absolute; display: block; }
+
+/* ---------------------------------------------------------------- A 煙と縁 */
+/* 外へ向かって暗くする面。ぼかした背景が明るい場面（昼・明るい店）でも、帯の字とボタンが読めるようにする */
+.side-fall { inset: 0; background: linear-gradient(to left, rgba(12, 8, 22, .36), rgba(12, 8, 22, .76)); }
+.side[data-side="r"] .side-fall { background: linear-gradient(to right, rgba(12, 8, 22, .36), rgba(12, 8, 22, .76)); }
+/* ステージの端の細い線と、外へ落ちる影（ステージを「窓」に見せる） */
+.side-rim { top: 0; bottom: 0; width: 36px; }
+.side[data-side="l"] .side-rim { right: 0; border-right: 2px solid rgba(255, 255, 255, .2); background: linear-gradient(to left, rgba(0, 0, 0, .42), transparent); }
+.side[data-side="r"] .side-rim { left: 0; border-left: 2px solid rgba(255, 255, 255, .2); background: linear-gradient(to right, rgba(0, 0, 0, .42), transparent); }
+/* 煙: やわらかい塊を縦に2枚ぶん並べ、1枚ぶんだけ上へ流して継ぎ目なく繰り返す。動かすのは transform だけ。
+   steps() で 1 秒に数回だけ進める（1 段は実寸 1px 未満。止まって見えず、読んでいる間の描き直しを減らす）。 */
+.side-smoke {
+  left: -30%; right: -30%; top: 0; height: 200%;
+  background-repeat: repeat-y; background-size: 100% 50%;
+  will-change: transform;
+  animation: side-drift 64s steps(480) infinite;
+}
+.side-smoke.a {
+  opacity: .62;
+  background-image:
+    radial-gradient(30% 10% at 62% 14%, rgba(236, 226, 255, .42), transparent 72%),
+    radial-gradient(22% 13% at 34% 33%, rgba(236, 226, 255, .30), transparent 70%),
+    radial-gradient(34% 9% at 58% 52%, rgba(236, 226, 255, .38), transparent 74%),
+    radial-gradient(20% 12% at 40% 71%, rgba(236, 226, 255, .28), transparent 70%),
+    radial-gradient(28% 8% at 66% 87%, rgba(236, 226, 255, .34), transparent 72%);
+}
+.side-smoke.b {
+  opacity: .4;
+  animation-duration: 97s;
+  animation-delay: -31s;
+  background-image:
+    radial-gradient(40% 11% at 44% 20%, rgba(255, 236, 214, .30), transparent 72%),
+    radial-gradient(26% 12% at 68% 44%, rgba(236, 226, 255, .34), transparent 70%),
+    radial-gradient(36% 10% at 36% 62%, rgba(255, 236, 214, .26), transparent 74%),
+    radial-gradient(24% 9% at 60% 83%, rgba(236, 226, 255, .30), transparent 72%);
+}
+@keyframes side-drift { to { transform: translate3d(0, -50%, 0); } }
+/* 夜・暗転の場面は煙も沈める（ぼかしの色合い #backdrop[data-tint] に合わせる） */
+#backdrop[data-tint="night"] ~ .side .side-smoke.a { opacity: .46; }
+#backdrop[data-tint="night"] ~ .side .side-smoke.b { opacity: .28; }
+#backdrop[data-tint="dim"] ~ .side .side-smoke.a { opacity: .32; }
+#backdrop[data-tint="dim"] ~ .side .side-smoke.b { opacity: .2; }
+/* 設定「揺れ・閃光を減らす」と端末の「動きを減らす」では流さない（煙は止まった絵として残る） */
+body.reduce-shake .side-smoke, :root[data-side-calm="on"] .side-smoke { animation: none; }
+@media (prefers-reduced-motion: reduce) { .side-smoke { animation: none; } }
+
+/* ---------------------------------------------------------------- B 縦書きの帯（左の余白の上から、ステージの端に沿った1列） */
+/* ステージの端から 10〜46px。どの機種の切り欠きよりも内側なので、街の名前や日付が下へ伸びても隠れない */
+.side-strip {
+  position: absolute; top: 26px; right: 10px; margin: 0;
+  writing-mode: vertical-rl; white-space: nowrap; font-family: var(--font); line-height: 36px;
+  color: #f7f1e6; text-shadow: 0 0 8px rgba(0, 0, 0, .95), 0 2px 10px rgba(0, 0, 0, .85);
+}
+.side-strip > * { display: inline-block; font-style: normal; }
+/* 章 */
+.side-strip small { font-size: max(20px, calc(11.5px / var(--k, 1))); font-weight: 700; letter-spacing: .26em; color: #e3bd6e; }
+/* 街 */
+.side-strip b { margin-top: 8px; font-size: 36px; font-weight: 900; letter-spacing: .1em; }
+/* 街と日付の間の細い金の線 */
+.side-strip i { width: 2px; height: 34px; margin: 12px 0 14px; vertical-align: middle; background: linear-gradient(#e3bd6e, rgba(227, 189, 110, .25)); }
+/* 日付と時間帯 */
+.side-strip span { font-size: max(23px, calc(12.5px / var(--k, 1))); font-weight: 700; letter-spacing: .2em; color: rgba(247, 241, 230, .95); }
+:root[data-side="narrow"] .side-strip { display: none; }
+
+/* ---------------------------------------------------------------- C 親指ボタン */
+.side-pad { position: absolute; display: none; gap: 12px; }
+:root[data-side-pad="on"] .side-pad { display: grid; }
+.side-pad.top { top: 22px; }
+/* 会話と地図の操作は同じ二席を使う。非表示ボタンの空席を下へ積まない。 */
+.side-pad.top [data-pad="glossary"], .side-pad.top [data-pad="lime"] { grid-area: 1 / 1; }
+.side-pad.top [data-pad="config"], .side-pad.top [data-pad="menu"] { grid-area: 2 / 1; }
+.side-pad.bottom { bottom: 22px; }
+/* 余白の幅の真ん中に置く。広い端末ではステージ寄り（端から 26px）で止め、外側を空ける */
+.side[data-side="l"] .side-pad { right: clamp(14px, calc((var(--side-g, 0px) - 88px) / 2), 26px); }
+.side[data-side="r"] .side-pad { left: clamp(14px, calc((var(--side-g, 0px) - 88px) / 2), 26px); }
+.side-btn {
+  position: relative;
+  display: grid; place-content: center; justify-items: center; gap: 6px;
+  box-sizing: border-box; width: 88px; height: 88px; margin: 0; padding: 0;
+  font-family: var(--font); font-size: max(21px, calc(11.5px / var(--k, 1))); font-weight: 800; line-height: 1; letter-spacing: .04em;
+  color: #fff;
+  background: linear-gradient(180deg, rgba(60, 41, 92, .95), rgba(30, 19, 48, .95));
+  border: 0; border-radius: 50%;
+  box-shadow: inset 0 0 0 2px rgba(201, 167, 230, .55), 0 6px 16px rgba(0, 0, 0, .5);
+  cursor: pointer; pointer-events: auto; touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
+  transition: opacity .16s ease, visibility .16s, transform .08s ease;
+}
+/* 元のボタンが押せない間（会話の外・モーダルの下 など）は出さない */
+.side-btn[data-live="false"] { opacity: 0; visibility: hidden; pointer-events: none; }
+.side-btn:active { transform: scale(.94); }
+.side-btn:focus-visible { outline: 3px solid #e3bd6e; outline-offset: 3px; }
+/* AUTO・SKIP が入っている間 */
+.side-btn[aria-pressed="true"] { color: #2a1a44; background: linear-gradient(180deg, #f3eafd, #cdb4ea); box-shadow: inset 0 0 0 2px #fff, 0 6px 16px rgba(0, 0, 0, .5); }
+/* 次へ: いちばんよく押すので金。下の角（親指の位置） */
+.side-btn[data-pad="next"] { color: #23160a; background: linear-gradient(180deg, #ecd08d, #b98b36); box-shadow: inset 0 0 0 2px rgba(255, 243, 207, .75), 0 6px 16px rgba(0, 0, 0, .5); }
+.side-btn[data-pad="next"]::after { content: ""; width: 0; height: 0; border-style: solid; border-width: 7px 0 7px 12px; border-color: transparent transparent transparent currentColor; }
+/* LIME: ステージの中の印と同じ、緑の吹き出し */
+.side-lime { position: relative; display: grid; place-items: center; width: 62px; height: 44px; padding-top: 1px; box-sizing: border-box; font-size: max(17px, calc(9.5px / var(--k, 1))); font-weight: 900; letter-spacing: 0; color: #fff; background: #06c755; border-radius: 50%; }
+.side-lime::after { content: ""; position: absolute; left: 28%; bottom: -6px; border-style: solid; border-width: 9px 5px 0 9px; border-color: #06c755 transparent transparent transparent; }
+/* MENU: 三本線と字 */
+.side-bars { position: static !important; width: 30px; height: 20px; border-top: 4px solid currentColor; border-bottom: 4px solid currentColor; box-sizing: border-box; background: linear-gradient(currentColor, currentColor) center / 100% 4px no-repeat; }
+/* 未読の数（赤）と、未使用の火種の数（火の色）、MENU の中に増えた物がある合図（金の点） */
+.side-badge { position: absolute; right: -4px; top: -4px; box-sizing: border-box; min-width: 32px; height: 32px; padding: 0 7px; font-style: normal; font-size: max(18px, calc(10px / var(--k, 1))); font-weight: 800; line-height: 32px; text-align: center; color: #fff; background: #e5484d; border-radius: 16px; box-shadow: 0 0 0 2px #1e1330; }
+.side-badge.fire { color: #2a1206; background: linear-gradient(180deg, #ffd27a, #ff9b3d); }
+.side-dot { position: absolute !important; left: 2px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: #e3bd6e; box-shadow: 0 0 0 2px #1e1330, 0 0 10px #e3bd6e; }
+
+/* 余白へ出している間は、ステージの中の元のボタンを隠す（用語・設定も右上へ）。
+   HUD のボタンは場所を残して見えなくするだけ（MENU を起点にする演出が元の位置を測るため）。
+   side-probe は、押せるかどうかを確かめる一瞬だけ付く（js/core/side-area.js の hitsHidden）。 */
+:root[data-side-pad="on"] #vn .vn-controls > .vn-ctl { visibility: hidden !important; }
+:root[data-side-pad="on"].side-probe #vn .vn-controls > .vn-ctl { visibility: inherit !important; }
+/* 隠した LOG の次に並ぶ「用語」の左の区切り線は要らない（旧版・紙のテーマで線だけ残るため） */
+:root[data-side-pad="on"] #vn .vn-controls > .vn-ctl[data-test="vn-glossary"]::before { content: none !important; }
+:root[data-side-pad="on"] #hud .hud-right > :is(.hud-lime, .hud-menu) { visibility: hidden !important; }
+/* 会話の操作を余白へ出している間は、会話欄の上に伸びる操作札（phone-density.css の --phone-tap）の分を空けない。
+   選択肢を PC と同じ高さ（3択以上は会話欄の上 62px、2択は 94px）へ下げる（オーナー「2択が上すぎる」「もう少し上」2026-11-13・YHK14）。
+   新版（look-neo.css）は帯のすぐ上に自分で置くので、ここでは触らない（#stage #vn の規則が勝つ）。 */
+html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:root) .vn-choices {
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px);
+}
+html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 94px);
+}
+:root[data-side-pad="on"].side-probe #hud .hud-right > :is(.hud-lime, .hud-menu) { visibility: inherit !important; }

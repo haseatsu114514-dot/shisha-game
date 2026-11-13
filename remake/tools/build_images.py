@@ -10,6 +10,7 @@
 """
 import io
 import json
+import re
 from pathlib import Path
 
 from PIL import Image
@@ -31,11 +32,15 @@ def targets(m):
     rel += [art["background"] for art in m.get("introArt", {}).values()]
     for ch, p in m["portraits"].items():
         rel += [f"sprites/characters/{ch}/chr_{ch}_{f}.png" for f in p["faces"]]
+    for style, characters in m.get("portraitVariants", {}).items():
+        for ch, p in characters.items():
+            rel += [f"sprites/character_variants/{style}/{ch}/chr_{ch}_{f}.png" for f in p["faces"]]
     rel += ["ui/title_arts/title_art_keyvisual_01.png", "ui/ui_title_logo.png", "ui/ui_title_logo_rich.png"]
     rel += [f"ui/title_arts/{art['file']}" for art in m.get("titleArts", [])]
     rel += ["ui/chapters/ch1_keyart.png"]
     rel += [f"ui/continue/{name}" for name in m.get("continueUI", [])]
     rel += [f"ui/face_icons/{name}" for name in m.get("faceIcons", [])]
+    rel += [f"ui/face_icons/{style}/{name}" for style, names in m.get("faceIconVariants", {}).items() for name in names]
     return [r for r in rel if (ASSETS / r).exists()]
 
 
@@ -48,15 +53,16 @@ def encode(src: Path, rel: str) -> bytes:
             k = edge / max(im.size)
             im = im.resize((round(im.width * k), round(im.height * k)), Image.LANCZOS)
     # 清書版の細かな輪郭・アルファと、チェキの手書き文字は再ビルド時も可逆で保つ。
-    if (rel.startswith("sprites/characters/samechan/")
+    if (rel.startswith("sprites/character_variants/")
+            or rel.startswith("sprites/characters/samechan/")
             or rel.startswith("sprites/characters/hiyori/")
             or rel.startswith("sprites/characters/ageha/")
             or rel.startswith("sprites/characters/minto/")
-            or rel.startswith("sprites/characters/rin/")
+            or rel.startswith("sprites/characters/rio/")
             or rel.startswith("sprites/characters/tsumugi/")
             or rel.startswith("sprites/characters/sumi/")
             or rel.startswith("sprites/characters/mashiro/")
-            or rel.startswith("sprites/characters/nagumo/")
+            or rel.startswith("sprites/characters/sui/")
             or rel.startswith("sprites/characters/maezono/")
             or rel.startswith("sprites/characters/pakki/")
             or rel.startswith("sprites/characters/hajime/")
@@ -67,6 +73,10 @@ def encode(src: Path, rel: str) -> bytes:
             or rel.startswith("sprites/characters/rei/")
             or rel.startswith("sprites/characters/volk/")
             or rel.startswith("sprites/characters/salaryman/")
+            or re.fullmatch(r"sprites/characters/emil/chr_emil_(smile|serious|surprise|thinking)\.png", rel)
+            or re.fullmatch(r"sprites/characters/maki/chr_maki_(smile|serious|surprise|excited)\.png", rel)
+            or re.fullmatch(r"sprites/characters/sai/chr_sai_(smile|serious|surprise|thinking)\.png", rel)
+            or re.fullmatch(r"sprites/characters/uranaishi/chr_uranaishi_(serious|surprise|sad)\.png", rel)
             or rel in ("backgrounds/bg_osu_map_day.png", "backgrounds/bg_osu_map_night.png")
             or rel == "cgs/cg_minto_first_cheki.png"
             or rel.startswith("ui/axe_throw/")):

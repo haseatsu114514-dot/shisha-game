@@ -1,5 +1,5 @@
 {
-  "comment": "来訪予定が確定し、実際に到着した恋人用。同行者の決定だけで再生しない。",
+  "comment": "来訪予定が確定し、実際に到着した恋人用。同行者の決定だけで再生しない。前夜祭の日の昼、前夜祭より前に読む。前夜の過ごし方（誘う・ひとりで休む・重なった予定の保留）のどれにもつながるよう、夜の約束はしない。",
   "dialogues": [
     {
       "dialogue_id": "ch4_minto_dubai_girlfriend",
@@ -7,27 +7,108 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ロビーへ下りると、栞さんは髪を下ろしていた。いつものリボンは、手首に一本巻いてあるだけだった。"
+          "text": "ロビーへ下りると、栞さんはベージュのカーディガン姿だった。"
         },
         {
-          "speaker": "minto",
-          "face": "ura_smile",
-          "text": "店のお休み、ちゃんと貼ってきたよ"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_smile",
-          "text": "来たかったから、予定を空けました"
+          "speaker": "",
+          "face": "",
+          "text": "店で付けているリボンは、手首に一本巻いてあるだけだった。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ありがとう。今日はもう休めますか"
+          "text": "栞さん。長旅、お疲れさま"
         },
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "うん。……ご飯は、あとで一緒にどう？"
+          "text": "お店の臨時休業、ちゃんと貼ってきたよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "『人気No.1キャスト、海外遠征のためお休みします』って"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……キャスト、私ひとりなんだけどね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ひとりで回してる店を閉めるの、大変だったでしょ"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "ちょっとね。……でも、自分で決めたお休みは、嫌じゃなかった"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "beat": 400,
+          "text": "……会いたかったから、来ちゃった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言ってから、栞さんは袖で口もとを隠した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。来てくれて、うれしい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞さんが、ロビーの空気を小さく吸い込む。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "こっち、知らない匂いばっかりだね。お香と、スパイスと、甘いお茶"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "知らない匂いって、思い出がくっついてないから、ちょっと楽"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今夜、大会の前夜祭があるんだ。少し顔を出してくる"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "うん。私は、部屋で少し休むね。飛行機、あんまり眠れなくて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞さんは、手首のリボンを指でとんとんと叩いた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "明日は、これをちゃんと付けて、『みんと』で応援するから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どっちの栞さんでも、心強いよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……ふふ。今夜は、はじめくんの好きに過ごしてね。私は、ここにいるから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "エレベーターの前で、栞さんは小さく手を振った。"
         }
       ],
       "metadata": {

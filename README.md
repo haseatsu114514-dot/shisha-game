@@ -5,6 +5,7 @@
 現行のゲームは **`remake/`**（ESモジュール・ビルド不要）。第1〜3章の必須本編を通しで遊べ、第3章帰郷後の「第4章へ進む」から第4章ドバイ・第5章・エンディングまで接続済みです。第3章の任意スポット・前夜デート等の未接続分は `remake/README.md` の「まだ無いもの」を見てください。
 旧ブラウザ版 `web/` と単一HTML配布版は、2026-10-07のオーナー指示で削除しました。
 共有の `data/`・`assets/` は現行版が使います。街歩き・歩行の未接続試作は `experiments/proto/` に保存しています。
+公式プロモーションサイトは `promo/`（`promo/README.md`。公開先は GitHub Pages の `/promo/`）。
 AI向けの入口は `AGENTS.md`（Claude Code は `CLAUDE.md`）、資料の地図は `docs/current_documentation_guide.md` です。
 
 ローカルで遊ぶ: `python3 remake/tools/serve_preview.py --port 8123` →

@@ -15,13 +15,17 @@
 import { DB, callName } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { affinityLevel, AFFINITY_GATE_CHOICES, releaseAffinity } from "../core/stats.js";
-import { AGEHA_AFFINITY_VISITS, questionComplete, questionDoneKey, CH2_VISIT_STORIES, ch2VisitStoriesDone, mashiroScenesRead } from "../core/affinity-stages.js";
+import { AGEHA_AFFINITY_VISITS, questionComplete, questionDoneKey, CH2_VISIT_STORIES, ch2VisitStoriesDone, mashiroScenesRead, samechanHeartEventsDone } from "../core/affinity-stages.js";
 import { emit } from "../core/bus.js";
+import { chapterFeatureEnabled } from "../core/chapter-features.js";
 import { play } from "../vn/engine.js";
 import { giftOpen } from "../core/scene-motions.js";
 import { isLover, romanceRouteOpen } from "./romance.js";
 import { VISIT_SEQ, storyCount, hasContact } from "./spots.js";
 import { hiyoriRoute, hiyoriStoriesDone, hiyoriFinaleReady } from "../core/hiyori-route.js";
+import { noorStoriesDone } from "../chapters/ch4-desert-progress.js";
+import { longlongStoriesDone } from "../chapters/ch4-longlong.js";
+import { DUBAI_BOND_FINALES, dubaiBondStoriesDone } from "../chapters/dubai-bonds.js";
 // #2090: 第2章の対峙（決裂・休業）以降か。spots.js / core/fortune-effects.js の naruRiftActive と同じ条件（試験の依存を増やさないため写し）
 const naruRiftActive = (save) => (save?.chapter || 1) >= 2 && !!(save?.flags?._ch2_read_ch2_naru_confrontation
   || save?.flags?._ch2_night_11_done || save?.flags?._ch2_naru_listened || save?.flags?._ch2_naru_hurt);
@@ -36,7 +40,7 @@ export const BOND_FINALES = {
   adam: { dialogue: "ch1_adam_bond_finale", gift: "suyaki_adam" },
   tsumugi: { dialogue: "ch1_tsumugi_bond_finale", gift: "suyaki_tsumugi", night: true, question: "bond_q2_tsumugi" },
   minto: { dialogue: "ch1_minto_bond_finale", gift: "suyaki_minto", invite: "lime_minto_bond_finale", question: "bond_q2_minto" },
-  rin: { dialogue: "ch1_rin_bond_finale", gift: "suyaki_rin", question: "bond_q2_rin" },
+  rio: { dialogue: "ch1_rio_bond_finale", gift: "suyaki_rio", question: "bond_q2_rio" },
   // 第2章の店（柚ヶ谷）で会う。訪問列（CH2_VISIT_STORIES）を読み終えた♥5の次の来店で一度だけ（#2027）
   kumicho: { dialogue: "ch2_kumicho_bond_finale", gift: "suyaki_kumicho" },
   rei: { dialogue: "ch2_rei_bond_finale", gift: "suyaki_rei" },
@@ -44,8 +48,33 @@ export const BOND_FINALES = {
   // あげは（#2023）: 第2章のMELTY PUFFで。方向は♥3の答え（bond_q1_ageha）だけで決まり、最後の質問は置かない。
   // 告白は日常の予約ではなく、第3章の帰郷後に ch3-romance-entry.js が出す（laterConfession）。
   ageha: { dialogue: "ch2_ageha_bond_finale", gift: "suyaki_ageha", laterConfession: true },
-  // ましろ（#2022）: 第3章の場面カードから（chapters/ch3.js）。告白は仮置きの寄り道 confession_mashiro（#1930）が担うので予約しない。
+  // ましろ（#2022）: 第3章の場面カードから（chapters/ch3.js）。告白は寄り道 confession_mashiro（#1930・IR20）が担うので予約しない。
   mashiro: { dialogue: "ch3_mashiro_bond_finale", gift: "suyaki_mashiro", question: "bond_q2_mashiro", ownConfession: true },
+  // 綾取（#2028）: 第3章の煙幕への来店（ch3-tokyo-daily.js）・旧行程の場面カード（chapters/ch3.js）・
+  // 大会後の寄り道（ch3-aftermath.js）から。恋愛対象外なので友情の着地だけ。条件はほかの人物と同じ♥5（IR22）。
+  // 煙幕には何度でも通えて♥5に届く（AFB02・#2347）ので、仮の♥1（#2281）は外した。
+  saku: { dialogue: "ch3_saku_bond_finale", gift: "suyaki_saku" },
+  // ヌール（DSR20）: 第4章ドバイのカフェ・オアシスで（chapters/ch4-desert.js）。店の段階の会話と♥3の問いを読んだ♥5で一度だけ。
+  // 告白は次の砂丘（ツアー代なし）の夕日の場面 confession_noor が担うので、夜の帰り道には予約しない。
+  noor: { dialogue: "ch4_noor_bond_finale", gift: "suyaki_noor", question: "bond_q2_noor", ownConfession: true },
+  // スティーブ（#2028）: 綾取と同じく第3章の東京で、Smoke & Glory への来店（ch3-tokyo-daily.js）・旧行程の場面カード
+  // （chapters/ch3.js）・大会後の寄り道（ch3-aftermath.js）から。恋愛対象外なので友情の着地だけ。条件は♥5。
+  // 第5章の東京の Smoke & Glory でも届け直せる（#2705）。第3章で♥5に届かなかった人用の書き出し（tokyoDialogue）で、
+  // 第3章で見た人は finales.steve があるので二度は出ない。
+  steve: { dialogue: "ch3_steve_bond_finale", tokyoDialogue: "ch5_steve_bond_finale", gift: "suyaki_steve" },
+  // ヴォルク（#2028）: 綾取・スティーブと同じく第3章の東京で、鉄の煙への来店（ch3-tokyo-daily.js）・旧行程の場面カード
+  // （chapters/ch3.js）・大会後の寄り道（ch3-aftermath.js）から。恋愛対象外なので友情の着地だけ。条件は♥5。
+  // 鉄の煙は初来店（DAY12夜）から大会まで行動が一つしかないので、実際は大会後の寄り道で読むことが多い。
+  // 第5章の東京の鉄の煙でも届け直せる（2026-11-07 オーナー指示「スティーブと揃える」）。スティーブと同じく第3章で見逃した人用の
+  // 書き出し（tokyoDialogue）で、第3章で見た人は finales.volk があるので二度は出ない。
+  volk: { dialogue: "ch3_volk_bond_finale", tokyoDialogue: "ch5_volk_bond_finale", gift: "suyaki_volk" },
+  // 王煙楼: 第4章ドバイの龍龍水煙所で、段階5本を読み終えた♥5の次の来店で一度だけ。恋愛対象外なので友情の着地だけ。
+  master_hookah: { dialogue: "ch4_longlong_bond_finale", gift: "suyaki_master_hookah" },
+  // 太陽・シェイク（2026-11-11 オーナー「ルートを新設」RVE03）: 第5章のシェイクの屋敷で、屋敷の段階を読み終えた♥5の次の来店で一度だけ。
+  // 恋愛対象外なので友情の着地だけ。太陽は第4章のFESTAで仲良くなれるが、審査員だと明かすのは大会当日なので、締めくくりは大会の後の中庭で。
+  // シェイクの連絡は手紙（chapters/ch5-travel.js）。締めくくりの後にも一通届く（chapters/dubai-bonds.js の SHEIKH_BOND_LETTERS）。
+  da_silva: { dialogue: DUBAI_BOND_FINALES.da_silva, gift: "suyaki_da_silva" },
+  sheikh: { dialogue: DUBAI_BOND_FINALES.sheikh, gift: "suyaki_sheikh" },
   hiyori: {
     get dialogue() { return hiyoriRoute().finale?.dialogue || ""; },
     get gift() { return hiyoriRoute().finale?.gift || null; },
@@ -62,7 +91,7 @@ export const BOND_FINALES = {
 export const BOND_QUESTIONS = {
   tsumugi: { dialogue: "ch1_tsumugi_bond_question", choice: AFFINITY_GATE_CHOICES.tsumugi, host: "ch1_tsumugi_fourth", when: "after" },
   minto: { dialogue: "ch1_minto_bond_question", choice: AFFINITY_GATE_CHOICES.minto, host: "ch1_minto_private_1", alsoAfter: ["ch1_minto_fifth"], when: "after" },
-  rin: { dialogue: "ch1_rin_bond_question", choice: AFFINITY_GATE_CHOICES.rin, host: "ch1_rin_third", when: "visit" },
+  rio: { dialogue: "ch1_rio_bond_question", choice: AFFINITY_GATE_CHOICES.rio, host: "ch1_rio_third", when: "after" },
   // あげは（#1988）: 第2章の店に通う回「初めての客」（♥3）を読んだ直後。第3章の帰郷後の告白はこの答えが恋愛寄りで♥5のときだけ。
   ageha: { dialogue: "ch2_ageha_bond_question", choice: AFFINITY_GATE_CHOICES.ageha, host: "remake_ch2_ageha_newcomer", when: "after" },
   // ましろ（#2022）: 第3章の寄り道「閉店後の練習」を読んだ後、♥3で場面カードから。
@@ -98,8 +127,8 @@ export function recordRomanceChoice(line, choice) {
 /** まだ恋愛に進める相手か（友情寄りの答えも、断った告白もない）。締めくくりの最後の質問を出す条件 */
 export function romanceOpen(id) {
   if (id === "hiyori" && !hiyoriFinaleReady()) return false;
-  if (id === "samechan" && (!(state.chapter >= 2 && state.chapter <= 3)
-    || !state.flags._samechan_bond_question_done
+  if (id === "samechan" && (!chapterFeatureEnabled(state.chapter, "samechanRomance")
+    || !state.flags[questionDoneKey("samechan")]
     || state.romanceChoices?.bond_q1_samechan?.char !== id)) return false;
   const def = BOND_FINALES[id];
   // 最後の質問がない相手は、実際に答えた質問がある時だけ（未回答を恋愛と推測しない）
@@ -149,7 +178,7 @@ function resumeChoice(scene, key, answer) {
 export function hiyoriQuestionReady() {
   const q = hiyoriRoute().question, scene = DB.dialogues[q?.dialogue];
   if (!state || !hiyoriRoute().enabled || !state.flags._hiyori_work_talk_done
-    || !state.flags._hiyori_real_self_known || !state.met.hiyori || ![1,2].includes(state.chapter)
+    || !state.flags._hiyori_real_self_known || !state.met.hiyori || !chapterFeatureEnabled(state.chapter, "hiyoriDaily")
     || !q?.flag || state.flags[q.flag] || !scene?.lines?.length || scene.metadata?.preview_only
     || finaleSeen("hiyori") || isLover("hiyori") || state.flags._friend_hiyori) return false;
   const answer = state.romanceChoices[q.choice];
@@ -162,7 +191,7 @@ export async function playHiyoriQuestion({ bg = null, signal = null, deferSave =
   const q = hiyoriRoute().question, scene = DB.dialogues[q.dialogue];
   const answer = state.romanceChoices[q.choice];
   const owner = state;
-  const result = await play(resumeChoice(scene,q.choice,answer), { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal });
+  const result = await play(resumeChoice(scene,q.choice,answer), { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal, growthScene: true });
   if (state !== owner || signal?.aborted || (!result || result.cancelled) || state.romanceChoices[q.choice]?.char !== "hiyori") return false;
   state.flags[q.flag] = true;
   releaseAffinity("hiyori");
@@ -172,7 +201,7 @@ export async function playHiyoriQuestion({ bg = null, signal = null, deferSave =
 
 const questionOpen = (id) => {
   if (id === "hiyori" && !hiyoriRoute().enabled) return false;
-  if (id === "mashiro" && state.chapter !== 3) return false;
+  if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
   if (AFFINITY_GATE_CHOICES[id] && affinityLevel(id) < 3) return false;
   const q = BOND_QUESTIONS[id];
   const answer = state.romanceChoices?.[q?.choice];
@@ -204,7 +233,7 @@ export async function playQuestionVisit(id, { bg = null, signal = null, deferSav
   try {
     const scene = DB.dialogues[q.dialogue];
     const script = resumeChoice(scene, q.choice, state.romanceChoices?.[q.choice]);
-    const result = await play(script, { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal });
+    const result = await play(script, { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal, growthScene: true });
     const answer = state.romanceChoices?.[q.choice];
     if (state !== owner || signal?.aborted || (!result || result.cancelled)
       || answer?.char !== id || !Number.isFinite(answer.value) || answer.value < 0) return false;
@@ -218,12 +247,37 @@ export async function playQuestionVisit(id, { bg = null, signal = null, deferSav
 // ---------------------------------------------------------------- 締めくくり（好感度MAXイベント）
 
 export const finaleSeen = (id) => !!state.finales?.[id];
+/** 締めくくりの台詞 id。スティーブは第5章の東京では第5章用の書き出し（#2705） */
+const finaleDialogue = (id) => BOND_FINALES[id]?.tokyoDialogue && (state.chapter || 1) >= 5 ? BOND_FINALES[id].tokyoDialogue : BOND_FINALES[id]?.dialogue;
+/** 締めくくりに要る好感度の段階（既定は♥5＝MAX。heart を持つ相手だけ別） */
+export const finaleHeart = (id) => BOND_FINALES[id]?.heart || 5;
+/** 鉄の煙の再訪三つ（chapters/ch3-story-wiring.js の任意場面。既読は _ch3_read_<id>）。 */
+const VOLK_VISITS = Object.freeze(["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_fifth", "ch3_volk_revisit"]);
 const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
   : id === "mashiro" ? mashiroScenesRead(state.flags) && questionComplete(state, id)
   : id === "samechan"
   ? storyCount(id) >= 3 && !!state.flags._samechan_quiet_seat_done && !!state.flags._samechan_closing_check_done
-    && (isLover(id) || !!state.flags._friend_samechan || !!state.flags._samechan_bond_question_done
+    && (isLover(id) || !!state.flags._friend_samechan || !!state.flags[questionDoneKey("samechan")]
       && state.romanceChoices?.bond_q1_samechan?.char === id)
+    && samechanHeartEventsDone(state) // ♥4・♥5の来店会話（#2025）
+  // 綾取: LIME交換の寄り道と、助言の後の「答えを返しに行く」外出の両方（ch3-story-wiring.js / ch3-outing-progress.js の保存キーの写し）
+  : id === "saku" ? !!state.flags._ch3_read_ch3_saku_lime && !!state.flags._lime_contact_saku
+    && (state.flags._ch3_outings?.enmaku_answer || 0) > 0
+    && (["ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_first_reply"].every((scene) => !!state.flags[`_ch3_read_${scene}`])
+      || !!state.finales?.saku)
+  : id === "noor" ? noorStoriesDone(state) && questionComplete(state, id)
+  // スティーブ: LIME交換の寄り道と、味の会話（予備のタイマーを借りる外出）の両方。締めくくりはそのタイマーを受ける
+  // 第5章の東京では、第3章の寄り道（LIME交換・予備のタイマー）はもう受けられないので、♥5だけで始める（#2705）
+  : id === "steve" ? (state.chapter || 1) >= 5 || !!state.flags._ch3_read_ch3_steve_lime && !!state.flags._lime_contact_steve
+    && (state.flags._ch3_outings?.steve_timer || 0) > 0
+    && (["ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch"].every((scene) => !!state.flags[`_ch3_read_${scene}`])
+      || !!state.finales?.steve)
+  // ヴォルク: 鉄の煙の再訪三つ（味の会話・七年分の記録・頷く順番）と、その後のLIME交換の寄り道。締めくくりは三つすべてを受ける
+  // 第5章の東京では、第3章の再訪・LIME交換の寄り道はもう読めないので、スティーブと同じく♥5だけで始める（2026-11-07 オーナー指示）
+  : id === "volk" ? (state.chapter || 1) >= 5 || VOLK_VISITS.every((scene) => !!state.flags[`_ch3_read_${scene}`])
+    && !!state.flags._ch3_read_ch3_volk_lime && !!state.flags._lime_contact_volk
+  : id === "master_hookah" ? longlongStoriesDone(state)
+  : id === "da_silva" || id === "sheikh" ? dubaiBondStoriesDone(state, id)
   : id === "ageha" ? AGEHA_AFFINITY_VISITS.every((scene) => !!state.flags[`_ch2_read_${scene}`]) && questionComplete(state, id)
   : CH2_VISIT_STORIES[id] ? ch2VisitStoriesDone(state.flags, id)
   : storyCount(id) >= (VISIT_SEQ[id] || []).length
@@ -233,36 +287,77 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
  * 締めくくりを始められるか: 固有会話を全部読み、好感度MAX（恋人も含む）で、まだ読んでいない。
  * みんとは私的な場面で会うので、私服の約束で本名を聞いた後
  */
+/** 第3章の東京へ発つ前の準備期間か（core/chapter-clock.js の departurePrep と同じ判定）。 */
+const beforeTokyoDeparture = () => state.chapter === 3 && !!state.flags?._ch3_prep && !state.flags._ch3_prep.departed;
+/**
+ * 第3章の東京の店で、その店主に会える間か（#2028）。東京に着いてから、大会後の後日談でその人の窓が閉じるまで
+ * （ch3-aftermath-progress.js の CH3_AFTERMATH_FINALES と同じ窓）。綾取・スティーブはなるへの報告まで（煙幕の片づけの朝からは
+ * 帰り支度で、その夜に地元へ帰る）、ヴォルクは鉄の煙の寄り道・授業と同じく片づけの朝まで。
+ * 段階の番号は CH3_AFTERMATH_SCENES の写し（vm で読む試験の依存を増やさない。ch3_aftermath.mjs で照合）。
+ * なるへの報告の後にピザとシーシャの夜が開く時（_ch3_naru_party_ready）は、その夜の画面に寄り道が無いので会えない扱い
+ * （スティーブの授業の窓 CH3_AFTERMATH_LESSONS と同じ）。翌朝（片づけの朝）からは、ヴォルクにはまた会える。
+ */
+const NARU_RECONCILE_STAGE = 2;
+export const SAKU_LAST_AFTERMATH_STAGE = 2;
+export const STEVE_LAST_AFTERMATH_STAGE = 2;
+export const VOLK_LAST_AFTERMATH_STAGE = 3;
+const tokyoShopInReach = (feature, lastStage) => {
+  if (!chapterFeatureEnabled(state.chapter, feature) || beforeTokyoDeparture() || state.flags._ch3_cleared) return false;
+  const stage = state.flags._ch3_aftermath?.stage;
+  if (stage === undefined) return true;
+  if (!Number.isInteger(stage) || stage > lastStage) return false;
+  return !(state.flags._ch3_naru_party_ready && stage === NARU_RECONCILE_STAGE);
+};
+/** 第5章の東京にいる間か（chapters/ch5-tokyo.js の inTokyo と同じ判定） */
+const inChapterFiveTokyo = () => state.chapter === 5 && state.flags?._ch2_region === "tokyo";
+const TOKYO_SHOP_REACH = Object.freeze({
+  saku: () => tokyoShopInReach("sakuBond", SAKU_LAST_AFTERMATH_STAGE),
+  steve: () => inChapterFiveTokyo() || tokyoShopInReach("steveBond", STEVE_LAST_AFTERMATH_STAGE),
+  volk: () => inChapterFiveTokyo() || tokyoShopInReach("volkBond", VOLK_LAST_AFTERMATH_STAGE),
+});
+/** 締めくくりの相手に、今の章・時点で会いに行けるか（MENU の「次に会うと」を、会えない間に約束しない）。 */
+export const finaleReachable = (id) => id === "da_silva" || id === "sheikh" ? (state.chapter || 1) === 5 // 第5章のシェイクの屋敷だけ
+  : !TOKYO_SHOP_REACH[id] || TOKYO_SHOP_REACH[id]();
+
 export function finaleDue(id) {
   if (id === "hiyori" && !hiyoriFinaleReady()) return false;
   if (id === "samechan" && (state.chapter || 1) < 2) return false;
-  if (id === "ageha" && state.chapter !== 2) return false; // MELTY PUFFに通えるのは第2章だけ
-  if (id === "mashiro" && state.chapter !== 3) return false;
+  // MELTY PUFFに通えるのは第2章と、第3章の東京へ発つ前の準備3日だけ（VOL02。東京にいる間は店が地図に無い）
+  if (id === "ageha" && !chapterFeatureEnabled(state.chapter, "agehaVisit") && !beforeTokyoDeparture()) return false;
+  if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
+  if (id === "saku" && !TOKYO_SHOP_REACH.saku()) return false; // 煙幕は第3章の東京にだけある
+  if (id === "noor" && ![4, 5].includes(state.chapter)) return false; // カフェ・オアシスは第4章と第5章のドバイ（第5章は 2026-11-07 オーナー決定）
+  if (id === "steve" && !TOKYO_SHOP_REACH.steve()) return false;
+  if (id === "volk" && !TOKYO_SHOP_REACH.volk()) return false;
+  if (id === "master_hookah" && (state.chapter || 1) !== 4) return false; // 龍龍水煙所は第4章ドバイの日常だけ
+  // シェイクの屋敷は第5章のドバイだけ（読むのは屋敷の行き先から。地元にいる間も MENU は「次に屋敷で会うと」を示す）
+  if ((id === "da_silva" || id === "sheikh") && (state.chapter || 1) !== 5) return false;
   const def = BOND_FINALES[id];
-  if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue] || !storiesDone(id)) return false;
-  if (affinityLevel(id) < 5 || questionVisitDue(id)) return false;
+  if (!def || finaleSeen(id) || !DB.dialogues[finaleDialogue(id)] || !storiesDone(id)) return false;
+  if (affinityLevel(id) < finaleHeart(id) || questionVisitDue(id)) return false;
   // つむぎは第1章本筋のDAY11「絵を描き終えて応募する」を関係の節目にする。
   // DAY12以降は旧セーブで当時の読了フラグが欠ける場合だけ進行不能を避けるフォールバック。
-  if (id === "tsumugi" && (state.chapter || 1) === 1 && state.day < 12 && !state.flags._tsumugi_contest_submitted) return false;
+  if (id === "tsumugi" && chapterFeatureEnabled(state.chapter || 1, "tsumugiContestGate") && state.day < 12 && !state.flags._tsumugi_contest_submitted) return false;
   if (id === "minto" && !(state.flags._minto_identity_revealed && state.flags._minto_name_known)) return false;
   return true;
 }
 
 /** 店で会ったときに始めるか（私的な約束で会う相手は除く・閉店後の場面は夜だけ） */
 export const finaleAtVisit = (id) => finaleDue(id) && !BOND_FINALES[id].invite && (!BOND_FINALES[id].night || state.slot >= 1);
-export const isFinaleEvent = (dialogueId) => Object.values(BOND_FINALES).some((d) => d.dialogue === dialogueId);
+export const isFinaleEvent = (dialogueId) => Object.values(BOND_FINALES).some((d) => d.dialogue === dialogueId || d.tokyoDialogue === dialogueId);
 
 /** 締めくくりを再生し、ルート（恋人／恋愛／友情）を記録して専用ハガルを渡す。一度だけ */
 export async function playFinale(id, { bg = null, deferSave = false, signal = null } = {}) {
-  if (["hiyori", "samechan", "mashiro"].includes(id) && !finaleDue(id)) return false;
+  if (["hiyori", "samechan", "mashiro", "saku", "noor", "steve", "volk", "master_hookah", "da_silva", "sheikh"].includes(id) && !finaleDue(id)) return false;
   const def = BOND_FINALES[id];
-  if (!def || finaleSeen(id) || !DB.dialogues[def.dialogue]) return false;
+  if (!def || finaleSeen(id) || !DB.dialogues[finaleDialogue(id)]) return false;
   const owner = state;
   // 中断保存に実回答が残ったサメちゃんの最終質問は、その答えの続きへ戻す。
   // 未回答を補わず、読み直しで気持ちを変更/加算しない。
   const answer = ["samechan", "hiyori"].includes(id) && state.romanceChoices?.[def.question];
   if (id === "hiyori" && answer && (answer.char !== id || !Number.isFinite(answer.value) || answer.value < 0)) return false;
-  const scene = DB.dialogues[def.dialogue];
+  const dialogue = finaleDialogue(id);
+  const scene = DB.dialogues[dialogue];
   if (!scene) return false;
   const resumeRows = rows => (rows || []).flatMap(line => {
     if (line.type !== "choice" || line.id !== def.question) return [line];
@@ -270,8 +365,8 @@ export async function playFinale(id, { bg = null, deferSave = false, signal = nu
     return scene.branches?.[choice.next] || [];
   });
   const script = answer ? { ...scene, lines: resumeRows(scene.lines),
-    branches: Object.fromEntries(Object.entries(scene.branches || {}).map(([key, rows]) => [key, resumeRows(rows)])) } : def.dialogue;
-  const result = await play(script, { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal });
+    branches: Object.fromEntries(Object.entries(scene.branches || {}).map(([key, rows]) => [key, resumeRows(rows)])) } : dialogue;
+  const result = await play(script, { ...(bg && !scene.metadata?.bg ? { bg } : {}), signal, growthScene: true });
   if (state !== owner || (!result || result.cancelled) || signal?.aborted) return false;
   const route = isLover(id) ? "lover" : romanceChosen(id) ? "romance" : "friend";
   if (!state.owned.includes(def.gift)) await giftOpen(def.gift); // 箱がほどけて専用ハガルが出てくる（受け取りの通知はこの後）
@@ -279,6 +374,11 @@ export async function playFinale(id, { bg = null, deferSave = false, signal = nu
   state.finales ||= {};
   state.finales[id] = { day: state.day, chapter: state.chapter, route };
   if (def.flag) state.flags[def.flag] = true;
+  // ヌールの友情着地でも LIME を交換する（台本の _lime_contact_noor。告白承諾時と同じ入口）
+  if (id === "noor" && route === "friend") {
+    state.flags._friend_noor = true;
+    if (state.flags._lime_contact_noor && !(state.contacts || []).includes("noor")) (state.contacts ||= []).push("noor");
+  }
   grantGift(def.gift);
   // 恋愛ルート: 告白を予約（一日の終わりに、再生前にもう一度ルートを確かめる）
   if (route === "romance" && !def.laterConfession && !def.ownConfession && romanceRouteOpen(id) && !state.flags._confession_due) state.flags._confession_due = id;
@@ -358,7 +458,10 @@ export function friendMessages({ tournamentDay = false, sceneChapter = false } =
   // sceneChapter: 場面カード式の第3〜5章（chapters/friend-entry.js）から。日常の朝の端末は無いので phase は見ない。
   // お誘いの約束は第1・2章の calendar.js 専用なので、第3章以降は雑談だけ（#2022）。
   if (tournamentDay) return [];
-  if (sceneChapter ? ![3, 4, 5].includes(state.chapter) : (state.phase !== "daily" || ![1, 2].includes(state.chapter || 1))) return [];
+  // 第5章の自由行動は日常ループ（calendar.js）の朝に届く。お誘いは出さず雑談だけ（#2033）。
+  const chatOnly = sceneChapter || chapterFeatureEnabled(state.chapter, "friendChatOnly");
+  if (sceneChapter ? !chapterFeatureEnabled(state.chapter, "friendSceneLime")
+    : (state.phase !== "daily" || !chapterFeatureEnabled(state.chapter || 1, "friendDailyLime"))) return [];
   const cfg = DB.friends || {};
   const gap = cfg.gapDays || 4;
   const all = friendSent();
@@ -379,7 +482,7 @@ export function friendMessages({ tournamentDay = false, sceneChapter = false } =
     const chats = sent.filter((i) => i.msg.type === "chat").length;
     // 出来事前提の雑談は、前提が揃うまで chats[0] へ退避（TL-01: 素焼き贈呈・正体開示は締めくくりで保証される前提だが、旧セーブ等でも先出ししない防御）
     let pick = f.chats?.length ? chats % f.chats.length : 0;
-    if ((pick === 2 && ["minto", "tsumugi", "rin", "kumicho", "rei", "mashiro", "samechan"].includes(id) && !state.owned.includes(`suyaki_${id}`))
+    if ((pick === 2 && ["minto", "tsumugi", "rio", "kumicho", "rei", "mashiro", "samechan", "saku", "steve", "volk"].includes(id) && !state.owned.includes(`suyaki_${id}`))
       || (pick === 1 && id === "adam" && !state.owned.includes("suyaki_adam"))
       || (pick === 1 && id === "minto" && !state.flags._minto_identity_revealed)) pick = 0;
     const chat = f.chats?.length ? { id: `${FRIEND_PREFIX}chat_${id}_d${state.day}`, sender: id, type: "chat", friend: true,
@@ -387,7 +490,7 @@ export function friendMessages({ tournamentDay = false, sceneChapter = false } =
     const invite = f.invite ? { id: `${FRIEND_PREFIX}inv_${id}_d${state.day}`, sender: id, type: "invitation", friend: true,
       private_schedule: "holiday_or_after_close", accept_event: `friend_${id}`, accept_text: f.invite.accept_text,
       messages: f.invite.messages.slice(), decline_response: { text: f.invite.decline } } : null;
-    const inviteTurn = !sceneChapter && inviteOk && sent.at(-1)?.msg?.type === "chat"; // 雑談→お誘い→雑談…（見送った回は雑談のまま次へ）
+    const inviteTurn = !chatOnly && inviteOk && sent.at(-1)?.msg?.type === "chat"; // 雑談→お誘い→雑談…（見送った回は雑談のまま次へ）
     for (const m of inviteTurn ? [invite, chat] : [chat]) if (m && !state.limeRead.includes(m.id)) out.push(m);
   }
   return out;
@@ -411,13 +514,15 @@ export async function playFriendHangout(id) {
     lines: [
       { speaker: "", text: `${state.slot === 0 ? "定休日の午後。" : "仕事を終えてから。"}${f.place}で、${name}と一服した。` },
       { speaker: id, face: v.arrive.face, text: v.arrive.text, inner: v.arrive.inner },
-      { speaker: "", text: "１台の煙を、急がずに回す。勝ち負けも、試香の数字もない時間だった。" },
+      { speaker: "", text: "1台の煙を、急がずに回す。勝ち負けも、試香の数字もない時間だった。" },
       { speaker: id, face: v.mid.face, text: v.mid.text, inner: v.mid.inner },
       { speaker: id, face: v.close.face, text: v.close.text, inner: v.close.inner },
       { type: "apply", stats: { [f.stat]: 2 } },
     ],
-  });
+  }, { growthScene: true });
   state.friendHangouts[id] = n + 1;
   save();
   return true;
 }
+
+

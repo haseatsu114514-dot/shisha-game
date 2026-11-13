@@ -1,0 +1,184 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "poem_ch1",
+      "metadata": {
+        "poem": true,
+        "panel": "poem_ch1.webp",
+        "panel_alt": "開店前のカウンターに並ぶ葉と炭と水差し。その上に畑と海辺と蛇口がにじみ、横でそれを見つめるはじめ"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "葉は 遠い 国の 畑から"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭は 南の 椰子の 殻から"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水は 今朝の 蛇口から"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一台の 煙は",
+          "gap": true
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一度も 会わない ものたちの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "待ち合わせだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "poem_ch2",
+      "metadata": {
+        "poem": true,
+        "panel": "poem_ch2.webp",
+        "panel_alt": "一枚の壁をはさんで、内側に座り込むあげはと、外側でノートを開くはじめ"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "勘で 煙を 立てる 者は"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "崩れた 日の 帰り道を 知らない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手順で 煙を 立てる 者は"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手順の ない 道を 歩けない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "壁は 一枚",
+          "gap": true
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "両側から 高い"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "poem_ch3",
+      "metadata": {
+        "poem": true,
+        "panel": "poem_ch3.webp",
+        "panel_alt": "暗い店の灯りの下で、目を伏せて小さく笑うましろ"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "平気な 顔で"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "席を 一つ 空けておく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "何も 聞かないのは",
+          "gap": true
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "僕も 一つ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "嘘を ついたからだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "poem_ch4",
+      "metadata": {
+        "poem": true,
+        "panel": "poem_ch4.webp",
+        "panel_alt": "夜の飛行機の窓辺で、道具のケースを抱えるはじめ。窓に顔が映り、下に暗い海と街の灯り"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言葉は 海を 渡れなかった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "だから 俺は",
+          "gap": true
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "生まれた 国の 匂いを"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一台に 詰めて 置いた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "poem_ch5",
+      "metadata": {
+        "poem": true,
+        "panel": "poem_ch5.webp",
+        "panel_alt": "研究室で、眼鏡を指で押し上げるチャコール博士"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "何を 吸っても 砂の 味が した"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "だから 私は",
+          "gap": true
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "舌の いらない 神を"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "組み立てた"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1595 @@
+{
+  "comment": "通いの続きの小さな出来事（#2020 D・2026-11-06 再調査の推奨案）。同じ店の小会話を一通り読んだ後に、後日へ続く2〜3段の出来事を一本ずつ置く。段の順・開く条件・記録は remake/js/chapters/visit-chains.js、読む処理は visit-chain-play.js と各章の行き先。条件 chain_pick は前の段（読んでいる段を含む）で選んだ分岐名、chain_fact は呼び出し側が渡す事実（第4章の宿の試作の結果）。第3・4章は大会前の日常でだけ読み、第5章は世界大会の後",
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_chain_tofu_1",
+      "comment": "第3章 mukai の通いの続き（#2020 D）1/3。手伝い・店番を2回した後。味が分からない日に読んでも成り立つよう、はじめは味を語らない。最初に直す一つを選ぶ（tofu_first）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客が引いた時間。カウンターの端に、いつもの常連さんが座っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "近所で豆腐屋をやっている人だ。朝が早いぶん、仕事の後にここで一服していく。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "兄ちゃん、ちょっといいか。相談があるんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。どうしました？"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "家でもやりたくなってな。一式、ネットで買ったんだよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出されたスマホに、ベランダの台が写っていた。ボウルの上に、炭が四つ積んである。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "最初はうまいんだ。でも十分もすると、喉がイガイガしてくる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（炭が四つ。葉も、縁から山になってる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "写真の端に、焼き肉用のトングが置いてあった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "このトングで、炭を挟んでるんですか"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "挟みやすいぞ。四つ、いっぺんに持てる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……それで、四つなんですね"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "はじめくん。一度に全部言うなよ。手が迷う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（直したいところは、いくつもある。最初の一つだけ渡そう）"
+        },
+        {
+          "type": "choice",
+          "id": "tofu_first",
+          "choices": [
+            {
+              "text": "炭は三つにしてみてください",
+              "next": "coal"
+            },
+            {
+              "text": "葉は縁より下に、ふんわりと",
+              "next": "leaf"
+            },
+            {
+              "text": "炭を載せたら、少し待ってください",
+              "next": "wait"
+            }
+          ]
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "よし。今度、台ごと持ってくる。見てくれるか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "客が引いた時間なら、隅の席を使っていい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "常連さんはコーヒーを飲み干すと、スマホの写真をもう一度眺めてから帰っていった。"
+        }
+      ],
+      "branches": {
+        "coal": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "炭は三つ、三角に置いてください。四つ目は、なしで"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "三つで足りるのか。店のは、もっと熱そうに見えるけどな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "足りなかったら、その時に考えましょう"
+          }
+        ],
+        "leaf": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "葉は、縁より下まで。押し込まずに、ふんわりです"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "ふんわり、なあ。……豆腐なら得意なんだが"
+          }
+        ],
+        "wait": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "炭を載せたら、すぐ吸わずに待ってください。台所のタイマーで五分"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "五分も？　炭が冷めちまうだろう"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "冷めません。その間に、葉がゆっくり温まるので"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch3_chain_tofu_2",
+      "comment": "第3章 mukai の通いの続き 2/3（1/3の翌日以降）。常連さんの台で一台を試す。誰の手で作るかを選ぶ（tofu_hands）。直すところは1/3の答え（chain_pick）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客が引いた時間に、常連さんが大きな紙袋を抱えて入ってきた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "持ってきたぞ。ベランダの台、そのまんまだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "袋から出てきたのは、背の低い台と、炭の箱と、焼き肉用のトングだった。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "……トングは、うちのを使ってくれ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隅の席に台を組む。ボウルは浅めで、ホースは少し硬い。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（台は悪くない。直すのは、この前決めた一つだけ）"
+        },
+        {
+          "type": "choice",
+          "id": "tofu_hands",
+          "choices": [
+            {
+              "text": "ご自分の手で、やってみましょう",
+              "next": "own"
+            },
+            {
+              "text": "俺が作るので、見ててください",
+              "next": "watch"
+            }
+          ]
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch3_chain_tofu_1",
+          "pick": "coal",
+          "next_true": "fix_coal",
+          "next_false": "fix_other"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙が細く立ちのぼる。常連さんは一口吸って、しばらく黙っていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……喉が、静かだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二口目、三口目。吸うたびに、常連さんの肩が下がっていく。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "次の休みに、家でやってみる。うまくいったら、報告するよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "待ってます"
+        }
+      ],
+      "branches": {
+        "own": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "トングを渡すと、常連さんは身を乗り出した。俺は横から、手順だけを伝える。"
+          }
+        ],
+        "watch": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "常連さんは腕を組んで、俺の手元をじっと見ている。豆腐の仕込みの時の顔だった。"
+          }
+        ],
+        "fix_coal": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "炭は三つ、三角に置いた。四つ目は、箱に戻す。"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "一つ余ると、なんだか損した気分だな"
+          }
+        ],
+        "fix_other": [
+          {
+            "type": "condition",
+            "condition_type": "chain_pick",
+            "scene": "ch3_chain_tofu_1",
+            "pick": "leaf",
+            "next_true": "fix_leaf",
+            "next_false": "fix_wait"
+          }
+        ],
+        "fix_leaf": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "葉は縁の下まで。指の先で、軽くならすだけにした。"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "豆腐を水に放す時と、同じ手つきだな"
+          }
+        ],
+        "fix_wait": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "炭を載せて、台所のタイマーを五分に合わせた。"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "……まだか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "まだです"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "常連さんは、同じことを三回聞いた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch3_chain_tofu_3",
+      "comment": "第3章 mukai の通いの続き 3/3（2/3の翌日以降）。家で作った報告。1/3と2/3の答えで言い方が変わる。読み終えると交流の記憶（大会前夜の振り返りに出る）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "常連さんが、カウンターに小さな包みを置いた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "報告だ。家で、やってみたぞ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch3_chain_tofu_1",
+          "pick": "coal",
+          "next_true": "home_coal",
+          "next_false": "home_other"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch3_chain_tofu_2",
+          "pick": "own",
+          "next_true": "hands_own",
+          "next_false": "hands_watch"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "包みを開けると、がんもどきが四つ並んでいた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "うちの売り物だ。まかないにでも、どうぞ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "surprise",
+          "text": "……コーヒーには、合わないな"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "でも、もらっとく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます。いただきます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りぎわ、常連さんは次の休みの天気を、ムカイさんに聞いていた。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "tofu_regular_throat"
+        }
+      ],
+      "branches": {
+        "home_coal": [
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "三つで、最後まで喉が痛くならなかった"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "四つ目を置きたくなる手は、ポケットに入れといた"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "それで、ちょうどいいと思います"
+          }
+        ],
+        "home_other": [
+          {
+            "type": "condition",
+            "condition_type": "chain_pick",
+            "scene": "ch3_chain_tofu_1",
+            "pick": "leaf",
+            "next_true": "home_leaf",
+            "next_false": "home_wait"
+          }
+        ],
+        "home_leaf": [
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "ふんわりってのが、最初はどうも分からなくてな"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "豆腐を崩さないつもりで詰めたら、ちょうどよかった"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "豆腐の手、ですか"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "毎朝やってる手だからな"
+          }
+        ],
+        "home_wait": [
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "五分、待ったよ。タイマーが鳴るまで、家内とベランダで話してた"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "何を話したかは忘れた。でも、一口目がやわらかかった"
+          }
+        ],
+        "hands_own": [
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "自分の手でやると、店のとは違う。でも、まあ、俺のだ"
+          }
+        ],
+        "hands_watch": [
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "兄ちゃんの手を思い出しながらやった。真似は、まあまあだな"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_chain_bowl_1",
+      "comment": "第4章 中心地のカフェの通いの続き（#2020 D）1/3。再訪の会話を3本（ホースの渡し方の客 ch4_cafe_culture_hose まで）読んだ後。一台を頼んだ後に読む。ボウルだけ替える頼み方を知る",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席に、前にホースの渡し方を教えてくれた客がいた。今日はひとりで、新聞を広げている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭係が回ってきた時、客は自分の台を指して、短く何か頼んだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "運ばれてきたのは、新しい台ではなかった。葉を詰めたボウルが一つだけだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "係は古いボウルを外し、同じ台に新しいボウルを載せて、炭を移していった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "今の、ボウルだけ替えたんですか"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "長く座る日は、台はそのまま。頭だけ替えてもらうんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "頭……ボウルのこと、ですか"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "ここでは、そう呼ぶ人が多いね。一つ目で話して、二つ目で落ち着く"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "二つ目に何を載せるか。そこが楽しいんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺の店だと、一台を最後まで調整して、それで終わりです"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "なら、一度試してみるといい。君なら、二つ目に何を載せる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一つ目の続き、か。宿の台で、やってみよう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は笑って、新しいボウルの一口目を、ゆっくり吸いこんだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_chain_bowl_2",
+      "comment": "第4章 宿の通いの続き 2/3（1/3の翌日以降）。持ってきた台で、二つ目のボウルを試す。二つ目に何を載せるかを選ぶ（bowl_second。同じ場面の後半もこの答えで分かれる）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿の机に、持ってきた台を組んだ。予備のボウルを、隣に並べる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一つ目は、いつもの配合。二つ目は……）"
+        },
+        {
+          "type": "choice",
+          "id": "bowl_second",
+          "choices": [
+            {
+              "text": "同じ葉を、少し重めに詰める",
+              "next": "same"
+            },
+            {
+              "text": "一つ目の香りを受ける、別の葉にする",
+              "next": "follow"
+            },
+            {
+              "text": "一つ目より軽い、締めの一台にする",
+              "next": "light"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一つ目を吸いはじめる。煙が少し細くなってきた頃に、二つ目の出番が来た。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ボウルを外そうと手を伸ばして、慌てて引っこめた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あつっ……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "タオルを二つ折りにして、もう一度。外したボウルは、皿の上に置いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を入れたままのHMDを、二つ目のボウルへ移す。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch4_chain_bowl_2",
+          "pick": "same",
+          "next_true": "smoke_same",
+          "next_false": "smoke_other"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "気がつくと、窓の外の光の色が変わっていた。いつもより、ずっと長く座っていた。"
+        }
+      ],
+      "branches": {
+        "same": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一つ目と同じ葉を、少しだけ多めに詰めた。"
+          }
+        ],
+        "follow": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一つ目の甘さの後ろに残りそうな香りを考えて、別の葉を選んだ。"
+          }
+        ],
+        "light": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "二つ目は量を控えて、軽く詰めた。締めの一台のつもりだ。"
+          }
+        ],
+        "smoke_same": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一口目から、さっきの香りが太く戻ってきた。驚きは、一つ目の時ほどない。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（続きというより、同じ話をもう一度聞いてるみたいだ）"
+          }
+        ],
+        "smoke_other": [
+          {
+            "type": "condition",
+            "condition_type": "chain_pick",
+            "scene": "ch4_chain_bowl_2",
+            "pick": "follow",
+            "next_true": "smoke_follow",
+            "next_false": "smoke_light"
+          }
+        ],
+        "smoke_follow": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "口に残っていた一つ目の甘さに、新しい香りが重なってきた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（……二つの葉が、時間をずらして混ざってる）"
+          }
+        ],
+        "smoke_light": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "軽い煙が、ゆっくり部屋にほどけていく。冷房の音が、さっきより大きく聞こえた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（話す一台じゃなくて、黙っていられる一台だ）"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_chain_bowl_3",
+      "comment": "第4章 中心地のカフェの通いの続き 3/3（2/3の翌日以降）。一台を頼んだ後に読む。2/3の答えと、宿の試作（ch4_inn_trial）の結果（chain_fact inn_trial: good・rough・failed。作っていなければ触れない）で言い方が変わる。読み終えると交流の記憶",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席の客が、こちらに気づいて新聞をたたんだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "やってみたかい。二つ目"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。宿の台で"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch4_chain_bowl_2",
+          "pick": "same",
+          "next_true": "told_same",
+          "next_false": "told_other"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_fact",
+          "fact": "inn_trial",
+          "value": "good",
+          "next_true": "trial_good",
+          "next_false": "trial_other"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "日本に帰っても、頭の話をしてくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "頭の話、ですか"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "二つ目の話さ。一つ目の続きを、待ってる人がいる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は炭係を呼んで、自分の台を指さした。今日も、二つ目を頼むらしい。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "dubai_cafe_second_bowl"
+        }
+      ],
+      "branches": {
+        "told_same": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "同じ葉を、少し重めにしました"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "続きというより、同じ話をもう一度聞いた感じで"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "はは。それも悪くない。好きな話は、二回聞くものだ"
+          }
+        ],
+        "told_other": [
+          {
+            "type": "condition",
+            "condition_type": "chain_pick",
+            "scene": "ch4_chain_bowl_2",
+            "pick": "follow",
+            "next_true": "told_follow",
+            "next_false": "told_light"
+          }
+        ],
+        "told_follow": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "一つ目の香りが残ってるところに、別の葉を重ねました"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "そう、それだ。口の中で、二つが混ざる"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "うちの祖父は、そこで必ず黙った"
+          }
+        ],
+        "told_light": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "二つ目は軽くして、締めの一台にしました"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "締めか。話し終わった後の一台だね"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "私はまだ話し足りないから、二つ目のほうが重いけどね"
+          }
+        ],
+        "trial_good": [
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "宿では、君の一台も作ってるのかい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "前に一度。こっちの空気でも、思ったとおりに立ち上がりました"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "なら、二つ目もすぐ手に馴染む"
+          }
+        ],
+        "trial_other": [
+          {
+            "type": "condition",
+            "condition_type": "chain_fact",
+            "fact": "inn_trial",
+            "value": "rough",
+            "next_true": "trial_rough",
+            "next_false": "trial_rest"
+          }
+        ],
+        "trial_rough": [
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "宿では、君の一台も作ってるのかい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "前に一度。冷房の風で、熱がなかなか落ち着かなくて"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "冷房は、どこの台にも厳しいよ"
+          }
+        ],
+        "trial_rest": [
+          {
+            "type": "condition",
+            "condition_type": "chain_fact",
+            "fact": "inn_trial",
+            "value": "failed",
+            "next_true": "trial_failed",
+            "next_false": ""
+          }
+        ],
+        "trial_failed": [
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "宿では、君の一台も作ってるのかい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "前に一度。途中で煙が薄くなって、そこで止めました"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "失敗した台の話は、ここだと長くなる。いい話だ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch5_chain_guest_1",
+      "comment": "第5章 Smoke & Glory の通いの続き（#2020 D）1/3。小会話3本の後。地元のtonariで一台作ってもらった客（転勤で東京へ）が覚えていた。何を作るかを選ぶ（guest_plan）。第4章の大会の後（新しい王者）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "Smoke & Glory。カウンターの端で、スティーブが手招きしていた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、ハジメ。ちょうどいい。ハジメを知ってるって客が来てる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席の客が、ホースを置いて会釈した。スーツの上着を、椅子の背に掛けている。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "突然すみません。橙須のtonariで、何度か一台作ってもらいました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "tonariで……"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "覚えてなくて当然です。私、いつも黙って吸ってたので"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "炭を替えに来た時、「次の一口、少し軽くなります」って言ってくれて"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "それだけ、ずっと覚えてるんです"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "転勤で東京に来て、こっちの店も回ってみたんですけど"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "世界大会のニュースで名前を見て、全国大会の記事を遡ったら、この店が"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "で、俺の店に来た。ハジメ、ここで作れよ。俺の台を貸す"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "スティーブさんの店で、ですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "イエス。俺の店で、俺の客に、ハジメの一台。ちょっとした挑戦だ"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "次のお休みに、また来てもいいですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。何を作るか、決めておきます"
+        },
+        {
+          "type": "choice",
+          "id": "guest_plan",
+          "choices": [
+            {
+              "text": "あの時と同じ一台を作ります",
+              "next": "same"
+            },
+            {
+              "text": "今の俺の一台を出させてください",
+              "next": "now"
+            },
+            {
+              "text": "先に、最近のことを聞かせてください",
+              "next": "listen"
+            }
+          ]
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "オーケー、決まりだ。タイマーは、いつでも貸すぞ"
+        }
+      ],
+      "branches": {
+        "same": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "tonariの時と同じ一台を作ります。覚えててくれた、そのままで"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "……うれしいです。あの味、まだ残ってるかな"
+          }
+        ],
+        "now": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今の俺の一台を出させてください。あの頃より、少し変わったので"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "世界一の一台ですね。楽しみにしてます"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "その呼び方は、ちょっと"
+          }
+        ],
+        "listen": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "作る前に、最近のことを聞かせてください"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "客は少し驚いた顔をして、それから仕事の話を、ぽつぽつ始めた。"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "……人に話すの、久しぶりかもしれません"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch5_chain_guest_2",
+      "comment": "第5章 Smoke & Glory の通いの続き 2/3（1/3の翌日以降）。スティーブの店で、あの客に一台を作る。タイマーを借りるかを選ぶ（guest_timer）。作り方と客の一言は1/3の答え",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "Smoke & Glory。スティーブの作業台の端を借りて、道具を並べた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "葉も炭も、好きに使っていい。ただし、俺のピザには触るな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "触りません"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "約束の時間に、あの客が入ってきた。今日は、上着を着ていなかった。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch5_chain_guest_1",
+          "pick": "same",
+          "next_true": "make_same",
+          "next_false": "make_other"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ハジメ、タイマーは？　俺のは正確だぞ"
+        },
+        {
+          "type": "choice",
+          "id": "guest_timer",
+          "choices": [
+            {
+              "text": "タイマー、お借りします",
+              "next": "timer"
+            },
+            {
+              "text": "今日は、顔だけ見ます",
+              "next": "face"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客が一口目を吸う。二口目の前に、肩がゆっくり下がった。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch5_chain_guest_1",
+          "pick": "same",
+          "next_true": "taste_same",
+          "next_false": "taste_other"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "次の一口、少し軽くなります"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……それ、前も言ってました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブが、レシピカードの余白に何か書き足した。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "今の一行、もらった"
+        }
+      ],
+      "branches": {
+        "make_same": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "tonariの頃と同じ組み立てで、一台を作る。炭の位置も、あの頃のままに。"
+          }
+        ],
+        "make_other": [
+          {
+            "type": "condition",
+            "condition_type": "chain_pick",
+            "scene": "ch5_chain_guest_1",
+            "pick": "now",
+            "next_true": "make_now",
+            "next_false": "make_listen"
+          }
+        ],
+        "make_now": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "今の手順で、一台を作る。炭の置き方も、蒸らしの長さも、あの頃とは違う。"
+          }
+        ],
+        "make_listen": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "この前聞いた話を思い出しながら、葉を選ぶ。疲れた日に、重すぎない一台を。"
+          }
+        ],
+        "timer": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スティーブのタイマーを、炭の横に置いた。秒数が、静かに減っていく。"
+          },
+          {
+            "speaker": "steve",
+            "face": "smile",
+            "text": "いい秒数だ。俺のカードに書きたいくらいだ"
+          }
+        ],
+        "face": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "タイマーは置かずに、客の顔だけを見る。スティーブも隣で、同じほうを見ていた。"
+          },
+          {
+            "speaker": "steve",
+            "face": "normal",
+            "text": "……ノー、ノー。俺の手が、タイマーを探してる"
+          }
+        ],
+        "taste_same": [
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "……これです。tonariの窓の外の音まで、思い出しました"
+          }
+        ],
+        "taste_other": [
+          {
+            "type": "condition",
+            "condition_type": "chain_pick",
+            "scene": "ch5_chain_guest_1",
+            "pick": "now",
+            "next_true": "taste_now",
+            "next_false": "taste_listen"
+          }
+        ],
+        "taste_now": [
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "前より、待たなくていい一台ですね。最初から、ちゃんと届く"
+          }
+        ],
+        "taste_listen": [
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "話したことが、全部入ってる気がします。……変な言い方ですけど"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch5_chain_guest_3",
+      "comment": "第5章 Smoke & Glory の通いの続き 3/3（2/3の翌日以降）。あの客はスティーブの店の常連になった。余白の一言は1/3、秒数の欄は2/3の答え",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "Smoke & Glory。スティーブが、レシピカードを一枚、カウンターに滑らせてきた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、ハジメ。あの客、あれからも来てるぞ。ひとりでな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あの人が、ですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "俺の一台を頼んで、余白の一言をくれた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "余白に、スティーブの大きな字で一行あった。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch5_chain_guest_1",
+          "pick": "same",
+          "next_true": "card_same",
+          "next_false": "card_other"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch5_chain_guest_2",
+          "pick": "timer",
+          "next_true": "seconds_timer",
+          "next_false": "seconds_face"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（tonariの客が、東京で、スティーブさんの店の常連になってる）"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "客を取ったなんて言うなよ、……取ったけどな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブは笑って、カードを棚のいちばん前に立てた。"
+        }
+      ],
+      "branches": {
+        "card_same": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「懐かしい味は、たまにでいい。次は、この店の一台」"
+          },
+          {
+            "speaker": "steve",
+            "face": "smile",
+            "text": "常連が一人増えた。ハジメの客だったのにな"
+          }
+        ],
+        "card_other": [
+          {
+            "type": "condition",
+            "condition_type": "chain_pick",
+            "scene": "ch5_chain_guest_1",
+            "pick": "now",
+            "next_true": "card_now",
+            "next_false": "card_listen"
+          }
+        ],
+        "card_now": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「前より待たない一台。私も、少し待たなくなった」"
+          },
+          {
+            "speaker": "steve",
+            "face": "normal",
+            "text": "待たなくなった、か。俺には、まだ難しい話だ"
+          }
+        ],
+        "card_listen": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「話してから吸う。それが、いちばん効く」"
+          },
+          {
+            "speaker": "steve",
+            "face": "smile",
+            "text": "俺の店にも、話を聞く係が要るな。ハジメ、どうだ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "遠いですよ、橙須から"
+          }
+        ],
+        "seconds_timer": [
+          {
+            "speaker": "steve",
+            "face": "normal",
+            "text": "あの日の秒数も、カードに書いといた。ハジメの秒数だ"
+          }
+        ],
+        "seconds_face": [
+          {
+            "speaker": "steve",
+            "face": "normal",
+            "text": "秒数の欄は空けてある。あの日は、誰も数えてなかったからな"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch5_chain_gift_1",
+      "comment": "第5章 路地裏のカフェの通いの続き（#2020 D）1/2。小会話3本（いつもの、の回まで）の後。いつも一台を出してくれる店員に、閉店後の一台を渡す約束。何で作るかを選ぶ（gift_plan）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "路地裏のカフェ。今日も、座る前に炭が熾してあった。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "いつもの、ですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。いつもので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店員は俺の台を置くと、すぐに次の客の台へ葉を詰めはじめた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの……誰かに一台作ってもらうこと、ありますか"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "私が、ですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店員は少し考えて、首を横に振った。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "店の台は、お客様のものです。私は、閉店のあとにミントの茶を一杯だけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ今度、俺に一台作らせてください。閉店のあとに"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "……お客様に、作っていただくんですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店員は困ったように笑った。断る言葉を探しているみたいだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いつものお礼です。座ってるだけでいいので"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "では、閉店のあとに、……一度だけですよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（何で作るか、決めておかないと）"
+        },
+        {
+          "type": "choice",
+          "id": "gift_plan",
+          "choices": [
+            {
+              "text": "日本から持ってきた葉にしよう",
+              "next": "tonari"
+            },
+            {
+              "text": "この店の葉を、俺の作り方で",
+              "next": "house"
+            },
+            {
+              "text": "閉店後の茶に合う、軽い一台に",
+              "next": "light"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "tonari": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（tonariで、いちばんよく出る葉にしよう）"
+          }
+        ],
+        "house": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（この店の葉を、俺の手で。比べられるのは、ちょっと怖いけど）"
+          }
+        ],
+        "light": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（一日の終わりの一杯を、邪魔しない一台がいい）"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch5_chain_gift_2",
+      "comment": "第5章 路地裏のカフェの通いの続き 2/2（1/2の翌日以降の夜）。閉店後、店員に一台を作る（客の一台ではないので代金なし）。詰め方と一言は1/2の答え",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "路地裏のカフェ。最後の客が帰ると、店員が裏口を開けた。夜の風が、細く通る。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "本当に、作っていただけるんですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "座っててください"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店員は向かいの席に座り、立ち上がりかけて、また座った。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "……落ち着きません。炭の音がすると、手が勝手に"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch5_chain_gift_1",
+          "pick": "tonari",
+          "next_true": "pack_tonari",
+          "next_false": "pack_other"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を載せて、待つ。店員の目が、何度も炭のほうへ動いた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch5_chain_gift_1",
+          "pick": "tonari",
+          "next_true": "first_tonari",
+          "next_false": "first_other"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店員はしばらく黙って吸っていた。炭が小さくなっても、トングに手を伸ばさなかった。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "作ってもらうと、待つ時間がこんなに長いんですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いつもは、俺が座る前に熾しておいてくれるので"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "……そうでした"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店員は笑って、二つのグラスにミントの茶を注いだ。一つを、俺の前に置く。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "今日は、私の休憩に付き合ってください"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい"
+        }
+      ],
+      "branches": {
+        "pack_tonari": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "日本から持ってきた葉を詰める。tonariで、いちばんよく出る葉だ。"
+          }
+        ],
+        "pack_other": [
+          {
+            "type": "condition",
+            "condition_type": "chain_pick",
+            "scene": "ch5_chain_gift_1",
+            "pick": "house",
+            "next_true": "pack_house",
+            "next_false": "pack_light"
+          }
+        ],
+        "pack_house": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "この店の葉を、自分のやり方で詰める。いつもより、少しだけ浅く。"
+          }
+        ],
+        "pack_light": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "量を控えて、軽く詰めた。ミントの茶の香りを、邪魔しないように。"
+          }
+        ],
+        "first_tonari": [
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "知らない香りです。甘いのに、重くない"
+          }
+        ],
+        "first_other": [
+          {
+            "type": "condition",
+            "condition_type": "chain_pick",
+            "scene": "ch5_chain_gift_1",
+            "pick": "house",
+            "next_true": "first_house",
+            "next_false": "first_light"
+          }
+        ],
+        "first_house": [
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "同じ葉なのに……私の台より、ゆっくり開きます"
+          }
+        ],
+        "first_light": [
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "茶の香りが、ちゃんと残っています"
+          }
+        ]
+      }
+    }
+  ]
+}

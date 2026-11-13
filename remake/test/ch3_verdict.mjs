@@ -13,9 +13,21 @@ const care = (coals, extra = {}) => ({ coals, ...extra });
 assert.equal(adjustmentLines(adj, null), adj);
 assert.equal(resultLines(res, { careHistory: [] }), res);
 
+// S7: 綾取が前夜の告白を突き、はじめは審査席の前で「分からない」まま客に聞く。どちらの調整でも残る
+for (const coals of [0, 2]) {
+  const lines = adjustmentLines(adj, { careHistory: [care(coals)] });
+  const at = id => lines.findIndex(line => line.text === id);
+  assert.ok(at("昨日、分からないって言ってたよね。その一口、どう？") >= 0);
+  assert.ok(at("……今日も、薄く感じます。だから、聞きます") > at("昨日、分からないって言ってたよね。その一口、どう？"));
+  assert.ok(at("熱いか、軽いか。それだけ、教えてください") > at("……今日も、薄く感じます。だから、聞きます"));
+}
+// 教訓の心の声は置かない（全体講評C3）
+assert.doesNotMatch(text(adj), /待つって、手を抜くことじゃなかった/);
+
 // 炭を替えなかった: 「待つ」の描写が残り、「動いた！」は出ない
 let t = text(adjustmentLines(adj, { careHistory: [care(0)] }));
-assert.match(t, /待つって、手を抜くことじゃなかった/);
+assert.match(t, /僕の方が待たされた/);
+assert.match(t, /軽いけど、嫌な軽さじゃない/);
 assert.doesNotMatch(t, /動いた！/);
 
 // 炭を替えた: 待った前提の台詞が消え、替えた判断への反応になる
@@ -23,9 +35,14 @@ t = text(adjustmentLines(adj, { careHistory: [care(2)] }));
 assert.doesNotMatch(t, /待つって|待たされた|待ち時間/);
 assert.match(t, /炭を替え|炭替え/);
 assert.match(t, /動いた！/);
+assert.match(t, /最初より遠くなったかも/);
+assert.doesNotMatch(t, /嫌な軽さじゃない/);
 
-// 客の感想は温度の結果に従う
-assert.match(text(adjustmentLines(adj, { careHistory: [care(0, { over: true })] })), /まだ少し熱い/);
+// 客の感想は温度の結果に従う（聞いた直後の答えと、後の感想が食い違わない）
+t = text(adjustmentLines(adj, { careHistory: [care(0, { over: true })] }));
+assert.match(t, /まだ少し熱い/);
+assert.match(t, /少し熱いです/);
+assert.doesNotMatch(t, /熱くはないです/);
 assert.match(text(adjustmentLines(adj, { careHistory: [care(1, { under: true })] })), /まだ少し薄い/);
 
 // 決着: 一度でも替えたら「炭は動かなかった」を言わない

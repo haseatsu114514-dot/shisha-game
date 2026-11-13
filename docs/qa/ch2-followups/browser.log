@@ -1,9 +1,0 @@
-[ch2-followups] PASS: ageha-legacy-save-completion-and-reload
-[ch2-followups] PASS: ageha-interrupt-at-line-6
-[ch2-followups] PASS: ageha-interrupt-at-line-14
-[ch2-followups] PASS: kumicho-legacy-save-completion-and-reload
-[ch2-followups] PASS: kumicho-interrupt-at-line-5
-[ch2-followups] PASS: kumicho-interrupt-at-line-12
-[ch2-followups] PASS: rei-legacy-save-completion-and-reload
-[ch2-followups] PASS: rei-interrupt-at-line-7
-[ch2-followups] PASS: rei-interrupt-at-line-14

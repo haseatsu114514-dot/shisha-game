@@ -1,0 +1,398 @@
+[
+  {
+    "file": "candidates/CR-BG01-A.png",
+    "size": [
+      1280,
+      720
+    ],
+    "mode": "RGB",
+    "alpha_extrema": null,
+    "alpha_bbox": null,
+    "transparent_fraction": 0,
+    "sha256": "55bc6c314a14e8f3801fb2ab3cbd2108deba4480813abc674097610040532e9d"
+  },
+  {
+    "file": "candidates/CR-BG01-B.png",
+    "size": [
+      1280,
+      720
+    ],
+    "mode": "RGB",
+    "alpha_extrema": null,
+    "alpha_bbox": null,
+    "transparent_fraction": 0,
+    "sha256": "93c94f280c6dfeaa676971075f83776e0495a2d134684b6fe4deefebbeb2ee3d"
+  },
+  {
+    "file": "candidates/CR-BG01-C.png",
+    "size": [
+      1280,
+      720
+    ],
+    "mode": "RGB",
+    "alpha_extrema": null,
+    "alpha_bbox": null,
+    "transparent_fraction": 0,
+    "sha256": "63a5e1e721d5898bd4f984cf64c22e201387ea3a77633e3defcc848040d3a7b1"
+  },
+  {
+    "file": "candidates/CR-GM01-camel-A-body_1.png",
+    "size": [
+      512,
+      384
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      9,
+      512,
+      384
+    ],
+    "transparent_fraction": 0.65,
+    "sha256": "aa5e76658062717ef4b678fa5b49fc6d99d8465660ea495b037a1508af5f88ad"
+  },
+  {
+    "file": "candidates/CR-GM01-camel-A-body_2.png",
+    "size": [
+      512,
+      384
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      0,
+      512,
+      384
+    ],
+    "transparent_fraction": 0.6568,
+    "sha256": "5cfc672bcc8df5764a1b0f5df782bd74080a4e7ac83455a46497805bcbf34edd"
+  },
+  {
+    "file": "candidates/CR-GM01-camel-A-body_3.png",
+    "size": [
+      512,
+      384
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      0,
+      512,
+      384
+    ],
+    "transparent_fraction": 0.6465,
+    "sha256": "811aa82eb93485454b7238619868f061df96a0f258f55e2e14bd2aefc55c5b28"
+  },
+  {
+    "file": "candidates/CR-GM01-camel-A-body_4.png",
+    "size": [
+      512,
+      384
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      0,
+      510,
+      384
+    ],
+    "transparent_fraction": 0.6521,
+    "sha256": "641c176d9d6cb723231c9422f009084880abb74418be7dea7f51d97c70d24151"
+  },
+  {
+    "file": "candidates/CR-GM01-camel-B-body_1.png",
+    "size": [
+      512,
+      384
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      18,
+      512,
+      384
+    ],
+    "transparent_fraction": 0.7072,
+    "sha256": "a7df04804be3bfb46cfe1936dc2d23a4d92bd840b76517b6a9f481dd680231c8"
+  },
+  {
+    "file": "candidates/CR-GM01-camel-B-body_2.png",
+    "size": [
+      512,
+      384
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      6,
+      510,
+      384
+    ],
+    "transparent_fraction": 0.7088,
+    "sha256": "446b7c8d37e6b74ea3c53433a05f24289a3d76c65900d4f97053655aacc0e0d9"
+  },
+  {
+    "file": "candidates/CR-GM01-camel-B-body_3.png",
+    "size": [
+      512,
+      384
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      0,
+      512,
+      384
+    ],
+    "transparent_fraction": 0.7336,
+    "sha256": "76ec4d114ecbe4a856f1cbace693ba16a31ce516e2ed70136326fde050e033f1"
+  },
+  {
+    "file": "candidates/CR-GM01-camel-B-body_4.png",
+    "size": [
+      512,
+      384
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      0,
+      502,
+      384
+    ],
+    "transparent_fraction": 0.6902,
+    "sha256": "6915e8381226cfad305048282eb1bc09366224c42994afed0ac1ba5899b7c711"
+  },
+  {
+    "file": "candidates/CR-GM01-camel-C-body_1.png",
+    "size": [
+      512,
+      384
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      9,
+      512,
+      384
+    ],
+    "transparent_fraction": 0.6231,
+    "sha256": "40a272dfa7e95c395cf8a7bcfeaae70d1056d31f4d2e4bbd87c838d8700d692e"
+  },
+  {
+    "file": "candidates/CR-GM01-camel-C-body_2.png",
+    "size": [
+      512,
+      384
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      12,
+      512,
+      384
+    ],
+    "transparent_fraction": 0.6367,
+    "sha256": "0c9d4fbd054a51c009a5bf2115eced5a2489bb8795d911b75b83ff299e188898"
+  },
+  {
+    "file": "candidates/CR-GM01-camel-C-body_3.png",
+    "size": [
+      512,
+      384
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      0,
+      512,
+      384
+    ],
+    "transparent_fraction": 0.632,
+    "sha256": "d57cc8b0966a412d308d4863f58c3b536a4d4d063f1e325680ea388c50776d41"
+  },
+  {
+    "file": "candidates/CR-GM01-camel-C-body_4.png",
+    "size": [
+      512,
+      384
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      0,
+      505,
+      384
+    ],
+    "transparent_fraction": 0.5991,
+    "sha256": "20cbe5020d94960823d3756b5b95fb2d033ef9c03f05d42ef51d3a362d7cd8ec"
+  },
+  {
+    "file": "candidates/CR-GM01-jockey-A.png",
+    "size": [
+      160,
+      160
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      29,
+      12,
+      158,
+      138
+    ],
+    "transparent_fraction": 0.7818,
+    "sha256": "a75b6e9b3e8637eae717f9f4b8cbf1e58a1d882b26c6e1f7433256d1349e96e1"
+  },
+  {
+    "file": "candidates/CR-GM01-jockey-B.png",
+    "size": [
+      160,
+      160
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      37,
+      10,
+      150,
+      136
+    ],
+    "transparent_fraction": 0.7889,
+    "sha256": "c048815309b8bc69e8a77b8e3d8859d1070de34538a56a9d5c462031ef30740b"
+  },
+  {
+    "file": "candidates/CR-GM01-jockey-C.png",
+    "size": [
+      160,
+      160
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      38,
+      23,
+      158,
+      154
+    ],
+    "transparent_fraction": 0.8246,
+    "sha256": "951e9e03ca0f2c53553677000f6f1a6036f276c2b47eda3d0625a92070e74139"
+  },
+  {
+    "file": "candidates/CR-GM02-A.png",
+    "size": [
+      720,
+      360
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      9,
+      35,
+      713,
+      360
+    ],
+    "transparent_fraction": 0.4228,
+    "sha256": "3ec104071f08c23c0abe99ff883875508760afa72d9eaedab986427f7dcbcfeb"
+  },
+  {
+    "file": "candidates/CR-GM02-B.png",
+    "size": [
+      720,
+      360
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      21,
+      715,
+      360
+    ],
+    "transparent_fraction": 0.4317,
+    "sha256": "ef0e248c36d0fb0de0ca028c45f3a90365209d7e3ea5a2f8ef21545b6d2e2097"
+  },
+  {
+    "file": "candidates/CR-GM02-C.png",
+    "size": [
+      720,
+      360
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      8,
+      8,
+      712,
+      356
+    ],
+    "transparent_fraction": 0.432,
+    "sha256": "627adb6b3984b2325187493b8945930935635eda1bedf1b535ff3b1daba655d8"
+  }
+]

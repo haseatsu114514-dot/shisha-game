@@ -1,0 +1,19 @@
+{
+  "library_file_id": "libfile_ac25ef725c7c8191a587a2529b01b71f",
+  "source_sha256": "757a1683e0ff8fa0fbe89a77ff2cbd463b53418a86a027b66ccc8b15a047a1df",
+  "native_pixels": [
+    1254,
+    1254
+  ],
+  "conversion": "Uniform LANCZOS resize only, true alpha preserved, lossless WebP",
+  "runtime_qa": {
+    "pc": true,
+    "touch": true,
+    "background": "graphic/bg_adam.webp",
+    "name": "アダム",
+    "white_skin_red_left_green_right_apples": true,
+    "shoulders_hands_visible": true,
+    "source_raw_unchanged": true
+  },
+  "review": "integration independent review pending"
+}

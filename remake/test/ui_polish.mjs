@@ -79,6 +79,9 @@ try {
   if (shots) await page.screenshot({ path: `${shots}/choices.png` });
   await page.locator(".vn-choice").first().click();
   await page.evaluate(() => {
+    // 能力の通知カード（STEP UP・進化）とスロットの能力報酬は旧しくみ（?growth=0）の表示。心得の盤（通常プレイの既定・SBD97）では
+    // 能力を直接伸ばさないので、この端末を旧しくみにして見た目を確かめる（スロットの経験値の見た目は slot_exp・growth_levelup）
+    localStorage.setItem("suien_growth_preview", "0");
     T.core.newGame(); T.core.state.phase = "daily";
     T.ui.showScreen("map", document.createElement("div"));
     T.core.state.stats.technique = 20;
@@ -126,7 +129,7 @@ try {
   assert.doesNotMatch(await page.locator(".gain-card").textContent(), /少し上がった|かなり上がった|大きく上がった/);
   assert.match(await page.locator(".gc-next").getAttribute("title"), /弾消しがかなり広い/);
   assert.deepEqual(await page.evaluate(() => T.steam.refreshEffect()), { radius: 310, mentalRecovery: true, label: "かなり広い範囲" });
-  assert.equal(await page.evaluate(() => T.steam.refreshStock()), 1);
+  assert.equal(await page.evaluate(() => T.steam.refreshStock()), 2); // SB01: 根性64＝★4で1回増える
   assert.equal(await page.evaluate(() => T.steam.REFRESH_RECHARGE_SECONDS), 8);
   await page.evaluate(() => T.ui.bannersIdle());
   const reward = await page.evaluate(() => {

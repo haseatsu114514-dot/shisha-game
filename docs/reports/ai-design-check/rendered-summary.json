@@ -1,0 +1,820 @@
+{
+  "ref": "e78eec552dc7aafb17b88d0f9100b991bec665d5",
+  "note": "Measurements are observations of sampled states; font weights/counts do not equal unique issues. Portrait normal title is covered by the orientation hint.",
+  "contrast": {
+    "selector": ".dm-chip.lime",
+    "foreground": "#ffffff",
+    "background": "#06c755",
+    "ratio": 2.256053821013603
+  },
+  "screens": [
+    {
+      "name": "title-1280",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "theme": "paper",
+      "layout": "normal",
+      "screen": "title",
+      "brokenImages": [],
+      "visibleTextElements": 9,
+      "fontSizes": [
+        "14px",
+        "15px",
+        "26px"
+      ],
+      "fontWeights": {
+        "400": 9
+      },
+      "visibleControls": 4
+    },
+    {
+      "name": "map-1280",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "theme": "paper",
+      "layout": "normal",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 30,
+      "fontSizes": [
+        "12px",
+        "13px",
+        "14px",
+        "15px",
+        "20px",
+        "30px"
+      ],
+      "fontWeights": {
+        "900": 5,
+        "700": 13,
+        "400": 12
+      },
+      "visibleControls": 8
+    },
+    {
+      "name": "menu-status-1280",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "theme": "paper",
+      "layout": "normal",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 50,
+      "fontSizes": [
+        "12px",
+        "13px",
+        "14px",
+        "15px",
+        "16px",
+        "17px",
+        "18px",
+        "19px",
+        "22px",
+        "28px"
+      ],
+      "fontWeights": {
+        "900": 17,
+        "700": 26,
+        "500": 7
+      },
+      "visibleControls": 10
+    },
+    {
+      "name": "menu-people-1280",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "theme": "paper",
+      "layout": "normal",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 39,
+      "fontSizes": [
+        "12px",
+        "14px",
+        "16px",
+        "17px",
+        "18px",
+        "19px",
+        "22px",
+        "28px"
+      ],
+      "fontWeights": {
+        "900": 12,
+        "700": 26,
+        "500": 1
+      },
+      "visibleControls": 11
+    },
+    {
+      "name": "menu-items-1280",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "theme": "paper",
+      "layout": "normal",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 50,
+      "fontSizes": [
+        "12px",
+        "13px",
+        "14px",
+        "15px",
+        "16px",
+        "17px",
+        "18px",
+        "19px",
+        "22px",
+        "28px"
+      ],
+      "fontWeights": {
+        "900": 13,
+        "700": 35,
+        "500": 2
+      },
+      "visibleControls": 7
+    },
+    {
+      "name": "menu-system-1280",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "theme": "paper",
+      "layout": "normal",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 28,
+      "fontSizes": [
+        "12px",
+        "14px",
+        "16px",
+        "18px",
+        "19px",
+        "22px",
+        "28px"
+      ],
+      "fontWeights": {
+        "900": 6,
+        "700": 21,
+        "500": 1
+      },
+      "visibleControls": 11
+    },
+    {
+      "name": "settings-1280",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "theme": "paper",
+      "layout": "normal",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 15,
+      "fontSizes": [
+        "17px",
+        "18px",
+        "24px"
+      ],
+      "fontWeights": {
+        "900": 1,
+        "400": 13,
+        "700": 1
+      },
+      "visibleControls": 14
+    },
+    {
+      "name": "title-390",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "paper",
+      "layout": "normal",
+      "screen": "title",
+      "brokenImages": [],
+      "visibleTextElements": 9,
+      "fontSizes": [
+        "14px",
+        "15px",
+        "26px"
+      ],
+      "fontWeights": {
+        "400": 9
+      },
+      "visibleControls": 4
+    },
+    {
+      "name": "title-ds-390",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "paper",
+      "layout": "ds",
+      "screen": "title",
+      "brokenImages": [],
+      "visibleTextElements": 6,
+      "fontSizes": [
+        "14px",
+        "19px"
+      ],
+      "fontWeights": {
+        "400": 6
+      },
+      "visibleControls": 4
+    },
+    {
+      "name": "map-390",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "paper",
+      "layout": "ds",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 26,
+      "fontSizes": [
+        "12px",
+        "13px",
+        "14px",
+        "18px"
+      ],
+      "fontWeights": {
+        "900": 4,
+        "700": 7,
+        "400": 14,
+        "800": 1
+      },
+      "visibleControls": 8
+    },
+    {
+      "name": "menu-status-390",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "paper",
+      "layout": "ds",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 49,
+      "fontSizes": [
+        "12px",
+        "13px",
+        "14px",
+        "15px",
+        "16px",
+        "17px",
+        "19px"
+      ],
+      "fontWeights": {
+        "700": 26,
+        "900": 16,
+        "500": 7
+      },
+      "visibleControls": 10
+    },
+    {
+      "name": "menu-people-390",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "paper",
+      "layout": "ds",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 38,
+      "fontSizes": [
+        "12px",
+        "13px",
+        "14px",
+        "15px",
+        "16px",
+        "17px",
+        "19px"
+      ],
+      "fontWeights": {
+        "700": 26,
+        "900": 11,
+        "500": 1
+      },
+      "visibleControls": 11,
+      "limeBadges": [
+        {
+          "tag": "SPAN",
+          "cls": "dm-chip lime",
+          "text": "LIME",
+          "font": "14px",
+          "weight": "700",
+          "radius": "13px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(6, 199, 85)",
+          "bgImage": "none",
+          "shadow": "none",
+          "outline": "rgb(255, 255, 255) none 3px",
+          "width": 52.6,
+          "height": 26,
+          "effectiveFont": 14,
+          "x": 294.4,
+          "y": 168
+        },
+        {
+          "tag": "SPAN",
+          "cls": "dm-chip lime",
+          "text": "LIME",
+          "font": "14px",
+          "weight": "700",
+          "radius": "13px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(6, 199, 85)",
+          "bgImage": "none",
+          "shadow": "none",
+          "outline": "rgb(255, 255, 255) none 3px",
+          "width": 52.6,
+          "height": 26,
+          "effectiveFont": 14,
+          "x": 294.4,
+          "y": 241
+        },
+        {
+          "tag": "SPAN",
+          "cls": "dm-chip lime",
+          "text": "LIME",
+          "font": "14px",
+          "weight": "700",
+          "radius": "13px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(6, 199, 85)",
+          "bgImage": "none",
+          "shadow": "none",
+          "outline": "rgb(255, 255, 255) none 3px",
+          "width": 52.6,
+          "height": 26,
+          "effectiveFont": 14,
+          "x": 294.4,
+          "y": 314
+        },
+        {
+          "tag": "SPAN",
+          "cls": "dm-chip lime",
+          "text": "LIME",
+          "font": "14px",
+          "weight": "700",
+          "radius": "13px",
+          "color": "rgb(255, 255, 255)",
+          "bg": "rgb(6, 199, 85)",
+          "bgImage": "none",
+          "shadow": "none",
+          "outline": "rgb(255, 255, 255) none 3px",
+          "width": 52.6,
+          "height": 26,
+          "effectiveFont": 14,
+          "x": 294.4,
+          "y": 460
+        }
+      ]
+    },
+    {
+      "name": "menu-items-390",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "paper",
+      "layout": "ds",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 45,
+      "fontSizes": [
+        "12px",
+        "13px",
+        "14px",
+        "15px",
+        "16px",
+        "17px",
+        "19px"
+      ],
+      "fontWeights": {
+        "700": 33,
+        "900": 11,
+        "500": 1
+      },
+      "visibleControls": 6
+    },
+    {
+      "name": "menu-system-390",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "paper",
+      "layout": "ds",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 27,
+      "fontSizes": [
+        "12px",
+        "13px",
+        "14px",
+        "15px",
+        "16px",
+        "19px"
+      ],
+      "fontWeights": {
+        "700": 21,
+        "900": 5,
+        "500": 1
+      },
+      "visibleControls": 11
+    },
+    {
+      "name": "settings-390",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "theme": "paper",
+      "layout": "ds",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 6,
+      "fontSizes": [
+        "17px",
+        "18px",
+        "24px"
+      ],
+      "fontWeights": {
+        "900": 1,
+        "400": 4,
+        "700": 1
+      },
+      "visibleControls": 5
+    },
+    {
+      "name": "title-320",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "theme": "paper",
+      "layout": "normal",
+      "screen": "title",
+      "brokenImages": [],
+      "visibleTextElements": 9,
+      "fontSizes": [
+        "14px",
+        "15px",
+        "26px"
+      ],
+      "fontWeights": {
+        "400": 9
+      },
+      "visibleControls": 4
+    },
+    {
+      "name": "title-ds-320",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "theme": "paper",
+      "layout": "ds",
+      "screen": "title",
+      "brokenImages": [],
+      "visibleTextElements": 6,
+      "fontSizes": [
+        "12px",
+        "17px"
+      ],
+      "fontWeights": {
+        "400": 5,
+        "700": 1
+      },
+      "visibleControls": 4
+    },
+    {
+      "name": "map-320",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "theme": "paper",
+      "layout": "ds",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 26,
+      "fontSizes": [
+        "12px",
+        "13px",
+        "14px",
+        "18px"
+      ],
+      "fontWeights": {
+        "900": 4,
+        "700": 7,
+        "400": 14,
+        "800": 1
+      },
+      "visibleControls": 8
+    },
+    {
+      "name": "menu-status-320",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "theme": "paper",
+      "layout": "ds",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 36,
+      "fontSizes": [
+        "12px",
+        "13px",
+        "14px",
+        "15px",
+        "16px",
+        "17px",
+        "19px"
+      ],
+      "fontWeights": {
+        "700": 22,
+        "900": 11,
+        "500": 3
+      },
+      "visibleControls": 8,
+      "statControls": [
+        {
+          "tag": "BUTTON",
+          "cls": "dm-row dm-stat s-technique",
+          "text": "技技術1段・見習いまだゲージは速い次の段まで あと1P",
+          "font": "16px",
+          "weight": "400",
+          "radius": "0px",
+          "color": "rgb(56, 40, 63)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "bgImage": "none",
+          "shadow": "none",
+          "outline": "rgb(56, 40, 63) none 3px",
+          "width": 252,
+          "height": 129,
+          "effectiveFont": 16,
+          "x": 31,
+          "y": 186
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "dm-row dm-stat s-sense",
+          "text": "感センス1段・ふつうジャスト帯は狭め次の段まで あと1P",
+          "font": "16px",
+          "weight": "400",
+          "radius": "0px",
+          "color": "rgb(56, 40, 63)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "bgImage": "none",
+          "shadow": "none",
+          "outline": "rgb(56, 40, 63) none 3px",
+          "width": 252,
+          "height": 129,
+          "effectiveFont": 16,
+          "x": 31,
+          "y": 315
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "dm-row dm-stat s-guts",
+          "text": "根根性1段・三日坊主体力はふつう・小さな範囲の弾を消す次の段まで あと1P",
+          "font": "16px",
+          "weight": "400",
+          "radius": "0px",
+          "color": "rgb(56, 40, 63)",
+          "bg": "rgba(0, 0, 0, 0)",
+          "bgImage": "none",
+          "shadow": "none",
+          "outline": "rgb(56, 40, 63) none 3px",
+          "width": 252,
+          "height": 150,
+          "effectiveFont": 16,
+          "x": 31,
+          "y": 444
+        }
+      ]
+    },
+    {
+      "name": "menu-people-320",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "theme": "paper",
+      "layout": "ds",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 32,
+      "fontSizes": [
+        "12px",
+        "13px",
+        "14px",
+        "15px",
+        "16px",
+        "17px",
+        "19px"
+      ],
+      "fontWeights": {
+        "700": 23,
+        "900": 9
+      },
+      "visibleControls": 9
+    },
+    {
+      "name": "menu-items-320",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "theme": "paper",
+      "layout": "ds",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 37,
+      "fontSizes": [
+        "12px",
+        "13px",
+        "14px",
+        "15px",
+        "16px",
+        "17px",
+        "19px"
+      ],
+      "fontWeights": {
+        "700": 26,
+        "900": 10,
+        "500": 1
+      },
+      "visibleControls": 5
+    },
+    {
+      "name": "menu-system-320",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "theme": "paper",
+      "layout": "ds",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 27,
+      "fontSizes": [
+        "12px",
+        "13px",
+        "14px",
+        "15px",
+        "16px",
+        "19px"
+      ],
+      "fontWeights": {
+        "700": 21,
+        "900": 5,
+        "500": 1
+      },
+      "visibleControls": 11
+    },
+    {
+      "name": "settings-320",
+      "viewport": {
+        "width": 320,
+        "height": 568
+      },
+      "theme": "paper",
+      "layout": "ds",
+      "screen": "map",
+      "brokenImages": [],
+      "visibleTextElements": 8,
+      "fontSizes": [
+        "17px",
+        "18px",
+        "24px"
+      ],
+      "fontWeights": {
+        "900": 1,
+        "400": 6,
+        "700": 1
+      },
+      "visibleControls": 7
+    },
+    {
+      "name": "craft-pack",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "theme": null,
+      "layout": null,
+      "screen": "bench",
+      "brokenImages": [],
+      "visibleTextElements": 34,
+      "fontSizes": [
+        "12px",
+        "13.3333px",
+        "13px",
+        "14px",
+        "15px",
+        "16px",
+        "17.2455px",
+        "17px",
+        "18px",
+        "20px",
+        "24px"
+      ],
+      "fontWeights": {
+        "700": 23,
+        "400": 11
+      },
+      "visibleControls": 7
+    },
+    {
+      "name": "craft-holes",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "theme": null,
+      "layout": null,
+      "screen": "bench",
+      "brokenImages": [],
+      "visibleTextElements": 32,
+      "fontSizes": [
+        "12px",
+        "13.3333px",
+        "14px",
+        "15px",
+        "16px",
+        "17.2455px",
+        "17px",
+        "22px"
+      ],
+      "fontWeights": {
+        "700": 20,
+        "400": 12
+      },
+      "visibleControls": 6
+    },
+    {
+      "name": "craft-heat",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "theme": null,
+      "layout": null,
+      "screen": "bench",
+      "brokenImages": [],
+      "visibleTextElements": 33,
+      "fontSizes": [
+        "12px",
+        "13.3333px",
+        "14px",
+        "150px",
+        "15px",
+        "16px",
+        "17.2455px",
+        "17px",
+        "23px",
+        "27px"
+      ],
+      "fontWeights": {
+        "700": 22,
+        "400": 10,
+        "800": 1
+      },
+      "visibleControls": 6
+    }
+  ],
+  "dailyPageErrors": [
+    {
+      "name": "errors-1280",
+      "errors": []
+    },
+    {
+      "name": "errors-390",
+      "errors": []
+    },
+    {
+      "name": "errors-320",
+      "errors": []
+    }
+  ]
+}

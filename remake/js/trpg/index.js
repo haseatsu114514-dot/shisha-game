@@ -1,5 +1,7 @@
 import { mountTrpg } from "./view.js";
 import { portraitUrl, sceneUrl } from "./presentation.js";
+import { costumeUrlsFor } from "./costumes.js";
+import { isTrpgRegular } from "./regulars.js";
 
 async function json(url, signal) {
   const controller = new AbortController();
@@ -40,18 +42,20 @@ export async function loadTrpgClubResources({ signal } = {}) {
   return { catalog, characters: [...people.values()], manifest, club };
 }
 
-function trpgAssetUrls({ characters, manifest, tableTalk }, scenarios) {
+function trpgAssetUrls({ characters, manifest, tableTalk, tutorialLines = [] }, scenarios) {
   const people = new Set(characters.map(c => c.id));
   const urls = new Set();
   scenarios.forEach(s => {
-    urls.add(sceneUrl(s));
+    if (sceneUrl(s)) urls.add(sceneUrl(s));
+    if (s.presentation.choiceArt?.src) urls.add(new URL(s.presentation.choiceArt.src, new URL("./view.js", import.meta.url)).href);
+    costumeUrlsFor([s]).forEach(url => urls.add(url));
     s.cast.forEach(c => {
-      if (!people.has(c.id) || !manifest.portraits[c.id]) throw new Error("Missing canonical character: " + c.id);
+      if (!people.has(c.id) || !manifest.portraits[c.id] && !isTrpgRegular(c.id)) throw new Error("Missing canonical character: " + c.id);
       urls.add(portraitUrl(manifest, c.id));
     });
     s.dialogues.forEach(d => d.lines.forEach(l => urls.add(portraitUrl(manifest, l.speaker, l.face))));
   });
-  Object.values(tableTalk).flat().forEach(l => { if (manifest.portraits[l.speaker]) urls.add(portraitUrl(manifest, l.speaker, l.face)); });
+  [...Object.values(tableTalk).flat(), ...(tutorialLines || [])].forEach(l => { if (manifest.portraits[l.speaker]) urls.add(portraitUrl(manifest, l.speaker, l.face)); });
   return urls;
 }
 
@@ -67,7 +71,7 @@ export async function loadTrpgLibrary({ signal, scenarioId = null, preloadAssets
   const catalog = await json(new URL("trpg_catalog.json", base), signal);
   const entries = scenarioId ? catalog.scenarios.filter(s => s.id === scenarioId) : catalog.scenarios;
   if (!entries.length) throw new Error("Unknown TRPG scenario: " + scenarioId);
-  const [scenarios, characters, manifest, overlays, club, talk] = await Promise.all([
+  const [scenarios, characters, manifest, overlays, club, talk, tutorial] = await Promise.all([
     Promise.all(entries.map(entry => json(new URL(entry.file, base), signal))),
     json(new URL("characters.json", base), signal),
     json(new URL("../../data/manifest.json", import.meta.url), signal),
@@ -75,11 +79,18 @@ export async function loadTrpgLibrary({ signal, scenarioId = null, preloadAssets
     json(new URL(catalog.club.file, base), signal),
     // Optional table chatter: a missing file only removes the doubles chatter.
     catalog.tableTalk ? json(new URL(catalog.tableTalk, base), signal).catch(error => { if (signal?.aborted) throw error; return null; }) : null,
+    // Optional first-table tutorial by the shopkeeper: a missing file only removes the tutorial.
+    catalog.tutorial ? json(new URL(catalog.tutorial, base), signal).catch(error => { if (signal?.aborted) throw error; return null; }) : null,
   ]);
   const tableTalk = Object.fromEntries((talk?.dialogues || []).map(d => [d.dialogue_id, d.lines]));
   const people = new Map(characters.map(c => [c.id, c]));
   overlays.forEach(o => { if (o.profile?.id) people.set(o.profile.id, o.profile); });
-  const resources = { catalog, scenarios, characters: [...people.values()], manifest, club, tableTalk };
+  const tutorialLines = (tutorial?.lines || []).filter(l => people.has(l.speaker));
+  // Measured faces of the role costumes, for even bust-ups (optional: without it the busts fall back to the portrait metrics).
+  const frames = await json(new URL("../../img/ui/trpg/costumes/frames.json", import.meta.url), signal).catch(error => { if (signal?.aborted) throw error; return []; });
+  const costumeFrames = Object.fromEntries((Array.isArray(frames) ? frames : []).filter(f => f?.face)
+    .map(f => [f.scenario + "/" + f.character + "/" + f.role_id, f]));
+  const resources = { catalog, scenarios, characters: [...people.values()], manifest, club, tableTalk, tutorialLines, costumeFrames };
   // cast 検証は先読みを省く場合も従来どおりここで行う。
   const urls = trpgAssetUrls(resources, scenarios);
   if (preloadAssets) await Promise.all([...urls].map(url => preload(url, signal)));

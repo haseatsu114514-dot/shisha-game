@@ -1,6 +1,6 @@
 # ラウンジUI原本
 
-画像生成による透過PNG。採用した生成プロンプトは [docs/ui_lounge_prompts.md](../../../docs/ui_lounge_prompts.md) に記録。
+画像生成による透過PNG。採用した生成プロンプトは [docs/prompts/ui_lounge_prompts.md](../../../docs/prompts/ui_lounge_prompts.md) に記録。
 
 | 原本 | 用途 |
 |---|---|

@@ -10,7 +10,7 @@ assert.deepEqual(inspector.eventInfo("ch1_start"), { id: "ch1_start", lines: 1, 
 assert.equal(inspector.eventInfo("missing"), null);
 const copy = inspector.snapshot();
 copy.flags.seen = false;
-copy.lovers.push("rin");
+copy.lovers.push("rio");
 assert.equal(source.flags.seen, true);
 assert.deepEqual(source.lovers, ["mashiro"]);
 assert.equal(JSON.parse(inspector.exportSnapshot()).day, 4);

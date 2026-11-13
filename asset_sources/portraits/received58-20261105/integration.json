@@ -1,0 +1,4353 @@
+{
+  "base_main": "138ed13b25e2567169b7f967636549fff569e2d8",
+  "ledger_library_file_id": "libfile_499d86ec46508191b23e75eaf59c704f",
+  "ledger_version": 0,
+  "conditions_library_file_id": "libfile_14a70d344a7c8191b2fc6f6d60bf2e4c",
+  "registered_images": 74,
+  "items": [
+    {
+      "character_id": "emil",
+      "style": "nanami",
+      "expression": "normal",
+      "source_library_file_id": "libfile_aa5e99aaf318819188ec3ae125f744c5",
+      "source_file_id": "file_000000008c18821083758ff66b2cb6e4",
+      "source_sha256": "9e3bac909f696cfacd2a70307b786434205c2990b6277060ca99bf5f14ec4232",
+      "source_size_bytes": 1807958,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/emil/normal-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/emil/chr_emil_normal.png",
+      "runtime_sha256": "647789316a2e07e57a63354c4dae86243bbfb3ec97b68aebb95b7cdbc092cd41",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/emil/chr_emil_normal.png",
+        "git_blob": "d67632456082ac718ec768130162f0388ad17310",
+        "sha256": "61e85caac8c7a35a4a5d753b0204fde5f85390898280e1759a157a8bd87ea1ab"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_aa5e99aaf318819188ec3ae125f744c5",
+        "file_id": "file_000000008c18821083758ff66b2cb6e4",
+        "sha256": "9e3bac909f696cfacd2a70307b786434205c2990b6277060ca99bf5f14ec4232"
+      },
+      "export": {
+        "scale": 0.7152317880794702,
+        "offset": [
+          85,
+          46
+        ],
+        "bbox_alpha24": [
+          255,
+          60,
+          644,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1510
+      },
+      "producer_raw_qa": {
+        "character": "emil",
+        "expression": "normal",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_NORMAL_GATE",
+        "source_sha256": "61e85caac8c7a35a4a5d753b0204fde5f85390898280e1759a157a8bd87ea1ab",
+        "output_sha256": "9e3bac909f696cfacd2a70307b786434205c2990b6277060ca99bf5f14ec4232",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/emil/nanami/normal-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/emil/independent-nanami-normal-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "emil",
+      "style": "new",
+      "expression": "normal",
+      "source_library_file_id": "libfile_4dc41c1131c88191afa35462d6c200ec",
+      "source_file_id": "file_00000000436081f987b1e6e7fc3a49e9",
+      "source_sha256": "e9f3642d93ef88f95fad513076980bf5370c711265a83d22f42edf348d624c97",
+      "source_size_bytes": 1421575,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/emil/normal-source.png",
+      "runtime": "assets/sprites/character_variants/new/emil/chr_emil_normal.png",
+      "runtime_sha256": "09d21adc16f3a916358a6f48c8932f02b6e955d32549f59817261f5898bc6ea4",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/emil/chr_emil_normal.png",
+        "git_blob": "d67632456082ac718ec768130162f0388ad17310",
+        "sha256": "61e85caac8c7a35a4a5d753b0204fde5f85390898280e1759a157a8bd87ea1ab"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_4dc41c1131c88191afa35462d6c200ec",
+        "file_id": "file_00000000436081f987b1e6e7fc3a49e9",
+        "sha256": "e9f3642d93ef88f95fad513076980bf5370c711265a83d22f42edf348d624c97"
+      },
+      "export": {
+        "scale": 0.7233757535164099,
+        "offset": [
+          81,
+          38
+        ],
+        "bbox_alpha24": [
+          260,
+          59,
+          641,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1493
+      },
+      "producer_raw_qa": {
+        "character": "emil",
+        "expression": "normal",
+        "style": "new",
+        "status": "PASS_RAW_ART_NORMAL_GATE",
+        "source_sha256": "61e85caac8c7a35a4a5d753b0204fde5f85390898280e1759a157a8bd87ea1ab",
+        "output_sha256": "e9f3642d93ef88f95fad513076980bf5370c711265a83d22f42edf348d624c97",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/emil/new/normal-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/emil/independent-new-normal-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "maki",
+      "style": "nanami",
+      "expression": "normal",
+      "source_library_file_id": "libfile_4cc2849628a881918a657c63e6283ce8",
+      "source_file_id": "file_00000000444481f6a91348cece8bc368",
+      "source_sha256": "b6ed8e637b06d2e49b5bd43f43a7a3565270f36df76d64b827434870aeceb01f",
+      "source_size_bytes": 944461,
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/maki/normal-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/maki/chr_maki_normal.png",
+      "runtime_sha256": "ad900a9adfa134e6912acc6793dab4517daaa61e2b8befd7f4e5eb59d283b2d2",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maki/chr_maki_normal.png",
+        "git_blob": "0e8ba2816b49322ef54492fea16f4059aa6b1355",
+        "sha256": "63d1324e76cd4f8cafe06b1e99bf1f8ba2e7a78a7fd2a3f7b382c8608c202ac8"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_4cc2849628a881918a657c63e6283ce8",
+        "file_id": "file_00000000444481f6a91348cece8bc368",
+        "sha256": "b6ed8e637b06d2e49b5bd43f43a7a3565270f36df76d64b827434870aeceb01f"
+      },
+      "export": {
+        "scale": 0.7708779443254818,
+        "offset": [
+          39,
+          58
+        ],
+        "bbox_alpha24": [
+          249,
+          61,
+          653,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1401
+      },
+      "producer_raw_qa": {
+        "independent_normal_gate": "pass; independent-normal-gate.json",
+        "fit_anchor_actualgame": "pending"
+      },
+      "reused_normal": true
+    },
+    {
+      "character_id": "master_hookah",
+      "style": "nanami",
+      "expression": "normal",
+      "source_library_file_id": "libfile_8459a3358fbc8191926535e5b96ffd22",
+      "source_file_id": "file_000000003dcc81f59272d54d1d297912",
+      "source_sha256": "66b6f030f46b37f751557a8ab8d5550f42f3d1b6d778d894b98fdbbab47b0a2a",
+      "source_size_bytes": 2033185,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/master_hookah/normal-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/master_hookah/chr_master_hookah_normal.png",
+      "runtime_sha256": "ae76379d60477063fd137e0dcd1cd6ed6c9b4218f94d1c3fe07625228563f975",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/master_hookah/chr_master_hookah_normal.png",
+        "git_blob": "60d6fc8316c951a093fb97340da52171fd79e9ef",
+        "sha256": "532c7a850a5e25a2cf0d702c4a24fbd273bb39dca656b08b9ae149709020da29"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_8459a3358fbc8191926535e5b96ffd22",
+        "file_id": "file_000000003dcc81f59272d54d1d297912",
+        "sha256": "66b6f030f46b37f751557a8ab8d5550f42f3d1b6d778d894b98fdbbab47b0a2a"
+      },
+      "export": {
+        "scale": 0.743801652892562,
+        "offset": [
+          51,
+          11
+        ],
+        "bbox_alpha24": [
+          190,
+          60,
+          671,
+          1139
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1452
+      },
+      "producer_raw_qa": {
+        "character": "master_hookah",
+        "expression": "normal",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_NORMAL_GATE",
+        "source_sha256": "532c7a850a5e25a2cf0d702c4a24fbd273bb39dca656b08b9ae149709020da29",
+        "output_sha256": "66b6f030f46b37f751557a8ab8d5550f42f3d1b6d778d894b98fdbbab47b0a2a",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/master_hookah/nanami/normal-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/master_hookah/independent-nanami-normal-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "master_hookah",
+      "style": "new",
+      "expression": "normal",
+      "source_library_file_id": "libfile_785e663378f08191b146319736893726",
+      "source_file_id": "file_000000001b6881f5b16d287baf0aac8a",
+      "source_sha256": "908321d2011ca619627acbfd710721cc7701782b8088aa2c7e61cbc9c5d69d44",
+      "source_size_bytes": 1743034,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/master_hookah/normal-source.png",
+      "runtime": "assets/sprites/character_variants/new/master_hookah/chr_master_hookah_normal.png",
+      "runtime_sha256": "c18feee9f9caa226a797473cb1a8f67b25d26c92200145ac8b59250c52eec95d",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/master_hookah/chr_master_hookah_normal.png",
+        "git_blob": "60d6fc8316c951a093fb97340da52171fd79e9ef",
+        "sha256": "532c7a850a5e25a2cf0d702c4a24fbd273bb39dca656b08b9ae149709020da29"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_785e663378f08191b146319736893726",
+        "file_id": "file_000000001b6881f5b16d287baf0aac8a",
+        "sha256": "908321d2011ca619627acbfd710721cc7701782b8088aa2c7e61cbc9c5d69d44"
+      },
+      "export": {
+        "scale": 0.7248322147651006,
+        "offset": [
+          71,
+          35
+        ],
+        "bbox_alpha24": [
+          198,
+          60,
+          656,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1490
+      },
+      "producer_raw_qa": {
+        "character": "master_hookah",
+        "expression": "normal",
+        "style": "new",
+        "status": "PASS_RAW_ART_NORMAL_GATE",
+        "source_sha256": "532c7a850a5e25a2cf0d702c4a24fbd273bb39dca656b08b9ae149709020da29",
+        "output_sha256": "908321d2011ca619627acbfd710721cc7701782b8088aa2c7e61cbc9c5d69d44",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/master_hookah/new/normal-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/master_hookah/independent-new-normal-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "mukai_master",
+      "style": "nanami",
+      "expression": "normal",
+      "source_library_file_id": "libfile_26c5127cc740819191e27f122018813b",
+      "source_file_id": "file_000000002f5881f588b47971bff8f727",
+      "source_sha256": "fcda3a115feaee4bcd8aeba3f5255add6cb4159582e10f9084564c0eb224e85c",
+      "source_size_bytes": 903482,
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/mukai_master/normal-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/mukai_master/chr_mukai_master_normal.png",
+      "runtime_sha256": "defdb219962515a27345c130245ba0dfb1f36f81bafe6311b94b88918a5183fb",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/mukai_master/chr_mukai_master_normal.png",
+        "git_blob": "8e56659563233116ffeb5b7356e7808d433c63fd",
+        "sha256": "dab5d6505f4d1f1baeead1e457b4751fa5ef1b3f249e6870ac96653dd44cf637"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_26c5127cc740819191e27f122018813b",
+        "file_id": "file_000000002f5881f588b47971bff8f727",
+        "sha256": "fcda3a115feaee4bcd8aeba3f5255add6cb4159582e10f9084564c0eb224e85c"
+      },
+      "export": {
+        "scale": 0.7547169811320755,
+        "offset": [
+          -12,
+          53
+        ],
+        "bbox_alpha24": [
+          220,
+          59,
+          596,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1431
+      },
+      "producer_raw_qa": {
+        "character": "mukai_master",
+        "expression": "normal",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_NORMAL_GATE",
+        "source_sha256": "dab5d6505f4d1f1baeead1e457b4751fa5ef1b3f249e6870ac96653dd44cf637",
+        "output_sha256": "fcda3a115feaee4bcd8aeba3f5255add6cb4159582e10f9084564c0eb224e85c",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/mukai_master/mukai_master-normal-nanami-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/mukai_master/independent-nanami-normal-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "mukai_master",
+      "style": "new",
+      "expression": "normal",
+      "source_library_file_id": "libfile_03e5089180d48191a54a8d9f23967d48",
+      "source_file_id": "file_00000000b01881f5a19ae184f88ab7a2",
+      "source_sha256": "fd865d9452eec8cf311ab4254e53de35a62e25decb14352e774964f0bddeacc6",
+      "source_size_bytes": 1313128,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/mukai_master/normal-source.png",
+      "runtime": "assets/sprites/character_variants/new/mukai_master/chr_mukai_master_normal.png",
+      "runtime_sha256": "e3281eba7d853276392b6cae172a83f5444e606b3febb02f2d3efe73ff14c162",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/mukai_master/chr_mukai_master_normal.png",
+        "git_blob": "8e56659563233116ffeb5b7356e7808d433c63fd",
+        "sha256": "dab5d6505f4d1f1baeead1e457b4751fa5ef1b3f249e6870ac96653dd44cf637"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_03e5089180d48191a54a8d9f23967d48",
+        "file_id": "file_00000000b01881f5a19ae184f88ab7a2",
+        "sha256": "fd865d9452eec8cf311ab4254e53de35a62e25decb14352e774964f0bddeacc6"
+      },
+      "export": {
+        "scale": 0.7100591715976331,
+        "offset": [
+          48,
+          54
+        ],
+        "bbox_alpha24": [
+          226,
+          61,
+          607,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1521
+      },
+      "producer_raw_qa": {
+        "character": "mukai_master",
+        "expression": "normal",
+        "style": "new",
+        "status": "PASS_RAW_ART_NORMAL_GATE",
+        "source_sha256": "dab5d6505f4d1f1baeead1e457b4751fa5ef1b3f249e6870ac96653dd44cf637",
+        "output_sha256": "fd865d9452eec8cf311ab4254e53de35a62e25decb14352e774964f0bddeacc6",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/mukai_master/mukai_master-normal-new-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/mukai_master/independent-new-normal-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "shisha_9000",
+      "style": "nanami",
+      "expression": "normal",
+      "source_library_file_id": "libfile_21ed059f4c048191a39eb1ef8d6a3373",
+      "source_file_id": "file_00000000f9a881f5beed5086e8a8021c",
+      "source_sha256": "c7deea2562626caf89985e12ffce058962c1388015cf621e1a8d27419f5b16c5",
+      "source_size_bytes": 1127670,
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/shisha_9000/normal-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/shisha_9000/chr_shisha_9000_normal.png",
+      "runtime_sha256": "1125bc3901eea7b9c0e5344fab0b1b6755517c49ea768cbd76e84c223a3661fd",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/shisha_9000/chr_shisha_9000_normal.png",
+        "git_blob": "4e3baa273978e1a1e1eec688084b0d69638617a2",
+        "sha256": "71e46baa50a43c0f98528c09fcea92603df436c9c6a5c4dae3e4db87c5471b45"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_21ed059f4c048191a39eb1ef8d6a3373",
+        "file_id": "file_00000000f9a881f5beed5086e8a8021c",
+        "sha256": "c7deea2562626caf89985e12ffce058962c1388015cf621e1a8d27419f5b16c5"
+      },
+      "export": {
+        "scale": 0.7741935483870968,
+        "offset": [
+          17,
+          47
+        ],
+        "bbox_alpha24": [
+          222,
+          60,
+          684,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1395
+      },
+      "producer_raw_qa": {
+        "character": "shisha_9000",
+        "expression": "normal",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_NORMAL_GATE",
+        "source_sha256": "71e46baa50a43c0f98528c09fcea92603df436c9c6a5c4dae3e4db87c5471b45",
+        "output_sha256": "c7deea2562626caf89985e12ffce058962c1388015cf621e1a8d27419f5b16c5",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/shisha_9000/shisha_9000-normal-nanami-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/shisha_9000/independent-nanami-normal-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "shisha_9000",
+      "style": "new",
+      "expression": "normal",
+      "source_library_file_id": "libfile_3c0e793bd7e08191895bf5cc8fb3d002",
+      "source_file_id": "file_000000004ba081f5884b89102a5c5104",
+      "source_sha256": "0b4717c788c9f62c35c89ebf5e1e1a88dce1b24fc1cf84ba184944ec6f575aed",
+      "source_size_bytes": 1071403,
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/shisha_9000/normal-source.png",
+      "runtime": "assets/sprites/character_variants/new/shisha_9000/chr_shisha_9000_normal.png",
+      "runtime_sha256": "b6fd61d5f90436eb7a2386b771a1dae145d32766ef782f82581a55719bcd6824",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/shisha_9000/chr_shisha_9000_normal.png",
+        "git_blob": "4e3baa273978e1a1e1eec688084b0d69638617a2",
+        "sha256": "71e46baa50a43c0f98528c09fcea92603df436c9c6a5c4dae3e4db87c5471b45"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_3c0e793bd7e08191895bf5cc8fb3d002",
+        "file_id": "file_000000004ba081f5884b89102a5c5104",
+        "sha256": "0b4717c788c9f62c35c89ebf5e1e1a88dce1b24fc1cf84ba184944ec6f575aed"
+      },
+      "export": {
+        "scale": 0.7616361071932299,
+        "offset": [
+          21,
+          51
+        ],
+        "bbox_alpha24": [
+          218,
+          60,
+          687,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1418
+      },
+      "producer_raw_qa": {
+        "character": "shisha_9000",
+        "expression": "normal",
+        "style": "new",
+        "status": "PASS_RAW_ART_NORMAL_GATE",
+        "source_sha256": "71e46baa50a43c0f98528c09fcea92603df436c9c6a5c4dae3e4db87c5471b45",
+        "output_sha256": "0b4717c788c9f62c35c89ebf5e1e1a88dce1b24fc1cf84ba184944ec6f575aed",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/shisha_9000/shisha_9000-normal-new-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/shisha_9000/independent-new-normal-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "tetsuko",
+      "style": "nanami",
+      "expression": "normal",
+      "source_library_file_id": "libfile_e8034b0612148191968a89bbc51c8b62",
+      "source_file_id": "file_00000000773481f5a85c25fc95530031",
+      "source_sha256": "2799318e3891d94376a8705d79df3d36798a83a8804e6cbd1ffc840ff68c65b0",
+      "source_size_bytes": 860293,
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/tetsuko/normal-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/tetsuko/chr_tetsuko_normal.png",
+      "runtime_sha256": "cd807e8c7e8185a37a0d23ea87ba51ccd85fa3f821eef14ff0264cf4cb6d0b0e",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/tetsuko/chr_tetsuko_normal.png",
+        "git_blob": "6f8d6f539b2524af6f08aa17073e5f02cd95952e",
+        "sha256": "9890e78c6b90f636861ddbabc5657191398dfbe3087bffb24d5704720b4f6f00"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_e8034b0612148191968a89bbc51c8b62",
+        "file_id": "file_00000000773481f5a85c25fc95530031",
+        "sha256": "2799318e3891d94376a8705d79df3d36798a83a8804e6cbd1ffc840ff68c65b0"
+      },
+      "export": {
+        "scale": 0.41058823529411764,
+        "offset": [
+          231,
+          603
+        ],
+        "bbox_alpha24": [
+          297,
+          799,
+          584,
+          1148
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 850
+      },
+      "producer_raw_qa": {
+        "character": "tetsuko",
+        "expression": "normal",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_NORMAL_GATE",
+        "source_sha256": "9890e78c6b90f636861ddbabc5657191398dfbe3087bffb24d5704720b4f6f00",
+        "output_sha256": "2799318e3891d94376a8705d79df3d36798a83a8804e6cbd1ffc840ff68c65b0",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/tetsuko-normal-nanami-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/independent-nanami-normal-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "tetsuko",
+      "style": "new",
+      "expression": "normal",
+      "source_library_file_id": "libfile_878691c063dc8191b0dc51e56718bf8e",
+      "source_file_id": "file_00000000eba481f5ba89daa28836acac",
+      "source_sha256": "da46a672f3e7ac51db2859206e276694b946369ce70a2e26e532b7a319d8716d",
+      "source_size_bytes": 724235,
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/tetsuko/normal-source.png",
+      "runtime": "assets/sprites/character_variants/new/tetsuko/chr_tetsuko_normal.png",
+      "runtime_sha256": "284e7a305ff4c27bfd601696b76a0b5243a6d4808317bb3fe6fb918870386d66",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/tetsuko/chr_tetsuko_normal.png",
+        "git_blob": "6f8d6f539b2524af6f08aa17073e5f02cd95952e",
+        "sha256": "9890e78c6b90f636861ddbabc5657191398dfbe3087bffb24d5704720b4f6f00"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_878691c063dc8191b0dc51e56718bf8e",
+        "file_id": "file_00000000eba481f5ba89daa28836acac",
+        "sha256": "da46a672f3e7ac51db2859206e276694b946369ce70a2e26e532b7a319d8716d"
+      },
+      "export": {
+        "scale": 0.3943502824858757,
+        "offset": [
+          237,
+          638
+        ],
+        "bbox_alpha24": [
+          299,
+          799,
+          583,
+          1148
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 885
+      },
+      "producer_raw_qa": {
+        "character": "tetsuko",
+        "expression": "normal",
+        "style": "new",
+        "status": "PASS_RAW_ART_NORMAL_GATE",
+        "source_sha256": "9890e78c6b90f636861ddbabc5657191398dfbe3087bffb24d5704720b4f6f00",
+        "output_sha256": "da46a672f3e7ac51db2859206e276694b946369ce70a2e26e532b7a319d8716d",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/tetsuko-normal-new-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/independent-new-normal-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "yoru",
+      "style": "nanami",
+      "expression": "normal",
+      "source_library_file_id": "libfile_639eec699760819183b992db1f689ace",
+      "source_file_id": "file_00000000514481f5adb45e34d71ff7bc",
+      "source_sha256": "d6e8e4065b64335189db5fba604d774001df635f532bbbf9e6d0475449b82a49",
+      "source_size_bytes": 797757,
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/yoru/normal-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/yoru/chr_yoru_normal.png",
+      "runtime_sha256": "1786e6b3c6d7ecf4bf5dd9085362e800d8a1013cf441dcfcfaf2af7a8a203b90",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/yoru/chr_yoru_normal.png",
+        "git_blob": "0fe19a8d04a4640f80a974451adf13342754ddc3",
+        "sha256": "24c14f268e31db5d8a6130abc9a889fa133a3d0c95a5cf9ef5d71702fbd940e3"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_639eec699760819183b992db1f689ace",
+        "file_id": "file_00000000514481f5adb45e34d71ff7bc",
+        "sha256": "d6e8e4065b64335189db5fba604d774001df635f532bbbf9e6d0475449b82a49"
+      },
+      "export": {
+        "scale": 0.7665010645848119,
+        "offset": [
+          13,
+          41
+        ],
+        "bbox_alpha24": [
+          249,
+          60,
+          638,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1409
+      },
+      "producer_raw_qa": {
+        "character": "yoru",
+        "expression": "normal",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_NORMAL_GATE",
+        "source_sha256": "24c14f268e31db5d8a6130abc9a889fa133a3d0c95a5cf9ef5d71702fbd940e3",
+        "output_sha256": "d6e8e4065b64335189db5fba604d774001df635f532bbbf9e6d0475449b82a49",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/yoru-normal-nanami-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/independent-nanami-normal-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "yoru",
+      "style": "new",
+      "expression": "normal",
+      "source_library_file_id": "libfile_75b7161d2c988191a3ba4c8afced0fbb",
+      "source_file_id": "file_00000000b4d881f5893c89801f69b3ce",
+      "source_sha256": "37fa6724a95e8bb4287aca64cf69c36d9ee2bd6ff4c5968c99801c617ad80e80",
+      "source_size_bytes": 1243522,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/yoru/normal-source.png",
+      "runtime": "assets/sprites/character_variants/new/yoru/chr_yoru_normal.png",
+      "runtime_sha256": "10b5682ef9b48d1cad3406f12e1524757aa9f6132c1585971c44dfc0f422cc94",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/yoru/chr_yoru_normal.png",
+        "git_blob": "0fe19a8d04a4640f80a974451adf13342754ddc3",
+        "sha256": "24c14f268e31db5d8a6130abc9a889fa133a3d0c95a5cf9ef5d71702fbd940e3"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_75b7161d2c988191a3ba4c8afced0fbb",
+        "file_id": "file_00000000b4d881f5893c89801f69b3ce",
+        "sha256": "37fa6724a95e8bb4287aca64cf69c36d9ee2bd6ff4c5968c99801c617ad80e80"
+      },
+      "export": {
+        "scale": 0.7166556071665561,
+        "offset": [
+          69,
+          46
+        ],
+        "bbox_alpha24": [
+          256,
+          59,
+          648,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1507
+      },
+      "producer_raw_qa": {
+        "character": "yoru",
+        "expression": "normal",
+        "style": "new",
+        "status": "PASS_RAW_ART_NORMAL_GATE",
+        "source_sha256": "24c14f268e31db5d8a6130abc9a889fa133a3d0c95a5cf9ef5d71702fbd940e3",
+        "output_sha256": "37fa6724a95e8bb4287aca64cf69c36d9ee2bd6ff4c5968c99801c617ad80e80",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/yoru-normal-new-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/independent-new-normal-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "emil",
+      "style": "nanami",
+      "expression": "serious",
+      "source_library_file_id": "libfile_f8869713d60c8191abad08c76b40568c",
+      "source_file_id": "file_00000000c10881f99010fbe9184ec157",
+      "source_sha256": "c66b6f80c8bffccdb97acb0e1cbc6f68432cd2bf4c4e16ad9995c8aeab38a03b",
+      "source_size_bytes": 1633258,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/emil/serious-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/emil/chr_emil_serious.png",
+      "runtime_sha256": "e867d1a871e7a30f47fe8a60d869433e3dc036c063c451f3da061a8c41ac6672",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/emil/chr_emil_serious.png",
+        "git_blob": "78b4460413525e26b2e6855c039db2c11b44d85d",
+        "sha256": "e55aa096169fc6c99271fadb85a27362d705c374b9853cfde1f3de2c9fbcc677"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_aa5e99aaf318819188ec3ae125f744c5",
+        "file_id": "file_000000008c18821083758ff66b2cb6e4",
+        "sha256": "9e3bac909f696cfacd2a70307b786434205c2990b6277060ca99bf5f14ec4232"
+      },
+      "export": {
+        "scale": 0.7160401997139406,
+        "offset": [
+          82,
+          45
+        ],
+        "bbox_alpha24": [
+          282,
+          59,
+          644,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0008665511265165,
+        "native_visible_height": 1511
+      },
+      "producer_raw_qa": {
+        "character": "emil",
+        "expression": "serious",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "e55aa096169fc6c99271fadb85a27362d705c374b9853cfde1f3de2c9fbcc677",
+        "output_sha256": "c66b6f80c8bffccdb97acb0e1cbc6f68432cd2bf4c4e16ad9995c8aeab38a03b",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/emil/nanami/serious-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/emil/independent-nanami-serious-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "emil",
+      "style": "nanami",
+      "expression": "smile",
+      "source_library_file_id": "libfile_e951d983d6248191832c81a54c3c8659",
+      "source_file_id": "file_00000000611481f9a8529846f1eb758d",
+      "source_sha256": "28babaff32f13ab5684ef680dfae531d3ae3987cfd7732fd6466da30cbf02ed8",
+      "source_size_bytes": 1701253,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/emil/smile-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/emil/chr_emil_smile.png",
+      "runtime_sha256": "aad713b989bfb3f2fa3794cbefa9556a76fa7e0bee455a678d99f58b94737366",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/emil/chr_emil_smile.png",
+        "git_blob": "6eef0c80a9116ba71598cd582b7dfe0aa62a65fe",
+        "sha256": "12b31033ff3421538d2a516ba3063a323463caec968faace6226dacd5b65295d"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_aa5e99aaf318819188ec3ae125f744c5",
+        "file_id": "file_000000008c18821083758ff66b2cb6e4",
+        "sha256": "9e3bac909f696cfacd2a70307b786434205c2990b6277060ca99bf5f14ec4232"
+      },
+      "export": {
+        "scale": 0.7170275856906787,
+        "offset": [
+          82,
+          48
+        ],
+        "bbox_alpha24": [
+          258,
+          61,
+          641,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9982668977469671,
+        "native_visible_height": 1505
+      },
+      "producer_raw_qa": {
+        "character": "emil",
+        "expression": "smile",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "12b31033ff3421538d2a516ba3063a323463caec968faace6226dacd5b65295d",
+        "output_sha256": "28babaff32f13ab5684ef680dfae531d3ae3987cfd7732fd6466da30cbf02ed8",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/emil/nanami/smile-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/emil/independent-nanami-smile-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "emil",
+      "style": "new",
+      "expression": "smile",
+      "source_library_file_id": "libfile_d02de750ae68819188e921b386df353c",
+      "source_file_id": "file_00000000989481f9b9a08bc391a6cdd9",
+      "source_sha256": "4b3dd284cb6a82c731a6036247c799ab9471e1f3c1837381805e889fadd32774",
+      "source_size_bytes": 1407743,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/emil/smile-source.png",
+      "runtime": "assets/sprites/character_variants/new/emil/chr_emil_smile.png",
+      "runtime_sha256": "17e62b4f18ab861a323f384cebd44e2a286ff1b0c611110ceec8f1be047df2cd",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/emil/chr_emil_smile.png",
+        "git_blob": "6eef0c80a9116ba71598cd582b7dfe0aa62a65fe",
+        "sha256": "12b31033ff3421538d2a516ba3063a323463caec968faace6226dacd5b65295d"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_4dc41c1131c88191afa35462d6c200ec",
+        "file_id": "file_00000000436081f987b1e6e7fc3a49e9",
+        "sha256": "e9f3642d93ef88f95fad513076980bf5370c711265a83d22f42edf348d624c97"
+      },
+      "export": {
+        "scale": 0.720378181885495,
+        "offset": [
+          82,
+          42
+        ],
+        "bbox_alpha24": [
+          262,
+          61,
+          636,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9982668977469671,
+        "native_visible_height": 1498
+      },
+      "producer_raw_qa": {
+        "character": "emil",
+        "expression": "smile",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "12b31033ff3421538d2a516ba3063a323463caec968faace6226dacd5b65295d",
+        "output_sha256": "4b3dd284cb6a82c731a6036247c799ab9471e1f3c1837381805e889fadd32774",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/emil/new/smile-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/emil/independent-new-smile-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "emil",
+      "style": "new",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_e724ff4bf0308191afcdc10a701e464f",
+      "source_file_id": "file_00000000fae481f99cc6dda3a3c1ff3e",
+      "source_sha256": "82e7f502df285672028f51be86f1a5bd7659220aeeab721204c3e1d047834e2e",
+      "source_size_bytes": 1462419,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/emil/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/new/emil/chr_emil_surprise.png",
+      "runtime_sha256": "e0418bcf9109cc7a82acc0cc77773a4040f8389a8e1b24b59be7afad78f3a129",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/emil/chr_emil_surprise.png",
+        "git_blob": "bf4b99644056deadd5b5887ba04a139fbeef6366",
+        "sha256": "5d04b7869f5fc469e50b0ab659a0ac666e818287f0a9792b3d82a7827a1a2a69"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_4dc41c1131c88191afa35462d6c200ec",
+        "file_id": "file_00000000436081f987b1e6e7fc3a49e9",
+        "sha256": "e9f3642d93ef88f95fad513076980bf5370c711265a83d22f42edf348d624c97"
+      },
+      "export": {
+        "scale": 0.7185448901324535,
+        "offset": [
+          72,
+          46
+        ],
+        "bbox_alpha24": [
+          230,
+          66,
+          679,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9930675909878682,
+        "native_visible_height": 1494
+      },
+      "producer_raw_qa": {
+        "character": "emil",
+        "expression": "surprise",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "5d04b7869f5fc469e50b0ab659a0ac666e818287f0a9792b3d82a7827a1a2a69",
+        "output_sha256": "82e7f502df285672028f51be86f1a5bd7659220aeeab721204c3e1d047834e2e",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/emil/new/surprise-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/emil/independent-new-surprise-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "maki",
+      "style": "nanami",
+      "expression": "excited",
+      "source_library_file_id": "libfile_3fc9dcaece488191bdda5f73c0f2b664",
+      "source_file_id": "file_000000009ef481f5a66eccfe43ddd8a2",
+      "source_sha256": "a2e21a2b96b178dacb4fc8c661c1bb3f32228ab104da169d7453af98b3dff965",
+      "source_size_bytes": 1898379,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/maki/excited-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/maki/chr_maki_excited.png",
+      "runtime_sha256": "f7f19dd5aa0bd15b5e7f1cc4a4e0e32058c5085d531f69ef14ad1b0576c4d66a",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maki/chr_maki_excited.png",
+        "git_blob": "a1bde0f99c85be8634f174385c7da911ea542be3",
+        "sha256": "a835dc901b35ed467aa1254345498db207d7d05ac3e7aa629907820227328528"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_4cc2849628a881918a657c63e6283ce8",
+        "file_id": "file_00000000444481f6a91348cece8bc368",
+        "sha256": "b6ed8e637b06d2e49b5bd43f43a7a3565270f36df76d64b827434870aeceb01f"
+      },
+      "export": {
+        "scale": 0.7267754425251498,
+        "offset": [
+          79,
+          43
+        ],
+        "bbox_alpha24": [
+          231,
+          65,
+          687,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9966244725738397,
+        "native_visible_height": 1481
+      },
+      "producer_raw_qa": {
+        "character": "maki",
+        "expression": "excited",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "a835dc901b35ed467aa1254345498db207d7d05ac3e7aa629907820227328528",
+        "output_sha256": "a2e21a2b96b178dacb4fc8c661c1bb3f32228ab104da169d7453af98b3dff965",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/maki/raw/nanami/maki-excited.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/maki/independent-nanami-excited-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "maki",
+      "style": "nanami",
+      "expression": "serious",
+      "source_library_file_id": "libfile_a8703679f22c8191b08f2d1e693d11e5",
+      "source_file_id": "file_000000006fa481f5a16f7022785002b9",
+      "source_sha256": "2b8ae99f220ba5179fbeb4f08e1ec6b4e8a8cf2550e82f9f11efa1642e1607bc",
+      "source_size_bytes": 1934452,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/maki/serious-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/maki/chr_maki_serious.png",
+      "runtime_sha256": "542d7542b1fc41df91e2ef411c8901441f978693151c167457a569a960b3768e",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maki/chr_maki_serious.png",
+        "git_blob": "82c866150113b6dc8c07321b051f9676096eacff",
+        "sha256": "61acd2e7a1b68b9d656ae67497069cd7883fad954cded8ca2273c6d07792938e"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_4cc2849628a881918a657c63e6283ce8",
+        "file_id": "file_00000000444481f6a91348cece8bc368",
+        "sha256": "b6ed8e637b06d2e49b5bd43f43a7a3565270f36df76d64b827434870aeceb01f"
+      },
+      "export": {
+        "scale": 0.7122697079834566,
+        "offset": [
+          95,
+          58
+        ],
+        "bbox_alpha24": [
+          229,
+          62,
+          673,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.99915611814346,
+        "native_visible_height": 1515
+      },
+      "producer_raw_qa": {
+        "character": "maki",
+        "expression": "serious",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "61acd2e7a1b68b9d656ae67497069cd7883fad954cded8ca2273c6d07792938e",
+        "output_sha256": "2b8ae99f220ba5179fbeb4f08e1ec6b4e8a8cf2550e82f9f11efa1642e1607bc",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/maki/raw/nanami/maki-serious.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/maki/independent-nanami-serious-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "maki",
+      "style": "nanami",
+      "expression": "smile",
+      "source_library_file_id": "libfile_28542cd87e7481918453e1f9c59f9fa3",
+      "source_file_id": "file_00000000ea4c81f5b688757906c52a7d",
+      "source_sha256": "8077aa0f2a99230897d36b3a099201ec0cbb61ca575bfe601ed73d4d5ccf861a",
+      "source_size_bytes": 1902308,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/maki/smile-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/maki/chr_maki_smile.png",
+      "runtime_sha256": "5bd4ef31ba06b8de1b550d9993132371d7e4eeee9d22eb7ececa0c4704bc94ca",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maki/chr_maki_smile.png",
+        "git_blob": "539fa5a473be8327d1e57a0bad406b161100ac21",
+        "sha256": "a54f9e12ba5009adae0d60b97c2d27e9e10f91e1825bc4d061903a4613171168"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_4cc2849628a881918a657c63e6283ce8",
+        "file_id": "file_00000000444481f6a91348cece8bc368",
+        "sha256": "b6ed8e637b06d2e49b5bd43f43a7a3565270f36df76d64b827434870aeceb01f"
+      },
+      "export": {
+        "scale": 0.7174791273902505,
+        "offset": [
+          82,
+          48
+        ],
+        "bbox_alpha24": [
+          215,
+          62,
+          685,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.99915611814346,
+        "native_visible_height": 1504
+      },
+      "producer_raw_qa": {
+        "character": "maki",
+        "expression": "smile",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "a54f9e12ba5009adae0d60b97c2d27e9e10f91e1825bc4d061903a4613171168",
+        "output_sha256": "8077aa0f2a99230897d36b3a099201ec0cbb61ca575bfe601ed73d4d5ccf861a",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/maki/raw/nanami/maki-smile.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/maki/independent-nanami-smile-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "maki",
+      "style": "nanami",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_1a709eaeb4c081918d56a440993366d9",
+      "source_file_id": "file_00000000943081f5aeb1ee0fd1627200",
+      "source_sha256": "8f976738dbbb2c51940ef1f8874d450541dde05c968fd5ef3da8f8e1fd42886e",
+      "source_size_bytes": 1774746,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/maki/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/maki/chr_maki_surprise.png",
+      "runtime_sha256": "c850d60afe99f0e49a1a9adf795f4f00a3995c0a450a509c163c334d3996df49",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maki/chr_maki_surprise.png",
+        "git_blob": "11b1204ab03f6581ef94d5a09869341452e4deeb",
+        "sha256": "73f5c4457e505c38128b80e4abe2ea91fe6a31101e3937c47342a76a9252cd2b"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_4cc2849628a881918a657c63e6283ce8",
+        "file_id": "file_00000000444481f6a91348cece8bc368",
+        "sha256": "b6ed8e637b06d2e49b5bd43f43a7a3565270f36df76d64b827434870aeceb01f"
+      },
+      "export": {
+        "scale": 0.7171314741035857,
+        "offset": [
+          88,
+          47
+        ],
+        "bbox_alpha24": [
+          245,
+          61,
+          685,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1506
+      },
+      "producer_raw_qa": {
+        "character": "maki",
+        "expression": "surprise",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "73f5c4457e505c38128b80e4abe2ea91fe6a31101e3937c47342a76a9252cd2b",
+        "output_sha256": "8f976738dbbb2c51940ef1f8874d450541dde05c968fd5ef3da8f8e1fd42886e",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/maki/raw/nanami/maki-surprise.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/maki/independent-nanami-surprise-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "maki",
+      "style": "new",
+      "expression": "excited",
+      "source_library_file_id": "libfile_62905f7609c48191a1527d74f17d68a8",
+      "source_file_id": "file_000000008b3881f5b7cb7f3d3c7ba1df",
+      "source_sha256": "2e44baa280af596c59a1bdca560b82cf309ac4e018e8d2ac6b6b6ec39cda615c",
+      "source_size_bytes": 1533328,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/maki/excited-source.png",
+      "runtime": "assets/sprites/character_variants/new/maki/chr_maki_excited.png",
+      "runtime_sha256": "1ea6d527e3d4b1e6580ac4ae6ed0b94a35a9f1c07cbecabddb549d656935b494",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maki/chr_maki_excited.png",
+        "git_blob": "a1bde0f99c85be8634f174385c7da911ea542be3",
+        "sha256": "a835dc901b35ed467aa1254345498db207d7d05ac3e7aa629907820227328528"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_8ca608dd5a088191a87a36c600100c45",
+        "file_id": "file_000000002e7881f5919c80781becd3d5",
+        "sha256": "105ed02fcb8c494462947b3e6d59d170bb2e9067e5ee31b0ec06a8670209e650"
+      },
+      "export": {
+        "scale": 0.7095282995252121,
+        "offset": [
+          88,
+          59
+        ],
+        "bbox_alpha24": [
+          228,
+          63,
+          695,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9966244725738397,
+        "native_visible_height": 1517
+      },
+      "producer_raw_qa": {
+        "character": "maki",
+        "expression": "excited",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "a835dc901b35ed467aa1254345498db207d7d05ac3e7aa629907820227328528",
+        "output_sha256": "2e44baa280af596c59a1bdca560b82cf309ac4e018e8d2ac6b6b6ec39cda615c",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/maki/raw/new/maki-excited.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/maki/independent-new-excited-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "maki",
+      "style": "new",
+      "expression": "serious",
+      "source_library_file_id": "libfile_361e7b2d27d48191825fc994f442ca3c",
+      "source_file_id": "file_00000000656481f5b0e2c70f6d2ee153",
+      "source_sha256": "90214dea91e447931f73995e9967b4e6165fca9b2da42d4e625ad4a1b798ee36",
+      "source_size_bytes": 1508637,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/maki/serious-source.png",
+      "runtime": "assets/sprites/character_variants/new/maki/chr_maki_serious.png",
+      "runtime_sha256": "4cd86960ccf3bb76a5771dce94481502421b82216c7128329e8ee31f1ba52336",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maki/chr_maki_serious.png",
+        "git_blob": "82c866150113b6dc8c07321b051f9676096eacff",
+        "sha256": "61acd2e7a1b68b9d656ae67497069cd7883fad954cded8ca2273c6d07792938e"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_8ca608dd5a088191a87a36c600100c45",
+        "file_id": "file_000000002e7881f5919c80781becd3d5",
+        "sha256": "105ed02fcb8c494462947b3e6d59d170bb2e9067e5ee31b0ec06a8670209e650"
+      },
+      "export": {
+        "scale": 0.7132112409748426,
+        "offset": [
+          87,
+          54
+        ],
+        "bbox_alpha24": [
+          225,
+          61,
+          681,
+          1139
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.99915611814346,
+        "native_visible_height": 1513
+      },
+      "producer_raw_qa": {
+        "character": "maki",
+        "expression": "serious",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "61acd2e7a1b68b9d656ae67497069cd7883fad954cded8ca2273c6d07792938e",
+        "output_sha256": "90214dea91e447931f73995e9967b4e6165fca9b2da42d4e625ad4a1b798ee36",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/maki/raw/new/maki-serious.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/maki/independent-new-serious-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "maki",
+      "style": "new",
+      "expression": "smile",
+      "source_library_file_id": "libfile_96ddfe51ca8081919b0b2f8041ae4c56",
+      "source_file_id": "file_000000004f3c81f5a2e1c4bb098286d9",
+      "source_sha256": "d742d26a789fbf91be29d83e4b0ce3b4247349d236ab8d402c83ed647f6e6937",
+      "source_size_bytes": 1520522,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/maki/smile-source.png",
+      "runtime": "assets/sprites/character_variants/new/maki/chr_maki_smile.png",
+      "runtime_sha256": "11c4f839b6146f9331e7d43a0b0cdcb881fe701eb22eda30c59b713389fa2939",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maki/chr_maki_smile.png",
+        "git_blob": "539fa5a473be8327d1e57a0bad406b161100ac21",
+        "sha256": "a54f9e12ba5009adae0d60b97c2d27e9e10f91e1825bc4d061903a4613171168"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_8ca608dd5a088191a87a36c600100c45",
+        "file_id": "file_000000002e7881f5919c80781becd3d5",
+        "sha256": "105ed02fcb8c494462947b3e6d59d170bb2e9067e5ee31b0ec06a8670209e650"
+      },
+      "export": {
+        "scale": 0.7099267155229847,
+        "offset": [
+          82,
+          56
+        ],
+        "bbox_alpha24": [
+          214,
+          61,
+          684,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.99915611814346,
+        "native_visible_height": 1520
+      },
+      "producer_raw_qa": {
+        "character": "maki",
+        "expression": "smile",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "a54f9e12ba5009adae0d60b97c2d27e9e10f91e1825bc4d061903a4613171168",
+        "output_sha256": "d742d26a789fbf91be29d83e4b0ce3b4247349d236ab8d402c83ed647f6e6937",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/maki/raw/new/maki-smile.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/maki/independent-new-smile-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "maki",
+      "style": "new",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_21820c3583608191ae6f62e663c0947f",
+      "source_file_id": "file_00000000d5c081f5b224be7c0476d17e",
+      "source_sha256": "179a9f8b9d0ba45542a491946c3d7fa726eed9469ec8d97f98b5504176c770dc",
+      "source_size_bytes": 1487947,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/maki/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/new/maki/chr_maki_surprise.png",
+      "runtime_sha256": "3b1feb6fcc4cee60c986576b4d912cb418d548f6f6c8a4f855206fcd6d0dd27a",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maki/chr_maki_surprise.png",
+        "git_blob": "11b1204ab03f6581ef94d5a09869341452e4deeb",
+        "sha256": "73f5c4457e505c38128b80e4abe2ea91fe6a31101e3937c47342a76a9252cd2b"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_8ca608dd5a088191a87a36c600100c45",
+        "file_id": "file_000000002e7881f5919c80781becd3d5",
+        "sha256": "105ed02fcb8c494462947b3e6d59d170bb2e9067e5ee31b0ec06a8670209e650"
+      },
+      "export": {
+        "scale": 0.7081967213114754,
+        "offset": [
+          86,
+          56
+        ],
+        "bbox_alpha24": [
+          238,
+          60,
+          688,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1525
+      },
+      "producer_raw_qa": {
+        "character": "maki",
+        "expression": "surprise",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "73f5c4457e505c38128b80e4abe2ea91fe6a31101e3937c47342a76a9252cd2b",
+        "output_sha256": "179a9f8b9d0ba45542a491946c3d7fa726eed9469ec8d97f98b5504176c770dc",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/maki/raw/new/maki-surprise.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/maki/independent-new-surprise-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "master_hookah",
+      "style": "nanami",
+      "expression": "smile",
+      "source_library_file_id": "libfile_b21c01f134b8819192b99a85f74cbff7",
+      "source_file_id": "file_0000000035a481f983210536b12485fb",
+      "source_sha256": "184912886f6485403e9abacdaa7ee7f7f617c0d3a200ea2f3cd798f745062b16",
+      "source_size_bytes": 1989420,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/master_hookah/smile-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/master_hookah/chr_master_hookah_smile.png",
+      "runtime_sha256": "877425214f9679fe9f856e2092008456ce92599e60ba3ac2fd98b6e13355a20f",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/master_hookah/chr_master_hookah_smile.png",
+        "git_blob": "647a04064d727a3b5f6263d4127a2a17e6876bf9",
+        "sha256": "c4bc661fd11d89e49b1b4a1d5a0b9e0f2eeb5b3ef1552212e53b94de04eadbb5"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_8459a3358fbc8191926535e5b96ffd22",
+        "file_id": "file_000000003dcc81f59272d54d1d297912",
+        "sha256": "66b6f030f46b37f751557a8ab8d5550f42f3d1b6d778d894b98fdbbab47b0a2a"
+      },
+      "export": {
+        "scale": 0.7432416878277998,
+        "offset": [
+          50,
+          10
+        ],
+        "bbox_alpha24": [
+          189,
+          59,
+          669,
+          1139
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0008620689655172,
+        "native_visible_height": 1453
+      },
+      "producer_raw_qa": {
+        "character": "master_hookah",
+        "expression": "smile",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "c4bc661fd11d89e49b1b4a1d5a0b9e0f2eeb5b3ef1552212e53b94de04eadbb5",
+        "output_sha256": "184912886f6485403e9abacdaa7ee7f7f617c0d3a200ea2f3cd798f745062b16",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/master_hookah/nanami/smile-v3-manual-frame-only.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/master_hookah/independent-nanami-smile-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "master_hookah",
+      "style": "nanami",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_58bab27969508191b01349d81d9e8164",
+      "source_file_id": "file_000000000cb481f7866e19b071e089dc",
+      "source_sha256": "9e8d616d6a834b77d4278f2a9fa09e0d579bcb314e275cfc417fcde21110ffa5",
+      "source_size_bytes": 2125791,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/master_hookah/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/master_hookah/chr_master_hookah_surprise.png",
+      "runtime_sha256": "60bd660226e9d0709d524e6c90430ec89bd4973855da01e1d2535ae9bf92ac1f",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/master_hookah/chr_master_hookah_surprise.png",
+        "git_blob": "1dda24ae8f94328961381821460caad17f9c319f",
+        "sha256": "1c1a38ad6e71df994e523a7937c6c3fa0e4dd7197d5d29471e37b65a686257da"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_8459a3358fbc8191926535e5b96ffd22",
+        "file_id": "file_000000003dcc81f59272d54d1d297912",
+        "sha256": "66b6f030f46b37f751557a8ab8d5550f42f3d1b6d778d894b98fdbbab47b0a2a"
+      },
+      "export": {
+        "scale": 0.7315254237288136,
+        "offset": [
+          61,
+          29
+        ],
+        "bbox_alpha24": [
+          196,
+          61,
+          673,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1475
+      },
+      "producer_raw_qa": {
+        "character": "master_hookah",
+        "expression": "surprise",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "1c1a38ad6e71df994e523a7937c6c3fa0e4dd7197d5d29471e37b65a686257da",
+        "output_sha256": "9e8d616d6a834b77d4278f2a9fa09e0d579bcb314e275cfc417fcde21110ffa5",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/master_hookah/nanami/surprise-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/master_hookah/independent-nanami-surprise-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "master_hookah",
+      "style": "new",
+      "expression": "smile",
+      "source_library_file_id": "libfile_9368d3296a188191b4746384cfe42526",
+      "source_file_id": "file_00000000ca9c81f9a0ed64375433c99d",
+      "source_sha256": "8a6c77bb77e2ac6272f5ed8e2c4c92b8de71b01eaae3390d24a0c06904b878ec",
+      "source_size_bytes": 1813833,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/master_hookah/smile-source.png",
+      "runtime": "assets/sprites/character_variants/new/master_hookah/chr_master_hookah_smile.png",
+      "runtime_sha256": "e6b3760f7d23b5e64bac7813601d0d86784eb5bf3879f8ffce53a5522748116c",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/master_hookah/chr_master_hookah_smile.png",
+        "git_blob": "647a04064d727a3b5f6263d4127a2a17e6876bf9",
+        "sha256": "c4bc661fd11d89e49b1b4a1d5a0b9e0f2eeb5b3ef1552212e53b94de04eadbb5"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_785e663378f08191b146319736893726",
+        "file_id": "file_000000001b6881f5b16d287baf0aac8a",
+        "sha256": "908321d2011ca619627acbfd710721cc7701782b8088aa2c7e61cbc9c5d69d44"
+      },
+      "export": {
+        "scale": 0.7239993533039241,
+        "offset": [
+          70,
+          35
+        ],
+        "bbox_alpha24": [
+          197,
+          59,
+          662,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0008620689655172,
+        "native_visible_height": 1493
+      },
+      "producer_raw_qa": {
+        "character": "master_hookah",
+        "expression": "smile",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "c4bc661fd11d89e49b1b4a1d5a0b9e0f2eeb5b3ef1552212e53b94de04eadbb5",
+        "output_sha256": "8a6c77bb77e2ac6272f5ed8e2c4c92b8de71b01eaae3390d24a0c06904b878ec",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/master_hookah/new/smile-v2-soft-expression.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/master_hookah/independent-new-smile-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "mukai_master",
+      "style": "nanami",
+      "expression": "sad",
+      "source_library_file_id": "libfile_437564a2408881919b7cfa29ac5edffd",
+      "source_file_id": "file_00000000356881f7bb1e504cc39311c7",
+      "source_sha256": "81577ad51807e13fc223464f520710605b115714d10e35a79af5b6e6421619d4",
+      "source_size_bytes": 945369,
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/mukai_master/sad-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/mukai_master/chr_mukai_master_sad.png",
+      "runtime_sha256": "9d594797971305ea92d78bbee561e9d55b78f513702110b013074521d7d0328d",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/mukai_master/chr_mukai_master_sad.png",
+        "git_blob": "92faefa0b6620e4a70c6a747e60460a7dd39dc40",
+        "sha256": "a0543a626ac192f6d4decf301d677f8dba7b24a13403a1e16de5d22a6ec162d6"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_26c5127cc740819191e27f122018813b",
+        "file_id": "file_000000002f5881f588b47971bff8f727",
+        "sha256": "fcda3a115feaee4bcd8aeba3f5255add6cb4159582e10f9084564c0eb224e85c"
+      },
+      "export": {
+        "scale": 0.7503523626845268,
+        "offset": [
+          -9,
+          58
+        ],
+        "bbox_alpha24": [
+          220,
+          62,
+          600,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9974619289340102,
+        "native_visible_height": 1437
+      },
+      "producer_raw_qa": {
+        "character": "mukai_master",
+        "expression": "sad",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "a0543a626ac192f6d4decf301d677f8dba7b24a13403a1e16de5d22a6ec162d6",
+        "output_sha256": "81577ad51807e13fc223464f520710605b115714d10e35a79af5b6e6421619d4",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/mukai_master/mukai_master-sad-nanami-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/mukai_master/independent-nanami-sad-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "mukai_master",
+      "style": "nanami",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_49ca3a27512081918767b5e5d698ca5f",
+      "source_file_id": "file_00000000744c81f6ae557e3be8a55dd3",
+      "source_sha256": "375ac98ee319d8fd5331df58666876ad50cc24a2fb0a4c9f319e39e109b854fb",
+      "source_size_bytes": 1727075,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/mukai_master/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/mukai_master/chr_mukai_master_surprise.png",
+      "runtime_sha256": "a1ab120fceebd18e85b56866c65c30c1ac87e35e7f0ce57dc8f6e8b00eaece10",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/mukai_master/chr_mukai_master_surprise.png",
+        "git_blob": "6efd4b35a4ffa2ca857584f650db492a3163779a",
+        "sha256": "a8a8cdf76041d24b2bfa4bcebb721be94b274a04254549c5dca4b6405a08f4b9"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_26c5127cc740819191e27f122018813b",
+        "file_id": "file_000000002f5881f588b47971bff8f727",
+        "sha256": "fcda3a115feaee4bcd8aeba3f5255add6cb4159582e10f9084564c0eb224e85c"
+      },
+      "export": {
+        "scale": 0.7053404554151046,
+        "offset": [
+          35,
+          57
+        ],
+        "bbox_alpha24": [
+          214,
+          61,
+          599,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9983079526226735,
+        "native_visible_height": 1530
+      },
+      "producer_raw_qa": {
+        "character": "mukai_master",
+        "expression": "surprise",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "a8a8cdf76041d24b2bfa4bcebb721be94b274a04254549c5dca4b6405a08f4b9",
+        "output_sha256": "375ac98ee319d8fd5331df58666876ad50cc24a2fb0a4c9f319e39e109b854fb",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/mukai_master/mukai_master-surprise-nanami-v2.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/mukai_master/independent-nanami-surprise-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "mukai_master",
+      "style": "new",
+      "expression": "serious",
+      "source_library_file_id": "libfile_b1ec51bbf764819199771c9edf4e0ea3",
+      "source_file_id": "file_00000000e9fc820dbd2dbf046618ff62",
+      "source_sha256": "ea5fbabe47c7284975229e3ed1faa3cea9f9e16a05d3aaf2101207da83c3ffd6",
+      "source_size_bytes": 1332242,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/mukai_master/serious-source.png",
+      "runtime": "assets/sprites/character_variants/new/mukai_master/chr_mukai_master_serious.png",
+      "runtime_sha256": "e6c282c3bf2b19a30e2385d4bc041e95a5a0975730dff1d16ef652afafe46650",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/mukai_master/chr_mukai_master_serious.png",
+        "git_blob": "d34b56e2fa9a979e1ab863952cfc8f949bc4b083",
+        "sha256": "eadc8b34e74af2b5509afc13731f3554fcafc753731f137a09dccfc0652fb96b"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_03e5089180d48191a54a8d9f23967d48",
+        "file_id": "file_00000000b01881f5a19ae184f88ab7a2",
+        "sha256": "fd865d9452eec8cf311ab4254e53de35a62e25decb14352e774964f0bddeacc6"
+      },
+      "export": {
+        "scale": 0.7071338757642488,
+        "offset": [
+          48,
+          56
+        ],
+        "bbox_alpha24": [
+          223,
+          62,
+          606,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9991539763113367,
+        "native_visible_height": 1526
+      },
+      "producer_raw_qa": {
+        "character": "mukai_master",
+        "expression": "serious",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "eadc8b34e74af2b5509afc13731f3554fcafc753731f137a09dccfc0652fb96b",
+        "output_sha256": "ea5fbabe47c7284975229e3ed1faa3cea9f9e16a05d3aaf2101207da83c3ffd6",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/mukai_master/mukai_master-serious-new-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/mukai_master/independent-new-serious-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "mukai_master",
+      "style": "new",
+      "expression": "smile",
+      "source_library_file_id": "libfile_f44b3758a34081918f044991f14403f5",
+      "source_file_id": "file_000000000300820dbc6807e095a8dfda",
+      "source_sha256": "bcf778bed2a83190d6a9898ab158fcfe69069fe6bba8a5c468da992732b75185",
+      "source_size_bytes": 1359039,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/mukai_master/smile-source.png",
+      "runtime": "assets/sprites/character_variants/new/mukai_master/chr_mukai_master_smile.png",
+      "runtime_sha256": "d35560aaa54dcdebcfd9ae9709b4fc2a05318d37fba488fca121cd847f611932",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/mukai_master/chr_mukai_master_smile.png",
+        "git_blob": "54c4685a9e9606425084e586c0ff27dbf1219d01",
+        "sha256": "7f6bafcc5c7b43d1b3c5affc4b990efff2d4c8784f4f33db328d2d7915026574"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_03e5089180d48191a54a8d9f23967d48",
+        "file_id": "file_00000000b01881f5a19ae184f88ab7a2",
+        "sha256": "fd865d9452eec8cf311ab4254e53de35a62e25decb14352e774964f0bddeacc6"
+      },
+      "export": {
+        "scale": 0.7089923090776896,
+        "offset": [
+          49,
+          56
+        ],
+        "bbox_alpha24": [
+          226,
+          62,
+          611,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9991539763113367,
+        "native_visible_height": 1522
+      },
+      "producer_raw_qa": {
+        "character": "mukai_master",
+        "expression": "smile",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "7f6bafcc5c7b43d1b3c5affc4b990efff2d4c8784f4f33db328d2d7915026574",
+        "output_sha256": "bcf778bed2a83190d6a9898ab158fcfe69069fe6bba8a5c468da992732b75185",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/mukai_master/mukai_master-smile-new-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/mukai_master/independent-new-smile-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "sai",
+      "style": "nanami",
+      "expression": "serious",
+      "source_library_file_id": "libfile_80c4df44ccd48191a30ab48bfb880047",
+      "source_file_id": "file_00000000cd7c81f59b42730df628483a",
+      "source_sha256": "a5c8710d104cb3531ba1d1588dc71911dab7a125d934f91f54a17add10ec4c5d",
+      "source_size_bytes": 1650189,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/sai/serious-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/sai/chr_sai_serious.png",
+      "runtime_sha256": "5f2c720095abedd91de96fc3dceac07cfa42a0cd40254b25a1f022f611967738",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/sai/chr_sai_serious.png",
+        "git_blob": "5cbb5a3e4f5b77bc85f5e4a704234c877f318e36",
+        "sha256": "9d59b2c90e1ad3e97ae3a5220cd1fe0bdd7d4705ae3ba641145c5ad498798185"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_73342204473481918d7f4a438a162124",
+        "file_id": "file_00000000164081f6a02bc0955fa77f37",
+        "sha256": "de6f6a35b8e9747f342d2678882acbe46b8d40d474e496ffe1c9956a62bf1357"
+      },
+      "export": {
+        "scale": 0.7214984110148486,
+        "offset": [
+          96,
+          38
+        ],
+        "bbox_alpha24": [
+          296,
+          60,
+          617,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9991518235793045,
+        "native_visible_height": 1497
+      },
+      "producer_raw_qa": {
+        "character": "sai",
+        "expression": "serious",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "9d59b2c90e1ad3e97ae3a5220cd1fe0bdd7d4705ae3ba641145c5ad498798185",
+        "output_sha256": "a5c8710d104cb3531ba1d1588dc71911dab7a125d934f91f54a17add10ec4c5d",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/sai/raw/nanami/sai-serious.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/sai/independent-nanami-serious-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "sai",
+      "style": "nanami",
+      "expression": "smile",
+      "source_library_file_id": "libfile_7114f217043481919d88534bcd47a9d4",
+      "source_file_id": "file_00000000214081f5bea4d576f3e902fc",
+      "source_sha256": "39ae8cb4c1783960234a8520b0724c3524bac84e6b45732b63d094a765fc1197",
+      "source_size_bytes": 1668383,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/sai/smile-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/sai/chr_sai_smile.png",
+      "runtime_sha256": "8bd5d350200477efae2f31498c4da8b3658bd55873dc6648255992f393e2d4d5",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/sai/chr_sai_smile.png",
+        "git_blob": "42bbb87d75d2c84cb7bbb63177f0f434fdb62332",
+        "sha256": "fb3839e420385ddd5b50b7c4d198d51eba35f5f8eda8cb6b0f6fce9a61e000a4"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_73342204473481918d7f4a438a162124",
+        "file_id": "file_00000000164081f6a02bc0955fa77f37",
+        "sha256": "de6f6a35b8e9747f342d2678882acbe46b8d40d474e496ffe1c9956a62bf1357"
+      },
+      "export": {
+        "scale": 0.7199241111263885,
+        "offset": [
+          96,
+          41
+        ],
+        "bbox_alpha24": [
+          310,
+          60,
+          613,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.998303647158609,
+        "native_visible_height": 1499
+      },
+      "producer_raw_qa": {
+        "character": "sai",
+        "expression": "smile",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "fb3839e420385ddd5b50b7c4d198d51eba35f5f8eda8cb6b0f6fce9a61e000a4",
+        "output_sha256": "39ae8cb4c1783960234a8520b0724c3524bac84e6b45732b63d094a765fc1197",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/sai/raw/nanami/sai-smile.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/sai/independent-nanami-smile-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "sai",
+      "style": "nanami",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_0fc6bc76adb88191a0b6b7a33b42c2ec",
+      "source_file_id": "file_00000000bf8481f59d0756523264474d",
+      "source_sha256": "8b792454a92bcfc8242ffccf71afa6a77f94380c8d3e566af3f46da931a0d44e",
+      "source_size_bytes": 1682895,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/sai/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/sai/chr_sai_surprise.png",
+      "runtime_sha256": "46e889e9205cf6ed17430ecf1571608b6efc850bba4e39fe1934889a89e543f9",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/sai/chr_sai_surprise.png",
+        "git_blob": "13ca990623a6e9ca0e476a213de4da8a20a15cf2",
+        "sha256": "145c4261c5ada49dae444d7930f01a5c51804af3e8eacb08cd3d1853e84e5e70"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_73342204473481918d7f4a438a162124",
+        "file_id": "file_00000000164081f6a02bc0955fa77f37",
+        "sha256": "de6f6a35b8e9747f342d2678882acbe46b8d40d474e496ffe1c9956a62bf1357"
+      },
+      "export": {
+        "scale": 0.7200554141928188,
+        "offset": [
+          100,
+          41
+        ],
+        "bbox_alpha24": [
+          315,
+          60,
+          616,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9991518235793045,
+        "native_visible_height": 1500
+      },
+      "producer_raw_qa": {
+        "character": "sai",
+        "expression": "surprise",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "145c4261c5ada49dae444d7930f01a5c51804af3e8eacb08cd3d1853e84e5e70",
+        "output_sha256": "8b792454a92bcfc8242ffccf71afa6a77f94380c8d3e566af3f46da931a0d44e",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/sai/raw/nanami/sai-surprise.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/sai/independent-nanami-surprise-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "sai",
+      "style": "nanami",
+      "expression": "thinking",
+      "source_library_file_id": "libfile_1ffa819d670c81918075220f0bdab8b8",
+      "source_file_id": "file_00000000aaf081f58d609351e7a4f134",
+      "source_sha256": "1fe5821640836e95ab12056feca55154548249a263d6bad9173676e5efed99db",
+      "source_size_bytes": 1656665,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/sai/thinking-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/sai/chr_sai_thinking.png",
+      "runtime_sha256": "96361df91cb3bcead0e59d3aa9b9390494d73faec2da0c29d5e9ebc78d568e44",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/sai/chr_sai_thinking.png",
+        "git_blob": "f43009350d5fe208098e1afec2cd86bae0159a40",
+        "sha256": "c8a06d658636ca4274a9721ea573a55f32c4293c6537a26644075b05947d367f"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_73342204473481918d7f4a438a162124",
+        "file_id": "file_00000000164081f6a02bc0955fa77f37",
+        "sha256": "de6f6a35b8e9747f342d2678882acbe46b8d40d474e496ffe1c9956a62bf1357"
+      },
+      "export": {
+        "scale": 0.7204047013207319,
+        "offset": [
+          97,
+          41
+        ],
+        "bbox_alpha24": [
+          309,
+          61,
+          615,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.998303647158609,
+        "native_visible_height": 1498
+      },
+      "producer_raw_qa": {
+        "character": "sai",
+        "expression": "thinking",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "c8a06d658636ca4274a9721ea573a55f32c4293c6537a26644075b05947d367f",
+        "output_sha256": "1fe5821640836e95ab12056feca55154548249a263d6bad9173676e5efed99db",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/sai/raw/nanami/sai-thinking.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/sai/independent-nanami-thinking-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "sai",
+      "style": "new",
+      "expression": "serious",
+      "source_library_file_id": "libfile_8dd947e7dae48191a51b4f4155c6c373",
+      "source_file_id": "file_000000006de081f5be7ca42c65c7c264",
+      "source_sha256": "15715d6008a3b4ff72cbaa87b039f7642538ee229213f52c353c13919c92b532",
+      "source_size_bytes": 1249261,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/sai/serious-source.png",
+      "runtime": "assets/sprites/character_variants/new/sai/chr_sai_serious.png",
+      "runtime_sha256": "3d1fe99fcd8a2d22c765c4ad3af73a9eaaf4f708b4cdad85024216397383c237",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/sai/chr_sai_serious.png",
+        "git_blob": "5cbb5a3e4f5b77bc85f5e4a704234c877f318e36",
+        "sha256": "9d59b2c90e1ad3e97ae3a5220cd1fe0bdd7d4705ae3ba641145c5ad498798185"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_b5839e144d0c8191a1d0b0de8c0380b9",
+        "file_id": "file_0000000045d481f69af65035a5cfbd93",
+        "sha256": "4ec2608bffc378f4247576002574bab057bb351ae721d81bd005102620a48c9b"
+      },
+      "export": {
+        "scale": 0.7291107901794924,
+        "offset": [
+          92,
+          32
+        ],
+        "bbox_alpha24": [
+          294,
+          61,
+          613,
+          1139
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9991518235793045,
+        "native_visible_height": 1480
+      },
+      "producer_raw_qa": {
+        "character": "sai",
+        "expression": "serious",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "9d59b2c90e1ad3e97ae3a5220cd1fe0bdd7d4705ae3ba641145c5ad498798185",
+        "output_sha256": "15715d6008a3b4ff72cbaa87b039f7642538ee229213f52c353c13919c92b532",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/sai/raw/new/sai-serious.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/sai/independent-new-serious-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "sai",
+      "style": "new",
+      "expression": "smile",
+      "source_library_file_id": "libfile_5dde2425c5bc8191ba441feb9024f3af",
+      "source_file_id": "file_00000000aef481f5928ec6626dd78c2b",
+      "source_sha256": "6d484e1870721f6f41acb40edaaa2357bb3461ccac7ce8c7a6412ef8db74fb71",
+      "source_size_bytes": 1216873,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/sai/smile-source.png",
+      "runtime": "assets/sprites/character_variants/new/sai/chr_sai_smile.png",
+      "runtime_sha256": "3019bf804502e0a3e5de1505716174f3e3ee7270db6df836b0867e88b03c75d6",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/sai/chr_sai_smile.png",
+        "git_blob": "42bbb87d75d2c84cb7bbb63177f0f434fdb62332",
+        "sha256": "fb3839e420385ddd5b50b7c4d198d51eba35f5f8eda8cb6b0f6fce9a61e000a4"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_b5839e144d0c8191a1d0b0de8c0380b9",
+        "file_id": "file_0000000045d481f69af65035a5cfbd93",
+        "sha256": "4ec2608bffc378f4247576002574bab057bb351ae721d81bd005102620a48c9b"
+      },
+      "export": {
+        "scale": 0.7207004939380331,
+        "offset": [
+          95,
+          37
+        ],
+        "bbox_alpha24": [
+          308,
+          62,
+          613,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.998303647158609,
+        "native_visible_height": 1496
+      },
+      "producer_raw_qa": {
+        "character": "sai",
+        "expression": "smile",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "fb3839e420385ddd5b50b7c4d198d51eba35f5f8eda8cb6b0f6fce9a61e000a4",
+        "output_sha256": "6d484e1870721f6f41acb40edaaa2357bb3461ccac7ce8c7a6412ef8db74fb71",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/sai/raw/new/sai-smile.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/sai/independent-new-smile-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "sai",
+      "style": "new",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_824da78e794881918d9f67db07f06785",
+      "source_file_id": "file_00000000505881f5b50768000a1cf15c",
+      "source_sha256": "e2bcbe23346022e9906b2d0e98f3c87b2029e81418b09cf3c0a193c1adceeaeb",
+      "source_size_bytes": 1220389,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/sai/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/new/sai/chr_sai_surprise.png",
+      "runtime_sha256": "5b9da6eeb99c461394100c7636ac3da06ee1bec84ee0c8315039be2b25646040",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/sai/chr_sai_surprise.png",
+        "git_blob": "13ca990623a6e9ca0e476a213de4da8a20a15cf2",
+        "sha256": "145c4261c5ada49dae444d7930f01a5c51804af3e8eacb08cd3d1853e84e5e70"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_b5839e144d0c8191a1d0b0de8c0380b9",
+        "file_id": "file_0000000045d481f69af65035a5cfbd93",
+        "sha256": "4ec2608bffc378f4247576002574bab057bb351ae721d81bd005102620a48c9b"
+      },
+      "export": {
+        "scale": 0.7276358526403566,
+        "offset": [
+          94,
+          34
+        ],
+        "bbox_alpha24": [
+          304,
+          60,
+          616,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9991518235793045,
+        "native_visible_height": 1483
+      },
+      "producer_raw_qa": {
+        "character": "sai",
+        "expression": "surprise",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "145c4261c5ada49dae444d7930f01a5c51804af3e8eacb08cd3d1853e84e5e70",
+        "output_sha256": "e2bcbe23346022e9906b2d0e98f3c87b2029e81418b09cf3c0a193c1adceeaeb",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/sai/raw/new/sai-surprise.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/sai/independent-new-surprise-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "sai",
+      "style": "new",
+      "expression": "thinking",
+      "source_library_file_id": "libfile_368c397de5e881919c79451cbfec7954",
+      "source_file_id": "file_00000000b5ac81f5af8f4a086a7c22cc",
+      "source_sha256": "292bf77579f757a05e99ffba84843350236bebf02bf9fa4c55100cedeb4a4a35",
+      "source_size_bytes": 1199550,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/sai/thinking-source.png",
+      "runtime": "assets/sprites/character_variants/new/sai/chr_sai_thinking.png",
+      "runtime_sha256": "83b52ca438fcc6bcb9a9f0bd8a64505a3244fde23ce1437c862cdf0a03850c8e",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/sai/chr_sai_thinking.png",
+        "git_blob": "f43009350d5fe208098e1afec2cd86bae0159a40",
+        "sha256": "c8a06d658636ca4274a9721ea573a55f32c4293c6537a26644075b05947d367f"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_b5839e144d0c8191a1d0b0de8c0380b9",
+        "file_id": "file_0000000045d481f69af65035a5cfbd93",
+        "sha256": "4ec2608bffc378f4247576002574bab057bb351ae721d81bd005102620a48c9b"
+      },
+      "export": {
+        "scale": 0.7255504299672259,
+        "offset": [
+          98,
+          36
+        ],
+        "bbox_alpha24": [
+          317,
+          62,
+          610,
+          1139
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.998303647158609,
+        "native_visible_height": 1486
+      },
+      "producer_raw_qa": {
+        "character": "sai",
+        "expression": "thinking",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "c8a06d658636ca4274a9721ea573a55f32c4293c6537a26644075b05947d367f",
+        "output_sha256": "292bf77579f757a05e99ffba84843350236bebf02bf9fa4c55100cedeb4a4a35",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/sai/raw/new/sai-thinking.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/sai/independent-new-thinking-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "steve",
+      "style": "nanami",
+      "expression": "sad",
+      "source_library_file_id": "libfile_b9ab84ddd99c8191913e8a2729decb86",
+      "source_file_id": "file_0000000097d8820d9492c65f4f7dfebb",
+      "source_sha256": "97cf6e396f23c55e1681f54a313c2807cc518797316f7a3c04c893f19c73911c",
+      "source_size_bytes": 2238813,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/steve/sad-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/steve/chr_steve_sad.png",
+      "runtime_sha256": "5d9c3ec8a219bc0889969074b8459212b259b00f964a788f104e2a7b2fdf8911",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/steve/chr_steve_sad.png",
+        "git_blob": "8c2aacac357696cbfa23103493d47496c6c5fac4",
+        "sha256": "d7605ac3c41210019b5f5c8d455d3fa1389e4ff9d0012782632197084ffdfb75"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_99eaea8a58948191a413ce67e4bf052a",
+        "file_id": "file_000000008de881f5aa78a80c7235ba54",
+        "sha256": "ad66692fa4acd11afb4dbc7ea672c7402e6be66c2686deb8c51f6946a09c7c0c"
+      },
+      "export": {
+        "scale": 0.7182724252491695,
+        "offset": [
+          72,
+          51
+        ],
+        "bbox_alpha24": [
+          151,
+          60,
+          728,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1505
+      },
+      "producer_raw_qa": {
+        "character": "steve",
+        "expression": "sad",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "d7605ac3c41210019b5f5c8d455d3fa1389e4ff9d0012782632197084ffdfb75",
+        "output_sha256": "97cf6e396f23c55e1681f54a313c2807cc518797316f7a3c04c893f19c73911c",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/steve/raw/nanami/steve-sad-v3-manual-frame-only.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/steve/independent-nanami-sad-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "steve",
+      "style": "nanami",
+      "expression": "serious",
+      "source_library_file_id": "libfile_669f1b53226c8191b6e3fc857ed770d0",
+      "source_file_id": "file_00000000ced881f59153039c3971b235",
+      "source_sha256": "9179d72f8db0f2dacddf8622ac4820ea9ff4e7cfe6b14284ca6d622c72c3d8df",
+      "source_size_bytes": 2347782,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/steve/serious-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/steve/chr_steve_serious.png",
+      "runtime_sha256": "dc5227bd640ecc80292407a0a79d715a5bc2e93891b5a7383699474f74d308e7",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/steve/chr_steve_serious.png",
+        "git_blob": "a8cb38c815137b1d661f8e99a892051db0c75454",
+        "sha256": "914bb40e278a60ac49c1ec5c7404c540e3b64fbf1ad12a47ba25a3e951b407a6"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_99eaea8a58948191a413ce67e4bf052a",
+        "file_id": "file_000000008de881f5aa78a80c7235ba54",
+        "sha256": "ad66692fa4acd11afb4dbc7ea672c7402e6be66c2686deb8c51f6946a09c7c0c"
+      },
+      "export": {
+        "scale": 0.7109550922842459,
+        "offset": [
+          81,
+          60
+        ],
+        "bbox_alpha24": [
+          161,
+          68,
+          730,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9924433249370277,
+        "native_visible_height": 1509
+      },
+      "producer_raw_qa": {
+        "character": "steve",
+        "expression": "serious",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "914bb40e278a60ac49c1ec5c7404c540e3b64fbf1ad12a47ba25a3e951b407a6",
+        "output_sha256": "9179d72f8db0f2dacddf8622ac4820ea9ff4e7cfe6b14284ca6d622c72c3d8df",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/steve/raw/nanami/steve-serious.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/steve/independent-nanami-serious-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "steve",
+      "style": "nanami",
+      "expression": "smile",
+      "source_library_file_id": "libfile_edbe89103e588191b1ebf3bd3196ae9c",
+      "source_file_id": "file_000000001d4081f58c4abbb6be4c3893",
+      "source_sha256": "3a08059beef796f7b0f8cc4a26dca7db73fdd1061e254d3bdc64cb2893a38f3b",
+      "source_size_bytes": 2355895,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/steve/smile-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/steve/chr_steve_smile.png",
+      "runtime_sha256": "bae54529af64b3e5dca8c858adf844983eb06cc331ac6e03d28d5c811c172bb5",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/steve/chr_steve_smile.png",
+        "git_blob": "679101666acb64bc16875c03ddce104c81bff2c2",
+        "sha256": "3112c2327f727a9be2908d06a7c2d2653844e3d6315bd6e278911a8fd69aa7d0"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_99eaea8a58948191a413ce67e4bf052a",
+        "file_id": "file_000000008de881f5aa78a80c7235ba54",
+        "sha256": "ad66692fa4acd11afb4dbc7ea672c7402e6be66c2686deb8c51f6946a09c7c0c"
+      },
+      "export": {
+        "scale": 0.7110853476126133,
+        "offset": [
+          80,
+          60
+        ],
+        "bbox_alpha24": [
+          163,
+          67,
+          725,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9932829554995802,
+        "native_visible_height": 1510
+      },
+      "producer_raw_qa": {
+        "character": "steve",
+        "expression": "smile",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "3112c2327f727a9be2908d06a7c2d2653844e3d6315bd6e278911a8fd69aa7d0",
+        "output_sha256": "3a08059beef796f7b0f8cc4a26dca7db73fdd1061e254d3bdc64cb2893a38f3b",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/steve/raw/nanami/steve-smile.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/steve/independent-nanami-smile-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "steve",
+      "style": "nanami",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_0cf2306124c48191b509db66cbbc052d",
+      "source_file_id": "file_0000000027f081f5b9a6a7d961374bb3",
+      "source_sha256": "08f673b8de5aa824a0a3a3763172c53e6ed2ea5e545b4121924789450658f733",
+      "source_size_bytes": 2443919,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/steve/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/steve/chr_steve_surprise.png",
+      "runtime_sha256": "18c1a806e69b0e3e0e5615e1a45657c8abe8bd66a859cd4a17c1cf380fd1cda8",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/steve/chr_steve_surprise.png",
+        "git_blob": "09dc33257e0c2d0f4a089ebe6d94af2fd1832a46",
+        "sha256": "0a752d58ac5300929fa3a4c094e23116e3f56c6b222b98315007ffaf9b8a5bba"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_99eaea8a58948191a413ce67e4bf052a",
+        "file_id": "file_000000008de881f5aa78a80c7235ba54",
+        "sha256": "ad66692fa4acd11afb4dbc7ea672c7402e6be66c2686deb8c51f6946a09c7c0c"
+      },
+      "export": {
+        "scale": 0.7068722020375551,
+        "offset": [
+          78,
+          59
+        ],
+        "bbox_alpha24": [
+          158,
+          68,
+          723,
+          1142
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9932829554995802,
+        "native_visible_height": 1519
+      },
+      "producer_raw_qa": {
+        "character": "steve",
+        "expression": "surprise",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "0a752d58ac5300929fa3a4c094e23116e3f56c6b222b98315007ffaf9b8a5bba",
+        "output_sha256": "08f673b8de5aa824a0a3a3763172c53e6ed2ea5e545b4121924789450658f733",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/steve/raw/nanami/steve-surprise.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/steve/independent-nanami-surprise-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "steve",
+      "style": "new",
+      "expression": "sad",
+      "source_library_file_id": "libfile_784dc0fc91908191996904e6551af226",
+      "source_file_id": "file_000000000d9881f5b99f43ef89749d99",
+      "source_sha256": "68819c6a2e50452d1b9698c4e7f5b7114076cdc90b98834e776356545fd7939d",
+      "source_size_bytes": 1703554,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/steve/sad-source.png",
+      "runtime": "assets/sprites/character_variants/new/steve/chr_steve_sad.png",
+      "runtime_sha256": "952b8bdb9d60282fd9e0a2d77eb12aa0afe47e7059f165339893576d69427396",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/steve/chr_steve_sad.png",
+        "git_blob": "8c2aacac357696cbfa23103493d47496c6c5fac4",
+        "sha256": "d7605ac3c41210019b5f5c8d455d3fa1389e4ff9d0012782632197084ffdfb75"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_39aebdeeff008191bd7dd81227a57068",
+        "file_id": "file_00000000d64081f58521579c175fc678",
+        "sha256": "f1c94186a25cc5a9f1130ff52d48626025ad71a53ab75b0cb0ebfe7f7d27baec"
+      },
+      "export": {
+        "scale": 0.7282535401213756,
+        "offset": [
+          67,
+          32
+        ],
+        "bbox_alpha24": [
+          156,
+          60,
+          727,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1483
+      },
+      "producer_raw_qa": {
+        "character": "steve",
+        "expression": "sad",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "d7605ac3c41210019b5f5c8d455d3fa1389e4ff9d0012782632197084ffdfb75",
+        "output_sha256": "68819c6a2e50452d1b9698c4e7f5b7114076cdc90b98834e776356545fd7939d",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/steve/raw/new/steve-sad.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/steve/independent-new-sad-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "steve",
+      "style": "new",
+      "expression": "serious",
+      "source_library_file_id": "libfile_2ede83392b348191a1b6846985fa4acc",
+      "source_file_id": "file_00000000e6cc81f5a4c5d7c9cb987f5d",
+      "source_sha256": "705282b0d8be7142c513f7ff0d6044808c41dd4b18548263a18a9e1bf6b60936",
+      "source_size_bytes": 1694279,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/steve/serious-source.png",
+      "runtime": "assets/sprites/character_variants/new/steve/chr_steve_serious.png",
+      "runtime_sha256": "84060569d333a48f5b7fbb7c09666bf554eb4bc933195c00b2a2322b712e99c8",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/steve/chr_steve_serious.png",
+        "git_blob": "a8cb38c815137b1d661f8e99a892051db0c75454",
+        "sha256": "914bb40e278a60ac49c1ec5c7404c540e3b64fbf1ad12a47ba25a3e951b407a6"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_39aebdeeff008191bd7dd81227a57068",
+        "file_id": "file_00000000d64081f58521579c175fc678",
+        "sha256": "f1c94186a25cc5a9f1130ff52d48626025ad71a53ab75b0cb0ebfe7f7d27baec"
+      },
+      "export": {
+        "scale": 0.7198380059986501,
+        "offset": [
+          72,
+          45
+        ],
+        "bbox_alpha24": [
+          159,
+          68,
+          725,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9924433249370277,
+        "native_visible_height": 1489
+      },
+      "producer_raw_qa": {
+        "character": "steve",
+        "expression": "serious",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "914bb40e278a60ac49c1ec5c7404c540e3b64fbf1ad12a47ba25a3e951b407a6",
+        "output_sha256": "705282b0d8be7142c513f7ff0d6044808c41dd4b18548263a18a9e1bf6b60936",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/steve/raw/new/steve-serious.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/steve/independent-new-serious-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "steve",
+      "style": "new",
+      "expression": "smile",
+      "source_library_file_id": "libfile_51b684d48cc08191aecd21a8a54b2bd3",
+      "source_file_id": "file_00000000c87081f58d6c85f285366e48",
+      "source_sha256": "75c3f679076b46bf0fa3333946ce23dca73d2ce3edc469a23832870853d0a636",
+      "source_size_bytes": 1693775,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/steve/smile-source.png",
+      "runtime": "assets/sprites/character_variants/new/steve/chr_steve_smile.png",
+      "runtime_sha256": "d0e689f486d9abc252beea67fed5a2eab7937e385eedf80ad20cf32a63204aa0",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/steve/chr_steve_smile.png",
+        "git_blob": "679101666acb64bc16875c03ddce104c81bff2c2",
+        "sha256": "3112c2327f727a9be2908d06a7c2d2653844e3d6315bd6e278911a8fd69aa7d0"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_39aebdeeff008191bd7dd81227a57068",
+        "file_id": "file_00000000d64081f58521579c175fc678",
+        "sha256": "f1c94186a25cc5a9f1130ff52d48626025ad71a53ab75b0cb0ebfe7f7d27baec"
+      },
+      "export": {
+        "scale": 0.7189983860184629,
+        "offset": [
+          73,
+          44
+        ],
+        "bbox_alpha24": [
+          160,
+          67,
+          725,
+          1139
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9932829554995802,
+        "native_visible_height": 1492
+      },
+      "producer_raw_qa": {
+        "character": "steve",
+        "expression": "smile",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "3112c2327f727a9be2908d06a7c2d2653844e3d6315bd6e278911a8fd69aa7d0",
+        "output_sha256": "75c3f679076b46bf0fa3333946ce23dca73d2ce3edc469a23832870853d0a636",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/steve/raw/new/steve-smile.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/steve/independent-new-smile-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "steve",
+      "style": "new",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_216b957405908191a4f4c709be00ffce",
+      "source_file_id": "file_00000000f19881f59a6c8f17a22c505a",
+      "source_sha256": "c88d41eeb43f0274d0afe9620467a11ea1cfacf969e55bb68a5080484faf35c4",
+      "source_size_bytes": 1706564,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/steve/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/new/steve/chr_steve_surprise.png",
+      "runtime_sha256": "e4ba853cfb65ca673036f0e378d408cb5837b6ddf2f4515995321cfce80c584b",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/steve/chr_steve_surprise.png",
+        "git_blob": "09dc33257e0c2d0f4a089ebe6d94af2fd1832a46",
+        "sha256": "0a752d58ac5300929fa3a4c094e23116e3f56c6b222b98315007ffaf9b8a5bba"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_39aebdeeff008191bd7dd81227a57068",
+        "file_id": "file_00000000d64081f58521579c175fc678",
+        "sha256": "f1c94186a25cc5a9f1130ff52d48626025ad71a53ab75b0cb0ebfe7f7d27baec"
+      },
+      "export": {
+        "scale": 0.720447006003725,
+        "offset": [
+          72,
+          42
+        ],
+        "bbox_alpha24": [
+          160,
+          67,
+          730,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9932829554995802,
+        "native_visible_height": 1489
+      },
+      "producer_raw_qa": {
+        "character": "steve",
+        "expression": "surprise",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "0a752d58ac5300929fa3a4c094e23116e3f56c6b222b98315007ffaf9b8a5bba",
+        "output_sha256": "c88d41eeb43f0274d0afe9620467a11ea1cfacf969e55bb68a5080484faf35c4",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/steve/raw/new/steve-surprise.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/steve/independent-new-surprise-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "tetsuko",
+      "style": "nanami",
+      "expression": "serious",
+      "source_library_file_id": "libfile_50065e1cc55c819190d5fe8d2800d027",
+      "source_file_id": "file_000000003ef481f5996b22ada9c9835a",
+      "source_sha256": "ff2c2a846190bb4a841463983d23f6ee0e854daabab40e0a90c3ae68bff244aa",
+      "source_size_bytes": 1168365,
+      "source_pixels": [
+        1191,
+        1320
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/tetsuko/serious-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/tetsuko/chr_tetsuko_serious.png",
+      "runtime_sha256": "6465c23c44187084a8baf40de218d9b6f9ff6a6429ae87273338d744bc4a5ad3",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/tetsuko/chr_tetsuko_serious.png",
+        "git_blob": "13aaf56b7b15fe9244b6295dac7cc400ce3bc711",
+        "sha256": "2093cc2d73ac95b5655603721b1ea802a4eca10095a824852c02b068646ee7f8"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_e8034b0612148191968a89bbc51c8b62",
+        "file_id": "file_00000000773481f5a85c25fc95530031",
+        "sha256": "2799318e3891d94376a8705d79df3d36798a83a8804e6cbd1ffc840ff68c65b0"
+      },
+      "export": {
+        "scale": 0.36468129571577845,
+        "offset": [
+          239,
+          734
+        ],
+        "bbox_alpha24": [
+          293,
+          799,
+          590,
+          1148
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 957
+      },
+      "producer_raw_qa": {
+        "character": "tetsuko",
+        "expression": "serious",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "2093cc2d73ac95b5655603721b1ea802a4eca10095a824852c02b068646ee7f8",
+        "output_sha256": "ff2c2a846190bb4a841463983d23f6ee0e854daabab40e0a90c3ae68bff244aa",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/tetsuko-serious-nanami-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/independent-nanami-serious-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "tetsuko",
+      "style": "nanami",
+      "expression": "sleep",
+      "source_library_file_id": "libfile_a0e46dd92b308191ba8e61d4eb64e99b",
+      "source_file_id": "file_00000000d9dc81f5881395f7afa25633",
+      "source_sha256": "f1b915ee35025070769208bb5e32d8669168e5bc6f5f0852c11580729aff01d6",
+      "source_size_bytes": 2016289,
+      "source_pixels": [
+        1536,
+        1024
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/tetsuko/sleep-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/tetsuko/chr_tetsuko_sleep.png",
+      "runtime_sha256": "1e8b8efc4d1f3b525e724d072316b468f6d38ab48ce6646c9957a1b46fe2a1a1",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/tetsuko/chr_tetsuko_sleep.png",
+        "git_blob": "2fe0f70571b6ee5d26a61698bcf2ce73228873df",
+        "sha256": "7cbba9787ff8228d44b188f55f9154f40e1dcba9beba010d8958ce395381876e"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_e8034b0612148191968a89bbc51c8b62",
+        "file_id": "file_00000000773481f5a85c25fc95530031",
+        "sha256": "2799318e3891d94376a8705d79df3d36798a83a8804e6cbd1ffc840ff68c65b0"
+      },
+      "export": {
+        "scale": 0.2740112994350282,
+        "offset": [
+          258,
+          909
+        ],
+        "bbox_alpha24": [
+          306,
+          954,
+          631,
+          1148
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.5558739255014327,
+        "native_visible_height": 708
+      },
+      "producer_raw_qa": {
+        "character": "tetsuko",
+        "expression": "sleep",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "7cbba9787ff8228d44b188f55f9154f40e1dcba9beba010d8958ce395381876e",
+        "output_sha256": "f1b915ee35025070769208bb5e32d8669168e5bc6f5f0852c11580729aff01d6",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/tetsuko-sleep-nanami-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/independent-nanami-sleep-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "tetsuko",
+      "style": "nanami",
+      "expression": "smile",
+      "source_library_file_id": "libfile_75346e9987f48191975ca599493162d7",
+      "source_file_id": "file_00000000071481f5a3168f3f9b8bd258",
+      "source_sha256": "c2b51acc492429f558e9887d2273aa6fe222599026f40f16ed51fd346858a61b",
+      "source_size_bytes": 874976,
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/tetsuko/smile-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/tetsuko/chr_tetsuko_smile.png",
+      "runtime_sha256": "a77fb9e3baa04830b8f6367cd07564bf1a173d76c0d2ebe1e3d662e792f021c4",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/tetsuko/chr_tetsuko_smile.png",
+        "git_blob": "b4f4f770501147630935c07d74e004faa249a496",
+        "sha256": "3df30e566cd75707c686621a87e5071fe11e1ef6cf5faab441d6fb8348959c10"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_e8034b0612148191968a89bbc51c8b62",
+        "file_id": "file_00000000773481f5a85c25fc95530031",
+        "sha256": "2799318e3891d94376a8705d79df3d36798a83a8804e6cbd1ffc840ff68c65b0"
+      },
+      "export": {
+        "scale": 0.40866510538641687,
+        "offset": [
+          233,
+          594
+        ],
+        "bbox_alpha24": [
+          294,
+          799,
+          586,
+          1148
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 854
+      },
+      "producer_raw_qa": {
+        "character": "tetsuko",
+        "expression": "smile",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "3df30e566cd75707c686621a87e5071fe11e1ef6cf5faab441d6fb8348959c10",
+        "output_sha256": "c2b51acc492429f558e9887d2273aa6fe222599026f40f16ed51fd346858a61b",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/tetsuko-smile-nanami-v2.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/independent-nanami-smile-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "tetsuko",
+      "style": "nanami",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_1dec40696b90819193acf3a770f744c5",
+      "source_file_id": "file_00000000947081f5bde759814b198746",
+      "source_sha256": "ae48ec2f3954792bfc53286c2ee199fe8081dbd8d8c255215fb3fb36e4efb63e",
+      "source_size_bytes": 883565,
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/tetsuko/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/tetsuko/chr_tetsuko_surprise.png",
+      "runtime_sha256": "cf026fbe15d20bb5a80c7bc2323368ff51455e37960c73ece73628158b939fe6",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/tetsuko/chr_tetsuko_surprise.png",
+        "git_blob": "ebf5e13c45ed072d9d76ed24c24189b1a39ac7c6",
+        "sha256": "5e710f85d3f7ebe9dc282fe60fb2ccc373cfc184213c12c759746186815e516f"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_e8034b0612148191968a89bbc51c8b62",
+        "file_id": "file_00000000773481f5a85c25fc95530031",
+        "sha256": "2799318e3891d94376a8705d79df3d36798a83a8804e6cbd1ffc840ff68c65b0"
+      },
+      "export": {
+        "scale": 0.42200725513905685,
+        "offset": [
+          225,
+          587
+        ],
+        "bbox_alpha24": [
+          295,
+          799,
+          586,
+          1148
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 827
+      },
+      "producer_raw_qa": {
+        "character": "tetsuko",
+        "expression": "surprise",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "5e710f85d3f7ebe9dc282fe60fb2ccc373cfc184213c12c759746186815e516f",
+        "output_sha256": "ae48ec2f3954792bfc53286c2ee199fe8081dbd8d8c255215fb3fb36e4efb63e",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/tetsuko-surprise-nanami-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/independent-nanami-surprise-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "tetsuko",
+      "style": "new",
+      "expression": "serious",
+      "source_library_file_id": "libfile_91478d07ade48191930613bc2ae22150",
+      "source_file_id": "file_00000000cd3881f59f71a529f267a56b",
+      "source_sha256": "ff463ee634fe6260025a84cc4388bcb8cdb93888d99dc5f7ed1cece553a2a650",
+      "source_size_bytes": 745926,
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/tetsuko/serious-source.png",
+      "runtime": "assets/sprites/character_variants/new/tetsuko/chr_tetsuko_serious.png",
+      "runtime_sha256": "0a61e0d11d4ef3423ff7dbf1fe3a830ccbf3b7f51078224de222265569d7e9a9",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/tetsuko/chr_tetsuko_serious.png",
+        "git_blob": "13aaf56b7b15fe9244b6295dac7cc400ce3bc711",
+        "sha256": "2093cc2d73ac95b5655603721b1ea802a4eca10095a824852c02b068646ee7f8"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_878691c063dc8191b0dc51e56718bf8e",
+        "file_id": "file_00000000eba481f5ba89daa28836acac",
+        "sha256": "da46a672f3e7ac51db2859206e276694b946369ce70a2e26e532b7a319d8716d"
+      },
+      "export": {
+        "scale": 0.39038031319910516,
+        "offset": [
+          238,
+          634
+        ],
+        "bbox_alpha24": [
+          295,
+          799,
+          587,
+          1148
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 894
+      },
+      "producer_raw_qa": {
+        "character": "tetsuko",
+        "expression": "serious",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "2093cc2d73ac95b5655603721b1ea802a4eca10095a824852c02b068646ee7f8",
+        "output_sha256": "ff463ee634fe6260025a84cc4388bcb8cdb93888d99dc5f7ed1cece553a2a650",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/tetsuko-serious-new-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/independent-new-serious-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "tetsuko",
+      "style": "new",
+      "expression": "sleep",
+      "source_library_file_id": "libfile_27e1d823164081919356a724849e9ec2",
+      "source_file_id": "file_00000000ed3481f5a4bb368660a5eda3",
+      "source_sha256": "118f2f21c7714aabddc4f3e4e850fa3f8dc642b8d078d40837a2642ee0df074c",
+      "source_size_bytes": 1398479,
+      "source_pixels": [
+        1536,
+        1024
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/tetsuko/sleep-source.png",
+      "runtime": "assets/sprites/character_variants/new/tetsuko/chr_tetsuko_sleep.png",
+      "runtime_sha256": "f2700fe51f6f68f2d5046758ce6dd7124c7cd58c915122d4befa63d3d520b0fe",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/tetsuko/chr_tetsuko_sleep.png",
+        "git_blob": "2fe0f70571b6ee5d26a61698bcf2ce73228873df",
+        "sha256": "7cbba9787ff8228d44b188f55f9154f40e1dcba9beba010d8958ce395381876e"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_878691c063dc8191b0dc51e56718bf8e",
+        "file_id": "file_00000000eba481f5ba89daa28836acac",
+        "sha256": "da46a672f3e7ac51db2859206e276694b946369ce70a2e26e532b7a319d8716d"
+      },
+      "export": {
+        "scale": 0.2664835164835165,
+        "offset": [
+          263,
+          918
+        ],
+        "bbox_alpha24": [
+          313,
+          953,
+          624,
+          1148
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.5558739255014327,
+        "native_visible_height": 728
+      },
+      "producer_raw_qa": {
+        "character": "tetsuko",
+        "expression": "sleep",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "7cbba9787ff8228d44b188f55f9154f40e1dcba9beba010d8958ce395381876e",
+        "output_sha256": "118f2f21c7714aabddc4f3e4e850fa3f8dc642b8d078d40837a2642ee0df074c",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/tetsuko-sleep-new-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/independent-new-sleep-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "tetsuko",
+      "style": "new",
+      "expression": "smile",
+      "source_library_file_id": "libfile_169cf63bab0081919e959c14a496d55a",
+      "source_file_id": "file_00000000a0d081f58c4104e5aaacaca4",
+      "source_sha256": "22b2b857ab51cbb4361e64bb3d334e93fcc804ad8119e8749488d7def1f00b7e",
+      "source_size_bytes": 787375,
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/tetsuko/smile-source.png",
+      "runtime": "assets/sprites/character_variants/new/tetsuko/chr_tetsuko_smile.png",
+      "runtime_sha256": "94950a678436c67fce6b90f39019f51a136a927c1060fefb977e88dbb7f6a405",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/tetsuko/chr_tetsuko_smile.png",
+        "git_blob": "b4f4f770501147630935c07d74e004faa249a496",
+        "sha256": "3df30e566cd75707c686621a87e5071fe11e1ef6cf5faab441d6fb8348959c10"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_878691c063dc8191b0dc51e56718bf8e",
+        "file_id": "file_00000000eba481f5ba89daa28836acac",
+        "sha256": "da46a672f3e7ac51db2859206e276694b946369ce70a2e26e532b7a319d8716d"
+      },
+      "export": {
+        "scale": 0.37526881720430105,
+        "offset": [
+          249,
+          664
+        ],
+        "bbox_alpha24": [
+          296,
+          799,
+          585,
+          1148
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 930
+      },
+      "producer_raw_qa": {
+        "character": "tetsuko",
+        "expression": "smile",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "3df30e566cd75707c686621a87e5071fe11e1ef6cf5faab441d6fb8348959c10",
+        "output_sha256": "22b2b857ab51cbb4361e64bb3d334e93fcc804ad8119e8749488d7def1f00b7e",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/tetsuko-smile-new-v2.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/independent-new-smile-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "tetsuko",
+      "style": "new",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_6623c1aba0b8819190803069892effa0",
+      "source_file_id": "file_000000005c6881f59fd983c3b6e32a1d",
+      "source_sha256": "f055dda32ed3989b5cc720ea6ab34b79592baccf3c94e49cb48bea60e812ffd9",
+      "source_size_bytes": 773844,
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/tetsuko/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/new/tetsuko/chr_tetsuko_surprise.png",
+      "runtime_sha256": "5ae980fc5adabf7fab82b7ededcab60c5ab14732bee9b3b248ac58c14cff1d8d",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/tetsuko/chr_tetsuko_surprise.png",
+        "git_blob": "ebf5e13c45ed072d9d76ed24c24189b1a39ac7c6",
+        "sha256": "5e710f85d3f7ebe9dc282fe60fb2ccc373cfc184213c12c759746186815e516f"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_878691c063dc8191b0dc51e56718bf8e",
+        "file_id": "file_00000000eba481f5ba89daa28836acac",
+        "sha256": "da46a672f3e7ac51db2859206e276694b946369ce70a2e26e532b7a319d8716d"
+      },
+      "export": {
+        "scale": 0.3814207650273224,
+        "offset": [
+          242,
+          642
+        ],
+        "bbox_alpha24": [
+          295,
+          799,
+          584,
+          1148
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 915
+      },
+      "producer_raw_qa": {
+        "character": "tetsuko",
+        "expression": "surprise",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "5e710f85d3f7ebe9dc282fe60fb2ccc373cfc184213c12c759746186815e516f",
+        "output_sha256": "f055dda32ed3989b5cc720ea6ab34b79592baccf3c94e49cb48bea60e812ffd9",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/tetsuko-surprise-new-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/tetsuko/independent-new-surprise-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "uranaishi",
+      "style": "nanami",
+      "expression": "sad",
+      "source_library_file_id": "libfile_433cccc38e648191960ff26bed36c31f",
+      "source_file_id": "file_00000000759481f98ee869cfc7174854",
+      "source_sha256": "6b04979302f9a6b02cf13433d49e31da5329f9262eace7641c43638eec34acb5",
+      "source_size_bytes": 2158616,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/uranaishi/sad-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/uranaishi/chr_uranaishi_sad.png",
+      "runtime_sha256": "9c9dd40d9c4fefd2bbef6a75af9088b0c3f8f38699a4ff3fc90d7682a55b7d4e",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/uranaishi/chr_uranaishi_sad.png",
+        "git_blob": "d4f7793d1e5a902d764b2e4a6238999fb0519670",
+        "sha256": "8e42a80f0cf25c4a1da2bf13404b6d29fafb6bfd86b3cea9ad5766a56042cecb"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_35a3c23e9e6481918dd17df236280482",
+        "file_id": "file_00000000839881f58f4f9e5d8bfc2fd8",
+        "sha256": "4f54fbb19aac40451b063e5ff122b1eac27fb760c14d7717d6a21f2a175c2b2f"
+      },
+      "export": {
+        "scale": 0.7139279325325838,
+        "offset": [
+          43,
+          51
+        ],
+        "bbox_alpha24": [
+          208,
+          66,
+          652,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9948717948717949,
+        "native_visible_height": 1505
+      },
+      "producer_raw_qa": {
+        "character": "uranaishi",
+        "expression": "sad",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "8e42a80f0cf25c4a1da2bf13404b6d29fafb6bfd86b3cea9ad5766a56042cecb",
+        "output_sha256": "6b04979302f9a6b02cf13433d49e31da5329f9262eace7641c43638eec34acb5",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/uranaishi/raw/nanami/uranaishi-sad.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/uranaishi/independent-nanami-sad-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "uranaishi",
+      "style": "nanami",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_5941e97a7ff4819187126e1974488831",
+      "source_file_id": "file_00000000dfa4820db464d7adaa91a96c",
+      "source_sha256": "d9e2fab11ba50a60a03f90510a55c99c311b71dc432da59526f3e50da7a9c786",
+      "source_size_bytes": 2110907,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/uranaishi/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/uranaishi/chr_uranaishi_surprise.png",
+      "runtime_sha256": "54b246a93e94ed2c5026a7347d5226a88193b43fd392a0aed37d5104c5bb7b94",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/uranaishi/chr_uranaishi_surprise.png",
+        "git_blob": "4b014c4c3049f998462eaa248a7b775fa72af180",
+        "sha256": "31992447b0ed210e88a3d641700913e873c05289ceffa1da550833a0c07bc686"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_35a3c23e9e6481918dd17df236280482",
+        "file_id": "file_00000000839881f58f4f9e5d8bfc2fd8",
+        "sha256": "4f54fbb19aac40451b063e5ff122b1eac27fb760c14d7717d6a21f2a175c2b2f"
+      },
+      "export": {
+        "scale": 0.70949263502455,
+        "offset": [
+          42,
+          59
+        ],
+        "bbox_alpha24": [
+          201,
+          73,
+          648,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9880341880341881,
+        "native_visible_height": 1504
+      },
+      "producer_raw_qa": {
+        "character": "uranaishi",
+        "expression": "surprise",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "31992447b0ed210e88a3d641700913e873c05289ceffa1da550833a0c07bc686",
+        "output_sha256": "d9e2fab11ba50a60a03f90510a55c99c311b71dc432da59526f3e50da7a9c786",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/uranaishi/raw/nanami/uranaishi-surprise.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/uranaishi/independent-nanami-surprise-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "uranaishi",
+      "style": "new",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_ec603986e37c8191a10803779b8194fe",
+      "source_file_id": "file_000000008e7081f799b77fe816053918",
+      "source_sha256": "e9e14a48f75c8fec978d69f82c5e5c06e22948e14bb5ddf7cdc804795a534b68",
+      "source_size_bytes": 1824668,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/uranaishi/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/new/uranaishi/chr_uranaishi_surprise.png",
+      "runtime_sha256": "b6b26f179fa7f68123e5abe8fe830c9209ce15a4b0db46bf10a2559c93db9cae",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/uranaishi/chr_uranaishi_surprise.png",
+        "git_blob": "4b014c4c3049f998462eaa248a7b775fa72af180",
+        "sha256": "31992447b0ed210e88a3d641700913e873c05289ceffa1da550833a0c07bc686"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_0eecfca1e28c819191fe64e2c7c5bb70",
+        "file_id": "file_00000000580481f59458612c41b17134",
+        "sha256": "bd7b06c0caea8dc374500c407c4f1a162409f50fc6023d49d0104fe3a9f08f44"
+      },
+      "export": {
+        "scale": 0.7101495726495727,
+        "offset": [
+          46,
+          55
+        ],
+        "bbox_alpha24": [
+          209,
+          72,
+          641,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9880341880341881,
+        "native_visible_height": 1504
+      },
+      "producer_raw_qa": {
+        "character": "uranaishi",
+        "expression": "surprise",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "31992447b0ed210e88a3d641700913e873c05289ceffa1da550833a0c07bc686",
+        "output_sha256": "e9e14a48f75c8fec978d69f82c5e5c06e22948e14bb5ddf7cdc804795a534b68",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/uranaishi/raw/new/uranaishi-surprise.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/uranaishi/independent-new-surprise-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "volk",
+      "style": "nanami",
+      "expression": "sad",
+      "source_library_file_id": "libfile_a6bbfbe0aa3881918612552732a9d719",
+      "source_file_id": "file_0000000063ec81f5b675c340fff16cc0",
+      "source_sha256": "81646b24c9cfa1e8cd21812d70c50edbc2c786f7d9bc48ecd5ed57b8f767428d",
+      "source_size_bytes": 1705700,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/volk/sad-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/volk/chr_volk_sad.png",
+      "runtime_sha256": "4cec2dda4ea7e66bdf9a61df1e366f0be0521466f32ed4ea8cd1516436254450",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/volk/chr_volk_sad.png",
+        "git_blob": "47424956991f959e6d90fc04ca42a8428105c9ac",
+        "sha256": "e4c18c076ecdf28b40d72dc5da807462389f2e74d4f4a90c57594ca0f61760cf"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_f4b5d34f30288191b66fb7f74cfb1dc2",
+        "file_id": "file_00000000195481f5b0d1ee0ac5a640ee",
+        "sha256": "1ff082f42e9043726bf88c119436f7dcb99169913996516e2d5a1da7c0a07a88"
+      },
+      "export": {
+        "scale": 0.7251543516078869,
+        "offset": [
+          86,
+          34
+        ],
+        "bbox_alpha24": [
+          239,
+          58,
+          682,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0008605851979346,
+        "native_visible_height": 1492
+      },
+      "producer_raw_qa": {
+        "character": "volk",
+        "expression": "sad",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "e4c18c076ecdf28b40d72dc5da807462389f2e74d4f4a90c57594ca0f61760cf",
+        "output_sha256": "81646b24c9cfa1e8cd21812d70c50edbc2c786f7d9bc48ecd5ed57b8f767428d",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/volk/raw/nanami/volk-sad.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/volk/independent-nanami-sad-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "volk",
+      "style": "nanami",
+      "expression": "serious",
+      "source_library_file_id": "libfile_5eca1098c050819184a50b75a18f0e64",
+      "source_file_id": "file_00000000774081f5865a278ec9458027",
+      "source_sha256": "9b40c010807df6d0c75dc9fdcbffd7a02dd1cd2f449aaa049e70a522ee1577a5",
+      "source_size_bytes": 1803549,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/volk/serious-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/volk/chr_volk_serious.png",
+      "runtime_sha256": "76807731af1f7578e410e752df48277362888edf2a88dfa3fca1736a4f260928",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/volk/chr_volk_serious.png",
+        "git_blob": "f783f5376722c8eebb47c3770504a71e9f4619d6",
+        "sha256": "f448645dbc7c308bbbeaae58fe1078eb1ebde3e088387f809ca1623e8f1e0446"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_f4b5d34f30288191b66fb7f74cfb1dc2",
+        "file_id": "file_00000000195481f5b0d1ee0ac5a640ee",
+        "sha256": "1ff082f42e9043726bf88c119436f7dcb99169913996516e2d5a1da7c0a07a88"
+      },
+      "export": {
+        "scale": 0.711146034512493,
+        "offset": [
+          99,
+          54
+        ],
+        "bbox_alpha24": [
+          248,
+          68,
+          675,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9913941480206541,
+        "native_visible_height": 1507
+      },
+      "producer_raw_qa": {
+        "character": "volk",
+        "expression": "serious",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "f448645dbc7c308bbbeaae58fe1078eb1ebde3e088387f809ca1623e8f1e0446",
+        "output_sha256": "9b40c010807df6d0c75dc9fdcbffd7a02dd1cd2f449aaa049e70a522ee1577a5",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/volk/raw/nanami/volk-serious.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/volk/independent-nanami-serious-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "volk",
+      "style": "nanami",
+      "expression": "smile",
+      "source_library_file_id": "libfile_b9e32818b42c8191a3d277f792e658a3",
+      "source_file_id": "file_000000000d2481f58cdae3336ff7592c",
+      "source_sha256": "3517ff202016d95aba668ecdde71ec2a3a82f5e8d3dc1af45a008dc3e3feb661",
+      "source_size_bytes": 1736329,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/volk/smile-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/volk/chr_volk_smile.png",
+      "runtime_sha256": "6e7081416019e1897952281680f3cb30ea49b277ab9ee7868a0fe7e6612c0f66",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/volk/chr_volk_smile.png",
+        "git_blob": "1acc6f5207f46892a5f9ba8b15bf569a2c49b5d0",
+        "sha256": "9f5b76f3073c33653648d56bf1db5dfe9accde2d2924f778d81886a6fd5f4adb"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_f4b5d34f30288191b66fb7f74cfb1dc2",
+        "file_id": "file_00000000195481f5b0d1ee0ac5a640ee",
+        "sha256": "1ff082f42e9043726bf88c119436f7dcb99169913996516e2d5a1da7c0a07a88"
+      },
+      "export": {
+        "scale": 0.717618756155255,
+        "offset": [
+          80,
+          48
+        ],
+        "bbox_alpha24": [
+          232,
+          66,
+          680,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9931153184165232,
+        "native_visible_height": 1496
+      },
+      "producer_raw_qa": {
+        "character": "volk",
+        "expression": "smile",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "9f5b76f3073c33653648d56bf1db5dfe9accde2d2924f778d81886a6fd5f4adb",
+        "output_sha256": "3517ff202016d95aba668ecdde71ec2a3a82f5e8d3dc1af45a008dc3e3feb661",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/volk/raw/nanami/volk-smile.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/volk/independent-nanami-smile-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "volk",
+      "style": "nanami",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_2f1514ff915c8191bda8348978b9ee48",
+      "source_file_id": "file_00000000a66c81f5a1b7918b29faff8a",
+      "source_sha256": "0b5f8dd43628481253d2c8e7ca83bdb4b9838943f132ae13fb8264b855744858",
+      "source_size_bytes": 1829259,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/volk/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/volk/chr_volk_surprise.png",
+      "runtime_sha256": "a6e27e4e0ce07e0fee27ce09937a401cced376ee2eb82e798d16f0903504ed83",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/volk/chr_volk_surprise.png",
+        "git_blob": "565510747e5208c5cefbd8eba0e8b7e72322afbc",
+        "sha256": "6a4660693eef245b226f87c611b3a205f92338fd37650280d3b42d78f302cd5f"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_f4b5d34f30288191b66fb7f74cfb1dc2",
+        "file_id": "file_00000000195481f5b0d1ee0ac5a640ee",
+        "sha256": "1ff082f42e9043726bf88c119436f7dcb99169913996516e2d5a1da7c0a07a88"
+      },
+      "export": {
+        "scale": 0.7065278675213431,
+        "offset": [
+          85,
+          61
+        ],
+        "bbox_alpha24": [
+          229,
+          76,
+          696,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9836488812392427,
+        "native_visible_height": 1505
+      },
+      "producer_raw_qa": {
+        "character": "volk",
+        "expression": "surprise",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "6a4660693eef245b226f87c611b3a205f92338fd37650280d3b42d78f302cd5f",
+        "output_sha256": "0b5f8dd43628481253d2c8e7ca83bdb4b9838943f132ae13fb8264b855744858",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/volk/raw/nanami/volk-surprise.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/volk/independent-nanami-surprise-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "volk",
+      "style": "new",
+      "expression": "sad",
+      "source_library_file_id": "libfile_aef0ef01dae48191a445fd7b47a2f75d",
+      "source_file_id": "file_000000004de481f5a5d6efcfa3cdff08",
+      "source_sha256": "37da581b705346e6577e9feb649a43846c6f7b222895a62aa84771a3af1d0db9",
+      "source_size_bytes": 1353424,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/volk/sad-source.png",
+      "runtime": "assets/sprites/character_variants/new/volk/chr_volk_sad.png",
+      "runtime_sha256": "7300d7e789f90c9bc4a2fc905eefb34e2d61f5698817c2a157a6ab935aaf0002",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/volk/chr_volk_sad.png",
+        "git_blob": "47424956991f959e6d90fc04ca42a8428105c9ac",
+        "sha256": "e4c18c076ecdf28b40d72dc5da807462389f2e74d4f4a90c57594ca0f61760cf"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_704db309cde08191a8164bf5358c4bac",
+        "file_id": "file_00000000d70081f5b1ef22b57988ad29",
+        "sha256": "89245187d471263b0eb17ca5a301b845b6f7b7ba0e002a58769ea5e92eab7b51"
+      },
+      "export": {
+        "scale": 0.7174604062327369,
+        "offset": [
+          86,
+          45
+        ],
+        "bbox_alpha24": [
+          247,
+          58,
+          669,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0008605851979346,
+        "native_visible_height": 1508
+      },
+      "producer_raw_qa": {
+        "character": "volk",
+        "expression": "sad",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "e4c18c076ecdf28b40d72dc5da807462389f2e74d4f4a90c57594ca0f61760cf",
+        "output_sha256": "37da581b705346e6577e9feb649a43846c6f7b222895a62aa84771a3af1d0db9",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/volk/raw/new/volk-sad.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/volk/independent-new-sad-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "volk",
+      "style": "new",
+      "expression": "serious",
+      "source_library_file_id": "libfile_9969d2c53df48191b7c3303d6bbdbd74",
+      "source_file_id": "file_0000000066d881f5b3d2f13a0ee6e1ed",
+      "source_sha256": "f45608a9dd494160d2bcc47d671ec7c3c9528ab1be438a5aeaa8854e7ddbe151",
+      "source_size_bytes": 1349886,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/volk/serious-source.png",
+      "runtime": "assets/sprites/character_variants/new/volk/chr_volk_serious.png",
+      "runtime_sha256": "8a12ebd645f882aaaf6d71759e558a35cd4c082f201e2eeab7b6614acd9568df",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/volk/chr_volk_serious.png",
+        "git_blob": "f783f5376722c8eebb47c3770504a71e9f4619d6",
+        "sha256": "f448645dbc7c308bbbeaae58fe1078eb1ebde3e088387f809ca1623e8f1e0446"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_704db309cde08191a8164bf5358c4bac",
+        "file_id": "file_00000000d70081f5b1ef22b57988ad29",
+        "sha256": "89245187d471263b0eb17ca5a301b845b6f7b7ba0e002a58769ea5e92eab7b51"
+      },
+      "export": {
+        "scale": 0.7073908079276086,
+        "offset": [
+          95,
+          58
+        ],
+        "bbox_alpha24": [
+          237,
+          69,
+          677,
+          1142
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9913941480206541,
+        "native_visible_height": 1515
+      },
+      "producer_raw_qa": {
+        "character": "volk",
+        "expression": "serious",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "f448645dbc7c308bbbeaae58fe1078eb1ebde3e088387f809ca1623e8f1e0446",
+        "output_sha256": "f45608a9dd494160d2bcc47d671ec7c3c9528ab1be438a5aeaa8854e7ddbe151",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/volk/raw/new/volk-serious.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/volk/independent-new-serious-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "volk",
+      "style": "new",
+      "expression": "smile",
+      "source_library_file_id": "libfile_4e6fd2f713308191a74fbfb1d3fb248a",
+      "source_file_id": "file_00000000ff9081f584f89d22114ec75f",
+      "source_sha256": "3c89773dbdd93bd4026ea2cbf9ca282305dae9e9d7743cb392f08bea64471fab",
+      "source_size_bytes": 1341804,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/volk/smile-source.png",
+      "runtime": "assets/sprites/character_variants/new/volk/chr_volk_smile.png",
+      "runtime_sha256": "1121527ed6ad373f66bc27cbdc52e544c7fc5f25d867126e93fb05e0eb36f95a",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/volk/chr_volk_smile.png",
+        "git_blob": "1acc6f5207f46892a5f9ba8b15bf569a2c49b5d0",
+        "sha256": "9f5b76f3073c33653648d56bf1db5dfe9accde2d2924f778d81886a6fd5f4adb"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_704db309cde08191a8164bf5358c4bac",
+        "file_id": "file_00000000d70081f5b1ef22b57988ad29",
+        "sha256": "89245187d471263b0eb17ca5a301b845b6f7b7ba0e002a58769ea5e92eab7b51"
+      },
+      "export": {
+        "scale": 0.719542667029666,
+        "offset": [
+          83,
+          43
+        ],
+        "bbox_alpha24": [
+          231,
+          67,
+          679,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9931153184165232,
+        "native_visible_height": 1492
+      },
+      "producer_raw_qa": {
+        "character": "volk",
+        "expression": "smile",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "9f5b76f3073c33653648d56bf1db5dfe9accde2d2924f778d81886a6fd5f4adb",
+        "output_sha256": "3c89773dbdd93bd4026ea2cbf9ca282305dae9e9d7743cb392f08bea64471fab",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/volk/raw/new/volk-smile.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/volk/independent-new-smile-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "volk",
+      "style": "new",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_a647ce51abb88191bcc33c219ade3c79",
+      "source_file_id": "file_0000000053c881f5841fb4d887fbb29f",
+      "source_sha256": "bd783efe8077141d8a5d64995913f27c4dd05000d29d02870a0423337308c996",
+      "source_size_bytes": 1383028,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/volk/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/new/volk/chr_volk_surprise.png",
+      "runtime_sha256": "76351c4eda098f2f35a88b8518ee4903aa1f9e9bcf4aa431ae01a09d039b4c6f",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/volk/chr_volk_surprise.png",
+        "git_blob": "565510747e5208c5cefbd8eba0e8b7e72322afbc",
+        "sha256": "6a4660693eef245b226f87c611b3a205f92338fd37650280d3b42d78f302cd5f"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_704db309cde08191a8164bf5358c4bac",
+        "file_id": "file_00000000d70081f5b1ef22b57988ad29",
+        "sha256": "89245187d471263b0eb17ca5a301b845b6f7b7ba0e002a58769ea5e92eab7b51"
+      },
+      "export": {
+        "scale": 0.7074680243643522,
+        "offset": [
+          82,
+          61
+        ],
+        "bbox_alpha24": [
+          236,
+          78,
+          705,
+          1142
+        ],
+        "canonical_expression_to_normal_height_ratio": 0.9836488812392427,
+        "native_visible_height": 1503
+      },
+      "producer_raw_qa": {
+        "character": "volk",
+        "expression": "surprise",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "6a4660693eef245b226f87c611b3a205f92338fd37650280d3b42d78f302cd5f",
+        "output_sha256": "bd783efe8077141d8a5d64995913f27c4dd05000d29d02870a0423337308c996",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/volk/raw/new/volk-surprise.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/volk/independent-new-surprise-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "yoru",
+      "style": "nanami",
+      "expression": "sad",
+      "source_library_file_id": "libfile_5c2e5c9002288191a007e6ba48417732",
+      "source_file_id": "file_0000000082a081f69156b73b2d87f5ba",
+      "source_sha256": "99b821550853b2af508f9534b9afde7d2a439d28d2c2b37f0fe4dfdcecc8b471",
+      "source_size_bytes": 1621971,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/yoru/sad-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/yoru/chr_yoru_sad.png",
+      "runtime_sha256": "f3b2b94469d09a107bb859c0b3376535e44094f64c16591796bf125a07b635ac",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/yoru/chr_yoru_sad.png",
+        "git_blob": "def0d0a92f83dd16c0c1649a2b91775de3e6c78b",
+        "sha256": "2acb9fbbeb8d3b12ce49401683733d438e8cfdcc7a3adf06578bd9979043fcb5"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_639eec699760819183b992db1f689ace",
+        "file_id": "file_00000000514481f5adb45e34d71ff7bc",
+        "sha256": "d6e8e4065b64335189db5fba604d774001df635f532bbbf9e6d0475449b82a49"
+      },
+      "export": {
+        "scale": 0.7195203197868087,
+        "offset": [
+          72,
+          44
+        ],
+        "bbox_alpha24": [
+          258,
+          60,
+          643,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1501
+      },
+      "producer_raw_qa": {
+        "character": "yoru",
+        "expression": "sad",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "2acb9fbbeb8d3b12ce49401683733d438e8cfdcc7a3adf06578bd9979043fcb5",
+        "output_sha256": "99b821550853b2af508f9534b9afde7d2a439d28d2c2b37f0fe4dfdcecc8b471",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/yoru-sad-nanami-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/independent-nanami-sad-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "yoru",
+      "style": "nanami",
+      "expression": "serious",
+      "source_library_file_id": "libfile_829f62f32ea081919bccb517d328858e",
+      "source_file_id": "file_00000000cc1081f5a9aac6fbbd0e7411",
+      "source_sha256": "703560b19f063cfd85d55bb743c66409dd9db774ae3bb913d102690019349189",
+      "source_size_bytes": 860702,
+      "source_pixels": [
+        1084,
+        1451
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/yoru/serious-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/yoru/chr_yoru_serious.png",
+      "runtime_sha256": "0e3391f233dd4f72dbbf5608e3a99e8bff4904618bd6674ca627972aa3907d63",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/yoru/chr_yoru_serious.png",
+        "git_blob": "d07c4796e6d2dd0cdae391c7aeb8fab18d8bad3e",
+        "sha256": "c9469293e5bc5b6cc50d49b7647edd16099971e6a7326067499d4baacf78fc5c"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_639eec699760819183b992db1f689ace",
+        "file_id": "file_00000000514481f5adb45e34d71ff7bc",
+        "sha256": "d6e8e4065b64335189db5fba604d774001df635f532bbbf9e6d0475449b82a49"
+      },
+      "export": {
+        "scale": 0.7573632538569425,
+        "offset": [
+          17,
+          47
+        ],
+        "bbox_alpha24": [
+          252,
+          60,
+          640,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1426
+      },
+      "producer_raw_qa": {
+        "character": "yoru",
+        "expression": "serious",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "c9469293e5bc5b6cc50d49b7647edd16099971e6a7326067499d4baacf78fc5c",
+        "output_sha256": "703560b19f063cfd85d55bb743c66409dd9db774ae3bb913d102690019349189",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/yoru-serious-nanami-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/independent-nanami-serious-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "yoru",
+      "style": "nanami",
+      "expression": "smile",
+      "source_library_file_id": "libfile_0ab4d602d3748191958dbe04d0c50b45",
+      "source_file_id": "file_000000002c5481f68f437497664a7999",
+      "source_sha256": "fdcde08f421e3046b46be3b327cb5746f70aeb5dc72cc345f23f2e20034acdd6",
+      "source_size_bytes": 1609750,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/yoru/smile-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/yoru/chr_yoru_smile.png",
+      "runtime_sha256": "96b2e6eea4b5493c29302d7b6bc0da0501c96e23be2499b9804b4d4a8a435940",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/yoru/chr_yoru_smile.png",
+        "git_blob": "d271bba234d50a67952a573d2963421e4b427d43",
+        "sha256": "eec5e67933520b74f4861a25cd60963824d779a75807326e52b54914cc7a28b1"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_639eec699760819183b992db1f689ace",
+        "file_id": "file_00000000514481f5adb45e34d71ff7bc",
+        "sha256": "d6e8e4065b64335189db5fba604d774001df635f532bbbf9e6d0475449b82a49"
+      },
+      "export": {
+        "scale": 0.7195203197868087,
+        "offset": [
+          57,
+          41
+        ],
+        "bbox_alpha24": [
+          260,
+          59,
+          631,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1501
+      },
+      "producer_raw_qa": {
+        "character": "yoru",
+        "expression": "smile",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "eec5e67933520b74f4861a25cd60963824d779a75807326e52b54914cc7a28b1",
+        "output_sha256": "fdcde08f421e3046b46be3b327cb5746f70aeb5dc72cc345f23f2e20034acdd6",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/yoru-smile-nanami-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/independent-nanami-smile-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "yoru",
+      "style": "nanami",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_02ba81899f688191a115b35612dc8213",
+      "source_file_id": "file_00000000a68081f6aa21d87e6f3e8a8d",
+      "source_sha256": "d5fa1c0dd4a30cc7ae262c9255d226b697b9aaa65ce22fc775f0eaddfca208c1",
+      "source_size_bytes": 1640097,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/nanami/yoru/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/yoru/chr_yoru_surprise.png",
+      "runtime_sha256": "706d38e5a8b35b589dd989800eb1bf3a654c0f96f71f3d9e5f1521dae783af0b",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/yoru/chr_yoru_surprise.png",
+        "git_blob": "a447bff81d52664b97a40dcc0995c39db583cff6",
+        "sha256": "ec4f57b0eead28d9682ed81cd7a51af95af67bf77a832b81c6651b1e008f31aa"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_639eec699760819183b992db1f689ace",
+        "file_id": "file_00000000514481f5adb45e34d71ff7bc",
+        "sha256": "d6e8e4065b64335189db5fba604d774001df635f532bbbf9e6d0475449b82a49"
+      },
+      "export": {
+        "scale": 0.712401055408971,
+        "offset": [
+          65,
+          47
+        ],
+        "bbox_alpha24": [
+          238,
+          60,
+          702,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1516
+      },
+      "producer_raw_qa": {
+        "character": "yoru",
+        "expression": "surprise",
+        "style": "nanami",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "ec4f57b0eead28d9682ed81cd7a51af95af67bf77a832b81c6651b1e008f31aa",
+        "output_sha256": "d5fa1c0dd4a30cc7ae262c9255d226b697b9aaa65ce22fc775f0eaddfca208c1",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/yoru-surprise-nanami-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/independent-nanami-surprise-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "yoru",
+      "style": "new",
+      "expression": "sad",
+      "source_library_file_id": "libfile_138e38050be881919f5362946f173545",
+      "source_file_id": "file_00000000717881f6aec736a297d8a929",
+      "source_sha256": "07bbb89151b7802c6ffc5e778a5315bc757af75584f35a79ac0681b1ee761596",
+      "source_size_bytes": 1284358,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/yoru/sad-source.png",
+      "runtime": "assets/sprites/character_variants/new/yoru/chr_yoru_sad.png",
+      "runtime_sha256": "d0d998e9926594cae7c7e7c8655a5f5f5255dfd8aea97383ef3f05e657d5b701",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/yoru/chr_yoru_sad.png",
+        "git_blob": "def0d0a92f83dd16c0c1649a2b91775de3e6c78b",
+        "sha256": "2acb9fbbeb8d3b12ce49401683733d438e8cfdcc7a3adf06578bd9979043fcb5"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_75b7161d2c988191a3ba4c8afced0fbb",
+        "file_id": "file_00000000b4d881f5893c89801f69b3ce",
+        "sha256": "37fa6724a95e8bb4287aca64cf69c36d9ee2bd6ff4c5968c99801c617ad80e80"
+      },
+      "export": {
+        "scale": 0.7158940397350994,
+        "offset": [
+          68,
+          48
+        ],
+        "bbox_alpha24": [
+          255,
+          59,
+          644,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1510
+      },
+      "producer_raw_qa": {
+        "character": "yoru",
+        "expression": "sad",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "2acb9fbbeb8d3b12ce49401683733d438e8cfdcc7a3adf06578bd9979043fcb5",
+        "output_sha256": "07bbb89151b7802c6ffc5e778a5315bc757af75584f35a79ac0681b1ee761596",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/yoru-sad-new-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/independent-new-sad-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "yoru",
+      "style": "new",
+      "expression": "serious",
+      "source_library_file_id": "libfile_81740770dd688191a2052e1e47da2d08",
+      "source_file_id": "file_0000000087ac81f692b512e0631d6441",
+      "source_sha256": "44e0b2fa0d361b2e352ee7aaa3b00f645ef0a2eff3b0eb28efdd1323db1b6ca6",
+      "source_size_bytes": 1250409,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/yoru/serious-source.png",
+      "runtime": "assets/sprites/character_variants/new/yoru/chr_yoru_serious.png",
+      "runtime_sha256": "4c31e401d907a7051aae17ab6d2bd58a2bf455a2efef8da9d5e011c4ac89c895",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/yoru/chr_yoru_serious.png",
+        "git_blob": "d07c4796e6d2dd0cdae391c7aeb8fab18d8bad3e",
+        "sha256": "c9469293e5bc5b6cc50d49b7647edd16099971e6a7326067499d4baacf78fc5c"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_75b7161d2c988191a3ba4c8afced0fbb",
+        "file_id": "file_00000000b4d881f5893c89801f69b3ce",
+        "sha256": "37fa6724a95e8bb4287aca64cf69c36d9ee2bd6ff4c5968c99801c617ad80e80"
+      },
+      "export": {
+        "scale": 0.7135313531353136,
+        "offset": [
+          71,
+          50
+        ],
+        "bbox_alpha24": [
+          268,
+          59,
+          646,
+          1140
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1515
+      },
+      "producer_raw_qa": {
+        "character": "yoru",
+        "expression": "serious",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "c9469293e5bc5b6cc50d49b7647edd16099971e6a7326067499d4baacf78fc5c",
+        "output_sha256": "44e0b2fa0d361b2e352ee7aaa3b00f645ef0a2eff3b0eb28efdd1323db1b6ca6",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/yoru-serious-new-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/independent-new-serious-gate.json"
+      },
+      "reused_normal": false
+    },
+    {
+      "character_id": "yoru",
+      "style": "new",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_34decf8cd3ec81918c9c19e29c0c5363",
+      "source_file_id": "file_00000000c02c81f6ab144c25c1ea1d59",
+      "source_sha256": "7eafc6c7b95e18decb5a7b8c648658c3366b0b6d79a82a04551f19aa35c6c2f4",
+      "source_size_bytes": 1307017,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source": "asset_sources/portraits/received58-20261105/new/yoru/surprise-source.png",
+      "runtime": "assets/sprites/character_variants/new/yoru/chr_yoru_surprise.png",
+      "runtime_sha256": "c1fdd280effac209835a5bc12886329cd8372fd1f43e6425e8c8e91dcb820522",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/yoru/chr_yoru_surprise.png",
+        "git_blob": "a447bff81d52664b97a40dcc0995c39db583cff6",
+        "sha256": "ec4f57b0eead28d9682ed81cd7a51af95af67bf77a832b81c6651b1e008f31aa"
+      },
+      "normal_authority": {
+        "library_file_id": "libfile_75b7161d2c988191a3ba4c8afced0fbb",
+        "file_id": "file_00000000b4d881f5893c89801f69b3ce",
+        "sha256": "37fa6724a95e8bb4287aca64cf69c36d9ee2bd6ff4c5968c99801c617ad80e80"
+      },
+      "export": {
+        "scale": 0.7158940397350994,
+        "offset": [
+          68,
+          48
+        ],
+        "bbox_alpha24": [
+          252,
+          59,
+          698,
+          1141
+        ],
+        "canonical_expression_to_normal_height_ratio": 1.0,
+        "native_visible_height": 1510
+      },
+      "producer_raw_qa": {
+        "character": "yoru",
+        "expression": "surprise",
+        "style": "new",
+        "status": "PASS_RAW_ART_EXPRESSION",
+        "source_sha256": "ec4f57b0eead28d9682ed81cd7a51af95af67bf77a832b81c6651b1e008f31aa",
+        "output_sha256": "7eafc6c7b95e18decb5a7b8c648658c3366b0b6d79a82a04551f19aa35c6c2f4",
+        "output_path": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/yoru-surprise-new-v1.png",
+        "report": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/received58-production/yoru/independent-new-surprise-gate.json"
+      },
+      "reused_normal": false
+    }
+  ],
+  "received_new_raw_count": 78,
+  "held_received_without_normal": [
+    {
+      "character_id": "da_silva",
+      "style": "nanami",
+      "expression": "excited",
+      "library_file_id": "libfile_3fc6b9ab31bc819182c31b0872eef522"
+    },
+    {
+      "character_id": "da_silva",
+      "style": "new",
+      "expression": "excited",
+      "library_file_id": "libfile_91c937c0f0f4819198ffb87f9d7e6a93"
+    },
+    {
+      "character_id": "da_silva",
+      "style": "new",
+      "expression": "serious",
+      "library_file_id": "libfile_e5a877c50480819194cfaeb68ddbcd37"
+    },
+    {
+      "character_id": "da_silva",
+      "style": "new",
+      "expression": "smile",
+      "library_file_id": "libfile_e6d329eb13c481918d63dfae734fac1b"
+    },
+    {
+      "character_id": "da_silva",
+      "style": "nanami",
+      "expression": "surprise",
+      "library_file_id": "libfile_096eb74440d881919f67d17bf9356db9"
+    }
+  ],
+  "export_rule": "Raw unchanged. Uniform resampling and positioning only. Existing selected normal SHA/runtime/geometry retained; added expressions preserve canonical expression-to-normal visible-height ratios, bottom and feet anchor. New human/robot normals 1080px; cat uses canonical normal height and low/wide canonical sleeping ratio. Detached low-alpha beyond 3px visible band removed only in derivative. No head/face/body/color/line edits. Classic assets retained.",
+  "excluded": "Noor and Ageha safety holds, private Minto, separate unselected body prototypes, rejected Rei/old doctor prototypes, Tsumugi bow.",
+  "unpermitted_not_attempted": [
+    {
+      "library_file_id": "libfile_ea92e07096fc81919290d35e244dce06",
+      "expected_file_id": "file_00000000817481f4a93686dffad91b0c",
+      "character": "da_silva",
+      "style": "nanami",
+      "expression": "normal",
+      "sha256": "ca0f7091d3327b744276fcfd698a7c8c1bdd34d39734a600026dbbe91f82f633",
+      "size_bytes": 1930902,
+      "host": "sdmntprnortheu.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_3ac2d28b40608191a6621c2726717ff3",
+      "expected_file_id": "file_00000000cd78822fb4a27c45035aeb2d",
+      "character": "da_silva",
+      "style": "new",
+      "expression": "normal",
+      "sha256": "e1c05cdb6af17dd8f08238245613b30023805dd5553a473275df2dc911cbf2be",
+      "size_bytes": 1685952,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_f0c3b0a9eac0819181f4a97cea1dfbf4",
+      "expected_file_id": "file_000000000db4820eb4fad9a8057090d0",
+      "character": "da_silva",
+      "style": "nanami",
+      "expression": "serious",
+      "sha256": "38ed919ba40ecbca145450a399f2e01e55adca89aac09c7396cd367fc9fa0556",
+      "size_bytes": 1939557,
+      "host": "sdmntprbrazilsouth.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_99c94495cbe48191b90b3c6bcfb7d262",
+      "expected_file_id": "file_000000006ff881f4908b213e69f6c61e",
+      "character": "da_silva",
+      "style": "nanami",
+      "expression": "smile",
+      "sha256": "7a286848830516ffcec32f9cd7de708eef4e1cfd90c013e2533e151a9f5fa4ac",
+      "size_bytes": 2030612,
+      "host": "sdmntprnortheu.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_baa08e34c2a88191b0cc44bd7c9d8955",
+      "expected_file_id": "file_0000000087a4820eb40fa85a4507c5b5",
+      "character": "da_silva",
+      "style": "new",
+      "expression": "surprise",
+      "sha256": "372227589c93ba84bb8ee11f07c0ffb6ff4d178200453646c3a4f7c169a8da06",
+      "size_bytes": 1712216,
+      "host": "sdmntprbrazilsouth.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_406f782d8a00819183da46ede791a9c9",
+      "expected_file_id": "file_000000001d7081f49f002b7afa429874",
+      "character": "emil",
+      "style": "new",
+      "expression": "serious",
+      "sha256": "714b900c5906d68c23bea1536f1f17c341f7bcb99957df0ed5af900646f3e436",
+      "size_bytes": 1413719,
+      "host": "sdmntprnortheu.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_deca03b8158c81918286dac66fd6abac",
+      "expected_file_id": "file_00000000fd2081f4b3aeda5f24791503",
+      "character": "emil",
+      "style": "nanami",
+      "expression": "surprise",
+      "sha256": "b15944a7fc52c5c3d0a023b648bb3832a3d565d7be4782c5f4f86f38727cf73f",
+      "size_bytes": 1697548,
+      "host": "sdmntprnortheu.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_f53f04b056708191a237ea10d27b8dc7",
+      "expected_file_id": "file_0000000072e4820ebe1b0a484052f2a5",
+      "character": "emil",
+      "style": "nanami",
+      "expression": "thinking",
+      "sha256": "199bd7f0bbddddafeb52cf7243e07faf3cbb94538dcc1b88fedb9ad958765239",
+      "size_bytes": 1663059,
+      "host": "sdmntprbrazilsouth.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_187222bcf9b081919813b91bfcb3dcb7",
+      "expected_file_id": "file_000000007980820e8daf9bf11a3816cb",
+      "character": "emil",
+      "style": "new",
+      "expression": "thinking",
+      "sha256": "7e2c147c771ee4bbf95cc002546c72d11f36fe34dbfb14493ded543cc5dcd8ca",
+      "size_bytes": 1348838,
+      "host": "sdmntprbrazilsouth.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_051c088c2d548191a3e502b045912c82",
+      "expected_file_id": "file_0000000085c8822fb8d19323c3cbcbb6",
+      "character": "master_hookah",
+      "style": "nanami",
+      "expression": "angry",
+      "sha256": "4a0f093627bb8cbb4c1fed46f43d04f34c5ad483724d09a8068708543206332e",
+      "size_bytes": 2066501,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_e17352d46d8c8191a23bab69af29c9d0",
+      "expected_file_id": "file_00000000bdf8822fa0d1640fbd872e5d",
+      "character": "master_hookah",
+      "style": "new",
+      "expression": "angry",
+      "sha256": "a7a72703457bdb42d43a06b579f5a9e72bc08f0f94d716a57aa8c63951e6661a",
+      "size_bytes": 1765601,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_a00ba63cefdc8191822d32406a8d797a",
+      "expected_file_id": "file_000000006b20822fad1bd97a9514b095",
+      "character": "master_hookah",
+      "style": "nanami",
+      "expression": "laugh",
+      "sha256": "2dd2edc39de805c92dc6c35dd6ccefedb193359046aae7109c613453e694bb7c",
+      "size_bytes": 2156853,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_a6e7b17c53f0819189599142394a2dda",
+      "expected_file_id": "file_0000000043d8822f98a2f0149611073d",
+      "character": "master_hookah",
+      "style": "new",
+      "expression": "laugh",
+      "sha256": "135f23b676fd5e82041441b751a9e28ef91509817bcbb21f9c2e16cfb64494c0",
+      "size_bytes": 1817971,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_c1411050df848191a0e9668675cf9515",
+      "expected_file_id": "file_000000000a7c822fbea8612daac82e55",
+      "character": "master_hookah",
+      "style": "nanami",
+      "expression": "sad",
+      "sha256": "68f0c6dce4a1a5e6b1f26d354607e2d0d0e77ca6d8d27c2f3b27b668dd40a973",
+      "size_bytes": 2076578,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_4632e5513abc8191a572e52c9fe20ff1",
+      "expected_file_id": "file_00000000fb98822fa220d797ad130451",
+      "character": "master_hookah",
+      "style": "new",
+      "expression": "sad",
+      "sha256": "cb3e51131f8b837057d0398281c114368d135470e6443364f0cd90bb23e2793a",
+      "size_bytes": 1772494,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_7fb40ba1dc88819198b1a76c66039fd2",
+      "expected_file_id": "file_00000000bd4c822f96bf623a7a7bca98",
+      "character": "master_hookah",
+      "style": "nanami",
+      "expression": "serious",
+      "sha256": "f02e429d18e8935e1aa1df973cd6d565973b068668beb3b58a1a76420ce90683",
+      "size_bytes": 2093905,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_c273c6483ecc8191833e77c7609439e6",
+      "expected_file_id": "file_00000000ee3c822f9182030491d44727",
+      "character": "master_hookah",
+      "style": "new",
+      "expression": "serious",
+      "sha256": "5c4446a737c96bb28722361853187a58dbc79e325e6f43b482e941266e890513",
+      "size_bytes": 1789100,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_ae0e5e599d4c8191ae444fe887102f43",
+      "expected_file_id": "file_00000000bd58820cbf051cbd2162836d",
+      "character": "master_hookah",
+      "style": "new",
+      "expression": "surprise",
+      "sha256": "9c464a6ff7b9bb7337cdd894432d5b4027413516ea8a452eb452747857c9fa5a",
+      "size_bytes": 1777850,
+      "host": "sdmntprsoutheastus3.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_cb49d5d1e9b8819193c405709a53a23b",
+      "expected_file_id": "file_00000000842c81fda9d5ddad1e2f758b",
+      "character": "mukai_master",
+      "style": "new",
+      "expression": "sad",
+      "sha256": "00df361864a5512fd85cdb2d411b6c2b8521b8e0cd5efe15f527cfc834bbf5a3",
+      "size_bytes": 1348148,
+      "host": "sdmntprwestus3.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_cbed42d8a0648191a29ad0604afa0cda",
+      "expected_file_id": "file_00000000eedc81fda45624b003778af2",
+      "character": "mukai_master",
+      "style": "nanami",
+      "expression": "serious",
+      "sha256": "ed29f5cae5037b1bbc897a32bbfad4dcf0b3a044a8baf2f8df156a29080b44c5",
+      "size_bytes": 1753200,
+      "host": "sdmntprwestus3.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_43e275d9e8d48191bca1a06ea5533e4b",
+      "expected_file_id": "file_0000000003bc81fd875da6bb7048f59f",
+      "character": "mukai_master",
+      "style": "nanami",
+      "expression": "smile",
+      "sha256": "89d6402eec086f12153dfccb16123134bde63aa1193995eaec1ab237599d8a4d",
+      "size_bytes": 954201,
+      "host": "sdmntprwestus3.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_d1d4fe8b56588191b1a1774dd65e0a7c",
+      "expected_file_id": "file_000000007054822fa26efd749a7bcf25",
+      "character": "mukai_master",
+      "style": "new",
+      "expression": "surprise",
+      "sha256": "63125294fbde8b8973abed3610c6dcf40c7390b5d2898724039fa8bbfb0fa8c1",
+      "size_bytes": 1375758,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_66e20e8f01488191b8e162e6f2d2ce49",
+      "expected_file_id": "file_000000004e10822fa029d8e7f67b2648",
+      "character": "sheikh",
+      "style": "nanami",
+      "expression": "normal",
+      "sha256": "1bd86d18873e544c6b024c500840aa4649f632dfd5de57a32d83616b999f9a69",
+      "size_bytes": 2067081,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_bb1f1c8268248191863272b8bc2549b0",
+      "expected_file_id": "file_00000000c754822f80e2a27a22a5f132",
+      "character": "sheikh",
+      "style": "new",
+      "expression": "normal",
+      "sha256": "fedfb1b026634c621a1f4062bf1f5945e13ff43e6d17707fe662b874d7450030",
+      "size_bytes": 1737739,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_e7dccecdd11c8191988271bd8310c3ac",
+      "expected_file_id": "file_00000000c750822fa4ce7361248eb5d1",
+      "character": "sheikh",
+      "style": "nanami",
+      "expression": "serious",
+      "sha256": "e829c345ed68a0b49cc281fa35e2e6dbc1dedc177a2bc1db5dd06286d9a931ae",
+      "size_bytes": 2144775,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_cd9d3c47e4048191a0ae2f335bbd82cf",
+      "expected_file_id": "file_00000000365c822f93e356120bb8f55c",
+      "character": "sheikh",
+      "style": "new",
+      "expression": "serious",
+      "sha256": "c1a3752d8947d5b978a0d934245fbeb01049776290514559a990c604ae0cf946",
+      "size_bytes": 1765108,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_7d1f701556588191b6dcca803af2522b",
+      "expected_file_id": "file_00000000a06c822f90de3795e2e4989f",
+      "character": "sheikh",
+      "style": "nanami",
+      "expression": "smile",
+      "sha256": "76a94a95deb661c8db9b9622c9eccff2712f0911e8da7ee09529b308a686f0b5",
+      "size_bytes": 2076580,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_e69ed1ffe0988191a8b0fda48daaf501",
+      "expected_file_id": "file_0000000062a8822fadf220a8d6250653",
+      "character": "sheikh",
+      "style": "new",
+      "expression": "smile",
+      "sha256": "4e60d2fc16afed1b9204158672b587146d48591ca22e6bd7d256d714f199d79d",
+      "size_bytes": 1790227,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_db62f96ed0bc81918ef35bec2de16c4c",
+      "expected_file_id": "file_00000000d36c822f87698aad64e03fc5",
+      "character": "sheikh",
+      "style": "nanami",
+      "expression": "smug",
+      "sha256": "a7c692e3ff845a95f670a65cefe34f4e82a9725da5d25dcb15c9c3ee673f00e7",
+      "size_bytes": 2105502,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_0c113e24c9ac8191aae0ea1e147d51d7",
+      "expected_file_id": "file_000000005108822fbe70daf3b0ef2dfe",
+      "character": "sheikh",
+      "style": "new",
+      "expression": "smug",
+      "sha256": "6bc10416bd758187dbad8576b01f0659981ce3c4ae00a7c41d54fda975bf8051",
+      "size_bytes": 1761187,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_2cd134c35680819181624cc605b4cebf",
+      "expected_file_id": "file_00000000f9a8822fba33d573f60d493e",
+      "character": "sheikh",
+      "style": "nanami",
+      "expression": "surprise",
+      "sha256": "8888854adb8d90639e8bd9a2076649130c1f4921b7051f40e702112008c87fcc",
+      "size_bytes": 2085639,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_0902cf72eeec819192a5c2862eebee04",
+      "expected_file_id": "file_00000000d584822f8c3953b401b1beb1",
+      "character": "sheikh",
+      "style": "new",
+      "expression": "surprise",
+      "sha256": "7c5c96cb01069e080a0d511287543675332e038140b145901055427a6571b3f2",
+      "size_bytes": 1781932,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_af6a48576f4c81919f4eef94bf3624bf",
+      "expected_file_id": "file_0000000079bc822f95c392a2d11e0194",
+      "character": "uranaishi",
+      "style": "new",
+      "expression": "sad",
+      "sha256": "988d463e11a60881fa9c1e448567a6b3678655b2bc76036efa608f1a781c733d",
+      "size_bytes": 1881176,
+      "host": "sdmntprnorthcentralus.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_aef19efd1c908191bd82ec32061528de",
+      "expected_file_id": "file_000000005d2481fd9f12e153584327f3",
+      "character": "uranaishi",
+      "style": "nanami",
+      "expression": "serious",
+      "sha256": "15cd8c664e682b18bff319137c2ea10af2b55c30521abb5d9a544a05b3af3db1",
+      "size_bytes": 2182451,
+      "host": "sdmntprwestus3.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_00ef8042f7a48191820f2d977895a490",
+      "expected_file_id": "file_00000000fa58820caa56266d397d8fa1",
+      "character": "uranaishi",
+      "style": "new",
+      "expression": "serious",
+      "sha256": "30dc3abca5eecfd26046c5eb57b48695c63dc431f236921db85b03ff93246d73",
+      "size_bytes": 1870856,
+      "host": "sdmntprsoutheastus3.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_af20afa8fcd08191a32fcf5a3cd94d82",
+      "expected_file_id": "file_00000000cfc4820cabdcf1067826ac3c",
+      "character": "uranaishi",
+      "style": "nanami",
+      "expression": "smile",
+      "sha256": "3a4431efd0a65ecb75457ce3a0ecfa847a923c4963e4031dd5b80b49a9fb2096",
+      "size_bytes": 2151936,
+      "host": "sdmntprsoutheastus3.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_500dd6ffafc8819183ef6e54011fa23f",
+      "expected_file_id": "file_000000004ba4820c8e075ea798e2671a",
+      "character": "uranaishi",
+      "style": "new",
+      "expression": "smile",
+      "sha256": "9b3382cc8101dd2929b3b25ba61348432cda0bdb844f64035f8a1f1f1ebd33b9",
+      "size_bytes": 1790895,
+      "host": "sdmntprsoutheastus3.oaiusercontent.com",
+      "download_attempted": false
+    },
+    {
+      "library_file_id": "libfile_a2c240275e8c8191bf8cfe0494ca5237",
+      "expected_file_id": "file_00000000f0e081f4b50ed2c006ec2c4b",
+      "character": "yoru",
+      "style": "new",
+      "expression": "smile",
+      "sha256": "6164cccb6845768f1689160c61d355a63d03785b6199bdf6f8d13af614efdc06",
+      "size_bytes": 1304228,
+      "host": "sdmntprnortheu.oaiusercontent.com",
+      "download_attempted": false
+    }
+  ],
+  "runtime_validation": {
+    "status": "passed_local_independent_review",
+    "production_data_and_engine": true,
+    "candidate_asset_injection": false,
+    "desktop": {
+      "viewport": [
+        1280,
+        720
+      ],
+      "passed": true
+    },
+    "landscape_touch": {
+      "viewport": [
+        844,
+        390
+      ],
+      "hasTouch": true,
+      "passed": true
+    },
+    "framing_measurement_records": 624,
+    "coverage": "all canonical expressions in classic/new/nanami for 11 actors; exact face or same-style normal fallback; all normal returns; five duos across three styles; 11 actors paired with Tsumugi; live settings repeated switching",
+    "existing_intro_cases": 40,
+    "intro_art_styles": [
+      "classic",
+      "graphic"
+    ],
+    "intro_assertions": "portrait and selected background decoded, opacity 1, names displayed, dedicated assets independent from standing style; robot retains existing classic-source choice",
+    "static_checks": {
+      "portrait_style": "20/20",
+      "portrait_framing_entries": 461,
+      "portrait_variants_python": "3/3",
+      "docs_suite": "1/1",
+      "png_webp_rgba": "74/74 exact"
+    },
+    "independent_review": {
+      "raw_fit_all_74": true,
+      "white_dark_edges": true,
+      "code_manifest_existing_frames_preserved": true,
+      "pc_touch_expression_duo_settings": true,
+      "intro_all_40": true,
+      "normal_return_stage_pixel_equal_pc": 30,
+      "normal_return_stage_pixel_equal_touch": 30,
+      "blocking_findings": []
+    },
+    "formal_ci": "pending latest pushed HEAD",
+    "game_adoption": "pending PR merge and deployment"
+  }
+}

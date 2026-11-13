@@ -8,7 +8,8 @@ const catalog = JSON.parse(fs.readFileSync(new URL('../../data/flavors.json', im
 const before = JSON.stringify(catalog);
 const ids = Array.from(vm.runInNewContext(source.match(/export const SHOP_FLAVORS = (\[[\s\S]*?\]);/)[1]));
 const rows = ids.map(id => catalog.flavors.find(f => f.id === id));
-assert.equal(rows.length, 25);
+assert.equal(rows.length, 27);
+assert(rows.every(Boolean), 'every listed id exists in flavors.json');
 assert(ids.includes('cardamom') && ids.includes('lavender'));
 const results = [];
 for (const category of ['all', 'fruit', 'sweet']) {

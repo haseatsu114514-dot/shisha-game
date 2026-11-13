@@ -1,0 +1,597 @@
+{
+  "comment": "第3章以降の「新しい一台を発見する」連鎖（#2020 G・2026-11-11 オーナー「推奨で全部進めて」）。daily/recipe-finds.js が、店で一服を終えた後に一本だけ読む。recipe_find_<id>_hint＝店の人が配合を教える（type:\"note\" でメモ＝第1章のヒントと同じ）。自分で作ってレシピ帳に載った後、同じ人の店を訪ねると recipe_find_<id>_return＝名前を付けた一台を返す。定義は data/recipes.json の find。大会の前後どちらでも読むので、大会・審査・勝負の日に触れない。好感度・能力の報酬は付けない（来店のぶんだけ）。作った場所（宿・家・店）は言わない（どこで作っても成り立つように）。",
+  "dialogues": [
+    {
+      "dialogue_id": "recipe_find_lime_second_puff_hint",
+      "comment": "スティーブ（第3章・第5章の Smoke & Glory）。マウンテンミスト（レモンライム系）が好きな低温の研究家。レモンとライムは東京の店で買える。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、スティーブがレシピカードを一枚、カウンターに滑らせてきた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、ハジメ。マウンテンミストが切れた日の、俺の逃げ道だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "逃げ道、ですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "レモンを主役に、ライムを少しだけ。ライムは、後から来る"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "炭を急ぐと、ライムが先に出ちまう。そしたら、ただ酸っぱいだけだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "二口目まで、待つんですね"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "イエス。待てるかどうかは、そっちの手次第だ"
+        },
+        {
+          "type": "note",
+          "note_id": "recipe_hint_lime_second_puff",
+          "label": "スティーブ直伝 レモン×ライム"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（レモンに、ライムを少し。東京の店なら、両方そろう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "recipe_find_lime_second_puff_return",
+      "comment": "レモン×ライムがレシピ帳に載った後の来店。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブが、こちらの顔を見てタイマーを止めた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ヘイ。……何か、言いたそうな顔だな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "この前のレモンとライム、作ってみました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ライムが、本当に後から来ました。二口目で、輪郭が締まって"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "だろ？　待てたなら、もうそっちの一台だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "名前も付けました。「二口目のライム」です"
+        },
+        {
+          "speaker": "steve",
+          "face": "surprise",
+          "text": "……いい名前だ。カードの表に書いとけ。裏には、急いだ日の話を書く"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブは白いカードを一枚、こちらへ押した。端に、小さなライムの絵が描いてあった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "recipe_find_weekend_citron_hint",
+      "comment": "綾取（第3章の煙幕）。果実と茶を熱の順番で立たせ、入れていない菓子を連想させる一台が得意。フローズンシトラスとブラックティーは東京の店で買える。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、綾取がノートの端を指で叩いた。"
+        },
+        {
+          "speaker": "saku",
+          "face": "smug",
+          "text": "ねえ、入れてないお菓子の味がする一台、君も作ってみない？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "入れてない、お菓子ですか"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "フローズンシトラスを先に立たせて、ブラックティーで追いかける"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "柑橘のあとに紅茶が来ると、焼いたレモンケーキみたいになる、……かもね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "かも、なんですか"
+        },
+        {
+          "speaker": "saku",
+          "face": "nervous",
+          "text": "僕の舌ではね。人によっては、ただのレモンティーだって言われる"
+        },
+        {
+          "type": "note",
+          "note_id": "recipe_hint_weekend_citron",
+          "label": "綾取の話 フローズンシトラス×ブラックティー"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（シトラスの後に、紅茶。東京の店なら、両方そろう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "recipe_find_weekend_citron_return",
+      "comment": "フローズンシトラス×ブラックティーがレシピ帳に載った後の来店。綾取は第3章の後に福岡へ戻るので、第3章の煙幕だけで返す。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取が、カウンター越しにこちらの顔をのぞき込んだ。"
+        },
+        {
+          "speaker": "saku",
+          "face": "smug",
+          "text": "その顔、何か作ってきたでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "シトラスの後にブラックティー、試しました。……ちゃんと、焼き菓子でした"
+        },
+        {
+          "speaker": "saku",
+          "face": "surprise",
+          "text": "え、ほんとに？　ただのレモンティーじゃなく？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "二口目に、焼けたところの香りがしたんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "名前は「ウィークエンド・シトロン」にしました"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "……いいね。噂にしていい？　「新しいお菓子を焼いた常連がいる」って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大げさですね"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "大げさな方が、人は路地に入ってくるからね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "recipe_find_lychee_jasmine_tea_hint",
+      "comment": "王煙楼（第4章の龍龍水煙所）。好きな葉はライチ。茉莉花茶にライチを合わせるのは実在する組み合わせ。ライチとジャスミンはドバイ店で買える。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、王煙楼が小さな茶杯を二つ並べた。白い花の香りが、湯気と立つ。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "茉莉花の茶だよ。本店では、これにライチを一つ浮かべる客がいる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "お茶に、果物を"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "甘い果実を、花の香りが上から包む。私の好きな組み合わせだ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "煙でもできる。ライチを主にして、ジャスミンは控えめに"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "serious",
+          "text": "花は強い。多いと、客の息より先に香りが走る"
+        },
+        {
+          "type": "note",
+          "note_id": "recipe_hint_lychee_jasmine_tea",
+          "label": "王煙楼の話 ライチ×ジャスミン"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ライチに、ジャスミンを少し。ドバイの店なら、どちらもある）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "recipe_find_lychee_jasmine_tea_return",
+      "comment": "ライチ×ジャスミンがレシピ帳に載った後の来店。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店を出る前に、王煙楼がこちらの指先を見た。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "花の匂いがするね、……作ったのかい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。ライチを主にして、ジャスミンは控えめにしました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "最初の一口は果実で、吐いたあとに花が残りました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "名前は「ライチ茉莉花茶」です"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "茶の名前のままか。……いい。客を迷わせない名前だ"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "次は、相手の息を見てから、花の量を決めなさい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい、……客ごとに、ですね"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "laugh",
+          "text": "そう。私の本店の客も、そこでうるさい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "recipe_find_festa_punch_hint",
+      "comment": "太陽（第4章のFESTA）。好きな葉はパッションフルーツ、南国の果実を重ねたお祭りミックスが得意。審査員であることには触れない。パイナップルとパッションフルーツはドバイ店で買える。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、太陽がカウンターの向こうから身を乗り出した。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "ハジメ！　俺のお祭りミックス、いちばん簡単なの、教える"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "いいんですか？"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "パイナップルに、パッションフルーツを足す。それだけ"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "serious",
+          "text": "パッションフルーツ、強い。少しでいい。パイナップルが、明るくする"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "甘酸っぱい、冷たい、明るい。フェスタの味だ！"
+        },
+        {
+          "type": "note",
+          "note_id": "recipe_hint_festa_punch",
+          "label": "太陽の話 パイナップル×パッションフルーツ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（パイナップルに、パッションフルーツを少し。ドバイの店でそろう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "recipe_find_festa_punch_return",
+      "comment": "パイナップル×パッションフルーツがレシピ帳に載った後の来店。第4章のFESTAと第5章の屋敷の中庭のどちらでも成り立つように、場所の名前を出さない（どちらも手拍子がある）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手拍子の切れ目で、太陽がこちらへ駆けてきた。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "ハジメ！　顔に書いてある。作ったな？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "パイナップルに、パッションフルーツを少し。作りました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "名前は「フェスタ・パンチ」にしました。明るくて、つい二口目が来るので"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "フェスタ・パンチ！　いいな、それ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "太陽さんの一台なのに、俺が名前を付けちゃって"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "教えたら、もうお前の一台。名前を付けたの、お前だろ"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "お前の働いてる店で、出せ。客、きっと笑うぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "recipe_find_russian_tea_hint",
+      "comment": "ヴォルク（第5章の東京・鉄の煙）。第3章の初来店（ch3_volk_first・必須）で出した祖母の赤いジャムと紅茶、「紅茶とジャムは、測らない」を受ける。ラズベリーは地元の店、ブラックティーは東京・柚ヶ谷・ドバイの店で買える。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、ヴォルクが紅茶と、赤いジャムの小皿を置いた。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "座れ。祖母のジャムだ。ラズベリー"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "舐めながら飲む、でしたよね"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "そうだ。日本では、紅茶に混ぜてロシアンティーと呼ぶらしいな"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "祖母が聞いたら、怒る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……煙なら、混ぜてもいいですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "煙なら、いい。ブラックティーに、ラズベリーを少し"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "量は、測るな。祖母の決まりだ"
+        },
+        {
+          "type": "note",
+          "note_id": "recipe_hint_russian_tea",
+          "label": "ヴォルクの話 ブラックティー×ラズベリー"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ラズベリーは地元の店にあった。紅茶は、東京の店で買える）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "recipe_find_russian_tea_return",
+      "comment": "ブラックティー×ラズベリーがレシピ帳に載った後の来店。手帳に書かずに閉じるのは、第3章の締めくくりの「書かずに覚えておく」と同じ向き（締めくくりを読んでいなくても成り立つ）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクが計器から目を上げ、こちらの手元を見た。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……紅茶の匂いがする。作ったか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ブラックティーに、ラズベリーを少し。量は、測りませんでした"
+        },
+        {
+          "speaker": "volk",
+          "face": "surprise",
+          "text": "……本当に、測らなかったのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "このくらいかなって、手で。名前は「ロシアンティー」にしました"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "日本の呼び方だな"
+        },
+        {
+          "speaker": "volk",
+          "face": "smile",
+          "text": "……いい。祖母には、煙の話はしないでおく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクは手帳を開きかけて、何も書かずに閉じた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "recipe_find_luqaimat_hint",
+      "comment": "なる（第5章のKEMURIKUSA）。菓子の味から配合を組み立てる。ルカイマットは第4章のスークの屋台の菓子（ch4_dubai_daily.json）で、はじめが買ったかどうかに頼らない。ハニーとカルダモンは地元の店で買える。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、なるがメモ帳を一枚破って、こちらへ寄こした。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "ドバイのスークの屋台に、ルカイマットってあったろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "蜜をかけた、揚げ団子の"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "あれ、煙にしたい。ハニーを主役に、カルダモンをひとつまみ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "生地にカルダモンが入ってた。あの香りがないと、ただの蜂蜜だ"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "……うちの客に出す前に、お前の舌でも確かめてくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺でいいの？"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "俺の台は丸見えだ。隠す配合なんか、ねえよ"
+        },
+        {
+          "type": "note",
+          "note_id": "recipe_hint_luqaimat",
+          "label": "なるの話 ハニー×カルダモン"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ハニーにカルダモン。どっちも、地元の店に並んでた）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "recipe_find_luqaimat_return",
+      "comment": "ハニー×カルダモンがレシピ帳に載った後の来店。なるが自分の客に出す（帰郷して客に出す）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるが、カウンターの奥からこちらを手招きした。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "で、どうだった。ルカイマット"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ハニーにカルダモン、作ったよ。吐いたあとに、揚げたての匂いがした"
+        },
+        {
+          "speaker": "naru",
+          "face": "surprise",
+          "text": "……揚げた匂いまで出たか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "カルダモンが、生地の役をしてくれた。名前は、そのまま「ルカイマット」"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "そのままか。……いい。客が、ドバイの話を聞きたくなる名前だ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "今度、うちの客にも出す。最初の一口は、お前が作った話からな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……それ、ちょっと照れる"
+        }
+      ]
+    }
+  ]
+}

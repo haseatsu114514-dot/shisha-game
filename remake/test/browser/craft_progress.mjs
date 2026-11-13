@@ -1,6 +1,7 @@
 // 提供成功/失敗、同じ調整セルへの2回の実プレイ、単工程のヘッダー。
 import assert from "node:assert/strict";
 import { suite, assertFits, storageSnapshot } from "./support.mjs";
+import { assertCraftProgress } from "./craft_progress_assertions.mjs";
 
 const labels = ["パッキング", "炭焼き", "蒸らし", "吸い出し", "提供", "調整"];
 async function init(page, steps = null) {
@@ -20,7 +21,7 @@ async function init(page, steps = null) {
 }
 const active = page => page.locator('.bench-phase[aria-current="step"]').getAttribute("data-step");
 const headerLabels = page => page.locator(".bench-phase-copy b").allTextContents();
-const fits = page => assertFits(page, ".bench-progress, .bench-phase-copy b");
+const fits = page => assertCraftProgress(page);
 
 await suite("craft-progress", async check => {
   for (const [name, viewport, mobile, reducedMotion] of [
@@ -127,7 +128,7 @@ await suite("craft-progress", async check => {
         await fits(page);
         await assertFits(page, '.care-coals-lead, .care-coals-ask, .care-coal');
         await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/${name}-care${round}.png` });
-        // 既存の炭焼き・吸引を自動操作して結果を取得。実時間20分の待ちはない。
+        // 既存の炭の交換・吸引を自動操作して結果を取得。実時間20分の待ちはない。
         await page.evaluate(() => { T.session.craftTest.auto = "good"; });
         await page.locator('[data-test="care-coal-1"]').click();
         await page.evaluate(() => window.run);
@@ -144,7 +145,7 @@ await suite("craft-progress", async check => {
       assert.equal(data.history.length, 2);
       assert.equal(JSON.stringify(data.history[0]), data.first);
       assert.equal(data.history[1].startTemp, Math.max(.14, data.history[0].temp - .075));
-      assert(data.history.every(h => h.coals === 1 && h.coalsDetail.count === 1 && h.coalsDetail.picks.length === 1));
+      assert(data.history.every(h => h.coals === 1 && h.coalsDetail.count === 1 && h.coalsDetail.picks.length === 0), "the fixture has no first-burn record, so the swap uses standard coals");
       assert.equal(data.parts.care1, data.history[0].score);
       assert.equal(data.parts.care2, data.history[1].score);
       assert.deepEqual(data.weights, { holes: .2, heat: .2, shisha: .2, care1: .2, care2: .2 });

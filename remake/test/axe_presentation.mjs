@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { BULLS, KILLS, resolveThrow } from "../js/minigames/axe-model.js";
-import { shotFeedback, sessionStats, impactFeedback, declarationCue } from "../js/minigames/axe-presentation.js";
+const league = { throws: 10 };
+import { shotFeedback, sessionStats, impactFeedback, contactHold, powerVerdict, declarationCue, quiverAt, QUIVER_MS, zoneLabel, haloFor } from "../js/minigames/axe-presentation.js";
+import { AXE_FEEL, applyFeel } from "../js/minigames/axe-feel.js";
+import { RINGS, CLUSTERS } from "../js/minigames/axe-model.js";
+/** The middle of the n-point ring's band, on the horizontal through the centre. */
+const bandMiddle = score => (RINGS[5 - score].radius + RINGS[6 - score].radius) / 2;
 
 test("declaring a new killshot blue gives one cue; same blue, normal, or non-killshot gives none", () => {
   const [first, second] = KILLS;
@@ -24,16 +29,61 @@ test("bullseye and killshot hits get the special celebration, ordinary hits do n
 });
 
 test("misses never celebrate a valid-power axe stuck outside the scoring circle or called blue", () => {
-  for (const failed of [shot(.9, .9), shot(1.08, 1.08), shot(0, 0, .62, KILLS[0].id), shot(0, 0, .1)]) {
+  for (const failed of [shot(1.15, 1.15), shot(1.2, 1.2), shot(0, 0, .62, KILLS[0].id), shot(0, 0, .1)]) {
     assert.equal(failed.score, 0);
     assert.equal(impactFeedback(failed).hit, false);
-    assert.equal(impactFeedback(failed).strength, 0);
-    assert.equal(impactFeedback(failed).duration, 0);
+    assert.equal(impactFeedback(failed).celebration, false);
   }
-  assert(shot(.9, .9).stuck, "Wood contact is separate from earning a point");
-  assert(!shot(1.08, 1.08).stuck, "Transparent artwork margins are not wood");
+  assert(shot(1.15, 1.15).stuck && shot(1.2, 1.2).stuck, "Wood contact is separate from earning a point");
+  assert(!shot(0, 0, .1).stuck, "An under-rotated axe does not stick");
   const bull = impactFeedback(shot()), normal = impactFeedback(shot(.7, 0));
   assert(bull.hit && normal.hit); assert(bull.strength > normal.strength);
+});
+// 2026-11-13 手応えレビュー指摘6: 刺さった＝木を割った物理の事実には、0点でも反応を返す（祝福とは別の層）
+test("a zero-point axe stuck in wood gets the physical reaction only; a drop gets none", () => {
+  for (const wood of [shot(1.15, 1.15), shot(0, 0, .62, KILLS[0].id)]) {
+    const effect = impactFeedback(wood);
+    assert(wood.stuck && wood.score === 0);
+    assert.equal(effect.physical, true); assert.equal(effect.celebration, false); assert.equal(effect.tier, "wood");
+    assert.equal(effect.strength, AXE_FEEL.impact.strength.wood); assert.equal(effect.duration, AXE_FEEL.impact.woodDuration);
+    assert(effect.strength < impactFeedback(shot(.7, 0)).strength, "the wood alone reacts less than a scoring hit");
+    assert.notEqual(effect.color, impactFeedback(shot(.7, 0)).color);
+  }
+  assert.equal(impactFeedback(shot(1.15, 1.15)).burst, "MISS");
+  assert.equal(impactFeedback(shot(0, 0, .62, KILLS[0].id)).burst, "宣言外");
+  assert.equal(impactFeedback(shot(.7, 0)).burst, "+" + shot(.7, 0).score);
+  const drop = impactFeedback(shot(0, 0, .1));
+  assert.equal(drop.physical, false); assert.equal(drop.strength, 0); assert.equal(drop.duration, 0); assert.equal(drop.tier, null);
+});
+// 指摘1: 刺さった瞬間の止め（ヒットストップ）は強い一投ほど長く、落下は当たった姿を見せてから落ちる
+test("hit-stop grows with the hit, a drop holds its bad contact, and an axe off the board never stops", () => {
+  const wood = contactHold(shot(1.15, 1.15)), ring = contactHold(shot(.7, 0)), bull = contactHold(shot()), kill = contactHold(shot(KILLS[0].x, KILLS[0].y, .62, KILLS[0].id));
+  assert(wood > 0 && wood < ring && ring < bull && bull < kill, [wood, ring, bull, kill].join());
+  assert(ring >= 50 && kill <= 120, "about 3 to 7 frames");
+  assert.equal(contactHold(shot(0, 0, .1)), AXE_FEEL.hitstop.drop); assert.equal(contactHold(shot(0, 0, .95)), AXE_FEEL.hitstop.drop);
+  assert.equal(contactHold(resolveThrow({ x: 1.2, y: 1.2, power: .62 })) > 0, true, "the plank corner is wood");
+  assert.equal(contactHold(null), 0);
+});
+// 指摘4: 自分の回転を、向きと量の言葉で返す
+test("the power verdict names the zone, the direction and the size of the fix", () => {
+  assert.match(powerVerdict(.62, { inputMode: "tap-pull" }).text, /回転 62% · ちょうどいい/);
+  assert.equal(powerVerdict(.62).zone, "sweet");
+  assert.match(powerVerdict(.5, { inputMode: "tap-pull" }).text, /回転 50% · 回転が足りない · あと少し速く/);
+  assert.match(powerVerdict(.3, { inputMode: "tap-pull" }).text, /柄から当たる · もっと速く弾く/);
+  assert.match(powerVerdict(.75, { inputMode: "tap-pull" }).text, /回り気味 · 少しゆっくり/);
+  assert.match(powerVerdict(.9, { inputMode: "tap-pull" }).text, /回りすぎ · もっとゆっくり弾く/);
+  assert.match(powerVerdict(.5).text, /待って放す/); assert.match(powerVerdict(.75).text, /早く放す/);
+  assert.equal(powerVerdict(.3).zone, "drop"); assert.equal(powerVerdict(.75).zone, "edge");
+  assert.equal(powerVerdict(.62, { inputMode: "tap-pull" }).short, "↻62% ちょうどいい");
+  assert.equal(powerVerdict(.9, { inputMode: "tap-pull" }).short, "↻90% もっとゆっくり");
+  assert.equal(powerVerdict(.5).short, "↻50% 少し待って");
+  for (let p = 0; p <= 1; p += .01) assert(powerVerdict(p, { inputMode: "tap-pull" }).short.length <= 12, "one short line on the result card");
+});
+test("development feel overrides touch only known numbers and the freeze switch", () => {
+  const target = structuredClone(AXE_FEEL);
+  assert.equal(applyFeel("hitstop.large:130,shake.small.x:3,freeze:contact,unknown:9,hitstop.small:abc", target), 3);
+  assert.equal(target.hitstop.large, 130); assert.equal(target.shake.small.x, 3); assert.equal(target.debug.freeze, "contact");
+  assert.equal(target.hitstop.small, AXE_FEEL.hitstop.small); assert.equal(applyFeel("", target), 0); assert.equal(applyFeel(null, target), 0);
 });
 
 test("feedback celebrates actual central and off-center red bulls without suggesting a correction", () => {
@@ -43,11 +93,13 @@ test("feedback celebrates actual central and off-center red bulls without sugges
     assert.match(feedback.tip, /赤い中心に命中/); assert.doesNotMatch(feedback.tip, /次は/);
   }
 });
+// Just right of and just above the upper-right outer bull (positions from the model, so they follow the painted target).
+const upperRight = CLUSTERS.find(c => c.id === "ur"), rightOfOuter = () => shot(upperRight.x + .19, upperRight.y);
 test("normal aim correction uses the nearest red core, including outer bulls", () => {
-  assert.match(shotFeedback(shot(.48, -.24)).tip, /左の赤い中心/);
-  assert.match(shotFeedback(shot(.36, -.36)).tip, /下の赤い中心/);
-  assert.match(shotFeedback(shot(.18, 0)).tip, /左の赤い中心/);
-  assert.equal(shotFeedback(shot(.48, -.24)).tone, "hit");
+  assert.match(shotFeedback(rightOfOuter()).tip, /左の赤い中心/);
+  assert.match(shotFeedback(shot(upperRight.x, upperRight.y - .21)).tip, /下の赤い中心/);
+  assert.match(shotFeedback(shot(.2, 0)).tip, /左の赤い中心/);
+  assert.equal(shotFeedback(rightOfOuter()).tone, "hit");
   assert.equal(shotFeedback(shot(1, 1)).tone, "miss");
 });
 test("declared misses explain the called blue instead of offering normal red points", () => {
@@ -57,23 +109,67 @@ test("declared misses explain the called blue instead of offering normal red poi
   assert.match(shotFeedback(declared).tip, /左上の青/);
   assert.doesNotMatch(shotFeedback(declared).tip, /赤/);
   assert.equal(shotFeedback(shot(target.x, target.y)).tone, "hit");
-  for (const dx of [0, .07]) assert.equal(shotFeedback(shot(target.x + dx, target.y, .62, target.id)).tone, "killshot");
+  for (const dx of [0, .04]) assert.equal(shotFeedback(shot(target.x + dx, target.y, .62, target.id)).tone, "killshot");
 });
 test("drops use the actual power failure even over red or declared blue", () => {
   for (const power of [.1, .95]) for (const called of [null, KILLS[0].id]) {
     const result = shot(0, 0, power, called), feedback = shotFeedback(result);
     assert.equal(result.stuck, false); assert.equal(feedback.tone, "drop");
-    assert.match(feedback.tip, /54〜70%/); assert.match(feedback.tip, power < .42 ? /力が足りず/ : /回転が合わず/);
+    assert.match(feedback.tip, /54〜70%/); assert.match(feedback.tip, power < .42 ? /柄から/ : /回りすぎ/);
     assert.doesNotMatch(feedback.tip, /宣言した青だけ|赤い中心を狙/);
+    // 弾いて投げる操作では % ではなく動作の言葉で（指摘4）
+    const tap = shotFeedback(result, { inputMode: "tap-pull" }).tip;
+    assert.doesNotMatch(tap, /%/); assert.match(tap, power < .42 ? /速く弾こう/ : /ゆっくり弾こう/);
   }
-  const tired = { ...shot(.48, -.24), sway: { fatigue: 1, focused: false } };
+  const tired = { ...rightOfOuter(), sway: { fatigue: 1, focused: false } };
   assert.match(shotFeedback(tired).tip, /左の赤い中心.*息を整える/);
   assert.doesNotMatch(shotFeedback({ ...tired, sway: { fatigue: 1, focused: true } }).tip, /息を整える/);
 });
-test("session summaries handle empty play and count outcomes, stuck axes, rounded average and best streak", () => {
-  assert.deepEqual(sessionStats([]), { bulls: 0, killshots: 0, stuck: 0, average: 0, best: 0, streak: 0 });
+test("session summaries handle empty play and count outcomes, calls, drops, two-decimal average and best streak", () => {
+  assert.deepEqual(sessionStats([]), { bulls: 0, killshots: 0, calls: 0, stuck: 0, drops: 0, average: 0, best: 0, streak: 0 });
   const target = KILLS[0], shots = [shot(BULLS[0].x, BULLS[0].y), shot(target.x, target.y, .62, target.id),
     shot(0, 0, .1), shot(), shot(0, 0, .62, target.id), shot(1, 1)];
-  assert.deepEqual(sessionStats(shots), { bulls: 2, killshots: 1, stuck: 5, average: 3.3, best: 8, streak: 2 });
+  assert.deepEqual(sessionStats(shots), { bulls: 2, killshots: 1, calls: 2, stuck: 5, drops: 1, average: 3.33, best: 8, streak: 2 });
   assert.equal(sessionStats([shot(), shot(), shot(), shot(.3, 0), shot()]).streak, 3);
+});
+test("a throw into a closed Pro five ring explains the closure instead of a miss correction", () => {
+  const first = resolveThrow({ x: 0, y: 0, power: .62 }, [], { division: "pro", ...league });
+  const closed = resolveThrow({ x: 0, y: 0, power: .62 }, [first], { division: "pro", ...league });
+  assert.equal(closed.score, 0); assert.equal(shotFeedback(closed).label, "CLOSED");
+  assert.match(shotFeedback(closed).tip, /閉じ|使った/);
+  assert.equal(impactFeedback(closed).hit, false);
+  const outer = shotFeedback(shot(BULLS[0].x, BULLS[0].y));
+  assert.equal(outer.tone, "bull"); assert.match(outer.tip, /外側の赤/);
+});
+
+test("the handle quiver decays to nothing and never moves the cutting edge", () => {
+  assert.equal(quiverAt(-1), null); assert.equal(quiverAt(QUIVER_MS), null); assert.equal(quiverAt(NaN), null);
+  const first = quiverAt(30), late = quiverAt(QUIVER_MS - 20);
+  assert(Math.abs(first.rotate) > Math.abs(late.rotate)); assert(Math.abs(first.scale - 1) > Math.abs(late.scale - 1));
+  for (let ms = 0; ms < QUIVER_MS; ms += 10) { const q = quiverAt(ms); assert(Math.abs(q.rotate) <= 2.6 && Math.abs(q.scale - 1) <= .06); }
+});
+test("the close-up names the zone the blade touched in plain words", () => {
+  const target = KILLS[0];
+  assert.equal(zoneLabel(shot()), "中央の赤に触れた");
+  assert.equal(zoneLabel(shot(BULLS[0].x, BULLS[0].y)), "左上の赤に触れた");
+  assert.equal(zoneLabel(shot(RINGS[1].radius - .05, 0, .62)), "中央の5の円");
+  assert.equal(zoneLabel(shot(bandMiddle(4), 0)), "4のリング");
+  assert.equal(zoneLabel(shot(target.x, target.y, .62, target.id)), "左上の青の中心");
+  assert.equal(zoneLabel(shot(target.x + .04, target.y, .62, target.id)), "左上の青");
+  assert.equal(zoneLabel(shot(0, 0, .62, target.id)), "宣言した青の外");
+  assert.equal(zoneLabel(shot(1.15, 1.15)), "得点圏の外");
+  const first = resolveThrow({ x: 0, y: 0, power: .62 }, [], { division: "pro", ...league });
+  assert.equal(zoneLabel(resolveThrow({ x: 0, y: 0, power: .62 }, [first], { division: "pro", ...league })), "閉じた円に触れた");
+});
+test("the aiming halo outlines exactly the zone that would score, and nothing for a zero", () => {
+  assert.deepEqual(haloFor(shot()), { kind: "bull", x: 0, y: 0, r: RINGS[0].radius });
+  const outer = CLUSTERS[1]; assert.deepEqual(haloFor(shot(outer.x, outer.y)), { kind: "bull", x: outer.x, y: outer.y, r: RINGS[0].radius });
+  assert.deepEqual(haloFor(shot(RINGS[1].radius - .05, 0)), { kind: "five", x: 0, y: 0, r: RINGS[1].radius });
+  for (const score of [4, 3, 2, 1]) {
+    const result = shot(bandMiddle(score), 0); assert.equal(result.score, score); assert.deepEqual(haloFor(result), { kind: "ring", x: 0, y: 0, r: RINGS[6 - score].radius });
+  }
+  const target = KILLS[2];
+  assert.equal(haloFor(shot(target.x, target.y, .62, target.id)).r, target.inner);
+  assert.equal(haloFor(shot(target.x + .04, target.y, .62, target.id)).r, target.outer);
+  for (const zero of [shot(1.15, 1.15), shot(0, 0, .1), shot(0, 0, .62, target.id)]) assert.equal(haloFor(zero), null);
 });

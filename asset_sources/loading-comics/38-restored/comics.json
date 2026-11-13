@@ -1,0 +1,107 @@
+{
+  "episode": 38,
+  "title": "月曜の香り",
+  "cast": "凛想・はじめ",
+  "theme": "旧・暴走編（復刻）",
+  "status": "adopted-registered-20261102",
+  "registered": true,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-unhinged-ltr-20261025/37-40-chaos-ltr.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "image_genによる再作画",
+  "image_manifest": [
+    {
+      "file": "38-restored.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2132183,
+      "sha256": "9982858447c25e840a7dc3946c66b6371290da8e02ce23f6f83b6c82703918fa"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "LEFT ①: languid Rio (dark long wolf cut/white shirt/black slacks) teasingly offers Hajime a tiny plain PERFUME TEST STRIP, asking 「何の香り？」 No tobacco or smoking involved. RIGHT ②: a surreal miniature GRAY OFFICE MONDAY has erupted like a cartoon sensory vision around the strip: tiny cubicles, alarm clocks, mountains of paperwork, giant calendar tile 「月」; Hajime stares with exaggerated emotional recognition and says 「月曜。」 Rio calmly checks her clipboard, says 「正解。」 Funny recognizable impossible fragrance, not a toxic chemical or medical event, no real company logos.",
+      "dialogue_original": [
+        "何の香り？",
+        "月",
+        "月曜。",
+        "正解。"
+      ],
+      "prompt": "旧漫画のサイズと読む順を統一する編集です。添付1の原画シートから指定した話1本だけを、添付2の下敷きへ再構成する。元のネタ・衣装・顔・小物・台詞を保つ。別の話を混ぜず、新しいギャグは足さない。出力1536x1024、左x36 y272幅720高さ480、右x780 y272幅720高さ480、横長3:2。上下272pxの紙余白、枠はy752で終わる。枠を縦に広げない。絵は枠内だけ。セーフマージン29px。左コマを導入、右コマをオチに並べ替え、絵や文字の左右反転は禁止。元絵の台詞は横書きの読みやすい太い日本語ゴシック。題名・話数・シリーズ名・読む順の番号・署名は消す。2.5頭身の太線セル塗りと紙質、原画の本人性を維持。台詞が多くても枠を拡げず人物を胸上で構成する。文字・顔・重要な小物を欠かさない。元々3人の話は物語を勝手に改変せず3人を維持してよい（旧話の復刻である）。シーシャ器具は指定された話以外描かない。写真は構造参照で、製品ロゴや写真の実在人物は模写しない。最終配置について、次の台本のLEFTは完成版の左、RIGHTは完成版の右です。元シートの左右位置を真似しない。上の大きな余白を残す下敷き画像が寸法の正本。出力は必ず1536x1024（2:1や横長帯は禁止）。下敷きは添付1。添付2のシートの第38話「月曜の香り」だけ。完成版の台本: LEFT ①: languid Rio (dark long wolf cut/white shirt/black slacks) teasingly offers Hajime a tiny plain PERFUME TEST STRIP, asking 「何の香り？」 No tobacco or smoking involved. RIGHT ②: a surreal miniature GRAY OFFICE MONDAY has erupted like a cartoon sensory vision around the strip: tiny cubicles, alarm clocks, mountains of paperwork, giant calendar tile 「月」; Hajime stares with exaggerated emotional recognition and says 「月曜。」 Rio calmly checks her clipboard, says 「正解。」 Funny recognizable impossible fragrance, not a toxic chemical or medical event, no real company logos.。元のギャグの誇張は復刻として保つ。シーシャの実物・ホース・炭・喫煙・武器は描かない。煙が物質化する第34話は空想の黒灰色の雲ブロックで、機材からの煙は描かない。第31話はあげはの髪・顔・クマ髪飾り・豹柄とピンク服を正式立ち絵に合わせる。",
+      "reference_images": [
+        "/workspace/shisha-game/asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "/workspace/shisha-game/asset_sources/short-comics-unhinged-ltr-20261025/37-40-chaos-ltr.png",
+        "/workspace/shisha-game/assets/sprites/characters/rin/chr_rin_normal.png"
+      ],
+      "generator": "OpenAI image_gen"
+    }
+  ],
+  "source": [
+    {
+      "file": "38-restored.png",
+      "region": {
+        "x": 39,
+        "y": 272,
+        "width": 715,
+        "height": 447,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "38-restored.png",
+      "region": {
+        "x": 780,
+        "y": 276,
+        "width": 716,
+        "height": 443,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-38-1.webp",
+      "width": 715,
+      "height": 477,
+      "sha256": "30cd6488e59290b133e0534fb4f2de38ce1d693deaa3145275c194e6d6f2bde3"
+    },
+    {
+      "file": "panels/restored-38-2.webp",
+      "width": 716,
+      "height": 477,
+      "sha256": "541e21828c4f8cdb969734f1ee44b0a6ca6f9db03fb47f7ee45ba3f140dc6fa5"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "ok（強制通過なし）",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "旧・暴走編の内容を維持。49話以降の少しシュールな作風とは異なる。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": []
+    }
+  },
+  "selection_note": "2026-11-02 オーナー採用。remake/js/core/loading-comics.js の id 'restored-38'（出てくるキャラと会った後に出る）。画風の統一は後日の作り直しで行う。"
+}

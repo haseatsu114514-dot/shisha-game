@@ -75,6 +75,8 @@ const transitions = await load(await read('../js/core/transitions.js'), {
   SE: { doorbell: () => transitionRings++ }, reducedMotion: () => reduced,
   moveCurtain: curtain, moveStyle: () => 'pin', withStoreArrival: (_host, c) => c,
   el: node, holdKeys: () => () => {}, nextFrame: async () => {}, sleep: async () => {},
+  // 一筆の幕（#2688 F1）が描く SVG とアニメーションも DOM の境界として差し替える
+  svg: () => ({ ...node(), style: {}, setAttribute() {} }), move: async () => {},
 }, { performance: { now: () => now } });
 for (const fast of [false, true]) for (const reducedSetting of [false, true]) {
   reduced = reducedSetting;
@@ -99,7 +101,9 @@ console.log('PASS: real transition integration, normal/SKIP/reduced, one-shot cu
 
 // Real setBg + real transitions, with only DOM/image/device boundaries replaced.
 function domNode() {
-  const n = { children: [], dataset: {}, classList: { add() {}, contains: () => false }, append(c) { this.children.push(c); c.remove = () => { this.children = this.children.filter(x => x !== c); }; } };
+  const n = { children: [], dataset: {}, style: {}, classList: { add() {}, contains: () => false }, append(c) { this.children.push(c); c.remove = () => { this.children = this.children.filter(x => x !== c); }; } };
+  // 煙のにじみ（TMG44）は、次の背景を前の背景の下へ差し込む
+  n.insertBefore = (c, ref) => { n.append(c); if (ref) { n.children = n.children.filter(x => x !== c); n.children.splice(n.children.indexOf(ref), 0, c); } };
   return n;
 }
 let pendingImages = [], failImages = false;
@@ -146,3 +150,6 @@ transitions.cueTransition('place', { spotId: 'tonari' });
 await integrated.setBg('bg_tonari_inside_night.png');
 assert.equal(transitionRings, base + 1, 'image failure preserves DOM-commit progression contract');
 console.log('PASS: production setBg/transition first, instant, fast, cover, redraw, interruption and image-failure integration');
+
+// The shared curtain must keep its animation lifetime and keyboard guard through nested/failing transitions.
+await import('./transition_lifecycle.mjs');

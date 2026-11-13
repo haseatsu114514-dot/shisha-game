@@ -1,0 +1,84 @@
+{
+  "date": "2026-11-11",
+  "issue": 3221,
+  "generator": "Codex built-in image_gen",
+  "counts": {
+    "windguard": 1,
+    "ice_hose": 2,
+    "diffuser": 1
+  },
+  "references": {
+    "windguard-photo.jpg": {
+      "source": "https://prana-lounge.com/shop/wp-content/uploads/2022/09/windcoverblackmatt-300x300.jpg",
+      "sha256": "749562b82655f7f95c8946e43bdd402f1365143fe04d7c67dc0ff89f0cbddc5f"
+    },
+    "diffuser-photo.jpg": {
+      "source": "https://www.pipe-m.com/data/pipe-m/product/20221002_5e32ae.jpg",
+      "sha256": "a7b74d7c15f37cad532f452e4b0c3e6a2c3ea216e30f1626918a5253e0b9cedc"
+    },
+    "diffuser-installed.jpg": {
+      "source": "https://www.pipe-m.com/data/pipe-m/product/20221005_ac522f.jpg",
+      "sha256": "9fc5131ac6863156eb82a0f3d07f967a97763c7bd16a90bfda323cbe864c9418"
+    },
+    "ice-photo.jpg": {
+      "source": "https://www.shisha-mart.com/data/shisha-mart/product/20250606_a3c21d.jpg",
+      "sha256": "01d98a6d0fce62a435ab8914d68dae90573d7451c6d8deb737d951d8998af33d"
+    },
+    "stand-russian-03.jpg": {
+      "source": "siryou:shisha-hardware-reference/web-refs/images/stand-russian-03.jpg",
+      "sha256": "a46c01fb85d71861c6cabbe5710a93cb13a815f3c07e898a459a219ba355319d"
+    },
+    "hose-silicone-handle-01.jpg": {
+      "source": "siryou:shisha-hardware-reference/web-refs/images/hose-silicone-handle-01.jpg",
+      "sha256": "738c3140639aa08a31e0ac6b2f8e99d92574b9cb55ac813052495ad1f95e7a5a"
+    }
+  },
+  "sources_not_committed": "Vendor and private reference photographs were inspected locally and passed to image_gen, not committed to game repository.",
+  "rules": [
+    "docs/shisha_reference.md sections 4.1-4.4, English structure paragraph copied verbatim in prompts.",
+    "STYLE_ART from gen.py kept verbatim. Its no-hardware line is explicitly excepted for these named B equipment subjects.",
+    "Each card is a standalone unmounted accessory, no assembled hookah, bowl, HMD, coal, people, hands, logos or text."
+  ],
+  "records": {
+    "windguard": {
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "bytes": 1820825,
+      "sha256": "b8120b65aec52ca2da6ecfd705280141df340a8d97d21a25672d8410d771776c",
+      "alpha": "opaque RGB",
+      "candidate_512_sha256": "badfb1e623282edda495261eb8fa5df4884c86f2b779f63cc6e5536ef3d10c73"
+    },
+    "ice_hose": {
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "bytes": 1638636,
+      "sha256": "63e83129b6810acdf6e77e3d3885148000bf6db4ea9a194caa51f95017c04b14",
+      "alpha": "opaque RGB",
+      "candidate_512_sha256": "cceb16d84fb5747000b5795586388b8976c0d0e53e860ea5821501cecfa9baff"
+    },
+    "diffuser": {
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGB",
+      "bytes": 1713193,
+      "sha256": "7f0507ae60d81b03754bc4ae2f06a9df93990bae430b591ba0e48a3734a984ae",
+      "alpha": "opaque RGB",
+      "candidate_512_sha256": "c4de270ce7795f3f6768c2c92ad79c3d2fe45425b3c60abb89baff5787b209be"
+    }
+  },
+  "checks": {
+    "windguard": "Open top, perforated lower cover, loop handle, single empty standalone windguard.",
+    "ice_hose": "Corrected short first attempt. Final one continuous smooth tube from cooling handle to heel connector, two ends, no fork/break. Approximate on-image flexible path about 4 handle lengths.",
+    "diffuser": "One silicone perforated cap, larger top mounting socket distinct from small air holes, no extra stem or bottle.",
+    "small_size": "100px contact-sheet view inspected. Generic accessory silhouette readable; exact product details naturally reduce at that scale."
+  },
+  "runtime": "Game code, assets/ui, manifest and runtime not changed. Adoption and real gameplay checks remain."
+}

@@ -1,4 +1,4 @@
-# 第3章冒頭・久世の調査机
+# 第3章冒頭・綾取の調査机
 
 2026-10-26。旧 `asset_sources/ch3-kuze-prologue-20261025/anonymous-video-desk-original.png` を背景に、現行の `assets/sprites/characters/kuze/chr_kuze_normal.png` を人物の正本として画像編集生成した。
 

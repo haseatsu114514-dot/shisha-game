@@ -29,10 +29,10 @@ for (const [a, b] of [["body", "sense"], ["sense", "wisdom"], ["body", "wisdom"]
   const A = keys(a), B = keys(b), diff = [...A].filter((k) => !B.has(k)).length + [...B].filter((k) => !A.has(k)).length;
   assert(diff >= 12, `${a} と ${b} の形が違う（違うマス ${diff}）`);
 }
-const expect = { body: [8, 6], sense: [8, 7], wisdom: [8, 7] }; // スキル各8（中ほどの面白いスキル2つを足した。SBD66） // スキル各6・授業20（カルダモンは感覚盤へ。SBD60）
+const expect = { body: [7, 6], sense: [8, 8], wisdom: [8, 8] }; // 第4章以降の授業（煙楼先生・博士）を足した。SBD91 // 差し入れ上手（K20）を人柄の通常マスへ置き換えて才能盤のスキルは7 // スキル各8（中ほどの面白いスキル2つを足した。SBD66） // スキル各6・授業20（カルダモンは感覚盤へ。SBD60）
 for (const k of board.BOARD_KEYS) {
   const nodes = board.boardNodes(k);
-  assert.equal(nodes.filter((n) => n.kind === "stat").length, SHAPE_SIZE[k][0], `${k}: 能力のマス`);
+  assert.equal(nodes.filter((n) => n.kind === "stat").length, SHAPE_SIZE[k][0]+(k==="body"?1:0), `${k}: 能力のマス`);
   assert.equal(board.STAT_SQUARES[k], SHAPE_SIZE[k][0]);
   assert.equal(nodes.filter((n) => n.kind === "gate").length, SHAPE_SIZE[k][1], `${k}: 関門`);
   assert.equal(nodes.filter((n) => n.kind === "skill").length, expect[k][0], `${k}: スキル`);
@@ -85,7 +85,7 @@ for (const l of board.LESSONS) {
 }
 // 帯と強さ: 火種4のスキルは近く、6と8は関門の先。極みも関門の先。どの関門の先にもスキルがある
 for (const s of board.SKILLS) assert.equal(N[s.id].band, s.cost === 4 ? 1 : s.cost === 2 ? 2 : 3, `${s.id}（火種${s.cost}）の帯: 4＝近く・2＝中ほど・5と7＝関門の先`);
-for (const k of board.BOARD_KEYS) assert.deepEqual(board.SKILLS.filter((s) => s.board === k).map((s) => s.cost).sort(), [2, 2, 4, 4, 5, 5, 7, 7], `${k}: スキルの火種`);
+for (const k of board.BOARD_KEYS) assert.deepEqual([...board.SKILLS,...board.STAT_UPGRADES].filter((s) => s.board === k).map((s) => s.cost).sort(), [2, 2, 4, 4, 5, 5, 7, 7], `${k}: スキルの火種`);
 for (const k of board.BOARD_KEYS) {
   const nodes = board.boardNodes(k);
   // 極みは道につながらない。その盤の能力のマスを全部灯すと灯せる（SBD63）
@@ -104,7 +104,7 @@ for (const k of board.BOARD_KEYS) {
     assert(nodes.some((n) => beyond.has(n.id) && n.kind === "skill"), `${gate.id}: 関門の先に強いスキル`);
   }
   const bands = [1, 2, 3].map((b) => nodes.filter((n) => n.kind === "stat" && !n.peak && n.band === b).length);
-  assert.deepEqual(bands, [9, 8, 8], `${k}: 能力のマスは 近く9・中ほど8・関門の先8`);
+  assert.deepEqual(bands, [9, k==="body"?9:8, 8], `${k}: 能力のマスは 近く9・中ほど8・関門の先8`);
   // v13「輪つきの木」（SBD73）
   {
     const V = nodes.filter((n) => !n.peak).length + 1; // 紋を含む（極みは道の外）
@@ -123,6 +123,8 @@ for (const k of board.BOARD_KEYS) {
     for (const n of notables) { assert.equal(n.kind, "stat"); assert.equal(n.cost, 1); assert.equal(board.NOTABLES[n.notable].board, k); }
     // 普通のマスの袋小路（線が1本だけ）は無い（授業・スキル・極みの手前は除く）
     for (const n of nodes) if (n.kind === "stat" && !n.peak) {
+      // K20はオーナー指定の置き換え。旧セーブの道を変えず、元の脇道の接続を厳密に保持する。
+      if(n.id==="K20"){assert.deepEqual(n.links,["B9"]);continue;}
       const deg = n.links.length;
       const onlyToSpot = deg === 2 && n.links.some((l) => byId[l] && byId[l].kind !== "stat" && byId[l].kind !== "gate");
       assert(deg >= 2, `${k} ${n.id}: 能力のマスの袋小路`);
@@ -143,14 +145,15 @@ for (const k of board.BOARD_KEYS) {
   // 紋の場所は盤ごとに違う（SBD65）
   assert.equal(new Set(Object.values(board.HUB_AT)).size, 3, "紋の場所は3枚とも違う");
 }
-// 恩恵は帯の倍率（近く×1・中ほど×2・関門の先×3）
+// 恩恵は帯の倍率（近く×2・中ほど×2・関門の先×3。近くは 2026-11-11 に ×1 → ×2。SBD111）
 {
-  // 帯の倍率: 同じ恩恵（要のマスでない）が 近く・中ほど・関門の先 にあれば ×1・×2・×3
-  const plain = board.boardNodes("body").filter((n) => n.kind === "stat" && !n.peak && !n.notable);
+  assert.deepEqual(board.PERK_TIERS.slice(1).map((t) => t.mult), [2, 2, 3], "近く×2・中ほど×2・台座の先×3");
+  // 帯の倍率: 同じ恩恵（要のマスでない）が 近く・中ほど・関門の先 にあれば、1マスの単位にその帯の倍率が掛かる
+  const plain = board.boardNodes("body").filter((n) => n.kind === "stat" && !n.peak && !n.notable && !n.worth);
   const sample = plain.find((n) => [1, 2, 3].every((b) => plain.some((m) => m.perk === n.perk && m.band === b)));
   assert(sample, "3つの帯にまたがる恩恵がある");
-  const unit = Number(/[\d.]+/.exec(board.perkOf(plain.find((m) => m.perk === sample.perk && m.band === 1)).text)[0]);
-  for (const b of [1, 2, 3]) assert.equal(Number(/[\d.]+/.exec(board.perkOf(plain.find((m) => m.perk === sample.perk && m.band === b)).text)[0]), unit * b, `帯${b}は×${b}`);
+  const unit = Number(/[\d.]+/.exec(board.SQUARE_PERKS.body.perks[sample.perk].text)[0]);
+  for (const b of [1, 2, 3]) assert.equal(Number(/[\d.]+/.exec(board.perkOf(plain.find((m) => m.perk === sample.perk && m.band === b)).text)[0]), unit * board.PERK_TIERS[b].mult, `帯${b}は×${board.PERK_TIERS[b].mult}`);
   assert.equal(board.perkOf(plain.find((m) => m.band === 3)).tierName, "台座の先");
   // 色の台座（SBD89）: 色の火をはめると先へ進めて、台座の能力も手に入る。各盤の4つの台座に、その盤の4つの能力を1つずつ。台座1つ＝台座の先のマス×4/3
   for (const k of board.BOARD_KEYS) {
@@ -169,7 +172,7 @@ for (const k of board.BOARD_KEYS) {
   assert.equal(board.perkOf(board.boardNodes("body").find((n) => n.peak)).name, "基礎", "極みは基礎");
   const notable = board.boardNodes("body").find((n) => n.notable === "ironsleep");
   assert.equal(board.perkOf(notable).notable.name, "不眠の体");
-  assert.equal(board.perkOf(notable).text, "寝た時の体力の回復 ＋4.5%", "要のマスは帯の倍率×1.5（SBD73）");
+  assert.equal(board.perkOf(notable).text, "寝た時の体力の回復 ＋9%（端数は次の睡眠へ）", "要のマスは帯の倍率×1.5（SBD73）。眠りの単位は2%（2026-11-02 補正）");
   for (const n of board.NODES.filter((x) => x.kind === "stat" && !x.peak)) assert(board.SQUARE_PERKS[n.board].perks[n.perk], `${n.id}: 恩恵が決まっている`);
 }
 assert.deepEqual(board.HIDANE_NAME, { any: "白火", body: "紅火", sense: "蒼火", wisdom: "翠火" }, "火種の名前（SBD62）");
@@ -177,10 +180,12 @@ assert.deepEqual(board.HIDANE_NAME, { any: "白火", body: "紅火", sense: "蒼
 assert.equal(N["M-W6"].board, "sense", "カルダモンは感覚盤（3つの盤の授業の数をならす。SBD60）");
 assert.deepEqual([N["M-W2"].ring, N["M-W6"].ring], [2, 2], "スミさんの四つ置き・カルダモンは第2章から");
 // 各スキル・授業は、データの章（届けたい章）までに開く
-for (const item of [...board.SKILLS, ...board.LESSONS]) assert(N[item.id].ring <= (item.ring ?? 1), `${item.id} の章`);
-assert.equal(board.SKILLS.length, 24, "中ほどの面白いスキル6つを足して24（SBD66）");
+for (const item of [...board.SKILLS, ...board.STAT_UPGRADES, ...board.LESSONS]) assert(N[item.id].ring <= (item.ring ?? 1), `${item.id} の章`);
+assert.equal(board.SKILLS.length, 23, "K20は通常マスへ変更（2026-11-01 オーナー指示）");
+assert.equal(N.K20.kind,"stat");assert.equal(N.K20.perk,"charm");assert.equal(N.K20.cost,2);
+assert.equal(board.perkOf(N.K20).text,"好感度が上がりやすく（＋4%）","火種2のマスは恩恵も2マス分（SBD112）");
 for (const k of board.BOARD_KEYS) {
-  const sk = board.SKILLS.filter((x) => x.board === k);
+  const sk = [...board.SKILLS,...board.STAT_UPGRADES].filter((x) => x.board === k);
   assert.equal(sk.reduce((n, x) => n + x.cost, 0), 36, `${k}: スキルの火種は各36`);
   assert.equal(sk.filter((x) => x.ring === 1).length, 2, `${k}: 第1章のスキルは各2つ`);
   assert.equal(board.boardNodes(k).reduce((n, x) => n + x.cost, 0), 66, `${k}: 盤は各66`);
@@ -190,7 +195,7 @@ assert.equal(board.BOARD_TOTAL_COST, 198, "盤の全部で198（1レベル2つ�
 assert(140 >= 0.7 * board.BOARD_TOTAL_COST, "中央の1周目の火種（約140）で、3つの盤をどれも7割まで開ける");
 assert.equal(board.BOARD_TOTAL_COST, growth.BOARD_TOTAL, "盤の全部と火種の上限が同じ");
 const cumulative = [1, 2, 3, 4, 5].map((r) => board.NODES.filter((n) => n.ring <= r).reduce((a, n) => a + n.cost, 0));
-const received = [26, 52, 78, 104, 140]; // 中央の遊び方で章末までに受け取る火種（1.6。1レベル2つ）
+const received = [29, 58, 87, 116, 155]; // 中央の遊び方で章末までに受け取る火種（1.6。1レベル2つ）に、各章の大会の優勝の白火3つ（SBD110）を足した上振れ
 cumulative.forEach((c, i) => assert(c > received[i], `第${i + 1}章: 開く範囲（${c}）が受け取る火種（${received[i]}）より多い`));
 for (let i = 1; i < 5; i++) assert(cumulative[i] > cumulative[i - 1], `第${i + 1}章で新しい範囲が開く`);
 assert(board.LESSONS.every((l) => N[l.id].cost === 0), "授業は火種いらず");
@@ -231,7 +236,7 @@ assert.equal(v.pending.length, 3, "火種3で3マスまで");
 // 盤の伸び（SBD63）: 灯した割合と、恩恵ごとの合計
 const five = new Set(["B1", "B2", "B3"]);
 assert.equal(board.statCount("body", five), 3);
-assert.equal(board.statRatio("body", five), 3 / board.STAT_SQUARES.body);
+assert.equal(board.statRatio("body", five), 3 / board.statTotal("body"));
 {
   const totals = Object.fromEntries(board.perkTotals("body", five).map((p) => [p.key, p]));
   const expect = {};
@@ -251,6 +256,9 @@ assert.deepEqual(board.paymentFor(N.K03, { any: 2, body: 3 }, { reserve: 1 }), {
 assert.equal(board.paymentFor(N.K03, { any: 2, body: 3 }, { reserve: 2 }), null, "色3のうち2を残すと4に足りない");
 assert.deepEqual(board.paymentFor(N.K03, { any: 0, body: 4 }, { reserve: 0 }), { body: 4 });
 assert.equal(board.paymentFor(N.B1, { any: 0, body: 1, sense: 1 }, { reserve: 2 }), null, "色は全部関門の予約");
+assert.equal(board.spendableHidane(N.B3, { any: 0, body: 2, sense: 0, wisdom: 0 }, { reserve: 12 }), 0, "不足表示にも使う数は予約後の0");
+assert.equal(board.spendableHidane(N.B3, { any: 0, body: 0, sense: 13, wisdom: 0 }, { reserve: 12, capped: true }), 1, "上限後は予約を越えた他盤の色が使える");
+assert.deepEqual(board.paymentFor(N.B3, { any: 0, body: 0, sense: 13, wisdom: 0 }, { reserve: 12, capped: true }), { sense: 1 });
 // 関門: 色つきの火種でだけ越える。その盤の色が先、無ければほかの色（SBD53）
 assert.deepEqual(board.paymentFor(N.BG1, { any: 9, body: 1, sense: 1 }), { body: 1 });
 assert.deepEqual(board.paymentFor(N.BG1, { any: 9, sense: 1 }), { sense: 1 }, "ほかの色でも越えられる");
@@ -352,7 +360,7 @@ core.state.affinity.adam = 0;
   const gg = growth.ensureGrowth();
   const known = (id) => board.lessonKnown(N[id], gg);
   assert.equal(board.lessonShown(N["M-B2"], gg), true, "授業のマスはいつも盤に出る");
-  assert.equal(known("M-B2"), false, "まだ会っていない零の授業は伏せる");
+  assert.equal(known("M-B2"), false, "まだ会っていないレヰの授業は伏せる");
   assert.equal(board.nodeStatus(N["M-B2"], gg, board.replay(gg, [])), "locked", "第1章では第2章の授業は封");
   assert.equal(board.NODES.filter((n) => n.trail).length, 0, "授業だけにつながる小道のマスは無い");
   assert.equal(known("M-S1"), true, "スミさんは最初から");
@@ -387,6 +395,61 @@ core.state.affinity.adam = 0;
   }
 }
 
+// 大会後に相談する授業は、その時の関係と時系列に合わせて分かれる（交流の時系列ルール・SPEC 2.6）。
+// なる（第3章の後はさん付けなし）・あげは（第4章からはため口。恋人ルートの呼び捨てとも食い違わないよう名前を呼ばない）・スティーブ（大会後の東京ではその夜がピザの夜）。
+{
+  const vm = await import("node:vm");
+  const { tournamentFinished } = await import("../js/core/story-context.js");
+  const engine = readFileSync(new URL("../js/vn/engine.js", import.meta.url), "utf8");
+  const start = engine.indexOf("function handleCondition("), end = engine.indexOf("\n}\n", start);
+  assert(start >= 0 && end > start, "engine handleCondition");
+  const scenes = Object.fromEntries(JSON.parse(readFileSync(new URL("../../data/dialogue/growth_lessons.json", import.meta.url), "utf8")).dialogues.map((d) => [d.dialogue_id, d]));
+  const ctx = vm.createContext({ tournamentFinished, DB: { dialogues: {} }, STAT_EN: {}, hooks: {}, jumpTo: () => { throw new Error("lesson scenes branch in place"); } });
+  vm.runInContext(engine.slice(start, end + 2), ctx);
+  const rows = (id, chapter, phase = "daily") => {
+    const d = scenes[id];
+    const running = { queue: [...d.lines], branches: d.branches || {} }, out = [];
+    Object.assign(ctx, { state: { chapter, phase, flags: {}, stats: {} }, running });
+    while (running.queue.length) { const line = running.queue.shift(); if (line.type === "condition") ctx.handleCondition(line); else out.push(line); }
+    return out;
+  };
+  const said = (id, chapter, phase, who = "hajime") => rows(id, chapter, phase).filter((l) => l.speaker === who).map((l) => l.text);
+  for (const id of ["lesson_naru_watch", "lesson_steve_pizza", "lesson_ageha_zuboo"]) {
+    const conditions = scenes[id].lines.filter((l) => l.type === "condition");
+    assert(conditions.length >= 1, `${id}: 大会後で分かれる`);
+    for (const c of conditions) {
+      assert.equal(c.condition_type, "tournament_finished"); assert.equal(c.tournament_chapter, 3);
+      assert(scenes[id].branches?.[c.next_true]?.length && scenes[id].branches?.[c.next_false]?.length, `${id}: 両方の分岐がある`);
+    }
+  }
+  for (const [chapter, phase] of [[1, "daily"], [2, "daily"], [3, "daily"], [3, "tournament"]]) {
+    const naru = said("lesson_naru_watch", chapter, phase).join("\n");
+    assert.match(naru, /なるさん/, `第${chapter}章 ${phase}: 大会前はなるさん`);
+    assert.doesNotMatch(naru, /なるって/);
+    assert.match(said("lesson_ageha_zuboo", chapter, phase).join("\n"), /ですか/, "大会前のあげはさんには丁寧語");
+    assert(rows("lesson_steve_pizza", chapter, phase).some((l) => l.text === "グッド。大会が終わって、東京にいる最後の夜にしよう"));
+  }
+  for (const [chapter, phase] of [[3, "aftermath"], [4, "daily"], [5, "daily"]]) {
+    const naru = said("lesson_naru_watch", chapter, phase).join("\n");
+    assert.match(naru, /なるって/, `第${chapter}章 ${phase}: 大会後はなる`);
+    assert.doesNotMatch(naru, /なるさん/);
+    for (const line of said("lesson_ageha_zuboo", chapter, phase)) assert.doesNotMatch(line, /です|ます/, `第${chapter}章のはじめはあげはさんにため口: ${line}`);
+    // 恋人ルートでは「あげは」と呼び捨てになる（lover_ageha_lv1）ので、大会後の相談では名前を呼ばない。
+    for (const line of said("lesson_ageha_zuboo", chapter, phase)) assert.doesNotMatch(line, /あげはさん/, `第${chapter}章: 恋人でも読める呼び方: ${line}`);
+    assert(said("lesson_ageha_zuboo", chapter, phase).some((t) => t === "ちょっと相談いい？ 吸い出しのことで"));
+    const agehaNarration = rows("lesson_ageha_zuboo", chapter, phase).filter((l) => !l.speaker).map((l) => l.text).join("\n");
+    assert.doesNotMatch(agehaNarration, /あげはさん/, "大会後の地の文は第4・5章と同じ「あげは」");
+    const steve = rows("lesson_steve_pizza", chapter, phase).map((l) => l.text || "");
+    assert(steve.some((t) => t.includes("今夜")), "大会後の東京では、その夜がピザの夜");
+    assert(!steve.some((t) => t.includes("大会が終わって")));
+  }
+  // 大会前の分岐は元の台詞のまま（行数・話者・表情）
+  assert.equal(rows("lesson_naru_watch", 1).length, 13);
+  assert.equal(rows("lesson_ageha_zuboo", 1).length, 16);
+  assert.equal(rows("lesson_steve_pizza", 1).length, 17);
+  assert.equal(rows("lesson_steve_pizza", 5).length, 17);
+}
+
 // 授業は会って相談した時だけ習う（SBD61: LIME では習えない）
 {
   assert.equal(growth.canAskByLime, undefined, "LIME で聞く入口は無い");
@@ -396,7 +459,7 @@ core.state.affinity.adam = 0;
   const gg = growth.ensureGrowth();
   const keep = { nodes: [...gg.nodes], learned: [...gg.learned] };
   gg.nodes.push("M-B2", "M-S2");
-  assert.deepEqual(growth.readyLessons("rei").map((l) => l.id), ["M-B2"], "零の授業も会った時に相談できる（SBD70）");
+  assert.deepEqual(growth.readyLessons("rei").map((l) => l.id), ["M-B2"], "レヰの授業も会った時に相談できる（SBD70）");
   assert.deepEqual(growth.readyLessons("adam").map((l) => l.id), ["M-S2"], "場面がある授業は会った時に相談できる");
   Object.assign(gg, keep);
 }
@@ -508,4 +571,177 @@ assert.deepEqual(growth.growthMenuItems(), []);
 growth.setGrowthPreview(true);
 assert.equal(growth.growthMenuItems().length, 1);
 growth.setGrowthPreview(false);
-console.log("[growth board] PASS: v13 ring-tree boards (loops, forked perks, 3 notables, toll skills on loops), lessons farther by chapter with lessons right behind gates, peak only after filling the board, no steps (perk totals + ✦ squares), bands near×1/mid×2/beyond-gate×3, gates by colored hidane, 20 lessons (learn only by meeting in person), chapter reach + gate-free ch1 skills, 3 equal boards of 66 (198 total, 70% of every board in run 1), connect rules, replay, color-first payment, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");
+console.log("[growth board] PASS: v13 ring-tree boards (loops, forked perks, 3 notables, toll skills on loops), lessons farther by chapter with lessons right behind gates, peak only after filling the board, no steps (perk totals + ✦ squares), bands near×1/mid×2/beyond-gate×3, gates by colored hidane, 22 lessons (learn only by meeting in person), chapter reach + gate-free ch1 skills, 3 equal boards of 66 (198 total, 70% of every board in run 1), connect rules, replay, color-first payment, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");
+
+// 組み直し: 実際の経路と支払を使う保存fixture。獲得ペースの通し証明とは分ける。
+const respec = await import("../js/core/growth-respec.js");
+const statCore = await import("../js/core/stats.js");
+const clone = value => JSON.parse(JSON.stringify(value));
+const funds = g => Object.values(g.hidane).reduce((a,b)=>a+b,0)
+  + Object.values(g.paid).flatMap(pay=>Object.values(pay)).reduce((a,b)=>a+b,0);
+core.newGame(); growth.setGrowthPreview(true);
+let respecG = growth.ensureGrowth();
+respecG.hidane={any:100,body:5,sense:5,wisdom:5}; respecG.earned=115;
+for (const id of ["B1","M-W1","M-S1"]) {
+  board.commitPending(board.pathTo(id,new Set(respecG.nodes)).path);
+  assert(respecG.nodes.includes(id));
+}
+assert(growth.completeLesson(core.state,"M-W1",{id:N['M-W1'].scene,visited:[N['M-W1'].scene]}));
+const rawBeforeRespec=clone(core.state.stats), maximumBeforeRespec=statCore.maxStamina();
+assert.equal(respec.canRespec(respecG,core.state),false,"初周の最初は組み直し無し");
+core.state.chapter=2;core.state.phase="opening";growth.ensureGrowth();
+assert.equal(respec.canRespec(respecG,core.state),false);
+core.state.day+=2;core.state.phase="daily";growth.ensureGrowth();
+assert.equal(respec.canRespec(respecG,core.state),true,"冒頭イベント後の最初の日常で開く");
+const paidGate=board.NODES.find(n=>n.kind==="gate"&&n.board==="body");
+board.commitPending(board.pathTo(paidGate.id,new Set(respecG.nodes)).path);
+assert.deepEqual(respecG.paid[paidGate.id],{body:1});
+const fullBefore=clone(respecG), originalFunds=funds(respecG), resourcesBefore=clone({day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,money:core.state.money,reel:core.state.reel});
+let transaction=respec.prepareRespec(respecG,core.state);
+assert(transaction);assert.deepEqual(respecG,fullBefore,"仮状態を作っても実保存は変えない");
+assert.deepEqual(transaction.growth.nodes,["M-W1","M-S1"]);
+assert.deepEqual(transaction.growth.learned,["M-W1"]);
+assert.equal(funds(transaction.growth),originalFunds);
+for (const color of growth.HIDANE_KEYS) {
+  const refund=Object.entries(fullBefore.paid).filter(([id])=>N[id].kind!=="lesson").reduce((sum,[,pay])=>sum+(pay[color]||0),0);
+  assert.equal(transaction.growth.hidane[color],fullBefore.hidane[color]+refund,"支払った種類を変えずに返す");
+}
+for (const id of transaction.growth.nodes) {
+  for (const neighbor of N[id].links.filter(id=>id!==board.HUB)) {
+    const node=N[neighbor];if(node.links.includes(board.HUB))continue;
+    assert.equal(board.connected(node,new Set(transaction.growth.nodes)),false,"保持授業から有料の道を無料で飛ばさない");
+  }
+}
+const forged=clone(transaction);forged.growth.hidane.any++;
+assert.equal(respec.commitRespec(respecG,forged,core.state),false,"返金額の改変を拒否");
+assert(respec.commitRespec(respecG,transaction,core.state));
+assert.equal(respec.commitRespec(respecG,transaction,core.state),false,"同じ返金を二度確定しない");
+assert.equal(funds(respecG),originalFunds);assert.deepEqual(respecG.paid,{"M-W1":{},"M-S1":{}});
+assert.equal(growth.lessonLearned("M-W1"),true);assert.equal(core.state.flags._coal_cube_learned,true);
+assert.equal(growth.readyLessons("sumi").some(l=>l.id==="M-S1"),true);
+assert.deepEqual(core.state.stats,rawBeforeRespec);
+assert(statCore.maxStamina()<=maximumBeforeRespec);
+assert.deepEqual({day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,money:core.state.money,reel:core.state.reel},resourcesBefore);
+assert.equal(board.commitPending(["B1"]).length,1);assert.equal(funds(respecG),originalFunds);
+core.save();core.load();respecG=growth.ensureGrowth();
+assert.equal(funds(respecG),originalFunds);assert.equal(growth.lessonLearned("M-W1"),true);
+transaction=respec.prepareRespec(respecG,core.state);assert(transaction);
+const other=core.newState();other.growth=clone(respecG);
+assert.equal(respec.commitRespec(respecG,transaction,other),false,"旧ownerは他の保存へ書かない");
+await statCore.paidAction(()=>false,{consumed:()=>false});
+assert.equal(respec.canRespec(respecG,core.state),true,"行動取消では閉じない");
+await statCore.paidAction(()=>true,{consumed:()=>true});
+assert.equal(respec.canRespec(respecG,core.state),false,"鍵無しの実行動でも閉じる");
+assert.equal(respec.commitRespec(respecG,transaction,core.state),false);
+const c3 = await import("../js/chapters/ch3-progress.js");
+core.state.phase="cleared";
+Object.assign(core.state.flags,{_ch2_cleared:true,_ch2_read_ch2_tournament_ageha_heart:true,_ch2_tournament:{stage:"complete"}});
+const ch3Start=clone(core.state);
+assert(c3.advanceToChapterThree(core.state));growth.ensureGrowth();
+// 版3（出発前の地元と東京も日常ループ）: 章頭の場面のあいだは開かず、最初の日常で開き、日付が変わると閉じる
+assert.equal(core.state.flags._ch3_intro.routeVersion,3);
+assert.equal(respecG.respec.status,"pending");assert.equal(respec.canRespec(respecG,core.state),false,"章頭の場面では開かない");
+core.state.phase="daily";growth.ensureGrowth();assert(respec.canRespec(respecG,core.state),"版3は最初の日常で開く");
+core.state.day++;growth.ensureGrowth();assert.equal(respec.canRespec(respecG,core.state),false,"日付が変わると閉じる");
+// 版2の旧セーブ（東京の行程の自由時間の枠）: 強制場面の日付変更では失効せず、最初の自由時間で開く
+core.setState(ch3Start);respecG=growth.ensureGrowth();
+assert(c3.advanceToChapterThree(core.state));delete core.state.flags._ch3_prep;
+core.state.flags._ch3_intro={startDay:core.state.day,stage:0,titleSeen:false,routeVersion:2};respecG=growth.ensureGrowth();
+while(!c3.chapterThreeFreeTime(core.state)) {
+  const scene=c3.chapterThreeScenes(core.state)[core.state.flags._ch3_intro.stage];
+  assert(scene);assert(c3.completeChapterThreeScene(core.state,scene.id));growth.ensureGrowth();
+  if(!c3.chapterThreeFreeTime(core.state)) {
+    assert.equal(respecG.respec.status,"pending","強制場面の日付変更では失効しない");
+    assert.equal(respec.canRespec(respecG,core.state),false);
+  }
+}
+assert.equal(c3.chapterThreeFreeTime(core.state).id,"d5-noon");
+assert(respec.canRespec(respecG,core.state),"実進行の最初の自由時間で開く");
+core.state.day++;growth.ensureGrowth();assert.equal(respec.canRespec(respecG,core.state),false);
+core.state.chapter=4;growth.ensureGrowth();delete respecG.paid.B1;
+assert.equal(respec.prepareRespec(respecG,core.state),null,"支払が無ければ無料返金を推測しない");
+growth.setGrowthPreview(false);
+await statCore.paidAction(()=>true,{consumed:()=>true});
+growth.setGrowthPreview(true);
+assert.equal(respec.canRespec(respecG,core.state),false,"無効中に済ませた行動の後から機会を復活させない");
+const {buildCarryPackage}=await import("../js/core/carry.js"),{startNextCycle}=await import("../js/core/cycle-start.js");
+startNextCycle(buildCarryPackage(core.state));core.state.phase="daily";respecG=growth.ensureGrowth();
+assert(respec.canRespec(respecG,core.state),"周回はじめの最初の日常にも開く");
+respecG.respec=null;core.state.chapter=3;growth.ensureGrowth();
+assert.equal(respec.canRespec(respecG,core.state),false,"既存セーブの表示だけで旧移行特典を作らない");
+growth.setGrowthPreview(false);
+console.log("[respec] PASS: exact payments, lessons retained, no shortcut/duplicate refund, draft/commit, SAVE/LOAD, old owner, action/day/NG+ windows and legacy no-grant");
+
+// 探索を共有しても、同額時の選択順・経路・費用を変えない。
+function referencePathTo(id, unlocked) {
+  const goal = board.NODE_BY_ID[id];
+  if (!goal) return { cost: 0, path: [] };
+  // 極みは道でなく「その盤の能力のマスを全部」: 残りの能力のマスへの道を近い順につないで、最後に極み
+  if (goal.peak) {
+    const have = new Set(unlocked), path = [];
+    for (;;) {
+      const rest = board.boardNodes(goal.board).filter((n) => n.kind === "stat" && !n.peak && !have.has(n.id));
+      if (!rest.length) break;
+      const next = rest.map((n) => referencePathTo(n.id, have)).sort((a, b) => a.cost - b.cost)[0];
+      for (const step of next.path) { have.add(step); path.push(step); }
+    }
+    if (!unlocked.has(id)) path.push(id);
+    return { cost: path.reduce((n, step) => n + board.NODE_BY_ID[step].cost, 0), path };
+  }
+  const nodes = board.boardNodes(goal.board);
+  const dist = { [board.HUB]: 0 }, prev = {}, done = new Set(), queue = [board.HUB];
+  const linksOf = (u) => u === board.HUB ? nodes.filter((n) => n.links.includes(board.HUB)).map((n) => n.id) : board.NODE_BY_ID[u].links;
+  while (queue.length) {
+    queue.sort((a, b) => dist[a] - dist[b]);
+    const u = queue.shift();
+    if (done.has(u)) continue;
+    done.add(u);
+    for (const v of linksOf(u)) {
+      if (v === board.HUB) continue;
+      const w = unlocked.has(v) ? 0 : board.NODE_BY_ID[v].cost;
+      if (dist[u] + w < (dist[v] ?? Infinity)) { dist[v] = dist[u] + w; prev[v] = u; queue.push(v); }
+    }
+  }
+  const path = [];
+  for (let c = id; c && c !== board.HUB; c = prev[c]) if (!unlocked.has(c)) path.unshift(c);
+  return { cost: dist[id] ?? 0, path };
+}
+
+let routeSeed = 0x31415926;
+const routeRandom = () => { routeSeed = (Math.imul(routeSeed, 1664525) + 1013904223) >>> 0; return routeSeed / 2 ** 32; };
+let routeCases = 0;
+for (const key of board.BOARD_KEYS) {
+  const nodes = board.boardNodes(key);
+  const sets = [new Set(), new Set(nodes.map(n => n.id))];
+  for (let i = 0; i < 20; i++) sets.push(new Set(nodes.filter(() => routeRandom() < i / 20).map(n => n.id)));
+  for (const unlocked of sets) for (const node of nodes) {
+    const before = [...unlocked];
+    assert.deepEqual(board.pathTo(node.id, unlocked), referencePathTo(node.id, unlocked), `${node.id}: cost and exact tie-broken path`);
+    assert.deepEqual([...unlocked], before, "path lookup does not mutate unlocked nodes");
+    routeCases++;
+  }
+}
+assert.deepEqual(board.pathTo("missing", new Set()), { cost: 0, path: [] });
+console.log(`[growth routes] PASS: ${routeCases} reference-equivalent routes, including empty/full/partial boards and peaks`);
+
+// 任意の比較計測。時間で合否を決めず、Node内の経路計算だけを測る（描画FPSではない）。
+if (process.env.GROWTH_ROUTE_BENCH === "1") {
+  const median = (values) => values.sort((a, b) => a - b)[Math.floor(values.length / 2)];
+  for (const key of board.BOARD_KEYS) {
+    const id = board.boardNodes(key).find((n) => n.peak).id;
+    const unlocked = new Set();
+    const ms = {};
+    for (const [name, lookup] of [["before", referencePathTo], ["after", board.pathTo]]) {
+      for (let i = 0; i < 8; i++) lookup(id, unlocked);
+      const times = [];
+      for (let i = 0; i < 41; i++) {
+        const start = performance.now();
+        lookup(id, unlocked);
+        times.push(performance.now() - start);
+      }
+      ms[name] = median(times);
+    }
+    console.log(`[growth route benchmark] ${key}: ${JSON.stringify(ms)} ms (median of 41)`);
+  }
+}
+

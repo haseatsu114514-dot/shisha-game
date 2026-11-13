@@ -1,0 +1,99 @@
+{
+  "id": "kuze-photo-face",
+  "title": "記念写真",
+  "cast": [
+    "kuze"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "一枚撮りますね。",
+    "かわいく頼むよ。",
+    "悪役の顔だ。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "綾取の店の前。左のはじめがスマホを構えて「一枚撮りますね。」。右の綾取がにこっとあどけない笑顔でピース「かわいく頼むよ。」。",
+  "panel2": "同じ位置。はじめが差し出すスマホの画面（コマの中央に大きく拡大）には、片側だけ口角を上げた不敵な笑みの綾取が、暗い背景と稲妻を背負って写っている。右の本物の綾取は画面を見てきょとん。左のはじめが「悪役の顔だ。」。",
+  "caption": "片側だけ上がる綾取の笑顔は、写真だと少し怪しい。",
+  "type": "写真写りのギャップ",
+  "note": "スマホにロゴは描かない。正本の「柔らかな目と片側だけ上がる笑顔」から。",
+  "num": 18,
+  "source": "allcast-kuze-photo-face-b.png",
+  "source_sha256": "2a1021fa60edaded5c0f2d30fa8bb3741b2ecd7d87819129f1cc965ee77c2d0d",
+  "generator": "built-in image_gen",
+  "prompt": "prompt-v2.txt",
+  "exact_prompt": "exact-prompt.txt",
+  "references": {
+    "template": {
+      "path": "output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+      "size": 7055,
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    "hajime": {
+      "path": "hajime-sheet/normal.png",
+      "size": 402899,
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "dimensions": [
+        896,
+        1200
+      ]
+    },
+    "kuze": {
+      "path": "kuze-sheet/kuze-normal.png",
+      "size": 479307,
+      "sha256": "c39ee51522b8082b831f0814959cc071b5104c808dc7452d5ec9b5890dba68ee",
+      "dimensions": [
+        896,
+        1200
+      ]
+    },
+    "early_adopted_style": {
+      "path": "ryuji-sheet/loading/pc.png",
+      "size": 642944,
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "dimensions": [
+        1188,
+        668
+      ]
+    }
+  },
+  "qa": {
+    "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+    "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+    "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+    "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+    "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+    "gag": "v1 extra human silhouettes in background; v2 removes them. Smartphone Ayatori is scripted photo, not extra character.",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+    "in_game_qa": "not run",
+    "adoption": "not adopted/not registered"
+  },
+  "canonical_original": "asset_sources/loading-comics/allcast-kuze-photo-face/allcast-kuze-photo-face-b.png",
+  "status": "candidate-not-adopted-not-registered",
+  "registered": false,
+  "adopted": false,
+  "originals": [
+    {
+      "file": "allcast-kuze-photo-face-a.png",
+      "sha256": "f0f6daa1c8764e59a41e487bb31c7855c56a7b76579518a557f1d10db4df406c",
+      "bytes": 1739330,
+      "original_version": "source-v1.png",
+      "review_candidate": false
+    },
+    {
+      "file": "allcast-kuze-photo-face-b.png",
+      "sha256": "2a1021fa60edaded5c0f2d30fa8bb3741b2ecd7d87819129f1cc965ee77c2d0d",
+      "bytes": 1717851,
+      "original_version": "source-v2.png",
+      "review_candidate": true
+    }
+  ],
+  "handoff": "Original PNGs copied byte-for-byte; no resize/crop/re-encode. Reference metadata only, no reference image bytes."
+}

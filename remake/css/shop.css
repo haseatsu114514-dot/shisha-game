@@ -6,7 +6,14 @@
   border: 1px solid #ded3dc; border-image: none; border-radius: 4px;
   box-shadow: 0 16px 54px #110a2255; text-shadow: none;
 }
-.shop.shop-paper { top: 110px; width: 1152px; height: 584px; padding: 0; }
+.shop.shop-paper { top: 72px; width: 1200px; height: 624px; padding: 0; }
+/* 店の入口と1Fショップでは左上の HUD の札を隠し、空いた分だけ店のパネルを中央で広げる（所持金は店のヘッダーに出す。#2958）。
+   右上の LIME・MENU も店の中では出さず、その分パネルを上まで広げる（上下左右 24px の余白。MENU と同じ枠）。
+   店を出ると LIME・MENU は元どおり出る。PC・スマホ共通（オーナー指示 2026-11-11・SUI01）。
+   DS風（body.game-ds）は LIME・MENU が下画面の帯にあるので、従来のまま */
+body[data-screen="shop"] #hud .hud-card, body[data-screen="shop-entry"] #hud .hud-card { visibility: hidden; }
+body:not(.game-ds)[data-screen="shop"] #hud .hud-right, body:not(.game-ds)[data-screen="shop-entry"] #hud .hud-right { visibility: hidden; }
+body:not(.game-ds) .shop.shop-paper, body:not(.game-ds) .shop-entry { top: 24px; width: 1232px; height: 672px; }
 .shop-paper button { font: inherit; cursor: pointer; touch-action: manipulation; }
 .shop-paper button:disabled { cursor: default; }
 .shop-paper button:focus-visible { outline: 3px solid #9470ad; outline-offset: 2px; }
@@ -15,8 +22,8 @@
 .shop-paper .shop-sub { color: var(--shop-muted); border-left: 1px solid var(--shop-line); padding-left: 20px; font-size: 16px; }
 .shop-paper .shop-money { color: var(--shop-ink); display: flex; align-items: baseline; gap: 14px; font: 32px var(--font); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .shop-paper .shop-money small { font: 14px var(--font); color: var(--shop-muted); }
-.shop-paper .shop-tabs { flex: none; gap: 8px; height: 46px; margin: 10px 26px 0; }
-.shop-paper .shop-tab { width: 164px; border-radius: 4px 4px 0 0; border: 1px solid var(--shop-line); border-image: none; background: #eee8f033; color: var(--shop-ink); font-size: 17px; box-shadow: none; }
+.shop-paper .shop-tabs { flex: none; gap: 8px; height: 64px; margin: 10px 26px 0; }
+.shop-paper .shop-tab { min-width: 164px; padding: 0 18px; white-space: nowrap; border-radius: 4px 4px 0 0; border: 1px solid var(--shop-line); border-image: none; background: #eee8f033; color: var(--shop-ink); font-size: 22px; box-shadow: none; }
 .shop-paper .shop-tab.on { color: #fff; background: var(--shop-purple); border-color: var(--shop-purple); }
 .shop-paper .shop-tab:hover:not(.on) { background: #e9e0ee; color: var(--shop-ink); }
 .shop-filters { flex: none; display: flex; align-items: center; gap: 8px; height: 48px; margin: 0 26px; }
@@ -50,8 +57,8 @@
 .shop-step:not(:disabled):hover { box-shadow: inset 0 0 0 2px #ac8ebc; }
 .shop-quantity output { min-width: 28px; text-align: center; font-size: 20px; font-variant-numeric: tabular-nums; }
 .shop-paper .shop-owned { width: 142px; flex: none; color: var(--shop-purple); font-size: 16px; }
-.shop-paper .shop-foot { height: 72px; flex: none; margin: 0; padding: 10px 26px; gap: 16px; border-top: 1px solid var(--shop-line); background: #ece5ee99; }
-.shop-back { min-width: 164px; min-height: 50px; padding: 10px 22px; font-weight: 700 !important; font-size: 17px !important; color: #58386c; border: 2px solid #9676a8; border-radius: 4px; background: #fffcf8; }
+.shop-paper .shop-foot { height: 92px; flex: none; margin: 0; padding: 10px 26px; gap: 16px; border-top: 1px solid var(--shop-line); background: #ece5ee99; }
+.shop-back { min-width: 164px; min-height: 72px; padding: 10px 22px; font-weight: 700 !important; font-size: 22px !important; color: #58386c; border: 2px solid #9676a8; border-radius: 4px; background: #fffcf8; }
 .shop-back:hover { background: #ebe0f0; }
 .shop-summary { margin-left: auto; display: flex; align-items: baseline; gap: 10px; border: 0; background: transparent; padding: 7px; color: var(--shop-ink); font-variant-numeric: tabular-nums; }
 .shop-summary small { font-size: 14px; }
@@ -72,17 +79,56 @@
 .shop-paper .btn:hover, .modal-box.shop-dialog .btn:hover { color: #38283f; background: #e9deef; }
 .shop-paper .kuji-row { padding-top: 14px; padding-bottom: 14px; }
 .shop-paper .kuji-row .shop-main { gap: 6px; }
-.shop-paper .kuji-row .btn { flex: none; min-width: 170px; }
-.shop-paper .kuji-actions { display: flex; flex-direction: column; gap: 4px; }
-.shop-entry { position: absolute; left: 50%; top: 126px; transform: translateX(-50%); width: 960px; height: 552px; padding: 24px 30px; display: flex; flex-direction: column; }
+.shop-paper .kuji-row .btn { flex: none; min-width: 150px; min-height: 64px; font-size: 22px; }
+.shop-paper .kuji-row .shop-main small { font-size: 18px; }
+/* くじ券（KJ05）: 限定台くじの行の下の1行。行そのものは押せない */
+.shop-paper .kuji-ticket-row { padding-top: 10px; padding-bottom: 10px; background: #f1eaf3; }
+.shop-paper .kuji-ticket-row .shop-main { gap: 4px; }
+.shop-paper .kuji-ticket-row .btn { flex: none; min-width: 150px; min-height: 64px; font-size: 22px; }
+.shop-paper .kuji-ticket-row .shop-main small { font-size: 18px; }
+.shop-paper .kuji-actions { display: flex; flex-direction: row; flex: none; gap: 16px; }
+.shop-paper .kuji-title { display: flex; align-items: center; gap: 12px; min-width: 0; }
+/* くじの「?」: 見た目は文字ほどの小さな丸。押せる範囲は透明な ::before で 72px 四方に広げる（#2958・オーナー指示） */
+.shop-paper .kuji-help { --help-size: 30px; --help-hit: 72px; position: relative; flex: none; width: var(--help-size); height: var(--help-size); padding: 0; border-radius: 50%; border: 1.5px solid #9676a8; background: #fffcf8; color: #58386c; font-size: 18px !important; font-weight: 700; line-height: 1; }
+.shop-paper .kuji-help::before { content: ""; position: absolute; left: 50%; top: 50%; width: var(--help-hit); height: var(--help-hit); transform: translate(-50%, -50%); border-radius: 50%; }
+.shop-paper .kuji-row { cursor: pointer; }
+.shop-paper .kuji-cat { font-size: 26px; border: 0; }
+/* 景品の一覧（棚の案内・GCH13）: くじは店ごとに1種類なので、行の下の空いた所にその箱の景品とのこり枚数を並べる。
+   左の帯と賞の字の色は、ガラガラの玉と同じ賞の色（S＝金・A＝赤・B＝青・C＝白・ラストワン＝黒） */
+.shop-paper .kuji-lineup { flex: none; padding: 16px 8px 20px; }
+.kuji-lineup-head { display: flex; align-items: baseline; gap: 16px; margin: 0 0 12px; color: var(--shop-ink); font-size: 20px; font-weight: 500; letter-spacing: .06em; }
+.kuji-lineup-head small { color: var(--shop-muted); font-size: 15px; letter-spacing: 0; }
+.kuji-lineup-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; margin: 0; padding: 0; list-style: none; }
+.kuji-lineup-item { --lineup-color: #b9b0a2; --lineup-ink: #5e554c; display: flex; align-items: center; gap: 12px; min-height: 68px; padding: 6px 14px 6px 8px; border: 1px solid var(--shop-line); border-left: 6px solid var(--lineup-color); border-radius: 4px; background: #fffcf8; }
+.kuji-lineup-item[data-rank="S"] { --lineup-color: #e9b233; --lineup-ink: #8a5a06; background: #fff7df; }
+.kuji-lineup-item[data-rank="A"] { --lineup-color: #e2443c; --lineup-ink: #b3261c; }
+.kuji-lineup-item[data-rank="B"] { --lineup-color: #3f82ea; --lineup-ink: #1f55b0; }
+.kuji-lineup-item[data-rank="LAST"] { --lineup-color: #2a2648; --lineup-ink: #2a2648; background: #efedf5; }
+.kuji-lineup-item[data-out] { opacity: .45; }
+.kuji-lineup-art { flex: none; display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; }
+.kuji-lineup-art > * { position: relative; }
+.kuji-lineup-art .kj-art-leaf { display: flex; align-items: center; justify-content: center; flex: none; margin: 0; background: none; }
+.kuji-lineup-art .kj-gift { --u: 5.6px; }
+.kuji-lineup-art .kj-art-fan .kj-gift { --u: 3.4px; }
+/* 詰め合わせ（パッケージを扇に重ねた絵）は、枠（56px）からはみ出して賞の字に重ならないよう縮める */
+.kuji-lineup-art .kj-art-fan { flex: none; width: 56px; transform: scale(.58); }
+.kuji-lineup-secret { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #2a2648; color: #e6e7f0; font-size: 24px; font-weight: 700; box-shadow: inset 0 0 0 3px #b9b4d8; }
+.kuji-lineup-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.kuji-lineup-rank { color: var(--lineup-ink); font-size: 15px; font-weight: 700; letter-spacing: .06em; }
+.kuji-lineup-name { color: var(--shop-ink); font-size: 18px; line-height: 1.3; }
+.kuji-lineup-left { flex: none; color: var(--shop-muted); font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.shop-badge { align-self: flex-start; padding: 2px 12px; border: 1px solid currentColor; border-radius: 14px; font-size: 20px !important; }
+.shop-entry { position: absolute; left: 50%; top: 72px; transform: translateX(-50%); width: 1200px; height: 624px; padding: 24px 30px; display: flex; flex-direction: column; }
 .shop-entry .shop-head { padding: 0 0 18px; height: 60px; }
 .shop-entry > h3 { font-size: 24px; font-weight: 500; letter-spacing: .08em; margin: 18px 0; }
 .shop-floors { display: flex; gap: 22px; flex: 1; min-height: 0; }
 .shop-floor { position: relative; width: 50%; min-width: 0; padding: 0; border: 1px solid #c7b6d1; border-radius: 5px; overflow: hidden; text-align: left; display: flex; flex-direction: column; background: #f3edf4; color: var(--shop-ink); }
-.shop-floor-picture { display: block; position: relative; height: 174px; flex: none; width: 100%; overflow: hidden; }
+.shop-floor-picture { display: block; position: relative; flex: 1 1 auto; min-height: 128px; width: 100%; overflow: hidden; }
 .shop-floor-picture img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* 写真が届くまでの下地（#3203）。通信が遅く上限で入口を出したときも枠を空白にしない。デコードできたら外す（shop.js） */
+.shop-floor-picture[data-loading] { background: linear-gradient(150deg, rgba(171, 141, 188, .34), rgba(90, 60, 107, .52)); }
 .shop-floor-number { position: absolute; top: 12px; left: 12px; padding: 8px 12px; background: #fbf4f4ec; color: #5a3c6b; border: 1px solid #c6b1d1; border-radius: 3px; font: 28px var(--font); }
-.shop-floor-caption { position: relative; display: flex; flex-direction: column; flex: 1; justify-content: center; gap: 10px; width: 100%; padding: 16px 24px; }
+.shop-floor-caption { position: relative; display: flex; flex-direction: column; flex: none; justify-content: center; gap: 8px; width: 100%; padding: 14px 24px 16px; }
 .shop-floor-caption b { font-size: 23px; font-weight: 500; letter-spacing: .06em; }
 .shop-floor-caption small { font-size: 16px; color: #72557f; }
 .shop-floor-arrow { position: absolute; bottom: 22px; right: 22px; font-size: 27px; color: #9976ab; }
@@ -92,6 +138,7 @@
 .shop-floor:disabled img { filter: saturate(.45); opacity: .65; }
 .shop-floor:disabled .shop-floor-arrow { display: none; }
 .shop-entry-foot { flex: none; margin-top: 20px; }
+.shop-entry .shop-back { min-height: 72px; font-size: 22px !important; }
 .modal-box.shop-dialog { padding: 28px; max-width: 700px; }
 .modal-box.shop-dialog h3 { color: #51325f; }
 .modal-box.shop-dialog .btn.primary { color: #fff; background: #69497e; }
@@ -102,3 +149,42 @@
 .shop-detail p { margin: 8px 0; }
 .shop-current { clear: both; padding-top: 14px; border-top: 1px solid #d5c8dc; color: #765780; font-size: 17px; }
 .shop-order p { display: flex; justify-content: space-between; gap: 25px; padding: 8px 0; border-bottom: 1px solid #d5c8dc; }
+/* スマホ横持ち: stage が縮むぶん（--k）を戻し、実寸で文字 11px 以上・押せる所 38px 以上にする（#2858）。縦持ちは扱わない */
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .shop-paper { --shop-text: max(18px, calc(11.5px / var(--k, 1))); --shop-tap: max(64px, calc(40px / var(--k, 1))); --shop-label: max(22px, calc(12px / var(--k, 1))); }
+  .shop-paper .shop-head { height: auto; min-height: 70px; }
+  .shop-paper .shop-sub, .shop-paper .shop-money small, .shop-paper .shop-stock small, .shop-paper .shop-summary small, .shop-paper .shop-summary span, .shop-paper .shop-owned, .shop-price.expense, .shop-filters > span,
+  .shop-paper .shop-main small, .shop-paper .shop-main .shop-feature-tags.shop-feature-tags, .shop-paper .kuji-row .shop-main small, .shop-paper .kuji-ticket-row .shop-main small, .shop-paper .shop-stock, .shop-paper .shop-stock span, .shop-type-mark, .shop-quantity output { font-size: var(--shop-text); }
+  .shop-paper .shop-tabs { height: var(--shop-tap); margin-top: 8px; }
+  .shop-paper .shop-tab, .shop-paper .shop-main b { font-size: var(--shop-label); }
+  .shop-paper .shop-row { min-height: var(--shop-tap); }
+  .shop-paper .shop-product { min-height: var(--shop-tap); }
+  .shop-paper .shop-filter { min-height: max(48px, calc(40px / var(--k, 1))); font-size: var(--shop-text) !important; }
+  /* 数量の欄は、大きくした − ＋ の分だけ広げる（固定幅のままだと − が価格に重なる） */
+  .shop-paper .shop-quantity { width: auto; }
+  .shop-paper .shop-step { flex: none; min-width: max(52px, calc(40px / var(--k, 1))); width: max(52px, calc(40px / var(--k, 1))); height: var(--shop-tap); font-size: var(--shop-label) !important; }
+  .shop-paper .shop-row .btn, .shop-paper .shop-checkout { min-height: var(--shop-tap); font-size: var(--shop-label) !important; }
+  .shop-paper .kuji-row, .shop-paper .kuji-actions { gap: 16px; }
+  .shop-paper .kuji-row .btn, .shop-paper .kuji-ticket-row .btn { min-width: 150px; }
+  .kuji-lineup-head { font-size: var(--shop-label); }
+  .kuji-lineup-head small, .kuji-lineup-rank, .kuji-lineup-left { font-size: var(--shop-text); }
+  .kuji-lineup-name { font-size: var(--shop-label); }
+  .kuji-lineup-item { min-height: var(--shop-tap); }
+  .shop-paper .kuji-help { --help-size: max(30px, calc(16px / var(--k, 1))); --help-hit: max(72px, calc(40px / var(--k, 1))); font-size: max(18px, calc(11px / var(--k, 1))) !important; }
+  .shop-paper .shop-foot { height: auto; min-height: 92px; }
+  .shop-paper .shop-summary { min-height: var(--shop-tap); }
+  .shop-paper .shop-back, .shop-entry .shop-back { min-height: max(72px, calc(40px / var(--k, 1))); font-size: var(--shop-label) !important; }
+  .shop-paper .shop-badge { font-size: max(20px, calc(11.5px / var(--k, 1))) !important; }
+  .shop-paper .shop-floor-caption b { font-size: var(--shop-label); }
+  .shop-entry > h3 { font-size: max(24px, calc(12px / var(--k, 1))); margin: 6px 0 8px; }
+  /* 店の入口: 写真をカード全体に広げ、文字は下端の細い帯（名前＋小さなバッジ）に重ねる。帯が2行になっても写真の上端・カードの下端は左右でそろう（#2858 の追加・オーナー指示） */
+  .shop-entry .shop-head { min-height: 0; padding-bottom: 8px; }
+  .shop-entry-foot { margin-top: 12px; }
+  .shop-floor-picture { position: absolute; inset: 0; height: auto; }
+  .shop-floor-number { top: 8px; left: 8px; padding: 4px 10px; font-size: 24px; }
+  .shop-floor-caption { position: absolute; left: 0; right: 0; bottom: 0; flex: none; flex-flow: row wrap; align-items: center; justify-content: flex-start; gap: 4px 12px; padding: 8px 52px 8px 18px; background: #f3edf4eb; }
+  .shop-floor.showroom .shop-floor-caption { background: #493353eb; }
+  .shop-floor-caption b { white-space: nowrap; }
+  .shop-paper .shop-floor .shop-badge { max-width: 100%; align-self: center; padding: 0 8px; border-radius: 10px; line-height: 1.35; font-size: max(16px, calc(11px / var(--k, 1))) !important; }
+  .shop-floor-arrow { top: 50%; bottom: auto; right: 18px; transform: translateY(-50%); font-size: 24px; }
+}

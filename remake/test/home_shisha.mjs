@@ -59,6 +59,7 @@ assert.equal(kuji.prizes.find((p) => p.rank === "S").equipId, rig.PRO_RIG);
 const sumiScene = read("../../data/dialogue/ch1_sumi.json").dialogues.find((d) => d.dialogue_id === rig.RIG_SCENE);
 assert(sumiScene?.lines.some((l) => l.text?.includes("ミャア")), "スミさんがミャアの卓上台を譲る場面");
 assert.equal(sumiScene.lines.find((l) => l.speaker === "sumi").text, "これやる", "スミさんの最初の一言は「これやる」");
+assert.match(sumiScene.lines.map(l => l.text || "").join(" "), /一酸化炭素.*中毒.*命.*窓は少し開けとけ.*閉め切った部屋で炭を焚くと、頭が痛くなる/);
 // 中盤の修行（DAY7 の中間準備）の最後に渡す
 const ch1Source = fs.readFileSync(new URL("../js/chapters/ch1.js", import.meta.url), "utf8");
 const midPrep = ch1Source.slice(ch1Source.indexOf("async function midPreparation"), ch1Source.indexOf("async function rehearsal"));
@@ -194,8 +195,10 @@ for (const schema of [14, SCHEMA]) for (const [label, patch, grant] of [
   store.set(key, original);
   const expected = JSON.parse(original);
   expected.schema = SCHEMA;
+  if (schema < 27) expected.affinity.sumi = Math.max(expected.affinity.sumi || 0, 9);
   if (schema < 19) expected.flags._sumi_double_apple_received = true;
   if (schema < 16) expected.flags._axe_bar_legacy_access = true; // #577の旧保存互換だけを追加。資源の厳密比較は維持
+  if (schema < 25) expected.flags._dense_pack_legacy = true;
   if (grant && !expected.owned.includes(rig.SUMI_RIG)) expected.owned.push(rig.SUMI_RIG);
   const loaded = key === SAVE_KEY ? loadGame() : loadFromSlot(key);
   // 手動LOADのみ自動保存日時を更新する。元の手動枠は変更しない。
@@ -346,6 +349,7 @@ for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, ri
   const d = home.homeShishaDialogue({ taste, mix: Object.fromEntries(flavors.map(f => [f.id, 1])) }, { id }, () => pick, { distant });
   for (const l of textLines(d)) {
     assert(!l.text.includes("配合"), l.text);
+    assert(!/窓を少し|窓は少し|窓を開け.*炭/.test(l.text), "少量の開窓を安全手順として描かない");
     assert(width(l.text) <= 48 && !l.text.includes("\n"), l.text);
     if (l.speaker === "hajime") assert(l.text.startsWith("（") && l.text.endsWith("）"), l.text);
   }
@@ -373,6 +377,117 @@ for (const taste of ["great", "fine", "meh"]) for (const id of [rig.SUMI_RIG, ri
   assert.equal(home.tasteDistant(s), false, "Chapter 1 never");
   s.chapter = 2; assert.equal(home.tasteDistant(s), false, "Before the DAY5 slump");
   s.flags._ch2_taste_distant = true; assert.equal(home.tasteDistant(s), true, "During the chapter 2 slump");
-  s.chapter = 3; assert.equal(home.tasteDistant(s), false, "Later chapters own their own recovery scenes");
+  // 第3章: 東京へ発つ前の3日と東京の前半は不調のまま。東京で ch3_taste_return を読んだら戻る（保存は変えない）。
+  s.chapter = 3; s.flags._ch3_prep = { startDay: s.day, days: 3, step: 0, departed: false };
+  s.flags._ch3_intro = { startDay: s.day + 3, stage: 0, titleSeen: false, routeVersion: 3 };
+  assert.equal(home.tasteDistant(s), true, "Departure prep days: taste is still distant");
+  s.flags._ch3_prep.departed = true; s.flags._ch3_intro.stage = 13;
+  assert.equal(home.tasteDistant(s), true, "Tokyo before ch3_taste_return");
+  s.flags._ch3_intro.stage = 14; assert.equal(home.tasteDistant(s), false, "ch3_taste_return has been read");
+  assert.equal(s.flags._ch3_intro.stage, 14, "Reading the taste state does not move the chapter");
+  const legacy = { chapter: 3, flags: { _ch2_taste_distant: true, _ch3_intro: { startDay: 1, stage: 8, titleSeen: true } } };
+  assert.equal(home.tasteDistant(legacy), true, "Legacy Tokyo route: before its ch3_taste_return");
+  legacy.flags._ch3_intro.stage = 9; assert.equal(home.tasteDistant(legacy), false, "Legacy Tokyo route: after its ch3_taste_return");
+  assert.equal(home.tasteDistant({ chapter: 3, flags: { _ch3_prep: { departed: false } } }), false, "No slump record, no distant taste");
+  s.chapter = 4; s.flags._ch3_intro.stage = 0; assert.equal(home.tasteDistant(s), false, "Chapter 4 and later: taste has returned");
 }
-console.log("[home shisha] PASS: rigs, kuji from ch1, offer rules, recipe mix, taste, 12g/24 stamina/no slot, proportional mastery only, no stat gain, lines");
+// P18: 本物の選択フローと消費APIで、確認前・取消・資源変更・LOADの境界を検査する。
+{
+  const core = await import("../js/core/state.js"), stats = await import("../js/core/stats.js");
+  const shop = await import("../js/daily/shop.js");
+  const { conditionForRatio } = await import("../js/core/condition.js");
+  const { goldenLabel } = await import("../js/craft/steps.js");
+  const source = src("../js/daily/home-shisha.js").slice(src("../js/daily/home-shisha.js").indexOf("async function chooseRecipe("))
+    .replace(/^export /gm, "");
+  let pending = [], saves = 0;
+  const flow = vm.runInNewContext(`${source}\n({ runHomeShisha });`, {
+    get state() { return core.state; }, DB, HOME_GRAMS: home.HOME_GRAMS, HOME_STAMINA: home.HOME_STAMINA,
+    dayKey: s => `${s.chapter || 1}:${s.day}`, vnTest: { turbo: false },
+    recipeMix: home.recipeMix, homeShishaOffer: home.homeShishaOffer, applyHomeShisha: home.applyHomeShisha,
+    homeShishaDialogue: home.homeShishaDialogue, tasteDistant: home.tasteDistant,
+    flavorStock: shop.flavorStock, staminaAfter: stats.staminaAfter, maxStamina: stats.maxStamina, conditionForRatio,
+    el: (tag, attrs = {}, children = []) => ({ tag, ...(Array.isArray(attrs) ? { children: attrs } : { ...attrs, children }) }),
+    modal: opts => new Promise(resolve => pending.push({ ...opts, resolve })),
+    save: () => { saves++; saveGame(); }, toast() {}, notifyMastery() {}, goldenLabel, play: async () => ({}),
+  });
+  const text = node => typeof node === "string" ? node : [node?.text || "", ...(node?.children || []).map(text)].join(" ");
+  const advance = async (test, value) => {
+    const prompt = pending.shift();
+    assert(prompt?.options.some(option => option.test === test), `Expected ${test}`);
+    prompt.resolve(value); await new Promise(setImmediate);
+  };
+  const start = () => {
+    pending = []; saves = 0;
+    state = newGame(); Object.assign(state, { phase: "daily", day: 9, slot: 2, stamina: 63 });
+    state.stats.guts = 0; state.owned.push(rig.SUMI_RIG);
+    state.flavorStock = { lemon: 20, mint: 10, absal_mint: 30 };
+    state.recipes.ice_lemonade = { day: 1 };
+    return flow.runHomeShisha();
+  };
+  const confirm = async () => {
+    await advance("home-shisha-recipe", "recipe");
+    await advance("home-recipe-ice_lemonade", "ice_lemonade");
+    assert.match(text(pending[0].body), /12g.*アフサール ミント：4g使用 → 残り26g.*レモン：8g使用 → 残り12g/);
+    assert.match(text(pending[0].body), /体調：好調 → 通常/);
+    assert.doesNotMatch(text(pending[0].body), /体力\s*\d|63|39/);
+  };
+  const enough = start(), expectedAfter = stats.staminaAfter(home.HOME_STAMINA);
+  const original = JSON.stringify(state);
+  await confirm(); assert.equal(JSON.stringify(state), original, "確認するまで何も消費しない"); assert.equal(saves, 0);
+  await advance("home-recipe-confirm-ok", true); assert.equal(await enough, true);
+  assert.deepEqual(state.flavorStock, { lemon: 12, mint: 10, absal_mint: 26 }, "確認した実銘柄だけを消費する");
+  assert.equal(state.stamina, expectedAfter); assert.equal(state.flags._home_shisha_day, "1:9");
+  assert.deepEqual(state.flavorMastery, { lemon: 4, mint: 2 }, "熟練度は従来どおり系統へ付与する");
+  const saved = JSON.stringify(loadGame()); assert.equal(await flow.runHomeShisha(), false); assert.equal(JSON.stringify(core.state), saved);
+
+  const cancelled = start(), beforeCancel = JSON.stringify(state);
+  await confirm(); await advance("home-recipe-confirm-back", false); await advance("home-shisha-skip", null);
+  assert.equal(await cancelled, false); assert.equal(JSON.stringify(state), beforeCancel); assert.equal(saves, 0);
+
+  const strong = start(); state.stats.guts = 100; state.stamina = 100;
+  await advance("home-shisha-recipe", "recipe"); await advance("home-recipe-ice_lemonade", "ice_lemonade");
+  assert.equal(conditionForRatio((100 + home.HOME_STAMINA) / stats.maxStamina()).label, "通常");
+  assert.match(text(pending[0].body), /体調：好調 → 好調/, "固定24ではなく根性補正後の体調を表示する");
+  await advance("home-recipe-confirm-back", false); await advance("home-shisha-skip", null); assert.equal(await strong, false);
+
+  for (const change of [s => { s.flavorStock.lemon = 3; }, s => { s.flavorStock.absal_mint += 1; }, s => { s.stamina -= 1; }]) {
+    const changed = start(); await confirm(); change(state); const before = JSON.stringify(state);
+    await advance("home-recipe-confirm-ok", true); await advance("home-shisha-skip", null);
+    assert.equal(await changed, false); assert.equal(JSON.stringify(state), before); assert.equal(saves, 0);
+  }
+  const insufficient = start(); await advance("home-shisha-recipe", "recipe");
+  state.flavorStock.lemon = 3; const beforeInsufficient = JSON.stringify(state);
+  await advance("home-recipe-ice_lemonade", "ice_lemonade");
+  assert(!pending[0].options.some(o => o.test === "home-shisha-recipe"), "不足したレシピを再提示しない");
+  await advance("home-shisha-skip", null); assert.equal(await insufficient, false);
+  assert.equal(JSON.stringify(state), beforeInsufficient); assert.equal(saves, 0);
+
+  for (const at of ["list", "confirm"]) {
+    const loaded = start(); saveGame();
+    await advance("home-shisha-recipe", "recipe");
+    if (at === "confirm") await advance("home-recipe-ice_lemonade", "ice_lemonade");
+    state = loadGame(); const before = JSON.stringify(state);
+    await advance(at === "list" ? "home-recipe-ice_lemonade" : "home-recipe-confirm-ok", at === "list" ? "ice_lemonade" : true);
+    assert.equal(await loaded, false); assert.equal(JSON.stringify(state), before); assert.equal(saves, 0);
+  }
+  for (const field of ["day", "slot"]) {
+    const interrupted = start(); await confirm(); state[field]++; const before = JSON.stringify(state);
+    await advance("home-recipe-confirm-ok", true); assert.equal(await interrupted, false);
+    assert.equal(JSON.stringify(state), before); assert.equal(saves, 0);
+  }
+}
+// つむぎの授業は相談済み・その夜に使ったラベンダーだけ。無料の一服をEXPへ換算しない。
+{
+  const growth=await import("../js/core/growth.js"),stats=await import("../js/core/stats.js");
+  growth.setGrowthPreview(true);state=newGame();Object.assign(state,{day:4,slot:2,stamina:80});
+  state.owned.push(rig.SUMI_RIG);state.flavors.push("lavender");state.flavorStock={lavender:24};
+  growth.ensureGrowth().nodes=["M-S3"];assert(growth.learnLesson("M-S3"));
+  const raw={...state.stats};assert(home.applyHomeShisha({lavender:12},rig.homeRig()));
+  assert.equal(state.flags._home_lavender_sleep,"1:4");assert.equal(state.slot,2);assert.equal(state.day,4);
+  assert.deepEqual(state.stats,raw);assert.equal(state.growth.xp,0);
+  saveGame();state=loadGame();state.stamina=20;stats.addStamina(20,{sleep:true});assert.equal(state.stamina,44);
+  state.stamina=20;stats.addStamina(20);assert.equal(state.stamina,40);
+  state.day++;state.stamina=20;stats.addStamina(20,{sleep:true});assert.equal(state.stamina,40,"翌晩へ効き目を持ち越さない");
+  growth.setGrowthPreview(false);
+}
+console.log("[home shisha] PASS: rigs, offer rules, recipe confirmation, stock/stamina/LOAD boundaries, 12g/24 stamina/no slot, mastery only, safety lines");

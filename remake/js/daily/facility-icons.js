@@ -3,6 +3,11 @@ export const FACILITY_SHEET = new URL('../../../assets/ui/map-facilities-579.web
 export const FACILITY_SHEET_SIZE = Object.freeze([2172, 724]);
 export const FACILITY_EXTRA_SHEET = new URL('../../../assets/ui/map-facilities-extra-579.webp', import.meta.url).href;
 export const CINEMA_ICON = new URL('../../../assets/ui/map-rojiura-cinema.webp', import.meta.url).href;
+// 地図アイコンの追加分（2026-11-02 MPI。Codex の候補からオーナーが採用）。1枚ずつの透過 WebP（長辺384px）。
+// 路上占いは「どこに現れても違和感のない」持ち運びの出店に作り直した（旧版は extra シートの店構え。シートは残す）。
+const single = (file, label, [width, height], badge) => Object.freeze({ badge: Object.freeze(badge), label,
+  src: new URL(`../../../assets/ui/${file}`, import.meta.url).href,
+  sheetSize: Object.freeze([width, height]), rect: Object.freeze([0, 0, width, height]) });
 // Half-open crops with two source pixels of breathing room. Badge anchors touch an opaque right-side contour.
 export const FACILITY_ICONS = Object.freeze({
   rojiura_cinema: Object.freeze({ badge: Object.freeze([476, 170]), label: '路地裏シネマ', src: CINEMA_ICON,
@@ -12,13 +17,45 @@ export const FACILITY_ICONS = Object.freeze({
   kohaku: Object.freeze({ badge: Object.freeze([1994, 293]), label: '喫茶こはく', rect: Object.freeze([1552, 104, 568, 539]) }),
   axe_bar: Object.freeze({ badge: Object.freeze([688, 153]), label: '斧投げBar', extra: true, rect: Object.freeze([56, 14, 655, 495]) }),
   choizap: Object.freeze({ badge: Object.freeze([1466, 178]), label: 'CHOI-ZAP', extra: true, rect: Object.freeze([844, 49, 633, 459]) }),
-  fortune: Object.freeze({ badge: Object.freeze([659, 652]), label: '路上占い', extra: true, rect: Object.freeze([81, 513, 632, 496]) }),
   trpg_bar: Object.freeze({ badge: Object.freeze([1425, 650]), label: 'ボドゲカフェ', extra: true, rect: Object.freeze([821, 512, 664, 494]) }),
+  // 路上占いは水晶玉だけのシール風アイコンに作り直し（2026-11-10 オーナー採用C案。旧出店アイコンは廃止）。
+  fortune: single('map-facilities-fortune-crystal.webp', '路上占い', [384, 384], [285, 150]),
+  tokyo_park: single('map-facilities-tokyo-park.webp', '東京の公園', [384, 347], [361, 120]),
+  mukai_back_room: single('map-facilities-mukai-back-room.webp', 'mukaiの奥の部屋', [384, 327], [368, 82]),
+  mukai_attic: single('map-facilities-mukai-attic.webp', 'mukaiの屋根裏', [384, 377], [379, 134]),
+  smartphone: single('map-facilities-smartphone.webp', 'スマホ', [353, 384], [265, 96]),
+  shinkansen_station: single('map-facilities-shinkansen-station.webp', '新幹線の駅', [384, 354], [312, 175]),
+  dubai_souq: single('map-facilities-dubai-souq.webp', 'スーク', [384, 324], [380, 89]),
+  dubai_creek: single('map-facilities-dubai-creek.webp', 'クリーク沿い', [384, 298], [378, 132]),
+  dubai_mosque: single('map-facilities-dubai-mosque.webp', '風の回廊モスク', [384, 327], [378, 147]),
+  dubai_inn: single('map-facilities-dubai-inn.webp', '旧市街の宿', [384, 347], [380, 157]),
+  dubai_inn_lobby: single('map-facilities-dubai-inn-lobby.webp', '宿のロビー', [384, 311], [372, 80]),
+  dubai_practice_hall: single('map-facilities-dubai-practice-hall.webp', '公式練習会場', [384, 269], [368, 67]),
+  // MPI07（2026-11-02 オーナー「おまかせで」）: 後から入ったドバイの行き先
+  desert_tour_desk: single('map-facilities-desert-tour-desk.webp', '砂漠ツアーのデスク', [384, 333], [376, 136]),
+  desert_dunes: single('map-facilities-desert-dunes.webp', '砂丘', [384, 259], [343, 128]),
+  camel_race_track: single('map-facilities-camel-race-track.webp', 'ラクダレース場', [384, 276], [372, 109]),
+  // #3022（2026-11-10 オーナー採用）: Dr.fookah の配送便。銀箱＋水色キャブのトラック（Grok 生成・清書済み）
+  delivery_truck: single('map-facilities-delivery-truck.webp', '配送便', [384, 334], [346, 130]),
 });
 export const FACILITY_ICON_SIZES = Object.freeze([32, 48, 64, 80, 96, 128]);
 const SPOT_ICONS = Object.freeze({ kannon: 'kannondo', rest: 'home', cafe: 'kohaku',
   rojiura_cinema: 'rojiura_cinema',
-  axe_bar: 'axe_bar', choizap: 'choizap', fortune: 'fortune', trpg_bar: 'trpg_bar' });
+  axe_bar: 'axe_bar', choizap: 'choizap', fortune: 'fortune', trpg_bar: 'trpg_bar',
+  ch3_tokyo_gym: 'choizap', // 第3章の東京のCHOI-ZAP（同じチェーンの高架下の店）
+  ch5_tokyo_gym: 'choizap', // 第5章の東京でも同じ店（会員の時だけ地図に出る）
+  // MPI: 東京・ドバイ・第5章の行き先。路地裏の神社は場所の決定待ち（#2166）
+  ch3_tokyo_park: 'tokyo_park', ch5_tokyo_park: 'tokyo_park', ch3_tokyo_room: 'mukai_back_room', ch5_tokyo_attic: 'mukai_attic',
+  ch5_call: 'smartphone', // 第3章の「地元と連絡」は地図から外し、右上の LIME の一番上の行に（オーナー決定 2026-11-02）
+  // 第5章の東京への行き来は Dr.fookah の配送便（FIN13）。当初は文字の盾（「便」）だったが、配送便専用の絵を #3022 で制作し
+  // 2026-11-10 にオーナーが採用したので、行きも帰りもトラックのアイコンにする。新幹線の駅の絵は使わない（FACILITY_ICONS には残す）。
+  ch5_to_tokyo: 'delivery_truck', ch5_tokyo_home: 'delivery_truck',
+  // MPI07: 砂漠ツアーのデスク・砂丘・ラクダレース場（ラクダは誘われた後のレース場だけ。店先の段階は facilityIcon: false）
+  ch4_dubai_tour_desk: 'desert_tour_desk', ch4_dubai_dunes: 'desert_dunes', ch4_dubai_camel: 'camel_race_track',
+  ch4_dubai_souq: 'dubai_souq', ch4_dubai_creek: 'dubai_creek', ch4_dubai_mosque: 'dubai_mosque', ch4_dubai_inn: 'dubai_inn',
+  ch4_dubai_naru: 'dubai_inn_lobby', ch4_dubai_practice: 'dubai_practice_hall',
+  // 第5章のドバイも同じ場所の絵（SLG05）
+  ch5_dubai_souq: 'dubai_souq', ch5_dubai_creek: 'dubai_creek', ch5_dubai_mosque: 'dubai_mosque' });
 export const hasFacilityIcon = id => Object.hasOwn(SPOT_ICONS, id);
 
 // Morphology follows the alpha silhouette, rather than adding a rectangular backing.

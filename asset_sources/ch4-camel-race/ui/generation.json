@@ -1,0 +1,336 @@
+{
+  "title": "CR08 ラクダレースUI素材（軽量引継ぎ6候補）の生成・選別記録",
+  "received": "2026-11-09、オーナーから軽量引継ぎZIP（cr08-light-handoff-20261109.zip）で受領。全47候補のうち6枚のみの抜粋で、残り41候補は未受領。",
+  "handoff_records": "生成の詳細記録は引継ぎZIP同梱の generation-records/（パッケージ別 generation.json / technical-qa.json）を正とし、SHA256SUMS は全件照合済み（2026-11-09 ミューズ確認）。",
+  "selection_record": "work/cr08-handoff-1109/SELECTION.md（ミューズの目視検品と選別理由）。組み込みは Issue #3046。",
+  "derivative_rule": "正本 asset_sources/ch4-camel-race/ui-request.md の許容は縮小のみ。切り抜き・変形・色補正はしていない。program-card は 1586×992 → 1280×801（均等縮小、幅1280基準）。button-primary は 2172×724 → 600×200（均等縮小、原画比3:1を維持）。",
+  "files": [
+    {
+      "original": "howto-camel-B.png",
+      "spec": "CR-UI11",
+      "sha256": "6fa29cd643da02a40b38cede5b40cf1b11b5b55178bad3cdde49b091c7e1c1b0",
+      "bytes": 1345307,
+      "size": [
+        1448,
+        1086
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui11-camel-candidates-20261108",
+      "derivative": "assets/ui/camel_race/ui/howto-camel.png + remake/img/ui/camel_race/ui/howto-camel.webp",
+      "selection": "採用（ミューズ選別 2026-11-09）"
+    },
+    {
+      "original": "howto-voice-B.png",
+      "spec": "CR-UI11",
+      "sha256": "1b253ba2e7deb9223e4d535991dd4c3e9cdf941bb533512308f459c32a3edb22",
+      "bytes": 1315882,
+      "size": [
+        1448,
+        1086
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui11-voice-whip-candidates-20261108",
+      "derivative": "assets/ui/camel_race/ui/howto-voice.png + remake/img/ui/camel_race/ui/howto-voice.webp",
+      "selection": "採用（ミューズ選別 2026-11-09）"
+    },
+    {
+      "original": "howto-whip-C.png",
+      "spec": "CR-UI11",
+      "sha256": "9157e9b6c3391f9ad7a43da7b03fdbc573e2d43df252f5e8a110294b40153ded",
+      "bytes": 789401,
+      "size": [
+        1448,
+        1086
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui11-voice-whip-candidates-20261108",
+      "derivative": "assets/ui/camel_race/ui/howto-whip.png + remake/img/ui/camel_race/ui/howto-whip.webp",
+      "selection": "採用（ミューズ選別 2026-11-09）"
+    },
+    {
+      "original": "program-card-B.png",
+      "spec": "CR-UI08",
+      "sha256": "0cf8d907aeed4a36fa1af7d4add2041655e227cab6e64032931cc228bba1a169",
+      "bytes": 2322530,
+      "size": [
+        1586,
+        992
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui08-candidates-20261108",
+      "derivative": "assets/ui/camel_race/ui/program-card.png + remake/img/ui/camel_race/ui/program-card.webp",
+      "selection": "採用（ミューズ選別 2026-11-09）"
+    },
+    {
+      "original": "balloon-C.png",
+      "spec": "CR-UI13",
+      "sha256": "eaabdf143b3e1a95accf35a64d7320b88b2a314705dc37468412cb7fe74870d9",
+      "bytes": 2014635,
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-art-candidates-20261108",
+      "derivative": "assets/ui/camel_race/ui/balloon.png + remake/img/ui/camel_race/ui/balloon.webp",
+      "selection": "採用（ミューズ選別 2026-11-09）"
+    },
+    {
+      "original": "button-primary-B.png",
+      "spec": "CR-UI09",
+      "sha256": "bd6523d8e9841e7cbc7c7e62cfcac1a66b94c65b7ffffc7a9b641e9790502e9f",
+      "bytes": 1945330,
+      "size": [
+        2172,
+        724
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui09-candidates-20261108",
+      "derivative": "assets/ui/camel_race/ui/button-primary.png + remake/img/ui/camel_race/ui/button-primary.webp",
+      "selection": "条件付き採用（ミューズ選別 2026-11-09）: 原画比3:1のため派生は600×200で均等縮小のみ。実画面プレビューで角を確認して採否を決める"
+    },
+    {
+      "original": "dash-panel-B.png",
+      "spec": "CR-UI04",
+      "sha256": "b5b37e5544d02f3788ad368107679f0f76946d51f80faa2b0cd1417987cb0b49",
+      "bytes": 1794611,
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui04-candidates-20261108",
+      "generation_record": "asset_sources/ch4-camel-race/ui/records/cr08-ui04-candidates-20261108-generation.json",
+      "derivative": "assets/ui/camel_race/ui/dash-panel.png + remake/img/ui/camel_race/ui/dash-panel.webp",
+      "derivative_size": [
+        640,
+        320
+      ],
+      "selection": "採用（2026-11-10、Issue #3053、SELECTION.md）"
+    },
+    {
+      "original": "finish-post-C.png",
+      "spec": "CR-UI06",
+      "sha256": "8f4c2ff25996c793516dfa59dba3a07e1192ef2788468c51ada3aab6da40b5d8",
+      "bytes": 406119,
+      "size": [
+        1122,
+        1402
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui06-finish-post-candidates-20261108",
+      "generation_record": "asset_sources/ch4-camel-race/ui/records/cr08-ui06-finish-post-candidates-20261108-generation.json",
+      "derivative": "assets/ui/camel_race/ui/finish-post.png + remake/img/ui/camel_race/ui/finish-post.webp",
+      "derivative_size": [
+        128,
+        160
+      ],
+      "selection": "採用（2026-11-10、Issue #3053、SELECTION.md）"
+    },
+    {
+      "original": "button-secondary-B.png",
+      "spec": "CR-UI09",
+      "sha256": "02a5c9b4ca11bc0717a0692992895c9f35c67149499c8b0f762454e65a76a75a",
+      "bytes": 1587229,
+      "size": [
+        2172,
+        724
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui09-candidates-20261108",
+      "generation_record": "asset_sources/ch4-camel-race/ui/records/cr08-ui09-candidates-20261108-generation.json",
+      "derivative": "assets/ui/camel_race/ui/button-secondary.png + remake/img/ui/camel_race/ui/button-secondary.webp",
+      "derivative_size": [
+        600,
+        200
+      ],
+      "selection": "採用（2026-11-10、Issue #3053、SELECTION.md）"
+    },
+    {
+      "original": "stamp-s-B.png",
+      "spec": "CR-UI10",
+      "sha256": "35a6f989cf4858ef2a9c6e72867480aea37c0a2248bd882b423daa88a157d4a2",
+      "bytes": 553491,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui10-candidates-20261108",
+      "generation_record": "asset_sources/ch4-camel-race/ui/records/cr08-ui10-candidates-20261108-generation.json",
+      "derivative": "assets/ui/camel_race/ui/stamp-s.png + remake/img/ui/camel_race/ui/stamp-s.webp",
+      "derivative_size": [
+        256,
+        256
+      ],
+      "selection": "採用（2026-11-10、Issue #3053、SELECTION.md）"
+    },
+    {
+      "original": "stamp-a-A.png",
+      "spec": "CR-UI10",
+      "sha256": "3c39998eb56cfa8ebda2644e980bcf9f51d1be06a6bac259f11c4fb5202fddcf",
+      "bytes": 494942,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui10-candidates-20261108",
+      "generation_record": "asset_sources/ch4-camel-race/ui/records/cr08-ui10-candidates-20261108-generation.json",
+      "derivative": "assets/ui/camel_race/ui/stamp-a.png + remake/img/ui/camel_race/ui/stamp-a.webp",
+      "derivative_size": [
+        256,
+        256
+      ],
+      "selection": "採用（2026-11-10、Issue #3053、SELECTION.md）"
+    },
+    {
+      "original": "stamp-b-A.png",
+      "spec": "CR-UI10",
+      "sha256": "d7a28838bdfd5e4d19b46a0c5252e4758129af5de6cb3d264c0c3e6d845470ff",
+      "bytes": 608794,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui10-candidates-20261108",
+      "generation_record": "asset_sources/ch4-camel-race/ui/records/cr08-ui10-candidates-20261108-generation.json",
+      "derivative": "assets/ui/camel_race/ui/stamp-b.png + remake/img/ui/camel_race/ui/stamp-b.webp",
+      "derivative_size": [
+        256,
+        256
+      ],
+      "selection": "採用（2026-11-10、Issue #3053、SELECTION.md）"
+    },
+    {
+      "original": "stamp-c-A.png",
+      "spec": "CR-UI10",
+      "sha256": "2ad48c6b2fbf4bf2b04bc7b32b1935cb40b1be8095750e742cfad0892f1cb714",
+      "bytes": 506035,
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui10-candidates-20261108",
+      "generation_record": "asset_sources/ch4-camel-race/ui/records/cr08-ui10-candidates-20261108-generation.json",
+      "derivative": "assets/ui/camel_race/ui/stamp-c.png + remake/img/ui/camel_race/ui/stamp-c.webp",
+      "derivative_size": [
+        256,
+        256
+      ],
+      "selection": "採用（2026-11-10、Issue #3053、SELECTION.md）"
+    },
+    {
+      "original": "word-perfect-A.png",
+      "spec": "CR-UI14",
+      "sha256": "c5a90223d5c952ab70abd61dd83a32b1d508781114f2fd33c78187d8e63a8233",
+      "bytes": 1089069,
+      "size": [
+        2172,
+        724
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-ui14-candidates-20261108",
+      "generation_record": "asset_sources/ch4-camel-race/ui/records/cr08-ui14-candidates-20261108-generation.json",
+      "derivative": "assets/ui/camel_race/ui/word-perfect.png + remake/img/ui/camel_race/ui/word-perfect.webp",
+      "derivative_size": [
+        1024,
+        341
+      ],
+      "selection": "採用（2026-11-10、Issue #3053、SELECTION.md）"
+    },
+    {
+      "original": "rank-plate-A.png",
+      "spec": "CR-UI01",
+      "sha256": "dc5af3f12be25f3e7e2ae7b0fa1b4f9a3dfc3a4ef16cd324129905041a820f9e",
+      "bytes": 108863,
+      "size": [
+        512,
+        160
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-3055-redo-20261110",
+      "source_raw": "asset_sources/ch4-camel-race/ui/records/3055-raw/rank-plate-A.png",
+      "derivative": "assets/ui/camel_race/ui/rank-plate.png + remake/img/ui/camel_race/ui/rank-plate.webp",
+      "selection": "合格見込み・ミューズ最終検品待ち"
+    },
+    {
+      "original": "rank-plate-player-A.png",
+      "spec": "CR-UI02",
+      "sha256": "b9b2b9d9be04976673ba0f9280cf53807415179e2cac55c15ce38635856bc6b7",
+      "bytes": 124228,
+      "size": [
+        512,
+        160
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-3055-redo-20261110",
+      "source_raw": "asset_sources/ch4-camel-race/ui/records/3055-raw/rank-plate-player-A.png",
+      "derivative": "assets/ui/camel_race/ui/rank-plate-player.png + remake/img/ui/camel_race/ui/rank-plate-player.webp",
+      "selection": "合格見込み・ミューズ最終検品待ち"
+    },
+    {
+      "original": "medal-gold-A.png",
+      "spec": "CR-UI03",
+      "sha256": "973ef6b99634d66daf9174a567b6be42fc18815ac2d88eab25f0a2c477c7585f",
+      "bytes": 97376,
+      "size": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-3055-redo-20261110",
+      "source_raw": "asset_sources/ch4-camel-race/ui/records/3055-raw/medal-gold-A.png",
+      "derivative": "assets/ui/camel_race/ui/medal-gold.png + remake/img/ui/camel_race/ui/medal-gold.webp",
+      "selection": "合格見込み・ミューズ最終検品待ち"
+    },
+    {
+      "original": "gauge-frame-A.png",
+      "spec": "CR-UI05",
+      "sha256": "427f7615569e65486efe42e82865ec0233d4b0d6de7c65d71c0333f680fc7d2c",
+      "bytes": 73025,
+      "size": [
+        800,
+        96
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-3055-redo-20261110",
+      "source_raw": "asset_sources/ch4-camel-race/ui/records/3055-raw/gauge-frame-A.png",
+      "derivative": "assets/ui/camel_race/ui/gauge-frame.png + remake/img/ui/camel_race/ui/gauge-frame.webp",
+      "selection": "合格見込み・ミューズ最終検品待ち"
+    },
+    {
+      "original": "gauge-fill-A.png",
+      "spec": "CR-UI05",
+      "sha256": "2af2f42ea1396ef435ffba958eb42853345bb0b92f4de9e35a006198240ea88f",
+      "bytes": 40968,
+      "size": [
+        800,
+        64
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-3055-redo-20261110",
+      "source_raw": "asset_sources/ch4-camel-race/ui/records/3055-raw/gauge-fill-A.png",
+      "derivative": "assets/ui/camel_race/ui/gauge-fill.png + remake/img/ui/camel_race/ui/gauge-fill.webp",
+      "selection": "合格見込み・ミューズ最終検品待ち"
+    },
+    {
+      "original": "call-plate-A.png",
+      "spec": "CR-UI12",
+      "sha256": "5e0ce0a261afc6145f52da9d81051a3dbcc56135e8bc21aa06e8a673df058ab8",
+      "bytes": 128149,
+      "size": [
+        720,
+        160
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-3055-redo-20261110",
+      "source_raw": "asset_sources/ch4-camel-race/ui/records/3055-raw/call-plate-A.png",
+      "derivative": "assets/ui/camel_race/ui/call-plate.png + remake/img/ui/camel_race/ui/call-plate.webp",
+      "selection": "合格見込み・ミューズ最終検品待ち"
+    }
+  ],
+  "remaining41_received": "2026-11-10、41枚の原画を受領。採用8枚のみこの台帳に追記。既存6件は維持。詳細は Issue #3053 / work/codex-a-cr08-41-1110/SELECTION.md。"
+}

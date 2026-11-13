@@ -1,4 +1,5 @@
 import { el } from "../core/util.js";
+import { buildVersioned } from "../core/asset-version.js";
 import { toast } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { SE } from "../core/audio.js";
@@ -8,9 +9,12 @@ import { waterQuantity, changeWater, waterComfort, STEM_TIP } from "./water.js";
 
 function ensureStyle() {
   if (document.querySelector('link[data-craft-water]')) return;
-  const link = el("link", { rel: "stylesheet", href: new URL("../../css/craft-water.css", import.meta.url).href, "data-craft-water": "" });
+  const link = el("link", { rel: "stylesheet", href: buildVersioned(new URL("../../css/craft-water.css", import.meta.url).href), "data-craft-water": "" });
   document.head.append(link);
 }
+
+// 操作の説明。スマホでは画面に出さず「?」で読む（craft-landscape.css・#2729 の基本画面はスッキリ）。PCは画面にも残す。
+const WATER_HELP = "押している間だけ水量が変わります。離すと止まり、何度でも調整できます。キーボードはボタンに合わせてSpace / Enterを長押し。";
 
 // 入力と波はこの画面だけの寿命。確定時に返すのは実qだけ。
 // 開始時は空（0）。途中再開はcs.waterの実量をそのまま渡すので保たれる。
@@ -37,21 +41,33 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
   const confirm = el("button.btn.primary", { type: "button", text: "この水量で進む", dataset: { test: "water-confirm" } });
   const root = el("section.craft-water", { dataset: { test: "water-step" } }, [
     el("div.craft-water-display", [meter, el("div", [status, el("p", { text: "目安：ステムが少し浸かるまで（二本の線のあいだ）" })])]),
-    el("p.craft-water-help", { text: "押している間だけ水量が変わります。離すと止まり、何度でも調整できます。キーボードはボタンに合わせてSpace / Enterを長押し。" }),
+    el("p.craft-water-help", { text: WATER_HELP }),
     el("div.craft-water-actions", [pour, drain, confirm]),
   ]);
   panel.append(root);
   const available = () => !done && root.isConnected && isCurrent() && !document.hidden
     && !panel.closest('[inert], .done') && !document.querySelector('#modal.show, .bench-guide[open], .bench-condition[open]');
+  let drawnQuantity = null, drawnWave = null, drawnBand = null, drawnFlow = null;
   function render() {
-    fill.style.height = `${q * 100}%`;
-    fill.style.setProperty("--water-wave", `${wave}px`);
-    meter.setAttribute("aria-valuenow", String(q * 100));
+    if (drawnQuantity !== q) {
+      fill.style.height = `${q * 100}%`;
+      meter.setAttribute("aria-valuenow", String(q * 100));
+      drawnQuantity = q;
+    }
+    const visibleWave = Math.round(wave * 100) / 100;
+    if (drawnWave !== visibleWave) {
+      fill.style.setProperty("--water-wave", `${visibleWave}px`);
+      drawnWave = visibleWave;
+    }
     const band = waterComfort(q).band;
-    status.textContent = { none: "ステムに届いていない", shallow: "浸かりが浅い", ideal: "ちょうどよく浸かっている", deep: "深い" }[band];
-    status.dataset.band = band;
-    meter.setAttribute("aria-valuetext", status.textContent);
-    root.dataset.flow = direction || "stopped";
+    if (drawnBand !== band) {
+      status.textContent = { none: "ステムに届いていない", shallow: "浸かりが浅い", ideal: "ちょうどよく浸かっている", deep: "深い" }[band];
+      status.dataset.band = band;
+      meter.setAttribute("aria-valuetext", status.textContent);
+      drawnBand = band;
+    }
+    const flow = direction || "stopped";
+    if (drawnFlow !== flow) { root.dataset.flow = flow; drawnFlow = flow; }
   }
   function advance(now) {
     if (direction && last !== null) q = changeWater(q, direction, Math.max(0, now - last) / 1000);
@@ -166,6 +182,7 @@ export async function stepWater(cs) {
     ? "スミ「注ぐときは長押し。二本の線を目安に、こぼして戻してもいい」"
     : "長押しで注ぐ・こぼす。水量を決めてから配合へ進む", { brief: STEP_BRIEFS.water, lessonStep: "water" });
   const view = mountWater(panel, { quantity: cs.water, isCurrent: () => state === ownerState && !!benchRoot(cs) });
+  benchRoot(cs)?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", [el("p", { text: WATER_HELP })]));
   if (craftTest.auto) queueMicrotask(view.confirm);
   cs.water = await view.result;
   // 確定した水位を左の作業風景のボトル内部へ描く（本編・練習共通）。

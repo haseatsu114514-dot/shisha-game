@@ -1,0 +1,29 @@
+/* 会話カットイン（立ち絵版・#2990。remake/js/vn/conversation-cutin.js）。
+   見た目と出入りの動きは Draft PR #2931 のデモ（#2924）が正本。座標は舞台 1280×720 の px。 */
+.vn-cutin-layer { position: absolute; inset: 0; pointer-events: none; z-index: 2; overflow: hidden; }
+#vn:not(.active) .vn-cutin-layer { visibility: hidden; }
+#vn.sepia .vn-cutin-layer { filter: sepia(0.75) contrast(0.95) brightness(0.92); }
+#vn.flashback .vn-cutin-layer { filter: grayscale(1) contrast(0.92); }
+.vn-cutin { position: absolute; pointer-events: none; animation: .22s ease-out both; }
+.vn-cutin svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.vn-cutin svg polygon { fill: none; stroke: #c9b491; stroke-width: 2.5; }
+.vn-cutin-clip { position: absolute; inset: 0; overflow: hidden;
+  background: repeating-linear-gradient(128deg, transparent 0 23px, #e7d3f21a 23px 24px), linear-gradient(135deg, #685272, #34253f); }
+.vn-cutin-art { position: absolute; max-width: none; max-height: none; }
+.vn-cutin[data-enter="slide"] { animation-name: vn-cutin-slide; }
+.vn-cutin[data-enter="fade"] { animation-name: vn-cutin-fade; animation-duration: .3s; }
+.vn-cutin[data-enter="rise"] { animation-name: vn-cutin-rise; animation-duration: .3s; }
+.vn-cutin[data-enter="wipe"] { animation-name: vn-cutin-wipe; animation-duration: .18s; transform-origin: left center; }
+/* 案4 余白に沈む: 暗い枠背景。消えるときだけ0.3秒で薄れる */
+.vn-cutin.sink { animation-duration: .4s; }
+.vn-cutin.sink .vn-cutin-clip { background: repeating-linear-gradient(128deg, transparent 0 23px, #e7d3f212 23px 24px), linear-gradient(135deg, #40334a, #1d1524); }
+/* 案5 胸に落ちる: 枠線だけ琥珀色 */
+.vn-cutin.amber svg polygon { stroke: #e0a85a; }
+.vn-cutin.leave { animation: vn-cutin-out .3s ease-in forwards; }
+.vn-cutin[data-still="true"] { animation: none; }
+@keyframes vn-cutin-slide { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+@keyframes vn-cutin-fade { from { opacity: 0; } }
+@keyframes vn-cutin-out { to { opacity: 0; } }
+@keyframes vn-cutin-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes vn-cutin-wipe { from { transform: scaleX(0); } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .vn-cutin { animation: none; } }

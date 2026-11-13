@@ -1,8 +1,0 @@
-Production cleanup edit ONLY of this exact five-character sprite sheet. Do not redesign or change faces, expressions, white windowpane-check suits, hands in jacket pockets, shoes, hair or proportions. Preserve all five people as drawn.
-
-1. REMOVE THE ENTIRE GREY/BROWN/BLACK GRADIENT BACKGROUND and all floor shadows. Make every space outside the five character silhouettes genuinely TRANSPARENT (alpha0), not a gray backdrop, not a checkerboard, not smoke or haze. This is a set of transparent isolated sticker/sprite cutouts. Preserve opaque clothing, faces and hair. Do not make the people semitransparent.
-2. Add MUCH MORE EMPTY TRANSPARENT PADDING and spacing. The rightmost man's shoe currently touches/crosses the right edge: reconstruct that missing small shoe tip naturally and ensure complete head, shoulders and shoes of all five remain comfortably inside the image. Scale the whole group down if needed. At least 60px equivalent clear padding at left/right and top/bottom, and 40px empty transparent gutters BETWEEN EACH FULL silhouette, including shoes. No touching and no clipping.
-3. Five equally sized FULL-BODY standing figures on a single horizontal row, same eye level and foot baseline, no additional images or inset faces, no labels or text. Expressions left to right remain stern neutral, warm toothy smile, grave serious, surprised open mouth, emotional manly tears.
-4. Little fingers remain hidden exactly as in source: both hands in jacket pockets, no fingers exposed or anatomy changed.
-
-Transparent RGBA asset only. All background must be removed; absolutely no painted backdrop or shadows. Retain the precise original character art and mature scary face, fine illustrated texture and costume.

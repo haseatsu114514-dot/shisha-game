@@ -1,0 +1,85 @@
+{
+  "id": "maki-let-the-axe",
+  "title": "斧の仕事",
+  "cast": [
+    "maki"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "全力で投げます！",
+    "斧に仕事をさせな。",
+    "店長が一番喜ぶ。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "斧投げBarのレーン。左のはじめが斧を振りかぶって力んで「全力で投げます！」。右のマキが腕を組んで笑い「斧に仕事をさせな。」。斧は的の方向だけを向く。",
+  "panel2": "はじめが力を抜いて投げた斧が、木の的の真ん中に刺さっている。マキが両手を挙げて客より大喜びで跳ねている。はじめ「店長が一番喜ぶ。」。人に刃を向けない。",
+  "caption": "マキさんの口癖は、「斧に仕事をさせな」。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v1.png",
+  "source_sha256": "9dab74e77ef180de5cecec3f92686a33a7ba72e601735a8fda6fd481c49375b6",
+  "references": [
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "role": "dimension template"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "role": "character normal identity"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/maki.png",
+      "sha256": "d762ff2e09e14c6747ebc91379c7b9032380a1834a48d185f56a7f95832190a8",
+      "role": "character normal identity"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "role": "initial adopted game comic style only"
+    }
+  ],
+  "prompts": [
+    {
+      "path": "prompt-A-v1.txt",
+      "sha256": "6d199323034ce351412860ce19a9b45e28ad016abe92629a5b9071e5d5f48976"
+    }
+  ],
+  "versions": [
+    {
+      "path": "source-A-v1.png",
+      "sha256": "9dab74e77ef180de5cecec3f92686a33a7ba72e601735a8fda6fd481c49375b6",
+      "status": "review candidate"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "all three canonical lines visually read; punctuation matched",
+    "reading_order": "left panel then right; first speaker top/left before response; tails to correct speaker",
+    "identity": "official normal images viewed before generation; both panels preserve Hajime left and partner right",
+    "style": "initial adopted comic screenshot used as fourth reference every generation; cute chibi 2.5-head proportions, thick clean outlines, warm cel colors visually consistent",
+    "hardware": "none: no shisha stand/bowl/HMD/coal/hose/smoking",
+    "prohibited_text": "no title, UI, watermark, or extra text in review candidate",
+    "cut": "16/16 panel check OK; fill changed 0; <400KiB each; minor 1-3px size/rounding differences recorded, no forced ratio or upscaling",
+    "notes": "No person downrange. Axe initially raised by Hajime, blade away from Maki; final axe embedded in unoccupied target. Copper streak/freckles/leather apron preserved.",
+    "in_game_pc_phone": "not run; candidates remain unregistered"
+  },
+  "delivery": [
+    {
+      "file": "panels/maki-let-the-axe-1.webp",
+      "width": 714,
+      "height": 476,
+      "bytes": 67316,
+      "sha256": "aec42060c131df5592d683932d6cf2b81e3c5d5d8a77efcfeb658cfce1b5d273"
+    },
+    {
+      "file": "panels/maki-let-the-axe-2.webp",
+      "width": 715,
+      "height": 477,
+      "bytes": 71324,
+      "sha256": "b9cf4de1b9f831cc7cba0384bfe9422d11fe0141065dc6ca69a1f4da6e23ac19"
+    }
+  ]
+}

@@ -9,7 +9,8 @@ await suite('minto-delivery',async check=>{
    page.setDefaultTimeout(30000);
    await page.evaluate(async ({scene,mode,legacy})=>{
     window.D={core:await import('./js/core/state.js'),vn:await import('./js/vn/engine.js'),calendar:await import('./js/daily/calendar.js'),ch1:await import('./js/chapters/ch1.js'),ui:await import('./js/core/ui.js')};
-    const s=D.core.newGame(); Object.assign(s,{phase:'daily',day:2,slot:0,money:10000,stamina:80});
+    // #2213 B01: 配達はその日の行動を終えた帰り道（slot 2）に、行動枠・体力を使わずに行う。
+    const s=D.core.newGame(); Object.assign(s,{phase:'daily',day:2,slot:2,money:10000,stamina:80});
     Object.assign(s.flags,{_c_station_registered:true,_errand_scout_done:true,_delivery_adam_done:true,_delivery_minto_told:true,_morning_2:true,_lime_tut:true,_lime_opened:true});
     if(legacy) {
      // 旧schemaで、みんとの依頼後・引渡し前に中断した保存。
@@ -62,9 +63,9 @@ await suite('minto-delivery',async check=>{
     }
     await page.waitForTimeout(mode==='auto'?400:80);
    }
-   await page.waitForFunction(()=>D.core.state.flags._delivery_minto_done && D.core.state.slot===1);
-   await page.locator('.map:not(.done)').waitFor();
-   const result=await page.evaluate(()=>({s:D.core.state,before:D.before,trace:D.trace,frames:D.frames,mutations:D.mutations,saved:JSON.parse(localStorage.getItem(D.core.SAVE_KEY))}));
+   await page.waitForFunction(()=>D.core.state.flags._delivery_minto_done);
+   const result=await page.evaluate(async()=>({s:D.core.state,before:D.before,trace:D.trace,frames:D.frames,mutations:D.mutations,saved:JSON.parse(localStorage.getItem(D.core.SAVE_KEY)),
+    firstMeetingPts:(await import('./js/core/stats.js')).AFFINITY_RANK_PTS[1]}));
    assert.equal(result.trace[0].speaker,'minto');
    assert(result.frames.length>0,'No rendered frames recorded');
    fs.writeFileSync(`${shots}/${device}-${mode}-${legacy?'legacy':'new'}-frames.json`,JSON.stringify({frames:result.frames,mutations:result.mutations,trace:result.trace},null,2));
@@ -73,16 +74,19 @@ await suite('minto-delivery',async check=>{
    }
    for(const row of result.trace) assert.match(row.bg,/peppermint/,`${row.text}: ${row.bg}`);
    assert(result.trace.some(l=>l.text?.includes('カウンター脇')));
-   assert.equal(result.s.money,12000); assert.equal(result.s.stamina,70); assert.equal(result.s.slot,1);
-   for(const key of ['stats','statXp','affinity','story']) assert.deepEqual(result.s[key],result.before[key],key);
+   // 手当はバイト代への上乗せで残る。帰り道の配達は体力を使わない（帰宅後の睡眠回復は増える側だけ）。
+   assert.equal(result.s.money,12000); assert(result.s.stamina>=80,`delivery spent stamina: ${result.s.stamina}`);
+   for(const key of ['stats','statXp','story']) assert.deepEqual(result.s[key],result.before[key],key);
+   // 配達はみんととの初対面なので、読了で♥1ちょうどになる（786fb334・初対面の好感度は♥1で固定）。ほかの相手は変わらない
+   assert.deepEqual(result.s.affinity,{...result.before.affinity,minto:Math.max(result.before.affinity.minto||0,result.firstMeetingPts)},'affinity');
    assert.equal(result.s.met.minto,true); assert.equal(result.s.flags.known_name_minto,true);
    assert(!result.s.flags._minto_identity_revealed && !result.s.flags._minto_name_known);
    assert.equal(result.saved.flags._delivery_minto_done,true);
    const replay=await page.evaluate(()=>{
     const money=D.core.state.money; D.core.load(); const s=D.core.state;
-    return {money:s.money,same:s.money===money,done:s.flags._delivery_minto_done,slot:s.slot};
+    return {money:s.money,same:s.money===money,done:s.flags._delivery_minto_done};
    });
-   assert.deepEqual(replay,{money:12000,same:true,done:true,slot:1});
+   assert.deepEqual(replay,{money:12000,same:true,done:true});
   },opts);
  }
 });

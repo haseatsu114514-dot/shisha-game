@@ -56,7 +56,7 @@ export async function playHiyoriEvent(id, options = {}) {
     if (id === "tonari_return") releaseHiyoriAffinity();
     if (hiyoriHasContact() && !state.contacts.includes("hiyori")) state.contacts.push("hiyori");
     if (hiyoriRoute().storyEvents.includes(id)) state.story.hiyori = (state.story.hiyori || 0) + 1;
-    if (event.affinity) gainAffinity("hiyori", event.affinity);
+    if (event.affinity) gainAffinity("hiyori", event.affinity, { firstMeeting: id === "meeting" });
     // 面識・読了と同じ確定境界。後続の勧誘待ちでLOADされても保証を取り残さない。
     if (id === "meeting") ensureAffinityLevel("hiyori", 1);
     await afterStory(event.dialogue, { signal: lifetime?.signal, deferSave: id === "work_talk" });
@@ -70,6 +70,19 @@ export async function playHiyoriEvent(id, options = {}) {
     active = false;
   }
 }
+
+// ぺぱーみんとの相席で一度だけ（REL07）。いつもの相席の代わりに、店主のみんとが儚い女の注文に乗る。
+// 相席の繰り返しの順番は進めない。相関の正本は brand/character_profiles.md「キャラ同士のつながり」。
+const MINTO_SEAT = "hiyori_shop_minto";
+export const hiyoriMintoSeatDue = spot => spot?.id === "minto" && !!state.met?.minto
+  && !state.flags._hiyori_minto_seat_done && !!DB.dialogues[MINTO_SEAT]?.lines?.length;
+// その後の夜（退勤後）のぺぱーみんとの相席で一度だけ（#3468 B案）。儚く見える窓際と、本当に休める奥の席。
+// 既読の旗は、次のぺぱーみんとの来店での後日の一言（daily/spot-encounters.js の FOLLOWUPS）が source として読む。
+const MINTO_REST_SEAT = "hiyori_shop_minto_seat";
+const MINTO_REST_SEAT_SEEN = `_spot_seen_${MINTO_REST_SEAT}`;
+export const hiyoriMintoRestSeatDue = spot => spot?.id === "minto" && state.slot >= 1
+  && !!state.flags._hiyori_minto_seat_done && !state.flags[MINTO_REST_SEAT_SEEN]
+  && !!DB.dialogues[MINTO_REST_SEAT]?.lines?.length;
 
 /** 買い物だけでは会わない。実際に一服できる他店を滞在候補にする（ショールームは除外）。 */
 export const hiyoriShopEligible = (spot) => !!spot && (spot.kind === "rival" || spot.kind === "samechan"
@@ -85,7 +98,7 @@ function encounterRoll(spot) {
 
 /** tonariの次の対面で実際にひより本人が登場する場合。スミさんへの伝言だけの日は除く。 */
 export function hiyoriAtTonari() {
-  if (["tonari_followup", "tonari_afterwork", "work_talk"].some(id => hiyoriEventStatus(id) === "ready")) return true;
+  if (["tonari_followup", "tonari_afterwork", "work_talk", "peach_talk", "promise"].some(id => hiyoriEventStatus(id) === "ready")) return true;
   return hiyoriQuestionReady() || !!state.flags._hiyori_work_talk_done && finaleAtVisit("hiyori");
 }
 
@@ -129,6 +142,28 @@ export async function visitHiyoriAtShop(spot, { bg, scheduledSpot = hiyoriShopLo
       if (!await playHiyoriEvent("relay", options)) return false;
     } else if (hiyoriEventStatus("cracks") === "ready") {
       if (!await playHiyoriEvent("cracks", options)) return false;
+    } else if (hiyoriEventStatus("clockout") === "ready") {
+      // 退勤後の食堂（bg_cafe）。他店の相席ではなく、仕事のあとの一台として読む。
+      if (!await playHiyoriEvent("clockout", { ...options, bg: "bg_cafe.png" })) return false;
+    } else if (hiyoriEventStatus("shop_charm") === "ready") {
+      // 再会のあと他店で一度だけ。相席の繰り返しには数えない（#3081）。
+      if (!await playHiyoriEvent("shop_charm", options)) return false;
+    } else if (hiyoriMintoSeatDue(spot)) {
+      active = true;
+      try {
+        const result = await play(MINTO_SEAT, options);
+        if (state !== owner || signal?.aborted || !result || result.cancelled) return false;
+        state.flags._hiyori_minto_seat_done = true;
+        gainAffinity("hiyori", 10); // いつもの相席と同じ
+      } finally { active = false; }
+    } else if (hiyoriMintoRestSeatDue(spot)) {
+      active = true;
+      try {
+        const result = await play(MINTO_REST_SEAT, options);
+        if (state !== owner || signal?.aborted || !result || result.cancelled) return false;
+        state.flags[MINTO_REST_SEAT_SEEN] = true;
+        gainAffinity("hiyori", 10); // いつもの相席と同じ
+      } finally { active = false; }
     } else {
       const n = Number(state.flags._hiyori_repeat_count || 0);
       const id = `hiyori_shop_repeat_${n % 4}`;
@@ -188,11 +223,30 @@ export async function meetHiyoriAtTonari() {
     try { if (await playHiyoriQuestion({ signal: lifetime.signal })) { await maybeRecruitTrpgMember("hiyori"); return true; } }
     finally { lifetime.close(); active = false; }
   }
-  if (!active && !isPlaying() && finaleAtVisit("hiyori")) {
-    const lifetime = ownedConversation(); active = true;
-    try { const played = await playFinale("hiyori", { signal: lifetime.signal });
-      if (played) await maybeRecruitTrpgMember("hiyori"); return played; }
-    finally { lifetime.close(); active = false; }
+  // ♥3の質問の後、♥4のピーチの会話（昼でも可）・♥5の約束を読んでから締めくくりへ。
+  // 第1章の大会前に届くよう、♥5の約束の夜はそのまま締めくくりへ進む。♥5に届いている夜は♥4から続けて読む（#2294）。
+  // 各場面は読了ごとに保存するので、途中で中断したら次の来店は続きの場面から。
+  if (hiyoriEventStatus("peach_talk") === "ready") {
+    const owner = state;
+    if (!await playHiyoriEvent("peach_talk")) return false;
+    if (state === owner && hiyoriEventStatus("promise") === "ready") await playHiyoriPromiseNight();
+    return true;
   }
-  return false;
+  if (hiyoriEventStatus("promise") === "ready") return playHiyoriPromiseNight();
+  return playHiyoriFinaleAtVisit();
+}
+
+async function playHiyoriPromiseNight() {
+  const owner = state;
+  if (!await playHiyoriEvent("promise")) return false;
+  if (state === owner) await playHiyoriFinaleAtVisit();
+  return true;
+}
+
+async function playHiyoriFinaleAtVisit() {
+  if (active || isPlaying() || !finaleAtVisit("hiyori")) return false;
+  const lifetime = ownedConversation(); active = true;
+  try { const played = await playFinale("hiyori", { signal: lifetime.signal });
+    if (played) await maybeRecruitTrpgMember("hiyori"); return played; }
+  finally { lifetime.close(); active = false; }
 }

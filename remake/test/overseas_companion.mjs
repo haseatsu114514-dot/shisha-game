@@ -7,14 +7,18 @@ import { OVERSEAS_HEROINES, overseasCompanion, overseasCompanionCandidates, over
 
 const memory = new Map();
 globalThis.localStorage = { getItem: key => memory.get(key) ?? null, setItem: (key, value) => memory.set(key, String(value)) };
-const heroineIds = JSON.parse(readFileSync(new URL("../../data/story_routes.json", import.meta.url))).heroine_ids;
+const storyRoutes = JSON.parse(readFileSync(new URL("../../data/story_routes.json", import.meta.url)));
+// 渡航できるのは日本に住むヒロインだけ（ドバイに住むヌールは resident・DSR20）
+const heroineIds = storyRoutes.heroine_ids.filter(id => !storyRoutes.romance[id].resident);
 assert.deepEqual([...OVERSEAS_HEROINES], heroineIds);
+assert.deepEqual(storyRoutes.heroine_ids.filter(id => storyRoutes.romance[id].resident), ["noor"]);
 
 function atDeparture(lovers) {
   const value = newState();
   Object.assign(value, { chapter: 3, day: 40, phase: "cleared", lovers, contacts: ["sumi", ...lovers] });
   value.flags = { _ch3_cleared: true };
   assert(advanceToChapterFour(value));
+  delete value.flags._ch4.routeVersion; // 旧行程（ドバイ5日）
   return value;
 }
 const keptKeys = ["lovers", "contacts", "loverSince", "loveLevel", "lovePts", "affinity", "guilt", "money", "stamina"];
@@ -61,7 +65,7 @@ const kept = value => Object.fromEntries(keptKeys.map(key => [key, structuredClo
   const value = atDeparture(["tsumugi", "minto"]);
   value.tokyoVisits.plans.push({ id: "tokyo.minto.41", characterId: "minto", arrivalDay: 41, returnDay: 44, status: "booked",
     meetup: { id: "m", day: 41, slot: 0 }, date: { id: "d", day: 42, slot: 0 }, met: false, dateDone: false });
-  value.tokyoVisits.offers.rin = { day: 41 };
+  value.tokyoVisits.offers.rio = { day: 41 };
   const before = kept(value), offers = structuredClone(value.tokyoVisits.offers);
   assert(chooseOverseasCompanion(value, "tsumugi"));
   assert(value.tokyoVisits.plans.every(plan => plan.status === "returned"));
@@ -70,7 +74,7 @@ const kept = value => Object.fromEntries(keptKeys.map(key => [key, structuredClo
   assert.deepEqual(kept(value), before);
 }
 // 壊れた保存値は未選択に戻る（同行者が応援に重複・不正IDなど）。
-for (const raw of [{ decided: true, companion: "x", supports: [] }, { decided: true, companion: "rin", supports: ["rin"] },
+for (const raw of [{ decided: true, companion: "x", supports: [] }, { decided: true, companion: "rio", supports: ["rio"] },
   { decided: true, companion: null, supports: "mashiro" }, "bad", null]) {
   const value = atDeparture([]);
   value.flags._overseas_companion = raw;

@@ -1,0 +1,106 @@
+{
+  "button-throw-green": {
+    "image": [
+      1280,
+      448
+    ],
+    "object": [
+      48,
+      33,
+      1232,
+      416
+    ]
+  },
+  "button-throw-orange": {
+    "image": [
+      1280,
+      448
+    ],
+    "object": [
+      48,
+      33,
+      1232,
+      416
+    ]
+  },
+  "gauge-frame": {
+    "image": [
+      320,
+      2048
+    ],
+    "object": [
+      33,
+      33,
+      288,
+      2015
+    ],
+    "slot": [
+      88,
+      123,
+      232,
+      1926
+    ]
+  },
+  "gauge-needle": {
+    "image": [
+      512,
+      160
+    ],
+    "object": [
+      32,
+      32,
+      480,
+      128
+    ],
+    "bar_height": 67,
+    "tip_x": 48
+  },
+  "tag-selected-amber": {
+    "image": [
+      896,
+      512
+    ],
+    "object": [
+      48,
+      40,
+      848,
+      472
+    ]
+  },
+  "tag-selected": {
+    "image": [
+      896,
+      512
+    ],
+    "object": [
+      48,
+      40,
+      848,
+      472
+    ]
+  },
+  "tag-slate-blue": {
+    "image": [
+      896,
+      512
+    ],
+    "object": [
+      48,
+      40,
+      848,
+      472
+    ]
+  },
+  "tag-slate": {
+    "image": [
+      896,
+      512
+    ],
+    "object": [
+      48,
+      40,
+      848,
+      472
+    ]
+  }
+}

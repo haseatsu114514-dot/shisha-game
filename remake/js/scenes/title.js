@@ -5,18 +5,28 @@ import { DB, bgUrl } from "../core/data.js";
 import { readGalleryProgress } from "../core/gallery-progress.js";
 import { galleryEntries, galleryStats } from "../core/gallery-catalog.js";
 import { layers, showScreen, setBg, smokeWipe, modal } from "../core/ui.js";
-import { peekSave, newGame, wipeSave, config, saveConfig, anySlotSaved, loadFromSlot, readSlot, SAVE_SLOTS } from "../core/state.js";
+import { peekSave, newGame, wipeSave, config, saveConfig, anySlotSaved, readSlot, SAVE_SLOTS } from "../core/state.js";
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
 import { playBgm, stopBgm, SE, applyVolumes } from "../core/audio.js";
 import { startNewGame, resumeGame } from "../chapters/ch1.js";
 import { clearLog } from "../vn/engine.js";
 import { openGallery } from "./gallery.js";
-import { loadFlow } from "./saves.js";
+import { loadWithRecovery } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
-import { mountTitleLayout } from "./title-layout.js";
 import { createUiThemeSelect } from "../core/ui-theme.js";
+import { LOOKS, normalizeLook, setLook } from "../core/look.js";
+import { refreshSideArea } from "../core/side-area.js";
+import { fullscreenButton, saveTransferRow } from "./save-transfer.js";
 
 let titleRevision = 0;
+
+/** 今遊んでいる版（公開時に index.html の meta へ書かれる。手元は dev）。自分のリンクが古い版か見分ける用 */
+function buildLabel() {
+  const meta = globalThis.document?.querySelector?.('meta[name="suien-build"]');
+  const build = meta?.content || "dev";
+  const built = build === "dev" ? "" : meta.dataset.built;
+  return built ? `ver. ${built} (${build})` : `ver. ${build}`;
+}
 // 直近に表示したキャラアート。メニューを閉じて再描画するだけのときは同じ絵を使い回し、
 // 読込待ちや無駄な抽選切替を起こさない。新しい絵はブート/タイトル復帰（reload）でだけ選ぶ。
 let currentArt = null;
@@ -192,9 +202,11 @@ export function showTitle(preparedArt = null) {
 
   menu.append(
     item("NEW GAME", "はじめから", async () => {
+      // wipeSave() はオートセーブ（AUTOキー）だけを消し、newGame() も手動枠に触れない。
+      // 何が消えるかを L121 の周回開始と同じ文面で明示する（#2444 item6）。
       if (saved && !(await modal({
         title: "はじめから",
-        body: "今のセーブデータは上書きされます。よろしいですか？",
+        body: `現在のオートセーブ（${saved.cycle ?? 1}周目・第${saved.chapter ?? 1}章）は上書きされます。手動セーブ枠は残ります。よろしいですか？`,
         options: [{ label: "はじめから遊ぶ", value: true, primary: true, test: "confirm-new" }, { label: "やめる", value: false, test: "cancel-new" }],
       }))) { refresh(); return; }
       if (!current()) return;
@@ -213,9 +225,9 @@ export function showTitle(preparedArt = null) {
       smokeWipe(() => { stopBgm(0); startNewGame(); }, { color: "dark" });
     }, "title-next-cycle")] : []),
     item("LOAD", "つづきから", async () => {
-      const key = await loadFlow();
+      const loaded = await loadWithRecovery();
       if (!current()) return;
-      if (!key || !loadFromSlot(key)) { refresh(); return; }
+      if (!loaded) { refresh(); return; }
       clearLog();
       leaving = true;
       smokeWipe(() => { stopBgm(0); resumeGame(); }, { color: "dark" });
@@ -238,7 +250,7 @@ export function showTitle(preparedArt = null) {
       ]),
       menu,
     ]),
-    el("div.title-foot", { text: "TAP / CLICK / ENTER ── CH.01 SMOKE CROWN CUP" }),
+    el("div.title-ver", { text: buildLabel() }),
   ]);
   showScreen("title", root);
   const brand = root.querySelector(".title-brand");
@@ -248,7 +260,6 @@ export function showTitle(preparedArt = null) {
   const fallbackLogo = () => { logo.hidden = true; fallback.hidden = false; };
   logo.addEventListener("error", fallbackLogo);
   if (logo.complete && !logo.naturalWidth) fallbackLogo();
-  mountTitleLayout(root, { art: artNode, brand, menu, left: root.querySelector(".title-left"), background: bgUrl("bg_title") });
   const requested = performance.now();
   const place = (loaded) => {
     // 幕の終了待ちでrootが未接続のときも、そのrootへ絵を準備する。
@@ -286,41 +297,41 @@ export async function openConfig(opts = {}) {
       dataset: { test },
       oninput: (e) => { config[key] = Number(e.target.value); applyVolumes(); persist(); opts.onChange?.(key, config[key]); },
     });
-  const speed = el("select", {
-    dataset: { test: "cfg-text-speed" },
-    onchange: (e) => { config.textSpeed = Number(e.target.value); persist(); opts.onChange?.("textSpeed", config.textSpeed); },
-  }, [["1", "ゆっくり"], ["2", "ふつう"], ["3", "はやい"], ["4", "瞬間表示"]].map(([v, t]) => {
-    const o = el("option", { value: v, text: t });
-    if (Number(v) === config.textSpeed) o.selected = true;
-    return o;
-  }));
-  const autoSpeed = el("select", {
-    dataset: { test: "cfg-auto-speed" },
-    onchange: (e) => { config.autoSpeed = Number(e.target.value); persist(); opts.onChange?.("autoSpeed", config.autoSpeed); },
-  }, [["1", "ゆっくり"], ["2", "ふつう"], ["3", "はやい"]].map(([v, t]) => {
-    const o = el("option", { value: v, text: t });
-    if (Number(v) === config.autoSpeed) o.selected = true;
-    return o;
-  }));
-  const skipMode = el("select", {
-    dataset: { test: "cfg-skip-mode" },
-    onchange: (e) => { config.skipSeenOnly = e.target.value === "seen"; persist(); opts.onChange?.("skipSeenOnly", config.skipSeenOnly); },
-  }, [["all", "全スキップ"], ["seen", "既読のみスキップ"]].map(([v, t]) => {
-    const o = el("option", { value: v, text: t });
-    if ((v === "seen") === !!config.skipSeenOnly) o.selected = true;
-    return o;
-  }));
-  const introArt = el("select", {
-    dataset: { test: "cfg-intro-art" },
-    onchange: (e) => { config.introArtStyle = e.target.value; persist(); opts.onChange?.("introArtStyle", config.introArtStyle); },
-  }, [["graphic", "グラフィック（新）"], ["classic", "立ち絵（旧）"]].map(([v, t]) => {
-    const o = el("option", { value: v, text: t });
-    if (v === (config.introArtStyle === "classic" ? "classic" : "graphic")) o.selected = true;
-    return o;
-  }));
+  // 段ボタン（#2857）。押せる部品を大きくするため <select> から置き換えた。保存キーと値は旧 <select> と同じ。
+  // label で包むと文言のタップが先頭の段に当たるので、行は div にして段の組へ名前を付ける。
+  const segRow = (label, test, choices, current, pick) => {
+    const buttons = choices.map(([value, text]) => el("button.cfg-seg-btn", {
+      type: "button", role: "radio", value, text, "aria-checked": String(value === current),
+      onclick: () => {
+        for (const b of buttons) b.setAttribute("aria-checked", String(b.value === value));
+        pick(value);
+      },
+    }));
+    return el("div.cfg-row", [el("span", { text: label }), el("div.cfg-seg", { role: "radiogroup", "aria-label": label, dataset: { test } }, buttons)]);
+  };
+  const setConfig = (key, value) => { config[key] = value; persist(); opts.onChange?.(key, value); };
+  const speed = segRow("文字の速さ", "cfg-text-speed", [["1", "おそい"], ["2", "ふつう"], ["3", "はやい"], ["4", "瞬間"]],
+    String(config.textSpeed), (v) => setConfig("textSpeed", Number(v)));
+  const autoSpeed = segRow("AUTOの速さ", "cfg-auto-speed", [["1", "おそい"], ["2", "ふつう"], ["3", "はやい"]],
+    String(config.autoSpeed), (v) => setConfig("autoSpeed", Number(v)));
+  const skipMode = segRow("SKIPの範囲", "cfg-skip-mode", [["seen", "既読"], ["all", "全部"]],
+    config.skipSeenOnly ? "seen" : "all", (v) => setConfig("skipSeenOnly", v === "seen"));
+  // 見た目の様式（LK01）。既定は新版（LK09）。新版・旧版・DS風のどれも、すべての章でいつでも切り替えられる（LK13・LK21）。
+  const look = segRow("見た目", "cfg-look", LOOKS.map(({ id, label }) => [id, label]),
+    normalizeLook(config.look), (v) => { setConfig("look", v); setLook(v); });
+  const portraits = segRow("会話の立ち絵", "cfg-portrait-style", [["classic", "旧"], ["new", "新"]],
+    config.portraitStyle === "classic" ? "classic" : "new", (v) => setConfig("portraitStyle", v));
+  const introArt = segRow("登場カットインの絵柄", "cfg-intro-art", [["classic", "旧"], ["graphic", "新"]],
+    config.introArtStyle === "classic" ? "classic" : "graphic", (v) => setConfig("introArtStyle", v));
+  // 立ち絵から登場カットインへの「変身」（2026-11-02 オーナー採用。グラフィック絵柄のときだけ効く）
+  const introTransition = segRow("登場カットインへの変身", "cfg-intro-transition", [["none", "なし"], ["morph", "変身"]],
+    config.introTransition === "none" ? "none" : "morph", (v) => setConfig("introTransition", v));
+  // 左右の余白（横長のスマホでステージの外に余る所・YHK）。余白が無い画面では何も変わらない。
+  const sideArea = segRow("左右の余白", "cfg-side-area", [["full", "帯とボタン"], ["plain", "ぼかしだけ"]],
+    config.sideArea === "plain" ? "plain" : "full", (v) => { setConfig("sideArea", v); refreshSideArea(); });
   const reduceShake = el("input", {
     type: "checkbox", dataset: { test: "cfg-reduce-shake" },
-    onchange: (e) => { config.reduceShake = e.target.checked; persist(); opts.onChange?.("reduceShake", config.reduceShake); },
+    onchange: (e) => { config.reduceShake = e.target.checked; document.body.classList.toggle("reduce-shake", config.reduceShake); persist(); opts.onChange?.("reduceShake", config.reduceShake); },
   });
   reduceShake.checked = !!config.reduceShake;
   const blip = el("input", {
@@ -340,27 +351,42 @@ export async function openConfig(opts = {}) {
     onchange: (e) => { config.statEffectColors = e.target.checked; persist(); opts.onChange?.("statEffectColors", config.statEffectColors); },
   });
   effectColors.checked = config.statEffectColors !== false;
-  const mute = el("input", {
-    type: "checkbox", dataset: { test: "cfg-mute" },
-    onchange: (e) => { config.mute = e.target.checked; delete config.muted; applyVolumes(); persist(); opts.onChange?.("mute", config.mute); },
+  // ミュートは 🔇 のトグル（#2857）。保存キーは従来どおり config.mute。
+  const mute = el("button.cfg-mute", {
+    type: "button", dataset: { test: "cfg-mute" }, "aria-label": "ミュート", "aria-pressed": String(!!config.mute),
+    text: config.mute ? "🔇" : "🔊",
+    onclick: (e) => {
+      config.mute = !config.mute; delete config.muted; applyVolumes(); persist();
+      e.currentTarget.setAttribute("aria-pressed", String(config.mute));
+      e.currentTarget.textContent = config.mute ? "🔇" : "🔊";
+      opts.onChange?.("mute", config.mute);
+    },
   });
-  mute.checked = !!config.mute;
+  const fullscreen = fullscreenButton();
   return modal({
     title: "設定",
     body: el("div.cfg", [
       row("UIデザイン", createUiThemeSelect(config.uiTheme, value => { config.uiTheme = value; persist(); opts.onChange?.("uiTheme", value); })),
+      look,
       row("ミュート（すべての音を消す）", mute),
       row("BGM 音量", range("bgmVolume", 0, 1, 0.05, "cfg-bgm-volume")),
       row("効果音 音量", range("seVolume", 0, 1, 0.05, "cfg-se-volume")),
-      row("文字の速さ", speed),
-      row("AUTOの速さ", autoSpeed),
-      row("SKIPの範囲", skipMode),
-      row("登場カットインの絵柄", introArt),
+      speed,
+      autoSpeed,
+      skipMode,
+      portraits,
+      introArt,
+      introTransition,
+      sideArea,
       row("揺れ・閃光を減らす", reduceShake),
       row("文字送りの声", blip),
       row("見た演出を短く", shortSeen),
       row("能力の効き目を色で表示", effectColors),
+      ...(fullscreen ? [el("div.cfg-row", [el("span", { text: "全画面" }), fullscreen])] : []),
+      saveTransferRow(),
     ]),
     options: [{ label: "閉じる", value: true, primary: true, test: "cfg-close" }],
+    className: "cfg-modal",
   });
 }
+

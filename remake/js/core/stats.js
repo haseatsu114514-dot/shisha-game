@@ -1,7 +1,7 @@
 // ステータス・好感度・体力・所持金。成長量は通知にPで出し、現在の強さは段で表す。
 import { MAX_MONEY } from "./rules.js";
 import { GUTS_STAMINA_BONUS } from "./stat-step-tables.js";
-import { state, STAT_KEYS, STAT_JA } from "./state.js";
+import { state, STAT_KEYS, STAT_JA, hasAffinity } from "./state.js";
 import { DB } from "./data.js";
 import { pendingLoveStage, questionComplete } from "./affinity-stages.js";
 import { emit } from "./bus.js";
@@ -61,6 +61,8 @@ export function gainWord(total) {
  * @param opts.silent 通知カードを出さない（スロットのように自前で見せるとき）
  */
 export function gainStat(key, amount = 1, { silent = false, excludedKeys = [] } = {}) {
+  // 盤モードの成長は経験値と確定したマスだけ。旧セーブの基礎値は書き換えない。
+  if (expHooks?.enabled?.()) return 0;
   if (!STAT_KEYS.includes(key) || !(amount > 0)) return 0;
   let cap = statCap(key);
   // 上限に届いた項目は、まだ伸びる項目へ振り替える（伸びている実感を保つ）
@@ -107,13 +109,28 @@ let earningAction = null;
 // 経験値（core/growth.js）は自分をここへ登録する。stats.js からは読みに行かない（未公開の機能に依存させない）。
 let expHooks = null;
 export function setExpHooks(hooks) { expHooks = hooks || null; }
+const growthPerks = s => expHooks?.enabled?.() ? expHooks.perks?.(s) : null;
 const noop = () => {};
 
 /** 台本・訪問・制作の成長候補。確定済み報酬用の gainStat と分ける。 */
 export function earnStat(key, amount = 1) {
+  if (expHooks?.enabled?.()) return;
   if (!earningAction || earningAction.owner !== state || !STAT_KEYS.includes(key) || !(amount > 0)) return;
   // 数字は育成候補の優先度に使う。台本・訪問終了の同じ能力を重複加算しない。
   earningAction.gains[key] = Math.max(earningAction.gains[key] || 0, amount);
+}
+
+/** 配合確定時の発見も、体力を使った自由行動が終わるまで預かる（家・教材・大会は対象外）。 */
+export function earnRecipeDiscovery(id, { discovered = false, golden = false } = {}) {
+  if (!expHooks?.enabled?.() || !earningAction || earningAction.owner !== state || typeof id !== "string" || !id) return;
+  const previous = earningAction.recipes[id] || {};
+  earningAction.recipes[id] = { discovered: !!(discovered || previous.discovered), golden: !!(golden || previous.golden) };
+}
+
+/** 自由行動として選んだ固有場面の完読。取消・部分再生・強制イベントは呼出し元が除外する。 */
+export function earnSceneCompletion(id, owner = state) {
+  if (!expHooks?.enabled?.() || owner !== state || earningAction?.owner !== owner || typeof id !== "string" || !id) return;
+  earningAction.scenes.add(id);
 }
 
 /**
@@ -122,7 +139,9 @@ export function earnStat(key, amount = 1) {
  */
 export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null, consumed = () => false, exp = null } = {}) {
   const parent = earningAction;
-  const action = { owner: state, gains: {}, spent: 0 };
+  const metBefore = { ...state.met };
+  for (const key of Object.keys(state.flags)) if (key.startsWith("_affinity_first_meeting_pending_") && state.flags[key]) delete metBefore[key.slice("_affinity_first_meeting_pending_".length)];
+  const action = { owner: state, parent, at: { chapter: state.chapter, phase: state.phase, cycle: state.cycle, day: state.day, slot: state.slot, chapterFive: !!state.flags?._ch5, matchDay: state.flags?._ch5?.matchDay }, metBefore, affinityBefore: { ...state.affinity }, firstAffinity: new Set(), gains: {}, recipes: Object.create(null), scenes: new Set(), spent: 0 };
   earningAction = action;
   const releaseChip = expHooks?.hold?.() || noop;
   let value;
@@ -137,15 +156,20 @@ function settleAction(action, parent, value, { budget, points, primary, consumed
   if (action.owner !== state) return { value, spent: 0 };
   if (parent?.owner === state) parent.spent += action.spent;
   if (action.spent > 0 || consumed(value)) {
+    expHooks?.committed?.(state);
     // 通常は最大2能力各1P。誘いはbudget=1・points=2で主な能力だけを伸ばす。
-    const entries = Object.entries(action.gains).sort((a, b) => (b[0] === primary) - (a[0] === primary) || b[1] - a[1]).slice(0, Math.max(0, Math.floor(budget)));
+    const entries = expHooks?.enabled?.() ? [] : Object.entries(action.gains).sort((a, b) => (b[0] === primary) - (a[0] === primary) || b[1] - a[1]).slice(0, Math.max(0, Math.floor(budget)));
     const rewarded = [];
     for (const [key] of entries) {
       const before = { ...state.stats };
       gainStat(key, points, { excludedKeys: rewarded });
       for (const k of STAT_KEYS) if (state.stats[k] > before[k]) rewarded.push(k);
     }
-    if (expHooks?.enabled()) expHooks.action(typeof exp === "function" ? exp(value) : exp);
+    if (expHooks?.enabled()) {
+      expHooks.action(typeof exp === "function" ? exp(value) : exp, action.at);
+      for (const [id, result] of Object.entries(action.recipes)) expHooks.recipe?.(id, result);
+      for (const id of action.scenes) expHooks.scene?.(id);
+    }
   }
   return { value, spent: action.spent };
 }
@@ -158,11 +182,11 @@ export function applyStats(obj = {}) {
 // ---------------------------------------------------------------- 好感度（二層: ポイント→5段階）
 
 export const AFFINITY_RANK_PTS = [0, 9, 20, 33, 48, 66];
-export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha", "mashiro", "hiyori", "samechan"];
+export const ROMANCEABLE = ["tsumugi", "minto", "rio", "ageha", "mashiro", "hiyori", "samechan"];
 
 // 実際に答えた既存の関係分岐。未接続キャラの条件は推測で足さない。
 export const AFFINITY_GATE_CHOICES = Object.freeze({
-  tsumugi: "bond_q1_tsumugi", minto: "bond_q1_minto", rin: "bond_q1_rin",
+  tsumugi: "bond_q1_tsumugi", minto: "bond_q1_minto", rio: "bond_q1_rio",
   samechan: "bond_q1_samechan", ageha: "bond_q1_ageha", mashiro: "bond_q1_mashiro",
 });
 const hasAffinityGate = (id) => id === "hiyori" || !!AFFINITY_GATE_CHOICES[id];
@@ -182,6 +206,7 @@ export function setStoryAffinityCap(fn) { storyAffinityCap = typeof fn === "func
 export function releaseStoryAffinity(id) { return releaseAffinity(id); }
 
 export function affinityLevel(id) {
+  if (!hasAffinity(id)) return 0;
   if ((state.lovers || []).includes(id)) return 5; // 恋人は好感度MAX扱い（段階は絆Lvで別に持つ）
   const pts = state.affinity[id] || 0;
   let lv = 0;
@@ -200,7 +225,7 @@ const releasedPoints = id => (Number(state.flags[`_${id}_affinity_released_pts`]
 /** 読み終えた物語の最低値保証。既存846の呼出し・端数・恋人の絆はそのまま。 */
 export function ensureAffinityLevel(id, level) {
   const target = Number.isInteger(level) ? AFFINITY_RANK_PTS[level] : undefined;
-  if (!id || !(target > 0) || (state.lovers || []).includes(id)) return 0;
+  if (!hasAffinity(id) || !(target > 0) || (state.lovers || []).includes(id)) return 0;
   releaseAffinity(id);
   const before = affinityLevel(id), prevPts = state.affinity[id] || 0;
   const next = Math.max(prevPts, Math.min(target, affinityPointCap(id)));
@@ -216,6 +241,7 @@ export function ensureAffinityLevel(id, level) {
 
 /** 元の獲得履歴と旧救済量を保持し、未消費分だけ解放。倍率・占い・端数は再適用しない。 */
 export function releaseAffinity(id) {
+  if (!hasAffinity(id)) return 0;
   const legacyKey = `_${id}_story_waiting_pts`;
   const legacy = Math.max(0, Number(state.flags[legacyKey]) || 0);
   if (legacy) {
@@ -294,6 +320,16 @@ export function privateBondScope() {
 export const AFFINITY_PACE = 0.85;
 export const BOND_PACE = 0.5;
 
+/**
+ * 店に通ったときの好感度（2026-11-02 オーナー指定・台帳 AFB01）。
+ * 「1章のライバル3人のうち2人を、多少寄り道しても♥5にできる」ように、段階会話・節目・締めくくりは16、
+ * 通いの小会話・続き・質問の回は8（どちらも上の0.85を掛ける前の値）。♥5まで1人5〜6回の来店。
+ * 第5章は「ゆっくり上げられる」程度にするため、従来の10・5のまま。
+ */
+export const VISIT_AFFINITY = Object.freeze({ story: 16, talk: 8 });
+export const SLOW_VISIT_AFFINITY = Object.freeze({ story: 10, talk: 5 });
+export const visitAffinity = (kind, s = state) => (s?.chapter >= 5 ? SLOW_VISIT_AFFINITY : VISIT_AFFINITY)[kind];
+
 // 会話のmetadata報酬と訪問終了の報酬は別々に加算される。同じ相手の通知だけを
 // ステ通知と同じ時間窓で合算し、最初のハートから最後のハートまで一枚で見せる。
 const affinityBatch = new Map();
@@ -325,12 +361,15 @@ function flushAffinityBatch() {
   for (const { owner, payload } of pending) if (owner === state) emit("affinity-gain", payload);
 }
 
-/** 占い師に見てもらった相手と次に会ったときだけ ×1.5（一度きり） */
-function fortuneMult(id) {
-  if (state.fortune?.char !== id) return 1;
+/** 占い師に見てもらった相手と次に会ったときだけ ×2（一度きり。2026-11-02 オーナー指定で1.5倍から・台帳 URA） */
+export const FORTUNE_AFFINITY_MULT = 2;
+/** 会って話した加算か。LIME・読むだけの連絡（remote）は会っていないので、占いの効果を使わず残す（台帳 URA07） */
+export const fortuneInPerson = (opts = {}) => opts.source !== "lime" && !opts.remote;
+function fortuneMult(id, opts = {}) {
+  if (state.fortune?.char !== id || !fortuneInPerson(opts)) return 1;
   delete state.fortune;
   setTimeout(() => emit("notice", { text: "（占いの効果もあってか、いつもより仲良くなれた気がする）" }), 1400);
-  return 1.5;
+  return FORTUNE_AFFINITY_MULT;
 }
 
 /**
@@ -351,18 +390,44 @@ function reportAffinityGain(opts, payload, carryBefore, carryAfter, cap) {
   } else if (payload.pts > payload.prevPts) queueAffinityGain(payload);
 }
 
+function firstMeetingAction(id) {
+  for (let action = earningAction; action; action = action.parent) {
+    if (action.owner === state && !action.metBefore[id] && !(action.affinityBefore[id] > AFFINITY_RANK_PTS[1])
+      && (state.met[id] || action.firstAffinity.has(id))) return true;
+  }
+  return false;
+}
+
 export function gainAffinity(id, pts, opts = {}) {
-  if (!id || !(pts > 0)) return;
+  if (!hasAffinity(id) || !(pts > 0)) return;
+  // 初対面の台詞・選択肢・来店精算は、まとめて♥1ちょうど。
+  // 面識済みの初入店・旧高値・恋人には通常の処理を残す。倍率や占い、端数も初回には積まない。
+  const firstAction = firstMeetingAction(id);
+  if (!(state.lovers || []).includes(id) && opts.source !== "lime" && !opts.remote && (opts.firstMeeting || firstAction || state.flags[`_affinity_first_meeting_pending_${id}`])) {
+    for (let action = earningAction; action; action = action.parent) if (action.owner === state) action.firstAffinity.add(id);
+    delete state.flags[`_affinity_first_meeting_pending_${id}`];
+    const prevPts = state.affinity[id] || 0;
+    const next = Math.max(prevPts, AFFINITY_RANK_PTS[1]);
+    state.affinityCarry ||= {};
+    if (prevPts <= AFFINITY_RANK_PTS[1]) state.affinityCarry[id] = 0;
+    if (next === prevPts) return 0;
+    state.affinity[id] = next;
+    queueAffinityGain({ id, level: affinityLevel(id), levelUp: true, prevPts, pts: next });
+    return next - prevPts;
+  }
   let mult = 1 + 0.2 * tier01("charm");
+  // 旧報酬の丸めは保ち、盤の上乗せだけを端数台帳へ渡す。小さい恩恵も失わない。
+  const boardRate = (growthPerks(state)?.charm || 0) / 100;
   if ((state.lovers || []).includes(id)) {
     if (!bond.private) return;
     releaseLoveAffinity(id);
-    mult *= fortuneMult(id);
+    const fortune = fortuneMult(id, opts);
+    mult *= fortune;
     const prevPts = state.lovePts[id] || 0;
     // 元の加算量の半分。1ポイントの会話も2回で1となり、切り捨てて失わない。
     state.loveCarry ||= {};
     const carryBefore = state.loveCarry[id] || 0;
-    const value = Math.round(pts * mult) * BOND_PACE + carryBefore;
+    const value = (Math.round(pts * mult) + pts * boardRate * fortune) * BOND_PACE + carryBefore;
     const got = Math.floor(value + 1e-9);
     state.loveCarry[id] = Math.max(0, value - got);
     const cap = lovePointCap(id);
@@ -379,7 +444,8 @@ export function gainAffinity(id, pts, opts = {}) {
     return applied;
   }
   releaseAffinity(id);
-  mult *= fortuneMult(id);
+  const fortune = fortuneMult(id, opts);
+  mult *= fortune;
   const before = affinityLevel(id);
   const prevPts = state.affinity[id] || 0;
   // 従来の加算量（倍率込みで四捨五入）の85%。旧式（pts×倍率×0.85）は1〜2ptの報酬で従来より増えていた
@@ -387,7 +453,7 @@ export function gainAffinity(id, pts, opts = {}) {
   // LIME返信のみ、整数丸めの後・端数繰り越しの前に倍率を掛ける（丸めで0にならず微量が累積する）
   const scale = opts.source === "lime" ? LIME_AFFINITY_SCALE : 1;
   const carryBefore = state.affinityCarry[id] || 0;
-  const value = Math.round(pts * mult) * AFFINITY_PACE * scale + (state.affinityCarry[id] || 0);
+  const value = (Math.round(pts * mult) + pts * boardRate * fortune) * AFFINITY_PACE * scale + (state.affinityCarry[id] || 0);
   const got = Math.floor(value + 1e-9);
   state.affinityCarry[id] = Math.max(0, value - got);
   const cap = affinityPointCap(id);
@@ -404,14 +470,31 @@ export function gainAffinity(id, pts, opts = {}) {
 
 export const STAMINA_LOW = 25;
 
-export function maxStamina() {
-  return 100 + GUTS_STAMINA_BONUS[step("guts") - 1];
+export function maxStamina({ forCondition = false } = {}) {
+  // 盤の容量増加だけで体調や発病リスクを悪化させない。ゲージの容量と体調の基準を分ける。
+  return 100 + GUTS_STAMINA_BONUS[step("guts") - 1] + (forCondition ? 0 : (growthPerks(state)?.stamina || 0)
+    + (expHooks?.enabled?.() ? expHooks.capacityBonus?.(state) || 0 : 0));
 }
 
-export function addStamina(n) {
+export function addStamina(n, { sleep = false } = {}) {
   const before = state.stamina;
   const maximum = maxStamina();
-  state.stamina = staminaAfter(n);
+  let amount = n;
+  if (sleep && n > 0) {
+    // 基礎回復とK03・ラベンダーは従来どおり四捨五入。盤の上乗せだけを貯め、1未満も捨てない。
+    const base = n * (expHooks?.enabled?.() ? expHooks.sleepMultiplier?.(state) || 1 : 1);
+    const rate = (growthPerks(state)?.sleep || 0) / 100;
+    amount = base;
+    if (rate > 0 && state.growth) {
+      const carry = state.growth.sleepCarry;
+      const bonus = base * rate + (Number.isFinite(carry) && carry >= 0 && carry < 1 ? carry : 0);
+      const whole = Math.floor(bonus + 1e-9);
+      amount = Math.round(base) + whole;
+      // 満タンで余った回復を次の日へ貯めない。最大体力や体調の基準は変更しない。
+      state.growth.sleepCarry = before + amount >= maximum ? 0 : Math.max(0, bonus - whole);
+    }
+  }
+  state.stamina = staminaAfter(amount);
   if (earningAction?.owner === state && state.stamina < before) earningAction.spent += before - state.stamina;
   if (state.stamina !== before) emit("stamina-change", { before, after: state.stamina, maximum });
   emit("hud");
@@ -424,11 +507,11 @@ export function staminaAfter(n) {
   return clamp(Math.round(state.stamina + d), 0, maxStamina());
 }
 
-export const staminaRatio = () => state.stamina / maxStamina();
+export const staminaRatio = ({ forCondition = false } = {}) => state.stamina / maxStamina({ forCondition });
 export const currentCondition = () => {
   const sick = state.restDay;
   return sick?.chapter === state.chapter && sick.day === state.day && STAMINA_CONDITIONS[sick.illnessHealth]
-    || conditionForRatio(staminaRatio());
+    || conditionForRatio(staminaRatio({ forCondition: true }));
 };
 
 // ---------------------------------------------------------------- お金
@@ -439,3 +522,5 @@ export function addMoney(n) {
   emit("money", { delta: state.money - before });
   emit("hud");
 }
+
+

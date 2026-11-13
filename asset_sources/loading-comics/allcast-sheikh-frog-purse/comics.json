@@ -1,0 +1,155 @@
+{
+  "id": "sheikh-frog-purse",
+  "title": "王者のお財布",
+  "cast": [
+    "sheikh"
+  ],
+  "minChapter": 4,
+  "dialogue": [
+    "ここは私が払おう。",
+    "金のカード……？",
+    "がま口だ。"
+  ],
+  "first_speaker": "sheikh",
+  "panel1": "お店のレジの前。右のシェイクが穏やかに懐へ手を入れて「ここは私が払おう。」（左上に高く）。左のはじめがごくりとつばを飲み、目を見開いて「金のカード……？」（右下）。",
+  "panel2": "シェイクが取り出したのは、緑のカエルの顔の形をしたかわいいがま口の小銭入れ（コマの中央に大きく）。シェイクはまじめな顔で、小銭を一枚ずつ丁寧に手のひらに数えている。左のはじめが拍子抜けして「がま口だ。」。",
+  "caption": "王族のシェイクも、日本の店ではただの客。",
+  "type": "肩書きと持ち物のギャップ",
+  "note": "王族の正装（白いカンドゥーラ）で描き、王族と分かっている前提の笑いなので第4章から（前回の『旅の人』と同じ）。旅装・変装は使わない。本編の台詞「ここでは、私はただの客だ」に沿う。紙幣・数字・カードの文字は描かない。店員は描かない。",
+  "num": 99,
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "533bcb8cec9eb17a34daafc7cc8a6f3c20227494",
+  "generator": "built-in image_gen",
+  "source": "allcast-sheikh-frog-purse-b.png",
+  "source_sha256": "c706eb7609fc6236c4255a566081c26d966271895e5a5040f2b83beb00f86848",
+  "references": [
+    {
+      "path": "hajime-sheet/normal.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "role": "hajime official normal"
+    },
+    {
+      "path": "portrait-standard-2369-ts11-ts12/sheikh/refs/sheikh-current-normal.png",
+      "sha256": "96cce4308d9a6c72c66276a637fa1ece92439875d8d013ce9434e04bb9236ebd",
+      "role": "sheikh current-main official normal; LFS SHA256 confirmed 96cce4308d9a6c72c66276a637fa1ece92439875d8d013ce9434e04bb9236ebd"
+    },
+    {
+      "path": "ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "role": "early adopted style only, not deliverable"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "role": "official template regenerated using unchanged repository tool"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked, 3 lines matching official script",
+    "reading_order": "left-to-right / first speaker upper-left when speaker is on right; tails checked",
+    "identity": "normal references; same positions both panels",
+    "style": "early adopted Menu Revision style: cute 2.5-head chibi, bold lines, warm cel palette",
+    "hardware": "none; no siryou hardware needed in these scripts",
+    "in_game_pc_phone": "NOT PERFORMED; not registered",
+    "selection": "awaiting owner; not adopted",
+    "template": "frame detection results retained; vertical drift recorded; no force",
+    "revision": "v1 reply tail unclear toward register; v2 reaches Hajime mouth.",
+    "fill_inspection": "All changed previews re-inspected. Keep padding in kotatsu both panels and coaster right via max-fill=0 to preserve bubble boundaries."
+  },
+  "cut_source_regions": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-frog-purse/source-v2.png",
+      "region": {
+        "x": 39,
+        "y": 272,
+        "width": 716,
+        "height": 502,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/sheikh-frog-purse/source-v2.png",
+      "region": {
+        "x": 784,
+        "y": 272,
+        "width": 716,
+        "height": 505,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/sheikh-frog-purse-1.webp",
+      "sha256": "300aed046051f3a010b423f128f8314aacf57aafca9212e2666cdd43ec134508",
+      "width": 753,
+      "height": 502,
+      "bytes": 71242
+    },
+    {
+      "file": "panels/sheikh-frog-purse-2.webp",
+      "sha256": "d73daabf8805e93e2d32f9618697b99a3448cc43b0af746a623f2981bd8613bb",
+      "width": 758,
+      "height": 505,
+      "bytes": 71370
+    }
+  ],
+  "originals": [
+    {
+      "file": "allcast-sheikh-frog-purse-a.png",
+      "sha256": "714b1c71f28b41344636fd1d9ac39136d294507e02753f78216614e27d8e289f",
+      "bytes": 1733430
+    },
+    {
+      "file": "allcast-sheikh-frog-purse-b.png",
+      "sha256": "c706eb7609fc6236c4255a566081c26d966271895e5a5040f2b83beb00f86848",
+      "bytes": 1977624
+    }
+  ],
+  "generation_calls": [
+    {
+      "output": "source-v1.png",
+      "prompt": "prompt-v1.txt",
+      "references": [
+        {
+          "path": "hajime-sheet/normal.png",
+          "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+          "role": "hajime official normal"
+        },
+        {
+          "path": "portrait-standard-2369-ts11-ts12/sheikh/refs/sheikh-current-normal.png",
+          "sha256": "96cce4308d9a6c72c66276a637fa1ece92439875d8d013ce9434e04bb9236ebd",
+          "role": "sheikh current-main official normal; LFS SHA256 confirmed 96cce4308d9a6c72c66276a637fa1ece92439875d8d013ce9434e04bb9236ebd"
+        },
+        {
+          "path": "ryuji-sheet/loading/pc.png",
+          "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+          "role": "early adopted style only, not deliverable"
+        },
+        {
+          "path": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+          "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+          "role": "official template regenerated using unchanged repository tool"
+        }
+      ],
+      "engine": "built-in image_gen",
+      "transparent_background": false
+    },
+    {
+      "output": "source-v2.png",
+      "prompt": "prompt-v2.txt",
+      "references": [
+        {
+          "path": "output/allcast-refill-2383-20261102/candidates/sheikh-frog-purse/source-v1.png",
+          "role": "edit target"
+        }
+      ],
+      "engine": "built-in image_gen",
+      "transparent_background": false
+    }
+  ],
+  "local_source_before_handoff": "source-v2.png"
+}

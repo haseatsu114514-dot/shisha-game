@@ -2,7 +2,7 @@ Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution f
 
 Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
-Character: Maezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
+Character: Uezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
 Expression and pose to keep exactly as image 1 (smile): both eyes closed, joyful open-mouth smile, the same SCREEN-LEFT greeting hand, SCREEN-RIGHT hand in the pocket
 
 HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 14% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.

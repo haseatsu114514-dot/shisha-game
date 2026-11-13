@@ -4,9 +4,12 @@ import { CITY_BACKGROUNDS, CH2_SCENE_BACKGROUNDS } from "../core/city-locations.
 // あげは（#626）: 3日目（なるの祝福のあと）の偵察返し・9日目の試煙会・10日目のスランプ来店を強制の夜にする。
 // 9日目はC.STATION柚ヶ谷店の客席で開くアフサール新作の先行試煙会（#929）。旧IDと読了フラグは保存互換のため維持。
 // 2日目と8日目の夜は、TRPGなど自由に使える夜として空けておく（#639）。
-// #1652: 事故・決裂・試煙会・前夜など前後すると成立しない転機は固定。DAY6の残る匂い・DAY7のアダム・DAY12のみんとは
-// 訪問・会話なので preparation にし、休養や夜の約束で後送りできる。deadline（章内日）までに必ず読み、大会後へ持ち越さない。
+// #1652: 事故・決裂・試煙会・前夜など前後すると成立しない転機は固定。DAY6の残る匂いは閉店後のtonariの会話なので
+// preparation にし、休養や夜の約束で後送りできる。deadline（章内日）までに必ず読み、大会後へ持ち越さない。
 // 後送りした夜は CH2_FREE_NIGHTS（DAY2・8）に入れない（期限の救済を除く）。
+// VOL13: DAY7のアダム・DAY12のみんとは schedule "visit"。夜に自動では読まず、day（章内日）から地図の店（charId）を
+// 選んだ行動で読む（slots があればその時間帯だけ）。deadline の夜までに訪ねなかった時だけ、その夜に救済で読む。
+// これで必ず読む夜は8夜（DAY3・4・5・6・9・10・11・13）。
 export const CH2_FREE_NIGHTS = [2, 8];
 // room は会話の前に出す店内（.webp の店内画は metadata.bg で指定できないため）。bg は店内以外の場所の背景。met は読み終えたら面識にする相手。
 // 連絡先の交換は台本の set_flag _lime_contact_<id> に置く（交換の演出が出る・#2023）。
@@ -16,6 +19,9 @@ export const CH2_NIGHTS = [
   { day: 3, pin: "naru", label: "なるの祝福", beat: "夜。なるの話を聞きに、KEMURIKUSAへ──", doneFlag: "_ch2_naru_warm_done", steps: [
     { id: "ch2_naru_warm", file: "ch2_isolation" },
     { id: "remake_ch2_ageha_scout", file: "ch2_ageha_story", met: "ageha" },
+    // 全体講評S6: あげはを見送ったあと、優勝目当ての客が大会の一台を半分残す。DAY4の居残りと炭の事故の前段。
+    // DAY3の夜を読み終えた保存には足さない（夜ごと完了済み）。
+    { id: "ch2_title_customer_half", file: "ch2_main", flag: "_stk_title_customer_half" },
   ] },
   { day: 4, pin: "tonari", label: "焦げたソファ", beat: "夜。預けていたノートを取りに、閉店前のtonariへ──", steps: [
     { id: "ch2_sofa_burn", file: "ch2_main" },
@@ -27,12 +33,23 @@ export const CH2_NIGHTS = [
     { id: "ch2_slump_taste", file: "ch2_main", flag: "_ch2_taste_distant" },
   ] },
   { day: 6, schedule: "preparation", deadline: 7, pin: "tonari", label: "残る匂い", beat: "夜。残る匂いのことが気になって、tonariへ──", prerequisites: ["_ch2_read_ch2_sofa_burn"], steps: [
+    // #1652: 事故と味の不調が続いたあと、閉店前の炭替えを二人でやり遂げる短い成果。読了フラグは場面ごとの既定だけで、
+    // 新しい進行フラグは足さない。DAY6の夜をすでに読み終えた保存は夜ごと完了済みなので読まない。
+    // 全体講評S6: 半分残した客が、軽い一台を最後まで吸う。DAY3の場面を見た保存だけ、二人の炭替えの前に読む。
+    { id: "ch2_title_customer_back", file: "ch2_main", flag: "_stk_title_customer_back", when: ({ flags }) =>
+      !!flags._stk_title_customer_half && !flags._ch2_read_ch2_coal_together },
+    { id: "ch2_coal_together", file: "ch2_main" },
     { id: "ch2_lingering_smell", file: "ch2_main" },
   ] },
-  { day: 7, schedule: "preparation", deadline: 12, pin: "adam", label: "アダムとの距離", beat: "夜。アダムの試作を味わいに、EDENへ──", steps: [
+  // EDENは章内DAY12が定休日（通算26日）。訪ねられるのはDAY7〜11で、DAY12の夜に救済する。
+  { day: 7, schedule: "visit", charId: "adam", deadline: 12, pin: "adam", label: "アダムとの距離", beat: "夜。アダムの試作を味わいに、EDENへ──", steps: [
     { id: "ch2_adam_distance", file: "ch2_isolation" },
   ] },
   { day: 9, pin: "ch2_c_station", label: "アフサール新作の試煙会", beat: "夜。C.STATIONの試煙会へ──", steps: [
+    // 全体講評S13: 開場前の客席で、博士が吸う間隔から不調に気づき、温度計を貸そうとする。
+    // 選択の記録（_stk_kemuri_thermo_borrowed / _declined）は台本が付ける。試煙会を読み終えた保存には足さない。
+    { id: "ch2_kemuri_thermometer", file: "ch2_main", bg: C_STATION_TASTING_BG, when: ({ flags }) =>
+      !flags._ch2_read_remake_ch2_ageha_tasting },
     { id: "remake_ch2_ageha_tasting", file: "ch2_ageha_story", bg: C_STATION_TASTING_BG },
     // #1650: 帰り際に試供品の苺を受け取り、tonariのまかないで熱だけを試す導線にする
     { id: "ch2_strawberry_sample", file: "ch2_main", bg: C_STATION_TASTING_BG, sample: true },
@@ -45,7 +62,9 @@ export const CH2_NIGHTS = [
   { day: 11, pin: "naru", label: "なるの言葉", beat: "夜。試作の話をしに、KEMURIKUSAへ──", steps: [
     { id: "ch2_naru_confrontation", file: "ch2_isolation" },
   ] },
-  { day: 12, schedule: "preparation", deadline: 13, pin: "minto", label: "みんとの心配", beat: "夜。みんとの様子を見に、PEPPERMINTへ──", steps: [
+  // 正本どおり「DAY12の夜、ぺぱーみんとからの帰り」に閉じたケムリクサを見る。訪問は夜の行動だけ（昼はいつもの来店）。
+  // 夜にほかの所へ行った時は、その夜に救済で読む。前夜（DAY13）へは持ち越さない。
+  { day: 12, schedule: "visit", charId: "minto", slots: [1], deadline: 12, pin: "minto", label: "みんとの心配", beat: "夜。みんとの様子を見に、PEPPERMINTへ──", steps: [
     { id: "ch2_minto_warning", file: "ch2_isolation" },
     // #929: 帰り道のケムリクサ。DAY11の選択の記録がある時だけ、距離の違いを見せる
     { id: "ch2_naru_window", file: "ch2_isolation", bg: CH2_SCENE_BACKGROUNDS.naruWindow, when: ({ flags }) =>
@@ -54,7 +73,7 @@ export const CH2_NIGHTS = [
   { day: 13, pin: "tonari", label: "大会前夜", beat: "夜。大会前夜のtonariへ──", steps: [
     { id: "ch2_tsumugi_color", file: "ch2_isolation" },
     { id: "remake_ch2_eve_arrival", file: "remake_ch2", bg: CH2_SCENE_BACKGROUNDS.venueBench },
-    // #929: あげはが搬入の確認へ行った間に、REIと一曲。前夜を読み終えた保存には足さない
+    // #929: あげはが搬入の確認へ行った間に、レヰと一曲。前夜を読み終えた保存には足さない
     { id: "remake_ch2_eve_rei", file: "remake_ch2", bg: CH2_SCENE_BACKGROUNDS.venueBench, when: ({ flags }) =>
       !flags._ch2_read_ch2_pre_tournament_realisation && !flags._ch2_eve_done },
     { id: "remake_ch2_eve_choices", file: "ch2_choice_echoes", when: ({ flags }) =>
@@ -93,4 +112,21 @@ export function agehaStoryScene(save, day, dialogues) {
   // 次の実会話の♥を満たすまで、いつもの会話。欠落原稿を飛ばして後段へ進めない。
   const threshold = [0, 9, 20, 33, 48, 66][required];
   return next && unread(next) && (save.affinity?.ageha || 0) >= threshold ? next : null;
+}
+
+// 通う回とダメな日のあと、MELTY PUFFで一度ずつ（#3081）。小品の巡回には混ぜない。
+// #3091 のグミ・店の言葉のあとに、#3089 の白いクマの席。
+export const AGEHA_LATER_SCENES = Object.freeze([
+  { id: "ch1_ageha_gummy_share", flag: "_ageha_gummy_share_done" },
+  { id: "ch1_ageha_floor_words", flag: "_ageha_floor_words_done" },
+  { id: "ch1_ageha_bear_seat", flag: "_ageha_bear_seat_done" },
+]);
+export function agehaLaterScene(save, dialogues) {
+  const needed = [...AGEHA_VISITS, AGEHA_BADDAY.id];
+  if (!needed.every((id) => save?.flags?.[`_ch2_read_${id}`])) return null;
+  for (const extra of AGEHA_LATER_SCENES) {
+    if (save?.flags?.[extra.flag]) continue;
+    if (dialogues?.[extra.id]?.lines?.length) return extra.id;
+  }
+  return null;
 }

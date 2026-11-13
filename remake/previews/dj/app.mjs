@@ -1,154 +1,488 @@
 import { DJAudio } from './audio.mjs';
-import { beatAt, lowCutDb, LOW_CUT_DB, updateMix, phaseError, phraseError, mod, dancerPose, scoreMix } from './model.mjs';
-import { peakAt } from './tracks.mjs';
-import { TRACKS, STAGES } from './tracks.mjs';
-const $=id=>document.getElementById(id);
-// Stage comes from the host (main game) via ?stage=1..3; default Stage 1.
-const stageParam=Number(new URLSearchParams(location.search).get('stage'))-1;
-let stage=STAGES[stageParam]?stageParam:0,score=null,audio=new DJAudio(undefined,{stageIndex:stage});
-function bindInterruption(){audio.onInterrupted=()=>status('音声が中断されました。PLAYで再開してください。');}
-function stageDisplay(){[STAGES[stage].a,STAGES[stage].b].forEach((key,id)=>{const k=id?'b':'a';$('track-'+k).textContent=TRACKS[key].title;$('platter-'+k).style.setProperty('--art',`url('../../img/ui/dj/art-${key}.webp')`);});}
-stageDisplay();
-document.querySelectorAll('.stage-btn').forEach((b,index)=>b.addEventListener('click',async()=>{
- document.querySelectorAll('.stage-btn').forEach(b=>b.disabled=true);
- try{await audio.dispose();stage=index;score=null;audio=new DJAudio(undefined,{stageIndex:stage});bindInterruption();stageDisplay();$('score-result').textContent='';$('play-feedback').textContent='';await audio.play(0);}
- catch(e){status(e.message);}finally{document.querySelectorAll('.stage-btn').forEach(b=>b.disabled=false);}
-}));
-function judge(){if(!audio.mix.decks.every(d=>d.playing))return;score=scoreMix(audio.mix,audio.now);if(!score)return;
- $('score-result').innerHTML=`<strong class="rank">${score.rank}</strong><table><tr><th>ピッチ誤差</th><td>${score.pitchErrPct.toFixed(3)}%</td></tr><tr><th>PLAYずれ</th><td>${score.playMs.toFixed(1)} ms</td></tr><tr><th>位相ドリフト</th><td>${score.driftMs.toFixed(1)} ms</td></tr><tr><th>合計</th><td>${score.total}点</td></tr></table><p>${{S:'完璧なミックス！',A:'いいつなぎ！',B:'あと少し、位相を合わせよう',C:'ピッチとPLAYをもう一度練習しよう'}[score.rank]}</p>`;
+import { beatAt, lowCutDb, LOCK_PCT, PHRASE, FOLLOW_BAND, REQUESTS, phaseError, bpmDiffPct, pitchOf, mod, gains, toward, keyMatch, energyMatch, quality, followHint, moodOf, MOODS, GRADE_FLOOR, RANK_FLOOR, PICK_FLOOR } from './model.mjs';
+import { TRACKS, SETS } from './tracks.mjs';
+// View of the DJ set (2026-11-11 renewal, DJS20〜). Three things the screen always answers:
+//   1. いま何をするか — the navi line + the gold arrow on the control to touch (▶ / PITCH / SYNC / 横フェーダー).
+//   2. お客さんがどう感じたか — the floor: heat meter with a mood word, the crowd getting brighter and raising hands, voices in speech bubbles.
+//   3. どこまで進んだか — the four step lamps (かける → 入れる → つなぐ → えらぶ).
+// Rules and scoring live in model.mjs; nothing here changes them.
+const $ = id => document.getElementById(id);
+// The host (main game) picks the set with ?set=1..3 (?stage= is the old name); default SET 1.
+const params = new URLSearchParams(location.search);
+const setParam = Number(params.get('set') || params.get('stage')) - 1;
+const setIndex = SETS[setParam] ? setParam : 0;
+// ?embed=1: opened by the main game (remake/js/minigames/dj.js). Shows ← 戻る and follows the game's mute / BGM volume (?mute=1, ?vol=0..1).
+const embedded = params.get('embed') === '1' && window.parent !== window;
+// ?phone=1: the main game's phone density (html[data-density=phone]). Display only: bigger text / parts, fewer labels (style.css).
+if (params.get('phone') === '1') document.documentElement.dataset.density = 'phone';
+const gameVolume = Number(params.get('vol')), gameMuted = params.get('mute') === '1';
+// ?phones=1: the player's own monitor headphones (main game VOL07). Every ▶ timing window is 10 ms wider; shown in the set info.
+const phones = params.get('phones') === '1', ALLOWANCE_MS = phones ? 10 : 0;
+const tell = message => { try { if (embedded) window.parent.postMessage(message, location.origin); } catch { /* host optional */ } };
+const reduced = matchMedia('(prefers-reduced-motion: reduce)'), coarse = matchMedia('(pointer: coarse)');
+const THUMB = document.documentElement.dataset.density === 'phone' ? 72 : 54; // crossfader cap width (style.css)
+const sideOf = id => id ? '右' : '左', deckOf = id => id ? 'B' : 'A';
+const pickOne = list => list[Math.floor(Math.random() * list.length)];
+let audio, disposed = false, frame = 0, view = { mode: 'idle' }, message = '', subMessage = '', toastUntil = 0, judgeUntil = 0, shownPlay = null, lastCount = '', shownTracks = [null, null], shownSelect = null;
+let moodShown = null, helpManual = null, missStreak = 0, awaySince = 0, awaySaid = false, clashSince = 0, clashSaid = false, comboSaid = 0, shown = {}, particles = [];
+const STRIPS = 7, STRIP_OVERLAP = 3; // the guests' band: 7 strips, each overlapping its neighbours by 3 % of the width (see buildBand)
+let strips = [], flash = 0;
+const status = text => { $('status').textContent = text; };
+/** Write text only when it changes (the render loop runs every frame; an unchanged write would still dirty the layout). */
+const put = (id, text) => { const el = $(id); if (el.textContent !== text) el.textContent = text; };
+// DJS33 (「処理重そう」): per-frame style writes only when the value changes, and the layout is read at most twice a second.
+// Reading offsetWidth after the frame's style writes forced a full style + layout pass on every frame.
+const written = new Map();
+const setVar = (el, name, value) => { const k = `${el.id}|${name}`; if (written.get(k) !== value) { written.set(k, value); el.style.setProperty(name, value); } };
+const setAttr = (el, name, value) => { const k = `${el.id}@${name}`; if (written.get(k) !== value) { written.set(k, value); el.setAttribute(name, value); } };
+const setStyle = (el, prop, value) => { const k = `${el.id}.${prop}`; if (written.get(k) !== value) { written.set(k, value); el.style[prop] = value; } };
+const geo = { at: -1e9, stageW: 1280, faderLeft: 0, faderW: 400, laneW: 960, laneH: 80 };
+function measure(t) {
+  if (t - geo.at < 500) return;
+  geo.at = t; const fader = $('crossfader'), lane = $('wave-a');
+  geo.stageW = $('dj-stage').offsetWidth || 1280; geo.faderLeft = fader.offsetLeft; geo.faderW = fader.offsetWidth;
+  geo.laneW = Math.max(320, Math.round(lane.clientWidth * 2)); geo.laneH = Math.max(40, Math.round(lane.clientHeight * 2)); // 2 canvas px per CSS px
 }
-document.querySelectorAll('[data-nudge-ms]').forEach(b=>b.addEventListener('click',()=>audio.nudgeMs(1,Number(b.dataset.nudgeMs))));
-const reduced=matchMedia('(prefers-reduced-motion: reduce)');
-let disposed=false,frame=0,frameView={mode:'idle'},message='';
-const status=text=>{$('status').textContent=text;};
-export function snapshot(){
- const now=audio.now;
- return {stage,lastPlay:audio.mix.lastPlay||null,score,clock:now,state:audio.context?.state||'not-started',running:audio.mix.running,
-  bpms:audio.mix.decks.map(d=>d.bpm),beats:audio.mix.decks.map(d=>beatAt(d,now)),playing:audio.mix.decks.map(d=>d.playing),
-  phase:phaseError(...audio.mix.decks,now),phraseOffset:phraseError(...audio.mix.decks,now),mix:audio.mix.mix,
-  master:audio.mix.master,visualMaster:audio.mix.visualMaster,mode:frameView.mode,
-  guide:audio.mix.guide?{...audio.mix.guide}:null,voices:audio.voices.filter(Boolean).length,retiring:audio.retiring.size,
-  rms:audio.level(),reduced:reduced.matches};
+addEventListener('resize', () => { geo.at = -1e9; });
+function create() {
+  audio = new DJAudio(undefined, { setIndex, allowance: ALLOWANCE_MS });
+  if (embedded) { audio.muted = gameMuted; if (Number.isFinite(gameVolume)) audio.volume = Math.max(0, Math.min(.36, .18 * gameVolume / .5)); }
+  audio.onInterrupted = () => status('音声が中断されました。▶で再開します。');
+  shownTracks = [undefined, undefined]; shownSelect = null; $('pick').hidden = true;
+  $('set-name').textContent = SETS[setIndex].name; $('set-gear').textContent = phones ? `ヘッドホン：▶の判定が${ALLOWANCE_MS}ms広い` : ''; $('score-result').innerHTML = ''; $('judge').textContent = ''; $('judge-sub').textContent = ''; $('toast').innerHTML = '';
+  // SET 1 arrives already in tempo: PITCH and SYNC are dimmed so the eye goes to ▶ and the crossfader.
+  $('dj-stage').dataset.pitch = SETS[setIndex].detune === 'match' ? 'off' : 'on';
+  $('voices').replaceChildren(); $('heat-delta').className = 'heat-delta'; $('crossfader').value = '0';
+  view = { mode: 'idle' }; shownPlay = null; judgeUntil = 0; toastUntil = 0; moodShown = null; helpManual = null; missStreak = 0; awaySince = 0; awaySaid = false; clashSince = 0; clashSaid = false; comboSaid = 0; particles = []; flash = 0;
+  shown = {}; message = ''; subMessage = ''; lastCount = ''; $('count').textContent = '';
+  showDecks();
 }
-audio.onInterrupted=()=>status('音声が中断されました。全体再開または各PLAYで再開できます。自動再開はしません。');
-async function pause(){try{await audio.pause();status('全体停止。全体再開は直前に鳴っていたデッキだけを戻します。');}catch(e){status(`停止処理: ${e.message}。音声nodeは切断済みです。`);}}
-for(const id of [0,1]){
- const key=id?'b':'a';
- $('tempo-'+key).addEventListener('input',e=>audio.tempo(id,Number(e.target.value)));
- $('play-'+key).addEventListener('click',async()=>{
-  try{if(audio.mix.decks[id].playing){audio.pauseDeck(id);status(`${key.toUpperCase()} PAUSE。位置を保ちます。`);}
-   else if(await audio.play(id)){if(document.hidden){await pause();return;}status(`${key.toUpperCase()} PLAY。押した時点の音声時計で開始。拍の位置は押したタイミングで決まります。`);}}
-  catch(e){status(`${e.message}。PLAYから再試行できます。`);}
- });
+/** Deck titles and artwork follow the decks (a deck is empty while the next track is being picked). */
+function showDecks() {
+  audio.mix.decks.forEach((d, id) => {
+    const state = d.track ?? (audio.mix.phase === 'done' ? 'done' : null);
+    if (shownTracks[id] === state) return;
+    shownTracks[id] = state; const key = id ? 'b' : 'a', t = TRACKS[d.track];
+    $('track-' + key).textContent = t ? t.title : state === 'done' ? '—' : '— 選曲中 —';
+    $('platter-' + key).style.setProperty('--art', t ? `url('../../img/ui/dj/art-${d.track}.webp')` : 'none');
+    $('pitch-' + key).value = '0';
+  });
 }
-// Jog outer rim = fine pitch (replaces the ±0.01 BPM buttons). Same audio.tempo call the buttons used; 12° of rim travel = 0.01 BPM.
-const JOG_STEP_DEG=12,JOG_INNER=.62;
-function finePitch(id,steps){const bpm=audio.mix.decks[id].bpm,next=Math.max(110,Math.min(140,Math.round((bpm+steps*.01)*100)/100));if(next!==bpm)audio.tempo(id,next);return next!==bpm;}
-for(const id of [0,1]){
- const jog=$('platter-'+(id?'b':'a'));let drag=null,spin=0;
- const angle=(e,r)=>Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2))*180/Math.PI;
- jog.addEventListener('pointerdown',e=>{const r=jog.getBoundingClientRect(),dist=Math.hypot(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2))/(r.width/2);
-  if(dist>1.05)return;e.preventDefault();jog.setPointerCapture(e.pointerId);drag={last:angle(e,r),acc:0,inner:dist<JOG_INNER};jog.classList.add('touching');});
- jog.addEventListener('pointermove',e=>{if(!drag)return;const r=jog.getBoundingClientRect(),a=angle(e,r);let d=a-drag.last;if(d>180)d-=360;if(d<-180)d+=360;drag.last=a;drag.acc+=d;spin+=d;
-  jog.style.setProperty('--spin',`${spin}deg`);const steps=Math.trunc(drag.acc/JOG_STEP_DEG);if(steps){drag.acc-=steps*JOG_STEP_DEG;if(drag.inner?audio.nudge(id,steps/16):finePitch(id,steps)){jog.classList.add('tick');setTimeout(()=>jog.classList.remove('tick'),90);if(matchMedia('(pointer: coarse)').matches)navigator.vibrate?.(3);}}});
- const end=()=>{drag=null;jog.classList.remove('touching');};jog.addEventListener('pointerup',end);jog.addEventListener('pointercancel',end);
- jog.addEventListener('keydown',e=>{const k={ArrowRight:1,ArrowUp:1,ArrowLeft:-1,ArrowDown:-1}[e.key];if(!k)return;e.preventDefault();if(e.shiftKey?audio.nudge(id,k/16):finePitch(id,k)){spin+=k*JOG_STEP_DEG;jog.style.setProperty('--spin',`${spin}deg`);}});
+buildBand();
+create();
+export function snapshot() {
+  const now = audio.now, m = audio.mix;
+  return { set: setIndex, phase: m.phase, mode: view.mode, clock: now, state: audio.context?.state || 'not-started', running: m.running,
+    tracks: m.decks.map(d => d.track), bpms: m.decks.map(d => d.bpm), pitches: m.decks.map(d => Math.round(pitchOf(d) * 100) / 100),
+    beats: m.decks.map(d => beatAt(d, now)), playing: m.decks.map(d => d.playing), phase_error: phaseError(...m.decks, now),
+    mix: m.mix, master: m.master, cue: m.cue ? { ...m.cue } : null, lastPlay: m.lastPlay, floor: m.floor, fader: m.fader ? { reached: m.fader.reached, checks: m.fader.checks, hits: m.fader.hits, combo: m.fader.combo } : null,
+    select: m.select ? { ...m.select, options: [...m.select.options] } : null, played: [...m.played], count: m.count, guide: view.guide, follow: view.follow,
+    transitions: m.transitions.map(t => ({ to: t.to, grade: t.grade, parts: t.parts, total: t.total, rank: t.rank, pick: t.pick, combo: t.combo, follow: t.follow })), result: m.result,
+    allowance: m.allowance, voices: audio.voices.filter(Boolean).length, rms: audio.level(), reduced: reduced.matches, embedded, muted: audio.muted, volume: audio.volume, remaining: view.remaining, progress: view.progress,
+    // what the screen is telling the player (DJS20): crowd mood, step lamp, navi lines, gold arrows, fader hint
+    mood: moodOf(m.floor), step: shown.step, navi: message, sub: subMessage, points: shown.points, hint: shown.hint, away: shown.away, arrows: !$('fader-arrows').hidden };
 }
-$('crossfader').addEventListener('input',e=>audio.setMix(e.target.value));
-document.querySelectorAll('[data-nudge]').forEach(button=>button.addEventListener('click',()=>{const[id,beats]=button.dataset.nudge.split(',').map(Number);audio.nudge(id,beats);}));
-document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
-window.addEventListener('pagehide',event=>{if(event.persisted){pause();return;}disposed=true;cancelAnimationFrame(frame);audio.dispose().catch(()=>{});});
+async function pause() { try { await audio.pause(); status('停止中。▶で再開します。'); } catch (e) { status(`停止処理: ${e.message}`); } }
+for (const id of [0, 1]) {
+  const key = id ? 'b' : 'a';
+  $('pitch-' + key).addEventListener('input', e => audio.pitch(id, Number(e.target.value)));
+  $('play-' + key).addEventListener('click', async () => {
+    if (audio.mix.decks[id].playing) return; // ▶ only starts: a deck leaves the air when its transition ends
+    // after an interruption (tab hidden, audio session lost) any ▶ brings back every deck that was playing, in step
+    const m = audio.mix, resume = !m.running && m.phase !== 'idle' && m.resumeDecks.length > 0;
+    try { if (await (resume ? audio.start() : audio.play(id))) { helpManual = null; if (document.hidden) { await pause(); return; } status(resume ? '再開' : `${key.toUpperCase()} ON AIR`); } }
+    catch (e) { status(`${e.message}。▶から再試行できます。`); }
+  });
+}
+$('sync').addEventListener('click', () => { if (audio.sync()) status('SYNC：次の曲のBPMを合わせました'); });
+// ── お客さんの反応: 声の吹き出し・熱の増減の札・気分の言葉 ──────────────────────────────
+const VOICES = {
+  PERFECT: ['きたー！', '今の入り、最高！', 'ぴったり！'], GOOD: ['いい入り！', 'お、いいね'], OK: ['うん、入った', 'わるくない'],
+  EARLY: ['あれ、早くない？', 'つんのめった…'], LATE: ['ん、遅れた？', 'ちょっとズレた…'],
+  combo8: ['気持ちいい…', 'なめらか！'], combo16: ['このつなぎ、好き！', 'ずっと踊れる！'], combo24: ['うますぎ！', '止まらない！'], combo32: ['完璧！！'],
+  clash: ['音がごちゃついてる…', 'なんか、ぶつかってない？'], quiet: ['音、小さくない？', 'あれ、止まった？'],
+  S: ['最高のつなぎ！', 'フゥー！！'], A: ['いいね！', 'ノれる！'], B: ['まあまあかな'], C: ['うーん…', '踊りづらい…'],
+  '◎': ['これ待ってた！', 'わかってる！'], '○': ['お、いいじゃん'], '△': ['今それじゃない…', 'えー…'],
+  cold: ['なんか冷めてきた…', '帰ろっかな…'], peak: ['最高潮！！'],
+};
+const COLD = new Set(['EARLY', 'LATE', 'clash', 'quiet', 'C', '△', 'cold']);
+let voiceSlot = 0;
+/** One guest speaks: a bubble over the crowd (three places, taken in turn). */
+function say(kind, { big = false, text = null, slot = null } = {}) {
+  const box = $('voices'), at = slot ?? (voiceSlot = (voiceSlot + 1) % 3);
+  for (const old of [...box.children]) if (old.dataset.slot === String(at)) old.remove();
+  const p = document.createElement('p'); p.className = `voice${COLD.has(kind) ? ' cold' : ''}${big ? ' big' : ''}`; p.dataset.slot = String(at); p.dataset.kind = kind;
+  p.textContent = text ?? pickOne(VOICES[kind]); p.addEventListener('animationend', () => p.remove()); box.append(p);
+}
+/** A step of the heat meter with its reason, next to the meter. */
+function bump(delta, label) {
+  if (!delta) return;
+  const el = $('heat-delta'); el.textContent = `${delta > 0 ? '+' : '−'}${Math.abs(Math.round(delta * 100))}　${label}`;
+  el.className = `heat-delta ${delta > 0 ? 'up' : 'down'}`; void el.offsetWidth; el.classList.add('show');
+}
+function showMood(m) {
+  const mood = moodOf(m.floor);
+  if (mood === moodShown) return;
+  $('floor').dataset.mood = String(mood); const word = $('mood'); word.textContent = MOODS[mood]; word.classList.remove('pop'); void word.offsetWidth; word.classList.add('pop');
+  if (moodShown != null && m.running) { if (mood === 4 && mood > moodShown) say('peak', { big: true, slot: 1 }); else if (mood <= 1 && mood < moodShown) say('cold'); }
+  moodShown = mood;
+}
+// 選曲: two candidate cards. The guests' request (ノリ) and the key (つながり) decide how well the pick lands.
+function renderPick(select) {
+  const m = audio.mix, now = m.decks[m.master];
+  $('pick').dataset.side = select.deck === 0 ? 'a' : 'b'; $('request').innerHTML = `<small>お客さんの声</small>「${REQUESTS[select.request]}」`;
+  $('pick-cards').replaceChildren(...select.options.map((key, index) => {
+    const t = TRACKS[key], keyOk = keyMatch(now.track, key), askOk = energyMatch(select.request, now.track, key), d = t.energy - TRACKS[now.track].energy;
+    const button = document.createElement('button'); button.type = 'button'; button.id = `pick-${index}`; button.className = 'pick-card';
+    const flames = Array.from({ length: 5 }, (_, i) => `<i${i < t.energy ? '' : ' class="off"'}></i>`).join('');
+    button.innerHTML = `<span class="pick-art" style="--art:url('../../img/ui/dj/art-${key}.webp')"></span><b>${t.title}</b>`
+      + `<span class="pick-row"><small>ノリ</small><span class="energy" aria-label="盛り上がり ${t.energy}／5">${flames}</span><span>${d > 0 ? '今より上がる ↑' : d < 0 ? '今より落ち着く ↓' : '今と同じくらい →'}</span></span>`
+      + `<span class="pick-row marks"><em class="${askOk ? 'ok' : 'ng'}">${askOk ? '✓ 声に合う' : '✕ 声と違う'}</em><em class="${keyOk ? 'ok' : 'ng'}">${keyOk ? '✓ なめらかにつながる' : '✕ 音がぶつかる'}</em></span>`
+      + `<span class="pick-meta">キー ${t.camelot}・${t.bpm} BPM${m.set.detune === 'match' && t.bpm !== now.bpm ? ` → ${now.bpm.toFixed(0)}（自動）` : ''}</span>`;
+    button.addEventListener('click', () => {
+      const picked = audio.choose(index); if (!picked) return;
+      $('pick').hidden = true; shownSelect = null; showDecks();
+      const tone = picked.rating === '◎' ? 'great' : picked.rating === '○' ? 'good' : 'bad';
+      toast(`<span class="medal pick-${tone}">${picked.rating}</span><span><span class="toast-label">${{ '◎': 'フロアが沸いた！', '○': '悪くない選曲', '△': 'フロアが少し冷めた…' }[picked.rating]}</span><span class="toast-parts">${TRACKS[picked.key].title}</span></span>`, 2200);
+      say(picked.rating); bump(PICK_FLOOR[picked.rating], { '◎': '待ってた曲！', '○': '悪くない選曲', '△': '今ほしい曲と違う' }[picked.rating]);
+      status(`選曲：${TRACKS[picked.key].title}（${picked.rating}）`);
+    });
+    return button;
+  }));
+  $('pick').hidden = false; shownSelect = select;
+}
+$('help').addEventListener('click', () => { helpManual = $('howto').hidden; });
+$('exit').hidden = !embedded;
+$('exit').addEventListener('click', async () => { if (!embedded) return; await audio.pause().catch(() => {}); tell({ type: 'dj-exit' }); });
+$('restart').addEventListener('click', async () => { const old = audio; create(); await old.dispose().catch(() => {}); status('最初から'); });
+$('crossfader').addEventListener('input', e => audio.setMix(e.target.value));
+// Jog outer rim = fine pitch (12° of rim travel = 0.01 BPM). Inside the rim does nothing; QUANTIZE keeps the phase.
+const JOG_STEP_DEG = 12, JOG_INNER = .62;
+function finePitch(id, steps) { const bpm = audio.mix.decks[id].bpm, next = Math.round((bpm + steps * .01) * 100) / 100; audio.tempo(id, next); return audio.mix.decks[id].bpm !== bpm; }
+for (const id of [0, 1]) {
+  const jog = $('platter-' + (id ? 'b' : 'a')); let drag = null, spin = 0;
+  const angle = (e, r) => Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2)) * 180 / Math.PI;
+  jog.addEventListener('pointerdown', e => { const r = jog.getBoundingClientRect(), dist = Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2)) / (r.width / 2);
+    if (dist > 1.05 || dist < JOG_INNER) return; e.preventDefault(); jog.setPointerCapture(e.pointerId); drag = { last: angle(e, r), acc: 0 }; jog.classList.add('touching'); });
+  jog.addEventListener('pointermove', e => { if (!drag) return; const r = jog.getBoundingClientRect(), a = angle(e, r); let d = a - drag.last; if (d > 180) d -= 360; if (d < -180) d += 360; drag.last = a; drag.acc += d; spin += d;
+    jog.style.setProperty('--spin', `${spin}deg`); const steps = Math.trunc(drag.acc / JOG_STEP_DEG); if (steps) { drag.acc -= steps * JOG_STEP_DEG; if (finePitch(id, steps)) { jog.classList.add('tick'); setTimeout(() => jog.classList.remove('tick'), 90); if (coarse.matches) navigator.vibrate?.(3); } } });
+  const end = () => { drag = null; jog.classList.remove('touching'); }; jog.addEventListener('pointerup', end); jog.addEventListener('pointercancel', end);
+  jog.addEventListener('keydown', e => { const k = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key]; if (!k) return; e.preventDefault(); if (finePitch(id, k)) { spin += k * JOG_STEP_DEG; jog.style.setProperty('--spin', `${spin}deg`); } });
+}
+document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
+window.addEventListener('pagehide', event => { if (event.persisted) { pause(); return; } disposed = true; cancelAnimationFrame(frame); audio.dispose().catch(() => {}); });
 
+// ── 曲の流れ（上 A・下 B の実波形）。金の線が「いま」、金の旗が次の入り ──────────────────
+const PHONE = document.documentElement.dataset.density === 'phone';
+/** The waveform as BINS bars per beat (the loudest moment in each), worked out once per track. Each frame only places the bars at their
+ *  (fractional) x, so the shape scrolls smoothly instead of being re-sampled and shimmering every frame (DJS33). */
+const BINS = 16;
+function binsOf(t) {
+  if (t.bins) return t.bins;
+  const n = t.beats * BINS, out = new Float32Array(n), per = 60 / t.nativeBpm / BINS, k = t.peaks.length / t.duration;
+  for (let i = 0; i < n; i++) {
+    const a = Math.floor((t.firstBeat + i * per) * k), b = Math.max(a + 1, Math.floor((t.firstBeat + (i + 1) * per) * k));
+    let v = 0; for (let j = Math.max(0, a); j < b && j < t.peaks.length; j++) if (t.peaks[j] > v) v = t.peaks[j];
+    out[i] = v;
+  }
+  return (t.bins = out);
+}
 function wave(canvas, id, now) {
-  const c = canvas.getContext('2d'), w = canvas.width, h = canvas.height, x0 = Math.round(w * .32), scale = w / 7;
-  c.clearRect(0, 0, w, h); if (!audio.tracks) return;
-  const d = audio.mix.decks[id], b = beatAt(d, now), t = audio.tracks[id];
-  c.fillStyle = id ? '#7fdcf0' : '#c39bff';
-  for (let x = 0; x < w; x += 2) {
-    const beat = b + ((x - x0) / scale) * d.bpm / 60;
-    const peak = peakAt(t, t.firstBeat + mod(b, t.beats)*60/t.nativeBpm + (beat-b)*60/t.nativeBpm);
-    const size = peak * (h - 8); c.globalAlpha = .75; c.fillRect(x, h / 2 - size / 2, 2, Math.max(1, size));
+  if (canvas.width !== geo.laneW) canvas.width = geo.laneW; // 2 canvas px per CSS px both ways, so the bar numbers and the flag keep their shape
+  if (canvas.height !== geo.laneH) canvas.height = geo.laneH;
+  const c = canvas.getContext('2d'), w = canvas.width, h = canvas.height, x0 = Math.round(w * .3), scale = w / 7;
+  c.clearRect(0, 0, w, h); c.fillStyle = '#0a0714cc'; c.fillRect(0, 0, w, h);
+  const m = audio.mix, cue = m.cue, t = audio.tracks[id], d = m.decks[id];
+  // One clock for both lanes (DJS29): the deck on air (during a cue, the one being mixed out of). The bar grid, the 8 bars of the mix and the
+  // entry flag are all placed on it, so the two lanes line up bar for bar.
+  const clock = cue ? m.decks[cue.from] : m.decks[m.master], cb = beatAt(clock, now), xOf = beat => x0 + (beat - cb) * 60 / clock.bpm * scale;
+  if (cue) { // the 8 bars of the mix
+    const xs = Math.max(0, xOf(cue.start)), xe = Math.min(w, xOf(cue.end));
+    if (xe > xs) { c.fillStyle = m.phase === 'mix' ? '#ffc85724' : '#ffc85712'; c.fillRect(xs, 0, xe - xs, h); }
   }
-  c.globalAlpha = 1;
-  const first = Math.floor(b - x0 / scale * d.bpm / 60);
-  for (let n = first; n < b + (w - x0) / scale * d.bpm / 60; n++) {
-    const x = x0 + (n - b) * 60 / d.bpm * scale;
-    c.fillStyle = mod(n, 32) === 0 ? '#aee7d5' : mod(n, 4) === 0 ? '#e7d8dd' : '#60545e'; c.fillRect(x, 0, mod(n,32)===0?2:1, h);
-    if (mod(n, 4) === 0) { c.font = '10px monospace'; c.fillText(`${Math.floor(mod(n, 32) / 4) + 1}`, x + 3, 11); }
+  // the grid: a line on every bar with its number in the 8-bar phrase (1 = the phrase head, where tracks come in), small ticks on the beats
+  const perPx = clock.bpm / 60 / scale, from = Math.floor(cb - x0 * perPx) - 1, to = Math.ceil(cb + (w - x0) * perPx) + 1;
+  c.font = `800 ${PHONE ? 40 : 24}px sans-serif`; c.textBaseline = 'top'; // 12px on the 1280 stage; 20px in the phone density (#2729)
+  for (let n = from; n <= to; n++) {
+    const x = Math.round(xOf(n));
+    if (mod(n, 4)) { const tick = Math.round(h * .1); c.fillStyle = '#ffffff38'; c.fillRect(x, 0, 2, tick); c.fillRect(x, h - tick, 2, tick); continue; }
+    const head = mod(n, PHRASE) === 0, bar = Math.floor(mod(n, PHRASE) / 4) + 1;
+    c.fillStyle = head ? '#ffffffb0' : '#ffffff5c'; c.fillRect(x - (head ? 1 : 0), 0, head ? 4 : 2, h);
+    c.fillStyle = head ? '#ffffff' : '#ffffffb8'; c.fillText(String(bar), x + 6, 4);
   }
-  const guide=audio.mix.guide;
-  if(guide?.from===id){const x=x0+(guide.start-b)*60/d.bpm*scale;if(x>=0&&x<w){c.fillStyle='#aee7d5';c.fillRect(x,0,2,h);c.font='10px monospace';c.fillText('NEXT HEAD',Math.min(w-75,x+4),h-5);}}
-  c.fillStyle = '#fff'; c.fillRect(x0, 0, 2, h);
+  if (t) {
+    // A deck on air follows its own beat. The incoming deck that has not started yet is drawn where it will come in: its first beat on the entry flag.
+    const waiting = cue && cue.to === id && !d.playing, b = waiting ? (cb - cue.start) * d.bpm / clock.bpm : beatAt(d, now);
+    const bins = binsOf(t), n = bins.length, ppb = scale * 60 / d.bpm, bw = Math.max(1, ppb / BINS * .7);
+    const from = Math.max(0, Math.floor((b - x0 / ppb) * BINS)), to = Math.ceil((b + (w - x0) / ppb) * BINS); // nothing before beat 0: the track has not started
+    c.fillStyle = id ? '#7fe3ff' : '#c39bff'; c.globalAlpha = d.playing ? .85 : .55;
+    for (let i = from; i <= to; i++) { const size = Math.max(1, bins[i % n] * (h - 16)); c.fillRect(x0 + (i / BINS - b) * ppb, (h - size) / 2, bw, size); }
+    c.globalAlpha = 1;
+  }
+  if (cue && !cue.pressed) {
+    const x = xOf(cue.start);
+    if (x >= -40 && x < w + 40) { // the entry flag; pulses on every beat in the last bar
+      const left = cue.start - cb, pulse = left <= 4 && left > 0 && !reduced.matches ? 1 - mod(cb, 1) : .4, glow = c.createLinearGradient(x - 34, 0, x + 34, 0);
+      glow.addColorStop(0, 'transparent'); glow.addColorStop(.5, `rgba(255,200,87,${.2 + pulse * .5})`); glow.addColorStop(1, 'transparent');
+      c.fillStyle = glow; c.fillRect(x - 34, 0, 68, h);
+      c.fillStyle = '#ffc857'; c.fillRect(x - 2, 0, 4, h);
+      if (cue.to === id) { const size = PHONE ? 40 : 30; c.font = `900 ${size}px sans-serif`; c.textBaseline = 'middle'; c.fillStyle = '#2a1840'; c.fillRect(x + 4, h / 2 - size * .68, size * 2.9, size * 1.36); c.fillStyle = '#ffc857'; c.fillText(`▶ ${deckOf(id)}`, x + 4 + size * .27, h / 2 + 2); }
+    }
+  }
+  c.fillStyle = '#ffc857'; c.fillRect(x0 - 1, 0, 3, h); // いま
+  c.beginPath(); c.moveTo(x0 - 9, 0); c.lineTo(x0 + 10, 0); c.lineTo(x0 + .5, 12); c.closePath(); c.fill();
 }
-function drawVJ(beat,energy){
- const c=$('vj').getContext('2d');c.imageSmoothingEnabled=false;c.clearRect(0,0,160,112);
- const pulse=reduced.matches ? .035 : .035+Math.min(.05,energy*.25);c.fillStyle=`rgba(150,92,240,${pulse})`;
- for(let i=0;i<5;i++)c.fillRect(5+i*33,32,16,70);
- const phase=mod(beat,32),dancing=audio.mix.running&&!reduced.matches&&phase<4;
- const character=audio.mix.running&&!reduced.matches&&phase>=28;
- const block=(x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),w,h);};
- const limb=(x,y,xx,yy,color)=>{const steps=Math.max(1,Math.ceil(Math.max(Math.abs(xx-x),Math.abs(yy-y))/2));for(let i=0;i<=steps;i++)block(x+(xx-x)*i/steps,y+(yy-y)*i/steps,4,4,color);};
- if(dancing){
-  const p=dancerPose(beat),u=2,cx=80+Math.round(p.hip)*u,cy=36+Math.round(p.bob)*u;
-  block(cx-6,cy-16,12,12,'#efb8a0');block(cx-8,cy-18,16,6,'#211926');block(cx-8,cy,16,18,'#9b5cf0');block(cx-2,cy+2,4,14,'#d9a6ff');
-  limb(cx-8,cy+2,cx-18,cy+12+Math.round(p.arm)*u,'#b47cf5');limb(cx+6,cy+2,cx+16,cy+12-Math.round(p.arm)*u,'#b47cf5');
-  const lx=66-Math.round(p.left)*u,rx=86+Math.round(p.right)*u,ly=94-Math.round(p.left)*u,ry=94-Math.round(p.right)*u;
-  limb(cx-6,cy+18,lx+4,ly-2,'#49374f');limb(cx+4,cy+18,rx+2,ry-2,'#49374f');block(lx,ly,10,4,'#e4c9ca');block(rx,ry,10,4,'#e4c9ca');
- }else if(character){
-  // Original geometric bust only: not a borrowed character/portrait or adopted new cast.
-  block(60,19,40,43,'#8e5cc9');block(70,25,22,27,'#efbdad');block(66,19,34,10,'#c49af0');block(56,62,49,33,'#6f46a8');block(77,56,8,27,'#e0b66e');
-  block(42,24,4,4,'#e0b66e');block(113,38,4,4,'#e0b66e');
- }
- block(0,102,160,1,'#7a5aa8');
- $('visual-label').textContent=reduced.matches?'低減表示・静止VJ':dancing?'4拍の仮ドット・自動演出':character?'華やかな仮シルエット（案）':'背景VJのみ・操作不要';
+// ── フロアの絵の上に重ねる光・音符（#crowd）。絵そのもの（シルエットの客）は CSS（.floor-art）が気分で切り替える ──────
+// DJS32: 客が絵の側でシルエットになったので、コードで描いていた手前の手のシルエットはやめた。
+// The guests are one painted band cut into 7 soft-edged vertical strips over a base copy: each strip bounces a little out of step with its
+// neighbours, so the room moves like people and not like one sheet. How much depends on the mood: still when cold, a slow sway while they
+// watch, a bounce on every beat once they dance, a jump at the peak.
+function buildBand() {
+  const band = $('band'), size = 100 / STRIPS + STRIP_OVERLAP * 2;
+  strips = Array.from({ length: STRIPS }, (_, k) => {
+    const left = k * 100 / STRIPS - STRIP_OVERLAP, el = document.createElement('i'), inner = document.createElement('b');
+    el.className = 'strip'; el.style.left = `${left}%`; el.style.width = `${size}%`;
+    inner.style.width = `${100 / size * 100}%`; inner.style.left = `${-left / size * 100}%`; el.append(inner); band.append(el);
+    return { el, phase: [.0, .11, -.06, .15, -.1, .07, -.03][k], gain: [1, .8, 1.15, .9, 1.1, .85, 1.05][k], y: null, x: null };
+  });
+  strips.push({ el: band.querySelector('.base'), phase: 0, gain: .55, y: null, x: null });
 }
-function render(){
- if(disposed)return;const now=audio.now;
- const oldGuide=audio.mix.guide;
- const completed=oldGuide && audio.mix.decks.every(d=>d.playing) && beatAt(audio.mix.decks[oldGuide.from],now)>=oldGuide.end;
- frameView=updateMix(audio.mix,now);
- if(!score && (completed || frameView.progress>=1))judge();
- if(audio.mix.lastPlay){const p=audio.mix.lastPlay;$('play-feedback').textContent=p.grade;$('play-feedback').dataset.grade=p.grade;}
- document.querySelectorAll('[data-nudge-ms]').forEach(b=>b.disabled=!audio.mix.decks[1].playing);
- const both=audio.mix.decks.every(d=>d.playing),guide=audio.mix.guide;
- for(const id of [0,1]){
-  const key=id?'b':'a',d=audio.mix.decks[id],beat=mod(beatAt(d,now),32),play=$('play-'+key);
-  $('bpm-'+key).value=d.bpm.toFixed(2);$('tempo-'+key).value=String(d.bpm);
-  $('beat-'+key).textContent=`${d.playing?'再生':'停止'}・${Math.floor(beat/4)+1}小節 ${Math.floor(beat%4)+1}拍`;
-  play.textContent=d.playing?'Ⅱ':'▶';play.setAttribute('aria-label',`${key.toUpperCase()}を${d.playing?'一時停止':'再生'}`);play.setAttribute('aria-pressed',String(d.playing));play.disabled=audio.busy;
-  $('deck-'+key).dataset.playing=String(d.playing);
-  $('indicator-'+key).textContent=d.playing?'ON AIR':'STANDBY';
-  $('platter-'+key).style.setProperty('--rotation',`${reduced.matches?0:mod(beatAt(d,now),4)*90}deg`);
-  wave($('wave-'+key),id,now);
- }
- document.querySelectorAll('[data-nudge]').forEach(b=>{b.disabled=!audio.mix.decks[Number(b.dataset.nudge.split(',')[0])].playing;});
- for(const key of ['a','b'])$('platter-'+key).setAttribute('aria-valuenow',$('bpm-'+key).value);
+function moveCrowd(beat, mood, still) {
+  // amp: how high they bounce (px); every: bounce on every beat (1) or every second beat (2); sway: sideways drift (px)
+  const [amp, every, sway] = still ? [0, 1, 0] : [[0, 1, 0], [0, 1, 0], [2.5, 2, 2], [8, 1, 3], [15, 1, 4]][mood];
+  for (const [k, strip] of strips.entries()) {
+    const t = beat / every + strip.phase, y = amp ? -Math.round(Math.abs(Math.sin(t * Math.PI)) ** .7 * amp * strip.gain * 2) / 2 : 0;
+    const x = sway ? Math.round(Math.sin((beat / 8 + k * .13) * Math.PI * 2) * sway * 2) / 2 : 0;
+    if (y !== strip.y || x !== strip.x) { strip.y = y; strip.x = x; strip.el.style.transform = x || y ? `translate(${x}px,${y}px)` : ''; }
+  }
+}
+/** The whole floor jolts once (a good entry lands, the fader locks in for 8 beats). */
+function shake() { if (reduced.matches) return; const art = $('floor-art'); art.classList.remove('shake'); void art.offsetWidth; art.classList.add('shake'); flash = 1; }
+function drawFloor(beat, floor, running) {
+  // The light layer is drawn at half resolution (it is all soft light) and not redrawn while nothing on it moves (DJS33).
+  const canvas = $('crowd'), W = geo.stageW, H = 288, still = reduced.matches || !running, mood = moodOf(floor), kick = still ? 0 : (1 - mod(beat, 1)) ** 2;
+  moveCrowd(beat, mood, still);
+  const idle = still && !particles.length && flash <= .02 ? `${W}|${floor.toFixed(3)}` : null;
+  if (idle && idle === shown.floorKey) return;
+  shown.floorKey = idle;
+  if (canvas.width !== W / 2) { canvas.width = W / 2; canvas.height = H / 2; }
+  const c = canvas.getContext('2d'); c.setTransform(.5, 0, 0, .5, 0, 0); c.clearRect(0, 0, W, H);
+  // beams from the truss over the booth, pointing out into the room: wider and brighter as it heats up
+  const sweep = still ? 0 : Math.sin(beat / 8 * Math.PI * 2);
+  c.globalCompositeOperation = 'lighter';
+  for (const [at, dir, col] of [[.16, 1, '180,92,240'], [.38, -1, '63,208,232'], [.62, 1, '255,95,168'], [.84, -1, '180,92,240']]) {
+    const x = at * W, tip = x + dir * sweep * 150 + (at - .5) * 200, spread = 50 + floor * 70, alpha = (.04 + floor * .2) * (mood >= 4 ? 1 + kick * .5 : 1);
+    // DJS32: the painted crowd already stands in its own beams, so these only sweep through the haze over the heads and are gone by mid-height
+    const g = c.createLinearGradient(x, 0, tip, H); g.addColorStop(0, `rgba(${col},${alpha * .9})`); g.addColorStop(.5, `rgba(${col},0)`);
+    c.fillStyle = g; c.beginPath(); c.moveTo(x - 6, 0); c.lineTo(x + 6, 0); c.lineTo(tip + spread, H); c.lineTo(tip - spread, H); c.closePath(); c.fill();
+  }
+  if (!still && mood >= 3) { // thin lasers fanning over the heads; more of them, and a strobe on the beat, at the peak
+    const n = mood >= 4 ? 6 : 3; c.lineWidth = 2;
+    for (let i = 0; i < n; i++) {
+      const a = Math.sin(beat / 4 * Math.PI + i * 1.7) * .9 + (i - (n - 1) / 2) * .22, x0 = W * (i % 2 ? .47 : .53), x1 = x0 + Math.tan(a) * 210;
+      c.strokeStyle = `rgba(${i % 2 ? '120,235,255' : '255,120,200'},${mood >= 4 ? .4 : .22})`; c.beginPath(); c.moveTo(x0, -4); c.lineTo(x1, 206); c.stroke();
+    }
+    if (mood >= 4) { c.fillStyle = `rgba(255,235,255,${(kick * .1).toFixed(3)})`; c.fillRect(0, 0, W, H); }
+  }
+  if (flash > .02) { c.fillStyle = `rgba(255,240,255,${(flash * .28).toFixed(3)})`; c.fillRect(0, 0, W, H); flash *= .86; } else flash = 0;
+  c.globalCompositeOperation = 'source-over';
+  // notes rising from the crowd while the fader rides the line
+  if (!reduced.matches) {
+    particles = particles.filter(p => p.life > 0);
+    for (const p of particles) { p.y -= p.vy; p.x += Math.sin(p.life * 6) * .6; p.life -= .014; }
+    c.textAlign = 'center'; // a soft halo (a bigger faint note) instead of shadowBlur, which is slow on phones
+    for (const [font, alpha] of [['900 44px sans-serif', .3], ['900 30px sans-serif', 1]]) {
+      c.font = font;
+      for (const p of particles) { c.globalAlpha = Math.min(1, p.life * 2) * alpha; c.fillStyle = p.color; c.fillText(p.char, p.x * W, p.y + (alpha < 1 ? 5 : 0)); }
+    }
+    c.globalAlpha = 1;
+  }
+}
+const note = () => { if (particles.length < 24) particles.push({ x: .08 + Math.random() * .84, y: 230 + Math.random() * 30, vy: 1 + Math.random() * 1.2, life: 1, char: pickOne(['♪', '♫', '♪']), color: pickOne(['#ffc857', '#ff8fc4', '#aee7d5', '#c39bff']) }); };
 
- $('mix-value').textContent=`A ${Math.round((1-audio.mix.mix)*100)} / B ${Math.round(audio.mix.mix*100)}%`;
- $('phase').textContent=`共通7秒 / BPM差 ${(audio.mix.decks[1].bpm-audio.mix.decks[0].bpm).toFixed(2)} / ${both?`B−A拍位相 ${phaseError(...audio.mix.decks,now).toFixed(3)} / ${(phaseError(...audio.mix.decks,now)*60000/audio.mix.decks[0].bpm).toFixed(1)} ms・フレーズ差 ${phraseError(...audio.mix.decks,now).toFixed(2)}拍`:'各PLAYを押すまで、そのデッキの波形は停止'}`;
- $('master').textContent=`VJ基準 ${audio.mix.visualMaster?'B':'A'}（音声時計）`;
- $('phrase').value=frameView.mode==='mix'?frameView.progress:0;
- const target=guide?.to?'B':'A';let text;
- if(frameView.mode==='idle')text='BPMを合わせて、まずAの▶。';
- else if(frameView.mode==='entry')text=frameView.remaining<=4?`${target}の入りまで ${Math.ceil(frameView.remaining)} 拍。合図で自分でPLAY。`:`次のフレーズ頭まで ${Math.ceil(frameView.remaining/4)}小節。${target}のBPMを合わせてPLAYを準備。`;
- else if(frameView.mode==='waiting-play')text=frameView.elapsed<1?`PLAY ${target}：今がフレーズ頭。押した瞬間に再生します。`:`${target}は停止中。次の頭まで ${Math.ceil(frameView.remaining)}拍。自動で再生しません。`;
- else text=`8小節MIX ${Math.floor(frameView.progress*8)+1}/8：位相を確かめ、横フェーダーを動かそう。ピッチ・PLAY・位相を採点します。`;
- if(text!==message){$('coaching').textContent=text;message=text;}
- const cue=frameView.mode==='entry'&&frameView.remaining<=4?String(Math.ceil(frameView.remaining)):frameView.mode==='waiting-play'&&frameView.elapsed<1?'▶':'';if($('cue').textContent!==cue)$('cue').textContent=cue;
- controllerLeds();
- drawVJ(beatAt(audio.mix.decks[audio.mix.visualMaster],now),audio.level());frame=requestAnimationFrame(render);
+// ── 横フェーダーの案内: 光る枠と、そこへ向かう金の矢印 ─────────────────────────────
+let comboShown = -1;
+/** away: the fader has left the playing deck's side while nothing is being mixed (the sound is fading out). */
+function faderGuide(m, away) {
+  const band = $('guide'), arrows = $('fader-arrows'), fader = $('crossfader'), x0 = geo.faderLeft + THUMB / 2, track = geo.faderW - THUMB;
+  const mixing = m.phase === 'mix' && view.guide != null && m.fader;
+  band.hidden = !mixing;
+  let hint = '', target = null, ok = false;
+  if (mixing) {
+    const g = m.cue.to === 1 ? view.guide : 1 - view.guide, side = followHint(m, view.guide);
+    setStyle(band, 'transform', `translateX(${(x0 + (g - FOLLOW_BAND) * track).toFixed(1)}px)`); setStyle(band, 'width', `${Math.round(FOLLOW_BAND * 2 * track)}px`); // moved with transform: no layout
+    band.classList.toggle('in', Math.abs(toward(m) - view.guide) <= FOLLOW_BAND);
+    if (view.follow) {
+      band.classList.remove('hit', 'miss'); void band.offsetWidth; band.classList.add(view.follow.hit ? 'hit' : 'miss');
+      if (view.follow.hit && view.follow.combo >= 4) { note(); if (view.follow.combo >= 16) note(); }
+      if (view.follow.hit && view.follow.combo >= 8) { if (view.follow.combo % 8 === 0) shake(); else flash = Math.max(flash, .35); }
+    }
+    const on = m.cue.to === 1 ? '右' : '左', back = m.cue.to === 1 ? '左' : '右', done = toward(m) >= .9 && view.guide >= .9;
+    if (side === 0 || done) { hint = done ? 'そのまま！' : 'いい感じ、そのまま'; ok = true; }
+    else if (side > 0) { hint = m.cue.to === 1 ? `もっと${on}へ →` : `← もっと${on}へ`; target = g; }
+    else { hint = m.cue.to === 1 ? `← 行きすぎ、少し${back}へ` : `行きすぎ、少し${back}へ →`; target = g; }
+  } else if (away) { target = m.master === 0 ? 0 : 1; hint = m.master === 0 ? '← 左へ戻す' : '右へ戻す →'; }
+  arrows.hidden = target == null;
+  if (target != null) { // chevrons run from the cap's leading edge toward the target: 1〜3 of them, as many as fit
+    const right = target > m.mix, cap = x0 + m.mix * track, n = Math.max(1, Math.min(3, Math.floor((Math.abs(target - m.mix) * track + 20) / 29))), width = n * 29;
+    setStyle(arrows, 'transform', `translateX(${(right ? cap + THUMB / 2 - 6 : cap - THUMB / 2 + 6 - width).toFixed(1)}px)`); setStyle(arrows, 'width', `${width}px`);
+    arrows.classList.toggle('left', !right); [...arrows.children].forEach((el, i) => { el.hidden = i >= n; });
+  }
+  const label = $('fader-hint'); if (label.textContent !== hint) label.textContent = hint; label.classList.toggle('ok', ok);
+  $('xfade').classList.toggle('go', !!mixing || away);
+  if (!mixing) { if (comboShown !== -1) { $('combo').textContent = ''; comboShown = -1; } }
+  else if (m.fader.combo !== comboShown) { comboShown = m.fader.combo; $('combo').textContent = comboShown > 1 ? `COMBO ${comboShown}` : ''; $('combo').classList.toggle('hot', comboShown >= 8); }
+  return hint;
+}
+function toast(html, ms = 2600) { $('toast').innerHTML = html; toastUntil = performance.now() + ms; }
+const RANK_LABEL = { S: 'かんぺきなつなぎ！', A: 'いいつなぎ！', B: 'まずまずのつなぎ', C: 'つなぎが荒れた…' };
+function showTransition(t) {
+  toast(`<span class="medal r-${t.rank}">${t.rank}</span><span><span class="toast-label">${RANK_LABEL[t.rank]}</span><span class="toast-parts">テンポ <b>${t.parts[0]}</b>・入り <b>${t.parts[1]}</b>・フェーダー <b>${t.parts[2]}</b><span class="best">（最大 ${t.combo} コンボ）</span></span></span>`);
+  say(t.rank, { big: t.rank === 'S' }); bump(RANK_FLOOR[t.rank], RANK_LABEL[t.rank].replace(/[！…]/g, ''));
+}
+/** One line on what to work on next: the weakest of the three parts across the set. */
+function advice(r) {
+  const avg = [0, 1, 2].map(i => r.transitions.reduce((s, t) => s + t.parts[i], 0) / r.transitions.length), weak = avg.indexOf(Math.min(...avg));
+  if (avg[weak] >= 85) return { S: 'フロアが沸いた。完璧なセット！', A: 'いいセット。フロアはずっと踊っていた', B: 'あと少し。入りとフェーダーをていねいに', C: '金色の矢印を追えば、次はもっとつながる' }[r.rank];
+  return ['次はテンポ合わせ：PITCH を動かして LOCK を点けるか、SYNC を押そう', '次は入りのタイミング：カウントが 0 になる瞬間に ▶', '次は横フェーダー：光る枠から離れないよう、ゆっくり動かそう'][weak];
+}
+function showResult(r) {
+  const rows = r.transitions.map((t, i) => `<tr><th>${i + 1}</th><td>${TRACKS[t.from].title} → ${TRACKS[t.to].title}</td><td>${t.pick || '—'}</td><td>${t.grade}</td><td>${t.parts.join(' / ')}</td><td>${t.combo}</td><td class="rank r-${t.rank}">${t.rank}</td></tr>`).join('');
+  const mood = MOODS[moodOf(r.floor / 100)];
+  $('score-result').innerHTML = `<div class="result-card"><div class="result-head"><span class="medal r-${r.rank}">${r.rank}</span><div><small>${r.set} RESULT</small><div class="result-total">${r.total}点</div><div class="result-mood">フロアの熱 ${r.floor}：${mood}${r.bonus ? `（${r.bonus > 0 ? 'ボーナス +' : ''}${r.bonus}点）` : ''}</div></div></div>`
+    + `<table><thead><tr><th>#</th><th>つなぎ</th><th>選曲</th><th>入り</th><th>テンポ / 入り / フェーダー</th><th>コンボ</th><th></th></tr></thead><tbody>${rows}</tbody></table>`
+    + `<p class="advice">${advice(r)}</p><div class="result-actions"><button id="again" type="button" class="gold">もう一度</button>${embedded ? '<button id="leave" type="button">戻る</button>' : ''}</div></div>`;
+  $('again').addEventListener('click', () => $('restart').click());
+  $('leave')?.addEventListener('click', () => $('exit').click());
+  tell({ type: 'dj-result', set: setIndex + 1, rank: r.rank, total: r.total, floor: r.floor });
+}
+/** What to do now: step lamp (1 かける / 2 入れる / 3 つなぐ / 4 えらぶ), the two navi lines and the controls the gold arrows point at. */
+function navi(m, now, away) {
+  const cue = m.cue, out = { step: 0, main: '', sub: '', warn: false, points: [], count: '', untilHead: null };
+  if (m.phase === 'done') return { ...out, step: 5, main: 'セット終了！ おつかれさま', sub: '最後の曲が流れている' };
+  if (!m.running) {
+    if (m.phase === 'idle') return { ...out, step: 1, main: '左の ▶ を押して、1曲目をかけよう', sub: '曲をつないでフロアを盛り上げよう。低音は機材が自動で整える', points: ['play-a'] };
+    const live = m.resumeDecks.length ? m.resumeDecks : [m.master];
+    return { ...out, step: m.phase === 'mix' ? 3 : m.phase === 'select' ? 4 : 2, main: `一時停止中。${sideOf(live[0])}の ▶ で続きから`, sub: '止まったところから、流れていた曲がそのまま戻る', points: [`play-${live[0] ? 'b' : 'a'}`] };
+  }
+  if (away) return { ...out, step: m.phase === 'select' ? 4 : 2, warn: true, main: `音が消える！ 横フェーダーを${sideOf(m.master)}へ戻そう`, sub: `次の曲を入れるまで、フェーダーは${sideOf(m.master)}（${deckOf(m.master)}）に置いておく`, points: ['fader'] };
+  if (m.phase === 'select') return { ...out, step: 4, main: 'お客さんの声を聞いて、次の曲をえらぼう', sub: '声に合うノリで、つながりも良い曲ならフロアが沸く', points: ['pick'] };
+  if (m.phase === 'mix') {
+    const to = cue.to, bar = Math.min(8, Math.floor(view.progress * 8) + 1);
+    if (view.progress >= 1) return { ...out, step: 3, main: `最後まで${sideOf(to)}へ動かしきろう`, sub: `フェーダーが${sideOf(to)}の端に着くと、${deckOf(to)} に乗り換わる`, points: ['fader'] };
+    return { ...out, step: 3, main: `横フェーダーを${sideOf(to)}へ。光る枠を追いかけよう`, sub: `8小節かけて ${deckOf(to)} へ乗り換える（${bar}／8）。拍ごとに枠の中かを見る`, points: ['fader'] };
+  }
+  // cue: waiting for the phrase head, then ▶ on the incoming deck
+  const to = cue.to, key = to ? 'b' : 'a', from = m.decks[cue.from], inc = m.decks[to], late = beatAt(from, now) - cue.start;
+  const untilHead = late <= 0 ? -late : cue.end - beatAt(from, now), bars = Math.ceil(untilHead / 4), count = untilHead <= 4 && untilHead > 0 ? String(Math.ceil(untilHead)) : '';
+  // 「いま！」 only while a press still lands inside the OK window (120 ms + headphones); after that the navi sends the player to the next head
+  if (late > 0 && late * 60 / from.bpm * 1000 <= 120 + (m.allowance || 0)) return { ...out, step: 2, untilHead: 0, count: '▶', main: `いま！ ${sideOf(to)}の ▶`, sub: '0 の瞬間に近いほど、フロアが沸く', points: [`play-${key}`] };
+  if (bpmDiffPct(from, inc) > LOCK_PCT && untilHead > 4) {
+    const up = inc.bpm < from.bpm;
+    return { ...out, step: 2, untilHead, main: `テンポ合わせ：${sideOf(to)}の PITCH を${up ? '上' : '下'}へ`, sub: `LOCK が点けば OK。むずかしければ SYNC を押す（あと ${bars} 小節）`, points: [`pitch-${key}-${up ? 'up' : 'down'}`, 'sync'] };
+  }
+  if (untilHead <= 4) return { ...out, step: 2, untilHead, count, main: `カウント 0 で、${sideOf(to)}の ▶ ！`, sub: '光の輪がボタンに重なる瞬間に押す', points: [`play-${key}`] };
+  if (late > 0) return { ...out, step: 2, untilHead, main: '入りを逃した。次の頭を待とう', sub: `あと ${bars} 小節。カウントが出たら、0 で${sideOf(to)}の ▶`, points: [] };
+  return { ...out, step: 2, untilHead, main: `次は${sideOf(to)}の ▶。カウントが出るまで待とう`, sub: `入りまで あと ${bars} 小節。金の旗が金の線に重なる瞬間が入り`, points: [] };
+}
+function showNavi(n, m) {
+  if (n.main !== message) { $('coaching').textContent = n.main; message = n.main; }
+  if (n.sub !== subMessage) { $('coach-sub').textContent = n.sub; subMessage = n.sub; }
+  $('coaching').classList.toggle('warn', n.warn);
+  if (n.step !== shown.step) for (const li of $('steps').children) { const s = Number(li.dataset.step); li.classList.toggle('now', s === n.step); li.classList.toggle('done', s < n.step || (s === 1 && m.phase !== 'idle')); }
+  const points = n.points.join(' ');
+  if (points !== shown.pointsKey) {
+    for (const key of ['a', 'b']) {
+      $('point-play-' + key).hidden = !n.points.includes(`play-${key}`);
+      const pitch = $('point-pitch-' + key), dir = n.points.includes(`pitch-${key}-up`) ? 'up' : n.points.includes(`pitch-${key}-down`) ? 'down' : '';
+      pitch.hidden = !dir; pitch.classList.toggle('up', dir === 'up'); pitch.classList.toggle('down', dir === 'down');
+    }
+    $('point-sync').hidden = !n.points.includes('sync');
+  }
+  shown.step = n.step; shown.pointsKey = points; shown.points = [...n.points];
+  if (n.count !== lastCount) { const el = $('count'); el.textContent = n.count; el.classList.remove('beat'); if (n.count) { void el.offsetWidth; el.classList.add('beat'); } lastCount = n.count; }
+}
+function render() {
+  if (disposed) return; measure(performance.now()); const now = audio.now, m = audio.mix; // measure first: the layout is still clean at the top of the frame
+  view = audio.update();
+  if (view.transition) { showTransition(view.transition); missStreak = 0; comboSaid = 0; clashSaid = false; }
+  if (view.finished) showResult(view.finished);
+  showDecks();
+  if (m.phase === 'select' && m.select && shownSelect !== m.select) renderPick(m.select);
+  if (m.phase !== 'select' && !$('pick').hidden) { $('pick').hidden = true; shownSelect = null; }
+  if (m.lastPlay && m.lastPlay !== shownPlay) {
+    shownPlay = m.lastPlay; const grade = shownPlay.grade; judgeUntil = performance.now() + 1800;
+    $('judge').textContent = grade; $('judge').dataset.grade = grade; $('judge').classList.remove('pop'); void $('judge').offsetWidth; $('judge').classList.add('pop');
+    $('judge-sub').textContent = { PERFECT: 'ぴったり！', GOOD: 'いい入り！', OK: 'まずまず', EARLY: '早すぎた…', LATE: '遅れた…' }[grade];
+    // DROP: the incoming track hits the floor (flash on PERFECT/GOOD, a small one on OK, a stumble on EARLY/LATE)
+    const drop = $('drop'); drop.className = 'drop'; void drop.offsetWidth;
+    drop.className = `drop ${grade === 'PERFECT' || grade === 'GOOD' ? 'big' : grade === 'OK' ? 'small' : 'miss'}`;
+    drop.textContent = grade === 'PERFECT' || grade === 'GOOD' ? 'DROP!' : '';
+    if (grade === 'PERFECT' || grade === 'GOOD') shake();
+    say(grade, { big: grade === 'PERFECT' }); bump(GRADE_FLOOR[grade], { PERFECT: 'ぴったり入った', GOOD: 'いい入り', EARLY: '入りが早かった', LATE: '入りが遅れた' }[grade] || '');
+  }
+  if (judgeUntil && performance.now() > judgeUntil) { $('judge').textContent = ''; $('judge-sub').textContent = ''; judgeUntil = 0; }
+  if (toastUntil && performance.now() > toastUntil) { $('toast').innerHTML = ''; toastUntil = 0; }
+  // the guests react to the fader beat by beat: a voice at 8 / 16 / 24 / 32 in a row, a complaint after four misses in a row
+  if (view.follow) {
+    if (view.follow.hit) { missStreak = 0; const c = view.follow.combo; if (c % 8 === 0 && c > comboSaid && c <= 32) { comboSaid = c; say(`combo${c}`); } }
+    else if (++missStreak === 4) { say('clash'); bump(-.03, 'フェーダーが枠から外れている'); }
+  }
+  const cue = m.cue, master = m.decks[m.master], perf = performance.now();
+  // the fader left the playing deck's side although nothing is being mixed: the sound is fading out
+  const away = m.running && m.phase !== 'mix' && m.phase !== 'done' && (m.master === 0 ? m.mix : 1 - m.mix) > .25;
+  if (!away) { awaySince = 0; awaySaid = false; } else if (!awaySince) awaySince = perf; else if (!awaySaid && perf - awaySince > 1200) { awaySaid = true; say('quiet'); }
+  // two decks audible but their beats rub (tempo not matched): the guests notice after a moment
+  const rub = m.running && m.phase === 'mix' && m.decks.every(d => d.playing) && quality(m, now) < .5;
+  if (!rub) clashSince = 0; else if (!clashSince) clashSince = perf; else if (!clashSaid && perf - clashSince > 1500) { clashSaid = true; say('clash'); }
+  const n = navi(m, now, away);
+  for (const id of [0, 1]) {
+    const key = id ? 'b' : 'a', d = m.decks[id], play = $('play-' + key), other = m.decks[1 - id];
+    put('bpm-' + key, d.track ? d.bpm.toFixed(2) : '--');
+    const pitch = pitchOf(d); if (document.activeElement !== $('pitch-' + key)) $('pitch-' + key).value = pitch.toFixed(2);
+    put('pitch-value-' + key, `${pitch >= 0 ? '+' : ''}${pitch.toFixed(2)}%`);
+    const locked = d.track && other.track && bpmDiffPct(other, d) <= LOCK_PCT; $('lock-' + key).classList.toggle('on', !!locked);
+    const beat = mod(beatAt(d, now), PHRASE);
+    put('beat-' + key, d.playing ? `再生・${Math.floor(beat / 4) + 1}小節 ${Math.floor(beat % 4) + 1}拍` : '停止中');
+    setAttr(play, 'aria-pressed', String(d.playing)); play.disabled = audio.busy || !d.track || d.playing;
+    const mine = !!(cue && cue.to === id && !cue.pressed && m.phase === 'cue' && m.running), soon = mine && n.untilHead != null && n.untilHead <= 4 && n.untilHead > 0;
+    play.classList.toggle('cue-open', mine && n.untilHead === 0);
+    play.classList.toggle('cue-soon', soon);
+    play.classList.toggle('first', m.phase === 'idle' && id === 0);
+    // approach ring: shrinks from 1.55× the button onto the button exactly on the phrase head
+    setVar(play, '--ap', soon ? (1 + n.untilHead / 4 * .55).toFixed(3) : '1');
+    setAttr($('deck-' + key), 'data-playing', String(d.playing));
+    setAttr($('deck-' + key), 'data-role', !d.track ? 'empty' : d.playing && m.master === id ? 'master' : d.playing ? 'incoming' : 'next');
+    put('indicator-' + key, !d.track ? 'EMPTY' : d.playing ? 'ON AIR' : 'STANDBY');
+    setVar($('platter-' + key), '--rotation', `${reduced.matches || !d.playing ? 0 : (mod(beatAt(d, now), 4) * 90).toFixed(1)}deg`);
+    if ($('platter-' + key).getAttribute('aria-valuenow') !== d.bpm.toFixed(2)) $('platter-' + key).setAttribute('aria-valuenow', d.bpm.toFixed(2));
+    $('side-' + key).classList.toggle('goal', !!cue && cue.to === id && m.running);
+    wave($('wave-' + key), id, now);
+  }
+  $('sync').disabled = !cue || !m.running;
+  $('sync').classList.toggle('needed', !!(cue && m.running && bpmDiffPct(m.decks[cue.from], m.decks[cue.to]) > LOCK_PCT));
+  put('mix-value', `A ${Math.round((1 - m.mix) * 100)} / B ${Math.round(m.mix * 100)}%`);
+  const heat = m.floor.toFixed(3); if (heat !== shown.heat) { shown.heat = heat; $('floor-fill').style.setProperty('--f', heat); put('floor-value', String(Math.round(m.floor * 100))); }
+  showMood(m);
+  put('set-progress', `${m.phase === 'done' ? m.count : Math.min(m.count, m.transitions.length + 1 + (m.phase === 'mix' ? 1 : 0))} / ${m.count}`);
+  put('set-next', cue ? `NEXT ▶ ${cue.to ? 'B' : 'A'}` : m.phase === 'select' ? '選曲' : m.phase === 'done' ? 'LAST TRACK' : '');
+  shown.hint = faderGuide(m, away); shown.away = away;
+  showNavi(n, m);
+  const help = helpManual ?? (m.phase === 'idle');
+  if ($('howto').hidden === help) { $('howto').hidden = !help; $('help').setAttribute('aria-pressed', String(help)); }
+  controllerLeds();
+  drawFloor(beatAt(master, now), m.floor, m.running);
+  frame = requestAnimationFrame(render);
 }
 render();
-
-// Controller LEDs only (no input/scoring effect): channel meters and the decorative LOW knobs that show the automatic bass cut.
-function controllerLeds(){
- const level=Math.min(1,audio.level()*6),g=[Math.cos(audio.mix.mix*Math.PI/2),Math.sin(audio.mix.mix*Math.PI/2)],cut=lowCutDb(audio.mix.mix);
-  for(const m of ['meter-m','meter-m2'])$(m).style.setProperty('--lvl',audio.mix.running?Math.min(1,level*(m==='meter-m'?1:.92)).toFixed(3):'0');
- for(const id of [0,1]){
-  const key=id?'b':'a',on=audio.mix.decks[id].playing&&audio.mix.running,c=cut[id]/LOW_CUT_DB;
-  $('meter-'+key).style.setProperty('--lvl',on?(level*g[id]).toFixed(3):'0');
-  const knob=$('eq-low-'+key);knob.style.setProperty('--k',`${-135*c}deg`);knob.parentElement.style.setProperty('--cut',c.toFixed(2));
- }
- const cutting=cut.findIndex(v=>v<-1);
- $('auto-low').textContent=cutting<0?'LOWは横フェーダーに合わせて自動でカット':`AUTO LOW CUT：${cutting?'B':'A'} ${Math.round(cut[cutting])}dB`;
+// Controller LEDs only (no input/scoring effect): channel meters and the AUTO EQ lamp (the bass swap itself is in audio.mjs).
+function controllerLeds() {
+  const m = audio.mix, level = Math.min(1, audio.level() * 6), g = gains(m.mix), cut = lowCutDb(m.mix);
+  for (const id of [0, 1]) {
+    const on = m.decks[id].playing && m.running;
+    setVar($('meter-' + (id ? 'b' : 'a')), '--lvl', on ? (level * g[id]).toFixed(2) : '0');
+  }
+  const cutting = cut.findIndex(v => v < -1);
+  $('led-autoeq').classList.toggle('on', cutting >= 0);
+  put('auto-low', cutting < 0 ? 'EQは横フェーダーに合わせて自動' : `AUTO EQ：${cutting ? 'B' : 'A'} の低音 ${Math.round(cut[cutting])}dB`);
 }

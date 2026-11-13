@@ -1,0 +1,22 @@
+{
+ "date": "2026-11-02",
+ "reason": "綾取の驚き・笑顔だけ、通常と同じ立ち方のまま絵全体が上にずれていて、表情を切り替えると浮いて見えた。下へ平行移動して足元を通常にそろえた（拡大・横移動・描き直しなし）",
+ "files": [
+  {
+   "file": "assets/sprites/characters/kuze/chr_kuze_surprise.png",
+   "dy_px": 22,
+   "before_copy": "asset_sources/portraits/size-alignment-review/kuze-surprise-before.png",
+   "before_sha256": "6a46d9902d78d4a69cb0da1db2cd03eed56a51f5d2b1ed1e214252d7504ecad4",
+   "after_sha256": "e88ac28e88b63d8fb886b8688127a8f4eaa19f5b01396bbea5fd2f4a4126e894",
+   "webp": true
+  },
+  {
+   "file": "assets/sprites/characters/kuze/chr_kuze_smile.png",
+   "dy_px": 8,
+   "before_copy": "asset_sources/portraits/size-alignment-review/kuze-smile-before.png",
+   "before_sha256": "8afa814efe457481f558560f3412c429c57fc0e1d01c6e52c0f433fdd526ea8a",
+   "after_sha256": "2af5f0ba9d855efd5b1eb7cb8a790861748b791cc80e6e3d22a09210347c187d",
+   "webp": true
+  }
+ ]
+}

@@ -6,6 +6,9 @@ fs.mkdirSync(shots, {recursive:true});
 await suite('attack-lesson', async check => {
   await check('shift-menu', async page => {
     await page.evaluate(async()=>{
+      // 旧しくみ（スミさん♥3でシフト後に特訓）の検査。心得の盤（通常プレイの既定・SBD97）では授業 M-S1 として盤から相談する
+      // （growth_board.mjs・growth_levelup.mjs）。?growth=0 と同じ印でこの端末を旧しくみにする
+      localStorage.setItem('suien_growth_preview','0');
       window.M={core:await import('./js/core/state.js'),tonari:await import('./js/daily/tonari.js'),vn:await import('./js/vn/engine.js'),
         stages:await import('./js/core/affinity-stages.js')};
       M.start=points=>{
@@ -38,6 +41,9 @@ await suite('attack-lesson', async check => {
   for (const [name, mobile] of [['desktop',false],['touch',true]]) await check(name, async page => {
     page.setDefaultTimeout(60000);
     await page.evaluate(async () => {
+      // studyAttack は旧♥3ルート専用（canStudyAttack が !growthEnabled を要求）。
+      // shift-menu と同じ旧セーブ互換の端末で、完読・中断・SAVE/LOADを検証する。
+      localStorage.setItem('suien_growth_preview','0');
       window.A = { core: await import('./js/core/state.js'), lesson: await import('./js/daily/attack-lesson.js'),
         vn: await import('./js/vn/engine.js'), session: await import('./js/craft/session.js'),
         steam: await import('./js/craft/steam.js'), ui: await import('./js/core/ui.js') };
@@ -106,6 +112,7 @@ await suite('attack-lesson', async check => {
         A.vn.vnTest.turbo=false; A.abort=new AbortController(); A.done=null;
         A.lesson.studyAttack({signal:A.abort.signal}).then(value=>A.done=value);
       },mode);
+      assert.equal(await page.evaluate(()=>A.lesson.canStudyAttack()),true,'Legacy lesson fixture must satisfy its actual route gate');
       await page.locator('#vn.active').waitFor();
       assert.equal(await page.evaluate(()=>!!A.core.state.flags._sumi_attack_learned),false,'Opening lesson granted attack');
       if(mode==='cancel') {

@@ -1,0 +1,1167 @@
+{
+  "comment": "龍龍水煙所のドバイの店（2026-11-02 オーナー「マスターフーカーの店に行けたり」「普通に他の章のライバルと同じ扱い」）。王煙楼は58歳の現役職人・一人称「私」・短く落ち着いた言葉（老人語にしない）。シェイクの師であることは出さない（シェイクの正体は大会の朝まで伏せる）。スミさんの弟子・旧友にしない。呼び名は王煙楼（「煙楼先生」とは呼ばない）。ライチの話は前夜祭（ch4_wang_reception）の味の会話なので、ここでは別の葉を出す。店はドバイの日常（DAY1〜12）だけの地図にあり、今は大会後に読めないが、大会に触れる行は tournament_finished（第4章）で大会後の言い方に分ける。好感度・能力・代金はコード側（ch4-dubai-daily.js）。 段階の会話は first〜fifth を一訪問一本（必要ハートは core/affinity-stages.js の LONGLONG_VISIT_STORIES）、読み終えた後は visit_b・visit_c を巡回する。背景は bg_longlong_shop（コード側で指定）。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_longlong_first",
+      "comment": "初めての来店（段階0）。まだ会っていなければ、ここで名乗って面識ができる（_met_master_hookah・登場カットイン）。前夜祭で先に会っていれば（今は起きない）名乗りを繰り返さない。味の会話はジャスミン。",
+      "metadata": {
+        "flavor_lesson": {
+          "jasmine": 1
+        }
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "金文字の看板に「龍龍水煙所」。中国の水煙の老舗が、大会に合わせて出した店だ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥で、小柄な男が炭を並べていた。深紅の上着の背に、白く長い三つ編みが垂れている。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "master_hookah",
+          "next_true": "familiar",
+          "next_false": "first_meeting"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "今日は暑かった。まず水を一杯。それから決めよう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼は、こちらが座り直して、息が落ち着くのを待ってから炭を置いた。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "ジャスミンにしよう。暑さで疲れた日は、花の香りが軽く入る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口目は、白い花の香り。甘さは控えめで、喉の奥に涼しさだけが残った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（炭より先に、俺の息を見てた。……注文の前から、もう始まってたんだ）"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "また来なさい。茶だけでもいい"
+        }
+      ],
+      "branches": {
+        "first_meeting": [
+          {
+            "type": "set_flag",
+            "flag": "_met_master_hookah"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "通訳アプリを開きかけた俺に、男が日本語で声をかけた。"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "いらっしゃい。……ずいぶん速い息だね。走ってきたのかな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……暑くて、つい早足で。今日は、ゆっくり吸いたくて"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "日本語で話せるんですね。助かります"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "世界を旅して、日本の店にも長くいた。言葉はそこで覚えた"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "normal",
+            "text": "王煙楼だ。この店の主をしている"
+          },
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ch2_city_visit_c_station",
+            "next_true": "seen_on_monitor",
+            "next_false": "heard_only"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "smile",
+            "text": "その指、炭を触る人の指だね。どこで作っている"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "日本です。tonariっていう店で"
+          },
+          {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 4,
+            "next_true": "after_tournament",
+            "next_false": "before_tournament"
+          }
+        ],
+        "before_tournament": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……世界大会にも、出ます"
+          },
+          {
+            "speaker": "master_hookah",
+            "face": "smile",
+            "text": "知っているよ。だが、台の前で会うのはまだ先だ。今日は客として座りなさい"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "master_hookah",
+            "face": "smile",
+            "text": "大会はもう済んだ。今日は、ただの客として座りなさい"
+          }
+        ],
+        "familiar": [
+          {
+            "speaker": "master_hookah",
+            "face": "smile",
+            "text": "来たね。今日は、客として座りなさい"
+          }
+        ],
+        "seen_on_monitor": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（王煙楼……県大会のモニターで、龍の煙を出していた人だ）"
+          }
+        ],
+        "heard_only": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（王煙楼……世界大会に出る人の名前だ）"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_longlong_second",
+      "comment": "段階1。水煙袋。水の役割は煙を冷やすだけ。濾過・除去と言わない。はじめが火種を吹く真似をして強すぎると笑われ、「自分の息で火種を立てたい」と言う（締めくくりで実際に立てて回収する。2026-11-11 添削）。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "店の奥のガラスの棚に、細い首の金属の道具が置かれていた。手のひらに載るほどの大きさだ。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "あれも、水煙の道具ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "水煙袋という。本店から持ってきた。手に持って吸う水煙だよ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼は棚から一つを下ろし、こちらの手のひらへ乗せる。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "金属は思ったより軽く、掌の線が透けるほど薄い。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "軽い。……これで、水が入るんですか",
+          "face": "surprise"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "入る。ただし、入れすぎると、煙が湿って死ぬ。冷やすだけでいい",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "胴に水を入れて、細かく刻んだ葉を、ひとつまみだけ詰める。数口で吸い切る",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "数口で……じゃあ、何度も詰め直すんですか",
+          "face": "surprise"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "そう。詰めるたびに、客の顔を見る間ができる",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "胴を傾けると、内側に水の跡が細く残っていた。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "段も網も、どこにもない。冷やすための水だけが、そこにある。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "シーシャのボトルと同じですね。冷やすために、水がある",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "同じだよ。形が違っても、客の舌に渡す温度は、嘘がつけない",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼は細かく刻んだ葉を、本当にひとつまみだけ摘ませてみせた。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "多めに取ろうとした指を、軽く押さえる。",
+          "face": ""
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "多いと、火が届く前に葉が蒸れる。数口で終える葉は、この量で足りる",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "火は、紙をよった火種で点ける。息を吹きかけると、小さな火が立つ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼は棚の前で、細く息を吹く真似をしてみせた。紙が燃える音だけが、想像できた。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺たちのは炭です。火種を吹く、という手が残っているんですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "残っている。急ぐ店は、もう使わない。私の本店は、まだ使う",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "真似をして、こちらも息を吹いてみた。",
+          "face": ""
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "強い。それでは、火種ごと飛んでいく",
+          "face": "laugh"
+        },
+        {
+          "speaker": "",
+          "text": "返す前に、持ち方だけ直された。親指が少し下がると、道具が手に沿った。",
+          "face": ""
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "道具は変わる。相手が吸える温度で煙を渡すのは、変わらない",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "次は、俺の息でも、火種を立ててみたいです",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "なら、その日まで息を細くしておきなさい",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼に促されて、棚へ戻す。隣の袋と触れないよう、指一つ分の間を空けた。",
+          "face": ""
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "いい。置く手は、もう静かだ。あとは、息だね",
+          "face": "smile"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_longlong_third",
+      "comment": "段階2。残された時間。急いでいる客を口では急かさず、小さい炭と一息の間で間に合わせる。段階2で増補。2026-11-11 STK24: 「顔を見なさい」型の格言を、出口を見た客・茶を底まで飲んだ杯・袖の時計の具体に替えた（スミさん・スティーブ・店員の教えと言葉が重ならないように）。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "店に入ると、王煙楼が入口近くの客を見ていた。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "客は、何度も腕時計に目をやっている。",
+          "face": ""
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "君なら、あの客に何を出す",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……時間がない人、ですよね。軽くて、すぐ香りが立つものにします",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "炭は",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "立ち上がりを早く。でも、吸い終わりに合わせて、最後は熱を落とします",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "いい。私も、そうする",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼は客の席へ行く前に、炭を一つ、小さいものと取り替えた。説明は、しない。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "客の前で、葉を詰める手は速い。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "けれど、差し出す前に、一度だけ間を置いた。客の肩が、そこで下がる。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "今の間は、何ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "息を一つ、待った。速い息のまま吸うと、一口目でむせる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "客は最初、まだ時計を見ていた。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "二口目のあと、針から目を離し、カップを両手で持った。",
+          "face": ""
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "座る前に、出口を見た客だ。炭は小さくする。だが、口では急かさない",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "急がせないと、間に合わないと思ってました",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "間に合わせるのは、熱の立ち上がりだ。言葉で急かすと、客は吸う前に終わる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "客は最後の一口まで、もう時計を見なかった。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "帰り際、小さく頭を下げて出ていく。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "自分の席に戻ると、王煙楼は「今日は、どれくらいいられる」とだけ聞いた。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "……一時間くらい、いられます",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "なら、今の一台でいい。残りの時間は、話しながらでいいよ",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "（一時間。……口に出すと、思ったより長い）",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "一時間の一台は、客のときより炭が多い。置き方は同じで、言葉は増やさない。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "さっきの客と、同じ順番ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "順番は同じだ。違うのは炭の数だけ。君の一時間の分だよ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "吸っている途中、王煙楼は一度も時計を見なかった。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "さっきの客が置いていったカップを、洗わずに一度だけ手に取る。内側に、まだ熱が残っている。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "さっきの客の、残り時間ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "残りではない。使った時間だ。……底まで、飲んでいった",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "急いだままの客は、茶を残す。私の炭が間に合ったか、これで分かる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "言ったあと、王煙楼は自分の時計を袖の内側へしまった。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "……店の中では、時計を見ないんですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "見ない。見ると、茶を淹れる手まで速くなる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "ポケットのスマホを出して、画面を伏せたまま卓に置いた。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼は何も言わずに、こちらのカップへ茶を足した。",
+          "face": ""
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "それでいい。今日の一時間は、全部使っていきなさい",
+          "face": "smile"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_longlong_fourth",
+      "comment": "段階3。最初の湯は茶葉を起こすために飲まない。陰陽は手つきで。段階2で増補。tonariへ寄る約束から、店の場所を聞くためにLIMEを交換する（_lime_contact_master_hookah。分岐の無い本文なので必ず通る。2026-11-11 添削）。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "今日は、一台の前に茶が出た。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "小さな急須から、指先ほどの杯へ、何度かに分けて注がれる。",
+          "face": ""
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "最初の湯は飲まない。茶葉を起こすためだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "一杯目から飲まないんですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "急ぐと、葉の香りが閉じたままになる。水煙の葉も同じだよ",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "捨てられた最初の湯は、色が薄い。杯の底に、葉のにおいだけが残る。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "捨てるのが、もったいない気がします",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "起こすための湯だ。飲むための湯ではない。順番を急がないことだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "言い直すように、王煙楼は二杯目を注いだ。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "二杯目の茶は、香ばしくて少し甘かった。その後で、台に炭が置かれる。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "二杯目で、やっと葉が開くんですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "開く。開いてから、客に渡す。閉じたままの葉は、まだ道具の中にいる",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "熱いものの後には、冷たいもの。甘いものの後には、少し苦いもの",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "片方だけでは、一台にならない。私の店では、昔からそう教えている",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "炭のあと、小さな水の杯が隣に置かれた。茶の甘さのあとに、少し苦い煙が続く。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "（配合の話だけじゃない。客の一日の順番まで、一台に入れてる）",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "水の杯を置いたあと、王煙楼は急須の蓋を一度開け、葉の開き方をこちらにも見せた。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "全部、開いてます。……最初の湯のおかげですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "おかげ、ではない。手順だ。手順を飛ばすと、あとの甘さも苦さも、順番を失う",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "茶の香ばしさが残るうちに、煙の苦さが来る。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "舌の上で、二つの温度が入れ替わるのが分かった。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺の店でも、同じ順番で出してみます",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "まねはしなくていい。自分の客の一日を、見てから決めなさい",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "いつか日本へ寄ったら、tonariの一台も吸ってみたいね",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "そのときは、最初の湯を捨てるところから、見てもらいます",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "なら、店の場所を聞いておこう。LIMEでいいかな",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼は、時計をしまうのと同じ袖から、スマホを出した。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "……王煙楼さんも、LIMEを使うんですね",
+          "face": "surprise"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "日本の店で覚えた。字を打つのは、茶を淹れるより遅い",
+          "face": "laugh"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_master_hookah"
+        },
+        {
+          "speaker": "",
+          "text": "最初に届いたのは、字ではなく、湯気の立つ杯の写真が一枚だった。",
+          "face": ""
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "字は、そのうち追いつく",
+          "face": "smile"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_longlong_fifth",
+      "comment": "段階4。黙って見て吸う。炭を外す手が王煙楼と重なり、先に引くのは王煙楼（はじめを同じ台の前に立つ者として認める山場）。大会前後は既存の分岐を残す。段階2で増補。2026-11-11 STK24: 「吸う前に相手の顔を見る癖」の認定と格言を外し、王煙楼が一度だけ炭を送ってみせる手・手を付けない茶・初日の速い息に替えた（山場の前は二人とも黙る）。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "店に入ると、王煙楼は台を二つ並べていた。一つは、こちらの席の前に置かれる。",
+          "face": ""
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "今日は、私の手を見ていなさい。話さなくていい",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "葉をほぐす指は、急がない。炭を置く前に、王煙楼は一度だけこちらの呼吸を見た。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "こちらの吸う速さを見てから、炭の位置をほんの少し内側へ寄せる。音は、立てない。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "最初の一口は、まだ熱が手前にある。二口目で、輪郭が落ちつく。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "三口目で、煙が細くなる。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "差し出された一台は、驚くほど静かだった。吸うたびに、少しずつ表情が変わる。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "……吸うたびに、違う顔になる",
+          "face": "surprise"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "客の息は、一口ごとに変わる。だから一台も、一口ごとに変える",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺は、最初に決めた熱のまま、最後まで行くことが多いです",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "最初の熱は、始まりだ。終わりまで同じなら、客のほうが先に変わる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼はトングの先で、こちらの台の炭を、指一つ分だけ外へ送った。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "次の一口で、喉の奥の熱がほどけた。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "duck": true,
+          "text": "黙って吸う時間が続く。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼も自分の台に口を付け、同じだけ待っている。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "卓の茶は、誰も手を付けないまま、湯気が細くなっていった。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "煙が、ほんの少し重くなった。気づいたときには、トングへ手が伸びていた。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "同じ炭の上で、王煙楼の指も止まっていた。先に手を引いたのは、王煙楼のほうだった。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "炭を一つ外して、皿へ置く。その音だけがした。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "……今、俺が先でしたか",
+          "face": "surprise"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "同じだった。同じ顔を見ていたら、手が同じ場所へ行く",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "静かだった一台が、終わりに近づいて、やっと少しだけ甘くなった。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "皿の上では、外した炭がまだ赤かった。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "最後の甘さ、最初からは想像できませんでした",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "君が外した炭の分だ。熱が引いて、甘さが前へ出た",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "空になった台を下げながら、王煙楼はこちらの肩を一度だけ見た。力が、抜けている。",
+          "face": ""
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "最初の日は、水を一杯飲んでも、まだ息が速かった",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼は空の台を一度、布で拭いた。熱の跡が、消える。",
+          "face": ""
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "話さなくていいと言ったのに、私のほうがよく話したな",
+          "face": "laugh"
+        },
+        {
+          "speaker": "hajime",
+          "text": "炭に手が伸びるまでは、二人とも黙ってました",
+          "face": "smile"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "あれで足りた。私も、久しぶりに人と黙って吸えた",
+          "face": "smile"
+        },
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 4,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
+        },
+        {
+          "speaker": "",
+          "text": "帰り際、王煙楼は店の入口まで出てきて、小さく手を上げた。",
+          "face": ""
+        }
+      ],
+      "branches": {
+        "before_tournament": [
+          {
+            "speaker": "master_hookah",
+            "text": "大会では、手加減しない。君の前で、私の一番の煙を作る",
+            "face": "normal"
+          },
+          {
+            "speaker": "hajime",
+            "text": "はい。俺も、全部出します",
+            "face": "normal"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "master_hookah",
+            "text": "大会の日も、君の手を見ていた。今日と同じ手だったよ",
+            "face": "smile"
+          },
+          {
+            "speaker": "hajime",
+            "text": "……あの台の前でも、見てたんですね",
+            "face": "surprise"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_longlong_visit_b",
+      "comment": "段階の会話を読み終えた後の通い（小会話。♥が足りない間も読むので、茶の回 fourth より前でも成り立つ文にする）。店員（shop_clerk）から見た店主。何も聞かずに今日の一台を出す。結びは「見ているから分かる」と言い直さず、奥の客に黙って茶を足す手で終える（2026-11-11 STK24）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "扉を開けると、店員が炭を起こしていた。王煙楼は、奥の客と小声で話している。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "店主は、話すより待つ方が長いんです。茶の話のときだけは、逆ですけど"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼の前の客は、さっきから一言もしゃべらない。それでも、王煙楼は笑っていた。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "来たね。今日は、何も聞かない。好きに座りなさい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "何も言わないのに、運ばれてきた一台は、今日の暑さにちょうどいい軽さだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼は奥の客の前へ戻り、また黙って茶を足した。店員が、肩をすくめてみせた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_longlong_visit_c",
+      "comment": "段階の会話を読み終えた後の通い（小会話）。開店前の片づけ（成長の授業 lesson_master_hookah_dragon の「冷めた炭を壺へ戻す」と同じ手つき）。結びは tonari の片づけに喩えず、灰で白くなった指と濡れた布で終える（2026-11-11 STK21）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開店前の店。王煙楼が、使い終えた炭を一つずつ壺に戻していた。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "冷めた炭を片づけるまでが、一台だよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "片づけまで、ですか"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "次の客の台に、前の客の灰を残さない。それだけだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣にしゃがんで、残りの炭を一つずつ壺へ戻した。王煙楼は、止めなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を壺に戻し終えると、王煙楼はやっと、こちらの一台の炭を起こしはじめた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "指先が、灰で白い。王煙楼は手を止めずに、濡れた布を卓へ滑らせた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_longlong_visit_d",
+      "comment": "段階の会話の合間・読み終えた後の通い（小会話。visit_b・visit_c と巡回。2026-11-11 RVE07）。♥が足りない間も読むので、初回（first）の後なら成り立つ文にする。店員（shop_clerk）から見た店主。初回の『まず水を一杯』を、王煙楼は客より先に、走り回る店員にもする。大会・前夜祭・シェイクに触れない。時間帯を言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "龍龍水煙所。店員が炭の箱を抱えて、奥と入口を小走りで行き来していた。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "いらっしゃいませ！　すぐお席を……あっ、先に炭を"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "王煙楼が、通りかかった店員に水の杯を一つ渡した。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "飲みなさい。息が速い。炭は、逃げない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店員は観念して、立ったまま杯を空けた。吐く息が、少し長くなる。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "この店、お客さまより私の方が水をもらうんです"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "来たね。君の分も、もう注いである"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "こちらの席にも、水の杯が一つ、先に置かれていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_longlong_bond_finale",
+      "comment": "候補A09。好感度♥5の締めくくり（未採用・友情のみ）。王煙楼はヒロインではない（story_routes の heroine_ids 外）。恋愛／友情の質問は置かず、神崎・レヰ・綾取・スティーブ・ヴォルクと同じく友情の着地。fifth（段階4）を読み終えたあと、龍龍水煙所で一度だけ、という想定。ライチの話は前夜祭の味の会話のため出さない。シェイクの師であることは出さない。スミさんの弟子・旧友にしない。呼び名は王煙楼（『煙楼先生』とは呼ばない）。一人称は私。老人語にしない。専用ハガル suyaki_master_hookah は採用時に equipment.json と bonds.js へ。大会前後で入りの一言だけ分ける（既存の fifth に合わせる）。昼にも夜にも読めるよう、入り以外では時間帯を言わない。2026-11-11 添削: 段階3で聞いた「どれくらいいられる」（炭の数のため）を言葉で聞き直し、段階1の「自分の息で火種を立てたい」をはじめが水煙袋で実際に立てて、王煙楼が初めて客の側に座る（肩が下がる＝段階2の客の合図）。最後の「残るのは、息だよ」はその火を指す。龍の煙は前夜祭より前でも読めるので「また見たい」と言わない。",
+      "metadata": {
+        "bond_finale": "master_hookah"
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 4,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼は、布に包んだ小さなボウルをカウンターへ置いた。その前に、茶が一杯だけある。"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "今日は、残りの時間を聞こう。顔だけは、見ない",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……今日は、帰れと言われても残るくらい、います",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "そうか。それなら、私の聞きたかった答えだ",
+          "face": "smile"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "前に聞いたときは、炭の数を決めるためだった",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "今日は友達の席だ。ただ、聞きたかった",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "茶の隣に、あの水煙袋が置かれた。紙をよった火種の先が、もう赤く燻っている。"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "前に、自分の息で火種を立てたいと言ったね",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "葉を、ひとつまみだけ摘む。今日は、指を押さえられなかった。"
+        },
+        {
+          "speaker": "",
+          "text": "一度目は、息が強すぎた。王煙楼が、声を立てずに笑う。"
+        },
+        {
+          "speaker": "",
+          "text": "二度目は、細く長く。紙の先に小さな火が立ち、葉へ移った。"
+        },
+        {
+          "speaker": "",
+          "text": "王煙楼は水煙袋を受け取り、目を閉じて二口吸った。肩が、ゆっくり下がる。"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "人に火を立ててもらうのは、いつ以来かな",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "水煙袋を置くと、王煙楼は布の包みを解いた。縁の滑らかな素焼きだった。"
+        },
+        {
+          "speaker": "",
+          "text": "鼻を近づけると、木の香りと、紅茶の葉の匂いが残っている。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "これ、王煙楼さんの……",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "旅のあいだ、日本の店で使っていた一つだ。これで龍を出したことはない",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "客の息に合わせた、静かな一台ばかりだよ",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "beat": 600,
+          "text": "その土を、預ける。tonariで使っていい",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "そんな大事なものを。……はい。預かります",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "素焼きは、思ったより軽い。縁だけが、何度も火を入れたように滑らかだ。"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "軽いだろう。見せるための器じゃないからね",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "手入れは水だけ。急いで乾かさないことだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "いつか日本へ寄ったら、そのハガルで、君の一台を吸わせてもらう",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "そのときは、龍の煙も見せてください",
+          "face": "normal"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "龍は見せ物だ。その前に、また火種を立ててもらおう",
+          "face": "laugh"
+        },
+        {
+          "speaker": "hajime",
+          "text": "はい。今日より細く、吹きます",
+          "face": "smile"
+        },
+        {
+          "speaker": "master_hookah",
+          "text": "それでいい。残るのは、息だよ",
+          "face": "smile"
+        }
+      ],
+      "branches": {
+        "before_tournament": [
+          {
+            "speaker": "",
+            "text": "龍龍水煙所。王煙楼は、俺の分の席だけを空けて待っていた。"
+          },
+          {
+            "speaker": "master_hookah",
+            "text": "来たね。今日は、勝負の話はしない。客としても、見ない",
+            "face": "smile"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "",
+            "text": "龍龍水煙所。王煙楼は、俺の分の席だけを空けて待っていた。"
+          },
+          {
+            "speaker": "master_hookah",
+            "text": "来たね。大会は済んだ。今日は、客としても見ない",
+            "face": "smile"
+          }
+        ]
+      }
+    }
+  ]
+}

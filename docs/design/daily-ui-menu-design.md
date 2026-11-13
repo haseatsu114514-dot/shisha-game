@@ -5,7 +5,7 @@
   - **第3版（本書）**: 「商店街を歩くはもう無い機能」「LIMEアイコンは実際のスマホをイメージした角丸四角で意図的」「シーシャ屋以外のシール風アイコンは意図的」「ステータスの三角形は不要」「白×ラベンダーのテロップボックスは良いが、日常の黒と金とは相性が悪い。白×ラベンダー＋もう一色でUI全体を作ってみては」「ウインドウやメニューは画像生成で見た目を良くしたい。今はシンプルすぎる」。
   - **採用（同日）**: 「このUIで行こう」「ステータスアップは昔の概念なので使わない」「3色目は琥珀」「看板はA」「画像は生成してから組み込み」「大会パートはリメイク中なので今度」。台帳は `docs/owner_requests.md` の DUI01〜11。
 - 作成: 2026-10-31 / 担当: Claude
-- 位置づけ: **設計資料**。コードの変更は §A の不具合修正（`remake/css/store-logos.css` の1行）だけ。画像生成の指示は `docs/ui_lounge_prompts.md` 末尾「紙×ラベンダーUI生成プロンプト」に置いた（未生成）。採用が決まった項目から `docs/master_spec.md`（#19・#20・#22）と `docs/owner_requests.md` の台帳へ写し、本書は `docs/archive/` へ移す。
+- 位置づけ: **設計資料**。コードの変更は §A の不具合修正（`remake/css/store-logos.css` の1行）だけ。画像生成の指示は `docs/prompts/ui_lounge_prompts.md` 末尾「紙×ラベンダーUI生成プロンプト」に置いた（未生成）。採用が決まった項目から `docs/master_spec.md`（#19・#20・#22）と `docs/owner_requests.md` の台帳へ写し、本書は `docs/archive/` へ移す。
 - 画面モックアップ（5枚。MENU は左のタブをクリックで切り替わる）: <https://claude.ai/artifact/77Sy6fxqdKG48BUB3GS4Zs>。背景・立ち絵・顔アイコン・店のロゴ・施設のシールは本編の実画像、枠と文字はCSSのモック（画像生成前の形）。
 - 計測の出どころ: main `c4067af2` の `remake/` を 1280×800 のChromiumで撮影。保存データは変更していない。
 - 扱わないもの: 制作画面・大会パート（別途リメイク中。DUI10）・タイトル・くじの演出・心得の盤の画面そのもの。**STATUS UP の通知は昔の概念なので新しいUIでは使わない**（DUI04。成長の表示は経験値のチップと Lv のゲージ）。
@@ -92,7 +92,7 @@
 | **システム** | `セーブ／ロード／設定／用語集／大会の規則／タイトルへ戻る` の6ボタンと注記1行 | `saves.js`・`openConfig`・`glossaryPanel`・`openRuleSheet` |
 
 - `GROWTH_BOARD=false` の間は、ステータスの枠に旧5能力の行（★段・呼称）を同じ紙の部品で出して互換を保ち、盤の公開と同時に差し替える。レーダーは出さない。
-- 章別の `openMenu` は `daily/menu.js`（新）の1関数に委譲。キー: `M`／`Esc`、`Q/E`、`1〜4`。スマホ縦（DS風）は下画面にタブバー4つ。
+- 章別の `openMenu` は `daily/menu.js`（新）の1関数に委譲。キー: `M`／`Esc`、`Q/E`、`1〜4`。（当初のスマホ縦＝DS風の下画面タブバーは 2026-11-10 に DS風ごと廃止。横画面一本）
 
 ---
 
@@ -121,7 +121,7 @@ CSSだけの紙と線では「シンプルすぎる」ので、面を画像生�
 | 4 | `assets/ui/paper/menu-bg.png` | MENU の背景 | 2464×1344。二重線の枠、左下にシーシャ台の小さなシルエットと煙、左 220px の淡い帯 |
 
 - **2026-10-31 生成済み**: 4枚とも生成し、ゲームのラベンダーへ色を合わせて `assets/ui/paper/` に採用した（原画・指示・SHA は `asset_sources/ui/paper-20261031/README.md`）。会話窓・板・ラベンダーの面は UIテーマ `paper`（既定）として組み込み済み。MENU背景は全画面MENUの段階で使う。
-- プロンプト本文: `docs/ui_lounge_prompts.md` 末尾「紙×ラベンダーUI生成プロンプト」（共通指針＋4枚、Codex にそのままコピペ）。
+- プロンプト本文: `docs/prompts/ui_lounge_prompts.md` 末尾「紙×ラベンダーUI生成プロンプト」（共通指針＋4枚、Codex にそのままコピペ）。
 - 受け取り後: `remake/tools/build_ui_skin.py` に `paper` 系の切り出し・WebP化を足し、`remake/img/ui/paper/` へ。`ui-art.css` で `.panel/.modal-box/.hud-card/.map-info/.vn-box/.vn-name/.btn` の面を `border-image` の九分割に差し替える。文字・ゲージ・チップはコードのまま。
 - 生成の注意: 文字・数字・アイコンを焼き込まない。中央は無地（文字が乗る）。装飾は細い線と小さな煙だけで、中世風・レース・リボンを入れない（共通指針に明記済み）。
 
@@ -133,7 +133,7 @@ CSSだけの紙と線では「シンプルすぎる」ので、面を画像生�
 |---|---|---|---|---|
 | **P0（本PR）** | ロゴ代替表示の店名を折り返す（§A） | `css/store-logos.css` | `typography_css.mjs`・ロゴ遮断時の表示（済） | 済 |
 | **P1（済）** | 画像生成4枚→色合わせ→`remake/css/ui-paper.css` の紙テーマ（`data-ui-theme="paper"`、既定）として会話窓・名前札・操作札・選択肢・モーダル・HUD・地図の案内・tonariの選択・ボタンに適用 | `tools/build_ui_skin.py`・`css/ui-art.css`・`css/ui-themes.css`・`css/vn-composition.css`・`core/ui-theme.js` | `ui_skin`・`conversation_ui`・`choice_oneline`・3画面サイズ | 1日・PR 1本（生成待ち） |
-| **P2** | HUDの板（行動回数なし・五角形廃止）、`daily/menu.js`（全画面4タブ）、章別 `openMenu` の委譲、STATUS の吸収 | `daily/hud.js`・`daily/menu.js`（新）・`daily/status.js`・`daily/calendar.js`・各章・`css/daily.css`・`css/game-ds.css` | `game_layout`・`hud_fortune`・`status_steps`・新規 `browser/daily_menu.mjs` | 1日・PR 2本 |
+| **P2** | HUDの板（行動回数なし・五角形廃止）、`daily/menu.js`（全画面4タブ）、章別 `openMenu` の委譲、STATUS の吸収 | `daily/hud.js`・`daily/menu.js`（新）・`daily/status.js`・`daily/calendar.js`・各章・`css/daily.css`（当時は `css/game-ds.css` も。2026-11-10 削除） | `game_layout`・`hud_fortune`・`status_steps`・新規 `browser/daily_menu.mjs` | 1日・PR 2本 |
 | **P3** | 看板（採用案）、案内パネルの `TODAY`、tonari の3択を紙の「行」部品へ、LIMEの面を紙に | `daily/map.js`・`css/daily.css`・`daily/tonari.js`・`daily/phone.js` | `facility_map`・`ui_polish`・撮影 | 1日・PR 1本 |
 
 - 保存データの schema は変えない。MENU は読み取りだけ。各段階で 1280×720・844×390・390×844 を撮影して自己レビュー（#22）。
@@ -165,5 +165,5 @@ CSSだけの紙と線では「シンプルすぎる」ので、面を画像生�
 - `docs/owner_requests.md` GUI01〜31・UX01〜17・PF18〜32・UIT24-01〜05・LM01〜06
 - `docs/gameplay_agent_reference.md` 書体の決まり（#1352）・ステータス表示ルール
 - `docs/stat-design/SPEC.md`（経験値・火種・盤）・`remake/README.md` 2026-10-30 節
-- `docs/ui_lounge_prompts.md`（既存の生成UIの分業と、今回の紙×ラベンダーのプロンプト）
+- `docs/prompts/ui_lounge_prompts.md`（既存の生成UIの分業と、今回の紙×ラベンダーのプロンプト）
 - 実装: `remake/js/daily/{hud,map,status,calendar,phone,tonari,shop,spots,facility-icons,relationship-status}.js`・`remake/js/core/{store-logos,growth,growth-board,ui-theme}.js`・`remake/js/vn/engine.js`・`remake/css/{base,daily,shop,vn,vn-composition,ui-themes,ui-art,store-logos,facility-icons}.css`

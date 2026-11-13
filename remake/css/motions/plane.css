@@ -1,0 +1,19 @@
+/* 機窓と車窓（motions/plane.js・#2688 A4）。客室の壁と窓の外の空・雲・土地 */
+.mo-plane { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; font-family: var(--font); }
+.mo-plane-outside { position: absolute; inset: 0; overflow: hidden; }
+.mo-plane-sky { position: absolute; inset: 0; }
+.mo-plane-ground { position: absolute; inset: 0; width: 100%; height: 100%; }
+.mo-plane-cloud { position: absolute; left: 0; height: 64px; border-radius: 50%; background: radial-gradient(ellipse at 50% 60%, #f4eefc, #dcd1f499 55%, transparent 72%); filter: blur(3px); opacity: .8; }
+.mo-plane-streak { position: absolute; left: 0; height: 3px; border-radius: 3px; opacity: .85; filter: blur(.6px); }
+.mo-plane-label { position: absolute; left: 0; right: 0; bottom: 70px; text-align: center; color: #dcd1f4; font-size: 26px; font-weight: 700; letter-spacing: .3em; padding-left: .3em; opacity: 0; text-shadow: 0 2px 0 #150f26; }
+.mo-plane.is-van .mo-plane-label { bottom: 120px; }
+/* c: 機内の窓の席の絵（#3254）と雲海の絵。窓の外は横に広く置いて流す */
+.mo-fly-outside { position: absolute; top: 0; left: 0; width: 125%; height: 100%; }
+.mo-fly-sky { position: absolute; inset: 0; background-size: cover; background-position: center; }
+.mo-fly-cabin { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+/* 行き先の題字（飛行機・配送便） */
+.mo-ride-title { position: absolute; left: 80px; top: 70px; z-index: 101; opacity: 0; display: grid; gap: 8px; justify-items: start; color: #fff; text-shadow: 0 2px 16px #050a1ee6; pointer-events: none; font-family: "Suien Name", var(--font); }
+.mo-ride-title small { font-size: 22px; letter-spacing: .3em; font-weight: 700; font-family: var(--font); }
+.mo-ride-title b { font-size: 92px; line-height: 1.05; letter-spacing: .08em; font-weight: 700; }
+.mo-ride-title i { display: block; width: 300px; height: 2px; background: linear-gradient(to right, #fff, #fff0); transform-origin: 0 50%; }
+.mo-ride-title.van { top: auto; left: 80px; bottom: 82px; }

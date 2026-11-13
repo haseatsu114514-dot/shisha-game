@@ -6,21 +6,21 @@ export const GALLERY_TABS = [
 ];
 export const CHAR_LABELS = {
   minto: "みんと", ageha: "あげは", tsumugi: "つむぎ", naru: "なる",
-  rin: "りん", mashiro: "ましろ", other: "その他",
+  rio: "凛想", mashiro: "ましろ", other: "その他",
 };
 const cgChars = Object.fromEntries(Object.entries({
   ageha: ["cg_ageha_first_purikura", "cg_ch2_ageha_purikura_strip", "cg_ageha_confession"],
   minto: ["cg_ch1_minto_casual_reveal", "cg_minto_casual", "cg_minto_cheki", "cg_minto_confession", "cg_minto_first_cheki"],
   tsumugi: ["cg_ch1_tsumugi_heart_art", "cg_tsumugi_confession", "cg_tsumugi_smoke_color"],
   naru: ["cg_naru_after_hours", "cg_naru_last_chance", "cg_naru_next_entry"],
-  rin: ["cg_rin_confession"],
-  mashiro: ["cg_ch3_childhood_offered_hand", "cg_kuze_mashiro_childhood", "cg_mashiro_double_apple", "cg_mashiro_confession"],
+  rio: ["cg_rio_confession"],
+  mashiro: ["cg_ch3_childhood_offered_hand", "cg_saku_mashiro_childhood", "cg_mashiro_double_apple", "cg_mashiro_confession"],
 }).flatMap(([char, ids]) => ids.map(id => [id, char])));
 const charTag = char => Object.hasOwn(CHAR_LABELS, char) ? char : "other";
 // IDに章がないCGは、実際の表示先の台本で章を確認できたものだけ記載する。
 const cgChapters = {
   cg_ageha_first_purikura: 2, cg_ryuji_purikura: 2,
-  cg_kuze_mashiro_childhood: 3, cg_mashiro_double_apple: 3,
+  cg_saku_mashiro_childhood: 3, cg_mashiro_double_apple: 3,
   cg_minto_casual: 1, cg_minto_cheki: 1, cg_minto_first_cheki: 1,
   cg_naru_after_hours: 2, cg_naru_last_chance: 3, cg_naru_next_entry: 3,
   cg_oneesan_first_smoke: 1, cg_tsumugi_smoke_color: 1,

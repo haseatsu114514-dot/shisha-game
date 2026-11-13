@@ -3,13 +3,13 @@
 
 /**
  * 表示対象の母集合 = 好感度の仕組みがあるキャラ全員。ゲーム内の既存ロスターの union:
- * - core/stats.js の ROMANCEABLE: tsumugi, minto, rin, ageha, mashiro, hiyori, samechan
- * - daily/bonds.js の BOND_FINALES（好感度MAXの締めくくり）: sumi, naru, adam, tsumugi, minto, rin, samechan, hiyori
- * - data/story_routes.json の heroine_ids: tsumugi, minto, rin, ageha, mashiro, samechan, hiyori
+ * - core/stats.js の ROMANCEABLE: tsumugi, minto, rio, ageha, mashiro, hiyori, samechan
+ * - daily/bonds.js の BOND_FINALES（好感度MAXの締めくくり）: sumi, naru, adam, tsumugi, minto, rio, samechan, hiyori
+ * - data/story_routes.json の heroine_ids: tsumugi, minto, rio, ageha, mashiro, samechan, hiyori
  * 並びは manifest の titleArts のキャラ順に合わせる。
  */
 export const TITLE_ART_CHARACTERS = [
-  "ageha", "hiyori", "samechan", "mashiro", "minto", "rin", "tsumugi",
+  "ageha", "hiyori", "samechan", "mashiro", "minto", "rio", "tsumugi",
   "sumi", "naru", "adam",
 ];
 
@@ -26,7 +26,7 @@ export const TITLE_KEY_VISUALS = {
   samechan: "title_art_samechan_04_throne_pose.png",
   mashiro: "title_art_mashiro_05_rooftop_dusk_yawn.png",
   minto: "title_art_minto_05_mint_cloud.png",
-  rin: "title_art_rin_04_rainy_neon_umbrella.png",
+  rio: "title_art_rio_04_rainy_neon_umbrella.png",
   tsumugi: "title_art_tsumugi_04_painting_studio.png",
   sumi: "title_art_sumi_01_own_clay_bowl.png",
   naru: "title_art_naru_01_bakery_morning.png",
@@ -41,12 +41,22 @@ const EXTRA_MET_SIGNALS = {
   // スミさんは勤務開始時から LIME 交換済みの上司で、名乗り記録（met）の対象外
   // （core/state.js の初期 contacts と core/data.js の ALWAYS_KNOWN が根拠）。連絡先にある＝すでに知っている相手として扱う。
   sumi: (s) => !!s.contacts?.includes?.("sumi"),
+  // 鉄仮面さん（tonariの常連）は第1章冒頭の tonari で「今日の、良かったよ」と声をかける（ch1_opening。立ち絵も名乗りもないので met は付かない）。
+  // 冒頭を読み終えた記録（chapters/ch1.js の _ch1_opening.introDone）と、常連の話を読んだ記録（_ev_salaryman）を会った扱いにする。
+  // ロード漫画の鉄仮面さんの話の解放用。タイトルアートの名簿（TITLE_ART_CHARACTERS）には入っていない。
+  salaryman: (s) => !!(s.flags?._ch1_opening?.introDone || s.flags?._ev_salaryman),
 };
+
+/** 純粋関数。そのセーブで id のキャラと出会っているか（state.met と、上の等価な既存記録）。
+ *  タイトルアートの解放とロード画面の漫画の解放（core/loading-comics.js の cast）で共通に使う。 */
+export function hasMetCharacter(save, id) {
+  return !!save && (!!save.met?.[id] || !!EXTRA_MET_SIGNALS[id]?.(save));
+}
 
 /** 純粋関数。save が無ければ characterIds の全員、あればそのセーブで出会ったキャラだけ（0人なら空配列） */
 export function titleArtCharacters(save, characterIds) {
   if (!save) return [...characterIds];
-  return characterIds.filter((id) => !!save.met?.[id] || !!EXTRA_MET_SIGNALS[id]?.(save));
+  return characterIds.filter((id) => hasMetCharacter(save, id));
 }
 
 /** 純粋関数。解放済みのうち、専用キービジュアルが割り当てられているキャラだけ（実際に表示できる面々） */

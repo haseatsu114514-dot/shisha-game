@@ -1,0 +1,554 @@
+{
+  "comment": "第3・4章の出発前の準備3日（VOL02）に、地元の常連が準備期間の来店で一度だけ話す送り出しの会話（N3a）。第3章は県大会の後に東京へ発つまで、第4章は全国大会の後にドバイへ発つまで。アダム・みんと・凛想は daily/spots.js の CHAPTER_TALKS（prep）、サメちゃんは daily/samechan.js の SAMECHAN_PREP_TALKS が出し、chapters/departure-prep.js が準備期間に読み込む。出発後は出ないので、その章の大会後の分岐は持たない。恋人でも友人でも、ドバイへ同行・別便で応援する恋人でも不自然にならない店の会話にし、同行・見送り・応援には触れない。味覚は第3章では原因を断定せず遠いまま、第4章はダブルアップルの判別（ch3_taste_return）の後の「少し戻った」まで（回復しきったとは書かない）。アダムの第4章は、第5章の ch5_free_eden_adam（#1588）の「分かる日が来たな」を先取りしない（作り手の違いまで分かったら聞かせろ、で止める）。凛想の第4章は、第3章で頼まれた「向こうの顔」の報告を既読の分岐で返す。第4章の出発前は全国大会から日がたっているので、優勝を初耳の知らせとしては扱わない。能力・好感度の伸びは来店の処理が付けるので、台本に報酬の文は書かない。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_prep_adam",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_eden_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "扉を開けると、アダムは林檎を剥く手を止めずに、こちらを見た。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "来たか。……県の頂に立った男よ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "近いうちに、東京へ発ちます。全国大会です"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "聞いている。座れ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "皮を一本につなげたまま、林檎が皿に置かれた。台は、いつもより軽く詰めてあった。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "感想はいらん。分かる日が来たら、聞かせろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "東京にも、ダブルアップルはある。たいていの店の棚に、我が同胞がいる"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "分からん日は、分からんと言え。林檎は逃げん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "林檎を一切れもらって、軽い煙を急がずに吸った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_prep_minto",
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "PEPPERMINTの扉を開けると、ミントの煙と一緒に、明るい声が飛んできた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "あ、はじめくん！　県大会優勝、おめでと〜♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。もうすぐ、全国大会で東京へ行きます"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "えっ、もう？　……そっか、勝ったらすぐ次なんだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとは、いつものミントの缶へ伸ばした手を止めて、隣の缶を取った。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "今日は軽めにしとくね。はじめくん、まだちょっと疲れた顔してるから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……分かりますか"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "わかるよ〜。お客さんの顔を見るのが、みんとのお仕事だもん♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "東京でも、しんどい日は休むんだよ。勝ってても、休んでいいの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。そうします"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_prep_rio",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の2階。凛想さんは、出荷前の箱に伝票を貼っていた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "あ、モルモットくん。東京、行くんだって？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。全国大会に出ます"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "うちの卸した葉、東京の店にも行ってるの"
+        },
+        {
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch1_rio_fourth",
+          "next_true": "face_known",
+          "next_false": "face_new"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_talk_seen_ch2_rio_taste",
+          "next_true": "taste_known",
+          "next_false": ""
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。見てきます"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "交渉成立。サインはいらないよ。これは仕事じゃないから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは伝票の束をそろえて、箱の上に置いた。"
+        }
+      ],
+      "branches": {
+        "face_known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……吸ってる人の顔、ですね"
+          },
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "話が早い。向こうの顔も、持って帰ってきて"
+          }
+        ],
+        "face_new": [
+          {
+            "speaker": "rio",
+            "face": "normal",
+            "text": "向こうでうちの葉を吸ってる人を見かけたら、どんな顔だったか教えて"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "顔、ですか？"
+          },
+          {
+            "speaker": "rio",
+            "face": "smug",
+            "text": "そう、顔。理由は、気が向いたら話してあげる"
+          }
+        ],
+        "taste_known": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……味は、まだ遠いままですけど"
+          },
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "味じゃなくていい。顔なら、今の君にも見えるでしょ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch3_prep_samechan",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "SHISHARKの扉を開けると、サメちゃんがカウンターの奥で、コロちゃんの王冠を直していた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "おお、はじめ。今日はまた、遠くを見る顔をしておるのう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "全国大会で、しばらく東京へ行くんです"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "東京とな！　……しばらくとは、どのくらいじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大会が終わるまでです"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者はじめよ、遠征であるか。余の海の外であるぞ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "東京の水族館には、大きなサメがおるそうじゃ。……いや、行けとは言わん"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "お主のいつもの席は、留守のあいだも空けておく。帰ったら、また座りに来るのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。帰ったら、寄ります"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近よ、勇者の席の札は、余が書いておくのである"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_prep_adam",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_eden_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "EDENの棚に、ラベルの違うタッパーが並んでいた。中身は、どれもダブルアップルだ。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "来たか、全国の王よ。……いや、今日はただの客の顔だな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ドバイへ発つ前に、一台お願いします"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは棚からタッパーを一つ選んで、台を作った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "甘い煙の奥に、アニスとリコリスがある。東京で、分かったふりをした頃とは違う。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ダブルアップルの味が、ちゃんとします"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "それは、林檎を林檎と呼んだだけだ"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "棚のは、全部ダブルアップルだ。作り手が違えば、甘さもアニスの長さも違う"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "その違いまで分かったら、聞かせろ。今はまだ、熟す前だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。行ってきます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "皿の林檎は、今日も皮が一本につながっていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_prep_minto",
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの奥で、みんとが新しいメニュー表に、ペンでハートを描き足していた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "あ、はじめくん！　世界大会、もうすぐでしょ？　すごすぎない？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も、まだ実感がないです"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……でも、前に来た時より、いい顔してる。しんどそうなの、ちょっと抜けたね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "東京で、作らないでお茶だけ飲む日もあったんです"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "えらい♡　その顔なら、世界のステージでも映えるよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "魅せ方のプロのみんとが言うんだから、間違いなし♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとは鼻歌まじりに、ミントの缶を開けた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_prep_rio",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の2階。凛想さんは、届いたばかりの銀色の袋を棚に並べていた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "お、モルモットくん。そろそろでしょ、ドバイ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。あと何日かです"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_volk",
+          "next_true": "boss",
+          "next_false": ""
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_talk_seen_ch3_prep_rio",
+          "next_true": "faces",
+          "next_false": ""
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_talk_seen_ch2_rio_taste",
+          "next_true": "promise",
+          "next_false": ""
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは袋を一つ開けて、先に自分で一口吸ってから、ホースをこちらへ向けた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "果物が先で、吐いたあとに渋み……だと思います"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "思います、でいいよ。感じた順に言う、いつもの君だ"
+        }
+      ],
+      "branches": {
+        "boss": [
+          {
+            "speaker": "rio",
+            "face": "normal",
+            "text": "東京で、うちの上司に会ったんでしょ。何か言ってた？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……報告は毎週、正確に届くって言ってました"
+          },
+          {
+            "speaker": "rio",
+            "face": "smug",
+            "text": "ふうん。それだけって顔じゃないけど、まあいいや"
+          }
+        ],
+        "faces": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "頼まれてた、東京の顔の話です"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ナイトサイドを吸ってた人が、一口目のあと、少し笑ってました"
+          },
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "……そっか。笑ってたんだ"
+          }
+        ],
+        "promise": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "それと……味が、少し戻ってきました"
+          },
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "……そう。じゃあ約束どおり、一番に吸わせてあげる"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_prep_samechan",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "SHISHARKのカウンターに、砂漠の写真の載った旅行雑誌が、開いたまま置いてあった。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "はじめ！　東京から戻ったと思うたら、今度はドバイじゃのう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。荷物をまとめているところです"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "砂の海であるな。勇者はじめよ、制してまいれ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コロちゃん、砂の海にサメはおらんのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "勝ち負けは、わしにはようわからん。じゃが、お主の一台は座って吸いたくなる"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "暑い国じゃ。客も、お主も、座る場所と水を忘れるでないぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。座る場所と水、ですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんはうなずいて、コロちゃんの頭を指先で軽くなでた。"
+        }
+      ]
+    }
+  ]
+}

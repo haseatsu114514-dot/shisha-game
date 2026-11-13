@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EEE3D2  枠の段 1: 2コマ@y=273
+  コマ1: 717x476 @(39,273) 比率 1.506 → ok
+  コマ2: 717x477 @(783,272) 比率 1.503 → ok
+コマ1: 717x476 (1.506) → 上下に各0.2%の紙帯 → 出力 717x478  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]
+コマ2: 717x477 (1.503) そのまま → 出力 717x477  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "ageha-shortcut",
+  "title": "（題名）",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "loading/ageha-shortcut-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "loading/ageha-shortcut-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "output/allcast-refill-2383-20261102/candidates/ageha-shortcut/source-v2.png",
+      "region": {
+        "x": 39,
+        "y": 273,
+        "width": 717,
+        "height": 476,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "output/allcast-refill-2383-20261102/candidates/ageha-shortcut/source-v2.png",
+      "region": {
+        "x": 783,
+        "y": 272,
+        "width": 717,
+        "height": 477,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "ageha-shortcut-1.webp",
+      "width": 717,
+      "height": 478,
+      "sha256": null
+    },
+    {
+      "file": "ageha-shortcut-2.webp",
+      "width": 717,
+      "height": 477,
+      "sha256": null
+    }
+  ]
+}

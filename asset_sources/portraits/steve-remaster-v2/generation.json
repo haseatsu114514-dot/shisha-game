@@ -1,0 +1,153 @@
+{
+ "phase": "立ち絵そろえ 第2期（規格そろえ）TS06",
+ "face": "normal",
+ "chosen": "B",
+ "chosen_by": "2026-11-02 オーナー「1は任せる」により Claude が選定（規格6.4〜7.7頭身の中央に近く、足元の余白がある案）",
+ "candidates": {
+  "a": {
+   "head_body_claude": 6.8,
+   "head_body_codex": 6.89,
+   "sha256": "d1b0f34422c0546ce09a503d3c3ddf2992d715168abaa9b92ee9495dff0f9d81"
+  },
+  "b": {
+   "head_body_claude": 6.98,
+   "head_body_codex": 6.99,
+   "sha256": "d5c387f69a6eaca57ef7c2ae1d69a970ba39b6512c5dd450571315e80e2010ec"
+  },
+  "c": {
+   "head_body_claude": 6.74,
+   "head_body_codex": 6.88,
+   "sha256": "13f45b96305fe1d52d041ba5aeee95f7e136dbd1b660b4129ca460ca8eb31247"
+  }
+ },
+ "source": {
+  "generated_by": "Codex built-in image_gen",
+  "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2330#issuecomment-6573094756",
+  "zip_sha256": "f4c68242905c3d83a9998c463354046dc5ac20a887b9162f1753b2c0ee435fa2",
+  "original_sha256": "d5c387f69a6eaca57ef7c2ae1d69a970ba39b6512c5dd450571315e80e2010ec"
+ },
+ "references": [
+  "/workspace/shared/portrait-standard-2330-trials/refs/steve.png",
+  "/workspace/shared/portrait-standard-2330-trials/refs/nagumo.png",
+  "/workspace/shared/portrait-standard-2330-trials/refs/minto.png",
+  "/workspace/shared/portrait-standard-2330-trials/refs/ageha.png"
+ ],
+ "game_integration": "未実施。表情差分を同じ頭の大きさで作ってから、キャラ単位で組み込む（通常だけ先に入れると表情を切り替えたときに頭の大きさが変わるため）",
+ "expressions": {
+  "smile": {
+   "chosen": "steve-smile-c",
+   "original_sha256": "e065ff2bffb3341163216337151c880964dca76f29eefd648de6f46ffdf8af2c",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6576946583",
+   "zip_sha256": "246ea833523b58d2a587d047fff8072c61171d9c45b497cf12c87a8488fb075b",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "steve-smile-a": {
+     "head_body_codex": 6.58,
+     "disposition": "NOT ADOPTED; review candidate",
+     "sha256": "f3ca2bf4347d4ce53da71b6c561489c4eb2a5de71475abebe6fb34e8be424d95"
+    },
+    "steve-smile-b": {
+     "head_body_codex": 6.53,
+     "disposition": "NOT ADOPTED; review candidate",
+     "sha256": "5919f136024066826f65387cca8203ac18671ff5cae4c53e7c5f3d6ab87b5b94"
+    },
+    "steve-smile-c": {
+     "head_body_codex": 6.61,
+     "disposition": "NOT ADOPTED; review candidate",
+     "sha256": "e065ff2bffb3341163216337151c880964dca76f29eefd648de6f46ffdf8af2c"
+    }
+   }
+  },
+  "serious": {
+   "chosen": "steve-serious-a",
+   "original_sha256": "b5d2e5bb3b6babfbcb46d03e33b0c3a3adceed751f90faff2216bc123ca4b4ba",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6576946583",
+   "zip_sha256": "246ea833523b58d2a587d047fff8072c61171d9c45b497cf12c87a8488fb075b",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "steve-serious-a": {
+     "head_body_codex": 6.72,
+     "disposition": "NOT ADOPTED; review candidate",
+     "sha256": "b5d2e5bb3b6babfbcb46d03e33b0c3a3adceed751f90faff2216bc123ca4b4ba"
+    },
+    "steve-serious-b": {
+     "head_body_codex": 6.73,
+     "disposition": "NOT ADOPTED; review candidate",
+     "sha256": "f8e9a4f7b4da92d35d633a3f2cc6952bdadfeb4d51c8b4457e1e8a1e6ea57bb1"
+    },
+    "steve-serious-c": {
+     "head_body_codex": 6.62,
+     "disposition": "NOT ADOPTED; review candidate",
+     "sha256": "b0c5104436993f5e5e3071169126f37969ac333793f19052cae65eb3364dccfc"
+    }
+   }
+  },
+  "surprise": {
+   "chosen": "steve-surprise-a",
+   "original_sha256": "67ea76c8f73553f89c02fc69b4272cabf658fad9c4549c1a400eba84a048ba0f",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6576946583",
+   "zip_sha256": "246ea833523b58d2a587d047fff8072c61171d9c45b497cf12c87a8488fb075b",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "steve-surprise-a": {
+     "head_body_codex": 6.78,
+     "disposition": "NOT ADOPTED; review candidate",
+     "sha256": "67ea76c8f73553f89c02fc69b4272cabf658fad9c4549c1a400eba84a048ba0f"
+    },
+    "steve-surprise-b": {
+     "head_body_codex": 6.72,
+     "disposition": "NOT ADOPTED; review candidate",
+     "sha256": "49fe43e47e80eadfc8d6fab6a3627866f79175ec83312b8e8a4527ed0267f40e"
+    },
+    "steve-surprise-c": {
+     "head_body_codex": 6.56,
+     "disposition": "NOT ADOPTED; review candidate",
+     "sha256": "ba4d2d329412af0273d1d4c67b47c3654d54036246e6c8aaefe0ffe92aa375f4"
+    }
+   }
+  },
+  "sad": {
+   "chosen": "steve-sad-c-v2",
+   "original_sha256": "226c494ec27c82e762ba95c2f0b3f2ce1ec051594b835da2a32f58ddf6896630",
+   "generated_by": "Codex built-in image_gen",
+   "shared_in": "https://github.com/haseatsu114514-dot/shisha-game/pull/2346#issuecomment-6576946583",
+   "zip_sha256": "246ea833523b58d2a587d047fff8072c61171d9c45b497cf12c87a8488fb075b",
+   "chosen_by": "2026-11-02 Claude（オーナー「今の作業に引き継いで」。候補は未採用のため、組み込みはオーナー確認後）。新しい通常と会話画面での頭の大きさが最も近い案",
+   "candidates": {
+    "steve-sad-a": {
+     "head_body_codex": 6.28,
+     "disposition": "REJECTED draft: head too large; superseded by v2",
+     "sha256": "d0d402833278a7272995caeea08e7dcb2ade9fbf9fed17beb59a878a6dd9a835"
+    },
+    "steve-sad-b": {
+     "head_body_codex": 6.19,
+     "disposition": "REJECTED draft: head too large; superseded by v2",
+     "sha256": "c9235eb7fd64f48f5a572a4ed6684c267922661dea3e28dda602c97a7fcfd08b"
+    },
+    "steve-sad-c": {
+     "head_body_codex": 6.32,
+     "disposition": "REJECTED draft: head too large; superseded by v2",
+     "sha256": "34534c49db831248c0088f895d196388b76045e723790a0ea9323c11bab841cb"
+    },
+    "steve-sad-a-v2": {
+     "head_body_codex": 6.8,
+     "disposition": "NOT ADOPTED; review candidate",
+     "sha256": "6f2aa2089c8bb2813b605d254c4c70f1d23b29c3c9f0efec2c315db33bdc9adf"
+    },
+    "steve-sad-b-v2": {
+     "head_body_codex": 6.83,
+     "disposition": "NOT ADOPTED; review candidate",
+     "sha256": "5e213cf4f9d13a1dfb5d30631c29f41eaa1567ef4b455532fb336c7476addced"
+    },
+    "steve-sad-c-v2": {
+     "head_body_codex": 6.84,
+     "disposition": "NOT ADOPTED; review candidate",
+     "sha256": "226c494ec27c82e762ba95c2f0b3f2ce1ec051594b835da2a32f58ddf6896630"
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,49 @@
+/* 案 A：熾火を囲う黒い金属。すべて既定の札 DOM に重ねる。 */
+@import url("ichidai-skin-signs.css");
+.ichi-game[data-skin="a"] {
+  --ichi-mat: url("../img/ui/ichidai/skin-a/mat.webp");
+  --ichi-plaque: none;
+  background: radial-gradient(ellipse at 50% 55%, transparent 45%, #090611aa 100%), var(--ichi-mat) center / cover no-repeat, #150d22;
+}
+.ichi-game[data-skin="a"] .ichi-card {
+  background: linear-gradient(145deg, color-mix(in srgb, var(--tc) 39%, #484456) 0 3%, #14121d 11%, #22202b 52%, #0c0b12 100%);
+  border: 1px solid #08070d;
+  box-shadow: inset 0 0 0 2px #55505d, inset 0 0 0 3px color-mix(in srgb, var(--tc) 75%, #fff), 0 4px 12px #050308ae;
+}
+.ichi-game[data-skin="a"] .ichi-card::before { inset: calc(var(--cw) * .035); border-color: color-mix(in srgb, var(--tc) 80%, #f8f2e6); border-width: 1px; opacity: .85; }
+.ichi-game[data-skin="a"] .ichi-card-head { padding: 1px 2px; border-bottom: 1px solid color-mix(in srgb, var(--tc) 70%, #fff); background: linear-gradient(90deg, #08070bbd, color-mix(in srgb, var(--tc) 20%, #16121e) 65%, #08070b8a); }
+.ichi-game[data-skin="a"] .ichi-card-name { color: #fffaf6; text-shadow: 0 1px 2px #000; letter-spacing: .02em; }
+.ichi-game[data-skin="a"] .ichi-card-art { border: 1px solid color-mix(in srgb, var(--tc) 70%, #f8efd8); background: radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--tc) 38%, #4b3a58), #101019 85%); box-shadow: inset 0 0 0 2px #100d1a, inset 0 0 15px #050309bd; }
+.ichi-game[data-skin="a"] .ichi-card-line { border-color: color-mix(in srgb, var(--tc) 75%, #fff); background: #0a0911e8; border-radius: 2px; }
+.ichi-game[data-skin="a"] .ichi-line-type { color: #fff; }
+.ichi-game[data-skin="a"] .ichi-gem { border-radius: 3px; background: linear-gradient(150deg, color-mix(in srgb, var(--tc) 70%, #eee), #14101f 63%); border: 1px solid #f8e7c0; box-shadow: inset 0 0 0 1px #111, 0 1px 2px #000; }
+.ichi-game[data-skin="a"] .ichi-gem b { color: #fff; text-shadow: 0 1px 2px #000; }
+.ichi-game[data-skin="a"] .ichi-gem.is-heat { background: linear-gradient(145deg, #ffb15e, #8b3017); }
+.ichi-game[data-skin="a"] .ichi-gem.is-taste { border-radius: 50%; background: linear-gradient(145deg, #ffebaa, #8c5e1f); }
+.ichi-game[data-skin="a"] .ichi-gem.is-cap { border-radius: 2px 2px 8px 8px; background: linear-gradient(145deg, #dbb18e, #6b3a22); }
+.ichi-game[data-skin="a"] .ichi-card.w-puff .ichi-card-head { background: linear-gradient(90deg, #9a382c, #28151f); }
+.ichi-game[data-skin="a"] .ichi-card.w-puff .ichi-line-sub { color: #ffd2b8; text-decoration: underline; text-decoration-thickness: 2px; }
+.ichi-game[data-skin="a"] .ichi-rar { border: 1px solid #b9afc3; border-radius: 2px; background: #211a2c; color: #fff; }
+.ichi-game[data-skin="a"] .r-U .ichi-rar { border-color: #b4c7d3; background: #334654; }
+.ichi-game[data-skin="a"] .r-R .ichi-rar { border-color: #ffda7b; background: #6b4b19; }
+.ichi-game[data-skin="a"] .r-SR .ichi-rar { border-color: #fff4b8; background: linear-gradient(120deg, #66405d, #886e38, #516689); }
+.ichi-game[data-skin="a"] .ichi-card.r-U { box-shadow: inset 0 0 0 2px #aebfc9, inset 0 0 0 3px var(--tc), 0 4px 12px #050308ae; }
+.ichi-game[data-skin="a"] .ichi-card.r-R { box-shadow: inset 0 0 0 2px #eac977, inset 0 0 0 4px var(--tc), 0 4px 12px #050308ae; }
+.ichi-game[data-skin="a"] .ichi-card.r-SR { box-shadow: inset 0 0 0 2px #fff1a9, inset 0 0 0 5px #b79acc, 0 0 0 1px #ffe7a3, 0 5px 16px #050308d9; }
+.ichi-game[data-skin="a"] .ichi-card.r-R::after, .ichi-game[data-skin="a"] .ichi-card.r-SR::after { background: linear-gradient(115deg, transparent 20%, #fff8d000 32%, #fff8d055 42%, #fff8d000 54%, transparent 65%); transform: translateX(-120%); animation: ichi-a-foil 5s ease-in-out infinite; }
+.ichi-game[data-skin="a"] .ichi-card.r-SR::after { background: linear-gradient(115deg, transparent 15%, #fff7c000 30%, #fff7c077 43%, #d0b9ff66 50%, transparent 67%); animation-duration: 3.5s; }
+@keyframes ichi-a-foil { 0%, 60% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+.ichi-game[data-skin="a"] .ichi-card-text { background: linear-gradient(#f5eddd, #e2d7c2); border: 1px solid #bfa875; border-radius: 2px; }
+.ichi-game[data-skin="a"] .ichi-card-foot { border-top: 1px solid #e3bd6eaa; padding-top: 2px; }
+.ichi-game[data-skin="a"] .ichi-card .ichi-strip i.z-just { clip-path: polygon(50% 0, 61% 35%, 100% 35%, 68% 58%, 79% 100%, 50% 73%, 21% 100%, 32% 58%, 0 35%, 39% 35%); }
+.ichi-game[data-skin="a"] .ichi-card .ichi-strip i.z-scorch { border-top: 3px solid #fff; }
+.ichi-game[data-skin="a"] .ichi-back { background: radial-gradient(ellipse at 50% 50%, #f9af66 0 9%, #a33f23 12% 22%, #3c1725 27% 34%, transparent 36%), radial-gradient(ellipse at 50% 17%, #f7a055 0 5%, #7f2b1c 9% 14%, transparent 19%), radial-gradient(ellipse at 50% 83%, #f7a055 0 5%, #7f2b1c 9% 14%, transparent 19%), repeating-linear-gradient(0deg, #19121f 0 7px, #4b2830 8px, #19121f 11px); border: 2px solid #e3bd6e; box-shadow: inset 0 0 0 3px #190d20, inset 0 0 0 4px #b87c4a, 0 3px 8px #0009; }
+.ichi-game[data-skin="a"] .ichi-back.is-judge { background: radial-gradient(ellipse at 50% 50%, #e7d7a8 0 8%, #75639a 12% 25%, transparent 30%), repeating-linear-gradient(0deg, #221732 0 8px, #49395e 9px, #221732 12px); border-color: #c9a7e6; }
+.ichi-game[data-skin="a"] .ichi-zone-box { background: #0b0915a8; border: 1px solid #d6b87677; border-radius: 6px; box-shadow: inset 0 0 0 1px #b9a3ce33, inset 0 0 25px #0008; }
+.ichi-game[data-skin="a"] .ichi-zone-tab { background: #201925; border: 1px solid #d6b87699; border-radius: 2px; color: #f8e8ba; letter-spacing: .04em; }
+.ichi-game[data-skin="a"] .ichi-slot { border: 1px dashed #c8b5d180; background: #0a0716a8; }
+.ichi-game[data-skin="a"] .ichi-puff-card { background: linear-gradient(160deg, #d7c59e, #f7ebd1 52%, #c5b08b); border: 6px double #674b26; border-radius: 7px; color: #291a0a; box-shadow: inset 0 0 0 2px #f6e8c1, 0 0 0 2px #150d22, 0 12px 40px #000a; }
+.ichi-game[data-skin="a"] .ichi-puff-card strong { color: #291a0a; text-shadow: 0 2px 0 #fff9; }
+.ichi-game[data-skin="a"] .ichi-puff-card.is-up strong { color: #a8321a; }
+.ichi-game[data-skin="a"] .ichi-puff-card.is-down strong { color: #17546e; }
+@media (prefers-reduced-motion: reduce) { .ichi-game[data-skin="a"] .ichi-card.r-R::after, .ichi-game[data-skin="a"] .ichi-card.r-SR::after { animation: none; transform: none; } }

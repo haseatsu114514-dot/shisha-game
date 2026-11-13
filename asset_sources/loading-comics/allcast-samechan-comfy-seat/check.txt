@@ -1,0 +1,2 @@
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-comfy-seat/panels/samechan-comfy-seat-1.webp: 746x497 比率 1.501 80 KiB
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-comfy-seat/panels/samechan-comfy-seat-2.webp: 747x498 比率 1.500 79 KiB

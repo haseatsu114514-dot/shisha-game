@@ -1,0 +1,598 @@
+{
+  "comment": "第4章ドバイ編・任意イベント「ラクダレース」（CAMEL RACE）。Dr.fookah ドバイ店のファーリスと知り合い、叔父ハリールの練習レースでリモコンを借りる。接続は remake/js/chapters/ch4-camel-race.js。大会前後の時系列を前提にしない（大会の予告・結果に触れない）。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_camel_meet",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "Dr.fookah ドバイ店の前。扉が開いて、冷気と一緒に声が飛んできた。"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "いらっしゃいませー！　……お、日本の人？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、日本語？"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "店長が日本人だから、挨拶だけ百回練習した。あとはアニメ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "発音、俺より良いかも"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "ファーリス。ここで葉を量ってる。あなたは？"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_faris"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "逢縁はじめです。日本で、シーシャの店で働いてて"
+        },
+        {
+          "speaker": "faris",
+          "face": "excited",
+          "text": "大会の人だ！　店長が言ってた。日本の若いのが来るって"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の奥から、ダブルアップルの甘い匂いが流れてくる。"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "日本の店って、どんな感じ？　ここみたいに静か？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "静かな日もあるし、閉店まで笑い声が止まらない日もあります"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "いいな。こっちは夜になると、みんな外のテラスに出る。星を見ながら吸う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "星……。それ、日本じゃあんまりできないな"
+        },
+        {
+          "speaker": "faris",
+          "face": "wink",
+          "text": "じゃ、今度の夜はテラスね。……いや、その前に、昼に見せたいものがある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "昼に？"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "まだ秘密。また店に来て。今日は葉、何にする？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "名前を聞いただけで、少しこの街が近くなった気がした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_invite",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "Dr.fookah ドバイ店。ファーリスが、葉の缶を抱えたまま手を振った。"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "ハジメ！　来た来た。今日は買い物？　話？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "両方で"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "日本のこと、もっと聞かせて。店長は仕事の話しかしない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ……うちの店では、お客さんの利き手を見てホースの向きを変えます"
+        },
+        {
+          "speaker": "faris",
+          "face": "surprise",
+          "text": "利き手？　そこまで見るの？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うちのスミさんが言うんです。最初の一口までに、気づかれずに済ませろって"
+        },
+        {
+          "speaker": "faris",
+          "face": "excited",
+          "text": "かっこいい。叔父さんも似たこと言う。「ラクダに気づかれる前に合図を出せ」って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ラクダ？"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "叔父さん、ラクダレースの調教師なんだ"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "明日の朝、レースがある。見に行かない？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "行きます。……でも、ラクダに人が乗って走るんですよね。落ちないのかな"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "……あー。ハジメ、それ、二十年前の話"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "え"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "今乗ってるのは、こんな小さいロボット。背中にちょこんと乗ってる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ファーリスが両手で、葉の缶くらいの大きさを作った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ロボットが手綱を握るんですか？"
+        },
+        {
+          "speaker": "faris",
+          "face": "wink",
+          "text": "握らない。ラクダは自分で走る"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "詳しくは明日、現地で。朝は早いよ、六時集合"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "六時……。日本の店なら、閉店したばかりの時間だ"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "じゃ、寝ないで来る？　冗談。宿の前に迎えに行く"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_watch",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "朝六時。街を出た車は、三十分で砂の色しか見えない場所に着いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "柵の向こうに、長いコースが一本。奥に白い日よけのテントが並んでいる。"
+        },
+        {
+          "speaker": "faris",
+          "face": "excited",
+          "text": "来た来た。ハジメ、こっち。叔父さんの車に乗ろう"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "ファーリスの友人か。ハリールだ"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_khalil"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "乗りなさい。走り出すぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "走り出す……？　車が？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "号砲。ラクダたちが一斉に動き、同時に、コース横の道を白い車の列が走り出した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "車が、ラクダと並んで走ってる！"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "調教師はみんな車から見てる。手に持ってるのが、これ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ファーリスが見せたのは、車のキーみたいな小さなリモコン。ハリールは窓から腕を出し、短く叫んだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今、叫んだのって……"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "声だ。騎手の背中にスピーカーがある。あいつは私の声を知っている"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "このボタンを押してる間、ロボットの腕が回ってムチを振る。それだけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "右に行けとか、左とかは？"
+        },
+        {
+          "speaker": "khalil",
+          "face": "smile",
+          "text": "無い。ラクダは自分で走る。私たちができるのは、声と、ムチだけだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ラジコンじゃないんだ。……シーシャと一緒だ。相手が主役で、こっちは手を貸すだけ）"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "昔は子どもが乗ってた。軽いから"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "でも危ないし、よくないことも多かった。それでロボットになった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……重いと遅くなるから、小さいんですね"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "そう。今のは数キロ。叔父さん、ハジメは理解が早い"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "早いなら、やってみるか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え？"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "本番の後に、若いラクダの練習レースをやる。四頭。リモコンを一つ、お前に貸す"
+        },
+        {
+          "speaker": "faris",
+          "face": "excited",
+          "text": "ハビーバだ！　ハジメ、あの子は声をかけるタイミングが好きなんだ。遅れると機嫌が悪くなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（タイミング……。炭を置くときと同じか）"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "連打はするな。声が多いと、ラクダは疲れる。終盤に息を残せ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "やってみます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_result_win",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハビーバが、鼻の差で先頭でゴールを抜けた。"
+        },
+        {
+          "speaker": "faris",
+          "face": "excited",
+          "text": "勝った！　ハジメ、初めてで勝った！"
+        },
+        {
+          "speaker": "khalil",
+          "face": "smile",
+          "text": "……ふむ。終盤に息を残していたな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "言われた通りにしただけです。あとは、ハビーバが走ってくれた"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "それが分かるなら、調教師の素質がある。日本に帰らず、ここで働け"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "叔父さん、本気で言ってる顔だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "嬉しいですけど……俺、ラクダより炭の方が得意なんで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "車の窓から見た朝の砂が、やけに明るかった。"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "ハジメ。また走りたくなったら、店に来て。叔父さんは朝ならいつもここにいる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_result_place",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハビーバは、二頭の間でゴールを抜けた。"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "惜しい！　でも初めてで中団はすごいよ"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "声の間が、ところどころ遅れた。あいつはそれを許さない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……わかりました。合図の前に、もう息を吸っておかないとだめなんですね"
+        },
+        {
+          "speaker": "khalil",
+          "face": "smile",
+          "text": "分かるのが早い。もう一度来い。あいつも覚えている"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "ハジメ。また走りたくなったら、店に来て。叔父さんは朝ならいつもここにいる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_result_last",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハビーバは、最後にゴールを抜けた。それでも首を高く上げていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……すみません。声をかけすぎました"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "誰でも最初はそうだ。声が多いと、あいつは聞き分けられなくなる"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "ハビーバ、怒ってないよ。ほら、ハジメの方を見てる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大きな目が、こちらをじっと見ていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（黙って待つのも、合図のうちか。……スミさんも、そんな顔で待ってたな）"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "もう一度来い。次は息を残せ"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "ハジメ。また走りたくなったら、店に来て。叔父さんは朝ならいつもここにいる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_replay",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "朝のレース場。ハリールの白い車が、同じ場所に停まっていた。"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "来たか。ハビーバが待っている"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "柵の向こうで、若いラクダが首をこちらに向けた。耳だけが、ゆっくり動いている。"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "リモコン、持ったね。今日は連打しないでよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "しません、……たぶん"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "たぶん、では困る。声は少なく、間を外すな。それだけ守れ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（炭を置く手つきと同じだ。急がない。でも、遅れない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_replay_best",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハビーバがゴールを抜けて、ゆっくり歩調を落とした。電光の数字を、ファーリスが先に読み上げる。"
+        },
+        {
+          "speaker": "faris",
+          "face": "excited",
+          "text": "自己ベスト！　ハビーバ、ハジメのこと好きになってきたんじゃない？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "声をかける前に、あいつが耳を向けてくれた気がして、……気のせいかな"
+        },
+        {
+          "speaker": "khalil",
+          "face": "smile",
+          "text": "ラクダは声を覚える、……お前の声を、だ"
+        },
+        {
+          "speaker": "faris",
+          "face": "wink",
+          "text": "ほら、叔父さんがここまで言うのは珍しい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（帰る前に、もう一回くらい……）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_replay_usual",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハビーバは無事にゴールを抜けた。息は荒くない。まだ余裕を残した顔をしている。"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "悪くない。だが、あいつはもっと走れる"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "叔父さんは褒めない人だから。「悪くない」は最高評価"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、今日はいい日だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……でも、どこで余らせたのかは分かってます"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "分かっているなら十分だ。次はそこを使え"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。次は、ちゃんと息を合わせます"
+        }
+      ]
+    }
+  ]
+}

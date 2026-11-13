@@ -3,11 +3,12 @@ import { ryujiAtMeltyPuff } from "../core/ryuji-visit.js";
 import { state } from "../core/state.js";
 import { displayName } from "../core/data.js";
 import { isUnlocked, isClosed } from "./spots.js";
-import { rinUnavailable } from "./spot-hours.js";
+import { rioUnavailable } from "./spot-hours.js";
 import { hiyoriShopEncounterDue, hiyoriAtTonari } from "./hiyori.js";
 import { hiyoriFirstMeetingReady } from "../core/axe-bar-discovery.js";
 import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 import { cityGuestAtShop } from "./city-guests.js";
+import { roamerPlan } from "./roamers.js";
 // 今後のゲストはここへ独立した登場条件を追加する。好感度の変化は表示側で起こさない。
 const GUESTS = [
   { id: "kumicho", present: spot => spot.id === "ch2_ageha" && ryujiAtMeltyPuff(state) },
@@ -28,12 +29,17 @@ export function spotPeople(spot, { visitBlock = null } = {}) {
   if (visitBlock?.(spot)) return [];
   if (!isUnlocked(spot) || isClosed(spot) || spot.unavailable) return [];
   const ids = [];
-  if (spot.face && (spot.face !== "rin" || !rinUnavailable(state))) ids.push(spot.face);
+  // 店主は自分の店に出す。ただし、この時間帯によその店へ居合わせに出ている（roamers.js）ときは、その店にだけ出し、
+  // 自分の店には出さない。同じ人が2か所で「在店」になるのを防ぐ（#2444。アダム＝EDEN・ヴォルク＝鉄の煙 など）。
+  const roaming = roamerPlan();
+  if (spot.face && (spot.face !== "rio" || !rioUnavailable(state)) && roaming?.id !== spot.face) ids.push(spot.face);
   for (const guest of GUESTS) if (guest.present(spot)) ids.push(guest.id);
   const visiting = cityGuestAtShop(spot);
   if (visiting) ids.push(visiting.id);
+  // よその店に居合わせる人（roamers.js）。会ったことのない審査員は「見知らぬ客」
+  if (roaming && roaming.spotId === spot.id) ids.push(roaming.id);
   return [...new Set(ids)].map(id => {
-    const known = id === "sumi" || !!state.met[id]
+    const known = id === "sumi" || id === "tetsuko" || !!state.met[id]
       || id === "tsumugi" && !!(state.flags._met_tsumugi || state.story.tsumugi > 0);
     return { id, known, role: id === spot.face ? "owner" : "guest", name: known ? displayName(id, state) : "見知らぬ客" };
   });

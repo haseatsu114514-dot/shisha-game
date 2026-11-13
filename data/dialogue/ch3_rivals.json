@@ -1,7 +1,7 @@
 {
   "dialogues": [
     {
-      "dialogue_id": "ch3_kuze_first",
+      "dialogue_id": "ch3_saku_first",
       "metadata": {
         "flavor_lesson": {
           "chocolate": 1
@@ -11,19 +11,19 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ch3_delivery_kuze",
+          "flag": "_ch3_delivery_saku",
           "next_true": "delivery_known_open",
           "next_false": "delivery_new_open"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "朔、帰ってきたんだ。東京にいた頃の幼なじみ。福岡へ行ってから疎遠でねぇ"
+          "text": "陣、帰ってきたんだ。幼なじみなの。福岡に行ってから、ずっと会えてなくてねぇ"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "懐かしいけど……勝負になると、人の迷いを見つけて無理をする。会うなら、気をつけて"
+          "text": "懐かしいけど……会うなら、気をつけて"
         },
         {
           "speaker": "hajime",
@@ -43,16 +43,16 @@
         {
           "speaker": "",
           "face": "",
-          "text": "入口の大会ポスターには、「福岡から出場・久世朔」の名があった。"
+          "text": "入口の大会ポスターには、「福岡から出場・綾取陣」の名があった。"
         },
         {
           "type": "set_flag",
-          "flag": "_met_kuze"
+          "flag": "_met_saku"
         },
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ch3_delivery_kuze",
+          "flag": "_ch3_delivery_saku",
           "next_true": "delivery_known_greet",
           "next_false": "delivery_new_greet"
         },
@@ -62,9 +62,9 @@
           "text": "……いえ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
-          "text": "僕。噂を流したのも僕だけどね。がっかりした？"
+          "text": "僕。あの評判、仕掛けたのは店主本人なんだ。拍子抜けした？"
         },
         {
           "speaker": "hajime",
@@ -72,7 +72,7 @@
           "text": "思ったより普通の店ですね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "ひどいなぁ。普通の椅子に座ってよ。吸う？　休む？"
         },
@@ -82,14 +82,14 @@
           "text": "今日は飲み物だけで"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "もちろん。煙なしの日にも、席はあるよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "久世は理由を聞かず、水と温かい飲み物を置いた。"
+          "text": "綾取は理由を聞かず、水と温かい飲み物を置いた。"
         },
         {
           "speaker": "",
@@ -102,12 +102,12 @@
           "text": "これ、レモンケーキみたい。何を入れたの？"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "柑橘とアールグレイ。粉もバターも、ひとかけらもないよ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "でも君の二口目にはあったんだ。……僕の手柄は半分かな"
         },
@@ -117,7 +117,7 @@
           "text": "菓子の味まで予想してたんですか"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "予想は書く。外れた客の答えもね"
         },
@@ -127,7 +127,7 @@
           "text": "ノートには葉と炭の位置、客ごとに違う味の名前が並んでいた。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "次に吸うなら、材料から見る？　味の名を伏せる？　選んでいい"
         },
@@ -137,24 +137,24 @@
           "text": "次は、材料から見たいです"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "了解。答えを当てる試験じゃないし"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "実は、全国の課題がチョコなんです。久世さんなら、どう組みますか"
+          "text": "実は、全国の課題がチョコなんです。綾取さんなら、どう組みますか"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "チョコか。じゃあ一台だけ、君の課題への差し入れを作るよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "久世は何種類かの葉を、少しずつ重ねていく。葉の名は伏せたまま。"
+          "text": "綾取は何種類かの葉を、少しずつ重ねていく。葉の名は伏せたまま。"
         },
         {
           "speaker": "",
@@ -172,12 +172,12 @@
           "text": "本当にチョコ、使ってます？　ほうじ茶の葉を足したんじゃなくて？"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "チョコと、アールグレイと、ぶどう。同じ量ずつ。ほうじ茶の葉は一枚もないよ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "素材を足すだけじゃ外れる。重ねる順番と熱で、別の記憶を呼ぶんだ"
         },
@@ -187,9 +187,9 @@
           "text": "（素材は全部知ってるのに、ほうじ茶にしか思えない）"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
-          "text": "実物でいつでも同じに出せる、とは言わないけどね。今日の君と、この一台の話"
+          "text": "毎回同じに出せる、とは言わないけどね。今日の君と、この一台だけの話"
         },
         {
           "speaker": "hajime",
@@ -197,17 +197,17 @@
           "text": "大会でも、これを出すんですか"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "まさか。これは差し入れ。当日は別の仕掛けを用意してる"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ましろちゃんに聞きました。久世さん、幼なじみなんですね"
+          "text": "ましろちゃんに聞きました。綾取さん、幼なじみなんですね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "ましろが僕の話を？　……嬉しい。でも、もう昔のことだし。今会っても、何を話せばいいんだろ"
         },
@@ -217,34 +217,34 @@
           "text": "そんなことないと思います。ましろちゃん、名前を聞いて懐かしそうでした"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
-          "text": "ましろとは昔なじみなんだ、……続きは、また今度"
+          "text": "……ありがと。この話の続きは、また今度"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
-          "text": "同じものを見ても、違う答えが返るんだね。あの頃から、ずっと面白い"
+          "text": "ましろって、同じものを見ても違う答えを返すんだ。昔から、それが面白くて"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "久世さんも、全国に出るんですよね"
+          "text": "綾取さんも、全国に出るんですよね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "うん。君にも勝ちたい"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "でも今は客でいて。飲み物、冷めるよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "客が帰ると、久世は一人で灰皿を運び、テーブルを拭いた。"
+          "text": "客が帰ると、綾取は一人でボトルの水を捨て、ボウルの葉を掻き出した。"
         },
         {
           "speaker": "hajime",
@@ -252,17 +252,17 @@
           "text": "手伝い、いらないんですか"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
-          "text": "東京を裏で動かす組織、片付け係が僕しかいないんだ"
+          "text": "東京を裏で動かす組織なのに、片付け係が僕しかいなくてさ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も県外から来たんです。着いた日は心細くて。久世さんも、東京へ戻ってきたばかりなんですね"
+          "text": "俺も県外から来たんで、着いた日は心細かったです。綾取さんも、戻ってきたばかりなんですよね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "うん。僕も東京じゃ少し迷子。よかったら、大会が終わっても友達でいてよ"
         },
@@ -272,14 +272,14 @@
           "text": "はい。今日話せて、よかったです"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "作業台、空けるよ。僕の予想を外しに来てね"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（ましろちゃんは気をつけてと言った。でも、いい人じゃないか）"
+          "text": "（ましろちゃんは「気をつけて」って言ってたけど……普通にいい人じゃないか）"
         }
       ],
       "branches": {
@@ -287,48 +287,48 @@
           {
             "speaker": "",
             "face": "",
-            "text": "mukaiの休憩中。配達で会った久世朔の話をすると、ましろの手が止まった。"
+            "text": "mukaiの休憩中。配達で会った綾取陣の話をすると、ましろの手が止まった。"
           }
         ],
         "delivery_new_open": [
           {
             "speaker": "",
             "face": "",
-            "text": "mukaiの休憩中。はじめが出場者一覧の「久世朔」の名を読み上げると、ましろの手が止まった。"
+            "text": "mukaiの休憩中。出場者一覧の「綾取陣」の名を読み上げると、ましろの手が止まった。"
           }
         ],
         "delivery_known_greet": [
           {
-            "speaker": "kuze",
+            "speaker": "saku",
             "face": "normal",
             "text": "いらっしゃい。ほんとに用事なしで来てくれたんだ"
           },
           {
-            "speaker": "kuze",
+            "speaker": "saku",
             "face": "smug",
             "text": "じゃあ改めて。東京の煙を裏から動かす男、って聞いたことある？"
           }
         ],
         "delivery_new_greet": [
           {
-            "speaker": "kuze",
+            "speaker": "saku",
             "face": "smug",
-            "text": "いらっしゃい。東京の煙を裏から動かす男、って聞いたことある？"
+            "text": "いらっしゃい。……ここ、東京の煙を裏から動かす男の店だよ"
           }
         ]
       }
     },
     {
-      "dialogue_id": "ch3_kuze_mukai_visit",
+      "dialogue_id": "ch3_saku_mukai_visit",
       "lines": [
         {
           "speaker": "",
-          "text": "mukaiの開店前。仕込み中のはじめが顔を上げると、入口に久世がいた。"
+          "text": "mukaiの開店前。仕込み中に顔を上げると、入口に綾取がいた。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
-          "text": "今日は客で来たよ。県大会の動画は見たけど、君がここで作る一台を吸ってみたくて"
+          "text": "今日は客で来たよ。県大会の動画より、ここで作る一台を吸いたくて"
         },
         {
           "speaker": "hajime",
@@ -336,70 +336,157 @@
           "text": "動画、見たんですか。……何か分かりました？"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
-          "text": "見直したけど、映像じゃ最後の一口まで分からないから"
+          "text": "何回か見たよ。でも映像じゃ、最後の一口までは分からないからさ"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "朔、……いらっしゃい"
+          "text": "陣、……いらっしゃい"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "ましろ、ここで働いてるって聞いてたから。今日は一台だけ、よろしくね"
         },
         {
           "speaker": "",
-          "text": "はじめは今分かる範囲をましろに伝え、二人で炭の位置を決めた。"
+          "text": "綾取はメニューを開き、ぶどうと紅茶の欄へ指を置いた。"
         },
         {
-          "speaker": "",
-          "text": "久世は名前を伏せずに材料を見てから吸う。"
-        },
-        {
-          "speaker": "kuze",
-          "face": "surprise",
-          "text": "最初は静かだね。……あ、二口目で変わった。君が待った理由、少し分かった気がする"
+          "speaker": "saku",
+          "face": "normal",
+          "text": "これ、混ぜられる？　急いで帰る用事はないよ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "まだ、毎回同じようには作れません"
+          "text": "はい。注文、一つ確かめてもいいですか"
         },
         {
-          "speaker": "kuze",
-          "face": "normal",
-          "text": "僕もだよ。だから、次の一台を見たい"
+          "type": "choice",
+          "id": "ch3_service_order",
+          "choices": [
+            {
+              "text": "強さの希望から聞く",
+              "next": "gentle"
+            },
+            {
+              "text": "吸う時間から聞く",
+              "next": "pace"
+            }
+          ]
         },
         {
-          "speaker": "kuze",
+          "speaker": "hajime",
           "face": "normal",
-          "text": "……大会でもね"
+          "text": "ぶどうと紅茶を、ゆっくり吸えるくらいで。材料の名前も先にお伝えします"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "うん。今日は答えを隠す遊びじゃなくて、普通に頼むよ"
         },
         {
           "speaker": "",
-          "text": "久世は笑って代金を払い、空のグラスを自分で下げた。はじめも、また話したいと思った。"
+          "text": "作業台へ戻り、ましろに注文を伝えた。葉も道具も、店のものを借りる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "味の確認をお願い。俺は仕込みと、提供したあとの熱を見る"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "朔、楽しそうだったね。勝負する時も、ああいう顔をするよ"
+          "text": "うん。ぶどうを多めに、ブラックティーを残す感じでねぇ"
+        },
+        {
+          "speaker": "",
+          "text": "葉を量り、道具を組んだ。ましろが一度確かめてから、俺が綾取の席へ運ぶ。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……俺も、楽しみです。少し怖いですけど"
+          "text": "お待たせしました。熱かったら、そこで教えてください"
         },
         {
           "speaker": "",
-          "text": "親しくなった相手と、同じ舞台に立つ日が近づいていた。久世が何を準備しているかは、まだ分からない。"
+          "text": "綾取は材料を見てから吸った。最初の一口のあと、水を飲み、もう一度ホースを取る。"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "最初は静かだね。……二口目で、紅茶が出てきた"
+        },
+        {
+          "speaker": "",
+          "text": "しばらく近況を話しながら吸ううち、綾取がホースを置いた。"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "少しぬるくなってきたかな。ここで、熱を見てもらえる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今、調整します。吸いやすさをもう一度聞かせてください"
+        },
+        {
+          "speaker": "",
+          "text": "綾取がホースを置くのを待ち、店で焼いてあった交換用の炭を持ってきた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "急がなくていいよぉ。陣は、待つのは平気だから"
+        },
+        {
+          "speaker": "",
+          "text": "一度だけ調整して、綾取の席へ戻す。うまくいかない時は、ましろにも手を借りればいい。"
         }
-      ]
+      ],
+      "branches": {
+        "gentle": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "強さは、どのくらいがお好みですか"
+          },
+          {
+            "speaker": "saku",
+            "face": "normal",
+            "text": "軽めで。でも、紅茶の香りはなくしたくないな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "分かりました。途中で強くなった時も、教えてください"
+          }
+        ],
+        "pace": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "途中で休みながら、長く吸う感じですか"
+          },
+          {
+            "speaker": "saku",
+            "face": "normal",
+            "text": "うん。話しながら、ゆっくり。重すぎないとうれしい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "じゃあ、二口目からも確かめに来ますね"
+          }
+        ]
+      }
     },
     {
-      "dialogue_id": "ch3_kuze_advice",
+      "dialogue_id": "ch3_saku_advice",
       "metadata": {
         "flavor_lesson": {
           "orange": 1
@@ -412,19 +499,19 @@
           "text": "数日後の煙幕。ましろは客席にいた。mukaiで顔を合わせた幼なじみと、ちゃんと話すのは初めてだ。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "来たね。……ましろ、本当に来てくれたんだ。顔を見た時、少し信じられなくて"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "今日はちゃんと話せるね、朔。店を借りてまで出るって聞いたから、気になって"
+          "text": "今日はちゃんと話せるね、陣。店を借りてまで出るって聞いたから、気になって"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "sad",
-          "text": "心配して来た？　そうだよね。僕なんか、まだ頼りなく見えるか"
+          "text": "心配して来てくれた？　……そうだよね。僕、まだ頼りなく見えるよね"
         },
         {
           "speaker": "mashiro",
@@ -432,32 +519,27 @@
           "text": "そこは変わってないね。昔も、最後に一人で片づけてた"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "surprise",
           "text": "え、覚えてるの？　……じゃあ僕の大きな組織、初日で解散だね"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "二人とも、昔から知ってるみたいですね"
-        },
-        {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "子どもの頃はね。今の朔は、僕にもまだ分からないところがある"
+          "text": "子どもの頃はね。今の陣は、僕にもまだ分からないところがある"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "……そっか。じゃあ今日の僕を見てて。嘘はつかないよ、たぶん"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "久世は二人の前に自分の一台と葉の袋を並べた。"
+          "text": "綾取は二人の前に自分の一台と葉の袋を並べた。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "葉は柑橘とアールグレイ。名前を伏せるのが嫌なら、先に見て"
         },
@@ -467,7 +549,7 @@
           "text": "見てから吸います"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "うん。何に感じるかは、教えてほしいけどね"
         },
@@ -482,42 +564,47 @@
           "text": "僕には、ちゃんとお茶"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "また外した"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺にも、柑橘と茶です。後から少し香ばしくなります"
+          "text": "俺にも、柑橘と茶……だと思います。今日は、少し自信がなくて"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "同じ葉でも、炭の順番で思い出すものが変わる"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "serious",
-          "text": "それを「客の思い込み」って片づけられると、腹が立つ"
+          "text": "それを「客の思い込み」って片づけられると、さすがに腹が立つ"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "珍しい。朔、素直だ"
+          "text": "珍しい。陣、素直だ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "",
+          "face": "",
+          "text": "綾取は答える前に、自分で小さく笑った。ましろが、その口元を見ている。"
+        },
+        {
+          "speaker": "saku",
           "face": "smile",
           "text": "撤回。僕はいつも素直。……やっぱり無理があるね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "はじめは約束していた作業台で、大会用の試作を一台作った。"
+          "text": "約束していた作業台を借りて、大会用の試作を一台作った。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "おいしい。最初は軽いのに、甘さが最後まで残る"
         },
@@ -527,7 +614,7 @@
           "text": "削った方がいいですか"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "僕に決めさせる？　それ、楽だけど損じゃない？"
         },
@@ -537,17 +624,17 @@
           "text": "僕は、後半も吸っていたいなぁ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "ほら、答えも分かれた。……でも、正直に言うとね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "最後の甘さは、少し長い。二度目の調整で炭を一つ外すと締まるよ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "決めるのは君。どうしたい？"
         },
@@ -557,19 +644,19 @@
           "text": "まだ決めません。自分の台でもう一度確かめます"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "そう来るか。僕も全国に出るんだけどな"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "おいしい相手に勝つ方が楽しい。……負けたら悔しいけど"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "久世はノートを伏せ、二人の冷めた飲み物を取り替えた。"
+          "text": "綾取はノートを伏せ、二人の冷めた飲み物を取り替えた。"
         },
         {
           "speaker": "hajime",
@@ -577,18 +664,18 @@
           "text": "そこまでしてくれるんですね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "計算だよ。喉が渇いた相手に勝っても自慢できないじゃん"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "……半分はね。おいしく帰ってほしいのも、本当"
         },
         {
           "type": "remember",
-          "memory_id": "kuze_decide"
+          "memory_id": "saku_decide"
         }
       ]
     },
@@ -642,12 +729,12 @@
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "隣の一口に歓声が上がると、俺も熱を足したくなる。前はそれで、ライムまで飛ばした"
+          "text": "前に一度、焦って熱を足して、ライムまで飛ばしたことがある"
         },
         {
           "speaker": "steve",
           "face": "serious",
-          "text": "自分の店で待てるだけじゃ、まだ悔しいんだ。ここでも、最後まで吸ってもらえる一台で勝ちたい"
+          "text": "自分の店でだけ待てても悔しいんだ。ここでも、最後まで吸ってもらえる一台で勝ちたい"
         },
         {
           "speaker": "",
@@ -667,7 +754,7 @@
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "一口目だけじゃない。二口目も軽く吸わせるのが、俺の仕事"
+          "text": "一口目だけじゃない。二口目も気持ちよく吸わせるのが、俺の仕事"
         },
         {
           "speaker": "hajime",
@@ -736,12 +823,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "エミルの体験会。古いナルギレの横に、新しいパッキンが並んでいた。"
+          "text": "エミルの体験会。トルコの古いナルギレの横に、新しいゴムのパッキンが並んでいた。"
         },
         {
           "speaker": "emil",
           "face": "normal",
-          "text": "古い道具でも、継ぎ目は直す。この職人の仕事がいい"
+          "text": "古い道具でも、継ぎ目は新しくする。このパッキンは、いい職人の仕事だ"
         },
         {
           "speaker": "hajime",
@@ -751,7 +838,7 @@
         {
           "speaker": "emil",
           "face": "normal",
-          "text": "家の店で教わった。修理の仕方は別の職人に。日本では南雲に場所を借りた"
+          "text": "家の店で教わった。修理は別の職人から。日本では、千須に場所を借りた"
         },
         {
           "speaker": "emil",
@@ -761,106 +848,2064 @@
         {
           "speaker": "",
           "face": "",
-          "text": "はじめは部品の名前と、作った人の名前を同じページに書いた。"
+          "text": "俺は部品の名前と、作った人の名前を同じページに書いた。"
         }
       ]
     },
     {
-      "dialogue_id": "ch3_kuze_lime",
-      "comment": "第3章の任意場面（#2028）。助言の後、煙幕への再訪で久世が♥1になってから。好感度は任意場面だけで付ける。後日談の ch3_enmaku_cleanup で、交換した時だけ「返事の欄」を回収する。大会の前後を前提にしない。",
+      "dialogue_id": "ch3_saku_lime",
+      "comment": "第3章の任意場面（#2028）。助言の後、煙幕への再訪で綾取が♥1になってから。好感度は任意場面だけで付ける。後日談の ch3_enmaku_cleanup で、交換した時だけ「返事の欄」を回収する。大会の前後を前提にしない。日常ループでは昼にも夜にも読めるので、時間帯を言わない。段階2で増補。",
       "lines": [
         {
           "speaker": "",
-          "text": "閉店後の煙幕。久世は客席で、ノートの最後のページを開いていた。"
+          "text": "煙幕の客席で、綾取がノートの最後のページを開いていた。",
+          "face": ""
         },
         {
-          "speaker": "kuze",
-          "face": "smile",
-          "text": "いらっしゃい。今夜の組織の議題は、君の連絡先"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "……議題、俺なんですか"
-        },
-        {
-          "speaker": "kuze",
-          "face": "normal",
-          "text": "うん。僕のノート、客の答えはたくさんあるのに、返事の欄がないんだ"
+          "speaker": "saku",
+          "text": "いらっしゃい。今日は伏せないで、先に言うね。用件は君の連絡先",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "返事の欄？"
+          "text": "……俺の、ですか",
+          "face": "normal"
         },
         {
-          "speaker": "kuze",
-          "face": "normal",
-          "text": "帰ってから「やっぱり違った」って思う人もいるでしょ。それも聞きたくて"
-        },
-        {
-          "speaker": "kuze",
-          "face": "nervous",
-          "text": "でも、煙幕は数週間だけの間借り。閉めたら、東京の客の続きは聞けない"
-        },
-        {
-          "speaker": "kuze",
-          "face": "nervous",
-          "text": "……かといって、お客さんに連絡先を聞くのも違う気がして"
-        },
-        {
-          "speaker": "kuze",
-          "face": "smile",
-          "text": "君は客で、作業台の常連で、ライバル。どれでもいいから、聞いていい？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "どれでもいいなら、交換します"
-        },
-        {
-          "type": "set_flag",
-          "flag": "_lime_contact_kuze"
+          "speaker": "saku",
+          "text": "うん。僕のノート、客の答えはたくさんあるのに、返事の欄がないんだ",
+          "face": "normal"
         },
         {
           "speaker": "",
-          "text": "久世は画面を確かめてから、ノートの最後のページに一行書き足した。"
-        },
-        {
-          "speaker": "kuze",
-          "face": "smug",
-          "text": "書記の勧誘は、LIMEでも続けるからね"
+          "text": "最後のページは、見出しだけが書いてあり、その下は空白だった。線も、まだ引かれていない。",
+          "face": ""
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "入りません"
+          "text": "返事の欄？",
+          "face": "normal"
         },
         {
-          "speaker": "kuze",
-          "face": "smile",
-          "text": "知ってる。……外れた予想も、送っていい？"
+          "speaker": "saku",
+          "text": "帰ってから「やっぱり違った」って思う人もいるでしょ。それも聞きたくて",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "でも、煙幕は数週間だけの間借り。閉めたら、東京の客の続きは聞けない",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "……かといって、お客さんに連絡先を聞くのも違う気がして",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "綾取はペンを置いて、空白を指で一度なぞった。書く場所はあるのに、宛先がない。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "君は客で、作業台の常連で、ライバル。どれでもいいから、聞いていい？",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "当たった時だけじゃなくて？"
+          "text": "どれでもいいなら、交換します",
+          "face": "normal"
         },
         {
-          "speaker": "kuze",
-          "face": "normal",
-          "text": "外れた方が、続きを聞きたくなるんだ"
+          "type": "set_flag",
+          "flag": "_lime_contact_saku"
+        },
+        {
+          "speaker": "",
+          "text": "綾取は画面を確かめてから、ノートの最後のページに一行書き足した。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "書記の勧誘は、LIMEでも続けるからね",
+          "face": "smile"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "（ノートの外にも、答えを返す場所ができたんだ）"
+          "text": "入りません",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "知ってる。……外れた予想も、送っていい？",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "当たった時だけじゃなくて？",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "外れた方が、続きを聞きたくなるんだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "欄が空のまま、店を閉めたくないんだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "書き足された一行は、「連絡先。返答の宛先」だけだった。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "宛先、だけなんですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "うん。肩書きを先に書くと、返事が肩書き宛てになる。僕は、答えが欲しいだけ",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "間借りが終わっても、この頁だけは、閉じないで持っていく",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺も、外れた予想が来たら、返します",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "返ってくれば、欄は生きてる。それで十分",
+          "face": "smile"
         },
         {
           "type": "apply",
           "affinity": {
-            "kuze": 2
+            "saku": 2
           }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_saku_bond_finale",
+      "comment": "#2028 好感度の締めくくり（友情のみ・綾取は恋愛対象外）。LIME交換（ch3_saku_lime）と「答えを返しに行く」外出の後、第3章の場面カードから一度だけ（daily/bonds.js）。福岡から持ってきたアールグレイの素焼きを渡し、客の答えではなく友人の返事として書き残す。第3章の場面カードは大会前夜までだが、時系列ルールに沿って大会後の分岐も置く。日常ループ・大会後の寄り道では昼にも夜にも読めるので、入りの台詞で時間帯を言わない。",
+      "metadata": {
+        "bond_finale": "saku"
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 3,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
+        },
+        {
+          "speaker": "",
+          "text": "席の前には、湯気の立つ杯が先に置いてあった。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "今日は、最初から温かいんですね",
+          "face": "surprise"
+        },
+        {
+          "speaker": "saku",
+          "text": "予想じゃないよ。前に君がくれた返事、ノートに書いてあったから",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "当てるより、覚えてる方を出したかった",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "綾取はカウンターの奥から、布に包んだものを持ってきた。"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "先に中身を見る？　それとも、名前を伏せたまま当てる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "見てからにします"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "だよね。君はいつもそっち"
+        },
+        {
+          "speaker": "",
+          "text": "布の中は、飴色に焼けた素焼きのハガルだった。鼻を近づけると、柑橘のあとに紅茶が残った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "アールグレイ……。綾取さんの、いつもの葉ですよね"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "福岡から持ってきた一つ。閉店後、客の答えを確かめる時は、ずっとこれで吸ってた"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "君に渡したい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "えっ。大事な道具なんじゃ"
+        },
+        {
+          "speaker": "",
+          "text": "綾取は答える前に、小さく笑った。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "face": "smug",
+          "text": "間借りが終わったら、荷物を減らさないといけないから"
+        },
+        {
+          "speaker": "saku",
+          "face": "nervous",
+          "text": "……っていうのは、半分。[pause]残りの半分は、ちゃんと言うね"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "僕のノート、客の答えばかりで、返事の欄がなかったでしょ"
+        },
+        {
+          "speaker": "",
+          "text": "綾取はノートの最後のページを開いた。俺が外した予想と、綾取が外した予想が、交互に並んでいた。"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "ここだけ、客の記録じゃないんだ。君が返してくれた分"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺、外してばっかりですね"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "僕もね。だから続きを書きたくなる"
+        },
+        {
+          "speaker": "saku",
+          "face": "serious",
+          "text": "このハガルは、柑橘を先に立てて、茶を最後に残す熱の順番を覚えてる"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "君が詰めたら、別の順番を覚えるかもしれない。それを、いつか吸わせて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は、布ごと両手でハガルを受け取った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "預かります。綾取さんの予想、また外しますから"
+        },
+        {
+          "speaker": "saku",
+          "face": "surprise",
+          "text": "……あ、今の、読めなかった"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "やっぱり君、客じゃなくて友達の欄だね。組織じゃなくて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "書記にも入りませんよ"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "知ってる。葉も一箱つけとく。……おいしく帰ってほしいのは、本当だから"
+        },
+        {
+          "speaker": "",
+          "text": "綾取はノートの新しい行に、俺の名前を書いた。その横に「客」とは書かなかった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 2
+          }
+        }
+      ],
+      "branches": {
+        "before_tournament": [
+          {
+            "speaker": "",
+            "text": "煙幕。綾取はノートを閉じ、俺の分の席だけを空けて待っていた。"
+          },
+          {
+            "speaker": "saku",
+            "face": "normal",
+            "text": "来てくれた。勝負の話は、今日はなしね"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "",
+            "text": "煙幕。綾取はノートを閉じ、俺の分の席だけを空けて待っていた。"
+          },
+          {
+            "speaker": "saku",
+            "face": "normal",
+            "text": "来てくれた。今日の議題は、勝ち負けとは別の話"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch3_steve_lime",
+      "comment": "#2028 スティーブとLIMEを交換する任意場面。客としてmukaiに寄ったスティーブが、タイマーから目を離せない自分の代わりに、はじめが見た客の顔の「山」を知らせてほしいと頼む。面識と♥2で、mukaiの店番の3回目（はじめが客の顔を読むと知る ch3_outing_mukai_steve_c）の後に、mukaiで開く。低温の話の後は♥2だけで開く（ch3-story-wiring.js）。味の言葉は使わない（味覚が戻る前でも読める）。Smoke & Gloryでの低温の話（ch3_steve_low_heat）を読む前後どちらでも成り立ち、大会の前後を前提にしない。昼にも夜にも読めるので時間帯を言わない。好感度は任意場面だけで付ける。段階2で増補。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "mukaiの客席の端で、スティーブがレシピカードの束をめくっていた。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "ヘイ、ハジメ。少しいいか。頼みがある",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺にですか？",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "俺はタイマーを見てると、客の顔を見落とす。知ってるだろ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……鳴るまで、目が離れないんですよね",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブの手は、カードの束の横で、ないタイマーを探すように一度動いた。自分で、止める。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "そう。だから、ハジメの目を借りたい",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "ここで客の顔が一番ゆるんだら、知らせてくれ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "知らせるって、Smoke & Gloryまで走るんですか？",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "ノー、ノー。LIMEでいい。何分目で、どんな顔だったか、一行で",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "カードの表は秒数ばかりで、裏は真っ白だった。顔を書く欄が、まだ無い。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "俺のカードの秒数と並べる。どこで山を見送ってるのか、自分じゃ分からないんだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "顔と、煙の量くらいしか書けませんよ",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "それがいい。俺のカードに一番足りないのが、それだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "じゃあ、交換しましょう",
+          "face": "normal"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_steve"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブは画面を確かめると、レシピカードを一枚、裏返した。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "こっちは俺の分。届いた時刻を、ここに並べる",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "毎日は送れませんよ。店が混んだら、見る余裕もないですし",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "オーケー。気づいた日だけでいい、……俺も急かさない",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "（待つのが苦手な人に、待つって言われた）",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "……今、ちょっと笑ったな。何分目だ？",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "数えてませんでした",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "だろ。数えてると、見逃すんだ",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "裏返したカードの角に、スティーブは細い線を一本だけ引いた。時刻を並べる起点だ。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "起点は、タイマーのゼロ、ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "ノー。客が一口目を吸ったところ。ゼロは俺の都合だ",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "ハジメの一行は、一口目のあとに置く。俺の秒数の隣に、顔が座ればいい",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "座らなかった日は、空欄のままにします",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "それがいい。無いものを、ある秒数に合わせるな",
+          "face": "normal"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "steve": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_steve_bond_finale",
+      "comment": "#2028 スティーブの好感度の締めくくり（友情のみ・スティーブは恋愛対象外）。LIME交換（ch3_steve_lime）と味の会話（予備のタイマーを借りる外出 ch3_outing_steve_timer）の後、♥5で一度だけ（daily/bonds.js）。入口は版3の東京の日常ループのSmoke & Glory（大会前）と、優勝の翌日の後日談の寄り道（煙幕の片づけの朝より前）。旧行程は場面カード。熱を急いで柑橘を飛ばした日から使ってきた練習用の素焼きを、客の顔から先に見るはじめに預ける。大会前はまだタイマー頼み（成長は大会で）。大会後の分岐は二口目も見るようになったとだけ言い、結果には触れない。昼にも夜にも読めるので時間帯を言わない。ピザの夜（lesson_steve_pizza）とは別の場面。",
+      "metadata": {
+        "bond_finale": "steve"
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 3,
+          "next_true": "after_tournament",
+          "next_false": "before_tournament"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブは棚の一番上から、小さな紙袋を下ろした。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ずっと練習に使ってきた、俺のハガルだ"
+        },
+        {
+          "speaker": "",
+          "text": "袋の中は、縁の欠けた素焼きのハガルだった。内側の土が、うっすら黄色く染まっている。"
+        },
+        {
+          "speaker": "",
+          "text": "鼻を近づけると、レモンのあとから、ライムが追ってきた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ、マウンテンミスト……ですよね"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "イエス。こいつで、何百回も待った"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "前に、熱を急いでライムまで飛ばした話をしたろ。あの日も、こいつだった"
+        },
+        {
+          "speaker": "steve",
+          "text": "縁の欠けも、あの日だ。慌ててトングを当てた",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そんな大事なものを"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "急ぎそうになったら、こいつを見る。それで、ずっと棚に置いてた"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "でも、こいつを見てると、待つことしか考えなくなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……客の顔より、先に"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "イエス。だから、俺の棚から出す。[pause]ハジメに預けたい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺が使っていいんですか？"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ハジメの、客の顔から先に見るやつ。あれ、俺ももらう。こいつは、その礼だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "でも、スティーブさんが急ぎそうになったら、どうするんですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "タイマーがある。……それと、ハジメのLIME"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そうだ。前に借りた予備のタイマーも、返さないと"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "そいつも、そのまま持ってろ。ハガルとセットだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……じゃあ、両方お借りします"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ノー、ノー。返しに来なくていい。……でも、顔の知らせは続けてくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "それは送ります。気づいた日だけ"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "オーケー。その一行が、一番の礼だ"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブはマウンテンミストの箱を一つ、紙袋に足した。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "葉もつけとく。最初は、俺の秒数で一度吸ってみろ。外すのは、それからだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "空いた棚に、スティーブはレシピカードを一枚立てた。顔の一行が並んだ裏を、表にして。"
+        },
+        {
+          "speaker": "steve",
+          "text": "ヘイ、じろじろ見るな。……こいつが、新しい見張り役だ",
+          "face": "smile"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "technique": 2
+          }
+        }
+      ],
+      "branches": {
+        "before_tournament": [
+          {
+            "speaker": "",
+            "text": "Smoke & Glory。カウンターの端で、スティーブがレシピカードを束ねていた。"
+          },
+          {
+            "speaker": "steve",
+            "face": "smile",
+            "text": "ヘイ、ハジメ。来たか。今日は客でも偵察でもなくていい"
+          }
+        ],
+        "after_tournament": [
+          {
+            "speaker": "",
+            "text": "Smoke & Glory。カウンターの端で、スティーブがレシピカードを束ねていた。"
+          },
+          {
+            "speaker": "steve",
+            "face": "smile",
+            "text": "ヘイ、ハジメ。来たか。今日は客でも、大会の相手でもなくていい"
+          },
+          {
+            "speaker": "steve",
+            "face": "normal",
+            "text": "大会の日から、タイマーと一緒に客の二口目も見てる、……まだ少しだけな"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch3_saku_mukai_served",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "熱くなったら、また声をかけてください"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "うん。さっき聞いてくれたから、言いやすかった"
+        },
+        {
+          "speaker": "",
+          "text": "綾取は手帳を開いた。葉の名前の下へ、俺が炭に触れた時のことを書いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それも、記録するんですか"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "僕が吸った時のことだけ。君が何を考えたかは、聞かないと分からないよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、俺にも一行だけ書かせてください",
+          "id": "ch3_service_note"
+        },
+        {
+          "speaker": "",
+          "text": "綾取の注文と、返ってきた言葉を、自分のノートへ書き足した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "まだ、毎回同じようには作れません"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "僕もだよ。だから、次の一台を見たい"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "……大会でもね"
+        },
+        {
+          "speaker": "",
+          "text": "綾取は笑って代金を払い、空のグラスを自分で下げた。店の売上は、いつもの伝票へ付ける。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "陣、楽しそうだったね。勝負する時も、ああいう顔をするよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……俺も、楽しみだよ。少し怖いけど"
+        },
+        {
+          "speaker": "",
+          "text": "綾取のグラスを洗い、ノートを作業台の端へ置いた。本番の配合は、まだ白紙だった。"
+        }
+      ],
+      "branches": {
+        "good": [
+          {
+            "speaker": "",
+            "text": "調整した一台を運び、別の吸い口を渡した。ましろは横で味を確かめる。"
+          },
+          {
+            "speaker": "saku",
+            "face": "normal",
+            "text": "……うん、今は吸いやすい。紅茶が、また前に出てきた"
+          }
+        ],
+        "rough": [
+          {
+            "speaker": "",
+            "text": "戻した一台を綾取が吸う。少し眉を上げ、ホースを置いた。"
+          },
+          {
+            "speaker": "saku",
+            "face": "normal",
+            "text": "さっきとは違うね。あと少しだけ、見てもらってもいい？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ましろちゃん、最後の確認をお願い"
+          },
+          {
+            "speaker": "",
+            "text": "気になった熱を伝え、ましろと整えた。二人で確かめてから、もう一度席へ運ぶ。"
+          }
+        ],
+        "failed": [
+          {
+            "speaker": "",
+            "text": "一台を傷めてしまった。綾取へ謝り、水を出して待ってもらう。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "すみません。作り直してから、お持ちしてもいいですか"
+          },
+          {
+            "speaker": "saku",
+            "face": "normal",
+            "text": "うん。急いでないよ。水、ありがとう"
+          },
+          {
+            "speaker": "",
+            "text": "ましろが作り直す間、俺は次の道具を用意した。味と熱を二人で確かめ、席へ運ぶ。"
+          }
+        ],
+        "coal_changed": [
+          {
+            "speaker": "",
+            "text": "ノートに、交換した炭と、綾取がホースを戻した時の様子を並べた。"
+          }
+        ],
+        "coal_kept": [
+          {
+            "speaker": "",
+            "text": "ノートに、炭を替えずに確かめたことと、綾取の返事を並べた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch3_saku_missed",
+      "comment": "候補A02。好感度♥2の段階会話（未採用）。LIME交換（ch3_saku_lime）の後、煙幕への再訪。恋愛対象外（bonds.js）なので共有1本。♥3の恋愛／友情の質問は置かない。客の『外れた答え』を喜ぶ流儀を、返事の欄の最初の一行として見せる。幼い頃の『嘘つき』の話と、ハガルを渡す締めくくりは先取りしない。大会の前後を前提にせず、時間帯も言わない。煙幕専用の背景は未収録のため bg は指定しない（既存の ch3_saku_lime に合わせる）。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "煙幕。綾取はノートを開いたまま、入口の方を見ていた。"
+        },
+        {
+          "speaker": "saku",
+          "text": "来たね。ちょうどいい。今日は、外れた答えの話",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "また、俺ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "君だけじゃないよ。今、常連さんが戻ってきたところ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "カウンターの端で、先日カードを裏返していた客が、遠慮がちに手を上げた。"
+        },
+        {
+          "speaker": "customer",
+          "text": "この前、レモンケーキって言ったけど……今日、同じ葉でも違った。雨の日の廊下、って感じで"
+        },
+        {
+          "speaker": "saku",
+          "text": "雨の日の廊下！　いいな。書いていい？",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "客がうなずくと、綾取はノートの最後のページ——返事の欄——へ、急いで一行を足した。"
+        },
+        {
+          "speaker": "",
+          "text": "字が、少し乱れている。"
+        },
+        {
+          "speaker": "saku",
+          "text": "当たった予想は、ここで終わるんだ。外れた予想は、続きが聞ける",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "だから僕、外れた方が好き。店ではね",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "LIMEでも、そう言ってました",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "うん。だから今日は、君の分も外してみた",
+          "face": "smug"
+        },
+        {
+          "speaker": "saku",
+          "text": "飲み物だけ、の日だろうと思って。水と、温かいの、どっちか当てる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "カウンターには、水のグラスが一つ、先に置いてあった。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "今日は、温かい方がよかったです",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "やった、外した",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "綾取は、本当に嬉しそうに、水を下げて湯気の立つ杯を出した。"
+        },
+        {
+          "speaker": "",
+          "text": "ノートの返事の欄に、俺の名前と『温かい』と書かれる。"
+        },
+        {
+          "speaker": "saku",
+          "text": "君が来ると、僕の予想、よく外れるんだ。悪い気は、しないけど",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "当てたいんですか。外したいんですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "外して、戻ってきてほしい。返事の欄は、まだ空が多いから",
+          "face": "smile"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "saku": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_saku_cleanup",
+      "comment": "候補A03。好感度♥3の段階会話（未採用）。煙幕の閉店後。ヒロインではない（story_routes の heroine_ids 外。bonds.js も『恋愛対象外・友情の着地だけ』）。♥3の恋愛／友情の質問は置かず、神崎・レヰ・なる・スティーブと同じく通常の段階会話1本。初来店で断った片付けを、ここでは一つだけ受け取る。幼い頃の話と締めくくりのハガルは先取りしない。時間帯は閉店後のみ。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "閉店のあと、煙幕の明かりは客席だけ落ちていた。綾取が一人で、ホースを洗っている。"
+        },
+        {
+          "speaker": "saku",
+          "text": "あ、ごめん。もう閉めたって、書いてなかったね",
+          "face": "nervous"
+        },
+        {
+          "speaker": "hajime",
+          "text": "店の前を通ったら、中の電気が一つだけ残ってて。手伝いましょうか",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "初めて来た日も、そう言ってくれたね。あの日は、冗談でごまかしちゃった",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "……今日は、グラスだけ、お願いしてもいい？　一人だと、手が足りなくて",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "俺がグラスを拭く。綾取は、借り物の棚を元の位置へ戻していた。"
+        },
+        {
+          "speaker": "saku",
+          "text": "ここの棚、借りる前の印が鉛筆で残ってるんだ。閉める日に、全部戻さないと",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "数週間だけの間借り、ですもんね",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "うん。だから噂は、自分で少し大きくした。人が来ないと、試せないから",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "でも、残る人は、噂じゃなくて答えの人なんだよね",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "レモンケーキじゃなかった、って戻ってくれる人",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "最後のホースを掛ける手が、一度止まった。"
+        },
+        {
+          "speaker": "saku",
+          "text": "……今、ちょっと読もうとした。君が次に何を言うか",
+          "face": "serious"
+        },
+        {
+          "speaker": "saku",
+          "text": "やめた。店では、当てにいかないって決めてる。君の答えは、君が持って帰っていい",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺、当てられるの、嫌いじゃないですよ。外したときの綾取さんの顔も、好きですし",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "……それ、読めなかった",
+          "face": "surprise"
+        },
+        {
+          "speaker": "saku",
+          "text": "ありがとう。片付け、もういいよ。最後の電気は、僕が消す",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "出口まで送られて、振り返ると、綾取はまだカウンターの内側に立っていた。"
+        },
+        {
+          "speaker": "saku",
+          "text": "君が来る日は、一つだけ、消すのを遅くする。組織の秘密、ってことで",
+          "face": "smile"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "saku": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_saku_liar",
+      "comment": "候補A04。好感度♥4の段階会話（未採用）。煙幕。幼い頃に『お茶に菓子の味がする』と言って笑われた話を、ここではじめて打ち明け、外れた答えを大切にする理由へつなげる。ましろの『お茶。でも好き』は本人の記憶として短く触れる（勝負や恋の返事には使わない）。締めくくりのハガルと『友達の欄』は先取りしない。恋愛対象外なので共有1本。大会の前後を前提にせず、時間帯も言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "煙幕の客が一段落した頃、綾取はノートではなく、白紙の味カードを指で揃えていた。"
+        },
+        {
+          "speaker": "saku",
+          "text": "今日は、先に材料を見せる日にしよう。伏せると、昔のことを思い出すから",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "昔のこと、ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "小さい頃、体調を崩しやすくて。お茶を飲んで、『絵に描いた菓子の味がする』って言ったんだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "そしたら、嘘つきって笑われた。同じ湯なのに、僕だけ違うことを言うから",
+          "face": "sad"
+        },
+        {
+          "speaker": "",
+          "text": "カードの端が、少し曲がる。綾取は、それに気づいて手を止めた。"
+        },
+        {
+          "speaker": "saku",
+          "text": "ましろだけは、味を合わせなかった。『お茶。でも好き』って、隣にいてくれた",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "あの一言のおかげで、今も外れた答えを書ける",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "……彼女に勝ちを贈る話じゃないよ。これは、僕の話",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "吸わない日の席があるのも、その頃のことがあるからですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "……そこ、つなげるんだ",
+          "face": "surprise"
+        },
+        {
+          "speaker": "saku",
+          "text": "半分はね。休んでばかりの子にも、座る場所はあった方がいい",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "だから店では、客を同じ答えへ誘導しない。材料は見せる。嘘の助言もしない",
+          "face": "serious"
+        },
+        {
+          "speaker": "saku",
+          "text": "でもね。勝負になると、同じ答えへ導きたくなる自分がいる。信じてもらいたくて",
+          "face": "nervous"
+        },
+        {
+          "speaker": "saku",
+          "text": "その手が、店のノートに混ざらないか、ちょっと怖い",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "綾取は、揃えていたカードを、客の側へ並べ直した。名前は、まだ書いていない。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺は、自分の台で確かめます。綾取さんがそう言ってくれたから",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "だよね。君は、そっちを選ぶ",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "duck": true,
+          "text": "嘘つきって呼ばれても、君が『違う』って返してくれるなら、僕は書けばいい",
+          "face": "smile"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "saku": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_saku_first_reply",
+      "comment": "好感度補充（段階2・A27）。♥4の嘘つきの欄のあと、煙幕への再訪。LIMEに最初の返事が届き、続きの一行を一緒に書く。恋愛対象外なので共有1本。大会の前後を前提にせず、時間帯も言わない。締めくくりのハガルと友達の欄は先取りしない。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "煙幕のカウンターで、綾取の画面が一度光った。ノートは、もう開かれていた。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "来た。最初の返事だ",
+          "face": "surprise"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……誰からですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "先日の客。あの日は「甘い」って答えた人。店の連絡口に、書き直してきた",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "画面には、短い文が一行だけあった。「やっぱり、あの日の方が近かった」。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "近い、って。正解とも、間違いとも書いてない。だから、どこに貼るか迷う",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "外れた答えの方、ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "違う気もする。外れたんじゃなくて、あとから近づいたんだから",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "ノートを並べると、答えの頁は埋まっていて、最後の返事の欄だけが、まだ短い。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "新しい見出しを切りたくなる。でも、切りすぎると、続きが見えなくなる",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "同じ人の続きなら、隣に足す、はどうですか。見出しは増やさずに",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "……隣、か。うん、それがいい",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "綾取は返事の欄の右に細い線を一本引き、画面の文を一字ずつ写した。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "僕が要約すると、また外れる。外れた予想は好きだけど、返事まで外したくない",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺の返事も、要約しないでくださいね",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "しない。来た文を、そのまま隣に置く",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "店の外から返事が届いたのは、これが初めてだった。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "最初の一行だ。閉めても、これだけは持っていける",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "次の返事も、来ますよ。欄が生きてるなら",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "来るといいな。来なくても、最初の一行があれば、空では閉まらない",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "綾取は画面を伏せず、通知の音だけを残した。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "音、残すんですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "うん。……返事は、早く読みたいから",
+          "face": "smile"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "saku": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_steve_two_timers",
+      "comment": "候補A05。好感度♥1の段階会話（未採用）。Smoke & Glory。本編の低温の話（ch3_steve_low_heat）とLIME交換の前後どちらでも成立するよう、焦ってライムを飛ばした過去には触れない（本編の開示を先取りしない）。タイマーを二つ並べる——ボウル用とピザの箱用——ことで、待つ仕事と待てない食欲の矛盾を見せる。本編でピザが届いたときに先にホースを見る拍子とは別の、夕食の箱を閉じたまま待つ話。予備のタイマーを渡す外出と、ハガルを渡す締めくくりは先取りしない。面識の有無で入りだけ分岐。昼にも夜にも読めるので時間帯を言わない。恋愛対象外なので共有1本。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_steve_shop.png"
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_steve",
+          "next_true": "met",
+          "next_false": "new"
+        },
+        {
+          "speaker": "",
+          "text": "カウンターの端に、キッチンタイマーが二つ並んでいた。"
+        },
+        {
+          "speaker": "",
+          "text": "一つは炭の近く。もう一つは、閉じたピザの箱の上だ。"
+        },
+        {
+          "speaker": "steve",
+          "text": "見たか。左がボウル。右が、俺の夕食",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "タイマー、二つも使うんですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "イエス。人は矛盾してる。ライムは待たないと出てこない。ピザは、待つのが苦手だ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "箱の上のタイマーが先に鳴る。スティーブの大きな手が、箱へ伸びた。"
+        },
+        {
+          "speaker": "steve",
+          "text": "ノー、ノー。……まだ、こっちだ",
+          "face": "serious"
+        },
+        {
+          "speaker": "",
+          "text": "手は箱を開けず、隣の客のホースを見た。客は、まだ一口目の途中だった。"
+        },
+        {
+          "speaker": "steve",
+          "text": "客の二口目の前に、俺が食べ始めたら、順番が逆だ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "お腹、鳴ってますよ",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "聞こえてたか。ヘイ、恥ずかしいな",
+          "face": "surprise"
+        },
+        {
+          "speaker": "",
+          "text": "ボウルのタイマーが鳴る。スティーブは炭を数ミリ動かし、客の顔を見てから、小さくうなずいた。"
+        },
+        {
+          "speaker": "steve",
+          "text": "オーケー。ライム、残ってる。今からだ",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "閉じたまま待たせた箱を開ける。ピザは少し蒸れている。スティーブは一切れ、俺の前にも置いた。"
+        },
+        {
+          "speaker": "steve",
+          "text": "ハジメも食え。熱いうちに、とは言わないけどな",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "いただきます。……蒸れてても、おいしいです",
+          "face": "smile"
+        },
+        {
+          "speaker": "steve",
+          "text": "だろ。箱の中で待たせたピザは、まだピザだ",
+          "face": "smile"
+        },
+        {
+          "speaker": "steve",
+          "text": "ボウルの中で急いだライムは、ライムじゃない。そこだけは、譲れない",
+          "face": "serious"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "steve": 2
+          }
+        }
+      ],
+      "branches": {
+        "met": [
+          {
+            "speaker": "",
+            "text": "Smoke & Glory。柄シャツのスティーブが、タイマーを二つ、並ぶように置いていた。"
+          },
+          {
+            "speaker": "steve",
+            "text": "ヘイ、ハジメ。来たか。今日は客でいい。偵察は、後でいい",
+            "face": "smile"
+          }
+        ],
+        "new": [
+          {
+            "speaker": "",
+            "text": "Smoke & Glory。柄シャツの男が、タイマーを二つ、並ぶように置いていた。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_steve"
+          },
+          {
+            "speaker": "steve",
+            "text": "ヘイ。ハジメだろ。顔は見てある。スティーブだ。座ってくれ",
+            "face": "smile"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch3_steve_empty_seat",
+      "comment": "候補A06。好感度♥3の段階会話（未採用）。Smoke & Glory。LIME交換の後を想定。常連の空席に合わせてタイマーを回し続けてしまう話。予備タイマーを渡す外出（置き場所の講義）や、ハガルを渡す締めくくり、焦ってライムを飛ばした本編の告白は繰り返さない。恋愛対象外なので♥3の恋愛／友情の質問は置かず、通常の段階会話1本。大会の前後を前提にせず、時間帯も言わない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_steve_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "Smoke & Gloryの奥の席が、一つ空いていた。その前だけ、タイマーが回っている。"
+        },
+        {
+          "speaker": "steve",
+          "text": "ヘイ、ハジメ。来たか。……今、ちょっと間抜けなところを見られた",
+          "face": "serious"
+        },
+        {
+          "speaker": "hajime",
+          "text": "その席、誰もいないですけど",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "イエス。毎週この時間に来る常連の席だ。レモンのあとにライムを待つ人",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "今日は来ない。カードには、来る前提の秒数だけが残ってる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "レシピカードの余白に、いつもの秒数が並んでいる。名前は書いてない。席の位置だけだ。"
+        },
+        {
+          "speaker": "steve",
+          "text": "知らせる手段は、俺にはない。来る前提で、熱だけ残してた",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブはトングを持ちかけ、空のホースを見て、手を戻した。"
+        },
+        {
+          "speaker": "steve",
+          "text": "熱だけ残しておくと、誰も吸わない一台になる。分かってる",
+          "face": "serious"
+        },
+        {
+          "speaker": "steve",
+          "text": "でも、止めるのが遅れた。数字を見てると、人が来る気がするんだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "止めましょう。俺も、手伝います",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "二人で炭を下ろす。止め損ねたタイマーだけが、空の席で小さく鳴った。"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブはカードの秒数の列を、斜線で消した。初めて消すみたいに、手が遅い。"
+        },
+        {
+          "speaker": "steve",
+          "text": "……サンキュー。ハジメが来なかったら、もっと待ってた",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "その常連さん、来週は来ますか",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "来るさ。レモンのあとのライムを、あの人は待てるからな",
+          "face": "smile"
+        },
+        {
+          "speaker": "steve",
+          "text": "次から、空の席の秒数は回さない。人が座ってから、置く",
+          "face": "serious"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "steve": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_steve_tongs",
+      "comment": "候補A07。好感度♥4の段階会話（未採用）。Smoke & Gloryの混んだ時間。隣の派手な一口に釣られてトングへ手が伸び、客の顔を見て置き直す。締めくくりのハガルは渡さない。LIMEの『顔の知らせ』が、数字以外の支えになっていることを着地にする。恋愛対象外なので共有1本。大会の前後を前提にせず、時間帯も言わない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_steve_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "混み合うSmoke & Glory。隣の席で、最初の一口に短い歓声がした。"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブの大きな手が、トングへ伸びる。炭は、まだ動かす時間ではなかった。"
+        },
+        {
+          "speaker": "steve",
+          "text": "ノー、ノー",
+          "face": "serious"
+        },
+        {
+          "speaker": "",
+          "text": "手は、トングの途中で止まる。スティーブはタイマーではなく、自分の客の顔を見た。"
+        },
+        {
+          "speaker": "",
+          "text": "客は、ゆっくり二口目を楽しんでいる。"
+        },
+        {
+          "speaker": "steve",
+          "text": "……今の、癖だ。隣が盛り上がると、足したくなる",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "置きましたね。トング",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "イエス。ハジメが店にいると、手が止まる。LIMEの一行を待ってるのと同じだ",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "自分の客のタイマーが鳴る。スティーブは炭を数ミリだけ外へずらした。"
+        },
+        {
+          "speaker": "",
+          "text": "二口目のあとの顔を見てから、カードの余白へ鉛筆を走らせる。"
+        },
+        {
+          "speaker": "customer",
+          "text": "今日の二口目、焦らなくてよかった。隣が盛り上がっても、ここは急がないんだね"
+        },
+        {
+          "speaker": "steve",
+          "text": "……今の、一番ほしかった一行だ",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブは、その一言をカードの余白へ書き足した。秒数の列の、隣だ。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "今の、俺が送る一行と同じですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "イエス。店の中で聞けたのが、一番いい",
+          "face": "smile"
+        },
+        {
+          "speaker": "steve",
+          "text": "秒数は合ってた。顔も、合ってた",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ラッキー、ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "ノー。ハジメが、先に顔を見るからだ。俺は、まだ先に数字を見ちゃう",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "だから、知らせは続けてくれ。気づいた日だけでいい",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "送ります。一行で",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "オーケー。タイマーは俺を止める。ハジメの一行は、俺を店に残す",
+          "face": "smile"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "steve": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_steve_watch",
+      "comment": "好感度補充（段階2・A32）。♥4のトングの手前のあと、Smoke & Glory。タイマーを伏せて、客の顔だけを見る練習を、はじめが隣で見守る。恋愛対象外なので共有1本。大会の前後を前提にせず、時間帯も言わない。締めくくりのハガルは渡さない。味の言葉は使わない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_steve_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "Smoke & Glory。カウンターの端で、スティーブが二つのタイマーを、文字盤ごと伏せていた。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "ヘイ、ハジメ。今日は、俺の目を借りない。ハジメの目の隣で、俺が見る",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "タイマー、伏せるんですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "一台だけだ。秒数は、あとで知る。今は、客の顔だけを見る練習",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "客席の中央で、常連らしい客がホースを受け取る。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "スティーブの指が、伏せたタイマーへ一度伸びて、止まる。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "……癖だ。手は、まだ秒数を探す",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "手を、こっちに置いてもいいですよ。タイマーの上じゃなくて",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "オーケー。置いた。動いたら、言ってくれ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "二人で、客の顔だけを見る。煙の量は、目の端に入るが、数えにいかない。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "二口目では、まだ肩が上がったままだった。三口目の途中で、客の眉が、ほんの少し下がる。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "……今です。眉が、下がりました",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "見た。俺も、今だと思った",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブは伏せたタイマーを起こし、文字盤を一度だけ見る。そして、小さく息を吐いた。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "……四十秒。山は、俺の秒数より四十秒手前だ",
+          "face": "surprise"
+        },
+        {
+          "speaker": "hajime",
+          "text": "四十秒も、ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "毎回だ。……客の一番いいところを、俺は見送ってた",
+          "face": "sad"
+        },
+        {
+          "speaker": "",
+          "text": "客は、まだゆっくり吸っている。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "スティーブは、タイマーを再び伏せはしなかった。見るだけ見て、動かさない。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "毎日はできない。数字も、俺は好きだから",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "でも、一台だけは、こうやって見る。ハジメが隣にいる日は、特に",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "隣にいなくても、一台だけなら、できますよ",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "やってみる。できなかった日は、一行で送る。いつもの、顔の知らせでいい",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "受け取ります。できなかった、も、知らせのうちですから",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "カウンターの端で、レシピカードが一枚、裏を上にされていた。今日の山を書く欄だ。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "今の眉、何口目だった？　覚えてるか",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "三口目の途中です",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "オーケー。秒数の隣に、口数を座らせる",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブは「三口目」と書き、少し迷ってから、隣に小さく「四十秒前」と足した。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "……数字も好きなんだ。言ったろ",
+          "face": "smile"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "steve": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_saku_steve_notes",
+      "comment": "#3468 C案。スティーブ×綾取「ノートは読めないが、熱の話は通じる」。大会後の寄り道（ch3-aftermath-progress.js）で、優勝の翌日・なるへの報告まで（綾取の帰り支度が始まった頃）だけ。煙幕の片づけ（ch3_enmaku_cleanup・帰郷の日の朝）と ch3_saku_cleanup は置き換えない。ピザは入口の小道具だけ、タイマーは出さない（ch3_steve_two_timers のオチを繰り返さない）。低温はスティーブの軸で、綾取は低温派にしない。はじめは居合わせるだけで仲介しない。好感度・恋愛は動かさない。後日の一言は第4章のLIME（lime_ch4_saku_steve_note）。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_yohaku_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "煙幕の入口に、畳んだ段ボールが立てかけてあった。仕切りの布はまだ吊られている。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "ようこそ、東京の煙を裏から動かす組織へ。……今日は、段ボールの組み立て中だけど",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "返す支度、もう始めてるんですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "借りた店だからね。組織の本部も、鏡から順に普通の店へ戻る",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "ドアベルが鳴った。大きな平たい箱を抱えて、柄シャツのスティーブが入ってくる。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "ヘイ。ここが噂の組織か。差し入れだ。片付けの日は、腹が減るだろ",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "……スティーブさん。本部へようこそ。合言葉は、",
+          "face": "surprise"
+        },
+        {
+          "speaker": "steve",
+          "text": "ピザ",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "正解にしておく",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "箱はカウンターの端に置かれた。その隣で、綾取のノートが開いたままになっている。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "それ、記録か",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "うん。左が僕の予想、右が客の答え",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "見せろ、とは言わない。見せたい頁があったら、それでいい。……俺は、これを出す",
+          "face": "serious"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブは胸ポケットから、手書きのレシピカードを一枚選んで置いた。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "綾取は表紙をめくり、何頁か飛ばして、一頁だけ開いた。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "カードの余白には「二口目、思ったより軽い。笑った」。ノートの右の列には「焼き菓子みたい」。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "ヘイ。客に外されてるな",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "外されてる。スティーブさんも",
+          "face": "smile"
+        },
+        {
+          "speaker": "steve",
+          "text": "イエス。客は、俺の予想をよく外す。そこが一番うまい",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "綾取の目が、少し見開いた。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "……同じ所、書いてる",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "焼き菓子、か。入れたのか",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "入れてない。入れてないものを、思い出してもらう一台",
+          "face": "smile"
+        },
+        {
+          "speaker": "steve",
+          "text": "ほう。いい嘘だな",
+          "face": "surprise"
+        },
+        {
+          "speaker": "saku",
+          "text": "でしょ。嘘で、人がちょっと嬉しくなるなら",
+          "face": "smug"
+        },
+        {
+          "speaker": "",
+          "text": "そこから、二人は互いの紙をのぞき込んだ。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "この、上の三角は？",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "炭だ。黒い三角が置いた炭、白い三角が抜いた跡。L-3は、左を三ミリ内側。見れば分かる",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "……分からない",
+          "face": "nervous"
+        },
+        {
+          "speaker": "steve",
+          "text": "ノー、ノー。分かるだろ。三ミリだぞ",
+          "face": "serious"
+        },
+        {
+          "speaker": "steve",
+          "text": "じゃあ、そっちの縦線と、閉じかっこは",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "縦線が立ち上がりで、閉じかっこが余韻。その間の波線は、客の顔がほどけた所。で、点は、",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "……点は、点だよ",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "ノー。点は点じゃないだろ",
+          "face": "serious"
+        },
+        {
+          "speaker": "",
+          "text": "どちらの記号も、書いた本人にだけは、最初から読めているらしかった。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "おかしいな。種明かしなら、いくらでも楽しくできるのに",
+          "face": "nervous"
+        },
+        {
+          "speaker": "saku",
+          "text": "……説明、やめていい？　手でやる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "綾取は火の入っていないボウルを引き寄せ、縁の三か所を指で順に叩いた。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "最初に、ここ。柑橘を先に立たせる。茶は、遅れてここから",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "外から内へ、だな。俺は逆だ。内を待ってから、外へ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブの太い指が、同じ縁を逆の順に叩いた。綾取がすぐにうなずく。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "それなら、黒い三角の意味、分かった",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "だろ。手なら、三秒だ",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "僕は待たない方だけどね。先に立たせて、あとは客の記憶に任せる",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "俺は待つ。待つと、二口目が軽い。……そこは、譲らない",
+          "face": "serious"
+        },
+        {
+          "speaker": "saku",
+          "text": "うん。譲らなくていい",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "話は、紙の上の記号を飛ばして、手元の順番だけで進んだ。俺が口を挟む隙は、一度もなかった。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "気づくと、綾取はノートの端に小さな黒い三角を描き、隣に細い字で何か書き足していた。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "おっと。長居した。ピザ、冷める前に食え。片付けの手は止めていい",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "スティーブさん。福岡で試したら、感想を送ってもいい？",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "イエス。記号じゃなく、字で頼む",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "そっちも",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "ドアベルが鳴りやんでから、綾取は箱を開けた。湯気は、もうあまり上がらなかった。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "君も食べて。組織の経費だから",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ありがとうございます。……組織、ピザ代は出してないですよね",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "出してない。でも、そう言った方がおいしい",
+          "face": "smile"
         }
       ]
     }

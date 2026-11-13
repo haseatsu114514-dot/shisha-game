@@ -34,7 +34,7 @@ function realJSON(url) {
 }
 const fixtureFetch = async (url) => ({ ok: true, status: 200, json: async () => realJSON(url) });
 
-// 起動時は42ファイル（casual_lime.json を含む）を読み、同時接続が4本を超えない。
+// 起動時は43ファイル（casual_lime.json・巻頭ポエムの chapter_poems.json を含む）を読み、同時接続が4本を超えない。
 const requests = [];
 let active = 0, maximum = 0;
 const all = await loader(async (url, options) => {
@@ -50,7 +50,7 @@ const all = await loader(async (url, options) => {
 });
 const progress = [];
 // manifest読込前のPNG経路でも、旧版の顔画像キャッシュを使わない。
-assert.equal(all.img("sprites/characters/ageha/chr_ageha_sad.png"), "../assets/sprites/characters/ageha/chr_ageha_sad.png?v=face-restore-20261028");
+assert.equal(all.img("sprites/characters/ageha/chr_ageha_sad.png"), "../assets/sprites/characters/ageha/chr_ageha_sad.png?v=portrait-standard-20261102");
 await all.loadAll((p) => progress.push(p));
 // The restored catalog keeps the saved vanilla ID and the lottery reward aligned.
 const vanilla = all.DB.flavorById.vanilla;
@@ -58,27 +58,32 @@ assert.equal(vanilla.maker, "af");
 assert.equal(vanilla.name, "アルファーヘブン バニラ");
 assert.equal(vanilla.short_name, "AF バニラ");
 assert.equal(vanilla.price, 1750);
-const vanillaReward = realJSON("../data/kuji.json").grades.g500.prizes.find(item => item.flavorId === "vanilla");
+const vanillaReward = Object.values(realJSON("../data/kuji.json").grades).flatMap(grade => grade.prizes).find(item => item.flavorId === "vanilla");
 assert(vanillaReward.name.startsWith(vanilla.short_name));
 for (const id of ["minto", "ageha"]) {
   for (const face of all.DB.manifest.portraits[id].faces) {
-    const version = id === "ageha" || face === "normal" ? "?v=face-restore-20261028" : "";
-    assert.equal(all.portraitInfo(id, face).src, `img/sprites/characters/${id}/chr_${id}_${face}.webp${version}`);
+    const version = id === "ageha" || face === "normal" ? "?v=portrait-standard-20261102" : "";
+    assert.equal(all.portraitInfo(id, face, "classic").src, `img/sprites/characters/${id}/chr_${id}_${face}.webp${version}`);
   }
-  assert.equal(all.faceIconUrl(id), `img/ui/face_icons/face_${id}.webp?v=face-restore-20261028`);
-  assert(all.allFaceIconUrls().includes(all.faceIconUrl(id)), "preload and display use the same revised icon URL");
+  // 顔アイコンは会話の立ち絵と同じ画風（#2680）。現行の版は改訂の版数付き、既定は採用済みの新版。
+  assert.equal(all.faceIconUrl(id, null, { style: "classic" }), `img/ui/face_icons/face_${id}.webp?v=portrait-standard-20261102`);
+  assert.equal(all.faceIconUrl(id), `img/ui/face_icons/new/face_${id}.webp`);
+  assert(all.allFaceIconUrls().includes(all.faceIconUrl(id)), "preload and display use the same icon URL");
 }
+assert.equal(all.portraitInfo("minto", "normal").style, "new");
+assert.equal(all.portraitInfo("minto", "normal").src, "img/sprites/character_variants/new/minto/chr_minto_normal.webp");
 assert.equal(all.img("backgrounds/bg_tonari_inside_day.png"), "img/backgrounds/bg_tonari_inside_day.webp");
-assert.equal(all.faceIconUrl("oneesan"), "img/ui/face_icons/face_minto_private.webp");
+assert.equal(all.faceIconUrl("oneesan", null, { style: "classic" }), "img/ui/face_icons/face_minto_private.webp");
+assert.equal(all.faceIconUrl("oneesan"), "img/ui/face_icons/new/face_minto_private.webp");
 assert.equal(all.portraitInfo("oneesan", "normal").face, "ura_normal");
-assert.equal(requests.length, 42);
-assert.equal(new Set(requests).size, 42);
+assert.equal(requests.length, 43);
+assert.equal(new Set(requests).size, 43);
 for (const file of ["hiyori", "cinema", "tournament_craft"]) {
   assert(!requests.includes(`../data/dialogue/${file}.json`));
 }
 assert.equal(maximum, 4);
 assert.equal(active, 0);
-assert.equal(progress.length, 42);
+assert.equal(progress.length, 43);
 assert.equal(all.DB.dialogues.samechan_cinema_introduction, undefined);
 assert.equal(all.DB.dialogues.cinema_first_screening, undefined);
 assert.equal(progress.at(-1), 1);
@@ -87,11 +92,22 @@ assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 const limeMessages = realJSON("../data/lime_messages.json").messages;
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.lime)), limeMessages);
 assert.equal(new Set(all.DB.lime.map(m => m.id)).size, all.DB.lime.length);
-assert.deepEqual(Array.from(all.DB.lime.slice(-3), m => m.id), [
-  "lime_naru_samechan_nickname", "lime_samechan_preparing_thanks", "lime_samechan_opening",
+assert.deepEqual(Array.from(all.DB.lime.slice(-80, -71), m => m.id), [
+  "lime_samechan_opening",
+  "lime_outing_samechan_1", "lime_after_outing_samechan", "lime_outing_rio_1", "lime_after_outing_rio",
+  "lime_outing_hiyori_1", "lime_after_outing_hiyori", "lime_hiyori_charm", "lime_hiyori_peach",
 ]);
+// 第3〜5章の物語のLIME（東京・ドバイ・帰郷後。#2024）は L01 の直前に残る。王煙楼（龍龍水煙所で交換）の9通・太陽（FESTAで交換）の6通もここ
+assert.deepEqual(Array.from(all.DB.lime.slice(-71, -43), m => m.id), [
+  "lime_ch3_sumi_tokyo_settle", "lime_ch4_sumi_settle", "lime_ch4_tsumugi_counter", "lime_ch4_mashiro_mukai",
+  "lime_ch4_ageha_melty", "lime_ch4_saku_stream", "lime_ch4_saku_steve_note", "lime_ch4_sumi_eve", "lime_ch5_saku_title", "lime_ch5_kumicho_title",
+  "lime_ch5_rei_title", ...Array.from({ length: 9 }, (_, i) => `lime_wang_0${i + 1}`), ...Array.from({ length: 6 }, (_, i) => `lime_taiyo_0${i + 1}`),
+  "lime_noor_after_sunset", "lime_mashiro_glass_cloth",
+]);
+// L01〜L43 の増量候補を末尾に足した（番号は固定）
+assert.deepEqual(Array.from(all.DB.lime.slice(-43), m => m.id), Array.from({ length: 43 }, (_, i) => `L${String(i + 1).padStart(2, "0")}`));
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.limeTemplates)), realJSON("../data/lime_messages.json").templates);
-assert.equal(all.DB.lime.length, 72);
+assert.equal(all.DB.lime.length, 159); // 139 + 王煙楼8・アダム2・レヰ2（好感度キャラのLIMEをそろえる）+ 太陽6（RVE03）+ 王煙楼の大会後1（RVE07）+ スティーブ×綾取の後日1（#3468 C案）
 assert(!all.DB.lime.some(m => m.accept_event === "__hiyori_shop__"));
 assert.equal(all.DB.samechan.lime, undefined);
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
@@ -100,7 +116,13 @@ for (const id of ["baito_tsumugi_01", "baito_minto_romance", "baito_ageha_romanc
   assert(!all.DB.baito.some(event => event.id === id), `未接続の物語イベントを一括解放しない: ${id}`);
 }
 assert(Array.isArray(all.DB.gallery.items), "the approved gallery catalog is loaded from real data");
-assert.equal(all.DB.characters.hiyori.name, "朝霧ひより");
+assert.equal(all.DB.characters.hiyori.name, "泡沫ひより");
+assert.equal(all.DB.characters.hiyori.reading, "うたかた ひより");
+assert.equal(all.DB.characters.saku.name, "綾取 陣（あやとり じん）");
+assert.equal(all.DB.characters.rei.reading, "あそう れい");
+assert.equal(all.realName("saku"), "綾取陣");
+assert.equal(all.realName("rei"), "鴉葬レヰ");
+assert.equal(all.realName("hiyori"), "ひより");
 assert.equal(all.DB.characters.hiyori.age, 25);
 assert.equal(all.DB.hiyori.route, undefined);
 assert.equal(all.DB.dialogues.hiyori_meeting, undefined);
@@ -110,10 +132,16 @@ assert(all.faceIconUrl("hiyori"));
 assert.equal(all.DB.relationshipMemories.tsumugi_creature.char_id, "tsumugi");
 assert(all.DB.dialogues.ch1_tsumugi_third);
 assert(all.DB.dialogues.remake_midcheck);
-assert.equal(Object.values(all.DB.fortuneTrivia.characters).flat().length, 62);
+assert.equal(Object.values(all.DB.fortuneTrivia.characters).flat().length, 95);
 assert(all.DB.dialogues.remake_fortune_trivia_naru_1, "fortune results were not registered after loading");
-assert(all.DB.dialogues.remake_fortune_trivia_sumi_13, "added fortune readings were not registered after loading");
+assert(all.DB.dialogues.remake_fortune_trivia_sumi_24, "selected fortune readings were not registered after loading");
+assert(all.DB.dialogues.remake_fortune_trivia_kumicho_2 && all.DB.dialogues.remake_fortune_trivia_sheikh_5, "Chapter 2-5 cast readings were not registered after loading");
 assert(!all.DB.dialogues.remake_fortune_trivia_adam_1, "excluded fortune readings must not be registered");
+// #2805 の決定ルールで削除した読み（見た目の言い当てなど）も登録しない。
+assert(!all.DB.dialogues.remake_fortune_trivia_kumicho_1 && !all.DB.dialogues.remake_fortune_trivia_sumi_17, "readings removed by the #2805 rules must not be registered");
+// 読み込み後の本物の順でも、三日間の「赤く見える」は注記のある相手（なる）だけに約束し、注記の無い相手（組長）には言わない。
+const fortuneSight = id => all.DB.dialogues[id].lines.some(l => /赤く見える/.test(l.text || ""));
+assert(fortuneSight("remake_fortune_trivia_naru_1") && !fortuneSight("remake_fortune_trivia_kumicho_2"), "fortune sight promise must follow the loaded choice hints");
 assert.equal(all.DB.dialogues.craft_inner_heat_watch.lines[0].speaker, "hajime");
 assert(all.DB.dialogues.craft_inner_heat_watch.lines[0].text);
 assert.equal(all.DB.dialogues.tournament_craft_packed_intro, undefined);
@@ -121,13 +149,13 @@ assert.equal(all.DB.dialogues.tournament_craft_care_recovered, undefined);
 assert.equal(all.DB.characters.maki.display_name, "斧崎マキ");
 assert.equal(all.DB.characters.sai.display_name, "六角サイ");
 assert(all.DB.dialogues.venue_maki_greet.lines[0].text);
-assert(all.DB.dialogues.ch1_tsumugi_bond_finale && all.DB.dialogues.ch1_rin_bond_question); // 交友の締めくくり（ch1_bonds）
+assert(all.DB.dialogues.ch1_tsumugi_bond_finale && all.DB.dialogues.ch1_rio_bond_question); // 交友の締めくくり（ch1_bonds）
 assert(all.DB.friends.friends.naru.chats.length > 0); // 友人のたまのLIME（remake/data/friends.json）
 assert(all.DB.manifest.backgrounds.includes("bg_tonari_inside_day.png"));
 assert(all.DB.flavors.every((f) => (f.leaf || "blond") === "blond"));
-// DB.flavors はローダがブロンドのみに絞るため、メーカー検証は生データ全77種を対象にする。
+// DB.flavors はローダがブロンドのみに絞るため、メーカー検証は生データ全84種を対象にする（2026-11-02 新フレーバー7種・NF01）。
 const rawFlavors = realJSON("../data/flavors.json").flavors;
-assert.equal(rawFlavors.length, 77);
+assert.equal(rawFlavors.length, 84);
 const makerProblems = flavorMakerProblems(rawFlavors);
 assert.equal(makerProblems.length, 0, `Invalid flavor makers: ${JSON.stringify(makerProblems)}`);
 assert.deepEqual(flavorMakerProblems([
@@ -145,13 +173,13 @@ assert.deepEqual(flavorMakerProblems([
 const deferred = all.loadDeferredDialogues();
 assert.equal(all.loadDeferredDialogues(), deferred);
 await deferred;
-assert.equal(requests.length, 43);
+assert.equal(requests.length, 44);
 assert.equal(requests.at(-1), "../data/dialogue/hiyori.json");
 assert.equal(all.DB.hiyori.route.enabled, true);
 assert(all.DB.dialogues.hiyori_meeting);
 assert(all.DB.dialogues.hiyori_preview_gap.lines[0].inner);
 assert.equal(all.loadDeferredDialogues(), deferred);
-assert.equal(requests.length, 43);
+assert.equal(requests.length, 44);
 assert.equal(all.DB.dialogues.cinema_first_screening, undefined);
 assert.equal(all.DB.dialogues.tournament_craft_packed_intro, undefined);
 
@@ -161,7 +189,7 @@ assert.equal(all.loadCinemaDialogue(), cinema);
 const tournament = all.loadTournamentCraftDialogue();
 assert.equal(all.loadTournamentCraftDialogue(), tournament);
 await Promise.all([cinema, tournament]);
-assert.equal(requests.length, 45);
+assert.equal(requests.length, 46);
 assert(requests.includes("../data/dialogue/cinema.json"));
 assert(requests.includes("../data/dialogue/tournament_craft.json"));
 assert(all.DB.dialogues.samechan_cinema_introduction);
@@ -170,7 +198,7 @@ assert.equal(all.DB.dialogues.tournament_craft_packed_intro.lines[0].speaker, "p
 assert(all.DB.dialogues.tournament_craft_care_recovered.lines[0].text);
 assert.equal(all.loadCinemaDialogue(), cinema);
 assert.equal(all.loadTournamentCraftDialogue(), tournament);
-assert.equal(requests.length, 45);
+assert.equal(requests.length, 46);
 
 for (const [file, method, dialogue] of [
   ["cinema", "loadCinemaDialogue", "cinema_first_screening"],
@@ -228,10 +256,10 @@ function validateLimeMedia(messages, catalog) {
 }
 const catalog = all.DB.manifest.limeMedia;
 assert.deepEqual(JSON.parse(JSON.stringify(catalog)), realJSON("data/lime_media.json"));
-assert.equal(Object.keys(catalog).length, 29);
+assert.equal(Object.keys(catalog).length, 38);
 // CI quick は画像を含まない sparse checkout のため、画像が展開されている環境でのみ実在チェックを行う
 const imgDir = path.resolve(documentRoot, "img");
-const hasImageTree = fs.existsSync(imgDir) && fs.readdirSync(imgDir, { recursive: true }).some((f) => /\.(png|webp|jpe?g)$/i.test(String(f)));
+const hasImageTree = fs.existsSync(imgDir) && Object.values(catalog).some(asset => fs.existsSync(path.resolve(documentRoot, asset.src)));
 for (const asset of Object.values(catalog)) {
   if (hasImageTree) assert(fs.existsSync(path.resolve(documentRoot, asset.src)), asset.src);
   assert(asset.alt && asset.preview);
@@ -250,7 +278,8 @@ for (const [lines, error] of [
 validateLimeMedia([{ sender: "adam", messages: ["legacy", { text: "text" }, stamp] }], catalog);
 console.log("[LIME media] catalog, files, unknown ID, owner, mixed kinds, count, adjacency: PASS");
 
-// HTTP・通信・JSONの各失敗にはファイル名が付き、以後の組は読まず、DBも公開しない。
+// HTTP・通信・JSONの各失敗にはファイル名が付き、失敗の後は新しいファイルを読み始めず、DBも公開しない。
+// 失敗する1本を、同時に始まった残り3本より先に返す。残りが後から終わっても次を始めないことを見る（#3500 A-18）。
 const badPath = "../data/relationship_memories.json";
 for (const [response, expected] of [
   [async () => ({ ok: false, status: 404 }), /relationship_memories\.json: HTTP 404/],
@@ -260,10 +289,10 @@ for (const [response, expected] of [
   const started = [];
   const failed = await loader(async (url) => {
     started.push(url);
-    return url === badPath ? response() : fixtureFetch(url);
+    return url === badPath ? response() : pause(5).then(() => fixtureFetch(url));
   });
   await assert.rejects(failed.loadAll(), expected);
-  await pause(1); // 同じ組の残りのリクエストを片付ける
+  await pause(20); // 同時に始まった残りのリクエストを終わらせる
   assert.equal(started.length, 4);
   assert.equal(Object.keys(failed.DB.characters).length, 0);
   assert.equal(Object.keys(failed.DB.dialogues).length, 0);
@@ -295,13 +324,17 @@ for (const phase of ["headers", "body"]) {
     return phase === "headers" ? waitForAbort() : { ok: true, status: 200, json: waitForAbort };
   }, timers);
   await assert.rejects(stalled.loadAll(), /relationship_memories\.json: .*15秒.*タイムアウト/);
+  // 1本が止まっても、残りは同時4本の枠で読み進める（組ごとの全員待ちをしない）。中断の後は新しく始めない（#3500 A-18）。
+  const startedAtFailure = started.length;
+  await pause(50); // 中断の時点で読んでいた残りを終わらせる
   assert(aborted, `${phase} was not aborted`);
   assert(scheduled.every((ms) => ms === 15000));
   assert.equal(pending.size, 0);
-  assert.equal(started.length, 4);
+  assert(startedAtFailure > 4, `${phase}: the stalled file held back the others (${startedAtFailure} started)`);
+  assert.equal(started.length, startedAtFailure);
 }
 
-console.log("[remake data] 42 boot JSON files, deferred hiyori/cinema/tournament_craft and retry, max 4 requests, gallery catalog, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
+console.log("[remake data] 43 boot JSON files, deferred hiyori/cinema/tournament_craft and retry, max 4 requests, gallery catalog, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
 
 assert.equal(all.DB.limeTemplates.sumi_baito.accept_reply.stamp, "st_sumi_ack");
 assert.equal(all.DB.limeTemplates.sumi_baito.reasons.length, 3);

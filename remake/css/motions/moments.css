@@ -1,0 +1,9 @@
+/* 章の要所の演出（motions/moments.js・#2688 A3・A5・A6・A8） */
+.mo-moment { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; font-family: var(--font); }
+.mo-leaves-cover { position: absolute; inset: 0; background: #34246a; }
+.mo-dragon-dim { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 55%, transparent 30%, #0b081499 100%); }
+.mo-scan-slice { position: absolute; left: 0; right: 0; background: #dcd1f41a; mix-blend-mode: screen; }
+.mo-scan-lines { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, #0000 0 3px, #dcd1f41f 3px 4px); mix-blend-mode: screen; }
+.mo-scan-bar { position: absolute; left: 0; right: 0; height: 10%; background: linear-gradient(transparent, #9fd8ff55, transparent); }
+.mo-scan-label { position: absolute; left: 50%; top: 24%; transform: translate(-50%, -50%); color: #fff; font-size: 40px; font-weight: 900; letter-spacing: .2em; text-shadow: 0 2px 0 #150f26; }
+.mo-mixed-dark { position: absolute; inset: 0; background: #0b0814; opacity: 0; }

@@ -19,32 +19,57 @@ export const STORE_LOGOS = Object.freeze({ ...BASE_LOGOS,
   ch2_aquarium: { name: "都市型水族館", file: "ch2-aquarium", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch2_sento: { name: "銭湯・サウナ", file: "ch2-sento", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   trpg_bar: { name: "ボドゲカフェ / TRPG BAR", file: "trpg-bar", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
+  ch4_festa: { name: "FESTA", file: "ch4-festa", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
+  ch4_dubai_longlong: { name: "龍龍水煙所", file: "ch4-longlong", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
+  // 2026-11-07 オーナー採用（SLG01〜SLG03: 1-B、2-C、3-A）。外形に合わせた表示窓で小さな地図ピンにも収める。
+  shishark: { name: "SHISHARK", file: "shishark", ext: "webp", sheet: [768, 512], frame: [60, 9, 648, 497] },
+  ch4_dubai_cafe: { name: "中心地のカフェ", file: "ch4-dubai-center-cafe", ext: "webp", sheet: [768, 512], frame: [157, 22, 452, 468] },
+  ch4_dubai_alley: { name: "路地裏のカフェ", file: "ch4-dubai-alley-cafe", ext: "webp", sheet: [768, 512], frame: [78, 17, 595, 482] },
   // 第3章・東京（#2034）。キーは ch3-map-model.js の地点 id に ch3_ を付けたもの。
   ch3_enmaku: { name: "煙幕", file: "ch3-enmaku", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch3_steve: { name: "Smoke & Glory", file: "ch3-smoke-and-glory", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch3_volk: { name: "Железный Дым（鉄の煙）", file: "ch3-iron-smoke", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch3_mukai: { name: "mukai", file: "ch3-mukai", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
+  ch3_club: { name: "SEAM", file: "ch3-seam", ext: "webp", sheet: [768, 512], frame: [20, 191, 728, 130], dark: true }, // クラブSEAM（DJS15・#2199）。横長の文字ロゴなので外枠を文字の周りに詰める。白い文字なので暗い札に載せる
 });
 
-export const hasStoreLogo = (id) => Object.hasOwn(STORE_LOGOS, id);
+// 日常の地図で章ごとに id を分けた行き先（第3章・第5章の東京、第4章のドバイ）を、同じ店の採用ロゴへつなぐ。
+// ロゴの絵は増やさない。地図のピンと到着時のロゴ表示が、元の店と同じ絵になる。
+const LOGO_ALIASES = Object.freeze({
+  ch3_tokyo_mukai: "ch3_mukai", ch3_tokyo_enmaku: "ch3_enmaku", ch3_tokyo_steve: "ch3_steve",
+  ch3_tokyo_volk: "ch3_volk", ch3_tokyo_club: "ch3_club", ch3_tokyo_shop: "shop",
+  ch5_tokyo_mukai: "ch3_mukai", ch5_tokyo_steve: "ch3_steve", ch5_tokyo_volk: "ch3_volk", ch5_tokyo_shop: "shop",
+  ch5_tokyo_club: "ch3_club", // 第5章の東京の夜のクラブSEAM（第3章と同じ店）
+  ch4_dubai_festa: "ch4_festa", ch4_dubai_shop: "shop",
+  ch5_dubai_shop: "shop", // 第5章のドバイの Dr.fookah ドバイ店（SLG04）
+  // 中心地のカフェ・路地裏のカフェ（SLG02・SLG03）: 第4章の旧「自由行動」カード（ch4_<場所>）と第5章の路地裏のカフェも同じ絵
+  ch4_center_cafe: "ch4_dubai_cafe", ch4_alley_cafe: "ch4_dubai_alley", ch5_dubai_alley: "ch4_dubai_alley",
+});
+const logoKey = (id) => Object.hasOwn(LOGO_ALIASES, id) ? LOGO_ALIASES[id] : id;
+
+export const hasStoreLogo = (id) => Object.hasOwn(STORE_LOGOS, logoKey(id));
 export const storeLogoUrl = (id) => hasStoreLogo(id)
-  ? new URL(`../../../assets/ui/store_logos/${STORE_LOGOS[id].file}.${STORE_LOGOS[id].ext || "png"}`, import.meta.url).href : null;
+  ? new URL(`../../../assets/ui/store_logos/${STORE_LOGOS[logoKey(id)].file}.${STORE_LOGOS[logoKey(id)].ext || "png"}`, import.meta.url).href : null;
 export const allStoreLogoUrls = () => Object.keys(STORE_LOGOS).map(storeLogoUrl);
 
 /** 店舗ごとに異なる縦横比を保ち、指定された枠へ収める。 */
 export function storeLogo(id, { width = 104, height = 60 } = {}) {
   if (!hasStoreLogo(id)) return null;
-  const logo = STORE_LOGOS[id];
+  const logo = STORE_LOGOS[logoKey(id)];
   const [x, y, w, h] = logo.frame;
   const scale = Math.min(width / w, height / h);
-  const node = el("span.store-logo", {
+  const node = el(logo.dark ? "span.store-logo.on-dark" : "span.store-logo", {
     role: "img", "aria-label": `${logo.name}のロゴ`, dataset: { storeLogo: id },
     style: { width: `${w * scale}px`, height: `${h * scale}px` },
   });
   const img = el("img", {
     src: storeLogoUrl(id), alt: "", decoding: "async", draggable: false,
     style: { width: `${logo.sheet[0] / w * 100}%`, height: `${logo.sheet[1] / h * 100}%`, left: `${-x / w * 100}%`, top: `${-y / h * 100}%` },
-    onerror: () => { node.classList.add("missing"); node.replaceChildren(el("span", { text: logo.name })); },
+    onerror: () => {
+      // 店名は画像の切り抜き比率ではなく、呼び出し元が用意した枠へ収める。
+      node.style.width = `${width}px`; node.style.height = `${height}px`;
+      node.classList.add("missing"); node.replaceChildren(el("span", { text: logo.name }));
+    },
   });
   node.append(img);
   return node;

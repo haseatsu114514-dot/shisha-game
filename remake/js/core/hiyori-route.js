@@ -10,12 +10,23 @@ export const hiyoriHasContact = () => !!state && (state.contacts.includes("hiyor
 export const hiyoriIsFriend = () => !!state && !state.lovers.includes("hiyori") && !!state.finales.hiyori
   && (state.finales.hiyori.route === "friend" || !!state.flags._friend_hiyori);
 
+// 締めくくり前の段階（untilFinale: ♥4・♥5）は、締めくくり・関係の着地の後には出さない。
+// 追加前に着地済みの保存では未読でも締めくくりを止めない（既読フラグは補完しない）。
+const pastFinale = () => !!state.finales?.hiyori || state.lovers.includes("hiyori") || !!state.flags._friend_hiyori;
+
 /** 読んだイベントだけから判定。好感度・訪問回数では正体発覚を推測しない。 */
+const hiyoriEventSkipped = (event) => {
+  if (!event) return false;
+  if (event.untilFinale && pastFinale()) return true;
+  // 後から足した段階（clockout など）。再会や仕事の相談より先に進んだ旧セーブは、未読でも締めくくりを止めない。
+  return !!(event.lateAdded && (event.skipIf || []).some((flag) => state.flags?.[flag])) || !!(event.lateAdded && pastFinale());
+};
+
 export function hiyoriStoriesDone() {
   const route = hiyoriRoute();
   return !!state && !!route.storyEvents?.length && route.storyEvents.every((id) => {
     const event = route.events?.find((e) => e.id === id);
-    return !!event?.flag && !!state.flags[event.flag];
+    return !!event?.flag && (!!state.flags[event.flag] || hiyoriEventSkipped(event));
   });
 }
 
@@ -28,6 +39,8 @@ export function hiyoriEventStatus(id) {
   const scripts = [dialogue, ...(event.outro ? [DB.dialogues[event.outro]] : [])];
   if (scripts.some(script => !script?.lines?.length || script.metadata?.preview_only)) return "missing_script";
   if (state.flags[event.flag]) return "seen";
+  if (event.untilFinale && pastFinale()) return "relationship";
+  if (event.lateAdded && hiyoriEventSkipped(event)) return "seen";
   if (!event.chapters.includes(state.chapter)) return "chapter";
   if (id === "meeting" && !hiyoriFirstMeetingReady(state)) return "prerequisites";
   if (event.slot !== undefined && state.slot !== event.slot) return "time";
@@ -52,7 +65,7 @@ export function hiyoriEventPrereqsMet(id) {
   const dialogue = DB.dialogues[event.dialogue];
   const scripts = [dialogue, ...(event.outro ? [DB.dialogues[event.outro]] : [])];
   if (scripts.some((script) => !script?.lines?.length || script.metadata?.preview_only)) return false;
-  if (state.flags[event.flag]) return false;
+  if (state.flags[event.flag] || event.untilFinale && pastFinale() || event.lateAdded && hiyoriEventSkipped(event)) return false;
   if (!event.chapters.includes(state.chapter)) return false;
   if (id === "meeting" && !hiyoriFirstMeetingReady(state)) return false;
   if (event.requires.some((flag) => !state.flags[flag]) || event.met && !state.met.hiyori

@@ -286,7 +286,7 @@ await suite("venue-invite-reminder", async (check) => {
     assert.equal(await page.evaluate(() => QA.core.state.slot), 1);
   });
 
-  await check("free-shopping-before-rin-action", async (page) => {
+  await check("free-shopping-before-rio-action", async (page) => {
     await startReminderDay(page);
     await page.locator('[data-test="pin-shop"]').click();
     await page.locator('[data-test="map-go"]').click();
@@ -302,7 +302,7 @@ await suite("venue-invite-reminder", async (check) => {
     await page.locator('[data-test="phone-close"]').click();
     await page.locator('[data-test="pin-rest"]').waitFor();
     assert.deepEqual(await page.evaluate(() => ({ slot: QA.core.state.slot, money: QA.core.state.money,
-      rinVisited: QA.core.state.visitedDay.rin || null })), { slot: 1, money: 30000, rinVisited: null });
+      rioVisited: QA.core.state.visitedDay.rio || null })), { slot: 1, money: 30000, rioVisited: null });
   });
 
   await check("full-day-rest-last-reply-before-two-slots", async (page) => {

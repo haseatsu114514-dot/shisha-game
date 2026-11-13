@@ -1,8 +1,0 @@
-{
-  "remake/js/chapters/continue-view.js": "7edd8e99c437b66f6b0b2f6305df57ebf65a9b946f3acdaca9249e1ccb8a4a1e",
-  "remake/css/continue-neon.css": "6e3a5cbc641c611242736f8f9f8954deacf9a0912839056776fe5892bd2ff423",
-  "remake/test/browser/continue_closeup.mjs": "2b9252eb87889aa4c49404616edd1178d0d9e1a965ce8bc54676ffe77e0f3d56",
-  "remake/test/browser/gameover_title_center.mjs": "7f549b255cc620ebb1d6ae2ea38e03795e97fac551b7d95007624c631df76d6b",
-  "remake/test/continue_neon.mjs": "821327033b84da301dbefe680b0faae96df3e0af2ea86ac5ce85ff69763daa7c",
-  "remake/test/continue_typing.mjs": "6251e3bb2835ec574e69f754305bbe4f2cb2ff9abdb4d39fd4e039224fde45ea"
-}

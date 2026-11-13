@@ -75,9 +75,12 @@ await suite("samechan-dates", async check => {
       assert.equal(r.s.money, before.s.money - 3000); assert.equal(r.s.pendingInvite, null);
       assert.equal(r.s.lastDate.samechan, 4); assert.equal(r.s.flags._samechan_last_date_chapter, 2);
       assert(r.s.flags._samechan_date.complete); assert.equal(r.saved.lastDate.samechan, 4);
-      assert.equal(r.s.stats[choice ? "sense" : "insight"], before.s.stats[choice ? "sense" : "insight"] + 2);
+      // 旧しくみ（?growth=0）は選んだ答えの能力に2P、心得の盤（通常プレイの既定・SBD97）は自由行動の経験値
+      if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())) {
+        assert.deepEqual(r.s.stats, before.s.stats); assert((r.s.growth?.xp || 0) > (before.s.growth?.xp || 0), "The date earns EXP");
+      } else assert.equal(r.s.stats[choice ? "sense" : "insight"], before.s.stats[choice ? "sense" : "insight"] + 2);
       assert.equal(r.s.lovePts.samechan, before.s.lovePts.samechan + 5); assert.equal(r.s.loverSince.samechan, 17);
-      assert(r.log.includes("わし") && r.log.includes("のじゃ")); assert(!/波多野|泳/.test(r.log));
+      assert(r.log.includes("わし") && r.log.includes("のじゃ")); assert(!/暑海|泳/.test(r.log));
       await page.reload({ waitUntil: "load" }); await page.locator('[data-test="title-new"]').waitFor();
       await page.locator("#boot").waitFor({ state: "detached" }); await setup(page, true);
       const loaded = await page.evaluate(() => K.snap());
@@ -183,7 +186,9 @@ await suite("samechan-dates", async check => {
       });
       assert.equal(r.after.money, 0); assert.equal(r.after.stamina, 0); assert.equal(r.after.pendingInvite, null);
       assert.equal(r.after.lovePts.samechan, 17); assert.equal(r.after.lastDate.samechan, 4);
-      assert.equal(r.after.stats[mode === "touch" ? "sense" : "insight"], r.before.stats[mode === "touch" ? "sense" : "insight"] + 2);
+      if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())) {
+        assert.deepEqual(r.after.stats, r.before.stats); assert((r.after.growth?.xp || 0) > (r.before.growth?.xp || 0), "The date earns EXP once");
+      } else assert.equal(r.after.stats[mode === "touch" ? "sense" : "insight"], r.before.stats[mode === "touch" ? "sense" : "insight"] + 2);
       assert.equal(r.loaded.money, 0); assert.deepEqual(r.loaded.stats, r.after.stats); assert.equal(r.loaded.lovePts.samechan, 17);
     }, options);
 

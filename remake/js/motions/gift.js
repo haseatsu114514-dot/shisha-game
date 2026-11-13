@@ -1,5 +1,5 @@
 // 締めくくりの贈り物（bonds.playFinale・専用ハガルを受け取る前）。
-// a／b の2パターン（?movar=b）。配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。動きを減らす設定では core/scene-motions.js で省く（SKIP中は省かず最後まで再生）。
+// 既定は c（贈り主の絵柄を舞台にする・TMG48）。作り直し前の a／b は見比べ用（?movar=a・?movar=b）。配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。動きを減らす設定では core/scene-motions.js で省く（SKIP中は省かず最後まで再生）。
 // どちらも生成したハガルの絵（making/bowl_empty_clay）を大きく見せる。シーシャの道具をベクターで描き足さない。
 import { el, sleep } from "../core/util.js";
 import { SE } from "../core/audio.js";
@@ -9,6 +9,7 @@ import { W, svg, stageSvg, move } from "../core/transition-kit.js";
 import { MG_EASE as E, pick, burst, ring, confetti, twinkle, kinetic, playKinetic } from "../core/mg-kit.js";
 import { flavorColor, bowlArtFiles } from "../craft/art.js";
 import { stagePlay, backdrop } from "./stage.js";
+import { graphicIntro } from "../vn/intro-graphic.js";
 
 // イージング。指数の曲線は短い動き用なので、長めの動きは quint／cubic のやわらかい曲線にする
 const OUT_SOFT = "cubic-bezier(.33,1,.68,1)"; // 放り出す・立ち上げる動き（cubic-out）
@@ -29,11 +30,11 @@ function giverColor(from) {
 
 /** ハガルの絵を中身の幅 w px で置く。sheen は絵の形で切り抜いた光の帯 */
 const bowlFile = gear => gear?.art ? bowlArtFiles({ equip: { bowl: gear.id } })[0] : BOWL;
-function bowlArt(w = BOWL_W, gear = null) {
-  const file = bowlFile(gear), url = makingUrl(file);
+function bowlArt(w = BOWL_W, gear = null, file = bowlFile(gear)) {
+  const url = makingUrl(file);
   const [l, t, r, b, aspect] = DB.manifest?.makingBox?.[file] || BOWL_BOX;
-  // 背の高い専用ハガルも、縦横比を保って文字より上へ収める。
-  const maxHeight = gear?.id === "suyaki_hiyori" ? 380 : 440;
+  // 背の高い（脚のある）専用ハガルも、縦横比を保って文字より上へ収める。
+  const maxHeight = String(gear?.id || "").startsWith("suyaki_") ? 380 : 440;
   w = Math.min(w, maxHeight * (r - l) * aspect / (b - t));
   const fullW = w / (r - l), fullH = fullW / aspect;
   const h = Math.round(fullH * (b - t));
@@ -47,8 +48,8 @@ function bowlArt(w = BOWL_W, gear = null) {
 }
 
 /** 絵を先に読んでおく（出てくる瞬間に欠けないように）。読めなくても長くは待たない */
-async function loadBowl(gear) {
-  const url = makingUrl(bowlFile(gear));
+async function loadBowl(gear, file = bowlFile(gear)) {
+  const url = makingUrl(file);
   if (!url) return;
   const img = new Image();
   img.src = url;
@@ -300,5 +301,93 @@ export async function b(gear) {
     move(tilt, [{ transform: "translateY(178px) rotateX(64deg) scale(1.16)", opacity: 1 }, { transform: "translateY(240px) rotateX(90deg) scale(1.16)", opacity: 0 }], 420, { easing: E.in });
     move(rays, [{ opacity: 1, transform: "translate(-50%,-50%) scale(1) rotate(40deg)" }, { opacity: 0, transform: "translate(-50%,-50%) scale(0.5) rotate(56deg)" }], 420, { easing: E.in });
     await finish(iris, hero, fx, cx, cy, { ...P, white: dark });
+  });
+}
+
+// ---------------------------------------------------------------- c: 贈り主の絵柄を舞台に、品を大きく、名前は帯で（2026-11-11・TMG48）
+// 見本は remake/previews/motion-direction/ の5。白い箱・紙吹雪・紫の面をやめ、登場カットインの背景（贈り主の絵柄）を斜めに差し込んで舞台にする。
+// 品は左寄りに大きく、名前は登場カットインと同じ生成りの帯（右下）で。誰からの贈り物かを、色と模様で伝える。約4秒。
+
+/** 贈り主の絵柄（登場カットインの背景）。無い人は贈り主の色の面 */
+function giverSet(from) {
+  const url = graphicIntro(from, "graphic")?.background || null;
+  const color = DB.manifest?.introArt?.[from]?.color || "#3a2a52";
+  return { url, color };
+}
+async function loadImage(url) {
+  if (!url) return;
+  const img = new Image();
+  img.src = url;
+  await Promise.race([img.decode().catch(() => {}), sleep(1500)]);
+}
+/**
+ * 贈り物の専用ハガルの絵（assets/ui/making/bowl_empty_<贈り主>.png。suyaki_hiyori → bowl_empty_hiyori.png）。
+ * 専用の絵がまだ無い贈り物は null で、品の絵を出さずに絵柄と名前の帯だけで見せる。
+ * 素焼きの標準の器（bowl_empty_clay）は贈り物の品にしない（2026-11-11 オーナー。脚の無い皿だった。今は脚のある絵に差し替え済み）。
+ * 専用ハガルの生成依頼は asset_sources/hagal-bond-gifts-20261111/prompts.md。
+ */
+function giftBowlFile(gear) {
+  const own = `bowl_empty_${String(gear?.id || "").replace(/^suyaki_/, "")}.png`;
+  if (DB.manifest?.makingBox?.[own]) return own;
+  const file = bowlFile(gear);
+  return file && file !== BOWL ? file : null;
+}
+/** 「つむぎが育てたラベンダー専用ハガル」→ 前置き「つむぎが育てた」と品名「ラベンダー専用ハガル」。分けられない名前は1行 */
+function splitGiftName(name = "") {
+  const at = name.indexOf("が育てた");
+  return at > 0 ? [name.slice(0, at + 4), name.slice(at + 4)] : ["", name];
+}
+const SET_IN = [{ clipPath: "polygon(0 0, 0 0, -30% 100%, -30% 100%)" }, { clipPath: "polygon(0 0, 130% 0, 100% 100%, -30% 100%)" }];
+const SET_OUT = [{ clipPath: "polygon(0 0, 130% 0, 100% 100%, -30% 100%)" }, { clipPath: "polygon(130% 0, 130% 0, 100% 100%, 100% 100%)" }];
+const BAND_TOP = 450; // 帯（右下・-3度）の上の縁のおおよその高さ。品はこれより上に収める
+const TAG_TEXT_W = 540; // 帯の品名に使える幅（帯の左の余白から、画面の右端の少し手前まで）
+
+export async function c(gear) {
+  const from = gear.gift?.from;
+  const set = giverSet(from);
+  const file = giftBowlFile(gear);
+  await Promise.all([file ? loadBowl(gear, file) : null, loadImage(set.url)]);
+  await stagePlay("gift", async (node) => {
+    node.classList.add("at-c");
+    const dim = el("i.mo-gift-dim");
+    const art = el("i.mo-gift-set-art", { style: { backgroundColor: set.color, backgroundImage: set.url ? `url("${set.url}")` : "none" } });
+    const stage = el("div.mo-gift-set", [art, el("i.mo-gift-set-shade"), el("i.mo-gift-set-pool")]);
+    const bowl = file ? bowlArt(478, gear, file) : null;
+    const cy = bowl ? Math.min(300, BAND_TOP - 16 - bowl.h / 2) : 300; // 背の高いハガルは上へ寄せて、帯に重ねない
+    const item = el("div.mo-gift-item", { style: { top: `${cy}px` } }, bowl ? [bowl.node] : []);
+    const [pre, title] = splitGiftName(gear.name);
+    const name = el("span.t", { text: title });
+    const tag = el("div.mo-gift-tag", [
+      el("small", { text: `${displayName(from, state)}から` }),
+      pre ? el("div.pre", { text: pre }) : null,
+      name,
+    ]);
+    node.append(dim, stage, item, tag);
+    // 品名は帯の見えている幅（画面の右端まで）に収める。長い名前（ホワイトグミベア…・ひよりの「素顔でひと休み」）は字を小さく
+    if (name.scrollWidth > TAG_TEXT_W) name.style.fontSize = `${Math.floor(58 * TAG_TEXT_W / name.scrollWidth)}px`;
+    // 1. 元の場面が少し沈み、贈り主の絵柄が斜めに差し込む
+    move(dim, [{ opacity: 0 }, { opacity: 0.45 }], 380, { easing: "ease" });
+    move(stage, SET_IN, 500, { easing: E.inOut });
+    move(art, [{ transform: "scale(1.1) translateX(1.5%)" }, { transform: "scale(1.05)" }], 4000, { easing: "linear" });
+    await sleep(360);
+    // 2. 品が下から上がり、少し行きすぎて落ち着く（専用の絵がまだ無い贈り物は、品を出さず帯だけ）
+    if (bowl) SE.puka();
+    move(item, [
+      { opacity: 0, transform: "translateY(180px) rotate(-9deg) scale(.82)", easing: E.out },
+      { opacity: 1, transform: "translateY(-15px) rotate(1.5deg) scale(1.03)", offset: 0.6, easing: E.inOut },
+      { opacity: 1, transform: "none" },
+    ], 820, { easing: "linear" });
+    await sleep(520);
+    // 3. 名前の帯が右から入り、光が品をなでる
+    SE.select();
+    move(tag, [{ translate: "110% 0" }, { translate: "0 0" }], 520, { easing: E.out });
+    if (bowl) glint(bowl.sheen, 420);
+    await sleep(820);
+    await move(item, [{ transform: "none" }, { transform: "translateY(-9px)" }, { transform: "none" }], 1750, { easing: "ease-in-out" });
+    // 4. 帯と品が退いて、元の場面へ戻る
+    move(tag, [{ translate: "0 0" }, { translate: "110% 0" }], 360, { easing: E.in });
+    move(item, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(38px) scale(.94)" }], 320, { easing: E.in });
+    move(dim, [{ opacity: 0.45 }, { opacity: 0 }], 520, { delay: 200, easing: "ease" });
+    await move(stage, SET_OUT, 500, { delay: 200, easing: E.inOut });
   });
 }

@@ -1,0 +1,3766 @@
+{
+  "id": "moonflower-encore",
+  "version": 2,
+  "title": "月光花の古城と、終わらないアンコール",
+  "subtitle": "ノクターン、夜明け前の最終公演",
+  "author": "千夜カナデ",
+  "collection": "船灯文庫・小さな卓の冒険 11",
+  "duration": "約10分",
+  "premise": "月の丘の月光花城。吸血鬼バンド『ノクターン』の公演は、幽霊の客席が叫ぶアンコールで終われない。居合わせた三人は、夜明けまでに本当の最後の一曲を見つけられるか。",
+  "fiction": {
+    "town": "月の丘",
+    "shop": "月光花城",
+    "traveler": "伯爵ヴァレリオ"
+  },
+  "flow": {
+    "prepare": [
+      "stage",
+      "scent"
+    ],
+    "serve": [
+      "finale"
+    ],
+    "twist": [
+      "tactic"
+    ]
+  },
+  "fitWeights": {
+    "stage": 1,
+    "scent": 1,
+    "finale": 2,
+    "tactic": 0
+  },
+  "fallbackEnding": "together",
+  "rules": {
+    "exploreLimit": 4,
+    "pressureMax": 6,
+    "initialPressure": 0,
+    "inspectionPressure": 1,
+    "checkPressure": {
+      "success": 0,
+      "mixed": 1,
+      "trouble": 2
+    },
+    "detourThreshold": 5,
+    "hypothesisBonus": 1
+  },
+  "cast": [
+    {
+      "id": "rei",
+      "part": "GM",
+      "role": "語り手と、家令ギルバート",
+      "color": "#9b1b3f"
+    },
+    {
+      "id": "hajime",
+      "part": "PLAYER",
+      "role": "{pc}／新人の裏方",
+      "color": "#c98f6a",
+      "ability": "土壇場のひらめき",
+      "abilityType": "reroll",
+      "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
+      "sheet": {
+        "name": "ノエル",
+        "title": "新人の裏方",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 3,
+          "nerve": 3
+        },
+        "trait": "荷運びと段取りは得意。吸血鬼の流儀は、まだ勉強中"
+      }
+    },
+    {
+      "id": "ageha",
+      "part": "PLAYER",
+      "role": "{pc:ageha}／追っかけのファン",
+      "color": "#ff8fc8",
+      "ability": "推し活の本気",
+      "abilityType": "prepare",
+      "abilityText": "舞台を盛るとき、判定に一度だけ＋7",
+      "sheet": {
+        "name": "キララ",
+        "title": "追っかけのファン",
+        "stats": {
+          "eye": 2,
+          "hand": 4,
+          "talk": 3,
+          "nerve": 2
+        },
+        "trait": "ノクターンを追って、城まで来たファン。うちわもペンライトも自作",
+        "likes": "プリクラと、白と赤のグミベア"
+      },
+      "alternatives": {
+        "regulara": {
+          "role": "{pc:ageha}／追っかけのファン",
+          "color": "#bb9c72"
+        }
+      }
+    },
+    {
+      "id": "adam",
+      "part": "PLAYER",
+      "role": "{pc:adam}／林檎の紋章のハンター",
+      "color": "#c9463a",
+      "ability": "原点の名言",
+      "abilityType": "serve",
+      "abilityText": "最後の一曲を届けるとき、判定に一度だけ＋7",
+      "sheet": {
+        "name": "レオン",
+        "title": "林檎の紋章のハンター",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 2
+        },
+        "trait": "吸血鬼を狩りに来た……が、実は平和主義。武器は林檎と名言",
+        "likes": "ダブルアップルと、舞台の仕掛け"
+      },
+      "alternatives": {
+        "regularb": {
+          "role": "{pc:adam}／林檎の紋章のハンター",
+          "color": "#8faeaa"
+        }
+      }
+    }
+  ],
+  "spots": [
+    {
+      "id": "stage",
+      "label": "大広間の舞台",
+      "short": "舞台",
+      "x": 40,
+      "y": 33
+    },
+    {
+      "id": "nameplates",
+      "label": "客席の名札",
+      "short": "名札",
+      "x": 23,
+      "y": 55
+    },
+    {
+      "id": "score",
+      "label": "楽屋の譜面台",
+      "short": "譜面台",
+      "x": 13,
+      "y": 22
+    },
+    {
+      "id": "garden",
+      "label": "庭の月光花",
+      "short": "月光花",
+      "x": 74,
+      "y": 38
+    },
+    {
+      "id": "portrait",
+      "label": "回廊の肖像画",
+      "short": "肖像画",
+      "x": 92,
+      "y": 26
+    },
+    {
+      "id": "keys",
+      "label": "家令の鍵束",
+      "short": "鍵束",
+      "x": 50,
+      "y": 84
+    }
+  ],
+  "hypotheses": [
+    {
+      "id": "promise",
+      "label": "約束の最後の一曲を、まだ弾いていない",
+      "description": "伯爵は昔、誰かと約束した一曲を残しているのかも。",
+      "discussion": "trpg_moonflower_encore_discuss_promise"
+    },
+    {
+      "id": "names",
+      "label": "幽霊たちは、名前を呼んでほしい",
+      "description": "客席のみんなは、ファンとして覚えていてほしいのかも。",
+      "discussion": "trpg_moonflower_encore_discuss_names"
+    },
+    {
+      "id": "garden",
+      "label": "月光花が咲く瞬間を、みんなで見たい",
+      "description": "夜明け前に一度だけ咲く花を、待っているのかも。",
+      "discussion": "trpg_moonflower_encore_discuss_garden"
+    }
+  ],
+  "options": {
+    "stage": [
+      {
+        "id": "petals",
+        "label": "薔薇の花びら",
+        "description": "終演の舞台から、客席へ花びらを降らせる。",
+        "response": "trpg_moonflower_encore_choice_stage_petals"
+      },
+      {
+        "id": "candles",
+        "label": "蝋燭の灯り",
+        "description": "大広間の明かりを落とし、蝋燭の火だけで照らす。",
+        "response": "trpg_moonflower_encore_choice_stage_candles"
+      },
+      {
+        "id": "mist",
+        "label": "霧のスモーク",
+        "description": "床いっぱいに霧を流し、月明かりを浮かび上がらせる。",
+        "response": "trpg_moonflower_encore_choice_stage_mist"
+      }
+    ],
+    "scent": [
+      {
+        "id": "moonflower",
+        "label": "月光花の香り",
+        "description": "夜に開く白い花の、細く甘い香り。",
+        "response": "trpg_moonflower_encore_choice_scent_moonflower"
+      },
+      {
+        "id": "rosetea",
+        "label": "薔薇と紅茶",
+        "description": "薔薇の華やかさに、紅茶の渋みを重ねた香り。",
+        "response": "trpg_moonflower_encore_choice_scent_rosetea"
+      },
+      {
+        "id": "forest",
+        "label": "夜の森",
+        "description": "湿った土と木の葉の、深く落ち着いた香り。",
+        "response": "trpg_moonflower_encore_choice_scent_forest"
+      }
+    ],
+    "finale": [
+      {
+        "id": "call",
+        "label": "客席の名前を呼ぶ",
+        "description": "決め台詞の代わりに、客席の一人一人の名前を呼ぶ。",
+        "response": "trpg_moonflower_encore_choice_finale_call"
+      },
+      {
+        "id": "score",
+        "label": "約束の譜面を渡す",
+        "description": "引き出しの古い譜面を、伯爵の譜面台に置く。",
+        "response": "trpg_moonflower_encore_choice_finale_score"
+      },
+      {
+        "id": "lead",
+        "label": "みんなを庭へ連れ出す",
+        "description": "大扉を開けて、客席も楽団も月明かりの庭へ。",
+        "response": "trpg_moonflower_encore_choice_finale_lead"
+      }
+    ],
+    "tactic": [
+      {
+        "id": "clap",
+        "label": "手拍子で落ち着かせる",
+        "description": "暗闇の中、三人で拍子を刻んで客席をまとめる。",
+        "response": "trpg_moonflower_encore_choice_tactic_clap"
+      },
+      {
+        "id": "relight",
+        "label": "蝋燭を灯し直す",
+        "description": "燭台を一つずつ回り、消えた火を灯していく。",
+        "response": "trpg_moonflower_encore_choice_tactic_relight"
+      },
+      {
+        "id": "sing",
+        "label": "コウモリにも歌を聞かせる",
+        "description": "子守唄を口ずさみ、コウモリたちを眠らせる。",
+        "response": "trpg_moonflower_encore_choice_tactic_sing"
+      }
+    ]
+  },
+  "profiles": [
+    {
+      "id": "promise",
+      "arrival": "伯爵は楽屋にこもり、古い譜面とにらめっこしておいでです",
+      "likes": {
+        "stage": [
+          "candles"
+        ],
+        "scent": [
+          "rosetea"
+        ],
+        "finale": [
+          "score"
+        ]
+      },
+      "ending": "promise-song",
+      "evidence": {
+        "stage": {
+          "title": "消された最後の曲",
+          "text": "セットリストの一番下に、線で消された曲名。かすれた字で『約束の曲』と読める。",
+          "lines": "trpg_moonflower_encore_clue_promise_stage"
+        },
+        "nameplates": {
+          "title": "最前列のロゼ",
+          "text": "最前列の名札に『ロゼ』。百年前から毎晩、同じ席に座っているという。",
+          "lines": "trpg_moonflower_encore_clue_promise_nameplates"
+        },
+        "score": {
+          "title": "題名のない譜面",
+          "text": "楽屋の譜面台に、題名のない古い譜面。最後の小節だけ、何度も書き直してある。",
+          "lines": "trpg_moonflower_encore_clue_promise_score"
+        },
+        "garden": {
+          "title": "二つのティーカップ",
+          "text": "月光花のそばのベンチに、薔薇模様のカップが二つ。片方に『また聴かせて』と刻んである。",
+          "lines": "trpg_moonflower_encore_clue_promise_garden"
+        },
+        "portrait": {
+          "title": "最初のファンへ",
+          "text": "伯爵の肖像の隣に、薔薇の髪飾りの婦人。額の裏に『最初のファンへ』と書いてある。",
+          "lines": "trpg_moonflower_encore_clue_promise_portrait"
+        },
+        "keys": {
+          "title": "薔薇の飾りの鍵",
+          "text": "鍵束に一本だけ、薔薇の飾りの鍵。楽屋の、百年開けられていない引き出しの鍵だ。",
+          "lines": "trpg_moonflower_encore_clue_promise_keys"
+        }
+      },
+      "answers": {
+        "band": {
+          "title": "たった一人の客",
+          "text": "百年前、ノクターンの最初の公演の客は、薔薇の髪飾りの婦人ただ一人だった。",
+          "lines": "trpg_moonflower_encore_ask_promise_band"
+        },
+        "count": {
+          "title": "最後で止まる手",
+          "text": "伯爵は毎晩、最後の曲の前で手を止め、楽譜を見ては首を振る。",
+          "lines": "trpg_moonflower_encore_ask_promise_count"
+        },
+        "audience": {
+          "title": "百年の最前列",
+          "text": "最前列のロゼ様は、百年のあいだ毎晩、同じ席に来ている。",
+          "lines": "trpg_moonflower_encore_ask_promise_audience"
+        },
+        "flower": {
+          "title": "紅茶と月光花",
+          "text": "月光花は伯爵とロゼ様が植えた花。紅茶の時間に、二人でよく眺めていた。",
+          "lines": "trpg_moonflower_encore_ask_promise_flower"
+        }
+      }
+    },
+    {
+      "id": "names",
+      "arrival": "伯爵は舞台袖で、『迷える魂たちよ』の言い方を練習しておいでです",
+      "likes": {
+        "stage": [
+          "petals"
+        ],
+        "scent": [
+          "forest"
+        ],
+        "finale": [
+          "call"
+        ]
+      },
+      "ending": "name-encore",
+      "evidence": {
+        "stage": {
+          "title": "花びらの跡",
+          "text": "舞台の床に、色あせた薔薇の花びら。昔は終演のたび、客席へ花びらをまいていたらしい。",
+          "lines": "trpg_moonflower_encore_clue_names_stage"
+        },
+        "nameplates": {
+          "title": "呼ばれたら手を振る",
+          "text": "手作りの名札は、どれも名前が大きく書いてある。裏には『呼ばれたら手を振る』。",
+          "lines": "trpg_moonflower_encore_clue_names_nameplates"
+        },
+        "score": {
+          "title": "最後の欄",
+          "text": "古いセットリストの最後の欄に、『みんなの名前を呼ぶ』と書いてある。今のものには、その欄がない。",
+          "lines": "trpg_moonflower_encore_clue_names_score"
+        },
+        "garden": {
+          "title": "森からの足跡",
+          "text": "庭の小道に、森の方から続く足跡がたくさん。客席の幽霊たちは、毎晩森の村から通っている。",
+          "lines": "trpg_moonflower_encore_clue_names_garden"
+        },
+        "portrait": {
+          "title": "名前つきの客席",
+          "text": "回廊に、昔の客席を描いた絵。一人一人の顔の横に、名前が添えてある。",
+          "lines": "trpg_moonflower_encore_clue_names_portrait"
+        },
+        "keys": {
+          "title": "今日も来てくれた",
+          "text": "鍵束の一本で開く、古い出席簿。常連の名前の横に、毎晩『今日も来てくれた』の印がある。",
+          "lines": "trpg_moonflower_encore_clue_names_keys"
+        }
+      },
+      "answers": {
+        "band": {
+          "title": "村祭りの楽団",
+          "text": "ノクターンは昔、森の村の祭りの楽団だった。客の名前を、全員覚えていた。",
+          "lines": "trpg_moonflower_encore_ask_names_band"
+        },
+        "count": {
+          "title": "迷える魂たちよ",
+          "text": "伯爵は近ごろ、客席を『迷える魂たちよ』としか呼ばない。かっこいいから、らしい。",
+          "lines": "trpg_moonflower_encore_ask_names_count"
+        },
+        "audience": {
+          "title": "胸の名札",
+          "text": "常連の幽霊たちは、手作りの名札を毎晩胸に付けてくる。",
+          "lines": "trpg_moonflower_encore_ask_names_audience"
+        },
+        "flower": {
+          "title": "一株ずつの花",
+          "text": "月光花は、森の村の人々が一株ずつ持ってきた花。株ごとに、持ち主の名札が立っている。",
+          "lines": "trpg_moonflower_encore_ask_names_flower"
+        }
+      }
+    },
+    {
+      "id": "garden",
+      "arrival": "伯爵は曲の合間に、窓から庭ばかり見ておいでです",
+      "likes": {
+        "stage": [
+          "mist"
+        ],
+        "scent": [
+          "moonflower"
+        ],
+        "finale": [
+          "lead"
+        ]
+      },
+      "ending": "moonflower-garden",
+      "evidence": {
+        "stage": {
+          "title": "花の振り付け",
+          "text": "客席の振り付けは、両手を花のように開く形。百年前、月光花が咲いた夜に生まれたという。",
+          "lines": "trpg_moonflower_encore_clue_garden_stage"
+        },
+        "nameplates": {
+          "title": "今夜の押し花",
+          "text": "名札の裏に、小さな月光花の押し花。添えられた日付は、どれも今夜と同じ日。",
+          "lines": "trpg_moonflower_encore_clue_garden_nameplates"
+        },
+        "score": {
+          "title": "花が開くまで",
+          "text": "譜面の最後に、赤い字で『花が開くまで、繰り返し』と書いてある。",
+          "lines": "trpg_moonflower_encore_clue_garden_score"
+        },
+        "garden": {
+          "title": "ふくらんだつぼみ",
+          "text": "月光花のつぼみが、今にも開きそうにふくらんでいる。開くのは年に一度、夜明け前だけ。",
+          "lines": "trpg_moonflower_encore_clue_garden_garden"
+        },
+        "portrait": {
+          "title": "庭の楽団",
+          "text": "肖像画のノクターンは、城の中ではなく庭にいる。楽器を手に、月光花を見上げている。",
+          "lines": "trpg_moonflower_encore_clue_garden_portrait"
+        },
+        "keys": {
+          "title": "磨かれた大扉の鍵",
+          "text": "鍵束で一番大きいのは、庭へ出る大扉の鍵。今夜のために、ぴかぴかに磨いてある。",
+          "lines": "trpg_moonflower_encore_clue_garden_keys"
+        }
+      },
+      "answers": {
+        "band": {
+          "title": "庭の初演",
+          "text": "ノクターンの最初の演奏は、庭の月光花の前だった。",
+          "lines": "trpg_moonflower_encore_ask_garden_band"
+        },
+        "count": {
+          "title": "窓の外",
+          "text": "伯爵は曲の合間に、何度も窓の外の庭を気にしている。",
+          "lines": "trpg_moonflower_encore_ask_garden_count"
+        },
+        "audience": {
+          "title": "窓を見る客席",
+          "text": "客席の幽霊たちも、アンコールの合間に窓の外ばかり見ている。",
+          "lines": "trpg_moonflower_encore_ask_garden_audience"
+        },
+        "flower": {
+          "title": "年に一度の夜明け前",
+          "text": "月光花は年に一度、今夜の夜明け前にだけ咲く。",
+          "lines": "trpg_moonflower_encore_ask_garden_flower"
+        }
+      }
+    }
+  ],
+  "endings": {
+    "promise-song": {
+      "title": "約束の一曲",
+      "line": "伯爵は百年しまっていた譜面を開いた。最前列のロゼのための一曲で、夜はやさしく幕を下ろした。",
+      "dialogue": "trpg_moonflower_encore_ending_promise-song"
+    },
+    "name-encore": {
+      "title": "名前を呼ぶアンコール",
+      "line": "伯爵は客席の名前を一人ずつ呼んだ。手を振り返した幽霊たちは、笑顔で森へ帰っていった。",
+      "dialogue": "trpg_moonflower_encore_ending_name-encore"
+    },
+    "moonflower-garden": {
+      "title": "月光花の咲く庭",
+      "line": "最後の一曲は庭で。夜明け前、月光花が開く瞬間を、城のみんなで見届けた。",
+      "dialogue": "trpg_moonflower_encore_ending_moonflower-garden"
+    },
+    "together": {
+      "title": "みんなで歌って、幕",
+      "line": "答えには少し届かなかった。それでも客席も舞台も一緒に歌い、朝日の前に幕が下りた。",
+      "dialogue": "trpg_moonflower_encore_ending_together"
+    }
+  },
+  "dialogues": [
+    {
+      "dialogue_id": "trpg_moonflower_encore_intro",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……じゃあ、始める。今夜の本は、俺が回す"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "お前たちは、古城のライブに居合わせた客と裏方だ。客席は、全員幽霊",
+          "castIntro": true,
+          "smallTableText": "お前は、古城のライブの裏方だ。空いた役は、俺が回す"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "幽霊の客席ですか。レヰさんらしい舞台ですね"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……吸血鬼のバンドも出る。好きなものを、全部入れた"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "吸血鬼のバンド！？ やば、絶対ビジュ強いじゃん",
+          "variants": {
+            "regulara": {
+              "text": "吸血鬼のバンド！？ やば、絶対ビジュ強いじゃん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "古城のライブか。舞台装置の血が騒ぐな",
+          "variants": {
+            "regularb": {
+              "text": "古城のライブか。舞台装置の血が騒ぐな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "月の丘。夜ごと白い花の香りに包まれる古城、月光花城"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "今宵、その大広間に鳴り響くのは、吸血鬼の楽団『ノクターン』の調べ"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "百年の夜を越え、彼らは月の下でだけ奏で続けてきた"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "客席を埋めるのは、透きとおった幽霊たち。揺れる灯りは、青白い鬼火だ"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}は、舞台袖で、ほどけた幕の綱を結び直している"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:ageha}は、最前列で、誰よりも大きく手を振っている"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:adam}は、柱の陰から、静かに客席を眺めている"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "最後の曲が終わる。だが、拍手は鳴りやまない"
+        },
+        {
+          "speaker": "rei",
+          "role": "幽霊の客席／物語",
+          "face": "smile",
+          "text": "『アンコール！ アンコール！』"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "今夜、これで九度目のアンコールだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "surprise",
+          "text": "九度目……！？ 夜明けまでに終わるのかな、これ"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……あ。悪い、語りすぎた"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "全然いい！ GMさんの語り、ライブのMCみたいでアガる",
+          "variants": {
+            "regulara": {
+              "text": "全然いい！ GMさんの語り、ライブのMCみたいでアガる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_listen",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "舞台袖の暗がりに、燕尾服の老紳士がすうっと現れた。足元が、少し透けている"
+        },
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "normal",
+          "text": "城の家令、ギルバートと申します。皆さまを見込んで、お願いがございます"
+        },
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "serious",
+          "text": "夜明けまでに、本当の最後の一曲を。伯爵が、幕を下ろせるように"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "分かりました。伯爵は、今どちらに？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_listen_success",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "アンコールの声は、まだ穏やかだ。伯爵の困り顔も、よく見える"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "よし、今のうちに調べましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_listen_mixed",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "客席の幽霊たちが、そろって激しく頭を振り始める。アンコールが一つ高まる"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ヘドバンじゃん！ わかる、うちも振る",
+          "variants": {
+            "regulara": {
+              "text": "ヘドバンじゃん！ わかる、うちも振る",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_listen_trouble",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "ドラムの吸血鬼が勘違いして、もう一曲始めてしまった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "終わらせたいのに、曲が増えた！？"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……アンコールは二つ高まる。でも、調べはできる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_prepare_success",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "大広間が、夜の色に染まる。客席から、ため息のような声がもれた"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "やば、超エモい。この景色、プリに残したい",
+          "variants": {
+            "regulara": {
+              "text": "やば、超エモい。この景色、プリに残したい",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_prepare_mixed",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "一つ直すあいだに、客席のアンコールが一つ高まる"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "直したからセーフ！ 盛りは、ちょい崩れてもかわいいの",
+          "variants": {
+            "regulara": {
+              "text": "直したからセーフ！ 盛りは、ちょい崩れてもかわいいの",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_prepare_trouble",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "物販のコウモリたちが、飾りをお土産と勘違いして持っていく"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "ちょ、それ売り物じゃないって！ 返してー！",
+          "variants": {
+            "regulara": {
+              "text": "ちょ、それ売り物じゃないって！ 返してー！",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……予備はある。まだ、間に合う"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_serve_success",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "伯爵が深く一礼する。客席が、しんと静まった"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "名演の前には、必ず静けさがある。覚えておくといい",
+          "variants": {
+            "regularb": {
+              "text": "名演の前には、必ず静けさがある。覚えておくといい",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "最後の一曲が、始まる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_serve_mixed",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "伯爵のマントが譜面台に引っかかり、譜面が舞い上がった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "smile",
+          "text": "拾います！ 伯爵は、そのまま続けてください"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……少し崩れた。でも、それが生の音だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_serve_trouble",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "伯爵が緊張のあまり、ギターの弦を一本はじき飛ばした"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "案ずるな。弦が一本減っても、音楽は止まらん",
+          "variants": {
+            "regularb": {
+              "text": "案ずるな。弦が一本減っても、音楽は止まらん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……弦は減った。でも、曲は続く"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_consult_ageha",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "四か所しか見れないの、ムズくない？ 推しの現場は全部回りたい派なんだけど",
+          "variants": {
+            "regulara": {
+              "text": "四か所しか見れないの、ムズくない？ 推しの現場は全部回りたい派なんだけど",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "てかアンコールって、まだ何か足りないときに起きるんだよね",
+          "variants": {
+            "regulara": {
+              "text": "てかアンコールって、まだ何か足りないときに起きるんだよね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……相談とメモは、回数を使わない。好きなだけ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_consult_adam",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "舞台の謎は、裏から見ると仕掛けが分かる。譜面台か、鍵束だな",
+          "variants": {
+            "regularb": {
+              "text": "舞台の謎は、裏から見ると仕掛けが分かる。譜面台か、鍵束だな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "客席の名札も気になる。客の顔を知るのは、演者の基本だ",
+          "variants": {
+            "regularb": {
+              "text": "客席の名札も気になる。客の顔を知るのは、演者の基本だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……鋭い。いい読みだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_preparation",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "幕間。楽屋で伯爵が、月光花の香りの一台を出してくれた"
+        },
+        {
+          "speaker": "rei",
+          "role": "伯爵ヴァレリオ／物語",
+          "face": "smile",
+          "text": "夜に開く花の香りだ。少し休むがいい、月夜の客人たちよ"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "surprise",
+          "text": "推しから直接一台とか、一生自慢するんだけど……！",
+          "variants": {
+            "regulara": {
+              "text": "推しから直接一台とか、一生自慢するんだけど……！",
+              "face": "normal",
+              "role": "{pc:ageha}／物語"
+            }
+          }
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……てか、うち役に入りすぎ？ 楽しすぎるんだけど",
+          "variants": {
+            "regulara": {
+              "text": "……てか、うち役に入りすぎ？ 楽しすぎるんだけど",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……支度だ。夜明けまでに、演出と香りを選んでくれ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "見立ては決まりました。舞台を整えましょう"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "香りは舞台の半分だ。林檎が無いのだけは惜しいがな",
+          "variants": {
+            "regularb": {
+              "text": "香りは舞台の半分だ。林檎が無いのだけは惜しいがな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_serving",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "東の空が、ほんの少しだけ薄くなる。夜明けまで、あとわずか"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "伯爵がギターを抱え直し、客席をゆっくり見渡した"
+        },
+        {
+          "speaker": "rei",
+          "role": "伯爵ヴァレリオ／物語",
+          "face": "serious",
+          "text": "客人たちよ。……最後の一曲を、どう届ければいい"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "みんな、打ち合わせどおりにいきましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_epilogue",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……これで、終演。付き合ってくれて、ありがとう"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "レヰさんの語り、本物のライブみたいでした"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……そうか。語りすぎた気は、する"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "GMさん、それがいいんじゃん！ うち途中から、ガチでファンの気持ちだった",
+          "variants": {
+            "regulara": {
+              "text": "GMさん、それがいいんじゃん！ うち途中から、ガチでファンの気持ちだった",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "終わらない夜より、終わる夜の方が美しい。今夜の名言だ",
+          "variants": {
+            "regularb": {
+              "text": "終わらない夜より、終わる夜の方が美しい。今夜の名言だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……月光花は、俺の一台の名前でもある。ジャスミンと、ブルーベリー"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "今夜の物語の香りですね。今度、頼みに行きます"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……ああ。合う曲も、選んでおく"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "うちも行く！ 自作のうちわ、持ってくね",
+          "variants": {
+            "regulara": {
+              "text": "うちも行く！ 自作のうちわ、持ってくね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_promise_stage",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "舞台の足元のセットリスト。線で消された最後の曲名は、『約束の曲』"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "一番大事な曲ほど、最後に回したくなるものだ",
+          "variants": {
+            "regularb": {
+              "text": "一番大事な曲ほど、最後に回したくなるものだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "消してあるってことは、まだ一度も弾いてないのかも"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_promise_nameplates",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "最前列の名札に『ロゼ』。百年、毎晩この席に座っているという"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "百年皆勤！？ ガチ勢の中のガチ勢じゃん",
+          "variants": {
+            "regulara": {
+              "text": "百年皆勤！？ ガチ勢の中のガチ勢じゃん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "そんなに通うなら、待ってる曲があるんだろうな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_promise_score",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "題名のない古い譜面。最後の小節だけ、何度も書き直した跡がある"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "書き直しの数は、迷いの数だ。だが、捨ててはいない",
+          "variants": {
+            "regularb": {
+              "text": "書き直しの数は、迷いの数だ。だが、捨ててはいない",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "できあがってるのに、弾く勇気が出ないのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_promise_garden",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "月光花のそばのベンチに、薔薇模様のカップが二つ。片方に『また聴かせて』"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "また聴かせて、って……ファンレターじゃん、これ",
+          "variants": {
+            "regulara": {
+              "text": "また聴かせて、って……ファンレターじゃん、これ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "誰かと紅茶を飲みながら、曲を聴いてたんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_promise_portrait",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "伯爵の肖像の隣に、薔薇の髪飾りの婦人。額の裏に『最初のファンへ』"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "最初の客は、演者にとって一生の客だ。顔は、何年たっても忘れない",
+          "variants": {
+            "regularb": {
+              "text": "最初の客は、演者にとって一生の客だ。顔は、何年たっても忘れない",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "この人のために書いた曲が、あるのかもしれない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_promise_keys",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "鍵束に一本だけ、薔薇の飾りの鍵がある"
+        },
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "serious",
+          "text": "楽屋の引き出しの鍵です。伯爵は百年、開けておられません"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "開けないってことは、大事なものが入ってるんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_names_stage",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "舞台の床に、色あせた薔薇の花びら。昔は終演のたびにまいていたらしい"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "花びらの雨か。昔の伯爵は、客席との距離が近かったのだな",
+          "variants": {
+            "regularb": {
+              "text": "花びらの雨か。昔の伯爵は、客席との距離が近かったのだな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今の演出より、ずっと近い感じがする"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_names_nameplates",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "手作りの名札は、どれも名前が大きい。裏に『呼ばれたら手を振る』"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "え、待って。これ、推しに名前呼ばれる準備じゃん！",
+          "variants": {
+            "regulara": {
+              "text": "え、待って。これ、推しに名前呼ばれる準備じゃん！",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "みんな、呼ばれるのを待ってるのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_names_score",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "古いセットリストの最後の欄に、『みんなの名前を呼ぶ』とある"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "演目の締めに、客の名前か。粋な幕切れだ",
+          "variants": {
+            "regularb": {
+              "text": "演目の締めに、客の名前か。粋な幕切れだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今のセットリストには、その欄がないな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_names_garden",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "庭の小道に、森の方から続く小さな足跡がたくさんある"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "客席の幽霊たちは、毎晩森の村から歩いて通っているらしい"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "毎晩遠征とか、愛が重い……。わかるけど",
+          "variants": {
+            "regulara": {
+              "text": "毎晩遠征とか、愛が重い……。わかるけど",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_names_portrait",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "回廊に、昔の客席の絵。一人一人の顔の横に、名前が書いてある"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "演者が客の顔と名を覚えていた時代か。いい絵だ",
+          "variants": {
+            "regularb": {
+              "text": "演者が客の顔と名を覚えていた時代か。いい絵だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "伯爵、昔は全員の名前を知ってたんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_names_keys",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "鍵束の一本で、古い出席簿の箱が開いた"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "常連の名前の横に、毎晩『今日も来てくれた』の印がある"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "百年分の印……。伯爵も、ちゃんと覚えてたんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_garden_stage",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "客席の幽霊が、両手を花のように開く。月光花の夜に生まれた振りだ"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……『咲き』っていう振りだ。……好きなんだ、こういうの"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "うちも咲く！ てか、みんな花が開くの待ってる感じしない？",
+          "variants": {
+            "regulara": {
+              "text": "うちも咲く！ てか、みんな花が開くの待ってる感じしない？",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_garden_nameplates",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "名札の裏に、月光花の押し花。日付は、どれも今夜と同じ日だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "一年に一夜の記念日か。客席は、今夜を待っていたのだな",
+          "variants": {
+            "regularb": {
+              "text": "一年に一夜の記念日か。客席は、今夜を待っていたのだな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今夜って、何か特別な夜なのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_garden_score",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "譜面の最後に、赤い字の指示。『花が開くまで、繰り返し』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "繰り返し……アンコールが終わらないのは、これのせい？"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "譜面どおりに弾いている。つまり、まだ花が開いていないのだ",
+          "variants": {
+            "regularb": {
+              "text": "譜面どおりに弾いている。つまり、まだ花が開いていないのだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_garden_garden",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "月光花のつぼみが、今にもほどけそうにふくらんでいる"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ジャスミンに似た甘い香りが、夜風にのって流れてくる"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "咲く前の匂いで、もうこれ？ 咲いたら絶対やばいじゃん",
+          "variants": {
+            "regulara": {
+              "text": "咲く前の匂いで、もうこれ？ 咲いたら絶対やばいじゃん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_garden_portrait",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "肖像画のノクターンは、城の中でなく庭にいる。皆で月光花を見上げて"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "野外の舞台か。この楽団、本当は外が好きなのかもしれん",
+          "variants": {
+            "regularb": {
+              "text": "野外の舞台か。この楽団、本当は外が好きなのかもしれん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "最初は、庭で演奏してたのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_clue_garden_keys",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "鍵束で一番大きいのは、庭へ出る大扉の鍵。ぴかぴかに磨いてある"
+        },
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "normal",
+          "text": "年に一度、今夜だけ使う鍵でございます"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今夜だけ……。庭で、何かあるんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_choice_stage_petals",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "花びら降らせるの、ライブの特効っぽくて好き！",
+          "variants": {
+            "regulara": {
+              "text": "花びら降らせるの、ライブの特効っぽくて好き！",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_choice_stage_candles",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "蝋燭の灯り、ちょい暗めがエモいんだよね。わかる",
+          "variants": {
+            "regulara": {
+              "text": "蝋燭の灯り、ちょい暗めがエモいんだよね。わかる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_choice_stage_mist",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "スモークもくもく、絶対ビジュ盛れるやつじゃん！",
+          "variants": {
+            "regulara": {
+              "text": "スモークもくもく、絶対ビジュ盛れるやつじゃん！",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_choice_scent_moonflower",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "夜に開く花の香りか。城の名にふさわしい",
+          "variants": {
+            "regularb": {
+              "text": "夜に開く花の香りか。城の名にふさ私い",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_choice_scent_rosetea",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "薔薇と紅茶。気品のある香りは、客席の背筋を伸ばす",
+          "variants": {
+            "regularb": {
+              "text": "薔薇と紅茶。気品のある香りは、客席の背筋を伸ばす",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_choice_scent_forest",
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "夜の森の香りは深い。夜明け前の空気によく似合う",
+          "variants": {
+            "regularb": {
+              "text": "夜の森の香りは深い。夜明け前の空気によく似合う",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_choice_finale_call",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "伯爵、客席の一人一人の名前を呼んであげてください"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_choice_finale_score",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "伯爵、この譜面を。約束の曲を、弾いてください"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_choice_finale_lead",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "smile",
+          "text": "最後の一曲は、外でやりましょう。みんなで庭へ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_ending_promise-song",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "伯爵は楽屋の引き出しから、百年しまっていた譜面を取り出した"
+        },
+        {
+          "speaker": "rei",
+          "role": "伯爵ヴァレリオ／物語",
+          "face": "serious",
+          "text": "最前列の、ロゼ。……君と約束した、最後の一曲だ"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "薔薇の髪飾りの幽霊が、両手で口元をおさえる"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "静かな旋律が流れ、アンコールの声は、ゆっくりと拍手に変わった"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "smile",
+          "text": "百年待って、ちゃんと届いたじゃん……。よかったね、ロゼさん",
+          "variants": {
+            "regulara": {
+              "text": "百年待って、ちゃんと届いたじゃん……。よかったね、ロゼさん",
+              "face": "normal",
+              "role": "{pc:ageha}／物語"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "終わらせたくなかったんじゃなくて、届けたかったんですね"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……夜明けの鐘と一緒に、客席はみんな、満足そうに帰っていった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_ending_name-encore",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "伯爵は決め台詞をやめ、客席の名札を一枚ずつ読み上げた"
+        },
+        {
+          "speaker": "rei",
+          "role": "伯爵ヴァレリオ／物語",
+          "face": "smile",
+          "text": "マーサ、トビー、ハンス、エマ……。毎晩、来てくれてありがとう"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "名前を呼ばれるたび、鬼火の灯りが高く揺れる"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "surprise",
+          "text": "伯爵、うちの名前も呼んで！ ……え、ほんとに呼んでくれた！",
+          "variants": {
+            "regulara": {
+              "text": "伯爵、うちの名前も呼んで！ ……え、ほんとに呼んでくれた！",
+              "face": "normal",
+              "role": "{pc:ageha}／物語"
+            }
+          }
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "名を呼ぶ。それだけで、百年分の拍手になる",
+          "variants": {
+            "regularb": {
+              "text": "名を呼ぶ。それだけで、百年分の拍手になる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "みんな、覚えていてほしかっただけなんですね"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……最後のアンコールのあと、幽霊たちは手を振って森へ帰った"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_ending_moonflower-garden",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "大扉が開き、客席も楽団も、月明かりの庭へ流れ出る"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "伯爵が月光花の前でギターを鳴らす。東の空が、白みはじめた"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "その瞬間、つぼみがほどけ、白い花がいっせいに開いた"
+        },
+        {
+          "speaker": "rei",
+          "role": "伯爵ヴァレリオ／物語",
+          "face": "smile",
+          "text": "……これだ。この景色を、みんなで見たかった"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "smile",
+          "text": "きれー……。これ、プリでも盛れないやつじゃん",
+          "variants": {
+            "regulara": {
+              "text": "きれー……。これ、プリでも盛れないやつじゃん",
+              "face": "normal",
+              "role": "{pc:ageha}／物語"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "アンコールは、花が咲くまでの時間かせぎだったんですね"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……花の香りの中で、幽霊たちは手を振って帰っていった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_ending_together",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "最後の一曲は、少しだけ答えから外れていた"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "それでも客席が歌い出し、楽団も裏方も、一緒に声を重ねる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "surprise",
+          "text": "客席が、歌ってる……！"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "smile",
+          "text": "うちも歌う！ 歌詞わかんないけど、ノリでいける！",
+          "variants": {
+            "regulara": {
+              "text": "うちも歌う！ 歌詞わかんないけど、ノリでいける！",
+              "face": "normal",
+              "role": "{pc:ageha}／物語"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "伯爵ヴァレリオ／物語",
+          "face": "smile",
+          "text": "今宵の答えは、また来年探そう。ありがとう、迷える魂たちよ"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……朝日の前に、幕は下りた。これも、いいライブだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_debrief_smooth",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……アンコールが暴れる前に、届いた。いい卓だった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "レヰさんの物語、最後まで楽しかったです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_debrief_with_detour",
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……客席、ずっと叫んでたな。でも、最後まで誰も帰らなかった"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "それな！ 熱い現場ほど、いい思い出になるんだって",
+          "variants": {
+            "regulara": {
+              "text": "それな！ 熱い現場ほど、いい思い出になるんだって",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_declare_listen_wings",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}が舞台袖へ行って、伯爵の様子を見てきます"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……度胸で判定。袖の暗がりは、深いぞ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_declare_listen_fans",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:ageha}、最前列に突撃！ 隣の幽霊ちゃんと推し語りする",
+          "variants": {
+            "regulara": {
+              "text": "{pc:ageha}、最前列に突撃！ 隣の幽霊ちゃんと推し語りする",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……話術で判定。ファン同士の会話だ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_declare_listen_watch",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:adam}は柱の陰から、客席の熱の出どころを探ろう",
+          "variants": {
+            "regularb": {
+              "text": "{pc:adam}は柱の陰から、客席の熱の出どころを探ろう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……観察で判定。熱は、どこから来てる。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_declare_twist_voice",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}が舞台の前に立って、落ち着いてと呼びかけます"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "……話術で判定。客席を、つかめ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_declare_twist_light",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:ageha}、手持ちの灯り全部配る！ 暗いのは任せて",
+          "variants": {
+            "regulara": {
+              "text": "{pc:ageha}、手持ちの灯り全部配る！ 暗いのは任せて",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……手際で判定。光で、道を作れ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_declare_twist_stand",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "{pc:adam}が両手を広げ、群れの前に立ちはだかる",
+          "variants": {
+            "regularb": {
+              "text": "{pc:adam}が両手を広げ、群れの前に立ちはだかる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……度胸で判定。羽音は、すぐそこだ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_declare_prepare_run",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}が城じゅうを走って、道具を集めて組みます"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……手際で判定。夜明けは、待ってくれない。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_declare_prepare_deco",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:ageha}が盛るね。こういうの、秒で仕上げるから",
+          "variants": {
+            "regulara": {
+              "text": "{pc:ageha}が盛るね。こういうの、秒で仕上げるから",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……手際で判定。見立てが合えば、追い風だ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_declare_prepare_plan",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:adam}が仕掛けの図面を描いて、段取りを決めよう",
+          "variants": {
+            "regularb": {
+              "text": "{pc:adam}が仕掛けの図面を描いて、段取りを決めよう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……観察で判定。図面は、舞台の楽譜だ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_declare_serve_front",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "{pc}が伯爵の隣に立ちます！ 最後まで、一緒に"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "serious",
+          "text": "……度胸で判定。最後の一曲の、立ち位置だ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_declare_serve_words",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "{pc:adam}が告げよう。夜は、終わるからこそ美しいと",
+          "variants": {
+            "regularb": {
+              "text": "{pc:adam}が告げよう。夜は、終わるからこそ美しいと",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……話術で判定。その名言、届くか。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_declare_serve_cheer",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:ageha}、最前列から全力で叫ぶ！ 推しの最後は、うちが支える",
+          "variants": {
+            "regulara": {
+              "text": "{pc:ageha}、最前列から全力で叫ぶ！ 推しの最後は、うちが支える",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……話術で判定。声援も、音楽だ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_make_ageha_ageha_kirara",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "うちはキララ！ ノクターンを追っかけて、城まで来ちゃったファン"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "うちわもペンライトも自作ね。プリ帳には、推しの写真びっしり"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……いい。ファンがいる卓は、ライブになる"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "あげはさん、もう設定が細かいですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_make_ageha_ageha_moka",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "うちはモカ。城で物販やってるコウモリ娘！"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "グッズはとにかく盛る派。白と赤のグミベアも売ってるよ"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……コウモリが、グミを売るのか"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "その物販、ちょっと覗いてみたいです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_make_adam_adam_leon",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "俺はレオン。林檎の紋章を背負う、吸血鬼ハンターだ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "だが争いは好まん。林檎は宇宙の原点、吸血鬼とも分け合える"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……平和主義のハンター。そういう役、好きだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_make_adam_adam_ziek",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺の役はジーク。……伝説のギタリスト、の弦を張り替える係だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "人前では弾かない。舞台袖で、誰かの一曲を待つのが好きな男だ"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……アダムが、袖に。それは、ちょっと見てみたい"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "アダムさんが脇役って、新鮮ですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_aside_adam_adam_ziek",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "{pc:adam}／物語",
+          "face": "normal",
+          "text": "伯爵。あんたの曲、袖からずっと聴いてた。……最後の一曲も、ここで聴いてる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_after_adam_adam_ziek",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "袖から見る舞台は、思ったより明るかったな。……ジーク、また借りよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_session_zero_open",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……始める前に、役を作る。今夜は、古城のライブの客と裏方だ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ライブの裏方か……。レヰさんの本、楽しみです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_session_zero_close",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺は{pc}。{pcTitle}でいく"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……そろったな。じゃあ、開演だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_ask_promise_band",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "normal",
+          "text": "最初の公演のお客様は、薔薇の髪飾りのご婦人お一人でした"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "客一人から始まったバンドとか、エモすぎ……",
+          "variants": {
+            "regulara": {
+              "text": "客一人から始まったバンドとか、エモすぎ……",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_ask_promise_count",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "serious",
+          "text": "伯爵は毎晩、最後の曲の前で手を止められます"
+        },
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "normal",
+          "text": "楽譜を見ては首を振り、またアンコールに戻られるのです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_ask_promise_audience",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "normal",
+          "text": "最前列のロゼ様は、百年、毎晩同じお席においでです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "百年も……。何かを待ってるみたいだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_ask_promise_flower",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "normal",
+          "text": "月光花は、伯爵とロゼ様が植えた花。紅茶の時間に、よく眺めておられました"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "薔薇と紅茶と、夜の花。香りの記憶は、百年でも色あせん",
+          "variants": {
+            "regularb": {
+              "text": "薔薇と紅茶と、夜の花。香りの記憶は、百年でも色あせん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_ask_names_band",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "normal",
+          "text": "昔は森の村の祭りの楽団。お客様の名前を、全員覚えておりました"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "推しが名前覚えてくれるとか、神対応すぎ",
+          "variants": {
+            "regulara": {
+              "text": "推しが名前覚えてくれるとか、神対応すぎ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_ask_names_count",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "serious",
+          "text": "伯爵は近ごろ、皆さまを『迷える魂たちよ』としか呼ばれません"
+        },
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "normal",
+          "text": "かっこいいから、だそうです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_ask_names_audience",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "normal",
+          "text": "常連の皆さまは、手作りの名札を毎晩胸に付けておいでです"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "名札って、呼んでほしい人が付けるものだよな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_ask_names_flower",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "normal",
+          "text": "月光花は、森の村の皆さまが一株ずつ、名札を付けて植えた花です"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "花にまで名札か。この城は、名前を大切にしてきたのだな",
+          "variants": {
+            "regularb": {
+              "text": "花にまで名札か。この城は、名前を大切にしてきたのだな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_ask_garden_band",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "normal",
+          "text": "ノクターンの最初の演奏は、庭の月光花の前でございました"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "始まりは庭か。最初の舞台は、いつまでも残るものだ",
+          "variants": {
+            "regularb": {
+              "text": "始まりは庭か。最初の舞台は、いつまでも残るものだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_ask_garden_count",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "normal",
+          "text": "伯爵は曲の合間に、何度も窓の外を気にしておられます"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "伯爵が見てるのは、時計じゃなくて庭なのか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_ask_garden_audience",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "normal",
+          "text": "皆さまも、アンコールの合間に窓の外ばかりご覧になります"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "推しより窓見るとか、よっぽどのことじゃん",
+          "variants": {
+            "regulara": {
+              "text": "推しより窓見るとか、よっぽどのことじゃん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_ask_garden_flower",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "家令ギルバート／物語",
+          "face": "serious",
+          "text": "月光花は年に一度、今夜の夜明け前にだけ咲くのです"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "一度きりの開演か。見逃せない舞台だな",
+          "variants": {
+            "regularb": {
+              "text": "一度きりの開演か。見逃せない舞台だな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_discuss_promise",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "約束の曲、ずっと弾けてないの？ 推しとしては、聴きたすぎるんだけど",
+          "variants": {
+            "regulara": {
+              "text": "約束の曲、ずっと弾けてないの？ 推しとしては、聴きたすぎるんだけど",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "百年分の約束か。重いが、だからこそ響く",
+          "variants": {
+            "regularb": {
+              "text": "百年分の約束か。重いが、だからこそ響く",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……いい読みだ。約束は、曲にすると長持ちする"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_discuss_names",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "わかる！ 推しに名前呼ばれたら、うち一生覚えてる自信ある",
+          "variants": {
+            "regulara": {
+              "text": "わかる！ 推しに名前呼ばれたら、うち一生覚えてる自信ある",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "名を呼ぶ。それは演者から客席への、最高の拍手だ",
+          "variants": {
+            "regularb": {
+              "text": "名を呼ぶ。それは演者から客席への、最高の拍手だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……客席あっての、ライブだからな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_discuss_garden",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "年に一回しか咲かない花とか、みんなで見たいに決まってんじゃん",
+          "variants": {
+            "regulara": {
+              "text": "年に一回しか咲かない花とか、みんなで見たいに決まってんじゃん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "舞台の外にも舞台はある。庭は、最高の野外ステージだ",
+          "variants": {
+            "regularb": {
+              "text": "舞台の外にも舞台はある。庭は、最高の野外ステージだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……夜明けの少し前。あの時間の空気が、一番きれいだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_twist_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "そのとき、天井の暗がりからコウモリの群れが舞い降りた"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "羽ばたきで燭台の火が次々と消え、客席がざわめきに包まれる"
+        },
+        {
+          "speaker": "rei",
+          "role": "幽霊の客席／物語",
+          "face": "surprise",
+          "text": "『暗いー！ でも、アンコールー！』"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "暗くなってもアンコールは続くんですか！？"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……熱心な客席だ。さあ、どうする"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_choice_tactic_clap",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "三人の手拍子に、客席の幽霊たちが少しずつ合わせ始める"
+        },
+        {
+          "speaker": "ageha",
+          "role": "{pc:ageha}／物語",
+          "face": "smile",
+          "text": "はい、せーの！ みんな、うちに合わせてー！",
+          "variants": {
+            "regulara": {
+              "text": "はい、せーの！ みんな、うちに合わせてー！",
+              "face": "normal",
+              "role": "{pc:ageha}／物語"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_choice_tactic_relight",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "蝋燭が一本ずつ灯り、大広間に赤い光が戻っていく"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "normal",
+          "text": "大丈夫です、すぐ明るくなります！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_choice_tactic_sing",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "低い子守唄に、コウモリたちが天井で丸くなって眠り始める"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "歌はコウモリにも通じる。宇宙の真理だな",
+          "variants": {
+            "regularb": {
+              "text": "歌はコウモリにも通じる。宇宙の真理だな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_twist_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "燭台に灯が戻り、客席から温かい拍手が起きた"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "混乱を拍手に変える。それこそ舞台の魔法だ",
+          "variants": {
+            "regularb": {
+              "text": "混乱を拍手に変える。それこそ舞台の魔法だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_twist_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "灯は戻ったが、客席は興奮したまま。アンコールが一つ高まる"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "みんなテンション上がっちゃってる！ でも気持ち、超わかる",
+          "variants": {
+            "regulara": {
+              "text": "みんなテンション上がっちゃってる！ でも気持ち、超わかる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_twist_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "コウモリが一匹、伯爵のマントの中にもぐりこんだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "surprise",
+          "text": "伯爵、マントがもぞもぞしてます！"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……アンコールは二つ高まる。誰も、けがはない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_make_ageha_ageha_kirara_regulara",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regulara",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はキララ。追っかけのファンを演じます"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_make_ageha_ageha_moka_regulara",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regulara",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はモカ。物販担当のコウモリ娘を演じます"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_make_adam_adam_leon_regularb",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はレオン。林檎の紋章のハンターを演じます"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_make_adam_adam_ziek_regularb",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はジーク。舞台袖のギター係を演じます"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    }
+  ],
+  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。GMのレヰが家令・伯爵・幽霊の客席の声も兼ねる。",
+  "presentation": {
+    "theme": "castle",
+    "number": "11",
+    "genre": "ゴシック幻想 / 音楽",
+    "tagline": "アンコールは鳴りやまない。夜明けまでに、最後の一曲を。",
+    "image": "../../img/backgrounds/trpg_moonflower-encore_room.webp",
+    "choiceArt": {
+      "src": "../../img/ui/trpg/choices-moonflower-encore.webp",
+      "rowCount": 5,
+      "rows": {
+        "stage": 0,
+        "scent": 1,
+        "finale": 2,
+        "tactic": 3,
+        "hypotheses": 4
+      }
+    },
+    "sceneAlt": "月夜の古城の大広間。大広間の舞台、客席の名札、楽屋の譜面台、庭の月光花、回廊の肖像画、家令の鍵束。客席には青白い幽霊たち。",
+    "location": "月の丘 / 月光花城",
+    "atmosphere": "燭台の灯り。白い花の香り。鳴りやまない、アンコール。",
+    "coverHeading": "アンコールが、終わらない。",
+    "coverRule": "四箇所を調べ、最後の一曲に要るものを見立て、夜明け前に幕を下ろす。",
+    "titleLines": [
+      "月光花の古城と、",
+      "終わらないアンコール"
+    ],
+    "fields": {
+      "stage": "演出",
+      "scent": "香り",
+      "finale": "最後の一曲の届け方",
+      "tactic": "コウモリ騒ぎへの手"
+    },
+    "prepareTitle": "どんな演出に、どの香り？",
+    "prepareDescription": "演出を一つ、香りを一つ。見立てた答えを、最後の舞台にしよう。",
+    "serveTitle": "夜明け前、最後の一曲。",
+    "serveDescription": "伯爵の最後の一曲を、どう届ける？",
+    "hypothesisTitle": "最後の一曲に、何が足りない？",
+    "arrivalRole": "家令ギルバート／物語",
+    "riskLabel": "アンコール",
+    "exploreIdle": "……調べられるのは四箇所まで。メモと相談は、何度でもいい",
+    "listenIdle": "……アンコールが止まらない。まずは、状況をつかもう",
+    "prepareIdle": "準備を選ぼう。仲間がいれば、切り札も頼める",
+    "serveIdle": "……ここが見せ場だ。最後の一曲を、届けてくれ",
+    "endingIdle": "この晩の話は、ここまで。次は、また別の本で会おう",
+    "phases": {
+      "listen": {
+        "kicker": "01 / 鳴りやまない拍手",
+        "title": "九度目のアンコール",
+        "description": "最後の曲が終わっても、客席は帰らない。まずは状況をつかもう。",
+        "button": "状況をつかむ"
+      },
+      "interview": {
+        "kicker": "02 / 家令に聞く",
+        "title": "家令ギルバートに、何を聞く？",
+        "description": "聞けるのは二つまで。答えは、最後の一曲に足りないものしだいで変わる。",
+        "button": "話を切り上げて、城を調べる"
+      },
+      "explore": {
+        "kicker": "03 / 城を調べる",
+        "title": "最後の一曲の手がかり",
+        "description": "調べられるのは四箇所まで。三つ以上の手がかりから、最後の一曲に要るものを考えよう。",
+        "button": "見立てを話す"
+      },
+      "twist": {
+        "kicker": "04 / コウモリの群れ",
+        "title": "燭台が、消えた",
+        "description": "コウモリの群れが燭台を消し、客席は大騒ぎ。どう切り抜ける？",
+        "button": "この手で切り抜ける"
+      },
+      "prepare": {
+        "kicker": "05 / 最後の舞台",
+        "title": "演出と、香り",
+        "description": "夜明けまでに、最後の一曲の舞台を整えよう。",
+        "button": "舞台を整える"
+      },
+      "serve": {
+        "kicker": "06 / 最後の一曲",
+        "title": "夜明け前のステージ",
+        "description": "伯爵の最後の一曲を、どう届ける？ ここがクライマックス。",
+        "button": "最後の一曲を届ける"
+      },
+      "ending": {
+        "kicker": "終演のあと",
+        "title": "幕が下りる",
+        "description": "古城の夜が明けた。さて、今夜のライブの感想は？"
+      }
+    },
+    "help": "家令に二つ質問し、城を最大四箇所調べます。新しい場所を調べるたびアンコールが一つ高まります。三つ以上の手がかりで最後の一曲に要るものを見立てたあと、コウモリ騒ぎを切り抜け、演出・香り・最後の一曲の届け方を決めます。相談とメモの再読は無料。見立てが合うと準備の判定に＋4。",
+    "exitText": "ライブをここで中断して、本棚へ戻ります。次に遊ぶと、最後の一曲に要るものが変わっているかもしれません。",
+    "endingKicker": "AFTER THE ENCORE / 今夜の終演",
+    "stats": {
+      "eye": "観察",
+      "hand": "手際",
+      "talk": "話術",
+      "nerve": "度胸"
+    },
+    "declareTitle": "どうする？ 行動を宣言せよ",
+    "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
+    "sheetTitle": "キャラクターシート",
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）",
+    "twistTitle": "コウモリの群れ。どうする？",
+    "interviewIdle": "……家令に聞けるのは、二つまで。何を聞く",
+    "twistIdle": "……燭台が消えた。手を選んで、誰が動くか決めてくれ",
+    "planTitle": "最後の一曲のセットリスト"
+  },
+  "intro": "trpg_moonflower_encore_intro",
+  "listen": "trpg_moonflower_encore_listen",
+  "checks": {
+    "listen": {
+      "title": "アンコールの嵐の中で、状況をつかむ",
+      "hint": "宣言した仲間の能力で判定。どの出目でも調査へ進みます。",
+      "success": "trpg_moonflower_encore_listen_success",
+      "mixed": "trpg_moonflower_encore_listen_mixed",
+      "trouble": "trpg_moonflower_encore_listen_trouble",
+      "approaches": [
+        {
+          "id": "listen_wings",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "舞台袖へ、伯爵の様子を見に行く",
+          "detail": "{pc}が幕の陰を抜けて、汗だくの伯爵のそばへ行く",
+          "declare": "trpg_moonflower_encore_declare_listen_wings"
+        },
+        {
+          "id": "listen_fans",
+          "actor": "ageha",
+          "sheet": "ageha",
+          "stat": "talk",
+          "label": "客席に混ざって、ファンと話す",
+          "detail": "{pc:ageha}が最前列に飛びこみ、幽霊のファンと盛り上がる",
+          "declare": "trpg_moonflower_encore_declare_listen_fans"
+        },
+        {
+          "id": "listen_watch",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "eye",
+          "label": "客席全体を見渡して、熱の出どころを探る",
+          "detail": "{pc:adam}が柱の陰から、アンコールが始まる場所を見極める",
+          "declare": "trpg_moonflower_encore_declare_listen_watch"
+        }
+      ]
+    },
+    "prepare": {
+      "title": "最後の舞台の演出を整える",
+      "hint": "宣言した仲間の能力で判定。見立てが合えば、さらに＋4。",
+      "success": "trpg_moonflower_encore_prepare_success",
+      "mixed": "trpg_moonflower_encore_prepare_mixed",
+      "trouble": "trpg_moonflower_encore_prepare_trouble",
+      "helper": "ageha",
+      "approaches": [
+        {
+          "id": "prepare_run",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "城じゅうを走って、手早く組む",
+          "detail": "{pc}が必要なものを集めて回り、その場で組み上げる",
+          "declare": "trpg_moonflower_encore_declare_prepare_run"
+        },
+        {
+          "id": "prepare_deco",
+          "actor": "ageha",
+          "sheet": "ageha",
+          "stat": "hand",
+          "label": "推し活の腕で、舞台を盛る",
+          "detail": "{pc:ageha}がうちわ作りの手つきで、演出を一気に仕上げる",
+          "declare": "trpg_moonflower_encore_declare_prepare_deco"
+        },
+        {
+          "id": "prepare_plan",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "eye",
+          "label": "図面で、仕掛けの段取りを決める",
+          "detail": "{pc:adam}が舞台装置の図を描き、置く場所と順番を割り出す",
+          "declare": "trpg_moonflower_encore_declare_prepare_plan"
+        }
+      ]
+    },
+    "serve": {
+      "title": "伯爵の最後の一曲を届ける",
+      "hint": "宣言した仲間の能力で判定。どの出目でも結末へ進みます。",
+      "success": "trpg_moonflower_encore_serve_success",
+      "mixed": "trpg_moonflower_encore_serve_mixed",
+      "trouble": "trpg_moonflower_encore_serve_trouble",
+      "helper": "adam",
+      "approaches": [
+        {
+          "id": "serve_front",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "nerve",
+          "label": "伯爵の隣で、最後の一曲を支える",
+          "detail": "{pc}が舞台に上がり、伯爵の背中をそっと押す",
+          "declare": "trpg_moonflower_encore_declare_serve_front"
+        },
+        {
+          "id": "serve_words",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "ひと言で、客席の心をつかむ",
+          "detail": "{pc:adam}が短い言葉で、最後の一曲への道をひらく",
+          "declare": "trpg_moonflower_encore_declare_serve_words"
+        },
+        {
+          "id": "serve_cheer",
+          "actor": "ageha",
+          "sheet": "ageha",
+          "stat": "talk",
+          "label": "最前列から、全力で声援を送る",
+          "detail": "{pc:ageha}が誰よりも大きな声で、伯爵の背中を押す",
+          "declare": "trpg_moonflower_encore_declare_serve_cheer"
+        }
+      ]
+    },
+    "twist": {
+      "title": "コウモリ騒ぎを鎮める",
+      "hint": "宣言した仲間の能力で判定。どの出目でも物語は続きます。",
+      "success": "trpg_moonflower_encore_twist_success",
+      "mixed": "trpg_moonflower_encore_twist_mixed",
+      "trouble": "trpg_moonflower_encore_twist_trouble",
+      "approaches": [
+        {
+          "id": "twist_voice",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "舞台の前で、落ち着いてと呼びかける",
+          "detail": "{pc}が舞台の真ん中に立ち、客席に声を届ける",
+          "declare": "trpg_moonflower_encore_declare_twist_voice"
+        },
+        {
+          "id": "twist_light",
+          "actor": "ageha",
+          "sheet": "ageha",
+          "stat": "hand",
+          "label": "手持ちの灯りで、客席を照らす",
+          "detail": "{pc:ageha}が灯りを掲げ、暗い客席に配って回る",
+          "declare": "trpg_moonflower_encore_declare_twist_light"
+        },
+        {
+          "id": "twist_stand",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "nerve",
+          "label": "コウモリの群れの前に立つ",
+          "detail": "{pc:adam}が両手を広げ、群れの真ん中で動じずに立つ",
+          "declare": "trpg_moonflower_encore_declare_twist_stand"
+        }
+      ]
+    }
+  },
+  "consult": {
+    "ageha": "trpg_moonflower_encore_consult_ageha",
+    "adam": "trpg_moonflower_encore_consult_adam"
+  },
+  "preparation": "trpg_moonflower_encore_preparation",
+  "serving": "trpg_moonflower_encore_serving",
+  "epilogue": "trpg_moonflower_encore_epilogue",
+  "debrief": {
+    "smooth": "trpg_moonflower_encore_debrief_smooth",
+    "with-detour": "trpg_moonflower_encore_debrief_with_detour"
+  },
+  "campaign": {
+    "seats": [
+      {
+        "actor": "rei",
+        "candidates": [
+          "rei"
+        ],
+        "required": true
+      },
+      {
+        "actor": "hajime",
+        "candidates": [
+          "hajime"
+        ],
+        "required": true
+      },
+      {
+        "actor": "ageha",
+        "candidates": [
+          "ageha",
+          "regulara"
+        ],
+        "required": false
+      },
+      {
+        "actor": "adam",
+        "candidates": [
+          "adam",
+          "regularb"
+        ],
+        "required": false
+      }
+    ]
+  },
+  "builder": {
+    "seat": "hajime",
+    "points": 11,
+    "min": 1,
+    "max": 5,
+    "nameMax": 6,
+    "title": "あなたのキャラクターを作る",
+    "intro": "今夜の古城ライブで働く裏方を決めよう。出自・能力値は、卓のあいだずっと使う",
+    "archetypes": [
+      {
+        "id": "stagehand",
+        "name": "ノエル",
+        "title": "新人の裏方",
+        "trait": "荷運びと段取りは得意。吸血鬼の流儀は、まだ勉強中",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 3,
+          "nerve": 3
+        },
+        "recommended": true
+      },
+      {
+        "id": "usher",
+        "name": "ジル",
+        "title": "客席の案内係",
+        "trait": "声の大きさなら城で一番。細かい作業は人任せ",
+        "stats": {
+          "eye": 3,
+          "hand": 1,
+          "talk": 4,
+          "nerve": 3
+        }
+      },
+      {
+        "id": "pageturner",
+        "name": "シモン",
+        "title": "譜めくりの見習い",
+        "trait": "楽譜と楽器に詳しい。人前に出ると、少し固まる",
+        "stats": {
+          "eye": 4,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 2
+        }
+      }
+    ],
+    "statHelp": {
+      "eye": "よく見て、気づく力。調べる・様子を見るときに使う",
+      "hand": "手先の器用さ。道具を使う・準備するときに使う",
+      "talk": "話す・聞く力。人と向き合うときに使う",
+      "nerve": "怖がらない力。危ない場面や、勇気が要るときに使う"
+    }
+  },
+  "companionBuilds": {
+    "ageha": {
+      "ageha": [
+        {
+          "id": "kirara",
+          "name": "キララ",
+          "title": "追っかけのファン",
+          "trait": "ノクターンを追って、城まで来たファン。うちわもペンライトも自作",
+          "likes": "プリクラと、白と赤のグミベア",
+          "stats": {
+            "eye": 2,
+            "hand": 4,
+            "talk": 3,
+            "nerve": 2
+          },
+          "making": "trpg_moonflower_encore_make_ageha_ageha_kirara"
+        },
+        {
+          "id": "moka",
+          "name": "モカ",
+          "title": "物販担当のコウモリ娘",
+          "trait": "城の物販を仕切るコウモリ娘。グッズの並べ方は、とにかく盛る",
+          "likes": "トロピカルな香りと、プリ帳",
+          "stats": {
+            "eye": 3,
+            "hand": 4,
+            "talk": 3,
+            "nerve": 1
+          },
+          "making": "trpg_moonflower_encore_make_ageha_ageha_moka"
+        }
+      ],
+      "regulara": [
+        {
+          "id": "kirara",
+          "name": "キララ",
+          "title": "追っかけのファン",
+          "trait": "ノクターンを追って、城まで来たファン。うちわもペンライトも自作",
+          "likes": "プリクラと、白と赤のグミベア",
+          "stats": {
+            "eye": 2,
+            "hand": 4,
+            "talk": 3,
+            "nerve": 2
+          },
+          "making": "trpg_moonflower_encore_make_ageha_ageha_kirara_regulara"
+        },
+        {
+          "id": "moka",
+          "name": "モカ",
+          "title": "物販担当のコウモリ娘",
+          "trait": "城の物販を仕切るコウモリ娘。グッズの並べ方は、とにかく盛る",
+          "likes": "トロピカルな香りと、プリ帳",
+          "stats": {
+            "eye": 3,
+            "hand": 4,
+            "talk": 3,
+            "nerve": 1
+          },
+          "making": "trpg_moonflower_encore_make_ageha_ageha_moka_regulara"
+        }
+      ]
+    },
+    "adam": {
+      "adam": [
+        {
+          "id": "leon",
+          "name": "レオン",
+          "title": "林檎の紋章のハンター",
+          "trait": "吸血鬼を狩りに来た……が、実は平和主義。武器は林檎と名言",
+          "likes": "ダブルアップルと、舞台の仕掛け",
+          "stats": {
+            "eye": 3,
+            "hand": 2,
+            "talk": 4,
+            "nerve": 2
+          },
+          "making": "trpg_moonflower_encore_make_adam_adam_leon"
+        },
+        {
+          "id": "ziek",
+          "name": "ジーク",
+          "title": "舞台袖のギター係",
+          "trait": "人前では弾かない。他人の弦を張り替えるのは、誰より速い",
+          "likes": "開演前の舞台袖。チューニングの音",
+          "stats": {
+            "eye": 2,
+            "hand": 3,
+            "talk": 4,
+            "nerve": 2
+          },
+          "making": "trpg_moonflower_encore_make_adam_adam_ziek",
+          "aside": "trpg_moonflower_encore_aside_adam_adam_ziek",
+          "after": "trpg_moonflower_encore_after_adam_adam_ziek"
+        }
+      ],
+      "regularb": [
+        {
+          "id": "leon",
+          "name": "レオン",
+          "title": "林檎の紋章のハンター",
+          "trait": "吸血鬼を狩りに来た……が、実は平和主義。武器は林檎と名言",
+          "likes": "ダブルアップルと、舞台の仕掛け",
+          "stats": {
+            "eye": 3,
+            "hand": 2,
+            "talk": 4,
+            "nerve": 2
+          },
+          "making": "trpg_moonflower_encore_make_adam_adam_leon_regularb"
+        },
+        {
+          "id": "ziek",
+          "name": "ジーク",
+          "title": "舞台袖のギター係",
+          "trait": "人前では弾かない。他人の弦を張り替えるのは、誰より速い",
+          "likes": "開演前の舞台袖。チューニングの音",
+          "stats": {
+            "eye": 2,
+            "hand": 3,
+            "talk": 4,
+            "nerve": 2
+          },
+          "making": "trpg_moonflower_encore_make_adam_adam_ziek_regularb"
+        }
+      ]
+    }
+  },
+  "sessionZero": {
+    "open": "trpg_moonflower_encore_session_zero_open",
+    "close": "trpg_moonflower_encore_session_zero_close"
+  },
+  "interview": {
+    "title": "家令ギルバートに、何を聞く？",
+    "prompt": "家令は燭台の手入れで忙しい。最後の一曲に近づけそうなことを、二つだけ聞こう",
+    "picks": 2,
+    "topics": [
+      {
+        "id": "band",
+        "label": "ノクターンの昔話",
+        "description": "バンドがどう始まったのか聞く"
+      },
+      {
+        "id": "count",
+        "label": "伯爵の近ごろ",
+        "description": "ヴァレリオの最近の様子を聞く"
+      },
+      {
+        "id": "audience",
+        "label": "客席の常連",
+        "description": "毎晩来る幽霊たちのことを聞く"
+      },
+      {
+        "id": "flower",
+        "label": "庭の月光花",
+        "description": "城の名の由来になった花の話を聞く"
+      }
+    ]
+  },
+  "twist": {
+    "intro": "trpg_moonflower_encore_twist_intro"
+  }
+}

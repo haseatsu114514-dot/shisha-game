@@ -13,12 +13,15 @@ const { DB } = await import("../js/core/data.js");
 const equipment = JSON.parse(fs.readFileSync(new URL("../../data/equipment.json", import.meta.url))).equipment;
 DB.equipById = Object.fromEntries(equipment.map((e) => [e.id, e]));
 DB.flavorById = {};
-const { finalize, NAGUMO_BAR } = await import("../js/craft/score.js");
+const { finalize, SUI_BAR } = await import("../js/craft/score.js");
 const { state, newGame } = await import("../js/core/state.js");
 newGame();
 
 // 1. usesFoil: ロートスは既定で飛ばし、レッスン・ドリル・任意トグル・他HMDでは行う
-assert.deepEqual(FOIL_FREE_HMS, ["lotos_hagal"]);
+// ロートスプラスHMD（VOL08・第3章〜）もロートス型なのでアルミを張らない。
+assert.deepEqual(FOIL_FREE_HMS, ["lotos_hagal", "lotos_plus"]);
+assert.equal(usesFoil({ mode: "tournament", equip: { hms: "lotos_plus" } }), false, "ロートスプラスも既定でアルミを飛ばす");
+assert.equal(usesFoil({ mode: "drill", equip: { hms: "lotos_plus" } }), true, "ドリルは必ず穴あけ");
 const lotos = (mode, extra = {}) => ({ mode, equip: { hms: "lotos_hagal" }, ...extra });
 assert.equal(usesFoil(lotos("tournament")), false, "ロートスの大会はアルミを飛ばす");
 assert.equal(usesFoil(lotos("rehearsal")), false, "ロートスの練習（リハ）も飛ばす");
@@ -47,7 +50,7 @@ const skipped = finalize({ ...base, holes: skippedFoilResult() });
 assert.equal(skipped.foilSkipped, true);
 assert.equal(skipped.total, 75, "穴あけを外し、炭80/完成60/調整70・90を各25%で割り直す = 75");
 assert.equal(Object.hasOwn(skipped.parts, "holes"), false, "省略した穴あけは結果の工程一覧にも出さない");
-assert.equal(NAGUMO_BAR, 90.8);
+assert.equal(SUI_BAR, 90.8);
 const tournament = { ...base, mode: "tournament", chapter: 1 };
 assert.equal(finalize({ ...tournament, holes: skippedFoilResult() }).total, 72,
   "第1章大会・省略時だけ炭20/完成40/調整各20");

@@ -1,0 +1,119 @@
+{
+ "phase": "立ち絵そろえ 第2期（規格そろえ）TS13",
+ "face": "normal",
+ "status": "生成済み・オーナー確認待ち（未採用・ゲーム未組み込み）",
+ "source": {
+  "generated_by": "Codex built-in image_gen",
+  "delivered_as": "camel-ts13-2390-20261102-NORMALS-REVIEW-NO-REFS.zip",
+  "zip_sha256": "843eba1dbc5acc87a9826438237e111c28ee494fd77054d3fa94b87c934ffed2",
+  "original_sha256": "11aedaf7aa8a69d0a4f2601968c23de0dc8a33ada51b4eac3328ea0bd6f8d50b"
+ },
+ "measure": {
+  "codex": {
+   "head_body": 6.85,
+   "eye_to_chin_at1400": 100.0,
+   "points_original": {
+    "eyes": [
+     [
+      459,
+      208
+     ],
+     [
+      519,
+      200
+     ]
+    ],
+    "chin": [
+     503,
+     299
+    ],
+    "crown": [
+     517,
+     109
+    ],
+    "cheeks": [
+     437,
+     582,
+     224
+    ],
+    "foot": 1411,
+    "body_top": 81,
+    "crown_note": "skull crown hidden by ghutra; estimated109 +/-12"
+   }
+  },
+  "claude": {
+   "points_preview": {
+    "eyes": [
+     [
+      382,
+      168
+     ],
+     [
+      438,
+      160
+     ]
+    ],
+    "chin": [
+     420,
+     232
+    ],
+    "crown": [
+     430,
+     90
+    ],
+    "cheeks": [
+     368,
+     500,
+     185
+    ]
+   },
+   "head_body": 7.68,
+   "head_game": 124
+  },
+  "note": "頭頂（ファーリスは逆立った髪のどこを頭頂とみるか、ハリールは頭巾の下の推定）とあご（ハリールはひげの下）の読み方で差が出る。どちらの値も規格 6.4〜7.7 内"
+ },
+ "codex_generation_record": {
+  "source_pr": 2390,
+  "source_commit": "addb377d690d8bfbf2c4836ef70e6cae1b5cd58d",
+  "section": "TS13",
+  "date": "2026-11-02",
+  "tool": "built-in image_gen",
+  "selection": "pending user; 5 expressions blocked until explicit selection",
+  "reference_roles": [
+   "same approved original identity",
+   "Sui adult male proportion only",
+   "Minto rendering only",
+   "Ageha rendering only"
+  ],
+  "records": [
+   {
+    "character": "saif",
+    "version": "v1",
+    "prompt": "Redraw the attached APPROVED game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Sui is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.\n\nCharacter: Faris, a 24-year-old Emirati young man, tall and slim, warm brown skin, short cropped black hair, a neat thin beard line along the jaw with a small chin beard, big friendly eyes, an easy relaxed smile. Black staff polo shirt (a tiny plain patch where a shop logo would be, no letters), sand-colored chinos, thin leather cord bracelets on one wrist, white sneakers. One hand holds a small round brass tobacco tin near his chest, the other hand rests in his trouser pocket; weight on one leg. Not a real person.\n\nHEAD SIZE (a percentage instruction barely changes the head, so use pixels): in image 1 the head is too SMALL (about 8.6 heads tall). In a figure about 1400 px tall (top of the hair to the shoe soles), the head from the top of the hair to the chin must be about 200 px (now about 162 px), and the distance from the eye line to the chin about 85 px (now about 69 px), so that he is about 7 heads tall like image 2. Enlarge the whole head, hair, ears and beard together; keep the neck and shoulders natural. Keep the total figure height, the slim build, the stance, both hands and the tin. He must still look like the same young man.\n\nJapanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rio sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.\n\nOutput ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the hair top to the soles. Entire hair, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.",
+    "file": "originals/saif-normal-v1.png",
+    "status": "superseded: sole touching lower border"
+   },
+   {
+    "character": "rashid",
+    "version": "v1",
+    "prompt": "Redraw the attached APPROVED game sprite (image 1) as ONE higher-resolution full-body sprite with a transparent background. This is NOT a redesign: keep the same person, face design, age, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY the head size and the rendering style standard below. Image 2 Sui is ONLY adult head-to-body proportion context (about 7 heads tall), never his face, hair, build or clothes. Images 3 Minto and 4 Ageha are ONLY rendering-style references.\n\nCharacter: Khalil, a 56-year-old Emirati camel trainer, quiet and composed, sun-tanned face with deep wrinkles, short grey-streaked beard and moustache, a white-and-red checkered ghutra headcloth with a black agal worn casually with one end over the shoulder, a white ankle-length kandura, a worn sand-colored multi-pocket vest over it, dark brown leather shoes. One hand holds a small key-fob sized remote control with a short cord at chest height, the other hand rests in the vest pocket. Not a real person.\n\nHEAD SIZE (a percentage instruction barely changes the head, so use pixels): The skull is hidden by the headcloth, so size the FACE: in a figure about 1400 px tall (headcloth top to soles), the distance from the eye line to the chin (under the beard) must be about 100 px (now about 73 px), so that he is about 7 heads tall like image 2. Enlarge the whole face, beard, headcloth and agal together; keep the neck and shoulders natural. Keep the total figure height, the kandura and vest silhouette, both hands, the remote control and the stance. He must still look like the same man of the same age.\n\nJapanese 2D visual-novel game art in the same artist's hand as the approved Minto, Ageha and Rio sprites: confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two or three clearly shaped cel-shadow steps; a few deliberate hair highlight bands and small eye catchlights. Preserve image 1's original local colors, saturation and light-dark range. No skin gloss, airbrush gradients, rim light, glow, photographic texture, fabric micro-detail, dense ornamental noise or generic pretty-face drift.\n\nOutput ONE complete figure on a tall canvas about 1085x1450, the figure at least 1300 px tall from the headcloth top to the soles. The entire headcloth, both hands and both shoes visible with a transparent margin on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid, watermark or extra objects.",
+    "file": "originals/rashid-normal-v1.png",
+    "status": "superseded: sole touching lower border"
+   },
+   {
+    "character": "saif",
+    "version": "v2",
+    "prompt": "限定修正。添付のファーリス通常立ち絵をそのまま保持。顔、表情、頭身、髪、肌、年齢、服、体形、ポーズ、手、缶、靴、色、描線と陰影を変更しない。変更点は構図と透過の縁のみ。全身を少しだけ縮小して、頭上と靴底の下にそれぞれ透明な40〜50pxの余白、左右にも十分な透明余白を確保。人物本体の高さは1300px以上、全身は約7頭身、目〜あごは全身1400px換算で約85pxを維持。靴底を絶対に切らない。輪郭外側と脚の間に残っている赤/黄/白の微細な色ノイズと浮遊ピクセルを除去し、滑らかな自然なalphaエッジにする。完全なRGBA透明背景、地面・影・文字・ロゴなし。人物の再デザインや新しい要素の追加は禁止。1人1枚のみ。",
+    "file": "originals/saif-normal-v2.png",
+    "status": "review candidate; not selected"
+   },
+   {
+    "character": "rashid",
+    "version": "v2",
+    "prompt": "限定修正。添付のハリール通常立ち絵を保持。顔、表情、頭身、髭、頭布、肌、56歳の年齢、服、体形、ポーズ、手、リモコン、靴、色、描線と陰影を変更しない。変更点は構図と透過の縁のみ。全身を少しだけ縮小して、頭布の上と靴底の下にそれぞれ透明な40〜50pxの余白、左右にも十分な透明余白を確保。人物本体の高さは1300px以上、顔の目〜あごは全身1400px換算で約100pxを維持。靴底と頭布を絶対に切らない。輪郭外側に残っている赤/黄/白の微細な色ノイズと浮遊ピクセルを除去し、自然なalphaエッジにする。完全なRGBA透明背景、地面・影・文字・ロゴなし。人物の再デザインや新しい要素の追加は禁止。1人1枚のみ。",
+    "file": "originals/rashid-normal-v2.png",
+    "status": "review candidate; not selected"
+   }
+  ]
+ }
+}

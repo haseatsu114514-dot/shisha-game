@@ -1,0 +1,70 @@
+{
+  "items": [
+    {
+      "id": "kumogama_phunnel",
+      "source": "asset_sources/premium-equipment-vol08/kumogama_phunnel.png",
+      "delivery": "remake/img/shop/equipment-v2/kumogama_phunnel.webp",
+      "sha256": "ecf3aa94e7f227d8b48e0257414750f8db47b8e218beea6b9f7ade80380facb9"
+    },
+    {
+      "id": "lotos_plus",
+      "source": "asset_sources/premium-equipment-vol08/lotos_plus.png",
+      "delivery": "remake/img/shop/equipment-v2/lotos_plus.webp",
+      "sha256": "33642080f520c8eb121bbe71f322a649103764f8854b011ef00cf7ad99fa8090"
+    },
+    {
+      "id": "stand_walnut",
+      "source": "asset_sources/premium-equipment-vol08/stand_walnut.png",
+      "delivery": "remake/img/shop/equipment-v2/stand_walnut.webp",
+      "sha256": "47d07def3aeb0463121f458118c0d5a7f51fe3f7462f6856a79a6afbda904cb4"
+    },
+    {
+      "id": "stand_custom",
+      "source": "asset_sources/premium-equipment-vol08/stand_custom.png",
+      "delivery": "remake/img/shop/equipment-v2/stand_custom.webp",
+      "sha256": "73139c6d659bf2aaaf35ec939c88c5e4338293ece8a8ba81771e141e60b0d679"
+    },
+    {
+      "id": "dense_flat_charcoal",
+      "source": "asset_sources/premium-equipment-vol08/redo-1111/dense_flat_charcoal-redo-C.png",
+      "delivery": "remake/img/shop/equipment-v2/dense_flat_charcoal.webp",
+      "sha256": "bf2d160d0fce92bc36cf4acfd834dad2424eb5bc714d21dab305f44c72ca379f"
+    },
+    {
+      "id": "stand_custom_melty",
+      "source": "asset_sources/kuji-equipment-3019-20261111/stand_custom_melty.png",
+      "delivery": "remake/img/shop/equipment-v2/stand_custom_melty.webp",
+      "sha256": "35731587dcbd41526d4a025d7d592baccabee19c831b111a7e9044f54827cd63"
+    },
+    {
+      "id": "stand_custom_tosu",
+      "source": "asset_sources/kuji-equipment-3019-20261111/stand_custom_tosu.png",
+      "delivery": "remake/img/shop/equipment-v2/stand_custom_tosu.webp",
+      "sha256": "b6fa2ad3279c0a8259213876f32826246827cec4f80bc9d78e4f96808dd03d32"
+    },
+    {
+      "id": "stand_custom_engraved",
+      "source": "asset_sources/kuji-equipment-3019-20261111/stand_custom_engraved.png",
+      "delivery": "remake/img/shop/equipment-v2/stand_custom_engraved.webp",
+      "sha256": "8d7678991b963952e44eb619bf4bf9832d4eb8b9c5dae87451e2b672ef92e238"
+    },
+    {
+      "id": "amaburst_hms",
+      "source": "asset_sources/equipment-art-2741-20261111/amaburst_hms.png",
+      "delivery": "remake/img/shop/equipment-v2/amaburst_hms.webp",
+      "sha256": "ab0f6f17530f5d6cab857c62157ae5df65b285770e8339b1e18effeb2a97afbb"
+    },
+    {
+      "id": "tanukish_lid",
+      "source": "asset_sources/equipment-art-2741-20261111/tanukish_lid.png",
+      "delivery": "remake/img/shop/equipment-v2/tanukish_lid.webp",
+      "sha256": "e0d1ae04de659959b51ca3053d6d71ab86851c406af0b5eeb1e5087c1184cce1"
+    },
+    {
+      "id": "winkwink_hagal",
+      "source": "asset_sources/equipment-art-2741-20261111/winkwink_hagal.png",
+      "delivery": "remake/img/shop/equipment-v2/winkwink_hagal.webp",
+      "sha256": "12a9b1866948a84535ed0cb5054eab960f66f64c147f6c194a2cf9ae801cc1a9"
+    }
+  ]
+}

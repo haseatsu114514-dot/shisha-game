@@ -34,9 +34,9 @@ await suite("lover-milestones", async check => {
     await setup(page);
     const result = await page.evaluate(async () => {
       const growth = await import("./js/core/growth.js"), hud = await import("./js/daily/hud.js"), ui = await import("./js/core/ui.js");
-      growth.setGrowthPreview(false); const s = M.fresh("rin"), before = { ...s.stats };
+      growth.setGrowthPreview(false); const s = M.fresh("rio"), before = { ...s.stats };
       ui.showScreen("map", document.createElement("div")); hud.initHud({}); hud.showHud(true);
-      await M.romance.playLoverMilestone("rin");
+      await M.romance.playLoverMilestone("rio");
       return { before, after: s.stats, xp: s.growth.xp, level: s.growth.level, hidane: growth.hidaneTotal(),
         menu: growth.growthMenuItems(), board: await growth.openGrowthBoard(), night: growth.settleGrowth() };
     });
@@ -54,11 +54,11 @@ await suite("lover-milestones", async check => {
     await setup(page);
     await page.evaluate(async () => {
       const growth = await import("./js/core/growth.js");
-      growth.setGrowthPreview(true); M.fresh("rin");
+      growth.setGrowthPreview(true); M.fresh("rio");
       const hud = await import("./js/daily/hud.js"), ui = await import("./js/core/ui.js");
       ui.showScreen("map", document.createElement("div"));
       hud.initHud({}); hud.showHud(true);
-      await M.romance.playLoverMilestone("rin");
+      await M.romance.playLoverMilestone("rio");
     });
     const chip = page.locator('[data-test="exp-chip"]');
     await chip.waitFor();
@@ -75,7 +75,7 @@ await suite("lover-milestones", async check => {
       bus.on("stat-gain", payload => gains.push(payload));
       for (const enabled of [false, true]) {
         growth.setGrowthPreview(enabled);
-        for (const id of ["tsumugi", "minto", "rin", "ageha", "mashiro", "samechan", "hiyori"]) {
+        for (const id of ["tsumugi", "minto", "rio", "ageha", "mashiro", "samechan", "hiyori"]) {
           let s = M.fresh(id); s.loveLevel[id] = 5; s.lovePts[id] = 72;
           s.flags._intro_samechan = s.flags._samechan_nickname_known = true;
           const before = { ...s.stats }, xp = { ...s.statXp };
@@ -119,24 +119,24 @@ await suite("lover-milestones", async check => {
     const result = await page.evaluate(async enabled => {
       const growth = await import("./js/core/growth.js");
       growth.setGrowthPreview(enabled);
-      let s = M.fresh("rin");
+      let s = M.fresh("rio");
       const abort = new AbortController();
       M.vn.vnTest.turbo = false;
-      const pending = M.romance.playLoverMilestone("rin", { signal: abort.signal });
+      const pending = M.romance.playLoverMilestone("rio", { signal: abort.signal });
       abort.abort(); await pending;
       const cancelled = { xp: s.growth?.xp || 0, seen: [...s.loverEventsSeen], stats: { ...s.stats } };
       M.vn.vnTest.turbo = true;
-      await M.romance.playLoverMilestone("rin");
+      await M.romance.playLoverMilestone("rio");
       const completed = s.growth.xp;
       M.core.save(); M.core.load();
-      await M.vn.play("lover_rin_lv1");
+      await M.vn.play("lover_rio_lv1");
       const loaded = M.core.state.growth.xp;
-      s = M.fresh("rin"); s.loverEventsSeen = ["lover_rin_lv1"];
-      M.core.save(); M.core.load(); await M.vn.play("lover_rin_lv1");
+      s = M.fresh("rio"); s.loverEventsSeen = ["lover_rio_lv1"];
+      M.core.save(); M.core.load(); await M.vn.play("lover_rio_lv1");
       const legacy = M.core.state.growth?.xp || 0;
-      s = M.fresh("rin"); M.vn.vnTest.turbo = false;
-      const old = M.vn.play("lover_rin_lv1");
-      M.fresh("rin"); M.vn.vnTest.turbo = true;
+      s = M.fresh("rio"); M.vn.vnTest.turbo = false;
+      const old = M.vn.play("lover_rio_lv1");
+      M.fresh("rio"); M.vn.vnTest.turbo = true;
       // 消滅したownerの会話を最後まで送っても新しいセーブへ付けない。
       while (M.vn.isPlaying()) { document.querySelector('[data-test="vn-auto"]')?.click(); await new Promise(r => setTimeout(r, 20)); }
       await old;
@@ -147,11 +147,43 @@ await suite("lover-milestones", async check => {
     assert.equal(result.legacy, 0); assert.equal(result.stale, 0);
   }, { reducedMotion: "reduce" });
 
+  // 地元が舞台の節目（PEPPERMINT・栞さんの部屋など）は、東京・ドバイでは読まずに地元へ帰ってから（#2024）。
+  await check("hometown-milestone-waits-until-home", async page => {
+    await setup(page);
+    const result = await page.evaluate(async () => {
+      const s = M.fresh("minto"); s.chapter = 3; s.loveLevel.minto = 2; s.lovePts.minto = 24;
+      s.loverEventsSeen = ["lover_minto_lv1"];
+      const away = {};
+      for (const region of ["tokyo", "dubai"]) {
+        s.flags._ch2_region = region; M.events.length = 0;
+        away[region] = { due: M.romance.loverMilestoneDue("minto"), played: await M.romance.playLoverMilestone("minto"),
+          events: [...M.events] };
+      }
+      M.core.save(); M.core.load();
+      const kept = M.snap().loverEventsSeen;
+      M.core.state.flags._ch2_region = "home"; M.events.length = 0;
+      const due = M.romance.loverMilestoneDue("minto"), played = await M.romance.playLoverMilestone("minto");
+      M.core.load();
+      return { away, kept, due, played, events: M.events, after: M.snap().loverEventsSeen,
+        again: await M.romance.playLoverMilestone("minto") };
+    });
+    for (const region of ["tokyo", "dubai"]) {
+      assert.equal(result.away[region].due, null, region);
+      assert.equal(result.away[region].played, false, region);
+      assert.deepEqual(result.away[region].events, [], region);
+    }
+    assert.deepEqual(result.kept, ["lover_minto_lv1"], "Nothing is marked read while away");
+    assert.equal(result.due, "lover_minto_lv2");
+    assert(result.played && !result.again);
+    assert.deepEqual(result.events, ["lover_minto_lv2"]);
+    assert.deepEqual(result.after, ["lover_minto_lv1", "lover_minto_lv2"]);
+  }, { reducedMotion: "reduce" });
+
   for (const [mode, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
     const opts = { ...options, reducedMotion: "reduce" };
     const press = (page, selector) => options.hasTouch ? page.locator(selector).tap() : page.locator(selector).click();
 
-    for (const id of ["tsumugi", "minto", "rin"]) {
+    for (const id of ["tsumugi", "minto", "rio"]) {
       await check(`${mode}-${id}-lime-level-before-date`, async page => {
         await setup(page);
         await page.evaluate(id => {
@@ -187,16 +219,20 @@ await suite("lover-milestones", async check => {
 
     await check(`${mode}-legacy-high-level-all-common-routes`, async page => {
       await setup(page);
-      const records = await page.evaluate(async () => {
+      const routes = Object.fromEntries(["tsumugi", "minto", "rio", "ageha", "mashiro"].map(id =>
+        [id, [1, 2, 3, 4, 5].map(n => `lover_${id}_lv${n}`)]));
+      // 同じLvの追加場面も、Lv5までの途中で読み・保存する（順序は実装から取得しない）。
+      routes.ageha.splice(2, 0, "lover_ageha_lv2_b");
+      const records = await page.evaluate(async routes => {
         const records = [];
-        for (const id of ["tsumugi", "minto", "rin", "ageha", "mashiro"]) {
+        for (const id of Object.keys(routes)) {
           const s = M.fresh(id); s.schema = 5; s.loveLevel[id] = 5; s.lovePts[id] = 72;
           s.loveCarry[id] = .5; s.guilt = 3;
           s.inbox.push({ id: "preserved", msg: { sender: id, type: "chat", messages: ["記録"] }, read: true, done: true, log: [] });
           M.core.save(); M.core.load();
           const before = M.snap(), due = [], reads = [], counts = [];
           M.events.length = 0;
-          for (let n = 1; n <= 5; n++) {
+          for (let n = 0; n < routes[id].length; n++) {
             due.push(M.romance.loverMilestoneDue(id));
             reads.push(await M.romance.playLoverMilestone(id));
             M.core.load(); counts.push(M.core.state.loverEventsSeen.length);
@@ -205,11 +241,11 @@ await suite("lover-milestones", async check => {
           records.push({ id, before, after, due, reads, counts, again, events: M.events.slice(), privateAfter: M.stats.bond.private });
         }
         return records;
-      });
+      }, routes);
       for (const r of records) {
-        const expected = [1, 2, 3, 4, 5].map(n => `lover_${r.id}_lv${n}`);
+        const expected = routes[r.id];
         assert.deepEqual(r.due, expected); assert.deepEqual(r.events, expected);
-        assert.deepEqual(r.counts, [1, 2, 3, 4, 5]); assert(r.reads.every(Boolean));
+        assert.deepEqual(r.counts, expected.map((_, n) => n + 1)); assert(r.reads.every(Boolean));
         assert.deepEqual(r.after.loverEventsSeen, expected); assert(!r.again && !r.privateAfter);
         assert.equal(r.after.lovePts[r.id], 72); assert.equal(r.after.loveCarry[r.id], .5);
         assert.deepEqual(r.after.stats, r.before.stats); assert.deepEqual(r.after.inbox, r.before.inbox);
@@ -221,36 +257,36 @@ await suite("lover-milestones", async check => {
     await check(`${mode}-additional-scene-known-scenes-and-boundaries`, async page => {
       await setup(page);
       const result = await page.evaluate(async () => {
-        let s = M.fresh("rin"); s.loveLevel.rin = 2;
-        M.data.DB.dialogues.lover_rin_lv1_b = { dialogue_id: "lover_rin_lv1_b", metadata: { private_scene: true },
-          lines: [{ speaker: "rin", text: "もう少し、話していこう" }] };
+        let s = M.fresh("rio"); s.loveLevel.rio = 2;
+        M.data.DB.dialogues.lover_rio_lv1_b = { dialogue_id: "lover_rio_lv1_b", metadata: { private_scene: true },
+          lines: [{ speaker: "rio", text: "もう少し、話していこう" }] };
         const order = [];
-        for (let n = 0; n < 3; n++) { order.push(M.romance.loverMilestoneDue("rin")); await M.romance.playLoverMilestone("rin"); }
-        const noNext = await M.romance.playLoverMilestone("rin");
-        s.loverEventsSeen = ["lover_rin_lv1", "lover_rin_lv1_b", "lover_rin_lv3"]; s.loveLevel.rin = 5;
-        const gap = M.romance.loverMilestoneDue("rin"); await M.romance.playLoverMilestone("rin");
-        const next = M.romance.loverMilestoneDue("rin");
+        for (let n = 0; n < 3; n++) { order.push(M.romance.loverMilestoneDue("rio")); await M.romance.playLoverMilestone("rio"); }
+        const noNext = await M.romance.playLoverMilestone("rio");
+        s.loverEventsSeen = ["lover_rio_lv1", "lover_rio_lv1_b", "lover_rio_lv3"]; s.loveLevel.rio = 5;
+        const gap = M.romance.loverMilestoneDue("rio"); await M.romance.playLoverMilestone("rio");
+        const next = M.romance.loverMilestoneDue("rio");
         const checks = [];
         for (const kind of ["friend", "low-level", "missing-scene", "empty-additional-scene", "future-chapter"]) {
-          s = M.fresh("rin"); s.loveLevel.rin = 2;
-          if (kind === "friend") { s.lovers = []; s.flags._friend_rin = true; }
-          if (kind === "low-level") s.loveLevel.rin = 0;
-          const base = M.data.DB.dialogues.lover_rin_lv1, extra = M.data.DB.dialogues.lover_rin_lv1_b;
-          if (kind === "missing-scene") delete M.data.DB.dialogues.lover_rin_lv1;
-          if (kind === "empty-additional-scene") { s.loverEventsSeen = ["lover_rin_lv1"]; M.data.DB.dialogues.lover_rin_lv1_b = { lines: [] }; }
-          if (kind === "future-chapter") M.data.DB.dialogues.lover_rin_lv1 = { ...base, metadata: { min_chapter: 3 } };
-          const before = M.snap(), played = await M.romance.playLoverMilestone("rin");
+          s = M.fresh("rio"); s.loveLevel.rio = 2;
+          if (kind === "friend") { s.lovers = []; s.flags._friend_rio = true; }
+          if (kind === "low-level") s.loveLevel.rio = 0;
+          const base = M.data.DB.dialogues.lover_rio_lv1, extra = M.data.DB.dialogues.lover_rio_lv1_b;
+          if (kind === "missing-scene") delete M.data.DB.dialogues.lover_rio_lv1;
+          if (kind === "empty-additional-scene") { s.loverEventsSeen = ["lover_rio_lv1"]; M.data.DB.dialogues.lover_rio_lv1_b = { lines: [] }; }
+          if (kind === "future-chapter") M.data.DB.dialogues.lover_rio_lv1 = { ...base, metadata: { min_chapter: 3 } };
+          const before = M.snap(), played = await M.romance.playLoverMilestone("rio");
           checks.push({ kind, before, played, after: M.snap() });
-          M.data.DB.dialogues.lover_rin_lv1 = base; M.data.DB.dialogues.lover_rin_lv1_b = extra;
+          M.data.DB.dialogues.lover_rio_lv1 = base; M.data.DB.dialogues.lover_rio_lv1_b = extra;
         }
-        delete M.data.DB.dialogues.lover_rin_lv1_b;
-        M.fresh("rin"); M.stats.bond.private = true;
-        const played = await M.romance.playLoverMilestone("rin"), restoredPrivate = M.stats.bond.private;
+        delete M.data.DB.dialogues.lover_rio_lv1_b;
+        M.fresh("rio"); M.stats.bond.private = true;
+        const played = await M.romance.playLoverMilestone("rio"), restoredPrivate = M.stats.bond.private;
         M.stats.bond.private = false;
         return { order, noNext, gap, next, checks, played, restoredPrivate };
       });
-      assert.deepEqual(result.order, ["lover_rin_lv1", "lover_rin_lv1_b", "lover_rin_lv2"]);
-      assert(!result.noNext); assert.equal(result.gap, "lover_rin_lv2"); assert.equal(result.next, "lover_rin_lv4");
+      assert.deepEqual(result.order, ["lover_rio_lv1", "lover_rio_lv1_b", "lover_rio_lv2"]);
+      assert(!result.noNext); assert.equal(result.gap, "lover_rio_lv2"); assert.equal(result.next, "lover_rio_lv4");
       for (const r of result.checks) { assert(!r.played, r.kind); assert.deepEqual(r.after, r.before, r.kind); }
       assert(result.played && result.restoredPrivate);
     }, opts);

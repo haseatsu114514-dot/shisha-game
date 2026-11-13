@@ -1,17 +1,40 @@
 {
-  "version": 3,
+  "version": 4,
   "tableTalk": "dialogue/trpg_table_talk.json",
   "characterProfiles": [
     "dialogue/samechan.json"
   ],
   "scenarios": [
     {
+      "id": "regular-harbor",
+      "file": "dialogue/trpg_regular_harbor.json",
+      "price": 300,
+      "stockRequires": [],
+      "zeroMemberCast": [
+        "sai",
+        "regulara",
+        "regularb"
+      ]
+    },
+    {
+      "id": "regular-mail",
+      "file": "dialogue/trpg_regular_mail.json",
+      "price": 300,
+      "stockRequires": [],
+      "zeroMemberCast": [
+        "sai",
+        "regulara",
+        "regularb"
+      ]
+    },
+    {
       "id": "ordinary-cup",
       "file": "dialogue/trpg_ordinary.json",
       "price": 500,
       "stockRequires": [
         "hiyori"
-      ]
+      ],
+      "member": "hiyori"
     },
     {
       "id": "shark-last-order",
@@ -19,6 +42,64 @@
       "price": 800,
       "stockRequires": [
         "samechan"
+      ],
+      "member": "samechan"
+    },
+    {
+      "id": "leaf-mail",
+      "file": "dialogue/trpg_leaf_mail.json",
+      "price": 500,
+      "stockRequires": [
+        "tsumugi"
+      ],
+      "member": "tsumugi"
+    },
+    {
+      "id": "apple-thief",
+      "file": "dialogue/trpg_apple_thief.json",
+      "price": 700,
+      "stockRequires": [
+        "adam"
+      ],
+      "member": "adam"
+    },
+    {
+      "id": "moonflower-encore",
+      "file": "dialogue/trpg_moonflower_encore.json",
+      "price": 800,
+      "stockRequires": [
+        "rei"
+      ],
+      "member": "rei"
+    },
+    {
+      "id": "purikura-hero",
+      "file": "dialogue/trpg_purikura_hero.json",
+      "price": 700,
+      "stockRequires": [
+        "ageha"
+      ],
+      "member": "ageha",
+      "zeroMemberCast": [
+        "sai"
+      ]
+    },
+    {
+      "id": "mist-kingdom",
+      "file": "dialogue/trpg_mist_kingdom.json",
+      "price": 700,
+      "stockRequires": [],
+      "clearRequires": [
+        "ordinary-cup",
+        "shark-last-order",
+        "leaf-mail",
+        "apple-thief",
+        "moonflower-encore",
+        "purikura-hero"
+      ],
+      "finale": true,
+      "zeroMemberCast": [
+        "sai"
       ]
     }
   ],
@@ -26,7 +107,6 @@
   "participants": [
     {
       "id": "hiyori",
-      "maxAffinity": 66,
       "workLabel": "仕事の時間",
       "shifts": [
         {
@@ -45,7 +125,6 @@
     },
     {
       "id": "samechan",
-      "maxAffinity": 66,
       "workLabel": "店のシフト中",
       "shifts": [
         {
@@ -74,7 +153,6 @@
     },
     {
       "id": "tsumugi",
-      "maxAffinity": 66,
       "workLabel": "大学の制作時間",
       "shifts": [
         {
@@ -91,7 +169,6 @@
     },
     {
       "id": "adam",
-      "maxAffinity": 66,
       "workLabel": "店のシフト中",
       "shifts": [
         {
@@ -119,10 +196,62 @@
       ],
       "interested": true,
       "interestHint": "物語や舞台の仕掛けが好き"
+    },
+    {
+      "id": "rei",
+      "workLabel": "零-ZERO-の営業中",
+      "shifts": [
+        {
+          "slot": 0,
+          "days": [
+            0,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        }
+      ],
+      "interested": true,
+      "interestHint": "休みの日はTRPGで遊んでいる"
+    },
+    {
+      "id": "ageha",
+      "workLabel": "MELTY PUFFの営業中",
+      "shifts": [
+        {
+          "slot": 0,
+          "days": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6
+          ]
+        }
+      ],
+      "interested": true,
+      "interestHint": "楽しそうなことには、とりあえず乗る"
     }
   ],
   "club": {
     "name": "煙とサイコロ部",
     "file": "dialogue/trpg_club.json"
-  }
+  },
+  "tutorial": "dialogue/trpg_tutorial.json",
+  "regulars": [
+    "regulara",
+    "regularb"
+  ],
+  "retiredScenarios": [
+    "shark-island",
+    "smoke-robot",
+    "fading-familiar",
+    "fox-market",
+    "stage-ghost",
+    "doll-requiem"
+  ]
 }

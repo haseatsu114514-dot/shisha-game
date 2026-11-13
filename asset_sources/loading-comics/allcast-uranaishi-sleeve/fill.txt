@@ -1,0 +1,3 @@
+uranaishi-sleeve-1.webp: 余白 左0% 右2% 上4% 下0% → 拡大 100%（切った所 left1%・right1%）
+uranaishi-sleeve-2.webp: 余白 左2% 右0% 上4% 下0% → 拡大 100%（切った所 left1%・right1%）
+拡大して埋めた: 2 / 2 枚

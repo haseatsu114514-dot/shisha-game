@@ -9,4 +9,4 @@
 - `playthrough.log`：最新表示の第1章通し。4位敗北→再挑戦→優勝、セーブ／ロードと25回転のスロット精算がPASS。
 - `provenance.json`：使用済み元素材と確認ファイルのSHA-256。
 
-[判断・成長ルールと検証記録](../../../docs/compact_gains_and_growth_20261008.md)。
+[判断・成長ルールと検証記録](../../../docs/spec/compact_gains_and_growth_20261008.md)。

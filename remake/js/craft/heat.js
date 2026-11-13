@@ -11,7 +11,9 @@ import { HEAT_GRADES, HEAT_TUNING, phaseOf, evaluateCoalTiming, formatTimingErro
 export { HEAT_GRADES } from "./heat_logic.js";
 import { coalCount, coalTypes } from "./coals.js";
 import { createCraftClock } from "./clock.js";
+import { impact, fxHolding } from "./fx.js";
 import { state } from "../core/state.js";
+import { growthCritical, settleGrowthPhase, SKILL_TUNING } from "../core/growth-effects.js";
 import { coalJustSeconds } from "./heat_logic.js";
 import { effectVisible, effectBadge, senseBand, effectTier } from "./effect-visual.js";
 
@@ -20,6 +22,7 @@ export async function runHeat(cs) {
   const panel = stepPanel("heat", "炭焼き", "黒い面が消えて全面が赤くなった炭を、タップして取り上げる");
   // 炭を一つ取るたびに、その炭の分の点がスコアへ入る（TH42）。
   const { res, timings, picks, info, feedback } = await burnCoals(cs, panel, { count: coalCount(cs), onPick: (timing, i, count) => scoreStep(cs, `heat:${i}`, timing.score / count) });
+  settleGrowthPhase(state, cs, "heat", res, res.just > 0);
   cs.heat = res;
   scoreStep(cs, "heat", res.score, "炭焼き");
   refreshBench();
@@ -36,7 +39,7 @@ export async function runHeat(cs) {
     grade: res.grade,
     summary: [
       ...timings.map((timing, i) => `${coalSpots(coalCount(cs))[i][2]} ${timing.rating}：${formatTimingError(timing.errorSeconds)}（${timing.label}${timing.automatic ? "・自動" : ""}）`),
-      res.just === coalCount(cs) ? "すべて全面が赤い取り頃で取れた" : res.just ? "取り頃で取れた炭がある" : "次は全面が赤くなるのを待とう",
+      res.just === coalCount(cs) ? "すべて全面が赤い取り頃で取れた" : res.just ? "取り頃で取れた炭がある" : "取り頃で取れた炭はなかった",
     ],
     lines: [
       picks.map((g) => HEAT_GRADES[g].label).join("・"),
@@ -55,7 +58,7 @@ function heatAdvice(res) {
   return early ? "早く取り出した炭がある。次は黒い面が消えるまで待とう" : "";
 }
 
-// 1〜4個の炭を焼く本体。最初の炭焼きと、熱管理で消耗した炭を交換するときの両方で使う（TH39）。
+// 1〜4個の炭を焼く本体。熱管理の交換では焼き直さず、焼いておいた炭をトングで持ってくる（#2213。K11 もそちらで効く）。
 export async function burnCoals(cs, panel, { count = 3, compact = false, onPick = null } = {}) {
   const tutorial = cs.mode === "tutorial";
   const types = coalTypes(cs, count);
@@ -89,7 +92,8 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
     c.p = elapsedSeconds / c.tj;
     c.picked = g;
     const index = coals.indexOf(c);
-    c.timing = { ...timing, coal: index + 1, automatic };
+    c.timing = { ...timing, coal: index + 1, automatic, critical: growthCritical(state, timing.errorSeconds, justSec, { tutorial, automatic }) };
+    if (c.timing.critical) { c.timing.rating = "会心"; c.timing.label = "会心の一服"; }
     const G = HEAT_GRADES[g];
     // 入力時刻で先に判定し、同じ素材・その時の焼け具合を炭壺へ残す。
     paint(c, c.p);
@@ -102,6 +106,10 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
     if (g === "just") { SE.just(); tickerSay("パッキー「出たーッ！ EXCELLENT！ 全面が真っ赤だーッ！」"); }
     else if (g === "pre" || g === "hot") SE.good();
     else SE.miss();
+    if (g === "just" || g === "pre" || g === "hot") {
+      impact(view.root, g === "just" ? (c.timing.critical ? "big" : "perfect") : "good",
+        { at: c.node, zoomNode: view.root.querySelector(".stove") || view.root });
+    }
     SE.coalSnip();
     onPick?.(c.timing, index, coals.length);
     if (coals.every((x) => x.picked)) finish();
@@ -125,7 +133,8 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
       const jw = justSec / c.tj;
       const ph = phaseOf(c.p, jw);
       const n = c.node;
-      paint(c, c.p);
+      // ヒットストップ中は焼け色の絵だけ止める（焼け具合と判定の時間は進む）
+      if (!fxHolding(view.root)) paint(c, c.p);
       n.dataset.phase = ph;
       // 洞察★: ジャスト直前にかすかな揺らぎ（読みやすさ）
       n.classList.toggle("soon", clarity > 0 && ph === "pre" && c.p > 1 - 0.1 * clarity);
@@ -173,10 +182,11 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
   const timings = coals.map((c) => c.timing);
   const timingSummary = summarizeCoalTimings(timings);
   const avg = (k) => picks.reduce((s, g) => s + HEAT_GRADES[g][k], 0) / picks.length;
-  const score = timingSummary.accuracy;
+  const criticals = timings.filter(t => t.critical).length;
+  const score = Math.min(100, timingSummary.accuracy + (criticals ? Math.min(SKILL_TUNING.criticalCap, criticals * SKILL_TUNING.critical) : 0));
   const res = {
-    score, grade: gradeOf(score), picks, timings,
-    timingAccuracy: score, meanAbsoluteError: timingSummary.meanAbsoluteError,
+    score, grade: gradeOf(score), picks, timings, criticals,
+    timingAccuracy: timingSummary.accuracy, meanAbsoluteError: timingSummary.meanAbsoluteError,
     just: picks.filter((g) => g === "just").length,
     early: picks.filter((g) => g === "raw" || g === "early").length,
     over: picks.filter((g) => g === "over").length,

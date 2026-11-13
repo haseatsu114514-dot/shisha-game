@@ -5,7 +5,7 @@
 // DOMの初期値は「終わった画面」。動きは最初にまとめて予約し、fill で途中の見た目を作る（動きを減らす設定はそのまま見せる）。
 import { el, sleep } from "../core/util.js";
 import { state } from "../core/state.js";
-import { DB, displayName, faceIconUrl } from "../core/data.js";
+import { DB, displayName, limeAccountName, faceIconUrl } from "../core/data.js";
 import { customLimeIconUrl } from "../daily/lime-icons.js";
 import { imageReady } from "../core/ui.js";
 import { SE } from "../core/audio.js";
@@ -13,7 +13,7 @@ import { move, svg } from "../core/transition-kit.js";
 import { MG_EASE as E, motionVariant } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
 
-// 器はスマホとその周りだけ。横長はPCと同じ大きさ、縦長のDSでも端末を大きく見せる。
+// 器はスマホとその周りだけ。どの画面でもPCと同じ大きさ（ステージ倍率で縮むだけ）。
 export const BOX_W = 560, BOX_H = 720;
 const ROWS = 6; // 一覧に見せる行（新しい1行を含む）
 const ROW_H = 76;
@@ -34,7 +34,7 @@ const PRIVATE_FACE = { minto: "oneesan" };
 function accountName(id, context) {
   const c = DB.characters?.[id];
   if (context === "private") return c?.private_name || displayName(id, state, { context });
-  return c?.lime_name || displayName(id, state, { context: "private" });
+  return limeAccountName(id, state);
 }
 const faceOf = (id, context) => (context !== "private" && customLimeIconUrl(id)) || faceIconUrl(context === "private" && PRIVATE_FACE[id] || id, state, { context });
 

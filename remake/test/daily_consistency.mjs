@@ -19,6 +19,7 @@ function find(node, id) { if (node.dataset?.test === id) return node; return nod
 const values = {
   "practice.js": { runFullPractice: async () => {} },
   "hiyori.js": { meetHiyoriAtTonari: async () => false, hiyoriShopEncounterDue: () => hiyoriDue, hiyoriAtTonari: () => false },
+  "roamers.js": { roamerAt: () => null, roamerPlan: () => null, meetRoamer: async () => false, addRoamerSpots: () => {} }, // よその店に居合わせる人。この検査では居合わせない
   "hiyori-axe.js": { hiyoriAxeReady: () => false, hiyoriAxeAffordable: () => false, hiyoriAxePrereqsMet: () => false, axeThrowExposed: () => false },
   "util.js": { el, seeded, pick: (pool) => { selectedPools.push(pool.map((e) => e.id)); return pool[0]; } },
   "data.js": { DB: db, sceneBg: () => ({}), loadCinemaDialogue: async () => db, bgUrl: () => "bg", displayName: id => id },
@@ -26,7 +27,7 @@ const values = {
   "transitions.js": { refreshPlaceCue() {} },
   "state.js": { state, config: { statEffectColors: true }, save() {}, timeOfDay: () => state.slot === 0 ? "day" : "night", markMet() {}, STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" } },
   "stats.js": { AFFINITY_RANK_PTS: [0,9,20,33,48,66], setStoryAffinityCap() {}, affinityGateWaiting: () => false, addMoney: (value) => money.push(value), addStamina: (value) => { state.stamina = Math.max(0, state.stamina + value); }, applyStats() {}, paidAction: async (run) => ({ value: await run() }), DRILL_GROWTH_BUDGET: 2, step: () => charmStep,
-    currentCondition: () => conditionForRatio(state.stamina / 100), gainAffinity() {}, releaseAffinity() {}, ensureAffinityLevel() {}, earnStat() {}, affinityLevel: id => [9,20,33,48,66].filter(n => (state.affinity?.[id] || 0) >= n).length },
+    currentCondition: () => conditionForRatio(state.stamina / 100), gainAffinity() {}, visitAffinity: kind => ({ story: 16, talk: 8 })[kind], releaseAffinity() {}, ensureAffinityLevel() {}, earnStat() {}, affinityLevel: id => [9,20,33,48,66].filter(n => (state.affinity?.[id] || 0) >= n).length },
 
   "audio.js": { SE: { select() {}, cancel() {} }, playBgm() {} },
   "engine.js": { isPlaying: () => false, play: async (scene) => { plays.push(scene); return {id: typeof scene === "string" ? scene : scene.dialogue_id, visited: []}; }, dialogueSequence: (run) => run() },
@@ -37,13 +38,14 @@ const values = {
   "scene-motions.js": { shiftClose: async () => {} },
   "bus.js": { emit() {}, on: () => () => {} },
   "growth.js": { growthEnabled: () => false, hidaneTotal: () => 0, readyLessons: () => [], consultLessons: async () => [] },
+  "growth-effects.js": { callingSalesBonus: () => 0 }, // このスイートは盤無効の既存の接客・給料を検証する。
   "reel.js": { installReel() {} },
   "weather.js": { isRainy: () => rainy, weatherOf: () => (rainy ? "rain" : "sun"), RAIN_BAITO: ["baito_rainy_day", "baito_tsumugi_rain"], RAIN_BAITO_BONUS: 500, RAIN_SPOT_TEXTS: {} },
 };
 const context = vm.createContext({ Math, Set, Promise, console, AbortController }); const mods = new Map();
 async function load(name) { if (mods.has(name)) return mods.get(name); const mod = values[name]
   ? new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name })
-  : new vm.SourceTextModule(await fs.readFile(new URL(`js/${name === "train-passengers.js" ? "motions" : ["coals.js", "attack-training.js"].includes(name) ? "craft" : ["chapter-features.js", "stat-step-tables.js", "flavor-mastery.js", "cinema-discovery.js", "rules.js", "affinity-stages.js", "axe-bar-discovery.js", "city-locations.js", "trpg-discovery.js", "ryuji-visit.js", "travel-budget.js"].includes(name) ? "core" : "daily"}/${name}`, root), "utf8"), { context, identifier: name });
+  : new vm.SourceTextModule(await fs.readFile(new URL(`js/${name === "train-passengers.js" ? "motions" : ["coals.js", "attack-training.js"].includes(name) ? "craft" : ["shift-pay.js", "chapter-features.js", "stat-step-tables.js", "flavor-mastery.js", "cinema-discovery.js", "rules.js", "affinity-stages.js", "axe-bar-discovery.js", "city-locations.js", "trpg-discovery.js", "ryuji-visit.js", "travel-budget.js", "chapter-clock.js", "play-mastery.js"].includes(name) ? "core" : "daily"}/${name}`, root), "utf8"), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod; }
 const module = await load("tonari.js"); await module.evaluate(); const tonari = module.namespace;
 const byid = Object.fromEntries(events.map((e) => [e.id, e]));
@@ -82,9 +84,53 @@ const ch2Events = events.filter((e) => e.chapter === 2);
 assert(ch2Events.length >= 4, "第2章固有の接客がロード対象に4件以上ない");
 for (const ev of ch2Events) {
   const slot = ev.time_slot === "night" ? 1 : 0;
-  reset({ slot }); db.baito = [ev]; await tonari.doBaito(); assert.equal(selected(), undefined, `${ev.id} が第1章に出た`);
-  reset({ chapter: 2, slot }); db.baito = [ev]; await tonari.doBaito(); assert.equal(selected(), `baito_${ev.id}`, `${ev.id} が第2章に出ない`);
+  // 正のtrigger_flagは両章で立て、第1章で出ないのが章の条件のためだと確かめる（否定flagは立てない）。
+  const unlock = () => { if (ev.trigger_flag && !ev.trigger_flag.startsWith("!")) state.flags[ev.trigger_flag] = true; };
+  reset({ slot }); unlock(); db.baito = [ev]; await tonari.doBaito(); assert.equal(selected(), undefined, `${ev.id} が第1章に出た`);
+  reset({ chapter: 2, slot }); unlock(); db.baito = [ev]; await tonari.doBaito(); assert.equal(selected(), `baito_${ev.id}`, `${ev.id} が第2章に出ない`);
 }
+// 新作の苺はDAY9の試煙会と試供品受領を読み終えてから接客に出す。
+const strawberryFan = byid.baito_ch2_strawberry_fan;
+reset({ chapter: 2, day: 1 }); db.baito = [strawberryFan]; await tonari.doBaito();
+assert.equal(selected(), undefined, "DAY1に新作苺の接客が出た");
+reset({ chapter: 2, day: 9 }); state.flags._ch2_read_remake_ch2_ageha_tasting = true;
+db.baito = [strawberryFan]; await tonari.doBaito();
+assert.equal(selected(), undefined, "試煙会の後、試供品受領前に新作苺の接客が出た");
+reset({ chapter: 2, day: 10 }); state.flags._ch2_read_ch2_strawberry_sample = true;
+db.baito = [strawberryFan]; await tonari.doBaito();
+assert.equal(selected(), "baito_baito_ch2_strawberry_fan", "試供品受領後に新作苺の接客が出ない");
+// #2032: 第2章の味の不調中は、自分で吸って味を確かめる閉店後の一服を出さない。不調の記録が残る第4章では出す。
+// 第3章の東京へ発つ前の3日も不調のまま（ch3_prep_opening「無理に吸って確かめるな」。味が戻るのは東京）。
+for (const [chapter, distant, shown, prep] of [[2, true, false], [2, false, true], [4, true, true],
+  [3, true, false, { departed: false }], [3, false, true, { departed: false }]]) {
+  reset({ chapter, slot: 1 }); if (distant) state.flags._ch2_taste_distant = true;
+  if (prep) state.flags._ch3_prep = { startDay: 8, days: 3, step: 0, ...prep };
+  db.baito = [byid.baito_closing_smoke]; await tonari.doBaito();
+  assert.equal(selected(), shown ? "baito_baito_closing_smoke" : undefined, `閉店後の一服 chapter=${chapter} distant=${distant} prep=${JSON.stringify(prep)}`);
+}
+// #2032: スミさんの飯は「残る匂い」（しばらく飯はうちで食ってけ）を読んだ第2章だけ。昼夜どちらのシフトでも出る。
+const staffMeal = byid.baito_ch2_staff_meal;
+assert(staffMeal, "第2章のスミさんの飯の回がロード対象にない");
+assert(!/まかない/.test(JSON.stringify(staffMeal)), "飯の回で「まかない（練習）」と紛れる語を使わない");
+assert(staffMeal.choices.every((choice) => !choice.money_bonus), "飯は売上ではない");
+reset({ chapter: 2 }); db.baito = [staffMeal]; await tonari.doBaito(); assert.equal(selected(), undefined, "残る匂いの前に飯が出た");
+for (const slot of [0, 1]) {
+  reset({ chapter: 2, slot }); state.flags._ch2_read_ch2_lingering_smell = true;
+  db.baito = [staffMeal]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_ch2_staff_meal", `slot=${slot} で飯が出ない`);
+}
+reset(); state.flags._ch2_read_ch2_lingering_smell = true; db.baito = [staffMeal]; await tonari.doBaito(); assert.equal(selected(), undefined, "第1章に飯が出た");
+// priority: 未読なら次のシフトで必ず飯（抽選の先頭が別の客でも）。一度読めば通常の抽選に戻る。
+reset({ chapter: 2 }); state.flags._ch2_read_ch2_lingering_smell = true;
+db.baito = [byid.baito_regular_01, staffMeal]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_ch2_staff_meal", "残る匂いの後の最初のシフトで飯が出ない");
+assert.deepEqual(state.usedBaito, ["baito_ch2_staff_meal"]);
+reset({ chapter: 2, usedBaito: ["baito_ch2_staff_meal"] }); state.flags._ch2_read_ch2_lingering_smell = true;
+db.baito = [byid.baito_regular_01, staffMeal]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_regular_01", "読んだ後も飯が優先され続けた");
+// 旧セーブの既読記録でも一度きり。通常回まで既読で未読候補が尽きても飯へ戻さない。
+reset({ chapter: 2, usedBaito: ["baito_ch2_staff_meal"] }); state.flags._ch2_read_ch2_lingering_smell = true;
+db.baito = [staffMeal]; await tonari.doBaito(); assert.equal(selected(), undefined, "既読セーブで飯が再選出された");
+reset({ chapter: 2, usedBaito: ["baito_ch2_staff_meal", "baito_regular_01"] }); state.flags._ch2_read_ch2_lingering_smell = true;
+db.baito = [byid.baito_regular_01, staffMeal]; await tonari.doBaito();
+assert.equal(selected(), "baito_baito_regular_01", "未読候補が尽きた際に飯が再選出された");
 reset({ chapter: 2 }); db.baito = [byid.baito_mysterious_customer, byid.baito_regular_03]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_regular_03");
 reset(); db.baito = [custom("locked", { trigger_flag: "needs_contact" })]; await tonari.doBaito(); assert.equal(selected(), undefined);
 state.flags.needs_contact = true; await tonari.doBaito(); assert.equal(selected(), "baito_locked");
@@ -110,6 +156,12 @@ reset({ usedBaito: ["baito_regular_01"] }); db.baito = [byid.baito_regular_01]; 
 // 昼に閉店回、夜に昼下がり回を出さない。晴れに雨回を出さない。
 for (const id of ["baito_closing_smoke", "baito_closing_late", "baito_atmosphere_03"]) { reset(); db.baito = [byid[id]]; await tonari.doBaito(); assert.equal(selected(), undefined); reset({ slot: 1 }); db.baito = [byid[id]]; await tonari.doBaito(); assert.equal(selected(), `baito_${id}`); }
 reset({ slot: 1 }); db.baito = [byid.baito_atmosphere_02]; await tonari.doBaito(); assert.equal(selected(), undefined);
+// 「午後の光」の回は晴れの昼だけ。みんとの正体を知った後は、初対面の目で語る回を出さない（一度きり）。
+reset(); rainy = true; db.baito = [byid.baito_atmosphere_02]; await tonari.doBaito(); assert.equal(selected(), undefined);
+reset(); db.baito = [byid.baito_atmosphere_02]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_atmosphere_02");
+reset(); db.baito = [byid.baito_mysterious_customer]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_mysterious_customer");
+reset({ usedBaito: ["baito_mysterious_customer"] }); db.baito = [byid.baito_mysterious_customer]; await tonari.doBaito(); assert.equal(selected(), undefined);
+reset({ flags: { _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true, _minto_identity_revealed: true } }); db.baito = [byid.baito_mysterious_customer]; await tonari.doBaito(); assert.equal(selected(), undefined);
 reset(); db.baito = [byid.baito_rainy_day]; await tonari.doBaito(); assert.equal(selected(), undefined);
 reset(); rainy = true; db.baito = [byid.baito_regular_01, byid.baito_rainy_day]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_rainy_day");
 // chapter1の正体を伏せた3客はそれぞれ一度きり、chapter2に持ち越さない。
@@ -253,6 +305,15 @@ for (const id of guestIds) {
   const repeat = cityGuests.cityGuestAtShop(spot);
   assert(repeat); assert(await cityGuests.visitCityGuestAtShop(spot, { scheduledVisit: repeat }));
   assert(plays.includes(`ch2_city_guest_${id}_repeat`));
+  // RVE07: 2回目からは繰り返しの回を巡回する（神崎・レヰは3本、あげはは1本のまま）。旧保存（巡回の記録なし）は _repeat から
+  assert.equal(state.flags[`_city_guest_count_${id}`], 1);
+  const pool = id === "ageha" ? ["repeat"] : ["repeat", "repeat_b", "repeat_c"];
+  for (let n = 0; n <= 4; n++) {
+    assert.equal(cityGuests.cityGuestScene({ flags: { [`_city_guest_seen_${id}`]: true, [`_city_guest_count_${id}`]: n } }, id),
+      `ch2_city_guest_${id}_${pool[n % pool.length]}`, `${id}: repeat ${n}`);
+    for (const suffix of pool) assert(guestScript.some(d => d.dialogue_id === `ch2_city_guest_${id}_${suffix}` && d.lines?.length), `${id}_${suffix} exists`);
+  }
+  assert.equal(cityGuests.cityGuestScene({ flags: {} }, id), `ch2_city_guest_${id}_first`);
   guestState(id); const stale = cityGuests.cityGuestAtShop(spot); state.day++;
   assert(!await cityGuests.visitCityGuestAtShop(spot, { scheduledVisit: stale }));
   assert.equal(state.flags._city_guest_day, undefined);
@@ -263,3 +324,4 @@ guestState("ageha"); state.slot = 2; assert.equal(cityGuests.cityGuestVisit(), n
 guestState("ageha"); state.phase = "tournament"; assert.equal(cityGuests.cityGuestVisit(), null);
 guestState("ageha"); state.pendingInvite = { sender: "ageha", day: state.day, slot: 1 }; assert.equal(cityGuests.cityGuestVisit(), null);
 console.log("[city guests] PASS: three matching map/shop schedules, known/closed/date guards, first/repeat, once daily, no added resources");
+

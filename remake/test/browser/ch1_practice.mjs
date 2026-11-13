@@ -124,8 +124,10 @@ await suite("ch1-practice", async run => {
       await page.reload(); await page.locator('[data-test="title-new"]').waitFor(); await setup(page, { fresh: false });
       await page.evaluate(() => { P.core.loadFromSlot("suien_remake_slot1"); P.run(); }); await finish(page);
       const again = await snapshot(page); assert.equal(again.benches, 0);
-      const { savedAt: _beforeTime, ...beforeState } = r.state;
-      const { savedAt: _afterTime, ...afterState } = again.state;
+      // 保存のたびに経過分を足すプレイ時間（playMs・#2902）も、保存日時と同じく別に確かめる（減らない）。
+      const { savedAt: _beforeTime, playMs: beforePlay, ...beforeState } = r.state;
+      const { savedAt: _afterTime, playMs: afterPlay, ...afterState } = again.state;
+      assert(Number.isFinite(beforePlay) && afterPlay >= beforePlay, "play time survives the save/load and never goes back");
       assert.deepEqual(afterState, beforeState);
     }, options);
     await check(`${device}-early-current-interrupted-save-load`, async page => {
@@ -176,19 +178,29 @@ await suite("ch1-practice", async run => {
       }, experienced);
       await finish(page); const r = await snapshot(page);
       assertMidFull(r);
-      assert.equal(r.state.flags._ch1_mid.choice, "full");
-      assert.equal(r.entries.includes("remake_midcheck_review"), experienced);
+      // #1089: 新しく始めたDAY7は、経験の有無にかかわらず仕入れだけを選ばせず、なる戦の一台へ。
+      assert.equal(r.state.flags._ch1_mid.naruMatch, true); assert.equal(r.state.flags._ch1_mid.choice, undefined);
+      assert(!r.entries.includes("remake_midcheck_review")); assert(!r.entries.includes("remake_midcheck_intro"));
+      assert(r.entries.includes("remake_naru_match_invite")); assert(r.entries.includes("remake_naru_match_review"));
+      assert(["win", "draw", "lose"].includes(r.state.flags._ch1_mid.match.result));
+      assert.equal(r.state.flags._met_naru, true); assert.equal(r.state.met.naru, true);
       resourcesUnchanged(r.state, true); await assertFits(page, ".vn-box");
     }, options);
-    await check(`${device}-mid-experienced-skip`, async page => {
+    await check(`${device}-mid-legacy-experienced-skip`, async page => {
+      // 旧版で導入と仕入れを終えて保存した経験者は、従来どおり「仕入れだけ」を選べる。
       await setup(page, { day: 7, manual: true });
-      await page.evaluate(() => { P.core.state.flags._craft_practice_runs = [{ day: 7, kind: "practice", success: true, adjustments: 2 }]; P.run(); });
+      await page.evaluate(() => {
+        P.core.state.flags._craft_practice_runs = [{ day: 7, kind: "practice", success: true, adjustments: 2 }];
+        P.core.state.flags._ch1_mid = { introRead: true, stockDone: true };
+        P.run();
+      });
       await until(page, () => !!document.querySelector('[data-test="choice-1"]'), touch);
       assert.equal(await page.locator('.vn-choice[data-test^="choice-"]').count(), 2);
       assert.equal(await page.evaluate(() => P.benches), 0); await assertFits(page, ".vn-choice");
       await select(page, '[data-test="choice-0"]', touch); await finish(page, touch);
       const r = await snapshot(page); assert.equal(r.benches, 0); assert.equal(r.state.flags._craft_practice_runs.length, 1);
-      assert.equal(r.state.flags._ch1_mid.choice, "stock"); resourcesUnchanged(r.state, true);
+      assert.equal(r.state.flags._ch1_mid.choice, "stock"); assert.equal(r.state.flags._ch1_mid.naruMatch, undefined);
+      assert(!r.entries.includes("remake_naru_match_invite")); resourcesUnchanged(r.state, true);
     }, options);
     await check(`${device}-supplied-care-controls`, async page => {
       await setup(page, { day: 7, auto: null });
@@ -245,6 +257,8 @@ await suite("ch1-practice", async run => {
     assert.equal(record.scope, "full"); assert.equal(record.success, false); assert.equal(record.served, false);
     assert.equal(record.adjustments, 0); assert.deepEqual(record.careScores, []); assert.equal(record.scores.pull, 0);
     assert(r.state.flags._ev_midcheck); assert(r.entries.includes("remake_preparation_failed"));
+    // 失敗しても講評へ進み、負けとして記録する（追加の罰はない）。
+    assert(r.entries.includes("remake_naru_match_review")); assert.equal(r.state.flags._ch1_mid.match.result, "lose");
     resourcesUnchanged(r.state, true);
   });
   for (const choice of ["full", "care"]) await check(`mid-interrupted-save-${choice}-restarts-full`, async page => {
@@ -255,24 +269,29 @@ await suite("ch1-practice", async run => {
       if (choice === "care") P.core.state.flags._ch1_mid = { introRead: true, stockDone: true, choice };
       P.run();
     }, choice);
-    await page.waitForFunction(() => P.benches === 1 && P.core.state.flags._ch1_mid?.choice);
+    await page.waitForFunction(() => P.benches === 1 && (P.core.state.flags._ch1_mid?.choice || P.core.state.flags._ch1_mid?.naruMatch));
     await page.evaluate(() => P.core.save());
     const before = await snapshot(page); assert.equal(before.state.flags._ev_midcheck, undefined);
-    assert.equal(before.state.flags._ch1_mid.choice, choice); assert(!before.state.flags._ch1_mid.practiceDone);
+    if (choice === "care") assert.equal(before.state.flags._ch1_mid.choice, choice);
+    else assert(before.state.flags._ch1_mid.naruMatch && before.state.flags._ch1_mid.inviteRead);
+    assert(!before.state.flags._ch1_mid.practiceDone);
     assert.equal(before.state.flags._craft_practice_runs, undefined);
     assert.deepEqual(before.state.flavorStock, { double_apple: 50, blueberry: 50, mint: 50, lemon: 50 }, "制作中の保存でも私物の葉は減らない");
     await page.reload(); await page.locator('[data-test="title-new"]').waitFor(); await setup(page, { day: 7, fresh: false });
     await page.evaluate(() => P.run()); await finish(page);
     const r = await snapshot(page); assertMidFull(r); assert.equal(r.state.flags._craft_practice_runs.length, 1);
     assert(!r.entries.includes("remake_midcheck_intro")); assert(!r.entries.includes("remake_midcheck_review"));
-    assert.equal(r.state.flags._ch1_mid.choice, choice);
+    // 再開で誘いを読み直さない。旧版の途中保存はなる戦へ切り替えない。
+    assert(!r.entries.includes("remake_naru_match_invite"));
+    if (choice === "care") { assert.equal(r.state.flags._ch1_mid.choice, choice); assert.equal(r.state.flags._ch1_mid.naruMatch, undefined); }
+    else assert(r.entries.includes("remake_naru_match_review"));
     resourcesUnchanged(r.state, true);
   });
   await check("completed-practice-unread-feedback-does-not-repeat", async page => {
     await setup(page, { day: 7 });
     await page.evaluate(() => {
       const onEnter = P.vn.hooks.onEnter;
-      P.vn.hooks.onEnter = (id, d) => { if (id === "remake_midcheck") P.vn.vnTest.turbo = false; onEnter(id, d); };
+      P.vn.hooks.onEnter = (id, d) => { if (id === "remake_naru_match_review") P.vn.vnTest.turbo = false; onEnter(id, d); };
       P.run();
     });
     await page.waitForFunction(() => P.core.state.flags._ch1_mid?.practiceDone && document.querySelector('#vn.active'));
@@ -282,6 +301,7 @@ await suite("ch1-practice", async run => {
     await page.evaluate(() => P.run()); await finish(page);
     const r = await snapshot(page); assert.equal(r.benches, 0); assert.equal(r.state.flags._craft_practice_runs.length, 1);
     assert.equal(r.state.stamina, before.state.stamina); assert(r.state.flags._ev_midcheck);
+    assert.deepEqual(r.state.flags._ch1_mid.match, before.state.flags._ch1_mid.match, "LOAD後も保存した勝敗で講評する");
     resourcesUnchanged(r.state, true);
   });
 });

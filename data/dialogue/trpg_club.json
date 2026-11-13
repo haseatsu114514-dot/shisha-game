@@ -59,6 +59,20 @@
         "text": "なぜか部長にされてて……TRPGの部活、一緒にどうですか？"
       }
     ],
+    "invite_rei": [
+      {
+        "speaker": "hajime",
+        "face": "normal",
+        "text": "レヰさんに教わった店で、なぜか部長にされてて……部活、一緒にどうですか？"
+      }
+    ],
+    "invite_ageha": [
+      {
+        "speaker": "hajime",
+        "face": "normal",
+        "text": "あげはさん、TRPGって知ってます？　なぜか部長にされてて……部活、一緒にどうですか？"
+      }
+    ],
     "founded": [
       {
         "speaker": "",
@@ -88,11 +102,11 @@
     "hiyori": [
       {
         "speaker": "hiyori",
-        "text": "……物語の中なら、少し違う私にもなれるかしら。"
+        "text": "……物語の中なら、少し違う私にもなれるかしら"
       },
       {
         "speaker": "hiyori",
-        "text": "ええ、入るわ。仕事のない夜に呼んでちょうだい。"
+        "text": "ええ、入るわ。仕事のない夜に呼んでちょうだい"
       }
     ],
     "samechan": [
@@ -118,11 +132,35 @@
     "adam": [
       {
         "speaker": "adam",
-        "text": "部活か。俺を誘うとは、いい目をしている。"
+        "text": "部活か。俺を誘うとは、いい目をしている"
       },
       {
         "speaker": "adam",
-        "text": "入ろう。店が休みの夜なら、物語の仕掛けを考えに行ける。"
+        "text": "入ろう。店が休みの夜なら、物語の仕掛けを考えに行ける"
+      }
+    ],
+    "rei": [
+      {
+        "speaker": "rei",
+        "face": "surprise",
+        "text": "……部長。お前が？"
+      },
+      {
+        "speaker": "rei",
+        "face": "smile",
+        "text": "……入る。店が休みの夜なら行ける。回してみたい本も、ある"
+      }
+    ],
+    "ageha": [
+      {
+        "speaker": "ageha",
+        "face": "surprise",
+        "text": "てぃーあーる……？　わかんないけど、ハジメっちが部長なのウケる"
+      },
+      {
+        "speaker": "ageha",
+        "face": "smile",
+        "text": "入る入る！　店閉めたら行くね。うち、ノリで来るから"
       }
     ],
     "host_day": [
@@ -137,6 +175,20 @@
         "speaker": "sai",
         "face": "normal",
         "text": "皆さんの営業が終わるまで、お待ちしていました。今夜の席は、こちらです"
+      }
+    ],
+    "host_day_seated": [
+      {
+        "speaker": "sai",
+        "face": "normal",
+        "text": "試遊でも、本選びでも。お決まりになったら、お声がけください"
+      }
+    ],
+    "host_night_seated": [
+      {
+        "speaker": "sai",
+        "face": "normal",
+        "text": "今夜の一冊と顔ぶれを、こちらからどうぞ"
       }
     ],
     "host_trial": [
@@ -193,6 +245,48 @@
         "speaker": "sai",
         "face": "normal",
         "text": "ええ、そこで迷いますよね。続けてくださって、よかった"
+      }
+    ],
+    "topic_hiyori": [
+      {
+        "speaker": "hiyori",
+        "face": "normal",
+        "text": "休みの日は、短い物語を作って遊ぶの。TRPGっていうんだよ"
+      }
+    ],
+    "topic_samechan": [
+      {
+        "speaker": "samechan",
+        "face": "normal",
+        "text": "サメ映画の続きを自分たちで決める遊びがあるのじゃ。TRPGじゃ！"
+      }
+    ],
+    "topic_tsumugi": [
+      {
+        "speaker": "tsumugi",
+        "face": "normal",
+        "text": "……絵を描きながら、みんなで物語を作るの。TRPGっていうよ"
+      }
+    ],
+    "topic_adam": [
+      {
+        "speaker": "adam",
+        "face": "normal",
+        "text": "人の役を借りて、仲間と物語を作る。TRPGという遊びだ"
+      }
+    ],
+    "topic_rei": [
+      {
+        "speaker": "rei",
+        "face": "normal",
+        "text": "……休みの日はTRPGをやってる。サイコロで話が変わるんだ"
+      }
+    ],
+    "topic_ageha": [
+      {
+        "speaker": "ageha",
+        "face": "normal",
+        "text": "最近、みんなで役を演じるTRPGが気になってるんだよね"
       }
     ]
   }

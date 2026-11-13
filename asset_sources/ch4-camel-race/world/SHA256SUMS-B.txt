@@ -1,0 +1,12 @@
+aeb26826608e1cb42d6c0e3270724b417c3b7be72eab7113485a86a6e8548939  asset_sources/ch4-camel-race/world/candidates/ground-road-B.png
+cc98218a9a551adf2cb23329a839f56edcf6b1f1151c7427ec86bd2a686cbb57  asset_sources/ch4-camel-race/world/candidates/remote-voice-normal-B.png
+1149e10d0628c6873405f7b1ac97bfea51716309112170b5a2447a75ab317cd4  asset_sources/ch4-camel-race/world/candidates/remote-voice-pressed-B.png
+7c7c9f79f51c8885d9bcb3d9263bebf16563fdb4650a390d314781363cf3e583  asset_sources/ch4-camel-race/world/candidates/remote-whip-normal-B.png
+26dc919bbb9269f53f76f870e260891bf37e92046519429df1b9616cb8f91177  asset_sources/ch4-camel-race/world/candidates/remote-whip-pressed-B.png
+3e8657d64d597e105fe1a9cfa86942684c65c98bc0b962f7665c2bc374f13115  asset_sources/ch4-camel-race/world/originals/ground-road-B.png
+284294c4cc0bc76cd0968a8f582a1d5cae7e1fa07efce662b2c646ff90903e0f  asset_sources/ch4-camel-race/world/originals/remote-voice-normal-B.png
+e308364cec9ac5d4dfcece67a2447b56c004607a12f6fe98e4c7ef71b7eb7129  asset_sources/ch4-camel-race/world/originals/remote-voice-pressed-B.png
+65673b057f6db9953832c9007497590a670004cc31e635c93870219161a625d5  asset_sources/ch4-camel-race/world/originals/remote-whip-normal-B.png
+9e56bbd756720751ebacad88a8290b089cb596e22a45ef037e821bdb59b02fce  asset_sources/ch4-camel-race/world/originals/remote-whip-pressed-B-rejected.png
+f096c64380c868b72bafec6b68538561a7230900800d53c06ddeb4ba6a4a071f  asset_sources/ch4-camel-race/world/originals/remote-whip-pressed-B.png
+434d00acf995feaeb860bd94f892e891883fc51d55aaf4797deb785385a6474a  asset_sources/ch4-camel-race/world/review/remotes-B-70px.png

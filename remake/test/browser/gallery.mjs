@@ -96,7 +96,7 @@ async function initialLegacyLoad(name, options, malformed) {
       ]);
     }
     // Reach GALLERY only after LOAD/autosave has discarded the old raw evidence.
-    await press("hud-menu");
+    await press("hud-menu"); await press("menu-tab-system");
     await Promise.all([page.waitForEvent("load"), press("menu-title")]);
     await page.locator(t("title-gallery")).waitFor();
     await page.locator("#boot").waitFor({ state: "detached" });
@@ -163,6 +163,50 @@ async function adoptedPurikura(name, viewport, random, variant) {
   } finally { await context.close(); }
 }
 // R11: hold real img requests and advance browser timers explicitly.
+// 「恋人成立」のルート記録の見出しは、告白で恋人になれる全員を名前で出す（内部IDを出さない）。
+async function routeRecordNames() {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+  const page = await context.newPage(), errors = [];
+  page.on("pageerror", error => errors.push(error.message));
+  try {
+    await page.goto(base);
+    await page.locator(t("title-gallery")).waitFor({ timeout: 45000 });
+    await page.locator("#boot").waitFor({ state: "detached" });
+    // 章ごとに後から読む台本（第4章のヌール等）も含めて、恋人になれる相手を台本データから集める。
+    const ids = new Set();
+    const dialogueDir = new URL("../../../data/dialogue/", import.meta.url);
+    for (const file of fs.readdirSync(dialogueDir).filter(name => name.endsWith(".json"))) {
+      const data = JSON.parse(fs.readFileSync(new URL(file, dialogueDir), "utf8"));
+      for (const dialogue of Array.isArray(data.dialogues) ? data.dialogues : []) {
+        const accept = /^confession_(\w+)_accept$/.exec(dialogue?.dialogue_id || "");
+        if (accept) ids.add(accept[1]);
+        if (typeof dialogue?.metadata?.set_romance === "string") ids.add(dialogue.metadata.set_romance);
+      }
+    }
+    const lovers = [...ids].sort();
+    await page.evaluate(async lovers => {
+      const progress = await import("./js/core/gallery-progress.js");
+      for (const id of lovers) progress.recordRouteLover(id);
+    }, lovers);
+    for (const id of ["hiyori", "samechan", "noor"]) assert(lovers.includes(id), `${id} can become a lover`);
+    await open(page);
+    const headings = await page.locator(".gal-route-record").evaluateAll(nodes => nodes.map(node => ({
+      name: node.querySelector("strong")?.textContent || "", lover: node.textContent.includes("恋人成立"),
+    })));
+    assert.equal(headings.length, lovers.length, "every lover gets one route record");
+    assert(headings.every(h => h.lover), "every route record shows 恋人成立");
+    for (const { name } of headings) {
+      assert(name && !lovers.includes(name) && !/[A-Za-z]/.test(name), `route record heading must be a name, not an ID: ${name}`);
+    }
+    const names = headings.map(h => h.name);
+    for (const name of ["ひより", "サメちゃん", "ヌール"]) assert(names.includes(name), `route record names ${name}`);
+    assert(!names.some(name => name.includes("暑海")), "the gallery must not disclose her unlearned full name");
+    assert.deepEqual(errors, []);
+    await page.screenshot({ path: path.join(out, "route-record-names.png") });
+    results.push({ name: "route-record-names", passed: true });
+    console.log("PASS: gallery route-record-names");
+  } finally { await context.close(); }
+}
 async function imageLoadingNotice() {
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   const page = await context.newPage(), errors = [];
@@ -256,6 +300,7 @@ async function imageLoadingNotice() {
   } finally { await context.close(); }
 }
 try {
+  await routeRecordNames();
   await imageLoadingNotice();
   for (const [name, viewport, random, variant] of [
     ["strip-pc-low", { width: 1280, height: 720 }, 0, "a"],
@@ -265,7 +310,6 @@ try {
   await initialLegacyLoad("first-load-raw-auto-pc", { viewport: { width: 1280, height: 720 } }, false);
   await initialLegacyLoad("first-load-malformed-auto-touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true);
   for (const [name, options] of Object.entries({ pc: { viewport: { width: 1280, height: 720 } },
-    touch: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true },
     landscape: { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true },
   }).filter(([name]) => !process.env.GALLERY_DEVICE || process.env.GALLERY_DEVICE === name)) {
     const context = await browser.newContext(options), page = await context.newPage(), errors = [], requests = [];
@@ -277,12 +321,12 @@ try {
     await page.goto(base);
     await page.locator(t("title-gallery")).waitFor({ timeout: 45000 });
     await page.locator("#boot").waitFor({ state: "detached" });
-    if (name !== "pc") {
-      await page.locator(t("title-layout-settings")).click();
-      await page.locator(t("title-layout-ds")).click();
-    }
     await open(page);
     assert.equal(await page.locator('[role="tab"]').count(), 6);
+    // 中身が無い札は「0/0」でなく「準備中」と出す（#3519）。ある札は従来どおり解放数/総数。
+    assert.equal((await page.locator(t("gallery-tab-comic")).textContent()).trim(), "漫画 準備中");
+    assert.equal((await page.locator(t("gallery-tab-movie")).textContent()).trim(), "ムービー 準備中");
+    assert.match(await page.locator(t("gallery-tab-all")).textContent(), /\d+\/\d+$/);
     await page.locator(t("gallery-tab-comic")).click();
     assert.match(await page.locator(".gal-empty").textContent(), /準備中/);
     await page.screenshot({ path: path.join(out, name + "-comics-unadopted.png") });
@@ -327,7 +371,7 @@ try {
     await page.locator(t("gallery-viewer-close")).click();
     await page.locator(t("gal-purikura-2-18-1-guest-hajime-samechan")).click();
     assert.match(await page.locator(".gal-viewer .purikura-caption").textContent(), /サメちゃん/);
-    assert(!(await page.locator(".gal-viewer").textContent()).includes("波多野"), "photo replay must not disclose her unlearned full name");
+    assert(!(await page.locator(".gal-viewer").textContent()).includes("暑海"), "photo replay must not disclose her unlearned full name");
     await page.locator(t("gallery-viewer-close")).click();
     await close(page);
     assert.deepEqual(await snapshot(page), before, "collecting legacy evidence does not load or rewrite the save slots");

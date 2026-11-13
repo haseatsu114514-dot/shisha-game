@@ -103,22 +103,34 @@
       "echo": "（つむぎちゃんは、見てきたものが混ざって、今の自分の絵になると言った）"
     },
     {
-      "id": "rin_feedback",
-      "char_id": "rin",
-      "dialogue_id": "ch1_rin_first",
-      "echo": "（凛さんは、俺が試した感想も次の仕事に持っていく）"
+      "id": "rio_feedback",
+      "char_id": "rio",
+      "dialogue_id": "ch1_rio_first",
+      "echo": "（凛想さんは、俺が試した感想も次の仕事に持っていく）"
     },
     {
-      "id": "rin_sample",
-      "char_id": "rin",
-      "dialogue_id": "ch1_rin_third",
-      "echo": "（凛さんから受け取った袋に、まだ会ったことのない人の仕事もある）"
+      "id": "rio_sample",
+      "char_id": "rio",
+      "dialogue_id": "ch1_rio_third",
+      "echo": "（凛想さんから受け取った袋に、まだ会ったことのない人の仕事もある）"
     },
     {
-      "id": "rin_face",
-      "char_id": "rin",
-      "dialogue_id": "ch1_rin_fourth",
-      "echo": "（凛さんに、吸っていた人の顔を持って帰る約束をした）"
+      "id": "rio_face",
+      "char_id": "rio",
+      "dialogue_id": "ch1_rio_fourth",
+      "echo": "（凛想さんに、吸っていた人の顔を持って帰る約束をした）"
+    },
+    {
+      "id": "rio_notebook",
+      "char_id": "rio",
+      "dialogue_id": "ch1_rio_fifth",
+      "echo": "（凛想さんは、俺が持ってきた客の顔を、誰にも出さない手帳に書いている）"
+    },
+    {
+      "id": "rio_window",
+      "char_id": "rio",
+      "dialogue_id": "ch1_rio_sixth",
+      "echo": "（凛想さんの窓からは、袋しか見えない。顔は、俺が下から持っていく）"
     },
     {
       "id": "ageha_today",
@@ -136,7 +148,7 @@
       "id": "ageha_roles",
       "char_id": "ageha",
       "dialogue_id": "remake_ch2_ageha_magazine",
-      "echo": "（撮影のあげはも、客の顔を見るあげはも、同じ彼女だった）"
+      "echo": "（カメラの前のあげはも、客の一台を決めるあげはも、どっちも本気だった）"
     },
     {
       "id": "kumicho_hands",
@@ -160,19 +172,19 @@
       "id": "rei_listen",
       "char_id": "rei",
       "dialogue_id": "ch2_rei_first",
-      "echo": "（REIさんの沈黙を、俺もすぐに言葉で埋めなくなった）"
+      "echo": "（レヰさんの沈黙を、俺もすぐに言葉で埋めなくなった）"
     },
     {
       "id": "rei_smile",
       "char_id": "rei",
       "dialogue_id": "ch2_rei_fourth",
-      "echo": "（REIさんの小さな笑顔は、二人で話した時に出てきた）"
+      "echo": "（レヰさんの小さな笑顔は、二人で話した時に出てきた）"
     },
     {
       "id": "rei_voice",
       "char_id": "rei",
       "dialogue_id": "ch2_rei_fifth",
-      "echo": "（REIさんの話を待つうちに、俺も自分の感想を急がなくなった）"
+      "echo": "（レヰさんの話を待つうちに、俺も自分の感想を急がなくなった）"
     },
     {
       "id": "kumicho_taste_first",
@@ -190,7 +202,7 @@
       "id": "rei_reach",
       "char_id": "rei",
       "dialogue_id": "ch2_rei_sixth",
-      "echo": "（REIさんの「嘘」を、最初に吸ったのは俺だった）"
+      "echo": "（レヰさんの「嘘」を、最初に吸ったのは俺だった）"
     },
     {
       "id": "volk_measure",
@@ -232,7 +244,7 @@
       "id": "mashiro_living",
       "char_id": "mashiro",
       "dialogue_id": "ch3_mashiro_recovery",
-      "echo": "（会った人も、今日の気持ちも入った「生きてる煙」だと、ましろちゃんは言った）"
+      "echo": "（作れない日の席に、今度はましろちゃんを座らせて、お茶をいれた）"
     },
     {
       "id": "tsumugi_research",
@@ -277,16 +289,52 @@
       "echo": "（ひよりさんの斧の音と大きな声。静かな顔の裏も知っている）"
     },
     {
-      "id": "kuze_decide",
-      "char_id": "kuze",
-      "dialogue_id": "ch3_kuze_advice",
-      "echo": "（久世さんは「決めるのは君」と言った。炭を外すかは、俺が決める）"
+      "id": "saku_decide",
+      "char_id": "saku",
+      "dialogue_id": "ch3_saku_advice",
+      "echo": "（綾取さんは「決めるのは君」と言った。炭を外すかは、俺が決める）"
     },
     {
       "id": "steve_wait",
       "char_id": "steve",
       "dialogue_id": "ch3_steve_low_heat",
       "echo": "（スティーブのタイマーと、二口目の前の客の顔。待ち方を借りている）"
+    },
+    {
+      "id": "da_silva_shop",
+      "char_id": "da_silva",
+      "dialogue_id": "ch4_festa",
+      "echo": "（太陽さんに「誰に来てほしい？」と聞かれて、俺の店の形が少し見えた）"
+    },
+    {
+      "id": "sheikh_asked",
+      "char_id": "sheikh",
+      "dialogue_id": "ch4_stranger_second",
+      "echo": "（吸いづらくないかと聞いたら、路地裏のあの人は、久しぶりだと笑った）"
+    },
+    {
+      "id": "master_hookah_wait",
+      "char_id": "master_hookah",
+      "dialogue_id": "ch4_wang_reception",
+      "echo": "（王煙楼は、こちらの都合で待たせるのと、相手を待つのは違うと言った）"
+    },
+    {
+      "id": "noor_sand_line",
+      "char_id": "noor",
+      "dialogue_id": "ch4_noor_talk2",
+      "echo": "（砂を見て、その日の線を決める。ヌールさんの言葉が、炭の前でよみがえる）"
+    },
+    {
+      "id": "tofu_regular_throat",
+      "char_id": "customer",
+      "dialogue_id": "ch3_chain_tofu_3",
+      "echo": "（豆腐屋さんの「喉が、静かだ」という声を、まだ覚えている）"
+    },
+    {
+      "id": "dubai_cafe_second_bowl",
+      "char_id": "customer",
+      "dialogue_id": "ch4_chain_bowl_3",
+      "echo": "（ドバイのカフェの客は、一つ目の続きを二つ目のボウルに載せていた）"
     }
   ]
 }

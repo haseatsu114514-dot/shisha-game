@@ -53,9 +53,78 @@ const calendarCode=await fs.readFile(new URL('../js/daily/calendar.js',import.me
 const phone=await load('phone.js','\nexport { runItem, drawHistory };');
 reset();state.day=5;const old={id:source.id,day:4,msg:source,read:true,done:true,result:'expired',replyState:'expired',log:[{note:'old long note'}]};
 const ui={gen:0,live:()=>true,bubble:async()=>{},note:t=>notes.push(t)};await phone.runItem(old,ui,[]);assert.deepEqual(notes,['返信するタイミングを逃した']);const original=JSON.stringify(old);notes.length=0;phone.drawHistory([old],ui);assert(notes.includes('返信するタイミングを逃した'));assert(!notes.includes('old long note'));assert.equal(JSON.stringify(old),original,'history display preserves data');
+// #2444: a replied invitation that was postponed is not an unanswered timeout.
+reset();
+const sumiSource={id:'sumi-shift',sender:'sumi',type:'invitation',accept_event:'__sumi_baito__',messages:['shift?'],accept_text:'入ります！',accept_reply:{stamp:'sumi-ok'}};
+DB.manifest={limeMedia:{'sumi-ok':{kind:'stamp',owner:'sumi'}}};
+const historyPhone=await load('phone.js','\nexport { runItem, drawHistory };',{chapterFeatureEnabled:()=>true});
+const replied={id:sumiSource.id,day:4,msg:sumiSource,read:true,done:false,log:[]};
+state.inbox=[replied];DB.lime=[sumiSource];
+const shown=[], media=[];
+const replyUi={gen:0,live:()=>true,bubble:async(text,mine)=>shown.push({text,mine}),media:async value=>media.push(value),note:t=>notes.push(t),choose:async choices=>choices.find(c=>c.go)};
+await historyPhone.runItem(replied,replyUi,[]);
+assert.equal(replied.result,'accepted');assert.equal(replied.log[1].stamp,'sumi-ok');
+const promise=state.pendingInvite;
+historyPhone.rescheduleInvitation(promise,'体調を考え、約束を別の日に改めることにした');
+assert.equal(state.pendingInvite,null);assert.equal(replied.needsResend,true);
+const stored=JSON.stringify(state);const savedItem=JSON.parse(JSON.stringify(replied));
+for(const item of [replied,savedItem]) {
+ shown.length=0;media.length=0;notes.length=0;
+ await historyPhone.runItem(item,replyUi,[]);
+ assert(shown.some(x=>x.mine&&x.text==='入ります！'),'accepted reply remains visible after postponement/load');
+ assert.equal(media.length,1,'acceptance stamp remains visible');
+ assert(notes.includes('体調を考え、約束を別の日に改めることにした'));
+ assert(!notes.includes('返信するタイミングを逃した'));
+ shown.length=0;media.length=0;notes.length=0;
+ historyPhone.drawHistory([item],replyUi);
+ assert(shown.some(x=>x.mine&&x.text==='入ります！'));assert.equal(media.length,1);
+ assert(notes.includes('体調を考え、約束を別の日に改めることにした'));
+ assert(!notes.includes('返信するタイミングを逃した'));
+}
+assert.equal(JSON.stringify(state),stored,'history replay does not change reservation, reward or saved data');
+// Legacy pending promises may have no accepted inbox item; retain their actual postponement note.
+reset();const recoveredPromise={event:'__sumi_baito__',sender:'sumi',day:4,slot:0,originId:'legacy-shift'};state.pendingInvite=recoveredPromise;
+const recovered=historyPhone.rescheduleInvitation(recoveredPromise,'体調を考え、約束を別の日に改めることにした');
+assert.equal(recovered.log.some(entry=>entry.me),false);notes.length=0;
+await historyPhone.runItem(JSON.parse(JSON.stringify(recovered)),replyUi,[]);
+assert(notes.includes('体調を考え、約束を別の日に改めることにした'));assert(!notes.includes('返信するタイミングを逃した'));
+notes.length=0;historyPhone.drawHistory([recovered],replyUi);assert(notes.includes('体調を考え、約束を別の日に改めることにした'));
+// The warning must describe the exact existing automatic-decline set, before any choice.
+const makeInvite=(id,extra={})=>({id,day:4,read:true,done:false,log:[],msg:{id,sender:id,type:'invitation',accept_event:'free_'+id,time_slot:'night',messages:[],...extra}});
+for(const firstHint of [false,true]) {
+ reset();if(!firstHint)state.flags._hint_invite=true;
+ const chosen=makeInvite('naru'), competitor=makeInvite('minto'), expired=makeInvite('old'), completed=makeInvite('done');
+ expired.day=3;completed.done=true;
+ state.inbox=[chosen,competitor,expired,completed,{id:'chat',day:4,msg:{type:'chat'},done:false}];
+ let hint, choice='later';const choosing={...replyUi,choose:async(choices,text)=>{hint=text;assert(!competitor.done,'notice appears before automatic reply');return choice==='later'?choices.find(c=>c.later):choices.find(c=>c.go);}};
+ await historyPhone.runItem(chosen,choosing,[]);
+ assert(hint.includes('ほかの返事待ちの誘い1件に、自動で断りの返信を送る'));
+ assert.equal(competitor.done,false);assert.equal(state.pendingInvite,undefined);
+ // Closing/deferring is harmless; a later acceptance still uses the same set.
+ choice='accept';await historyPhone.runItem(chosen,choosing,[]);
+ assert.equal(competitor.result,'conflict_declined');assert.equal(expired.done,false);assert.equal(completed.result,undefined);
+ assert.equal(chosen.result,'accepted');assert.equal(state.pendingInvite.sender,'naru');
+ const after=JSON.stringify(state);await historyPhone.runItem(chosen,replyUi,[]);assert.equal(JSON.stringify(state),after,'reopen does not repeat replies');
+}
+reset();const multi=makeInvite('multi'), a=makeInvite('a'), b=makeInvite('b'), unavailable=makeInvite('unavailable');
+state.inbox=[multi,a,b,unavailable];unavailable.msg.closed_on=6;let multiHint;
+await historyPhone.runItem(multi,{...replyUi,choose:async(choices,hint)=>{multiHint=hint;return choices.find(c=>c.go);}},[]);
+assert(multiHint.includes('誘い2件に、自動で断り'));assert.equal(a.result,'conflict_declined');assert.equal(b.result,'conflict_declined');assert.equal(unavailable.done,false);
+reset();const declined=makeInvite('declined'), remains=makeInvite('remains');state.inbox=[declined,remains];
+await historyPhone.runItem(declined,{...replyUi,choose:async choices=>choices.find(c=>c.go===false)},[]);
+assert.equal(declined.result,'declined');assert.equal(remains.done,false);assert.equal(state.pendingInvite,undefined);
+reset();const closed=makeInvite('closed'), untouched=makeInvite('untouched');state.inbox=[closed,untouched];const beforeClose=JSON.stringify(state);
+await historyPhone.runItem(closed,{...replyUi,choose:async()=>null},[]);assert.equal(JSON.stringify(state),beforeClose,'closing without a choice does not send replies');
+reset();const solo=makeInvite('solo');state.inbox=[solo];let soloHint;
+await historyPhone.runItem(solo,{...replyUi,choose:async(_,hint)=>{soloHint=hint;return null;}},[]);
+assert(!soloHint.includes('自動で断り'),'no warning without affected invitations');
+reset();const forced=makeInvite('forced'), other=makeInvite('other');state.inbox=[forced,other];let forcedHint;
+await historyPhone.runItem(forced,{...replyUi,choose:async(choices,hint)=>{forcedHint=hint;return choices.find(c=>c.go);}},[],{forced:true});
+assert(!forcedHint.includes('自動で断り'));assert.equal(other.done,false);assert.equal(state.pendingInvite,undefined,'forced flow still does not reserve or decline');
 reset();state.inbox=[{id:'chat',day:4,msg:{id:'chat',sender:'minto',type:'chat',messages:['hello']},read:true,done:true,log:[]}];
 const flush=async()=>{for(let i=0;i<20;i++)await Promise.resolve();};
 let closePrepared=false;const session=phone.openLime({beforeClose:async()=>{assert(layers.modal.classList.contains('show'));closePrepared=true;}});await flush();assert(layers.modal.querySelectorAll('.lcr-tag').some(n=>n.text==='雑談'));
 function find(node,id){if(node.dataset?.test===id)return node;for(const child of node.children){const hit=find(child,id);if(hit)return hit;}}
 find(layers.modal,'phone-close').onclick();await session;assert(closePrepared);assert(!layers.modal.classList.contains('show'));
-console.log('PASS #781: pre-close direct destination, successful venue record, normal/forced/next-day access, cancellation, future promise data, banner absence, expired history and chat label; synthetic state');
+console.log('PASS #781: pre-close direct destination, successful venue record, normal/forced/next-day access, cancellation, future promise data, banner absence, expired/replied/postponed/loaded history, conditional automatic-decline notice and chat label; synthetic state');
+

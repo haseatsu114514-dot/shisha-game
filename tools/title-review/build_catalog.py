@@ -9,7 +9,9 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = Path(__file__).resolve().parent
-CHARACTERS = {'ageha': 'アゲハ', 'hiyori': 'ひより', 'samechan': 'サメちゃん／波多野なぎさ', 'mashiro': 'ましろ', 'minto': 'みんと', 'rin': '凛', 'tsumugi': 'つむぎ', 'sumi': 'スミ', 'naru': 'なる', 'adam': 'アダム', 'other': 'その他'}
+CHARACTERS = {'ageha': 'あげは', 'hiyori': 'ひより', 'samechan': 'サメちゃん／暑海なぎさ', 'mashiro': 'ましろ', 'minto': 'みんと', 'rio': '凛想', 'tsumugi': 'つむぎ', 'sumi': 'スミ', 'naru': 'なる', 'adam': 'アダム', 'other': 'その他'}
+# IDREN01: asset_sources は改名対象外で旧ID名のフォルダが残る。概念画の原画走査で取りこぼさないための対応表。
+LEGACY_SOURCE_DIRS = {'rio': ['rin']}
 V1 = 'asset_sources/title-art/heroine-concepts-v1-20261008'
 V2 = 'asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008'
 DAILY = 'asset_sources/heroine-title-candidates-20261009'
@@ -55,15 +57,16 @@ def build(check=False):
             add(root + '/' + c['source'], c['character'], group, c.get('label'), c.get('status'), root + '/' + c.get('latest_prompt', c.get('prompt', '')))
         # Original/intermediate generations, excluding reference photos, contact sheets, and screenshots.
         for char in CHARACTERS:
-            directory = ROOT / root / char
-            for p in sorted(directory.glob('*.png')):
-                rp = str(p.relative_to(ROOT))
-                r = add(rp, char, group)
-                if any(x in p.stem for x in ['first', 'revision']):
-                    r['groups'].append('途中履歴')
-                    base = re.sub(r'-(first|revision-\d+)$', '', p.stem) + '.png'
-                    b = str(p.with_name(base).relative_to(ROOT))
-                    if b != rp and (ROOT / b).is_file(): relations.append((rp, b))
+            for dirname in dict.fromkeys([char] + LEGACY_SOURCE_DIRS.get(char, [])):
+                directory = ROOT / root / dirname
+                for p in sorted(directory.glob('*.png')):
+                    rp = str(p.relative_to(ROOT))
+                    r = add(rp, char, group)
+                    if any(x in p.stem for x in ['first', 'revision']):
+                        r['groups'].append('途中履歴')
+                        base = re.sub(r'-(first|revision-\d+)$', '', p.stem) + '.png'
+                        b = str(p.with_name(base).relative_to(ROOT))
+                        if b != rp and (ROOT / b).is_file(): relations.append((rp, b))
         if root == V2:
             for c in concepts:
                 previous = V1 + '/' + c['source']
@@ -71,7 +74,7 @@ def build(check=False):
 
     inventory = read(DAILY + '/review-issue375/inventory.json')
     for c in inventory['candidates']:
-        add(c['path'], c['character'], '別タイトル候補', label={'ageha_c_backstage_selfie':'楽屋のセルフィー','title_art_ageha_02_bowl_wash':'閉店後のボウル洗い','title_art_mashiro_01_window_smoke':'窓際の一服','title_art_mashiro_02_dark_leaf_prep':'ダークリーフの準備','title_art_mashiro_03_tetsuko':'猫のてつこと休憩','minto_01_afterhours_smoke':'閉店後の一服','minto_03_private_parfait':'私服でパフェ','title_art_minto_02_opening_prep':'開店前の準備','rin_c_midnight_coffee':'深夜のコーヒー','title_art_rin_02_aroma_blend':'香りのブレンド','title_art_tsumugi_02_bowl_prep':'ボウルの準備','title_art_tsumugi_03_rain_drawing':'雨の日の絵描き'}.get(Path(c['path']).stem), history=c['status'] + '：' + c.get('visual_review', ''), prompt=c.get('prompt'))
+        add(c['path'], c['character'], '別タイトル候補', label={'ageha_c_backstage_selfie':'楽屋のセルフィー','title_art_ageha_02_bowl_wash':'閉店後のボウル洗い','title_art_mashiro_01_window_smoke':'窓際の一服','title_art_mashiro_02_dark_leaf_prep':'ダークリーフの準備','title_art_mashiro_03_tetsuko':'猫のてつこと休憩','minto_01_afterhours_smoke':'閉店後の一服','minto_03_private_parfait':'私服でパフェ','title_art_minto_02_opening_prep':'開店前の準備','rio_c_midnight_coffee':'深夜のコーヒー','title_art_rio_02_aroma_blend':'香りのブレンド','title_art_tsumugi_02_bowl_prep':'ボウルの準備','title_art_tsumugi_03_rain_drawing':'雨の日の絵描き'}.get(Path(c['path']).stem), history=c['status'] + '：' + c.get('visual_review', ''), prompt=c.get('prompt'))
     revision = inventory['revision']
     add(revision['path'], 'minto', 'みんと修正', '私服パフェ・植物修正', revision['status'] + '：' + revision['qa'], revision.get('prompt'), revision['before'])
     for c in inventory['missing_slots']:
@@ -86,7 +89,7 @@ def build(check=False):
         add(str(p.relative_to(ROOT)), group='過去NG', history='機材・ホースの過去NG原画。再採用にはオーナー判断と修正確認が必要。')
 
     for c in read(AGEHA + '/candidates.json')['candidates']:
-        add(c['candidate']['path'], 'ageha', 'アゲハ修正', {'ageha-01-professional-face':'試香席・顔修正','ageha-02-grocery-face':'商店街・顔修正','ageha-03-studio-face':'撮影スタジオ・顔修正','ageha-04-selfie-face':'セルフィー・顔修正','ageha-05-closing-rack':'閉店後の乾燥ラック'}.get(c['id'], c['id']), c['status'] + '：' + c.get('locality', ''), c['prompt'], c['source']['path'])
+        add(c['candidate']['path'], 'ageha', 'あげは修正', {'ageha-01-professional-face':'試香席・顔修正','ageha-02-grocery-face':'商店街・顔修正','ageha-03-studio-face':'撮影スタジオ・顔修正','ageha-04-selfie-face':'セルフィー・顔修正','ageha-05-closing-rack':'閉店後の乾燥ラック'}.get(c['id'], c['id']), c['status'] + '：' + c.get('locality', ''), c['prompt'], c['source']['path'])
     for c in read(HIYORI + '/candidates.json')['candidates']:
         add(c['candidate']['path'], 'hiyori', 'ひより候補', c['scene'], c['status'], c['prompt'])
         if 'prior_version' in c:

@@ -6,11 +6,17 @@ import { LOADING_COMICS } from '../../js/core/loading-comics.js';
 // The bench preview picks one eligible comic at random (see selectLoadingComic
 // in js/core/loading.js), so expectations are derived from whichever registered
 // comic actually appears instead of pinning one episode.
+// プレビューは新しいゲームで始まる。#2750（PR #2765）から、新しいゲームは開始時から知っている
+// スミさん（上司・LIMEの連絡先）とつむぎ（顔見知り）に会っている。漫画は登場人物（cast）全員に会うと出るので、
+// ここに出てよいのは cast がこの2人だけの話。
+const MET_AT_START = ['sumi', 'tsumugi'];
+const castIds = [...new Set(LOADING_COMICS.flatMap(comic => comic.cast || []))];
 const eligibleComics = LOADING_COMICS.filter(comic =>
   comic.panels?.length === 2 &&
   Number.isInteger(comic.minChapter) && comic.minChapter <= 1 &&
-  (!comic.contexts || comic.contexts.includes('craft')));
-assert(eligibleComics.length > 0, 'At least one registered comic must be eligible for craft at chapter 1');
+  (!comic.contexts || comic.contexts.includes('craft')) &&
+  Array.isArray(comic.cast) && comic.cast.every(id => MET_AT_START.includes(id)));
+assert(eligibleComics.length > 0, 'At least one registered comic must be eligible for craft at chapter 1 in a fresh game');
 
 const escapeRegExp = text => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -19,25 +25,37 @@ await suite('loading-craft', async check => {
     await check(label, async page => {
       const storage = await page.evaluate(() => JSON.stringify({ ...localStorage }));
       assert.equal(await page.locator('.bench').count(), 1, 'Use the actual game bench');
+      // 前提そのものを毎回確かめる。出る話は抽選なので、出た話の検査だけでは前提のずれがたまにしか落ちない。
+      const met = await page.evaluate(async ids => {
+        const [{ state }, { hasMetCharacter }] = await Promise.all([import('./js/core/state.js'), import('./js/core/title-art-unlock.js')]);
+        return ids.filter(id => hasMetCharacter(state, id));
+      }, castIds);
+      assert.deepEqual(met.sort(), [...MET_AT_START].sort(), '新しいゲームで会っているのは、開始時から知っている2人だけ');
       await page.locator('.loading-panels img').first().waitFor();
       assert.equal(await page.locator('.loading-panels img').count(), 2);
       const shownTitle = await page.locator('.loading-comic-title').innerText();
       const comic = eligibleComics.find(entry => entry.title === shownTitle);
-      assert(comic, `Shown comic "${shownTitle}" must be a registered comic eligible for craft`);
+      assert(comic, `Shown comic "${shownTitle}" must be a registered comic eligible for craft in a fresh game (met: ${MET_AT_START.join(', ')})`);
       assert.match(await page.locator('.loading-comic').getAttribute('aria-label'), new RegExp(escapeRegExp(comic.title)));
-      assert.equal(await page.locator('.loading-status').innerText(), 'LOADING…');
+      // The status reads LOADING… until the reading hold opens, then 準備完了 (read both in one step: preparation may finish in between).
+      const [ready, statusText] = await page.locator('.loading-gate').evaluate(gate => [gate.classList.contains('is-ready'), gate.querySelector('.loading-status').innerText]);
+      assert.equal(statusText, ready ? '準備完了' : 'LOADING…');
       assert.equal(await page.locator('.loading-gate button, .loading-gate progress, .loading-gate figcaption').count(), 0);
       assert.equal(await page.locator('.bench-panel > *').count(), 0, 'No gameplay before preparation');
       await page.keyboard.press('Enter');
       assert.equal(await page.locator('.loading-gate').count(), 1, 'Cannot skip the preparation');
       const regions = await page.locator('.loading-panel-art').evaluateAll(nodes => nodes.map(node => {
         const box = node.getBoundingClientRect(), image = node.querySelector('img');
-        const stage = document.querySelector('#stage').getBoundingClientRect();
-        return { inside: box.left >= stage.left && box.right <= stage.right && box.bottom <= stage.bottom,
+        // The gate's own frame: #stage on wide screens, the real screen on a phone held sideways (see below).
+        const frame = node.closest('.loading-gate').getBoundingClientRect();
+        return { inside: box.left >= frame.left && box.right <= frame.right && box.bottom <= frame.bottom,
           ratio: box.width / box.height, decoded: image.complete && image.naturalWidth > 0,
           naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight,
           overflow: getComputedStyle(node).overflow, src: image.getAttribute('src') };
       }));
+      // A short landscape screen (the mobile case) shows the gate at viewport scale, outside the letterboxed #stage.
+      assert.equal(await page.locator('.loading-gate').evaluate(gate => gate.classList.contains('is-viewport') && gate.parentElement === document.body),
+        label === 'mobile', 'Only the phone-sized landscape screen leaves #stage');
       assert(regions.every(region => region.inside && region.decoded && region.overflow === 'hidden'));
       assert(regions.every(region => Math.abs(region.ratio - 3 / 2) < 0.03), 'Every panel uses the fixed 3:2 display frame');
       // The decoded image must be the shown comic's registered sheet, at its registered size.
@@ -65,7 +83,7 @@ await suite('loading-craft', async check => {
       }), true, 'The comic sheet stays horizontal, including after its entrance');
       await page.locator("#stage").screenshot({ path: path.resolve(`.codex/artifacts/remake-browser/loading-ingame-${label}.png`) });
       const indicator = await page.locator('.loading-status').evaluate(node => {
-        const box = node.getBoundingClientRect(), stage = document.querySelector('#stage').getBoundingClientRect();
+        const box = node.getBoundingClientRect(), stage = node.closest('.loading-gate').getBoundingClientRect();
         const center = box.left + box.width / 2;
         return { right: stage.right - box.right, bottom: stage.bottom - box.bottom, left: box.left - stage.left,
           inside: box.top > stage.top + stage.height * .8 && Math.abs(center - (stage.left + stage.width / 2)) < stage.width * .2,
@@ -108,6 +126,43 @@ await suite('loading-craft', async check => {
     await page.locator('.loading-gate').waitFor({ state: 'detached' });
     await page.waitForFunction(() => document.querySelector('.bench-panel')?.childElementCount > 0);
   }, { viewport: { width: 390, height: 844 } });
+  await check('read-record', async page => {
+    // The reading record (core/loading-comic-log.js) is written by the real bench entry when the player
+    // moves on from a comic, never by the preview. Unread comics are shown before any repeat.
+    const KEY = 'suien_remake_loading_comics_read';
+    const record = () => page.evaluate(key => JSON.parse(localStorage.getItem(key) || 'null'), KEY);
+    // The record belongs to the player default (comics at every fixed point); automated browsers keep the
+    // old behaviour and write nothing, which the pc/mobile cases above confirm.
+    await page.evaluate(() => localStorage.setItem('suien_loading_comics', 'always'));
+    const readShown = async () => {
+      await page.locator('.loading-gate.is-ready').waitFor();
+      const title = await page.locator('.loading-comic-title').innerText();
+      await page.keyboard.press('Enter');
+      await page.locator('.loading-gate').waitFor({ state: 'detached' });
+      return eligibleComics.find(comic => comic.title === title)?.id ?? `unknown title: ${title}`;
+    };
+    const enter = options => page.evaluate(async options => {
+      const { prepareBenchEntry } = await import('./js/craft/loading.js');
+      window.__benchEntry = prepareBenchEntry(new Promise(resolve => setTimeout(resolve, 1200)), 1, [], options);
+      window.__benchEntry.catch(() => {});
+    }, options);
+    await readShown();
+    assert.equal(await record(), null, 'The bench preview never writes the reading record');
+    await enter({ preview: true });
+    await readShown();
+    assert.equal(await record(), null, 'A preview entry never writes the reading record');
+    const seen = [];
+    for (let round = 0; round < eligibleComics.length; round++) {
+      await enter();
+      seen.push(await readShown());
+      assert.deepEqual(await record(), seen, 'Each comic the player moves on from is recorded, in reading order');
+    }
+    assert.deepEqual([...seen].sort(), eligibleComics.map(comic => comic.id).sort(), 'Every unlocked comic is shown once before any repeat');
+    await enter();
+    assert(seen.includes(await readShown()), 'With everything read, the comics come round again');
+    assert.deepEqual(await record(), seen, 'Reading a comic again adds nothing');
+    assert.equal(await page.evaluate(() => localStorage.getItem('suien_remake_save')), 'untouched-loading-preview', 'The save slot is never touched');
+  }, { viewport: { width: 1280, height: 720 } });
 }, {
   readLoadingComics: false,
   entry: new URL('craft-preview.html?loading=comic', baseURL).href,

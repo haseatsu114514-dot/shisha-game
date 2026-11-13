@@ -43,7 +43,8 @@ def main():
              "remake/js/core/chapter-clock.js", "remake/js/core/rules.js", "remake/js/core/venue-host.js", "remake/css/venue-host.css"}
     files.update(git("ls-tree", "-r", "--name-only", commit, "--", "remake/js/trpg").decode().splitlines())
     files.update(git("ls-tree", "-r", "--name-only", commit, "--", "remake/css/trpg-stage.css", "remake/img/ui/trpg").decode().splitlines())
-    files.update(git("ls-tree", "-r", "--name-only", commit, "--", "remake/css/trpg-paper.css", "remake/css/ui-paper.css",
+    files.update(git("ls-tree", "-r", "--name-only", commit, "--", "remake/css/trpg-theme.css", "remake/css/trpg-phone.css", "remake/css/phone-density.css",
+                     "remake/css/settings.css", "remake/js/core/stage-fit.js", "remake/css/ui-paper.css",
                      "remake/img/ui/paper").decode().splitlines())
     files.update("data/" + file for file in catalog.get("characterProfiles", []))
     if catalog.get("club", {}).get("file"):
@@ -63,6 +64,11 @@ def main():
         for block in json.loads(read("data/" + catalog["tableTalk"])).get("dialogues", []):
             for line in block["lines"]:
                 portrait(line["speaker"], line.get("face", "normal"))
+
+    if catalog.get("tutorial"):
+        files.add("data/" + catalog["tutorial"])
+        for line in json.loads(read("data/" + catalog["tutorial"])).get("lines", []):
+            portrait(line["speaker"], line.get("face", "normal"))
 
     for entry in catalog["scenarios"]:
         path = "data/" + entry["file"]

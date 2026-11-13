@@ -69,10 +69,10 @@ def character_shop_name_errors(characters):
     errors = []
     for person in characters:
         fields = ('affiliation', 'description')
-        if person.get('id') == 'nagumo':
+        if person.get('id') == 'sui':
             for field in fields:
                 if 'シーステーション' in person.get(field, ''):
-                    errors.append(f'characters.json:nagumo.{field}: 店名はC.STATION（#2015）')
+                    errors.append(f'characters.json:sui.{field}: 店名はC.STATION（#2015）')
         if person.get('id') == 'adam':
             for field in fields:
                 if re.search(r'(?<![A-Za-z])Eden(?![A-Za-z])', person.get(field, '')):
@@ -114,7 +114,7 @@ def text_errors(row):
         if re.search(r'(?:^|[。！？!?])\s*…*師匠(?=[、。！？!?]|$)', unquoted):
             errors.append('はじめはスミさんを師匠と呼びかけない（#1947）')
     if speaker == 'dr_kemuri' and '僕' in text:
-        errors.append('博士の一人称は私（公的）／俺（はじめ・年下とフランクに）')
+        errors.append('博士の一人称は私（機材自慢の持ちネタ「それ作ったの、俺だもん」だけ俺）')
     if speaker == 'ageha' and re.search(r'あたし|アタシ|ウチ|はじめくん', text):
         errors.append('あげははうち／ハジメっち')
     if speaker == 'tsumugi' and 'はじめくん' in text:
@@ -157,8 +157,9 @@ def check(root=ROOT):
                 errors.append(f'{document}:{num}: protagonist first-person drift')
     route = json.loads((root / 'data/story_routes.json').read_text())
     roster = route['heroine_ids']
-    if len(roster) != 7 or len(set(roster)) != 7:
-        errors.append('heroine_ids must have seven unique IDs')
+    # DSR20（2026-11-02 オーナー「ヌールもヒロインの一人にします」）で8人。
+    if len(roster) != 8 or len(set(roster)) != 8:
+        errors.append('heroine_ids must have eight unique IDs')
     if set(route['romance']) != set(roster):
         errors.append('romance coverage must match heroine_ids')
     lover = json.loads((root / 'remake/data/lover.json').read_text())
@@ -179,12 +180,17 @@ def check(root=ROOT):
     if route['conflict']['stage'] != 'post_ending':
         errors.append('serious relationship conflict belongs after the ending')
     for person, spec in route['romance'].items():
+        # 遠くに住むヒロイン（ヌール・resident）は渡航しないので、到着場面を持たない。
+        if spec.get('resident') and spec.get('arrival') is not None:
+            errors.append(f'{person}: a resident has no arrival scene')
         for field in ('date', 'conflict', 'epilogue', 'arrival'):
+            if field == 'arrival' and spec.get('resident'):
+                continue
             references.append(spec[field])
         if spec['date_min_chapter'] <= route['near_conflict']['chapter']:
             references.append(spec.get('near_conflict'))
         for field in ('date', 'epilogue', 'arrival'):
-            for row in nodes(scenes.get(spec[field], {})):
+            for row in nodes(scenes.get(spec[field] or '', {})):
                 if row.get('stats') or re.search(r'【.+】.*上がった', str(row.get('text', ''))):
                     errors.append(f'{spec[field]}: romance stat reward')
         if not scenes.get(f'confession_{person}_accept'):
@@ -218,4 +224,4 @@ if __name__ == '__main__':
         print('ERROR', error)
     if errors:
         sys.exit(1)
-    print(f'OK: {count} active scenes, seven routes, canon text, references and legacy isolation')
+    print(f'OK: {count} active scenes, eight routes, canon text, references and legacy isolation')

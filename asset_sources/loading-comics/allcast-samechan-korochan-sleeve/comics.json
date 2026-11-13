@@ -1,0 +1,136 @@
+{
+  "id": "samechan-korochan-sleeve",
+  "title": "帰さない王",
+  "cast": [
+    "samechan"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "そろそろ帰ります。",
+    "うむ、気をつけての。",
+    "コロちゃんが離さない。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "サメちゃんの店の入口。左のはじめが片手を上げて帰りかけ「そろそろ帰ります。」。右のサメちゃんがすました顔で、コロちゃんを着けた右手を下ろしたまま「うむ、気をつけての。」。",
+  "panel2": "右手のコロちゃんが、はじめのパーカーの袖をがっぷりくわえ、ぐいーんと引っぱって離さない（袖が大きく伸びる）。サメちゃん本人はそっぽを向いて平静を装うが、頬が赤い。はじめは引っぱられて前のめり「コロちゃんが離さない。」。伸びた袖とコロちゃんは画面中央に大きく。",
+  "caption": "コロちゃんは、サメちゃんの右手にいるサメの王。",
+  "type": "本音バレ（パペットが引き止める）",
+  "note": "コロちゃんは腹話術でサメちゃんの本心をばらす役（正本）。名残惜しさは友だちとしての範囲で、恋愛は進めない。",
+  "num": 167,
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "533bcb8cec9eb17a34daafc7cc8a6f3c20227494",
+  "generator": "built-in image_gen",
+  "source": "allcast-samechan-korochan-sleeve.png",
+  "source_sha256": "d1a99983ef25cda56153cc12680191666828f52d62fcc187673941c2db7af8da",
+  "references": [
+    {
+      "path": "hajime-sheet/normal.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "role": "hajime official normal"
+    },
+    {
+      "path": "references/samechan.png",
+      "sha256": "602b983ba598473c5a2225039014e4609e302e5df0e49450395e783c14505bb3",
+      "role": "samechan official normal; Git blob SHA matches 22768d83367e0560e4576a1d15f2010008dc2076"
+    },
+    {
+      "path": "ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "role": "early adopted style only, not deliverable"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "role": "official template regenerated using unchanged repository tool"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked, 3 lines matching official script",
+    "reading_order": "left-to-right / first speaker upper-left when speaker is on right; tails checked",
+    "identity": "normal references; same positions both panels; korochan is puppet",
+    "style": "early adopted Menu Revision style: cute 2.5-head chibi, bold lines, warm cel palette",
+    "hardware": "none; no siryou hardware needed in these scripts",
+    "in_game_pc_phone": "NOT PERFORMED; not registered",
+    "selection": "awaiting owner; not adopted",
+    "template": "watermelon/sleeve near exact; other originals have vertical drift; retained original and ratio reports without force"
+  },
+  "cut_source_regions": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-korochan-sleeve/source-v1.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 720,
+        "height": 478,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/samechan-korochan-sleeve/source-v1.png",
+      "region": {
+        "x": 780,
+        "y": 272,
+        "width": 720,
+        "height": 478,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/samechan-korochan-sleeve-1.webp",
+      "sha256": "66a0bb57de635113e0dfbe3a28e96c44a7a0e7f7900629d22346aaeea6bb70f7",
+      "width": 720,
+      "height": 480,
+      "bytes": 72130
+    },
+    {
+      "file": "panels/samechan-korochan-sleeve-2.webp",
+      "sha256": "ebebe4048bb76cb6bb539a9657b7a4eaadf35b94bd8526f1ff9af85f8243193c",
+      "width": 720,
+      "height": 480,
+      "bytes": 69264
+    }
+  ],
+  "originals": [
+    {
+      "file": "allcast-samechan-korochan-sleeve.png",
+      "sha256": "d1a99983ef25cda56153cc12680191666828f52d62fcc187673941c2db7af8da",
+      "bytes": 1726099
+    }
+  ],
+  "generation_calls": [
+    {
+      "output": "source-v1.png",
+      "prompt": "prompt-v1.txt",
+      "references": [
+        {
+          "path": "hajime-sheet/normal.png",
+          "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+          "role": "hajime official normal"
+        },
+        {
+          "path": "references/samechan.png",
+          "sha256": "602b983ba598473c5a2225039014e4609e302e5df0e49450395e783c14505bb3",
+          "role": "samechan official normal; Git blob SHA matches 22768d83367e0560e4576a1d15f2010008dc2076"
+        },
+        {
+          "path": "ryuji-sheet/loading/pc.png",
+          "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+          "role": "early adopted style only, not deliverable"
+        },
+        {
+          "path": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+          "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+          "role": "official template regenerated using unchanged repository tool"
+        }
+      ],
+      "engine": "built-in image_gen",
+      "transparent_background": false
+    }
+  ],
+  "local_source_before_handoff": "source-v1.png"
+}

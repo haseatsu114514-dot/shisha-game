@@ -1,4 +1,4 @@
-Create ONE large wide transparent sprite sheet containing exactly FIVE full-body variations of the SAME existing game character Mashiro (水瀬ましろ), arranged in ONE horizontal row. This is a faithful remaster of the supplied existing character, not a new design. Draw all five in the same shared game illustration style as the approved Minto and Tsumugi references.
+Create ONE large wide transparent sprite sheet containing exactly FIVE full-body variations of the SAME existing game character Mashiro (黒葉ましろ), arranged in ONE horizontal row. This is a faithful remaster of the supplied existing character, not a new design. Draw all five in the same shared game illustration style as the approved Minto and Tsumugi references.
 
 REFERENCE ROLES IN ORDER:
 1. Actual approved Minto normal PNG: primary shared rendering style, delicate organic ink contours, subtle fine pixel-like edges/grain and intentional shaped shadows.

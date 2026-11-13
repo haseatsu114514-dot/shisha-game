@@ -10,7 +10,8 @@ async function capture(page, name) {
 async function fit(page) {
   const checks = await page.locator('.axe-header, .axe-panel, .axe-button, .axe-comment, .axe-note, .axe-match-score, .axe-match-records').evaluateAll(nodes => nodes.map(n => {
     const r = n.getBoundingClientRect();
-    return { text: n.textContent, visible: r.width > 0 && r.height > 0,
+    // ステージ内の対戦では得点表示を看板と重複させないため 1px に隠す（axe-throw.css・本編と同じ）。隠れた要素は「見えている」扱いにしない
+    return { text: n.textContent, visible: r.width > 1 && r.height > 1,
       fits: r.left >= -1 && r.right <= innerWidth + 1 && r.top >= -1 && r.bottom <= innerHeight + 1
         && n.scrollWidth <= n.clientWidth + 1 && n.scrollHeight <= n.clientHeight + 1 };
   }));
@@ -25,13 +26,54 @@ async function press(page, { touch = false, keyboard = false } = {}) {
   else if (touch) await button.tap(); else await button.click();
 }
 async function stop(page, value, options) {
-  if (options?.precise) await root(page).focus();
+  if (options?.precise) {
+    // The center bull needs frame-accurate input. Read the displayed needle
+    // and click the UI control in that frame, without changing game state.
+    await page.evaluate(value => new Promise((resolve, reject) => {
+      const deadline = performance.now() + 12000;
+      const seek = () => {
+        const game = document.querySelector('[data-test="axe-game"]');
+        const button = game?.querySelector('[data-test="axe-action"]');
+        const t = Number(game?.dataset.timing);
+        if (button && !button.disabled && t >= value - .008 && t <= value + .015) {
+          button.click(); resolve();
+        } else if (performance.now() < deadline) requestAnimationFrame(seek);
+        else reject(new Error(`Visible gauge never reached ${value}`));
+      };
+      requestAnimationFrame(seek);
+    }), value);
+    return;
+  }
   await page.waitForFunction(value => {
     const game = document.querySelector('[data-test="axe-game"]'), t = Number(game.dataset.timing);
     return !game.querySelector('[data-test="axe-action"]').disabled && t >= value - .02 && t <= value + .015;
   }, value);
-  if (options?.precise) await page.keyboard.press("Space");
-  else await press(page, options);
+  await press(page, options);
+}
+async function focusedBullOnFrame(page) {
+  // Use the visible power band and landing marker in one browser frame. The
+  // focus window can expire during separate Playwright input round trips.
+  await page.evaluate(() => new Promise((resolve, reject) => {
+    const deadline = performance.now() + 12000;
+    let focused = false, previous = -1;
+    const seek = () => {
+      const game = document.querySelector('[data-test="axe-game"]');
+      const focus = game?.querySelector('[data-test="axe-focus"]');
+      const action = game?.querySelector('[data-test="axe-action"]');
+      const t = Number(game?.dataset.timing);
+      if (!focused && focus && !focus.disabled && t >= .38 && t <= .48 && t > previous) {
+        focus.click(); focused = true;
+      }
+      if (focused && game.dataset.focused === "true" && action && !action.disabled
+        && t >= .54 && t <= .70 && Math.abs(Number(game.dataset.landingX)) < .025
+        && Math.abs(Number(game.dataset.landingY)) < .09) {
+        action.click(); resolve(); return;
+      }
+      if (performance.now() >= deadline) reject(new Error("Focused bull was not visible within the power band"));
+      else { previous = t; requestAnimationFrame(seek); }
+    };
+    requestAnimationFrame(seek);
+  }));
 }
 async function shoot(page, options = {}) {
   await phase(page, "choice"); await press(page, options); await phase(page, "horizontal");
@@ -39,26 +81,46 @@ async function shoot(page, options = {}) {
   await stop(page, .5, options); await phase(page, "power");
   if (options.focus) {
     const [x, y] = await root(page).evaluate(game => [Number(game.dataset.aimX), Number(game.dataset.aimY)]);
-    if (Math.hypot(x, y) > .06) {
-      // Leave room inside the radius .1 bull for focused sway and the power correction.
+    if (Math.abs(x) > .025 || Math.abs(y) > .13) {
+      // The 1.5in bull (radius .042 of the 18in 1 ring) forgives vertical error through the 4in blade (.111); horizontal error must leave room for focused sway.
       assert((options.attempt || 0) < 5, `Visible center aiming failed: ${x},${y}`);
       await page.locator('[data-test="axe-reaim"]:not([disabled])').click();
       return shoot(page, { ...options, attempt: (options.attempt || 0) + 1 });
     }
-    await page.waitForFunction(() => {
-      const game = document.querySelector('[data-test="axe-game"]');
-      return Number(game.dataset.timing) >= .4 && Number(game.dataset.timing) <= .5;
-    });
-    await page.locator('[data-test="axe-focus"]').click();
+    if (options.precise) await focusedBullOnFrame(page);
+    else {
+      await page.waitForFunction(() => {
+        const game = document.querySelector('[data-test="axe-game"]');
+        return Number(game.dataset.timing) >= .4 && Number(game.dataset.timing) <= .5;
+      });
+      await page.locator('[data-test="axe-focus"]').click();
+    }
   }
-  await stop(page, options.power ?? .62, options); await phase(page, "result");
+  if (!(options.focus && options.precise)) await stop(page, options.power ?? .62, options);
+  await phase(page, "result");
   assert.equal(await root(page).getAttribute("data-actor"), "player");
 }
+/** A tie after ten throws goes to sudden death: alternate killshot throws until the game declares a winner. */
+async function finishSuddenDeath(page, options = {}, shootInput = { x: 0, y: 0 }) {
+  for (let round = 0; round < 12 && await root(page).getAttribute("data-phase") !== "summary"; round++) {
+    await phase(page, "choice");
+    assert.equal(await root(page).getAttribute("data-sudden-death"), "true");
+    assert.equal(await page.locator(".axe-calls").count() && await page.locator(".axe-calls").isHidden(), true, "no call buttons in sudden death");
+    await shoot(page, { ...options, ...shootInput });
+    assert.equal(await root(page).getAttribute("data-player-throws"), "10", "sudden death adds no game throws");
+    await press(page, options); await phase(page, "opponent-ready"); await phase(page, "result");
+    assert.match(await page.locator('[data-test="axe-call-status"]').textContent(), /サドンデス/);
+    await press(page, options);
+    await page.waitForFunction(() => ["choice", "summary"].includes(document.querySelector('[data-test="axe-game"]')?.dataset.phase));
+  }
+  await phase(page, "summary");
+}
 async function start(page, difficulty = "normal", options = {}) {
-  await page.goto(new URL("axe-throw.html", page.url()).href);
+  // 一投ずつ手で進める検査なので、対戦の自動送り（2026-11-13）は ?auto=0 で止める。自動送りは axe_tap_pull.mjs で確かめる
+  await page.goto(new URL("axe-throw.html?input=gauges&auto=0", page.url()).href);
   await page.evaluate(() => {
     localStorage.setItem("suien_remake_save", JSON.stringify({ schema: 5, money: 45678, stamina: 71,
-      lovers: ["rin"], flags: { _friend_hiyori: true }, inbox: [{ id: "keep", read: true }],
+      lovers: ["rio"], flags: { _friend_hiyori: true }, inbox: [{ id: "keep", read: true }],
       pendingInvite: { sender: "hiyori", day: 10, slot: 1 }, affinity: { hiyori: 66 } }));
     sessionStorage.setItem("keep", "unchanged");
   });
@@ -68,15 +130,18 @@ async function start(page, difficulty = "normal", options = {}) {
   const button = page.locator('[data-test="axe-versus"]');
   if (options.keyboard) { await button.focus(); await page.keyboard.press("Enter"); }
   else if (options.touch) await button.tap(); else await button.click();
+  // The setup sheet: keep the shown division and one game, then start.
+  await page.locator('[data-test="axe-setup"]').waitFor();
+  if (options.keyboard) await page.keyboard.press("Enter");
+  else if (options.touch) await page.locator('[data-test="axe-setup-start"]').tap(); else await page.locator('[data-test="axe-setup-start"]').click();
   // A second same-host call observes the existing Promise; no state or outcomes are injected.
-  await page.evaluate(() => { window.matchPromise = import("./js/minigames/axe.js").then(m => m.runAxeThrow({host:document.getElementById("axe-app")})); });
+  await page.evaluate(() => { window.matchPromise = import("./js/minigames/axe.js").then(m => m.runAxeThrow({ inputMode: "gauges", host:document.getElementById("axe-app")})); });
   await phase(page, "choice"); await fit(page);
 }
 await suite("axe-versus", async check => {
   for (const [label, options, context, difficulty] of [
     ["pc", {}, {}, "normal"],
     ["touch-landscape", { touch: true }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, "easy"],
-    ["touch-portrait", { touch: true }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }, "normal"],
     ["keyboard-reduced", { keyboard: true }, { reducedMotion: "reduce" }, "hard"],
   ]) await check(label + "-twenty-throws", async page => {
     await start(page, difficulty, options); const before = await storageSnapshot(page);
@@ -88,16 +153,20 @@ await suite("axe-versus", async check => {
       await press(page, options); await phase(page, "opponent-ready");
       assert.equal(await root(page).getAttribute("data-actor"), "opponent");
       if (i === 5 || i === 10) {
-        assert.equal(await root(page).getAttribute("data-called"), i === 5 ? "upper-left" : "lower-left");
-        assert.match(await page.locator('.axe-comment').textContent(), /キルショット/);
+        // Throw five calls the upper-left blue. Throw ten calls a left blue, unless a drop's bonus call was spent on throw eight:
+        // the last call must then go to the opposite height, and if that height is already closed there is no legal call (checked below).
+        const calledNow = await root(page).getAttribute("data-called");
+        if (i === 5) assert.equal(calledNow, "upper-left"); else assert.match(calledNow, /^((upper|lower)-left)?$/);
+        if (calledNow) assert.match(await page.locator('.axe-comment').textContent(), /キルショット/);
       }
       await phase(page, "result");
       assert.equal(await root(page).getAttribute("data-opponent-throws"), String(i));
       if (i === 1) { await fit(page); await capture(page, label + "-opponent-result"); }
       await press(page, options);
     }
+    if (await root(page).getAttribute("data-phase") !== "summary") await finishSuddenDeath(page, options);
     await phase(page, "summary"); await fit(page); await capture(page, label + "-summary");
-    assert.match(await page.locator('.axe-note').textContent(), /勝ち|引き分け/);
+    assert.match(await page.locator('.axe-note').textContent(), /勝ち/);
     assert.equal(await page.locator('.axe-match-records > div').count(), 2);
     await press(page, options);
     const result = await page.evaluate(() => window.matchPromise);
@@ -108,23 +177,33 @@ await suite("axe-versus", async check => {
     assert.equal(result.total, result.match.playerTotal);
     assert.equal(result.match.playerTotal, result.match.player.reduce((sum, s) => sum + s.score, 0));
     assert.equal(result.match.opponentTotal, result.match.opponent.reduce((sum, s) => sum + s.score, 0));
-    assert.equal(result.match.winner, result.match.playerTotal === result.match.opponentTotal ? "draw"
+    assert.equal(result.match.winner, result.match.playerTotal === result.match.opponentTotal ? result.match.suddenDeath.winner
       : result.match.playerTotal > result.match.opponentTotal ? "player" : "opponent");
+    if (result.match.playerTotal === result.match.opponentTotal) assert(result.match.suddenDeath.rounds >= 1 && ["player", "opponent"].includes(result.match.winner));
     const scoring = await page.evaluate(async result => {
       const model = await import("./js/minigames/axe-model.js");
       return [result.match.player, result.match.opponent].every(history => history.every((s, i) =>
-        JSON.stringify(model.resolveThrow({ ...s.aim, power: s.power, called: s.called }, history.slice(0, i))) ===
+        JSON.stringify(model.resolveThrow({ ...s.aim, power: s.power, called: s.called }, history.slice(0, i), { division: result.match.division, throws: 10 })) ===
         JSON.stringify(Object.fromEntries(Object.entries(s).filter(([k]) => !["baseAim", "sway"].includes(k))))));
     }, result);
     assert(scoring, "every rendered shot uses resolveThrow and its own history");
-    assert.deepEqual(await storageSnapshot(page), before);
+    if (!result.match.opponent[9].called) assert(await page.evaluate(async history => {
+      const { KILLS, canCall } = await import("./js/minigames/axe-model.js");
+      return !KILLS.some(k => canCall(k.id, history, 10));
+    }, result.match.opponent.slice(0, 9)), "the opponent skips its last call only when no blue is legal");
+    const expectedStorage = structuredClone(before);
+    // Winning a hard match intentionally unlocks Adam on the standalone page.
+    // Keep every other save and session key byte-for-byte unchanged.
+    if (difficulty === "hard" && result.match.winner === "player") expectedStorage.local.shisha_axe_adam_unlocked = "1";
+    assert.deepEqual(await storageSnapshot(page), expectedStorage);
   }, context);
 
-  await check("seeded-draw-ends-at-ten-and-retry-clears-both-histories", async page => {
-    await page.goto(new URL("axe-throw.html", page.url()).href);
+  await check("seeded-tie-goes-to-sudden-death-and-retry-clears-both-histories", async page => {
+    await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
     await page.evaluate(async () => {
       const mini = await import("./js/minigames/axe.js");
-      window.matchPromise = mini.runAxeThrow({ host: document.getElementById("axe-app"), mode: "versus", difficulty: "hard", seed: 9 });
+      // Seed 11: the hard opponent's ten throws total exactly 60 on the official target (#2729), the same as ten focused bulls.
+      window.matchPromise = mini.runAxeThrow({ inputMode: "gauges",  host: document.getElementById("axe-app"), mode: "versus", difficulty: "hard", seed: 11 });
     });
     await phase(page, "choice");
     const before = await storageSnapshot(page);
@@ -133,20 +212,29 @@ await suite("axe-versus", async check => {
       assert.match(await page.locator('.axe-note').textContent(), /6点/, "real focused bull must score six");
       await press(page); await phase(page, "opponent-ready"); await phase(page, "result"); await press(page);
     }
-    await phase(page, "summary");
+    await phase(page, "choice");
     assert.equal(await root(page).getAttribute("data-player-throws"), "10");
     assert.equal(await root(page).getAttribute("data-opponent-throws"), "10");
     assert.match(await page.locator('.axe-match-score').textContent(), /あなた 60 — 60 ひより/);
-    assert.match(await page.locator('.axe-note').textContent(), /引き分け.*延長なし/);
-    assert.match(await page.locator('.axe-comment').textContent(), /引き分け/);
-    await capture(page, "seeded-draw-summary");
+    assert.equal(await root(page).getAttribute("data-sudden-death"), "true");
+    assert.equal(await root(page).getAttribute("data-called"), "upper-left", "sudden death starts at the upper-left blue");
+    assert.match(await page.locator('.axe-comment').textContent(), /同点|決着/);
+    await capture(page, "seeded-tie-sudden-death");
+    // The player throws at the centre (zero on a called blue); the hard opponent decides the round on the blue or by distance.
+    await finishSuddenDeath(page, { focus: true, precise: true });
+    assert.match(await page.locator('.axe-match-score').textContent(), /あなた 60 — 60 ひより/);
+    assert.match(await page.locator('.axe-note').textContent(), /勝ち.*サドンデス/);
+    assert.equal(await page.locator('.axe-tile-sd').count() >= 2, true, "sudden-death tiles join both scoreboard rows");
+    await capture(page, "seeded-tie-summary");
+    const finished = await page.evaluate(() => JSON.parse(document.querySelector('[data-test="axe-game"]').dataset.suddenDeathRounds));
+    assert(finished >= 1);
     await page.locator('[data-test="axe-retry"]:not([disabled])').click(); await phase(page, "choice");
     assert.equal(await root(page).getAttribute("data-player-throws"), "0");
     assert.equal(await root(page).getAttribute("data-opponent-throws"), "0");
     assert.match(await page.locator('.axe-call-status').textContent(), /残り2回/);
     await page.keyboard.press("Escape");
     const result = await page.evaluate(() => window.matchPromise);
-    assert.equal(result.match.seed, 9); assert.equal(result.match.winner, null);
+    assert.equal(result.match.seed, 11); assert.equal(result.match.winner, null);
     assert.deepEqual(result.match.player, []); assert.deepEqual(result.match.opponent, []);
     assert.deepEqual(await storageSnapshot(page), before);
   });
@@ -184,7 +272,7 @@ await suite("axe-versus", async check => {
     assert(cancelled.cancelled && !cancelled.completed);
     assert.equal(cancelled.match.winner, null); assert.equal(cancelled.match.player.length, 1); assert.equal(cancelled.match.opponent.length, 0);
     assert.deepEqual(await storageSnapshot(page), before);
-    await page.locator('[data-test="axe-versus"]').click(); await phase(page, "choice");
+    await page.locator('[data-test="axe-versus"]').click(); await page.locator('[data-test="axe-setup-start"]').click(); await phase(page, "choice");
     assert.equal(await root(page).getAttribute("data-player-throws"), "0");
     await page.keyboard.press("Escape");
   });
@@ -195,8 +283,8 @@ await suite("axe-versus", async check => {
       const s = core.newGame(); s.money = 12345; s.flags._friend_hiyori = true;
       core.save(); window.beforeState = JSON.stringify(core.state);
       window.abort = new AbortController();
-      window.gamePromise = mini.runAxeThrow({ host: document.getElementById("stage"), mode: "versus", seed: 489, signal: abort.signal });
-      window.duplicate = window.gamePromise === mini.runAxeThrow({host:document.getElementById("stage")});
+      window.gamePromise = mini.runAxeThrow({ inputMode: "gauges",  host: document.getElementById("stage"), mode: "versus", seed: 489, signal: abort.signal });
+      window.duplicate = window.gamePromise === mini.runAxeThrow({ inputMode: "gauges", host:document.getElementById("stage")});
     });
     for (const reason of ["abort", "detach", "load", "pagehide", "screen"]) {
       await setup(); await phase(page, "choice"); assert(await page.evaluate(() => window.duplicate));
@@ -220,12 +308,47 @@ await suite("axe-versus", async check => {
     }
     const invalid = await page.evaluate(async () => {
       const signal = new AbortController(); signal.abort();
-      const result = await mini.runAxeThrow({mode:"versus", signal:signal.signal});
+      const result = await mini.runAxeThrow({ inputMode: "gauges", mode:"versus", signal:signal.signal});
       const rejected = await Promise.all([
-        mini.runAxeThrow({mode:"versus", opponent:null}), mini.runAxeThrow({mode:"versus", difficulty:"fake"}),
+        mini.runAxeThrow({ inputMode: "gauges", mode:"versus", opponent:null}), mini.runAxeThrow({ inputMode: "gauges", mode:"versus", difficulty:"fake"}),
       ].map(p => p.then(() => false, e => e instanceof RangeError)));
       return { result, rejected };
     });
     assert(invalid.result.cancelled && invalid.result.match.player.length === 0); assert(invalid.rejected.every(Boolean));
   });
+  await check("adam-secret-boss-full-match", async page => {
+    await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
+    assert.equal(await page.locator('[data-rival="adam"]').count(), 0, "解放前は一覧に出さない");
+    await page.evaluate(async () => {
+      const { recordAdamUnlock } = await import("./js/minigames/axe-secret-boss.js");
+      recordAdamUnlock({ completed: true, opponent: "hiyori", match: { difficulty: "hard", winner: "player" }, series: { winner: "player" } });
+    });
+    await page.reload();
+    await page.locator('[data-rival="adam"]').click();
+    assert.match(await page.locator('[data-test="axe-versus"]').textContent(), /アダムと対戦/);
+    await page.locator('[data-test="axe-versus"]').click();
+    assert.match(await page.locator('[data-test="axe-setup"]').textContent(), /手加減はしない/);
+    await page.locator('[data-test="axe-setup-start"]').click();
+    await phase(page, "choice");
+    assert.match(await page.locator('.axe-header').textContent(), /アダムと10投対戦/);
+    assert.match(await page.locator('[data-test="axe-portrait"]').getAttribute('src'), /adam/);
+    for (let i = 1; i <= 10; i++) {
+      await shoot(page);
+      await press(page); await phase(page, "opponent-ready"); await phase(page, "result");
+      await press(page);
+      await page.waitForFunction(() => ["choice", "summary"].includes(document.querySelector('[data-test="axe-game"]')?.dataset.phase));
+    }
+    await phase(page, "summary");
+    assert.match(await page.locator('[data-test="axe-note"]').textContent(), /勝ち|引き分け/);
+    await press(page);
+    await page.locator('[data-test="axe-versus"]').waitFor();
+    assert.doesNotMatch(await page.locator('.axe-menu-message').textContent(), /undefined/);
+    assert.equal(await page.evaluate(() => localStorage.getItem("shisha_axe_adam_unlocked")), "1");
+  });
+await check("touch-portrait-rotate-hint", async page => {
+    // 縦持ちスマホは本編と同じく横向き案内で止める（2026-11-09 オーナー決定・#3035／試遊ページ共通化 #3076）
+    await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
+    await page.locator(".axe-menu").waitFor();
+    assert.equal(await page.locator("#rotate-hint").isVisible(), true);
+  }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 });

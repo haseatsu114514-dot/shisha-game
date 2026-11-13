@@ -1,0 +1,824 @@
+{
+  "scope": "PR2246の49〜72候補24話とPR2258の記録番号61〜90候補30話を全文台本・記録で照合。旧台帳の一部を補助参照。1〜72一覧の作成・変更ではない。",
+  "source_heads": {
+    "2246": "ca2ab1db59c1a32a03b67a36b0e6863f67ecd6ab",
+    "2258_content": "c09d7412dfd231cf13d57180e4d154b5ef80601c"
+  },
+  "identity_rule": "PR番号＋安定IDを選別の識別子とし、recorded_numberは制作時の記録番号に留める。番号再割当なし。",
+  "own_candidates": [
+    {
+      "stable_key": "PR2258:sumi-jacket-souvenir",
+      "pr": 2258,
+      "id": "sumi-jacket-souvenir",
+      "recorded_number": 61,
+      "title": "香りのお土産",
+      "record_path": "asset_sources/loading-comics/61-sumi-jacket-souvenir/comics.json",
+      "source_sha256": "b83d5a2a3e90d7207d2228a73323b9b8017608b95ce249676b7de484bd6c66cd",
+      "dialogue": [
+        "何か持ち帰った？",
+        "上着を見てみろ。",
+        "香りのお土産だ。"
+      ],
+      "same_number_other": "PR2246:leave-it-to-you",
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:sumi-cold-tea",
+      "pr": 2258,
+      "id": "sumi-cold-tea",
+      "recorded_number": 62,
+      "title": "冷めた紅茶",
+      "record_path": "asset_sources/loading-comics/62-sumi-cold-tea/comics.json",
+      "source_sha256": "9aad1ea935c33276d7f85335818a810d46c2a3e5c4b417b2e8c6ec0d645d4bf3",
+      "dialogue": [
+        "お茶、冷めました。",
+        "話しすぎたな。",
+        "話はまだ熱い。"
+      ],
+      "same_number_other": "PR2246:all-favorites",
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:sumi-seat-choice",
+      "pr": 2258,
+      "id": "sumi-seat-choice",
+      "recorded_number": 63,
+      "title": "席選びの旅",
+      "record_path": "asset_sources/loading-comics/63-sumi-seat-choice/comics.json",
+      "source_sha256": "8699ce81742dac93db04107485f10a5ae05348145847ff90af02211060fbda3b",
+      "dialogue": [
+        "好きな席でいいぞ。",
+        "迷いますね。",
+        "味より迷ってる。"
+      ],
+      "same_number_other": "PR2246:short-visit",
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:sumi-tasting-sketch",
+      "pr": 2258,
+      "id": "sumi-tasting-sketch",
+      "recorded_number": 64,
+      "title": "感想は一言",
+      "record_path": "asset_sources/loading-comics/64-sumi-tasting-sketch/comics.json",
+      "source_sha256": "f97612951ce16df3a0726b05fbae638831f54cad32361b756d0190927155c19b",
+      "dialogue": [
+        "感想は一言で。",
+        "任せてください。",
+        "絵日記になった。"
+      ],
+      "same_number_other": "PR2246:apple-study",
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:sumi-memory-kitchen",
+      "pr": 2258,
+      "id": "sumi-memory-kitchen",
+      "recorded_number": 65,
+      "title": "香りの帰省",
+      "record_path": "asset_sources/loading-comics/65-sumi-memory-kitchen/comics.json",
+      "source_sha256": "7bdc2fe94b42cdf77a2bbca26550822e6df00abfb2cb2bc4205a19a1f94595e9",
+      "dialogue": [
+        "何の香りです？",
+        "思い出してみろ。",
+        "実家に着いた。"
+      ],
+      "same_number_other": "PR2246:apple-season",
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:sumi-slow-clock",
+      "pr": 2258,
+      "id": "sumi-slow-clock",
+      "recorded_number": 66,
+      "title": "時計の一分",
+      "record_path": "asset_sources/loading-comics/66-sumi-slow-clock/comics.json",
+      "source_sha256": "de766edbb38c42e661791091e7028071710fc27a663f3fe73fb36a8a3e9a3efb",
+      "dialogue": [
+        "あと一分ですか？",
+        "あと一分だ。",
+        "見すぎて長い。"
+      ],
+      "same_number_other": "PR2246:apple-break",
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:sumi-clean-counter",
+      "pr": 2258,
+      "id": "sumi-clean-counter",
+      "recorded_number": 67,
+      "title": "磨きすぎ注意",
+      "record_path": "asset_sources/loading-comics/67-sumi-clean-counter/comics.json",
+      "source_sha256": "6fd18763cba92a666552fe8d168ee0f436f54cb8ac174f7cdf69de9696153699",
+      "dialogue": [
+        "机、拭きました！",
+        "きれいだな。",
+        "顔まで映った。"
+      ],
+      "same_number_other": "PR2246:sweet-name",
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:sumi-order-practice",
+      "pr": 2258,
+      "id": "sumi-order-practice",
+      "recorded_number": 68,
+      "title": "注文の練習",
+      "record_path": "asset_sources/loading-comics/68-sumi-order-practice/comics.json",
+      "source_sha256": "dc646521d380f429049f70083552b114e5d46da5a8ff84204e6658eea79ddf18",
+      "dialogue": [
+        "注文の練習だ。",
+        "爽やかな味で！",
+        "急に他人行儀だ。"
+      ],
+      "same_number_other": "PR2246:not-sweet",
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:sumi-two-umbrellas",
+      "pr": 2258,
+      "id": "sumi-two-umbrellas",
+      "recorded_number": 69,
+      "title": "雨の忘れ物",
+      "record_path": "asset_sources/loading-comics/69-sumi-two-umbrellas/comics.json",
+      "source_sha256": "c9c7b159f4321607d3b92bcb303cd59a5204e95f635b2ed13bafdb188428c21b",
+      "dialogue": [
+        "傘、忘れるなよ。",
+        "ちゃんとあります。",
+        "それ、店の傘だ。"
+      ],
+      "same_number_other": "PR2246:cake-lunch",
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:sumi-coin-hunt",
+      "pr": 2258,
+      "id": "sumi-coin-hunt",
+      "recorded_number": 70,
+      "title": "釣り銭探し",
+      "record_path": "asset_sources/loading-comics/70-sumi-coin-hunt/comics.json",
+      "source_sha256": "a863b26170c45aca6f6e7d2f989dbbc09705f92536cef33e8ee369b67c9e162a",
+      "dialogue": [
+        "十円が見つかりません。",
+        "そこを見ろ。",
+        "俺の手にいた。"
+      ],
+      "same_number_other": "PR2246:mint-ranking",
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:adam-holiday-choice",
+      "pr": 2258,
+      "id": "adam-holiday-choice",
+      "recorded_number": 71,
+      "title": "休日の二択",
+      "record_path": "asset_sources/loading-comics/71-adam-holiday-choice/comics.json",
+      "source_sha256": "4f74b28aca37ec695f0b202bd45a73db67305ed9c39b82cff4a95f74e336a3b2",
+      "dialogue": [
+        "休みは何します？",
+        "気分で選ぶ。",
+        "また赤か緑だ。"
+      ],
+      "same_number_other": "PR2246:mint-service",
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:adam-lunch-dessert",
+      "pr": 2258,
+      "id": "adam-lunch-dessert",
+      "recorded_number": 72,
+      "title": "昼飯の余白",
+      "record_path": "asset_sources/loading-comics/72-adam-lunch-dessert/comics.json",
+      "source_sha256": "dbab17c6e47cee43cfbd5c27bcf5cd0c4604763d9cb41712d80aae987d68a237",
+      "dialogue": [
+        "昼は何食べます？",
+        "バランスが大事だ。",
+        "リンゴが主役だ。"
+      ],
+      "same_number_other": "PR2246:mint-photo",
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:adam-shopping-bag",
+      "pr": 2258,
+      "id": "adam-shopping-bag",
+      "recorded_number": 73,
+      "title": "買い物の内訳",
+      "record_path": "asset_sources/loading-comics/73-adam-shopping-bag/comics.json",
+      "source_sha256": "453ce33e4385c62c077c16c509ea2303818eba4cd17f14882b95b57673ccacda",
+      "dialogue": [
+        "買い忘れない？",
+        "全部そろった。",
+        "夕飯は未定だ。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:adam-alarm-clock",
+      "pr": 2258,
+      "id": "adam-alarm-clock",
+      "recorded_number": 74,
+      "title": "目覚ましの役目",
+      "record_path": "asset_sources/loading-comics/74-adam-alarm-clock/comics.json",
+      "source_sha256": "f1d94f7d4290a09a353e137ebe351c21ff59b29ccd8cc5d83f7e58237a0f8c5c",
+      "dialogue": [
+        "朝は起きられます？",
+        "音には敏感だ。",
+        "リンゴは鳴らない。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:adam-napkin-fold",
+      "pr": 2258,
+      "id": "adam-napkin-fold",
+      "recorded_number": 75,
+      "title": "折り目の精度",
+      "record_path": "asset_sources/loading-comics/75-adam-napkin-fold/comics.json",
+      "source_sha256": "db9e4a42aeb2794b6cd51902f9f860028203b274f6d6744a435986cd6f41f5a3",
+      "dialogue": [
+        "几帳面ですね。",
+        "一ミリも譲らない。",
+        "服は裏返しだ。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:adam-photo-album",
+      "pr": 2258,
+      "id": "adam-photo-album",
+      "recorded_number": 76,
+      "title": "写真の主役",
+      "record_path": "asset_sources/loading-comics/76-adam-photo-album/comics.json",
+      "source_sha256": "120a61dcc0812f7fee1d906cc131fcd196837c021155c7f02fa967f01a0fc579",
+      "dialogue": [
+        "旅行の写真です？",
+        "いい記録だ。",
+        "全部リンゴだ。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:adam-weather-forecast",
+      "pr": 2258,
+      "id": "adam-weather-forecast",
+      "recorded_number": 77,
+      "title": "今日の予報",
+      "record_path": "asset_sources/loading-comics/77-adam-weather-forecast/comics.json",
+      "source_sha256": "fac8dbc2735842b382ceced5d9bde681ae9516bdaefdc311d7843d84ebe1c779",
+      "dialogue": [
+        "今日は晴れます？",
+        "色は見てきた。",
+        "空を見てない。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:adam-key-ring",
+      "pr": 2258,
+      "id": "adam-key-ring",
+      "recorded_number": 78,
+      "title": "鍵より目印",
+      "record_path": "asset_sources/loading-comics/78-adam-key-ring/comics.json",
+      "source_sha256": "fd9b54e3e0ecf992aaa90710575575941a571617ff586968bd352f16d489a3e8",
+      "dialogue": [
+        "鍵、見つかります？",
+        "目印がある。",
+        "目印が重すぎる。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:adam-gift-wrap",
+      "pr": 2258,
+      "id": "adam-gift-wrap",
+      "recorded_number": 79,
+      "title": "包みの中身",
+      "record_path": "asset_sources/loading-comics/79-adam-gift-wrap/comics.json",
+      "source_sha256": "ecafc9b5b781a90842a97110093750baf4129c55e81a6086d4a19f2c3b9f66cb",
+      "dialogue": [
+        "中身、当ててみて。",
+        "難しいですね。",
+        "形が全部言ってる。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:adam-cup-noodles",
+      "pr": 2258,
+      "id": "adam-cup-noodles",
+      "recorded_number": 80,
+      "title": "三分の難問",
+      "record_path": "asset_sources/loading-comics/80-adam-cup-noodles/comics.json",
+      "source_sha256": "585bc5d7e1ecdded7c2dba118a265bc5dcace4243235eb59d9a631bd2adb0128",
+      "dialogue": [
+        "お湯はどこまでだ。",
+        "内側の線です。",
+        "急に慎重すぎる。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:naru-sweet-description",
+      "pr": 2258,
+      "id": "naru-sweet-description",
+      "recorded_number": 81,
+      "title": "甘さのたとえ",
+      "record_path": "asset_sources/loading-comics/81-naru-sweet-description/comics.json",
+      "source_sha256": "6af59a3b486651c8cf16a6f36f34eb11a5b2e14b034552ef327d55c8991d5268",
+      "dialogue": [
+        "甘さはどのくらい？",
+        "ケーキで言うとな。",
+        "説明で腹が減る。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:naru-vanilla-break",
+      "pr": 2258,
+      "id": "naru-vanilla-break",
+      "recorded_number": 82,
+      "title": "休憩の香り",
+      "record_path": "asset_sources/loading-comics/82-naru-vanilla-break/comics.json",
+      "source_sha256": "fee6eb166b41c4e77f8a6f76c0f53ac8243e7e4fbe81af30733d1795ba707da5",
+      "dialogue": [
+        "休憩はコーヒー？",
+        "今日は紅茶だ。",
+        "バニラは譲らない。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:naru-recipe-notes",
+      "pr": 2258,
+      "id": "naru-recipe-notes",
+      "recorded_number": 83,
+      "title": "レシピの余白",
+      "record_path": "asset_sources/loading-comics/83-naru-recipe-notes/comics.json",
+      "source_sha256": "533a969f09373da740ce3d696196dd62fbaf815d05458faf91b30fb7526a4cd0",
+      "dialogue": [
+        "メモ、見てもいい？",
+        "全部見てけ。",
+        "余白までお菓子。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:naru-biscuit-measure",
+      "pr": 2258,
+      "id": "naru-biscuit-measure",
+      "recorded_number": 84,
+      "title": "厚みのこだわり",
+      "record_path": "asset_sources/loading-comics/84-naru-biscuit-measure/comics.json",
+      "source_sha256": "e38e19b938eea035dd3991d5a5e57d1bbf69efe76503868b77e3ae877d593b9f",
+      "dialogue": [
+        "どれも同じです？",
+        "厚みが違う。",
+        "一口で消えます。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:naru-cake-compass",
+      "pr": 2258,
+      "id": "naru-cake-compass",
+      "recorded_number": 85,
+      "title": "帰り道の寄り道",
+      "record_path": "asset_sources/loading-comics/85-naru-cake-compass/comics.json",
+      "source_sha256": "a2ea6d0466b1b8209916d68c85dfe969fbabb633f61ca1a4c302387cb641e1b1",
+      "dialogue": [
+        "駅はどっちです？",
+        "こっちだ。",
+        "ケーキ屋に着いた。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:naru-freezer-space",
+      "pr": 2258,
+      "id": "naru-freezer-space",
+      "recorded_number": 86,
+      "title": "冷凍庫の陣地",
+      "record_path": "asset_sources/loading-comics/86-naru-freezer-space/comics.json",
+      "source_sha256": "799b6cc6424fd9ddddc803c6b16b70c6741acd91cc2bb85e10a5fbed00e6cccb",
+      "dialogue": [
+        "氷、入ります？",
+        "少し空けた。",
+        "アイスが引っ越した。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:naru-spoon-choice",
+      "pr": 2258,
+      "id": "naru-spoon-choice",
+      "recorded_number": 87,
+      "title": "スプーン選び",
+      "record_path": "asset_sources/loading-comics/87-naru-spoon-choice/comics.json",
+      "source_sha256": "e8486135f5e238ea8716617a54b509670d986b9ca9b8322c786860ca73f4ed73",
+      "dialogue": [
+        "どっちを使う？",
+        "小さい方で。",
+        "慎重に食べたい。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:naru-flavor-dream",
+      "pr": 2258,
+      "id": "naru-flavor-dream",
+      "recorded_number": 88,
+      "title": "夢まで試作",
+      "record_path": "asset_sources/loading-comics/88-naru-flavor-dream/comics.json",
+      "source_sha256": "351a303b9bf9803f281e20d588e2052e60008482484e326ed81175276e88c145",
+      "dialogue": [
+        "昨夜は眠れた？",
+        "いい夢だった。",
+        "夢でも味見か。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:naru-tiny-sample",
+      "pr": 2258,
+      "id": "naru-tiny-sample",
+      "recorded_number": 89,
+      "title": "小さな一口",
+      "record_path": "asset_sources/loading-comics/89-naru-tiny-sample/comics.json",
+      "source_sha256": "c260a1db2c21f3b488a9c976624e74706c8b59709ffdaeaa2f3e081ec93f98f2",
+      "dialogue": [
+        "ひと口、ください。",
+        "小さく切った。",
+        "皿だけ大きい。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    },
+    {
+      "stable_key": "PR2258:naru-last-cookie",
+      "pr": 2258,
+      "id": "naru-last-cookie",
+      "recorded_number": 90,
+      "title": "最後の一枚",
+      "record_path": "asset_sources/loading-comics/90-naru-last-cookie/comics.json",
+      "source_sha256": "eeb3c575a7e929daff25855d8f66ee4b3810a68583a5ce4dfdcecc5d175a27d4",
+      "dialogue": [
+        "最後、半分ずつ？",
+        "そうしよう。",
+        "厳密すぎる。"
+      ],
+      "same_number_other": null,
+      "selection": "undecided"
+    }
+  ],
+  "number_collisions": [
+    {
+      "recorded_number": 61,
+      "pr2246_key": "PR2246:leave-it-to-you",
+      "pr2246_title": "おまかせの罠",
+      "pr2246_path": "asset_sources/loading-comics/61-leave-it-to-you/comics.json",
+      "pr2258_key": "PR2258:sumi-jacket-souvenir",
+      "pr2258_title": "香りのお土産",
+      "pr2258_path": "asset_sources/loading-comics/61-sumi-jacket-souvenir/comics.json",
+      "result": "different_works",
+      "same_full_dialogue": false,
+      "same_source_sha256": false,
+      "same_delivery_sha256": false
+    },
+    {
+      "recorded_number": 62,
+      "pr2246_key": "PR2246:all-favorites",
+      "pr2246_title": "感想の落とし穴",
+      "pr2246_path": "asset_sources/loading-comics/62-all-favorites/comics.json",
+      "pr2258_key": "PR2258:sumi-cold-tea",
+      "pr2258_title": "冷めた紅茶",
+      "pr2258_path": "asset_sources/loading-comics/62-sumi-cold-tea/comics.json",
+      "result": "different_works",
+      "same_full_dialogue": false,
+      "same_source_sha256": false,
+      "same_delivery_sha256": false
+    },
+    {
+      "recorded_number": 63,
+      "pr2246_key": "PR2246:short-visit",
+      "pr2246_title": "少しだけの幅",
+      "pr2246_path": "asset_sources/loading-comics/63-short-visit/comics.json",
+      "pr2258_key": "PR2258:sumi-seat-choice",
+      "pr2258_title": "席選びの旅",
+      "pr2258_path": "asset_sources/loading-comics/63-sumi-seat-choice/comics.json",
+      "result": "different_works",
+      "same_full_dialogue": false,
+      "same_source_sha256": false,
+      "same_delivery_sha256": false
+    },
+    {
+      "recorded_number": 64,
+      "pr2246_key": "PR2246:apple-study",
+      "pr2246_title": "他店の勉強",
+      "pr2246_path": "asset_sources/loading-comics/64-apple-study/comics.json",
+      "pr2258_key": "PR2258:sumi-tasting-sketch",
+      "pr2258_title": "感想は一言",
+      "pr2258_path": "asset_sources/loading-comics/64-sumi-tasting-sketch/comics.json",
+      "result": "different_works",
+      "same_full_dialogue": false,
+      "same_source_sha256": false,
+      "same_delivery_sha256": false
+    },
+    {
+      "recorded_number": 65,
+      "pr2246_key": "PR2246:apple-season",
+      "pr2246_title": "一年中の旬",
+      "pr2246_path": "asset_sources/loading-comics/65-apple-season/comics.json",
+      "pr2258_key": "PR2258:sumi-memory-kitchen",
+      "pr2258_title": "香りの帰省",
+      "pr2258_path": "asset_sources/loading-comics/65-sumi-memory-kitchen/comics.json",
+      "result": "different_works",
+      "same_full_dialogue": false,
+      "same_source_sha256": false,
+      "same_delivery_sha256": false
+    },
+    {
+      "recorded_number": 66,
+      "pr2246_key": "PR2246:apple-break",
+      "pr2246_title": "休憩も一筋",
+      "pr2246_path": "asset_sources/loading-comics/66-apple-break/comics.json",
+      "pr2258_key": "PR2258:sumi-slow-clock",
+      "pr2258_title": "時計の一分",
+      "pr2258_path": "asset_sources/loading-comics/66-sumi-slow-clock/comics.json",
+      "result": "different_works",
+      "same_full_dialogue": false,
+      "same_source_sha256": false,
+      "same_delivery_sha256": false
+    },
+    {
+      "recorded_number": 67,
+      "pr2246_key": "PR2246:sweet-name",
+      "pr2246_title": "名前で休憩",
+      "pr2246_path": "asset_sources/loading-comics/67-sweet-name/comics.json",
+      "pr2258_key": "PR2258:sumi-clean-counter",
+      "pr2258_title": "磨きすぎ注意",
+      "pr2258_path": "asset_sources/loading-comics/67-sumi-clean-counter/comics.json",
+      "result": "different_works",
+      "same_full_dialogue": false,
+      "same_source_sha256": false,
+      "same_delivery_sha256": false
+    },
+    {
+      "recorded_number": 68,
+      "pr2246_key": "PR2246:not-sweet",
+      "pr2246_title": "甘くない注文",
+      "pr2246_path": "asset_sources/loading-comics/68-not-sweet/comics.json",
+      "pr2258_key": "PR2258:sumi-order-practice",
+      "pr2258_title": "注文の練習",
+      "pr2258_path": "asset_sources/loading-comics/68-sumi-order-practice/comics.json",
+      "result": "different_works",
+      "same_full_dialogue": false,
+      "same_source_sha256": false,
+      "same_delivery_sha256": false
+    },
+    {
+      "recorded_number": 69,
+      "pr2246_key": "PR2246:cake-lunch",
+      "pr2246_title": "研究の昼ご飯",
+      "pr2246_path": "asset_sources/loading-comics/69-cake-lunch/comics.json",
+      "pr2258_key": "PR2258:sumi-two-umbrellas",
+      "pr2258_title": "雨の忘れ物",
+      "pr2258_path": "asset_sources/loading-comics/69-sumi-two-umbrellas/comics.json",
+      "result": "different_works",
+      "same_full_dialogue": false,
+      "same_source_sha256": false,
+      "same_delivery_sha256": false
+    },
+    {
+      "recorded_number": 70,
+      "pr2246_key": "PR2246:mint-ranking",
+      "pr2246_title": "人気の一位",
+      "pr2246_path": "asset_sources/loading-comics/70-mint-ranking/comics.json",
+      "pr2258_key": "PR2258:sumi-coin-hunt",
+      "pr2258_title": "釣り銭探し",
+      "pr2258_path": "asset_sources/loading-comics/70-sumi-coin-hunt/comics.json",
+      "result": "different_works",
+      "same_full_dialogue": false,
+      "same_source_sha256": false,
+      "same_delivery_sha256": false
+    },
+    {
+      "recorded_number": 71,
+      "pr2246_key": "PR2246:mint-service",
+      "pr2246_title": "甘さの接客",
+      "pr2246_path": "asset_sources/loading-comics/71-mint-service/comics.json",
+      "pr2258_key": "PR2258:adam-holiday-choice",
+      "pr2258_title": "休日の二択",
+      "pr2258_path": "asset_sources/loading-comics/71-adam-holiday-choice/comics.json",
+      "result": "different_works",
+      "same_full_dialogue": false,
+      "same_source_sha256": false,
+      "same_delivery_sha256": false
+    },
+    {
+      "recorded_number": 72,
+      "pr2246_key": "PR2246:mint-photo",
+      "pr2246_title": "写真の主役",
+      "pr2246_path": "asset_sources/loading-comics/72-mint-photo/comics.json",
+      "pr2258_key": "PR2258:adam-lunch-dessert",
+      "pr2258_title": "昼飯の余白",
+      "pr2258_path": "asset_sources/loading-comics/72-adam-lunch-dessert/comics.json",
+      "result": "different_works",
+      "same_full_dialogue": false,
+      "same_source_sha256": false,
+      "same_delivery_sha256": false
+    }
+  ],
+  "exact_title_matches": [
+    {
+      "title": "写真の主役",
+      "works": [
+        "PR2246:mint-photo",
+        "PR2258:adam-photo-album"
+      ],
+      "result": "same_title_different_works"
+    }
+  ],
+  "exact_full_dialogue_matches": [],
+  "cross_pr_identical_source_hashes": [],
+  "content_comparison_proposals": [
+    {
+      "level": "high",
+      "works": [
+        "PR2258:sumi-jacket-souvenir",
+        "PR2246:scent-overtime"
+      ],
+      "shared_premise": "閉店後、服に残る香りを嗅ぎ、果物の想像アイコンで示す。",
+      "difference": "残業／営業中の比喩と、持ち帰る土産の比喩。絵と台詞は別だが状況・視覚的オチがかなり近い。",
+      "classification": "comparison_proposal_only"
+    },
+    {
+      "level": "high",
+      "works": [
+        "PR2258:sumi-memory-kitchen",
+        "PR2246:flavor-address"
+      ],
+      "shared_premise": "味・香りから実家を連想し、小さい想像吹き出しで家や食卓を描く。",
+      "difference": "住所へのツッコミと、カレーの食卓へ帰省した気持ちのオチ。",
+      "classification": "comparison_proposal_only"
+    },
+    {
+      "level": "high",
+      "works": [
+        "PR2258:adam-photo-album",
+        "PR2246:apple-study"
+      ],
+      "shared_premise": "アダムの帳面を開くとリンゴの絵・写真ばかり。",
+      "difference": "他店研究のスクラップ帳と旅行の写真アルバム。視覚的な種明かしが近い。",
+      "classification": "comparison_proposal_only"
+    },
+    {
+      "level": "medium",
+      "works": [
+        "PR2258:sumi-slow-clock",
+        "PR2246:steeping-clock"
+      ],
+      "shared_premise": "はじめが残り一分の待ち時間に時計を凝視。",
+      "difference": "時計を三つに増やす／砂粒を虫眼鏡で見る。",
+      "classification": "comparison_proposal_only"
+    },
+    {
+      "level": "medium",
+      "works": [
+        "PR2258:naru-sweet-description",
+        "PR2246:sweet-unit",
+        "PR2246:sweet-name"
+      ],
+      "shared_premise": "菓子系の味をケーキで説明し、相手の食欲や休憩欲を誘う。",
+      "difference": "甘さの単位、味名、説明で空腹になるという異なるオチ。",
+      "classification": "comparison_proposal_only"
+    },
+    {
+      "level": "medium",
+      "works": [
+        "PR2258:sumi-tasting-sketch",
+        "PR2258:naru-recipe-notes",
+        "PR2246:all-favorites"
+      ],
+      "shared_premise": "味の記録ノートが果物・ケーキの絵でいっぱいになる。",
+      "difference": "一言が絵日記、なるの余白のお菓子、全て好きで星が同じという異なるオチ。",
+      "classification": "comparison_proposal_only"
+    },
+    {
+      "level": "medium",
+      "works": [
+        "PR2258:naru-vanilla-break",
+        "PR2246:apple-break"
+      ],
+      "shared_premise": "休憩中も普段の推し味を選ぶ。",
+      "difference": "アダムのリンゴジュース／なるの紅茶とバニラアイス。",
+      "classification": "comparison_proposal_only"
+    },
+    {
+      "level": "medium",
+      "works": [
+        "PR2258:naru-biscuit-measure",
+        "PR2258:naru-last-cookie"
+      ],
+      "shared_premise": "なるがクッキーを測るほど厳密に扱い、はじめが短く反応。",
+      "difference": "厚みをノギスで比較している間に食べる／半分の重さを天秤でそろえる。自分の30候補内の近似。",
+      "classification": "comparison_proposal_only"
+    },
+    {
+      "level": "theme",
+      "works": [
+        "PR2258:adam-holiday-choice",
+        "PR2258:adam-lunch-dessert",
+        "PR2258:adam-shopping-bag",
+        "PR2258:adam-weather-forecast",
+        "PR2258:adam-key-ring",
+        "PR2258:adam-gift-wrap",
+        "PR2246:apple-interview",
+        "PR2246:apple-light",
+        "PR2246:apple-ratio",
+        "PR2246:apple-judge",
+        "PR2246:apple-season"
+      ],
+      "shared_premise": "アダムの選択・生活が赤緑リンゴへ偏る共通キャラネタ。",
+      "difference": "休日、昼飯、買い物、天気、鍵、贈り物など具体的な導入・オチは異なる。同じ設定だけを完全重複と扱わない。",
+      "classification": "comparison_proposal_only"
+    },
+    {
+      "level": "theme",
+      "works": [
+        "PR2258:naru-spoon-choice",
+        "PR2258:naru-tiny-sample",
+        "PR2258:naru-flavor-dream",
+        "PR2246:dessert-stomach",
+        "PR2246:cake-lunch"
+      ],
+      "shared_premise": "なるのお菓子・一口・別腹・味見という共通題材。",
+      "difference": "小スプーンで長く楽しむ／極小ケーキと大皿／夢のアイス／昼飯／喫煙の注文と実ケーキの取り違え。",
+      "classification": "comparison_proposal_only"
+    }
+  ],
+  "legacy_record_comparisons": [
+    {
+      "own": "PR2258:adam-cup-noodles",
+      "other_path": "asset_sources/short-comics-20261024/comics.json#source_sheets:07",
+      "other_title": "専門外",
+      "level": "high",
+      "shared": "アダムの仕事上の精密さと、カップ麺の初歩が分からない私生活の落差。",
+      "difference": "何分か分からない／お湯の線を教わり定規と水平器まで使う。"
+    },
+    {
+      "own": "PR2258:adam-cup-noodles",
+      "other_path": "asset_sources/short-comics-unhinged-ltr-20261025/comics.json#pages:27",
+      "other_title": "専門外・再び",
+      "level": "medium",
+      "shared": "計測に強いアダムが家庭の調理器具で困る。",
+      "difference": "炊飯器の操作／カップ麺のお湯の線。"
+    },
+    {
+      "own": "PR2258:sumi-tasting-sketch",
+      "other_path": "asset_sources/loading-comics/45-sumi-recipe-scroll/comics.json",
+      "other_title": "一行の秘訣",
+      "level": "medium",
+      "shared": "スミさんの一言・一行の指示に対し、はじめのメモの形が予想外になる。",
+      "difference": "長い巻物／絵日記。"
+    },
+    {
+      "own": "PR2258:naru-recipe-notes",
+      "other_path": "asset_sources/short-comics-20261024/comics.json#source_sheets:11",
+      "other_title": "全部見てけ",
+      "level": "medium",
+      "shared": "なるが研究ノートを惜しまず見せる。「全部見てけ」の言葉も共通。",
+      "difference": "ノートが足りないほど教える／余白もお菓子の絵。"
+    },
+    {
+      "own": "PR2258:sumi-memory-kitchen",
+      "other_path": "asset_sources/short-comics-unhinged-ltr-20261025/comics.json#pages:38",
+      "other_title": "月曜の香り",
+      "level": "theme",
+      "shared": "香りを場所・記憶の想像図で表す。",
+      "difference": "凛想の香りで月曜のオフィス／スミさんとの会話で実家のカレー。"
+    }
+  ],
+  "limitations": [
+    "テキストと保存ハッシュの照合であり、新たな画像目視比較ではない。",
+    "全1〜72話の網羅的な重複検査ではない。第42話は今回未照合。",
+    "PR2258のPC横・スマホ横の実画面QAはSUID helper設定エラーで未完。新規ブラウザ起動・設定変更なし。"
+  ],
+  "selection_status": "全候補未選別。採用・削除・再番号・ゲーム登録・mergeなし。"
+}

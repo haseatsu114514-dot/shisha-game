@@ -1,0 +1,462 @@
+{
+  "latest_main_reference": {
+    "main_sha": "7b2088aa18ab96531ee0750e6edc5d4057939b5b",
+    "files": [
+      {
+        "path": "docs/prompts/ai_naturalness_guide.md",
+        "blob_sha": "0dad5ea3b5888f9bd21ef6a4bbbefa31df441bb0",
+        "bytes": 8615,
+        "sha256": "d4b3cb37212d175dce281dc6756efced31147e27a6b4fc661c939901751a535a"
+      },
+      {
+        "path": "docs/asset_ai_guidance.md",
+        "blob_sha": "c4530dcb3c25a1a6ec15a6e3e3d4c182729fbf18",
+        "bytes": 15682,
+        "sha256": "4f59025c80b635fb0e603fb3695d2df36ed19c057d6cff27e24febb3135fd918"
+      },
+      {
+        "path": "docs/portrait_standard.md",
+        "blob_sha": "f35ce4c053e5c9c1a877c05178effe587e4a704d",
+        "bytes": 16242,
+        "sha256": "57c05b11cb43cc26eb48cad9524b3c5acc55a821124c3064fdba792840ee891b"
+      },
+      {
+        "path": "AGENTS.md",
+        "blob_sha": "a1a0f45f94745cb6bca4c5571231fbef99efc543",
+        "bytes": 15436,
+        "sha256": "7b1ff44fa27c6e0b0472d00268b82cb12c8a3339ca13acf2a03e9097edc56886"
+      }
+    ],
+    "issue": {
+      "number": 2470,
+      "state": "open",
+      "title": "[リサーチ] AIっぽさを出さない画像生成のやり方（2026-11-03）"
+    }
+  },
+  "formal_reference_paths": [
+    {
+      "path": "/workspace/shisha-game/assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+      "sha256": "9c6915ec1d5cf21c400065b4c76262f1c5f538df68681409b36a22f753bccf46"
+    },
+    {
+      "path": "/workspace/shisha-game/assets/sprites/characters/minto/chr_minto_normal.png",
+      "sha256": "7a778a53e35050f7daf38d08a16ec3ff9cbf0b506324a01aa6770c47ec6c8d71"
+    },
+    {
+      "path": "/workspace/shisha-game/assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe"
+    },
+    {
+      "path": "/workspace/shisha-game/assets/sprites/characters/rin/chr_rin_normal.png",
+      "sha256": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09"
+    }
+  ],
+  "normal_prompt": "Create a new refined NORMAL sprite of adult Tsumugi, carefully based on reference1 APPROVED E1. ROLE1 reference1: sole character identity, face/eyes/brown bob, body roundness, exact simplified floral muted purple hoodie, black pleated skirt/knee socks/chunky shoes, crossed arms holding tablet, colors and pose, no earrings. Preserve E1 recognizable restrained slightly melancholic normal face and soft unobtrusive brows hidden under bangs. Tablet back has SAME tiny camera upper-right and ONE modest medium-contrast warm-grey diagonal scratch upper-left; no extra scuffs/stickers/logos. ROLE2 reference2 Mashiro is ONLY petite head-body proportion target; DO NOT copy her face, hair, body shape, dress or palette. ROLE3 reference3 Minto and ROLE4 reference4 Ageha are ONLY linework and cel-shadow treatment; DO NOT copy their costumes, accessories, face, pose, hair or colors. Preserve original E1 pose, no forced asymmetry or added wear, no neck change or skinny body. Tsumugi is petite: target around 5.5 to 5.8 heads within5.4–6.2, maintain rounded compact body and recognizable face. Height optionB is a LATER runtime display scale0.90, do NOT stretch legs or move feet to simulate it in artwork. Full body with head/feet fully inside 1024x1536 portrait canvas, figure at least1300px high, genuinely TRANSPARENT alpha-zero background; no background haze or shadows on background. STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand as the approved Minto, Ageha and Rio sprites. Japanese 2D visual-novel game art; confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two to three clearly shaped cel-shadow steps; highlights only as a few deliberate bands on the hair and small catchlights in the eyes. No skin gloss, no airbrush gradients, no rim light or glow, no photographic texture, no pore or fabric micro-detail, no dense ornamental noise, no hundreds of thin hair strands. Limited palette: hair and skin plus three or four main colors. Keep this character's own eye, brow, nose and mouth shapes and natural age and gender differences; do not drift toward a generic AI pretty face.\nHEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoods or ornaments) to the chin must be about one seventh of the full height from the top of the hair to the shoe soles (about 7 heads tall). For the petite cast (Tsumugi, Mashiro, Ageha, Same-chan) it is about 5.8 heads tall instead.\n\n",
+  "expression_common_prompt": "REFERENCE ROLES: 1=new E1-based NORMAL (sole identity, compact petite body, no earrings, face shape, brown bob/russet eyes, purple simplified-flower hoodie, crossed arms hugging dark tablet, clothing and colors). 2=current OFFICIAL same-expression Tsumugi (emotion interpretation ONLY; do NOT inherit its piercings, dense embroidery, old texture or different hand/prop positions). 3=Mashiro (petite proportion ONLY, do not copy appearance). 4=Minto and5=Ageha (linework and two-three cel-shadow shapes ONLY, do not copy identity/costume/accessories). Roles2–5 must NOT change reference1 identity. Keep reference1 exact full-body coordinates, head scale, feet, clothes, both hands and camera/one diagonal scratch on tablet, no stickers or extra wear. Head-body ratio in PETITE5.4–6.2 range. Only face/lids/mouth and a tiny permitted neck tilt change. Eyebrows thin soft brown mostly UNDER fringe, never heavy black strokes over hair. No added jewelry, studs or white-dot earrings. Genuine alpha-zero empty transparent background; 1024x1536 full figure, no haze. Same E1 visual language with official style rules: \nSTYLE STANDARD (shisha-game cast): draw this character in the same artist's hand as the approved Minto, Ageha and Rio sprites. Japanese 2D visual-novel game art; confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two to three clearly shaped cel-shadow steps; highlights only as a few deliberate bands on the hair and small catchlights in the eyes. No skin gloss, no airbrush gradients, no rim light or glow, no photographic texture, no pore or fabric micro-detail, no dense ornamental noise, no hundreds of thin hair strands. Limited palette: hair and skin plus three or four main colors. Keep this character's own eye, brow, nose and mouth shapes and natural age and gender differences; do not drift toward a generic AI pretty face.\nHEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoods or ornaments) to the chin must be about one seventh of the full height from the top of the hair to the shoe soles (about 7 heads tall). For the petite cast (Tsumugi, Mashiro, Ageha, Same-chan) it is about 5.8 heads tall instead.\n\n",
+  "reference_roles": {
+    "normal": [
+      "selected E1 identity",
+      "Mashiro petite proportions only",
+      "Minto style only",
+      "Ageha style only"
+    ],
+    "expression": [
+      "new E1 normal identity",
+      "current official same-face emotion only",
+      "Mashiro proportions",
+      "Minto style",
+      "Ageha style"
+    ]
+  },
+  "deterministic_finish": "Generated heads blended y360..389 into new normal shared body. Prior approved matte tablet-back interior and medium scratch resampled into new visible backplane (source398,394,577,480 to170x84 at408,403) to avoid a rectangular partial-patch seam; approved camera and medium scratch transferred together as one coherent tablet-back plane and shared across all expressions. Largest alpha>=16 component plus2px edge support removes distant faint alpha residues only. One common downscale/placement applied to all seven.",
+  "normalization": {
+    "scale": 0.587956698240866,
+    "resize": [
+      602,
+      903
+    ],
+    "offset": [
+      141,
+      280
+    ]
+  },
+  "candidate_framing": {
+    "h": 0.7267,
+    "b": 0.0217,
+    "ax": 0.4926,
+    "aspect": 0.7467,
+    "scale": 0.9
+  },
+  "selected_height_B": {
+    "spriteScale": 0.9,
+    "relative_to_old_percent": 2.2727272727272707,
+    "repository_setting_changed": false
+  },
+  "sidecar_normal_landmarks_source": {
+    "crown": [
+      510,
+      44
+    ],
+    "chin": [
+      506,
+      317
+    ],
+    "eyes": [
+      [
+        453,
+        246
+      ],
+      [
+        543,
+        227
+      ]
+    ],
+    "cheeks": [
+      423,
+      570,
+      264
+    ],
+    "foot_y": 1520
+  },
+  "approx_head_body_ratio": 5.406593406593407,
+  "measurement_status": "Approximate manual inspection only; near lower boundary, not formal canonical metrics registration.",
+  "qa": {
+    "pass": [
+      "Originals generated one person/one expression; source figure height >1300px.",
+      "Final candidates896x1200RGBA; same common transform and foot baseline, LANCZOS only, no post color/saturation grading.",
+      "E1 brown bob/russet eyes/adult identity, purple simplified floral hoodie, dark skirt/socks/shoes retained; no piercings seen.",
+      "Shared hands/body/tablet exact across source final set; approved medium scratch and camera appearance carried from prior candidate with alignment to new tablet.",
+      "Two-three deliberate cloth shadow planes; no dense microtexture, unnecessary props, pseudo-text, skin gloss, rim glow or forced asymmetry.",
+      "Evil soft gradient revised to shaped flat shadow; smile made near-neutral and restrained.",
+      "Actual formal style/proportion reference bytes viewed and supplied with explicit roles, actual official expression supplied too.",
+      "Candidate-size neutral stage views reviewed at scale.90 using measured candidate framing; no copied old framing."
+    ],
+    "warn": [
+      "Normal manually estimated about5.41 heads, lower boundary of petite5.4–6.2; landmark uncertainty of a few pixels means formal head-body PASS is not certified. No canonical metrics written.",
+      "E1-to-v4 head proportion and line simplification have changed slightly; candidate selection required, not automatic replacement.",
+      "Bow head dip retained but arms/tablet remain chest-high pending owner decision.",
+      "A strict four-image count conflicts with needing both approved new normal and official emotion plus three formal references: normal used4images, expressions used5images across four roles, explicitly logged.",
+      "Full actual-game side-by-side QA cannot pass: local dialogue.webp/lavender.webp still undecodable LFS pointers; no downloads/bypass attempted.",
+      "No face icon/WebP/manifest/game asset registration, no repository changes or publication."
+    ]
+  },
+  "art_adoption_status": "User selection pending; no adoption or registration. Bow pose provisional.",
+  "records": [
+    {
+      "face": "normal",
+      "label": "通常",
+      "raw_generated_image": "9d3a630c-39bf-4f64-bb3d-9be602a436d9",
+      "source_path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/raw/tsumugi-E1-v4-normal-source.png",
+      "normalized_path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/deliverables/tsumugi-E1-v4-normal.png",
+      "source_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        896,
+        1200
+      ],
+      "source_alpha16_bbox": [
+        302,
+        42,
+        722,
+        1520
+      ],
+      "normalized_alpha16_bbox": [
+        318,
+        304,
+        566,
+        1174
+      ],
+      "sha256": "a3e91848b0bc501eb483d713fe68059717d5f676b45648c49a23cf5086e91fbd",
+      "source_body_RGBA_sha256": "5532fc19c2a80f4d182bd5f6a290f8d735f7bac858a24d7de8de5f4fb58185e0",
+      "source_tablet_RGBA_sha256": "0d14010a143e4a14a7d86b64c29531b4175f3d828b7faa5bf53105554d33a4f4",
+      "normalized_feet_y": 1174
+    },
+    {
+      "face": "smile",
+      "label": "微かな笑顔",
+      "raw_generated_image": "6802410a-8641-4769-bfa4-85d6e6375e08",
+      "source_path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/raw/tsumugi-E1-v4-smile-source.png",
+      "normalized_path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/deliverables/tsumugi-E1-v4-smile.png",
+      "source_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        896,
+        1200
+      ],
+      "source_alpha16_bbox": [
+        302,
+        40,
+        722,
+        1520
+      ],
+      "normalized_alpha16_bbox": [
+        318,
+        303,
+        566,
+        1174
+      ],
+      "sha256": "e8cfe0b831ca74ca597fee47333744eb4a9dd18c5fae90883bef0673ae4d6256",
+      "source_body_RGBA_sha256": "5532fc19c2a80f4d182bd5f6a290f8d735f7bac858a24d7de8de5f4fb58185e0",
+      "source_tablet_RGBA_sha256": "0d14010a143e4a14a7d86b64c29531b4175f3d828b7faa5bf53105554d33a4f4",
+      "normalized_feet_y": 1174
+    },
+    {
+      "face": "serious",
+      "label": "静かな集中",
+      "raw_generated_image": "896dc413-a44e-405f-904f-6a20b25d48a3",
+      "source_path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/raw/tsumugi-E1-v4-serious-source.png",
+      "normalized_path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/deliverables/tsumugi-E1-v4-serious.png",
+      "source_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        896,
+        1200
+      ],
+      "source_alpha16_bbox": [
+        302,
+        39,
+        722,
+        1520
+      ],
+      "normalized_alpha16_bbox": [
+        318,
+        303,
+        566,
+        1174
+      ],
+      "sha256": "502d88433a4f140a1c447254067cfabc90ae784dc1fd94e58917ada3cc98af0d",
+      "source_body_RGBA_sha256": "5532fc19c2a80f4d182bd5f6a290f8d735f7bac858a24d7de8de5f4fb58185e0",
+      "source_tablet_RGBA_sha256": "0d14010a143e4a14a7d86b64c29531b4175f3d828b7faa5bf53105554d33a4f4",
+      "normalized_feet_y": 1174
+    },
+    {
+      "face": "sad",
+      "label": "弱い悲しさ",
+      "raw_generated_image": "062d9a67-72af-40cc-bd7e-88f4b2ab64b4",
+      "source_path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/raw/tsumugi-E1-v4-sad-source.png",
+      "normalized_path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/deliverables/tsumugi-E1-v4-sad.png",
+      "source_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        896,
+        1200
+      ],
+      "source_alpha16_bbox": [
+        302,
+        42,
+        722,
+        1520
+      ],
+      "normalized_alpha16_bbox": [
+        318,
+        305,
+        566,
+        1174
+      ],
+      "sha256": "0dc98d1934a592e2757ec6511188702b2b4bb531543915b1d3309d3ecc46790f",
+      "source_body_RGBA_sha256": "5532fc19c2a80f4d182bd5f6a290f8d735f7bac858a24d7de8de5f4fb58185e0",
+      "source_tablet_RGBA_sha256": "0d14010a143e4a14a7d86b64c29531b4175f3d828b7faa5bf53105554d33a4f4",
+      "normalized_feet_y": 1174
+    },
+    {
+      "face": "surprise",
+      "label": "小さな驚き",
+      "raw_generated_image": "8f6c01cc-22e7-4b79-a59f-67777577d808",
+      "source_path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/raw/tsumugi-E1-v4-surprise-source.png",
+      "normalized_path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/deliverables/tsumugi-E1-v4-surprise.png",
+      "source_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        896,
+        1200
+      ],
+      "source_alpha16_bbox": [
+        302,
+        42,
+        722,
+        1520
+      ],
+      "normalized_alpha16_bbox": [
+        318,
+        305,
+        566,
+        1174
+      ],
+      "sha256": "34d27fe549710e2080e206e277542ce7ea7d5038bcb46b0239016538cfffa02f",
+      "source_body_RGBA_sha256": "5532fc19c2a80f4d182bd5f6a290f8d735f7bac858a24d7de8de5f4fb58185e0",
+      "source_tablet_RGBA_sha256": "0d14010a143e4a14a7d86b64c29531b4175f3d828b7faa5bf53105554d33a4f4",
+      "normalized_feet_y": 1174
+    },
+    {
+      "face": "evil",
+      "label": "目元の影",
+      "raw_generated_image": "8e03ef8d-7564-41d8-be42-77ad03234061",
+      "source_path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/raw/tsumugi-E1-v4-evil-source.png",
+      "normalized_path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/deliverables/tsumugi-E1-v4-evil.png",
+      "source_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        896,
+        1200
+      ],
+      "source_alpha16_bbox": [
+        302,
+        37,
+        722,
+        1520
+      ],
+      "normalized_alpha16_bbox": [
+        318,
+        302,
+        566,
+        1174
+      ],
+      "sha256": "fd3fe6df5b0a0e29509ee68b4f6821cfd1fdee8f5ee9ff2d0cd763051c96065c",
+      "source_body_RGBA_sha256": "5532fc19c2a80f4d182bd5f6a290f8d735f7bac858a24d7de8de5f4fb58185e0",
+      "source_tablet_RGBA_sha256": "0d14010a143e4a14a7d86b64c29531b4175f3d828b7faa5bf53105554d33a4f4",
+      "normalized_feet_y": 1174
+    },
+    {
+      "face": "bow",
+      "label": "会釈・腕位置保留",
+      "raw_generated_image": "59694854-d331-456b-976e-3995d75462db",
+      "source_path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/raw/tsumugi-E1-v4-bow-source.png",
+      "normalized_path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/deliverables/tsumugi-E1-v4-bow-provisional.png",
+      "source_size": [
+        1024,
+        1536
+      ],
+      "size": [
+        896,
+        1200
+      ],
+      "source_alpha16_bbox": [
+        302,
+        39,
+        722,
+        1520
+      ],
+      "normalized_alpha16_bbox": [
+        318,
+        303,
+        566,
+        1174
+      ],
+      "sha256": "d81700e2e162acb5ce85b475f3477f954fd056bd866a9235989dff0239fcec35",
+      "source_body_RGBA_sha256": "5532fc19c2a80f4d182bd5f6a290f8d735f7bac858a24d7de8de5f4fb58185e0",
+      "source_tablet_RGBA_sha256": "0d14010a143e4a14a7d86b64c29531b4175f3d828b7faa5bf53105554d33a4f4",
+      "normalized_feet_y": 1174
+    }
+  ],
+  "reference_latest_main_identity_check": [
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_bow.png",
+      "main_blob_sha": "e39a30fc9d9cec411513db6c8be62b82f14a6e78",
+      "local_checkout_blob_sha": "e39a30fc9d9cec411513db6c8be62b82f14a6e78",
+      "matches_latest_pinned_main": true
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_evil.png",
+      "main_blob_sha": "a947d12cc2507fe7d7a3dc454d8d0707a74a941c",
+      "local_checkout_blob_sha": "a947d12cc2507fe7d7a3dc454d8d0707a74a941c",
+      "matches_latest_pinned_main": true
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+      "main_blob_sha": "67fff31bea79471dab2b63f89fcd8ea5c94165e0",
+      "local_checkout_blob_sha": "67fff31bea79471dab2b63f89fcd8ea5c94165e0",
+      "matches_latest_pinned_main": true
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_sad.png",
+      "main_blob_sha": "9e490d929d95aaa0c5da4c4bae0f8b3ae3488815",
+      "local_checkout_blob_sha": "9e490d929d95aaa0c5da4c4bae0f8b3ae3488815",
+      "matches_latest_pinned_main": true
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_serious.png",
+      "main_blob_sha": "b8cf149b67271a358bbb8a5f7745205ffc1c8d05",
+      "local_checkout_blob_sha": "b8cf149b67271a358bbb8a5f7745205ffc1c8d05",
+      "matches_latest_pinned_main": true
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_smile.png",
+      "main_blob_sha": "6f5c9653f621f775b4a9d3f44dfe25cd1e415d4b",
+      "local_checkout_blob_sha": "6f5c9653f621f775b4a9d3f44dfe25cd1e415d4b",
+      "matches_latest_pinned_main": true
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_surprise.png",
+      "main_blob_sha": "e1a2883119932cf34e80d4b92a96ae609822da8b",
+      "local_checkout_blob_sha": "e1a2883119932cf34e80d4b92a96ae609822da8b",
+      "matches_latest_pinned_main": true
+    },
+    {
+      "path": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+      "main_blob_sha": "e4ce6e0e6a36dcb25aa7752100b0c487a3084595",
+      "local_checkout_blob_sha": "e4ce6e0e6a36dcb25aa7752100b0c487a3084595",
+      "matches_latest_pinned_main": true
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "main_blob_sha": "d594d172388b89e981ed6fadab5a931507a618f8",
+      "local_checkout_blob_sha": "d594d172388b89e981ed6fadab5a931507a618f8",
+      "matches_latest_pinned_main": true
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "main_blob_sha": "70c28dec704ad0396116057c8d4cf3816769f098",
+      "local_checkout_blob_sha": "70c28dec704ad0396116057c8d4cf3816769f098",
+      "matches_latest_pinned_main": true
+    }
+  ],
+  "untouched_generated_originals": [
+    {
+      "face": "normal",
+      "path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/raw/generated-normal-untouched.png",
+      "sha256": "8efb408f489297ec161ba08d31ab4997310f60233f524abf62b5e36b0c65e83e"
+    },
+    {
+      "face": "smile",
+      "path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/raw/generated-smile-untouched.png",
+      "sha256": "dfabb4ceb74f5612d606e9509e8d3b07f957ac854654bc4aa90694e7f75380d4"
+    },
+    {
+      "face": "serious",
+      "path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/raw/generated-serious-untouched.png",
+      "sha256": "834cc7ddd7e3c76f41d8a4388f57d4f3125e30acc9c0235b0e59c826f7ce0315"
+    },
+    {
+      "face": "sad",
+      "path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/raw/generated-sad-untouched.png",
+      "sha256": "c6eb55662072a838a20f708f66cab102a5ceb1e3d73ac62ebb7f280a3f156aa2"
+    },
+    {
+      "face": "surprise",
+      "path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/raw/generated-surprise-untouched.png",
+      "sha256": "8d8ad35ee2cc41952b63c706bd7cb9ebdf8aaecc2442315340fe26053238f0ed"
+    },
+    {
+      "face": "evil",
+      "path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/raw/generated-evil-untouched.png",
+      "sha256": "db11fc606780dcedc082d5aa0c3b5a18e5bd35a6ca8af03eef602f74f67da2a3"
+    },
+    {
+      "face": "bow",
+      "path": "/workspace/scratch/tsumugi-E1-guidance-round-v4-20261104/raw/generated-bow-untouched.png",
+      "sha256": "a40694d422ddff5d8a67e4895d8421d9c8e7273b57d554b57d35e3d62b344954"
+    }
+  ]
+}

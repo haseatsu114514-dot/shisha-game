@@ -32,13 +32,13 @@ try {
     const { config } = await import('./js/core/state.js');
     const { createContinueView } = await import('./js/chapters/continue-view.js');
     const { SUMI_CONTINUE_SCRIPTS } = await import('./js/chapters/gameover.js');
-    const { PREMIUM_CONTINUE_SCRIPTS } = await import('./js/chapters/continue-premium.js');
+    const { LOVER_CONTINUE_SCRIPTS } = await import('./js/chapters/continue-lovers.js');
     config.bgmVolume = config.seVolume = 0;
     window.closeupQA = {
       mount(speaker, face) {
         const view = createContinueView({
-          script: speaker === 'sumi' ? SUMI_CONTINUE_SCRIPTS[0] : PREMIUM_CONTINUE_SCRIPTS[speaker],
-          speaker, character: speaker, premium: speaker !== 'sumi',
+          script: speaker === 'sumi' ? SUMI_CONTINUE_SCRIPTS[0] : LOVER_CONTINUE_SCRIPTS[speaker],
+          speaker, character: speaker, lover: speaker !== 'sumi', layout: 'neon',
         });
         document.querySelector('#screen').replaceChildren(view.root);
         this.view = view;
@@ -52,7 +52,8 @@ try {
         const view = this.mount(speaker, face);
         await Promise.all([...view.root.querySelectorAll('img')].map(i => i.decode()));
         await document.fonts.ready;
-        const info = portraitInfo(speaker, face), f = DB.manifest.continuePortraits[info.folder][info.face];
+        const { continueFraming } = await import('./js/chapters/continue-view.js');
+        const info = portraitInfo(speaker, face, view.root.dataset.portraitStyle), f = continueFraming(info);
         const stage = document.querySelector('#stage').getBoundingClientRect(), scale = stage.width / 1280;
         const box = element => {
           const r = element.getBoundingClientRect();
@@ -72,7 +73,8 @@ try {
         view.face(face, false);
         const image = view.root.querySelector('.go-sumi-img');
         await image.decode();
-        const f = DB.manifest.continuePortraits[speaker][face], before = image.style.cssText;
+        const { continueFraming } = await import('./js/chapters/continue-view.js');
+        const f = continueFraming(portraitInfo(speaker, face, view.root.dataset.portraitStyle)), before = image.style.cssText;
         view.setCaption('台詞送りで構図を変えない');
         view.reveal(.2);
         view.reveal();
@@ -87,8 +89,8 @@ try {
       Object.keys(expressions).map(face => ({ speaker, face })));
   });
   const saveBefore = await page.evaluate(() => JSON.stringify({ ...localStorage }));
-  assert.equal(new Set(faces.map(f => f.speaker)).size, 7);
-  assert.equal(faces.length, 44);
+  assert.equal(new Set(faces.map(f => f.speaker)).size, 8);
+  assert.equal(faces.length, 57);
   for (const viewport of [
     { width: 1280, height: 720 }, { width: 1920, height: 1080 },
     { width: 844, height: 390 }, { width: 667, height: 375 },
@@ -122,7 +124,7 @@ try {
   assert.deepEqual(errors, []);
   assert.deepEqual(failed, []);
   fs.writeFileSync(path.join(out, 'metrics.json'), JSON.stringify({
-    faces: 44, speakers: 7, viewportCases: records.length, switches: 88, errors, failed, saveUnchanged: true, records,
+    faces: 57, speakers: 8, viewportCases: records.length, switches: 114, errors, failed, saveUnchanged: true, records,
   }, null, 2));
-  console.log('PASS: C 524.8px centered at (640,273); 44 expressions × 4 sizes, 88 switches, caption stability, errors/missing=0, save unchanged');
+  console.log('PASS: C 524.8px centered at (640,273); 57 expressions × 4 sizes, 114 switches, caption stability, errors/missing=0, save unchanged');
 } finally { await browser.close(); }

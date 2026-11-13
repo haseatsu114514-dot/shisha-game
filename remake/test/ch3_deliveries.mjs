@@ -14,10 +14,10 @@ await check('normal completion commits three identities and no voluntary/economy
  const before=JSON.parse(JSON.stringify(value));
  assert.equal(await run(value,{read:async s=>{called.push(s.id);return true;},save:()=>saved.push(JSON.stringify(value)),isCurrent:()=>true}),true);
  assert.deepEqual(called,Array.from(steps,s=>s.id));assert.equal(saved.length,6);
- for(const id of ['kuze','steve','volk']){assert.equal(value.met[id],true);assert.equal(value.flags['_met_'+id],true);assert.equal(value.flags['_ch3_delivery_'+id],true);}
+ for(const id of ['saku','steve','volk']){assert.equal(value.met[id],true);assert.equal(value.flags['_met_'+id],true);assert.equal(value.flags['_ch3_delivery_'+id],true);}
  for(const key of ['day','slot','phase','money','stamina','affinity','visits','story'])assert.deepEqual(value[key],before[key]);
  assert.deepEqual(value.flags._ch3_intro,before.flags._ch3_intro);
- assert(!value.flags._ch3_kuze_first);assert(!value.flags._ch3_rules_read);
+ assert(!value.flags._ch3_saku_first);assert(!value.flags._ch3_rules_read);
  assert.equal(await run(value,{read:async()=>{throw Error('Completed delivery cannot replay');},save:()=>{throw Error('Cannot save twice');},isCurrent:()=>true}),true);
 });
 for(const failure of ['cancel','missing','throw','abort','owner','day'])await check(`${failure} cannot complete current introduction; completed earlier stops retained`,async()=>{
@@ -34,17 +34,17 @@ for(const failure of ['cancel','missing','throw','abort','owner','day'])await ch
  if(failure==='throw')await assert.rejects(task,/controlled read failure/);else assert.equal(await task,false);
  assert.equal(value.met.steve,undefined);assert.equal(value.flags._met_steve,undefined);assert.equal(value.flags._intro_steve,undefined);
  assert.equal(value.flags._ch3_delivery_steve,undefined);assert.equal(value.flags._ch3_delivery_return,undefined);
- assert(value.flags._ch3_delivery_kuze);assert.equal(saves,3);assert.equal(value.money,9000);
+ assert(value.flags._ch3_delivery_saku);assert.equal(saves,3);assert.equal(value.money,9000);
  if(failure!=='owner'&&failure!=='day'){
   assert.equal(await run(value,{read:async()=>true,save:()=>saves++,isCurrent:()=>true}),true);
   assert.equal(saves,6,'Resume only unfinished steps');
  }
 });
 await check('existing identities and old history survive cancellation; no unearned completion',async()=>{
- const value=fresh();value.met.kuze=true;value.flags._met_kuze=true;value.flags._intro_kuze=true;value.flags._ch3_delivery_offer=true;value.flags._ch3_mukai_work_intro_read=true;
- value.visits.kuze=4;value.story.kuze=2;
+ const value=fresh();value.met.saku=true;value.flags._met_saku=true;value.flags._intro_saku=true;value.flags._ch3_delivery_offer=true;value.flags._ch3_mukai_work_intro_read=true;
+ value.visits.saku=4;value.story.saku=2;
  assert.equal(await run(value,{read:async()=>false,save:()=>{throw Error('Cannot save cancelled read');},isCurrent:()=>true}),false);
- assert(value.met.kuze&&value.flags._met_kuze&&value.flags._intro_kuze);assert.equal(value.visits.kuze,4);assert.equal(value.story.kuze,2);assert.equal(value.flags._ch3_delivery_kuze,undefined);
+ assert(value.met.saku&&value.flags._met_saku&&value.flags._intro_saku);assert.equal(value.visits.saku,4);assert.equal(value.story.saku,2);assert.equal(value.flags._ch3_delivery_saku,undefined);
 });
 await check('duplicate click and pre-aborted/wrong-stage entry do not read or save twice',async()=>{
  const value=fresh();let resolve,reads=0;
@@ -60,7 +60,7 @@ await check('isolated JSON reload resumes only remaining delivery; later custome
  value=JSON.parse(JSON.stringify(value));const resumed=[];
  assert.equal(await run(value,{read:async s=>{resumed.push(s.id);return true;},save(){},isCurrent:()=>true}),true);
  assert.deepEqual(resumed,['ch3_delivery_steve','ch3_delivery_volk','ch3_delivery_return']);
- assert.equal(value.flags._ch3_kuze_first,undefined);assert.equal(value.flags._ch3_kuze_advice,undefined);
+ assert.equal(value.flags._ch3_saku_first,undefined);assert.equal(value.flags._ch3_saku_advice,undefined);
 });
 await check('actual script branches keep delivery and later customer introductions separate',async()=>{
  const load=name=>JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`,import.meta.url),'utf8'));
@@ -70,7 +70,7 @@ await check('actual script branches keep delivery and later customer introductio
   return expand(scene,game,scene.branches?.[ok?line.next_true:line.next_false]||[]);
  });
  const deliveries=load('ch3_deliveries');
- for(const who of ['kuze','steve','volk']){
+ for(const who of ['saku','steve','volk']){
   const scene=deliveries.dialogues.find(s=>s.dialogue_id==='ch3_delivery_'+who);
   const first=expand(scene,{met:{},flags:{}}),known=expand(scene,{met:{[who]:true},flags:{}});
   assert.notDeepEqual(first,known);
@@ -80,8 +80,21 @@ await check('actual script branches keep delivery and later customer introductio
  const volk=load('ch3_volk').dialogues.find(s=>s.dialogue_id==='ch3_volk_first');
  const known=expand(volk,{met:{volk:true},flags:{_ch3_delivery_volk:true}}).map(l=>l.text||'').join('\n');
  assert(!known.includes('初めて見る顔'));assert(!known.includes('名前を聞いても'));
- assert(known.includes('ナイトサイド')&&known.includes('凛'),'Approved parent characterization retained after delivery');
- const kuze=load('ch3_rivals').dialogues.find(s=>s.dialogue_id==='ch3_kuze_first');
- assert(expand(kuze,{met:{kuze:true},flags:{_ch3_delivery_kuze:true}})[0].text.includes('配達で会った'));
+ assert(known.includes('ナイトサイド')&&known.includes('凛想'),'Approved parent characterization retained after delivery');
+ const saku=load('ch3_rivals').dialogues.find(s=>s.dialogue_id==='ch3_saku_first');
+ assert(expand(saku,{met:{saku:true},flags:{_ch3_delivery_saku:true}})[0].text.includes('配達で会った'));
+});
+await check('mashiro requests and receives the delivery report; rivals are met in a fixed main-line order (#2682)',async()=>{
+ const deliveries=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch3_deliveries.json',import.meta.url),'utf8'));
+ const scene=id=>deliveries.dialogues.find(s=>s.dialogue_id===id);
+ assert.deepEqual(Array.from(steps,s=>s.id),['ch3_mukai_intro','ch3_delivery_offer','ch3_delivery_saku','ch3_delivery_steve','ch3_delivery_volk','ch3_delivery_return']);
+ assert.deepEqual(Array.from(steps.filter(s=>s.person),s=>s.person),['saku','steve','volk']);
+ for(const id of ['ch3_delivery_offer','ch3_delivery_return']){
+  const lines=scene(id).lines;
+  const speakers=new Set(lines.map(l=>l.speaker).filter(Boolean));
+  assert(speakers.has('mashiro'),id+' is spoken with mashiro');assert(!speakers.has('mukai_master'),id+' requester is mashiro, not the manager');
+  assert(!lines.some(l=>l.type),id+' has no branch, flag or reward that could skip or pay out');
+  for(const l of lines)if(l.speaker)assert(!l.text.endsWith('。'),'dialogue line ends without a period: '+l.text);
+ }
 });
 console.log(`Mukai delivery: ${count} controlled groups PASS; real AUTO/SKIP/LOAD not run`);

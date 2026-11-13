@@ -2,22 +2,168 @@
 const copy = value => structuredClone(value);
 
 export const TEAMWORK_MAX = 2;
+/** Character sheet stats. A PC's rating in the chosen stat replaces the flat base bonus. */
+export const STATS = Object.freeze(["eye", "hand", "talk", "nerve"]);
+/** The human player's seat: companions earn a spotlight when they act for the first time. */
+export const PLAYER_SEAT = "hajime";
+/** PC sheets keyed by the authored seat id; a materialized table carries them even when a seat is empty. */
+export const sheetsOf = scenario => scenario.sheets || Object.fromEntries((scenario.cast || []).filter(c => c.sheet).map(c => [c.id, c.sheet]));
+export const approachesOf = (scenario, kind) => scenario.checks?.[kind]?.approaches || [];
+/** The public bonus a declared approach brings: the PC's stat, or the flat base when a check has no sheets. */
+export function approachBase(scenario, kind, approachId = null, sheets = null) {
+  const approaches = approachesOf(scenario, kind);
+  if (!approaches.length) return { base: DICE.base, approach: null };
+  const approach = approachId ? approaches.find(a => a.id === approachId) : approaches[0];
+  if (!approach) throw new Error("Unknown approach");
+  const stat = (sheets || sheetsOf(scenario))[approach.sheet || approach.actor]?.stats?.[approach.stat];
+  return { base: Number.isInteger(stat) ? stat : DICE.base, approach };
+}
+/**
+ * Build the player's own character from the scenario's builder: an archetype preset, edited stats and a name.
+ * The look is not chosen (#3050, owner 2026-11-09): the player's own face plays the role, so the built sheet
+ * carries no portrait and the seat shows the player's portrait. Old saves may still pass a look; it is ignored.
+ */
+export function buildPc(scenario, choices = {}, growth = 0) {
+  const builder = scenario.builder;
+  if (!builder) return null;
+  const archetype = builder.archetypes.find(a => a.id === (choices.archetype || builder.archetypes[0].id));
+  if (!archetype) throw new Error("Unknown archetype");
+  const earned = growthOf(growth);
+  // Chosen stats are taken as written (within the grown budget); an archetype left as it is grows on its own.
+  const base = choices.stats ? archetype.stats : grownStats(builder, archetype.stats, earned);
+  const stats = Object.fromEntries(STATS.map(key => [key, choices.stats?.[key] ?? base[key]]));
+  for (const key of STATS) {
+    if (!Number.isInteger(stats[key]) || stats[key] < builder.min || stats[key] > builder.max) throw new Error("Stat out of range: " + key);
+  }
+  const points = STATS.reduce((n, key) => n + stats[key], 0);
+  if (points > builder.points + earned) throw new Error("Too many stat points");
+  const name = String(choices.name ?? archetype.name).trim();
+  if (!name || [...name].length > (builder.nameMax || 6)) throw new Error("Invalid character name");
+  return { seat: builder.seat || PLAYER_SEAT, name, title: archetype.title, trait: archetype.trait, stats, points,
+    archetype: archetype.id };
+}
+/**
+ * 成長点（TRF13）: the club's rank lets the player's own character start with one or two more stat points.
+ * It is a whole number from 0 to GROWTH_MAX; anything else counts as none, so an old caller changes nothing.
+ */
+export const GROWTH_MAX = 2;
+export const growthOf = value => Number.isInteger(value) ? Math.max(0, Math.min(GROWTH_MAX, value)) : 0;
+/** Where an archetype's growth goes when the player does not place it: its best stat first, never past the maximum. */
+export function grownStats(builder, stats, growth = 0) {
+  const grown = { ...stats };
+  for (let n = growthOf(growth); n > 0; n--) {
+    const key = STATS.filter(k => grown[k] < builder.max).sort((a, b) => grown[b] - grown[a])[0];
+    if (!key) break;
+    grown[key]++;
+  }
+  return grown;
+}
+/**
+ * Companions make their own characters: each seat's player picks one authored option (likes, a joke, a parody),
+ * chosen from the seed by a separate hash so the dice sequence never changes. Empty seats keep the authored sheet.
+ */
+export function pickCompanions(scenario, seed = 1, chosen = {}) {
+  const picks = {};
+  for (const [seat, byPlayer] of Object.entries(scenario.companionBuilds || {})) {
+    const player = scenario.cast.find(c => (c.seat || c.id) === seat && c.part !== "GM")?.id;
+    const options = player ? byPlayer[player] || [] : [];
+    if (!options.length) continue;
+    // FNV-1a over the seat, mixed with the seed by a murmur finalizer: every bit of the seed reaches the pick.
+    let x = ((Number(seed) >>> 0) ^ [...seat].reduce((n, ch) => Math.imul(n ^ ch.codePointAt(0), 16777619) >>> 0, 2166136261)) >>> 0;
+    x = Math.imul(x ^ (x >>> 16), 0x85ebca6b) >>> 0; x = Math.imul(x ^ (x >>> 13), 0xc2b2ae35) >>> 0; x = (x ^ (x >>> 16)) >>> 0;
+    const option = options.find(o => o.id === chosen[seat]) || options[x % options.length];
+    picks[seat] = { ...option, player };
+  }
+  return picks;
+}
+/** A deterministic "leave it to the dice" character: archetype from the seed, with one point moved between stats. */
+export function randomPc(scenario, seed = Date.now(), growth = 0) {
+  const builder = scenario.builder;
+  if (!builder) return null;
+  let x = Number(seed) >>> 0 || 1;
+  const next = () => { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; return x >>> 0; };
+  // The first draw used to pick a look (#3050 removed the choice); it is still drawn so every seed keeps its archetype and stats.
+  next();
+  const archetype = builder.archetypes[next() % builder.archetypes.length];
+  const stats = { ...archetype.stats };
+  const from = STATS[next() % STATS.length], to = STATS[next() % STATS.length];
+  if (from !== to && stats[from] > builder.min && stats[to] < builder.max) { stats[from]--; stats[to]++; }
+  return buildPc(scenario, { archetype: archetype.id, stats: grownStats(builder, stats, growth) }, growth);
+}
 // Keep two dice and one-die rerolls; scale the old aids toward their original success rates.
 export const DICE = Object.freeze({ sides: 20, base: 3, support: 7, momentum: 4, hypothesis: 4, success: 30, mixed: 19 });
 export const gradeOf = total => total >= DICE.success ? "success" : total >= DICE.mixed ? "mixed" : "trouble";
-/** Doubles are table events: 20-20 critical, 1-1 fumble, any other pair a cheer. */
-export const specialOf = dice => dice[0] !== dice[1] ? null : dice[0] === DICE.sides ? "critical" : dice[0] === 1 ? "fumble" : "double";
+/**
+ * What the two dice mean on the table (TRF01). A 20 on either die is a critical and always a success; a 1 on a roll
+ * that ends in trouble is a fumble; any other pair is a cheer. The forecast and the reroll odds read the same rule.
+ */
+export function outcomeOf(dice, bonus = 0) {
+  const total = dice[0] + dice[1] + bonus;
+  const critical = dice.includes(DICE.sides);
+  const grade = critical ? "success" : gradeOf(total);
+  const special = critical ? "critical" : grade === "trouble" && dice.includes(1) ? "fumble" : dice[0] === dice[1] ? "double" : null;
+  return { total, grade, special };
+}
+export const specialOf = (dice, bonus = 0) => outcomeOf(dice, bonus).special;
+/** A roll that misses the target by one or two: the table groans together. */
+export const NEAR_MISS = 2;
+export const nearMissOf = result => result.grade === "mixed" && DICE.success - result.total <= NEAR_MISS ? DICE.success - result.total : 0;
+/**
+ * What a success buys (TRF02). Every check has a stake the GM names before the dice: one more question for the
+ * story's character, a GM hint on the next choices, or a mark on the ending. A miss costs nothing more than the prize.
+ */
+export const REWARDS = Object.freeze({ listen: "question", twist: "hint", prepare: "hint", serve: "finale" });
+/** The choices a hint from this check marks: the plan fields decided next. */
+export const hintFieldsOf = (scenario, kind) => {
+  const flow = scenario.flow || { prepare: ["aroma", "seat"], serve: ["approach"] };
+  return kind === "twist" ? flow.prepare || [] : kind === "prepare" ? flow.serve || [] : [];
+};
+/** The prize a check offers at this table: a scenario without an interview cannot offer one more question. */
+export const rewardKindOf = (scenario, kind) => REWARDS[kind] === "question" && !scenario.interview ? "cheer" : REWARDS[kind] || "cheer";
 const RATING_TITLES = ["にぎやかな卓", "よい卓", "名卓", "伝説の卓"];
-/** Table excitement. Each tier reached once gives one momentum: bonus +4 to the next roll (up to two). */
-export const HEAT = { max: 8, tiers: [3, 6, 8], momentumMax: 2,
+/**
+ * Table excitement. Each tier reached once gives one momentum: bonus +4 to the next roll (up to two).
+ * The first two tiers are within anyone's reach; the top (TRF12) takes a table where everyone had a turn and the
+ * cards were played: with the old top at 8, a practised table reached it every single night.
+ */
+export const HEAT = { max: 10, tiers: [3, 6, 10], momentumMax: 2,
   names: ["静かな卓", "あたたまってきた", "沸いてきた", "最高潮"],
   nights: ["静かな夜", "和やかな夜", "盛り上がった夜", "大盛況の夜"] };
 export const heatTier = value => HEAT.tiers.filter(t => value >= t).length;
+/** The scenes a scenario plays, in order. Interview and twist are optional scenes a scenario can add. */
+export const phasesOf = scenario => ["listen", ...(scenario.interview ? ["interview"] : []), "explore",
+  ...(scenario.flow?.twist ? ["twist"] : []), "prepare", "serve", "ending"];
+/** Every roll a full session makes: listen, the optional twist, preparation and the finale. */
+export const checkKindsOf = scenario => ["listen", ...(scenario.flow?.twist ? ["twist"] : []), "prepare", "serve"];
+
+/** A number picked from the seed and a label by a hash that never touches the dice stream (the GM's hint, the closer look). */
+function seededPick(seed, label) {
+  let x = ((seed >>> 0) ^ [...label].reduce((n, ch) => Math.imul(n ^ ch.codePointAt(0), 16777619) >>> 0, 2166136261)) >>> 0;
+  x = Math.imul(x ^ (x >>> 16), 0x85ebca6b) >>> 0; x = Math.imul(x ^ (x >>> 13), 0xc2b2ae35) >>> 0;
+  return (x ^ (x >>> 16)) >>> 0;
+}
+/** じっくり調べる（TRF14）: how many wrong guesses each grade rules out. */
+export const SEARCH_RULED = Object.freeze({ success: 2, mixed: 1, trouble: 0 });
 
 export class TrpgSession {
-  constructor(scenario, { seed = Date.now(), profileId = null } = {}) {
+  constructor(scenario, { seed = Date.now(), profileId = null, pc = null, companions = {}, warmStart = false, growth = 0 } = {}) {
     if (!scenario?.profiles?.length || scenario.profiles.length < 1) throw new Error("Missing traveler profiles");
     this.scenario = scenario;
+    // The player's own character replaces the authored default on that seat; each companion brings the character they made.
+    this.growth = growthOf(growth);
+    this.pc = scenario.builder ? buildPc(scenario, pc || {}, this.growth) : null;
+    this.sheets = { ...sheetsOf(scenario) };
+    this.companions = pickCompanions(scenario, seed, companions);
+    for (const [seat, option] of Object.entries(this.companions)) {
+      this.sheets[seat] = { ...(this.sheets[seat] || {}), name: option.name, title: option.title, trait: option.trait, likes: option.likes,
+        stats: { ...option.stats }, option: option.id };
+    }
+    if (this.pc) this.sheets[this.pc.seat] = { ...(this.sheets[this.pc.seat] || {}), ...this.pc };
+    // Every seat shows the face of whoever plays it (#3050): role art, looks and tints from older data are dropped.
+    for (const seat of Object.keys(this.sheets)) {
+      const { portrait, color, accent, look, ...sheet } = this.sheets[seat];
+      this.sheets[seat] = sheet;
+    }
     this.rng = Number(seed) >>> 0 || 1;
     const profile = profileId ? scenario.profiles.find(p => p.id === profileId)
       : scenario.profiles[this.next() % scenario.profiles.length];
@@ -28,13 +174,17 @@ export class TrpgSession {
       checkPressure: { success: 0, mixed: 1, trouble: 1 }, detourThreshold: 1, hypothesisBonus: 0,
       ...scenario.rules };
     this.rerollActor = scenario.cast.find(c => c.abilityType === "reroll")?.id || "hajime";
+    // 自分のダイス（VOL07）: 卓が盛り上がり1から始まる。ダイスは振らないので、同じseedの出目は変わらない。
+    this.warmStart = warmStart === true;
     this.state = {
       scenarioId: scenario.id, version: scenario.version, seed: Number(seed) >>> 0, phase: "cover",
       profileId: profile.id, clues: [], consulted: [], hypothesis: null,
       plan: Object.fromEntries(Object.values(this.flow).flat().map(field => [field, null])),
-      pressure: this.rules.initialPressure, teamwork: 2, heat: 0, momentum: 0, heatLog: [],
+      pressure: this.rules.initialPressure, teamwork: 2, heat: 0, momentum: 0, heatLog: [], extraQuestions: 0, hints: {},
       used: Object.fromEntries(scenario.cast.filter(c => c.part !== "GM").map(c => [c.id, false])),
-      checks: [], pending: null,
+      acted: {}, checks: [], pending: null, asked: [], search: null,
+      pc: this.pc ? { name: this.pc.name, title: this.pc.title, archetype: this.pc.archetype, stats: { ...this.pc.stats } } : null,
+      companions: Object.fromEntries(Object.entries(this.companions).map(([seat, o]) => [seat, o.id])),
     };
   }
 
@@ -58,7 +208,36 @@ export class TrpgSession {
   require(phase) {
     if (this.state.phase !== phase || this.state.pending) throw new Error("Action unavailable in this phase");
   }
-  start() { this.require("cover"); this.state.phase = "listen"; }
+  start() {
+    this.require("cover"); this.state.phase = "listen";
+    if (this.warmStart) this.cheer(1, "マイダイスを卓に並べた");
+  }
+
+  /** How many questions the story's character answers tonight: one more after a successful first roll (TRF02). */
+  interviewPicks() {
+    const interview = this.scenario.interview;
+    return interview ? Math.min(interview.topics.length, (interview.picks || 2) + this.state.extraQuestions) : 0;
+  }
+  /** Talking to the story's character: pick a few questions; each answer depends on the hidden profile. */
+  ask(id) {
+    this.require("interview");
+    const topic = this.scenario.interview.topics.find(t => t.id === id);
+    if (!topic) throw new Error("Unknown topic");
+    const answer = this.profile.answers?.[id];
+    if (!answer) throw new Error("Missing answer for topic: " + id);
+    const fresh = !this.state.asked.includes(id);
+    if (fresh && this.state.asked.length >= this.interviewPicks()) throw new Error("No more questions");
+    if (fresh) {
+      this.state.asked.push(id);
+      if (this.state.asked.length === 1) this.cheer(1, "物語の人物と話した");
+    }
+    return { fresh, topic: copy(topic), answer: copy(answer) };
+  }
+  endInterview() {
+    this.require("interview");
+    if (!this.state.asked.length) throw new Error("Ask at least one question");
+    this.state.phase = "explore";
+  }
 
   inspect(id) {
     this.require("explore");
@@ -85,8 +264,33 @@ export class TrpgSession {
     if (this.state.clues.length < 3) throw new Error("Collect three clues before discussing the plan");
     if (!this.scenario.hypotheses.some(h => h.id === id)) throw new Error("Unknown hypothesis");
     this.state.hypothesis = id;
-    this.state.phase = "prepare";
+    this.state.phase = this.flow.twist ? "twist" : "prepare";
     this.cheer(1, "みんなで見立てを話した");
+  }
+
+  /**
+   * じっくり調べる（目星・TRF14）: once per table, before the table settles on a guess, the player's own character
+   * looks closer with 観察 (2d20 + eye). ひと手間 rules out one wrong guess, 成功 rules out two (the truth is what is left),
+   * 思わぬ出来事 finds nothing. It never costs anything. The dice come from the seed by a separate hash, like the
+   * GM's hint, so the story's own checks roll the same numbers whether or not anyone searched.
+   */
+  searchBase() {
+    const seat = this.pc?.seat || PLAYER_SEAT, rating = this.sheets[seat]?.stats?.eye;
+    return { seat, stat: "eye", base: Number.isInteger(rating) ? rating : DICE.base };
+  }
+  search() {
+    this.require("explore");
+    if (this.state.search) throw new Error("Already searched");
+    if (this.state.clues.length < 3) throw new Error("Collect three clues before a closer look");
+    const { seat, stat, base } = this.searchBase();
+    const dice = ["search:a", "search:b"].map(label => seededPick(this.state.seed, label) % DICE.sides + 1);
+    const outcome = outcomeOf(dice, base);
+    const wrong = this.scenario.hypotheses.filter(h => h.id !== this.profile.id).map(h => h.id);
+    const first = wrong.length ? seededPick(this.state.seed, "search:ruled") % wrong.length : 0;
+    const ruled = wrong.map((_, i) => wrong[(first + i) % wrong.length]).slice(0, SEARCH_RULED[outcome.grade] || 0);
+    this.state.search = { seat, stat, dice, base, bonus: base, ...outcome, ruled };
+    if (outcome.grade === "success") this.cheer(1, "目星が冴えた");
+    return copy(this.state.search);
   }
 
   plan(field, value) {
@@ -97,21 +301,34 @@ export class TrpgSession {
     this.state.plan[field] = value;
   }
 
-  beginCheck(kind, { support = false } = {}) {
-    const phases = { listen: "listen", prepare: "prepare", serve: "serve" };
+  /** Declare who acts and with which stat; the sheet's rating becomes the roll's base bonus. */
+  beginCheck(kind, { support = false, approach = null } = {}) {
+    const phases = { listen: "listen", twist: "twist", prepare: "prepare", serve: "serve" };
     if (!phases[kind]) throw new Error("Unknown check");
     this.require(phases[kind]);
     if (this.flow[kind]?.some(field => !this.state.plan[field])) throw new Error("Complete the plan before rolling");
+    const declared = approachBase(this.scenario, kind, approach, this.sheets);
+    if (approach && !declared.approach) throw new Error("This check has no approaches");
     const helper = this.scenario.checks[kind].helper || null;
     if (support && (!helper || this.state.used[helper] || this.state.teamwork < 1)) throw new Error("This support is unavailable");
     if (support) { this.state.used[helper] = true; this.state.teamwork--; }
     const hypothesisBonus = kind === "prepare" && this.state.hypothesis === this.profile.id ? this.rules.hypothesisBonus * DICE.hypothesis : 0;
     const momentum = this.state.momentum;
     this.state.momentum = 0;
+    const chosen = declared.approach;
     this.state.pending = {
-      kind, dice: [this.die(), this.die()], bonus: DICE.base + hypothesisBonus + (support ? DICE.support : 0) + momentum * DICE.momentum, hypothesisBonus, momentum,
+      kind, dice: [this.die(), this.die()], base: declared.base,
+      bonus: declared.base + hypothesisBonus + (support ? DICE.support : 0) + momentum * DICE.momentum, hypothesisBonus, momentum,
+      approach: chosen?.id || null, actor: chosen?.actor || null, sheet: chosen ? chosen.sheet || chosen.actor : null, stat: chosen?.stat || null,
       helper: support ? helper : null, rerolled: false,
     };
+    if (chosen) {
+      const first = !this.state.acted[chosen.actor];
+      this.state.acted[chosen.actor] = (this.state.acted[chosen.actor] || 0) + 1;
+      // Anyone's character stepping forward for the first time is a table moment, the player's own included (TRF12):
+      // the character you made deserves its spotlight as much as a companion's. The GM playing an empty seat is not one.
+      if (first && !chosen.npc) this.cheer(1, (this.sheets[this.state.pending.sheet]?.name || "仲間") + "の見せ場");
+    }
     if (support) this.cheer(1, "仲間の見せ場");
     return this.checkResult();
   }
@@ -119,8 +336,41 @@ export class TrpgSession {
   checkResult() {
     const p = this.state.pending;
     if (!p) throw new Error("No pending check");
-    const total = p.dice[0] + p.dice[1] + p.bonus;
-    return { ...copy(p), total, grade: gradeOf(total), special: specialOf(p.dice) };
+    return { ...copy(p), ...outcomeOf(p.dice, p.bonus) };
+  }
+
+  /**
+   * The GM's hint (TRF02): one choice per coming field that does not suit tonight's hidden profile. It is picked
+   * from the seed by a separate hash, so the dice never move, and it never marks a choice the profile likes.
+   */
+  hintFor(field) {
+    const liked = this.profile.likes?.[field];
+    if (!liked?.length) return null;
+    const wrong = (this.scenario.options[field] || []).filter(option => !liked.includes(option.id));
+    if (!wrong.length) return null;
+    return wrong[seededPick(this.state.seed, field) % wrong.length].id;
+  }
+  /** Pay out what a successful check was rolled for. Returns what the table actually received. */
+  grant(kind) {
+    const prize = rewardKindOf(this.scenario, kind);
+    if (prize === "question") {
+      this.state.extraQuestions = 1;
+      return { type: "question" };
+    }
+    if (prize === "hint") {
+      const hints = {};
+      for (const field of hintFieldsOf(this.scenario, kind)) {
+        const id = this.hintFor(field);
+        if (id) hints[field] = id;
+      }
+      if (Object.keys(hints).length) {
+        Object.assign(this.state.hints, hints);
+        return { type: "hint", hints };
+      }
+    }
+    // The finale's prize is a mark on the ending, not more heat: the meter is already near its top by the last roll.
+    if (prize === "finale") return { type: "finale" };
+    return null;
   }
 
   reroll(index) {
@@ -141,14 +391,21 @@ export class TrpgSession {
       result.inspired = this.state.teamwork < TEAMWORK_MAX;
       if (result.inspired) this.state.teamwork++;
     }
+    const near = nearMissOf(result);
+    if (near) result.near = near;
     this.state.checks.push(result);
-    const lift = { critical: [3, "クリティカル！"], fumble: [2, "ファンブルに大笑い"], double: [1, "ゾロ目"] }[result.special];
+    // A critical is a one-in-ten roll now (TRF01), so it lifts the table two rather than three.
+    const lift = { critical: [2, "クリティカル！"], fumble: [2, "ファンブルに大笑い"], double: [1, "ゾロ目"] }[result.special];
     if (lift) this.cheer(lift[0], lift[1]);
     else if (result.grade === "success") this.cheer(1, "判定がうまくいった");
     else if (result.grade === "trouble") this.cheer(1, "思わぬ出来事に卓がざわつく");
+    if (result.grade === "success") {
+      const reward = this.grant(result.kind);
+      if (reward) result.reward = reward;
+    }
     this.state.pressure = Math.min(this.rules.pressureMax, this.state.pressure + this.rules.checkPressure[result.grade]);
     this.state.pending = null;
-    this.state.phase = { listen: "explore", prepare: "serve", serve: "ending" }[result.kind];
+    this.state.phase = { listen: this.scenario.interview ? "interview" : "explore", twist: "prepare", prepare: "serve", serve: "ending" }[result.kind];
     return copy(result);
   }
 
@@ -166,15 +423,19 @@ export class TrpgSession {
   result() {
     if (this.state.phase !== "ending") throw new Error("The session is not complete");
     const plan = this.state.plan;
+    // A field counts toward the ending only when the profile names what it likes there (the twist tactic usually does not).
     const fit = Object.entries(plan).reduce((n, [field, value]) =>
-      n + (this.profile.likes[field].includes(value) ? (this.scenario.fitWeights?.[field] || 1) : 0), 0);
-    const ending = fit >= 3 ? this.profile.ending : (this.scenario.fallbackEnding || "discovery");
+      n + (this.profile.likes[field]?.includes(value) ? (this.scenario.fitWeights?.[field] ?? 1) : 0), 0);
+    const ending = fit >= (this.rules.fitThreshold || 3) ? this.profile.ending : (this.scenario.fallbackEnding || "discovery");
     return {
       scenarioId: this.state.scenarioId, version: this.state.version, ending, rating: this.rating(ending),
       heat: { value: this.state.heat, max: HEAT.max, night: HEAT.nights[heatTier(this.state.heat)] },
       variant: this.state.pressure >= this.rules.detourThreshold ? "with-detour" : "smooth",
       plan: copy(plan), hypothesis: this.state.hypothesis,
-      clues: copy(this.state.clues), checks: copy(this.state.checks),
+      clues: copy(this.state.clues), asked: copy(this.state.asked), checks: copy(this.state.checks), acted: copy(this.state.acted), pc: copy(this.state.pc),
+      hints: copy(this.state.hints), finale: this.state.checks.some(check => check.reward?.type === "finale"),
+      search: copy(this.state.search),
+      companions: copy(this.state.companions),
       pressure: this.state.pressure, profileId: this.profile.id,
     };
   }

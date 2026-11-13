@@ -1,4 +1,4 @@
-// 採用した登場イラスト・DAY4の未知アゲハ・新人物PNG・昼夜マップの本編接続。
+// 採用した登場イラスト・DAY4の未知あげは・新人物PNG・昼夜マップの本編接続。
 // 8123でpreviewを起動後: CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/intro_art.mjs
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
@@ -28,7 +28,7 @@ try {
     }))).observe(document.querySelector("#fx"), { childList: true });
     assertArt();
     function assertArt() {
-      const missing = ["hajime", "sumi", "tsumugi", "oneesan", "naru", "adam", "minto", "rin", "samechan", "nagumo", "maezono", "dr_kemuri", "pakki", "ageha", "hiyori", "kumicho", "rei"].filter(id => !DB.manifest.introArt[id]);
+      const missing = ["hajime", "sumi", "tsumugi", "oneesan", "naru", "adam", "minto", "rio", "samechan", "sui", "maezono", "dr_kemuri", "pakki", "ageha", "hiyori", "kumicho", "rei"].filter(id => !DB.manifest.introArt[id]);
       if (missing.length) throw new Error(`採用済みの登場背景がない: ${missing.join(", ")}`);
     }
     return Object.fromEntries(["hajime", "adam", "naru", "dr_kemuri", "samechan"].map((id) => [id, DB.manifest.portraits[id].faces]));
@@ -153,20 +153,25 @@ try {
   const pins = JSON.parse(await readFile(new URL("../../asset_sources/backgrounds/osu-sakae-map-remaster-v1/pin-layout.json", import.meta.url))).spots;
   for (const slot of [0, 1]) {
     const tod = slot ? "night" : "day";
-    await page.evaluate((slot) => {
-      T.core.state.phase = "daily"; T.core.state.day = 13; T.core.state.slot = slot; // 13日目: 6日目と同じ曜日（占いの出店日）で、seed 0 では晴れ（6日目は雨で占いが閉店する）
+    const fortuneAt = await page.evaluate(async (slot) => {
+      T.core.state.phase = "daily"; T.core.state.day = 13; T.core.state.slot = slot;
       T.core.state.weatherSeed = 0;
       for (const id of ["naru", "adam", "minto"]) T.core.state.flags[`_spot_guide_${id}`] = true;
       T.core.state.flags._cafe_introduced = true; // 座標確認は紹介を読了したマップで行う。
-      T.core.state.flags._fortune_rumor_heard = true; // 占いピンは噂を聞き終えた後だけマップに出る（#780 fortune-schedule）
+      T.core.state.flags._fortune_rumor_heard = true; // 第1章の占いピンは噂を聞き終えた後だけマップに出る
+      // 占い師は章で1〜2回、現れた時間帯だけ地図に出る（台帳 URA・fortune-schedule.js）。この時間帯に出し、場所は保存の種で決まる
+      const fortune = await import("./js/daily/fortune-schedule.js");
+      fortune.placeFortuneNow(T.core.state);
+      const { x, y } = fortune.fortunePosition(T.core.state);
       T.mapTask = T.map.chooseSpot();
+      return { x, y };
     }, slot);
     await page.waitForSelector(`.map[data-night="${!!slot}"]`);
     await page.waitForFunction((tod) => [...document.querySelectorAll("#bg > div")].some((node) => node.style.backgroundImage.includes(`bg_osu_map_${tod}.webp`) && node.classList.contains("show")), tod);
     await page.waitForFunction(() => !document.querySelector(".scene-curtain") && getComputedStyle(document.querySelector("#bg > div:last-child")).opacity === "1");
     for (const pin of pins) {
       const position = await page.locator(`.map [data-spot="${pin.id}"]`).evaluate((node) => ({ x: parseFloat(node.style.left), y: parseFloat(node.style.top) }));
-      const moved = { cafe: { x: 72, y: 45 }, kannon: { x: 18, y: 57 }, choizap: { x: 20, y: 24 }, fortune: { x: 63, y: 69 }, rest: { x: 89, y: 44 } };
+      const moved = { cafe: { x: 72, y: 45 }, kannon: { x: 18, y: 57 }, choizap: { x: 20, y: 24 }, fortune: fortuneAt, rest: { x: 89, y: 44 } };
       const expected = moved[pin.id] || { x: pin.x_percent, y: pin.y_percent }; // mainでHUDを避けて移動済みの施設を反映。
       assert.deepEqual(position, expected, `${tod}:${pin.id}の座標が変わった`);
     }

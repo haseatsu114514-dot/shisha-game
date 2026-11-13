@@ -1,0 +1,1058 @@
+{
+ "package": "allcast-comics-review-20261102",
+ "delivered_zip_sha256": "80836f274b1f24d1d6d0be1cce61760ba5759c4f53785e84c998da8a58fed253",
+ "episodes": [
+  {
+   "id": "kemuri-experiment",
+   "title": "実験の正体",
+   "cast": [
+    "dr_kemuri"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "逢縁くん、実験だ。",
+    "えっ。",
+    "ただの飲み比べ。"
+   ],
+   "caption": "博士の好きな味は、コーラ。",
+   "current": "allcast-kemuri-experiment-b.png",
+   "files": [
+    {
+     "file": "allcast-kemuri-experiment-a.png",
+     "source_version": "A-v1",
+     "status": "superseded",
+     "sha256": "bede34a41e40595c16dcc3b9731a621e770748b4b82c29d387150a6c066bf043"
+    },
+    {
+     "file": "allcast-kemuri-experiment-b.png",
+     "source_version": "A-v2",
+     "status": "candidate",
+     "sha256": "0917b434f8e4d34ce8579fef29a8ec2144ae0a4d1cea6530cefa19d3b71925f6"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "kemuri-made-it",
+   "title": "作った人",
+   "cast": [
+    "dr_kemuri"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "このタイマー、便利。",
+    "それ作ったの、俺だもん。",
+    "まだ言いたそう。"
+   ],
+   "caption": "チャコール博士は、機材の話になると止まらない。",
+   "current": "allcast-kemuri-made-it-b.png",
+   "files": [
+    {
+     "file": "allcast-kemuri-made-it-a.png",
+     "source_version": "A-v1",
+     "status": "superseded",
+     "sha256": "bbb4548526a4da882ae056afb898d376c6f25b7f16cabb86eb8ce1b78ff1a2c3"
+    },
+    {
+     "file": "allcast-kemuri-made-it-b.png",
+     "source_version": "A-v2",
+     "status": "candidate",
+     "sha256": "7ea0d58e8ae6b9a0e5a6f230344640493245ef0a0e240689095b2b8082f698ab"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "kuze-blank-card",
+   "title": "白紙のカード",
+   "cast": [
+    "kuze"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "味、当ててみて。",
+    "ヒントは？",
+    "白紙が増えた。"
+   ],
+   "caption": "綾取は、味の名前を伏せて出すこともある。",
+   "current": "allcast-kuze-blank-card-b.png",
+   "files": [
+    {
+     "file": "allcast-kuze-blank-card-a.png",
+     "source_version": "A-v1",
+     "status": "superseded",
+     "sha256": "8b57707d18982ca6ba19f0248a494fb12e4e06d45616325d810119bd7844c017"
+    },
+    {
+     "file": "allcast-kuze-blank-card-b.png",
+     "source_version": "A-v2",
+     "status": "candidate",
+     "sha256": "c51fcdf68ef16aacfd469af3b320e5de539c6c5244c5da87f8ca5063471b346a"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "kuze-rumor-source",
+   "title": "噂の出どころ",
+   "cast": [
+    "kuze"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "噂、聞きました。",
+    "どんな噂？",
+    "書いた本人だ。"
+   ],
+   "caption": "綾取の店の大げさな噂は、だいたい本人発。",
+   "current": "allcast-kuze-rumor-source-b.png",
+   "files": [
+    {
+     "file": "allcast-kuze-rumor-source-a.png",
+     "source_version": "A-v1",
+     "status": "superseded",
+     "sha256": "ac0317a37901d876d29ee013ed5c467bcbd49fc7c254852b338cf92dbe2bd608"
+    },
+    {
+     "file": "allcast-kuze-rumor-source-b.png",
+     "source_version": "A-v2",
+     "status": "candidate",
+     "sha256": "e46cafabb816ffa73f7e380082cc1798a06edd8d5c183a39140af585b1f32b50"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "rei-mix-names",
+   "title": "味の名前",
+   "cast": [
+    "rei"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "この味の名前は？",
+    "……月光花。",
+    "全部曲名だ。"
+   ],
+   "caption": "レイのミックスの名前は、好きなバンドへの贈り物。",
+   "current": "allcast-rei-mix-names.png",
+   "files": [
+    {
+     "file": "allcast-rei-mix-names.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "0ecef6512709af6fb524c3e5a55190445acd50ed73f9eb4caa3f69fa615d73ad"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "rei-one-song",
+   "title": "一曲だけ",
+   "cast": [
+    "rei"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "……一曲だけ、聴く？",
+    "ぜひ。",
+    "まだ前奏だ。"
+   ],
+   "caption": "レイの好きな曲は、前奏から長い。",
+   "current": "allcast-rei-one-song-c.png",
+   "files": [
+    {
+     "file": "allcast-rei-one-song-a.png",
+     "source_version": "A-v1",
+     "status": "superseded",
+     "sha256": "c30a28694438b4ec79e06d09fc6ec22366412a15ee8275cdc91295c61c77b6d5"
+    },
+    {
+     "file": "allcast-rei-one-song-b.png",
+     "source_version": "A-v2",
+     "status": "superseded",
+     "sha256": "0be6685694910a929175fe69752be0d7eebaf1aada9f8c2b77e18ce8bde8f645"
+    },
+    {
+     "file": "allcast-rei-one-song-c.png",
+     "source_version": "A-v3",
+     "status": "candidate",
+     "sha256": "52710c9463a608dd7f5ded00fec0bf1c9bf999b5cb88d916e3caeccb0fcfcb69"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "salaryman-necktie",
+   "title": "ゆるむ日",
+   "cast": [
+    "salaryman"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "アールグレイで？",
+    "……。",
+    "ネクタイが緩んだ。"
+   ],
+   "caption": "常連さんの「おいしい」は、小さな変化に出ます。",
+   "current": "allcast-salaryman-necktie.png",
+   "files": [
+    {
+     "file": "allcast-salaryman-necktie.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "dc22a4ff5167da0d3b8c4dd62a519e089b0951bc9dec00fb70d767baa7e2310e"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "salaryman-ok-sign",
+   "title": "無言の感想",
+   "cast": [
+    "salaryman"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "お味はどうです？",
+    "……。",
+    "伝わった。"
+   ],
+   "caption": "あの常連さんは、顔には出さない人です。",
+   "current": "allcast-salaryman-ok-sign.png",
+   "files": [
+    {
+     "file": "allcast-salaryman-ok-sign.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "24466b5979723bf47cf9ba5a8572f8aae025356c20216b3d675f3f9d7676242c"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "steve-recipe-cards",
+   "title": "新作のカード",
+   "cast": [
+    "steve"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ヘイ、新作だ。",
+    "何枚あるんです？",
+    "全部レモンライム。"
+   ],
+   "caption": "スティーブの研究は、レモンとライムに尽きない。",
+   "current": "allcast-steve-recipe-cards.png",
+   "files": [
+    {
+     "file": "allcast-steve-recipe-cards.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "8cf3b8d61ff79f70f772fda40568a5aaef0c0870c9ce7198bffecd21c500b2d0"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "steve-wait-pizza",
+   "title": "待てる男",
+   "cast": [
+    "steve"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "もう食べます？",
+    "ノー、まだだ。",
+    "冷めました。"
+   ],
+   "caption": "スティーブは、熱を急がない職人です。",
+   "current": "allcast-steve-wait-pizza.png",
+   "files": [
+    {
+     "file": "allcast-steve-wait-pizza.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "a243868420e3cc9a3adbd83da8bc2ff794c5bf24d796a08fbe15b2f355a85a25"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "volk-jam",
+   "title": "測らない量",
+   "cast": [
+    "volk"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "全部測るんですね。",
+    "当然だ。",
+    "ジャムは目分量。"
+   ],
+   "caption": "おばあさんのジャムの量だけは、測らない約束。",
+   "current": "allcast-volk-jam.png",
+   "files": [
+    {
+     "file": "allcast-volk-jam.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "0ddd1fd733514dd13e9d8fd662fb6e58e6f1bbdac264ade791927b0f32f2ee87"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "hold",
+   "gameRegistration": ""
+  },
+  {
+   "id": "volk-rest",
+   "title": "休憩の準備",
+   "cast": [
+    "volk"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "疲れたか？",
+    "少し。",
+    "休憩も精密。"
+   ],
+   "caption": "ヴォルクは、数字より先に本人に聞く人です。",
+   "current": "allcast-volk-rest.png",
+   "files": [
+    {
+     "file": "allcast-volk-rest.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "f90271134a483bbbc11231760f5ebd712dc395da4cc095fffe5917e0c51eebc0"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "hold",
+   "gameRegistration": ""
+  },
+  {
+   "id": "wang-beard",
+   "title": "長さ比べ",
+   "cast": [
+    "master_hookah"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "龍、すごかったです。",
+    "私の髭も長い。",
+    "張り合ってる。"
+   ],
+   "caption": "龍の煙で有名な王煙楼にも、ちょっとした自慢がある。",
+   "current": "allcast-wang-beard-c.png",
+   "files": [
+    {
+     "file": "allcast-wang-beard-a.png",
+     "source_version": "A-v1",
+     "status": "superseded",
+     "sha256": "4b102733f8d641a901fdf47924ff7122b572470ac8847911ebe2fee4cb44d765"
+    },
+    {
+     "file": "allcast-wang-beard-b.png",
+     "source_version": "A-v2",
+     "status": "superseded",
+     "sha256": "58ec9aef846b1e68508159b6157ec5bb66ed340ed22345753e8757bb92bc996e"
+    },
+    {
+     "file": "allcast-wang-beard-c.png",
+     "source_version": "A-v3",
+     "status": "candidate",
+     "sha256": "f6c7a2368c6e526b8354efcb9a94f236b88f2aadce1b3804613b672ac4c906f7"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "wang-lychee",
+   "title": "ライチの皮",
+   "cast": [
+    "master_hookah"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "むいてごらん。",
+    "はい。",
+    "手元が速すぎる。"
+   ],
+   "caption": "王煙楼の得意な味は、ライチ。",
+   "current": "allcast-wang-lychee.png",
+   "files": [
+    {
+     "file": "allcast-wang-lychee.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "6da773b50a0b6e78cf379044343bfff4c3769cef3ba7ef0e054f395651ba28ed"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "adopt",
+   "gameRegistration": "remake/js/core/loading-comics.js の wang-lychee"
+  },
+  {
+   "id": "maezono-interview",
+   "title": "取材の範囲",
+   "cast": [
+    "maezono"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "取材いいかな？",
+    "はい！",
+    "そこまで？"
+   ],
+   "caption": "HOOKAH PRESS編集長の取材は、細かい。",
+   "current": "allcast-maezono-interview.png",
+   "files": [
+    {
+     "file": "allcast-maezono-interview.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "60c0b236bbfdf4d839a7b6b16880611f4305decdac610c9ce7b52480f314b4df"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "maezono-onigiri",
+   "title": "おにぎり特集",
+   "cast": [
+    "maezono"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "どうぞ。",
+    "おいしいねえ。",
+    "特集が始まった。"
+   ],
+   "caption": "上園さんは、何でも本当においしそうに食べる。",
+   "current": "allcast-maezono-onigiri.png",
+   "files": [
+    {
+     "file": "allcast-maezono-onigiri.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "f613554f9e7f3d2697758abe1a5d241a1996fcd779d61732ac92ea05c10e6dd2"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "maki-butter-knife",
+   "title": "構えが本気",
+   "cast": [
+    "maki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "パン、切ろうか？",
+    "お願いします。",
+    "構えが本気だ。"
+   ],
+   "caption": "マキさんは、道具の扱いがいつも丁寧。",
+   "current": "allcast-maki-butter-knife-b.png",
+   "files": [
+    {
+     "file": "allcast-maki-butter-knife-a.png",
+     "source_version": "A-v1",
+     "status": "superseded",
+     "sha256": "a3fa06f14049a4aa4b0751ec187add9de2fb8bee6ad5ad21d6fee0710e554407"
+    },
+    {
+     "file": "allcast-maki-butter-knife-b.png",
+     "source_version": "A-v2",
+     "status": "candidate",
+     "sha256": "8f223864566398f34c9f02d08036d98d2b2bbbf1191d807d9946d8624eabc139"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "maki-let-the-axe",
+   "title": "斧の仕事",
+   "cast": [
+    "maki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "全力で投げます！",
+    "斧に仕事をさせな。",
+    "店長が一番喜ぶ。"
+   ],
+   "caption": "マキさんの口癖は、「斧に仕事をさせな」。",
+   "current": "allcast-maki-let-the-axe.png",
+   "files": [
+    {
+     "file": "allcast-maki-let-the-axe.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "9dab74e77ef180de5cecec3f92686a33a7ba72e601735a8fda6fd481c49375b6"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "nine-thousand-random",
+   "title": "好きな味",
+   "cast": [
+    "shisha_9000"
+   ],
+   "minChapter": 5,
+   "dialogue": [
+    "好きな味は？",
+    "ランダムです。",
+    "楽しそう。"
+   ],
+   "caption": "SHISHA-9000は、どんな味でもいける。",
+   "current": "allcast-nine-thousand-random.png",
+   "files": [
+    {
+     "file": "allcast-nine-thousand-random.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "84d310d6f8e8f332de2a1aef9b735d740f30ce695a5ec9ded51e6082db1894e3"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "nine-thousand-scan",
+   "title": "取得完了",
+   "cast": [
+    "shisha_9000"
+   ],
+   "minChapter": 5,
+   "dialogue": [
+    "環境データ、取得完了。",
+    "何がわかった？",
+    "優しい分析。"
+   ],
+   "caption": "SHISHA-9000は、吸う人の様子も読み取る。",
+   "current": "allcast-nine-thousand-scan-b.png",
+   "files": [
+    {
+     "file": "allcast-nine-thousand-scan-a.png",
+     "source_version": "A-v1",
+     "status": "superseded",
+     "sha256": "246534243ecac88beb0e232d07a8794cf53273975b284ccdf0d35014775ddb0c"
+    },
+    {
+     "file": "allcast-nine-thousand-scan-b.png",
+     "source_version": "A-v2",
+     "status": "candidate",
+     "sha256": "9eebe7cf4802ff67995a0f8f1868765699541842018102524d1ec3a046c49722"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "yoru-backdoor-boss",
+   "title": "裏口の主",
+   "cast": [
+    "yoru"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "裏口の主に挨拶。",
+    "主？",
+    "猫だった。"
+   ],
+   "caption": "mukaiの裏口には、てつこがいます。",
+   "current": "allcast-yoru-backdoor-boss-b.png",
+   "files": [
+    {
+     "file": "allcast-yoru-backdoor-boss-a.png",
+     "source_version": "A-v1",
+     "status": "superseded",
+     "sha256": "2d540d48d94838ed7fdb187664ac4b353c0dbb4340bd912d3437e84f775aeaae"
+    },
+    {
+     "file": "allcast-yoru-backdoor-boss-b.png",
+     "source_version": "A-v2",
+     "status": "candidate",
+     "sha256": "cd8485227ad99099571f816f036987b71e4e97cb60038e649d5096669c04238c"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "yoru-next-head",
+   "title": "次の頭",
+   "cast": [
+    "yoru"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "いつ入ればいい？",
+    "次の頭で入れよう。",
+    "注文もそれ？"
+   ],
+   "caption": "ヨルさんの口癖は、「次の頭で入れよう」。",
+   "current": "allcast-yoru-next-head.png",
+   "files": [
+    {
+     "file": "allcast-yoru-next-head.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "0acbb1d11d3371243756e429161c25001d6a82b5bef6d1610bd51c52fd370f27"
+    }
+   ],
+   "warnings": [],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "dasilva-acai",
+   "title": "おかわり",
+   "cast": [
+    "da_silva"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "食べな！",
+    "一杯で十分です。",
+    "増えてる。"
+   ],
+   "caption": "太陽の好きな味は、アサイー。",
+   "current": "allcast-dasilva-acai-b.png",
+   "files": [
+    {
+     "file": "allcast-dasilva-acai-a.png",
+     "source_version": "A-v1",
+     "status": "superseded",
+     "sha256": "2a74b4c0db7c8a24738ea6fb992504beeef95c847617ef555c00f4f57fb24b39"
+    },
+    {
+     "file": "allcast-dasilva-acai-b.png",
+     "source_version": "A-v2",
+     "status": "candidate",
+     "sha256": "20b4ea06d4f852b0d3a284fd6e6f1dd7ac7fbc0a0e56d701fb331c11e66863cf"
+    }
+   ],
+   "warnings": [
+    "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+    "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。",
+    "左右の切出し出力高さに1〜3px差が残る。厳密な同高化は未実施。"
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "dasilva-festa-break",
+   "title": "休憩もフェスタ",
+   "cast": [
+    "da_silva"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "少し休憩を。",
+    "休憩もフェスタだ！",
+    "休めない。"
+   ],
+   "caption": "太陽にとっては、何でもお祭り。",
+   "current": "allcast-dasilva-festa-break.png",
+   "files": [
+    {
+     "file": "allcast-dasilva-festa-break.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "6ae9485bd2aa183839b5327a375434db82239b6e1f5d46c5a718c6a71f037c42"
+    }
+   ],
+   "warnings": [
+    "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+    "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
+   ],
+   "ownerVerdict": "adopt",
+   "gameRegistration": "remake/js/core/loading-comics.js の dasilva-festa-break"
+  },
+  {
+   "id": "emil-murmur",
+   "title": "ひとこと",
+   "cast": [
+    "emil"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "どうぞ。",
+    "……。",
+    "今の、褒めてる？"
+   ],
+   "caption": "エミルは、心が動くと母国語でつぶやく。",
+   "current": "allcast-emil-murmur.png",
+   "files": [
+    {
+     "file": "allcast-emil-murmur.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "110c0731c2387b92a6b4698b18d046fc15d30bf95e9cc109d11e94fb5633e33b"
+    }
+   ],
+   "warnings": [
+    "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+    "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。",
+    "左右の切出し出力高さに1〜3px差が残る。厳密な同高化は未実施。"
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "emil-repair",
+   "title": "直す人",
+   "cast": [
+    "emil"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "直りますか？",
+    "見せて。",
+    "店ごと直った。"
+   ],
+   "caption": "エミルは、受け継いだ仕事を手で伝える人です。",
+   "current": "allcast-emil-repair-c.png",
+   "files": [
+    {
+     "file": "allcast-emil-repair-a.png",
+     "source_version": "A-v1",
+     "status": "superseded",
+     "sha256": "1e890fa4bfc9516cc829245e580abec99d82a7bfd57f7efe62b8db3fff1d0e73"
+    },
+    {
+     "file": "allcast-emil-repair-b.png",
+     "source_version": "A-v2",
+     "status": "superseded",
+     "sha256": "dd1325b3dd69f9d4849d5536723f0f9e2094fb0542ec46365828888359ba4b3d"
+    },
+    {
+     "file": "allcast-emil-repair-c.png",
+     "source_version": "A-v3",
+     "status": "candidate",
+     "sha256": "6e81000e1978387e3031fce6da2054964faebb8d63cb53cb9b8e3fb26116f42a"
+    }
+   ],
+   "warnings": [
+    "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+    "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。",
+    "左右の切出し出力高さに1〜3px差が残る。厳密な同高化は未実施。"
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "nagumo-drink-bar",
+   "title": "入り口の店",
+   "cast": [
+    "nagumo"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "お店、入りやすいです。",
+    "入り口だからな。",
+    "審査が始まった。"
+   ],
+   "caption": "須井会長は、自分の店にも審査の目を向ける。",
+   "current": "allcast-nagumo-drink-bar-b.png",
+   "files": [
+    {
+     "file": "allcast-nagumo-drink-bar-a.png",
+     "source_version": "A-v1",
+     "status": "superseded",
+     "sha256": "c538b8ade6bfa0d290233aaaae6c228ebeb3aca38a806f0057ddbd88dadbd1c6"
+    },
+    {
+     "file": "allcast-nagumo-drink-bar-b.png",
+     "source_version": "A-v2",
+     "status": "candidate",
+     "sha256": "b846f76e8989c53fe9729dca3c92b70f2fd6a6fc21a0b20120dde500cb1d6f39"
+    }
+   ],
+   "warnings": [
+    "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+    "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "nagumo-stamp-card",
+   "title": "会長の名刺",
+   "cast": [
+    "nagumo"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "須井だ。",
+    "会長さん……",
+    "スタンプカードだ。"
+   ],
+   "caption": "C.STATIONは、誰でも入りやすい店です。",
+   "current": "allcast-nagumo-stamp-card.png",
+   "files": [
+    {
+     "file": "allcast-nagumo-stamp-card.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "4b3258d06ba8ad7f06248fad7fabc568174140b894bc5bd4adb5cc82c5b5dfb9"
+    }
+   ],
+   "warnings": [
+    "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+    "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
+   ],
+   "ownerVerdict": "adopt",
+   "gameRegistration": "remake/js/core/loading-comics.js の nagumo-stamp-card"
+  },
+  {
+   "id": "pakki-live-lunch",
+   "title": "昼も実況",
+   "cast": [
+    "pakki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "マイク、外さないの？",
+    "ぷぷぷっ！",
+    "昼も実況だ。"
+   ],
+   "caption": "大会MCのパッキーは、いつでも実況中。",
+   "current": "allcast-pakki-live-lunch.png",
+   "files": [
+    {
+     "file": "allcast-pakki-live-lunch.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "890e73367ffdf270d504d805338bedea4a9526201006ae1714afd40da440e0d0"
+    }
+   ],
+   "warnings": [
+    "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+    "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "pakki-quiet",
+   "title": "静かな日",
+   "cast": [
+    "pakki"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "ぷぷぷっ！満席ッ！",
+    "元気ですね。",
+    "お茶でも黙った。"
+   ],
+   "caption": "パッキーは、本当においしいと黙るらしい。",
+   "current": "allcast-pakki-quiet.png",
+   "files": [
+    {
+     "file": "allcast-pakki-quiet.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "e715f173fa0e66d8eaf5eefbc0f582b48ad1a7f2de52b5b6e14c51928ca79b96"
+    }
+   ],
+   "warnings": [
+    "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+    "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "sheikh-receive-all",
+   "title": "全部受け止める",
+   "cast": [
+    "sheikh"
+   ],
+   "minChapter": 4,
+   "dialogue": [
+    "何でも聞いていい？",
+    "全部、受け止めよう。",
+    "本当に全部だ。"
+   ],
+   "caption": "世界王者の器は、とても大きい。",
+   "current": "allcast-sheikh-receive-all.png",
+   "files": [
+    {
+     "file": "allcast-sheikh-receive-all.png",
+     "source_version": "A-v1",
+     "status": "candidate",
+     "sha256": "34450505b112676f451c446f99db71f69ed101b0bcf93e8b83863fd151109ad2"
+    }
+   ],
+   "warnings": [
+    "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+    "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。",
+    "左右の切出し出力高さに1〜3px差が残る。厳密な同高化は未実施。"
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "sheikh-traveler",
+   "title": "旅の人",
+   "cast": [
+    "sheikh"
+   ],
+   "minChapter": 4,
+   "dialogue": [
+    "旅の人ですか？",
+    "ただの旅人だ。",
+    "隠しきれてない。"
+   ],
+   "caption": "ドバイで会った旅人は、実は。",
+   "current": "allcast-sheikh-traveler-b.png",
+   "files": [
+    {
+     "file": "allcast-sheikh-traveler-a.png",
+     "source_version": "A-v1",
+     "status": "superseded",
+     "sha256": "e9844ae9e4219d6ddaf97e33b62f4909e189197baf92a7b3bd57188c8ce9efbb"
+    },
+    {
+     "file": "allcast-sheikh-traveler-b.png",
+     "source_version": "A-v2",
+     "status": "candidate",
+     "sha256": "45855dc1cfd627aa0206311cd00fd27c9adc4c81721367019844204b34fee421"
+    }
+   ],
+   "warnings": [
+    "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+    "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
+   ],
+   "ownerVerdict": "adopt",
+   "gameRegistration": "remake/js/core/loading-comics.js の sheikh-traveler"
+  },
+  {
+   "id": "uranaishi-fate",
+   "title": "近い縁",
+   "cast": [
+    "uranaishi"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "縁、見えます？",
+    "ヒヒ、見えるよ。",
+    "縁が近い。"
+   ],
+   "caption": "路上の占い師は、腕は本物らしい。",
+   "current": "allcast-uranaishi-fate-b.png",
+   "files": [
+    {
+     "file": "allcast-uranaishi-fate-a.png",
+     "source_version": "A-v1",
+     "status": "superseded",
+     "sha256": "dee344dc7db93f11e6b0067e1ec344b0507b9b281dba2b4c3c5d9bbf6eee348e"
+    },
+    {
+     "file": "allcast-uranaishi-fate-b.png",
+     "source_version": "A-v2",
+     "status": "candidate",
+     "sha256": "e46078b144d973fa6027e4fda4f3a47885bc062ee7f44269d28d78ede8acfad1"
+    }
+   ],
+   "warnings": [
+    "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+    "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  },
+  {
+   "id": "uranaishi-hood",
+   "title": "フードの奥",
+   "cast": [
+    "uranaishi"
+   ],
+   "minChapter": 1,
+   "dialogue": [
+    "顔、見えないですね。",
+    "ヒヒ。",
+    "二重だった。"
+   ],
+   "caption": "占い師の素顔は、誰も知らない。",
+   "current": "allcast-uranaishi-hood-d.png",
+   "files": [
+    {
+     "file": "allcast-uranaishi-hood-a.png",
+     "source_version": "A-v1",
+     "status": "superseded",
+     "sha256": "982fbfdd9c524bf4a6e376046d27dc07dd68099acc018985366bff27968b4d09"
+    },
+    {
+     "file": "allcast-uranaishi-hood-b.png",
+     "source_version": "A-v2",
+     "status": "superseded",
+     "sha256": "6868ec5277a96a19793f8147843817d562f495068f5c7c52f9dc0cff64656588"
+    },
+    {
+     "file": "allcast-uranaishi-hood-c.png",
+     "source_version": "A-v3",
+     "status": "superseded",
+     "sha256": "7b2a2802c8ee7cf500c3edcd1da4bf6eda1b6c9aefd9183b5f7b8a917611b0d0"
+    },
+    {
+     "file": "allcast-uranaishi-hood-d.png",
+     "source_version": "A-v4",
+     "status": "candidate",
+     "sha256": "9cd184d8e068b24a5797239c1bbc24b44c0700bffc5e9a27a0c81247f4934976"
+    }
+   ],
+   "warnings": [
+    "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+    "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。",
+    "左右の切出し出力高さに1〜3px差が残る。厳密な同高化は未実施。"
+   ],
+   "ownerVerdict": "reject",
+   "gameRegistration": ""
+  }
+ ],
+ "ownerSelection": {
+  "date": "2026-11-02",
+  "adopt": 4,
+  "hold": 2,
+  "reject": 28,
+  "page": "https://claude.ai/artifact/NniXASgEjSy16wNcBGS9Dr"
+ }
+}

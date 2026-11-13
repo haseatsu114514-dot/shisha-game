@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE4D2  枠の段 1: 2コマ@y=272
+  コマ1: 718x492 @(39,272) 比率 1.459 → ok
+  コマ2: 720x492 @(779,272) 比率 1.463 → ok
+コマ1: 718x492 (1.459) → 左右に各1.4%の紙帯 → 出力 738x492  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-red-thread/panels/uranaishi-red-thread-1.webp (72 KiB)
+コマ2: 720x492 (1.463) → 左右に各1.2%の紙帯 → 出力 738x492  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-red-thread/panels/uranaishi-red-thread-2.webp (84 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "uranaishi-red-thread",
+  "title": "絡まる縁",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "占い師は、カードで人と人の縁を見てくれる。",
+  "panels": [
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-red-thread/panels/uranaishi-red-thread-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-red-thread/panels/uranaishi-red-thread-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-red-thread/source-v1.png",
+      "region": {
+        "x": 39,
+        "y": 272,
+        "width": 718,
+        "height": 492,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-red-thread/source-v1.png",
+      "region": {
+        "x": 779,
+        "y": 272,
+        "width": 720,
+        "height": 492,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "uranaishi-red-thread-1.webp",
+      "width": 738,
+      "height": 492,
+      "sha256": "f98cca0277f691f36ba02c8eeca789cf6f312165914ef7874e68b0ed60909ab8"
+    },
+    {
+      "file": "uranaishi-red-thread-2.webp",
+      "width": 738,
+      "height": 492,
+      "sha256": "b2811bb47acc1913f86074981918734357279d2c95eb30414dcee77126f1bf3b"
+    }
+  ]
+}

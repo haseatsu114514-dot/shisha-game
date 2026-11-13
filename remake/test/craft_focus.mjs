@@ -14,6 +14,8 @@ if (shots) fs.mkdirSync(shots, { recursive: true });
 const errors = [];
 const open = async (viewport, mobile = false) => {
   const context = await browser.newContext({ viewport, isMobile: mobile, hasTouch: mobile });
+  // 選ぶ工程の初回説明（#3028）は step-intro スイートで検証する。support.mjs と同じく既定で止める。
+  await context.addInitScript(() => { try { localStorage.setItem('suien_step_intro', 'off'); } catch {} });
   const page = await context.newPage(); page.on('pageerror', e => errors.push(e.message));
   await installLoadingComicReader(page);
   await page.goto(base); await page.waitForSelector('[data-test="title-new"]');
@@ -105,9 +107,10 @@ try {
   await page.evaluate(() => T.session.reactAudience(cs,'good',{force:true}));
   assert.equal(await page.locator('.bench-audience').getAttribute('data-speaker'), 'dr_kemuri');
   assert.equal(await page.locator('.audience-person figcaption').textContent(), '？？？');
-  assert.equal(await page.evaluate(() => Object.keys(T.core.state.met).length), 0);
+  // #2750: 開始時から知るのはスミさん（上司）とつむぎ（顔見知り）だけ。審査員の表示・反応で名前を解禁しない。
+  assert.deepEqual(await page.evaluate(() => T.core.state.met), { sumi: true, tsumugi: true });
   await page.evaluate(async () => {
-    ['nagumo','maezono','dr_kemuri'].forEach(T.core.markMet);
+    ['sui','maezono','dr_kemuri'].forEach(T.core.markMet);
     window.cs = T.session.newSession('tournament'); await T.openBench(cs, { steps });
     __remake.craftTest.auto = 'good';
     window.heatRun = T.heat.runHeat(cs);
@@ -130,13 +133,13 @@ try {
   await page.locator('[data-test="step-details"]').click(); assert(await page.locator('.rc-lines').isVisible());
   await page.locator('[data-test="step-details"]').click();
   await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.heatRun);
-  for (const judge of ['nagumo','maezono','dr_kemuri']) {
+  for (const judge of ['sui','maezono','dr_kemuri']) {
     await page.evaluate(judge => T.session.reactAudience(cs,'just',{judge,force:true}),judge);
     assert.equal(await page.locator('.audience-person').count(),1);
     assert.equal(await page.locator('.audience-person').getAttribute('data-person'),judge);
   }
-  await page.evaluate(() => T.session.reactAudience(cs,'just',{judge:'nagumo',force:true}));
-  assert.match(await page.locator('[data-person="nagumo"] img').getAttribute('src'), /thinking/);
+  await page.evaluate(() => T.session.reactAudience(cs,'just',{judge:'sui',force:true}));
+  assert.match(await page.locator('[data-person="sui"] img').getAttribute('src'), /thinking/);
   // 同じスミさんでも、システム説明はチュートリアル限定。成績記号はまだ出さない。
   const modes=[];
   for (const mode of ['tutorial','rehearsal']) {
@@ -151,7 +154,7 @@ try {
   assert.match(modes[0].first,/針を止め/); assert.match(modes[0].live,/キープ左/);
   assert(!/針|ゲージ|ボタン|キープ左/.test(modes[1].first+modes[1].live));
   assert(modes.every(m=>m.rating));
-  console.log('[craft focus] PASS: one current speaker, real Sumi/judge success feedback, distinct ◎/○/△ scores and lines, optional result detail, hidden undiscovered names and reserved Nagumo');
+  console.log('[craft focus] PASS: one current speaker, real Sumi/judge success feedback, distinct ◎/○/△ scores and lines, optional result detail, hidden undiscovered names and reserved Sui');
 
   // 自主練4工程は、途中の感触も3段階の結果もはじめ本人の内心。
   for (const step of ['holes','heat','steam','pull']) {
@@ -289,7 +292,7 @@ try {
   ]) {
     const p = await open(viewport, mobile);
     await p.evaluate(async () => {
-      T.core.state.stamina = 80; ['nagumo','maezono','dr_kemuri'].forEach(T.core.markMet);
+      T.core.state.stamina = 80; ['sui','maezono','dr_kemuri'].forEach(T.core.markMet);
       window.cs = T.session.newSession('tournament'); await T.openBench(cs,{steps}); window.timerRun = T.steps.stepSteamTime(cs);
     });
     await loaded(p);

@@ -46,13 +46,9 @@ OUT = ROOT / "remake" / "data" / "manifest.json"
 
 
 def load_characters():
-    """ゲームの DB.characters と同じ順序で人物定義と独立 profile を合成する。"""
+    """ゲームの DB.characters と同じ人物定義を読み込む。"""
     characters = {c["id"]: c for c in json.loads(
         (ROOT / "data/characters.json").read_text(encoding="utf-8"))}
-    samechan = json.loads((ROOT / "data/dialogue/samechan.json").read_text(encoding="utf-8"))
-    profile = samechan.get("profile")
-    if profile and profile.get("id"):
-        characters[profile["id"]] = profile
     return characters
 
 
@@ -86,11 +82,20 @@ def measure(png: Path, anchor="feet"):
     return {"top": y0 / h, "bottom": y1 / h, "ax": feet / w, "aspect": w / h}
 
 
-def portraits(character_ids=None):
+# 頭で横位置を合わせる人（spriteAnchor: "head"）のうち、表情ごとのポーズの差で頭の重心が左右に動く人。
+# 「通常」だけを基準にすると、ほかの表情の頭が画面の中央から1pxを超えて外れるので、
+# 全表情の頭の重心の最小と最大の中間に合わせる（どの表情も中央から同じ幅に収まる。絵は動かさない）。
+# 新版のあげは: 5表情で約1.5pxの差がある（remake/test/browser/portrait_framing.mjs が「中央から1px以内」を確かめる）。
+HEAD_ANCHOR_MIDRANGE = {("new", "ageha")}
+
+
+def portraits(character_ids=None, base=None, style=None):
     """キャラごとに表情一覧と共通の framing 値（全表情で同じ＝表情を変えても絵が動かない）。"""
     out = {}
-    base = ASSETS / "sprites" / "characters"
-    anchor_modes = {cid: c.get("spriteAnchor", "feet")
+    base = base or ASSETS / "sprites" / "characters"
+    if not base.exists():
+        return {}
+    anchor_modes = {cid: c.get("spriteAnchorVariants", {}).get(style, c.get("spriteAnchor", "feet"))
                     for cid, c in load_characters().items()}
     for d in sorted(p for p in base.iterdir() if p.is_dir()):
         if character_ids is not None and d.name not in character_ids:
@@ -111,12 +116,21 @@ def portraits(character_ids=None):
             top = min(r["top"] for r in metrics.values())
             bottom = max(r["bottom"] for r in metrics.values())
             ref = metrics.get("normal") or next(iter(metrics.values()))
+            ax = ref["ax"]
+            if (style, d.name) in HEAD_ANCHOR_MIDRANGE and anchor_modes.get(d.name) == "head":
+                spread = [r["ax"] for r in metrics.values()]
+                ax = (min(spread) + max(spread)) / 2
+            # 新絵は通常の人物高を保つ。高く掲げた小物で本人を縮めない。
+            frame_top = ref["top"] if style else top
+            frame_bottom = ref["bottom"] if style else bottom
             entry.update({
-                "h": round(bottom - top, 4),     # 本体の高さ（画像高さ比）
-                "b": round(1 - bottom, 4),       # 下端の余白（画像高さ比）
-                "ax": round(ref["ax"], 4),       # normal の横アンカー（全表情共通）
+                "h": round(frame_bottom - frame_top, 4),
+                "b": round(1 - frame_bottom, 4),
+                "ax": round(ax, 4),              # normal の横アンカー（全表情共通。HEAD_ANCHOR_MIDRANGE の人は全表情の中間）
                 "aspect": round(ref["aspect"], 4),
             })
+            if style and frame_top - top > 0.002:
+                entry["topOverhang"] = round(frame_top - top, 4)
         if anchor_modes.get(d.name) == "head":
             entry["anchor"] = "head"
         out[d.name] = entry
@@ -149,7 +163,7 @@ def title_arts():
     # titleArtDisplayCharacters uses this character order when picking a title art.
     # Keep manifest groups aligned so callers indexing its unique characters agree.
     character_order = (
-        "ageha", "hiyori", "samechan", "mashiro", "minto", "rin", "tsumugi",
+        "ageha", "hiyori", "samechan", "mashiro", "minto", "rio", "tsumugi",
         "sumi", "naru", "adam",
     )
     rank = {character: index for index, character in enumerate(character_order)}
@@ -161,23 +175,18 @@ def title_arts():
     return sorted(out, key=lambda art: (rank.get(art["character"], len(rank)), art["file"]))
 
 
-def continue_portraits():
-    """正規立ち絵の顔を中央に寄せる。顔アイコンと同じ測定値を元画像の比で記録。"""
+def continue_portraits(style="classic"):
+    """正規立ち絵の顔を中央に寄せる。顔アイコンと同じ測定値を元画像の比で記録（tools/make_face_icons.py）。"""
     sys.path.insert(0, str(ROOT / "tools"))
-    from make_face_icons import face_box
-    out = {}
-    for character in ("sumi", "tsumugi", "minto", "rin", "ageha", "mashiro", "samechan"):
-        faces = {}
-        for path in sorted((ASSETS / "sprites/characters" / character).glob(f"chr_{character}_*.png")):
-            image = Image.open(path).convert("RGBA")
-            box = face_box(character, image)
-            if box:
-                x, y, side = box
-                face = path.stem.removeprefix(f"chr_{character}_")
-                faces[face] = {"cx": round((x + side / 2) / image.width, 5),
-                               "top": round(y / image.height, 5), "size": round(side / image.height, 5)}
-        out[character] = faces
-    return out
+    from make_face_icons import continue_portraits as measure_continue
+    return measure_continue(style)
+
+
+def face_frames():
+    """顔アイコンと同じ顔の枠（作業台の審査員・心得の盤が使う）。tools/make_face_icons.py の frames()"""
+    sys.path.insert(0, str(ROOT / "tools"))
+    from make_face_icons import frames
+    return frames()
 
 
 def intro_art(character_ids=None):
@@ -259,10 +268,36 @@ def main():
     scope.add_argument("--cgs-only", nargs="+", metavar="PNG", help="指定したCGの目録・WebPだけ更新")
     scope.add_argument("--making-only", nargs="+", metavar="PNG", help="指定した制作UIパーツの目録・WebPだけ更新")
     scope.add_argument("--scene-props-only", nargs="+", metavar="PNG", help="指定した背景の重ね素材の目録・WebPだけ更新")
+    scope.add_argument("--portrait-variants-only", nargs="+", metavar="ID", help="新立ち絵だけ計測・WebP更新。現行は変更しない")
     scope.add_argument("--portraits-only", nargs="+", metavar="ID", help="指定した人物の立ち絵計測・WebPだけ更新")
     scope.add_argument("--intros-only", nargs="+", metavar="ID", help="指定した人物の登場背景・配置・WebPだけ更新")
+    parser.add_argument("--portrait-style", choices=("new", "nanami"), default="new", help="立ち絵の画風（限定更新で使用）")
     args = parser.parse_args()
     generated = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    if args.portrait_variants_only:
+        import build_images
+        ids = set(args.portrait_variants_only)
+        if not ids <= load_characters().keys():
+            parser.error("人物設定がありません")
+        style = args.portrait_style
+        entries = portraits(ids, ASSETS / f"sprites/character_variants/{style}", style=style)
+        if ids != entries.keys() or any("normal" not in e["faces"] or "h" not in e for e in entries.values()):
+            parser.error("新立ち絵の通常PNG・有効な透過領域がありません")
+        manifest = json.loads(OUT.read_text(encoding="utf-8"))
+        manifest.setdefault("portraitVariants", {}).setdefault(style, {}).update(entries)
+        webp = set(manifest.get("webp", []))
+        for cid, entry in entries.items():
+            for face in entry["faces"]:
+                rel = f"sprites/character_variants/{style}/{cid}/chr_{cid}_{face}.png"
+                dst = build_images.OUT / Path(rel).with_suffix(".webp")
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                dst.write_bytes(build_images.encode(ASSETS / rel, rel))
+                webp.add(rel)
+        manifest["webp"] = sorted(webp)
+        manifest["generated"] = generated
+        OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(f"wrote {len(entries)} new portrait families (classic unchanged)")
+        return
     if args.intros_only:
         import build_images
         ids = set(args.intros_only)
@@ -428,14 +463,21 @@ def main():
         "generated": generated,
         "limeMedia": lime_media(),
         "portraits": portraits(),
+        "portraitVariants": {style: portraits(base=ASSETS / f"sprites/character_variants/{style}", style=style) for style in ("new", "nanami")},
         "backgrounds": listing("backgrounds"),
         # 仮置きCG（文字だけの画像）は載せない＝場面では飛ばし、ギャラリーにも出さない
         "cgs": [f for f in listing("cgs") if not is_placeholder(ASSETS / "cgs" / f)],
         "faceIcons": listing("ui/face_icons"),
+        # 画風ごとの顔アイコン（assets/ui/face_icons/<画風>/）と顔の枠は tools/make_face_icons.py が作る
+        "faceIconVariants": {d.name: listing(f"ui/face_icons/{d.name}") for d in sorted((ASSETS / "ui/face_icons").iterdir())
+                             if d.is_dir() and listing(f"ui/face_icons/{d.name}")},
+        "faceFrames": face_frames(),
         "making": listing("ui/making"),
         "sceneProps": listing("ui/scene_props"),
         "continueUI": listing("ui/continue"),
         "continuePortraits": continue_portraits(),
+        "continuePortraitVariants": {style: continue_portraits(style) for style in ("new", "nanami")
+                                     if (ROOT / "assets/ui/face_icons" / style).is_dir()},
         "introArt": intro_art(),
         "titleArts": title_arts(),
         "makingBox": making_boxes(),

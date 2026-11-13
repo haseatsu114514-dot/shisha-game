@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
 import { travelToCity as travel } from "./station_helpers.mjs";
+import { flickFromHandle } from "./axe_flick_input.mjs";
 const shots = process.env.COMPARISON_DIR;
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
@@ -11,11 +12,16 @@ async function hit(page, id) {
   const button = page.locator(t(id));
   if (await page.evaluate(() => matchMedia("(pointer:coarse)").matches)) await button.tap(); else await button.click();
 }
-async function setup(page, { chapter = 1, day = chapter === 1 ? 5 : 16, slot = chapter === 1 ? 1 : 0, money = 12000, club = false, clubIds = ["hiyori"], run = true } = {}) {
+async function setup(page, { chapter = 1, day = chapter === 1 ? 5 : 16, slot = chapter === 1 ? 1 : 0, money = 12000, club = false, clubIds = ["hiyori"], run = true, lessonDone = true } = {}) {
   page.setDefaultTimeout(20000);
-  await page.evaluate(async ({ chapter, day, slot, money, club, clubIds, run }) => {
+  await page.evaluate(async ({ chapter, day, slot, money, club, clubIds, run, lessonDone }) => {
+    // 施設の直接成長（#784: 斧投げBarは根性に2P）を見るため、この端末を旧しくみにする。
+    // 心得の盤（SBD97・91e0463f0 で通常プレイの既定を true に）では施設は火種になり能力を書き換えない。
+    // 盤側の挙動は spot_encounters.mjs / paid_action_growth.mjs が受け持つ。
+    localStorage.setItem("suien_growth_preview", "0");
     const core = await import("./js/core/state.js"), s = core.newGame();
     s.flags._rei_trpg_introduced = true; s.flags._axe_bar_legacy_access = true; // #577: 既存店舗の精算・取消回帰は互換保存として維持
+    if (lessonDone) s.flags._axe_lesson_done = true; // AXR08: 初回の店主レッスンは first-play の検査で扱う
     Object.assign(s.flags, { _axe_bar_sighting_done: true, _axe_bar_sighting_day: day - 1, _axe_bar_sighting_chapter: chapter }); // 目撃後の既存店舗回帰
     Object.assign(s, { chapter, day, slot, money, phase: "daily", stamina: 80 });
     Object.assign(s.flags, { ["_morning_" + s.day]: true, _errand_scout_done: true, _delivery_adam_done: true,
@@ -37,7 +43,7 @@ async function setup(page, { chapter = 1, day = chapter === 1 ? 5 : 16, slot = c
       await (await import("./js/chapters/ch2-city-data.js")).loadPreparationDialogues();
       void (await import("./js/chapters/ch2-preparation.js")).runChapterTwoPreparation();
     } else void (await import("./js/daily/calendar.js")).runDaily({ nightEvents: {}, onQuit() {} });
-  }, { chapter, day, slot, money, club, clubIds, run });
+  }, { chapter, day, slot, money, club, clubIds, run, lessonDone });
   if (run) await page.locator(map).waitFor();
 }
 // 店の案内役（マキ・サイ）は初回の登場カットインで面識が付く（8100c4f6・recent_intros.mjs で検証）。
@@ -60,16 +66,28 @@ async function go(page, id) {
   await page.locator(t(id === "axe_bar" ? "axe-bar-practice" : "trpg-campaign-notice")).waitFor();
 }
 async function phase(page, phase) { await page.waitForFunction(p => document.querySelector('[data-test="axe-game"]')?.dataset.phase === p, phase); }
+// Drive the new default with real board taps and a real mouse/touch drag; never inject scores.
+async function aimAxe(page, touch = false) {
+  assert.equal(await page.locator('[data-test="axe-game"]').getAttribute('data-input-mode'), 'tap-pull');
+  const point = await page.locator('[data-test="axe-target"]').evaluate(node => {
+    const p = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
+    return { x: p.x, y: p.y };
+  });
+  if (touch) await page.touchscreen.tap(point.x, point.y); else await page.mouse.click(point.x, point.y);
+  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'power');
+}
+async function pullAxe(page, touch = false, power = .62) {
+  // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、power になる速さで弾く（axe_flick_input.mjs）。
+  await flickFromHandle(page, { touch, power });
+  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'result');
+  const actual = Number(await page.locator('[data-test="axe-game"]').getAttribute('data-power'));
+  assert(Math.abs(actual - power) < .06, `actual flick power ${actual} must match the gesture ${power}`);
+}
 async function finishAxe(page, count, confirm = true, aimed = false) {
-  for (let i = 0; i < count; i++) for (const p of ["choice", "horizontal", "vertical", "power", "result"]) {
-    await phase(page, p);
-    if (aimed && ["horizontal", "vertical", "power"].includes(p)) {
-      // 既存axe_throw.mjsと同じ、画面に描かれている針を読んで止める操作。
-      await page.waitForFunction(target => {
-        const root = document.querySelector('[data-test="axe-game"]'), n = Number(root.dataset.timing);
-        return !root.querySelector('[data-test="axe-action"]').disabled && n >= target - .02 && n <= target + .005;
-      }, p === "power" ? .62 : .5);
-    }
+  const touch = await page.evaluate(() => navigator.maxTouchPoints > 0);
+  for (let i = 0; i < count; i++) {
+    await phase(page, "choice"); await aimAxe(page, touch);
+    await pullAxe(page, touch, aimed ? .62 : .3);
     await hit(page, "axe-action");
   }
   await phase(page, "summary");
@@ -80,9 +98,44 @@ async function finishAxe(page, count, confirm = true, aimed = false) {
   }
 }
 async function lines(page) { for (let i = 0; i < 35 && await page.locator(t("trpg-next")).isVisible(); i++) await hit(page, "trpg-next"); }
-async function roll(page) { await hit(page, "trpg-roll"); await page.locator(t("trpg-settle")).waitFor(); await hit(page, "trpg-settle"); await lines(page); }
+
+// New scenes: two questions for the story's character after the first roll, a twist after the guess.
+async function interviewStep(page) {
+  const snap = () => page.evaluate(() => window.__trpg?.snapshot?.() ?? null);
+  if ((await snap())?.phase !== "interview" && !(await page.locator('[data-test="trpg-interview-done"], [data-test^="trpg-topic-"]').count())) return;
+  for (let n = 0; n < 2; n++) {
+    const topic = page.locator('[data-test^="trpg-topic-"]:not([disabled]):not(.selected)').first();
+    if (!await topic.count()) break;
+    if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await topic.tap(); else await topic.click();
+    for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+  }
+  const done = page.locator('[data-test="trpg-interview-done"]');
+  if (await page.evaluate(() => navigator.maxTouchPoints > 0)) await done.tap(); else await done.click();
+}
+async function twistStep(page) {
+  const option = page.locator('[data-test^="trpg-plan-tactic-"]').first();
+  if (!await option.count()) return;
+  const touch = await page.evaluate(() => navigator.maxTouchPoints > 0);
+  if (touch) await option.tap(); else await option.click();
+  const open = page.locator('[data-test="trpg-twist-open"]');
+  if (touch) await open.tap(); else await open.click();
+  const card = page.locator('[data-test^="trpg-approach-"]').first();
+  if (touch) await card.tap(); else await card.click();
+  for (let i = 0; i < 40 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+  const roll = page.locator('[data-test="trpg-roll"]');
+  if (touch) await roll.tap(); else await roll.click();
+  await page.locator('[data-test="trpg-settle"]').waitFor();
+  const settle = page.locator('[data-test="trpg-settle"]');
+  if (touch) await settle.tap(); else await settle.click();
+  for (let i = 0; i < 60 && await page.locator('[data-test="trpg-next"]').isVisible(); i++) await page.locator('[data-test="trpg-next"]').click();
+}
+async function declare(page) {
+  const card = page.locator('[data-test^="trpg-approach-"]').first();
+  if (await card.count() && await card.isVisible()) { await card.click(); await lines(page); }
+}
+async function roll(page) { await declare(page); await hit(page, "trpg-roll"); await page.locator(t("trpg-settle")).waitFor(); await hit(page, "trpg-settle"); await lines(page); }
 async function manualSave(page) {
-  await hit(page, "hud-menu"); await hit(page, "menu-save"); await hit(page, "slot-1");
+  await hit(page, "hud-menu"); await hit(page, "menu-tab-system"); await hit(page, "menu-save"); await hit(page, "slot-1");
   await page.waitForFunction(() => localStorage.getItem("suien_remake_slot1") !== null);
 }
 
@@ -97,6 +150,9 @@ await suite("play-spots", async runCheck => {
     // ピンの装飾はボタン枠から出るため、文字そのものの収まりを検査する。
     await assertFits(page, ".spot-pin .sub-label");
     await go(page, "axe_bar"); await assertFits(page, ".axe-bar-menu button");
+    await hit(page, "axe-bar-gear-open"); await assertFits(page, ".axe-bar-menu button");
+    await capture(page, label + "-axe-shop");
+    await hit(page, "axe-bar-gear-back"); await assertFits(page, ".axe-bar-menu button");
     await page.locator('[data-test="venue-host-maki"] img').evaluate(img => img.decode());
     await capture(page, label + "-axe-entry");
     assert.deepEqual(await value(page), before);
@@ -131,7 +187,33 @@ await suite("play-spots", async runCheck => {
     await page.evaluate(async () => { window.spotCore = await import("./js/core/state.js"); });
     assert.deepEqual(await value(page), nextNight);
     await go(page, "axe_bar"); await assertFits(page, ".axe-bar-menu button");
+    await hit(page, "axe-bar-gear-open"); await assertFits(page, ".axe-bar-menu button");
+    await capture(page, label + "-axe-shop");
+    await hit(page, "axe-bar-gear-back"); await assertFits(page, ".axe-bar-menu button");
   }, options);
+
+  await check("first-play-owner-lesson-then-paid-game", async page => {
+    await setup(page, { lessonDone: false }); const before = await value(page);
+    await go(page, "axe_bar"); await hit(page, "axe-bar-practice");
+    // AXR08: the first paid play starts with Maki's free lesson, before anything is charged.
+    const coach = page.locator('[data-test="axe-coach"][data-kind="welcome"]'); await coach.waitFor();
+    assert.match(await coach.innerText(), /斧は初めて/);
+    assert.equal(await page.locator('[data-test="axe-game"]').getAttribute("data-tutorial"), "true");
+    assert.deepEqual(await value(page), before, "The lesson itself charges nothing");
+    await capture(page, "first-play-owner-lesson");
+    await hit(page, "axe-coach-skip");
+    await page.locator('[data-test="axe-game"][data-tutorial="false"][data-phase="choice"]').waitFor();
+    assert.equal(await page.evaluate(() => spotCore.state.flags._axe_lesson_done), true, "Skipping still counts as having been offered the lesson");
+    await finishAxe(page, 3); await page.locator(map).waitFor();
+    const after = await value(page);
+    assert.equal(after.money, before.money - 3000); assert.equal(after.records.practice.plays, 1);
+    // Next night the paid game opens directly.
+    await page.evaluate(() => { spotCore.state.slot = 1; });
+    await go(page, "axe_bar"); await hit(page, "axe-bar-practice");
+    await page.locator('[data-test="axe-game"][data-tutorial="false"][data-phase="choice"]').waitFor();
+    assert.equal(await page.locator('[data-test="axe-coach"]').count(), 0, "The owner's lesson runs only once");
+    await hit(page, "axe-cancel"); await page.locator(map).waitFor();
+  });
 
   await check("cancel-poor-and-zero-stamina", async page => {
     await setup(page); const before = await value(page);
@@ -168,10 +250,12 @@ await suite("play-spots", async runCheck => {
     const before = await page.evaluate(() => localStorage.getItem("suien_remake_save"));
     await go(page, "axe_bar");
     const introduced = JSON.parse(before); introduced.flags._intro_maki = true; introduced.met.maki = true; // 登場カットインで面識も付く（8100c4f6）
+    // 初めての来店の会話を読んだ時間帯の印（VAR01・daily/venue-arrivals.js）。同じ夜に入り直した時に来店の会話を重ねない
+    introduced.flags._venue_arrival_at_axe_bar = `${introduced.chapter || 1}:${introduced.day}:${introduced.slot}`;
     assert.equal(await page.evaluate(() => spotCore.state.flags._intro_maki), true, "Completed introduction is read in the live state");
     assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), before, "The introduction itself does not settle the venue action");
     await hit(page, "axe-bar-practice");
-    await phase(page, "choice"); await hit(page, "axe-action"); await phase(page, "horizontal");
+    await phase(page, "choice"); await aimAxe(page);
     await page.reload(); await page.locator(t("title-new")).waitFor();
     assert.deepEqual(JSON.parse(await page.evaluate(() => localStorage.getItem("suien_remake_save"))), introduced,
       "Cancellation saves only the completed introduction, without committing the unfinished throws");
@@ -208,10 +292,12 @@ await suite("play-spots", async runCheck => {
       assert.equal(await page.locator(t("pin-axe_bar")).count(), 0);
       await assertFits(page, ".spot-pin");
       assert.deepEqual(await value(page), before);
-      await go(page, "trpg_bar"); await page.locator(t("trpg-club-choice-time")).waitFor();
+      await go(page, "trpg_bar");
+      // The normal VN now finishes founding on entry, before the shelf opens.
+      assert((await value(page)).trpg.club.founded);
       assert.match(await page.locator(".trpg-campaign-meta").textContent(), /CH\.2 · DAY 2/);
       assert((await page.locator(".trpg-kicker").first().textContent()).includes("ボドゲカフェ"));
-      await hit(page, "trpg-club-choice-time"); await hit(page, "trpg-campaign-close");
+      await hit(page, "trpg-campaign-close");
       await page.locator(t("pin-trpg_bar")).waitFor();
       const after = await value(page); assert(after.trpg.club.founded);
       for (const key of ["money", "stamina", "slot", "stats", "reel"]) assert.deepEqual(after[key], before[key]);
@@ -238,9 +324,10 @@ await suite("play-spots", async runCheck => {
     await travel(page, "widehanga"); await go(page, "trpg_bar");
     assert.equal(await page.locator(t("trpg-buy-ordinary-cup")).count(), 0);
     assert(await page.locator(t("trpg-play-ordinary-cup")).isEnabled());
-    await hit(page, "trpg-play-ordinary-cup"); await hit(page, "trpg-start"); await lines(page); await roll(page);
+    await hit(page, "trpg-play-ordinary-cup"); await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
+    await interviewStep(page);
     for (const id of ["menu", "window", "bag"]) { await hit(page, "trpg-spot-" + id); await lines(page); }
-    await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-quiet"); await lines(page);
+    await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-quiet"); await lines(page); await twistStep(page);
     await hit(page, "trpg-plan-aroma-tea"); await hit(page, "trpg-plan-seat-window");
     await hit(page, "trpg-prepare-open"); await roll(page);
     await hit(page, "trpg-plan-approach-quiet"); await hit(page, "trpg-serve-open"); await roll(page);
@@ -280,10 +367,21 @@ await suite("play-spots", async runCheck => {
       const bought = await value(page);
       assert.equal(bought.money, before.money - 800); assert.equal(bought.slot, 1); assert.equal(bought.stamina, before.stamina);
       assert.deepEqual(bought.trpg.owned, ["shark-last-order"]);
-      await hit(page, "trpg-play-shark-last-order"); await hit(page, "trpg-start"); await lines(page); await roll(page);
-      assert.deepEqual(await value(page), bought, "An unfinished table must not commit its ending or night action");
+      await hit(page, "trpg-play-shark-last-order"); await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
+      const inProgress = await value(page);
+      const { bookmark, ...inProgressTrpg } = inProgress.trpg;
+      assert.deepEqual({ ...inProgress, trpg: inProgressTrpg }, bought,
+        "An unfinished table may save its bookmark, but must not commit its ending, rewards or night action");
+      assert.equal(bookmark.id, "shark-last-order");
+      assert.equal(bookmark.chapter, 2);
+      assert.equal(bookmark.day, bought.day);
+      assert(bookmark.actions.length > 0 && Number.isInteger(bookmark.seed));
+      assert.equal(bookmark.phase, await page.locator('.trpg-root:not(.trpg-campaign)').getAttribute("data-phase"));
+      assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")).trpg.bookmark), bookmark,
+        "The in-progress bookmark must reach the actual save");
+      await interviewStep(page);
       for (const id of ["radio", "leaves", "fan"]) { await hit(page, "trpg-spot-" + id); await lines(page); }
-      await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-scent"); await lines(page);
+      await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-scent"); await lines(page); await twistStep(page);
       await hit(page, "trpg-plan-tool-citrus"); await hit(page, "trpg-plan-route-pier");
       await hit(page, "trpg-prepare-open"); await roll(page);
       await hit(page, "trpg-plan-finale-lure"); await hit(page, "trpg-serve-open"); await roll(page);
@@ -291,7 +389,9 @@ await suite("play-spots", async runCheck => {
       const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
       assert.equal(saved.day, 22); assert.equal(saved.slot, 2); assert.equal(saved.money, before.money - 800);
       assert.equal(saved.trpg.cleared["shark-last-order"].gm, "samechan");
-      assert.deepEqual([...saved.trpg.cleared["shark-last-order"].participants].sort(), ["hajime", "hiyori", "samechan"]);
+      assert.equal(saved.trpg.bookmark, undefined, "Completing the story removes its in-progress bookmark");
+      // TRF16–18: the absent Tsumugi seat is filled by cafe regular B; all four participants are saved.
+      assert.deepEqual([...saved.trpg.cleared["shark-last-order"].participants].sort(), ["hajime", "hiyori", "regularb", "samechan"]);
       assert.equal(saved.stamina, before.stamina); assert.deepEqual(saved.stats, before.stats);
       assert.deepEqual(withoutHostIntros(saved.met), before.met);
       for (const key of ["affinity", "story", "lovers", "relationshipMemories"]) assert.deepEqual(saved[key], before[key]);
@@ -309,7 +409,10 @@ await suite("play-spots", async runCheck => {
       await travel(page, "widehanga");
       const revisit = await value(page); assert.deepEqual(revisit, { ...after, money: after.money - 200 }, "Revisit charges only one outbound ticket");
       await go(page, "trpg_bar");
-      assert.equal(await page.locator(t("trpg-play-shark-last-order")).count(), 0);
+      // TMX14 permits replay, but this return visit is daytime and cannot use a night action.
+      const replay = page.locator(t("trpg-play-shark-last-order"));
+      assert.equal(await replay.innerText(), "もう一度遊ぶ");
+      assert(await replay.isDisabled(), "A completed book cannot be replayed during the day");
       assert((await page.locator(t("trpg-memory-shark-last-order")).textContent()).length > 0);
       await hit(page, "trpg-campaign-close"); await page.locator(map).waitFor();
       assert.deepEqual(await value(page), revisit);
@@ -324,10 +427,12 @@ await suite("play-spots", async runCheck => {
       window.cafeResult = null;
       (await import("./js/daily/trpg.js")).openTrpgBar().then(result => { window.cafeResult = result; });
     });
-    await page.locator(t("trpg-club-choice-time")).waitFor();
+    await page.locator(t("trpg-campaign-notice")).waitFor();
+    assert((await value(page)).trpg.club.founded);
     await page.evaluate(() => { spotCore.newGame(); });
     await page.waitForFunction(() => window.cafeResult?.completed === false);
-    assert.equal(await page.locator(t("trpg-club-choice-time")).count(), 0);
+    assert.equal(await page.locator(t("trpg-campaign-notice")).count(), 0);
     assert.equal((await value(page)).trpg.club.founded, null);
   });
 });
+

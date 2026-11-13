@@ -1,24 +1,24 @@
 # 立ち絵・画風統一の試作（6人）
 
-> **REIの新しい服装デザインは [新A・B・C比較](../../rei-look-929/README.md) へ。** このページのREIは旧衣装の画風試作で、新デザインの採用候補ではありません。
+> **レヰの新しい服装デザインは [新A・B・C比較](../../rei-look-929/README.md) へ。** このページのレヰは旧衣装の画風試作で、新デザインの採用候補ではありません。
 
-みんと・アゲハの正式立ち絵を画風の基準に、各キャラの通常立ち絵を1枚ずつ生成した比較用候補です。凛は対象外です。ゲーム内の画像は変更していません。採用前の試作で、位置合わせ・透過端・本人性の最終調整は未実施です。
+みんと・あげはの正式立ち絵を画風の基準に、各キャラの通常立ち絵を1枚ずつ生成した比較用候補です。凛想は対象外です。ゲーム内の画像は変更していません。採用前の試作で、位置合わせ・透過端・本人性の最終調整は未実施です。
 
 左が現行、右が試作です。右のJPEGは見やすい背景色を付けた閲覧用で、透過PNG原画は無加工で保存しています。
 
 ## 画風の基準
 
-| みんと | アゲハ |
+| みんと | あげは |
 |---|---|
-| <img src="../../../assets/sprites/characters/minto/chr_minto_normal.png" width="210" alt="基準 みんと"> | <img src="../../../assets/sprites/characters/ageha/chr_ageha_normal.png" width="210" alt="基準 アゲハ"> |
+| <img src="../../../assets/sprites/characters/minto/chr_minto_normal.png" width="210" alt="基準 みんと"> | <img src="../../../assets/sprites/characters/ageha/chr_ageha_normal.png" width="210" alt="基準 あげは"> |
 
-### 零（REI）
+### 鴉葬レヰ（あそう れい）
 
 線と刺繍を整理。背景のにじみが残るため、採用前に透過を要修正。
 
 | 現行 | 試作 |
 |---|---|
-| <img src="../../../assets/sprites/characters/rei/chr_rei_normal.png" width="280" alt="零（REI） 現行"> | <img src="rei/normal-preview.jpg" width="280" alt="零（REI） 試作"> |
+| <img src="../../../assets/sprites/characters/rei/chr_rei_normal.png" width="280" alt="鴉葬レヰ（あそう れい） 現行"> | <img src="rei/normal-preview.jpg" width="280" alt="鴉葬レヰ（あそう れい） 試作"> |
 
 [試作の透過PNG原画](rei/normal-source.png) · [生成指示](rei/normal-prompt.txt)
 
@@ -32,13 +32,13 @@
 
 [試作の透過PNG原画](kumicho/normal-source.png) · [生成指示](kumicho/normal-prompt.txt)
 
-### 路上占い師
+### 辻占のオババ
 
 布の粒状感を抑え、装飾を読みやすい形に整理。
 
 | 現行 | 試作 |
 |---|---|
-| <img src="../../../assets/sprites/characters/uranaishi/chr_uranaishi_normal.png" width="280" alt="路上占い師 現行"> | <img src="uranaishi/normal-preview.jpg" width="280" alt="路上占い師 試作"> |
+| <img src="../../../assets/sprites/characters/uranaishi/chr_uranaishi_normal.png" width="280" alt="辻占のオババ 現行"> | <img src="uranaishi/normal-preview.jpg" width="280" alt="辻占のオババ 試作"> |
 
 [試作の透過PNG原画](uranaishi/normal-source.png) · [生成指示](uranaishi/normal-prompt.txt)
 

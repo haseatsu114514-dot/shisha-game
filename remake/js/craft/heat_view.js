@@ -59,7 +59,9 @@ export function buildHeatView(types, { count = 3, compact = false } = {}) {
     carrier, feedback,
     el("ol.heat-picks", { "aria-label": "各炭の取り出し結果" }, rows),
   ]);
-  const root = el("div.heat" + (compact ? ".heat-compact" : ""), { "aria-busy": "true" }, [stove, info]);
+  // 取り出しは炭そのものをタップする。取り出すボタンは置かない（#2445 オーナー補足）。
+  const stage = el("div.heat-stage", [stove]);
+  const root = el("div.heat" + (compact ? ".heat-compact" : ""), { "aria-busy": "true" }, [stage, info]);
   return { root, stove, coals, info, feedback, rows, recordPick(index, timing) {
     const c = coals[index], [x, y] = CARRIER_SPOTS[stored.children.length];
     const sprite = c.visual.cloneNode(true);

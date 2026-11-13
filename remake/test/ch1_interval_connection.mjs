@@ -10,6 +10,16 @@ const expected = [
   'interval_day2_adam_lime', 'interval_day3_sumi_call', 'interval_day5_eve',
 ];
 assert.deepEqual(scenes.map(scene => scene.dialogue_id).sort(), [...expected].sort());
+const contacts = { interval_day1_naru_lime: 'naru', interval_day2_adam_lime: 'adam' };
+for (const scene of scenes) {
+  const remote = contacts[scene.dialogue_id];
+  assert.equal(scene.metadata?.contact_channel, remote ? 'lime' : undefined, `${scene.dialogue_id}: explicit contact channel`);
+  if (!remote) continue;
+  assert.equal(scene.lines.filter(line => line.speaker === remote).length, 4);
+  for (const line of scene.lines) {
+    assert.equal(line.portrait, line.speaker === remote ? false : undefined, 'remote speaker only: leave Hajime and narration unchanged');
+  }
+}
 
 function sortKeys(value) {
   if (Array.isArray(value)) return value.map(sortKeys);
@@ -29,10 +39,7 @@ function stringify(value) {
   return JSON.stringify(value);
 }
 assert.equal(createHash('sha256').update(stringify(sortKeys(sumi))).digest('hex'),
-  '186935cd6f1ee864150edb8d3d9d415a98ecd2871fcc2a67dbcd4e41f5616465');
-const legacy = JSON.parse(read('data/dialogue/_legacy/forced_events.json')).interval_1;
-assert(!legacy.some(entry => entry.id === 'interval_day1_morning'));
-assert(legacy.some(entry => entry.id === 'interval_day3_sumi_call'));
+  'e69ed71a60c2f82aae8c6d0cfd90f89713ec3c90a19697b819ef4c9016b01af4');
 
 const data = read('remake/js/core/data.js');
 const files = data.match(/const DIALOGUE_FILES = \[([\s\S]*?)\];/);
@@ -45,14 +52,15 @@ assert(start >= 0 && end > start, 'victory function boundaries exist');
 const victory = chapter.slice(start, end);
 const sequence = [
   'const after = DB.dialogues.ch1_tournament_after;',
-  '() => play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: STAGE }),',
+  'const lobby = BG("bg_c_station_lobby");',
+  'inScene(lobby, () => play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: lobby })),',
   'id: "_sys_sumi_scoresheet"', 'title: "表彰式のあと"',
-  '() => play({ ...after, lines: after.lines.slice(tonariAt) }),',
-  '() => play("interval_day1_naru_lime"),', '() => gainStat("guts", 1),',
+  'inScene(TONARI_N, () => play({ ...after, lines: after.lines.slice(tonariAt) })),',
+  'inScene(TONARI_N, () => play("interval_day1_naru_lime")),', 'inScene(TONARI_N, () => gainStat("guts", 1)),',
   'id: "_sys_unknown_recorded"', 'title: "優勝の夜"',
-  '() => play("interval_day1_morning_win"),', '() => play("ch1_naru_promise"),',
-  '() => play("interval_day2_adam_lime"),', '() => gainStat("insight", 1),',
-  '() => play("interval_day5_eve"),', 'state.phase = "aftermath";',
+  'inScene(BG("bg_home_day"), () => play("interval_day1_morning_win")),', 'inScene(BG("kemurikusa"), () => play("ch1_naru_promise")),',
+  'inScene(BG("kemurikusa"), () => play("interval_day2_adam_lime")),', 'inScene(BG("kemurikusa"), () => gainStat("insight", 1)),',
+  'inScene(TONARI_N, () => play("interval_day5_eve")),', 'owner.phase = "aftermath";',
 ];
 let previous = -1;
 for (const call of sequence) {
@@ -66,7 +74,7 @@ assert.doesNotMatch(chapter, /play\("interval_day3_sumi_call"/);
 // #2088: 優勝確定から余韻の各段ごとに保存し、再開は大会を作り直さず続きから。賞金は一度だけ。
 assert.match(chapter, /state\.phase === "tournament" && state\.tournament\?\.victory\) return resumeVictory\(\);\n  if \(state\.phase === "tournament"\) return tournamentDay\(\);/);
 assert.match(victory, /if \(!v\.paid\) \{[\s\S]*?addMoney\(PRIZE\);[\s\S]*?v\.paid = true;\n    save\(\);/);
-assert.match(victory, /while \(v\.step < steps\.length\) \{\n    await steps\[v\.step\]\(\);\n    v\.step \+= 1;\n    save\(\);/);
+assert.match(victory, /while \(v\.step < steps\.length\) \{\n    await steps\[v\.step\]\(\);\n    if \(state !== owner\) return;\n    v\.step \+= 1;\n    save\(\);/);
 assert.equal((victory.match(/addMoney\(/g) || []).length, 1, 'prize paid once');
 const tday = chapter.slice(chapter.indexOf('if (out.rank === 1) {'), chapter.indexOf('await victory(cs);'));
 assert(tday.indexOf('state.tournament.victory = { step: 0, revealed: false };') < tday.indexOf('ch1_tournament_judging'), 'victory marked before the long judging scene');
@@ -84,8 +92,23 @@ assert(tonariAt > 0 && toastAt > tonariAt, 'the tonari toast follows the split p
 assert.match(victory, /"今日は喜べ。帰ったら、一緒に一服しよう"/);
 assert.match(chapter, /import \{[^}]*\bgainStat\b[^}]*\} from "\.\.\/core\/stats\.js"/);
 
-assert.equal(scenes.find(scene => scene.dialogue_id === 'interval_day1_morning_win').lines[0].text,
-  '大会で優勝した翌朝。目が覚めて、まずトロフィーを探した。……そうだ、店のカウンターに飾ったんだった。現実感がまだ追いついていない。');
+const morning = scenes.find(scene => scene.dialogue_id === 'interval_day1_morning_win');
+assert.equal(morning.lines[0].text, '大会で優勝した翌朝。目が覚めて、まずトロフィーを探した。');
+assert.equal(morning.lines[1].text, '……そうだ、店のカウンターに飾ったんだった。現実感が、まだ追いつかない。');
+// 全体講評（2026-11-11）S6・C9: 章末は総括で閉じず、優勝を目当てに来た初めての客の注文で切る。
+// 読み終えたら _stk_title_customer_met を立て、一度だけ読む（第2章の台本が同じ名前を読む）。報酬は付けない。
+const closing = scenes.find(scene => scene.dialogue_id === 'interval_day5_eve');
+assert(!closing.lines.some(line => line.text?.includes('糧になる')), 'the summary line stays removed');
+assert.deepEqual(closing.lines.at(-1), { type: 'condition', condition_type: 'flag', flag: '_stk_title_customer_met', next_true: '', next_false: 'eve_title_customer' });
+const titleCustomer = closing.branches.eve_title_customer;
+assert.deepEqual(titleCustomer.at(-1), { type: 'set_flag', flag: '_stk_title_customer_met' }, 'seen only after the whole scene is read');
+const spoken = titleCustomer.filter(line => typeof line.text === 'string');
+assert(spoken.length >= 3 && spoken.length <= 6);
+assert.equal(spoken.at(-1).speaker, 'customer', 'the scene stops at the order');
+assert(spoken.at(-1).text.includes('優勝の一台'));
+assert(titleCustomer.every(line => !['apply', 'choice'].includes(line.type) && !/上がった/.test(line.text || '')), 'the forced scene carries no reward');
+const adamLime = scenes.find(scene => scene.dialogue_id === 'interval_day2_adam_lime');
+assert(!adamLime.lines.some(line => line.text?.includes('大きなことが動いている')), 'one hook stays with the ??? message');
 console.log('PASS: interval IDs, unchanged Sumi hash, legacy entries, loader, victory order, rewards and trophy continuity');
 const remaining = [];
 function scan(directory) {

@@ -1,0 +1,92 @@
+{
+  "episode": {
+    "id": "dasilva-festa-break",
+    "title": "休憩もフェスタ",
+    "cast": [
+      "da_silva"
+    ],
+    "minChapter": 1,
+    "dialogue": [
+      "少し休憩を。",
+      "休憩もフェスタだ！",
+      "休めない。"
+    ],
+    "first_speaker": "hajime",
+    "panel1": "左のはじめが疲れて椅子に座り「少し休憩を。」。右の太陽が両手を広げて満面の笑みで「休憩もフェスタだ！」。",
+    "panel2": "休憩所がハンモック・紙吹雪・マラカス・南国のフルーツで祭りになり、太陽がはじめにマラカスを渡している。はじめ「休めない。」。",
+    "caption": "太陽にとっては、何でもお祭り。"
+  },
+  "status": "review_candidate_not_adopted",
+  "generator": "built-in image_gen",
+  "selected_for_review": "source-A-v1.png",
+  "prompt": "prompt-A-v1.txt",
+  "references": [
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/da_silva.png",
+      "sha256": "138df18ab350103ee433a7cf3c688753f0a17b502cff899e7cc078aa3f95f0c7"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+    }
+  ],
+  "edit_reference": null,
+  "variants": [
+    {
+      "file": "source-A-v1.png",
+      "sha256": "6ae9485bd2aa183839b5327a375434db82239b6e1f5d46c5a718c6a71f037c42",
+      "size": [
+        1536,
+        1024
+      ],
+      "qa": "台詞・話者・読順・2人・外見・枠/余白・禁止描写を目視確認"
+    }
+  ],
+  "panels": [
+    {
+      "file": "panels/dasilva-festa-break-1.webp",
+      "sha256": "d61c252e4e6d79eabaf41acd3fa6295f2402380bcf0b0cf266a5ecb24d2c1c04",
+      "size": [
+        715,
+        477
+      ],
+      "bytes": 81124
+    },
+    {
+      "file": "panels/dasilva-festa-break-2.webp",
+      "sha256": "50324cdd95b158c844a375634f9aeb2b6b1a6d35e623c78b2ede5a9462390543",
+      "size": [
+        715,
+        477
+      ],
+      "bytes": 97012
+    }
+  ],
+  "qa": {
+    "source_dimensions": "1536x1024",
+    "dialogue": "台本と一字一句一致を目視（句読点/！？含む）",
+    "speakers_order": "左右配置固定・先話を上/左、応答を下/右、尻尾の話者所属を確認",
+    "identity": "正式立ち絵に準拠。パッキーは白い雲状/赤蝶ネクタイ/通常マイクへ。占い師は台本優先で目/鼻を陰に隠す。",
+    "style": "初期採用pc.pngを実見し、少し可愛いデフォルメ/暖かいセル塗り/太い主線を確認。先行3話は同系統のrei-mix-namesを作風参照。",
+    "count": "はじめ＋相手の2人のみ。背景に人なし",
+    "prohibited": "シーシャ台/HMD/ハガル/炭/ホース/吸い口/喫煙/武器なし。カードのラーメンの湯気は料理の絵で喫煙ではない。",
+    "cut_visual": "qa-contact-1〜3を目視、文字/顔/オチが切れていない",
+    "warnings": [
+      "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+      "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
+    ]
+  },
+  "file_hashes": {
+    "source-A-v1.png": "6ae9485bd2aa183839b5327a375434db82239b6e1f5d46c5a718c6a71f037c42",
+    "cut-QA.txt": "2c39ad934d33f990c80cb22b8ee234024fdc14eb26e4362d0a7e0952a5fd2f1a",
+    "prompt-A-v1.txt": "128e2ba9b4c26f5332a35a36b6c0a14abdd3a3c08a06f65d423aad8eeaf47ff8"
+  }
+}

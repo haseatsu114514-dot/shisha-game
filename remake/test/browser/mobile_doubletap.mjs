@@ -41,7 +41,7 @@ try {
     const measure = () => page.evaluate(() => {
       const stage = document.querySelector("#stage"), box = stage.getBoundingClientRect();
       return { browserScale: visualViewport.scale, visualWidth: visualViewport.width,
-        visualHeight: visualViewport.height, gameScale: Number(stage.style.getPropertyValue("--k")),
+        visualHeight: visualViewport.height, stageWidth: stage.offsetWidth, stageHeight: stage.offsetHeight, gameScale: Number(stage.style.getPropertyValue("--k")),
         width: box.width, height: box.height, transform: getComputedStyle(stage).transform };
     });
     const recordStable = async (label, action) => {
@@ -81,7 +81,7 @@ try {
     await recordStable("config input repeated taps", () => repeat(range));
     await boot();
     await page.evaluate(async () => {
-      const s = await import("./js/core/state.js"); s.newGame(); s.state.day = 4; s.save();
+      const s = await import("./js/core/state.js"); s.newGame(); s.state.day = 2; s.save(); // 案内箱（.map-info）は第1章の最初の自由行動の日（2日目）だけ出る（#2853）
       void (await import("./js/daily/map.js")).chooseSpot();
     });
     await page.waitForSelector(".map");
@@ -132,10 +132,11 @@ try {
     await page.locator('[data-test="hole-punch"]').waitFor({ state: "visible" });
     await page.waitForTimeout(4000); // countdown
     await recordStable("mini-game pointer input", () => repeat(page.locator('[data-test="hole-punch"]'), 2));
-    assert(await page.locator(".foil-holes .foil-hole").count() > 0, "real mini-game records punches");
+    // #2937: 素早い連打は浅すぎて穴にならず、へこみだけが残る。どちらも実際の入力として記録される。
+    assert(await page.locator(".foil-holes .foil-hole, .foil-dents .foil-dent").count() > 0, "real mini-game records punches");
     assert.equal(await page.locator(".foil:not(.ht-preview)").evaluate(el => getComputedStyle(el).touchAction), "none", "mini-game drag policy preserved");
     await boot(); // fresh document stops the mini-game timers, same isolated save
-    assert.equal(await page.evaluate(async () => { const s = await import("./js/core/state.js"); return s.load().day; }), 4, "save survives reload");
+    assert.equal(await page.evaluate(async () => { const s = await import("./js/core/state.js"); return s.load().day; }), 2, "save survives reload");
     await page.evaluate(async () => { void (await import("./js/daily/map.js")).chooseSpot(); });
     await page.waitForSelector(".map");
     await recordStable("map after save restore", () => repeat(page.locator(".map-info")));
@@ -176,15 +177,28 @@ try {
     });
     assert.notEqual(await page.locator(".dodge-heart").evaluate(el => el.style.transform), heartBefore, "drag moves the player");
     assert.equal(await pad.evaluate(el => el.classList.contains("held")), false, "pointer capture releases");
-    const before = (await measure()).gameScale;
-    await client.send("Emulation.setPageScaleFactor", { pageScaleFactor: 2 });
-    await page.waitForTimeout(300);
-    const zoomed = await measure();
-    results.push({ mobile, label: "browser zoom does not counter-scale game", before, after: zoomed,
-      pass: Math.abs(zoomed.browserScale - 2) < .01 && Math.abs(zoomed.gameScale - before) < .001 });
+    const before = await measure();
+    // #3179: fit to the visible CSS-pixel area, including when an external tool
+    // forces page scale. setPageScaleFactor bypasses touch handling; it is not a
+    // pinch-gesture test. Keep native input policy separate from layout fitting.
+    for (const pageScaleFactor of [2, 1]) {
+      await client.send("Emulation.setPageScaleFactor", { pageScaleFactor });
+      await page.waitForTimeout(300);
+      const after = await measure();
+      const expectedK = Math.min(after.visualWidth / 1280, after.visualHeight / 720);
+      const pass = Math.abs(after.browserScale - pageScaleFactor) < .01
+        && Math.abs(after.gameScale - expectedK) < .001
+        && after.stageWidth === 1280 && after.stageHeight === 720
+        && Math.abs(after.width - 1280 * expectedK) < .1
+        && Math.abs(after.height - 720 * expectedK) < .1
+        && (pageScaleFactor !== 1 || Math.abs(after.gameScale - before.gameScale) < .001);
+      results.push({ mobile, label: `forced page scale ${pageScaleFactor} fits visual viewport`,
+        expectedK, before, after, pass });
+    }
     assert.deepEqual(errors, [], "no runtime errors");
     await context.close();
   }
   console.log(JSON.stringify({ browser: browser.version(), results, missing: [...missing] }, null, 2));
   assert(results.every(r => r.pass), "viewport regression (see measured results)");
 } finally { await browser?.close(); await new Promise(r => server.close(r)); }
+

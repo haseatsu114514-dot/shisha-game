@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+"""NF04: encode the seven new-flavor cartons from the adopted originals; never modify originals.
+
+The only edit is clearing near-invisible generation specks (alpha <= 4 -> fully transparent)
+before the 512px resize. No drawing, retouching or perspective changes.
+"""
+import argparse, hashlib, io, json, pathlib
+from PIL import Image
+from build_shop_art import inspect
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+SOURCE = ROOT / 'asset_sources/new-flavor-cartons-nf04'
+EXPECTED = {'grapefruit', 'honey', 'milk', 'cherry', 'passion_fruit', 'lime', 'biscuit'}
+SPECK_ALPHA = 4
+
+
+def encode(native):
+    with Image.open(native) as im:
+        im.load()
+        im = im.convert('RGBA')
+        alpha = im.getchannel('A').point(lambda v: 0 if v <= SPECK_ALPHA else v)
+        im.putalpha(alpha)
+        out = io.BytesIO()
+        im.resize((512, 512), Image.Resampling.LANCZOS).save(out, format='WEBP', quality=88, method=6, exact=True)
+        return out.getvalue()
+
+
+def main():
+    parser = argparse.ArgumentParser(); parser.add_argument('--check', action='store_true'); args = parser.parse_args()
+    items = json.loads((SOURCE / 'sources.json').read_text())['items']
+    if len(items) != 7 or {i['id'] for i in items} != EXPECTED: raise ValueError('Expected the seven NF04 cartons only')
+    mappings = []; report = []
+    for item in items:
+        native = ROOT / item['source']; original = native.read_bytes()
+        if hashlib.sha256(original).hexdigest() != item['sha256']: raise ValueError(f'Native source changed: {native}')
+        data = encode(native); destination = ROOT / f'remake/img/shop/new-flavors/{item["id"]}.webp'
+        if args.check:
+            if destination.read_bytes() != data: raise ValueError(f'Delivery not reproducible: {destination}')
+        else:
+            destination.parent.mkdir(parents=True, exist_ok=True); destination.write_bytes(data)
+        after = inspect(destination)
+        if native.read_bytes() != original: raise ValueError('Encoding mutated native PNG')
+        report.append(dict(id=item['id'], variant=item['variant'], source_sha256=item['sha256'], delivery=after, bytes=len(data)))
+        mappings.append(f'  "{item["id"]}": {{ url: new URL("../../img/shop/new-flavors/{item["id"]}.webp", import.meta.url).href, size: [512, 512], box: {json.dumps(after["box"])} }},')
+    module = '// NF04 new-flavor cartons; derived by tools/build_new_flavor_art.py.\nexport const NEW_FLAVOR_ART = {\n' + '\n'.join(mappings) + '\n};\n'
+    for path, content in [(ROOT / 'remake/js/daily/shop-art-new-flavors.js', module), (SOURCE / 'validation.json', json.dumps(dict(items=report), indent=2) + '\n')]:
+        if args.check:
+            if path.read_text() != content: raise ValueError(f'Derived file changed: {path}')
+        else: path.write_text(content)
+    print(f'PASS: 7 PNGs decoded, immutable source hashes verified; delivery {sum(i["bytes"] for i in report):,} bytes')
+
+
+if __name__ == '__main__': main()
