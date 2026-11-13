@@ -68,6 +68,9 @@ async function harness({ learned = false, noWobble = false } = {}) {
   const imports = {
     "../core/naru-finish.js": naru,
     "../core/util.js": { el: (...args) => new Node(...args), sleep: async () => {}, clamp: (v, a, b) => Math.max(a, Math.min(b, v)), rand: (a, b) => (a + b) / 2 },
+    // 変化時だけ書く部品（#3500）。偽の要素では、書く側の挙動をそのまま写す。
+    "../core/dom-write.js": { setText: (node, text) => { node.textContent = text; }, setAttr: (node, name, value) => node.setAttribute(name, value),
+      setData: (node, key, value) => { node.dataset[key] = String(value); }, setFlag: (node, key, value) => { node[key] = value; } },
     "../core/ui.js": { countdown: async () => {}, shake: noop },
     "../core/audio.js": { SE: new Proxy({}, { get: () => noop }), startBubbling: () => noop },
     "./session.js": { stepPanel: () => (panel = new Node()), refreshBench: noop, tickerSay: noop, reactAudience: noop,
