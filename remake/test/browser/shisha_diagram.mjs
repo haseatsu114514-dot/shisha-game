@@ -8,7 +8,7 @@ const PREVIEW = (process.env.BASE_URL || "http://127.0.0.1:8123/remake/") + "con
 const stepText = {
   show: "ガラスボトル（水入れ）を置き",
   heat: "炭の『熱』でじわじわと温める",
-  smoke: "ステムを通って下のボトルに行き",
+  smoke: "ステムを通って、下のボトルで水をくぐる",
   bubble: "水をくぐると煙が冷えて",
   hose: "ホースを通って、お前の口に届く",
   hide: "グリセリンと熱の仕事だ",
@@ -59,7 +59,7 @@ await suite("shisha-diagram", async check => {
     await advanceTo(page, stepText.hose);
     assert.equal(await count(page), 1);
     await advanceTo(page, stepText.hide);
-    await advanceTo(page, "はい……！ ありがとうございます、スミさん");
+    await advanceTo(page, "まず、今ここにある一台を見ろ");
     for (let i = 0; i < 8; i++) {
       if (await page.evaluate(() => document.querySelector("#preview-status")?.textContent.includes("会話終了"))) break;
       await page.locator(".vn-text").click({ force: true });

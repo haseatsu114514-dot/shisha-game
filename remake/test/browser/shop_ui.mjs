@@ -69,8 +69,13 @@ await suite("shop-ui", async check => {
         localStorage.setItem(S.core.SAVE_KEY, S.legacyRaw);
         S.core.load();
       });
+      // #3491: 地元の店は入るたびに店頭の応対を読む（初対面の旧セーブでは凛想さんの名乗りと面識が付く）。
+      // 応対を読み終えた入口で控えを取り、売り場で絵を見るだけでは状態もセーブも書き換えないことを確かめる。
+      await page.evaluate(() => S.open());
+      await page.locator('[data-test="shop-enter"]').waitFor();
       const before = await page.evaluate(() => JSON.stringify(S.core.state));
-      await open(page);
+      await page.locator('[data-test="shop-enter"]').click();
+      await page.locator('.shop-tabs').waitFor();
       const mapping = await page.evaluate(async () => Object.keys({ ...(await import('./js/daily/shop-art.js')).SHOP_ART,
         ...(await import('./js/daily/shop-art-remaining.js')).REMAINING_SHOP_ART }));
       assert.deepEqual(mapping.sort(), [...ADOPTED].sort());
@@ -148,14 +153,7 @@ await suite("shop-ui", async check => {
         await capture(page, `${platform}-equipment-${id}`);
         await tap(page, 'shop-detail-close');
       }
-      // 店頭の応対（shop-greeting.js）で初めて凛想に会うので、面識の3項目だけは増える。絵を見ること自体は何も書き換えない。
-      const expected = JSON.parse(before);
-      expected.met = { ...expected.met, rio: true };
-      expected.flags = { ...expected.flags, _met_rio: true, _affinity_first_meeting_pending_rio: true };
-      const actual = JSON.parse(await page.evaluate(() => JSON.stringify(S.core.state)));
-      // 名乗った後の登場カットイン（vn/intro.js）は、応対を読み進める速さによって出たり出なかったりする。出た時だけ見た印が付く。
-      if (actual.flags?._intro_rio === true) expected.flags._intro_rio = true;
-      assert.deepStrictEqual(actual, expected);
+      assert.equal(await page.evaluate(() => JSON.stringify(S.core.state)), before);
       assert(await page.evaluate(() => localStorage.getItem(S.core.SAVE_KEY) === S.legacyRaw));
       await page.locator('[data-tab="flavor"]').click();
       if (platform === 'touch') {
@@ -409,10 +407,11 @@ await suite("shop-ui", async check => {
     await page.evaluate(() => { S.core.state.flavorStock.mint = 0; });
     await open(page, { errand: 'mint', expense: true });
     await tap(page, 'buy-mint'); assert(await page.locator('[data-test="shop-checkout"]').isDisabled(), 'Reopening granted a second expense');
-    // 2つ目の店は開いたまま（買い出しの残りで出られない）なので、同じ保存では二重に開かない（shop.js の homeShopInFlight）。
-    // 準備の経費は、新しい保存で開き直して確かめる。
-    await setup(page, { money: 0, day: 1 });
-    await page.evaluate(() => { S.core.state.flavorStock.blueberry = 1; });
+    // 入店中の店は二重に開かない（#3491）。ミントを手元に用意した扱いで店を出てから、大会準備の買い出しを開く。
+    await tap(page, 'minus-mint');
+    await page.evaluate(() => { S.core.state.flavorStock.mint = 50; });
+    await tap(page, 'shop-leave'); await page.waitForFunction(() => S.result === null);
+    await page.evaluate(() => { S.ui.clearScreen(); S.core.state.flavorStock.blueberry = 1; });
     await open(page, { errand: 'blueberry', expense: true, minStock: 12, expenseFlag: '_prep_flavor_expensed' });
     await tap(page, 'shop-leave'); assert.equal(await page.evaluate(() => S.result), 'pending');
     await tap(page, 'buy-blueberry'); await tap(page, 'shop-checkout'); await tap(page, 'shop-leave');
@@ -672,15 +671,14 @@ await suite("shop-ui", async check => {
   await run('delayed-entry-and-discard', async page => {
     await setup(page);
     await page.evaluate(() => { S.transitions.cueTransition('place', { spotId: 'shop', area: '問屋街' }); S.open(); });
-    // 店のロゴは着いた時に一度だけ。入口の前の応対（shop-greeting.js）が最初に背景を出すので、ロゴはそこで出る。
+    // #3491: 店に着いた演出（店ロゴ）は、入口より先の店頭の応対の場面で一度だけ出る。
     await page.locator('[data-test="store-arrival"][data-store="shop"]').waitFor();
     await page.locator('[data-test="shop-enter"]').waitFor();
-    await page.waitForTimeout(400);
-    assert.equal(await page.locator('[data-test="store-arrival"]').count(), 0, '入口の画面でロゴを出し直さない');
+    // 入口で待ってから入っても、売り場で二度目の演出を出さない。
+    await page.waitForTimeout(3200);
     await tap(page, 'shop-enter');
     await page.locator('.shop-tabs').waitFor();
-    await page.waitForTimeout(400);
-    assert.equal(await page.locator('[data-test="store-arrival"]').count(), 0, '売り場でロゴを出し直さない');
+    assert.equal(await page.locator('[data-test="store-arrival"]').count(), 0);
     await tap(page, 'buy-mint'); await tap(page, 'shop-leave'); await tap(page, 'shop-discard-leave');
     assert.equal(await page.evaluate(() => S.result), null);
     assert.equal((await snapshot(page)).money, 12800); assert.equal((await snapshot(page)).stock.mint, 15);

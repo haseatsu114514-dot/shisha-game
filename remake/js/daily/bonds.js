@@ -272,7 +272,7 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
     && (state.flags._ch3_outings?.steve_timer || 0) > 0
     && (["ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch"].every((scene) => !!state.flags[`_ch3_read_${scene}`])
       || !!state.finales?.steve)
-  // ヴォルク: 鉄の煙の再訪三つ（味の会話・七年分の記録・頷く順番）と、その後のLIME交換の寄り道。締めくくりは三つすべてを受ける
+  // ヴォルク: 鉄の煙の再訪三つ（味の会話・七冊の記録・頷く順番）と、その後のLIME交換の寄り道。締めくくりは三つすべてを受ける
   // 第5章の東京では、第3章の再訪・LIME交換の寄り道はもう読めないので、スティーブと同じく♥5だけで始める（2026-11-07 オーナー指示）
   : id === "volk" ? (state.chapter || 1) >= 5 || VOLK_VISITS.every((scene) => !!state.flags[`_ch3_read_${scene}`])
     && !!state.flags._ch3_read_ch3_volk_lime && !!state.flags._lime_contact_volk

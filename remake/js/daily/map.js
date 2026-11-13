@@ -2,7 +2,9 @@
 // 見た目は旧版を踏襲: 橙須の街マップ／看板型のピン（面識のある相手は顔ドット絵）／右下の墨×金パネル。
 import { el, yen } from "../core/util.js";
 import { bgUrl, sceneBg, faceIconUrl } from "../core/data.js";
-import { showScreen, setBg, retire, uiArtReady, storeLogosReady, imageReady, layers, toast } from "../core/ui.js";
+import { showScreen, setBg, retire, uiArtReady, storeLogosReady, imageReady, layers, toast, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice } from "../core/module-loading.js";
+import { comicLoadingRequired } from "../core/loading.js";
 import { cueTransition } from "../core/transitions.js";
 import { trainRide } from "../core/scene-motions.js";
 import { TRAIN_ICON_SVG } from "../core/train-icon.js";
@@ -91,13 +93,19 @@ const backgroundOf = (region) => typeof region?.background === "function" ? regi
  */
 export async function chooseSpot(opts = {}) {
   // 初回だけ: 看板の顔とスロットの図柄が読めてから地図を出す（遅い回線でも最大2秒・GUI20・21）
+  const ready = () => Promise.all([uiArtReady(), storeLogosReady(), imageReady(FACILITY_SHEET, 2000, { keep: true }), setBg(backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
+  // プレイヤーの既定では、0.5秒を超えた待ちに作業台と同じ漫画つきのロード画面を出す（core/ui.js の loadingNotice）。
+  if (comicLoadingRequired()) {
+    await withLoadingNotice(ready(), loadingNotice("マップを準備しています…"));
+    return await openMap(opts);
+  }
   let notice = null;
   const timer = setTimeout(() => {
     notice = el("div.vn-loading", { role: "status", text: "マップを準備しています…" });
     layers.fx.append(notice);
   }, 500);
   try {
-    await Promise.all([uiArtReady(), storeLogosReady(), imageReady(FACILITY_SHEET, 2000, { keep: true }), setBg(backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
+    await ready();
   } finally { clearTimeout(timer); notice?.remove(); }
   return await openMap(opts);
 }
