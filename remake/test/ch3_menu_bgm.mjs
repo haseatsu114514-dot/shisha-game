@@ -35,6 +35,8 @@ async function harness(chapter, value) {
     openConfig: async () => { calls.config++; },
     playBgm: key => { currentBgm = key; calls.bgm.push(key); },
     readDialogues: async (file, ids) => Object.fromEntries(ids.map(id => [id, { lines: [] }])),
+    // core/ui.js: the wait for the chapter's script (the comic loading screen for players) passes the result through.
+    withSceneLoading: task => task, withChapterLoading: load => load(),
     play: async () => ({}), syncTokyoVisits: () => {},
     tournamentProgress: () => value.flags._ch3_tournament,
     TOURNAMENT_STORY_STEPS: new Map(), MUKAI_DELIVERY_STEPS: [], CH3_STORY_DIALOGUE_FILES: {},

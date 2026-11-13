@@ -4,6 +4,8 @@
 
 ライセンスはすべて CC0。クレジット義務はないが、スタッフロールとこの台帳に作者・曲名・配布元を載せる（オーナー指示）。
 
+2026-11-12 の変更（[要望台帳](../../../docs/owner_requests.md) の OTO06）: ドバイの曲を 27秒の繰り返し（DJ CrisP「Desert Travel (Loop)」）から約95秒の yd「Desert theme」へ差し替え、第2章の街・柚ヶ谷の仮の曲（Pro Sensory「Mocha Frapp」・`bgm_yuzugaya`）を足した。どちらも耳での確認はしておらず、オーナーの試聴待ち（`remake/audio-preview.html`）。切り出し区間と原音の SHA-256 は sources.json の `edit`・`source_sha256`。
+
 ラクダレース（PC側）と DJ（#2456）の音は対象外。TRPG・斧投げの仮音は別台帳（`trpg-audio/`、`minigame-se/`）。
 
 ## 再変換

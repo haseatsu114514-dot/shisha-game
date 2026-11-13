@@ -127,7 +127,7 @@ export function openGallery() {
     // CGの実際のimgを待つ。失敗表示はimage()の既存ハンドラに任せる。
     function trackImageLoad(img) {
       if (img.complete) return;
-      const notice = loadingNotice("画像を読み込んでいます…");
+      const notice = loadingNotice("画像を読み込んでいます…", { inline: true }); // 一覧の中の絵の待ち（場面の切り替えではない）は小さな表示のまま
       let finish;
       const task = new Promise(resolve => {
         finish = () => {

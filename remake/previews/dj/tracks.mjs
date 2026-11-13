@@ -7,14 +7,15 @@ export const TRACKS = {
  risingTide: {file:'km__rising-tide-faster.mp3',title:'Rising Tide (faster)',bpm:122,firstBeat:.486,key:'A minor',camelot:'8A',energy:4,isrc:'USUAN1900011',trimDb:5}
 };
 // A SET opens with a fixed pair (tracks[0] on A, tracks[1] on B) and plays `count` tracks in all. After the first
-// transition the player picks each next track from two candidates (選曲, DJS17).
-// detune: 'match' = every incoming track arrives already at the playing track's tempo (SET 1: nothing to match),
-//         'random' = the incoming track arrives ±1.2〜2.8 % off and the player matches it with PITCH (or SYNC),
-//         'none' = native tempo (SET 3: 120 and 122 BPM tracks meet, so the pitch has to be moved).
+// transition the player picks each next track from two candidates (選曲, DJS17). Every track arrives at the playing track's tempo
+// (no tempo faders, 2026-11-13 DJG).
+// drift: the incoming track slips out of time during the 8 bars and the player turns its platter to bring it back.
+//   windows = one slip per entry, starting on a beat of the mix picked from [from, to]; size = how far it slips (beats, either way).
+//   null = it never slips (SET 1: ▶, the crossfader and the pick only).
 export const SETS = [
- {name:'SET 1',label:'入門・BPM合わせなし',tracks:['danceMonster','digitalLemonade'],count:3,detune:'match'},
- {name:'SET 2',label:'本命・ピッチ合わせ',tracks:['ravingEnergy','cutAndDry'],count:4,detune:'random'},
- {name:'SET 3',label:'ピッチ課題・120↔122',tracks:['risingTide','danceMonster'],count:4,detune:'none'}
+ {name:'SET 1',label:'入門・ズレなし',tracks:['danceMonster','digitalLemonade'],count:3,drift:null},
+ {name:'SET 2',label:'本命・途中で1回ズレる',tracks:['ravingEnergy','cutAndDry'],count:4,drift:{windows:[[6,20]],size:[.12,.2]}},
+ {name:'SET 3',label:'上級・2回ズレる',tracks:['risingTide','danceMonster'],count:4,drift:{windows:[[4,11],[17,25]],size:[.16,.3]}}
 ];
 export const STAGES = SETS; // old name kept for the host (?stage=)
 export function buildTrackData(channelData, sampleRate, cfg) {

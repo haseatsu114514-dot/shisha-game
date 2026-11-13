@@ -531,27 +531,37 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "サビの前、音がふっと引くところが好きでした"
+          "text": "一回目は、正直よく分からなくて"
         },
         {
           "speaker": "rei",
-          "face": "smile",
-          "text": "……あそこ、聴いてくれたんだ"
+          "face": "normal",
+          "text": "……そうか"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "煙でも、ああいう余韻を残せるかなって考えてました"
-        },
-        {
-          "speaker": "rei",
-          "face": "normal",
-          "text": "残せる。吐いたあと、すぐ次を吸わせなければ"
+          "text": "でも三回目で、サビの前が一瞬静かになるのに気づきました"
         },
         {
           "speaker": "rei",
           "face": "smile",
-          "text": "……好きな曲が増えたら、教えて。俺も、次の一枚を選んでおく"
+          "text": "……三回、聴いたのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "煙を吐いたあと、すぐ次を吸わないのと、少し似てるなって"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "似てる。すぐ次を吸わせなければ、余韻は残る"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……次の一枚、選んでおく。分からなかったら、分からないでいい"
         }
       ]
     },

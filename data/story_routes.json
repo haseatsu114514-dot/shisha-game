@@ -130,6 +130,8 @@
         "ch3_mashiro_black_tea",
         "ch3_saku_mashiro_tea_tin",
         "ch3_saku_mashiro_soon_back",
+        "ch3_mashiro_mukai_syrup_shelf",
+        "ch3_mashiro_mukai_shelf_tags",
         "ch3_saku_lime",
         "ch3_saku_missed",
         "ch3_saku_cleanup",
@@ -149,11 +151,14 @@
         "ch3_volk_lime",
         "ch3_volk_fifth",
         "ch3_volk_revisit",
+        "ch3_rival_volk_steve_greeting",
+        "ch3_rival_volk_steve_seat",
         "ch3_mashiro_timer_side",
         "ch3_mashiro_cup_warm",
         "ch3_mashiro_glass_cloth",
         "ch3_mashiro_leaf_rest",
-        "ch3_mashiro_bench_tea"
+        "ch3_mashiro_bench_tea",
+        "ch3_mukai_yoru_playlist"
       ],
       "after_eve": [
         "ch3_tournament_day",
@@ -219,6 +224,8 @@
         "ch4_noor_story_table_edge",
         "ch4_noor_story_unsaid_question",
         "ch4_noor_story_doorway",
+        "ch4_noor_faris_seat",
+        "ch4_noor_faris_seat_again",
         "ch4_arrival_inn",
         "ch4_festa_revisit",
         "ch4_alley_cafe_quiet",
@@ -450,7 +457,7 @@
   },
   "progression_contract": {
     "ch3_romance": "既存の交友締めくくり・告白で実際に交際した人だけ。あげはの着地は帰郷後。友人・未読イベントをMAX好感度から捏造しない。",
-    "shuraba": "第3章の前夜は同じ場所の恋人2人以上とスティーブがいる時にnear_conflict。彼の茶化しで曖昧に流し、謝罪・破局・和解を確定しない。他の前夜は重なった予定を保留。本格的なconflict（反応と謝罪）は第5章冒頭の打ち上げで起き、起きなかった場合だけスタッフロール後に選ぶ。スタッフロール後は一人ずつの話し直し（talk）の後、conflict.aftercare（スミさんが裏で一人ずつ「本命はあんた一人だ」と説得していたと明かし「……気をつけろよ」と言う）で締める（2026-11-11 オーナー決定）。",
+    "shuraba": "第3章の前夜は同じ場所の恋人2人以上とスティーブがいる時にnear_conflict。彼の冗談で場が凍り、彼は気づいて去る。説明も問いも出ないまま、謝罪・破局・和解を確定しない（2026-11-13 オーナー訂正）。他の前夜は重なった予定を保留。本格的なconflict（反応と謝罪）は第5章冒頭の打ち上げで起き、起きなかった場合だけスタッフロール後に選ぶ。スタッフロール後は一人ずつの話し直し（talk）の後、conflict.aftercare（スミさんが裏で一人ずつ「本命はあんた一人だ」と説得していたと明かし「……気をつけろよ」と言う）で締める（2026-11-11 オーナー決定）。",
     "epilogue": "実際の恋人がちょうど1人かつ所在・会う約束が確認済みで、未解決の修羅場がない場合。共通の賄い（ending.normal）は置き換えず、読んでからその人の後日談へ進む。複数交際は日常の共通エンディング→スタッフロール→本格的な修羅場。同席している恋人の反応だけを再生し、未到着者を出現させない。",
     "loss": "第3・4章の敗北はその競技から再挑戦。第5章の負け/同数も後日談へ続く（after_matchの先頭だけ、after_match_loss_or_tieの台本に替わる。どれを読むかは二本の挙手で決まる。after_match_tailは先頭の場面の末尾に勝敗共通で続ける）。大会結果を恋愛人数で書き換えない。"
   },
@@ -517,6 +524,12 @@
         "ch3_mashiro_leaf_rest"
       ]
     },
+    "ch3_mukai_yoru_playlist": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "#3468 G案: 開店前のmukaiで、ムカイさんとヨルが昼の曲順から夜の曲へ脱線する（ムカイさん×針間ヨル）。mukaiの二日目の後。ヨルとの面識は場面カードの置き方（ch3-story-wiring.js の met）。大会後は ch3-aftermath-progress.js の寄り道から。"
+    },
     "ch3_saku_mashiro_tea_tin": {
       "seen": [
         "ch3_saku_first"
@@ -526,6 +539,18 @@
       "seen": [
         "ch3_saku_mukai_visit"
       ]
+    },
+    "ch3_mashiro_mukai_syrup_shelf": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "#3468 H案: mukaiの棚整理で、ムカイさんの試飲の瓶とましろの休憩用の缶にそれぞれ本人用の札を付ける（ましろ×ムカイさん）。ムカイさんの甘いラテとましろの重い葉が出たmukaiの二日目の後。大会後は ch3-aftermath-progress.js の寄り道から。"
+    },
+    "ch3_mashiro_mukai_shelf_tags": {
+      "seen": [
+        "ch3_mashiro_mukai_syrup_shelf"
+      ],
+      "comment": "#3468 H案の後日の一言: 二人の本人用の札が同じ棚の別の場所に残っている。"
     },
     "ch3_saku_lime": {
       "seen": [
@@ -690,6 +715,18 @@
       ],
       "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
     },
+    "ch4_noor_faris_seat": {
+      "seen": [
+        "ch4_noor_meet"
+      ],
+      "comment": "#3468 D案: ヌール×ファーリス。カフェ・オアシスの名乗りの後の来店で、ファーリスとも店先で知り合っている時（第4章のラクダレースの段階か、第5章の _met_faris）。実行時は ch4-desert-progress.js の noorFarisDue で判定。"
+    },
+    "ch4_noor_faris_seat_again": {
+      "seen": [
+        "ch4_noor_faris_seat"
+      ],
+      "comment": "#3468 D案の後日の一言: 本場面を読んだ日より後のカフェ・オアシスの来店。"
+    },
     "ch3_saku_missed": {
       "seen": [
         "ch3_saku_lime"
@@ -724,7 +761,7 @@
       "seen": [
         "ch3_steve_two_timers"
       ],
-      "comment": "好感度補充: 二つのタイマーの次（♥3）。"
+      "comment": "好感度補充: 待たせたピザ（ch3_steve_two_timers）の次（♥3）。"
     },
     "ch3_steve_tongs": {
       "seen": [
@@ -749,6 +786,18 @@
         "ch3_volk_fifth"
       ],
       "comment": "好感度補充（A28）: 五度目のあと、残した一項の短い再訪（♥4）。"
+    },
+    "ch3_rival_volk_steve_greeting": {
+      "seen": [
+        "ch3_volk_first"
+      ],
+      "comment": "#3468 F案: スティーブが新しく開いた鉄の煙へ挨拶に寄る（ヴォルク×スティーブ）。初来店の後。両者との面識は場面カードの置き方（ch3-story-wiring.js の met）。大会後は ch3-aftermath-progress.js の寄り道から。"
+    },
+    "ch3_rival_volk_steve_seat": {
+      "seen": [
+        "ch3_rival_volk_steve_greeting"
+      ],
+      "comment": "#3468 F案の後日の一言: 挨拶で「続きはうちで」と約束した後の Smoke & Glory。"
     }
   },
   "near_conflict": {

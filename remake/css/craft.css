@@ -132,26 +132,27 @@
 .bench-panel { position: relative; flex: 1; min-height: 0; }
 .bench-demo-link { border: 0; padding: 0; background: none; color: var(--accent); font: inherit; text-decoration: underline; cursor: pointer; }
 .bench-demo-link:focus-visible, .bench-demo-sheet button:focus-visible { outline: 3px solid #ffe3a7; outline-offset: 3px; }
-.bench-demo-sheet { position: absolute; inset: 0; z-index: 40; display: grid; place-items: center; padding: 12px; background: #08060de8; }
-.bench-demo-card { width: min(900px, 100%); max-height: 100%; overflow: auto; padding: 14px; border: 1px solid var(--accent); border-radius: 14px; background: #201b25; box-shadow: 0 18px 48px #000b; }
-.bench-demo-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.bench-demo-sheet { position: absolute; inset: 0; z-index: 40; display: grid; place-items: center; padding: 12px; background: #08060de8; container-type: size; }
+.bench-demo-card { display: flex; flex-direction: column; width: min(900px, 100%); max-height: 100%; overflow: auto; padding: 14px; border: 1px solid var(--accent); border-radius: 14px; background: #201b25; box-shadow: 0 18px 48px #000b; }
+.bench-demo-head { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
 .bench-demo-head h2 { margin: 0; font-size: 20px; color: #f2dfb8; }
 .bench-demo-sheet button { min-height: 44px; padding: 8px 18px; border: 1px solid var(--accent); border-radius: 999px; background: #312b35; color: #fff4e0; font: inherit; cursor: pointer; }
-.bench-demo-stage { position: relative; aspect-ratio: 16 / 9; background: #000; overflow: hidden; }
+/* 映像は16:9のまま、シートの高さから見出し・字幕・状態文・手順・ボタンの分を引いた残りで幅を決める（「作業へ進む」を画面外へ出さない）。 */
+.bench-demo-stage { flex: none; align-self: center; width: min(100%, calc((100cqh - 360px) * 16 / 9)); position: relative; aspect-ratio: 16 / 9; background: #000; overflow: hidden; }
 .bench-demo-stage video { display: block; width: 100%; height: 100%; object-fit: contain; }
 .bench-demo-arrow { position: absolute; font-size: clamp(34px, 5vw, 72px); line-height: 1; color: #ffd94d; text-shadow: 0 2px 8px #000; transform: translate(-50%, -50%); pointer-events: none; animation: bench-demo-bob .9s ease-in-out infinite alternate; }
 .bench-demo-arrow[hidden] { display: none; }
 @keyframes bench-demo-bob { from { margin-top: -5px; } to { margin-top: 5px; } }
-.bench-demo-caption { min-height: 3em; margin: 10px 0; color: #f2e9dc; font-size: 17px; line-height: 1.5; }
+.bench-demo-caption { flex: none; min-height: 3em; margin: 10px 0; color: #f2e9dc; font-size: 17px; line-height: 1.5; }
 .bench-demo-status, .bench-demo-instructions { color: inherit; font-size: 16px; line-height: 1.6; }
-.bench-demo-status { margin: 10px 0; }
-.bench-demo-instructions { margin: 10px 0 14px; padding: 10px 14px; border: 1px solid #a895b6; border-radius: 8px; }
+.bench-demo-status { flex: none; margin: 10px 0; }
+.bench-demo-instructions { flex: 0 1 auto; min-height: 0; overflow: auto; margin: 10px 0 14px; padding: 10px 14px; border: 1px solid #a895b6; border-radius: 8px; }
 .bench-demo-instructions summary { cursor: pointer; }
 .bench-demo-instructions summary:focus-visible { outline: 3px solid #ffe3a7; outline-offset: 3px; }
 .bench-demo-instructions ol { margin: 10px 0 0; padding-left: 24px; }
 .bench-demo-instructions li + li { margin-top: 6px; }
 .bench-demo-stage[hidden], .bench-demo-caption[hidden] { display: none; }
-.bench-demo-finish { display: block; margin-left: auto; }
+.bench-demo-finish { flex: none; display: block; margin-left: auto; }
 
 /* 制作中の操作ボタンは、道具・表情より目立ちすぎない面と一色の縁で統一。 */
 .bench .btn { border-image: none; border: 1px solid #ffffff29; border-radius: 10px; background: #28252d; color: #e7e1d8; box-shadow: none; font-size: 17px; }
@@ -1050,6 +1051,8 @@
 .pull-read[data-tone="danger"] .pull-state { color: #ff5a3a; animation: thermal-warn .45s ease-in-out infinite alternate; }
 .pull-read[data-tone="cold"] .pull-state { color: #eef3f6; animation: thermal-warn .45s ease-in-out infinite alternate; }
 .pull-read[data-tone="cool"] .pull-state { color: #c4bcb2; }
+/* 桜井式の大会の「攻めの帯」（SKR04） */
+.pull-read[data-tone="attack"] .pull-state { color: #ff5cb4; }
 .pull-drift { font-size: 22px; font-weight: 800; color: #d6e4f2; animation: drift-fall 1.2s ease-in infinite; }
 @keyframes drift-fall { 0% { transform: translateY(-5px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(7px); opacity: 0; } }
 /* 回数の点は廃止（TH80）。炭・雨・少穴は短い札。 */

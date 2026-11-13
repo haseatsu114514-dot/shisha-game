@@ -50,7 +50,7 @@ const RIVAL_FACE_DELAY_MS = 1200;
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
  * その腕前相当の結果を出して進む（UIの流れ自体は通常どおり通る）。
  */
-export const craftTest = { auto: null }; // "good" / "bad" / "burn"（温度を上げ続けて焦がす）
+export const craftTest = { auto: null, aim: null }; // auto: "good" / "bad" / "burn"（温度を上げ続けて焦がす）。aim: "attack" で上手な自動操作が攻めの帯を狙う（桜井式の大会だけ）
 
 export const MODE_LABEL = { tutorial: "LESSON", drill: "PRACTICE", rehearsal: "REHEARSAL", tournament: "SMOKE CROWN CUP" };
 const MODE_NOTE = { tutorial: "レッスン", drill: "練習モード", rehearsal: "リハーサル", tournament: "大会" };
@@ -160,7 +160,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   const leaf = buildLeafIcon();
   worker.footer.append(leaf.root);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
-    el("div.bench-top", [el("span.bench-mode", [craftMode(cs, MODE_LABEL), el("small", { text: cs.retryAssist ? "今回のみ操作補助" : craftModeNote(cs, MODE_NOTE) })]), progress]),
+    el("div.bench-top", [el("span.bench-mode", [craftMode(cs, MODE_LABEL), el(cs.retryAssist ? "small.retry-assist" : "small", { text: cs.retryAssist ? "今回のみ操作補助" : craftModeNote(cs, MODE_NOTE) })]), progress]),
     el("div.bench-left", [
       worker.root,
       audience?.root,

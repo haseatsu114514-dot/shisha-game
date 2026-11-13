@@ -51,7 +51,7 @@ await mod.link(spec => {
 await mod.evaluate(); bonds = mod.namespace;
 const reset = (chapter, phase = "daily") => { fresh(chapter, phase); stateModule.setExport("state", state); mode = "normal"; };
 const text = id => rows(id).map(r => r.text || "").join("\n");
-const beforeText = /大会前|本番、よろしく|正面から叩く|勝った方が作る/;
+const beforeText = /大会前|本番、よろしく|全部置きに行く|勝った方が作る/;
 const results = [];
 reset(1); assert.match(text("ch1_naru_fifth"), beforeText); assert.match(text("ch1_naru_bond_finale"), /大会前の最後/);
 results.push("chapter1 pre-match dialogue retained");

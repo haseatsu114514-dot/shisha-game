@@ -349,7 +349,7 @@ export async function c(charId = state?.fortune?.char) {
       const from = `translate(947px, 77px) rotate(${38 + i * 9}deg) scale(.82)`;
       move(cards[i], [{ opacity: 0, transform: from }, { opacity: 1, offset: 0.2 }, { opacity: 1, transform: place(p) }], 520, { delay: i * 120 });
       move(shadows[i], [{ opacity: 0, transform: `translate(973px, 115px) rotate(${38 + i * 9}deg)` }, { opacity: 0.5, transform: under(p) }], 520, { delay: i * 120 });
-      setTimeout(() => SE.tick(), 120 + i * 120);
+      setTimeout(() => SE.card(), 120 + i * 120); // 札を置く音
     });
     await sleep(1020);
     // 3. 両脇が退いて暗くなり、真ん中の1枚が持ち上がってめくられる

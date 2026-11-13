@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
+import * as voteStyle from '../js/core/vote-style.js';
 const read = path => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
 const storage = new Map();
 const context = vm.createContext({ console, setTimeout, clearTimeout, localStorage: {
@@ -139,6 +140,7 @@ function el(selector,attrs={},children=[]) {
 const configCtx = vm.createContext({config:state.config,document:{body:{dataset:{screen:'vn'}}},el,
  saveConfig(){saves++;},applyVolumes(){},createUiThemeSelect(){return {};},
  LOOKS:[{id:'classic',label:'現行'},{id:'neo',label:'新版'},{id:'retro',label:'DS風'}],normalizeLook(v){return v||'classic';},setLook(){},
+ VOTE_STYLES:voteStyle.VOTE_STYLES,normalizeVoteStyle:voteStyle.normalizeVoteStyle,
  fullscreenButton(){return null;},saveTransferRow(){return {};},
  modal(args){modalArgs=args;return Promise.resolve(true);}});
 vm.runInContext(titleSource.slice(titleSource.indexOf('export async function openConfig')).replace('export async function','async function')+';globalThis.openConfig=openConfig;',configCtx);

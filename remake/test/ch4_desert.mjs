@@ -8,7 +8,8 @@ import { DESERT_FLAG, DESERT_TALKS, DESERT_TALK_HEARTS, DESERT_INVITE_STAGE, NOO
   desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertRankAtLeast, desertDestinations,
   DESERT_SPOT_IDS, desertDailySpots, desertDailySpotById, NOOR_FINALE, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, noorStoriesDone, noorFinaleWaiting,
   noorConfessionWaiting, desertChapterFiveSpots, completeDesertReunion, NOOR_VISIT_CONFESSION_FLAG,
-  NOOR_STORY_EXTRAS, NOOR_STORY_DIALOGUE_IDS, NOOR_CONFESSION_DIALOGUE_IDS, noorStoryFlag, noorStoryDue, completeNoorStory } from "../js/chapters/ch4-desert-progress.js";
+  NOOR_STORY_EXTRAS, NOOR_STORY_DIALOGUE_IDS, NOOR_CONFESSION_DIALOGUE_IDS, noorStoryFlag, noorStoryDue, completeNoorStory,
+  NOOR_FARIS_SCENES, NOOR_FARIS_FLAGS, noorFarisDue, completeNoorFaris } from "../js/chapters/ch4-desert-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
 import { tournamentFinished } from "../js/core/story-context.js";
 import { readFileSync } from "node:fs";
@@ -440,6 +441,52 @@ test("Noor's 16 café stories follow the visited stages once, including a late c
   assert.equal(noorStoryDue(value), NOOR_STORY_EXTRAS.at(-1).id, "unfinished story stays readable after the chapter changes");
   value.finales = { noor: { route: "romance" } };
   assert.equal(noorStoryDue(value), null, "a completed route does not replay the pre-confession stories out of order");
+});
+
+// #3468 D案: ヌール×ファーリス「客の席が決まらない」。はじめが二人と面識を得た後、カフェ・オアシスの来店の後に一度ずつ
+// （本場面→別の日の後日の一言）。段階・好感度は動かさず、第5章の店先で知り合った人にも同じ順で出る。
+test("Noor and Faris share one café break after hajime has met both, then a short follow-up on a later visit", () => {
+  const data = JSON.parse(readFileSync(new URL("../../data/dialogue/noor.json", import.meta.url), "utf8"));
+  const scenes = new Map(data.dialogues.map(scene => [scene.dialogue_id, scene]));
+  const { seat, again } = NOOR_FARIS_SCENES;
+  for (const id of [seat, again]) {
+    const lines = scenes.get(id)?.lines || [];
+    assert(lines.some(line => line.speaker === "noor") && lines.some(line => line.speaker === "faris"), id);
+    assert(!lines.some(line => line.type || line.affinity || "inner" in line), `${id}: no affinity, flag or inner rows`);
+    assert(!lines.some(line => line.speaker && /。$/.test(line.text || "")), `${id}: spoken lines end without 。`);
+    const text = lines.map(line => line.text || "").join("");
+    assert.doesNotMatch(text, /大会|本番|優勝|宿|アリガトナス|カシコマリ|ヤリマスネ/, id);
+  }
+  const value = fresh();
+  assert.equal(noorFarisDue(value, 1), null, "not before meeting either");
+  value.flags._ch4_camel = { stage: 1 };
+  assert.equal(noorFarisDue(value, 1), null, "not before Noor has introduced herself");
+  assert(completeDesertTalk(value, DESERT_TALKS[0], 1, noorHeart(value)));
+  delete value.flags._ch4_camel;
+  assert.equal(noorFarisDue(value, 2), null, "not before meeting Faris");
+  value.flags._ch4_camel = { stage: 1 };
+  const before = { affinity: structuredClone(value.affinity), desert: structuredClone(value.flags[DESERT_FLAG]) };
+  assert.equal(completeNoorFaris(value, again, 2), false, "the follow-up waits for the scene");
+  assert.equal(noorFarisDue(value, 2), seat);
+  assert(completeNoorFaris(value, seat, 2));
+  assert.equal(value.flags[NOOR_FARIS_FLAGS.seat], 2);
+  assert.equal(noorFarisDue(value, 2), null, "the follow-up is on a later day");
+  assert.equal(noorFarisDue(value, 3), again);
+  assert(completeNoorFaris(value, again, 3));
+  assert.equal(noorFarisDue(value, 9), null, "each is read once");
+  assert.deepEqual({ affinity: value.affinity, desert: value.flags[DESERT_FLAG] }, before, "no affinity or stage change");
+  // 第5章の店先で知り合った（_met_faris）人にも出る。章内の日（≤14）で読んだ本場面の後日は、第5章の通算の日でも後
+  const late = fresh();
+  late.chapter = 5;
+  late.flags[DESERT_FLAG] = { v: 2, talks: 2, chats: 0, lastTalkDay: 60 };
+  late.flags._met_faris = true;
+  assert.equal(noorFarisDue(late, 61), seat);
+  late.flags[NOOR_FARIS_FLAGS.seat] = 12;
+  assert.equal(noorFarisDue(late, 61), again);
+  assert(Object.keys(NOOR_FARIS_FLAGS).every(key => NOOR_FARIS_FLAGS[key].startsWith("_noor_story_")), "not carried to the next cycle");
+  const desert = readFileSync(new URL("../js/chapters/ch4-desert.js", import.meta.url), "utf8");
+  assert.match(desert, /const pair = id === "ch4_noor_bond_question" \? null : noorFarisDue\(owner, day\);\n\s+if \(!await read\(scene\(id\)/,
+    "decided before the visit's talk, so the first-meeting visit does not show it");
 });
 
 test("Noor's lover milestones use the five existing romance levels at the dunes", () => {

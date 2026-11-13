@@ -86,11 +86,13 @@ async function loadUi({ loadImage = image => image.onload?.(), imageSize = 0, no
     "scene-art.js": { renderSceneArt: () => {}, sceneArtUrls: () => [] },
     "weather.js": { rainScene: () => {}, weatherSkyTone: () => "", weatherViewKind: () => "", renderWeatherLayer: () => {} },
     "shop-haze.js": { syncShopHaze: () => {} },
-    "transitions.js": { createSceneCurtain: () => {}, nightToMorning: () => {}, isCovering: () => false, takeSceneArrival: () => null, takeParkedCover: () => null },
+    "transitions.js": { createSceneCurtain: () => {}, nightToMorning: () => {}, isCovering: () => false, takeSceneArrival: () => null, takeParkedCover: () => null, smokeArt: () => ({}), smokeIn: async () => {}, smokeOut: async () => {} },
     "store-logos.js": { allStoreLogoUrls: () => STORE_URLS },
     "chapter-title-art.js": { chapterTitleArt: () => "img/ui/chapter_title_ch1.webp" },
     "ui-theme.js": { uiThemeFrame: () => "img/ui/frame.webp" },
     "module-loading.js": { withLoadingNotice: (p) => p },
+    "loading.js": { withLoading: (prepare) => Promise.resolve().then(() => prepare({})), comicLoadingRequired: () => false },
+    "loading-context.js": { gameLoadingOptions: () => ({}) },
     "stage-fit.js": { syncBackdrop: () => {} },
     "dom-write.js": await import("../js/core/dom-write.js"), // 変化時だけ書く部品は、本物をそのまま使う（#3500）
     "loading-prefetch.js": {
@@ -262,6 +264,16 @@ console.log("[warmup defer] PASS: store logos defer to idle only on the title pa
   assert.equal(requested.length, 4, 'recent kept art is still reused');
   await ui.imageReady('a', 100, { keep: true });
   assert.equal(requested.length, 5, 'oldest decoded reference was released');
+}
+// 作業台の素材（pin）は上限の外。1工程で上限を超えるので、上限に入れると同じ作業台の中で追い出し合う（craft_readiness）。
+{
+  const { ui, requested } = await loadUi({ imageSize: 2048 });
+  await ui.imageReady('bench', 100, { keep: true, pin: true });
+  for (const u of ['a', 'b', 'c', 'd']) await ui.imageReady(u, 100, { keep: true });
+  await ui.imageReady('bench', 100, { keep: true, pin: true });
+  assert.equal(requested.length, 5, 'pinned bench art survives the decoded budget');
+  await ui.imageReady('a', 100, { keep: true });
+  assert.equal(requested.length, 6, 'other kept art stays bounded and does not count the pinned bench');
 }
 {
   const { ui, requested } = await loadUi();

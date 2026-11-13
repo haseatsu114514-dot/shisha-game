@@ -40,13 +40,13 @@
       "id": "adam_origin",
       "char_id": "adam",
       "dialogue_id": "ch1_adam_first",
-      "echo": "（アダムさんの大げさな声まで、ダブルアップルと一緒に残った）"
+      "echo": "（アダムさんの大げさな声も、甘さの後ろの薬草の香りも、まだ残っている）"
     },
     {
       "id": "adam_blend",
       "char_id": "adam",
       "dialogue_id": "ch1_adam_second",
-      "echo": "（アニスとリコリスが合わさって、あの林檎の香りになる）"
+      "echo": "（同じ名前の葉に、十の顔がある。アダムさんの棚で、そう教わった）"
     },
     {
       "id": "adam_practice",
@@ -280,7 +280,7 @@
       "id": "hiyori_boundary",
       "char_id": "hiyori",
       "dialogue_id": "hiyori_work_talk",
-      "echo": "（ひよりさんと決めた「今日はここまで」が、俺の手も止めてくれる）"
+      "echo": "（ひよりさんと話した「閉店時間」が、俺の手も止めてくれる）"
     },
     {
       "id": "hiyori_shout",

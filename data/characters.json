@@ -114,7 +114,7 @@
     "affiliation": "EDEN",
     "play_style": "「ダブルアップル特化」",
     "description": "純日本人であり、EDENに所属するダブルアップル特化のプレイヤー。本人は頑なに「アダム」と名乗り、ダブルアップルを宇宙の原点のように語る愛すべき変人。\nローランド風の名言と過剰な自己演出で周囲を振り回すが、一つの味を徹底的に掘り下げる技術は本物。\nEDENの営業設定: 表向きのメニューには多くの味があるが、実際の在庫はメーカー違いのダブルアップル約十種類と、ミントなど数種類だけ。ほかの味を尋ねられると「在庫切れ」と答え、初見のおすすめも、甘い・さっぱり・変わり種の希望も、結局ダブルアップルを勧める。常連は承知してメニューを見ず、メーカーや今日の重さを指定する。メーカーごとの甘さ・アニスやリコリスの釣り合い・熱の入り方を掘り下げ、客に合わせた一台を出す腕と常連との関係で、この異質な店が街の中で続いている。ダブルアップル以外の在庫が完全にゼロという設定にはせず、大会課題のレモン使用とも両立する。",
-    "background_secret": "私生活は少しポンコツだが、ダブルアップルだけは誰よりも真剣。原点の味を極めることで、自分の弱さや不器用さも含めて肯定しようとしている。",
+    "background_secret": "私生活は少しポンコツだが、ダブルアップルだけは誰よりも真剣。一つの味を愛し続けたから、同じ味の中に、メーカー・熱・年月ごとの無数の「顔」を見てきた。器用でない自分が続けた年月を、その顔の数で肯定している。混ぜる側のはじめの舌から、一人では見えなかった顔を受け取る。",
     "favorite_flavor": "ダブルアップル",
     "specialty_flavor": "ダブルアップル（アニス強め）",
     "growth_stats": {
@@ -303,24 +303,24 @@
     "age": 37,
     "nationality": "Russia",
     "affiliation": "NIGHTSIDE（ナイトサイド）経営者／東京の店 Железный Дым（ジェレーズヌイ・ドゥイム／鉄の煙）",
-    "play_style": "「完璧な熱管理と精度（Точность）」",
-    "description": "ナイトサイドを経営し、日本の窓口を任せる凛想の上司でもある。来訪の主目的は、日本の店ごとの器具・環境・客の吸う間隔を確かめる市場調査。東京に開いて日は浅いが、ナイトサイドを扱うハードコアな名店としてすでに知られる「鉄の煙」を拠点に、全国大会にも出場する。徹底した計測と温度管理でブレない提供を目指すが、客がホースを置くと数値の入力を止め、まず本人に熱さや休憩の意図を尋ねる。祖母の作るジャムを舐めながら紅茶を飲むのが好きで、その量だけは「測るな」と言われたまま測らない。",
-    "background_secret": "極寒の地で客に温かい煙を途切れさせないため、軍で身につけた観察・記録を熱管理へ活かしてきた。メーカーの計測条件では揃った袋が、店の客には違って届くことを見落としたくない。計器が正常でも客が吸うのをやめると動揺するが、失敗と決めつけず、本人の言葉と休憩の間を記録へ加える。第2章では名乗らず試煙会・大会前夜・県大会を調べる。第3章でナイトサイドの経営と凛想との関係、市場調査という目的を話す。精度を捨てて感情だけへ転向する人物にはしない。",
+    "play_style": "「熱と部屋を測る精度（Точность）」",
+    "description": "ナイトサイドを経営し、日本の窓口を任せる凛想の上司でもある。来訪の主目的は、日本の店ごとの器具と部屋の条件を見て、同じ袋が客にどう届くかを確かめる市場調査。東京に開いて日は浅いが、ナイトサイドを扱うハードコアな名店としてすでに知られる「鉄の煙」を拠点に、全国大会にも出場する。HMDの温度を温度計で測り、室温・湿度・扉の開け閉めまで気にして火を決め、それを「精度」と呼ぶ（ここまでやる職人はあまりいない、という程度の几帳面さ。店の壁には室温・湿度・外気の計器が並び、炭を置く前に一度見るが、主役ではない。火を決めるのはHMDに当てる細い温度計一本）。客がホースを置くと書く手を止め、まず本人に熱さや休憩の意図を尋ねる。祖母の作るジャムを舐めながら紅茶を飲むのが好きで、その量だけは「測るな」と言われたまま測らない。",
+    "background_secret": "扉を開けるたびに部屋の熱が変わる極寒の国の冬で、客に温かい煙を途切れさせないため、炭の熱と部屋を測る癖がついた。軍で身につけた観察・記録を熱管理へ活かし、紙のノートに日付・室温・湿度・炭の数・HMDの温度を書く。客の体温や口数は数えず、客のことは尋ねてから言葉で一行書く（2026-11-13 オーナー訂正「計測を盛りすぎない」）。店の壁の計器は使っているが、置く前に一度見る補助で、主役は温度計と客への問い（2026-11-13 オーナー指示「計器は使ってることにしよう　メインではないけど」）。メーカーの計測条件では揃った袋が、店の客には違って届くことを見落としたくない。温度が合っていても客が吸うのをやめると動揺するが、失敗と決めつけず、本人の言葉と休憩の間を記録へ加える。第2章では名乗らず試煙会・県大会を調べる。第3章でナイトサイドの経営と凛想との関係、市場調査という目的を話す。精度を捨てて感情だけへ転向する人物にはしない。",
     "favorite_flavor": "発売されたばかりのナイトサイド ブラストミント",
-    "specialty_flavor": "ナイトサイド ブラストミントを使った精密な熱管理",
+    "specialty_flavor": "ナイトサイド ブラストミントを使った、測ってから決める熱管理",
     "growth_stats": {
       "primary": "技術",
       "secondary": "根性",
-      "notes": "完璧な精度に人間性を排除していたが、はじめのアナログな即興調整に敗北後、いつの間にか客の呼吸音に合わせて吸い感をわずかに変える『揺らぎのある精度』を取り入れていた。"
+      "notes": "熱と部屋の数字を先に見る順番を崩さなかったが、はじめのアナログな即興調整に敗北後、いつの間にか客の息の間も聞いて吸い感をわずかに変える『揺らぎのある精度』を取り入れていた。"
     },
     "visual_concepts": [
       "37s russian man, cold and sharp facial features, short blonde hair, wearing a sleek black turtleneck sweater, robotic precision in his posture, using an advanced high-tech metal hookah pipe",
-      "steely-eyed russian shisha expert, pale skin, wearing a dark tailored overcoat, operating a modern minimalist shisha setup with digital thermal sensors, icy cool lighting"
+      "steely-eyed russian shisha expert, pale skin, wearing a dark tailored overcoat, operating a modern minimalist shisha setup with a single thin probe thermometer, icy cool lighting"
     ],
     "intro_cutin": {
-      "title": "誤差ゼロの職人",
+      "title": "熱と部屋を測る職人",
       "display_name": "ヴォルク・イヴァノフ",
-      "line": "ブレは、許さない",
+      "line": "先に、部屋を見る",
       "face": "normal",
       "color": "#8fb4d8",
       "motion": "still"
@@ -472,7 +472,7 @@
       "selected_work": "会場での作品展示",
       "subject": "tonariで過ごす時間",
       "submission_dialogue_id": "ch1_tsumugi_sketch",
-      "result": "第3章の帰郷後に入選を本人が報告。応募した作品が会場に展示される"
+      "result": "第3章の帰郷後に入選を本人が報告。応募した作品が会場に展示される。第5章の時点で展示は済んでおり、会場で絵の前を通る人を見た経験を店先の黒板に生かす（ch5_tsumugi_menu_board）"
     },
     "voice": {
       "first_person": "私",
@@ -503,7 +503,7 @@
       "27 year old japanese woman, very dark long wolf-cut hair with subtle slate-blue undertones ending below the bust and above the waist, thick sweeping bangs and cheek-hugging layers, mature languid half-lidded blue-gray eyes, a subtle cool smile, curvy adult figure, white shirt with rolled sleeves and a clean collar without paper scent strips, black slacks, silver hoop earrings, holding a clipboard, dim showroom shelves of unlabeled flavor tins, refined high-resolution fine pixel-art style",
       "same woman at midnight, loose dark slate-blue long wolf-cut hair ending above the waist, black-framed glasses, leaning on a counter with a jar of coffee beans, blueberry shisha bowl beside her, neon glow leaking through black-filmed windows, relaxed private mood, refined high-resolution fine pixel-art style"
     ],
-    "appearance": "少し青みのある暗い髪のロングウルフ。厚めに流れる前髪と頬を包むレイヤー、胸下〜ウエスト上までの長さ。主人公たちより少し年上に見える落ち着いた顔立ち、とろんとした細めの半目、控えめでクールな微笑み。白シャツの袖まくり＋黒スラックス。胸元に試香紙は付けない。銀のフープピアス。ネイルは常に無色（商材の香りを邪魔しないため＝職業的な色気）。普段はコンタクトで、深夜の2階では黒縁眼鏡＝眼鏡の凛想はルート進行者だけが見られる姿。低めの声でゆっくり喋り、笑うと目尻が緩むのを本人は少し気にしている。",
+    "appearance": "少し青みのある暗い髪のロングウルフ。厚めに流れる前髪と頬を包むレイヤー、胸下〜ウエスト上までの長さ。主人公たちより少し年上に見える落ち着いた顔立ち、とろんとした細めの半目、控えめでクールな微笑み。白シャツの袖まくり＋黒スラックス。胸元に試香紙は付けない。銀のフープピアス。ネイルは無色。服の洗剤・柔軟剤まで無香料で、香水・ハンドクリームも付けない（商材の香りを邪魔しないため＝職業的な色気）。普段はコンタクトで、深夜の2階では黒縁眼鏡＝眼鏡の凛想はルート進行者だけが見られる姿。低めの声でゆっくり喋り、笑うと目尻が緩むのを本人は少し気にしている。",
     "spriteScale": 0.97,
     "spriteAnchor": "head",
     "intro_cutin": {
@@ -1302,7 +1302,7 @@
     "nationality": "Japan",
     "affiliation": "SHISHARK",
     "romance_available": true,
-    "description": "シーシャークの開店を準備している成人女性。普通の成人女性の身長で、サメのフードを被り、笑うとギザ歯が見える。古風な「じゃ」「じゃぞ」の口調。右手に常に着けたサメのパペット、コロンブレ（コロちゃん）をサメの王として扱い、腹話術で自分にツッコミを入れる。店作りには真面目で、通路や居心地を細かく確かめる。大会には興味がなく、はじめを競争相手として扱わない。手伝ってもらってから、少しずつはじめに懐く。",
+    "description": "第1章では開店準備中、第2章からシーシャーク（SHISHARK）を開けている店主の成人女性。普通の成人女性の身長で、サメのフードを被り、笑うとギザ歯が見える。古風な「じゃ」「じゃぞ」の口調。右手に常に着けたサメのパペット、コロンブレ（コロちゃん）をサメの王として扱い、腹話術で自分にツッコミを入れる。店作りには真面目で、通路や居心地を細かく確かめる。大会には興味がなく、はじめを競争相手として扱わない。はじめが客として通ううちに、少しずつ懐く。",
     "background_secret": "サメ映画の話を始めると長くなる。スピルバーグを尊敬している。グロい場面は目をそらして怖がるが、平気だと強がる。実は泳ぎが苦手。泳ぎの話と本名の紹介は後の私的会話で扱い、初回の説明には並べない。 本名を聞かれると「知ってどうする」と強がるが、はじめに名前で呼ばれると照れて嬉しい。",
     "favorite_flavor": "アフサール スプリングウォーター",
     "specialty_flavor": null,

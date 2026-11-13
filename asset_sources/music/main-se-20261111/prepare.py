@@ -1,4 +1,4 @@
-"""本編の効果音（2026-11-11 第1弾）を、CC0 の原音から作り直す。
+"""本編の効果音（2026-11-11 第1弾・2026-11-13 第2弾）を、CC0 の原音から作り直す。
 
 原音はリポジトリに置かない。sources.json の URL から取得して SHA-256 を照合し、
 assets/audio/se/ のゲーム用ファイルと game_files.json を書き出す。ffmpeg が必要。
@@ -34,9 +34,18 @@ def fetch(cache: Path) -> dict:
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
         if digest != src["sha256"]:
             raise SystemExit(f"{src['key']}: 原音が台帳と違う（{digest}）。配布元の更新を確認する")
-        if "member" in src:  # zip の中の1ファイルだけ使う
+        if "member" in src:  # 書庫の中の1ファイルだけ使う
             member = cache / (src["key"] + "_" + Path(src["member"]).name)
-            member.write_bytes(zipfile.ZipFile(path).read(src["member"]))
+            if path.suffix == ".7z":
+                try:
+                    import py7zr
+                except ImportError:
+                    raise SystemExit("7z の書庫を開くのに py7zr が要る: pip install py7zr")
+                with tempfile.TemporaryDirectory() as unpack, py7zr.SevenZipFile(path) as archive:
+                    archive.extract(path=unpack, targets=[src["member"]])
+                    member.write_bytes((Path(unpack) / src["member"]).read_bytes())
+            else:
+                member.write_bytes(zipfile.ZipFile(path).read(src["member"]))
             path = member
         paths[src["key"]] = path
     return paths
@@ -73,6 +82,10 @@ def build(src: dict):
     clip(src["fire"], "fire_crackle_03.wav", 2.26, 0.44, -16, highpass=400, fade_out=0.04)
     clip(src["bell"], "heart_bell.wav", 0, 0.62, -15, fade_out=0.1)
     clip(src["kenney_interface"], "ui_save.wav", 0, 0.5, -14, fade_out=0.02)
+    # 第2弾（2026-11-13）
+    clip(src["door"], "door_open.wav", 0, 0.82, -12, fade_out=0.05)
+    clip(src["complete"], "item_get.wav", 0, 0.60, -14, fade_out=0.1)
+    clip(src["birds"], "morning_birds.mp3", 1.4, 3.8, -14, fade_in=0.15, fade_out=1.2)
 
 
 def catalog():

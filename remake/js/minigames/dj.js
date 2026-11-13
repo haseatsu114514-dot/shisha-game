@@ -72,8 +72,9 @@ export function djNightChoices(value, window) {
   return [{ ...(clubKnown(value) ? DJ_NIGHT : DJ_NIGHT_FIRST), ok: true, consumes: false, dj: true }];
 }
 
-/** 本編の音量設定と、自分のモニターヘッドホン（VOL07・▶の判定が10ms広い）を DJ へ渡す URL。 */
-export function djUrl(set, { muted = false, volume = 0.5, phones = false, phone = false } = {}) {
+/** 本編の音量設定と、自分のモニターヘッドホン（VOL07・▶の判定が10ms広い）を DJ へ渡す URL。
+ *  best: このセットの自己ベストの点（0〜100・無ければ付けない）。結果の板が「自己ベストまであと○点」を出す（DJF07）。 */
+export function djUrl(set, { muted = false, volume = 0.5, phones = false, phone = false, best = null } = {}) {
   const url = new URL("../../previews/dj/index.html", import.meta.url);
   url.searchParams.set("set", String(set));
   url.searchParams.set("embed", "1");
@@ -81,6 +82,7 @@ export function djUrl(set, { muted = false, volume = 0.5, phones = false, phone 
   if (Number.isFinite(volume)) url.searchParams.set("vol", String(Math.max(0, Math.min(1, volume))));
   if (phones === true) url.searchParams.set("phones", "1");
   if (phone === true) url.searchParams.set("phone", "1"); // スマホ密度（表示だけ。判定・採点は変わらない）
+  if (percent(best) !== null) url.searchParams.set("best", String(percent(best))); // 表示だけ。記録は本編の state.dj が正本
   return url.href;
 }
 
@@ -89,7 +91,7 @@ export function djUrl(set, { muted = false, volume = 0.5, phones = false, phone 
  * セットを回しきるたびに onResult(result) を呼ぶ（もう一度遊べば何度でも）。
  * 戻り値: { results: [...] }。閉じたら iframe は片付ける。
  */
-export function runDjSet({ host, set = 1, signal = null, muted = false, volume = 0.5, phones = false, phone = typeof document !== "undefined" && document.documentElement.dataset.density === "phone", onResult = null } = {}) {
+export function runDjSet({ host, set = 1, signal = null, muted = false, volume = 0.5, phones = false, phone = typeof document !== "undefined" && document.documentElement.dataset.density === "phone", best = null, onResult = null } = {}) {
   if (!host || !DJ_SETS.some(item => item.id === set)) return Promise.reject(new Error("DJ set unavailable"));
   return new Promise(resolve => {
     const results = [];
@@ -123,7 +125,7 @@ export function runDjSet({ host, set = 1, signal = null, muted = false, volume =
     window.addEventListener("message", listen);
     signal?.addEventListener("abort", finish, { once: true });
     frame.addEventListener("load", () => { try { frame.contentWindow?.focus(); } catch { /* same origin only */ } }, { once: true });
-    frame.src = djUrl(set, { muted, volume, phones, phone });
+    frame.src = djUrl(set, { muted, volume, phones, phone, best });
     host.append(frame);
   });
 }

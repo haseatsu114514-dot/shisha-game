@@ -65,7 +65,7 @@ mukaiで行動を使った帰りの裏口では、ふれあいの画面「てつ
 
 煙の描き方の見本（2026-11-11〜12・[要望台帳](../docs/owner_requests.md) の KMR。本編には未接続）は `http://127.0.0.1:8123/remake/previews/smoke-styles/`。「いま」の煙（本編の数値の写し）と、もこもこの房で描く3種（繊細ドット・ドット絵もくもく・アニメもくもく）・流体で描く3種（リアル・ドット×リアル・セル画）を、同じ場面で見比べる。絵柄を「ドット絵」にすると、背景と立ち絵も細かいドット絵（`make_pixel_art.py` がゲームの絵から変換した見本用の絵）に替わる。
 
-ラクダレース（第4章ドバイの任意ミニゲーム）の試遊は `http://127.0.0.1:8123/remake/camel-race.html`。
+ラクダレース（第4章ドバイの任意ミニゲーム）の試遊は `http://127.0.0.1:8123/remake/camel-race.html`。レース中は右上のボタン（Esc・P）で一時停止できる。手応えの数値（止め・揺れ・音量など）はコンソールの `__camelRace.feel` か URL の `?feel=stopPerfect:0.2` でその場で変えられ、試遊ページでは `__camelRace.debug` で息・調子・位置を指定できる（[仕様](../docs/spec/camel_race.md) §11）。DJ（`previews/dj/`）は `__dj.feel`・`?feel=`・`__dj.slip()`（[README](previews/dj/README.md) の「手応え」「ズレと皿」）。
 ラクダは自分で走り、車のリモコンから「声」（Space／左ボタン。騎手のまわりの輪が重なる瞬間）と「ムチ」（X／右ボタン。押している間だけ効いてスタミナを使う）を送るだけ。前のラクダのすぐ後ろは風よけで息が戻り、並びかけると相手が粘るので声かムチで抜き切る。4頭・1,000m・約50〜60秒、順位＋声かけ＋スタミナで0〜100点とS/A/B/C。`?pilot=perfect&speed=6` で自動操作のデモ。本編ではドバイの自由行動の地図から、Dr.fookah ドバイ店のファーリスと知り合い→誘い→朝の見学の順に解放し、レースは昼の行動を使う。本編セーブは読み書きしない。[仕様・接続・素材依頼](../docs/spec/camel_race.md)。
 サンドボード DESERT RIDE（第4章ドバイの昼の寄り道）は `http://127.0.0.1:8123/remake/desert-ride.html` で単体でも遊べる。本番はヌールと競走し、空中トリック（大ジャンプ中に ← →）とブースト（↓）がある。カーブでは外へ流されるので曲がる向きへ切り込む（ブーストも貯まる）。岩はぎりぎりでかすめるほど点もブーストも大きく、ブーストは岩を砕くたびに短くなり、端の深い砂に入ると切れる。手応えの数値はコンソールの `__desertRide.feel` でその場で変えられる（[仕様](../docs/spec/desert_ride.md)の「手応え」）。ヌールに勝つと裏ボスのなると勝負できる。`?course=left-bowl` などでコースを固定できる。
 後方視点の疑似3Dで砂丘を自動滑走し、← →（スマホは左右ボタン）で岩をよけ、起伏の手前で Space（ジャンプ）、空中ではボタンが LAND に変わり、縮む輪が重なった時にもう一度 Space で着地が決まる。ゲージが溜まるほど BOOST ボタンとゲージが放電する。転倒しても起き上がる。S／A／B／Cの評価と自己ベスト、練習（チュートリアル）、動き軽減に対応。
@@ -81,7 +81,7 @@ python3 remake/tools/serve_preview.py --port 8123
 # → http://127.0.0.1:8123/remake/ を開く
 ```
 
-効果音の試聴は `http://127.0.0.1:8123/remake/audio-preview.html`（2026-11-11 に入れた録音の音と、前の合成音をボタンで聴き比べる。保存データは変えない。出典は [asset_sources/music/main-se-20261111/](../asset_sources/music/main-se-20261111/README.md)）。
+効果音・BGMの試聴は `http://127.0.0.1:8123/remake/audio-preview.html`（2026-11-11 に入れた録音の音と前の合成音をボタンで聴き比べる。2026-11-12 に当てた柚ヶ谷・ドバイの曲も聴ける。保存データは変えない。出典は [asset_sources/music/main-se-20261111/](../asset_sources/music/main-se-20261111/README.md)）。
 
 大会のコンティニューだけを確認する場合は `http://127.0.0.1:8123/remake/continue-preview.html`。
 コンティニューは声なし。初回（その大会で1回目の敗北）は時間制限なしでカウントは演出だけ、2回目以降は20秒でGAME OVER。BGMは BGMer「EMGコール」（以前はプレビュー画面の最下段に出していた制作メモ。#2863 でここへ移した）。
@@ -94,8 +94,9 @@ python3 remake/tools/serve_preview.py --port 8123
 20秒でGAME OVERを表示してタイトルへ戻り、期限内の「大会に戻る」は反応後に大会冒頭へ戻る。字幕送りは期限に影響しない。
 プレビューはセーブに書き込まない。[V4仕様と検証](../docs/spec/continue_button_reactions_sfx_20261010.md)。
 2026-11-07（#2524・オーナー決定）: 本編の既定は前バージョンの neon（筆文字・円形HUD・金と紫のボタン「最初から再挑戦／諦める」）と前バージョンの台本に戻した。立ち絵だけ新バージョン（台本の全表情が新版にそろう人物）。台詞は敗因・順位・弱点で差し替えず、どの負け方でも同じ台本（2敗目以降は4行に短縮）。出演者はスミさんか成立済みの恋人を同じ確率で選ぶ（恋人の「プレミア20%」は廃止のまま）。2026-11-06 に一度既定にした「記憶の暗室」（inner）は `continue-preview.html?layout=inner` で比較できる。[V5仕様](../docs/spec/continue_inner_voice_20261106.md)・[制作記録とCodexプロンプト](../asset_sources/ui/continue-v5-20261106/README.md)。
+2026-11-13（CV61・オーナー決定「Cでゲームに実装して　Aは一旦保留」）: **本編の既定は C 漫画の大ゴマ（`layout=manga`）**。紙の白と黒のコマ割りで、人物は集中線の大ゴマ、台詞は吹き出し、残り秒数はギザギザ、2択は2つのコマ（選ぶと黒く反転）、時間切れは黒いページ。台詞・20秒の時計・2択・遷移は前の版と同じ。前の版の neon（筆文字・円形HUD）と保留中の A 熾火（`layout=ember`）も残し、本編のゲームでは URL に `?continueLook=neon` / `?continueLook=ember` を付けると切り替わる（端末に覚える・`?continueLook=manga` で既定に戻す）。プレビューは `continue-preview.html?layout=manga|neon|ember`。[案出しの記録](../asset_sources/ui/continue-concepts-20261111/README.md)。
 
-プレビューの既定は「筆文字・円形HUD（採用中）」と「暗いステージ（採用中）」。過去の王道／王道＋迫る数字／上段ボタン／上段ボタン＋背面カウントも比較用に保持する。
+プレビューの既定は「C 漫画の大ゴマ（採用中）」と「暗いステージ（採用中）」。前の版の「筆文字・円形HUD」と保留中の「A 熾火」も選べる。過去の王道／王道＋迫る数字／上段ボタン／上段ボタン＋背面カウントも比較用に保持する。
 実験版は「コンティニュー？ 15 ［する］［諦める］」を上部へ集め、下のセリフを大きくする。背面カウント版は人物の後ろの薄い数字が残り時間に沿って拡大する。動き軽減ではサイズを固定。「背景」で紫の煙と、添付画像を参考に生成した暗いステージを切り替えられる。
 `continue-preview.html?layout=neon&background=stage` で本編と同じ版、`?layout=top&background=purple` で上段比較版、`?layout=back-count&background=stage` で上段背面カウント版を選べる。紫背景も比較用に残す。背景タブでは時計・煙・光を停止し、動き軽減では数字の拡大と装飾アニメーションを止める。
 添付の王道構図に合わせた下段2択のまま、かなり大きい数字が迫る版は `continue-preview.html?layout=bottom-back-count&background=stage`。背面の数字は750→1800pxに拡大する。王道そのままの `?layout=bottom&background=stage` と比較できる。
@@ -154,10 +155,17 @@ remake/
 この実測値から位置を計算して組む。制作画面には独立した一台のパネルを表示しない。それ以外の変更にビルドは要らない。
 文字だけの仮置きCG（無地に説明文の画像）は一覧に載せない＝場面では飛ばし、ギャラリーにも出さない。本物の絵に差し替えて再実行すれば出る。
 同じコマンドの最後に `tools/build_images.py` が走り、表示用の軽い WebP を `remake/img/` に作る（元の PNG 91MB → 約15MB。
-1枚ずつ可逆と非可逆q90の小さいほう・作業台素材は長辺1280pxまで）。ゲームは一覧にある画像だけ WebP を読み、無ければ assets/ の PNG を読む。
+1枚ずつ可逆と非可逆q90の小さいほう・作業台素材は長辺1280pxまで。会話の立ち絵は可逆と「非可逆q92＋透明は劣化なし」の小さいほう＝2026-11-13 から・LD03）。ゲームは一覧にある画像だけ WebP を読み、無ければ assets/ の PNG を読む。
 変換済みで元より新しい画像は作り直さないので、2回目以降は数秒で終わる。
 
-**トランジション・場面の演出**（2026-10-09〜10）: 就寝→翌朝は夜の紫が降りて、朝のDAYと残り日数のカードがめくれる。数字は表示開始から更新後のHUDと同じ値（`core/transitions.js`）。マップ→場所の移動は6つの型を `core/transition-moves.js` に持ち、既定は帰宅だけ door、ほかは pin。`?move=door` や `__remake.dev.moveStyle("door")` で切り替える。チェキ・占い・贈り物・バイトの終わり・サメちゃんとの出会い・つむぎのスケッチは `core/scene-motions.js` が窓口で、中身は場面ごとの `js/motions/<場面>.js`・`css/motions/<場面>.css`（扉の型も `motions/door.js`）。各場面に a／b の2パターンがあり、本編はオーナーが選んだ採用（`core/mg-kit.js` の `ADOPTED_VARIANT`: 扉a・チェキb・占いa・贈り物a・バイトb・サメb・スケッチb。帰宅だけ短くしたdoor、ほかはpin。2026-10-11 CI125〜127）。比べるときは `?movar=a|b`（全場面をそろえる）・`?move=pin`・`__remake.dev.motionVariant("b")`（`"auto"` で採用に戻す）。配色は紫1色（既定）／場面ごとの色（`?mopal=free`・`__remake.dev.motionPalette("free")`）。`__remake.dev.motion("cheki")` などで再生、夜明けの天気は `dawn-sun`／`dawn-cloud`／`dawn-rain`／`dawn-sick`。DAYカードの天気（晴れ・くもり・雨）は `daily/weather.js` の `weatherOf()` で、くもりは見た目だけ。会話の中では `show_cg` の `"effect": "cheki"` と `{"type": "motion", "id": "tarot"}` で呼ぶ。SKIP中と動きを減らす設定では省く。録画は `asset_sources/transitions/`。
+**トランジション・場面の演出**（2026-11-11〜13 に作り直し・TMG44〜60。方向と判定表は `remake/previews/motion-direction/`）: 10月の「画像を使わない」「紫1色」の約束はやめ、次の5つの決まりで作る。
+1. **場面の切り替えは覆わない**: 前の絵が次の絵へ直接ほどける（煙のにじみ `core/transitions.js` の `smokeCurtain`・`smokeOut`／`smokeIn`）。紫の面を挟まず、カメラの寄り・光・にじみで背景そのものを動かす。
+2. **人にまつわる演出の舞台は、その人の絵柄**: 登場カットインの背景（`img/ui/character_intros/graphic/`）の上で見せる（チェキはみんと、贈り物は贈り主、占いは占い師）。色もそこから取る。
+3. **物はコードで描かない**: 札・箱・扉・窓・タブレットなどは、ゲームにある絵か、同じ絵柄で生成した絵（`img/ui/transitions/<場面>/`・原画は `asset_sources/transitions/`）を使う。
+4. **文字は題字として組む**: 章題と同じ明朝（`Suien Name`）で大きく、または登場カットインの生成りの帯に載せる（行き先の題字・ROUND の帯・贈り物の札）。
+5. **数を絞り、山場に寄せる**: 毎日見るものは1〜2秒で静かに。時間を使うのは物語の要所と一度きりの出来事だけ。
+
+就寝→翌朝は部屋の夜と朝の絵をつなぎ、左下に日付の題字（`nightToMorning`）。マップ→場所の移動は `core/transition-moves.js`（既定は帰宅が lights、ほかは zoom。`?move=pin` などで切り替え）。場面ごとの演出は `core/scene-motions.js` が窓口で、中身は `js/motions/<場面>.js`・`css/motions/<場面>.css`。各場面の a／b（10月の型）と c（作り直した型）を持ち、本編は `core/mg-kit.js` の `ADOPTED_VARIANT`（2026-11-13: チェキ・占い・贈り物・バイト終業・サメちゃん・スケッチ・電車・飛行機と配送便・新幹線が c、扉は a）。比べるときは `?movar=a|b|c`（c の無い場面は採用の型のまま）・`__remake.dev.motionVariant("b")`（`"auto"` で採用に戻す）。a／b の配色は紫1色（既定）／場面ごとの色（`?mopal=free`）で、c は配色の切り替えを使わない。大会の会場入り（`ui.smokeWipe`）・ROUND の帯（`ui.roundCut`）・敗北の入り（`defeatFade`）・再挑戦（`retryStroke`）・回想から現在へ（`motions/moments.js` の `leafWave`）・フィナーレの混ざる煙（`mixedSmoke`）は1つの型だけ。龍の煙（`dragonSmoke`）は一枚絵の到着待ち（Issue #3413）。`__remake.dev.motion("cheki")` などで再生、夜明けの天気は `dawn-sun`／`dawn-cloud`／`dawn-rain`／`dawn-sick`。DAYカードの天気（晴れ・くもり・雨）は `daily/weather.js` の `weatherOf()` で、くもりは見た目だけ。会話の中では `show_cg` の `"effect": "cheki"` と `{"type": "motion", "id": "tarot"}` で呼ぶ。SKIP中と動きを減らす設定では省く。録画は `asset_sources/transitions/`。
 
 **LIME交換**（#931）: 連絡先を交換した直後に、はじめのスマホの画面で「友だち追加→『追加』をタップ→友だち一覧に1行増える」を見せる（`js/motions/lime.js`・`css/motions/lime.css`）。端末・緑・アカウント名はゲーム内のLIMEと同じで、友だち一覧は演出の中だけの画面。a はアイコンが一覧へ飛んで収まる、b は画面ごと横にスライドする（採用待ち。既定は a、`?movar=b` で比べる）。`__remake.dev.motion("lime")`・`"lime-adam"`・`"lime-minto-private"`（栞の私用アカウント）で再生。SKIP中も見せ、動きを減らす設定では追加し終えた画面だけを見せる（#833）。
 
@@ -200,6 +208,7 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
    - KEMURIKUSA（なる）・EDEN（アダム）・PEPPERMINT（みんと）: 固有会話を順に消化
    - Dr.fookah（フレーバー・機材の売買／2階＝凛想）・カフェ・観音堂・チョイザップ・C.STATION・家に帰る
    - **施設の寄り道会話**（`daily/spot-encounters.js`）: 再訪から、カフェのなる・上園さん・マスター、観音堂のアダム・老人、ジムのみんと・なる・常連と短く会う。読了した回だけ保存し、遭遇の間には一回以上の静かな訪問を挟む。雨で出なかった回は残す。みんとは実際の正体開示後だけ登場、本名は本人から聞いた後だけ。施設では好感度・恋愛値・店の訪問数／固有会話を進めない。二択の返事は途中セーブからも保ち、次の通常来店で一度だけ拾う。料金・回復／消耗・成長量は通常の施設行動と同じ。
+   - **施設の静かな回**（`daily/spots.js` の `quietTurn`・SPV02）: 喫茶こはく・観音堂・CHOI-ZAP・C.STATION で誰にも会わない来店は、束（昼・夜・雨）ごとに小品を一本ずつ順番に読み、一巡するまで同じ文に戻らない（喫茶 昼7・雨2／観音堂 昼6・夜4・雨2／CHOI-ZAP 昼6・夜4）。読んだ本数はフラグ `_spot_turn_<施設>`（夜は `_night`、雨は `_rain`）。小品を足す時は `data/dialogue/ch1_spots.json`（夜は `venue_hours.json`）に書き、`SPOTS` の `pool`／`nightPool`（雨は `weather.js` の `RAIN_SPOT_TEXTS`）へ ID を足す。章や大会の前後・天気・面識に触れない文にする（第1・2・5章と出発前の準備期間で読むため）。東京の CHOI-ZAP（第3・5章）・第5章の東京の公園・ドバイのクリーク沿い（第4・5章）・家で休む（`REST_SCENES`。雨の日は `REST_RAIN_SCENES`）も同じ `quietTurn` で順番に読む（SPV03）。
    - 体力・所持金・ステ（★表示のみ・章ソフトキャップ）・好感度（5段階）
    - **LIME**（`daily/phone.js`・オーナー指定）: 朝はプッシュ通知で「新着 n件」を知らせて受信箱（`state.inbox`）に積むだけ。
      HUD の LIME アイコンに未読の赤丸（数字なし）が付き、マップにいる間ならいつでも開ける（トーク一覧→相手を選んで読む）。
@@ -209,7 +218,7 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
    - ★が上がると、報酬カードに「何が楽になったか」を一言（`remake/data/status_texts.json` の statTierFx）。
      ステータス画面は各行に今の★で効いていること、タップで「そのステが何に効くか」（statPurpose）
    - **雨の日**（`daily/weather.js`・旧版 A8/W4）: セーブ固有の種で約3割（DAY1 は晴れ）。マップに雨・DAYカードに「☂ 雨」。
-     観音堂・カフェは雨の回（`kannon_rain`/`cafe_window_rain`）、ほかの店は入りの1行が雨に、つむぎは仲良くなると長居（`remake_repeat_tsumugi_rain`）。
+     観音堂・喫茶こはくは雨の回（2本ずつを順番に読む。`RAIN_SPOT_TEXTS`）、ほかの店は入りの1行が雨に、つむぎは仲良くなると長居（`remake_repeat_tsumugi_rain`）。
      バイトは雨の回の接客が出て、長居客の追加注文ぶん +500円
    - **辻占のオババ**（`daily/fortune.js`・旧版 F11）: 週2日（DAY3/6/10/13）だけアーケード脇に出店。会うまでは「？」。
      時間を使わない・1日1回・相性占い3,000円。占ってもらった相手と次に会ったとき一度だけ好感度の伸びが1.5倍
@@ -296,6 +305,7 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
    - 生放送レイヤー（`craft/broadcast.js`・旧版 #24/#20/#26）: 工程の頭でパッキーが前振り＋ライバルの進行実況、
      出来に応じてニコ動風のコメントが流れる。点数は作業台右上の SCORE（全モード共通・工程ごとに加算・結果表にも載る）に一本化（TH42）。文面は `remake/data/broadcast.json`
    - 審査 → RESULT 10 COUNT（プチュン＝1位確定／パリン＝敗北）→ 千須の持ち点10一括投入
+   - **桜井式の審査（試作・SKR04）**: 設定の「大会の審査（第1章）」で、いままでの審査と切り替えられる（プレイヤーの既定は桜井式・`?vote=sakurai|classic`）。各回をその回の工程だけで決め、提供の回は審査員ごとに見る所が違い、吸い出し・調整の温度計に「攻めの帯」（+4）が出る。仕様は `docs/master_spec.md` の 2026-11-13 の節、検証は `remake/test/ch1_votes_sakurai.mjs`・`browser/ch1_vote_style.mjs`
    - 優勝: 表彰 → `ch1_tournament_after`（会場まで） → スミさんの祝福LIME → `ch1_tournament_after`（閉店後のtonariの祝杯・採点表の走り書き） → なるのLIME・「???」の記録LIME → `ch1_naru_promise` → 採点表を気にし始める章末 → 90年代風の次回予告 → 第1章クリア
    - 敗北: `ch1_tournament_defeat` → GAME OVER（大会の頭から再挑戦／タイトルへ）
 
@@ -386,11 +396,12 @@ node --experimental-vm-modules remake/test/data_loading.mjs # 接続数・通信
 2026-11-02 オーナー「デバッグ用に役立つ機能入れたい。何倍速とかシーシャ作りパートスキップとか。リリースするときは消すけど」。
 
 - URL に `?debug=1` を付けて開くと、左下に「DBG」が出る（この端末に覚える。`?debug=0` で消える）。` キーでも開閉できる
+- **ホーム画面に追加した iPhone など URL を変えられない時**: タイトルの右下の版の表示（`ver. …`）を続けて5回押すと「DBG」が出る（もう一度5回押すと消える）。ホーム画面のアプリは Safari と保存が別なので、Safari で `?debug=1` にしてもアプリには移らない（2026-11-13・DBG03）
 - **速さ** ×1／×2／×4／×8: ゲームの時計（タイマー・アニメーション・ミニゲームの時間）をまとめて速くする。音の高さ・長さは変えない（`js/dev/time-warp.js`）
 - **シーシャ作り** 自分で／自動で成功／自動で失敗: 各工程が操作なしで進む（検査用の `craftTest.auto` を使う）
 - **便利**: 体力を満タン・お金＋10万円・経験値＋200・火種＋6、今の章・日・時間帯・体力・お金
 - 会話の早送りは、会話の操作バーの SKIP（設定で未読も飛ばせる）
-- **リリース前に消すもの**: `remake/js/dev/` のフォルダ、`remake/js/main.js` の「デバッグ用の道具」の行、`remake/test/browser/debug_tools.mjs` と `tools/ci/suites.json` の `debug-tools`
+- **リリース前に消すもの**: `remake/js/dev/` のフォルダ、`remake/js/main.js` の「デバッグ用の道具」の行、`remake/js/scenes/title.js` の `debugTapToggle`（と `.title-ver` の押せる指定）、`remake/test/browser/debug_tools.mjs` と `tools/ci/suites.json` の `debug-tools`
 
 テスト用フック: `window.__remake`（state参照・ミニゲーム自動解決）。
 開発用ジャンプ: ブラウザのコンソールで `__remake.dev.tournament()`（大会当日から）／`__remake.dev.drill("heat")`（ドリル単体）。※今のセーブを上書きする。UIの見た目を変えても壊れないよう、

@@ -10,9 +10,13 @@ await suite('tournament-story',async check=>{
   for(const touch of [false,true]) await check(`${touch?'touch':'pc'}-dialogue-pause-cancel-and-json-resume`,async page=>{
     await page.evaluate(async()=>{
       const core=await import('./js/core/state.js');core.newGame();
+      // 大会の掛け合いの台本は、各章の大会の入口と同じく必要になった時に読む（#3500でタイトルの先読みから外れた）。
+      await (await import('./js/core/data.js')).loadTournamentCraftDialogue();
       const vn=await import('./js/vn/engine.js');
       const session=await import('./js/craft/session.js');
       const story=await import('./js/craft/tournament-story.js');
+      // 大会の掛け合いの台本は大会の入口で読む（タイトルの先読みはしない・#3500）。本編の入口と同じく先に読む
+      await (await import('./js/core/data.js')).loadTournamentCraftDialogue();
       const cs=window.cs=session.newSession('tournament');
       cs.mix={mint:12};cs.pack='fluffy';cs.steam={temp:.52,score:85};
       for(const id of ['hajime','pakki','dr_kemuri','maezono'])core.state.flags[`_intro_${id}`]=true;

@@ -173,9 +173,9 @@
         ],
         "samechan": [
           { "speaker": "", "face": "", "text": "サメちゃんは、カウンターの端で、コロちゃんにグラスを持たせようとしていた。" },
-          { "speaker": "samechan", "face": "ventriloquism", "text": "勇者はじめよ、よくぞ戻った。世界の王の座、大儀であった" },
+          { "speaker": "samechan", "face": "ventriloquism", "text": "勇者はじめよ、よくぞ戻った。世界の王の座、大儀であった", "voice": "korochan" },
           { "speaker": "samechan", "face": "normal", "text": "……コロちゃん。王はお主ではなく、はじめじゃ" },
-          { "speaker": "samechan", "face": "ventriloquism", "text": "余の側近は、朝から祝いの言葉を練習しておったぞ" },
+          { "speaker": "samechan", "face": "ventriloquism", "text": "余の側近は、朝から祝いの言葉を練習していた", "voice": "korochan" },
           { "speaker": "samechan", "face": "surprise", "text": "そ、それは言わぬ約束じゃ！" },
           { "speaker": "hajime", "face": "smile", "text": "練習したの、聞かせてください" },
           { "speaker": "samechan", "face": "normal", "text": "……うむ。ならば、コロちゃんは少し休んでおれ" },

@@ -1337,6 +1337,101 @@
       ]
     },
     {
+      "dialogue_id": "remake_rest_b",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "家に帰って、まず靴下を脱いだ。ベッドに倒れこむと、枕が少しひんやりしている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "目が覚めると、同じ姿勢のままだった。体が、軽い。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_rest_c",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "部屋に戻って、湯を沸かした。マグカップを持って、ローテーブルの前に座る。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "何も考えずに飲み終えるころには、肩が下りていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_rest_d",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "本棚から一冊抜いて、ベッドに寝転んだ。三ページ目で、もう字が追えなくなる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開いたままの本を胸にのせて、少し眠った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_rest_e",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "部屋の鉢植えに、水をやった。乾いた土が、小さな音を立てて水を吸っていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（俺も、同じくらい乾いてたのかもな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自分の分もコップに一杯くんで、ゆっくり飲んだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_rest_rain",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨の日は、家にいる理由がある。カーテンを半分だけ閉めて、横になった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓を打つ雨の音を聞いているうちに、眠っていた。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_rest_day",
       "lines": [
         {
