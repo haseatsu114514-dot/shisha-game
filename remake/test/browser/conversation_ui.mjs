@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { suite, baseURL, storageSnapshot } from "./support.mjs";
 
+// #3556: 選択肢が出てから 0.5 秒（engine.js の CHOICE_KEY_LOCK_MS）は Enter／Space を受け付けない。
+// 選択肢をキーで決める検査は、その間が過ぎてから押す（待ちは「0.5秒以上」の向きなので負荷で揺れても誤判定しない）。
+const choiceKeysReady = page => page.waitForTimeout(600);
+
 await suite("conversation-ui", async check => {
   await check("paper-safe-area-and-work-costume", async page => {
     // The preview omits phone-density.css. Exercise the real game with a home-bar inset.
@@ -114,6 +118,7 @@ await suite("conversation-ui", async check => {
         assert(spoken.indexOf(text) >= 0 && spoken.indexOf(text) < spoken.indexOf("所持金不足（あと1円）"), "読み上げ情報は本文のあとに不足理由が続く");
         await paid.focus();
         assert.equal(await page.evaluate(() => document.activeElement?.dataset.test), "choice-0", "不足理由にキーボードで到達できる");
+        await choiceKeysReady(page); // ロック中の Enter で「実行されない」が素通りにならないように
         await page.keyboard.press("Enter");
         assert.equal(await page.locator(".vn-choices.show .vn-choice").count(), 2, "不足項目は実行されない");
         await page.keyboard.press("1");
@@ -194,6 +199,7 @@ await suite("conversation-ui", async check => {
     assert.equal(await page.evaluate(() => document.activeElement?.dataset.test), "choice-0");
     await page.keyboard.press("ArrowUp");
     assert.equal(await page.evaluate(() => document.activeElement?.dataset.test), "choice-1");
+    await choiceKeysReady(page);
     await page.keyboard.press("Enter");
     await page.locator('[data-test="choice-0"]').waitFor({ state: "hidden" });
     await showChoices();
@@ -252,6 +258,7 @@ await suite("conversation-ui", async check => {
       await page.locator('[data-test="choice-0"]').waitFor();
       await skip.focus(); await page.keyboard.press(key);
       assert.equal(await skip.getAttribute("aria-pressed"), "false");
+      await choiceKeysReady(page);
       await page.locator('[data-test="choice-0"]').press(key);
       await page.locator('[data-test="choice-0"]').waitFor({ state: "hidden" });
       await page.locator(".vn-next.show").waitFor();

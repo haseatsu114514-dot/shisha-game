@@ -148,7 +148,7 @@ html:root[data-density="phone"] body:not(:root) .log-row { font-size: var(--phon
 html:root[data-density="phone"] body:not(:root) :is(.log-row b, .log-inner) { font-size: var(--phone-sub); }
 
 /* ---------------------------------------------------------------- MENU の「?」（#3556）
-   押せる範囲（::before）は実寸 40px 済み。見た目の丸がスマホ横で実寸 15px まで縮んでいたので、実寸約 20px・「?」の字は 11px 以上にする。PC は変えない。 */
-html:root[data-density="phone"] body:not(:root) .dmenu .dm-help {
-  width: calc(var(--dm-min) + 15px); height: calc(var(--dm-min) + 15px); font-size: var(--dm-min);
-}
+   押せる範囲（::before）は実寸 40px 済み。「?」の字はスマホ横で実寸 10.8px だったので、規格の下限（--dm-min＝実寸 11.5px）にする。
+   丸は daily-menu.css の上限 30px（#2859・2026-11-08 オーナー指摘「大きすぎ」。帯の文字に合う小さな丸で、帯の高さを押し広げない）の中で最大にする。
+   丸をこれより大きくする（実寸 20px 前後）のは上の指摘と食い違うので、オーナー判断を待つ。PC は変えない。 */
+html:root[data-density="phone"] body:not(:root) .dmenu .dm-help { width: 30px; height: 30px; font-size: var(--dm-min); }
