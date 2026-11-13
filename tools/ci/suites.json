@@ -229,6 +229,18 @@
       "run": ["node remake/test/browser/ch1_victory_resume_2190.mjs"]
     },
     {
+      "id": "resume-modal-title-cleared-3514",
+      "title": "LOAD直後に最初のモーダルが出る再開でも、タイトル画面が背後に残らない",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch1.js",
+        "remake/test/browser/resume_modal_title_cleared.mjs"
+      ],
+      "run": ["node remake/test/browser/resume_modal_title_cleared.mjs"]
+    },
+    {
       "id": "vn-speaker-atomic-2190",
       "title": "Speaker and dialogue switch together after portrait entry",
       "kind": "browser",
