@@ -106,6 +106,14 @@ assert(!canReadOptionalStory(routes, {}, 'unknown'));
     assert(canReadOptionalStory(routes, {}, id, {completedScenes: [stage]}));
   }
 }
+// #3468 D案: ヌール×ファーリスの本場面と後日の一言も、カフェ・オアシスの任意場面として登録する（実行時の判定は ch4-desert-progress.js）。
+{
+  const ids = ['ch4_noor_faris_seat', 'ch4_noor_faris_seat_again'];
+  assert.deepEqual(routes.chapters['4'].optional.filter(id => id.startsWith('ch4_noor_faris_')), ids);
+  for (const id of ids) assert(scenes.has(id), id);
+  assert.deepEqual(routes.optional_requirements[ids[0]].seen, ['ch4_noor_meet']);
+  assert.deepEqual(routes.optional_requirements[ids[1]].seen, [ids[0]]);
+}
 
 // --- #1176 GAP 3-B: 第3章の任意場面・前夜の配線（ch3-story-wiring.js）。ブラウザ不要の純粋ロジック。
 const wiring = await import(new URL('remake/js/chapters/ch3-story-wiring.js', root));
@@ -247,6 +255,23 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   for (const id of entry.AGEHA_CONFESSION_SCENES) assert(sceneData.get(id)?.lines?.length, id);
 }
 {
+  // #3468 G案: ムカイさん×針間ヨル。mukaiの二日目の後、ヨルと面識がある時に mukai で一度だけ。
+  const value = tokyo();
+  const playlist = v => offered(v).includes('ch3_mukai_yoru_playlist');
+  readUntil(value, 'ch3_mukai_intro');
+  value.met.yoru = true;
+  assert(!playlist(value), 'not before the second day at mukai');
+  readUntil(value, 'ch3_rest_before_recovery');
+  assert(playlist(value));
+  assert(!playlist({...value, met: {}}), 'needs to have met yoru');
+  assert.deepEqual(wiring.CH3_OPTIONAL_SCENES.ch3_mukai_yoru_playlist.location, 'mukai');
+  wiring.commitOptionalRead(value, 'ch3_mukai_yoru_playlist');
+  assert(!playlist(value), 'read once');
+  const lines = sceneData.get('ch3_mukai_yoru_playlist').lines;
+  assert(!lines.some(row => row.type), 'no affinity, stats, memory or flag rows');
+  assert(lines.some(row => row.speaker === 'yoru') && lines.some(row => row.speaker === 'mukai_master'));
+}
+{
   // ひよりの tokyo_contact（#1434 決定B）: 仕事の相談を読んだ面識・連絡先のある相手だけ。恋人は要らず、東京に来ている間は出さない。
   const value = tokyo();
   readUntil(value, 'ch3_mukai_intro');
@@ -383,6 +408,27 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert(!offered(value).includes('ch3_saku_mashiro_soon_back'), 'saku talks after visiting mukai');
   readUntil(value, 'ch3_taste_return');
   assert(offered(value).includes('ch3_saku_mashiro_soon_back'));
+}
+{
+  // #3468 H案: ましろ×ムカイさん。mukaiの二日目の後に棚整理、その後に札が残る後日の一言を一度ずつ。
+  const value = tokyo();
+  const shelf = v => offered(v).filter(id => id.startsWith('ch3_mashiro_mukai_'));
+  readUntil(value, 'ch3_mukai_intro');
+  assert.deepEqual(shelf(value), [], 'not before the second day at mukai');
+  readUntil(value, 'ch3_rest_before_recovery');
+  assert.deepEqual(shelf(value), ['ch3_mashiro_mukai_syrup_shelf'], 'the shelf comes before its follow-up');
+  for (const id of ['ch3_mashiro_mukai_syrup_shelf', 'ch3_mashiro_mukai_shelf_tags']) {
+    const place = wiring.CH3_OPTIONAL_SCENES[id];
+    assert.deepEqual([place.file, place.location, place.bg], ['ch3_mashiro', 'mukai', 'bg_mukai_shop'], id);
+    const lines = sceneData.get(id).lines;
+    assert(!lines.some(row => row.type), `${id}: no affinity, stats, memory or flag rows`);
+    assert(lines.some(row => row.speaker === 'mashiro') && lines.some(row => row.speaker === 'mukai_master'), id);
+    assert(!/大会|優勝|本番|シガーマン|猫|写真|ましろさん|経費/.test(lines.map(row => row.text || '').join('')), id);
+  }
+  wiring.commitOptionalRead(value, 'ch3_mashiro_mukai_syrup_shelf');
+  assert.deepEqual(shelf(value), ['ch3_mashiro_mukai_shelf_tags']);
+  wiring.commitOptionalRead(value, 'ch3_mashiro_mukai_shelf_tags');
+  assert.deepEqual(shelf(value), [], 'read once');
 }
 {
   // 前夜: location_contract どおり、実際に滞在中の人物と会う約束だけが根拠。

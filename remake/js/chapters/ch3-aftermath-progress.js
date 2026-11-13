@@ -69,6 +69,11 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
   // 窓の終わりは綾取の授業・締めくくりと同じなるへの報告まで（to）。好感度は動かさない。後日の一言は第4章のLIME。
   { id: "ch3_saku_steve_notes", file: "ch3_rivals", label: "読めない記号", location: "煙幕", bg: "bg_yohaku_shop",
     met: ["saku", "steve"], to: "ch3_naru_reconcile" },
+  // #3468 H案。ましろ×ムカイさんの棚整理と、札が残る後日の一言。大会前に読めなかった分を同じ既読で順に。
+  // 台本は大会に触れない。好感度は動かさない。
+  { id: "ch3_mashiro_mukai_syrup_shelf", file: "ch3_mashiro", label: "店用の瓶", location: "mukai", bg: "bg_mukai_shop" },
+  { id: "ch3_mashiro_mukai_shelf_tags", file: "ch3_mashiro", label: "棚の札", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_mukai_syrup_shelf"] },
   // #3081。大会前に読めなかったましろの段階の続き。台本は大会に触れないので、前後どちらの読了でも同じ。
   // 既読は大会前の寄り道と同じ _ch3_read_<id>。続く2本は glass_cloth の次へつなぐ。
   { id: "ch3_mashiro_timer_side", file: "ch3_mashiro", label: "タイマーの隣", location: "mukai", bg: "bg_mukai_shop",
@@ -82,6 +87,8 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
     after: ["ch3_mashiro_glass_cloth"] },
   { id: "ch3_mashiro_bench_tea", file: "ch3_mashiro", label: "裏口のベンチ", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_mashiro_leaf_rest"] },
+  // #3468 G案。ムカイさん×ヨルの開店前の曲順。大会前に読めなかった時だけ、同じ既読で。台本は大会に触れない。好感度は動かさない。
+  { id: "ch3_mukai_yoru_playlist", file: "ch3_mukai", label: "昼の曲順", location: "mukai", bg: "bg_mukai_shop", met: ["yoru"] },
 ]);
 /**
  * 好感度の段階（♥）の下限。core/stats.js の AFFINITY_RANK_PTS の写し（vm で読む試験の依存を増やさない。ch3_aftermath.mjs で照合）。
