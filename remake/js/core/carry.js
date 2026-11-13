@@ -247,6 +247,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_preview_seen", "progression"],
   ["_ch3_read_ch3_mashiro_glass_cloth", "progression"], // 布巾の場面（#3081）。LIMEの trigger_flag に字面で出る
   ["_ch3_read_ch3_saku_lime", "progression"],
+  ["_ch3_read_ch3_saku_steve_notes", "progression"], // スティーブ×綾取（#3468 C案）。第4章のLIMEの trigger_flag に字面で出る
   ["_ch3_read_ch3_steve_lime", "progression"],
   ["_ch3_read_ch3_volk_lime", "progression"],
   ["_ch3_read_ch3_minto_small_lies", "progression"],

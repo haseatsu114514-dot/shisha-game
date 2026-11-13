@@ -92,6 +92,7 @@ async function loadUi({ loadImage = image => image.onload?.(), imageSize = 0, no
     "ui-theme.js": { uiThemeFrame: () => "img/ui/frame.webp" },
     "module-loading.js": { withLoadingNotice: (p) => p },
     "stage-fit.js": { syncBackdrop: () => {} },
+    "dom-write.js": await import("../js/core/dom-write.js"), // 変化時だけ書く部品は、本物をそのまま使う（#3500）
     "loading-prefetch.js": {
       prepareImage: (url) => new Promise((resolve) => {
         const image = new Image();

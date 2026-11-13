@@ -1,3 +1,4 @@
+import "./trial-redirect.js"; // 人が開いた時は本編の試遊へ送る（TRF21）。検査と ?harness=1 はこのページのまま
 import { mountTrpgCollection } from "./collection.js";
 import { fitStage } from "../core/stage-fit.js";
 import { initSideArea } from "../core/side-area.js";
