@@ -126,8 +126,10 @@ const detourIds = ["ch3_mukai_after_tournament", "ch3_cigarman_trace", "ch3_emil
   "ch3_volk_lime", "ch3_volk_fifth", "ch3_volk_revisit", "ch3_rival_volk_steve_greeting", "ch3_rival_volk_steve_seat",
   "ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_first_reply",
   "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch", "ch3_saku_steve_notes",
+  "ch3_mashiro_mukai_syrup_shelf", "ch3_mashiro_mukai_shelf_tags",
   ...MASHIRO_EXTRAS];
-const openFirst = ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_second", "ch3_volk_after_ch3"];
+const openFirst = ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_second", "ch3_volk_after_ch3",
+  "ch3_mashiro_mukai_syrup_shelf"];
 assert.deepEqual(CH3_AFTERMATH_DETOURS.map(scene => scene.id), detourIds);
 for (const scene of CH3_AFTERMATH_DETOURS) {
   const row = readData(`dialogue/${scene.file}`).dialogues.find(dialogue => dialogue.dialogue_id === scene.id);
@@ -179,10 +181,11 @@ assert(!mukaiAfter.lines.some(line => /屋根裏|鍵/.test(line.text || "")), "t
   assert.deepEqual(detour.flags._ch3_aftermath, progress, "a detour does not advance the aftermath");
   assert.deepEqual([detour.day, detour.slot], date, "a detour does not spend time");
   const reloaded = JSON.parse(JSON.stringify(detour));
-  assert.deepEqual(availableAftermathDetours(reloaded).map(scene => scene.id), ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_second"]);
+  assert.deepEqual(availableAftermathDetours(reloaded).map(scene => scene.id), ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_second",
+    "ch3_mashiro_mukai_syrup_shelf"]);
   // 帰郷の日の朝（煙幕の片づけ）まで東京で読める。帰郷の夜からは出さない。
   for (const id of ["ch3_mashiro_recovery", "ch3_naru_reconcile"]) assert.equal(completeChapterThreeAftermathScene(detour, id), true);
-  assert.equal(availableAftermathDetours(detour).length, 3, "still open on the morning of the cleanup");
+  assert.equal(availableAftermathDetours(detour).length, 4, "still open on the morning of the cleanup");
   assert.equal(completeChapterThreeAftermathScene(detour, "ch3_enmaku_cleanup"), true);
   assert.equal(playerRegion(detour), "home");
   assert.deepEqual(availableAftermathDetours(detour), [], "no Tokyo detours after going home");
@@ -191,7 +194,7 @@ assert(!mukaiAfter.lines.some(line => /屋根裏|鍵/.test(line.text || "")), "t
   stranger.met = {};
   beginChapterThreeAftermath(stranger);
   completeChapterThreeAftermathScene(stranger, "ch3_abyss_hotel");
-  assert.deepEqual(availableAftermathDetours(stranger).map(scene => scene.id), ["ch3_mukai_after_tournament"]);
+  assert.deepEqual(availableAftermathDetours(stranger).map(scene => scene.id), ["ch3_mukai_after_tournament", "ch3_mashiro_mukai_syrup_shelf"]);
   assert.equal(completeAftermathDetour(stranger, "ch3_emil_workshop"), false);
   // 大会前に体験会を読んだ保存（同じ既読フラグ）は、大会後にもう一度出さない。
   const readBefore = winningSave();
@@ -312,6 +315,44 @@ console.log("PASS: Steve and Ayatori's notes visit opens only before Ayatori pac
   assert.deepEqual(open(loser), [], "a non-winning save has no aftermath finale");
 }
 console.log("PASS: Chapter 3 aftermath offers Ayatori's ♥5 finale until the cleanup morning, read-only");
+// #3468 H案: ましろ×ムカイさん。大会前に読めなかった時だけ、優勝の翌日から帰郷の日の朝まで mukai で棚整理→札の後日の一言の順に一度ずつ。
+// 二人とはmukaiの到着で面識があるので met は問わない。台本は大会に触れず、好感度・フラグを動かさない。
+{
+  const [shelf, tags] = ["ch3_mashiro_mukai_syrup_shelf", "ch3_mashiro_mukai_shelf_tags"]
+    .map(id => CH3_AFTERMATH_DETOURS.find(scene => scene.id === id));
+  assert.deepEqual([shelf.file, shelf.location, shelf.met, shelf.after], ["ch3_mashiro", "mukai", undefined, undefined]);
+  assert.deepEqual([tags.file, tags.location, tags.met, tags.after], ["ch3_mashiro", "mukai", undefined, [shelf.id]]);
+  const scripts = readData("dialogue/ch3_mashiro").dialogues;
+  for (const id of [shelf.id, tags.id]) {
+    const lines = scripts.find(row => row.dialogue_id === id).lines;
+    assert(!lines.some(line => line.type || line.affinity), `${id}: no affinity, stats, memory or flag rows`);
+    assert(lines.some(line => line.speaker === "mashiro") && lines.some(line => line.speaker === "mukai_master"), id);
+    assert(!lines.some(line => /大会|優勝|本番|シガーマン|猫|写真|経費/.test(line.text || "")), `${id}: no tournament timing, no cigarman or cat-latte punchline`);
+    assert(!lines.some(line => line.speaker && /。$/.test(line.text || "")), `${id}: spoken lines end without 。`);
+  }
+  const open = value => availableAftermathDetours(value).map(scene => scene.id).filter(id => id.startsWith("ch3_mashiro_mukai_"));
+  const save = winningSave();
+  beginChapterThreeAftermath(save);
+  assert.deepEqual(open(save), [], "not on the victory night");
+  completeChapterThreeAftermathScene(save, "ch3_abyss_hotel");
+  assert.deepEqual(open(save), [shelf.id], "the shelf comes first");
+  const affinity = structuredClone(save.affinity);
+  assert.equal(completeAftermathDetour(save, tags.id), false, "the follow-up waits for the shelf");
+  assert.equal(completeAftermathDetour(save, shelf.id), true);
+  assert.deepEqual(open(save), [tags.id]);
+  for (const id of ["ch3_mashiro_recovery", "ch3_naru_reconcile"]) completeChapterThreeAftermathScene(save, id);
+  assert.deepEqual(open(save), [tags.id], "still open on the cleanup morning, like the other mukai detours");
+  assert.equal(completeAftermathDetour(save, tags.id), true);
+  assert.deepEqual(open(save), [], "read once");
+  assert.deepEqual(save.affinity, affinity, "reading does not change affinity");
+  const before = winningSave();
+  before.flags._ch3_read_ch3_mashiro_mukai_syrup_shelf = true;
+  before.flags._ch3_read_ch3_mashiro_mukai_shelf_tags = true;
+  beginChapterThreeAftermath(before);
+  completeChapterThreeAftermathScene(before, "ch3_abyss_hotel");
+  assert.deepEqual(open(before), [], "scenes read before the tournament are not offered again");
+}
+console.log("PASS: Mashiro and Mukai's shelf and its follow-up open once each at mukai after the win, read-only");
 // #2028: スティーブの締めくくり（♥5）も、大会前に Smoke & Glory で読めなかった時だけ大会後の寄り道から。窓は綾取と同じ。
 {
   const entry = CH3_AFTERMATH_FINALES.find(item => item.who === "steve");
