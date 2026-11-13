@@ -111,12 +111,12 @@ html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-name { font-s
 html:root[data-density="phone"] body:not(:root) .vn-choice { width: 880px; max-width: 100%; min-height: var(--phone-tap); font-size: max(28px, calc(var(--phone-text) + 4px)); }
 /* 操作ボタンが上へ伸びた分だけ、選択肢を上げて間隔を保つ。 */
 html:root[data-density="phone"] body:not(:root) .vn-choices { bottom: calc(262px + var(--phone-tap) - 44px); }
-html:root[data-density="phone"] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: calc(386px + var(--phone-tap) - 44px); }
+html:root[data-density="phone"] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: calc(338px + var(--phone-tap) - 44px); }
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-choices {
   bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px + var(--phone-tap) - 44px);
 }
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
-  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 142px + var(--phone-tap) - 44px);
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 94px + var(--phone-tap) - 44px);
 }
 /* 選択肢が高くなるので、5択から（従来は6択から）画面上端と操作欄の間でスクロールさせる。 */
 html:root[data-density="phone"] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(5)) {

@@ -359,6 +359,9 @@ await suite("look_neo_portrait", async (check) => {
     await page.locator(t("retro-row-shop")).tap();
     await page.waitForFunction(() => document.querySelector('[data-test="retro-go"]').getAttribute("aria-disabled") === "false");
     await page.locator(t("retro-go")).tap();
+    // 2026-11-12（a389db22f）から、入口の前に店頭の応対（daily/shop-greeting.js）を読む。応対は速送りで読み終える
+    await page.locator("#vn.active .vn-text").waitFor({ timeout: 15000 });
+    await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.turbo = true; });
     // 入口（1F・2F）→ 1階の売り場。店は縦長のシートで、本体のボタンは売り場のタブ
     await page.locator(t("sheet-shop-enter")).tap({ timeout: 15000 });
     await page.locator('.retro-sheet[data-kind="shop"] [data-test="sheet-shop-checkout"]').waitFor({ timeout: 15000 });

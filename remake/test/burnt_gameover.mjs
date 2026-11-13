@@ -37,8 +37,8 @@ try {
   await page.clock.pauseAt(new Date(Date.now() + 1000));
   await page.evaluate(() => window.__remake.dev.gameOver('rank', 0));
   await page.clock.runFor(1000);
-  // 2026-11-07 オーナー決定（#2524）: 本編の既定は前バージョンの neon（筆文字・円形HUD）。見出しは読み上げ名で照合する。
-  assert.equal(await page.locator('.gameover').getAttribute('data-layout'), 'neon');
+  // 2026-11-13 オーナー決定（#2524・CV61）: 本編の既定は C 漫画の大ゴマ（manga）。見出しは読み上げ名で照合する。
+  assert.equal(await page.locator('.gameover').getAttribute('data-layout'), 'manga');
   assert.equal(await page.locator('.go-title').getAttribute('aria-label'), 'コンティニューする？');
   await page.clock.runFor(19050);
   assert.equal(await page.locator('.gameover').getAttribute('data-phase'), 'speaking');

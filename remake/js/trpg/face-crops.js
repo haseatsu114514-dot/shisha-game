@@ -42,3 +42,33 @@ export function circleFaceStyle(frame) {
 export function faceIconStyle(id, style = portraitStyle()) {
   return circleFaceStyle(portraitFaceFrame(id, style));
 }
+
+/**
+ * 役衣装の上半身の札（行動宣言・表紙・キャラ作成・転生・カットイン）の切り出し。全員の顔が同じ大きさ・同じ目の高さに並ぶ。
+ * face = 頬の幅が札の幅に占める割合、eye = 目の高さ（札の上から）。
+ * damp: 絵ごとに測った頬の幅は、頬にかかる髪や顔の向きで ±20% ぶれる（実際の頭の大きさの違いは ±7% ほど）。測った値をそのまま使うと、
+ *       同じキャラでも札ごとに顔が大きくなったり小さくなったりする（オーナー 2026-11-13「拡大率に統一感がない」）。
+ *       そのキャラの中央値へ寄せ、測定値の違いは damp 乗の分だけ効かせる。
+ * fix:  キャラごとの補正。頬へかかる髪まで幅に入る2人（サメちゃん・レヰ）と、面長で頭が小さく写る2人（アダム・スミさん）。
+ */
+export const BUST = Object.freeze({ face: 0.26, eye: 0.4, damp: 0.4, fix: Object.freeze({ samechan: 0.86, rei: 0.78, adam: 0.9, sumi: 0.92 }) });
+
+/** キャラごとの頬の幅の中央値。frames は { "シナリオ/キャラ/役": { face } }（costumes/frames.json から作る）。 */
+export function bustTypicalWidths(frames) {
+  const lists = {};
+  for (const [key, record] of Object.entries(frames || {})) {
+    const id = key.split("/")[1], width = record?.face?.w;
+    if (id && width > 0) (lists[id] ||= []).push(width);
+  }
+  return Object.fromEntries(Object.entries(lists).map(([id, list]) => {
+    list.sort((a, b) => a - b);
+    const middle = list.length >> 1;
+    return [id, list.length % 2 ? list[middle] : (list[middle - 1] + list[middle]) / 2];
+  }));
+}
+
+/** 札の拡大に使う頬の幅（原画の画素）。typical はそのキャラの中央値（無ければ測った値のまま）。 */
+export function bustCheekWidth(face, id, typical = null) {
+  const base = typical > 0 ? typical * (face.w / typical) ** BUST.damp : face.w;
+  return base * (BUST.fix[id] || 1);
+}
