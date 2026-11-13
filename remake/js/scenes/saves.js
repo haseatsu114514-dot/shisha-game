@@ -104,7 +104,19 @@ function slotBody(data) {
  */
 function pickSlot(mode) {
   return new Promise((resolve) => {
-    const close = (v) => { layers.modal.classList.remove("show"); layers.modal.replaceChildren(); resolve(v); };
+    // Esc で「やめる」と同じく閉じる（#3556。ほかの確認窓と同じ操作）。
+    const onKey = (e) => {
+      if (e.key !== "Escape" || e.repeat || !box.isConnected) return;
+      e.preventDefault();
+      SE.cancel();
+      close(null);
+    };
+    const close = (v) => {
+      window.removeEventListener("keydown", onKey);
+      layers.modal.classList.remove("show");
+      layers.modal.replaceChildren();
+      resolve(v);
+    };
     const rows = SAVE_SLOTS.map((s, i) => {
       const data = readSlot(s.key);
       const future = isFutureSave(data);
@@ -134,6 +146,7 @@ function pickSlot(mode) {
     ]);
     layers.modal.replaceChildren(el("div.modal-backdrop"), box);
     layers.modal.classList.add("show");
+    window.addEventListener("keydown", onKey);
   });
 }
 

@@ -584,14 +584,14 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-pile-card { min-width: 0; max-width: 100%; }
 .ichi-pile-foot small { font-size: 12px; font-weight: 700; white-space: nowrap; color: var(--ichi-text); text-shadow: 0 1px 2px #000; }
 .ichi-pile-foot .ichi-kind { width: 18px; height: 18px; }
-.ichi-pile-foot .ichi-count { position: absolute; right: -4px; top: -8px; z-index: 3; min-width: 24px; height: 24px; font-size: 13px; font-weight: 900; }
+.ichi-pile-foot .ichi-count { position: absolute; right: -4px; top: 30px; z-index: 3; min-width: 24px; height: 24px; font-size: 13px; font-weight: 900; }
 .ichi-pair { display: inline-flex; align-items: center; gap: 3px; }
 /* 選んだ枚数と「戻す」: 札の下の行に出す。選んでいるあいだは、その行の文字（適温・相性）を隠して重ならないようにする */
 .ichi-pile-card.is-on .ichi-pile-foot small { visibility: hidden; }
 .ichi-pile-minus { position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%); z-index: 4; white-space: nowrap; min-width: 64px; min-height: 30px; padding: 0 8px; border-radius: 15px; border: 2px solid #150d22; background: var(--ichi-gold); color: #1d1206; font-size: 14px; font-weight: 900; cursor: pointer; }
 .ichi-market .s-pile { --cw: 86px; }
 /* 盆の見出し: いま何枚選んだか・蒸らせるか（押せない理由も字で出す） */
-.ichi-market-head { grid-column: 1 / -1; justify-self: stretch; display: flex; align-items: baseline; justify-content: space-between; gap: 14px; min-width: 0; padding: 0 4px 2px; margin-bottom: 16px; } /* 下の余白は、札の上に出る「ここ」の矢印のぶん */
+.ichi-market-head { grid-column: 1 / -1; justify-self: stretch; display: flex; align-items: baseline; justify-content: space-between; gap: 14px; min-width: 0; padding: 0 4px 2px; margin-bottom: 36px; } /* 下の余白は、札の上に出る「ここ」の矢印のぶん（矢印は札の上端から約30px＋はずみ6px。見出しの字に掛けない・#3557） */
 .ichi-market-head b { font-size: 16px; font-weight: 900; color: #fff6dc; white-space: nowrap; }
 .ichi-market-head small { font-size: 13px; color: #ffcf9a; text-align: right; }
 /* ガイドつきは右上の案内の札が長いので、盆を少し下げる */
@@ -1136,6 +1136,11 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-hand .ichi-line-type { display: none; }
 .ichi-zone-box:is(.is-setting, .is-deck, .is-ash) > .ichi-zone-tab { display: none; }
 .ichi-market .ichi-card-line { display: none; }
+
+/* 試遊ページのメニュー: ボタンの文字を真ん中に（「すぐ対戦する」が左に寄って見えていた・#3557） */
+.ichi-menu .btn { align-items: center; justify-content: center; text-align: center; }
+/* 終局（勝ち負けの札）では次の手の案内が無いので、右上の案内の枠ごと出さない（中身の無い暗い四角が残っていた・#3557） */
+.ichi-game[data-phase="end"] .ichi-guide:not(:has(:is(b, span, li, p):not(:empty))) { display: none; }
 
 /* ── 第0.8版（2026-11-13）: 熱と火力を分けた。炭の高さ＝火力、目盛りの明るいところまで＝熱。熱はターンの終わりに火力へ1段近づく ── */
 .ichi-fire-gauge i { position: relative; }

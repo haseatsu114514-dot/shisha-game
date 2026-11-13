@@ -142,6 +142,8 @@ export async function dialogueSequence(run) {
 }
 
 export const vnTest = { turbo: false, choose: null }; // テスト用: 瞬時表示＋自動送り・選択肢の方針
+/** 選択肢が出た直後、Enter/Space で選ばない時間（送りの連打で先頭を選ばないため。矢印で選び直した後は効かない） */
+const CHOICE_KEY_GUARD_MS = 450;
 
 function buildDom() {
   // 設定のコードは会話の準備中に読み、タップ時は同じイベント内でモーダルを開く。
@@ -187,6 +189,18 @@ function buildDom() {
     if (e.key === "Control") { setSkip(true); return; }
     if (running.waitingChoice) {
       const choices = [...dom.choices.querySelectorAll('.vn-choice:not([aria-disabled="true"])')];
+      // 本文を送るつもりで連打した Enter/Space が、出たばかりの選択肢（先頭にフォーカス）を押さないように（#3556）。
+      // 押しっぱなしの連続入力はいつでも、出た直後の短い間は、ほかの操作（矢印・SKIP など）をしていない限り受け付けない。
+      const sendKey = e.key === "Enter" || e.key === " ";
+      const onChoice = !!e.target?.closest?.(".vn-choice")
+        || !e.target?.closest?.("button, a[href], input, select, textarea, [contenteditable]");
+      if (sendKey && onChoice && (e.repeat
+        || (!running.choiceNavigated && performance.now() - (running.choiceShownAt || 0) < CHOICE_KEY_GUARD_MS))) {
+        e.preventDefault();
+        running.choiceKeyHeld = e.key;
+        return;
+      }
+      if (!sendKey || !onChoice) running.choiceNavigated = true;
       if (e.key === "ArrowDown" || e.key === "ArrowUp") {
         e.preventDefault();
         const current = choices.indexOf(document.activeElement);
@@ -206,7 +220,14 @@ function buildDom() {
     }
     if (e.key === "Control") setSkip(true);
   });
-  window.addEventListener("keyup", (e) => { if (e.key === "Control") setSkip(false); });
+  window.addEventListener("keyup", (e) => {
+    if (e.key === "Control") setSkip(false);
+    // Space はキーを離したときにボタンが押される。受け付けなかった押下の続きなら、ここでも止める。
+    if ((e.key === " " || e.key === "Enter") && running?.choiceKeyHeld) {
+      if (running.choiceKeyHeld === e.key) e.preventDefault();
+      running.choiceKeyHeld = null;
+    }
+  });
 }
 
 /**
@@ -1233,6 +1254,8 @@ function showChoices(line) {
   });
   dom.choices.replaceChildren(...buttons);
   dom.choices.classList.add("show");
+  r.choiceShownAt = performance.now();
+  r.choiceNavigated = false;
   buttons.find((button) => button.getAttribute("aria-disabled") !== "true")?.focus();
   // 選択肢は1行（GUI22）。文言は全角26字以内で書く。差し込みで長くなったときだけ字を縮める
   buttons.forEach((b, i) => {
