@@ -146,4 +146,28 @@ await suite('craft-rank-wire', async check => {
     });
     await page.waitForFunction(() => !document.querySelector('.craft-rank'));
   }, options);
+
+  // 大会の水入れ（機材を選ぶ工程）でも「外観を選ぶ」が「?」の手前に全文見える（#3516）
+  for (const [name, options] of [
+    ['tournament-setup-pc', {}],
+    ['tournament-setup-touch', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+    ['tournament-setup-touch-low', { viewport: { width: 844, height: 340 }, isMobile: true, hasTouch: true }],
+  ]) await check(name, async page => {
+    const boxes = await page.evaluate(async () => {
+      const core = await import('./js/core/state.js'); core.newGame();
+      const S = await import('./js/craft/session.js');
+      const { CRAFT_STEPS } = await import('./js/craft/practice.js');
+      const b = S.openBench(S.newSession('tournament'), { steps: CRAFT_STEPS });
+      while (!b.root.isConnected) await new Promise(requestAnimationFrame);
+      await b.ready;
+      S.stepPanel('setup', '機材', '機材を選ぶ');
+      await new Promise(requestAnimationFrame);
+      const rect = selector => document.querySelector(selector).getBoundingClientRect().toJSON();
+      return { appearance: rect('.bench-appearance-button'), help: rect('.bench-guide summary'), rank: rect('.craft-rank'), vw: innerWidth };
+    });
+    assert(boxes.appearance.width > 0 && boxes.appearance.right <= boxes.vw, `Appearance clipped: ${JSON.stringify(boxes)}`);
+    assert(boxes.appearance.right <= boxes.help.left + .5, `Appearance behind help: ${JSON.stringify(boxes)}`);
+    assert(!overlaps(boxes.appearance, boxes.rank), `Appearance covered by rank: ${JSON.stringify(boxes)}`);
+    await page.locator('.bench-appearance-button').click({ trial: true });
+  }, options);
 });
