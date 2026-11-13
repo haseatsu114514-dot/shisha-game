@@ -123,7 +123,7 @@ const VOLK_VISITS = ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth"];
 const MASHIRO_EXTRAS = ["ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_mashiro_glass_cloth",
   "ch3_mashiro_leaf_rest", "ch3_mashiro_bench_tea"];
 const detourIds = ["ch3_mukai_after_tournament", "ch3_cigarman_trace", "ch3_emil_workshop", ...VOLK_VISITS, "ch3_volk_after_ch3",
-  "ch3_volk_lime", "ch3_volk_fifth", "ch3_volk_revisit",
+  "ch3_volk_lime", "ch3_volk_fifth", "ch3_volk_revisit", "ch3_rival_volk_steve_greeting", "ch3_rival_volk_steve_seat",
   "ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_first_reply",
   "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch", "ch3_saku_steve_notes",
   ...MASHIRO_EXTRAS];
@@ -402,6 +402,46 @@ console.log("PASS: Chapter 3 aftermath offers Steve's ♥5 finale with the same 
   assert.deepEqual(open(window), [], "back home from the night of the cleanup");
 }
 console.log("PASS: Chapter 3 aftermath offers Volk's LIME (after the fourth visit, ♥2) and ♥5 finale until the cleanup morning");
+// #3468 F案: ヴォルク×スティーブ。二人と面識がある時だけ、鉄の煙の挨拶→ Smoke & Glory の後日の一言の順に一度ずつ。
+// 好感度・大会結果は動かさず、タイマー・ジャム・ピザのオチを出さない。台本は大会に触れない（前後どちらでも読める）。
+{
+  const [greeting, seat] = ["ch3_rival_volk_steve_greeting", "ch3_rival_volk_steve_seat"]
+    .map(id => CH3_AFTERMATH_DETOURS.find(scene => scene.id === id));
+  assert.deepEqual([greeting.file, greeting.location, greeting.met, greeting.after], ["ch3_volk", "鉄の煙", ["volk", "steve"], undefined]);
+  assert.deepEqual([seat.file, seat.location, seat.met, seat.after], ["ch3_volk", "Smoke & Glory", ["volk", "steve"], [greeting.id]]);
+  const scripts = readData("dialogue/ch3_volk").dialogues;
+  for (const id of [greeting.id, seat.id]) {
+    const lines = scripts.find(row => row.dialogue_id === id).lines;
+    assert(!lines.some(line => line.type === "apply" || line.type === "set_flag" || line.affinity), `${id}: no affinity or flag change`);
+    assert(!lines.some(line => /タイマー|ジャム|ピザ|大会|優勝/.test(line.text || "")), `${id}: no timer/jam/pizza joke, no tournament timing`);
+    assert(lines.some(line => line.speaker === "volk") && lines.some(line => line.speaker === "steve"), id);
+    assert(!lines.some(line => line.speaker && /。$/.test(line.text || "")), `${id}: spoken lines end without 。`);
+  }
+  const open = value => availableAftermathDetours(value).map(scene => scene.id).filter(id => id.startsWith("ch3_rival_volk_steve"));
+  const save = winningSave();
+  save.met = { volk: true, steve: true };
+  beginChapterThreeAftermath(save);
+  assert.deepEqual(open(save), [], "not on the victory night");
+  completeChapterThreeAftermathScene(save, "ch3_abyss_hotel");
+  assert.deepEqual(open(save), [greeting.id], "the greeting comes first");
+  for (const met of [{ volk: true }, { steve: true }]) assert.deepEqual(open({ ...structuredClone(save), met }), [], "only when hajime has met both");
+  const affinity = structuredClone(save.affinity);
+  assert.equal(completeAftermathDetour(save, seat.id), false, "the follow-up waits for the greeting");
+  assert.equal(completeAftermathDetour(save, greeting.id), true);
+  assert.deepEqual(open(save), [seat.id], "then the follow-up at Smoke & Glory");
+  for (const id of ["ch3_mashiro_recovery", "ch3_naru_reconcile"]) completeChapterThreeAftermathScene(save, id);
+  assert.deepEqual(open(save), [seat.id], "still open on the cleanup morning, like the other Iron Smoke detours");
+  assert.equal(completeAftermathDetour(save, seat.id), true);
+  assert.deepEqual(open(save), [], "each is read once");
+  assert.deepEqual(save.affinity, affinity, "reading does not change affinity");
+  const before = winningSave();
+  before.met = { volk: true, steve: true };
+  before.flags._ch3_read_ch3_rival_volk_steve_greeting = true;
+  beginChapterThreeAftermath(before);
+  completeChapterThreeAftermathScene(before, "ch3_abyss_hotel");
+  assert.deepEqual(open(before), [seat.id], "a greeting read before the tournament is not offered again");
+}
+console.log("PASS: Volk and Steve's greeting and Smoke & Glory follow-up open once each, in order, for hajime who has met both");
 // 大会後の東京で、灯した授業を相談できる（SPEC 2.6・SBD61）。窓は場面idで決まり、保存は変更しない。
 {
   assert.deepEqual(CH3_AFTERMATH_LESSONS.map(entry => entry.who), ["saku", "steve", "volk", "mashiro"]);
