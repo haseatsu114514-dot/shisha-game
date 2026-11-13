@@ -237,6 +237,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function name(id) {
     return displayName(characters, id);
   }
+  /** サメちゃんの腹話術（voice: korochan）の一言。名前欄はコロちゃんにする（本編の会話画面 vn/engine.js と同じ決まり）。 */
+  const isPuppet = frame => frame.speaker === "samechan" && frame.voice === "korochan";
   function portrait(id, face = "normal") {
     return portraitUrl(manifest, id, face);
   }
@@ -403,7 +405,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (frame.speaker === gm) return "npc";
     return "pc";
   }
-  const roleLabel = frame => pcText(frame.role).replace(/^(?:GM|PL)／卓の会話$/, "");
+  const roleLabel = frame => pcText(frame.role).replace(/^(?:GM|PL|コロちゃん)／卓の会話$/, "");
   /** 舞台の層を切り替える: 物語の中では卓の縁（座席）を隠して人物を大きく、卓の会話では部屋の絵を少し沈める。 */
   function setLayer(kind) {
     const layer = kind === "idle" ? "idle" : kind === "table" ? "table" : "fiction";
@@ -438,6 +440,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       // GM自身の声（卓の会話・場面の語り）: 顔は出さず、印と「ゲームマスター（名前）」。語りは中央に寄せる（印も出さない）。
       art.replaceChildren(...(kind === "narration" ? [] : [gmMark()]));
       speaker.textContent = GM_TITLE; role.textContent = name(gm);
+      // サメちゃんがGMの卓でも、腹話術の一言はコロちゃんの名札で話す（演じているゲームマスターを添える。物語の人物と同じ形）。
+      if (isPuppet(frame)) { speaker.textContent = "コロちゃん"; role.textContent = GM_TITLE + " " + name(gm); }
     } else if (kind === "narration") {
       art.replaceChildren();
       speaker.textContent = "語り"; role.textContent = name(frame.speaker);
@@ -450,7 +454,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       // 卓の会話は素の本人。表情つきの立ち絵で話す（役衣装の絵は表情が1つなので、物語の中だけで使う）。
       art.replaceChildren(el("img", { src: portrait(frame.speaker, frame.face) || speakerPortrait(frame.speaker, frame.face), alt: name(frame.speaker),
         style: portraitFrame(frame.speaker, 410, 16) }));
-      speaker.textContent = name(frame.speaker);
+      speaker.textContent = isPuppet(frame) ? "コロちゃん" : name(frame.speaker);
       role.textContent = roleLabel(frame);
     }
     art.style.backgroundColor = person?.color || "#566053";
@@ -462,8 +466,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     showPanel(frame.panel || null);
     next.textContent = cursor + 1 < frames.length ? "次へ" : "続ける";
     syncSpeaker(frame.speaker);
-    // 台詞の肩書きは場面の種類（「場面」「物語」）だけ。「GM／卓の会話」「PL／卓の会話」は出さない（#2839）。
-    log.push({ speaker: frame.speaker, gm: frame.speaker === gm && gmVoice(frame), role: roleLabel(frame), text: pcText(frame.text) });
+    // 台詞の肩書きは場面の種類（「場面」「物語」）だけ。「GM／卓の会話」「PL／卓の会話」「コロちゃん／卓の会話」は出さない（#2839）。
+    log.push({ speaker: frame.speaker, puppet: isPuppet(frame), gm: frame.speaker === gm && gmVoice(frame), role: roleLabel(frame), text: pcText(frame.text) });
   }
   /** 転生の演出（TRF08）: 卓の顔ぶれの札が裏返り、本人から役の姿へ。操作は塞がず、送りの1押しで閉じられる。 */
   function incarnate() {
@@ -520,7 +524,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       const frame = frames[cursor];
       // 飛ばした会話の中で物語に入っていたら、転生の演出は出さずに済ませる（後の場面で遅れて出さない）。
       if (lineKind(frame) !== "table" && session.snapshot().phase !== "cover") incarnated = true;
-      log.push({ speaker: frame.speaker, gm: frame.speaker === gm && gmVoice(frame), role: roleLabel(frame), text: pcText(frame.text) });
+      log.push({ speaker: frame.speaker, puppet: isPuppet(frame), gm: frame.speaker === gm && gmVoice(frame), role: roleLabel(frame), text: pcText(frame.text) });
     }
     finishTalk();
   }
@@ -1494,7 +1498,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   function openLog() {
     const rows = log.length ? log.map(line => el("p.trpg-log-line", [
-      el("strong", { text: (line.gm ? GM_TITLE + "（" + name(line.speaker) + "）" : name(line.speaker)) + " · " + line.role }), line.text,
+      el("strong", { text: (line.puppet ? "コロちゃん" + (line.gm ? "（" + GM_TITLE + "）" : "") : line.gm ? GM_TITLE + "（" + name(line.speaker) + "）" : name(line.speaker)) + " · " + line.role }), line.text,
     ])) : [el("p", { text: "卓を始めると、ここに会話が残ります。" })];
     let pop;
     pop = modal("卓のログ", rows, [button("卓に戻る", "trpg-log-close", () => pop.close(), { class: "primary" })]);
