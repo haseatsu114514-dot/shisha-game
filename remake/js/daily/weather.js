@@ -83,7 +83,7 @@ const INDOOR_WINDOWS_BY_BG = [
   [/^bg_yuzugaya_shop\.png$/, YUZUGAYA_SHOP_WINDOWS],
   [/^bg_yuzugaya_aquarium\.png$/, YUZUGAYA_AQUARIUM_WINDOWS],
   [/^bg_yuzugaya_sento\.png$/, YUZUGAYA_SENTO_WINDOWS],
-  [/^bg_volk_shop\.png$/, VOLK_SHOP_WINDOWS],
+  [/^bg_volk_shop(?:_day)?\.png$/, VOLK_SHOP_WINDOWS],
 ];
 
 /** 見えている背景と画面に対応する雨。抽選とセーブ値は既存 isRainy を使う。 */

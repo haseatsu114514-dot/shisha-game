@@ -97,6 +97,7 @@ const windowedCh2 = [
   [CITY_BACKGROUNDS.aquarium, 4],
   [CITY_BACKGROUNDS.sento, 4],
   ["img/backgrounds/bg_volk_shop.webp", 4],
+  ["img/backgrounds/bg_volk_shop_day.webp", 4],
 ];
 for (const [bg, expectedPanes] of windowedCh2) {
   const scene = rainScene(bg, "vn");

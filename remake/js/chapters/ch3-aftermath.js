@@ -1,7 +1,7 @@
 // 全国大会の勝利後。結果発表は大会ランナーが読了・保存し、ここでは再生しない。
 import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
-import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
+import { state, save, loadFromSlot, requestResumeOnBoot, timeOfDay } from "../core/state.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { layers, showScreen, setBg, enterScene, modal, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
@@ -259,10 +259,10 @@ async function playScene(owner, scene) {
   if (!source) throw new Error(`台本がありません: ${scene.id}`);
   if (homecomingRide(scene)) {
     // 東京→地元の復路。帰郷した夜の最初の場面へ入る直前だけ新幹線の車窓を見せる（#1059）。
-    await shinkansenRide(async () => { await setBg(scene.bg ? bgUrl(scene.bg) : null, { instant: true }); },
+    await shinkansenRide(async () => { await setBg(scene.bg ? bgUrl(scene.bg, timeOfDay()) : null, { instant: true }); },
       { from: "tokyo", to: "home" });
   } else {
-    await enterScene(scene.bg ? bgUrl(scene.bg) : null);
+    await enterScene(scene.bg ? bgUrl(scene.bg, timeOfDay()) : null);
   }
   if (!live(owner)) return false;
   showScreen("none", null);
@@ -350,7 +350,7 @@ async function renderStage(owner) {
   }
   // 帰郷の夜(#1059)は、新幹線の車窓が覆うまで東京側の背景のままにし、地元の店を先見せしない。
   const preBg = homecomingRide(scene) ? "bg_mukai_shop" : scene.bg;
-  await enterScene(preBg ? bgUrl(preBg) : null);
+  await enterScene(preBg ? bgUrl(preBg, timeOfDay()) : null);
   if (!live(owner)) return;
   card(owner, "scene", `DAY ${chapterDay(state)}・${scene.slot ? "夜" : "昼"} ／ ${scene.label}`,
     `${scene.location}で、次の話を聞く。`, [
