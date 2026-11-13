@@ -16,8 +16,8 @@
     "bytes": 1084788
   },
   "bgm/bgm_dubai.mp3": {
-    "sha256": "fd4aa8bc23243a2c0b12fa135a9b1f9ad36a897b95d8201aa19df9d0b717ab5a",
-    "bytes": 275264
+    "sha256": "01f5bcd6256b20416d72492d1dbbdb9469ceaf0fd77a3e8a139779ae7a5b4731",
+    "bytes": 955661
   },
   "bgm/bgm_world_stage.mp3": {
     "sha256": "fe54359a446226da9230acf3b0b5907ad5924ba93efcc9059481a85573e1ddbd",
@@ -46,5 +46,9 @@
   "se/ui_card.wav": {
     "sha256": "af3b19bee62ad61611dc6c7e3f1eef20272334c5700edf192e0847511e68e23f",
     "bytes": 13112
+  },
+  "bgm/bgm_yuzugaya.mp3": {
+    "sha256": "6da613a2efad4c7c5967bec697deaa37b8b7efe40891a0a59815f2b58c1d9800",
+    "bytes": 1236747
   }
 }

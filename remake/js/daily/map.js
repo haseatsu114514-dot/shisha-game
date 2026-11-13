@@ -289,6 +289,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
     const stationActive = () => state === owner && root.isConnected && !root.classList.contains("done") && !document.hidden;
     const openStation = () => {
       if (moving || revealing || !stationActive() || !stationDestinations(state, regions || [], region?.id).length) return;
+      SE.click(); // ほかのピンと同じ押した音
       clearSpotInfo();
       stationTrip?.cancel(); stationTrip = null; selected = null;
       pins.querySelectorAll(".spot-pin").forEach(p => p.classList.remove("sel"));
@@ -450,6 +451,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
         };
         stopReveal = startSpotReveal({
           pop: () => {
+            if (freshPins.length) SE.pon?.(); // 新しい店のピンが現れる
             for (const { btn, index } of freshPins) {
               btn.style.visibility = "";
               btn.classList.add("newly-revealed");

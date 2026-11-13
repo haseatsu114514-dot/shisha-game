@@ -171,10 +171,10 @@ await suite('ch2-main', async check => {
     await assertFits(page, '[data-test="end-chapter2"], [data-test="end-title"]');
     await screenshot(page, 'chapter1-clear.png');
     await begin(page);
-    assert.equal(await musicOf(page), 'kansetsu_shomei_to_black_coffee', 'Chapter 2 city must replace tournament aftermath music');
+    assert.equal(await musicOf(page), 'bgm_yuzugaya', 'Chapter 2 city must replace tournament aftermath music');
     const music = await page.evaluate(() => window.__ch2SceneMusic);
     assert.equal(music.find(row => row.id === 'remake_ch2_departure')?.key, 'tonari');
-    assert.equal(music.find(row => row.id === 'ch2_city_arrival')?.key, 'kansetsu_shomei_to_black_coffee');
+    assert.equal(music.find(row => row.id === 'ch2_city_arrival')?.key, 'bgm_yuzugaya');
     const value = await page.evaluate(() => window.__remake.state);
     assert.equal(value.chapter, 2); assert.equal(value.day, 15); assert.equal(value.phase, 'daily');
     assert.equal(value.flags._ch1_cleared, true);
@@ -209,12 +209,12 @@ await suite('ch2-main', async check => {
     const before = await setup(page, { knownTrpg: false });
     await watchMusic(page);
     await begin(page);
-    assert.equal(await musicOf(page), 'kansetsu_shomei_to_black_coffee');
+    assert.equal(await musicOf(page), 'bgm_yuzugaya');
     for (const id of ['ch2_aquarium', 'ch2_sento', 'trpg_bar']) assert.equal(await page.locator(test(`pin-${id}`)).count(), 0, 'A meeting is not a spot introduction');
     for (const id of ['ageha', 'rei', 'c_station', 'kumicho']) await visit(page, id, id !== 'c_station', true);
     for (const id of ['ageha', 'rei', 'kumicho']) {
       const music = await page.evaluate(() => window.__ch2SceneMusic);
-      assert.equal(music.find(row => row.id === `ch2_city_${id}_inside`)?.key, 'kansetsu_shomei_to_black_coffee');
+      assert.equal(music.find(row => row.id === `ch2_city_${id}_inside`)?.key, 'bgm_yuzugaya');
     }
     // VOL13: 街の遊び場の紹介は初日に続けて読まず、DAY2以降にその店へ初めて通った時に読む（ch2_daily で確認）
     for (const id of ['ch2_aquarium', 'ch2_sento', 'trpg_bar']) assert.equal(await page.locator(test(`pin-${id}`)).count(), 0, 'Deliveries do not read the city introductions');
@@ -226,7 +226,7 @@ await suite('ch2-main', async check => {
     assert.doesNotMatch(await page.locator('.ch2-route-note').innerText(), /三軒への配達と会場の確認を終えた。/);
     await page.locator(test('go')).tap();
     await page.locator('[data-test="ch2-morning-home"]').waitFor();
-    assert.equal(await musicOf(page), 'kansetsu_shomei_to_black_coffee');
+    assert.equal(await musicOf(page), 'bgm_yuzugaya');
     const value = await page.evaluate(() => window.__remake.state);
     assert.equal(value.chapter, 2); assert.equal(value.day, 16); assert.equal(value.slot, 0);
     assert.equal(value.flags._ch2_day1.stage, 'complete');
@@ -239,7 +239,7 @@ await suite('ch2-main', async check => {
     await preserved(page, before, { firstMeetings: ['ageha', 'rei', 'kumicho'] });
     await reloadSaved(page);
     await page.locator('[data-test="ch2-morning-home"]').waitFor();
-    assert.equal(await musicOf(page), 'kansetsu_shomei_to_black_coffee', 'LOAD after sleep restores morning music');
+    assert.equal(await musicOf(page), 'bgm_yuzugaya', 'LOAD after sleep restores morning music');
     assert.equal(await page.evaluate(() => window.__remake.state.day), 16, 'Loading completion advanced the date again');
     await preserved(page, before, { firstMeetings: ['ageha', 'rei', 'kumicho'] });
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
@@ -247,7 +247,7 @@ await suite('ch2-main', async check => {
   await check('autosave-resumes-partial-city-without-replaying-opening', async page => {
     const before = await setup(page); await begin(page); await visit(page, 'rei', true);
     await reloadSaved(page); await page.locator(test('map')).waitFor();
-    assert.equal(await musicOf(page), 'kansetsu_shomei_to_black_coffee', 'LOAD in the city must replace title music');
+    assert.equal(await musicOf(page), 'bgm_yuzugaya', 'LOAD in the city must replace title music');
     assert.equal(await page.locator(test('pin-rei')).getAttribute('data-read'), 'true');
     assert.equal(await page.locator(test('pin-ageha')).getAttribute('data-read'), 'false');
     assert.equal(await page.locator('#vn.active').count(), 0);
@@ -276,7 +276,7 @@ await suite('ch2-main', async check => {
     assert.match(await page.locator('[data-test="slot-1"] .ss-info').textContent(), /第2章\s*DAY 1(?!\d)/);
     await page.locator('[data-test="slot-1"]').click(); await page.locator('[data-test="confirm-load"]').click();
     await page.locator(test('map')).waitFor();
-    assert.equal(await musicOf(page), 'kansetsu_shomei_to_black_coffee', 'MENU LOAD restores the city track');
+    assert.equal(await musicOf(page), 'bgm_yuzugaya', 'MENU LOAD restores the city track');
     assert.equal(await page.locator(test('pin-kumicho')).getAttribute('data-read'), 'true');
     assert.equal(await page.locator(test('pin-c_station')).getAttribute('data-read'), 'false');
     assert.equal(await page.evaluate(() => window.__remake.state.flags._ch2_day1.stage), 'map');

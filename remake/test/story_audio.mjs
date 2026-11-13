@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { STORY_BGM, STORY_SE, storyBgm, chapterHubBgm } from "../js/core/story-audio.js";
+import { STORY_BGM, STORY_SE, storyBgm, chapterHubBgm, cityBgm } from "../js/core/story-audio.js";
 import { CH4_DEFAULT_BGM, CH4_SCENE_BGM } from "../js/chapters/ch4-progress.js";
 import { CH5_DEFAULT_BGM, CH5_SCENE_BGM, CH5_ENDING_IDS } from "../js/chapters/ch5-progress.js";
 const staffSrc = readFileSync(new URL("../js/scenes/staff-roll.js", import.meta.url), "utf8");
@@ -17,7 +17,11 @@ assert.match(stateSrc, /mute:\s*false/, "sound defaults ON");
 assert.equal(storyBgm("dubai"), "bgm_dubai");
 assert.equal(storyBgm("unknown-role"), STORY_BGM.shopHome);
 assert.equal(chapterHubBgm(1), STORY_BGM.dailyCity);
-assert.equal(chapterHubBgm(2), STORY_BGM.dailyCity);
+assert.equal(chapterHubBgm(2), STORY_BGM.yuzugaya); // 第2章の朝・地図は柚ヶ谷の曲（J04・仮曲）
+assert.equal(STORY_BGM.yuzugaya, "bgm_yuzugaya");
+// 店や施設から街へ戻る時: 第2章だけ柚ヶ谷、ほかは今までどおり日常の曲。
+assert.equal(cityBgm(2), STORY_BGM.yuzugaya);
+for (const chapter of [1, 3, 4, 5]) assert.equal(cityBgm(chapter), STORY_BGM.dailyCity, `chapter ${chapter}`);
 assert.equal(chapterHubBgm(3), STORY_BGM.dailyCity);
 assert.equal(chapterHubBgm(4), STORY_BGM.dubai);
 assert.equal(chapterHubBgm(5), STORY_BGM.shopHome);
@@ -36,7 +40,7 @@ assert.equal(CH5_SCENE_BGM.ch5_copy_first_cup, STORY_BGM.ch5Duel);
 assert.equal(CH5_SCENE_BGM.ch5_relationship_before_second_cup, STORY_BGM.smokeLab);
 for (const id of CH5_ENDING_IDS) assert.equal(CH5_SCENE_BGM[id], STORY_BGM.ending, id);
 
-const newKeys = ["map", "tournamentWait", "resultWin", "rivalShop", "dubai", "worldStage", "smokeLab", "ch5Duel", "ending"];
+const newKeys = ["map", "tournamentWait", "resultWin", "rivalShop", "dubai", "worldStage", "smokeLab", "ch5Duel", "ending", "yuzugaya"];
 for (const role of newKeys) {
   const key = STORY_BGM[role];
   assert(hasBgm(key), `manifest missing ${key}`);
@@ -49,7 +53,8 @@ const credits = {
   "Tension Theme": "Umplix",
   "Daisy": "Kistol",
   "Cool City": "MintoDog",
-  "Desert Travel (Loop)": "DJ CrisP",
+  "Desert theme": "yd",
+  "Mocha Frapp": "Pro Sensory",
   "Dare The Bustloro Way": "Spring Spring",
   "Dark Horse": "Centurion_of_war",
   "The Rush": "tebruno99",
@@ -66,6 +71,21 @@ for (const file of ["ui_whoosh.wav", "ui_jingle.wav", "ui_card.wav"]) {
 for (const id of ["click", "select", "cancel", "whoosh", "jingle", "card"]) {
   assert.equal(STORY_SE[id === "whoosh" ? "transition" : id === "jingle" ? "title" : id], id === "whoosh" ? "whoosh" : id === "jingle" ? "jingle" : id);
 }
+
+// 曲のキーをその場に書いている所（import を足さない書き方）が、対応表と同じ曲を鳴らすこと。
+const source = path => readFileSync(join(root, path), "utf8");
+const pick = (code, vars) => new Function(...Object.keys(vars), `return ${code};`)(...Object.values(vars));
+const morning = source("remake/js/daily/calendar.js").match(/playBgm\((state\.chapter === 2 \? [^;]+)\);/)?.[1];
+assert(morning, "calendar.js morning track expression");
+for (const chapter of [1, 2, 3, 4, 5]) assert.equal(pick(morning, { state: { chapter } }), chapterHubBgm(chapter), `morning of chapter ${chapter}`);
+const afterTrpg = source("remake/js/daily/trpg.js").match(/playBgm\((state\.chapter === 2 \? [^)]+)\);/)?.[1];
+const atCounter = source("remake/js/daily/shop.js").match(/playBgm\((stockChapter === 2 \? [^)]+)\);/)?.[1];
+assert(afterTrpg && atCounter, "trpg.js / shop.js town track expressions");
+for (const chapter of [1, 2, 3, 4, 5]) {
+  assert.equal(pick(afterTrpg, { state: { chapter } }), cityBgm(chapter), `after the board-game cafe in chapter ${chapter}`);
+  assert.equal(pick(atCounter, { stockChapter: chapter }), cityBgm(chapter), `shop counter of chapter ${chapter}`);
+}
+assert.match(source("remake/js/chapters/ch2.js"), new RegExp(`const CITY_BGM = "${STORY_BGM.yuzugaya}";`), "chapter 2 town track");
 
 const storySrc = readFileSync(join(root, "remake/js/core/story-audio.js"), "utf8");
 assert(!/camel-race|camel_race|dj-club|assets\/audio\/dj/.test(storySrc), "mapping must not touch camel race or DJ audio");

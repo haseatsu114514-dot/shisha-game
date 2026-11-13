@@ -3,6 +3,7 @@
 import { el, sleep } from "./util.js";
 import { move } from "./transition-kit.js";
 import { hasStoreLogo, storeLogo } from "./store-logos.js";
+import { SE } from "./audio.js";
 
 export function withStoreArrival(host, curtain, opts, { fast = false, reduced = false } = {}) {
   if (opts?.anonymous || !hasStoreLogo(opts?.spotId)) return curtain; // 名前を伏せた行き先ではロゴで明かさない
@@ -15,6 +16,7 @@ export function withStoreArrival(host, curtain, opts, { fast = false, reduced = 
       storeLogo(opts.spotId, { width: 360, height: 208 }),
     ])]);
     host.append(node);
+    if (!fast) SE.door?.(); // 店のロゴが出るのに合わせて扉の音（早送り中は鳴らさない）
     shownAt = performance.now();
     if (bare) move(node, [{ opacity: 0, transform: "scale(.92)" }, { opacity: 1, transform: "none" }], 220, { easing: "ease-out" });
     else if (!fast && !reduced) move(node, [{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], 160, { easing: "ease-out" });
