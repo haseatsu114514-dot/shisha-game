@@ -1,0 +1,1560 @@
+{
+  "comment": "すれ違い（恋人の裏の数値）が溜まりきった夜の別れ話（2026-11-13 オーナー「彼女のストレスみたいな裏ステータスが一定に行くと別れ話になって、引き止めないと友達に戻る」「なぜ別れ話になったかわかりやすいように、構ってくれないしとか」「引き止めは何度でも」・台帳 STR）。決まりは remake/js/core/lover-strain.js、再生は remake/js/daily/lover-strain.js。一晩に読むのは「切り出し open →（二度目からの一言 again）→ 理由 why_<理由> → 問いかけと答え ask」をつないだ一つの会話。理由は、誘いを断り続けた decline／LIMEを開かない unread／ほかの誰かの気配 suspect（女の勘。二股を言い当てたり確かめたりはしない。表に出るのは最後の修羅場）。答えは3つ: 向き合うと約束して引き止める keep／言い訳で引き止める excuse（次が早い）／受け入れる end（友達に戻る）。必ず読む場面なので能力・お金・体力の報酬は無く、数値は台詞に出さない。第5章に大会は無いので、言い訳は「店のこと」と言う。やり直し（復縁）は strain_reunion_<ID>: 友達に戻った相手に、章をまたいだ後、はじめのほうから一度だけ申し込める（台帳 STR11）。申し込むかどうかの一拍は daily/lover-strain.js が出し、ここは彼女の返事（一つだけ条件を言って受ける）。",
+  "dialogues": [
+    {
+      "dialogue_id": "strain_talk_open_tsumugi",
+      "comment": "別れ話・切り出し・つむぎ（丁寧語・「……」・色の言葉。はじめは「つむぎちゃん」）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "街灯の下に、スケッチブックを抱えたつむぎが立っていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん。少しだけ、お時間いいですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "つむぎちゃん、……待ってたの？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……はい。LIMEじゃなくて、顔を見て話したくて",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_again_tsumugi",
+      "comment": "二度目からの一言（切り出しの後に挟む）",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……この話、前にもしました。同じ色に、戻ってしまって"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_decline_tsumugi",
+      "comment": "理由: 誘いを断り続けた",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……誘っても、断られてばかりです。二人の予定のページが、白いままで"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "構ってもらえないのは、……思っていたより、さみしいです",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_unread_tsumugi",
+      "comment": "理由: LIMEを開かない",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……LIME、何日も、開いてもらえてません"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "返事はなくていいんです。……でも、読まれもしないのは、灰色です",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_suspect_tsumugi",
+      "comment": "理由: ほかの誰かの気配（女の勘。確かめはしない）",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……一緒にいても、はじめさんの色が、こっちを向いてないんです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "理由は、聞きません。……でも、見えてしまうので",
+          "beat": 400
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（……つむぎちゃんの目は、ごまかせない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_ask_tsumugi",
+      "comment": "問いかけと答え。keep=向き合うと約束して引き止める / excuse=言い訳で引き止める / end=受け入れて友達に戻る",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "face": "serious",
+          "text": "……だから。友達に、戻りませんか",
+          "beat": 600,
+          "duck": true
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "店員さんと、常連に。……それなら、待たなくて済むので"
+        },
+        {
+          "type": "choice",
+          "id": "strain_talk_tsumugi_answer",
+          "choices": [
+            {
+              "text": "これからは、ちゃんと向き合う",
+              "next": "keep"
+            },
+            {
+              "text": "「忙しかった」と言う",
+              "next": "excuse"
+            },
+            {
+              "text": "「……わかった」と答える",
+              "next": "end"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "keep": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "ごめん。さみしい思いをさせた。これからは、ちゃんと時間を作る"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "surprise",
+            "text": "……本当、ですか"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……じゃあ、もう一度だけ、待ちます。待つのは、慣れてるので"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_keep"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎは、抱えていたスケッチブックを、少しだけ下ろした。"
+          }
+        ],
+        "excuse": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……忙しかったんだ。店のことで、手いっぱいで"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "sad",
+            "text": "……知ってます。忙しいのは、ずっと見てましたから"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……もう少しだけ、待ちます。でも、色は、まだ灰色のままです"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_excuse"
+          }
+        ],
+        "end": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……わかった。ごめん、つむぎちゃん"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "sad",
+            "text": "……はい。……明日からは、常連の猫洞です",
+            "beat": 400
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "煙の色は、これからも描かせてください。それは、やめたくないので"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_end"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎは小さく頭を下げて、角を曲がった。足音が、いつもより速かった。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "strain_talk_open_minto",
+      "comment": "別れ話・切り出し・みんと（私服の栞。声が小さい・短文・一人称「私」。表情は ura_*。はじめは「栞さん」）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通りの先に、私服の栞さんが立っていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……はじめくん。お疲れさま、……少し、歩ける？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "栞さん。お店は？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "早めに閉めたの。……今日は、「みんと」じゃ話せないから",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_again_minto",
+      "comment": "二度目からの一言（切り出しの後に挟む）",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "……この話、二回目だね。……言わせて、ごめんね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_decline_minto",
+      "comment": "理由: 誘いを断り続けた",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "……誘うたびに、断られるでしょ。そのたびに、平気な顔を練習したの"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "でも、もう上手に笑えない。……構ってもらえないの、こたえるよ",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_unread_minto",
+      "comment": "理由: LIMEを開かない",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "……LIME、ずっと既読がつかないの。お仕事用じゃないほうの、私の"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "お店のお知らせなら、流されてもいい。……栞のは、読んでほしかった",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_suspect_minto",
+      "comment": "理由: ほかの誰かの気配（女の勘。確かめはしない）",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……一緒にいても、はじめくん、ときどき遠くを見てる"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "接客が仕事だから、分かるの。目の前の人を見てない人の顔って",
+          "beat": 400
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（……見抜かれている。全部ではなくても）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_ask_minto",
+      "comment": "問いかけと答え。keep=向き合うと約束して引き止める / excuse=言い訳で引き止める / end=受け入れて友達に戻る",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "……だからね。友達に、戻ろうか",
+          "beat": 600,
+          "duck": true
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "お店では、今までどおり笑うよ。……それは、得意だから"
+        },
+        {
+          "type": "choice",
+          "id": "strain_talk_minto_answer",
+          "choices": [
+            {
+              "text": "これからは、ちゃんと向き合う",
+              "next": "keep"
+            },
+            {
+              "text": "「忙しかった」と言う",
+              "next": "excuse"
+            },
+            {
+              "text": "「……わかった」と答える",
+              "next": "end"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "keep": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "ごめん。さみしい思いをさせた。これからは、ちゃんと栞さんを見る"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_surprise",
+            "text": "……っ"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "……ずるい。そう言われたら、もう一回、信じちゃうよ"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_keep"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "栞さんは、握っていたバッグの紐を、やっと離した。"
+          }
+        ],
+        "excuse": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……忙しかったんだ。店のことで、手いっぱいで"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……うん。知ってる。がんばってるのは、ちゃんと見てたよ"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_sad",
+            "text": "もう少しだけ、待つね。……でも、平気な顔は、もう練習しない"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_excuse"
+          }
+        ],
+        "end": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……わかった。ごめん、栞さん"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_sad",
+            "text": "……ぅん。……次に会う時は、「みんと」だからね",
+            "beat": 400
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "はじめくんは、ずっと大事なお客さん。それは、本当だよ"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_end"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "栞さんは手を振って、明るいほうの通りへ歩いていった。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "strain_talk_open_rio",
+      "comment": "別れ話・切り出し・凛想（気だるげなタメ口・仕事の言葉。「モルモットくん」「君」。はじめは敬語で「凛想さん」）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自販機の明かりの横に、凛想さんがもたれていた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "おつかれ、モルモットくん。……少し、時間ちょうだい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "凛想さん。こんな時間に、どうしたんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "業務連絡じゃないよ。今日は、私の話",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_again_rio",
+      "comment": "二度目からの一言（切り出しの後に挟む）",
+      "lines": [
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "同じ報告を二度するのは、好きじゃないんだけど"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_decline_rio",
+      "comment": "理由: 誘いを断り続けた",
+      "lines": [
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "誘いを出すたびに、断られてる。記録を見返したら、けっこう並んでた"
+        },
+        {
+          "speaker": "rio",
+          "face": "sad",
+          "text": "構ってもらえない実験は、……思ったより、こたえるね",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_unread_rio",
+      "comment": "理由: LIMEを開かない",
+      "lines": [
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "私のLIME、何日も未読のまま。既読のつかない画面は、もう見飽きた"
+        },
+        {
+          "speaker": "rio",
+          "face": "sad",
+          "text": "返事はいらないって言ったけど。……読まれないのは、別の話",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_suspect_rio",
+      "comment": "理由: ほかの誰かの気配（女の勘。確かめはしない）",
+      "lines": [
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "最近の君、ここにいても、半分はよそにいる"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "鼻は確かなの。何の香りかまでは、聞かないけど",
+          "beat": 400
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（……聞かないでいてくれている。それが、いちばん痛い）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_ask_rio",
+      "comment": "問いかけと答え。keep=向き合うと約束して引き止める / excuse=言い訳で引き止める / end=受け入れて友達に戻る",
+      "lines": [
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "だから、提案がある。友達に、戻ろう",
+          "beat": 600,
+          "duck": true
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "問屋と、取引先の店員。それなら、期待しなくて済む"
+        },
+        {
+          "type": "choice",
+          "id": "strain_talk_rio_answer",
+          "choices": [
+            {
+              "text": "これからは、ちゃんと向き合う",
+              "next": "keep"
+            },
+            {
+              "text": "「忙しかった」と言う",
+              "next": "excuse"
+            },
+            {
+              "text": "「……わかった」と答える",
+              "next": "end"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "keep": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "すみません。待たせてばかりでした。これからは、ちゃんと時間を作ります"
+          },
+          {
+            "speaker": "rio",
+            "face": "surprise",
+            "text": "……へえ。言い切るんだ"
+          },
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "じゃあ、再試験。……次に同じ結果なら、もう一回、呼び出すから"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_keep"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "凛想さんは自販機で缶コーヒーを二本買って、一本を投げてよこした。"
+          }
+        ],
+        "excuse": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……忙しかったんです。店のことで、手いっぱいで"
+          },
+          {
+            "speaker": "rio",
+            "face": "normal",
+            "text": "知ってる。君が手を抜かないのは、仕入れの量で分かる"
+          },
+          {
+            "speaker": "rio",
+            "face": "serious",
+            "text": "保留にしとく。……ただ、待つ側の記録は、まだ消さないよ"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_excuse"
+          }
+        ],
+        "end": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……わかりました。すみません、凛想さん"
+          },
+          {
+            "speaker": "rio",
+            "face": "sad",
+            "text": "……そう。じゃあ、この実験は、ここまで",
+            "beat": 400
+          },
+          {
+            "speaker": "rio",
+            "face": "normal",
+            "text": "葉の相談は、今までどおり乗る。それは、仕事だから"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_end"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "凛想さんは片手を上げて、振り返らずに歩いていった。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "strain_talk_open_ageha",
+      "comment": "別れ話・切り出し・あげは（平成ギャル・一人称「うち」・「ハジメっち」。はじめは「あげは」）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ガードレールに腰かけたあげはが、スマホから顔を上げた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "お、出てきた。……ハジメっち、ちょい顔かして"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あげは。店は、いいの？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "早じまい。……今日はさ、ノリじゃない話、しに来た",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_again_ageha",
+      "comment": "二度目からの一言（切り出しの後に挟む）",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "……この話すんの、二回目なんだけど。うち、しつこい？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_decline_ageha",
+      "comment": "理由: 誘いを断り続けた",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "誘ってもさ、ずっと断られてんじゃん。うち、けっこう数えてたよ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "構ってくんないの、……ふつうに、さみしいんだけど",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_unread_ageha",
+      "comment": "理由: LIMEを開かない",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "LIME、ずっと未読じゃん。既読スルーより、きついんだけど"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "返事いらないって言ったけどさ。……見てもくんないのは、なしでしょ",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_suspect_ageha",
+      "comment": "理由: ほかの誰かの気配（女の勘。確かめはしない）",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "最近のハジメっち、うちといても、どっか別んとこ見てんだよね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "当てっこ、得意って言ったっしょ、……当てたくないけど",
+          "beat": 400
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（……当てられる前に、何か言わないといけないのに）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_ask_ageha",
+      "comment": "問いかけと答え。keep=向き合うと約束して引き止める / excuse=言い訳で引き止める / end=受け入れて友達に戻る",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "……だからさ。友達に、戻んない？",
+          "beat": 600,
+          "duck": true
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "ダチなら、待たなくていいし。……うち、待つの、向いてないわ"
+        },
+        {
+          "type": "choice",
+          "id": "strain_talk_ageha_answer",
+          "choices": [
+            {
+              "text": "これからは、ちゃんと向き合う",
+              "next": "keep"
+            },
+            {
+              "text": "「忙しかった」と言う",
+              "next": "excuse"
+            },
+            {
+              "text": "「……わかった」と答える",
+              "next": "end"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "keep": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "ごめん。さみしい思いをさせた。これからは、ちゃんと時間を作る"
+          },
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "……まじで言ってる？"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "……じゃ、もっかいだけ信じる。次も放置したら、店まで乗りこむかんね"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_keep"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "あげははガードレールから降りて、俺の肩を一回だけ、強めに叩いた。"
+          }
+        ],
+        "excuse": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……忙しかったんだ。店のことで、手いっぱいで"
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "……知ってるし。がんばってんの、うちが一番見てるし"
+          },
+          {
+            "speaker": "ageha",
+            "face": "sad",
+            "text": "……もうちょいだけ待つ。でも、さみしいのは、まだ消えてないから"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_excuse"
+          }
+        ],
+        "end": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……わかった。ごめん、あげは"
+          },
+          {
+            "speaker": "ageha",
+            "face": "sad",
+            "text": "……そっか、……りょ",
+            "beat": 400
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "ダチに戻っても、ハジメっちの煙は推すから。そこは、変わんない"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_end"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "あげはは手を振って歩き出した。一度も、振り返らなかった。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "strain_talk_open_samechan",
+      "comment": "別れ話・切り出し・サメちゃん（「わし／お主／〜じゃ」。コロちゃんは voice: korochan・一人称「余」。はじめは敬語）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "看板の下に、コロちゃんを抱えたサメちゃんが立っていた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "お、お主。……少しだけ、よいかの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "サメちゃん。お店は、どうしたんですか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "今日は早じまいじゃ。……コロちゃんではなく、わしが話しに来たのじゃ",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_again_samechan",
+      "comment": "二度目からの一言（切り出しの後に挟む）",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……この話は、二度目じゃな。わしも、言いとうはないのじゃが"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_decline_samechan",
+      "comment": "理由: 誘いを断り続けた",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "誘いを出しても、断られてばかりじゃ。席を何度確かめても、お主は来ぬ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "構ってもらえぬのは、……思うたより、さみしいものじゃな",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_unread_samechan",
+      "comment": "理由: LIMEを開かない",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "わしのLIME、何日も読まれておらぬ。海に流した瓶のようじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "返事はよい。……じゃが、読まれもせぬのは、こたえるのじゃ",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_suspect_samechan",
+      "comment": "理由: ほかの誰かの気配（女の勘。確かめはしない）",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者はじめ。近ごろは、この城にいても、心がよその城にある",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……コロちゃんの言うとおりじゃ。わしにも、そう見えておる",
+          "beat": 400
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（……サメちゃんにまで、見えている）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_ask_samechan",
+      "comment": "問いかけと答え。keep=向き合うと約束して引き止める / excuse=言い訳で引き止める / end=受け入れて友達に戻る",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……じゃから。友に、戻らぬか",
+          "beat": 600,
+          "duck": true
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "サメ仲間なら、待たずともよい。……わしは、待つのが下手なのじゃ"
+        },
+        {
+          "type": "choice",
+          "id": "strain_talk_samechan_answer",
+          "choices": [
+            {
+              "text": "これからは、ちゃんと向き合う",
+              "next": "keep"
+            },
+            {
+              "text": "「忙しかった」と言う",
+              "next": "excuse"
+            },
+            {
+              "text": "「……わかった」と答える",
+              "next": "end"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "keep": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "すみません。さみしい思いをさせました。これからは、ちゃんと時間を作ります"
+          },
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "……ま、まことか"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "……うむ。ならば、もう一度だけ信じるのじゃ。勇者の誓いじゃぞ"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_keep"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "サメちゃんの右手で、コロちゃんが大きくうなずいた。"
+          }
+        ],
+        "excuse": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……忙しかったんです。店のことで、手いっぱいで"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "知っておる。お主が励んでおるのは、わしも見ておった"
+          },
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "……もう少しだけ、待つのじゃ。じゃが、さみしさは、まだ消えておらぬぞ"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_excuse"
+          }
+        ],
+        "end": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……わかりました。すみません、サメちゃん"
+          },
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "……うむ、……分かったのじゃ",
+            "beat": 400
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "サメ仲間は、やめぬぞ。お主の煙は、これからも見に行くのじゃ"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_end"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "サメちゃんは、コロちゃんの手を振らせて、背を向けた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "strain_talk_open_hiyori",
+      "comment": "別れ話・切り出し・ひより（儚い女ごっこ＋素の明るさ・「はじめくん」。はじめは敬語で「ひよりさん」）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "看板の明かりの下で、会社帰りのひよりさんが待っていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "おつかれさま。……残業の帰り。というのは、半分うそ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ひよりさん。待っててくれたんですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "うん。今日は、儚くない話をしに来たの",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_again_hiyori",
+      "comment": "二度目からの一言（切り出しの後に挟む）",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "この話、二回目だね。……儚い女は、同じことを二度言わないはずなのに"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_decline_hiyori",
+      "comment": "理由: 誘いを断り続けた",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "誘っても、断られてばかりでしょ。予定表の「未定」が、ずっと消えないの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "構ってもらえないの、大丈夫って言えなくなっちゃった",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_unread_hiyori",
+      "comment": "理由: LIMEを開かない",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "私のLIME、何日も未読のままだよ。通知ひとつより軽いの、冗談だったのに"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "返事はいいの。……でも、読まれもしないのは、大丈夫じゃない",
+          "beat": 400
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_why_suspect_hiyori",
+      "comment": "理由: ほかの誰かの気配（女の勘。確かめはしない）",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "最近ね、一緒にいても、はじめくんの気持ちが半分しか来てない気がするの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "総務の勘。……当たってほしくない時ほど、当たるんだよね",
+          "beat": 400
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（……勘、で済んでいるうちに、何か言わないと）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_talk_ask_hiyori",
+      "comment": "問いかけと答え。keep=向き合うと約束して引き止める / excuse=言い訳で引き止める / end=受け入れて友達に戻る",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "だからね。友達に、戻ろうか",
+          "beat": 600,
+          "duck": true
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "tonariの元バイトと、今の店員さん。それなら、待たなくていいから"
+        },
+        {
+          "type": "choice",
+          "id": "strain_talk_hiyori_answer",
+          "choices": [
+            {
+              "text": "これからは、ちゃんと向き合う",
+              "next": "keep"
+            },
+            {
+              "text": "「忙しかった」と言う",
+              "next": "excuse"
+            },
+            {
+              "text": "「……わかった」と答える",
+              "next": "end"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "keep": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "すみません。さみしい思いをさせました。これからは、ちゃんと時間を作ります"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "surprise",
+            "text": "……それ、本気で言ってる？"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "smile",
+            "text": "じゃあ、もう一回だけ信じる。……儚く消える予定、取り消しておくね"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_keep"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ひよりさんは、握っていた社員証の紐を、鞄にしまった。"
+          }
+        ],
+        "excuse": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……忙しかったんです。店のことで、手いっぱいで"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "normal",
+            "text": "知ってる。がんばってるの、ちゃんと見てたよ"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "sad",
+            "text": "もう少しだけ、待つね。……でも、大丈夫って顔は、まだできない"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_excuse"
+          }
+        ],
+        "end": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……わかりました。すみません、ひよりさん"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "sad",
+            "text": "……うん。大丈夫、とは言わないでおくね",
+            "beat": 400
+          },
+          {
+            "speaker": "hiyori",
+            "face": "smile",
+            "text": "tonariには、また吸いに行く。そこは、元バイトの権利だから"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_strain_end"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ひよりさんは小さく手を振って、駅のほうへ歩いていった。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "strain_reunion_tsumugi",
+      "comment": "やり直し（復縁）・つむぎ。友達に戻った後、章をまたいでから、はじめが一度だけ申し込める（再生は daily/lover-strain.js の maybeStrainReunion。読み終えると恋人に戻る）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "連絡すると、つむぎは、いつもの街灯の下まで来てくれた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "つむぎちゃん。もう一度、付き合ってほしい",
+          "beat": 400
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "surprise",
+          "text": "……えっ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あの時は、さみしい思いをさせた。今度は、ちゃんと向き合う"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……本当は、ずっと描いてました。はじめさんの煙の色"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今度、灰色になったら、すぐ言います。だから、聞いてくださいね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。約束する"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……はい。……また、よろしくお願いします"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは、スケッチブックの新しいページを開いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_reunion_minto",
+      "comment": "やり直し（復縁）・みんと（私服の栞）。友達に戻った後、章をまたいでから、はじめが一度だけ申し込める（再生は daily/lover-strain.js の maybeStrainReunion。読み終えると恋人に戻る）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "連絡すると、栞さんは、私服のまま通りの先に立っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "栞さん。もう一度、付き合ってほしい",
+          "beat": 400
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_surprise",
+          "text": "……え"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あの時は、さみしい思いをさせた。今度は、ちゃんと栞さんを見る"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "……お店では笑えるのにね。こういう時の顔は、まだ練習してないの"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……次に私が平気な顔をしてたら、ちゃんと見抜いてね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。見抜く"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……ぅん。……じゃあ、もう一回。栞を、よろしくね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞さんは、握っていたバッグの紐を、ゆっくり離した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_reunion_rio",
+      "comment": "やり直し（復縁）・凛想。友達に戻った後、章をまたいでから、はじめが一度だけ申し込める（再生は daily/lover-strain.js の maybeStrainReunion。読み終えると恋人に戻る）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "連絡すると、凛想さんは、あの自販機の横で待っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "凛想さん。もう一度、付き合ってください",
+          "beat": 400
+        },
+        {
+          "speaker": "rio",
+          "face": "surprise",
+          "text": "……へえ。君のほうから来るんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あの時は、待たせてばかりでした。今度は、ちゃんと向き合います"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "終わった実験を再開するの、本当は好きじゃないんだけど"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "条件はひとつ。待たせる時は、先に言うこと"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。必ず言います"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "じゃあ、再開。……おかえり、モルモットくん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは缶コーヒーを一本、こっちへ投げてよこした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_reunion_ageha",
+      "comment": "やり直し（復縁）・あげは。友達に戻った後、章をまたいでから、はじめが一度だけ申し込める（再生は daily/lover-strain.js の maybeStrainReunion。読み終えると恋人に戻る）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "連絡すると、あげはは、あのガードレールに腰かけて待っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あげは。もう一度、付き合ってほしい",
+          "beat": 400
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "……は？ まじで？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あの時は、さみしい思いをさせた。今度は、ちゃんと向き合う"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "……うちさ、ダチに戻るって言ったけど、全然戻れてなかったんだよね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "次に放置したら、まじで店まで乗りこむかんね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。その前に、ちゃんと行く"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……りょ！ じゃ、すきぴ復活ってことで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげははガードレールから降りて、俺の肩を二回、強めに叩いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_reunion_samechan",
+      "comment": "やり直し（復縁）・サメちゃん（コロちゃんは voice: korochan）。友達に戻った後、章をまたいでから、はじめが一度だけ申し込める（再生は daily/lover-strain.js の maybeStrainReunion。読み終えると恋人に戻る）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "連絡すると、サメちゃんは、コロちゃんを抱えて看板の下に来てくれた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "サメちゃん。もう一度、付き合ってください",
+          "beat": 400
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "……な、なんと"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あの時は、さみしい思いをさせました。今度は、ちゃんと向き合います"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、ずっと待っておった。余は知っている",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "こ、こら！ 言うでない！"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……わしは、待つのが下手じゃ。じゃから、待たせる時は、そう言うてくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。約束します"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……うむ。ならば、もう一度じゃ。勇者の誓い、二度目じゃぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんの右手で、コロちゃんが大きくうなずいた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_reunion_hiyori",
+      "comment": "やり直し（復縁）・ひより。友達に戻った後、章をまたいでから、はじめが一度だけ申し込める（再生は daily/lover-strain.js の maybeStrainReunion。読み終えると恋人に戻る）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "連絡すると、ひよりさんは、会社帰りの格好のまま来てくれた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "ひよりさん。もう一度、付き合ってください",
+          "beat": 400
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……え。儚く消えたはずの女に？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あの時は、さみしい思いをさせました。今度は、ちゃんと向き合います"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "大丈夫って言わないと決めたら、言えることが減っちゃって、困ってたの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "次は、大丈夫じゃない時に、ちゃんとそう言うから。聞いてね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。ちゃんと聞きます"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "じゃあ、もう一回。……儚くないほうの私を、よろしく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんは、社員証の紐を指に巻いて、少しだけ笑った。"
+        }
+      ]
+    }
+  ]
+}

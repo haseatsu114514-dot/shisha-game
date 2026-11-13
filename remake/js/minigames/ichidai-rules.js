@@ -55,6 +55,8 @@ export const RULES = Object.freeze({
   //   useVote=一票を入れるか／useBonus=審査員の決め手を入れるか／prepack=一台を一式の配合で詰めてから始める（準備は蒸らすターンだけ）／
   //   autoEmbers=最初の種火を山札の上から自動で置く数（0なら、手札から自分で選ぶ）
   useVote: true, useBonus: true, prepack: false, autoEmbers: 0,
+  // 焦げたときに失う主役の葉の枚数（第0.7版の途中で 1 → 2。2026-11-13 オーナー「焦げたらのやつもっと減らしたりリスキーにしていいかも」）
+  scorchLoss: 2,
   // 一口のカード: false＝提供の自分のターンに仕込む（第0.3版）。true＝審査カードをめくったあとに使う（第0.2版の受け方）
   reactAfterReveal: false,
   // 審査カードをめくる時: true＝ラウンドのはじめ（第0.5版。全員が見てから熱を合わせる）。false＝全員のターンのあと（第0.4版まで）
@@ -717,13 +719,13 @@ function resolveJudge(G) {
     if (s.zone === "just") p.justCount++;
     const bonus = pf.impress + (s.zone === "just" ? 2 * pf.allIn : 0) + (good ? pf.warm || 0 : 0) + (p.sessImp || 0);
     const imp = voteScore(G, p, s, pts, bonus); // 焦げで葉が減る前に数える
-    let lost = null;
+    let lost = null, lostN = 0;
     if (s.zone === "scorch") {
       p.scorchCount++;
       const safe = p.person === "minto" && Object.keys(p.bowl).some((k) => FLAVOR[k].kind === "cool" && p.bowl[k] >= 2);
-      if (!safe && p.main) { lost = p.main; p.bowl[p.main]--; fixMain(p); }
+      if (!safe && p.main) { lost = p.main; lostN = Math.min(G.R.scorchLoss, p.bowl[p.main]); p.bowl[p.main] -= lostN; fixMain(p); }
     }
-    res[i] = { h, zone: s.zone, pts, parts, lost, rank: RANK[s.zone], duel: pf.duel, imp, bonus };
+    res[i] = { h, zone: s.zone, pts, parts, lost, lostN, rank: RANK[s.zone], duel: pf.duel, imp, bonus };
   }
   // 一票: 印象がいちばん高い1人（いちばん上が並んだら入らない）
   const top = Math.max(...res.map((r) => r.imp)); let voter = null;
@@ -736,7 +738,7 @@ function resolveJudge(G) {
   for (const p of G.P) {
     const i = p.index, r = res[i];
     p.score += r.pts + (r.vote || 0); p.lastPuff = r.pts; p.pend = 0; if (!G.R.revealFirst) p.peek = null;
-    say(G, `判定熱${r.h}・${ZONE_LABEL[r.zone]} → ${r.pts}点${r.vote ? `＋一票${r.vote}点` : ""}${r.lost ? `（${FLAVOR[r.lost].name}を1枚失う）` : ""}`, i);
+    say(G, `判定熱${r.h}・${ZONE_LABEL[r.zone]} → ${r.pts}点${r.vote ? `＋一票${r.vote}点` : ""}${r.lost ? `（${FLAVOR[r.lost].name}を${r.lostN}枚失う）` : ""}`, i);
   }
   for (const p of G.P) p.puff.scored = true;
   G.lastResult = { round: G.round, puff: q, res, voter };

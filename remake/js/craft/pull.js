@@ -15,6 +15,7 @@ import { growthPerks, growthFeature, useGrowthInsurance, growthSkill, growthLess
 // 熱管理では、立ち上げから吸われて消耗した炭を交換する。交換する炭は最初の炭焼きのときに一緒に焼いておいたものをトングで持ってくる。
 // 炭焼きは挟まず、焼け具合は最初の炭焼きと同じで、それで戻る熱と持ちが変わる（TH39・#2213）。
 import { el, sleep, clamp, rand } from "../core/util.js";
+import { setText, setAttr, setData, setFlag } from "../core/dom-write.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE, startBubbling } from "../core/audio.js";
 import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, setBenchDraw, failBench, setBenchLeaf, dockBenchLeaf, strainBench, scoreStep, waitBenchReady } from "./session.js";
@@ -269,16 +270,18 @@ async function pullGame(cs, mode) {
   thermometer.root.append(readout);
   dockBenchLeaf(cs, lifeLeaves);
 
+  // 針が動く間は毎フレーム呼ばれる。状態の一語・札は、中身が変わった時だけ作り直す（#3500 F-1）。
+  let readoutKey = "", tagsKey = "";
   const render = () => {
     thermometer.update(T);
     setBenchTemperature(cs, T);
     const predicted = clamp(T + pullHeat(actionAt(pos).delta),0,1);
     thermometer.preview(running && !drawing && !finished ? predicted : null);
-    if (omen) omen.textContent = !running || drawing || finished ? "" : isBurnt(predicted) ? "次の一口で焦げそうだ"
+    if (omen) setText(omen, !running || drawing || finished ? "" : isBurnt(predicted) ? "次の一口で焦げそうだ"
       : mode.drift && predicted <= COLD_OUT + .04 ? "冷え切る前に熱を戻したい"
       : predicted >= harshTemp ? "次の一口は熱が強すぎそうだ"
       : pulls + 1 > safeLimit && cs.leaf.hp <= 1 ? "これ以上吸うと、最後の葉が抜けそうだ"
-      : pulls + 1 > safeLimit ? "次の一口から葉を傷めそうだ" : "";
+      : pulls + 1 > safeLimit ? "次の一口から葉を傷めそうだ" : "");
     if (choosing) return;
     const inZone = isIdealTemperature(T, bands);
     const expressive = bands.expressionWeight >= .999;
@@ -289,21 +292,30 @@ async function pullGame(cs, mode) {
     // 今の温度を短い一語で。温度計の印と同じ色にする。
     const [state, tone] = optimal ? [expressive ? goodLabel : "最適温", "optimal"] : inZone ? [goodLabel, "ok"] : T >= DANGER_TEMP ? ["焦げる寸前！", "danger"]
       : T > ideal[1] ? ["熱い", "hot"] : mode.drift && T <= COLD_OUT + 0.08 ? ["冷え切りそう！", "cold"] : ["ぬるい", "cool"];
-    readout.dataset.tone = tone;
-    readout.replaceChildren(el("b.pull-state", { text: state }), mode.drift && running && !drawing ? el("span.pull-drift", { text: "↓", title: "炭が燃え進んで、熱が落ちていく" }) : "");
-    tags.replaceChildren(...[
-      coals != null && el("span.pull-tag", { text: coals ? `炭×${coals}` : "炭そのまま", title: coals ? `消耗した炭を${coals}個交換した` : "炭は交換していない" }),
-      conditions.sparsity && el("span.pull-tag", { text: "少穴", title: "吸い方による温度変化が大きい" }),
-      cs.vent === "closed" && el("span.pull-tag", { text: "蓋：閉" }),
-      conditions.rainy && el("span.pull-tag", { text: "雨", title: "熱が入りづらい" }),
-    ].filter(Boolean));
+    setData(readout, "tone", tone);
+    const drift = mode.drift && running && !drawing;
+    const nextReadoutKey = `${state}|${drift}`;
+    if (nextReadoutKey !== readoutKey) {
+      readoutKey = nextReadoutKey;
+      readout.replaceChildren(el("b.pull-state", { text: state }), drift ? el("span.pull-drift", { text: "↓", title: "炭が燃え進んで、熱が落ちていく" }) : "");
+    }
+    const nextTagsKey = `${coals}|${!!conditions.sparsity}|${cs.vent === "closed"}|${!!conditions.rainy}`;
+    if (nextTagsKey !== tagsKey) {
+      tagsKey = nextTagsKey;
+      tags.replaceChildren(...[
+        coals != null && el("span.pull-tag", { text: coals ? `炭×${coals}` : "炭そのまま", title: coals ? `消耗した炭を${coals}個交換した` : "炭は交換していない" }),
+        conditions.sparsity && el("span.pull-tag", { text: "少穴", title: "吸い方による温度変化が大きい" }),
+        cs.vent === "closed" && el("span.pull-tag", { text: "蓋：閉" }),
+        conditions.rainy && el("span.pull-tag", { text: "雨", title: "熱が入りづらい" }),
+      ].filter(Boolean));
+    }
     pips.forEach((pip, i) => pip.classList.toggle("on", i < pulls));
-    pullCount.textContent = `${pulls}/${MAX_PULLS}`;
-    counter.dataset.pulls = String(pulls);
-    counter.setAttribute("aria-label", `吸った回数 ${pulls}/${MAX_PULLS}回`);
-    serveBtn.disabled = !running || drawing || finished || pulls < mode.min || !!failed;
-    pullBtn.disabled = !running || drawing || finished || !!failed || pulls >= MAX_PULLS;
-    if (deepBtn) deepBtn.disabled = pullBtn.disabled;
+    setText(pullCount, `${pulls}/${MAX_PULLS}`);
+    setData(counter, "pulls", pulls);
+    setAttr(counter, "aria-label", `吸った回数 ${pulls}/${MAX_PULLS}回`);
+    setFlag(serveBtn, "disabled", !running || drawing || finished || pulls < mode.min || !!failed);
+    setFlag(pullBtn, "disabled", !running || drawing || finished || !!failed || pulls >= MAX_PULLS);
+    if (deepBtn) setFlag(deepBtn, "disabled", pullBtn.disabled);
   };
 
   // その一台がダメになったら、すぐに止めて結果へ進む。
@@ -629,7 +641,7 @@ async function pullGame(cs, mode) {
   if (abandoned) return false;
   if (failed) {
     const text = FAIL_TEXT[failed];
-    readout.textContent = `${text.title}……！`;
+    readout.textContent = `${text.title}……！`; readoutKey = "";
     await failBench(cs, failed);
     cs[mode.store] = { score: 0, grade: gradeOf(0), temp: T, startTemp: initialTemp, pulls, justs, coals, inZone: false, optimal: false, over: failed === "burnt", under: failed === "cold", failed };
     cs.failed = failed;

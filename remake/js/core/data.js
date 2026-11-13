@@ -150,17 +150,25 @@ export async function loadAll(onProgress = () => {}) {
     ["fortuneHints", "data/fortune-choice-hints.json"],
     ...DIALOGUE_FILES.map((f) => [`dlg:${f}`, `${ROOT}data/dialogue/${f}.json`]),
   ];
-  let done = 0;
+  let done = 0, next = 0, failed = false;
   const results = [];
-  // ローカルサーバーの接続待ちを溢れさせない。失敗したら次の組は開始しない。
-  for (let start = 0; start < jobs.length; start += JSON_CONCURRENCY) {
-    const batch = await Promise.all(jobs.slice(start, start + JSON_CONCURRENCY).map(async ([key, path]) => {
-      const v = await getJSON(path);
+  // ローカルサーバーの接続待ちを溢れさせないよう、同時に JSON_CONCURRENCY 本まで。
+  // 組ごとに全員を待たず、1本終わるたびに次の1本を始める（遅い1本が組全体を止めない。#3500 A-18）。
+  // 失敗したら新しい取得は始めない。
+  const worker = async () => {
+    while (!failed && next < jobs.length) {
+      const i = next++;
+      const [key, path] = jobs[i];
+      try {
+        results[i] = [key, await getJSON(path)];
+      } catch (error) {
+        failed = true;
+        throw error;
+      }
       onProgress(++done / jobs.length);
-      return [key, v];
-    }));
-    results.push(...batch);
-  }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(JSON_CONCURRENCY, jobs.length) }, worker));
   const raw = Object.fromEntries(results);
 
   for (const c of raw.characters) DB.characters[c.id] = c;
@@ -250,6 +258,16 @@ export function displayName(id, state, { context = null } = {}) {
 export function callName(id, state, opts = {}) {
   const name = displayName(id, state, opts);
   return id === "minto" && name === DB.characters.minto?.private_name ? `${name}さん` : name;
+}
+
+/**
+ * LIMEのアカウント名（data/characters.json の lime_name。本人が自分で付けた名前で、LIMEの画面にだけ出す）。
+ * 名乗る前（表示名が「？？？」の間）は、アカウント名でも正体を明かさない。lime_name の無い相手は、私的な場面の呼び名
+ */
+export function limeAccountName(id, state) {
+  const shown = displayName(id, state, { context: "private" });
+  const own = DB.characters?.[id]?.lime_name;
+  return own && shown !== "？？？" ? own : shown;
 }
 
 // ---------------------------------------------------------------- アセット
