@@ -7,6 +7,7 @@ import { createTrpgAudio } from "./audio.js";
 import { checkForecast, rerollOdds, rollOdds } from "./feedback.js";
 import { playTrpgEntrance } from "./entrance.js";
 import { playIncarnation, playSceneCard, playResultCut, playClueCard, impact } from "./stage-fx.js";
+import { autoWrap } from "../vn/text.js";
 
 // 調べる場所の印の半径（見える輪。スマホでは押せる範囲が広いが、輪は同じ大きさ）。ワイドでの上下の切り方に使う
 const ROOM_SPOT_REACH = 28;
@@ -443,7 +444,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     }
     art.style.backgroundColor = person?.color || "#566053";
     setLayer(kind);
-    speech.textContent = pcText(frame.text);
+    setSpeech(pcText(frame.text));
     // 一行ごとに短く現れる（字は最初から全部入っている。読み上げと検査は待たない）。
     speech.dataset.tick = String(cursor % 2);
     showPanel(frame.panel || null);
@@ -520,15 +521,41 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (callback) callback(); else renderBody();
     if (!overlay && !busy) (focusTest && root.querySelector('[data-test="' + focusTest + '"]') || root).focus({ preventScroll: true });
   }
+  /**
+   * 台詞の折り返し（#3199）: 本編の会話と同じ組版（vn/text.js の autoWrap＝文節・禁則・語の保護）で、台詞欄の幅が全角何字分かに
+   * 合わせて折る位置を決め、そこに <br> を入れる。ブラウザ任せ（文節折り＋balance）では、2行をそろえるために1行目が文の途中で
+   * 早く切れ（「世界一普通の／一台を」）、文節折りの無い Safari では語の途中でも切れていた。文字は足さない・消さない
+   * （textContent は台詞のまま）。測れない時（欄が隠れている・試験の仮のDOM）はブラウザの折り返しのまま。
+   */
+  function setSpeech(text) {
+    delete speech.dataset.wrapped;
+    speech.dataset.raw = text;
+    speech.textContent = text;
+    if (!wrapSpeech() && typeof requestAnimationFrame === "function") requestAnimationFrame(() => { if (!disposed) wrapSpeech(); });
+  }
+  function wrapSpeech() {
+    const raw = speech.dataset.raw;
+    if (raw == null || typeof getComputedStyle !== "function" || !speech.clientWidth) return false;
+    const style = getComputedStyle(speech), size = parseFloat(style.fontSize);
+    if (!(size > 0)) return false;
+    const limit = Math.max(6, Math.floor(speech.clientWidth / (size + (parseFloat(style.letterSpacing) || 0))));
+    if (speech.dataset.wrapped === raw && speech.dataset.limit === String(limit)) return true;
+    let lines;
+    try { lines = autoWrap(raw, limit).split("\n"); } catch { return false; }
+    speech.dataset.wrapped = raw; speech.dataset.limit = String(limit);
+    speech.replaceChildren(...lines.flatMap((line, i) => i ? [el("br"), line] : [line]));
+    return true;
+  }
   function idle(text) {
     if (busy) return;
     art.replaceChildren(el("img", { src: speakerPortrait(gm), alt: name(gm),
       style: portraitFrame(gm, 410, 16) }));
     art.style.backgroundColor = cast[gm].color;
-    speaker.textContent = name(gm); role.textContent = ""; speech.textContent = text;
+    speaker.textContent = name(gm); role.textContent = "";
     setLayer("idle");
     syncSpeaker(gm);
     root.classList.add("trpg-idle"); next.hidden = true;
+    setSpeech(text); // 待機の一言は字が小さい（.trpg-idle）ので、その大きさで測る
   }
   function start() {
     if (busy || overlay || session.snapshot().phase !== "cover") return;
@@ -1511,7 +1538,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (providedAudio) audio.silence(); else audio.destroy();
     document.removeEventListener("visibilitychange", visibility);
     root.removeEventListener("keydown", keys);
-    if (typeof window !== "undefined") window.removeEventListener?.("resize", fitRoomCrop);
+    if (typeof window !== "undefined") { window.removeEventListener?.("resize", fitRoomCrop); window.removeEventListener?.("resize", wrapSpeech); }
     root.remove();
   }
   function keys(event) {
@@ -1543,7 +1570,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   root.addEventListener("keydown", keys);
   function visibility() { root.dataset.paused = String(document.hidden); }
   document.addEventListener("visibilitychange", visibility);
-  if (typeof window !== "undefined") window.addEventListener?.("resize", fitRoomCrop);
+  // 画面の向き・スマホ用の文字拡大が変わると台詞欄の字数も変わるので、折り直す（stage-fit が先に data-density を立てる）。
+  if (typeof window !== "undefined") { window.addEventListener?.("resize", fitRoomCrop); window.addEventListener?.("resize", wrapSpeech); }
   visibility();
   renderBody(); root.focus({ preventScroll: true });
   if (resumed) log.push({ speaker: gm, text: "（しおりから、前回の続き）" });
