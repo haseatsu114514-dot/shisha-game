@@ -1,6 +1,6 @@
 {
   "id": "shark-last-order",
-  "version": 5,
+  "version": 6,
   "title": "サメは閉店を待たない",
   "subtitle": "海上ラウンジ、最後の夜",
   "author": "青瀬マコ",
@@ -83,6 +83,10 @@
         "adam": {
           "ability": "舞台の支度",
           "color": "#c9463a"
+        },
+        "regulara": {
+          "role": "{pc:hiyori}／実況する研究員",
+          "color": "#bb9c72"
         }
       },
       "sheet": {
@@ -117,6 +121,12 @@
         },
         "trait": "暗い場所も高い場所も平気。照明なら任せて",
         "likes": "暗い部屋と、ラベンダー色のライト"
+      },
+      "alternatives": {
+        "regularb": {
+          "role": "{pc:tsumugi}／照明係",
+          "color": "#8faeaa"
+        }
       }
     }
   ],
@@ -532,6 +542,11 @@
             "adam": {
               "text": "舞台装置は、この店の道具だけか。俺らの見せ場だな",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "……店にあるもので、あのサメから逃げるのね",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -539,7 +554,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……予告編、もう見たいです"
+          "text": "……予告編、もう見たいです",
+          "variants": {
+            "regularb": {
+              "text": "……予告編、もう見たいです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
@@ -598,6 +620,11 @@
             "adam": {
               "text": "続編の主役は、生き残った者だけだ。まずはこの一夜を越えよう",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "続編より先に、今ここで助かる方法を考えたいな……",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         }
@@ -661,6 +688,11 @@
             "adam": {
               "text": "滑って退場では締まらない。足元から、落ち着いていこう",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "足元、濡れてる……。ゆっくり行こう。私、波しぶきでも消えちゃうから",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         }
@@ -707,6 +739,11 @@
             "adam": {
               "text": "仕掛けは決まった。さあ、主役たちの退場だ",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "……うまくいった。今のうちに、みんなで渡ろう",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         }
@@ -730,6 +767,11 @@
             "adam": {
               "text": "修正も、物語を作る一手だ。次こそ狙いを通そう",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "手直しできたなら、大丈夫……。次はちゃんと動くはず",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         }
@@ -771,7 +813,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……今。動くなら、今だと思いました"
+          "text": "……今。動くなら、今だと思いました",
+          "variants": {
+            "regularb": {
+              "text": "……今。動くなら、今だと思いました",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
@@ -822,6 +871,11 @@
             "adam": {
               "text": "まだ終幕じゃない。店番三人で、あの艇へ向かおう",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "いったん戻ろう……。店番の三人、誰も置いていかないで",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -845,6 +899,11 @@
             "adam": {
               "text": "すべてを追うより、狙いを定めよう。二つの手がかりを比べるんだ",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "全部は調べられないのね……。手がかりを比べてみよう",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -857,6 +916,11 @@
             "adam": {
               "text": "保管箱と送風機。香りと振動、その違いが勝負を分けそうだ",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "保管箱と送風機。香りなのか、音なのか、確かめられそう",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -875,13 +939,27 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……目が向くものを、逃げ道から遠ざけたいです"
+          "text": "……目が向くものを、逃げ道から遠ざけたいです",
+          "variants": {
+            "regularb": {
+              "text": "……目が向くものを、逃げ道から遠ざけたいです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "光ならランプ。渡れる場所なら、海図と救命具でしょうか"
+          "text": "光ならランプ。渡れる場所なら、海図と救命具でしょうか",
+          "variants": {
+            "regularb": {
+              "text": "光ならランプ。渡れる場所なら、海図と救命具でしょうか",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
@@ -915,6 +993,11 @@
             "adam": {
               "text": "仕掛けも、立つ場所で輝きが変わる。配置を考えよう",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "……仕掛けを置く場所も、ちゃんと考えた方がよさそうね",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -922,7 +1005,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……仕掛けの位置、図にしておきます"
+          "text": "……仕掛けの位置、図にしておきます",
+          "variants": {
+            "regularb": {
+              "text": "……仕掛けの位置、図にしておきます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -939,7 +1029,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……最後の合図。みんなに見えるようにしますね"
+          "text": "……最後の合図。みんなに見えるようにしますね",
+          "variants": {
+            "regularb": {
+              "text": "……最後の合図。みんなに見えるようにしますね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -973,6 +1070,11 @@
             "adam": {
               "text": "次作は、避難訓練から幕を開けよう。俺もその方が安心だ",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "サメがいる海で営業するなら、開店前に避難訓練してほしい……",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -980,7 +1082,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……エンドロールの絵、描いてもいいですか？"
+          "text": "……エンドロールの絵、描いてもいいですか？",
+          "variants": {
+            "regularb": {
+              "text": "……エンドロールの絵、描いてもいいですか？",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
@@ -997,6 +1106,11 @@
             "adam": {
               "text": "サメのGM、見事だった。脚本も悪くない",
               "face": "smile"
+            },
+            "regulara": {
+              "text": "……サメちゃん、GMうまいね",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -1027,7 +1141,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……無線の声、少し震えてました"
+          "text": "……無線の声、少し震えてました",
+          "variants": {
+            "regularb": {
+              "text": "……無線の声、少し震えてました",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1049,6 +1170,11 @@
             "adam": {
               "text": "柑橘の箱が、怪物を呼ぶ小道具か。覚えておこう",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "箱が遠いと、背びれも遠ざかるのね……。覚えておこう",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -1061,6 +1187,11 @@
             "adam": {
               "text": "保管箱の中身、全部覚えた",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "保管箱の中身、全部メモしておくわね",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         }
@@ -1079,7 +1210,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……風が香りを運んでる。風向き、描き留めておきます"
+          "text": "……風が香りを運んでる。風向き、描き留めておきます",
+          "variants": {
+            "regularb": {
+              "text": "……風が香りを運んでる。風向き、描き留めておきます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1130,6 +1268,11 @@
             "adam": {
               "text": "表の桟橋まで、縄が届く。最短の花道だな",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "表の桟橋まで、縄が届くのね……。それなら近道できそう",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -1137,7 +1280,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……三人分。ちゃんと、あります"
+          "text": "……三人分。ちゃんと、あります",
+          "variants": {
+            "regularb": {
+              "text": "……三人分。ちゃんと、あります",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1154,7 +1304,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……潮が沖向き。香りを流す方向、決められそうです"
+          "text": "……潮が沖向き。香りを流す方向、決められそうです",
+          "variants": {
+            "regularb": {
+              "text": "……潮が沖向き。香りを流す方向、決められそうです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1183,7 +1340,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……無線の声、少し震えてました"
+          "text": "……無線の声、少し震えてました",
+          "variants": {
+            "regularb": {
+              "text": "……無線の声、少し震えてました",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1205,6 +1369,11 @@
             "adam": {
               "text": "香りではなく、物音が呼ぶのか。静かな演技が要るな",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "箱を置いた音で、来ちゃうのね……。そっと動かなきゃ",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -1217,6 +1386,11 @@
             "adam": {
               "text": "保管箱の中身、全部覚えた",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "保管箱の中身、全部メモしておくわね",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         }
@@ -1235,7 +1409,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……床の震えを止めたら、静かになる。足元、描き留めておきます"
+          "text": "……床の震えを止めたら、静かになる。足元、描き留めておきます",
+          "variants": {
+            "regularb": {
+              "text": "……床の震えを止めたら、静かになる。足元、描き留めておきます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1286,6 +1467,11 @@
             "adam": {
               "text": "屋根伝いの退場か。悪くない見せ場だ",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "屋根の上なら、濡れた床を通らずに済むのね……",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -1293,7 +1479,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……三人分。ちゃんと、あります"
+          "text": "……三人分。ちゃんと、あります",
+          "variants": {
+            "regularb": {
+              "text": "……三人分。ちゃんと、あります",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1310,7 +1503,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……屋根の側なら、軋まない。逃げ道、印をつけておきます"
+          "text": "……屋根の側なら、軋まない。逃げ道、印をつけておきます",
+          "variants": {
+            "regularb": {
+              "text": "……屋根の側なら、軋まない。逃げ道、印をつけておきます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1339,7 +1539,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……無線の声、少し震えてました"
+          "text": "……無線の声、少し震えてました",
+          "variants": {
+            "regularb": {
+              "text": "……無線の声、少し震えてました",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1361,6 +1568,11 @@
             "adam": {
               "text": "狙いは香りではなく灯りか。照明係が主役だな",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "香りじゃなくて、灯りを探してるのね……。暗くしていたい",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -1373,6 +1585,11 @@
             "adam": {
               "text": "保管箱の中身、全部覚えた",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "保管箱の中身、全部メモしておくわね",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         }
@@ -1391,7 +1608,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……影で光が消えると、曲がる。影の形、描き留めておきます"
+          "text": "……影で光が消えると、曲がる。影の形、描き留めておきます",
+          "variants": {
+            "regularb": {
+              "text": "……影で光が消えると、曲がる。影の形、描き留めておきます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1442,6 +1666,11 @@
             "adam": {
               "text": "灯りを浮きに預けても、縄は足りる。舞台は整うな",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "灯りを浮きに預けても、縄は足りるのね……。安心した",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -1449,7 +1678,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……三人分。ちゃんと、あります"
+          "text": "……三人分。ちゃんと、あります",
+          "variants": {
+            "regularb": {
+              "text": "……三人分。ちゃんと、あります",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1466,7 +1702,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……明るい表と、暗い裏。暗い方の道、写しておきます"
+          "text": "……明るい表と、暗い裏。暗い方の道、写しておきます",
+          "variants": {
+            "regularb": {
+              "text": "……明るい表と、暗い裏。暗い方の道、写しておきます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1488,6 +1731,11 @@
             "adam": {
               "text": "最後の一箱で、香りの幕を開ける。流す方向を確かめよう",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "最後の一箱……。香りを流す方向、間違えないようにしよう",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         }
@@ -1505,6 +1753,11 @@
             "adam": {
               "text": "密閉して、足元を整える。静かな退場にも、準備が必要だ",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "箱を閉めて、足元も整える。……気づかれずに行きたいね",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         }
@@ -1522,6 +1775,11 @@
             "adam": {
               "text": "光の主役を、遠くへ移す。俺らは影を歩こう",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "灯りを遠くへ運んで……。私たちから、目をそらしてもらうの",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         }
@@ -1534,7 +1792,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……短い移動。三人が渡る間だけ、目をそらしたいです"
+          "text": "……短い移動。三人が渡る間だけ、目をそらしたいです",
+          "variants": {
+            "regularb": {
+              "text": "……短い移動。三人が渡る間だけ、目をそらしたいです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1545,7 +1810,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……乾いた足場の方が、足音を揃えやすいです"
+          "text": "……乾いた足場の方が、足音を揃えやすいです",
+          "variants": {
+            "regularb": {
+              "text": "……乾いた足場の方が、足音を揃えやすいです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1556,7 +1828,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……壁の影。こっちを、光の反対側にしましょう"
+          "text": "……壁の影。こっちを、光の反対側にしましょう",
+          "variants": {
+            "regularb": {
+              "text": "……壁の影。こっちを、光の反対側にしましょう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1624,7 +1903,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……海に、ラストオーダー。きれいでした"
+          "text": "……海に、ラストオーダー。きれいでした",
+          "variants": {
+            "regularb": {
+              "text": "……海に、ラストオーダー。きれいでした",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1647,7 +1933,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……足音まで消したら、海の音が聞こえました"
+          "text": "……足音まで消したら、海の音が聞こえました",
+          "variants": {
+            "regularb": {
+              "text": "……足音まで消したら、海の音が聞こえました",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hiyori",
@@ -1658,6 +1951,11 @@
             "adam": {
               "text": "終幕は静かに。この海には、拍手より似合う音がある",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "……閉店の曲まで小さくするのね。静かな夜でよかった",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -1688,7 +1986,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……最後のカットは、海の灯りだけ"
+          "text": "……最後のカットは、海の灯りだけ",
+          "variants": {
+            "regularb": {
+              "text": "……最後のカットは、海の灯りだけ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
@@ -1705,6 +2010,11 @@
             "adam": {
               "text": "最高のプレミアだ。監督冥利に尽きる",
               "face": "smile"
+            },
+            "regulara": {
+              "text": "上映会みたいで、ちょっとロマンチックね",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         }
@@ -1752,6 +2062,11 @@
             "adam": {
               "text": "続編にも、店番三人の救命胴衣を。主役は泳げなくてもいい",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "続編でも、店番三人の救命胴衣は最初から置いておいてね……",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         }
@@ -1785,7 +2100,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……危ないところも、見せ場でした"
+          "text": "……危ないところも、見せ場でした",
+          "variants": {
+            "regularb": {
+              "text": "……危ないところも、見せ場でした",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1824,6 +2146,11 @@
             "adam": {
               "text": "{pc:hiyori}は双眼鏡を構える。背びれの癖を見抜いてやる",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "{pc:hiyori}は双眼鏡を構えて、背びれの動きを追うわ",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -1845,7 +2172,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:tsumugi}は救難灯を海へ向けて、照らします"
+          "text": "……{pc:tsumugi}は救難灯を海へ向けて、照らします",
+          "variants": {
+            "regularb": {
+              "text": "……{pc:tsumugi}は救難灯を海へ向けて、照らします",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
@@ -1890,6 +2224,11 @@
             "adam": {
               "text": "{pc:hiyori}が道具を組む。舞台の仕掛けと同じさ",
               "face": "smile"
+            },
+            "regulara": {
+              "text": "{pc:hiyori}が道具を組むわ。研究室で慣れてるから",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -1911,7 +2250,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:tsumugi}は照明の配線をつないで、仕掛けを動かします"
+          "text": "{pc:tsumugi}は照明の配線をつないで、仕掛けを動かします",
+          "variants": {
+            "regularb": {
+              "text": "{pc:tsumugi}は照明の配線をつないで、仕掛けを動かします",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
@@ -1951,7 +2297,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "{pc:tsumugi}が先頭で走ります。暗い桟橋は、慣れてるので"
+          "text": "{pc:tsumugi}が先頭で走ります。暗い桟橋は、慣れてるので",
+          "variants": {
+            "regularb": {
+              "text": "{pc:tsumugi}が先頭で走ります。暗い桟橋は、慣れてるので",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
@@ -1976,6 +2329,11 @@
             "adam": {
               "text": "{pc:hiyori}が波を読む。合図は俺が出そう",
               "face": "serious"
+            },
+            "regulara": {
+              "text": "{pc:hiyori}は波の間を読んで、走る合図を出すわ",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -2348,6 +2706,11 @@
             "adam": {
               "text": "表の桟橋か。縄があれば、届きそうだな",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "表の桟橋……縄があれば、届くかしら",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         }
@@ -2389,7 +2752,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……ずっと、低い音がしてました"
+          "text": "……ずっと、低い音がしてました",
+          "variants": {
+            "regularb": {
+              "text": "……ずっと、低い音がしてました",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2474,6 +2844,11 @@
             "adam": {
               "text": "閉店セールの電飾か。点けっぱなしだったな",
               "face": "surprise"
+            },
+            "regulara": {
+              "text": "閉店セール用の飾り……点けっぱなしだったわ",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         }
@@ -2515,7 +2890,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……暗い方なら、見つからないと思います"
+          "text": "……暗い方なら、見つからないと思います",
+          "variants": {
+            "regularb": {
+              "text": "……暗い方なら、見つからないと思います",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2534,6 +2916,11 @@
             "adam": {
               "text": "香りを追うなら、柑橘の箱が最高の囮だ",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "香りを追うなら……柑橘の箱が、囮になるわね",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -2541,7 +2928,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……潮の向き、沖へ流れてました"
+          "text": "……潮の向き、沖へ流れてました",
+          "variants": {
+            "regularb": {
+              "text": "……潮の向き、沖へ流れてました",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
@@ -2566,6 +2960,11 @@
             "adam": {
               "text": "音を追うなら、静けさが武器になるな",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "音を追うなら、動かないのが一番……かしら",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -2573,7 +2972,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……屋根の側は、軋まないです"
+          "text": "……屋根の側は、軋まないです",
+          "variants": {
+            "regularb": {
+              "text": "……屋根の側は、軋まないです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
@@ -2598,6 +3004,11 @@
             "adam": {
               "text": "光を追うなら、照明で舞台を作れる",
               "face": "normal"
+            },
+            "regulara": {
+              "text": "光を追うなら、明かりで引きつけられるわね",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -2605,7 +3016,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……裏は暗い。逃げるなら、そっちです"
+          "text": "……裏は暗い。逃げるなら、そっちです",
+          "variants": {
+            "regularb": {
+              "text": "……裏は暗い。逃げるなら、そっちです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
@@ -2689,7 +3107,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……橋みたい。渡れます"
+          "text": "……橋みたい。渡れます",
+          "variants": {
+            "regularb": {
+              "text": "……橋みたい。渡れます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2729,7 +3154,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……ちゃんと、みんなの顔が見えます"
+          "text": "……ちゃんと、みんなの顔が見えます",
+          "variants": {
+            "regularb": {
+              "text": "……ちゃんと、みんなの顔が見えます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2754,6 +3186,11 @@
             "adam": {
               "text": "冷たいな。だが、見せ場はこれからだ",
               "face": "sad"
+            },
+            "regulara": {
+              "text": "……冷たい。でも、まだ動けるわ",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         }
@@ -2820,6 +3257,11 @@
             "adam": {
               "text": "{pc:hiyori}が手探りで道具を組む。暗転は慣れてる",
               "face": "serious"
+            },
+            "regulara": {
+              "text": "{pc:hiyori}は手探りで、穴を塞ぐ道具を組むわ",
+              "face": "normal",
+              "role": "PL／卓の会話"
             }
           }
         },
@@ -2841,13 +3283,100 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:tsumugi}は、水の音がする方を探します"
+          "text": "……{pc:tsumugi}は、水の音がする方を探します",
+          "variants": {
+            "regularb": {
+              "text": "……{pc:tsumugi}は、水の音がする方を探します",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "観察で判定じゃ。耳も目も澄ますのじゃ。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_make_hiyori_hiyori_otto_regulara",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regulara",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はオット。実況する研究員を演じます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_make_hiyori_hiyori_midori_regulara",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regulara",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はミドリ。斧を背負った研究員を演じます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_make_tsumugi_tsumugi_sera_regularb",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はセラ。照明係を演じます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_make_tsumugi_tsumugi_noa_regularb",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はノア。お約束に詳しい照明係を演じます"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
         }
       ]
     }
@@ -3137,14 +3666,16 @@
         "actor": "hiyori",
         "candidates": [
           "hiyori",
-          "adam"
+          "adam",
+          "regulara"
         ],
         "required": false
       },
       {
         "actor": "tsumugi",
         "candidates": [
-          "tsumugi"
+          "tsumugi",
+          "regularb"
         ],
         "required": false
       }
@@ -3269,6 +3800,36 @@
           },
           "making": "trpg_shark_make_hiyori_adam_mackin"
         }
+      ],
+      "regulara": [
+        {
+          "id": "otto",
+          "name": "オット",
+          "title": "実況する研究員",
+          "trait": "怖いと声が大きくなる。サメの動きを、全部実況してしまう",
+          "likes": "研究室の大鍋カレー。おかわりは三杯",
+          "stats": {
+            "eye": 4,
+            "hand": 4,
+            "talk": 2,
+            "nerve": 1
+          },
+          "making": "trpg_shark_make_hiyori_hiyori_otto_regulara"
+        },
+        {
+          "id": "midori",
+          "name": "ミドリ",
+          "title": "斧を背負った研究員",
+          "trait": "か弱い研究員……のはず。なぜか斧を一本、背負っている",
+          "likes": "斧投げと、夜のラーメン",
+          "stats": {
+            "eye": 3,
+            "hand": 5,
+            "talk": 1,
+            "nerve": 2
+          },
+          "making": "trpg_shark_make_hiyori_hiyori_midori_regulara"
+        }
       ]
     },
     "tsumugi": {
@@ -3300,6 +3861,36 @@
             "nerve": 5
           },
           "making": "trpg_shark_make_tsumugi_tsumugi_noa"
+        }
+      ],
+      "regularb": [
+        {
+          "id": "sera",
+          "name": "セラ",
+          "title": "照明係",
+          "trait": "暗い場所も高い場所も平気。照明なら任せて",
+          "likes": "暗い部屋と、ラベンダー色のライト",
+          "stats": {
+            "eye": 2,
+            "hand": 2,
+            "talk": 1,
+            "nerve": 5
+          },
+          "making": "trpg_shark_make_tsumugi_tsumugi_sera_regularb"
+        },
+        {
+          "id": "noa",
+          "name": "ノア",
+          "title": "お約束に詳しい照明係",
+          "trait": "こういう映画のお約束を、全部知っている。だから生き残る",
+          "likes": "お約束どおりの展開",
+          "stats": {
+            "eye": 3,
+            "hand": 2,
+            "talk": 1,
+            "nerve": 5
+          },
+          "making": "trpg_shark_make_tsumugi_tsumugi_noa_regularb"
         }
       ]
     }

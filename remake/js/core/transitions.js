@@ -84,6 +84,7 @@ export function smokeArt() {
   return smokeUrls;
 }
 let smokeReady = null; // null＝まだ読んでいない、Promise＝読み込み中、true／false＝結果
+const smokeImages = []; // デコード済みの3枚を保持し、GC後の切り替えでも再取得させない
 const canMask = () => typeof CSS !== "undefined" && !!CSS.supports
   && (CSS.supports("mask-image", 'url("x.png")') || CSS.supports("-webkit-mask-image", 'url("x.png")'));
 /** マスクと煙の絵を先に読む（このファイルを読み込んだ時に一度）。読めるまでの切り替えは、前の背景を薄くするだけ */
@@ -94,15 +95,32 @@ export function warmSmoke() {
     const img = new Image();
     // CSS の mask-image は CORS で取りに行く。先読みも同じ取り方にしないと、ほどくたびに取り直す（煙の絵は普通の背景なのでそのまま）
     if (key !== "haze") img.crossOrigin = "anonymous";
+    smokeImages.push(img);
     img.src = src;
     return img.decode();
-  })).then(() => (smokeReady = true), () => (smokeReady = false));
+  })).then(() => (smokeReady = true), () => { smokeImages.length = 0; return (smokeReady = false); });
   return smokeReady;
 }
 // 起動の早い段階（ui.js がこのファイルを読む時）に読み始める。ブラウザでないテストの環境では何もしない。
 if (typeof window !== "undefined" && typeof document !== "undefined") warmSmoke();
 
 const MASK = (pos) => ({ maskPosition: pos, webkitMaskPosition: pos });
+
+/**
+ * 場面の切り替え（smokeCurtain）と同じ煙のにじみで、node を下から上へほどいて消す（TMG58〜）。
+ * 煙の絵がまだ読めない・使えない環境では薄くするだけ。消し終えても node は残す（片付けは呼び出し側）。
+ */
+export async function smokeOut(node, ms = 780) {
+  const ready = await Promise.race([Promise.resolve(warmSmoke()), sleep(300).then(() => false)]);
+  if (ready !== true) return move(node, [{ opacity: 1 }, { opacity: 0 }], Math.round(ms * 0.6), { easing: "ease" });
+  const art = smokeArt();
+  const mask = `url("${art.a}"), url("${art.b}")`;
+  Object.assign(node.style, {
+    maskImage: mask, webkitMaskImage: mask, maskSize: "100% 300%", webkitMaskSize: "100% 300%",
+    maskRepeat: "no-repeat", webkitMaskRepeat: "no-repeat", maskComposite: "intersect", webkitMaskComposite: "source-in",
+  });
+  return move(node, [MASK("50% 0%, 50% 0%"), { ...MASK("50% 46%, 50% 56%"), offset: 0.5 }, MASK("50% 100%, 50% 100%")], ms, { easing: "cubic-bezier(.45,0,.55,1)", fill: "forwards" });
+}
 
 /**
  * 煙のにじみの幕。覆わないので covered はすぐ解決し、ui.setBg が次の背景を前の背景の下に置いて dissolve() で前の背景を渡す。
@@ -298,30 +316,29 @@ export async function waveBeat(host, text, mid = null, { dusk = true } = {}) {
   }
 }
 
-// ---------------------------------------------------------------- 敗北: 色が抜けて一筋の煙が途切れる（#2688 A19）
+// ---------------------------------------------------------------- 敗北と再挑戦（#2688 A19・作り直し TMG59）
 
 /**
- * 大会の敗北から GAME OVER へ入る手前。画面の中心から色が抜けて灰色になり、一筋の煙が細くなって途切れる（約2秒）。
- * 覆ったまま返すので、後ろに GAME OVER の画面を出してから、戻り値の関数で灰色を薄れさせる。動きを減らす設定では何もしない。
+ * 大会の敗北から GAME OVER へ入る手前。画面の中心から色が抜けて灰色になり、会場の照明が外側から段々に落ちる（約1.9秒）。
+ * 白い線の煙はやめた（TMG59）。覆ったまま返すので、後ろに GAME OVER の画面を出してから、戻り値の関数で灰色を薄れさせる。
+ * 動きを減らす設定では何もしない。
  */
 export async function defeatFade(host = document.getElementById("fx")) {
   if (!host || reducedMotion()) return async () => {};
   const unhold = holdCover();
   const node = el("div.tr-defeat", { "aria-hidden": "true", dataset: { transition: "defeat" } });
   const gray = el("div.tr-defeat-gray");
-  const smoke = svg("path", { d: "M 640 760 C 600 660, 690 580, 640 480 S 600 330, 650 240", fill: "none", stroke: COLOR.lav,
-    "stroke-width": 9, "stroke-linecap": "round", "stroke-dasharray": 640, "stroke-dashoffset": 640 });
-  node.append(gray, stageSvg([smoke]));
+  const dim = el("div.tr-defeat-dim");
+  node.append(gray, dim);
   host.append(node);
   try {
-    await move(smoke, [{ strokeDashoffset: 640 }, { strokeDashoffset: 0 }], 600, { easing: EASE.out });
     move(gray, [{ clipPath: "circle(0% at 50% 55%)" }, { clipPath: "circle(80% at 50% 55%)" }], 1000, { easing: EASE.snap });
-    await sleep(300);
-    await move(smoke, [
-      { strokeWidth: 9, opacity: 1, strokeDasharray: "640 0" },
-      { strokeWidth: 3, opacity: 0.8, strokeDasharray: "260 50 120 400" },
-      { strokeWidth: 1, opacity: 0, strokeDasharray: "140 120 40 400" },
-    ], 1000, { easing: "ease-in" });
+    await sleep(320);
+    // 照明が3段で落ちる（落ちるたびに少し揺り戻す）
+    await move(dim, [
+      { opacity: 0 }, { opacity: 0.42, offset: 0.12 }, { opacity: 0.36, offset: 0.26 },
+      { opacity: 0.68, offset: 0.42 }, { opacity: 0.62, offset: 0.58 }, { opacity: 0.88, offset: 0.76 }, { opacity: 0.86 },
+    ], 1500, { easing: "linear" });
   } catch (error) { node.remove(); unhold(); throw error; }
   return async () => {
     try { await move(node, [{ opacity: 1 }, { opacity: 0 }], 420, { easing: "ease" }); }
@@ -329,18 +346,33 @@ export async function defeatFade(host = document.getElementById("fx")) {
   };
 }
 
-/** 再挑戦: 一筆の帯を逆向き（左上から右下）に流して色を戻し、覆っている間に mid() で大会の頭へ戻す（#2688 A19・F4） */
+/**
+ * 再挑戦: 暗転して、覆っている間に mid() で大会の頭へ戻す。戻った場面は色の抜けた灰色で現れ、
+ * 煙のにじみで色が戻る（TMG59・見本1の仕組み。紫の一筆はやめた）。
+ */
 export async function retryStroke(mid, host = document.getElementById("fx")) {
   if (!host || reducedMotion()) { await mid?.(); return; }
   const unhold = holdCover();
-  const band = strokeBand({ angle: STROKE.angle + 180 });
-  const node = el("div.scene-curtain.stroke.retry", { "aria-hidden": "true", dataset: { transition: "retry" } }, [band.art]);
+  const node = el("div.tr-retry", { "aria-hidden": "true", dataset: { transition: "retry" } });
+  const veil = el("div.tr-retry-veil");
+  node.append(veil);
   host.append(node);
   try {
-    await move(band.mov, [{ transform: `translateY(${STROKE.from}px)` }, { transform: `translateY(${STROKE.cover}px)` }], 380, { easing: EASE.in });
+    await move(veil, [{ opacity: 0 }, { opacity: 1 }], 340, { easing: "ease" });
     await mid?.();
     await nextFrame(); await nextFrame();
-    await move(band.mov, [{ transform: `translateY(${STROKE.cover}px)` }, { transform: `translateY(${STROKE.to}px)` }], 440, { easing: EASE.out });
+    const pic = bgSnapshot();
+    if (pic) {
+      pic.classList.add("tr-retry-gray");
+      pic.style.filter = `${pic.style.filter || ""} grayscale(1) brightness(.72)`.trim();
+      node.append(pic);
+      await nextFrame();
+      veil.remove();
+      await sleep(260);
+      await smokeOut(pic, 1000);
+    } else {
+      await move(veil, [{ opacity: 1 }, { opacity: 0 }], 420, { easing: "ease" });
+    }
   } finally { node.remove(); unhold(); }
 }
 

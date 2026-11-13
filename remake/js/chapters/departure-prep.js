@@ -10,6 +10,7 @@ import { readDialogues } from "../core/chapter-data.js";
 import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 import { DEPARTURE_PREP_DAYS } from "../core/chapter-clock.js";
 import { runDaily } from "../daily/calendar.js";
+import { ensureRioBeforeTokyo } from "../daily/shop-greeting.js";
 import { allSpots, CHAPTER_TALKS } from "../daily/spots.js";
 import { SAMECHAN_PREP_TALKS } from "../daily/samechan.js";
 import { trpgSpot } from "../daily/trpg.js";
@@ -117,7 +118,12 @@ async function loadDepartureTalks() {
 
 /** 準備期間を日常ループで回す。出発の朝（または LOAD）で戻る。柚ヶ谷の台本と地元の送り出しの会話を先に読み込む。 */
 export async function runDeparturePrep(opts) {
+  const owner = state;
   await Promise.all([loadChapterTwoDialogues(), loadPreparationDialogues(), loadDepartureTalks()]);
+  if (state !== owner) return;
+  // 東京へ発つ前、まだ名乗り合っていない周回・旧保存だけ、tonariへの納品で紹介する。
+  if (state.chapter === 3 && !await ensureRioBeforeTokyo({ bg: bgUrl(`bg_tonari_inside${state.slot >= 1 ? "_night" : ""}`) })) return;
+  if (state !== owner) return;
   state.phase = "daily";
   save();
   await runDaily(departurePrepDefinition(opts));

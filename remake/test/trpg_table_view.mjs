@@ -62,7 +62,7 @@ function mount(scenario, extra = {}) {
   const manifest = { portraits: Object.fromEntries(scenario.cast.map(c => [c.id, { faces: ['normal'], h: .7, b: .1, aspect: 1 }])) };
   const audio = { enabled: false, available: true, setTheme() {}, play() {}, silence() {}, setEnabled() {} };
   let completions = 0, result = null;
-  const api = mod.namespace.mountTrpg(host, { ...extra, onComplete: r => { completions++; result = r; }, scenario, characters: [], manifest, seed: 9, profileId: scenario.profiles[0].id, audio });
+  const api = mod.namespace.mountTrpg(host, { ...extra, onComplete: r => { completions++; result = r; return extra.onComplete?.(r); }, scenario, characters: [], manifest, seed: 9, profileId: scenario.profiles[0].id, audio });
   const root = host.children[0];
   const q = id => { const node = root.querySelector('[data-test="' + id + '"]'); assert(node, id); return node; };
   const drain = () => { let n = 0; while (!q('trpg-next').hidden) { q('trpg-next').click(); assert(++n < 100); } };
@@ -84,6 +84,33 @@ function mount(scenario, extra = {}) {
   return { api, root, q, drain, roll, declare, interview, twist, get completions() { return completions; }, get result() { return result; } };
 }
 for (const scenario of scenarios) {
+  // 物語の層と卓の層（TRF10）: 台本の role から、語り・GMが演じる人物・役の台詞・卓の会話を見分けて、名札と舞台の層を切り替える。
+  test(scenario.id + ': each line is staged as table talk, narration, a character the GM plays, or a player in role', () => {
+    const { api, root, q } = mount(scenario); q('trpg-start').click();
+    const gm = scenario.cast.find(c => c.part === 'GM').id, seen = {};
+    const label = () => root.querySelector('.trpg-speaker-label').children.map(n => n.textContent);
+    for (let n = 0; !q('trpg-next').hidden; n++) {
+      assert(n < 100);
+      const kind = root.dataset.kind, [who, aside] = label();
+      seen[kind] ||= { who, aside, layer: root.dataset.layer, dock: root.querySelector('.trpg-dock').dataset.layer, art: root.querySelector('.trpg-speaker-art').children.length };
+      q('trpg-next').click();
+    }
+    assert(seen.table && seen.narration && seen.npc && seen.pc, 'the opening of ' + scenario.id + ' uses every layer: ' + Object.keys(seen));
+    assert.equal(seen.table.layer, 'table'); assert.equal(seen.table.dock, 'table');
+    for (const kind of ['narration', 'npc', 'pc']) { assert.equal(seen[kind].layer, 'fiction'); assert.equal(seen[kind].dock, 'fiction'); }
+    assert.equal(seen.narration.who, '語り'); assert.equal(seen.narration.aside, gm); assert.equal(seen.narration.art, 0, 'narration shows no portrait');
+    assert.equal(seen.npc.aside, 'GM ' + gm, 'the GM is credited beside the character they play');
+    assert(seen.npc.who && seen.npc.who !== gm && !/物語|\{pc/.test(seen.npc.who), 'the story character is named: ' + seen.npc.who);
+    const sheets = api.snapshot(), names = scenario.cast.filter(c => c.sheet).map(c => c.sheet.name);
+    assert(names.includes(seen.pc.who) || Object.values(scenario.companionBuilds || {}).some(byPlayer => Object.values(byPlayer).flat().some(o => o.name === seen.pc.who)),
+      'a player in role is named by the character: ' + seen.pc.who);
+    assert(scenario.cast.some(c => c.id === seen.pc.aside), 'with the player credited: ' + seen.pc.aside);
+    assert.equal(sheets.phase, 'listen');
+    // Waiting for input is neither layer: the scene is the player's again.
+    q('trpg-declare-back').click();
+    assert.equal(root.dataset.layer, 'idle');
+    api.destroy();
+  });
   test(scenario.id + ': cast seats follow dialogue and idle GM; no invented participants', () => {
     const { api, root, q, drain } = mount(scenario); q('trpg-start').click();
     assert.equal(root.querySelectorAll('.trpg-table-person').length, scenario.cast.length);
@@ -126,6 +153,68 @@ for (const scenario of scenarios) {
     q('trpg-settle').click(); drain(); assert.equal(api.snapshot().phase, 'ending');
     assert.equal(root.querySelectorAll('.trpg-table-clue').length, 3); assert(!q('trpg-finish').disabled);
     assert.equal(api.snapshot().teamwork, 0); assert.equal(mounted.completions, 1); drain(); assert.equal(mounted.completions, 1, 'Fast advance cannot deliver completion twice'); api.destroy(); assert.equal(mounted.completions,1);
+  });
+  // 部の成長（TRF13）: 本編の卓は成長点を受け取り、結末で「今夜の卓で増えた部の実績」を出す。試遊の卓には何も出ない。
+  test(scenario.id + ': growth shows on the cover and the sheet, and the ending shows what the club gained', () => {
+    const play = extra => {
+      const mounted = mount(scenario, extra), { root, q, drain, roll, declare, interview, twist } = mounted;
+      const cover = { chip: root.querySelector('[data-test="trpg-growth"]')?.textContent ?? null, stats: { ...mounted.api.snapshot().pc.stats } };
+      q('trpg-start').click(); drain(); declare('listen'); roll(); q('trpg-settle').click(); drain(); interview();
+      for (const spot of scenario.spots.slice(0, 3)) { q('trpg-spot-' + spot.id).click(); drain(); }
+      q('trpg-interpret').click(); q('trpg-hypothesis-' + scenario.hypotheses[0].id).click(); drain(); twist();
+      for (const field of scenario.flow.prepare) { q('trpg-choice-tab-' + field).click(); q('trpg-plan-' + field + '-' + scenario.options[field][0].id).click(); }
+      q('trpg-prepare-open').click(); declare('prepare'); roll(); q('trpg-settle').click(); drain();
+      for (const field of scenario.flow.serve) q('trpg-plan-' + field + '-' + scenario.options[field][0].id).click();
+      q('trpg-serve-open').click(); declare('serve'); roll(); q('trpg-settle').click(); drain();
+      const club = root.querySelector('[data-test="trpg-ending-club"]');
+      const out = { cover, club: club && { up: club.dataset.up, text: club.textContent }, completions: mounted.completions };
+      mounted.api.destroy(); return out;
+    };
+    const base = scenario.builder.archetypes[0].stats, sum = stats => Object.values(stats).reduce((n, v) => n + v, 0);
+    const plain = play({});
+    assert.equal(plain.cover.chip, null); assert.deepEqual(plain.cover.stats, base); assert.equal(plain.club, null, 'a table outside the campaign shows no club line');
+    const next = { rank: 3, name: '評判の部', at: 16, need: 9, growth: 1 };
+    const grown = play({ growth: 1, onComplete: () => ({ club: { gained: 4, points: 7, rank: 2, name: 'なじみの部', growth: 1, rankUp: true, growthUp: 1, next } }) });
+    assert.equal(grown.cover.chip, '成長点 ＋1'); assert.equal(sum(grown.cover.stats), sum(base) + 1); assert.equal(grown.completions, 1);
+    assert.equal(grown.club.up, 'true'); assert.match(grown.club.text, /部の実績 ＋4/); assert.match(grown.club.text, /ランク 2 · なじみの部/); assert.match(grown.club.text, /能力＋1/);
+    const steady = play({ growth: 1, onComplete: () => ({ club: { gained: 1, points: 8, rank: 2, name: 'なじみの部', growth: 1, rankUp: false, growthUp: 0, next: { ...next, need: 8 } } }) });
+    assert.equal(steady.club.up, 'false'); assert.match(steady.club.text, /部の実績 ＋1次のランクまで あと 8/); assert.doesNotMatch(steady.club.text, /能力＋/);
+    assert.equal(play({ growth: 1, onComplete: () => ({ club: { gained: 0, rankUp: false, growthUp: 0, next } }) }).club, null, 'nothing gained, nothing shown');
+  });
+  // じっくり調べる（目星・TRF14）: 見立ての卓で一度だけ振れる。出目と結果の帯・違いそうな見立ての付箋が出て、しおりにも残る。
+  test(scenario.id + ': a closer look rolls once on the guess board, marks the wrong guesses and is kept in the bookmark', () => {
+    const marks = [];
+    const mounted = mount(scenario, { onBookmark: mark => marks.push(mark) }), { api, root, q, drain, roll, declare, interview } = mounted;
+    q('trpg-start').click(); drain(); declare('listen'); roll(); q('trpg-settle').click(); drain(); interview();
+    for (const spot of scenario.spots.slice(0, 3)) { q('trpg-spot-' + spot.id).click(); drain(); }
+    q('trpg-interpret').click();
+    const eye = api.snapshot().pc.stats.eye;
+    assert.equal(q('trpg-search').textContent, 'じっくり調べる' + scenario.presentation.stats.eye + ' ＋' + eye + ' · 1回');
+    assert.match(q('trpg-search').getAttribute('aria-label'), /一度だけ。成功 約\d+%で違う見立てが2つ、ひと手間 約\d+%で1つ分かる/);
+    assert.equal(root.querySelectorAll('.trpg-hint-mark').length, 0);
+    const pending = timers.length;
+    q('trpg-search').click(); for (const fn of timers.splice(pending)) fn();
+    const found = api.snapshot().search;
+    assert.equal(found.base, eye); assert.equal(root.querySelector('[data-test="trpg-search"]'), null, 'one look per table');
+    const strip = q('trpg-search-result');
+    assert.equal(strip.dataset.grade, found.grade); assert.equal(strip.dataset.fresh, 'true');
+    assert(strip.textContent.startsWith(found.dice.join('') + '＋' + eye + ' ＝ ' + found.total), strip.textContent);
+    assert(strip.textContent.endsWith(found.ruled.length ? '✕ ' + found.ruled.length + 'つ' : '決め手なし'), strip.textContent);
+    assert.equal(root.querySelectorAll('.trpg-hint-mark').length, found.ruled.length);
+    for (const h of scenario.hypotheses) assert.equal(q('trpg-hypothesis-' + h.id).dataset.ruled, String(found.ruled.includes(h.id)));
+    assert(marks.at(-1).actions.some(([key]) => key === 'search'), 'the bookmark keeps the look');
+    // Reopening the board shows the same result without replaying the roll.
+    q('trpg-hypothesis-back').click(); q('trpg-interpret').click();
+    assert.equal(q('trpg-search-result').dataset.fresh, 'false');
+    assert.equal(root.querySelectorAll('.trpg-hint-mark').length, found.ruled.length);
+    // A marked guess can still be chosen, and the table goes on as usual.
+    const pick = found.ruled[0] || scenario.hypotheses[0].id;
+    q('trpg-hypothesis-' + pick).click(); drain();
+    assert.equal(api.snapshot().hypothesis, pick);
+    const actions = marks.at(-1).actions; api.destroy();
+    // Continuing from the bookmark lands on the same look.
+    const again = mount(scenario, { resume: { actions } });
+    assert.deepEqual(again.api.snapshot().search, found); again.api.destroy();
   });
   test(scenario.id + ': a role against type says one line in the role before the ending and one as the player after the table (S17)', () => {
     const text = id => scenario.dialogues.find(d => d.dialogue_id === id).lines[0].text;

@@ -3588,6 +3588,11 @@
           "text": "……はい。……ちゃんと、見てます、……ぜんぶ"
         },
         {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
@@ -3682,6 +3687,11 @@
           "text": "……がんばって、ください。……それから、あとで、お話を"
         },
         {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
@@ -3764,6 +3774,11 @@
           "speaker": "rio",
           "face": "normal",
           "text": "結果が出たら、次は君の検証の番、……逃げないように"
+        },
+        {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
         },
         {
           "speaker": "",
@@ -3863,6 +3878,11 @@
           "speaker": "tsumugi",
           "face": "normal",
           "text": "……がんばって、ください。……それは、本当、です"
+        },
+        {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
         },
         {
           "speaker": "",
@@ -3968,6 +3988,11 @@
           "inner": "味玉は、はじめくんのおごり"
         },
         {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
@@ -4068,6 +4093,11 @@
           "face": "smile",
           "text": "……いってらっしゃい。儚く、待ってるね",
           "inner": "待つ。待つけど、終わったら全部聞く"
+        },
+        {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
         },
         {
           "speaker": "",
@@ -4176,6 +4206,11 @@
           "face": "smile",
           "text": "……いってらっしゃい。終わったら、三人で話そうね",
           "inner": "三人で、って言っちゃった。どういう会になるの、それ"
+        },
+        {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
         },
         {
           "speaker": "",
@@ -4302,6 +4337,11 @@
           "speaker": "hiyori",
           "face": "smile",
           "text": "……がんばってね。これは、儚くない方の私から"
+        },
+        {
+          "type": "motion",
+          "id": "gaze",
+          "brief": true
         },
         {
           "speaker": "",
@@ -4836,6 +4876,7 @@
           {
             "speaker": "sumi",
             "face": "serious",
+            "beat": 600,
             "text": "……今日の一台は、はじめだ"
           }
         ],
@@ -4843,6 +4884,7 @@
           {
             "speaker": "sumi",
             "face": "normal",
+            "beat": 600,
             "text": "……決めきれねえな。今日は引分けだ"
           }
         ],
@@ -4850,6 +4892,7 @@
           {
             "speaker": "sumi",
             "face": "normal",
+            "beat": 600,
             "text": "今日の一台は、なるだ。基礎の堅さで、まだ差がある"
           }
         ],

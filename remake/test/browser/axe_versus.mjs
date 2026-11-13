@@ -116,7 +116,7 @@ async function finishSuddenDeath(page, options = {}, shootInput = { x: 0, y: 0 }
   await phase(page, "summary");
 }
 async function start(page, difficulty = "normal", options = {}) {
-  await page.goto(new URL("axe-throw.html", page.url()).href);
+  await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
   await page.evaluate(() => {
     localStorage.setItem("suien_remake_save", JSON.stringify({ schema: 5, money: 45678, stamina: 71,
       lovers: ["rio"], flags: { _friend_hiyori: true }, inbox: [{ id: "keep", read: true }],
@@ -134,7 +134,7 @@ async function start(page, difficulty = "normal", options = {}) {
   if (options.keyboard) await page.keyboard.press("Enter");
   else if (options.touch) await page.locator('[data-test="axe-setup-start"]').tap(); else await page.locator('[data-test="axe-setup-start"]').click();
   // A second same-host call observes the existing Promise; no state or outcomes are injected.
-  await page.evaluate(() => { window.matchPromise = import("./js/minigames/axe.js").then(m => m.runAxeThrow({host:document.getElementById("axe-app")})); });
+  await page.evaluate(() => { window.matchPromise = import("./js/minigames/axe.js").then(m => m.runAxeThrow({ inputMode: "gauges", host:document.getElementById("axe-app")})); });
   await phase(page, "choice"); await fit(page);
 }
 await suite("axe-versus", async check => {
@@ -198,11 +198,11 @@ await suite("axe-versus", async check => {
   }, context);
 
   await check("seeded-tie-goes-to-sudden-death-and-retry-clears-both-histories", async page => {
-    await page.goto(new URL("axe-throw.html", page.url()).href);
+    await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
     await page.evaluate(async () => {
       const mini = await import("./js/minigames/axe.js");
       // Seed 11: the hard opponent's ten throws total exactly 60 on the official target (#2729), the same as ten focused bulls.
-      window.matchPromise = mini.runAxeThrow({ host: document.getElementById("axe-app"), mode: "versus", difficulty: "hard", seed: 11 });
+      window.matchPromise = mini.runAxeThrow({ inputMode: "gauges",  host: document.getElementById("axe-app"), mode: "versus", difficulty: "hard", seed: 11 });
     });
     await phase(page, "choice");
     const before = await storageSnapshot(page);
@@ -282,8 +282,8 @@ await suite("axe-versus", async check => {
       const s = core.newGame(); s.money = 12345; s.flags._friend_hiyori = true;
       core.save(); window.beforeState = JSON.stringify(core.state);
       window.abort = new AbortController();
-      window.gamePromise = mini.runAxeThrow({ host: document.getElementById("stage"), mode: "versus", seed: 489, signal: abort.signal });
-      window.duplicate = window.gamePromise === mini.runAxeThrow({host:document.getElementById("stage")});
+      window.gamePromise = mini.runAxeThrow({ inputMode: "gauges",  host: document.getElementById("stage"), mode: "versus", seed: 489, signal: abort.signal });
+      window.duplicate = window.gamePromise === mini.runAxeThrow({ inputMode: "gauges", host:document.getElementById("stage")});
     });
     for (const reason of ["abort", "detach", "load", "pagehide", "screen"]) {
       await setup(); await phase(page, "choice"); assert(await page.evaluate(() => window.duplicate));
@@ -307,16 +307,16 @@ await suite("axe-versus", async check => {
     }
     const invalid = await page.evaluate(async () => {
       const signal = new AbortController(); signal.abort();
-      const result = await mini.runAxeThrow({mode:"versus", signal:signal.signal});
+      const result = await mini.runAxeThrow({ inputMode: "gauges", mode:"versus", signal:signal.signal});
       const rejected = await Promise.all([
-        mini.runAxeThrow({mode:"versus", opponent:null}), mini.runAxeThrow({mode:"versus", difficulty:"fake"}),
+        mini.runAxeThrow({ inputMode: "gauges", mode:"versus", opponent:null}), mini.runAxeThrow({ inputMode: "gauges", mode:"versus", difficulty:"fake"}),
       ].map(p => p.then(() => false, e => e instanceof RangeError)));
       return { result, rejected };
     });
     assert(invalid.result.cancelled && invalid.result.match.player.length === 0); assert(invalid.rejected.every(Boolean));
   });
   await check("adam-secret-boss-full-match", async page => {
-    await page.goto(new URL("axe-throw.html", page.url()).href);
+    await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
     assert.equal(await page.locator('[data-rival="adam"]').count(), 0, "解放前は一覧に出さない");
     await page.evaluate(async () => {
       const { recordAdamUnlock } = await import("./js/minigames/axe-secret-boss.js");
@@ -346,7 +346,7 @@ await suite("axe-versus", async check => {
   });
 await check("touch-portrait-rotate-hint", async page => {
     // 縦持ちスマホは本編と同じく横向き案内で止める（2026-11-09 オーナー決定・#3035／試遊ページ共通化 #3076）
-    await page.goto(new URL("axe-throw.html", page.url()).href);
+    await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
     await page.locator(".axe-menu").waitFor();
     assert.equal(await page.locator("#rotate-hint").isVisible(), true);
   }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });

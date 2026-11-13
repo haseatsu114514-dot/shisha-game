@@ -4,7 +4,7 @@
     {
       "dialogue_id": "lover_tsumugi_lv1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
@@ -183,7 +183,7 @@
     {
       "dialogue_id": "lover_tsumugi_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "bg": "res://assets/backgrounds/bg_toosu_park_day.png",
         "private_scene": true
       },
       "lines": [
@@ -430,7 +430,7 @@
     {
       "dialogue_id": "lover_minto_lv3",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_home.png",
+        "bg": "res://assets/backgrounds/bg_shiori_room_day.png",
         "private_scene": true,
         "hometown": true
       },
@@ -510,7 +510,7 @@
     {
       "dialogue_id": "lover_minto_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_home.png",
+        "bg": "res://assets/backgrounds/bg_shiori_room_day.png",
         "private_scene": true,
         "hometown": true
       },
@@ -585,7 +585,7 @@
     {
       "dialogue_id": "lover_minto_lv5",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_home.png",
+        "bg": "res://assets/backgrounds/bg_shiori_room_day.png",
         "private_scene": true,
         "hometown": true
       },
@@ -746,7 +746,7 @@
     {
       "dialogue_id": "lover_rio_lv2",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
@@ -886,7 +886,7 @@
     {
       "dialogue_id": "lover_rio_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
@@ -1046,7 +1046,7 @@
     {
       "dialogue_id": "lover_ageha_lv1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
@@ -1095,7 +1095,7 @@
     {
       "dialogue_id": "lover_ageha_lv2",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "bg": "res://assets/backgrounds/bg_ageha_cafe_day.png",
         "private_scene": true
       },
       "lines": [
@@ -1139,7 +1139,7 @@
     {
       "dialogue_id": "lover_ageha_lv2_b",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "bg": "res://assets/backgrounds/bg_ageha_cafe_day.png",
         "private_scene": true
       },
       "lines": [
@@ -1516,12 +1516,12 @@
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "……じゃあ、カップ、置いてからねぇ"
+          "text": "……じゃあ、続きも取っておくねぇ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "カップを置いて座ると、ましろちゃんは俺の手を両手で包んで、指を一本ずつ数えはじめた。"
+          "text": "隣に座ると、ましろちゃんは俺の手を両手で包んで、指を一本ずつ数えはじめた。"
         },
         {
           "speaker": "hajime",
@@ -1536,29 +1536,29 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ピピ、とタイマーが鳴った。ましろちゃんは、数えかけの指を離さない。"
+          "text": "タイマーが鳴った。ましろちゃんは手をほどき、二人ぶんのお茶を仕上げた。"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "……鳴っちゃった。もう少し、鳴らなくてよかったのにねぇ"
+          "text": "……お茶は、待たせないよぉ。好きな濃さで、一緒に飲みたいから"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "二杯目のときも、手、空けとくよ"
+          "text": "じゃあ、飲み終わったら、また貸すね"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "……うん。じゃあ二杯目は、もっと長く蒸らそ"
+          "text": "うん。今度は、タイマーなしで借りるねぇ"
         }
       ]
     },
     {
       "dialogue_id": "lover_mashiro_lv3",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_mukai_backdoor_night.png",
         "private_scene": true
       },
       "lines": [
@@ -1595,17 +1595,17 @@
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "……俺は、隣で話してくれるましろちゃんが好きだよ"
+          "text": "……どんな重さが好きなのか、俺にも教えてくれる？"
         },
         {
           "speaker": "mashiro",
           "face": "surprise",
-          "text": "……っ"
+          "text": "……っ。そっちを、聞いてくれるんだ"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "……じゃあ、もう少し見てて。今日は、はじめくんと話したいんだぁ"
+          "text": "うん、話すよぉ。重ければ、何でもいいわけじゃないの"
         },
         {
           "speaker": "",
@@ -1620,17 +1620,17 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "……てつこちゃん、こっち見てる"
+          "text": "重さのあとに、紅茶も残るのが好き。好きな味は、消したくないんだぁ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "邪魔しないで、って顔だね"
+          "text": "うん。その違い、もう少し聞かせて"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "ふふ。じゃあ、もう少しだけ、このままでいよ"
+          "text": "ふふ。長くなるよぉ。今日は、もう少し付き合ってくれる？"
         },
         {
           "speaker": "",
@@ -1878,7 +1878,7 @@
       "dialogue_id": "lover_hiyori_lv1_b",
       "comment": "恋人Lv1の続き（#3081）。斧投げの帰り道。大会には触れない。地元で読む。",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true,
         "hometown": true
       },
@@ -2127,6 +2127,10 @@
           "text": "なんで分かるの！？ ……あ、前に言ったんだっけ"
         },
         {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_ramen_counter_night.png"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "カウンターに並んで座る。ひよりさんはポニーテールを結び直して、真剣な顔でレンゲを構えた。"
@@ -2182,7 +2186,7 @@
     {
       "dialogue_id": "lover_hiyori_lv3",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
@@ -2267,7 +2271,7 @@
     {
       "dialogue_id": "lover_hiyori_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
@@ -2411,6 +2415,7 @@
         {
           "speaker": "hiyori",
           "face": "love_blush",
+          "duck": true,
           "text": "……うん。好きだよ、はじめくん。儚くないほうの声で、言っとくね"
         },
         {
@@ -2428,7 +2433,7 @@
     {
       "dialogue_id": "lover_samechan_lv1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true,
         "min_chapter": 2,
         "bgm": "sweets_or_sweets",
@@ -2497,7 +2502,7 @@
     {
       "dialogue_id": "lover_samechan_lv2",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true,
         "min_chapter": 2,
         "bgm": "sweets_or_sweets",
@@ -2631,7 +2636,7 @@
     {
       "dialogue_id": "lover_samechan_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true,
         "min_chapter": 2,
         "bgm": "sweets_or_sweets",
@@ -2749,6 +2754,7 @@
         {
           "speaker": "samechan",
           "face": "smile",
+          "beat": 600,
           "text": "……はじめさんが、好きです。面白い話ができない日も、隣にいてほしい"
         },
         {

@@ -15,12 +15,13 @@ import { LIMITED_FLAVOR_ART } from "../daily/shop-art-limited.js";
 import { CHARACTER_FLAVOR_ART } from "../daily/shop-art-character-flavors.js";
 import { NEW_FLAVOR_ART } from "../daily/shop-art-new-flavors.js";
 import { FLAVOR_CARTONS_3287_ART } from "../daily/shop-art-flavor-cartons-3287.js";
+import { SHOP_EQUIPMENT_ART } from "../daily/shop-equipment-art.js";
 
 export const ICHIDAI_ART = Object.freeze({
   flavor: [],
   card: ["add_coal", "all_in", "ash_tap", "blow", "breath", "buyout", "diffuser", "draft", "duel", "encore", "fan", "go_second", "heat_in", "heat_out", "hype", "ice_hose", "inner", "loosen", "outer", "read", "repack", "reset", "show_smoke", "timer", "tongs", "venue_heat", "windguard"],
-  table: [],
-  back: [],
+  table: ["mat"],
+  back: ["deck", "judge"],
 });
 
 const own = (kind, id) => (ICHIDAI_ART[kind]?.includes(id) ? { url: imgFileUrl(`ui/ichidai/${kind}/${id}.webp`), mode: "art" } : null);
@@ -43,7 +44,8 @@ export function flavorArt(id) {
 }
 
 // ───────── デッキのカード ─────────
-const CARD_SPRITE = { flat: "coal_flat_just", cube: "coal_just", dense_flat: "coal_flat_red", chacosta: "heat_stove" };
+const CARD_EQUIPMENT = { flat: "flat_charcoal", cube: "cube_charcoal", dense_flat: "dense_flat_charcoal" };
+const CARD_SPRITE = { chacosta: "heat_stove" };
 // 人物カードと審査員 → 本編のキャラID（顔アイコン）
 export const PERSON_FACE = Object.freeze({ sumi: "sumi", naru: "naru", adam: "adam", minto: "minto", mashiro: "mashiro", tsumugi: "tsumugi", packy: "pakki" });
 export const JUDGE_FACE = Object.freeze({ kamizono: "maezono", hakase: "dr_kemuri", sensu: "sui", emir: "emil", taiyo: "da_silva" });
@@ -60,6 +62,7 @@ export const faceUrl = (charId) => (charId ? faceIconUrl(charId) || imgFileUrl(`
 /** カードの絵。mode: "art"（専用の絵）/"sprite"（炭・コンロ。透過）/"face"（顔）/"icon"（線画）。無ければ null */
 export function cardArt(id) {
   return own("card", id)
+    || (CARD_EQUIPMENT[id] ? { ...SHOP_EQUIPMENT_ART[CARD_EQUIPMENT[id]], mode: "box" } : null)
     || (CARD_SPRITE[id] ? { url: making(CARD_SPRITE[id]), mode: "sprite" } : null)
     || (PERSON_FACE[id] ? { url: faceUrl(PERSON_FACE[id]), mode: "face" } : null)
     || (CARD_ICON[id] ? { url: icon(CARD_ICON[id]), mode: "icon" } : null);
@@ -71,6 +74,7 @@ export const coalSprite = (shape, state) => making(`coal${shape === "flat" ? "_f
 export const STOVE_ART = making("heat_stove");
 const BOWL_ART = { silicone: ["bowl_empty_silicone", "bowl_packed_normal"], funnel: ["bowl_empty_phunnel", "bowl_packed_phunnel_normal"],
   clay: ["bowl_empty_clay", "bowl_empty_clay"], beat80: ["bowl_empty_clay", "bowl_empty_clay"] };
-export const bowlArt = (bowlId, packed) => making((BOWL_ART[bowlId] || BOWL_ART.clay)[packed ? 1 : 0]);
+export const bowlArt = (bowlId, packed) => !packed && bowlId === "funnel"
+  ? SHOP_EQUIPMENT_ART.kumogama_phunnel.url : making((BOWL_ART[bowlId] || BOWL_ART.clay)[packed ? 1 : 0]);
 const HMD_ART = { lotus: "lotos_hagal", amaburst: "amaburst_hms", tanukish: "tanukish_lid", big_tanukish: "tanukish_lid" };
-export const hmdArt = (hmdId) => equip(HMD_ART[hmdId] || "lotos_hagal");
+export const hmdArt = (hmdId) => SHOP_EQUIPMENT_ART[HMD_ART[hmdId]]?.url || equip(HMD_ART[hmdId] || "lotos_hagal");

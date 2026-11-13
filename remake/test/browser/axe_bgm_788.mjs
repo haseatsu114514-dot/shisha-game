@@ -1,6 +1,7 @@
 // #788: 斧投げBARとひよりの斧投げで、開始時に斧投げ曲、終了・中断で元の曲へ戻る。再入場で二重に鳴らさない。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
+import { flickFromHandle } from "./axe_flick_input.mjs";
 const t = id => `[data-test="${id}"]`;
 const bgm = page => page.evaluate(() => A.audio.currentBgm());
 const waitPlaying = (page, key) => page.waitForFunction(key => window.__axeMedia?.some(({ track, audio }) =>
@@ -75,8 +76,16 @@ await suite("axe-bgm-788", async check => {
     await waitPlaying(page, "bgm_axe");
     assert.equal(await page.evaluate(() => A.daily.playHiyoriEvent("axe_reveal")), false, "second start must not overlap");
     assert.equal(await bgm(page), "bgm_axe");
-    for (let n = 0; n < 3; n++) for (const p of ["choice", "horizontal", "vertical", "power", "result"]) {
-      await phase(page, p); await page.locator('[data-test="axe-action"]:not([disabled])').click();
+    for (let n = 0; n < 3; n++) {
+      await phase(page, "choice");
+      const target = await page.locator('.axe-target').evaluate(node => {
+        const point = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
+        return { x: point.x, y: point.y };
+      });
+      await page.mouse.click(target.x, target.y); await phase(page, "power");
+      // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、適正の速さで弾く
+      await flickFromHandle(page, { power: .62 }); await phase(page, "result");
+      await page.locator('[data-test="axe-action"]:not([disabled])').click();
     }
     await phase(page, "summary"); await page.locator('[data-test="axe-action"]:not([disabled])').click();
     assert.equal(await page.evaluate(() => A.run), true);

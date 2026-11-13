@@ -190,6 +190,30 @@ await suite("conversation-effects-2828", async check => {
     assert.equal(await page.evaluate(() => convfx.audio.bgmDuckLevel()), 1, "中断でも戻す");
   });
 
+  await check("skip-omits-transient-fx-keeps-scene-state", async page => {
+    await start(page, [{ text: "前の行。" }, { text: "驚いた！？" },
+      { type: "fx", id: "flash" }, { type: "fx", id: "scent" }, { type: "fx", id: "gold" },
+      { text: "揺れる行。", fx: "shake" }, { type: "fx", id: "sepia" }, END], { reduceShake: false });
+    await page.evaluate(() => {
+      convfx.transients = [];
+      convfx.fxObserver = new MutationObserver(records => {
+        for (const r of records) {
+          if (r.type === 'attributes' && r.target.classList.contains('shake')) convfx.transients.push('shake');
+          for (const n of r.addedNodes) if (n.matches?.('.flash, .vn-scent')) convfx.transients.push(n.className);
+        }
+      });
+      convfx.fxObserver.observe(document.getElementById('stage'), { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
+    });
+    await page.locator('[data-test="vn-skip"]').click();
+    await page.locator('[data-test="choice-0"]').waitFor();
+    const effects = await page.evaluate(() => {
+      convfx.fxObserver.disconnect();
+      return { transient: convfx.transients, sepia: document.querySelector('#vn').classList.contains('sepia') };
+    });
+    assert.deepEqual(effects, { transient: [], sepia: true }, 'SKIP omits flashes and shake but retains scene state');
+    await end(page);
+  });
+
   await check("skip-and-instant-drop-effects", async page => {
     // 時間の上限ではなく、台詞欄の移り変わりで確かめる（重い端末でも揺れない）。
     // 溜めがあれば一度空欄になり、文中ポーズがあれば「溜めて」で止まる。どちらも経ずに一度で出ること。

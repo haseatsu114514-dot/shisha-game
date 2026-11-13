@@ -55,7 +55,8 @@ await suite("samechan-confession", async check => {
           K.vn.vnTest.choose = id => id === "samechan_shop_bond_question" ? 1 - q1
             : id === "samechan_bond_finale" ? 1 - q2 : id === "confession_samechan" ? reply : 0;
           const start = K.samechan.samechanVisitDialogue();
-          await K.visit(0); await K.visit(1); await K.visit(0);
+          await K.visit(0); await K.visit(1);
+          // The closing visit now includes the question before the free cinema introduction.
           // ♥4・♥5の来店会話（#2025）を読んでから締めくくり。
           const beforeHearts = K.samechan.samechanVisitDialogue(); await K.visit(0); await K.visit(0);
           const beforeFinale = K.snap();
@@ -70,7 +71,7 @@ await suite("samechan-confession", async check => {
         }, { q1, q2, reply });
         assert.equal(r.start, "samechan_shop_quiet_seat");
         assert.deepEqual(r.events.slice(0, 7), ["samechan_shop_quiet_seat", "samechan_shop_closing_check",
-          "samechan_cinema_introduction", "samechan_shop_bond_question", "samechan_shop_heart4",
+          "samechan_shop_bond_question", "samechan_cinema_introduction", "samechan_shop_heart4",
           "samechan_shop_heart5", "samechan_bond_finale"]);
         assert.equal(r.beforeHearts, "samechan_shop_heart4");
         assert(r.beforeFinale.flags._samechan_heart4_done && r.beforeFinale.flags._samechan_heart5_done);
@@ -81,7 +82,7 @@ await suite("samechan-confession", async check => {
         assert.equal(r.finale.finales.samechan.route, q1 && q2 ? "romance" : "friend");
         assert.equal(r.finale.romanceChoices.bond_q2_samechan?.value ?? null, q1 ? q2 : null);
         assert(r.sameVisit); assert.deepEqual(r.repeated, r.finale);
-        assert.equal(r.finale.money, 100000 - 6 * 3000);
+        assert.equal(r.finale.money, 100000 - 5 * 3000);
         assert.equal(r.final.owned.filter(x => x === "suyaki_samechan").length, 1);
         assert.equal(r.confessed, !!(q1 && q2)); assert.equal(r.again, false);
         const lover = !!(q1 && q2 && !reply);
@@ -90,7 +91,7 @@ await suite("samechan-confession", async check => {
         if (lover) {
           assert.equal(r.final.loveLevel.samechan, 1); assert.equal(r.final.lovePts.samechan, 12);
           assert(r.final.loverEventsSeen.includes("lover_samechan_lv1"));
-          assert.equal(r.final.loverSince.samechan, 21);
+          assert.equal(r.final.loverSince.samechan, 20); // One fewer visit/day before the same-night confession.
         }
         assert.deepEqual(r.loaded.lovers, r.final.lovers);
         assert.deepEqual(r.loaded.finales, r.final.finales);
@@ -149,8 +150,8 @@ await suite("samechan-confession", async check => {
           localStorage.setItem(K.core.SAVE_KEY, JSON.stringify(saved)); K.core.load();
           const before = K.snap(), first = K.samechan.samechanVisitDialogue();
           await K.visit(0); await K.visit(1); const next = K.samechan.samechanVisitDialogue();
-          // 未回答の旧セーブは問いかけ→♥4→♥5の来店会話を読んでから締めくくり（#2025）。着地済みには出さない。
-          if (kind === "unanswered") { await K.visit(0); await K.visit(0); await K.visit(0); }
+          // 未回答の旧セーブは片付けの同訪問で問いかけ、その後♥4→♥5を読んでから締めくくり。着地済みには出さない。
+          if (kind === "unanswered") { await K.visit(0); await K.visit(0); }
           await K.visit(1); out.push({ kind, before, first, next, after: K.snap() });
         }
         return out;
@@ -158,7 +159,7 @@ await suite("samechan-confession", async check => {
       for (const x of r) {
         assert.deepEqual(x.before.romanceChoices, {}); assert.deepEqual(x.before.finales, {});
         assert.equal(x.first, "samechan_shop_quiet_seat"); assert(x.after.affinity.samechan >= 72);
-        assert.equal(x.next, x.kind === "unanswered" ? "samechan_shop_bond_question" : "samechan_bond_finale");
+        assert.equal(x.next, x.kind === "unanswered" ? "samechan_shop_heart4" : "samechan_bond_finale");
         assert.equal(x.after.owned.filter(x => x === "suyaki_samechan").length, 1);
         assert.equal(x.after.finales.samechan.route, x.kind === "unanswered" ? "romance" : x.kind);
         if (x.kind !== "unanswered") assert.deepEqual(x.after.romanceChoices, {});
@@ -300,3 +301,4 @@ await suite("samechan-confession", async check => {
     }, options);
   }
 });
+

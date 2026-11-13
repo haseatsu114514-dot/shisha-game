@@ -79,7 +79,7 @@ async function harness({ learned = false, noWobble = false } = {}) {
     // 一台に最初の炭焼きの記録が無いので、トングで持ってくる炭は標準の焼き炭になる（#2213）。
     "./heat_logic.js": { replacementCoals: () => ({ batch: null, picks: [] }) },
     "./conditions.js": conditions,
-    "./fx.js": { impact: noop, exhale: async () => false },
+    "./fx.js": { impact: noop, exhale: async () => false, smokeRing: () => false },
     "./art.js": { mixColor: () => "#d9d2e6" },
     "./thermometer.js": { buildThermometer: () => ({ root: new Node(), update: noop, preview: noop, pop: noop }) },
     "./flavor-life.js": life, "./coals.js": coals, "./temperature-model.js": model,

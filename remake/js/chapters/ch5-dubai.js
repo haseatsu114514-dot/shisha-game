@@ -208,7 +208,7 @@ export async function performDubaiSpot(spot, { staminaGuard } = {}) {
   if (chain) return readDubaiChain(spot, chain, staminaGuard, owner);
   // シェイクの屋敷・スーク・路地裏のカフェ: 小会話を巡回して読む。
   if ((spot.cost || 0) > state.money) {
-    toast("お金が足りない");
+    toast("お金が足りない", { se: "error" });
     return unused;
   }
   if (staminaGuard && !(await staminaGuard(spot.stamina))) return unused;
@@ -235,7 +235,7 @@ export async function performDubaiSpot(spot, { staminaGuard } = {}) {
 async function readDubaiChain(spot, due, staminaGuard, owner) {
   const fee = due.stage.free ? 0 : spot.cost || 0;
   if (fee > state.money) {
-    toast("お金が足りない");
+    toast("お金が足りない", { se: "error" });
     return unused;
   }
   if (staminaGuard && !(await staminaGuard(spot.stamina))) return unused;
@@ -440,7 +440,7 @@ async function visitNoorCafe(spot, owner) {
   }
   if (state !== owner) return unused;
   if (!owner.flags[DUNES_AGAIN.flag] && desertProgress(owner).talks > 0) {
-    if (DESERT_CAFE_PRICE > spendableMoney(owner)) { toast(`お金が足りない（${DESERT_CAFE_PRICE.toLocaleString("ja-JP")}円）`); return unused; }
+    if (DESERT_CAFE_PRICE > spendableMoney(owner)) { toast(`お金が足りない（${DESERT_CAFE_PRICE.toLocaleString("ja-JP")}円）`, { se: "error" }); return unused; }
     if (!await read(NOOR_CAFE_AGAIN, "bg_dubai_cafe_salim_day", owner) || !completeDesertReunion(owner, owner.day)) return unused;
     addMoney(-DESERT_CAFE_PRICE);
     gainAffinity(DESERT_GUIDE, visitAffinity("talk"));

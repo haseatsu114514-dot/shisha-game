@@ -2,6 +2,7 @@
 import { SE } from "../core/audio.js";
 import { state } from "../core/state.js";
 import { W, H, svg, stageSvg, move } from "../core/transition-kit.js";
+import { sleep, nextFrame } from "../core/util.js";
 import { MONO } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
 import { PRIVATE_PASSENGERS, trainPassengers } from "./train-passengers.js";
@@ -73,8 +74,8 @@ function costumePassengers(P) {
   });
 }
 
-/** 車内の絵（横幅 SPAN）。揺れの更新に使う部品も返す */
-function carriage(P, id, passengers, available) {
+/** 車内の絵（横幅 SPAN）。揺れの更新に使う部品も返す。look.glow: 窓の光の濃さ */
+function carriage(P, id, passengers, available, look = {}) {
   const body = [];
   const front = (H + 40 - TOP) / CH; // 手前の列: 絵の下端が画面の下より少し下
   const edge = `${SLANT},-60 ${SPAN},-60 ${SPAN - SLANT},${H + 80} 0,${H + 80}`;
@@ -96,12 +97,14 @@ function carriage(P, id, passengers, available) {
     ])),
     tint(`${id}-back`, P.bg, P.back, P.mid), // 奥は暗がりに沈める
   ]));
-  body.push(svg("polygon", { points: edge, fill: P.bg }));
+  body.push(svg("polygon", { points: edge, fill: P.bg, class: "train-car" }));
   for (const w of wins) { w.setAttribute("fill", P.win); w.setAttribute("stroke", P.ink); w.setAttribute("stroke-width", 8); body.push(w); }
   const lights = svg("g", { "clip-path": `url(#${id}-win)` }, [0, 1, 2, 3, 4, 5].map((i) => svg("polygon", {
-    points: `${i * 820},120 ${i * 820 + 160},120 ${i * 820 + 100},370 ${i * 820 - 60},370`, fill: P.glow, opacity: 0.22,
+    points: `${i * 820},120 ${i * 820 + 160},120 ${i * 820 + 100},370 ${i * 820 - 60},370`, fill: P.glow, opacity: look.glow ?? 0.22,
   })));
   body.push(lights);
+  // 天井の板（作り直しの型だけ。a は車内の暗がりのまま）
+  if (P.ceil) body.push(svg("rect", { x: 0, y: -60, width: SPAN, height: RAIL_Y + 50, fill: P.ceil }), svg("rect", { x: 0, y: RAIL_Y - 14, width: SPAN, height: 4, fill: P.ink, opacity: 0.35 }));
   // 網棚の棒と、空いている吊り革（奥の人の後ろで揺れる）
   body.push(svg("rect", { x: 0, y: RAIL_Y - 10, width: SPAN, height: 12, fill: P.rail, stroke: P.ink, "stroke-width": 3 }));
   const straps = [];
@@ -209,3 +212,160 @@ export async function a(mid, opts = {}) {
 }
 
 export const b = a;
+
+// ---------------------------------------------------------------- c: 作り直し（TMG54・見本 remake/previews/motion-direction/ の「電車」）
+// 紫1色の面へフェードで入って抜けるのをやめる。車両が右から滑り込んで画面を覆い、乗っている間はゆっくり流れ、
+// 着いたら左へ走り去って行き先の絵が出る。人混みの絵は活かし、昼は窓からの日差し、夜は車内灯の色で塗る。
+
+/** 時間帯ごとの色（キーは MONO_TRAIN と同じ。light は日差し・車内灯の色） */
+const TONE = {
+  day: { ceil: "#b8bdc4", bg: "#3f444d", win: "#dcefff", glow: "#ffffff", back: "#767b84", mid: "#b2b3b2", front: "#8f9095", hair: "#262a33", ink: "#262a35", rim: "#fff4e2", rail: "#b9bcc0", light: "#ffe0a6" },
+  night: { ceil: "#262e3c", bg: "#141a25", win: "#0f192e", glow: "#ffc77e", back: "#38435a", mid: "#6a7991", front: "#6b7a92", hair: "#121722", ink: "#0a0d14", rim: "#eef4ff", rail: "#8f99a8", light: "#e6efff" },
+};
+const C_IN = 460, C_RIDE = 900, C_OUT = 560; // 滑り込む・乗っている（最短）・走り去る
+const X0 = W + 80; // 右の画面外（先頭の切り口が見えない）
+const X1 = -SLANT - 330; // 滑り込み終えた位置（左上の角まで覆う）
+const DRIFT = 1000, VD = 0.62; // 乗っている間の流れ（最初 VD px/ms で、DRIFT 進んだ所で止まる。最後尾の切り口を画面に入れない）
+const XEND = -SPAN - 160; // 左の画面外（最後尾の切り口と影まで抜ける）
+const BEAM = 760; // 日差しの帯の間隔
+
+/** 3次エルミート補間（滑り込みの終わりの速さを、乗っている間の流れの速さにそろえる） */
+function hermite(u, p0, p1, m0, m1) {
+  const u2 = u * u, u3 = u2 * u;
+  return (2 * u3 - 3 * u2 + 1) * p0 + (u3 - 2 * u2 + u) * m0 + (-2 * u3 + 3 * u2) * p1 + (u3 - u2) * m1;
+}
+
+/** 昼: 窓から差す斜めの日差し。縁のぼけた光の帯を人の上に重ね、外の景色の速さで流す。
+ * 帯は繰り返しのグラデーション1枚（斜めに傾ける）で描き、下へ向かって消えるマスクは動かさない（重い blur を使わない） */
+function daylight(P, id) {
+  const slant = (-Math.atan(180 / 690) * 180) / Math.PI; // 帯の傾き（下へ行くほど左）
+  const defs = svg("defs", {}, [
+    svg("linearGradient", { id: `${id}-sun`, gradientUnits: "userSpaceOnUse", x1: 0, y1: 0, x2: BEAM, y2: 0, spreadMethod: "repeat", gradientTransform: `skewX(${slant.toFixed(2)})` }, [
+      svg("stop", { offset: 0, "stop-color": P.light, "stop-opacity": 0 }),
+      svg("stop", { offset: 0.1, "stop-color": P.light, "stop-opacity": 0 }),
+      svg("stop", { offset: 0.27, "stop-color": P.light, "stop-opacity": 0.42 }),
+      svg("stop", { offset: 0.44, "stop-color": P.light, "stop-opacity": 0 }),
+      svg("stop", { offset: 1, "stop-color": P.light, "stop-opacity": 0 }),
+    ]),
+    svg("linearGradient", { id: `${id}-sunfade`, x1: 0, y1: 0, x2: 0, y2: 1 }, [
+      svg("stop", { offset: 0.16, "stop-color": "#fff" }),
+      svg("stop", { offset: 0.95, "stop-color": "#000" }),
+    ]),
+    svg("mask", { id: `${id}-sunmask`, maskUnits: "userSpaceOnUse", x: -BEAM, y: -60, width: SPAN + BEAM * 2, height: H + 140 }, [
+      svg("rect", { x: -BEAM, y: -60, width: SPAN + BEAM * 2, height: H + 140, fill: `url(#${id}-sunfade)` }),
+    ]),
+  ]);
+  const flow = svg("rect", { x: -BEAM, y: 100, width: SPAN + BEAM * 2, height: H, fill: `url(#${id}-sun)` });
+  return { g: svg("g", { "clip-path": `url(#${id}-car)` }, [defs, svg("g", { mask: `url(#${id}-sunmask)`, style: "mix-blend-mode: screen" }, [flow])]), flow };
+}
+
+/** 夜: 天井の車内灯の帯と、その下へ落ちる白い光（流れない） */
+function cabinLight(P, id) {
+  const grad = svg("linearGradient", { id: `${id}-lamp`, x1: 0, y1: 0, x2: 0, y2: 1 }, [
+    svg("stop", { offset: 0, "stop-color": P.light, "stop-opacity": 0.3 }),
+    svg("stop", { offset: 1, "stop-color": P.light, "stop-opacity": 0 }),
+  ]);
+  return { g: svg("g", { "clip-path": `url(#${id}-car)` }, [
+    svg("defs", {}, [grad]),
+    svg("rect", { x: 0, y: -60, width: SPAN, height: 460, fill: `url(#${id}-lamp)`, style: "mix-blend-mode: screen" }),
+    svg("rect", { x: 0, y: 10, width: SPAN, height: 13, rx: 6, fill: P.light, opacity: 0.92 }),
+  ]), flow: null };
+}
+
+/** 車両の前後の切り口の外に落ちる影（前の場面・行き先の絵の上に車両の厚みを出す） */
+function edgeShadows(id) {
+  const shade = (side) => svg("linearGradient", { id: `${id}-shade${side}`, x1: side === "L" ? 1 : 0, y1: 0, x2: side === "L" ? 0 : 1, y2: 0 }, [
+    svg("stop", { offset: 0, "stop-color": "#000", "stop-opacity": 0.38 }),
+    svg("stop", { offset: 1, "stop-color": "#000", "stop-opacity": 0 }),
+  ]);
+  return [
+    svg("defs", {}, [shade("L"), shade("R")]),
+    svg("polygon", { points: `${SLANT - 150},-60 ${SLANT},-60 0,${H + 80} -150,${H + 80}`, fill: `url(#${id}-shadeL)` }),
+    svg("polygon", { points: `${SPAN},-60 ${SPAN + 150},-60 ${SPAN - SLANT + 150},${H + 80} ${SPAN - SLANT},${H + 80}`, fill: `url(#${id}-shadeR)` }),
+  ];
+}
+
+/** 乗客の絵を読んでから乗客を決める。素材待ちの間にLOADされたら null（旧セーブの演出を始めない） */
+async function prepare(opts) {
+  const owner = state;
+  const passengers = trainPassengers(state, opts);
+  const urls = [...CROWD, ...(passengers.cameo ? [passengerUrl(passengers.cameo)] : [])];
+  const decoded = new Set();
+  let timeout;
+  try {
+    await Promise.race([
+      Promise.all(urls.map(async url => { if (await ready(url)) decoded.add(url); })),
+      new Promise(r => { timeout = setTimeout(r, 800); }),
+    ]);
+  } finally { clearTimeout(timeout); }
+  if (state !== owner) return null;
+  const available = new Set(decoded); // 遅れて読めた絵が乗車中に急に現れないよう、ここで確定する。
+  if (passengers.cameo && !available.has(passengerUrl(passengers.cameo))) passengers.cameo = null;
+  return { passengers, available };
+}
+
+/** opts.tone: "day" | "night"（省略で今の時間帯）。halloween/cameo は a と同じ */
+export async function c(mid, opts = {}) {
+  const prep = await prepare(opts);
+  if (!prep) return;
+  const tone = opts.tone === "day" || opts.tone === "night" ? opts.tone : state?.slot ? "night" : "day";
+  const P = TONE[tone];
+  await stagePlay("train", async (node) => {
+    node.dataset.tone = tone;
+    const id = `mo-train-${++serial}`;
+    const car = carriage(P, id, prep.passengers, prep.available, { glow: tone === "day" ? 0.5 : 0.42 });
+    const light = tone === "day" ? daylight(P, id) : cabinLight(P, id);
+    const pan = svg("g", {}, [...edgeShadows(id), car.g, light.g]);
+    const rock = svg("g", {}, [pan]);
+    const art = stageSvg([rock]);
+    art.setAttribute("preserveAspectRatio", "xMidYMid slice");
+    node.append(art);
+    // 位置は時刻から決める（描画が遅れても、覆い終える時刻と走り去る時刻はずれない）
+    const t0 = performance.now();
+    let phase = "in", tRide = 0, tOut = 0, pE = 0, vE = 0, acc = 0;
+    const xAt = (now) => {
+      if (phase === "in") return hermite(Math.min(1, (now - t0) / C_IN), X0, X1, -(X0 - X1) * 2.6, -VD * C_IN);
+      if (phase === "ride") return X1 - DRIFT * (1 - Math.exp(-((now - tRide) * VD) / DRIFT));
+      const s = Math.min(C_OUT, now - tOut);
+      return pE + vE * s - 0.5 * acc * s * s;
+    };
+    const render = (now = performance.now()) => {
+      const t = (now - t0) / 1000;
+      const sway = 0.16 * Math.sin((t / 1.2) * Math.PI * 2);
+      rock.setAttribute("transform", `translate(0 ${jolt(t).toFixed(2)}) rotate(${sway.toFixed(3)} ${W / 2} ${H + 220})`);
+      pan.setAttribute("transform", `translate(${xAt(now).toFixed(1)} 0)`);
+      for (const [i, st] of car.straps.entries()) {
+        const angle = -sway * 4 + 2.5 * Math.sin((t / 1.2) * Math.PI * 2 - 1.1 + i * 0.35);
+        st.g.setAttribute("transform", `rotate(${angle.toFixed(2)} ${st.x} ${RAIL_Y})`);
+      }
+      for (const p of car.people) p.bob.setAttribute("transform", `translate(0 ${(p.amp * 0.5 * Math.sin(t * 7.5 + p.phase) + jolt(t - 0.04) * 0.4).toFixed(2)})`);
+      car.lights.setAttribute("transform", `translate(${(-((t * 1100) % 820)).toFixed(1)} 0)`);
+      light.flow?.setAttribute("transform", `translate(${(-((t * 520) % BEAM)).toFixed(1)} 0)`);
+    };
+    let frameId = 0;
+    const frame = () => { render(); frameId = requestAnimationFrame(frame); };
+    frame();
+    try {
+      SE.train?.((C_IN + C_RIDE + C_OUT) / 1000);
+      await sleep(C_IN);
+      // 覆い終えた位置を描いてから場面を替える（描画が遅れて切り口の外が見えたまま mid に入らない）
+      phase = "ride"; tRide = performance.now(); render(tRide);
+      node.dataset.covered = "1";
+      await nextFrame();
+      try {
+        await Promise.all([sleep(C_RIDE), Promise.resolve().then(() => mid?.())]);
+      } finally {
+        // 今の位置と速さから、C_OUT で画面の外まで加速して走り去る
+        const now = performance.now();
+        pE = xAt(now);
+        vE = -VD * Math.exp(-((now - tRide) * VD) / DRIFT);
+        acc = (2 * (pE + vE * C_OUT - XEND)) / (C_OUT * C_OUT);
+        phase = "out"; tOut = now;
+        delete node.dataset.covered;
+        await sleep(C_OUT + 40);
+      }
+    } finally {
+      cancelAnimationFrame(frameId);
+    }
+  }, { cover: true });
+}

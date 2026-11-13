@@ -5,7 +5,7 @@ import path from "node:path";
 import vm from "node:vm";
 const root = new URL("../js/", import.meta.url);
 const dataRoot = new URL("../../data/dialogue/", import.meta.url);
-const actual = new Set(["core/chapter-features.js", "core/flavor-mastery.js","core/cinema-discovery.js", "daily/cinema.js","core/affinity-stages.js", "core/state.js","core/portrait-style.js", "core/gallery-progress.js", "core/rules.js", "core/bus.js", "core/chapter-clock.js", "daily/fortune-schedule.js", "core/fortune-effects.js",
+const actual = new Set(["core/shift-pay.js","core/chapter-features.js", "core/flavor-mastery.js","core/cinema-discovery.js", "daily/cinema.js","core/affinity-stages.js", "core/state.js","core/portrait-style.js", "core/gallery-progress.js", "core/rules.js", "core/bus.js", "core/chapter-clock.js", "daily/fortune-schedule.js", "core/fortune-effects.js",
   "daily/fortune-rumor.js", "daily/weather.js", "daily/tonari.js", "daily/spots.js", "daily/fortune.js", "daily/spot-access.js",
   "daily/spot-people.js", "daily/map-reveals.js", "daily/tsumugi-schedule.js", "chapters/tsumugi-story.js", "daily/calendar.js"]);
 const DB = { flavorById: {}, dialogues: {}, characters: { naru: { name: "なる" } }, fortuneTrivia: {}, flavors: [], recipes: [], baito: [] };
@@ -35,7 +35,7 @@ const mocks = {
   paidAction:async run=>({value:await run(),spent:10}), coldRisk:()=>false,catchesCold:()=>false,fitActive:()=>false,staminaAfter:n=>core.state.stamina+n,maxStamina:()=>100,staminaRatio:()=>core.state.stamina/100,
   readyLessons: () => [], consultLessons: async () => [], // 心得の盤の授業（相談）。この検査では無効
   takeChapterBoardNotice: () => null, chapterBoardCards: () => [], respecMapNotice: () => "", // 章はじめの盤の知らせ（#1801 C10）。この検査では無効
-  onAction:noop,hiyoriShopLocation:()=>null,visitHiyoriAtShop:async()=>false,visitCityGuestAtShop:async()=>false,roamerAt:()=>null,roamerPlan:()=>null,meetRoamer:async()=>false,
+  onAction:noop,hiyoriShopLocation:()=>null,visitHiyoriAtShop:async()=>false,visitCityGuestAtShop:async()=>false,roamerAt:()=>null,roamerPlan:()=>null,meetRoamer:async()=>false,petitAfterVisit:async()=>false,petitAfterDate:async()=>false,
 
   dialogueSequence: fn => fn(),
   play: async id => {
@@ -277,3 +277,4 @@ await check("obsolete LIME is not newly delivered and requested scene is retaine
   assert(lines.some(l=>l.speaker==="hajime"&&l.text==="（好きな方を食べればいいのに……）"));
 });
 console.log(JSON.stringify({ groups: results.length, results, scope: "Node actual public modules; controlled VN/render/stats ports; no real PC/touch/LOAD UI" }));
+

@@ -9,6 +9,7 @@ import { HOME_CITY_EN, currentCity } from "../core/city-locations.js";
 import { el, yen, sleep } from "../core/util.js";
 import { layers, toast, gainCard } from "../core/ui.js";
 import { on } from "../core/bus.js";
+import { SE } from "../core/audio.js";
 import { state } from "../core/state.js";
 import { staminaRatio, currentCondition, maxStamina } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
@@ -126,7 +127,11 @@ export function initHud(h) {
   recoveryObserver.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "data-screen"] });
   on("hud", updateHud);
   on("money", ({ delta }) => {
-    if (!delta || !dom) return;
+    if (!delta) return;
+    // 所持金が動いたらコインの音（バイト代・手当・賞金・買い物・運賃など全部ここを通る）。
+    // 続けて動く時や、店の売り買いが自分でも SE.money を呼ぶ時は、音の側（audio.js の minGap）が1回にまとめる。
+    SE.money();
+    if (!dom) return;
     const pop = el(`div.money-pop${delta < 0 ? ".minus" : ""}`, { text: `${delta > 0 ? "+" : "−"}${yen(Math.abs(delta))}` });
     dom.moneyRow.append(pop);
     setTimeout(() => pop.remove(), 1400);

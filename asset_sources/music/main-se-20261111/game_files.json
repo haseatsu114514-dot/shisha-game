@@ -1,0 +1,67 @@
+{
+  "se/crowd_applause_01.mp3": {
+    "sha256": "8b48fb94a8e94a1980f71a70ab51c5cafdba02eb86151a3b2babfa0a28296d09",
+    "bytes": 50782,
+    "duration_seconds": 4.232
+  },
+  "se/crowd_applause_02.mp3": {
+    "sha256": "d7729c129c76dc6da5844c3a1849443621ef12f10526d9f66bbe2a0b1fdfe198",
+    "bytes": 50782,
+    "duration_seconds": 4.232
+  },
+  "se/coin_01.wav": {
+    "sha256": "66cf773f7986c64ec208e4230dd210239cbd5fc3a7618cd68ca0a85c72bb8e8a",
+    "bytes": 70604,
+    "duration_seconds": 0.8
+  },
+  "se/coin_02.wav": {
+    "sha256": "43e055a615281533091087739d05295d0ad7cf1b663b80c586abce0994e8c164",
+    "bytes": 35884,
+    "duration_seconds": 0.406
+  },
+  "se/glass_break.wav": {
+    "sha256": "4e2de169d8a06122b9133e0b4ee933bd4306982ba4f436406abc48fee6998c7d",
+    "bytes": 92654,
+    "duration_seconds": 1.05
+  },
+  "se/camera_shutter.wav": {
+    "sha256": "5af3062a7f0456556f27052be0b1660c35308eed12988e9d0574c8d1dd8f35fa",
+    "bytes": 67090,
+    "duration_seconds": 0.76
+  },
+  "se/cat_mew_01.wav": {
+    "sha256": "08ee0dad3e1d289f646b16ba181ef6af7dcda3aee27ffd6590f1e6be85558238",
+    "bytes": 56492,
+    "duration_seconds": 0.64
+  },
+  "se/cat_mew_02.wav": {
+    "sha256": "784193781424378347aebd7ae33bc8c87ddb6dcbeea26a7c5ea5004462b8ffd3",
+    "bytes": 39734,
+    "duration_seconds": 0.45
+  },
+  "se/fire_crackle_01.wav": {
+    "sha256": "0f2f90e124ea8e9af7611bf10f0f0bb386f133473c993d8b1e441463bbe2fe26",
+    "bytes": 19448,
+    "duration_seconds": 0.22
+  },
+  "se/fire_crackle_02.wav": {
+    "sha256": "be49b86550079ac9d132d6c15bccd61773f342f8bbe85baefd79c7beed0add46",
+    "bytes": 38852,
+    "duration_seconds": 0.44
+  },
+  "se/fire_crackle_03.wav": {
+    "sha256": "1b24c659be61a92230c933444871198212ef8472e5a5437929901c00ecdfd34f",
+    "bytes": 38852,
+    "duration_seconds": 0.44
+  },
+  "se/heart_bell.wav": {
+    "sha256": "c07972dd3947e8055a0fafbf30b3ac8607ca9f6ac2e53029b977376ce33463a3",
+    "bytes": 54666,
+    "duration_seconds": 0.619
+  },
+  "se/ui_save.wav": {
+    "sha256": "c105dbf2278f78c4d83917b1142bd9efe039f90848f7915a4663b6dd1955db63",
+    "bytes": 44144,
+    "duration_seconds": 0.5
+  }
+}

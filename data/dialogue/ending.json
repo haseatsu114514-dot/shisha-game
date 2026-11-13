@@ -84,6 +84,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
+          "duck": true,
           "text": "tonariは任せた。お前の店の名前は、その先まで取っとけ"
         },
         {
@@ -555,70 +556,74 @@
         {
           "speaker": "",
           "face": "",
-          "text": "別の日。ひよりさんが鞄を置き、ソファに深く沈んだ。"
+          "text": "別の日。部屋に来たひよりさんが、買ってきた夕飯をテーブルに並べた。"
         },
         {
           "speaker": "hiyori",
-          "face": "normal",
-          "text": "今日の総務、閉店しました。私も半透明になります"
+          "face": "sad",
+          "text": "今夜の迷える魂は……こっちかな",
+          "inner": "いつもの返事がない。まだ仕事の中にいる"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ご飯、先に温めますね"
+          "text": "すみません。明日の段取り、考えてました"
         },
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "うん。……あ、肩、五分だけ借りたい"
+          "text": "私も仕事の続き、気になった。でも、今日は置いてきた。明日の私に任せる"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "今、相談したい？ それとも、ご飯にする？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ご飯にします。続きは、食べてから決めます"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ひよりさんは俺の肩に頬を寄せて、息をついた。"
+          "text": "メモを伏せると、ひよりさんは袋から箸を二膳取り出した。"
         },
         {
           "speaker": "hiyori",
           "face": "smile",
-          "text": "捕まえてくれたから、今日は消えません",
-          "inner": "明日も会社に行く。その前に、もう少しここにいたい"
+          "text": "食べたあとの片づけは、二人でね",
+          "inner": "急がせたくない。でも、隣には座ってほしい"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "五分過ぎましたよ"
+          "face": "smile",
+          "text": "今日は俺が、見つけてもらう番ですね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "ふふ。見つける役も……たまにはね"
         },
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "延長申請、……だめ？"
+          "text": "……来週は締め日だから、迎えはお願い。ラーメン屋の前で"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "ご飯が冷めるまでなら"
+          "face": "smile",
+          "text": "はい。味玉は、二つですね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "予約成立。……今日のご飯も、隣で食べてね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "顔を見合わせて笑う。彼女はもう少しだけ、肩の上に残った。"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "normal",
-          "text": "……来週、締め日なの。私、たぶん半透明になってる",
-          "inner": "ちゃんと言えた。前の私なら、黙って消えてた"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "じゃあ、迎えに行きます。ラーメン屋の前で待ってますね"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "smile",
-          "text": "……味玉、二つね",
-          "inner": "恋人の約束、ラーメンばっかり。でも、それがいい"
+          "text": "ひよりさんが隣の座面をぽんと叩いた。メモは伏せたまま、二人でいただきますを言った。"
         }
       ],
       "metadata": {
@@ -797,6 +802,7 @@
         {
           "speaker": "dr_kemuri",
           "face": "normal",
+          "beat": 500,
           "text": "いえ。今日は、客です"
         },
         {

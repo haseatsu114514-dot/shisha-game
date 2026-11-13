@@ -661,6 +661,12 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 /* 敗北→GAME OVER の入り（core/transitions.js defeatFade・#2688 A19）。中心から色が抜けて灰色になる */
 .tr-defeat { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; }
 .tr-defeat-gray { position: absolute; inset: 0; clip-path: circle(0% at 50% 55%); backdrop-filter: grayscale(1) brightness(.62); -webkit-backdrop-filter: grayscale(1) brightness(.62); background: #0b081433; }
+/* 照明が落ちる（TMG59）: 外側の客席から暗くなり、真ん中の台だけが少し残る */
+.tr-defeat-dim { position: absolute; inset: 0; opacity: 0; background: radial-gradient(ellipse 58% 62% at 50% 52%, #05040a26 0%, #05040a99 55%, #05040af2 100%); }
+/* 再挑戦（TMG59）: 暗転のあと、戻った場面が灰色で現れて煙のにじみで色が戻る */
+.tr-retry { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; }
+.tr-retry-veil { position: absolute; inset: 0; background: #07060c; }
+.tr-retry > .tr-retry-gray { position: absolute; inset: 0; background-size: cover; background-position: center; background-color: #07060c; }
 /* 場面の意味ごとの型（core/transitions.js・CI102）。紫と淡いラベンダーの図形だけで描く */
 .tr-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
 .tr-scale { transform-box: fill-box; transform-origin: center; }
@@ -702,7 +708,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .tr-wave-line { position: absolute; left: 0; right: 0; top: 320px; text-align: center; font-family: var(--font); font-size: 30px; font-weight: 700; letter-spacing: 0.14em; color: #fff; text-shadow: 0 2px 0 #34246a, 0 0 24px #1a1238; }
 /* ワイドステージ（#2861）: 画面全体を覆う転換（翌朝・波・敗北）は左右の余白まで覆う。
    端へ出した HUD（日付の札・LIME・MENU）が紫の面の外に覗かないように。中身は中央寄せなので位置は変わらない。 */
-#stage[data-wide] :is(.tr-dawn, .tr-wave, .tr-defeat) { inset: 0 calc(-1 * var(--stage-gutter)); }
+#stage[data-wide] :is(.tr-dawn, .tr-wave, .tr-defeat, .tr-retry) { inset: 0 calc(-1 * var(--stage-gutter)); }
 
 /* マップ→場所の「移動」の型（core/transition-moves.js・CI103） */
 .scene-curtain.move { background: transparent; }
@@ -748,28 +754,18 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .dc-title { font-family: var(--font); font-size: 76px; font-weight: 800; letter-spacing: 0.12em; color: #fff; }
 .dc-sub { font-size: 20px; color: var(--gold); letter-spacing: 0.2em; margin-top: 4px; }
 
-.round-cut {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 290px;
-  height: 140px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.92) 20%, rgba(0, 0, 0, 0.92) 80%, transparent);
-  border-top: 2px solid var(--neon-pink);
-  border-bottom: 2px solid var(--neon-cyan);
-  transform: scaleY(0);
-  transition: transform 0.35s var(--ease-snap), opacity 0.4s;
-}
-.round-cut.show { transform: scaleY(1); }
-/* ワイドステージ: 「ROUND 1」の帯は画面の両端まで（文字は中央のまま） */
-#stage[data-wide] .round-cut { left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); }
-.round-cut.out { opacity: 0; }
-.round-cut b { font-family: var(--font); font-size: 64px; font-weight: 700; letter-spacing: 0.2em; color: #fff; text-shadow: 0 0 20px var(--neon-pink); }
-.round-cut small { font-size: 18px; letter-spacing: 0.3em; color: var(--neon-cyan); }
+/* 「ROUND 1」の帯（TMG59）: 登場カットインと同じ生成りの帯（-3度）を大きく。右から入って左へ抜ける */
+.round-cut { position: absolute; inset: 0; pointer-events: none; background: #05040a00; transition: background-color .35s ease; }
+.round-cut.show { background: #05040a66; }
+.round-cut.out { background: #05040a00; }
+.round-cut-band { position: absolute; left: -60px; right: -60px; top: 272px; height: 176px; display: flex; align-items: center; justify-content: center;
+  background: #f4ecda; rotate: -3deg; translate: 112% 0; box-shadow: 0 16px 36px #05020a99; transition: translate .4s cubic-bezier(.16,1,.3,1); }
+.round-cut.show .round-cut-band { translate: 0 0; }
+.round-cut.out .round-cut-band { translate: -112% 0; transition: translate .34s cubic-bezier(.55,0,.85,.35); }
+/* ワイドステージ: 帯は画面の両端まで（文字は中央のまま） */
+#stage[data-wide] .round-cut-band { left: calc(-60px - var(--stage-gutter)); right: calc(-60px - var(--stage-gutter)); }
+.round-cut-band b { font-family: "Suien Name", var(--font); font-size: 128px; line-height: 1; font-weight: 700; letter-spacing: 0.12em; padding-left: 0.12em; color: #1a0f24; }
+.round-cut-band small { position: absolute; left: 30%; bottom: 100%; background: #2a1638; color: #f4ecda; font-size: 24px; line-height: 1.5; letter-spacing: 0.24em; font-weight: 700; padding: 5px 18px; white-space: nowrap; }
 
 /* ---------------------------------------------------------------- 起動 */
 #boot {

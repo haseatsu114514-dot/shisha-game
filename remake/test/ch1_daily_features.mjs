@@ -1,6 +1,7 @@
 // Real feature registry and public daily entry points; controlled UI/VN/stats/save ports.
 // This checks state and persistence calls, not browser rendering or disk SAVE/LOAD.
 import assert from 'node:assert/strict';
+import './shift_pay.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -36,7 +37,7 @@ const ports = {
   staffFlavors: () => [], staffStock: () => 0,
 };
 const ctx = vm.createContext({ console, queueMicrotask, AbortController });
-const actual = new Set(['core/chapter-features.js', 'core/stat-step-tables.js', 'daily/home-rig.js', 'daily/tonari.js']);
+const actual = new Set(['core/shift-pay.js', 'core/chapter-features.js', 'core/stat-step-tables.js', 'daily/home-rig.js', 'daily/tonari.js', 'daily/tsumugi-schedule.js']);
 const modules = new Map();
 function get(id) {
   if (!modules.has(id)) modules.set(id, new vm.SourceTextModule(fs.readFileSync(new URL(id, root), 'utf8'), { context: ctx, identifier: id }));
@@ -136,4 +137,22 @@ for (let i = 0; i < 3; i++) {
   reset({ day: 6, baitoCount: i + 1, flags: Object.fromEntries(cameoFlags.slice(0, i).map(k => [k, true])) });
   await tonari.doBaito(); assert(plays().includes(cameoScenes[i])); assert(state.flags[cameoFlags[i]]);
 }
-console.log(`PASS ch1 daily features: ${cases} boundary cases; actual registry/home-rig/tonari, controlled ports`);
+// Tournament achievement pay is wired into the actual shift, not only the pure model.
+for (const [flags, base] of [
+  [{}, 8000], [{ _ch1_cleared: true }, 9000], [{ _ch2_cleared: true }, 10000],
+  [{ _ch3_tournament_won: true }, 11000], [{ _ch4_cleared: true }, 12000],
+]) for (const called of [false, true]) {
+  reset({ chapter: 5, flags });
+  assert.equal(await tonari.doBaito({ called }), true);
+  assert.equal(state.money, 20000 + base + (called ? 5000 : 0));
+  assert.equal(state.stamina, 76);
+  assert.equal(state.baitoCount, 1);
+  assert.equal(trace.filter(([kind]) => kind === 'money').length, 1, 'raise is part of one payment');
+  assert(trace.some(([kind, text]) => kind === 'toast' && text.includes(`基本${base.toLocaleString('ja-JP')}円`)), 'receipt matches actual base');
+}
+reset({ chapter: 5, flags: { _ch4_cleared: true } });
+const parallel = await Promise.all([tonari.doBaito(), tonari.doBaito()]);
+assert.equal(parallel.filter(Boolean).length, 1);
+assert.equal(state.money, 32000, 'simultaneous duplicate does not double pay the raised shift');
+console.log(`PASS ch1 daily features: ${cases} boundary cases and achievement payment/receipt/duplicate cases; actual registry/home-rig/tonari, controlled ports`);
+

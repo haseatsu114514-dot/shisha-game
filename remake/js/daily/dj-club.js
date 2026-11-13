@@ -1,3 +1,4 @@
+import { masteryLine } from "../core/play-mastery.js";
 // 東京の路地の地下のクラブ「SEAM」（第3章の夜の自由時間・DJS10/DJS12。第5章の東京に泊まっている夜も同じ・#2033）。店主は針間ヨル（characters.json の yoru）。
 // 初めて入る夜だけ出会いの場面（名乗るまで → 登場カットイン → ch3_club_first_after）、初めてAランク以上を出した夜だけヨルとの会話（ch3_club_a_talk）を流す。
 // ミニゲームなので時間・お金・体力・好感度は変えない（#2113）。記録（state.dj）と既読フラグだけを保存する。
@@ -91,6 +92,7 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
           gearOffer(owner, "gear_headphones", { isCurrent: current, onBought: item => {
             save(); toast(`「${item.name}」を買った。${item.effect}`, { kind: "good" });
           } }),
+          el("p", { text: masteryLine(owner, "dj"), dataset: { test: "dj-mastery" } }),
           el("div.sub-choices", DJ_SETS.map(set => el("button.big-choice", {
             type: "button", disabled: !djSetOpen(owner, set.id), dataset: { test: `dj-set-${set.id}` },
             onclick: () => { if (djSetOpen(owner, set.id)) resolve(set.id); },

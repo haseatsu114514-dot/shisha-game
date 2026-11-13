@@ -4,6 +4,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 
 const source = fs.readFileSync(new URL("../js/craft/fx.js", import.meta.url), "utf8");
+const smokeSource = fs.readFileSync(new URL("../js/core/smoke.js", import.meta.url), "utf8");
 const recordSource = fs.readFileSync(new URL("../js/craft/rig-record.js", import.meta.url), "utf8");
 
 class Node {
@@ -30,7 +31,18 @@ async function load({ dom = true, reduced = false, calm = false, auto = null, tu
   if (dom) Object.assign(g, {
     matchMedia: () => ({ matches: reduced }),
     getComputedStyle: () => ({ position: "relative" }),
-    document: { body: { classList: { contains: c => calm && c === "reduce-shake" } } },
+    requestAnimationFrame: () => 1, cancelAnimationFrame: () => {},
+    document: {
+      body: { classList: { contains: c => calm && c === "reduce-shake" } },
+      // 煙の層（core/smoke.js）が作る canvas。className をこの偽ノードの cls に写す
+      createElement: () => {
+        const n = new Node();
+        Object.defineProperty(n, "className", { set(v) { n.cls = String(v).split(" ")[0]; }, get() { return n.cls; } });
+        n.isConnected = true;
+        n.getContext = () => ({ createImageData: (w, h) => ({ data: new Uint8ClampedArray(w * h * 4) }), putImageData() {} });
+        return n;
+      },
+    },
   });
   const context = vm.createContext(g);
   const util = { el: (spec, a, b) => {
@@ -43,8 +55,10 @@ async function load({ dom = true, reduced = false, calm = false, auto = null, tu
   const utilMod = new vm.SyntheticModule(Object.keys(util), function () { for (const [k, v] of Object.entries(util)) this.setExport(k, v); }, { context });
   const mod = new vm.SourceTextModule(source, { context });
   const record = new vm.SourceTextModule(recordSource, { context });
+  const smoke = new vm.SourceTextModule(smokeSource, { context });
   const link = spec => {
     if (spec === "../core/util.js") return utilMod;
+    if (spec === "../core/smoke.js") return smoke;
     if (spec === "./fx.js") return mod;
     throw Error(`Unexpected import ${spec}`);
   };
@@ -111,20 +125,33 @@ for (const opts of [{ auto: "good" }, { turbo: true }, { dom: false }]) {
   assert.equal(h.fx.fxHolding(h.host), false);
 }
 
-// 吸い出しの山場: 通常は煙の塊（最適温は輪も）を出し、止めだけの設定・自動操作ではすぐ返す
+// 吸い出しの山場: 通常は切り抜きの層に煙の canvas を1枚載せ（出来と輪の印を持つ）、止めだけの設定・自動操作ではすぐ返す
 {
   const h = await load();
   h.fx.exhale(h.host, { color: "rgb(12,200,255)" });
   const own = n => n.children.find(c => c.cls === "fx-exhale");
-  assert.equal(own(h.host).children.length, 11, "a veil and ten smoke puffs in its own clipped layer");
+  assert.deepEqual(own(h.host).children.map(c => c.cls), ["smoke-layer"], "one smoke canvas in its own clipped layer");
   assert.equal(own(h.host).style.overflow, "hidden");
+  assert.equal(own(h.host).dataset.quality, "good");
+  assert.equal(own(h.host).dataset.ring, undefined);
+  for (const quality of ["thin", "harsh"]) {
+    const q = await load();
+    q.fx.exhale(q.host, { quality });
+    assert.equal(own(q.host).dataset.quality, quality, "the smoke shows how the heat went");
+  }
   const g = await load();
   g.fx.exhale(g.host, { grand: true });
-  assert.equal(own(g.host).children.length, 12, "grand adds a smoke ring");
+  assert.equal(own(g.host).dataset.quality, "best");
+  assert.equal(own(g.host).dataset.ring, "1", "grand adds a smoke ring");
+  // 煙の輪: 作業台の上の目印の位置から描く。出せない設定では false（呼び出し側が線の輪を見せる）
+  assert.equal(g.fx.smokeRing(g.host), true);
+  assert.ok(g.bench.children.some(c => c.cls === "smoke-layer"));
   for (const opts of [{ reduced: true }, { auto: "good" }]) {
     const q = await load(opts);
     assert.equal(await q.fx.exhale(q.host), false);
     assert.equal(q.host.children.length, 0);
+    assert.equal(q.fx.smokeRing(q.host), false);
+    assert.equal(q.bench.children.some(c => c.cls === "smoke-layer"), false);
   }
   assert.deepEqual(["rgb(12,200,255)", "#abc", "#a1b2c3", "red"].map(h.fx.hex6), ["#0cc8ff", "#aabbcc", "#a1b2c3", "#d9d2e6"]);
 }

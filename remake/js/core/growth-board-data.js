@@ -276,15 +276,21 @@ export const CHAR_TYPE = {
 // 量は小さく（オーナー: 「あげすぎ。♥5まで上げてやっと色の火種がもらえるぐらい」「ミニゲームをやりたくない人もいる」）。
 // 遊ばなくても盤の進みはほとんど変わらない。色は遊びの性格で: 斧投げ＝才能、DJ＝感覚、TRPG＝理論。
 export const PLAY_REWARDS = [
+
   { id: "axe-a", game: "axe", rank: "A", label: "斧投げで Aランク", gift: { body: 1 } },
   { id: "trpg-star3", game: "trpg", stars: 3, label: "TRPGで★3の卓", gift: { wisdom: 1 } },
-  // DJ はまだ本編に入っていない（remake/previews/dj）。入ったら最高ランクを state に残し、ここを読む
+  // DJ は本編のクラブSEAMから接続済み。
   { id: "dj-a", game: "dj", rank: "A", label: "DJで Aランク", gift: { sense: 1 } },
   // ラクダレース（第4章ドバイ・chapters/ch4-camel-race.js）: 初めて練習レースを走り切ったら1つ（順位は問わない。再プレイでは増えない）
   { id: "camel-finish", game: "camel", clears: 1, label: "ラクダレースを完走", gift: { sense: 1 } },
   { id: "camel-master", game: "camel", master: true, label: "ラクダレース中級認定", gift: { any: 1 } },
   // 第4章ドバイのサンドボード（chapters/ch4-desert.js が state.desert.bestRank を残す）
   { id: "desert-a", game: "desert", rank: "A", label: "サンドボードで Aランク", gift: { body: 1 } },
+  { id: "axe-master", game: "axe", master: true, label: "斧投げの達人", gift: { any: 1 } },
+  { id: "dj-master", game: "dj", master: true, label: "フロアのつなぎ手", gift: { any: 1 } },
+  { id: "desert-master", game: "desert", master: true, label: "砂丘の乗り手", gift: { any: 1 } },
+  { id: "trpg-master", game: "trpg", master: true, label: "物語の読み手", gift: { any: 1 } },
+  { id: "tetsuko-master", game: "tetsuko", master: true, label: "てつこの友だち", gift: { any: 1 } },
 ];
 /** くじのラストワン賞（中身はシークレット）。箱を引き切るたびに色つきの火種1つ（いちばん伸びの少ない盤の色）。
  * 第5章の限定台くじ（core/rules.js の KUJI_LIMITED_GRADES・KJ05）は付けない（#2455） */

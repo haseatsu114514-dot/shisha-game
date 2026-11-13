@@ -663,10 +663,52 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._story_shuraba_unresolved, true, "Two lovers at the party: the affair comes out and stays unresolved");
     assert.deepEqual(state.flags._ch5_party_conflict, ["tsumugi", "minto"], "Those who reacted at the party are recorded (#2815)");
     assert.equal(state.slot, 0, "The party does not use a free action");
+    // 2026-11-11 演出: 席の引き金（みんとの隣）→ 打ち明け → つむぎ → 隣に座ったみんとが最後 → お開き。
+    const read = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(row => row.text));
+    const at = needle => read.findIndex(text => text.includes(needle));
+    for (const needle of ["今日は、隣に座っていいんだよね", "隣からじゃ、なかった", "一人だけじゃ、ありません", "ちゃんと聞くのは、初めてです",
+      "私たち、付き合ってるよね", "本当にごめんなさい", "店が広くなった"]) assert(at(needle) >= 0, `Read: ${needle}`);
+    assert(at("今日は、隣に座っていいんだよね") < at("隣からじゃ、なかった"), "The seat triggers it");
+    assert(at("隣からじゃ、なかった") < at("一人だけじゃ、ありません"), "Then the confession");
+    assert(at("ちゃんと聞くのは、初めてです") < at("私たち、付き合ってるよね"), "The lover next to Hajime speaks last");
+    assert(read.includes("正直に言う"), "The answer is the player's choice");
+    assert.equal(await page.evaluate(() => document.body.dataset.sceneMood), undefined, "The shuraba air is cleared after the party");
+    // 話し直しが済むまで、恋人からは何も届かない（朝のひとこと・誘い・物語のLIME）。
+    assert.deepEqual(state.inbox.filter(item => ["tsumugi", "minto"].includes(item.msg?.sender)).map(item => item.id), [],
+      "No LIME from the lovers after the shuraba");
     // もう一度入っても打ち上げは繰り返さない。
     await loadSlot(page, 0);
     await mapReady(page, { day: 51, slot: 0 });
     assert.equal(await page.locator('[data-test^="party-seat-"]').count(), 0, "The party happens once");
+  });
+
+  // 2026-11-11 演出: 視線のカットイン（motions/gaze.js）。その場にいる恋人の目元の帯が人数ぶん並び、終われば片付く。
+  // 本編では台本の motion "gaze" から呼ぶ（高速送りの検査では省かれるので、ここで直接出して確かめる）。
+  await check("chapter-five-shuraba-gaze-cutin", async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const { gaze } = await import("./js/motions/gaze.js");
+      window.__gazeDone = false;
+      gaze(["tsumugi", { id: "noor", remote: true }, "minto", "tsumugi", "nobody"]).then(() => { window.__gazeDone = true; });
+    });
+    await page.waitForFunction(() => document.querySelectorAll(".mo-gaze-band").length === 3);
+    const bands = await page.evaluate(() => [...document.querySelectorAll(".mo-gaze-band")].map(band => {
+      const stage = document.getElementById("stage").getBoundingClientRect(), box = band.getBoundingClientRect();
+      const art = band.querySelector("img");
+      return { id: band.dataset.gaze, remote: band.classList.contains("remote"), loaded: art.naturalWidth > 0,
+        inside: box.top >= stage.top - 1 && box.bottom <= stage.bottom + 1 };
+    }));
+    assert.deepEqual(bands.map(band => band.id), ["tsumugi", "noor", "minto"], "One band each, in order; unknown people are left out");
+    assert.deepEqual(bands.map(band => band.remote), [false, true, false], "Noor looks on through the video call");
+    assert(bands.every(band => band.loaded && band.inside), "Every band shows its portrait inside the stage");
+    await page.waitForFunction(() => window.__gazeDone === true);
+    assert.equal(await page.locator(".mo-gaze").count(), 0, "The cut-in cleans up after itself");
+    // 1人では視線にならない（修羅場は2人から）。
+    assert.equal(await page.evaluate(async () => {
+      const { gaze } = await import("./js/motions/gaze.js");
+      await gaze(["tsumugi"]);
+      return document.querySelectorAll(".mo-gaze").length;
+    }), 0);
   });
 
   // #2815: ドバイのヌール（テレビ電話）と地元の恋人の修羅場。ヌールは席に座らず、席を選ぶ前に着信がつながってから打ち明け→反応。

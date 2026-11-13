@@ -70,6 +70,10 @@ for (const bg of [
   const scene = rainScene(bg, "ch2-city");
   assert.deepEqual(scene, { mode: "outdoor", windows: [] }, `屋外背景が outdoor になっていない: ${bg}`);
 }
+// 恋人の節目の屋外（#3285 の駅までの帰り道・橙須の公園）も、今までの商店街と同じく屋外の雨にする
+for (const bg of ["img/backgrounds/bg_station_walk_night.webp", "img/backgrounds/bg_toosu_park_day.webp"]) {
+  assert.deepEqual(rainScene(bg, "ch2-city"), { mode: "outdoor", windows: [] }, `屋外背景が outdoor になっていない: ${bg}`);
+}
 
 // 3. 第2章の窓なし室内（MELTY PUFF・神崎煙草店奥・零-ZERO-・閉店後あげは店・TRPGカフェ・神崎煙草店店先）は部屋の中に雨を降らせない
 for (const bg of [

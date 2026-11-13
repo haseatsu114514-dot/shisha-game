@@ -74,7 +74,7 @@ const mocks = {
   // tonariの大会準備（VOL13）は ch2_craft_prep.mjs で確認する
   "./ch2-craft-prep.js": { craftPrepDue: () => null, offerCraftPrep: async () => null },
   // あげはの店に通う回は ch2_ageha_story.mjs で確認する。ここでは従来の chat/followup/repeat だけを見る
-  "./ch2-story-data.js": { agehaStoryScene: () => agehaStory, agehaLaterScene: () => agehaLater, AGEHA_LATER_SCENES, syncAgehaVibes: () => 0 },
+  "./ch2-story-data.js": { agehaStoryScene: () => agehaStory, agehaLaterScene: () => agehaLater, AGEHA_BADDAY: { id: "remake_ch2_ageha_badday", fromDay: 7 }, AGEHA_LATER_SCENES, syncAgehaVibes: () => 0 },
   // 心得の盤の授業の相談（SBD70）。盤が無効な時と同じく何もしない
   "../core/growth.js": { consultLessons: async () => [] },
   // 第5章の柚ヶ谷の通い訪問（#2033）が小会話を読み込む。ここでは第2章の訪問だけを見る
@@ -254,6 +254,20 @@ for (const id of ids) {
   mode = "cancel";
   assert.equal((await visit("ageha")).used, false);
   assert.equal(state.flags._ageha_bear_seat_done, undefined);
+}
+
+// A short Ageha followup can lead into an unlocked story, with one shared settlement.
+{
+  await setup(1); heartLevel = 2; agehaStory = "remake_ch2_ageha_gyaru";
+  DB.dialogues[agehaStory] = { dialogue_id: agehaStory, lines: [{ type: "choice", id: "fixture", choices: [] }] };
+  const before = structuredClone(state);
+  assert.equal((await visit("ageha")).used, true);
+  assert.deepEqual(played, ["remake_ch2_ageha_followup", "remake_ch2_ageha_gyaru"]);
+  assert(state.flags._ch2_followup_done.ageha && state.flags._ch2_read_remake_ch2_ageha_gyaru);
+  assert.equal(state.money, before.money - 3000); assert.equal(state.stamina, before.stamina - 16);
+  assert.equal(state.visits.ageha, before.visits.ageha + 1);
+  assert.deepEqual(state.affinity, [["ageha", 16]]); assert.deepEqual(state.growth, [["sense", 4]]);
+  agehaStory = null;
 }
 
 // The actual required-ID loader is atomic on missing/malformed new scenes.
@@ -485,3 +499,4 @@ console.log("PASS: three everyday talks are loaded, rotate, retain normal fees/r
   await visit("kumicho"); assert.notEqual(played.at(-1), live);
 }
 console.log("PASS: Rei's live night appears once during the chapter 3 departure prep for ticket holders");
+

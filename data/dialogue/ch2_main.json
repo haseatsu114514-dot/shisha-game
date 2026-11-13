@@ -50,6 +50,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
+          "beat": 600,
           "text": "……今日は上がれ"
         },
         {
@@ -669,7 +670,7 @@
         {
           "speaker": "salaryman",
           "face": "normal",
-          "text": "……炭、きれいだった"
+          "text": "……炭、[pause]きれいだった"
         },
         {
           "speaker": "hajime",
@@ -995,6 +996,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
+          "duck": true,
           "text": "……あの顔の男に効いた言葉を、俺はひとつも知らねえ"
         },
         {

@@ -69,6 +69,7 @@ GALLERY_SHELF = {"tournament", "tsumugi-sketch", "tsumugi-smoke"}
 # ボタンの大きさ（表示の2倍で作る）。CSS の .btn / .btn-l / .head-play / .btn-wide と同じ比率
 BUTTON_SIZES = {"m": (368, 120), "l": (496, 148), "s": (216, 92), "wide": (664, 120)}
 
+CAST_BG_FOCUS = 0.78  # スマホの舞台で、人物の背景のどこを見せるか（0＝左端、1＝右端）
 STAND_HEIGHT, STAND_FLOOR = 1200, 1188  # 立ち絵の台紙の高さと、足元を置く高さ（CSS の .cast-stand はこの比で置く）
 
 LIST_ONLY = False          # --sources: 絵を開かず、パスだけ集める
@@ -236,6 +237,20 @@ def build_wide_key_visuals() -> None:
                 save(make(art.convert("RGB")), rel, quality=quality)
 
 
+# #3431: スマホ用の縦長原画。PC用の採用は WIDE_KEY_VISUALS のまま。
+TALL_KEY_VISUALS = {"town": "kv-b-tall-01", "counter": "kv-a-tall-04"}
+
+
+def build_tall_key_visuals() -> None:
+    for name, file in TALL_KEY_VISUALS.items():
+        rel = f"hero/kv-{name}-tall.webp"
+        art = load_site_art(PROMO_KEY_ART / f"{file}.png")
+        if art is None:
+            keep(rel)
+        else:
+            save(fit_width(art.convert("RGB"), 1024), rel, quality=78)
+
+
 def build_hero() -> None:
     # タイトル画面の背景（1280x720のドット絵）。ぼかさず整数倍に拡大して、ドットの角を保つ。
     lounge = load(GAME / "backgrounds" / "bg_title.webp").convert("RGB")
@@ -243,6 +258,7 @@ def build_hero() -> None:
     lounge = load(GAME / "backgrounds" / "bg_title.webp").convert("RGB")
     save(lounge.resize((1280, 720), Image.NEAREST), "hero/lounge-s.webp", quality=74)
     build_wide_key_visuals()
+    build_tall_key_visuals()
     for cid, name in key_visuals().items():
         art = load(GAME / "ui" / "title_arts" / f"{name}.webp").convert("RGB")
         save(art, f"hero/kv-{cid}.webp", quality=80)
@@ -261,6 +277,8 @@ def build_story() -> None:
     # 章のはじめに出る詩のコマ絵（第1章）
     save(load(GAME / "ui" / "poems" / "poem_ch1.webp").convert("RGB"), "story/strip-ch1.webp", quality=80)
     save(fit_width(load(GAME / "backgrounds" / "bg_tonari_inside_night.webp").convert("RGB"), 1920), "story/tonari-night.webp", quality=74)
+    # 暗く沈めて敷く絵なので、スマホでは小さい版で足りる
+    save(fit_width(load(GAME / "backgrounds" / "bg_tonari_inside_night.webp").convert("RGB"), 960), "story/tonari-night-s.webp", quality=72)
 
 
 def build_cast() -> None:
@@ -281,6 +299,14 @@ def build_cast() -> None:
         save(load(faces / f"face_{cid}.webp").convert("RGBA"), f"chara/{cid}-face.webp", quality=88)
         save(fit_width(load(intro / f"{cid}.webp").convert("RGBA"), 880), f"chara/{cid}-graphic.webp", quality=84)
         save(fit_width(load(intro / f"bg_{cid}.webp").convert("RGB"), 1600), f"chara/{cid}-bg.webp", quality=76)
+        # スマホでは縦長の舞台（3:4）に背景の右寄りだけが見える。見える所だけを切り出した軽い絵も作る
+        # （切り出す位置は CSS の .cast-bg の横の位置 CAST_BG_FOCUS と同じ。見た目は変わらない）
+        backdrop = load(intro / f"bg_{cid}.webp").convert("RGB")
+        if not LIST_ONLY:
+            crop_w = round(backdrop.height * 3 / 4)
+            left = round((backdrop.width - crop_w) * CAST_BG_FOCUS)
+            backdrop = backdrop.crop((left, 0, left + crop_w, backdrop.height))
+        save(backdrop, f"chara/{cid}-bg-m.webp", quality=76)
     for cid in CAST_SUB:  # 大会の人びとは、立ち絵の胸から上
         stand = load(sprites / cid / f"chr_{cid}_normal.webp").convert("RGBA")
         if LIST_ONLY:
@@ -354,6 +380,9 @@ SCREENS = {
 }
 
 
+SCREEN_SMALL = 1080  # スマホ（幅390前後・3倍の画素）で足りる幅
+
+
 def build_screens(folder: Path) -> None:
     for name, (source, width, crop) in SCREENS.items():
         path = folder / f"{source}.png"
@@ -364,11 +393,15 @@ def build_screens(folder: Path) -> None:
         if crop:
             w, h = shot.size
             shot = shot.crop((round(crop[0] * w), round(crop[1] * h), round(crop[2] * w), round(crop[3] * h)))
-        shot = fit_width(shot, width)
-        target = OUT / "system" / f"{name}.webp"
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shot.save(target, "WEBP", quality=80, method=6)
-        print(f"system/{name}.webp {shot.size[0]}x{shot.size[1]} {target.stat().st_size / 1024:.1f} KB")
+        sizes = {"": width}
+        if width > SCREEN_SMALL:  # 大きい画面写真は、スマホ用の小さい版も作る（index.html の srcset が選ぶ）
+            sizes["-s"] = SCREEN_SMALL
+        for suffix, size in sizes.items():
+            out = fit_width(shot, size)
+            target = OUT / "system" / f"{name}{suffix}.webp"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            out.save(target, "WEBP", quality=80, method=6)
+            print(f"system/{name}{suffix}.webp {out.size[0]}x{out.size[1]} {target.stat().st_size / 1024:.1f} KB")
 
 
 STEPS = {"hero": build_hero, "story": build_story, "cast": build_cast, "world": build_world, "gallery": build_gallery, "ui": build_ui}
