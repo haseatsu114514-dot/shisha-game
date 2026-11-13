@@ -507,6 +507,8 @@ const measureMap = (page) => page.evaluate((helpers) => {
     card: px(card), cardFace: cardStyle.backgroundImage, cardFrame: cardStyle.borderImageSource, cardColor: rgb(cardStyle.color),
     day: text(q("#hud .dc-day")), dayShown: shown(q("#hud .dc-day b")), dayColor: rgb(getComputedStyle(q("#hud .dc-day b")).color),
     slot: text(q("#hud .dc-slot")), slotShown: shown(q("#hud .dc-slot")),
+    // 読み上げ用に残した札が、見た目では 1px 以下に畳まれているか（MAP06）。
+    slotHidden: ((node) => !!node && node.getBoundingClientRect().width <= 1 && node.getBoundingClientRect().height <= 1)(q("#hud .dc-slot")),
     money: text(q("#hud .dc-row.money b")), moneyShown: shown(q("#hud .dc-row.money b")), moneySize: parseFloat(getComputedStyle(q("#hud .dc-row.money b")).fontSize),
     moneyColor: rgb(getComputedStyle(q("#hud .dc-row.money b")).color),
     stamina: px(q("#hud .hud-stamina .hud-bar")), staminaShown: shown(q("#hud .hud-stamina .hud-bar")), staminaFill: px(q("#hud .hud-stamina .hud-bar b")).width,
@@ -532,7 +534,8 @@ const mapFacts = (m) => ({
   pins: m.pins.map((pin) => ({ id: pin.id, label: pin.label, cost: pin.cost, badge: pin.badge, status: pin.status, closedMark: pin.closedMark, people: pin.people,
     shown: [pin.labelShown, pin.costShown, pin.badgeShown, pin.statusShown, pin.peopleShown].every((flag) => flag !== false) })),
   hud: { day: m.hud.day, slot: m.hud.slot, money: m.hud.money, exp: m.hud.exp, limeBadge: m.hud.limeBadge, goal: m.hud.goal?.text ?? null,
-    shown: [m.hud.dayShown, m.hud.slotShown, m.hud.moneyShown, m.hud.staminaShown, m.hud.expShown, m.hud.limeBadgeShown, m.hud.limeLabelShown, m.hud.menuIcon].every(Boolean) },
+    // 時間帯・残りの行動の札（☀残り2）は画面に出さない（MAP06）ので、出ているものの一覧に入れない。
+    shown: [m.hud.dayShown, m.hud.moneyShown, m.hud.staminaShown, m.hud.expShown, m.hud.limeBadgeShown, m.hud.limeLabelShown, m.hud.menuIcon].every(Boolean), slotHidden: m.hud.slotHidden },
 });
 
 const dark = (color) => color.slice(0, 3).reduce((sum, v) => sum + v, 0) < 240 && (color[3] ?? 1) > .5;
@@ -554,7 +557,8 @@ async function dailyMap(page, { phone }) {
   assert(m.hud.cardFace.includes("linear-gradient") && m.hud.cardFace.includes("rgba("), `HUD は半透明の面 ${m.hud.cardFace}`);
   assert(light(m.hud.dayColor) && light(m.hud.moneyColor), "HUD の数字は白");
   assert.equal(m.hud.day, "5/14");
-  assert.match(m.hud.slot, /残り2$/);
+  assert.match(m.hud.slot, /残り2$/, "読み上げ用の文は残る");
+  assert(m.hud.slotHidden, "時間帯・残りの行動の札（☀残り2）は画面に出さない（MAP06）");
   assert.equal(m.hud.money, "42,000円");
   assert(m.hud.moneySize >= (phone ? 24 : 20), `所持金の数字の大きさ ${m.hud.moneySize}`);
   assert.equal(m.hud.exp, "Lv.1");
@@ -601,8 +605,8 @@ async function dailyMap(page, { phone }) {
     if (pin.badge !== null) assert(pin.badgeShown, `${pin.id}: 「!」が出ている`);
     assert(pin.peopleShown, `${pin.id}: 居る人の顔が出ている`);
   }
-  assert.deepEqual(m.pins.filter((pin) => pin.cost).map((pin) => [pin.id, pin.cost]).sort(),
-    [["adam", "¥3,000"], ["c_station", "¥2,500"], ["cafe", "¥800"], ["minto", "¥3,000"], ["naru", "¥3,000"]]);
+  // 料金はピンに出さず、右下のプレビューで見る（MAP05）。
+  assert.deepEqual(m.pins.filter((pin) => pin.cost).map((pin) => [pin.id, pin.cost]), [], "ピンに料金を出さない（MAP05）");
   assert(m.pins.some((pin) => pin.badge === "!"), "新しいイベントの「!」がある");
   assert(m.pins.some((pin) => pin.people.length), "居る人の顔がある");
   // 定休日（DAY5 は EDEN）: 看板の右上の角に「休」の印。
@@ -1107,8 +1111,8 @@ const MAP_PARTS = [["#hud .hud", [""]], ["#hud .hud-card", ALL], ["#hud .dc-main
   ["#hud .hud-stamina .gauge-track", [""]], ["#hud .hud-stamina .hud-bar b", [""]], ["#hud .hud-exp", [""]], ["#hud .hx-lv", [""]], ["#hud .hx-bar", ALL], ["#hud .hx-settled", [""]],
   ["#hud .hud-right", [""]], ["#hud .hud-lime", ALL], ["#hud .hud-lime span", ALL], ["#hud .hud-lime .badge", [""]], ["#hud .hud-menu", ALL], ["#hud .hud-menu i", ALL],
   ["#screen .map", ALL], ['[data-test="pin-minto"]', [""]], ['[data-test="pin-minto"] .pin-visual', [""]], ['[data-test="pin-minto"] .shield', ALL], ['[data-test="pin-minto"] .ico', [""]],
-  ['[data-test="pin-minto"] .sub-label', [""]], ['[data-test="pin-minto"] .pin-cost', [""]], ['[data-test="pin-minto"] .pin-person', [""]], ['[data-test="pin-minto"] .evt-badge', [""]],
-  ['[data-test="pin-adam"]', [""]], ['[data-test="pin-adam"] .shield', ALL], ['[data-test="pin-adam"] .sub-label', [""]], ['[data-test="pin-adam"] .pin-cost', [""]], ['[data-test="pin-adam"] .pin-status', ALL],
+  ['[data-test="pin-minto"] .sub-label', [""]], ['[data-test="pin-minto"] .pin-person', [""]], ['[data-test="pin-minto"] .evt-badge', [""]],
+  ['[data-test="pin-adam"]', [""]], ['[data-test="pin-adam"] .shield', ALL], ['[data-test="pin-adam"] .sub-label', [""]], ['[data-test="pin-adam"] .pin-status', ALL],
   ['[data-test="pin-rest"]', [""]], ['[data-test="pin-rest"] .shield', ALL], ['[data-test="pin-rest"] .sub-label', [""]], ['[data-test="pin-kannon"] .evt-badge', [""]],
   ['[data-test="pin-tonari"] .shield', ALL], ['[data-test="pin-tonari"] .sub-label', [""]], ["#screen .map .map-info", ALL], ["#screen .map .mi-banner", [""]], ["#screen .map .mi-preview", [""]]];
 // ---------------------------------------------------------------- 第2〜5章（LK13・2026-11-11 オーナー「新版を広げる」）
@@ -1504,7 +1508,7 @@ const CARD_PARTS = [["#screen .ch2-contest", ALL], ["#screen .ch2-contest-header
   ["#screen .ch2-contest-description", [""]], ["#screen .ch2-contest-actions .btn", ALL], ["#screen .ch2-contest-header .btn", ALL]];
 const GOAL_MAP_PARTS = [["#hud .hud-card", ALL], ["#hud .dc-main", [""]], ["#hud .dc-meta", [""]], ["#hud .dc-row.money", ALL], ["#hud .dc-row.goal", ALL], ["#hud .dc-row.goal b", [""]],
   ["#hud .hud-stamina", ALL], ["#hud .hud-stamina .hud-bar", [""]], ["#hud .hud-exp", [""]], ["#hud .hx-lv", [""]], ["#hud .hx-bar", ALL],
-  ['[data-test="pin-c_station"] .sub-label', [""]], ['[data-test="pin-c_station"] .pin-cost', [""]], ['[data-test="pin-ch5_to_dubai"]', [""]], ['[data-test="pin-ch5_to_dubai"] .shield', ALL]];
+  ['[data-test="pin-c_station"] .sub-label', [""]], ['[data-test="pin-ch5_to_dubai"]', [""]], ['[data-test="pin-ch5_to_dubai"] .shield', ALL]];
 
 // ---------------------------------------------------------------- ショップ・LIME・レベルアップ・ギャラリー（LK05 の残り）
 

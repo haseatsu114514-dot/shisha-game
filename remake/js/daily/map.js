@@ -66,7 +66,6 @@ function pinCaption(s, locked) {
 }
 const pinSpeech = (s, locked, caption) => !locked && caption === s.label && ["tonari", "rival", "shop", "samechan"].includes(s.kind) ? `${caption}へ行く` : caption;
 /** 地図の利用料は「¥3,000」の短い印（読み上げは「利用料 3,000円」のまま・#2853） */
-const yenMark = (n) => `¥${Math.round(n).toLocaleString("ja-JP")}`;
 /** 定休日・臨時休業は文字の札ではなく、看板をグレーにして「休」の印を付ける（#2853） */
 const CLOSED_TAGS = new Set(["本日定休日", "本日臨時休業"]);
 /** 「今日はどうする？」の操作の説明を出すのは、第1章の最初の自由行動の日（1日目は案内つきの用事だけ）まで。日付を読むだけ（#2853） */
@@ -270,8 +269,15 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
           renderSceneArt(preview, pv.url);
         });
       }
+      // 今は入れない行き先は、理由（本日定休日・夜から営業・今日はもう行った 等）を見える文字で添える（#3555。読み上げだけだった）。
+      // 説明文は増やさず（#2853 の「店名と写真だけ」）、小さな札で見せる。入れる行き先は料金、入れない時はその理由。
+      // 体力は数字で見せない（ゲージでなんとなく把握するゲーム性・MAP04）。料金はピンから外し、ここで見せる（MAP05）。
+      const tags = !av.ok ? (av.why && av.why !== "locked" ? [["mi-why", av.why, "map-why"]] : [])
+        : [s.cost && !freeGuide(s) ? ["mi-cost", `料金 ${yen(s.cost)}`, "map-cost"] : null].filter(Boolean);
+      const tagRow = tags.length ? el("div.mi-tags", tags.map(([cls, text, test]) => el(`span.mi-tag.${cls}`, { text, dataset: { test } }))) : null;
       info.replaceChildren(...[
         el("div.mi-banner", { text: label }),
+        tagRow,
         preview,
       ].filter(child => child != null));
     };
@@ -410,7 +416,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
           peopleRow(people),
         ]),
         el("div.sub-label", { text: caption }),
-        s.cost && !freeGuide(s) ? el("small.pin-cost", { text: yenMark(s.cost), title: `利用料 ${yen(s.cost)}` }) : null,
+        // 料金はピンに出さない（右下のプレビューの「料金」で確かめる・MAP05。読み上げの aria-label には残す）。
         // 休みの札は文字を残したまま、PC・スマホとも CSS で看板の角の「休」の印に置き換える（2画面表示は文字のまま）。
         av.tag ? el(`small.pin-status${closed ? ".pin-closed" : ""}`, { text: av.tag, title: av.tag }) : null,
       ]);
