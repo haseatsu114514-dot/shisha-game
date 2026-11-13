@@ -1,16 +1,15 @@
-import { createSet, detuneFactorFor, resumeMix, playDeck, pauseMix, beatAt, gains, lowCutDb, mod, setTempo, setPitch, syncIncoming, updateSet, anchor, chooseTrack } from './model.mjs';
+import { createSet, resumeMix, playDeck, pauseMix, beatAt, gains, lowCutDb, mod, updateSet, chooseTrack, nudgeDeck } from './model.mjs';
 import { TRACKS, SETS, buildTrackData } from './tracks.mjs';
 export class DJAudio {
   constructor(Context = globalThis.AudioContext, options = {}) {
     this.set = SETS[options.setIndex ?? 0];
-    this.detune = options.detune || (options.detuneFactor != null ? index => index > 0 ? options.detuneFactor : 1 : detuneFactorFor(this.set, options.rng));
     this.loadTrack = options.loadTrack || (async (context, key) => {
       const cfg = TRACKS[key], response = await fetch(new URL('../../../assets/audio/dj/' + cfg.file, import.meta.url));
       if (!response.ok) throw new Error(`音源読み込み失敗: ${cfg.title}`);
       const buffer = await context.decodeAudioData(await response.arrayBuffer());
       return { ...buildTrackData(buffer.getChannelData(0), buffer.sampleRate, cfg), buffer, trimDb: cfg.trimDb };
     });
-    this.Context = Context; this.mix = createSet(this.set, this.detune, options.rng || Math.random, { allowance: options.allowance || 0, ...(options.entry || {}) }); this.context = null; this.voices = [null, null];
+    this.Context = Context; this.mix = createSet(this.set, options.rng || Math.random, { allowance: options.allowance || 0, ...(options.entry || {}) }); this.context = null; this.voices = [null, null];
     this.cache = new Map(); this.tracks = [null, null]; // decoded track data per deck
     this.retiring = new Set(); this.volume = .18; this.muted = false; this.busy = false; this.disposed = false; this.revision = 0;
   }
@@ -136,9 +135,6 @@ export class DJAudio {
     if (this.output) this.output.gain.setTargetAtTime(this.muted || !this.mix.running ? 0 : this.volume, this.now, .012);
   }
   applyRate(id) { const t = this.tracks[id]; if (t) this.voices[id]?.source.playbackRate.setValueAtTime(this.mix.decks[id].bpm / t.nativeBpm, this.now); }
-  tempo(id, value) { setTempo(this.mix.decks[id], value, this.now); this.applyRate(id); }
-  pitch(id, pct) { setPitch(this.mix.decks[id], pct, this.now); this.applyRate(id); }
-  sync() { if (!syncIncoming(this.mix, this.now)) return false; this.applyRate(this.mix.cue.to); return true; }
   async play(id) { return this.start(id); }
   /** 選曲: load the picked candidate on the empty deck (see model chooseTrack). */
   choose(index) {
@@ -149,14 +145,15 @@ export class DJAudio {
   /** Advance the set and apply what changed to the audio graph. Call every frame. */
   update() {
     const view = updateSet(this.mix, this.now);
-    if (view.snapped != null) this.spawn(view.snapped);
+    if (view.retuned != null) this.applyRate(view.retuned); // a slip starts or settles: the incoming track runs a little fast or slow (DJG)
     if (view.stopped != null) this.killVoice(view.stopped);
     // 選曲: fetch both candidates while the player decides, so the pick is ready by the next cue.
     if (view.select && this.context) for (const key of view.select.options) this.track(key).catch(() => {});
     if (view.stopped != null || view.finished) this.setVolume(this.volume);
     return view;
   }
-  nudge(id, beats) { const d = this.mix.decks[id]; if (!d.playing) return false; anchor(d, this.now, beatAt(d, this.now) + beats); this.spawn(id); return true; }
+  /** The platter: move the incoming track along or back while it is out of time (model nudgeDeck). The voice is re-seeked to the new position. */
+  nudge(id, beats) { const moved = nudgeDeck(this.mix, id, beats, this.now); if (moved && this.context) this.spawn(id); return moved; }
   level() {
     if (!this.analyser || !this.mix.running) return 0;
     this.analyser.getFloatTimeDomainData(this.meterData);

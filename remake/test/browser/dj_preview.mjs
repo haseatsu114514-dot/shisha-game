@@ -1,4 +1,4 @@
-// DJ set (2026-11-01 redesign, DJS17 gameplay, 2026-11-11 renewal DJS20〜) in a real Chromium: ▶ ×2 + crossfader (+ optional PITCH/SYNC),
+// DJ set (2026-11-01 redesign, DJS17 gameplay, 2026-11-11 renewal DJS20〜) in a real Chromium: ▶ ×2 + crossfader + the two platters (2026-11-13 DJG: no tempo faders or SYNC; a slip is fixed by turning the platter),
 // quantized entry, riding the guide band for 8 bars, 選曲 cards, floor meter.
 // Renewal: the how-to board before the set, the navi line + step lamps + gold arrows (▶ / crossfader), the crowd's mood word and voices.
 // Normal PR CI only; never launch locally around the recorded Chrome refusal.
@@ -27,9 +27,9 @@ try{
   await page.addInitScript(()=>{window.__djTestFrames=0;const count=()=>{window.__djTestFrames++;requestAnimationFrame(count);};requestAnimationFrame(count);});
   const press=async id=>{if(kind==='pc')await page.locator('#'+id).click();else await page.locator('#'+id).tap();};
   await page.goto(url);
-  // Controls: two ▶, a crossfader, PITCH ×2 and SYNC. No stage header, no nudge/judge/VOL/CUE buttons, no EQ inputs.
-  assert.equal(await page.locator('.stage-btn,header,[data-nudge],[data-nudge-ms],#judge-btn,#offset,#volume,#cue-a,#cue-b,#start,#pause,#mute').count(),0);
-  assert.equal(await page.locator('input[type=range]').count(),3,'crossfader + PITCH ×2 only');
+  // Controls: two ▶, one crossfader, two platters. No tempo faders, no SYNC (DJG), no stage header, no nudge/judge/VOL/CUE buttons, no EQ inputs.
+  assert.equal(await page.locator('.stage-btn,header,[data-nudge],[data-nudge-ms],#judge-btn,#offset,#volume,#cue-a,#cue-b,#start,#pause,#mute,#sync,#pitch-a,#pitch-b,.pitch-col,#lock-a,#lock-b').count(),0);
+  assert.equal(await page.locator('input[type=range]').count(),1,'the crossfader is the only fader');
   assert(await page.locator('#exit').isHidden(),'← 戻る only when opened from the game (?embed=1 in a frame)');
   assert.equal(await page.locator('.eq input').count(),0,'EQ knobs are decorative');
   assert.equal(await page.locator('#track-a').textContent(),'Dance Monster');assert.equal(await page.locator('#track-b').textContent(),'Digital Lemonade');
@@ -37,11 +37,12 @@ try{
   assert.equal((await snap(page)).state,'not-started');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   const stageScale=await page.evaluate(()=>Number(getComputedStyle(document.getElementById('dj-stage')).getPropertyValue('--s'))||1);
   for(const id of ['play-a','play-b']){const r=await page.locator('#'+id).boundingBox();assert(r.height/stageScale>=52&&r.width/stageScale>=88,'Large ▶ targets');}
-  // DJS20/DJS26/DJS27: the floor takes the top 288px; below it the turntables stand 308px tall on both sides. ▶ (90px) sits in its socket on the strip under each
-  // turntable and never overlaps the platter; the crossfader is 400px+ wide.
-  for(const key of ['a','b']){assert.equal(await page.locator('#indicator-'+key).textContent(),'STANDBY');const j=await page.locator('#platter-'+key).boundingBox();assert(j.width/stageScale>=300&&j.height/stageScale>=300,'Large turntables');}
+  // DJS20/DJS26/DJS27/DJG: the floor takes the top 288px; below it the turntables stand 356px+ on both sides (308 before the tempo faders went). ▶ (90px) sits in its
+  // socket at the inner bottom corner and never overlaps the platter's circle; the track name is under the platter; the crossfader is 400px+ wide.
+  for(const key of ['a','b']){assert.equal(await page.locator('#indicator-'+key).textContent(),'STANDBY');const j=await page.locator('#platter-'+key).boundingBox();assert(j.width/stageScale>=355&&j.height/stageScale>=355,'Large turntables');}
   for(const key of ['a','b']){const r=await page.locator('#play-'+key).boundingBox(),j=await page.locator('#platter-'+key).boundingBox(),d=await page.locator('#deck-'+key).boundingBox();
-   assert(r.height/stageScale>=88&&r.width/stageScale>=88,'▶ is a 90px pad');assert(r.y>=j.y+j.height-1,'▶ sits below the platter, not on it');assert(r.x>=d.x-1&&r.x+r.width<=d.x+d.width+1&&r.y+r.height<=d.y+d.height+1,'▶ stays inside its deck');}
+   assert(r.height/stageScale>=88&&r.width/stageScale>=88,'▶ is a 90px pad');assert(Math.hypot(j.x+j.width/2-(r.x+r.width/2),j.y+j.height/2-(r.y+r.height/2))>=j.width/2+r.width/2,'▶ does not overlap the platter\'s circle');
+   const l=await page.locator('#deck-'+key+' .lcd').boundingBox();assert(l.y>=j.y+j.height-1&&l.y+l.height<=d.y+d.height+1&&(l.x+l.width<=r.x+1||l.x>=r.x+r.width-1),'the track name sits under the platter, beside ▶');assert(r.x>=d.x-1&&r.x+r.width<=d.x+d.width+1&&r.y+r.height<=d.y+d.height+1,'▶ stays inside its deck');}
   {const r=await page.locator('#crossfader').boundingBox();assert(r.width/stageScale>=400&&r.height/stageScale>=70,'The crossfader is the widest control');}
   {const f=await page.locator('.floor').boundingBox();assert(f.height/stageScale>=280,'the floor (the guests) takes the top 288px');}
   // Before the set: the how-to board, step 1 lit, one navi line and a gold arrow on ▶ A. ？ 遊び方 folds the board away and back.
@@ -61,26 +62,15 @@ try{
     &&a.right<=x.left&&x.right<=b.left&&pa.right<=x.left+1&&x.right<=pb.left+1   // ▶ A | crossfader | ▶ B along the bottom, turntables outside
     &&a.left>=cr.left&&b.right<=cr.right&&a.bottom<=cr.bottom+1&&b.bottom<=cr.bottom+1;}),'floor above the booth; turntables left and right, the navi over the mixer between them');
   const ready=await snap(page);assert.deepEqual(ready.playing,[false,false]);assert.equal(ready.voices,0);assert.deepEqual(ready.bpms,[120,120],'SET 1 needs no pitch match');assert.equal(ready.phase,'idle');near(ready.floor,.5);
-  assert(await page.locator('#lock-a').evaluate(e=>e.classList.contains('on')),'LOCK lamp lit while BPMs match');
-  // PITCH fader: ±8 %, keyboard steps of 0.01 %, only the chosen deck.
-  await page.locator('#pitch-b').focus();for(let n=0;n<10;n++)await page.locator('#pitch-b').press('ArrowRight');
-  let pitched=await snap(page);near(pitched.pitches[1],.1,.001);near(pitched.bpms[1],120.12,.001);assert.equal(pitched.bpms[0],120);
-  await page.waitForTimeout(60);assert(await page.locator('#lock-b').evaluate(e=>e.classList.contains('on')),'0.1 % off is within the 0.15 % lock');
-  for(let n=0;n<10;n++)await page.locator('#pitch-b').press('ArrowRight');pitched=await snap(page);near(pitched.bpms[1],120.24,.001);
-  await page.waitForTimeout(60);assert(!(await page.locator('#lock-b').evaluate(e=>e.classList.contains('on'))),'0.2 % off unlocks');
-  for(let n=0;n<20;n++)await page.locator('#pitch-b').press('ArrowLeft');pitched=await snap(page);near(pitched.bpms[1],120,.001);
-  // Jog outer rim: clockwise raises BPM by 0.01 per 12°; the centre does nothing; keyboard arrows do the same.
+  assert.equal(await page.locator('#beat').getAttribute('data-state'),'idle','the beat meter is idle until two tracks play');assert(await page.locator('#jog-arrows-a').isHidden());assert(await page.locator('#jog-arrows-b').isHidden());
+  // The platters turn under the finger / the arrow keys, but with nothing out of time they move nothing in the music (DJG).
   for(const deck of [0,1]){
-   const jog=page.locator('#platter-'+(deck?'b':'a'));const before=await snap(page);await jog.focus();await jog.press('ArrowRight');
-   const after=await snap(page);near(after.bpms[deck],before.bpms[deck]+.01,.000001);assert.deepEqual(after.playing,[false,false]);assert.equal(after.bpms[1-deck],before.bpms[1-deck]);
-   await jog.press('ArrowLeft');near((await snap(page)).bpms[deck],before.bpms[deck],.000001);
-   if(kind==='pc'){
-    const r=await jog.boundingBox(),cx=r.x+r.width/2,cy=r.y+r.height/2,R=r.width/2*.85;
-    await page.mouse.move(cx,cy);await page.mouse.down();await page.mouse.move(cx+20,cy+5);await page.mouse.up();near((await snap(page)).bpms[deck],before.bpms[deck],.000001);
-    await page.mouse.move(cx,cy-R);await page.mouse.down();for(let t=1;t<=13;t++){const a=t*5*Math.PI/180;await page.mouse.move(cx+R*Math.sin(a),cy-R*Math.cos(a));}await page.mouse.up();
-    near((await snap(page)).bpms[deck],before.bpms[deck]+.05,.000001);
-    await jog.focus();for(let n=0;n<5;n++)await jog.press('ArrowLeft');near((await snap(page)).bpms[deck],before.bpms[deck],.000001);
-   }
+   const jog=page.locator('#platter-'+(deck?'b':'a')),before=await snap(page);await jog.focus();await jog.press('ArrowRight');await jog.press('ArrowRight');
+   const spin=await jog.evaluate(e=>parseFloat(e.style.getPropertyValue('--spin')));assert(spin>0,'the picture turns clockwise');
+   if(kind==='pc'){const r=await jog.boundingBox(),cx=r.x+r.width/2,cy=r.y+r.height/2,R=r.width/2*.5;   // anywhere on the platter, not only the rim
+    await page.mouse.move(cx,cy-R);await page.mouse.down();for(let t=1;t<=6;t++){const a=t*10*Math.PI/180;await page.mouse.move(cx+R*Math.sin(a),cy-R*Math.cos(a));}await page.mouse.up();
+    assert(await jog.evaluate(e=>parseFloat(e.style.getPropertyValue('--spin')))>spin+40,'dragging the middle of the platter turns it too');}
+   await page.waitForTimeout(120);const after=await snap(page);assert.deepEqual(after.bpms,before.bpms);assert.deepEqual(after.beats,before.beats);assert.deepEqual(after.playing,[false,false]);assert.equal(after.fx.fixes,0);
   }
   // ▶ A starts the set: A on air, B cued at the next 4-bar line (beat 16 in SET 1: 8 s, DJF03), B's waveform stays still.
   await press('play-a');await until(page,'audio',s=>s.running&&s.rms>1e-5,errors);
@@ -88,6 +78,9 @@ try{
   await until(page,'deck A DOM',()=>true,errors);
   assert.equal(await page.locator('#indicator-a').textContent(),'ON AIR');assert.equal(await page.locator('#deck-a').getAttribute('data-playing'),'true');
   assert(await page.locator('#play-a').isDisabled(),'▶ only starts: a deck on air cannot be stopped by ▶');
+  // …but pressing it still answers (no dead buttons): it shakes its head, and the track keeps playing
+  {const r=await page.locator('#play-a').boundingBox();if(kind==='pc')await page.mouse.click(r.x+r.width/2,r.y+r.height/2);else await page.touchscreen.tap(r.x+r.width/2,r.y+r.height/2);
+   const s=await until(page,'nope',x=>x.fx.nopes===1,errors);assert.deepEqual(s.playing,[true,false]);assert(await page.locator('#play-a').evaluate(e=>e.classList.contains('nope')));}
   const a=await hashWaves(page);let b;await until(page,'deck A waveform',()=>true,errors);
   // DJS29: both lanes scroll on one bar grid (the deck on air); the stopped deck B itself never advances.
   for(let i=0;i<40;i++){b=await hashWaves(page);if(b[0]!==a[0]&&b[1]!==a[1])break;await page.waitForTimeout(50);}assert.notEqual(a[0],b[0]);assert.notEqual(a[1],b[1],'B lane scrolls with the shared bar grid');
@@ -117,8 +110,6 @@ try{
   const moved=()=>page.evaluate(()=>[...document.querySelectorAll('#band .strip')].filter(e=>e.style.transform).length);
   if(kind==='reduced')assert.equal(await moved(),0,'reduced motion: the guests do not move');else{let n=0;for(let i=0;i<20&&!n;i++){n=await moved();await page.waitForTimeout(60);}assert(n>0,'the guests sway with the music');}
   if(kind==='reduced')assert.equal(await page.locator('#platter-a').evaluate(e=>e.style.getPropertyValue('--rotation')),'0deg','reduced motion: the platter does not spin');else assert.notEqual(c1,c2,'crowd bobs on the beat');
-  // SYNC exists but SET 1 does not need it; it stays enabled while a cue is open.
-  assert(!(await page.locator('#sync').isDisabled()));assert(!(await page.locator('#sync').evaluate(e=>e.classList.contains('needed'))));
   // Countdown numbers show for the last 4 beats, then ▶ B at the head is quantized onto the beat and graded.
   await until(page,'countdown',s=>s.phase==='cue'&&s.remaining<=4&&s.remaining>0,errors,19000,20);
   const count=await page.locator('#count').textContent();assert(['4','3','2','1'].includes(count),`countdown digit, got ${JSON.stringify(count)}`);
@@ -174,7 +165,7 @@ try{
   assert(mixed,'the fader rode past 0.8 during the 8 bars');assert.match(comboText,/^COMBO \d+$/,'combo counter on the fader');assert(onLine,'the hint said the cap was on the band');
   // Transition end: scored toast, A leaves the air and empties, then the 選曲 cards appear over deck A.
   const done=await until(page,'transition',s=>s.transitions.length>=1,errors,20000,100);
-  const t=done.transitions[0];assert.equal(t.to,'digitalLemonade');assert.equal(t.parts[0],100,'BPM matched');assert(t.parts[2]>=85,`fader ${t.parts[2]} follow ${t.follow}`);assert(t.combo>=16,`combo ${t.combo}`);assert(['S','A'].includes(t.rank),t.rank);
+  const t=done.transitions[0];assert.equal(t.to,'digitalLemonade');assert.equal(t.parts[0],100,'SET 1: nothing slips');assert.deepEqual([t.drifts,t.fixes],[0,0]);assert(t.parts[2]>=85,`fader ${t.parts[2]} follow ${t.follow}`);assert(t.combo>=16,`combo ${t.combo}`);assert(['S','A'].includes(t.rank),t.rank);
   assert.deepEqual(done.playing,[false,true]);assert.equal(done.master,1);assert.equal(done.cue,null);assert.equal(done.phase,'select');assert.equal(done.tracks[0],null);assert(done.floor>.5);
   assert.equal(await page.locator('#toast').evaluate(e=>e.textContent.length>0),true,'transition toast');assert.equal(await page.locator('#toast .medal.stamp').count(),1,'the rank is stamped on (DJF05)');assert.equal(done.fx.lastSfx,'transition');
   assert.equal(await page.locator('#indicator-a').textContent(),'EMPTY');assert.equal(await page.locator('#track-a').textContent(),'— 選曲中 —');assert.equal(await page.locator('#set-progress').textContent(),'2 / 3');
@@ -197,6 +188,40 @@ try{
   assert.deepEqual(errors,[]);
   await page.screenshot({path:path.join(out,`visual-${kind}.png`),fullPage:true});
   results.push({kind,ready,started,entered,mixed,done,picked,passed:true,limits:'Real WebAudio/UI only; physical listening/capture excluded'});await context.close();
+ }
+ // DJG: SET 2. The incoming track slips out of time once in the 8 bars: the navi, the arrows on its platter and the beat meter say so, the other platter does
+ // nothing, and dragging the platter the way the arrows run brings it back (the fader is driven by script here; the mouse does the turning).
+ {
+  const context=await browser.newContext({viewport:{width:1280,height:720}}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.addInitScript(()=>{window.__djTestFrames=0;const count=()=>{window.__djTestFrames++;requestAnimationFrame(count);};requestAnimationFrame(count);});
+  await page.goto(url.replace('set=1','set=2'));assert.equal(await page.locator('#set-name').textContent(),'SET 2');await page.locator('#play-a').click();
+  const ride=s=>page.evaluate(v=>{const f=document.getElementById('crossfader');f.value=String(v);f.dispatchEvent(new Event('input',{bubbles:true}));},s.progress>=.97?1:s.guide??0);
+  let s,slip=null;const deadline=Date.now()+60000;
+  for(;;){
+   s=await snap(page);assert(Date.now()<deadline,`no slip: ${JSON.stringify({phase:s.phase,fader:s.fader})}`);
+   if(s.phase==='cue'&&s.cue&&!s.cue.pressed&&s.remaining<=.05)await page.locator('#play-b').click();
+   else if(s.phase==='mix'){await ride(s);if(s.sync?.off){slip=s;break;}assert(s.fader.drifts.length===1&&!s.fader.fixes);}
+   assert.notEqual(s.phase,'select','the slip comes before the 8 bars end');await page.waitForTimeout(15);
+  }
+  const ahead=slip.sync.error>0;assert.equal(slip.sync.deck,1);assert.equal(slip.jog,ahead?'b-ccw':'b-cw');assert.match(slip.navi,ahead?/ズレた！ 右の皿を左回りに回そう/:/ズレた！ 右の皿を右回りに回そう/);assert(slip.points.includes('jog-b'));
+  assert.equal(await page.locator('#beat').getAttribute('data-state'),'off');assert.match(await page.locator('#beat-label').textContent(),/ズレ/);
+  assert(await page.locator('#jog-arrows-b').isVisible(),'arrows on the platter to turn');assert.equal(await page.locator('#jog-arrows-b').evaluate(e=>e.classList.contains('ccw')),ahead);assert(await page.locator('#jog-arrows-a').isHidden());
+  assert(await page.locator('#platter-b').evaluate(e=>e.classList.contains('off')));assert(await page.locator('#voices .voice[data-kind=slip]').count()>=1,'a guest notices');
+  const dot=await page.locator('#beat-dot').evaluate(e=>Number(e.style.getPropertyValue('--x')));assert(ahead?dot>.1:dot<-.1,`the dot is out of the frame on the side the track ran to: ${dot}`);
+  // the playing deck's platter moves nothing
+  await page.locator('#platter-a').focus();for(let n=0;n<4;n++)await page.locator('#platter-a').press(ahead?'ArrowLeft':'ArrowRight');await page.waitForTimeout(120);
+  s=await snap(page);assert(s.sync.off&&s.fx.fixes===0,'turning the other platter fixes nothing');
+  // drag the incoming platter along its rim the way the arrows run until QUANTIZE catches it
+  const r=await page.locator('#platter-b').boundingBox(),cx=r.x+r.width/2,cy=r.y+r.height/2,R=r.width/2*.8,dir=ahead?-1:1;
+  await page.mouse.move(cx,cy-R);await page.mouse.down();
+  for(let t=1;t<=40&&!s.fx.fixes;t++){const a=dir*t*6*Math.PI/180;await page.mouse.move(cx+R*Math.sin(a),cy-R*Math.cos(a));await page.waitForTimeout(40);s=await snap(page);await ride(s);}
+  await page.mouse.up();
+  const fixed=await until(page,'fixed',x=>x.fx.fixes===1&&x.sync&&!x.sync.off,errors);assert(Math.abs(fixed.sync.error)<.01,'snapped onto the beat');assert.equal(fixed.fader.fixes,1);
+  assert.equal(await page.locator('#beat').getAttribute('data-state'),'lock');assert(await page.locator('#jog-arrows-b').isHidden());assert(await page.locator('#platter-b').evaluate(e=>!e.classList.contains('off')));
+  assert.match(await page.locator('#heat-delta').textContent(),/^\+3　ズレを直した$/);assert(await page.locator('#voices .voice[data-kind=fix]').count()>=1);assert(fixed.bpms[1]===fixed.bpms[0],'the tempo is the playing track\'s again');
+  for(;;){s=await snap(page);if(s.phase!=='mix')break;await ride(s);await page.waitForTimeout(20);}
+  const t=s.transitions[0];assert.deepEqual([t.drifts,t.fixes],[1,1]);assert(t.parts[0]>=60,`ビート ${t.parts[0]} (${t.sync})`);assert.match(await page.locator('#toast').textContent(),/ビート/);
+  await page.screenshot({path:path.join(out,'visual-slip.png')});assert.deepEqual(errors,[]);results.push({kind:'slip',slip:slip.sync,transition:t,passed:true});await context.close();
  }
  // DJF06〜08: one whole SET 1 to the end (PC; the fader is driven by script here, native input is covered above). The afterglow, the result card
  // that counts up and is stamped, the next goal, and 「もう一度」 putting the first track straight back on.

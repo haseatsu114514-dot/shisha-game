@@ -1,5 +1,5 @@
 // DJ の効果音（2026-11-13 DJF02）。曲とは別の出口（bus）から鳴らす: メーターには乗らず、曲の音量・ミュートには従う。
-// 役割を分ける: カウント＝高く短いクリック／入り＝低い衝撃＋歓声／外した＝下がる鈍い音／コンボの節目＝手拍子／つなぎ・セットの締め＝歓声と拍手。
+// 役割を分ける: カウント＝高く短いクリック／入り＝低い衝撃＋歓声／外した＝下がる鈍い音／コンボの節目＝手拍子／ズレた＝たわむ音・直した＝はまる音／つなぎ・セットの締め＝歓声と拍手。
 // 音程のある音は D と A だけ（5曲のキー A minor・C major・F major・D minor のどれにも入っている音）。
 // 大きさは feel.mjs の FEEL.sfx（出来事が大きいほど大きい）。WebAudio の部品が無い環境（テストの注入コンテキスト）では何もしない。
 import { FEEL } from './feel.mjs';
@@ -45,7 +45,7 @@ export class DJSfx {
   clap(at) { const g = FEEL.sfx.clap; this.burst({ freq: 1500, at, dur: .09, gain: g }); this.burst({ freq: 2300, at: at + .012, dur: .07, gain: g * .7 }); }
   up(at) { const g = FEEL.sfx.up; this.tone({ type: 'triangle', from: 587.33, at, dur: .09, gain: g }); this.tone({ type: 'triangle', from: 880, at: at + .09, dur: .14, gain: g }); }
   down(at) { const g = FEEL.sfx.down; this.tone({ type: 'triangle', from: 440, at, dur: .1, gain: g }); this.tone({ type: 'triangle', from: 293.66, at: at + .1, dur: .18, gain: g }); }
-  /** name: tick / entry / combo / broken / transition / pick / finish / stamp。鳴らしたら true。 */
+  /** name: tick / entry / combo / broken / nope / slip / fix / transition / pick / finish / stamp。鳴らしたら true。 */
   play(name, arg = {}) {
     const c = this.ready(); if (!c) return false;
     const S = FEEL.sfx, now = c.currentTime, at = Math.max(now, Number.isFinite(arg.at) ? arg.at : now);
@@ -61,6 +61,10 @@ export class DJSfx {
       for (let i = 0; i < claps; i++) this.clap(at + i * .11);
       if (n >= 16) this.sample('cheer', { gain: S.cheer[`combo${Math.min(32, n)}`] || 0, at, rate: 1.08 });
     } else if (name === 'broken') this.tone({ from: 95, to: 60, at, dur: .12, gain: S.thud });
+    // ズレ（DJG）: レコードが滑るような、たわむ音。直した瞬間は、はまる音（高いクリック2つ）
+    else if (name === 'nope') this.tone({ from: 110, to: 80, at, dur: .07, gain: S.thud * .7 }); // 押せない ▶ を押した
+    else if (name === 'slip') { this.tone({ type: 'triangle', from: 440, to: 392, at, dur: .16, gain: S.slip }); this.tone({ type: 'triangle', from: 392, to: 440, at: at + .16, dur: .14, gain: S.slip * .8 }); }
+    else if (name === 'fix') { this.tone({ from: 1568, at, dur: .03, gain: S.fix }); this.tone({ from: 2093, at: at + .06, dur: .05, gain: S.fix }); this.clap(at + .06); }
     else if (name === 'transition') {
       const r = arg.rank;
       if (r === 'S') { this.impact(at, S.impact, true); this.sample('cheer', { gain: S.cheer.S, at }); }

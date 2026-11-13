@@ -25,7 +25,7 @@ button:hover{filter:drop-shadow(0 3px 3px #0009) brightness(1.18)}
 button:active,button.hit{transform:translateY(2px);filter:drop-shadow(0 1px 1px #0009) brightness(.9)}
 button:focus-visible,summary:focus-visible,.platter:focus-visible{outline:3px solid #fff;outline-offset:3px}
 input[type=range]:focus-visible{outline:none}
-.xtrack:has(#crossfader:focus-visible),.pitch-col:has(input:focus-visible){filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 6px #fff)}
+.xtrack:has(#crossfader:focus-visible){filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 6px #fff)}
 button:disabled{opacity:.45;cursor:default;transform:none}
 button.small{min-height:40px;font-size:13px;white-space:nowrap}
 button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill / 14px / 0 stretch}
@@ -155,8 +155,8 @@ button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill 
 .howto li p{font-size:14px;font-weight:700;line-height:1.3;color:#efe9f4}
 .how-foot{font-size:14px;font-weight:700;text-align:center;color:#d8cdea}
 .how-foot strong{color:var(--gold)}
-/* ── 下: ブース。左右に大きなターンテーブル（296px・DJS26）、中央の上に案内と曲の流れ、その下に PITCH・ミキサー・PITCH ───── */
-.console{flex:1;min-height:0;margin:4px 12px 4px;display:grid;grid-template-columns:320px minmax(0,1fr) 320px;grid-template-rows:200px minmax(0,1fr);gap:6px 10px;padding:6px 14px;
+/* ── 下: ブース。左右に大きなターンテーブル（356〜366px・DJG）、中央の上に案内と曲の流れ、その下にミキサー ───── */
+.console{flex:1;min-height:0;margin:4px 12px 4px;display:grid;grid-template-columns:var(--deck-w,362px) minmax(0,1fr) var(--deck-w,362px);grid-template-rows:200px minmax(0,1fr);gap:6px 10px;padding:6px 14px;
  background:url('../../img/ui/dj/controller-body-duo.webp') center/100% 100% no-repeat,#16121f}
 .deck,.mixer,.mixrow,.navi{min-height:0;min-width:0}
 /* 中央の上: 案内（いまやること）と曲の流れ */
@@ -168,12 +168,12 @@ button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill 
 .steps li.now{color:var(--gold)}.steps li.now i{background-image:url('../../img/ui/craft-night/step-now.webp');color:#fff;filter:drop-shadow(0 0 6px #f0a64a);animation:lamp 1s ease-in-out infinite alternate}
 @keyframes lamp{to{filter:drop-shadow(0 0 12px #ffc857)}}
 .say{min-width:0;display:flex;flex-direction:column;justify-content:center}
-.coach{font-size:24px;font-weight:900;line-height:1.25;letter-spacing:.02em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.coach{font-size:22px;font-weight:900;line-height:1.25;letter-spacing:.02em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .coach.warn{color:var(--warn)}
 .coach-sub{font-size:14px;font-weight:700;line-height:1.35;color:#cfc4e2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .coach-sub:empty{display:none}
-.lane{display:grid;grid-template-rows:1fr 1fr;gap:4px;padding-right:38px}
-.lane>div{display:flex;gap:8px;align-items:center;min-height:0}
+.lane{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:1fr 1fr;gap:4px;padding-right:38px}
+.lane>div{display:flex;gap:8px;align-items:center;min-height:0;min-width:0}
 .lane b{flex:none;display:grid;place-items:center;width:24px;height:24px;font-size:13px;font-weight:900;color:#150f22;background:url('../../img/ui/craft-night/step-done.webp') center/contain no-repeat}
 .lane b.a{color:var(--a)}.lane b.b{color:var(--b)}
 .lane canvas{flex:1;min-width:0;height:39px;display:block;border-radius:4px}
@@ -183,8 +183,9 @@ button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill 
 .credits summary::-webkit-details-marker{display:none}
 .credits details[open] .pop{position:absolute;right:0;bottom:40px;width:540px;max-height:400px;overflow:auto;z-index:9;padding:2px 6px;border:14px solid transparent;border-image:var(--kit) 40 fill / 14px / 0 stretch;filter:drop-shadow(0 10px 20px #000c)}
 .pop p{margin:0 0 6px}.pop a{color:var(--b)}
-/* 左右のデッキ（DJS26・DJS27）: 大きなターンテーブル（308px）と、その下の台座。台座には曲名と BPM の表示窓と、▶ の受け皿（▶ は皿に重ねない）。
-   状態のランプは皿の外側の上の角（円が空ける角）。 */
+/* 左右のデッキ（DJS26・DJS27・DJG）: 大きなターンテーブル（--jog。controller-fx.mjs が画面の幅から決める）を外側の上に置き、
+   ▶ は内側の下の角の受け皿（皿の丸には重ねない）、曲名と BPM は皿の下の細い窓。状態のランプは皿の外側の上の角（円が空ける角）。
+   皿は全面が触れる: 入れた曲の拍がズレた時に回して戻す（ズレている間は縁が脈打ち、上に回す向きの矢印が流れる）。 */
 .deck{--deck:var(--a);position:relative;grid-row:1/3;grid-column:1}
 .deck.b{--deck:var(--b);grid-column:3}
 .deck-indicator{position:absolute;z-index:2;top:0;left:0;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.1em;color:#8f84a6}
@@ -192,8 +193,7 @@ button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill 
 .deck-indicator:before{content:"";width:11px;height:11px;border-radius:50%;background:currentColor}
 .deck[data-playing=true] .deck-indicator{color:var(--deck)}.deck[data-playing=true] .deck-indicator:before{box-shadow:0 0 10px var(--deck),0 0 2px #fff}
 .deck[data-role=empty] .deck-indicator{color:#5d5670}
-/* jog wheel: outer grip ring (radius > 62 %) = fine pitch; the centre shows the artwork */
-.platter{position:absolute;top:0;left:calc(50% - 154px);width:308px;height:308px;border-radius:50%;display:grid;place-items:center;touch-action:none;cursor:grab;--rim:transparent;
+.platter{position:absolute;top:0;left:0;width:var(--jog,356px);height:var(--jog,356px);border-radius:50%;display:grid;place-items:center;touch-action:none;cursor:grab;--rim:transparent;
  background:radial-gradient(circle,transparent 61%,var(--rim) 62%,var(--rim) 100%);box-shadow:0 8px 14px #000b;transition:box-shadow .15s}
 .platter:before{content:"";position:absolute;inset:0;border-radius:50%;background:url('../../img/ui/dj/jog-wheel-purple.webp') center/100% 100% no-repeat;transform:rotate(calc(var(--rotation,0deg) + var(--spin,0deg)));will-change:transform}
 .deck.b .platter:before{background-image:url('../../img/ui/dj/jog-wheel-cyan.webp')}
@@ -201,24 +201,31 @@ button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill 
 .deck[data-role=empty] .platter{filter:brightness(.55) saturate(.4)}
 .platter.touching{cursor:grabbing;--rim:color-mix(in srgb,var(--deck),transparent 65%)}
 .platter.tick{--rim:color-mix(in srgb,var(--deck),transparent 35%)}
-.deck-display{position:relative;z-index:1;width:120px;height:120px;border-radius:50%;overflow:hidden;pointer-events:none;background:var(--art,none) center/cover no-repeat;transform:rotate(calc(var(--rotation,0deg) + var(--spin,0deg)));will-change:transform}
-/* 台座（deck-strip.webp）: 表示窓 = 幅 2.2〜68.8 %・高さ 11〜89 %、▶ の受け皿の中心 = 幅 84.4 %。右デッキは左右反転 */
-.deck-strip{position:absolute;left:0;right:0;bottom:0;height:100px;display:flex}
-.deck.b .deck-strip{flex-direction:row-reverse}
-.deck-strip:before{content:"";position:absolute;inset:0;background:url('../../img/ui/dj/deck-strip.webp') center/100% 100% no-repeat}
-.deck.b .deck-strip:before{transform:scaleX(-1)}
-.lcd{position:relative;flex:none;width:213px;min-width:0;margin:11px 0 11px 7px;padding:0 14px;display:flex;flex-direction:column;justify-content:center;gap:7px}
-.deck.b .lcd{margin:11px 7px 11px 0;align-items:flex-end}
-.track-name{max-width:100%;font-size:15px;font-weight:800;line-height:1.1;color:#efe9f4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lcd-row{display:flex;align-items:center;gap:12px}
-.deck.b .lcd-row{flex-direction:row-reverse}
+.deck.b .platter{left:auto;right:0}
+.platter.off{--rim:color-mix(in srgb,var(--warn),transparent 45%);animation:jog-off .5s ease-in-out infinite alternate}
+@keyframes jog-off{to{--rim:color-mix(in srgb,var(--gold),transparent 30%);box-shadow:0 8px 14px #000b,0 0 26px #ffc857aa}}
+/* 回す向きの矢印（金色 = いま触るところ）: 皿の上の縁に沿って3つ流れる。.ccw は左回り */
+.jog-arrows{position:absolute;z-index:3;top:10px;left:calc(var(--jog,356px) / 2 - 62px);width:124px;height:46px;display:flex;justify-content:center;align-items:flex-start;gap:6px;pointer-events:none}
+.deck.b .jog-arrows{left:auto;right:calc(var(--jog,356px) / 2 - 62px)}
+.jog-arrows[hidden]{display:none}
+.jog-arrows i{flex:none;width:32px;height:42px;background:url('../../img/ui/dj/chevron.webp') center/contain no-repeat;filter:drop-shadow(0 2px 4px #000c);animation:march .6s linear infinite}
+.jog-arrows i:nth-child(1){transform:translateY(12px) rotate(-26deg)}.jog-arrows i:nth-child(2){animation-delay:.12s}.jog-arrows i:nth-child(3){transform:translateY(12px) rotate(26deg);animation-delay:.24s}
+.jog-arrows.ccw{flex-direction:row-reverse}
+.jog-arrows.ccw i:nth-child(1){transform:translateY(12px) rotate(26deg) scaleX(-1)}.jog-arrows.ccw i:nth-child(2){transform:scaleX(-1)}.jog-arrows.ccw i:nth-child(3){transform:translateY(12px) rotate(-26deg) scaleX(-1)}
+.deck-display{position:relative;z-index:1;width:138px;height:138px;border-radius:50%;overflow:hidden;pointer-events:none;background:var(--art,none) center/cover no-repeat;transform:rotate(calc(var(--rotation,0deg) + var(--spin,0deg)));will-change:transform}
+/* 曲名と BPM の窓（皿の下の細い帯。▶ の受け皿の分だけ内側を空ける） */
+.lcd{position:absolute;left:0;bottom:0;width:calc(100% - 106px);height:calc(100% - var(--jog,356px) - 6px);max-height:56px;min-height:38px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 6px;
+ border:10px solid transparent;border-image:var(--glass) 28 fill / 10px / 0 stretch}
+.deck.b .lcd{left:auto;right:0;flex-direction:row-reverse}
+.track-name{min-width:0;font-size:15px;font-weight:800;line-height:1.1;color:#efe9f4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bpm{flex:none;font-variant-numeric:tabular-nums;white-space:nowrap}
-.bpm output{font:700 25px/1 var(--mono);letter-spacing:-.03em;color:var(--deck);text-shadow:0 0 9px color-mix(in srgb,var(--deck),transparent 45%)}
+.bpm output{font:700 19px/1 var(--mono);letter-spacing:-.03em;color:var(--deck);text-shadow:0 0 9px color-mix(in srgb,var(--deck),transparent 45%)}
 .bpm:after{content:"BPM";margin-left:4px;font-size:9px;font-weight:700;letter-spacing:.1em;color:#b9aecd}
-.lock{flex:none;display:flex;align-items:center;gap:4px;font:800 11px/1 var(--mono);letter-spacing:.1em;color:#6c6480;transition:color .2s}
-.lock:before{content:"";width:16px;height:16px;background:url('../../img/ui/craft-night/step-next.webp') center/contain no-repeat}
-.lock.on{color:var(--ok)}.lock.on:before{background-image:url('../../img/ui/craft-night/step-now.webp');filter:drop-shadow(0 0 5px #ffc857)}
-.deck-controls{position:relative;flex:1;display:grid;place-items:center}
+.deck-controls{position:absolute;right:0;bottom:0;width:100px;height:100px;display:grid;place-items:center}
+.deck.b .deck-controls{right:auto;left:0}
+/* 受け皿の絵は台座の絵（deck-strip.webp）の右端の丸いくぼみを切り出して使う */
+.deck-controls:before{content:"";position:absolute;inset:0;background:url('../../img/ui/dj/deck-strip.webp') 100% 50%/320px 100px no-repeat;-webkit-mask-image:radial-gradient(circle,#000 62%,transparent 70%);mask-image:radial-gradient(circle,#000 62%,transparent 70%)}
+.deck.b .deck-controls:before{transform:scaleX(-1)}
 /* ▶: 丸いパッド（play-a / play-b）。次に押す側は金（play-go）に光り、入りに向かって輪が縮む */
 .deck-play{position:relative;display:block;width:90px;height:90px;min-height:0;padding:0;border:0;border-image:none;border-radius:50%;font-size:0;color:transparent;overflow:visible;
  background:url('../../img/ui/dj/play-a.webp') center/100% 100% no-repeat;filter:saturate(.8) brightness(.85)}
@@ -226,6 +233,8 @@ button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill 
 .deck-play:hover{filter:brightness(1.05)}
 .deck-play:active,.deck-play.hit{transform:scale(.96);filter:brightness(.9)}
 .deck-play:disabled{opacity:1;filter:saturate(.3) brightness(.45)}
+.deck-play.nope{animation:nope .26s ease-out}
+@keyframes nope{0%{transform:translateX(-5px)}30%{transform:translateX(5px)}60%{transform:translateX(-3px)}100%{transform:none}}
 .deck-play[aria-pressed=true],.deck-play[aria-pressed=true]:disabled{filter:drop-shadow(0 0 7px var(--deck)) brightness(1.15);transform:scale(.97)}
 .deck .deck-play:is(.cue-soon,.cue-open,.first){background-image:url('../../img/ui/dj/play-go.webp');filter:drop-shadow(0 0 9px #f0a64a) brightness(1.1)}
 .deck-play.cue-open{animation:go .3s ease-in-out infinite alternate}
@@ -241,36 +250,19 @@ button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill 
 @keyframes kick{0%{scale:1.04}100%{scale:1}}
 .deck-play:after{content:"";position:absolute;inset:2px;border-radius:50%;border:4px solid var(--gold);box-shadow:0 0 14px #f0a64a,inset 0 0 8px #f0a64a88;opacity:0;transform:scale(var(--ap,1));pointer-events:none;transition:opacity .15s}
 .deck-play.cue-soon:after{opacity:.95}
-/* 中央の下: PITCH（±8 %。SET 1 では使わない）・ミキサー・PITCH */
-.mixrow{grid-column:2;grid-row:2;display:grid;grid-template-columns:58px minmax(0,460px) 58px;justify-content:center;gap:10px}
-.pitch-col{--deck:var(--a);position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:0}
-.pitch-col.b{--deck:var(--b)}
-.pitch-col small{font-size:10px;color:var(--deck)}
-.pitch-col:before{content:"";position:absolute;left:0;right:0;top:15px;bottom:15px;background:url('../../img/ui/dj/pitch-plate.webp') center/100% 100% no-repeat}
-.pitch-col input{position:relative;z-index:1}
-.pitch-value{font:700 10px/1 var(--mono);color:#cfc4e2;z-index:1}
-#dj-stage[data-pitch="off"] .pitch-col{opacity:.42}
+/* 中央の下: ミキサー（メーター・ランプ・ビートメーター・横フェーダー）。PITCH の列は DJG で外した */
+.mixrow{grid-column:2;grid-row:2;display:grid;grid-template-columns:minmax(0,460px);justify-content:center}
 /* 金色の矢印: いま触るところ */
 .point{position:absolute;z-index:5;width:56px;height:56px;background:url('../../img/ui/dj/arrow.webp') center/contain no-repeat;pointer-events:none;filter:drop-shadow(0 3px 4px #000a)}
 .point[hidden]{display:none}
 .point.play{left:calc(50% - 28px);bottom:100px;transform:rotate(90deg);animation:point-down .55s ease-in-out infinite alternate}
 @keyframes point-down{to{transform:translateY(12px) rotate(90deg)}}
-.point.pitch{width:30px;height:40px;left:calc(50% - 15px);background-image:url('../../img/ui/dj/chevron.webp')}
-.point.pitch.up{top:26px;transform:rotate(-90deg);animation:point-up .55s ease-in-out infinite alternate}
-.point.pitch.down{bottom:26px;transform:rotate(90deg);animation:point-down .55s ease-in-out infinite alternate}
-@keyframes point-up{to{transform:translateY(-12px) rotate(-90deg)}}
-.point.sync{width:36px;height:36px;left:calc(50% - 18px);top:-30px;transform:rotate(90deg);animation:point-down .55s ease-in-out infinite alternate}
 /* faders: transparent native track, generated cap */
 input[type=range]{-webkit-appearance:none;appearance:none;margin:0;background:transparent;cursor:grab;touch-action:none;accent-color:var(--deck,var(--glow))}
 input[type=range].dragging{cursor:grabbing}
 input[type=range]::-webkit-slider-runnable-track{background:transparent;border:0}
 input[type=range]::-moz-range-track{background:transparent;border:0}
 input[type=range]::-moz-range-progress{background:transparent}
-.vfader{writing-mode:vertical-lr;direction:rtl;flex:1 1 0;width:54px;height:auto;min-height:0}
-.vfader::-webkit-slider-thumb{-webkit-appearance:none;width:46px;height:27px;border:0;border-radius:4px;background:url('../../img/ui/dj/fader-cap-h-purple.webp') center/100% 100% no-repeat;filter:drop-shadow(0 3px 3px #000b);transition:transform .08s,filter .08s}
-.vfader::-moz-range-thumb{width:46px;height:27px;border:0;border-radius:4px;background:url('../../img/ui/dj/fader-cap-h-purple.webp') center/100% 100% no-repeat;filter:drop-shadow(0 3px 3px #000b)}
-.pitch-col.b .vfader::-webkit-slider-thumb{background-image:url('../../img/ui/dj/fader-cap-h-cyan.webp')}
-.pitch-col.b .vfader::-moz-range-thumb{background-image:url('../../img/ui/dj/fader-cap-h-cyan.webp')}
 input[type=range].dragging::-webkit-slider-thumb,input[type=range]:active::-webkit-slider-thumb{transform:scale(.95);filter:brightness(1.35) drop-shadow(0 0 7px var(--deck,var(--glow)))}
 input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 /* mixer: channel meters A / B, QUANTIZE / AUTO EQ lamps, SYNC, the big crossfader. No EQ knobs (DJS29: HI / MID / LOW looked like controls and confused) */
@@ -283,11 +275,17 @@ input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 .led{justify-self:center;display:flex;align-items:center;gap:5px;font:800 10px/1 var(--mono);letter-spacing:.06em;color:#6c6480;white-space:nowrap}
 .led:before{content:"";width:10px;height:10px;border-radius:50%;background:#2b2440;box-shadow:inset 0 1px 2px #000}
 .led.on{color:var(--ok)}.led.on:before{background:var(--ok);box-shadow:0 0 8px var(--ok)}
+/* ビートメーター（DJG）: 2曲の拍のズレ。金の点が真ん中の枠にあれば合っている。ズレると点が左右へ出て、皿を回すと戻る（横フェーダーの「枠に入れる」と同じ見方） */
+.beat{position:relative;height:50px;display:grid;grid-template-rows:13px minmax(0,1fr);justify-items:center;gap:3px}
+.beat small{font:800 10px/1.2 var(--mono);letter-spacing:.08em;color:#8f84a6;white-space:nowrap}
+.beat-track{position:relative;width:100%;border:8px solid transparent;border-image:var(--strip) 60 fill / 8px / 0 stretch}
+.beat-zone{position:absolute;left:calc(50% - 18px);top:-6px;bottom:-6px;width:36px;background:url('../../img/ui/dj/zone.webp') center/100% 100% no-repeat;opacity:.55}
+.beat-dot{position:absolute;left:calc(50% - 10px);top:calc(50% - 10px);width:20px;height:20px;background:url('../../img/ui/craft-night/step-now.webp') center/contain no-repeat;transform:translateX(calc(var(--x,0) * 72px));transition:transform .08s linear;opacity:.35}
+.beat[data-state=lock] small{color:var(--ok)}.beat[data-state=lock] .beat-zone{background-image:url('../../img/ui/dj/zone-ok.webp');opacity:1}.beat[data-state=lock] .beat-dot{opacity:1}
+.beat[data-state=off] small{color:var(--warn);font-size:11px;animation:lamp .3s ease-in-out infinite alternate}.beat[data-state=off] .beat-zone{opacity:1}.beat[data-state=off] .beat-dot{opacity:1;filter:drop-shadow(0 0 6px #ffc857)}
+.beat.snap .beat-zone{animation:beat-snap .4s ease-out}
+@keyframes beat-snap{0%{transform:scale(1.9);filter:brightness(2)}100%{transform:none}}
 #led-autoeq.on{color:var(--a)}#led-autoeq.on:before{background:var(--a);box-shadow:0 0 8px var(--a)}
-.sync-box{position:relative;display:grid;height:48px}
-.sync{min-height:0;height:100%;padding:0;font:800 15px/1 var(--mono);letter-spacing:.14em}
-.sync.needed:not(:disabled){color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill / 14px / 0 stretch}
-#dj-stage[data-pitch="off"] .sync-box{opacity:.42}
 .xfade{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:flex-end;--deck:#ece6dc}
 .mix-label{display:flex;justify-content:space-between;align-items:center;height:30px;padding:0 6px}
 .mix-label>b{display:grid;place-items:center;width:30px;height:30px;font-size:16px;font-weight:900;background:url('../../img/ui/craft-night/step-next.webp') center/contain no-repeat}
@@ -371,7 +369,8 @@ input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 .result-card .advice{margin:10px 0 12px;font-size:15px;font-weight:700;color:#efe9f4}
 .result-actions{display:flex;gap:12px}.result-actions button{flex:1;min-height:50px;font-size:17px;font-weight:900}
 @media (prefers-reduced-motion:reduce){.platter:before,.deck-display{transform:none}button{transition:none}
- .judge.pop,.count.beat,.heat-text strong.pop,.drop.big,.drop.small,.drop.miss,.drop.finish,.floor-art:is(.shake-drop,.shake-sway,.shake-big,.shake-stumble),.burst.go,.platter.kick,.medal.stamp,.combo.pop,.combo.broken,.result-card.settled,.guide.hit,.guide.miss,.deck-play.cue-open,.steps li.now i,.point,.fader-arrows i{animation:none}
+ .judge.pop,.count.beat,.heat-text strong.pop,.drop.big,.drop.small,.drop.miss,.drop.finish,.floor-art:is(.shake-drop,.shake-sway,.shake-big,.shake-stumble),.burst.go,.platter.kick,.medal.stamp,.combo.pop,.combo.broken,.deck-play.nope,.platter.off,.jog-arrows i,.beat[data-state=off] small,.beat.snap .beat-zone,.result-card.settled,.guide.hit,.guide.miss,.deck-play.cue-open,.steps li.now i,.point,.fader-arrows i{animation:none}
+ .jog-arrows i{opacity:1}.beat-dot{transition:none}
  .floor-art.hold{filter:none}.drop.finish{opacity:1}.combo.broken{opacity:.5}.result-card.settled .result-goal{transition:none}
  .fader-arrows i{opacity:1}.guide{transition:none}.voice{animation:voice-still 2.7s both}}
 @keyframes voice-still{0%,90%{opacity:1}100%{opacity:0}}
@@ -416,21 +415,12 @@ html[data-density=phone] .credits details,html[data-density=phone] .credits summ
 html[data-density=phone] .deck-indicator{font-size:0;letter-spacing:0;gap:0}
 html[data-density=phone] .deck-indicator:before{width:18px;height:18px}
 html[data-density=phone] .track-name{font-size:20px}
-html[data-density=phone] .bpm output{font-size:26px}
+html[data-density=phone] .bpm output{font-size:20px}
+html[data-density=phone] .beat small{font-size:15px}html[data-density=phone] .beat[data-state=off] small{font-size:16px}html[data-density=phone] .beat{grid-template-rows:18px minmax(0,1fr)}
 html[data-density=phone] .lcd{gap:4px;padding:0 10px}
 html[data-density=phone] .bpm:after{display:none}
-html[data-density=phone] .lock{font-size:0;gap:0}
-html[data-density=phone] .lock:before{width:24px;height:24px}
-html[data-density=phone] .pitch-col small{display:none}
-html[data-density=phone] .mixrow{grid-template-columns:78px minmax(0,460px) 78px}
-html[data-density=phone] .pitch-col:before{top:0}
-html[data-density=phone] .pitch-value{font-size:20px}
-html[data-density=phone] .vfader{width:74px}
-html[data-density=phone] .vfader::-webkit-slider-thumb{width:62px;height:38px}
-html[data-density=phone] .vfader::-moz-range-thumb{width:62px;height:38px}
 html[data-density=phone] .led{font-size:0;gap:0}
 html[data-density=phone] .led:before{width:14px;height:14px}
-html[data-density=phone] .sync{font-size:20px;letter-spacing:.04em}
 html[data-density=phone] .mix-label>b{font-size:20px;width:34px;height:34px}
 html[data-density=phone] .fader-hint{font-size:22px}
 html[data-density=phone] .combo{font-size:20px}

@@ -1,8 +1,11 @@
 // DJ set model (pure functions, audio-clock seconds). A SET opens with a fixed pair, then the player picks each next
 // track from two candidates (選曲: key, energy and what the floor asks for). Each transition: press ▶ on the incoming
-// deck at the phrase head (quantized to the nearest beat, like a CDJ with QUANTIZE on), then ride the crossfader along
-// the guide line for 8 bars (one check per beat, combo). EQ (bass swap) is automatic. Each transition is scored on
-// pitch / entry / fader-follow; the floor meter reacts to the mix, the picks and every beat of the fader.
+// deck at the entry line (quantized to the nearest beat, like a CDJ with QUANTIZE on), then ride the crossfader along
+// the guide line for 8 bars (one check per beat, combo). EQ (bass swap) and the tempo are automatic.
+// 2026-11-13 (DJG): no tempo faders any more. Every track arrives at the playing track's tempo; in SET 2・3 the incoming track
+// slips out of time once or twice during the 8 bars (ズレ) and the player turns its platter to bring it back (nudgeDeck).
+// Each transition is scored on beat (share of the 8 bars in time) / entry / fader-follow; the floor meter reacts to the
+// mix, the picks and every beat of the fader.
 // 2026-11-11 renewal (DJS20〜): the floor is the crowd's heat. It starts at 様子見 (50) and each thing the player does moves it by a
 // visible step (entry, every beat of the fader, the transition's rank, the pick), so a clean set warms the room up to 最高潮 by the end
 // instead of pinning the meter at 100 after one mix. ▶ is judged against the nearest phrase head.
@@ -10,12 +13,15 @@ import { TRACKS } from './tracks.mjs';
 export const PHRASE = 32;      // 8 bars of 4/4
 export const LEAD = 16;        // the next entry cue is at least 4 bars away
 // 2026-11-13 DJF03 (待ち時間): the game opens entries on every 4-bar line instead of every 8-bar phrase head, so the wait before a ▶ is
-// 2〜6 bars (SET 1) / 4〜8 bars (SET 2・3, time to match the tempo) instead of 4〜12. createSet's defaults keep the 8-bar grid.
+// 2〜6 bars instead of 4〜12 (every set: there is no tempo to match any more, DJG). createSet's defaults keep the 8-bar grid.
 export const QUICK_GRID = 16;
-export const quickEntry = set => ({ grid: QUICK_GRID, lead: set?.detune === 'match' ? 8 : LEAD });
+export const quickEntry = () => ({ grid: QUICK_GRID, lead: 8 });
 export const GRACE = 32;       // after the 8 bars the outgoing deck keeps playing up to 8 more bars if the fader has not crossed
-export const PITCH_RANGE = 8;  // PITCH fader ±8 % like a CDJ
-export const LOCK_PCT = .15;   // BPM within this % counts as locked (LOCK LED, quantize phase snap)
+export const SYNC_BAND = .06;  // the two tracks count as in time within ±0.06 beat (30 ms at 120 BPM); past it the room hears the beats rub
+export const SNAP_BAND = .035; // a turn of the platter that lands within ±0.035 beat is caught by QUANTIZE and snaps onto the beat
+export const DRIFT_BEATS = 3;  // a slip builds up over 3 beats (the track runs a little fast or slow), then stays until it is fixed
+export const SYNC_FLOOR = .03; // bringing the track back in time warms the room by a step
+export const SLIP_FLOOR = -.008; // every beat the two tracks are out of time cools it (as much as a beat with the fader off the line)
 export const FOLLOW_BAND = .14; // the fader counts as on the guide line within ±0.14 of it
 export const LOW_CUT_DB = -26;
 export const mod = (v, n) => ((v % n) + n) % n;
@@ -23,12 +29,7 @@ export const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 export const round2 = v => Math.round(v * 100) / 100;
 export const beatAt = (d, now) => d.beat + (d.playing ? (now - d.at) * d.bpm / 60 : 0);
 export function anchor(d, now, beat = beatAt(d, now)) { d.beat = beat; d.at = now; }
-export const bpmRange = d => [round2(d.nativeBpm * (1 - PITCH_RANGE / 100)), round2(d.nativeBpm * (1 + PITCH_RANGE / 100))];
-export function setTempo(d, bpm, now) { const [lo, hi] = bpmRange(d); anchor(d, now); d.bpm = clamp(round2(Number(bpm)), lo, hi); }
-export const pitchOf = d => (d.bpm / d.nativeBpm - 1) * 100;
-export function setPitch(d, pct, now) { setTempo(d, d.nativeBpm * (1 + clamp(Number(pct), -PITCH_RANGE, PITCH_RANGE) / 100), now); }
 export function phaseError(a, b, now) { return mod(beatAt(b, now) - beatAt(a, now) + .5, 1) - .5; }
-export const bpmDiffPct = (a, b) => Math.abs(b.bpm - a.bpm) / a.bpm * 100;
 /** Automatic bass swap (no player input): incoming B keeps its lows cut until the fader reaches the middle, then A's lows are cut. dB per deck. */
 export function lowCutDb(x) { x = clamp(x, 0, 1); const ramp = t => (LOW_CUT_DB * clamp(t, 0, 1)) || 0; return [ramp((x - .5) / .25), ramp((.5 - x) / .25)]; }
 export function gains(x) { x = clamp(x, 0, 1); return [Math.cos(x * Math.PI / 2), Math.sin(x * Math.PI / 2)]; }
@@ -68,31 +69,27 @@ function candidates(m, master) {
   return pool.slice(0, 2);
 }
 
-export function makeDeck(key, detuneFactor = 1) {
-  const nativeBpm = TRACKS[key].bpm;
-  return { track: key, nativeBpm, bpm: round2(nativeBpm * detuneFactor), beat: 0, at: 0, playing: false };
+/** bpm: the tempo the deck plays at (an incoming track is set to the playing track's tempo; the default is the track's own). */
+export function makeDeck(key, bpm = TRACKS[key].bpm) {
+  return { track: key, nativeBpm: TRACKS[key].bpm, bpm: round2(bpm), beat: 0, at: 0, playing: false };
 }
-/** Detune factor for the nth track of the set (the first track is never detuned). */
-export const detuneFactorFor = (set, rng = Math.random) => index =>
-  set.detune === 'random' && index > 0 ? 1 + (rng() < .5 ? -1 : 1) * (.012 + rng() * .016) : 1;
-function incomingDeck(m, key, index, now) {
-  const d = makeDeck(key, m.detune(index));
-  if (m.set.detune === 'match') setTempo(d, m.decks[m.master].bpm, now);
-  d.beat = 0; d.at = 0;
-  return d;
+const incomingDeck = (m, key) => makeDeck(key, m.decks[m.master].bpm);
+/** The slips of one transition (set.drift): where in the 8 bars each starts and how far it goes (beats; + = the incoming track runs ahead). */
+function planDrifts(m) {
+  const plan = m.set.drift; if (!plan) return [];
+  return plan.windows.map(([from, to]) => ({ at: from + Math.floor(m.rng() * (to - from + 1)), size: (m.rng() < .5 ? -1 : 1) * (plan.size[0] + m.rng() * (plan.size[1] - plan.size[0])), started: false, ended: false }));
 }
 /** allowance: extra ms added to every ▶ timing window (the main game's monitor headphones, VOL07: 10). 0 = the club's house setup. */
-export function createSet(set, detune = () => 1, rng = Math.random, { allowance = 0, grid = PHRASE, lead = LEAD } = {}) {
-  const m = { set, count: set.count, grid: grid > 0 ? grid : PHRASE, lead: lead >= 0 ? lead : LEAD, allowance: Number.isFinite(allowance) && allowance > 0 ? Math.min(30, allowance) : 0, played: [set.tracks[0], set.tracks[1]], detune, rng,
-    decks: [makeDeck(set.tracks[0]), makeDeck(set.tracks[1], detune(1))],
+export function createSet(set, rng = Math.random, { allowance = 0, grid = PHRASE, lead = LEAD } = {}) {
+  const m = { set, count: set.count, grid: grid > 0 ? grid : PHRASE, lead: lead >= 0 ? lead : LEAD, allowance: Number.isFinite(allowance) && allowance > 0 ? Math.min(30, allowance) : 0, played: [set.tracks[0], set.tracks[1]], rng,
+    decks: [makeDeck(set.tracks[0]), makeDeck(set.tracks[1], TRACKS[set.tracks[0]].bpm)],
     running: false, resumeDecks: [], mix: 0, master: 0, phase: 'idle', cue: null, select: null, transitions: [], floor: .5,
     lastPlay: null, lastUpdate: null, fader: null, result: null, pendingPick: null };
-  if (set.detune === 'match') m.decks[1].bpm = m.decks[0].bpm;
   return m;
 }
 function nextCue(m, from, now) {
   const beat = beatAt(m.decks[from], now), start = (Math.floor((beat + m.lead) / m.grid) + 1) * m.grid; // the next entry line at least `lead` beats away
-  m.cue = { from, to: 1 - from, start, end: start + PHRASE, pressed: null, synced: false, missed: 0 };
+  m.cue = { from, to: 1 - from, start, end: start + PHRASE, pressed: null, missed: 0 };
   m.phase = 'cue'; m.fader = null;
 }
 export const GRADE_FLOOR = { PERFECT: .06, GOOD: .03, OK: 0, EARLY: -.06, LATE: -.06 };
@@ -116,7 +113,7 @@ export function playDeck(m, id, now) {
     const errorMs = (fb - c.start) * 60 / from.bpm * 1000, grade = gradeOf(errorMs, m.allowance || 0);
     d.beat = 0; d.at = from.at + (n - from.beat) * 60 / from.bpm; // beat 0 on the master's nearest beat (may be a few ms ahead)
     c.pressed = { errorMs, grade, beat: n, at: now }; m.lastPlay = { id, errorMs, grade };
-    m.phase = 'mix'; m.fader = { reached: null, checks: 0, hits: 0, combo: 0, best: 0, lastBeat: 0, last: null };
+    m.phase = 'mix'; m.fader = { reached: null, checks: 0, hits: 0, combo: 0, best: 0, lastBeat: 0, last: null, inTime: 0, off: false, fixes: 0, drifts: planDrifts(m) };
     m.floor = clamp(m.floor + GRADE_FLOOR[grade], 0, 1);
   } else {
     anchor(d, now);
@@ -132,17 +129,30 @@ export function chooseTrack(m, index, now) {
   const s = m.select; if (!s || m.phase !== 'select') return null;
   const key = s.options[index]; if (!key) return null;
   const rating = pickRating(s.request, m.decks[m.master].track, key);
-  m.decks[s.deck] = incomingDeck(m, key, m.played.length, now);
+  m.decks[s.deck] = incomingDeck(m, key);
   m.played.push(key); m.pendingPick = { key, rating, request: s.request };
   m.floor = clamp(m.floor + PICK_FLOOR[rating], 0, 1);
   m.select = null; nextCue(m, m.master, now);
   return { id: s.deck, key, rating };
 }
-/** SYNC: the incoming deck copies the master's tempo (pitch score is then capped). */
-export function syncIncoming(m, now) {
-  const c = m.cue; if (!c) return false;
-  const [lo, hi] = bpmRange(m.decks[c.to]), target = clamp(m.decks[c.from].bpm, lo, hi);
-  setTempo(m.decks[c.to], target, now); c.synced = true; return true;
+/** The platter (jog): push the incoming track along (+beats) or hold it back (−beats) while it is out of time during a mix.
+ *  A turn that lands within SNAP_BAND, or passes through the beat, is caught by QUANTIZE: it snaps on and the room warms by a step.
+ *  Turning the wrong way only takes it further out.
+ *  In time already (nothing to fix), outside a mix, or the other deck: null and nothing moves. Returns { error, fixed }. */
+export function nudgeDeck(m, id, beats, now) {
+  const c = m.cue, f = m.fader;
+  if (m.phase !== 'mix' || !c || !f || c.to !== id || !m.decks[id].playing || !Number.isFinite(beats) || !beats) return null;
+  const from = m.decks[c.from], to = m.decks[id];
+  if (beatAt(to, now) < 0 || Math.abs(phaseError(from, to, now)) <= SNAP_BAND) return null;
+  const before = phaseError(from, to, now), landed = before + beats; // where the turn puts it, before wrapping to the nearest beat
+  anchor(to, now, beatAt(to, now) + beats);
+  const error = phaseError(from, to, now);
+  // caught when it lands close, or when the turn carries it through the beat (no overshoot: the platter is forgiving, the hurry is the game)
+  if (Math.abs(landed) > SNAP_BAND && before * landed > 0) return { error, fixed: false };
+  anchor(to, now, beatAt(to, now) - error); f.off = false; f.fixes++; m.floor = clamp(m.floor + SYNC_FLOOR, 0, 1);
+  for (const d of f.drifts) if (d.started && !d.ended) d.ended = true; // caught while it was still building: it stops there (one slip, one fix)
+  to.bpm = from.bpm;
+  return { error: 0, fixed: true };
 }
 export function pauseMix(m, now) {
   const ids = m.decks.flatMap((d, id) => d.playing ? [id] : []);
@@ -158,13 +168,13 @@ export function resumeMix(m, now) {
 /** Crossfader position measured toward the incoming deck (0 = all on the outgoing deck, 1 = all on the incoming). */
 export const toward = m => m.cue?.to === 0 ? 1 - m.mix : m.mix;
 /** One check on every beat of the 8 bars: is the fader on the guide line? Returns the newest result for the view. */
-function followCheck(m, beatInMix) {
+function followCheck(m, beatInMix, inTime = true) {
   const f = m.fader, upto = Math.min(PHRASE, Math.floor(beatInMix));
   let result = null;
   while (f.lastBeat < upto) {
     f.lastBeat++;
     const hit = Math.abs(toward(m) - guideAt(f.lastBeat / PHRASE)) <= FOLLOW_BAND;
-    f.checks++;
+    f.checks++; if (inTime) f.inTime++; else m.floor = clamp(m.floor + SLIP_FLOOR, 0, 1);
     if (hit) { f.hits++; f.combo++; f.best = Math.max(f.best, f.combo); m.floor = clamp(m.floor + FOLLOW_FLOOR.hit, 0, 1); }
     else { f.combo = 0; m.floor = clamp(m.floor + FOLLOW_FLOOR.miss, 0, 1); }
     f.last = result = { beat: f.lastBeat, hit, combo: f.combo };
@@ -193,14 +203,15 @@ export const scoreFromRatio = r => r >= .9 - 1e-10 ? 100 : r >= .75 - 1e-10 ? 85
 /** The lowest total of each rank (the result card says how many points the next one is away, DJF07). */
 export const RANK_LINES = Object.freeze({ S: 90, A: 75, B: 55 });
 export const rankFromScore = total => total >= RANK_LINES.S ? 'S' : total >= RANK_LINES.A ? 'A' : total >= RANK_LINES.B ? 'B' : 'C';
-/** Fader: how much of the 8 bars rode the guide line; never reaching the incoming deck caps it at 30, reaching it late at 60. */
-export function scoreTransition({ pitchErrPct, synced, playMs, reached, follow, allowance = 0 }) {
-  const pitch = Math.min(scoreFromErr(pitchErrPct, LOCK_PCT, .3, .6), synced ? 85 : 100);
+/** Beat: how much of the 8 bars the two tracks were in time (1 when nothing slipped). Fader: how much of the 8 bars rode the guide line;
+ *  never reaching the incoming deck caps it at 30, reaching it late at 60. */
+export function scoreTransition({ sync = 1, playMs, reached, follow, allowance = 0 }) {
+  const beat = scoreFromRatio(sync);
   const entry = scoreFromErr(playMs, 30 + allowance, 60 + allowance, 120 + allowance);
   const followScore = scoreFromRatio(follow);
   const fader = reached == null ? 30 : reached > 1 ? Math.min(60, followScore) : followScore;
-  const total = Math.round((pitch + entry + fader) / 3);
-  return { pitchErrPct, synced, playMs, reached, follow, parts: [pitch, entry, fader], total, rank: rankFromScore(total) };
+  const total = Math.round((beat + entry + fader) / 3);
+  return { sync, playMs, reached, follow, parts: [beat, entry, fader], total, rank: rankFromScore(total) };
 }
 /** The set: average of the transitions, plus a FLOOR bonus (≥80 % +5, <30 % −5). */
 export function scoreSet(m) {
@@ -208,12 +219,13 @@ export function scoreSet(m) {
   const base = Math.round(t.reduce((s, x) => s + x.total, 0) / t.length);
   const bonus = m.floor >= .8 ? 5 : m.floor < .3 ? -5 : 0, total = clamp(base + bonus, 0, 100);
   return { total, base, bonus, rank: rankFromScore(total), floor: Math.round(m.floor * 100), set: m.set.name,
-    transitions: t.map(x => ({ from: x.from, to: x.to, grade: x.grade, parts: x.parts, total: x.total, rank: x.rank, pick: x.pick, combo: x.combo })) };
+    transitions: t.map(x => ({ from: x.from, to: x.to, grade: x.grade, parts: x.parts, total: x.total, rank: x.rank, pick: x.pick, combo: x.combo, drifts: x.drifts, fixes: x.fixes })) };
 }
 function finishTransition(m, now, view) {
   const c = m.cue, from = m.decks[c.from], to = m.decks[c.to], f = m.fader;
-  const score = scoreTransition({ pitchErrPct: bpmDiffPct(from, to), synced: c.synced, playMs: Math.abs(c.pressed.errorMs), reached: f.reached, follow: f.checks ? f.hits / f.checks : 0, allowance: m.allowance || 0 });
-  const record = { ...score, from: from.track, to: to.track, grade: c.pressed.grade, missed: c.missed, combo: f.best, pick: m.pendingPick?.rating || null };
+  const score = scoreTransition({ sync: f.checks ? f.inTime / f.checks : 1, playMs: Math.abs(c.pressed.errorMs), reached: f.reached, follow: f.checks ? f.hits / f.checks : 0, allowance: m.allowance || 0 });
+  const record = { ...score, from: from.track, to: to.track, grade: c.pressed.grade, missed: c.missed, combo: f.best, pick: m.pendingPick?.rating || null, drifts: f.drifts.filter(d => d.started).length, fixes: f.fixes };
+  if (to.bpm !== from.bpm) { anchor(to, now); to.bpm = from.bpm; view.retuned = c.to; } // a slip still building when the 8 bars end: the tempo goes back
   m.transitions.push(record); view.transition = record; m.pendingPick = null;
   m.floor = clamp(m.floor + RANK_FLOOR[score.rank], 0, 1);
   anchor(from, now); from.playing = false; view.stopped = c.from; m.master = c.to;
@@ -229,7 +241,7 @@ function finishTransition(m, now, view) {
 /** Advance the set to `now`. Returns what the host must apply to audio (snapped / stopped / select) and the view state. */
 export function updateSet(m, now) {
   const dt = m.lastUpdate == null ? 0 : Math.max(0, now - m.lastUpdate); m.lastUpdate = now;
-  const view = { mode: m.phase, progress: 0, remaining: 0, open: false, snapped: null, stopped: null, select: null, transition: null, finished: null, follow: null, guide: null, rolled: false };
+  const view = { mode: m.phase, progress: 0, remaining: 0, open: false, snapped: null, stopped: null, select: null, transition: null, finished: null, follow: null, guide: null, rolled: false, retuned: null, sync: null, slipped: false };
   if (!m.running) { view.mode = 'idle'; return view; }
   const c = m.cue;
   if (c) {
@@ -239,12 +251,18 @@ export function updateSet(m, now) {
       view.remaining = c.start - fb; view.open = fb >= c.start;
     } else if (m.phase === 'mix') {
       const progress = (fb - c.start) / PHRASE; view.progress = clamp(progress, 0, 1); view.remaining = c.end - fb;
-      view.follow = followCheck(m, fb - c.start);
-      view.guide = guideAt(progress);
-      if (bpmDiffPct(from, to) <= LOCK_PCT && beatAt(to, now) >= 0) {
-        const e = phaseError(from, to, now);
-        if (Math.abs(e) > .02) { anchor(to, now, beatAt(to, now) - e); view.snapped = c.to; }
+      // ズレ (DJG): at its beat the incoming track runs a little fast or slow for DRIFT_BEATS beats (the host applies the rate: view.retuned),
+      // then keeps its tempo but stays out of time until the player turns its platter back (nudgeDeck). QUANTIZE only catches a turn that lands close.
+      const f = m.fader, into = fb - c.start;
+      for (const d of f.drifts) {
+        if (!d.started && into >= d.at && into < PHRASE - 2) { d.started = true; anchor(to, now); to.bpm = from.bpm * (1 + d.size / DRIFT_BEATS); view.retuned = c.to; }
+        else if (d.started && !d.ended && into >= d.at + DRIFT_BEATS) { d.ended = true; anchor(to, now); to.bpm = from.bpm; view.retuned = c.to; }
       }
+      const error = beatAt(to, now) >= 0 ? phaseError(from, to, now) : 0, off = Math.abs(error) > SYNC_BAND;
+      if (off && !f.off) view.slipped = true;
+      f.off = off; view.sync = { error, off, deck: c.to };
+      view.follow = followCheck(m, into, !off);
+      view.guide = guideAt(progress);
       const crossed = toward(m) >= .9;
       if (crossed && m.fader.reached == null) m.fader.reached = Math.max(0, progress);
       if (progress >= 1 && (crossed || progress >= 1 + GRACE / PHRASE)) finishTransition(m, now, view);

@@ -1,10 +1,10 @@
 import { DJAudio } from './audio.mjs';
-import { beatAt, lowCutDb, LOCK_PCT, PHRASE, FOLLOW_BAND, REQUESTS, phaseError, bpmDiffPct, pitchOf, mod, gains, toward, keyMatch, energyMatch, quality, followHint, moodOf, MOODS, GRADE_FLOOR, RANK_FLOOR, PICK_FLOOR, RANK_LINES, quickEntry } from './model.mjs';
+import { beatAt, lowCutDb, PHRASE, FOLLOW_BAND, REQUESTS, phaseError, SNAP_BAND, SYNC_FLOOR, mod, gains, toward, keyMatch, energyMatch, quality, followHint, moodOf, MOODS, GRADE_FLOOR, RANK_FLOOR, PICK_FLOOR, RANK_LINES, quickEntry } from './model.mjs';
 import { FEEL, applyFeelOverrides } from './feel.mjs';
 import { DJSfx } from './sfx.mjs';
 import { TRACKS, SETS } from './tracks.mjs';
 // View of the DJ set (2026-11-11 renewal, DJS20〜). Three things the screen always answers:
-//   1. いま何をするか — the navi line + the gold arrow on the control to touch (▶ / PITCH / SYNC / 横フェーダー).
+//   1. いま何をするか — the navi line + the gold arrow on the control to touch (▶ / 横フェーダー / ズレた時の皿).
 //   2. お客さんがどう感じたか — the floor: heat meter with a mood word, the crowd getting brighter and raising hands, voices in speech bubbles.
 //   3. どこまで進んだか — the four step lamps (かける → 入れる → つなぐ → えらぶ).
 // Rules and scoring live in model.mjs; nothing here changes them.
@@ -35,8 +35,11 @@ const SHAKES = ['shake-drop', 'shake-sway', 'shake-big', 'shake-stumble'];
 const STRIPS = 7, STRIP_OVERLAP = 3; // the guests' band: 7 strips, each overlapping its neighbours by 3 % of the width (see buildBand)
 let strips = [], flash = 0, sfx = null;
 // 手応え（2026-11-13 DJF）: 止め・跳ね・揺れ・余韻のいまの状態。数値は feel.mjs の FEEL。コンソールの __dj.feel / __dj.fx で読み書きできる。
-const fx = { pending: null, holdUntil: 0, holdBeat: 0, holds: 0, burst: 1, burstBeat: 0, shakes: 0, lastShake: '', ticks: new Set(), tickCount: 0, combo: 0, brokenUntil: 0, result: null, count: null, played: false };
-globalThis.__dj = { feel: FEEL, fx };
+const fx = { fixes: 0, nopes: 0, pending: null, holdUntil: 0, holdBeat: 0, holds: 0, burst: 1, burstBeat: 0, shakes: 0, lastShake: '', ticks: new Set(), tickCount: 0, combo: 0, brokenUntil: 0, result: null, count: null, played: false };
+globalThis.__dj = { feel: FEEL, fx,
+  /** 調整用: つなぎの最中に、いますぐズレを起こす（拍。+ = 入れた曲が先へ走る）。例: __dj.slip(-0.2) */
+  slip(beats = .15) { const m = audio.mix; if (m.phase !== 'mix' || !m.fader || !Number.isFinite(beats) || !beats) return false; m.fader.drifts.push({ at: beatAt(m.decks[m.cue.from], audio.now) - m.cue.start, size: beats, started: false, ended: false }); return true; } };
+document.addEventListener('dj-nope', () => { sfx?.play('nope'); fx.nopes++; });
 const buzz = pattern => { if (pattern && coarse.matches && navigator.vibrate) try { navigator.vibrate(pattern); } catch { /* unsupported */ } };
 const status = text => { $('status').textContent = text; };
 /** Write text only when it changes (the render loop runs every frame; an unchanged write would still dirty the layout). */
@@ -61,8 +64,6 @@ function create() {
   audio.onInterrupted = () => status('音声が中断されました。▶で再開します。');
   shownTracks = [undefined, undefined]; shownSelect = null; $('pick').hidden = true;
   $('set-name').textContent = SETS[setIndex].name; $('set-gear').textContent = phones ? `ヘッドホン：▶の判定が${ALLOWANCE_MS}ms広い` : ''; $('score-result').innerHTML = ''; $('judge').textContent = ''; $('judge-sub').textContent = ''; $('toast').innerHTML = '';
-  // SET 1 arrives already in tempo: PITCH and SYNC are dimmed so the eye goes to ▶ and the crossfader.
-  $('dj-stage').dataset.pitch = SETS[setIndex].detune === 'match' ? 'off' : 'on';
   $('voices').replaceChildren(); $('heat-delta').className = 'heat-delta'; $('crossfader').value = '0';
   view = { mode: 'idle' }; shownPlay = null; judgeUntil = 0; toastUntil = 0; moodShown = null; missStreak = 0; awaySince = 0; awaySaid = false; clashSince = 0; clashSaid = false; comboSaid = 0; particles = []; flash = 0;
   helpManual = fx.played ? false : null; // DJF08: the how-to board only before the very first set; a retry goes straight back to the decks
@@ -79,7 +80,6 @@ function showDecks() {
     shownTracks[id] = state; const key = id ? 'b' : 'a', t = TRACKS[d.track];
     $('track-' + key).textContent = t ? t.title : state === 'done' ? '—' : '— 選曲中 —';
     $('platter-' + key).style.setProperty('--art', t ? `url('../../img/ui/dj/art-${d.track}.webp')` : 'none');
-    $('pitch-' + key).value = '0';
   });
 }
 buildBand();
@@ -87,20 +87,19 @@ create();
 export function snapshot() {
   const now = audio.now, m = audio.mix;
   return { set: setIndex, phase: m.phase, mode: view.mode, clock: now, state: audio.context?.state || 'not-started', running: m.running,
-    tracks: m.decks.map(d => d.track), bpms: m.decks.map(d => d.bpm), pitches: m.decks.map(d => Math.round(pitchOf(d) * 100) / 100),
+    tracks: m.decks.map(d => d.track), bpms: m.decks.map(d => d.bpm), sync: view.sync ? { ...view.sync } : null, jog: shown.jog || '',
     beats: m.decks.map(d => beatAt(d, now)), playing: m.decks.map(d => d.playing), phase_error: phaseError(...m.decks, now),
-    mix: m.mix, master: m.master, cue: m.cue ? { ...m.cue } : null, lastPlay: m.lastPlay, floor: m.floor, fader: m.fader ? { reached: m.fader.reached, checks: m.fader.checks, hits: m.fader.hits, combo: m.fader.combo } : null,
+    mix: m.mix, master: m.master, cue: m.cue ? { ...m.cue } : null, lastPlay: m.lastPlay, floor: m.floor, fader: m.fader ? { reached: m.fader.reached, checks: m.fader.checks, hits: m.fader.hits, combo: m.fader.combo, inTime: m.fader.inTime, off: m.fader.off, fixes: m.fader.fixes, drifts: m.fader.drifts.map(d => ({ ...d })) } : null,
     select: m.select ? { ...m.select, options: [...m.select.options] } : null, played: [...m.played], count: m.count, guide: view.guide, follow: view.follow,
-    transitions: m.transitions.map(t => ({ to: t.to, grade: t.grade, parts: t.parts, total: t.total, rank: t.rank, pick: t.pick, combo: t.combo, follow: t.follow })), result: m.result,
+    transitions: m.transitions.map(t => ({ to: t.to, grade: t.grade, parts: t.parts, total: t.total, rank: t.rank, pick: t.pick, combo: t.combo, follow: t.follow, sync: t.sync, drifts: t.drifts, fixes: t.fixes })), result: m.result,
     allowance: m.allowance, voices: audio.voices.filter(Boolean).length, rms: audio.level(), reduced: reduced.matches, embedded, muted: audio.muted, volume: audio.volume, remaining: view.remaining, progress: view.progress,
     // what the screen is telling the player (DJS20): crowd mood, step lamp, navi lines, gold arrows, fader hint
-    grid: m.grid, best, fx: { holds: fx.holds, held: !!fx.pending, shakes: fx.shakes, lastShake: fx.lastShake, ticks: fx.tickCount, sfx: sfx.count, lastSfx: sfx.last, afterglow: !!fx.result && !fx.result.shown, counting: !!fx.count, result: !!fx.result?.shown },
+    grid: m.grid, best, fx: { fixes: fx.fixes, nopes: fx.nopes, holds: fx.holds, held: !!fx.pending, shakes: fx.shakes, lastShake: fx.lastShake, ticks: fx.tickCount, sfx: sfx.count, lastSfx: sfx.last, afterglow: !!fx.result && !fx.result.shown, counting: !!fx.count, result: !!fx.result?.shown },
     mood: moodOf(m.floor), step: shown.step, navi: message, sub: subMessage, points: shown.points, hint: shown.hint, away: shown.away, arrows: !$('fader-arrows').hidden };
 }
 async function pause() { try { await audio.pause(); status('停止中。▶で再開します。'); } catch (e) { status(`停止処理: ${e.message}`); } }
 for (const id of [0, 1]) {
   const key = id ? 'b' : 'a';
-  $('pitch-' + key).addEventListener('input', e => audio.pitch(id, Number(e.target.value)));
   $('play-' + key).addEventListener('click', () => startDeck(id));
 }
 async function startDeck(id) {
@@ -111,7 +110,6 @@ async function startDeck(id) {
   try { if (await (resume ? audio.start() : audio.play(id))) { helpManual = null; fx.played = true; if (document.hidden) { await pause(); return; } status(resume ? '再開' : `${key.toUpperCase()} ON AIR`); } }
   catch (e) { status(`${e.message}。▶から再試行できます。`); }
 }
-$('sync').addEventListener('click', () => { if (audio.sync()) status('SYNC：次の曲のBPMを合わせました'); });
 // ── お客さんの反応: 声の吹き出し・熱の増減の札・気分の言葉 ──────────────────────────────
 const VOICES = {
   PERFECT: ['きたー！', '今の入り、最高！', 'ぴったり！'], GOOD: ['いい入り！', 'お、いいね'], OK: ['うん、入った', 'わるくない'],
@@ -121,8 +119,9 @@ const VOICES = {
   S: ['最高のつなぎ！', 'フゥー！！'], A: ['いいね！', 'ノれる！'], B: ['まあまあかな'], C: ['うーん…', '踊りづらい…'],
   '◎': ['これ待ってた！', 'わかってる！'], '○': ['お、いいじゃん'], '△': ['今それじゃない…', 'えー…'],
   cold: ['なんか冷めてきた…', '帰ろっかな…'], peak: ['最高潮！！'], skip: ['あれ、まだかな？', '次の曲、まだ？'],
+  slip: ['ん、ズレてきた？', '拍がバラけてる…'], fix: ['お、戻った！', 'ぴたっと来た！'],
 };
-const COLD = new Set(['EARLY', 'LATE', 'clash', 'quiet', 'C', '△', 'cold']);
+const COLD = new Set(['EARLY', 'LATE', 'clash', 'quiet', 'C', '△', 'cold', 'slip']);
 let voiceSlot = 0;
 /** One guest speaks: a bubble over the crowd (three places, taken in turn). */
 function say(kind, { big = false, text = null, slot = null } = {}) {
@@ -173,18 +172,39 @@ $('exit').hidden = !embedded;
 $('exit').addEventListener('click', async () => { if (!embedded) return; await audio.pause().catch(() => {}); tell({ type: 'dj-exit' }); });
 $('restart').addEventListener('click', async () => { const old = audio; create(); await old.dispose().catch(() => {}); status('最初から'); });
 $('crossfader').addEventListener('input', e => audio.setMix(e.target.value));
-// Jog outer rim = fine pitch (12° of rim travel = 0.01 BPM). Inside the rim does nothing; QUANTIZE keeps the phase.
-const JOG_STEP_DEG = 12, JOG_INNER = .62;
-function finePitch(id, steps) { const bpm = audio.mix.decks[id].bpm, next = Math.round((bpm + steps * .01) * 100) / 100; audio.tempo(id, next); return audio.mix.decks[id].bpm !== bpm; }
-for (const id of [0, 1]) {
-  const jog = $('platter-' + (id ? 'b' : 'a')); let drag = null, spin = 0;
-  const angle = (e, r) => Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2)) * 180 / Math.PI;
-  jog.addEventListener('pointerdown', e => { const r = jog.getBoundingClientRect(), dist = Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2)) / (r.width / 2);
-    if (dist > 1.05 || dist < JOG_INNER) return; e.preventDefault(); jog.setPointerCapture(e.pointerId); drag = { last: angle(e, r), acc: 0 }; jog.classList.add('touching'); });
-  jog.addEventListener('pointermove', e => { if (!drag) return; const r = jog.getBoundingClientRect(), a = angle(e, r); let d = a - drag.last; if (d > 180) d -= 360; if (d < -180) d += 360; drag.last = a; drag.acc += d; spin += d;
-    jog.style.setProperty('--spin', `${spin}deg`); const steps = Math.trunc(drag.acc / JOG_STEP_DEG); if (steps) { drag.acc -= steps * JOG_STEP_DEG; if (finePitch(id, steps)) { jog.classList.add('tick'); setTimeout(() => jog.classList.remove('tick'), 90); if (coarse.matches) navigator.vibrate?.(3); } } });
-  const end = () => { drag = null; jog.classList.remove('touching'); }; jog.addEventListener('pointerup', end); jog.addEventListener('pointercancel', end);
-  jog.addEventListener('keydown', e => { const k = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key]; if (!k) return; e.preventDefault(); if (finePitch(id, k)) { spin += k * JOG_STEP_DEG; jog.style.setProperty('--spin', `${spin}deg`); } });
+// 皿（2026-11-13 DJG）: 入れた曲の拍がズレた時、その皿を回して戻す。時計回りで曲を先へ送り、反時計回りで戻す（1回転 = FEEL.jog.beatsPerTurn 拍）。
+// 回した分は jog.pending に貯め、描画のたびに（FEEL.jog.flushMs おきに）まとめて送る。合っている時・相手の皿は、絵が指について回るだけ。
+const jogs = [0, 1].map(id => ({ id, el: $('platter-' + (id ? 'b' : 'a')), drag: null, spin: 0, pending: 0, flushed: 0 }));
+for (const jog of jogs) {
+  const el = jog.el, angle = (e, r) => Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2)) * 180 / Math.PI;
+  const turn = degrees => { jog.spin += degrees; el.style.setProperty('--spin', `${jog.spin.toFixed(1)}deg`); jog.pending += degrees / 360 * FEEL.jog.beatsPerTurn; };
+  el.addEventListener('pointerdown', e => { const r = el.getBoundingClientRect(); if (Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2)) > r.width / 2 * 1.05) return;
+    e.preventDefault(); el.setPointerCapture(e.pointerId); jog.drag = { last: angle(e, r) }; el.classList.add('touching'); buzz(6); });
+  el.addEventListener('pointermove', e => { if (!jog.drag) return; const a = angle(e, el.getBoundingClientRect()); let d = a - jog.drag.last; if (d > 180) d -= 360; if (d < -180) d += 360; jog.drag.last = a; turn(d); });
+  const end = () => { jog.drag = null; el.classList.remove('touching'); }; el.addEventListener('pointerup', end); el.addEventListener('pointercancel', end);
+  el.addEventListener('keydown', e => { const k = { ArrowRight: 1, ArrowUp: 1, ArrowLeft: -1, ArrowDown: -1 }[e.key]; if (!k) return; e.preventDefault(); turn(k * FEEL.jog.keyStep / FEEL.jog.beatsPerTurn * 360); });
+}
+/** Send what the platters were turned since the last time. A turn that brings the track back in time is the moment (lamp, sound, the room). */
+function flushJogs(perf) {
+  for (const jog of jogs) {
+    if (!jog.pending || perf - jog.flushed < FEEL.jog.flushMs) continue;
+    const moved = audio.nudge(jog.id, jog.pending); jog.pending = 0; jog.flushed = perf;
+    if (!moved) continue;
+    jog.el.classList.add('tick'); setTimeout(() => jog.el.classList.remove('tick'), 90);
+    if (moved.fixed) { fx.fixes++; say('fix'); bump(SYNC_FLOOR, 'ズレを直した'); sfx.play('fix'); buzz(FEEL.buzz.fix); impact('fix', beatAt(audio.mix.decks[audio.mix.master], audio.now)); const lamp = $('beat'); lamp.classList.remove('snap'); void lamp.offsetWidth; lamp.classList.add('snap'); }
+    else buzz(4);
+  }
+}
+/** ビートメーター: 金の点が真ん中の枠にあれば拍は合っている。ズレると点が左右へ出る（右 = 入れた曲が先へ走っている）。皿の上の矢印は回す向き。 */
+function beatMeter(m) {
+  const sync = m.phase === 'mix' && m.running ? view.sync : null, off = !!sync?.off, state = !sync ? 'idle' : off ? 'off' : 'lock';
+  if (state !== shown.beat) { shown.beat = state; setAttr($('beat'), 'data-state', state); put('beat-label', state === 'off' ? 'ズレ！ 皿で直す' : state === 'lock' ? '拍 ぴったり' : '拍'); }
+  setVar($('beat-dot'), '--x', (sync ? Math.max(-1, Math.min(1, sync.error / FEEL.jog.meterSpan)) : 0).toFixed(3));
+  const jog = off ? `${sync.deck ? 'b' : 'a'}-${sync.error > 0 ? 'ccw' : 'cw'}` : '';
+  if (jog !== shown.jog) {
+    shown.jog = jog;
+    for (const [id, key] of ['a', 'b'].entries()) { const mine = off && sync.deck === id, arrows = $('jog-arrows-' + key); arrows.hidden = !mine; arrows.classList.toggle('ccw', mine && sync.error > 0); $('platter-' + key).classList.toggle('off', mine); }
+  }
 }
 document.addEventListener('visibilitychange', () => { if (document.hidden) pause(); });
 window.addEventListener('pagehide', event => { if (event.persisted) { pause(); return; } disposed = true; cancelAnimationFrame(frame); audio.dispose().catch(() => {}); });
@@ -399,7 +419,7 @@ const RANK_LABEL = { S: 'かんぺきなつなぎ！', A: 'いいつなぎ！', 
 function showTransition(t, last = false) {
   // DJF05: the moment the track changes over. The medal is stamped on, the room answers by rank (the last one is answered by the set's own finish)
   if (!last) { impact(t.rank, beatAt(audio.mix.decks[audio.mix.master], audio.now)); buzz(FEEL.buzz[t.rank]); sfx.play('transition', { rank: t.rank }); }
-  if (!last) toast(`<span class="medal stamp r-${t.rank}">${t.rank}</span><span><span class="toast-label">${RANK_LABEL[t.rank]}</span><span class="toast-parts">テンポ <b>${t.parts[0]}</b>・入り <b>${t.parts[1]}</b>・フェーダー <b>${t.parts[2]}</b><span class="best">（最大 ${t.combo} コンボ）</span></span></span>`);
+  if (!last) toast(`<span class="medal stamp r-${t.rank}">${t.rank}</span><span><span class="toast-label">${RANK_LABEL[t.rank]}</span><span class="toast-parts">ビート <b>${t.parts[0]}</b>・入り <b>${t.parts[1]}</b>・フェーダー <b>${t.parts[2]}</b><span class="best">（最大 ${t.combo} コンボ）</span></span></span>`);
   if (!last) say(t.rank, { big: t.rank === 'S' });
   bump(RANK_FLOOR[t.rank], RANK_LABEL[t.rank].replace(/[！…]/g, ''));
 }
@@ -407,7 +427,7 @@ function showTransition(t, last = false) {
 function advice(r) {
   const avg = [0, 1, 2].map(i => r.transitions.reduce((s, t) => s + t.parts[i], 0) / r.transitions.length), weak = avg.indexOf(Math.min(...avg));
   if (avg[weak] >= 85) return { S: 'フロアが沸いた。完璧なセット！', A: 'いいセット。フロアはずっと踊っていた', B: 'あと少し。入りとフェーダーをていねいに', C: '金色の矢印を追えば、次はもっとつながる' }[r.rank];
-  return ['次はテンポ合わせ：PITCH を動かして LOCK を点けるか、SYNC を押そう', '次は入りのタイミング：カウントが 0 になる瞬間に ▶', '次は横フェーダー：光る枠から離れないよう、ゆっくり動かそう'][weak];
+  return ['次はズレ直し：金の点が枠から出たら、すぐ皿を回して戻そう', '次は入りのタイミング：カウントが 0 になる瞬間に ▶', '次は横フェーダー：光る枠から離れないよう、ゆっくり動かそう'][weak];
 }
 const NEXT_RANK = { C: 'B', B: 'A', A: 'S' };
 /** DJF07: what to aim for next: the points to the next rank, and how far the player's own best is. */
@@ -429,7 +449,7 @@ function showResult() {
   const rows = r.transitions.map((t, i) => `<tr><th>${i + 1}</th><td>${TRACKS[t.from].title} → ${TRACKS[t.to].title}</td><td>${t.pick || '—'}</td><td>${t.grade}</td><td>${t.parts.join(' / ')}</td><td>${t.combo}</td><td class="rank r-${t.rank}">${t.rank}</td></tr>`).join('');
   const mood = MOODS[moodOf(r.floor / 100)];
   $('score-result').innerHTML = `<div class="result-card" id="result-card"><div class="result-head"><span class="medal wait r-${r.rank}" id="result-medal">${r.rank}</span><div><small>${r.set} RESULT</small><div class="result-total"><b id="result-num">0</b>点</div><div class="result-mood">フロアの熱 ${r.floor}：${mood}${r.bonus ? `（${r.bonus > 0 ? 'ボーナス +' : ''}${r.bonus}点）` : ''}</div><div class="result-goal" id="result-goal">${goalLine(r, state.previous)}</div></div></div>`
-    + `<table><thead><tr><th>#</th><th>つなぎ</th><th>選曲</th><th>入り</th><th>テンポ / 入り / フェーダー</th><th>コンボ</th><th></th></tr></thead><tbody>${rows}</tbody></table>`
+    + `<table><thead><tr><th>#</th><th>つなぎ</th><th>選曲</th><th>入り</th><th>ビート / 入り / フェーダー</th><th>コンボ</th><th></th></tr></thead><tbody>${rows}</tbody></table>`
     + `<p class="advice">${advice(r)}</p><div class="result-actions"><button id="again" type="button" class="gold">もう一度</button>${embedded ? '<button id="leave" type="button">戻る</button>' : ''}</div></div>`;
   // DJF08: 「もう一度」 puts the first track straight back on (no how-to board, no extra ▶)
   $('again').addEventListener('click', () => { $('restart').click(); startDeck(0); });
@@ -479,18 +499,16 @@ function navi(m, now, away) {
   if (m.phase === 'select') return { ...out, step: 4, main: 'お客さんの声を聞いて、次の曲をえらぼう', sub: '声に合うノリで、つながりも良い曲ならフロアが沸く', points: ['pick'] };
   if (m.phase === 'mix') {
     const to = cue.to, bar = Math.min(8, Math.floor(view.progress * 8) + 1);
+    // DJG: the incoming track has slipped out of time. Turn its platter the way the arrows run (ahead → back, behind → on) until the gold dot is in the frame.
+    if (view.sync?.off) return { ...out, step: 3, warn: true, main: `ズレた！ ${sideOf(to)}の皿を${view.sync.error > 0 ? '左回り' : '右回り'}に回そう`, sub: '金の点が枠に入れば戻る。フェーダーはそのまま', points: ['fader', `jog-${to ? 'b' : 'a'}`] };
     if (view.progress >= 1) return { ...out, step: 3, main: `最後まで${sideOf(to)}へ動かしきろう`, sub: `フェーダーが${sideOf(to)}の端に着くと、${deckOf(to)} に乗り換わる`, points: ['fader'] };
     return { ...out, step: 3, main: `横フェーダーを${sideOf(to)}へ。光る枠を追いかけよう`, sub: `8小節かけて ${deckOf(to)} へ乗り換える（${bar}／8）。拍ごとに枠の中かを見る`, points: ['fader'] };
   }
   // cue: waiting for the phrase head, then ▶ on the incoming deck
-  const to = cue.to, key = to ? 'b' : 'a', from = m.decks[cue.from], inc = m.decks[to], late = beatAt(from, now) - cue.start;
+  const to = cue.to, key = to ? 'b' : 'a', from = m.decks[cue.from], late = beatAt(from, now) - cue.start;
   const untilHead = late <= 0 ? -late : cue.start + m.grid - beatAt(from, now), bars = Math.ceil(untilHead / 4), count = untilHead <= 4 && untilHead > 0 ? String(Math.ceil(untilHead)) : '';
   // 「いま！」 only while a press still lands inside the OK window (120 ms + headphones); after that the navi sends the player to the next head
   if (late > 0 && late * 60 / from.bpm * 1000 <= 120 + (m.allowance || 0)) return { ...out, step: 2, untilHead: 0, count: '▶', main: `いま！ ${sideOf(to)}の ▶`, sub: '0 の瞬間に近いほど、フロアが沸く', points: [`play-${key}`] };
-  if (bpmDiffPct(from, inc) > LOCK_PCT && untilHead > 4) {
-    const up = inc.bpm < from.bpm;
-    return { ...out, step: 2, untilHead, main: `テンポ合わせ：${sideOf(to)}の PITCH を${up ? '上' : '下'}へ`, sub: `LOCK が点けば OK。むずかしければ SYNC を押す（あと ${bars} 小節）`, points: [`pitch-${key}-${up ? 'up' : 'down'}`, 'sync'] };
-  }
   if (untilHead <= 4) return { ...out, step: 2, untilHead, count, main: `カウント 0 で、${sideOf(to)}の ▶ ！`, sub: '光の輪がボタンに重なる瞬間に押す', points: [`play-${key}`] };
   if (late > 0) return { ...out, step: 2, untilHead, main: '入りを逃した。次の頭を待とう', sub: `あと ${bars} 小節。カウントが出たら、0 で${sideOf(to)}の ▶`, points: [] };
   return { ...out, step: 2, untilHead, main: `次は${sideOf(to)}の ▶。カウントが出るまで待とう`, sub: `入りまで あと ${bars} 小節。金の旗が金の線に重なる瞬間が入り`, points: [] };
@@ -504,10 +522,7 @@ function showNavi(n, m) {
   if (points !== shown.pointsKey) {
     for (const key of ['a', 'b']) {
       $('point-play-' + key).hidden = !n.points.includes(`play-${key}`);
-      const pitch = $('point-pitch-' + key), dir = n.points.includes(`pitch-${key}-up`) ? 'up' : n.points.includes(`pitch-${key}-down`) ? 'down' : '';
-      pitch.hidden = !dir; pitch.classList.toggle('up', dir === 'up'); pitch.classList.toggle('down', dir === 'down');
     }
-    $('point-sync').hidden = !n.points.includes('sync');
   }
   shown.step = n.step; shown.pointsKey = points; shown.points = [...n.points];
   if (n.count !== lastCount) { const el = $('count'); el.textContent = n.count; el.classList.remove('beat'); if (n.count) { void el.offsetWidth; el.classList.add('beat'); } lastCount = n.count; }
@@ -520,6 +535,8 @@ function render() {
   if (view.finished) finishSet(view.finished);
   if (fx.result && !fx.result.shown && performance.now() >= fx.result.until) showResult();
   countUp(performance.now());
+  flushJogs(performance.now());
+  if (view.slipped) { say('slip'); sfx.play('slip'); buzz(FEEL.buzz.slip); shake('stumble'); } // the incoming track just went out of time
   if (view.rolled) say('skip'); // the entry line went by without a ▶: the next one is 4 bars on
   showDecks();
   if (m.phase === 'select' && m.select && shownSelect !== m.select) renderPick(m.select);
@@ -554,11 +571,8 @@ function render() {
   if (!rub) clashSince = 0; else if (!clashSince) clashSince = perf; else if (!clashSaid && perf - clashSince > 1500) { clashSaid = true; say('clash'); }
   const n = navi(m, now, away);
   for (const id of [0, 1]) {
-    const key = id ? 'b' : 'a', d = m.decks[id], play = $('play-' + key), other = m.decks[1 - id];
+    const key = id ? 'b' : 'a', d = m.decks[id], play = $('play-' + key);
     put('bpm-' + key, d.track ? d.bpm.toFixed(2) : '--');
-    const pitch = pitchOf(d); if (document.activeElement !== $('pitch-' + key)) $('pitch-' + key).value = pitch.toFixed(2);
-    put('pitch-value-' + key, `${pitch >= 0 ? '+' : ''}${pitch.toFixed(2)}%`);
-    const locked = d.track && other.track && bpmDiffPct(other, d) <= LOCK_PCT; $('lock-' + key).classList.toggle('on', !!locked);
     const beat = mod(beatAt(d, now), PHRASE);
     put('beat-' + key, d.playing ? `再生・${Math.floor(beat / 4) + 1}小節 ${Math.floor(beat % 4) + 1}拍` : '停止中');
     setAttr(play, 'aria-pressed', String(d.playing)); play.disabled = audio.busy || !d.track || d.playing;
@@ -572,12 +586,10 @@ function render() {
     setAttr($('deck-' + key), 'data-role', !d.track ? 'empty' : d.playing && m.master === id ? 'master' : d.playing ? 'incoming' : 'next');
     put('indicator-' + key, !d.track ? 'EMPTY' : d.playing ? 'ON AIR' : 'STANDBY');
     if (!fx.pending) setVar($('platter-' + key), '--rotation', `${reduced.matches || !d.playing ? 0 : (mod(beatAt(d, now), 4) * 90).toFixed(1)}deg`); // held with the floor (DJF01)
-    if ($('platter-' + key).getAttribute('aria-valuenow') !== d.bpm.toFixed(2)) $('platter-' + key).setAttribute('aria-valuenow', d.bpm.toFixed(2));
+    setAttr($('platter-' + key), 'aria-valuenow', String(view.sync && view.sync.deck === id ? Math.round(view.sync.error * 100) : 0)); // how far out of time, in hundredths of a beat
     $('side-' + key).classList.toggle('goal', !!cue && cue.to === id && m.running);
     wave($('wave-' + key), id, now);
   }
-  $('sync').disabled = !cue || !m.running;
-  $('sync').classList.toggle('needed', !!(cue && m.running && bpmDiffPct(m.decks[cue.from], m.decks[cue.to]) > LOCK_PCT));
   put('mix-value', `A ${Math.round((1 - m.mix) * 100)} / B ${Math.round(m.mix * 100)}%`);
   const heat = m.floor.toFixed(3); if (heat !== shown.heat) { shown.heat = heat; $('floor-fill').style.setProperty('--f', heat); put('floor-value', String(Math.round(m.floor * 100))); }
   showMood(m);
@@ -585,6 +597,7 @@ function render() {
   put('set-next', cue ? `NEXT ▶ ${cue.to ? 'B' : 'A'}` : m.phase === 'select' ? '選曲' : m.phase === 'done' ? 'LAST TRACK' : '');
   shown.hint = faderGuide(m, away); shown.away = away;
   showNavi(n, m);
+  beatMeter(m);
   countTicks(m, now);
   const help = helpManual ?? (m.phase === 'idle');
   if ($('howto').hidden === help) { $('howto').hidden = !help; $('help').setAttribute('aria-pressed', String(help)); }
