@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { BULLS, KILLS, resolveThrow } from "../js/minigames/axe-model.js";
 const league = { throws: 10 };
-import { shotFeedback, sessionStats, impactFeedback, declarationCue, quiverAt, QUIVER_MS, zoneLabel, haloFor } from "../js/minigames/axe-presentation.js";
+import { shotFeedback, sessionStats, impactFeedback, contactHold, powerVerdict, declarationCue, quiverAt, QUIVER_MS, zoneLabel, haloFor } from "../js/minigames/axe-presentation.js";
+import { AXE_FEEL, applyFeel } from "../js/minigames/axe-feel.js";
 import { RINGS, CLUSTERS } from "../js/minigames/axe-model.js";
 /** The middle of the n-point ring's band, on the horizontal through the centre. */
 const bandMiddle = score => (RINGS[5 - score].radius + RINGS[6 - score].radius) / 2;
@@ -31,13 +32,58 @@ test("misses never celebrate a valid-power axe stuck outside the scoring circle 
   for (const failed of [shot(1.15, 1.15), shot(1.2, 1.2), shot(0, 0, .62, KILLS[0].id), shot(0, 0, .1)]) {
     assert.equal(failed.score, 0);
     assert.equal(impactFeedback(failed).hit, false);
-    assert.equal(impactFeedback(failed).strength, 0);
-    assert.equal(impactFeedback(failed).duration, 0);
+    assert.equal(impactFeedback(failed).celebration, false);
   }
   assert(shot(1.15, 1.15).stuck && shot(1.2, 1.2).stuck, "Wood contact is separate from earning a point");
   assert(!shot(0, 0, .1).stuck, "An under-rotated axe does not stick");
   const bull = impactFeedback(shot()), normal = impactFeedback(shot(.7, 0));
   assert(bull.hit && normal.hit); assert(bull.strength > normal.strength);
+});
+// 2026-11-13 手応えレビュー指摘6: 刺さった＝木を割った物理の事実には、0点でも反応を返す（祝福とは別の層）
+test("a zero-point axe stuck in wood gets the physical reaction only; a drop gets none", () => {
+  for (const wood of [shot(1.15, 1.15), shot(0, 0, .62, KILLS[0].id)]) {
+    const effect = impactFeedback(wood);
+    assert(wood.stuck && wood.score === 0);
+    assert.equal(effect.physical, true); assert.equal(effect.celebration, false); assert.equal(effect.tier, "wood");
+    assert.equal(effect.strength, AXE_FEEL.impact.strength.wood); assert.equal(effect.duration, AXE_FEEL.impact.woodDuration);
+    assert(effect.strength < impactFeedback(shot(.7, 0)).strength, "the wood alone reacts less than a scoring hit");
+    assert.notEqual(effect.color, impactFeedback(shot(.7, 0)).color);
+  }
+  assert.equal(impactFeedback(shot(1.15, 1.15)).burst, "MISS");
+  assert.equal(impactFeedback(shot(0, 0, .62, KILLS[0].id)).burst, "宣言外");
+  assert.equal(impactFeedback(shot(.7, 0)).burst, "+" + shot(.7, 0).score);
+  const drop = impactFeedback(shot(0, 0, .1));
+  assert.equal(drop.physical, false); assert.equal(drop.strength, 0); assert.equal(drop.duration, 0); assert.equal(drop.tier, null);
+});
+// 指摘1: 刺さった瞬間の止め（ヒットストップ）は強い一投ほど長く、落下は当たった姿を見せてから落ちる
+test("hit-stop grows with the hit, a drop holds its bad contact, and an axe off the board never stops", () => {
+  const wood = contactHold(shot(1.15, 1.15)), ring = contactHold(shot(.7, 0)), bull = contactHold(shot()), kill = contactHold(shot(KILLS[0].x, KILLS[0].y, .62, KILLS[0].id));
+  assert(wood > 0 && wood < ring && ring < bull && bull < kill, [wood, ring, bull, kill].join());
+  assert(ring >= 50 && kill <= 120, "about 3 to 7 frames");
+  assert.equal(contactHold(shot(0, 0, .1)), AXE_FEEL.hitstop.drop); assert.equal(contactHold(shot(0, 0, .95)), AXE_FEEL.hitstop.drop);
+  assert.equal(contactHold(resolveThrow({ x: 1.2, y: 1.2, power: .62 })) > 0, true, "the plank corner is wood");
+  assert.equal(contactHold(null), 0);
+});
+// 指摘4: 自分の回転を、向きと量の言葉で返す
+test("the power verdict names the zone, the direction and the size of the fix", () => {
+  assert.match(powerVerdict(.62, { inputMode: "tap-pull" }).text, /回転 62% · ちょうどいい/);
+  assert.equal(powerVerdict(.62).zone, "sweet");
+  assert.match(powerVerdict(.5, { inputMode: "tap-pull" }).text, /回転 50% · 回転が足りない · あと少し速く/);
+  assert.match(powerVerdict(.3, { inputMode: "tap-pull" }).text, /柄から当たる · もっと速く弾く/);
+  assert.match(powerVerdict(.75, { inputMode: "tap-pull" }).text, /回り気味 · 少しゆっくり/);
+  assert.match(powerVerdict(.9, { inputMode: "tap-pull" }).text, /回りすぎ · もっとゆっくり弾く/);
+  assert.match(powerVerdict(.5).text, /待って放す/); assert.match(powerVerdict(.75).text, /早く放す/);
+  assert.equal(powerVerdict(.3).zone, "drop"); assert.equal(powerVerdict(.75).zone, "edge");
+  assert.equal(powerVerdict(.62, { inputMode: "tap-pull" }).short, "↻62% ちょうどいい");
+  assert.equal(powerVerdict(.9, { inputMode: "tap-pull" }).short, "↻90% もっとゆっくり");
+  assert.equal(powerVerdict(.5).short, "↻50% 少し待って");
+  for (let p = 0; p <= 1; p += .01) assert(powerVerdict(p, { inputMode: "tap-pull" }).short.length <= 12, "one short line on the result card");
+});
+test("development feel overrides touch only known numbers and the freeze switch", () => {
+  const target = structuredClone(AXE_FEEL);
+  assert.equal(applyFeel("hitstop.large:130,shake.small.x:3,freeze:contact,unknown:9,hitstop.small:abc", target), 3);
+  assert.equal(target.hitstop.large, 130); assert.equal(target.shake.small.x, 3); assert.equal(target.debug.freeze, "contact");
+  assert.equal(target.hitstop.small, AXE_FEEL.hitstop.small); assert.equal(applyFeel("", target), 0); assert.equal(applyFeel(null, target), 0);
 });
 
 test("feedback celebrates actual central and off-center red bulls without suggesting a correction", () => {
@@ -71,6 +117,9 @@ test("drops use the actual power failure even over red or declared blue", () => 
     assert.equal(result.stuck, false); assert.equal(feedback.tone, "drop");
     assert.match(feedback.tip, /54〜70%/); assert.match(feedback.tip, power < .42 ? /柄から/ : /回りすぎ/);
     assert.doesNotMatch(feedback.tip, /宣言した青だけ|赤い中心を狙/);
+    // 弾いて投げる操作では % ではなく動作の言葉で（指摘4）
+    const tap = shotFeedback(result, { inputMode: "tap-pull" }).tip;
+    assert.doesNotMatch(tap, /%/); assert.match(tap, power < .42 ? /速く弾こう/ : /ゆっくり弾こう/);
   }
   const tired = { ...rightOfOuter(), sway: { fatigue: 1, focused: false } };
   assert.match(shotFeedback(tired).tip, /左の赤い中心.*息を整える/);

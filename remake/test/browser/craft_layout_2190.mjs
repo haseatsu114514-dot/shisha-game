@@ -53,6 +53,34 @@ await suite("craft-layout-2190", async check => {
     }
   }, { viewport });
 
+  // #3521: 吸い出しを提供した後、下端に出る結果カードが「針の現在位置」の札に重ならない。
+  await check("pull-result-card-no-zone-overlap", async page => {
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"); core.newGame();
+      const session = await import("./js/craft/session.js");
+      const pull = await import("./js/craft/pull.js");
+      const cs = session.newSession("tutorial");
+      Object.assign(cs, { mix: { lemon: 6, mint: 6 }, water: .5 });
+      session.openBench(cs); await session.waitBenchReady(cs);
+      session.stepPanel("pull", "吸い出し", "");
+      void pull.runPull(cs);
+    });
+    for (let n = 0; n < 2; n++) {
+      await page.locator('[data-test="pull-stop"]:not([disabled])').click();
+      await page.waitForFunction(pulls => document.querySelector('[data-test="pull-count"]')?.dataset.pulls === String(pulls), n + 1);
+    }
+    await page.locator('[data-test="pull-serve"]:not([disabled])').click();
+    await page.locator('[data-test="step-next"]').waitFor();
+    const hits = await page.evaluate(() => {
+      const card = document.querySelector(".result-card").getBoundingClientRect();
+      const zone = document.querySelector('[data-test="pull-current-zone"]');
+      const z = zone.getBoundingClientRect();
+      const shown = getComputedStyle(zone).display !== "none" && z.width > 0;
+      return { shown, overlap: shown && z.bottom > card.top && z.top < card.bottom && z.right > card.left && z.left < card.right };
+    });
+    assert.equal(hits.overlap, false, `針の現在位置が結果カードに重なる ${JSON.stringify(hits)}`);
+  }, { viewport: { width: 1280, height: 720 } });
+
   await check("result-full-flavor-body", async page => {
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js"); core.newGame();

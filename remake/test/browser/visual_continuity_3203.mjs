@@ -7,6 +7,7 @@ import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
 const FLOOR_PHOTOS = /\/img\/backgrounds\/bg_(?:shop|fookah_showroom)\.webp(?:[?#]|$)/;
+const SHOWROOM_PHOTO = /\/img\/backgrounds\/bg_fookah_showroom\.webp(?:[?#]|$)/; // 入口にだけ出る2Fの写真
 const FAILING_BG = /\/img\/backgrounds\/bg_eden_shop\.webp(?:[?#]|$)/; // 起動時の先読みに入っていない背景
 
 async function setup(page, values = {}) {
@@ -20,11 +21,11 @@ async function setup(page, values = {}) {
 }
 
 /** 写真の通信を止めておき、release() で流す。止めた通信のURLは seen に残る。 */
-async function holdFloorPhotos(page) {
+async function holdFloorPhotos(page, photos = FLOOR_PHOTOS) {
   let release;
   const held = new Promise(resolve => { release = resolve; });
   const seen = [];
-  await page.route(FLOOR_PHOTOS, async route => {
+  await page.route(photos, async route => {
     seen.push(route.request().url());
     await held;
     await route.continue().catch(() => {});
@@ -102,13 +103,25 @@ await suite("visual-continuity-3203", async check => {
 
   await check("slow-photo-entry-not-blank", async page => {
     await setup(page);
-    const photos = await holdFloorPhotos(page);
+    // 2026-11-12 から、入口の前に店頭の応対（凛想。daily/shop-greeting.js）を読む。応対の背景は1Fの写真と同じ
+    // bg_shop なので、遅らせるのは入口にしか出ない2Fの写真だけにし、入口を待つ時間は応対を読み終えた時から測る。
+    const photos = await holdFloorPhotos(page, SHOWROOM_PHOTO);
     await watchEntry(page);
-    await page.evaluate(() => { S.openedAt = performance.now(); S.result = "pending"; S.shop.openShop().then(r => { S.result = r; }); });
+    await page.evaluate(() => {
+      S.greetedAt = null; S.result = "pending";
+      let opened = false;
+      new MutationObserver((_, observer) => {
+        const open = document.body.classList.contains("vn-open");
+        if (open) opened = true;
+        else if (opened && S.greetedAt === null) { S.greetedAt = performance.now(); observer.disconnect(); }
+      }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+      S.shop.openShop().then(r => { S.result = r; });
+    });
+    await page.waitForFunction(() => S.greetedAt !== null, null, { timeout: 30000 });
     // 調査の再現と同じ 3000ms の遅れ。入口は上限で出て、写真が届くまでは枠に下地が見える。
     setTimeout(photos.release, 3000);
     const entry = await firstEntry(page);
-    const waited = entry.at - await page.evaluate(() => S.openedAt);
+    const waited = entry.at - await page.evaluate(() => S.greetedAt);
     assert(waited >= 1400 && waited < 2600, `entry should wait for the photos up to the limit: ${Math.round(waited)}ms`);
     assert.equal(entry.pictures.length, 2);
     for (const picture of [...entry.pictures, ...entry.frame]) assert(visible(picture), `blank photo frame: ${JSON.stringify(picture)}`);
