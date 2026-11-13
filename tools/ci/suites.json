@@ -3713,6 +3713,15 @@
       "chrome": "playwright"
     },
     {
+      "id": "neo-light-swap",
+      "title": "新版: 表情が替わる間も立ち絵の光の層が消えない（型は新しい表情の絵をデコードしてから替える・LD08）",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 3,
+      "paths": ["remake/js/looks/neo.js", "remake/css/look-neo.css", "remake/js/vn/engine.js", "remake/test/browser/neo_light_swap.mjs"],
+      "run": ["node remake/test/browser/neo_light_swap.mjs"]
+    },
+    {
       "id": "phone-density",
       "title": "Phone density standard on landscape touch: common parts keep real text >= 11px and taps >= 38px; edge parts stay outside a simulated notch; desktop unchanged (#2851, #3001)",
       "kind": "browser",
