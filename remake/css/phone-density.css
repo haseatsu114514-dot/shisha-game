@@ -140,3 +140,21 @@ html:root[data-density="phone"] body:not(:root) :is(.btn.xfer-btn, .xfer-box .mo
   font-size: max(26px, var(--phone-text));
 }
 html:root[data-density="phone"] body:not(:root) .xfer-btns { gap: var(--phone-gap); }
+
+/* ---------------------------------------------------------------- LIME・会話の LOG・起動の案内（#3556） */
+/* 横持ちでは端末の枠が実寸 184×347px ほどになり、トーク一覧 8.7px・閉じる 7.6px・時刻の帯 6.5px まで縮んでいた。
+   枠を舞台の高さいっぱいまで広げ、文字だけを規格へ。実物のアプリをまねた色・形（LK20）は変えない。 */
+html:root[data-density="phone"] body:not(:root) .phone { width: 520px; height: min(700px, calc(100% - 16px)); border-radius: 30px; }
+html:root[data-density="phone"] body:not(:root) .phone-status { font-size: var(--phone-sub); padding: 2px 20px 4px; }
+html:root[data-density="phone"] body:not(:root) :is(.lime-logo, .lime-unread, .lcr-side small, .lcr-tag) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) :is(.lime-name, .lime-title, .lcr-name) { font-size: var(--phone-text); }
+html:root[data-density="phone"] body:not(:root) :is(.lcr-preview, .lime-bubble, .lime-note, .lime-hint, .lime-empty, .lime-tip, .lime-tip b) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .lime-reply { min-height: var(--phone-tap); font-size: var(--phone-sub); }
+/* 会話の LOG: 本文 9.8px・名前 7.6px だった。左右の余白を詰めて幅を取り、本文と名前を規格へ。 */
+html:root[data-density="phone"] body:not(:root) .vn-log { inset: 16px 48px; padding: 14px 22px; }
+html:root[data-density="phone"] body:not(:root) .log-head { font-size: var(--phone-text); }
+html:root[data-density="phone"] body:not(:root) .log-head button { min-height: var(--phone-tap); font-size: var(--phone-text); }
+html:root[data-density="phone"] body:not(:root) .log-row { font-size: var(--phone-text); }
+html:root[data-density="phone"] body:not(:root) :is(.log-row b, .log-inner) { font-size: var(--phone-sub); }
+/* 起動に失敗した時の案内（8.1px だった）。再読込のボタンは .btn の規格がもう効いている。 */
+html:root[data-density="phone"] body:not(:root) .boot-msg { font-size: var(--phone-text); }
