@@ -69,6 +69,7 @@ export const STATE_KEY_RULES = {
   lastDate: { verdict: "reset", note: "§2.4" },
   loverEventsSeen: { verdict: "reset", note: "§2.4" },
   guilt: { verdict: "reset", note: "§2.4" },
+  loverStrain: { verdict: "reset", note: "§2.4。恋人ごとのすれ違い（core/lover-strain.js）" },
   romance: { verdict: "reset", note: "§2.4" },
   romanceChoices: { verdict: "reset", note: "§2.4" },
   finales: { verdict: "reset", note: "§2.4" },
@@ -307,6 +308,9 @@ export const FLAG_EXACT_RULES = [
   ["_cold_pending", "pending"],
   ["_confession_due", "pending"],
   ["_confession_go", "person"],
+  ["_strain_keep", "person"], // 別れ話で選んだ答え（core/lover-strain.js の STRAIN_OUTCOME_FLAGS）。再生の前後で消す
+  ["_strain_excuse", "person"],
+  ["_strain_end", "person"],
   ["_confession_wait", "pending"],
   ["_craft_practice_runs", "progression"],
   ["_day1_shift_ended", "progression"],

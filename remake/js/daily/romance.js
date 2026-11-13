@@ -17,6 +17,7 @@ import { dateScene, dateVenue, relationshipDayTotal } from "./date-scene.js";
 import { playSamechanDate, samechanDateGap, samechanDateReady } from "./samechan-date.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
 import { petitAfterDate } from "./petit-shuraba.js";
+import { strainOf, STRAIN_SIGN2 } from "../core/lover-strain.js";
 import { recordRouteLover, recordRouteEvent } from "../core/gallery-progress.js";
 
 // 告白は「帰り道」の場面。背景を持たない台本は通りの絵で（前の場面の背景を引き継がない）
@@ -397,7 +398,8 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
     const pool = [...((L().morning || {})[id] || []).filter((v) => home || !v.hometown),
       ...(apartFrom(id, home) ? (L().morning_away || {})[id] || [] : [])];
     const msgId = `_lover_morning_${id}${chapterKey}_d${state.day}`;
-    if (pool?.length && turn % LOVER_MORNING_GAP === 0 && !read(msgId)) {
+    // すれ違いが「話したい」の段まで溜まった恋人からは、いつもの朝のひとことが来なくなる（core/lover-strain.js。誘いは届く）
+    if (pool?.length && turn % LOVER_MORNING_GAP === 0 && !read(msgId) && strainOf(state, id) < STRAIN_SIGN2) {
       const k = Math.floor(turn / LOVER_MORNING_GAP);
       const stamp = (L().morningStamp || {})[id];
       const v = stamp && k % 2 === 1 ? { m: [stamp.text, { sender: id, stamp: stamp.stamp }] } : { m: pool[Math.floor(k / (stamp ? 2 : 1)) % pool.length].m };

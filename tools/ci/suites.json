@@ -922,6 +922,7 @@
         "node remake/test/ch5_sumi_trial.mjs",
         "node remake/test/ch5_party.mjs",
         "node remake/test/petit_shuraba.mjs",
+        "node remake/test/lover_strain.mjs",
         "node remake/test/ch5_travel.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
@@ -1912,6 +1913,26 @@
       ],
       "run": [
         "node remake/test/browser/petit_shuraba.mjs"
+      ]
+    },
+    {
+      "id": "lover-strain",
+      "title": "Lover strain: the hidden number's morning signs (LIME and monologue), the breakup talk on the way home with its three answers, and going back to friends",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 8,
+      "paths": [
+        "remake/js/core/lover-strain.js",
+        "remake/js/daily/lover-strain.js",
+        "data/dialogue/lover_strain.json",
+        "remake/data/lover.json",
+        "remake/js/daily/romance.js",
+        "remake/js/daily/phone.js",
+        "remake/js/daily/petit-shuraba.js",
+        "remake/test/browser/lover_strain.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/lover_strain.mjs"
       ]
     },
     {

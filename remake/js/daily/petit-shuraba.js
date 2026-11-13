@@ -8,6 +8,7 @@ import { DB } from "../core/data.js";
 import { play, isPlaying } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { markPetit, petitActive, petitAfterDatePick, petitAfterVisitPick, PETIT_SCENES, joinPetitScenes } from "../core/petit-shuraba.js";
+import { strainSuspect } from "../core/lover-strain.js";
 
 const FILE = "petit_shuraba";
 let loading = null;
@@ -19,12 +20,13 @@ async function loadScenes() {
 }
 
 /** 読み終えた時だけ記録して保存する。 */
-async function read(pick, dialogue, options = {}) {
+async function read(pick, dialogue, options = {}, suspects = []) {
   const owner = state;
   if (!dialogue) return false;
   const result = await play(dialogue, options);
   if (state !== owner || !result || result.cancelled) return false;
   markPetit(owner, pick.key);
+  strainSuspect(owner, suspects); // その場にいた恋人は、少し勘づく（すれ違い・core/lover-strain.js）
   save();
   return true;
 }
@@ -45,6 +47,7 @@ async function misfire(pick) {
     messages: [{ me: true, text: data.sent }, ...lines.m], replies: lines.r }], { title: "帰り道", time: state.slot ? "夜" : "昼" });
   if (state !== owner) return false;
   markPetit(owner, pick.key);
+  strainSuspect(owner, [pick.to]); // 誤爆を受け取った恋人
   save();
   await play("petit_lime_misfire_close");
   return state === owner;
@@ -59,8 +62,8 @@ export async function petitAfterDate(id, { bg = null } = {}) {
   try { await loadScenes(); } catch { return false; } // 寄り道なので、読めなければ出さない
   if (state !== owner) return false;
   const options = bg ? { bg } : {};
-  if (pick.kind === "call") return read(pick, joinPetitScenes(DB.dialogues, ["petit_date_call", `petit_date_call_${pick.partner}`, "petit_date_call_close"]), options);
-  if (pick.kind === "notice") return read(pick, DB.dialogues[`petit_notice_${pick.who}`], options);
+  if (pick.kind === "call") return read(pick, joinPetitScenes(DB.dialogues, ["petit_date_call", `petit_date_call_${pick.partner}`, "petit_date_call_close"]), options, [id]);
+  if (pick.kind === "notice") return read(pick, DB.dialogues[`petit_notice_${pick.who}`], options, [pick.who]);
   if (pick.kind === "misfire") return misfire(pick);
   return false;
 }
@@ -87,7 +90,7 @@ export async function petitAfterVisit(spot, { bg = null } = {}) {
   if (pick.kind === "cross") {
     return read(pick, joinPetitScenes(DB.dialogues, ["petit_cross_open", `petit_cross_host_${pick.host}`, `petit_cross_guest_${pick.guest}`, "petit_cross_close"]),
       // 自分の店に立つみんとは営業の姿なので、視線の帯も営業の顔で出す（客として来たみんとは私服の栞）
-      { ...options, cast: [pick.host === "minto" ? { id: "minto", face: "normal" } : pick.host, pick.guest] });
+      { ...options, cast: [pick.host === "minto" ? { id: "minto", face: "normal" } : pick.host, pick.guest] }, [pick.host, pick.guest]);
   }
   return read(pick, DB.dialogues[pick.scene], options);
 }

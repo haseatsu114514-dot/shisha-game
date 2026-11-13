@@ -37,6 +37,7 @@ import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
 import { roamerAt, meetRoamer } from "./roamers.js";
 import { recipeFindAfterVisit } from "./recipe-finds.js";
 import { petitAfterVisit } from "./petit-shuraba.js";
+import { strainMorning, maybeStrainTalk, strainAfterVisit } from "./lover-strain.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
 import { presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
@@ -193,7 +194,9 @@ async function morning() {
   // 一緒にいる恋人（ドバイの同行者）からは届かない。
   // 章の側から届く朝のLIME（第3章の東京の恋人からの訪問の相談など）
   const extra = chapterDef.morningLime?.() || 0;
-  const n = deliverMorning({ fixedNight, invitations: chapterDef.dateInvitations !== false,
+  // すれ違い（恋人の裏の数値）を一日ぶん進める。予兆のLIMEは、いつもの朝のLIMEより先に届ける（同じ相手からは重ねない）
+  const strained = strainMorning();
+  const n = strained + deliverMorning({ fixedNight, invitations: chapterDef.dateInvitations !== false,
     exclude: chapterDef.withLovers?.() || [] }) + extra;
   if (n) pushNotice(n, { onOpen: (sender) => {
     if (isChoosingDestination() && !layers.modal.classList.contains("show")) phoneButton({ sender });
@@ -627,7 +630,7 @@ async function performSpotAction(spot) {
       // 第3章以降の店の人が、配合を教える／名前を付けた一台を受け取る（#2020 G・daily/recipe-finds.js）
       if (result.used && state === actionOwner) await recipeFindAfterVisit(spot, { bg: roamerBg() });
       // プチ修羅場（恋人が2人以上・一度きり）: 居合わせ・予約表・映画館・なるの釘。訪問は済んでいて、行動も料金も使わない
-      if (result.used && state === actionOwner) await petitAfterVisit(spot, { bg: roamerBg() });
+      if (result.used && state === actionOwner) { strainAfterVisit(spot); await petitAfterVisit(spot, { bg: roamerBg() }); }
       if (result.used && state === actionOwner) await meetRoamer(spot, scheduledRoamer, { bg: roamerBg() });
       return result;
     }
@@ -736,7 +739,7 @@ async function performSpotAction(spot) {
     if (await visitHiyoriAtShop(spot, { scheduledSpot: scheduledGuestSpot, bg: guestBg })) await consultLessons("hiyori", { bg: guestBg });
   }
   if (used) await visitCityGuestAtShop(spot, { scheduledVisit: scheduledCityVisit });
-  if (used && state === actionOwner) await petitAfterVisit(spot, { bg: roamerBg() }); // プチ修羅場（上の章の分岐と同じ）
+  if (used && state === actionOwner) { strainAfterVisit(spot); await petitAfterVisit(spot, { bg: roamerBg() }); } // すれ違いの埋め合わせ・プチ修羅場（上の章の分岐と同じ）
   if (used && state === actionOwner) await meetRoamer(spot, scheduledRoamer, { bg: roamerBg() });
   return { used, exerted, slotsUsed, exp };
 }
@@ -969,6 +972,12 @@ async function endDay({ returnedToTonari = false } = {}) {
   const confessed = chapterDef.confessions === false ? false
     : await maybeConfession(beat, { busyNight: metTonight || rested || state.flags._eve_slept === state.day, companion });
   if (confessed) { delete state.flags._home_tonight; await bannersIdle(); }
+  // 別れ話（すれ違いが溜まりきった恋人が帰り道で待っている。daily/lover-strain.js）。告白・約束・休養・夜の予定・大会前夜の夜には重ねない
+  const strainOwner = state;
+  const talked = await maybeStrainTalk(beat, { busyNight: confessed || metTonight || rested || nightCount > 0
+    || state.flags._eve_slept === state.day || tournamentEve() || finalEve() });
+  if (state !== strainOwner) return;
+  if (talked) { delete state.flags._home_tonight; await bannersIdle(); }
   await chapterDef.beforeHomecoming?.();
   const athome = !!state.flags._home_tonight;
   delete state.flags._home_tonight;
