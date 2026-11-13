@@ -116,7 +116,7 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
       host.hidden = true;
       stopBgm(0.4);
       const { results } = await runDjSet({ host: document.getElementById("stage") || layers.screen, set: pick, signal: controller.signal,
-        muted: !!config.mute, volume: config.bgmVolume, phones: ownsGear(owner, "gear_headphones"),
+        muted: !!config.mute, volume: config.bgmVolume, phones: ownsGear(owner, "gear_headphones"), best: djRecords(owner).sets[pick]?.best?.total ?? null,
         onResult: result => {
           if (!current()) return;
           const saved = recordDjResult(owner, result);
