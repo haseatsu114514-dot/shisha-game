@@ -235,12 +235,12 @@
       "comment": "第5章でドバイへ来て、最初にラクダレース場へ行った日だけ、練習レースの前の会話（ch4_camel_replay）の代わりに読む。第4章で一度でも走った人だけ（第4章で走っていない人は第5章の店先 ch5_dubai_camel_meet で会うので読まない。chapters/ch5-dubai.js）。大会・シェイクの正体には触れない。",
       "lines": [
         { "speaker": "", "face": "", "text": "朝のレース場。ハリールの白い車の横で、見覚えのある顔が両手を大きく振った。" },
-        { "speaker": "faris", "face": "excited", "text": "ハジメ！　日本に帰ったんじゃなかったの？" },
+        { "speaker": "faris", "face": "normal", "text": "ハジメ！　日本に帰ったんじゃなかったの？" },
         { "speaker": "hajime", "face": "smile", "text": "また来ました。……ハビーバに、会いたくなって" },
-        { "speaker": "faris", "face": "smile", "text": "ハビーバ、きっと喜ぶよ。叔父さんも、顔には出さないけど絶対嬉しいんだから" },
+        { "speaker": "faris", "face": "normal", "text": "ハビーバ、きっと喜ぶよ。叔父さんも、顔には出さないけど絶対嬉しいんだから" },
         { "speaker": "", "face": "", "text": "柵の向こうで、ラクダの長い首が、こちらへゆっくり向いた。" },
         { "speaker": "khalil", "face": "normal", "text": "……戻ったか。乗りなさい。ハビーバが待っている" },
-        { "speaker": "faris", "face": "smile", "text": "今日も連打しないでよ。リモコン、はい" }
+        { "speaker": "faris", "face": "normal", "text": "今日も連打しないでよ。リモコン、はい" }
       ]
     },
     {
@@ -279,44 +279,44 @@
       "comment": "第5章のドバイ（2026-11-07 オーナー決定「第4章のラクダレース／砂丘を飛ばしたプレイヤーも、第5章側で前提を補ってルートに入れる」）。第4章で練習レースを走っていない人が、Dr.fookah ドバイ店の店先で最初に読む（chapters/ch5-dubai.js・時間は使わない）。第4章の段階で分ける（ch5-dubai.js が読む間だけ立てる _ch5_camel_known）: 会っていなければ出会い（first）、知り合った・誘われただけなら再会と叔父さんのレースの思い出させ（again → again_shop）、本番を見た人は再会してすぐレースの話（again → again_track）。どれも翌朝のレースに誘われ、翌日以降の昼にレース場へ（本番を見ていなければ ch4_camel_watch から）。大会・王者・シェイクの正体・宿には触れない。",
       "lines": [
         { "type": "condition", "condition_type": "flag_count", "flag": "_ch5_camel_known", "threshold": 1, "next_true": "again", "next_false": "first" },
-        { "speaker": "faris", "face": "smile", "text": "明日の朝、レースがある。一緒に行こう" },
+        { "speaker": "faris", "face": "normal", "text": "明日の朝、レースがある。一緒に行こう" },
         { "speaker": "hajime", "face": "smile", "text": "行きます。何時に集まればいいですか" },
         { "speaker": "faris", "face": "normal", "text": "六時。この店の前で待ってて。車で三十分" },
         { "speaker": "hajime", "face": "surprise", "text": "六時……。起きられるかな" },
-        { "speaker": "faris", "face": "smile", "text": "寝坊したら、置いていくからね" },
+        { "speaker": "faris", "face": "normal", "text": "寝坊したら、置いていくからね" },
         { "speaker": "", "face": "", "text": "店の奥から、ダブルアップルの甘い匂いが流れてきた。" },
-        { "speaker": "faris", "face": "smile", "text": "決まり。じゃ、今日は葉、何にする？" }
+        { "speaker": "faris", "face": "normal", "text": "決まり。じゃ、今日は葉、何にする？" }
       ],
       "branches": {
         "first": [
           { "speaker": "", "face": "", "text": "Dr.fookah ドバイ店の前。扉が開いて、冷気と一緒に声が飛んできた。" },
-          { "speaker": "faris", "face": "smile", "text": "いらっしゃいませー！　……お、日本の人？" },
+          { "speaker": "faris", "face": "normal", "text": "いらっしゃいませー！　……お、日本の人？" },
           { "speaker": "hajime", "face": "surprise", "text": "え、日本語？" },
-          { "speaker": "faris", "face": "smile", "text": "店長が日本人だから、挨拶だけ百回練習した。あとはアニメ" },
+          { "speaker": "faris", "face": "normal", "text": "店長が日本人だから、挨拶だけ百回練習した。あとはアニメ" },
           { "speaker": "faris", "face": "normal", "text": "ファーリス。ここで葉を量ってる。あなたは？" },
           { "type": "set_flag", "flag": "_met_faris" },
           { "speaker": "hajime", "face": "normal", "text": "逢縁はじめです。日本で、シーシャの店で働いてて" },
-          { "speaker": "faris", "face": "excited", "text": "同じ仕事だ！　遊びに来たの？" },
+          { "speaker": "faris", "face": "normal", "text": "同じ仕事だ！　遊びに来たの？" },
           { "speaker": "hajime", "face": "smile", "text": "はい。知り合いに招かれて、少しだけ" },
           { "speaker": "faris", "face": "normal", "text": "じゃ、普通の観光じゃもったいない。俺の叔父さん、ラクダレースの調教師なんだ" },
           { "speaker": "hajime", "face": "surprise", "text": "ラクダレース？" },
-          { "speaker": "faris", "face": "smile", "text": "今は騎手がロボット。見たら、絶対びっくりする" }
+          { "speaker": "faris", "face": "normal", "text": "今は騎手がロボット。見たら、絶対びっくりする" }
         ],
         "again": [
           { "speaker": "", "face": "", "text": "Dr.fookah ドバイ店の前。葉の缶を抱えた店員が、こちらを見て足を止めた。" },
-          { "speaker": "faris", "face": "excited", "text": "ハジメ！　日本に帰ったんじゃなかったの？" },
+          { "speaker": "faris", "face": "normal", "text": "ハジメ！　日本に帰ったんじゃなかったの？" },
           { "speaker": "hajime", "face": "smile", "text": "帰りました。また、遊びに来たんです" },
-          { "speaker": "faris", "face": "smile", "text": "おかえり。前は、ゆっくり遊ぶ前に帰っちゃったよね" },
+          { "speaker": "faris", "face": "normal", "text": "おかえり。前は、ゆっくり遊ぶ前に帰っちゃったよね" },
           { "speaker": "hajime", "face": "normal", "text": "そうでした。あの時は、慌ただしくて" },
           { "type": "condition", "condition_type": "flag_count", "flag": "_ch5_camel_known", "threshold": 2, "next_true": "again_track", "next_false": "again_shop" }
         ],
         "again_shop": [
           { "speaker": "faris", "face": "normal", "text": "前に言ってた、見せたいもの。叔父さんのラクダレースなんだ" },
-          { "speaker": "faris", "face": "smile", "text": "今は騎手がロボット。見たら、絶対びっくりする" }
+          { "speaker": "faris", "face": "normal", "text": "今は騎手がロボット。見たら、絶対びっくりする" }
         ],
         "again_track": [
-          { "speaker": "faris", "face": "smile", "text": "叔父さん、ハジメのこと覚えてたよ。『理解の早い子』って" },
-          { "speaker": "faris", "face": "smile", "text": "今度こそ、ハビーバと走ってもらうからね" }
+          { "speaker": "faris", "face": "normal", "text": "叔父さん、ハジメのこと覚えてたよ。『理解の早い子』って" },
+          { "speaker": "faris", "face": "normal", "text": "今度こそ、ハビーバと走ってもらうからね" }
         ]
       }
     },

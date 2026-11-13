@@ -11,7 +11,7 @@
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "いらっしゃいませー！　……お、日本の人？"
         },
         {
@@ -21,7 +21,7 @@
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "店長が日本人だから、挨拶だけ百回練習した。あとはアニメ"
         },
         {
@@ -45,7 +45,7 @@
         },
         {
           "speaker": "faris",
-          "face": "excited",
+          "face": "normal",
           "text": "大会の人だ！　店長が言ってた。日本の若いのが来るって"
         },
         {
@@ -65,7 +65,7 @@
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "いいな。こっちは夜になると、みんな外のテラスに出る。星を見ながら吸う"
         },
         {
@@ -75,7 +75,7 @@
         },
         {
           "speaker": "faris",
-          "face": "wink",
+          "face": "normal",
           "text": "じゃ、今度の夜はテラスね。……いや、その前に、昼に見せたいものがある"
         },
         {
@@ -85,7 +85,7 @@
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "まだ秘密。また店に来て。今日は葉、何にする？"
         },
         {
@@ -105,7 +105,7 @@
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "ハジメ！　来た来た。今日は買い物？　話？"
         },
         {
@@ -125,7 +125,7 @@
         },
         {
           "speaker": "faris",
-          "face": "surprise",
+          "face": "normal",
           "text": "利き手？　そこまで見るの？"
         },
         {
@@ -135,7 +135,7 @@
         },
         {
           "speaker": "faris",
-          "face": "excited",
+          "face": "normal",
           "text": "かっこいい。叔父さんも似たこと言う。「ラクダに気づかれる前に合図を出せ」って"
         },
         {
@@ -145,12 +145,12 @@
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "叔父さん、ラクダレースの調教師なんだ"
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "明日の朝、レースがある。見に行かない？"
         },
         {
@@ -160,7 +160,7 @@
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "……あー。ハジメ、それ、二十年前の話"
         },
         {
@@ -185,12 +185,12 @@
         },
         {
           "speaker": "faris",
-          "face": "wink",
+          "face": "normal",
           "text": "握らない。ラクダは自分で走る"
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "詳しくは明日、現地で。朝は早いよ、六時集合"
         },
         {
@@ -200,7 +200,7 @@
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "じゃ、寝ないで来る？　冗談。宿の前に迎えに行く"
         }
       ]
@@ -220,7 +220,7 @@
         },
         {
           "speaker": "faris",
-          "face": "excited",
+          "face": "normal",
           "text": "来た来た。ハジメ、こっち。叔父さんの車に乗ろう"
         },
         {
@@ -254,7 +254,7 @@
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "調教師はみんな車から見てる。手に持ってるのが、これ"
         },
         {
@@ -284,7 +284,7 @@
         },
         {
           "speaker": "khalil",
-          "face": "smile",
+          "face": "normal",
           "text": "無い。ラクダは自分で走る。私たちができるのは、声と、ムチだけだ"
         },
         {
@@ -309,7 +309,7 @@
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "そう。今のは数キロ。叔父さん、ハジメは理解が早い"
         },
         {
@@ -329,7 +329,7 @@
         },
         {
           "speaker": "faris",
-          "face": "excited",
+          "face": "normal",
           "text": "ハビーバだ！　ハジメ、あの子は声をかけるタイミングが好きなんだ。遅れると機嫌が悪くなる"
         },
         {
@@ -359,12 +359,12 @@
         },
         {
           "speaker": "faris",
-          "face": "excited",
+          "face": "normal",
           "text": "勝った！　ハジメ、初めてで勝った！"
         },
         {
           "speaker": "khalil",
-          "face": "smile",
+          "face": "normal",
           "text": "……ふむ。終盤に息を残していたな"
         },
         {
@@ -379,7 +379,7 @@
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "叔父さん、本気で言ってる顔だ"
         },
         {
@@ -409,7 +409,7 @@
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "惜しい！　でも初めてで中団はすごいよ"
         },
         {
@@ -424,7 +424,7 @@
         },
         {
           "speaker": "khalil",
-          "face": "smile",
+          "face": "normal",
           "text": "分かるのが早い。もう一度来い。あいつも覚えている"
         },
         {
@@ -454,7 +454,7 @@
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "ハビーバ、怒ってないよ。ほら、ハジメの方を見てる"
         },
         {
@@ -499,7 +499,7 @@
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "リモコン、持ったね。今日は連打しないでよ"
         },
         {
@@ -529,7 +529,7 @@
         },
         {
           "speaker": "faris",
-          "face": "excited",
+          "face": "normal",
           "text": "自己ベスト！　ハビーバ、ハジメのこと好きになってきたんじゃない？"
         },
         {
@@ -539,12 +539,12 @@
         },
         {
           "speaker": "khalil",
-          "face": "smile",
+          "face": "normal",
           "text": "ラクダは声を覚える、……お前の声を、だ"
         },
         {
           "speaker": "faris",
-          "face": "wink",
+          "face": "normal",
           "text": "ほら、叔父さんがここまで言うのは珍しい"
         },
         {
@@ -569,7 +569,7 @@
         },
         {
           "speaker": "faris",
-          "face": "smile",
+          "face": "normal",
           "text": "叔父さんは褒めない人だから。「悪くない」は最高評価"
         },
         {
