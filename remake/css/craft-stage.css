@@ -586,10 +586,12 @@ html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .ben
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-note { font-size: max(20px, calc(13px / var(--k, 1))) !important; }
 
 /* ---------- スマホ横持ち: 拡大した工程番号が白い玉から切れないようにし、大会の帯を「？」の手前に収める ---------- */
-html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .bench-phase .bench-phase-copy small { line-height: 1; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .bench-phase:not(.now) .bench-phase-copy small {
+  width: auto; height: auto; max-width: none; max-height: none;
+}
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .bench-phase.now { padding-left: 42px !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .bench-phase.now .bench-phase-copy small {
-  left: 3.5px; width: max(24px, 1.55em); height: max(24px, 1.25em); margin: 0; transform: translateY(-50%);
+  left: 3.5px; width: max(24px, 1.6em); height: max(24px, 1.45em); margin: 0; transform: translateY(-50%); line-height: 1;
 }
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top { gap: 6px !important; padding: 0 104px 0 12px !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top .bench-mode { letter-spacing: 0; }
