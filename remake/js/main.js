@@ -102,6 +102,14 @@ export async function boot() {
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
   const resumeRequested = consumeResumeOnBoot();
   if (resumeRequested && load()) resumeGame();
+  // TRPGの試遊（TRF21）: ?trial=trpg で、タイトルの代わりに本編と同じボドゲカフェを使い捨ての状態で開く。
+  // セーブは読み書きしない。「タイトルへ戻る」でふだんのタイトルへ。
+  else if (new URLSearchParams(location.search).get("trial") === "trpg") {
+    try {
+      const trial = await (await import("./daily/trpg-trial.js")).openTrpgTrial();
+      trial.finished.finally(() => showTitle(titleArt));
+    } catch { showTitle(titleArt); } // 試遊を用意できなかった時は、ふだんのタイトルへ
+  }
   else showTitle(titleArt);
   // タイトルを描けたことを確認してから、読み込み画面を閉じる。
   $("#boot").classList.add("done");
