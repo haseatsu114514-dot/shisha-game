@@ -500,14 +500,27 @@
           "text": "マンゴーに、パッションフルーツを重ねた。風が吹いても、甘い香りが残る。"
         },
         {
+          "speaker": "",
+          "text": "客の母が、ひと息目をゆっくり吸いこむ。"
+        },
+        {
           "speaker": "customer",
           "face": "smile",
           "text": "南の国の匂いだって、母が喜んでます"
         },
         {
+          "speaker": "",
+          "text": "父は黙ったまま、吸い口を受け取った。"
+        },
+        {
           "speaker": "customer",
           "face": "normal",
           "text": "父も、もう一口って。新しい部屋の、最初のお客さんですね"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "段ボールだらけの部屋なのに、ここだけ先に、住んでる匂いになりました"
         },
         {
           "speaker": "hajime",
@@ -524,14 +537,27 @@
           "text": "ジャスミンに桃を合わせた、やさしい一台にした。"
         },
         {
+          "speaker": "",
+          "text": "煙は薄く立って、風が吹くたびにベランダの外へ流れていった。"
+        },
+        {
           "speaker": "customer",
           "face": "normal",
           "text": "いい匂い……でも、外だとすぐ消えちゃいますね"
         },
         {
           "speaker": "customer",
+          "face": "normal",
+          "text": "風が来るたびに、匂いがふっと遠くなります"
+        },
+        {
+          "speaker": "customer",
           "face": "smile",
           "text": "吸うと、ちゃんと甘いです。両親も、おいしいって"
+        },
+        {
+          "speaker": "",
+          "text": "母は吸い口を口に当てたまま、うなずいている。父は椅子を少し前に寄せた。"
         },
         {
           "speaker": "hajime",
@@ -548,14 +574,27 @@
           "text": "甘い葉を四種、混ぜた一台にした。"
         },
         {
+          "speaker": "",
+          "text": "吸い口を受け取った客が、一口吸って首をかしげた。"
+        },
+        {
           "speaker": "customer",
           "face": "normal",
           "text": "……甘いね。でも、何の味か、ちょっと分からないな"
         },
         {
           "speaker": "customer",
+          "face": "normal",
+          "text": "桃っぽいような、ベリーっぽいような……全部ちょっとずつ、いるんですよね"
+        },
+        {
+          "speaker": "customer",
           "face": "smile",
           "text": "父が言ってた三種までって、このことかも。でも、楽しかったです"
+        },
+        {
+          "speaker": "",
+          "text": "父が笑って、母に吸い口を回した。"
         },
         {
           "speaker": "hajime",
