@@ -9,7 +9,8 @@
 import { silenceBgm } from "../core/audio.js";
 import { DB } from "../core/data.js";
 import { el, nextFrame, sleep } from "../core/util.js";
-import { layers, clearScreen, imageReady } from "../core/ui.js";
+import { layers, clearScreen, imageReady, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice } from "../core/module-loading.js";
 import { reducedMotion } from "../core/transition-kit.js";
 import { chapterTitleEntry } from "../core/chapter-title-art.js";
 import { vnTest } from "../vn/engine.js";
@@ -27,11 +28,11 @@ const panelUrl = (name) => new URL(`../../img/ui/poems/${name}`, import.meta.url
 /**
  * コマ絵は必ず出す（2026-11-13 オーナー「ブリーチ風を大事にしてるから横長の漫画はマストで出したい」・OSP20）。
  * 以前は2.5秒で読めなければ詩だけにしていたため、回線が混んでいると絵が出なかった。
- * 今は届くまで待つ（0.5秒を超えたら小さな案内）。読めなかった（通信の失敗）ときは1回だけ読み直す。
+ * 今は届くまで待つ（0.5秒を超えたら、ほかの待ちと同じロード表示 loadingNotice。LDC40 でそろえた漫画つきの画面）。
+ * 読めなかった（通信の失敗）ときは1回だけ読み直す。
  * それでも読めない（壊れた絵・つながらない）ときだけ、詩だけを全面に出す（ゲームを止めない）。
  */
 const PANEL_WAITS = Object.freeze([30000, 60000]);
-const PANEL_NOTICE_MS = 500;
 const poemPanelUrl = (key) => {
   const name = DB.dialogues[CHAPTER_POEM_IDS[key]]?.metadata?.panel;
   return name ? panelUrl(name) : null;
@@ -43,24 +44,18 @@ export function preparePoemPanel(key) {
   return url ? imageReady(url, PANEL_WAITS[0]) : Promise.resolve(false);
 }
 
-/** コマ絵が届くまで待つ。0.5秒を超えたら小さな案内を出す。読めたら true。 */
-async function waitPoemPanel(url, aborted) {
-  let notice = null;
-  const timer = setTimeout(() => {
-    notice = el("div.vn-loading", { role: "status", "aria-live": "polite", text: "詩を準備しています…", dataset: { test: "chapter-poem-loading" } });
-    layers.fx.append(notice);
-  }, PANEL_NOTICE_MS);
-  try {
+/** コマ絵が届くまで待つ（0.5秒を超えたら、ほかの待ちと同じロード表示）。読めたら true。 */
+function waitPoemPanel(url, aborted) {
+  const load = (async () => {
     for (const ms of PANEL_WAITS) {
       const loaded = await Promise.race([imageReady(url, ms), aborted.then(() => null)]);
       if (loaded !== false) return loaded === true;
     }
     return false;
-  } finally {
-    clearTimeout(timer);
-    notice?.remove();
-  }
+  })();
+  return withLoadingNotice(load, loadingNotice("詩を準備しています…"));
 }
+
 /** コマ絵の比率の範囲（横:縦）。範囲の内なら絵の比率のまま、外なら端の比率の枠に収める（tools/poem_panel_cut.py と同じ） */
 export const PANEL_RATIO = Object.freeze({ min: 4, max: 5.6, fallback: 16 / 3 });
 

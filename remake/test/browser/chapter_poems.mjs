@@ -235,7 +235,7 @@ await suite("chapter-poems", async check => {
   });
 
   // 横長の漫画は必ず出す（OSP20）: 回線が混んで絵が遅れても（以前は2.5秒で諦めて詩だけにしていた）、届くまで待って出す。
-  // 待っている間は「詩を準備しています…」の小さな案内を出し、絵が出たら消す。
+  // 待っている間は、ほかの待ちと同じロード表示（loadingNotice。自動操作のブラウザでは小さな案内）を出し、絵が出たら消す。
   await check("poem-panel-waits-for-slow-image", async page => {
     page.setDefaultTimeout(30000);
     await page.route("**/img/ui/poems/poem_ch4.webp", async route => {
@@ -244,11 +244,11 @@ await suite("chapter-poems", async check => {
     });
     await watch(page, { turbo: false });
     await page.evaluate(async () => { window.POEM_MODULE.playChapterPoem(4).then(result => { window.RESULT = result; }); });
-    await page.locator('[data-test="chapter-poem-loading"]').waitFor({ timeout: 3000 });
+    await page.locator('[data-test="module-loading"]', { hasText: "詩を準備しています" }).waitFor({ timeout: 3000 });
     await page.locator(`${POEM}[data-poem="poem_ch4"]`).waitFor({ timeout: 20000 });
     assert.equal(await page.locator(`${POEM}.has-panel`).count(), 1, "遅れて届いた絵も出す");
     assert.equal(await page.locator(`${POEM} .cp-panel img`).evaluate(img => img.complete && img.naturalWidth > 0), true);
-    assert.equal(await page.locator('[data-test="chapter-poem-loading"]').count(), 0, "絵が出たら案内を消す");
+    assert.equal(await page.locator('[data-test="module-loading"]').count(), 0, "絵が出たら案内を消す");
     await page.keyboard.press("Control");
     await page.waitForFunction(() => window.RESULT === true);
   });
