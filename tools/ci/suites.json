@@ -300,7 +300,7 @@
     },
     {
       "id": "smoke-field",
-      "title": "Breath smoke and shop haze (KMR11・KMR21): palette, breath styles, quality tiers, ring, cover, haze amount, which backgrounds",
+      "title": "Breath smoke and shop haze (KMR11・KMR21・KMR23): palette, breath styles that keep the face clear, worker breath tiers inside the worker window, rings, haze amount, which backgrounds, exhale lines name a visible person",
       "kind": "quick",
       "run": ["node remake/test/smoke_field.mjs"]
     },
@@ -4332,11 +4332,11 @@
     },
     {
       "id": "smoke-breath",
-      "title": "Breath smoke and shop haze in the game (KMR11・KMR21): VN exhale, craft exhale tiers, result cover, faint haze in shisha shops",
+      "title": "Breath smoke and shop haze in the game (KMR11・KMR21・KMR23): VN exhale that keeps the face clear, craft exhale and rings from the worker's mouth, faint haze in shisha shops",
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
-      "paths": ["remake/js/core/smoke.js", "remake/js/core/shop-haze.js", "remake/js/core/ui.js", "remake/js/vn/breath.js", "remake/js/vn/engine.js", "remake/js/craft/fx.js", "remake/js/craft/result.js", "remake/test/browser/smoke_breath.mjs"],
+      "paths": ["remake/js/core/smoke.js", "remake/js/core/shop-haze.js", "remake/js/core/ui.js", "remake/js/vn/breath.js", "remake/js/vn/engine.js", "remake/js/craft/fx.js", "remake/js/craft/worker-scenes.js", "remake/css/worker-scenes.css", "remake/img/ui/making/hajime_craft_pull*", "remake/test/browser/smoke_breath.mjs"],
       "run": ["node remake/test/browser/smoke_breath.mjs"]
     },
     {

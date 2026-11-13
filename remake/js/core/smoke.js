@@ -3,7 +3,8 @@
 // ・大小の丸をまとめた「房」をいくつも重ねて雲の形を作る。丸ごとには塗り分けず、重ねた丸を「高さの地図」にして、
 //   房の境目と光の向きで 影・中間・明るい面・いちばん明るい縁 の4色に塗る（房の境目が、淡い色の違いとして中に出る）。
 // ・消えるときは、縮みながら全体が薄くなり、ちぎれる。コマ打ち（毎秒12コマ）で手描きの間にする。
-// ・煙の出どころは人の口元だけ（docs/shisha_reference.md）。機材からは出さない。
+// ・煙の出どころは、画面に見えている人の口元だけ（docs/shisha_reference.md）。機材からは出さず、吐く人が画面にいない煙も出さない。
+// ・吐く煙は顔や計器を覆わない: 口元では細く、顔の向いている側へ流れてからふくらむ（KMR23〜）。
 // 座標: 位置は煙を載せる面に対する 0〜1（y は下向き）、向きは 右が0・上が -π/2、速さ・大きさは「面の高さ＝1」の単位。
 // 前半（createSmokeField）は DOM に触れない計算だけで、単体テスト（test/smoke_field.mjs）から直接呼ぶ。
 
@@ -66,17 +67,17 @@ const DEFAULTS = {
   turb: .09,       // ゆらぎ
   hold: .45,       // 寿命のどこまで縮まずにいるか
   fade: true,      // 消えぎわに薄くする
-  solid: false,    // 透かさずに塗る（画面を覆う煙）
+  solid: false,    // 透かさずに塗る
   alpha: 1,        // 濃さ（薄い煙は 1 より小さく）
-  even: false,     // 寿命をそろえる（画面を覆う煙）
-  flat: false,     // 吐く強さを一定にする（既定は、すっと強くなって尾を引く）
+  even: false,     // 寿命をそろえる（煙の輪）
+  flat: false,     // 吐く強さを一定にする（既定は、すっと強くなって尾を引く。尾の弱い房は口元に留まる）
   sway: 0,         // 吐く向きの揺れ
   colors: null,    // [[r,g,b]]（2色まで）。無ければ白
   vivid: false,    // 色を主役にする（白へ寄せる量を減らす）
   jitter: 1,       // 房ごとの速さ・大きさのばらつき（0 でそろえる。煙の輪）
   swell: .3,       // 房がふくらみきるまでの秒数（漂う煙はゆっくり）
   soft: false,     // 縁へ向かって段々に薄くする（漂う煙。人が吐く煙は縁をくっきり）
-  lean: false,     // 房を少ない丸で作る（画面を覆う煙。大きな房が何重にも重なるので、描く量を半分にする）
+  lean: false,     // 房を少ない丸で作る（大きな房が何重にも重なる煙で、描く量を半分にする）
   move: null,      // (breath, 進み 0〜1) => void  口の位置を動かす
 };
 
@@ -258,50 +259,53 @@ export function createSmokeField({ random = Math.random } = {}) {
 const UP = -Math.PI / 2;
 
 /**
- * 一人称の吐く煙（吸い出しの山場）。画面の下から満ちる。出来で煙の姿が変わる（煙が成績表になる）:
- *   "best"…最適温・会心。大きくまとまり、長く残る ／ "good"…適温 ／ "thin"…ぬるい。薄く、小さく、すぐ消える ／
- *   "harsh"…熱すぎ。勢いはあるが、ちぎれてすぐ消える
+ * 作業風景のはじめが吐く煙（吸い出しの山場）。口元（x・y）から、顔の向いている右へ細く出て、ふくらみながら昇る。
+ * 作業風景の窓の中に収まる大きさにとどめる（計器や結果の札には掛けない）。出来で煙の姿が変わる（煙が成績表になる）:
+ *   "best"…最適温・会心。たっぷり、長く残る ／ "good"…適温 ／ "thin"…ぬるい。薄く、小さく、すぐ消える ／
+ *   "harsh"…熱すぎ。むせて、短くちぎれた煙が二度出る
  */
-export function firstPersonBreath(quality = "good", colors = null) {
-  const base = { x: .5, y: 1.0, angle: UP, spread: 1.0, width: .6, dur: 1.1, speed: 1.05, rate: 52, size: .125, life: 2.5, buoy: .05, drag: 1.7, turb: .12, hold: .5, colors };
-  if (quality === "best") return [{ ...base, rate: 62, size: .14, life: 3.0, dur: 1.25, hold: .56, width: .7 }];
-  if (quality === "thin") return [{ ...base, rate: 15, size: .075, speed: .7, life: 1.5, alpha: .62, width: .3, spread: .7, hold: .3 }];
-  if (quality === "harsh") return [{ ...base, rate: 36, size: .085, speed: 1.5, life: 1.25, turb: .36, drag: 1.2, hold: .22, spread: 1.4 }];
+export function workerBreath(quality = "good", { x = .09, y = .66, colors = null } = {}) {
+  const base = { x, y, angle: -.26, spread: .46, speed: .42, width: .004, dur: 1.25, rate: 15, size: .034, life: 2.2, buoy: .05, drag: 1.5, turb: .1, hold: .4, alpha: .86, swell: .5, sway: .1, colors };
+  if (quality === "best") return [{ ...base, dur: 1.6, rate: 18, size: .04, life: 2.8, speed: .43, hold: .46 }];
+  if (quality === "thin") return [{ ...base, dur: .8, rate: 8, size: .024, life: 1.4, speed: .3, alpha: .58, hold: .3 }];
+  if (quality === "harsh") {
+    const cough = { ...base, dur: .24, rate: 30, size: .026, life: 1.0, speed: .62, spread: 1.0, turb: .3, drag: 2.3, hold: .25, alpha: .8, flat: true, sway: 0 };
+    return [cough, { ...cough, delay: .5, speed: .5, angle: -.5 }];
+  }
   return [base];
 }
 
-/** 煙の輪。小さな房を輪に並べ、形を保ったまま、ゆっくり広がりながら昇らせる（スモークリング K21・龍の煙 M-S7） */
-export function ringBreath({ x = .5, y = .62, radius = .07, colors = null, delay = 0, grow = .05, rise = .13, life = 1.9, size = .024 } = {}) {
-  const n = 18;
+/**
+ * 煙の輪。小さな房を輪に並べ、形を保ったまま、ゆっくり広がりながら進ませる（スモークリング K21・龍の煙 M-S7）。
+ * squash は輪のつぶれ方 [横, 縦]: 既定の [1, .42] は真上へ昇る輪（下から見上げた横長）、[.5, 1] は横へ吹いた輪（縦長）。
+ * rise は昇る速さ、drift は横へ流れる速さ（右が正）
+ */
+export function ringBreath({ x = .5, y = .62, radius = .07, colors = null, delay = 0, grow = .05, rise = .13, drift = 0, life = 1.9, size = .024, squash = [1, .42], alpha = 1 } = {}) {
+  const n = 18, [sx, sy] = squash;
   return Array.from({ length: n }, (_, i) => {
-    const a = (i / n) * TAU, vx = Math.cos(a) * grow, vy = Math.sin(a) * grow * .42 - rise;
+    const a = (i / n) * TAU, vx = Math.cos(a) * grow * sx + drift, vy = Math.sin(a) * grow * sy - rise;
     // 1つの口から房を1つだけ出す。速さ・大きさをそろえ、空気のゆらぎを切って、輪の形を崩さない
-    return { x: x + Math.cos(a) * radius / ASPECT, y: y + Math.sin(a) * radius * .42, angle: Math.atan2(vy, vx), spread: 0, speed: Math.hypot(vx, vy), width: 0,
-      dur: .1, delay, rate: 15, size, life, buoy: 0, drag: .25, turb: 0, hold: .55, flat: true, even: true, jitter: 0, colors };
+    return { x: x + Math.cos(a) * radius * sx / ASPECT, y: y + Math.sin(a) * radius * sy, angle: Math.atan2(vy, vx), spread: 0, speed: Math.hypot(vx, vy), width: 0,
+      dur: .1, delay, rate: 15, size, life, buoy: 0, drag: .25, turb: 0, hold: .55, flat: true, even: true, jitter: 0, alpha, colors };
   });
 }
 
 /**
- * 立ち絵の口元から吐く煙（会話の「間」の一服）。吐き方を人物の身ぶりにする:
+ * 立ち絵の口元から吐く煙（会話の「間」の一服）。口元では細く、顔の外へ流れてからふくらみ、透けたまま消える
+ * （顔を覆わない。煙ごしに表情が見える濃さ）。吐き方を人物の身ぶりにする:
  *   "long"…細く長く ／ "twice"…小さく二度 ／ "up"…ふわっと上へ ／ 既定…ひと息
- * side は吐く向き（1＝右へ、-1＝左へ）
+ * side は吐く向き（1＝右へ、-1＝左へ）。顔の向いている側へ吐かせる
  */
 export function mouthBreath(style = "", { x, y, side = 1, colors = null } = {}) {
   const dir = (a) => (side >= 0 ? a : Math.PI - a);
-  // 顔の前に出る煙なので、少し薄くして顔を透かす
-  const base = { x, y, angle: dir(-.3), spread: .85, speed: .44, width: .006, dur: 1.5, rate: 20, size: .05, life: 2.5, sway: .16, alpha: .9, colors };
-  if (style === "long") return [{ ...base, angle: dir(-.16), spread: .36, speed: .56, dur: 2.3, rate: 20, size: .038, life: 2.7, drag: 1.6, sway: .1 }];
-  if (style === "twice") return [{ ...base, dur: .5, rate: 24, size: .036, life: 1.9, speed: .42 }, { ...base, dur: .55, delay: .85, rate: 26, size: .042, life: 2.1, speed: .46, angle: dir(-.5) }];
-  if (style === "up") return [{ ...base, angle: dir(-1.15), spread: .9, speed: .5, dur: 1.6, rate: 17, size: .052, life: 2.8, buoy: .075, drag: 1.4 }];
+  // 口元から扇の形に広がる、ひとつながりの息にする: 房は小さく数を多く、向きと速さをそろえ、進むほどふくらませる。
+  // 吐く強さは一定（flat）: 吐き終わりに弱い房を残すと、口元に留まって顔の前を昇ってしまう
+  const base = { x, y, angle: dir(-.08), spread: .22, speed: .5, width: .003, dur: 1.2, rate: 21, size: .021, life: 1.5, buoy: .02, drag: 1.6, turb: .05, hold: .3, alpha: .7, swell: 1, jitter: .6, sway: .05, soft: true, flat: true, colors };
+  if (style === "long") return [{ ...base, spread: .16, speed: .58, dur: 1.7, size: .02, life: 1.6 }];
+  if (style === "twice") return [{ ...base, dur: .4, rate: 24, size: .019, life: 1.2, speed: .42 }, { ...base, dur: .45, delay: .75, rate: 24, size: .021, life: 1.3, speed: .46, angle: dir(-.24) }];
+  // 上へ: 口元からは横へ出し、顔の外へ出てから浮かせる（斜め上へ吐くと、煙が目もとを横切る）
+  if (style === "up") return [{ ...base, angle: dir(.1), spread: .26, speed: .46, buoy: .13, drag: 1.5, life: 2, hold: .4 }];
   return [base];
-}
-
-/** 画面を覆う煙（結果発表）。下から昇る横一列の口が房を置いていき、縮んで晴れる。透かさない */
-export function coverBreath(colors = null) {
-  return Array.from({ length: 6 }, (_, i) => ({
-    x: .07 + i * .172, y: 1.04, angle: UP + (i - 2.5) * .1, spread: 1.1, speed: .25, width: .2, dur: 1.25, rate: 19, size: .19, life: 1.9, buoy: .05, drag: 2.2, turb: .1, hold: .62, lean: true,
-    solid: true, fade: false, even: true, flat: true, colors, move: (b, u) => { b.y = 1.04 - Math.min(1, u * 1.7) * 1.02; },
-  }));
 }
 
 /**
@@ -328,9 +332,10 @@ const layers = new WeakMap();
 
 /**
  * host いっぱいに煙の層（640×360 の canvas を拡大）を載せて返す。同じ host には1枚だけ作る。
+ * cover を渡すと、canvas を cover の枠に合わせて host の中に置く（位置の 0〜1 は cover に対する割合になる）。
  * 煙が全部消えたら自分で止まり、canvas を外す。host は position が static 以外であること（ステージの層や画面の箱）。
  */
-export function smokeLayer(host, { zIndex = 30, className = "" } = {}) {
+export function smokeLayer(host, { zIndex = 30, className = "", cover = null } = {}) {
   const had = layers.get(host);
   if (had?.canvas.isConnected) return had;
   const canvas = document.createElement("canvas");
@@ -338,6 +343,12 @@ export function smokeLayer(host, { zIndex = 30, className = "" } = {}) {
   canvas.className = `smoke-layer${className ? " " + className : ""}`;
   canvas.setAttribute("aria-hidden", "true");
   Object.assign(canvas.style, { position: "absolute", inset: "0", width: "100%", height: "100%", pointerEvents: "none", imageRendering: "pixelated", zIndex: String(zIndex) });
+  // cover: canvas を host ではなく cover の枠に合わせる（host が cover の中の小さな窓のとき。煙は窓で切り抜かれ、升目は cover と同じ細かさ）
+  const h = cover ? host.getBoundingClientRect() : null, c = cover?.getBoundingClientRect();
+  if (h?.width && h.height && c?.width && c.height) {
+    const pct = (v) => `${(v * 100).toFixed(3)}%`;
+    Object.assign(canvas.style, { inset: "auto", left: pct((c.left - h.left) / h.width), top: pct((c.top - h.top) / h.height), width: pct(c.width / h.width), height: pct(c.height / h.height) });
+  }
   host.append(canvas);
   const ctx = canvas.getContext("2d");
   const field = createSmokeField();
