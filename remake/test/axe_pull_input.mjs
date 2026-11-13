@@ -15,15 +15,15 @@ function fire(node,type,props={}) { const e=new Event(type,{cancelable:true});fo
 function setup() {
  const win=Object.assign(new Node('window'),{innerWidth:844,innerHeight:390,DOMPoint:class {constructor(x,y){this.x=x;this.y=y}matrixTransform(m){return{x:(this.x-m.x)/m.scale,y:(this.y-m.y)/m.scale}}}});
  const doc=Object.assign(new EventTarget(),{defaultView:win,hidden:false}),root=new Node(),board=new Node(),handle=new Node('button');for(const n of [root,board,handle])n.ownerDocument=doc;
- const signal=new AbortController();let canAim=true,canPull=true,aims=[],powers=[],releases=0,cancels=0;
- const input=attachAxePullInput({root,board,handle,signal:signal.signal,canAim:()=>canAim,canPull:()=>canPull,onAim:p=>aims.push(p),onPower:p=>powers.push(p),onRelease:()=>releases++,onCancel:()=>cancels++});
+ const signal=new AbortController();let canAim=true,canPull=true,aims=[],powers=[],releases=0,cancels=0,reasons=[],prepared=0;
+ const input=attachAxePullInput({root,board,handle,signal:signal.signal,canAim:()=>canAim,canPull:()=>canPull,onAim:p=>aims.push(p),onPower:p=>powers.push(p),onRelease:()=>releases++,onCancel:r=>{cancels++;reasons.push(r??null);},prepare:()=>prepared++});
  let clock=0;const pointer=(type,x=780,y=160,id=1,t=clock+=40)=>{const p={clientX:x,clientY:y,pointerId:id,isPrimary:true,button:0,timeStamp:t};if(type==='pointerdown')fire(win,type,p);fire(handle,type,p);if(type==='pointerup')fire(win,type,p);};
  const key=(type,code,repeat=false,target=board)=>fire(root,type,{code,repeat,target});
- return {win,doc,root,board,handle,signal,input,pointer,key,aims,powers,get releases(){return releases},get cancels(){return cancels},set aimAllowed(v){canAim=v},set pullAllowed(v){canPull=v}};
+ return {win,doc,root,board,handle,signal,input,pointer,key,aims,powers,get releases(){return releases},get cancels(){return cancels},reasons,get prepared(){return prepared},set aimAllowed(v){canAim=v},set pullAllowed(v){canPull=v}};
 }
 test('inverse CTM aim, board bounds, keyboard aim, focus and canAim gate',()=>{const s=setup();fire(s.board,'pointerdown',{button:0,isPrimary:true,clientX:680,clientY:520,pointerId:5,timeStamp:0});fire(s.board,'pointerup',{button:0,isPrimary:true,clientX:680,clientY:520,pointerId:5,timeStamp:60});assert.equal(s.releases,0,'a tap on the board only aims');assert.deepEqual(s.aims.at(-1),{x:0,y:0});assert.equal(s.doc.activeElement,s.board);s.key('keydown','ArrowRight');assert.deepEqual(s.aims.at(-1),{x:.025,y:0});fire(s.board,'pointerdown',{button:0,isPrimary:true,clientX:9000,clientY:520});assert.equal(s.aims.length,2);s.aimAllowed=false;s.key('keydown','ArrowLeft');assert.equal(s.aims.length,2);s.signal.abort();});
 test('upward flick speed emits raw power, release once and ignores click',()=>{const s=setup();const rise=3*390*.08;s.pointer('pointerdown',780,300,1,0);s.pointer('pointermove',780,300-rise/2,1,40);s.pointer('pointermove',780,300-rise,1,80);assert(Math.abs(s.input.rawPower-.62)<1e-9);s.pointer('pointerup',780,300-rise,1,80);assert.equal(s.releases,1);s.pointer('pointerup',780,230);const click=fire(s.handle,'click');assert(click.defaultPrevented);assert.equal(s.releases,1);assert.equal(s.input.pulling,false);assert.equal(s.doc.activeElement,s.board);s.signal.abort();});
-test('tap, return to origin, downward/sideways/outside moves and pointer identity never commit',()=>{for(const action of ['tap','return','down','side','outside','wrong']){const s=setup();s.pointer('pointerdown',780,300);if(action==='return'){s.pointer('pointermove',780,200);s.pointer('pointermove',780,300);}if(action==='down')s.pointer('pointermove',780,380);if(action==='side')s.pointer('pointermove',500,260);if(action==='outside')s.pointer('pointermove',900,200);if(action==='wrong'){s.pointer('pointerup',780,200,2);assert(s.input.pulling);}else{const end={tap:[780,300],return:[780,300],down:[780,380],side:[500,260],outside:[900,200]}[action];s.pointer('pointerup',...end);}assert.equal(s.releases,0,action);s.signal.abort();assert.equal(s.input.pulling,false);}});
+test('tap, return to origin, downward/sideways/outside moves and pointer identity never commit',()=>{for(const action of ['tap','return','down','side','outside','wrong']){const s=setup();s.pointer('pointerdown',780,300);if(action==='return'){s.pointer('pointermove',780,200);s.pointer('pointermove',780,300);}if(action==='down')s.pointer('pointermove',780,380);if(action==='side')s.pointer('pointermove',500,260);if(action==='outside')s.pointer('pointermove',950,200);if(action==='wrong'){s.pointer('pointerup',780,200,2);assert(s.input.pulling);}else{const end={tap:[780,300],return:[780,300],down:[780,380],side:[500,260],outside:[950,200]}[action];s.pointer('pointerup',...end);}assert.equal(s.releases,0,action);s.signal.abort();assert.equal(s.input.pulling,false);}});
 test('keyboard hold uses active delta, ignores repeat, clamps, suppresses native activation',()=>{const s=setup();assert(s.key('keydown','Space').defaultPrevented);s.input.tick(600);assert.equal(s.input.rawPower,.5);s.key('keydown','Space',true);s.input.tick(144);assert.equal(s.input.rawPower,.62);s.key('keyup','Space');assert.equal(s.releases,1);s.key('keyup','Space');assert.equal(s.releases,1);s.key('keydown','Space',false,s.handle);s.input.tick(9000);assert.equal(s.input.rawPower,1);s.key('keyup','Space',false,s.handle);assert.equal(s.releases,2);assert.throws(()=>s.input.tick(NaN),RangeError);s.signal.abort();});
 test('Escape consumes only active pull; form controls and F pass through',()=>{const s=setup();assert(!s.key('keydown','Escape').defaultPrevented);s.key('keydown','Space');assert(s.key('keydown','Escape').defaultPrevented);s.key('keyup','Space');assert.equal(s.releases,0);assert(!s.key('keydown','KeyF').defaultPrevented);assert(!s.key('keydown','Space',false,{tagName:'SELECT'}).defaultPrevented);assert(!s.input.pulling);s.signal.abort();});
 test('cancel sources and permission changes never release; aim is retained',()=>{for(const reason of ['multi','pointercancel','lost','resize','blur','visibility','abort','permission','tick']){const s=setup();s.key('keydown','ArrowRight');s.pointer('pointerdown');s.pointer('pointermove',780,230);if(reason==='multi')fire(s.win,'pointerdown',{pointerId:2});if(reason==='pointercancel')fire(s.win,'pointercancel',{pointerId:1});if(reason==='lost')fire(s.handle,'lostpointercapture',{pointerId:1});if(['resize','blur'].includes(reason))fire(s.win,reason);if(reason==='visibility'){s.doc.hidden=true;fire(s.doc,'visibilitychange');}if(reason==='abort')s.signal.abort();if(reason==='permission')s.pullAllowed=false;if(reason==='tick'){s.pullAllowed=false;s.input.tick(1);}s.pointer('pointerup',780,230);assert.equal(s.releases,0,reason);assert.equal(s.input.pulling,false,reason);assert.equal(s.cancels,1,reason);assert.deepEqual(s.aims.at(-1),{x:.025,y:0});s.signal.abort();}});
@@ -47,4 +47,24 @@ test('synchronous viewport or stage geometry changes cancel before resize event 
     assert.equal(s.releases,0,mode+' '+change);assert.equal(s.cancels,1);assert.equal(s.input.pulling,false);
     s.signal.abort();
   }
+});
+
+// 2026-11-13 手応えレビュー指摘3・8: 弾き損ねは理由つきで取り消し、結果の間に的へ触れたら狙う前に prepare を呼ぶ
+test('failed flicks cancel with a reason; a tap or a return cancels silently; a 50 degree flick still throws',()=>{
+  for(const [action,reason] of [['tap',null],['return',null],['down','down'],['side','lean'],['outside','lean'],['shallow','shallow']]){
+    const s=setup();s.pointer('pointerdown',780,300);
+    if(action==='return'){s.pointer('pointermove',780,200);s.pointer('pointermove',780,300);}
+    const end={tap:[780,300],return:[780,300],down:[780,380],side:[500,260],outside:[950,200],shallow:[780,290]}[action];
+    s.pointer('pointerup',...end);
+    assert.equal(s.releases,0,action);assert.deepEqual(s.reasons,[reason],action);s.signal.abort();
+  }
+  const s=setup();s.pointer('pointerdown',780,300);s.pointer('pointerup',900,200);assert.equal(s.releases,1,'a wide but upward flick is a (poor) throw');s.signal.abort();
+  const k=setup();k.key('keydown','Space');k.input.tick(30);k.key('keyup','Space');assert.equal(k.releases,0);assert.deepEqual(k.reasons,['hold']);k.signal.abort();
+});
+test('touching the board while aiming is unavailable asks the runtime to prepare first',()=>{
+  const s=setup();s.aimAllowed=false;
+  fire(s.board,'pointerdown',{button:0,isPrimary:true,clientX:680,clientY:520,pointerId:5,timeStamp:0});
+  assert.equal(s.prepared,1);assert.equal(s.aims.length,0,'still no aim when prepare did not open it');
+  s.aimAllowed=true;fire(s.board,'pointerdown',{button:0,isPrimary:true,clientX:680,clientY:520,pointerId:6,timeStamp:10});
+  assert.equal(s.prepared,1,'prepare is only for an unavailable aim');assert.equal(s.aims.length,1);s.signal.abort();
 });
