@@ -288,7 +288,8 @@ export function preloadCamelRaceSe() {
   const files = Object.values(CAMEL_RACE_SE).flatMap(cue => cue.files);
   return Promise.all(files.map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
 }
-export function playCamelRaceSe(id) {
+// gain・rate: 同じ録音を出来事ごとに鳴らし分ける倍率（音量と再生の速さ。2026-11-13 ラクダレース手応え CRF07）。合成の代用音では使わない。
+export function playCamelRaceSe(id, { gain = 1, rate = 1 } = {}) {
   const cue = CAMEL_RACE_SE[id];
   if (!cue || !seEnabled()) return;
   const ready = cue.files.filter(file => seBuffers.has(file));
@@ -296,7 +297,7 @@ export function playCamelRaceSe(id) {
   const choices = ready.filter(file => file !== lastVariant.get("camel:" + id));
   const file = (choices.length ? choices : ready)[Math.floor(Math.random() * (choices.length || ready.length))];
   lastVariant.set("camel:" + id, file);
-  recordedVoice(file, { gain: cue.gain });
+  recordedVoice(file, { gain: cue.gain * (Number.isFinite(gain) && gain >= 0 ? gain : 1), rate: Number.isFinite(rate) && rate > 0 ? rate : 1 });
 }
 
 function syncPulls() { activePulls.forEach(pull => pull.sync()); }

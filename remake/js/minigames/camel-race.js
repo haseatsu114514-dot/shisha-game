@@ -15,7 +15,7 @@ import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camel
   whipDrain, finishMargins, POLICIES, PLAYER_CAMEL, RIVAL_PROFILES } from "./camel-race-model.js";
 import { CAMEL_RACE_BGM, camelRaceBgmRate } from "./camel-race-bgm.js";
 
-import { camelStaminaReadout, SPURT_RESERVE } from "./camel-race-feedback.js";
+import { camelStaminaReadout, camelNextGoal, SPURT_RESERVE } from "./camel-race-feedback.js";
 
 export const CAMEL_RACE_TITLE = "CAMEL RACE";
 const CUP_TIME_NOTE = "この訪問中の再挑戦は日付を進めません。完走して戻ると従来どおり昼の1行動を使います。";
@@ -84,8 +84,44 @@ const TUTORIAL = [
   // 駆け引き（2026-11-11）。絵は CR-WD07（#3217）。
   { icon: "camel", art: "howto-tactics", title: "前のラクダを使う", body: "前のラクダのすぐ後ろは風よけ。息が戻り、ムチも軽くなる。並びかけると相手が粘るので、声を当てるかムチで抜き切る。競り負けた相手は気落ちして遅くなる。" },
 ];
-// レース中の SE ID は従来どおり（sfx("hoof") など）。録音はラクダ専用で、他ミニゲームの合成SEは置き換えない。
-const sfx = name => { try { if (name === "select" || name === "click" || name === "cancel") SE[name]?.(); else playCamelRaceSe(name); } catch { /* 音は無くても遊べる */ } };
+/**
+ * 手応え（演出）の数値（2026-11-13・CRF。docs/spec/camel_race.md §11）。競走の規則（camel-race-model.js）と違い凍結しない:
+ * ブラウザのコンソールで `__camelRace.feel.stopPerfect = 0.2` のように書き換えると、止めずにその場で変わる（調整用・保存はされない）。
+ * 今の状態は `__camelRace.fx`。動き軽減（prefers-reduced-motion）では、止め・揺れ・閃光・潰し伸ばし・前へ出る動きを使わない。
+ */
+const FEEL = {
+  // 止め（ヒットストップ・秒）。止めの間はレースの時計（race.t）を進めないので、声の輪もその場で止まる（判定は不利にならない）。
+  // 声・ムチは止めの間も押せる。火花・砂煙・文字・揺れは動かし続ける
+  stopPerfect: 0.045, stopPerfectDuel: 0.07, stopPass: 0.05, stopDuelStart: 0.06, stopDuelWon: 0.1, stopWhipEmpty: 0.08, stopGoal: 0.1,
+  // 自分のラクダが画面の前へ出る量（px）。止めが明けた瞬間に飛び出し、カメラが追いついて戻る。競り合いの最中の声は kickDuel 倍
+  kickPerfect: 22, kickGood: 12, kickDuel: 1.4, kickWhip: 16, kickPass: 10, kickMiss: -8, kickEmpty: -12,
+  // 前へ出る動きの上限（px）、飛び出す速さ・戻る速さ（1秒あたりの割合）
+  lungeMax: 34, lungeAttack: 30, lungeDecay: 5,
+  // 潰し・伸ばし [横, 縦, 秒]（足元が軸。1 へまっすぐ戻る）。GO は4頭とも、競り合いは相手も動く
+  stretchPerfect: [1.09, 0.93, 0.16], stretchGood: [1.05, 0.96, 0.12], stretchWhip: [1.12, 0.9, 0.2], stretchGo: [1.1, 0.92, 0.18],
+  squashMiss: [0.95, 1.04, 0.14], squashEmpty: [0.93, 1.06, 0.3], stretchRivalDuel: [1.07, 0.95, 0.18], squashRivalLost: [0.93, 1.05, 0.34],
+  // 声を押した瞬間に騎手が跳ねる [倍, 秒]（当たり外れに関係なく、押した最初のコマから）
+  jockeyPop: [1.22, 0.14],
+  // 画面の揺れ [横px, 縦px, 秒]。大きさだけでなく向きを変える（蹄＝縦、前へ出る＝横、競り勝ち・ゴール＝両方で長く）。最初が強く、二乗で収まる
+  shake: { go: [3, 7, 0.3], perfect: [0, 3, 0.09], whip: [7, 2, 0.16], whipSpurt: [10, 3, 0.22], whipEmpty: [2, 6, 0.28], spurt: [5, 5, 0.25],
+    pass: [6, 0, 0.14], passed: [0, 4, 0.14], duelStart: [9, 3, 0.2], duelWon: [10, 6, 0.26], goal: [10, 6, 0.4] },
+  // 画面全体の閃光 [秒, 最初の濃さ, 最初の暗転の秒]。明るい砂の上では白だけだと目立たないので、最初の一瞬だけ暗く落とす（濃さは flashDark）
+  flash: { duelWon: [0.2, 0.34, 0.034], whipEmpty: [0.26, 0.3, 0], goal: [0.034, 0, 0.034] }, flashDark: 0.5,
+  // PERFECT の瞬間、騎手のまわりだけ金色に光る [秒, 濃さ, 半径px]（画面全体は光らせない。数秒に1回あるため）
+  glowPerfect: [0.14, 0.5, 190],
+  // スタートの合図: 2本目からの秒数（最初の1本は RACE.countdown＝3秒）。数字は3・2・1のまま速く数える
+  countdownRetry: 1.5,
+  // ゴールの余韻: 結果のカードまでの長さ（スロー込みの見た目の秒）、スローの長さと速さ、押して飛ばせるようになるまで（秒）
+  goalAfter: 2.3, goalSlow: 1.1, goalSlowRate: 0.32, goalSkipAfter: 0.7,
+  // 効果音: 同じ録音を、出来事ごとに音量（倍率）と高さ（再生の速さ）で鳴らし分ける。勝敗に効く出来事ほど大きく、ずっと鳴る蹄は小さく。
+  // PERFECT は続くほど高くなる（1回ごとに comboStep、comboMax 回まで）。蹄は速いほど高い
+  se: { perfect: { gain: 1.15 }, comboStep: 0.03, comboMax: 8, good: { gain: 1 }, wasted: { gain: 0.9 }, lost: { gain: 0.8, rate: 0.8 }, spent: { gain: 0.8, rate: 0.7 },
+    notice: { gain: 0.5, rate: 1.3 }, whip: { gain: 0.85 }, whipSpurt: { gain: 1, rate: 1.08 }, whipEmpty: { gain: 1, rate: 0.6 }, whipReady: { gain: 0.7, rate: 1.5 },
+    hoof: { gain: 0.55, rateMin: 0.94, rateMax: 1.14 }, pass: { gain: 0.9 }, lead: { gain: 1.1, rate: 1.12 }, passed: { gain: 0.6, rate: 0.75 },
+    duelStart: { gain: 0.8, rate: 1.3 }, duelWon: { gain: 1.1, rate: 1.2 }, duelHeld: { gain: 0.8, rate: 0.9 }, goal: { gain: 1.2 } },
+};
+// レース中の SE ID は従来どおり（sfx("hoof") など）。録音はラクダ専用で、他ミニゲームの合成SEは置き換えない。opts は { gain, rate } の倍率（FEEL.se）。
+const sfx = (name, opts) => { try { if (name === "select" || name === "click" || name === "cancel") SE[name]?.(); else playCamelRaceSe(name, opts); } catch { /* 音は無くても遊べる */ } };
 const armCamelAudio = () => { unlockAudio(); preloadCamelRaceSe(); };
 
 // ---- 絵（Codex・2026-11-02 採用）。寸法は絵の画素で、asset_sources/ch4-camel-race/README.md で測った値。
@@ -451,7 +487,34 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   let lastStaminaNotice = -99;
   let standingsStamp = 0, whip = 0, done = false, spurtShown = false, settleTimer = 0;
   // 演出: 画面の揺れ・ゴールのスロー・GO の柵・連続成功・ファーリスの声・抜いた／抜かれた。
-  let shake = 0, slow = 0, goTime = -1, combo = 0, callTimer = 0, lastCallAt = -9, spurtTint = 0;
+  let slow = 0, goTime = -1, combo = 0, callTimer = 0, lastCallAt = -9, spurtTint = 0;
+  // 手応え（CRF・数値は FEEL）: 止め・揺れ・閃光・潰し伸ばし・前へ出る動き・騎手の跳ね・合図の長さ・ゴールした走の記録。
+  let hitStop = 0, lunge = 0, lungeGoal = 0, jockeyPop = 0, glow = 0, countdownTotal = RACE.countdown, raceCount = 0, goalReal = 0, committed = null;
+  const shakeFx = { x: 0, y: 0, t: 0, life: 1 }, flashFx = { kind: null, t: 0, life: 1, dark: 0 };
+  const stretches = new Map();
+  const stop = seconds => { if (!reducedMotion && seconds > 0) hitStop = Math.max(hitStop, seconds); };
+  /** 揺れを始める。今の揺れの残りより弱いものでは上書きしない。 */
+  const setShake = kind => {
+    const next = FEEL.shake[kind];
+    if (reducedMotion || !next) return;
+    const left = shakeFx.t > 0 ? (shakeFx.t / shakeFx.life) ** 2 : 0;
+    if (Math.max(next[0], next[1]) < Math.max(shakeFx.x, shakeFx.y) * left) return;
+    shakeFx.x = next[0]; shakeFx.y = next[1]; shakeFx.t = shakeFx.life = Math.max(0.01, next[2]);
+  };
+  const setFlash = kind => {
+    const next = FEEL.flash[kind];
+    if (reducedMotion || !next) return;
+    flashFx.kind = kind; flashFx.t = flashFx.life = Math.max(0.01, next[0]); flashFx.dark = next[2] || 0;
+  };
+  const setStretch = (id, value) => { if (!reducedMotion && value) stretches.set(id, { x: value[0], y: value[1], t: Math.max(0.01, value[2]), life: Math.max(0.01, value[2]) }); };
+  const kick = px => { if (!reducedMotion) lungeGoal = clamp(lungeGoal + px, -FEEL.lungeMax, FEEL.lungeMax); };
+  // 調整・検査用（コンソールから __camelRace.feel を書き換える。fx は今の演出の状態）。閉じたら片付ける。
+  const debug = { feel: FEEL, get fx() {
+    return { phase, t: race?.t ?? 0, stop: hitStop, shake: { ...shakeFx }, flash: { ...flashFx }, glow, lunge, jockeyPop,
+      stretch: Object.fromEntries([...stretches].map(([id, item]) => [id, { ...item }])), countdown: countdownLeft, countdownTotal,
+      goalReal, combo, runs: runs.length, whipHeld: !!race?.player.whipHeld, whipping: !!race?.player.whipping, reducedMotion };
+  } };
+  window.__camelRace = debug;
   // カメラは自分のラクダを少し遅れて追う: 伸びた瞬間はラクダが画面の前へ出て、カメラが追いつく（camShift px）。
   let camShift = 0, camAt = 0, lastStride = -1;
   // 群れを収める位置（frameX）、風よけの見せ方の濃さ（draftFx 0〜1）、競り合いの演出（duelFx）、一度だけ教える声（taught）。
@@ -464,7 +527,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   const hajime = (text, face, seconds = 0.9) => {
     if (text) { hajimeText = text; hajimeTextTimer = seconds; }
   };
-  const playerX = () => Math.min(FRAME_X.limit, frameX + camShift);
+  const playerX = () => Math.min(FRAME_X.limit, frameX + camShift) + lunge;
   let lastPosition = 0, leaderId = null, marks = new Set();
   // スマホではコース（1280×720）が半分ほどに縮むので、Canvas の名札・吹き出し・順位の文字だけ大きくする。
   let textScale = 1;
@@ -525,36 +588,60 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   // ---- 入力 -----------------------------------------------------------------------------------------
   // 声のボタンは押した瞬間だけ held を付けて、沈んだ見た目にする（キーの Space でも同じ。ムチは押している間ずっと held）。
   let voiceHeld = 0;
-  const onVoice = () => {
-    if (phase !== "race" || !race) return;
+  const dipVoice = () => {
     voiceButton.classList.add("held"); clearTimeout(voiceHeld);
     voiceHeld = setTimeout(() => voiceButton.classList.remove("held"), 140);
+    jockeyPop = reducedMotion ? 0 : FEEL.jockeyPop[1]; // 押した最初のコマから、声の届く先（騎手）が跳ねる
+  };
+  const onVoice = () => {
+    if (!race) return;
+    if (phase === "goal") { skipGoal(); return; }
+    // スタート前に押しても黙らない: ボタンが沈み、騎手が跳ね、はじめが一言（判定も消耗も無い）。
+    if (phase === "countdown") { dipVoice(); hajime("まだだ……", "serious", 0.6); return; }
+    if (phase !== "race") return;
+    dipVoice();
     const result = pressVoice(race);
     if (!result) return;
     flashButton(voiceButton, result.type);
     if (result.type === "perfect" || result.type === "good") {
       combo += 1;
       const sub = combo >= 2 ? `${combo} COMBO` : "";
-      if (result.type === "perfect") { sfx("perfect"); showFeedback("PERFECT", "perfect", sub); hajime("ハイッ！", "smile"); }
-      else { sfx("good"); showFeedback("GOOD", "good", sub || (result.dt > 0 ? "少し遅め" : "少し早め")); hajime("よしっ", "smile"); }
+      const perfect = result.type === "perfect", duel = result.duel ? FEEL.kickDuel : 1;
+      if (perfect) {
+        // 続けて当てるほど、音が少しずつ高くなる。
+        sfx("perfect", { gain: FEEL.se.perfect.gain, rate: 1 + Math.min(combo - 1, FEEL.se.comboMax) * FEEL.se.comboStep });
+        showFeedback("PERFECT", "perfect", sub); hajime("ハイッ！", "smile");
+        stop(result.duel ? FEEL.stopPerfectDuel : FEEL.stopPerfect); setShake("perfect"); if (!reducedMotion) glow = FEEL.glowPerfect[0];
+      } else { sfx("good", FEEL.se.good); showFeedback("GOOD", "good", sub || (result.dt > 0 ? "少し遅め" : "少し早め")); hajime("よしっ", "smile"); }
+      // 当たった瞬間に体が伸び、止めが明けると画面の前へ出る（「その場で一伸び」を目で見せる）。
+      setStretch("player", perfect ? FEEL.stretchPerfect : FEEL.stretchGood); kick((perfect ? FEEL.kickPerfect : FEEL.kickGood) * duel);
       burst(result.type);
       if (combo === 5 && !marks.has("combo")) { marks.add("combo"); say(CALLS.combo); }
-    } else { combo = 0; sfx("miss"); showFeedback(result.spam ? "連打はダメ" : "無駄な声", "miss"); burst("miss"); hajime("あっ", "surprise"); }
+    } else {
+      combo = 0; sfx("miss", FEEL.se.wasted); showFeedback(result.spam ? "連打はダメ" : "無駄な声", "miss"); burst("miss"); hajime("あっ", "surprise");
+      setStretch("player", FEEL.squashMiss); kick(FEEL.kickMiss);
+    }
   };
   /** ムチを押す・離す。押している間だけ騎手の腕が回り続け、ラクダが伸びる（スタミナを使う）。 */
+  let whipDown = false;
   const onWhip = on => {
-    if (!race || (phase !== "race" && on)) return;
+    if (!race) return;
+    whipDown = !!on;
+    // スタート前に押しても黙らない: ボタンが沈み、はじめが一言。押したまま GO を迎えると、そのままムチが入る（先行入力）。
+    if (phase === "countdown" && on) { if (!signalButton.classList.contains("held")) { signalButton.classList.add("held"); hajime("まだだ……", "serious", 0.6); } return; }
+    if (phase !== "race" && on) return;
     const result = setWhip(race, on);
     signalButton.classList.toggle("held", !!on);
     if (!result) return;
     if (result.type === "release") return;
-    if (result.type === "spent") { flashButton(signalButton, "miss"); sfx("miss"); showFeedback("息が切れてる", "miss", "離して声で整える"); hajime("くっ……", "surprise"); return; }
+    if (result.type === "spent") { flashButton(signalButton, "miss"); sfx("miss", FEEL.se.spent); showFeedback("息が切れてる", "miss", "離して声で整える"); hajime("くっ……", "surprise"); setStretch("player", FEEL.squashMiss); return; }
     flashButton(signalButton, "boost");
-    sfx("whoosh");
-    hajime(result.type === "spurt" ? "ラストだ、いけーっ！" : "いけっ！", "excited");
+    const spurtWhip = result.type === "spurt";
+    sfx("whoosh", spurtWhip ? FEEL.se.whipSpurt : FEEL.se.whip);
+    hajime(spurtWhip ? "ラストだ、いけーっ！" : "いけっ！", "excited");
+    // 入れた瞬間: 体が前へ伸び、画面が前後に揺れ、ラクダの後ろで砂が爆ぜる。
+    setShake(spurtWhip ? "whipSpurt" : "whip"); setStretch("player", FEEL.stretchWhip); kick(FEEL.kickWhip);
     if (!reducedMotion) {
-      // 入れた瞬間: 画面が揺れ、ラクダの後ろで砂が爆ぜる。
-      shake = Math.max(shake, result.type === "spurt" ? 0.5 : 0.32);
       const lane = laneOf("player");
       for (let i = 0; i < puffCount(14); i++) dust.push({ lane: "player", x: playerX() - 40 + Math.random() * 30, y: lane.y + 24, r: 10 + Math.random() * 14, a: 0.55, vx: -(120 + Math.random() * 160), vy: -(30 + Math.random() * 60), s: lane.scale });
     }
@@ -589,7 +676,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   // キーはウィンドウの捕捉段階で受ける。本編の会話エンジンがウィンドウのキーを拾わないよう、ここで止める
   // （以前は止めるだけで、レースの中のキー処理まで届いていなかった）。カードのボタンの Space は既定の動作のまま。
   const ours = event => (event.code === "Space" || event.key === " " || isWhipKey(event))
-    && (root.contains(document.activeElement) || phase === "race" || phase === "countdown");
+    && (root.contains(document.activeElement) || phase === "race" || phase === "countdown" || phase === "goal");
   const windowKey = event => { if (!ours(event)) return; armCamelAudio(); onKey(event); event.stopImmediatePropagation(); };
   const windowKeyUp = event => {
     if (!isWhipKey(event)) return;
@@ -613,13 +700,27 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     root.remove();
     active.delete(host);
     resetBgmTempo();
+    if (window.__camelRace === debug) delete window.__camelRace;
     if (currentBgm() === CAMEL_RACE_BGM) playBgm(bgmBefore);
     try { previousFocus?.focus?.(); } catch { /* 元の要素が無い */ }
     finish(summary(completed));
   };
   const abort = () => cleanup(runs.length > 0);
   signal?.addEventListener("abort", abort, { once: true });
-  closeButton.addEventListener("click", () => { sfx("cancel"); cleanup(runs.length > 0); });
+  // ゴールした後の「やめる」は、閉じずに結果へ進む（走り切った記録を捨てない）。
+  closeButton.addEventListener("click", () => { if (phase === "goal") { sfx("click"); openResult(); return; } sfx("cancel"); cleanup(runs.length > 0); });
+  // ゴールの余韻は、少し見せた後なら画面のタップ・Space で飛ばせる。
+  const skipGoal = () => { if (phase === "goal" && goalReal >= FEEL.goalSkipAfter) openResult(); };
+  stageNode.addEventListener("pointerdown", event => { if (phase === "goal" && !event.target.closest?.("button")) skipGoal(); });
+  /** 走り切った走は、ゴールした瞬間に記録へ入れる（余韻の途中で閉じても残る）。大会の解放もここで決まる。 */
+  const commitRun = () => {
+    if (committed || !race?.finished) return committed;
+    committed = { ...scoreRace(race), seed: race.seed };
+    runs.push(committed);
+    if (committed.cup === "rookie" && camelCupQualified(committed)) unlocked.add("standard");
+    if (camelMastered(committed)) unlocked.add("expert");
+    return committed;
+  };
 
   // ---- 進行 -----------------------------------------------------------------------------------------
   /** 遊び方。back があれば「？」から開いた読み直しで、最後のページと「閉じる」で元のカードへ戻る（レースは始めない）。 */
@@ -703,13 +804,17 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     dust.length = 0; confetti.length = 0; sparks.length = 0; waves.length = 0; floaters.length = 0;
     lastStaminaNotice = -99;
     whip = 0; spurtShown = false; goalAt = 0; settleTimer = 0;
-    shake = 0; slow = 0; goTime = -1; combo = 0; spurtTint = 0; lastCallAt = -9; lastPosition = 0; leaderId = null; marks = new Set();
+    slow = 0; goTime = -1; combo = 0; spurtTint = 0; lastCallAt = -9; lastPosition = 0; leaderId = null; marks = new Set();
+    hitStop = 0; lunge = 0; lungeGoal = 0; jockeyPop = 0; glow = 0; goalReal = 0; committed = null; whipDown = false;
+    shakeFx.t = 0; flashFx.t = 0; stretches.clear();
     camShift = 0; lastStride = -1; hajimeTextTimer = 0;
     frameX = PLAYER_SCREEN_X; draftFx = 0; duelFx = null; closingAt = -99; margins = null; puffMarks.clear();
     signalButton.classList.remove("held");
-    countdownLeft = RACE.countdown; countdownShown = -1; last = null;
+    // 2本目からは合図を短く（3・2・1 の並びのまま速く数える）。もう一度走るまでの待ちを詰める。
+    countdownTotal = raceCount > 0 ? clamp(FEEL.countdownRetry, 0.3, RACE.countdown) : RACE.countdown; raceCount += 1;
+    countdownLeft = countdownTotal; countdownShown = -1; last = null;
     setPhase("countdown");
-    announce("スタートまで3秒。手前の金のゼッケンが自分のラクダ（ハビーバ）。");
+    announce(`スタートまで${countdownTotal === RACE.countdown ? "3秒" : "まもなく"}。手前の金のゼッケンが自分のラクダ（ハビーバ）。`);
     say(CALLS.intro, true);
     hajime("よし、いくぞ", "serious", 2.4);
     root.focus({ preventScroll: true });
@@ -727,17 +832,21 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     last = now;
     if (phase === "countdown") {
       countdownLeft -= dt;
-      const shown = Math.ceil(countdownLeft);
+      const shown = Math.ceil(countdownLeft / countdownTotal * RACE.countdown - 1e-9);
       if (shown !== countdownShown) {
         countdownShown = shown;
+        // 数字が替わるたびに、字を出し直して弾ませる（以前は「3」の時だけ弾み、2・1 は字が替わるだけだった）。
+        countdownNode.classList.remove("show"); void countdownNode.offsetWidth;
         if (shown > 0) { countdownNode.textContent = String(shown); countdownNode.dataset.word = String(shown); countdownNode.classList.add("show"); sfx("count"); }
         else {
-          countdownNode.textContent = "GO!"; countdownNode.dataset.word = "go"; sfx("count"); sfx("reelLever"); setPhase("race"); goTime = 0;
+          countdownNode.textContent = "GO!"; countdownNode.dataset.word = "go"; countdownNode.classList.add("show"); sfx("count"); sfx("reelLever"); setPhase("race"); goTime = 0;
           announce("スタート。輪が重なったら声をかける。"); setTimeout(() => countdownNode.classList.remove("show"), 500);
           say(CALLS.go, true);
+          // 柵が上がって4頭が一斉に飛び出す: 体が前へ伸び、蹄で画面が縦に揺れ、足元から砂が爆ぜる。
+          setShake("go");
+          for (const lane of LANES) setStretch(lane.id, FEEL.stretchGo);
+          if (whipDown) onWhip(true); // 押したまま GO を迎えたムチは、そのまま入る
           if (!reducedMotion) {
-            // 柵が上がって4頭が一斉に飛び出す: 足元から砂が爆ぜ、画面が揺れる。
-            shake = 0.45;
             for (const lane of LANES) for (let i = 0; i < puffCount(10); i++) {
               dust.push({ lane: lane.id, x: playerX() - 20 + Math.random() * 60, y: lane.y + 26 * lane.scale, r: 8 + Math.random() * 14, a: 0.6, vx: -(60 + Math.random() * 140), vy: -(20 + Math.random() * 50), s: lane.scale });
             }
@@ -745,8 +854,10 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         }
       }
     } else if (phase === "race") {
+      // 止め: レースの時計を進めない（輪も止まる）。声・ムチの入力と、火花・揺れは止めない。
       let acc = dt;
-      while (acc > 0 && !race.finished) {
+      if (hitStop > 0) { const used = Math.min(hitStop, acc); hitStop -= used; acc -= used; }
+      while (acc > 0 && hitStop <= 0 && !race.finished) {
         // 自動操作（テスト・デモ）は早回しでも輪を逃さないよう、モデルの1歩ごとに判断する。
         if (pilotPolicy) {
           const action = pilotPolicy(race) || {};
@@ -762,18 +873,20 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         goalAt = 0;
         const rank = race.rank;
         margins = finishMargins(race);
+        commitRun();
         // 着差: 1着なら2着との差、それ以外はすぐ前の相手との差。0.15秒以内は写真判定。
         const edge = rank === 1 ? margins.behind : margins.ahead;
         const photo = !!edge && edge.seconds <= 0.15;
         showBanner(`${rank}着`, rank === 1 ? "goal" : "goal-place", 2.6,
           edge ? `${photo ? "写真判定 ・ " : ""}${edge.name}と ${edge.seconds.toFixed(2)}秒差` : "", "goal");
-        sfx(rank === 1 ? "fanfare" : rank <= 3 ? "jingle" : "crowd");
+        sfx(rank === 1 ? "fanfare" : rank <= 3 ? "jingle" : "crowd", FEEL.se.goal);
         say(photo && rank === 1 ? `${CALLS.photo} ${CALLS.finish[0]}` : CALLS.finish[rank - 1] || CALLS.finish.at(-1), true);
         hajime(["やったー！", "くそっ、あと少し！", "まだまだ……", "うそだろ……"][rank - 1] || "……", rank === 1 ? "smile" : rank === 4 ? "sad" : "serious", 3);
         if (!reducedMotion) {
-          // ゴールの瞬間: 白く光り、揺れ、少しのあいだスローで線を越える。
-          slow = 1.1; shake = 0.4;
-          flashNode.classList.remove("show"); void flashNode.offsetWidth; flashNode.classList.add("show");
+          // ゴールの瞬間: 一瞬止まり、暗く落ちてから白く光り、揺れ、少しのあいだスローで線を越える。
+          slow = FEEL.goalSlow; stop(FEEL.stopGoal); setShake("goal"); setFlash("goal");
+          flashNode.classList.remove("show");
+          setTimeout(() => { if (!done && phase === "goal") { void flashNode.offsetWidth; flashNode.classList.add("show"); } }, FEEL.flash.goal[2] * 1000);
           const pieces = rank === 1 ? 110 : rank <= 3 ? 60 : 0;
           const hues = rank === 1 ? [45, 50, 38, 0, 200] : [45, 30, 200, 120];
           for (let i = 0; i < pieces; i++) confetti.push({ x: W / 2 + (Math.random() - 0.5) * 900, y: -20 - Math.random() * 260, vx: (Math.random() - 0.5) * 80, vy: 120 + Math.random() * 180, rot: Math.random() * 6, hue: hues[i % hues.length] });
@@ -781,10 +894,12 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       }
     } else if (phase === "goal") {
       // ゴール後は見た目だけ走り続ける（モデルは止まる）。最初の約1秒はスロー。
-      const rate = slow > 0 ? 0.32 : 1;
-      if (slow > 0) slow -= dt;
-      goalAt += dt * rate;
-      if (goalAt > 2.3) openResult();
+      let run = dt;
+      if (hitStop > 0) { const used = Math.min(hitStop, run); hitStop -= used; run -= used; }
+      const rate = slow > 0 ? FEEL.goalSlowRate : 1;
+      if (slow > 0) slow -= run;
+      goalAt += run * rate; goalReal += dt;
+      if (goalAt > FEEL.goalAfter) openResult();
     }
     if (phase === "race" && race && !race.finished) {
       setBgmPlaybackRate(camelRaceBgmRate(race.player.speed));
@@ -797,11 +912,23 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   }
   function consumeEvents() {
     for (const event of race.events) {
-      if (event.kind === "voice" && event.type === "lost") { combo = 0; sfx("miss"); showFeedback("見送った……", "lost"); }
+      if (event.kind === "voice" && event.type === "lost") { combo = 0; sfx("miss", FEEL.se.lost); showFeedback("見送った……", "lost"); setStretch("player", FEEL.squashMiss); }
+      else if (event.kind === "whip" && event.type === "empty") {
+        // ムチが止まった瞬間: 一瞬止まって暗く沈み、体が縮む（それまでは計器の色が変わるだけで、気づきにくかった）。
+        sfx("miss", FEEL.se.whipEmpty); stop(FEEL.stopWhipEmpty); setShake("whipEmpty"); setFlash("whipEmpty"); setStretch("player", FEEL.squashEmpty); kick(FEEL.kickEmpty);
+        floaters.push({ text: "ムチが止まった……", kind: "down", row: 1, age: 0, life: 1.3 });
+        flashButton(signalButton, "miss"); hajime("くっ……", "surprise", 1);
+      }
+      else if (event.kind === "whip" && event.type === "ready") {
+        // ムチがまた使えるようになった合図（音・ボタンの光・文字）。
+        sfx("good", FEEL.se.whipReady); flashButton(signalButton, "boost");
+        floaters.push({ text: "ムチ、いける！", kind: "up", row: 1, age: 0, life: 1.1 });
+      }
       else if (event.kind === "spurt" && !spurtShown) {
         spurtShown = true; showBanner("", "spurt", 1.6, "", "last-spurt"); announce("ラストスパート。ムチを押し続けるなら今。");
         say(CALLS.spurt, true); sfx("slotBonus"); if (Math.random() < 0.3) playCamelRaceSe("grunt");
-        if (!reducedMotion) { spurtTint = 1; shake = Math.max(shake, 0.25); }
+        setShake("spurt");
+        if (!reducedMotion) spurtTint = 1;
       }
       else if (event.kind === "stamina" && event.type === "exhausted") { showBanner("息が切れた", "tired", 1.2); say(CALLS.tired, true); }
       else if (event.kind === "draft" && event.type === "in") {
@@ -813,16 +940,24 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         if (event.type === "start") {
           duelFx = { who: event.who, age: 0 };
           floaters.push({ text: "競り合い！", kind: "duel", age: 0, life: 1.2, at: race.t });
-          sfx("slotBonus"); hajime("負けるな！", "excited", 1.2);
-          if (!reducedMotion) shake = Math.max(shake, 0.22);
+          // スパートの角笛と同じ録音を高く短く鳴らして聞き分ける。並んだ瞬間に一瞬止まり、相手が体を伸ばして粘る。
+          sfx("slotBonus", FEEL.se.duelStart); hajime("負けるな！", "excited", 1.2);
+          stop(FEEL.stopDuelStart); setShake("duelStart"); setStretch(event.who, FEEL.stretchRivalDuel);
           if (!taught.has("duel")) { taught.add("duel"); say(CALLS.duel(name), true); }
           announce(`${name}と競り合い。声を当てるかムチで抜く。`);
         } else {
           duelFx = null;
           const won = event.type === "won";
           floaters.push({ text: won ? "競り勝った！" : "粘られた……", kind: won ? "up" : "down", age: 0, life: 1.3, at: race.t });
-          if (won) { sfx("reelWin"); if (!taught.has("duelWon")) { taught.add("duelWon"); say(CALLS.duelWon(name), true); } }
-          else if (!taught.has("duelHeld")) { taught.add("duelHeld"); say(CALLS.duelHeld(name)); }
+          if (won) {
+            // 競り勝ち: レースの中でいちばん大きい止め。暗く落ちてから白く光り、相手は縮んで下がる。
+            sfx("reelWin", FEEL.se.duelWon); sfx("perfect", { gain: 0.8, rate: 1.3 });
+            stop(FEEL.stopDuelWon); setFlash("duelWon"); setShake("duelWon"); setStretch(event.who, FEEL.squashRivalLost); kick(FEEL.kickPass);
+            if (!taught.has("duelWon")) { taught.add("duelWon"); say(CALLS.duelWon(name), true); }
+          } else {
+            sfx("miss", FEEL.se.duelHeld); setShake("passed");
+            if (!taught.has("duelHeld")) { taught.add("duelHeld"); say(CALLS.duelHeld(name)); }
+          }
         }
       }
     }
@@ -841,8 +976,11 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       const up = me.position < lastPosition;
       const other = rows[up ? me.position : me.position - 2]; // 入れ替わった相手（自分の1つ後ろ／前）
       floaters.push({ text: up ? `${me.position}位 ▲` : `${me.position}位 ▼`, kind: up ? "up" : "down", age: 0, life: 1.3, at: race.t });
-      if (up) { sfx("reelWin"); if (me.position === 1) say(CALLS.lead, true); else if (other) say(CALLS.pass(other.name)); }
-      else if (other) say(CALLS.passed(other.name));
+      if (up) {
+        // 抜いた瞬間: 一瞬止まり、横に揺れて前へ出る。先頭に立った時は音を高く大きく。
+        sfx("reelWin", me.position === 1 ? FEEL.se.lead : FEEL.se.pass); stop(FEEL.stopPass); setShake("pass"); kick(FEEL.kickPass);
+        if (me.position === 1) say(CALLS.lead, true); else if (other) say(CALLS.pass(other.name));
+      } else { sfx("reelWin", FEEL.se.passed); setShake("passed"); if (other) say(CALLS.passed(other.name)); } // 抜かれた音は同じ録音を低く小さく
       lastPosition = me.position;
     }
     if (rows[0].id !== leaderId) {
@@ -860,7 +998,17 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     if (feedbackTimer > 0 && (feedbackTimer -= dt) <= 0) feedback.classList.remove("show");
     if (bannerTimer > 0 && (bannerTimer -= dt) <= 0) banner.classList.remove("show");
     whip = race?.player.whipping && phase === "race" ? 1 : Math.max(0, whip - dt * 2.4);
-    shake = Math.max(0, shake - dt * 1.6);
+    if (shakeFx.t > 0) shakeFx.t = Math.max(0, shakeFx.t - dt);
+    if (flashFx.t > 0) flashFx.t = Math.max(0, flashFx.t - dt);
+    if (glow > 0) glow = Math.max(0, glow - dt);
+    if (jockeyPop > 0) jockeyPop = Math.max(0, jockeyPop - dt);
+    // 潰し伸ばしと前へ出る動きは、止めの間は当たった姿のまま持ち、明けてから動く。
+    if (hitStop <= 0) {
+      for (const [id, item] of stretches) { item.t -= dt; if (item.t <= 0) stretches.delete(id); }
+      lunge += (lungeGoal - lunge) * Math.min(1, dt * FEEL.lungeAttack);
+      lungeGoal *= Math.exp(-dt * FEEL.lungeDecay);
+      if (Math.abs(lungeGoal) < 0.2 && Math.abs(lunge) < 0.2) { lungeGoal = 0; lunge = 0; }
+    }
     if (hajimeTextTimer > 0) hajimeTextTimer -= dt;
     if (race && phase === "race") {
       // 速いほど前へ（最大120px）、遅いと後ろへ。カメラはゆっくり追いつく。
@@ -878,7 +1026,11 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       if (duelFx) duelFx.age += dt;
       // 蹄の音: 自分のラクダの一完歩ごと。速くなるほど詰まって聞こえる。
       const stride = Math.floor(race.player.distance / 4.5);
-      if (stride !== lastStride) { if (lastStride >= 0) sfx("hoof"); lastStride = stride; }
+      // ずっと鳴る音なので小さく（声の判定・ムチより下）。速いほど少し高い。
+      if (stride !== lastStride) {
+        if (lastStride >= 0) { const hoof = FEEL.se.hoof; sfx("hoof", { gain: hoof.gain, rate: clamp(hoof.rateMin + (race.player.speed - 17) / 8 * (hoof.rateMax - hoof.rateMin), hoof.rateMin, hoof.rateMax) }); }
+        lastStride = stride;
+      }
     }
     spurtTint = Math.max(0, spurtTint - dt * 0.8);
     if (goTime >= 0) goTime += dt;
@@ -964,10 +1116,12 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ctx.save();
     // 揺れ（GO・ムチ・ゴール）と、ムチの間だけ自分のラクダへ少し寄る。
     if (!reducedMotion && race) {
-      const amp = shake * shake * 14;
-      ctx.translate((Math.random() - 0.5) * amp, (Math.random() - 0.5) * amp);
-      // 揺れで画面の端が空かないよう、揺れの幅だけ少し拡大して覆う。
-      const zoom = 1 + amp / 300 + whip * 0.035 + (phase === "goal" && slow > 0 ? 0.05 * Math.min(1, slow) : 0);
+      // 揺れは種類ごとに横・縦の幅と長さが違う（FEEL.shake）。最初が強く、二乗で収まる。
+      const k = shakeFx.t > 0 ? (shakeFx.t / shakeFx.life) ** 2 : 0;
+      const dx = k ? (Math.random() * 2 - 1) * shakeFx.x * k : 0, dy = k ? (Math.random() * 2 - 1) * shakeFx.y * k : 0;
+      ctx.translate(dx, dy);
+      // 揺れで画面の端が空かないよう、ずれた分だけ自分のラクダを軸に拡大して覆う。
+      const zoom = 1 + Math.max(Math.abs(dx) / 320, Math.abs(dy) / 170) + whip * 0.035 + (phase === "goal" && slow > 0 ? 0.05 * Math.min(1, slow) : 0);
       if (zoom > 1) { const lane = laneOf("player"), px = playerX(); ctx.translate(px, lane.y); ctx.scale(zoom, zoom); ctx.translate(-px, -lane.y); }
     }
     if (art) drawPaintedGround(camX);
@@ -989,7 +1143,14 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         const sx = screenX(camel);
         if (camel.id === "player") drawPlayerRing(sx, lane.y, lane.scale, t);
         drawDust(camel.id);
+        // 潰し・伸ばし（足元が軸）。
+        const stretch = stretches.get(camel.id);
+        if (stretch) {
+          const e = clamp(stretch.t / stretch.life, 0, 1), gy = lane.y + 31 * lane.scale;
+          ctx.save(); ctx.translate(sx, gy); ctx.scale(1 + (stretch.x - 1) * e, 1 + (stretch.y - 1) * e); ctx.translate(-sx, -gy);
+        }
         drawCamel(sx, lane.y, lane.scale, camel, t);
+        if (stretch) ctx.restore();
       }
       drawStartBar(camX);
       drawFence(camX, 604, 1);
@@ -1012,6 +1173,23 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       drawConfetti();
     } else { drawFence(camX, 604, 1); drawNearPosts(camX); drawSuv(); drawLight(); }
     ctx.restore();
+    drawFlash();
+  }
+  /** 閃光: PERFECT は騎手のまわりだけ金色に、競り勝ち・ムチ切れ・ゴールは画面全体（最初の一瞬は暗く落とす）。 */
+  function drawFlash() {
+    if (reducedMotion || !race) return;
+    if (glow > 0) {
+      const [life, peak, radius] = FEEL.glowPerfect, { x, y } = cuePoint(), k = clamp(glow / Math.max(0.01, life), 0, 1);
+      const light = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      light.addColorStop(0, `rgba(255,236,170,${peak * k})`); light.addColorStop(1, "rgba(255,214,102,0)");
+      ctx.fillStyle = light; ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+    }
+    if (flashFx.t <= 0) return;
+    const peak = FEEL.flash[flashFx.kind]?.[1] || 0;
+    if (flashFx.life - flashFx.t < flashFx.dark) ctx.fillStyle = `rgba(24,12,4,${FEEL.flashDark})`;
+    else if (peak > 0) ctx.fillStyle = `rgba(${flashFx.kind === "whipEmpty" ? "70,14,8" : "255,250,235"},${peak * flashFx.t / flashFx.life})`;
+    else return;
+    ctx.fillRect(0, 0, W, H);
   }
   /** 絵の背景: 奥の景色をゆっくり流し、走路・道・手前の砂地をタイルで速く流す。 */
   function drawPaintedGround(camX) {
@@ -1266,7 +1444,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     }
     ctx.drawImage(image, dx, dy, iw, ih);
     // 騎手: 鞍の底を背に合わせ、ムチの間は腕を回して前後に揺らす（自分のラクダ）。
-    const jk = k * JOCKEY_ART.scale;
+    // 声を押した瞬間は、自分の騎手が鞍の上で跳ねる（鞍の底が軸）。
+    const jk = k * JOCKEY_ART.scale * (me && jockeyPop > 0 ? 1 + (FEEL.jockeyPop[0] - 1) * jockeyPop / Math.max(0.01, FEEL.jockeyPop[1]) : 1);
     const sx = dx + CAMEL_ART.seatX * k, sy = dy + CAMEL_ART.seatY * k;
     const swing = me ? (race?.player.whipping ? Math.sin(t * 22) * 0.3 : Math.sin(whip * Math.PI * 3) * whip * 0.28) : (camel.whipping ? Math.sin(t * 22) * 0.3 : Math.sin(t * 6 + x) * 0.04);
     ctx.translate(sx, sy); ctx.rotate(-swing);
@@ -1698,7 +1877,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       ctx.globalAlpha = k < 0.15 ? k / 0.15 : 1 - Math.max(0, (k - 0.6) / 0.4);
       ctx.font = `900 ${Math.round(30 * textScale)}px ${FONT}`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
       const duel = f.kind === "duel";
-      const y = lane.y - (duel ? 196 : 96) - k * 40, fx = playerX() + (duel ? 40 : 150);
+      const y = lane.y - (duel ? 196 : 96 + (f.row || 0) * 44) - k * 40, fx = playerX() + (duel ? 40 : 150);
       ctx.lineJoin = "round";
       ctx.lineWidth = 7; ctx.strokeStyle = duel ? "#4a1a04" : up ? "#0c3a18" : "#4a0c0c"; ctx.strokeText(f.text, fx, y);
       ctx.fillStyle = duel ? "#ffcf5a" : up ? "#9dffb4" : "#ff9a9a"; ctx.fillText(f.text, fx, y);
@@ -1768,7 +1947,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       staminaNode.dataset.state = state; signalButton.dataset.stamina = state; pacingNode.dataset.state = state;
       if (phase === "race" && ["low", "tired", "spent"].includes(state)) {
         announce(readout.message);
-        if (race.t - lastStaminaNotice >= 6) { sfx("miss"); lastStaminaNotice = race.t; }
+        // 注意の音は小さく高く（外した声と聞き分ける）。ムチが止まった時は、その瞬間の音（whipEmpty）に任せる。
+        if (state !== "spent" && race.t - lastStaminaNotice >= 6) { sfx("miss", FEEL.se.notice); lastStaminaNotice = race.t; }
       }
     });
     setOnce("pacing", readout.message, text => { pacingText.textContent = text; });
@@ -1795,9 +1975,9 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     setOnce("duel", phase === "race" && race.player.duel ? "on" : "off", v => { voiceButton.dataset.duel = v; signalButton.dataset.duel = v; root.dataset.duel = v; });
   }
   function openResult() {
-    const score = scoreRace(race);
-    const run = { ...score, seed: race.seed };
-    runs.push(run);
+    if (phase === "result") return;
+    // 記録はゴールの瞬間に入っている（commitRun）。ここでは見せるだけ。
+    const run = commitRun(), score = run;
     setPhase("result");
     const previousBest = Math.max(best?.total ?? -1, ...runs.slice(0, -1).map(item => item.total));
     const isBest = score.total > previousBest;
@@ -1821,8 +2001,13 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       requestAnimationFrame(count);
       setTimeout(() => { if (!done && runs.length === shownRun && phase === "result") sfx("stamp"); }, 1050);
     }
-    if (run.cup === "rookie" && camelCupQualified(run)) unlocked.add("standard");
-    if (camelMastered(run)) unlocked.add("expert");
+    // 次の目標: 次の評価までの点、今回いちばん伸びる所を1つ、大会の条件のうち届いたもの・届かなかったもの。
+    const next = camelNextGoal(run, { mastered: !!cupRecords[run.cup]?.mastered || runs.slice(0, -1).some(item => item.cup === run.cup && (camelMastered(item) || camelExpert(item))) });
+    const nextNode = el("div.camel-next", { dataset: { test: "camel-next" } }, [
+      el("p.camel-next-grade", [el("b", { text: next.grade }), next.tip ? el("span", { text: next.tip }) : null]),
+      next.cup ? el("p.camel-next-cup", [el("b", { text: next.cup.label }),
+        ...next.cup.items.map(item => el("span", { dataset: { ok: String(item.ok) }, text: `${item.ok ? "✓" : "✗"} ${item.text}` }))]) : null,
+    ]);
     const again = el("button.btn.primary", { type: "button", text: "もう一度", dataset: { test: "camel-retry" }, onclick: () => { sfx("select"); prepareRace(); } });
     const choose = el("button.btn", { type: "button", text: "大会を選ぶ", dataset: { test: "camel-choose-cup" }, onclick: () => { sfx("click"); openCups(); } });
     const leave = el("button.btn", { type: "button", text: "終える", dataset: { test: "camel-finish" }, onclick: () => { sfx("click"); cleanup(true); } });
@@ -1840,6 +2025,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       el("ul.camel-stats", [["PERFECT", score.stats.perfect], ["GOOD", score.stats.good], ["見送り", score.stats.lost],
         ["無駄な声", score.stats.spam ? `${score.stats.miss}（連打${score.stats.spam}）` : score.stats.miss], ["競り合い", `${score.stats.duelsWon}勝／${score.stats.duels}回`], ["ムチ", `${score.stats.whipTime}秒（スパート${score.stats.spurtWhip}秒）`]]
         .map(([label, value]) => el("li", [el("small", { text: label }), el("b", { text: String(value) })]))),
+      nextNode,
       isBest && (best !== null || runs.length > 1) ? el("p.camel-best", { text: "自己ベスト更新！", dataset: { test: "camel-new-best" } }) : null,
       camelMastered(run) ? el("p.camel-best", { text: "中級認定！ 連打に頼らず、声と息を合わせた走り。追加の火種は初回認定時のみ。" })
         : camelExpert(run) ? el("p.camel-best", { text: "称号獲得：砂漠の名調教師" }) : null,
