@@ -64,6 +64,8 @@ const DEFERRED_DIALOGUE_FILES = ["hiyori"];
 // 映画館と大会制作会話はタイトル後に先読みし、各入口でも完了を待つ。
 const CINEMA_DIALOGUE_FILE = "cinema";
 const TOURNAMENT_CRAFT_DIALOGUE_FILE = "tournament_craft";
+// 遊び場へ入った時の、店の人とのやり取り（daily/venue-arrivals.js）。タイトルでは先読みせず、店の入口で読む（小さい台本なので待ちは短い）。
+const VENUE_ARRIVAL_DIALOGUE_FILE = "venue_arrivals";
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
 const JSON_TIMEOUT_MS = 15000;
 const JSON_CONCURRENCY = 4;
@@ -122,6 +124,7 @@ function dialogueLoader(file) {
 
 export const loadCinemaDialogue = dialogueLoader(CINEMA_DIALOGUE_FILE);
 export const loadTournamentCraftDialogue = dialogueLoader(TOURNAMENT_CRAFT_DIALOGUE_FILE);
+export const loadVenueArrivals = dialogueLoader(VENUE_ARRIVAL_DIALOGUE_FILE);
 
 export async function loadAll(onProgress = () => {}) {
   globalThis.performance?.setResourceTimingBufferSize?.(1000);
@@ -147,17 +150,25 @@ export async function loadAll(onProgress = () => {}) {
     ["fortuneHints", "data/fortune-choice-hints.json"],
     ...DIALOGUE_FILES.map((f) => [`dlg:${f}`, `${ROOT}data/dialogue/${f}.json`]),
   ];
-  let done = 0;
+  let done = 0, next = 0, failed = false;
   const results = [];
-  // ローカルサーバーの接続待ちを溢れさせない。失敗したら次の組は開始しない。
-  for (let start = 0; start < jobs.length; start += JSON_CONCURRENCY) {
-    const batch = await Promise.all(jobs.slice(start, start + JSON_CONCURRENCY).map(async ([key, path]) => {
-      const v = await getJSON(path);
+  // ローカルサーバーの接続待ちを溢れさせないよう、同時に JSON_CONCURRENCY 本まで。
+  // 組ごとに全員を待たず、1本終わるたびに次の1本を始める（遅い1本が組全体を止めない。#3500 A-18）。
+  // 失敗したら新しい取得は始めない。
+  const worker = async () => {
+    while (!failed && next < jobs.length) {
+      const i = next++;
+      const [key, path] = jobs[i];
+      try {
+        results[i] = [key, await getJSON(path)];
+      } catch (error) {
+        failed = true;
+        throw error;
+      }
       onProgress(++done / jobs.length);
-      return [key, v];
-    }));
-    results.push(...batch);
-  }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(JSON_CONCURRENCY, jobs.length) }, worker));
   const raw = Object.fromEntries(results);
 
   for (const c of raw.characters) DB.characters[c.id] = c;

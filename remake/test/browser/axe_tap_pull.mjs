@@ -150,4 +150,79 @@ await suite('axe-tap-pull', async check => {
     }
     await throwAxe(page, { touch: true });
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+
+  // 2026-11-13 手応えレビュー（桜井政博スキル準拠）: 止め・弾き損ねの札・強さの振り返り・装備の色・自動送り
+  await check('hitstop-holds-the-contact-pose-and-the-result-shows-my-power', async page => {
+    await page.goto(new URL('axe-throw.html?feel=freeze:contact', baseURL).href);
+    await page.locator('[data-test="axe-start"]').click(); await phase(page, 'choice');
+    await flickFromBoard(page, { power: .62 });
+    await page.waitForTimeout(1200);
+    assert.equal(await root(page).getAttribute('data-phase'), 'flight', 'freeze:contact keeps the contact frame');
+    assert.equal(await root(page).getAttribute('data-hitstop'), 'true');
+    assert.equal(await page.locator('.axe-flight-trail').getAttribute('opacity'), '0', 'no trail while the axe is held');
+    assert.equal(await page.locator('.axe-flight').getAttribute('opacity'), '1');
+    // 通常は、止めが明けてから結果へ（強さの振り返りは結果カードに残る）
+    await start(page); await throwAxe(page, { power: .62 });
+    assert.equal(await root(page).getAttribute('data-hitstop'), 'false');
+    const review = page.locator('[data-test="axe-power-review"]');
+    assert.equal(await review.isVisible(), true);
+    assert.match(await review.innerText(), /↻\d+% ちょうどいい/);
+    assert.match(await review.getAttribute('aria-label'), /回転 \d+% · ちょうどいい/);
+    assert.match(await page.locator('[data-test="axe-zoom"] figcaption').innerText(), /回転 \d+%/);
+    assert.equal(await root(page).getAttribute('data-impact'), 'celebration');
+  });
+
+  await check('failed-flick-says-why-and-keeps-the-throw', async page => {
+    await start(page); await aim(page);
+    const stage = await root(page).boundingBox(), p = await page.locator('.axe-target').evaluate(node => {
+      const point = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM()); return { x: point.x, y: point.y }; });
+    for (const [options, words] of [[{ rise: stage.height * .025 }, /弾きが浅い/], [{ rise: stage.height * .2, lean: 3 }, /斜めすぎ/]]) {
+      await flick(page, { x: p.x, y: p.y, height: stage.height, ...options });
+      const cue = page.locator('[data-test="axe-flick-cue"]');
+      await cue.waitFor(); assert.match(await cue.innerText(), words);
+      assert.equal(await root(page).getAttribute('data-phase'), 'power'); assert.equal(await root(page).getAttribute('data-player-throws'), '0');
+      await page.waitForTimeout(800);
+    }
+    // 浅いが一応上へ弾いた（画面の高さの4〜6%）は、弱い投げとして結果が返る
+    await flick(page, { x: p.x, y: p.y, height: stage.height, rise: stage.height * .05 });
+    await phase(page, 'result');
+    assert.equal(await root(page).getAttribute('data-outcome'), 'drop');
+    assert.match(await page.locator('.axe-note').innerText(), /柄から当たって落下/);
+  });
+
+  await check('own-axe-flies-and-sticks-in-its-colours', async page => {
+    await page.goto(new URL('axe-throw.html', baseURL).href);
+    await page.locator('[data-test="axe-start"]').waitFor();
+    await page.evaluate(async () => { const { runAxeThrow } = await import('./js/minigames/axe.js');
+      window.gearRun = runAxeThrow({ host: document.getElementById('axe-app'), mode: 'practice', opponent: null, gearId: 'gear_hatchet_precision' }); });
+    await phase(page, 'choice');
+    assert.equal(await page.locator('.axe-flight').getAttribute('data-gear'), 'gear_hatchet_precision');
+    await throwAxe(page);
+    const fill = await page.locator('.axe-impacts polygon[data-face^="head"]').first().getAttribute('fill');
+    const house = await page.evaluate(async () => { const { projectedAxe } = await import('./js/minigames/axe-geometry.js'); const { impactPose } = await import('./js/minigames/axe-flight.js');
+      const { resolveThrow } = await import('./js/minigames/axe-model.js'); return projectedAxe(impactPose(resolveThrow({ x: 0, y: 0, power: .62 }))).polygons.find(p => p.id.startsWith('head')).fill; });
+    assert.notEqual(fill, house, 'the precision head is not the house steel');
+  });
+
+  await check('versus-auto-advance-and-board-tap-next-aim', async page => {
+    await page.goto(new URL('axe-throw.html', baseURL).href);
+    await page.locator('[data-test="axe-versus"]').click(); await page.locator('[data-test="axe-setup-start"]').click();
+    await phase(page, 'choice'); await page.locator('.axe-cutin').waitFor({ state: 'detached' });
+    await throwAxe(page);
+    assert.equal(await root(page).getAttribute('data-auto'), 'opponent');
+    // ボタンを押さなくても相手の番へ進み、相手の結果からも自分の番へ戻る（タップで即）
+    await phase(page, 'opponent-ready'); await phase(page, 'result');
+    assert.equal(await root(page).getAttribute('data-actor'), 'opponent');
+    assert.equal(await root(page).getAttribute('data-auto'), 'player');
+    await page.waitForTimeout(650);
+    // 相手の結果の間に的へ触れると、次の投へ進んでそのまま狙いになる
+    const p = await page.locator('.axe-target').evaluate(node => { const point = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM()); return { x: point.x, y: point.y }; });
+    await page.mouse.click(p.x, p.y);
+    await phase(page, 'power');
+    assert.equal(await root(page).getAttribute('data-actor'), 'player');
+    assert.equal(await root(page).getAttribute('data-player-throws'), '1');
+    await throwAxe(page);
+    await phase(page, 'opponent-ready'); await phase(page, 'result'); await phase(page, 'choice');
+    assert.equal(await root(page).getAttribute('data-opponent-throws'), '2');
+  });
 }, { entry: new URL('axe-throw.html', baseURL).href, readySelector: '[data-test="axe-start"]', freshBrowserPerCase: true });

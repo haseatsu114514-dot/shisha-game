@@ -1127,7 +1127,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "カウンターに立って客にシーシャを出す、はじめの後ろ姿だった。"
+            "text": "カウンターに立って客にシーシャを出す、俺の後ろ姿だった。"
           },
           {
             "speaker": "",
@@ -1285,17 +1285,6 @@
           "tournament_chapter": 1,
           "next_true": "color_after",
           "next_false": "color_before"
-        },
-        {
-          "type": "fx",
-          "id": "exhale",
-          "x": 0.74,
-          "y": 0.7,
-          "style": "up",
-          "scale": 1.5,
-          "tint": 0.72,
-          "color": "#5a66d6",
-          "color2": "#f2a878"
         },
         {
           "speaker": "",

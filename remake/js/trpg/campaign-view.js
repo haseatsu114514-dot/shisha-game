@@ -23,7 +23,7 @@ const SHOP_HELP = [
 
 /** Owns a shop/table screen. Only the supplied state and save callback may change. */
 export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy = () => false,
-  readOnly = false, closeLabel = "街へ戻る", signal, resources: suppliedResources = null, visitMember = null } = {}) {
+  readOnly = false, closeLabel = "街へ戻る", signal, resources: suppliedResources = null, visitMember = null, greeted = false } = {}) {
   const abort = new AbortController();
   const owner = getState();
   const visitStamp = owner && `${owner.chapter}:${owner.day}:${owner.slot}`;
@@ -55,6 +55,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     if (!readOnly && !completed && syncTrpgStock(state, catalog)) save();
     const daytime = !readOnly && !completed && state?.phase === "daily" && state.chapter >= catalog.unlockChapter && state.slot === 0;
     const hostLine = key => club.branches["host_" + key][0].text;
+    const seated = key => greeted && club.branches["host_" + key + "_seated"] ? key + "_seated" : key;
     const options = { nightBusy: nightBusy() };
     const time = tableStatus(state, catalog, options);
     const name = id => displayName(characters, id);
@@ -72,7 +73,8 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     ]));
     if (!readOnly) root.append(venueHost("sai", hostLine(completed ? reflection || "after_table" : trial
       ? trial.done ? trial.total > 7 ? "bust" : trial.total === 7 ? "seven" : "stop" : trial.rolls.length ? "push" : "trial"
-      : daytime ? "day" : "night"), resources));
+      // 入口でサイと話したばかりの来店（daily/venue-arrivals.js）は、挨拶を繰り返さず棚へ促す一言にする
+      : daytime ? seated("day") : seated("night")), resources));
     if (completed) {
       root.append(el("p.trpg-campaign-notice", { text: "誰と迎えた結末か、今夜の思い出を本棚にしまった。" }));
       if (lastGain) root.append(clubBanner(clubRecord(state, catalog), lastGain));

@@ -84,13 +84,13 @@ console.log('image preparation: PASS (abort, timeout, queued load, decoded reten
 }
 console.log('background preparation: PASS (yield, serial, stale, hidden, save-data, failure)');
 
-// The actual race loader used by module warm-up, tutorial and START must share
+// The actual race loader used by the race entrance (visit/page), tutorial and START must share
 // optional art as well as the core art. Previously each call decoded it again.
 {
   const { readFile } = await import('node:fs/promises');
   const { runInNewContext } = await import('node:vm');
   const source = await readFile(new URL('../js/minigames/camel-race.js', import.meta.url), 'utf8');
-  const body = source.slice(source.indexOf('export function loadCamelArt()'), source.indexOf('if (typeof Image !== "undefined" && typeof document'));
+  const body = source.slice(source.indexOf('export function loadCamelArt()'), source.indexOf('/** 4頭それぞれの4コマに'));
   const files = { camel: ['camel'], jockey: 'jockey', suv: 'suv', wheel: 'wheel', track: 'track',
     balloon: 'balloon', dust: ['dust'], words: { start: 'start' }, pole: 'pole', sand: 'sand',
     posts: { start: 'post' }, rivalSuvs: ['rival'], marker: 'marker', road: 'road' };

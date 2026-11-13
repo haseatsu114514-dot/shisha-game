@@ -63,10 +63,12 @@ html, body {
   touch-action: manipulation;
 }
 /* 短い文は行の長さをそろえる（TXW04）。pretty は最後の1文節を引き下ろすだけで、「確認して次の／工程へ」のような形が残るため。
-   対象はボタンと、2〜3行の一言・注記だけ（長い説明文をそろえると右側が空く）。行数と箱の大きさは変わらない */
+   対象はボタンと、2〜3行の一言・注記だけ（長い説明文をそろえると右側が空く）。行数と箱の大きさは変わらない。
+   TRPGの台詞（.trpg-speech > p）は対象にしない（#3199）: 台詞は2行に収まる長さが多く、そろえると1行目が早く切れて
+   「世界一普通の／一台を」「この／旅人の」のように文の途中で泣き別れになっていた。台詞は body の pretty（1行目を詰め、最後の短い切れ端だけ避ける）に任せる */
 .btn, .btn-label, .lime-reply.multiline, .lime-empty, .lime-tip, .lime-hint, .sub-lead, .big-choice > small, .opt > small,
 .map .mi-desc, .end-notes > p, .ch2-contest-note, .dm-sub, .lb-learned, .go-limit-note, .sd-note, .mix-taste, .flavor-forecast > b,
-.dr-caption, .axe-bar-division-note, .trpg-speech > p, .trpg-tutorial-panel > p, .trpg-object-label, .trpg-object-detail {
+.dr-caption, .axe-bar-division-note, .trpg-tutorial-panel > p, .trpg-object-label, .trpg-object-detail {
   text-wrap: balance;
 }
 button { font: inherit; color: inherit; }

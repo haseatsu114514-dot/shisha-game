@@ -109,7 +109,8 @@ export function castTrpgTable(state, catalog, scenario, options = {}) {
   if (!book) return { ok: false, reason: "今の本棚にはない物語" };
   const progress = trpgBookProgress(state, book);
   if (!progress.ok) return progress;
-  if (!state.trpg?.owned?.includes(scenario.id)) return { ok: false, reason: "本棚に加えると遊べる" };
+  // onShelf: 入荷済みでまだ買っていない本も、顔ぶれが成り立つかだけを見る（tablePlayableTonight）
+  if (!options.onShelf && !state.trpg?.owned?.includes(scenario.id)) return { ok: false, reason: "本棚に加えると遊べる" };
   const available = new Set(catalog.participants.filter(p => participantStatus(state, p).ok).map(p => p.id));
   if (book?.zeroMemberCast) for (const id of book.zeroMemberCast) available.add(id);
   for (const id of catalog.regulars || []) if (isTrpgRegular(id)) available.add(id);
@@ -124,6 +125,16 @@ export function castTrpgTable(state, catalog, scenario, options = {}) {
     if (id) used.add(id);
   }
   return { ok: true, assignments, participants: [...used], gm: assignments[scenario.cast.find(c => c.part === "GM").id] };
+}
+
+/**
+ * 今夜、棚の本（入荷済みを含む・まだ結末を見ていない本）のどれかで卓を囲めるか。本棚の画面の「今は遊べる本と仲間が
+ * 揃っていません」と同じ見方で、来店のやり取りの出し分けに使う（daily/trpg.js）。状態は変えない。
+ */
+export function tablePlayableTonight(state, catalog, scenarios, options = {}) {
+  const shelved = id => state?.trpg?.owned?.includes(id) || state?.trpg?.stock?.includes(id);
+  return (scenarios || []).some(scenario => shelved(scenario.id) && !state.trpg.cleared?.[scenario.id]
+    && castTrpgTable(state, catalog, scenario, { ...options, onShelf: true }).ok);
 }
 
 /** Authored alternatives are required for any replacement actor; never reuse another person's voice. */

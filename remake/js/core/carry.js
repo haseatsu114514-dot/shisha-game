@@ -381,6 +381,7 @@ export const FLAG_EXACT_RULES = [
   ["_hiyori_meeting_done", "person"],
   ["_hiyori_meeting_shop", "person"],
   ["_hiyori_message_delivered", "person"],
+  ["_hiyori_minto_seat_done", "person"], // ぺぱーみんとの相席で一度だけ（REL07・daily/hiyori.js）
   ["_hiyori_peach_talk_done", "person"],
   ["_hiyori_promise_done", "person"],
   ["_hiyori_real_self_known", "person"],
@@ -665,6 +666,7 @@ export const FLAG_FAMILY_RULES = [
   ["_petit_seen_*", "progression"], // プチ修羅場の読んだ場面（core/petit-shuraba.js の petitSeenFlag）
   ["_roam_seen_*", "person"],
   ["_trpg_topic_*", "person"], // 部活の話は周回ごとに対面し直す
+  ["_venue_arrival_*", "progression"], // 遊び場の来店のやり取り（daily/venue-arrivals.js）。巡回・一度きりの回は周回ごとに読み直す
   ["_date_inv_*", "person"],
   ["_delivery_*", "progression"],
   ["_fortune_*", "progression"],

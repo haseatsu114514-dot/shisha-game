@@ -1,7 +1,8 @@
 // 人が吐く煙（js/core/smoke.js）の計算部分の検査。DOM を使わない。
 //   node remake/test/smoke_field.mjs
 import assert from "node:assert/strict";
-import { createSmokeField, firstPersonBreath, mouthBreath, ringBreath, coverBreath, hazeBreath, hazeLayer, parseColor, smokeTint, smokeAllowed, GRID_W, GRID_H, SMOKE_WHITE } from "../js/core/smoke.js";
+import fs from "node:fs";
+import { createSmokeField, workerBreath, mouthBreath, ringBreath, hazeBreath, hazeLayer, parseColor, smokeTint, smokeAllowed, GRID_W, GRID_H, SMOKE_WHITE } from "../js/core/smoke.js";
 import { hazeLevel } from "../js/core/shop-haze.js";
 
 // 同じ乱数列なら同じ煙になる（撮り直しても結果が変わらないようにする）
@@ -35,12 +36,12 @@ assert.equal(smokeAllowed(), false);
   assert.ok(field.count > 5, "吐いている間は房がある");
   assert.equal(field.done(ids[0]), false);
   const painted = field.paint(px);
-  assert.ok(painted > 800, `升目に描かれる（${painted}）`);
+  assert.ok(painted > 500, `升目に描かれる（${painted}）`);
   assert.equal(px.filter((v) => v !== 0).length, painted, "描いた升目の数が合う");
   // 透けは決まった段だけ（半端な濃さを作らない）
   const alphas = new Set([...px].filter((v) => v).map(alphaOf));
   assert.ok(alphas.size <= 5, `濃さは5段まで（${[...alphas]}）`);
-  assert.ok(Math.max(...alphas) < 255, "ふつうの煙は少し透ける");
+  assert.ok(Math.max(...alphas) < 160, "会話の煙は、煙ごしに顔が見える濃さ");
   // 色は 1色の煙で4色まで
   const tones = new Set([...px].filter((v) => v).map((v) => v & 0xffffff));
   assert.ok(tones.size >= 2 && tones.size <= 4, `塗りは4色まで（${tones.size}）`);
@@ -55,22 +56,50 @@ assert.equal(smokeAllowed(), false);
 // ---- 同じ乱数列なら同じ絵
 {
   const a = new Uint32Array(GRID_W * GRID_H), b = new Uint32Array(GRID_W * GRID_H);
-  run(firstPersonBreath("good"), 1.2, 11).field.paint(a);
-  run(firstPersonBreath("good"), 1.2, 11).field.paint(b);
+  run(workerBreath("good"), 1.2, 11).field.paint(a);
+  run(workerBreath("good"), 1.2, 11).field.paint(b);
   assert.deepEqual(a, b);
 }
 
-// ---- 煙が成績表になる: 最適 ＞ 適温 ＞ ぬるい の順に、画面を満たす量が減る。熱すぎはすぐ消える
+// ---- 吸い出しの煙（作業風景のはじめの口元から）: 煙が成績表になり、作業風景の窓の中に収まる
 {
-  const area = (q, sec) => run(firstPersonBreath(q), sec, 3).field.paint(px);
-  const best = area("best", 1.4), good = area("good", 1.4), thin = area("thin", 1.4);
-  assert.ok(best > good && good > thin * 2, `best ${best} > good ${good} > thin ${thin}`);
-  assert.ok(area("harsh", 2.2) < area("good", 2.2) * .5, "熱すぎた煙は、ちぎれてすぐ消える");
-  run(firstPersonBreath("thin"), 1.0, 3).field.paint(px);
+  // 出てから消えるまでを追い、いちばん多いときの量・広がった範囲・消えた時刻を見る
+  const life = (q, seed) => {
+    const field = createSmokeField({ random: rng(seed) });
+    workerBreath(q).forEach((s) => field.breath(s));
+    const out = { peak: 0, left: 1, right: 0, top: 1, bottom: 0, end: 0 };
+    for (let f = 1; f <= 480; f++) {
+      field.step(1 / 60);
+      if (f % 6) continue;
+      const n = field.paint(px);
+      if (!n) continue;
+      out.peak = Math.max(out.peak, n); out.end = f / 60;
+      for (let i = 0; i < px.length; i++) if (px[i]) {
+        const x = (i % GRID_W) / GRID_W, y = Math.floor(i / GRID_W) / GRID_H;
+        out.left = Math.min(out.left, x); out.right = Math.max(out.right, x); out.top = Math.min(out.top, y); out.bottom = Math.max(out.bottom, y);
+      }
+    }
+    return out;
+  };
+  for (const seed of [3, 7, 11]) {
+    const best = life("best", seed), good = life("good", seed), thin = life("thin", seed), harsh = life("harsh", seed);
+    assert.ok(best.peak > good.peak && good.peak > thin.peak * 2, `量は 最適 ＞ 適温 ＞ ぬるい（${best.peak}・${good.peak}・${thin.peak}）`);
+    assert.ok(best.end > good.end && good.end > thin.end && harsh.end < good.end - 1, `長く残るのは 最適 ＞ 適温 ＞ ぬるい。熱すぎは、むせてすぐ消える（${best.end}・${good.end}・${thin.end}・${harsh.end}）`);
+    for (const [name, b] of Object.entries({ best, good, thin, harsh })) {
+      // 口元は作業台の (0.09, 0.66)。窓は左の 0.32 まで。右の計器・下の結果の札・上の見出しへは出ない
+      assert.ok(b.left > .04 && b.right < .3 && b.top > .3 && b.bottom < .88, `${name} は作業風景の窓の中（横 ${b.left.toFixed(2)}〜${b.right.toFixed(2)}・縦 ${b.top.toFixed(2)}〜${b.bottom.toFixed(2)}）`);
+      assert.ok(b.right > .14, `${name} は顔の向いている右へ出る`);
+    }
+  }
+  run(workerBreath("thin"), 1.0, 3).field.paint(px);
   assert.ok(Math.max(...[...px].filter((v) => v).map(alphaOf)) < 160, "ぬるい煙は薄い");
+  // 口元の位置を渡すと、そこから出る
+  run(workerBreath("good", { x: .6, y: .3 }), .5, 3).field.paint(px);
+  const xs = [...px].map((v, i) => (v ? (i % GRID_W) / GRID_W : -1)).filter((x) => x >= 0);
+  assert.ok(xs.length > 0 && Math.min(...xs) > .56 && Math.max(...xs) < .8, "渡した口元から出る");
 }
 
-// ---- 吐き方: 「小さく二度」は間が空く。「上へ」は口元より上に溜まる
+// ---- 吐き方: 「小さく二度」は間が空く。「上へ」は上に溜まる。顔は覆わない
 {
   const twice = createSmokeField({ random: rng(5) });
   mouthBreath("twice", { x: .5, y: .5 }).forEach((s) => twice.breath(s));
@@ -79,11 +108,29 @@ assert.equal(smokeAllowed(), false);
   assert.ok(before > 0 && twice.count > gap, "二度目でまた房が増える");
 
   const centroidY = (field) => { field.paint(px); let sum = 0, n = 0; for (let i = 0; i < px.length; i++) if (px[i]) { sum += Math.floor(i / GRID_W); n++; } return sum / n / GRID_H; };
-  assert.ok(centroidY(run(mouthBreath("up", { x: .5, y: .6 }), 1.6).field) < centroidY(run(mouthBreath("long", { x: .5, y: .6 }), 1.6).field) - .03, "「上へ」は上に溜まる");
+  // 「上へ」は、口元からは横へ出て（目もとを横切らない）、顔の外へ出てから浮く
+  assert.ok(centroidY(run(mouthBreath("up", { x: .5, y: .6 }), 2.2).field) < centroidY(run(mouthBreath("long", { x: .5, y: .6 }), 2.2).field) - .02, "「上へ」は上に溜まる");
   // 左向きは左へ流れる
   const centroidX = (field) => { field.paint(px); let sum = 0, n = 0; for (let i = 0; i < px.length; i++) if (px[i]) { sum += i % GRID_W; n++; } return sum / n / GRID_W; };
   assert.ok(centroidX(run(mouthBreath("long", { x: .5, y: .4, side: -1 }), 1.5).field) < .47);
   assert.ok(centroidX(run(mouthBreath("long", { x: .5, y: .4, side: 1 }), 1.5).field) > .53);
+  // 顔を覆わない: どの吐き方でも、煙は顔の向いている側だけへ流れ（後ろ頭の側へは出ない）、口元の真上（目もと）へは昇らない
+  for (const style of ["", "long", "twice", "up"]) for (const side of [-1, 1]) {
+    const field = createSmokeField({ random: rng(9) });
+    mouthBreath(style, { x: .5, y: .5, side }).forEach((s) => field.breath(s));
+    let behind = 0, eyes = 0, seen = 0;
+    for (let f = 1; f <= 300; f++) {
+      field.step(1 / 60);
+      if (f % 6 || !field.paint(px)) continue;
+      for (let i = 0; i < px.length; i++) if (px[i]) {
+        const dx = ((i % GRID_W) / GRID_W - .5) * side, y = Math.floor(i / GRID_W) / GRID_H;
+        seen++;
+        if (dx < -.02) behind++;
+        if (Math.abs(dx) < .02 && y < .455) eyes++;
+      }
+    }
+    assert.ok(seen > 2000 && behind === 0 && eyes === 0, `吐き方「${style}」向き ${side}: 後ろ ${behind}・目もと ${eyes}（${seen}）`);
+  }
 }
 
 // ---- 煙の輪: まん中が抜けている
@@ -101,22 +148,43 @@ assert.equal(smokeAllowed(), false);
   assert.ok(row.length > 6 && row.at(-1) - row[0] > .1 * GRID_W && row.at(-1) - row[0] < .3 * GRID_W, `輪の幅が保たれている（${row[0]}〜${row.at(-1)}）`);
 }
 
-// ---- 画面を覆う煙: 覆いきる時間があり、透かさない。そのあと晴れる
+// ---- 横へ吹いた輪（はじめの口元から）: 縦長で、吹いた向き（右）へ進みながら少し昇る。まん中は抜けたまま
 {
-  const { field } = run(coverBreath(), 1.05);
+  const { field } = run(ringBreath({ x: .3, y: .6, radius: .05, size: .014, squash: [.55, 1], grow: .03, drift: .085, rise: .05, life: 1.7 }), .9);
   const painted = field.paint(px);
-  assert.ok(painted > GRID_W * GRID_H * .97, `画面を覆う（${(painted / px.length * 100).toFixed(1)}%）`);
-  assert.ok([...px].filter((v) => v).every((v) => alphaOf(v) === 255), "覆う煙は透かさない");
-  for (let t = 0; t < 2.6; t += 1 / 60) field.step(1 / 60);
-  assert.equal(field.paint(px), 0, "晴れる");
+  let sx = 0, sy = 0, x0 = GRID_W, x1 = 0, y0 = GRID_H, y1 = 0;
+  for (let i = 0; i < px.length; i++) if (px[i]) { const x = i % GRID_W, y = Math.floor(i / GRID_W); sx += x; sy += y; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); }
+  const cx = Math.round(sx / painted), cy = Math.round(sy / painted);
+  assert.equal(px[cy * GRID_W + cx], 0, "輪のまん中は抜けている");
+  assert.ok(cx / GRID_W > .32 && cy / GRID_H < .58, `右へ進みながら昇る（${(cx / GRID_W).toFixed(3)}, ${(cy / GRID_H).toFixed(3)}）`);
+  assert.ok(y1 - y0 > (x1 - x0) * 1.3, `横へ吹いた輪は縦長（幅 ${x1 - x0}・高さ ${y1 - y0}）`);
 }
 
-// ---- 2色の煙（つむぎの見え方）: 両方の色が出る
+// ---- 2色の煙: 両方の色が出る
 {
   const { field } = run(mouthBreath("", { x: .5, y: .5, colors: [[1, .56, .8], [.5, .84, 1]] }), 1.2);
   field.paint(px);
   const reds = new Set([...px].filter((v) => v).map((v) => (v & 0xff) > ((v >>> 16) & 0xff) ? "warm" : "cool"));
   assert.deepEqual([...reds].sort(), ["cool", "warm"]);
+}
+
+// ---- 決まり（KMR23）: 煙は、画面に見えている人の口元からだけ。台本の一服は「誰が吐くか」だけを書く
+// （自分＝画面にいない人の煙や、決まった位置に立てる煙・色つきの煙は置かない）
+{
+  const dir = new URL("../../data/dialogue/", import.meta.url), found = [];
+  const walk = (node, file) => {
+    if (Array.isArray(node)) { node.forEach((n) => walk(n, file)); return; }
+    if (!node || typeof node !== "object") return;
+    if (node.type === "fx" && node.id === "exhale") found.push({ file, line: node });
+    Object.values(node).forEach((v) => walk(v, file));
+  };
+  for (const file of fs.readdirSync(dir).filter((f) => f.endsWith(".json"))) walk(JSON.parse(fs.readFileSync(new URL(file, dir), "utf8")), file);
+  assert.ok(found.length >= 3, `一服の入った場面がある（${found.length}）`);
+  for (const { file, line } of found) {
+    assert.ok(typeof line.who === "string" && line.who && line.who !== "self", `${file}: 一服は、立ち絵の出ている人を who で指す（${JSON.stringify(line)}）`);
+    const extra = Object.keys(line).filter((k) => !["type", "id", "who", "style", "side"].includes(k));
+    assert.deepEqual(extra, [], `${file}: 一服に書けるのは who・style・side だけ（${JSON.stringify(line)}）`);
+  }
 }
 
 // ---- 店に漂う煙（KMR21）: うっすら。画面を覆わず、縁は段々に薄く、部屋の上半分に溜まる
@@ -200,4 +268,4 @@ assert.equal(smokeAllowed(), false);
   }
 }
 
-console.log("smoke field: PASS (色・吐き方・成績表・輪・覆う・2色・漂う煙・出す背景・後片付け)");
+console.log("smoke field: PASS (色・吐き方・顔を覆わない・成績表と作業風景の窓・輪・2色・台本の決まり・漂う煙・出す背景・後片付け)");

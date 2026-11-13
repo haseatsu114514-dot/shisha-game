@@ -326,39 +326,46 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   assert.match(ch5Dubai, /delete owner\.flags\[CH5_CAMEL_KNOWN\]/);
   assert.match(ch5Dubai, /owner\.flags\[CAMEL_AGAIN\.flag\] = true/);
 }
-// 初回の会話は読了まで待ち、再訪は直接レースへ。第5章の最初の再会だけは残す。
+// 初回の会話は読了まで待つ。再訪は、通いの朝のやり取り（VAR04・daily/venue-arrivals.js）を挟んでレースへ。第5章の最初の再会だけは残す。
 {
   const { runInNewContext } = await import("node:vm");
   const source = readFileSync(new URL("../js/chapters/ch4-camel-race.js", import.meta.url), "utf8")
     .replace(/^import [\s\S]*?;\n/gm, "").replace(/^export \*[^\n]*\n/gm, "").replace("export async function", "async function");
   const loadVisit = ({ stage = CAMEL_STAGES.unlocked, watched = true, readDone = true, current = true, aborted = false } = {}) => {
-    const calls = [], owner = { flags: {}, day: 50, chapter: 4 };
+    const calls = [], owner = { flags: {}, day: 50, chapter: 4 }, art = { started: 0 };
     const camel = { stage, watched, plays: stage === CAMEL_STAGES.unlocked ? 1 : 0, cups: {} };
     const context = { state: owner, CAMEL_SCENES, CAMEL_STAGES,
       camelRaceDestination: () => ({ ok: true }), camelRaceRecord: () => camel,
       advanceCamelRaceStage: (_, id) => { calls.push(["advance", id]); return true; },
       save: () => calls.push(["save"]), availableCamelCups: () => [],
+      playArrival: async (venue, options) => { calls.push(["arrival", venue, options.save === owner, typeof options.read]); return null; },
       paidAction: async work => ({ value: await work() }),
-      runCamelRace: async options => { calls.push(["race", options.tutorial]); return { completed: false }; } };
+      runCamelRace: async options => { calls.push(["race", options.tutorial]); return { completed: false }; },
+      // レースの絵はレースへ進む訪問の入口で読み始める（import しただけでは読まない・#3500 E-2）
+      loadCamelArt: () => { art.started++; return Promise.resolve(null); } };
     const visit = runInNewContext(source + "\nvisitCamelRace;", context);
-    return { calls, run: (extra = {}) => visit({ host: {}, signal: { aborted }, isCurrent: () => current,
+    return { calls, art, run: (extra = {}) => visit({ host: {}, signal: { aborted }, isCurrent: () => current,
       read: async id => { calls.push(["read", id]); return readDone; },
       beforeRace: () => calls.push(["before"]), ...extra }) };
   };
   for (const [stage, scene] of [[CAMEL_STAGES.unknown, CAMEL_SCENES.meet], [CAMEL_STAGES.met, CAMEL_SCENES.invite]]) {
     const entry = loadVisit({ stage }); await entry.run();
     assert.deepEqual(entry.calls, [["read", scene], ["advance", scene], ["save"]]);
+    assert.equal(entry.art.started, 0, "meeting/invitation visits do not prepare race art");
   }
   const first = loadVisit({ stage: CAMEL_STAGES.invited, watched: false }); await first.run();
   assert.deepEqual(first.calls, [["read", CAMEL_SCENES.watch], ["advance", CAMEL_SCENES.watch], ["save"], ["before"], ["race", true]]);
+  assert.equal(first.art.started, 1, "race art starts loading at the visit entrance, before the viewing scene");
   const interrupted = loadVisit({ stage: CAMEL_STAGES.invited, watched: false, readDone: false }); await interrupted.run();
   assert.deepEqual(interrupted.calls, [["read", CAMEL_SCENES.watch]], "interrupted dialogue neither saves nor starts the race");
   const watched = loadVisit({ stage: CAMEL_STAGES.invited }); await watched.run();
   assert.deepEqual(watched.calls, [["before"], ["race", true]], "a saved viewing is not replayed after an interrupted first race");
   const repeat = loadVisit(); await repeat.run();
-  assert.deepEqual(repeat.calls, [["before"], ["race", false]], "repeat visits start directly without read or save");
+  assert.deepEqual(repeat.calls, [["arrival", "camel_track", true, "function"], ["before"], ["race", false]],
+    "repeat visits read the morning exchange through the caller's reader, then race without saving");
+  assert.equal(repeat.art.started, 1, "repeat visits start the race art while the morning exchange is read");
   const reunion = loadVisit(); await reunion.run({ replayIntro: true });
-  assert.deepEqual(reunion.calls, [["read", CAMEL_SCENES.replay], ["before"], ["race", false]], "Chapter 5 still reads its first reunion");
+  assert.deepEqual(reunion.calls, [["read", CAMEL_SCENES.replay], ["before"], ["race", false]], "Chapter 5 still reads its first reunion, without a second exchange");
   const reunionInterrupted = loadVisit({ readDone: false }); await reunionInterrupted.run({ replayIntro: true });
   assert.deepEqual(reunionInterrupted.calls, [["read", CAMEL_SCENES.replay]]);
   for (const options of [{ current: false }, { aborted: true }]) {
