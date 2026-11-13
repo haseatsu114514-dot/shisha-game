@@ -17,7 +17,9 @@ import { DB, displayName, portraitInfo, sceneBg, cgUrl, preload } from "../core/
 import { loadVnFonts } from "../core/vn-fonts.js";
 import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
 import { applyStats, gainAffinity, addMoney, affinityLevel, earnSceneCompletion } from "../core/stats.js";
-import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady } from "../core/ui.js";
+import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady, loadingNotice } from "../core/ui.js";
+import { withLoadingNotice } from "../core/module-loading.js";
+import { comicLoadingRequired } from "../core/loading.js";
 import { SE, playSe, playBgm, preloadBgm, currentBgm, duckBgm } from "../core/audio.js";
 import { formatHtml, visibleLength, stripTags, pausePoints } from "./text.js";
 import { playerInner } from "./inner.js";
@@ -30,7 +32,6 @@ import { buyKeepsake } from "../core/keepsakes.js";
 import { chekiShot, tarotFlip, limeExchange, purikuraShot, sceneMoment, gazeCutin } from "../core/scene-motions.js";
 import { showShishaDiagram, hideShishaDiagram } from "./shisha-diagram.js";
 import { reducedMotion } from "../core/transition-kit.js";
-import { attachLoadingComic } from "../core/loading-comic-notice.js";
 import { vnBreath } from "./breath.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
@@ -266,17 +267,28 @@ function kickAuto() {
 
 // ---------------------------------------------------------------- 再生
 
-/** 同じ背景へ続く会話でも、長い素材待ちには案内を出す。既存のreadyガードで操作を保護する。 */
+/**
+ * 同じ背景へ続く会話でも、長い素材待ちには案内を出す。既存のreadyガードで操作を保護する。
+ * プレイヤーの既定では、0.5秒を超えた待ちに作業台と同じ漫画つきのロード画面を出し、読み終えてから会話を続ける
+ * （core/ui.js の loadingNotice）。自動操作のブラウザ（既存の検査）は従来の小さな案内。
+ */
 function waitSceneAssets(task, owner = running, assets = task.assetsReady || task) {
-  let notice = null, hideComic;
+  if (comicLoadingRequired()) {
+    const notice = loadingNotice("場面を準備しています…");
+    const loaded = withLoadingNotice(Promise.resolve(assets), {
+      onShow() { if (running === owner) notice.onShow(); },
+      onHide: notice.onHide,
+    });
+    return Promise.all([task, loaded]).then(([value]) => value);
+  }
+  let notice = null;
   const timer = setTimeout(() => {
     if (running !== owner) return;
     notice = el("div.vn-loading", { role: "status", "aria-live": "polite",
       text: "場面を準備しています…", dataset: { test: "vn-loading" } });
     layers.fx.append(notice);
-    if (typeof attachLoadingComic === "function") hideComic = attachLoadingComic(notice);
   }, 500);
-  const loaded = Promise.resolve(assets).finally(() => { clearTimeout(timer); hideComic?.(); notice?.remove(); });
+  const loaded = Promise.resolve(assets).finally(() => { clearTimeout(timer); notice?.remove(); });
   // 場面転換の演出は最後まで待つが、取得・デコード済みなら読み込み表示を延長しない。
   return Promise.all([task, loaded]).then(([value]) => value);
 }
