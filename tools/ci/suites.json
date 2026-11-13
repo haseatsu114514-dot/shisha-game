@@ -183,6 +183,23 @@
       ]
     },
     {
+      "id": "craft-phone-text-browser",
+      "title": "Landscape phone craft stage text size and tap target",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "asset_sources/ui/craft-stage-20261110/stage_src.css",
+        "remake/css/craft-stage.css",
+        "remake/css/wide-craft.css",
+        "remake/test/browser/craft_phone_text.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/craft_phone_text.mjs"
+      ],
+      "chrome": "playwright"
+    },
+    {
       "id": "craft-rank-wire-browser",
       "title": "Craft rank during real sessions and cleanup",
       "kind": "browser",
