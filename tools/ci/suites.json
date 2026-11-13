@@ -3121,7 +3121,8 @@
         "data/dialogue/*samechan*.json",
         "remake/js/daily/romance.js",
         "remake/test/browser/ch1_feedback.mjs",
-        "remake/test/relationship_memories.mjs"
+        "remake/test/relationship_memories.mjs",
+        "remake/css/craft-stage.css"
       ],
       "run": [
         "node remake/test/browser/play_feedback.mjs",
