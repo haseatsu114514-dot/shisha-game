@@ -1033,14 +1033,13 @@
         },
         {
           "speaker": "samechan",
-          "face": "ventriloquism",
-          "text": "そして帰りの電車で、勇者はじめに話す順番を考えていた",
-          "voice": "korochan"
+          "face": "normal",
+          "text": "……それは、わしが言う。帰りの電車で、話す順番を考えておった"
         },
         {
           "speaker": "samechan",
-          "face": "surprise",
-          "text": "そ、それは言わんでよいと言うに！"
+          "face": "smile",
+          "text": "長い話を最後まで聞いてくれる客は、そうはおらんからの。お主を選んだのじゃ"
         },
         {
           "type": "condition",
@@ -1048,6 +1047,16 @@
           "char_id": "samechan",
           "next_true": "romance",
           "next_false": "friend"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "話の途中で、彼女はふと手を止め、トングで俺の台の炭を一つ、縁のほうへずらした。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……熱が寄っておった。話に夢中でも、客の台は見ておる。店主じゃからの"
         },
         {
           "speaker": "",
@@ -1143,8 +1152,8 @@
           },
           {
             "speaker": "samechan",
-            "face": "surprise",
-            "text": "コ、コロちゃん。試験があるとは、わしも聞いておらんぞ"
+            "face": "excited",
+            "text": "うむ、それはよい。サメ仲間には、試験がつきものじゃ"
           },
           {
             "speaker": "samechan",
@@ -1611,8 +1620,8 @@
         },
         {
           "speaker": "samechan",
-          "face": "surprise",
-          "text": "こ、コロちゃん！ 準備などしておらん、メモを見ておっただけじゃ"
+          "face": "normal",
+          "text": "……見ておったなら、隠しても仕方ないのう。メモを見ると、足が勝手に立つのじゃ"
         },
         {
           "speaker": "hajime",
@@ -1937,8 +1946,8 @@
         },
         {
           "speaker": "samechan",
-          "face": "surprise",
-          "text": "こ、コロちゃんまで納得するでない！"
+          "face": "normal",
+          "text": "……うむ。今日は、コロちゃんに言わせておく"
         },
         {
           "speaker": "samechan",
