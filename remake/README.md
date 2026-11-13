@@ -157,7 +157,14 @@ remake/
 1枚ずつ可逆と非可逆q90の小さいほう・作業台素材は長辺1280pxまで）。ゲームは一覧にある画像だけ WebP を読み、無ければ assets/ の PNG を読む。
 変換済みで元より新しい画像は作り直さないので、2回目以降は数秒で終わる。
 
-**トランジション・場面の演出**（2026-10-09〜10）: 就寝→翌朝は夜の紫が降りて、朝のDAYと残り日数のカードがめくれる。数字は表示開始から更新後のHUDと同じ値（`core/transitions.js`）。マップ→場所の移動は6つの型を `core/transition-moves.js` に持ち、既定は帰宅だけ door、ほかは pin。`?move=door` や `__remake.dev.moveStyle("door")` で切り替える。チェキ・占い・贈り物・バイトの終わり・サメちゃんとの出会い・つむぎのスケッチは `core/scene-motions.js` が窓口で、中身は場面ごとの `js/motions/<場面>.js`・`css/motions/<場面>.css`（扉の型も `motions/door.js`）。各場面に a／b の2パターンがあり、本編はオーナーが選んだ採用（`core/mg-kit.js` の `ADOPTED_VARIANT`: 扉a・チェキb・占いa・贈り物a・バイトb・サメb・スケッチb。帰宅だけ短くしたdoor、ほかはpin。2026-10-11 CI125〜127）。比べるときは `?movar=a|b`（全場面をそろえる）・`?move=pin`・`__remake.dev.motionVariant("b")`（`"auto"` で採用に戻す）。配色は紫1色（既定）／場面ごとの色（`?mopal=free`・`__remake.dev.motionPalette("free")`）。`__remake.dev.motion("cheki")` などで再生、夜明けの天気は `dawn-sun`／`dawn-cloud`／`dawn-rain`／`dawn-sick`。DAYカードの天気（晴れ・くもり・雨）は `daily/weather.js` の `weatherOf()` で、くもりは見た目だけ。会話の中では `show_cg` の `"effect": "cheki"` と `{"type": "motion", "id": "tarot"}` で呼ぶ。SKIP中と動きを減らす設定では省く。録画は `asset_sources/transitions/`。
+**トランジション・場面の演出**（2026-11-11〜13 に作り直し・TMG44〜60。方向と判定表は `remake/previews/motion-direction/`）: 10月の「画像を使わない」「紫1色」の約束はやめ、次の5つの決まりで作る。
+1. **場面の切り替えは覆わない**: 前の絵が次の絵へ直接ほどける（煙のにじみ `core/transitions.js` の `smokeCurtain`・`smokeOut`／`smokeIn`）。紫の面を挟まず、カメラの寄り・光・にじみで背景そのものを動かす。
+2. **人にまつわる演出の舞台は、その人の絵柄**: 登場カットインの背景（`img/ui/character_intros/graphic/`）の上で見せる（チェキはみんと、贈り物は贈り主、占いは占い師）。色もそこから取る。
+3. **物はコードで描かない**: 札・箱・扉・窓・タブレットなどは、ゲームにある絵か、同じ絵柄で生成した絵（`img/ui/transitions/<場面>/`・原画は `asset_sources/transitions/`）を使う。
+4. **文字は題字として組む**: 章題と同じ明朝（`Suien Name`）で大きく、または登場カットインの生成りの帯に載せる（行き先の題字・ROUND の帯・贈り物の札）。
+5. **数を絞り、山場に寄せる**: 毎日見るものは1〜2秒で静かに。時間を使うのは物語の要所と一度きりの出来事だけ。
+
+就寝→翌朝は部屋の夜と朝の絵をつなぎ、左下に日付の題字（`nightToMorning`）。マップ→場所の移動は `core/transition-moves.js`（既定は帰宅が lights、ほかは zoom。`?move=pin` などで切り替え）。場面ごとの演出は `core/scene-motions.js` が窓口で、中身は `js/motions/<場面>.js`・`css/motions/<場面>.css`。各場面の a／b（10月の型）と c（作り直した型）を持ち、本編は `core/mg-kit.js` の `ADOPTED_VARIANT`（2026-11-13: チェキ・占い・贈り物・バイト終業・サメちゃん・スケッチ・電車・飛行機と配送便・新幹線が c、扉は a）。比べるときは `?movar=a|b|c`（c の無い場面は採用の型のまま）・`__remake.dev.motionVariant("b")`（`"auto"` で採用に戻す）。a／b の配色は紫1色（既定）／場面ごとの色（`?mopal=free`）で、c は配色の切り替えを使わない。大会の会場入り（`ui.smokeWipe`）・ROUND の帯（`ui.roundCut`）・敗北の入り（`defeatFade`）・再挑戦（`retryStroke`）・回想から現在へ（`motions/moments.js` の `leafWave`）・フィナーレの混ざる煙（`mixedSmoke`）は1つの型だけ。龍の煙（`dragonSmoke`）は一枚絵の到着待ち（Issue #3413）。`__remake.dev.motion("cheki")` などで再生、夜明けの天気は `dawn-sun`／`dawn-cloud`／`dawn-rain`／`dawn-sick`。DAYカードの天気（晴れ・くもり・雨）は `daily/weather.js` の `weatherOf()` で、くもりは見た目だけ。会話の中では `show_cg` の `"effect": "cheki"` と `{"type": "motion", "id": "tarot"}` で呼ぶ。SKIP中と動きを減らす設定では省く。録画は `asset_sources/transitions/`。
 
 **LIME交換**（#931）: 連絡先を交換した直後に、はじめのスマホの画面で「友だち追加→『追加』をタップ→友だち一覧に1行増える」を見せる（`js/motions/lime.js`・`css/motions/lime.css`）。端末・緑・アカウント名はゲーム内のLIMEと同じで、友だち一覧は演出の中だけの画面。a はアイコンが一覧へ飛んで収まる、b は画面ごと横にスライドする（採用待ち。既定は a、`?movar=b` で比べる）。`__remake.dev.motion("lime")`・`"lime-adam"`・`"lime-minto-private"`（栞の私用アカウント）で再生。SKIP中も見せ、動きを減らす設定では追加し終えた画面だけを見せる（#833）。
 

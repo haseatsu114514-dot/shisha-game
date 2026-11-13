@@ -86,7 +86,7 @@ async function loadUi({ loadImage = image => image.onload?.(), imageSize = 0, no
     "scene-art.js": { renderSceneArt: () => {}, sceneArtUrls: () => [] },
     "weather.js": { rainScene: () => {}, weatherSkyTone: () => "", weatherViewKind: () => "", renderWeatherLayer: () => {} },
     "shop-haze.js": { syncShopHaze: () => {} },
-    "transitions.js": { createSceneCurtain: () => {}, nightToMorning: () => {}, isCovering: () => false, takeSceneArrival: () => null, takeParkedCover: () => null },
+    "transitions.js": { createSceneCurtain: () => {}, nightToMorning: () => {}, isCovering: () => false, takeSceneArrival: () => null, takeParkedCover: () => null, smokeArt: () => ({}), smokeIn: async () => {}, smokeOut: async () => {} },
     "store-logos.js": { allStoreLogoUrls: () => STORE_URLS },
     "chapter-title-art.js": { chapterTitleArt: () => "img/ui/chapter_title_ch1.webp" },
     "ui-theme.js": { uiThemeFrame: () => "img/ui/frame.webp" },

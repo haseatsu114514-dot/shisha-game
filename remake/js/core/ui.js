@@ -12,7 +12,7 @@ import { nextStepProgress } from "./stat-progress.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
 import { syncShopHaze } from "./shop-haze.js";
-import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival, takeParkedCover } from "./transitions.js";
+import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival, takeParkedCover, smokeArt, smokeIn, smokeOut } from "./transitions.js";
 import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
 import { uiThemeFrame } from "./ui-theme.js";
@@ -362,19 +362,39 @@ export function clearScreen() {
 
 // ---------------------------------------------------------------- 煙ワイプ（遷移の共通部品・master_spec #20）
 
-/** 画面を白煙で覆い、覆った瞬間に mid() を実行してから晴らす */
+/**
+ * 画面を煙で覆い、覆った瞬間に mid() を実行してから晴らす（大会の会場入り・タイトルから始める時）。
+ * 作り直し（TMG60）: ぼかした丸の重なりをやめ、場面の切り替えと同じ煙のにじみ（smokeCurtain の型）を濃く長くした。
+ * 煙が床から昇って画面を覆い（約0.7秒）、覆っている間に mid()、そのあとゆっくり上へほどける（約1.2秒）。
+ * 覆っている間は #wipe に cover を付ける（覆いの有無を見る処理のため）。
+ */
 export async function smokeWipe(mid, { color = "light" } = {}) {
   const w = layers.wipe;
   w.dataset.color = color;
   w.classList.remove("clear");
-  w.classList.add("cover");
+  w.classList.add("cover", "smoke");
+  const veil = el("div.wipe-smoke");
+  const haze = el("div.wipe-haze", { style: { backgroundImage: `url("${smokeArt().haze}")` } });
+  w.append(veil, haze);
+  const rise = (ms) => haze.animate([{ top: "125%", opacity: 0 }, { top: "23%", opacity: 0.6, offset: 0.5 }, { top: "-75%", opacity: 0 }], { duration: ms, easing: "cubic-bezier(.45,0,.55,1)" });
   SE.whoosh();
-  await sleep(620);
-  if (mid) await mid();
-  await nextFrame();
-  w.classList.add("clear");
-  await sleep(700);
-  w.classList.remove("cover", "clear");
+  try {
+    // 1. 床から煙が昇って覆う（上下を返して、逆向きのにじみを下から上へ）
+    veil.style.transform = "scaleY(-1)";
+    rise(700);
+    await smokeIn(veil, 700);
+    if (mid) await mid();
+    await nextFrame(); await nextFrame();
+    // 2. ゆっくり上へほどけて晴れる
+    veil.getAnimations().forEach((a) => a.cancel());
+    veil.style.transform = "";
+    rise(1200);
+    await smokeOut(veil, 1200);
+  } finally {
+    veil.remove();
+    haze.remove();
+    w.classList.remove("cover", "clear", "smoke");
+  }
 }
 
 export async function fadeBlack(mid, ms = 500) {
@@ -778,7 +798,10 @@ export async function chapterTitle({ no, name, read, sub }) {
 /** DAYカード（日付の区切り）。クリックを吸い込み、読み終わるまで待つ。weather は小見出しの後ろに出す天気（sun／cloud／rain） */
 export async function dayCard(title, sub, { ms = 1900, weather = null, forecast = null } = {}) {
   const wx = weather ? (await import("../motions/dawn-weather.js").catch(() => null))?.weatherBadge(weather, "dc-weather", "currentColor") : null;
-  const card = el("div.day-card", [el("div.dc-title", { text: title }), sub ? el("div.dc-sub", [sub, wx?.badge]) : null]);
+  // 就寝→翌朝の日付の題字（tr-dawn-card）と同じ組み方（TMG60）: 左下に「DAY」の小さな字と大きな数字、細い線、小見出し
+  const m = /^([A-Z]+)\s+(\d+)$/.exec(title);
+  const head = m ? [el("small", { text: m[1] }), el("b", { text: m[2] })] : [el("b.word", { text: title })];
+  const card = el("div.day-card", [el("div.dc-title", head), el("i.dc-rule"), sub ? el("div.dc-sub", [sub, wx?.badge]) : null]);
   if (forecast) card.append(el("small.dc-sub", { text: `明日は${forecast}`, dataset: { test: "day-forecast" } }));
   layers.fx.append(card);
   SE.card();
