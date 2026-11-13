@@ -21,3 +21,6 @@
 @keyframes ichi-say-in { from { opacity: 0; transform: translate(-50%, 6px); } to { opacity: 1; transform: translateX(-50%); } }
 @keyframes ichi-say-in-side { from { opacity: 0; transform: translate(8px, -50%); } to { opacity: 1; transform: translateY(-50%); } }
 @media (prefers-reduced-motion: reduce) { .ichi-say, .ichi-say.is-anchored { animation: none; } }
+/* 遊び方・説明・やめる確認の札を開いている間は、相手の一言を出さない（#3557。z-index 11 の一言が、読む札の見出しに重なっていた）。
+   審査・勝敗の札（reveal・score・end）の上には、これまでどおり出す。 */
+.ichi-game:has(> .ichi-sheet:is([data-kind="help"], [data-kind="info"], [data-kind="quit"]):not([hidden])) .ichi-say { visibility: hidden; }

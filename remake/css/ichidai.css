@@ -1113,3 +1113,8 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-game:not([data-skin]) .ichi-puff-card.is-up strong { color: #a8321a; }
 .ichi-game:not([data-skin]) .ichi-puff-card.is-down strong { color: #17546e; }
 @media (prefers-reduced-motion: reduce) { .ichi-game:not([data-skin]) .ichi-card.r-R::after, .ichi-game:not([data-skin]) .ichi-card.r-SR::after { animation: none; transform: none; } }
+
+/* 試遊ページのメニュー: ボタンの文字を真ん中に（「すぐ対戦する」が左に寄って見えていた・#3557） */
+.ichi-menu .btn { align-items: center; justify-content: center; text-align: center; }
+/* 終局（勝ち負けの札）では次の手の案内が無いので、右上の案内の枠ごと出さない（中身の無い暗い四角が残っていた・#3557） */
+.ichi-game[data-phase="end"] .ichi-guide:not(:has(:is(b, span, li, p):not(:empty))) { display: none; }
