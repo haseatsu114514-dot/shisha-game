@@ -1245,3 +1245,36 @@ html:root[data-density="phone"] body:not(:root) .axe-bar-menu[data-view="gear"] 
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-handle { top: auto; bottom: -41px; cursor: pointer; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-green { display: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-track { background: linear-gradient(0deg, #172323, #2b3a36); }
+
+/* 2026-11-13 手応えレビュー（桜井政博スキル準拠）の反映 ---------------------------------------- */
+/* 指摘2: 放した後も手を見せる（振り抜き→フォロースルー）。姿勢と消え方は axe.js の tick が描く（ゲームの時計で動く） */
+.axe-game[data-input-mode="tap-pull"].axe-first-person[data-phase="flight"][data-actor="player"] .axe-fps-hands { display: inline; }
+/* 指摘3: 弾き損ねの理由の札。失敗を責めない琥珀色で短く */
+.axe-declare[data-kind="flick"] { top: 80%; border-color: #e8b86e; background: rgba(34,22,10,.88); animation-duration: .7s; }
+.axe-declare[data-kind="flick"] strong { color: #ffd08a; }
+.axe-declare[data-kind="flick"] span { color: #f6e2bf; }
+/* 指摘4: 自分が弾いた強さの振り返り（刺さる範囲＝茶、緑の帯、この投の印） */
+.axe-power-review { display: grid; gap: 4px; margin: 4px 0 2px; grid-column: 1 / -1; }
+.axe-power-review[hidden] { display: none; }
+.axe-power-review-bar { position: relative; display: block; height: 10px; border-radius: 5px; background: #2a2622; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+.axe-power-review-bar i { position: absolute; top: 0; bottom: 0; }
+.axe-power-review-stick { border-radius: 5px; background: #8a6a45; }
+.axe-power-review-sweet { background: #7cbea1; }
+.axe-power-review-mark { top: -4px !important; bottom: -4px !important; width: 4px; margin-left: -2px; border-radius: 2px; background: #fff5d9; box-shadow: 0 0 0 1.5px #160f0a; }
+.axe-power-review[data-zone="drop"] .axe-power-review-mark { background: #f0a58b; }
+.axe-power-review-text { color: #f1ddbb; font-size: 13px; font-weight: 700; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+.axe-power-review[data-zone="sweet"] .axe-power-review-text { color: #b9f2b8; }
+.axe-power-review[data-zone="drop"] .axe-power-review-text { color: #f0b3a1; }
+.axe-in-stage .axe-power-review-text { font-size: var(--axe-text); }
+.axe-in-stage .axe-power-review-bar { height: 14px; }
+.axe-zoom figcaption .axe-zoom-power { color: #d9cfb7; }
+/* 指摘12: 次のランクまでの残り（合計点の脇に小さく）。集計のランクは数え終わってから押す */
+.axe-total-next { align-self: center; padding: 1px 7px; border-radius: 4px; background: rgba(232,184,110,.16); color: #f3cf92; font-size: 12px; font-style: normal; font-weight: 800; }
+.axe-total-next[hidden] { display: none; }
+.axe-in-stage .axe-total-next { font-size: var(--axe-text); }
+.axe-game[data-phase="summary"] .axe-rank[data-stamped="false"] strong { visibility: hidden; }
+.axe-game[data-phase="summary"] .axe-rank[data-stamped="true"] strong { animation: axe-stamp .42s cubic-bezier(.2,.8,.2,1) both; }
+/* 指摘13: 弾き方の小さな見本。下から上へ2回だけ動いて消える（動きを減らす設定では矢印が止まったまま見える） */
+.axe-flick-hint-motion { animation: axe-flick-hint .4s ease-out 2 both; }
+@keyframes axe-flick-hint { 0% { transform: translateY(18px); opacity: 0; } 25% { opacity: 1; } 80% { transform: translateY(-26px); opacity: 1; } 100% { transform: translateY(-34px); opacity: 0; } }
+.axe-game[data-reduced-motion="true"] .axe-flick-hint-motion { opacity: 1; }
