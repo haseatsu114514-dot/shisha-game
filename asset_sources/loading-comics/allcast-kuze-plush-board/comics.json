@@ -1,0 +1,106 @@
+{
+  "id": "kuze-plush-board",
+  "title": "幹部会議",
+  "cast": [
+    "kuze"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "幹部を集めたよ。",
+    "何の幹部…？",
+    "全員ぬいぐるみ。"
+  ],
+  "first_speaker": "kuze",
+  "panel1": "薄暗い綾取の店。丸テーブルの奥は暗く、背の高い影がいくつも並んで座っているように見える。右の綾取が片側だけ口角を上げ、指を組んで「幹部を集めたよ。」（この吹き出しを左上に高く置き、尻尾を綾取へ）。左のはじめが緊張して「何の幹部…？」（右下）。",
+  "panel2": "明かりがついた同じ店内、同じ位置。丸テーブルの席に座っているのは、小さなサングラスをかけたクマ・ウサギ・ペンギンのぬいぐるみと、大きな観葉植物。右の綾取はにこにこしてノートを開いている。左のはじめが「全員ぬいぐるみ。」。ぬいぐるみの幹部たちはコマの中央に大きく。",
+  "caption": "綾取は、自分の店の噂を大げさに盛るのが好きな店主。",
+  "type": "看板倒れ（隠し事バレ）",
+  "note": "正本の「大げさな噂は自分で流す」「東京を裏で動かした組織、本日で解散」の冗談から。影は暗がりで、煙は描かない。",
+  "num": 11,
+  "source": "allcast-kuze-plush-board-c.png",
+  "source_sha256": "6546cc1db8e25c1cc0a676d58e290f010c67d26956d9edcf9aae659511cfe1dd",
+  "generator": "built-in image_gen",
+  "prompt": "prompt-v3.txt",
+  "exact_prompt": "exact-prompt.txt",
+  "references": {
+    "template": {
+      "path": "output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+      "size": 7055,
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "dimensions": [
+        1536,
+        1024
+      ]
+    },
+    "hajime": {
+      "path": "hajime-sheet/normal.png",
+      "size": 402899,
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "dimensions": [
+        896,
+        1200
+      ]
+    },
+    "kuze": {
+      "path": "kuze-sheet/kuze-normal.png",
+      "size": 479307,
+      "sha256": "c39ee51522b8082b831f0814959cc071b5104c808dc7452d5ec9b5890dba68ee",
+      "dimensions": [
+        896,
+        1200
+      ]
+    },
+    "early_adopted_style": {
+      "path": "ryuji-sheet/loading/pc.png",
+      "size": 642944,
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "dimensions": [
+        1188,
+        668
+      ]
+    }
+  },
+  "qa": {
+    "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+    "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+    "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+    "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+    "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+    "gag": "v1 extra background human silhouettes; v2 fixed silhouettes; v3 moved reply bubble up and resolved narrow lower margin.",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+    "in_game_qa": "not run",
+    "adoption": "not adopted/not registered"
+  },
+  "canonical_original": "asset_sources/loading-comics/allcast-kuze-plush-board/allcast-kuze-plush-board-c.png",
+  "status": "candidate-not-adopted-not-registered",
+  "registered": false,
+  "adopted": false,
+  "originals": [
+    {
+      "file": "allcast-kuze-plush-board-a.png",
+      "sha256": "38200c9ddccf28c174be7fd51682c4d0f6d0420b265407ded050c3f2ac6434fc",
+      "bytes": 1710938,
+      "original_version": "source-v1.png",
+      "review_candidate": false
+    },
+    {
+      "file": "allcast-kuze-plush-board-b.png",
+      "sha256": "66353f90bc0afeb562b17d13e6a07c2bb342fb852bf9c899ea001b7b4458c6f9",
+      "bytes": 1694958,
+      "original_version": "source-v2.png",
+      "review_candidate": false
+    },
+    {
+      "file": "allcast-kuze-plush-board-c.png",
+      "sha256": "6546cc1db8e25c1cc0a676d58e290f010c67d26956d9edcf9aae659511cfe1dd",
+      "bytes": 1902543,
+      "original_version": "source-v3.png",
+      "review_candidate": true
+    }
+  ],
+  "handoff": "Original PNGs copied byte-for-byte; no resize/crop/re-encode. Reference metadata only, no reference image bytes."
+}

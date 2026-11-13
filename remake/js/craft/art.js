@@ -69,13 +69,24 @@ export function mixColor(mix) {
  */
 // ボウルの種類 → 素材。rim=口（楕円）の上端〜中心までの高さ比（素材を実測）。
 // 素焼きは「詰めた」差分が無いので、空の器に葉の色の楕円を重ねる
+// 2026-11-11（#3327）: 素焼き・80beat を脚のある絵に差し替え、贈り物の専用ハガルを足した。
+// どれもひより（中身の幅 812px を w 150）と同じ大きさ・角度で描いてあるので、w は中身の幅の比、rim は口の楕円のいちばん幅の広い行
+const goblet = (file, contentW, rim) => ({ empty: file, packed: null, w: Math.round(150 * contentW / 812), rim,
+  packRim: { fluffy: rim, normal: rim + .01, firm: rim + .02 } });
 const BOWL_ART = {
   silicone_bowl: { empty: "bowl_empty_silicone.png", packed: (p) => `bowl_packed_${p}.png`, w: 116, rim: 0.12 },
-  hagal_80beat: { empty: "bowl_empty_phunnel.png", packed: (p) => `bowl_packed_phunnel_${p}.png`, w: 150, rim: 0.27 },
-  suyaki_hagal: { empty: "bowl_empty_clay.png", packed: null, w: 150, rim: 0.24 },
+  hagal_80beat: { empty: "bowl_empty_phunnel.png", packed: (p) => `bowl_packed_phunnel_${p}.png`, w: 137, rim: 0.16 },
+  suyaki_hagal: goblet("bowl_empty_clay.png", 773, .21),
   suyaki_hiyori: { empty: "bowl_empty_hiyori.png", packed: null, w: 150, rim: 0.20,
     packRim: { fluffy: .20, normal: .21, firm: .22 } },
 };
+// 贈り物の専用ハガル（suyaki_<贈り主> → bowl_empty_<贈り主>.png）。[中身の幅, rim]
+const BOND_HAGALS = {
+  sumi: [784, .23], naru: [799, .23], adam: [820, .19], rio: [813, .21], tsumugi: [801, .26], minto: [775, .23],
+  samechan: [795, .21], ageha: [816, .22], mashiro: [817, .20], kumicho: [884, .20], rei: [815, .20], saku: [813, .20],
+  noor: [815, .21], steve: [805, .20], volk: [812, .20], master_hookah: [818, .21], da_silva: [816, .22], sheikh: [820, .21],
+};
+for (const [who, [contentW, rim]] of Object.entries(BOND_HAGALS)) BOWL_ART[`suyaki_${who}`] = goblet(`bowl_empty_${who}.png`, contentW, rim);
 const PACK_ART = { fluffy: "airy", normal: "normal", firm: "firm" };
 
 /** 今選んでいる器と詰め方だけを先読みする。 */
@@ -129,7 +140,7 @@ const RIG = { baseW: 190, stemW: 25, stemShow: 112, stemInside: 30, trayW: 150 }
  */
 export function buildRig() {
   const coalName = (charcoal, st) => (charcoal === "cube_charcoal" ? `coal_${st}.png` : `coal_flat_${st}.png`);
-  // 贈られた専用ハガルは equipment.json の art（素焼き）で描き、染み付いた香りの色をうっすら縁に乗せる
+  // 贈られた専用ハガルはその人の器の絵で描き（無ければ equipment.json の art＝素焼き）、染み付いた香りの色をうっすら縁に乗せる
   const bowlSpec = (id) => BOWL_ART[id] || BOWL_ART[DB.equipById[id]?.art] || BOWL_ART.silicone_bowl;
   const root = el("div.rig");
   const smoke = el("div.rig-smoke");

@@ -1,6 +1,6 @@
 // 場面ごとの一度きりのモーショングラフィックス（CI107〜CI109）。中身は remake/js/motions/ の場面ごとのファイル。
 // チェキ（PEPPERMINT）／占いのタロット／締めくくりの贈り物／バイトの終わり／サメちゃんとの出会い／つむぎのスケッチ。
-// 各場面に a／b の2パターンがあり、本編は場面ごとの採用（mg-kit.js の ADOPTED_VARIANT）。比べるときは ?movar=b か __remake.dev.motionVariant("b")、配色は紫1色／場面ごとの色（?mopal=free）。
+// 各場面に a／b の2パターン（作り直した場面は c も）があり、本編は場面ごとの採用（mg-kit.js の ADOPTED_VARIANT）。比べるときは ?movar=b か __remake.dev.motionVariant("b")、配色は紫1色／場面ごとの色（?mopal=free）。
 // 動きを減らす設定では省く（背景を替える mid() だけは呼ぶ）。SKIP中は省かず最後まで見せる（#1081 H05・一度きりの演出を飛ばして見逃さない）。
 import { state, config } from "./state.js";
 import { DB } from "./data.js";
@@ -28,6 +28,9 @@ const lime = () => import("../motions/lime.js");
 const train = () => import("../motions/train.js");
 const shinkansen = () => import("../motions/shinkansen.js");
 const purikura = () => import("../motions/purikura.js");
+const plane = () => import("../motions/plane.js");
+const moments = () => import("../motions/moments.js");
+const gaze = () => import("../motions/gaze.js");
 
 // 連絡先の交換は一度きり（交換済みの記録が先に付く）。SKIP中でも見せ、動きを減らす設定では
 // 動かないカードで見せる。省くと二度と見られない（#833）。
@@ -49,7 +52,7 @@ const omitMotion = () => reducedMotion();
 const variant = async (scene, load) => {
   const mod = await withLoadingNotice(load(), { ...loadingNotice("演出を準備しています…"), delayMs: 500 })
     .catch((e) => { console.error(e); return null; });
-  return mod && (motionVariant(scene) === "b" ? mod.b : mod.a);
+  return mod && (mod[motionVariant(scene)] || mod.a);
 };
 
 /** placeCg(): 写真が仕上がった瞬間に会話のCGを同じ位置へ置く（省いたときは会話側がふつうに置く） */
@@ -87,7 +90,8 @@ export async function shiftClose() {
   const short = shortenSeen("shift");
   const mod = await shift().catch((e) => { console.error(e); return null; });
   if (!mod || state !== owner) return;
-  const run = short ? mod.brief : (motionVariant("shift") === "b" ? mod.b : mod.a);
+  const v = motionVariant("shift");
+  const run = short ? (v === "c" ? () => mod.c({ brief: true }) : mod.brief) : (mod[v] || mod.a);
   if (run) await run();
   if (state === owner) markSeen("shift"); // 見せ終えてから記録
 }
@@ -99,20 +103,34 @@ export async function sharkSwim(mid) {
   else await mid?.();
 }
 
-/** 電車に乗る（Issue #891）。mid(): 車内の絵が覆っている間に次の背景へ替える。tone: "day"|"night"（省略で今の時間帯） */
-export async function trainRide(mid, opts = {}) {
-  // テストの高速送りでも省く（engine の vnTest は window.__remake 経由で見る。循環 import を避ける）
-  const mod = omitMotion() || window.__remake?.vnTest?.turbo ? null : await train().catch((e) => { console.error(e); return null; });
-  if (mod) await mod.a(mid, opts);
+/** 乗り物の演出の共通の入口。テストの高速送り・動きを減らす設定では省いて mid() だけ（engine の vnTest は window.__remake 経由で見る。循環 import を避ける） */
+async function ride(load, mid, opts, scene = null) {
+  if (omitMotion() || window.__remake?.vnTest?.turbo) { await mid?.(); return; }
+  const mod = await load().catch((e) => { console.error(e); return null; });
+  const run = mod && ((scene && mod[motionVariant(scene)]) || mod.a);
+  if (run) await run(mid, opts);
   else await mid?.();
+}
+
+/** 電車に乗る（Issue #891・作り直し TMG54）。mid(): 車両が覆っている間に次の背景へ替える。tone: "day"|"night"（省略で今の時間帯） */
+export async function trainRide(mid, opts = {}) {
+  await ride(train, mid, opts, "train");
 }
 
 /** 新幹線に乗る（Issue #1059）。mid(): 車窓が覆っている間に次の背景へ替える。
  * opts.from/to: "home"|"tokyo"。第2章の隣町行き電車(#891 trainRide)とは別の演出。 */
 export async function shinkansenRide(mid, opts = {}) {
-  const mod = omitMotion() || window.__remake?.vnTest?.turbo ? null : await shinkansen().catch((e) => { console.error(e); return null; });
-  if (mod) await mod.a(mid, opts);
-  else await mid?.();
+  await ride(shinkansen, mid, opts, "shinkansen");
+}
+
+/** 飛行機に乗る（#2688 A4・作り直し TMG57）。機内の窓の外の雲海が時差の色へ移り、行き先の題字のあと窓へ寄って次の場面になる。opts.to: "dubai" | "home" */
+export async function planeRide(mid, opts = {}) {
+  await ride(plane, mid, { ...opts, kind: "plane" }, "plane");
+}
+
+/** 配送便（車）に乗る（#2688 A4・TMG57）。ふつうの切り替えと行き先の題字だけ（車窓の演出はやめた）。opts.to: "tokyo" | "town" */
+export async function vanRide(mid, opts = {}) {
+  await ride(plane, mid, { ...opts, kind: "van" }, "plane");
 }
 
 /** mid(): 覆っている間に背景を替える。bgUrl はその背景の絵（線画の元） */
@@ -120,4 +138,33 @@ export async function sketchIn(mid, bgUrl) {
   const run = omitMotion() || !bgUrl ? null : await variant("sketch", sketch);
   if (run) await run(mid, bgUrl);
   else await mid?.();
+}
+
+/**
+ * 章の要所の一度きりの演出（motions/moments.js・#2688 A3・A5・A6・A8）。name は moments.js の関数名、args はその引数。
+ * 動きを減らす設定・高速送りの判断は moments.js 側。読み込めなかったときは、引数の関数（覆っている間の mid）だけ行う。
+ */
+export async function sceneMoment(name, ...args) {
+  const owner = state;
+  const mod = await withLoadingNotice(moments(), { ...loadingNotice("演出を準備しています…"), delayMs: 500 })
+    .catch((e) => { console.error(e); return null; });
+  if (state !== owner) return null; // 読み込み中のLOADから、前のセーブの演出を始めない
+  const run = mod?.[name];
+  if (run) return run(...args);
+  const mid = args.find((arg) => typeof arg === "function");
+  if (mid) await mid();
+  return null;
+}
+
+/**
+ * 修羅場の「視線」（motions/gaze.js）。その場にいる恋人たちの目元の帯が左右から差し込まれる。
+ * 会話の {"type": "motion", "id": "gaze"} から呼ぶ（"brief": true でプチ修羅場の短い版）。cast はその場にいる恋人（ID か { id, remote }）。
+ * 動きを減らす設定・高速送りの判断は gaze.js 側。読み込めなかったときは何もせず先へ進む。
+ */
+export async function gazeCutin(cast = [], options = {}) {
+  const owner = state;
+  const mod = await withLoadingNotice(gaze(), { ...loadingNotice("演出を準備しています…"), delayMs: 500 })
+    .catch((e) => { console.error(e); return null; });
+  if (state !== owner) return; // 読み込み中のLOADから、前のセーブの演出を始めない
+  await mod?.gaze(cast, options);
 }

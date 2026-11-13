@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import * as ch2 from "../js/chapters/ch2-tournament-state.js";
 import * as ch3 from "../js/chapters/ch3-tournament-state.js";
+import { initialBaseVotes } from "../js/chapters/tournament-base-votes.js";
+import { tournamentStandings } from "../js/chapters/tournament-standings.js";
 
 const freeze = value => {
   if (value && typeof value === "object") {
@@ -46,5 +48,8 @@ for (const chapter of [ch2, ch3]) {
   assert.deepEqual(chapter.standings(p), expected, "呼出しごとに独立した結果を返す");
 }
 assert.deepEqual(ch2.CONTESTANTS, ["hajime", "ageha", "kumicho", "rei"]);
-assert.deepEqual(ch3.CONTESTANTS, ["hajime", "kuze", "steve", "volk"]);
+assert.deepEqual(ch3.CONTESTANTS, ["hajime", "saku", "steve", "volk"]);
+const many = Array.from({ length: 31 }, (_, index) => `contestant_${index}`);
+assert(tournamentStandings({ votes: {}, baseVotes: initialBaseVotes(many) }, many, []).every(row => row.points === 1),
+  "出場者が審査員の30点を超えても基礎票で最低1票を保つ");
 console.log("tournament_standings: ok (chapter 2/3)");

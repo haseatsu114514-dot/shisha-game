@@ -8,8 +8,8 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../js/', import.meta.url));
 const sourceRoot = process.env.HIYORI_SOURCE_ROOT || root;
 const supportRoot = process.env.HIYORI_SUPPORT_ROOT || root;
-const realPaths = ['core/util.js','core/axe-bar-discovery.js','daily/hiyori.js','daily/spot-encounters.js','core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
-const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rin','ch1_bonds','samechan','hiyori','lover_events','cinema','remake_ch1','ch1_spots'];
+const realPaths = ['core/util.js','core/axe-bar-discovery.js','daily/hiyori.js','daily/spot-encounters.js','core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
+const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rio','ch1_bonds','samechan','hiyori','lover_events','cinema','remake_ch1','ch1_spots'];
 const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))));
 const clone = value => JSON.parse(JSON.stringify(value));
 async function fixture() {
@@ -19,6 +19,8 @@ async function fixture() {
   const db = { dialogues: Object.fromEntries(data.flatMap(d => d.dialogues || []).map(d => [d.dialogue_id,d])), hiyori: data[8], samechan: data[7], equipById: {}, flavorById: {}, characters: {} };
   const context = vm.createContext({ console, AbortController, setTimeout: fn => { timers.set(++serial,fn); return serial; }, clearTimeout: id => timers.delete(id), localStorage: { getItem: k => memory.get(k) ?? null, setItem: (k,v) => memory.set(k,v), removeItem: k => memory.delete(k) } });
   const known = {
+    // 占い師（daily/fortune-schedule.js）: この試験では現れない
+    fortuneHere: () => false, fortunePosition: () => ({ x: 0, y: 0, area: '' }),
     on: () => () => {}, hiyoriAxeAffordable: () => false, playHiyoriAxeSequence: async () => false, playAxeBarRumor: async () => false, MAX_MONEY: 999999, TOURNAMENT_DAY: 14, DB: db, callName: String,
     emit: (type,payload) => events.push({type,payload}),
     
@@ -50,7 +52,7 @@ async function fixture() {
   await entry.evaluate();
   const ns = p => modules.get(p).namespace;
   const core=ns('core/state.js'), stats=ns('core/stats.js');
-  const fresh=() => { const s=core.newGame(); Object.assign(s,{phase:'daily',day:8,slot:0,seed:4}); Object.assign(s.met,{hiyori:true,naru:true,adam:true,minto:true}); Object.assign(s.flags,{_hiyori_meeting_done:true,_hiyori_sumi_message_done:true,_hiyori_message_delivered:true,_hiyori_cracks_done:true}); return s; };
+  const fresh=() => { const s=core.newGame(); Object.assign(s,{phase:'daily',day:8,slot:0,seed:4}); Object.assign(s.met,{hiyori:true,naru:true,adam:true,minto:true}); Object.assign(s.flags,{_hiyori_meeting_done:true,_hiyori_sumi_message_done:true,_hiyori_message_delivered:true,_hiyori_cracks_done:true,_hiyori_clockout_done:true}); return s; };
   fresh();
   return { core, stats, fresh, db, plays, events, memory, stages: ns('core/affinity-stages.js'), spots: ns('daily/spots.js'), hiyori: ns('daily/hiyori.js'), util: ns('core/util.js'), bonds: ns('daily/bonds.js'), samechan: ns('daily/samechan.js'), romance: ns('daily/romance.js'), sharkBond: ns('daily/samechan-bonds.js'), setRain: value => rainy=value, setPlay: fn => playImpl=fn,
     tick: () => { for (const [id,fn] of [...timers]) { timers.delete(id); fn(); } },
@@ -123,6 +125,8 @@ await check('first meeting, followup, cafe introduction, question and missing re
 await check('samechan and C.STATION repeat classification preserves pending intros and special events',async f=>{
   const s=f.core.state;s.chapter=2;s.met.samechan=true;s.story.samechan=1;
   const shark=f.spots.allSpots().find(p=>p.kind==='samechan');assert(shark);
+  // みんとの開店祝い（REL03）は一度きりの話。読むまでは短い通常来店として扱わない（ひよりの相席を重ねない）。
+  if(s.met.minto){assert.equal(f.spots.shortNormalVisit(shark),false);s.flags._spot_seen_samechan_shop_minto_gift=true;}
   assert.equal(f.spots.shortNormalVisit(shark),true);
   s.flags._samechan_quiet_seat_done=true;assert.equal(f.spots.shortNormalVisit(shark),false);
   s.flags._samechan_cinema_introduced=true;assert.equal(f.spots.shortNormalVisit(shark),true);
@@ -184,6 +188,21 @@ await check('repeat pool rotates four scenes; double entry and deferred completi
   for(let n=1;n<4;n++){s.day++;assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),true);}
   assert.deepEqual(f.plays.map(p=>p[0]),[0,1,2,3].map(n=>`hiyori_shop_repeat_${n}`));
   assert.equal(s.flags._hiyori_repeat_count,4);assert(s.affinity.hiyori>=earned);
+});
+await check('after tonari return, the charm visit plays once and repeats resume',async f=>{
+  const s=f.core.state,p=f.spots.spotById('naru'),story=s.story.hiyori||0;
+  s.flags._hiyori_tonari_return_done=true;
+  f.setPlay(async()=>done);
+  assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),true);
+  assert.equal(f.plays.at(-1)[0],'hiyori_shop_charm');
+  assert.equal(s.flags._hiyori_charm_done,true);
+  assert.equal(s.flags._hiyori_repeat_count,undefined);
+  assert.equal(s.story.hiyori||0,story);
+  s.day++;delete s.flags._hiyori_encounter_day;
+  assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),true);
+  assert.equal(f.plays.at(-1)[0],'hiyori_shop_repeat_0');
+  assert.equal(s.flags._hiyori_repeat_count,1);
+  assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),false);
 });
 await check('multiple host repeats and rain use the same existing scripts in preview and actual visit',async f=>{
   const s=f.core.state,p=host(f,'naru',{read:3,points:20});

@@ -1,56 +1,82 @@
 // 起動: ステージの拡縮 → データ読込 → タイトル。
+import { installNoZoom } from "./core/no-zoom.js";
+import { installDoubleTapGuard } from "./core/double-tap-guard.js";
 import { TOURNAMENT_DAY } from "./core/rules.js";
 import { $, sleep } from "./core/util.js";
-import { loadAll, loadDeferredDialogues, loadCinemaDialogue, loadTournamentCraftDialogue, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
+import { initStageFit } from "./core/stage-fit.js";
+import { initCraftStage } from "./craft/stage-layout.js";
+import { initIchidaiSwitch } from "./daily/ichidai-table.js";
+import { loadAll, loadDeferredDialogues, DB, bgUrl } from "./core/data.js";
 import { loadVnFonts } from "./core/vn-fonts.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
-import { loadConfig, state, load, consumeResumeOnBoot } from "./core/state.js";
-import { unlockAudio } from "./core/audio.js";
+import { loadConfig, saveConfig, state, load, peekSave, consumeResumeOnBoot, tickPlayTime } from "./core/state.js";
+import { unlockAudio, preloadBgm } from "./core/audio.js";
 import { applyUiTheme } from "./core/ui-theme.js";
+import { initLook, migrateLook, normalizeLook } from "./core/look.js";
+import { installLooks } from "./looks/index.js";
+import { installRotateGuard } from "./core/rotate-guard.js";
 import { imgFileUrl } from "./core/img-file.js";
-import { withLoading } from "./core/loading.js";
-import { vnTest, enableSeenLinePersistence } from "./vn/engine.js";
+import { warmInBackground } from "./core/loading-prefetch.js";
+import { withLoading, comicLoadingRequired } from "./core/loading.js";
+import { gameLoadingOptions } from "./core/loading-context.js";
+import { vnTest, enableSeenLinePersistence, tapAdvance } from "./vn/engine.js";
+import { initSideArea } from "./core/side-area.js";
 import { createDevInspector } from "./core/dev-inspector.js";
 import { createEventPreview } from "./core/dev-event-preview.js";
 import { createIsolatedEventPlayer } from "./core/dev-isolated-player.js";
 import { craftTest } from "./craft/session.js";
 import { showTitle } from "./scenes/title.js";
 import { prepareTitleArt } from "./scenes/title-art.js";
-import { isNormalTitleForced } from "./scenes/title-layout.js";
-import { initGameLayout } from "./scenes/game-layout.js";
 import { resumeGame } from "./chapters/ch1.js";
 import { setGrowthPreview, growthEnabled, gainExp, ensureGrowth, openGrowthBoard } from "./core/growth.js";
+installNoZoom(); // ダブルタップによる拡大を止める（#2826。ピンチは禁止しない）
+installDoubleTapGuard(); // ダブルタップ拡大の保険（#2852）。no-zoom が入っていれば __suienNoZoom を見て自動で何もしない
 enableSeenLinePersistence(); // 既読SKIPの記録は本編でだけ端末に残す
+// デバッグ用の道具（URL に ?debug=1 で左下に「DBG」・?debug=0 で消す。速さ・シーシャ作りの自動など）。
+// リリース前に、この1行と remake/js/dev/ のフォルダを消す（remake/README.md「デバッグ用の道具」）
+try { const q = new URLSearchParams(location.search).get("debug"); if (q !== null) localStorage.setItem("suien_debug", q === "1" ? "1" : "0"); if (localStorage.getItem("suien_debug") === "1") import("./dev/debug-panel.js").then(m => m.mountDebugPanel()).catch(e => console.error(e)); } catch {}
 
-function fitStage() {
-  const stage = $("#stage");
-  const viewport = window.visualViewport;
-  // Browser zoom shrinks visualViewport in CSS pixels. Normalize that zoom out
-  // of the game fit so it does not also change --k (or cancel accessible zoom).
-  // Keep following the visible height when browser chrome / the keyboard moves.
-  const zoom = viewport?.scale || 1;
-  const w = viewport ? viewport.width * zoom : window.innerWidth;
-  const h = viewport ? viewport.height * zoom : window.innerHeight;
-  stage.style.setProperty("--k", String(Math.min(w / 1280, h / 720)));
-}
+/** 廃止したDS風表示の選択（"normal"/"ds"）を保存していたキー。起動時に消す。 */
+export const LEGACY_TITLE_LAYOUT_KEY = "suien_title_layout";
 
 export async function boot() {
-  fitStage();
-  window.addEventListener("resize", fitStage);
-  window.addEventListener("orientationchange", () => setTimeout(fitStage, 200));
-  window.visualViewport?.addEventListener("resize", fitStage);
+  initStageFit($("#stage")); // 画面の当て方は共通部品（core/stage-fit.js・#3076）
+  installRotateGuard(); // 縦持ちの回転ガード中は、制作の時計と音を止める（#2941）
   initLayers();
-  initGameLayout();
-  applyUiTheme(loadConfig().uiTheme);
+  // DS風表示（上下2画面）は廃止して横画面一本にした（オーナー決定 2026-11-04／11-10）。
+  // 以前に「DS風」を選んだ端末に残る表示設定は読まずに消すだけ（セーブ・設定には触れない）。
+  try { localStorage.removeItem(LEGACY_TITLE_LAYOUT_KEY); } catch { /* 保存できない環境は何もしない */ }
+  initCraftStage(); // シーシャ作りの新しい配置（?craftStage=1 で入・CSL）
+  initIchidaiSwitch(); // カードゲーム「一台勝負」の入口（?ichidai=1 で入・ICG）
+  const cfg = loadConfig();
+  applyUiTheme(cfg.uiTheme);
+  // 見た目の様式（新版／旧版／DS風・LK01）。既定は新版で、まだ選んでいない端末は一度だけ既定へ移す（LK09）。
+  // ?look=neo などで端末の設定ごと切り替えられる。
+  migrateLook(cfg);
+  const lookParam = new URLSearchParams(location.search).get("look");
+  if (lookParam !== null && normalizeLook(lookParam) === lookParam) { cfg.look = lookParam; saveConfig(); }
+  initLook({ look: cfg.look, chapter: () => (document.body.dataset.screen === "title" ? 1 : state?.chapter || 1) });
+  installLooks();
+  // 左右の余白（煙と縁・縦書きの帯・親指ボタン。YHK）。設定と見た目の様式が決まってから作る。
+  initSideArea({ stage: $("#stage"), advance: tapAdvance });
+  // 設定「揺れ・閃光を減らす」を CSS からも見えるようにする（場面の演出の閃光を省く・#2688 F11）
+  document.body.classList.toggle("reduce-shake", !!cfg.reduceShake);
   const growthParam = new URLSearchParams(location.search).get("growth");
   if (growthParam === "1" || growthParam === "0") setGrowthPreview(growthParam === "1");
   // 自動再生制限: 最初の操作で音を解禁（以後も操作のたびに保険で呼ぶ・軽い）
   window.addEventListener("pointerdown", unlockAudio);
   window.addEventListener("keydown", unlockAudio);
+  document.addEventListener("visibilitychange", tickPlayTime); // タブが隠れている間はプレイ時間を数えない（#2902）
 
   // 起動の待ち時間も、ゲーム内と同じ共通ロード画面（背景イラスト案B・ロゴ・発光ゲージ）で見せる。
   // 静的な #boot はモジュール読込前と起動失敗時の受け皿として残し、ゲートが閉じた後に役目を終える。
-  // 漫画は boot 文脈の登録がないため表示されず、読了待ちも入らない（起動に追加の待ちを足さない）。
+  // 起動も「決まった場面」（2026-11-12 オーナー「漫画はマストで出して欲しい」「決まった場面は毎回出す」）: 毎回漫画を載せ、
+  // 読み終えてタップ・キーで進むとタイトルが開く。そのタップで音も鳴らせるようにする（ブラウザは最初の操作まで音を止める）。
+  // 漫画は続きのセーブで会った人の話から選ぶ（セーブがなければ新しいゲームの開始時に会っている人だけ。core/loading-context.js）。
+  // 自動操作のブラウザ（既存の検査）では、従来どおり漫画のない起動画面（boot 文脈には登録がない）で、読む待ちも入らない。
+  const bootComic = comicLoadingRequired()
+    ? { ...gameLoadingOptions(peekSave()), fixed: true, onProceed: unlockAudio }
+    : { context: "boot", chapter: 1 };
   let titleArt;
   await withLoading(async ({ report }) => {
     // データと一緒に書体も待つ（読み込み前の代わりの字で一瞬崩れて見えないように）。遅い回線では4秒で先へ
@@ -58,20 +84,32 @@ export async function boot() {
       Promise.all(["500", "700", "900"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線あA7"))),
       new Promise((r) => setTimeout(r, 4000)),
     ]).catch(() => {});
+    // ロゴと枠絵は DB に依存しないので、データ・書体と同時に取り始める（#3500 A-19）。ここでは待たない。
+    // 下の imageReady が同じ読み込みを共有し、待つ上限は従来どおりデータの後の3秒。
+    // 起動の見張り（index.html の30秒）より先に時間切れの印を付けないよう、こちらの待ちは30秒にする。
+    imageReady(imgFileUrl("ui/ui_title_logo_rich.webp"), 30000);
+    for (const u of FRAME_ART) imageReady(u, 30000, { keep: true });
     await Promise.all([loadAll((p) => {
       // ゲージはデータ読込の実績（済んだ割合）にだけ追従させる。表示の進捗で起動を止めない。
       try { report(Math.round(p * 100), 100); } catch { /* 表示だけの進捗で起動を止めない */ }
     }), fonts]);
     // 抽選した1枚だけをデコードしてから幕を開ける。全候補を起動時にダウンロードしない。
-    [titleArt] = await Promise.all([prepareTitleArt(), Promise.all([
+    [titleArt] = await Promise.all([prepareTitleArt(), preloadBgm("title"), Promise.all([
       imageReady(imgFileUrl("ui/ui_title_logo_rich.webp"), 3000),
       ...FRAME_ART.map((u) => imageReady(u, 3000, { keep: true })),
     ])]);
-  }, { label: "ゲームを準備しています…", context: "boot", chapter: 1 });
+  }, { label: "ゲームを準備しています…", ...bootComic });
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
   const resumeRequested = consumeResumeOnBoot();
-  // 復旧URLは通常タイトルを開く。セーブの読込・書換えは行わない。
-  if (!isNormalTitleForced() && resumeRequested && load()) resumeGame();
+  if (resumeRequested && load()) resumeGame();
+  // TRPGの試遊（TRF21）: ?trial=trpg で、タイトルの代わりに本編と同じボドゲカフェを使い捨ての状態で開く。
+  // セーブは読み書きしない。「タイトルへ戻る」でふだんのタイトルへ。
+  else if (new URLSearchParams(location.search).get("trial") === "trpg") {
+    try {
+      const trial = await (await import("./daily/trpg-trial.js")).openTrpgTrial();
+      trial.finished.finally(() => showTitle(titleArt));
+    } catch { showTitle(titleArt); } // 試遊を用意できなかった時は、ふだんのタイトルへ
+  }
   else showTitle(titleArt);
   // タイトルを描けたことを確認してから、読み込み画面を閉じる。
   $("#boot").classList.add("done");
@@ -81,27 +119,23 @@ export async function boot() {
 
 /** タイトルを見ている間に、日常でよく出る絵を裏で読んでおく（初めて出る場面で絵が遅れないように） */
 async function warmUp() {
-  // 後段台詞はタイトル後に先読みする。失敗しても起動を妨げず、各入口で再試行する。
-  loadDeferredDialogues().catch(() => {});
-  loadCinemaDialogue().catch(() => {});
-  loadTournamentCraftDialogue().catch(() => {});
-  // 会話用の明朝2書体はタイトル後に先読みし、失敗時は会話開始時に再試行する。
-  loadVnFonts().catch(() => {});
-  // 先に小さなUIの絵（枠・看板・顔アイコン・スロットの図柄）を並行で。背景・立ち絵はそのあと1枚ずつ
-  // 店ロゴはマップまで要らないので、タイトル直後の帯域を空けるためアイドル時に回す（ui.js 側）。
-  await Promise.all([warmUiArt({ deferStores: true }), ...["bg_osu_map_day", "bg_osu_map_night"].map((bg) => imageReady(bgUrl(bg), 8000, { keep: true }))]);
-  const bgs = ["bg_osu_map_day", "bg_osu_map_night", "bg_tonari_inside_day", "bg_tonari_inside_night", "bg_home_day", "bg_home_night", "bg_shop"];
-  const faces = [["sumi", "normal"], ["tsumugi", "normal"], ["naru", "normal"], ["adam", "normal"], ["minto", "normal"], ["rin", "normal"], ["pakki", "normal"]];
-  const urls = [
-    ...bgs.map((b) => bgUrl(b)),
-    ...faces.map(([c, f]) => portraitInfo(c, f)?.src),
-    ...["bench_base.png", "stove_coil.png", "hookah_base.png"].map((m) => makingUrl(m)),
-  ].filter(Boolean);
-  for (const u of urls) await imageReady(u, 8000);
-  // 大会ステージは大会当日にしか出ないので、最後にアイドル時へ回す（遅くとも8秒で必ず始める）。
-  const warmStage = () => imageReady(bgUrl("bg_tournament_stage"), 8000);
-  if (typeof requestIdleCallback === "function") requestIdleCallback(warmStage, { timeout: 8000 });
-  else setTimeout(warmStage, 4000);
+  const owner = state;
+  const chapter = state?.chapter || 1;
+  const isCurrent = () => state === owner && (state?.chapter || 1) === chapter;
+  // Foreground scene entry already requests its own fonts/data/images. Speculation
+  // must yield before each job, and stop if START/LOAD changes its owner.
+  const jobs = [
+    () => loadVnFonts(),
+    () => loadDeferredDialogues(),
+    () => warmUiArt({ deferStores: true }),
+  ];
+  if (chapter === 1) {
+    const bgs = ["bg_osu_map_day", "bg_tonari_inside_day", "bg_home_day"];
+    jobs.push(...bgs.map(bg => () => imageReady(bgUrl(bg), 8000)));
+  }
+  // Cinema/tournament data and distant chapter art remain demand-loaded at their
+  // existing entrances. No all-chapter download on title or a late-game resume.
+  await warmInBackground(jobs, { isCurrent });
 }
 
 // テスト・デバッグ用フック（見た目を変えてもテストが壊れないよう、ここだけに依存させる）
@@ -131,7 +165,7 @@ window.__remake = {
     // 心得の盤を開く（?growth=1 のときだけ）。火種が無ければ addHidane で足す
     board() { return openGrowthBoard(); },
     addHidane(n = 5, kind = "any") { const g = ensureGrowth(); g.hidane[kind] = (g.hidane[kind] || 0) + n; return { ...g.hidane }; },
-    // マップ→場所の移動トランジションの比較用（pin / steps / walk / door / noren / walkdoor。本編の既定は door）。URLの ?move=pin でも切り替わる
+    // マップ→場所の移動トランジションの比較用（zoom / lights / pin / steps / walk / door / noren / walkdoor。本編の既定は帰宅が lights、ほかは zoom）。URLの ?move=pin でも切り替わる
     async moveStyle(style) {
       const moves = await import("./core/transition-moves.js");
       if (style) moves.setMoveStyle(style);
@@ -143,14 +177,14 @@ window.__remake = {
       if (name) kit.setMotionPalette(name);
       return kit.motionPalette();
     },
-    // 場面ごとの動きのパターン（a／b）。本編は採用（mg-kit.js の ADOPTED_VARIANT）。"auto" で採用に戻す。URLの ?movar=b でも切り替わる
+    // 場面ごとの動きのパターン（a／b。作り直した場面は c も）。本編は採用（mg-kit.js の ADOPTED_VARIANT）。"auto" で採用に戻す。URLの ?movar=b でも切り替わる
     async motionVariant(name) {
       const kit = await import("./core/mg-kit.js");
       if (name) kit.setMotionVariant(name);
       return Object.fromEntries(Object.keys(kit.ADOPTED_VARIANT).map((k) => [k, kit.motionVariant(k)]));
     },
     // 場面ごとのモーショングラフィックスを本来の背景・会話つきで見る（cheki / tarot / gift / shift / shark / sketch）。
-    // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。くじのガラガラは garagara-S / -A / -B / -C、ラストワン賞は garagara-LAST（C賞のあとに続けて見るなら garagara-C+LAST）。章題は chapter-1 / -2 / -4 / -5。※今のセーブを上書きする
+    // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。くじのガラガラは garagara-S / -A / -B / -C、ラストワン賞は garagara-LAST（C賞のあとに続けて見るなら garagara-C+LAST）。連続は garagara-10 / -10A / -10S / -10LAST（5回なら garagara-5S）。章題は chapter-1 / -2 / -4 / -5。※今のセーブを上書きする
     async motion(name = "cheki") {
       const core = await import("./core/state.js");
       const { play } = await import("./vn/engine.js");
@@ -161,7 +195,7 @@ window.__remake = {
       core.newGame();
       const state = core.state; // newGame() で作り直した状態
       Object.assign(state, { phase: "daily", day: 12, slot: 1 });
-      for (const id of ["sumi", "tsumugi", "naru", "minto", "adam", "rin"]) state.met[id] = true;
+      for (const id of ["sumi", "tsumugi", "naru", "minto", "adam", "rio"]) state.met[id] = true;
       document.getElementById("screen").replaceChildren();
       const tonariNight = "res://assets/backgrounds/bg_tonari_inside_night.png";
       if (name === "cheki") {
@@ -198,7 +232,7 @@ window.__remake = {
         const tokens = name.split("-").slice(1);
         const passenger = tokens.find(id => Object.hasOwn(PRIVATE_PASSENGERS, id));
         const destination = tokens.find(id => ["home", "widehanga"].includes(id));
-        return motions.trainRide(() => setBg(bgUrl("bg_street", tone), { instant: true }), {
+        return motions.trainRide(() => setBg(bgUrl("bg_street", tone), { instant: true }), { tone,
           ...(name.includes("halloween") ? { halloween: true } : {}), ...(passenger ? { cameo: passenger } : {}),
           ...(destination ? { to: destination } : {}),
         });
@@ -243,7 +277,8 @@ window.__remake = {
       }
       // プリクラ（#939）: purikura は演出だけ、purikura-scene はあげはのギャル友の回を通しで
       if (name.startsWith("purikura")) {
-        const { ROOMS, readDialogues } = await import("./chapters/ch2-city-data.js");
+        const { ROOMS } = await import("./chapters/ch2-city-data.js");
+        const { readDialogues } = await import("./core/chapter-data.js");
         Object.assign(state, { chapter: 2, slot: 0 });
         state.met.ageha = true;
         await setBg(ROOMS.ageha);
@@ -283,3 +318,5 @@ window.__remake = {
     },
   },
 };
+
+

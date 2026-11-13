@@ -1,5 +1,5 @@
 {
-  "comment": "第3章の正史台本。必須本編の進行順はdata/story_routes.json、実行はremake/js/chapters。ch3_double_apple/ch3_mukai/ch3_rivals.jsonの台本は必須本編の場面（久世の煙幕訪問ch3_kuze_first・ch3_kuze_adviceを含む）と任意場面が同居し、任意場面の一覧はstory_routes.jsonのoptionalとremake/js/chapters/ch3-story-wiring.js。大会前に読める任意場面はremake/js/chapters/ch3.jsが接続済み。",
+  "comment": "第3章の正史台本。必須本編の進行順はdata/story_routes.json、実行はremake/js/chapters。ch3_double_apple/ch3_mukai/ch3_rivals.jsonの台本は必須本編の場面（綾取の煙幕訪問ch3_saku_first・ch3_saku_adviceを含む）と任意場面が同居し、任意場面の一覧はstory_routes.jsonのoptionalとremake/js/chapters/ch3-story-wiring.js。大会前に読める任意場面はremake/js/chapters/ch3.jsが接続済み。",
   "dialogues": [
     {
       "dialogue_id": "ch3_opening",
@@ -32,7 +32,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "県大会代表の、蒸野はじめです。参加登録に来ました"
+          "text": "県大会代表の、逢縁はじめです。参加登録に来ました"
         },
         {
           "speaker": "",
@@ -62,7 +62,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（チョコか……甘さも苦みも後味も、ごまかせない。支給とは別に、買って練習しよう）"
+          "text": "（チョコか……熱に弱くて、焦げるとすぐ苦くなる。支給とは別に、買って練習しよう）"
         },
         {
           "speaker": "hajime",
@@ -82,7 +82,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（俺に聞かれるのは、前の大会の話ばかりだ）"
+          "text": "（聞かれるのは、県大会の話ばっかりだ）"
         },
         {
           "speaker": "",
@@ -94,6 +94,11 @@
     {
       "dialogue_id": "ch3_tokyo_shop_gap",
       "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "高架沿いの雑居ビル。満席の客席を、炭のトレイを持った店員が行き来している。"
+        },
         {
           "speaker": "",
           "face": "",
@@ -112,7 +117,7 @@
         {
           "speaker": "shop_clerk",
           "face": "normal",
-          "text": "帰る直前なら、新しい炭を丸ごと足したりしないよ"
+          "text": "電車の時間が近いなら、新しい炭を丸ごと足したりしないよ"
         },
         {
           "speaker": "",
@@ -132,17 +137,17 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "昨日より薄く感じます。どこまで熱を入れていいか、自信がなくて"
+          "text": "昨日より薄く感じる。どこまで熱を入れていいか、自信がなくて"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "朝の自主練でも、ましろには十分な味が出ていた。はじめには薄く思え、焦って炭を足してしまった。"
+          "text": "朝の自主練でも、ましろには十分な味が出ていた。俺には薄く思え、焦って炭を足してしまった。"
         },
         {
           "speaker": "hajime",
           "face": "sad",
-          "text": "焦げた苦さは分かるんです。でも、その前に止められなかった"
+          "text": "焦げた苦さは分かるんだ。でも、その前に止められなかった"
         },
         {
           "speaker": "",
@@ -162,7 +167,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "もう一度、俺も一台作ってみたいです"
+          "text": "もう一度、俺も一台作ってみたい"
         },
         {
           "speaker": "mashiro",
@@ -174,13 +179,16 @@
     {
       "dialogue_id": "ch3_naru_contact_before_tournament",
       "metadata": {
-        "lime_history": { "sender": "naru", "call": "通話：戻ったら会う約束をした" }
+        "lime_history": {
+          "sender": "naru",
+          "call": "通話：戻ったら会う約束をした"
+        }
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "東京に来て一週間。店の片づけを終え、なるさんへ電話をかけた。"
+          "text": "東京に来て一週間。店の片づけを終え、なるへ電話をかけた。"
         },
         {
           "speaker": "",
@@ -252,7 +260,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "……聞いてくれて、ありがとな。今度はお前が休む日の話からな"
+          "text": "……聞いてくれて、ありがとな。次は、お前の休みの日の話を聞かせろよ"
         },
         {
           "speaker": "",
@@ -314,6 +322,16 @@
             "speaker": "naru",
             "face": "normal",
             "text": "聞くよ。今日は俺も、急いでない"
+          }
+        ],
+        "work_phone_echo": [
+          {
+            "speaker": "",
+            "text": "水差しを戻し、手を拭いた。分からない味は、今日もましろに頼んだ。"
+          },
+          {
+            "speaker": "",
+            "text": "味が戻った報告ではない。それでも今なら、自分から声を聞きたかった。"
           }
         ]
       }
@@ -411,50 +429,60 @@
         {
           "speaker": "",
           "face": "",
-          "text": "全国大会の前夜。明日の道具を並べ終え、はじめはましろと店を出た。"
+          "text": "全国大会の前夜。明日の道具を並べ終え、ましろと店を出た。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "路地の先、「煙幕」の看板が消える。久世が借りた店の鍵をかけていた。"
+          "text": "路地の先、「煙幕」の看板が消える。綾取が借りた店の鍵をかけていた。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "夜回り？　東京の煙を裏から動かす会議なら、もう閉会したよ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "久世さんも、今まで準備を？"
+          "text": "綾取さんも、今まで準備を？"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "うん。何度も配合を見直してた。失敗しても、福岡へ戻ればいいだけだし"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "久世は笑ってノートを閉じたが、指先に力が残っていた。"
+          "text": "綾取は笑ってノートを閉じたが、指先に力が残っていた。"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "「だけ」って顔じゃないよ、朔"
+          "text": "「だけ」って顔じゃないよ、陣"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "……ばれた？　店では平気な顔、得意だったんだけどな"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "僕も平気なふりをしてた。朔が帰ってきて、嬉しかった。でも、また無理するかもって怖かった"
+          "text": "平気な顔は、嘘じゃないよぉ。僕も、店ではそうしてる"
         },
         {
-          "speaker": "kuze",
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "でも、陣が帰ってきて嬉しかったのも、また無理しそうで怖かったのも、黙ってた"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "言わなかったのは、僕。そっちは、ごめんね"
+        },
+        {
+          "speaker": "saku",
           "face": "normal",
           "text": "僕は、会っても何を話せばいいか分からなかった。軽口なら出るのにね"
         },
@@ -473,12 +501,17 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ましろちゃんにダブルアップルだと聞いた煙。分からないのに、分かったふりで味を語った"
+          "text": "ましろちゃんに「ダブルアップル」だと出された煙。分からないのに、分かったふりで味を語ったんです"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "僕が出したのはグレープ。はじめくんを試すために、材料の名前で嘘をついた"
+          "text": "本当はグレープだったの。お客さんの『甘い』に、はじめくんがすぐ頷いてたから"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "自分の舌で言ってるのか、知りたくて。……僕が、名前で嘘をついた"
         },
         {
           "speaker": "hajime",
@@ -491,7 +524,7 @@
           "text": "『懐かしい味』って言った自分の声、今も耳に残ってます"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "僕の店の大げさな噂は、笑って種を明かせる。二人のは、相手の前で引けなくなる嘘だね"
         },
@@ -506,7 +539,7 @@
           "text": "俺も。だから明日は、分からないことを隠すために作りたくない"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "それ、僕にまで話していいの？　明日は勝負の相手だよ"
         },
@@ -516,7 +549,7 @@
           "text": "はい。見栄のために炭を動かしたくない。吸う人に合わせて作ります"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "serious",
           "text": "……そっか。僕は聞いたことを忘れない。勝ちたいから、遠慮もしないよ"
         },
@@ -526,9 +559,15 @@
           "text": "店に並べてきた道具を思い出す。炭の置き方も、待つ間も、誰かの手から来たものだ。"
         },
         {
+          "type": "reflection",
+          "text": "",
+          "close": "",
+          "comment": "大会前夜の交流の振り返り。直前の地の文が導入を兼ねるので、既定の導入（トングを持つ。…）は出さない。締めの内心も出さず、続くはじめの迷いと「それ全部で作ります」を答えにする"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……俺の作り方、誰かに教わったことばっかりです。どこからが俺のなのか、ずっと分からなかった"
+          "text": "……俺の作り方、誰かに教わったことばっかりです。[pause]どこからが俺のなのか、ずっと分からなかった"
         },
         {
           "speaker": "mashiro",
@@ -546,7 +585,7 @@
           "text": "明日は客席から見てる。二人とも、自分を追い込みすぎないで"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "じゃあ明日、全部見てて。弱気な顔も、勝つための一台も"
         },
@@ -556,7 +595,7 @@
           "text": "俺のも見ててください。終わったら、また三人で話しましょう"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "うん。勝っても負けても、店の片づけは手伝ってね"
         },
@@ -573,44 +612,9 @@
         {
           "type": "hide_portrait",
           "char_id": "hajime"
-        },
-        {
-          "type": "show_cg",
-          "cg_id": "cg_naru_next_entry"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "同じ夜、別の会場の控室。なるの前にも、明日の分だけの道具が並んでいた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "地域大会の出場票と引き換えに渡された番号札を、ケースの上へ置く。代表決定大会は、明日だ。"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "一回勝っても、まだ終わりじゃない"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "荷物を閉じる前に、ノートをいちばん上へ入れ直した。明朝も確かめたいことが、一つだけ残っている。"
-        },
-        {
-          "type": "hide_portrait",
-          "char_id": "naru"
-        },
-        {
-          "type": "hide_cg"
-        },
-        {
-          "type": "bg",
-          "bg": "res://assets/backgrounds/bg_street_night.png"
         }
       ],
-      "comment": "章題「嘘つきたちの夜」の三人場面。久世の見栄、ましろの平気なふり、はじめの強がりを一部明かす。はじめの味覚回復は別の生活場面でましろと積み重ねる。任意の前夜デートはch3_dates。",
+      "comment": "章題「嘘つきたちの夜」の三人場面。綾取の見栄、ましろの平気なふり、はじめの強がりを一部明かす。はじめの味覚回復は別の生活場面でましろと積み重ねる。任意の前夜デートはch3_dates。",
       "branches": {
         "minto_memo": [
           {
@@ -628,6 +632,9 @@
     },
     {
       "dialogue_id": "ch3_tournament_day",
+      "metadata": {
+        "forced_event": true
+      },
       "lines": [
         {
           "speaker": "",
@@ -647,12 +654,17 @@
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "福岡から帰郷した久世朔、スティーブ、東京のヴォルク！　そして、tonariの蒸野はじめ！"
+          "text": "第参条ッ！ 各台には客席から試喫の方が一人ずつ！ 吸い心地の声も審査の材料だッ！"
         },
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "審査席は南雲会長、チャコール博士、トプハーネの元職人エミル！"
+          "text": "福岡から帰郷した綾取陣、スティーブ、東京のヴォルク！　そして、tonariの逢縁はじめ！"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "審査席は千須会長、チャコール博士、トプハーネの元職人エミル！"
         },
         {
           "type": "set_flag",
@@ -661,15 +673,15 @@
         {
           "speaker": "emil",
           "face": "normal",
-          "text": "各審査員の持ち点は10。入れた点は戻せない。最後の合計で決まる"
+          "text": "各審査員の持ち点は10。入れた点は戻せない。……道具も、人も、同じだ"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
           "text": "優勝者が日本の第一代表として、GRAND SMOKEへ進む"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "nervous",
           "text": "お、おはよう。今朝、配合を変えた？　……ごめん、答えなくていい。緊張して変なこと聞いた"
         },
@@ -681,10 +693,10 @@
         {
           "speaker": "",
           "face": "",
-          "text": "久世はノートを胸に抱えた。笑おうとしても口元が固い。審査席を見て、息を一つ飲む。"
+          "text": "綾取はノートを胸に抱えた。笑おうとしても口元が固い。審査席を見て、息を一つ飲む。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "nervous",
           "text": "あれ、また読めなかった。……大丈夫。いつも通り作れば、きっと"
         },
@@ -694,9 +706,14 @@
           "text": "「大会が終わっても友達で」って話。俺、本気です"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "nervous",
-          "text": "うん。君が覚えていてくれて、よかった、……僕も忘れてないよ"
+          "text": "うん。君が覚えていてくれて、よかった"
+        },
+        {
+          "speaker": "saku",
+          "face": "nervous",
+          "text": "……僕も忘れてないよ"
         },
         {
           "speaker": "steve",
@@ -716,7 +733,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "隣の声が聞こえた。はじめは水を一口飲み、トングを握った。"
+          "text": "隣の声が聞こえた。俺は水を一口飲み、トングを握った。"
         }
       ]
     },
@@ -731,7 +748,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "久世は震える指で炭を置いた。"
+          "text": "綾取は震える指で炭を置いた。"
         },
         {
           "speaker": "",
@@ -751,7 +768,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "試喫の番が回ると、久世は自分の台を最初の山で差し出した。"
+          "text": "試喫の番が回ると、綾取は香りがいちばん強く立ったところで自分の台を差し出した。"
         },
         {
           "speaker": "",
@@ -761,17 +778,18 @@
         {
           "speaker": "",
           "face": "",
-          "text": "久世が触れたのは自分の葉と炭だけ。"
+          "text": "綾取が触れたのは自分の葉と炭だけ。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "nervous",
           "text": "ちょっと濃かった、かな。……でも、一口目はこれで出すって決めたんだ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "久世は自分の煙の余韻を整えながら、はじめの炭を見た。"
+          "text": "綾取は自分の煙の余韻を整えながら、俺の炭を見た。",
+          "id": "ch3_work_echo"
         },
         {
           "speaker": "hajime",
@@ -786,7 +804,7 @@
         {
           "speaker": "emil",
           "face": "normal",
-          "text": "蒸野くん。その空間は何のためだ"
+          "text": "逢縁くん。その空間は何のためだ"
         },
         {
           "speaker": "hajime",
@@ -798,7 +816,30 @@
           "face": "",
           "text": "答えてから、炭を一つ外へ寄せた。最初の煙が、客席へ届く。"
         }
-      ]
+      ],
+      "branches": {
+        "strategy_aroma": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（ノートには最初の香りと書いた。いまの一口も、急がず確かめよう）"
+          }
+        ],
+        "strategy_light": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（二口目以降の熱を見る。いま吸っている人が、休む間も見ておこう）"
+          }
+        ],
+        "strategy_sweet": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（残る香りを見る。ノートの予想と違っても、こっちの一台を確かめよう）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_national_adjustment",
@@ -811,12 +852,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "久世の鋭い苦みがまだ鼻に残る。はじめの煙が薄く思え、炭に手が伸びた。"
+          "text": "綾取の鋭い苦みがまだ鼻に残る。自分の煙が薄く思え、炭に手が伸びた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "その手を見た久世の震えが止まる。"
+          "text": "その手を見た綾取の震えが止まる。"
         },
         {
           "speaker": "",
@@ -824,34 +865,67 @@
           "text": "ノートを鋭く閉じた音が響き、怯えた笑顔が、目を見開いた愉快そうな顔へ跳ねた。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "wild",
           "text": "あはっ、動いた！　僕の一口を基準にしちゃった？"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "wild",
           "text": "煙幕で言ったよね、最後の甘さは長いって。今なら直せるよ？"
         },
         {
+          "speaker": "saku",
+          "face": "wild",
+          "text": "昨日、分からないって言ってたよね。その一口、どう？"
+        },
+        {
           "speaker": "",
           "face": "",
-          "text": "客席のましろが立ち上がりかける。昔の朔を知っている。だから、あの笑い方が少し怖い。"
+          "text": "客席のましろが、立ち上がりかけた。昔の陣を知っているぶん、あの笑い方が怖いのかもしれない。"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "朔……勝ちたいのは分かる。でも、そこまで自分を追い込まなくても"
+          "text": "陣……勝ちたいのは分かる。でも、そこまで自分を追い込まなくても"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "wild",
           "text": "聞こえてるよ、ましろ。大丈夫。僕はルールの中で、本気で勝ちに来ただけ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（昨夜の弱気も、今の勝負の顔も、久世さんの本当だ）"
+          "text": "（昨夜の弱気も、今の勝負の顔も、綾取さんの本当だ）"
+        },
+        {
+          "speaker": "",
+          "text": "審査席のペンが止まった。県大会を勝った作り手が、何と答えるのか。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……今日も、薄く感じます。だから、聞きます"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "……言うんだ、それ。ここで"
+        },
+        {
+          "speaker": "",
+          "text": "俺は綾取から目を外し、客へ向き直った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "熱いか、軽いか。それだけ、教えてください"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……熱くはないです。軽いけど、嫌な軽さじゃない"
         },
         {
           "speaker": "",
@@ -859,14 +933,9 @@
           "text": "香りを急いで立たせたくなる。隣ではスティーブが、灰を落とした炭をすぐには戻さない。"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（待つって、手を抜くことじゃなかった）"
-        },
-        {
           "speaker": "",
           "face": "",
-          "text": "客が息を継ぐ。はじめも手を止め、吸い終わってからホースを受け取った。"
+          "text": "客が息を継ぐ。俺も手を止め、吸い終わってからホースを受け取った。"
         },
         {
           "speaker": "customer",
@@ -874,14 +943,14 @@
           "text": "このくらいなら、もう少し吸ってたい"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smug",
           "text": "やるじゃん。僕が仕掛けたのに、僕の方が待たされた"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "久世は悔しそうに笑い、自分の炭を直した。"
+          "text": "綾取は悔しそうに笑い、自分の炭を直した。"
         },
         {
           "speaker": "",
@@ -921,74 +990,86 @@
         {
           "speaker": "pakki",
           "face": "normal",
-          "text": "優勝、蒸野はじめ！　東京から、世界への第一代表だ！"
+          "beat": 800,
+          "text": "優勝、逢縁はじめ！　東京から、世界への第一代表だ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（勝った。……今度は、ちゃんと嬉しい）"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "拍手の中、審査席を立った南雲が、俺の前で一度だけ足を止めた。"
+          "text": "拍手の中、審査席を立った千須が、俺の前で一度だけ足を止めた。"
         },
         {
-          "speaker": "nagumo",
+          "speaker": "sui",
           "face": "normal",
+          "duck": true,
           "text": "……今日は、顔が見えた"
         },
         {
           "type": "hide_portrait",
-          "char_id": "nagumo"
+          "char_id": "sui"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "smile",
+          "text": "逢縁くん。今日は、数字より先に、人に聞いたね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "久世はノートを胸元へ戻した。笑顔は店にいた時のものだが、閉じたノートを握る指に力が入っている。"
+          "text": "綾取はノートを胸元へ戻した。笑顔は店にいた時のものだが、閉じたノートを握る指に力が入っている。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "君の炭は動かなかった。助言は、本当だよ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "serious",
           "text": "言う時を選んだのは僕。ごめん"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "客の一口を待てました。どっちも急がず、俺の一台を選べた"
+          "text": "待てました。綾取さんの一口じゃなくて、目の前の人の一口を"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "……ましろ、客席で立ち上がりかけてたね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "sad",
           "text": "あーあ、負けた。予想が外れて嬉しいはずなのに、ちゃんと悔しい"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "もう一口、吸わせて。君の答え、ノートの空欄にまだ書けない"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "serious",
           "text": "次は僕の一台で勝つよ。そこだけは、冗談にしない"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "久世は小さく息を吐き、ノートに新しい一行を書き足した。"
+          "text": "綾取は小さく息を吐き、ノートに新しい一行を書き足した。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "客席から降りてきたましろが、温かいお茶を久世に差し出した。"
+          "text": "客席から降りてきたましろが、温かいお茶を綾取に差し出した。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "……あの顔まで見られたくなかったな。嫌になった？"
         },
@@ -1000,55 +1081,50 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "でも後ろのお茶の香りは、ちゃんと朔が作った味だった"
+          "text": "でも後ろのお茶の香りは、ちゃんと陣が作った味だった"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "負けた僕にも、そう言うの？"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "朔の煙、勝ち負けで消える味じゃないよ。僕にはお茶。でも好き"
+          "text": "陣の煙、勝ち負けで消える味じゃないよ。僕にはお茶。でも好き"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "久世がカップを受け取る。湯気の向こうで、眉が少しだけほどけた。"
+          "text": "綾取がカップを受け取る。湯気の向こうで、眉が少しだけほどけた。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "……公園で言ったことまで覚えてたんだ。僕だけが引きずってると思ってた"
         },
         {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "忘れないよ。帰りに、絵を半分に折ってくれたでしょ"
-        },
-        {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "覚えててくれても、また話せるとは思わなかった。僕の方が連絡しなかったのに"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "僕も何て言えばいいか分からなかった。疎遠になったの、二人のことだよ"
+          "text": "僕も、何て言えばいいか分からなかった。離れちゃったのは、二人ともだよ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "……そっか。二人とも、黙ってただけか"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "朔の話、もっと聞きたい。まずはお茶、冷める前にね"
+          "text": "陣の話、もっと聞きたい。まずはお茶、冷める前にね"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "……大会が終わっても、電話していい？　福岡の話、聞いてほしい"
         },
@@ -1060,7 +1136,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "久世はノートを閉じたまま、お茶を一口飲んだ。はじめは少し離れて、自分の道具を片づける。"
+          "text": "綾取はノートを閉じたまま、お茶を一口飲んだ。俺は少し離れて、自分の道具を片づける。"
         },
         {
           "speaker": "steve",
@@ -1088,7 +1164,7 @@
         },
         {
           "type": "hide_portrait",
-          "char_id": "kuze"
+          "char_id": "saku"
         },
         {
           "type": "hide_portrait",
@@ -1105,62 +1181,6 @@
         {
           "type": "hide_portrait",
           "char_id": "pakki"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "その日の夕方、別の会場。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ラストチャンスの代表決定大会も、最後の調整を迎えていた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "甘さが重くなりかける。なるは炭を小さく動かし、旅先で何度も覚えた、一口ぶんの間を待った。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "審査員が吸い終わる。残った票がすべて置かれるまで、トングを下ろさなかった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "最終結果、日本第二代表――KEMURIKUSA、なる。"
-        },
-        {
-          "type": "show_cg",
-          "cg_id": "cg_naru_last_chance"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "渡されたトロフィーを握る。笑おうとすると、先に目元がゆがんだ。"
-        },
-        {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "……くそ。やっと、勝てた"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "スタッフから、東京の全国大会も終わったと聞く。なるは目元を拭い、スマホを手に取った。"
-        },
-        {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "俺も行くぞ、はじめ"
-        },
-        {
-          "type": "hide_portrait",
-          "char_id": "naru"
-        },
-        {
-          "type": "hide_cg"
         }
       ],
       "comment": "成功時の台本。失敗時は勝利台本へ進めず、再挑戦へ。"
@@ -1186,7 +1206,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（誰もいないと、何を作ろうか迷うな）"
+          "text": "（誰もいないと、何を作るか決められないな。次は、誰に作ろう）"
         },
         {
           "speaker": "",
@@ -1217,7 +1237,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "翌日のmukai。ましろは、昨日と同じ席を拭いていた。"
+          "text": "翌日のmukai。ましろが、壁際のソファ席のテーブルを拭いていた。"
         },
         {
           "speaker": "mashiro",
@@ -1235,21 +1255,106 @@
           "text": "ふふ。いい報告"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "布巾を置いたましろが、流しに残った洗い物へ手を伸ばす。"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "ましろちゃん、今日は俺が洗うよ。座ってて"
         },
         {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "……僕が？"
+        },
+        {
           "speaker": "",
           "face": "",
-          "text": "ましろが布巾を置いて、椅子へ沈む。今度は、はじめがお茶をいれた。"
+          "text": "ましろは少し迷ってから、拭いたばかりのソファ席に座った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "洗い物の前に湯を沸かして、白いカップを二つ出す。"
+        },
+        {
+          "type": "choice",
+          "id": "mashiro_recovery_tea",
+          "choices": [
+            {
+              "text": "「お茶、飲む？」と聞く",
+              "next": "tea_ask"
+            },
+            {
+              "text": "黙って、お茶をいれる",
+              "next": "tea_quiet"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お茶を注いで、片方をましろの手のひらに置いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは両手でカップを包んで、ソファに深く沈んだ。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……明日は、僕がいれるねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。交代で"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自分のカップを持って、隣に腰を下ろす。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "時計が進む音を、二人で聞いていた。"
         },
         {
           "type": "remember",
           "memory_id": "mashiro_living"
         }
       ],
-      "comment": "旧IDを保持した大会翌日の場面。再救済や二度目の味覚回復ではない。"
+      "branches": {
+        "tea_ask": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "お茶、飲む？"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "……ふふ。それ、僕の台詞"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "うん。飲む"
+          }
+        ],
+        "tea_quiet": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "何も聞かずに、カップを並べる。ましろも、黙って待っていた。"
+          }
+        ]
+      },
+      "comment": "旧IDを保持した大会翌日の場面。再救済や二度目の味覚回復ではない。DAY4 ch3_rest_before_recovery の席・白いカップ・時計の音を、今度ははじめから返す（#2534）。お茶の選択肢は成否も好感度もなく、どちらも同じ場面へ合流する。恋愛の有無で変えない。"
     },
     {
       "dialogue_id": "ch3_naru_reconcile",
@@ -1257,7 +1362,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "全国優勝の翌日。結果を、自分からなるさんに送った。"
+          "text": "全国優勝の翌日。結果を、自分からなるに送った。"
         },
         {
           "speaker": "",
@@ -1318,18 +1423,84 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "……うん。じゃあ、改めてよろしく。なる"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "hajime"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "naru"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        },
+        {
+          "speaker": "",
+          "text": "前の日の夕方、別の会場。ラストチャンスの代表決定大会も、最後の調整を迎えていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "甘さが重くなりかける。なるは炭を小さく動かし、旅先で何度も確かめた、一口ぶんの間を待った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "審査員が吸い終わる。残った票がすべて置かれるまで、トングを下ろさなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最終結果、日本第二代表――KEMURIKUSA、なる。"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_naru_last_chance"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "渡されたトロフィーを握る。笑おうとすると、先に目元がゆがんだ。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "……くそ。[shiver]やっと、勝てた[/shiver]"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スタッフから、東京の全国大会も終わったと聞く。なるは目元を拭い、スマホを手に取った。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "俺も行くぞ、はじめ"
+        },
+        {
+          "speaker": "",
+          "text": "打ちかけた一行は、送らずに閉じた。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "naru"
+        },
+        {
+          "type": "hide_cg"
         }
       ],
       "comment": "全国大会と同日の代表決定大会を勝ち抜いた二人が、翌日に結果を伝え合う。なるは東京会場の客席にはいない。"
     },
     {
       "dialogue_id": "ch3_enmaku_cleanup",
-      "comment": "帰郷の日の朝。前夜の「店の片づけは手伝ってね」と大会後の電話の約束を回収する。半分ずつの絵を合わせ、「すぐ戻る」の嘘を本人が謝る。ましろは恋の返事をしない。どの恋愛状態でも読めるよう、久世の気持ちは言葉にしない。",
+      "comment": "帰郷の日の朝。前夜の「店の片づけは手伝ってね」と大会後の電話の約束を回収する。半分ずつの絵を合わせ、「すぐ戻る」の嘘を本人が謝る。ましろは恋の返事をしない。どの恋愛状態でも読めるよう、綾取の気持ちは言葉にしない。",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "帰郷の日の朝。約束どおり、はじめは煙幕の片づけに来た。"
+          "text": "帰郷の日の朝。約束どおり、煙幕の片づけに来た。"
         },
         {
           "speaker": "",
@@ -1337,7 +1508,7 @@
           "text": "仕切りの布は外され、鏡には段ボールが映っている。借りた店が、元の顔へ戻っていく。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "おはよう。東京を裏で動かした組織、本日で解散です"
         },
@@ -1347,7 +1518,7 @@
           "text": "お疲れさまでした。どこから運びます？"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "鏡から。僕の店、これがないと本当に普通の店だね"
         },
@@ -1362,7 +1533,7 @@
           "text": "おはよう。お茶、持ってきたよぉ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "surprise",
           "text": "……ましろ。手伝いは、はじめだけのはずだったけど"
         },
@@ -1379,7 +1550,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "朔。これ、覚えてる？"
+          "text": "陣。これ、覚えてる？"
         },
         {
           "speaker": "",
@@ -1387,19 +1558,19 @@
           "text": "ましろが茶缶のふたを開ける。黄色いクレヨンの、半分のケーキ。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "surprise",
           "text": "……持ってたの？"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "僕も。ノートの表紙の裏"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "久世がノートを開くと、黄ばんだ紙がもう一枚。並べると、ケーキが一つになった。"
+          "text": "綾取がノートを開くと、黄ばんだ紙がもう一枚。並べると、ケーキが一つになった。"
         },
         {
           "speaker": "mashiro",
@@ -1407,7 +1578,7 @@
           "text": "ふふ。ちゃんとケーキだ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "絵は、ケーキに見えるんだ"
         },
@@ -1417,7 +1588,7 @@
           "text": "絵はね。煙は、今でもお茶"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "知ってる。大会の日にも言われた"
         },
@@ -1432,7 +1603,7 @@
           "text": "半分ずつ、また持ってよう。半分だったから、なくさなかったんだと思う"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "……うん。合わせるのは、会った時でいい"
         },
@@ -1442,7 +1613,7 @@
           "text": "ましろがお茶をいれる。今日の湯気には、勝負の匂いがしなかった。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "ましろ。僕、福岡へ行く日に「すぐ戻る」って言ったよね"
         },
@@ -1452,37 +1623,37 @@
           "text": "言ったねぇ。五年かかった"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "serious",
           "text": "あれ、嘘だった。戻る日なんて決めてなかった、……ごめん"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "知ってたよ。朔、嘘をつく時、先に笑うから"
+          "text": "知ってたよ。陣、嘘をつく時、先に笑うから"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "surprise",
           "text": "え、そうなの？　じゃあ大会の時も……"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "うん。笑ってた。だから、気をつけてって言ったの"
+          "text": "うん。笑ってた。昔からそうだから、はじめくんに気をつけてって言ったの"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（久世さんを一番読んでたのは、ましろちゃんだったのか）"
+          "text": "（綾取さんを一番読んでたのは、ましろちゃんだったのか）"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "serious",
           "text": "今度は、すぐ戻るって言わない。次の電話の日を言う"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "日曜の夜、……どう？"
         },
@@ -1492,7 +1663,7 @@
           "text": "日曜は、mukaiが混むよぉ"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "surprise",
           "text": "外れた"
         },
@@ -1502,17 +1673,17 @@
           "text": "月曜の夜。お茶をいれて、待ってる"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "月曜。ノートに書いた。……今度は、外したくないな"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "久世はそれ以上言わなかった。言いかけた続きを、お茶と一緒に飲みこんだように見えた。"
+          "text": "綾取はそれ以上言わなかった。言いかけた続きを、お茶と一緒に飲みこんだように見えた。"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "それと、君の分の空欄。まだ書けてない"
         },
@@ -1522,30 +1693,30 @@
           "text": "優勝の時の、ですか"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "normal",
           "text": "うん。世界の大会が終わったら書く。それまで空けておく"
         },
         {
-          "speaker": "kuze",
+          "speaker": "saku",
           "face": "smile",
           "text": "次は僕の一台で勝つからね。その時の答えも、同じページに"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "俺も、久世さんの予想を外し続けます"
+          "text": "俺も、綾取さんの予想を外し続けます"
         },
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_lime_contact_kuze",
+          "flag": "_lime_contact_saku",
           "next_true": "lime"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "夕方、久世は福岡行きの便へ、はじめは地元へ帰る新幹線へ向かった。"
+          "text": "夕方、綾取は福岡行きの便へ、俺は地元へ帰る新幹線へ向かった。"
         },
         {
           "speaker": "",
@@ -1556,17 +1727,17 @@
       "branches": {
         "lime": [
           {
-            "speaker": "kuze",
+            "speaker": "saku",
             "face": "smile",
             "text": "外したら、LIMEで報告して。福岡からでも、ノートに書くから"
           },
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "久世さんも、外れた予想を送ってください"
+            "text": "綾取さんも、外れた予想を送ってください"
           },
           {
-            "speaker": "kuze",
+            "speaker": "saku",
             "face": "normal",
             "text": "うん。……返事の欄、やっと埋まりそう"
           }
@@ -1579,7 +1750,14 @@
         {
           "speaker": "",
           "face": "",
-          "text": "帰郷した夜、tonariのカウンターに、酸っぱい顔の客が座った。"
+          "text": "帰郷した夜。閉店の少し前、カウンターに浮かない顔の客が座った。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_stk_title_customer_half",
+          "next_true": "title_customer",
+          "next_false": ""
         },
         {
           "speaker": "customer",
@@ -1619,9 +1797,18 @@
         {
           "speaker": "",
           "face": "",
-          "text": "机の上には、まだ世界大会の案内がある。今は、客の返事を待った。"
+          "text": "机の上には、まだ世界大会の案内がある。それは後だ。今は、客の返事を待った。"
         }
-      ]
+      ],
+      "branches": {
+        "title_customer": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（優勝の一台を、半分残した人だ）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_tsumugi_result",
@@ -1630,7 +1817,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "最後の客を送り出したtonari。つむぎが、いつもの席からタブレットを持ってきた。"
+          "text": "tonariに戻ると、つむぎがいつもの席で待っていた。タブレットを持って、こちらへ来る。"
         },
         {
           "speaker": "tsumugi",
@@ -1692,6 +1879,41 @@
           "text": "……はじめさんも、全国大会、おめでとうございます"
         },
         {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……次の絵は、シーシャを作る手を描きたいです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺の手？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさんのと。いつか、自分の手も"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "なら、ボウルの洗い方から見てけ。作る手は、そこからだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "surprise",
+          "text": "……いいんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "見るだけならな"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……はい。見てます"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "二人の結果の話を終えると、つむぎは席に戻って、次の白いページを開いた。"
@@ -1730,7 +1952,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "帰郷して、MELTY PUFFを訪ねた。あげはは店の外で待っていた。"
+          "text": "新幹線を降りた足で、MELTY PUFFを訪ねた。あげはは店の外で待っていた。"
         },
         {
           "speaker": "ageha",
@@ -1801,6 +2023,7 @@
         {
           "speaker": "",
           "face": "",
+          "beat": 800,
           "text": "投票が終わった。全国の一番には、届かなかった。"
         },
         {
@@ -1811,7 +2034,12 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "その話、あとで聞くよ、……まず、お水"
+          "text": "その話、あとで聞くよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……まず、お水"
         },
         {
           "speaker": "",
@@ -1825,18 +2053,40 @@
       "lines": [
         {
           "speaker": "",
-          "face": "",
-          "text": "全国大会のノートを開いた。ましろちゃんは、俺の書いた材料の横へ水を置く。"
+          "text": "全国大会のノートを開いた。ましろは、俺の書いた材料の横へ水を置く。"
+        },
+        {
+          "speaker": "",
+          "text": "チョコを四グラム以上。まず、課題の条件を一番上へ書いた。"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "全部見せようとすると、忙しいねぇ"
+          "text": "チョコは焦げると、すぐ苦くなるからねぇ"
+        },
+        {
+          "speaker": "",
+          "text": "ページには、店で見た手つきと、自分で触った炭の記録が並んでいる。",
+          "id": "ch3_work_notes"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "どこを一番、残したいか……かな"
+          "text": "見てきた手つきを、いっぺんに真似しようとしてた"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "読むのと、同時にやるのは違うからねぇ"
+        },
+        {
+          "speaker": "",
+          "text": "ましろはペンを渡した。どの行にも、代わりに丸は付けない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "まず、自分で確かめるところを一つ決める"
         },
         {
           "type": "choice",
@@ -1857,6 +2107,10 @@
           ]
         },
         {
+          "speaker": "",
+          "text": "一行を丸で囲んだ。残りのメモも消さず、ページを折っておく。"
+        },
+        {
           "speaker": "mashiro",
           "face": "normal",
           "text": "明日、違うと思ったら変えていいよ"
@@ -1864,29 +2118,122 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "うん。まず一台作って、確かめたい"
+          "text": "うん。今の人と、自分の一台を見て決める"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "それなら、ノートは持っていけるねぇ"
+        },
+        {
+          "speaker": "",
+          "text": "水を一口飲み、チョコの欄へ戻った。次に手を動かす時、最初に見るところは決まった。"
         }
       ],
       "branches": {
         "aroma": [
           {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "最初の立ち上がりを見る。強く吸わなくても、香りが届くところを探す"
+          },
+          {
             "speaker": "mashiro",
             "face": "normal",
-            "text": "じゃあ、強く吸わなくても分かるところから"
+            "text": "うん。じゃあ、最初の一口もゆっくりねぇ"
           }
         ],
         "light": [
           {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "二口目以降の熱を見る。休んだあとも、吸いやすい一台にしたい"
+          },
+          {
             "speaker": "mashiro",
             "face": "normal",
-            "text": "休みながら吸って、途中も確かめよっか"
+            "text": "うん。途中でホースを置く時間も見よう"
           }
         ],
         "sweet": [
           {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "残る香りを見る。甘さを足す前に、今ある葉がどう変わるか確かめる"
+          },
+          {
             "speaker": "mashiro",
             "face": "normal",
-            "text": "甘いのが続く時間、二人で見てみよ"
+            "text": "うん。最後も一口、確かめよっか"
+          }
+        ],
+        "service_gentle_echo": [
+          {
+            "speaker": "",
+            "text": "綾取には、軽さの希望から聞いた。紅茶の香りは残してほしい、と返ってきた。"
+          }
+        ],
+        "service_pace_echo": [
+          {
+            "speaker": "",
+            "text": "綾取には、吸う時間から聞いた。話しながらゆっくり、と返ってきた。"
+          }
+        ],
+        "service_good_echo": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの時は、調整したあとに吸いやすいって言ってもらえた"
+          }
+        ],
+        "service_rough_echo": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの一台は、戻したあとも整わなかった。ましろちゃんと、もう一度確かめた"
+          }
+        ],
+        "service_failed_echo": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの時は傷めて、作り直しを頼んだ。次は熱を決めた理由も残したい"
+          }
+        ],
+        "trial_saku_good": [
+          {
+            "speaker": "",
+            "text": "炭の順番を試したページには、うまく仕上がった手順が残っていた。"
+          }
+        ],
+        "trial_saku_rough": [
+          {
+            "speaker": "",
+            "text": "炭の順番を試したページには、仕上がりが粗かったところも書いてある。"
+          }
+        ],
+        "trial_saku_failed": [
+          {
+            "speaker": "",
+            "text": "炭の順番を試して傷めた一台も、ノートから消さなかった。"
+          }
+        ],
+        "trial_steve_good": [
+          {
+            "speaker": "",
+            "text": "待つ調整を試した時のページには、落ち着いた熱の記録があった。"
+          }
+        ],
+        "trial_steve_rough": [
+          {
+            "speaker": "",
+            "text": "待つ調整を試した時のページには、まだ整わなかったところが残る。"
+          }
+        ],
+        "trial_steve_failed": [
+          {
+            "speaker": "",
+            "text": "待つ調整を試して傷めた一台も、次に確かめる場所として残した。"
           }
         ]
       }

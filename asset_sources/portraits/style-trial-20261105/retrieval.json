@@ -1,0 +1,328 @@
+{
+  "observed": "2026-11-05",
+  "policy": "restricted/enforced; only sdmntpreastus2.oaiusercontent.com permitted. Failed transfers to other hosts were not retried or rerouted.",
+  "files": [
+    {
+      "file_id": "file_0000000027cc81f5a90cdfcb536ea1f5",
+      "name": "new-博士-現行正本どおり・通常.png",
+      "byte_size": 849852,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000aa5c81f5b2d05591e59de126",
+      "name": "new-博士-現行正本どおり・真剣.png",
+      "byte_size": 865456,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000688081f580dde207573724dd",
+      "name": "new-博士-現行正本どおり・笑顔.png",
+      "byte_size": 871399,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000924481f5ba50911477b07698",
+      "name": "new-博士-現行正本どおり・驚き.png",
+      "byte_size": 857369,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000643481f597221745888547fc",
+      "name": "new-ひより-現行正本どおり・斧・笑い.png",
+      "byte_size": 1342493,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000abfc81f592913eb570943512",
+      "name": "new-ひより-現行正本どおり・斧・通常.png",
+      "byte_size": 1279198,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000519081f5abb26adfcaf9edfd",
+      "name": "new-ひより-現行正本どおり・斧・叫び.png",
+      "byte_size": 1390007,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000065081f5acc4f75bf3702428",
+      "name": "new-ひより-現行正本どおり・斧・投げ.png",
+      "byte_size": 1402558,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_0000000033cc81f58b0c134da9f27679",
+      "name": "new-ひより-現行正本どおり・照れ.png",
+      "byte_size": 1282234,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_0000000036e881f59daf5bb7960b2810",
+      "name": "new-ひより-現行正本どおり・通常.png",
+      "byte_size": 1343235,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_0000000054fc81f5bad11f8ebb5a8790",
+      "name": "new-ひより-現行正本どおり・オフィス・むきー.png",
+      "byte_size": 1252150,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000b0e081f58cc7c36c1763a95b",
+      "name": "new-ひより-現行正本どおり・悲しい.png",
+      "byte_size": 1345518,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_0000000046e081f5898b9cc9555c235d",
+      "name": "new-ひより-現行正本どおり・真剣.png",
+      "byte_size": 1265214,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000354481f58fad55c7d3bb860a",
+      "name": "new-ひより-現行正本どおり・笑顔.png",
+      "byte_size": 1271234,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000f2f881f5a0a19a12b43f0f96",
+      "name": "new-ひより-現行正本どおり・学生時代・笑顔.png",
+      "byte_size": 1278718,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_0000000077bc81f585ff4c7a1efce9ce",
+      "name": "new-ひより-現行正本どおり・驚き.png",
+      "byte_size": 1350766,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000de3c81f5a97ef43e8ad30553",
+      "name": "new-ひより-現行正本どおり・涙.png",
+      "byte_size": 1324574,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000492881f6a64483eb2bbed633",
+      "name": "new-スミさん-現行正本どおり・通常.png",
+      "byte_size": 756448,
+      "host": "sdmntpreastus2.oaiusercontent.com",
+      "permitted": true
+    },
+    {
+      "file_id": "file_000000005ed081f6ac40163873517cd1",
+      "name": "new-スミさん-現行正本どおり・真剣.png",
+      "byte_size": 1270665,
+      "host": "sdmntpreastus2.oaiusercontent.com",
+      "permitted": true
+    },
+    {
+      "file_id": "file_00000000e73c81f6b8833bbaabb80620",
+      "name": "new-スミさん-現行正本どおり・笑顔.png",
+      "byte_size": 1325565,
+      "host": "sdmntpreastus2.oaiusercontent.com",
+      "permitted": true
+    },
+    {
+      "file_id": "file_0000000009d481f6afc0aaf061b34549",
+      "name": "new-スミさん-現行正本どおり・驚き.png",
+      "byte_size": 1281197,
+      "host": "sdmntpreastus2.oaiusercontent.com",
+      "permitted": true
+    },
+    {
+      "file_id": "file_00000000328481f6a2a1692e0a3d19b9",
+      "name": "new-スミさん-現行正本どおり・思案.png",
+      "byte_size": 1237240,
+      "host": "sdmntpreastus2.oaiusercontent.com",
+      "permitted": true
+    },
+    {
+      "file_id": "file_00000000b12081f6936b81f9a984def4",
+      "name": "nanami-博士-現行正本どおり・悪い笑み.png",
+      "byte_size": 957312,
+      "host": "sdmntpreastus2.oaiusercontent.com",
+      "permitted": true
+    },
+    {
+      "file_id": "file_000000006c54820d8107ffde8a29f0b5",
+      "name": "nanami-博士-現行正本どおり・通常.png",
+      "byte_size": 975381,
+      "host": "sdmntprcacentral.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000b36081f6a7e45c5cbbd7b3e0",
+      "name": "nanami-博士-現行正本どおり・真剣.png",
+      "byte_size": 923808,
+      "host": "sdmntpreastus2.oaiusercontent.com",
+      "permitted": true
+    },
+    {
+      "file_id": "file_00000000af8481f68149481ad12796a4",
+      "name": "nanami-博士-現行正本どおり・笑顔.png",
+      "byte_size": 954145,
+      "host": "sdmntpreastus2.oaiusercontent.com",
+      "permitted": true
+    },
+    {
+      "file_id": "file_00000000551081f6a421905ad31f57b3",
+      "name": "nanami-博士-現行正本どおり・驚き.png",
+      "byte_size": 980625,
+      "host": "sdmntpreastus2.oaiusercontent.com",
+      "permitted": true
+    },
+    {
+      "file_id": "file_0000000071f081f58a1c5a05629beec9",
+      "name": "nanami-ひより-現行正本どおり・斧・笑い.png",
+      "byte_size": 1628616,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_000000009ebc81f58b0c575bae011c8b",
+      "name": "nanami-ひより-現行正本どおり・斧・通常.png",
+      "byte_size": 1597085,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000031481f5a9e5bc3324dd867d",
+      "name": "nanami-ひより-現行正本どおり・斧・叫び.png",
+      "byte_size": 1608421,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_000000007ab481f5bf44b6ba6674a78a",
+      "name": "nanami-ひより-現行正本どおり・斧・投げ.png",
+      "byte_size": 1775066,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_000000008f5c81f589c498c12ddd9311",
+      "name": "nanami-ひより-現行正本どおり・照れ.png",
+      "byte_size": 1486997,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000a8ac81f59e5ce49e3531cde9",
+      "name": "nanami-ひより-現行正本どおり・通常.png",
+      "byte_size": 1633272,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000808081f5ba838702d8e79687",
+      "name": "nanami-ひより-現行正本どおり・オフィス・むきー.png",
+      "byte_size": 1560680,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000765481f5b27ff75414337d40",
+      "name": "nanami-ひより-現行正本どおり・悲しい.png",
+      "byte_size": 1674585,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000b80c81f5be78d695a4e62aec",
+      "name": "nanami-ひより-現行正本どおり・真剣.png",
+      "byte_size": 1539290,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_0000000061e081f592201d6f83111a0c",
+      "name": "nanami-ひより-現行正本どおり・笑顔.png",
+      "byte_size": 1485310,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000a3b481f594dd25ede4838b51",
+      "name": "nanami-ひより-現行正本どおり・学生時代・笑顔.png",
+      "byte_size": 1539300,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000da4c81f5bd5b0f451d5d9393",
+      "name": "nanami-ひより-現行正本どおり・驚き.png",
+      "byte_size": 1629700,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000cf3c81f58ec7bf4af0d917d8",
+      "name": "nanami-ひより-現行正本どおり・涙.png",
+      "byte_size": 1516280,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000005081f68aa8d4c9f133fc92",
+      "name": "nanami-スミさん-現行正本どおり・通常.png",
+      "byte_size": 1668862,
+      "host": "sdmntpreastus2.oaiusercontent.com",
+      "permitted": true
+    },
+    {
+      "file_id": "file_000000000ff081f5b982396ef62c7ad7",
+      "name": "nanami-スミさん-現行正本どおり・真剣.png",
+      "byte_size": 826299,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_0000000014dc81f5b072eef6b66d898f",
+      "name": "nanami-スミさん-現行正本どおり・笑顔.png",
+      "byte_size": 1726521,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000c6c481f5b4d09692090040df",
+      "name": "nanami-スミさん-現行正本どおり・驚き.png",
+      "byte_size": 1671767,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000e3e481f5ad9380e89235f80c",
+      "name": "nanami-スミさん-現行正本どおり・思案.png",
+      "byte_size": 863165,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    },
+    {
+      "file_id": "file_00000000a1d481f5945c2394415d4e7c",
+      "name": "new-博士-現行正本どおり・悪い笑み.png",
+      "byte_size": 900696,
+      "host": "sdmntprcentralus.oaiusercontent.com",
+      "permitted": false
+    }
+  ]
+}

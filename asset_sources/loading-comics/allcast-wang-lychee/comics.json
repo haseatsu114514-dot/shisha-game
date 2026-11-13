@@ -1,0 +1,67 @@
+{
+  "id": "wang-lychee",
+  "title": "ライチの皮",
+  "cast": [
+    "master_hookah"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "むいてごらん。",
+    "はい。",
+    "手元が速すぎる。"
+  ],
+  "first_speaker": "master_hookah",
+  "panel1": "右の王煙楼がライチを一つ差し出して「むいてごらん。」（左上に高く）。左のはじめが受け取って「はい。」（右下）。",
+  "panel2": "はじめはまだ一つ目の皮と格闘中。王煙楼の前には、むき終わったライチが小さな山になっている。はじめ「手元が速すぎる。」。",
+  "caption": "王煙楼の得意な味は、ライチ。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v1.png",
+  "source_sha256": "6da773b50a0b6e78cf379044343bfff4c3769cef3ba7ef0e054f395651ba28ed",
+  "references": [
+    {
+      "path": "references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "references/master_hookah.png",
+      "sha256": "532c7a850a5e25a2cf0d702c4a24fbd273bb39dca656b08b9ae149709020da29"
+    },
+    {
+      "path": "references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked",
+    "reading_order": "left-to-right; first speaker upper-left; tails checked",
+    "identity": "official sprites inspected; same positions/faces both panels",
+    "prohibited_hardware": "none",
+    "notes": "candidate visual check complete",
+    "in_game_pc_phone": "not run; unregistered",
+    "style_alignment": "Compared with early adopted Menu Revision reference: large expressive faces, 2.5-head chibi proportions, warm cel colors and bold clean lines; consistent across both panels.",
+    "selection": "Owner decision pending; not adopted",
+    "fill": "Official fill applied; filled panels re-inspected, faces/dialogue/gag preserved."
+  },
+  "delivery": [
+    {
+      "file": "panels/wang-lychee-1.webp",
+      "sha256": "109fecc2ba6572543d697c04a541e601f66e3df79c16aae1f6fb587f39ea0124",
+      "width": 715,
+      "height": 477
+    },
+    {
+      "file": "panels/wang-lychee-2.webp",
+      "sha256": "28d6b7756481f21f751b17fc134661810935f21ad0215b83a12de6b884206df7",
+      "width": 714,
+      "height": 476
+    }
+  ],
+  "style_reference": {
+    "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+    "role": "early adopted Menu Revision comic, style only",
+    "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+  }
+}

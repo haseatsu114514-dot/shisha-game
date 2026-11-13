@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
-terms = re.compile(r"(?:はじめ|ハジメ|蒸野|始)(?:くん|君|さん|ちゃん|様|さま|っち)?")
+terms = re.compile(r"(?:はじめ|ハジメ|逢縁|始)(?:くん|君|さん|ちゃん|様|さま|っち)?")
 found = collections.defaultdict(lambda: collections.Counter())
 
 def walk(node, origin):

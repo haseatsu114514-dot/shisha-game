@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE3CF  枠の段 1: 2コマ@y=275
+  コマ1: 716x507 @(38,275) 比率 1.412 → ok
+  コマ2: 721x513 @(779,272) 比率 1.405 → ok
+コマ1: 716x507 (1.412) → 左右に各2.9%の紙帯 → 出力 760x507  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-teacup/panels/nagumo-teacup-1.webp (60 KiB)
+コマ2: 721x513 (1.405) → 左右に各3.2%の紙帯 → 出力 770x513  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-teacup/panels/nagumo-teacup-2.webp (65 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "nagumo-teacup",
+  "title": "大事な話",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "須井会長の大事な話は、場所を選ばない……？",
+  "panels": [
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-teacup/panels/nagumo-teacup-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-teacup/panels/nagumo-teacup-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-teacup/source-v1.png",
+      "region": {
+        "x": 38,
+        "y": 275,
+        "width": 716,
+        "height": 507,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-teacup/source-v1.png",
+      "region": {
+        "x": 779,
+        "y": 272,
+        "width": 721,
+        "height": 513,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "nagumo-teacup-1.webp",
+      "width": 760,
+      "height": 507,
+      "sha256": "161c8aa38b639fe763aa0acbfe73b24aa987ab2f352d5049e64db064139130a7"
+    },
+    {
+      "file": "nagumo-teacup-2.webp",
+      "width": 770,
+      "height": 513,
+      "sha256": "129314cb2688e1251d42572683e572019d0a41bb0540e998a223e90b9b5dd6dc"
+    }
+  ]
+}

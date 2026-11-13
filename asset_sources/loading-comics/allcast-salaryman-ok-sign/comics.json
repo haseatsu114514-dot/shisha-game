@@ -1,0 +1,67 @@
+{
+  "id": "salaryman-ok-sign",
+  "title": "無言の感想",
+  "cast": [
+    "salaryman"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "お味はどうです？",
+    "……。",
+    "伝わった。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "tonariのカウンター。左のはじめがお茶を出して「お味はどうです？」。右のサラリーマンは無表情で黙っている「……。」。",
+  "panel2": "帰り際、サラリーマンが無表情のまま、胸の前で小さく指でOKの丸を作っている。はじめがうれしそうに「伝わった。」。",
+  "caption": "あの常連さんは、顔には出さない人です。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v1.png",
+  "source_sha256": "24466b5979723bf47cf9ba5a8572f8aae025356c20216b3d675f3f9d7676242c",
+  "references": [
+    {
+      "path": "references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "references/salaryman.png",
+      "sha256": "446e02ceafb0d457fffbb262e7a107a8faaf4306193c660e24b3a9a2cf20aec0"
+    },
+    {
+      "path": "references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked",
+    "reading_order": "left-to-right; first speaker upper-left; tails checked",
+    "identity": "official sprites inspected; same positions/faces both panels",
+    "prohibited_hardware": "none",
+    "notes": "candidate visual check complete",
+    "in_game_pc_phone": "not run; unregistered",
+    "style_alignment": "Compared with early adopted Menu Revision reference: large expressive faces, 2.5-head chibi proportions, warm cel colors and bold clean lines; consistent across both panels.",
+    "selection": "Owner decision pending; not adopted",
+    "fill": "Official fill applied; filled panels re-inspected, faces/dialogue/gag preserved."
+  },
+  "delivery": [
+    {
+      "file": "panels/salaryman-ok-sign-1.webp",
+      "sha256": "f799170dcccf1bb3e5c1847f01012e8083aec5840476b8df867da244fc030587",
+      "width": 720,
+      "height": 480
+    },
+    {
+      "file": "panels/salaryman-ok-sign-2.webp",
+      "sha256": "58f67ce9d5b4e3e34436b309fe456e17b1fbf3cd04299a8ed15517d6fc7b3938",
+      "width": 721,
+      "height": 480
+    }
+  ],
+  "style_reference": {
+    "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+    "role": "early adopted Menu Revision comic, style only",
+    "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+  }
+}

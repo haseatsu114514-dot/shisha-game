@@ -2,14 +2,34 @@
 // 雨の日: マップに雨、観音堂・カフェは雨の回、つむぎは長居、バイトは長居客の追加注文ぶん給料に上乗せ。
 import { state } from "../core/state.js";
 import { setBackgroundWeatherSource } from "../core/data.js";
+import { growthSkill } from "../core/growth-effects.js";
 
 setBackgroundWeatherSource(weatherOf);
+
+const rollsRain = (seed, day) => (Math.imul(seed + day * 7919, 2654435761) >>> 0) % 100 < 30;
+const rollsCloud = (seed, day) => (Math.imul(seed + day * 104729, 2246822519) >>> 0) % 100 < 30;
+/**
+ * 第4章で日本を発った後か。出発の朝の到着・宿の場面は、街の札がまだ "home" のまま読むので、出発の日付で見る。
+ * 準備期間の無い旧保存は、出発前のtonari2場面（プロローグの先頭2つ）を読んだ後をドバイとする。
+ */
+const ch4Abroad = (s, day) => {
+  if (s?.chapter !== 4) return false;
+  const prep = s.flags?._ch4_prep, progress = s.flags?._ch4;
+  if (prep) return prep.departed === true
+    || (Number.isInteger(prep.startDay) && Number.isInteger(prep.days) && day >= prep.startDay + prep.days);
+  return !!progress && (progress.part !== "prologue" || progress.stage >= 2);
+};
+/**
+ * ドバイには雨を降らせない。雨の抽選が出た日は晴れにする。ドバイにいるのは、第4章・第5章で flags._ch2_region が
+ * "dubai"（HUD の街の札と同じ判定）の時と、第4章で日本を発った後。
+ */
+const inDryRegion = (s, day = s?.day) => (s?.flags?._ch2_region === "dubai" && (s.chapter === 4 || s.chapter === 5))
+  || ch4Abroad(s, day);
 
 export function isRainy(day = state?.day) {
   if (!state || !day || day < 2 || state.phase === "tournament") return false;
   if (state.weatherSeed == null) state.weatherSeed = Math.floor(Math.random() * 100000);
-  const h = Math.imul(state.weatherSeed + day * 7919, 2654435761) >>> 0;
-  return h % 100 < 30;
+  return !inDryRegion(state, day) && rollsRain(state.weatherSeed, day);
 }
 
 /**
@@ -19,11 +39,18 @@ export function isRainy(day = state?.day) {
 export function weatherOf(day = state?.day) {
   if (!state || !day || state.phase === "tournament") return null;
   if (isRainy(day)) return "rain";
-  if (day < 2) return "sun";
-  const h = Math.imul(state.weatherSeed + day * 104729, 2246822519) >>> 0;
-  return h % 100 < 30 ? "cloud" : "sun";
+  if (day < 2 || rollsRain(state.weatherSeed, day)) return "sun"; // ドバイで雨の抽選が出た日
+  return rollsCloud(state.weatherSeed, day) ? "cloud" : "sun";
 }
 export const WEATHER_LABEL = { sun: "晴れ", cloud: "くもり", rain: "雨" };
+
+/** 空模様は同じ保存済みの種を読むだけ。表示のために天気を抽選し直さない。第4章の出発前日は、明日（ドバイDAY1）をドバイの天気で出す。 */
+export function tomorrowForecast(s = state) {
+  if (!growthSkill(s, "K05") || !Number.isFinite(s?.weatherSeed) || s.phase === "tournament") return null;
+  const day = (s.day || 1) + 1;
+  const rain = rollsRain(s.weatherSeed, day);
+  return WEATHER_LABEL[rain ? (inDryRegion(s, day) ? "sun" : "rain") : rollsCloud(s.weatherSeed, day) ? "cloud" : "sun"];
+}
 
 /** 雨の日だけ出す回（晴れの日はローテーションに出さない＝天気と文が食い違わない） */
 export const RAIN_SPOT_TEXTS = { kannon: "kannon_rain", cafe: "cafe_window_rain" };
@@ -44,13 +71,13 @@ const YUZUGAYA_AQUARIUM_WINDOWS = [[6,38,66,310],[152,144,84,204],[272,224,60,12
 const YUZUGAYA_SENTO_WINDOWS = [[52,114,74,110],[130,158,62,100],[218,228,82,68],[518,126,128,48]];
 const VOLK_SHOP_WINDOWS = [[2,8,64,232],[126,48,70,300],[204,80,44,264],[256,98,26,242]];
 
-const OUTDOOR_BG_RE = /^bg_(?:osu_map|map_local|widehanga_map|widehanga_station|street|kannon|tonari_outside|shishark|shishark_preparing|ch2_venue_bench|kemurikusa_outside)(?:_day|_night)?\.png$/;
+const OUTDOOR_BG_RE = /^bg_(?:osu_map|map_local|widehanga_map|widehanga_station|street|kannon|tonari_outside|shishark|shishark_preparing|ch2_venue_bench|kemurikusa_outside|station_walk|toosu_park)(?:_day|_night)?\.png$/;
 
 const INDOOR_WINDOWS_BY_BG = [
   [/^bg_tonari_inside_(?:day|night)\.png$/, TONARI_WINDOWS],
   [/^bg_home_(?:day|night)\.png$/, HOME_WINDOWS],
   [/^bg_c_station_(?:day|night)\.png$/, C_STATION_WINDOWS],
-  [/^bg_choizap(?:_night)?\.png$/, CHOIZAP_WINDOWS],
+  [/^bg_choizap(?:_day|_night)?\.png$/, CHOIZAP_WINDOWS],
   [/^bg_cafe_(?:day|night)\.png$/, CAFE_WINDOWS],
   [/^bg_yuzugaya_c_station(?:_night)?\.png$/, YUZUGAYA_C_STATION_WINDOWS],
   [/^bg_yuzugaya_shop\.png$/, YUZUGAYA_SHOP_WINDOWS],
@@ -64,7 +91,8 @@ export function rainScene(background, screen) {
   if (["title", "end", "result", "count"].includes(screen)) return null;
   const file = String(background || "").split(/[?#]/)[0].split("/").pop().replace(/\.webp$/, ".png")
     .replace(/_overcast_(day|night)\.png$/, "_$1.png");
-  if (!file || /(?:title|tournament)/.test(file) || !isRainy()) return null;
+  // ドバイの背景にも雨を重ねない（第5章でドバイへ発つ機内の場面は、街の札が変わる前に読む）
+  if (!file || /(?:title|tournament)/.test(file) || /^bg_dubai_/.test(file) || !isRainy()) return null;
   if (OUTDOOR_BG_RE.test(file)) {
     return { mode: "outdoor", windows: [] };
   }

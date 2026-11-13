@@ -1,3 +1,4 @@
+/* body:not(:root)／.title:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds)／:not([data-layout="ds"]) と同じ詳細度を保つための置き換え。 */
 /* 工程名は上の帯へまとめ、右パネルは遊ぶための面積にする。 */
 .bench-top { height: 64px; gap: 18px; }
 .bench-top .bench-mode { width: 220px; letter-spacing: .14em; }
@@ -18,6 +19,10 @@
 .bench-phase.now .bench-phase-icon { filter: drop-shadow(0 0 5px #edb66d88); }
 .bench-phase.now[data-step="steam"] svg { fill: currentColor; stroke-width: .7; }
 .bench-left, .bench-right { top: 70px; }
+/* スマホ規格（#2851）: 帯の中のボタン（外観を選ぶ・大会の MENU）は帯の高さ（64px）いっぱいにする。
+   規格の高さ（--phone-tap: 72px、ワイドでは 80px）のままだと帯より高く、中央そろえで画面の上端から欠け、下は作業板に隠れる。
+   文字の大きさは規格のまま（帯そのものを高くすると作業台全体が下がるので、ここでは変えない）。 */
+html:root[data-density="phone"] body:not(:root) .bench .bench-top > .btn { align-self: stretch; min-height: 0; }
 .bench[data-step] .bench-right { padding-top: 12px; }
 .bench[data-step] .bench-head { position: absolute; right: 12px; top: 8px; z-index: 8; display: block; min-height: 0; margin: 0; padding: 0; border: 0; }
 .bench[data-step] .bench-heading, .bench[data-step] .bench-head::after { display: none; }

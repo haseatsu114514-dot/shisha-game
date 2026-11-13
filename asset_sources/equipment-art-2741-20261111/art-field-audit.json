@@ -1,0 +1,128 @@
+{
+  "date": "2026-11-11",
+  "total_equipment": 45,
+  "data_art_absent_count": 20,
+  "method": "Absence of data.art alone does not mean no image. Compared shop.js EQUIP_ART, SHOP_EQUIPMENT_ART and scene-art.js HOME_SCENE_PROPS; excludes deprecated, flags prototype decision.",
+  "items": [
+    {
+      "id": "silicone_bowl",
+      "name": "シリコンボウル",
+      "status": "existing",
+      "source_or_reason": "assets/ui/making/bowl_empty_silicone.png"
+    },
+    {
+      "id": "hagal_80beat",
+      "name": "80beatハガル",
+      "status": "existing",
+      "source_or_reason": "assets/ui/making/bowl_empty_phunnel.png"
+    },
+    {
+      "id": "suyaki_hagal",
+      "name": "素焼きハガル",
+      "status": "existing",
+      "source_or_reason": "assets/ui/making/bowl_empty_clay.png"
+    },
+    {
+      "id": "lotos_hagal",
+      "name": "ロートスHMD",
+      "status": "existing",
+      "source_or_reason": "remake/img/shop/equipment-v2/lotos_hagal.webp"
+    },
+    {
+      "id": "tanukish_lid",
+      "name": "タヌキッシュリッド",
+      "status": "generated_here",
+      "source_or_reason": "tanukish_lid.png"
+    },
+    {
+      "id": "amaburst_hms",
+      "name": "アマバースト",
+      "status": "generated_here",
+      "source_or_reason": "amaburst_hms.png"
+    },
+    {
+      "id": "flat_charcoal",
+      "name": "フラット炭",
+      "status": "existing",
+      "source_or_reason": "remake/img/shop/equipment-v2/flat_charcoal.webp"
+    },
+    {
+      "id": "cube_charcoal",
+      "name": "キューブ炭",
+      "status": "existing",
+      "source_or_reason": "remake/img/shop/equipment-v2/cube_charcoal.webp"
+    },
+    {
+      "id": "harry_the_moon",
+      "name": "ハリーザムーン",
+      "status": "existing_scene_prop",
+      "source_or_reason": "assets/ui/scene_props/shisha_tonari.png; craft/art.js builds the rig from parts; no shop product card"
+    },
+    {
+      "id": "pipe_middle",
+      "name": "中級パイプ（スチール製）",
+      "status": "deprecated",
+      "source_or_reason": "Chapter 99, not for sale; no new art"
+    },
+    {
+      "id": "pipe_high",
+      "name": "高級パイプ（ガラス・真鍮）",
+      "status": "deprecated",
+      "source_or_reason": "Chapter 99, not for sale; no new art"
+    },
+    {
+      "id": "pipe_highest",
+      "name": "最高級パイプ（特注品）",
+      "status": "deprecated",
+      "source_or_reason": "Chapter 99, not for sale; no new art"
+    },
+    {
+      "id": "winkwink_hagal",
+      "name": "ビッグタヌキッシュリッド",
+      "status": "generated_here",
+      "source_or_reason": "winkwink_hagal.png"
+    },
+    {
+      "id": "home_rig_set",
+      "name": "ミャア 卓上台",
+      "status": "existing_scene_prop",
+      "source_or_reason": "assets/ui/scene_props/shisha_home_tabletop.png"
+    },
+    {
+      "id": "home_rig_pro",
+      "name": "大会公式モデルの台",
+      "status": "existing_scene_prop",
+      "source_or_reason": "assets/ui/scene_props/shisha_home_pro.png"
+    },
+    {
+      "id": "dr_kemuri_proto_hmd",
+      "name": "博士の試作HMD",
+      "status": "decision_pending",
+      "source_or_reason": "PR #2930 J2 recommends no new art yet; not generated"
+    },
+    {
+      "id": "stand_stainless",
+      "name": "ステンレス削り出しの台",
+      "status": "selected_existing_candidate",
+      "source_or_reason": "asset_sources/premium-equipment-vol08/redo-1107/stand_stainless-redo-A.png; owner selected A, integration separate"
+    },
+    {
+      "id": "stand_custom_melty",
+      "name": "MELTY PUFF柄の特注台",
+      "status": "generated_separate_pr",
+      "source_or_reason": "PR #3336: stand_custom_melty.png"
+    },
+    {
+      "id": "stand_custom_tosu",
+      "name": "橙須限定色の特注台",
+      "status": "generated_separate_pr",
+      "source_or_reason": "PR #3336: stand_custom_tosu.png"
+    },
+    {
+      "id": "stand_custom_engraved",
+      "name": "名入れの特注台（逢縁）",
+      "status": "generated_separate_pr",
+      "source_or_reason": "PR #3336: stand_custom_engraved.png"
+    }
+  ]
+}

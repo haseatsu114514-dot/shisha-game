@@ -4,27 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b0812">
+<!-- 版の名札。公開時に remake/tools/stamp_deploy.py がコミットの短いハッシュと公開日時を書く（手元は dev） -->
+<meta name="suien-build" content="dev" data-built="">
 <title>水煙前線 -EN:CODE-</title>
 <link rel="icon" href="../icon.svg">
+<!-- ホーム画面に追加すると全画面で遊べる（iPhone の Safari は Fullscreen API 非対応のため唯一の道）。横画面前提 -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="水煙前線">
 <!-- 文字は同梱フォントのみ（remake/fonts/）。外部フォントは読まない＝端末で見た目が変わらない -->
 <link rel="preload" href="fonts/ZenKakuGothicNew-Medium.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/ZenKakuGothicNew-Bold.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fonts/ZenKakuGothicNew-Black.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/axe-throw.css">
+<link rel="stylesheet" href="css/camel-race.css">
+<link rel="stylesheet" href="css/ichidai.css">
+<link rel="stylesheet" href="css/ichidai-lines.css">
+<link rel="stylesheet" href="css/desert-ride.css">
+<link rel="stylesheet" href="css/tetsuko-time.css">
+<link rel="stylesheet" href="css/tetsuko-theme.css">
 <link rel="stylesheet" href="css/trpg.css">
 <link rel="stylesheet" href="css/vn.css">
 <link rel="stylesheet" href="css/intro.css">
 <link rel="stylesheet" href="css/tonari-opening.css">
 <link rel="stylesheet" href="css/daily.css">
 <link rel="stylesheet" href="css/rule-sheet.css">
-<link rel="stylesheet" href="css/title-ds.css">
-<link rel="stylesheet" href="css/chapter-preview.css">
 <link rel="stylesheet" href="css/ch2-preview.css">
 <link rel="stylesheet" href="css/ch2-tournament.css">
 <link rel="stylesheet" href="css/ch3-wayfinding.css">
 <link rel="stylesheet" href="css/store-logos.css">
 <link rel="stylesheet" href="css/craft.css">
+<link rel="stylesheet" href="css/craft-rank.css">
 <link rel="stylesheet" href="css/reel.css">
 <link rel="stylesheet" href="css/extras.css">
 <link rel="stylesheet" href="css/ui-art.css">
@@ -46,18 +60,37 @@
 <link rel="stylesheet" href="css/motions/garagara.css">
 <link rel="stylesheet" href="css/motions/purikura.css">
 <link rel="stylesheet" href="css/motions/chapter-title.css">
+<link rel="stylesheet" href="css/motions/chapter-poem.css">
 <link rel="stylesheet" href="css/motions/lime.css">
+<link rel="stylesheet" href="css/motions/plane.css">
+<link rel="stylesheet" href="css/motions/shinkansen.css">
+<link rel="stylesheet" href="css/motions/moments.css">
+<link rel="stylesheet" href="css/motions/gaze.css">
 <link rel="stylesheet" href="css/vn/shisha-diagram.css">
+<link rel="stylesheet" href="css/vn/conversation-cutin.css">
 <link rel="stylesheet" href="css/continue.css">
-<link rel="stylesheet" href="css/game-ds.css">
+<link rel="stylesheet" href="css/staff-roll.css">
+<link rel="stylesheet" href="css/result.css">
 <link rel="stylesheet" href="css/facility-icons.css">
 <link rel="stylesheet" href="css/vn-lounge.css">
 <link rel="stylesheet" href="css/ui-themes.css">
 <link rel="stylesheet" href="css/vn-composition.css">
 <link rel="stylesheet" href="css/ui-paper.css">
+<link rel="stylesheet" href="css/settings.css">
 <link rel="stylesheet" href="css/craft-landscape.css">
 <link rel="stylesheet" href="css/flavor-guide.css">
 <link rel="stylesheet" href="css/craft-paper.css">
+<link rel="stylesheet" href="css/daily-menu.css">
+<link rel="stylesheet" href="css/phone-density.css">
+<link rel="stylesheet" href="css/wide-screens.css">
+<link rel="stylesheet" href="css/wide-craft.css">
+<link rel="stylesheet" href="css/phone-layout.css">
+<link rel="stylesheet" href="css/craft-stage.css">
+<link rel="stylesheet" href="css/side-area.css">
+<link rel="stylesheet" href="css/look-neo.css">
+<link rel="stylesheet" href="css/look-neo-board.css">
+<link rel="stylesheet" href="css/look-neo-art.css">
+<link rel="stylesheet" href="css/look-retro.css">
 <style>
 /* 起動直後（モジュール読込前）の #boot も、共通ロード画面と同じ背景イラスト（案B「霞と奥行き」）で見せる。
    素材は css/loading.css の --loading-backdrop-art と同じもの。暗幕はロゴと文言の可読性のため。
@@ -68,6 +101,7 @@
 </head>
 <body data-screen="boot">
 <div id="viewport">
+  <div id="backdrop" aria-hidden="true"></div>
   <div id="stage">
     <div id="bg"></div>
     <div id="screen"></div>
@@ -92,6 +126,13 @@
 <div id="rotate-hint"><div>📱 スマホは横向きでお楽しみください</div></div>
 <noscript>このゲームは JavaScript が必要です。</noscript>
 <script>
+// 公開版をインストール可能にする。更新確認は起動ごとに行い、プレイ中の再読み込みはしない。
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./sw.js", { scope: "./", updateViaCache: "none" })
+    .then((registration) => registration.update())
+    .catch((error) => console.warn("Service worker registration failed:", error));
+}
+
 // 本体のimport自体が通信・キャッシュで失敗しても、読み込み画面を放置しない。
 (() => {
   const bootScreen = document.getElementById("boot");
@@ -111,9 +152,68 @@
   const watchdog = setTimeout(() => fail(new Error("Boot timeout"), true), 30000);
   window.addEventListener("error", (event) => fail(event.error || new Error(event.message)));
   window.addEventListener("unhandledrejection", (event) => fail(event.reason));
-  import("./js/main.js")
-    .then(({ boot }) => boot())
-    .then(() => clearTimeout(watchdog), fail);
+
+  // 公開版は、開いた版が最新かを build.json（キャッシュなし）で確かめる。古い版がキャッシュから
+  // 出ていたら、版付きの URL で読み直す＝自分で開いたリンクでも最新で遊べる（手元の dev は確かめない）
+  const BUILD = document.querySelector('meta[name="suien-build"]')?.content || "dev";
+  window.SUIEN_BUILD = BUILD; // スクリプトから差し込む CSS の版（js/core/asset-version.js）
+  const latest = async (timeoutMs) => {
+    if (BUILD === "dev") return null;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await fetch(`build.json?t=${Date.now()}`, { cache: "no-store", signal: controller.signal });
+      return res.ok ? await res.json() : null;
+    } catch {
+      return null; // 確かめられないときは今の版のまま遊ぶ
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+  const openBuild = (build) => {
+    const next = new URL(location.href);
+    next.searchParams.set("v", build);
+    location.replace(next.href);
+  };
+
+  // 遊んでいる途中で新しい版が出たら、勝手に読み直さず上に知らせるだけ（タブへ戻ったとき）
+  let lastCheck = Date.now();
+  const recheck = async (force = false) => {
+    if (BUILD === "dev" || document.hidden || document.getElementById("update-note")) return;
+    if (!force && Date.now() - lastCheck < 60000) return;
+    lastCheck = Date.now();
+    const info = await latest(8000);
+    if (!info?.build || info.build === BUILD) return;
+    const note = document.createElement("div");
+    note.id = "update-note";
+    const go = document.createElement("button");
+    go.type = "button";
+    go.className = "update-go";
+    go.dataset.test = "update-go";
+    go.textContent = "新しい版が出ています ── タップで更新（オートセーブから再開）";
+    go.addEventListener("click", () => openBuild(info.build));
+    const close = document.createElement("button");
+    close.type = "button";
+    close.className = "update-close";
+    close.setAttribute("aria-label", "閉じる");
+    close.textContent = "×";
+    close.addEventListener("click", () => note.remove());
+    note.append(go, close);
+    document.body.append(note);
+  };
+  document.addEventListener("visibilitychange", () => recheck());
+  window.addEventListener("pageshow", (event) => { if (event.persisted) recheck(true); });
+
+  (async () => {
+    const info = await latest(3000);
+    // 新しい版の URL で開き直しても古いまま（配信の切り替え待ち）なら、繰り返さずにこの版で遊ぶ
+    if (info?.build && info.build !== BUILD && new URLSearchParams(location.search).get("v") !== info.build) {
+      openBuild(info.build);
+      return;
+    }
+    const { boot } = await import("./js/main.js");
+    await boot();
+  })().then(() => clearTimeout(watchdog), fail);
 })();
 </script>
 </body>

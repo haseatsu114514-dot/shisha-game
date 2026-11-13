@@ -1,0 +1,17 @@
+/* 修羅場の「視線」カットイン（motions/gaze.js）。恋人たちの目元の帯が左右から差し込まれる */
+.mo-gaze { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; }
+.mo-gaze-dim { position: absolute; inset: 0; opacity: 0; background: radial-gradient(ellipse at 50% 50%, #0b0814d9 20%, #05030af2 100%); }
+.mo-gaze-band { position: absolute; left: -2%; width: 104%; overflow: hidden;
+  background: linear-gradient(90deg, #0b0814 0%, color-mix(in srgb, var(--gaze, #dcd1f4) 26%, #150f26) 50%, #0b0814 100%);
+  border-top: 3px solid var(--gaze, #dcd1f4); border-bottom: 3px solid var(--gaze, #dcd1f4);
+  clip-path: polygon(0 0, 100% 9%, 100% 100%, 0 91%); box-shadow: 0 0 0 1px #0b0814; }
+.mo-gaze-band[data-side="right"] { clip-path: polygon(0 9%, 100% 0, 100% 91%, 0 100%); }
+.mo-gaze-art { position: absolute; max-width: none; height: auto; transform-origin: 50% 30%; filter: saturate(.78) contrast(1.08) brightness(.92); user-select: none; }
+/* 帯の左右を暗く落として、目元だけに光が残るようにする */
+.mo-gaze-band::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(90deg, #0b0814e6 0%, #0b081400 22%, #0b081400 78%, #0b0814e6 100%); }
+/* テレビ電話で加わる人（ヌール）: 画面越しの走査線と冷たい色 */
+.mo-gaze-band.remote .mo-gaze-art { filter: saturate(.6) contrast(1.05) brightness(.95) hue-rotate(-8deg); }
+.mo-gaze-scan { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, #0000 0 3px, #9fd8ff24 3px 4px); mix-blend-mode: screen; }
+/* 短い版（プチ修羅場）: 暗転を浅くして、会話の画面が透けて見える */
+.mo-gaze.brief .mo-gaze-dim { background: radial-gradient(ellipse at 50% 40%, #0b08148c 20%, #05030ab3 100%); }

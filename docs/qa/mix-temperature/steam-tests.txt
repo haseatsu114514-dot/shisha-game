@@ -1,5 +1,0 @@
-[steam temperature] PASS: stable daily climate, cooler nights, slower warming in rain/high humidity and cold air
-[steam temperature] PASS: 11340 warm-up samples stay monotonic without early clipping, including ten minutes, four coals and strongest heat
-[steam temperature] PASS: coarse repeatable forecast permits drift; misses affect the next inhalation controls, not heat
-[steam temperature] PASS: insight narrows the range and reads part of real coal behavior, while retaining uncertainty
-[steam temperature] PASS: unchanged elapsed-time curve, late warming and meaningful coal count/shape balance

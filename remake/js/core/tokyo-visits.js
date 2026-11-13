@@ -1,11 +1,13 @@
 // 訪問の正本。人物の常住地・恋愛・能力・旧pendingInviteは変更しない。
-import { TOKYO_FREE_TIMES, tokyoTime, timeNumber } from "./tokyo-clock.js";
+import { tokyoFreeTimes, tokyoTime, timeNumber, TOKYO_EVE_WINDOW } from "./tokyo-clock.js";
 
 import { emptyTokyoVisits } from "./state.js";
 export const tokyoVisitState = value => value.tokyoVisits ||= emptyTokyoVisits();
 
 export function playerRegion(value) {
   if (value.chapter !== 3) return value.chapter < 3 ? "home" : "unknown";
+  // 出発前の準備3日（VOL02）はまだ地元。東京へ着くのは出発の朝。
+  if (value.flags?._ch3_prep && !value.flags._ch3_prep.departed) return "home";
   // 後日談の帰郷の夜（版3は煙幕の片づけの次、版1・2は三場面目）からは地元。
   const aftermath = value.flags?._ch3_aftermath;
   const homeStage = aftermath?.version >= 3 ? 4 : 3;
@@ -16,10 +18,11 @@ export function visitContacts(value, definitions) {
   return Object.keys(definitions.characters).filter(id => (value.lovers || []).includes(id)
     && (value.contacts || []).includes(id));
 }
+/** 東京への訪問で、今その人が東京に来ているか（到着済み・滞在中で、帰る日より前）。 */
+export const visitingTokyo = (value, id) => !!value.tokyoVisits?.plans.some(plan => plan.characterId === id
+  && ["arrived", "staying"].includes(plan.status) && value.day >= plan.arrivalDay && value.day < plan.returnDay);
 export function characterRegion(value, definitions, id) {
-  const plan = value.tokyoVisits?.plans.find(plan => plan.characterId === id
-    && ["arrived", "staying"].includes(plan.status) && value.day >= plan.arrivalDay && value.day < plan.returnDay);
-  return plan ? "tokyo" : definitions.characters[id]?.home || "unknown";
+  return visitingTokyo(value, id) ? "tokyo" : definitions.characters[id]?.home || "unknown";
 }
 
 /** 時計・地域変更時に必ず呼ぶ。未合流でも帰郷し、未読通知を所在条件にしない。 */
@@ -50,13 +53,16 @@ export function proposeTokyoVisit(value, definitions, id) {
     || !character || value.chapter < character.dateMinChapter) return null;
   const visits = syncTokyoVisits(value);
   if (visits.plans.some(plan => plan.characterId === id && plan.status !== "returned")) return null;
-  const windows = TOKYO_FREE_TIMES.map(window => tokyoTime(value, window)).filter(window => windowAvailable(value, window));
+  const windows = tokyoFreeTimes(value).map(window => tokyoTime(value, window)).filter(window => windowAvailable(value, window));
   for (const meetup of windows) {
     if (meetup.day < value.day + definitions.leadDays) continue;
     const returnDay = meetup.day + definitions.stayDays;
     if (visits.plans.some(plan => plan.status !== "returned"
       && meetup.day < plan.returnDay && plan.arrivalDay < returnDay)) continue;
-    const date = windows.find(window => timeNumber(window) > timeNumber(meetup) && window.day < returnDay);
+    const stay = windows.filter(window => timeNumber(window) > timeNumber(meetup) && window.day < returnDay);
+    // 滞在が大会前夜にかかる時は、散歩を前夜に置く（前夜デート・BLC02）。版3で12日目の夜が空き時間に入ってから、
+    // 散歩が必ず12日目に決まり、前夜デートへ届く約束が作れなくなっていた。
+    const date = stay.find(window => window.id === TOKYO_EVE_WINDOW) || stay[0];
     if (!date) continue;
     return { characterId: id, arrivalDay: meetup.day, returnDay, meetup: { id: meetup.id, day: meetup.day, slot: meetup.slot },
       date: { id: date.id, day: date.day, slot: date.slot } };

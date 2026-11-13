@@ -31,6 +31,8 @@ await suite("loading-gate", async check => {
       await page.evaluate(() => { window.clicksBehindGate = 0; window.addEventListener('click', () => { window.clicksBehindGate++; }, { once: true }); });
       await page.locator('.loading-gate.is-ready').waitFor();
       assert.equal(await page.locator('.loading-proceed').evaluate(node => getComputedStyle(node).opacity !== '0'), true, 'The reading prompt appears');
+      assert.equal(await page.locator('.loading-status').innerText(), '準備完了', 'The status says loading has finished');
+      assert.equal(await page.locator('.loading-proceed').innerText(), 'クリック・Enter で進む', 'A mouse-and-keyboard screen is told to click or press Enter');
       await page.locator('.loading-status').click();
       await page.locator('.loading-gate').waitFor({ state: 'detached' });
       assert.equal(await page.locator('#underlying').evaluate(node => node.closest('.demo-scene').inert), false);
@@ -75,6 +77,62 @@ await suite("loading-gate", async check => {
     await page.keyboard.press('Enter');
     await page.locator('.loading-gate').waitFor({ state: 'detached' });
   });
+  await check("late-art-keeps-layout-and-reading-guard", async page => {
+    // The sheet's space is reserved while the art decodes, so the logo and gauge do not jump when it
+    // arrives; and taps made before the ready look appears (left over from the previous screen, or
+    // mashing) must not skip a comic nobody has read yet.
+    await page.route('**/late-panel.svg', async route => {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await route.fulfill({ status: 200, contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"/>' });
+    });
+    await page.evaluate(async () => {
+      const { withLoading } = await import('./js/core/loading.js');
+      const host = document.querySelector('#loading-demo');
+      const src = new URL('late-panel.svg', location.href).href;
+      let started;
+      const preparationStarted = new Promise(resolve => { started = resolve; });
+      window.__lateGate = withLoading(() => new Promise(resolve => {
+        window.__releaseLateGate = resolve;
+        started();
+      }), { host, delayMs: 0, comics: [{ id: 'late', title: 'late', minChapter: 1, caption: 'note',
+        panels: [{ src, alt: 'one' }, { src, alt: 'two' }] }] });
+      await preparationStarted;
+    });
+    const layout = () => page.evaluate(() => {
+      const gate = document.querySelector('.loading-gate');
+      const top = selector => Math.round(gate.querySelector(selector).getBoundingClientRect().top);
+      return { logo: top('.loading-logo'), bar: top('.loading-bar'),
+        card: getComputedStyle(gate.querySelector('.loading-card')).visibility,
+        images: gate.querySelectorAll('.loading-panels img').length };
+    });
+    const before = await layout();
+    assert.deepEqual([before.card, before.images], ['hidden', 0], 'The sheet stays hidden until its art is decoded');
+    await page.locator('.loading-panels img').first().waitFor();
+    const after = await layout();
+    assert.deepEqual([after.logo, after.bar, after.card, after.images], [before.logo, before.bar, 'visible', 2],
+      'Late art must not move the logo or the gauge');
+    const hold = await page.evaluate(async () => {
+      const releasedAt = performance.now();
+      window.__releaseLateGate();
+      let taps = 0;
+      for (;;) {
+        const gate = document.querySelector('.loading-gate');
+        if (!gate) return { skipped: true, taps };
+        const status = gate.querySelector('.loading-status').innerText;
+        if (gate.classList.contains('is-ready')) return { skipped: false, taps, heldMs: performance.now() - releasedAt, status };
+        if (status !== 'LOADING…') return { skipped: false, taps, early: status };
+        gate.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+        taps++;
+        await new Promise(resolve => setTimeout(resolve, 20));
+      }
+    });
+    assert.equal(hold.skipped, false, 'Taps made before the ready look must not skip the comic');
+    assert.equal(hold.status, '準備完了', `The status changes only with the ready look, got ${JSON.stringify(hold)}`);
+    assert(hold.taps >= 3 && hold.heldMs >= 200, `The reading guard must outlast early taps, got ${JSON.stringify(hold)}`);
+    await page.locator('.loading-status').click();
+    await page.locator('.loading-gate').waitFor({ state: 'detached' });
+    await page.evaluate(() => window.__lateGate);
+  });
   await check("portrait-readable", async page => {
     // Portrait escapes the shrunken #stage: the overlay covers the real viewport and stacks the
     // two panels large so the bubble text stays readable (and still advances on a key press).
@@ -102,6 +160,40 @@ await suite("loading-gate", async check => {
     await page.locator('.loading-gate').waitFor({ state: 'detached' });
     assert.match(await page.locator('#result').textContent(), /準備完了/);
   }, { viewport: { width: 390, height: 844 } });
+  await check("phone-landscape-readable", async page => {
+    // A phone held sideways leaves the letterboxed #stage like portrait does: no logo, panels that use the
+    // screen width, and small texts with a real-pixel floor (they used to shrink to about 8px).
+    await page.locator('[data-demo="comic"]').click();
+    await page.locator('.loading-gate').waitFor();
+    await page.locator('.loading-panels img').first().waitFor();
+    await page.locator('.loading-gate.is-ready').waitFor();
+    const layout = await page.evaluate(() => {
+      const gate = document.querySelector('.loading-gate');
+      const box = selector => gate.querySelector(selector).getBoundingClientRect();
+      const font = selector => parseFloat(getComputedStyle(gate.querySelector(selector)).fontSize);
+      return {
+        viewport: gate.classList.contains('is-viewport') && gate.parentElement === document.body,
+        logo: getComputedStyle(gate.querySelector('.loading-logo')).display,
+        panelWidths: [...gate.querySelectorAll('.loading-panel-art')].map(node => node.getBoundingClientRect().width),
+        sideBySide: box('.loading-panel-art').top === [...gate.querySelectorAll('.loading-panel-art')][1].getBoundingClientRect().top,
+        fonts: { title: font('.loading-comic-title'), caption: font('.loading-comic-caption'), status: font('.loading-status'), proceed: font('.loading-proceed') },
+        within: ['.loading-card', '.loading-bar', '.loading-status', '.loading-proceed'].map(box)
+          .every(rect => rect.left >= 0 && rect.top >= 0 && rect.right <= window.innerWidth + 1 && rect.bottom <= window.innerHeight + 1),
+        prompt: gate.querySelector('.loading-proceed').innerText,
+      };
+    });
+    assert(layout.viewport, 'Short landscape renders the gate at viewport scale, outside #stage');
+    assert.equal(layout.logo, 'none', 'The logo gives its height to the panels');
+    assert(layout.sideBySide && layout.panelWidths.every(width => width >= 340), `Panels must be large and side by side, got ${layout.panelWidths}`);
+    assert(layout.fonts.caption >= 12 && layout.fonts.proceed >= 12 && layout.fonts.status >= 13 && layout.fonts.title >= 16,
+      `Small texts keep a readable floor, got ${JSON.stringify(layout.fonts)}`);
+    assert(layout.within, 'The whole stack stays on screen');
+    assert.equal(layout.prompt, 'タップで進む', 'A touch screen is only told to tap');
+    await page.screenshot({ path: path.resolve('.codex/artifacts/remake-browser/loading-comic-phone-landscape.png') });
+    await page.locator('.loading-status').tap();
+    await page.locator('.loading-gate').waitFor({ state: 'detached' });
+    assert.match(await page.locator('#result').textContent(), /準備完了/);
+  }, { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
   await check("fast-error-cancel", async page => {
     await page.evaluate(() => {
       window.gatesShown = 0;
@@ -130,6 +222,185 @@ await suite("loading-gate", async check => {
     assert.equal(await page.locator('.loading-gate.is-ready').count(), 0);
     await page.getByText('準備完了。次の場面を開始できます。', { exact: true }).waitFor();
     assert.equal(await page.locator('.loading-gate').count(), 0);
+  });
+  await check("scene-notice-comic-lifecycle", async page => {
+    await page.addStyleTag({ url: new URL('css/vn.css', baseURL).href });
+    const setup = await page.evaluate(async () => {
+      const { withLoadingNotice } = await import('./js/core/module-loading.js');
+      const { attachLoadingComic } = await import('./js/core/loading-comic-notice.js');
+      const src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"/>';
+      const comic = { id: 'scene-test', title: 'Scene comic', minChapter: 1, contexts: ['scene'],
+        cast: ['sumi'], panels: [{ src, alt: 'first' }, { src, alt: 'second' }] };
+      const run = (duration, comics = [comic], chapter = 1) => {
+        const notice = document.createElement('div');
+        notice.className = 'vn-loading';
+        notice.textContent = '場面を準備しています…';
+        let hide;
+        return withLoadingNotice(new Promise(resolve => setTimeout(resolve, duration)), {
+          delayMs: 500,
+          onShow() { document.body.append(notice); hide = attachLoadingComic(notice, {
+            comics, chapter, isMet: id => id === 'sumi',
+          }); },
+          onHide() { hide?.(); },
+        });
+      };
+      const seen = [];
+      new MutationObserver(records => { for (const record of records) for (const node of record.addedNodes) {
+        if (node.matches?.('.vn-loading')) seen.push('notice');
+        if (node.matches?.('.vn-loading-comic')) seen.push('comic');
+      } }).observe(document.body, { subtree: true, childList: true });
+      await run(50);
+      const fast = seen.length === 0;
+      window.__finishSceneNotice = run(2000);
+      return { fast, seen };
+    });
+    assert.equal(setup.fast, true, 'A short wait must not show a notice or comic');
+    await page.locator('.vn-loading-comic-panels img').first().waitFor();
+    assert.equal(await page.locator('.vn-loading-comic-panels img').count(), 2);
+    await page.evaluate(() => window.__finishSceneNotice);
+    assert.equal(await page.locator('.vn-loading').count(), 0, 'The comic closes as soon as preparation ends');
+    const fallback = await page.evaluate(async () => {
+      const { attachLoadingComic } = await import('./js/core/loading-comic-notice.js');
+      const { LOADING_COMICS } = await import('./js/core/loading-comics.js');
+      const notice = document.createElement('div');
+      document.body.append(notice);
+      const hide = attachLoadingComic(notice, { comics: LOADING_COMICS, context: 'scene', chapter: 1 });
+      await new Promise(resolve => setTimeout(resolve, 50));
+      const plain = notice.isConnected && !notice.querySelector('.vn-loading-comic');
+      hide();
+      return plain;
+    });
+    assert.equal(fallback, true, 'A context without registered comics keeps the plain notice');
+  });
+  await check("unread-first-and-read-record", async page => {
+    const result = await page.evaluate(async () => {
+      const { withLoading, selectLoadingComic } = await import('./js/core/loading.js');
+      const host = document.querySelector('#loading-demo');
+      const src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"/>';
+      const comics = ['a', 'b', 'c', 'd'].map(id => ({ id, title: id, minChapter: 1, panels: [{ src, alt: 'one' }, { src, alt: 'two' }] }));
+      // Unread comics are drawn until none is left; then every comic is offered again.
+      const read = new Set();
+      const order = [];
+      for (let i = 0; i < comics.length; i++) { const comic = selectLoadingComic(comics, { isRead: id => read.has(id) }); order.push(comic.id); read.add(comic.id); }
+      const allOnce = new Set(order).size === comics.length;
+      const lastUnread = [1, 2, 3].map(() => selectLoadingComic(comics, { isRead: id => id !== 'c' }).id).join();
+      const afterAll = [1, 2, 3, 4].map(() => selectLoadingComic(comics, { isRead: () => true }).id);
+      const repeatsAvoided = afterAll.every((id, i) => i === 0 || id !== afterAll[i - 1]);
+      // onRead: only when a shown comic is passed by the reader's own tap or key.
+      const calls = [];
+      const gate = (prepareMs, options = {}) => withLoading(() => new Promise(resolve => setTimeout(resolve, prepareMs)), {
+        host, delayMs: 0, comics: [comics[0]], onRead: comic => calls.push(comic.id), ...options });
+      const pending = gate(300);
+      await new Promise(resolve => { const poll = () => host.querySelector('.loading-gate.is-ready') ? resolve() : setTimeout(poll, 20); poll(); });
+      const beforeProceed = calls.length;
+      host.querySelector('.loading-gate').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      await pending;
+      const afterProceed = calls.join();
+      // A failing record must not break the gate.
+      const throwing = gate(300, { onRead: () => { throw new Error('storage full'); } });
+      await new Promise(resolve => { const poll = () => host.querySelector('.loading-gate.is-ready') ? resolve() : setTimeout(poll, 20); poll(); });
+      host.querySelector('.loading-gate').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      const survived = await throwing.then(() => true, () => false);
+      // Leaving the scene during the reading hold is not a read.
+      const controller = new AbortController();
+      const left = gate(300, { signal: controller.signal });
+      await new Promise(resolve => { const poll = () => host.querySelector('.loading-gate.is-ready') ? resolve() : setTimeout(poll, 20); poll(); });
+      controller.abort();
+      const aborted = await left.then(() => false, error => error.name === 'AbortError');
+      // No comic on screen (broken art): nothing to record.
+      await gate(300, { comics: [{ ...comics[0], panels: [{ src, alt: 'one' }, { src: 'data:image/png,invalid', alt: 'two' }] }] });
+      return { allOnce, lastUnread, repeatsAvoided, beforeProceed, afterProceed, survived, aborted, total: calls.join() };
+    });
+    assert.deepEqual(result, { allOnce: true, lastUnread: 'c,c,c', repeatsAvoided: true, beforeProceed: 0, afterProceed: 'a', survived: true, aborted: true, total: 'a' });
+  });
+  // Fixed points (bench entry, minigame start, chapter start, resume, boot; core/loading.js comicLoadingRequired):
+  // for players the comic gate shows every time, even with nothing to load. Automated browsers keep the
+  // old rule (only when a wait occurs); suien_loading_comics = "always" / "wait" switches it for checks.
+  await check("fixed-points-show-the-comic", async page => {
+    const result = await page.evaluate(async () => {
+      const { withLoading, comicLoadingRequired } = await import('./js/core/loading.js');
+      const host = document.querySelector('#loading-demo');
+      const src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"/>';
+      const comics = [{ id: 'fixed-a', title: 'fixed-a', minChapter: 1, panels: [{ src, alt: 'one' }, { src, alt: 'two' }] }];
+      const ready = () => new Promise(resolve => { const poll = () => host.querySelector('.loading-gate.is-ready') ? resolve() : setTimeout(poll, 20); poll(); });
+      let shown = false;
+      const observer = new MutationObserver(() => { if (host.querySelector('.loading-gate')) shown = true; });
+      observer.observe(host, { childList: true, subtree: true });
+      const automated = comicLoadingRequired();
+      localStorage.setItem('suien_loading_comics', 'wait');
+      const waitMode = comicLoadingRequired();
+      await withLoading(async () => {}, { host, comics, fixed: true });
+      const waitShown = shown;
+      localStorage.setItem('suien_loading_comics', 'always');
+      shown = false;
+      const calls = [];
+      const first = withLoading(async () => 'done', { host, comics, fixed: true,
+        onRead: comic => calls.push('read:' + comic.id), onProceed: () => calls.push('proceed') });
+      await ready();
+      const holding = !!host.querySelector('.loading-panels img') && calls.length === 0;
+      host.querySelector('.loading-gate').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      const value = await first;
+      // A fixed point right after a read comic (a LOAD that reloads and resumes) does not stack a second one.
+      shown = false;
+      await withLoading(async () => {}, { host, comics, fixed: true });
+      const stacked = shown;
+      await new Promise(resolve => setTimeout(resolve, 2100));
+      const again = withLoading(async () => {}, { host, comics, fixed: true });
+      await ready();
+      const againShown = shown;
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      await again;
+      observer.disconnect();
+      return { automated, waitMode, waitShown, holding, value, calls: calls.join(), stacked, againShown };
+    });
+    assert.deepEqual(result, { automated: false, waitMode: false, waitShown: false, holding: true, value: 'done',
+      calls: 'proceed,read:fixed-a', stacked: false, againShown: true });
+  });
+  await check("shown-gate-waits-for-its-comic", async page => {
+    await page.route('**/late-fixed-*.svg', async route => {
+      await new Promise(resolve => setTimeout(resolve, 600));
+      await route.fulfill({ status: 200, contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"/>' });
+    });
+    const result = await page.evaluate(async () => {
+      const { withLoading } = await import('./js/core/loading.js');
+      const host = document.querySelector('#loading-demo');
+      const comic = n => [{ id: 'late-' + n, title: 'late', minChapter: 1, panels: ['a', 'b'].map(side =>
+        ({ src: new URL(`late-fixed-${n}${side}.svg`, location.href).href, alt: side })) }];
+      const run = async (mode, n) => {
+        localStorage.setItem('suien_loading_comics', mode);
+        let ready = false;
+        const observer = new MutationObserver(() => {
+          const gate = host.querySelector('.loading-gate.is-ready');
+          if (gate && !ready) { ready = true; gate.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); }
+        });
+        observer.observe(host, { subtree: true, childList: true, attributes: true, attributeFilter: ['class'] });
+        const started = performance.now();
+        await withLoading(() => new Promise(resolve => setTimeout(resolve, 100)), { host, delayMs: 0, comics: comic(n) });
+        observer.disconnect();
+        return { ready, ms: Math.round(performance.now() - started) };
+      };
+      return { wait: await run('wait', 1), always: await run('always', 2) };
+    });
+    assert.equal(result.wait.ready, false, 'Automated default: preparation that ends before the art closes the plain gate');
+    assert.equal(result.always.ready, true, 'A shown gate waits for its comic and holds for reading');
+    assert(result.always.ms >= 1250, `The hold starts after the late art (600 ms) plus the reading guard, got ${result.always.ms} ms`);
+  });
+  await check("next-comic-is-fetched-ahead", async page => {
+    const result = await page.evaluate(async () => {
+      const { warmNextLoadingComic, selectLoadingComic } = await import('./js/core/loading.js');
+      const src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="20"/>';
+      const comics = ['p', 'q', 'r', 's'].map(id => ({ id, title: id, minChapter: 1, panels: [{ src, alt: 'one' }, { src, alt: 'two' }] }));
+      const rounds = [];
+      for (let i = 0; i < 8; i++) {
+        const warmed = warmNextLoadingComic(comics, { isRead: id => id === 'p' });
+        rounds.push(warmed.id !== 'p' && selectLoadingComic(comics, { isRead: id => id === 'p' }).id === warmed.id);
+      }
+      // A warmed comic that is no longer a fair pick (read since) is not forced.
+      const warmed = warmNextLoadingComic(comics, {});
+      const later = selectLoadingComic(comics, { isRead: id => id === warmed.id });
+      return { rounds: rounds.every(Boolean), skipped: later.id !== warmed.id };
+    });
+    assert.deepEqual(result, { rounds: true, skipped: true });
   });
   await check("slow-comic-does-not-delay", async page => {
     await page.route('**/slow-panel.svg', async route => {

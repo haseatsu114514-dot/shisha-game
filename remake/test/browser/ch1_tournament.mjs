@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
+import { assertCraftProgress } from "./craft_progress_assertions.mjs";
 import { prepareAppearanceCatalog } from "./appearance_setup.mjs";
 prepareAppearanceCatalog();
 const shots = process.env.SHOTS;
@@ -166,7 +167,7 @@ await suite("ch1-tournament", async check => {
         if (variant === "current-read") state.flags._ev_first_practice = true;
         if (baselineArrival) T.data.DB.dialogues.ch1_tournament_arrival = baselineArrival;
         // 初登場カットインは3.6秒固定。既読セーブを想定し、会話のSKIPだけを検証する。
-        for (const id of ["sumi", "pakki", "nagumo", "maezono", "dr_kemuri", "naru", "adam", "minto"]) intro.markIntroSeen(id);
+        for (const id of ["sumi", "pakki", "sui", "maezono", "dr_kemuri", "naru", "adam", "minto"]) intro.markIntroSeen(id);
         vn.vnTest.turbo = false;
         window.openingRead = false;
         window.skipTrace = [];
@@ -264,7 +265,7 @@ await suite("ch1-tournament", async check => {
     assert(lane.width > .95 && lane.count > 0 && lane.count <= 4);
     assert.equal(lane.pointer, "none");
     // 工程間の矢印はセル外へ描く。ラベル自体とヘッダー全体の収まりを確認する。
-    await assertFits(page, '.bench-progress, .bench-phase-copy b');
+    await assertCraftProgress(page);
     await page.evaluate(() => { T.broadcast.clearComments(); T.broadcast.burst(cs, "perfect", 4); T.broadcast.clearComments(); });
     await page.waitForTimeout(900);
     assert.equal(await page.locator('.nico').count(), 0, "Old comments leaked after fast transition");
@@ -278,6 +279,8 @@ await suite("ch1-tournament", async check => {
       T.core.state.flavors.push("lemon");
       window.preparing = T.preparation.prepareFlavorStock();
     });
+    // #2213 B08: レモンの立て替えは無くなった。練習用の香りとして自分で選んで仕入れる。
+    await page.locator('[data-test="prep-flavor-lemon"]').click();
     await page.locator('[data-test="shop-leave"]').click();
     assert.equal(await page.locator('.shop').count(), 1, "Insufficient stock could leave preparation");
     await page.locator('.shop-row.errand [data-test="buy-lemon"]').click();
@@ -314,7 +317,7 @@ await suite("ch1-tournament", async check => {
   ]) await check(`results-${label}`, async page => {
     await init(page);
     await page.evaluate(() => {
-      ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"].forEach(T.core.markMet);
+      ["naru", "adam", "minto", "sui", "maezono", "dr_kemuri"].forEach(T.core.markMet);
       window.cs = { mix: { blueberry: 10, mint: 2 }, total: 84.4, parts: { holes: 95, heat: 100, shisha: 78, care1: 86, care2: 91 }, arcade: { total: 92340 }, bonusNotes: ["前日リハーサルの手応え"] };
     });
     if (label === "desktop") {
@@ -324,9 +327,12 @@ await suite("ch1-tournament", async check => {
       await capture(page, "result-count");
       await page.evaluate(async () => { await countdown; (await import("./js/core/ui.js")).retireScreen(); });
     }
-    await page.evaluate(() => { window.standings = T.result.showStandings(3, 88); });
+    await page.evaluate(() => {
+      window.standingsDone = false;
+      window.standings = T.result.showStandings(3, 88).then(() => { window.standingsDone = true; });
+    });
     await page.locator('[data-test="standings"].show').waitFor();
-    await assertFits(page, '.standings, .sd-row, .sd-status');
+    await assertFits(page, '.standings, .sd-row, .sd-status, [data-test="standings-next"]');
     const interim = await page.locator('[data-test="standings"]').evaluate(board => ({
       judges: Object.fromEntries([...board.querySelectorAll('.judge-chip')].map(chip =>
         [chip.dataset.judge, {spent:Number(chip.dataset.spent),left:chip.querySelector('.judge-left').textContent}])),
@@ -336,25 +342,78 @@ await suite("ch1-tournament", async check => {
     assert.deepEqual(interim.judges, {
       maezono:{spent:7,left:'投入 7 ／ 残り 3'},
       dr_kemuri:{spent:6,left:'投入 6 ／ 残り 4'},
-      nagumo:{spent:0,left:'10点を保留中'},
+      sui:{spent:0,left:'10点を保留中'},
     });
     assert.deepEqual(interim.points,{adam:5,naru:3,minto:2,hajime:3});
     // The second feed line starts after a 0.5s delay and slides in for 0.5s.
     // Measure its settled layout, not its temporarily translated overflow.
     await page.waitForTimeout(1100);
     await assertFits(page,'.standings .judge-panel, .standings .judge-chip, .standings .judge-left, .standings .sd-feed-lines');
+    if (label !== "portrait") {
+      await page.waitForTimeout(3100); // Past the former 3.6s automatic dismissal.
+      assert.equal(await page.evaluate(() => window.standingsDone), false);
+      assert(await page.locator('[data-test="standings"].show:not(.out)').isVisible());
+      assert.equal(await page.locator('.sd-feed-lines > div').count(), 2);
+    }
+    const paint = await page.locator('.standings .rank-medal').evaluateAll(nodes => nodes.map(n => {
+      const s = getComputedStyle(n); return { image: s.backgroundImage, size: s.backgroundSize,
+        position: s.backgroundPosition, repeat: s.backgroundRepeat, clip: s.clipPath };
+    }));
+    assert(paint.length > 0);
+    for (const medal of paint) {
+      assert.match(medal.image, /medal-(gold|silver|bronze|plain)\.webp/);
+      assert.equal(medal.size, 'contain'); assert.equal(medal.position, '50% 50%');
+      assert.equal(medal.repeat, 'no-repeat'); assert.equal(medal.clip, 'none');
+    }
+    assert.equal(await page.locator('.standings .sd-board').evaluate(n => getComputedStyle(n).backgroundImage), 'none');
+    const decorations = await page.locator('.standings .sd-row').evaluateAll(nodes => nodes.map(n => {
+      const s = getComputedStyle(n); return [s.borderTopColor, s.boxShadow];
+    }));
+    assert(decorations.every(([border, shadow]) => border === 'rgba(0, 0, 0, 0)' && shadow === 'none'));
+    assert(await page.locator('.standings .sd-board').evaluate(n => {
+      const legend = n.querySelector('.judge-legend').getBoundingClientRect();
+      return legend.bottom <= n.querySelector('.sd-rows').getBoundingClientRect().top;
+    }), 'Judge legend overlaps the ranking rows');
     await capture(page, `standings-${label}`);
+    await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/night-standings-${viewport.width}x${viewport.height}.png` });
+    if (label === "portrait") {
+      // Keep the portrait layout checks, then follow the guide to rotate before tapping.
+      assert(await page.locator("#rotate-hint").isVisible());
+      await page.setViewportSize({ width: 844, height: 390 });
+      await page.locator("#rotate-hint").waitFor({ state: "hidden" });
+    }
+    if (mobile) await page.locator('[data-test="standings-next"]').tap();
+    else await page.locator('[data-test="standings-next"]').click();
     await page.evaluate(() => window.standings);
-    await page.evaluate(() => { window.cut = T.result.nagumoCutin(1); });
+    assert.equal(await page.locator('[data-test="standings"], .fx-dim').count(), 0);
+    if (label === "portrait") await page.setViewportSize(viewport);
+    await page.evaluate(() => { window.cut = T.result.suiCutin(1); });
     await page.locator('.nc-cut.show').waitFor();
     await page.waitForTimeout(550);
-    await assertFits(page, '.nagumo-cut, .nc-row, .nc-cut');
-    await capture(page, `nagumo-${label}`);
+    await assertFits(page, '.sui-cut, .nc-row, .nc-cut');
+    await capture(page, `sui-${label}`);
     await page.evaluate(() => window.cut);
     await page.evaluate(() => { window.finalResult = T.result.resultTable(cs, 1); });
     await page.locator('[data-test="result-next"]').waitFor();
     await page.waitForTimeout(550);
     await assertFits(page, '.result-table, .rt-layout, .rt-row, .rt-detail, [data-test="result-next"]');
+    await capture(page, `result-${label}-top`);
+    const scroll = page.locator('.rt-detail-scroll');
+    assert.equal(await scroll.getAttribute("tabindex"), "0");
+    const deductions = page.locator('.rt-judge-deduction');
+    assert.equal(await deductions.count(), 3);
+    for (const line of await deductions.all()) {
+      await line.scrollIntoViewIfNeeded();
+      await assertFits(page, `.rt-judge-deduction[data-judge="${await line.getAttribute("data-judge")}"]`);
+      assert(await line.evaluate(node => {
+        const card = node.closest('.rt-detail-scroll').getBoundingClientRect();
+        const text = node.getBoundingClientRect();
+        return text.top >= card.top - 1 && text.bottom <= card.bottom + 1;
+      }), "Each deduction must be readable inside the scroll area");
+    }
+    await page.locator('.rt-detail-scroll button').last().scrollIntoViewIfNeeded();
+    await assertFits(page, '.rt-detail, .rt-detail-scroll button');
+    await capture(page, `result-${label}-bottom`);
     const labels = await page.locator('.rt-part > span').allTextContents();
     assert.deepEqual(labels, ["穴あけ", "炭焼き", "完成品", "調整1回目", "調整2回目", "総合"]);
     assert.match(await page.locator('.rt-judge-comment').innerText(), /上園「.+」/);
@@ -363,12 +422,54 @@ await suite("ch1-tournament", async check => {
     const finalVotes = await page.locator('.rt-row').evaluateAll(rows => Object.fromEntries(rows.map(row =>
       [row.dataset.id,{points:parseInt(row.querySelector('.rt-pt').textContent,10),votes:row.querySelector('.rt-votes').textContent}])));
     assert.deepEqual(finalVotes,{
-      naru:{points:5,votes:'上園 2 · 博士 3 · 南雲 0'},
-      adam:{points:5,votes:'上園 2 · 博士 3 · 南雲 0'},
-      minto:{points:3,votes:'上園 2 · 博士 1 · 南雲 0'},
-      hajime:{points:17,votes:'上園 4 · 博士 3 · 南雲 10'},
+      naru:{points:5,votes:'上園 2 · 博士 3 · 千須 0'},
+      adam:{points:5,votes:'上園 2 · 博士 3 · 千須 0'},
+      minto:{points:3,votes:'上園 2 · 博士 1 · 千須 0'},
+      hajime:{points:17,votes:'上園 4 · 博士 3 · 千須 10'},
     });
     for(const [id,points] of Object.entries(interim.points))assert(finalVotes[id].points>=points,`${id}: displayed allocated points returned`);
     await assertFits(page,'.rt-name, .rt-votes, .rt-pt');
   }, { viewport, isMobile: mobile, hasTouch: mobile });
+
+  for (const [round, key] of [[1, "Enter"], [2, "Space"]]) await check(`standings-round${round}-${key}`, async page => {
+    await init(page);
+    await page.evaluate(async round => {
+      T.core.markMet("maezono");
+      // Build the real VN controls without starting a scene, then use their
+      // normal handlers to leave AUTO/SKIP enabled while reading the board.
+      await T.vn.play({ dialogue_id: "__standings_controls", lines: [] }, { signal: AbortSignal.abort() });
+      T.core.config.autoSpeed = 3;
+      T.standingsMode = round === 1 ? "vn-auto" : "vn-skip";
+      document.querySelector(`[data-test="${T.standingsMode}"]`).click();
+      T.beforeStandings = JSON.stringify(T.core.state);
+      T.standingsDone = false;
+      T.standings = T.result.showStandings(round, 60).then(() => { T.standingsDone = true; });
+    }, round);
+    const next = page.locator('[data-test="standings-next"]');
+    await next.waitFor({ state: "visible" });
+    await page.waitForTimeout(4200);
+    assert.equal(await page.evaluate(() => T.standingsDone), false, "VN AUTO/SKIP cannot dismiss standings");
+    assert.equal(await page.evaluate(() => document.querySelector(`[data-test="${T.standingsMode}"]`).getAttribute("aria-pressed")), "true");
+    assert.equal(await next.evaluate(button => document.activeElement === button), true);
+    assert.equal(await next.evaluate(button => getComputedStyle(button).pointerEvents), "auto");
+    await assertFits(page, '[data-test="standings"], .sd-feed-lines, [data-test="standings-next"]');
+    await page.keyboard.press(key);
+    await page.evaluate(() => T.standings);
+    assert.equal(await page.locator('[data-test="standings"], .fx-dim').count(), 0);
+    assert(await page.evaluate(() => JSON.stringify(T.core.state) === T.beforeStandings));
+    await page.evaluate(() => document.querySelector(`[data-test="${T.standingsMode}"]`).click());
+  });
+
+  await check("standings-load-cancels-old-tournament", async page => {
+    await init(page);
+    await page.evaluate(() => {
+      T.standingsContinued = false;
+      T.standings = T.result.showStandings(1, 60).then(() => { T.standingsContinued = true; return null; }, error => error.name);
+    });
+    await page.locator('[data-test="standings-next"]').waitFor({ state: "visible" });
+    await page.evaluate(() => T.core.setState(T.core.newState()));
+    assert.equal(await page.evaluate(() => T.standings), "AbortError");
+    assert.equal(await page.evaluate(() => T.standingsContinued), false);
+    assert.equal(await page.locator('[data-test="standings"], .fx-dim').count(), 0);
+  });
 });

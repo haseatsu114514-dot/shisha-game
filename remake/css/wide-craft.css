@@ -1,0 +1,144 @@
+/* ワイドステージ（#2861）でのシーシャ作りと大会の画面（オーナー指示 2026-11-08
+   「シーシャ作りパートとかその他のパートもワイドモードに合わせて。文字のサイズとかUIも調整して」）。
+
+   1) 作業台と大会の演出（カウントダウン・千須のカットイン・結果表・入場）を、中央1280の層から
+      左右の余白（--stage-gutter）まで広げる。ノッチを避ける幅（--stage-safe-l/r）は外枠の透明な縁で空ける。
+      絶対配置の子の基準は縁の内側（padding box）なので、中の板の座標指定は 1280 のときのまま使える。
+   2) 広がった幅の一部（60px）を左のカード（絵と台詞）へ回す。右の作業域はそれでも広くなる。
+      板の幅は工程ごとに width で決まっているので、ここでは min-width で広げる（width の詳細度と競わない）。
+   3) スマホ（data-density=phone）でワイドのときだけ、小さい文字の下限を実寸 11.5px、読ませる文を 13px にする。
+
+   PC（1280×720）・ワイドにならない画面（iPhone SE など）は変わらない。
+   当たり判定のある物（蒸らしで飛んでくる言葉・穴あけの目印・炭など）の大きさは変えない。 */
+
+/* ---------------------------------------------------------------- 1) 左右の余白まで広げる */
+body #stage[data-wide] :is(.bench, .count-screen, .sui-cut, .result-table, .entrance, .fx-dim) {
+  left: calc(-1 * var(--stage-gutter));
+  right: calc(-1 * var(--stage-gutter));
+  border-left: var(--stage-safe-l) solid transparent;
+  border-right: var(--stage-safe-r) solid transparent;
+}
+
+/* ---------------------------------------------------------------- 2) 左のカードへ 60px 回す */
+body #stage[data-wide] .bench .bench-left { min-width: 492px; }
+body #stage[data-wide] .bench[data-step="heat"] .bench-left { min-width: 370px; }
+body #stage[data-wide] .bench .bench-right { margin-left: 60px; }
+/* スマホ横持ちの詰め方・機材選び・配置（craft-landscape.css で左 260px）は 320px に */
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  body #stage[data-wide] .bench:is([data-step="setup"]:has(> .bench-right > .bench-panel > .opt-grid), [data-step="pack"], [data-step="place"]) .bench-left { min-width: 320px; }
+}
+/* 中間投票の板は、広がった画面で少し広く（文字を大きくした分の余裕） */
+body #stage[data-wide] .standings.tournament-board { width: 1200px; }
+
+/* ---------------------------------------------------------------- 3) スマホでの文字の下限 */
+html:root[data-density="phone"] body #stage[data-wide] {
+  --wide-small: calc(11.5px / var(--k, 1)); /* 名札・補足・単位など */
+  --wide-text: calc(13px / var(--k, 1));    /* 台詞・説明など読ませる文 */
+}
+/* 作業台の上の帯・左のカード */
+html:root[data-density="phone"] body #stage[data-wide] .bench :is(
+  .bench-mode, .bench-mode small, .craft-rank-status, .bench-phase-copy b, .bench-phase:not(.seen) .bench-phase-copy small,
+  .worker-scene-tag, .audience-name, .rival-name, .bench-guide summary
+) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage[data-wide] .bench .audience-note { font-size: var(--wide-text); line-height: 1.45; }
+/* 済んだ工程は番号を消して ✓ だけ（CUI09）。番号は 0 のまま、✓ を同じ大きさにする */
+html:root[data-density="phone"] body #stage[data-wide] .bench .bench-phase.seen .bench-phase-copy small::after { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage[data-wide] .bench .rig-lamp { width: calc(var(--wide-small) * 1.9); height: calc(var(--wide-small) * 1.9); }
+html:root[data-density="phone"] body #stage[data-wide] .bench .rig-lamp b { font-size: var(--wide-small); }
+/* 上の帯の「PRACTICE｜練習モード」「SMOKE CROWN CUP｜大会」は1行のまま。
+   文字を大きくした分、「SMOKE CROWN CUP」「HAZE: OPEN CLOUD」などの大会名は枠（160px）に入らず隣のランクへ重なるので、
+   枠を名前の幅まで広げる（工程の列が少し縮む。名前が枠に入る時は今までどおり） */
+html:root[data-density="phone"] body #stage[data-wide] .bench .bench-mode { white-space: nowrap; min-width: max-content; }
+/* #3010: 詰め方は右欄を二分すると選択肢の説明が細くなる。
+   上から一行ずつ積み、器だけ残りの高さを使う。決定ボタンも通常フロー内に置く。 */
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .packing {
+  display: flex; flex-direction: column; gap: 8px; min-height: 0;
+}
+/* #3036: 器の絵は高さ最大300px。残り高さ（約150px）の欄へそのまま中央に置くと、
+   上の香り文と下の詰め方の見出し・説明へはみ出して文字が隠れる。
+   絵を欄に収まる大きさへ縮め（配合画面の .45 と同じ考え方）、欄の高さは固定で確保する。
+   香り文が2行になる等で収まらない時は、板のスクロールで読める（重なりは作らない）。 */
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .pack-vessel {
+  flex: none; height: 142px; min-height: 0;
+}
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .pack-vessel-art {
+  transform: scale(.45);
+}
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .pack-caption {
+  flex: none; min-height: 0;
+}
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .pack-choices {
+  flex: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; padding: 0;
+}
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .pack-choice {
+  min-width: 0; padding: 8px; text-align: center;
+}
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .pack-choice small {
+  display: block; overflow-wrap: normal; line-height: 1.35;
+}
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .pack-footer {
+  flex: none; position: static; min-height: 0; padding-top: 4px;
+}
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .pack-footer .pack-confirm {
+  flex: none; min-width: 240px;
+}
+/* 上帯は長い工程名とボタンを優先し、工程タブの余白を均等に縮める。 */
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .bench-top { gap: 8px; }
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .bench-progress-track { gap: 4px; }
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .bench-progress-track > .bench-phase {
+  min-width: 0; gap: 3px; padding-inline: 3px;
+}
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .bench-phase:not(:last-child)::after { display: none; }
+/* 左のカードの台詞: 窓の高さを中身に合わせて伸ばし（上の絵に少し重なる）、心の声の最大幅（232px）も外す。
+   それでも長い時は窓の中でスクロールする（craft.css の .audience-note と同じ） */
+html:root[data-density="phone"] body #stage[data-wide] .bench .bench-left .bench-audience { height: auto; min-height: 112px; max-height: 58%; }
+html:root[data-density="phone"] body #stage[data-wide] .bench .bench-audience .audience-note { max-width: none; }
+/* 配合: 「温度帯」「フレーバーの持ち」の見出し（温度帯の凡例は細い列に収める既存の作りのまま） */
+html:root[data-density="phone"] body #stage[data-wide] .bench :is(.mix-life-preview > b, .mix-temperature-preview > b) { font-size: var(--wide-small); }
+/* 穴あけの型の説明 */
+html:root[data-density="phone"] body #stage[data-wide] .bench :is(.ht-counts, .ht-help summary, .ht-note) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage[data-wide] .bench .ht-description { font-size: var(--wide-text); line-height: 1.45; }
+/* 炭焼き */
+html:root[data-density="phone"] body #stage[data-wide] .bench :is(
+  .heat-carrier-head small, .heat-picks b, .heat-picks span
+) { font-size: var(--wide-small); }
+/* 蒸らし（飛んでくる言葉は当たり判定があるので変えない） */
+html:root[data-density="phone"] body #stage[data-wide] .bench :is(
+  .refresh-copy, .slash-count, .precision-state, .pull-state
+) { font-size: var(--wide-small); }
+/* 吸い出し */
+html:root[data-density="phone"] body #stage[data-wide] .bench :is(
+  .pull-zone-label span, .pull-current-zone small, .pull-life-label, .pull-count-num
+) { font-size: var(--wide-small); }
+
+/* 大会: 中間投票 */
+html:root[data-density="phone"] body #stage[data-wide] :is(.standings, .count-screen, .sui-cut, .result-table) :is(
+  .tournament-live, .tournament-eyebrow, .judge-legend span
+) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage[data-wide] :is(.standings, .count-screen, .sui-cut, .result-table) .tournament-heading p { font-size: var(--wide-text); }
+html:root[data-density="phone"] body #stage[data-wide] .standings :is(.sd-rank, .sd-points small, .judge-name, .judge-left) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage[data-wide] .standings .sd-name { font-size: var(--wide-text); }
+html:root[data-density="phone"] body #stage[data-wide] .standings :is(.sd-status > span, .sd-feed-tag) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage[data-wide] .standings .sd-feed-lines > div { font-size: var(--wide-text); }
+/* 大会: カウントダウン・千須のカットイン */
+html:root[data-density="phone"] body #stage[data-wide] .count-screen :is(.rc-cut, .rc-card span) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage[data-wide] .sui-cut :is(.nc-rank, .nc-cut-text small, .nc-cut-pt span) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage[data-wide] .sui-cut .nc-name { font-size: var(--wide-text); }
+/* 大会: 結果表 */
+html:root[data-density="phone"] body #stage[data-wide] .result-table :is(
+  .rt-emblem small, .rt-ranking-head h2, .rt-rank, .rt-votes, .rt-detail h4, .rt-part span, .rt-part small,
+  .rt-judge-comment, .rt-judge-deduction
+) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage[data-wide] .result-table .rt-name { font-size: var(--wide-text); }
+/* 大会: 入場 */
+html:root[data-density="phone"] body #stage[data-wide] .entrance :is(.ent-tag, .ent-ring) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage[data-wide] .entrance .ent-note { font-size: var(--wide-text); }
+
+/* 844×340（Safari のバーあり）で 11px を割る見出し・通知 */
+html:root[data-density="phone"] body #stage[data-wide] .bench :is(.ht-title, .pull-current-zone b) { font-size: max(var(--wide-small), 1em); }
+html:root[data-density="phone"] body #stage[data-wide] #toasts .toast { font-size: var(--wide-text); }
+
+/* 「詳しく見る」「お手本を見る」は採点の根拠・手本を開く入口。横持ちスマホでは実寸の高さ 32px 以上の押せる箱にする（#3518） */
+html:root[data-density="phone"] body #stage .bench :is(.rc-details > summary, .bench-demo-link) {
+  display: inline-flex; align-items: center; min-height: calc(32px / var(--k, 1)); padding-inline: calc(8px / var(--k, 1));
+}

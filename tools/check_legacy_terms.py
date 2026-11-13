@@ -47,11 +47,45 @@ LEGACY_ERROR = {
     "ドクター・ケムリ": "チャコール博士（dr_kemuri）に統一",
     "シーシャ・ステーション": "C.STATION に統一",
     "シーシャステーション": "C.STATION に統一",
-    "蒸野 始": "蒸野 はじめ に統一（2026-10-16 オーナー指定: 主人公の表記は平仮名の「はじめ」）",
-    "蒸野始": "蒸野はじめ に統一（2026-10-16 オーナー指定）",
+    "逢縁 始": "逢縁 はじめ に統一（主人公の表記は平仮名の「はじめ」）",
+    "逢縁始": "逢縁はじめ に統一",
     "ましろさん": "ましろちゃん に統一",
     "筋肉の記憶": "「体で覚えた手つき」等に言い換え（2026-07-20オーナー指定・禁止）",
 }
+
+# 2026-11-02 追加。過去の記録（要望台帳・archive・検証記録）には当時の名前が残るので、それ以外だけを見る。
+LEGACY_ERROR_CURRENT = {
+    "綾取 朔": "綾取 陣（あやとり じん）に統一",
+    "綾取朔": "綾取陣に統一",
+    "向井 玄": "向井 然（むかい しかり）に統一",
+    "緑川": "木成頼 栞（きなりせ しおり）に統一",
+    "薄羽": "泡沫 ひより（うたかた ひより）に統一",
+    "汐見なぎさ": "サメちゃんの本名は暑海 なぎさ（あつみ なぎさ）に統一",
+    "汐見 なぎさ": "サメちゃんの本名は暑海 なぎさ（あつみ なぎさ）に統一",
+    "熱海なぎさ": "サメちゃんの本名は暑海 なぎさ（あつみ なぎさ）に統一",
+    "熱海 なぎさ": "サメちゃんの本名は暑海 なぎさ（あつみ なぎさ）に統一",
+    "猫柳": "猫洞 つむぎ（ねこがほら つむぎ）に統一",
+    "墨田": "炭吉 丈一郎（すみよし じょういちろう）に統一",
+    "スハイル": "ファーリス（faris）に統一",
+    "suhail": "faris に統一",
+    "宵野": "夜長 千代子（よなが ちよこ）に統一",
+    "葉子": "あげはの本名は夜長 千代子（よなが ちよこ）に統一",
+    "須井": "千須 豪（せんす ごう）に統一",
+    "修二": "会長の本名は千須 豪（せんす ごう）に統一",
+    "ライマン": "スティーブの旧姓。スティーブ・A・アッシュに統一",
+    "Steve Lyman": "Steve A. Ash に統一",
+    "蒸野": "逢縁 はじめ（あいえん はじめ）に統一",
+    "香坂 くゆり": "円頓寺 凛想（えんどうじ りお）に統一",
+    "香坂": "円頓寺 凛想（えんどうじ りお）に統一",
+    "くゆり": "凛想（rio）に統一",
+    "kuyuri": "rio に統一",
+    "スナック＆シーシャ": "みんとの店はコンセプトカフェ「ぺぱーみんと／PEPPERMINT」（旧設定資料集の誤り・2026-11-02削除）",
+    "オーナーママ": "みんとはオーナー兼キャスト（スナックのママではない）",
+    "炭場 創": "チャコール博士の本名は火浦 理一",
+    "炭場創": "チャコール博士の本名は火浦 理一",
+    "前園": "上園 文太郎（ID maezono）に統一",
+}
+HISTORY_PATHS = ("docs/archive/", "docs/qa/", "docs/owner_requests.md")
 
 LEGACY_STAT_ERROR = {
     "技術力": "技術",
@@ -83,19 +117,49 @@ DOC_FILES = {
     "story_review_prompt.md",
     "story_and_structure.md",
     "owner_requests.md",
+    # 2026-11-02 に owner_requests.md から archive/ へ移した 2026-09 以前の節（同じ禁止語の説明を含む）
+    "owner_requests_2026-06_09.md",
 }
 
 EXTENSIONS = {".json", ".js", ".md", ".py", ".gd", ".txt", ".csv", ".sh"}
 
-# セーブ互換処理・その回帰テスト・この検査定義だけに旧名のリテラルを許す。
-LEGACY_CHARACTER_RE = re.compile(r"kafuka|カフカ|かふか", re.IGNORECASE)
-IDENTITY_FIXTURES = {"remake/test/samechan_migration.mjs", "tools/check_legacy_terms.py"}
 IDENTITY_TEXT_EXTENSIONS = EXTENSIONS | {".mjs", ".cjs", ".html", ".css", ".yml", ".yaml", ".svg", ".xml", ".toml", ".lock"}
+# 2026-11-03 改名（#2474）。旧名は履歴・素材メモを含む全追跡ファイルで禁止する（「凛とした」等の一般語は許す）。
+# 2026-11-04 追加（#2528）: kuyuri の姓「匂坂（さぎさか）」→「香坂（こうさか）」、suhail の「サイーフ」→「スハイル」。同じく全追跡ファイルで禁止。
+# 同日追加: saku / rei / hiyori の改名。店名「零-ZERO-」と国名「朝霧の王国」、小文字の内部ID・保存キーは維持する。
+# 2026-11-10 追加（オーナー指示「あげはの苗字を夜長に書き換えて」）: ageha の本名の姓「宵永」→「夜長（よなが）」。読み・ローマ字（Yonaga）は同じなので漢字表記だけ禁止する。
+# 2026-11-10 追加（オーナー指示「伏見会長の名前を千須にして　苗字を　せんす　と読む」・#3058 の続き）: sui の姓「伏見（ふしみ）」→「千須（せんす）」。
+#   remake/README.md など走査対象外にも残っていたので全追跡ファイルで禁止する。地名（伏見稲荷・伏見区・伏見桃山など）は許す。
+# 2026-11-07 追加（#2792）: samechan の姓「熱海」→「暑海（あつみ）」。リポジトリ内の出現は全て苗字としての用例だったため、全追跡ファイルでの禁止に含める。
+RENAMED_CHARACTER_RE = re.compile(r"久世|熱海|くぜ さく|朝霧 ?ひより|あさぎり ひより|零-REI-|匂坂|さぎさか|サギサカ|\bSagisaka\b|サイーフ|\bSaif\b|凛(?!とし|々|然|冽|想)|水瀬|白木 ?つむぎ|さぎさか りん|南雲|なぐも しゅうじ|デイビス|Steve Davis|波多野|ラシード|\bRashid\b|アゲハ(?!蝶|チョウ)|路上占い師|\bPak(?:i|ie)\b|サラリーマンさん|宵永|伏見(?!稲荷|区|桃山|城|港|駅|大社|の酒)|ふしみ|フシミ")
+RENAMED_CHARACTER_FIX = "旧キャラ名 → 綾取 陣（saku）／鴉葬レヰ（rei・本名と店名は維持）／泡沫ひより（hiyori・国名の朝霧は維持）／円頓寺 凛想（rio）／猫洞 つむぎ（tsumugi）／黒葉 ましろ（mashiro）／千須 豪（sui）／スティーブ・A・アッシュ（steve）／暑海 なぎさ（samechan）／ハリール（khalil）／あげは（ageha・本名 夜長 千代子）／辻占のオババ（uranaishi）／Packy（pakki）／鉄仮面さん（salaryman）／ファーリス（faris）に統一（#2474・#2528）"
 MINTO_HAIR_RE = re.compile(r"(?:mint|light)[ -]green (?:hair|twin)|black twin[ -]?tails|ミント(?:グリーン|色)のツイン|黒髪ツインテール|角ツインテール", re.IGNORECASE)
+# 2026-11-04 追加（#2528 残骸チェック）: 改名済みキャラの旧ローマ字。英字は前後が英数字でない時だけ検出する
+# （内部ID kuyuri / sui / maezono / samechan / dr_kemuri の小文字表記・ファイル名は対象外）。
+RENAMED_ROMAJI_RE = re.compile(r"(?<![A-Za-z0-9_])(?:Kuze|KUZE|Asagiri|ASAGIRI|REI|Rin|RIN|Nagumo|NAGUMO|Maezono|MAEZONO|Hatano|HATANO|Fushimi|FUSHIMI)(?![A-Za-z0-9_])|Dr\.? ?Kemuri")
+RENAMED_ROMAJI_FIX = "旧キャラ名（英字・旧表記） → Ayatori（saku）／Usuba（hiyori）／鴉葬レヰ（rei）／Rio（rio）／Sui・姓は Sensu（sui）／Uezono（maezono）／Shiomi（samechan）／Dr. Charcoal（dr_kemuri）に統一（#2528）"
+
+
+JSON_STRING_RE = re.compile(r'"(?:[^"\\]|\\.)*"')
+
+
+def has_renamed_romaji(line: str, json_strings: bool = False) -> bool:
+    """Keep raw checks and also inspect decoded JSON text on its original line."""
+    if RENAMED_ROMAJI_RE.search(line):
+        return True
+    if json_strings:
+        for match in JSON_STRING_RE.finditer(line):
+            try:
+                value = json.loads(match.group())
+            except json.JSONDecodeError:
+                continue
+            if RENAMED_ROMAJI_RE.search(value):
+                return True
+    return False
 
 
 def scan_character_identity(errors: list):
-    """素材のファイル名・疎チェックアウト未取得分も含め、追跡対象の旧名を防ぐ。"""
+    """疎チェックアウト未取得分も含め、追跡対象のみんとの旧髪設定を防ぐ。"""
     result = subprocess.run(
         ["git", "-C", str(REPO), "ls-files", "--cached", "--others", "--exclude-standard", "-z"],
         check=True, stdout=subprocess.PIPE,
@@ -103,9 +167,7 @@ def scan_character_identity(errors: list):
     for rel in sorted(set(result.stdout.decode("utf-8").split("\0")) - {""}):
         if "_legacy" in Path(rel).parts:
             continue
-        if LEGACY_CHARACTER_RE.search(rel):
-            errors.append(f"{rel}: 旧キャラIDのファイル名 → samechan に統一")
-        if rel in IDENTITY_FIXTURES:
+        if rel == "tools/check_legacy_terms.py":
             continue
         path = REPO / rel
         if path.suffix not in IDENTITY_TEXT_EXTENSIONS:
@@ -114,13 +176,11 @@ def scan_character_identity(errors: list):
             text = path.read_text(encoding="utf-8")
         except (UnicodeDecodeError, OSError):
             continue
-        if rel == "remake/js/core/state.js":
-            # この関数の外に互換IDや旧表記を増やすことは許さない。
-            text = re.sub(r"^function migrateSamechanIdentity\(value\) \{.*?^\}",
-                          lambda match: "\n" * match.group().count("\n"), text, flags=re.MULTILINE | re.DOTALL)
         for number, line in enumerate(text.splitlines(), 1):
-            if LEGACY_CHARACTER_RE.search(line):
-                errors.append(f"{rel}:{number}: 旧キャラ名・ID → サメちゃん / samechan に統一")
+            if RENAMED_CHARACTER_RE.search(line):
+                errors.append(f"{rel}:{number}: {RENAMED_CHARACTER_FIX}")
+            if has_renamed_romaji(line, json_strings=path.suffix == ".json"):
+                errors.append(f"{rel}:{number}: {RENAMED_ROMAJI_FIX}")
             if ("minto" in rel.lower() or "minto" in line.lower() or "みんと" in line) and MINTO_HAIR_RE.search(line):
                 # 過去の検品を現行の事実に書き換えず、誤記を明示した訂正注記は残せる。
                 if not ("旧" in line and "誤" in line):
@@ -166,6 +226,11 @@ def scan_file(path: Path, errors: list, warnings: list):
         for term, fix in LEGACY_ERROR.items():
             if term in line:
                 errors.append(f"{rel}:{i}: 旧名 '{term}' → {fix}")
+
+        if not str(rel).startswith(HISTORY_PATHS):
+            for term, fix in LEGACY_ERROR_CURRENT.items():
+                if term in line:
+                    errors.append(f"{rel}:{i}: 旧名 '{term}' → {fix}")
 
         for term, fix in LEGACY_STAT_ERROR.items():
             if term in line:

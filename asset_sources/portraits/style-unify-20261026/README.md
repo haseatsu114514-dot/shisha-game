@@ -1,14 +1,14 @@
 # 立ち絵の画風整理（2026-10-26 採用分）
 
-REI、組長、路上占い師、ヴォルク、ひより、チャコール博士の候補を比較し、オーナー確認後に25枚を正式素材へ反映した。みんと・アゲハのドット感を強めた別試作は見送り、現行素材を維持した。
+レヰ、組長、辻占のオババ、ヴォルク、ひより、チャコール博士の候補を比較し、オーナー確認後に25枚を正式素材へ反映した。みんと・あげはのドット感を強めた別試作は見送り、現行素材を維持した。
 
 ![採用前の比較。各組の左が旧版、右が採用候補](normal-lineup.jpg)
 
 | 人物 | 採用した枚数 | 正式素材 |
 |---|---:|---|
-| REI | 1 | `assets/sprites/characters/rei/` |
+| レヰ | 1 | `assets/sprites/characters/rei/` |
 | 組長 | 5 | `assets/sprites/characters/kumicho/` |
-| 路上占い師 | 1 | `assets/sprites/characters/uranaishi/` |
+| 辻占のオババ | 1 | `assets/sprites/characters/uranaishi/` |
 | ヴォルク | 1 | `assets/sprites/characters/volk/` |
 | ひより | 12 | `assets/sprites/characters/hiyori/` |
 | チャコール博士 | 5 | `assets/sprites/characters/dr_kemuri/` |

@@ -17,7 +17,7 @@
   },
   {
     "id": "rin",
-    "name": "凛",
+    "name": "凛想",
     "bytes": 1833700,
     "sha256": "e2ad397e0d21b612d558ec68936527a5a16987107194cd20dfdd815a040cc4ad",
     "path": "asset_sources/video-reference-sheets-20261021/rin/rin-reference-sheet.png",
@@ -41,7 +41,7 @@
   },
   {
     "id": "nagumo",
-    "name": "南雲",
+    "name": "須井",
     "bytes": 1753531,
     "sha256": "6ceda0b6c52346d71d47c4928a561677c1ec3bf9ce2b80f8e166c7fcea3bfa29",
     "path": "asset_sources/video-reference-sheets-20261021/nagumo/nagumo-reference-sheet.png",

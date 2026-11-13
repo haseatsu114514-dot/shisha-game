@@ -32,7 +32,7 @@ DB.ngMixes = [];
 DB.characters = Object.fromEntries(characters.map((c) => [c.id, c]));
 
 // 1. データ整合性: メーカー6社・表記統一・禁止語チェック
-assert.equal(flavors.length, 77); // 人物に結びつく11種・マウンテンミスト・サメちゃんのスプリングウォーター
+assert.equal(flavors.length, 84); // 人物に結びつく11種・マウンテンミスト・サメちゃんのスプリングウォーター・新フレーバー7種（NF01）
 const expectedPrefixToMaker = {
   "アルファーヘブン": "af",
   "ドバジ": "dobaj",
@@ -258,12 +258,12 @@ assert.equal(isSuyakiBowl("silicone_bowl"), false);
 
 // 5. 審査員の最終得点式（1本化・同品質 Q=80 で好みだけを変えた計算例）
 assert.equal(BASE_PREF_SCALE, 20);
-assert.equal(judgeMaxPrefDelta("nagumo"), 2.0);
+assert.equal(judgeMaxPrefDelta("sui"), 2.0);
 assert.equal(judgeMaxPrefDelta("dr_kemuri"), 3.0);
 assert.equal(judgeMaxPrefDelta("maezono"), 4.4);
 
 const expectedAtQ80 = {
-  nagumo: [78.0, 79.0, 80.0, 81.0, 82.0],
+  sui: [78.0, 79.0, 80.0, 81.0, 82.0],
   dr_kemuri: [77.0, 78.5, 80.0, 81.5, 83.0],
   maezono: [75.6, 77.8, 80.0, 82.2, 84.4],
 };
@@ -341,6 +341,21 @@ assert.equal(finalize(evenCup(3)).total, 70, "real chapter 3 transition must sto
 assert.equal(prepared.rehearsal, "great", "keep the historical preparation record");
 assert.equal(prepared.flags._last_night, "practice");
 
+// #2091: 前夜に苦手工程を反復し★1つ以上で終えたら +1。★0・記録の無い旧セーブ・第2章以降は加点しない。
+for (const [chapter, eve, expected] of [
+  [1, { choice: "drill", drillTier: 2 }, 1], [1, { choice: "drill", drillTier: 1 }, 1],
+  [1, { choice: "drill", drillTier: 0 }, 0], [1, { choice: "drill" }, 0], [1, undefined, 0],
+  [2, { choice: "drill", drillTier: 2 }, 0],
+]) {
+  const saved = newGame();
+  saved.chapter = chapter;
+  saved.flags._last_night = "drill";
+  if (eve) saved.flags._ch1_eve = eve;
+  assert.equal(bonusOf().bonus, expected, `drill eve chapter=${chapter} ${JSON.stringify(eve)}`);
+  assert.equal(finalize(evenCup(chapter)).total, 70 + expected);
+  if (expected) assert.deepEqual(bonusOf().notes, ["前夜の反復"]);
+}
+
 for (const chapter of [1, 2, 3, 4, 5]) {
   for (const rehearsal of [null, "rough", "good", "great"]) {
     for (const choice of [undefined, "sleep_early", "talk_sumi", "practice"]) {
@@ -387,3 +402,16 @@ assert.equal(Object.hasOwn(lotosCup.parts, "holes"), false);
 assert.equal(lotosCup.total, 62.5, "four completed parts share the score when foil is skipped");
 assert.equal(improvementOf(lotosCup), "次の練習：炭の全面が赤くなる頃合いを確かめよう。");
 
+
+// #2190 P03: 炭焼きが一番弱い一台の「次の練習」は、炭焼き結果の助言と同じ向き（遅取り＝待たずに／早取り＝待ってから）。
+for (const [picks, expected] of [
+  [["over", "over", "over"], "次の練習：炭の全面が赤くなったら、待たずに取り出そう。"],
+  [["hot", "just", "just"], "次の練習：炭の全面が赤くなったら、待たずに取り出そう。"],
+  [["early", "pre", "just"], "次の練習：黒い面が消えるまで待ってから取り出そう。"],
+  [["early", "over", "just"], "次の練習：黒い面が消えて全面が赤くなった炭から取り出そう。"],
+]) {
+  newGame();
+  const cup = finalize({ ...evenCup(1), heat: { score: 40, picks } });
+  assert.equal(improvementOf(cup), expected, `heat practice follows picks ${picks.join(",")}`);
+}
+console.log("[craft scoring spec] PASS: heat practice tip matches early/late pick direction");

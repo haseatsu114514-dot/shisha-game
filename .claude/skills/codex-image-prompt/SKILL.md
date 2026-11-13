@@ -13,22 +13,23 @@ description: 画像（立ち絵・背景・CG・UIパーツ）の新規生成や
 
 | 種類 | 正本（書式・スタイル指針をここから写す） |
 |---|---|
-| 背景 | `tools/bg_prompts.txt` — 英語プロンプト・1280x720・no people・painterly。画風基準は `bg_eden_shop.png` |
-| 立ち絵・表情差分 | `docs/image_generation_guide.md` — マゼンタ(#FF00FF)背景・表情は1枚のシートで一括生成・pixelize前提 |
-| 作りパートUI・小物 | `docs/asset_gen_prompts.md` — 共通スタイル指針＋分業表＋現行の作業台素材表（ファイル名→使う場所） |
-| CG（一枚絵） | `docs/cg_production_plan.md` ＋ 背景の書式を流用 |
+| 背景 | [背景の規格](../../../docs/background_standard.md) — 1920x1080（生成は2048x1152以上）・no people・画風の基準画像4枚と2節の英文。書式と既存の依頼文は `tools/bg_prompts.txt`。受け取ったら `tools/background_catalog.py sync` で台帳に記録 |
+| 立ち絵・表情差分 | [立ち絵の規格](../../../docs/portrait_standard.md) — 画風は3節の英文、参照画像は6節の4枚（本人・頭身の目標・画風の目標2枚）、受け取ったら2節で測り7節の並び検査。1回の生成で1人・1表情・人物1300px以上。組み込みの手順は `character-portrait-remaster` / `portrait-fix` スキル |
+| 作りパートUI・小物 | `docs/prompts/asset_gen_prompts.md` — 共通スタイル指針＋分業表＋現行の作業台素材表（ファイル名→使う場所） |
+| CG（一枚絵） | `docs/prompts/cg_production_plan.md` ＋ 背景の書式を流用 |
+| ロード画面の2コマ漫画 | `asset_sources/loading-comics/README.md` — 1536x1024 の下敷き `template/` を添付・コマ 720x480×2（3:2）・題名や話数は描かない・受領後は `tools/loading_comic_cut.py` で 3:2 の WebP 2枚に揃えて登録 |
 
 - キャラの容姿・雰囲気は `brand/character_profiles.md` と `data/characters.json` から写す。
   ⚠️ ガイド内の旧サンプルに「自信なさげ」等の**旧人格の雰囲気語**が残っていることがある。
   雰囲気の形容は最新の人格設定（docs/gameplay_agent_reference.md「主人公」節など）に合わせて書く。
 - 夜/昼の差分背景は `_day`/`_night` ペア命名（`resolveSceneBg()` が自動切替に使う）。
 - 台詞側と画像側の資料の対応は `docs/shisha_reference.md`（炭の個数は画像ではHMD内2〜3個、制作工程ではアルミ上に三角3個）。
-- シーシャ台・ホース・炭が写る画像は、まず[シーシャ描写の早見表](../../../asset_sources/shisha-hardware-reference/drawing-sheet/README.md)の「生成前に決める8行」「プロンプトに貼る文」をプロンプトへ入れる。早見表・構造図は資料なので添付画像にしない（図の見た目が移る）。添付するのは各資料に記録した実物写真（台・HMDの装着状態・手持ちなら掌が写る実写）。
-- ヒロイン日常・タイトルCGでは[専用の追加生成ルール](../../../asset_sources/shisha-hardware-reference/heroine-title-cg-rules-20261009.md)も必読。正規立ち絵を本人・年齢感、タイトル絵を質感の参照として実画像を添付し、完成・喫煙状態はHMD必須・直炭禁止。具体的な一モデルと適合ボウル・蓋・炭を先に選び、少量の色や仕上げだけ変える。候補間で台・背景・時間帯・行動を変え、植物を必須にしない。出力後は顔・縮尺・HMDの混成・ホース接続を目視し、NGは修正・再生成する。
+- シーシャ台・ハガル・HMD・炭・ホースが写る画像は、[画像生成の必須手順](../../../docs/shisha_reference.md#4-画像生成の必須手順機材の形と構造)（`docs/shisha_reference.md` §4）に従う: 「生成前に決める8行」を埋め、「プロンプトに貼る文」をそのまま入れ、参考写真を見る（渡せるなら渡す）。参考写真と機材の資料は非公開リポジトリ `siryou` の `shisha-hardware-reference/`（PCではゲームのリポジトリと同じ階層の `../siryou`）。早見表・構造図は資料なので添付画像にしない（図の見た目が移る）。Codexアプリで自分が生成するときも同じ手順で、出力後は §4.4 のチェックを通してから採用する。機材と内装は日本のシーシャバーを基準にし（§4.0.5。日本の店・機材の写真116枚は `../siryou/shisha-hardware-reference/web-refs/images/`）、`photos/` の海外の写真は構造の確認だけに使う。
+- ヒロイン日常・タイトルCGでは[専用の追加生成ルール](https://github.com/haseatsu114514-dot/siryou/blob/main/shisha-hardware-reference/heroine-title-cg-rules-20261009.md)も必読。正規立ち絵を本人・年齢感、タイトル絵を質感の参照として実画像を添付し、完成・喫煙状態はHMD必須・直炭禁止。具体的な一モデルと適合ボウル・蓋・炭を先に選び、少量の色や仕上げだけ変える。候補間で台・背景・時間帯・行動を変え、植物を必須にしない。出力後は顔・縮尺・HMDの混成・ホース接続を目視し、NGは修正・再生成する。
 
 ## Step 2 — プロンプトに必ず含める6点セット
 
-機材の縮尺は実際の装着写真（受け皿・ステム・ベースまで）と、手持ちの場合は掌・指を含む実写で確認する。単体の商品写真と寸法だけで済ませない。[ホースのY字分岐NG実例](../../../asset_sources/shisha-hardware-reference/ng-examples/README.md)を読んで、接続口から手元まで一本で両方向に追える経路を設計し、第三の端・輪郭の融合した交差を出力後に除外する。
+機材の縮尺は実際の装着写真（受け皿・ステム・ベースまで）と、手持ちの場合は掌・指を含む実写で確認する。単体の商品写真と寸法だけで済ませない。**ハガルとHMDは大きく出やすい**ので、§4.1.1 のとおり大きさを数値・台全体との比・人物の顔との比の3つで書き（§4.2 の文に入っている）、縮尺の参照に台の全体か手持ちの写真を最低1枚渡し、接写には「形だけ。写真の中の大きさは真似しない」と書き添える。台は人物と同じ奥行きに置いて受け皿まで写す。生成後はハガル＋HMD＋炭の高さを台全体・顔の高さと測って比べる（2026-11-02 SHR10）。[ホースのY字分岐NG実例](../../../asset_sources/shisha-hardware-reference/ng-examples/README.md)を読んで、接続口から手元まで一本で両方向に追える経路を設計し、第三の端・輪郭の融合した交差を出力後に除外する。
 
 1. **スタイル指針**（正本の共通指針を冒頭にそのまま貼る。要約・言い換えしない）
 2. **保存先とファイル名**（例: `assets/backgrounds/bg_xxx.png`。命名は既存に倣う）
@@ -36,7 +37,7 @@ description: 画像（立ち絵・背景・CG・UIパーツ）の新規生成や
 4. **場面の内容**（人物なし/あり、時間帯、光源。既存の近い画像を参照基準として指定）
 5. **焼き込み禁止**: 文字・ロゴ・数字・ゲージ・watermark。作りパート素材では
    穴・煙・炭の明滅・水泡など**コードが描く動的要素**も焼き込まない
-   （`docs/asset_gen_prompts.md` の分業表が正）
+   （`docs/prompts/asset_gen_prompts.md` の分業表が正）
 6. **NG形状**: シーシャ台の先端は小さい凸型金属ポスト（カップ型・ボウル一体型にしない）
 
 **修正依頼**の場合はさらに: 現画像のパスと「何がどうダメか」を具体的に
@@ -46,13 +47,13 @@ description: 画像（立ち絵・背景・CG・UIパーツ）の新規生成や
 
 - コピペ可能な**1つのコードブロック**で出す（前置き・後書きを混ぜない）。
 - 複数枚頼むときは `tools/bg_prompts.txt` 式に「--- n/N: ファイル名 ---」で区切る。
-- 立ち絵の表情差分は**必ず同一生成内のグリッドシート**で頼む（別々に生成すると顔が変わる）。
+- 立ち絵の表情差分は**1回の生成で1表情**。参照は規格6節の4枚を役割付きで添付する（横並びのシートは人物が縮むので使わない）。
 
 ## Step 4 — 画像を受け取った後の組み込み（こちら側の仕事）
 
 ```bash
 # 立ち絵: 変換→正規化→ビルド（詳細は portrait-fix スキル E節）
-python3 tools/pixelize.py sheet.png --char <id> --slice 3x2 --names normal,smile,sad,serious,surprise
+# （配置・正規化は character-portrait-remaster / portrait-fix スキルの手順）
 # 背景: そのまま保存 or pixelize --key none --grid 360 --out assets/backgrounds/<name>.png
 python3 remake/tools/build_manifest.py
 ```

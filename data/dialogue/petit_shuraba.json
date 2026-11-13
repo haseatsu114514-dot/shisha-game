@@ -1,0 +1,609 @@
+{
+  "comment": "プチ修羅場（2026-11-11 オーナー「他にもプチ修羅場みたいなのも導入したい」→「全部入れよう」・SRB10〜）。恋人が2人以上いる間に起きる、バレかける小さな場面。どれも一度きりで、行動・体力・能力の報酬は無い。途中では謝罪・和解・破局を決めない（本格的な修羅場は第5章の打ち上げかスタッフロールの後。brand/story_and_structure.md）。選択肢はどれも「ごまかし方」で、読んだ場面は core/petit-shuraba.js が数え、最後の修羅場で一行ずつ返る（ch5_party_shuraba_open・shuraba_open の petit_* の枝）。再生の条件と差し込み口は daily/petit-shuraba.js。petit_notice_<ID> は恋人ごとの「気づきかけ」で、その人の最後の反応（relationship_conflicts.json の shuraba_<ID>）の前振り。相手は気づきかけて、聞かないでいてくれる。",
+  "dialogues": [
+    {
+      "dialogue_id": "petit_notice_rio",
+      "comment": "気づきかけ・凛想（香り）。デートの別れぎわ。最後の反応「違う店の香りがしたから、気にはなってた」「でも、香りだけじゃ決めない」の前振り。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "別れぎわ、凛想さんが俺の上着の襟に、少しだけ顔を寄せた。" },
+        { "speaker": "rio", "face": "normal", "text": "……よその店の香りがする。うちの棚には無い葉だね", "beat": 400 },
+        { "speaker": "hajime", "face": "surprise", "text": "（……昼に寄った店の煙だ。襟に、残ってた）" },
+        { "speaker": "rio", "face": "serious", "text": "仕事柄、鼻は確かなの。どこの店か、当ててあげようか" },
+        {
+          "type": "choice",
+          "id": "petit_notice_rio_answer",
+          "choices": [
+            { "text": "「勉強で寄りました」と言う", "next": "study" },
+            { "text": "葉の話にそらす", "next": "dodge" },
+            { "text": "何も言わない", "next": "silent" }
+          ]
+        },
+        { "speaker": "rio", "face": "normal", "text": "香りだけじゃ、何も決めない。それが私の仕事だから" },
+        { "speaker": "", "face": "", "text": "凛想さんは、それ以上聞かなかった。聞かないでくれた、のだと思う。" }
+      ],
+      "branches": {
+        "study": [
+          { "speaker": "hajime", "face": "normal", "text": "……ほかの店の、勉強で寄りました" },
+          { "speaker": "rio", "face": "smile", "text": "勉強熱心だね、モルモットくん" }
+        ],
+        "dodge": [
+          { "speaker": "hajime", "face": "normal", "text": "……凛想さんの今日の葉、新しく入ったやつですか" },
+          { "speaker": "rio", "face": "smug", "text": "話のそらし方まで、教えた覚えはないけど" }
+        ],
+        "silent": [
+          { "speaker": "", "face": "", "text": "何も言えなかった。襟に手をやることも、できなかった。" },
+          { "speaker": "rio", "face": "normal", "text": "……答えなくていいよ。今のは、業務外の質問" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "petit_notice_tsumugi",
+      "comment": "気づきかけ・つむぎ（色）。共感覚はその時の彼女の感じ方で、嘘発見器ではない。濁りを体の疲れとして気遣う（brand/story_and_structure.md）。濁りの理由に気づいているのは、はじめだけ。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "帰りぎわ、つむぎがペンを止めて、俺の顔を見上げた。" },
+        { "speaker": "tsumugi", "face": "normal", "text": "……はじめさん。今日は少し、色が混ざってます", "beat": 400 },
+        { "speaker": "hajime", "face": "surprise", "text": "色？" },
+        { "speaker": "tsumugi", "face": "sad", "text": "いつもは、あたたかい色なのに。今日は、縁が濁ってて" },
+        { "speaker": "tsumugi", "face": "normal", "text": "……疲れて、ますか？ ちゃんと、寝てますか" },
+        { "speaker": "hajime", "face": "normal", "text": "（心配してくれている。……濁りの理由は、疲れじゃない）" },
+        {
+          "type": "choice",
+          "id": "petit_notice_tsumugi_answer",
+          "choices": [
+            { "text": "「寝不足かも」と言う", "next": "sleep" },
+            { "text": "絵の話にそらす", "next": "dodge" },
+            { "text": "何も言わない", "next": "silent" }
+          ]
+        },
+        { "speaker": "", "face": "", "text": "つむぎは、濁った色のことを、それ以上は口にしなかった。" },
+        { "speaker": "hajime", "face": "sad", "text": "（色まで、ごまかせるわけがないのに）" }
+      ],
+      "branches": {
+        "sleep": [
+          { "speaker": "hajime", "face": "normal", "text": "……最近、ちょっと寝不足で" },
+          { "speaker": "tsumugi", "face": "smile", "text": "……じゃあ、今日は早く帰ってください。約束です" }
+        ],
+        "dodge": [
+          { "speaker": "hajime", "face": "normal", "text": "つむぎちゃんの絵の色のほうが、気になるな" },
+          { "speaker": "tsumugi", "face": "surprise", "text": "……ごまかすの、下手です、……でも、見せます" }
+        ],
+        "silent": [
+          { "speaker": "", "face": "", "text": "うまい言葉が、出てこなかった。" },
+          { "speaker": "tsumugi", "face": "normal", "text": "……言いたくなったら、でいいです。待つのは、慣れてるので" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "petit_notice_ageha",
+      "comment": "気づきかけ・あげは（プリクラ）。最後の反応「さっきから、なんか変だと思ってた。でも、当てっこはもういい」の前振り。プリクラを撮ったことがあるかどうかには触れない（これから撮る話）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "別れぎわ、あげはが自分のスマホの裏を、こっちに向けた。" },
+        { "speaker": "ageha", "face": "smile", "text": "ね、今度プリ撮ろ。で、ハジメっちのスマホの裏に貼んの" },
+        { "speaker": "hajime", "face": "surprise", "text": "（スマホの、裏。……人前で、毎日出すものだ）", "beat": 400 },
+        {
+          "type": "choice",
+          "id": "petit_notice_ageha_answer",
+          "choices": [
+            { "text": "「ケースの内側に」と言う", "next": "inside" },
+            { "text": "「財布に入れる」と言う", "next": "wallet" },
+            { "text": "何も言わない", "next": "silent" }
+          ]
+        },
+        { "speaker": "ageha", "face": "normal", "text": "……てかさ。今日のハジメっち、なんか変じゃね？" },
+        { "speaker": "ageha", "face": "smile", "text": "……ま、いいや。当てっこは、うち得意だし" },
+        { "speaker": "", "face": "", "text": "あげはは笑って手を振った。笑い返す顔が、うまく作れなかった。" }
+      ],
+      "branches": {
+        "inside": [
+          { "speaker": "hajime", "face": "normal", "text": "ケースの内側がいいな。剥がれないし" },
+          { "speaker": "ageha", "face": "normal", "text": "えー、見えないじゃん。……ま、いっか。うちだけの秘密で" }
+        ],
+        "wallet": [
+          { "speaker": "hajime", "face": "normal", "text": "財布に入れとくよ。なくしたくないから" },
+          { "speaker": "ageha", "face": "smile", "text": "お守りかよ、うける。……でも、ちょっとうれしい" }
+        ],
+        "silent": [
+          { "speaker": "", "face": "", "text": "返事が、一拍遅れた。" },
+          { "speaker": "ageha", "face": "normal", "text": "……あ、ごめ。ノリで言った。嫌なら、全然いいよ" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "petit_notice_samechan",
+      "comment": "気づきかけ・サメちゃん（コロちゃんが口をすべらせる）。コロちゃんは一人称「余」、はじめは「勇者はじめ」、サメちゃんは「側近」。本人の「じゃ」「おる」を使わず、落ち着いて本心をばらす（data/characters.json）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "帰りぎわ、サメちゃんの右手で、コロちゃんが俺のほうを向いた。" },
+        { "speaker": "samechan", "face": "ventriloquism", "text": "勇者はじめ。近ごろ、よその城の煙の匂いがする", "voice": "korochan", "beat": 400 },
+        { "speaker": "samechan", "face": "surprise", "text": "こ、コロちゃん！ 何を言うのじゃ！" },
+        { "speaker": "samechan", "face": "ventriloquism", "text": "側近は、三日前から気にしている。余は、代わりに言っただけだ", "voice": "korochan" },
+        { "speaker": "samechan", "face": "surprise", "text": "い、言わぬ約束じゃろう！ ……すまぬ、今のは、わしではないのじゃ" },
+        {
+          "type": "choice",
+          "id": "petit_notice_samechan_answer",
+          "choices": [
+            { "text": "「よその店の勉強です」と言う", "next": "study" },
+            { "text": "コロちゃんに話しかける", "next": "dodge" },
+            { "text": "何も言わない", "next": "silent" }
+          ]
+        },
+        { "speaker": "", "face": "", "text": "サメちゃんは、コロちゃんの口をそっと手でふさいだ。" },
+        { "speaker": "", "face": "", "text": "自分の口も、一緒に結んでいた。" }
+      ],
+      "branches": {
+        "study": [
+          { "speaker": "hajime", "face": "normal", "text": "……よその店の、勉強です" },
+          { "speaker": "samechan", "face": "normal", "text": "う、うむ。勉強は大事じゃ。……わしも、分かっておる" }
+        ],
+        "dodge": [
+          { "speaker": "hajime", "face": "normal", "text": "コロちゃん、鼻がいいんですね" },
+          { "speaker": "samechan", "face": "ventriloquism", "text": "サメの鼻は、海でいちばん遠くまで届く", "voice": "korochan" },
+          { "speaker": "samechan", "face": "normal", "text": "……こら。得意げにするでない" }
+        ],
+        "silent": [
+          { "speaker": "", "face": "", "text": "返事が、出てこなかった。" },
+          { "speaker": "samechan", "face": "normal", "text": "……よい。答えずともよいのじゃ。聞いたのは、コロちゃんじゃ" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "petit_notice_hiyori",
+      "comment": "気づきかけ・ひより（総務の目）。最後の反応「……大丈夫って、先に言いそうになっちゃった」の前振り（ここでは先に言ってしまう）。inner は、はじめには聞こえない本心。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "別れぎわ、ポケットのスマホが震えた。画面を見て、すぐに伏せた。" },
+        { "speaker": "hiyori", "face": "normal", "text": "……今の、伏せ方", "inner": "総務三年目の目は、その伏せ方を知っている", "beat": 400 },
+        { "speaker": "hiyori", "face": "sad", "text": "ううん、大丈夫。私、通知ひとつより軽い女だから", "inner": "大丈夫って、先に言っちゃった。誰から。誰からなの" },
+        {
+          "type": "choice",
+          "id": "petit_notice_hiyori_answer",
+          "choices": [
+            { "text": "「スミさんからです」と言う", "next": "sumi" },
+            { "text": "終電の話にそらす", "next": "dodge" },
+            { "text": "何も言わない", "next": "silent" }
+          ]
+        },
+        { "speaker": "hiyori", "face": "smile", "text": "じゃあ、またね。煙みたいに、消えるから", "inner": "消えない。帰って、今の伏せ方を百回思い出す" },
+        { "speaker": "", "face": "", "text": "ひよりさんの背中が角を曲がるまで、スマホを出せなかった。" }
+      ],
+      "branches": {
+        "sumi": [
+          { "speaker": "hajime", "face": "normal", "text": "……スミさんからです。シフトの話で" },
+          { "speaker": "hiyori", "face": "smile", "text": "そっか。元バイトとしては、それは出たほうがいいよ", "inner": "スミさんの連絡で、あんな顔はしない" }
+        ],
+        "dodge": [
+          { "speaker": "hajime", "face": "normal", "text": "ひよりさん、終電、大丈夫ですか" },
+          { "speaker": "hiyori", "face": "normal", "text": "……儚い女に、終電の心配をするのね", "inner": "そらした。今、きれいにそらした" }
+        ],
+        "silent": [
+          { "speaker": "", "face": "", "text": "言い訳が、ひとつも出てこなかった。" },
+          { "speaker": "hiyori", "face": "normal", "text": "……いいの。聞かないでおいてあげる", "inner": "聞きたい。聞けない。全然、大丈夫じゃない" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "petit_notice_mashiro",
+      "comment": "気づきかけ・ましろ（数えてた）。最後の反応「作れない日も座ってていいよ。それは、変わらない」「でも、僕の隣に座る約束は、別」の前振り。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "帰りぎわ、ましろがカップを両手で持ったまま、こっちを見た。" },
+        { "speaker": "mashiro", "face": "normal", "text": "はじめくん、今日ねぇ、スマホ、三回見たよ", "beat": 400 },
+        { "speaker": "hajime", "face": "surprise", "text": "……数えてたの？" },
+        { "speaker": "mashiro", "face": "yawn", "text": "ん、暇だったから。……ふぁ。お茶が冷めるまでに、三回" },
+        { "speaker": "mashiro", "face": "normal", "text": "誰か、待たせてる？" },
+        {
+          "type": "choice",
+          "id": "petit_notice_mashiro_answer",
+          "choices": [
+            { "text": "「店の連絡」と言う", "next": "shop" },
+            { "text": "お茶の話にそらす", "next": "dodge" },
+            { "text": "何も言わない", "next": "silent" }
+          ]
+        },
+        { "speaker": "mashiro", "face": "normal", "text": "見てても、いいよ。僕は、お茶を淹れてるから" },
+        { "speaker": "", "face": "", "text": "ましろは、四回目を数えなかった。数えないでいてくれた、のだと思う。" }
+      ],
+      "branches": {
+        "shop": [
+          { "speaker": "hajime", "face": "normal", "text": "……店の連絡。スミさん、心配性だから" },
+          { "speaker": "mashiro", "face": "smile", "text": "そっかぁ。いい師匠だねぇ" }
+        ],
+        "dodge": [
+          { "speaker": "hajime", "face": "normal", "text": "このお茶、おいしいね。何の葉？" },
+          { "speaker": "mashiro", "face": "normal", "text": "ブラックティー、……話、そらしたねぇ" }
+        ],
+        "silent": [
+          { "speaker": "", "face": "", "text": "答えが、出てこなかった。" },
+          { "speaker": "mashiro", "face": "normal", "text": "……いいよぉ。ここは、黙って座ってていい席だから" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "petit_notice_minto",
+      "comment": "気づきかけ・みんと（偵察）。デートの帰りは私服の栞（声が小さい・短文・一人称「私」。表情は ura_*）。最後の反応「お店で笑うのも、ここで怒るのも、どっちも私だよ」の前振り。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "帰りぎわ、栞さんがバッグの紐を握ったまま、立ち止まった。" },
+        { "speaker": "minto", "face": "ura_normal", "text": "……あのね。この前、偵察に出たの。よその店の、看板を見に" },
+        { "speaker": "minto", "face": "ura_normal", "text": "そしたら、はじめくんに似た人がいて、……誰かと、歩いてた", "beat": 400 },
+        { "speaker": "hajime", "face": "surprise", "text": "（……見られてた）" },
+        { "speaker": "minto", "face": "ura_smile", "text": "……似た人、だよね。帽子の人なんて、たくさんいるし" },
+        {
+          "type": "choice",
+          "id": "petit_notice_minto_answer",
+          "choices": [
+            { "text": "「人違いだよ」と言う", "next": "mistake" },
+            { "text": "偵察の話にそらす", "next": "dodge" },
+            { "text": "何も言わない", "next": "silent" }
+          ]
+        },
+        { "speaker": "minto", "face": "ura_smile", "text": "明日はまた、お店で笑うから、……今のは、栞のひとりごと" },
+        { "speaker": "", "face": "", "text": "栞さんは、いつもより少しだけ早く、手を振った。" }
+      ],
+      "branches": {
+        "mistake": [
+          { "speaker": "hajime", "face": "normal", "text": "……人違いだよ、たぶん" },
+          { "speaker": "minto", "face": "ura_normal", "text": "……ぅん。そう、だよね。……ごめんね、変なこと聞いて" }
+        ],
+        "dodge": [
+          { "speaker": "hajime", "face": "normal", "text": "偵察、まだ続けてるんだ。熱心だね" },
+          { "speaker": "minto", "face": "ura_smug", "text": "……話をそらすの、うまくなったね。誰に教わったの" }
+        ],
+        "silent": [
+          { "speaker": "", "face": "", "text": "うなずくことも、首を振ることも、できなかった。" },
+          { "speaker": "minto", "face": "ura_sad", "text": "……答えなくて、いいよ。聞いた私が、悪いの" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "petit_notice_noor",
+      "comment": "気づきかけ・ヌール（時差のテレビ電話）。ドバイに住むので、ほかの恋人と会った帰り道にかかってくる（時差は五時間。昼に会った日も夜に会った日も読める文面にする）。最後の反応「遠いから、隠せると思った？」の前振り。",
+      "metadata": { "bg": "bg_street" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "帰り道、ヌールさんからテレビ電話がかかってきた。" },
+        { "speaker": "", "face": "", "text": "ドバイとの時差は、五時間ある。" },
+        { "speaker": "noor", "face": "smile", "text": "ハジメ！ ……あ、外だ。今、帰るところ？" },
+        { "speaker": "noor", "face": "normal", "text": "なんだか、楽しかった顔してる。誰かと、会ってた？", "beat": 400 },
+        { "speaker": "hajime", "face": "surprise", "text": "（……顔に、残ってた）" },
+        {
+          "type": "choice",
+          "id": "petit_notice_noor_answer",
+          "choices": [
+            { "text": "「店の帰りです」と言う", "next": "shop" },
+            { "text": "カメラを空へ向ける", "next": "dodge" },
+            { "text": "何も言わない", "next": "silent" }
+          ]
+        },
+        { "speaker": "noor", "face": "normal", "text": "こっちの砂、今日もきれいだよ。……いつか、同じ時間に見たいな" },
+        { "speaker": "", "face": "", "text": "通話が切れた。暗くなった画面に、さっきまでの自分の顔が映っていた。" }
+      ],
+      "branches": {
+        "shop": [
+          { "speaker": "hajime", "face": "normal", "text": "……店の帰りです。今日は、お客さんが多くて" },
+          { "speaker": "noor", "face": "smile", "text": "そっか。ハジメの店、いつか行ってみたいな" }
+        ],
+        "dodge": [
+          { "speaker": "", "face": "", "text": "スマホを、空のほうへ向けた。" },
+          { "speaker": "noor", "face": "normal", "text": "……あ、空。……ハジメ、顔を隠すの、上手になったね" }
+        ],
+        "silent": [
+          { "speaker": "", "face": "", "text": "返事までに、少し間があいた。" },
+          { "speaker": "noor", "face": "normal", "text": "……電波、遠いね。五時間ぶん" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "petit_date_call",
+      "comment": "デート中の着信。相手の名前を出さない共通の場面で、選択肢のあとに、デートの相手ごとの一言（petit_date_call_<ID>）を続けて読む（daily/petit-shuraba.js が一つの会話につなぐ）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "テーブルの上で、スマホが震えた。画面が、上を向いていた。" },
+        { "speaker": "", "face": "", "text": "表示された名前は、今ここにいない、もう一人の恋人のものだった。", "beat": 400 },
+        { "speaker": "hajime", "face": "surprise", "text": "（……今、鳴るか）" },
+        {
+          "type": "choice",
+          "id": "petit_date_call_answer",
+          "choices": [
+            { "text": "画面を伏せる", "next": "flip" },
+            { "text": "「店からだ」と言う", "next": "shop" },
+            { "text": "電源を切る", "next": "off" }
+          ]
+        }
+      ],
+      "branches": {
+        "flip": [
+          { "speaker": "", "face": "", "text": "そっと裏返した。裏返す手が、自分でも分かるくらい速かった。" }
+        ],
+        "shop": [
+          { "speaker": "hajime", "face": "normal", "text": "……店からだ。あとで、かけ直すよ" },
+          { "speaker": "", "face": "", "text": "嘘は、思ったよりなめらかに出た。" }
+        ],
+        "off": [
+          { "speaker": "", "face": "", "text": "長押しして、画面を消した。消える前に、もう一度だけ震えた。" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "petit_date_call_tsumugi",
+      "lines": [
+        { "speaker": "tsumugi", "face": "normal", "text": "……出なくて、いいんですか" },
+        { "speaker": "tsumugi", "face": "smile", "text": "……じゃあ、今は、こっちを見ててください" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_date_call_minto",
+      "lines": [
+        { "speaker": "minto", "face": "ura_normal", "text": "……出て、いいよ。私、待てるから" },
+        { "speaker": "minto", "face": "ura_smile", "text": "……なんてね。ちょっとだけ、妬いた" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_date_call_rio",
+      "lines": [
+        { "speaker": "rio", "face": "normal", "text": "鳴ってるよ。出ないなら、通知は切っておくこと" },
+        { "speaker": "rio", "face": "smug", "text": "業務連絡なら、なおさらね" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_date_call_ageha",
+      "lines": [
+        { "speaker": "ageha", "face": "normal", "text": "え、出なよ。うち、待つし" },
+        { "speaker": "ageha", "face": "smile", "text": "……ま、いっか。今は、うちの時間だし" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_date_call_samechan",
+      "lines": [
+        { "speaker": "samechan", "face": "normal", "text": "む。鳴っておるぞ。出ぬのか？" },
+        { "speaker": "samechan", "face": "smile", "text": "……そうか。なら、今はわしの番じゃな" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_date_call_hiyori",
+      "lines": [
+        { "speaker": "hiyori", "face": "normal", "text": "……鳴ってるよ。大事な電話じゃ、ないの？", "inner": "画面、見えた。名前までは見えなかった。見えなくてよかった" },
+        { "speaker": "hiyori", "face": "sad", "text": "ううん、いいの。私は、待つのが似合う女だから", "inner": "待たない。次に鳴ったら、名前を見る" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_date_call_mashiro",
+      "lines": [
+        { "speaker": "mashiro", "face": "normal", "text": "鳴ってるねぇ、……出ないの？" },
+        { "speaker": "mashiro", "face": "smile", "text": "そっかぁ。じゃあ、お茶、もう一杯淹れるね" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_date_call_close",
+      "lines": [
+        { "speaker": "", "face": "", "text": "着信は、それきり鳴らなかった。鳴らないことまで、気になった。" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_lime_misfire_open",
+      "comment": "LIMEの誤爆。デートの帰り道に、お礼を別の恋人へ送ってしまう。この後に相手のトーク（remake/data/lover.json の misfire）を開き、閉じた後に petit_lime_misfire_close を読む（daily/petit-shuraba.js）。",
+      "metadata": { "bg": "bg_street" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "帰り道、歩きながらお礼のLIMEを打った。" },
+        { "speaker": "", "face": "", "text": "送信してから、いちばん上の名前に気づいた。", "beat": 400 },
+        { "speaker": "hajime", "face": "surprise", "text": "（……送り先が、違う）" },
+        { "type": "sfx", "id": "phone_receive" },
+        { "speaker": "", "face": "", "text": "取り消すより先に、既読がついた。" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_lime_misfire_close",
+      "metadata": { "bg": "bg_street" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "スマホをしまっても、指先が冷たかった。" },
+        { "speaker": "", "face": "", "text": "本当に送りたかった相手には、まだ何も送っていない。" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_cross_open",
+      "comment": "居合わせ。恋人の店で一服して帰ろうとした時、別の恋人が客として来ていたと気づく（訪問を終えた後に読む）。共通の入り → 店の恋人の一言（petit_cross_host_<ID>）→ 客の恋人の一言（petit_cross_guest_<ID>）→ 共通の山場（petit_cross_close）の順に、一つの会話につないで読む（daily/petit-shuraba.js）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "席を立とうとして、足が止まった。" },
+        { "speaker": "", "face": "", "text": "奥の席に、見覚えのある横顔があった。", "beat": 400 },
+        { "speaker": "hajime", "face": "surprise", "text": "（……いつから、いたんだ）" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_cross_host_minto",
+      "lines": [
+        { "speaker": "minto", "face": "smile", "text": "はじめくん、もう帰っちゃうの？ みんと、さみしいな♡" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_cross_host_rio",
+      "lines": [
+        { "speaker": "rio", "face": "normal", "text": "もう帰るの、モルモットくん。次の検証日は、空けておいて" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_cross_host_ageha",
+      "lines": [
+        { "speaker": "ageha", "face": "smile", "text": "ハジメっち、もう帰んの？ 次いつ来る？ てか明日来な" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_cross_host_samechan",
+      "lines": [
+        { "speaker": "samechan", "face": "normal", "text": "む、もう帰るのか。次も、いつもの席を空けておくのじゃ" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_cross_guest_tsumugi",
+      "lines": [
+        { "speaker": "tsumugi", "face": "surprise", "text": "……はじめさん。……ここにも、来るんですね" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_cross_guest_minto",
+      "comment": "よその店では私服（栞。表情は ura_*）。偵察に来ている。",
+      "lines": [
+        { "speaker": "minto", "face": "ura_surprise", "text": "……はじめくん。……えっと、私は、偵察、です" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_cross_guest_rio",
+      "lines": [
+        { "speaker": "rio", "face": "normal", "text": "あら、モルモットくん。卸先を見に来たら、君がいるなんて" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_cross_guest_ageha",
+      "lines": [
+        { "speaker": "ageha", "face": "surprise", "text": "え、ハジメっち？ なんでいんの。うち、今日は休みで偵察" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_cross_guest_samechan",
+      "lines": [
+        { "speaker": "samechan", "face": "surprise", "text": "む、お主！ わ、わしは休みの日の勉強じゃ。よその海も見ねばな" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_cross_guest_hiyori",
+      "lines": [
+        { "speaker": "hiyori", "face": "surprise", "text": "……はじめくん。煙に誘われたら、あなたまでいた", "inner": "なんでいるの。しかも、店の人と距離が近い" }
+      ]
+    },
+    {
+      "dialogue_id": "petit_cross_close",
+      "comment": "居合わせの山場。motion gaze の brief は、視線のカットインの短い版（店の恋人と客の恋人の2人。出す人は play の cast）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "店の人と客が、同じ顔で俺を見た。知り合いかと、二人が同時に聞いた。" },
+        { "type": "motion", "id": "gaze", "brief": true },
+        {
+          "type": "choice",
+          "id": "petit_cross_answer",
+          "choices": [
+            { "text": "「常連さんです」と言う", "next": "regular" },
+            { "text": "「店の人です」と言う", "next": "staff" },
+            { "text": "財布を探すふりをする", "next": "wallet" }
+          ]
+        },
+        { "speaker": "", "face": "", "text": "会計を済ませるあいだ、背中に二人ぶんの視線があった。" },
+        { "speaker": "", "face": "", "text": "店を出るまで、誰も、それ以上は聞かなかった。" }
+      ],
+      "branches": {
+        "regular": [
+          { "speaker": "hajime", "face": "normal", "text": "……お世話になってる、常連さんです" },
+          { "speaker": "", "face": "", "text": "どちらにも嘘にならない言い方を、探してしまった。" }
+        ],
+        "staff": [
+          { "speaker": "hajime", "face": "normal", "text": "……いつも来てる、店の人です" },
+          { "speaker": "", "face": "", "text": "二人とも、同じ顔でうなずいた。納得した顔では、なかった。" }
+        ],
+        "wallet": [
+          { "speaker": "", "face": "", "text": "財布を探すふりで、鞄をのぞきこんだ。" },
+          { "speaker": "", "face": "", "text": "逃げ道は、鞄の中にも入っていなかった。" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "petit_sumi_reservation",
+      "comment": "スミさんの予約表。tonari で一服かシフトを終えた帰りぎわに読む。tonari に恋人2人の予約が同じ日に入る。スミさんは席を離すだけで、何も聞かない（最後の締め shuraba_sumi_cover の「……気をつけろよ」は、ここでは言わせない）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "帰りぎわ、スミさんが予約表を指でたたいた。" },
+        { "speaker": "sumi", "face": "normal", "text": "今週の予約だ。見ておけ" },
+        { "speaker": "", "face": "", "text": "同じ日の同じ時間に、名前が二つ並んでいた。" },
+        { "speaker": "", "face": "", "text": "どちらにも、「はじめの連れ」と書き添えてあった。", "beat": 400 },
+        { "speaker": "hajime", "face": "surprise", "text": "（……同じ日に、二人とも）" },
+        { "speaker": "sumi", "face": "thinking", "text": "電話を受けたのは俺だ。どっちも、同じことを言ってたぞ" },
+        {
+          "type": "choice",
+          "id": "petit_sumi_reservation_answer",
+          "choices": [
+            { "text": "「二人とも友達です」と言う", "next": "friends" },
+            { "text": "日をずらせないか頼む", "next": "move" },
+            { "text": "何も言わない", "next": "silent" }
+          ]
+        },
+        { "speaker": "sumi", "face": "normal", "text": "席は、端と端にしておいた。店にできるのは、そこまでだ" },
+        { "speaker": "", "face": "", "text": "スミさんは予約表を閉じて、炭を起こしに行った。" },
+        { "speaker": "hajime", "face": "sad", "text": "（……店にまで、嘘を手伝わせた）" }
+      ],
+      "branches": {
+        "friends": [
+          { "speaker": "hajime", "face": "normal", "text": "……二人とも、友達です" },
+          { "speaker": "sumi", "face": "normal", "text": "そうか。友達か" },
+          { "speaker": "", "face": "", "text": "スミさんは、それ以上聞かなかった。聞かれないほうが、こたえた。" }
+        ],
+        "move": [
+          { "speaker": "hajime", "face": "normal", "text": "……片方、日をずらしてもらえませんか" },
+          { "speaker": "sumi", "face": "serious", "text": "客の予約を、お前の都合で動かすな" }
+        ],
+        "silent": [
+          { "speaker": "", "face": "", "text": "予約表から、目を上げられなかった。" },
+          { "speaker": "sumi", "face": "normal", "text": "……返事はいらん" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "petit_cinema_row",
+      "comment": "映画館の前の列。路地裏シネマは一人で観に来る場所なので、上映の後に読む。明かりがつくと、恋人が2人、別々に同じ回を観ていたと気づく。相手の名前を出さない共通の場面。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "明かりがつくと、前の列に、見覚えのある後ろ姿があった。恋人だった。" },
+        { "speaker": "", "face": "", "text": "通路をはさんだ席でも、見覚えのある横顔が立ち上がった。", "beat": 400 },
+        { "speaker": "", "face": "", "text": "もう一人の、恋人だった。" },
+        { "speaker": "hajime", "face": "surprise", "text": "（二人とも、同じ回を観てた。……出口は、ひとつしかない）" },
+        {
+          "type": "choice",
+          "id": "petit_cinema_row_answer",
+          "choices": [
+            { "text": "帽子を深くかぶる", "next": "cap" },
+            { "text": "座席に沈む", "next": "sink" },
+            { "text": "エンドロールを最後まで読む", "next": "credits" }
+          ]
+        },
+        { "speaker": "", "face": "", "text": "ロビーに出た時には、二人とも、もういなかった。" },
+        { "speaker": "", "face": "", "text": "別々の方向へ、帰っていったらしい。" },
+        { "speaker": "hajime", "face": "sad", "text": "（気づかなかったのか。気づかないふりを、してくれたのか）" }
+      ],
+      "branches": {
+        "cap": [
+          { "speaker": "", "face": "", "text": "つばを下げて、人の流れにまぎれた。足元だけを見て歩いた。" }
+        ],
+        "sink": [
+          { "speaker": "", "face": "", "text": "背もたれの下まで沈んだ。掃除の人に、不思議そうな顔をされた。" }
+        ],
+        "credits": [
+          { "speaker": "", "face": "", "text": "流れていく名前を、最後の一行まで読んだ。" },
+          { "speaker": "", "face": "", "text": "知らない名前ばかりなのに、目が離せなかった。" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "petit_naru_warning",
+      "comment": "なるに釘を刺される。なるの店で一服した帰りぎわに読む。なるは誰にも言わない（「言うのは、俺じゃないだろ」）。能力の報酬は無い。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "帰りぎわ、なるが炭を返しながら、こっちを見ないで言った。" },
+        { "speaker": "naru", "face": "normal", "text": "お前さ。この前、駅前で女の子と歩いてただろ" },
+        { "speaker": "naru", "face": "normal", "text": "で、おとといは、別の子と歩いてた", "beat": 400 },
+        { "speaker": "hajime", "face": "surprise", "text": "（……両方、見られてた）" },
+        {
+          "type": "choice",
+          "id": "petit_naru_warning_answer",
+          "choices": [
+            { "text": "「どっちも友達だ」と言う", "next": "friends" },
+            { "text": "「見間違いだろ」と言う", "next": "mistake" },
+            { "text": "何も言わない", "next": "silent" }
+          ]
+        },
+        { "speaker": "naru", "face": "serious", "text": "俺は、誰にも言わねえよ。言うのは、俺じゃないだろ" },
+        { "speaker": "naru", "face": "normal", "text": "……で、今日の一台はどうだった。そっちの話をしろよ" },
+        { "speaker": "", "face": "", "text": "なるは、それきり、その話をしなかった。" }
+      ],
+      "branches": {
+        "friends": [
+          { "speaker": "hajime", "face": "normal", "text": "……どっちも、友達だよ" },
+          { "speaker": "naru", "face": "serious", "text": "友達と歩く時の顔じゃなかったぞ、両方とも" }
+        ],
+        "mistake": [
+          { "speaker": "hajime", "face": "normal", "text": "見間違いだろ。帽子のやつなんて、いくらでもいる" },
+          { "speaker": "naru", "face": "normal", "text": "その帽子で、お前を見間違えるかよ" }
+        ],
+        "silent": [
+          { "speaker": "", "face": "", "text": "言い返す言葉が、なかった。" },
+          { "speaker": "naru", "face": "normal", "text": "……黙るってことは、そういうことか" }
+        ]
+      }
+    }
+  ]
+}

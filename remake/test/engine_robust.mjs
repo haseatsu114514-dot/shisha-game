@@ -34,6 +34,7 @@ async function loadModule(source, portSource, overrides) {
 }
 
 // ---------------- VNエンジン（#1362） ----------------
+const affinityCalls = [];
 const vnState = { stats: {}, money: 0, flags: {}, met: {}, contacts: [] };
 const vnDb = {
   dialogues: {
@@ -41,16 +42,19 @@ const vnDb = {
   },
   flavorById: {},
 };
+const nameData = await import("../js/core/data.js");
+nameData.DB.characters = Object.fromEntries(JSON.parse(readFileSync(new URL("../../data/characters.json", import.meta.url), "utf8")).map(c => [c.id, c]));
 const vn = await loadModule(engineSource, `
-export const robustPort = { handleCondition, jumpTo, getVnWarnings, clearVnWarnings, hooks,
+export const robustPort = { handleCondition, jumpTo, lineDisplayName, getVnWarnings, clearVnWarnings, hooks, dialogueAffinity, completeDialogueAffinity, affinityMetBefore, applyLine, applyCue,
   setRunning: (r) => { running = r; }, getRunning: () => running };
-`, { state: vnState, DB: vnDb, config: {}, STAT_EN: {}, affinityLevel: () => 0, tournamentFinished: () => false, basicsExperienced: () => false });
+`, { gainAffinity: (...args) => affinityCalls.push(args), state: vnState, DB: vnDb, config: {}, displayName: nameData.displayName, STAT_EN: {}, affinityLevel: () => 0, tournamentFinished: () => false, basicsExperienced: () => false });
 const port = vn.robustPort;
 
-function fakeRunning() {
+function fakeRunning(known = []) {
   return {
     id: "root_dlg", currentId: "root_dlg",
     dlg: { dialogue_id: "root_dlg", lines: [], branches: {}, metadata: {} },
+    owner: vnState, metAtStart: { ...vnState.met }, metBefore: port.affinityMetBefore(known), affinityKnown: new Set(known), encountered: new Set(), firstAffinity: new Set(),
     queue: [], branches: { yes: [{ text: "YES" }], no: [{ text: "NO" }] },
     visited: ["root_dlg"], slots: {}, context: null,
   };
@@ -83,6 +87,22 @@ check("flag_count: 通常の閾値比較は変えない", () => {
   assert.equal(condition({ condition_type: "flag_count", flag: "f", threshold: 2, next_true: "yes", next_false: "no" }).queue[0]?.text, "YES");
   vnState.flags = { f: 1 };
   assert.equal(condition({ condition_type: "flag_count", flag: "f", threshold: 2, next_true: "yes", next_false: "no" }).queue[0]?.text, "NO");
+});
+check("contact: 連絡先（配列／フラグ／固有会話の消化数）を読むだけで判定し、保存値は書き換えない（#2818）", () => {
+  const line = { condition_type: "contact", char_id: "minto", threshold: 1, next_true: "yes", next_false: "no" };
+  const saved = { flags: vnState.flags, contacts: vnState.contacts, story: vnState.story };
+  vnState.flags = {}; vnState.contacts = []; vnState.story = {};
+  assert.equal(condition(line).queue[0]?.text, "NO");
+  vnState.story = { minto: 1 };
+  assert.equal(condition(line).queue[0]?.text, "YES");
+  vnState.story = {}; vnState.flags = { _lime_contact_minto: true };
+  assert.equal(condition(line).queue[0]?.text, "YES");
+  vnState.flags = {}; vnState.contacts = ["minto"];
+  assert.equal(condition(line).queue[0]?.text, "YES");
+  vnState.contacts = ["naru"];
+  assert.equal(condition(line).queue[0]?.text, "NO");
+  assert.deepEqual(vnState.contacts, ["naru"]);
+  Object.assign(vnState, saved);
 });
 check("未知の条件タイプ（フックなし）は false 扱い＋警告を集約する", () => {
   port.clearVnWarnings();
@@ -124,6 +144,76 @@ check("jumpTo: currentId を jump 先へ引き継ぎ、開始台本の id は残
   assert.equal(r.queue[0]?.text, "jumped");
 });
 
+check("LIMEの名前表示: 明示metadataだけを使い、既存の公私名・未知名・声を保つ", () => {
+  const r = fakeRunning(); r.dlg.metadata.contact_channel = "lime";
+  vnState.met = { naru: true, minto: true }; vnState.flags = {};
+  assert.equal(port.lineDisplayName({ speaker: "naru" }, r), "なる（LIME）");
+  assert.equal(port.lineDisplayName({ speaker: "adam" }, r), "？？？（LIME）");
+  assert.equal(port.lineDisplayName({ speaker: "minto" }, r), "みんと（LIME）");
+  vnState.flags._minto_name_known = true;
+  assert.equal(port.lineDisplayName({ speaker: "minto" }, r), "みんと（LIME）");
+  r.context = "private";
+  assert.equal(port.lineDisplayName({ speaker: "minto" }, r), `${nameData.DB.characters.minto.private_name}（LIME）`);
+  assert.equal(port.lineDisplayName({ speaker: "samechan", voice: "korochan" }, r), "コロちゃん（LIME）");
+  assert.equal(port.lineDisplayName({ speaker: "" }, r), "");
+  delete r.dlg.metadata.contact_channel; r.id = r.currentId = "filename_lime";
+  assert.equal(port.lineDisplayName({ speaker: "naru" }, r), "なる", "IDの字面では経路を推測しない");
+});
+
+check("LIMEの名前表示: jump先のmetadataへ切り替わり、対面へ持ち越さない", () => {
+  const r = fakeRunning(); r.dlg.metadata.contact_channel = "lime";
+  port.setRunning(r); port.jumpTo("jump_target");
+  assert.equal(port.lineDisplayName({ speaker: "naru" }, r), "なる");
+  vnDb.dialogues.jump_target.metadata.contact_channel = "lime";
+  assert.equal(port.lineDisplayName({ speaker: "naru" }, r), "なる（LIME）");
+  delete vnDb.dialogues.jump_target.metadata.contact_channel;
+});
+
+check("初対面: 行・選択肢・好感度キュー・metadataは読了時の♥1一回へ集約", () => {
+  affinityCalls.length=0;vnState.met={};const r=fakeRunning();port.setRunning(r);
+  port.applyLine({affinity:{naru:2}});port.hooks.contextChar='naru';port.applyCue({'好感度':3});
+  r.dlg.metadata.add_affinity={naru:2};vnState.met.naru=true;
+  assert.equal(affinityCalls.length,0,'initial line/choice cannot commit before completion');
+  port.completeDialogueAffinity(r);
+  assert.equal(affinityCalls.length,1);assert.deepEqual(affinityCalls[0].slice(0,2),['naru',1]);assert.equal(affinityCalls[0][2].firstMeeting,true);
+});
+check("初対面: 名乗りのみでも♥1、主人公は対象外、既知の同席者には通常報酬", () => {
+  affinityCalls.length=0;vnState.met={adam:true};const r=fakeRunning();port.setRunning(r);
+  vnState.met.minto=true;vnState.met.hajime=true;r.dlg.metadata.add_affinity={adam:1};
+  port.completeDialogueAffinity(r);
+  assert.equal(affinityCalls.length,2);assert.deepEqual(affinityCalls[0],['adam',6]);assert.equal(affinityCalls[1][0],'minto');
+});
+check("対面以外のLIME・恋人の私的報酬・旧stateの読了を初対面報酬へ変換しない", () => {
+  affinityCalls.length=0;vnState.met={};const r=fakeRunning();r.dlg.metadata.contact_channel='lime';r.dlg.metadata.add_affinity={naru:1};
+  port.completeDialogueAffinity(r);assert.equal(affinityCalls[0][0],'naru');assert.equal(affinityCalls[0][1],6);assert.equal(affinityCalls[0][2].remote,true);
+  affinityCalls.length=0;delete r.dlg.metadata.contact_channel;vnState.lovers=['naru'];
+  port.completeDialogueAffinity(r);assert.deepEqual(affinityCalls,[['naru',6]]);vnState.lovers=[];
+  affinityCalls.length=0;r.owner={};port.completeDialogueAffinity(r);assert.equal(affinityCalls.length,0);
+});
+
+check("中断した初対面pendingは無関係な相手の会話では精算せず、本人と再開した時だけ精算", () => {
+  affinityCalls.length=0;vnState.met={naru:true,sumi:true};vnState.flags={_affinity_first_meeting_pending_naru:true};
+  const r=fakeRunning();r.encountered.add('sumi');port.completeDialogueAffinity(r);
+  assert.equal(affinityCalls.length,0);assert.equal(vnState.flags._affinity_first_meeting_pending_naru,true);
+  r.encountered.add('naru');port.completeDialogueAffinity(r);
+  assert.equal(affinityCalls.length,1);assert.equal(affinityCalls[0][0],'naru');assert.equal(affinityCalls[0][2].firstMeeting,true);
+  affinityCalls.length=0;r.dlg.metadata.contact_channel='lime';r.dlg.metadata.add_affinity={naru:1};
+  port.completeDialogueAffinity(r);assert.equal(affinityCalls.length,1);assert.equal(affinityCalls[0][1],6);assert.equal(affinityCalls[0][2].remote,true);
+  vnState.flags={};
+});
+
+check("章で保証された既知は台詞分岐を変えず、面識欠損の修復を初対面へ戻さない", () => {
+  affinityCalls.length=0;vnState.met={};vnState.flags={_affinity_first_meeting_pending_dr_kemuri:true};
+  const r=fakeRunning(['dr_kemuri']);
+  assert.equal(vnState.met.dr_kemuri,undefined,'the existing doctor_first recognition branch stays available');
+  assert.equal(r.metBefore.dr_kemuri,true);vnState.met.dr_kemuri=true;r.encountered.add('dr_kemuri');
+  port.completeDialogueAffinity(r);assert.equal(affinityCalls.length,0);
+  const unrelated=fakeRunning();unrelated.encountered.add('sumi');port.completeDialogueAffinity(unrelated);
+  assert.equal(affinityCalls.length,0);
+  assert.match(engineSource,/markMet\(m\[1\], \{ known: r\.affinityKnown\.has\(m\[1\]\) \}\)/);
+  vnState.flags={};
+});
+
 // ---------------- scoreStep（#1364） ----------------
 const craft = await loadModule(sessionSource, `
 export const robustPort = { scoreStep };
@@ -157,6 +247,42 @@ check("scoreStep: 負数と undefined は従来どおり 0", () => {
   assert.equal(cs.arcade.parts.pull, 0);
   scoreStep(cs, "pull", undefined);
   assert.equal(cs.arcade.parts.pull, 0);
+});
+
+
+// #2446: 本名は身分証ではなく本人の名乗りで知る。正体既知/未知・旧セーブの全経路を読む。
+check("みんとの名乗りは正体の既読に依存せず、名前欄は本人が名乗った後だけ", () => {
+  const scenes = JSON.parse(readFileSync(new URL("../../data/dialogue/ch1_minto.json", import.meta.url), "utf8")).dialogues;
+  const all = Array.isArray(scenes) ? scenes : Object.values(scenes);
+  function readScene(id, flags) {
+    vnState.flags = { ...flags };
+    const dlg = all.find(d => d.dialogue_id === id);
+    assert(dlg, id);
+    const r = { ...fakeRunning(), dlg, context: dlg.metadata?.private_scene ? "private" : null, branches: dlg.branches || {}, queue: [...dlg.lines] };
+    const seen = [];
+    port.setRunning(r);
+    while (r.queue.length) {
+      const line = r.queue.shift();
+      if (line.type === "condition") port.handleCondition(line);
+      else if (line.type === "set_flag") vnState.flags[line.flag] = true;
+      else if (line.text) seen.push({ text: line.text, name: port.lineDisplayName(line, r) });
+    }
+    return seen;
+  }
+  for (const known of [false, true]) for (const checked of [false, true]) {
+    const seen = readScene("ch1_minto_fifth", { _minto_identity_revealed: known, _oneesan_id_checked: checked });
+    const intro = seen.findIndex(line => line.text.includes("名前は、木成頼栞"));
+    assert(intro >= 0);
+    assert(seen.slice(0, intro + 1).every(line => !line.name?.includes("栞")));
+    assert(!seen.some(line => /身分証で|名前は、あの時見てた/.test(line.text)));
+    assert.equal(vnState.flags._minto_name_known, true);
+    assert(seen.slice(intro + 1).some(line => line.name === "栞"));
+  }
+  for (const known of [false, true]) {
+    const seen = readScene("ch1_minto_private_1", { _minto_name_known: known });
+    assert.equal(seen.some(line => line.text.includes("私、木成頼栞")), !known);
+    assert.equal(vnState.flags._minto_name_known, true);
+  }
 });
 
 process.exitCode = failures ? 1 : 0;

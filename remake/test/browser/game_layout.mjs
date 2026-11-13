@@ -1,4 +1,4 @@
-// Real shared game flows in isolated browser saves; rendering does not fork progression.
+// Real shared game flows in isolated browser saves, landscape only (DS風・スマホ縦画面モードは廃止。2026-11-04／11-10 オーナー決定).
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -14,13 +14,6 @@ const browserOptions = { headless: true, ...(process.env.CHROME_EXECUTABLE_PATH 
 const results = [];
 const button = (p, id) => p.locator(`[data-test="${id}"]`);
 const activate = async (p, id, touch) => {
-  if (["title-layout-normal", "title-layout-ds", "title-layout-recover"].includes(id)
-    && !(await p.locator(".title-layout-toolbar").evaluate(node => node.open)))
-    await activate(p, "title-layout-settings", touch);
-  // 本編の表示切替も「表示」を開いてから選ぶ（DS風ではヒンジの小さなボタン）。
-  if (["game-layout-normal", "game-layout-ds", "game-layout-recover"].includes(id)
-    && !(await p.locator(".game-layout-toolbar").evaluate(node => node.open)))
-    await activate(p, "game-layout-settings", touch);
   const target = button(p, id); await target.scrollIntoViewIfNeeded();
   if (touch) await target.tap(); else await target.click();
 };
@@ -62,32 +55,20 @@ async function advanceUntil(p, predicate, touch, timeout=45000) {
   }
   assert.fail(`state wait timed out: ${JSON.stringify(await diagnostics(p))}`);
 }
-async function dsGeometry(p) {
-  await p.locator("body.game-ds").waitFor();
-  const rects = await p.locator(".game-ds-panel").evaluateAll(ns=>ns.map(n=>{
-    const r=n.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,hidden:n.hidden};
-  }));
-  assert.equal(rects.length,2); assert(rects.every(r=>!r.hidden&&r.w>0&&r.h>0));
-  assert(Math.abs(rects[0].w-rects[1].w)<1&&Math.abs(rects[0].h-rects[1].h)<1);
-  assert(rects[1].x>=rects[0].x+rects[0].w+9||rects[1].y>=rects[0].y+rects[0].h+9,"two panels overlap or gap missing");
-  if (await p.locator("body").getAttribute("data-ds-view")==="map") {
-    // MENUは下画面（触る画面）のタッチバーにある。
-    const menu=await button(p,"hud-menu").boundingBox(), touchPanel=rects[1];
-    assert(menu && menu.x>=touchPanel.x-1 && menu.x+menu.width<=touchPanel.x+touchPanel.w+1
-      && menu.y>=touchPanel.y-1 && menu.y+menu.height<=touchPanel.y+touchPanel.h+1,"MENU clipped outside touch panel");
-  }
-}
 async function normalGeometry(p) {
-  assert.equal(await p.locator("body.game-ds").count(),0);
-  assert.deepEqual(await p.locator("#stage").evaluate(n=>[n.offsetWidth,n.offsetHeight]),[1280,720]);
+  assert.equal(await p.locator("body.game-ds, .game-ds-panel, .game-layout-toolbar").count(),0);
+  // 通常表示は常に 1280×720 の固定ステージ（2026-11-09 オーナー決定・#3035。ワイド拡張 #2861 は廃止）
+  const [size]=await p.locator("#stage").evaluate(n=>[[n.offsetWidth,n.offsetHeight]]);
+  assert.deepEqual(size,[1280,720]);
   assert.deepEqual(await p.locator("#viewport").evaluate(n=>[n.getBoundingClientRect().top,n.scrollLeft,n.scrollTop]),[0,0,0]);
 }
 async function check(name, options, run, setup) {
   if (process.env.CASE_FILTER && name !== process.env.CASE_FILTER) return;
-  // Isolate device emulation/input as well as storage between landscape/portrait fixtures.
+  // Isolate device emulation/input as well as storage between PC/touch fixtures.
   const browser=await chromium.launch(browserOptions);
   const context=await browser.newContext(options), p=await context.newPage(); const errors=[];
   await p.addInitScript(()=>{
+    try { localStorage.setItem("suien_step_intro", "off"); } catch {} // 選ぶ工程の初回説明（#3028）はレイアウト検査の対象外
     window.__layoutInputs=[];
     document.addEventListener("click",e=>{
       const test=e.target.closest("[data-test]")?.dataset.test;
@@ -107,10 +88,9 @@ async function check(name, options, run, setup) {
 }
 try {
   for (const touch of [false,true]) {
-    for (const mode of ["normal","ds"]) {
-      const device=touch?"touch":"pc", name=`${device}-${mode}-shared-practice-save-load`;
-      const options={viewport:touch?(mode==="ds"?{width:390,height:844}:{width:844,height:390}):{width:1280,height:720}, ...(touch?{isMobile:true,hasTouch:true}:{}),
-        ...(touch&&mode==="ds"?{recordVideo:{dir:path.join(dir,"video"),size:{width:390,height:844}}}:{})};
+    {
+      const device=touch?"touch":"pc", name=`${device}-shared-practice-save-load`;
+      const options={viewport:touch?{width:844,height:390}:{width:1280,height:720}, ...(touch?{isMobile:true,hasTouch:true}:{})};
       await check(name,options,async p=>{
         await p.evaluate(async()=>{
           const core=await import("./js/core/state.js"), s=core.newState();
@@ -123,29 +103,17 @@ try {
           localStorage.setItem(core.SAVE_KEY,JSON.stringify(s));localStorage.setItem("suien_remake_slot1",JSON.stringify(s));
         });
         await p.reload();await ready(p);
-        await activate(p,`title-layout-${mode}`,touch);
-        assert.equal(await p.locator(".title").getAttribute("data-layout"),mode,"requested title mode did not activate");
+        // 表示の切り替え（通常版／DS風）はもう無い。CONFIG にも本編にも出さない。
+        assert.equal(await p.locator('[data-test^="title-layout-"], [data-test^="game-layout-"]').count(),0);
         await p.evaluate(async()=>{__remake.vnTest.turbo=false;(await import("./js/core/state.js")).config.textSpeed=4;});
         await activate(p,"title-load",touch);await activate(p,"slot-1",touch);
         // Legacy LOAD may replay several authored unread scenes. Let real taps
         // finish those scenes, using the same bounded budget as practice below.
         await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open"),touch,90000);
-        if(mode==="ds")await dsGeometry(p);else await normalGeometry(p);
+        await normalGeometry(p);
         const before=await state(p);assert.equal(before.money,45678);assert.equal(before.slot,0);
         assert.deepEqual(before.lovers,["hiyori"]);assert(before.memory.includes("actually-read"));
-        await p.screenshot({path:path.join(dir,`${device}-${mode}-map.png`)});
-        if(mode==="ds"){
-          const raw=await p.evaluate(()=>JSON.stringify(__remake.state));
-          await activate(p,"game-layout-normal",touch);
-          await p.waitForFunction(()=>!document.body.classList.contains("game-ds"));await normalGeometry(p);
-          if(touch)await p.setViewportSize({width:844,height:390});
-          await activate(p,"hud-menu",touch);
-          await p.getByRole("button",{name:"閉じる",exact:true}).click();
-          assert.equal(await p.evaluate(()=>JSON.stringify(__remake.state)),raw);
-          if(touch)await p.setViewportSize({width:390,height:844});
-          await activate(p,"game-layout-ds",touch);await dsGeometry(p);
-          assert.equal(await p.evaluate(()=>JSON.stringify(__remake.state)),raw);
-        }
+        await p.screenshot({path:path.join(dir,`${device}-map.png`)});
         // 店の制作本体の表示を検査する。日常の1行動は消費しない。
         await p.evaluate(() => {
           import("./js/craft/practice.js").then(m => m.runFullPractice())
@@ -154,11 +122,10 @@ try {
         await confirmAppearanceSetup(p, { touch });
         await confirmWaterSetup(p, { touch });
         await button(p,"mix-ok").waitFor();
-        if(mode==="ds")await dsGeometry(p);
         for(let n=0;n<10;n++)await activate(p,"mix-plus-double_apple",touch);
         for(let n=0;n<2;n++)await activate(p,"mix-plus-lemon",touch);
         assert.equal(await button(p,"mix-ok").isEnabled(),true);
-        await p.screenshot({path:path.join(dir,`${device}-${mode}-mix.png`)});
+        await p.screenshot({path:path.join(dir,`${device}-mix.png`)});
         await activate(p,"mix-ok",touch);await button(p,"pack-confirm").waitFor();
         await activate(p,"opt-normal",touch);
         // Existing timed-stage automation only, after real DOM mix/packing input.
@@ -171,26 +138,21 @@ try {
         assert.equal(after.runs.length,before.runs.length+1);assert.equal(after.runs.at(-1).served,true);
         assert.equal(after.runs.at(-1).adjustments,2);assert.equal(after.runs.at(-1).success,true);
         assert.deepEqual(after.runs.at(-1).mix,{double_apple:10,lemon:2});
-        await p.screenshot({path:path.join(dir,`${device}-${mode}-result.png`)});
-        await activate(p,"hud-menu",touch);await activate(p,"menu-save",touch);await activate(p,"slot-2",touch);
+        await p.screenshot({path:path.join(dir,`${device}-result.png`)});
+        await activate(p,"hud-menu",touch);await activate(p,"menu-tab-system",touch);await activate(p,"menu-save",touch);await activate(p,"slot-1",touch);
+        await activate(p,"confirm-overwrite",touch);
         await p.waitForFunction(()=>!document.querySelector("#modal.show"));
-        const saved=await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot2")));
+        const saved=await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot1")));
         assert.equal(saved.slot,0);assert.equal(saved.money,after.money);assert.deepEqual(saved.flags._craft_practice_runs,after.runs);
-        await activate(p,"hud-menu",touch);await activate(p,"menu-load",touch);await activate(p,"slot-2",touch);
+        await activate(p,"hud-menu",touch);await activate(p,"menu-tab-system",touch);await activate(p,"menu-load",touch);await activate(p,"slot-1",touch);
         const navigation=p.waitForNavigation({waitUntil:"load"});
         await activate(p,"confirm-load",touch);await navigation;
         await p.locator("#boot").waitFor({state:"detached",timeout:35000});
         await advanceUntil(p,()=>document.body.dataset.screen==="map"&&!document.body.classList.contains("vn-open")&&__remake.state.slot===0,touch);
-        assert.deepEqual(await state(p),after);if(mode==="ds")await dsGeometry(p);else await normalGeometry(p);
-        if(mode==="ds"){
-          await activate(p,"game-layout-recover",touch);await ready(p);
-          assert.equal(await p.locator(".title").getAttribute("data-layout"),"normal");
-          assert.equal(await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot2")).slot),0);
-        }
+        assert.deepEqual(await state(p),after);await normalGeometry(p);
       });
     }
-    await check(`${touch?"touch":"pc"}-dialogue-choice-geometry`,{viewport:touch?{width:390,height:844}:{width:1280,height:720},...(touch?{isMobile:true,hasTouch:true}:{})},async p=>{
-      await activate(p,"title-layout-ds",touch);
+    await check(`${touch?"touch":"pc"}-dialogue-choice-geometry`,{viewport:touch?{width:844,height:390}:{width:1280,height:720},...(touch?{isMobile:true,hasTouch:true}:{})},async p=>{
       await p.evaluate(async()=>{
         const {play}=await import("./js/vn/engine.js");const core=await import("./js/core/state.js");
         core.newGame();core.config.textSpeed=4;__remake.vnTest.turbo=false;
@@ -198,51 +160,39 @@ try {
           {type:"choice",choices:[{text:"一つ目",next:"done"},{text:"二つ目",next:"done"},{text:"三つ目",next:"done"}]}],
           branches:{done:[{speaker:"sumi",face:"normal",text:"選択できた。"}]}},{bg:"res://assets/backgrounds/bg_tonari_inside.png"});
       });
-      await advanceUntil(p,()=>!!document.querySelector(".vn-choices.show"),touch);await dsGeometry(p);
+      await advanceUntil(p,()=>!!document.querySelector(".vn-choices.show"),touch);await normalGeometry(p);
       for(const theme of ["paper","smoke","smoke-purple","cut-paper","amber","tissue","classic"]){
         await p.evaluate(async id=>(await import("./js/core/ui-theme.js")).applyUiTheme(id),theme);
-        // 2026-10-30: 縦持ちの見直しで、AUTO/SKIP/LOG/用語/設定 は下画面（触る画面）の下端のタッチバーへ移した。
-        // 上画面の立ち絵の顔を覆わず、本文・選択肢とも交差しない。
+        // AUTO/SKIP/LOG/用語/設定 はステージの内側にあり、本文・選択肢と交差しない。
         const toolbar=await p.evaluate(()=>{
-          const visual=document.querySelector(".game-ds-visual").getBoundingClientRect();
-          const panel=document.querySelector(".game-ds-controls").getBoundingClientRect();
+          const stage=document.querySelector("#stage").getBoundingClientRect();
           const ctl=document.querySelector(".vn-controls").getBoundingClientRect();
-          const text=document.querySelector(".vn-text").getBoundingClientRect();
+          // 通常表示ではボタン列が文章窓の上余白に載る設計なので、窓ではなく実際の本文の行と比べる。
+          const range=document.createRange();range.selectNodeContents(document.querySelector(".vn-text"));
+          const lines=[...range.getClientRects()].filter(r=>r.width>0&&r.height>0);
           // 選択肢はスクロール領域の中なので、見えている範囲（親の枠で切った矩形）だけを比べる。
           const box=document.querySelector(".vn-choices").getBoundingClientRect();
           const choices=[...document.querySelectorAll(".vn-choice")].map(n=>n.getBoundingClientRect())
             .map(r=>({left:Math.max(r.left,box.left),right:Math.min(r.right,box.right),top:Math.max(r.top,box.top),bottom:Math.min(r.bottom,box.bottom)}))
             .filter(r=>r.bottom>r.top && r.right>r.left);
           const clear=r=>!(ctl.right>r.left && ctl.left<r.right && ctl.bottom>r.top && ctl.top<r.bottom);
-          return { inside:ctl.left>=panel.left && ctl.right<=panel.right && ctl.top>=panel.top && ctl.bottom<=panel.bottom+1,
-            offVisual:clear(visual), bottomBar:panel.bottom-ctl.bottom<12,
-            clearText:clear(text) && choices.every(clear),
-            sizes:[...document.querySelectorAll(".vn-ctl")].map(n=>n.getBoundingClientRect().height) };
+          return { inside:ctl.left>=stage.left-1 && ctl.right<=stage.right+1 && ctl.top>=stage.top-1 && ctl.bottom<=stage.bottom+1,
+            clearText:lines.length>0 && lines.every(clear) && choices.every(clear) };
         });
-        assert(toolbar.inside && toolbar.offVisual && toolbar.bottomBar && toolbar.clearText,"DS toolbar sits in the touch bar of the lower screen for "+theme);
-        assert(toolbar.sizes.every(h=>h>=44),"DS controls keep 44px touch targets");
+        assert(toolbar.inside && toolbar.clearText,"VN controls stay on stage and clear of text/choices for "+theme+": "+JSON.stringify(toolbar));
       }
-      if(!touch){
-        const before=await p.evaluate(()=>JSON.stringify(__remake.state));
-        const keyboardSwitch=async id=>{
-          if(!(await p.locator(".game-layout-toolbar").evaluate(n=>n.open))){await button(p,"game-layout-settings").focus();await p.keyboard.press("Enter");}
-          await button(p,id).focus();await p.keyboard.press("Enter");
-        };
-        await keyboardSwitch("game-layout-normal");
-        await p.waitForFunction(()=>!document.body.classList.contains("game-ds"));await normalGeometry(p);
-        await keyboardSwitch("game-layout-ds");await dsGeometry(p);
-        assert.equal(await p.evaluate(()=>JSON.stringify(__remake.state)),before);
-        assert.equal(await p.locator(".vn-choices.show button").count(),3);
-      }
-      const choices=await p.locator(".vn-choice").evaluateAll(ns=>ns.map(n=>n.getBoundingClientRect().height));assert(choices.every(h=>h>=44));
+      assert.equal(await p.locator(".vn-choices.show button").count(),3);
+      const choices=await p.locator(".vn-choice").evaluateAll(ns=>ns.map(n=>n.getBoundingClientRect().height));
+      // PC は 44px。横持ちスマホは phone-density.css の --phone-tap の実寸下限（39px・#2851）。旧 44px は DS風の下画面の規格だった。
+      const minTap=touch?39:44;
+      assert(choices.every(h=>h>=minTap),`choices keep ${minTap}px targets: `+choices);
       await p.locator(".vn-choice").evaluateAll(ns=>Promise.allSettled(ns.flatMap(n=>n.getAnimations()).map(a=>a.finished)));
-      await p.screenshot({path:path.join(dir,`${touch?"touch":"pc"}-ds-conversation.png`)});
+      await p.screenshot({path:path.join(dir,`${touch?"touch":"pc"}-conversation.png`)});
       await activate(p,"choice-2",touch);await advanceUntil(p,()=>!document.body.classList.contains("vn-open"),touch);
       await p.evaluate(()=>window.layoutChoice);
     });
   }
-  await check("small-phone-scroll-choice-and-return",{viewport:{width:320,height:568},isMobile:true,hasTouch:true},async p=>{
-    await activate(p,"title-layout-ds",true);
+  await check("small-landscape-choice-and-return",{viewport:{width:568,height:320},isMobile:true,hasTouch:true},async p=>{
     await p.evaluate(async()=>{
       const core=await import("./js/core/state.js"), {play}=await import("./js/vn/engine.js");
       core.newGame();core.config.textSpeed=4;
@@ -251,15 +201,13 @@ try {
         {type:"choice",choices:[{text:"一つ目"},{text:"二つ目"},{text:"三つ目"}]}]},
         {bg:"res://assets/backgrounds/bg_tonari_inside.png"});
     });
-    await advanceUntil(p,()=>!!document.querySelector(".vn-choices.show"),true);await dsGeometry(p);
+    await advanceUntil(p,()=>!!document.querySelector(".vn-choices.show"),true);await normalGeometry(p);
     await activate(p,"choice-2",true);await advanceUntil(p,()=>!document.body.classList.contains("vn-open"),true);
     await p.evaluate(()=>window.smallChoice);
-    await activate(p,"game-layout-normal",true);await p.waitForFunction(()=>!document.body.classList.contains("game-ds"));
     await normalGeometry(p);
     assert.deepEqual(await p.locator("#stage").evaluate(n=>[n.scrollLeft,n.scrollTop]),[0,0]);
   });
-  await check("small-phone-station-arrival-shows-map-top",{viewport:{width:320,height:568},isMobile:true,hasTouch:true},async p=>{
-    await activate(p,"title-layout-ds",true);
+  await check("small-landscape-station-arrival-shows-map",{viewport:{width:568,height:320},isMobile:true,hasTouch:true},async p=>{
     await p.evaluate(async()=>{
       const core=await import("./js/core/state.js"),s=core.newGame();
       Object.assign(s,{chapter:2,phase:"daily",day:15,slot:2,money:36000,stamina:100,weatherSeed:7});
@@ -284,44 +232,44 @@ try {
     await p.waitForFunction(()=>!document.querySelector('.map[data-revealing="true"]'));
     await activate(p,"station-open",true);
     await activate(p,"station-destination-widehanga",true);
-    // DS風では行き先の一覧が下画面の中でスクロールする。決定ボタンが画面内に見えていればよい。
     const confirm=await button(p,"station-confirm").boundingBox(), view=p.viewportSize();
     assert(confirm&&confirm.y>=0&&confirm.y+confirm.height<=view.height,"Station confirm is offscreen on the short viewport");
     await activate(p,"station-confirm",true);
     await button(p,"pin-ch2_rei").waitFor();
-    await p.waitForFunction(()=>document.querySelector("#viewport").scrollTop===0);
     const layout=await p.evaluate(()=>{
       const viewport=document.querySelector("#viewport").getBoundingClientRect();
       const hud=document.querySelector(".hud-card").getBoundingClientRect();
       return {visible:hud.top>=viewport.top&&hud.bottom<=viewport.bottom,region:document.querySelector(".map")?.dataset.region};
     });
     assert.equal(layout.region,"widehanga");assert(layout.visible,"Station arrival left the HUD offscreen");
-    await p.screenshot({path:path.join(dir,"small-phone-station-arrival.png")});
+    await normalGeometry(p);
+    await p.screenshot({path:path.join(dir,"small-landscape-station-arrival.png")});
   });
-  await check("old-auto-load-ds-conversation",{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async p=>{
-    await activate(p,"title-layout-ds",true);
+  // 移行: 以前に DS風を選んでいた端末（suien_title_layout="ds"）でも、自動ロードは通常の横画面で再開し、古い表示設定は消える。
+  await check("legacy-ds-preference-auto-load-migrates",{viewport:{width:844,height:390},isMobile:true,hasTouch:true},async p=>{
     await p.evaluate(async()=>{
       const core=await import("./js/core/state.js"),s=core.newState();
       Object.assign(s,{schema:14,phase:"daily",day:6,slot:0,money:45678,stamina:90});
       Object.assign(s.flags,{_morning_6:true,_lime_tut:1,_qa_ds:"preserved"});
       s.affinity.hiyori=22;s.relationshipMemories=["actually-read"];
       localStorage.setItem(core.SAVE_KEY,JSON.stringify(s));core.requestResumeOnBoot();
+      localStorage.setItem("suien_title_layout","ds");
     });
     await p.reload();await p.locator("#boot").waitFor({state:"detached",timeout:35000});
     await p.waitForFunction(()=>document.body.classList.contains("in-vn") && !!document.querySelector(".vn-text")?.textContent);
-    await dsGeometry(p);assert.equal(await p.locator("body").getAttribute("data-screen"),"boot");
+    // 再開の入口でタイトルの画面を片付ける（#3514・#3527）。会話に入った時点で、残っているのは「画面なし」
+    await normalGeometry(p);assert.equal(await p.locator("body").getAttribute("data-screen"),"none");
+    assert.equal(await p.evaluate(()=>localStorage.getItem("suien_title_layout")),null,"legacy display preference is cleared");
     const loaded=await state(p);assert.equal(loaded.money,45678);assert.equal(loaded.slot,0);
     assert.equal(loaded.marker,"preserved");assert.deepEqual(loaded.memory,["actually-read"]);
     assert.equal(await p.evaluate(()=>__remake.state.affinity.hiyori),22);
-    await activate(p,"game-layout-recover",true);await ready(p);
-    assert.equal(await p.locator(".title").getAttribute("data-layout"),"normal");
   });
-  await check("game-css-failure-normal-recovery",{viewport:{width:1280,height:720}},async p=>{
-    await activate(p,"title-layout-ds",false);await activate(p,"title-new",false);
-    await p.locator("body.vn-open").waitFor();await normalGeometry(p);
-    await button(p,"game-layout-recover").click();await ready(p);
-    assert.equal(await p.locator(".title").getAttribute("data-layout"),"normal");
-  },p=>p.route("**/css/game-ds.css",r=>r.fulfill({status:200,contentType:"text/css",body:""})));
+  // 旧「通常版で開き直す」リンク（?titleLayout=normal）をブックマークしていても、ふつうにタイトルが開く。
+  await check("legacy-recovery-url-opens-title",{viewport:{width:1280,height:720}},async p=>{
+    await p.goto(new URL("?titleLayout=normal",base).href);await ready(p);
+    await normalGeometry(p);
+    assert.equal(await p.locator(".title-ds-panel").count(),0);
+  });
 } finally {
   fs.writeFileSync(path.join(dir,"results.json"),JSON.stringify({base,results},null,2)+"\n");
 }

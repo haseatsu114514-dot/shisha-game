@@ -27,6 +27,7 @@ async function harness(chapter, value) {
   const modules = new Map();
   const bindings = {
     state: value, save: () => calls.saves++,
+    chapterGrowthNight: async () => true, // 盤無効のMENU検査。夜の実精算はgrowth_chapter_rewardsで別途検証。
     DB: { dialogues: {} }, bgUrl: key => key, el: node,
     layers: { hud: node() }, showScreen: (name, root) => calls.screens.push({ name, root }), setBg: async () => {},
     modal: async options => { calls.modals.push(options); return calls.modals.length === 1 ? choice : true; },
@@ -37,6 +38,8 @@ async function harness(chapter, value) {
     play: async () => ({}), syncTokyoVisits: () => {},
     tournamentProgress: () => value.flags._ch3_tournament,
     TOURNAMENT_STORY_STEPS: new Map(), MUKAI_DELIVERY_STEPS: [], CH3_STORY_DIALOGUE_FILES: {},
+    CH3_SERVICE_IDS: ["ch3_saku_mukai_visit", "ch3_saku_mukai_served"],
+    chapterThreeWorkDialogue: (_value, source) => source,
   };
   async function synthetic(url, names) {
     const key = url.href;
@@ -71,7 +74,7 @@ async function harness(chapter, value) {
     const depUrl = new URL(specifier, url);
     if (specifier === "../core/chapter-actions.js") {
       const dep = new vm.SourceTextModule(readFileSync(depUrl, "utf8"), { context });
-      await dep.link(async () => synthetic(new URL("../core/util.js", url), ["el"]));
+      await dep.link(async () => synthetic(new URL("../core/util.js", url), [...(required.get(new URL("../core/util.js", url).href) || []), "el"]));
       return dep;
     }
     if (specifier === "./ch3-aftermath-progress.js") {
@@ -160,6 +163,27 @@ for (let stage = 0; stage < CH3_AFTERMATH_SCENES.length; stage++) {
 }
 assert.equal(h.calls.errors.length, 0);
 assert.equal(continuous.flags._ch3_cleared, true);
+// #2658: LOADから大会後のmukai寄り道を開き、完読後は保存して再訪で消える。
+{
+  const trace = winningSave();
+  trace.flags._ch3_read_ch3_cigarman_rumor = true;
+  beginChapterThreeAftermath(trace);
+  completeChapterThreeAftermathScene(trace, "ch3_abyss_hotel");
+  const loadedState = clone(trace), loaded = await harness("ch3-aftermath", loadedState);
+  assert.equal(await loaded.api.runChapterThreeAftermath(), true);
+  const action = name => loaded.calls.screens.at(-1).root.children.at(-1).children
+    .find(node => node.props.dataset?.test === `ch3-aftermath-${name}`);
+  assert(action("detour-open"), "LOAD offers the detour entrance");
+  await action("detour-open").props.onclick();
+  assert(action("detour-ch3_cigarman_trace"), "the mukai trace is selectable");
+  await action("detour-ch3_cigarman_trace").props.onclick();
+  assert.equal(loaded.calls.errors.length, 0);
+  assert.equal(loaded.calls.saves, 1, "the completed detour is saved once");
+  assert.equal(loadedState.flags._ch3_read_ch3_cigarman_trace, true);
+  assert.equal(await loaded.api.runChapterThreeAftermath(), true);
+  await action("detour-open").props.onclick();
+  assert(!action("detour-ch3_cigarman_trace"), "the read detour does not replay after resume");
+}
 const complete = winningSave(), tournament = await harness("ch3-tournament", complete);
 await tournament.api.drive(tournament.api.menuOwner());
 assert.equal(tournament.bgm(), "bgm_aftermath", "Winning tournament complete card restores victory BGM");

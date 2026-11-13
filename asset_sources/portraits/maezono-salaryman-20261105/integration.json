@@ -1,0 +1,539 @@
+{
+  "base_main": "da2613a687041d0b6a708f1dac51db9cbc144620",
+  "ledger_library_file_ids": [
+    "libfile_8814f0b134e881919969a2c2314366c5",
+    "libfile_7a02f693ce948191a965f67ca365760a"
+  ],
+  "maezono_raw_zip_library_file_id": "libfile_5e80d9bb77ac8191996232429055c425",
+  "registered_images": 14,
+  "items": [
+    {
+      "character_id": "maezono",
+      "style": "nanami",
+      "expression": "normal",
+      "source_library_file_id": "libfile_c4cfebb074b481918aca8bed37bb9239",
+      "source_file_id": "file_00000000ddc0822fbcb7a98028ebc707",
+      "source_sha256": "1116bfd623e97737ac621aeb7a388816bbdd5a0bd9dc50a2e09b01ebbec8ecb1",
+      "source_size_bytes": 1888826,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source_subject_height": 1451,
+      "source": "asset_sources/portraits/maezono-salaryman-20261105/nanami/maezono/normal-source.png",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+        "git_blob": "a6edd59479a9d683cfcce4933f041777091ef2de",
+        "sha256": "a8bce133e3a390519149237cc1c934ee02e9822f549b33aecbac4c8ae776c21b"
+      },
+      "selected_normal_sha256": "1116bfd623e97737ac621aeb7a388816bbdd5a0bd9dc50a2e09b01ebbec8ecb1",
+      "runtime": "assets/sprites/character_variants/nanami/maezono/chr_maezono_normal.png",
+      "runtime_sha256": "d8c7fad9fcc3bb0bffdb8378b6870f496b3e0902f0add3aff1beb466d7429a2c",
+      "export": {
+        "scale": 0.7443142660234321,
+        "offset": [
+          45,
+          8
+        ],
+        "bbox_alpha24": [
+          185,
+          60,
+          661,
+          1140
+        ]
+      },
+      "producer_qa": "independent-normal-review.json"
+    },
+    {
+      "character_id": "maezono",
+      "style": "new",
+      "expression": "normal",
+      "source_library_file_id": "libfile_0785abe1e2588191b0a591551a943434",
+      "source_file_id": "file_00000000df38822fa34599dd69738fa5",
+      "source_sha256": "29e470399aee4bbc4157f26dc80633d5fd1b541b8e978e89f2485a41f429da0d",
+      "source_size_bytes": 1404362,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source_subject_height": 1434,
+      "source": "asset_sources/portraits/maezono-salaryman-20261105/new/maezono/normal-source.png",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+        "git_blob": "a6edd59479a9d683cfcce4933f041777091ef2de",
+        "sha256": "a8bce133e3a390519149237cc1c934ee02e9822f549b33aecbac4c8ae776c21b"
+      },
+      "selected_normal_sha256": "29e470399aee4bbc4157f26dc80633d5fd1b541b8e978e89f2485a41f429da0d",
+      "runtime": "assets/sprites/character_variants/new/maezono/chr_maezono_normal.png",
+      "runtime_sha256": "8bfb2254313a8a88cd48bd3da2fb660db26e8689e32f32f54353eac7be01f2bb",
+      "export": {
+        "scale": 0.7531380753138075,
+        "offset": [
+          44,
+          8
+        ],
+        "bbox_alpha24": [
+          189,
+          60,
+          655,
+          1140
+        ]
+      },
+      "producer_qa": "independent-normal-review.json"
+    },
+    {
+      "character_id": "salaryman",
+      "style": "nanami",
+      "expression": "normal",
+      "source_library_file_id": "libfile_734b5f63d6208191a2089ea2185c76ad",
+      "source_file_id": "file_000000009cfc81f99d89dec30d6d1ff3",
+      "source_sha256": "57c77550a241c1f431dd8b28bbf353da0d692be69192db5174ac0e667f3b9104",
+      "source_size_bytes": 1588912,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source_subject_height": 1444,
+      "source": "asset_sources/portraits/maezono-salaryman-20261105/nanami/salaryman/normal-source.png",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/salaryman/chr_salaryman_normal.png",
+        "git_blob": "d10bd4ab59c9b2ec7b768002a15df24e0a7023d7",
+        "sha256": "446e02ceafb0d457fffbb262e7a107a8faaf4306193c660e24b3a9a2cf20aec0"
+      },
+      "selected_normal_sha256": "57c77550a241c1f431dd8b28bbf353da0d692be69192db5174ac0e667f3b9104",
+      "runtime": "assets/sprites/character_variants/nanami/salaryman/chr_salaryman_normal.png",
+      "runtime_sha256": "e332efa90454973dd6041d82ebd184e07a4cd78f7a5ad3724326eaf61f58bb0f",
+      "export": {
+        "scale": 0.7479224376731302,
+        "offset": [
+          42,
+          -4
+        ],
+        "bbox_alpha24": [
+          255,
+          59,
+          607,
+          1140
+        ]
+      },
+      "producer_qa": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/next-production/salaryman/independent-normal-review.json"
+    },
+    {
+      "character_id": "salaryman",
+      "style": "new",
+      "expression": "normal",
+      "source_library_file_id": "libfile_d6886c5bfa148191999b3b356c0973fa",
+      "source_file_id": "file_00000000f63c81f9b02691bfca1004a7",
+      "source_sha256": "228d9379af941573e15d72a57463d0faa6e3446cf9849368425fd859286d7319",
+      "source_size_bytes": 1285477,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source_subject_height": 1417,
+      "source": "asset_sources/portraits/maezono-salaryman-20261105/new/salaryman/normal-source.png",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/salaryman/chr_salaryman_normal.png",
+        "git_blob": "d10bd4ab59c9b2ec7b768002a15df24e0a7023d7",
+        "sha256": "446e02ceafb0d457fffbb262e7a107a8faaf4306193c660e24b3a9a2cf20aec0"
+      },
+      "selected_normal_sha256": "228d9379af941573e15d72a57463d0faa6e3446cf9849368425fd859286d7319",
+      "runtime": "assets/sprites/character_variants/new/salaryman/chr_salaryman_normal.png",
+      "runtime_sha256": "efc23392f63c74a0118d17f81b1151f62d2ef4895537135cef7a8d04bfef5740",
+      "export": {
+        "scale": 0.7621736062103035,
+        "offset": [
+          35,
+          -11
+        ],
+        "bbox_alpha24": [
+          260,
+          60,
+          606,
+          1141
+        ]
+      },
+      "producer_qa": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/next-production/salaryman/independent-normal-review.json"
+    },
+    {
+      "character_id": "maezono",
+      "style": "nanami",
+      "expression": "excited",
+      "source_library_file_id": "libfile_fc37370211f8819192d03487ee5b9ad3",
+      "source_file_id": "file_000000000ac0822f860814ab9bb405c6",
+      "source_sha256": "950082ec25b653b9ef4c3b76b5b424f21dbf7d5ea1ec0c95a0130c6e76769aed",
+      "source_size_bytes": 1986775,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source_subject_height": 1448,
+      "source": "asset_sources/portraits/maezono-salaryman-20261105/nanami/maezono/excited-source.png",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maezono/chr_maezono_excited.png",
+        "git_blob": "fab35b1a52a1b59b4ec74cbb1f351ef10a0141b0",
+        "sha256": "5849ed0f70cc8a0f6b1312d239cc29116a9b5ddee0d7291ec8be8ed1e148aa1c"
+      },
+      "selected_normal_sha256": "1116bfd623e97737ac621aeb7a388816bbdd5a0bd9dc50a2e09b01ebbec8ecb1",
+      "runtime": "assets/sprites/character_variants/nanami/maezono/chr_maezono_excited.png",
+      "runtime_sha256": "37d7e224253c209fd6d246d3276b94305421e59e8f14d025812c0e453832af14",
+      "export": {
+        "scale": 0.7458563535911602,
+        "offset": [
+          48,
+          9
+        ],
+        "bbox_alpha24": [
+          195,
+          60,
+          671,
+          1140
+        ]
+      },
+      "producer_qa": "independent-family-review.json"
+    },
+    {
+      "character_id": "maezono",
+      "style": "nanami",
+      "expression": "serious",
+      "source_library_file_id": "libfile_8142ea7a228c8191bca409e1cff7dad0",
+      "source_file_id": "file_00000000f894822fa6e8e601044b971d",
+      "source_sha256": "83ee78f5552c85bba96d751d0e6fef2b87f080ac9e4e98fa1327b02e2617b6c4",
+      "source_size_bytes": 1808549,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source_subject_height": 1460,
+      "source": "asset_sources/portraits/maezono-salaryman-20261105/nanami/maezono/serious-source.png",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maezono/chr_maezono_serious.png",
+        "git_blob": "6f45d540dffdac2f81ab53f52ffed713f89384b9",
+        "sha256": "61ef8b40c9e9c084e59e351b3f57a1ecdbdc3b1e1d632642f115a6aff74efe98"
+      },
+      "selected_normal_sha256": "1116bfd623e97737ac621aeb7a388816bbdd5a0bd9dc50a2e09b01ebbec8ecb1",
+      "runtime": "assets/sprites/character_variants/nanami/maezono/chr_maezono_serious.png",
+      "runtime_sha256": "864567e2d1e1f49ed9aea3b4586ce67ebd7affe55de28ace3116345cf3dd667e",
+      "export": {
+        "scale": 0.7397260273972602,
+        "offset": [
+          49,
+          14
+        ],
+        "bbox_alpha24": [
+          226,
+          60,
+          663,
+          1139
+        ]
+      },
+      "producer_qa": "independent-family-review.json"
+    },
+    {
+      "character_id": "maezono",
+      "style": "nanami",
+      "expression": "smile",
+      "source_library_file_id": "libfile_4b22b5a6520481918fb3cca1c3aea1a8",
+      "source_file_id": "file_00000000b694822f8e4b820077a5f507",
+      "source_sha256": "39a8ade9c000cf3e9d1f01ddfe184aace00f8994ec17dd1857647a19cd343597",
+      "source_size_bytes": 1902168,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source_subject_height": 1453,
+      "source": "asset_sources/portraits/maezono-salaryman-20261105/nanami/maezono/smile-source.png",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maezono/chr_maezono_smile.png",
+        "git_blob": "d23c0388b432f5520d42120a3460a6c15266ede9",
+        "sha256": "de726fbcaafbb86b061d4d723c361a15a707a6d80f3b1cbc0720efd3be555875"
+      },
+      "selected_normal_sha256": "1116bfd623e97737ac621aeb7a388816bbdd5a0bd9dc50a2e09b01ebbec8ecb1",
+      "runtime": "assets/sprites/character_variants/nanami/maezono/chr_maezono_smile.png",
+      "runtime_sha256": "42a11bc31d203ed032d827cb7cf9deb8f75326834a25b437d22209fce1c01c68",
+      "export": {
+        "scale": 0.7432897453544391,
+        "offset": [
+          44,
+          9
+        ],
+        "bbox_alpha24": [
+          182,
+          60,
+          660,
+          1141
+        ]
+      },
+      "producer_qa": "independent-family-review.json"
+    },
+    {
+      "character_id": "maezono",
+      "style": "nanami",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_a2b8ad715dc08191b5c67ad28dd80fea",
+      "source_file_id": "file_00000000cab0822fa5873598032dc781",
+      "source_sha256": "afaaa962ce2002796cac35f83d11cb9723b40e30155f32682d78907260737475",
+      "source_size_bytes": 1881574,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source_subject_height": 1456,
+      "source": "asset_sources/portraits/maezono-salaryman-20261105/nanami/maezono/surprise-source.png",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maezono/chr_maezono_surprise.png",
+        "git_blob": "760f59d94a68242b0b63f0194faf5d89c829e9b1",
+        "sha256": "ad0a3fbf3e90a9d72ae9bc0f21eddb426634f147ff9ed9b86f4f8c40c2151d8c"
+      },
+      "selected_normal_sha256": "1116bfd623e97737ac621aeb7a388816bbdd5a0bd9dc50a2e09b01ebbec8ecb1",
+      "runtime": "assets/sprites/character_variants/nanami/maezono/chr_maezono_surprise.png",
+      "runtime_sha256": "fc3ffb51834bd7cfcc54f234b387152b96b0060e9e6400454725641a74acd39a",
+      "export": {
+        "scale": 0.7417582417582418,
+        "offset": [
+          46,
+          12
+        ],
+        "bbox_alpha24": [
+          183,
+          60,
+          665,
+          1140
+        ]
+      },
+      "producer_qa": "independent-family-review.json"
+    },
+    {
+      "character_id": "maezono",
+      "style": "new",
+      "expression": "excited",
+      "source_library_file_id": "libfile_8c9ccdb5b3648191ba9f8d9325061513",
+      "source_file_id": "file_000000003560822f8fe2ceef93147bd2",
+      "source_sha256": "d78ff64ea49e713fba69a7e02fed531d6c1d21da9250f477d141aac8b3beff1a",
+      "source_size_bytes": 1492009,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source_subject_height": 1460,
+      "source": "asset_sources/portraits/maezono-salaryman-20261105/new/maezono/excited-source.png",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maezono/chr_maezono_excited.png",
+        "git_blob": "fab35b1a52a1b59b4ec74cbb1f351ef10a0141b0",
+        "sha256": "5849ed0f70cc8a0f6b1312d239cc29116a9b5ddee0d7291ec8be8ed1e148aa1c"
+      },
+      "selected_normal_sha256": "29e470399aee4bbc4157f26dc80633d5fd1b541b8e978e89f2485a41f429da0d",
+      "runtime": "assets/sprites/character_variants/new/maezono/chr_maezono_excited.png",
+      "runtime_sha256": "675b513008b0f17b72b7eab8e4177ca8ddc79a4131688ff7e8be7344e3959e89",
+      "export": {
+        "scale": 0.7397260273972602,
+        "offset": [
+          60,
+          14
+        ],
+        "bbox_alpha24": [
+          210,
+          60,
+          679,
+          1140
+        ]
+      },
+      "producer_qa": "independent-family-review.json"
+    },
+    {
+      "character_id": "maezono",
+      "style": "new",
+      "expression": "serious",
+      "source_library_file_id": "libfile_0f1dbb787d3c8191b51f193f5e7121ff",
+      "source_file_id": "file_000000007744822fab4d3f8aeeb4e9c4",
+      "source_sha256": "b2a4784117ee20a797498b55a9d3850ff2997e453d151245aae106255b229444",
+      "source_size_bytes": 1384433,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source_subject_height": 1437,
+      "source": "asset_sources/portraits/maezono-salaryman-20261105/new/maezono/serious-source.png",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maezono/chr_maezono_serious.png",
+        "git_blob": "6f45d540dffdac2f81ab53f52ffed713f89384b9",
+        "sha256": "61ef8b40c9e9c084e59e351b3f57a1ecdbdc3b1e1d632642f115a6aff74efe98"
+      },
+      "selected_normal_sha256": "29e470399aee4bbc4157f26dc80633d5fd1b541b8e978e89f2485a41f429da0d",
+      "runtime": "assets/sprites/character_variants/new/maezono/chr_maezono_serious.png",
+      "runtime_sha256": "354ccd2f65b4cc3a54314134b55efdfaef9bcb036ac59fcff7ce4d2a4a4927b3",
+      "export": {
+        "scale": 0.7515657620041754,
+        "offset": [
+          43,
+          10
+        ],
+        "bbox_alpha24": [
+          224,
+          61,
+          664,
+          1140
+        ]
+      },
+      "producer_qa": "independent-family-review.json"
+    },
+    {
+      "character_id": "maezono",
+      "style": "new",
+      "expression": "smile",
+      "source_library_file_id": "libfile_132ef73fb57c8191b117435ac05b71dd",
+      "source_file_id": "file_0000000028dc822fbb6e09886ac71c98",
+      "source_sha256": "17188da431a53326d0c4101723d98bd0112cf6642697099fd1c0f1bc53036702",
+      "source_size_bytes": 1415990,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source_subject_height": 1437,
+      "source": "asset_sources/portraits/maezono-salaryman-20261105/new/maezono/smile-source.png",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maezono/chr_maezono_smile.png",
+        "git_blob": "d23c0388b432f5520d42120a3460a6c15266ede9",
+        "sha256": "de726fbcaafbb86b061d4d723c361a15a707a6d80f3b1cbc0720efd3be555875"
+      },
+      "selected_normal_sha256": "29e470399aee4bbc4157f26dc80633d5fd1b541b8e978e89f2485a41f429da0d",
+      "runtime": "assets/sprites/character_variants/new/maezono/chr_maezono_smile.png",
+      "runtime_sha256": "b5e986c24a054c594b6cdacd5fe5d21f0fad5870684f0bd2c9f730b6433dcfa8",
+      "export": {
+        "scale": 0.7515657620041754,
+        "offset": [
+          45,
+          10
+        ],
+        "bbox_alpha24": [
+          186,
+          59,
+          658,
+          1139
+        ]
+      },
+      "producer_qa": "independent-family-review.json"
+    },
+    {
+      "character_id": "maezono",
+      "style": "new",
+      "expression": "surprise",
+      "source_library_file_id": "libfile_523e038edf448191b65580a4172a8c67",
+      "source_file_id": "file_00000000fe9c822fb659192998c7a007",
+      "source_sha256": "1a8dfc55f22e8f247d37ef5e1303a0d6709f5432d46f91fd12330534791e89e7",
+      "source_size_bytes": 1433489,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source_subject_height": 1437,
+      "source": "asset_sources/portraits/maezono-salaryman-20261105/new/maezono/surprise-source.png",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/maezono/chr_maezono_surprise.png",
+        "git_blob": "760f59d94a68242b0b63f0194faf5d89c829e9b1",
+        "sha256": "ad0a3fbf3e90a9d72ae9bc0f21eddb426634f147ff9ed9b86f4f8c40c2151d8c"
+      },
+      "selected_normal_sha256": "29e470399aee4bbc4157f26dc80633d5fd1b541b8e978e89f2485a41f429da0d",
+      "runtime": "assets/sprites/character_variants/new/maezono/chr_maezono_surprise.png",
+      "runtime_sha256": "4effce7b3e5f0b2f131a3d628036d81438a1ee3e331b8d099e3d4b7f49a39204",
+      "export": {
+        "scale": 0.7515657620041754,
+        "offset": [
+          45,
+          10
+        ],
+        "bbox_alpha24": [
+          187,
+          60,
+          657,
+          1140
+        ]
+      },
+      "producer_qa": "independent-family-review.json"
+    },
+    {
+      "character_id": "salaryman",
+      "style": "nanami",
+      "expression": "smile",
+      "source_library_file_id": "libfile_237aef1757908191b2bf4fab4708ade9",
+      "source_file_id": "file_0000000086a88230b3de64096f486117",
+      "source_sha256": "8928ab309f7211ad933f05fec5e6b140b546d0a1a436515c9e31b87eb4ce0b90",
+      "source_size_bytes": 1602280,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source_subject_height": 1444,
+      "source": "asset_sources/portraits/maezono-salaryman-20261105/nanami/salaryman/smile-source.png",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/salaryman/chr_salaryman_smile.png",
+        "git_blob": "3f6b81bb7e7eb35a9557247f4502103eaee33a05",
+        "sha256": "139f234e67220f08e4796bb09e853b0b9b37fc721e8fb8440594eeb26f2e8ddf"
+      },
+      "selected_normal_sha256": "57c77550a241c1f431dd8b28bbf353da0d692be69192db5174ac0e667f3b9104",
+      "runtime": "assets/sprites/character_variants/nanami/salaryman/chr_salaryman_smile.png",
+      "runtime_sha256": "03f50b3bffb6bcd66f694443093713e8b5ec49dbf37ca9b89d643353121061bb",
+      "export": {
+        "scale": 0.7479224376731302,
+        "offset": [
+          42,
+          -3
+        ],
+        "bbox_alpha24": [
+          253,
+          60,
+          608,
+          1140
+        ]
+      },
+      "producer_qa": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/next-production/salaryman/independent-smile-review.json"
+    },
+    {
+      "character_id": "salaryman",
+      "style": "new",
+      "expression": "smile",
+      "source_library_file_id": "libfile_035d7a8c52888191abc433f70a04136f",
+      "source_file_id": "file_00000000cea881f98558da23e952c823",
+      "source_sha256": "2e860b42ac0e31a0ab9f1802463a96b31bbd3304d521a7702e1c0b94b3f71d67",
+      "source_size_bytes": 1305522,
+      "source_pixels": [
+        1024,
+        1536
+      ],
+      "source_subject_height": 1421,
+      "source": "asset_sources/portraits/maezono-salaryman-20261105/new/salaryman/smile-source.png",
+      "canonical_expression_reference": {
+        "path": "assets/sprites/characters/salaryman/chr_salaryman_smile.png",
+        "git_blob": "3f6b81bb7e7eb35a9557247f4502103eaee33a05",
+        "sha256": "139f234e67220f08e4796bb09e853b0b9b37fc721e8fb8440594eeb26f2e8ddf"
+      },
+      "selected_normal_sha256": "228d9379af941573e15d72a57463d0faa6e3446cf9849368425fd859286d7319",
+      "runtime": "assets/sprites/character_variants/new/salaryman/chr_salaryman_smile.png",
+      "runtime_sha256": "f4a2274a6ac8c10a391e8339c9ed96e0adc0b83850401bbd0777fc8ab4e22d17",
+      "export": {
+        "scale": 0.7600281491907108,
+        "offset": [
+          37,
+          -8
+        ],
+        "bbox_alpha24": [
+          261,
+          59,
+          608,
+          1140
+        ]
+      },
+      "producer_qa": "/workspace/scratch/431c36bf589e/integrate-portrait-styles/next-production/salaryman/independent-smile-review.json"
+    }
+  ],
+  "export_rule": "Raw unmodified; uniform LANCZOS shrink to896x1200, personheight1080, bottom1140, feetcentroid448. Sparse lowalpha residue outside3px visible>=24 band removed only from derivative. No head/face/body/color/line edits. Shared normal framing and existing character display scales retained.",
+  "held_tsumugi_bow": {
+    "library_file_id": "libfile_fdd562aeb600819187d16314e9808588",
+    "file_id": "file_00000000177c81f5a937b6bf38b7f637",
+    "sha256": "eb1d2c3a7bcd1c0aed75b0af777fe995f81e3ad61e308b90852a6ca022783937",
+    "receipt": "Verified native1024x1536RGBA/person1404;36 RGB ear-spot repair per owner-approved handoff.",
+    "reason": "Nanami normal family is not introduced; existing selected normal raw is held below native person1300 gate (1261px). No assumption that bow handoff removes this normal hold.",
+    "registered": false
+  },
+  "protected": "Classic assets unchanged; Mashi/Tsumugi head/body not changed. No Noor v5 or safety-refused Ageha adoption. No global body normalization."
+}

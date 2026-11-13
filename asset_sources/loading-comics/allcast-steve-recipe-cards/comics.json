@@ -1,0 +1,67 @@
+{
+  "id": "steve-recipe-cards",
+  "title": "新作のカード",
+  "cast": [
+    "steve"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "ヘイ、新作だ。",
+    "何枚あるんです？",
+    "全部レモンライム。"
+  ],
+  "first_speaker": "steve",
+  "panel1": "右のスティーブが分厚い手書きカードの束を誇らしげに見せて「ヘイ、新作だ。」（左上に高く）。左のはじめが束の厚さに驚き「何枚あるんです？」（右下）。",
+  "panel2": "机いっぱいにカードが並ぶ。どのカードもレモンとライムの絵だけ（文字なし）。スティーブは満足げ。はじめ「全部レモンライム。」。",
+  "caption": "スティーブの研究は、レモンとライムに尽きない。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v1.png",
+  "source_sha256": "8cf3b8d61ff79f70f772fda40568a5aaef0c0870c9ce7198bffecd21c500b2d0",
+  "references": [
+    {
+      "path": "references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "references/steve.png",
+      "sha256": "6053510bfa3b52e3fe66dde0071af133fdae931410ad919eb47323a6b5d89735"
+    },
+    {
+      "path": "references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked",
+    "reading_order": "left-to-right; first speaker upper-left; tails checked",
+    "identity": "official sprites inspected; same positions/faces both panels",
+    "prohibited_hardware": "none",
+    "notes": "candidate visual check complete",
+    "in_game_pc_phone": "not run; unregistered",
+    "style_alignment": "Compared with early adopted Menu Revision reference: large expressive faces, 2.5-head chibi proportions, warm cel colors and bold clean lines; consistent across both panels.",
+    "selection": "Owner decision pending; not adopted",
+    "fill": "Official fill applied; filled panels re-inspected, faces/dialogue/gag preserved."
+  },
+  "delivery": [
+    {
+      "file": "panels/steve-recipe-cards-1.webp",
+      "sha256": "81b31f940a239af29919f0f58b8185a55910dc663ae7e9cad19e38db264905e9",
+      "width": 716,
+      "height": 477
+    },
+    {
+      "file": "panels/steve-recipe-cards-2.webp",
+      "sha256": "6195de9fc10b58a4b8d7a9835f5948ccff4659e317993e8d0bc11086a0015771",
+      "width": 720,
+      "height": 480
+    }
+  ],
+  "style_reference": {
+    "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+    "role": "early adopted Menu Revision comic, style only",
+    "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+  }
+}

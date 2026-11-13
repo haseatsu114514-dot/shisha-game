@@ -3,7 +3,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 const data = JSON.parse(readFileSync(new URL("../data/lover.json", import.meta.url), "utf8"));
-const ids = ["tsumugi", "minto", "rin", "ageha", "hiyori", "mashiro", "samechan"];
+const ids = ["tsumugi", "minto", "rio", "ageha", "hiyori", "mashiro", "samechan"];
 const allowedStats = new Set(["sense", "charm", "insight", "technique", "guts"]);
 for (const id of ids) {
   const scene = data.dates?.[id];
@@ -24,7 +24,7 @@ const mashiro = data.dates.mashiro;
 const dialogue = [mashiro.arrive.text, mashiro.mid.text, mashiro.optA.line, mashiro.optB.line, mashiro.close.text].join("\n");
 assert.ok(dialogue.includes("はじめくん"));
 assert.ok(dialogue.includes("僕"));
-assert.doesNotMatch(dialogue, /わたし|私|はじめさん|蒸野くん/);
+assert.doesNotMatch(dialogue, /わたし|私|はじめさん|逢縁くん/);
 for (const field of ["optA", "optB"]) {
   assert.match(mashiro[field].text, /ましろちゃん/, `Mashiro date ${field}: Hajime uses her established name`);
   assert.doesNotMatch(mashiro[field].text, /ましろ(?!ちゃん)/, `Mashiro date ${field}: no bare name in Hajime's speech`);
@@ -33,8 +33,9 @@ console.log("OK: all seven romance dates have complete data and Mashiro's voice 
 
 // 恋人の節目は台詞中のキューも能力の加算元になる。入れ子の分岐を含めて残さない。
 const milestones = JSON.parse(readFileSync(new URL("../../data/dialogue/lover_events.json", import.meta.url), "utf8")).dialogues;
-assert.equal(milestones.length, 35);
-for (const id of ["tsumugi", "minto", "rin", "ageha", "mashiro", "samechan", "hiyori"]) {
+// #3112 のヌール恋人Lv1〜5を含めて42本。
+assert.equal(milestones.length, 42);
+for (const id of ["tsumugi", "minto", "rio", "ageha", "mashiro", "samechan", "hiyori", "noor"]) {
   for (let level = 1; level <= 5; level++) {
     const scene = milestones.find(scene => scene.dialogue_id === `lover_${id}_lv${level}`);
     assert.ok(scene?.lines.length, `${id} Lv${level}: missing milestone`);
@@ -49,7 +50,7 @@ function checkMilestone(value, id) {
   }
 }
 for (const scene of milestones) checkMilestone(scene, scene.dialogue_id);
-console.log("OK: all 35 lover milestones contain no ability rewards or cues");
+console.log("OK: all 42 lover milestones contain no ability rewards or cues");
 
 // ひよりの恋人Lv1〜5（#1498 オーナー決定: 斧投げ・ラーメン・総務の区切り・儚い女の演技 → epilogue_hiyori）。
 const { existsSync } = await import("node:fs");
@@ -70,6 +71,11 @@ for (const scene of hiyori) {
   assert.ok(!scene.metadata.preview_only && !scene.metadata.min_chapter, `${scene.dialogue_id}: playable in chapters 1-3`);
   assert.ok(!scene.branches, `${scene.dialogue_id}: no timeline branch needed`);
   for (const line of scene.lines) {
+    // 場面の途中の背景の切り替え（lv2 の暖簾の前 → ラーメン屋の店内・#3285 C5）は台詞ではない。絵が実在することだけ確かめる。
+    if (line.type === "bg") {
+      assert.ok(assetExists(String(line.bg).replace("res://", "")), `${scene.dialogue_id}: bg line ${line.bg}`);
+      continue;
+    }
     assert.ok(["", "hiyori", "hajime"].includes(line.speaker), `${scene.dialogue_id}: speaker ${line.speaker}`);
     if (line.speaker === "hiyori") {
       assert.ok(assetExists(`assets/sprites/characters/hiyori/chr_hiyori_${line.face}.png`), `${scene.dialogue_id}: face ${line.face}`);
@@ -90,11 +96,41 @@ assert.match(sceneText(hiyori[2]), /総務、これにて閉店/);
 assert.match(sceneText(hiyori[2]), /延長申請/);
 assert.match(sceneText(hiyori[3]), /儚い/);
 assert.match(sceneText(hiyori[3]), /見つけ/);
-// 後日談 epilogue_hiyori の「総務、閉店」「半透明」「肩、五分」「捕まえて」へ自然につなぐ。
+// Lv5は休む場所の確立。後日談では同じ「半透明・肩五分」を繰り返さず、
+// 仕事を区切ったひよりも相手を気遣い、必要な日は迎えを頼める関係へ。
+for (const motif of ["総務、閉店", "半透明", "肩、五分", "捕まえて"]) {
+  assert.ok(sceneText(hiyori[4]).includes(motif), `Lv5 keeps its rest motif ${motif}`);
+}
 const epilogue = JSON.parse(readFileSync(new URL("../../data/dialogue/ending.json", import.meta.url), "utf8"))
   .dialogues.find(scene => scene.dialogue_id === "epilogue_hiyori");
+assert.equal(epilogue.metadata.private_scene, true);
 const epilogueText = sceneText(epilogue);
-for (const motif of ["総務、閉店", "半透明", "肩、五分", "捕まえて"]) {
-  assert.ok(epilogueText.includes(motif) && sceneText(hiyori[4]).includes(motif), `Lv5 sets up epilogue motif ${motif}`);
+assert.match(epilogueText, /明日の私に任せる/, "Hiyori sets her own work boundary");
+assert.match(epilogueText, /相談したい？.*ご飯にする？/, "Hiyori asks instead of deciding for Hajime");
+assert.match(epilogueText, /今日は俺が、見つけてもらう番/, "Hajime can receive care too");
+assert.match(epilogueText, /食べたあとの片づけは、二人で/, "They share the meal cleanup");
+assert.match(epilogueText, /来週は締め日.*迎えはお願い/, "Hiyori still asks for support on busy days");
+assert.match(epilogueText, /ラーメン屋/);
+assert.match(epilogueText, /味玉.*二つ/);
+for (const line of epilogue.lines) {
+  assert.ok(["", "hiyori", "hajime"].includes(line.speaker), `epilogue_hiyori: speaker ${line.speaker}`);
+  if (line.speaker === "hiyori") {
+    assert.ok(assetExists(`assets/sprites/characters/hiyori/chr_hiyori_${line.face}.png`), `epilogue_hiyori: face ${line.face}`);
+    assert.doesNotMatch(line.text, /はじめさん|ハジメ/);
+  } else assert.ok(!line.inner, "Only Hiyori has inner lines");
+  if (line.speaker === "hajime") assert.doesNotMatch(line.text, /ひより(?!さん)/);
 }
-console.log("OK: Hiyori lover Lv1-5 cover the owner themes and lead into epilogue_hiyori");
+console.log("OK: Hiyori lover Lv1-5 keep the owner themes and the epilogue makes care reciprocal");
+
+// ましろは触れ合いのために好みを曲げず、重さの噂ではなく本人の感想を話せる。
+const mashiroLv2 = milestones.find(scene => scene.dialogue_id === "lover_mashiro_lv2");
+const mashiroLv3 = milestones.find(scene => scene.dialogue_id === "lover_mashiro_lv3");
+assert.match(sceneText(mashiroLv2), /好きな濃さ/);
+assert.match(sceneText(mashiroLv2), /タイマーが鳴った.*手をほどき.*お茶を仕上げた/);
+assert.match(sceneText(mashiroLv2), /飲み終わったら、また貸す/);
+assert.match(sceneText(mashiroLv2), /タイマーなしで借りる/);
+assert.match(sceneText(mashiroLv3), /どんな重さが好き.*教えてくれる/);
+assert.match(sceneText(mashiroLv3), /重ければ、何でもいいわけじゃない/);
+assert.match(sceneText(mashiroLv3), /紅茶も残るのが好き/);
+assert.match(sceneText(mashiroLv3), /もう少し付き合ってくれる/);
+console.log("OK: Mashiro keeps her tea preferences and speaks about her own taste");

@@ -1,0 +1,459 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_ageha_dubai_evening",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕方のロビーで、あげはがハンドクリームの小さな蓋と格闘していた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ハジメっち、これ開けて。塗り足したいんだけど、滑る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "貸して。……これ、締めすぎじゃない？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "さっき塗ったあと、きつく閉めたの。鞄で出たらやじゃん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "蓋が回ると、あげはは両手を広げて待っていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "はい。今、持てないから、そのままお願い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。手のひらに出すね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手の甲をゆっくり擦り合わせる。その間、俺は開いた容器が倒れないように支えた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……来たら、あちこち見に行きたくなると思ってたんだけど"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "今、座ってるだけでも、わりと満足かも"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "もう少し、ここにいようか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "うん。あと、写真も今はいらない。手、てかてかだしｗ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "携帯は鞄の中にしまったまま、あげはが隣へ座り直した。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "蓋は、うちでも開けられるくらいに閉めといて。ありがと、ハジメっち"
+        }
+      ],
+      "comment": "接続済み（#3097・IR18 と同じ仕組み）。前夜祭の日、ch4_ageha_dubai_girlfriend（別便の到着）を読んだ後、前夜祭が始まる前に任意で一度読める。恋人の時だけ。同行者には到着場面が無いので出ない。大会の結果・前夜祭には触れていない。"
+    },
+    {
+      "dialogue_id": "ch4_minto_dubai_evening",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーの窓際で、栞さんが手首のリボンを指に巻き直していた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "さっき、お店のお知らせを見直しちゃった。ちゃんと休業って書いてあるのに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "落ち着かない？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "うん。看板を出したかどうか、いつも気にしてるから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞さんは携帯を裏返して、小さなバッグへ入れた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……今日は、看板を出さなくてもいいんだった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何をしようか。もう少し座っててもいいけど"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "じゃあ、窓の外で赤い車を先に見つけた方が勝ち"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "急に？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "お休みの遊び、……今、考えたの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で窓の外を見た。白い車が、三台続けて通る。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……なかなか来ないね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "来るまで、待ってようか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞さんは頷いて、リボンをいじっていた手を膝の上へ下ろした。"
+        }
+      ],
+      "comment": "接続済み（#3097・IR18 と同じ仕組み）。前夜祭の日、ch4_minto_dubai_girlfriend（別便の到着）を読んだ後、前夜祭が始まる前に任意で一度読める。恋人の時だけ。同行者には到着場面が無いので出ない。大会の結果・前夜祭には触れていない。"
+    },
+    {
+      "dialogue_id": "ch4_rio_dubai_evening",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーの椅子で、凛想さんが街の地図を広げていた。腕に掛けていた上着は、隣へ置いてある。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "行きたい場所に印をつけてたら、地図が丸だらけになった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ、仕入れの下見の地図ですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "それを聞くと、仕事の話に戻っちゃうけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あ、そっか。もう休みでしたね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "地図を畳む凛想さんを待ちながら、ポケットの小袋を出した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "これ、潰さない場所を探してたんです"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "カルダモン？　ああ、そのポケットだと座りにくいね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鞄の小さなポケットへ移す。凛想さんが、空いた椅子を少し引いた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "はい。これで、落ち着いて座れる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "贈り物の置き場所まで、相談しちゃいました"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "そういう話なら、休みの間でもいいよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で並んで座ると、凛想さんは上着を膝に広げた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……何も買わずに座ってるの、久しぶり。もう少し、付き合って"
+        }
+      ],
+      "comment": "接続済み（#3097・IR18 と同じ仕組み）。前夜祭の日、ch4_rio_dubai_girlfriend（別便の到着）を読んだ後、前夜祭が始まる前に任意で一度読める。恋人の時だけ。同行者には到着場面が無いので出ない。大会の結果・前夜祭には触れていない。"
+    },
+    {
+      "dialogue_id": "ch4_tsumugi_dubai_evening",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎが、到着した時と同じ窓際でスケッチブックを開いていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "空、少し色が変わったね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。さっきのページ、続きを描こうとしたんですけど"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎが鉛筆を持ち上げる。紙の上には、まだ昼の明るさが残っていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "塗り直すと、さっきの色が、なくなっちゃうので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "もう一枚にする？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……そうします。今の窓も、残したいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新しいページがめくられた。俺は鞄を足元へ置いて、隣の椅子に座る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ここにいても、邪魔じゃない？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。……動いても、大丈夫です。今日は、空から描くので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、のびをしておこうかな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背中を伸ばすと、つむぎが鉛筆を止めて、小さく笑った。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……今のは、端っこに描いてもいいですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。今度の俺は、ずいぶん気が抜けてるね"
+        }
+      ],
+      "comment": "接続済み（#3097・IR18 と同じ仕組み）。前夜祭の日、ch4_tsumugi_dubai_girlfriend（別便の到着）を読んだ後、前夜祭が始まる前に任意で一度読める。恋人の時だけ。同行者には到着場面が無いので出ない。大会の結果・前夜祭には触れていない。"
+    },
+    {
+      "dialogue_id": "ch4_mashiro_dubai_evening",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんと、宿の小さなテーブルを挟んで座った。パンとスープの皿が、二人分並ぶ。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "一緒にご飯って、言ったもんねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。少し落ち着いた？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ん、鞄を下ろしただけで、ずいぶん楽になった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんが携帯を出しかけて、皿の横へ伏せた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "写真、撮らなくていいの？　報告書の分"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "これは、お仕事の写真じゃなくていいかなぁ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "はじめくんと食べた、って覚えておく分"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、俺も携帯しまうね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "パンをちぎると、小さな欠片がテーブルへ落ちた。二人の手が同時に伸びる。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "あ、僕がやる。はじめくんは、先にスープを飲んでてねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとう。ましろちゃんも、スープが温かいあいだにね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙ナプキンを半分ずつに分けて、食事に戻った。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……一緒にご飯にして、よかったねぇ"
+        }
+      ],
+      "comment": "接続済み（#3097・IR18 と同じ仕組み）。前夜祭の日、ch4_mashiro_dubai_girlfriend（別便の到着）を読んだ後、前夜祭が始まる前に任意で一度読める。恋人の時だけ。同行者には到着場面が無いので出ない。大会の結果・前夜祭には触れていない。"
+    },
+    {
+      "dialogue_id": "ch4_mashiro_dubai_friend_evening",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿のロビーで、ましろちゃんがここへ来るまでの写真を一枚ずつ確かめていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ほらぁ。やっぱり、食べ物の写真が多い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "店の写真は、これからだね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ん、今は、まだ道中の分。ほら、こっち"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "空港の案内板と、機内から見た窓。その間に、パンの写真が三枚挟まっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "同じパン、三回撮ってるね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "丸いところ、見て。こっちは、割ったところ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なるほど。食べ物の方が、資料が細かい"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ムカイさんも、きっとそこから読むと思うんだぁ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんは写真に短い説明を付けてから、携帯をしまった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "報告書の順番は、帰ってから考える。今は、少し座ってようかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お疲れさま。俺も、ちょっと休んでいくよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "向かいの椅子へ座る。鞄を下ろしたましろちゃんが、長く息を吐いた。"
+        }
+      ],
+      "comment": "接続済み（#3097・IR18 と同じ仕組み）。前夜祭の日、恋人でないましろの ch4_mashiro_dubai_friend（視察の到着）を読んだ後、前夜祭が始まる前に任意で一度読める。恋人版の夕方とは同じ日に重ならない。同行者には出ない。前夜の過ごし方・修羅場には数えない。"
+    }
+  ],
+  "comment": "#3097 別便で来た人と、到着の後に過ごす夕方の場面（接続済み・2026-11-12 オーナー決定で広げた。サメちゃん・ひよりの2本は ch4_main.json）。前夜祭の日、その人の到着場面を読んだ後、前夜祭が始まる前に任意で一度だけ読める（remake/js/chapters/ch4-progress.js の chapterFourArrivalEveningsDue、ch4.js の renderEve）。恋人5人は恋人版の到着の後、恋人でないましろは友人版の到着（視察）の後だけ。同行者には到着場面が無いので出ない。報酬なし。前夜の過ごし方・修羅場には数えない。"
+}

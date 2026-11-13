@@ -1,9 +1,15 @@
 import assert from 'node:assert/strict';
-import { LOADING_COMICS } from '../js/core/loading-comics.js';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { LOADING_COMICS, eligibleLoadingComics } from '../js/core/loading-comics.js';
+import { hasMetCharacter } from '../js/core/title-art-unlock.js';
+import { minigameLoadingOptions } from '../js/minigames/minigame-loading.js';
+import { gameLoadingOptions } from '../js/core/loading-context.js';
+import { KNOWN_AT_START } from '../js/core/state.js';
 
 // Registration guard: every comic offered to the loading screen must fit the fixed
-// display frame (3:2, css/loading.css --loading-panel-ratio; see the authoring spec in
-// remake/README.md and work/loading-comic-ref/REFERENCE.md §2). Panels are letterboxed
+// display frame (3:2, css/loading.css --loading-panel-ratio; authoring spec:
+// asset_sources/loading-comics/README.md, cut tool: tools/loading_comic_cut.py). Panels are letterboxed
 // without distortion or cropping, so a region whose ratio strays too far from the frame
 // shows as a small picture floating in a large beige field. The band below keeps the
 // letterbox occupancy at >= 80% of the frame width (ratio < 3:2) or >= 75% of the
@@ -13,6 +19,23 @@ import { LOADING_COMICS } from '../js/core/loading-comics.js';
 const FRAME_RATIO = 3 / 2;
 const MIN_RATIO = 1.2;
 const MAX_RATIO = 2.0;
+// Whole-image panels (the 1-panel-1-file standard since 2026-11-01) must be delivered at 3:2 exactly
+// (±1%) and no larger than 1440x960, as tools/loading_comic_cut.py emits them.
+const WHOLE_TOLERANCE = 0.01;
+const MAX_WHOLE = { width: 1440, height: 960 };
+
+// Image size from the file header (WebP VP8 / VP8L / VP8X, PNG). No decoder needed in CI quick.
+function imageSize(file) {
+  const b = readFileSync(file);
+  if (b.length >= 24 && b.toString('ascii', 0, 4) === '\x89PNG') return { width: b.readUInt32BE(16), height: b.readUInt32BE(20) };
+  if (b.toString('ascii', 0, 4) === 'RIFF' && b.toString('ascii', 8, 12) === 'WEBP') {
+    const chunk = b.toString('ascii', 12, 16);
+    if (chunk === 'VP8 ') return { width: b.readUInt16LE(26) & 0x3fff, height: b.readUInt16LE(28) & 0x3fff };
+    if (chunk === 'VP8L') { const bits = b.readUInt32LE(21); return { width: (bits & 0x3fff) + 1, height: ((bits >> 14) & 0x3fff) + 1 }; }
+    if (chunk === 'VP8X') return { width: 1 + (b[24] | (b[25] << 8) | (b[26] << 16)), height: 1 + (b[27] | (b[28] << 8) | (b[29] << 16)) };
+  }
+  throw new Error(`${file}: unsupported image header`);
+}
 
 assert(Array.isArray(LOADING_COMICS) && LOADING_COMICS.length > 0,
   'At least one loading comic must be registered');
@@ -29,10 +52,15 @@ for (const comic of LOADING_COMICS) {
     assert(panel.src && panel.alt, `${where}: src and alt are required`);
     const region = panel.region;
     if (!region) {
-      // No region: the whole image is the panel. Its own ratio is only known at decode
-      // time, so ratio enforcement applies to region-based registrations (the sheet
-      // method used by every adopted episode); whole-image panels must be authored at
-      // 3:2 per the README spec.
+      // No region: the whole image is the panel. Read its size from the file header and
+      // require the delivery spec (3:2 within 1%, at most 1440x960).
+      const file = panel.src.startsWith('file:') ? fileURLToPath(panel.src) : panel.src;
+      const { width, height } = imageSize(file);
+      const ratio = width / height;
+      assert(Math.abs(ratio - FRAME_RATIO) <= WHOLE_TOLERANCE * FRAME_RATIO,
+        `${where}: whole-image panel is ${width}x${height} (${ratio.toFixed(3)}); deliver it at 3:2 via tools/loading_comic_cut.py`);
+      assert(width <= MAX_WHOLE.width && height <= MAX_WHOLE.height,
+        `${where}: ${width}x${height} exceeds the 1440x960 delivery cap`);
       return;
     }
     const fields = [region.x, region.y, region.width, region.height, region.sourceWidth, region.sourceHeight];
@@ -48,4 +76,121 @@ for (const comic of LOADING_COMICS) {
   });
 }
 
-console.log(`loading comics spec: PASS (${LOADING_COMICS.length} comics fit the 3:2 frame band)`);
+// Cast: every comic names the characters in it (besides hajime) by their data/characters.json id
+// so it unlocks only after meeting them all.
+const root = fileURLToPath(new URL('../../', import.meta.url));
+const characterIds = new Set([
+  ...JSON.parse(readFileSync(root + 'data/characters.json', 'utf8')).map(c => c.id),
+]);
+for (const comic of LOADING_COMICS) {
+  assert(Array.isArray(comic.cast) && comic.cast.length > 0, `${comic.id}: cast (character ids) is required for the met-based unlock`);
+  for (const id of comic.cast) {
+    assert(id !== 'hajime', `${comic.id}: hajime is in every comic; list only the other characters`);
+    assert(characterIds.has(id), `${comic.id}: unknown character id "${id}" in cast`);
+  }
+}
+assert.equal(new Set(LOADING_COMICS.map(c => c.id)).size, LOADING_COMICS.length, 'comic ids are unique');
+
+// Where a comic appears: every game loading screen draws from the bench registrations ("craft";
+// core/loading-context.js), the minigame-only ones add "minigame". contexts is required: a comic without
+// it would also be offered at boot's plain gate, which must stay comic-free in the automated tests.
+const CONTEXTS = ['craft', 'minigame'];
+for (const comic of LOADING_COMICS) {
+  assert(Array.isArray(comic.contexts) && comic.contexts.includes('craft'), `${comic.id}: contexts must include "craft"`);
+  assert(comic.contexts.every(context => CONTEXTS.includes(context)), `${comic.id}: unknown context in ${JSON.stringify(comic.contexts)}`);
+}
+assert.equal(eligibleLoadingComics(LOADING_COMICS, { context: 'boot', chapter: 9 }).length, 0, 'no comic is registered for the boot context');
+
+// Unlock: only comics whose whole cast the player has met. A fresh game has met only sumi
+// (LIME contact from the start), so the bench shows sumi's comics until others are met.
+const craft = (chapter, save) => eligibleLoadingComics(LOADING_COMICS, { context: 'craft', chapter, isMet: id => hasMetCharacter(save, id) }).map(c => c.id);
+const fresh = { met: {}, flags: {}, contacts: ['sumi'], story: {} };
+const freshIds = craft(1, fresh);
+assert(freshIds.length > 0, 'a fresh game must still have at least one comic (sumi)');
+assert(freshIds.every(id => LOADING_COMICS.find(c => c.id === id).cast.every(x => x === 'sumi')), `fresh game shows only sumi comics, got ${freshIds}`);
+const metNaru = craft(1, { ...fresh, met: { naru: true } });
+assert(metNaru.some(id => LOADING_COMICS.find(c => c.id === id).cast.includes('naru')), 'meeting naru unlocks naru comics');
+assert(metNaru.every(id => LOADING_COMICS.find(c => c.id === id).cast.every(x => x === 'sumi' || x === 'naru')), 'no comic of an unmet character');
+// 鉄仮面さん（salaryman）は名乗りの met が付かない。第1章冒頭の tonari を読み終えた記録か、常連の話の記録で会った扱いになる。
+const salarymanComics = LOADING_COMICS.filter(c => c.cast.includes('salaryman')).map(c => c.id);
+assert(salarymanComics.length > 0, 'salaryman comics are registered');
+assert(!craft(1, { ...fresh, flags: { _ch1_opening: {} } }).some(id => salarymanComics.includes(id)), 'salaryman comics wait until the opening at tonari is read');
+for (const flags of [{ _ch1_opening: { introDone: true } }, { _ev_salaryman: true }]) {
+  const ids = craft(1, { ...fresh, flags });
+  assert(salarymanComics.every(id => ids.includes(id)), `salaryman comics unlock with ${JSON.stringify(flags)}`);
+}
+// A comic with two characters needs both; a spoiler comic also waits for its chapter.
+const multi = LOADING_COMICS.filter(c => c.cast.length > 1);
+for (const comic of multi) {
+  const partial = { ...fresh, met: { [comic.cast[0]]: true } };
+  assert(!craft(9, partial).includes(comic.id), `${comic.id}: meeting only ${comic.cast[0]} must not unlock it`);
+}
+const everyone = { ...fresh, met: Object.fromEntries([...characterIds].map(id => [id, true])) };
+const spoilers = LOADING_COMICS.filter(c => c.minChapter > 1);
+for (const comic of spoilers) {
+  assert(!craft(comic.minChapter - 1, everyone).includes(comic.id), `${comic.id}: hidden before chapter ${comic.minChapter}`);
+  assert(craft(comic.minChapter, everyone).includes(comic.id), `${comic.id}: shown from chapter ${comic.minChapter} once met`);
+}
+assert.equal(eligibleLoadingComics(LOADING_COMICS, { context: 'craft', chapter: 9 }).length, LOADING_COMICS.length, 'without isMet (previews) the cast is not checked');
+
+// Every game loading screen (bench, minigame, chapter, resume, boot) uses the same rules.
+const game = (save, chapter) => eligibleLoadingComics(LOADING_COMICS, gameLoadingOptions(save, { chapter })).map(c => c.id);
+assert.deepEqual(game(null), craft(1, { ...fresh, met: { tsumugi: true } }), 'without a save (first boot), only the people a new game has met');
+assert.deepEqual(game(null), craft(1, { met: Object.fromEntries(KNOWN_AT_START.map(id => [id, true])), flags: {}, contacts: ['sumi'], story: {} }));
+assert(game(null).length > 0, 'a first boot has a comic to show');
+assert.deepEqual(game({ ...everyone, chapter: 3 }), craft(3, everyone), 'a save uses its own chapter and the people met');
+assert.deepEqual(game({ ...everyone, chapter: 3 }, 5), craft(5, everyone), 'the bench passes its own chapter');
+assert.equal(gameLoadingOptions(fresh, { record: false }).onRead, null, 'preview pages never write the reading record');
+
+// Reading record (core/loading-comic-log.js): ids in reading order, outside the save slots.
+{
+  const store = new Map();
+  let failing = false;
+  globalThis.localStorage = {
+    getItem: key => { if (failing) throw new Error('blocked'); return store.has(key) ? store.get(key) : null; },
+    setItem: (key, value) => { if (failing) throw new Error('blocked'); store.set(key, String(value)); },
+  };
+  const log = await import('../js/core/loading-comic-log.js');
+  const KEY = log.LOADING_COMICS_READ_KEY;
+  assert.equal(KEY, 'suien_remake_loading_comics_read');
+  assert.deepEqual(log.readLoadingComicsRead(), [], 'no record reads as nothing read');
+  log.recordLoadingComicRead('sumi-cold-tea');
+  log.recordLoadingComicRead('restored-17');
+  log.recordLoadingComicRead('sumi-cold-tea');
+  assert.deepEqual(JSON.parse(store.get(KEY)), ['sumi-cold-tea', 'restored-17'], 'reading order, no duplicates');
+  assert.equal(log.hasReadLoadingComic('restored-17'), true);
+  assert.equal(log.hasReadLoadingComic('sumi-cloth-fold'), false);
+  for (const bad of [undefined, null, 7, '', 'Has Space', '<img>', 'x'.repeat(65)]) log.recordLoadingComicRead(bad);
+  assert.deepEqual(JSON.parse(store.get(KEY)), ['sumi-cold-tea', 'restored-17'], 'only id-shaped strings are recorded');
+  assert.deepEqual(log.normalizeLoadingComicsRead(['a', 'a', 3, null, 'b', '../x']), ['a', 'b']);
+  assert.deepEqual(log.normalizeLoadingComicsRead({ a: true }), []);
+  store.set(KEY, '{broken');
+  assert.deepEqual(log.readLoadingComicsRead(), [], 'a broken record reads as nothing read');
+  log.recordLoadingComicRead('sumi-cloth-fold');
+  assert.deepEqual(JSON.parse(store.get(KEY)), ['sumi-cloth-fold'], 'recording again repairs a broken record');
+  // Another tab (or a save transfer) may rewrite the record: the next read must see it.
+  store.set(KEY, JSON.stringify(['restored-17']));
+  assert.deepEqual(log.readLoadingComicsRead(), ['restored-17']);
+  failing = true;
+  assert.deepEqual(log.readLoadingComicsRead(), [], 'blocked storage reads as nothing read');
+  assert.doesNotThrow(() => log.recordLoadingComicRead('sumi-cold-tea'), 'blocked storage never breaks the game');
+  failing = false;
+  delete globalThis.localStorage;
+}
+
+// Before a minigame starts (sandboard, camel race; 2026-11-11 owner "ゲーム開始前に漫画付きロードとか挟んでもいい"),
+// the same loading screen picks comics by the same rules: in the game, the save's chapter and the people met;
+// on a standalone trial page (no save) like the bench preview, the cast is not checked and spoilers stay hidden.
+const minigame = save => eligibleLoadingComics(LOADING_COMICS, minigameLoadingOptions(save)).map(c => c.id);
+assert.deepEqual(minigame({ ...fresh, chapter: 1 }), freshIds, 'in the game, a minigame shows the same comics as the bench');
+for (const chapter of [1, 2, 3, 4, 5]) {
+  for (const [label, save] of [['fresh', fresh], ['met naru', { ...fresh, met: { naru: true } }], ['everyone met', everyone]]) {
+    assert.deepEqual(minigame({ ...save, chapter }), craft(chapter, save), `chapter ${chapter} ${label}: same as the bench`);
+  }
+}
+const trial = minigame(null);
+assert.deepEqual(trial, eligibleLoadingComics(LOADING_COMICS, { context: 'craft', chapter: 1 }).map(c => c.id), 'a standalone trial uses the bench preview pool');
+assert(trial.length > freshIds.length, 'a trial page has comics to show');
+assert(trial.every(id => LOADING_COMICS.find(c => c.id === id).minChapter === 1), 'a trial page never shows a spoiler comic');
+
+console.log(`loading comics spec: PASS (${LOADING_COMICS.length} comics fit the 3:2 frame band; cast-based unlock: fresh game ${freshIds.length}; minigame trial ${trial.length})`);

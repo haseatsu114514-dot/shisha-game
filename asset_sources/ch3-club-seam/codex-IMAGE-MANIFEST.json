@@ -1,0 +1,92 @@
+[
+  {
+    "file": "seam-entrance-a.png",
+    "bytes": 2924461,
+    "sha256": "2e0fe1626105bcde10c0f368f02748d170564e204ac43d6694000a06dbde11fa",
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGB"
+  },
+  {
+    "file": "seam-entrance-b.png",
+    "bytes": 2811687,
+    "sha256": "77dfefa8484f57bc4c9a2c76504c6e40c55e1d7aba7bf4a6ea2dd33e515206d5",
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGB"
+  },
+  {
+    "file": "seam-entrance-c.png",
+    "bytes": 2872646,
+    "sha256": "d370b5d57008fe908bf0e5d0a401c84a9d025bc42c91d2fe1ed071f9c93d54cb",
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGB"
+  },
+  {
+    "file": "seam-interior-a.png",
+    "bytes": 2557927,
+    "sha256": "eb54aa315d85a1cc689e8d005006e7b876bcebfc46d1e7b1096378e69f750cf9",
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGB"
+  },
+  {
+    "file": "seam-interior-b.png",
+    "bytes": 2536295,
+    "sha256": "9118f1f873bee7212aa8b5a99f03248707be1df5ee5e6029ebfdc4d78e51e2a2",
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGB"
+  },
+  {
+    "file": "seam-interior-c.png",
+    "bytes": 2452449,
+    "sha256": "8996fc69bb86e6f97dcc770bc60cd3864121a8e6545c93da948db3ee1eb4ae66",
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGB"
+  },
+  {
+    "file": "seam-logo-a.png",
+    "bytes": 838500,
+    "sha256": "0d1b3b167cbf0aa92eb72252cf5fe1770af70949258ece0c81de5efc78bef347",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA"
+  },
+  {
+    "file": "seam-logo-b.png",
+    "bytes": 846807,
+    "sha256": "ff679df7bab5e951ddb84cd92bf5be047f19a706b7a1ac588970bed785288758",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA"
+  },
+  {
+    "file": "seam-logo-c.png",
+    "bytes": 868145,
+    "sha256": "e53cc0acd424e35f423c67790796c528d5888f61b95cc0207b97bfd03623f092",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA"
+  }
+]

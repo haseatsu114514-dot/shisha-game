@@ -26,7 +26,12 @@ async function prepare(page) {
       return s;
     };
     T.lines = () => T.vn.backlog().map(l => l.text);
-    T.game = () => { const s = structuredClone(T.core.state); delete s.savedAt; return s; };
+    // 保存の記録（保存日時 savedAt と、保存のたびに経過分を足すプレイ時間 playMs・#2902）は物語の効果ではないので外す。
+    T.game = () => {
+      const s = structuredClone(T.core.state);
+      if (!Number.isFinite(s.playMs) || s.playMs < 0) throw Error("play time must stay a valid count");
+      delete s.savedAt; delete s.playMs; return s;
+    };
     T.events = { 2: T.ch1.NIGHT_EVENTS[2], 10: T.ch1.NIGHT_EVENTS[10] };
   });
 }
@@ -144,7 +149,7 @@ await suite("regular-service-response", async check => {
     await check(`${label}-auto-stops-at-service-and-reads-later-response`, async page => {
       await prepare(page); await page.evaluate(() => { T.fresh(); });
       await start(page, REG, true);
-      await advanceUntil(page, "いつものサラリーマンが、いつもの席に座る。襟元に指を入れて、無言でメニューを指差した。", touch);
+      await advanceUntil(page, "いつもの鉄仮面さんが、いつもの席に座る。襟元に指を入れて、無言でメニューを指差した。", touch);
       await input(page.locator('[data-test="vn-auto"]'), touch);
       const choices = page.locator('.vn-choices button');
       await choices.first().waitFor({ timeout: 20000 }); await page.waitForTimeout(500);
@@ -154,7 +159,7 @@ await suite("regular-service-response", async check => {
       const answer = touch ? 0 : 1;
       await input(choices.nth(answer), touch);
       const reply = answer === 0 ? "ダブルアップルにミント少し、ですね"
-        : "先に水を置くと、サラリーマンは一口飲んでから、小さく頷いた。";
+        : "先に水を置くと、鉄仮面さんは一口飲んでから、小さく頷いた。";
       await page.waitForFunction(text => T.lines().includes(text), reply);
       await input(page.locator('[data-test="vn-auto"]'), touch);
       await input(page.locator('[data-test="vn-skip"]'), touch);
@@ -194,9 +199,13 @@ await suite("regular-service-response", async check => {
         if (version === "current") response(later.lines, answer);
         counts[version] = { first: first.clicks, choices: first.choices, later: later.clicks };
       }
-      assert.equal(counts.current.first, counts.baseline.first);
+      // The new mouthpiece explanation adds one line to the current first visit,
+      // and #2534 EMO04 removes one monologue that re-explained the loosened shoulders (net 0).
+      assert.equal(counts.current.first, counts.baseline.first + (answer === null ? 0 : 1 - 1));
       assert.equal(counts.current.choices, answer === null ? 0 : 1);
-      assert.equal(counts.baseline.choices, 0); assert.equal(counts.current.later, counts.baseline.later);
+      // #2606: the later scene gains Tsumugi's five-line foreshadowing after the salaryman leaves.
+      // #2534 EMO04: plus one line noting he changed his own order for the first time.
+      assert.equal(counts.baseline.choices, 0); assert.equal(counts.current.later, counts.baseline.later + 5 + 1);
       console.log(`${label}/${answer ?? "legacy"} clicks ${JSON.stringify(counts)}`);
       await page.evaluate(() => { T.fresh(); });
       if (answer !== null) {

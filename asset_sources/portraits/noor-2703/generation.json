@@ -1,0 +1,488 @@
+{
+  "issue": 2703,
+  "generator": "Codex built-in image_gen",
+  "prompt_file": "asset_sources/portraits/noor-2703/prompts.json",
+  "fit": "asset_sources/portraits/noor-2703/fit.py",
+  "canvas": [
+    896,
+    1200
+  ],
+  "person_height_px": 1080,
+  "feet_y": 1140,
+  "variants": {
+    "new/normal": {
+      "prompt": "Use case: illustration-story. Asset type: full-body transparent PNG standing portrait for shisha-game. Draw Noor Salim (ヌール・サーリム), normal expression, in the NEW adopted portrait style. Image 1 reference: assets/sprites/characters/noor/chr_noor_normal.png — identity authority for her face, tan skin, dark ponytail, sunglasses on head, beige scarf, olive field shirt over black top, tan cargo trousers, black hiking boots, body type and hand-on-hip pose; preserve all. Image 2 reference: assets/sprites/characters/rio/chr_rio_normal.png — FEMALE HEAD-TO-BODY RATIO ONLY, about 6.5-7 heads; do not copy Rio's face, hair, body, outfit or pose. Image 3 reference: assets/sprites/character_variants/new/minto/chr_minto_normal.png — NEW style authority for clean cel shading and line work, do not copy character. Image 4 reference: assets/sprites/character_variants/new/tsumugi/chr_tsumugi_normal.png — NEW style authority and maximum external-outline weight; Noor's outer outline must be no thicker than this adopted Tsumugi outline, adjusted for scale. STYLE FIXING: match the adopted NEW shisha-game cast style exactly, not the older painterly Noor source style. STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand as the approved Minto, Ageha and Rio sprites. Japanese 2D visual-novel game art; confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two to three clearly shaped cel-shadow steps; highlights only as a few deliberate bands on the hair and small catchlights in the eyes. No skin gloss, no airbrush gradients, no rim light or glow, no photographic texture, no pore or fabric micro-detail, no dense ornamental noise, no hundreds of thin hair strands. Limited palette: hair and skin plus three or four main colors. Keep this character's own eye, brow, nose and mouth shapes and natural age and gender differences; do not drift toward a generic AI pretty face. HEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoods or ornaments) to the chin must be about one seventh of the full height from the top of the hair to the shoe soles (about 7 heads tall). Make one full figure, entire boots visible, no cropping, no background, no shadow, no text, genuinely transparent alpha. Source resolution portrait with character at least 1300 px tall if possible.",
+      "references": [
+        {
+          "path": "assets/sprites/characters/noor/chr_noor_normal.png",
+          "bytes": 626887,
+          "sha256": "1374af232413652aaa6285982730e308ba47edf31305d89c3f3632b279b07266",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "identity and normal expression"
+        },
+        {
+          "path": "assets/sprites/characters/rio/chr_rio_normal.png",
+          "bytes": 386848,
+          "sha256": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "female head-to-body proportion only"
+        },
+        {
+          "path": "assets/sprites/character_variants/new/minto/chr_minto_normal.png",
+          "bytes": 416997,
+          "sha256": "a2858d52a200b441a7b55221efb10bfb882a604e3bcd74c4efa75dac220dac60",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "adopted new style"
+        },
+        {
+          "path": "assets/sprites/character_variants/new/tsumugi/chr_tsumugi_normal.png",
+          "bytes": 290813,
+          "sha256": "a3e91848b0bc501eb483d713fe68059717d5f676b45648c49a23cf5086e91fbd",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "maximum outline weight"
+        }
+      ],
+      "original": {
+        "path": "asset_sources/portraits/noor-2703/new/normal-source.png",
+        "bytes": 807887,
+        "sha256": "05ca152f96d6f20d6bee105b042e82c7b957513478d2102d9874de05c2be5661",
+        "dimensions": [
+          1084,
+          1451
+        ],
+        "mode": "RGBA"
+      },
+      "png": {
+        "path": "assets/sprites/character_variants/new/noor/chr_noor_normal.png",
+        "bytes": 466423,
+        "sha256": "6024c08e23a4fa6e2dfa0b6490fabfaae55f59ebfd395f92b632a1347cd6311b",
+        "dimensions": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      },
+      "webp": {
+        "path": "remake/img/sprites/character_variants/new/noor/chr_noor_normal.webp",
+        "bytes": 299864,
+        "sha256": "36f82e56eaaa4e16f99c9118ff30cc714f096cd72037fdce1ed129d4db4a2cee",
+        "dimensions": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      }
+    },
+    "new/smile": {
+      "prompt": "Draw Noor Salim with SMILE expression: happy closed eyes, broad open smiling mouth as current smile reference. Keep full body and head placement matching accepted new normal. Use case: illustration-story. Asset type: full-body transparent shisha-game standing portrait. Reference 1: current Noor expression image, IDENTITY and exact facial expression authority; preserve tan skin, black fringe and side ponytail, sunglasses, beige scarf, olive field shirt, black inner top, tan cargo pants, black hiking boots, adult athletic build and hand-on-hip pose. Reference 2: Rio normal, FEMALE PROPORTIONS ONLY, about seven heads tall; do not copy Rio identity, clothes, hair or pose. Reference 3: accepted new-style Noor normal, SAME PERSON/style and body/face/head-size anchor; preserve clothing and outline exactly, change only face expression. Reference 4: adopted new-style Tsumugi normal, maximum outer-outline thickness, do not copy character. STYLE FIXING: match the adopted NEW shisha-game style and accepted new Noor normal, not the older painterly source. STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand as the approved Minto, Ageha and Rio sprites. Japanese 2D visual-novel game art; confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two to three clearly shaped cel-shadow steps; highlights only as a few deliberate bands on the hair and small catchlights in the eyes. No skin gloss, no airbrush gradients, no rim light or glow, no photographic texture, no pore or fabric micro-detail, no dense ornamental noise, no hundreds of thin hair strands. Limited palette: hair and skin plus three or four main colors. Keep this character's own eye, brow, nose and mouth shapes and natural age and gender differences; do not drift toward a generic AI pretty face. HEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoods or ornaments) to the chin must be about one seventh of the full height from the top of the hair to the shoe soles (about 7 heads tall). Entire figure and boots visible; transparent alpha, no background or text; character at least 1300px tall if possible.",
+      "references": [
+        {
+          "path": "assets/sprites/characters/noor/chr_noor_smile.png",
+          "bytes": 626075,
+          "sha256": "278f80e8c0db4b50eca58e94229c068103d1532ddbc0b22d2d3218e10b3a4049",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "identity and smile expression"
+        },
+        {
+          "path": "assets/sprites/characters/rio/chr_rio_normal.png",
+          "bytes": 386848,
+          "sha256": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "female head-to-body proportion only"
+        },
+        {
+          "path": "asset_sources/portraits/noor-2703/new/normal-source.png",
+          "bytes": 807887,
+          "sha256": "05ca152f96d6f20d6bee105b042e82c7b957513478d2102d9874de05c2be5661",
+          "dimensions": [
+            1084,
+            1451
+          ],
+          "mode": "RGBA",
+          "role": "accepted same-person new normal"
+        },
+        {
+          "path": "assets/sprites/character_variants/new/tsumugi/chr_tsumugi_normal.png",
+          "bytes": 290813,
+          "sha256": "a3e91848b0bc501eb483d713fe68059717d5f676b45648c49a23cf5086e91fbd",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "maximum outline weight"
+        }
+      ],
+      "original": {
+        "path": "asset_sources/portraits/noor-2703/new/smile-source.png",
+        "bytes": 854427,
+        "sha256": "08def4ca8e5d8f94fb6df8be4748e5d336c3076ba9bdb8c51d6ab83b05f62723",
+        "dimensions": [
+          1084,
+          1451
+        ],
+        "mode": "RGBA"
+      },
+      "png": {
+        "path": "assets/sprites/character_variants/new/noor/chr_noor_smile.png",
+        "bytes": 485858,
+        "sha256": "636e7e828c2023b128386e11a5d8dfda1b1078bf1935fe1331ab235880f32b80",
+        "dimensions": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      },
+      "webp": {
+        "path": "remake/img/sprites/character_variants/new/noor/chr_noor_smile.webp",
+        "bytes": 312868,
+        "sha256": "ed7c0e873f80ef640fc0a3a659856b34e203ae8c19d6452000095850f4ef9d20",
+        "dimensions": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      }
+    },
+    "new/surprise": {
+      "prompt": "Draw Noor Salim SURPRISED: raised brows, open wide brown eyes, small round O mouth, as reference 1. Keep head/body geometry and outfit matching reference 3. Use case: illustration-story. Full-body transparent shisha-game standing portrait. Reference 1: current Noor SURPRISE image = IDENTITY and facial expression authority; preserve tan skin, black fringe and side ponytail, sunglasses, beige scarf, olive field shirt, black inner top, tan cargo pants, dark hiking boots, adult athletic body and hand-on-hip pose. Reference 2: Rio normal = FEMALE PROPORTIONS ONLY, about seven heads tall; do not copy her identity/outfit. Reference 3: accepted new-style Noor normal = SAME PERSON/style, body, face size and line anchor; match closely, changing expression only. Reference 4: adopted new-style Tsumugi normal = maximum outer-outline weight, do not copy identity. STYLE FIXING: follow the adopted NEW shisha-game style of reference 3, with outer lines no thicker than Tsumugi. STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand as the approved Minto, Ageha and Rio sprites. Japanese 2D visual-novel game art; confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two to three clearly shaped cel-shadow steps; highlights only as a few deliberate bands on the hair and small catchlights in the eyes. No skin gloss, no airbrush gradients, no rim light or glow, no photographic texture, no pore or fabric micro-detail, no dense ornamental noise, no hundreds of thin hair strands. Limited palette: hair and skin plus three or four main colors. Keep this character's own eye, brow, nose and mouth shapes and natural age and gender differences; do not drift toward a generic AI pretty face. HEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoods or ornaments) to the chin must be about one seventh of the full height from the top of the hair to the shoe soles (about 7 heads tall). Entire figure and boots visible; transparent alpha, no background or text; figure at least 1300px tall if possible.",
+      "references": [
+        {
+          "path": "assets/sprites/characters/noor/chr_noor_surprise.png",
+          "bytes": 624985,
+          "sha256": "3a9bf3af813791406f00784da864d439a7877e0bf811198c3093e55882ec4ec0",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "identity and surprise expression"
+        },
+        {
+          "path": "assets/sprites/characters/rio/chr_rio_normal.png",
+          "bytes": 386848,
+          "sha256": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "female head-to-body proportion only"
+        },
+        {
+          "path": "asset_sources/portraits/noor-2703/new/normal-source.png",
+          "bytes": 807887,
+          "sha256": "05ca152f96d6f20d6bee105b042e82c7b957513478d2102d9874de05c2be5661",
+          "dimensions": [
+            1084,
+            1451
+          ],
+          "mode": "RGBA",
+          "role": "accepted same-person new normal"
+        },
+        {
+          "path": "assets/sprites/character_variants/new/tsumugi/chr_tsumugi_normal.png",
+          "bytes": 290813,
+          "sha256": "a3e91848b0bc501eb483d713fe68059717d5f676b45648c49a23cf5086e91fbd",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "maximum outline weight"
+        }
+      ],
+      "original": {
+        "path": "asset_sources/portraits/noor-2703/new/surprise-source.png",
+        "bytes": 859509,
+        "sha256": "ba0b46472a039220f7ad0a2cd76c39ec75b70f3c824539debd1e99b18b2423d8",
+        "dimensions": [
+          1084,
+          1451
+        ],
+        "mode": "RGBA"
+      },
+      "png": {
+        "path": "assets/sprites/character_variants/new/noor/chr_noor_surprise.png",
+        "bytes": 491744,
+        "sha256": "7624f5418133fc3810ff5903fb80ee58c0e06543252f547a96ddd4ff851312cb",
+        "dimensions": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      },
+      "webp": {
+        "path": "remake/img/sprites/character_variants/new/noor/chr_noor_surprise.webp",
+        "bytes": 317904,
+        "sha256": "aafbd683edd814bf2f30de688670b9dea5a791ff80f3d9fa003c6088b638ce31",
+        "dimensions": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      }
+    },
+    "nanami/normal": {
+      "prompt": "Use case: illustration-story. Asset type: full-body transparent game portrait. Draw Noor Salim (ヌール・サーリム), NORMAL calm expression, in adopted NANAMI (七海風) style. Reference 1: assets/sprites/characters/noor/chr_noor_normal.png = IDENTITY authority: preserve Noor's distinctive tan face, eye shape, black side ponytail and fringe, sunglasses on head, beige scarf, olive field shirt and black inner top, tan cargo pants, dark hiking boots, adult athletic body, hand-on-hip pose. Reference 2: assets/sprites/characters/rio/chr_rio_normal.png = female proportion target ONLY (6.4–7.7 heads, about 7); copy none of Rio's identity, hair, outfit, or pose. Reference 3: assets/sprites/character_variants/nanami/minto/chr_minto_normal.png = NANAMI style authority for line quality, restrained textured cel colors; do not copy identity or costume. Reference 4: assets/sprites/character_variants/nanami/hiyori/chr_hiyori_normal.png = second NANAMI style authority; do not copy identity. STYLE FIXING: follow the adopted NANAMI style from references 3 and 4, not the painterly original source and not the smoother new style; maintain clean dark contour no heavier than adopted new-style Tsumugi standard, fine interior lines. STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand as the approved Minto, Ageha and Rio sprites. Japanese 2D visual-novel game art; confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two to three clearly shaped cel-shadow steps; highlights only as a few deliberate bands on the hair and small catchlights in the eyes. No skin gloss, no airbrush gradients, no rim light or glow, no photographic texture, no pore or fabric micro-detail, no dense ornamental noise, no hundreds of thin hair strands. Limited palette: hair and skin plus three or four main colors. Keep this character's own eye, brow, nose and mouth shapes and natural age and gender differences; do not drift toward a generic AI pretty face. HEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoods or ornaments) to the chin must be about one seventh of the full height from the top of the hair to the shoe soles (about 7 heads tall). Make one full figure, entire boots visible, no cropping, no background, no shadow, no text, genuinely transparent alpha. Source resolution portrait with character at least 1300 px tall if possible.",
+      "references": [
+        {
+          "path": "assets/sprites/characters/noor/chr_noor_normal.png",
+          "bytes": 626887,
+          "sha256": "1374af232413652aaa6285982730e308ba47edf31305d89c3f3632b279b07266",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "identity and normal expression"
+        },
+        {
+          "path": "assets/sprites/characters/rio/chr_rio_normal.png",
+          "bytes": 386848,
+          "sha256": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "female head-to-body proportion only"
+        },
+        {
+          "path": "assets/sprites/character_variants/nanami/minto/chr_minto_normal.png",
+          "bytes": 569928,
+          "sha256": "74fb1fbf5683b13d1ec851136300ecbfc3ca9cf6619cb522a7f82b9e3b2eb6f6",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "adopted nanami style"
+        },
+        {
+          "path": "assets/sprites/character_variants/nanami/hiyori/chr_hiyori_normal.png",
+          "bytes": 443137,
+          "sha256": "43440ff178f6fd5127f545702a1ccfff5588f3bcfed4b586b6f538c9145b9c67",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "adopted nanami style"
+        }
+      ],
+      "original": {
+        "path": "asset_sources/portraits/noor-2703/nanami/normal-source.png",
+        "bytes": 837429,
+        "sha256": "07c8486897b3eba700baede40d1cd74e7449dcdb83820b96c320d75090d542a2",
+        "dimensions": [
+          1084,
+          1451
+        ],
+        "mode": "RGBA"
+      },
+      "png": {
+        "path": "assets/sprites/character_variants/nanami/noor/chr_noor_normal.png",
+        "bytes": 473919,
+        "sha256": "d5f217db8e79c13a38438ffc3a6538d64efc23769a5eac152b61504b1ff17558",
+        "dimensions": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      },
+      "webp": {
+        "path": "remake/img/sprites/character_variants/nanami/noor/chr_noor_normal.webp",
+        "bytes": 305246,
+        "sha256": "a402f5086cc95a6d01b35c3864ccd253c71cf81d672a261552984fd68960332d",
+        "dimensions": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      }
+    },
+    "nanami/smile": {
+      "prompt": "Use case: illustration-story. Full-body transparent game portrait, Noor Salim (ヌール・サーリム), NANAMI (七海風) style, SMILE expression with happy closed eyes and broad open smiling mouth. Reference 1: assets/sprites/characters/noor/chr_noor_smile.png = Noor identity and exact smile expression; preserve her tan face, dark side ponytail, sunglasses, beige scarf, olive field shirt/black top, tan cargo pants, black hiking boots, adult athletic body and hand-on-hip pose. Reference 2: assets/sprites/characters/rio/chr_rio_normal.png = FEMALE HEAD-TO-BODY PROPORTION ONLY (~7 heads), do not copy Rio's identity/outfit. Reference 3: asset_sources/portraits/noor-2703/nanami/normal-source.png = accepted Nanami Noor normal, exact style/body/head size/outfit anchor; only expression changes. Reference 4: assets/sprites/character_variants/nanami/minto/chr_minto_normal.png = adopted NANAMI style line and texture authority, do not copy identity. STYLE FIXING: remain in adopted NANAMI style matching references 3 and 4; do not drift to painterly original or smoother new style. Outer dark outlines are moderate and no thicker than adopted new Tsumugi; interior lines finer. STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand as the approved Minto, Ageha and Rio sprites. Japanese 2D visual-novel game art; confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two to three clearly shaped cel-shadow steps; highlights only as a few deliberate bands on the hair and small catchlights in the eyes. No skin gloss, no airbrush gradients, no rim light or glow, no photographic texture, no pore or fabric micro-detail, no dense ornamental noise, no hundreds of thin hair strands. Limited palette: hair and skin plus three or four main colors. Keep this character's own eye, brow, nose and mouth shapes and natural age and gender differences; do not drift toward a generic AI pretty face. HEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoods or ornaments) to the chin must be about one seventh of the full height from the top of the hair to the shoe soles (about 7 heads tall). Entire figure and boots visible; transparent alpha, no background or text; figure at least 1300px tall if possible.",
+      "references": [
+        {
+          "path": "assets/sprites/characters/noor/chr_noor_smile.png",
+          "bytes": 626075,
+          "sha256": "278f80e8c0db4b50eca58e94229c068103d1532ddbc0b22d2d3218e10b3a4049",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "identity and smile expression"
+        },
+        {
+          "path": "assets/sprites/characters/rio/chr_rio_normal.png",
+          "bytes": 386848,
+          "sha256": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "female head-to-body proportion only"
+        },
+        {
+          "path": "asset_sources/portraits/noor-2703/nanami/normal-source.png",
+          "bytes": 837429,
+          "sha256": "07c8486897b3eba700baede40d1cd74e7449dcdb83820b96c320d75090d542a2",
+          "dimensions": [
+            1084,
+            1451
+          ],
+          "mode": "RGBA",
+          "role": "accepted same-person nanami normal"
+        },
+        {
+          "path": "assets/sprites/character_variants/nanami/minto/chr_minto_normal.png",
+          "bytes": 569928,
+          "sha256": "74fb1fbf5683b13d1ec851136300ecbfc3ca9cf6619cb522a7f82b9e3b2eb6f6",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "adopted nanami style"
+        }
+      ],
+      "original": {
+        "path": "asset_sources/portraits/noor-2703/nanami/smile-source.png",
+        "bytes": 875398,
+        "sha256": "7c0225207698d1eb4d546f3b43a0708ecb6b0064e39b4d87592e4bb3ce8576d4",
+        "dimensions": [
+          1084,
+          1451
+        ],
+        "mode": "RGBA"
+      },
+      "png": {
+        "path": "assets/sprites/character_variants/nanami/noor/chr_noor_smile.png",
+        "bytes": 496952,
+        "sha256": "7ca724154142e1feaba0e402b755b900ffbde502da5bf4cf3f1b715eff499ad0",
+        "dimensions": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      },
+      "webp": {
+        "path": "remake/img/sprites/character_variants/nanami/noor/chr_noor_smile.webp",
+        "bytes": 319404,
+        "sha256": "ad739e093c9656c4eff363d674878a699b4f487bbca1924160361277d974d7f1",
+        "dimensions": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      }
+    },
+    "nanami/surprise": {
+      "prompt": "Use case: illustration-story. Full-body transparent game portrait, Noor Salim (ヌール・サーリム), NANAMI (七海風) style, SURPRISE expression with raised brows, round open brown eyes, small O mouth. Reference 1: assets/sprites/characters/noor/chr_noor_surprise.png = Noor IDENTITY and exact surprise expression; preserve tan face, black fringe and side ponytail, sunglasses on head, beige scarf, olive field shirt over black top, tan cargo pants, black hiking boots, adult athletic body, hand-on-hip pose. Reference 2: assets/sprites/characters/rio/chr_rio_normal.png = female ~7-head PROPORTION ONLY; do not copy Rio. Reference 3: asset_sources/portraits/noor-2703/nanami/normal-source.png = accepted Nanami Noor normal, same-person face/head size, body, outfit and style anchor; expression changes only. Reference 4: assets/sprites/character_variants/nanami/minto/chr_minto_normal.png = adopted NANAMI style line and restrained texture target; do not copy character. STYLE FIXING: match adopted NANAMI style and reference 3, no drift toward older painterly source or smoother new style. Outline moderate, thinner than or equal to adopted new Tsumugi external contour; inner lines finer. STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand as the approved Minto, Ageha and Rio sprites. Japanese 2D visual-novel game art; confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two to three clearly shaped cel-shadow steps; highlights only as a few deliberate bands on the hair and small catchlights in the eyes. No skin gloss, no airbrush gradients, no rim light or glow, no photographic texture, no pore or fabric micro-detail, no dense ornamental noise, no hundreds of thin hair strands. Limited palette: hair and skin plus three or four main colors. Keep this character's own eye, brow, nose and mouth shapes and natural age and gender differences; do not drift toward a generic AI pretty face. HEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoods or ornaments) to the chin must be about one seventh of the full height from the top of the hair to the shoe soles (about 7 heads tall). Entire figure and boots visible, transparent alpha, no background or text, figure at least 1300px tall if possible.",
+      "references": [
+        {
+          "path": "assets/sprites/characters/noor/chr_noor_surprise.png",
+          "bytes": 624985,
+          "sha256": "3a9bf3af813791406f00784da864d439a7877e0bf811198c3093e55882ec4ec0",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "identity and surprise expression"
+        },
+        {
+          "path": "assets/sprites/characters/rio/chr_rio_normal.png",
+          "bytes": 386848,
+          "sha256": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "female head-to-body proportion only"
+        },
+        {
+          "path": "asset_sources/portraits/noor-2703/nanami/normal-source.png",
+          "bytes": 837429,
+          "sha256": "07c8486897b3eba700baede40d1cd74e7449dcdb83820b96c320d75090d542a2",
+          "dimensions": [
+            1084,
+            1451
+          ],
+          "mode": "RGBA",
+          "role": "accepted same-person nanami normal"
+        },
+        {
+          "path": "assets/sprites/character_variants/nanami/minto/chr_minto_normal.png",
+          "bytes": 569928,
+          "sha256": "74fb1fbf5683b13d1ec851136300ecbfc3ca9cf6619cb522a7f82b9e3b2eb6f6",
+          "dimensions": [
+            896,
+            1200
+          ],
+          "mode": "RGBA",
+          "role": "adopted nanami style"
+        }
+      ],
+      "original": {
+        "path": "asset_sources/portraits/noor-2703/nanami/surprise-source.png",
+        "bytes": 859450,
+        "sha256": "701bca7f3e6ab2325ce0b1cfc97faad76eef7d9c27a8494daadcf7e41d92f577",
+        "dimensions": [
+          1084,
+          1451
+        ],
+        "mode": "RGBA"
+      },
+      "png": {
+        "path": "assets/sprites/character_variants/nanami/noor/chr_noor_surprise.png",
+        "bytes": 476709,
+        "sha256": "4e4ff9918c4f85f0a63b289b527ac2e1806ebd083694ac537aad62639d7246e2",
+        "dimensions": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      },
+      "webp": {
+        "path": "remake/img/sprites/character_variants/nanami/noor/chr_noor_surprise.webp",
+        "bytes": 308044,
+        "sha256": "081466758f8a9aea3bcfaf50a48106c87a04045e7de413ef1eeb8132e7b257a5",
+        "dimensions": [
+          896,
+          1200
+        ],
+        "mode": "RGBA"
+      }
+    }
+  }
+}

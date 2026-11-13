@@ -1,11 +1,14 @@
 import { playEntrance } from "./tournament-entrance.js";
+import { defeatFade } from "../core/transitions.js";
+import { advanceTournamentCraft } from "./tournament-craft-runner.js";
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
+import { createChapterActions } from "../core/chapter-actions.js";
 import { difficultyForRun } from "../core/ngplus-difficulty.js";
 import { difficultyEvidence } from "../core/cycle-start.js";
 import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, loadTournamentCraftDialogue } from "../core/data.js";
 import { el, yen } from "../core/util.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, modal, loadingNotice } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, modal, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -34,9 +37,14 @@ import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { adjustmentLines, resultLines, defeatLines } from "./ch3-verdict.js";
+import { awardTournamentExp } from "../core/growth.js";
 import { chapterThreeScenes, chapterThreeProgress } from "./ch3-progress.js";
+import { chapterThreeWorkDialogue } from "./ch3-work-progress.js";
+import { readTournamentCheers } from "./lover-entry.js";
+import { TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
+import { syncTokyoVisits, visitingTokyo } from "../core/tokyo-visits.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
-  startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult, CH3_PRIZE } from "./ch3-tournament-state.js";
+  startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch3-tournament-state.js";
 
 const REQUIRED = ["tournament_day", "national_craft", "national_adjustment", "national_result", "national_defeat"]
   .map(id => `ch3_${id}`);
@@ -44,7 +52,19 @@ const setupWithWater = async cs => { await stepSetup(cs); await stepWater(cs); }
 const STEPS = [setupWithWater, stepMix, stepPack, runHoles, stepPlace, runHeat,
   stepSteamTime, runSteamDodge, runPull, cs => runCare(cs, { round: 1 }), cs => runCare(cs, { round: 2 })];
 const STEP_IDS = ["setup", "mix", "pack", "foil", "place", "coalfire", "steam", "steam", "pull", "adjust", "adjust"];
-const MILESTONES = new Map([[8, 0], [9, 1], [10, 2], [11, 3]]);
+// 1・4票は工程確定直後、2・3票は対応する台詞の読了後に確定する。
+// 台詞待ちの stage は既存 SAVE の再開地点でもあるため、そのまま保持する。
+const VOTE_BOUNDARIES = new Map([
+  [8, { round: 0, after: "milestone" }],
+  [9, { round: 1, after: "national_craft" }],
+  [10, { round: 2, after: "national_adjustment" }],
+  [11, { round: 3, after: "milestone" }],
+]);
+function voteAfterDialogue(p, stage) {
+  const { round } = [...VOTE_BOUNDARIES.values()].find(boundary => boundary.after === stage);
+  const error = stage === "national_craft" ? "全国大会の提供後の投票地点を確認できません" : "全国大会の調整後の投票地点を確認できません";
+  if (!castVotes(p, round, partialQuality(p.craft, round), null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error(error);
+}
 const PART_LABELS = ["アルミ穴あけ", "炭の温度", "蒸らしと吸い出し", "一度目の調整", "二度目の調整"];
 const clone = value => JSON.parse(JSON.stringify(value));
 const id = name => `ch3-tournament-${name}`;
@@ -52,18 +72,8 @@ let session;
 const live = owner => session === owner && owner.active && owner.state === state;
 const progress = () => tournamentProgress(state);
 
-function button(owner, text, name, action, primary = false) {
-  return el(`button.btn${primary ? ".primary" : ""}`, { type: "button", text,
-    dataset: { test: id(name) }, onclick: () => perform(owner, action) });
-}
-
-async function perform(owner, action) {
-  if (!live(owner) || owner.busy) return;
-  owner.busy = true;
-  try { await action(); }
-  catch (error) { if (live(owner)) { console.error("[ch3 tournament]", error); renderError(owner); } }
-  finally { owner.busy = false; }
-}
+const { button, perform } = createChapterActions({ current: live, test: id,
+  logName: "[ch3 tournament]", renderError });
 
 function menuButton(owner) {
   return el("button.btn.ch2-tournament-menu", { type: "button", text: "MENU",
@@ -133,6 +143,7 @@ function matchDialogue(name) {
   const craft = progress().craft;
   if (name === "national_result") return { ...source, lines: resultLines(source.lines, craft, state.flags._ch3_strategy) };
   if (name === "national_defeat") return { ...source, lines: defeatLines(source.lines, craft) };
+  if (name === "national_craft") return chapterThreeWorkDialogue(state, source);
   if (name !== "national_adjustment") return source;
   const lines = source.lines.map((line, index) => {
     if (index === 0) return { ...line, text: "一度目の調整を終えた。まだ、全員に持ち点が残っている。" };
@@ -146,7 +157,7 @@ async function read(owner, name) {
   if (!live(owner)) return false;
   showScreen("none", null);
   // 大会場面内で初めて名乗る人物の表示名を解禁する。未読で中断したら戻す。
-  const reveals = name === "tournament_day" ? ["kuze", "steve", "volk", ...JUDGES] : [];
+  const reveals = name === "tournament_day" ? ["saku", "steve", "volk", ...JUDGES] : [];
   const newlyMet = reveals.filter(who => !state.met[who]);
   const newMetFlags = reveals.filter(who => !state.flags[`_met_${who}`]);
   for (const who of reveals.filter(who => who !== "emil")) markMet(who);
@@ -201,15 +212,28 @@ export async function runChapterThreeTournament() {
     Object.assign(DB.dialogues, Object.fromEntries(REQUIRED.map(key => [key, dialogues[key]])));
     recoverStep(state);
     save();
-    await setBg(bgUrl("bg_tournament_stage", "day"), { instant: true });
+    await enterScene(bgUrl("bg_tournament_stage", "day"));
     if (live(owner)) await drive(owner);
   });
 }
 
+/**
+ * 大会の朝、会場へ向かう前に届く恋人の応援（第1・2章の大会の朝と同じ形・IR19）。
+ * 地元にいる恋人は配信で見る側の文面。東京に住む恋人（ましろ）と、訪問で東京に来ている恋人はいつもの文面。
+ * 一度読めば既読になり、LOAD・再挑戦で重ねて届かない。
+ */
+async function morningCheers(owner) {
+  syncTokyoVisits(state);
+  const away = (state.lovers || []).filter(who => !TOKYO_RESIDENT_IDS.includes(who) && !visitingTokyo(state, who));
+  showScreen("none", null);
+  await readTournamentCheers({ away });
+  return live(owner);
+}
+
 function renderEntry(owner) {
-  card(owner, "entry", "全国大会の朝。", "はじめ・久世・スティーブ・ヴォルク。四人が同時に一台を仕上げる。", [
+  card(owner, "entry", "全国大会の朝。", "はじめ・綾取・スティーブ・ヴォルク。四人が同時に一台を仕上げる。", [
     button(owner, "会場へ向かう", "start", async () => { checkpoint("opening"); await drive(owner); }, true),
-  ], [el("p.ch2-contest-note", { text: "審査員は南雲・チャコール博士・エミル。各10点を四回に分けて投じる。" })]);
+  ], [el("p.ch2-contest-note", { text: "審査員は千須・チャコール博士・エミル。各10点を四回に分けて投じる。" })]);
 }
 
 function renderReady(owner) {
@@ -287,9 +311,9 @@ function voteReason(p, cs, final = false) {
     const target = displayName(tactic.affected, state);
     const contrast = tactic.delta > 0 ? "香りが強く映った" : "香りが薄く映った";
     const others = affected.filter(who => who !== judge);
-    lines.push(`南雲は水を飲んだ。${names([judge])}は水を挟まず、久世の直後に${target}を試喫。鋭い苦みの余韻で${contrast}（比較${tactic.delta > 0 ? "+" : ""}${tactic.delta}）。${others.length ? `${names(others)}にも残った。` : ""}`);
+    lines.push(`千須は水を飲んだ。${names([judge])}は水を挟まず、綾取の直後に${target}を試喫。鋭い苦みの余韻で${contrast}（比較${tactic.delta > 0 ? "+" : ""}${tactic.delta}）。${others.length ? `${names(others)}にも残った。` : ""}`);
   } else if (JUDGES.some(judge => last[judge]?.tactic)) {
-    lines.push("南雲は水を飲んだ。ほかの席も試喫順と給水が噛み合わず、久世の鋭い苦みは直後の比較に残らなかった。");
+    lines.push("千須は水を飲んだ。ほかの席も試喫順と給水が噛み合わず、綾取の鋭い苦みは直後の比較に残らなかった。");
   }
   return lines;
 }
@@ -309,7 +333,7 @@ function renderVotes(owner, final = false) {
     el("strong", [String(value.points), el("small", { text: "pt" })]),
   ]);
   const judgeFace = judge => { const face = contestantAvatar(judge); face.classList.add("judge-face"); return face; };
-  const judges = judgePanel(p.votes, JUDGES, { cls: ".ch2-contest-judges", face: judgeFace });
+  const judges = judgePanel(p.votes, JUDGES, { cls: ".ch2-contest-judges", face: judgeFace, craft: final ? craft : null });
   card(owner, final ? "result" : "votes", final ? "全国大会の結果" : "いま、動いた持ち点。",
     final ? `はじめは${p.result.rank}位。審査員三人、それぞれの10点が出揃いました。`
       : ["制作が終わり、次は吸い出しと提供。", "提供を終えた一台。次は客席での調整。",
@@ -324,6 +348,7 @@ function renderVotes(owner, final = false) {
         el("b.ch2-contest-reason-tag", { text: "解説" }), ...reason.map(text => el("p", { text })),
       ]) : null,
       review,
+      p.baseVotes ? el("p.ch2-contest-note", { text: "全出場者に基礎票1点" }) : null,
       el("section.ch2-contest-board", [judgeLegend(JUDGES), el("ol.ch2-contest-ranking", rows.map(row))]),
       judges,
       el("p.ch2-contest-note", { text: "一度入れた点は戻らない。同点なら一台の出来栄えで順位を決める。" }),
@@ -361,7 +386,11 @@ async function renderDefeat(owner, variant = null) {
   owner.continueRoot = root;
   root.dataset.test = id("defeat");
   root.querySelector(".go-retry").dataset.test = id("retry");
+  // この場で負けが決まった時だけ、色が抜けて煙が途切れる入り（#2688 A19）。再表示・LOAD後は出さない
+  const fade = (owner.resultShown && !owner.defeatFaded && (owner.defeatFaded = true) && await defeatFade()) || (async () => {});
+  if (!live(owner)) { await fade(); return; }
   showScreen("end", root);
+  await fade();
 }
 
 function renderComplete(owner) {
@@ -378,7 +407,9 @@ function renderComplete(owner) {
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
   ], [
     // 賞金は recordResult で優勝確定時に一度だけ加算済み。ここでは受け取ったことだけを見せる（#1658 ⑦）。
-    p.prizePaid ? el("p.ch2-contest-note", { dataset: { test: id("prize") }, text: `優勝賞金 ${yen(CH3_PRIZE)} を受け取った。` }) : null,
+    p?.prizePaid ? el("p.ch2-contest-note", { dataset: { test: id("prize") }, text: Number.isFinite(p.prizeReceived)
+      ? p.prizeReceived > 0 ? `優勝賞金 ${yen(p.prizeReceived)} を受け取った。` : "優勝賞金は所持金の上限に達したため加算されなかった。"
+      : "優勝賞金を受け取った。" }) : null,
   ]);
 }
 
@@ -392,7 +423,11 @@ function renderError(owner) {
 async function drive(owner) {
   while (live(owner)) {
     const p = progress();
-    if (p.stage === "entry") { renderEntry(owner); return; }
+    if (p.stage === "entry") {
+      if (!await morningCheers(owner)) return;
+      renderEntry(owner);
+      return;
+    }
     if (p.stage === "opening") {
       if (!await read(owner, "tournament_day")) return;
       await playEntrance(3);
@@ -404,7 +439,8 @@ async function drive(owner) {
       const cs = owner.cs;
       playBgm("bgm_tournament_craft");
       // 投票の後、調整に入る合間の掛け合い（#1290）。見た目は commentary と同じ経路で一度だけ。
-      const interlude = p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
+      // 作り始める直前（開始前）と吸い出しの前（審査員への提供開始）の掛け合い（#3060）。
+      const interlude = p.step === 0 ? "prestart" : p.step === 8 ? "serve" : p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
       if (interlude && !await commentary(owner, interlude)) return;
       const event = TOURNAMENT_STORY_STEPS.get(p.step);
       if (event && !await commentary(owner, event)) return;
@@ -427,40 +463,40 @@ async function drive(owner) {
         renderError(owner);
         return;
       }
-      if (p.step === 8 && !cs.failed) {
-        cs.tournamentStory ||= { seen: [] };
-        cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
-      }
-      finishStep(state, cs);
-      if (cs.failed) { save(); continue; }
-      if (MILESTONES.has(p.step)) {
-        broadcast.clearComments();
+      if (!advanceTournamentCraft({ state, progress: p, craft: cs, finishStep, milestones: VOTE_BOUNDARIES, onMilestone: boundary => {
         p.craft = clone(cs);
-        if (p.step === 9) p.stage = "national_craft";
-        else if (p.step === 10) p.stage = "national_adjustment";
+        if (boundary.after !== "milestone") p.stage = boundary.after;
         else {
-          const round = MILESTONES.get(p.step), quality = partialQuality(cs, round);
+          const { round } = boundary;
+          const quality = partialQuality(cs, round);
+          // Final scoring creates parts/total; persist them before the tasting save boundary.
+          p.craft = clone(cs);
           if (!castVotes(p, round, quality, null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error("全国大会の投票地点を確認できません");
           p.stage = p.step === STEPS.length ? "tasting" : "votes";
-          if (p.stage === "tasting") recordResult(state, cs.total);
+          if (p.stage === "tasting") { const result = recordResult(state, cs.total); awardTournamentExp(result.rank, cs); }
         }
-      }
-      save();
+      } })) continue;
     } else if (p.stage === "national_craft") {
       if (!await read(owner, "national_craft")) return;
-      if (!castVotes(p, 1, partialQuality(p.craft, 1), null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error("全国大会の提供後の投票地点を確認できません");
+      voteAfterDialogue(p, "national_craft");
       checkpoint("votes");
     } else if (p.stage === "national_adjustment") {
       if (!await read(owner, "national_adjustment")) return;
-      if (!castVotes(p, 2, partialQuality(p.craft, 2), null, difficultyForRun(state, difficultyEvidence(state)))) throw new Error("全国大会の調整後の投票地点を確認できません");
+      voteAfterDialogue(p, "national_adjustment");
       checkpoint("votes");
     } else if (p.stage === "tasting") {
       owner.cs ||= clone(p.craft);
       playBgm("bgm_judging");
       if (!await commentary(owner, "tasting")) return;
+      // 結果発表前の掛け合い（#3060）。
+      if (!await commentary(owner, "preresult")) return;
       checkpoint("result");
     } else if (p.stage === "votes") { renderVotes(owner); return; }
-    else if (p.stage === "result") { playBgm("bgm_judging"); renderVotes(owner, true); return; }
+    else if (p.stage === "result") {
+      // この場で結果を出したことを覚える。敗北の入り（#2688 A19）は、この場で負けが決まった時だけ出す
+      if (p.result) owner.resultShown = true;
+      playBgm("bgm_judging"); renderVotes(owner, true); return;
+    }
     else if (p.stage === "defeat") { await renderDefeat(owner); return; }
     else if (p.stage === "victory") {
       if (p.result?.rank !== 1) throw new Error("全国大会の結果と勝利場面が一致しません");
@@ -474,3 +510,4 @@ async function drive(owner) {
     else throw new Error(`不明な全国大会の保存地点: ${p.stage}`);
   }
 }
+

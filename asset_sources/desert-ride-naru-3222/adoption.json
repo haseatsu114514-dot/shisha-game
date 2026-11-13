@@ -1,0 +1,94 @@
+{
+  "source": "Codex image_gen (Issue #3222). Raw PNGs as delivered (SHA-256 checked against the handoff SHA256.json). Rebuilt here to the protagonist's scale and board-centre anchors; Codex's own centred canvas candidates were not adopted.",
+  "basis": "per pose, the same head-top-to-board-centre length as the protagonist's sprite (fall: the same content height); anchor = board centre (fall: the protagonist's fall anchor mapped into the content box)",
+  "rider_naru_ride": {
+    "raw": "asset_sources/desert-ride-naru-3222/rider_naru_ride.png",
+    "raw_sha256": "28984c1c109350236c680712ab3693bdfdaeac774d309566a1bb8189a0f554d1",
+    "webp": "remake/img/ui/desert_ride/rider_naru_ride.webp",
+    "size": [
+      503,
+      774
+    ],
+    "anchor": {
+      "x": 0.5692,
+      "y": 0.8226
+    },
+    "scale": 0.5654,
+    "reference": "remake/img/ui/desert_ride/rider_ride.webp"
+  },
+  "rider_naru_lean_left": {
+    "raw": "asset_sources/desert-ride-naru-3222/rider_naru_lean_left.png",
+    "raw_sha256": "c73d860b0fead9b9d685946b00011d30587202234bedcad9c80a0c113823731d",
+    "webp": "remake/img/ui/desert_ride/rider_naru_lean_left.webp",
+    "size": [
+      544,
+      725
+    ],
+    "anchor": {
+      "x": 0.5868,
+      "y": 0.8137
+    },
+    "scale": 0.5396,
+    "reference": "remake/img/ui/desert_ride/rider_lean_left.webp"
+  },
+  "rider_naru_lean_right": {
+    "raw": "asset_sources/desert-ride-naru-3222/rider_naru_lean_right.png",
+    "raw_sha256": "869686b988ee9e63dbd87d29862a0b39623071c490124ad68589e627bc8046e3",
+    "webp": "remake/img/ui/desert_ride/rider_naru_lean_right.webp",
+    "size": [
+      567,
+      773
+    ],
+    "anchor": {
+      "x": 0.4855,
+      "y": 0.8134
+    },
+    "scale": 0.6182,
+    "reference": "remake/img/ui/desert_ride/rider_lean_right.webp"
+  },
+  "rider_naru_jump": {
+    "raw": "asset_sources/desert-ride-naru-3222/rider_naru_jump.png",
+    "raw_sha256": "312e0c8461a98186345e763a3f8a50c9c218667ded2a12dae6c9f8fc714b460b",
+    "webp": "remake/img/ui/desert_ride/rider_naru_jump.webp",
+    "size": [
+      534,
+      673
+    ],
+    "anchor": {
+      "x": 0.5564,
+      "y": 0.828
+    },
+    "scale": 0.5265,
+    "reference": "remake/img/ui/desert_ride/rider_jump.webp"
+  },
+  "rider_naru_brace": {
+    "raw": "asset_sources/desert-ride-naru-3222/rider_naru_brace.png",
+    "raw_sha256": "d0c007dbf0c6360c38e1db6d42e96f9a59ead2537299aceac240357c3dbd5a81",
+    "webp": "remake/img/ui/desert_ride/rider_naru_brace.webp",
+    "size": [
+      647,
+      640
+    ],
+    "anchor": {
+      "x": 0.489,
+      "y": 0.8224
+    },
+    "scale": 0.5435,
+    "reference": "remake/img/ui/desert_ride/rider_brace.webp"
+  },
+  "rider_naru_fall": {
+    "raw": "asset_sources/desert-ride-naru-3222/rider_naru_fall.png",
+    "raw_sha256": "0dedeb77fdf7885849aa020b09f451fe1b344480074409fec8e2abfbd0411287",
+    "webp": "remake/img/ui/desert_ride/rider_naru_fall.webp",
+    "size": [
+      656,
+      652
+    ],
+    "anchor": {
+      "x": 0.5266,
+      "y": 0.9582
+    },
+    "scale": 0.557,
+    "reference": "remake/img/ui/desert_ride/rider_fall.webp"
+  }
+}

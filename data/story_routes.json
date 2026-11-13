@@ -1,15 +1,16 @@
 {
   "version": 2,
   "status": "partially_connected",
-  "comment": "第3章の必須本編は東京到着から全国大会・帰郷まで接続。第3章の任意場面（大会前に読める6件）・前夜デート・前夜の修羅場未遂も接続済み（remake/js/chapters/ch3-story-wiring.js）。ch3_cigarman_traceとch3_emil_workshopは大会後の面が要り未接続。第4章の前夜（同行者・到着済みの恋人とのデート／重なった予定の保留）はremake/js/chapters/ch4-story-wiring.jsで接続済み。第4章のヒロイン到着場面などは未接続台本。正式ヒロイン一覧・再生順・恋愛場面の条件の正本。実行順はremake/js/chaptersが正。",
+  "comment": "第3章の必須本編は東京到着から全国大会・帰郷まで接続。第3章の任意場面（大会前に読める6件）・前夜デート・前夜の修羅場未遂も接続済み（remake/js/chapters/ch3-story-wiring.js）。ch3_emil_workshopは大会後の寄り道（remake/js/chapters/ch3-aftermath-progress.js）で接続済み。ch3_cigarman_traceは大会前の噂を読んだ保存に限り、大会後のmukai寄り道（remake/js/chapters/ch3-aftermath-progress.js）から一度だけ読める。第4章の前夜（同行者・到着済みの恋人とのデート／重なった予定の保留）はremake/js/chapters/ch4-story-wiring.jsで接続済み。第4章の到着場面（別便の恋人・ましろの友人版）は前夜祭の日に接続済み（remake/js/chapters/ch4.js の renderEve）。到着した恋人（別便の7人）・恋人でないましろ（友人版）との夕方（ch4_*_dubai_evening・ch4_mashiro_dubai_friend_evening。#3097で5人と友人版へ広げた）は、到着の後・前夜祭の前に任意で一度（remake/js/chapters/ch4-progress.js の chapterFourArrivalEveningsDue）。正式ヒロイン一覧・再生順・恋愛場面の条件の正本。実行順はremake/js/chaptersが正。第4章勝利後の再生順の正本は結果 → 会長 → 屋敷 → 帰国 → 二卓。実行側のCH4_RESOLUTIONもこの順。ヌール（DSR20）は第4章のドバイで出会うヒロインで、ドバイに住む（romance.noor.resident）。到着場面は無く（arrival: null）、恋人ならドバイの前夜は同じ街にいる。第5章の打ち上げ・スタッフロール後の修羅場にはテレビ電話で加わり、席には座らない。",
   "heroine_ids": [
     "tsumugi",
     "minto",
-    "rin",
+    "rio",
     "ageha",
     "mashiro",
     "samechan",
-    "hiyori"
+    "hiyori",
+    "noor"
   ],
   "romance": {
     "tsumugi": {
@@ -30,14 +31,14 @@
       "near_conflict": "ch3_shuraba_minto",
       "talk": "shuraba_talk_minto"
     },
-    "rin": {
-      "date": "tournament_date_rin",
-      "conflict": "shuraba_rin",
-      "epilogue": "epilogue_rin",
+    "rio": {
+      "date": "tournament_date_rio",
+      "conflict": "shuraba_rio",
+      "epilogue": "epilogue_rio",
       "date_min_chapter": 3,
-      "arrival": "ch4_rin_dubai_girlfriend",
-      "near_conflict": "ch3_shuraba_rin",
-      "talk": "shuraba_talk_rin"
+      "arrival": "ch4_rio_dubai_girlfriend",
+      "near_conflict": "ch3_shuraba_rio",
+      "talk": "shuraba_talk_rio"
     },
     "ageha": {
       "date": "tournament_date_ageha",
@@ -73,12 +74,22 @@
       "arrival": "ch4_hiyori_dubai_girlfriend",
       "near_conflict": "ch3_shuraba_hiyori",
       "talk": "shuraba_talk_hiyori"
+    },
+    "noor": {
+      "date": "tournament_date_noor",
+      "conflict": "shuraba_noor",
+      "epilogue": "epilogue_noor",
+      "date_min_chapter": 4,
+      "arrival": null,
+      "resident": "dubai",
+      "talk": "shuraba_talk_noor"
     }
   },
   "conflict": {
     "open": "shuraba_open",
     "close": "shuraba_accountability",
     "pending_ending": "ending_relationship_pending",
+    "aftercare": "shuraba_sumi_cover",
     "minimum_present_lovers": 2,
     "stage": "post_ending"
   },
@@ -97,11 +108,11 @@
         "ch3_work_without_taste",
         "ch3_naru_contact_before_tournament",
         "ch3_naru_work",
-        "ch3_kuze_first",
-        "ch3_kuze_mukai_visit",
+        "ch3_saku_first",
+        "ch3_saku_mukai_visit",
         "ch3_taste_return",
         "ch3_abyss_recovery",
-        "ch3_kuze_advice",
+        "ch3_saku_advice",
         "ch3_steve_low_heat",
         "ch3_volk_first",
         "ch3_strategy",
@@ -117,20 +128,39 @@
         "ch3_mashiro_play_3",
         "ch3_mashiro_practice",
         "ch3_mashiro_black_tea",
-        "ch3_kuze_mashiro_tea_tin",
-        "ch3_kuze_mashiro_soon_back",
-        "ch3_kuze_lime",
+        "ch3_saku_mashiro_tea_tin",
+        "ch3_saku_mashiro_soon_back",
+        "ch3_saku_lime",
+        "ch3_saku_missed",
+        "ch3_saku_cleanup",
+        "ch3_saku_liar",
+        "ch3_saku_first_reply",
+        "ch3_steve_lime",
+        "ch3_steve_two_timers",
+        "ch3_steve_empty_seat",
+        "ch3_steve_tongs",
+        "ch3_steve_watch",
         "confession_mashiro",
         "hiyori_tokyo_contact",
         "ch3_tsumugi_slump",
         "ch3_volk_second",
         "ch3_volk_third",
-        "ch3_volk_fourth"
+        "ch3_volk_fourth",
+        "ch3_volk_lime",
+        "ch3_volk_fifth",
+        "ch3_volk_revisit",
+        "ch3_mashiro_timer_side",
+        "ch3_mashiro_cup_warm",
+        "ch3_mashiro_glass_cloth",
+        "ch3_mashiro_leaf_rest",
+        "ch3_mashiro_bench_tea"
       ],
       "after_eve": [
         "ch3_tournament_day",
         "ch3_national_craft",
-        "ch3_national_adjustment"
+        "ch3_national_adjustment",
+        "ch3_volk_after_ch3",
+        "ch3_volk_after_ch3_firstshop"
       ],
       "on_win": [
         "ch3_national_result",
@@ -138,9 +168,9 @@
         "ch3_mashiro_recovery",
         "ch3_naru_reconcile",
         "ch3_enmaku_cleanup",
-        "ch3_home_customer",
+        "ch3_ageha_reunion",
         "ch3_tsumugi_result",
-        "ch3_ageha_reunion"
+        "ch3_home_customer"
       ],
       "on_loss": [
         "ch3_national_defeat"
@@ -163,8 +193,8 @@
       ],
       "on_win": [
         "ch4_result",
+        "ch4_sui_old_rival",
         "ch4_ending",
-        "ch4_nagumo_old_rival",
         "ch4_sumi_return",
         "ch4_two_tables"
       ],
@@ -172,39 +202,246 @@
         "ch4_defeat"
       ],
       "optional": [
-        "ch4_mashiro_dubai_friend"
+        "ch4_mashiro_dubai_friend",
+        "ch4_noor_story_seat_edge",
+        "ch4_noor_story_second_cup",
+        "ch4_noor_story_map_corner",
+        "ch4_noor_story_water_glass",
+        "ch4_noor_story_tray_order",
+        "ch4_noor_story_quiet_counter",
+        "ch4_noor_story_empty_chair",
+        "ch4_noor_story_board_angle",
+        "ch4_noor_story_pencil_line",
+        "ch4_noor_story_waiting_wind",
+        "ch4_noor_story_pinky_gap",
+        "ch4_noor_story_father_seat",
+        "ch4_noor_story_return_mark",
+        "ch4_noor_story_table_edge",
+        "ch4_noor_story_unsaid_question",
+        "ch4_noor_story_doorway",
+        "ch4_arrival_inn",
+        "ch4_festa_revisit",
+        "ch4_alley_cafe_quiet",
+        "ch4_stranger_first_forced_in",
+        "ch4_wang_reception_forced_in",
+        "ch4_dubai_souq_revisit",
+        "ch4_dubai_cafe_revisit",
+        "ch4_samechan_dubai_evening",
+        "ch4_hiyori_dubai_evening",
+        "ch4_inn_tool_care"
       ]
     },
     "5": {
       "before_match": [
         "ch5_opening",
-        "ch5_unrecorded_day"
+        "ch5_unrecorded_day",
+        "ch5_free_tonari_practice",
+        "ch5_free_mashiro_visit",
+        "ch5_free_first_visitor",
+        "ch5_free_eden_adam",
+        "ch5_schedule_contact",
+        "ch5_prep_trial_heat",
+        "ch5_prep_trial_pack",
+        "ch5_prep_trial_aroma",
+        "ch5_prep_adjust_heat",
+        "ch5_prep_adjust_pack",
+        "ch5_prep_adjust_aroma",
+        "ch5_prep_keep",
+        "ch5_prep_recall_heat_adjusted",
+        "ch5_prep_recall_heat_kept",
+        "ch5_prep_recall_pack_adjusted",
+        "ch5_prep_recall_pack_kept",
+        "ch5_prep_recall_aroma_adjusted",
+        "ch5_prep_recall_aroma_kept",
+        "ch5_prep_answer_heat_adjusted",
+        "ch5_prep_answer_heat_kept",
+        "ch5_prep_answer_pack_adjusted",
+        "ch5_prep_answer_pack_kept",
+        "ch5_prep_answer_aroma_adjusted",
+        "ch5_prep_answer_aroma_kept"
       ],
       "postpone": [
         "ch5_timeout"
       ],
       "first_cup": [
-        "ch5_copy_first_cup"
+        "ch5_copy_first_cup",
+        "ch5_match_day_arrival"
       ],
       "second_cup": [
         "ch5_relationship_before_second_cup"
       ],
       "on_win": [
-        "ch5_second_cup_result"
+        "ch5_second_cup_result",
+        "ch5_second_cup_result_afterglow"
       ],
       "on_loss_or_tie": [
         "ch5_second_cup_defeat"
       ],
       "after_match": [
         "ch5_doctor_after_match",
+        "ch5_doctor_cocreation",
         "ch5_return_to_tonari"
+      ],
+      "after_match_loss_or_tie": [
+        "ch5_doctor_after_match_loss",
+        "ch5_doctor_after_match_loss_close",
+        "ch5_doctor_after_match_tie"
+      ],
+      "after_match_tail": [
+        "ch5_sui_after_match"
+      ]
+    },
+    "1": {
+      "opening": [
+        "ch1_opening",
+        "ch1_salaryman_regular",
+        "ch1_day5_sumi_story",
+        "ch1_day7_last_night",
+        "ch1_cold_open",
+        "ch1_tutorial_oneesan",
+        "ch1_meet_rivals",
+        "ch1_salaryman_change",
+        "ch1_tsumugi_sketch",
+        "ch1_tsumugi_departure"
+      ],
+      "practice": [
+        "ch1_sumi_cube_coals",
+        "ch1_sumi_tutorial",
+        "ch1_sumi_basics",
+        "ch1_sumi_training",
+        "ch1_sumi_secret",
+        "ch1_sumi_closing",
+        "ch1_sumi_final",
+        "ch1_sumi_eve",
+        "ch1_sumi_home_rig",
+        "ch1_sumi_home_rig_homecoming",
+        "ch1_sumi_attack"
+      ],
+      "rival_encounters": [
+        "ch1_naru_cafe_intro",
+        "ch1_naru_first",
+        "ch1_naru_second",
+        "ch1_naru_third",
+        "ch1_naru_fourth",
+        "ch1_naru_fifth",
+        "ch1_naru_promise",
+        "ch1_naru_group_regulars",
+        "ch1_naru_after_return",
+        "ch1_naru_after_return_firstshop",
+        "ch1_adam_first",
+        "ch1_adam_second",
+        "ch1_adam_third",
+        "ch1_adam_fourth",
+        "ch1_adam_fifth",
+        "ch1_adam_group_soutoku",
+        "ch1_adam_outing_dagurikura",
+        "ch1_adam_after_ch1",
+        "ch1_adam_after_ch1_firstshop",
+        "ch1_minto_first",
+        "ch1_minto_second",
+        "ch1_minto_identity_reveal",
+        "ch1_minto_third",
+        "ch1_minto_fourth",
+        "ch1_minto_phantom_smell",
+        "ch1_minto_fifth",
+        "ch1_minto_private_1",
+        "ch1_minto_after_ch1",
+        "ch1_minto_after_ch1_firstshop",
+        "ch1_minto_group_regulars",
+        "ch1_minto_side_seat",
+        "ch1_minto_quiet_hello",
+        "ch1_minto_timer_hand",
+        "ch1_minto_cheki_keep",
+        "ch1_tsumugi_first",
+        "ch1_tsumugi_second",
+        "ch1_tsumugi_third",
+        "ch1_tsumugi_fourth",
+        "ch1_tsumugi_fifth",
+        "ch1_tsumugi_smoke_color",
+        "ch1_tsumugi_eve",
+        "ch1_tsumugi_research",
+        "ch1_tsumugi_work_in_progress",
+        "ch1_tsumugi_one_ear",
+        "ch1_tsumugi_short_tail",
+        "ch1_tsumugi_window_line",
+        "ch1_tsumugi_pen_down",
+        "ch1_tsumugi_low_water",
+        "ch1_ageha_encounter",
+        "ch1_ageha_gummy_share",
+        "ch1_ageha_floor_words",
+        "ch1_ageha_bear_seat"
+      ],
+      "events": [
+        "outing_naru_1",
+        "outing_adam_1",
+        "outing_minto_1",
+        "interaction_naru_night_01",
+        "interaction_minto_noon_01",
+        "outing_tsumugi_1",
+        "outing_rio_1",
+        "outing_hiyori_1",
+        "ch1_rei_cameo",
+        "outing_ageha_1",
+        "ch1_tsumugi_fortune_rumor"
+      ],
+      "tournament": [
+        "ch1_tournament_arrival",
+        "ch1_tournament_opening",
+        "ch1_tournament_match",
+        "ch1_tournament_served",
+        "ch1_tournament_judging",
+        "ch1_tournament_reveal",
+        "ch1_tournament_after",
+        "ch1_tournament_r1_end",
+        "ch1_tournament_r2_end",
+        "ch1_tournament_r3_end",
+        "ch1_tournament_defeat",
+        "ch1_craft_recognition_steady",
+        "ch1_craft_recognition_recovered",
+        "ch1_craft_recognition_care",
+        "ch1_craft_recognition_serve",
+        "ch1_craft_recognition_heat",
+        "ch1_craft_recognition_holes",
+        "ch1_craft_recognition_steam"
+      ]
+    },
+    "2": {
+      "main": [
+        "ch2_abyss_baito",
+        "ch2_slump_taste",
+        "ch2_sofa_burn",
+        "ch2_kumicho_greeting",
+        "ch2_pre_tournament_realisation",
+        "ch2_coal_together",
+        "ch2_lingering_smell",
+        "ch2_sumi_silence",
+        "ch2_strawberry_sample",
+        "ch2_strawberry_trial_intro",
+        "ch2_strawberry_trial_gentle",
+        "ch2_strawberry_trial_hot",
+        "ch2_strawberry_trial_thin",
+        "ch2_strawberry_trial_no_berry",
+        "ch2_title_customer_half",
+        "ch2_title_customer_back",
+        "ch2_kemuri_thermometer"
+      ],
+      "tournament": [
+        "ch2_tournament_lobby",
+        "ch2_tournament_entrance",
+        "ch2_tournament_stations",
+        "ch2_tournament_rules",
+        "ch2_tournament_verdict",
+        "ch2_tournament_farewell",
+        "ch2_tournament_tasteless",
+        "ch2_tournament_ageha_heart"
       ]
     }
   },
   "ending": {
     "start": "ending_start",
     "normal": "ending_normal",
-    "daily": "ending_daily_smoke"
+    "daily": "ending_daily_smoke",
+    "salaryman_name": "ending_salaryman_name"
   },
   "location_contract": {
     "present": "その時点で同じ会場へ実際に到着している人物ID。渡航予定・好感度・同伴選択だけで加えない。",
@@ -213,9 +450,9 @@
   },
   "progression_contract": {
     "ch3_romance": "既存の交友締めくくり・告白で実際に交際した人だけ。あげはの着地は帰郷後。友人・未読イベントをMAX好感度から捏造しない。",
-    "shuraba": "第3章の前夜は同じ場所の恋人2人以上とスティーブがいる時にnear_conflict。彼の茶化しで曖昧に流し、謝罪・破局・和解を確定しない。他の前夜は重なった予定を保留。本格的なconflictはending_daily_smokeとスタッフロール後にだけ選ぶ。",
-    "epilogue": "実際の恋人がちょうど1人かつ所在・会う約束が確認済みで、未解決の修羅場がない場合。複数交際は日常の共通エンディング→スタッフロール→本格的な修羅場。同席している恋人の反応だけを再生し、未到着者を出現させない。",
-    "loss": "第3・4章の敗北はその競技から再挑戦。第5章の負け/同数も後日談へ続く。大会結果を恋愛人数で書き換えない。"
+    "shuraba": "第3章の前夜は同じ場所の恋人2人以上とスティーブがいる時にnear_conflict。彼の茶化しで曖昧に流し、謝罪・破局・和解を確定しない。他の前夜は重なった予定を保留。本格的なconflict（反応と謝罪）は第5章冒頭の打ち上げで起き、起きなかった場合だけスタッフロール後に選ぶ。スタッフロール後は一人ずつの話し直し（talk）の後、conflict.aftercare（スミさんが裏で一人ずつ「本命はあんた一人だ」と説得していたと明かし「……気をつけろよ」と言う）で締める（2026-11-11 オーナー決定）。",
+    "epilogue": "実際の恋人がちょうど1人かつ所在・会う約束が確認済みで、未解決の修羅場がない場合。共通の賄い（ending.normal）は置き換えず、読んでからその人の後日談へ進む。複数交際は日常の共通エンディング→スタッフロール→本格的な修羅場。同席している恋人の反応だけを再生し、未到着者を出現させない。",
+    "loss": "第3・4章の敗北はその競技から再挑戦。第5章の負け/同数も後日談へ続く（after_matchの先頭だけ、after_match_loss_or_tieの台本に替わる。どれを読むかは二本の挙手で決まる。after_match_tailは先頭の場面の末尾に勝敗共通で続ける）。大会結果を恋愛人数で書き換えない。"
   },
   "optional_requirements": {
     "ch3_minto_small_lies": {
@@ -251,21 +488,56 @@
       ],
       "comment": "味の会話（#2022）。味覚が戻った後、休みの日の配合メモの続きとして。"
     },
-    "ch3_kuze_mashiro_tea_tin": {
+    "ch3_mashiro_timer_side": {
       "seen": [
-        "ch3_kuze_first"
-      ]
-    },
-    "ch3_kuze_mashiro_soon_back": {
-      "seen": [
-        "ch3_kuze_mukai_visit"
-      ]
-    },
-    "ch3_kuze_lime": {
-      "seen": [
-        "ch3_kuze_advice"
+        "ch3_mashiro_play_3",
+        "ch3_mashiro_practice",
+        "ch3_mashiro_black_tea"
       ],
-      "comment": "#2028: 久世とLIMEを交換する。助言の後。♥1（煙幕への再訪で付く好感度）の条件は場面カードの置き方（ch3-story-wiring.js の heart）。"
+      "comment": "#3081。約束・練習・ブラックティーのあと、mukaiで一度。大会の前後で同じ店の話。"
+    },
+    "ch3_mashiro_cup_warm": {
+      "seen": [
+        "ch3_mashiro_timer_side"
+      ]
+    },
+    "ch3_mashiro_glass_cloth": {
+      "seen": [
+        "ch3_mashiro_cup_warm"
+      ]
+    },
+    "ch3_mashiro_leaf_rest": {
+      "seen": [
+        "ch3_mashiro_glass_cloth"
+      ],
+      "comment": "#3081。約束・練習・ブラックティーのあと、mukaiで一度。3本側の glass_cloth の次。"
+    },
+    "ch3_mashiro_bench_tea": {
+      "seen": [
+        "ch3_mashiro_leaf_rest"
+      ]
+    },
+    "ch3_saku_mashiro_tea_tin": {
+      "seen": [
+        "ch3_saku_first"
+      ]
+    },
+    "ch3_saku_mashiro_soon_back": {
+      "seen": [
+        "ch3_saku_mukai_visit"
+      ]
+    },
+    "ch3_saku_lime": {
+      "seen": [
+        "ch3_saku_advice"
+      ],
+      "comment": "#2028: 綾取とLIMEを交換する。助言の後。♥1（煙幕への再訪で付く好感度）の条件は場面カードの置き方（ch3-story-wiring.js の heart）。"
+    },
+    "ch3_steve_lime": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "#2028: スティーブとLIMEを交換する。配達で会った後、客として来るmukaiで。面識と♥2の条件は場面カードの置き方（ch3-story-wiring.js の met・heart）。"
     },
     "ch3_mashiro_play_3": {
       "seen": [
@@ -286,7 +558,7 @@
         "ch3_mashiro_play_3",
         "ch3_mashiro_practice"
       ],
-      "comment": "#1930 仮置き: 締めくくりの正式原稿が無い間、任意4場面を読んだ後の告白の返事を実回答にする。好感度や訪問回数からは開かない。"
+      "comment": "#1930: 任意4場面を読んだ後の告白の返事を実回答にする。好感度や訪問回数からは開かない。告白の台本は #2431 で正式原稿（IR20）。"
     },
     "ch3_tsumugi_slump": {
       "contacts": [
@@ -315,6 +587,168 @@
         "ch3_volk_third"
       ],
       "comment": "#2026: 「三回分、同じだった」。三度目の来店の後。"
+    },
+    "ch3_volk_lime": {
+      "seen": [
+        "ch3_volk_fourth"
+      ],
+      "comment": "#2028: ヴォルクとLIMEを交換する。四度目の来店の「次は、俺のメモも持ってきます」を受ける。面識と♥2の条件は場面カードの置き方（ch3-story-wiring.js の met・heart）。大会後は ch3-aftermath-progress.js の寄り道から。"
+    },
+    "ch4_noor_story_seat_edge": {
+      "seen": [
+        "ch4_noor_meet"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_second_cup": {
+      "seen": [
+        "ch4_noor_meet"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_map_corner": {
+      "seen": [
+        "ch4_noor_talk2"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_water_glass": {
+      "seen": [
+        "ch4_noor_talk2"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_tray_order": {
+      "seen": [
+        "ch4_noor_cafe_3"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_quiet_counter": {
+      "seen": [
+        "ch4_noor_cafe_3"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_empty_chair": {
+      "seen": [
+        "ch4_noor_cafe_3"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_board_angle": {
+      "seen": [
+        "ch4_noor_invite"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_pencil_line": {
+      "seen": [
+        "ch4_noor_invite"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_waiting_wind": {
+      "seen": [
+        "ch4_noor_invite"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_pinky_gap": {
+      "seen": [
+        "ch4_noor_bond_question"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_father_seat": {
+      "seen": [
+        "ch4_noor_bond_question"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_return_mark": {
+      "seen": [
+        "ch4_noor_bond_question"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_table_edge": {
+      "seen": [
+        "ch4_noor_cafe_4"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_unsaid_question": {
+      "seen": [
+        "ch4_noor_cafe_4"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_doorway": {
+      "seen": [
+        "ch4_noor_cafe_4"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch3_saku_missed": {
+      "seen": [
+        "ch3_saku_lime"
+      ],
+      "comment": "好感度補充: LIME交換の後の煙幕再訪（♥2）。"
+    },
+    "ch3_saku_cleanup": {
+      "seen": [
+        "ch3_saku_missed"
+      ],
+      "comment": "好感度補充: 外れた予想の次の閉店後（♥3）。"
+    },
+    "ch3_saku_liar": {
+      "seen": [
+        "ch3_saku_cleanup"
+      ],
+      "comment": "好感度補充: 閉店後の次の来店（♥4）。"
+    },
+    "ch3_saku_first_reply": {
+      "seen": [
+        "ch3_saku_liar"
+      ],
+      "comment": "好感度補充（A27）: 嘘つきの欄のあと、最初の返事（♥4）。"
+    },
+    "ch3_steve_two_timers": {
+      "seen": [
+        "ch3_steve_low_heat"
+      ],
+      "comment": "好感度補充: 低温の話のあと、Smoke & Glory の初来店（♥1）。面識と♥の条件は場面カードの置き方。"
+    },
+    "ch3_steve_empty_seat": {
+      "seen": [
+        "ch3_steve_two_timers"
+      ],
+      "comment": "好感度補充: 二つのタイマーの次（♥3）。"
+    },
+    "ch3_steve_tongs": {
+      "seen": [
+        "ch3_steve_empty_seat"
+      ],
+      "comment": "好感度補充: 空の席の次（♥4）。"
+    },
+    "ch3_steve_watch": {
+      "seen": [
+        "ch3_steve_tongs"
+      ],
+      "comment": "好感度補充（A32）: トングの手前のあと、伏せたタイマー（♥4）。"
+    },
+    "ch3_volk_fifth": {
+      "seen": [
+        "ch3_volk_lime"
+      ],
+      "comment": "好感度補充: LIME交換の後の五度目（♥4）。締めくくりの前。"
+    },
+    "ch3_volk_revisit": {
+      "seen": [
+        "ch3_volk_fifth"
+      ],
+      "comment": "好感度補充（A28）: 五度目のあと、残した一項の短い再訪（♥4）。"
     }
   },
   "near_conflict": {
@@ -323,5 +757,28 @@
     "open": "ch3_shuraba_open",
     "close": "ch3_shuraba_steve",
     "overlap": "tournament_evening_overlap"
+  },
+  "ch1_near_conflict": {
+    "chapter": 1,
+    "flag": "_shuraba_ch1",
+    "scenes": [
+      "remake_shuraba_minto_tsumugi",
+      "remake_shuraba_rio_tsumugi",
+      "remake_shuraba_minto_rio",
+      "remake_shuraba_all",
+      "remake_shuraba_hiyori_minto",
+      "remake_shuraba_hiyori_rio",
+      "remake_shuraba_hiyori_tsumugi",
+      "remake_shuraba_all_hiyori"
+    ],
+    "deferred": true,
+    "recall": {
+      "minto": "ch1_tournament_after",
+      "tsumugi": "ch1_tournament_after",
+      "rio": "interval_day1_morning_win",
+      "hiyori": "interval_day1_morning_win",
+      "defeat": "remake_defeat_follow"
+    },
+    "comment": "#2089: 第1章の大会当日、控室入場前の鉢合わせ。第3章の茶化しと同じく謝罪・破局・和解を確定せず保留する。大会後は居合わせた恋人が「朝の話」を一言だけ返す（優勝: ロビーのみんと・tonariのつむぎ・翌朝の凛想とひよりのLIME／敗北: remake_defeat_follow）。#2025: ひよりも対象。ひよりを含む2人は組ごとの台本、3人以上は居合わせた恋人の行だけを出す remake_shuraba_all_hiyori。"
   }
 }

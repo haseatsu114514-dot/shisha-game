@@ -9,13 +9,43 @@ async function setup(page) {
     F.chapter.setupHooks(); F.vn.vnTest.turbo = true;
     F.fresh = () => {
       F.core.newGame(); F.core.state.phase = "daily"; F.core.state.day = 11;
-      for (const id of ["tsumugi", "adam", "sumi", "naru", "nagumo", "minto", "dr_kemuri"]) F.intro.markIntroSeen(id);
+      for (const id of ["tsumugi", "adam", "sumi", "naru", "sui", "minto", "dr_kemuri"]) F.intro.markIntroSeen(id);
       F.vn.backlog().length = 0;
     };
     F.lines = () => F.vn.backlog().map(line => line.text);
   });
 }
 await suite("ch1-story-feedback", async check => {
+  for (const [id, remote, name] of [["interval_day1_naru_lime", "naru", "なる"], ["interval_day2_adam_lime", "adam", "アダム"]]) {
+    await check(`contact-channel-${remote}-1180`, async page => {
+      await setup(page);
+      await page.evaluate(async ({ id, remote }) => {
+        F.fresh(); F.core.state.met[remote] = true; F.core.config.textSpeed = 4; F.vn.vnTest.turbo = false;
+        (await import("./js/core/ui.js")).clearScreen();
+        window.remoteSceneDone = false;
+        void F.vn.play(id).then(() => { remoteSceneDone = true; });
+      }, { id, remote });
+      // 最初の通常入力ロック（320ms）だけを待ち、その後は描画された読了合図で送る。
+      await page.waitForTimeout(340);
+      let remoteFrames = 0;
+      for (let n = 0; n < 40; n++) {
+        await page.waitForFunction(() => remoteSceneDone || document.querySelector(".vn-next.show"));
+        if (await page.evaluate(() => remoteSceneDone)) break;
+        const tag = page.locator(".vn-name.show");
+        if (await tag.count()) {
+          const label = await tag.textContent();
+          assert(label.endsWith("（LIME）"), label);
+          if (label === `${name}（LIME）`) remoteFrames++;
+        }
+        assert.equal(await page.locator(`.portrait[data-speaker="${remote}"]`).count(), 0, "remote contact never stands in the room");
+        await page.keyboard.press("Space");
+      }
+      assert.equal(await page.evaluate(() => remoteSceneDone), true);
+      assert(remoteFrames >= 4, "channel stays visible through every remote message");
+      const log = await page.evaluate(() => F.vn.backlog());
+      assert.equal(log.filter(line => line.name === `${name}（LIME）`).length, 4);
+    }, { viewport: { width: 1180, height: 740 }, reducedMotion: "reduce" });
+  }
   await check("known-art-uses-real-seen-flag-and-keeps-memory", async page => {
     await setup(page);
     const result = await page.evaluate(async () => {

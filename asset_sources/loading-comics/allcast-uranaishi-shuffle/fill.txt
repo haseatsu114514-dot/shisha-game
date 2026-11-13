@@ -1,0 +1,3 @@
+uranaishi-shuffle-1.webp: 余白 左3% 右3% 上0% 下0% → そのまま
+uranaishi-shuffle-2.webp: 余白 左3% 右3% 上0% 下0% → そのまま
+拡大して埋めた: 0 / 2 枚

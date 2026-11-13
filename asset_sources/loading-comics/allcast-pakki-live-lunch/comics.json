@@ -1,0 +1,92 @@
+{
+  "episode": {
+    "id": "pakki-live-lunch",
+    "title": "昼も実況",
+    "cast": [
+      "pakki"
+    ],
+    "minChapter": 1,
+    "dialogue": [
+      "マイク、外さないの？",
+      "ぷぷぷっ！",
+      "昼も実況だ。"
+    ],
+    "first_speaker": "hajime",
+    "panel1": "大会の昼休み。左のはじめが弁当を手に「マイク、外さないの？」。右のパッキーがマイクを握って「ぷぷぷっ！」。",
+    "panel2": "パッキーがマイクを片手に、自分の弁当の唐揚げを高く掲げて全力で実況している（実況の文字は描かず、勢いの線だけ）。はじめ「昼も実況だ。」。",
+    "caption": "大会MCのパッキーは、いつでも実況中。"
+  },
+  "status": "review_candidate_not_adopted",
+  "generator": "built-in image_gen",
+  "selected_for_review": "source-A-v1.png",
+  "prompt": "prompt-A-v1.txt",
+  "references": [
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/pakki.png",
+      "sha256": "660e0029f3c0e620f754df778c9a7908675fbfcbad10804a1e760926578faf8d"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/allcast-rei-mix-names/source-A-v1.png",
+      "sha256": "0ecef6512709af6fb524c3e5a55190445acd50ed73f9eb4caa3f69fa615d73ad"
+    }
+  ],
+  "edit_reference": null,
+  "variants": [
+    {
+      "file": "source-A-v1.png",
+      "sha256": "890e73367ffdf270d504d805338bedea4a9526201006ae1714afd40da440e0d0",
+      "size": [
+        1536,
+        1024
+      ],
+      "qa": "台詞・話者・読順・2人・外見・枠/余白・禁止描写を目視確認"
+    }
+  ],
+  "panels": [
+    {
+      "file": "panels/pakki-live-lunch-1.webp",
+      "sha256": "26e47deec91d36b1ccf5b266abb5b4bd976745f460941226448366a7713d340e",
+      "size": [
+        720,
+        480
+      ],
+      "bytes": 63168
+    },
+    {
+      "file": "panels/pakki-live-lunch-2.webp",
+      "sha256": "3b6bdcc0fcfe093fc3e6f9d30e6a76282097bd158bdd1ee00732a7e0057bad1b",
+      "size": [
+        721,
+        480
+      ],
+      "bytes": 65410
+    }
+  ],
+  "qa": {
+    "source_dimensions": "1536x1024",
+    "dialogue": "台本と一字一句一致を目視（句読点/！？含む）",
+    "speakers_order": "左右配置固定・先話を上/左、応答を下/右、尻尾の話者所属を確認",
+    "identity": "正式立ち絵に準拠。パッキーは白い雲状/赤蝶ネクタイ/通常マイクへ。占い師は台本優先で目/鼻を陰に隠す。",
+    "style": "初期採用pc.pngを実見し、少し可愛いデフォルメ/暖かいセル塗り/太い主線を確認。先行3話は同系統のrei-mix-namesを作風参照。",
+    "count": "はじめ＋相手の2人のみ。背景に人なし",
+    "prohibited": "シーシャ台/HMD/ハガル/炭/ホース/吸い口/喫煙/武器なし。カードのラーメンの湯気は料理の絵で喫煙ではない。",
+    "cut_visual": "qa-contact-1〜3を目視、文字/顔/オチが切れていない",
+    "warnings": [
+      "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+      "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
+    ]
+  },
+  "file_hashes": {
+    "source-A-v1.png": "890e73367ffdf270d504d805338bedea4a9526201006ae1714afd40da440e0d0",
+    "cut-QA.txt": "9d65c4fcb16e1ef3673f75e6e2833199ec72394038ee431c2626a07670ba8ec5",
+    "prompt-A-v1.txt": "33fa4d7dcacdb8dacc9df9190aedf36c68588423816c2f9e984239de05ab74f2"
+  }
+}

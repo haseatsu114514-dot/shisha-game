@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>登場カットインへの変身（つなぎの3案） — 水煙前線 -EN:CODE-</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/vn.css">
+<link rel="stylesheet" href="css/intro.css">
+<style>
+body { background:#07090d; color:#f8f6ee; }
+#viewport { top:0; bottom:84px; }
+#vn { opacity:1; }
+.preview-tools { position:fixed; left:0; right:0; bottom:0; height:84px; z-index:100; display:flex; flex-wrap:wrap; gap:8px 12px; justify-content:center; align-items:center; padding:0 12px; font:14px var(--font); background:#0d1016; border-top:1px solid #2a2f3a; }
+.preview-tools button,.preview-tools select { min-height:36px; padding:6px 14px; border:1px solid #bc9e72; border-radius:6px; background:#20232b; color:inherit; font:inherit; }
+.preview-tools button:disabled,.preview-tools select:disabled { opacity:.45; }
+.preview-tools label { display:flex; gap:6px; align-items:center; }
+.preview-tools p { flex-basis:100%; text-align:center; margin:0; color:#cfd3dc; font-size:13px; }
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+  <div id="bg"><div class="bg-img show" id="bgimg"></div></div>
+  <div id="vn" class="active"><div class="vn-portraits" id="portraits"></div>
+    <div class="vn-box" id="box"><div class="vn-name show" id="vnname"></div><div class="vn-text" id="vntext"></div></div></div>
+  <div id="fx"></div>
+</div></div>
+<div class="preview-tools">
+ <label>つなぎ <select id="variant"><option value="morph">A 影になって迫る（morph）</option><option value="card">B 札が裏返る（card）</option><option value="slash">C 一閃（slash）</option><option value="none">なし（今まで通り）</option></select></label>
+ <label>人物 <select id="character" disabled></select></label>
+ <button id="play" type="button" disabled>再生する</button>
+ <button id="all" type="button" disabled>3案を続けて</button>
+ <label><input type="checkbox" id="sound"> 音</label>
+ <p id="status" role="status">読み込み中…</p>
+</div>
+<script type="module">
+import { DB, loadAll, realName, portraitInfo, img } from './js/core/data.js';
+import { newGame, state, config } from './js/core/state.js';
+import { layers } from './js/core/ui.js';
+import { playIntro } from './js/vn/intro.js';
+import { plainLine } from './js/vn/intro-art.js';
+const ids = ['naru','rio','sui','pakki','hiyori','kumicho','sumi','samechan','adam','saku','oneesan'];
+const bgs = { naru:'bg_kemurikusa_outside_night', rio:'bg_shop', sui:'bg_shop', pakki:'bg_shop', hiyori:'bg_tonari_inside', kumicho:'bg_ryuji_shop', sumi:'bg_tonari_inside', samechan:'bg_shop', adam:'bg_eden_shop', saku:'bg_mukai_shop', oneesan:'bg_tonari_inside' };
+const $ = (s) => document.querySelector(s);
+const variantSel = $('#variant'), selector = $('#character'), play = $('#play'), all = $('#all'), status = $('#status'), sound = $('#sound');
+layers.fx = $('#fx');
+const FRAMING = { target: 1.36, sink: 0.4, pakkiTarget: 0.94, pakkiSink: 0.08 };
+function fit() { $('#stage').style.setProperty('--k', Math.max(.05, Math.min(innerWidth / 1280, (innerHeight - 84) / 720))); }
+addEventListener('resize', fit); fit();
+function busy(value) { variantSel.disabled = selector.disabled = play.disabled = all.disabled = value; }
+/** 会話画面と同じ置き方で本人の立ち絵を出す（engine.js の frame() と同じ式） */
+async function showStanding(id) {
+  const p = portraitInfo(id, DB.characters[id].intro_cutin.face || 'normal');
+  const pakki = p.folder === 'pakki';
+  const target = (pakki ? FRAMING.pakkiTarget : FRAMING.target) * p.scale, sink = pakki ? FRAMING.pakkiSink : FRAMING.sink;
+  const hPct = Math.min(target / p.h, 2.4) * 100, contentTop = p.h * hPct - sink * 100, extra = Math.max(0, contentTop - 97);
+  const image = new Image(); image.src = p.src; image.className = 'portrait active'; image.dataset.speaker = id; image.dataset.pos = 'center'; image.draggable = false;
+  image.style.height = `${hPct}%`; image.style.bottom = `${-(p.b * hPct + sink * 100 + extra)}%`; image.style.setProperty('--ax', `${-(p.ax * 100)}%`);
+  await image.decode().catch(() => {});
+  $('#portraits').replaceChildren(image);
+  $('#bgimg').style.backgroundImage = `url("${img(`backgrounds/${bgs[id] || 'bg_shop'}.png`)}")`;
+  $('#vnname').textContent = realName(id);
+  $('#vntext').textContent = plainLine(DB.characters[id].intro_cutin.line || '');
+}
+async function run(list) {
+  busy(true);
+  try {
+    for (const [variant, id] of list) {
+      variantSel.value = variant; selector.value = id;
+      await showStanding(id);
+      config.introTransition = variant;
+      config.seVolume = sound.checked ? 0.8 : 0; config.bgmVolume = 0;
+      status.textContent = `${variantSel.selectedOptions[0].textContent} ／ ${realName(id)}`;
+      await new Promise((r) => setTimeout(r, 500));
+      state.met[id] = true; delete state.flags[`_intro_${id}`];
+      await playIntro(id);
+      await new Promise((r) => setTimeout(r, 700));
+    }
+    status.textContent = '再生終了。ゲームの保存データは変更していません。';
+  } catch (error) { status.textContent = `表示エラー：${error.message}`; console.error(error); }
+  finally { busy(false); }
+}
+play.addEventListener('click', () => run([[variantSel.value, selector.value]]));
+all.addEventListener('click', () => run(['morph','card','slash'].map((v) => [v, selector.value])));
+selector.addEventListener('change', () => showStanding(selector.value));
+try {
+  await loadAll(); newGame();
+  for (const id of ids) { state.met[id] = true; selector.add(new Option(realName(id), id)); }
+  const q = new URLSearchParams(location.search);
+  if (ids.includes(q.get('character'))) selector.value = q.get('character');
+  if (['morph','card','slash','none'].includes(q.get('variant'))) variantSel.value = q.get('variant');
+  await showStanding(selector.value);
+  status.textContent = 'A: 影になって迫り、閃きの中から現れる ／ B: 札が切り取って裏返る ／ C: 一閃が通った跡がカットイン。クリックでは短縮しません。';
+  busy(false);
+  if (q.get('autoplay')) play.click();
+} catch (error) { status.textContent = `読み込みエラー：${error.message}`; }
+</script>
+</body>
+</html>

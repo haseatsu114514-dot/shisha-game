@@ -1,0 +1,287 @@
+{
+  "normal": {
+    "count": 349,
+    "samples": [
+      {
+        "file": "ch1_interval.json",
+        "scene": "interval_day3_sumi_call",
+        "text": "はじめ、ちょっといい？ 話がある"
+      },
+      {
+        "file": "ch1_interval.json",
+        "scene": "interval_day3_sumi_call",
+        "text": "次の大会の情報が入った。正式発表は明日だけど、先に教えとく"
+      },
+      {
+        "file": "ch1_interval.json",
+        "scene": "interval_day3_sumi_call",
+        "text": "次は、県大会。同じ県内だが、会場エリアはここよりずっと大きい"
+      },
+      {
+        "file": "ch1_interval.json",
+        "scene": "interval_day3_sumi_call",
+        "text": "ああ。地元大会とは比べものにならない"
+      },
+      {
+        "file": "ch1_interval.json",
+        "scene": "interval_day3_sumi_call",
+        "text": "参加者のレベルも、審査も、観客の数も。全部が一段上になる"
+      },
+      {
+        "file": "ch1_interval.json",
+        "scene": "interval_day3_sumi_call",
+        "text": "レギュレーションも変わる。使えるフレーバーの種類が増えるし、大会の形式も対戦相手のレベルも段違い"
+      },
+      {
+        "file": "ch1_interval.json",
+        "scene": "interval_day3_sumi_call",
+        "text": "で、だ。はじめ、選択肢が二つある"
+      },
+      {
+        "file": "ch1_interval.json",
+        "scene": "interval_day3_sumi_call",
+        "text": "一つは、このまま地元で修行を続けること。tonariで実戦経験を積むのは悪くない"
+      },
+      {
+        "file": "ch1_interval.json",
+        "scene": "interval_day3_sumi_call",
+        "text": "俺も教えられることはまだある"
+      },
+      {
+        "file": "ch1_interval.json",
+        "scene": "interval_day3_sumi_call",
+        "text": "もう一つは、会場エリアに通っておくこと。向こうのシーシャ屋を回りながら、大会の空気を先に掴む"
+      },
+      {
+        "file": "ch1_interval.json",
+        "scene": "interval_day3_sumi_call",
+        "text": "……まあ、今すぐ決めなくていい。まだ準備期間はある"
+      },
+      {
+        "file": "ch1_interval.json",
+        "scene": "interval_day3_sumi_call",
+        "text": "よし。じゃあ残りの日数、無駄にするなよ。ここでできることを全部やれ"
+      }
+    ]
+  },
+  "smile": {
+    "count": 62,
+    "samples": [
+      {
+        "file": "ch1_interval.json",
+        "scene": "interval_day3_sumi_call",
+        "text": "……ふっ。聞くまでもなかったか"
+      },
+      {
+        "file": "ch1_bonds.json",
+        "scene": "ch1_sumi_bond_finale",
+        "text": "……それと、今日の一台。金を取るなら半額だな"
+      },
+      {
+        "file": "ch1_bonds.json",
+        "scene": "ch1_sumi_bond_finale",
+        "text": "閉店後の客は気前がいいんだ。覚えとけ"
+      },
+      {
+        "file": "hiyori.json",
+        "scene": "hiyori_tonari_return",
+        "text": "おい。俺をいないみたいに話すなよ"
+      },
+      {
+        "file": "hiyori.json",
+        "scene": "hiyori_tonari_return",
+        "text": "客の席は、空けとくよ"
+      },
+      {
+        "file": "ch1_sumi.json",
+        "scene": "ch1_sumi_cube_coals",
+        "text": "そういうことだ。まずは三つで試せ。数を増やす話は、また別だ"
+      },
+      {
+        "file": "ch1_sumi.json",
+        "scene": "ch1_sumi_tutorial",
+        "text": "店の現場も、ライバルの店も、全部お前の武器になる"
+      },
+      {
+        "file": "ch1_sumi.json",
+        "scene": "ch1_sumi_closing",
+        "text": "暇だったからな"
+      },
+      {
+        "file": "ch1_sumi.json",
+        "scene": "ch1_sumi_final",
+        "text": "……常連の顔がな、お前の一台の時は少しだけ緩む"
+      },
+      {
+        "file": "ch1_sumi.json",
+        "scene": "ch1_sumi_eve",
+        "text": "勝ち負けの話は、そのあとで聞く"
+      },
+      {
+        "file": "ch1_sumi.json",
+        "scene": "ch1_sumi_attack",
+        "text": "そうだ。切ったら少し待て。焦って振り回すなよ"
+      },
+      {
+        "file": "ch4_main.json",
+        "scene": "ch4_sumi_training",
+        "text": "じゃあ、その人の注文、聞いてこい"
+      }
+    ]
+  },
+  "thinking": {
+    "count": 22,
+    "samples": [
+      {
+        "file": "ch1_bonds.json",
+        "scene": "ch1_sumi_bond_finale",
+        "text": "はじめ。今日はお前が作れ"
+      },
+      {
+        "file": "hiyori.json",
+        "scene": "hiyori_sumi_message",
+        "text": "儚い女は、自分でそんなこと言わねえだろ……"
+      },
+      {
+        "file": "hiyori.json",
+        "scene": "hiyori_sumi_message",
+        "text": "まあ、そういう年頃なんだろ"
+      },
+      {
+        "file": "hiyori.json",
+        "scene": "hiyori_tonari_followup",
+        "text": "普通に歩いて来たって言えばいいだろ"
+      },
+      {
+        "file": "ch4_main.json",
+        "scene": "ch4_sumi_training",
+        "text": "……県大会の頃、話しかけても手元しか見なかったな"
+      },
+      {
+        "file": "ch4_main.json",
+        "scene": "ch4_sumi_return",
+        "text": "……あの店、まだあったか"
+      },
+      {
+        "file": "ch4_main.json",
+        "scene": "ch4_sumi_return",
+        "text": "そのあと、路地裏の店で、あのお客さんに一台作った。点のことは考えずに、顔だけ見てな"
+      },
+      {
+        "file": "ch4_main.json",
+        "scene": "ch4_sumi_return",
+        "text": "お前、常連の『良かったよ』ひとつで、えへへって笑ってた"
+      },
+      {
+        "file": "ch4_main.json",
+        "scene": "ch4_sumi_return",
+        "text": "須井にも、勝ち負けの話はしてないって言われた"
+      },
+      {
+        "file": "ch4_main.json",
+        "scene": "ch4_sumi_return",
+        "text": "須井は昔、煙を吐きながら笑うやつでな"
+      },
+      {
+        "file": "ch4_main.json",
+        "scene": "ch4_sumi_return",
+        "text": "……そうか。あの店の葉か"
+      },
+      {
+        "file": "ch4_main.json",
+        "scene": "ch4_strategy",
+        "text": "その香り、強すぎないところを探そう"
+      }
+    ]
+  },
+  "serious": {
+    "count": 71,
+    "samples": [
+      {
+        "file": "ch1_bonds.json",
+        "scene": "ch1_sumi_bond_finale",
+        "text": "……詰めが半歩ゆるい。炭を置くのも、一拍遅い"
+      },
+      {
+        "file": "ch1_bonds.json",
+        "scene": "ch1_sumi_bond_finale",
+        "text": "道具は使うためにある。棚で眠らせる方が、よっぽど失礼だ"
+      },
+      {
+        "file": "ch1_sumi.json",
+        "scene": "ch1_sumi_cube_coals",
+        "text": "同じ三つでも火が強く入る。いつもの待ち方のままじゃ、熱くなるぞ"
+      },
+      {
+        "file": "ch1_sumi.json",
+        "scene": "ch1_sumi_basics",
+        "text": "シーシャってのは『燃やす』んじゃねえ。『蒸らす』んだ"
+      },
+      {
+        "file": "ch1_sumi.json",
+        "scene": "ch1_sumi_basics",
+        "text": "そうだ。温められた葉っぱから出た煙は、ステムを通って下のボトルに行き、水の中をくぐる"
+      },
+      {
+        "file": "ch1_sumi.json",
+        "scene": "ch1_sumi_training",
+        "text": "残れ。炭の扱い、叩き込む"
+      },
+      {
+        "file": "ch1_sumi.json",
+        "scene": "ch1_sumi_training",
+        "text": "客の顔を見て、必要な熱だけ入れろ。それが全てだ"
+      },
+      {
+        "file": "ch1_sumi.json",
+        "scene": "ch1_sumi_final",
+        "text": "……昔、シーシャに救われたことがある。それだけだ"
+      },
+      {
+        "file": "ch1_sumi.json",
+        "scene": "ch1_sumi_eve",
+        "text": "……悪くない"
+      },
+      {
+        "file": "ch1_sumi.json",
+        "scene": "ch1_sumi_home_rig",
+        "text": "ただ、体力のある日だけな。準備も片付けも疲れる。毎日やろうとしなくていい"
+      },
+      {
+        "file": "ch1_sumi.json",
+        "scene": "ch1_sumi_home_rig",
+        "text": "炭は一酸化炭素を出す。中毒で命を落とすこともある"
+      },
+      {
+        "file": "ch1_sumi.json",
+        "scene": "ch1_sumi_home_rig",
+        "text": "室内で炭を焚くな。窓を開けても、安全とは言えない"
+      }
+    ]
+  },
+  "surprise": {
+    "count": 4,
+    "samples": [
+      {
+        "file": "hiyori.json",
+        "scene": "hiyori_sumi_message",
+        "text": "あいつが儚い？セミに生まれたら、"
+      },
+      {
+        "file": "ch4_main.json",
+        "scene": "ch4_sumi_return",
+        "text": "……あのお客さんが。作るようになったのか"
+      },
+      {
+        "file": "ch4_main.json",
+        "scene": "ch4_sumi_return",
+        "text": "……聞いてたのか"
+      },
+      {
+        "file": "remake_ch1.json",
+        "scene": "remake_rehearsal_great",
+        "text": "……完璧だ。今夜のこれが本番で出せたら、誰にも文句は言わせない"
+      }
+    ]
+  }
+}

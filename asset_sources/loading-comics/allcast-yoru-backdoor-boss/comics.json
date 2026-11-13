@@ -1,0 +1,94 @@
+{
+  "id": "yoru-backdoor-boss",
+  "title": "裏口の主",
+  "cast": [
+    "yoru"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "裏口の主に挨拶。",
+    "主？",
+    "猫だった。"
+  ],
+  "first_speaker": "yoru",
+  "panel1": "mukaiの裏口の前。右のヨルが「裏口の主に挨拶。」（左上に高く）。左のはじめが身構えて「主？」（右下）。",
+  "panel2": "裏口で茶色と白のハチワレ猫（スコティッシュフォールド、折れ耳）が壁にもたれてスコ座りでくつろぎ、ヨルが丁寧に会釈している。はじめ「猫だった。」。",
+  "caption": "mukaiの裏口には、てつこがいます。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v2.png",
+  "source_sha256": "cd8485227ad99099571f816f036987b71e4e97cb60038e649d5096669c04238c",
+  "references": [
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "role": "dimension template"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "role": "character normal identity"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/yoru.png",
+      "sha256": "24c14f268e31db5d8a6130abc9a889fa133a3d0c95a5cf9ef5d71702fbd940e3",
+      "role": "character normal identity"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "role": "initial adopted game comic style only"
+    }
+  ],
+  "prompts": [
+    {
+      "path": "prompt-A-v1.txt",
+      "sha256": "4fa90555a94150a97eb5bea562c1908df0da532074f626e711d52e51554776b5"
+    },
+    {
+      "path": "prompt-A-v2.txt",
+      "sha256": "be81f5040337434afa0506e99b3bd6bb0dcb972d052f6abeaf9876b89e080ab4"
+    }
+  ],
+  "versions": [
+    {
+      "path": "source-A-v1.png",
+      "sha256": "2d540d48d94838ed7fdb187664ac4b353c0dbb4340bd912d3437e84f775aeaae",
+      "status": "superseded for documented QA issue"
+    },
+    {
+      "path": "source-A-v2.png",
+      "sha256": "cd8485227ad99099571f816f036987b71e4e97cb60038e649d5096669c04238c",
+      "status": "review candidate"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "all three canonical lines visually read; punctuation matched",
+    "reading_order": "left panel then right; first speaker top/left before response; tails to correct speaker",
+    "identity": "official normal images viewed before generation; both panels preserve Hajime left and partner right",
+    "style": "initial adopted comic screenshot used as fourth reference every generation; cute chibi 2.5-head proportions, thick clean outlines, warm cel colors visually consistent",
+    "hardware": "none: no shisha stand/bowl/HMD/coal/hose/smoking",
+    "prohibited_text": "no title, UI, watermark, or extra text in review candidate",
+    "cut": "16/16 panel check OK; fill changed 0; <400KiB each; minor 1-3px size/rounding differences recorded, no forced ratio or upscaling",
+    "notes": "v1 rejected for tabby-like cat marking; v2 corrected to brown/white hachiware folded-ear cat in Scottish sitting pose. Both dialogue order and polite bow preserved.",
+    "in_game_pc_phone": "not run; candidates remain unregistered"
+  },
+  "delivery": [
+    {
+      "file": "panels/yoru-backdoor-boss-1.webp",
+      "width": 720,
+      "height": 480,
+      "bytes": 65662,
+      "sha256": "f60293a4a4d8ac84265dc7861ffec0b6d8266c5106f85f7e21160b64120791ec"
+    },
+    {
+      "file": "panels/yoru-backdoor-boss-2.webp",
+      "width": 720,
+      "height": 480,
+      "bytes": 64188,
+      "sha256": "0c6d16e3dc4b5f7215095235ae756b35f47bed27944a11c14fe875ac8f843078"
+    }
+  ]
+}

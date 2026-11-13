@@ -20,12 +20,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "蒸野はじめです。今日から、お世話になります"
+          "text": "逢縁はじめです。今日から、お世話になります"
         },
         {
           "speaker": "mukai_master",
           "face": "normal",
-          "text": "俺はムカイ。うちも皿洗いから。分からないことは、聞いてくれ"
+          "text": "俺はムカイ。うちも皿洗いからだ、分からないことは聞いてくれ。……まあ、まずは一杯やってけ"
         },
         {
           "type": "set_flag",
@@ -39,7 +39,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "ましろです。僕も、ここで働いてるの。よろしくねぇ"
+          "text": "はじめまして、ましろです"
         },
         {
           "type": "set_flag",
@@ -58,7 +58,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "持つ場所を空けてもらう。持ち手の重みが半分になった。"
+          "text": "片側を持ってもらうと、腕にかかる重みが半分になった。"
         },
         {
           "speaker": "",
@@ -83,7 +83,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ましろちゃんがしゃがむと、てつこは立ち上がって、その膝に頭をこすりつけた。"
+          "text": "ましろがしゃがむと、てつこは立ち上がって、その膝に頭をこすりつけた。"
         },
         {
           "speaker": "mashiro",
@@ -139,7 +139,7 @@
     {
       "dialogue_id": "ch3_double_apple_incident",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png"
       },
       "lines": [
         {
@@ -155,7 +155,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あ、いえ、俺は……"
+          "text": "あ、いや、俺は……"
         },
         {
           "speaker": "mashiro",
@@ -267,7 +267,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……うん。ダブルアップル、だね。懐かしい味"
+          "text": "……うん。[shiver]ダブルアップル、だね[/shiver]。懐かしい味"
         },
         {
           "speaker": "hajime",
@@ -277,11 +277,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ましろは、黙って自分も一口吸った。煙をゆっくり吐いて、ボウルの中を覗き込む。"
+          "text": "ましろは黙って一口吸い、カウンターの缶を一つ、俺の前へ置いた。"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
+          "duck": true,
           "text": "これ、グレープ。ダブルアップル、一粒も入ってないよ"
         },
         {
@@ -292,12 +293,17 @@
         {
           "speaker": "",
           "face": "",
+          "text": "グレープ。アニスもリコリスもない、果物の甘さ。いちばん間違えようのない二つだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "店内の空気が、止まった。炭の爆ぜる小さな音だけが、やけに大きく聞こえる。"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "…………あ"
+          "text": "…………あ、いや、これは……"
         },
         {
           "speaker": "mashiro",
@@ -307,7 +313,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ましろはしばらく、はじめの顔を見ていた。それから、ホースを置いて、ぽつりと言った。"
+          "text": "ましろはしばらく、俺の顔を見ていた。それから、ホースを置いて、ぽつりと言った。"
         },
         {
           "speaker": "mashiro",
@@ -337,7 +343,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "気づいたら、涙が落ちていた。答えられないまま、隣にいてよかった。"
+          "text": "気づいたら、涙が落ちていた。答えられないままでも、隣にいていいらしかった。"
         },
         {
           "speaker": "mashiro",
@@ -458,7 +464,8 @@
         {
           "speaker": "",
           "face": "",
-          "text": "吸える日は一台。吸わない日はお茶。ましろは、席を空けて待っていてくれた。"
+          "text": "夜のmukai。最後の客が帰ると、ましろが小さな一台をカウンターへ置いた。",
+          "id": "ch3_work_echo"
         },
         {
           "speaker": "mashiro",
@@ -468,17 +475,27 @@
         {
           "speaker": "",
           "face": "",
-          "text": "名前は言わない。説明もしない。はじめも、聞かない。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "味が分からなくても、分かったふりは、もうしない。"
+          "text": "名前は言わない。説明もしない。俺も、聞かない。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……今日のは、すこし、あったかい感じがします"
+          "text": "昼は、作らなくていいって言ったのに"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "作るのは僕。はじめくんは、吸っても吸わなくてもいいよぉ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ホースを受け取り、浅く一口だけ吸った。味が分からなくても、分かったふりは、もうしない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……今日のは、すこし、あったかい感じがする"
         },
         {
           "speaker": "mashiro",
@@ -491,26 +508,272 @@
           "text": "甘さはぼんやりしていても、温かさや煙の重さはつかめる。言葉にできるものから、すこしずつ。"
         },
         {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ごはん、食べた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "買ったやつ、半分。残りはあとで食べる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "じゃあ、冷蔵庫の上の段ね。僕のと間違えないでねぇ"
+        },
+        {
           "speaker": "",
           "face": "",
-          "text": "通院も、食事も、店の仕事も続く。味の判断に自信が持てない日にも、一緒に座った。"
+          "text": "冷蔵庫の扉には、明日の仕込みが書かれていた。水差し、グラス、布巾。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "水差しは洗ってある。朝、俺が出すね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ありがとう。じゃあ僕は、客用の葉を用意するよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸える日は一台。吸わない日はお茶。どちらの日も、ましろは隣の席を空けていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "明日も、起きたら声かけてねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。おやすみ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は残していたごはんを温め、ましろは先に帰り支度をした。"
         }
-      ]
+      ],
+      "branches": {
+        "rest_tea_echo": [
+          {
+            "speaker": "",
+            "text": "昼にお茶を選んだ時のカップが、水切り棚に伏せてあった。"
+          }
+        ],
+        "rest_sit_echo": [
+          {
+            "speaker": "",
+            "text": "昼、吸わずに座っていた席は、夜にはいつもの客席へ戻っていた。"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_work_without_taste",
       "lines": [
-        { "speaker": "", "text": "東京に来て五日目の夜。mukaiの仕込みで、はじめは客用の水と炭を並べた。" },
-        { "speaker": "mashiro", "face": "normal", "text": "一台、作ってみる？　味を当てる仕事じゃないよ" },
-        { "speaker": "hajime", "face": "normal", "text": "今日は炭を見ます。吸う人が熱いって言ったら、そこで直したい" },
-        { "speaker": "", "text": "客が二口目で少しむせた。はじめは急いで炭に手を伸ばさず、ホースを置く相手の手を待ってから、炭を一つ端へ寄せた。" },
-        { "speaker": "hajime", "face": "normal", "text": "俺にはまだ味の名前が分かりません。でも、さっきより熱くなったのは分かります" },
-        { "speaker": "mashiro", "face": "normal", "text": "うん。それを伝えてくれたら、一緒に直せる" },
-        { "speaker": "", "text": "ましろはブラックティーの配合メモを開き、客用のブロンドを指した。" },
-        { "speaker": "mashiro", "face": "normal", "text": "ブラックティーが得意なの。僕は、ほかの葉も分かる量を探してる" },
-        { "speaker": "mashiro", "face": "normal", "text": "ブロンドでも同じ。混ぜる葉の声が残る量を探してみてぇ" },
-        { "speaker": "", "text": "一台を作り切れた日ではない。分かることだけを口にできた日だった。帰りに次の受診日を確認した。" }
-      ]
+        {
+          "speaker": "",
+          "text": "東京に来て五日目の夜。洗っておいた水差しを棚から下ろした。"
+        },
+        {
+          "speaker": "",
+          "text": "昨日と同じ場所に布巾がある。水滴を拭き、客席へグラスを並べた。",
+          "id": "ch3_work_echo"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "今日は、炭を見る仕事をお願いしてもいい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。味の確認だけ、頼んでもいいかな"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "もちろん。僕は葉の準備もするねぇ"
+        },
+        {
+          "speaker": "",
+          "text": "ましろが客用のブロンドを出した。自分で吸う重い葉とは、缶の置き場所から違う。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "この一台、少し強くなったかな"
+        },
+        {
+          "speaker": "",
+          "text": "客がホースを置いた。俺はすぐには炭へ手を伸ばさず、顔を上げた。"
+        },
+        {
+          "type": "choice",
+          "id": "ch3_work_role",
+          "choices": [
+            {
+              "text": "分かる熱の変化を先に伝える",
+              "next": "heat"
+            },
+            {
+              "text": "味の確認をましろちゃんに頼む",
+              "next": "taste"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "text": "俺は皿を置き、吸い口を受け取った。炭の灰と、客が吸っていた間隔を確かめる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "少し熱を落として、また様子を聞きますね"
+        },
+        {
+          "speaker": "",
+          "text": "炭を一つ外寄りへ動かし、ホースを客へ戻した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あ、さっきより吸いやすい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "このくらいで、もう少し吸えそうですか"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "うん。まだお茶の香りもする"
+        },
+        {
+          "speaker": "",
+          "text": "ましろが別の吸い口で確かめ、うなずいた。俺は客の言葉を伝票の端へ書く。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "茶の香り、残ってるねぇ。熱を見るの、助かったよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺にはまだ、味の名前がはっきり分からない"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。だから今、二人で確かめたんだよ"
+        },
+        {
+          "speaker": "",
+          "text": "ましろは配合のメモへ戻り、ブラックティーの缶を指した。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕はブラックティーが得意なの。ほかの葉の味も残る量を、ずっと探してる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕はその境目を見るのが好き。はじめくんは、さっき何を見てた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ホースを置くまでの間。あと、熱いって言ったあとの顔"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "じゃあ、それは任せたいなぁ"
+        },
+        {
+          "speaker": "",
+          "text": "次の客が来た。俺は水を出し、ましろは注文を聞きに行く。"
+        },
+        {
+          "speaker": "",
+          "text": "一台を一人で作り切った日ではない。担当した仕事を終え、洗い物へ戻った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "グラスは、俺が拭いておくよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。僕は、明日の葉を量っておくねぇ"
+        },
+        {
+          "speaker": "",
+          "text": "帰りに、次の受診日を確かめた。味はまだ戻っていない。明日の水差しは、もう乾いていた。"
+        }
+      ],
+      "branches": {
+        "rest_tea_echo": [
+          {
+            "speaker": "",
+            "text": "お茶だけにした昨日のカップも拭き、いつもの棚へ戻した。"
+          }
+        ],
+        "rest_sit_echo": [
+          {
+            "speaker": "",
+            "text": "昨日、吸わずに座っていたソファに、今日は客の上着がかかっている。"
+          }
+        ],
+        "heat": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "さっきより熱が上がったのは分かります。味は、同僚にも確かめてもらいます"
+          },
+          {
+            "speaker": "customer",
+            "face": "normal",
+            "text": "じゃあ、二人で見てもらおうかな"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "うん。はじめくんは炭をお願い"
+          }
+        ],
+        "taste": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ましろちゃん、味を確かめてもらえる？　俺は炭と、吸う間隔を見る"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "うん。お客さんにもそう伝えよう"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "味の確認は同僚が担当します。俺は熱を見ながら直しますね"
+          },
+          {
+            "speaker": "customer",
+            "face": "normal",
+            "text": "分かりました。熱さが少し気になってて"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_taste_return",
@@ -541,16 +804,17 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "アニスとリコリスの、あの独特の重なりです。今、分かりました"
+          "text": "アニスとリコリスが、重なってる。今、ちゃんと分かった"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ましろは煙を一口吸って、ふっと笑った。"
+          "text": "ましろは一口吸って、深紅のパッケージをこちらへ向けた。それから、ふっと笑った。"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
+          "beat": 600,
           "text": "おかえり"
         },
         {
@@ -573,18 +837,30 @@
     {
       "dialogue_id": "ch3_rest_before_recovery",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png"
       },
       "lines": [
         {
           "speaker": "",
-          "face": "",
-          "text": "mukaiの昼、客のいない席。今日は味の輪郭をつかみにくい。作業台へ向かう気にもなれなかった。"
+          "text": "mukaiの昼、客のいない店。作業台に葉の缶を出したところで、手が止まった。"
+        },
+        {
+          "speaker": "",
+          "text": "今日も、味が遠い。缶を開けては閉め、同じラベルをもう一度読む。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……今日は、うまく作れる気がしません"
+          "text": "……今日は、うまく作れる気がしない"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん"
+        },
+        {
+          "speaker": "",
+          "text": "ましろは、俺の返事を待ってから缶のふたを閉めた。トングも棚へ戻す。"
         },
         {
           "speaker": "mashiro",
@@ -599,14 +875,130 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "うん。お茶、飲む？"
+          "text": "うん。僕も、休憩するところ"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "カップを受け取って座る。時計が進む音を、二人で聞いていた。"
+          "text": "ましろは自分の作業台にも布をかけた。俺のためだけに休むのではないらしい。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "お茶、飲む？"
+        },
+        {
+          "type": "choice",
+          "id": "ch3_rest_choice",
+          "choices": [
+            {
+              "text": "今日はお茶にする",
+              "next": "tea"
+            },
+            {
+              "text": "吸わずに、隣にいる",
+              "next": "sit"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "text": "いつもは客を通す、壁際のソファ席。ましろがクッションを整えた。"
+        },
+        {
+          "speaker": "",
+          "text": "湯を注ぐ音のあと、白いカップが手のひらに置かれた。"
+        },
+        {
+          "speaker": "",
+          "text": "いつもトングを持つ手が、今日はカップを包んで、膝の上にある。"
+        },
+        {
+          "speaker": "",
+          "text": "ましろも自分のカップを持って、隣に腰を下ろした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんは、休みの日もここに？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "たまにねぇ。でも今日は、帰りにごはんを買うよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "仕込みばっかりしてると、おなかが空いたの忘れちゃうから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……俺も、何か食べようかな"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。食べられそうなものにしよ"
+        },
+        {
+          "speaker": "",
+          "text": "時計が進む音を、二人で聞いていた。カップが空になるまで、道具の話はしなかった。"
+        },
+        {
+          "speaker": "",
+          "text": "休憩が終わり、俺は洗ったグラスを拭いた。ましろは明日使う布巾を干している。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この水差し、明日の分も洗っておくね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "お願い。布巾は、こっちの棚に置くねぇ"
+        },
+        {
+          "speaker": "",
+          "text": "作らないと決めた日の終わりに、明日の置き場所が一つ決まった。"
         }
-      ]
+      ],
+      "comment": "壁際のソファ席・白いカップ・湯を注ぐ音・時計の音は ch3_mashiro_recovery に残す。休む選択は好感度や回復条件にしない。",
+      "branches": {
+        "tea": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "うん。今日は、お茶がいい"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "じゃあ、僕のも一緒にいれよぉ"
+          },
+          {
+            "speaker": "",
+            "text": "ましろがカップを二つ出す。俺は、やかんを火にかけた。"
+          }
+        ],
+        "sit": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今は吸わずに、少し隣にいてもいい？"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "うん。話さなくてもいいよぉ"
+          },
+          {
+            "speaker": "",
+            "text": "ホースは棚へ戻した。温かいものだけ置いてもらい、ソファの端を空けた。"
+          }
+        ]
+      }
     }
   ]
 }

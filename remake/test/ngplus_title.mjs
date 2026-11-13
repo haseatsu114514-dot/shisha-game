@@ -110,7 +110,7 @@ function makeFixture(opts = {}) {
       modal: (args) => new Promise((resolve) => modalCalls.push({ args, resolve })),
     },
     "../core/state.js": {
-      peekSave: () => null,
+      peekSave: () => opts.save ?? null,
       newGame: () => { calls.newGame++; },
       wipeSave: () => { calls.wipeSave++; },
       config: {}, saveConfig() {},
@@ -125,15 +125,17 @@ function makeFixture(opts = {}) {
     "../core/audio.js": { playBgm() {}, stopBgm() {}, SE: { select() {} }, applyVolumes() {} },
     "../core/ngplus-difficulty.js": { difficultyForRun },
     "../core/ui-theme.js": { createUiThemeSelect: () => el("select") },
+    "../core/look.js": { LOOKS: [{ id: "classic", label: "現行" }, { id: "neo", label: "新版" }, { id: "retro", label: "DS風" }], normalizeLook: (value) => value || "classic", setLook() {} },
+    "../core/side-area.js": { refreshSideArea() {} },
+    "./save-transfer.js": { fullscreenButton: () => null, saveTransferRow: () => el("div") },
     "../chapters/ch1.js": { startNewGame: () => { calls.startNewGame++; }, resumeGame() {} },
     "../vn/engine.js": { clearLog() {} },
     "./gallery.js": { openGallery: async () => {} },
-    "./saves.js": { loadFlow: async () => null },
+    "./saves.js": { loadWithRecovery: async () => false },
     "./title-art.js": {
       pickTitleArt: () => ({ character: "sumi", file: "sumi.webp", url: "blob:sumi", ready: true }),
       prepareTitleArt: async (art) => art,
     },
-    "./title-layout.js": { mountTitleLayout() {} },
     "../core/cycle-meta.js": {
       readCycleMeta: () => (typeof opts.meta === "function" ? opts.meta() : opts.meta ?? null),
       recordCycleStarted: () => {},
@@ -388,6 +390,52 @@ const META = (over = {}) => ({
   assert.equal(fx.calls.newGame, 0, "周回開始で newGame() を呼ばない");
   assert.equal(fx.calls.wipeSave, 0, "周回開始で wipeSave() を呼ばない");
   assert.equal(fx.calls.startNewGame, 1, "作成済み state のまま opening へ");
+}
+
+// ---------------------------------------------------------------- E. NEW GAME の上書き確認は範囲を明示する（#2444 item6）
+{
+  // セーブありでは、消えるのはオートセーブだけで手動枠は残ると確認文に明示する
+  const fx = makeFixture({ save: { day: 5, cycle: 1, chapter: 2 } });
+  const title = await loadTitle(fx);
+  title.showTitle();
+  await flush();
+  const btn = findByTest(fx.screens.at(-1).root, "title-new");
+  assert.ok(btn, "NEW GAME ボタンがある");
+  btn.onclick();
+  await flush();
+  assert.equal(fx.modalCalls.length, 1, "上書き確認が出る");
+  assert.equal(fx.modalCalls[0].args.title, "はじめから");
+  assert.ok(String(fx.modalCalls[0].args.body).includes("現在のオートセーブ（1周目・第2章）は上書きされます。手動セーブ枠は残ります"),
+    "上書き範囲（オートセーブのみ・手動枠は残る）を明示する");
+  // やめる: セーブに触れない
+  fx.modalCalls[0].resolve(false);
+  await flush();
+  assert.equal(fx.calls.wipeSave, 0);
+  assert.equal(fx.calls.newGame, 0);
+  assert.equal(fx.calls.startNewGame, 0);
+}
+{
+  // 周回に応じて周回数・章を出す
+  const fx = makeFixture({ save: { day: 30, cycle: 2, chapter: 4 } });
+  const title = await loadTitle(fx);
+  title.showTitle();
+  await flush();
+  findByTest(fx.screens.at(-1).root, "title-new").onclick();
+  await flush();
+  assert.ok(String(fx.modalCalls[0].args.body).includes("現在のオートセーブ（2周目・第4章）は上書きされます。手動セーブ枠は残ります"));
+}
+{
+  // セーブ無しでは確認を出さずそのまま開始する（上書きするものが無い）
+  const fx = makeFixture({ save: null });
+  const title = await loadTitle(fx);
+  title.showTitle();
+  await flush();
+  findByTest(fx.screens.at(-1).root, "title-new").onclick();
+  await flush();
+  assert.equal(fx.modalCalls.length, 0, "セーブが無ければ確認なし");
+  assert.equal(fx.calls.wipeSave, 1);
+  assert.equal(fx.calls.newGame, 1);
+  assert.equal(fx.calls.startNewGame, 1);
 }
 
 console.log("ngplus_title: all assertions passed");

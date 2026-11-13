@@ -1,0 +1,99 @@
+{
+  "episode": 32,
+  "title": "あと一匹",
+  "cast": "あげは・はじめ",
+  "theme": "旧・暴走編（復刻）",
+  "status": "adopted-registered-20261102",
+  "registered": true,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-unhinged-ltr-20261025/29-32-chaos-ltr.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "原画の切り出し・規格内の紙色補正（拡大・反転なし）",
+  "image_manifest": [],
+  "tasks": [
+    {
+      "script": "LEFT ①: inside pink/leopard MELTY PUFF, Ageha hugs ONE cute new pink teddy bear and begs 「あと一匹だけ♡」 Hajime mildly concerned at nearby bears. RIGHT ②: gigantic wide street view: the ENTIRE cafe building has become a GIANT PINK TEDDY BEAR formed of thousands of white/pink plushies, bear head is the storefront, paws are doors, eyes are windows. Ageha and BLACK-CAP Hajime peek from the eye windows. Hajime says 「店がクマ。」 Delightfully ludicrous scale. Shop sign can read 「MELTY PUFF」. No ordinary generic plants.",
+      "dialogue_original": [
+        "あと一匹だけ♡",
+        "店がクマ。",
+        "MELTY PUFF"
+      ],
+      "prompt": null,
+      "reference_images": [
+        "asset_sources/short-comics-unhinged-ltr-20261025/29-32-chaos-ltr.png"
+      ],
+      "generator": "tools/loading_comic_cut.py"
+    }
+  ],
+  "source": [
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/29-32-chaos-ltr.png",
+      "region": {
+        "x": 23,
+        "y": 1118,
+        "width": 510,
+        "height": 307,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    },
+    {
+      "file": "asset_sources/short-comics-unhinged-ltr-20261025/29-32-chaos-ltr.png",
+      "region": {
+        "x": 555,
+        "y": 1084,
+        "width": 508,
+        "height": 341,
+        "sourceWidth": 1086,
+        "sourceHeight": 1448
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-32-1.webp",
+      "width": 510,
+      "height": 340,
+      "sha256": "9f3d28a1642ad3c02d029cc75d31f2092d39aadf92cf5cabf81140a8c9d99c3d"
+    },
+    {
+      "file": "panels/restored-32-2.webp",
+      "width": 512,
+      "height": 341,
+      "sha256": "3fc96ed943e2187d28437389e4c5647dd5077db644785eb17c1c835fe0c1d971"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "warnを記録し紙色補正を採用。強制通過なし。",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "旧・暴走編の内容を維持。49話以降の少しシュールな作風とは異なる。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": [
+        "qa-pc.png",
+        "qa-phone.png"
+      ]
+    }
+  },
+  "selection_note": "2026-11-02 オーナー採用。remake/js/core/loading-comics.js の id 'restored-32'（出てくるキャラと会った後に出る）。画風の統一は後日の作り直しで行う。"
+}

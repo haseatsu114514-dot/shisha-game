@@ -14,7 +14,7 @@ class MashiroVoiceTests(unittest.TestCase):
         self.assertEqual(voice.bad, [])
 
     def test_wrong_addresses_and_pronouns(self):
-        for text in ["はじめさん", "蒸野くん", "始君", "ハジメくん", "はじめ！", "わたしの", "私の", "うちのこと"]:
+        for text in ["はじめさん", "逢縁くん", "始君", "ハジメくん", "はじめ！", "わたしの", "私の", "うちのこと"]:
             with self.subTest(text=text):
                 voice.bad.clear()
                 voice.check_text(text, "sample")
@@ -26,7 +26,7 @@ class MashiroVoiceTests(unittest.TestCase):
 
     def test_dialogue_speaker_and_player_choices(self):
         voice.scan({"speaker": "mashiro", "text": "僕ははじめくんと", "choices": [{"text": "私も"}],
-                    "branches": {"other": [{"speaker": "rin", "text": "私と蒸野くん"}]}}, "sample")
+                    "branches": {"other": [{"speaker": "rio", "text": "私と逢縁くん"}]}}, "sample")
         self.assertEqual(voice.bad, [])
         voice.scan({"dialogues": [{"lines": [{"speaker": "mashiro", "text": "はじめさん"}]}]}, "sample")
         self.assertEqual(len(voice.bad), 1)
@@ -38,8 +38,8 @@ class MashiroVoiceTests(unittest.TestCase):
         self.assertEqual(len(voice.bad), 3)
 
     def test_lover_character_keys_and_player_options(self):
-        voice.scan_lover({"mashiro": {"text": "僕とはじめくん", "optA": "私も", "optB": "蒸野くん",
-                                     "replyA": "はじめさん"}, "rin": {"text": "私"}}, "sample")
+        voice.scan_lover({"mashiro": {"text": "僕とはじめくん", "optA": "私も", "optB": "逢縁くん",
+                                     "replyA": "はじめさん"}, "rio": {"text": "私"}}, "sample")
         self.assertEqual(len(voice.bad), 1)
 
     def test_relocated_legacy_warning_is_contextual(self):

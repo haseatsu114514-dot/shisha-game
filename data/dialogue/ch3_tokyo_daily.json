@@ -1,0 +1,247 @@
+{
+  "comment": "第3章の東京14日を日常ループで遊ぶ時の短い場面（VOL03）。chapters/ch3-tokyo-daily.js が読む。報酬は台詞に書かない（体力の回復はコードが付ける）。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_tokyo_room_rest",
+      "comment": "mukaiの奥の部屋で休む（体力が大きく戻る）。寝泊まりしている部屋（ch3_main の「mukaiの奥の部屋」）。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "mukaiの奥の部屋で、少し横になった。"
+        },
+        {
+          "speaker": "",
+          "text": "天井の木目を、なんとなく目で追う。"
+        },
+        {
+          "speaker": "",
+          "text": "知らない家の匂いが、まだ少しだけ他人行儀だ。"
+        },
+        {
+          "speaker": "",
+          "text": "壁の向こうから、グラスを拭く音が小さく聞こえる。"
+        },
+        {
+          "speaker": "",
+          "text": "棚の向こうで、氷が小さく鳴った。店の人の生活音は、思っていたより遠くて、やわらかい。"
+        },
+        {
+          "speaker": "",
+          "text": "肩に入っていた力が、いつのまにか抜けている。"
+        },
+        {
+          "speaker": "",
+          "text": "目を閉じているうちに、体が軽くなった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_tokyo_room_rest_b",
+      "comment": "#3097 奥の部屋で休む2回目以降に巡回する日常の小品（ch3-tokyo-daily.js の roomRestId）。昼夜・味覚回復・恋愛の成立に依存しない。報酬は台詞に書かない（体力の回復はコードが付ける）。 ムカイさんのコーヒー（characters.json: コーヒーが好き）。味の言葉は使わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "奥の部屋で横になると、壁の向こうで豆を挽く音がした。"
+        },
+        {
+          "speaker": "",
+          "text": "音が止んでしばらくして、戸が二回叩かれた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "淹れすぎた。飲めるなら飲んでくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。……淹れすぎたんですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "毎日な"
+        },
+        {
+          "speaker": "",
+          "text": "戸が静かに閉まった。マグカップを両手で包むと、指先から温かくなる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（毎日淹れすぎてるなら、毎日誰かがもらってるってことか）"
+        },
+        {
+          "speaker": "",
+          "text": "湯気が消えるまで、何もしないで座っていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_tokyo_room_rest_c",
+      "comment": "#3097 奥の部屋で休む2回目以降に巡回する日常の小品（ch3-tokyo-daily.js の roomRestId）。昼夜・味覚回復・恋愛の成立に依存しない。報酬は台詞に書かない（体力の回復はコードが付ける）。 mukai は高架下の商店街（CH3_TOKYO_SPOTS）。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "布団に転がると、頭の上を電車が通っていった。"
+        },
+        {
+          "speaker": "",
+          "text": "そのたびに、棚のコップが小さくカチカチと鳴る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（最初の夜は、これで全然眠れなかったな）"
+        },
+        {
+          "speaker": "",
+          "text": "一本、二本。数えているうちに、音と音の間が長くなっていく。"
+        },
+        {
+          "speaker": "",
+          "text": "遠ざかる音が、床を伝って体に残る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（地元の部屋は、もっと静かだった。……静かすぎたのかもしれない）"
+        },
+        {
+          "speaker": "",
+          "text": "カチカチという音が、遠くの時計みたいに思えてくる。"
+        },
+        {
+          "speaker": "",
+          "text": "四本目が来る前に、目を閉じていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_tokyo_room_rest_d",
+      "comment": "#3097 奥の部屋で休む2回目以降に巡回する日常の小品（ch3-tokyo-daily.js の roomRestId）。昼夜・味覚回復・恋愛の成立に依存しない。報酬は台詞に書かない（体力の回復はコードが付ける）。 ましろは眠たげで、一人称「僕」、はじめを「はじめくん」と呼ぶ。好意を表に出さない小さな親切。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "奥の部屋で座り込んでいると、戸がそっと開いた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん、起きてる？　……あ、起きてた"
+        },
+        {
+          "speaker": "",
+          "text": "ましろが、たたんだ毛布を一枚抱えている。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "この部屋ねぇ、床から冷えるんだよ。これ、使って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ありがとう。……これ、どこにあったの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "僕が昼寝に使ってるやつ。ムカイさんには、内緒ね"
+        },
+        {
+          "speaker": "",
+          "text": "ましろはあくびを一つして、店へ戻っていった。"
+        },
+        {
+          "speaker": "",
+          "text": "毛布は少し重くて、膝にかけると、そこから体がゆるんでいった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_tokyo_room_rest_e",
+      "comment": "#3097 奥の部屋で休む2回目以降に巡回する日常の小品（ch3-tokyo-daily.js の roomRestId）。昼夜・味覚回復・恋愛の成立に依存しない。報酬は台詞に書かない（体力の回復はコードが付ける）。 はじめの手帳（ch3_outing_enmaku_visit_c と同じ手帳）。作れない日も座れる時間（characters.json）。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "奥の部屋で、手帳を開いた。"
+        },
+        {
+          "speaker": "",
+          "text": "東京に来てから、客の顔と、煙の量を書きとめている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（今日は……まだ何も書くことがないな）"
+        },
+        {
+          "speaker": "",
+          "text": "ペンを持ったまま、しばらく白いページを眺めた。"
+        },
+        {
+          "speaker": "",
+          "text": "前のページには、細かい字がびっしり並んでいる。白いのは、今日の欄だけだ。"
+        },
+        {
+          "speaker": "",
+          "text": "それから、日付の横に一言だけ書く。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（「休んだ」。……これも、今日やったことだ）"
+        },
+        {
+          "speaker": "",
+          "text": "手帳を閉じて、そのまま横になった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_tokyo_fortune",
+      "comment": "東京で辻占のオババに再会する（VOL15・台帳 URA の「東京にも理由は詳しく教えてくれないけど現れる」）。daily/fortune.js が東京で2回目以降に会ったとき読む。続きは remake_fortune_offer。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "路地の角に、紫の布をかけた小さな机が出ていた。"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "……ヒヒ。ずいぶん遠くまで来たね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "地元の、占いの……？　東京にもいるんですか？"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "smile",
+          "text": "縁が呼ぶ所なら、どこへでも。……どうやって来たかは、聞かない方がいい"
+        },
+        {
+          "speaker": "",
+          "text": "机の上には、角の擦り切れたタロットの束が伏せてある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（同じ人だ。フードの陰で顔が見えないところまで、同じだ）"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "smile",
+          "text": "机が一つあれば、どこでも店さ"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "さて。こっちでも、気になる縁はあるかい？"
+        }
+      ]
+    }
+  ]
+}

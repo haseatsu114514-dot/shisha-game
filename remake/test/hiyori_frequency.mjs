@@ -16,7 +16,7 @@ const mocks = {
   "vn/engine.js": { play: async id => played.push(id), isPlaying: () => false },
   "daily/bonds.js": { afterStory: async () => {}, hiyoriQuestionReady: () => false, playHiyoriQuestion: async () => false, finaleAtVisit: () => false, playFinale: async () => false },
   "daily/spots.js": { allSpots: () => shops, isClosed: spot => spot.closedOn === state.day % 7, isUnlocked: spot => !spot.locked, shortNormalVisit: () => false },
-  "daily/spot-hours.js": { rinUnavailable: () => state.slot === 1 ? "" : "夜から" },
+  "daily/spot-hours.js": { rioUnavailable: () => state.slot === 1 ? "" : "夜から" },
   "daily/hiyori-axe.js": { hiyoriAxeAffordable: () => false, playHiyoriAxeSequence: async () => false },
 };
 const modules = new Map();
@@ -36,7 +36,7 @@ const { visitHiyoriAtShop, meetHiyoriAtTonari, playHiyoriEvent, hiyoriShopLocati
 const shops = [{ id: "naru", kind: "rival" }, { id: "adam", kind: "rival" },
   { id: "minto", kind: "rival" }, { id: "shop", kind: "shop" }, { id: "c_station", kind: "spot" }];
 function reset(seed = 0, flags = { _hiyori_meeting_done: true, _hiyori_sumi_message_done: true,
-  _hiyori_message_delivered: true, _hiyori_cracks_done: true }) {
+  _hiyori_message_delivered: true, _hiyori_cracks_done: true, _hiyori_clockout_done: true }) {
   Object.keys(state).forEach(k => delete state[k]);
   Object.assign(state, { seed, chapter: 1, day: 1, slot: 0, flags: { ...flags },
     contacts: [], met: { hiyori: true }, story: {}, affinity: {}, lovers: [], finales: {}, loveLevel: {} });

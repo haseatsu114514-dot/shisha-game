@@ -1,0 +1,104 @@
+{
+  "episode": {
+    "id": "dasilva-acai",
+    "title": "おかわり",
+    "cast": [
+      "da_silva"
+    ],
+    "minChapter": 1,
+    "dialogue": [
+      "食べな！",
+      "一杯で十分です。",
+      "増えてる。"
+    ],
+    "first_speaker": "da_silva",
+    "panel1": "右の太陽がアサイーボウルを差し出して「食べな！」（左上に高く）。左のはじめが手を振って「一杯で十分です。」（右下）。",
+    "panel2": "はじめの前のボウルが、バナナやベリーが山盛りの特大サイズになっている。太陽は親指を立ててにっこり。はじめ「増えてる。」。",
+    "caption": "太陽の好きな味は、アサイー。"
+  },
+  "status": "review_candidate_not_adopted",
+  "generator": "built-in image_gen",
+  "selected_for_review": "source-A-v2.png",
+  "prompt": "prompt-A-v2.txt",
+  "references": [
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/da_silva.png",
+      "sha256": "138df18ab350103ee433a7cf3c688753f0a17b502cff899e7cc078aa3f95f0c7"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+    }
+  ],
+  "edit_reference": null,
+  "variants": [
+    {
+      "file": "source-A-v1.png",
+      "sha256": "2a74b4c0db7c8a24738ea6fb992504beeef95c847617ef555c00f4f57fb24b39",
+      "size": [
+        1536,
+        1024
+      ],
+      "qa": "頭頂と吹き出しが上辺へ接触"
+    },
+    {
+      "file": "source-A-v2.png",
+      "sha256": "20b4ea06d4f852b0d3a284fd6e6f1dd7ac7fbc0a0e56d701fb331c11e66863cf",
+      "size": [
+        1536,
+        1024
+      ],
+      "qa": "頭頂/台詞吹き出し全体を枠内へ。ボウルは下辺寄りだが果物/顔/文字欠けなし"
+    }
+  ],
+  "panels": [
+    {
+      "file": "panels/dasilva-acai-1.webp",
+      "sha256": "ddf6839ee0da6147a49fd536cb964e02a275ecda135674fffb5ea0635ec1a869",
+      "size": [
+        717,
+        478
+      ],
+      "bytes": 80794
+    },
+    {
+      "file": "panels/dasilva-acai-2.webp",
+      "sha256": "1334126bc9d589168fc04baf7db0c16e346360677e88d0c089d893cdbbd7dfa0",
+      "size": [
+        714,
+        476
+      ],
+      "bytes": 86704
+    }
+  ],
+  "qa": {
+    "source_dimensions": "1536x1024",
+    "dialogue": "台本と一字一句一致を目視（句読点/！？含む）",
+    "speakers_order": "左右配置固定・先話を上/左、応答を下/右、尻尾の話者所属を確認",
+    "identity": "正式立ち絵に準拠。パッキーは白い雲状/赤蝶ネクタイ/通常マイクへ。占い師は台本優先で目/鼻を陰に隠す。",
+    "style": "初期採用pc.pngを実見し、少し可愛いデフォルメ/暖かいセル塗り/太い主線を確認。先行3話は同系統のrei-mix-namesを作風参照。",
+    "count": "はじめ＋相手の2人のみ。背景に人なし",
+    "prohibited": "シーシャ台/HMD/ハガル/炭/ホース/吸い口/喫煙/武器なし。カードのラーメンの湯気は料理の絵で喫煙ではない。",
+    "cut_visual": "qa-contact-1〜3を目視、文字/顔/オチが切れていない",
+    "warnings": [
+      "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+      "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。",
+      "左右の切出し出力高さに1〜3px差が残る。厳密な同高化は未実施。"
+    ]
+  },
+  "file_hashes": {
+    "prompt-A-v2.txt": "586670b026e3f1e1a6c906a9c6d0cd5c457657c25bfbe6adc7578472e7db3a7f",
+    "source-A-v2.png": "20b4ea06d4f852b0d3a284fd6e6f1dd7ac7fbc0a0e56d701fb331c11e66863cf",
+    "source-A-v1.png": "2a74b4c0db7c8a24738ea6fb992504beeef95c847617ef555c00f4f57fb24b39",
+    "cut-QA.txt": "9ab83fa51514b6532b85d8b830cba25db08c0c28ef3f72b9415ca23b2228ce5a",
+    "prompt-A-v1.txt": "afff69a7c62db984c3154e114e3368eec61fe8faa66746ebe521610c2f4b0105"
+  }
+}

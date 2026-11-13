@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
+import { hasAffinity } from "../js/core/state.js";
 const jsRoot = new URL("../js/", import.meta.url);
 let now = 1000, frameId = 0, frames = new Map(), panel, spawned = 0;
 class Element {
@@ -27,6 +28,7 @@ class Element {
   addEventListener(type, fn) { (this.listeners[type] ||= []).push(fn); }
   setAttribute(name, value) { this[name] = String(value); }
   getAttribute(name) { return this[name] ?? null; }
+  removeAttribute(name) { delete this[name]; }
   querySelector(selector) {
     assert(selector.startsWith(".") && !selector.includes(" "), `Unsupported fixture selector: ${selector}`);
     const name = selector.slice(1);
@@ -54,7 +56,7 @@ const bench = el("div.bench");
 const mocks = {
   "core/util.js": { el, sleep: async () => {}, clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)), rand: (lo, hi) => (lo + hi) / 2, pick: (pool) => pool[0] },
   "core/ui.js": { countdown: async () => {}, flash() {}, shake() {} },
-  "core/state.js": { state: { flags: {} }, config: { statEffectColors: true } },
+  "core/state.js": { state: { flags: {} }, hasAffinity, config: { statEffectColors: true } },
   "core/audio.js": { SE: new Proxy({}, { get: () => () => {} }) },
   "core/stats.js": { tier01: () => 0, step: () => 1 },
   "craft/session.js": { waitBenchReady: async () => {}, explainTutorialStep: async () => true, benchRoot: () => bench, scoreStep() {}, setBenchTemperature() {}, pauseBenchTemperature() {}, craftTest: { auto: null }, stepPanel: id => (panel = el("div.panel", { dataset: { step: id } })), refreshBench() {}, tickerSay() {}, reactAudience() {}, setPlayerMental() {}, presentBenchResult: () => ({ evaluation: { mark: "○", tone: "warm" }, hasAudience: false }) },

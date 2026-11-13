@@ -50,7 +50,7 @@ async function harness(mode = "tutorial", override = null) {
   });
   await mod.evaluate();
   const clock = await makeModule(clockSource, () => ({}));
-  const doc = new EventTarget(); doc.body = {}; doc.hidden = false;
+  const doc = new EventTarget(); doc.body = {}; doc.hidden = false; doc.documentElement = { dataset: {} };
   const styled = () => ({ style: { width: "", height: "", fontSize: "", lineHeight: "" } });
   const summary = styled(), title = styled(), footer = styled();
   const tip = { ...styled(), querySelector: selector => selector === "b" ? title : footer };
@@ -68,7 +68,7 @@ async function harness(mode = "tutorial", override = null) {
     explain: () => mod.namespace.explainTutorialStep(cs, "steam"),
     replaceState: () => stateModule.setExport("state", {}),
     newBench: () => { const next = { ...b, explainedLessons: undefined }; mod.namespace.setTestBench(next); return next; },
-    clock: () => clock.namespace.createCraftClock(panel, doc),
+    clock: () => clock.namespace.createCraftClock(panel, doc), doc,
     tick: ms => { now += ms; },
   };
 }
@@ -94,6 +94,21 @@ test("demo sheet pauses the craft clock during replay", async () => {
   delete h.root.dataset.demoPaused;
   h.tick(200); assert.equal(clock.now(), 100);
   h.tick(50); assert.equal(clock.now(), 150);
+  clock.dispose();
+});
+
+test("rotate guard pauses the craft clock and resumes from the same time (#2941)", async () => {
+  const h = await harness();
+  const clock = h.clock();
+  const guard = on => {
+    if (on) h.doc.documentElement.dataset.rotateGuard = "true"; else delete h.doc.documentElement.dataset.rotateGuard;
+    h.doc.dispatchEvent(new Event("rotateguardchange"));
+  };
+  h.tick(100); assert.equal(clock.now(), 100);
+  guard(true); assert.equal(clock.paused, true);
+  h.tick(5000); assert.equal(clock.now(), 100);
+  guard(false); assert.equal(clock.paused, false);
+  h.tick(40); assert.equal(clock.now(), 140);
   clock.dispose();
 });
 
@@ -172,4 +187,53 @@ test("existing automatic craft driver acknowledges the displayed help", async ()
   // The native details element delivers toggle after open changes.
   h.guide.dispatchEvent(new Event("toggle"));
   assert.equal(await done, true);
+});
+
+test("step intro shows once per save for choice steps in any mode (#3028)", async () => {
+  const h = await harness("drill");
+  const done = h.mod.namespace.explainStepOnce(h.cs, "timer", "steam");
+  // 説明が先に出て、操作は止まる。
+  assert.equal(h.guide.open, true);
+  assert.equal(h.panel.inert, true);
+  assert.match(h.b.guide.note.textContent, /熱の目安|時間を決めろ/);
+  h.close();
+  assert.equal(await done, true);
+  // 既読がセーブへ残り、説明文は元のガイド文へ戻る。
+  assert.equal(h.statePort.state.flags.seenStepIntro.timer, true);
+  assert.equal(h.saved, 1);
+  assert.equal(h.b.guide.note.textContent, "full manual help");
+  // 2回目は直接操作できる（ガイドは開かない）。
+  assert.equal(await h.mod.namespace.explainStepOnce(h.cs, "timer", "steam"), true);
+  assert.equal(h.guide.open, false);
+});
+
+test("step intro prefers the session lesson override over the generic text (#3187)", async () => {
+  const h = await harness("tutorial");
+  h.cs.lessonHelp = { mix: { brief: "サッパリ系の葉を選び、合計12gにする", detail: "スミ「注文はサッパリ系。レモン・オレンジ・ミントから選ぶ」" } };
+  const done = h.mod.namespace.explainStepOnce(h.cs, "mix", "steam");
+  assert.equal(h.guide.open, true);
+  assert.match(h.b.guide.note.textContent, /レモン・オレンジ・ミントから選ぶ/);
+  assert.doesNotMatch(h.b.guide.note.textContent, /ダブルアップル/);
+  h.close();
+  assert.equal(await done, true);
+  assert.equal(h.statePort.state.flags.seenStepIntro.mix, true);
+});
+
+test("tournament mix intro shows today's condition, not the practice recipe (#3553)", async () => {
+  const h = await harness("tournament");
+  h.b.guide.note.textContent = "課題フレーバー「レモン」を2g以上（大会支給）が今日の課題。合計12g以上で決める";
+  const done = h.mod.namespace.explainStepOnce(h.cs, "mix", "steam");
+  assert.equal(h.guide.open, true);
+  assert.match(h.b.guide.note.textContent, /レモン」を2g以上/);
+  assert.doesNotMatch(h.b.guide.note.textContent, /ダブルアップル/);
+  h.close();
+  assert.equal(await done, true);
+});
+
+test("step intro is skipped when the save already saw it (#3028)", async () => {
+  const h = await harness("tournament");
+  h.statePort.state.flags.seenStepIntro = { mix: true };
+  assert.equal(await h.mod.namespace.explainStepOnce(h.cs, "mix", "steam"), true);
+  assert.equal(h.guide.open, false);
+  assert.equal(h.saved, 0);
 });

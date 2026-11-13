@@ -22,11 +22,7 @@ async function add(page, id, grams) {
 }
 
 async function forecast(page) {
-  const compact = page.locator('[data-test="mix-taste-compact"]');
-  const host = await compact.isVisible() ? compact : page.locator('[data-test="mix-taste"]');
-  const details = host.locator(".flavor-forecast-compact");
-  if (await details.count() && !await details.evaluate(node => node.open)) await details.locator(":scope > summary").click();
-  return host.locator('[data-test="mix-forecast"]');
+  return page.locator('[data-test="mix-taste"]').locator('[data-test="mix-forecast"]');
 }
 
 async function readRanges(card) {
@@ -69,7 +65,7 @@ await suite("flavor-expression", async check => {
       await add(page, "lemon", 11);
       const noviceCard = await forecast(page), novice = await readRanges(noviceCard);
       assert.equal(novice.length, 3);
-      assert.deepEqual(novice.map(axis => axis.label), ["甘い印象", "清涼感", "煙の厚み"]);
+      assert.deepEqual(novice.map(axis => axis.label), ["甘い印象", "清涼感", "煙の量"]);
       assert(novice.every(axis => /予想/.test(axis.text) && axis.low < axis.high));
       assert.notDeepEqual(novice, mintOnly, "Real gram controls update the blended forecast");
       assert.match(await noviceCard.innerText(), /仕上がりの目安/);
@@ -158,25 +154,18 @@ await suite("flavor-expression", async check => {
     }, { reducedMotion: "reduce", ...options });
   }
 
-  await check("compact-forecast-ds-touch", async page => {
-    await page.evaluate(async () => {
-      const { TITLE_LAYOUT_KEY } = await import("./js/scenes/title-layout.js");
-      localStorage.setItem(TITLE_LAYOUT_KEY, "ds");
-      window.dispatchEvent(new Event("display-layout-change"));
-    });
+  // 横持ちタッチ（DS風の折りたたみ予想は廃止・横画面一本化）: 温度帯の凡例と仕上がりの目安が画面に収まり、操作できる。
+  await check("forecast-touch-landscape", async page => {
     await setupMix(page);
-    await page.locator("body.game-ds").waitFor();
+    assert.equal(await page.locator("body.game-ds").count(), 0);
     await add(page, "mint", 12);
-    await assertFits(page, '.mix-temperature-preview .mix-temperature-legend, .mix-temperature-preview > small:visible');
-    const compact = page.locator('[data-test="mix-taste-compact"]');
-    assert(await compact.isVisible());
-    assert.equal(await compact.locator(".flavor-forecast-compact").evaluate(node => node.open), false);
+    await assertFits(page, '.mix-temperature-preview .mix-temperature-legend');
     const card = await forecast(page);
     assert.equal((await readRanges(card)).length, 3);
     await card.locator(".flavor-axes").scrollIntoViewIfNeeded();
-    await assertFits(page, '[data-test="mix-taste-compact"] .flavor-axis');
+    await assertFits(page, '[data-test="mix-taste"] .flavor-axis');
     await page.locator('[data-test="mix-minus-mint"]').click();
-    assert.equal(await compact.locator(".flavor-forecast-compact").evaluate(node => node.open), true, "Changing grams preserves the expanded preview");
+    assert.equal((await readRanges(await forecast(page))).length, 3, "Changing grams keeps the preview");
     await page.locator('[data-test="flavor-info-mint"]').click();
     await feature(page, "flavor-info-close");
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" });

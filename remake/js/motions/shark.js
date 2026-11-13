@@ -1,10 +1,12 @@
 // サメちゃんとの夜道の出会い（samechan.js の playSamechanEncounter）。覆っている間に mid() で SHISHARK の店先へ替える。
-// a／b の2パターン（?movar=b）。配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。動きを減らす設定では core/scene-motions.js で省く（SKIP中は省かず最後まで再生）。
+// 既定は c（サメちゃんの絵柄と店の青・TMG52）。作り直し前の a／b は見比べ用（?movar=a・?movar=b）。
+// 配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。動きを減らす設定では core/scene-motions.js で省く（SKIP中は省かず最後まで再生）。
 import { el, sleep } from "../core/util.js";
 import { SE } from "../core/audio.js";
 import { W, H, svg, stageSvg, move } from "../core/transition-kit.js";
 import { MG_EASE as E, pick, burst, ring, twinkle } from "../core/mg-kit.js";
 import { stagePlay } from "./stage.js";
+import { graphicIntro } from "../vn/intro-graphic.js";
 
 /** サメちゃんの色（SHISHARK の看板の青・歯ぐきの桃色）。紫1色は濃淡だけで同じ役割を描く */
 const SHARK = { skin: "#3d82e6", shade: "#2457ad", belly: "#eaf6ff", bellyShade: "#bcdcf7", gum: "#ff8fb0", tooth: "#ffffff", throat: "#5c1d47", line: "#d6f3ff" };
@@ -221,5 +223,43 @@ export async function b(mid) {
     face.remove();
     ring(fx, W / 2, cy, { r: 420, color: P.line, width: 8, dur: 520 });
     await sleep(540);
+  }, { cover: true });
+}
+
+
+// ---------------------------------------------------------------- c: サメちゃんの絵柄と店の青（TMG52）
+// 紫の口と三角の牙をやめ、店（SHISHARK）の青い帯のすぐ後ろから、サメちゃんの登場カットインの背景が斜めに差し込んで画面を覆う。
+// 覆っている間に店先へ替え、絵柄が泳ぎ抜けるように斜めに退いて店先が見える。初対面なので名前は出さない。約2秒（b は約3.6秒）
+
+const SHOP_BLUE = "#3d82e6"; // SHISHARK の看板の青（a／b の SHARK.skin と同じ）
+const COVER = "polygon(0 0, 130% 0, 100% 100%, -30% 100%)";
+const S_IN = [{ clipPath: "polygon(0 0, 0 0, -30% 100%, -30% 100%)" }, { clipPath: COVER }];
+const S_OUT = [{ clipPath: COVER }, { clipPath: "polygon(130% 0, 130% 0, 100% 100%, 100% 100%)" }];
+
+export async function c(mid) {
+  const url = graphicIntro("samechan", "graphic")?.background || null;
+  if (url) {
+    const img = new Image();
+    img.src = url;
+    await Promise.race([img.decode().catch(() => {}), sleep(1500)]);
+  }
+  await stagePlay("shark", async (node) => {
+    node.classList.add("at-c");
+    const band = el("i.mo-sk-band", { style: { background: SHOP_BLUE } });
+    const art = el("i.mo-sk-art", { style: url ? { backgroundImage: `url("${url}")` } : { backgroundColor: SHOP_BLUE } });
+    const set = el("div.mo-sk-set", [art, el("i.mo-sk-shade")]);
+    node.append(band, set);
+    // 1. 店の青い帯が先に走り、そのすぐ後ろからサメちゃんの絵柄が画面を覆う
+    SE.whoosh();
+    move(band, S_IN, 460, { easing: E.inOut });
+    move(art, [{ transform: "scale(1.12) translateX(-2%)" }, { transform: "scale(1.04) translateX(1.5%)" }], 2300, { easing: "linear" });
+    await move(set, S_IN, 520, { easing: E.inOut, delay: 70 });
+    // 2. 覆いきった。この間に店先へ替える（替え終わるまで覆ったまま）
+    set.getAnimations().forEach((a) => a.finish());
+    await Promise.all([mid?.(), sleep(620)]);
+    // 3. 絵柄が泳ぎ抜けるように斜めに退き、青い帯が後を追って、店先が見える
+    SE.select();
+    move(set, S_OUT, 560, { easing: E.inOut });
+    await move(band, S_OUT, 560, { easing: E.inOut, delay: 70 });
   }, { cover: true });
 }

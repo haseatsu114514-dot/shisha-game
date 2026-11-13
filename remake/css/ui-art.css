@@ -149,6 +149,7 @@
 .spot-pin:hover .shield, .spot-pin.sel .shield { box-shadow: none; }
 .spot-pin.sel .shield::before { filter: brightness(1.28) drop-shadow(0 0 4px var(--pin-accent)); }
 .spot-pin .sub-label { padding: 4px 10px; border-image-width: 5px 12px; }
+.spot-pin .sub-label:not(.closed-tag) { color: #fff7e8; background: rgba(28, 17, 43, .94); border: 1px solid rgba(255, 255, 255, .8); border-image: none; border-radius: 8px; font-weight: 700; }
 .spot-pin .sub-label.closed-tag { background: none; border: 0; color: #f0b9b9; }
 
 /* ウィンドウ全体を従来の --gc で着色。生成した無彩色素材の明暗・質感を合成し、

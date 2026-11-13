@@ -30,7 +30,7 @@ async function seed(page) {
     const core = await import("./js/core/state.js");
     const progress = await import("./js/chapters/ch3-progress.js");
     const value = core.newGame();
-    Object.assign(value, { chapter: 2, day: 28, slot: 0, phase: "cleared", money: 35000, stamina: 100,
+    Object.assign(value, { chapter: 2, day: 25, /* 準備3日の後の東京DAY1が従来どおり通算29日 */ slot: 0, phase: "cleared", money: 35000, stamina: 100,
       flavorStock: { double_apple: 100, mint: 100, chocolate: 100 }, weatherSeed: 5,
       lovers: ["minto"], contacts: ["sumi", "minto", "ageha"] });
     // #1988: あげはは第2章の♥3の分岐で恋愛寄りに答え、♥5に達した保存だけ帰郷後に告白へ。
@@ -41,11 +41,16 @@ async function seed(page) {
       _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
     value.tournament.lastRank = 1; value.tournament.lastTotal = 88;
-    for (const who of ["ageha", "kumicho", "rei", "pakki", "maezono", "dr_kemuri", "nagumo", "hajime", "sumi"])
+    for (const who of ["ageha", "kumicho", "rei", "pakki", "maezono", "dr_kemuri", "sui", "hajime", "sumi"])
       value.flags[`_intro_${who}`] = true;
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
     core.saveConfig(); core.save();
     if (!progress.advanceToChapterThree(value)) throw new Error("Chapter boundary failed");
+    // 出発前の準備3日（VOL02）を過ごした出発の朝から始める（準備の3日は ch3_departure_prep で遊ぶ）。
+    value.day += 3;
+    if (!progress.departChapterThree(value)) throw new Error("Departure failed");
+    value.flags._ch3_intro.routeVersion = 2; // 場面カードの東京（作業中の旧セーブの行程）を確かめる
+    value.flags._ch3_intro.prologueStep = 0; // このスイートは旧行程の章頭（列車→回想→調べもの→章題→到着）から東京へ
     core.save();
     const vn = await import("./js/vn/engine.js");
     vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
@@ -63,7 +68,7 @@ await suite("ch3-full-flow", async check => {
     assert.equal(state.chapter, 3);
     assert.equal(state.flags._ch3_intro.prologueStep, 4);
     assert.equal(state.flags._ch3_intro.titleSeen, true);
-    assert.equal(state.met.kuze, undefined, "The anonymous prologue must not reveal Kuze");
+    assert.equal(state.met.saku, undefined, "The anonymous prologue must not reveal Ayatori");
     const startDay = state.flags._ch3_intro.startDay;
     assert.equal(startDay, 29);
     const scenes = await page.evaluate(async () =>
@@ -182,11 +187,14 @@ await suite("ch3-full-flow", async check => {
     assert.equal(state.day, 42);
     assert.equal(state.phase, "tournament");
     assert.equal(state.flags._ch3_cleared, undefined);
-    assert(state.met.kuze && state.met.steve && state.met.volk, "Rivals must be known after the introduction");
+    assert(state.met.saku && state.met.steve && state.met.volk, "Rivals must be known after the introduction");
     assert.equal(state.flags._ch3_strategy, "aroma");
 
     // 3. 全国大会
     await page.locator(dt("ch3-intro-tournament")).click();
+    await page.locator(".phone-overlay").waitFor();
+    await page.locator('[data-test="reply-0"]:not([disabled])').click();
+    await page.locator(dt("phone-next")).click();
     await page.locator(t("entry")).waitFor();
     await page.locator(t("start")).click();
     await page.locator(t("ready")).waitFor();
@@ -236,7 +244,7 @@ await suite("ch3-full-flow", async check => {
     await page.locator(t("aftermath")).click();
     const aftermath = id => `[data-test="ch3-aftermath-scene"][data-scene="${id}"]`;
     const after = ["ch3_abyss_hotel", "ch3_mashiro_recovery", "ch3_naru_reconcile", "ch3_enmaku_cleanup",
-      "ch3_home_customer", "ch3_tsumugi_result", "ch3_ageha_reunion"];
+      "ch3_ageha_reunion", "ch3_tsumugi_result", "ch3_home_customer"]; // STK23: 帰郷した夜の最後が帰郷の客
     for (const [index, id] of after.entries()) {
       await page.locator(aftermath(id)).waitFor();
       await page.locator(dt("ch3-aftermath-continue")).click();
@@ -257,10 +265,22 @@ await suite("ch3-full-flow", async check => {
     await page.locator(dt("ch3-aftermath-ageha-confession")).waitFor();
     assert.equal(await page.locator(dt("ch3-aftermath-chapter-four")).count(), 0);
     assert.equal((await get(page)).day, reunionDay + 1, "The confession happens the day after the reunion");
-    assert.equal((await get(page)).flags._ch3_cleared, true, "The reunion already closed the aftermath");
+    assert.equal((await get(page)).flags._ch3_cleared, true, "The homecoming night already closed the aftermath");
+    // みんとと交際中なので、告白を受ける前に2段階の確認が入る。
+    // 常に先頭を選ぶと「元の選択へ戻る」を繰り返すため、ここでは明示的に続行する。
+    await page.evaluate(async () => {
+      window.__confessionConfirmations = [];
+      (await import("./js/vn/engine.js")).vnTest.choose = (_id, labels) => {
+        const proceed = labels.findIndex(label => label.startsWith("それでも、"));
+        if (proceed >= 0) window.__confessionConfirmations.push(labels[proceed]);
+        return proceed >= 0 ? proceed : 0;
+      };
+    });
     await page.locator(dt("ch3-aftermath-ageha-confession-continue")).click();
     await page.locator(dt("ch3-aftermath-complete")).waitFor();
-    assert((await get(page)).lovers.includes("ageha"), "The first answer (turbo) accepts ageha's confession");
+    assert.deepEqual(await page.evaluate(() => window.__confessionConfirmations),
+      ["それでも、気持ちを確かめる", "それでも、付き合うと伝える"], "Both existing-partner confirmations must be read before accepting");
+    assert((await get(page)).lovers.includes("ageha"), "The accepted confession adds ageha after both confirmations");
 
     // 5. 最終state
     state = await get(page);

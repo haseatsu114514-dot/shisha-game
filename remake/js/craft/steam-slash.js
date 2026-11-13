@@ -21,9 +21,9 @@ const SLASH_CURVE = [
 const SLASH_PATH = SLASH_CURVE.map(([p0, p1, p2, p3], i) => `${i ? "" : `M${p0.join(" ")}`}C${p1.join(" ")} ${p2.join(" ")} ${p3.join(" ")}`).join("");
 
 // 扇形と弾の実寸矩形の交差。長い言葉も、触れた端だけで切れる。
-export function slashTouchesBullet(b, hx, hy, angle, reach = SLASH_REACH) {
+export function slashTouchesBullet(b, hx, hy, angle, reach = SLASH_REACH, halfAngle = SLASH_HALF_ANGLE) {
   const left = b.x - hx, right = left + b.w, top = b.y - hy, bottom = top + b.h;
-  const dx = Math.cos(angle), dy = Math.sin(angle), edge = Math.cos(SLASH_HALF_ANGLE);
+  const dx = Math.cos(angle), dy = Math.sin(angle), edge = Math.cos(halfAngle);
   const inside = (x, y) => {
     const distance = Math.hypot(x, y);
     return distance <= reach + 1e-7 && x * dx + y * dy >= distance * edge - 1e-7;
@@ -31,7 +31,7 @@ export function slashTouchesBullet(b, hx, hy, angle, reach = SLASH_REACH) {
   if (left <= 0 && right >= 0 && top <= 0 && bottom >= 0) return true;
   if ([[left, top], [right, top], [left, bottom], [right, bottom]].some(([x, y]) => inside(x, y))) return true;
   // 両端の半径と矩形の交差（slab法）。
-  for (const a of [angle - SLASH_HALF_ANGLE, angle + SLASH_HALF_ANGLE]) {
+  for (const a of [angle - halfAngle, angle + halfAngle]) {
     let near = 0, far = 1;
     for (const [v, lo, hi] of [[Math.cos(a) * reach, left, right], [Math.sin(a) * reach, top, bottom]]) {
       if (Math.abs(v) < 1e-7) { if (lo > 0 || hi < 0) { far = -1; break; } }
@@ -116,4 +116,16 @@ export function buildWordCutFx(b, hx, hy, angle, reach = SLASH_REACH) {
       "--cut-still-x": `${cut.normal.x * sign * 2}px`, "--cut-still-y": `${cut.normal.y * sign * 2}px`, "--cut-turn": `${sign * 6}deg`,
     } });
   }));
+}
+
+/** 大きな噛みつきは周囲の矩形と円の交差。見た目と同じ半径を使う。 */
+export function sharkPulseTouchesBullet(b,x,y,radius) {
+  const nx=Math.max(b.x,Math.min(x,b.x+b.w)),ny=Math.max(b.y,Math.min(y,b.y+b.h));
+  return Math.hypot(nx-x,ny-y)<=radius;
+}
+
+export function buildSharkFx(x,y,angle,reach,pulse=false) {
+  return el("div.dodge-slash-fx.shark-bite",{"aria-hidden":"true",dataset:{test:"shark-bite",pulse:String(pulse)},
+    style:{left:`${x}px`,top:`${y}px`,"--angle":`${angle}rad`,width:`${reach*2}px`,height:`${reach*2}px`},
+    html:`<svg viewBox="-100 -100 200 200">${pulse?'<circle r="100" fill="#a0e5f51c" stroke="#a6e7f7" stroke-width="3"/>':""}<path d="M-12 -80Q90 -92 97 -4L78 -17 69 -1 60 -20 49 -5 40 -27 27 -13 18 -37 5 -25Z" fill="#87bfd8" stroke="#e1f6ff" stroke-width="3"/><path d="M-12 80Q90 92 97 4L78 17 69 1 60 20 49 5 40 27 27 13 18 37 5 25Z" fill="#bed9e5" stroke="#e1f6ff" stroke-width="3"/></svg>`});
 }

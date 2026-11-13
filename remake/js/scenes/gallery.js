@@ -34,6 +34,8 @@ export function openGallery() {
   const announceComplete = shouldAnnounceCompletion(stats, progress);
   if (announceComplete) markCompletionAnnounced();
   const fraction = s => `${s.unlocked} / ${s.total}（${s.rate}%）`;
+  // 中身が1つも無い札（採用前の漫画・ムービー）は「0/0」でなく「準備中」と読ませる
+  const tabCount = s => s.total === 0 ? "準備中" : `${s.unlocked}/${s.total}`;
   return new Promise(resolve => {
     let tab = "all", closed = false, active = null, page = 0, trigger = null;
     let video = null, movieBgm = null, observer;
@@ -55,7 +57,8 @@ export function openGallery() {
     const routes = recordedRoutes.length ? el("section.gal-route-records", { "aria-label": "ルート記録" }, [
       el("h3", { text: "ルート記録" }),
       ...recordedRoutes.map(([char, record]) => el("div.gal-route-record", [
-        el("strong", { text: Object.hasOwn(CHAR_LABELS, char) ? CHAR_LABELS[char] : char }),
+        // 収集率の行に無い恋人（ひより・サメちゃん・ヌール等）も、内部IDではなく名前で出す
+        el("strong", { text: Object.hasOwn(CHAR_LABELS, char) ? CHAR_LABELS[char] : photoName(char) }),
         record.becameLover ? el("p", { text: "恋人成立" }) : null,
         record.eventsSeen.length ? el("p", { text: `閲覧した段階・派生：${record.eventsSeen.join("、")}` }) : null,
         record.trueEndAsLover ? el("p", { text: "真エンド同行" }) : null,
@@ -71,7 +74,8 @@ export function openGallery() {
     } }, [tools, content]);
     const closeButton = el("button.gal-close", { text: "閉じる", dataset: { test: "gallery-close" }, onclick: () => close() });
     const tabs = el("div.gal-tabs", { role: "tablist", "aria-label": "コレクションの種類" }, GALLERY_TABS.map(([kind, name]) =>
-      el("button.gal-tab", { text: `${name} ${fraction(kind === "all" ? stats : stats.byKind[kind])}`, role: "tab", "aria-controls": "gallery-items", "aria-selected": kind === tab ? "true" : "false",
+      // 札は「名前 解放数/総数」だけ（割合は札の title と上の収集率で読む）。6枚の札が横1列に収まり、押せる大きさを保つ
+      el("button.gal-tab", { text: `${name} ${tabCount(kind === "all" ? stats : stats.byKind[kind])}`, title: fraction(kind === "all" ? stats : stats.byKind[kind]), role: "tab", "aria-controls": "gallery-items", "aria-selected": kind === tab ? "true" : "false",
         dataset: { kind, test: "gallery-tab-" + kind }, onclick: () => { tab = kind; render(); SE.select(); } })));
     const box = el("div.gal", [
       el("div.gal-head", [el("h2", { text: "GALLERY" }), collection, count, closeButton]), tabs, characters, routes, grid, note,
@@ -220,6 +224,6 @@ export function openGallery() {
     document.addEventListener("keydown", onKey);
     observer = new MutationObserver(() => { if (!overlay.isConnected) close(); });
     observer.observe(layers.modal, { childList: true });
-    closeButton.focus({ preventScroll: true }); SE.phone();
+    closeButton.focus({ preventScroll: true }); SE.card(); // 開く音（LIMEの着信音は使わない）
   });
 }

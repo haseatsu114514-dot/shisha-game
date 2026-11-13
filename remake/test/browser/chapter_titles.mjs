@@ -1,4 +1,4 @@
-// 実描画・自然な章入口・保存不変・遅延/失敗を確認。第3章は保留。
+// 実描画・自然な章入口・保存不変・遅延/失敗を確認。第3章E「交わらない視線」を含む。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -36,7 +36,8 @@ async function drawn(page, entry) {
   assert.match(await image.getAttribute('src'), new RegExp(`/ch${entry.chapter}-title\\.webp$`));
   assert((await image.getAttribute('alt')).includes(entry.name));
   assert.equal(await card.locator('.cc-copy').isVisible(), false, 'Image and DOM titles were both shown');
-  assert.equal(await card.locator('.cc-frame').count(), 0);
+  assert.equal(await card.locator('img').count(),1,'採用画像1枚だけを表示する');
+  assert.equal(await card.locator('.ct-stage,.ct-glint,.ct-painted,.cc-frame').count(), 0);
   const geometry = await image.evaluate(image => {
     const r = image.getBoundingClientRect();
     return { size: [image.naturalWidth, image.naturalHeight], fit: getComputedStyle(image).objectFit,
@@ -111,9 +112,9 @@ await suite('chapter-titles', async check => {
   for (const [label, options] of [
     ['pc', {}], ['touch', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
   ]) {
-    await check(`${label}-four-approved-images`, async page => {
+    await check(`${label}-five-approved-images`, async page => {
       const selected = await entries(page);
-      assert.deepEqual(selected.map(x => x.chapter), [1, 2, 4, 5]);
+      assert.deepEqual(selected.map(x => x.chapter), [1, 2, 3, 4, 5]);
       await page.evaluate(async () => {
         const core = await import('./js/core/state.js'); core.newGame(); core.save();
         localStorage.setItem('suien_remake_slot1', 'preserve-manual');
@@ -130,21 +131,6 @@ await suite('chapter-titles', async check => {
       assert.equal(await page.evaluate(() => JSON.stringify(__remake.state)), state);
     }, options);
   }
-
-  await check('portrait-ds-keeps-full-title', async page => {
-    await page.locator('[data-test="title-layout-settings"]').tap();
-    await page.locator('[data-test="title-layout-ds"]').tap();
-    await page.evaluate(async () => {
-      const core = await import('./js/core/state.js'); core.newGame();
-      document.body.dataset.screen = 'map';
-    });
-    await page.locator('body.game-ds').waitFor();
-    const before = await storageSnapshot(page), entry = (await entries(page))[0];
-    await start(page, entry); await drawn(page, entry);
-    await page.screenshot({ path: path.join(out, 'portrait-ds-chapter-1.png') });
-    await done(page);
-    assert.deepEqual(await storageSnapshot(page), before);
-  }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
 
   await check('delayed-image-waits-before-visible-time', async page => {
     let release;
@@ -176,9 +162,9 @@ await suite('chapter-titles', async check => {
     await done(page); assert.deepEqual(await storageSnapshot(page), before);
   });
 
-  await check('chapter-three-remains-text-only', async page => {
+  await check('unregistered-chapter-remains-text-only', async page => {
     const before = await storageSnapshot(page);
-    await start(page, { no: '第三章', name: '章題の確認用テキスト', read: 'TITLE TEST' });
+    await start(page, { no: '第六章', name: '章題の確認用テキスト', read: 'TITLE TEST' });
     const card = page.locator('.chapter-card.show'); await card.waitFor();
     assert.equal(await card.getAttribute('data-art'), 'text');
     assert.equal(await card.locator('img').count(), 0);
@@ -190,9 +176,10 @@ await suite('chapter-titles', async check => {
     await page.evaluate(() => { __remake.vnTest.turbo = true; });
     await page.locator('[data-test="title-new"]').click();
     await page.locator('.ch1-title-motion[data-art="ready"]').waitFor({ timeout: 60000 });
-    await page.waitForFunction(() => Number(document.querySelector('.ch1-title-motion')?.dataset.elapsed) >= 3150);
+    await page.locator('.ch1-title-motion img').evaluate(img=>img.decode());
     assert.equal(await page.evaluate(() => __remake.state.chapter), 1);
-    assert.equal(await page.locator('.ch1-title-motion canvas').count(), 1);
+    assert.equal(await page.locator('.ch1-title-motion img').count(), 1);
+    assert.equal(await page.locator('.ch1-title-motion canvas,.ch1-title-fx').count(),0);
     assert.equal(await page.locator('.chapter-card').count(), 0);
     await page.screenshot({ path: path.join(out, 'new-game-chapter-1.png') });
     await page.locator('.ch1-title-motion').waitFor({ state: 'detached' });
@@ -371,7 +358,7 @@ await suite('chapter-titles', async check => {
     await done(page); assert.deepEqual(await storageSnapshot(page), before);
   });
 
-  await check('preview-four-chapters-without-saving', async page => {
+  await check('preview-five-chapters-without-saving', async page => {
     await page.evaluate(() => {
       localStorage.setItem('suien_remake_save', 'preserve-original');
       localStorage.setItem('suien_remake_slot1', 'preserve-manual');
@@ -381,7 +368,7 @@ await suite('chapter-titles', async check => {
     });
     const before = await storageSnapshot(page);
     await page.goto(new URL('chapter-titles-preview.html', page.url()).href);
-    assert.deepEqual(await page.locator('#chapter option').evaluateAll(nodes => nodes.map(n => n.value)), ['1', '2', '4', '5']);
+    assert.deepEqual(await page.locator('#chapter option').evaluateAll(nodes => nodes.map(n => n.value)), ['1', '2', '3', '4', '5']);
     await page.locator('#chapter').selectOption('4'); await page.locator('#play').click();
     await page.locator('.chapter-card.show').waitFor();
     assert.match(await page.locator('.cc-art').getAttribute('src'), /ch4-title\.webp$/);

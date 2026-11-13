@@ -1,0 +1,2 @@
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-teacup/panels/nagumo-teacup-1.webp: 760x507 比率 1.499 57 KiB
+OK  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-teacup/panels/nagumo-teacup-2.webp: 770x513 比率 1.501 64 KiB

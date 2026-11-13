@@ -1,3 +1,4 @@
+import { hasAffinity } from "./state.js";
 // Fortune's one-visit affinity bonus remains in state.fortune. Sight has its own lifetime.
 import { relationshipElapsedDay } from "./chapter-clock.js";
 
@@ -13,7 +14,8 @@ export function naruRiftActive(save) {
   );
 }
 export function isFortuneTargetAvailable(save, charId) {
-  return typeof charId === 'string' && charId.length > 0 && !(charId === 'naru' && naruRiftActive(save));
+  return typeof charId === 'string' && charId.length > 0 && hasAffinity(charId)
+    && !(charId === 'naru' && naruRiftActive(save));
 }
 export function fortuneTargets(save, characters = {}) {
   return Object.keys(save?.affinity || {}).filter(
@@ -63,21 +65,34 @@ export function grantFortuneReading(save, char, trivia) {
   return picked;
 }
 export const fortuneResultId = entry => `remake_fortune_trivia_${entry.id}`;
+// 選択肢を赤く示せる注記か（fortuneChoiceIndex と同じ除外。味・購入は示さず、恋愛は表示が有効な時だけ）。
+const usableChoiceHint = (hint, data) => !!hint && hint.kind !== 'taste' && hint.kind !== 'purchase'
+  && !(hint.kind === 'romance' && !data?.includeRomance);
+/** 三日間の「届く言葉」がこの相手で一度でも光りうるか。注記の無い相手には、結果の台詞で約束しない */
+export function fortuneSightHinted(charId, data) {
+  return Object.values(data?.choices || {}).some(hint => hint?.target === charId && usableChoiceHint(hint, data));
+}
 export function registerFortuneReadings(db) {
   const base = db.dialogues?.remake_fortune_result;
   if (!base || !base.lines) return;
-  for (const entries of Object.values(db.fortuneTrivia?.characters || {})) for (const entry of entries) {
-    const id = fortuneResultId(entry);
-    db.dialogues[id] = { ...base, dialogue_id: id, lines: [
-      ...base.lines.slice(0, -1),
-      { speaker: 'uranaishi', face: 'normal', text: '二つの言葉に迷ったら、あの人に届く方が赤く見える。今日を含めて三日間だよ' },
-      { speaker: 'uranaishi', face: 'normal', text: entry.teller },
-      { speaker: 'hajime', face: 'normal', text: entry.reaction },
-    ] };
+  for (const [char, entries] of Object.entries(db.fortuneTrivia?.characters || {})) {
+    const sight = fortuneSightHinted(char, db.fortuneHints)
+      ? [{ speaker: 'uranaishi', face: 'normal', text: '二つの言葉に迷ったら、あの人に届く方が赤く見える。今日を含めて三日間だよ' }] : [];
+    for (const entry of entries) {
+      const id = fortuneResultId(entry);
+      db.dialogues[id] = { ...base, dialogue_id: id, lines: [
+        ...base.lines.slice(0, -1),
+        ...sight,
+        { speaker: 'uranaishi', face: 'normal', text: entry.teller },
+        { speaker: 'hajime', face: 'normal', text: entry.reaction },
+      ] };
+    }
   }
   const offer = db.dialogues?.remake_fortune_offer;
   if (offer && offer.lines?.length) db.dialogues.remake_fortune_offer = { ...offer, lines: [offer.lines[0],
-    { speaker: 'uranaishi', face: 'normal', text: '次に会うときの縁をひと押し。それと三日間、あの人に届く言葉が見えるおまじないだよ' }, ...offer.lines.slice(1)] };
+    { speaker: 'uranaishi', face: 'normal', text: '占った相手と次に会ったときだけ、縁をひと押し' },
+    // 届く言葉の注記がある相手は一部だけなので、相手を選ぶ前の説明では約束しきらない（結果の台詞は fortuneSightHinted で出し分け）
+    { speaker: 'uranaishi', face: 'normal', text: 'それと相手によっては三日間、あの人に届く言葉が見えるおまじないだよ' }, ...offer.lines.slice(1)] };
 }
 // Authored response hints, never a global preference for the first option.
 export function fortuneChoiceIndex(save, dialogueId, line, data) {
@@ -85,8 +100,7 @@ export function fortuneChoiceIndex(save, dialogueId, line, data) {
   if (!sight || line?.choices?.length !== 2) return -1;
   const key = `${dialogueId}:${line.id || ''}`;
   const hint = data?.choices?.[key];
-  if (!hint || hint.target !== sight.char || hint.kind === 'taste' || hint.kind === 'purchase'
-    || hint.kind === 'romance' && !data.includeRomance) return -1;
+  if (!usableChoiceHint(hint, data) || hint.target !== sight.char) return -1;
   const options = line.choices.map(c => String(c.next || c.next_id || ''));
   if (!hint.options || hint.options.length !== 2 || hint.options.some((v, i) => v !== options[i])) return -1;
   const index = options.indexOf(hint.preferred);

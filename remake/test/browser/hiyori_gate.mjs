@@ -16,7 +16,7 @@ async function setup(page) {
       Object.assign(s, { phase: 'daily', day: 9, slot: 1, seed: 131, money: 30000, stamina: 100, lastBaitoDay: 9 });
       Object.assign(s.flags, { _morning_9: true, _morning_10: true, _delivery_minto_done: true,
         _delivery_adam_done: true, _errand_scout_done: true, _lime_tut: 1, _hiyori_meeting_done: true,
-        _hiyori_sumi_message_done: true, _hiyori_message_delivered: true, _hiyori_cracks_done: true,
+        _hiyori_sumi_message_done: true, _hiyori_message_delivered: true, _hiyori_cracks_done: true, _hiyori_clockout_done: true,
         _intro_hiyori: true, known_name_hiyori: true });
       s.met.hiyori = s.met.naru = s.met.adam = s.met.minto = true;
       s.contacts = ['hiyori']; s.affinity.hiyori = 33;
@@ -60,11 +60,11 @@ await suite('hiyori-gate', async check => {
         return { rows, guarantee, lover, minto: s.affinity.minto };
       });
       for (const r of results.rows) {
-        assert.equal(r.locked, r.start + 209); assert.equal(r.held,0);
+        assert.equal(r.locked, r.start + 214); assert.equal(r.held,0);
         assert.equal(r.beforeRead, 0); assert(r.read && r.done && r.fortuneUsed);
         assert.equal(r.legacyReleased, 0); assert.equal(r.stageReleased,0);
         assert.equal(r.retained,0);
-        assert.equal(r.after, r.start + 219, JSON.stringify(r));
+        assert.equal(r.after, r.start + 224, JSON.stringify(r));
         assert(!r.duplicate); assert.equal(r.again, 0); assert.equal(r.final, r.after);
       }
       assert.deepEqual(results.guarantee, { points: 48, guaranteed: 0, again: 0 });
@@ -81,6 +81,7 @@ await suite('hiyori-gate', async check => {
       await setup(page);
       const eligibility = await page.evaluate(() => {
         const s = H.core.state, find = opts => H.phone.morningMessages(opts).find(m => m.accept_event === '__hiyori_shop__');
+        s.flags._invited_lime_outing_hiyori_1 = true; // Shop visit scenario follows the separate story outing.
         const before = !!find(); s.flags._hiyori_tonari_return_done = true;
         const m = find();
         const tournament = !!find({ tournamentDay: true }), fixed = !!find({ fixedNight: () => true });

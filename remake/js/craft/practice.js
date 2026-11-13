@@ -14,11 +14,13 @@ import { retireScreen } from "../core/ui.js";
 import { temperatureAfterSteam } from "./conditions.js";
 import { ensureFlavorLife } from "./flavor-life.js";
 import { recordPractice } from "./practice-history.js";
+import { finalize } from "./score.js";
+import { growthSkill } from "../core/growth-effects.js";
 export { practiceRecords, recordPractice } from "./practice-history.js";
 
 export const CRAFT_STEPS = [["setup", "SETUP"], ["mix", "MIX"], ["pack", "PACK"], ["holes", "FOIL"], ["place", "SET"], ["heat", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"], ["care1", "調整1回目"], ["care2", "調整2回目"]];
 
-export async function runFullPractice({ coached = false, adjustments = true, kind = "practice", staffPractice = false, isCurrent = null } = {}) {
+export async function runFullPractice({ coached = false, adjustments = true, kind = "practice", staffPractice = false, isCurrent = null, note = null, onStep = null } = {}) {
   // 呼出し元が指定した制作だけを中断判定する。既存の自由練習等は従来どおり。
   const owner = state;
   const checkCurrent = () => {
@@ -30,6 +32,7 @@ export async function runFullPractice({ coached = false, adjustments = true, kin
   cs.practiceKind = kind;
   cs.staffPractice = staffPractice;
   if (staffPractice) { cs.eventTitle = "PRACTICE"; cs.eventNote = "まかないで練習"; }
+  if (note) cs.eventNote = note;
   openBench(cs, { steps: adjustments ? CRAFT_STEPS : CRAFT_STEPS.filter(([id]) => !id.startsWith("care")) });
   await waitBenchReady(cs);
   checkCurrent();
@@ -39,6 +42,7 @@ export async function runFullPractice({ coached = false, adjustments = true, kin
   checkCurrent();
   await stepMix(cs);
   checkCurrent();
+  onStep?.("mix", cs);
   await stepPack(cs);
   checkCurrent();
   await runHoles(cs);
@@ -47,18 +51,21 @@ export async function runFullPractice({ coached = false, adjustments = true, kin
   checkCurrent();
   await runHeat(cs);
   checkCurrent();
+  onStep?.("heat", cs);
   await stepSteamTime(cs);
   checkCurrent();
   await runSteamDodge(cs);
   checkCurrent();
   await runPull(cs);
   checkCurrent();
+  onStep?.("pull", cs);
   if (adjustments) for (const round of [1, 2]) {
     if (cs.failed) break;
     await runCare(cs, { round });
     checkCurrent();
   }
   if (!recordPractice(cs, kind)) throw new Error("Practice interrupted before serving");
+  if (cs.mode !== "tutorial" && growthSkill(state, "K24")) finalize(cs);
   const key = !coached && `_mastery_practice_${masteryDay(state)}_${kind}`;
   cs.masteryGained = false;
   if (cs.pullDone && !state.flags[key] && !coached) {

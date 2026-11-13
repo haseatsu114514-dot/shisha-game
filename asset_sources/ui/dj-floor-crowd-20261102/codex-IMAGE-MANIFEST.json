@@ -1,0 +1,32 @@
+[
+  {
+    "file": "exec-7d3e77b0-62c5-4b1f-a965-492e9ae58505.png",
+    "bytes": 1776177,
+    "sha256": "ad0586891b318a72ae87a5ee24393bd58f9c7fd4457546ce7737a9bc48f7178a",
+    "size": [
+      2172,
+      724
+    ],
+    "mode": "RGB"
+  },
+  {
+    "file": "exec-9d208c63-873c-47d3-a92e-04d4a462aeb8.png",
+    "bytes": 1726235,
+    "sha256": "7bf58602552ea1ecc43fa95612c536f1fdf013d3bd85340f3cca8eda87e774d5",
+    "size": [
+      2172,
+      724
+    ],
+    "mode": "RGB"
+  },
+  {
+    "file": "exec-e3332158-c6e2-4ec2-8c6f-c405641f8c6d.png",
+    "bytes": 1853981,
+    "sha256": "954734c9eedcfcbc9a0b5f9e1c28f622803cee2720620e4d06298bc69c48c358",
+    "size": [
+      2172,
+      724
+    ],
+    "mode": "RGB"
+  }
+]

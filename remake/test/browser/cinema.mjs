@@ -96,8 +96,14 @@ await suite("cinema", async check => {
       const after = await page.evaluate(() => C.snapshot());
       assert.equal(after.money, before.money - 1000);
       assert.equal(after.stamina, before.expectedStamina, "existing condition adjustment applies to base cost 8");
-      assert.equal(after.stats.insight, before.stats.insight + 2);
-      for (const stat of ["technique", "sense", "guts", "charm"]) assert.equal(after.stats[stat], before.stats[stat]);
+      // 心得の盤（通常プレイの既定・#2166）では映画は経験値になる。旧しくみ（?growth=0）では洞察が伸びる
+      if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())) {
+        assert((after.growth?.xp || 0) > (before.growth?.xp || 0), "The screening should earn EXP");
+        assert.deepEqual(after.stats, before.stats, "The board does not write the old stats");
+      } else {
+        assert.equal(after.stats.insight, before.stats.insight + 2);
+        for (const stat of ["technique", "sense", "guts", "charm"]) assert.equal(after.stats[stat], before.stats[stat]);
+      }
       assert.equal(after.spotVisits.rojiura_cinema, 1);
       assert.equal(after.visitedDay.rojiura_cinema, 16);
       assert.deepEqual(after.affinity, before.affinity);

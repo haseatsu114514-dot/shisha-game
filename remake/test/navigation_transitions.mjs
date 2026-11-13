@@ -22,7 +22,7 @@ async function prepare(page) {
 
 async function arm(page, selector) {
   await page.evaluate((selector) => {
-    window.audit = { types: [], overlap: [], frames: 0, started: null, ended: null, stop: false };
+    window.audit = { types: [], overlap: [], frames: 0, started: null, ended: null, stop: false, purple: false, zoomed: false, card: false };
     const sample = () => {
       if (audit.stop) return;
       const curtain = document.querySelector(".scene-curtain");
@@ -30,6 +30,11 @@ async function arm(page, selector) {
         audit.started ??= performance.now();
         audit.frames++;
         if (!audit.types.includes(curtain.dataset.transition)) audit.types.push(curtain.dataset.transition);
+        // 地図へ寄る移動（TMG46）: 紫の図形を描かず、地図の絵そのものを寄せる。店ロゴは白い札に載せない
+        if (curtain.querySelector(".tr-svg")) audit.purple = true;
+        if ([...document.querySelectorAll("#bg .bg-img")].some((b) => getComputedStyle(b).transform.startsWith("matrix(2"))) audit.zoomed = true;
+        const card = document.querySelector(".store-arrival-card");
+        if (card && getComputedStyle(card).backgroundColor === "rgb(255, 253, 247)") audit.card = true;
         if (document.querySelector(selector)) audit.overlap.push(performance.now() - audit.started);
       } else if (audit.started !== null) audit.ended ??= performance.now();
       requestAnimationFrame(sample);
@@ -51,6 +56,46 @@ async function verify(page, selector, expected = null) {
 }
 
 await suite("navigation-transitions", async (check) => {
+  for (const mode of ["normal", "reduced", "cancel-flip"]) {
+    await check(`dawn-current-numbers-${mode}`, async (page) => {
+      const result = await page.evaluate(async mode => {
+        const transitions = await import("./js/core/transitions.js");
+        const samples = [];
+        let frame, purple = false;
+        const sample = () => {
+          // 夜明け（TMG47）は紫の夜の面・ラベンダーの地平線を描かない
+          if (document.querySelector(".tr-dawn .tr-svg, .tr-dawn-veil, .tr-dawn-horizon")) purple = true;
+          const card = document.querySelector('[data-test="dawn-card"]');
+          if (card && Number(getComputedStyle(card).opacity) > .1) {
+            samples.push([...card.querySelectorAll(".tr-flip")].map(span =>
+              [...span.children].filter(node => Number(getComputedStyle(node).opacity) > .1).map(node => node.textContent)));
+          }
+          frame = requestAnimationFrame(sample);
+        };
+        const animate = Element.prototype.animate;
+        if (mode === "cancel-flip") Element.prototype.animate = function (...args) {
+          const animation = animate.apply(this, args);
+          if (this.matches(".tr-flip > i")) queueMicrotask(() => animation.cancel());
+          return animation;
+        };
+        sample();
+        try {
+          await transitions.nightToMorning(document.getElementById("fx"), async () =>
+            ({ fromDay: 6, day: 7, fromLeft: 8, left: 7 }));
+        } finally {
+          cancelAnimationFrame(frame);
+          Element.prototype.animate = animate;
+        }
+        return { samples, purple, covering: transitions.isCovering(), leftovers: document.querySelectorAll(".tr-dawn").length };
+      }, mode);
+      assert(result.samples.length > 0, "朝のカードが一度も表示されなかった");
+      assert(result.samples.some(([day, left]) => day.includes("7") && left.includes("7")));
+      assert(result.samples.every(numbers => numbers.flat().every(value => value === "7")), "前日のDAY6／あと8日が表示された");
+      assert.equal(result.purple, false, "the dawn drew the purple night or the lavender horizon");
+      assert.equal(result.covering, false); assert.equal(result.leftovers, 0);
+    }, { reducedMotion: mode === "reduced" ? "reduce" : "no-preference" });
+  }
+
   for (const [label, spot, viewport] of [
     ["home-pc", "rest", desktop], ["home-mobile", "rest", mobile],
     ["tonari-pc", "tonari", desktop], ["shop-mobile", "shop", mobile],
@@ -67,17 +112,30 @@ await suite("navigation-transitions", async (check) => {
       });
       await page.locator(`[data-test="pin-${spot}"]`).click();
       await page.waitForFunction(() => !document.querySelector(".scene-curtain"));
-      const selector = spot === "rest" ? "#vn.active .vn-text" : spot === "tonari" ? '[data-test="tonari-customer"]' : ".shop-tabs";
+      // 店（Dr.fookah）は 2026-11-12（a389db22f）から、入口の前に店頭の応対（daily/shop-greeting.js）を読む。
+      // 地図からの移動の幕が明けて最初に出るのは応対の台詞で、入口（shop-enter）と売り場はその後に出る。
+      const selector = spot === "tonari" ? '[data-test="tonari-customer"]' : "#vn.active .vn-text";
       await arm(page, selector);
       await page.locator('[data-test="map-go"]').click();
-      if (spot === "shop") await page.locator('[data-test="shop-enter"]').click();
       await page.locator(".scene-curtain").waitFor();
       await page.keyboard.press("Enter");
+      // 店は、幕のあとにリオの紹介（#3491・読み取りは support.mjs の installShopGreetingReader）が入ってから入口が出る。
+      // 入口を先に待つと、その頃には幕が終わっていて、幕を待って時間切れになる
+      if (spot === "shop") await page.locator('[data-test="shop-enter"]').click();
       if (spot === "rest") assert.equal(await page.locator(".vn-text").textContent(), "");
-      const audit = await verify(page, selector, spot === "rest" ? "move-door" : "move-pin");
+      const audit = await verify(page, selector, spot === "rest" ? "move-lights" : "move-zoom");
+      assert.equal(audit.purple, false, "The move drew purple shapes");
+      assert.equal(audit.zoomed, true, "The map itself did not zoom toward the pin");
+      assert.equal(audit.card, false, "The store logo was shown on the white card");
       if (spot === "rest") {
         assert.ok(audit.ended - audit.started < 1800, "The warmed-up home transition still feels too long");
         await page.waitForFunction(() => document.querySelector(".vn-text").textContent.includes("今日は早めに家へ帰った"));
+      }
+      if (spot === "shop") {
+        // 応対を読み終えると入口が出て、入ると売り場が開く（買い物そのものは変わらない）
+        await page.evaluate(() => { T.engine.vnTest.turbo = true; });
+        await page.locator('[data-test="shop-enter"]').click();
+        await page.locator(".shop-tabs").waitFor();
       }
     }, { viewport });
   }
@@ -100,11 +158,11 @@ await suite("navigation-transitions", async (check) => {
         { type: "choice", choices: [{ text: "休む" }, { text: "窓を開ける" }] },
       ] });
     });
-    await page.locator('.scene-curtain[data-transition="move-door"]').waitFor();
+    await page.locator('.scene-curtain[data-transition="move-lights"]').waitFor();
     await page.waitForTimeout(750);
     assert.equal(await page.evaluate(() => backgroundDone), false, "Background resolved before the slow image/reveal");
     assert.equal(await page.locator(".vn-choice").count(), 0);
-    await verify(page, ".vn-choice", "move-door");
+    await verify(page, ".vn-choice", "move-lights");
     await page.evaluate(() => window.background);
     await page.locator('[data-test="choice-0"]').click();
     await page.evaluate(() => window.dialogue);
@@ -121,7 +179,7 @@ await suite("navigation-transitions", async (check) => {
       T.ui.showScreen("old-menu", old);
       T.ui.showScreen("new-menu", next);
     });
-    await verify(page, '[data-test="new-menu"]', "move-door");
+    await verify(page, '[data-test="new-menu"]', "move-lights");
     assert.equal(await page.locator('[data-test="old-menu"]').count(), 0);
     assert.equal(await page.evaluate(() => document.body.dataset.screen), "new-menu");
   });
@@ -134,6 +192,6 @@ await suite("navigation-transitions", async (check) => {
       window.visit = T.spots.restAtHome(T.spots.spotById("rest"));
     });
     const audit = await verify(page, "#vn.active .vn-text");
-    assert.ok(!audit.types.includes("move-door"), "Reduced motion played the full door");
+    assert.deepEqual(audit.types, ["fade"], "Reduced motion played the full move instead of a fade");
   }, { reducedMotion: "reduce" });
 });

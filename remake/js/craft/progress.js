@@ -10,14 +10,18 @@ const PHASES = [
   ["care", "調整", ["care", "care1", "care2"], '<path d="M4 27h27M7 24a11 11 0 0 1 22 0ZM18 9V6m-2 0h4"/>'],
 ];
 
+// 同じ工程の見出しに複数の作業が入るもの（パッキング）は、いまの作業名を見出しの横へ添える。見出し本体の語は変えない。
+const SUB_STEP = { pack: (id, title) => ({ setup: title.startsWith("機材") ? "機材" : "水入れ", mix: "配合", pack: "詰め", holes: title.includes("通気") ? "通気" : "穴あけ" })[id] || "" };
+
 export function buildCraftProgress(steps) {
   const available = new Set(steps.map(([id]) => id));
   if (available.has("pull")) available.add("serve");
   const phases = PHASES.filter(([, , ids]) => !steps.length || ids.some(id => available.has(id)));
   const count = el("b.bench-progress-count");
-  const cells = phases.map(([phase, label, ids, icon], i) => el("span.bench-phase", { dataset: { step: phase, steps: ids.join(",") } }, [
+  const cells = phases.map(([phase, label, ids, icon], i) => el("span.bench-phase", { "aria-label": label, title: label, dataset: { step: phase, steps: ids.join(",") } }, [
     el("i.bench-phase-icon", { "aria-hidden": "true", html: `<svg viewBox="0 0 36 36">${icon}</svg>` }),
     el("span.bench-phase-copy", [el("small", { text: String(i + 1).padStart(2, "0") }), el("b", { text: label })]),
+    SUB_STEP[phase] ? el("span.bench-phase-step", { "aria-hidden": "true", dataset: { test: "bench-phase-step" } }) : null,
   ]));
   const root = el("nav.bench-progress", { "aria-label": "制作の工程" }, [count, el("div.bench-progress-track", cells)]);
   return { root, count, update(id, title) {
@@ -27,9 +31,12 @@ export function buildCraftProgress(steps) {
       cell.classList.toggle("seen", i < active);
       if (i === active) cell.setAttribute("aria-current", "step");
       else cell.removeAttribute("aria-current");
+      const sub = cell.querySelector(".bench-phase-step");
+      if (sub) sub.textContent = i === active ? SUB_STEP[phases[i][0]](id, title || "") : "";
     });
     count.textContent = `${active + 1} / ${phases.length}`;
     const currentTitle = phases[active]?.[1] ?? title;
-    root.setAttribute("aria-label", `制作の工程：${currentTitle}。${active + 1} / ${phases.length}`);
+    const subLabel = phases[active] && SUB_STEP[phases[active][0]]?.(id, title || "");
+    root.setAttribute("aria-label", `制作の工程：${currentTitle}${subLabel ? `（${subLabel}）` : ""}。${active + 1} / ${phases.length}`);
   } };
 }

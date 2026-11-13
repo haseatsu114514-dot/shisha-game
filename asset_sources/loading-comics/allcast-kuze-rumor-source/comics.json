@@ -1,0 +1,67 @@
+{
+  "id": "kuze-rumor-source",
+  "title": "噂の出どころ",
+  "cast": [
+    "kuze"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "噂、聞きました。",
+    "どんな噂？",
+    "書いた本人だ。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "煙幕の店先。左のはじめが少し緊張して「噂、聞きました。」。右の綾取がとぼけて「どんな噂？」。",
+  "panel2": "綾取が手書きの貼り紙の束（文字は描かず、波線と星の記号だけ）と筆を抱え、片側だけ口角を上げて笑う。はじめ「書いた本人だ。」。",
+  "caption": "綾取の店の大げさな噂は、だいたい本人発。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v2.png",
+  "source_sha256": "e46cafabb816ffa73f7e380082cc1798a06edd8d5c183a39140af585b1f32b50",
+  "references": [
+    {
+      "path": "references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "references/kuze.png",
+      "sha256": "c39ee51522b8082b831f0814959cc071b5104c808dc7452d5ec9b5890dba68ee"
+    },
+    {
+      "path": "references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked",
+    "reading_order": "left-to-right; reply tail points to speaker",
+    "identity": "official sprites inspected; same positions/faces both panels",
+    "prohibited_hardware": "none",
+    "notes": "background chalkboard squiggles removed; story paper marks retained",
+    "in_game_pc_phone": "not run; unregistered",
+    "style_alignment": "Compared with early adopted Menu Revision reference: large expressive faces, 2.5-head chibi proportions, warm cel colors and bold clean lines; consistent across both panels.",
+    "selection": "Owner decision pending; not adopted",
+    "fill": "Official fill applied; filled panels re-inspected, faces/dialogue/gag preserved."
+  },
+  "delivery": [
+    {
+      "file": "panels/kuze-rumor-source-1.webp",
+      "sha256": "d7cdca37c63e1eb8fb73af35e111b84c5bc571ead831a4a543bc930caf9dca99",
+      "width": 720,
+      "height": 480
+    },
+    {
+      "file": "panels/kuze-rumor-source-2.webp",
+      "sha256": "24e06f0c7b430049bb453f021758c9f9e31b4f066d95ea4565ba717e0bce49ec",
+      "width": 720,
+      "height": 480
+    }
+  ],
+  "style_reference": {
+    "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+    "role": "early adopted Menu Revision comic, style only",
+    "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+  }
+}

@@ -27,7 +27,7 @@ ports.set('remake/js/core/data.js', fixed(['bgUrl'],{bgUrl:id=>id}));
 ports.set('remake/js/core/util.js', fixed(['el'],{el:()=>{throw Error('Unexpected el');}}));
 ports.set('remake/js/core/city-locations.js',fixed(['CH2_CITY_NAME','HOME_CITY_NAME','HOME_CITY_READING'],{CH2_CITY_NAME:'柚ヶ谷',HOME_CITY_NAME:'地元',HOME_CITY_READING:'じもと'}));
 ports.set('remake/js/core/rules.js',fixed(['TOURNAMENT_DAY'],{TOURNAMENT_DAY:99}));
-ports.set('remake/js/core/chapter-clock.js',fixed(['chapterDay'],{chapterDay:s=>s.day}));
+ports.set('remake/js/core/chapter-clock.js',fixed(['chapterDay','atChapterFinalDay'],{chapterDay:s=>s.day,atChapterFinalDay:s=>s.day>=99}));
 async function moduleAt(p) {
   if(ports.has(p)) return ports.get(p);
   assert(['remake/js/chapters/ch2-commute.js','remake/js/daily/station-travel.js','remake/js/core/travel-budget.js','remake/js/daily/night-events.js'].includes(p),p);
@@ -65,6 +65,8 @@ console.log(JSON.stringify({groups:6,scope:'actual commute/station/night-plan mo
 const runDailySource = calendar.slice(calendar.indexOf('export async function runDaily('), calendar.indexOf('\nasync function morning()')).replace('export ', '');
 const morningSource = calendar.slice(calendar.indexOf('async function morning()'), calendar.indexOf('\n/** HUD'));
 const nightSource = calendar.slice(calendar.indexOf('async function endDay('));
+// #2213 B01: 配達はその日の行動枠の後（帰り道）に確認する。実 dueDelivery で、第2章・配達期間外は割り込まないことを通す。
+const dueDeliverySource = calendar.slice(calendar.indexOf('function dueDelivery()'), calendar.indexOf('\nasync function deliver('));
 for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
   const trace = [], snapshots = [];
   const fixture = { chapter, day: 15, slot: 2, stamina: 60, money: 1000, flags: { _morning_15: true }, visitedDay: {} };
@@ -79,24 +81,26 @@ for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
     restingToday: () => false, bannersIdle: async () => {},
     runNightPlan: async () => { trace.push('night'); return 0; },
     maybeConfession: async () => { trace.push('confession'); return false; },
+    strainMorning: () => 0, maybeStrainTalk: async () => false, maybeStrainReunion: async () => false, // すれ違い（恋人の裏の数値）は remake/test/lover_strain.mjs。この検査では動かない
     maybeSamechanEncounter: async () => { trace.push('encounter'); },
     play: async id => { trace.push(id); return {}; }, beat() {},
     showSumiRigAtHome: async () => { trace.push('rig-homecoming'); return false; },
     runHomeShisha: async () => { trace.push('home-shisha'); return false; },
     presentNight: async () => { trace.push('night-growth'); return null; },
+    takeChapterBoardNotice: () => null, chapterBoardCards: () => [], respecMapNotice: () => "", // 章はじめの盤の知らせ（#1801 C10）。盤が無効な時と同じく何もしない
     conditionForRatio: () => ({ health: 'healthy' }), staminaRatio: () => fixture.stamina / 100,
     addStamina: n => { fixture.stamina += n; trace.push('recovery'); },
     daysLeft: () => 28 - fixture.day, updateHud() {},
     refreshWeather: () => trace.push('weather:' + fixture.day),
     bgUrl: (id, time) => `${id}:${time}`, setBg: bg => trace.push(bg),
     dayTurn: async wake => { trace.push('dawn'); const data = await wake(); assert.equal(data.weather, weather); },
-    fadeBlack: async wake => wake(), isRainy: () => weather === 'rain', weatherOf: () => weather,
+    fadeBlack: async wake => wake(), isRainy: () => weather === 'rain', weatherOf: () => weather, tomorrowForecast: () => null,
     presentSleepRecovery: async ({ before, after }) => { assert.equal(before, 60); assert.equal(after, 74); trace.push('recovery-ui'); },
     playBgm: bgm => trace.push(bgm), dayCard: async () => { throw Error('Duplicate morning DAY card'); },
     deliverMorning: () => { trace.push('lime'); return 1; }, pushNotice: () => trace.push('notice'),
   };
   const ctx = vm.createContext(env);
-  vm.runInContext('let chapterDef, onQuit, queuedLimeSender, dawnShownDay; const fixedNight = () => false;\n' + runDailySource + morningSource + nightSource, ctx);
+  vm.runInContext('let chapterDef, onQuit, queuedLimeSender, dawnShownDay; const fixedNight = () => false;\n' + runDailySource + dueDeliverySource + morningSource + nightSource, ctx);
   await assert.rejects(ctx.runDaily({ startNextDay: chapter === 2, untilDay: 28, nightEvents: {},
     beforeHomecoming: async () => trace.push('return-home'),
     morningDeparture: async () => { if (fixture.day === 16) throw stop; },
@@ -129,7 +133,7 @@ console.log('PASS: chapter 1 / chapter 2 actual calendar night → home → slee
 
 // Actual chapter controller: finish the mandatory report before entering the shared calendar.
 const chapterSource = read('remake/js/chapters/ch2.js');
-const dayOneSource = chapterSource.slice(chapterSource.indexOf('async function continueDayOne()'), chapterSource.indexOf('\nasync function introduceStop('));
+const dayOneSource = chapterSource.slice(chapterSource.indexOf('async function continueDayOne()'), chapterSource.indexOf('\nfunction greetingWithoutFarewell('));
 for (const stage of ['tonari', 'complete']) {
   const scenes = [], progress = { stage }, fixture = { slot: 1, money: 1000, flags: { _ch2_deliveries: { accepted: true, reported: stage === 'complete' } } };
   const ctx = vm.createContext({
@@ -175,6 +179,7 @@ const invitationContext = vm.createContext({
   addMoney: n => { state.money += n; }, addStamina: n => { state.stamina += n; },
   playHiyoriHangout: async () => { log.push('meeting:' + state.flags._ch2_region); },
   consultLessons: async () => [], // 心得の盤の授業の相談（SBD70）。盤が無効な時と同じく何もしない
+  takeChapterBoardNotice: () => null, chapterBoardCards: () => [], respecMapNotice: () => "", // 章はじめの盤の知らせ（#1801 C10）
   bgRef: id => id, VISIT_BG: { hiyori: 'shop' },
   completeInvitation: inv => { state.pendingInvite = null; rewardTrace.push('complete:' + inv.sender); },
   paidAction: async fn => { rewardTrace.push('paidAction'); const value = await fn(); if (value) rewardTrace.push('reward'); return { value, spent: 1 }; },
@@ -183,6 +188,7 @@ const invitationContext = vm.createContext({
   save: () => saves++, restingToday: () => restedForInvite,
   runNightPlan: async () => 0, bannersIdle: async () => {}, beat: async () => log.push('beat'),
   maybeConfession: async () => { throw appointmentStop; },
+  maybeStrainTalk: async () => false, maybeStrainReunion: async () => false,
 });
 Object.defineProperty(invitationContext, 'state', { configurable: true, get: () => state });
 const invitationStats = fixed(['earnStat'], { earnStat: (key, amount) => rewardTrace.push(`stat:${key}:${amount}`) });

@@ -1,0 +1,111 @@
+{
+  "episode": 23,
+  "title": "一口の重さ",
+  "cast": "りゅうじ・はじめ",
+  "theme": "旧・暴走編（復刻）",
+  "status": "not-adopted-owner-20261102",
+  "registered": false,
+  "reading_order": "左①導入→右②オチ",
+  "source_reference": {
+    "file": "asset_sources/short-comics-unhinged-ltr-20261025/21-24-chaos-ltr.png",
+    "original_order": "left-to-right",
+    "branch": "main",
+    "note": "元版は上書きしない"
+  },
+  "restoration": "image_genによる再作画",
+  "image_manifest": [
+    {
+      "file": "23-restored.png",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 2332891,
+      "sha256": "cce50a90dbd6a3e788c2c10baffe87134506e2c9bdc1521d42a2924c64847e09"
+    }
+  ],
+  "tasks": [
+    {
+      "script": "LEFT ①: Hajime stands by Ryuji with a plain small water glass, politely asks 「一口、いいですか？」 No smoking or pipe shown. RIGHT ②: Ryuji has produced a ridiculous enormous FAMILY TREE SCROLL that unrolls out the window between city buildings, thousands of little stern adult portraits. One highlighted branch connects Ryuji's white-check portrait and Hajime's black-cap portrait with text 「五厘の兄弟」. Ryuji emotionally says 「兄弟だ。」 Hajime buried in scroll says 「親戚、増えた。」 Huge scale shift, no real legal family records.",
+      "dialogue_original": [
+        "一口、いいですか？",
+        "五厘の兄弟",
+        "兄弟だ。",
+        "親戚、増えた。"
+      ],
+      "prompt": "旧漫画のサイズと読む順を統一する編集です。添付1の原画シートから指定した話1本だけを、添付2の下敷きへ再構成する。元のネタ・衣装・顔・小物・台詞を保つ。別の話を混ぜず、新しいギャグは足さない。出力1536x1024、左x36 y272幅720高さ480、右x780 y272幅720高さ480、横長3:2。上下272pxの紙余白、枠はy752で終わる。枠を縦に広げない。絵は枠内だけ。セーフマージン29px。左コマを導入、右コマをオチに並べ替え、絵や文字の左右反転は禁止。元絵の台詞は横書きの読みやすい太い日本語ゴシック。題名・話数・シリーズ名・読む順の番号・署名は消す。2.5頭身の太線セル塗りと紙質、原画の本人性を維持。台詞が多くても枠を拡げず人物を胸上で構成する。文字・顔・重要な小物を欠かさない。元々3人の話は物語を勝手に改変せず3人を維持してよい（旧話の復刻である）。シーシャ器具は指定された話以外描かない。写真は構造参照で、製品ロゴや写真の実在人物は模写しない。最終配置について、次の台本のLEFTは完成版の左、RIGHTは完成版の右です。元シートの左右位置を真似しない。上の大きな余白を残す下敷き画像が寸法の正本。出力は必ず1536x1024（2:1や横長帯は禁止）。下敷きは添付1。添付2のシートの第23話「一口の重さ」だけ。完成版の台本: LEFT ①: Hajime stands by Ryuji with a plain small water glass, politely asks 「一口、いいですか？」 No smoking or pipe shown. RIGHT ②: Ryuji has produced a ridiculous enormous FAMILY TREE SCROLL that unrolls out the window between city buildings, thousands of little stern adult portraits. One highlighted branch connects Ryuji's white-check portrait and Hajime's black-cap portrait with text 「五厘の兄弟」. Ryuji emotionally says 「兄弟だ。」 Hajime buried in scroll says 「親戚、増えた。」 Huge scale shift, no real legal family records.。りゅうじは白大柄チェック・紫ネクタイ・色付き眼鏡・口ひげ53歳。シーシャ台・ホース・喫煙・武器は描かない。実際のシーシャ煙や炭は描かない。",
+      "reference_images": [
+        "/workspace/shisha-game/asset_sources/loading-comics/template/2koma_template_1536x1024.png",
+        "/workspace/shisha-game/asset_sources/short-comics-unhinged-ltr-20261025/21-24-chaos-ltr.png",
+        "/workspace/shisha-game/assets/sprites/characters/kumicho/chr_kumicho_normal.png"
+      ],
+      "generator": "OpenAI image_gen"
+    }
+  ],
+  "source": [
+    {
+      "file": "23-restored.png",
+      "region": {
+        "x": 40,
+        "y": 276,
+        "width": 710,
+        "height": 519,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "23-restored.png",
+      "region": {
+        "x": 784,
+        "y": 276,
+        "width": 710,
+        "height": 519,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/restored-23-1.webp",
+      "width": 778,
+      "height": 519,
+      "sha256": "4a7b32e62b81156f64c575baa158856ea49e29e41efd9d99e5665c1ddebdedcc"
+    },
+    {
+      "file": "panels/restored-23-2.webp",
+      "width": 778,
+      "height": 519,
+      "sha256": "55dadbe16a75bf14bc32a35a4ea4d58b525f5f0b7380d50c365b4797943be1d9"
+    }
+  ],
+  "qa": {
+    "image_check": "配信用2枚は3:2許容内・1440×960以下・400KiB未満",
+    "source_visual": "元シートと再作画原画を目視。選別用の2枚は左→右。",
+    "ratio": "ok（強制通過なし）",
+    "known_deviations": [
+      "選別用の復刻候補。ゲームへの登録・採用画像の置換はしていない。",
+      "旧作の台詞数・看板文字・人物数などを保存。新作の2人/3台詞の制作ルールと異なる話は、正式採用前に編集確認が必要。",
+      "旧・暴走編の内容を維持。49話以降の少しシュールな作風とは異なる。",
+      "枠検出が片側のみだったため、目視した枠内710×519を指定してpanelモードの同じ比率検査を適用。",
+      "原版に埋め込まれた話数・見出しの断片が残る候補は正式採用前の画像整理対象。"
+    ],
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        "1280x720",
+        "844x390"
+      ],
+      "assertions": [
+        "2枚をdecode",
+        "題名一致",
+        "表示枠3:2",
+        "表示枠が画面内"
+      ],
+      "screenshots": [
+        "qa-pc.png",
+        "qa-phone.png"
+      ]
+    }
+  },
+  "selection_note": "2026-11-02 オーナーの選別で不採用（ゲームに登録しない）。"
+}

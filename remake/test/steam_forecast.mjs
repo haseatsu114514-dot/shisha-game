@@ -10,11 +10,13 @@ const errors = [], shots = process.env.SHOTS;
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const open = async (viewport, mobile, insight = 10) => {
   const page = await browser.newPage({ viewport, isMobile: mobile, hasTouch: mobile });
+  // 選ぶ工程の初回説明（#3028）はこの検査の対象外（support.mjs を使わない単独ハーネスのため、ここでも既定オフに合わせる）
+  await page.addInitScript(() => { try { localStorage.setItem("suien_step_intro", "off"); } catch {} });
   await installLoadingComicReader(page);
   page.on('pageerror', e => errors.push(e.message));
   await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
   await page.waitForSelector('[data-test="title-new"]');
-  await page.evaluate(async insight => {
+  await page.evaluate(async ({ insight }) => {
     const core = await import('./js/core/state.js'); core.newGame(); core.state.stamina = 80;
     core.state.stats.insight = insight;
     const session = await import('./js/craft/session.js'), steps = await import('./js/craft/steps.js');
@@ -25,7 +27,7 @@ const open = async (viewport, mobile, insight = 10) => {
     cs.heat = { heatPower: 70 }; cs.holes = { total: 24, minimumComplete: true };
     const bench = session.openBench(cs);
     while (!bench.root.isConnected) await new Promise(requestAnimationFrame);
-  }, insight);
+  }, { insight });
   return page;
 };
 const ready = async page => {
@@ -91,7 +93,51 @@ const pressWhileSteering = async (page, selector) => {
     await touch.detach();
   }
 };
+const checkHelp = async (page, name) => {
+  const guide = page.locator('.bench-guide');
+  assert(await guide.isVisible(), 'Optional help button should be available');
+  assert.equal(await guide.getAttribute('open'), null, 'Help must not cover the playfield by default');
+  const helpOutsideField = await guide.locator('summary').evaluate(n => {
+    const help = n.getBoundingClientRect(), field = document.querySelector('.dodge').getBoundingClientRect();
+    return help.right <= field.left || help.left >= field.right || help.bottom <= field.top || help.top >= field.bottom;
+  });
+  assert(helpOutsideField, 'Help must not intercept taps inside the playfield');
+  const summary = guide.locator('summary');
+  const hit = await summary.evaluate(n => {
+    const r = n.getBoundingClientRect(), x = r.x + r.width / 2, y = r.y + r.height / 2;
+    return { x, y, width: r.width, height: r.height, receivesPointer: n.contains(document.elementFromPoint(x, y)) };
+  });
+  assert(hit.receivesPointer, `Help is clipped or covered: ${JSON.stringify(hit)}`);
+  await summary.click({ trial: true });
+  console.log(`[steam help] PASS: ${name} ${JSON.stringify(hit)}`);
+  await guide.locator('summary').click();
+  assert(await guide.locator('.bench-guide-tip').isVisible());
+  assert.match(await guide.locator('.bench-guide-tip').textContent(), /アタック/);
+  await guide.locator('summary').click();
+  assert.equal(await guide.getAttribute('open'), null);
+};
 try {
+  {
+    // 横持ちタッチ（DS風は廃止・横画面一本化）。ヘルプが押せて、スティックが入力を受け続ける。
+    const page = await open({ width: 844, height: 390 }, true, 10);
+    await page.evaluate(() => {
+      window.steamFlow = (async () => {
+        await T.steps.stepSteamTime(cs);
+        await T.steam.runSteamDodge(cs);
+      })();
+    });
+    await page.locator('[data-test="timer-minute-up"]').waitFor();
+    for (let i = 0; i < 6; i++) await page.locator('[data-test="timer-minute-up"]').click();
+    await page.locator('[data-test="timer-start"]').click();
+    await page.locator('.dodge').waitFor(); await ready(page);
+    await checkHelp(page, 'touch-landscape');
+    await page.waitForFunction(() => !document.querySelector('.countdown') && Number(document.querySelector('[data-test="steam-world"]').dataset.frame) > 0);
+    const speed = await stickSpeed(page, true);
+    assert(speed > 100, `Landscape touch stick stopped receiving input: ${speed}`);
+    console.log(`[steam help] PASS: landscape touch steering ${speed.toFixed(0)} px/s`);
+    await screenshot(page, 'steam-help-touch-landscape');
+    await page.close();
+  }
   for (const [name, viewport, mobile] of [
     ['desktop', { width: 1280, height: 720 }, false],
     ['mobile', { width: 844, height: 390 }, true],
@@ -135,35 +181,28 @@ try {
     await screenshot(page, `timer-rain-${name}`);
     const spacing = await page.evaluate(() => {
       const r = s => document.querySelector(s).getBoundingClientRect();
-      const left = r('.bench-left'), right = r('.bench-right'), bench = r('.bench');
+      const right = r('.bench-right'), bench = r('.bench');
       const scale = bench.width / 1280;
-      return { gap: (right.left - left.right) / scale, bottom: (bench.bottom - right.bottom) / scale };
+      // 新しい配置（一枚の舞台・既定）では、舞台は熱の柱のすぐ右から始まる。旧配置（?craftStage=0）は左右の窓が接する。
+      const stage = document.body.classList.contains('craft-stage');
+      const left = stage ? r('.bench-panel .thermo') : r('.bench-left');
+      return { stage, gap: (right.left - left.right) / scale, bottom: (bench.bottom - right.bottom) / scale };
     });
-    assert(spacing.gap > 0 && spacing.gap <= 8, `Window gap too wide: ${JSON.stringify(spacing)}`);
+    assert(spacing.gap > 0 && spacing.gap <= (spacing.stage ? 14 : 8), `Window gap too wide: ${JSON.stringify(spacing)}`);
     assert(spacing.bottom <= 14, `Bottom margin too large: ${JSON.stringify(spacing)}`);
     await page.locator('[data-test="timer-start"]').click(); await page.evaluate(() => window.timerRun);
     await page.evaluate(() => { window.steamRun = T.steam.runSteamDodge(cs); });
     await page.waitForSelector('.dodge'); await ready(page);
     assert.deepEqual(await geometry(page), position, `${name}: thermometer was moved during bullet hell`);
     assert(await page.locator('[data-test="steam-forecast-range"]').isHidden(), 'Forecast leaked into bullet hell');
-    const guide = page.locator('.bench-guide');
-    assert(await guide.isVisible(), 'Optional help button should be available');
-    assert.equal(await guide.getAttribute('open'), null, 'Help must not cover the playfield by default');
-    const helpOutsideField = await guide.locator('summary').evaluate(n => {
-      const help = n.getBoundingClientRect(), field = document.querySelector('.dodge').getBoundingClientRect();
-      return help.right <= field.left || help.left >= field.right || help.bottom <= field.top || help.top >= field.bottom;
-    });
-    assert(helpOutsideField, 'Help must not intercept taps inside the playfield');
-    await guide.locator('summary').click();
-    assert(await guide.locator('.bench-guide-tip').isVisible());
-    assert.match(await guide.locator('.bench-guide-tip').textContent(), /アタック/);
-    await guide.locator('summary').click();
-    assert.equal(await guide.getAttribute('open'), null);
+    await checkHelp(page, name);
     assert(await page.locator('.bench-worker-name').isHidden());
     assert.equal(await page.locator('.bench-title').textContent(), '蒸らし');
     assert(await page.locator('.bench-title').isHidden());
     assert.equal(await page.locator('.bench-phase[aria-current="step"]').textContent(), '03蒸らし');
-    assert.equal(await page.locator('.bench-phase[aria-current="step"]').evaluate(n => n.offsetHeight), 49);
+    // 今の工程の札の高さ: 新しい配置（既定）は上のレールの札 44、旧配置は帯の札 49
+    assert.equal(await page.locator('.bench-phase[aria-current="step"]').evaluate(n => n.offsetHeight),
+      await page.evaluate(() => document.body.classList.contains('craft-stage')) ? 44 : 49);
     assert.deepEqual(await page.locator('.dodge-controls .refresh-copy').allTextContents(), ['リフレッシュ', 'アタック', '精密']);
     assert.equal(await page.locator('.dodge-world-title').count(), 0);
     const controls = await page.locator('.dodge-controls').evaluate(n => {

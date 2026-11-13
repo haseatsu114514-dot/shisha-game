@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
 import test from 'node:test';
+import { chapterFeatureEnabled } from '../js/core/chapter-features.js';
 
 const source = await fs.readFile(new URL('../js/daily/phone.js', import.meta.url), 'utf8');
 const mediaCatalog = JSON.parse(await fs.readFile(new URL('../data/lime_media.json', import.meta.url), 'utf8'));
@@ -13,7 +14,7 @@ const response = { text: '頑張ります', response: 'うん、お互いにね'
 const deferred = () => { let resolve; const promise = new Promise(r => { resolve = r; }); return { promise, resolve }; };
 const flush = async () => { for (let i = 0; i < 12; i++) await Promise.resolve(); };
 
-async function fixture({ lover = false, reply = response, invitation = false } = {}) {
+async function fixture({ lover = false, reply = response, invitation = false, cost = 0 } = {}) {
   const nodes = [], timers = new Map();
   const element = (spec, attrs = {}, children = []) => {
     if (Array.isArray(attrs)) { children = attrs; attrs = {}; }
@@ -29,20 +30,24 @@ async function fixture({ lover = false, reply = response, invitation = false } =
   const noop = () => {};
   const imports = {
     'util.js': { el: element, sleep: async () => {}, fitOneLine: noop, yen: String },
-    'data.js': { DB: { lime: [], limeTemplates, manifest: { limeMedia: mediaCatalog } }, displayName: String, faceIconUrl: noop },
+    'data.js': { DB: { lime: [], limeTemplates, manifest: { limeMedia: mediaCatalog } }, displayName: String, limeAccountName: String, faceIconUrl: noop },
     'lime-icons.js': { customLimeIconUrl: () => null },
     'ui.js': { layers: { modal: element('modal') }, toast: noop }, 'tsumugi-schedule.js': { tsumugiAtTonari: () => false, tsumugiMessages: () => [], TSUMUGI_STORY: [] }, 'casual-lime.js': { casualMessages: () => [] }, 'state.js': { state: current }, 'rules.js': { TOURNAMENT_DAY: 14 },
     'chapter-clock.js': { chapterDay: () => 5 },
+    'chapter-features.js': { chapterFeatureEnabled },
     'travel-budget.js': { spendableMoney: () => 30000 },
     'stats.js': { gainAffinity: (id, pts, opts) => { current.gains.push({ id, pts, private: bond.private }); if (pts > 0) opts?.onGain?.(.2125); },
       affinityLevel: () => 1, applyStats: noop, bond },
-    'audio.js': { SE: { phoneReceive: noop } }, 'engine.js': { hooks: {} }, 'text.js': { formatHtml: String },
+    'audio.js': { SE: { phoneReceive: noop, click: noop } }, 'engine.js': { hooks: {} }, 'text.js': { formatHtml: String },
     'spots.js': { hasContact: noop, spotById: noop, isClosed: noop },
     'romance.js': { loverMessages: noop, isLover: id => current.lovers.includes(id), dateSchedule: noop },
     'bonds.js': { bondInvites: noop, friendMessages: noop },
     'story-knowledge.js': { syncMintoKnowledge: noop }, 'hiyori-route.js': { hiyoriEventStatus: noop },
     'story-contact.js': { storyThreadStatus: () => null },
-    'invitations.js': { invitationCost: () => 0, storeInvitationSpot: noop, visitReminderSpot: noop, invitationVisitSpot: noop, immediateInvitation: () => false, missedInvitationNote: () => null },
+    // 朝の配分（LM08）。この試験は1件のやりとりだけを見るので、配分は使わない
+    'lime-pacing.js': { LIME_PACING: { softCap: 2, hardCap: 3, backlog: 3, quietDays: 2 }, isWorkInvite: m => ['__sumi_baito__', '__mukai_baito__'].includes(m?.accept_event),
+      storyPaceClass: () => 'must', pacingHistory: () => ({ lastBySender: new Map(), lastAny: -Infinity, yesterday: 0, unread: 0 }), overdue: () => 1.5, urgency: () => 1, dayCap: () => 2, bondInvitation: () => false },
+    'invitations.js': { invitationCost: () => cost, storeInvitationSpot: noop, visitReminderSpot: noop, invitationVisitSpot: noop, immediateInvitation: () => false, missedInvitationNote: () => null },
   };
   const context = vm.createContext({ console, setTimeout: (fn, ms) => { const id = {}; timers.set(id, { fn, ms }); return id; }, clearTimeout: id => timers.delete(id), requestAnimationFrame: noop, document: {}, Math, Date, Set, Promise });
   const modules = new Map();
@@ -64,7 +69,7 @@ async function fixture({ lover = false, reply = response, invitation = false } =
   original.inbox.push(item);
   const picks = [], bubbles = [], media = [], held = [];
   const ui = { gen: 0, open: true, live(g) { return this.open && this.gen === g; },
-    choose() { const pick = deferred(); picks.push(pick); return pick.promise; },
+    choose(options) { const pick = deferred(); pick.options = options; picks.push(pick); return pick.promise; },
     bubble(text, mine, sender, animate = true) {
       bubbles.push({ text, mine, animate });
       if (!animate) return Promise.resolve();
@@ -206,10 +211,16 @@ test('media snapshots preserve templates and enforce chapter, account, owner, co
   assert.equal(receive().msg.messages.length, 3);
   assert.equal(JSON.stringify(template), original);
   f.original.chapter = 2;
-  // The second asset has no explicit chapter limit and can appear in chapters 1–3.
+  // The second asset has no explicit chapter limit and can appear in chapters 1–5.
   assert.equal(receive().msg.messages[1].image, 'im_adam_moon');
-  f.original.chapter = 4;
-  assert.equal(receive().msg.messages.length, 2);
+  for (const chapter of [4, 5]) {
+    f.original.chapter = chapter;
+    assert.equal(receive().msg.messages[1].image, 'im_adam_moon');
+  }
+  for (const chapter of [0, 6, '4', undefined]) {
+    f.original.chapter = chapter;
+    assert.equal(receive().msg.messages.length, 2);
+  }
   f.original.chapter = 1;
   const first = receive(); f.original.inbox.push(first);
   f.original.day += 4;
@@ -277,7 +288,7 @@ test('reply acknowledgement obeys owner, account and recent-media spacing limits
 test('reply acknowledgement is suppressed outside media chapters and when a thread already has media', async () => {
   const f = await fixture({ invitation: true });
   f.item.msg.accept_reply = { sender: 'minto', stamp: 'st_minto_cheer' };
-  f.original.chapter = 4;
+  f.original.chapter = 6;
   let run = f.run(); f.picks[0].resolve({ text: '行く！', go: true }); await flush(); await f.finish(); await run;
   assert.equal(f.item.log.some(line => line.stamp), false);
   const g = await fixture({ invitation: true });
@@ -356,4 +367,79 @@ test('media wait is bounded, history is immediate and stale callbacks cannot cha
   f.replaceState();
   loadImage.onerror(); await loaded;
   assert.equal(loadBox.children[0], loadImage);
+});
+
+test('reply layout is established before scrolling to the last message', async () => {
+  const f = await fixture();
+  const ui = f.api.phoneShell({ time: '昼', title: 'test' });
+  Object.defineProperty(ui.chat, 'scrollHeight', { get: () => ui.actions.children.length ? 900 : 500 });
+  ui.chat.scrollTop = 500;
+  const choice = ui.choose([{ label: '行きます！（行動1回・3,000円必要）', wrap: true }, { text: '今日は難しいです' }]);
+  assert.equal(ui.chat.scrollTop, 900, 'scroll after reply buttons change the available chat height');
+  const buttons = ui.actions.children;
+  assert.match(buttons[0].spec, /\.multiline/);
+  assert.doesNotMatch(buttons[1].spec, /\.multiline/);
+  ui.cancel(); await choice;
+});
+
+test('attachment space is reserved before scrolling, including unread and history draws', async () => {
+  const f = await fixture();
+  const ui = f.api.phoneShell({ time: '昼', title: 'test' });
+  Object.defineProperty(ui.chat, 'scrollHeight', { get: () =>
+    f.nodes.findLast(node => node.spec === 'div.lime-media.lime-image')?.style.aspectRatio ? 900 : 500 });
+  const drawing = ui.media(f.api.messageContent({ image: 'im_adam_moon' }), 'adam', true);
+  assert.equal(ui.chat.scrollTop, 900, 'unread image dimensions contribute before scroll');
+  f.nodes.findLast(node => node.spec === 'img').onload(); await drawing;
+  ui.chat.scrollTop = 0;
+  await ui.media(f.api.messageContent({ image: 'im_adam_moon' }), 'adam', false);
+  assert.equal(ui.chat.scrollTop, 900, 'history also scrolls after reserving image dimensions');
+});
+
+
+test('only a priced invitation opts into wrapping without changing the acceptance choice', async () => {
+  for (const cost of [0, 3000]) {
+    const f = await fixture({ invitation: true, cost });
+    const pending = f.run(); await flush();
+    const choice = f.picks[0].options[0];
+    assert.equal(choice.wrap, !!cost);
+    assert.equal(choice.go, true);
+    assert.equal(choice.text, '行く！');
+    if (cost) assert.match(choice.label, /3000必要/);
+    f.picks[0].resolve(null); await pending;
+    assert.equal(f.item.done, false);
+    assert.equal(f.original.pendingInvite, undefined);
+  }
+});
+
+test('forced story LIME wraps custom closing replies and preserves ordinary close controls', async () => {
+  for (const label of [null, '……誰？', '……はい。ありがとうございます、スミさん']) {
+    const f = await fixture();
+    const pending = f.api.openPhone([{ id: 'story-close', sender: 'sumi', messages: [], close_label: label }]);
+    const chat = f.nodes.findLast(node => node.spec === 'div.lime-chat');
+    const actions = f.nodes.findLast(node => node.spec === 'div.lime-actions');
+    Object.defineProperty(chat, 'scrollHeight', { get: () => actions.children.some(node => node.spec?.includes('.multiline')) ? 900 : 500 });
+    await flush();
+    const button = f.nodes.findLast(node => node.dataset?.test === 'phone-next');
+    assert(button, 'openPhone reaches its actual closing control');
+    assert.equal(button.text, label || 'スマホを閉じる');
+    assert.equal(button.spec.includes('.multiline'), !!label);
+    assert.match(button.spec, /\.lime-reply\.ghost/);
+    assert.equal(chat.scrollTop, label ? 900 : 500, 'scroll after closing reply changes available chat height');
+    assert.equal(f.original.inbox.at(-1).done, true);
+    assert.equal(f.original.gains.length, 0);
+    button.onclick(); await flush(); await pending;
+    assert.equal(f.original.inbox.at(-1).log.length, 0, 'closing label does not become a new reply or reward');
+  }
+  const css = await fs.readFile(new URL('../css/daily.css', import.meta.url), 'utf8');
+  assert.match(css, /\.lime-reply\.multiline\s*\{[^}]*white-space:\s*normal;[^}]*text-overflow:\s*clip;/);
+});
+
+for (const chapter of [3, 5]) test(`Mukai accepted shift replies with one owned stamp in chapter ${chapter}`, async () => {
+  const f = await fixture({ invitation: true });
+  f.original.chapter = chapter;
+  f.item.msg = { ...JSON.parse(JSON.stringify(limeTemplates.mukai_baito)), id: 'mukai-stamp', messages: ['はじめくん。今日の昼、店に入れるか'] };
+  const run = f.run(); f.picks[0].resolve({ text: '入ります', go: true });
+  await flush(); await f.finish(); await run;
+  assert.equal(f.item.log.filter(line => line.stamp === 'st_mukai_master_ack').length, 1);
+  assert.equal(f.media[0].content.asset.owner, 'mukai_master');
 });

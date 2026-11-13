@@ -4,6 +4,8 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { installLoadingComicReader } from "./loading_reader.mjs";
+import { installGrowthAcknowledger } from "./growth_ack.mjs";
+import { installShopGreetingReader } from "./shop_greeting_reader.mjs";
 
 const { chromium } = createRequire(import.meta.url)("playwright");
 const root = fileURLToPath(new URL("../../../", import.meta.url));
@@ -16,19 +18,35 @@ export async function suite(name, run, {
   readySelector = process.env.READY_SELECTOR || '[data-test="title-new"]',
   initScript = null,
   readLoadingComics = true,
+  acknowledgeGrowth = true,
+  readShopGreeting = true,
+  // 心得の盤のはじめての案内と最初の火種（growth-board-tutorial.js）。他の検査の火種の数を変えないよう既定は出さない
+  boardTutorial = false,
+  roamers = false,
+  // 選ぶ工程の初回説明（#3028 説明→ボタンの段階表示）。専用スイートだけ出す
+  stepIntro = false,
+  freshBrowserPerCase = false,
 } = {}) {
   fs.mkdirSync(artifacts, { recursive: true });
   const timeoutMs = Number(process.env.BROWSER_TIMEOUT_MS || 10000);
   const results = [];
-  const browser = await chromium.launch({
+  const launch = () => chromium.launch({
     headless: true,
     ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}),
   });
+  const browser = freshBrowserPerCase ? null : await launch();
   async function check(label, body, options = {}) {
     if (process.env.CASE_FILTER && label !== process.env.CASE_FILTER) return;
-    const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, ...options });
+    const { pageEntry = entry, pageReadySelector = readySelector, ignoreFailedResource = () => false, ...contextOptions } = options;
+    const caseBrowser = browser || await launch();
+    const context = await caseBrowser.newContext({ viewport: { width: 1280, height: 720 }, ...contextOptions });
     const page = await context.newPage();
     if (readLoadingComics) await installLoadingComicReader(page);
+    if (acknowledgeGrowth) await installGrowthAcknowledger(page);
+    if (!boardTutorial) await page.addInitScript(() => { try { localStorage.setItem("suien_board_tutorial", "off"); } catch {} });
+    // よその店に居合わせる人（daily/roamers.js）。店を訪ねる検査の流れを変えないよう、既定で切る（roamers.mjs だけ外す）
+    if (!roamers) await page.addInitScript(() => { try { localStorage.setItem("suien_roamers", "off"); } catch {} });
+    if (!stepIntro) await page.addInitScript(() => { try { localStorage.setItem("suien_step_intro", "off"); } catch {} });
     if (initScript) await page.addInitScript(initScript);
     const errors = [];
     const failedResources = [];
@@ -45,13 +63,14 @@ export async function suite(name, run, {
     });
     const prefix = path.join(artifacts, `${name}-${label}`);
     try {
-      await page.goto(entry, { waitUntil: "load" });
+      await page.goto(pageEntry, { waitUntil: "load" });
       // 起動時は書体と選んだタイトル画像を待つ。工程中の操作とは別の上限。
-      await page.locator(readySelector).waitFor({ timeout: 30000 });
+      await page.locator(pageReadySelector).waitFor({ timeout: 30000 });
       await page.locator("#boot").waitFor({ state: "detached" });
+      if (readShopGreeting) await installShopGreetingReader(page);
       await body(page);
       assert.deepEqual(errors, [], "Unexpected browser errors");
-      assert.deepEqual(failedResources, [], "Failed resource requests");
+      assert.deepEqual(failedResources.filter(failure => !ignoreFailedResource(failure)), [], "Failed resource requests");
       await page.screenshot({ path: `${prefix}.png` });
       results.push({ label, status: "passed" });
       console.log(`[${name}] PASS: ${label}`);
@@ -61,12 +80,13 @@ export async function suite(name, run, {
       console.error(`[${name}] FAIL: ${label}\n${error.stack || error}`);
     } finally {
       await context.close();
+      if (freshBrowserPerCase) await caseBrowser.close();
     }
   }
   try {
     await run(check);
   } finally {
-    await browser.close();
+    if (browser) await browser.close();
     fs.writeFileSync(path.join(artifacts, `${name}.json`), JSON.stringify({
       name, baseURL: entry, timeoutMs, ref: process.env.TEST_REF || null, results,
     }, null, 2) + "\n");

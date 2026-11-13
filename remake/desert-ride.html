@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja" data-ui-theme="paper">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="suien-build" content="dev" data-built="">
+<meta name="theme-color" content="#e9c995">
+<title>DESERT RIDE — 水煙前線 -EN:CODE-</title>
+<link rel="icon" href="../icon.svg">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/desert-ride.css">
+<link rel="stylesheet" href="css/ui-paper.css">
+<link rel="stylesheet" href="css/settings.css">
+<link rel="stylesheet" href="css/side-area.css">
+<style>
+#viewport { background: #1a1210; }
+#backdrop { background-image: radial-gradient(ellipse at 50% 30%, #f3d7a6, #d9a86c 70%, #9d6a3c); }
+.dr-page { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 30%, #f3d7a6, #d9a86c 70%, #9d6a3c); font-family: var(--font); color: #3a2520; text-align: center; }
+.dr-page h1 { margin: 0 0 6px; font-size: 56px; letter-spacing: .1em; }
+.dr-page p { margin: 0 0 18px; font-size: 18px; }
+.dr-page .row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.dr-page label { font-size: 15px; display: inline-flex; gap: 6px; align-items: center; }
+/* スマホ横持ち（#2729）: ステージが --k で縮むぶんを戻し、文字は実寸 12px 以上・ボタンは実寸 44px 以上。英字の飾りとキーの説明は出さない */
+@media (orientation: landscape) and (max-height: 520px) and (pointer: coarse) {
+  .dr-page :is(.dr-page-kicker, .dr-page-keys) { display: none; }
+  .dr-page h1 { font-size: 64px; }
+  .dr-page p { font-size: max(18px, calc(13px / var(--k, 1))); }
+  .dr-page label { font-size: max(15px, calc(12px / var(--k, 1))); }
+  .dr-page label input { width: calc(22px / var(--k, 1)); height: calc(22px / var(--k, 1)); }
+  .dr-page .row .btn { min-width: calc(150px / var(--k, 1)); min-height: calc(44px / var(--k, 1)); align-items: center; justify-content: center; text-align: center; font-size: max(18px, calc(13px / var(--k, 1))); }
+}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="backdrop" aria-hidden="true"></div><div id="stage"><main class="dr-page" id="desert-app"></main></div></div>
+<div id="rotate-hint"><div>📱 スマホは横向きでお楽しみください</div></div>
+<script src="js/page-boot.js" data-page="js/desert-ride-page.js"></script>
+</body>
+</html>

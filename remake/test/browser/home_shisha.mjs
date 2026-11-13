@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, assertFits, storageSnapshot } from "./support.mjs";
+import { rotateThroughGuard } from "./rotate_guard.mjs";
 
 const out = process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser";
 fs.mkdirSync(out, { recursive: true });
@@ -26,7 +27,7 @@ async function offer(page) {
 
 await suite("home-shisha", async check => {
   await check("all-discovered-recipe-details", async page => {
-    assert.equal(recipes.length, 13, "Current regular recipe catalog has 13 entries");
+    assert.equal(recipes.length, 19, "Current regular recipe catalog has 19 entries, including the six later discoveries");
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js");
       const { DB } = await import("./js/core/data.js");
@@ -51,16 +52,12 @@ await suite("home-shisha", async check => {
     await page.locator(t("status-close")).click();
   });
   // #1906: 家で発見した配合を、在庫や保存内容を変えずにレシピ帳で読み返す。
+  // portrait は縦持ちから始める（#2789・#2794: スマホの縦持ちは回転ガードで止める）。ガードがレシピ帳の操作を
+  // 止め、保存も変えないことを確かめてから、横（844×390）へ戻して同じ帳面を読み返す。
   for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
     ["portrait", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }]]) {
     await check(`${label}-discovered-recipe-details`, async page => {
-      const before = await page.evaluate(async portrait => {
-        if (portrait) {
-          const layout = await import("./js/scenes/title-layout.js");
-          localStorage.setItem(layout.TITLE_LAYOUT_KEY, "ds");
-          (await import("./js/core/ui.js")).showScreen("home", document.createElement("div"));
-          window.dispatchEvent(new Event("display-layout-change"));
-        }
+      const before = await page.evaluate(async () => {
         const core = await import("./js/core/state.js"), s = core.newGame();
         s.recipes = { ice_lemonade: { day: 3, home: true }, sumi_basic: true, secret_probe: { day: 1 } };
         s.flavorStock = {}; // 閲覧には材料の在庫を要求しない。
@@ -68,8 +65,12 @@ await suite("home-shisha", async check => {
         window.recipeClosed = false;
         void (await import("./js/daily/status.js")).openStatus().then(() => { recipeClosed = true; });
         return JSON.stringify(core.state);
-      }, label === "portrait");
+      });
       const storage = await storageSnapshot(page);
+      if (label === "portrait") await rotateThroughGuard(page, { portrait: options.viewport, landscape: { width: 844, height: 390 },
+        label: "portrait/recipe-book", targets: [page.locator('[data-tab="items"]'), page.locator(t("status-close"))],
+        state: async () => ({ tab: await page.locator(".st-tabs .on").getAttribute("data-tab"), closed: await page.evaluate(() => recipeClosed),
+          state: await page.evaluate(() => JSON.stringify(__remake.state)), storage: await storageSnapshot(page) }) });
       await page.locator('[data-tab="items"]').click();
       assert.equal(await page.locator('[data-recipe]').count(), 2);
       assert.equal(await page.locator(t("recipe-peach_sorbet")).count(), 0, "未発見は名前も操作も出さない");
@@ -88,7 +89,9 @@ await suite("home-shisha", async check => {
       assert.doesNotMatch(await detail.innerText(), /白桃ソルベ|secret_probe/);
       await assertFits(page, '[data-test="recipe-detail"]');
       const text = detail.locator('.recipe-detail-text');
-      assert(await text.evaluate(node => node.clientHeight >= Math.min(96, node.scrollHeight)), "詳細本文に読める高さを確保する");
+      // 詳細本文に読める高さ（#1906）。DS風は廃止したので、どの横画面でも同じ基準で測る。
+      const textBox = await text.evaluate(node => ({ client: node.clientHeight, scroll: node.scrollHeight }));
+      assert(textBox.client >= Math.min(96, textBox.scroll), `詳細本文に読める高さを確保する（${label}: ${textBox.client}px / 内容${textBox.scroll}px）`);
       await assertFits(page, '[data-test="recipe-back"]');
       for (const paragraph of await text.locator('p').all()) {
         await paragraph.scrollIntoViewIfNeeded();
@@ -202,11 +205,70 @@ await suite("home-shisha", async check => {
       assert.doesNotMatch(await page.locator(".home-shisha-dialog").innerText(), /配合/);
       await assertFits(page, ".home-shisha-dialog .modal-actions button");
       await page.evaluate(() => { __remake.vnTest.turbo = true; });
-      await hit("home-recipe-ice_lemonade"); await page.waitForFunction(() => homeDone === true);
+      await hit("home-recipe-ice_lemonade");
+      await page.locator(t("home-recipe-confirm")).waitFor();
+      assert.match(await page.locator(t("home-recipe-leaf-lemon")).innerText(), /8g使用 → 残り3g/);
+      assert.match(await page.locator(t("home-recipe-leaf-mint")).innerText(), /4g使用 → 残り13g/);
+      await hit("home-recipe-confirm-ok"); await page.waitForFunction(() => homeDone === true);
       assert.deepEqual(await snapshot(page), { ...after, flavorStock: { ...after.flavorStock, lemon: 3, mint: 13 }, stamina: 34,
         stats: before.stats, statXp: {} });
     }, options);
   }
+
+  await check("recipe-consumption-confirmation-1180", async page => {
+    const hit = id => page.locator(t(id)).click();
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), s = core.newGame();
+      Object.assign(s, { phase: "daily", day: 9, slot: 2, stamina: 63 });
+      s.stats.guts = 0; s.owned.push("home_rig_set");
+      s.flavorStock = { lemon: 20, mint: 10, absal_mint: 30 };
+      s.recipes.ice_lemonade = { day: 1 };
+      Object.assign(core.config, { bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      (await import("./js/core/ui.js")).showScreen("home", document.createElement("div"));
+      core.save();
+    });
+    const choose = async () => {
+      await offer(page); await hit("home-shisha-recipe"); await hit("home-recipe-ice_lemonade");
+      await page.locator(t("home-recipe-confirm")).waitFor();
+    };
+    const before = await snapshot(page), storage = await storageSnapshot(page);
+    await choose();
+    assert.match(await page.locator(t("home-recipe-leaf-absal_mint")).innerText(), /アフサール ミント：4g使用 → 残り26g/);
+    assert.match(await page.locator(t("home-recipe-leaf-lemon")).innerText(), /8g使用 → 残り12g/);
+    assert.match(await page.locator(t("home-recipe-condition")).innerText(), /体調：好調 → 通常/);
+    assert.doesNotMatch(await page.locator(t("home-recipe-condition")).innerText(), /\d/);
+    await assertFits(page, '[data-test="home-recipe-confirm"] p, [data-test="home-recipe-confirm"] li, .home-shisha-dialog .modal-actions button');
+    await page.screenshot({ path: `${out}/home-recipe-confirmation-1180.png` });
+    assert.deepEqual(await snapshot(page), before); assert.deepEqual(await storageSnapshot(page), storage);
+    await page.keyboard.press("Escape"); await hit("home-shisha-skip");
+    await page.waitForFunction(() => homeDone === false);
+    assert.deepEqual(await snapshot(page), before); assert.deepEqual(await storageSnapshot(page), storage);
+
+    await choose();
+    await page.evaluate(() => { __remake.state.flavorStock.lemon = 3; });
+    const changed = await snapshot(page);
+    await hit("home-recipe-confirm-ok");
+    await page.locator(t("home-shisha-skip")).waitFor();
+    assert.equal(await page.locator(t("home-shisha-recipe")).count(), 0, "在庫不足になったレシピを提示しない");
+    await hit("home-shisha-skip"); await page.waitForFunction(() => homeDone === false);
+    assert.deepEqual(await snapshot(page), changed); assert.deepEqual(await storageSnapshot(page), storage);
+
+    // 確認画面で実際のLOAD APIを通し、古い決定ボタンでは別のセーブを消費しない。
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      core.load(); core.saveToSlot("suien_remake_slot1");
+    });
+    await choose();
+    await page.evaluate(async () => { (await import("./js/core/state.js")).loadFromSlot("suien_remake_slot1"); });
+    const loaded = await snapshot(page), loadedStorage = await storageSnapshot(page);
+    await hit("home-recipe-confirm-ok"); await page.waitForFunction(() => homeDone === false);
+    assert.deepEqual(await snapshot(page), loaded); assert.deepEqual(await storageSnapshot(page), loadedStorage);
+
+    await choose();
+    await page.evaluate(() => { __remake.vnTest.turbo = true; });
+    await hit("home-recipe-confirm-ok"); await page.waitForFunction(() => homeDone === true);
+    assert.deepEqual(await snapshot(page), { ...before, flavorStock: { lemon: 12, mint: 10, absal_mint: 26 }, stamina: 39 });
+  }, { viewport: { width: 1180, height: 740 } });
 
   // #1081 D04-D06: HUDの現在色・回復後・誘い中LOAD・単品の文言。
   for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
@@ -277,9 +339,11 @@ await suite("home-shisha", async check => {
       const before = await snapshot(page);
       await offer(page); await hit("home-shisha-recipe");
       await page.locator(t("home-recipe-ice_lemonade")).waitFor();
+      await hit("home-recipe-ice_lemonade");
+      await page.locator(t("home-recipe-confirm")).waitFor();
       if (timing !== "before") {
         if (timing === "after") await page.evaluate(() => { __remake.vnTest.turbo = true; });
-        await hit("home-recipe-ice_lemonade");
+        await hit("home-recipe-confirm-ok");
         if (timing === "during") {
           await page.locator("#vn.active .vn-box").waitFor();
           assert.equal(await page.evaluate(() => homeDone), null, "Reload while the home dialogue is still unfinished");

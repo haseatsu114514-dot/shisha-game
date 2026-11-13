@@ -6,7 +6,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "大会で優勝した翌朝。目が覚めて、まずトロフィーを探した。……そうだ、店のカウンターに飾ったんだった。現実感がまだ追いついていない。"
+          "text": "大会で優勝した翌朝。目が覚めて、まずトロフィーを探した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……そうだ、店のカウンターに飾ったんだった。現実感が、まだ追いつかない。"
         },
         {
           "speaker": "hajime",
@@ -24,21 +29,87 @@
           "text": "……スミさんらしい。"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（嬉しいけど……あいつらの顔が浮かぶ。なるの悔しそうな顔）"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_shuraba_ch1",
+          "next_true": "mw_shuraba_rio"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（アダムの立てた親指。みんとの……笑顔）"
+          "text": "（嬉しいけど……みんなの顔が浮かぶ。なるさんの、悔しそうな顔）"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（次があるなら、もっと上を目指さないと。あいつらは絶対に、もっと強くなって戻ってくる）"
+          "text": "（アダムさんの立てた親指。みんとの……笑顔）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（次があるなら、もっと上を目指さないと。あの三人は、もっと強くなって戻ってくる）"
         }
-      ]
+      ],
+      "branches": {
+        "mw_shuraba_rio": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "rio",
+            "next_true": "mw_shuraba_rio_lover"
+          },
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "hiyori",
+            "next_true": "mw_shuraba_hiyori_lover"
+          }
+        ],
+        "mw_shuraba_rio_lover": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "その下に、凛想さんからも一件。夜のうちに届いていたらしい。"
+          },
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "優勝おめでとう、モルモットくん。データは、ちゃんと取らせてもらったよ"
+          },
+          {
+            "speaker": "rio",
+            "face": "normal",
+            "text": "朝の件は、まだ保留。……結果は出たから、次は君の検証の番だね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "（……逃げ切れたわけじゃ、なかった）"
+          }
+        ],
+        "mw_shuraba_hiyori_lover": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ひよりさんからも、一件。送信は、夜明け前だった。"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "smile",
+            "text": "優勝おめでとう。最前列で、ちゃんと見てたよ"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "normal",
+            "text": "朝のお話は、また今度、……儚く、待ってるね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "（……待ってる、のほうが、ずっと効く）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "interval_day1_naru_lime",
@@ -51,17 +122,20 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "お疲れ。今日の一台、いい煙だった"
+          "text": "お疲れ。今日の一台、いい煙だった",
+          "portrait": false
         },
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "正直、悔しさが先だけどな。……おかげでノートに書くことが増えた"
+          "text": "正直、悔しさが先だけどな。……おかげでノートに書くことが増えた",
+          "portrait": false
         },
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "でも、楽しかっただろ？ シーシャで戦うってのは"
+          "text": "でも、楽しかっただろ？ シーシャで戦うってのは",
+          "portrait": false
         },
         {
           "speaker": "hajime",
@@ -71,7 +145,8 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "なら上等。俺はもっと突き詰めたのを作る。お互い、次もな"
+          "text": "なら上等。俺はもっと突き詰めたのを作る。お互い、次もな",
+          "portrait": false
         },
         {
           "speaker": "",
@@ -83,7 +158,10 @@
           "face": "",
           "text": "……【根性】が少し上がった。"
         }
-      ]
+      ],
+      "metadata": {
+        "contact_channel": "lime"
+      }
     },
     {
       "dialogue_id": "interval_day2_adam_lime",
@@ -96,7 +174,8 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "はじめ。次の大会、どこで開催されるか知ってるか？"
+          "text": "はじめ。次の大会、どこで開催されるか知ってるか？",
+          "portrait": false
         },
         {
           "speaker": "hajime",
@@ -106,34 +185,40 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "……まだ正式発表前だから、詳しくは言えないが"
+          "text": "……まだ正式発表前だから、詳しくは言えないが",
+          "portrait": false
         },
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "次は県大会だ。客の数も、舌の数も、今日の比ではない"
+          "text": "隣の街のイベントホールだ。客の数も、舌の数も、今日の比ではない",
+          "portrait": false
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "県大会……もう決まってるんですか"
+          "text": "隣の街……もう会場まで決まってるんですか"
         },
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "……じきに分かる。それだけだ"
+          "text": "……じきに分かる。それだけだ",
+          "portrait": false
         },
         {
           "speaker": "",
           "face": "",
-          "text": "アダムからはそれきりで、こちらの返信にも既読がつかなかった。……何か、大きなことが動いている気がする。"
+          "text": "アダムからはそれきりで、こちらの返信にも既読がつかなかった。"
         },
         {
           "speaker": "",
           "face": "",
           "text": "……【洞察】が少し上がった。"
         }
-      ]
+      ],
+      "metadata": {
+        "contact_channel": "lime"
+      }
     },
     {
       "dialogue_id": "interval_day3_sumi_call",
@@ -241,11 +326,6 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんの目が、少しだけ柔らかくなった気がした。県大会。会場エリア。"
-        },
-        {
-          "speaker": "",
-          "face": "",
           "text": "次の戦いが、もう始まっている。"
         },
         {
@@ -281,11 +361,6 @@
           "text": "この町で学んだこと。スミさんに教わったこと。ライバルたちと競い合ったこと。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "バイトで磨いた接客。練習で染み込ませた技術。全部が、次のステージへの糧になる。"
-        },
-        {
           "speaker": "hajime",
           "face": "normal",
           "text": "……よし。行くか"
@@ -294,6 +369,13 @@
           "speaker": "",
           "face": "",
           "text": "店の電気を消して、夜の街に出た。駅の方から、遅い電車の音がぼんやりと聞こえた気がした。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_stk_title_customer_met",
+          "next_true": "",
+          "next_false": "eve_title_customer"
         }
       ],
       "branches": {
@@ -301,7 +383,37 @@
           {
             "speaker": "",
             "face": "",
-            "text": "この数日で、tonariに「配信で見ました」という新規のお客さんが２人来た。"
+            "text": "この数日で、tonariに「配信で見ました」という新規のお客さんが2人来た。"
+          }
+        ],
+        "eve_title_customer": [
+          {
+            "type": "bg",
+            "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "翌日。初めて見る客が、奥の席に座った。いつもは鉄仮面さんが座る席だ。"
+          },
+          {
+            "speaker": "customer",
+            "face": "normal",
+            "text": "ここ、優勝した人の店だよね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "はい、……俺です"
+          },
+          {
+            "speaker": "customer",
+            "face": "normal",
+            "text": "じゃあ、メニューはいいや。優勝の一台を"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_stk_title_customer_met"
           }
         ]
       }

@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
+import { hasAffinity } from "../js/core/state.js";
 import { coldRisk, catchesCold, fitActive, FIT_DAYS, FIT_RISK } from "../js/core/illness.js";
 const risks = [0.25, 0.2, 0.1, 0.01, 0].map(coldRisk);
 assert(risks.every((value, i) => !i || value > risks[i - 1]));
@@ -20,47 +21,56 @@ const fitSave = (day, chapter = 1) => ({ chapter, day, flags: { _fit_since: { ch
 assert(fitActive(fitSave(3)) && fitActive(fitSave(3 + FIT_DAYS - 1)));
 assert(!fitActive(fitSave(3 + FIT_DAYS)) && !fitActive(fitSave(2)) && !fitActive(fitSave(4, 2)) && !fitActive({ chapter: 1, day: 3, flags: {} }));
 
-const state = {}, played = [], saves = [], guards = [], homecomingChecks = [];
+const state = {}, played = [], saves = [], guards = [], guardBodies = [], dawns = [], homecomingChecks = [];
 let rng = .99, route = [], decisions = [], shifts = 0;
 const math = Object.create(Math); math.random = () => rng;
 const context = vm.createContext({ Math: math, Set, Map, Promise, console, setTimeout: () => 0, clearTimeout() {}, document: { querySelector: () => null } });
 const noop = () => {}, elem = () => ({ classList: { add: noop, remove: noop, contains: () => false }, remove: noop });
 const db = { dialogues: {}, statusTexts: {}, lime: [] };
 const values = {
+  "growth-respec.js": { syncRespecOpportunity() {}, closeRespecOpportunity() {} },
+  "growth-chapter-notice.js": { takeChapterBoardNotice: () => null, chapterBoardCards: () => [], respecMapNotice: () => "", takeRespecCloseWarning: () => "" }, // 章はじめの盤の知らせ（#1801 C10）。この検査では盤が無効
+  "growth-mode.js": { growthEnabled: () => false, GROWTH_BOARD: false, PREVIEW_KEY: "suien_growth_preview" },
+  "growth-effects.js": { useGrowthInsurance: () => false, growthCritical: () => false, settleGrowthPhase: (_s,_cs,_key,result) => result?.score, growthPerks: () => null, growthSkill: () => false, growthFeature: () => false, growthLesson: () => false, LESSON_TUNING: {}, growthCraftCondition: (_s,_m,c) => c, SKILL_TUNING: {} },
+  "flavor-mastery.js": { masteryHooks: { multiplier: () => 1 } },
   "city-guests.js": { cityGuestAtShop: () => null, visitCityGuestAtShop: async () => false },
+  "roamers.js": { roamerAt: () => null, meetRoamer: async () => false }, // よその店に居合わせる人。この検査では居合わせない
+  "recipe-finds.js": { recipeFindAfterVisit: async () => false }, // 第3章以降のレシピの連鎖（#2020 G）。この検査では話さない
+  "petit-shuraba.js": { petitAfterVisit: async () => false, petitAfterDate: async () => false }, // プチ修羅場（恋人が2人以上の時の寄り道）。この検査では起きない
+  "lover-strain.js": { strainMorning: () => 0, maybeStrainTalk: async () => false, maybeStrainReunion: async () => false, strainAfterVisit() {}, strainOf: () => 0, STRAIN_SIGN2: 7 }, // すれ違い（恋人の裏の数値）は remake/test/lover_strain.mjs。この検査では動かない
   "hiyori.js": { hiyoriShopEncounterDue: () => false, visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
-  "state.js": { state, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,
+  "state.js": { state, hasAffinity, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,
     visitedDay: { ...state.visitedDay }, stamina: state.stamina, rest: state.restDay ? { ...state.restDay } : null,
     queue: JSON.parse(JSON.stringify(state.deferredNightEvents || [])), appointment: state.pendingInvite ? { ...state.pendingInvite } : null }),
     STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"], STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" },
     markMet: (id) => state.met[id] = true, loadFromSlot: () => false, requestResumeOnBoot: noop },
-  "ui.js": { withScenePreparation: task => task, imageReady: async () => false, layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, dayCard: async () => {}, modal: async () => { guards.push(state.stamina); return decisions.length ? decisions.shift() : true; },
-    toast: noop, fadeBlack: async (mid) => mid?.(), dayTurn: async (mid) => { await mid?.(); }, bannersIdle: async () => {}, setBg: noop, refreshWeather: noop },
+  "ui.js": { withScenePreparation: task => task, imageReady: async () => false, layers: { fx: { append: noop }, modal: elem() }, dropRetired: noop, gainCard: noop, dayCard: async () => {}, modal: async (opts) => { guards.push(state.stamina); guardBodies.push(opts.body); return decisions.length ? decisions.shift() : true; },
+    toast: noop, fadeBlack: async (mid) => mid?.(), dayTurn: async (mid) => { const info = await mid?.(); dawns.push({ ...info, absoluteDay: state.day, hudLeft: values["hud.js"].daysLeft() }); }, bannersIdle: async () => {}, setBg: noop, refreshWeather: noop },
   "transitions.js": { refreshPlaceCue: noop },
   "data.js": { sceneBg: () => ({}), DB: db, loadCinemaDialogue: async () => db, bgUrl: (ref) => ref, displayName: id => id }, "saves.js": { saveFlow: async () => {}, loadFlow: async () => {} },
   "audio.js": { SE: { select: noop, cancel: noop }, playBgm: noop },
   "engine.js": { isPlaying: () => false, play: async (id) => played.push(id) }, "glossary.js": { glossaryPanel: () => "" },
-  "hud.js": { initHud: noop, showHud: noop, updateHud: noop, daysLeft: () => 14 - state.day, setPhoneBadge: noop, presentSleepRecovery: async () => {} },
+  "hud.js": { initHud: noop, showHud: noop, updateHud: noop, daysLeft: () => modules.get("chapter-clock.js").namespace.chapterDaysLeft(state), setPhoneBadge: noop, presentSleepRecovery: async () => {} },
   "map.js": { chooseSpot: async () => route.shift() || "rest", interruptMap: noop, isChoosingDestination: () => false },
-  "weather.js": { isRainy: () => false, weatherOf: () => "sun", RAIN_SPOT_TEXTS: {} },
+  "weather.js": { isRainy: () => false, weatherOf: () => "sun", tomorrowForecast: () => null, RAIN_SPOT_TEXTS: {} },
   "tonari.js": { tonariMenu: async () => "baito", tonariCustomer: async () => {}, tonariPractice: async () => {}, doBaito: async () => { shifts++; stats.addStamina(-24); } },
   // 家シーシャ（#638）: 寝る前の一服はこのテストの対象外（home_shisha.mjs で確かめる）
   "home-shisha.js": { runHomeShisha: async () => false },
   "home-rig.js": { showSumiRigAtHome: async () => false },
-  "shop.js": { openShop: async () => null, visitRin: async () => {}, ownsFlavor: () => true },
+  "shop.js": { openShop: async () => null, visitRio: async () => {}, ownsFlavor: () => true },
   "fortune.js": { doFortune: async () => {} },
   "phone.js": { deliverMorning: () => 0, pushNotice: noop, hasUnread: () => false, unreadCount: () => 0,
     actionInviteNeedingReply: () => null, openLime: async () => {}, limeCoach: noop, expireInvitations: noop,
     rescheduleInvitation: noop, completeInvitation: noop, invitationReadBeforeMeeting: () => null },
-  "status.js": { openStatus: async () => {} }, "reel.js": { onAction: noop, presentNow: async () => {}, installReel: noop, changeSetting: () => false },
+  "status.js": { openStatus: async () => {} }, "menu.js": { openMenu: async () => null }, "reel.js": { onAction: noop, presentNow: async () => {}, installReel: noop, changeSetting: () => false },
   "romance.js": { maybeConfession: async () => false, playDate: async () => {} },
   "samechan-date.js": { samechanDateReady: () => false, playSamechanDate: async () => ({ done: false, spent: 0 }) },
   "bonds.js": { afterStory: async () => {}, isFinaleEvent: () => false, playFinale: async () => {}, isFriendEvent: () => false, playFriendHangout: async () => {},
     questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false },
   "samechan.js": { syncSamechanKnowledge: noop, maybeSamechanEncounter: async opts => { homecomingChecks.push({ day: state.day, ...opts }); return false; }, visitSamechan: async () => false, samechanSpot: () => null, samechanVisitDialogue: () => null },
 };
-const files = { "chapter-features.js": "core", "stat-step-tables.js": "core", "cinema.js": "daily", "cinema-discovery.js": "core", "affinity-stages.js": "core", "fortune-schedule.js": "daily", "travel-budget.js": "core", "city-locations.js": "core", "trpg-discovery.js": "core", "ryuji-visit.js": "core", "tsumugi-schedule.js": "daily", "axe-bar-discovery.js": "core", "cafe-ideas.js": "daily", "spot-hours.js": "daily", "axe-bar-data.js": "daily", "chapter-clock.js": "core", "stats.js": "core", "growth.js": "core", "growth-board-data.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "trpg.js": "daily", "spots.js": "daily", "spot-encounters.js": "daily", "calendar.js": "daily", "invitations.js": "daily", "night-events.js": "daily" };
+const files = { "chapter-features.js": "core", "stat-step-tables.js": "core", "cinema.js": "daily", "cinema-discovery.js": "core", "affinity-stages.js": "core", "fortune-schedule.js": "daily", "travel-budget.js": "core", "city-locations.js": "core", "trpg-discovery.js": "core", "ryuji-visit.js": "core", "tsumugi-schedule.js": "daily", "axe-bar-discovery.js": "core", "cafe-ideas.js": "daily", "spot-hours.js": "daily", "axe-bar-data.js": "daily", "chapter-clock.js": "core", "stats.js": "core", "growth.js": "core", "growth-board-data.js": "core", "play-mastery.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "trpg.js": "daily", "spots.js": "daily", "spot-encounters.js": "daily", "calendar.js": "daily", "invitations.js": "daily", "lime-pacing.js": "daily", "night-events.js": "daily" };
 
 const modules = new Map(), pending = new Map();
 function load(name) {
@@ -78,14 +88,14 @@ const calendarModule = await load("calendar.js");
 await calendarModule.link((s) => load(s.split("/").at(-1)));
 await calendarModule.evaluate();
 const stats = modules.get("stats.js").namespace;
-async function run({ stamina = 0, guts = 10, day = 13, slot = 1, roll = .99, sick = false, paths = ["tonari"], answers = [], events = {}, flags = {}, appointment = null, queue = [] } = {}) {
+async function run({ stamina = 0, guts = 10, day = 13, slot = 1, roll = .99, sick = false, paths = ["tonari"], answers = [], events = {}, flags = {}, appointment = null, queue = [], chapter = 1, untilDay = 14 } = {}) {
   Object.keys(state).forEach((key) => delete state[key]);
-  Object.assign(state, { chapter: 1, phase: "daily", day, slot, stamina, money: 10000, pendingInvite: appointment, deferredNightEvents: JSON.parse(JSON.stringify(queue)),
+  Object.assign(state, { chapter, phase: "daily", day, slot, stamina, money: 10000, pendingInvite: appointment, deferredNightEvents: JSON.parse(JSON.stringify(queue)),
     stats: { technique: 10, sense: 10, guts, charm: 10, insight: 10 }, statXp: {}, story: {}, visitedDay: {}, met: {}, contacts: [], inbox: [], limeRead: [],
     flags: { [`_morning_${day}`]: true, _sick_once: sick, _overwork: 9, ...flags } });
-  played.length = 0; saves.length = 0; guards.length = 0; homecomingChecks.length = 0; shifts = 0;
+  played.length = 0; saves.length = 0; guards.length = 0; guardBodies.length = 0; dawns.length = 0; homecomingChecks.length = 0; shifts = 0;
   rng = roll; route = paths.slice(); decisions = answers.slice();
-  await calendarModule.namespace.runDaily({ nightEvents: events });
+  await calendarModule.namespace.runDaily({ nightEvents: events, untilDay });
   return { played: [...played], saves: [...saves], guards: [...guards], stamina: state.stamina, day: state.day, shifts };
 }
 let result = await run(); assert.equal(result.shifts, 1); assert(!result.played.some((id) => id.includes("sick")), "0体力でも運が良ければ進める");
@@ -202,3 +212,22 @@ await run({ stamina: 60, day: 4, slot: 2, flags: { _night_event_day: "1:4" }, ev
 assert(homecomingChecks.find(check => check.day === 4)?.hasNightEvent,
   "読了直後のロードでも夜の予定が無かったことにして追加遭遇を発火しない");
 console.log("[full-day rest] PASS: remaining slots/recovery, half/cancel/healthy, automatic illness deferral, fixed sick attendance, accepted appointment, preparation deadlines, post-tournament order, no duplicates, other chapters and interrupted scenes");
+
+// #2446: 黄色の現在値でも行動後に赤くなると警告する。文言は行動後の予測を示す。
+await run({ stamina: 40, answers: [false], paths: ["tonari", "rest"] });
+assert.match(guardBodies[0], /この行動の後は/);
+assert.match(guardBodies[0], /行動後の残り/);
+for (const scenario of [
+  { day: 6, chapter: 1, untilDay: 14, flags: {} },
+  { day: 20, chapter: 2, untilDay: 28, flags: { _ch2_day1: { startDay: 15 } } },
+]) {
+  await run({ ...scenario, stamina: 100, slot: 2, paths: ["rest"] });
+  assert.equal(dawns[0].day, 7);
+  assert.equal(dawns[0].left, 7);
+  assert.equal(dawns[0].absoluteDay, scenario.day + 1);
+  assert(dawns.every(info => info.left === info.hudLeft));
+  assert(dawns.every(info => info.day < 14), "大会当日は通常の夜明けカードを出さない");
+  assert.equal(state.day, scenario.untilDay);
+}
+
+await import("./dawn_numbers.mjs");

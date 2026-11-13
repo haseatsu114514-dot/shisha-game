@@ -2,7 +2,7 @@
 
 このフォルダは、実ゲーム用の `assets/` へ反映する前の元データ置き場です。
 
-外部素材サイトの候補と、ライセンス・クレジット・GitHub保存の確認手順は [`docs/external_asset_sources.md`](../docs/external_asset_sources.md) を参照。**外部素材を無条件に元データとしてコミットしない**こと。
+外部素材サイトの候補と、ライセンス・クレジット・GitHub保存の確認手順は [`docs/prompts/external_asset_sources.md`](../docs/prompts/external_asset_sources.md) を参照。**外部素材を無条件に元データとしてコミットしない**こと。
 
 - [ヒロインアートの採用候補一覧](title-daily-heroines-20261009/README.md)：新19案・旧15案のキャラ別画像、原画、タイトル配置の比較、別チャットの制作中の候補へ進めます。採用はオーナーの選定後。
 

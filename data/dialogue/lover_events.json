@@ -4,7 +4,7 @@
     {
       "dialogue_id": "lover_tsumugi_lv1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
@@ -26,17 +26,17 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……この前は、はじめさんからだったので。……今日は、私から"
+          "text": "……この前は、はじめさんからだったので。……今日は、私の番です"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "うん。……うれしい"
+          "text": "うん、……すごく、うれしい"
         },
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……っ。……はじめさんの手、あったかい。……煙の、においがする"
+          "text": "……っ。……はじめさんの手、あったかい。……ちょっとだけ、煙のにおい"
         },
         {
           "speaker": "",
@@ -46,22 +46,22 @@
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……今日のこと、ノートに描きます。……２人の、いちばん最初のページ"
+          "text": "……今日のこと、ノートに描きます。……ふたりの、いちばん最初のページに"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "見せてもらえる？ そのページ"
+          "text": "そのページ、俺にも見せてもらえる？"
         },
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……だめ、です。……完成したら、……ずっと、先です"
+          "text": "……だめ、です。……完成したら。……ずっと、ずっと先です"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "帰り道はいつもの倍、ゆっくり歩いた。それでも、あっという間だった。"
+          "text": "帰り道はいつもの倍、ゆっくり歩いた。それでも、あっという間に駅だった。"
         }
       ]
     },
@@ -69,7 +69,8 @@
       "dialogue_id": "lover_tsumugi_lv2",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_home.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -80,7 +81,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……見せたいもの、あって。……ずっと、誰にも見せたこと、ないんですけど"
+          "text": "……煙の色だけ集めた練習帳です。これは、まだ誰にも見せてなくて"
         },
         {
           "speaker": "",
@@ -90,17 +91,17 @@
         {
           "speaker": "tsumugi",
           "face": "sad",
-          "text": "……私に見える色、です。お客さんの煙、ぜんぶ"
+          "text": "……私に見えてる色、です。お客さんの煙、ぜんぶ"
         },
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "変じゃない、……すごく、きれいだ"
+          "text": "……きれいだ。つむぎちゃんが見てる色、もっと見たい"
         },
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……はじめさんのは、いちばん最後のページ。……いちばん、好きな色だから"
+          "text": "……はじめさんのは、最後のページ。……いちばん好きな色は、最後に描くので"
         },
         {
           "speaker": "",
@@ -110,7 +111,7 @@
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……あったかい色。……tonariの、カウンターの色です"
+          "text": "……あったかい色。……tonariの、カウンターの灯りの色です"
         }
       ]
     },
@@ -118,7 +119,8 @@
       "dialogue_id": "lover_tsumugi_lv3",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -127,9 +129,14 @@
           "text": "閉店後。誰もいないtonariで、つむぎのために一台、組んだ。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "ラベンダーを主に。つむぎは長く吸うから、炭を外寄りに置いて熱を控えた。"
+        },
+        {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……お店のじゃなくて。私のために、だけの一台"
+          "text": "……お店の一台じゃなくて。私のためだけの、一台"
         },
         {
           "speaker": "",
@@ -139,7 +146,7 @@
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……澄んだ、水色。……今、私が、すごく落ち着いてる色"
+          "text": "……澄んだ、水色。……今の私が、すごく落ち着いてる時の色"
         },
         {
           "speaker": "tsumugi",
@@ -149,22 +156,22 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "疲れてないか、聞きます。……出来の話じゃなくて、はじめさんの話です"
+          "text": "疲れてないか、聞きます。……出来の話じゃなくて、はじめさん自身の話"
         },
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "だから、こわがらないで"
+          "text": "だから、こわがらないでくださいね"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……うん。君がいるなら、こわくない"
+          "text": "……うん。つむぎちゃんがいるなら、こわくない"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……この一台の色、忘れないように、覚えて帰ります"
+          "text": "……この一台の色、忘れないように、目に焼きつけて帰ります"
         },
         {
           "speaker": "",
@@ -176,44 +183,94 @@
     {
       "dialogue_id": "lover_tsumugi_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "bg": "res://assets/backgrounds/bg_toosu_park_day.png",
         "private_scene": true
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "昼の公園。つむぎが、めずらしく自分から話したいことがある、と言った。"
+          "text": "昼の公園。つむぎはベンチに座り、タブレットを膝に置いた。"
         },
         {
           "speaker": "tsumugi",
           "face": "sad",
-          "text": "……私、昔。煙の色の話をして、嘘つきって言われたことがあって"
+          "text": "……今日は、煙じゃなくて、はじめさんの顔を描きたいです"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……それから、色の話は誰にもしてなくて。……はじめさんには、なんでか話せます"
+          "text": "……こっち、見ていてください。少しだけ、そのままで"
         },
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……今は、話すのが、少しだけ楽しいです"
+          "text": "……あ、そんなに、まっすぐ見ないでください"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……俺も。君の見てる世界を、もっと知りたい"
+          "text": "つむぎちゃんだって、俺を見てるよ。……こっちまで、照れる"
         },
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……じゃあ、少しずつ。……ぜんぶは、まだ、恥ずかしいので"
+          "text": "……描くので。……でも、今は線、引けないです"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "それから公園を出るまで、つむぎはずっと、半歩となりにいた。"
+          "text": "画面の線は、まだ増えていない。つむぎは小さく笑って、俺の隣へ少し詰めた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……近くで見たら、描けるかもしれません"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "肩が触れる距離で、ペンが動く。一本、二本。線は、すぐに止まった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どうしたの？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……近すぎて、はじめさんの顔、画面に全部入りません"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、少し離れようか"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "surprise",
+          "text": "……っ、だめです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……今日は、入るところだけ描きます。目と、笑ってる口"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面には、目と口だけの、ふしぎな顔ができていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……続きは、また隣で描かせてください、……ずっと先まで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰るまで、つむぎは詰めた距離を、元に戻さなかった。"
         }
       ]
     },
@@ -237,17 +294,17 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……新しいページの、いちばん最初。……もう描いてあるんです"
+          "text": "……新しいタブレットの、最初のページ。……もう、描いてあるんです"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "見せてくれた画面には、２つの煙が、ほどけきらないまま混ざり合っていた。水色に、淡いオレンジが少し。"
+          "text": "画面の中で、二つの煙がほどけきらずに混ざり合っていた。水色に、淡いオレンジが少し。"
         },
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……私と、はじめさんの、今の色。……きっと、また変わります。……変わっても、描き続けて、いいですか"
+          "text": "……私と、はじめさんの今の色。……変わっても、ずっと描いていいですか"
         },
         {
           "speaker": "hajime",
@@ -262,7 +319,7 @@
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……捨てないですよ。……ここまでの色も、ぜんぶ、私なので"
+          "text": "……捨てませんよ。……ここまでの色も、ぜんぶ、私なので"
         }
       ]
     },
@@ -281,42 +338,42 @@
         {
           "speaker": "minto",
           "face": "ura_sad",
-          "text": "……ねえ。ほんとに、私でいいの……？……7コも、上だよ。私"
+          "text": "……ねえ。ほんとに、私でいいの……？ ……7コも上だよ、私"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "栞さんがいい。年齢は関係ない"
+          "text": "栞さんがいい。年齢なんて、関係ない"
         },
         {
           "speaker": "minto",
           "face": "ura_surprise",
-          "text": "……っ。……もう。そういうの、ずるい……"
+          "text": "……っ。……もう。そういうこと、真顔で言うの、ずるい……"
         },
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "……あのね。店の『みんと』じゃない私、……かわいくないよ。弱いし、暗いし"
+          "text": "……お店なら、目を見て話せるのに。今日は、手をつなぎたいって言うだけで精いっぱい"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "その栞さんを、知れてうれしい"
+          "text": "俺も、つなぐタイミングばっかり考えてた"
         },
         {
           "speaker": "minto",
           "face": "ura_smug",
-          "text": "……ばか、……ありがと"
+          "text": "……ふふ。じゃあ、次の角までに。どっちが先か、ね"
         },
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "……次のお休みも、また会えたらうれしい。……ゆっくり、予定を合わせようね"
+          "text": "……次のお休みも、会えたらうれしいな。……ゆっくり、予定合わせようね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "別れ際の小さな手は、店の誰も知らない、栞さんの手だった。"
+          "text": "次の角の手前で、栞さんの手が俺の手を探した。俺も、指を伸ばした。"
         }
       ]
     },
@@ -324,7 +381,8 @@
       "dialogue_id": "lover_minto_lv2",
       "metadata": {
         "bg": "res://assets/backgrounds/peppermint.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -335,22 +393,22 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "……前に話した、喫茶店のこと。ここから見ると、まだ看板を思い出すの"
+          "text": "……前に話した、喫茶店のこと。ここから見ると、今も昔の看板を思い出すの"
         },
         {
           "speaker": "minto",
           "face": "ura_sad",
-          "text": "……チョコミントのパフェが、看板でね。……手放したとき、私、なんにもできなくて"
+          "text": "……チョコミントのパフェが名物でね。……手放したとき、私、なんにもできなくて"
         },
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "ミントで上書きしてた頃も、あの看板は忘れられなくてね"
+          "text": "ミントで上書きしてた頃も、あの看板だけは忘れられなかったの"
         },
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "……今度は、栞さんのお店で、一緒に思い出を作っていきたい"
+          "text": "……今度は、栞さんのこの店で、一緒に思い出を作っていきたい"
         },
         {
           "speaker": "minto",
@@ -372,8 +430,9 @@
     {
       "dialogue_id": "lover_minto_lv3",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_home.png",
-        "private_scene": true
+        "bg": "res://assets/backgrounds/bg_shiori_room_day.png",
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -384,31 +443,66 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "……実家のやつ。これと、傷だらけのトング、……ずっと、こっそり使ってるの"
+          "text": "……実家のお店のやつ。これと、傷だらけのトング。……ずっと、こっそり使ってるの"
         },
         {
           "speaker": "minto",
-          "face": "ura_sad",
-          "text": "……重いでしょ。29にもなって、昔のものに、しがみついて"
+          "face": "ura_normal",
+          "text": "……これ出すの、ちょっと迷った。お店のより、地味だなって"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "大事なものを、大事にしてるだけだ。……かっこいいよ、栞さん"
+          "text": "栞さんが家で使ってるもの、見せてもらえてうれしい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "コースターの真ん中に、薄い輪の跡がある。何度洗っても、そこだけ色が落ちなかったらしい。"
         },
         {
           "speaker": "minto",
-          "face": "ura_surprise",
-          "text": "……っ、〜〜！……もう、ほんと、その素直なの、心臓に、わるい……"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_smug",
-          "text": "……ね、トングのほうは、お店で使ってるの、……見ても、笑わないでよ"
+          "face": "ura_normal",
+          "text": "お店を手放した日、これだけ鞄に入れたの。……ほかは、何も持ち出せなくて"
         },
         {
           "speaker": "hajime",
           "face": "normal",
+          "text": "……それで、今日まで"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "うん。……でも、重い話はここまで。はじめくん、肩が上がってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "今日、ずっと立ちっぱなしだったでしょ。……ここでは、お客さんの顔しなくていいよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞さんは俺の湯のみを取って、輪の跡にぴったり重ねた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……じゃあ、今日はここに置いて。はじめくんのカップ"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……ね、トングのほうはお店で使ってるの。……見つけても、笑わないでよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
           "text": "笑わないよ。今度、こっそり見せて"
         }
       ]
@@ -416,197 +510,280 @@
     {
       "dialogue_id": "lover_minto_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_home.png",
-        "private_scene": true
+        "bg": "res://assets/backgrounds/bg_shiori_room_day.png",
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "栞さんの部屋で、２人でゆっくり過ごす時間。彼女が、めずらしくお酒を少しだけ飲んで、頬を赤くしていた。"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_smile",
-          "text": "……あのね。私、目標が、できたの。お店を取り戻して、終わりじゃなくて"
+          "text": "栞さんの部屋。冷蔵庫から出てきたのは、小さなチョコミントのパフェだった。"
         },
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "……いつか、チョコミントのパフェ、もう１回、出すんだ。……はじめくんにも、食べてほしい"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "絶対食べる。一番乗りで"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_smile",
-          "text": "……ふふ。約束ね。……ひとりの夢が、ふたりの夢になった、……こんなの、初めて"
+          "text": "……試作一号。お店でまた出したくて。まだ、味見してないの"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "栞さんの部屋の冷蔵庫に「試作パフェ・一号」と書かれたメモが、こっそり貼ってあった。"
+          "text": "グラスの横に、手書きの表が置いてあった。層の厚さ、アイスの温度、ミントの葉の枚数。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ、全部量ったんですか"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "うん。上から食べても、底から食べても、同じ甘さで終わるように"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "最後の一口が冷たすぎると、お客さんの顔が、ちょっとだけ曇るの"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……最初のひと口、はじめくんに、……はい、あーん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……うまい。もう一口、いい？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……っ、ふふ。味の感想、もうちょっと欲しいけど、……うれしい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "底のほう、チョコがちょっとだけ固いかも"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_surprise",
+          "text": "……ほんとだ。冷やす時間、十分短くしてみる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "メモの感想欄に、栞さんは「もう一口」と「底は十分短く」を書いた。笑って、スプーンを持ち直す。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "「もう一口」を三回もらえたら、お店に出すの。あと、二回"
         }
       ]
     },
     {
       "dialogue_id": "lover_minto_lv5",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_home.png",
-        "private_scene": true
+        "bg": "res://assets/backgrounds/bg_shiori_room_day.png",
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "家でゆっくり過ごす時間。栞さんは、化粧もしないで、となりで笑っていた。"
+          "text": "家でゆっくり過ごす時間。栞さんは、となりで笑っていた。"
         },
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "……今日は、お化粧もしてないの。はじめくんとなら、このままでも落ち着くね"
+          "text": "……今日は、お化粧もしてないの。はじめくんの前なら、このままでいいかなって"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……うん。こうして２人で過ごせる時間、好きだな"
+          "text": "……うん。こうして二人でぼーっとしてる時間、好きだな"
         },
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "……もう、隠さなくていいんだ。年も、過去も、弱いとこも。……ぜんぶ、知られてる"
+          "text": "……もう、隠さなくていいんだ。年も、過去も、弱いとこも、……ぜんぶ知られてる"
         },
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "……こんなに、楽なの、生まれて初めて。……ありがとね、はじめくん"
+          "text": "……こんなに楽なの、生まれて初めて。……ありがとね、はじめくん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞さんはクッションを一つ取って、俺の背中へ差し込んだ。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "でも、はじめくんはまだ隠してるでしょ。……肩、ずっと固いもん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "そんなこと、ないと思うけど"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "七つも上だとね、見えちゃうの。……ほら、寄りかかって"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われるまま、肩を預けた。栞さんの手が、ゆっくり、一定の速さで背中を叩く。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……これ、お店でもやってるの？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "やってないよ。お店のみんとは、甘やかしてもらう係だもん"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "今日もお疲れさまでした♡ ……なんてね。これも、私の声"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……何か、作ろうか"
+          "text": "どっちの声でも、ちゃんと届いてる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……一台、作ろうか"
         },
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "ん、……ふたりで作ろ"
+          "text": "ん、……ふたりで作ろう。ミントの量は、私が決めるからね"
         }
       ]
     },
     {
-      "dialogue_id": "lover_rin_lv1",
+      "dialogue_id": "lover_rio_lv1",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_cafe.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんの、いつもの夕飯の店。店員さんが、注文より先にいつもの皿を指した。凛さんは首を振って、仕事の鞄を椅子の背に掛けた。"
+          "text": "凛想さん行きつけの夕飯の店。店員さんがいつもの皿を指すと、彼女は首を振って鞄を置いた。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "今日は、別のにする。向かいに君がいるから。……君は何にする？"
+          "text": "今日は、別のにする。向かいに君がいるから、……君は、何にする？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "甘いのがいいです。凛さんは？"
+          "text": "甘いのがいいです。凛想さんは？"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "私も。仕事中は、眠くならないように苦いのばっかり飲んでるから"
+          "text": "私も。仕事中は、眠くならないように苦いのばっかりだから"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "食後に運ばれてきたカップから、同じミルクの匂いがした。凛さんは砂糖を足して、こちらの顔を見る。"
+          "text": "食後に運ばれたカップから、同じミルクの匂いがした。凛想さんは砂糖を足して、こちらの顔を見る。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "そこ、意外そうにしない"
+          "text": "……そこ、意外そうな顔しない"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "また一つ、知れたなって思いました"
+          "text": "凛想さんのこと、また一つ知れたなって"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "私も。君が甘いもの選ぶ顔、仕事じゃ見なかった"
+          "text": "私も。君が甘いものを選ぶ顔、仕事じゃ見たことなかった"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "机の上で触れた指を、凛さんがそっと裏返した。掌を合わせる。"
+          "text": "机の上で触れた指を、凛想さんがそっと裏返した。掌を合わせる。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "今日は感想、提出しなくていいから"
+          "text": "今日は、感想の提出はなし"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "でも、一つだけ。会えてうれしいです"
+          "text": "でも、一つだけ言わせてください。会えて、うれしいです"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "smile",
-          "text": "……それは、もう一回聞いてもいい"
+          "text": "……それは、もう一回聞かせて"
         }
       ],
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
     },
     {
-      "dialogue_id": "lover_rin_lv2",
+      "dialogue_id": "lover_rio_lv2",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "約束した夜。駅へ来た凛さんのスマホが、続けて二度鳴った。"
+          "text": "約束した夜。駅へ来た凛想さんのスマホが、続けて二度鳴った。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "ごめん。一つだけ返してもいい？"
+          "text": "ごめん。一件だけ、返していい？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。終わったら、こっちを見てください"
+          "text": "どうぞ。終わったら、こっちを見てください"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "返信を終えると、凛さんはスマホを鞄へしまった。"
+          "text": "返信を終えると、凛想さんはスマホを鞄へしまった。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "待たせた。私、会えてるだけで十分だと思ってたかも"
+          "text": "待たせたね。私、会えてるだけで十分だと思ってたのかも"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "一緒にいる時、ずっと待ってるのは、少し寂しいです"
+          "text": "一緒にいるのに、ずっと待ってるのは、少し寂しいです"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "……うん。言ってくれてよかった"
+          "text": "……うん。言ってくれて、よかった"
         },
         {
           "speaker": "",
@@ -614,17 +791,17 @@
           "text": "少し迷ってから、彼女の方から俺の手を取った。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "急ぎの仕事が入ったら、その日は先に連絡する。会うって決めた時間は、ちゃんと空ける"
+          "text": "急ぎの仕事が入ったら、先に連絡する。会うって決めた時間は、ちゃんと空ける"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も。無理に大丈夫って言って、後で黙りません"
+          "text": "俺も。無理して大丈夫って言って、後で黙り込むの、やめます"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "smile",
           "text": "いいね、それ。お互い、分かったふりは禁止"
         },
@@ -637,7 +814,7 @@
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
     },
     {
-      "dialogue_id": "lover_rin_lv3",
+      "dialogue_id": "lover_rio_lv3",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
         "private_scene": true
@@ -646,37 +823,37 @@
         {
           "speaker": "",
           "face": "",
-          "text": "来週の出張日を教わって、凛さんとカレンダーを見比べた。"
+          "text": "来週の出張日を教わって、凛想さんとカレンダーを見比べた。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "向こうの朝だと、こっちは夕方。君、仕込み中かな"
+          "text": "向こうの朝だと、こっちは夕方か。君、仕込み中だね"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "その時間なら、短いメッセージは返せます。電話は夜勤がない日に"
+          "text": "その時間なら、短いメッセージは返せます。電話は遅番がない日に"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
           "text": "毎日じゃなくても、寂しくない？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "寂しい日は、そう送ります。凛さんも、返せない日は先に教えてください"
+          "text": "寂しい日は、寂しいって送ります。凛想さんも、返せない日は先に教えてください"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんは予定を二つ消し、空いている夜だけ丸で囲んだ。"
+          "text": "凛想さんは予定を二つ消し、空いている夜だけ丸で囲んだ。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "私、連絡を義務にして、嫌われる方を想像してた"
+          "text": "私、連絡を義務にして、そのうち嫌われるほうを想像してた"
         },
         {
           "speaker": "hajime",
@@ -684,9 +861,9 @@
           "text": "話したいから話すんです。疲れた日は、おやすみだけでも"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "じゃあ、帰ってきた日は空けといて。声だけじゃ、足りなくなると思う"
+          "text": "じゃあ、帰ってきた日は空けといて。たぶん、声だけじゃ足りなくなるから"
         },
         {
           "speaker": "hajime",
@@ -694,54 +871,59 @@
           "text": "迎えに行きます"
         },
         {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "人混みでも平気。tonariの匂いで、君を見つけられるから"
+        },
+        {
           "speaker": "",
           "face": "",
-          "text": "別れる前、凛さんが俺の袖を引いた。短い抱擁のあとも、指がしばらく離れなかった。"
+          "text": "別れる前、凛想さんが俺の袖を引いた。短い抱擁のあとも、指がしばらく離れなかった。"
         }
       ],
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
     },
     {
-      "dialogue_id": "lover_rin_lv4",
+      "dialogue_id": "lover_rio_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "出張の話の続きで、本社勤務の打診も来ていると聞いた。帰り道のベンチで、凛さんが鞄を置く。"
+          "text": "出張の話の続きで、本社勤務の打診も来ていると聞いた。帰り道のベンチで、凛想さんが鞄を置く。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "まだ返事してない。君に黙って決めて、後から平気な顔するのは、違うと思って"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "凛さんは、どう働きたいですか"
-        },
-        {
-          "speaker": "rin",
-          "face": "normal",
-          "text": "日本で、私が選んだ葉を誰が吸うか、もう少し見てたい。本社の仕事も、してみたいけど"
+          "text": "まだ返事してない。君に黙って決めて、平気な顔をするのは違うと思って"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺がいるから、どっちかを諦めてほしいとは思わないです"
+          "text": "凛想さんは、どんなふうに働きたいですか"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "うん。でも、君に会いたいのも私の希望。そこも、勝手に勘定から外さないで"
+          "text": "私が選んだ葉を、日本で誰が吸うのか、もう少し見ていたい。本社も気になるけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺のために、どっちかを諦めてほしいとは思わないです"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "うん。でも、君に会いたいのも私の希望。そこを勝手に勘定から外さないで"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんは俺の肩に、自分の肩を軽くぶつけた。"
+          "text": "凛想さんは俺の肩に、自分の肩を軽くぶつけた。"
         },
         {
           "speaker": "hajime",
@@ -749,19 +931,19 @@
           "text": "……はい。俺の予定も、ちゃんと話します"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "日本の担当を続けて、必要な時に向こうへ行く形。まずは、それを相談してみる"
+          "text": "日本の担当を続けて、必要な時に向こうへ行く。まずは、その形で相談してみる"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "決まったら、二人の時間も考えましょう"
+          "text": "決まったら、二人の時間のことも考えましょう"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "smile",
-          "text": "決まる前にも、考えて。私も君に相談してるんだから"
+          "text": "決まる前から考えて。私だって、君に相談してるんだから"
         },
         {
           "speaker": "",
@@ -772,7 +954,7 @@
       "comment": "既存の絆読了・報酬を維持。営業中の接客とは分けた私的な時間として、二人の希望と距離を具体的に描く。"
     },
     {
-      "dialogue_id": "lover_rin_lv5",
+      "dialogue_id": "lover_rio_lv5",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
         "private_scene": true
@@ -781,22 +963,22 @@
         {
           "speaker": "",
           "face": "",
-          "text": "仕事帰りの待ち合わせで、凛さんが小さな試香紙を二枚差し出した。"
+          "text": "仕事帰りの待ち合わせで、凛想さんが小さな試香紙を二枚差し出した。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "売り物じゃない。私たちが好きな匂い、少しずつ合わせてみた"
+          "text": "売り物じゃないよ。私たちの好きな匂い、少しずつ合わせてみた"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "こっちはブルーベリーですね"
+          "text": "こっちは、ブルーベリーですね"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "もう片方は、君が前に好きだって言った方。どっちかを消すのは、もったいないでしょ"
+          "text": "もう片方は、君が前に好きって言ったほう。どっちかを消すの、もったいないでしょ"
         },
         {
           "speaker": "",
@@ -806,42 +988,52 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "名前、まだないんですね"
+          "text": "名前は、まだないんですね"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "一人の名前には、したくなかった。二人で決めたい"
+          "text": "私ひとりの名前には、したくなかった。二人で決めたいの"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "じゃあ、急がず考えましょう。これからの約束も、一緒に"
+          "text": "名前が決まる前に、これで一台組ませてください"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "smile",
-          "text": "……はじめくん。そういうの、さらっと言うのね"
+          "text": "……いいね。紙の上じゃ、煙になった時の顔までは分からないから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、急がずに考えましょう。この先の約束も、一緒に"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "……はじめくん。そういうの、さらっと言うんだね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんが一歩近づく。触れた手を握ると、彼女の方から頬へ短くキスをした。"
+          "text": "凛想さんが一歩近づく。触れた手を握ると、彼女の方から頬へ短くキスをした。"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "normal",
-          "text": "今のは、記録しなくていい。もう一回会った時、またするから"
+          "text": "今のは記録しなくていい。次に会った時も、またするから"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺からも、していいですか"
+          "text": "俺からも、していいですか。……同意書、いりますか"
         },
         {
-          "speaker": "rin",
+          "speaker": "rio",
           "face": "smile",
-          "text": "……いいよ、はじめ"
+          "text": "……いらない。いいよ、はじめ"
         },
         {
           "speaker": "",
@@ -854,93 +1046,182 @@
     {
       "dialogue_id": "lover_ageha_lv1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "付き合って、初めてのデートの帰り。あげはは、テンション高く腕を組んできた。"
+          "text": "付き合って初めてのデートの帰り。あげはは、テンション高く腕を組んできた。"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "ハジメっち、もううちの男なんだから！腕組むくらい、当たり前っしょ！"
+          "text": "ハジメっち、もううちのカレシなんだから！ 腕組むくらい、当たり前っしょ！"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "てか、もう『さん』いらなくない？ 敬語もナシ。カレシなんだし"
+          "text": "てか、もう『さん』いらなくない？ 敬語もナシね。カレシなんだし"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……分かった。じゃあ、あげは。ほんと迷いがないな"
+          "text": "……分かった。あげは、って呼ぶの、ちょっと緊張するな"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "迷う意味なくない？好きなもんは好き。バイブスがすべて！"
+          "text": "うちも。……いま名前呼ばれただけで、やばかったし"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "……でもさ。うちの直感、ハジメっちのこと『当たり』って言ってる。この直感は、ガチで外さないから"
+          "text": "でも、腕組みたいのはガチ。……もうちょい、くっついていい？"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "ってことで、記念写真！ 初デートのやつは一生モンだから！"
+          "text": "ってことで、記念写真！ 初デートのは一生モンだから！"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "撮った写真は、その日のうちに待ち受けになっていた。"
+          "text": "撮った写真は、その日のうちに、あげはの待ち受けになっていた。"
         }
       ]
     },
     {
       "dialogue_id": "lover_ageha_lv2",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "bg": "res://assets/backgrounds/bg_ageha_cafe_day.png",
         "private_scene": true
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "昼。あげはオススメの店を２軒まわった。２軒目は、一台を二人で分けて、さすがに笑ってしまう。"
+          "text": "昼。あげはオススメの店で、ふたり並んでメニューを見ていた。"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "この店、一台を二人で分けるのがちょうどいいんだって！……って、ハジメっち、もう休憩？ｗ"
+          "text": "見て、この席！ 店員さんの手元、めっちゃ見える、……ここ座ろ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あげはの店の知識、化け物すぎる……"
+          "text": "あげは、席のおすすめまであるんだな"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "あはは！でもさ、いろんな店まわると、わかんない？『あ、この店、客のこと好きだな』って"
+          "text": "あはは！ いろんな店まわってるとさ、『この店、客のこと好きだな』って分かるの"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "うちそういうの、匂いで分かる。……ハジメっちの店も、好きだよ。客のこと"
+          "text": "うち、入口見るの好き。……ハジメっちも、お客さん来ると笑うじゃん"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……あげはの『匂いで分かる』、俺も欲しいな"
+          "text": "俺も、あげはが楽しそうだと、つい見ちゃう"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "あげない！ ……けど、隣で見てるのはタダだよ"
+          "text": "え、店じゃなくてうち？ ……そっちは、見すぎ禁止！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_ageha_lv2_b",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ageha_cafe_day.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "食事のあと、あげはは店員さんの手元から、目を離さなかった"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "見て見て、今の、お冷の置き方"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "音、させてないな"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そ！ 客がしゃべってる時、グラスをスッて置く人。あれ、めっちゃプロ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うち、ああいうの見ると「この店好き」ってなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "席を選んだ理由、それだったのか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "半分ね。もう半分は、ハジメっちと見たいから"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……一個、言っていい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "この席、また予約しよ。……ハジメっちと、また来たいの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、次は俺が予約する"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "え、マジ？ ハジメっちが予約とか、デートっぽすぎない？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "デートだよ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "……っ、知ってるし！"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……でも、もう一回言って。今の、録音したかった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "グラスが静かに置かれる音がした。テーブルの下で、あげはの靴先が、俺の靴にこつんと当たった"
         }
       ]
     },
@@ -959,37 +1240,37 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "……うちさ。バイブスで戦うって言うけど。ほんとは、こわいんだよね、たまに"
+          "text": "……うちさ。バイブスで戦うとか言ってるけど。ほんとは、たまにこわいんだよね"
         },
         {
           "speaker": "ageha",
           "face": "sad",
-          "text": "手が震える日、店閉めたくなる。……でも、誰にも言わないで笑ってる"
+          "text": "手が震える日は、店閉めたくなる。……お客さんの前じゃ笑ってるけど"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "……だから、練習。震える日、一緒にいて、って言っていい？"
+          "text": "……だから、練習。震える日に『一緒にいて』って、言っていい？"
         },
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "うん。言ってくれたら、行く"
+          "text": "うん。行ける時間、ちゃんと返す。行けない日も、連絡はする"
         },
         {
           "speaker": "ageha",
           "face": "surprise",
-          "text": "……っ、即答じゃん"
+          "text": "……そっか。無理な日は、無理って言ってよ。そしたら、待てるし"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "『大丈夫』って言われるより、そっちがいい。……ありがと"
+          "text": "来てほしいって言える相手いるの、……やっぱ、うれしいわ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "数日後、LIMEに「今日ちょい震える日。夜、来て」とだけ届いた。"
+          "text": "数日後、LIMEに「今日ちょい震える日。夜、会える？」と届いた。"
         }
       ]
     },
@@ -1003,12 +1284,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "あげはが、スマホで自分の煙の動画を見せてきた。ホワイトグミベアの、甘い香り。"
+          "text": "あげはが、スマホで自分の煙の動画を見せてきた。ホワイトグミベアの一台だという。"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "見て！この煙のうねり！うちの『好き』を、ぜんぶ詰めた一台！"
+          "text": "見て！ この煙のうねり！ うちの『好き』を、ぜんぶ詰めた一台！"
         },
         {
           "speaker": "hajime",
@@ -1018,22 +1299,22 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "でしょ？……ハジメっちの煙とは、全然ちがう。でもさ、それでいいんだよね"
+          "text": "でしょ？ ……ハジメっちの煙とは全然ちがう。でもさ、それでいいんだよね"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "違うから、並べると、楽しい。……いつか、隣の台で一緒に作ろ？"
+          "text": "違うから、並べると楽しい。……いつか、隣の台で一緒に作ろ？"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "いいね。……震える日は、炭は俺が置く。香りはあげはが決めて"
+          "text": "作ってるところ、動画にしよう。あげはが俺を撮って、俺があげはを撮る"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "約束な！ 指切りとかじゃなくて、バイブスで契約ね！"
+          "text": "いいね！ ……でも、カメラ目線したら、うちが照れるかも。笑うなよ？"
         }
       ]
     },
@@ -1047,7 +1328,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜。あげはが、いつもの満面の笑みじゃなく、やわらかい顔で、となりに座った。"
+          "text": "夜。あげはが、いつもの満面の笑みじゃなく、やわらかい顔でとなりに座った。"
         },
         {
           "speaker": "ageha",
@@ -1057,32 +1338,32 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "うち、バイブスだけじゃなくて、ちゃんと『考える』ようになった"
+          "text": "うちがしてほしいこと、前より口に出せるようになった"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "でも芯は変わんない。直感も、勢いも、ぜんぶうち"
+          "text": "言ったあと、やっぱ恥ずい！ってなるけど。そこも、うちだし"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "……それを、好きでいてくれる人がいる"
+          "text": "……今日も一個、言っていい？"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……ずっと、あげはのバイブスのファンだよ"
+          "text": "うん。聞きたい"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "あはは！知ってる！……うちも。ガチで、ずっと好（ハオ）だわ"
+          "text": "……そうやって待ってくれんの、好き。ガチで"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "……あとさ。今日、ちょい疲れてる日。……肩、貸して"
+          "text": "……あとさ。今日、ちょい疲れてる日なの、……肩、貸して"
         },
         {
           "speaker": "hajime",
@@ -1106,7 +1387,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "休みの夜。ソファに並んで何か観ていた。"
+          "text": "休みの夜。ソファに並んで、映画を観ていた。"
         },
         {
           "speaker": "",
@@ -1116,22 +1397,42 @@
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "……あったかいねぇ……ぽかぽか"
+          "text": "……あったかいねぇ……ぽかぽかだぁ"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……寝そうになってない？"
+          "text": "……ましろちゃん、寝そうになってない？"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "寝てないよぉ。……匂い、かいでるだけ"
+          "text": "寝てないよぉ。……はじめくんの匂い、かいでるだけ"
         },
         {
           "speaker": "mashiro",
           "face": "yawn",
-          "text": "……充電中……"
+          "text": "……ただいま、充電中……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "映画、まだ半分残ってるよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "いいの。続きは、はじめくんが覚えてて。あとで、教えてもらうから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "結末、言っちゃうかもよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……それでもいいよぉ。はじめくんの声で聞くほうが、好き"
         },
         {
           "speaker": "",
@@ -1146,7 +1447,17 @@
         {
           "speaker": "mashiro",
           "face": "sleep",
-          "text": "……はじめくんのそば、安心する……えへへ"
+          "text": "……はじめくんのそば、いちばん安心する……えへへ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "エンドロールが流れても、肩の重さはそのままだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "起こさないように、ソファの毛布を、そっと彼女の肩まで引き上げた。"
         }
       ]
     },
@@ -1160,59 +1471,94 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ましろちゃんが古い袋を差し出してきた。"
+          "text": "ましろちゃんが、小さな紅茶の袋をテーブルに置いた。"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "はい。僕が仕入れたシガーリーフ"
+          "text": "これ、はじめくんにも飲んでほしくて選んだんだぁ"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "特別なやつだよぉ"
+          "text": "僕のは、少し濃くするねぇ"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "……俺に？ すごい貴重なんじゃ"
+          "text": "お茶も、別々のタイマーなんだ"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "うん。でもね、知ってほしくて"
+          "text": "うん。好きな濃さ、違うから"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "僕の世界の葉っぱのこと"
+          "text": "先に僕のぶんを淹れたら、同じ時にできるよぉ"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "ブロンドとは火の入り方が違うんだぁ"
+          "text": "待ってる間、何しようかなぁ"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "じわって熱を通すの。急ぐと、えぐみが出ちゃう"
+          "text": "……こっち座って。できるまで、手、貸してほしいの"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "最初の蒸らしを、長めに取る感じか"
+          "text": "できたあとも、空いてるよ"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "さすが、のみこみ早いねぇ……えへへ"
+          "text": "……じゃあ、続きも取っておくねぇ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣に座ると、ましろちゃんは俺の手を両手で包んで、指を一本ずつ数えはじめた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……何してるの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "手、借りてるの。タイマーより、こっちのほうが、時間がゆっくりになる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "タイマーが鳴った。ましろちゃんは手をほどき、二人ぶんのお茶を仕上げた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……お茶は、待たせないよぉ。好きな濃さで、一緒に飲みたいから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、飲み終わったら、また貸すね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。今度は、タイマーなしで借りるねぇ"
         }
       ]
     },
     {
       "dialogue_id": "lover_mashiro_lv3",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_mukai_backdoor_night.png",
         "private_scene": true
       },
       "lines": [
@@ -1239,27 +1585,27 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "怖い人を見るみたいな顔。……僕のこと、見てないみたい"
+          "text": "怖い人を見るみたいな顔。……僕のこと、見てないみたいで"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "ちょっと寂しいなぁ"
+          "text": "ちょっとだけ、寂しいなぁ"
         },
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "……俺はましろちゃんを見てる"
+          "text": "……どんな重さが好きなのか、俺にも教えてくれる？"
         },
         {
           "speaker": "mashiro",
           "face": "surprise",
-          "text": "……っ"
+          "text": "……っ。そっちを、聞いてくれるんだ"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "……知ってるよぉ。最初から僕を見てくれてた"
+          "text": "うん、話すよぉ。重ければ、何でもいいわけじゃないの"
         },
         {
           "speaker": "",
@@ -1269,7 +1615,27 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ましろちゃんが袖で目元を拭う。"
+          "text": "差し出された手を握ると、ましろちゃんは俺の肩に、こつんと肩を合わせた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "重さのあとに、紅茶も残るのが好き。好きな味は、消したくないんだぁ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。その違い、もう少し聞かせて"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ふふ。長くなるよぉ。今日は、もう少し付き合ってくれる？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "てつこはあくびをひとつして、また丸くなった。"
         }
       ]
     },
@@ -1283,52 +1649,77 @@
         {
           "speaker": "",
           "face": "",
-          "text": "閉店後のmukai。めずらしく真剣な顔。"
+          "text": "閉店後のmukai。ましろちゃんが、めずらしく真剣な顔をしていた。"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "……僕ね。重いのが好きなのは、昔から"
+          "text": "……僕ね。重いのが好きなのは、昔からなんだぁ"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "理由はないんだぁ。好きなだけ"
+          "text": "理由はないの。ただ、好きなだけ"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "シガーリーフは、僕の言葉なの"
+          "text": "シガーリーフはね、僕の言葉なの"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "でも最近、軽い人と吸う時は、間を空けるようになったよぉ"
+          "text": "でもね、軽いのが好きなはじめくんと過ごす時間も、好き"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "間？"
+          "text": "俺、いつもお茶ばっかり飲んでない？"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "一口ごとに、お茶を挟むの。そうすると、相手の顔も見えるから"
+          "text": "いいんだよぉ。ホース置いて、はじめくんの話を聞く時間も欲しいの"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "その間、俺もけっこう好きだよ"
+          "text": "じゃあ、今日は俺から、話してもいい？"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "えへへ……知ってるよぉ"
+          "text": "うん、……聞かせて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その夜は、tonariのこと、スミさんのこと、まだうまく作れなかった頃の一台のことを話した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんは頬杖をついて、ひとつも急かさずに聞いていた。"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "じゃあ、今日も一口ずつねぇ"
+          "text": "……はじめくんの話、軽いのに、ちゃんと残るねぇ。はじめくんの煙みたい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "それ、褒めてる？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "褒めてるよぉ。僕、重いのが好きだけど、はじめくんのは別腹なの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "お茶、もう一杯いれようねぇ。まだ帰ってほしくないから"
         }
       ]
     },
@@ -1342,67 +1733,67 @@
         {
           "speaker": "",
           "face": "",
-          "text": "深夜のmukai。一台が用意されていた。"
+          "text": "深夜のmukai。カウンターに、形の違うカップが二つ並んでいた。"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "特別なの作ったんだぁ。一緒に吸おぉ？"
+          "text": "……今日は、もう閉店。僕も、隣に座っていい？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ブロンドとシガーリーフ、両方入ってないか？"
+          "text": "うん。ましろちゃんの分、ここに置いておくね"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "うん。はじめくんの世界と、僕の世界"
+          "text": "カップ、前より自然に並ぶようになったねぇ"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "……混ぜてみたの"
+          "text": "……僕、こういうの、ずっと続けたい"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ホースを受け取って、吸う。"
+          "text": "ましろちゃんが椅子を寄せた。カップの取っ手が、同じ方を向く。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ブロンドの甘さの奥にシガーの余韻が重なる。"
+          "text": "小さな手が、カウンターの上で俺の手を探した。"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "……すごい。ひとつの味になってる"
+          "text": "俺も。お茶の時間じゃなくても、一緒にいたい"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "でしょぉ？ 僕とはじめくんみたい"
+          "text": "……僕も。今日は、まだ眠くないよぉ"
         },
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "全然ちがうのに、一緒だと、ちょうどいいの"
+          "text": "ねぇ、はじめくん、……こっち、向いて"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "……ずっと、ふたりの煙を混ぜていたいなぁ"
+          "text": "……僕から、キスしてもいい？"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "そっと俺の手に指を絡めてきた。"
+          "text": "うなずくと、ましろちゃんが少し身を乗り出した。唇が離れても、手はつながったままだった。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "煙が天井へ、ゆっくり昇っていく。"
+          "text": "彼女はもう一度椅子を寄せて、俺の肩にそっと額をつけた。"
         }
       ]
     },
@@ -1410,7 +1801,8 @@
       "dialogue_id": "lover_hiyori_lv1",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_axe_lounge_night.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -1421,7 +1813,7 @@
         {
           "speaker": "hiyori",
           "face": "sad",
-          "text": "夜の木が……私たちを呼んでる気がして……",
+          "text": "夜の木が……私たちを、呼んでいる気がして……",
           "inner": "恋人になって最初の斧投げ。ここは譲れない"
         },
         {
@@ -1442,7 +1834,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "隠さなくていいですよ。もう知ってますから"
+          "text": "隠さなくていいですよ。もう、知ってますから"
         },
         {
           "speaker": "hiyori",
@@ -1452,7 +1844,7 @@
         {
           "speaker": "hiyori",
           "face": "axe_normal",
-          "text": "今は、見ててほしいって思ってる。……投げるとこも、外すとこも"
+          "text": "今は、見ててほしいって思ってる。……当てるとこも、外すとこも"
         },
         {
           "speaker": "",
@@ -1462,7 +1854,7 @@
         {
           "speaker": "hiyori",
           "face": "axe_laugh",
-          "text": "はい、交代。はじめくんが青に入れたら、帰りに何かおごる",
+          "text": "はい、交代。はじめくんが青に入れたら、帰りに何かおごってあげる",
           "inner": "入らなくてもおごる。理由はあとで作る"
         },
         {
@@ -1483,10 +1875,234 @@
       ]
     },
     {
+      "dialogue_id": "lover_hiyori_lv1_b",
+      "comment": "恋人Lv1の続き（#3081）。斧投げの帰り道。大会には触れない。地元で読む。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
+        "private_scene": true,
+        "hometown": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "斧投げの店を出て、夜の道を並んで歩く"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんのお腹が、小さく鳴った"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……今のは、夜風。か細い、夜風なの",
+          "inner": "恋人の前でも、一回は儚さで誤魔化したくなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今、風は止んでますよ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "止んでても、夜風はあるの！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あります。でも、お腹の音のほうが大きく聞こえました"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "……もう、隠すのやめる"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "お腹、すいた。斧で、声と一緒に体力も使った",
+          "inner": "言えた。普通に、言えた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ラーメン、寄りますか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "今日は座って食べる元気が、的に全部持っていかれた"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "小さいのでいい。あったかい紅茶があれば、それで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自販機の明かりの前で、ひよりさんが足を止めた"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "これ。甘くないほう"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "桃は、煙で吸いたいから。缶で先に使いたくないの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺が買います。ひよりさんは、その缶で"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "うん。おそろいにして"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "ひとりで選ぶと、また夜風のふりしちゃうから",
+          "inner": "おそろい、って自分から言った。照れる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "熱い紅茶、二つですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "缶を二つ受け取って、また歩き出す"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんの肩が、こちらの腕に軽く触れた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "手、痛くないですか。俺も、何投か握ってました"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "見せて。うん、赤くなってる。私より正直",
+          "inner": "触りたい。でも缶があるから、今日はこれで我慢"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ひよりさんのほうは、大丈夫ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "大丈夫。声を出した分、肩の力が抜けた"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "会社だと、この抜け方はできないから。ここまでの道で、やっと"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "斧、今日も楽しかった"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "声、大きくなってない？ 店の中、静かだったし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "なってました。いい声でしたよ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……じゃあ、次も連れてって"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "儚い女の、夜の運動ってことにする",
+          "inner": "運動って言うと、総務の自分が出る。まあいいか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。お腹が鳴る前に、何か食べられるところも探します"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "約束ね。ラーメンは、ちゃんと座れる日に"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "味玉つきで。今日は、紅茶だけで許して",
+          "inner": "味玉は先に言っちゃった。隠し味にするつもりだったのに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "許します。今日は、このままもう少し歩きましょう"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "……うん。帰りたくない、までは言わない"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "でも、この角までは一緒がいい",
+          "inner": "本当は角の先だ。今日は、これで十分"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "缶、あったかい。手は、これで十分"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "冷えてきたら、言ってください"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "言う。夜風のふりは、もう一回で打ち止め"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の道に、紅茶の湯気が小さく立った"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんは缶を両手で包んだまま、隣を離れなかった"
+        }
+      ]
+    },
+    {
       "dialogue_id": "lover_hiyori_lv2",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -1497,7 +2113,7 @@
         {
           "speaker": "hiyori",
           "face": "sad",
-          "text": "お腹がね……少しだけ、透けてる気がして……",
+          "text": "お腹がね……少しだけ、透けてきた気がして……",
           "inner": "味噌。味玉。今日は迷わない"
         },
         {
@@ -1508,7 +2124,11 @@
         {
           "speaker": "hiyori",
           "face": "surprise",
-          "text": "なんで分かるの！？ ……あ、前に言ったか"
+          "text": "なんで分かるの！？ ……あ、前に言ったんだっけ"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_ramen_counter_night.png"
         },
         {
           "speaker": "",
@@ -1518,17 +2138,17 @@
         {
           "speaker": "hiyori",
           "face": "serious",
-          "text": "最初の一口は、スープだけ。ここ大事だから"
+          "text": "最初の一口は、スープだけ。ここ、大事だから"
         },
         {
           "speaker": "hiyori",
           "face": "smile",
-          "text": "……はあ、おいしい。今日の書類、全部溶けた"
+          "text": "……はあ、おいしい。今日の書類、ぜんぶ溶けた"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "儚い女の人、どこに行きました？"
+          "text": "儚いひよりさん、どこに行きました？"
         },
         {
           "speaker": "hiyori",
@@ -1566,7 +2186,7 @@
     {
       "dialogue_id": "lover_hiyori_lv3",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
@@ -1578,7 +2198,7 @@
         {
           "speaker": "hiyori",
           "face": "serious",
-          "text": "……明日の朝イチの件。今ちょっと確認すれば、明日が楽になるんだけど"
+          "text": "……明日の朝イチの件。今ちょっと確認しておけば、明日が楽なんだけど"
         },
         {
           "speaker": "hajime",
@@ -1651,7 +2271,7 @@
     {
       "dialogue_id": "lover_hiyori_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
@@ -1678,12 +2298,12 @@
         {
           "speaker": "hiyori",
           "face": "serious",
-          "text": "最初は、こうしたらモテるかもって始めたの。疲れてて、物語の中の人になりたかったのもある"
+          "text": "最初は、モテるかもって始めたの。疲れてて、物語の中の人になりたかったのもある"
         },
         {
           "speaker": "hiyori",
           "face": "serious",
-          "text": "もう付き合ってるんだし、やめた方がいいのかなって。最近ちょっと思ってた"
+          "text": "もう付き合ってるんだし、やめた方がいいのかなって。最近、ちょっと思ってた"
         },
         {
           "speaker": "hajime",
@@ -1698,7 +2318,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "じゃあ、続けてください。俺は、どっちのひよりさんも見たいです"
+          "text": "じゃあ、続けてください。今日の『月が欠けてる』、けっこう好きでした"
         },
         {
           "speaker": "hajime",
@@ -1724,7 +2344,7 @@
         {
           "speaker": "hiyori",
           "face": "smile",
-          "text": "儚い女は、ひとりで消えていくんじゃなくて、見つけてもらえるの、……君に"
+          "text": "儚い女は、ひとりで消えるんじゃなくて、見つけてもらえるの、……君に"
         },
         {
           "speaker": "",
@@ -1737,7 +2357,8 @@
       "dialogue_id": "lover_hiyori_lv5",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_home_night.png",
-        "private_scene": true
+        "private_scene": true,
+        "hometown": true
       },
       "lines": [
         {
@@ -1748,17 +2369,17 @@
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "本日の総務、閉店しました……。私、半透明になります"
+          "text": "本日の総務、閉店しました……。私、これから半透明になります"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "お茶、淹れますね"
+          "text": "卓上で、桃と紅茶の一台を作りますね"
         },
         {
           "speaker": "hiyori",
           "face": "sad",
-          "text": "ありがと……。ねえ、半透明の女はね、放っておくとそのまま消えちゃうの……"
+          "text": "ありがと……。ねえ、半透明の女はね、放っておくと、そのまま消えちゃうの……"
         },
         {
           "speaker": "hajime",
@@ -1784,17 +2405,18 @@
         {
           "speaker": "hiyori",
           "face": "smile",
-          "text": "今は、閉店したらここに来ればいいって分かってる。……それだけで、明日も行ける"
+          "text": "今は、閉店したらここに来ればいいって分かってる。……それだけで、明日も頑張れる"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "いつでも来てください。ご飯、用意して待ってます"
+          "text": "いつでも来てください。ご飯作って、待ってます"
         },
         {
           "speaker": "hiyori",
           "face": "love_blush",
-          "text": "……うん。好きだよ、はじめくん。儚くないほうの声で、言っとく"
+          "duck": true,
+          "text": "……うん。好きだよ、はじめくん。儚くないほうの声で、言っとくね"
         },
         {
           "speaker": "hajime",
@@ -1811,7 +2433,7 @@
     {
       "dialogue_id": "lover_samechan_lv1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true,
         "min_chapter": 2,
         "bgm": "sweets_or_sweets",
@@ -1832,23 +2454,23 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "大丈夫です。サメちゃんは？"
+          "text": "大丈夫です。サメちゃんこそ、平気ですか？"
         },
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "……離す方が、落ち着かぬ"
+          "text": "……離すほうが、落ち着かぬ"
         },
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "ならば、そのまま進軍せよ",
+          "text": "ならば、このまま進軍せよ",
           "voice": "korochan"
         },
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "進軍ではなく、散歩じゃ！"
+          "text": "進軍ではない、散歩じゃ！"
         },
         {
           "speaker": "",
@@ -1858,17 +2480,17 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "お主、手伝いが何もない日でも、誘ってよいのじゃな"
+          "text": "お主、手伝いが何もない日でも、わしを誘ってよいのじゃな"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。今日は、サメちゃんと歩くために来ました"
+          "text": "はい。今日は、サメちゃんと歩くためだけに来ました"
         },
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "なら、もう一つ角を曲がるまで。わしも、そうしたい"
+          "text": "なら、もう一つ角を曲がるまで。……わしも、そうしたいのじゃ"
         },
         {
           "speaker": "",
@@ -1880,7 +2502,7 @@
     {
       "dialogue_id": "lover_samechan_lv2",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true,
         "min_chapter": 2,
         "bgm": "sweets_or_sweets",
@@ -1896,12 +2518,12 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "スピルバーグのサメは、見せぬ時間こそ恐ろしいのじゃ。この作品も、そこを分かっておる"
+          "text": "スピルバーグのサメは、見せぬ時間こそ恐ろしいのじゃ。これも、そこを分かっておる"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "怖い場面、俺の袖をつかんでましたね"
+          "text": "怖い場面で、俺の袖をつかんでましたよね"
         },
         {
           "speaker": "samechan",
@@ -1927,22 +2549,22 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "……次も、あの場面では隣におってほしい。平気なふりをするのは、少し疲れるのじゃ"
+          "text": "……次も、あの場面では隣におってほしい。平気なふりは、少し疲れるのじゃ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "います。怖くないところは、サメちゃんの解説を聞きたいです"
+          "text": "います。怖くないところは、サメちゃんの解説を聞かせてください"
         },
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "うむ！ 話すことは、まだあるぞ。帰り道だけでは足りぬかもしれん"
+          "text": "うむ！ 話すことは、まだまだあるぞ。帰り道だけでは足りぬかもしれん"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "抱き寄せると、フードの端が頬に触れた。彼女は笑って、カップを持たない手を俺の腰に回した。"
+          "text": "抱き寄せると、フードの端が頬に触れた。彼女は笑って、左手を俺の腰に回した。"
         }
       ]
     },
@@ -1975,7 +2597,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "泳がなくても、岸から海を見るのもいいですね"
+            "text": "泳がなくても、岸から海を眺めるのもいいですね"
           },
           {
             "speaker": "samechan",
@@ -1990,7 +2612,7 @@
           {
             "speaker": "samechan",
             "face": "smile",
-            "text": "それがよい。お主も、したいことを言うのじゃぞ"
+            "text": "それがよい。お主も、したいことをちゃんと言うのじゃぞ"
           },
           {
             "speaker": "",
@@ -2002,7 +2624,7 @@
           {
             "speaker": "samechan",
             "face": "serious",
-            "text": "……海の話になると、言っておきたいことがあるのじゃ"
+            "text": "……海の話になると、お主に言っておきたいことがあるのじゃ"
           },
           {
             "type": "jump",
@@ -2014,7 +2636,7 @@
     {
       "dialogue_id": "lover_samechan_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true,
         "min_chapter": 2,
         "bgm": "sweets_or_sweets",
@@ -2025,7 +2647,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "駅へ向かう途中、連絡先の名前の話になった。サメちゃんは右手のコロちゃんを胸元へ引き寄せ、俺を見た。"
+          "text": "駅へ向かう途中、連絡先の名前の話になった。サメちゃんはコロちゃんを胸元へ寄せ、俺を見た。"
         },
         {
           "type": "condition",
@@ -2040,17 +2662,17 @@
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "なぎささん。そう呼ぶと、やっぱり照れますね"
+            "text": "なぎささん。……そう呼ぶと、やっぱり照れますね"
           },
           {
             "speaker": "samechan",
             "face": "surprise",
-            "text": "……お主が呼ぶのは、嫌ではないのじゃ"
+            "text": "……お主に呼ばれるのは、嫌ではないのじゃ"
           },
           {
             "speaker": "samechan",
             "face": "ventriloquism",
-            "text": "側近は、もう一度呼ばれることを望んでいる",
+            "text": "側近は、もう一度呼ばれることを所望している",
             "voice": "korochan"
           },
           {
@@ -2091,7 +2713,7 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "持って来ぬつもりだったのじゃが……気になる所を思いついたら、忘れそうでのう"
+          "text": "持って来ぬつもりだったのじゃが……思いついた時に、忘れそうでのう"
         },
         {
           "speaker": "hajime",
@@ -2117,7 +2739,7 @@
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "それを言わせたのは、わしじゃがな"
+          "text": "……それを言わせたのは、わしじゃがな"
         },
         {
           "speaker": "",
@@ -2132,6 +2754,7 @@
         {
           "speaker": "samechan",
           "face": "smile",
+          "beat": 600,
           "text": "……はじめさんが、好きです。面白い話ができない日も、隣にいてほしい"
         },
         {
@@ -2147,7 +2770,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺もです。今日は、何も手伝わずに隣にいます"
+          "text": "俺もです。今日は何も手伝わずに、ただ隣にいます"
         },
         {
           "speaker": "samechan",
@@ -2188,6 +2811,466 @@
           "speaker": "samechan",
           "face": "surprise",
           "text": "……今のは、ずるいのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_noor_lv1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
+        "private_scene": true
+      },
+      "comment": "#3081 ヌールの恋人の絆。砂丘での私的な外出の後に一度。帰りの手。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "砂丘を下り、車のそばまで来ても、つないだ手がほどけなかった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "さっき、恋人って言った時。ハジメ、ちょっと固まってたでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "固まりました。うれしいのに、返事が遅くなって"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "私も。言ったあとで、急に足がふらついた。砂のせいにしたけど"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんはいつものように笑おうとして、途中でやめた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ガイドなら、迷わない顔ができる。でも今日は、ハジメに見せてもいい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。俺も、うまくできるふりはしません"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "よかった。遠くにいる日も、分からないことはちゃんと聞く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も。返事を待つだけじゃなくて、言葉にします"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は小指を一本だけ離して、また、指を絡め直した。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "じゃあ、最初の約束。会えない日に、会いたいって言ってもいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "言ってください。俺も言います"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……あ、今の顔"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ちょっとカワイイ。恋人になったら、からかうの、我慢しなくていいよね？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……手加減は、してください"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "考えておく。……車に乗る前に、もう少しだけ、こうしてる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕日の影が二人の足元で重なり、離れなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_noor_lv2",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
+        "private_scene": true
+      },
+      "comment": "#3081 ヌールの恋人の絆。砂丘での私的な外出の後に一度。声の届き方。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "砂丘を下りる前、ヌールさんはスマホを取り出して、こちらへ画面を向けた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "見て。日本の時計、ホームに出しておいたの。もう、二つの時間で暮らしてる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "いつの間に"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "離れて話す時、声が途切れたら、私きっと大きな声になる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ヌールさんなら、そうかもしれません"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "そこは否定して！"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……元気にしてないと、距離まで大きくなる気がして"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女はスマホをしまい、肩が触れるところへ座り直した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "声が小さい日も、俺は聞きます"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "本当？ 言葉にならない日でも？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。黙ってる時間も、切らずにいられます"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "……じゃあ、私もそうする。急いで面白い話を探さない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "風が強まり、聞こえるのは砂の細い音だけになった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "今は隣にいるから、もっとよく聞こえる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんは俺の肩に頭を預けて、目を閉じた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "……画面の向こうでも、今日のこの静けさ、覚えておく"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_noor_lv3",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
+        "private_scene": true
+      },
+      "comment": "#3081 ヌールの恋人の絆。砂丘での私的な外出の後に一度。写真の端。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんが砂丘の写真を撮る。画面の端に、俺の肩が少しだけ写っていた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "これ、消したくないな。ハジメ、ほとんど写ってないのに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "景色、きれいですよ"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "景色だけなら、毎日見てる。今、隣でハジメが笑ったから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は画面を引いて、同じ砂丘をもう一度見渡した。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "今日は二人で写ろう。かっこよく立たなくていいよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "写真だと、どうしても顔を作っちゃって"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "だったら、私を見て。いつもの、ちょっと困った顔で"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "タイマーが動き出し、二人で慌てて並ぶ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シャッターの直前、頬に、やわらかいものが触れた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……っ、今の"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "作ってない顔、撮れた。ガイドの勝ち"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面には、目を丸くした俺と、得意げに笑うヌールさんが、少し傾いて写っていた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "これ、待ち受けにする。次に離れた時、これを見て笑えるように"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺にも送ってください。……あと、次は俺の番です"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "え、……ず、ずるい。それは、心の準備がいる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_noor_lv4",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
+        "private_scene": true
+      },
+      "comment": "#3081 ヌールの恋人の絆。砂丘での私的な外出の後に一度。板を置く場所。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "板を車のそばに置くと、ヌールさんがその位置を少し直した。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "こうすると砂がつきにくい。ハジメ、もう自分で置けるようになったね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "最初は、持つ向きも分からなかったです"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "教えるの、楽しかった。できるようになるのは、ちょっと寂しいけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "まだ教えてほしいこと、あります"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "砂の読み方？ ……あ、競走の勝ち方は教えないよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それも、ですけど。ヌールさんが黙った時、どう声をかけたらいいか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女の手が、板の上で止まった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……名前を呼んで。返事が遅くても、待ってくれたらうれしい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ヌール、って？"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……っ"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ずるい。今、さんが取れた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あ、すみません。つい"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "謝らないで。普段は、ヌールさんのままでいい。黙った時だけ、それで呼んで"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "私も、ハジメの返事を待つ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で板を並べ直した。今度はどちらも、すぐには手を離さなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_noor_lv5",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
+        "private_scene": true
+      },
+      "comment": "#3081 ヌールの恋人の絆。砂丘での私的な外出の後に一度。戻る線。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕日の砂丘で、ヌールさんが指先で地面に二本の線を引いた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "出る道は違っても、戻る印は同じ。店の地図にも、小さな丸を書いてるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ここへ戻る印なんですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "今は、紙の上だけじゃない。ハジメの声がするところも、私の戻る場所"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "風で線の端が崩れ、彼女は描き直さずに手を止めた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、日本に帰っても、ヌールさんのことを思います"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "それだけでいい。次に会う日を、無理に決めなくていいから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "決められない日も、連絡します"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "私も。会いたい時は、会いたいって、ちゃんと言う"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "……だから、今言う。ハジメ、会いたかった。隣にいるのに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺もです。隣にいるのに"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんは笑って、崩れた二本の線の真ん中に、小さな丸をひとつ描いた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "戻る印。今日は、ここ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そう言って、彼女は俺の首に腕を回した。唇が触れたのは、夕日が稜線に沈む少し前だった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "……さあ、戻ろう。今日は二人で、同じ線を歩ける"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。また違う線になっても、一緒に探します"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "握った手は、車の影に入るまで離れなかった。"
         }
       ]
     }

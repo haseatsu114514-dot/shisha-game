@@ -16,7 +16,14 @@ async function setup(page) {
     const jingle = audio.SE.jingle;
     audio.SE.jingle = (...args) => { T.jingles++; return jingle(...args); };
     T.start = options => {
-      T.done = false; T.result = null; T.started = performance.now();
+      T.done = false; T.result = null; T.started = performance.now(); T.shownAt = null;
+      T.titleObserver?.disconnect();
+      T.titleObserver = new MutationObserver(() => {
+        if (ui.layers.fx.querySelector('.ch1-title-motion img')) {
+          T.shownAt = performance.now(); T.titleObserver.disconnect();
+        }
+      });
+      T.titleObserver.observe(ui.layers.fx,{childList:true,subtree:true});
       T.task = motion.playCh1Title(options).then(result => {
         T.done = true; T.result = result; T.finished = performance.now(); return result;
       }).catch(error => { T.error = error.stack; });
@@ -44,9 +51,12 @@ async function send(page, touch = false) {
   await page.keyboard.press('Enter'); await page.keyboard.press('Space');
 }
 async function fitAndPixels(page) {
-  const result = await page.locator('.ch1-title-motion canvas').evaluate(async canvas => {
-    const r = canvas.getBoundingClientRect();
-    return { pixels: canvas.toDataURL() === await T.originalPixels(), fit: getComputedStyle(canvas).objectFit,
+  const result = await page.locator('.ch1-title-motion img').evaluate(async image => {
+    await image.decode();
+    const canvas=document.createElement('canvas'); canvas.width=1280; canvas.height=720;
+    canvas.getContext('2d').drawImage(image,0,0);
+    const r = image.getBoundingClientRect();
+    return { pixels: canvas.toDataURL() === await T.originalPixels(), fit: getComputedStyle(image).objectFit,
       fits: r.left >= -.5 && r.top >= -.5 && r.right <= innerWidth + .5 && r.bottom <= innerHeight + .5 };
   });
   assert(result.pixels && result.fits && result.fit === 'contain', JSON.stringify(result));
@@ -73,20 +83,22 @@ await suite('ch1-title-motion', async check => {
       await setup(page); const before = await storageSnapshot(page);
       await page.evaluate(() => T.start()); await ready(page);
       await page.waitForTimeout(750);
-      const early = await page.locator('canvas').evaluate(c => c.toDataURL());
+      await fitAndPixels(page);
+      const early = await page.locator('.ch1-title-motion img').getAttribute('src');
+      assert.equal(await page.locator('.ch1-title-motion img').count(),1);
+      assert.equal(await page.locator('.ch1-title-motion canvas,.ch1-title-fx').count(),0);
       await page.screenshot({ path: path.join(out, `${label}-early.png`) });
       await send(page, label === 'touch');
       assert.equal(await page.evaluate(() => T.done), false, '送り入力で自然な章題が中断された');
       assert.equal(await page.evaluate(() => T.underClicks), 0);
-      await page.waitForFunction(() => Number(document.querySelector('.ch1-title-motion')?.dataset.elapsed) >= 3150);
-      const fullAt = await page.evaluate(() => performance.now());
+      await page.waitForTimeout(1000);
       await fitAndPixels(page);
-      assert.notEqual(await page.locator('canvas').evaluate(c => c.toDataURL()), early);
+      assert.equal(await page.locator('.ch1-title-motion img').getAttribute('src'), early, '途中で絵や構図を切り替えない');
       await page.screenshot({ path: path.join(out, `${label}-full-title.png`) });
       await done(page);
-      const result = await page.evaluate(() => ({ duration: T.finished - T.started, ended: T.finished, result: T.result, jingles: T.jingles }));
+      const result = await page.evaluate(() => ({ duration: T.finished - T.started, ended: T.finished, shownAt: T.shownAt, result: T.result, jingles: T.jingles }));
       assert(result.duration >= 4780 && result.duration < 5400, JSON.stringify(result));
-      assert(result.ended - fullAt >= 1400, '完全表示後の読み時間が不足');
+      assert(result.shownAt && result.ended - result.shownAt >= 4780, '最初から完全な画像を既存の4.8秒間表示する');
       assert.deepEqual(result.result, { cancelled: false, art: 'ready' }); assert.equal(result.jingles, 1);
       assert.deepEqual(await storageSnapshot(page), before);
       await send(page, label === 'touch');
@@ -138,7 +150,7 @@ await suite('ch1-title-motion', async check => {
     const release = await gatedImage(page); await setup(page);
     const before = await storageSnapshot(page); await page.evaluate(() => T.start());
     await page.waitForTimeout(700); await send(page);
-    assert.equal(await page.locator('.ch1-title-motion canvas').count(), 0);
+    assert.equal(await page.locator('.ch1-title-motion img').count(), 0);
     assert.equal(await page.evaluate(() => T.jingles), 0); assert.equal(await page.evaluate(() => T.underClicks), 0);
     release(); await ready(page); const drawnAt = Date.now();
     await done(page); assert(Date.now() - drawnAt >= 4700);
@@ -148,14 +160,14 @@ await suite('ch1-title-motion', async check => {
     await gatedImage(page, true); await setup(page); await page.evaluate(() => T.start()); await ready(page);
     assert.equal(await page.locator('.ch1-title-motion').getAttribute('data-art'), 'text');
     assert.match(await page.locator('.ch1-title-motion').innerText(), /煙がつなぐ街/);
-    assert.equal(await page.locator('.ch1-title-motion canvas').count(), 0);
+    assert.equal(await page.locator('.ch1-title-motion img').count(), 0);
     await done(page); assert.equal(await page.evaluate(() => T.jingles), 1);
   });
   await check('15000ms-image-timeout-late-image-does-not-replace-text', async page => {
     const release = await gatedImage(page); await setup(page); await page.evaluate(() => T.start());
     await page.locator('.ch1-title-motion[data-art="text"]').waitFor({ timeout: 20000 });
     release(); await page.waitForTimeout(250);
-    assert.equal(await page.locator('.ch1-title-motion canvas').count(), 0);
+    assert.equal(await page.locator('.ch1-title-motion img').count(), 0);
     await done(page); assert.equal(await page.evaluate(() => T.jingles), 1);
   });
   await check('abort-loading-and-playing-removes-owned-work', async page => {

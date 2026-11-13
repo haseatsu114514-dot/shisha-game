@@ -1,0 +1,67 @@
+{
+  "base_main": "416a397ea7d813689ea844607a181e344bcdc7b7",
+  "approval": "Selected v4 after actual UI comparison",
+  "classic_scale": 0.88,
+  "new_scale": 0.9,
+  "canvas": [
+    896,
+    1200
+  ],
+  "expressions": [
+    {
+      "face": "bow",
+      "sha256": "d81700e2e162acb5ce85b475f3477f954fd056bd866a9235989dff0239fcec35",
+      "alpha_nonzero_bottom": 1175,
+      "shared_body_camera_scratch_from_y512": true
+    },
+    {
+      "face": "evil",
+      "sha256": "fd3fe6df5b0a0e29509ee68b4f6821cfd1fdee8f5ee9ff2d0cd763051c96065c",
+      "alpha_nonzero_bottom": 1175,
+      "shared_body_camera_scratch_from_y512": true
+    },
+    {
+      "face": "normal",
+      "sha256": "a3e91848b0bc501eb483d713fe68059717d5f676b45648c49a23cf5086e91fbd",
+      "alpha_nonzero_bottom": 1175,
+      "shared_body_camera_scratch_from_y512": true
+    },
+    {
+      "face": "sad",
+      "sha256": "0dc98d1934a592e2757ec6511188702b2b4bb531543915b1d3309d3ecc46790f",
+      "alpha_nonzero_bottom": 1175,
+      "shared_body_camera_scratch_from_y512": true
+    },
+    {
+      "face": "serious",
+      "sha256": "502d88433a4f140a1c447254067cfabc90ae784dc1fd94e58917ada3cc98af0d",
+      "alpha_nonzero_bottom": 1175,
+      "shared_body_camera_scratch_from_y512": true
+    },
+    {
+      "face": "smile",
+      "sha256": "e8cfe0b831ca74ca597fee47333744eb4a9dd18c5fae90883bef0673ae4d6256",
+      "alpha_nonzero_bottom": 1175,
+      "shared_body_camera_scratch_from_y512": true
+    },
+    {
+      "face": "surprise",
+      "sha256": "34d27fe549710e2080e206e277542ce7ea7d5038bcb46b0239016538cfffa02f",
+      "alpha_nonzero_bottom": 1175,
+      "shared_body_camera_scratch_from_y512": true
+    }
+  ],
+  "notes": [
+    "All seven share body, camera and medium scratch exactly. No piercings.",
+    "Bow retains selected v4 arms/tablet position; prior arm-lowering question unanswered.",
+    "Manual head/body estimate5.4066 near petite lower boundary5.4; landmark uncertainty remains."
+  ],
+  "preview_library": "libfile_04e1638dabd88191b2505bbb029df04e",
+  "validation": {
+    "portrait_unit": "18/18 pass",
+    "portrait_builder": "pass; classic metadata unchanged, lossless WebP roundtrip",
+    "browser": "desktop and landscape-touch: registered switching/persistence + partial variant fallback, 4/4 pass",
+    "actual_ui": "7 current and 7 new captures; no HTTP/page errors; textures decoded and actual visible-pixel test passed",
+    "full_quick_initial": "58/63; five failures caused by sparse missing existing text or LFS loading-comic files; text restored and affected suites rechecked separately. Full quick success is not claimed."
+  }
+}

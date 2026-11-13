@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import { suite, assertFits } from './support.mjs';
+import { rotateThroughGuard } from './rotate_guard.mjs';
 const shots = process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser';
 const test = (page,id) => page.locator(`[data-test="${id}"]`);
 async function setGuide(page, open, touch) {
@@ -56,15 +57,19 @@ async function fullRig(page) {
   assert(result.length>=4);for(const r of result)assert(r.visible && r.contained,JSON.stringify(r));
 }
 await suite('craft-layout-703', async check => {
-  for(const [name,options,layout] of [
-    ['pc',{},'normal'],['touch',{viewport:{width:844,height:390},isMobile:true,hasTouch:true},'normal'],
-    ['pc-ds',{},'ds'],['touch-ds',{viewport:{width:844,height:390},isMobile:true,hasTouch:true},'ds'],
-    ['portrait-ds',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},'ds'],
+  // DS風（pc-ds・touch-ds）は廃止（横画面一本化）。
+  for(const [name,options,portrait] of [
+    ['pc',{}],['touch',{viewport:{width:844,height:390},isMobile:true,hasTouch:true}],
+    // #2789: スマホの縦持ちは回転ガードで止める（#2794）。作業台を開いたまま縦（390×844）へ回すと、ガードが
+    // 観客の札と操作を覆い、押しても一台は変わらない。横（844×390）へ戻すと同じ工程から続け、以下の配置を横で検査する。
+    ['portrait-rotate',{viewport:{width:844,height:390},isMobile:true,hasTouch:true},{width:390,height:844}],
   ]) {
     await check(`layout-${name}`,async page=>{
-      if(options.hasTouch)await test(page,'title-layout-settings').tap();
-      else await test(page,'title-layout-settings').click();
-      await test(page,`title-layout-${layout}`).click();await init(page,'drill');await run(page,'mix');
+      await init(page,'drill');await run(page,'mix');
+      if(portrait)await rotateThroughGuard(page,{portrait,landscape:options.viewport,label:`${name}/mix`,
+        targets:[page.locator('.bench-audience'),test(page,'mix-plus-double_apple'),test(page,'mix-ok'),page.locator('.bench-guide summary')],
+        state:()=>page.evaluate(()=>({cs:JSON.stringify(QA.cs),step:document.querySelector('.bench')?.dataset.step??null,
+          guide:document.querySelector('.bench-guide')?.open??null,inert:document.querySelector('.bench-panel')?.inert??null}))});
       await overlap(page);
       for(let i=0;i<9;i++)await test(page,'mix-plus-double_apple').click();
       for(let i=0;i<3;i++)await test(page,'mix-plus-mint').click();
@@ -85,6 +90,11 @@ await suite('craft-layout-703', async check => {
       await page.screenshot({path:path.join(shots,`${name}-pull.png`)});
       await test(page,'pull-stop').waitFor({state:'visible'});
       await page.waitForFunction(()=>!document.querySelector('[data-test="pull-stop"]').disabled);
+      // #2941: 吸い出しの針が動いている最中に縦へ回すと、ガードの間は針（時間で進む工程）が止まり、横へ戻すと動き出す。
+      if(portrait)await rotateThroughGuard(page,{portrait,landscape:options.viewport,label:`${name}/pull`,
+        targets:[test(page,'pull-stop')],ticking:{selector:'[data-test="pull-needle"]',attr:'data-pos'},
+        state:()=>page.evaluate(()=>({step:document.querySelector('.bench')?.dataset.step??null,
+          pulls:document.querySelector('[data-pulls]')?.dataset.pulls??null,draw:document.querySelector('.bench-worker')?.dataset.draw??null}))});
       if(options.hasTouch)await test(page,'pull-stop').tap();else await test(page,'pull-stop').click();
       await page.waitForFunction(()=>!!document.querySelector('.bench-worker').dataset.draw);
       await fullRig(page);

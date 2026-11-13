@@ -1,0 +1,103 @@
+{
+  "episode": {
+    "id": "nagumo-drink-bar",
+    "title": "入り口の店",
+    "cast": [
+      "nagumo"
+    ],
+    "minChapter": 1,
+    "dialogue": [
+      "お店、入りやすいです。",
+      "入り口だからな。",
+      "審査が始まった。"
+    ],
+    "first_speaker": "hajime",
+    "panel1": "明るいチェーン店の店内。左のはじめが「お店、入りやすいです。」。右の須井が腕を組んで「入り口だからな。」。",
+    "panel2": "須井がドリンクバーのジュースのグラスを光にかざし、審査員長の鋭い目で香りを確かめている。はじめ「審査が始まった。」。",
+    "caption": "須井会長は、自分の店にも審査の目を向ける。"
+  },
+  "status": "review_candidate_not_adopted",
+  "generator": "built-in image_gen",
+  "selected_for_review": "source-A-v2.png",
+  "prompt": "prompt-A-v2.txt",
+  "references": [
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/references/nagumo.png",
+      "sha256": "c29ed0b480b049f2dd069ff401abd7e702b0825449ed9652e1d8768772778ba1"
+    },
+    {
+      "path": "/workspace/shared/allcast-comics-20261102/allcast-rei-mix-names/source-A-v1.png",
+      "sha256": "0ecef6512709af6fb524c3e5a55190445acd50ed73f9eb4caa3f69fa615d73ad"
+    }
+  ],
+  "edit_reference": null,
+  "variants": [
+    {
+      "file": "source-A-v1.png",
+      "sha256": "c538b8ade6bfa0d290233aaaae6c228ebeb3aca38a806f0057ddbd88dadbd1c6",
+      "size": [
+        1536,
+        1024
+      ],
+      "qa": "余分な背景客、メニュー文字を検出し不採用候補"
+    },
+    {
+      "file": "source-A-v2.png",
+      "sha256": "b846f76e8989c53fe9729dca3c92b70f2fd6a6fc21a0b20120dde500cb1d6f39",
+      "size": [
+        1536,
+        1024
+      ],
+      "qa": "背景無人・余分な文字なしへ修正"
+    }
+  ],
+  "panels": [
+    {
+      "file": "panels/nagumo-drink-bar-1.webp",
+      "sha256": "d46ade4765b286b02d7f8e31cb8548e5b523987743d61c5e72a98432b4c7efb1",
+      "size": [
+        720,
+        480
+      ],
+      "bytes": 60526
+    },
+    {
+      "file": "panels/nagumo-drink-bar-2.webp",
+      "sha256": "f8524f95aea8dc0fce663a02912a7e940a7432bba88f1a838e6b2a33f14968b7",
+      "size": [
+        721,
+        480
+      ],
+      "bytes": 62752
+    }
+  ],
+  "qa": {
+    "source_dimensions": "1536x1024",
+    "dialogue": "台本と一字一句一致を目視（句読点/！？含む）",
+    "speakers_order": "左右配置固定・先話を上/左、応答を下/右、尻尾の話者所属を確認",
+    "identity": "正式立ち絵に準拠。パッキーは白い雲状/赤蝶ネクタイ/通常マイクへ。占い師は台本優先で目/鼻を陰に隠す。",
+    "style": "初期採用pc.pngを実見し、少し可愛いデフォルメ/暖かいセル塗り/太い主線を確認。先行3話は同系統のrei-mix-namesを作風参照。",
+    "count": "はじめ＋相手の2人のみ。背景に人なし",
+    "prohibited": "シーシャ台/HMD/ハガル/炭/ホース/吸い口/喫煙/武器なし。カードのラーメンの湯気は料理の絵で喫煙ではない。",
+    "cut_visual": "qa-contact-1〜3を目視、文字/顔/オチが切れていない",
+    "warnings": [
+      "ゲーム未登録・未採用・未公開。ゲーム実画面PC/スマホのQAは未実施。",
+      "cutツールは比率ok/check OKだが、原画の枠内は714〜721px程度。新規制作寸法警告あり。"
+    ]
+  },
+  "file_hashes": {
+    "prompt-A-v2.txt": "3243b1c16ba033d25b210c6b45ece5192fb7803c3b9145b9f160ed111bdaac06",
+    "source-A-v2.png": "b846f76e8989c53fe9729dca3c92b70f2fd6a6fc21a0b20120dde500cb1d6f39",
+    "source-A-v1.png": "c538b8ade6bfa0d290233aaaae6c228ebeb3aca38a806f0057ddbd88dadbd1c6",
+    "cut-QA.txt": "b5f2f8dcdbf80facefc4cb3b4fc4efb50a8e6286206b6534e2c9ccf3a260891c",
+    "prompt-A-v1.txt": "8f98f5d4d07bf7c7e9c6e9471091d1a6d88c9c698214e9aaf7154ee535305d88"
+  }
+}

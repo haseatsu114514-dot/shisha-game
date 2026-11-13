@@ -9,12 +9,16 @@ async function seed(page, { member = false, at = "initial" } = {}) {
     const core = await import("./js/core/state.js");
     const p = await import("./js/chapters/ch3-progress.js");
     const value = core.newGame();
-    Object.assign(value, { chapter: 2, day: 28, phase: "cleared", money: 20000, stamina: 80 });
+    Object.assign(value, { chapter: 2, day: 25, /* 準備3日の後の東京DAY1が従来どおり通算29日 */ phase: "cleared", money: 20000, stamina: 80 });
     value.stats = { technique: 20, sense: 20, guts: 20, charm: 20, insight: 20 };
     value.flags = { _elapsed_calendar: true, _ch2_cleared: true,
       _ch2_read_ch2_tournament_ageha_heart: true, _ch2_tournament: { stage: "complete" },
       ...(member ? { _gym_member: true } : {}) };
     if (!p.advanceToChapterThree(value)) throw new Error("Chapter boundary failed");
+    // 出発前の準備3日（VOL02）を過ごした出発の朝から始める（準備の3日は ch3_departure_prep で遊ぶ）。
+    value.day += 3;
+    if (!p.departChapterThree(value)) throw new Error("Departure failed");
+    value.flags._ch3_intro.routeVersion = 2; // 場面カードの東京（作業中の旧セーブの行程）を確かめる
     Object.assign(value.flags._ch3_intro, { titleSeen: true, prologueStep: 4 });
     if (at === "free") {
       while (!p.chapterThreeFreeTime(value)) {
@@ -60,7 +64,7 @@ await suite("ch3-map-activities", async check => {
       const image = document.querySelector('[data-test="ch3-map-image"]');
       return image?.complete && image.naturalWidth > 0;
     });
-    assert.doesNotMatch(await page.locator(t("ch3-map")).innerText(), /煙幕|Smoke & Glory|鉄の煙|久世|ヴォルク/);
+    assert.doesNotMatch(await page.locator(t("ch3-map")).innerText(), /煙幕|Smoke & Glory|鉄の煙|綾取|ヴォルク/);
     assert.match(await page.locator(t("ch3-map-details")).innerText(), /会員登録が必要/);
     assert.equal(await page.locator(t("ch3-map-gym")).count(), 0);
     await visibleInViewport(page, '.ch3-map-dialog, .ch3-map-canvas, .ch3-map-pin, .ch3-map-close');
@@ -85,7 +89,11 @@ await suite("ch3-map-activities", async check => {
     const after = await get(page);
     assert.equal(after.money, freeBefore.money, "A member was charged again");
     assert.equal(after.stamina, freeBefore.stamina - 8);
-    assert.equal(after.stats.charm, freeBefore.stats.charm + 2);
+    // 心得の盤（通常プレイの既定・#2166）ではジムは経験値になる。旧しくみ（?growth=0）では魅力が伸びる
+    if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())) {
+      assert((after.growth?.xp || 0) > (freeBefore.growth?.xp || 0), "The gym should earn EXP");
+      assert.deepEqual(after.stats, freeBefore.stats, "The board does not write the old stats");
+    } else assert.equal(after.stats.charm, freeBefore.stats.charm + 2);
     assert.equal(after.flags._ch3_intro.stage, freeBefore.flags._ch3_intro.stage, "Gym skipped a story scene");
     assert.deepEqual(after.flags._fit_since, { chapter: 3, day: freeBefore.day });
     assert.equal(after.visitedDay.choizap, freeBefore.day);

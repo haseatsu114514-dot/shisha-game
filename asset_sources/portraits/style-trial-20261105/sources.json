@@ -1,0 +1,96 @@
+{
+  "page": "https://chatgpt.com/space/page_94de436084308191b4ac7b5dc7b1a6c3",
+  "agehaPreview": "libfile_0d51d66614708191b876fcbf6d061f4b",
+  "agehaOriginalFigureHeight": 1185,
+  "agehaNote": "User-approved provisional normalized preview; original generation source not obtained. No resolution increase claimed. Normal only; other expressions reuse normal within this style.",
+  "incomplete": "Nanami Sumi: normal only; Nanami doctor: normal unavailable. Kept as source candidates, not registered. Other candidates blocked by host policy.",
+  "files": [
+    {
+      "source": "asset_sources/portraits/style-trial-20261105/ageha-approved-normalized.png",
+      "sha256": "b02292b268fb524daf4f248aad164b7a491236a28cea0fa3bbce7b72e22de368",
+      "adopted": true
+    },
+    {
+      "source": "asset_sources/portraits/style-trial-20261105/nanami-スミさん-現行正本どおり・通常.png",
+      "sha256": "6ed017c67163557a86e68cf93a4310f371c1ea4b119bc802136b0b7cc5be90b6",
+      "adopted": false
+    },
+    {
+      "source": "asset_sources/portraits/style-trial-20261105/nanami-博士-現行正本どおり・悪い笑み.png",
+      "sha256": "1406757e5727c69df8663dee1838ae773628dbb123e07ead031ca9b570dccea8",
+      "adopted": false
+    },
+    {
+      "source": "asset_sources/portraits/style-trial-20261105/nanami-博士-現行正本どおり・真剣.png",
+      "sha256": "48e422f3f153d938605b68dbd2659299bc2cdc3e2567544def45794d6623c9d4",
+      "adopted": false
+    },
+    {
+      "source": "asset_sources/portraits/style-trial-20261105/nanami-博士-現行正本どおり・笑顔.png",
+      "sha256": "24e5de5818c44106a4f15bf4d986d2a02138da4aca23a541a5966db4ad105956",
+      "adopted": false
+    },
+    {
+      "source": "asset_sources/portraits/style-trial-20261105/nanami-博士-現行正本どおり・驚き.png",
+      "sha256": "b19c7851530cf846f8a5bd5cd202895927655527d0ca0648bf59fbb909b984ce",
+      "adopted": false
+    },
+    {
+      "source": "asset_sources/portraits/style-trial-20261105/new-スミさん-現行正本どおり・思案.png",
+      "sha256": "77a98100330e5a3486ec6924618a3f5e0954c7dad464058ce77ee577fcf3d867",
+      "adopted": true
+    },
+    {
+      "source": "asset_sources/portraits/style-trial-20261105/new-スミさん-現行正本どおり・真剣.png",
+      "sha256": "6a40b7c48e4f3393dc8ac187e73f6feec5463b336bde717cc93e708dd4c211b3",
+      "adopted": true
+    },
+    {
+      "source": "asset_sources/portraits/style-trial-20261105/new-スミさん-現行正本どおり・笑顔.png",
+      "sha256": "1d9edd4f17e76e51dd6ae2dcd884dbcc2ff17f2a5521044074de7898d45291b4",
+      "adopted": true
+    },
+    {
+      "source": "asset_sources/portraits/style-trial-20261105/new-スミさん-現行正本どおり・通常.png",
+      "sha256": "bd80381388fa1aa8331e21c565776fae667a9bb7fe3859723928e0cc9de05121",
+      "adopted": true
+    },
+    {
+      "source": "asset_sources/portraits/style-trial-20261105/new-スミさん-現行正本どおり・驚き.png",
+      "sha256": "15ebe820360013c0323c72fb9f7f1326f457217227e81e3671cf5027b742c256",
+      "adopted": true
+    }
+  ],
+  "officialPageSha256Verified": [
+    {
+      "id": "file_00000000492881f6a64483eb2bbed633",
+      "name": "new-スミさん-現行正本どおり・通常.png",
+      "sha256": "bd80381388fa1aa8331e21c565776fae667a9bb7fe3859723928e0cc9de05121",
+      "error": false
+    },
+    {
+      "id": "file_000000005ed081f6ac40163873517cd1",
+      "name": "new-スミさん-現行正本どおり・真剣.png",
+      "sha256": "6a40b7c48e4f3393dc8ac187e73f6feec5463b336bde717cc93e708dd4c211b3",
+      "error": false
+    },
+    {
+      "id": "file_00000000e73c81f6b8833bbaabb80620",
+      "name": "new-スミさん-現行正本どおり・笑顔.png",
+      "sha256": "1d9edd4f17e76e51dd6ae2dcd884dbcc2ff17f2a5521044074de7898d45291b4",
+      "error": false
+    },
+    {
+      "id": "file_0000000009d481f6afc0aaf061b34549",
+      "name": "new-スミさん-現行正本どおり・驚き.png",
+      "sha256": "15ebe820360013c0323c72fb9f7f1326f457217227e81e3671cf5027b742c256",
+      "error": false
+    },
+    {
+      "id": "file_00000000328481f6a2a1692e0a3d19b9",
+      "name": "new-スミさん-現行正本どおり・思案.png",
+      "sha256": "77a98100330e5a3486ec6924618a3f5e0954c7dad464058ce77ee577fcf3d867",
+      "error": false
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Issueを実装・PR・マージまで進める"
+  short_description: "Issueを小さなタスクに分け、実装・検証・PR・マージまで進める"
+  default_prompt: "$issue-to-merge を使って、このIssueの残件をタスクに分け、実装・テスト・PR作成から条件を満たすマージまで進めて。"

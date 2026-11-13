@@ -131,7 +131,7 @@ DAY7夜 tonari。既存の `midPreparation()` の流れを次のように組み�
 | 調整 | `cs.care.score`（`runCare`） | 中（例: 72） | 上回る→「立て直しははじめ」 |
 
 - **再利用**: 提供状態の講評は PR #1102（#1072）の `remake/js/craft/served-eval.js`（`servedTasteLine`/`servedStateLine`/`temperatureBands`/`isIdealTemperature`）をそのまま流用できる。はじめの「一口の感想」をスミの比較講評へ横展開する形。新規の採点系を作らない。
-- **本大会の審査員・票配分は変更しない**（Issue明記）。本イベントはスミ1人の講評で、`showStandings`／`resultTable`／南雲の票などの本番審査系には触れない。
+- **本大会の審査員・票配分は変更しない**（Issue明記）。本イベントはスミ1人の講評で、`showStandings`／`resultTable`／千須の票などの本番審査系には触れない。
 - なるのベースライン定数は**台本側に講評テキストとして持たせる**のが安全（スコア定数を新設すると #1081 F/G の報酬境界に波及しうる）。実装時に定数の置き場所をオーナー/Sol と確認。
 
 ---

@@ -1,0 +1,4 @@
+interface:
+  display_name: "PRをマージまで進める"
+  short_description: "依存PR・現HEADのCI・レビューを確認してPRをマージまで進める"
+  default_prompt: "$pr-to-merge を使って、このPRの依存関係・レビュー・現HEADのCIを確認し、必要な対応から条件を満たすマージまで進めて。"

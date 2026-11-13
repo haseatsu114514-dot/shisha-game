@@ -14,7 +14,18 @@ const VISITS = {
   rei: { spotId: "tonari", bg: "bg_tonari_inside" },
 };
 const sceneId = (id, repeat) => `ch2_city_guest_${id}_${repeat ? "repeat" : "first"}`;
-const IDS = Object.keys(VISITS).flatMap(id => [sceneId(id, false), sceneId(id, true)]);
+// 2回目からの来店は、繰り返しの回を順に巡回する（2026-11-11 オーナー「推奨で全部」RVE07。神崎・レヰは3本、あげはは1本のまま）。
+// 巡回の位置は `_city_guest_count_<id>`（読み終えた繰り返しの回数）。無い旧保存は0として、従来どおり `_repeat` から。
+const REPEATS = Object.freeze({ ageha: ["repeat"], kumicho: ["repeat", "repeat_b", "repeat_c"], rei: ["repeat", "repeat_b", "repeat_c"] });
+const repeatIds = id => (REPEATS[id] || ["repeat"]).map(suffix => `ch2_city_guest_${id}_${suffix}`);
+const IDS = Object.keys(VISITS).flatMap(id => [sceneId(id, false), ...repeatIds(id)]);
+const countKey = id => `_city_guest_count_${id}`;
+/** 次に読む場面（初回か、繰り返しの巡回）。保存は変えない。 */
+export function cityGuestScene(value, id) {
+  if (!value?.flags?.[`_city_guest_seen_${id}`]) return sceneId(id, false);
+  const pool = repeatIds(id), count = Number(value.flags[countKey(id)]) || 0;
+  return pool[Math.max(0, Math.floor(count)) % pool.length];
+}
 const dayKey = value => `${value.chapter}:${value.day}`;
 let active = false, loading = null;
 
@@ -41,7 +52,7 @@ async function loadDialogues() {
   if (IDS.every(id => DB.dialogues[id]?.lines?.length)) return;
   if (!loading) loading = (async () => {
     const { CHAPTER_DIALOGUE_FILES } = await import("../core/data.js");
-    const { readDialogues } = await import("../chapters/ch2-city-data.js");
+    const { readDialogues } = await import("../core/chapter-data.js");
     Object.assign(DB.dialogues, await readDialogues(CHAPTER_DIALOGUE_FILES.cityGuests, IDS));
   })().finally(() => { loading = null; });
   await loading;
@@ -66,11 +77,13 @@ export async function visitCityGuestAtShop(spot, { scheduledVisit = cityGuestAtS
       return false;
     }
     if (!current()) return false;
-    const result = await play(sceneId(visit.id, !!state.flags[`_city_guest_seen_${visit.id}`]), {
+    const repeat = !!state.flags[`_city_guest_seen_${visit.id}`];
+    const result = await play(cityGuestScene(state, visit.id), {
       bg: bg || `res://assets/backgrounds/${visit.bg}.png`, signal: controller.signal,
     });
     if (!current() || result?.cancelled) return false;
     state.flags[`_city_guest_seen_${visit.id}`] = true;
+    if (repeat) state.flags[countKey(visit.id)] = (Number(state.flags[countKey(visit.id)]) || 0) + 1;
     state.flags._city_guest_day = dayKey(state);
     save();
     return true;

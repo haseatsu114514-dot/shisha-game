@@ -17,7 +17,7 @@ const stepText = {
 async function selectScene(page) {
   await page.selectOption("#preview-scene", "shisha");
   await page.waitForFunction(() =>
-    document.querySelector(".vn-text")?.textContent.includes("落ち着いた時間"));
+    document.querySelector(".vn-text")?.textContent.includes("客足の引いた店内"));
 }
 
 // 目的の台詞まで会話を送る（打ち切り・連打でも図は1つだけ）。
@@ -42,7 +42,7 @@ const stepOf = page => page.evaluate(() => document.querySelector(".sd-diagram")
 const count = page => page.locator(".sd-diagram").count();
 
 await suite("shisha-diagram", async check => {
-  await check("experienced-short-review", async page => {
+  await check("experienced-full-explanation", async page => {
     await selectScene(page);
     const before = await page.evaluate(async () => {
       const { state } = await import("./js/core/state.js");
@@ -55,14 +55,12 @@ await suite("shisha-diagram", async check => {
       }), { consumed: () => true });
       return state.stats.technique;
     });
-    await advanceTo(page, "今日は復習だ");
-    assert.equal(await stepOf(page), "hose", "review shows the completed flow once");
+    // 制作経験があっても、初めての会話では全文（水と煙の説明）を読む（2026-11-01 オーナー決定）。
+    await advanceTo(page, stepText.hose);
     assert.equal(await count(page), 1);
-    await advanceTo(page, "一度で全部覚えなくていい");
-    assert.equal(await count(page), 0, "review hides the diagram before closing");
-    // 能力の報酬キューは画面の台詞を省いて適用される。最後の発話から会話終了まで送る。
-    await advanceTo(page, "はい。ありがとうございます、スミさん");
-    for (let i = 0; i < 5; i++) {
+    await advanceTo(page, stepText.hide);
+    await advanceTo(page, "はい……！ ありがとうございます、スミさん");
+    for (let i = 0; i < 8; i++) {
       if (await page.evaluate(() => document.querySelector("#preview-status")?.textContent.includes("会話終了"))) break;
       await page.locator(".vn-text").click({ force: true });
       await page.waitForTimeout(70);
@@ -73,13 +71,17 @@ await suite("shisha-diagram", async check => {
       await window.__sumiReviewAction;
       const { state } = await import("./js/core/state.js");
       const { backlog } = await import("./js/vn/engine.js");
-      return { technique: state.stats.technique, memories: state.relationshipMemories,
+      const { growthEnabled } = await import("./js/core/growth-mode.js");
+      return { technique: state.stats.technique, memories: state.relationshipMemories, board: growthEnabled(),
         text: backlog().map(row => row.text).join("\n") };
     });
-    assert.equal(result.technique - before, 1, "technique cue settles once as the normal action's 1P reward");
+    // 旧しくみ（?growth=0）は台詞のキューが行動の1Pになる。心得の盤（通常プレイの既定・SBD97）は台詞のキューで能力を伸ばさない（SPEC 4.1）
+    if (result.board) assert.equal(result.technique - before, 0, "the board does not grow stats from text cues");
+    else assert.equal(result.technique - before, 1, "technique cue settles once as the normal action's 1P reward");
     assert.equal(result.memories.filter(id => id === "sumi_heat").length, 1, "same memory, once");
-    assert.doesNotMatch(result.text, /そもそもなんで|解像度を上げろ|グリセリン/);
-    assert.equal(await count(page), 0, "no diagram after review ends");
+    assert.match(result.text, /蒸らす/);
+    assert.match(result.text, /グリセリン/);
+    assert.equal(await count(page), 0, "no diagram after the explanation ends");
   });
 
   await check("steps-and-cleanup", async page => {
@@ -140,7 +142,7 @@ await suite("shisha-diagram", async check => {
     // 「もう一度」で再生し直す＝play()の入口で前の図を消す（LOADと同じ経路）
     await page.locator("#preview-restart").click();
     await page.waitForFunction(() =>
-      document.querySelector(".vn-text")?.textContent.includes("落ち着いた時間"));
+      document.querySelector(".vn-text")?.textContent.includes("客足の引いた店内"));
     assert.equal(await count(page), 0, "restart starts with no stale diagram");
     await advanceTo(page, stepText.heat);
     assert.equal(await stepOf(page), "heat");

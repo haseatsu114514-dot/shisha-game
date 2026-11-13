@@ -143,6 +143,8 @@
 .gameover[data-layout="neon"][data-paused="true"] *::before,
 .gameover[data-layout="neon"][data-paused="true"] *::after { animation-play-state: paused !important; }
 @keyframes go-neon-enter { from { opacity: 0; } to { opacity: 1; } }
+/* 記憶の暗室（inner・比較用）の暗がりの呼吸。continue.css の inner の規則が使う。 */
+@keyframes go-inner-breathe { from { opacity: .82; } to { opacity: 1; } }
 @keyframes go-neon-title { from { opacity: 0; transform: translateX(-24px); filter: brightness(2.4); } 55% { filter: brightness(1.45); } to { opacity: 1; transform: none; filter: none; } }
 @keyframes go-neon-slash { from { clip-path: inset(0 100% 0 0); opacity: 0; } to { clip-path: inset(0); opacity: .82; } }
 @keyframes go-neon-hud { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: none; } }

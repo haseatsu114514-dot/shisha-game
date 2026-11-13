@@ -5,6 +5,7 @@ Codex / Claude Code 共通。Claude Code は `CLAUDE.md` の `@AGENTS.md` から
 ## 対象・優先順位
 
 - 正本は GitHub の `haseatsu114514-dot/shisha-game`（main と作業branch）。ゲームの実装・起動・公開先は `remake/`、台詞・共有データは `data/`、共有素材は `assets/`。
+- 公式プロモーションサイトは `promo/`（ゲーム本体と独立した静的ページ。作り・更新・載せる範囲は [promo/README.md](promo/README.md)）。
 - 旧 `web/` と Godot 版は廃止済み。`web/` は存在不要で、復元・テスト・確認要求の対象にしない。`project.godot` が残るcheckoutは古い。
 - 最新の明示的なユーザー指示を、古い仕様・Issueコメント・引き継ぎ・スキルの担当メモより優先する。依頼された仕様変更に再承認を求めない。
 - 仕様・要望は `docs/master_spec.md` / `docs/owner_requests.md`、物語・人物は `brand/story_and_structure.md` / `brand/character_profiles.md` / `data/characters.json`。
@@ -23,6 +24,7 @@ Codex / Claude Code 共通。Claude Code は `CLAUDE.md` の `@AGENTS.md` から
 - 確認するのは、依頼外の重大な仕様変更・結果を大きく変える曖昧さ・破壊的操作・新しい権限や公開範囲・大容量通信のときだけ。
 - WARN、CLI不在、利用枠不明、旧資料との食い違いだけを理由に止めない。事実を確認して、使える経路で進める。
 - ゲームの挙動・UI・世界観の変更は依頼範囲に収める。キャラ設定・台詞・報酬・改行は正本とスキーマに従う。
+- シーシャ台・ハガル・HMD・炭・ホースが写る画像を生成・修正するときは（Codexアプリで直接生成する場合も）、[画像生成の必須手順](docs/shisha_reference.md#4-画像生成の必須手順機材の形と構造)を実行する: 貼る文をプロンプトに入れ、参考写真を見て（渡せるツールなら渡し）、生成後チェックで検品してから採用する。参考写真と機材の資料は**非公開リポジトリ [`siryou`](https://github.com/haseatsu114514-dot/siryou) の `shisha-hardware-reference/`**（PCではゲームのリポジトリと同じ階層に `git clone https://github.com/haseatsu114514-dot/siryou ../siryou`）。機材と内装は日本のシーシャバーの写真（`web-refs/images/`）を基準にし、海外の写真（`photos/`）は構造の確認だけに使う。資料の写真をゲームのリポジトリへ入れない。
 - 好感度イベントを追加・変更・接続するときは、全章共通の[交流の時系列ルール](docs/gameplay_agent_reference.md#交流の時系列ルール必須)を必ず守る。好感度と大会進行・面識を同一視せず、大会後に遅れて読む場合の分岐を実装・検証する。
 - 新規作業は最新 `origin/main` からbranchを作る。保存済みPRの続きは既存branchで行う。**mainより遅れているだけでは毎回mergeしない**。競合解消・必要な依存変更があるときだけ取り込む。
 
@@ -49,7 +51,7 @@ Codex / Claude Code 共通。Claude Code は `CLAUDE.md` の `@AGENTS.md` から
 - quick（ブラウザ不要の検査）は毎回すべて動く。PRのbrowser（Chromium）は変更ファイルに関係する短いスイート（目安5分以内）を最大8グループで動かし、ブラウザテスト本体を変更した場合は長いスイートも動かす。長い通し検査を含む全件は毎晩mainで動かす。
 - Draft PRではbrowserを動かさない。結果が必要になったら Ready for review にする（その時点のheadで動く）。mainへのpushはquickだけ。browserの全テストは毎晩（03:17 JST）mainで動く。夜間の失敗は「mainのCIが赤い」として最優先で直す。
 - テストの追加は [tools/ci/suites.json](tools/ci/suites.json) に1件足す。**workflowファイルを増やさない**。手元では `node tools/ci/run.mjs --kind quick` / `--kind browser --suites <id>`（プレビューサーバーを先に起動）で同じものを動かせる。
-- CIのcheckoutは必要なフォルダだけ（約0.7GB）にし、4.4GBのファイル一式を取らない。新規画像（Git LFS）はキャッシュ経由で取得する。
+- CIのcheckoutは必要なフォルダだけ（約0.7GB）にし、ファイル一式を取らない。新規画像（Git LFS）はキャッシュ経由で取得する。
 
 ## 実行経路: CLI / GitHub連携
 
@@ -83,20 +85,23 @@ checkout使用時は、開始時・checkout/worktree変更後・commit/push前�
 - 既存checkout/cacheを再利用し、必要なファイル・ref・差分だけ取得する。新しい作業場所は既存repoの `git worktree add` を使う。やむを得ない新規取得は事前に相談し、`--filter=blob:none` 等で最小化する。
 - 全履歴・全ブランチ・素材・LFSの一括取得や、CI成果物の大量ダウンロード（`gh run download` の繰り返し）を自動実行しない。大容量通信が見込まれる操作は、目的・推定量（不明なら不明）・節約案を示して承認を得る。
 - shallow/filtered fetchでも少量とは限らない。想定外に転送量が増えたら中断し、状況を報告する。
-- 最新のファイル一式だけでも約4.4GB（`asset_sources/` 約3GB・`docs/qa` 約0.7GB）ある。ゲーム開発に要るのは約0.7GB。新しいPCなどでどうしても取得が必要なときは、オーナーの承認を得たうえで次の「軽量取得」を使う（必要なフォルダの最新版だけを取る）。
+- 最新のファイル一式は約1.3GB（`asset_sources/` 約0.5GB。2026-11-11 に `asset_sources/` の画像・動画をLFSへ移す前は約3.5GB）。ゲーム開発に要るのは約0.8GB。履歴には変換前の画像が残るので、全履歴の取得は今も大きい。新しいPCなどでどうしても取得が必要なときは、オーナーの承認を得たうえで次の「軽量取得」を使う（必要なフォルダの最新版だけを取る）。
 
   ```bash
   git clone --depth 1 --filter=blob:none --sparse https://github.com/haseatsu114514-dot/shisha-game.git
   cd shisha-game
-  git sparse-checkout set --no-cone '/*' '!/*/' '/remake/' '/data/' '/assets/' '/tools/' '/brand/' '/experiments/' \
-    '/.claude/' '/.agents/' '/.github/' '/.githooks/' '/docs/' '!/docs/*/' '/docs/qa/' '!/docs/qa/*/' '/asset_sources/' '!/asset_sources/*/'
+  git sparse-checkout set --no-cone '/*' '!/*/' '/remake/' '/data/' '/assets/' '/promo/' '/tools/' '/brand/' '/experiments/' \
+    '/.claude/' '/.agents/' '/.github/' '/.githooks/' '/docs/' '!/docs/archive/' '!/docs/qa/*/' '/asset_sources/' '!/asset_sources/*/' '/asset_sources/shisha-hardware-reference/'
   ```
 
   `asset_sources/` や `docs/qa/` の特定フォルダが要るときは `git sparse-checkout add '/asset_sources/<フォルダ>/'` でそのフォルダだけ取る。範囲外に新しいファイルを足すときは `git add --sparse <パス>`。
 
 ### 画像と Git LFS
 
-- `assets/`・`remake/img/`・`asset_sources/` の png/jpg/jpeg/webp/gif は、`.gitattributes` により**新規追加分だけ** Git LFS。既存画像を通常Gitに固定する `.gitattributes` 末尾の生成ブロック（`tools/gen_lfs_legacy_attributes.sh`）は手で消さない。既存履歴の移行（`git lfs migrate` 等）や一括変換はしない。
+- `assets/`・`remake/img/` の png/jpg/jpeg/webp/gif は、`.gitattributes` により**新規追加分だけ** Git LFS。既存画像は `.gitattributes` 末尾の生成ブロック（`tools/gen_lfs_legacy_attributes.sh`）で通常Gitに固定してあり、手で消さない。
+- `asset_sources/` の画像（png/jpg/jpeg/webp/gif）・動画（mp4/webm/mov）・zip・pdf は、既存分も含めて Git LFS（2026-11-11 オーナー決定で一括変換。履歴は書き換えていない）。例外は、CIが中身を読むフォルダ（`tools/ci/suites.json` の `sparse` にある `asset_sources/…`）と `asset_sources/shisha-hardware-reference/` で、同じ生成ブロックで通常Gitのまま。CIに `asset_sources/` のフォルダを読ませるときは `sparse` に足してから生成ブロックを作り直す（足す前にLFSになったファイルはCIではポインタのまま）。
+- `asset_sources/` の原画を見る・加工するときは、そのフォルダだけ `git lfs pull --include="asset_sources/<フォルダ>/**"` で取る。
+- 既存履歴の書き換え（`git lfs migrate import` で過去のコミットを作り直す等）や force push はしない。それ以外の一括変換も、オーナーの依頼があるときだけ行う。
 - checkoutでの作業前に一度 `git lfs install --skip-repo`（LFS uploadは `.githooks/pre-push` が担う）。git-lfs が無ければ新規画像の追加前に導入する。`git add` 後は `git lfs ls-files` で新規画像がLFS管理になったことを確認する。
 - worktreeは `GIT_LFS_SKIP_SMUDGE=1` で作り、必要な実体だけ `git lfs pull --include="<パス>"` で取得する。LFSも所有者の無料枠を消費するため上の通信量ルールに従う。
 
@@ -107,7 +112,7 @@ checkout使用時は、開始時・checkout/worktree変更後・commit/push前�
 - 作業の区切りと終了時に、有効な変更をcommitして作業branchへpushし、PRに変更点・テスト・未完・次の一手を書く。push が止まったら回避せず、未保存の差分と再開方法を報告する。
 - 終える前に `git status` と `git log @{u}..HEAD`（またはAPIのremote head照合）で、自分の未保存・未pushがないことを確認する。
 - 要望台帳（`docs/owner_requests.md`）のIDは、最新mainを見て次の空き番号を使う。
-- 利用枠が残り少ない・セッション終了が近いときは、大きな新規作業を始めず保存とPR整理を優先する。オーナーが望む小さな作業は続けてよい。残量は公式に見える場合だけ参照し、推測しない。Macでは任意で `python3 tools/agent_quota_guard.py check codex|claude` を使える（[詳細](docs/agent_quota_guard.md)）。
+- 利用枠が残り少ない・セッション終了が近いときは、大きな新規作業を始めず保存とPR整理を優先する。オーナーが望む小さな作業は続けてよい。残量は公式に見える場合だけ参照し、推測しない。Macでは任意で `python3 tools/agent_quota_guard.py check codex|claude` を使える（[詳細](docs/tools/agent_quota_guard.md)）。
 - AIの交代は、変更をpushしたうえでPRかIssueに DONE / TODO / TEST / NEXT を書くだけでよい。後任はそのbranchで続ける。予約の受け渡しは不要。
 - オーナーが「止めてマージ」「終了整理」と言ったら、新しい実装を止め、push → 条件を満たすPRをmerge → 未完をIssue/PRに記録 → 短く報告する。
 - 終了報告は **MERGED: #番号 / PENDING: #番号(理由) / ISSUES: #番号 / BRANCH: 名前 / NEXT: 次の1手** の形で短く書く。

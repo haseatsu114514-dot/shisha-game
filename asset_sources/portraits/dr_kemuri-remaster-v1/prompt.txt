@@ -1,4 +1,4 @@
-Remaster the provided existing game character CHARCOAL DOCTOR (チャコール博士 / 炭場創, id dr_kemuri), creating ONE highest-resolution wide RGBA expression sheet with EXACTLY FIVE complete full-body sprites of the SAME man in ONE horizontal row. Left to right: normal / smile / serious / surprise / evil.
+Remaster the provided existing game character CHARCOAL DOCTOR (チャコール博士 / 火浦理一, id dr_kemuri), creating ONE highest-resolution wide RGBA expression sheet with EXACTLY FIVE complete full-body sprites of the SAME man in ONE horizontal row. Left to right: normal / smile / serious / surprise / evil.
 
 REFERENCE ROLES:
 1. chr_dr_kemuri_normal.png is authoritative for the actual character identity, hair, face, clothes, proportions and full-body design.

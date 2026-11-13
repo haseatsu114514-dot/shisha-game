@@ -1,0 +1,67 @@
+{
+  "id": "kuze-blank-card",
+  "title": "白紙のカード",
+  "cast": [
+    "kuze"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "味、当ててみて。",
+    "ヒントは？",
+    "白紙が増えた。"
+  ],
+  "first_speaker": "kuze",
+  "panel1": "右の綾取が白紙の味カードを一枚差し出して「味、当ててみて。」（この吹き出しを左上に高く置き、尻尾を綾取へ）。左のはじめがカードを見て「ヒントは？」（右下）。",
+  "panel2": "綾取がにこにこしながら白紙のカードをもう一枚重ねる。はじめは二枚の白紙を見比べて「白紙が増えた。」。",
+  "caption": "綾取は、味の名前を伏せて出すこともある。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v2.png",
+  "source_sha256": "c51fcdf68ef16aacfd469af3b320e5de539c6c5244c5da87f8ca5063471b346a",
+  "references": [
+    {
+      "path": "references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "references/kuze.png",
+      "sha256": "c39ee51522b8082b831f0814959cc071b5104c808dc7452d5ec9b5890dba68ee"
+    },
+    {
+      "path": "references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked",
+    "reading_order": "left-to-right; reply tail points to speaker",
+    "identity": "official sprites inspected; same positions/faces both panels",
+    "prohibited_hardware": "none",
+    "notes": "extra card removed; exactly two cards in panel2",
+    "in_game_pc_phone": "not run; unregistered",
+    "style_alignment": "Compared with early adopted Menu Revision reference: large expressive faces, 2.5-head chibi proportions, warm cel colors and bold clean lines; consistent across both panels.",
+    "selection": "Owner decision pending; not adopted",
+    "fill": "Official fill applied; filled panels re-inspected, faces/dialogue/gag preserved."
+  },
+  "delivery": [
+    {
+      "file": "panels/kuze-blank-card-1.webp",
+      "sha256": "e2affb8b895435494e009b01b80289ae07e89aa502862ace87d85aaf14c93881",
+      "width": 717,
+      "height": 478
+    },
+    {
+      "file": "panels/kuze-blank-card-2.webp",
+      "sha256": "4c131be3b96bb084f20584eb52fbd58e95063450136e57a537be92e68c820b02",
+      "width": 717,
+      "height": 478
+    }
+  ],
+  "style_reference": {
+    "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+    "role": "early adopted Menu Revision comic, style only",
+    "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+  }
+}

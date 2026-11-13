@@ -1,0 +1,1629 @@
+{
+  "findings": [
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/axe-menu.css",
+      "line": 30,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/axe-menu.css",
+      "line": 64,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/axe-throw.css",
+      "line": 28,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/axe-throw.css",
+      "line": 36,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/axe-throw.css",
+      "line": 65,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/axe-throw.css",
+      "line": 98,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/axe-throw.css",
+      "line": 116,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/axe-throw.css",
+      "line": 410,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/axe-throw.css",
+      "line": 447,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/axe-throw.css",
+      "line": 463,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/axe-throw.css",
+      "line": 585,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/axe-throw.css",
+      "line": 596,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/axe-throw.css",
+      "line": 597,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/axe-throw.css",
+      "line": 607,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/axe-throw.css",
+      "line": 608,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/axe-throw.css",
+      "line": 709,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/base.css",
+      "line": 10,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/base.css",
+      "line": 349,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-bounce-easing",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/base.css",
+      "line": 379,
+      "value": "cubic-bezier(0.2, 0.9, 0.3, 1.2",
+      "message": "No bounce or overshoot easing on interface: cubic-bezier(0.2, 0.9, 0.3, 1.2"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/base.css",
+      "line": 416,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/base.css",
+      "line": 484,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/base.css",
+      "line": 561,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/base.css",
+      "line": 625,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/base.css",
+      "line": 640,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/base.css",
+      "line": 647,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/base.css",
+      "line": 648,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/base.css",
+      "line": 669,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/camel-race.css",
+      "line": 9,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/camel-race.css",
+      "line": 13,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/camel-race.css",
+      "line": 20,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/camel-race.css",
+      "line": 28,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/camel-race.css",
+      "line": 34,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/camel-race.css",
+      "line": 57,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/camel-race.css",
+      "line": 60,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/camel-race.css",
+      "line": 68,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/ch2-preview.css",
+      "line": 21,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/ch2-preview.css",
+      "line": 43,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/ch2-preview.css",
+      "line": 47,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/ch2-preview.css",
+      "line": 67,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/ch2-preview.css",
+      "line": 69,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/ch2-preview.css",
+      "line": 88,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/ch2-preview.css",
+      "line": 172,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/ch2-tournament.css",
+      "line": 47,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/ch2-tournament.css",
+      "line": 51,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/chapter-preview-samples.css",
+      "line": 20,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/continue.css",
+      "line": 33,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/continue.css",
+      "line": 55,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/continue.css",
+      "line": 90,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/continue.css",
+      "line": 127,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/continue.css",
+      "line": 147,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/continue.css",
+      "line": 160,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft-paper.css",
+      "line": 473,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 248,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 339,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 425,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-layout-animation",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 511,
+      "value": "transition: bottom",
+      "message": "Animate transform and opacity, not position: transition: bottom"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 542,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 561,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 563,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 573,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 593,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 623,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 632,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 643,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-layout-animation",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 842,
+      "value": "transition: bottom",
+      "message": "Animate transform and opacity, not position: transition: bottom"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 892,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 898,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 951,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 968,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 976,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 982,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-layout-animation",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/craft.css",
+      "line": 1044,
+      "value": "transition: bottom",
+      "message": "Animate transform and opacity, not position: transition: bottom"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily-menu.css",
+      "line": 31,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily-menu.css",
+      "line": 54,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily-menu.css",
+      "line": 79,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily-menu.css",
+      "line": 83,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily-menu.css",
+      "line": 95,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily-menu.css",
+      "line": 137,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily-menu.css",
+      "line": 145,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily-menu.css",
+      "line": 155,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily-menu.css",
+      "line": 165,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily-menu.css",
+      "line": 183,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily-menu.css",
+      "line": 228,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 159,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-transition-all",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 198,
+      "value": "transition: all",
+      "message": "Transition named properties, not all: transition: all"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 227,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 419,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-bounce-easing",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 651,
+      "value": "cubic-bezier(0.2, 0.9, 0.3, 1.1",
+      "message": "No bounce or overshoot easing on interface: cubic-bezier(0.2, 0.9, 0.3, 1.1"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 682,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-bounce-easing",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 878,
+      "value": "cubic-bezier(0.2, 0.9, 0.3, 1.1",
+      "message": "No bounce or overshoot easing on interface: cubic-bezier(0.2, 0.9, 0.3, 1.1"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 883,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 950,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 965,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 973,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 980,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 1053,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 1063,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 1229,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 1235,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 1262,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 1269,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 1314,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 1321,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 1380,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 1409,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 1432,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 1465,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 1513,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 1587,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 1610,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/daily.css",
+      "line": 1661,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/desert-ride.css",
+      "line": 10,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/desert-ride.css",
+      "line": 12,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/desert-ride.css",
+      "line": 21,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/desert-ride.css",
+      "line": 54,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/desert-ride.css",
+      "line": 62,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-bounce-easing",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/extras.css",
+      "line": 34,
+      "value": "cubic-bezier(0.2, 1.4",
+      "message": "No bounce or overshoot easing on interface: cubic-bezier(0.2, 1.4"
+    },
+    {
+      "rule": "no-bounce-easing",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/extras.css",
+      "line": 38,
+      "value": "cubic-bezier(0.2, 1.6",
+      "message": "No bounce or overshoot easing on interface: cubic-bezier(0.2, 1.6"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/extras.css",
+      "line": 40,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/intro.css",
+      "line": 12,
+      "value": "font-weight:900",
+      "message": "Headings at regular to semibold weight: font-weight:900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/intro.css",
+      "line": 26,
+      "value": "font-weight:800",
+      "message": "Headings at regular to semibold weight: font-weight:800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/loading.css",
+      "line": 103,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/loading.css",
+      "line": 121,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/loading.css",
+      "line": 153,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/motions/gift.css",
+      "line": 31,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/motions/lime.css",
+      "line": 29,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/motions/lime.css",
+      "line": 77,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/motions/purikura.css",
+      "line": 45,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/motions/purikura.css",
+      "line": 67,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/motions/purikura.css",
+      "line": 71,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/motions/purikura.css",
+      "line": 91,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/motions/purikura.css",
+      "line": 99,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/motions/shark.css",
+      "line": 3,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/motions/shift.css",
+      "line": 12,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/motions/shift.css",
+      "line": 24,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/motions/sketch.css",
+      "line": 15,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/motions/tarot.css",
+      "line": 14,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/reel.css",
+      "line": 38,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-bounce-easing",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/reel.css",
+      "line": 114,
+      "value": "cubic-bezier(0.2, 1.6",
+      "message": "No bounce or overshoot easing on interface: cubic-bezier(0.2, 1.6"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/reel.css",
+      "line": 190,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-bounce-easing",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/reel.css",
+      "line": 242,
+      "value": "cubic-bezier(0.2, 1.6",
+      "message": "No bounce or overshoot easing on interface: cubic-bezier(0.2, 1.6"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/reel.css",
+      "line": 246,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-bounce-easing",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/reel.css",
+      "line": 248,
+      "value": "cubic-bezier(0.2, 1.6",
+      "message": "No bounce or overshoot easing on interface: cubic-bezier(0.2, 1.6"
+    },
+    {
+      "rule": "no-bounce-easing",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/reel.css",
+      "line": 250,
+      "value": "cubic-bezier(0.2, 1.6",
+      "message": "No bounce or overshoot easing on interface: cubic-bezier(0.2, 1.6"
+    },
+    {
+      "rule": "no-bounce-easing",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/reel.css",
+      "line": 267,
+      "value": "cubic-bezier(0.2, 1.6",
+      "message": "No bounce or overshoot easing on interface: cubic-bezier(0.2, 1.6"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/reel.css",
+      "line": 401,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/reel.css",
+      "line": 407,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/staff-roll.css",
+      "line": 33,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/tournament.css",
+      "line": 4,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/tournament.css",
+      "line": 18,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/tournament.css",
+      "line": 62,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/tournament.css",
+      "line": 81,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/tournament.css",
+      "line": 114,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-bounce-easing",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/tournament.css",
+      "line": 115,
+      "value": "cubic-bezier(.2, .9, .2, 1.05",
+      "message": "No bounce or overshoot easing on interface: cubic-bezier(.2, .9, .2, 1.05"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/tournament.css",
+      "line": 125,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-bounce-easing",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/tournament.css",
+      "line": 126,
+      "value": "cubic-bezier(.2, 1.4",
+      "message": "No bounce or overshoot easing on interface: cubic-bezier(.2, 1.4"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/tournament.css",
+      "line": 126,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-bounce-easing",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/tournament.css",
+      "line": 136,
+      "value": "cubic-bezier(.2, 1.3",
+      "message": "No bounce or overshoot easing on interface: cubic-bezier(.2, 1.3"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/tournament.css",
+      "line": 140,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/tournament.css",
+      "line": 141,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/tournament.css",
+      "line": 159,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/tournament.css",
+      "line": 172,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-bounce-easing",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/trpg-stage.css",
+      "line": 588,
+      "value": "cubic-bezier(.2,1.4",
+      "message": "No bounce or overshoot easing on interface: cubic-bezier(.2,1.4"
+    },
+    {
+      "rule": "no-bounce-easing",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/trpg-stage.css",
+      "line": 1037,
+      "value": "cubic-bezier(.2,1.3",
+      "message": "No bounce or overshoot easing on interface: cubic-bezier(.2,1.3"
+    },
+    {
+      "rule": "no-bounce-easing",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/trpg-stage.css",
+      "line": 1050,
+      "value": "cubic-bezier(.2,1.3",
+      "message": "No bounce or overshoot easing on interface: cubic-bezier(.2,1.3"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/trpg.css",
+      "line": 67,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/trpg.css",
+      "line": 251,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/ui-art.css",
+      "line": 213,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/ui-paper.css",
+      "line": 32,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/ui-paper.css",
+      "line": 69,
+      "value": "font-weight: 900",
+      "message": "Headings at regular to semibold weight: font-weight: 900"
+    },
+    {
+      "rule": "no-layout-animation",
+      "area": "motion",
+      "severity": "warn",
+      "path": "remake/css/vn.css",
+      "line": 97,
+      "value": "transition: filter 0.25s ease, left",
+      "message": "Animate transform and opacity, not position: transition: filter 0.25s ease, left"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/vn.css",
+      "line": 349,
+      "value": "font-weight:900",
+      "message": "Headings at regular to semibold weight: font-weight:900"
+    },
+    {
+      "rule": "no-heavy-headings",
+      "area": "type",
+      "severity": "warn",
+      "path": "remake/css/vn/shisha-diagram.css",
+      "line": 25,
+      "value": "font-weight: 800",
+      "message": "Headings at regular to semibold weight: font-weight: 800"
+    },
+    {
+      "rule": "icons-not-emoji",
+      "area": "visual",
+      "severity": "warn",
+      "path": "remake/index.html",
+      "line": 96,
+      "value": "📱",
+      "message": "Line icons, not emoji: 📱"
+    },
+    {
+      "rule": "locale-aware-case",
+      "area": "i18n",
+      "severity": "warn",
+      "path": "remake/js/core/audio.js",
+      "line": 405,
+      "value": ".toUpperCase()",
+      "message": "Case changes name the locale: .toUpperCase()"
+    },
+    {
+      "rule": "locale-aware-case",
+      "area": "i18n",
+      "severity": "warn",
+      "path": "remake/js/core/dev-inspector.js",
+      "line": 14,
+      "value": ".toLowerCase()",
+      "message": "Case changes name the locale: .toLowerCase()"
+    },
+    {
+      "rule": "locale-aware-case",
+      "area": "i18n",
+      "severity": "warn",
+      "path": "remake/js/core/dev-inspector.js",
+      "line": 17,
+      "value": ".toLowerCase()",
+      "message": "Case changes name the locale: .toLowerCase()"
+    },
+    {
+      "rule": "locale-aware-case",
+      "area": "i18n",
+      "severity": "warn",
+      "path": "remake/js/craft/heat_view.js",
+      "line": 79,
+      "value": ".toLowerCase()",
+      "message": "Case changes name the locale: .toLowerCase()"
+    },
+    {
+      "rule": "locale-aware-case",
+      "area": "i18n",
+      "severity": "warn",
+      "path": "remake/js/daily/reel.js",
+      "line": 1217,
+      "value": ".toLowerCase()",
+      "message": "Case changes name the locale: .toLowerCase()"
+    },
+    {
+      "rule": "locale-aware-case",
+      "area": "i18n",
+      "severity": "warn",
+      "path": "remake/js/minigames/axe.js",
+      "line": 460,
+      "value": ".toLowerCase()",
+      "message": "Case changes name the locale: .toLowerCase()"
+    }
+  ],
+  "errors": 0,
+  "warnings": 180,
+  "notes": 0,
+  "baselined": 0,
+  "reviewRules": 37
+}

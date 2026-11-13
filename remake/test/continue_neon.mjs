@@ -17,7 +17,7 @@ async function mount(options = {}) {
     const { buildGameOver } = await import("./js/chapters/gameover.js");
     const { showScreen } = await import("./js/core/ui.js");
     window.__decisions = [];
-    showScreen("end", buildGameOver({ variant: "premium:ageha", soundEffects: false, ...options,
+    showScreen("end", buildGameOver({ variant: "lover:ageha", soundEffects: false, layout: "neon", ...options,
       onRetry: () => window.__decisions.push("retry"), onTitle: () => window.__decisions.push("title") }));
   }, options);
   await page.clock.runFor(50);
@@ -48,12 +48,15 @@ try {
     assert.equal(await page.locator(".go-retry").textContent(), "最初から再挑戦");
     assert.equal(await page.locator(".go-quit").textContent(), "諦める");
     const safe = await page.evaluate(async () => {
-      const root = document.querySelector(".gameover"), stage = document.querySelector("#stage").getBoundingClientRect();
+      // #2861 のワイドステージでは #stage が1280より広がり、CONTINUE は1280×720のまま中央に置かれる。
+      // そのため倍率と原点は #stage ではなく CONTINUE 自身（.gameover）の枠から取る。
+      const root = document.querySelector(".gameover"), stage = root.getBoundingClientRect();
       const k = stage.width / 1280, image = root.querySelector(".go-sumi-img");
       for (const animation of image.getAnimations()) animation.finish();
       const { DB, portraitInfo } = await import("./js/core/data.js");
-      const info = portraitInfo(root.dataset.speaker, root.dataset.emotion);
-      const framing = DB.manifest.continuePortraits[info.folder][info.face], r = image.getBoundingClientRect();
+      const { continueFraming } = await import("./js/chapters/continue-view.js");
+      const info = portraitInfo(root.dataset.speaker, root.dataset.emotion, root.dataset.portraitStyle);
+      const framing = continueFraming(info), r = image.getBoundingClientRect();
       const size = r.height / k * framing.size;
       const cx = (r.left - stage.left + r.width * framing.cx) / k;
       const cy = (r.top - stage.top + r.height * (framing.top + framing.size / 2)) / k;
@@ -80,6 +83,34 @@ try {
     assert(safe.hudOutsideFace && safe.imagesLoaded);
   }
   console.log("PASS: generated brush title / frames, dynamic labels, face protection and 1080p / 720p / phone");
+  // #2190 P24: the first count is an animation, so show that before it reaches infinity.
+  const limitNote = page.locator(".go-limit-note");
+  for (const { width, height, minFont } of [{ width: 1180, height: 740, minFont: 16 }, { width: 844, height: 390, minFont: 12 }]) {
+    await page.setViewportSize({ width, height });
+    await mount({ variant: 0, context: { lossOrdinal: 1 } });
+    assert(await limitNote.isVisible(), "the initial unlimited-time explanation must be visible");
+    assert.equal(await limitNote.textContent(), "初回は時間制限なし（カウントは演出です）");
+    assert.equal((await reading()).count, "20", "keep the initial countdown animation");
+    assert.match(await page.locator(".go-time-announcement").textContent(), /初回は時間制限がありません/);
+    const noteLayout = await limitNote.evaluate(note => {
+      const box = note.getBoundingClientRect(), stage = document.querySelector(".gameover").getBoundingClientRect();
+      const separate = other => { const r = other.getBoundingClientRect(); return box.right <= r.left || box.left >= r.right || box.bottom <= r.top || box.top >= r.bottom; };
+      return { inside: box.left >= stage.left && box.right <= stage.right && box.top >= stage.top && box.bottom <= stage.bottom,
+        insideViewport: box.left >= 0 && box.right <= innerWidth && box.top >= 0 && box.bottom <= innerHeight,
+        separate: [...document.querySelectorAll(".go-clock,.go-dialogue,.end-actions")].every(separate),
+        renderedFont: parseFloat(getComputedStyle(note).fontSize) * stage.width / 1280 };
+    });
+    assert(noteLayout.inside && noteLayout.insideViewport && noteLayout.separate && noteLayout.renderedFont >= minFont,
+      `${width}×${height}: ${JSON.stringify(noteLayout)}`);
+  }
+  await page.clock.runFor(21000);
+  assert.equal((await reading()).count, "∞");
+  assert(await limitNote.isVisible(), "the explanation remains visible after the animated count");
+  assert.deepEqual(await page.evaluate(() => __decisions), [], "the first count must not choose automatically");
+  await mount({ variant: 0, context: { lossOrdinal: 2 } });
+  assert(await limitNote.isHidden(), "repeat losses must not show the unlimited-time explanation");
+  assert.match(await page.locator(".go-time-announcement").textContent(), /20秒以内に選択/);
+  console.log("PASS: first-loss unlimited-time note readable and within viewport at 1180×740 / 844×390; animation and repeat-loss deadline announcement preserved");
   // #590: measure the actual scaled target, feedback handoff, guard and both callbacks.
   const saved = await page.evaluate(async () => JSON.stringify({ state: (await import("./js/core/state.js")).state, storage: { ...localStorage } }));
   for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }, { width: 667, height: 375 }, { width: 390, height: 844 }]) {
@@ -94,7 +125,7 @@ try {
       assert(await page.locator(".end-actions").isHidden());
       assert(await page.locator(".go-proceed").isVisible());
       const target = await page.locator(".go-proceed").evaluate(button => {
-        const r = button.getBoundingClientRect(), stage = document.querySelector("#stage").getBoundingClientRect();
+        const r = button.getBoundingClientRect(), stage = document.querySelector(".gameover").getBoundingClientRect();
         const dialogue = document.querySelector(".go-dialogue").getBoundingClientRect();
         return { width: r.width, height: r.height, centered: Math.abs(r.x + r.width / 2 - (stage.x + stage.width / 2)) < 1,
           inside: r.left >= stage.left && r.right <= stage.right && r.top >= stage.top && r.bottom <= stage.bottom + .1,
@@ -179,24 +210,24 @@ try {
   await page.evaluate(async () => {
     const { buildGameOver } = await import("./js/chapters/gameover.js");
     const { showScreen } = await import("./js/core/ui.js");
-    const root = buildGameOver({ variant: 0, soundEffects: false }); root.id = "continue-delayed";
+    const root = buildGameOver({ variant: 0, soundEffects: false, layout: "neon" }); root.id = "continue-delayed";
     window.setTimeout(() => showScreen("end", root), 500);
   });
   await page.clock.runFor(700);
   assert(await page.locator("#continue-delayed").isVisible());
   await page.clock.runFor(5200);
   assert.equal(await page.locator("#continue-delayed .go-count").textContent(), "15", "a deferred mount must start its visible countdown");
-  // #590: actual contextual captions and shortened scripts keep the independent 20-second deadline.
+  // #590: shortened scripts keep the independent 20-second deadline. 2026-11-07: captions no longer depend on the loss reason.
   await page.emulateMedia({ reducedMotion: "no-preference" });
   for (const reason of ["burnt", "cold", "leaf", "rank"]) for (const lossOrdinal of [1, 2, 3]) {
     await mount({ variant: 0, context: { reason, rank: 3, parts: { heat: 42, holes: 60 }, completedParts: ["holes", "heat"], lossOrdinal, sameReasonOrdinal: lossOrdinal } });
     const first = await page.locator(".go-speech-text").textContent();
-    assert.match(first, new RegExp({ burnt: "熱", cold: "冷え", leaf: "香り", rank: "3位" }[reason]));
     const script = await page.evaluate(async context => {
       const { prepareContinueScript, normalizeContinueContext } = await import("./js/chapters/continue-context.js");
       const { SUMI_CONTINUE_SCRIPTS } = await import("./js/chapters/gameover.js");
       return prepareContinueScript(SUMI_CONTINUE_SCRIPTS[0], normalizeContinueContext(context));
     }, { reason, rank: 3, parts: { heat: 42, holes: 60 }, completedParts: ["holes", "heat"], lossOrdinal, sameReasonOrdinal: lossOrdinal });
+    assert.equal(first, script.cues[0].text, "the first caption is the script line, whatever the reason");
     await page.clock.runFor(2500);
     assert.equal(await page.locator(".go-speech-text").textContent(), script.cues[1].text);
     assert.notEqual(await page.locator(".gameover").getAttribute("data-quiet"), "true", "the opening keeps its normal sound level");
@@ -218,7 +249,7 @@ try {
     }));
     for (const r of targets) assert(r.w >= 44 && r.h >= 44 && r.x >= 0 && r.y >= 0 && r.right <= viewport.width && r.bottom <= viewport.height, JSON.stringify(r));
   }
-  console.log("PASS: four reasons x first/repeat/third loss, real advice, 7/4 cues with 20 seconds, all scaled inputs >=44px");
+  console.log("PASS: four reasons x first/repeat/third loss with reason-free captions, 7/4 cues with 20 seconds, all scaled inputs >=44px");
   assert.deepEqual(errors, []); assert.deepEqual(missing, []);
   console.log("PASS: reduced motion by option / OS, keyboard retry and deferred mounting; page errors / missing art 0");
 } finally { await browser.close(); }

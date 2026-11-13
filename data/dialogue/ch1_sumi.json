@@ -5,7 +5,7 @@
       "lines": [
         { "speaker": "sumi", "face": "normal", "text": "はじめ、片付けが済んだら炭を見ていけ。今日は四角いやつだ" },
         { "speaker": "hajime", "face": "normal", "text": "キューブ炭ですね。いつものフラットと、何が違うんですか？" },
-        { "speaker": "sumi", "face": "serious", "text": "同じ三つでも火が強く入る。いつもの待ち方のままじゃ、熱くなるぞ" },
+        { "speaker": "sumi", "face": "serious", "text": "キューブのほうが大きい。同じ三つでも熱の持ちが違う。いつもの待ち方のままじゃ、熱が残るぞ" },
         { "speaker": "", "face": "", "text": "スミさんと並んで炭の芯を見て、ボウルへ置いたあとの温まり方を確かめた。" },
         { "speaker": "hajime", "face": "normal", "text": "形だけ替えるんじゃなくて、温度を見て待ち方も変えるんですね" },
         { "speaker": "sumi", "face": "smile", "text": "そういうことだ。まずは三つで試せ。数を増やす話は、また別だ" },
@@ -73,13 +73,123 @@
         {
           "speaker": "",
           "face": "",
-          "text": "接客の落ち着いた時間。スミさんが新しいボトルを洗いながら、はじめに口を開いた。"
+          "text": "客足の引いた店内。スミさんが新しいボトルを洗いながら、俺に口を開いた。"
         },
         {
-          "type": "condition",
-          "condition_type": "craft_basics_experienced",
-          "next_true": "review",
-          "next_false": "first_explanation"
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ。お前、そもそもなんでシーシャから煙が出るか分かって作ってるか？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "えっ？ ……えっと、上の炭でフレーバーを温めて、出た煙を水に通して吸う……からですよね？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "まあ80点だ。正解には違いねえが、もう少し解像度を上げろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが洗ったばかりのガラスボトル（水入れ）を置き、ステム（金属の管）を挿し込んだ。",
+          "diagram": "show"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "シーシャってのは『燃やす』んじゃねえ。『蒸らす』んだ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "一番上のボウルに詰めたフレーバー、タバコの葉っぱは、直接火に当てない"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "上に置いた炭の『熱』でじわじわと温める",
+          "diagram": "heat"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "だから焦がしちゃダメなんですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "そうだ。温められた葉っぱから出た煙は、ステムを通って下のボトルに行き、水の中をくぐる",
+          "diagram": "smoke"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "水をくぐると煙が冷えて、吸いやすくなる。害のほうにどこまで効くかは……諸説あるな",
+          "diagram": "bubble"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "冷えた煙はボトルの上に溜まる。それがホースを通って、お前の口に届く",
+          "diagram": "hose"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ちなみにあのモクモクの爆煙はな、水じゃなくてグリセリンと熱の仕事だ",
+          "diagram": "hide"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（なるほど……なんとなく作ってたけど、ちゃんと理屈があるんだ）"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "熱が高すぎれば焦げてイガイガする。低すぎれば煙が出ねえ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "炭の調整と吸い方、全部が噛み合って初めて『美味い煙』になる"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "葉っぱだけじゃ煙にならねえ。炭も、水も、吸うやつも要る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "同じ配合でも、それだけじゃ決まらないんですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ああ。まず、今ここにある一台を見ろ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ただ煙を出すだけなら誰でもできる"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "客が『ずっと吸っていたい』と思う煙は、仕組みを手が覚えてからだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "はい……！ ありがとうございます、スミさん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんはステムを抜いて、ボトルを洗い直した。授業は、それで終わりだった。"
         },
         {
           "type": "remember",
@@ -90,156 +200,7 @@
           "face": "",
           "text": "……【技術】が少し上がった。"
         }
-      ],
-      "branches": {
-        "review": [
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "今日は復習だ。作った一台を思い出しながら、図をたどってみろ",
-            "diagram": "hose"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（手順を思い出すと、図の流れとつながって見える）"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "まず、今ここにある一台を見ろ"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "分からなくなったら、また聞け。一度で全部覚えなくていい",
-            "diagram": "hide"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "はい。ありがとうございます、スミさん"
-          }
-        ],
-        "first_explanation": [
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "はじめ。お前、そもそもなんでシーシャから煙が出るか分かって作ってるか？"
-          },
-          {
-            "speaker": "hajime",
-            "face": "surprise",
-            "text": "えっ？ ……えっと、上の炭でフレーバーを温めて、出た煙を水に通して吸う……からですよね？"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "まあ80点だ。正解には違いねえが、もう少し解像度を上げろ"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "スミさんが洗ったばかりのガラスボトル（水入れ）を置き、ステム（金属の管）を挿し込んだ。",
-            "diagram": "show"
-          },
-          {
-            "speaker": "sumi",
-            "face": "serious",
-            "text": "シーシャってのは『燃やす』んじゃねえ。『蒸らす』んだ"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "一番上のボウルに入れたフレーバー（タバコの葉っぱ）は、直接火に当てない"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "上に置いた炭の『熱』でじわじわと温める",
-            "diagram": "heat"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "だから焦がしちゃダメなんですね"
-          },
-          {
-            "speaker": "sumi",
-            "face": "serious",
-            "text": "そうだ。温められた葉っぱから出た煙は、ステムを通って下のボトルに行き、水の中をくぐる",
-            "diagram": "smoke"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "水をくぐると煙が冷えて、吸いやすくなる。害のほうにどこまで効くかは……諸説あるな",
-            "diagram": "bubble"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "冷えた煙はボトルの上に溜まる。それがホースを通って、お前の口に届く",
-            "diagram": "hose"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "ちなみにあのモクモクの爆煙はな、水じゃなくてグリセリンと熱の仕事だ",
-            "diagram": "hide"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（なるほど……なんとなく作ってたけど、ちゃんと理屈があるんだ）"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "熱が高すぎれば焦げてイガイガする。低すぎれば煙が出ねえ。炭の調整と、吸い方"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "全てが噛み合って初めて『美味い煙』になる"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "葉っぱだけじゃ煙にならねえ。炭も、水も、吸うやつもいる"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "同じ配合でも、それだけじゃ決まらないんですね"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "ああ。まず、今ここにある一台を見ろ"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "ただ煙を出すだけなら誰でもできる"
-          },
-          {
-            "speaker": "sumi",
-            "face": "normal",
-            "text": "だが、客が『ずっと吸っていたい』と思う煙を作るには、その仕組みを頭と体で理解しろ"
-          },
-          {
-            "speaker": "hajime",
-            "face": "serious",
-            "text": "はい……！ ありがとうございます、スミさん"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "構造を理解したことで、ほんの少しだけシーシャの奥深さに触れた気がした。"
-          }
-        ]
-      }
+      ]
     },
     {
       "dialogue_id": "ch1_sumi_training",
@@ -262,7 +223,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "大会は派手な技より、崩れない基礎だ"
+          "text": "店でも大会でも、派手な技より崩れない基礎だ"
         },
         {
           "speaker": "",
@@ -277,7 +238,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "コンロに火を入れる。炭が少しずつ赤くなっていくのを、２人で無言で見つめる。"
+          "text": "コンロに火を入れる。炭が少しずつ赤くなっていくのを、2人で無言で見つめる。"
         },
         {
           "speaker": "",
@@ -309,32 +270,32 @@
         {
           "speaker": "",
           "face": "",
-          "text": "吸う速度が落ちたら、少し間を置く。眉間にシワが寄ったら、炭を引く。"
+          "text": "吸うのがゆっくりなら、熱を一段下げる。眉間にシワが寄ったら、炭を引く。"
         },
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "……はい。もう１回お願いします"
+          "text": "……はい。もう1回お願いします"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんが頷いて、新しい炭をコンロに置いた。また赤くなるのを２人で待つ。"
+          "text": "スミさんが頷いて、新しい炭をコンロに置いた。また赤くなるのを2人で待つ。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "閉店後の静かな店内に、コンロの微かな音だけが響いている。"
+          "text": "焼けた炭をトングでつまみ、ボウルへ運ぶ。置き終えるまで、息をするのを忘れていた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "赤くなる炭を見つめながら、スミさんはほんのわずかに口角を動かした。"
+          "text": "スミさんは何も言わなかった。ただ、ほんのわずかに口角を動かした。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（あの人、今……少しだけ嬉しそうだった？ いや、気のせいか）"
+          "text": "（あの人、今……少しだけ笑った？）"
         },
         {
           "speaker": "",
@@ -354,7 +315,7 @@
           {
             "speaker": "sumi",
             "face": "normal",
-            "text": "お前はそれが得意だろう。バイトで毎日やってることだ"
+            "text": "バイトで毎日やってることだ。……毎日できてるかは、別だがな"
           }
         ]
       }
@@ -375,7 +336,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "この人はいつも、最後のお客を見送ってから、１人で一台だけ吸う。"
+          "text": "この人はいつも、最後のお客を見送ってから、1人で一台だけ吸う。"
         },
         {
           "speaker": "",
@@ -390,7 +351,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "その煙の表情が、バイト中に出すものとは全然違うことに、はじめは気づいていた。"
+          "text": "隣の一台のホースが、黙ってこっちへ向けられた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口吸う。カルダモンだけの、軽い煙だった。"
         },
         {
           "speaker": "",
@@ -627,12 +593,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "閉店後。片付けの途中で、スミさんが古い写真を眺めているのに気づいた。"
+          "text": "閉店後の片付けの途中。スミさんが、レジ横で古い写真を眺めていた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "声をかけようとした瞬間、スミさんが写真をポケットにしまった。"
+          "text": "声をかける前に、写真は引き出しへ戻った。"
         },
         {
           "speaker": "sumi",
@@ -662,7 +628,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "でも今日は、何か考え事をしている手つきだった。"
+          "text": "でも今日は、炭を置く前に一度、手が止まった。"
         },
         {
           "speaker": "sumi",
@@ -686,13 +652,8 @@
         },
         {
           "speaker": "sumi",
-          "face": "normal",
-          "text": "お前の煙は正直だからな。客にもそれは伝わってる"
-        },
-        {
-          "speaker": "sumi",
           "face": "smile",
-          "text": "……常連の顔も、お前の一台の時は少しだけ緩む"
+          "text": "……常連の顔がな、お前の一台の時は少しだけ緩む"
         },
         {
           "speaker": "hajime",
@@ -702,17 +663,22 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "分からないからいいんだ。それがお前の強みだ"
+          "text": "分からないからいいんだ。数えだしたら、顔が見えなくなる"
+        },
+        {
+          "type": "fx",
+          "id": "exhale",
+          "who": "sumi"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんは煙を吐いて、写真をしまったポケットを、上着の上から一度だけ押さえた。"
+          "text": "スミさんは煙を吐いて、引き出しを一度だけ見た。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（あの写真の人も、煙を吐きながら笑ったんだろうか。……今日は、聞かないでおこう）"
+          "text": "（救われた、か。……あの写真も、その頃のものなんだろうか。今日は、聞かないでおこう）"
         },
         {
           "speaker": "",
@@ -807,6 +773,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
+          "beat": 800,
           "text": "……悪くない"
         },
         {
@@ -893,6 +860,11 @@
           "speaker": "sumi",
           "face": "serious",
           "text": "ただ、体力のある日だけな。準備も片付けも疲れる。毎日やろうとしなくていい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "炭は一酸化炭素を出す。中毒で命を落とすこともある"
         },
         {
           "speaker": "sumi",

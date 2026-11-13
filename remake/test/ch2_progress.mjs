@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { newState } from "../js/core/state.js";
 import { chapterDay, chapterDaysLeft, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 import { advanceToChapterTwo } from "../js/chapters/ch2-progress.js";
-import { CH3_INTRO_SCENES, chapterThreeScenes, advanceToChapterThree, chapterThreeProgress,
+import { CH3_INTRO_SCENES, chapterThreeScenes, advanceToChapterThree, chapterThreeProgress, chapterThreePrepPending, departChapterThree, chapterThreeDaily, CH3_DAILY_PLAN,
   completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime } from "../js/chapters/ch3-progress.js";
 
 const value = newState();
@@ -81,7 +81,26 @@ for (const key of ["money", "stamina", "stats", "statXp", "flavorStock", "owned"
   "reel", "lovers", "loverSince", "relationshipMemories", "contacts", "inbox", "tournament"])
   assert.deepEqual(tokyo[key], saved[key], `Chapter 3 transition changed ${key}`);
 assert.deepEqual(tokyo.statsAtChapterStart, saved.stats);
-assert.deepEqual(chapterThreeProgress(tokyo), { startDay: 29, stage: 0, titleSeen: false, prologueStep: 0, routeVersion: 2 });
+// 出発前の3日を地元で過ごしてから東京へ（VOL02）。東京DAY1（startDay）は出発の朝に確定し直す。
+assert.deepEqual(tokyo.flags._ch3_prep, { startDay: 29, days: 3, step: 0, departed: false });
+assert.equal(tokyo.flags._ch2_region, "home");
+assert.deepEqual(chapterThreeProgress(tokyo), { startDay: 32, stage: 0, titleSeen: false, routeVersion: 3 });
+assert(chapterThreePrepPending(tokyo));
+assert.equal(chapterDay(tokyo), 1, "The first prep day");
+const preDeparture = structuredClone(tokyo);
+assert.equal(departChapterThree(tokyo), false, "Departure waits for the morning after the third prep day");
+assert.deepEqual(tokyo, preDeparture);
+tokyo.day = 31; tokyo.slot = 1;
+assert.equal(chapterDay(tokyo), 3);
+assert.equal(departChapterThree(tokyo), false);
+tokyo.day = 32; tokyo.slot = 2; tokyo.phase = "daily"; tokyo.flags._ch2_region = "widehanga";
+assert.equal(departChapterThree(tokyo), true);
+assert.equal(tokyo.flags._ch3_prep.departed, true);
+assert.equal(chapterThreePrepPending(tokyo), false);
+assert.deepEqual([tokyo.slot, tokyo.phase, tokyo.flags._ch2_region], [0, "opening", "home"]);
+assert.deepEqual(chapterThreeProgress(tokyo), { startDay: 32, stage: 0, titleSeen: false, routeVersion: 3 });
+assert.equal(chapterDay(tokyo), 1, "Tokyo DAY1 after departure");
+assert.equal(departChapterThree(tokyo), false, "Departure happens once");
 const entered = structuredClone(tokyo);
 assert.equal(advanceToChapterThree(tokyo), false);
 assert.deepEqual(tokyo, entered, "Repeated Chapter 3 entry reset progress or date");
@@ -90,7 +109,7 @@ const ids = CH3_INTRO_SCENES.map(scene => scene.id);
 const legacy = structuredClone(entered);
 delete legacy.flags._ch3_intro.routeVersion;
 legacy.flags._ch3_intro.stage = 9;
-legacy.day = 34;
+legacy.day = 37; // 東京DAY6（準備3日の後の東京DAY1＝通算32日）
 assert.equal(chapterThreeScenes(legacy).length, 18);
 assert.equal(chapterThreeScenes(legacy)[legacy.flags._ch3_intro.stage].id, "ch3_abyss_recovery",
   "An existing save must resume its unread scene without replaying the revised route");
@@ -100,16 +119,38 @@ assert.deepEqual(ids, [
   "ch3_opening", "ch3_mukai_arrival", "ch3_mukai_intro", "ch3_individuality_doubt",
   "ch3_tokyo_shop_gap", "ch3_double_apple_incident", "ch3_rest_before_recovery",
   "ch3_daily_cup_1", "ch3_work_without_taste", "ch3_naru_contact_before_tournament",
-  "ch3_naru_work", "ch3_kuze_first", "ch3_kuze_mukai_visit", "ch3_taste_return",
-  "ch3_abyss_recovery", "ch3_kuze_advice",
+  "ch3_naru_work", "ch3_saku_first", "ch3_saku_mukai_visit", "ch3_taste_return",
+  "ch3_abyss_recovery", "ch3_saku_advice",
   "ch3_steve_low_heat", "ch3_volk_first", "ch3_strategy", "ch3_tournament_eve",
 ], "Chapter 3 introduction must keep the canonical scene order through the tournament eve");
 const availableScenes = new Set(["ch3_main", "ch3_double_apple", "ch3_mukai", "ch3_rivals", "ch3_volk"].flatMap(name =>
   JSON.parse(readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))).dialogues.map(scene => scene.dialogue_id)));
 assert(ids.every(id => availableScenes.has(id)), "A Chapter 3 scene is absent from dialogue data");
-assert.equal(CH3_INTRO_SCENES.find(scene => scene.id === "ch3_kuze_first").day, 8);
-assert.equal(CH3_INTRO_SCENES.find(scene => scene.id === "ch3_kuze_advice").day, 11,
-  "Kuze must have several days between first meeting and return visit");
+assert.equal(CH3_INTRO_SCENES.find(scene => scene.id === "ch3_saku_first").day, 8);
+assert.equal(CH3_INTRO_SCENES.find(scene => scene.id === "ch3_saku_advice").day, 11,
+  "Ayatori must have several days between first meeting and return visit");
+// 東京も日常ループの行程（版3・VOL03）: 場面の並びは同じで、全場面に日付（昼の行動を使う場面か夜の予定か）がある。
+// 場面の読了で時計を動かさない（日付と時間帯は日常ループが進める）。
+{
+  const daily = structuredClone(tokyo);
+  assert(chapterThreeDaily(daily));
+  assert.deepEqual(Object.keys(CH3_DAILY_PLAN), ids, "Every Tokyo scene has a day in the daily plan, in order");
+  let last = 0;
+  for (const scene of CH3_INTRO_SCENES) {
+    const plan = CH3_DAILY_PLAN[scene.id];
+    assert(["slot", "night"].includes(plan.kind), scene.id);
+    assert.equal(plan.day, scene.day, `${scene.id} keeps the canonical Tokyo day`);
+    const order = plan.day * 3 + (plan.kind === "night" ? 2 : plan.slot);
+    assert(order >= last, `${scene.id} keeps the order`);
+    last = order;
+    const clock = [daily.day, daily.slot, daily.phase];
+    assert.equal(completeChapterThreeScene(daily, scene.id), true, scene.id);
+    assert.deepEqual([daily.day, daily.slot, daily.phase], clock, `${scene.id} must not move the clock in the daily route`);
+  }
+  assert.equal(chapterThreeFreeTime(daily), null, "The daily route has no scene-card free time");
+}
+// 以下は場面カードの東京（作業中の旧セーブの行程・版2）。
+tokyo.flags._ch3_intro.routeVersion = 2;
 for (let i = 0; i < ids.length; i++) {
   const scene = CH3_INTRO_SCENES[i];
   // 東京の空き時間（#1655）は休んで閉じる。場面の日付はその後に確かめる。
@@ -125,7 +166,7 @@ for (let i = 0; i < ids.length; i++) {
   completeChapterThreeScene(tokyo, scene.id);
   assert.deepEqual(tokyo, completed, `Scene committed twice: ${scene.id}`);
 }
-assert.equal(tokyo.day, 42);
+assert.equal(tokyo.day, 45); // 東京DAY14（準備3日の後の東京DAY1＝通算32日）
 assert.equal(chapterDay(tokyo), 14, "The national match must begin on DAY14");
 assert.equal(tokyo.chapter, 3);
 assert.equal(tokyo.phase, "tournament");

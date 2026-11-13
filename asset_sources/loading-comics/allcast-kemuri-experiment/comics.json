@@ -1,0 +1,67 @@
+{
+  "id": "kemuri-experiment",
+  "title": "実験の正体",
+  "cast": [
+    "dr_kemuri"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "逢縁くん、実験だ。",
+    "えっ。",
+    "ただの飲み比べ。"
+  ],
+  "first_speaker": "dr_kemuri",
+  "panel1": "右の博士が眼鏡を光らせて、穏やかだが意味ありげな笑みで「逢縁くん、実験だ。」（左上に高く）。左のはじめがたじろいで「えっ。」（右下）。",
+  "panel2": "机にはコーラのグラスが二つと輪切りのレモンだけ。博士が子どものように楽しげに飲み比べている。はじめ「ただの飲み比べ。」。",
+  "caption": "博士の好きな味は、コーラ。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v2.png",
+  "source_sha256": "0917b434f8e4d34ce8579fef29a8ec2144ae0a4d1cea6530cefa19d3b71925f6",
+  "references": [
+    {
+      "path": "references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "references/dr_kemuri.png",
+      "sha256": "0930e24deb62543289a70c7b5d860ae7093e27d8440433c8d285c435447fb259"
+    },
+    {
+      "path": "references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked",
+    "reading_order": "left-to-right; first speaker upper-left; tails checked",
+    "identity": "official sprites inspected; same positions/faces both panels",
+    "prohibited_hardware": "none",
+    "notes": "v1 had 3 glasses; v2 repaired to 2",
+    "in_game_pc_phone": "not run; unregistered",
+    "style_alignment": "Compared with early adopted Menu Revision reference: large expressive faces, 2.5-head chibi proportions, warm cel colors and bold clean lines; consistent across both panels.",
+    "selection": "Owner decision pending; not adopted",
+    "fill": "Official fill applied; filled panels re-inspected, faces/dialogue/gag preserved."
+  },
+  "delivery": [
+    {
+      "file": "panels/kemuri-experiment-1.webp",
+      "sha256": "499d5f27cc868875a0eb949d13be844f1ff00e0da3fdfe597e486caff9802554",
+      "width": 717,
+      "height": 478
+    },
+    {
+      "file": "panels/kemuri-experiment-2.webp",
+      "sha256": "bc60b79ee7bb8e97244a865eaa5d8ae3a9055de4a8f51010e3aa412d757c0c8b",
+      "width": 717,
+      "height": 477
+    }
+  ],
+  "style_reference": {
+    "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+    "role": "early adopted Menu Revision comic, style only",
+    "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+  }
+}

@@ -12,8 +12,9 @@ const shark = JSON.parse(await readFile(new URL("../../data/dialogue/trpg_shark.
 
 test("2d20 forecasts match all 400 real checks at base, aided and momentum bonuses", () => {
   const expected = [
-    { success: 26, mixed: 48, trouble: 26 },
-    { success: 43, mixed: 44, trouble: 14 },
+    // A 20 on either die always succeeds (TRF01), so the low bonuses gain a few points of success.
+    { success: 29, mixed: 45, trouble: 26 },
+    { success: 44, mixed: 43, trouble: 14 },
     { success: 57, mixed: 36, trouble: 7 },
     { success: 74, mixed: 25, trouble: 2 },
   ];
@@ -29,7 +30,7 @@ test("2d20 forecasts match all 400 real checks at base, aided and momentum bonus
       assert.equal(rollOdds(bonus)[grade], Math.round(counts[grade] * 100 / 400));
     }
   }
-  assert.deepEqual(rollOdds(-40), { success: 0, mixed: 0, trouble: 100 });
+  assert.deepEqual(rollOdds(-40), { success: 10, mixed: 0, trouble: 90 }, "only a 20 saves a hopeless roll");
   assert.deepEqual(rollOdds(30), { success: 100, mixed: 0, trouble: 0 });
 });
 
@@ -59,17 +60,21 @@ test("unconfirmed hypotheses and other phases have no conditional bonus; support
   }
   for (const kind of ["listen", "prepare", "serve"]) for (const support of [false, true]) {
     const forecast = checkForecast(ordinary, { hypothesis: "quiet" }, kind, { support });
-    assert.equal(forecast.baseBonus, support ? 10 : 3);
+    // Without a declared approach the forecast reads the player's own character, the first approach.
+    const lead = ordinary.checks[kind].approaches[0];
+    const base = ordinary.cast.find(c => c.id === lead.actor).sheet.stats[lead.stat];
+    assert.equal(forecast.base, base);
+    assert.equal(forecast.baseBonus, base + (support ? 7 : 0));
     assert.equal(forecast.potentialBonus, 0);
-    assert.deepEqual(forecast.bestOdds, rollOdds(support ? 10 : 3));
+    assert.deepEqual(forecast.bestOdds, rollOdds(base + (support ? 7 : 0)));
     if (kind !== "prepare") assert.equal(checkForecast(shark, { hypothesis: "scent" }, kind, { support }).potentialBonus, 0);
   }
   assert.equal(checkForecast({}, { hypothesis: "scent" }, "prepare").potentialBonus, 0);
 });
 
 test("reroll forecasts enumerate all twenty outcomes of the selected die and preserve inputs", () => {
-  assert.deepEqual(rerollOdds([1, 20], 3, 0), { success: 70, mixed: 30, trouble: 0 });
-  assert.deepEqual(rerollOdds([1, 20], 3, 1), { success: 0, mixed: 30, trouble: 70 });
+  assert.deepEqual(rerollOdds([1, 20], 3, 0), { success: 100, mixed: 0, trouble: 0 }, "the kept 20 is already a critical");
+  assert.deepEqual(rerollOdds([1, 20], 3, 1), { success: 5, mixed: 25, trouble: 70 }, "only a new 20 succeeds beside a kept 1");
   for (const bonus of [3, 7, 10, 14]) for (let first = 1; first <= 20; first++) {
     for (let second = 1; second <= 20; second++) for (const index of [0, 1]) {
       const dice = Object.freeze([first, second]);
@@ -100,7 +105,61 @@ test("returned forecasts are independent and malformed roll inputs are rejected"
 
 test("table momentum is part of the public forecast", () => {
   const forecast = checkForecast(ordinary, { hypothesis: null, momentum: 2 }, "listen");
-  assert.equal(forecast.momentum, 2); assert.equal(forecast.baseBonus, 11);
-  assert.deepEqual(forecast.odds, rollOdds(11));
+  assert.equal(forecast.momentum, 2); assert.equal(forecast.baseBonus, forecast.base + 8);
+  assert.deepEqual(forecast.odds, rollOdds(forecast.base + 8));
 });
 
+
+test("a declared approach forecasts with that character's stat; unknown approaches are rejected", () => {
+  const watch = checkForecast(ordinary, { hypothesis: null }, "listen", { approach: "listen_watch" });
+  assert.equal(watch.base, ordinary.cast.find(c => c.id === "tsumugi").sheet.stats.eye);
+  assert.equal(watch.baseBonus, watch.base);
+  assert.deepEqual(watch.odds, rollOdds(watch.base));
+  assert.notEqual(watch.baseBonus, checkForecast(ordinary, { hypothesis: null }, "listen").baseBonus);
+  assert.throws(() => checkForecast(ordinary, { hypothesis: null }, "listen", { approach: "missing" }));
+  // The hidden profile is never read for an approach forecast either.
+  const hidden = { hypothesis: "scent", get profileId() { throw new Error("Hidden profile was read"); } };
+  assert.equal(checkForecast(shark, hidden, "prepare", { approach: "prepare_kit" }).potentialBonus, 4);
+});
+
+// #3199（2026-11-12 オーナー「ダイスの成功率は補正込みで出して」）: 振る前に見せる見込みは、実際の判定に効く補正と同じもの。
+test("the odds shown before a roll carry exactly the modifiers the real roll uses (stat, chosen support, momentum; a guess only as a range)", () => {
+  let checks = 0, aided = 0, pushed = 0, guessed = 0;
+  for (const [scenario, spots] of [[ordinary, ["menu", "window", "bag"]], [shark, shark.spots.slice(0, 3).map(spot => spot.id)]]) {
+    for (let seed = 1; seed <= 30; seed++) {
+      const session = new TrpgSession(scenario, { seed });
+      const roll = kind => {
+        const before = session.snapshot(), helper = scenario.checks[kind].helper || null;
+        const approaches = scenario.checks[kind].approaches || [];
+        const approach = approaches.length ? approaches[(seed + checks) % approaches.length].id : null;
+        // Like the table: the support card can only be chosen while it is unused and a teamwork card is left.
+        const support = !!helper && !before.used[helper] && before.teamwork > 0 && (seed + checks) % 2 === 0;
+        const shown = checkForecast(scenario, before, kind, { support, approach, sheets: session.sheets });
+        const plain = checkForecast(scenario, before, kind, { support: false, approach, sheets: session.sheets });
+        session.beginCheck(kind, { support, approach });
+        const real = session.checkResult();
+        assert.equal(real.bonus, shown.baseBonus + real.hypothesisBonus, scenario.id + " seed " + seed + " " + kind + ": the shown bonus is the rolled bonus");
+        assert.equal(shown.momentum, real.momentum);
+        assert.equal(shown.baseBonus - plain.baseBonus, support ? 7 : 0, "An unchosen support card is never counted");
+        assert(real.hypothesisBonus === 0 || real.hypothesisBonus === shown.potentialBonus, "A matching guess adds exactly the announced potential");
+        assert.deepEqual(rollOdds(real.bonus), real.hypothesisBonus ? shown.bestOdds : shown.odds, "The real chance is one end of the shown range");
+        if (!shown.potentialBonus) assert.deepEqual(shown.odds, shown.bestOdds, "Without a pending guess there is one number, not a range");
+        checks++; aided += support; pushed += real.momentum > 0; guessed += shown.potentialBonus > 0;
+        session.settleCheck();
+      };
+      session.start(); roll("listen");
+      if (session.snapshot().phase === "interview") {
+        for (const topic of scenario.interview.topics.slice(0, scenario.interview.picks || 2)) session.ask(topic.id);
+        session.endInterview();
+      }
+      for (const id of spots) session.inspect(id);
+      session.interpret(seed % 2 ? session.profile.id : scenario.hypotheses.find(h => h.id !== session.profile.id).id);
+      if (session.snapshot().phase === "twist") { for (const field of session.flow.twist) session.plan(field, scenario.options[field][0].id); roll("twist"); }
+      for (const field of session.flow.prepare) session.plan(field, scenario.options[field][0].id);
+      roll("prepare");
+      for (const field of session.flow.serve) session.plan(field, scenario.options[field][0].id);
+      roll("serve");
+    }
+  }
+  assert(checks >= 200 && aided > 20 && pushed > 20 && guessed > 20, JSON.stringify({ checks, aided, pushed, guessed }));
+});

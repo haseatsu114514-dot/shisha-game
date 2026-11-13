@@ -1,0 +1,131 @@
+{
+  "comment": "来訪予定が確定し、実際に到着した恋人用。同行者の決定だけで再生しない。前夜祭の日の昼、前夜祭より前に読む。前夜の過ごし方（誘う・ひとりで休む・重なった予定の保留）のどれにもつながるよう、夜の約束はしない。午後の「仕入れの下見」は前夜デート（tournament_date_rio の eve_dubai）の香水の店につながる。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_rio_dubai_girlfriend",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーへ下りると、凛想さんが上着を腕に掛けて待っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手には、市場で買ったらしいカルダモンの小袋。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "凛想さん。……ほんとに来たんですね"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "来るって送ったでしょ。予定の申請で、私は嘘をつかないよ"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "申請は「最重要サンプルの品質管理」。……業務は午後で終わり"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "最重要サンプルって、……俺ですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "ほかに誰がいるの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんが一歩近づいて、俺の顔をのぞきこんだ。香りを確かめる時と同じ、細めた目だった。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……うん。寝てるし、食べてる"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "煙の話をする顔も、ちゃんと君の顔"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "検品ですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "検品は合格"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……ここからは、私の休み"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……来てくれて、うれしいです"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "beat": 400,
+          "text": "……うん。それを聞きに来たところもある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは、カルダモンの小袋を俺の手に乗せた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "スークで袋を開けたら、tonariの匂いがした。知らない国だと、知ってる匂いに安心するね"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "明日、手が固くなったら嗅いで。君の店の匂い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今夜、大会の前夜祭があるんです。少し顔を出してきます"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "うん、行っておいで。選手は、前の晩の空気も吸っておいたほうがいい"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "その代わり、あとで聞かせて。向こうの煙が、どんな顔で吸われてたか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。ちゃんと持って帰ってきます"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "明日の煙は明日。私は、午後の分の下見を片づけてくる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは上着を肩に掛け直して、手を一度だけ振った。"
+        }
+      ]
+    }
+  ]
+}

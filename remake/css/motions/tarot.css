@@ -24,3 +24,22 @@
 .mo-tarot-front.glow { box-shadow: 0 0 36px 8px #fff6; }
 .mo-tarot-flash { position: absolute; inset: -10%; opacity: 0; pointer-events: none; mix-blend-mode: screen; }
 .mo-tarot-flare { position: absolute; left: 50%; top: 330px; width: 1400px; height: 6px; border-radius: 3px; opacity: 0; transform: translate(-50%, -50%) rotate(var(--r)) scaleX(0); pointer-events: none; }
+/* c: 占い師の卓で札を3枚配り、真ん中の1枚をめくる（見本4・TMG35〜44・#3278）。舞台は占い師の登場カットインの背景 */
+.mo-tarot.at-c { background: transparent; }
+.mo-tc-dim { position: absolute; inset: 0; background: #0b0612; opacity: 0; }
+.mo-tc-set { position: absolute; inset: 0; clip-path: polygon(0 0, 0 0, -30% 100%, -30% 100%); }
+.mo-tc-set > i { position: absolute; inset: 0; }
+.mo-tc-table { background: center / cover no-repeat; transform-origin: 30% 60%; }
+.mo-tc-shade { background: linear-gradient(105deg, #0a0410d9 0%, #0a04108c 38%, transparent 64%); }
+.mo-tc-lantern { background: radial-gradient(256px 230px at 97% 12%, #ffc97a80, transparent 70%); mix-blend-mode: screen; opacity: 0; }
+.mo-tc-card, .mo-tc-shadow { position: absolute; left: 0; top: 0; opacity: 0; }
+.mo-tc-shadow { border-radius: 13px; background: #05020a; filter: blur(15px); }
+.mo-tc-face { position: absolute; inset: 0; background-repeat: no-repeat; backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden; border-radius: 12px; }
+.mo-tc-face.front { transform: perspective(1150px) rotateY(-180deg); }
+.mo-tc-art { position: absolute; background: center / cover no-repeat; }
+.mo-tc-sheen { position: absolute; inset: -20% -60%; background: linear-gradient(100deg, transparent 42%, #fff6d9cc 50%, transparent 58%); translate: -70% 0; mix-blend-mode: screen; pointer-events: none; }
+.mo-tc-band { position: absolute; right: -51px; bottom: 134px; width: 576px; box-sizing: border-box; padding: 19px 115px 24px 54px; background: #f4ecda;
+  rotate: -3deg; translate: 110% 0; box-shadow: 0 13px 31px #05020a80; }
+.mo-tc-band small { position: absolute; left: 54px; bottom: 100%; background: #2a1638; color: #f4ecda; font-size: 20px; line-height: 1.5; letter-spacing: 0.22em;
+  font-weight: 700; padding: 4px 15px 4px; white-space: nowrap; }
+.mo-tc-band .t { display: block; color: #1a0f24; font-size: 84px; line-height: 1.2; letter-spacing: 0.14em; white-space: nowrap; font-family: "Suien Name", var(--font); font-weight: 700; }

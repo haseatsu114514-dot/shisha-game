@@ -5,9 +5,11 @@ import { el, nextFrame } from "./util.js";
 export const W = 1280;
 export const H = 720;
 export const NS = "http://www.w3.org/2000/svg";
-export const COLOR = { purple: "#6b4fb0", deep: "#34246a", lav: "#dcd1f4", pink: "#f06aae", ink: "#0b0814", shadow: "#150f26", warm: "#fff1d2" };
-export const EASE = { in: "cubic-bezier(.55,0,.85,.35)", out: "cubic-bezier(.16,1,.3,1)", snap: "cubic-bezier(.7,0,.2,1)" };
+export const COLOR = { purple: "#6b4fb0", deep: "#34246a", lav: "#dcd1f4", pink: "#f06aae", dusk: "#f3b9d6", ink: "#0b0814", shadow: "#150f26", warm: "#fff1d2" };
+export const EASE = { in: "cubic-bezier(.55,0,.85,.35)", out: "cubic-bezier(.16,1,.3,1)", snap: "cubic-bezier(.7,0,.2,1)", inOut: "cubic-bezier(.65,0,.35,1)" };
 export const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+/** 画面全体の閃光・揺れを省くか。端末の「動きを減らす」か、設定「揺れ・閃光を減らす」（config.reduceShake → body.reduce-shake）。#2688 F11 */
+export const calmFlash = () => reducedMotion() || !!document.body?.classList.contains("reduce-shake");
 
 export function svg(tag, attrs = {}, kids = []) {
   const node = document.createElementNS(NS, tag);
@@ -18,16 +20,37 @@ export function svg(tag, attrs = {}, kids = []) {
 export const stageSvg = (kids = []) => svg("svg", { viewBox: `0 0 ${W} ${H}`, class: "tr-svg" }, kids);
 
 export function move(node, frames, ms, opt = {}) {
-  return node.animate(frames, { duration: ms, easing: EASE.snap, fill: "both", ...opt }).finished.catch(() => {});
+  const duration = opt.duration ?? ms;
+  const anim = node.animate(frames, { duration: ms, easing: EASE.snap, fill: "both", ...opt });
+  // 偽時計では WAAPI の finished が終わらないことがある。タイマーがあれば上限を置き、
+  // Node の VM 検査（setTimeout が無い／即死するモック）では finished だけを待つ。
+  const finished = Promise.resolve(anim.finished).catch(() => {});
+  // 遅延・繰り返しのある演出も最後まで待つ。duration だけで打ち切ると、
+  // 遅れて始まる絵や線が途中で消えたり、次の演出と重なってしまう。
+  const end = Math.max(0, (opt.delay ?? 0) + duration * (opt.iterations ?? 1) + (opt.endDelay ?? 0));
+  const timer = globalThis.setTimeout;
+  const clear = globalThis.clearTimeout;
+  if (typeof timer !== "function" || !Number.isFinite(end)) return finished;
+  let id;
+  const timeout = new Promise((resolve) => { id = timer(resolve, end + 80); });
+  return Promise.race([finished, timeout]).finally(() => {
+    if (id != null && typeof clear === "function") clear(id);
+  });
 }
 
 // 画面を覆っているあいだは Enter・Space で下の会話や画面が進まないようにする
 const blockKey = (e) => {
   if (["Enter", " "].includes(e.key)) { e.preventDefault(); e.stopImmediatePropagation(); }
 };
+let keyHolds = 0;
 export function holdKeys() {
-  window.addEventListener("keydown", blockKey, true);
-  return () => window.removeEventListener("keydown", blockKey, true);
+  if (keyHolds++ === 0) window.addEventListener("keydown", blockKey, true);
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    if (--keyHolds === 0) window.removeEventListener("keydown", blockKey, true);
+  };
 }
 
 /** 幕の器。ui.setBg の covered／release 約束に合わせ、覆う・開くの2段で書く */
@@ -40,9 +63,11 @@ export function curtain(host, style, cover, reveal) {
   return { covered, async release() {
     if (released) return;
     released = true;
-    await covered;
-    await nextFrame(); await nextFrame();
-    try { await reveal(node); } finally { node.remove(); unhold(); }
+    try {
+      await covered;
+      await nextFrame(); await nextFrame();
+      await reveal(node);
+    } finally { node.remove(); unhold(); }
   } };
 }
 

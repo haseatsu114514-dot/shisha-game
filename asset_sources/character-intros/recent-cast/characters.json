@@ -113,5 +113,103 @@
       "brief": "Background only, no people or text. Dark left 43% for approved portrait, illustrated objects upper right, blank middle right for white name ribbon, dark lower right for quotation. Gouache editorial illustration. Palette #aa83c7, motifs: タロット・紫布・月. No hookah or hose."
     },
     "portrait_sha256": "38ef4fa13f7e082db74108c52719ab8127071d98db391cea9895a6b4fdfc3f8d"
+  },
+  {
+    "id": "yoru",
+    "color": "#8f6cf0",
+    "secondary": "#3fd0e8",
+    "shadow": "#120d1f",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/yoru/chr_yoru_normal.png",
+    "motif_label": "DJの皿・縫い目・イコライザー",
+    "caption_source": "data/characters.json: yoru.intro_cutin",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/recent-cast/backgrounds/yoru.png",
+        "sha256": "066f483e1a2f56d23b5fc443409077e64a54a8e103eb3ecef1f06e56de6bb40c"
+      }
+    },
+    "generation": {
+      "tool": "Codex image_gen",
+      "date": "2026-11-01",
+      "source": "asset_sources/character-intros/yoru-20261102/background-B.png（3案から採用。1672×940 を高さ1024へ拡大し右寄せで1536×1024に切り出し）",
+      "brief": "Issue #2199 #4. Graphic-poster background, no people or text; dark left third and lower area for the portrait and text."
+    }
+  },
+  {
+    "id": "master_hookah",
+    "color": "#3fbf7f",
+    "secondary": "#e2b75f",
+    "shadow": "#151917",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/master_hookah/chr_master_hookah_normal.png",
+    "caption_source": "data/characters.json: master_hookah.intro_cutin"
+  },
+  {
+    "id": "sheikh",
+    "color": "#f5c542",
+    "secondary": "#f6e6b7",
+    "shadow": "#15182a",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/sheikh/chr_sheikh_normal.png",
+    "caption_source": "data/characters.json: sheikh.intro_cutin"
+  },
+  {
+    "id": "shisha_9000",
+    "color": "#9aa4b8",
+    "secondary": "#c1cad8",
+    "shadow": "#151926",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/shisha_9000/chr_shisha_9000_normal.png",
+    "caption_source": "data/characters.json: shisha_9000.intro_cutin"
+  },
+  {
+    "id": "da_silva",
+    "color": "#2fd27a",
+    "secondary": "#f5d96e",
+    "shadow": "#0e2519",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/da_silva/chr_da_silva_normal.png",
+    "caption_source": "data/characters.json: da_silva.intro_cutin"
+  },
+  {
+    "id": "emil",
+    "color": "#4a8be0",
+    "secondary": "#d7e7f5",
+    "shadow": "#111827",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/emil/chr_emil_normal.png",
+    "caption_source": "data/characters.json: emil.intro_cutin"
+  },
+  {
+    "id": "mukai_master",
+    "color": "#b08a5e",
+    "secondary": "#e5d1ac",
+    "shadow": "#231915",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/mukai_master/chr_mukai_master_normal.png",
+    "caption_source": "data/characters.json: mukai_master.intro_cutin"
+  },
+  {
+    "id": "noor",
+    "color": "#e39a48",
+    "secondary": "#f6d6a0",
+    "shadow": "#0d0332",
+    "expression": "normal",
+    "portrait": "assets/sprites/characters/noor/chr_noor_normal.png",
+    "motif_label": "砂丘・夕日・ツアーの四駆・ボードの跡",
+    "caption_source": "data/characters.json: noor.intro_cutin",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/recent-cast/backgrounds/noor.png",
+        "sha256": "4faeb5c72086746862d4b003523ec42d753c39b11c497f7dd2fcaa131e6f1408"
+      }
+    },
+    "generation": {
+      "tool": "Codex image_gen",
+      "date": "2026-11-02",
+      "source": "asset_sources/character-intros/graphic-20261031/replacements/2026-11-02/bg_noor.png（グラフィック背景の原画 1672×941 を高さ1024へ拡大し右寄せで1536×1024に切り出し）",
+      "brief": "DSR11 / PR #2382. Graphic-poster background, no people or text; dark left third and lower area for the portrait and text."
+    }
   }
 ]

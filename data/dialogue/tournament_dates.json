@@ -1,43 +1,15 @@
 {
-  "comment": "第3・4章の任意前夜デート。story_routes.jsonとstory-routes.jsの条件を通して呼ぶ。第3章はch3.js、第4章はch4.jsの前夜に接続済み（実際に同じ場所にいる恋人だけ）。stayの帰り道は第3章の大会が終わったか（tournament_finished 3）で、東京前夜のmukaiの裏口と、ドバイ前夜の宿のロビーに分ける。あげはは第4章だけなので宿のロビー。能力・大会加点なし。",
+  "comment": "第3・4章の任意前夜デート。story_routes.jsonとstory-routes.jsの条件を通して呼ぶ。第3章はch3.js、第4章はch4.jsの前夜に接続済み（実際に同じ場所にいる恋人だけ）。stayの帰り道は第3章の大会が終わったか（tournament_finished 3）で、東京前夜のmukaiの裏口と、ドバイ前夜の宿のロビーに分ける。あげはは第4章だけなので宿のロビー。能力・大会加点なし。homeの別れ際は人ごとに書き分ける。凛想・サメちゃん・ひよりは持ち物が章で違うので、stayと同じ条件で東京（home_tokyo）とドバイ（home_dubai）に分ける。",
   "dialogues": [
     {
       "dialogue_id": "tournament_date_tsumugi",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "二人で駅前のベンチに座る。つむぎは旅先の木を描いていた。"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……明日は、手だけ描いても、いいですか"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "顔じゃなくて？"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "炭を待っている時の手、好きなので"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "じゃあ今は？"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……今は、貸してください"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "鉛筆をしまったつむぎの指が、俺の手を握った。"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 3,
+          "next_true": "eve_dubai",
+          "next_false": "eve_tokyo"
         },
         {
           "type": "choice",
@@ -58,11 +30,75 @@
         "private_scene": true
       },
       "branches": {
+        "eve_tokyo": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "二人で駅前のベンチに座る。つむぎは旅先の木を描いていた。"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……明日は、手だけ描いても、いいですか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "顔じゃなくて？"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "炭を待っている時の手、好きなので"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "じゃあ今は？"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……今は、貸してください"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "鉛筆をしまったつむぎの指が、俺の手を握った。"
+          }
+        ],
+        "eve_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "宿の前のベンチ。つむぎは、葉が空へ開く見慣れない木を描いていた。"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……知らない木なのに、描くと、いつもの線が混ざります"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "俺の明日の一台も、そうかもしれない"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……はい。描いてる手が同じなら、たぶん、大丈夫です"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "鉛筆を置いたつむぎが、そっと俺の手を取った。"
+          }
+        ],
         "stay": [
           {
             "speaker": "",
             "face": "",
-            "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
+            "text": "つむぎがもう一枚だけ描き終えるのを、隣で待った。"
           },
           {
             "type": "condition",
@@ -81,7 +117,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "つむぎは描きかけのページの角を小さく折って、握っていたほうの手を振った。"
           }
         ],
         "stay_tokyo": [
@@ -104,39 +140,11 @@
       "dialogue_id": "tournament_date_minto",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "閉店した店のメニューを、二人で外から眺める。"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_normal",
-          "text": "このパフェ、仕込み大変そう。……休みなのに見ちゃうね"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "栞さん、店の話をしてる時も楽しそうだ"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_normal",
-          "text": "うん。みんとでいるのも、好きだから"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_normal",
-          "text": "でも今夜は、隣の彼氏にアイスをねだりたいな"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "一個ずつ？"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_normal",
-          "text": "半分こ、……違う味、頼もうよ"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 3,
+          "next_true": "eve_dubai",
+          "next_false": "eve_tokyo"
         },
         {
           "type": "choice",
@@ -157,11 +165,80 @@
         "private_scene": true
       },
       "branches": {
+        "eve_tokyo": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "閉店した店のメニューを、二人で外から眺める。"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "このパフェ、仕込み大変そう。……休みなのに見ちゃうね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "栞さん、店の話をしてる時も楽しそうだ"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "うん。みんとでいるのも、好きだから"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "でも今夜は、隣の彼氏にアイスをねだりたいな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "一個ずつ？"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "半分こ、……違う味、頼もうよ"
+          }
+        ],
+        "eve_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "宿の近くの屋台。よく伸びるアイスを、栞さんが真剣な顔で見ていた。"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "練って伸ばすんだって。……これ、店で出せないかな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "休みなのに、また仕込みの顔してる"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "してた？　……じゃあ今夜は、彼氏とアイスだけ"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "半分こしよ。違う味で、どっちが勝つか決めるの"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スプーンを二本もらうと、栞さんが嬉しそうに肩を寄せてきた。"
+          }
+        ],
         "stay": [
           {
             "speaker": "",
             "face": "",
-            "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
+            "text": "アイスが溶けるまで、どっちの味が勝ちか言い合った。"
           },
           {
             "type": "condition",
@@ -180,7 +257,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "角まで、栞さんは俺の袖をつまんで歩いた。離す時は、指を一本ずつだった。"
           }
         ],
         "stay_tokyo": [
@@ -200,46 +277,18 @@
       }
     },
     {
-      "dialogue_id": "tournament_date_rin",
+      "dialogue_id": "tournament_date_rio",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "凛さんは買い物袋を下げていた。中身は新商品のサンプルではなかった。"
-        },
-        {
-          "speaker": "rin",
-          "face": "normal",
-          "text": "足、痛くない？　絆創膏。あと水"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "品質管理ですか"
-        },
-        {
-          "speaker": "rin",
-          "face": "normal",
-          "text": "そういう口実も、今日は休み"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "じゃあ、少し手をつないで歩きませんか"
-        },
-        {
-          "speaker": "rin",
-          "face": "normal",
-          "text": "……申請が遅い"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "差し出した手を取ってから、凛さんが笑った。"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 3,
+          "next_true": "eve_dubai",
+          "next_false": "eve_tokyo"
         },
         {
           "type": "choice",
-          "id": "tournament_date_choice_rin",
+          "id": "tournament_date_choice_rio",
           "choices": [
             {
               "text": "もう少し一緒にいよう",
@@ -256,11 +305,80 @@
         "private_scene": true
       },
       "branches": {
+        "eve_tokyo": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "凛想さんは買い物袋を下げていた。中身は新商品のサンプルではなかった。"
+          },
+          {
+            "speaker": "rio",
+            "face": "normal",
+            "text": "足、痛くない？　絆創膏。あと水"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "品質管理ですか"
+          },
+          {
+            "speaker": "rio",
+            "face": "normal",
+            "text": "そういう口実も、今日は休み"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "じゃあ、少し手をつないで歩きませんか"
+          },
+          {
+            "speaker": "rio",
+            "face": "normal",
+            "text": "……申請が遅い"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "差し出した手を取ってから、凛想さんが笑った。"
+          }
+        ],
+        "eve_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "凛想さんは、宿の売店の袋を下げていた。中身は水と、のど飴だった。"
+          },
+          {
+            "speaker": "rio",
+            "face": "normal",
+            "text": "こっちは乾くから、喉からやられるよ。明日、声が出ないと困るでしょ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "凛想さんこそ、昼はずっと香水の店を見てましたね"
+          },
+          {
+            "speaker": "rio",
+            "face": "normal",
+            "text": "仕入れの下見。……って言うつもりだったけど、今日は嘘"
+          },
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "君の隣で、知らない匂いを嗅ぎたかっただけ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "歩き出すと、凛想さんの方から指を絡めてきた。"
+          }
+        ],
         "stay": [
           {
             "speaker": "",
             "face": "",
-            "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
+            "text": "凛想さんが買ってきた水を、二人で半分ずつ飲んだ。"
           },
           {
             "type": "condition",
@@ -277,9 +395,25 @@
             "text": "会えて、うれしかったです"
           },
           {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 3,
+            "next_true": "home_dubai",
+            "next_false": "home_tokyo"
+          }
+        ],
+        "home_tokyo": [
+          {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "別れ際、凛想さんは絆創膏をもう一枚、俺の鞄の外ポケットに差し込んだ。"
+          }
+        ],
+        "home_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "別れ際、凛想さんはのど飴をひと粒、黙って俺の手のひらに置いた。"
           }
         ],
         "stay_tokyo": [
@@ -337,6 +471,41 @@
           "text": "つないだ指先が少し震えていた。二人の歩く速さが揃った。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "屋台の灯りの前で、あげはが空いているほうの手を開いて見せた。指先が、細かく揺れている。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "今日、[pause]震える日なんだ。飛行機、長かったし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "言ってくれて、ありがと。……明日、客席にいてくれる？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "いる。うちが吸うんじゃないけど、ちゃんと見てる"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっちが炭置くとこ。震えてても、それはちゃんと見えるから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ明日は、あげはに見えるように置く"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……それ、うちが言いたかったやつ"
+        },
+        {
           "type": "choice",
           "id": "tournament_date_choice_ageha",
           "choices": [
@@ -359,7 +528,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
+            "text": "黙ったまま、つないだ手の震えが止まるのを待った。"
           },
           {
             "speaker": "",
@@ -376,7 +545,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "あげはは手を離す前に、一度だけ強く握った。震えたままの指で、ピースを作って見せた。"
           }
         ]
       }
@@ -385,39 +554,11 @@
       "dialogue_id": "tournament_date_mashiro",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "ましろちゃんが、温かいお茶を二つ買ってきた。"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "僕が買う番。……昨日、はじめくんだったでしょ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "覚えてたんだ"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "ん、お世話係、ひとりにしない"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "じゃあ次、俺が選ぶ"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "次も会うの、今決まったねぇ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "彼女は俺の肩に少し寄りかかり、お茶が冷めるまで黙っていた。"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 3,
+          "next_true": "eve_dubai",
+          "next_false": "eve_tokyo"
         },
         {
           "type": "choice",
@@ -438,11 +579,85 @@
         "private_scene": true
       },
       "branches": {
+        "eve_tokyo": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ましろちゃんが、温かいお茶を二つ買ってきた。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "僕が買う番。……前は、はじめくんだったでしょ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "覚えてたんだ"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "ん、お世話係、ひとりにしない"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "じゃあ次、俺が選ぶ"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "次も会うの、今決まったねぇ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "彼女は俺の肩に少し寄りかかり、お茶が冷めるまで黙っていた。"
+          }
+        ],
+        "eve_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ましろちゃんが、屋台の甘いミルクティーを二つ買ってきた。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "こっちのお茶、甘いんだって。……僕、けっこう好きかも"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "甘いの、ちょっと意外だな"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "甘いのは、急いで飲めないから。ゆっくりできるの"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "じゃあ、飲み終わるまでここにいよう"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "ん、明日の分まで、ここで休んでいこうねぇ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "彼女は俺の肩に少し寄りかかり、湯気が消えるまで黙っていた。"
+          }
+        ],
         "stay": [
           {
             "speaker": "",
             "face": "",
-            "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
+            "text": "冷めたお茶を、二人とも捨てずに最後まで飲んだ。"
           },
           {
             "type": "condition",
@@ -461,7 +676,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "ましろちゃんは空いたカップを二つ重ねて持ち、もう片方の手をゆっくり振った。"
           }
         ],
         "stay_tokyo": [
@@ -484,40 +699,11 @@
       "dialogue_id": "tournament_date_samechan",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "サメちゃんは、小さな土産袋を抱えていた。"
-        },
-        {
-          "speaker": "samechan",
-          "face": "normal",
-          "text": "常連の分じゃ、……これは、お主の分"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "俺にも、ですか？　同じ町に来てるのに"
-        },
-        {
-          "speaker": "samechan",
-          "face": "normal",
-          "text": "お主の分は、わしが一人で選んだのじゃ、……黙って受け取れ"
-        },
-        {
-          "speaker": "samechan",
-          "face": "ventriloquism",
-          "text": "勇者はじめよ、店主の手が空いたぞ",
-          "voice": "korochan"
-        },
-        {
-          "speaker": "samechan",
-          "face": "normal",
-          "text": "……コロちゃん。そこまで頼んではおらぬ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "俺が手を差し出すと、サメちゃんは土産袋を持ち替えた。"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 3,
+          "next_true": "eve_dubai",
+          "next_false": "eve_tokyo"
         },
         {
           "type": "choice",
@@ -538,11 +724,87 @@
         "private_scene": true
       },
       "branches": {
+        "eve_tokyo": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "サメちゃんは、小さな土産袋を抱えていた。"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "常連の分じゃ、……これは、お主の分"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "俺にも、ですか？　同じ町に来てるのに"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "お主の分は、わしが一人で選んだのじゃ、……黙って受け取れ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "勇者はじめよ、店主の手が空いたぞ",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "……コロちゃん。そこまで頼んではおらぬ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "俺が手を差し出すと、サメちゃんは土産袋を持ち替えた。"
+          }
+        ],
+        "eve_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "サメちゃんは、スークの紙袋を両手で抱えていた。"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "香辛料に、ナツメヤシに、……常連への土産じゃ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "俺の分は、ないんですか"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "……あるに決まっておろう。一番底じゃ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "勇者はじめよ、底を掘るのは明日の勝負のあとにせよ",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "samechan",
+            "face": "normal",
+            "text": "……コロちゃん。順番まで決めるでない"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "俺が手を差し出すと、サメちゃんは紙袋を片腕に持ち替えた。"
+          }
+        ],
         "stay": [
           {
             "speaker": "",
             "face": "",
-            "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
+            "text": "土産袋の中身を、サメちゃんが一つずつ説明してくれた。"
           },
           {
             "type": "condition",
@@ -559,9 +821,25 @@
             "text": "お土産、大事にします。会えてよかったです"
           },
           {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 3,
+            "next_true": "home_dubai",
+            "next_false": "home_tokyo"
+          }
+        ],
+        "home_tokyo": [
+          {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "サメちゃんが手を離すと、コロちゃんが先にお辞儀をした。本人は、少し遅れて手を振った。"
+          }
+        ],
+        "home_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "サメちゃんは紙袋の底を一度確かめて、口を折り直した。それから、自分の手を振った。"
           }
         ],
         "stay_tokyo": [
@@ -584,40 +862,11 @@
       "dialogue_id": "tournament_date_hiyori",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "ひよりさんの旅程表には、何も書かれていない枠があった。"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "normal",
-          "text": "ここ。夜風にさらわれる予定"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "歩きすぎると、明日つらくないですか"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "normal",
-          "text": "よくぞ聞いてくれました。ベンチも調べてあります"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "準備万端の儚さですね"
-        },
-        {
-          "speaker": "hiyori",
-          "face": "smile",
-          "text": "……捕まえてないと、消えちゃうよ",
-          "inner": "手、つなぎたい。言っちゃえ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "差し出された手を握ると、ひよりさんの歩幅が小さくなった。"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 3,
+          "next_true": "eve_dubai",
+          "next_false": "eve_tokyo"
         },
         {
           "type": "choice",
@@ -638,11 +887,87 @@
         "private_scene": true
       },
       "branches": {
+        "eve_tokyo": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ひよりさんの旅程表には、何も書かれていない枠があった。"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "normal",
+            "text": "ここ。夜風にさらわれる予定"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "歩きすぎると、明日つらくないですか"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "normal",
+            "text": "よくぞ聞いてくれました。ベンチも調べてあります"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "準備万端の儚さですね"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "smile",
+            "text": "……捕まえてないと、消えちゃうよ",
+            "inner": "手、つなぎたい。言っちゃえ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "差し出された手を握ると、ひよりさんの歩幅が小さくなった。"
+          }
+        ],
+        "eve_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ひよりさんのスマホには、宿の周りの地図が保存してあった。"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "normal",
+            "text": "砂漠の夜風、思ったより冷たいんだって。上着、二枚持ってきた"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "一枚は、俺の分ですか"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "normal",
+            "text": "夜風にさらわれないように。……ベンチも調べてあります"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "世界大会の前夜まで、総務の仕事ですね"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "smile",
+            "text": "……今夜のは、私用です",
+            "inner": "本当は、隣にいる口実。ばれてるかな"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "上着を受け取ると、ひよりさんが袖の上から俺の手を握った。"
+          }
+        ],
         "stay": [
           {
             "speaker": "",
             "face": "",
-            "text": "遠くの明かりを眺めながら、少しだけ話を続けた。"
+            "text": "調べてあったベンチで、ひよりさんは本当に少しだけ儚くなった。"
           },
           {
             "type": "condition",
@@ -659,9 +984,25 @@
             "text": "会えて、うれしかったです"
           },
           {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 3,
+            "next_true": "home_dubai",
+            "next_false": "home_tokyo"
+          }
+        ],
+        "home_tokyo": [
+          {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "ひよりさんは旅程表の空いた枠に小さく丸を付けてから、儚くない速さで手を振った。"
+          }
+        ],
+        "home_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ひよりさんは俺に着せた上着の袖口を整えてから、儚くない速さで手を振った。"
           }
         ],
         "stay_tokyo": [
@@ -676,6 +1017,104 @@
             "speaker": "",
             "face": "",
             "text": "約束した時間に、宿のロビーまで二人で歩いた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "tournament_date_noor",
+      "comment": "DSR20 第4章ドバイの前夜デート。ヌールはドバイに住む恋人なので、到着場面なしで前夜の街にいる（ch4-story-wiring.js）。大会の中身には踏み込まず、説教もしない。能力値は上げない。",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前夜の街。カフェ・オアシスの裏口で、ヌールさんがミントティーを二つ持って待っていた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "お疲れさま、ハジメ。今日は店、父に任せてきた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いいんですか、抜けてきて"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "いいの。父も「今夜は行ってこい」って。バレてるみたい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で、夜の路地をゆっくり歩く。昼の砂ぼこりが、うそみたいに静かだ。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "明日のこと、聞かない方がいい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……少しだけなら"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "じゃあ、少しだけ。私は、ハジメの煙がもう好き。それは明日も変わらないよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（それだけで、肩の力が抜けた）"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "もう少し一緒にいよう",
+              "next": "stay"
+            },
+            {
+              "text": "明日のために、そろそろ帰ろう",
+              "next": "home"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "stay": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "広場のベンチで、ぬるくなったミントティーを最後まで分け合った。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "約束した時間に、宿のロビーまで二人で戻った。"
+          }
+        ],
+        "home": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "会えてよかった。ミントティー、ごちそうさまです"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "どういたしまして。おやすみ、ハジメ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "宿の前で手を振ると、ヌールさんは路地の角で二回振り返った。"
           }
         ]
       }

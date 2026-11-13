@@ -11,20 +11,33 @@ const node = (spec, attrs = {}, children = []) => Array.isArray(attrs)
 let state, owner, screen, cancel = false, saves = 0;
 const notices = [], comparisons = [];
 const dialogues = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch4_main.json", import.meta.url))).dialogues;
-const values = {
+const values = {createChapterMenu: () => () => {},
   DB: { dialogues: Object.fromEntries(dialogues.map(d => [d.dialogue_id, d])) },
   bgUrl: id => id, el: node, save: () => saves++,
   layers: { hud: { replaceChildren() {}, classList: { remove() {} } } },
-  showScreen: (_, tree) => { screen = tree; }, setBg: async () => {},
+  showScreen: (_, tree) => { screen = tree; }, setBg: async () => {}, enterScene: async () => {},
   playBgm() {}, toast: text => notices.push(text), hooks: {},
+  awardChapterClearExp() {},
   play: async () => ({ cancelled: cancel }),
-  radar: (current, baseline, size) => { comparisons.push({ current, baseline, size }); return node("svg"); },
+  // 章末のグラフ（daily/status.js の chapterGrowthChart）。盤モード／旧しくみの描き分けと基準の扱いは growth_levelup.mjs の chapter-end-board-chart
+  chapterGrowthChart: (value, size) => { comparisons.push({ value, size }); return node("svg"); },
 };
 let source = fs.readFileSync(new URL("../js/chapters/ch4.js", import.meta.url), "utf8");
 source += '\nexport function testOwner(value) { session = value; }\nexport { readAndCommit, renderComplete };';
 const modules = new Map();
 const module = new vm.SourceTextModule(source, { context });
 await module.link(async spec => {
+    if (spec === "../core/chapter-card.js") {
+      const helper = new vm.SourceTextModule(fs.readFileSync(new URL("../js/core/chapter-card.js", import.meta.url), "utf8"), { context });
+      await helper.link(dependency => {
+        const names = dependency === "./util.js" ? ["el"] : ["showScreen"];
+        return new vm.SyntheticModule(names, function () {
+          for (const name of names) this.setExport(name, values[name]);
+        }, { context });
+      });
+      return helper;
+    }
+
   if (spec === "../core/chapter-actions.js") {
     const dep = new vm.SourceTextModule(fs.readFileSync(new URL("../js/core/chapter-actions.js", import.meta.url), "utf8"), { context });
     await dep.link(() => new vm.SyntheticModule(["el"], function () { this.setExport("el", node); }, { context }));
@@ -48,7 +61,9 @@ function seed() {
   Object.assign(fresh, { chapter: 3, phase: "cleared", day: 45 });
   fresh.flags._ch3_cleared = true;
   progress.advanceToChapterFour(fresh);
+  delete fresh.flags._ch4.routeVersion; // 旧行程（ドバイ5日）
   for (const scene of progress.CH4_PROLOGUE) progress.completeChapterFourScene(fresh, scene.id);
+  progress.completeChapterFourScene(fresh, "ch4_festa");
   progress.completeChapterFourScene(fresh, "ch4_stranger_first");
   progress.endChapterFourDay(fresh); progress.endChapterFourDay(fresh);
   Object.assign(state, fresh);
@@ -90,12 +105,13 @@ assert(dialogues.find(d => d.dialogue_id === "ch4_result").lines.some(l => l.spe
 for (const scene of progress.CH4_RESOLUTION.slice(1)) progress.completeChapterFourScene(state, scene.id);
 state.flags._ch4_preview_seen = true;
 runner.renderComplete(owner);
-assert.equal(comparisons.at(-1).current, state.stats);
-assert.equal(comparisons.at(-1).baseline, state.statsAtChapterStart);
+assert.equal(comparisons.at(-1).value, state, "The chapter end draws the current save");
+assert.equal(comparisons.at(-1).size, 300);
 const walk = n => !n ? [] : [n, ...(n.children || []).flatMap(walk)];
 assert(walk(screen).some(n => n.dataset?.test === "ch4-growth"));
-// 章開始能力を持たない旧セーブは差分を捏造せず、同じ能力を比較する。
+// 章開始能力を持たない旧セーブでも描ける（同じ能力を比べる扱いは chapterGrowthChart 側）
 delete state.statsAtChapterStart;
 runner.renderComplete(owner);
-assert.equal(comparisons.at(-1).baseline, state.stats);
+assert.equal(comparisons.at(-1).value, state);
 console.log("PASS: Chapter 4 rewards separate learning, revisit unlock, recognition and actual growth comparison (VM)");
+

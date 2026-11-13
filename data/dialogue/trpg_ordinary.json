@@ -1,6 +1,6 @@
 {
   "id": "ordinary-cup",
-  "version": 3,
+  "version": 6,
   "title": "世界一普通の一台",
   "subtitle": "港町の茶房と、ひとりの旅人",
   "author": "汐見しお",
@@ -22,29 +22,76 @@
     {
       "id": "hajime",
       "part": "PLAYER",
-      "role": "フィン／見習い店番",
+      "role": "{pc}／見習い店番",
       "color": "#89bbc4",
       "ability": "ひらめき",
       "abilityText": "判定後、サイコロ1個を一度だけ振り直す",
-      "abilityType": "reroll"
+      "abilityType": "reroll",
+      "sheet": {
+        "name": "フィン",
+        "title": "見習い店番",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 2
+        },
+        "trait": "人の話を聞くのが上手い。手は、まだ少し慌てる"
+      }
     },
     {
       "id": "adam",
       "part": "PLAYER",
-      "role": "ニコ／香りの案内役",
+      "role": "{pc:adam}／小声の案内役",
       "color": "#c8a375",
       "ability": "舞台の支度",
       "abilityText": "一台を準備するとき、判定に一度だけ＋7",
-      "abilityType": "prepare"
+      "abilityType": "prepare",
+      "sheet": {
+        "name": "ニコ",
+        "title": "小声の案内役",
+        "stats": {
+          "eye": 2,
+          "hand": 5,
+          "talk": 3,
+          "nerve": 1
+        },
+        "trait": "香りと炭の支度は店一番。声が小さく、すぐ謝る",
+        "likes": "閉店後の片づけ。客の『ごちそうさま』"
+      },
+      "alternatives": {
+        "regulara": {
+          "role": "{pc:adam}／小声の案内役",
+          "color": "#bb9c72"
+        }
+      }
     },
     {
       "id": "tsumugi",
       "part": "PLAYER",
-      "role": "ルカ／窓辺の絵描き",
+      "role": "{pc:tsumugi}／窓辺の絵描き",
       "color": "#b8a3cc",
       "ability": "席の気配",
       "abilityText": "提供するとき、判定に一度だけ＋7",
-      "abilityType": "serve"
+      "abilityType": "serve",
+      "sheet": {
+        "name": "ルカ",
+        "title": "窓辺の絵描き",
+        "stats": {
+          "eye": 5,
+          "hand": 2,
+          "talk": 1,
+          "nerve": 3
+        },
+        "trait": "よく見て、よく描く。口数は少ない",
+        "likes": "雨の日の窓。描きかけのスケッチ"
+      },
+      "alternatives": {
+        "regularb": {
+          "role": "{pc:tsumugi}／窓辺の絵描き",
+          "color": "#8faeaa"
+        }
+      }
     }
   ],
   "intro": "trpg_ordinary_intro",
@@ -52,26 +99,149 @@
   "checks": {
     "listen": {
       "title": "旅人の言葉を待つ",
-      "hint": "聞き役の気配り ＋3。結果にかかわらず、店内の探索へ進みます。",
+      "hint": "宣言した店番の能力で判定。結果にかかわらず、店内の探索へ進みます。",
       "success": "trpg_ordinary_listen_success",
       "mixed": "trpg_ordinary_listen_mixed",
-      "trouble": "trpg_ordinary_listen_trouble"
+      "trouble": "trpg_ordinary_listen_trouble",
+      "approaches": [
+        {
+          "id": "listen_talk",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "向かいに座って、話しかける",
+          "detail": "{pc}が旅人の正面へ。ひと言ずつ、ゆっくり聞く",
+          "declare": "trpg_ordinary_declare_listen_talk"
+        },
+        {
+          "id": "listen_watch",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "eye",
+          "label": "少し離れて、様子を見る",
+          "detail": "{pc:tsumugi}が窓辺から、旅人の手元と視線を追う",
+          "declare": "trpg_ordinary_declare_listen_watch"
+        },
+        {
+          "id": "listen_serve",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "お冷やを出しながら、世間話",
+          "detail": "{pc:adam}がカウンター越しに、気楽な話題から",
+          "declare": "trpg_ordinary_declare_listen_serve"
+        }
+      ]
     },
     "prepare": {
       "title": "選んだ香りを、一台にする",
-      "hint": "店番の手際 ＋3。香りと席の準備を、判定します。",
+      "hint": "宣言した店番の能力で判定。香りと席の準備を、一台にします。",
       "success": "trpg_ordinary_prepare_success",
       "mixed": "trpg_ordinary_prepare_mixed",
       "trouble": "trpg_ordinary_prepare_trouble",
-      "helper": "adam"
+      "helper": "adam",
+      "approaches": [
+        {
+          "id": "prepare_self",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "hand",
+          "label": "教わった通りに、自分で作る",
+          "detail": "{pc}が自分の手で一台を。少し慌てるかも",
+          "declare": "trpg_ordinary_declare_prepare_self"
+        },
+        {
+          "id": "prepare_craft",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "hand",
+          "label": "{pc:adam}が香りを量って整える",
+          "detail": "店一番の手際で、一台を仕上げる",
+          "declare": "trpg_ordinary_declare_prepare_craft"
+        },
+        {
+          "id": "prepare_light",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "eye",
+          "label": "席の光と風を見て整える",
+          "detail": "{pc:tsumugi}が席の雰囲気を読み、一台を合わせる",
+          "declare": "trpg_ordinary_declare_prepare_light"
+        }
+      ]
     },
     "serve": {
       "title": "席へ案内して、声をかける",
-      "hint": "相手への気配り ＋3。どの出目でも結末へ進みます。",
+      "hint": "宣言した店番の能力で判定。どの出目でも結末へ進みます。",
       "success": "trpg_ordinary_serve_success",
       "mixed": "trpg_ordinary_serve_mixed",
       "trouble": "trpg_ordinary_serve_trouble",
-      "helper": "tsumugi"
+      "helper": "tsumugi",
+      "approaches": [
+        {
+          "id": "serve_word",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "席へ案内して、声をかける",
+          "detail": "{pc}が選んだ言葉を、自分の声で添える",
+          "declare": "trpg_ordinary_declare_serve_word"
+        },
+        {
+          "id": "serve_sketch",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "nerve",
+          "label": "黙って、絵を一枚添える",
+          "detail": "{pc:tsumugi}が言葉の代わりに、港の小さなスケッチを",
+          "declare": "trpg_ordinary_declare_serve_sketch"
+        },
+        {
+          "id": "serve_host",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "talk",
+          "label": "一台の説明をして、下がる",
+          "detail": "{pc:adam}が香りの話を少しだけ。あとは任せる",
+          "declare": "trpg_ordinary_declare_serve_host"
+        }
+      ]
+    },
+    "twist": {
+      "title": "賑やかな店を切り盛りする",
+      "hint": "宣言した店番の能力で判定。どの出目でも物語は続きます。",
+      "success": "trpg_ordinary_twist_success",
+      "mixed": "trpg_ordinary_twist_mixed",
+      "trouble": "trpg_ordinary_twist_trouble",
+      "approaches": [
+        {
+          "id": "twist_talk",
+          "actor": "hajime",
+          "sheet": "hajime",
+          "stat": "talk",
+          "label": "親方に話しかけて、場を仕切る",
+          "detail": "{pc}が親方の機嫌を取りながら、注文をまとめる",
+          "declare": "trpg_ordinary_declare_twist_talk"
+        },
+        {
+          "id": "twist_craft",
+          "actor": "adam",
+          "sheet": "adam",
+          "stat": "hand",
+          "label": "大急ぎで五人分を支度する",
+          "detail": "{pc:adam}が棚から香りを出し、手早く支度する",
+          "declare": "trpg_ordinary_declare_twist_craft"
+        },
+        {
+          "id": "twist_watch",
+          "actor": "tsumugi",
+          "sheet": "tsumugi",
+          "stat": "eye",
+          "label": "店全体を見て、席を割り振る",
+          "detail": "{pc:tsumugi}が、誰がどこに座るといいか見て決める",
+          "declare": "trpg_ordinary_declare_twist_watch"
+        }
+      ]
     }
   },
   "spots": [
@@ -126,17 +296,20 @@
     {
       "id": "quiet",
       "label": "静かに休みたいのかも",
-      "description": "人の声から少し離れ、雨を眺められる時間。"
+      "description": "人の声から少し離れ、雨を眺められる時間。",
+      "discussion": "trpg_ordinary_discuss_quiet"
     },
     {
       "id": "home",
       "label": "懐かしい時間が欲しいのかも",
-      "description": "旅先で、いつもの香りや暮らしを思い出す時間。"
+      "description": "旅先で、いつもの香りや暮らしを思い出す時間。",
+      "discussion": "trpg_ordinary_discuss_home"
     },
     {
       "id": "company",
       "label": "誰かと話したいのかも",
-      "description": "一人で過ごした道のりのあと、会話がある時間。"
+      "description": "一人で過ごした道のりのあと、会話がある時間。",
+      "discussion": "trpg_ordinary_discuss_company"
     }
   ],
   "preparation": "trpg_ordinary_preparation",
@@ -201,6 +374,26 @@
         "description": "『長い道のりでした？』。話すきっかけを作る。",
         "response": "trpg_ordinary_choice_approach_company"
       }
+    ],
+    "tactic": [
+      {
+        "id": "back",
+        "label": "漁師たちを奥の席へ",
+        "description": "賑やかさを奥にまとめ、手前を静かに保つ。",
+        "response": "trpg_ordinary_choice_tactic_back"
+      },
+      {
+        "id": "mix",
+        "label": "旅人と漁師を引き合わせる",
+        "description": "せっかくの縁。同じ卓で話してもらう。",
+        "response": "trpg_ordinary_choice_tactic_mix"
+      },
+      {
+        "id": "dim",
+        "label": "灯りを落として、静かに",
+        "description": "店の灯りを一段落とし、夜の店にする。",
+        "response": "trpg_ordinary_choice_tactic_dim"
+      }
     ]
   },
   "profiles": [
@@ -251,6 +444,28 @@
           "text": "店番のノートに『呼べる距離で、少し待つ。それも接客』とある。",
           "lines": "trpg_ordinary_quiet_notebook"
         }
+      },
+      "answers": {
+        "journey": {
+          "title": "人の多い道",
+          "text": "朝から、混んだ船と汽車を乗り継いできた。",
+          "lines": "trpg_ordinary_ask_quiet_journey"
+        },
+        "usual": {
+          "title": "薄い紅茶",
+          "text": "いつもは薄い紅茶を、黙って飲むのが好きらしい。",
+          "lines": "trpg_ordinary_ask_quiet_usual"
+        },
+        "today": {
+          "title": "ずっと話していた",
+          "text": "今日は一日、打ち合わせで誰かと話し続けていた。",
+          "lines": "trpg_ordinary_ask_quiet_today"
+        },
+        "shop": {
+          "title": "灯りが静かだった",
+          "text": "外から見て、灯りが静かな店だと思ったから入った。",
+          "lines": "trpg_ordinary_ask_quiet_shop"
+        }
       }
     },
     {
@@ -300,6 +515,28 @@
           "text": "ノートに『何を好きかに加え、なぜ戻ってくるかも聞いてみる』とある。",
           "lines": "trpg_ordinary_home_notebook"
         }
+      },
+      "answers": {
+        "journey": {
+          "title": "帰りの便",
+          "text": "明日の朝、生まれた町へ帰る便に乗る。",
+          "lines": "trpg_ordinary_ask_home_journey"
+        },
+        "usual": {
+          "title": "家で淹れる紅茶",
+          "text": "家では毎晩、母の真似をして同じ紅茶を淹れていた。",
+          "lines": "trpg_ordinary_ask_home_usual"
+        },
+        "today": {
+          "title": "昔の店を探した",
+          "text": "昼間、昔通った店を探したが、もうなかった。",
+          "lines": "trpg_ordinary_ask_home_today"
+        },
+        "shop": {
+          "title": "似ている窓",
+          "text": "この店の窓と棚が、昔の店に似ているという。",
+          "lines": "trpg_ordinary_ask_home_shop"
+        }
       }
     },
     {
@@ -348,6 +585,28 @@
           "title": "一台が話の入口",
           "text": "ノートに『隣に座って、一台を話の入口にした日』という記録がある。",
           "lines": "trpg_ordinary_company_notebook"
+        }
+      },
+      "answers": {
+        "journey": {
+          "title": "一人の道",
+          "text": "人の少ない山道を、ずっと一人で歩いてきた。",
+          "lines": "trpg_ordinary_ask_company_journey"
+        },
+        "usual": {
+          "title": "おすすめを聞く",
+          "text": "いつも店の人におすすめを聞くのが好き。",
+          "lines": "trpg_ordinary_ask_company_usual"
+        },
+        "today": {
+          "title": "面白い鳥",
+          "text": "橋で面白い鳥を見たが、話す相手がいなかった。",
+          "lines": "trpg_ordinary_ask_company_today"
+        },
+        "shop": {
+          "title": "奥の笑い声",
+          "text": "奥から聞こえた笑い声に惹かれて入った。",
+          "lines": "trpg_ordinary_ask_company_shop"
         }
       }
     }
@@ -403,28 +662,28 @@
           "smallTableText": "私はGM、はじめくんは店番。空いた役は私が兼ねるね"
         },
         {
-          "speaker": "adam",
-          "role": "",
+          "speaker": "hiyori",
+          "role": "GM／場面",
           "face": "normal",
-          "text": "ニコという名で、香りを導く。今夜の俺には似合う役だ"
-        },
-        {
-          "speaker": "tsumugi",
-          "role": "",
-          "face": "normal",
-          "text": "……私はルカ。窓辺で絵を描いてる人。席の様子、見ておくね"
-        },
-        {
-          "speaker": "hajime",
-          "role": "",
-          "face": "normal",
-          "text": "じゃあ俺は、見習いのフィン。店番なのに、ちょっと緊張するな"
+          "text": "港町ノーラ。茶房『波止場の灯』には、雨を避けた人たちが残っている"
         },
         {
           "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
-          "text": "港町ノーラ。茶房『波止場の灯』には、雨を避けた人たちが残っている"
+          "text": "{pc}はカウンターで、最後のカップを拭いている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:adam}は棚の前で、明日の香りを並べている"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc:tsumugi}は窓辺で、雨のしずくを目で追っている"
         },
         {
           "speaker": "hiyori",
@@ -461,13 +720,26 @@
         {
           "speaker": "adam",
           "text": "一台の前に、客の望みを聞こう。名店の幕開けだ",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "一台の前に、客の望みを聞こう。名店の幕開けだ",
+              "face": "normal",
+              "role": ""
+            }
+          }
         },
         {
           "speaker": "hajime",
-          "role": "フィン",
+          "role": "{pc}",
           "text": "急がなくて大丈夫です。よければ、少しだけお話を",
           "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "normal",
+          "text": "ありがとう、……何から話そうかな"
         }
       ]
     },
@@ -484,13 +756,27 @@
         },
         {
           "speaker": "adam",
-          "text": "三つの香り、三つの可能性。原点に帰る時間だな",
-          "face": "normal"
+          "text": "三つの香り、三つの可能性。旅人の顔を思い出して選ぼう",
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "三つの香り、三つの可能性。旅人の顔を思い出して選ぼう",
+              "face": "normal",
+              "role": ""
+            }
+          }
         },
         {
           "speaker": "tsumugi",
-          "text": "席も、三つ。……集めたメモを、もう一度見てもいいよ",
-          "face": "normal"
+          "text": "席も、三つ。……集めたメモを、もう一度見てもいいですよ",
+          "face": "normal",
+          "variants": {
+            "regularb": {
+              "text": "席も、三つ。……集めたメモを、もう一度見てもいいですよ",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -513,8 +799,15 @@
         },
         {
           "speaker": "tsumugi",
-          "text": "……言葉を添えることも、少し待つことも、できると思う",
-          "face": "normal"
+          "text": "……言葉を添えることも、少し待つことも、できると思います",
+          "face": "normal",
+          "variants": {
+            "regularb": {
+              "text": "……言葉を添えることも、少し待つことも、できると思います",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -537,17 +830,43 @@
         {
           "speaker": "adam",
           "text": "世界一普通……。俺が言うと、世界一普通じゃなく聞こえるな",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "世界一普通……。私が言うと、世界一普通じゃなく聞こえるな",
+              "face": "normal",
+              "role": ""
+            }
+          }
         },
         {
           "speaker": "tsumugi",
-          "text": "……あの窓、描きたくなった。雨の中に、灯りがあったね",
-          "face": "normal"
+          "text": "……あの窓、描きたくなりました。雨の中に、灯りがありましたね",
+          "face": "normal",
+          "variants": {
+            "regularb": {
+              "text": "……あの窓、描きたくなりました。雨の中に、灯りがありましたね",
+              "face": "normal",
+              "role": ""
+            }
+          }
         },
         {
           "speaker": "hiyori",
           "text": "……いい夜だったね。本を閉じても、雨の音が残ってるみたい",
           "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ひよりさんのGM、すごく話しやすかった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "……えへへ。じゃなくて、ふふ。光栄よ"
         }
       ]
     },
@@ -565,8 +884,15 @@
         },
         {
           "speaker": "tsumugi",
-          "text": "……急かさないと、話せることもあるんだね",
-          "face": "normal"
+          "text": "……急かさないと、話せることもあるんですね",
+          "face": "normal",
+          "variants": {
+            "regularb": {
+              "text": "……急かさないと、話せることもあるんですね",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -585,7 +911,14 @@
         {
           "speaker": "adam",
           "text": "まずは客を座らせよう。舞台を整えるのも、俺らの役目だ",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "まずは客を座らせよう。舞台を整えるのも、私たちの役目だ",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -598,7 +931,7 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "フィンは思わず『一番人気なら』と言う。旅人は、少しだけ首を振った",
+          "text": "{pc}は思わず『一番人気なら』と言う。旅人は、少しだけ首を振った",
           "face": "normal"
         },
         {
@@ -622,13 +955,20 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "ニコが棚を整え、フィンが一台を用意する。選んだ香りが、静かに開いた",
+          "text": "{pc:adam}が棚を整え、{pc}が一台を用意する。選んだ香りが、静かに開いた",
           "face": "normal"
         },
         {
           "speaker": "adam",
           "text": "香りの幕は上がった。あとは、この一夜をどう彩るか",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "香りの幕は上がった。あとは、この一夜をどう彩るか",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -666,12 +1006,26 @@
         {
           "speaker": "adam",
           "text": "名店にも修正はある。俺も、道具を見直そう",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "名店にも修正はある。私も、道具を見直そう",
+              "face": "normal",
+              "role": ""
+            }
+          }
         },
         {
           "speaker": "tsumugi",
-          "text": "……待ってる間の席なら、こっちで用意するね",
-          "face": "normal"
+          "text": "……待ってる間の席なら、こっちで用意しますね",
+          "face": "normal",
+          "variants": {
+            "regularb": {
+              "text": "……待ってる間の席なら、こっちで用意しますね",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -684,8 +1038,14 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "ルカが椅子を引き、フィンが旅人を案内する。落ち着いたところで、一台を置いた",
+          "text": "{pc:tsumugi}が椅子を引き、{pc}が旅人を案内する。落ち着いたところで、一台を置いた",
           "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "smile",
+          "text": "……いい席だね。ありがとう"
         }
       ]
     },
@@ -700,6 +1060,12 @@
           "role": "GM／場面",
           "text": "席の説明が少し長くなる。旅人と顔を見合わせ、二人とも小さく笑った",
           "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "（説明しすぎたかな……でも、笑ってくれた）"
         }
       ]
     },
@@ -712,7 +1078,7 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "フィンが声をかけると、椅子がこつんと鳴った。気まずい間のあと、旅人が先に口を開く",
+          "text": "{pc}が声をかけると、椅子がこつんと鳴った。気まずい間のあと、旅人が先に口を開く",
           "face": "normal"
         },
         {
@@ -733,13 +1099,27 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "ニコは言う。香りの名だけで、客の望みを決めてはいけない"
+          "text": "{pc:adam}は言う。香りの名だけで、客の望みを決めてはいけない",
+          "variants": {
+            "regulara": {
+              "text": "{pc:adam}は言う。香りの名だけで、客の望みを決めてはいけない",
+              "face": "normal",
+              "role": ""
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "メニューと飲み物を見よう。そこに、この店の日常がある"
+          "text": "メニューと飲み物を見よう。そこに、この店の日常がある",
+          "variants": {
+            "regulara": {
+              "text": "メニューと飲み物を見よう。そこに、この店の日常がある",
+              "face": "normal",
+              "role": ""
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -751,7 +1131,14 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "そう。俺らがこの一台を選ぶ、その理由を探そう"
+          "text": "そう。俺らがこの一台を選ぶ、その理由を探そう",
+          "variants": {
+            "regulara": {
+              "text": "そう。私たちがこの一台を選ぶ、その理由を探そう",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -765,7 +1152,14 @@
           "speaker": "tsumugi",
           "role": "",
           "face": "normal",
-          "text": "……同じ部屋でも、席によって見えるものが違う。窓、棚、人の顔"
+          "text": "……同じ部屋でも、席によって見えるものが違う。窓、棚、人の顔",
+          "variants": {
+            "regularb": {
+              "text": "……同じ部屋でも、席によって見えるものが違う。窓、棚、人の顔",
+              "face": "normal",
+              "role": ""
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -777,7 +1171,14 @@
           "speaker": "tsumugi",
           "role": "",
           "face": "normal",
-          "text": "うん。旅人が、どこを見てるかも気になる"
+          "text": "はい。旅人が、どこを見てるかも気になります",
+          "variants": {
+            "regularb": {
+              "text": "はい。旅人が、どこを見てるかも気になります",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -803,7 +1204,14 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "紅茶の行を、指でなぞっていたな。さて、どの香りで旅人を迎えようか"
+          "text": "紅茶の行を、指でなぞっていたな。さて、どの香りで旅人を迎えようか",
+          "variants": {
+            "regulara": {
+              "text": "紅茶の行を、指でなぞっていたな。さて、どの香りで旅人を迎えようか",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -823,7 +1231,7 @@
           "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
-          "text": "窓辺には人の声があまり届かない"
+          "text": "旅人は、窓の雨音に耳を澄ませている"
         },
         {
           "speaker": "hiyori",
@@ -835,7 +1243,14 @@
           "speaker": "tsumugi",
           "role": "",
           "face": "normal",
-          "text": "……この席から、旅人は何を見たいんだろう"
+          "text": "……この席から、旅人は何を見たいんでしょう",
+          "variants": {
+            "regularb": {
+              "text": "……この席から、旅人は何を見たいんでしょう",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -925,7 +1340,14 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ"
+          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ",
+          "variants": {
+            "regulara": {
+              "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -977,7 +1399,14 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "家でも淹れる紅茶、か。さて、どの香りで旅人を迎えようか"
+          "text": "家でも淹れる紅茶、か。さて、どの香りで旅人を迎えようか",
+          "variants": {
+            "regulara": {
+              "text": "家でも淹れる紅茶、か。さて、どの香りで旅人を迎えようか",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1003,7 +1432,14 @@
           "speaker": "tsumugi",
           "role": "",
           "face": "normal",
-          "text": "……この席から、旅人は何を見たいんだろう"
+          "text": "……この席から、旅人は何を見たいんでしょう",
+          "variants": {
+            "regularb": {
+              "text": "……この席から、旅人は何を見たいんでしょう",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1099,7 +1535,14 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ"
+          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ",
+          "variants": {
+            "regulara": {
+              "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1151,7 +1594,14 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "果実に興味あり、か。さて、どの香りで旅人を迎えようか"
+          "text": "果実に興味あり、か。さて、どの香りで旅人を迎えようか",
+          "variants": {
+            "regulara": {
+              "text": "果実に興味あり、か。さて、どの香りで旅人を迎えようか",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1177,7 +1627,14 @@
           "speaker": "tsumugi",
           "role": "",
           "face": "normal",
-          "text": "……この席から、旅人は何を見たいんだろう"
+          "text": "……この席から、旅人は何を見たいんでしょう",
+          "variants": {
+            "regularb": {
+              "text": "……この席から、旅人は何を見たいんでしょう",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1267,7 +1724,14 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ"
+          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ",
+          "variants": {
+            "regulara": {
+              "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1318,8 +1782,27 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "フィンたちは呼べる距離に戻る。閉店の札は、もう少しだけ、そのままにした",
+          "text": "{pc}たちは呼べる距離に戻る。閉店の札は、もう少しだけ、そのままにした",
           "face": "normal"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……雨の音、きれいですね",
+          "variants": {
+            "regularb": {
+              "text": "……雨の音、きれいですね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "（何もしない時間も、ちゃんと一台なんだな）"
         }
       ]
     },
@@ -1346,6 +1829,25 @@
           "role": "旅人オル",
           "text": "帰ったら、また寄ってみようかな。今日は、帰り道の途中みたいだ",
           "face": "normal"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "思い出の香りか。俺の原点と同じだな",
+          "variants": {
+            "regulara": {
+              "text": "思い出の香りか。私の原点と同じだな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "帰り道の途中、か。いい言葉だな"
         }
       ]
     },
@@ -1372,6 +1874,18 @@
           "role": "旅人オル",
           "text": "普通って、こうやって一日を誰かに話すことだったのかもしれないな",
           "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "漁師の親方も身を乗り出し、鳥の話で盛り上がった"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "普通の夜って、こういうのかもな"
         }
       ]
     },
@@ -1390,7 +1904,7 @@
         {
           "speaker": "hiyori",
           "role": "GM／場面",
-          "text": "旅人の話を聞き、フィンたちは席や言葉を少し変える。一台は、その相談の入口になった",
+          "text": "旅人の話を聞き、{pc}たちは席や言葉を少し変える。一台は、その相談の入口になった",
           "face": "normal"
         },
         {
@@ -1398,6 +1912,25 @@
           "role": "旅人オル",
           "text": "頼んだ私も、何が欲しいか分かっていなかったんだ。一緒に考えられて、よかった",
           "face": "normal"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……答えは、一緒に探してもいいんですね",
+          "variants": {
+            "regularb": {
+              "text": "……答えは、一緒に探してもいいんですね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "当てられなくても、届くことってあるんだな"
         }
       ]
     },
@@ -1408,7 +1941,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "text": "紅茶という静かな主役。今夜は、そこに任せてみよう",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "紅茶という静かな主役。今夜は、そこに任せてみよう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1419,7 +1959,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "text": "果実の甘さ。この店の原点が、ここにあるのかもしれない",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "果実の甘さ。この店の原点が、ここにあるのかもしれない",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1430,7 +1977,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "text": "スパイスで幕を開ける。客の表情を見逃さないようにしよう",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "スパイスで幕を開ける。客の表情を見逃さないようにしよう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1440,7 +1994,14 @@
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
-          "text": "……雨を見る席。何も話さない時間も、ちゃんとある"
+          "text": "……雨を見る席。何も話さない時間も、ちゃんとあります",
+          "variants": {
+            "regularb": {
+              "text": "……雨を見る席。何も話さない時間も、ちゃんとあります",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1450,7 +2011,14 @@
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
-          "text": "……顔が見える距離。話したくなったら、話せるね"
+          "text": "……顔が見える距離。話したくなったら、話せますね",
+          "variants": {
+            "regularb": {
+              "text": "……顔が見える距離。話したくなったら、話せますね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1460,7 +2028,14 @@
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
-          "text": "古い写真のそば。今の店と、前の店が少し重なる"
+          "text": "古い写真のそば。今の店と、前の店が少し重なる",
+          "variants": {
+            "regularb": {
+              "text": "古い写真のそば。今の店と、前の店が少し重なる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1501,6 +2076,12 @@
           "speaker": "hiyori",
           "role": "GM／卓の会話",
           "text": "静かな夜だったね。旅人も、少し休めたんじゃないかな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "うまくいくと、物語が静かに流れるんだな"
         }
       ]
     },
@@ -1511,6 +2092,1174 @@
           "speaker": "hiyori",
           "role": "GM／卓の会話",
           "text": "聞き直した時間も、この一台に入ってる……。そういうの、好きだな"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……寄り道した分だけ、話が増えました",
+          "variants": {
+            "regularb": {
+              "text": "……寄り道した分だけ、話が増えました",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_listen_talk",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}は旅人の向かいに座る。『長い旅でした？』って聞いてみる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "じゃあ話術で判定ね。目標は30。サイコロ二つ、どうぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_listen_watch",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:tsumugi}は窓辺から、旅人の手元と視線を見ています",
+          "variants": {
+            "regularb": {
+              "text": "……{pc:tsumugi}は窓辺から、旅人の手元と視線を見ています",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "観察で判定。{pc:tsumugi}の得意分野ね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_listen_serve",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "{pc:adam}はお冷やを出しながら、天気の話から入るよ",
+          "variants": {
+            "regulara": {
+              "text": "{pc:adam}はお冷やを出しながら、天気の話から入るよ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定。気楽な入り方、いいね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_prepare_self",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "{pc}は教わった通りに、自分の手で一台を作ります"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定ね。慌てないで。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_prepare_craft",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ここは{pc:adam}の出番だな。香りを量って、炭を整える",
+          "variants": {
+            "regulara": {
+              "text": "ここは{pc:adam}の出番だな。香りを量って、炭を整える",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "手際で判定。店一番の腕前、見せてもらおうかな。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_prepare_light",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:tsumugi}は席の光と風を見て、一台の置き場所を決めます",
+          "variants": {
+            "regularb": {
+              "text": "{pc:tsumugi}は席の光と風を見て、一台の置き場所を決めます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "観察で判定。席の雰囲気も一台の一部ね。目標30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_serve_word",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc}が席へ案内して、選んだ言葉を添えます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定。最後の一言、大事にね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_serve_sketch",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:tsumugi}は何も言わず、港のスケッチを一枚添えます",
+          "variants": {
+            "regularb": {
+              "text": "……{pc:tsumugi}は何も言わず、港のスケッチを一枚添えます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "度胸で判定。言葉なしは勇気がいるね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_serve_host",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "{pc:adam}は香りの説明を少しだけして、静かに下がるよ",
+          "variants": {
+            "regulara": {
+              "text": "{pc:adam}は香りの説明を少しだけして、静かに下がるよ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定。引き際が肝心ね。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_make_adam_adam_nico",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "俺の役はニコ。茶房の案内役だ。……ただし、声がとても小さい"
+        },
+        {
+          "speaker": "adam",
+          "role": "{pc:adam}／物語",
+          "face": "normal",
+          "text": "……い、いらっしゃいませ。あ、すみません、お席はこちらです……"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "アダムさんが、謝ってる……！"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "今夜の俺は、頭を下げる側だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_aside_adam_adam_nico",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "{pc:adam}／物語",
+          "face": "normal",
+          "text": "……あの、オルさん。僕、本当は毎晩、何を勧めたらいいか迷ってるんです。内緒ですよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_after_adam_adam_nico",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ニコは毎晩迷うらしい。……俺は迷わない。たぶん、明日も"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_make_adam_adam_pippin",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "俺の役はピピン。港を渡り歩く、流しの香り師だ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "口ぐせは『すべての香りは、一つの林檎から始まった』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……それ、いつものアダムさんじゃない？"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "役と俺が重なる。それを人は、天職と呼ぶ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_make_tsumugi_tsumugi_luca",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私はルカ。窓辺で絵を描いてる人です"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "好きなものは、雨の日の窓。猫も、描きます"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "猫は描くんだな。つむぎらしい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_make_tsumugi_tsumugi_leaf",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……私の役は、リーフ。茶房の看板猫です"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "猫！？ ……い、いいよ。GMが許します"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "猫が、店番を……？"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "絵も描けます、……肉球で"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_session_zero_open",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "物語の前に、キャラ作りの時間。役はもう決まった？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_session_zero_close",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "俺は{pc}。{pcTitle}でいく"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "いい卓になりそう。じゃあ、はじめよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_ask_quiet_journey",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "旅人は少し考えてから、指を折って数える"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "sad",
+          "text": "朝から船と汽車を三つ。どこも、人でいっぱいだったよ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "それは、疲れますね……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_ask_quiet_usual",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "normal",
+          "text": "普段？ 薄い紅茶かな。香りが強すぎないのがいい"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "smile",
+          "text": "飲みながら、何も考えない時間が好きなんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_ask_quiet_today",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "normal",
+          "text": "仕事の打ち合わせが続いてね。ずっと話してた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "旅人は喉に手を当て、小さく笑った"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……声、少し休ませたいのかもしれません",
+          "variants": {
+            "regularb": {
+              "text": "……声、少し休ませたいのかもしれません",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_ask_quiet_shop",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "smile",
+          "text": "外から見たら、灯りが静かでね。ここなら、と思った"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "静けさに惹かれた客か。覚えておこう",
+          "variants": {
+            "regulara": {
+              "text": "静けさに惹かれた客か。覚えておこう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_ask_home_journey",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "normal",
+          "text": "明日の朝の便で、生まれた町へ帰るんだ"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "smile",
+          "text": "帰る前に、一息つきたくてね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_ask_home_usual",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "smile",
+          "text": "家では毎晩、同じ紅茶を淹れてた。母の真似でね"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "旅人の声が、少しだけやわらかくなる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_ask_home_today",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "sad",
+          "text": "昼間、昔よく行った店を探したんだ。もう、なかったけど"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "sad",
+          "text": "……そうだったんですか"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "smile",
+          "text": "だから、似た灯りを見つけて、つい入っちゃった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_ask_home_shop",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "smile",
+          "text": "この店、窓と棚の感じが、昔の店に似てるんだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……古いメニューの棚、ずっと見てましたね",
+          "variants": {
+            "regularb": {
+              "text": "……古いメニューの棚、ずっと見てましたね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_ask_company_journey",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "normal",
+          "text": "山の道を、ずっと一人で歩いてきたよ。静かだった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "sad",
+          "text": "最後に人と話したのは、朝だったかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_ask_company_usual",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "smile",
+          "text": "いつも？ 店の人に、おすすめを聞くのが好きなんだ"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "おすすめを聞く客か。腕が鳴るな",
+          "variants": {
+            "regulara": {
+              "text": "おすすめを聞く客か。腕が鳴るな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_ask_company_today",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "smile",
+          "text": "今日ね、橋で面白い鳥を見たんだ。誰にも言えなくて"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "旅人は話の続きを、言いかけてやめた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "（続き、聞きたいな）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_ask_company_shop",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "smile",
+          "text": "奥から笑い声が聞こえてね。楽しそうだなって"
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……にぎやかなのが、嫌じゃないんですね",
+          "variants": {
+            "regularb": {
+              "text": "……にぎやかなのが、嫌じゃないんですね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_discuss_quiet",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "serious",
+          "text": "静けさを求める客か。ならば、香りも控えめに",
+          "variants": {
+            "regulara": {
+              "text": "静けさを求める客か。ならば、香りも控えめに",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……窓辺なら、雨の音だけが聞こえます",
+          "variants": {
+            "regularb": {
+              "text": "……窓辺なら、雨の音だけが聞こえます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "いい読みだね。じゃあ、その線で行ってみよう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_discuss_home",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "懐かしさ、か。香りは記憶の扉だからな",
+          "variants": {
+            "regulara": {
+              "text": "懐かしさ、か。香りは記憶の扉だからな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……古いメニューの棚、思い出の席になりそうです",
+          "variants": {
+            "regularb": {
+              "text": "……古いメニューの棚、思い出の席になりそうです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "なるほど。思い出は、見えるところに置かないとね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_discuss_company",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "話し相手が欲しい、か。ならば俺らの出番だ",
+          "variants": {
+            "regulara": {
+              "text": "話し相手が欲しい、か。ならば私たちの出番だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……カウンターなら、誰かの声が届きますね",
+          "variants": {
+            "regularb": {
+              "text": "……カウンターなら、誰かの声が届きますね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "賑やかな方へ、ね。いいと思う"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_twist_intro",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "その時、戸口の鈴が鳴った。雨宿りの漁師たちが、どっと入ってくる"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "漁師の親方",
+          "face": "smile",
+          "text": "おう、閉める前に一杯頼むぜ！ 五人だ！"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "急に店が賑やかになる。旅人は、少しだけ目を丸くした"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "まずい、このままだと旅人の一台どころじゃない……"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "では、店番の皆さん。どうしますか？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_choice_tactic_back",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}たちは、漁師たちを奥の大きな卓へ案内する"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "漁師の親方",
+          "face": "smile",
+          "text": "おう、奥か。いい席じゃねえか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_choice_tactic_mix",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "{pc}は旅人に、漁師たちの話の輪をそっと示す"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "surprise",
+          "text": "……私も、混ざっていいのかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_choice_tactic_dim",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "灯りを一段落とすと、漁師たちも声をひそめた"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "漁師の親方",
+          "face": "smile",
+          "text": "なんだ、いい雰囲気じゃねえか"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_twist_success",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "漁師たちはすぐに落ち着き、店に心地よいざわめきが戻る"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "漁師の親方",
+          "face": "smile",
+          "text": "いい店だな、ここは。また来るぜ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "よし、旅人の一台に戻ろう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_twist_mixed",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "少し手間取ったが、漁師たちは席に収まった。旅人を待たせてしまう"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "旅人オル",
+          "face": "smile",
+          "text": "大丈夫。賑やかなのも、たまにはいいね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_twist_trouble",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "surprise",
+          "text": "注文が混ざり、親方の前に旅人の紅茶が置かれてしまった"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "漁師の親方",
+          "face": "surprise",
+          "text": "……紅茶？ まあ、これもうまいな"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "店じゅうが笑いに包まれる。旅人も、肩を揺らして笑った"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_twist_talk",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "excited",
+          "text": "{pc}が親方の前に出る。『ご注文、まとめて伺います！』"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "話術で判定。親方、声が大きいよ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_twist_craft",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "{pc:adam}が五人分の支度にかかる。腕の見せどころだ",
+          "variants": {
+            "regulara": {
+              "text": "{pc:adam}が五人分の支度にかかる。腕の見せどころだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "手際で判定。急ぐと崩れるよ。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_declare_twist_watch",
+      "metadata": {
+        "preview_only": true
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……{pc:tsumugi}は、店全体を見て席を決めます",
+          "variants": {
+            "regularb": {
+              "text": "……{pc:tsumugi}は、店全体を見て席を決めます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "smile",
+          "text": "観察で判定。全員の居場所、見えるかな。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_make_adam_adam_nico_regulara",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regulara",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はニコ。小声の案内役を演じます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_make_adam_adam_pippin_regulara",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regulara",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はピピン。流しの香り師を演じます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_make_tsumugi_tsumugi_luca_regularb",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はルカ。窓辺の絵描きを演じます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_make_tsumugi_tsumugi_leaf_regularb",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はリーフ。絵を描く看板猫を演じます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
         }
       ]
     }
@@ -1523,12 +3272,16 @@
     ],
     "serve": [
       "approach"
+    ],
+    "twist": [
+      "tactic"
     ]
   },
   "fitWeights": {
     "aroma": 1,
     "seat": 1,
-    "approach": 2
+    "approach": 2,
+    "tactic": 0
   },
   "fallbackEnding": "discovery",
   "rules": {
@@ -1562,7 +3315,8 @@
     "fields": {
       "aroma": "一台の香り",
       "seat": "過ごす席",
-      "approach": "添える言葉"
+      "approach": "添える言葉",
+      "tactic": "来客への対応"
     },
     "prepareTitle": "旅人に、どんな時間を用意する？",
     "prepareDescription": "香りを一つ、席を一つ。手がかりを組み合わせて提案しよう。",
@@ -1582,20 +3336,32 @@
         "description": "旅人は何を求めているのだろう。まずは、少し話を聞いてみる。",
         "button": "言葉を待つ"
       },
+      "interview": {
+        "kicker": "02 / 旅人と話す",
+        "title": "旅人に、何を聞く？",
+        "description": "聞ける質問は二つ。答えは旅人ごとに違う。",
+        "button": "話を聞き終えて、店内を調べる"
+      },
       "explore": {
-        "kicker": "02 / 店内を調べる",
+        "kicker": "03 / 店内を調べる",
         "title": "旅人の「普通」を探す",
         "description": "気になる場所を調査。3つ以上の手がかりから、みんなで仮説を立てよう。",
         "button": "仮説を話す"
       },
+      "twist": {
+        "kicker": "04 / 思わぬ来客",
+        "title": "雨宿りの漁師たち",
+        "description": "店が急に賑やかに。旅人の一台を守りながら切り抜けよう。",
+        "button": "この手で切り抜ける"
+      },
       "prepare": {
-        "kicker": "03 / 一台を用意する",
+        "kicker": "05 / 一台を用意する",
         "title": "香りと、過ごす場所",
         "description": "香りも席も、相手の過ごす時間の一部。",
         "button": "一台を準備する"
       },
       "serve": {
-        "kicker": "04 / 席へ案内する",
+        "kicker": "06 / 席へ案内する",
         "title": "最後に、どう声をかける？",
         "description": "言葉を添えることも、少し待つこともできる。",
         "button": "旅人を席へ案内する"
@@ -1606,9 +3372,33 @@
         "description": "みんなで考えた一台と、過ごす時間。どんな「普通」になっただろう。"
       }
     },
-    "help": "三つ以上の手がかりから仮説を立て、香り・席・声のかけ方を選びます。探索・相談・メモの再読に回数制限はありません。",
+    "help": "旅人に二つ質問し、店内を調べて三つ以上の手がかりから仮説を立てます。途中で思わぬ来客があり、切り抜け方を選びます。最後に香り・席・声のかけ方を選びます。探索・相談・メモの再読に回数制限はありません。",
     "exitText": "この卓はここで終わります。もう一度遊ぶと、別の旅人が訪れるかもしれません。",
-    "endingKicker": "この晩の結末"
+    "endingKicker": "この晩の結末",
+    "stats": {
+      "eye": "観察",
+      "hand": "手際",
+      "talk": "話術",
+      "nerve": "度胸"
+    },
+    "declareTitle": "どうする？ 行動を宣言しよう",
+    "declareHint": "誰が、どの能力で動くかを決める。宣言すると、GMが目標値を告げる",
+    "sheetTitle": "キャラクターシート",
+    "target": "GMの裁定 · 目標値30（19以上でひと手間）",
+    "choiceArt": {
+      "src": "../../img/ui/trpg/choices-harbor.webp",
+      "rowCount": 3,
+      "rows": {
+        "aroma": 0,
+        "seat": 1,
+        "approach": 2,
+        "hypotheses": 2
+      }
+    },
+    "twistTitle": "店が急に賑やかに。どうする？",
+    "interviewIdle": "旅人に聞けるのは二つまで。何を聞こう？",
+    "twistIdle": "どう切り抜ける？ 手を選んで、誰が動くか決めよう",
+    "planTitle": "旅人への提案"
   },
   "debrief": {
     "smooth": "trpg_ordinary_debrief_smooth",
@@ -1633,18 +3423,235 @@
       {
         "actor": "adam",
         "candidates": [
-          "adam"
+          "adam",
+          "regulara"
         ],
         "required": false
       },
       {
         "actor": "tsumugi",
         "candidates": [
-          "tsumugi"
+          "tsumugi",
+          "regularb"
         ],
         "required": false
       }
     ]
+  },
+  "builder": {
+    "seat": "hajime",
+    "points": 11,
+    "min": 1,
+    "max": 5,
+    "nameMax": 6,
+    "title": "あなたのキャラクターを作る",
+    "intro": "この物語で演じる店番を決めよう。出自・能力値は、卓のあいだずっと使う",
+    "archetypes": [
+      {
+        "id": "apprentice",
+        "name": "フィン",
+        "title": "見習い店番",
+        "trait": "人の話を聞くのが上手い。手は、まだ少し慌てる",
+        "stats": {
+          "eye": 3,
+          "hand": 2,
+          "talk": 4,
+          "nerve": 2
+        },
+        "recommended": true
+      },
+      {
+        "id": "sailor",
+        "name": "マル",
+        "title": "船乗り帰りの手伝い",
+        "trait": "港の仕事で鍛えた度胸。茶房の作法は覚えたて",
+        "stats": {
+          "eye": 2,
+          "hand": 3,
+          "talk": 2,
+          "nerve": 4
+        }
+      },
+      {
+        "id": "regular",
+        "name": "テオ",
+        "title": "本好きの常連",
+        "trait": "店のことは本で読んで知っている。手を動かすのは苦手",
+        "stats": {
+          "eye": 4,
+          "hand": 1,
+          "talk": 3,
+          "nerve": 3
+        }
+      }
+    ],
+    "statHelp": {
+      "eye": "よく見て、気づく力。調べる・様子を見るときに使う",
+      "hand": "手先の器用さ。道具を使う・準備するときに使う",
+      "talk": "話す・聞く力。人と向き合うときに使う",
+      "nerve": "怖がらない力。危ない場面や、勇気が要るときに使う"
+    }
+  },
+  "companionBuilds": {
+    "adam": {
+      "adam": [
+        {
+          "id": "nico",
+          "name": "ニコ",
+          "title": "小声の案内役",
+          "trait": "香りと炭の支度は店一番。声が小さく、すぐ謝る",
+          "likes": "閉店後の片づけ。客の『ごちそうさま』",
+          "stats": {
+            "eye": 2,
+            "hand": 5,
+            "talk": 3,
+            "nerve": 1
+          },
+          "making": "trpg_ordinary_make_adam_adam_nico",
+          "aside": "trpg_ordinary_aside_adam_adam_nico",
+          "after": "trpg_ordinary_after_adam_adam_nico"
+        },
+        {
+          "id": "pippin",
+          "name": "ピピン",
+          "title": "流しの香り師",
+          "trait": "どんな注文にも、まず林檎の話から入る。腕は確か",
+          "likes": "林檎。すべての香りの始まり",
+          "stats": {
+            "eye": 2,
+            "hand": 5,
+            "talk": 2,
+            "nerve": 2
+          },
+          "making": "trpg_ordinary_make_adam_adam_pippin"
+        }
+      ],
+      "regulara": [
+        {
+          "id": "nico",
+          "name": "ニコ",
+          "title": "小声の案内役",
+          "trait": "香りと炭の支度は店一番。声が小さく、すぐ謝る",
+          "likes": "閉店後の片づけ。客の『ごちそうさま』",
+          "stats": {
+            "eye": 2,
+            "hand": 5,
+            "talk": 3,
+            "nerve": 1
+          },
+          "making": "trpg_ordinary_make_adam_adam_nico_regulara"
+        },
+        {
+          "id": "pippin",
+          "name": "ピピン",
+          "title": "流しの香り師",
+          "trait": "どんな注文にも、まず林檎の話から入る。腕は確か",
+          "likes": "林檎。すべての香りの始まり",
+          "stats": {
+            "eye": 2,
+            "hand": 5,
+            "talk": 2,
+            "nerve": 2
+          },
+          "making": "trpg_ordinary_make_adam_adam_pippin_regulara"
+        }
+      ]
+    },
+    "tsumugi": {
+      "tsumugi": [
+        {
+          "id": "luca",
+          "name": "ルカ",
+          "title": "窓辺の絵描き",
+          "trait": "よく見て、よく描く。口数は少ない",
+          "likes": "雨の日の窓。描きかけのスケッチ",
+          "stats": {
+            "eye": 5,
+            "hand": 2,
+            "talk": 1,
+            "nerve": 3
+          },
+          "making": "trpg_ordinary_make_tsumugi_tsumugi_luca"
+        },
+        {
+          "id": "leaf",
+          "name": "リーフ",
+          "title": "絵を描く看板猫",
+          "trait": "人の言葉は話せない。よく見て、絵で伝える",
+          "likes": "窓辺の日だまり。煮干し",
+          "stats": {
+            "eye": 5,
+            "hand": 1,
+            "talk": 1,
+            "nerve": 4
+          },
+          "making": "trpg_ordinary_make_tsumugi_tsumugi_leaf"
+        }
+      ],
+      "regularb": [
+        {
+          "id": "luca",
+          "name": "ルカ",
+          "title": "窓辺の絵描き",
+          "trait": "よく見て、よく描く。口数は少ない",
+          "likes": "雨の日の窓。描きかけのスケッチ",
+          "stats": {
+            "eye": 5,
+            "hand": 2,
+            "talk": 1,
+            "nerve": 3
+          },
+          "making": "trpg_ordinary_make_tsumugi_tsumugi_luca_regularb"
+        },
+        {
+          "id": "leaf",
+          "name": "リーフ",
+          "title": "絵を描く看板猫",
+          "trait": "人の言葉は話せない。よく見て、絵で伝える",
+          "likes": "窓辺の日だまり。煮干し",
+          "stats": {
+            "eye": 5,
+            "hand": 1,
+            "talk": 1,
+            "nerve": 4
+          },
+          "making": "trpg_ordinary_make_tsumugi_tsumugi_leaf_regularb"
+        }
+      ]
+    }
+  },
+  "sessionZero": {
+    "open": "trpg_ordinary_session_zero_open",
+    "close": "trpg_ordinary_session_zero_close"
+  },
+  "interview": {
+    "title": "旅人に、何を聞く？",
+    "prompt": "聞けるのは二つまで。旅人の『普通』に近づく質問を選ぼう",
+    "picks": 2,
+    "topics": [
+      {
+        "id": "journey",
+        "label": "どこから来たのか",
+        "description": "旅の道のりを聞く"
+      },
+      {
+        "id": "usual",
+        "label": "いつもは何を飲むのか",
+        "description": "普段の好みを聞く"
+      },
+      {
+        "id": "today",
+        "label": "今日はどんな一日だったか",
+        "description": "今日のことを聞く"
+      },
+      {
+        "id": "shop",
+        "label": "この店をどう見つけたか",
+        "description": "店に入った理由を聞く"
+      }
+    ]
+  },
+  "twist": {
+    "intro": "trpg_ordinary_twist_intro"
   }
 }
-

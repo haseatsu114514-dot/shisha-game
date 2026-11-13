@@ -75,13 +75,18 @@ await suite("issue439", async (check) => {
       await page.locator('[data-test="pin-kannon"]').click();
       await page.locator('[data-test="map-go"]').click();
       await page.waitForFunction(() => I.core.state.slot === 1 && !!document.querySelector('#screen .map:not(.done)'));
-      const first = await page.evaluate(() => ({ guts: I.core.state.stats.guts, slot: I.core.state.slot, count: I.core.state.reel.count, affinity: { ...I.core.state.affinity } }));
-      assert.equal(first.guts, 12); assert.equal(first.slot, 1); assert.equal(first.count, 0);
+      // 施設の行動の成長: 旧しくみ（?growth=0）は主な能力に2P、心得の盤（通常プレイの既定・SBD97）は経験値で、能力は書き換えない
+      const board = await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled());
+      const first = await page.evaluate(() => ({ guts: I.core.state.stats.guts, xp: I.core.state.growth?.xp || 0, slot: I.core.state.slot, count: I.core.state.reel.count, affinity: { ...I.core.state.affinity } }));
+      if (board) { assert.equal(first.guts, 10); assert(first.xp > 0, "観音堂の行動で経験値"); }
+      else assert.equal(first.guts, 12);
+      assert.equal(first.slot, 1); assert.equal(first.count, 0);
       await page.locator('[data-test="pin-choizap"]').click();
       await page.locator('[data-test="map-go"]').click();
-      await page.waitForFunction(() => I.core.state.stats.charm === 12);
+      if (board) await page.waitForFunction((xp) => (I.core.state.growth?.xp || 0) > xp, first.xp);
+      else await page.waitForFunction(() => I.core.state.stats.charm === 12);
       const second = await page.evaluate(() => ({ charm: I.core.state.stats.charm, affinity: { ...I.core.state.affinity } }));
-      assert.equal(second.charm, 12); assert.deepEqual(second.affinity, first.affinity);
+      assert.equal(second.charm, board ? 10 : 12); assert.deepEqual(second.affinity, first.affinity);
     }, options);
 
     await check(`rain-window-and-date-${label}`, async (page) => {
@@ -111,7 +116,9 @@ await suite("issue439", async (check) => {
       I.map = (await import("./js/daily/map.js")).chooseSpot();
     });
     await page.locator('[data-test="pin-kannon"]').click();
-    assert.match(await page.locator(".mi-preview").innerText(), /読み込んでいます/);
+    // #2761 で詳細パネルは写真とスポット名だけになり、読み込み中の案内は画面の文字ではなく読み上げのラベルになった。
+    assert.match(await page.locator(".mi-preview.loading").getAttribute("aria-label"), /写真を読み込んでいます/);
+    assert.equal(await page.locator(".mi-preview").innerText(), "", "The panel shows only the photo and the spot name");
     await page.locator(".mi-preview:not(.loading)").waitFor();
     assert.match(await page.locator(".mi-preview").evaluate(node => getComputedStyle(node).backgroundImage), /bg_kannon/);
   });
@@ -167,7 +174,8 @@ await suite("issue439", async (check) => {
     await page.locator(".mo-lime").waitFor();
     await page.locator(".mo-lime-toast").waitFor();
     await page.waitForFunction(() => getComputedStyle(document.querySelector(".mo-lime-toast")).opacity === "1");
-    assert.match(await page.locator(".mo-lime").innerText(), /なる.*友だちに追加しました/s);
+    // LIMEの演出はアカウント名で出す（LNM01〜06。なるは「鳴切亮太」）
+    assert.match(await page.locator(".mo-lime").innerText(), /鳴切亮太.*友だちに追加しました/s);
     await page.screenshot({ path: ".codex/artifacts/remake-browser/issue439-lime.png" });
     await page.locator(".mo-lime").waitFor({ state: "detached" });
     await page.locator(".vn-next.show").waitFor(); await page.keyboard.press("Enter"); await page.evaluate(() => I.talk);

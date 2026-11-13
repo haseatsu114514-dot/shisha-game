@@ -24,6 +24,17 @@ async function prepareCityGuest(page, id) {
   }, id);
 }
 
+// 顔の列は看板（.shield）に付き、店名の札の幅では動かない。1人・3人は看板の左端から右へ並べる。
+// 2人は右の顔が右上の「!」にかからないよう、看板の右端から 16px 内側で終わらせて左へ伸ばす（#2853・#2881 の daily.css）。
+// 16px はステージ座標なので、画面上の長さにはステージの倍率を掛ける。許容差は今までどおり（横 10px・縦 14px）。
+const facesAnchored = page => page.locator('.pin-people').evaluateAll(rows => rows.every(row => {
+  const faces = [...row.children], shield = row.parentElement.querySelector('.shield').getBoundingClientRect();
+  const stage = document.getElementById('stage'), k = stage.getBoundingClientRect().width / stage.offsetWidth;
+  const first = faces[0].getBoundingClientRect(), last = faces.at(-1).getBoundingClientRect();
+  const edge = faces.length === 2 ? Math.abs(last.right - (shield.right - 16 * k)) : Math.abs(first.left - shield.left);
+  return edge <= 10 && Math.abs(first.bottom - shield.top) <= 14;
+}));
+
 await suite("map-guests", async check => {
   for (const id of ["ageha", "kumicho", "rei"]) {
     await check(`city-${id}-schedule-first-repeat`, async page => {
@@ -76,10 +87,13 @@ await suite("map-guests", async check => {
     assert.deepEqual(await page.evaluate(()=>({old:C.visit.owner.flags._city_guest_day,new:C.core.state.flags._city_guest_day,
       playing:C.engine.isPlaying()})),{old:undefined,new:undefined,playing:false});
   });
-  for (const [device, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
-    ["narrow", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }]]) {
+  // #2730: 移動ボタンは写真とスポット名だけのパネル全体。パネルごと画面に収まる。
+  const assertGoFits = async page => {
+    await page.locator('[data-test="map-go"]').scrollIntoViewIfNeeded();
+    await assertFits(page, '[data-test="map-go"]');
+  };
+  for (const [device, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
     await check(`${device}-silhouette-schedule-save`, async page => {
-      if (device === "narrow") await page.evaluate(() => { localStorage.setItem("suien_title_layout", "ds"); window.dispatchEvent(new Event("display-layout-change")); });
       await page.evaluate(async () => {
         window.G = { core: await import("./js/core/state.js"), data: await import("./js/core/data.js"),
           map: await import("./js/daily/map.js"), people: await import("./js/daily/spot-people.js"),
@@ -93,13 +107,15 @@ await suite("map-guests", async check => {
       });
       await page.locator('[data-test="pin-tonari"] .pin-people').waitFor();
       assert.equal(await page.locator('[data-test="pin-tonari"] .pin-person').count(), 2);
-      assert.equal(await page.locator('[data-test="pin-tonari"] .pin-unknown').count(), 1);
+      // #2750: つむぎは開始時から顔見知り。tonari では顔で出し、人影にしない。未面識の人影と正体の秘匿はひよりで確かめる。
+      assert.equal(await page.locator('[data-test="pin-tonari"] .pin-unknown').count(), 0);
+      assert.equal(await page.locator('[data-test="pin-tonari"] img.pin-person[alt="つむぎ"]').count(), 1);
       const location = await page.evaluate(() => G.hiyori.hiyoriShopLocation());
       assert(location);
       assert.equal(await page.locator(`[data-spot="${location}"] .pin-person`).count(), 2);
       assert.equal(await page.locator(`[data-spot="${location}"] .pin-unknown`).count(), 1);
-      assert.equal(await page.locator('.map img[src*="hiyori"], .map img[src*="tsumugi"]').count(), 0);
-      assert(!await page.locator('.map').evaluate(n => /ひより|つむぎ/.test(n.outerHTML)), "Unknown identities must not leak through labels or attributes");
+      assert.equal(await page.locator('.map img[src*="hiyori"]').count(), 0);
+      assert(!await page.locator('.map').evaluate(n => /ひより/.test(n.outerHTML)), "Unknown identities must not leak through labels or attributes");
       const snapshot = await page.evaluate(() => {
         const before = JSON.stringify(G.core.state);
         const one = G.spots.allSpots().filter(s => G.people.spotPeople(s).some(p => p.id === "hiyori")).map(s => s.id);
@@ -110,19 +126,13 @@ await suite("map-guests", async check => {
       assert.deepEqual(snapshot.one, [location]); assert(snapshot.unchanged); assert.equal(snapshot.after, location);
       await page.locator(`[data-spot="${location}"]`).click();
       await page.locator('[data-test="map-go"]').waitFor();
-      const anchored = await page.locator('.pin-people').evaluateAll(rows => document.body.classList.contains('game-ds') || rows.every(row => {
-        const face = row.firstElementChild.getBoundingClientRect(), shield = row.parentElement.querySelector('.shield').getBoundingClientRect();
-        return Math.abs(face.left - shield.left) <= 10 && Math.abs(face.bottom - shield.top) <= 14;
-      }));
-      assert(anchored, 'Faces must stay at the shield left edge regardless of caption width');
+      assert(await facesAnchored(page), 'Faces must stay at the shield edge regardless of caption width');
       await assertFits(page, '.pin-people');
-      await page.locator('[data-test="map-go"]').scrollIntoViewIfNeeded();
-      await assertFits(page, '[data-test="map-go"]');
+      await assertGoFits(page);
       await page.locator('[data-test="map-go"]').click();
       assert.equal(await page.evaluate(() => window.flow), location);
     }, options);
     await check(`${device}-multiple-guests-closure`, async page => {
-      if (device === "narrow") await page.evaluate(() => { localStorage.setItem("suien_title_layout", "ds"); window.dispatchEvent(new Event("display-layout-change")); });
       const result = await page.evaluate(async () => {
         const core = await import("./js/core/state.js"), map = await import("./js/daily/map.js"),
           people = await import("./js/daily/spot-people.js"), spots = await import("./js/daily/spots.js");
@@ -152,15 +162,10 @@ await suite("map-guests", async check => {
         return boxes.every((a,i)=>boxes.slice(i+1).every(b=>Math.min(a.right,b.right)<=Math.max(a.left,b.left)+1 || Math.min(a.bottom,b.bottom)<=Math.max(a.top,b.top)+1));
       });
       assert(clear, "Guest faces and event badge must not overlap");
-      const anchored = await page.locator('.pin-people').evaluateAll(rows => document.body.classList.contains('game-ds') || rows.every(row => {
-        const face = row.firstElementChild.getBoundingClientRect(), shield = row.parentElement.querySelector('.shield').getBoundingClientRect();
-        return Math.abs(face.left - shield.left) <= 10 && Math.abs(face.bottom - shield.top) <= 14;
-      }));
-      assert(anchored, 'Faces must stay at the shield left edge regardless of caption width');
+      assert(await facesAnchored(page), 'Faces must stay at the shield edge regardless of caption width');
       await assertFits(page, '.pin-people');
       await page.locator('[data-test="pin-tonari"]').click();
-      await page.locator('[data-test="map-go"]').scrollIntoViewIfNeeded();
-      await assertFits(page, '[data-test="map-go"]');
+      await assertGoFits(page);
     }, options);
   }
 });

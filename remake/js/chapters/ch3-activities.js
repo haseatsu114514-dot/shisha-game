@@ -1,8 +1,8 @@
 // 会員資格を共有する東京店。地元の施設会話・人物遭遇は呼ばない。
 import { DB, bgUrl } from "../core/data.js";
 import { state, save } from "../core/state.js";
-import { addStamina, earnStat, paidAction } from "../core/stats.js";
-import { layers, showScreen, setBg, toast } from "../core/ui.js";
+import { addStamina, earnStat, paidAction, earnSceneCompletion } from "../core/stats.js";
+import { layers, showScreen, setBg, enterScene, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { facilityGrowth } from "../daily/spots.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -40,7 +40,7 @@ export async function visitChapterThreeGym(windowId, { signal = null, isCurrent 
     const eligible = chapterThreeGymAvailability(state, windowId);
     if (!eligible.ok) return false;
     const id = eligible.window.slot ? "ch3_choizap_night" : "ch3_choizap_day";
-    await setBg(bgUrl("bg_choizap", eligible.window.slot ? "night" : "day"), { instant: true });
+    await enterScene(bgUrl("bg_choizap", eligible.window.slot ? "night" : "day"));
     if (!current()) return false;
     showScreen("none", null);
     layers.hud.replaceChildren();
@@ -53,8 +53,9 @@ export async function visitChapterThreeGym(windowId, { signal = null, isCurrent 
       if (!window) return false;
       addStamina(TOKYO_GYM.stamina);
       earnStat(TOKYO_GYM.stat, 4);
+      earnSceneCompletion(id, owner.value);
       return true;
-    }, { ...facilityGrowth(TOKYO_GYM), consumed: used => used });
+    }, { ...facilityGrowth(TOKYO_GYM), consumed: used => used, exp: { key: "tokyo:gym", place: "tokyo:gym" } });
     if (!settled.value || !current()) return false;
     save();
     toast("体を動かして、少し気分が整った", { kind: "good" });

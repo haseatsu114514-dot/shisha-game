@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EFE4CF  枠の段 1: 2コマ@y=272
+  コマ1: 720x480 @(36,272) 比率 1.500 → ok
+  コマ2: 721x480 @(779,272) 比率 1.502 → ok
+コマ1: 720x480 (1.500) そのまま → 出力 720x480  /workspace/shared/allcast-comics-20261102/middle/allcast-nagumo-drink-bar/panels/nagumo-drink-bar-1.webp (59 KiB)
+コマ2: 721x480 (1.502) そのまま → 出力 721x480  /workspace/shared/allcast-comics-20261102/middle/allcast-nagumo-drink-bar/panels/nagumo-drink-bar-2.webp (61 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "nagumo-drink-bar",
+  "title": "入り口の店",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "須井会長は、自分の店にも審査の目を向ける。",
+  "panels": [
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/middle/allcast-nagumo-drink-bar/panels/nagumo-drink-bar-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/middle/allcast-nagumo-drink-bar/panels/nagumo-drink-bar-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/middle/allcast-nagumo-drink-bar/source-A-v2.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 720,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/middle/allcast-nagumo-drink-bar/source-A-v2.png",
+      "region": {
+        "x": 779,
+        "y": 272,
+        "width": 721,
+        "height": 480,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "nagumo-drink-bar-1.webp",
+      "width": 720,
+      "height": 480,
+      "sha256": "d46ade4765b286b02d7f8e31cb8548e5b523987743d61c5e72a98432b4c7efb1"
+    },
+    {
+      "file": "nagumo-drink-bar-2.webp",
+      "width": 721,
+      "height": 480,
+      "sha256": "f8524f95aea8dc0fce663a02912a7e940a7432bba88f1a838e6b2a33f14968b7"
+    }
+  ]
+}

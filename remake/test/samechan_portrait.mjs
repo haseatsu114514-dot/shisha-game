@@ -29,7 +29,8 @@ await suite("samechan-portrait", async check => {
       const before = await page.evaluate(() => JSON.stringify(K.core.state));
       for (const { scene, line } of lines) {
         await page.evaluate(({ scene, line }) => {
-          K.scene = K.vn.play({ metadata: K.data.DB.dialogues[scene].metadata, lines: [line,
+          const { add_affinity, ...metadata } = K.data.DB.dialogues[scene].metadata;
+          K.scene = K.vn.play({ metadata, lines: [line,
             { speaker: "samechan", face: "normal", text: "分かっておる" }] });
         }, { scene, line });
         await page.waitForFunction(text => document.querySelector('.vn-text')?.textContent === text, line.text);

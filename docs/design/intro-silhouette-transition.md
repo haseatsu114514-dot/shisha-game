@@ -1,5 +1,7 @@
 # 登場カットインへのつなぎ「シルエット化」設計書
 
+> **2026-11-02 追記**: #2156 の4人限定試作（本書の基本形）は、影が約0.15秒しか見えず、色の面で画面が置き換わるだけに見えた。オーナー「もっと滑らかでスタイリッシュで自然に」を受け、`remake/js/vn/intro-transition.js` に3案（A morph＝影が迫って変身／B card＝札が裏返る／C slash＝一閃）を同じ仕組みで実装し、`remake/intro-transition-preview.html` で比べられるようにした（要望台帳 CIG11）。採用案が決まるまで設定 `config.introTransition` の既定は none。 さらにオーナー「ポーズが変わるから変形・変身のような自然な切り替わりを」を受け、A では影の形を距離場の補間で立ち絵のポーズからカットインのポーズへ変形させる（`intro-shape-morph.js`、CIG12）。本書の3章の時間割は A の土台で、A では影を約0.3秒見せ、影の形のまま拡大移動させ、斜めの一閃で中からポスター調の人物を出す形に変えた。
+
 2026-10-31 オーナー採用（「シルエット化いいね」）。対象は登場カットインのグラフィック絵柄（要望台帳 CIG・#2141）。
 
 ## 1. 目的
@@ -99,11 +101,11 @@
 - つなぎの間の Enter・クリックで、カットインが短くならない。
 - `SHOTS=<フォルダ>` で、80ms・240ms・400ms の3コマを保存し、オーナー確認用の連続画像にする。
 
-関連する回帰: `intro_art.mjs`（旧絵柄）、`browser/recent_intros.mjs`、DS の `browser/ds_overlay_layers.mjs`。
+関連する回帰: `intro_art.mjs`（旧絵柄）、`browser/recent_intros.mjs`（DS の `browser/ds_overlay_layers.mjs` は 2026-11-10 に DS風ごと削除）。
 
 ## 6. 進め方
 
-1. 試作: `character-intros-preview.html` で、なる（sharp）・凛（soft）・南雲（still）・パッキー（bounce）の4人を再生できるようにし、連続画像と動画でオーナーに見せる。
+1. 試作: `character-intros-preview.html` で、なる（sharp）・凛想（soft）・千須（still）・パッキー（bounce）の4人を再生できるようにし、連続画像と動画でオーナーに見せる。
 2. 採用後に本実装とテスト。1つのPRにまとめる（`intro-transition.js`・`intro.js`・`intro.css`・テスト）。
 
 ## 7. 未決事項（オーナー確認）

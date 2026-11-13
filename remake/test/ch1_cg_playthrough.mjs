@@ -24,7 +24,7 @@ chromium.launch = async (...args) => {
 };
 await import("./playthrough.mjs");
 const expected = ["cg_oneesan_first_smoke", "cg_ch1_sumi_training", "cg_ch1_tsumugi_heart_art",
-  "cg_ch1_tournament_battle", "cg_ch1_nagumo_smile", "cg_ch1_dr_kemuri_hook"];
+  "cg_ch1_tournament_battle", "cg_ch1_sui_smile", "cg_ch1_dr_kemuri_hook"];
 const missing = expected.filter(id => !seen.has(id));
 const output = path.resolve(process.env.ARTIFACT_DIR || ".codex/artifacts/ch1-cg-art");
 fs.mkdirSync(output, { recursive: true });

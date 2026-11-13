@@ -11,14 +11,17 @@ async function setup(page) {
     };
     A.chapter.setupHooks(); A.vn.vnTest.turbo = true;
     A.trace = [];
-    A.vn.hooks.onLine = (id, line) => A.trace.push({ id, text: line.text, key: line._seenKey });
+    A.vn.hooks.onLine = (id, line) => A.trace.push({ id, text: line.text, key: line._seenKey, speaker: line.speaker });
     A.room = A.data.DB.dialogues.ch1_tournament_arrival.lines.find(l => l.text?.startsWith("出場者控室に入る。" )).text;
   });
 }
 
 await suite("ch1-arrival", async check => {
-  const combinations = [[], ["minto"], ["rin"], ["tsumugi"],
-    ["minto", "rin"], ["minto", "tsumugi"], ["rin", "tsumugi"], ["minto", "rin", "tsumugi"]];
+  // #2025: 第1章で恋人になれる4人（ひよりを含む）の全組み合わせ。
+  const heroines = ["hiyori", "minto", "rio", "tsumugi"];
+  const combinations = Array.from({ length: 1 << heroines.length }, (_, bits) => heroines.filter((_, i) => bits & (1 << i)));
+  const sceneFor = lovers => lovers.length < 2 ? null
+    : `remake_shuraba_${lovers.length >= 3 ? (lovers.includes("hiyori") ? "all_hiyori" : "all") : lovers.slice().sort().join("_")}`;
   for (const lovers of combinations) await check(lovers.join("-") || "no-lover", async page => {
     await setup(page);
     const result = await page.evaluate(async lovers => {
@@ -35,9 +38,11 @@ await suite("ch1-arrival", async check => {
         after: JSON.stringify({ lovers: loaded.lovers, stats: loaded.stats, money: loaded.money, affinity: loaded.affinity }),
         guilt: loaded.guilt, flag: !!loaded.flags._shuraba_ch1 };
     }, lovers);
-    const expected = lovers.length >= 2 ? `remake_shuraba_${lovers.length === 3 ? "all" : lovers.slice().sort().join("_")}` : null;
+    const expected = sceneFor(lovers);
     const shuraba = result.first.filter(l => l.id.startsWith("remake_shuraba_"));
     assert.deepEqual([...new Set(shuraba.map(l => l.id))], expected ? [expected] : []);
+    // 鉢合わせで話すヒロインは、恋人として居合わせた全員だけ（恋人でない人は出てこない）。
+    assert.deepEqual([...new Set(shuraba.map(l => l.speaker).filter(id => heroines.includes(id)))].sort(), expected ? lovers.slice().sort() : []);
     const roomAt = result.first.findIndex(l => l.text === result.room);
     assert(roomAt > 0);
     if (expected) {
@@ -57,7 +62,7 @@ await suite("ch1-arrival", async check => {
   for (const alreadySeen of [false, true]) await check(`legacy-save-${alreadySeen ? "seen" : "unseen"}`, async page => {
     await setup(page);
     const result = await page.evaluate(async alreadySeen => {
-      const s = A.core.newGame(); Object.assign(s, { schema: 7, phase: "tournament", day: 14, lovers: ["rin", "tsumugi"], guilt: 6 });
+      const s = A.core.newGame(); Object.assign(s, { schema: 7, phase: "tournament", day: 14, lovers: ["rio", "tsumugi"], guilt: 6 });
       if (alreadySeen) s.flags._shuraba_ch1 = true;
       A.core.save(); A.core.newGame(); A.core.load();
       await A.arrival.playTournamentArrival();
@@ -66,7 +71,7 @@ await suite("ch1-arrival", async check => {
       return { scenes: [...new Set(A.trace.filter(l => l.id.startsWith("remake_shuraba_")).map(l => l.id))],
         guilt: A.core.state.guilt, flag: A.core.state.flags._shuraba_ch1, schema: A.core.state.schema, currentSchema: A.core.SCHEMA };
     }, alreadySeen);
-    assert.deepEqual(result.scenes, alreadySeen ? [] : ["remake_shuraba_rin_tsumugi"]);
+    assert.deepEqual(result.scenes, alreadySeen ? [] : ["remake_shuraba_rio_tsumugi"]);
     assert.equal(result.guilt, alreadySeen ? 6 : 7);
     assert.equal(result.flag, true); assert.equal(result.schema, result.currentSchema);
   });
@@ -86,7 +91,7 @@ await suite("ch1-arrival", async check => {
     await setup(page);
     await page.evaluate(() => {
       const s = A.core.newGame(); s.phase = "tournament";
-      s.lovers = ["minto", "rin"]; s.flags._shuraba_ch1 = true;
+      s.lovers = ["minto", "rio"]; s.flags._shuraba_ch1 = true;
       const id = "ch1_tournament_arrival", dlg = A.data.DB.dialogues[id];
       A.oldKeys = [
         ...dlg.lines.map((_, i) => JSON.stringify([id, "main", i])),

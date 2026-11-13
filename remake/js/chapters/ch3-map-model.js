@@ -12,7 +12,12 @@ export const TOKYO_MAP_PLACES = Object.freeze({
   volk: place("volk", "鉄の煙", 55.9, 40.4),
   gym: place("gym", "CHOI-ZAP", 34.9, 75.9),
   park: place("park", "公園", 69, 62),
-  shrine: place("shrine", "路地裏の神社", 54, 70), // 心得の盤の内省（SPEC 2.8・#1788）。火種がある時だけ出る
+  // 心得の盤の内省（SPEC 2.8・#1788）。火種がある時だけ出る。地図の右下の池に浮かぶお堂（IR26・SBD98）。
+  // お堂そのもの（昼の地図の 91,83 あたり）は右下の案内パネルの裏になるので、ピンの先は池の北の岸（お堂の真上）に置く。
+  // id の shrine は仮置きの「路地裏の神社」からの名前のまま（行き先・検査の互換）
+  shrine: place("shrine", "池の弁天堂", 91, 73),
+  club: place("club", "クラブSEAM", 71.5, 51), // 路地の地下のクラブ（DJS12）。夜の行き先が渡された時だけ地点になる。店ロゴは ch3_club
+  club_unknown: place("club_unknown", "地下の店", 71.5, 51), // 初めて入るまでの同じ場所。店名もロゴも出さない（ch3_club_unknown のロゴは無い）
 });
 
 export const TOKYO_MAP_LANDMARKS = Object.freeze([
@@ -31,7 +36,7 @@ const scenePlace = scene => {
   if (scene.location === "mukai") return "mukai";
   if (["ch3_individuality_doubt", "ch3_naru_contact_before_tournament", "ch3_tournament_eve"].includes(scene.id)) return "street";
   if (scene.id === "ch3_tokyo_shop_gap") return "shop";
-  if (["ch3_kuze_first", "ch3_kuze_advice"].includes(scene.id)) return "enmaku";
+  if (["ch3_saku_first", "ch3_saku_advice"].includes(scene.id)) return "enmaku";
   if (scene.id === "ch3_steve_low_heat") return "steve";
   if (scene.id === "ch3_volk_first") return "volk";
   return null;
@@ -72,7 +77,7 @@ export function chapterThreeMapModel(value, scenes, { sceneId, allowGym = false,
       .map(pin => ({ ...pin, actions: actionsAt(pin.id) })),
     landmarks: TOKYO_MAP_LANDMARKS.filter(item => !reached.has(item.id)).map(item => ({ ...item })),
     member, canTrain: allowGym === true && member, freeTime: freeTime === true,
-    note: freeTime ? choices.length ? "自由時間です。内省と作業台の試作は予定を進めません。それ以外の行き先は一回の自由時間を使います。"
+    note: freeTime ? choices.length ? `自由時間です。内省と作業台の試作${choices.some(action => action.dj) ? "、地下の店のDJ" : ""}は予定を進めません。それ以外の行き先は一回の自由時間を使います。`
       : "自由時間です。これまでに訪ねた場所を地図で確かめられます。"
       : target?.id === "ch3_naru_work"
       ? "別会場の場面です。地図では東京で訪ねた場所を確かめられます。"

@@ -1,0 +1,226 @@
+{
+  "issue": 3217,
+  "date_utc": "2026-11-11",
+  "tool": "Codex built-in image_gen",
+  "authority": "Issue #3217 body (world-request.md not yet on origin/main)",
+  "references": [
+    {
+      "path": "assets/backgrounds/bg_dubai_camel_track_morning.png",
+      "role": "画風と朝の光の正本"
+    },
+    {
+      "path": "assets/ui/camel_race/camel_1.png",
+      "role": "物の描き込み密度の正本"
+    },
+    {
+      "path": "assets/ui/camel_race/suv.png",
+      "role": "物の描き込み密度の正本"
+    }
+  ],
+  "items": [
+    {
+      "id": "CR-WD02",
+      "prompt": "Use case: stylized-concept. Asset type: transparent PNG game sprite, CR-WD02 marker-board.png. Input reference roles: bg_dubai_camel_track_morning.png is the authoritative style and sunrise lighting reference; camel_1.png and suv.png are authoritative object detail-density references. STYLE: Game sprites for a Japanese pixel-painterly visual novel minigame set at a desert camel racetrack in Dubai at sunrise. Same painter's hand and texture as the game's racetrack background (bg_dubai_camel_track_morning) and its camel and SUV sprites: fine painterly pixel texture, confident dark outlines slightly heavier on the outer silhouette, flat local colors with two to three clearly shaped shadow steps, warm low light from the upper left. Honest, used materials: sun-bleached wood, faded cloth, packed sand, dull worn brass. Palette: sand #e2c48c, sun-bleached cream #f4ead6, brass #c9963a, deep indigo #1c2236, ink #1a110a, accent amber #e08a2c, racing red #c8302a, deep green #2f8f6b. NO glossy gradients, NO glow or bloom, NO neon, NO airbrush, NO photo realism, NO smooth 3D render. Never draw any text, letters, digits, pseudo-writing, logos or watermark. No people. FORMAT: side view as seen from the trackside, flat with no strong perspective. Transparent background with real alpha. No drop shadow or ground shadow outside the object (the game adds shadows). The object fills the canvas to within about 2% of the edges. Target final canvas exactly 160x240 pixels, 2:3 portrait ratio. Draw a thin sun-bleached wooden stake holding a small cream rectangular board with a racing-red strip along its top edge. Board central face completely blank and flat for code-drawn number. Stake base touches bottom canvas edge. Isolated sprite, no other objects.",
+      "source": {
+        "path": "asset_sources/ch4-camel-race/world/originals/marker-board.png",
+        "sha256": "ed98e046a5b20d36556a0d79e035e03639980b6a5158430626b5a5bfd2b4f308",
+        "width": 1024,
+        "height": 1536,
+        "alpha": true,
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "bytes": 1586428
+      },
+      "candidate": {
+        "path": "asset_sources/ch4-camel-race/world/candidates/marker-board.png",
+        "sha256": "2f3852c9060c1d68c6fc3216cc402ee66c1874c1570c4fa9e0354752ed486d2d",
+        "width": 160,
+        "height": 240,
+        "alpha": true,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bytes": 29472
+      },
+      "processing": "原画を縦横同率で160×240へ縮小。透過を維持。",
+      "status": "候補"
+    }
+  ],
+  "batches": [
+    {
+      "date_utc": "2026-11-11",
+      "tool": "Codex built-in image_gen",
+      "authority": "Issue #3217 body updated 2026-11-11 / Codex へ渡す文",
+      "prompts": {
+        "normalPrompt": "STYLE: Game sprites for a Japanese pixel-painterly visual novel minigame set at a desert camel racetrack in Dubai at sunrise. Same painter's hand and texture as the game's racetrack background (bg_dubai_camel_track_morning) and its camel and SUV sprites: fine painterly pixel texture, confident dark outlines slightly heavier on the outer silhouette, flat local colors with two to three clearly shaped shadow steps, warm low light from the upper left. Honest, used materials: sun-bleached wood, faded cloth, packed sand, dull worn brass. Palette: sand #e2c48c, sun-bleached cream #f4ead6, brass #c9963a, deep indigo #1c2236, ink #1a110a, accent amber #e08a2c, racing red #c8302a, deep green #2f8f6b. NO glossy gradients, NO glow or bloom, NO neon, NO airbrush, NO photo realism, NO smooth 3D render. Never draw any text, letters, digits, pseudo-writing, logos or watermark. No people.\nCR-UI07 remote-voice-normal. Transparent PNG sprite. EXACT target canvas 960x240, 4:1 landscape. ONE front-facing rectangular matte black rubber remote housing fills canvas edge to edge especially top and bottom, corners only tiny transparent cuts. Not a presentation on a larger canvas. At left ONE HUGE round dull brass raised push button, diameter 180px = 75% housing height, center (110,120), left edge x20. Speaker grille dark holes on the button. Button and all decoration within x0..240. x240..900 uninterrupted plain even matte black rubber: absolutely no seams, inset panels, dividers, screws or symbols. Rightmost x900..960 only narrow frame and two tiny screws. Warm upper left light. Very thin dark outer frame, NO external shadows. Match reference suv's fine painterly pixel material treatment; reference only for style not content. Housing must occupy 100% canvas height. The large button is the focal point. No text.",
+        "vpPrompt": "STYLE: Game sprites for a Japanese pixel-painterly visual novel minigame set at a desert camel racetrack in Dubai at sunrise. Same painter's hand and texture as the game's racetrack background (bg_dubai_camel_track_morning) and its camel and SUV sprites: fine painterly pixel texture, confident dark outlines slightly heavier on the outer silhouette, flat local colors with two to three clearly shaped shadow steps, warm low light from the upper left. Honest, used materials: sun-bleached wood, faded cloth, packed sand, dull worn brass. Palette: sand #e2c48c, sun-bleached cream #f4ead6, brass #c9963a, deep indigo #1c2236, ink #1a110a, accent amber #e08a2c, racing red #c8302a, deep green #2f8f6b. NO glossy gradients, NO glow or bloom, NO neon, NO airbrush, NO photo realism, NO smooth 3D render. Never draw any text, letters, digits, pseudo-writing, logos or watermark. No people.\nEDIT attached remote-voice-normal exact image to remote-voice-pressed. Retain exact 3:1 canvas and exact housing frame, screws, rubber texture, lighting and position. Change ONLY the big round brass speaker button on LEFT. Button pressed DEEP DOWN into socket. Eliminate raised bright projecting rim. Button face MUCH darker muted brown brass, about half brightness, surrounded by broad very dark recessed shadow ring. Keep same grille holes. Strong easy-to-read pressed state at height 70px. Nothing else changes. Real alpha corners, no external shadow.",
+        "wnPrompt": "STYLE: Game sprites for a Japanese pixel-painterly visual novel minigame set at a desert camel racetrack in Dubai at sunrise. Same painter's hand and texture as the game's racetrack background (bg_dubai_camel_track_morning) and its camel and SUV sprites: fine painterly pixel texture, confident dark outlines slightly heavier on the outer silhouette, flat local colors with two to three clearly shaped shadow steps, warm low light from the upper left. Honest, used materials: sun-bleached wood, faded cloth, packed sand, dull worn brass. Palette: sand #e2c48c, sun-bleached cream #f4ead6, brass #c9963a, deep indigo #1c2236, ink #1a110a, accent amber #e08a2c, racing red #c8302a, deep green #2f8f6b. NO glossy gradients, NO glow or bloom, NO neon, NO airbrush, NO photo realism, NO smooth 3D render. Never draw any text, letters, digits, pseudo-writing, logos or watermark. No people.\nEDIT attached remote-voice-normal exact image to remote-whip-normal. Retain exact 3:1 canvas, housing frame, screws, black rubber texture, lighting and positions. Change ONLY big round button at left: replace brass speaker face and holes with RED-AMBER raised round push button, embossed curved riding-whip pictogram (curved lash and small handle; symbol only NO letters). Same large button diameter and position. Clear raised warm rim. All other pixels should stay identical. Alpha corners no external shadow.",
+        "wpPrompt": "STYLE: Game sprites for a Japanese pixel-painterly visual novel minigame set at a desert camel racetrack in Dubai at sunrise. Same painter's hand and texture as the game's racetrack background (bg_dubai_camel_track_morning) and its camel and SUV sprites: fine painterly pixel texture, confident dark outlines slightly heavier on the outer silhouette, flat local colors with two to three clearly shaped shadow steps, warm low light from the upper left. Honest, used materials: sun-bleached wood, faded cloth, packed sand, dull worn brass. Palette: sand #e2c48c, sun-bleached cream #f4ead6, brass #c9963a, deep indigo #1c2236, ink #1a110a, accent amber #e08a2c, racing red #c8302a, deep green #2f8f6b. NO glossy gradients, NO glow or bloom, NO neon, NO airbrush, NO photo realism, NO smooth 3D render. Never draw any text, letters, digits, pseudo-writing, logos or watermark. No people.\nEDIT attached remote-voice-normal exact image to remote-whip-pressed. Retain exact 3:1 canvas, housing frame, screws, black rubber texture, lighting and positions. Change ONLY big round button at left: replace brass speaker face and holes with DARK RED-AMBER deeply depressed round push button, embossed curved riding-whip pictogram (curved lash and small handle; symbol only NO letters). Same large button diameter and position. Pressed DEEPLY into socket: raised rim disappears, broad dark shadow ring, face distinctly dark burnt red, far darker than normal bright red-amber. At 70px height must clearly read as pressed. All other pixels should stay identical. Alpha corners no external shadow.",
+        "roadPrompt": "STYLE: Game sprites for a Japanese pixel-painterly visual novel minigame set at a desert camel racetrack in Dubai at sunrise. Same painter's hand and texture as the game's racetrack background (bg_dubai_camel_track_morning) and its camel and SUV sprites: fine painterly pixel texture, confident dark outlines slightly heavier on the outer silhouette, flat local colors with two to three clearly shaped shadow steps, warm low light from the upper left. Honest, used materials: sun-bleached wood, faded cloth, packed sand, dull worn brass. Palette: sand #e2c48c, sun-bleached cream #f4ead6, brass #c9963a, deep indigo #1c2236, ink #1a110a, accent amber #e08a2c, racing red #c8302a, deep green #2f8f6b. NO glossy gradients, NO glow or bloom, NO neon, NO airbrush, NO photo realism, NO smooth 3D render. Never draw any text, letters, digits, pseudo-writing, logos or watermark. No people.\nCR-WD04 ground-road.png. Target 1280x152 pixels, VERY THIN STRIP 8.42:1 landscape. OPAQUE sand service road texture fills EVERY PIXEL edge to edge, including uppermost and lowermost rows. Two horizontal tire ruts left to right at 1/3 and 2/3 height. Flat trackside texture matching attached adopted ground-track painterly pixel sand treatment. Horizontally seamless repeating tile, left and right match. No horizon, no background, no white margins, no transparency, no objects, no people. The ENTIRE IMAGE is closeup packed sand with exactly two ruts. If wider format not possible render sand edge to edge with the two horizontal ruts and NO margins; crop to thin strip later."
+      },
+      "files": [
+        {
+          "path": "asset_sources/ch4-camel-race/world/candidates/ground-road-B.png",
+          "sha256": "aeb26826608e1cb42d6c0e3270724b417c3b7be72eab7113485a86a6e8548939",
+          "width": 1280,
+          "height": 152,
+          "alpha": false,
+          "alpha_extrema": null,
+          "bytes": 321267,
+          "status": "candidate"
+        },
+        {
+          "path": "asset_sources/ch4-camel-race/world/candidates/remote-voice-normal-B.png",
+          "sha256": "cc98218a9a551adf2cb23329a839f56edcf6b1f1151c7427ec86bd2a686cbb57",
+          "width": 720,
+          "height": 240,
+          "alpha": true,
+          "alpha_extrema": [
+            0,
+            253
+          ],
+          "bytes": 238984,
+          "status": "candidate"
+        },
+        {
+          "path": "asset_sources/ch4-camel-race/world/candidates/remote-voice-pressed-B.png",
+          "sha256": "1149e10d0628c6873405f7b1ac97bfea51716309112170b5a2447a75ab317cd4",
+          "width": 720,
+          "height": 240,
+          "alpha": true,
+          "alpha_extrema": [
+            0,
+            255
+          ],
+          "bytes": 218730,
+          "status": "candidate"
+        },
+        {
+          "path": "asset_sources/ch4-camel-race/world/candidates/remote-whip-normal-B.png",
+          "sha256": "7c7c9f79f51c8885d9bcb3d9263bebf16563fdb4650a390d314781363cf3e583",
+          "width": 720,
+          "height": 240,
+          "alpha": true,
+          "alpha_extrema": [
+            0,
+            255
+          ],
+          "bytes": 233136,
+          "status": "candidate"
+        },
+        {
+          "path": "asset_sources/ch4-camel-race/world/candidates/remote-whip-pressed-B.png",
+          "sha256": "26dc919bbb9269f53f76f870e260891bf37e92046519429df1b9616cb8f91177",
+          "width": 720,
+          "height": 240,
+          "alpha": true,
+          "alpha_extrema": [
+            0,
+            255
+          ],
+          "bytes": 214526,
+          "status": "candidate"
+        },
+        {
+          "path": "asset_sources/ch4-camel-race/world/originals/ground-road-B.png",
+          "sha256": "3e8657d64d597e105fe1a9cfa86942684c65c98bc0b962f7665c2bc374f13115",
+          "width": 2172,
+          "height": 724,
+          "alpha": false,
+          "alpha_extrema": null,
+          "bytes": 2117303,
+          "status": "raw"
+        },
+        {
+          "path": "asset_sources/ch4-camel-race/world/originals/remote-voice-normal-B.png",
+          "sha256": "284294c4cc0bc76cd0968a8f582a1d5cae7e1fa07efce662b2c646ff90903e0f",
+          "width": 2172,
+          "height": 724,
+          "alpha": true,
+          "alpha_extrema": [
+            0,
+            253
+          ],
+          "bytes": 2580647,
+          "status": "raw"
+        },
+        {
+          "path": "asset_sources/ch4-camel-race/world/originals/remote-voice-pressed-B.png",
+          "sha256": "e308364cec9ac5d4dfcece67a2447b56c004607a12f6fe98e4c7ef71b7eb7129",
+          "width": 2172,
+          "height": 724,
+          "alpha": true,
+          "alpha_extrema": [
+            0,
+            252
+          ],
+          "bytes": 2259245,
+          "status": "raw"
+        },
+        {
+          "path": "asset_sources/ch4-camel-race/world/originals/remote-whip-normal-B.png",
+          "sha256": "65673b057f6db9953832c9007497590a670004cc31e635c93870219161a625d5",
+          "width": 2172,
+          "height": 724,
+          "alpha": true,
+          "alpha_extrema": [
+            0,
+            252
+          ],
+          "bytes": 2354800,
+          "status": "raw"
+        },
+        {
+          "path": "asset_sources/ch4-camel-race/world/originals/remote-whip-pressed-B-rejected.png",
+          "sha256": "9e56bbd756720751ebacad88a8290b089cb596e22a45ef037e821bdb59b02fce",
+          "width": 2172,
+          "height": 724,
+          "alpha": true,
+          "alpha_extrema": [
+            0,
+            252
+          ],
+          "bytes": 2252433,
+          "status": "rejected: whip symbol changed"
+        },
+        {
+          "path": "asset_sources/ch4-camel-race/world/originals/remote-whip-pressed-B.png",
+          "sha256": "f096c64380c868b72bafec6b68538561a7230900800d53c06ddeb4ba6a4a071f",
+          "width": 2172,
+          "height": 724,
+          "alpha": true,
+          "alpha_extrema": [
+            0,
+            252
+          ],
+          "bytes": 2180317,
+          "status": "raw"
+        },
+        {
+          "path": "asset_sources/ch4-camel-race/world/review/remotes-B-70px.png",
+          "sha256": "434d00acf995feaeb860bd94f892e891883fc51d55aaf4797deb785385a6474a",
+          "width": 210,
+          "height": 280,
+          "alpha": false,
+          "alpha_extrema": null,
+          "bytes": 68494,
+          "status": "review"
+        }
+      ],
+      "copy_check": "524288 bytes copy with equal SHA-256 before generation",
+      "processing": {
+        "remotes": "ImageMagick: uniform resize to 720x240 (3:1). Other states composited over voice-normal using ellipse centered (310,352), radii (300,310) on 2172x724 source. Outside this button region all housing pixels identical. Whip pressed final edited from whip normal; earlier rejected raw retained.",
+        "road": "ImageMagick: resize raw to 640x152, append horizontally mirrored copy; opaque 1280x152 with exactly matching edge columns."
+      },
+      "validation": {
+        "housing_identical_x205_to719": true,
+        "road_edge_columns_equal": true,
+        "review_70px": "review/remotes-B-70px.png",
+        "visual": "Normal/pressed visible at 70px. No text or external shadow. Road has no margins. Artwork candidates only; no game integration."
+      }
+    }
+  ]
+}

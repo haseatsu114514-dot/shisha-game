@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EEE2CE  枠の段 1: 2コマ@y=275
+  コマ1: 714x505 @(39,275) 比率 1.414 → ok
+  コマ2: 713x505 @(783,275) 比率 1.412 → ok
+コマ1: 714x505 (1.414) → 左右に各2.9%の紙帯 → 出力 758x505  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-crystal/panels/uranaishi-crystal-1.webp (74 KiB)
+コマ2: 713x505 (1.412) → 左右に各3.0%の紙帯 → 出力 758x505  /workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-crystal/panels/uranaishi-crystal-2.webp (71 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "uranaishi-crystal",
+  "title": "水晶の正体",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "占い師の道具は、どれも年季が入っている……はず。",
+  "panels": [
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-crystal/panels/uranaishi-crystal-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-crystal/panels/uranaishi-crystal-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-crystal/source-v1.png",
+      "region": {
+        "x": 39,
+        "y": 275,
+        "width": 714,
+        "height": 505,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/uranaishi-crystal/source-v1.png",
+      "region": {
+        "x": 783,
+        "y": 275,
+        "width": 713,
+        "height": 505,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "uranaishi-crystal-1.webp",
+      "width": 758,
+      "height": 505,
+      "sha256": "a6975a91133e2096bcc338edb1b3b7aa26fdee5c3728a737e4221eed6c9032ba"
+    },
+    {
+      "file": "uranaishi-crystal-2.webp",
+      "width": 758,
+      "height": 505,
+      "sha256": "0ac0ae80925b93d8641fe322b5e86034e76bf6fbbc73938634c27ea12ba9cf50"
+    }
+  ]
+}

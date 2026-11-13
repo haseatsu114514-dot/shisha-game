@@ -1,0 +1,1451 @@
+{
+ "$comment": "背景の台帳。説明・規格は docs/background_standard.md、道具は tools/background_catalog.py。背景を足した・差し替えたら sync で測り直す（blob が古いと CI が止まる）",
+ "spec": {
+  "canvas": [
+   1920,
+   1080
+  ],
+  "luma_min": 30,
+  "sheet_columns": 5,
+  "sheet_rows": 12
+ },
+ "anchors": [
+  "kemurikusa.png",
+  "bg_tonari_inside_day.png",
+  "bg_street_night.png",
+  "bg_dubai_souq_day.png"
+ ],
+ "backgrounds": {
+  "bg_ageha_cafe_day.png": {
+   "place": "ageha_cafe",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 166,
+   "blob": "d3b824a92a2341e22064b703cf4ac83de2d90288",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
+  "bg_ageha_shop.png": {
+   "place": "ageha_shop",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 139,
+   "blob": "ee9cdc46ee73b32f66e8d8eb7c632bc819aebdcc",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
+  "bg_axe_lounge_night.png": {
+   "place": "axe_lounge",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 58,
+   "blob": "e357c28c1520737e04a9e0e6198c136a6d2035a0",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_c_station_day.png": {
+   "place": "c_station",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 95,
+   "blob": "987d9bfa186896922d6c469517cc0fce55a3333d"
+  },
+  "bg_c_station_lobby.png": {
+   "place": "c_station_lobby",
+   "time": "",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 95,
+   "blob": "987d9bfa186896922d6c469517cc0fce55a3333d"
+  },
+  "bg_c_station_night.png": {
+   "place": "c_station",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 69,
+   "blob": "ef3ea7ea4848ad865a812d442dca951ea0b17f33"
+  },
+  "bg_c_station_overcast_day.png": {
+   "place": "c_station",
+   "time": "day",
+   "weather": "overcast",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 89,
+   "blob": "6fb50acba904d6cc19c6ce2e3f91a75bbb55e654"
+  },
+  "bg_c_station_overcast_night.png": {
+   "place": "c_station",
+   "time": "night",
+   "weather": "overcast",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 67,
+   "blob": "554b7e5a590591483fd5298072149b73aaa3fa2f"
+  },
+  "bg_cafe_day.png": {
+   "place": "cafe",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 90,
+   "blob": "739c206ff6499a960a37170a31aaf7f74098fba5",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_cafe_night.png": {
+   "place": "cafe",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 58,
+   "blob": "2ef1fca2c0d1337a46e56e2c348f8c4634f4a57f",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_cafe_overcast_day.png": {
+   "place": "cafe",
+   "time": "day",
+   "weather": "overcast",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 84,
+   "blob": "54ef8d6d4a4f72cf26d85231a9d32e679628e9a4",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_ch2_ageha_closed_night.png": {
+   "place": "ch2_ageha_closed",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 46,
+   "blob": "7b42478943538911159b7b4a25474a79d13df8f0",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_ch2_ageha_entry.webp": {
+   "place": "ch2_ageha_entry",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 138,
+   "blob": "bf99cda8ac141d0aee8c50d8b9fc301dc31aa84c",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_ch2_kumicho_entry.webp": {
+   "place": "ch2_kumicho_entry",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 83,
+   "blob": "9f545598cb5cea33ed5eacffc3a3ec997aacb524",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_ch2_rei_entry.webp": {
+   "place": "ch2_rei_entry",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 46,
+   "blob": "0ef5727e2006d9c47f5d7f213fb98b35f3209c26",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_ch2_venue_bench_night.png": {
+   "place": "ch2_venue_bench",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 70,
+   "blob": "dde2e73660a720b98df227f13592d5f43e7a423d",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_ch2_volk_entry.webp": {
+   "place": "ch2_volk_entry",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 108,
+   "blob": "0b4eabcd3bc91ed2d814019ce570c390efa1e469",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_ch3_hotel_night.png": {
+   "place": "ch3_hotel",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 61,
+   "blob": "a2fcd63b06ad0acd199b0c8af0c7e3c1ba4c2a18",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_ch3_saku_video.png": {
+   "place": "ch3_saku_video",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 58,
+   "blob": "7be2f21fa0ffb17fe11427027426e9111fc45c0a",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_ch3_train_arrival.png": {
+   "place": "ch3_train_arrival",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 131,
+   "blob": "16fd37a23c06569b4374918cee3ae895ec107edc",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_choizap.png": {
+   "place": "choizap",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 134,
+   "blob": "69e377a1b265034019a2046780041079224358fe",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_choizap_day.png": {
+   "place": "choizap",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 130,
+   "blob": "500a1755955998b5f1f225c5f4a9d1718d64a0bc",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
+  "bg_choizap_night.png": {
+   "place": "choizap",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 119,
+   "blob": "d14d443760e14032cdc3327e4939898b4ed7f6cd",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_club_seam.png": {
+   "place": "club_seam",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 44,
+   "blob": "a2a278a13efa3143bebe395d43715f8e196d3050",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_club_seam_entrance.png": {
+   "place": "club_seam_entrance",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 45,
+   "blob": "079d34af6d8a1e1b02b621007812f15ccbeff713",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_dj_red_room.png": {
+   "place": "dj_red_room",
+   "time": "",
+   "weather": "",
+   "size": [
+    2048,
+    768
+   ],
+   "luma": 12,
+   "blob": "0a3fe3964f6208d59a9ac0888ce98b70da913dfc",
+   "accepted": "2026-11-02 規格制定前の既存絵。暗い赤の部屋は演出（2048x768）"
+  },
+  "bg_dubai_airport_day.png": {
+   "place": "dubai_airport",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 158,
+   "blob": "7f82f179c55f5eac774346c04f903c6d61c8c260",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_dubai_alley_cafe_night.png": {
+   "place": "dubai_alley_cafe",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 59,
+   "blob": "ef02a38478eb012fef1fa4b0ae8853e4c0df4292",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_dubai_cafe_day.png": {
+   "place": "dubai_cafe",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 180,
+   "blob": "96f57103a4ea4222b127060ea76b9f02343d1027",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_dubai_cafe_salim_day.png": {
+   "place": "dubai_cafe_salim",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 128,
+   "blob": "f60f60669bd0b31963237e6f09a9dd22fd21ab86",
+   "accepted": "2026-11-07 本件指定により既存ドバイ背景の実寸 1280x720 に合わせた",
+   "prompt": "tools/bg_prompts.txt Issue #2887",
+   "note": "旧市街の通りに面する昼の小さなシーシャカフェ。表に砂漠ツアーのデスク。"
+  },
+  "bg_dubai_camel_track_morning.png": {
+   "place": "dubai_camel_track",
+   "time": "morning",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 142,
+   "blob": "24c9abadc8f82875b08eb0a272ee546b1a7c2efc",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_dubai_dunes_day.png": {
+   "place": "dubai_dunes",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 170,
+   "blob": "385dec22c575a8a33177331af40e06f590a26809",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_dubai_dunes_dusk.png": {
+   "place": "dubai_dunes",
+   "time": "dusk",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 106,
+   "blob": "c731ca39f19a21229f5704a49b30193855838616",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_dubai_festa.png": {
+   "place": "dubai_festa",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 83,
+   "blob": "3df0e1727269b7d46a7967a2e7e48a275bc8f51b",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_dubai_grand_smoke_stage.png": {
+   "place": "dubai_grand_smoke_stage",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 79,
+   "blob": "42cf29b9feadad395e8546620b7f8c1147b7ad8c",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_dubai_inn_day.png": {
+   "place": "dubai_inn",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 111,
+   "blob": "65a437ad2f9e4a6a9a915a4157e1cc8824de4996",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_dubai_inn_night.png": {
+   "place": "dubai_inn",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 76,
+   "blob": "0fbe041523cc173801af98823d1bd80ba0afeb37",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_dubai_map.webp": {
+   "place": "dubai_map",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 161,
+   "blob": "7d43b0640a64f7d41cdc7f8e46e1c6d981dcd51a",
+   "accepted": "2026-11-06 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_dubai_map_dusk.webp": {
+   "place": "dubai_map",
+   "time": "dusk",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 101,
+   "blob": "0f4cf2889f655db641e405e6bb2c608918f9c134",
+   "accepted": "2026-11-06 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_dubai_sheikh_residence.png": {
+   "place": "dubai_sheikh_residence",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 74,
+   "blob": "4305ca9189e01c5029ef3bdad069725bb855f03e",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_dubai_souq_day.png": {
+   "place": "dubai_souq",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 97,
+   "blob": "d6645b6f5d63ac96fd2cdca6850b0965394dc82c",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_dubai_street_night.png": {
+   "place": "dubai_street",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 76,
+   "blob": "ff5797886ab0709d508dccbc12f3fe99598b2faf",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_eden_shop.png": {
+   "place": "eden_shop",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 71,
+   "blob": "ce2ed7b692c887479df32b67d7e3ba2aa8a0face",
+   "accepted": "2026-11-13 オーナー「推奨で」でa案を採用（#3446）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
+  "bg_fookah_showroom.png": {
+   "place": "fookah_showroom",
+   "time": "",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 85,
+   "blob": "df63057df5a928ff8e6c1fc629fefa4e3bbc2360"
+  },
+  "bg_hideaway.png": {
+   "place": "hideaway",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 64,
+   "blob": "952f4b9c79362cbaaac18044614b52a4bee50e9e",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う。台は描かれておらず、ゲームが scene-art.js の SCENE_PROPS で重ねる（2026-11-13）"
+  },
+  "bg_home.png": {
+   "place": "home",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 50,
+   "blob": "d5d68578496a26dc1d59134cf0f2aff1c17b573c",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_home_day.png": {
+   "place": "home",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 109,
+   "blob": "80395ccbd42faf9d5bf40abaee08ddd0fbad41a9"
+  },
+  "bg_home_night.png": {
+   "place": "home",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 68,
+   "blob": "fc686244477755fc1117d0af8c09b9e949319a91"
+  },
+  "bg_home_overcast_day.png": {
+   "place": "home",
+   "time": "day",
+   "weather": "overcast",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 91,
+   "blob": "ae0d409d1543ac02443be20cb5365715386d8fdd"
+  },
+  "bg_home_overcast_night.png": {
+   "place": "home",
+   "time": "night",
+   "weather": "overcast",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 68,
+   "blob": "761c6f2d8452b7c0f3797ff07df98c49f512cdfb"
+  },
+  "bg_kannon_day.png": {
+   "place": "kannon",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 127,
+   "blob": "23fe48cea4beede9fd19167894216524693ff38c",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
+  "bg_kannon_night.png": {
+   "place": "kannon",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 56,
+   "blob": "e5fca5ec2e8994868631a93a43529c15eda5abb8",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_kannon_overcast_day.png": {
+   "place": "kannon",
+   "time": "day",
+   "weather": "overcast",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 115,
+   "blob": "0819d2b892bca10d3285c6d1fbede19d7ba1f7bc",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_kemurikusa_outside_night.png": {
+   "place": "kemurikusa_outside",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 35,
+   "blob": "d51785b304c54936de9d15d04e18b9f9acd64d08",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_longlong_shop.png": {
+   "place": "longlong_shop",
+   "time": "",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 80,
+   "blob": "f622b60305837663410b706b2756acd796cef527"
+  },
+  "bg_mukai_attic.png": {
+   "place": "mukai_attic",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 65,
+   "blob": "acfc5ba998f79b122a4bee38094b2529a6f2c45a",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_mukai_backdoor_day.png": {
+   "place": "mukai_backdoor",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 112,
+   "blob": "4de57efec2fbd310bbc150c81722d6ea3602e1ba",
+   "accepted": "2026-11-11 オーナー承認: てつこといっしょの画面専用。Codex の生成機能が 1672×941 までで規格に届かない（#2689・PR #2695 の案02）"
+  },
+  "bg_mukai_backdoor_night.png": {
+   "place": "mukai_backdoor",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 67,
+   "blob": "272477389391a0b09f8c535aff30b04a9b66556b",
+   "accepted": "2026-11-11 オーナー承認: てつこといっしょの画面専用。Codex の生成機能が 1672×941 までで規格に届かない（#2689・PR #2695 の案02）"
+  },
+  "bg_mukai_shop.png": {
+   "place": "mukai_shop",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 73,
+   "blob": "9127a2b2dbb17878b21c5051ed86e012e70df483",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_osu_map_day.png": {
+   "place": "osu_map",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 136,
+   "blob": "9ad95b3d28556d076288c557f6c35bb823e3eb41",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_osu_map_night.png": {
+   "place": "osu_map",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 97,
+   "blob": "05df2729f7003a00b58bfa567159deb070ad4663",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_ramen_counter_night.png": {
+   "place": "ramen_counter",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 77,
+   "blob": "54341a6dfb121c4277fa5a3be4f68503ab218dbb",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
+  "bg_rojiura_cinema.png": {
+   "place": "rojiura_cinema",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 38,
+   "blob": "beebd44fe3fe4c635f8e8adee2a8f685f9bf5da2",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_rojiura_cinema_detective.png": {
+   "place": "rojiura_cinema_detective",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 32,
+   "blob": "0738a24867a82171098e1278acc864aa359df1c8",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_rojiura_cinema_monster.png": {
+   "place": "rojiura_cinema_monster",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 35,
+   "blob": "115ae0b61bf3f46f195849686e5d96af42f799e1",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_rojiura_cinema_space.png": {
+   "place": "rojiura_cinema_space",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 34,
+   "blob": "5df091b6084a5a1fb9a1b6fffa4d47ea155e60b8",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_ryuji_shop.png": {
+   "place": "ryuji_shop",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 90,
+   "blob": "12dfe2c6dd73f9681a1131a4a5d43b78be309458",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
+  "bg_shiori_room_day.png": {
+   "place": "shiori_room",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 123,
+   "blob": "1fa2e6e1d22ecf52f5357b20cdd16d64a5931910",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
+  "bg_shiori_room_night.png": {
+   "place": "shiori_room",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 87,
+   "blob": "a154d2e89e15beebc1fb0fb87cb3012ab239d3a5",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
+  "bg_shishark.png": {
+   "place": "shishark",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 117,
+   "blob": "4983a89118c7b692630f59d20efd8de6a5c785b9",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_shishark_preparing_night.png": {
+   "place": "shishark_preparing",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 92,
+   "blob": "6f369e90c612ddd2275a318ff573cbe9d55b5312",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_shop.png": {
+   "place": "shop",
+   "time": "",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 90,
+   "blob": "6a75e7ae3a7625894049d691ee2b0ba60414dd39"
+  },
+  "bg_smoke_lab.png": {
+   "place": "smoke_lab",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 139,
+   "blob": "3553f3b18ca24d0723246bec28ffacdc7d834231"
+  },
+  "bg_station_walk_night.png": {
+   "place": "station_walk",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 67,
+   "blob": "deee9a1b51406861d724beddec1c05d9a8397166",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
+  "bg_steve_shop.png": {
+   "place": "steve_shop",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 68,
+   "blob": "a9afd31c928f959cafee79eb8288de42a70b100a",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_street_day.png": {
+   "place": "street",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 95,
+   "blob": "69eb084575630ac8dc3f9575aad4333dbd6cdad5"
+  },
+  "bg_street_night.png": {
+   "place": "street",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 61,
+   "blob": "9ab717f003c74a1d9e7ad9e007e12c714edfbd12"
+  },
+  "bg_street_overcast_day.png": {
+   "place": "street",
+   "time": "day",
+   "weather": "overcast",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 83,
+   "blob": "0b2f63b2dc57eccd807c3391455f587c024188e0"
+  },
+  "bg_street_overcast_night.png": {
+   "place": "street",
+   "time": "night",
+   "weather": "overcast",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 60,
+   "blob": "5a0589a1e6bf43c5e5c4ddcf0835bc454061d7b6"
+  },
+  "bg_title.png": {
+   "place": "title",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 37,
+   "blob": "a423cebfa5e33d50707af95b09cdcfd2978731e7",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_tokyo_map_day.png": {
+   "place": "tokyo_map",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 135,
+   "blob": "d10858eb4634b8a2c9e8ebb8aa2f084f54a95efe",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_tokyo_map_night.png": {
+   "place": "tokyo_map",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 77,
+   "blob": "922769d75a41e62fbd065bba5a9cdbd58ef24e0f",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_tokyo_park_day.png": {
+   "place": "tokyo_park",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 111,
+   "blob": "dc907e7cb34e3f063a784b49466fa9e556cb560b",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_tokyo_park_night.png": {
+   "place": "tokyo_park",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 38,
+   "blob": "a025fd92748760e2e539b015982c6c34cc3d80e7",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_tonari_customer_hands.png": {
+   "place": "tonari_customer_hands",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 90,
+   "blob": "89f1328c3d8e21bf1e8289b5c94ec5e96a525a07",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_tonari_inside.png": {
+   "place": "tonari_inside",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 52,
+   "blob": "01968ed9e8f0b6206dfcd7debb818004b5ef660c",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_tonari_inside_day.png": {
+   "place": "tonari_inside",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 91,
+   "blob": "19fc875e9918e41e9327ceedc2678628d19b01e1"
+  },
+  "bg_tonari_inside_night.png": {
+   "place": "tonari_inside",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 82,
+   "blob": "aa143fa77ed72f9f5386ca4a6464eeef6431489c"
+  },
+  "bg_tonari_inside_overcast_day.png": {
+   "place": "tonari_inside",
+   "time": "day",
+   "weather": "overcast",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 84,
+   "blob": "5c1457464bc55635723e9f0a43b5f18484e71519"
+  },
+  "bg_tonari_inside_overcast_night.png": {
+   "place": "tonari_inside",
+   "time": "night",
+   "weather": "overcast",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 82,
+   "blob": "127d5a251a57ae6b5bb9db76e6e17c608eaf55fb"
+  },
+  "bg_tonari_opening_coal.png": {
+   "place": "tonari_opening_coal",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 58,
+   "blob": "4787273e0c68bbf5835b62071d640559d924de86",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_toosu_park_day.png": {
+   "place": "toosu_park",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 107,
+   "blob": "bec234a79e0edfb97463629287a4a3dba440159d",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
+  "bg_tournament_stage.png": {
+   "place": "tournament_stage",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 61,
+   "blob": "9115bd165d68ad0eb3a8966bbef6ef42c9ded0ed",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う。台は描かれておらず、ゲームが scene-art.js の SCENE_PROPS で重ねる（2026-11-13）"
+  },
+  "bg_volk_shop.png": {
+   "place": "volk_shop",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 55,
+   "blob": "79af39e9665136907ebb943b33a734851f0a32f0",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_widehanga_map_day.webp": {
+   "place": "widehanga_map",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 135,
+   "blob": "ddd2a3c9f413b181b5a979d56bb5ca3ec22ac8cc",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_widehanga_map_night.webp": {
+   "place": "widehanga_map",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 96,
+   "blob": "93a8a7f44ee2abbdc7fb75fb15507df65152e1ba",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_widehanga_station_day.webp": {
+   "place": "widehanga_station",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 147,
+   "blob": "0261065014ccd70a31bd81c540c21c876e7cf774",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_yohaku_shop.png": {
+   "place": "yohaku_shop",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 64,
+   "blob": "a83dc31f6e5f57e90a1599c0564d09735cc034c8",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_yuzugaya_aquarium.webp": {
+   "place": "yuzugaya_aquarium",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 64,
+   "blob": "57f83028481b075c682951f0416b8d0d0bf434fa",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_yuzugaya_c_station.webp": {
+   "place": "yuzugaya_c_station",
+   "time": "",
+   "weather": "",
+   "size": [
+    1279,
+    720
+   ],
+   "luma": 122,
+   "blob": "26d46486607b00188fe68ada3b5b2b095a299ffd",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_yuzugaya_c_station_night.webp": {
+   "place": "yuzugaya_c_station",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 94,
+   "blob": "f4c2e895e449cadea7c3e8f1879cd55386efada4",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_yuzugaya_kumicho.webp": {
+   "place": "yuzugaya_kumicho",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 92,
+   "blob": "54bf28802458c9abb777188f20e355f5897b6251",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_yuzugaya_sento.webp": {
+   "place": "yuzugaya_sento",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 97,
+   "blob": "3d4259ddbb2230e56bed779120d555ebe73ef5d2",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_yuzugaya_shop.webp": {
+   "place": "yuzugaya_shop",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 152,
+   "blob": "3f5d922117eb79813a7fb36d26dc5e50244027f2",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_yuzugaya_trpg.webp": {
+   "place": "yuzugaya_trpg",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 41,
+   "blob": "999a929ce9d00461835fcd66381b2018bd6cbf2e",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "eden.png": {
+   "place": "eden",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 34,
+   "blob": "933de5ce0b9b992156f5907d1ae6db3db28b52c1",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "kemurikusa.png": {
+   "place": "kemurikusa",
+   "time": "",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 66,
+   "blob": "70b12ca179b9c1c230600a2a4d34ce63ac0bf469"
+  },
+  "peppermint.png": {
+   "place": "peppermint",
+   "time": "",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 157,
+   "blob": "815b1cd7278e6daaa78440cb23f72d6f6270c32c"
+  },
+  "trpg_apple-thief_room.png": {
+   "place": "trpg_apple-thief_room",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 67,
+   "blob": "7d99f6de421b741b5c514aedd5e1fd0189c3f1b0",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "trpg_doll-requiem_room.png": {
+   "place": "trpg_doll-requiem_room",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 64,
+   "blob": "3c3d01b834fe96b6561fdb95f360bf6a87bd693f",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "trpg_fading-familiar_room.png": {
+   "place": "trpg_fading-familiar_room",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 66,
+   "blob": "e3e539b74a4648f79a3d6b13ab3cdc7e84907111",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "trpg_fox-market_room.png": {
+   "place": "trpg_fox-market_room",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 73,
+   "blob": "c42b176193ef541d4a470abc60cc144bb37c4040",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "trpg_leaf-mail_room.png": {
+   "place": "trpg_leaf-mail_room",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 85,
+   "blob": "65795b1ce1b4db467b5b7c9fc61668e19a0f32b3",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "trpg_mist-kingdom_room.png": {
+   "place": "trpg_mist-kingdom_room",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 167,
+   "blob": "d4f87e0e8d8b7cac666661c27c415f2440081f66",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "trpg_moonflower-encore_room.png": {
+   "place": "trpg_moonflower-encore_room",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 59,
+   "blob": "410f9ea5d463f879805661ae88420ceb9be286f5",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "trpg_ordinary_room.png": {
+   "place": "trpg_ordinary_room",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 62,
+   "blob": "012d062d86f3c10117c4b421ae23c546970dddb8",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "trpg_purikura-hero_room.png": {
+   "place": "trpg_purikura-hero_room",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 140,
+   "blob": "7fcdcda7432858748ceed50d1fb0dd1690da3111",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "trpg_shark-island_room.png": {
+   "place": "trpg_shark-island_room",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 134,
+   "blob": "77b2c6918a770bd38c6698c5fc6ded6eddef1e56",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "trpg_shark_room.png": {
+   "place": "trpg_shark_room",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 59,
+   "blob": "a26555ebf76b2e6cc1a14827241bb610bc809c5c",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "trpg_smoke-robot_room.png": {
+   "place": "trpg_smoke-robot_room",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 61,
+   "blob": "a74759df1264eff3f895be9f956c5143d3831dd2",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "trpg_stage-ghost_room.png": {
+   "place": "trpg_stage-ghost_room",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 40,
+   "blob": "e0eea992024a559b3494f1e497f9ec0ff9ddb5a5",
+   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  }
+ }
+}

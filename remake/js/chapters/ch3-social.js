@@ -6,7 +6,7 @@ import { state, save } from "../core/state.js";
 import { gainAffinity } from "../core/stats.js";
 import { visitContacts, tokyoVisitState, playerRegion, characterRegion, syncTokyoVisits,
   proposeTokyoVisit, bookTokyoVisit } from "../core/tokyo-visits.js";
-import { openContactLime } from "../daily/phone.js";
+import { openContactLime, deliverLimeMessage, registerLimeReplyAction } from "../daily/phone.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { pendingLoverLime, readLoverLime } from "./lover-entry.js";
 import { chapterThreeStoryContacts } from "./ch3-story-lime.js";
@@ -81,6 +81,59 @@ const timeLabel = time => `${dayLabel(time.day)} ${time.slot ? "夜" : "昼"}`;
 const latestPlan = id => [...tokyoVisitState(state).plans].reverse().find(plan => plan.characterId === id);
 const tripLabel = trip => `${timeLabel(trip.meetup)}に東京駅で合流、${timeLabel(trip.date)}に散歩。${dayLabel(trip.returnDay)}に帰郷。`;
 
+// ---- 恋人のほうから届く「東京へ行ってもいい？」（MPI09・オーナー「連絡はあっちからくるように」） ----------
+// 東京にいる間、地元の恋人から訪問の相談が LIME で届き、返事で約束が決まる。こちらから誘う画面（地元との連絡）も残す。
+const PROPOSAL_FROM_DAY = 3;   // 東京DAY3の朝から
+const PROPOSAL_GAP_DAYS = 3;   // 前の相談・訪問の帰郷から3日あける（いっぺんに何人も来ない）
+const PROPOSAL_FLAG = "_ch3_tokyo_proposal_day";
+const proposalId = (id, proposal) => `tokyo-proposal:${id}:${proposal.arrivalDay}`;
+
+/** 朝に1件まで、地元の恋人から訪問の相談を届ける。戻り値=届いた件数（朝の通知に足す）。 */
+export function deliverTokyoVisitProposals() {
+  if (!definitions || state.chapter !== 3 || playerRegion(state) !== "tokyo" || !state.flags._ch3_intro) return 0;
+  const tokyoDay = state.day - state.flags._ch3_intro.startDay + 1;
+  if (tokyoDay < PROPOSAL_FROM_DAY) return 0;
+  const visits = syncTokyoVisits(state);
+  if (visits.plans.some(plan => plan.status !== "returned")) return 0;
+  const lastReturn = Math.max(-Infinity, ...visits.plans.map(plan => plan.returnDay));
+  const lastProposal = Number.isFinite(state.flags[PROPOSAL_FLAG]) ? state.flags[PROPOSAL_FLAG] : -Infinity;
+  if (state.day - Math.max(lastReturn, lastProposal) < PROPOSAL_GAP_DAYS) return 0;
+  const waiting = id => (state.inbox || []).some(item => item.msg?.tokyoProposal && item.msg.sender === id && !item.done);
+  const candidates = visitContacts(state, definitions).filter(id => !visits.offers[id] && !waiting(id));
+  if (!candidates.length) return 0;
+  const id = candidates[state.day % candidates.length];
+  const proposal = proposeTokyoVisit(state, definitions, id);
+  if (!proposal) return 0;
+  visits.offers[id] = proposal;
+  state.flags[PROPOSAL_FLAG] = state.day;
+  const character = definitions.characters[id];
+  deliverLimeMessage({ id: proposalId(id, proposal), sender: id, type: "chat", lover: true, tokyoVisit: true, tokyoProposal: true,
+    messages: [{ text: character.offer }, { text: `（${tripLabel(proposal)}）` }],
+    replies: [
+      { text: "その日に会おう", action: "tokyo_visit_book", affinity: 1 },
+      { text: "今回はやめておく", action: "tokyo_visit_decline", affinity: 0 },
+    ] });
+  return 1;
+}
+
+registerLimeReplyAction("tokyo_visit_book", item => {
+  const id = item.msg.sender, proposal = tokyoVisitState(state).offers[id];
+  if (definitions && proposal && bookTokyoVisit(state, definitions, proposal)) return `約束した：${tripLabel(proposal)}`;
+  // 返事が遅れて相談の日程が組めなくなっていたら、今から組める日で約束する（無ければ見送り）。
+  const fresh = definitions && proposeTokyoVisit(state, definitions, id);
+  if (fresh && bookTokyoVisit(state, definitions, fresh)) {
+    delete tokyoVisitState(state).offers[id];
+    return `日程を組み直して約束した：${tripLabel(fresh)}`;
+  }
+  delete tokyoVisitState(state).offers[id];
+  return "予定が合わず、今回は会えなかった。また相談しよう。";
+});
+registerLimeReplyAction("tokyo_visit_decline", item => {
+  // 断っても関係は変わらない。少しあけてから、また相談が届く。
+  delete tokyoVisitState(state).offers[item.msg.sender];
+  return "今回は見送った。また都合が合えば相談しよう。";
+});
+
 export async function openTokyoLime({ signal = null } = {}) {
   await loadTokyoSocial();
   if (signal?.aborted) return;
@@ -111,7 +164,9 @@ export async function openTokyoLime({ signal = null } = {}) {
       { id: "book", label: "この日程で約束する" },
       { id: "hold", label: "今は保留する" },
     ];
-    const lover = pendingLoverLime({ senders: [id] }).length ? [{ id: "lover", label: "新しいLIMEを読む" }] : [];
+    // 現在地の印（flags._ch2_region）は帰郷の後も東京のまま、日常ループの無い旧版の東京では地元のままなので、
+    // 地元にいるかは playerRegion で渡す（離れている間は地元前提の文面を送ってこない・#2024）
+    const lover = pendingLoverLime({ senders: [id], home: playerRegion(state) === "home" }).length ? [{ id: "lover", label: "新しいLIMEを読む" }] : [];
     if (!definitions.characters[id]) return lover;
     const options = [...lover, { id: "chat", label: "話しかける" }];
     const plan = latestPlan(id);
@@ -169,7 +224,7 @@ export async function openTokyoLime({ signal = null } = {}) {
   } });
   signal?.removeEventListener("abort", forward);
   if (!loverRead || signal?.aborted) return;
-  await readLoverLime({ senders: [loverRead] });
+  await readLoverLime({ senders: [loverRead], home: playerRegion(state) === "home" });
   if (!signal?.aborted) await openTokyoLime({ signal });
 }
 

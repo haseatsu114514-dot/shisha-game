@@ -70,7 +70,7 @@ await suite("tsumugi-sketch-timing", async check => {
       assert.equal(result.cgs.length, mode === "load" ? 0 : 1);
       assert.equal(result.starts.length, mode === "reduced" ? 0 : 1);
       if (result.starts.length) assert(result.starts[0].includes("……できました。応募する絵"));
-      if (mode !== "load") assert.equal(result.lines.filter(t => t === "「応募完了」。短い文字を、２人で確かめた。").length, 1);
+      if (mode !== "load") assert.equal(result.lines.filter(t => t === "「応募完了」。短い文字を、2人で確かめた。").length, 1);
     }, { reducedMotion: mode === "reduced" ? "reduce" : "no-preference" });
   }
 });

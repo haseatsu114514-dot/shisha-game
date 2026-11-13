@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #F0E4D0  枠の段 1: 2コマ@y=275
+  コマ1: 716x474 @(41,275) 比率 1.511 → ok
+  コマ2: 714x474 @(783,275) 比率 1.506 → ok
+コマ1: 716x474 (1.511) → 上下に各0.3%の紙帯 → 出力 716x477  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/middle/allcast-sheikh-receive-all/panels/sheikh-receive-all-1.webp (71 KiB)
+コマ2: 714x474 (1.506) → 上下に各0.2%の紙帯 → 出力 714x476  [警告: 原画が小さい。新規制作は 1536x1024 の下敷き（コマ 720x480）以上で]  /workspace/shared/allcast-comics-20261102/middle/allcast-sheikh-receive-all/panels/sheikh-receive-all-2.webp (70 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "sheikh-receive-all",
+  "title": "全部受け止める",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 4,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "世界王者の器は、とても大きい。",
+  "panels": [
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/middle/allcast-sheikh-receive-all/panels/sheikh-receive-all-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/middle/allcast-sheikh-receive-all/panels/sheikh-receive-all-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/middle/allcast-sheikh-receive-all/source-A-v1.png",
+      "region": {
+        "x": 41,
+        "y": 275,
+        "width": 716,
+        "height": 474,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/middle/allcast-sheikh-receive-all/source-A-v1.png",
+      "region": {
+        "x": 783,
+        "y": 275,
+        "width": 714,
+        "height": 474,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "sheikh-receive-all-1.webp",
+      "width": 716,
+      "height": 477,
+      "sha256": "6bc2f3acbafe29a8d49aa95ccbac462e995f2c3b059b83eaab162a81230d76e6"
+    },
+    {
+      "file": "sheikh-receive-all-2.webp",
+      "width": 714,
+      "height": 476,
+      "sha256": "36a1e43598f04a6100b813b1a2dde88f2171b09f4e799263de2f5e4b1b9fbba1"
+    }
+  ]
+}

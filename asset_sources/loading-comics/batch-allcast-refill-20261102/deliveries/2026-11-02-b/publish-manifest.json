@@ -1,0 +1,823 @@
+{
+  "status": "local-package-only-not-sent-not-uploaded-not-adopted-not-registered",
+  "source_pr": 2383,
+  "canonical_source_head": "533bcb8cec9eb17a34daafc7cc8a6f3c20227494",
+  "episode_count": 20,
+  "original_count": 33,
+  "original_bytes": 60079861,
+  "reference_image_bytes_included": false,
+  "derived_webp_panels_included": false,
+  "episodes": [
+    {
+      "id": "kuze-plush-board",
+      "num": 11,
+      "title": "幹部会議",
+      "source": "asset_sources/loading-comics/allcast-kuze-plush-board/allcast-kuze-plush-board-c.png",
+      "source_sha256": "6546cc1db8e25c1cc0a676d58e290f010c67d26956d9edcf9aae659511cfe1dd",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "v1 extra background human silhouettes; v2 fixed silhouettes; v3 moved reply bubble up and resolved narrow lower margin.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "kuze-every-order",
+      "num": 12,
+      "title": "注文当て",
+      "source": "asset_sources/loading-comics/allcast-kuze-every-order/allcast-kuze-every-order-b.png",
+      "source_sha256": "a0ba07da0e479c426a3cfacbf038d905d83526cb03f90f4b2b471041e800612e",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "v2 moves reply bubble up, resolving narrow lower margin. Large nonalcoholic drinks reveal.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "kuze-pouch",
+      "num": 13,
+      "title": "腰のポーチ",
+      "source": "asset_sources/loading-comics/allcast-kuze-pouch/allcast-kuze-pouch.png",
+      "source_sha256": "a5c582d2210677b80c76b1f0f82070de43c3a15fffcd9dc2f5868763bbb156b9",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "Large impossible pouch inventory gag. No text on props.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "kuze-mirror-room",
+      "num": 14,
+      "title": "鏡の多い店",
+      "source": "asset_sources/loading-comics/allcast-kuze-mirror-room/allcast-kuze-mirror-room.png",
+      "source_sha256": "72e00a0054b48aee3c528b0b095d53230c8af1b92c6a41a648abbf25cf0c2e43",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "Extra Ayatori images are scripted mirror reflections, not extra characters. Multiple reflection poses are gag stylization.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "kuze-praise-shrink",
+      "num": 15,
+      "title": "ほめられ弱い",
+      "source": "asset_sources/loading-comics/allcast-kuze-praise-shrink/allcast-kuze-praise-shrink.png",
+      "source_sha256": "d03da4e65a7dcfb0566709c9a823755554d0d2ce836f42fe0c900ec13ade6d50",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "Ayatori shrinks and hides in/behind teacup as gag exaggeration. No person-setting change.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "kuze-plain-tea",
+      "num": 16,
+      "title": "ただのお茶",
+      "source": "asset_sources/loading-comics/allcast-kuze-plain-tea/allcast-kuze-plain-tea.png",
+      "source_sha256": "72bf7e2eec435cfb2df92dc1f8013323cc694b1e708a7f466c4cb4b5d4ff4673",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "Hajime wears scripted protective goggles and respirator and uses kitchen tongs; these are gag precautions, not smoking hardware.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "kuze-cushion-forecast",
+      "num": 17,
+      "title": "転ぶ予言",
+      "source": "asset_sources/loading-comics/allcast-kuze-cushion-forecast/allcast-kuze-cushion-forecast-b.png",
+      "source_sha256": "44bfcb045387100d91d036ac06ffdc3d13fee827ed0d7b42313023e223073d70",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "v1 reply touched lower frame; v2 fixes margin and final speech tail to Hajime. Falling character has cushion; no injury.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "kuze-photo-face",
+      "num": 18,
+      "title": "記念写真",
+      "source": "asset_sources/loading-comics/allcast-kuze-photo-face/allcast-kuze-photo-face-b.png",
+      "source_sha256": "2a1021fa60edaded5c0f2d30fa8bb3741b2ecd7d87819129f1cc965ee77c2d0d",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "v1 extra human silhouettes in background; v2 removes them. Smartphone Ayatori is scripted photo, not extra character.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "kuze-wrong-guess",
+      "num": 19,
+      "title": "外れて上機嫌",
+      "source": "asset_sources/loading-comics/allcast-kuze-wrong-guess/allcast-kuze-wrong-guess.png",
+      "source_sha256": "21852bd10bc8d43bd7fcc1d1894f9042eb0374da8c086251880d559509f4480b",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "Trophy handoff and open palms visible; candy itself not prominent after reveal. Large cheerful victory gag.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "kuze-brave-face",
+      "num": 20,
+      "title": "平気なふり",
+      "source": "asset_sources/loading-comics/allcast-kuze-brave-face/allcast-kuze-brave-face.png",
+      "source_sha256": "af422ae3bddf04b3bc09e00c999ff45983e8a5e36efe6b5de45afe79aaf9f674",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Ayatori normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "Upside-down notebook indicated by spiral binding moving from top to bottom; shakes, sweat and spilled tea clear.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "wang-long-spout",
+      "num": 101,
+      "title": "長い注ぎ口",
+      "source": "asset_sources/loading-comics/allcast-wang-long-spout/allcast-wang-long-spout.png",
+      "source_sha256": "d821dd2039f2397e60ff473ecbb2a0910087d04df3f29e1a66bca6f756f2004e",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Wang normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "Long-spout teapot martial-arts tea pour; teapot is not shisha hardware. No waist hose or hardware embroidery visible.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "wang-futon-ready",
+      "num": 102,
+      "title": "先回りの布団",
+      "source": "asset_sources/loading-comics/allcast-wang-futon-ready/allcast-wang-futon-ready-c.png",
+      "source_sha256": "fc5548c61b24d697da74bfe845e418046e591697d79080e017a38c1fc7f43af3",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Wang normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "v2 moved reply bubble upward but introduced small cursor-like arrow on Hajime hair; v3 removes arrow. Final checked no cursor. Futon fills center.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "wang-dragon-dance",
+      "num": 103,
+      "title": "龍の胴体",
+      "source": "asset_sources/loading-comics/allcast-wang-dragon-dance/allcast-wang-dragon-dance.png",
+      "source_sha256": "d778656e2e1b9814ef396c79d02e90201e7e4916efc65bed2597c979ae42d847",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Wang normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "Dragon is fabric dragon-dance prop on poles, not smoke or living third character; running dust puffs are motion/cartoon dust. Hajime supports body.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "wang-selfie",
+      "num": 104,
+      "title": "記念写真",
+      "source": "asset_sources/loading-comics/allcast-wang-selfie/allcast-wang-selfie.png",
+      "source_sha256": "9bf967f90bea2047c31179d9b74e549c97171b4093fa803398e6aade89390b4b",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Wang normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "Phone shows scripted large white eyebrow and single eye; no logo/text. Small white sigh symbol by Hajime is cartoon sigh, not smoking.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "wang-bird-nest",
+      "num": 105,
+      "title": "待つ達人",
+      "source": "asset_sources/loading-comics/allcast-wang-bird-nest/allcast-wang-bird-nest.png",
+      "source_sha256": "be7564081ee08758ac87f7488ecc6c50de79df599656aac78d29f05700895a9e",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Wang normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "Scripted birds and nest visible, including bird on eyebrow and shoulder. No extra human characters.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "ageha-full-coord",
+      "num": 181,
+      "title": "全身コーデ",
+      "source": "asset_sources/loading-comics/allcast-ageha-full-coord/allcast-ageha-full-coord-d.png",
+      "source_sha256": "6b4ecbb169d477cebaf9bffc4927fd0c8eb46e2a7a41f8a229ca31ef75236d6d",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Ageha normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "v2 enlarges lower margin and points reply tail to Hajime; v3 removes introduced cursor artifact; v4 recomposes both panels to template frame height and resolves ratio warning. Final reply bubble lower margin remains slightly narrow without clipping. Leopard jacket/trousers/hat bow with black inner shirt and pink shoes; conspicuous all-body leopard gag retained.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "ageha-backroom-avalanche",
+      "num": 182,
+      "title": "生活感ゼロ",
+      "source": "asset_sources/loading-comics/allcast-ageha-backroom-avalanche/allcast-ageha-backroom-avalanche-b.png",
+      "source_sha256": "17b7b1ad64e5639ae057cfbb8d8d7277f3f66c93d524d79951c4d6bc2674da3c",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Ageha normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "v2 moves reply upward and points to Hajime. Clothing, boxes and domestic clutter avalanche fills panel. No people in background.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "ageha-photo-filter",
+      "num": 183,
+      "title": "盛れる写真",
+      "source": "asset_sources/loading-comics/allcast-ageha-photo-filter/allcast-ageha-photo-filter-b.png",
+      "source_sha256": "a7b05e518d9b676531459112603b2687a32e500871acfdbcb740463a2ee210b8",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Ageha normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "v1 reply tail pointed toward Ageha; v2 tail reaches left Hajime mouth and margin improved. Scripted Hajime phone photo gains cat ears, whiskers and big sparkling eyes; no third live character.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "ageha-shortcut",
+      "num": 184,
+      "title": "近道の勘",
+      "source": "asset_sources/loading-comics/allcast-ageha-shortcut/allcast-ageha-shortcut-b.png",
+      "source_sha256": "3a381ead8b30e7b10fe791543bf1ebd3550fdc908f7f2e4d9daaee173d482fc7",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Ageha normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "v1 reply tail pointed toward Ageha; v2 tail reaches left Hajime mouth and margin improved. Mountain scene transformation clear; panting puffs are exertion symbols, no smoking.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    },
+    {
+      "id": "ageha-manager-office",
+      "num": 185,
+      "title": "店長の部屋",
+      "source": "asset_sources/loading-comics/allcast-ageha-manager-office/allcast-ageha-manager-office.png",
+      "source_sha256": "5951a578e9265e85b9944a36d596b6828b007f1aebea79e91b5a239b4ea064e2",
+      "qa": {
+        "dialogue_verbatim": "all three lines visually checked against canonical script; exact punctuation",
+        "reading_order": "first speaker left/top; second lower/right when right character speaks first; tails visually checked",
+        "identity": "official Hajime/Ageha normal pixels inspected, hairstyle/clothing maintained; same character sides both panels",
+        "style": "early adopted Menu Revision reference used, warm bold-lined expressive chibi",
+        "prohibited_items": "no shisha hardware, smoke, weapons, alcohol, real logos, extra lettering; no unscripted people in selected final",
+        "gag": "Photo booth curtains and dense office contents visible; laptop is generic without logo/text. Documents and sticky notes have no readable extra lettering.",
+        "dimensions": [
+          1536,
+          1024
+        ],
+        "frame_geometry": "official cut dry-run exit 0; exact frame coordinates vary, see batch warnings",
+        "in_game_qa": "not run",
+        "adoption": "not adopted/not registered"
+      }
+    }
+  ],
+  "originals": [
+    {
+      "episode_id": "kuze-plush-board",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-kuze-plush-board/allcast-kuze-plush-board-a.png",
+      "bytes": 1710938,
+      "sha256": "38200c9ddccf28c174be7fd51682c4d0f6d0420b265407ded050c3f2ac6434fc",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": false,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "kuze-plush-board",
+      "original_version": "source-v2.png",
+      "path": "asset_sources/loading-comics/allcast-kuze-plush-board/allcast-kuze-plush-board-b.png",
+      "bytes": 1694958,
+      "sha256": "66353f90bc0afeb562b17d13e6a07c2bb342fb852bf9c899ea001b7b4458c6f9",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": false,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "kuze-plush-board",
+      "original_version": "source-v3.png",
+      "path": "asset_sources/loading-comics/allcast-kuze-plush-board/allcast-kuze-plush-board-c.png",
+      "bytes": 1902543,
+      "sha256": "6546cc1db8e25c1cc0a676d58e290f010c67d26956d9edcf9aae659511cfe1dd",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "kuze-every-order",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-kuze-every-order/allcast-kuze-every-order-a.png",
+      "bytes": 1737156,
+      "sha256": "a15bf6d0ba61c3295ada4074fd1b07c30cb9d57942498764718d6ed0770a9a78",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": false,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "kuze-every-order",
+      "original_version": "source-v2.png",
+      "path": "asset_sources/loading-comics/allcast-kuze-every-order/allcast-kuze-every-order-b.png",
+      "bytes": 1927811,
+      "sha256": "a0ba07da0e479c426a3cfacbf038d905d83526cb03f90f4b2b471041e800612e",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "kuze-pouch",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-kuze-pouch/allcast-kuze-pouch.png",
+      "bytes": 1819605,
+      "sha256": "a5c582d2210677b80c76b1f0f82070de43c3a15fffcd9dc2f5868763bbb156b9",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "kuze-mirror-room",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-kuze-mirror-room/allcast-kuze-mirror-room.png",
+      "bytes": 1897188,
+      "sha256": "72e00a0054b48aee3c528b0b095d53230c8af1b92c6a41a648abbf25cf0c2e43",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "kuze-praise-shrink",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-kuze-praise-shrink/allcast-kuze-praise-shrink.png",
+      "bytes": 1667042,
+      "sha256": "d03da4e65a7dcfb0566709c9a823755554d0d2ce836f42fe0c900ec13ade6d50",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "kuze-plain-tea",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-kuze-plain-tea/allcast-kuze-plain-tea.png",
+      "bytes": 1684332,
+      "sha256": "72bf7e2eec435cfb2df92dc1f8013323cc694b1e708a7f466c4cb4b5d4ff4673",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "kuze-cushion-forecast",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-kuze-cushion-forecast/allcast-kuze-cushion-forecast-a.png",
+      "bytes": 1716457,
+      "sha256": "68b5909e9937d7c57b771d9994a6c0f5cfabe35e348cf9696f153b7a9fe74f74",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": false,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "kuze-cushion-forecast",
+      "original_version": "source-v2.png",
+      "path": "asset_sources/loading-comics/allcast-kuze-cushion-forecast/allcast-kuze-cushion-forecast-b.png",
+      "bytes": 1760094,
+      "sha256": "44bfcb045387100d91d036ac06ffdc3d13fee827ed0d7b42313023e223073d70",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "kuze-photo-face",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-kuze-photo-face/allcast-kuze-photo-face-a.png",
+      "bytes": 1739330,
+      "sha256": "f0f6daa1c8764e59a41e487bb31c7855c56a7b76579518a557f1d10db4df406c",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": false,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "kuze-photo-face",
+      "original_version": "source-v2.png",
+      "path": "asset_sources/loading-comics/allcast-kuze-photo-face/allcast-kuze-photo-face-b.png",
+      "bytes": 1717851,
+      "sha256": "2a1021fa60edaded5c0f2d30fa8bb3741b2ecd7d87819129f1cc965ee77c2d0d",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "kuze-wrong-guess",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-kuze-wrong-guess/allcast-kuze-wrong-guess.png",
+      "bytes": 1653094,
+      "sha256": "21852bd10bc8d43bd7fcc1d1894f9042eb0374da8c086251880d559509f4480b",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "kuze-brave-face",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-kuze-brave-face/allcast-kuze-brave-face.png",
+      "bytes": 1722520,
+      "sha256": "af422ae3bddf04b3bc09e00c999ff45983e8a5e36efe6b5de45afe79aaf9f674",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "wang-long-spout",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-wang-long-spout/allcast-wang-long-spout.png",
+      "bytes": 1795638,
+      "sha256": "d821dd2039f2397e60ff473ecbb2a0910087d04df3f29e1a66bca6f756f2004e",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "wang-futon-ready",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-wang-futon-ready/allcast-wang-futon-ready-a.png",
+      "bytes": 1738891,
+      "sha256": "c76bf7f2b94dc5558667b2779852d70b278f7dd03390d01a7b5143880c91b0f5",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": false,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "wang-futon-ready",
+      "original_version": "source-v2.png",
+      "path": "asset_sources/loading-comics/allcast-wang-futon-ready/allcast-wang-futon-ready-b.png",
+      "bytes": 1737271,
+      "sha256": "520c15eb16bb6a9e5bd086572bdbf3fd72681cd36e8adfee66ef212dcd42725c",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": false,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "wang-futon-ready",
+      "original_version": "source-v3.png",
+      "path": "asset_sources/loading-comics/allcast-wang-futon-ready/allcast-wang-futon-ready-c.png",
+      "bytes": 1942820,
+      "sha256": "fc5548c61b24d697da74bfe845e418046e591697d79080e017a38c1fc7f43af3",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "wang-dragon-dance",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-wang-dragon-dance/allcast-wang-dragon-dance.png",
+      "bytes": 1776627,
+      "sha256": "d778656e2e1b9814ef396c79d02e90201e7e4916efc65bed2597c979ae42d847",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "wang-selfie",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-wang-selfie/allcast-wang-selfie.png",
+      "bytes": 1726235,
+      "sha256": "9bf967f90bea2047c31179d9b74e549c97171b4093fa803398e6aade89390b4b",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "wang-bird-nest",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-wang-bird-nest/allcast-wang-bird-nest.png",
+      "bytes": 1887293,
+      "sha256": "be7564081ee08758ac87f7488ecc6c50de79df599656aac78d29f05700895a9e",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "ageha-full-coord",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-ageha-full-coord/allcast-ageha-full-coord-a.png",
+      "bytes": 1896892,
+      "sha256": "74d5caf28b0f5201649647be4985733f50ef7ca288d2b873208b6793eb7f9e7c",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": false,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "ageha-full-coord",
+      "original_version": "source-v2.png",
+      "path": "asset_sources/loading-comics/allcast-ageha-full-coord/allcast-ageha-full-coord-b.png",
+      "bytes": 2093145,
+      "sha256": "101bb70f94d9eeb8148873f4e83a9b9fc82daffaa6232896b98b38190ecf2049",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": false,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "ageha-full-coord",
+      "original_version": "source-v3.png",
+      "path": "asset_sources/loading-comics/allcast-ageha-full-coord/allcast-ageha-full-coord-c.png",
+      "bytes": 2083739,
+      "sha256": "0ceed0e3547348577a0c90a388f151e0d425249e17892b32161c7ebab1f69e7a",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": false,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "ageha-full-coord",
+      "original_version": "source-v4.png",
+      "path": "asset_sources/loading-comics/allcast-ageha-full-coord/allcast-ageha-full-coord-d.png",
+      "bytes": 1763071,
+      "sha256": "6b4ecbb169d477cebaf9bffc4927fd0c8eb46e2a7a41f8a229ca31ef75236d6d",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "ageha-backroom-avalanche",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-ageha-backroom-avalanche/allcast-ageha-backroom-avalanche-a.png",
+      "bytes": 1777156,
+      "sha256": "1384381a3ca615206b65fa35768ab53abd4a88c0378d9f9fdc37b41f17e09996",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": false,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "ageha-backroom-avalanche",
+      "original_version": "source-v2.png",
+      "path": "asset_sources/loading-comics/allcast-ageha-backroom-avalanche/allcast-ageha-backroom-avalanche-b.png",
+      "bytes": 1976044,
+      "sha256": "17b7b1ad64e5639ae057cfbb8d8d7277f3f66c93d524d79951c4d6bc2674da3c",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "ageha-photo-filter",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-ageha-photo-filter/allcast-ageha-photo-filter-a.png",
+      "bytes": 1814566,
+      "sha256": "90e76c937990bb1b73e5b37d615a889d70678a8c826d197bde1d6c4180124638",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": false,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "ageha-photo-filter",
+      "original_version": "source-v2.png",
+      "path": "asset_sources/loading-comics/allcast-ageha-photo-filter/allcast-ageha-photo-filter-b.png",
+      "bytes": 2035189,
+      "sha256": "a7b05e518d9b676531459112603b2687a32e500871acfdbcb740463a2ee210b8",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "ageha-shortcut",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-ageha-shortcut/allcast-ageha-shortcut-a.png",
+      "bytes": 1871481,
+      "sha256": "75648047769445c27d5094d8851f63d045368c842e29f9afd40a6a4fd68ad488",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": false,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "ageha-shortcut",
+      "original_version": "source-v2.png",
+      "path": "asset_sources/loading-comics/allcast-ageha-shortcut/allcast-ageha-shortcut-b.png",
+      "bytes": 2056134,
+      "sha256": "3a381ead8b30e7b10fe791543bf1ebd3550fdc908f7f2e4d9daaee173d482fc7",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    },
+    {
+      "episode_id": "ageha-manager-office",
+      "original_version": "source-v1.png",
+      "path": "asset_sources/loading-comics/allcast-ageha-manager-office/allcast-ageha-manager-office.png",
+      "bytes": 1756750,
+      "sha256": "5951a578e9265e85b9944a36d596b6828b007f1aebea79e91b5a239b4ea064e2",
+      "width": 1536,
+      "height": 1024,
+      "review_candidate": true,
+      "owner_adopted": false
+    }
+  ],
+  "known_qa_limits": [
+    "Several frame lower edges extend beyond template y752; all final candidates passed official sheet dry-run without --force, but this is not exact-coordinate or in-game certification.",
+    "Some speech/face margins are narrow; individual notes remain in comics.json.",
+    "No final cut/fill/game registration or PC/mobile in-game QA was run for this batch.",
+    "Earlier versions are preservation/history only; newest review_candidate is not owner adoption."
+  ]
+}

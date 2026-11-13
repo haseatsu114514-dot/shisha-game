@@ -16,7 +16,7 @@ const FACE_URLS = ["img/faces/face_sumi.webp", "img/faces/face_naru.webp"];
   const source = await fs.readFile(new URL("../js/core/vn-fonts.js", import.meta.url), "utf8");
   const calls = [];
   let fail = false;
-  const context = vm.createContext({ document: { fonts: { load: (font, sample) => {
+  const context = vm.createContext({ setTimeout, clearTimeout, document: { fonts: { load: (font, sample) => {
     calls.push([font, sample]);
     return fail ? Promise.reject(new Error("font unavailable")) : Promise.resolve([]);
   } } } });
@@ -31,7 +31,7 @@ const FACE_URLS = ["img/faces/face_sumi.webp", "img/faces/face_naru.webp"];
   assert.deepEqual(calls.map(([font]) => font), ['700 20px "Suien Name"', '400 20px "Suien Blue Mincho"']);
   assert(calls.every(([, sample]) => /[一-龯ぁ-ん]/.test(sample)));
 
-  const retryContext = vm.createContext({ document: { fonts: { load: (font) => {
+  const retryContext = vm.createContext({ setTimeout, clearTimeout, document: { fonts: { load: (font) => {
     calls.push([font]);
     return fail ? Promise.reject(new Error("font unavailable")) : Promise.resolve([]);
   } } } });
@@ -44,20 +44,29 @@ const FACE_URLS = ["img/faces/face_sumi.webp", "img/faces/face_naru.webp"];
   await retryModule.namespace.loadVnFonts();
   assert.equal(calls.length, 6, "both faces retry after a failed attempt");
 
+  const stalled = new vm.SourceTextModule(source, { context: vm.createContext({
+    setTimeout: (fn) => setTimeout(fn, 10), clearTimeout,
+    document: { fonts: { load: () => new Promise(() => {}) } },
+  }) });
+  await stalled.link(() => { throw new Error("unexpected font loader import"); });
+  await stalled.evaluate();
+  assert.deepEqual(Array.from(await stalled.namespace.loadVnFonts()), [], "stalled fonts fall back instead of holding the first scene");
+
   const noFonts = new vm.SourceTextModule(source, { context: vm.createContext({}) });
   await noFonts.link(() => { throw new Error("unexpected font loader import"); });
   await noFonts.evaluate();
   await noFonts.namespace.loadVnFonts();
 }
 
-async function loadUi() {
+async function loadUi({ loadImage = image => image.onload?.(), imageSize = 0, now = () => Date.now() } = {}) {
   const requested = [], idle = [];
   class Image {
-    set src(url) { requested.push(url); queueMicrotask(() => this.onload?.()); }
+    constructor() { this.naturalWidth = this.naturalHeight = imageSize; }
+    set src(url) { requested.push(url); queueMicrotask(() => loadImage(this, url)); }
     decode() { return Promise.resolve(); }
   }
   const context = vm.createContext({
-    Image, console, setTimeout, clearTimeout, queueMicrotask,
+    Image, console, setTimeout, clearTimeout, queueMicrotask, Date: { now },
     document: { hidden: false, documentElement: { dataset: {} }, addEventListener() {} },
     window: { addEventListener() {} },
     requestIdleCallback: (fn) => { idle.push(fn); return idle.length; },
@@ -72,14 +81,18 @@ async function loadUi() {
     "transition-kit.js": { reducedMotion: () => false },
     "data.js": { DB: {}, displayName: () => "", faceIconUrl: () => "", allFaceIconUrls: () => FACE_URLS, assetUrl: (u) => u },
     "stats.js": { AFFINITY_RANK_PTS: [], step: () => 1 },
+    "gain-notice.js": { gainSeenKey: () => null, bannerHold: () => 2200 },
     "stat-progress.js": { nextStepProgress: () => ({}), stepOfValue: () => 1 },
     "scene-art.js": { renderSceneArt: () => {}, sceneArtUrls: () => [] },
     "weather.js": { rainScene: () => {}, weatherSkyTone: () => "", weatherViewKind: () => "", renderWeatherLayer: () => {} },
-    "transitions.js": { createSceneCurtain: () => {}, nightToMorning: () => {}, isCovering: () => false, takeSceneArrival: () => null },
+    "shop-haze.js": { syncShopHaze: () => {} },
+    "transitions.js": { createSceneCurtain: () => {}, nightToMorning: () => {}, isCovering: () => false, takeSceneArrival: () => null, takeParkedCover: () => null },
     "store-logos.js": { allStoreLogoUrls: () => STORE_URLS },
     "chapter-title-art.js": { chapterTitleArt: () => "img/ui/chapter_title_ch1.webp" },
     "ui-theme.js": { uiThemeFrame: () => "img/ui/frame.webp" },
     "module-loading.js": { withLoadingNotice: (p) => p },
+    "stage-fit.js": { syncBackdrop: () => {} },
+    "dom-write.js": await import("../js/core/dom-write.js"), // 変化時だけ書く部品は、本物をそのまま使う（#3500）
     "loading-prefetch.js": {
       prepareImage: (url) => new Promise((resolve) => {
         const image = new Image();
@@ -102,6 +115,43 @@ async function loadUi() {
   return { ui: module.namespace, requested, idle };
 }
 const storeRequests = (requested) => requested.filter((u) => STORE_URLS.includes(u));
+
+// 場面で一度読んだ画像も、後から固定UI用に keep へ昇格できる。
+{
+  const { ui, requested } = await loadUi();
+  assert.equal(await ui.imageReady('bench.webp'), true);
+  assert.equal(await ui.imageReady('bench.webp', 1500, { keep: true }), true);
+  assert.equal(requested.length, 2, 'released image is prepared again before keep resolves');
+  await ui.imageReady('bench.webp', 1500, { keep: true });
+  await ui.imageReady('bench.webp');
+  assert.equal(requested.length, 2, 'kept image remains reusable');
+}
+
+// 読み込み中の昇格は通信を増やさず、時間切れ後も元の通信を受け取る。
+{
+  const pending = [];
+  const { ui, requested } = await loadUi({ loadImage: image => pending.push(image) });
+  const first = ui.imageReady('slow.webp', 5);
+  const kept = ui.imageReady('slow.webp', 5, { keep: true });
+  assert.deepEqual(await Promise.all([first, kept]), [false, false]);
+  assert.equal(await ui.imageReady('slow.webp', 5, { keep: true }), false);
+  assert.equal(requested.length, 1, 'pending upgrade and expired wait share one request');
+  const longer = ui.imageReady('slow.webp', 1500, { keep: true });
+  pending.shift().onload();
+  assert.equal(await longer, true);
+  assert.equal(await ui.imageReady('slow.webp', 5, { keep: true }), true);
+  assert.equal(requested.length, 1, 'late completion clears the expired wait');
+}
+
+// 保持するつもりの画像も、取得に失敗したらキャッシュから除いて再試行する。
+{
+  let calls = 0;
+  const { ui } = await loadUi({ loadImage: image => ++calls === 1 ? image.onerror() : image.onload() });
+  assert.equal(await ui.imageReady('retry.webp', 1500, { keep: true }), false);
+  assert.equal(await ui.imageReady('retry.webp', 1500, { keep: true }), true);
+  assert.equal(await ui.imageReady('retry.webp', 1500, { keep: true }), true);
+  assert.equal(calls, 2);
+}
 
 // 既定: 店ロゴも含めて即時に読む（従来どおり）。2回呼んでも二重に読まない。
 {
@@ -148,31 +198,30 @@ const storeRequests = (requested) => requested.filter((u) => STORE_URLS.includes
   assert.equal(ui.storeLogosReady(), null, "once loaded, storeLogosReady does not wait");
 }
 
-// main.js 側の配線: タイトル直後は deferStores で呼び、大会ステージは逐次先読みから外れてアイドル行き。
+// main.js: speculative jobs stop when START/LOAD changes the state owner.
 {
   const main = await fs.readFile(new URL("../js/main.js", import.meta.url), "utf8");
-  assert.match(main, /warmUiArt\(\{ deferStores: true \}\)/);
-  const bgsLine = main.match(/const bgs = \[([^\]]*)\]/);
-  assert(bgsLine && !bgsLine[1].includes("bg_tournament_stage"), "stage bg left the sequential warm list");
-  assert.match(main, /requestIdleCallback\(warmStage, \{ timeout: 8000 \}\)/);
-  assert.match(main, /imageReady\(bgUrl\("bg_tournament_stage"\), 8000\)/);
+  const { warmInBackground } = await import('../js/core/loading-prefetch.js');
   const warmUpSource = main.slice(main.indexOf("async function warmUp()"), main.indexOf("// テスト・デバッグ用フック"));
-  assert(warmUpSource.includes("loadVnFonts().catch(() => {})"));
-  let started = 0;
-  const warmUp = vm.runInNewContext(`${warmUpSource}\nwarmUp`, {
-    loadDeferredDialogues: () => Promise.resolve(),
-    loadCinemaDialogue: () => Promise.resolve(),
-    loadTournamentCraftDialogue: () => Promise.resolve(),
-    loadVnFonts: () => { started++; return new Promise(() => {}); },
-    warmUiArt: () => Promise.resolve(),
-    imageReady: () => Promise.resolve(),
-    bgUrl: (name) => name,
-    portraitInfo: () => null,
-    makingUrl: (name) => name,
-    requestIdleCallback: () => {},
-  });
-  await warmUp();
-  assert.equal(started, 1, "warmUp starts the fonts without waiting for them");
+  for (const chapter of [1, 4]) {
+    const calls = [];
+    const ctx = {
+      state: { chapter },
+      loadVnFonts: async () => calls.push('fonts'),
+      loadDeferredDialogues: async () => calls.push('dialogue'),
+      warmUiArt: async () => calls.push('ui'),
+      imageReady: async u => calls.push(u), bgUrl: u => u,
+      warmInBackground: (jobs, options) => warmInBackground(jobs, { ...options, yieldTask: async () => {} }),
+    };
+    await vm.runInNewContext(`${warmUpSource}\nwarmUp()`, ctx);
+    assert.equal(calls.filter(u => u.startsWith('bg_')).length, chapter === 1 ? 3 : 0);
+    calls.length = 0;
+    ctx.warmInBackground = (jobs, options) => warmInBackground(jobs, {
+      ...options, yieldTask: async () => { ctx.state = { chapter: 5 }; },
+    });
+    await vm.runInNewContext(`${warmUpSource}\nwarmUp()`, ctx);
+    assert.equal(calls.length, 0, 'START/LOAD drops obsolete preparation before any I/O');
+  }
 
   const engine = await fs.readFile(new URL("../js/vn/engine.js", import.meta.url), "utf8");
   const entry = engine.slice(engine.indexOf("export function play("), engine.indexOf("function sceneBgm("));
@@ -181,4 +230,60 @@ const storeRequests = (requested) => requested.filter((u) => STORE_URLS.includes
   assert(entry.indexOf("const assetsReady") < entry.indexOf("next();"), "first line starts after the font gate");
 }
 
-console.log("[warmup defer] PASS: store logos defer to idle only on the title path; stage bg deferred in main.js");
+console.log("[warmup defer] PASS: store logos defer to idle only on the title path; bounded warm-up and obsolete/late-chapter work dropped");
+
+
+// UI speculation has two in-flight images; a foreground scene can load immediately.
+{
+  const pending = [];
+  const { ui, requested } = await loadUi({ loadImage: (image, url) => pending.push({ image, url }) });
+  const warm = ui.warmUiArt({ deferStores: true });
+  await new Promise(r => setImmediate(r));
+  // Two workers plus the selected frame, which is immediately necessary.
+  assert.equal(requested.length, 3);
+  const urgent = ui.imageReady('next-scene.webp');
+  await new Promise(r => setImmediate(r));
+  assert.equal(requested.at(-1), 'next-scene.webp', 'foreground bypasses speculative backlog');
+  pending.find(x => x.url === 'next-scene.webp').image.onload();
+  assert.equal(await urgent, true);
+  let finished = false;
+  warm.then(() => { finished = true; });
+  while (!finished) {
+    const batch = pending.splice(0);
+    for (const { image, url } of batch) if (url !== 'next-scene.webp') image.onload();
+    await new Promise(r => setImmediate(r));
+  }
+}
+// Four 16MiB images exceed the 48MiB decoded budget: only the oldest is released.
+{
+  const { ui, requested } = await loadUi({ imageSize: 2048 });
+  for (const u of ['a', 'b', 'c', 'd']) await ui.imageReady(u, 100, { keep: true });
+  await ui.imageReady('d', 100, { keep: true });
+  assert.equal(requested.length, 4, 'recent kept art is still reused');
+  await ui.imageReady('a', 100, { keep: true });
+  assert.equal(requested.length, 5, 'oldest decoded reference was released');
+}
+{
+  const { ui, requested } = await loadUi();
+  for (let i = 0; i < 150; i++) await ui.imageReady(`scene-${i}`, 100);
+  await ui.imageReady('scene-149', 100);
+  assert.equal(requested.length, 150);
+  await ui.imageReady('scene-0', 100);
+  assert.equal(requested.length, 151, 'completed URL metadata is bounded too');
+}
+console.log('image working set: PASS (two workers, foreground bypass, decoded and URL bounds)');
+
+// Bounded concurrency must not turn one 15s batch into N successive 15s waits.
+{
+  let clock = 0, slow = true;
+  const { ui, requested } = await loadUi({ now: () => clock, loadImage: image => {
+    if (slow) clock = 15001;
+    image.onload();
+  } });
+  await ui.warmUiArt({ deferStores: true });
+  assert.equal(requested.length, 3, 'deadline drops unstarted work after two workers + frame');
+  slow = false;
+  await ui.warmUiArt({ deferStores: true });
+  assert(requested.length > 3, 'unfinished batch retries at the next entrance');
+}
+console.log('warm-up deadline: PASS (batch budget preserved, next entrance retries)');

@@ -245,6 +245,7 @@ await check("real practice orchestration puts confirmed water between SETUP and 
   stub("js/craft/steam.js", { runSteamDodge: async () => {} });
   stub("js/craft/pull.js", { runPull: async cs => { cs.pullDone = true; }, runCare: async cs => cs.careHistory.push({ score: 80 }) });
   stub("js/core/mastery-notice.js", { notifyMastery: () => {} });
+  stub("js/craft/score.js", { finalize: () => { throw Error("legacy water practice must not record growth memo"); } });
   stub("js/craft/conditions.js", { temperatureAfterSteam: () => 0 });
   stub("js/craft/flavor-life.js", { ensureFlavorLife: () => {} });
   state.newGame(); order.length = 0; session.namespace.craftTest.auto = "good";

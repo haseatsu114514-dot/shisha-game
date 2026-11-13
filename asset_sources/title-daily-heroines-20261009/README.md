@@ -29,15 +29,15 @@
 
 ![みんと4案：お出迎え、チェキ、休日の私服、閉店後の素顔](../title-art/heroine-concepts-v2-personality-pixel-20261008/review/minto.png)
 
-### アゲハ
+### あげは
 
-![アゲハ3案：ピンクの試香席、買い出しの笑顔、撮影スタジオ](../title-art/heroine-concepts-v2-personality-pixel-20261008/review/ageha.png)
+![あげは3案：ピンクの試香席、買い出しの笑顔、撮影スタジオ](../title-art/heroine-concepts-v2-personality-pixel-20261008/review/ageha.png)
 
-### 凛
+### 凛想
 
-![凛3案：黒い試香室、サンプル、眼鏡とコーヒー](../title-art/heroine-concepts-v2-personality-pixel-20261008/review/rin.png)
+![凛想3案：黒い試香室、サンプル、眼鏡とコーヒー](../title-art/heroine-concepts-v2-personality-pixel-20261008/review/rin.png)
 
-凛02の葉は茶色寄りに見えるため、採用前に黒いダークリーフへ調整する候補です。絵の保存と採用承認は別に記録しています。
+凛想02の葉は茶色寄りに見えるため、採用前に黒いダークリーフへ調整する候補です。絵の保存と採用承認は別に記録しています。
 
 ### サメちゃん
 

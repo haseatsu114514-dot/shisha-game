@@ -1,12 +1,13 @@
 // 日付固定の予定と、休養で見送った夜の予定を分ける。台本・報酬は章側が実行する。
 import { state, save } from "../core/state.js";
-import { TOURNAMENT_DAY } from "../core/rules.js";
-import { chapterDay } from "../core/chapter-clock.js";
+import { atChapterFinalDay } from "../core/chapter-clock.js";
 
 export const restingToday = () => state.restDay?.chapter === state.chapter
   && state.restDay.day === state.day && state.restDay.fullDay;
 
-const postponeable = (ev) => ev?.schedule === "regular" || ev?.schedule === "preparation";
+// visit: 地図の店を選んだ行動で読む本編（第2章のアダム・みんと）。夜には自動で読まず、期限の夜だけ救済する。
+const postponeable = (ev) => ev?.schedule === "regular" || ev?.schedule === "preparation" || ev?.schedule === "visit";
+const deadlined = (ev) => ev?.schedule === "preparation" || ev?.schedule === "visit";
 const currentQueue = () => (state.deferredNightEvents || []).filter((entry) => entry.chapter === state.chapter);
 const eventById = (events, id) => Object.values(events).find((ev) => ev.id === id);
 const ready = (ev) => (ev.prerequisites || []).every((key) => state.flags[key]);
@@ -50,10 +51,10 @@ export function nightPlan(events, { resting = restingToday(), appointment = stat
   const pending = currentQueue().map((entry) => ({ entry, ev: eventById(events, entry.id) }))
     .filter(({ ev }) => ev && !ev.done?.())
     .sort((a, b) => a.entry.originalDay - b.entry.originalDay);
-  const urgent = pending.filter(({ ev }) => ev.schedule === "preparation" && ev.deadline <= state.day);
+  const urgent = pending.filter(({ ev }) => deadlined(ev) && ev.deadline <= state.day);
   // 旧セーブで複数の期限が過ぎていた場合も、先行準備の実読了後に後続を実行する。
   if (urgent.length) return urgent.map(({ ev }) => ev);
-  if (chapterDay(state) >= TOURNAMENT_DAY) return [];
+  if (atChapterFinalDay(state)) return [];
   const fixed = events[state.day];
   if (fixed && !postponeable(fixed)) return fixed.done?.() ? [] : [fixed];
   // 会話後〜翌朝の保存から再開しても、同じ夜の通常予定をもう1件実行しない。
@@ -62,14 +63,15 @@ export function nightPlan(events, { resting = restingToday(), appointment = stat
     || appointment && (appointment.day ?? state.day) === state.day && appointment.slot === 1;
   if (resting || bookedNight) return [];
   // 章が守る自由な夜（freeNights）には、後送りした予定を入れない。期限の救済だけは上で優先する。
-  const next = pending.find(({ entry, ev }) => entry.deferredOn < state.day && ready(ev)
+  // 訪問の本編（visit）は期限の救済まで夜に割り込まない。
+  const next = pending.find(({ entry, ev }) => ev.schedule !== "visit" && entry.deferredOn < state.day && ready(ev)
     && !(ev.freeNights || []).includes(state.day));
   return next ? [next.ev] : [];
 }
 
 /** 自由訪問だけの案内。runNightPlanと同じ実行順を読むが、キュー・既読・保存は更新しない。 */
 export function fixedNightVisitBlock(events, spot) {
-  if (spot?.id !== "tonari" || ![0, 1].includes(state.slot) || chapterDay(state) >= TOURNAMENT_DAY) return null;
+  if (spot?.id !== "tonari" || ![0, 1].includes(state.slot) || atChapterFinalDay(state)) return null;
   const plan = nightPlan(events).slice();
   const fixed = events[state.day];
   // 期限救済の準備が先でも、その後の固定回を見落とさない。
@@ -78,7 +80,7 @@ export function fixedNightVisitBlock(events, spot) {
   for (const ev of plan) {
     if (ev.done?.()) continue;
     if (!(ev.prerequisites || []).every(key => flags.has(key))) break;
-    const mandatory = !postponeable(ev) || ev.schedule === "preparation" && ev.deadline <= state.day;
+    const mandatory = !postponeable(ev) || deadlined(ev) && ev.deadline <= state.day;
     if (mandatory && ev.pin === spot.id) {
       // #1044 A08: 説明欄が通常の「一服／シフト」のままだと、何がいつ使えないか迷う。
       const homeRig = (state.owned || []).some(id => id === "home_rig_set" || id === "home_rig_pro");
@@ -95,7 +97,9 @@ export function fixedNightVisitBlock(events, spot) {
 }
 
 export function nightOccupied(events, day) {
-  if (day !== state.day) return !!events[day] && !events[day].done?.();
+  // 期限前の訪問の本編は、その日の夜を塞がない（期限の夜は救済があるので塞ぐ）。
+  if (day !== state.day) return !!events[day] && !events[day].done?.()
+    && !(events[day].schedule === "visit" && events[day].deadline > day);
   // 受諾済みの約束がある夜は通常の延期候補を実行しない。新規受諾前は予定を予約する。
   return nightPlan(events).length > 0;
 }

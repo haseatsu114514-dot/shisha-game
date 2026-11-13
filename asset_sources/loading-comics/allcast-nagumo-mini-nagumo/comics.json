@@ -1,0 +1,137 @@
+{
+  "id": "nagumo-mini-nagumo",
+  "title": "見学の成果",
+  "cast": [
+    "nagumo"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "見学させてください。",
+    "好きに見なさい。",
+    "……うむ。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "大会運営の事務所（ロゴは描かない）。左のはじめがメモ帳を持って元気に「見学させてください。」。右の須井が書類から顔を上げずに「好きに見なさい。」。",
+  "panel2": "同じ構図。左のはじめが、黒いキャップはそのままに、紺の三つ揃えスーツ・腕組み・鋭い眉・須井そっくりの真顔になりきって並んでいる（ミニ須井のはじめはコマの中央寄りに大きく）。右の須井が汗を一粒浮かべて横目で見る。はじめが重々しく「……うむ。」。",
+  "caption": "はじめは、会った人の仕草をすぐに覚えてしまう。",
+  "type": "影響されすぎ（はじめが須井になる）",
+  "note": "はじめの正本『いつの間にか手つきや話し方を取り入れている』の誇張。",
+  "num": 70,
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "533bcb8cec9eb17a34daafc7cc8a6f3c20227494",
+  "generator": "built-in image_gen",
+  "source": "allcast-nagumo-mini-nagumo.png",
+  "source_sha256": "3ee3219b94454cf951ad11b069e2414237be83a7fa5c3992c943906520a04bf6",
+  "references": [
+    {
+      "path": "hajime-sheet/normal.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "role": "hajime official normal"
+    },
+    {
+      "path": "portrait-standard-2369-ts11-ts12/refs/nagumo-normal.png",
+      "sha256": "c29ed0b480b049f2dd069ff401abd7e702b0825449ed9652e1d8768772778ba1",
+      "role": "nagumo official normal; parent verified current-main hash"
+    },
+    {
+      "path": "ryuji-sheet/loading/pc.png",
+      "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+      "role": "early adopted style only, not deliverable"
+    },
+    {
+      "path": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+      "role": "official template regenerated using unchanged repository tool"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked, 3 lines matching official script",
+    "reading_order": "left-to-right / first speaker upper-left when speaker is on right; tails checked",
+    "identity": "normal references; same positions both panels",
+    "style": "early adopted Menu Revision style: cute 2.5-head chibi, bold lines, warm cel palette",
+    "hardware": "none; no siryou hardware needed in these scripts",
+    "in_game_pc_phone": "NOT PERFORMED; not registered",
+    "selection": "awaiting owner; not adopted",
+    "template": "frame detection results retained; minor vertical drift recorded; no force",
+    "filled_panel_inspection": "Re-inspected filled derivatives; retain right-panel padding for bear ears and shoes using max-fill=0 to avoid cutting gag props."
+  },
+  "cut_source_regions": [
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-mini-nagumo/source-v1.png",
+      "region": {
+        "x": 36,
+        "y": 272,
+        "width": 720,
+        "height": 478,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/candidates/nagumo-mini-nagumo/source-v1.png",
+      "region": {
+        "x": 780,
+        "y": 272,
+        "width": 717,
+        "height": 478,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "panels/nagumo-mini-nagumo-1.webp",
+      "sha256": "8291c59506ed208c3e218c27574c292bc54916a1d25a33411595cfe79a2b5fd7",
+      "width": 720,
+      "height": 480,
+      "bytes": 58722
+    },
+    {
+      "file": "panels/nagumo-mini-nagumo-2.webp",
+      "sha256": "a2e54472230cc0d53251f39edfc525556d6ca0b6416e0a69424098ae83c8b7fd",
+      "width": 717,
+      "height": 478,
+      "bytes": 50722
+    }
+  ],
+  "originals": [
+    {
+      "file": "allcast-nagumo-mini-nagumo.png",
+      "sha256": "3ee3219b94454cf951ad11b069e2414237be83a7fa5c3992c943906520a04bf6",
+      "bytes": 1563848
+    }
+  ],
+  "generation_calls": [
+    {
+      "output": "source-v1.png",
+      "prompt": "prompt-v1.txt",
+      "references": [
+        {
+          "path": "hajime-sheet/normal.png",
+          "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+          "role": "hajime official normal"
+        },
+        {
+          "path": "portrait-standard-2369-ts11-ts12/refs/nagumo-normal.png",
+          "sha256": "c29ed0b480b049f2dd069ff401abd7e702b0825449ed9652e1d8768772778ba1",
+          "role": "nagumo official normal; parent verified current-main hash"
+        },
+        {
+          "path": "ryuji-sheet/loading/pc.png",
+          "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2",
+          "role": "early adopted style only, not deliverable"
+        },
+        {
+          "path": "/workspace/scratch/431c36bf589e/output/allcast-refill-2383-20261102/references/2koma_template_1536x1024.png",
+          "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762",
+          "role": "official template regenerated using unchanged repository tool"
+        }
+      ],
+      "engine": "built-in image_gen",
+      "transparent_background": false
+    }
+  ],
+  "local_source_before_handoff": "source-v1.png"
+}

@@ -20,7 +20,23 @@ for (const [chapter, roster] of [[2, CH2], [3, CH3], [4, CH4]]) {
   assert.equal(ids.at(-1), "hajime", `第${chapter}章は主人公が最後に入場する`);
 }
 assert.ok(!/ワイドハンガ/.test(src));
-assert.match(read("../js/chapters/ch1.js"), /playEntrance\(1\)/);
+assert.match(read("../js/chapters/ch1.js"), /playEntrance\(1, \{ heroNote: CH1_EVE_NOTES\[state\.flags\._last_night\] \|\| null \}\)/);
+// #2091: 前夜の4択それぞれに、はじめの入場カードのスミの一言がある（台詞の長さ・句点の規則も守る）。
+const eve = src.slice(src.indexOf("CH1_EVE_NOTES"), src.indexOf("});", src.indexOf("CH1_EVE_NOTES")));
+const eveNotes = Object.fromEntries([...eve.matchAll(/\n  ([a-z_]+): "([^"]+)"/g)].map(m => [m[1], m[2]]));
+assert.deepEqual(Object.keys(eveNotes).sort(), ["drill", "practice", "sleep_early", "talk_sumi"]);
+for (const note of Object.values(eveNotes)) {
+  assert.ok([...note].length <= 48, note);
+  assert.ok(!note.endsWith("。"), note);
+}
+// 正本: スミさんの入場メッセージは「目の前の一人に届けてこい」。優勝の場面がこの言葉を回収するので、
+// 前夜の選択で一言が差し替わっても、はじめの入場カードには必ずこの言葉が出る。
+const sendOff = "目の前の一人に届けてこい";
+assert.ok(block.includes(`{ id: "hajime", ring: "tonari の新星", note: "──行ってこい。${sendOff}" }`));
+for (const [choice, note] of Object.entries(eveNotes)) assert.ok(note.endsWith(sendOff), `${choice}: ${note}`);
+const reveal = JSON.parse(read("../../data/dialogue/ch1_tournament.json")).dialogues.find(d => d.dialogue_id === "ch1_tournament_reveal");
+assert.ok(reveal.lines.some(line => line.speaker === "hajime" && line.text?.includes(`${sendOff}、か`)), "優勝の場面が入場の言葉を回収する");
+assert.match(src, /me && heroNote \? heroNote : c\.note/);
 assert.match(read("../js/chapters/ch2-tournament.js"), /playEntrance\(2\)/);
 assert.match(read("../js/chapters/ch3-tournament.js"), /playEntrance\(3\)/);
 assert.match(read("../js/chapters/ch4.js"), /playEntrance\(4\)/);

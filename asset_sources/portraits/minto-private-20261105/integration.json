@@ -1,0 +1,488 @@
+{
+  "ledger_library_file_id": "libfile_f3540aa8aa688191bf8bda993eb4f78f",
+  "base_main": "ff7cb4e79a8bd8eed0973052eb5601e8e5489e9b",
+  "export_rule": "Native originals unchanged. Uniform LANCZOS shrink to896x1200. Private visible-body height equals public hair-crown-to-foot height excluding horns; feet same. Common style display scale compensates this export so private on-screen body stays previous1080px-fit size; public body is brought to same physical height. No head/body deformation or color/line edit. Sparse low-alpha residue outside3px visible band trimmed only in derivative.",
+  "spriteScaleClassic": 0.91,
+  "spriteScaleVariants": {
+    "new": 0.931564,
+    "nanami": 0.929801
+  },
+  "head_landmark_measurement": "Public hair crowns manually read atnew86/nanami84 in1200px PNG; each landmark about+/-3px. Exact5% guarantee not claimed. Runtime and visual review required.",
+  "items": [
+    {
+      "style": "new",
+      "character_id": "minto",
+      "expression": "ura_normal",
+      "raw_library_file_id": "libfile_b4cea1432f3c8191932c1c0d7e7d46a3",
+      "raw_file_id": "file_000000006e5481f6ac7aa47c6e3a2913",
+      "raw_sha256": "ac92792fc13b9d48baf38eb2adaeebd9dcfc4782497968350fb04e87a0c6412e",
+      "raw_size_bytes": 1213820,
+      "raw_pixels": [
+        1024,
+        1536
+      ],
+      "export": {
+        "scale": 0.7589928057553957,
+        "offset": [
+          39,
+          25
+        ],
+        "bbox_alpha24": [
+          271,
+          86,
+          630,
+          1141
+        ],
+        "physical_body_height": 1055,
+        "bottom": 1141,
+        "feet_centroid_x": 448.02238327860977,
+        "public_crown_y_excluding_horns": 86
+      },
+      "fit_sha256": "8c1c0f518e8faa09659f7d77ab57aa2a6b840e046d0c36e89a45f4796455b4f8",
+      "source": "asset_sources/portraits/minto-private-20261105/new/ura_normal-source.png",
+      "runtime": "assets/sprites/character_variants/new/minto/chr_minto_ura_normal.png",
+      "runtime_sha256": "8c1c0f518e8faa09659f7d77ab57aa2a6b840e046d0c36e89a45f4796455b4f8",
+      "original_expression_source": {
+        "repository_path": "assets/sprites/characters/minto/chr_minto_ura_normal.png",
+        "git_blob": "f8aaf07f55d3f1bf62f864d416b7b68dd226dcca",
+        "sha256": "19cced410c172b79a0eaa3b0e2fdfa53bbf8e394f793bb2ac3b1828f2332e678"
+      },
+      "selected_private_normal_sha256": "ac92792fc13b9d48baf38eb2adaeebd9dcfc4782497968350fb04e87a0c6412e",
+      "reused_existing": true
+    },
+    {
+      "style": "new",
+      "character_id": "minto",
+      "expression": "ura_sad",
+      "raw_library_file_id": "libfile_87cea134357c8191ba0abb2d783f402d",
+      "raw_file_id": "file_000000004d4881f68e7d98b053883ca5",
+      "raw_sha256": "beefb14c77944d01947cc2ded2b038added7afa89e0e02f38c31c2d69b8a4532",
+      "raw_size_bytes": 1167377,
+      "raw_pixels": [
+        1024,
+        1536
+      ],
+      "export": {
+        "scale": 0.7855547282204021,
+        "offset": [
+          22,
+          -2
+        ],
+        "bbox_alpha24": [
+          268,
+          86,
+          619,
+          1141
+        ],
+        "physical_body_height": 1055,
+        "bottom": 1141,
+        "feet_centroid_x": 448.02238327860977,
+        "public_crown_y_excluding_horns": 86
+      },
+      "fit_sha256": "7f23a8b549cf7c605e87c8ad8d25d3f8f3d35fbe724dce3f773166383536a08b",
+      "source": "asset_sources/portraits/minto-private-20261105/new/ura_sad-source.png",
+      "runtime": "assets/sprites/character_variants/new/minto/chr_minto_ura_sad.png",
+      "runtime_sha256": "7f23a8b549cf7c605e87c8ad8d25d3f8f3d35fbe724dce3f773166383536a08b",
+      "original_expression_source": {
+        "repository_path": "assets/sprites/characters/minto/chr_minto_ura_sad.png",
+        "git_blob": "e6a59f1d85de64a3d853ed2aefa2bbcd9858e578",
+        "sha256": "026f938da42bab3d58eed44d633a8eca61a3f79a33d964da7af365a8f06dcb35"
+      },
+      "selected_private_normal_sha256": "ac92792fc13b9d48baf38eb2adaeebd9dcfc4782497968350fb04e87a0c6412e",
+      "reused_existing": true
+    },
+    {
+      "style": "new",
+      "character_id": "minto",
+      "expression": "ura_smile",
+      "raw_library_file_id": "libfile_1eeb6e6e93548191a5dd5406ab71c036",
+      "raw_file_id": "file_00000000fd8881f6851cbca4542a54f4",
+      "raw_sha256": "03216b2f997233f9d314916920efb2d9577ae0e0b98a652174cef74d97809489",
+      "raw_size_bytes": 1234523,
+      "raw_pixels": [
+        1024,
+        1536
+      ],
+      "export": {
+        "scale": 0.7706355003652301,
+        "offset": [
+          11,
+          -1
+        ],
+        "bbox_alpha24": [
+          218,
+          86,
+          615,
+          1142
+        ],
+        "physical_body_height": 1055,
+        "bottom": 1141,
+        "feet_centroid_x": 448.02238327860977,
+        "public_crown_y_excluding_horns": 86
+      },
+      "fit_sha256": "43448cdd2846274082d8c9cd2ce9c2d8a25cea7aa4e11a05f43d7126d54fc5c0",
+      "source": "asset_sources/portraits/minto-private-20261105/new/ura_smile-source.png",
+      "runtime": "assets/sprites/character_variants/new/minto/chr_minto_ura_smile.png",
+      "runtime_sha256": "43448cdd2846274082d8c9cd2ce9c2d8a25cea7aa4e11a05f43d7126d54fc5c0",
+      "original_expression_source": {
+        "repository_path": "assets/sprites/characters/minto/chr_minto_ura_smile.png",
+        "git_blob": "2a20eb7628d7f72ddc4bc0297430d81408a9ac00",
+        "sha256": "179b5a4b20a1021efb3fe97f82980cd9aca3b27fedff67dc09f044ca44c88b57"
+      },
+      "selected_private_normal_sha256": "ac92792fc13b9d48baf38eb2adaeebd9dcfc4782497968350fb04e87a0c6412e",
+      "reused_existing": true
+    },
+    {
+      "style": "new",
+      "character_id": "minto",
+      "expression": "ura_smug",
+      "raw_library_file_id": "libfile_3d68a2ef4d2c819183297f20eae93667",
+      "raw_file_id": "file_0000000037cc81f6a74f0425ecba39ca",
+      "raw_sha256": "8a54ea61fd183fb5d5e48f8f2c02e9e2ccdc43ddb5224d6bcba0afdedfad1014",
+      "raw_size_bytes": 1174600,
+      "raw_pixels": [
+        1024,
+        1536
+      ],
+      "export": {
+        "scale": 0.7832219747587231,
+        "offset": [
+          11,
+          -15
+        ],
+        "bbox_alpha24": [
+          233,
+          86,
+          625,
+          1141
+        ],
+        "physical_body_height": 1055,
+        "bottom": 1141,
+        "feet_centroid_x": 448.02238327860977,
+        "public_crown_y_excluding_horns": 86
+      },
+      "fit_sha256": "3f3cfe549a931d71397158f32bb8aa45ddbc1be7563469dcc33240842b820afd",
+      "source": "asset_sources/portraits/minto-private-20261105/new/ura_smug-source.png",
+      "runtime": "assets/sprites/character_variants/new/minto/chr_minto_ura_smug.png",
+      "runtime_sha256": "3f3cfe549a931d71397158f32bb8aa45ddbc1be7563469dcc33240842b820afd",
+      "original_expression_source": {
+        "repository_path": "assets/sprites/characters/minto/chr_minto_ura_smug.png",
+        "git_blob": "45f66c15adbe4d0008d85664f7543049ec0a09bc",
+        "sha256": "1ebe7726c008eb1180cb9c1347b26c66d3868ec22c2d8e9222463f26ebc912bf"
+      },
+      "selected_private_normal_sha256": "ac92792fc13b9d48baf38eb2adaeebd9dcfc4782497968350fb04e87a0c6412e",
+      "reused_existing": false
+    },
+    {
+      "style": "new",
+      "character_id": "minto",
+      "expression": "ura_surprise",
+      "raw_library_file_id": "libfile_73d8396eb6888191b30415e2aec1f9fb",
+      "raw_file_id": "file_00000000ee4481f6b59342708859a723",
+      "raw_sha256": "b3f71a9f7a2026998952430b46760b6356a7cdb4e6c8ed66170c3d5db8ffab3b",
+      "raw_size_bytes": 1129164,
+      "raw_pixels": [
+        1024,
+        1536
+      ],
+      "export": {
+        "scale": 0.8041158536585366,
+        "offset": [
+          21,
+          -24
+        ],
+        "bbox_alpha24": [
+          271,
+          86,
+          622,
+          1141
+        ],
+        "physical_body_height": 1055,
+        "bottom": 1141,
+        "feet_centroid_x": 448.02238327860977,
+        "public_crown_y_excluding_horns": 86
+      },
+      "fit_sha256": "9b8ad6ffe8032385f226cbdf8c69fbab8b5bc8d41f956d67be3ae3e825f2362b",
+      "source": "asset_sources/portraits/minto-private-20261105/new/ura_surprise-source.png",
+      "runtime": "assets/sprites/character_variants/new/minto/chr_minto_ura_surprise.png",
+      "runtime_sha256": "9b8ad6ffe8032385f226cbdf8c69fbab8b5bc8d41f956d67be3ae3e825f2362b",
+      "original_expression_source": {
+        "repository_path": "assets/sprites/characters/minto/chr_minto_ura_surprise.png",
+        "git_blob": "9065b0ff901df1b61168afa11cc8de65ca99e087",
+        "sha256": "31ca101d8f0cf055b13b99a84700bd9bfdb3e5baefda4ebf2a201b34f9a3b4d9"
+      },
+      "selected_private_normal_sha256": "ac92792fc13b9d48baf38eb2adaeebd9dcfc4782497968350fb04e87a0c6412e",
+      "reused_existing": false
+    },
+    {
+      "style": "nanami",
+      "character_id": "minto",
+      "expression": "ura_normal",
+      "raw_library_file_id": "libfile_12416589cf8881918a33dceddef0dee0",
+      "raw_file_id": "file_000000008a1881f6864747314cd96dbd",
+      "raw_sha256": "9523865d258977b382aa2dea191ea623f03fe99e729935d2b68f840fd02df44b",
+      "raw_size_bytes": 870435,
+      "raw_pixels": [
+        1084,
+        1451
+      ],
+      "export": {
+        "scale": 0.7749266862170088,
+        "offset": [
+          3,
+          38
+        ],
+        "bbox_alpha24": [
+          262,
+          84,
+          630,
+          1140
+        ],
+        "physical_body_height": 1057,
+        "bottom": 1141,
+        "feet_centroid_x": 447.8189431704885,
+        "public_crown_y_excluding_horns": 84
+      },
+      "fit_sha256": "b6909eb5cc3d474df992ff2399e22b6c8af2b46dc40d89aca155c895eb27cb5f",
+      "source": "asset_sources/portraits/minto-private-20261105/nanami/ura_normal-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/minto/chr_minto_ura_normal.png",
+      "runtime_sha256": "b6909eb5cc3d474df992ff2399e22b6c8af2b46dc40d89aca155c895eb27cb5f",
+      "original_expression_source": {
+        "repository_path": "assets/sprites/characters/minto/chr_minto_ura_normal.png",
+        "git_blob": "f8aaf07f55d3f1bf62f864d416b7b68dd226dcca",
+        "sha256": "19cced410c172b79a0eaa3b0e2fdfa53bbf8e394f793bb2ac3b1828f2332e678"
+      },
+      "selected_private_normal_sha256": "9523865d258977b382aa2dea191ea623f03fe99e729935d2b68f840fd02df44b",
+      "reused_existing": true
+    },
+    {
+      "style": "nanami",
+      "character_id": "minto",
+      "expression": "ura_sad",
+      "raw_library_file_id": "libfile_f2fd54222c40819199b14f463dfe5c1f",
+      "raw_file_id": "file_000000001f4c81f5b85c0a465330a643",
+      "raw_sha256": "a167c31a4eba5e82bb5e8f4444a01d096b29efa61e02956dcaba1af504036384",
+      "raw_size_bytes": 1544030,
+      "raw_pixels": [
+        1024,
+        1536
+      ],
+      "export": {
+        "scale": 0.7249657064471879,
+        "offset": [
+          65,
+          43
+        ],
+        "bbox_alpha24": [
+          269,
+          84,
+          624,
+          1142
+        ],
+        "physical_body_height": 1057,
+        "bottom": 1141,
+        "feet_centroid_x": 447.8189431704885,
+        "public_crown_y_excluding_horns": 84
+      },
+      "fit_sha256": "e436d627f51515b0ca8addd71886d772d36620ce21b5075b221f2e771351bcc2",
+      "source": "asset_sources/portraits/minto-private-20261105/nanami/ura_sad-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/minto/chr_minto_ura_sad.png",
+      "runtime_sha256": "e436d627f51515b0ca8addd71886d772d36620ce21b5075b221f2e771351bcc2",
+      "original_expression_source": {
+        "repository_path": "assets/sprites/characters/minto/chr_minto_ura_sad.png",
+        "git_blob": "e6a59f1d85de64a3d853ed2aefa2bbcd9858e578",
+        "sha256": "026f938da42bab3d58eed44d633a8eca61a3f79a33d964da7af365a8f06dcb35"
+      },
+      "selected_private_normal_sha256": "9523865d258977b382aa2dea191ea623f03fe99e729935d2b68f840fd02df44b",
+      "reused_existing": true
+    },
+    {
+      "style": "nanami",
+      "character_id": "minto",
+      "expression": "ura_smile",
+      "raw_library_file_id": "libfile_1076dd33732081918a17e684b5ac2750",
+      "raw_file_id": "file_0000000090ec81f5ab0fe31ff5668d14",
+      "raw_sha256": "9538e207929ea9ca3835bb54f595df5717eca3295da6109f5107b0f632be4b5d",
+      "raw_size_bytes": 1578916,
+      "raw_pixels": [
+        1024,
+        1536
+      ],
+      "export": {
+        "scale": 0.7309820193637621,
+        "offset": [
+          42,
+          41
+        ],
+        "bbox_alpha24": [
+          222,
+          84,
+          623,
+          1142
+        ],
+        "physical_body_height": 1057,
+        "bottom": 1141,
+        "feet_centroid_x": 447.8189431704885,
+        "public_crown_y_excluding_horns": 84
+      },
+      "fit_sha256": "659a52a44c773f103b894189083d9327d5a27ba5ff0d36e368c530514bd15b98",
+      "source": "asset_sources/portraits/minto-private-20261105/nanami/ura_smile-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/minto/chr_minto_ura_smile.png",
+      "runtime_sha256": "659a52a44c773f103b894189083d9327d5a27ba5ff0d36e368c530514bd15b98",
+      "original_expression_source": {
+        "repository_path": "assets/sprites/characters/minto/chr_minto_ura_smile.png",
+        "git_blob": "2a20eb7628d7f72ddc4bc0297430d81408a9ac00",
+        "sha256": "179b5a4b20a1021efb3fe97f82980cd9aca3b27fedff67dc09f044ca44c88b57"
+      },
+      "selected_private_normal_sha256": "9523865d258977b382aa2dea191ea623f03fe99e729935d2b68f840fd02df44b",
+      "reused_existing": true
+    },
+    {
+      "style": "nanami",
+      "character_id": "minto",
+      "expression": "ura_smug",
+      "raw_library_file_id": "libfile_725ff391e6b0819181fe00e16e1a6147",
+      "raw_file_id": "file_00000000539881f5afaa77a039c49f36",
+      "raw_sha256": "518facfcf752a49e00afabbfe5196766cbde974f0da63790b4d61181715e0f36",
+      "raw_size_bytes": 1608709,
+      "raw_pixels": [
+        1024,
+        1536
+      ],
+      "export": {
+        "scale": 0.7244688142563399,
+        "offset": [
+          45,
+          41
+        ],
+        "bbox_alpha24": [
+          231,
+          84,
+          622,
+          1142
+        ],
+        "physical_body_height": 1057,
+        "bottom": 1141,
+        "feet_centroid_x": 447.8189431704885,
+        "public_crown_y_excluding_horns": 84
+      },
+      "fit_sha256": "16e13f664d9f4bdf0cd45c610cb132c9225653aaa2c17accd469c301de2f030f",
+      "source": "asset_sources/portraits/minto-private-20261105/nanami/ura_smug-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/minto/chr_minto_ura_smug.png",
+      "runtime_sha256": "16e13f664d9f4bdf0cd45c610cb132c9225653aaa2c17accd469c301de2f030f",
+      "original_expression_source": {
+        "repository_path": "assets/sprites/characters/minto/chr_minto_ura_smug.png",
+        "git_blob": "45f66c15adbe4d0008d85664f7543049ec0a09bc",
+        "sha256": "1ebe7726c008eb1180cb9c1347b26c66d3868ec22c2d8e9222463f26ebc912bf"
+      },
+      "selected_private_normal_sha256": "9523865d258977b382aa2dea191ea623f03fe99e729935d2b68f840fd02df44b",
+      "reused_existing": true
+    },
+    {
+      "style": "nanami",
+      "character_id": "minto",
+      "expression": "ura_surprise",
+      "raw_library_file_id": "libfile_652e0ef4892881918d9cfd29e9fb3491",
+      "raw_file_id": "file_00000000dbf481f58ea207c5c8271fbc",
+      "raw_sha256": "3d8e28abf6f0347082818726d5bf389edf46819a5cf86bfa7daca730d8daae30",
+      "raw_size_bytes": 1564095,
+      "raw_pixels": [
+        1024,
+        1536
+      ],
+      "export": {
+        "scale": 0.7219945355191257,
+        "offset": [
+          74,
+          47
+        ],
+        "bbox_alpha24": [
+          278,
+          83,
+          634,
+          1141
+        ],
+        "physical_body_height": 1057,
+        "bottom": 1141,
+        "feet_centroid_x": 447.8189431704885,
+        "public_crown_y_excluding_horns": 84
+      },
+      "fit_sha256": "c6bcc6e370d9999192a5c529145dc2f3ef9a1f9bcb4a25c570cef70709fd1e35",
+      "source": "asset_sources/portraits/minto-private-20261105/nanami/ura_surprise-source.png",
+      "runtime": "assets/sprites/character_variants/nanami/minto/chr_minto_ura_surprise.png",
+      "runtime_sha256": "c6bcc6e370d9999192a5c529145dc2f3ef9a1f9bcb4a25c570cef70709fd1e35",
+      "original_expression_source": {
+        "repository_path": "assets/sprites/characters/minto/chr_minto_ura_surprise.png",
+        "git_blob": "9065b0ff901df1b61168afa11cc8de65ca99e087",
+        "sha256": "31ca101d8f0cf055b13b99a84700bd9bfdb3e5baefda4ebf2a201b34f9a3b4d9"
+      },
+      "selected_private_normal_sha256": "9523865d258977b382aa2dea191ea623f03fe99e729935d2b68f840fd02df44b",
+      "reused_existing": true
+    }
+  ],
+  "runtime_adopted": true,
+  "raw_manual_repair": [
+    {
+      "expression": "ura_smug",
+      "changed_pixels": 491,
+      "diff_bbox": [
+        501,
+        369,
+        564,
+        432
+      ],
+      "alpha_identical": true,
+      "sha256": "8a54ea61fd183fb5d5e48f8f2c02e9e2ccdc43ddb5224d6bcba0afdedfad1014"
+    },
+    {
+      "expression": "ura_surprise",
+      "changed_pixels": 497,
+      "diff_bbox": [
+        496,
+        368,
+        564,
+        429
+      ],
+      "alpha_identical": true,
+      "sha256": "b3f71a9f7a2026998952430b46760b6356a7cdb4e6c8ed66170c3d5db8ffab3b"
+    }
+  ],
+  "qa": "producer raw/static + consumer independent static/body-basis calculation passed; actual-production runtime and current-head formal CI recorded in PR",
+  "source_receipt": "New ledger+handoff and2 repaired raws formally received from allowlisted eastus2;8 unchanged raws reused from earlier formally received centralus ZIP and SHA matched new ledger.",
+  "unpermitted_not_attempted": [
+    {
+      "library_file_id": "libfile_bd9b7bea71148191861f481c85c086b8",
+      "host": "sdmntprsoutheastus3.oaiusercontent.com"
+    },
+    {
+      "library_file_id": "libfile_b23f9c64facc8191b8e4a49d3e514767",
+      "host": "sdmntprwestus3.oaiusercontent.com"
+    },
+    {
+      "library_file_id": "libfile_d14c34b385608191ad8dada9fa696cc6",
+      "host": "sdmntprwestus3.oaiusercontent.com"
+    }
+  ],
+  "framing_basis": "Independent authorized recomputation from formally received public/private images and earlier independent manual hair-crown landmarks; blocked supplemental ZIP was not used. Public horns excluded from physical person height. Private on-screen body size mathematically preserved, common family frame retained.",
+  "manual_approval": "User approved local manual necklace repair per delegated user evidence; no generation by consumer. Other8 raws byte-identical to prior official batch.",
+  "public_normal_references": {
+    "new": {
+      "path": "assets/sprites/character_variants/new/minto/chr_minto_normal.png",
+      "sha256": "a2858d52a200b441a7b55221efb10bfb882a604e3bcd74c4efa75dac220dac60",
+      "hair_crown_y_approx_excluding_horns": 86,
+      "foot_bottom_y": 1141
+    },
+    "nanami": {
+      "path": "assets/sprites/character_variants/nanami/minto/chr_minto_normal.png",
+      "sha256": "74fb1fbf5683b13d1ec851136300ecbfc3ca9cf6619cb522a7f82b9e3b2eb6f6",
+      "hair_crown_y_approx_excluding_horns": 84,
+      "foot_bottom_y": 1141
+    }
+  },
+  "math_private_on_screen_body_preservation": {
+    "old": 982.8000000000001,
+    "new": 982.8000199999999,
+    "nanami": 982.799657,
+    "actual_runtime_max_error_check_css_px": 1
+  }
+}

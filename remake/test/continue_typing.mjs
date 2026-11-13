@@ -19,18 +19,19 @@ async function prepare(options) {
   await page.locator("#boot").waitFor({ state: "detached" });
   await page.evaluate(async () => {
     window.C = {
-      go: await import("./js/chapters/gameover.js"), premium: await import("./js/chapters/continue-premium.js"),
+      go: await import("./js/chapters/gameover.js"), lovers: await import("./js/chapters/continue-lovers.js"),
       core: await import("./js/core/state.js"), ui: await import("./js/core/ui.js"),
     };
     C.core.newGame(); C.core.config.bgmVolume = C.core.config.seVolume = 0;
     (await import("./js/core/audio.js")).applyVolumes();
     await document.fonts.ready;
     C.script = variant => typeof variant === "number" ? C.go.SUMI_CONTINUE_SCRIPTS[variant]
-      : C.premium.PREMIUM_CONTINUE_SCRIPTS[variant.slice(8)];
+      : C.lovers.LOVER_CONTINUE_SCRIPTS[variant.slice(6)];
     C.headTops = new Map();
     C.read = async () => {
       const root = document.querySelector(".gameover"), caption = root.querySelector(".go-speech-text");
-      const box = caption.getBoundingClientRect(), stage = document.querySelector("#stage").getBoundingClientRect();
+      // #2861 のワイドステージでは #stage が1280より広がる。CONTINUE は1280×720のまま中央なので、その枠を基準に測る。
+      const box = caption.getBoundingClientRect(), stage = root.getBoundingClientRect();
       const image = root.querySelector(".go-sumi-img"); await image.decode();
       if (!C.headTops.has(image.src)) {
         const canvas = document.createElement("canvas"); canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
@@ -41,8 +42,9 @@ async function prepare(options) {
       }
       const imageBox = image.getBoundingClientRect(), clip = image.parentElement.getBoundingClientRect();
       const { DB, portraitInfo } = await import("./js/core/data.js");
-      const info = portraitInfo(root.dataset.speaker, root.dataset.emotion);
-      const framing = DB.manifest.continuePortraits[info.folder][info.face];
+      const { continueFraming } = await import("./js/chapters/continue-view.js");
+      const info = portraitInfo(root.dataset.speaker, root.dataset.emotion, root.dataset.portraitStyle);
+      const framing = continueFraming(info);
       const imageHeight = parseFloat(image.style.height), imageWidth = parseFloat(image.style.width);
       const faceSize = imageHeight * framing.size;
       const faceCenterX = (clip.left - stage.left) / stage.width * 1280
@@ -66,7 +68,8 @@ async function prepare(options) {
         })),
         decisions: [...C.decisions] };
     };
-    C.resources = () => JSON.stringify({ state: C.core.state, storage: { ...localStorage } });
+    // playMs はプレイ時間の記録（#2902）で、画面が見えている間は時計とともに増える。CONTINUE がゲームや保存を変えないことだけを比べる。
+    C.resources = () => JSON.stringify({ state: C.core.state, storage: { ...localStorage } }, (key, value) => key === "playMs" ? undefined : value);
     C.before = C.resources();
   });
   await page.clock.install({ time: new Date("2026-10-13T00:00:00Z") });
@@ -76,7 +79,7 @@ async function prepare(options) {
 async function mount(page, variant = 0, reducedMotion = false, context = null) {
   await page.evaluate(({ variant, reducedMotion, context }) => {
     C.decisions = [];
-    C.ui.showScreen("end", C.go.buildGameOver({ variant, context, soundEffects: false, reducedMotion,
+    C.ui.showScreen("end", C.go.buildGameOver({ variant, context, soundEffects: false, reducedMotion, layout: "neon",
       onRetry: () => C.decisions.push("retry"), onTitle: () => C.decisions.push("quit") }));
   }, { variant, reducedMotion, context });
   await page.locator(".go-sumi-img").evaluate(image => image.decode());
@@ -164,7 +167,7 @@ try {
 
     // Every normal/premium cue completes in its original slot, including the shortest slots.
     const variants = await page.evaluate(() => [0, 1, 2,
-      ...Object.keys(C.premium.PREMIUM_CONTINUE_SCRIPTS).map(id => `premium:${id}`)]);
+      ...Object.keys(C.lovers.LOVER_CONTINUE_SCRIPTS).map(id => `lover:${id}`)]);
     for (const variant of variants) {
       await mount(page, variant);
       const script = await page.evaluate(variant => C.script(variant), variant);

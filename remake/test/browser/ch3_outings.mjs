@@ -10,11 +10,15 @@ async function seed(page, windowId) {
     const core = await import("./js/core/state.js");
     const p = await import("./js/chapters/ch3-progress.js");
     const value = core.newGame();
-    Object.assign(value, { chapter: 2, day: 28, phase: "cleared", money: 20000, stamina: 80 });
+    Object.assign(value, { chapter: 2, day: 25, /* 準備3日の後の東京DAY1が従来どおり通算29日 */ phase: "cleared", money: 20000, stamina: 80 });
     value.stats = { technique: 20, sense: 20, guts: 20, charm: 20, insight: 20 };
     value.flags = { _elapsed_calendar: true, _ch2_cleared: true,
       _ch2_read_ch2_tournament_ageha_heart: true, _ch2_tournament: { stage: "complete" } };
     if (!p.advanceToChapterThree(value)) throw new Error("Chapter boundary failed");
+    // 出発前の準備3日（VOL02）を過ごした出発の朝から始める（準備の3日は ch3_departure_prep で遊ぶ）。
+    value.day += 3;
+    if (!p.departChapterThree(value)) throw new Error("Departure failed");
+    value.flags._ch3_intro.routeVersion = 2; // 場面カードの東京（作業中の旧セーブの行程）を確かめる
     Object.assign(value.flags._ch3_intro, { titleSeen: true, prologueStep: 4 });
     for (let guard = 0; guard < 60; guard++) {
       const window = p.chapterThreeFreeTime(value);
@@ -48,7 +52,7 @@ async function choose(page, place, action) {
 }
 
 await suite("ch3-outings", async check => {
-  await check("nonmember-visits-kuze-from-the-map", async page => {
+  await check("nonmember-visits-saku-from-the-map", async page => {
     await seed(page, "d8-night");
     assert.match(await page.locator(t("ch3-intro-map")).innerText(), /行き先を選ぶ/);
     assert.match(await page.locator(".ch2-contest-note").innerText(), /煙幕/);
@@ -68,7 +72,12 @@ await suite("ch3-outings", async check => {
     assert.deepEqual(after.flags._ch3_outings, { enmaku_notes: 1 });
     assert(after.tokyoVisits.closedSlots.includes("d8-night"));
     assert.equal(after.flags._ch3_intro.stage, before.flags._ch3_intro.stage);
-    assert(after.stats.insight > before.stats.insight, "A chosen, tiring visit should grow its stat");
+    // 心得の盤（通常プレイの既定・SBD97）では、自分で選んだ疲れる訪問は経験値になる。旧しくみ（?growth=0）では能力が伸びる
+    const board = await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled());
+    if (board) {
+      assert((after.growth?.xp || 0) > (before.growth?.xp || 0), "A chosen, tiring visit should earn EXP");
+      assert.deepEqual(after.stats, before.stats, "The board does not write the old stats");
+    } else assert(after.stats.insight > before.stats.insight, "A chosen, tiring visit should grow its stat");
   });
 
   await check("mukai-help-pays-and-park-rests", async page => {
@@ -77,7 +86,7 @@ await suite("ch3-outings", async check => {
     await choose(page, "mukai", "mukai_help");
     await readUntilCard(page);
     const mid = await get(page);
-    assert.equal(mid.money, before.money + 6000);
+    assert.equal(mid.money, before.money + 10000);
     assert.equal(mid.stamina, before.stamina - 14);
     assert.deepEqual(mid.flags._ch3_outings, { mukai_help: 1 });
     // 次の自由時間で公園を歩くと、能力は増やさず体力だけ戻る。

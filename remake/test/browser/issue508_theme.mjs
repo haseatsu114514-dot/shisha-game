@@ -101,20 +101,28 @@ await suite("issue508-theme", async checkAll => {
       }, { opts, previous: baseline.scenes[opts.id] });
       if (opts.id === "ch1_salaryman_regular") {
         // #452 adds only the actual service answer and its immediate save.
-        const { savedAt: beforeAt, ...beforeGame } = result.before;
-        const { savedAt: currentAt, ...currentGame } = result.current;
+        // Each save also adds the elapsed play time (playMs, #2902): it is a clock, not a story effect.
+        const { savedAt: beforeAt, playMs: beforePlay, ...beforeGame } = result.before;
+        const { savedAt: currentAt, playMs: currentPlay, ...currentGame } = result.current;
         assert(Number.isFinite(currentAt));
+        assert(Number.isFinite(beforePlay) && Number.isFinite(currentPlay) && currentPlay >= 0, "play time stays a valid count");
         assert.equal(currentGame.flags._salaryman_service_order, opts.choice === 0);
         assert.equal(currentGame.flags._salaryman_service_water, opts.choice === 1);
+        // E案の立ち絵を見た時点で面識と紹介済みを記録する。
+        assert.equal(currentGame.met.salaryman, true);
+        assert.equal(currentGame.flags._intro_salaryman, true);
         delete currentGame.flags._salaryman_service_order;
         delete currentGame.flags._salaryman_service_water;
+        delete currentGame.flags._intro_salaryman;
+        delete currentGame.met.salaryman;
         assert.deepEqual(currentGame, beforeGame, `Changed state effect: ${JSON.stringify(opts)}`);
       } else if (opts.id === "ch1_tsumugi_work_in_progress") {
         // #452 saves the actual answer immediately. Compare every game field,
-        // and check the refreshed save timestamp separately.
-        const { savedAt: beforeAt, ...beforeGame } = result.before;
-        const { savedAt: currentAt, ...currentGame } = result.current;
+        // and check the refreshed save timestamp and play time (playMs, #2902) separately.
+        const { savedAt: beforeAt, playMs: beforePlay, ...beforeGame } = result.before;
+        const { savedAt: currentAt, playMs: currentPlay, ...currentGame } = result.current;
         assert(Number.isFinite(beforeAt) && currentAt >= beforeAt);
+        assert(Number.isFinite(beforePlay) && Number.isFinite(currentPlay) && currentPlay >= 0, "play time stays a valid count");
         assert.deepEqual(currentGame, beforeGame, `Changed state effect: ${JSON.stringify(opts)}`);
       } else if (opts.id === "ch1_naru_fourth") {
         // #1108: the fourth visit now teaches vanilla. Every other game effect stays identical.
@@ -132,12 +140,12 @@ await suite("issue508-theme", async checkAll => {
         assert(ls.includes("（──多分、気のせいだ）"));
       }
       if (opts.id === "ch1_tournament_arrival") {
-        assert.equal(ls.includes("スミさんの「１つずつ手を動かして覚えろ」が浮かんだ。"), opts.practice);
+        assert.equal(ls.includes("頭に浮かんだのは、スミさんの「1つずつ手を動かして覚えろ」だった。"), opts.practice);
         assert.equal(ls.filter(t => t === "（……今の俺にできることを、やるしかない）").length, 1);
       }
       if (opts.id === "ch1_tsumugi_work_in_progress") {
         assert(ls.includes("……こっちの方が、描いていられます"));
-        assert.equal(ls.filter(t => t.includes("大会の一台は、ちゃんと手を止めて吸います")).length, 1);
+        assert.equal(ls.filter(t => t.includes("大会の日は、ちゃんと手を止めて見てます")).length, 1);
       }
       if (opts.id === "ch1_tournament_after") {
         assert(ls.includes("（次も、これくらいのを出さないとな）"));
@@ -166,7 +174,7 @@ await suite("issue508-theme", async checkAll => {
       await advanceTo(page, "……今日の、良かったよ", touch);
       assert.equal(await page.locator(".tonari-opening").count(), 1);
       assert.equal(await page.locator('img[data-speaker="salaryman"]').count(), 0);
-      assert.equal(await page.locator(".vn-name").textContent(), "サラリーマン");
+      assert.equal(await page.locator(".vn-name").textContent(), "鉄仮面さん");
       await page.screenshot({ path: `${shotDir}/${label}-opening-faceless.png` });
       const skip = page.getByRole("button", { name: "SKIP", exact: true });
       if (touch) await skip.tap(); else await skip.click();
@@ -183,7 +191,7 @@ await suite("issue508-theme", async checkAll => {
       await prepare(page);
       await page.evaluate(() => { T.vn.vnTest.turbo = false; T.core.config.textSpeed = 4; T.fresh(); window.finished = false;
         T.vn.play("ch1_salaryman_regular").then(() => { window.finished = true; }); });
-      await advanceTo(page, "いつものサラリーマンが、いつもの席に座る。襟元に指を入れて、無言でメニューを指差した。", touch);
+      await advanceTo(page, "いつもの鉄仮面さんが、いつもの席に座る。襟元に指を入れて、無言でメニューを指差した。", touch);
       await snapshotPortrait(page, "normal");
       await page.screenshot({ path: `${shotDir}/${label}-salaryman-regular.png` });
       const skip = page.getByRole("button", { name: "SKIP", exact: true });
@@ -202,7 +210,7 @@ await suite("issue508-theme", async checkAll => {
       assert.equal(await page.locator('img[data-speaker="salaryman"]').count(), 0);
       await page.evaluate(() => { T.fresh(); window.finished = false;
         T.vn.play("ch1_salaryman_change").then(() => { window.finished = true; }); });
-      await advanceTo(page, "夜のtonari。いつもの時間に、いつものサラリーマンが来た。……でも、今日は少し違う。", touch);
+      await advanceTo(page, "夜のtonari。いつもの時間に、いつもの鉄仮面さんが来た。……でも、今日は少し違う。", touch);
       const normal = await snapshotPortrait(page, "normal");
       await page.screenshot({ path: `${shotDir}/${label}-salaryman-change-normal.png` });
       await advanceTo(page, "小さく笑って電話を切り、スマホをしまった。肩がほんの少しだけ下がっていた。", touch);

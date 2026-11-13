@@ -1,4 +1,0 @@
-PASS: schema 13/14 auto/manual migration; schema 15 membership, books, clears and shifts
-PASS: 43 malformed TRPG fixtures via auto/manual load; valid records, money and relationships preserved
-(node:29613) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
-(Use `node --trace-warnings ...` to show where the warning was created)

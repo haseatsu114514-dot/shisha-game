@@ -1,0 +1,69 @@
+原画 1536x1024  紙色 #EEE4CF  枠の段 1: 2コマ@y=273
+  コマ1: 720x479 @(36,273) 比率 1.503 → ok
+  コマ2: 720x479 @(780,273) 比率 1.503 → ok
+コマ1: 720x479 (1.503) そのまま → 出力 720x479  /workspace/shared/allcast-comics-20261102/allcast-rei-mix-names/panels/rei-mix-names-1.webp (72 KiB)
+コマ2: 720x479 (1.503) そのまま → 出力 720x479  /workspace/shared/allcast-comics-20261102/allcast-rei-mix-names/panels/rei-mix-names-2.webp (75 KiB)
+
+--- loading-comics.js へ貼る登録（src は imgFileUrl("...") で包む・alt を書く） ---
+{
+  "id": "rei-mix-names",
+  "title": "味の名前",
+  "contexts": [
+    "craft"
+  ],
+  "minChapter": 1,
+  "note": "番外編のギャグ漫画です。左から右へお読みください。",
+  "caption": "（初心者向けの一行解説。省略可）",
+  "panels": [
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/allcast-rei-mix-names/panels/rei-mix-names-1.webp",
+      "alt": "（読む順に沿った説明）"
+    },
+    {
+      "src": "/workspace/shared/allcast-comics-20261102/allcast-rei-mix-names/panels/rei-mix-names-2.webp",
+      "alt": "（読む順に沿った説明）"
+    }
+  ]
+}
+
+--- 素材台帳（comics.json）用 ---
+{
+  "source": [
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/allcast-rei-mix-names/source-A-v1.png",
+      "region": {
+        "x": 36,
+        "y": 273,
+        "width": 720,
+        "height": 479,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    },
+    {
+      "file": "/workspace/shared/allcast-comics-20261102/allcast-rei-mix-names/source-A-v1.png",
+      "region": {
+        "x": 780,
+        "y": 273,
+        "width": 720,
+        "height": 479,
+        "sourceWidth": 1536,
+        "sourceHeight": 1024
+      }
+    }
+  ],
+  "delivery": [
+    {
+      "file": "rei-mix-names-1.webp",
+      "width": 720,
+      "height": 479,
+      "sha256": "bf1d31efce746ba1bd05e0ddf4523b157358028723b468fa9063286f8de83808"
+    },
+    {
+      "file": "rei-mix-names-2.webp",
+      "width": 720,
+      "height": 479,
+      "sha256": "dbed777ca6551238370153fea23b7fe7ec043feda38590fc592f4191d0dc9658"
+    }
+  ]
+}

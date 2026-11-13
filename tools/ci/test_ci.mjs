@@ -54,9 +54,9 @@ test("chapter 3 changes do not start unrelated chapter and feature suites", () =
   const changed = [
     "data/dialogue/ch3_prologue.json",
     "remake/js/chapters/ch3.js",
-    "remake/css/ch3-kuze-video.css",
-    "assets/backgrounds/bg_ch3_kuze_video.png",
-    "remake/img/backgrounds/bg_ch3_kuze_video.webp",
+    "remake/css/ch3-saku-video.css",
+    "assets/backgrounds/bg_ch3_saku_video.png",
+    "remake/img/backgrounds/bg_ch3_saku_video.webp",
     "remake/data/manifest.json",
     "remake/index.html",
     "remake/test/browser/ch2_tournament.mjs",
@@ -66,7 +66,8 @@ test("chapter 3 changes do not start unrelated chapter and feature suites", () =
     assert.ok(selected.has(id), `${id} must run`);
   for (const id of ["relationships", "minto-progression", "ch1-practice", "playthrough-direct"])
     assert.ok(!selected.has(id), `${id} is unrelated`);
-  assert.ok(selected.size < 25, `chapter 3 selected ${selected.size} browser suites`);
+  // The phone layout regression suite also follows the shared index page.
+  assert.ok(selected.size <= 25, `chapter 3 selected ${selected.size} browser suites`);
 });
 
 test("PR browser selection keeps related short suites and changed tests", () => {

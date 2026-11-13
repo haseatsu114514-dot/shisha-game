@@ -15,11 +15,12 @@ const tonari={id:'tonari',kind:'tonari',label:'tonari',face:'sumi'};
 const other={id:'other',kind:'spot'};
 const noop=()=>{};
 const ports={
- state,TOURNAMENT_DAY:14,chapterDay:s=>s.day,save:()=>saved.push(JSON.stringify(state)),flag:k=>!!state.flags[k],setFlag:k=>{state.flags[k]=true;},
+ state,TOURNAMENT_DAY:14,chapterDay:s=>s.day,atChapterFinalDay:s=>s.day>=14,syncFortune:()=>false,save:()=>saved.push(JSON.stringify(state)),flag:k=>!!state.flags[k],setFlag:k=>{state.flags[k]=true;},
  DB:{dialogues:{},characters:{},lime:[]},CRAFT_STEPS:[],SE:{},displayName:id=>id,el:noop,
  playTsumugiStory:async day=>{state.flags[day===11?'_tsumugi_contest_submitted':'_tsumugi_contest_eve']=true;},
  isUnlocked:()=>true,isClosed:()=>false,isTemporaryClosed:()=>false,visitedToday:()=>false,openingStatus:()=>({ok:true}),spendableMoney:s=>s.money,returnFareReserve:()=>0,
- hiyoriFirstMeetingReady:()=>false,tsumugiAtTonari:()=>true,cityGuestAtShop:()=>null,ryujiAtMeltyPuff:()=>false,
+ hiyoriFirstMeetingReady:()=>false,tsumugiAtTonari:()=>true,cityGuestAtShop:()=>null,ryujiAtMeltyPuff:()=>false,roamerAt:()=>null,roamerPlan:()=>null,meetRoamer:async()=>false,
+ takeChapterBoardNotice:()=>null,chapterBoardCards:()=>[],respecMapNotice:()=>'',
  showHud:noop,initHud:noop,setPhoneBadge:noop,updateHud:noop,unreadCount:()=>0,syncSamechanKnowledge:noop,expireInvitations:noop,presentNow:async()=>{},
  spotById:id=>id==='tonari'?tonari:other,facilityGrowth:()=>({}),toast:text=>notices.push(text),
  paidAction:async fn=>{paid++;return {value:await fn(),spent:0};},addStamina:n=>{staminaCalls++;state.stamina+=n;},

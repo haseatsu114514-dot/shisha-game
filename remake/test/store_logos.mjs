@@ -1,6 +1,7 @@
 // 採用ロゴの看板・入店表示と、未解放／SKIP／読込失敗の境界を実画面で確認する。
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { installShopGreetingReader } from "./browser/shop_greeting_reader.mjs";
 import { createRequire } from "node:module";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const shots = process.env.SHOTS;
@@ -14,6 +15,7 @@ try {
   page.on("pageerror", e => errors.push(e.message));
   await page.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
   await page.waitForSelector('[data-test="title-new"]');
+  await installShopGreetingReader(page);
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"), ui = await import("./js/core/ui.js");
     const map = await import("./js/daily/map.js"), spots = await import("./js/daily/spots.js");
@@ -23,7 +25,7 @@ try {
     const shop = await import("./js/daily/shop.js"), tonari = await import("./js/daily/tonari.js");
     window.T = { core, ui, map, spots, data, hud, transitions, logos, util, shop, tonari };
     core.newGame(); Object.assign(core.state, { phase: "daily", day: 4, slot: 0, money: 30000 });
-    for (const id of ["naru", "adam", "minto", "rin", "tsumugi"]) core.state.met[id] = true;
+    for (const id of ["naru", "adam", "minto", "rio", "tsumugi"]) core.state.met[id] = true;
     Object.assign(core.state.flags, { _spot_guide_naru: true, _spot_guide_adam: true, _spot_guide_minto: true,
       _tsumugi_contest_research: true, _tsumugi_contest_progress: true, _cafe_introduced: true }); // #782: 固定回を見終えた日だけつむぎが在店 / #780: 喫茶店は紹介後に出る
     // 顔画像を持つ既知の店主の小バッジを、空のmanifestでも実物素材で検証する。
@@ -55,7 +57,7 @@ try {
     assert.equal(await page.locator('[data-test="pin-choizap"] .facility-icon[data-facility="choizap"]').count(), 1);
     assert(info.logos.every(n=>n.loaded)); assert.deepEqual(info.collisions, []);
     assert.deepEqual(info.owners.map(n=>n.id).sort(), ["adam","minto","naru","tonari"]);
-    assert(info.owners.every(n=>n.loaded && n.width===30 && n.clear));
+    assert(info.owners.every(n=>n.loaded && n.width===48 && n.clear));
     assert(info.people.every(n=>["owner","guest"].includes(n.role) && n.loaded && n.clear));
     assert(info.people.some(n=>n.role==="guest"));
     assert(info.eventBadges.includes("naru"));
@@ -95,8 +97,9 @@ try {
       });
     },id);
     await page.locator(`[data-test="pin-${id}"]`).click(); await page.locator('[data-test="map-go"]').click();
-    if (id === "shop") await page.locator('[data-test="shop-enter"]').click();
+    // Dr.fookahの最初の入店ロゴは接客VNの前。応対を読んでから売り場を選ぶ。
     await page.locator(`[data-test="store-arrival"][data-store="${id}"]`).waitFor();
+    if (id === "shop") await page.locator('[data-test="shop-enter"]').click();
     await page.locator(id==="tonari"?'[data-test="sub-back"]':'.shop-tabs').waitFor();
     assert.equal(await page.locator('.store-arrival').count(),0); checks++;
   }
@@ -144,12 +147,24 @@ try {
     assert.equal(await page.locator('.store-arrival,.scene-curtain').count(),0); checks++;
   }
   await page.emulateMedia({reducedMotion:"no-preference"});
+  // 東京の地図の行き先 id も元の店のロゴで迎える。名前を伏せた「地下の店」（会う前のクラブSEAM）ではロゴを出さない（2026-11-02 MPI02）。
+  for(const [spotId,anonymous] of [["ch3_tokyo_club",true],["ch3_tokyo_club",false],["ch5_tokyo_club",true],["ch5_tokyo_club",false],["ch3_tokyo_mukai",false]]){
+    const shown=await page.evaluate(async([spotId,anonymous])=>{
+      T.transitions.cueTransition("place",{spotId,area:"東京",anonymous});
+      const c=T.transitions.createSceneCurtain(T.ui.layers.fx,{fast:true});
+      await c.covered;const card=document.querySelector('[data-test="store-arrival"]');
+      const shown=card ? card.dataset.store : null;await c.release();return shown;
+    },[spotId,anonymous]);
+    assert.equal(shown,anonymous?null:spotId,`${spotId} anonymous=${anonymous}`);
+    assert.equal(await page.locator('.store-arrival,.scene-curtain').count(),0); checks++;
+  }
   await page.evaluate(async()=>{const c=T.transitions.createSceneCurtain(T.ui.layers.fx,{fast:true});await c.covered;await c.release();});
   assert.equal(await page.locator('.store-arrival').count(),0);checks++;
   // WebPが取得できなくても看板名と操作は残る。
   await page.route('**/assets/ui/store_logos/tonari.webp',r=>r.abort());
   await page.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
   await page.waitForSelector('[data-test="title-new"]');
+  await installShopGreetingReader(page);
   await page.evaluate(async()=>{
     const logos=await import('./js/core/store-logos.js');
     document.querySelector('#screen').append(logos.storeLogo('tonari'));

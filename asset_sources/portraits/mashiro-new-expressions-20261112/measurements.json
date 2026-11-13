@@ -1,0 +1,94 @@
+[
+  {
+    "name": "normal reference",
+    "path": "main:assets/sprites/character_variants/new/mashiro/chr_mashiro_normal.png",
+    "bytes": 526049,
+    "sha256": "32a3938f9d01ccd7504b4ca3b705262a8184c39426033eac87e12517fe15ab4f",
+    "size": [
+      896,
+      1200
+    ],
+    "alpha_bbox_ge16": [
+      252,
+      60,
+      648,
+      1140
+    ],
+    "figure_height": 1080,
+    "normalized_top": 0.05,
+    "normalized_bottom": 0.95,
+    "alpha_extrema": [
+      0,
+      255
+    ]
+  },
+  {
+    "name": "smile",
+    "path": "asset_sources/portraits/mashiro-new-expressions-20261112/smile-untouched.png",
+    "bytes": 734990,
+    "sha256": "9eea82f45ac8723aa5d1e895cefc6fba6d2c068ed96cb2ab21cfa4c3a262aabe",
+    "size": [
+      1084,
+      1451
+    ],
+    "alpha_bbox_ge16": [
+      304,
+      72,
+      790,
+      1386
+    ],
+    "figure_height": 1314,
+    "normalized_top": 0.04962095106822881,
+    "normalized_bottom": 0.9552033080634046,
+    "alpha_extrema": [
+      0,
+      255
+    ]
+  },
+  {
+    "name": "sad",
+    "path": "asset_sources/portraits/mashiro-new-expressions-20261112/sad-untouched.png",
+    "bytes": 705257,
+    "sha256": "f894a48139203263d82b9545c5c3780900cdd4c098c024990792455b7a94568e",
+    "size": [
+      1084,
+      1451
+    ],
+    "alpha_bbox_ge16": [
+      303,
+      70,
+      790,
+      1383
+    ],
+    "figure_height": 1313,
+    "normalized_top": 0.048242591316333565,
+    "normalized_bottom": 0.9531357684355617,
+    "alpha_extrema": [
+      0,
+      255
+    ]
+  },
+  {
+    "name": "sleep",
+    "path": "asset_sources/portraits/mashiro-new-expressions-20261112/sleep-untouched.png",
+    "bytes": 717721,
+    "sha256": "bfa3bd552821c93165c99303897afb74da31f25753721e48898d4642c11ee4c2",
+    "size": [
+      1084,
+      1451
+    ],
+    "alpha_bbox_ge16": [
+      304,
+      70,
+      800,
+      1390
+    ],
+    "figure_height": 1320,
+    "normalized_top": 0.048242591316333565,
+    "normalized_bottom": 0.957960027567195,
+    "alpha_extrema": [
+      0,
+      255
+    ]
+  }
+]

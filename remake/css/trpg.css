@@ -1,6 +1,7 @@
 @import url("venue-host.css");
 @import url("trpg-stage.css");
-@import url("trpg-paper.css");
+@import url("trpg-theme.css");
+@import url("trpg-phone.css");
 /* A paper scenario on a small table. Scoped to the preview / mounted minigame. */
 #trpg-app { position: absolute; inset: 0; }
 .trpg-screen { position: absolute; inset: 0; background: #171c1e; }
@@ -266,6 +267,10 @@
 @keyframes trpg-breathe { to { opacity: .5; } }
 @media (prefers-reduced-motion: reduce) {
   .trpg-root *, .trpg-root *::before, .trpg-root *::after { animation: none !important; transition: none !important; }
+  /* 盛り上がりの知らせは、動かさずに消えるだけの trpg-heat-fade（trpg-stage.css）を残す（#3199）。上の一括停止で消えなくなり、
+     animationend が来ないので知らせが卓の上に残り続け、判定の卓や結末に重なって、使い終えた勢いを「次の判定 ＋4」と出し続けていた。 */
+  .trpg-root .trpg-heat-pop { animation: trpg-heat-fade 1.5s ease-out both !important; }
+  .trpg-root .trpg-heat-pop:not([data-tier="0"]) { animation-duration: 2.2s !important; }
 }
 
 /* The campaign shelf is a quiet shop, with tonight's party and lasting book memories. */
@@ -283,6 +288,10 @@
 .trpg-campaign-books { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; flex: 1; min-height: 0; overflow-y: auto; }
 .trpg-campaign-book { border: 1px solid #938365; border-radius: 9px; background: #202b2d; overflow: hidden; display: flex; flex-direction: column; }
 .trpg-campaign-book[data-theme="shark"] { border-color: #487a8c; }
+.trpg-campaign-book[data-locked="true"] { background: #101719; border-color: #3b4648; color: #a9b0ae; }
+.trpg-campaign-book[data-locked="true"] .trpg-campaign-book-art img { filter: brightness(.25) saturate(.35); }
+.trpg-campaign-book[data-locked="true"] .trpg-campaign-book-art::after { content: ""; position: absolute; inset: 0; background: #07101466; pointer-events: none; }
+.trpg-campaign-book[data-locked="true"] .trpg-campaign-book-copy { opacity: .72; }
 .trpg-campaign-book-art { position: relative; height: 175px; flex-shrink: 0; }
 .trpg-campaign-book-art img { width: 100%; height: 100%; object-fit: cover; }
 .trpg-campaign-book-badge { position: absolute; left: 16px; bottom: 13px; background: #132c2ded; border: 1px solid #b9a579; padding: 5px 12px; font-size: 13px; }
@@ -443,3 +452,34 @@ body[data-screen="trpg"] #hud { visibility: hidden; }
 .trpg-recap-check small { font-size: 12px; color: #788362; }
 .trpg-recap-rule { font-size: 14px; color: #64795a; padding: 8px 0; }
 .trpg-room.interactive .trpg-spot:not(.checked):focus-visible { box-shadow: 0 0 0 6px #f4ddaa44, 0 6px 20px #0006; }
+
+/* #2862 本棚: 文字にしなくてよい所は記号（音・所要時間・結末の数）。PCの寸法は変えない。 */
+.trpg-icon { width: 1.1em; height: 1.1em; flex: none; vertical-align: -.18em; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.trpg-library-details > span { display: inline-flex; align-items: center; gap: .3em; }
+/* 表紙を読めなかった時、代わりの説明（alt）を表紙の上に文字で重ねない。読み上げには残る。 */
+.trpg-library-art > img { color: transparent; }
+.trpg-library-meta .trpg-icon-button { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; }
+.trpg-library-meta .trpg-icon-button .trpg-icon { width: 22px; height: 22px; }
+/* スマホ横持ち（#2729 優先12）: ステージが縮むぶん（--k）を戻し、文字は実寸12px以上・押せる所は実寸44px。
+   パンくず・冊数・前置きの一文・作者・名前の文字は外し（顔は残す。説明は右上の「？」）、3列のまま縦に伸ばしてスクロールで吸収する。 */
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  html:root .trpg-root.trpg-library { --lib-small: calc(12px / var(--k, 1)); --lib-body: calc(13px / var(--k, 1)); --lib-title: calc(16px / var(--k, 1)); --lib-target: calc(44px / var(--k, 1)); }
+  html:root .trpg-root.trpg-library :is(.trpg-library-header .trpg-kicker, .trpg-library-meta > span, .trpg-library-intro, .trpg-library-byline, .trpg-library-cast > div > span:last-child) { display: none; }
+  html:root .trpg-root.trpg-library .trpg-library-header { top: 12px; align-items: center; }
+  html:root .trpg-root.trpg-library .trpg-library-header h1 { margin: 0; }
+  html:root .trpg-root.trpg-library .trpg-library-meta { gap: calc(10px / var(--k, 1)); padding-top: 0; }
+  html:root .trpg-root.trpg-library .trpg-library-meta .trpg-button { min-width: var(--lib-target); min-height: var(--lib-target); padding: 0 calc(10px / var(--k, 1)); font-size: var(--lib-body); }
+  html:root .trpg-root.trpg-library .trpg-library-meta :is(.trpg-help-button, .trpg-icon-button) { width: var(--lib-target); height: var(--lib-target); padding: 0; font-size: var(--lib-title); }
+  html:root .trpg-root.trpg-library .trpg-library-meta .trpg-icon-button .trpg-icon { width: calc(22px / var(--k, 1)); height: calc(22px / var(--k, 1)); }
+  html:root .trpg-root.trpg-library .trpg-library-books { top: calc(24px + var(--lib-target)); bottom: 12px; grid-auto-rows: max-content; align-content: start; overflow-y: auto; }
+  html:root .trpg-root.trpg-library .trpg-library-art { height: 92px; }
+  html:root .trpg-root.trpg-library .trpg-library-number { font-size: var(--lib-title); }
+  html:root .trpg-root.trpg-library .trpg-library-genre { font-size: var(--lib-small); font-weight: 700; }
+  html:root .trpg-root.trpg-library .trpg-library-copy h2 { font-size: var(--lib-title); line-height: 1.3; }
+  html:root .trpg-root.trpg-library .trpg-library-copy > p { font-size: var(--lib-body); line-height: 1.45; }
+  html:root .trpg-root.trpg-library .trpg-library-details { flex-wrap: wrap; row-gap: 4px; font-size: var(--lib-small); font-weight: 700; }
+  /* 顔の切り抜きは保ったまま、枠ごと大きくする */
+  html:root .trpg-root.trpg-library .trpg-library-face { zoom: calc(.75 / var(--k, 1)); }
+  html:root .trpg-root.trpg-library .trpg-library-cast { gap: calc(8px / var(--k, 1)); margin-bottom: calc(8px / var(--k, 1)); }
+  html:root .trpg-root.trpg-library .trpg-library-copy > button { min-height: var(--lib-target); font-size: var(--lib-body); }
+}

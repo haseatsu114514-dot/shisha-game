@@ -1,0 +1,67 @@
+{
+  "id": "wang-beard",
+  "title": "長さ比べ",
+  "cast": [
+    "master_hookah"
+  ],
+  "minChapter": 1,
+  "dialogue": [
+    "龍、すごかったです。",
+    "私の髭も長い。",
+    "張り合ってる。"
+  ],
+  "first_speaker": "hajime",
+  "panel1": "前夜祭の会場の隅。左のはじめが興奮して「龍、すごかったです。」。右の王煙楼が穏やかに白ひげをなでて「私の髭も長い。」。",
+  "panel2": "王煙楼が結んだ白ひげと背中の三つ編みを両手で誇らしげに広げて見せる。はじめは苦笑い「張り合ってる。」。",
+  "caption": "龍の煙で有名な王煙楼にも、ちょっとした自慢がある。",
+  "status": "candidate-awaiting-owner-selection",
+  "registered": false,
+  "source_commit": "102a9c9b46891c577ef9910b5be36ead66d2204e",
+  "generator": "built-in image_gen",
+  "source": "source-A-v3.png",
+  "source_sha256": "f6c7a2368c6e526b8354efcb9a94f236b88f2aadce1b3804613b672ac4c906f7",
+  "references": [
+    {
+      "path": "references/hajime.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+    },
+    {
+      "path": "references/master_hookah.png",
+      "sha256": "532c7a850a5e25a2cf0d702c4a24fbd273bb39dca656b08b9ae149709020da29"
+    },
+    {
+      "path": "references/2koma_template_1536x1024.png",
+      "sha256": "810056cbb6ff611155598678e306fbfe9b1535a5466ca2d08f0b1b8d0a8d6762"
+    }
+  ],
+  "qa": {
+    "dialogue_verbatim": "visually checked",
+    "reading_order": "left-to-right; first speaker upper-left; tails checked",
+    "identity": "official sprites inspected; same positions/faces both panels",
+    "prohibited_hardware": "none",
+    "notes": "extra arm removed in v2; tied chin beard rather than moustache held in v3",
+    "in_game_pc_phone": "not run; unregistered",
+    "style_alignment": "Compared with early adopted Menu Revision reference: large expressive faces, 2.5-head chibi proportions, warm cel colors and bold clean lines; consistent across both panels.",
+    "selection": "Owner decision pending; not adopted",
+    "fill": "Official fill applied; filled panels re-inspected, faces/dialogue/gag preserved."
+  },
+  "delivery": [
+    {
+      "file": "panels/wang-beard-1.webp",
+      "sha256": "62d4cf05fbdab7242b19d2381948124ed9538975c8fdb5ce2b40e268c16100de",
+      "width": 721,
+      "height": 481
+    },
+    {
+      "file": "panels/wang-beard-2.webp",
+      "sha256": "35835b2b69df6cd34aecc859013067ae22e7653409583f1528ad70b2dbc30e61",
+      "width": 720,
+      "height": 481
+    }
+  ],
+  "style_reference": {
+    "path": "/workspace/scratch/431c36bf589e/ryuji-sheet/loading/pc.png",
+    "role": "early adopted Menu Revision comic, style only",
+    "sha256": "8324b1657957588133e23f26088609472ae0acbfede80ad3263db6ee3ba0dda2"
+  }
+}

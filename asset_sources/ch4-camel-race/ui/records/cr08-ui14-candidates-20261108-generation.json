@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-08",
+  "tool": "built-in image_gen",
+  "transparent_background": true,
+  "prompt": "Use case: stylized-concept.\nAsset: CR-UI14 word-perfect.png, a single isolated hand-painted racing UI word for shisha-game.\nReference image 1 is STYLE AND PALETTE ONLY: the game's sunrise Dubai camel racetrack background. Do not reproduce its scenery, vehicles or objects.\nCreate exactly the uppercase word \"PERFECT\" spelled P E R F E C T, once, in one horizontal line. Gold paint #c9963a with a strong dark brown #1a110a outline, bold slightly irregular sign-writer brush strokes, confident readable letters. Fine painterly pixel texture, flat local color with 2–3 hard-edged value steps, consistent with the attached background's Japanese pixel-painterly visual-novel style. No 90s OVA/cel aesthetic.\nThe letters themselves are the only artwork. No signboard, panel, backdrop, rectangle, paper, ground, shadow outside letters, glow, extra words, extra marks, symbols, ornaments, logos or watermark. REAL ALPHA transparency everywhere outside letters and inside letter counters. Do not paint a checkerboard. No gradient, airbrush, glossy/3D bevel.\nOutput a landscape transparent PNG no larger than 1024 pixels on its long edge. Keep all letter outlines fully inside the canvas with a modest clear transparent margin. This is a standalone word asset, not a sheet or a UI screenshot.",
+  "reference": {
+    "path": "references/bg_dubai_camel_track_morning.png",
+    "role": "style and palette only"
+  },
+  "output_hint": "Generated images are saved to /workspace/scratch/431c36bf589e/generated_images as /workspace/scratch/431c36bf589e/generated_images/exec-da057b27-0ee0-4189-a31d-49c0cca62a9b.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "source_brief": {
+    "url": "https://github.com/haseatsu114514-dot/shisha-game/blob/main/asset_sources/ch4-camel-race/ui-request.md",
+    "sha": "3fce93d0e9c466d3a088143ba4fac5633b7841ae"
+  },
+  "status": "candidate; dimension failure; remaining nine not generated"
+}

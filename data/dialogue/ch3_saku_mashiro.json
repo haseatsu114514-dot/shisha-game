@@ -1,0 +1,333 @@
+{
+  "comment": "第3章の任意場面。綾取とましろの幼少期と、綾取が福岡へ発った日の嘘。二人が直接話す場面はDAY11の煙幕以降の本編に任せ、ここではそれぞれがはじめにだけ話す。後日談の ch3_enmaku_cleanup で二枚の絵と嘘を回収する。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_saku_mashiro_tea_tin",
+      "comment": "ましろ側。煙幕の初訪問（レモンケーキの客）を聞いた後。読む日付を問わない内容にする。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のmukai。ましろは棚の奥から、古い茶缶を下ろしていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ、売り物？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ううん、僕の。家から持ってきて、ずっと棚に置きっぱなしなの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "煙幕で、隣のお客さんが「レモンケーキみたい」って。材料には入ってないのに"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "……レモンケーキ？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "そっか。陣、まだあのケーキを作ってるんだぁ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろが缶のふたを開ける。中には、折り目で切れた画用紙が一枚。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クレヨンの黄色いケーキが、ちょうど真ん中で途切れている。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "小さい頃、陣が描いたの。半分、僕にくれた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "綾取さん、昔からああいう感じ？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ううん、もっと静かだったよぉ。よく熱を出して、保育園も休んでた"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "熱が下がると、公園で予想するの。「ましろは次、絶対ブランコ」って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "当たるの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ぜんぜん。僕、すべり台に行くんだもん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "――小学校の帰り道。自販機の前で、少年が指を立てた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少年「ましろは絶対、りんごジュース。賭けてもいい」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少女はしばらく迷ってから、温かいお茶のボタンを押した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少年「……また外れた」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少女「だって、今日は寒いもん」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少年は悔しそうに笑い、外れた予想をノートに書いた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "外れると、陣はうれしそうだったなぁ。書いて、次もまた外すの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ノート、その頃からつけてたんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。僕の答えのページが、たぶん一番分厚い"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "serious",
+          "text": "……だから、心配なんだよねぇ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "serious",
+          "text": "外れて笑ってた子が、勝負になると、当てなきゃ気がすまない顔をするの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんには、ケーキの味はしたの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "しなかった。今も、陣の煙は、僕にはただのお茶"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "でも、絵は好きだったの。だから、捨てられなかった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは缶を閉めず、ふたを横に置いたまま棚へ戻した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（開けたままにしておくんだ）"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "閉めたら、また何年も開けない気がして"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_saku_mashiro_soon_back",
+      "comment": "綾取側。mukaiの客として来た後。福岡へ発った日の「すぐ戻る」と、連絡しなかった理由。大会の対策は明かさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店間際の煙幕。綾取は客席のカードを一枚ずつ揃えていた。"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "いらっしゃい。今夜の組織の議題は、カードの角をそろえること"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "手伝います"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "助かる。じゃあ、君を角の監査役に任命するね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "束の中に、一枚だけ古い紙があった。黄色いクレヨンの、半分のケーキ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ……"
+        },
+        {
+          "speaker": "saku",
+          "face": "surprise",
+          "text": "あ、見つかった。ノートの表紙の裏に挟んでたのに"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "子どもの頃の絵。半分しかないのは、もう半分をあげたから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんに？"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "……君、ほんと何でも知ってるね。煙幕の情報部に欲しいな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "入りません"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "福岡へ行ったのは、十八の春。知り合いの店に、住み込みで入ったんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一人で、ですか"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "うん。熱ばっかり出す子のままじゃ、あいつの隣に立てない気がして"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "……今の、聞かなかったことにして"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "聞きました"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "正直だなぁ。じゃあ、ついでにもう一つ。[pause]僕は出発の日、嘘をついた"
+        },
+        {
+          "speaker": "saku",
+          "face": "serious",
+          "text": "ましろに「すぐ戻る」って言った。戻る日なんて、決めてなかったのに"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "種を明かさないまま、もう五年。僕の嘘で、いちばん長いやつ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どうして、連絡しなかったんですか"
+        },
+        {
+          "speaker": "saku",
+          "face": "sad",
+          "text": "店の一台を「客の思い込み」って言われた夜があってさ"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "胸を張れる一台ができたら電話しよう。そう決めたら、永遠に決まらなくて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今度の大会は……"
+        },
+        {
+          "speaker": "saku",
+          "face": "serious",
+          "text": "胸を張る場所。それと、僕の夢。思い込みじゃないって、世界に言わせたい"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "ましろに見せたいのと、僕が勝ちたいのは別。混ぜたら、どっちも嘘になる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取は絵をノートの表紙の裏へ戻し、角の折れを指で一度だけ伸ばした。"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "内緒ね。ましろには、自分で言うよ、……いつか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その「いつか」、「すぐ戻る」と同じじゃないですか"
+        },
+        {
+          "speaker": "saku",
+          "face": "surprise",
+          "text": "……痛いとこ突くなぁ。じゃあ、大会が終わったら。これでどう？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "覚えておきます"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "監査役、なかなか厳しい"
+        }
+      ]
+    }
+  ]
+}

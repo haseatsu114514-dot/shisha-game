@@ -1,0 +1,72 @@
+{
+ "phase": "立ち絵そろえ 第2期（規格そろえ）TS10",
+ "face": "normal",
+ "chosen": "sai-normal-b",
+ "status": "合格（2026-11-02 オーナー「推奨のをお願い」でB案に決定）。ゲームの素材は表情差分ができてから差し替える",
+ "chosen_by": "2026-11-02 Claude。頭身が規格内で 7.0 に近く、顔・ポーズ・衣装が今の通常と同じ案",
+ "source": {
+  "generated_by": "Codex built-in image_gen",
+  "shared_by": "オーナーがギガファイル便（期限 2026-11-09）で共有",
+  "zip_sha256": "dac280234dbbf36391b14b95d07ff3c8ec480de249309cbc85c63856d326aa15",
+  "original_sha256": "84f05740f759431485b7e0fda6ff4ab577d94ad30b69154aea9ffaf8712e7122"
+ },
+ "candidates": {
+  "sai-normal-a": {
+   "head_body_codex": 7.86,
+   "head_body_claude": 7.95,
+   "disposition_codex": "HOLD above/borderline upper7.7",
+   "sha256": "57d0b7354f646e16ddacb11bc6a33d2a93b4d9e78ff63622eecd7ae3b447f7d0"
+  },
+  "sai-normal-b": {
+   "head_body_codex": 7.6,
+   "head_body_claude": 7.65,
+   "disposition_codex": "COMPARISON near upper7.7; second measurement needed; NOT ADOPTED",
+   "sha256": "84f05740f759431485b7e0fda6ff4ab577d94ad30b69154aea9ffaf8712e7122"
+  },
+  "sai-normal-c": {
+   "head_body_codex": 7.87,
+   "head_body_claude": 7.92,
+   "disposition_codex": "HOLD above/borderline upper7.7",
+   "sha256": "3fd952631ff34bc60360add87add06bcc5ac95396b42df7fb1f312d9690ab10b"
+  }
+ },
+ "game_integration": "未実施。表情差分を同じ頭の大きさで作ってから、キャラ単位で組み込む",
+ "expressions": {
+  "smile": {
+   "original": "sai-smile-v1.png",
+   "original_sha256": "b3a3ebaee4d52b35d45a06b3890707e8197a666433e08558c6d0d427f570067d",
+   "generated_by": "Codex built-in image_gen（TS11、合格した通常を参照②に使用）",
+   "shared_by": "オーナーがギガファイル便（期限 2026-11-09）で共有",
+   "zip_sha256": "8a43a3ab1c22773b45176a1a22f2a5cc1a19167578be22f411b91e471bdc8399",
+   "inner_zip_sha256": "1f90cc5c8418c1e0d7c96e5373028820d07014c754359d84c730da6c1101cbab",
+   "check": "Claude が会話画面の大きさで新しい通常と頭頂・あごを並べ、頭の大きさがそろうことを確認。透明度16以上の散った画素は無い（それ未満の極薄の画素はゲームでは見えない）"
+  },
+  "serious": {
+   "original": "sai-serious-v1.png",
+   "original_sha256": "3c00a1b6811d9ab8a85c91167821656ed1f5ae15e2723fa1d62960d80377f1b9",
+   "generated_by": "Codex built-in image_gen（TS11、合格した通常を参照②に使用）",
+   "shared_by": "オーナーがギガファイル便（期限 2026-11-09）で共有",
+   "zip_sha256": "8a43a3ab1c22773b45176a1a22f2a5cc1a19167578be22f411b91e471bdc8399",
+   "inner_zip_sha256": "1f90cc5c8418c1e0d7c96e5373028820d07014c754359d84c730da6c1101cbab",
+   "check": "Claude が会話画面の大きさで新しい通常と頭頂・あごを並べ、頭の大きさがそろうことを確認。透明度16以上の散った画素は無い（それ未満の極薄の画素はゲームでは見えない）"
+  },
+  "surprise": {
+   "original": "sai-surprise-v1.png",
+   "original_sha256": "6033f5f193051976c1da4b9a87a43ef5b3f7035fdc0e9ecc8a6f5a0088175c21",
+   "generated_by": "Codex built-in image_gen（TS11、合格した通常を参照②に使用）",
+   "shared_by": "オーナーがギガファイル便（期限 2026-11-09）で共有",
+   "zip_sha256": "8a43a3ab1c22773b45176a1a22f2a5cc1a19167578be22f411b91e471bdc8399",
+   "inner_zip_sha256": "1f90cc5c8418c1e0d7c96e5373028820d07014c754359d84c730da6c1101cbab",
+   "check": "Claude が会話画面の大きさで新しい通常と頭頂・あごを並べ、頭の大きさがそろうことを確認。透明度16以上の散った画素は無い（それ未満の極薄の画素はゲームでは見えない）"
+  },
+  "thinking": {
+   "original": "sai-thinking-v1.png",
+   "original_sha256": "c06cd3787d797e37973703d5c0a7320f3308659f61df016253a2cebbe08c37ee",
+   "generated_by": "Codex built-in image_gen（TS11、合格した通常を参照②に使用）",
+   "shared_by": "オーナーがギガファイル便（期限 2026-11-09）で共有",
+   "zip_sha256": "8a43a3ab1c22773b45176a1a22f2a5cc1a19167578be22f411b91e471bdc8399",
+   "inner_zip_sha256": "1f90cc5c8418c1e0d7c96e5373028820d07014c754359d84c730da6c1101cbab",
+   "check": "Claude が会話画面の大きさで新しい通常と頭頂・あごを並べ、頭の大きさがそろうことを確認。透明度16以上の散った画素は無い（それ未満の極薄の画素はゲームでは見えない）"
+  }
+ }
+}
