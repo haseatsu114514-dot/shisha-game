@@ -954,6 +954,11 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const base = scenario.interview?.picks || 2, picks = session.interviewPicks(), kanji = ["", "一", "二", "三", "四", "五"];
     return picks === base || !kanji[base] || !kanji[picks] ? text || "" : String(text || "").replace(kanji[base] + "つ", kanji[picks] + "つ");
   }
+  /** 見込みに入っている補正の内訳（能力・選んだ助力・勢い）。checkForecast の baseBonus と同じ足し方。 */
+  function bonusParts(predicted, approach, supported = false) {
+    return [(approach ? statLabel(approach.stat) : "基本") + "＋" + predicted.base, supported ? "助力＋" + DICE.support : null,
+      predicted.momentum ? "勢い＋" + predicted.momentum * DICE.momentum : null].filter(Boolean);
+  }
   /** The GM names the stake before the dice (TRF02): what a success on this check buys. */
   function stakeLine(kind) {
     const prize = STAKES[rewardKindOf(scenario, kind)];
@@ -1002,8 +1007,14 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         ].filter(Boolean)),
       ]);
     });
+    // 札の「成功 N%」には、どの札にも同じく入る勢いが含まれている。札の能力の数字だけでは分からないので、題の行に書き添える（#3199）。
+    const shared = checkForecast(scenario, state, kind, { approach: approaches[0].id, sheets });
+    const included = [shared.momentum ? "見込みは勢い＋" + shared.momentum * DICE.momentum + "込み" : null,
+      shared.potentialBonus ? "見立てが合えば さらに＋" + shared.potentialBonus : null].filter(Boolean);
     pop = modal(presentation.declareTitle || "どうする？", el("div.trpg-declare-board", [
-      el("div.trpg-declare-prompt", [el("strong", { text: check.title }), stakeLine(kind), helpToggle("宣言のしかた", "trpg-declare-help", [
+      el("div.trpg-declare-prompt", [el("strong", { text: check.title }), stakeLine(kind),
+        included.length ? el("small.trpg-declare-included", { text: included.join("・"), dataset: { test: "trpg-declare-included" } }) : null,
+        helpToggle("宣言のしかた", "trpg-declare-help", [
         el("span", { text: presentation.declareHint || "" }),
         el("span.trpg-declare-rule", { text: presentation.target || ("目標値" + DICE.success) }),
         el("span.trpg-declare-rule", { text: "20の目が出たらクリティカル。必ず成功" }),
@@ -1020,9 +1031,17 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const body = el("div", [el("p.trpg-roll-instruction", { text: DICE.success + "以上で成功" }), stakeLine(kind), actorPanel(declared), el("div.trpg-roll-scene",
       el("div.trpg-dice-row", [die(1), die(1), el("span.trpg-dice-bonus", { text: "＋" + DICE.base, dataset: { test: "trpg-bonus" } })]))].filter(Boolean));
     const forecast = el("div.trpg-forecast", { dataset: { test: "trpg-forecast" }, "aria-live": "polite" });
+    // 成功の見込みは、詳細を開かなくても補正込みで1行出す（#3199）。数字は詳細の見通しと同じ checkForecast から取り、
+    // 助力を付け外しすると一緒に変わる。見立ての正誤は振るまで分からないので、合っていた場合は「〜」の上限にだけ入れる。
+    const chance = el("p.trpg-roll-chance", { dataset: { test: "trpg-roll-chance" }, "aria-live": "polite" });
+    body.append(chance);
     function updateForecast() {
       const predicted = checkForecast(scenario, session.snapshot(), kind, { support: !!support?.checked, approach: declared?.id || null, sheets });
       body.querySelector(".trpg-dice-bonus").textContent = "＋" + predicted.baseBonus;
+      const lo = Math.min(predicted.odds.success, predicted.bestOdds.success), hi = Math.max(predicted.odds.success, predicted.bestOdds.success);
+      chance.replaceChildren(el("strong", { text: "成功 約" + lo + (predicted.potentialBonus ? "〜" + hi : "") + "%" }),
+        el("small", { text: bonusParts(predicted, declared, !!support?.checked).join("・") + " 込み"
+          + (predicted.potentialBonus ? "（見立てが合えば＋" + predicted.potentialBonus + "）" : "") }));
       forecast.replaceChildren(el("div.trpg-forecast-head", [
         el("strong", { text: "この判定の見通し" }), el("small", { text: "2d20 ＋ " + (declared ? statLabel(declared.stat) : "基本") + predicted.base + (support?.checked ? " ＋ 助力" + DICE.support : "") + (predicted.momentum ? " ＋ 勢い" + predicted.momentum * DICE.momentum : "") }),
       ]), el("div.trpg-odds", [

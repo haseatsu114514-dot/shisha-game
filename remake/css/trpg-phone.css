@@ -89,10 +89,20 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-plan-summary .ch
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div { position: relative; min-height: 340px; padding-left: 50%; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene { position: absolute; left: 0; top: 4px; width: 47%; margin: 0; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total { position: absolute; left: 0; top: 196px; width: 47%; margin: 0; }
-html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details { position: absolute; left: 0; top: 166px; width: 47%; margin: 0; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details { position: absolute; left: 0; top: 236px; width: 47%; margin: 0; }
+/* 成功の見込み（補正込み・#3199）はトレイの下。詳細を開くと、その下に3つの見込みの表だけを出す。表の題の式と下の注記は、
+   この1行（何が込みか・見立ての一言）と題の行の「30以上で成功」に同じことが書いてあるので出さない。
+   開いたままでも表が下の「サイコロを振る」に隠れず、本文の箱に縦スクロールが出ない。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > p.trpg-roll-chance { position: absolute; left: 0; top: 176px; width: 47%; margin: 0; gap: 0 14px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-chance > strong { font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-chance > small { font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage :is(.trpg-forecast-head, .trpg-forecast > p) { display: none; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-declare-prompt > small.trpg-declare-included { font-size: var(--phone-sub); }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details > p { display: none; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-details > summary { min-height: calc(44px / var(--k, 1)); height: calc(44px / var(--k, 1)); padding-block: 0; margin: 0; }
-html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div { min-height: 418px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div { display: flow-root; min-height: 400px; }
+/* ↑ #3199: 本文の箱（約410px）より高い 418px だと、振る前から縦スクロールが出ていた。振った後は右の列の先頭（目標までの帯）の
+   上の余白が箱の外へ抜けて（マージンの相殺）全体が 16px 下がり、さらに伸びていた。flow-root で余白を箱の中に留める。 */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-forecast { margin-top: 0; padding: 2px 15px 0; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-forecast-head > strong,
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-odds small { display: none; } /* 「30以上で成功」は右の説明と同じ */
