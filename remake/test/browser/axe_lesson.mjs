@@ -101,18 +101,29 @@ async function completeTapPullLesson(page) {
   assert.match(await coach(page, "welcome").innerText(), /お金も体力も使わない/);
   assert.match(await coach(page, "welcome").innerText(), /上へ弾いて投げる/);
   assert.doesNotMatch(await coach(page, "welcome").innerText(), /横、縦、回転/);
-  await guide(page, "welcome", false, false); await guide(page, "target", false, false);
+  // 2026-11-13 手応えレビュー指摘13: 弾いて投げるレッスンは4枚。先に投げ、刺さった所の点を見てから得点の決まりを聞く
+  await guide(page, "welcome", false, false);
+  assert.equal(await coach(page, "target").count(), 0, "the scoring talk waits until after the first throw");
   const target = await page.locator('.axe-target').evaluate(node => {
     const point = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
     return { x: point.x, y: point.y };
   });
   await page.mouse.click(target.x, target.y); await phase(page, "power");
+  await coach(page, "power").waitFor();
+  assert.match(await coach(page, "power").innerText(), /2 \/ 4/);
+  assert(await page.locator('[data-test="axe-coach-line"]').evaluate(n => n.textContent.split("。").filter(Boolean).length <= 2), "two sentences only");
   await guide(page, "power", false, false);
+  assert.equal(await page.locator('[data-test="axe-flick-hint"]').getAttribute("opacity"), "1", "the small hand shows the flick instead of words");
   assert.equal(await coach(page, "horizontal").count(), 0);
   assert.equal(await coach(page, "vertical").count(), 0);
   // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、適正の速さで弾く
   await flickFromHandle(page, { power: .62 }); await page.clock.runFor(1200);
-  await guide(page, "result", false, false); await phase(page, "result");
+  await coach(page, "target").waitFor();
+  assert.match(await coach(page, "target").innerText(), /今回は\d+点/);
+  assert.match(await coach(page, "target").innerText(), /刃が触れた一番高いところ/);
+  assert.equal(await page.locator('[data-test="axe-coach-next"]').textContent(), "わかった");
+  await guide(page, "target", false, false); await phase(page, "result");
+  assert.equal(await coach(page, "result").count(), 0);
   assert.equal(await game(page).getAttribute("data-player-throws"), "1");
   await action(page); await coach(page, "finish").waitFor();
   assert.doesNotMatch(await coach(page, "finish").innerText(), /横、縦、回転/);
@@ -234,7 +245,7 @@ await suite("axe-lesson", async check => {
           _axe_bar_sighting_day: state.day - 1, _axe_bar_sighting_chapter: state.chapter });
         if (restriction === "played") state.visitedDay.axe_bar = state.day;
         window.lessonGuardCalls = 0; window.lessonVisitSettled = false;
-        // #2605: 初回の斧投げBARは、マキの登場カットインの前にはじめの呼びかけ1行が入る。会話は早送りで読む（状態は変えない）。
+        // 初回の斧投げBARは、マキが名乗るまでの会話 → 登場カットイン → 決まりと案内を読む（#2605・VAR01）。会話は早送りで読む（その時間帯に話した印だけが付く）。
         (await import("./js/vn/engine.js")).vnTest.turbo = true;
         window.visitPromise = (await import("./js/daily/axe-bar.js")).visitAxeBar({
           staminaGuard: async () => { window.lessonGuardCalls++; return true; },

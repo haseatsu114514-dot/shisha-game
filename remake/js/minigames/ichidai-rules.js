@@ -53,7 +53,7 @@ export const coalHeat = (c) => c.f ?? (c.up ? CARD[c.id].heat : 1);
 /** 火力ゾーンに置く炭をつくる。up＝表向きの炭カード（新品の火）／裏向き＝種火（火1） */
 const newCoal = (id, up) => ({ id, up, f: up ? CARD[id].heat : 1 });
 /** 炭の枠が空いているか（HMDに載る炭は4つまで） */
-/** 置ける炭の数。ふつうは4つ。ワンコールリッド（炭1個で回す低温用のHMD）は2つ */
+/** 置ける炭の数。ふつうは4つ。C1（炭1個で回す低温用のHMD）は2つ */
 export const coalMaxOf = (p) => (p.hmd === "one_coal" ? 2 : RULES.coalMax);
 export const coalRoom = (p) => Math.max(0, coalMaxOf(p) - p.zone.length);
 export const leavesOf = (p) => Object.values(p.bowl).reduce((a, b) => a + b, 0);
@@ -606,7 +606,7 @@ function startServeTurn(G) {
   const skipBig = p.hmd === "big_tanukish" && G.round % 3 === 0, solo = p.hmd === "one_coal" && p.zone.length === 1;
   if (p.noCool || skipBig || solo || !p.zone.length) {
     if (p.noCool && p.zone.length) say(G, "灰落とし：このターンは冷めない。", p.index);
-    else if (solo) say(G, "ワンコールリッド：炭が1つだけなので冷めない。", p.index);
+    else if (solo) say(G, "C1：炭が1つだけなので冷めない。", p.index);
     else if (skipBig && p.zone.length) say(G, "ビッグタヌキッシュリッド：セッション最初のターンは冷めない。", p.index);
     p.noCool = false; afterCool(G, p); return;
   }

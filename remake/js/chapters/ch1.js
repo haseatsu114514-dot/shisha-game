@@ -203,6 +203,9 @@ async function openingPart() {
 
 export async function resumeGame() {
   setupHooks();
+  // タイトルの #screen を残したまま、会話より先に出るモーダル（今日の注文・初回パッキー・受け取り）が重なると
+  // ぼかした背後にタイトルが透ける。新規開始（openingPart）と同じく、再開の入口で先に片付ける。
+  clearScreen();
   if (state.chapter === 2) return resumeChapterModule(() => import("./ch2.js"), m => m.resumeChapterTwo(), "第2章の街へ戻っています…");
   if (state.chapter === 3) return resumeChapterModule(() => import("./ch3.js"), m => m.resumeChapterThree(), "第3章へ戻っています…");
   if (state.chapter === 4) return resumeChapterModule(() => import("./ch4.js"), m => m.resumeChapterFour(), "第4章へ戻っています…");

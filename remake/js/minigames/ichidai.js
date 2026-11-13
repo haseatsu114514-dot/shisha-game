@@ -1316,7 +1316,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     } else if (coalInHand && stoveRoom) tip("coal", "いまのうちに炭カードを炭焼き場へ。次のターンにのせられる");
     else if (!me.stove.length && !coalInHand) tip("coal", "焼いている炭が無い。次は種火（チャージ）でつなぐ");
     // 次のターン
-    if (w.type === "main" && me.hmd === "one_coal" && me.zone.length === 1) tip("next", "炭が1つだけなので、次のターンも冷めない（ワンコールリッド）");
+    if (w.type === "main" && me.hmd === "one_coal" && me.zone.length === 1) tip("next", "炭が1つだけなので、次のターンも冷めない（C1）");
     else if (w.type === "main" && !me.noCool && me.zone.length) {
       const lose = Math.max(0, coolStepsOf(me) - me.wind);
       if (lose) tip("next", `次のターンは冷めて熱−${lose}${baking + ready.length ? "。焼けた炭で戻す" : "。足す炭を用意しておく"}`);
