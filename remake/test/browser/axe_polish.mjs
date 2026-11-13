@@ -264,7 +264,12 @@ await suite("axe-polish", async check => {
     await page.clock.runFor(240);
     assert(Number(await page.locator(".axe-ghost").first().getAttribute("opacity")) > 0, "afterimages follow the axe mid-flight");
     assert(Number(await page.locator(".axe-contact-shadow").getAttribute("opacity")) > 0, "the contact shadow is on the wood");
-    await page.clock.runFor(400); await phase(page, "result");
+    // 2026-11-13 手応えレビュー指摘1: 赤に刺さった瞬間は接触の姿で一拍止める（6点は80ms）。残像はその間に消える
+    await page.clock.runFor(400);
+    assert.equal(await root(page).getAttribute("data-phase"), "flight", "the bull holds its contact for a beat");
+    assert.equal(await root(page).getAttribute("data-hitstop"), "true");
+    assert.equal(Number(await page.locator(".axe-ghost").first().getAttribute("opacity")), 0);
+    await page.clock.runFor(100); await phase(page, "result");
     assert.equal(Number(await page.locator(".axe-ghost").first().getAttribute("opacity")), 0);
     const zoom = page.locator('[data-test="axe-zoom"]');
     await zoom.waitFor();
@@ -284,7 +289,9 @@ await suite("axe-polish", async check => {
     await boardStop(page, .62, 2400, "flight", false);
     assert.equal(await root(page).getAttribute("data-slow-motion"), "true");
     await page.clock.runFor(700); assert.equal(await root(page).getAttribute("data-phase"), "flight", "slow motion stretches the approach");
-    await page.clock.runFor(200); await phase(page, "result");
+    // 板に届くのは0.84秒。結果はそこから接触の止め（0点で刺されば50ms）の後
+    await page.clock.runFor(160); assert.equal(await root(page).getAttribute("data-hitstop"), "true", "the slow throw meets the board within 0.9s");
+    await page.clock.runFor(100); await phase(page, "result");
     const result = await cancel(page, before);
     assert.equal(result.throws.length, 2); assert.equal(result.throws[0].score, 6); assert.equal(result.throws[1].called, "upper-left");
   });
