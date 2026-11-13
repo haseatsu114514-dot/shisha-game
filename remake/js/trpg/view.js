@@ -2,7 +2,7 @@ import { el } from "../core/util.js";
 import { TrpgSession, HEAT, heatTier, DICE, STATS, PLAYER_SEAT, approachesOf, approachBase, buildPc, randomPc, grownStats, phasesOf, checkKindsOf, rewardKindOf, nearMissOf } from "./session.js";
 import { displayName, portraitUrl, portraitAx, portraitHeadTop, portraitTop as topFor, sceneUrl } from "./presentation.js";
 import { costumeUrl } from "./costumes.js";
-import { faceIconStyle } from "./face-crops.js";
+import { BUST, bustCheekWidth, bustTypicalWidths, faceIconStyle } from "./face-crops.js";
 import { createTrpgAudio } from "./audio.js";
 import { checkForecast, rerollOdds, rollOdds } from "./feedback.js";
 import { playTrpgEntrance } from "./entrance.js";
@@ -80,10 +80,9 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   // The role costume (same person, dressed as the PC) where we have one: sheets, cover, origins and declaration cards (TMX04).
   // "bust" zooms on the upper body for small cards; "full" shows the whole figure. Falls back to the round face.
-  // Bust framing shared by every costume card: cheek-to-cheek width as a share of the box width, eye line as a share of its height.
-  const BUST = { face: 0.26, eye: 0.36 };
-  // 頬の幅の測定に、頬へかかる青い髪まで入ってしまう2人（全身の絵と見比べて決めた補正・2026-11-11）。
-  const FACE_FIX = { samechan: 0.86, rei: 0.8 };
+  // Bust framing shared by every costume card (face-crops.js の BUST): cheek width as a share of the box width, eye line as a share of its height.
+  // 頬の幅は、そのキャラの中央値へ寄せて使う（絵ごとの測定のぶれで、顔の大きさが札ごとに変わらないように）。
+  const bustTypical = bustTypicalWidths(costumeFrames);
   function pcFigure(seat, playerId, { role = sheets[seat]?.archetype || sheets[seat]?.option || null, shape = "bust" } = {}) {
     const url = costumeUrl(scenario.id, playerId, role);
     if (!url) return pcFace(seat, playerId);
@@ -92,7 +91,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     // the measured cheek width and eye line of each costume picture (img/ui/trpg/costumes/frames.json) set the zoom and the offset.
     const face = costumeFrames?.[scenario.id + "/" + playerId + "/" + role]?.face;
     if (face?.w > 0) {
-      const [W, H] = [896, 1200], width = BUST.face * W / (face.w * (FACE_FIX[playerId] || 1)) * 100;
+      const [W, H] = [896, 1200], width = BUST.face * W / bustCheekWidth(face, playerId, bustTypical[playerId]) * 100;
       return el("span.trpg-costume", { dataset: { shape, framed: "face" } }, el("i", { style: { backgroundImage: `url("${url}")`,
         width: width + "%", top: BUST.eye * 100 + "%", transform: `translate(-${face.cx / W * 100}%, -${face.eye_y / H * 100}%)` } }));
     }

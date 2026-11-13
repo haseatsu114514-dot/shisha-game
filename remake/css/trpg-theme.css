@@ -750,7 +750,7 @@ html:root .trpg-root.trpg-cinematic .trpg-dock[data-layer="fiction"] { overflow:
 /* 役衣装の絵は台紙を抜いた人物だけ（TRF19）。札にせず、人物がそのまま部屋に立つ（縁の影だけ）。 */
 html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="pc"] .trpg-speaker-art {
   width: 232px; height: 318px; margin: -104px 6px 16px 0; flex: 0 0 232px; align-self: flex-end; overflow: hidden;
-  filter: drop-shadow(0 8px 14px #000b) drop-shadow(0 0 1px #000);
+  filter: var(--trpg-pawn-edge) drop-shadow(0 8px 14px #000b);
   animation: trpg-figure-in .32s ease-out both;
 }
 html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="pc"] .trpg-speaker-art img { width: 520px !important; filter: none; }
@@ -1026,7 +1026,7 @@ html:root .trpg-root.trpg-cinematic .trpg-cover-person small[data-part="gm"] { c
 /* 判定のカットイン: 証明写真のような札をやめ、腰から上の人物が帯から頭ひとつ抜けて立つ。絵の無い役（顔の丸）は札のまま。 */
 html:root .trpg-root.trpg-cinematic .trpg-cutin-figure[data-cutout="true"] {
   flex: 0 0 270px; height: 270px; align-self: flex-end; margin-bottom: 12px; border: 0; border-radius: 0; background: none; box-shadow: none;
-  filter: drop-shadow(0 8px 14px #000c) drop-shadow(0 0 1px #000);
+  filter: var(--trpg-pawn-edge) drop-shadow(0 8px 14px #000c);
 }
 html:root .trpg-root.trpg-cinematic .trpg-cutin-figure[data-cutout="true"] .trpg-costume { background-color: transparent; }
 
@@ -1209,4 +1209,13 @@ html:root[data-density="phone"] .trpg-campaign[data-view="shelf"] .trpg-campaign
 @media (min-width: 1001px) and (min-height: 601px) {
   html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene { min-height: 132px; }
   html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-scene .trpg-dice-row { margin: 8px 0; }
+}
+
+/* ---- 役の姿は「紙のコマ」（TRF26）: 暗い場面に立つ時（判定のカットイン・物語の中の役の台詞）は、人物のまわりに生成りの紙の縁を付ける。
+   卓に立てる紙のコマ（ペーパースタンド）の見た目。髪の房の間などの細いすき間は紙の色で埋まるので、切り抜きの細かい出来に左右されない。
+   2画素ずつ8方向へ重ねて、4画素の縁にする（1回で大きくずらすと、細い毛先が二重に見える）。 ---- */
+html:root .trpg-root.trpg-cinematic {
+  --trpg-pawn-paper: #efe5cf; /* 役衣装の絵の、もとの台紙の色。札の地（.trpg-costume）と同じ色なので、抜き残しがあっても見分けがつかない */
+  --trpg-pawn-edge: drop-shadow(2px 0 0 var(--trpg-pawn-paper)) drop-shadow(-2px 0 0 var(--trpg-pawn-paper)) drop-shadow(0 2px 0 var(--trpg-pawn-paper)) drop-shadow(0 -2px 0 var(--trpg-pawn-paper))
+    drop-shadow(2px 0 0 var(--trpg-pawn-paper)) drop-shadow(-2px 0 0 var(--trpg-pawn-paper)) drop-shadow(0 2px 0 var(--trpg-pawn-paper)) drop-shadow(0 -2px 0 var(--trpg-pawn-paper));
 }

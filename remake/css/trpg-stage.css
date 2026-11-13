@@ -1086,7 +1086,7 @@
 /* ---- 役衣装の姿（TMX04・2026-11-11）: 同じ人物が役の服を着た全身の絵（生成りの下地つき）を、シート・表紙・役どころ・宣言カードにも出す。
    絵が無い役は従来の丸い顔のまま。 ---- */
 /* 役衣装の絵は台紙を抜いた人物だけ（TRF19・tools/trpg_costume_cutout.py）。札として見せる所は、ここで絵の台紙と同じ生成りを敷く。 */
-.trpg-root.trpg-cinematic .trpg-costume { display: block; width: 100%; height: 100%; background-repeat: no-repeat; background-color: #efe5cf; }
+.trpg-root.trpg-cinematic .trpg-costume { display: block; width: 100%; height: 100%; background-repeat: no-repeat; background-color: var(--trpg-pawn-paper, #efe5cf); }
 .trpg-root.trpg-cinematic .trpg-costume[data-shape="bust"] { position: relative; overflow: hidden; }
 .trpg-root.trpg-cinematic .trpg-costume[data-shape="bust"] > i { position: absolute; left: 50%; top: 0; width: 200%; aspect-ratio: 896 / 1200; background-size: 100% 100%; background-repeat: no-repeat; }
 /* 測った顔で合わせる時は、幅・位置を view.js が入れる（顔の幅と目の高さを全員そろえる）。 */
