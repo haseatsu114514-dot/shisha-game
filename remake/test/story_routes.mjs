@@ -106,6 +106,14 @@ assert(!canReadOptionalStory(routes, {}, 'unknown'));
     assert(canReadOptionalStory(routes, {}, id, {completedScenes: [stage]}));
   }
 }
+// #3468 D案: ヌール×ファーリスの本場面と後日の一言も、カフェ・オアシスの任意場面として登録する（実行時の判定は ch4-desert-progress.js）。
+{
+  const ids = ['ch4_noor_faris_seat', 'ch4_noor_faris_seat_again'];
+  assert.deepEqual(routes.chapters['4'].optional.filter(id => id.startsWith('ch4_noor_faris_')), ids);
+  for (const id of ids) assert(scenes.has(id), id);
+  assert.deepEqual(routes.optional_requirements[ids[0]].seen, ['ch4_noor_meet']);
+  assert.deepEqual(routes.optional_requirements[ids[1]].seen, [ids[0]]);
+}
 
 // --- #1176 GAP 3-B: 第3章の任意場面・前夜の配線（ch3-story-wiring.js）。ブラウザ不要の純粋ロジック。
 const wiring = await import(new URL('remake/js/chapters/ch3-story-wiring.js', root));
