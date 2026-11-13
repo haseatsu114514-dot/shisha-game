@@ -58,7 +58,15 @@ const BUILD = {
       "--x": `${(next() * 100).toFixed(1)}%`, "--s": `${(3 + next() * 5).toFixed(1)}px`,
       "--d": `${(4.5 + next() * 5).toFixed(2)}s`, "--delay": `${(-next() * 9).toFixed(2)}s`,
       "--dx": `${(-70 + next() * 140).toFixed(0)}px`, "--h": `${(360 + next() * 330).toFixed(0)}px` } })));
-    back.append(el("i.go-ember-tint"), el("i.go-ember-coal"), sparks);
+    // 筆文字の絵（白い芯＋色の光）から芯だけを温かい白で取り出す。光は CSS の drop-shadow で炭火の色に付け直す。
+    const core = svg("svg", { class: "go-look-defs", width: "0", height: "0", "aria-hidden": "true" }, [
+      svg("filter", { id: "go-ember-core", "color-interpolation-filters": "sRGB" }, [
+        svg("feColorMatrix", { in: "SourceGraphic", type: "matrix", result: "core",
+          values: "0 0 0 0 1  0 0 0 0 0.97  0 0 0 0 0.9  1.3 4.3 0.4 0 -4.2" }),
+        svg("feComposite", { in: "core", in2: "SourceAlpha", operator: "in" }),
+      ]),
+    ]);
+    back.append(core, el("i.go-ember-tint"), el("i.go-ember-backlight"), el("i.go-ember-coal"), sparks);
     root.querySelector(".go-clock").prepend(el("i.go-ember-ring", [el("i")]), el("i.go-ember-spark"));
     fore.append(el("i.go-ember-flare"));
     portraitLight(root);
@@ -66,7 +74,7 @@ const BUILD = {
   // C 漫画の大ゴマ: 紙・集中線の大ゴマ・コマ枠・ギザギザの残り秒数・吹き出しと名札。
   manga({ root, back, fore, character }) {
     // 筆文字の絵（白い芯＋色の光）から芯だけを墨の黒で取り出す。光のにじみは落とす。
-    const ink = svg("svg", { class: "go-manga-defs", width: "0", height: "0", "aria-hidden": "true" }, [
+    const ink = svg("svg", { class: "go-look-defs", width: "0", height: "0", "aria-hidden": "true" }, [
       svg("filter", { id: "go-manga-ink", "color-interpolation-filters": "sRGB" }, [
         svg("feColorMatrix", { in: "SourceGraphic", type: "matrix", result: "core",
           values: "0 0 0 0 0.07  0 0 0 0 0.07  0 0 0 0 0.07  1.3 4.3 0.4 0 -4.2" }),

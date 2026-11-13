@@ -1,14 +1,21 @@
 /* CONTINUE の見た目の候補 A 熾火（おきび・data-layout="ember"・CV58）。共通の土台は continue-looks.css。
    neon の構図（中央の顔・筆文字・右上の時計・下の2択）はそのまま、色を炭火へ。
    時計は燃え尽きていく炭の輪。火の粉が上がり、残り時間とともに足元の火が弱まる。時間切れは火が消えて灰色。 */
-.end-screen.gameover[data-layout="ember"] { background: #090504; --go-ink: #1c0a02; }
+/* 暗がりは冷たい炭色、火の色は題字・時計・ボタン・足元の火と人物の縁だけ（全部を橙にすると見分けにくい）。 */
+.end-screen.gameover[data-layout="ember"] { background: #06070c; --go-ink: #1c0a02; }
 .end-screen.gameover[data-layout="ember"] .go-veil { background: linear-gradient(0deg, #0a030066, transparent 30%), radial-gradient(ellipse 60% 70% at 50% 36%, #ff8a2a1c, transparent 70%), radial-gradient(ellipse at 50% 50%, transparent 52%, #000000a8 100%); }
 /* 人物の箱を左右対称に画面幅まで広げる（大きい衣装・小物が横で切れないように）。中央は元のまま。 */
 .end-screen.gameover[data-layout="ember"] .go-portrait { inset: 0 -170px; }
 /* 暗い会場の絵を炭の色へ寄せて敷く（画面全体を橙に塗らない。明るいのは足元の火だけ）。 */
 .end-screen.gameover[data-layout="ember"] .go-ember-tint {
   position: absolute; inset: 0; background: var(--go-backdrop) center / cover no-repeat;
-  filter: sepia(1) saturate(2.2) hue-rotate(-24deg) brightness(.5); opacity: .8;
+  filter: saturate(.3) brightness(.68) contrast(1.05); opacity: .9;
+}
+/* 人物の背中側だけを温める（暗い帽子・服の輪郭を背景から浮かせる）。 */
+.end-screen.gameover[data-layout="ember"] .go-ember-backlight {
+  position: absolute; left: 290px; top: 20px; width: 700px; height: 600px; mix-blend-mode: screen;
+  background: radial-gradient(ellipse closest-side, #ff8a2a52 0, #ff6a1428 48%, transparent 100%);
+  opacity: calc(1 - var(--go-look-p) * .45);
 }
 .end-screen.gameover[data-layout="ember"] .go-ember-coal {
   position: absolute; left: -14%; right: -14%; bottom: -250px; height: 560px; mix-blend-mode: screen;
@@ -31,13 +38,16 @@
 .end-screen.gameover[data-layout="ember"] .go-look-light.go-beat { animation: go-portrait-beat .38s var(--ease-out) both; }
 .end-screen.gameover[data-layout="ember"][data-effect="shark"] .go-look-light { animation: go-plush-nod .6s .4s ease-out both; }
 .end-screen.gameover[data-layout="ember"] .go-count-back:not([hidden]) { display: grid; inset: 0; height: auto; grid-template-rows: minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); }
-.end-screen.gameover[data-layout="ember"] .go-count-echo { font-size: 1000px; color: #ff7a1a; opacity: .075; }
+.end-screen.gameover[data-layout="ember"] .go-count-echo { font-size: 1000px; color: #ff7a1a; opacity: .05; }
 /* 筆文字は同じ絵を炭火の色へ（h1 に掛ける。絵自身の入場の動きは filter を none に戻すため）。 */
+/* 筆文字は白い芯を残し、光だけを炭火の色にする（芯まで橙に染めると輪郭がにじむ）。
+   h1 に掛ける（絵自身の入場の動きは filter を none に戻すため）。#go-ember-core は continue-looks.js。 */
 .end-screen.gameover[data-layout="ember"] .go-title {
   left: 196px; top: 20px; width: 752px; height: 178px; transform: rotate(-2deg);
-  filter: sepia(1) saturate(3.6) hue-rotate(-16deg) brightness(1.1) drop-shadow(0 0 10px #ff6a14aa) drop-shadow(0 0 30px #ff3d0050);
+  filter: url(#go-ember-core) drop-shadow(0 0 2px #ffcf8a) drop-shadow(0 0 9px #ff7a1a) drop-shadow(0 0 26px #ff4d00aa) drop-shadow(0 3px 2px #1a0700);
 }
-.end-screen.gameover[data-layout="ember"] .go-sumi-img { filter: drop-shadow(0 0 26px #ff6a1430) drop-shadow(5px 4px 0 #1408009c); }
+/* 輪郭に細い火の縁を入れる（暗い背景に溶けないように）。 */
+.end-screen.gameover[data-layout="ember"] .go-sumi-img { filter: drop-shadow(0 0 1.5px #ffc27acc) drop-shadow(0 0 12px #ff7a1a55) drop-shadow(5px 4px 0 #1408009c); }
 .end-screen.gameover[data-layout="ember"] .go-clock { left: 966px; top: -2px; width: 218px; height: 218px; animation: go-look-enter .7s .18s ease-out both; }
 .end-screen.gameover[data-layout="ember"] .go-ember-ring { position: absolute; inset: 20px; filter: drop-shadow(0 0 7px #ff7a1acc) drop-shadow(0 0 20px #ff4d0066); }
 .end-screen.gameover[data-layout="ember"] .go-ember-ring > i {
@@ -54,8 +64,8 @@
 .end-screen.gameover[data-layout="ember"] .go-count {
   position: absolute; inset: 22px 0 0; width: 100%; height: 172px; padding-right: 10px;
   font: italic 400 138px / 1.22 Georgia, "Times New Roman", serif; text-align: center; letter-spacing: -.08em;
-  background: linear-gradient(180deg, #fff8dc 22%, #ffd07a 48%, #ff7a1a 86%);
-  background-clip: text; -webkit-background-clip: text; color: transparent; filter: drop-shadow(0 0 9px #ff6a1499);
+  background: linear-gradient(180deg, #ffffff 30%, #fff0d2 62%, #ffc27a 92%);
+  background-clip: text; -webkit-background-clip: text; color: transparent; filter: drop-shadow(0 0 2px #ff9a3a) drop-shadow(0 0 10px #ff6a14cc) drop-shadow(0 3px 2px #1a0700);
 }
 .end-screen.gameover[data-layout="ember"] .go-count-tick { animation: go-ember-tick .3s ease-out; }
 .end-screen.gameover[data-layout="ember"] .go-limit-note {
@@ -81,10 +91,11 @@
 .end-screen.gameover[data-layout="ember"] .go-choice {
   --go-look-tap: max(106px, calc(44.1px / var(--k, 1)));
   height: var(--go-look-tap); min-height: var(--go-look-tap); padding: 12px 68px; border: 0; border-radius: 0; background: none; box-shadow: none;
-  font-size: 38px; color: #f1ddc8; text-shadow: 0 0 8px #7a3a1a, 0 2px 2px #140800;
+  font-size: 38px; color: #fff1de; text-shadow: 0 0 6px #1a0700, 0 2px 2px #140800;
 }
 .end-screen.gameover[data-layout="ember"] .go-choice-frame { display: block; }
-.end-screen.gameover[data-layout="ember"] .go-choice-frame:not(.go-choice-frame-selected) { filter: sepia(1) saturate(1.5) hue-rotate(-28deg) brightness(.72); }
+/* 選んでいない枠も、ボタンだと分かる明るさの白っぽい金に（暗い茶に沈めない）。 */
+.end-screen.gameover[data-layout="ember"] .go-choice-frame:not(.go-choice-frame-selected) { filter: grayscale(1) sepia(.55) brightness(1.45) contrast(1.05); }
 .end-screen.gameover[data-layout="ember"] .go-choice-frame-selected { filter: saturate(1.25) drop-shadow(0 0 10px #ff8a2a88); }
 .end-screen.gameover[data-layout="ember"] .go-choice-label { position: relative; z-index: 1; transform: skewX(-4deg); }
 .end-screen.gameover[data-layout="ember"] .go-choice:not(:disabled):is(:focus-visible, :active),
@@ -110,7 +121,7 @@
 .end-screen.gameover[data-layout="ember"][data-choice="quit"] :is(.go-ember-coal, .go-ember-sparks) { opacity: .25; transition: opacity 1.2s; }
 /* 残り5秒: 火が消えかけて脈を打つ。 */
 .end-screen.gameover[data-layout="ember"].go-urgent .go-ember-coal { animation: go-ember-gasp .5s ease-in-out infinite alternate; }
-.end-screen.gameover[data-layout="ember"].go-urgent .go-count { background-image: linear-gradient(180deg, #fff1e0 20%, #ff9a6b 52%, #ff3d1f 90%); }
+.end-screen.gameover[data-layout="ember"].go-urgent .go-count { background-image: linear-gradient(180deg, #ffffff 26%, #ffd0bc 58%, #ff6a4a 92%); filter: drop-shadow(0 0 2px #ff5a3a) drop-shadow(0 0 12px #ff3d1fcc) drop-shadow(0 3px 2px #1a0700); }
 .end-screen.gameover[data-layout="ember"].go-urgent .go-veil { box-shadow: inset 0 0 110px #ff3d1f2e; }
 /* 時間切れ: 火が消える。灰色の文字に、最後の残り火だけがしばらく灯る。 */
 .end-screen.gameover[data-layout="ember"][data-timed-out="true"] :is(.go-ember-coal, .go-ember-sparks) { opacity: 0; transition: opacity .5s; }

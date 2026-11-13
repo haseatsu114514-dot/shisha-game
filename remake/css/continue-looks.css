@@ -10,6 +10,7 @@
 }
 .end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) :is(.go-look-back, .go-look-fore) { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 .end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-look-back { z-index: 0; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-look-defs { position: absolute; }
 .end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-look-fore { z-index: 2; }
 .end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) :is(.go-look-back, .go-look-fore) i { display: block; font-style: normal; }
 .end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-heading { inset: 0; display: block; text-align: left; animation: none; pointer-events: none; }

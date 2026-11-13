@@ -29,22 +29,25 @@
 .end-screen.gameover[data-layout="manga"] .go-left { left: -70px; width: 940px; clip-path: polygon(94px 24px, 876px 24px, 818px 696px, 94px 696px); }
 .end-screen.gameover[data-layout="manga"] .go-portrait { transform: translateY(26px) scale(.92); transform-origin: 470px 273px; -webkit-mask-image: none; mask-image: none; overflow: visible; }
 .end-screen.gameover[data-layout="manga"] .go-sumi-img { filter: drop-shadow(7px 7px 0 #111); }
-.end-screen.gameover[data-layout="manga"] .go-manga-defs { position: absolute; }
 .end-screen.gameover[data-layout="manga"] .go-title { left: 844px; top: 34px; width: 396px; height: 94px; transform: rotate(-3deg); filter: url(#go-manga-ink); transition: top .3s var(--ease-out); }
 .end-screen.gameover[data-layout="manga"] .go-clock { left: 1000px; top: 118px; width: 250px; height: 200px; }
+/* ギザギザは左右・上下とも釣り合った形（重心＝箱の中心）。数字は同じ箱の中心に置く。 */
 .end-screen.gameover[data-layout="manga"] .go-manga-burst {
-  position: absolute; inset: -4px 6px -4px 14px; background: #111;
-  clip-path: polygon(50.0% 0.0%, 58.0% 14.9%, 69.7% 9.0%, 74.3% 19.5%, 88.4% 19.4%, 82.4% 34.4%, 93.5% 40.1%, 89.0% 50.0%, 97.0% 60.7%, 82.4% 65.6%, 84.2% 77.2%, 74.3% 80.5%, 70.5% 92.6%, 58.0% 85.1%, 50.0% 92.8%, 41.3% 88.0%, 29.9% 91.8%, 27.6% 78.1%, 10.9% 81.2%, 14.9% 66.9%, 5.6% 60.1%, 14.0% 50.0%, 2.1% 39.1%, 14.9% 33.1%, 15.1% 22.2%, 27.6% 21.9%, 29.1% 6.6%, 41.3% 12.0%);
+  position: absolute; inset: 6px 16px 10px; background: #111; rotate: -6deg;
+  clip-path: polygon(50.0% 0.0%, 56.7% 16.2%, 66.8% 9.3%, 69.2% 21.3%, 85.4% 14.6%, 78.7% 30.8%, 90.7% 33.2%, 83.8% 43.3%, 100.0% 50.0%, 83.8% 56.7%, 90.7% 66.8%, 78.7% 69.2%, 85.4% 85.4%, 69.2% 78.7%, 66.8% 90.7%, 56.7% 83.8%, 50.0% 100.0%, 43.3% 83.8%, 33.2% 90.7%, 30.8% 78.7%, 14.6% 85.4%, 21.3% 69.2%, 9.3% 66.8%, 16.2% 56.7%, 0.0% 50.0%, 16.2% 43.3%, 9.3% 33.2%, 21.3% 30.8%, 14.6% 14.6%, 30.8% 21.3%, 33.2% 9.3%, 43.3% 16.2%);
 }
+/* 斜体は合成の傾き（字の下端が基準で右へずれる）を使わず、中心を軸に傾ける。
+   字は数字だけ（下に伸びない）なので、行の箱の中心より下に見える分（0.08em）を上げる。 */
 .end-screen.gameover[data-layout="manga"] .go-count {
-  position: absolute; inset: 0 0 8px 8px; display: grid; place-items: center; width: auto; padding-right: .06em;
-  font: italic 900 104px / 1 var(--font); letter-spacing: -.05em; text-align: center; color: #fff;
+  position: absolute; inset: 6px 16px 10px; display: grid; place-items: center; width: auto; padding: 0;
+  font: normal 900 104px / 1 var(--font); letter-spacing: -.04em; text-indent: -.04em; text-align: center; color: #fff;
+  font-variant-numeric: tabular-nums; transform: translateY(-.08em) skewX(-10deg);
 }
 .end-screen.gameover[data-layout="manga"] .go-count-tick { animation: go-manga-pop .22s cubic-bezier(.2, 1.6, .4, 1); }
 .end-screen.gameover[data-layout="manga"] .go-clock::before,
 .end-screen.gameover[data-layout="manga"] .go-clock::after { position: absolute; z-index: 1; font: 900 34px / 1 var(--font); color: #111; -webkit-text-stroke: 5px #fff; paint-order: stroke fill; }
-.end-screen.gameover[data-layout="manga"] .go-clock::before { content: "あと"; left: -22px; top: 30px; transform: rotate(-9deg); }
-.end-screen.gameover[data-layout="manga"] .go-clock::after { content: "秒"; right: 6px; bottom: 14px; transform: rotate(-6deg); }
+.end-screen.gameover[data-layout="manga"] .go-clock::before { content: "あと"; left: -30px; top: 22px; transform: rotate(-9deg); }
+.end-screen.gameover[data-layout="manga"] .go-clock::after { content: "秒"; right: 0; bottom: 12px; transform: rotate(-6deg); }
 .end-screen.gameover[data-layout="manga"] .go-limit-note {
   top: 192px; left: 832px; right: auto; width: 190px; padding: 0; border: 0; background: none; color: #111;
   font-size: max(16px, calc(12.5px / var(--k, 1))); font-weight: 700; line-height: 1.35; text-align: left; text-wrap: balance;
@@ -118,5 +121,5 @@
 .end-screen.gameover[data-layout="manga"][data-timed-out="true"] { background: #0c0c0c; transition: background .25s; }
 .end-screen.gameover[data-layout="manga"][data-timed-out="true"] :is(.go-look-back, .go-look-fore) { opacity: 0; transition: opacity .25s; }
 .end-screen.gameover[data-layout="manga"][data-timed-out="true"] .go-title { filter: grayscale(1) brightness(1.7) contrast(1.15); transition: none; }
-@keyframes go-manga-pop { from { transform: scale(1.35) rotate(-6deg); } to { transform: none; } }
-@keyframes go-manga-shake { from { transform: translate(-2px, 1px) rotate(-1deg); } to { transform: translate(2px, -1px) rotate(1deg); } }
+@keyframes go-manga-pop { from { scale: 1.35; rotate: -6deg; } to { scale: 1; rotate: 0deg; } }
+@keyframes go-manga-shake { from { translate: -2px 1px; rotate: -7deg; } to { translate: 2px -1px; rotate: -5deg; } }
