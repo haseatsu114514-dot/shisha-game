@@ -531,6 +531,7 @@ export const FLAG_EXACT_RULES = [
   ["_spot_follow_adam", "person"],
   ["_spot_follow_adam_lunch", "person"], // 街の人同士のつながりの続き（REL01〜03・daily/spot-encounters.js の FOLLOWUPS）
   ["_spot_follow_minto", "person"],
+  ["_spot_follow_minto_hiyori", "person"], // ひより×みんとの後日の一言（#3468 B案・daily/spot-encounters.js の FOLLOWUPS）
   ["_spot_follow_minto_samechan", "person"],
   ["_spot_follow_naru", "person"],
   ["_spot_follow_naru_rio", "person"],
@@ -548,6 +549,7 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_choizap_oldman", "progression"],
   ["_spot_seen_cs_ch2_haze", "progression"],
   ["_spot_seen_cs_kemuri_sample", "person"],
+  ["_spot_seen_hiyori_shop_minto_seat", "person"], // ぺぱーみんとの夜の相席で一度だけ（#3468 B案・daily/hiyori.js）
   ["_spot_seen_kannon_adam", "person"],
   ["_spot_seen_kannon_adam_lunch", "person"],
   ["_spot_seen_kannon_adam_pakki", "person"],
