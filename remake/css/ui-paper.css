@@ -102,9 +102,10 @@ html:root[data-ui-theme="paper"] body:not(:root) .vn-controls .vn-ctl:is(:hover,
 }
 html:root[data-ui-theme="paper"] body:not(:root) .vn-controls .vn-ctl.on { color: var(--amber-ink); background: none; box-shadow: none; }
 /* スマホの枠はホームバーを避けて上がる。操作列も同じ下端を参照しないと本文へ残ってしまう。
-   大きいタップ領域は上へ伸ばし、文字と区切り線は下端に寄せて紙の見出し帯に収める。 */
+   大きいタップ領域は上へ伸ばし、文字と区切り線は下端に寄せて紙の見出し帯に収める。
+   下端の値は phone-density.css の .vn-box と同じ式にそろえる（2026-11-13 に実寸約6px下げた。DUI20）。 */
 html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) #stage {
-  --vn-dialogue-bottom: max(30px, calc((env(safe-area-inset-bottom, 0px) + 8px) / var(--k, 1)));
+  --vn-dialogue-bottom: max(20px, calc((env(safe-area-inset-bottom, 0px) + 2px) / var(--k, 1)));
 }
 html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) .vn-controls .vn-ctl {
   display: flex; align-items: flex-end; justify-content: center;

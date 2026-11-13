@@ -976,6 +976,12 @@
       "run": ["node remake/test/visit_chains.mjs", "node --experimental-vm-modules remake/test/visit_chains_wiring.mjs"]
     },
     {
+      "id": "vn-preload-queue",
+      "title": "会話の立ち絵・CGの待たない先読み: 1枚ずつ・新しい会話を先に・重複なし・読み残しの上限（LD02）",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/vn_preload_queue.mjs"]
+    },
+    {
       "id": "manifest-dependencies",
       "title": "Manifest generator required dependency diagnostics",
       "kind": "quick",
@@ -3730,6 +3736,15 @@
       "paths": ["remake/css/phone-layout.css", "remake/index.html", "remake/craft-preview.html", "remake/test/browser/phone_layout_1110.mjs"],
       "run": ["node remake/test/browser/phone_layout_1110.mjs"],
       "chrome": "playwright"
+    },
+    {
+      "id": "neo-light-swap",
+      "title": "新版: 表情が替わる間も立ち絵の光の層が消えない（型は新しい表情の絵をデコードしてから替える・LD08）",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 3,
+      "paths": ["remake/js/looks/neo.js", "remake/css/look-neo.css", "remake/js/vn/engine.js", "remake/test/browser/neo_light_swap.mjs"],
+      "run": ["node remake/test/browser/neo_light_swap.mjs"]
     },
     {
       "id": "phone-density",

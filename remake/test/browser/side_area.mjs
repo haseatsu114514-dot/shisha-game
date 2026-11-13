@@ -136,6 +136,9 @@ await suite("side-area", async check => {
     await page.locator(t("side-auto")).tap();
     await page.waitForFunction(() => document.querySelector('[data-test="vn-auto"]').getAttribute("aria-pressed") === "false");
     await page.locator(`${t("side-auto")}[aria-pressed="false"]`).waitFor();
+    // 置き場所（YHK16）: SKIP は右の親指（「次へ」と同じ列）、AUTO は左（LOG と同じ列）
+    assert.equal(await page.locator(`.side[data-side="r"] .side-pad.bottom ${t("side-skip")} + ${t("side-next")}`).count(), 1, "SKIP は右下、「次へ」の上");
+    assert.equal(await page.locator(`.side[data-side="l"] .side-pad.bottom ${t("side-auto")} + ${t("side-log")}`).count(), 1, "AUTO は左下、LOG の上");
     // SKIP も同じ（入れたら面を押して止める＝次へで止まる）
     await page.locator(t("side-skip")).tap();
     await page.waitForFunction(() => document.querySelector('[data-test="vn-skip"]').getAttribute("aria-pressed") === "true");
