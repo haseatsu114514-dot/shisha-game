@@ -2681,6 +2681,295 @@
           }
         }
       ]
+    },
+    {
+      "dialogue_id": "ch3_saku_steve_notes",
+      "comment": "#3468 C案。スティーブ×綾取「ノートは読めないが、熱の話は通じる」。大会後の寄り道（ch3-aftermath-progress.js）で、優勝の翌日・なるへの報告まで（綾取の帰り支度が始まった頃）だけ。煙幕の片づけ（ch3_enmaku_cleanup・帰郷の日の朝）と ch3_saku_cleanup は置き換えない。ピザは入口の小道具だけ、タイマーは出さない（ch3_steve_two_timers のオチを繰り返さない）。低温はスティーブの軸で、綾取は低温派にしない。はじめは居合わせるだけで仲介しない。好感度・恋愛は動かさない。後日の一言は第4章のLIME（lime_ch4_saku_steve_note）。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_yohaku_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "煙幕の入口に、畳んだ段ボールが立てかけてあった。仕切りの布はまだ吊られている。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "ようこそ、東京の煙を裏から動かす組織へ。……今日は、段ボールの組み立て中だけど",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "返す支度、もう始めてるんですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "借りた店だからね。組織の本部も、鏡から順に普通の店へ戻る",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "ドアベルが鳴った。大きな平たい箱を抱えて、柄シャツのスティーブが入ってくる。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "ヘイ。ここが噂の組織か。差し入れだ。片付けの日は、腹が減るだろ",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "……スティーブさん。本部へようこそ。合言葉は、",
+          "face": "surprise"
+        },
+        {
+          "speaker": "steve",
+          "text": "ピザ",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "正解にしておく",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "箱はカウンターの端に置かれた。その隣で、綾取のノートが開いたままになっている。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "それ、記録か",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "うん。左が僕の予想、右が客の答え",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "見せろ、とは言わない。見せたい頁があったら、それでいい。……俺は、これを出す",
+          "face": "serious"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブは胸ポケットから、手書きのレシピカードを一枚選んで置いた。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "綾取は表紙をめくり、何頁か飛ばして、一頁だけ開いた。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "カードの余白には「二口目、思ったより軽い。笑った」。ノートの右の列には「焼き菓子みたい」。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "ヘイ。客に外されてるな",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "外されてる。スティーブさんも",
+          "face": "smile"
+        },
+        {
+          "speaker": "steve",
+          "text": "イエス。客は、俺の予想をよく外す。そこが一番うまい",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "綾取の目が、少し見開いた。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "……同じ所、書いてる",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "焼き菓子、か。入れたのか",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "入れてない。入れてないものを、思い出してもらう一台",
+          "face": "smile"
+        },
+        {
+          "speaker": "steve",
+          "text": "ほう。いい嘘だな",
+          "face": "surprise"
+        },
+        {
+          "speaker": "saku",
+          "text": "でしょ。嘘で、人がちょっと嬉しくなるなら",
+          "face": "smug"
+        },
+        {
+          "speaker": "",
+          "text": "そこから、二人は互いの紙をのぞき込んだ。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "この、上の三角は？",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "炭だ。黒い三角が置いた炭、白い三角が抜いた跡。L-3は、左を三ミリ内側。見れば分かる",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "……分からない",
+          "face": "nervous"
+        },
+        {
+          "speaker": "steve",
+          "text": "ノー、ノー。分かるだろ。三ミリだぞ",
+          "face": "serious"
+        },
+        {
+          "speaker": "steve",
+          "text": "じゃあ、そっちの縦線と、閉じかっこは",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "縦線が立ち上がりで、閉じかっこが余韻。その間の波線は、客の顔がほどけた所。で、点は、",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "……点は、点だよ",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "ノー。点は点じゃないだろ",
+          "face": "serious"
+        },
+        {
+          "speaker": "",
+          "text": "どちらの記号も、書いた本人にだけは、最初から読めているらしかった。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "おかしいな。種明かしなら、いくらでも楽しくできるのに",
+          "face": "nervous"
+        },
+        {
+          "speaker": "saku",
+          "text": "……説明、やめていい？　手でやる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "綾取は火の入っていないボウルを引き寄せ、縁の三か所を指で順に叩いた。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "最初に、ここ。柑橘を先に立たせる。茶は、遅れてここから",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "外から内へ、だな。俺は逆だ。内を待ってから、外へ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブの太い指が、同じ縁を逆の順に叩いた。綾取がすぐにうなずく。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "それなら、黒い三角の意味、分かった",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "だろ。手なら、三秒だ",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "僕は待たない方だけどね。先に立たせて、あとは客の記憶に任せる",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "俺は待つ。待つと、二口目が軽い。……そこは、譲らない",
+          "face": "serious"
+        },
+        {
+          "speaker": "saku",
+          "text": "うん。譲らなくていい",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "話は、紙の上の記号を飛ばして、手元の順番だけで進んだ。俺が口を挟む隙は、一度もなかった。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "気づくと、綾取はノートの端に小さな黒い三角を描き、隣に細い字で何か書き足していた。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "おっと。長居した。ピザ、冷める前に食え。片付けの手は止めていい",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "スティーブさん。福岡で試したら、感想を送ってもいい？",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "イエス。記号じゃなく、字で頼む",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "そっちも",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "ドアベルが鳴りやんでから、綾取は箱を開けた。湯気は、もうあまり上がらなかった。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "君も食べて。組織の経費だから",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ありがとうございます。……組織、ピザ代は出してないですよね",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "出してない。でも、そう言った方がおいしい",
+          "face": "smile"
+        }
+      ]
     }
   ]
 }

@@ -112,15 +112,17 @@ await suite("navigation-transitions", async (check) => {
       });
       await page.locator(`[data-test="pin-${spot}"]`).click();
       await page.waitForFunction(() => !document.querySelector(".scene-curtain"));
-      // 2026-11-12（a389db22f）から、Dr.fookah では入口の前に凛想の店頭の応対（daily/shop-greeting.js）を読む。
-      // 地図から寄る移動は、その応対の場面に入る時に使われる（入口の「店に入る」の後には幕が出ない）。
-      // そのため店は、休む時と同じく「寄る移動が終わってから応対の会話が出る」ことを確かめる。
+      // 店（Dr.fookah）は 2026-11-12（a389db22f）から、入口の前に店頭の応対（daily/shop-greeting.js）を読む。
+      // 地図からの移動の幕が明けて最初に出るのは応対の台詞で、入口（shop-enter）と売り場はその後に出る。
       const selector = spot === "tonari" ? '[data-test="tonari-customer"]' : "#vn.active .vn-text";
       await arm(page, selector);
       await page.locator('[data-test="map-go"]').click();
       await page.locator(".scene-curtain").waitFor();
       await page.keyboard.press("Enter");
-      if (spot !== "tonari") assert.equal(await page.locator(".vn-text").textContent(), "");
+      // 店は、幕のあとにリオの紹介（#3491・読み取りは support.mjs の installShopGreetingReader）が入ってから入口が出る。
+      // 入口を先に待つと、その頃には幕が終わっていて、幕を待って時間切れになる
+      if (spot === "shop") await page.locator('[data-test="shop-enter"]').click();
+      if (spot === "rest") assert.equal(await page.locator(".vn-text").textContent(), "");
       const audit = await verify(page, selector, spot === "rest" ? "move-lights" : "move-zoom");
       assert.equal(audit.purple, false, "The move drew purple shapes");
       assert.equal(audit.zoomed, true, "The map itself did not zoom toward the pin");
@@ -128,6 +130,12 @@ await suite("navigation-transitions", async (check) => {
       if (spot === "rest") {
         assert.ok(audit.ended - audit.started < 1800, "The warmed-up home transition still feels too long");
         await page.waitForFunction(() => document.querySelector(".vn-text").textContent.includes("今日は早めに家へ帰った"));
+      }
+      if (spot === "shop") {
+        // 応対を読み終えると入口が出て、入ると売り場が開く（買い物そのものは変わらない）
+        await page.evaluate(() => { T.engine.vnTest.turbo = true; });
+        await page.locator('[data-test="shop-enter"]').click();
+        await page.locator(".shop-tabs").waitFor();
       }
     }, { viewport });
   }
@@ -186,5 +194,4 @@ await suite("navigation-transitions", async (check) => {
     const audit = await verify(page, "#vn.active .vn-text");
     assert.deepEqual(audit.types, ["fade"], "Reduced motion played the full move instead of a fade");
   }, { reducedMotion: "reduce" });
-// 店頭の応対は、寄る移動の終わりを確かめるために自分で止めておく（読み飛ばし役を入れない）。
-}, { readShopGreeting: false });
+});

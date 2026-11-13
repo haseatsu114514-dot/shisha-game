@@ -1617,6 +1617,134 @@
       ]
     },
     {
+      "dialogue_id": "hiyori_shop_minto_seat",
+      "metadata": {
+        "private_scene": false,
+        "setting": "ひより×みんと（Issue #3468 B案）。REL07 hiyori_shop_minto の後、夜（退勤後）のぺぱーみんとの相席で一度だけ（daily/hiyori.js）。儚く見える窓際と、本当に休める奥の席。みんとは疲れと手つきに気づく程度で、種明かしはしない。みんとの店なので営業の名前のまま。年齢・本名・私服・ひよりの本心は誰も口にしない。"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "仕事帰りのひよりは、ドアを入るなり、まっすぐ窓際の席へ向かった。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……今夜も、窓の外の灯りを見ていたいの。遠くて、届かないものを",
+          "inner": "窓際は外から見える。今日いちばん儚く映る席、ここ"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "わかる〜♡ でもね、夜の窓際って、ガラスから冷えてくるの"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "奥のソファ、どう？ ランプ、お店でいちばん暗くできる席だよ♡"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……暗がり",
+          "inner": "え、暗くできるの？ そっちのほうが雰囲気出るじゃん"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……灯りの届かない場所で、ひっそり溶けるのも、悪くないね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席に座ると、みんとがランプのつまみを回した。灯りは落ちたが、手元だけはちゃんと見えた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとが盆を持って戻ってくる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりは遠くへ目をやったまま、通路に置いていたバッグを足もとへ引き寄せた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ついでに、コースターをテーブルの縁に合わせて、まっすぐ置き直す。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "顔は物憂げなのに、手だけがやけに速い。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとの目が、一瞬だけそのコースターに止まった。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "煙はもうちょっと待っててね。先に、あったかいの置いとく♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "湯気の立つ紅茶が、まっすぐになったコースターの上に置かれた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……温かい。ここは、時間がゆっくり流れるのね",
+          "inner": "あ、肩が下りた。今日、内線鳴りすぎだったんだよね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……このまま、ソファに沈んで、消えてしまいたい"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "閉店まではどうぞ♡ 沈んでても、延長料金は取らないから"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……ふふ",
+          "inner": "笑うとこじゃないのに。……でも、ちょっと笑った"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりは、それきり何も演じないで、紅茶を両手で包んでいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりが帰ったあと、みんとはランプを元の明るさに戻した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ソファのクッションを一つだけ、ぽんと叩いて整える。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……あの席、最初から勧めるつもりだった？"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "なにがー？ みんと、お客さんの好きな席を探すのが得意なだけだよ♡"
+        }
+      ]
+    },
+    {
       "dialogue_id": "hiyori_tonari_afterwork",
       "metadata": {
         "private_scene": true,

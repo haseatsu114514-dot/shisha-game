@@ -20,6 +20,7 @@ const V3_SCENE_IDS = Object.freeze(["ch3_abyss_hotel", "ch3_mashiro_recovery", "
  * 大会後の寄り道（#2028 残件3・#1658 ⑥）。優勝の翌日から煙幕の片づけまで、東京にいる間の場面カードから一度ずつ読める。
  * 読んでも stage・日時は進めない。既読は大会前の寄り道と同じ _ch3_read_<id>（ch3-story-wiring.js の optionalReadFlag）。
  * file=台詞ファイル、met=面識がある人物だけ、after=この寄り道を読んでから（順に読む）。
+ * to=CH3_AFTERMATH_SCENES の場面id。その場面を読む前の間だけ開く（省略時は片づけの朝まで）。
  */
 export const CH3_AFTERMATH_DETOURS = Object.freeze([
   { id: "ch3_mukai_after_tournament", file: "ch3_mukai", label: "閉店前のカウンター", location: "mukai", bg: "bg_mukai_shop" },
@@ -58,6 +59,10 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
     met: ["steve"], after: ["ch3_steve_empty_seat"], heart: { steve: 4 } },
   { id: "ch3_steve_watch", file: "ch3_rivals", label: "伏せたタイマー", location: "Smoke & Glory", bg: "bg_steve_shop",
     met: ["steve"], after: ["ch3_steve_tongs"], heart: { steve: 4 } },
+  // #3468 C案。スティーブが煙幕へピザを差し入れる短い別訪問。綾取の帰り支度が始まった頃（片づけの朝の前日）だけ。
+  // 窓の終わりは綾取の授業・締めくくりと同じなるへの報告まで（to）。好感度は動かさない。後日の一言は第4章のLIME。
+  { id: "ch3_saku_steve_notes", file: "ch3_rivals", label: "読めない記号", location: "煙幕", bg: "bg_yohaku_shop",
+    met: ["saku", "steve"], to: "ch3_naru_reconcile" },
   // #3081。大会前に読めなかったましろの段階の続き。台本は大会に触れないので、前後どちらの読了でも同じ。
   // 既読は大会前の寄り道と同じ _ch3_read_<id>。続く2本は glass_cloth の次へつなぐ。
   { id: "ch3_mashiro_timer_side", file: "ch3_mashiro", label: "タイマーの隣", location: "mukai", bg: "bg_mukai_shop",
@@ -87,6 +92,7 @@ export function availableAftermathDetours(value) {
   const stage = value.flags._ch3_aftermath?.stage;
   if (!Number.isInteger(stage) || stage < DETOUR_FIRST || stage > DETOUR_LAST) return [];
   return CH3_AFTERMATH_DETOURS.filter(scene => !value.flags[detourReadFlag(scene.id)]
+    && (!scene.to || stage <= sceneIndex(scene.to))
     && (scene.met || []).every(who => value.met?.[who])
     && (scene.after || []).every(id => value.flags[detourReadFlag(id)])
     && Object.entries(scene.heart || {}).every(([who, level]) => (value.affinity?.[who] || 0) >= AFTERMATH_HEART_PTS[level]));

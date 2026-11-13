@@ -69,7 +69,7 @@ const values = {
   "chapter-features.js": { chapterFeatureEnabled },
   "hiyori-route.js": { hiyoriEventStatus: () => "disabled", hiyoriRoute: () => db.hiyori?.route || {}, hiyoriFinaleReady: () => false },
   "util.js": { el, clamp, sleep: async () => {}, fitOneLine: () => {}, yen: (n) => `¥${Number(n).toLocaleString("ja-JP")}` },
-  "data.js": { DB: db, displayName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
+  "data.js": { DB: db, displayName: (id) => id, limeAccountName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
   "lime-icons.js": { customLimeIconUrl: () => null },
   "ui.js": { layers, toast: (text) => nudges.push(text) }, "state.js": { state, save: noop, STAT_JA, hasAffinity, STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"] },
   "stats.js": { setStoryAffinityCap() {}, affinityGateWaiting: () => false, gainStat: noop, addMoney: noop, gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
@@ -84,6 +84,7 @@ const values = {
   // サメちゃんのデート（samechan-date.js）が読む心得の盤。LIMEの検査なので旧しくみ（盤は無効）の代役にする
   "growth.js": { growthEnabled: () => false, awardActionExp: () => 0 },
   "petit-shuraba.js": { petitAfterDate: async () => false }, // プチ修羅場（デートの後の寄り道）は remake/test/petit_shuraba.mjs
+  "lover-strain.js": { strainOf: () => 0, STRAIN_SIGN2: 7 }, // すれ違い（恋人の裏の数値）は remake/test/lover_strain.mjs。この検査では動かない
   "gallery-progress.js": { recordRouteLover: noop, recordRouteEvent: noop }, // コレクションのルート記録（恋人成立・閲覧した段階）は remake/test/gallery_route_records.mjs
 };
 // 同じVM stateに実statsを接続。新しいexportを空の成功stubで埋めない。
