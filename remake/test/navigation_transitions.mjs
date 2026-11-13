@@ -112,14 +112,19 @@ await suite("navigation-transitions", async (check) => {
       });
       await page.locator(`[data-test="pin-${spot}"]`).click();
       await page.waitForFunction(() => !document.querySelector(".scene-curtain"));
-      const selector = spot === "rest" ? "#vn.active .vn-text" : spot === "tonari" ? '[data-test="tonari-customer"]' : ".shop-tabs";
+      // 地元の店は、移動の幕が開けると店頭の応対（#3491）の会話になる。会話は幕が下りるまで出さない。
+      const selector = spot === "tonari" ? '[data-test="tonari-customer"]' : "#vn.active .vn-text";
       await arm(page, selector);
       await page.locator('[data-test="map-go"]').click();
-      if (spot === "shop") await page.locator('[data-test="shop-enter"]').click();
       await page.locator(".scene-curtain").waitFor();
       await page.keyboard.press("Enter");
       if (spot === "rest") assert.equal(await page.locator(".vn-text").textContent(), "");
       const audit = await verify(page, selector, spot === "rest" ? "move-lights" : "move-zoom");
+      if (spot === "shop") {
+        // 応対を読み終えた入口から1階の売り場へ進める。
+        await page.locator('[data-test="shop-enter"]').click();
+        await page.locator(".shop-tabs").waitFor();
+      }
       assert.equal(audit.purple, false, "The move drew purple shapes");
       assert.equal(audit.zoomed, true, "The map itself did not zoom toward the pin");
       assert.equal(audit.card, false, "The store logo was shown on the white card");

@@ -108,7 +108,8 @@ export function enableSeenLinePersistence() {
   globalThis.addEventListener?.("pagehide", flushSeenLines);
   globalThis.document?.addEventListener?.("visibilitychange", () => { if (document.hidden) flushSeenLines(); });
 }
-function flushSeenLines() {
+/** 読んだ行の既読印を今すぐ保存する（ふだんは10秒ごと・会話の終わり・タブを隠した時にまとめて書く）。保存の中身を比べる検査からも呼ぶ。 */
+export function flushSeenLines() {
   clearTimeout(seenLinesTimer);
   seenLinesTimer = 0;
   if (!seenLinesDirty || !seenLinePersistence) return;
