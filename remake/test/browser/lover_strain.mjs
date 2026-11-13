@@ -153,6 +153,48 @@ await suite("lover-strain", async check => {
     assert.deepEqual([result.busy, result.away, result.unresolved, result.notYet], [false, false, false, false]);
   });
 
+  // やり直し（復縁）: 友達に戻った相手に、章をまたいだ後、こちらから一度だけ申し込める。見送れば数日後にもう一度。
+  await check("an-ex-can-be-asked-back-once-in-a-later-chapter", async page => {
+    await setup(page);
+    const result = await page.evaluate(async () => {
+      const s = H.fresh(["rio"]);
+      Object.assign(s, { lovers: [], loverStrain: { init: true, by: { rio: { v: 0, why: {}, sign: 0, talks: 1, ex: 10, exChapter: 1 } } } });
+      s.flags._friend_rio = true; s.lovePts.rio = 20;
+      const out = { before: H.snap() };
+      const ask = choice => { H.vn.vnTest.choose = () => choice; return H.strain.maybeStrainReunion(async text => { H.beat = text; }); };
+      out.wait = await ask(1); out.waitRead = H.read(); out.afterWait = H.snap(); out.beat = H.beat;
+      H.vn.clearLog();
+      out.sameWeek = await ask(0);
+      s.day = 25; H.vn.clearLog();
+      out.go = await ask(0); out.goRead = H.read(); out.after = H.snap(); out.toasts = H.toasts();
+      out.level = s.loveLevel.rio; out.pts = s.lovePts.rio; out.lover = H.romance.isLover("rio");
+      out.again = await ask(0);
+      // 同じ章の間・遠出の間は申し込めない
+      const same = H.fresh([]); same.flags._friend_rio = true; same.loverStrain = { init: true, by: { rio: { ex: 18, exChapter: 2 } } };
+      out.sameChapter = await ask(0);
+      return out;
+    });
+    assert.equal(result.wait, true);
+    assert.equal(result.beat, "（……凛想さんの顔が、ふと浮かんだ）");
+    assert(result.waitRead.some(text => text.includes("▶|……今は、やめておく")) && result.waitRead.some(text => text.includes("もう少し、考えよう")));
+    assert.deepEqual(result.afterWait.lovers, [], "Not asking changes nothing");
+    assert.equal(result.sameWeek, false, "The thought does not come back the same week");
+    assert.equal(result.go, true);
+    const at = needle => result.goRead.findIndex(text => text.includes(needle));
+    assert(at("▶|もう一度、気持ちを伝える") >= 0 && at("もう一度、付き合ってください") > at("▶|もう一度、気持ちを伝える"), "Hajime is the one who asks");
+    assert(at("おかえり、モルモットくん") > at("条件はひとつ"), "She names one condition and takes him back");
+    assert.equal(result.lover, true);
+    assert.deepEqual(result.after.lovers, ["rio"]);
+    assert.deepEqual(result.after.friend, [], "The 'stay friends' mark is gone");
+    assert.deepEqual(result.after.temp, []);
+    assert.deepEqual([result.level, result.pts], [2, 20], "The bond she had is kept");
+    assert.equal(result.after.strain.rio.reunited, true);
+    assert.deepEqual(result.toasts, ["凛想さんと、もう一度付き合うことになった。"]);
+    assert.deepEqual([result.after.money, result.after.stamina, result.after.stats], [result.before.money, result.before.stamina, result.before.stats]);
+    assert.equal(result.again, false);
+    assert.equal(result.sameChapter, false, "Not in the chapter she left");
+  });
+
   // 実際の一日の流れ: 朝に予兆が届き（通知の件数に入る）、行動を終えた夜の帰り道で別れ話になってから家に帰る。
   await check("a-real-day-delivers-the-sign-in-the-morning-and-the-talk-at-night", async page => {
     page.setDefaultTimeout(30000);

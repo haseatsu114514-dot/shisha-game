@@ -3,6 +3,7 @@
 // 差し込み口:
 //   strainMorning()      … 朝（calendar.js の morning）。一日ぶん進めて、予兆のLIMEと、はじめの独り言を出す
 //   maybeStrainTalk(beat) … 一日の終わり（calendar.js の endDay。告白と同じ位置）。溜まりきった恋人が帰り道で待っている
+//   maybeStrainReunion(beat) … 同じく一日の終わり（別れ話が無かった夜）。友達に戻った相手に、こちらからやり直しを申し込む
 //   strainAfterVisit(spot) … その人の店へ顔を出した後（calendar.js の performSpotAction）
 // 別れ話は必ず読む場面なので、行動・体力・お金・能力の報酬は無い。数値は画面にも台詞にも出さない。
 import { state, save } from "../core/state.js";
@@ -12,9 +13,11 @@ import { play, isPlaying } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { relationshipElapsedDay } from "../core/chapter-clock.js";
 import { deliverLimeMessage } from "./phone.js";
+import { rejoinLover } from "./romance.js";
 import { petitPlace } from "./petit-shuraba.js";
 import { tickStrain, syncStrain, strainTalkPick, settleStrainTalk, strainVisit, strainSignMessage,
-  strainTalkScenes, joinStrainScenes, STRAIN_SCENES, STRAIN_OUTCOME_FLAGS } from "../core/lover-strain.js";
+  strainTalkScenes, joinStrainScenes, STRAIN_SCENES, STRAIN_OUTCOME_FLAGS,
+  strainReunionPick, deferStrainReunion, settleStrainReunion, STRAIN_REUNION_FLAG } from "../core/lover-strain.js";
 
 const FILE = "lover_strain";
 const STREET_NIGHT = "res://assets/backgrounds/bg_street_night.png";
@@ -93,6 +96,57 @@ export async function maybeStrainTalk(beat, { busyNight = false } = {}) {
   settleStrainTalk(state, pick.id, outcome);
   save();
   if (outcome === "end") toast(`${who}と、友達に戻った。`, { ms: 4600 });
+  return true;
+}
+
+// やり直しを申し込むかどうか（告白の前の一拍 romance.js の gateScene と同じ形）。申し込むのは、はじめのほうから
+const reunionGate = (id) => ({
+  dialogue_id: `remake_strain_reunion_gate_${id}`,
+  metadata: { private_scene: true },
+  lines: [
+    { speaker: "", text: `（……${name(id)}と友達に戻ってから、ずいぶん経った）` },
+    { speaker: "", text: "（それでも、まだ、あの夜のことを考えてしまう）" },
+    { type: "choice", id: "strain_reunion_gate", choices: [
+      { text: "もう一度、気持ちを伝える", next: "go" },
+      { text: "……今は、やめておく", next: "wait" },
+    ] },
+  ],
+  branches: {
+    go: [{ type: "set_flag", flag: STRAIN_REUNION_FLAG }],
+    wait: [{ speaker: "", text: "（……同じことを繰り返さないと、言い切れるだろうか。もう少し、考えよう）" }],
+  },
+});
+
+/**
+ * 一日の終わりに呼ぶ（別れ話が無かった夜）。友達に戻った相手に、章をまたいだ後、こちらから一度だけやり直しを申し込める。
+ * 見送れば数日後にもう一度考える。申し込めば、その人の場面を読んで恋人に戻る（絆の段・読んだ場面は前のまま）。
+ * @returns 一拍か場面を読んだか
+ */
+export async function maybeStrainReunion(beat, { busyNight = false } = {}) {
+  if (!state || state.phase !== "daily" || state.slot < 2 || busyNight || isPlaying()) return false;
+  const id = strainReunionPick(state);
+  if (!id) return false;
+  const owner = state;
+  try { await loadScenes(); } catch { return false; }
+  if (state !== owner) return false;
+  const scene = DB.dialogues[`strain_reunion_${id}`];
+  if (!scene?.lines?.length) return false;
+  delete state.flags[STRAIN_REUNION_FLAG];
+  await beat(`（……${name(id)}の顔が、ふと浮かんだ）`);
+  if (state !== owner) return false;
+  const gate = await play(reunionGate(id), { bg: STREET_NIGHT });
+  if (state !== owner) return false;
+  const go = !!state.flags[STRAIN_REUNION_FLAG];
+  delete state.flags[STRAIN_REUNION_FLAG];
+  if (!gate || gate.cancelled) return false;
+  if (!go) { deferStrainReunion(state, id); save(); return true; }
+  const result = await play({ ...scene, metadata: { ...(scene.metadata || {}), private_scene: true } }, { bg: STREET_NIGHT });
+  if (state !== owner || !result || result.cancelled) return false; // 途中のLOAD・中断では何も決めない（次の夜にもう一度）
+  const who = name(id);
+  if (!settleStrainReunion(state, id)) return false;
+  rejoinLover(id);
+  save();
+  toast(`${who}と、もう一度付き合うことになった。`, { ms: 4600 });
   return true;
 }
 

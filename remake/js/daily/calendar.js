@@ -37,7 +37,7 @@ import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
 import { roamerAt, meetRoamer } from "./roamers.js";
 import { recipeFindAfterVisit } from "./recipe-finds.js";
 import { petitAfterVisit } from "./petit-shuraba.js";
-import { strainMorning, maybeStrainTalk, strainAfterVisit } from "./lover-strain.js";
+import { strainMorning, maybeStrainTalk, maybeStrainReunion, strainAfterVisit } from "./lover-strain.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
 import { presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
@@ -975,10 +975,14 @@ async function endDay({ returnedToTonari = false } = {}) {
   // 別れ話（すれ違いが溜まりきった恋人が帰り道で待っている。daily/lover-strain.js）。告白・約束・休養・夜の予定・大会前夜の夜と、
   // 夜を家で過ごした日（帰り道が無い）には重ねない
   const strainOwner = state;
-  const talked = await maybeStrainTalk(beat, { busyNight: confessed || metTonight || rested || nightCount > 0
-    || !!state.flags._home_tonight || state.flags._eve_slept === state.day || tournamentEve() || finalEve() });
+  const strainBusy = confessed || metTonight || rested || nightCount > 0
+    || !!state.flags._home_tonight || state.flags._eve_slept === state.day || tournamentEve() || finalEve();
+  const talked = await maybeStrainTalk(beat, { busyNight: strainBusy });
   if (state !== strainOwner) return;
-  if (talked) { delete state.flags._home_tonight; await bannersIdle(); }
+  // やり直し（友達に戻った相手に、章をまたいだ後こちらから一度だけ申し込める）。別れ話のあった夜には重ねない
+  const reunion = talked ? false : await maybeStrainReunion(beat, { busyNight: strainBusy });
+  if (state !== strainOwner) return;
+  if (talked || reunion) { delete state.flags._home_tonight; await bannersIdle(); }
   await chapterDef.beforeHomecoming?.();
   const athome = !!state.flags._home_tonight;
   delete state.flags._home_tonight;

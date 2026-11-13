@@ -79,6 +79,17 @@ function becomeLovers(id) {
   save();
 }
 
+/**
+ * 友達に戻った相手と、もう一度付き合う（すれ違いの別れ話の後のやり直し。daily/lover-strain.js・台帳 STR11）。
+ * 絆の段・記念日の起点・読んだ場面は前のまま。「友達のまま」の印を外して、付き合う処理をもう一度通す
+ */
+export function rejoinLover(id) {
+  if (isLover(id) || !state.flags[`_friend_${id}`]) return false;
+  delete state.flags[`_friend_${id}`];
+  becomeLovers(id);
+  return true;
+}
+
 /** 会話に入るたびに呼ばれる（engine の hooks.onEnter）。告白の返事は分岐先の dialogue_id で決まる */
 export function onDialogueEnter(id, dlg) {
   const m = /^confession_(\w+)_(accept|reject)$/.exec(id || "");
