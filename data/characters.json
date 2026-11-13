@@ -438,7 +438,9 @@
       "reticent young illustrator at a window seat of a small shisha cafe, drawing a cat with leaf ears and a smoke tail on a cracked tablet, calm and self-accepting rather than lonely, soft lavender smoke"
     ],
     "spriteScale": 0.88,
-    "spriteScaleVariants": { "new": 0.90 },
+    "spriteScaleVariants": {
+      "new": 0.9
+    },
     "art_sns": {
       "followers": 50000,
       "reveal_dialogue_id": "ch1_tsumugi_third",
@@ -564,7 +566,7 @@
     "nationality": "Japan",
     "affiliation": "tonari常連",
     "play_style": "N/A",
-    "description": "第1章やエンディングなど、ストーリーの要所で登場する象徴的な客。通常のランダム接客（日常営業）には一切登場しないストーリー限定キャラクター。\n感情を全く顔に出さない手強い客だが、本当に上手いシーシャを出すと心が動き、主人公の成長を測る指標となる。",
+    "description": "第1章やエンディングなど、ストーリーの要所で登場する象徴的な客。通常のランダム接客（日常営業）には一切登場しないストーリー限定キャラクター。\n感情を全く顔に出さない手強い客だが、本当に上手いシーシャを出すと心が動き、主人公の成長を測る指標となる。 TRPGには参加しない。",
     "background_secret": "社内政治や家族との軋轢で完全に心が摩耗しきっている。tonariの煙だけが彼にとって唯一「何者でもない自分」に戻れる呼吸の場所となっている。",
     "favorite_flavor": "アールグレイ（仮）",
     "specialty_flavor": "N/A",
@@ -886,6 +888,7 @@
   {
     "id": "tetsuko",
     "birthday": "02-22",
+    "name": "てつこ",
     "internal_name": "tetsuko",
     "display_name": "てつこ",
     "age": "不明",
@@ -1154,7 +1157,7 @@
     "nationality": "Japan",
     "affiliation": "柚ヶ谷のボドゲカフェ",
     "play_style": "何が起きても同じ笑顔",
-    "description": "ボドゲカフェの男性店長。黒髪、細身、深緑のベストと長いエプロン。糸目でいつも自然に微笑み、丁寧に接客する。その笑顔と言葉の間が逆に少し怖いが、本人は普通に親切。わざと威圧したり悪役を演じたりしない。ただ、なぜか誰も彼の提案を断れず、気づけば体が頷いている（本人は無自覚）。「では、その選択で」「続きも気になりますね」と静かに遊びを見守る。相手が困ればルールを言い直す。TRPGの部活設立と本の入荷を支え、ひより・サメちゃんのGM役を奪わない。",
+    "description": "ボドゲカフェの男性店長。黒髪、細身、深緑のベストと長いエプロン。糸目でいつも自然に微笑み、丁寧に接客する。その笑顔と言葉の間が逆に少し怖いが、本人は普通に親切。わざと威圧したり悪役を演じたりしない。ただ、なぜか誰も彼の提案を断れず、気づけば体が頷いている（本人は無自覚）。「では、その選択で」「続きも気になりますね」と静かに遊びを見守る。相手が困ればルールを言い直す。TRPGの部活設立と本の入荷を支え、部員の持ち込みシナリオを支え、汎用の卓と部員の物語を遊び終えた後の最終シナリオではGMを務める。",
     "visual_concepts": [
       "28歳の細身の男性。黒髪の横分け、糸目、自然で柔らかな閉じた口の笑顔。眼鏡なし。深緑のベスト、生成りシャツ、炭色エプロン、小さな六角形の真鍮ピン。怖がらせる陰影や悪意のある笑いは付けない。"
     ],
@@ -1309,5 +1312,19 @@
       "motion": "bounce"
     },
     "reading": "あつみ なぎさ"
+  },
+  {
+    "id": "regulara",
+    "name": "サイの店の常連A",
+    "role": "mob",
+    "affiliation": "柚ヶ谷のボドゲカフェ",
+    "description": "六角サイの店でTRPGを遊ぶ常連。部員がそろわない卓ではプレイヤー席を手伝う。tonariの客や部員とは別人。"
+  },
+  {
+    "id": "regularb",
+    "name": "サイの店の常連B",
+    "role": "mob",
+    "affiliation": "柚ヶ谷のボドゲカフェ",
+    "description": "六角サイの店でTRPGを遊ぶ常連。部員がそろわない卓ではプレイヤー席を手伝う。tonariの客や部員とは別人。"
   }
 ]

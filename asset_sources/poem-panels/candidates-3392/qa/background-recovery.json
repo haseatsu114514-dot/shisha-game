@@ -1,0 +1,38 @@
+[
+  {
+    "file": "bg_tonari_inside_night.png",
+    "bytes": 2874828,
+    "sha256": "a40237abeadf3ee6c6008a284f754b5d3937f8901550fc306aff200cfc67c238",
+    "git_blob_sha": "aa143fa77ed72f9f5386ca4a6464eeef6431489c"
+  },
+  {
+    "file": "bg_tonari_inside_day.png",
+    "bytes": 2699129,
+    "sha256": "0c425cfc21a6241cf7cfba5f257ff5fbd5c42a640e7db28ed8e923ba45058645",
+    "git_blob_sha": "19fc875e9918e41e9327ceedc2678628d19b01e1"
+  },
+  {
+    "file": "bg_ch2_ageha_closed_night.png",
+    "bytes": 1395300,
+    "sha256": "82a825c1406ef39056bdc03461869fec726fccc80443a912773675f648f83116",
+    "git_blob_sha": "f5f7e9684ff0b70a005e98bb4c4e67692100850e"
+  },
+  {
+    "file": "bg_dubai_grand_smoke_stage.png",
+    "bytes": 1568775,
+    "sha256": "6a24a8a500b5682fe361212f0849026fde191a03d03a7debe0531e2739ce0082",
+    "git_blob_sha": "f03ceb1fcbf63746f48e6b2448dca82dc6a2e833"
+  },
+  {
+    "file": "bg_smoke_lab.png",
+    "bytes": 1468333,
+    "sha256": "55d99fc7a1429bf3db0e8cbfbe13d63930a19c8a3588a7e044647fbdc96304f5",
+    "git_blob_sha": "f0629a1f5d30577e2e1e5ac2703c1ab58d8192a1"
+  },
+  {
+    "file": "bg_mukai_shop.png",
+    "bytes": 1265123,
+    "sha256": "998401f6510d9ef9937b9710b1df1d49507e95e91f7331cbcfb6c1af1afeb4fc",
+    "git_blob_sha": "314d0faea1d6365ae5738360f6f550e3d13d1550"
+  }
+]

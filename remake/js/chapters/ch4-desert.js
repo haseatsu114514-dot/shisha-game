@@ -79,7 +79,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       const legacy = destination.legacy === true;
       const visit = desertCafeVisit(owner, day, { legacy });
       if (!visit) return false;
-      if (paid && DESERT_CAFE_PRICE > spendableMoney(owner)) { toast(`お金が足りない（${DESERT_CAFE_PRICE.toLocaleString("ja-JP")}円）`); return false; }
+      if (paid && DESERT_CAFE_PRICE > spendableMoney(owner)) { toast(`お金が足りない（${DESERT_CAFE_PRICE.toLocaleString("ja-JP")}円）`, { se: "error" }); return false; }
       // ♥5の締めくくり（DSR20）: 再生・ルートの記録・専用ハガルは bonds.js の playFinale。読み終えたら今日の来店として確定する
       if (visit.kind === "finale") {
         const { finaleDue, playFinale } = await import("../daily/bonds.js");
@@ -167,8 +167,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     if (confessionDay) {
       const { romanceRouteOpen } = await import("../daily/romance.js");
       if (current() && romanceRouteOpen(DESERT_GUIDE)) {
-        // ほかに恋人がいれば、返事の前に一度だけ立ち止まる（台本の条件で出す一時の印）
-        owner.flags[NOOR_OTHER_LOVER_FLAG] = (owner.lovers || []).length > 0;
+        // 返事の直前の迷いは共通VNへ。旧一段警告と二重に表示しない。
+        owner.flags[NOOR_OTHER_LOVER_FLAG] = false;
         // 第5章で締めくくりを迎えた人（遊びに来ている間の告白・2026-11-07 オーナー決定）は「また日本に帰る」の言い方（台本の visiting）
         owner.flags[NOOR_VISIT_CONFESSION_FLAG] = (owner.finales?.[DESERT_GUIDE]?.chapter || 0) >= 5;
         let completed = false;
@@ -217,4 +217,5 @@ export async function performDesertSpot(entry, { day, showHud = null, naru = tru
   const went = desertProgress(owner).outings > before.outings;
   return { used: went, exerted: false, slotsUsed: 0 };
 }
+
 

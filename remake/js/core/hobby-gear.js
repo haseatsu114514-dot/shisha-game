@@ -13,9 +13,19 @@ export const DJ_ALLOWANCE_MS = 10;
 
 export const HOBBY_GEAR = Object.freeze({
   gear_hatchet: Object.freeze({
-    id: "gear_hatchet", name: "マイ斧（投擲用ハチェット）", short: "マイ斧", price: 15000, venue: "axe_bar", chapterMin: 1,
+    id: "gear_hatchet", name: "マイ斧（投擲用ハチェット）", short: "マイ斧", price: 5000, venue: "axe_bar", chapterMin: 1,
     effect: "構えの揺れが1割小さい",
     description: "マキの店で扱う投擲用のハチェット。刃と柄の重さが手になじみ、構えたときの照準のぶれが少し小さくなる。店の10投・3投で使う。",
+  }),
+  gear_hatchet_balanced: Object.freeze({
+    id: "gear_hatchet_balanced", name: "バランス・ハチェット", short: "バランス斧", price: 9000, venue: "axe_bar", chapterMin: 1,
+    effect: "構えの揺れが2割・回転のずれが1割小さい",
+    description: "重心を整えたマイ斧。店の10投・3投で選んで使う。照準と引き加減を少し助けるが、命中は保証しない。",
+  }),
+  gear_hatchet_precision: Object.freeze({
+    id: "gear_hatchet_precision", name: "プレシジョン・ハチェット", short: "プレシジョン斧", price: 15000, venue: "axe_bar", chapterMin: 1,
+    effect: "構えの揺れが3割・回転のずれが2割小さい",
+    description: "握りと重心を丁寧に調整したマイ斧。店の10投・3投で選んで使う。狙いやすさは増すが、得点や的の大きさは変わらない。",
   }),
   gear_dice: Object.freeze({
     id: "gear_dice", name: "マイダイス（20面2個とトレイ）", short: "マイダイス", price: 3800, venue: "trpg_bar", chapterMin: 2,

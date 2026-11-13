@@ -264,6 +264,15 @@ function checkRulesQuiet(rows) {
     assert(bond > base && bond > usual * 3, `ふだんの行動より多い（${bond} / ${usual}）`);
     assert.equal(s.growth.fresh.counts.naru, count, "誘いは、店へ通う回数に数えない");
     assert.equal(s.growth.xp, before + usual + bond);
+    // 第5章の決戦前は、日常の行動が各枠ひとつめから底上げされる（SBD130）。絆の誘いは底上げの後に1.5倍
+    Object.assign(s, { chapter: 5, phase: "daily", day: 120, slot: 0 });
+    s.flags._ch5 = { startDay: 100, stage: 2, part: "free" };
+    const mult = growth.CHAPTER_MULT[5];
+    const date = growth.awardActionExp({ key: "tsumugi", person: "tsumugi", bond: true }, { ...s, chapterFive: true });
+    s.slot = 1;
+    const shop = growth.awardActionExp({ key: "naru", person: "naru" }, { ...s, chapterFive: true });
+    assert.equal(shop, Math.round(90 * mult), "第5章の決戦前の日常は底上げされる");
+    assert.equal(date - Math.round(growth.EXP.firstPerson * mult), Math.round(90 * growth.BOND_INVITE_MULT * mult), "絆の誘いは底上げの後に1.5倍");
   }
   const calendar = fs.readFileSync(new URL("../js/daily/calendar.js", import.meta.url), "utf8");
   assert.match(calendar, /bond: bondInvitation\(inv\.event, inv\.sender\)/, "誘いの精算が絆の印を渡す");

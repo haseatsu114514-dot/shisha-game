@@ -581,7 +581,7 @@
         {
           "speaker": "saku",
           "face": "serious",
-          "text": "それを「客の思い込み」って片づけられると、腹が立つ"
+          "text": "それを「客の思い込み」って片づけられると、さすがに腹が立つ"
         },
         {
           "speaker": "mashiro",
@@ -1083,7 +1083,7 @@
         {
           "speaker": "saku",
           "face": "nervous",
-          "text": "……っていうのは、半分。残りの半分は、ちゃんと言うね"
+          "text": "……っていうのは、半分。[pause]残りの半分は、ちゃんと言うね"
         },
         {
           "speaker": "saku",
@@ -1420,7 +1420,7 @@
         {
           "speaker": "steve",
           "face": "smile",
-          "text": "イエス。だから、俺の棚から出す。ハジメに預けたい"
+          "text": "イエス。だから、俺の棚から出す。[pause]ハジメに預けたい"
         },
         {
           "speaker": "hajime",
@@ -1975,6 +1975,7 @@
         },
         {
           "speaker": "saku",
+          "duck": true,
           "text": "嘘つきって呼ばれても、君が『違う』って返してくれるなら、僕は書けばいい",
           "face": "smile"
         },

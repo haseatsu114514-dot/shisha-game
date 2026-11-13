@@ -234,6 +234,7 @@
     },
     {
       "id": "dark_earlgrey",
+      "family": "earlgrey",
       "name": "アルファーヘブン ダーク アールグレイ",
       "short_name": "AF ダーク アールグレイ",
       "category": "floral",
@@ -345,7 +346,7 @@
         "sweet_natural": 2,
         "sweet_confection": 1,
         "cooling": 8,
-        "assertiveness": 6,
+        "assertiveness": 8,
         "acquired_taste": 2,
         "smoke_body": 3,
         "sourness": 1,
@@ -425,6 +426,7 @@
     },
     {
       "id": "strawberry",
+      "family": "strawberry",
       "name": "アルファーヘブン ストロベリー",
       "short_name": "AF ストロベリー",
       "category": "fruit",
@@ -562,6 +564,7 @@
         "floral": 3,
         "nicotine": 3
       },
+      "ng_flavors": [],
       "maker": "dobaj"
     },
     {
@@ -1008,7 +1011,7 @@
         "sweet_natural": 1,
         "sweet_confection": 1,
         "cooling": 9,
-        "assertiveness": 7,
+        "assertiveness": 8,
         "acquired_taste": 3,
         "smoke_body": 3,
         "sourness": 1,

@@ -1129,3 +1129,119 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-game.axe-in-stage .axe-calls [data-call="normal"][aria-pressed="true"] { color: var(--lane-orange-ink); }
 .axe-game.axe-in-stage :is(.axe-throw .axe-retry, .axe-controls .axe-button, .axe-calls .axe-button):hover:not(:disabled) { color: #fff8dc; }
 .axe-game.axe-in-stage .axe-calls [data-call="normal"][aria-pressed="true"]:hover:not(:disabled) { color: var(--lane-orange-ink); }
+
+/* ===== 見出し・枠・黒板の窓・ランク・帯の絵（2026-11-12・#3423・AXQ03） =====
+   PR #3448 の Codex の部品（asset_sources/ui/axe-quality-ui-20261111/）。文字・点数・ランクの字・押せる範囲はこれまでどおりコードが描く。
+   上の「絵の部品」と同じく、絵は ::before／::after に 9分割（border-image）で描き、透明な余白の分は border-image-outset で外へ出す。
+   寸法は tools/geometry.json（表示用WebPの外接範囲）から。k は「表示の大きさ÷絵の画素」で、縁の幅＝切り位置×k、外へ出す分＝余白×k。
+   - 見出しの板（hud-plate 2048×192、絵は y24〜168）: 高さ88pxに144を合わせ k=0.611。切り位置 上下48・左右104（角の鋲と金具は伸ばさない）。
+   - 投げ数の溝（score-slot 512×192、絵は y24〜168）: 枠は高さ39pxで k=0.271、合計点は高さ76pxで k=0.528。切り位置 上下54・左右68。
+   - 黒板の窓（chalk-window 1152×768、絵は 36〜1115×37〜731）: 切り位置120（角の金具まで）。結果と一言は k=0.19（木の縁 約12px）、まとめは k=0.27（約17px）。
+   - 帯（banner 1024×256、絵は 32〜992×33〜223、燕尾の切れ込み54）: k=0.52。切り位置 上下55・左右112（切れ込みと鋲は伸ばさない）。字は切れ込みと鋲より内側（左右46px）。
+   - ランクの丸（rank-medallion 384×384）: 字の後ろに 84px で敷く。焼き印の輪の内側の明るい所（半径の約7割）に字が入る。
+   画像は axe.js の UI_ART で読み込み中に先に解く（読めなければ今までどおり「もう一度読み込む」になる）。 */
+.axe-game.axe-in-stage :is(.axe-header, .axe-total, .axe-result-card, .axe-side .axe-companion, .axe-declare) { isolation: isolate; }
+.axe-game.axe-in-stage :is(.axe-header, .axe-total, .axe-result-card, .axe-side .axe-companion) { position: relative; }
+.axe-game.axe-in-stage :is(.axe-header, .axe-total, .axe-result-card, .axe-side .axe-companion, .axe-declare)::before,
+.axe-game.axe-in-stage[data-phase="summary"] .axe-panel::before,
+.axe-game.axe-in-stage .axe-tile::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; box-sizing: border-box; border-style: solid; border-color: transparent; border-width: 0; border-radius: 0; pointer-events: none; }
+/* 見出しの板 */
+/* 板の両端は斜めの鉄の金具（縦の真ん中で約22〜35px、上下の端で約77px）。題字と × は金具の内側に置く */
+.axe-game.axe-in-stage .axe-header { padding-left: 46px; padding-right: 34px; border-color: transparent; background: none; box-shadow: none; }
+.axe-game.axe-in-stage .axe-header::before { inset: -1px; border-image: url("../img/ui/axe_throw/hud-plate.webp") 48 104 fill / 29.3px 63.6px / 14.7px 20.2px; }
+/* 投げ数の溝。今の投は溝の外を橙に光らせる */
+.axe-game.axe-in-stage .axe-tile { isolation: isolate; border-color: transparent; background: none; box-shadow: none; }
+.axe-game.axe-in-stage .axe-tile::after { inset: -1px; border-image: url("../img/ui/axe_throw/score-slot.webp") 54 68 fill / 14.6px 18.4px / 6.5px 8.7px; }
+.axe-game.axe-in-stage .axe-tile[data-current="true"] { border-radius: 5px; box-shadow: 0 0 0 2px var(--lane-orange), 0 0 12px #ff8c3a99; }
+.axe-game.axe-in-stage .axe-total { border-color: transparent; background: none; box-shadow: none; }
+.axe-game.axe-in-stage .axe-total::before { border-image: url("../img/ui/axe_throw/score-slot.webp") 54 68 fill / 28.5px 35.9px / 12.7px 16.9px; }
+/* 黒板の窓: 投げた後の結果・見守る人の一言（木の縁 約12px の内側に字） */
+.axe-game.axe-in-stage :is(.axe-result-card, .axe-side .axe-companion) { border-color: transparent; border-radius: 0; background: none; box-shadow: none; }
+.axe-game.axe-in-stage .axe-result-card { padding: 14px 18px; }
+.axe-game.axe-in-stage[data-phase="result"] .axe-result-card { padding-block: 14px; }
+.axe-game.axe-in-stage .axe-side .axe-companion { padding: 14px 16px; }
+.axe-game.axe-in-stage :is(.axe-result-card, .axe-side .axe-companion)::before { border-image: url("../img/ui/axe_throw/chalk-window.webp") 120 fill / 22.8px / 7px; }
+.axe-game.axe-in-stage[data-phase="result"][data-special="true"] .axe-result-card { box-shadow: 0 0 34px #ffcd7859; }
+/* まとめ: 的の上に出す大きい黒板（木の縁 約17px）。中のランクの欄には窓を重ねない */
+.axe-game.axe-in-stage[data-phase="summary"] .axe-panel { padding: 24px 26px 22px; border-color: transparent; border-radius: 4px; background: none; box-shadow: 0 20px 60px #000000d9; }
+.axe-game.axe-in-stage[data-phase="summary"] .axe-panel::before { inset: -1px; border-image: url("../img/ui/axe_throw/chalk-window.webp") 120 fill / 32.4px / 10px; }
+.axe-game.axe-in-stage[data-phase="summary"] .axe-result-card { padding: 0; }
+.axe-game.axe-in-stage[data-phase="summary"] .axe-result-card::before { content: none; }
+/* ランク: 焼き印の丸の上に字 */
+.axe-game.axe-in-stage[data-phase="summary"] .axe-rank { align-items: center; }
+.axe-game.axe-in-stage .axe-rank strong { display: inline-grid; place-items: center; width: 84px; height: 84px; flex: none;
+  background: url("../img/ui/axe_throw/rank-medallion.webp") center / 100% 100% no-repeat; color: #4a2410; font-size: 40px; text-shadow: 0 1px 0 #fff3dc99; }
+.axe-game.axe-in-stage .axe-rank[data-rank="S"] strong { color: #7a1f00; text-shadow: 0 0 8px #ffd27acc, 0 1px 0 #fff3dc; }
+.axe-game.axe-in-stage .axe-rank[data-rank="A"] strong { color: #5e2a0a; }
+/* 帯: 最後の1投・持ち替え・延長戦は橙、目標達成は緑。字は帯の面に濃い色で */
+.axe-game.axe-in-stage .axe-declare:is([data-kind="last"], [data-kind="half"], [data-kind="goal"]) { padding: 12px 46px; border-color: transparent; border-radius: 0; background: none; }
+.axe-game.axe-in-stage .axe-declare:is([data-kind="last"], [data-kind="half"])::before { border-image: url("../img/ui/axe_throw/banner-orange.webp") 55 112 fill / 28.6px 58.2px / 17.2px 16.6px; }
+.axe-game.axe-in-stage .axe-declare[data-kind="goal"]::before { border-image: url("../img/ui/axe_throw/banner-green.webp") 55 112 fill / 28.6px 58.2px / 17.2px 16.6px; }
+.axe-game.axe-in-stage .axe-declare:is([data-kind="last"], [data-kind="half"]) :is(strong, span) { color: var(--lane-orange-ink); text-shadow: 0 1px 0 #ffd0a666; }
+.axe-game.axe-in-stage .axe-declare[data-kind="goal"] :is(strong, span) { color: #0d2716; text-shadow: 0 1px 0 #d6f5c866; }
+
+
+/* AXE first person: the lane is the scene, not a framed target window.
+   Keep #3472's header/score/chalk artwork; scope every layout change to the new input. */
+.axe-game[data-input-mode="tap-pull"].axe-first-person { padding: 0; gap: 0; overflow: hidden; background: #172025; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-body { display: block !important; position: absolute; inset: 0; grid-template-columns: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-header { position: absolute; z-index: 5; top: 18px; left: 24px; right: 24px; min-height: 72px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-board-pane { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; aspect-ratio: auto; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: hidden; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person :is(.axe-target-art, .axe-target) { position: absolute; inset: 0; display: block; width: 100%; height: 100%; max-width: none; max-height: none; aspect-ratio: auto; margin: 0; border: 0; border-radius: 0; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-target { z-index: 1; touch-action: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-target:focus-visible { outline: 2px solid #b4d4c9; outline-offset: -4px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person :is(.axe-legend, .axe-steps, .axe-gauge-label, .axe-x-needle, .axe-y-needle, .axe-timing .axe-gauge, .axe-power-readout) { display: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-side { position: absolute; z-index: 2; top: auto; left: 2%; bottom: 3%; width: 23%; max-height: 39%; overflow: auto; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-side .axe-challenges { display: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-panel { position: absolute; z-index: 3; right: 2%; bottom: 3%; top: auto; width: 24%; max-height: 44%; padding: 10px; border: 0; background: none; box-shadow: none; overflow: auto; gap: 8px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-panel .axe-throw { position: static; width: 100%; margin: 0; transform: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-panel .axe-throw-button { min-height: var(--axe-tap, 82px); height: auto; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person[data-phase="power"] .axe-throw { display: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-controls { display: flex; flex-wrap: wrap; gap: 6px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-controls .axe-button { min-height: var(--axe-tap, 82px); }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-calls { position: absolute; z-index: 3; left: 3%; top: 20%; right: auto; bottom: auto; width: 23%; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0; transform: none; background: none; border: 0; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-calls .axe-button { min-height: var(--axe-tap, 82px); padding: 7px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-call-status { position: absolute; z-index: 2; left: 3%; right: auto; top: 12%; max-width: 28%; margin: 0; font-size: 18px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-timing { position: absolute; z-index: 4; top: 27%; right: 7%; left: auto; bottom: auto; width: 140px; max-height: none; display: block; padding: 0; border: 0; background: none; box-shadow: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-label { margin: 0 0 24px; font-size: var(--axe-text, 24px); white-space: nowrap; text-align: center; color: #f4d39d; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-track { position: relative; width: 18px; margin: 0 auto 36px; background: #172323; border: 1px solid #9ca793; border-radius: 10px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-green { position: absolute; left: -11px; width: 38px; border-radius: 5px; background: #7cbea1; box-shadow: 0 0 8px #82c9a066; pointer-events: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-handle { position: absolute; z-index: 1; left: -32px; top: -41px; width: 82px; height: 82px; border: 3px solid #e4c79e; border-radius: 50%; color: #f9e4c4; font: 32px/1 system-ui; touch-action: none; cursor: grab; user-select: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-handle:disabled { opacity: .45; cursor: default; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-handle:active { cursor: grabbing; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-fps-hands { pointer-events: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person:not([data-phase="choice"]):not([data-phase="power"]) .axe-fps-hands { display: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person[data-actor="opponent"] .axe-fps-hands { display: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-zoom { z-index: 3; left: 29%; bottom: 4%; top: auto; width: 150px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person[data-phase="summary"] .axe-panel { top: 18%; bottom: 3%; left: 27%; right: 20%; width: auto; max-height: none; padding: 24px; transform: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person [hidden] { display: none !important; }
+
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-calls .axe-button { position: static; inset: auto; width: auto; margin: 0; transform: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-calls .axe-button[aria-pressed="true"] { transform: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-timing::before { content: none; }
+.axe-bar-menu .axe-bar-gear { display: grid; gap: 8px; min-width: 0; max-width: 100%; }
+.axe-bar-menu .axe-bar-gear-selection { display: flex; flex-wrap: wrap; gap: 8px; }
+.axe-bar-menu .axe-bar-gear .gear-offer { white-space: normal; text-align: left; }
+.axe-bar-menu .axe-bar-tools { flex-wrap: wrap; }
+/* The shop replaces, rather than extends, the venue menu. Four cards always fit
+   inside the 720px logical stage while preserving 24px type and 82px controls. */
+.sub-menu.axe-bar-menu[data-view="gear"] { height: 650px; max-height: 96%; overflow: hidden; }
+.axe-bar-menu .axe-bar-gear { display: grid; grid-template-rows: 82px auto minmax(0, 1fr); gap: 12px; height: 100%; min-height: 0; }
+.axe-bar-menu .axe-bar-gear > .sub-title { margin: 0; padding-right: 260px; }
+.axe-bar-menu .axe-bar-gear-note { margin: 0; font-size: 24px; line-height: 1.4; }
+.axe-bar-menu .axe-bar-gear-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 12px; min-height: 0; }
+.axe-bar-menu .axe-bar-gear-card { display: flex; flex-direction: column; justify-content: center; gap: 6px; min-width: 0; min-height: 0; padding: 12px; border: 1px solid currentColor; border-radius: 12px; }
+.axe-bar-menu .axe-bar-gear-card .btn { width: 100%; min-height: 82px; height: auto; padding: 8px 12px; font-size: 24px; line-height: 1.35; white-space: normal; overflow-wrap: anywhere; }
+.axe-bar-menu .axe-bar-gear-card p.gear-offer { margin: 0; font-size: 24px; line-height: 1.35; }
+.axe-bar-menu .axe-bar-gear-select[aria-pressed="true"] { outline: 3px solid currentColor; outline-offset: 2px; }
+/* phone-density.css loads later and applies a 72px (wide: 80px) generic .btn floor.
+   These shop controls intentionally use the venue's larger 82px/24px contract. */
+html:root[data-density="phone"] body:not(:root) .axe-bar-menu[data-view="gear"] .btn {
+  min-height: max(82px, var(--phone-tap, 82px));
+  font-size: max(24px, var(--phone-text, 24px));
+}
+/* 投げ方を「上へ弾く」に（2026-11-12）: 取っ手は台の下に置き、ここから上へ弾く。引いた長さの緑の帯は使わない（強さは回転ゲージ） */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-handle { top: auto; bottom: -41px; cursor: pointer; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-green { display: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-track { background: linear-gradient(0deg, #172323, #2b3a36); }

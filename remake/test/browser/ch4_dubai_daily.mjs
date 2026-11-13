@@ -428,6 +428,46 @@ await suite("ch4-dubai-daily", async check => {
     assert(!(await backlog(page)).filter(text => text.includes("王煙楼だ。")).slice(1).length, "No second self-introduction");
   });
 
+  // 無料の締めくくりは所持金に関係なく読める。翌日の普通の一台は6,000円に戻る。
+  for (const money of [0, 5999]) await check(`longlong-free-finale-with-${money}-yen`, async page => {
+    await seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      p.read.ch4_inn_tool_care = true;
+      value.day = p.startDay + 1; value.slot = 0; p.day = 2;
+      value.met.master_hookah = true; value.affinity.master_hookah = 66;
+      value.flags._intro_master_hookah = true;
+      value.flags._ch4_longlong = { read: Object.fromEntries([
+        "ch4_longlong_first", "ch4_longlong_second", "ch4_longlong_third", "ch4_longlong_fourth", "ch4_longlong_fifth",
+      ].map(id => [id, true])), talks: 0 };
+    });
+    await page.evaluate(async money => {
+      const core = await import("./js/core/state.js"); core.state.money = money; core.save();
+    }, money);
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 50, slot: 0 });
+    await page.locator(dt("pin-ch4_dubai_longlong")).click();
+    assert.equal(await page.locator(dt("map-go")).isEnabled(), true, "map lets a free finale through the affordability gate");
+    await page.locator(dt("map-go")).click();
+    await dubaiMap(page, { day: 50, slot: 1 });
+    let state = await get(page);
+    assert.equal(state.money, money);
+    assert(state.finales.master_hookah, "actual bonds runner recorded the completed finale");
+    assert(state.owned.includes("suyaki_master_hookah"));
+    assert.equal(state.flags._ch4_longlong.talks, 0, "a free finale is not an ordinary paid revisit");
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 50, slot: 1 });
+    state = await get(page);
+    assert.equal(state.money, money); assert(state.finales.master_hookah);
+    await go(page, "ch4_dubai_creek");
+    await dubaiMap(page, { day: 51, slot: 0 });
+    await page.locator(dt("pin-ch4_dubai_longlong")).click();
+    assert.equal(await page.locator(`${dt("pin-ch4_dubai_longlong")}.off`).count(), 1, "the next ordinary visit is unavailable");
+    assert.match(await page.locator(".map-info").getAttribute("aria-label"), /お金が足りない.*6,000/, "blocked by the restored 6,000-yen price, not a daily visit lock");
+    assert.equal(await page.locator(dt("map-go")).count(), 0, "unavailable destinations do not expose the map-go action");
+    assert.equal((await get(page)).money, money);
+  });
+
   // 先に龍龍水煙所で会っていれば（面識）、前夜祭の王煙楼は顔見知りとして迎え、初対面の地の文・名乗りを繰り返さない。
   await check("eve-reception-greets-wang-as-an-acquaintance-after-the-shop", async page => {
     await seed(page, (value, progress) => {
@@ -461,7 +501,7 @@ await suite("ch4-dubai-daily", async check => {
 
   // 同行なしで、凛想（恋人）とましろ（第3章クリア）が別便で応援に来る。前夜祭の日に凛想→ましろちゃんの到着を読み、
   // 前夜祭の後、到着した凛想を前夜に誘える。到着の場面を読む途中でロードしても、同じ到着から読み直し二重に確定しない。
-  // 2人目の到着カードは「もう一人」の文になる。
+  // 2人目の到着カードは「もう一人」の文になる。到着の後・前夜祭の前は、二人と夕方を過ごせる（#3097）。
   await check("a-separate-flight-lover-arrives-on-the-festival-day-and-can-be-invited", async page => {
     await seed(page, (value, progress) => {
       const p = value.flags._ch4;
@@ -495,17 +535,30 @@ await suite("ch4-dubai-daily", async check => {
     assert.equal((await get(page)).flags._ch4.read.ch4_rio_dubai_girlfriend, true);
     assert.match(await page.locator(dt("ch4-arrival")).innerText(), /もう一人着いたらしい/);
     await page.locator(dt("ch4-continue")).click();
-    for (const id of ["ch4_wang_reception", "ch4_stranger_third"]) {
-      await page.locator(`${dt("ch4-eve")}[data-scene="${id}"]`).waitFor();
-      await page.locator(dt("ch4-continue")).click();
-    }
+    // #3097: 到着した凛想（恋人版）と、視察で来たましろちゃん（友人版）とも、前夜祭の前に夕方を一度ずつ過ごせる。
+    const eveCard = `${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`;
+    await page.locator(eveCard).waitFor({ timeout: 60000 });
+    assert.equal(await page.locator(dt("ch4-arrival-evening-rio")).innerText(), "凛想と夕方を過ごす");
+    assert.equal(await page.locator(dt("ch4-arrival-evening-mashiro")).innerText(), "ましろちゃんと夕方を過ごす");
+    await page.locator(dt("ch4-arrival-evening-mashiro")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch4.read.ch4_mashiro_dubai_friend_evening === true, null, { timeout: 60000 });
+    await page.locator(eveCard).waitFor({ timeout: 60000 });
+    assert.equal(await page.locator(dt("ch4-arrival-evening-mashiro")).count(), 0, "The friend evening is read once");
+    assert.equal(await page.locator(dt("ch4-arrival-evening-rio")).count(), 1, "Rio's evening stays optional");
+    assert((await backlog(page)).some(text => text.includes("食べ物の写真が多い")), "The friend evening scene was played");
+    assert.equal((await get(page)).flags._ch4.read.ch4_mashiro_dubai_evening, undefined, "No lover evening for a friend");
+    await page.locator(dt("ch4-continue")).click();
+    await page.locator(`${dt("ch4-eve")}[data-scene="ch4_stranger_third"]`).waitFor();
+    assert.equal(await page.locator(dt("ch4-arrival-evening-rio")).count(), 0, "The evening ends when the festival starts");
+    await page.locator(dt("ch4-continue")).click();
     await page.locator(dt("ch4-evening")).waitFor();
     assert.match(await page.locator(dt("ch4-evening")).innerText(), /と過ごす時間がある/);
     await page.locator(dt("ch4-evening-date")).click();
     await page.waitForFunction(() => !!window.__remake.state.flags._ch4_evening, null, { timeout: 60000 });
     const state = await get(page);
-    assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["rio"] });
+    assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["rio"] }, "The friend evening is not the eve date");
     assert.equal(state.flags._ch4.read.ch4_mashiro_dubai_friend, true);
+    assert.equal(state.flags._ch4.read.ch4_rio_dubai_evening, undefined, "An unread evening stays unread");
   });
 
   // IR18: 別便で着いたサメちゃん（恋人）とは、到着の後、前夜祭の前に夕方を任意で一度過ごせる。読むと同じカードに戻り、
@@ -554,3 +607,4 @@ await suite("ch4-dubai-daily", async check => {
     assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["samechan"] });
   });
 });
+

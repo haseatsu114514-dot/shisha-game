@@ -40,7 +40,7 @@ export const RIVALS = Object.freeze({
 // 跳んだ瞬間から押していた向きは、一度離すまで回転に使わない（よけながら跳んだだけで回り出さないように）。
 export const SPIN = Object.freeze({ rate: 1.7, finishRate: 3.2, tolerance: 0.1, points: Object.freeze([0, 150, 400, 700, 1100, 1500, 2000, 2600, 3300]) });
 // ブースト: かすめ・大ジャンプの着地・トリックでゲージ（0〜1）が貯まり、残量に比例した時間だけ発動できる。duration 秒のあいだ速度の上限が SPEED.boost になり、
-// 当たった岩は砕ける（転倒しない）。転倒するとゲージが fallLoss 減る。岩に当たった直後（recoverWindow 秒）にゲージがあれば、ブーストで立て直せる（転倒を取り消して加速する）。
+// 当たった岩は砕ける（転倒しない）。転倒するとゲージが fallLoss 減るが、転倒前の半分は残す（空のゲージは増やさない）。岩に当たった直後（recoverWindow 秒）にゲージがあれば、ブーストで立て直せる（転倒を取り消して加速する）。
 // いい勝負（2026-11-11 オーナー「ライバルとの距離が離れすぎたらついてきたり、逆に離れすぎたら少し手加減してくれたり、いい勝負してる感を出したい」）:
 // 相手は記録した滑り（rivalRun）を、差に応じた速さで再生する（game.rivalClock）。差が gap メートルを超えると、
 // 離した時は最大 catchUp 倍まで速く（追いつく）、離された時は最低 easeOff 倍まで遅く（手加減）。span メートルで最大に届く。
@@ -432,7 +432,7 @@ function fall(game, feature, reason = "rock") {
   game.air = 0; game.airKind = null;
   game.rot = 0; game.spinDir = 0; game.spinHold = false;
   game.boostT = 0;
-  game.gauge = Math.max(0, game.gauge - BOOST.fallLoss);
+  game.gauge = Math.max(game.gauge * 0.5, game.gauge - BOOST.fallLoss);
   game.events.push({ kind: "fall", points: FALL.points, t: game.t, x: feature?.x ?? game.x, reason });
 }
 

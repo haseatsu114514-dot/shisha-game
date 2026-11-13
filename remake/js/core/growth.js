@@ -6,7 +6,7 @@
 // 2026-11-11 オーナー「寝る前のレベルアップは不要」（SBD108）「一気にリザルトみたいに見せるのはいらない。都度経験値もらって達したらレベルアップがいい」（SBD122）:
 // 経験値が入ったその場でレベルが上がり、火種は手持ちに入る。画面はその場で短い演出を出す（操作は止めない）。火種を盤に灯すのは観音堂などで振り返った時。
 import { state, save } from "./state.js";
-import { emit } from "./bus.js";
+import { emit, on } from "./bus.js";
 import { setExpHooks, affinityLevel, AFFINITY_RANK_PTS } from "./stats.js";
 import { BOARD_KEYS, BOARD_PREFIX, BOARD_SHAPES, STAT_SQUARES, SKILLS, STAT_UPGRADES, LESSONS, CHAR_TYPE, PLAY_REWARDS, KUJI_LAST_ONE_GIFT } from "./growth-board-data.js";
 import { GROWTH_BOARD, growthEnabled, PREVIEW_KEY } from "./growth-mode.js";
@@ -14,6 +14,7 @@ import { growthPerks, growthSkill, growthLesson, SKILL_TUNING, LESSON_TUNING } f
 import { masteryHooks } from "./flavor-mastery.js";
 import { syncRespecOpportunity, closeRespecOpportunity } from "./growth-respec.js";
 import { KUJI_LIMITED_GRADES } from "./rules.js";
+import { syncPlayMastery, masteryRecord, masteryLine, PLAY_MASTERY } from "./play-mastery.js";
 export { GROWTH_BOARD, growthEnabled } from "./growth-mode.js";
 
 export function setGrowthPreview(on) {
@@ -389,7 +390,7 @@ export function awardSlotExp(role) {
  * @param target.person はじめての相手（X2）／ target.place はじめての場所・遊び（X3）
  * @param target.bond 絆の深い相手からの誘い（LM11）。新鮮さで減らさず BOND_INVITE_MULT 倍。鍵の回数にも数えない
  */
-export function awardActionExp(target) {
+export function awardActionExp(target, actionTime = null) {
   if (!growthEnabled() || !state) return 0;
   const g = ensureGrowth();
   closeRespecOpportunity(g); // expの鍵が無い行動でも、実際に確定した最初の自由行動で閉じる。
@@ -401,8 +402,26 @@ export function awardActionExp(target) {
   log.people = strings(log.people); log.places = strings(log.places);
   const collection = target.person ? log.people : log.places, id = target.person || target.place || target.key;
   if (!collection.includes(id)) collection.push(id);
-  let got = target.bond ? gainExp(EXP.action * BOND_INVITE_MULT, { key: target.key, tag: "絆" })
-    : gainExp(EXP.action * freshness(count), { key: target.key, tag: count >= 3 ? "なじみ" : null });
+  // 絆の深い相手からの誘い（LM11）は新鮮さで減らさない（倍率は第5章の底上げの後に掛ける）
+  let base = target.bond ? EXP.action : EXP.action * freshness(count);
+  // 第5章の決戦前: 一日に最初の2枠だけ、確定した日常の学びを180XPまで底上げ。
+  // 同じ枠の再通知・無料リトライは補助を増やさない。章1〜4と決戦後は従来どおり。
+  let practice = false;
+  // TRPG・移動など自分で時間を進める行動も、開始時の枠で数える。
+  const at = actionTime || { ...state, chapterFive: !!state.flags?._ch5, matchDay: state.flags?._ch5?.matchDay };
+  if (state.chapter === 5 && at.chapter === 5 && at.phase === "daily" && at.chapterFive && !at.matchDay
+      && Number.isInteger(at.day) && Number.isInteger(at.slot) && [0, 1].includes(at.slot)) {
+    const day = `${at.cycle || 1}:${at.day}`;
+    const ledger = g.practiceDay?.day === day ? g.practiceDay : { day, slots: [] };
+    if (!Array.isArray(ledger.slots)) ledger.slots = [];
+    if (!ledger.slots.includes(at.slot)) {
+      ledger.slots.push(at.slot); base = Math.max(base, 90); practice = true;
+    }
+    g.practiceDay = ledger;
+  }
+  // 絆の深い相手からの誘いは、その行動の基本量（第5章の決戦前は底上げ後）の BOND_INVITE_MULT 倍
+  if (target.bond) base *= BOND_INVITE_MULT;
+  let got = gainExp(base, { key: target.key, tag: target.bond ? "絆" : practice ? "日々の学び" : count >= 3 ? "なじみ" : null });
   if (target.person && !g.firsts.people.includes(target.person)) {
     g.firsts.people.push(target.person);
     got += gainExp(EXP.firstPerson, { key: target.key, tag: "はじめて", first: true });
@@ -551,6 +570,7 @@ function bestAxeRank(s) {
   return best;
 }
 function playRewardMet(reward, s) {
+  if (reward.master) return masteryRecord(s, reward.game).done;
   if (reward.game === "axe") { const rank = bestAxeRank(s); return !!rank && atLeast(rank, reward.rank); }
   if (reward.game === "trpg") {
     const cleared = Object.values(s.trpg?.cleared || {});
@@ -558,7 +578,7 @@ function playRewardMet(reward, s) {
     return cleared.length >= reward.clears;
   }
   if (reward.game === "dj") { const rank = s.dj?.bestRank; return typeof rank === "string" && atLeast(rank, reward.rank); }
-  if (reward.game === "camel") { if (reward.master) return s.flags?._camel_cups?.standard?.mastered === true; const plays = s.flags?._ch4_camel?.plays; return Number.isInteger(plays) && plays >= (reward.clears || 1); }
+  if (reward.game === "camel") { const plays = s.flags?._ch4_camel?.plays; return Number.isInteger(plays) && plays >= (reward.clears || 1); }
   if (reward.game === "desert") { const rank = s.desert?.bestRank; return typeof rank === "string" && atLeast(rank, reward.rank); }
   return false;
 }
@@ -568,6 +588,7 @@ function playRewardMet(reward, s) {
  * 戻り値: [{ label, parts: [{ kind, n }] }]
  */
 export function claimPlayRewards(g, s = state) {
+  syncPlayMastery(s);
   const out = [];
   for (const reward of PLAY_REWARDS) {
     if (g.rewards[reward.id] || !playRewardMet(reward, s)) continue;
@@ -755,3 +776,10 @@ setExpHooks({ enabled: growthEnabled, hold: holdExpChip, action: awardActionExp,
     * (growthLesson(s, "M-S3") && s.flags?._home_lavender_sleep === `${s.chapter || 1}:${s.day}` ? 1 + LESSON_TUNING.lavenderSleep : 1) });
 masteryHooks.multiplier = s => (1 + (growthPerks(s)?.tongue || 0) / 100)
   * (growthSkill(s, "K09") ? 1 + SKILL_TUNING.mastery : 1);
+
+// 確定した遊びの認定をその場で精算。上限後も称号は通知し、架空の+1は出さない。
+on("play-mastery", ({ state: owner, game, newly }) => {
+  if (owner !== state) return;
+  settleGrowth();
+  emit("notice", { text: newly ? `認定：${PLAY_MASTERY[game].title}` : masteryLine(owner, game) });
+});

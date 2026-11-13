@@ -9,6 +9,7 @@ const ride = (page, code) => page.evaluate(code);
 const game = page => page.evaluate(() => { const g = window.__desertRide?.game; return g ? { z: g.z, x: g.x, air: g.air, airKind: g.airKind, t: g.t, score: g.score, falls: g.falls, finished: g.finished, hops: g.stats.hops, bigJumps: g.stats.bigJumps } : null; });
 const phase = (page, value) => page.waitForFunction(value => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === value, value, { timeout: 90000 });
 const autoplayToResult = async (page, skill = "expert") => {
+  await phase(page, "run"); // 初回/相手変更の画像準備が終わってから自動操縦を設定する。
   await page.evaluate(skill => { window.__desertRide.autoplay(skill); window.__desertRide.setSpeedUp(8); }, skill);
   await phase(page, "result");
 };
@@ -72,6 +73,36 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-leave")).click();
   });
 
+  // 始める前のロード（2026-11-11 オーナー「加速すると処理重い。ゲーム開始前に漫画付きロードとか挟んでもいい」）:
+  // 絵の読み込みが遅いと、作業台と同じ漫画つきのロード画面が出て、読み終えて進むと（テストは自動で読む）絵がそろった状態で走り出す。
+  await check("slow-art-waits-behind-the-comic-loading-screen", async page => {
+    await page.addInitScript(() => {
+      window.__comicTitles = [];
+      new MutationObserver(() => {
+        for (const node of document.querySelectorAll(".loading-comic-title")) if (!window.__comicTitles.includes(node.textContent)) window.__comicTitles.push(node.textContent);
+      }).observe(document, { childList: true, subtree: true });
+    });
+    await page.route(url => /\/img\/ui\/desert_ride\/.+\.webp/.test(url.href), async route => { await new Promise(resolve => setTimeout(resolve, 1500)); await route.continue(); });
+    await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href, { waitUntil: "domcontentloaded" });
+    await page.locator(t("desert-page-start")).click();
+    await page.locator(t("desert-start")).click();
+    await phase(page, "run");
+    assert.equal((await page.evaluate(() => window.__comicTitles)).length, 1, "one comic was shown while the art loaded");
+    assert.equal(await page.locator(".loading-gate").count(), 0, "the loading screen is gone");
+    const missing = await page.evaluate(async () => {
+      const { DESERT_ART } = await import("./js/minigames/desert-ride-art.js");
+      const loaded = performance.getEntriesByType("resource").map(entry => entry.name);
+      return Object.entries(DESERT_ART).filter(([key, def]) => def.file && !key.startsWith("naruRider") && !loaded.some(name => name.includes(def.file))).map(([, def]) => def.file);
+    });
+    assert.deepEqual(missing, [], "all common and selected rival art finished loading before the run");
+    // 2回目からは読み終わっているので、ロード画面を出さずにすぐ始まる。
+    await page.keyboard.press("Escape");
+    await phase(page, "menu");
+    await page.locator(t("desert-start")).click();
+    await phase(page, "run");
+    assert.equal((await page.evaluate(() => window.__comicTitles)).length, 1, "no second loading screen once the art is ready");
+  });
+
   await check("standalone-page-keyboard-run-result-best-and-quit", async page => {
     await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
     await page.locator(t("desert-page-start")).click();
@@ -107,7 +138,6 @@ await suite("desert-ride", async check => {
     const loaded = await page.evaluate(() => performance.getEntriesByType("resource").map(entry => entry.name).filter(name => name.includes("/img/ui/desert_ride/")).map(name => name.split("/").pop()).sort());
     assert.deepEqual(loaded, ["backdrop_day_land.webp", "backdrop_day_sky.webp", "backdrop_dusk_land.webp", "backdrop_dusk_sky.webp", "flag_pole.webp", "goal_banner.webp",
       "rider_brace.webp", "rider_fall.webp", "rider_jump.webp", "rider_lean_left.webp", "rider_lean_right.webp",
-      "rider_naru_brace.webp", "rider_naru_fall.webp", "rider_naru_jump.webp", "rider_naru_lean_left.webp", "rider_naru_lean_right.webp", "rider_naru_ride.webp",
       "rider_noor_brace.webp", "rider_noor_fall.webp", "rider_noor_jump.webp", "rider_noor_lean_left.webp", "rider_noor_lean_right.webp", "rider_noor_ride.webp",
       "rider_ride.webp", "rock_large.webp", "rock_small.webp", "sand_puff.webp"]);
     // 空中トリックとブーストを使う理想の滑り: S、ヌールに勝つ。360 以上を決めるとカットインが走る
@@ -167,6 +197,13 @@ await suite("desert-ride", async check => {
   });
 
   await check("phone-touch-buttons-reduced-motion-and-tutorial", async page => {
+    // タッチ端末でもブースト中の曲の速さは変えない。
+    await page.addInitScript(() => {
+      window.__rateWrites = [];
+      const rate = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "playbackRate");
+      Object.defineProperty(HTMLMediaElement.prototype, "playbackRate", { configurable: true, get() { return rate.get.call(this); },
+        set(value) { window.__rateWrites.push(value); rate.set.call(this, value); } });
+    });
     await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
     await page.locator(t("desert-page-reduce")).check();
     await page.locator(t("desert-page-tutorial")).tap();
@@ -176,7 +213,7 @@ await suite("desert-ride", async check => {
     // 動き軽減では放電の稲妻を出さない（満タンの光だけ）
     const calm = await page.evaluate(async () => {
       const r = window.__desertRide; r.game.gauge = 1; await new Promise(resolve => setTimeout(resolve, 90)); r.redraw();
-      const lit = [...document.querySelectorAll(".dr-zap path")].filter(path => path.getAttribute("d")).length;
+      const lit = [...document.querySelectorAll(".dr-zap path.core")].filter(path => path.getAttribute("d")).length;
       const shown = [...document.querySelectorAll(".dr-zap")].some(node => getComputedStyle(node).display !== "none");
       r.game.gauge = 0; r.redraw();
       return { lit, shown, charge: document.querySelector('[data-test="desert-ride"]').dataset.charge };
@@ -230,6 +267,8 @@ await suite("desert-ride", async check => {
     assert.equal(await page.evaluate(() => window.__desertRide.game.stats.boosts), 1, "the BOOST button spends a partial gauge");
     assert.equal(await page.evaluate(() => window.__desertRide.game.gauge), 0, "the BOOST button consumes the stocked gauge");
     assert(await page.evaluate(() => window.__desertRide.game.boostT > 0), "the partial gauge gives boost time");
+    await page.waitForTimeout(200);
+    assert.deepEqual(await page.evaluate(() => window.__rateWrites.filter(value => value !== 1)), [], "touch boost keeps the music at its normal tempo");
     // 練習は説明つきで（回転・ブーストまで）、終わると本番へ進むカード
     await page.evaluate(() => {
       window.__captions = [];
@@ -296,7 +335,7 @@ await suite("desert-ride", async check => {
     const zaps = level => page.evaluate(async level => {
       const r = window.__desertRide; r.game.gauge = level;
       await new Promise(resolve => setTimeout(resolve, 90)); r.redraw();
-      const lit = selector => [...document.querySelectorAll(`${selector} path`)].filter(path => path.getAttribute("d")).length;
+      const lit = selector => [...document.querySelectorAll(`${selector} path.core`)].filter(path => path.getAttribute("d")).length;
       return { charge: document.querySelector('[data-test="desert-ride"]').dataset.charge, button: lit(".dr-zap-button"), gauge: lit(".dr-zap-gauge") };
     }, level);
     assert.deepEqual(await zaps(0), { charge: "", button: 0, gauge: 0 }, "no discharge with an empty gauge");
@@ -309,7 +348,7 @@ await suite("desert-ride", async check => {
     assert(full.button > most.button, "more bolts as the gauge fills");
     await ride(page, () => { const r = window.__desertRide; r.game.fallT = 0; r.boost(); });
     await page.waitForTimeout(90);
-    const during = await page.evaluate(() => { window.__desertRide.redraw(); return { charge: document.querySelector('[data-test="desert-ride"]').dataset.charge, lit: [...document.querySelectorAll(".dr-zap path")].filter(path => path.getAttribute("d")).length }; });
+    const during = await page.evaluate(() => { window.__desertRide.redraw(); return { charge: document.querySelector('[data-test="desert-ride"]').dataset.charge, lit: [...document.querySelectorAll(".dr-zap path.core")].filter(path => path.getAttribute("d")).length }; });
     assert.deepEqual(during, { charge: "", lit: 0 }, "the charge is spent by the boost");
     // 光は絵の形に沿う drop-shadow だけ。箱の形の光（box-shadow）は付けない（同日「うっすら水色の四角が見える」）
     await page.waitForFunction(() => document.querySelector('[data-test="desert-boost"]').classList.contains("art-ready"));
@@ -345,6 +384,10 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-start-naru")).click();
     await phase(page, "run");
     assert.equal((await page.locator(t("desert-versus")).innerText()).replace(/\s+/g, " "), "裏ボス VS なる");
+    await page.waitForFunction(() => {
+      const node = document.querySelector('[data-test="desert-versus"]');
+      return window.__desertRide.countdown > 0 && node.classList.contains("show") && Number(getComputedStyle(node).opacity) > 0;
+    });
     const banner = await page.evaluate(() => {
       const node = document.querySelector('[data-test="desert-versus"]'), root = document.querySelector('[data-test="desert-ride"]').getBoundingClientRect(), box = node.getBoundingClientRect();
       return { shown: node.classList.contains("show") && getComputedStyle(node).opacity !== "0", top: (box.top - root.top) / root.height, counting: window.__desertRide.countdown > 0 };
@@ -372,17 +415,19 @@ await suite("desert-ride", async check => {
     const carved = await ride(page, () => { const g = window.__desertRide.game; window.__desertRide.setInput(false, false); return { gauge: g.gauge, event: g.events.some(e => e.kind === "carve" && e.points > 0), falls: g.falls }; });
     assert(carved.event && carved.gauge > 0.05, `carving charges the gauge (${carved.gauge})`);
     await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]').dataset.carve === "");
-    // ブースト中は曲が速くなり、終わると戻る。やめてメニューへ戻っても元の速さ
+    // ブースト中・終了後・メニューへ戻った後も曲は通常の速さ
     const audioUrl = new URL("js/core/audio.js", page.url()).href;
     await page.evaluate(async url => { window.__audio = await import(url); }, audioUrl);
     assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "normal tempo outside a boost");
     await ride(page, () => { const r = window.__desertRide; r.game.x = 0; r.game.vx = 0; r.game.fallT = 0; r.game.gauge = 1; r.boost(); });
-    await page.waitForFunction(() => window.__audio.bgmPlaybackRate() > 1.15 && document.querySelector('[data-test="desert-ride"]').dataset.boost === "on");
-    assert(await page.evaluate(() => window.__audio.bgmPlaybackRate()) <= 1.18 + 1e-9, "the boost tempo is 1.18x at most");
+    await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]').dataset.boost === "on");
+    assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "boost keeps the music at its normal tempo");
     await ride(page, () => { window.__desertRide.game.boostT = 0.02; });
-    await page.waitForFunction(() => window.__audio.bgmPlaybackRate() === 1);
+    await page.waitForFunction(() => window.__desertRide.game.boostT === 0);
+    assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "boost end keeps normal tempo");
     await ride(page, () => { const r = window.__desertRide; r.game.fallT = 0; r.game.gauge = 1; r.boost(); });
-    await page.waitForFunction(() => window.__audio.bgmPlaybackRate() > 1.05);
+    await page.waitForFunction(() => window.__desertRide.game.boostT > 0);
+    assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "a second boost also keeps normal tempo");
     await page.keyboard.press("Escape");
     await phase(page, "menu");
     assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "quitting mid-boost restores the tempo");

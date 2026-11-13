@@ -48,20 +48,27 @@ await suite("vn-speaker-atomic-2190", async check => {
       await prepare(page);
       if (mode === "manual") await page.locator(".vn-box").click();
       else await page.locator(`[data-test="vn-${mode}"]`).click();
-      await page.waitForFunction(() => atomic.entranceWaiting);
-      if (mode === "manual") await page.evaluate(() => {
-        for (let i = 0; i < 10; i++) document.querySelector(".vn-box").dispatchEvent(
-          new PointerEvent("pointerup", { bubbles: true, button: 0, pointerType: "mouse" }));
-      });
-      const waiting = await page.evaluate(() => ({ name: document.querySelector(".vn-name.show")?.textContent,
-        text: document.querySelector(".vn-text").textContent, oldName: atomic.names.sumi }));
-      assert.equal(waiting.name, waiting.oldName, "入場待ちは旧本文に旧名札をそろえる");
-      assert.equal(waiting.text, "前の本文。");
-      await page.evaluate(() => atomic.release());
-      await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent === "次の本文。");
+      if (mode === "skip") {
+        // SKIPは入場アニメーションを作らず、画像・名札・本文を揃えて選択肢まで進む。
+        await page.locator('[data-test="choice-0"]').waitFor();
+        assert.equal(await page.evaluate(() => !!atomic.entranceWaiting), false,
+          "SKIP must not wait for a portrait entrance animation");
+      } else {
+        await page.waitForFunction(() => atomic.entranceWaiting);
+        if (mode === "manual") await page.evaluate(() => {
+          for (let i = 0; i < 10; i++) document.querySelector(".vn-box").dispatchEvent(
+            new PointerEvent("pointerup", { bubbles: true, button: 0, pointerType: "mouse" }));
+        });
+        const waiting = await page.evaluate(() => ({ name: document.querySelector(".vn-name.show")?.textContent,
+          text: document.querySelector(".vn-text").textContent, oldName: atomic.names.sumi }));
+        assert.equal(waiting.name, waiting.oldName, "入場待ちは旧本文に旧名札をそろえる");
+        assert.equal(waiting.text, "前の本文。");
+        await page.evaluate(() => atomic.release());
+        await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent === "次の本文。");
+        if (mode === "manual") await page.locator(".vn-box").click();
+        await page.locator('[data-test="choice-0"]').waitFor();
+      }
       assert.equal(await page.locator(".vn-name.show").textContent(), await page.evaluate(() => atomic.names.adam));
-      if (mode === "manual") await page.locator(".vn-box").click();
-      await page.locator('[data-test="choice-0"]').waitFor();
       const mixed = await page.evaluate(() => {
         atomic.observer.disconnect();
         return atomic.samples.filter(s => (s.text === "前の本文。" && s.name !== atomic.names.sumi)

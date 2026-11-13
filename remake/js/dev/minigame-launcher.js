@@ -2,6 +2,24 @@
 import { newState } from "../core/state.js";
 import { DJ_SETS } from "../minigames/dj.js";
 import { CAMEL_CUPS } from "../minigames/camel-race-model.js";
+import { foundTrpgClub, joinTrpgClub, syncTrpgStock, buyTrpgBook } from "../trpg/campaign.js";
+
+// The daytime shop stays available; the night entry prepares only this disposable state.
+export function createTrpgDebugState(catalog = null) {
+  const value = newState();
+  Object.assign(value, { chapter: 3, phase: "daily", day: 5, slot: catalog ? 1 : 0, money: 100000 });
+  if (catalog) {
+    foundTrpgClub(value, catalog);
+    for (const id of ["hiyori", "samechan", "tsumugi", "adam"]) {
+      value.met[id] = true;
+      value.flags[`_trpg_topic_${id}`] = true;
+      joinTrpgClub(value, catalog, id);
+    }
+    syncTrpgStock(value, catalog);
+    buyTrpgBook(value, catalog, "ordinary-cup");
+  }
+  return value;
+}
 
 const GAMES = [
   { id: "axe", label: "斧投げ", start: async (host, signal) => (await import("../minigames/axe.js")).runAxeThrow({ host, signal, mode: "practice", opponent: null }) },
@@ -14,11 +32,19 @@ const GAMES = [
     value.chapter = 3; value.phase = "daily"; value.day = 5;
     return (await import("../minigames/tetsuko-time.js")).openTetsukoTime({ value, visitKey: "debug", signal });
   } },
-  { id: "trpg", label: "TRPG・ボドゲカフェ", start: async (host, signal) => {
-    const value = newState();
-    value.chapter = 3; value.phase = "daily"; value.day = 5; value.slot = 0; value.money = 100000;
+  { id: "trpg", label: "ボドゲカフェ（昼・七つの灯り）", start: async (host, signal) => {
+    const value = createTrpgDebugState();
     const { mountTrpgCampaign } = await import("../trpg/campaign-view.js");
     const controller = mountTrpgCampaign(host, { getState: () => value, save: () => true, signal, closeLabel: "閉じる" });
+    await controller.ready;
+    return controller.finished;
+  } },
+  { id: "trpg-night", label: "TRPG（夜・物語）", start: async (host, signal) => {
+    const { loadTrpgLibrary } = await import("../trpg/index.js");
+    const resources = await loadTrpgLibrary({ signal, preloadAssets: false });
+    const value = createTrpgDebugState(resources.catalog);
+    const { mountTrpgCampaign } = await import("../trpg/campaign-view.js");
+    const controller = mountTrpgCampaign(host, { getState: () => value, save: () => true, signal, resources, closeLabel: "閉じる" });
     await controller.ready;
     return controller.finished;
   } },
@@ -40,7 +66,9 @@ export function mountMiniGameDebug() {
       document.querySelector("[data-test='debug-minigame-host']")?.remove();
       document.querySelector("[data-test='debug-minigame-close']")?.remove();
       const stage = document.getElementById("stage");
-      if (!stage) return;
+      const panel = document.querySelector("[data-test='debug-panel']");
+      const toggle = document.querySelector("[data-test='debug-toggle']");
+      if (!stage || !panel) return;
       const controller = new AbortController();
       current = controller;
       const host = document.createElement("div");
@@ -49,14 +77,13 @@ export function mountMiniGameDebug() {
       if (game.id !== "tetsuko") stage.append(host);
       const close = document.createElement("button");
       close.type = "button";
-      close.textContent = "デバッグ一覧へ戻る";
+      close.textContent = "ミニゲームを閉じる（タイトルへ）";
       close.dataset.test = "debug-minigame-close";
-      Object.assign(close.style, { position: "absolute", right: "12px", top: "12px", zIndex: "2147483001", padding: "8px", background: "#21162c", color: "#fff", border: "1px solid #f5c26b", borderRadius: "6px" });
-      if (game.id === "desert") Object.assign(close.style, { left: "20px", right: "auto", top: "280px" });
-      if (game.id === "ichidai") Object.assign(close.style, { top: "100px" }); // 右上の「早送り・？・✕」に重ねない
+      close.style.marginBottom = "8px";
       close.onclick = () => { controller.abort(); host.remove(); close.remove(); if (current === controller) current = null; location.reload(); };
-      stage.append(close);
-      document.querySelector("[data-test='debug-panel']").hidden = true;
+      panel.prepend(close);
+      if (toggle) toggle.textContent = "DBG・終了";
+      panel.hidden = true;
       try { await game.start(host, controller.signal); }
       catch (error) { if (!controller.signal.aborted) { host.textContent = `開始できませんでした: ${error.message}`; if (!host.isConnected) stage.append(host); } return; }
       if (current === controller && !controller.signal.aborted) close.click();

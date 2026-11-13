@@ -7,6 +7,7 @@
 // ・「揺れ・閃光を減らす」または端末の「動きを減らす」では寄り（ズーム）と輪を省き、
 //   「動きを減らす」では火の粉も省く。時間を止めるだけの部分は動きが無いので残す。
 import { el, rand } from "../core/util.js";
+import { smokeLayer, smokeAllowed, smokeTint, firstPersonBreath, ringBreath } from "../core/smoke.js";
 
 /** 判定ごとの強さ。ms＝止める長さ、zoom＝寄りの倍率、sparks＝火の粉の数 */
 export const IMPACT = Object.freeze({
@@ -62,10 +63,11 @@ export function hitStop(node, ms = IMPACT.perfect.ms, { zoom = IMPACT.perfect.zo
     bench.dataset.hitStopUntil = String(Math.max(until, performance.now() + ms));
   }
   if (mode !== "full" || !zoom || typeof node?.animate !== "function") return;
+  // 独立した scale で寄せる。transform を置き換えると舞台側で指定した拡大率が消える。
   node.animate([
-    { transform: `scale(${zoom})`, filter: "brightness(1.18)" },
-    { transform: `scale(${zoom})`, filter: "brightness(1.18)", offset: Math.min(0.6, ms / (ms + 160)) },
-    { transform: "scale(1)", filter: "brightness(1)" },
+    { scale: String(zoom), filter: "brightness(1.18)" },
+    { scale: String(zoom), filter: "brightness(1.18)", offset: Math.min(0.6, ms / (ms + 160)) },
+    { scale: "1", filter: "brightness(1)" },
   ], { duration: ms + 160, easing: "cubic-bezier(.2,.8,.3,1)" });
 }
 
@@ -156,54 +158,38 @@ export function impact(host, kind, { x = "50%", y = "50%", color, zoomNode = hos
 
 /**
  * 吐いた煙が画面を満たして晴れる（CFX03・吸い出しの山場）。一人称なので、画面の下中央（口元）から
- * 柔らかい煙の塊が広がって上へ抜ける。grand（最適温・会心）は晴れ際に煙の輪が昇る。
+ * もこもこの煙（core/smoke.js）が満ちて上へ抜ける。色は配合の色をうっすら。
+ * 煙の姿が出来を語る（KMR11）: quality "good"＝適温 ／ "thin"＝ぬるい（薄く小さい）／ "harsh"＝熱すぎ（ちぎれてすぐ消える）。
+ * grand（最適温・会心）は大きくまとまって長く残り、晴れ際に煙の輪が昇る。
  * 自動操作・「動きを減らす」では出さずにすぐ返す。戻り値は煙が晴れるまで待つ Promise。
  */
-export function exhale(host, { color = "#d9d2e6", grand = false } = {}) {
-  color = hex6(color);
+export function exhale(host, { color = "#d9d2e6", grand = false, quality = "good" } = {}) {
   const mode = fxMode();
-  if (mode === "off" || mode === "still" || !host) return Promise.resolve(false);
-  // 大きな煙の塊は画面の外から立ちのぼるので、専用の層で切り抜く（はみ出しでページがスクロールしないように）
-  const layer = el("div.fx-exhale", { "aria-hidden": "true", style: { position: "absolute", inset: "0", pointerEvents: "none", overflow: "hidden", zIndex: "30" } });
+  if (mode === "off" || mode === "still" || !host || !smokeAllowed()) return Promise.resolve(false);
+  // 煙は画面の外から立ちのぼるので、専用の層で切り抜く（下の結果の札は、この層の下で先に出ている）
+  const layer = el("div.fx-exhale", { "aria-hidden": "true", dataset: { quality: grand ? "best" : quality, ...(grand ? { ring: "1" } : {}) },
+    style: { position: "absolute", inset: "0", pointerEvents: "none", overflow: "hidden", zIndex: "30" } });
   host.append(layer);
-  const puffs = [];
-  const COUNT = 10, DURATION = 1600;
-  // 画面ぜんたいに薄くかかる息のもや（下から満ちて引く）
-  const veil = el("i", { style: { position: "absolute", inset: "0",
-    background: `radial-gradient(150% 110% at 50% 105%, ${color}d0, ${color}66 50%, transparent 82%)` } });
-  layer.append(veil);
-  const veilAnim = veil.animate([{ opacity: 0 }, { opacity: .8, offset: .35 }, { opacity: .55, offset: .6 }, { opacity: 0 }],
-    { duration: DURATION, easing: "ease-in-out", fill: "both" });
-  puffs.push(veilAnim.finished.then(() => veil.remove(), () => veil.remove()));
-  for (let i = 0; i < COUNT; i++) {
-    const size = rand(520, 860), dx = (i - (COUNT - 1) / 2) * rand(90, 140), rise = rand(300, 520);
-    const p = el("i", { style: {
-      position: "absolute", left: "50%", top: "100%", width: `${size}px`, height: `${size * .78}px`, borderRadius: "50%",
-      background: `radial-gradient(closest-side, #fffdf8f5, #fffdf8b0 22%, ${color}aa 50%, ${color}44 72%, transparent)`, filter: "blur(18px)",
-    } });
-    layer.append(p);
-    const delay = i * 55;
-    const anim = p.animate([
-      { transform: "translate(-50%,-50%) scale(.25)", opacity: 0 },
-      { transform: `translate(calc(-50% + ${dx * .6}px), calc(-50% - ${rise * .55}px)) scale(1)`, opacity: .95, offset: .4 },
-      { transform: `translate(calc(-50% + ${dx}px), calc(-50% - ${rise}px)) scale(1.45)`, opacity: 0 },
-    ], { duration: DURATION - delay, delay, easing: "cubic-bezier(.2,.65,.35,1)", fill: "both" });
-    puffs.push(anim.finished.then(() => p.remove(), () => p.remove()));
-  }
-  if (grand) {
-    const ring = el("i", { style: {
-      position: "absolute", left: "50%", top: "62%", width: "120px", height: "120px", borderRadius: "50%",
-      border: "14px solid #f4eff9", filter: "blur(3px)", boxShadow: `0 0 18px ${color}`,
-    } });
-    layer.append(ring);
-    const anim = ring.animate([
-      { transform: "translate(-50%,-50%) scale(.4)", opacity: 0 },
-      { transform: "translate(-50%,-50%) scale(.9)", opacity: .9, offset: .3 },
-      { transform: "translate(-50%, calc(-50% - 260px)) scale(1.9)", opacity: 0 },
-    ], { duration: 1300, delay: 700, easing: "ease-out", fill: "both" });
-    puffs.push(anim.finished.then(() => ring.remove(), () => ring.remove()));
-  }
-  // 万一アニメが終わらない環境でも先へ進める
-  return Promise.race([Promise.all(puffs), new Promise((r) => setTimeout(r, DURATION + 1200))])
+  const colors = [smokeTint(hex6(color), .3)];
+  const breaths = firstPersonBreath(grand ? "best" : quality, colors);
+  // 輪は、煙が晴れてきたころに昇らせる（煙のかたまりの中だと埋もれて見えない）。煙より白く、はっきり見せる
+  if (grand) breaths.push(...ringBreath({ x: .5, y: .66, radius: .11, size: .03, colors: [smokeTint(hex6(color), .08)], delay: 2.9, rise: .16, grow: .06, life: 2.3 }));
+  // 万一アニメが終わらない環境でも先へ進める（いちばん長い「最適温＋輪」で6秒ほど）
+  return Promise.race([smokeLayer(layer, { zIndex: 0 }).breathe(breaths), new Promise((r) => setTimeout(r, 9000))])
     .then(() => { layer.remove(); return true; });
+}
+
+/**
+ * 煙の輪（スモークリング K21・龍の煙 M-S7）を、anchor（輪を出す位置に置いた要素）の中心から昇らせる。
+ * 描けたら true。描けないとき（自動操作・「動きを減らす」）は false を返すので、呼び出し側は従来の輪を見せる。
+ */
+export function smokeRing(anchor, { color = "#e4dff0", big = false } = {}) {
+  const host = anchor?.closest?.(".bench"), mode = fxMode();
+  if (!host || mode === "off" || mode === "still" || !smokeAllowed()) return false;
+  const a = anchor.getBoundingClientRect(), b = host.getBoundingClientRect();
+  if (!b.width || !b.height) return false;
+  const x = (a.left + a.width / 2 - b.left) / b.width, y = (a.top + a.height / 2 - b.top) / b.height;
+  const colors = [smokeTint(hex6(color), big ? .5 : .2)];
+  smokeLayer(host, { zIndex: 29 }).breathe(ringBreath(big ? { x, y, radius: .09, size: .028, rise: .15, grow: .06, life: 2.2, colors } : { x, y, radius: .045, size: .017, rise: .14, grow: .04, life: 1.4, colors }));
+  return true;
 }

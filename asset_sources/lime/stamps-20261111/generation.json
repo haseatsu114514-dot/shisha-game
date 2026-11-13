@@ -1,0 +1,17 @@
+{
+  "tool": "image_gen.imagegen",
+  "date": "2026-11-11",
+  "common_prompt": "ONE chat sticker illustration for a cozy visual novel. Square 1024x1024 PNG, pure white background. Match reference style only: soft watercolor and colored-pencil texture, warm dark brown continuous outlines, gentle shading, dot eyes, pink blush, tiny rounded nub hands, friendly calm mood. Place the entire art centered in upper 78% with bottom 22% completely empty white for caption later. No text letters numbers logos speech bubbles written symbols, humans, human hands, shisha equipment or tobacco. ",
+  "reference": "st_mukai_master_ack/raw.png",
+  "notes": "B2 follows the original mug design; B4 references B3 and B6 references B5. Other characters reference the mug for style only. White raw PNGs are retained without modification. Captions are composited separately with Noto Sans CJK Bold.",
+  "prompts": {
+    "st_mukai_master_latte": "Create ONE new chat sticker illustration, square 1024x1024 white background. Match the attached fedora cream mug mascot exactly in design, watercolor colored-pencil texture, warm brown outline and colors. This is the second sticker: the same fedora-wearing mug now holding out a tall sweet latte glass with whipped cream and caramel drizzle with both tiny nub hands, relaxed inviting smile. Character entirely in upper 78 percent, bottom 22 percent pure white empty for later caption. No text letters numbers logos symbols, humans, cigarettes or shisha equipment. Save generated PNG in workspace if supported.",
+    "st_steve_ok": "A round lemon mascot with small round glasses, happy face, raising a tiny nub hand, holding a small round chrome kitchen timer with blank dial, one pointer only, no ticks, in the other hand.",
+    "st_saku_ack": "A small upright cream-colored blank tasting-card mascot, rounded rectangle dark brown outline, crooked one-sided smile, one eye half closed, small casual salute with a tiny nub hand. The card has no suit, pictures, writing or decorations. Friendly slightly mysterious.",
+    "st_steve_wait": "Same round lemon mascot with glasses and same design/colors as reference, sitting calmly with gentle smile holding blank-dial chrome timer up patiently, a small round green lime mascot sleeping beside it. Keep their whole bodies in upper 78 percent.",
+    "st_saku_guess": "Same blank cream rounded card mascot as reference in same colors, peeking from behind a small closed indigo notebook, eyes wide delighted with crooked grin, two tiny plain sparkles. No writing or drawings on card or notebook.",
+    "st_noor_morning": "Style reference only, do NOT copy hat clothes mug or bowtie. A small rounded sandboard mascot warm orange and cream with one plain stripe, standing on soft sand dune and waving tiny nub hand, round morning sun behind dune. Bright energetic desert sunrise. No hats, clothes or glasses.",
+    "st_master_hookah_wait": "A small round red lychee mascot with textured fruit skin and tiny long white beard tied at end, sitting upright eyes gently closed beside a small celadon teacup with thin curl of steam, patient dignified serene, not comical. No hat, suit or bowtie, do not copy mug's clothing. Style reference only.",
+    "st_da_silva_great": "A round purple passion-fruit mascot, big open laughing mouth and one eye winking, clapping tiny nub hands once above head, a few plain colorful confetti shapes, festive joyful sunny mood. No hat, suit or bowtie; do not copy reference character content. Style reference only."
+  }
+}

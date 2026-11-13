@@ -63,7 +63,7 @@ const BG = (name) => `res://assets/backgrounds/${name}.png`;
 const TONARI = BG("bg_tonari_inside");
 const TONARI_N = BG("bg_tonari_inside_night");
 const STAGE = BG("bg_tournament_stage");
-const PRIZE = 30000;
+const PRIZE = 50000;
 
 // ---------------------------------------------------------------- 会話フック
 

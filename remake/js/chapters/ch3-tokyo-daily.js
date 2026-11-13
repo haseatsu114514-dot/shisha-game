@@ -32,8 +32,9 @@ import { availableOptionalScenes, commitOptionalRead, selectChapterThreeEvening,
   eveningRecord, EVENING_WINDOW } from "./ch3-story-wiring.js";
 import { loverMilestonesDue, readLoverMilestone, pendingLoverLime } from "./lover-entry.js";
 import { mashiroTimeOpen, spendMashiroTime } from "./mashiro-time.js";
+import { petitAfterDate } from "../daily/petit-shuraba.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "../daily/bonds.js";
-import { runMukaiShift, loadMukaiShift, MUKAI_PAY, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
+import { runMukaiShift, loadMukaiShift, mukaiShiftPay, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
 import { addRoamerSpots } from "../daily/roamers.js";
 import { openTetsukoTime, settleTetsukoTime, tetsukoVisitKey } from "../minigames/tetsuko-time.js";
 import { chainStageAt } from "./visit-chains.js";
@@ -384,7 +385,8 @@ async function settleEvening(io) {
   const window = tokyoTime(state, TOKYO_FREE_TIMES_V3.find(entry => entry.id === EVENING_WINDOW));
   const result = selectChapterThreeEvening(routes, state, definitions, window);
   for (const id of result.scenes) {
-    if (!await keepDailyHud(() => io.readScene({ id, bg: "bg_street_night" })) || state !== owner) return;
+    // cast: 視線のカットイン（台本の motion "gaze" の短い版）に出すのは、その場にいる恋人だけ
+    if (!await keepDailyHud(() => io.readScene({ id, bg: "bg_street_night", cast: result.participants })) || state !== owner) return;
   }
   // 前夜デートは訪問デートと同じ一回の散歩。訪問の記録を済ませる（ch3_visit_*_date は再生しない）。
   if (result.kind === "date") {
@@ -519,7 +521,7 @@ async function visitRivalShop(entry, io, staminaGuard, owner) {
   const cost = entry.fee || 0;
   // 締めくくりは代金がかからないので、お金が足りない日もそれだけは選べる（客の一台の寄り道・外出は出さない）
   const short = cost > spendableMoney(state);
-  if (short && !finale) { toast(`お金が足りない（${cost.toLocaleString("ja-JP")}円）`); return unused; }
+  if (short && !finale) { toast(`お金が足りない（${cost.toLocaleString("ja-JP")}円）`, { se: "error" }); return unused; }
   const choices = [...finale ? [{ label: finale.label, value: `finale:${finale.who}` }] : [], ...short ? [] : paid];
   const pick = choices.length === 1 ? choices[0].value : await modal({ title: entry.label, className: "tokyo-visit-choice",
     body: "何をしに行こう。", options: [...choices.map((choice, index) => ({ ...choice, test: `tokyo-${entry.place}-${index}` })),
@@ -556,7 +558,7 @@ async function visitMukai(io, staminaGuard, owner) {
   const options = [
     ...(bond ? [{ label: bond === "lover" ? "ましろちゃんと過ごす（恋人）" : bond === "question" ? "ましろちゃんと話す" : "ましろちゃんに呼ばれる", value: `bond:${bond}` }] : []),
     ...scenes.map(scene => ({ label: scene.label, value: `scene:${scene.id}` })),
-    ...outings.map(outing => ({ label: outing.id === "mukai_help" ? `シフトに入る（バイト・日当 ${MUKAI_PAY.toLocaleString("ja-JP")}円）` : outing.label, value: `outing:${outing.id}` })),
+    ...outings.map(outing => ({ label: outing.id === "mukai_help" ? `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）` : outing.label, value: `outing:${outing.id}` })),
     ...trials.map(trial => ({ label: `作業台で${trial.label}（時間は進まない）`, value: `trial:${trial.id}` })),
     ...chainOptions("mukai"),
   ];
@@ -623,8 +625,11 @@ async function readMashiroBond(kind, staminaGuard, owner) {
   await setBg(bg);
   let done = false;
   // 恋人の時間は絆も spendMashiroTime が足す（恋人には普通の好感度が入らない。core/stats.js の gainAffinity）。
-  if (kind === "lover") done = await spendMashiroTime({ read: scene => readPlain(scene, "bg_mukai_shop", owner),
-    milestoneDue: mashiroMilestoneDue, readMilestone: () => readLoverMilestone("mashiro") });
+  if (kind === "lover") {
+    done = await spendMashiroTime({ read: scene => readPlain(scene, "bg_mukai_shop", owner),
+      milestoneDue: mashiroMilestoneDue, readMilestone: () => readLoverMilestone("mashiro") });
+    if (done && state === owner) await petitAfterDate("mashiro"); // プチ修羅場（恋人が2人以上・一度きり。daily/petit-shuraba.js）
+  }
   else if (kind === "question") done = await playQuestionVisit("mashiro", { bg });
   else done = await playFinale("mashiro", { bg });
   if (!done || state !== owner) return unused;

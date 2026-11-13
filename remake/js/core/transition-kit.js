@@ -25,11 +25,14 @@ export function move(node, frames, ms, opt = {}) {
   // 偽時計では WAAPI の finished が終わらないことがある。タイマーがあれば上限を置き、
   // Node の VM 検査（setTimeout が無い／即死するモック）では finished だけを待つ。
   const finished = Promise.resolve(anim.finished).catch(() => {});
+  // 遅延・繰り返しのある演出も最後まで待つ。duration だけで打ち切ると、
+  // 遅れて始まる絵や線が途中で消えたり、次の演出と重なってしまう。
+  const end = Math.max(0, (opt.delay ?? 0) + duration * (opt.iterations ?? 1) + (opt.endDelay ?? 0));
   const timer = globalThis.setTimeout;
   const clear = globalThis.clearTimeout;
-  if (typeof timer !== "function") return finished;
+  if (typeof timer !== "function" || !Number.isFinite(end)) return finished;
   let id;
-  const timeout = new Promise((resolve) => { id = timer(resolve, duration + 80); });
+  const timeout = new Promise((resolve) => { id = timer(resolve, end + 80); });
   return Promise.race([finished, timeout]).finally(() => {
     if (id != null && typeof clear === "function") clear(id);
   });
@@ -39,9 +42,15 @@ export function move(node, frames, ms, opt = {}) {
 const blockKey = (e) => {
   if (["Enter", " "].includes(e.key)) { e.preventDefault(); e.stopImmediatePropagation(); }
 };
+let keyHolds = 0;
 export function holdKeys() {
-  window.addEventListener("keydown", blockKey, true);
-  return () => window.removeEventListener("keydown", blockKey, true);
+  if (keyHolds++ === 0) window.addEventListener("keydown", blockKey, true);
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    if (--keyHolds === 0) window.removeEventListener("keydown", blockKey, true);
+  };
 }
 
 /** 幕の器。ui.setBg の covered／release 約束に合わせ、覆う・開くの2段で書く */
@@ -54,9 +63,11 @@ export function curtain(host, style, cover, reveal) {
   return { covered, async release() {
     if (released) return;
     released = true;
-    await covered;
-    await nextFrame(); await nextFrame();
-    try { await reveal(node); } finally { node.remove(); unhold(); }
+    try {
+      await covered;
+      await nextFrame(); await nextFrame();
+      await reveal(node);
+    } finally { node.remove(); unhold(); }
   } };
 }
 

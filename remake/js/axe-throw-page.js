@@ -9,6 +9,7 @@ import { axeRules } from "./minigames/axe-rules.js";
 import { adamUnlocked, recordAdamUnlock } from "./minigames/axe-secret-boss.js";
 import { DB } from "./core/data.js";
 import { unlockAudio, preloadBgm, playBgm, stopBgm } from "./core/audio.js";
+const inputMode = new URLSearchParams(location.search).get("input") === "gauges" ? "gauges" : "tap-pull";
 const host = document.getElementById("axe-app");
 // This standalone page does not run the main game's data loader. Register its one
 // packaged track before the first click so bgmUrl() can resolve it immediately.
@@ -29,7 +30,7 @@ function menu(result = null) {
     if (mode !== "practice" && !confirmed) { openSetup(mode, button); return; }
     buttons.forEach(b => { b.disabled = true; }); lesson.disabled = true;
     playBgm("bgm_axe");
-    try { const result = await runAxeThrow({ host, mode, opponent: mode === "versus" ? rival : opponent,
+    try { const result = await runAxeThrow({ host, inputMode, mode, opponent: mode === "versus" ? rival : opponent,
       difficulty: mode === "versus" && rival === "adam" ? "secret" : difficulty,
       division: mode === "practice" ? "rec" : division, bestOf: mode === "versus" ? bestOf : 1 });
       stopBgm(); menu(result);
@@ -101,14 +102,14 @@ function menu(result = null) {
   const rules = el("button.axe-button.axe-menu-rules.axe-help", { type: "button", title: "遊び方・得点ルール", dataset: { test: "axe-menu-rules" }, onclick: () => {
     if (busy() || intro.inert) return;
     intro.inert = true;
-    const panel = axeRules(() => { panel.remove(); intro.inert = false; rules.focus(); });
+    const panel = axeRules(() => { panel.remove(); intro.inert = false; rules.focus(); }, { inputMode });
     host.append(panel); panel.querySelector("button").focus();
   } }, [el("span", { "aria-hidden": "true", text: "？" }), el("span.axe-quiet", { text: "遊び方・得点ルール" })]);
   const lesson = el("button.axe-button.axe-menu-lesson", { type: "button", text: "マキの無料1投レッスン", dataset: { test: "axe-menu-lesson" }, onclick: async () => {
     if (busy() || intro.inert || !intro.isConnected) return;
     lessonOpen = true; intro.inert = true;
     playBgm("bgm_axe");
-    try { await runAxeThrow({ host, tutorial: true, opponent: null, allowRetry: true }); }
+    try { await runAxeThrow({ host, inputMode, tutorial: true, opponent: null, allowRetry: true }); }
     catch (error) { console.error(error); }
     finally {
       stopBgm();
@@ -137,3 +138,4 @@ function menu(result = null) {
   if (result) start.focus();
 }
 menu();
+

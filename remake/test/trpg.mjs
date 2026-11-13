@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
 const source = await readFile(new URL("../js/trpg/session.js", import.meta.url), "utf8");
-const { TrpgSession, specialOf, outcomeOf, HEAT, heatTier, checkKindsOf } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
+const { TrpgSession, specialOf, outcomeOf, HEAT, heatTier, checkKindsOf, buildPc, randomPc, grownStats, growthOf, GROWTH_MAX, STATS, SEARCH_RULED } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
 
 // The scenes a full session adds between the old ones: two questions after the first roll, a twist after the guess.
 function interviewDone(s) {
@@ -361,7 +361,7 @@ test("every GM on the shelf has the whole set of table chatter, in the GM's and 
   const talk = JSON.parse(await readFile(new URL("../../data/" + catalog.tableTalk, import.meta.url), "utf8"));
   const shelf = await Promise.all(catalog.scenarios.map(async s => JSON.parse(await readFile(new URL("../../data/" + s.file, import.meta.url), "utf8"))));
   const gms = new Set(shelf.map(s => s.cast.find(c => c.part === "GM").id));
-  assert(gms.size >= 6, "hiyori, samechan, adam, tsumugi, rei and sumi all run tables");
+  assert(gms.size >= 6, "hiyori, samechan, adam, tsumugi, rei and sai all run tables");
   const faces = Object.fromEntries(characters.map(c => [c.id, c]));
   for (const gm of gms) for (const kind of ["critical", "critical_full", "fumble", "double", "heat_up", "heat_max",
     "near1", "near2", "reward_question", "reward_hint", "reward_finale"]) {
@@ -402,7 +402,8 @@ test("table excitement rises with shared moments, tiers give the next roll one m
   session.state.heat = HEAT.max - 1; session.cheer(5, "test");
   assert.equal(session.snapshot().heat, HEAT.max);
   assert(session.snapshot().momentum <= HEAT.momentumMax);
-  assert.deepEqual([0, 3, 6, 8].map(heatTier), [0, 1, 2, 3]);
+  assert.deepEqual([0, 3, 6, 9, 10].map(heatTier), [0, 1, 2, 2, 3], "the top tier takes a full table (TRF12)");
+  assert.equal(HEAT.max, 10);
   const done = complete();
   assert.equal(done.result().heat.night, HEAT.nights[heatTier(done.snapshot().heat)]);
 });
@@ -441,6 +442,9 @@ test("declared approaches roll with the PC's sheet stat; a companion's first tur
   session.settleCheck(); interviewDone(session);
   for (const id of ["menu", "window", "bag"]) session.inspect(id);
   session.interpret("quiet"); twistDone(session); session.plan("aroma", "tea"); session.plan("seat", "window");
+  // The twist above was the player's own first turn: the character you made gets its spotlight too (TRF12).
+  assert(session.snapshot().heatLog.some(entry => /の見せ場$/.test(entry.reason) && entry.reason.startsWith(session.sheets.hajime.name)),
+    "the player's own character earns a spotlight the first time it acts");
   const heatBefore = session.snapshot().heat;
   const second = session.beginCheck("prepare", { approach: "prepare_light" });
   assert.equal(second.base, 5); assert.equal(session.snapshot().heat, heatBefore, "the same companion earns no second spotlight");
@@ -448,7 +452,7 @@ test("declared approaches roll with the PC's sheet stat; a companion's first tur
   const heatBeforeServe = session.snapshot().heat;
   const own = session.beginCheck("serve");
   assert.equal(own.actor, "hajime"); assert.equal(own.base, 4, "the default approach is the player's own character");
-  assert.equal(session.snapshot().heat, heatBeforeServe, "the player's own turn is not a spotlight");
+  assert.equal(session.snapshot().heat, heatBeforeServe, "the player's own second turn is no new spotlight");
   session.settleCheck();
   assert.deepEqual(session.result().checks.map(c => c.approach), ["listen_watch", "twist_talk", "prepare_light", "serve_word"]);
   assert.deepEqual(session.result().acted, { tsumugi: 2, hajime: 2 });
@@ -576,6 +580,111 @@ test("companions make their own characters: seeded variety, likes, own-voice mak
   }
 });
 
+test("growth from the club's rank gives the player's character one or two more stat points (TRF13)", () => {
+  assert.equal(GROWTH_MAX, 2);
+  assert.deepEqual([0, 1, 2, 3, -1, 1.5, "1", null, undefined].map(growthOf), [0, 1, 2, 2, 0, 0, 0, 0, 0]);
+  for (const s of catalogScenarios) {
+    const builder = s.builder, sum = stats => STATS.reduce((n, key) => n + stats[key], 0);
+    for (const archetype of builder.archetypes) {
+      const base = buildPc(s, { archetype: archetype.id });
+      assert.deepEqual(base.stats, archetype.stats, "no growth: the archetype as written");
+      assert.deepEqual(buildPc(s, { archetype: archetype.id }, 0).stats, archetype.stats);
+      for (const growth of [1, 2]) {
+        const grown = buildPc(s, { archetype: archetype.id }, growth);
+        assert.equal(sum(grown.stats), sum(archetype.stats) + growth);
+        for (const key of STATS) { assert(grown.stats[key] >= archetype.stats[key]); assert(grown.stats[key] <= builder.max); }
+        assert.deepEqual(grown.stats, grownStats(builder, archetype.stats, growth));
+        // The first point goes to the archetype's best stat (when it is not already at the maximum).
+        const best = STATS.slice().sort((a, b) => archetype.stats[b] - archetype.stats[a])[0];
+        if (archetype.stats[best] < builder.max) assert.equal(buildPc(s, { archetype: archetype.id }, 1).stats[best], archetype.stats[best] + 1);
+      }
+    }
+    // Chosen stats are taken as written, within the grown budget.
+    const first = builder.archetypes[0], over = { ...first.stats };
+    const room = STATS.find(key => over[key] < builder.max); over[room]++;
+    assert.throws(() => buildPc(s, { stats: over }), /Too many stat points/);
+    assert.deepEqual(buildPc(s, { stats: over }, 1).stats, over);
+    assert.deepEqual(buildPc(s, { stats: first.stats }, 2).stats, first.stats, "points may be left unspent");
+    const allMax = Object.fromEntries(STATS.map(key => [key, builder.max]));
+    assert.deepEqual(grownStats(builder, allMax, 2), allMax, "nothing grows past the maximum");
+    // The dice pick the same archetype and move the same point; growth is added on top.
+    for (const seed of [1, 7, 99]) {
+      const plain = randomPc(s, seed), grown = randomPc(s, seed, 2);
+      assert.equal(grown.archetype, plain.archetype); assert.equal(sum(grown.stats), sum(plain.stats) + 2);
+    }
+    // A session with growth: the sheet, the snapshot and the declared bonus all use the grown stat; the dice do not move.
+    const plain = new TrpgSession(s, { seed: 21 }), grown = new TrpgSession(s, { seed: 21, growth: 1 });
+    assert.equal(plain.growth, 0); assert.equal(grown.growth, 1);
+    assert.equal(sum(grown.sheets.hajime.stats), sum(plain.sheets.hajime.stats) + 1);
+    assert.deepEqual(grown.snapshot().pc.stats, grown.sheets.hajime.stats);
+    plain.start(); grown.start();
+    const a = plain.beginCheck("listen"), b = grown.beginCheck("listen");
+    assert.deepEqual(b.dice, a.dice); assert(b.base >= a.base);
+    assert.deepEqual(Object.keys(grown.snapshot().pc).sort(), Object.keys(plain.snapshot().pc).sort(), "the recorded character keeps its shape");
+  }
+});
+
+test("a closer look (TRF14): once per table the player's character rolls 観察 on dice of its own; it rules out wrong guesses and the story's dice never move", () => {
+  assert.deepEqual({ ...SEARCH_RULED }, { success: 2, mixed: 1, trouble: 0 });
+  for (const s of catalogScenarios) {
+    const toExplore = (seed, options = {}) => {
+      const t = new TrpgSession(s, { seed, ...options }); t.start();
+      assert.throws(() => t.search(), /unavailable/, "not before the room is open");
+      t.beginCheck("listen"); t.settleCheck(); interviewDone(t); return t;
+    };
+    const nextDice = t => {
+      t.interpret(t.profile.id);
+      const kind = t.flow.twist ? "twist" : "prepare";
+      for (const field of t.flow[kind]) t.plan(field, s.options[field][0].id);
+      return t.beginCheck(kind).dice;
+    };
+    const grades = new Set();
+    for (let seed = 1; seed <= 80; seed++) {
+      const t = toExplore(seed);
+      assert.throws(() => t.search(), /three clues/);
+      for (const spot of s.spots.slice(0, 3)) t.inspect(spot.id);
+      const heat = t.snapshot().heat, who = t.searchBase();
+      assert.deepEqual(who, { seat: "hajime", stat: "eye", base: t.sheets.hajime.stats.eye });
+      const found = t.search();
+      grades.add(found.grade);
+      assert.equal(found.total, found.dice[0] + found.dice[1] + who.base);
+      assert.equal(found.grade, outcomeOf(found.dice, who.base).grade);
+      for (const die of found.dice) assert(Number.isInteger(die) && die >= 1 && die <= 20);
+      assert.equal(found.ruled.length, SEARCH_RULED[found.grade]);
+      assert.equal(new Set(found.ruled).size, found.ruled.length);
+      assert(!found.ruled.includes(t.profile.id), "the truth is never ruled out");
+      for (const id of found.ruled) assert(s.hypotheses.some(h => h.id === id));
+      // Only a success lifts the table; nothing is ever spent.
+      assert.equal(t.snapshot().heat, Math.min(HEAT.max, heat + (found.grade === "success" ? 1 : 0)));
+      assert.equal(t.snapshot().teamwork, 2); assert.equal(t.snapshot().checks.length, 1, "it is not one of the story's checks");
+      assert.deepEqual(t.snapshot().search, found);
+      assert.throws(() => t.search(), /Already searched/);
+      // The same seed gives the same look, and the story's next dice are the same with or without it.
+      const again = toExplore(seed); for (const spot of s.spots.slice(0, 3)) again.inspect(spot.id);
+      assert.deepEqual(again.search(), found);
+      const plain = toExplore(seed); for (const spot of s.spots.slice(0, 3)) plain.inspect(spot.id);
+      assert.equal(plain.snapshot().search, null);
+      assert.deepEqual(nextDice(t), nextDice(plain));
+    }
+    assert.deepEqual([...grades].sort(), ["mixed", "success", "trouble"]);
+    // The roll uses the character the player made: a sharper eye is a better look on the same dice.
+    const keen = s.builder.archetypes.slice().sort((a, b) => b.stats.eye - a.stats.eye)[0], dull = s.builder.archetypes.slice().sort((a, b) => a.stats.eye - b.stats.eye)[0];
+    const look = archetype => { const t = toExplore(5, { pc: { archetype: archetype.id } }); for (const spot of s.spots.slice(0, 3)) t.inspect(spot.id); return t.search(); };
+    assert.equal(look(keen).base, keen.stats.eye); assert.equal(look(dull).base, dull.stats.eye);
+    assert.deepEqual(look(keen).dice, look(dull).dice); assert.equal(look(keen).total - look(dull).total, keen.stats.eye - dull.stats.eye);
+  }
+  // The finished table remembers the look; a table that never looked says so.
+  const looked = new TrpgSession(scenario, { seed: 9, profileId: "quiet" }); looked.start(); looked.beginCheck("listen"); looked.settleCheck(); interviewDone(looked);
+  for (const id of ["menu", "window", "bag"]) looked.inspect(id);
+  const found = looked.search();
+  assert.deepEqual(found.dice, [14, 13]); assert.equal(found.grade, "success"); assert.deepEqual(found.ruled.slice().sort(), ["company", "home"]);
+  looked.interpret("quiet"); twistDone(looked);
+  for (const [field, value] of [["aroma", "tea"], ["seat", "window"]]) looked.plan(field, value);
+  looked.beginCheck("prepare"); looked.settleCheck(); looked.plan("approach", "quiet"); looked.beginCheck("serve"); looked.settleCheck();
+  assert.deepEqual(looked.result().search, found);
+  assert.equal(complete().result().search, null);
+});
+
 test("the shopkeeper's first-table tutorial explains GM, PL, PC, the sheet, declaring, rolling and failure in short lines", async () => {
   const tutorial = JSON.parse(await readFile(new URL("../../data/" + catalog.tutorial, import.meta.url), "utf8"));
   const panels = new Set(tutorial.lines.map(l => l.panel));
@@ -666,5 +775,7 @@ test("role costumes: 95 origin outfits are keyed, and a built sheet resolves to 
 
   const mail = JSON.parse(await readFile(new URL("../../data/dialogue/trpg_regular_mail.json", import.meta.url), "utf8"));
   const table = new TrpgSession(mail, { profileId: mail.profiles[0].id, seed: 1 });
-  assert(hasCostume(mail.id, "sumi", table.sheets.sumi.option), "regular-mail sumi " + table.sheets.sumi.option);
+  assert(table.sheets.regulara.option);
+  assert.equal(table.sheets.sumi, undefined);
+  assert.equal(table.sheets.salaryman, undefined);
 });

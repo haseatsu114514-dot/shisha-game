@@ -31,6 +31,10 @@ const laterVisits = [
   { dialogue: "samechan_shop_own_seat", flag: "_samechan_own_seat_done" },
   { dialogue: "samechan_shop_look_away", flag: "_samechan_look_away_done" },
 ];
+// みんとの開店祝い（REL03）。いつもの来店の代わりに一度だけ。みんとと面識のある時だけ（店名を見て分かるため）。
+// 既読の旗は、ぺぱーみんとでの続き（daily/spot-encounters.js の FOLLOWUPS）が source として読む。
+const mintoGift = { dialogue: "samechan_shop_minto_gift", flag: "_spot_seen_samechan_shop_minto_gift" };
+const mintoGiftDue = () => !!state.met?.minto && !state.flags[mintoGift.flag] && !!DB.dialogues[mintoGift.dialogue]?.lines?.length;
 // 東京・ドバイへ発つ前の地元の準備3日（chapters/departure-prep.js）だけ、その章の送り出しの会話を一度（N3a。daily/spots.js の
 // CHAPTER_TALKS の prep と同じ扱い。来店の処理が別なのでここに持つ）。初来店の後の来店で、ほかの来店イベントより先に読む。
 // 台本は data/dialogue/ch3_ch4_home.json を準備期間に読み込むので、未読込なら出さない。既読は `_talk_seen_<scene>`。
@@ -65,7 +69,8 @@ export function samechanVisitDialogue() {
   if (count === 0) return "samechan_shop_first";
   const prepTalk = samechanPrepTalkDue();
   if (prepTalk) return prepTalk;
-  if (count >= 3) {
+  // 初来店の次から、実際の♥と既読で進める。回数だけの空振り訪問は挟まない。
+  if (count >= 1) {
     for (const event of entryEvents) {
       if (state.flags[event.flag]) continue;
       if (event.night && state.slot < 1) break;
@@ -94,6 +99,7 @@ export function samechanVisitDialogue() {
       if (DB.dialogues[event.dialogue]?.lines?.length) return event.dialogue;
     }
   }
+  if (count >= 1 && mintoGiftDue()) return mintoGift.dialogue;
   return `samechan_shop_repeat_${(count - 1) % 2}`;
 }
 
@@ -177,6 +183,12 @@ export async function visitSamechan(spot, { signal = null } = {}) {
   const count = state.story.samechan || 0;
   const dialogue = pending ? receipt.dialogue : samechanVisitDialogue();
   if (!DB.dialogues[dialogue]?.lines?.length) return false;
+  // 片付けのあと、同じ席で話を聞く流れのまま問いかける。別の来店や追加報酬には数えない。
+  // 既存の回答は visitScript が引き継ぎ、反応を読み終えるまで質問済みにはしない。
+  const appendQuestion = dialogue === "samechan_shop_closing_check" && affinityLevel("samechan") >= 3
+    && !state.flags[questionDoneKey("samechan")] && !state.finales?.samechan
+    && !state.flags._friend_samechan && !(state.lovers || []).includes("samechan")
+    && !!DB.dialogues.samechan_shop_bond_question?.lines?.length;
   // 静かな席を読む当日には先取りせず、成立後の次の自主訪問に添える。
   const introduceCinema = pending && typeof receipt.cinemaIntroduction === "boolean"
     ? receipt.cinemaIntroduction : cinemaIntroductionDue(state);
@@ -202,17 +214,22 @@ export async function visitSamechan(spot, { signal = null } = {}) {
       if ((!result || result.cancelled)) return false;
     }
     if (!current()) return false;
-    if (dialogue === "samechan_shop_bond_question"
+    if (appendQuestion) {
+      const result = await play(visitScript("samechan_shop_bond_question"), { signal, growthScene: true });
+      if (!current() || !result || result.cancelled) return false;
+    }
+    const readQuestion = appendQuestion || dialogue === "samechan_shop_bond_question";
+    if (readQuestion
       && state.romanceChoices?.[SAMECHAN_BOND_CHOICE]?.char !== "samechan") return false;
     if (introduceCinema && !await readCinemaIntroduction({ signal })) return false;
     if (!current()) return false;
     // 読了時に一度だけ確定。中断のセーブは未払いなので、残金が訪問料だけでも再開できる。
     addMoney(-(spot.cost || 0));
     addStamina(spot.stamina || 0);
-    const event = [...entryEvents, ...SAMECHAN_HEART_EVENTS, cinemaImpression, unwellVisit, ...laterVisits].find(e => e.dialogue === dialogue);
+    const event = [...entryEvents, ...SAMECHAN_HEART_EVENTS, cinemaImpression, unwellVisit, mintoGift, ...laterVisits].find(e => e.dialogue === dialogue);
     if (event) state.flags[event.flag] = true;
     if (isPrepTalk(dialogue)) state.flags[`_talk_seen_${dialogue}`] = true;
-    if (dialogue === "samechan_shop_bond_question") {
+    if (readQuestion) {
       state.flags[questionDoneKey("samechan")] = true;
       releaseAffinity("samechan");
     }
@@ -230,3 +247,4 @@ export async function visitSamechan(spot, { signal = null } = {}) {
     return true;
   } finally { visiting = false; }
 }
+

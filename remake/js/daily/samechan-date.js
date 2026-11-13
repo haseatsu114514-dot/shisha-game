@@ -6,6 +6,7 @@ import { play, isPlaying } from "../vn/engine.js";
 import { dateVenue, dateScene, relationshipDayTotal, relationshipDayOf } from "./date-scene.js";
 import { playSamechanMilestone } from "./samechan-bonds.js";
 import { growthEnabled, awardActionExp } from "../core/growth.js";
+import { petitAfterDate } from "./petit-shuraba.js";
 
 let playing = false;
 export function samechanDateReady() {
@@ -69,6 +70,7 @@ export async function playSamechanDate({ invite = null, cost = 0, advanceSlot = 
     state.flags._samechan_date.complete = true;
     save(); // 日付・支払・選択・成長・行動まで一緒に確定。後続の絆の中断でデートを失わない。
     bond.private = previousPrivate;
+    await petitAfterDate("samechan"); // プチ修羅場（恋人が2人以上・一度きり）。デートは確定済みで、報酬は無い
     await playSamechanMilestone();
     return { done: true, spent };
   } finally { bond.private = previousPrivate; playing = false; }

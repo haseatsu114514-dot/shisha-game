@@ -30,6 +30,7 @@ const shinkansen = () => import("../motions/shinkansen.js");
 const purikura = () => import("../motions/purikura.js");
 const plane = () => import("../motions/plane.js");
 const moments = () => import("../motions/moments.js");
+const gaze = () => import("../motions/gaze.js");
 
 // 連絡先の交換は一度きり（交換済みの記録が先に付く）。SKIP中でも見せ、動きを減らす設定では
 // 動かないカードで見せる。省くと二度と見られない（#833）。
@@ -119,17 +120,17 @@ export async function trainRide(mid, opts = {}) {
 /** 新幹線に乗る（Issue #1059）。mid(): 車窓が覆っている間に次の背景へ替える。
  * opts.from/to: "home"|"tokyo"。第2章の隣町行き電車(#891 trainRide)とは別の演出。 */
 export async function shinkansenRide(mid, opts = {}) {
-  await ride(shinkansen, mid, opts);
+  await ride(shinkansen, mid, opts, "shinkansen");
 }
 
-/** 飛行機に乗る（#2688 A4）。丸い機窓の外が時差の色へ移り、着く土地が見えたところで窓が広がる。opts.to: "dubai" | "home" */
+/** 飛行機に乗る（#2688 A4・作り直し TMG57）。機内の窓の外の雲海が時差の色へ移り、行き先の題字のあと窓へ寄って次の場面になる。opts.to: "dubai" | "home" */
 export async function planeRide(mid, opts = {}) {
-  await ride(plane, mid, { ...opts, kind: "plane" });
+  await ride(plane, mid, { ...opts, kind: "plane" }, "plane");
 }
 
-/** 配送便（車）に乗る（#2688 A4）。横長の車窓の外を道路の灯が流れる。opts.to: "tokyo" | "town" */
+/** 配送便（車）に乗る（#2688 A4・TMG57）。ふつうの切り替えと行き先の題字だけ（車窓の演出はやめた）。opts.to: "tokyo" | "town" */
 export async function vanRide(mid, opts = {}) {
-  await ride(plane, mid, { ...opts, kind: "van" });
+  await ride(plane, mid, { ...opts, kind: "van" }, "plane");
 }
 
 /** mid(): 覆っている間に背景を替える。bgUrl はその背景の絵（線画の元） */
@@ -153,4 +154,17 @@ export async function sceneMoment(name, ...args) {
   const mid = args.find((arg) => typeof arg === "function");
   if (mid) await mid();
   return null;
+}
+
+/**
+ * 修羅場の「視線」（motions/gaze.js）。その場にいる恋人たちの目元の帯が左右から差し込まれる。
+ * 会話の {"type": "motion", "id": "gaze"} から呼ぶ（"brief": true でプチ修羅場の短い版）。cast はその場にいる恋人（ID か { id, remote }）。
+ * 動きを減らす設定・高速送りの判断は gaze.js 側。読み込めなかったときは何もせず先へ進む。
+ */
+export async function gazeCutin(cast = [], options = {}) {
+  const owner = state;
+  const mod = await withLoadingNotice(gaze(), { ...loadingNotice("演出を準備しています…"), delayMs: 500 })
+    .catch((e) => { console.error(e); return null; });
+  if (state !== owner) return; // 読み込み中のLOADから、前のセーブの演出を始めない
+  await mod?.gaze(cast, options);
 }

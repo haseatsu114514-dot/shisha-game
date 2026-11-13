@@ -1,0 +1,116 @@
+[
+  {
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "bytes": 1569808,
+    "sha256": "62f61a6b3c3315fe4565986f71caa0feac3dc14d11444f2cbe012363ad047f59",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "alpha_zero_pixels": 1233334,
+    "alpha_1_to_8_pixels": 14602,
+    "bbox_alpha_gt_0": [
+      0,
+      65,
+      1014,
+      1512
+    ],
+    "bbox_alpha_gt_8": [
+      198,
+      80,
+      828,
+      1483
+    ],
+    "bbox_alpha_gt_128": [
+      198,
+      80,
+      827,
+      1483
+    ],
+    "bbox_alpha_gt_240": [
+      199,
+      81,
+      826,
+      1482
+    ],
+    "filename": "my-axe-tier1-basic-candidate.png"
+  },
+  {
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "bytes": 1418882,
+    "sha256": "f0711682c89169ff6fa757eb9ded6f1a9b81d5b1782a32735c1d01b4d37fbfd9",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "alpha_zero_pixels": 1231085,
+    "alpha_1_to_8_pixels": 13901,
+    "bbox_alpha_gt_0": [
+      0,
+      0,
+      1002,
+      1522
+    ],
+    "bbox_alpha_gt_8": [
+      196,
+      79,
+      829,
+      1484
+    ],
+    "bbox_alpha_gt_128": [
+      197,
+      80,
+      828,
+      1483
+    ],
+    "bbox_alpha_gt_240": [
+      198,
+      80,
+      827,
+      1482
+    ],
+    "filename": "my-axe-tier2-balanced-candidate.png"
+  },
+  {
+    "size": [
+      1024,
+      1536
+    ],
+    "mode": "RGBA",
+    "bytes": 1434801,
+    "sha256": "e20bd01b3b6830b3a550198ebc55aaaa34b7e65f1d420399451298ccb301124b",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "alpha_zero_pixels": 1229472,
+    "alpha_1_to_8_pixels": 13094,
+    "bbox_alpha_gt_0": [
+      0,
+      0,
+      986,
+      1526
+    ],
+    "bbox_alpha_gt_8": [
+      195,
+      79,
+      830,
+      1484
+    ],
+    "bbox_alpha_gt_128": [
+      196,
+      80,
+      829,
+      1483
+    ],
+    "bbox_alpha_gt_240": [
+      197,
+      80,
+      828,
+      1482
+    ],
+    "filename": "my-axe-tier3-precision-candidate.png"
+  }
+]

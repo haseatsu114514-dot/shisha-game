@@ -16,6 +16,7 @@ import { samechanMilestoneDue, playSamechanMilestone } from "./samechan-bonds.js
 import { dateScene, dateVenue, relationshipDayTotal } from "./date-scene.js";
 import { playSamechanDate, samechanDateGap, samechanDateReady } from "./samechan-date.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
+import { petitAfterDate } from "./petit-shuraba.js";
 import { recordRouteLover, recordRouteEvent } from "../core/gallery-progress.js";
 
 // 告白は「帰り道」の場面。背景を持たない台本は通りの絵で（前の場面の背景を引き継がない）
@@ -111,23 +112,6 @@ const gateScene = (id) => ({
   },
 });
 
-const cheatScene = (id) => ({
-  dialogue_id: `remake_cheat_warning_${id}`,
-  metadata: { private_scene: true },
-  lines: [
-    { speaker: "", text: `（……今、${state.lovers.map(privateCall).join("、")}と付き合っている）` },
-    { speaker: "", text: "（この気持ちに応えれば、隠しごとがひとつ増える。それでも？）" },
-    { type: "choice", choices: [
-      { text: "それでも、気持ちに応えたい", next: "go" },
-      { text: "……今は、目の前の人を大切にする", next: "stay" },
-    ] },
-  ],
-  branches: {
-    go: [{ type: "set_flag", flag: "_cheat_go" }, { speaker: "", text: "（胸の奥が、少しだけ重くなった気がした）" }],
-    stay: [{ speaker: "", text: "（気づかないふりをした。……この想いには、まだ答えを出さない）" }],
-  },
-});
-
 // 告白の台本が自分の場面を持つ相手（daily/bonds.js の BOND_FINALES.ownConfession）。夜の帰り道では始めない。
 // ましろは第3章の寄り道（休日の部屋。chapters/ch3-story-wiring.js の confession_mashiro・IR20）だけで告白する。
 // ヌールはドバイの砂丘の夕日（chapters/ch4-desert.js の confession_noor・DSR20。第4章と第5章のドバイ）だけで告白する。
@@ -166,14 +150,8 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
   if ((state.flags._confession_wait || 0) > state.day || busyNight && companion !== id) return false;
   delete state.flags._confession_due;
   await beat(companion === id ? "——別れ際、もう少しだけ話したくなった。" : id === "ageha" ? "——と、そのとき。" : `（……${privateCall(id)}の顔が、ふと浮かんだ）`);
-  // すでに恋人がいるなら、応える前に一度立ち止まる
-  if (state.lovers.length) {
-    delete state.flags._cheat_go;
-    await play(cheatScene(id), { bg: STREET });
-    if (!state.flags._cheat_go) { state.flags._confession_wait = state.day + 3; save(); return true; }
-    delete state.flags._cheat_go;
-    state.guilt = (state.guilt || 0) + 1;
-  } else if (id !== "ageha") {
+  // 恋人がいる時の迷いは、正式な返事の直前に共通VNで確認する。
+  if (!state.lovers.length && id !== "ageha") {
     // あげは以外は、主人公が踏み出すかどうかから（あげはだけは向こうから来る）
     delete state.flags._confession_go;
     await play(gateScene(id), { bg: STREET });
@@ -202,7 +180,7 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
     state.flags._minto_name_known = true;
     save();
   }
-  await play(`confession_${id}`, DB.dialogues[`confession_${id}`]?.metadata?.bg ? {} : { bg: STREET });
+  await play(`confession_${id}`, { ...(DB.dialogues[`confession_${id}`]?.metadata?.bg ? {} : { bg: STREET }), romanceWarningGuilt: true });
   if (id === "samechan" && isLover(id)) await playSamechanMilestone();
   save();
   return true;
@@ -281,6 +259,8 @@ export async function playDate(id) {
   await play(dateScene(id, venue), { growthScene: true });
   gainAffinity(id, 10);
   bond.private = false;
+  // プチ修羅場（恋人が2人以上・一度きり）: 着信・気づきかけ・帰り道の誤爆。デートの場所のまま読み、報酬は無い
+  await petitAfterDate(id);
   addStamina(-10);
   save();
   await playLoverMilestone(id);
@@ -351,6 +331,9 @@ function apartFrom(id, home, value = state) {
  */
 export function loverMessages({ tournamentDay = false, fixedNight = () => false, invitations = true, away = [], exclude = [], home = !awayFromHome(), carryMorning = false } = {}) {
   const out = [];
+  // 修羅場が未解決のあいだは、恋人の誰からも連絡が来ない（朝のひとこと・記念日・誘いのどれも。2026-11-11 オーナー
+  // 「やってしまった感を出せるように」）。打ち上げの後、スマホが鳴らなくなる。一人ずつの話し直しが済めば、元どおり届く
+  if (state.flags?._story_shuraba_unresolved) return out;
   const read = (id) => state.limeRead.includes(id);
   const phase = L().limePhase || {};
   const invites = [];
@@ -444,8 +427,11 @@ export async function maybeShuraba() {
   state.flags._shuraba_ch1 = true;
   // 3人以上: 既存の all は3人固定の台本。ひよりを含む場合は、居合わせた恋人の行だけを出す all_hiyori
   const key = lv.length >= 3 ? (lv.includes("hiyori") ? "all_hiyori" : "all") : lv.join("_");
-  await play(`remake_shuraba_${key}`);
+  // 視線のカットイン（台本の motion "gaze" の短い版）に出すのは、ロビーで鉢合わせた恋人だけ
+  // （第1章のみんとは出場者として営業の姿で来ているので、営業の顔で出す）
+  await play(`remake_shuraba_${key}`, { cast: lv.map((id) => id === "minto" ? { id, face: "normal" } : id) });
   state.guilt = (state.guilt || 0) + 1;
   save();
   return true;
 }
+

@@ -80,3 +80,75 @@ Use case: game UI texture. Asset type: playmat surface for proposal B. Create on
 **案 A を推す。** マット上では暗い石と枠線が退き、手札の種類色と熱の数字が先に見える。スマホ横持ちではカード幅が約60pxになるが、黒い面の縁と珊瑚色の一口が残る。案 B は拡大時の文が読みやすく、レア度の順も強い一方、密集した手札では白い縁が連続する。
 
 第2段階前に、A の U の銀縁を C からもう一段離し、白黒でも種類が見分けられる小さな形のしるしを手札帯に追加したい。現行のレア度割り当ては仮のまま維持し、希少度を効果の強さに直結させないことを提案する。図鑑では全66種の未入手を輪郭だけで見せ、拡大札の絵と番号を獲得時に開くと、収集の動機と実戦での読みやすさを両立できる。入手経路と配分はオーナー判断を待つ。
+
+## 第2段階：A 案の本番化（2026-11-12）
+
+既定の表示へ A 案の黒い金属枠、種類色の二重線、箔、しるし、審査カードの表を適用した。`?skin=a` と `?skin=b` は第1段階の比較口として残した。卓面と2種の裏面は以下の新しい絵に差し替えた。枠、文字、数字、しるしは CSS／SVG で描画する。画像は質感と抽象絵だけであり、機材を描いていないため `docs/shisha_reference.md` §4 の機材生成手順の対象外。
+
+### 画像生成プロンプト全文
+
+#### 卓面 `mat.png`
+
+```text
+Use case: stylized-concept
+Asset type: tabletop playmat surface texture for a Japanese trading card minigame, landscape 16:9
+Primary request: a refined dark stone and black metal tabletop surface with subtle midnight-purple undertone, designed to sit beneath brightly colored collectible cards.
+Composition: directly overhead, flat and uniform across the whole frame, no perspective, no cards or slots; subdued charcoal slate grain with quiet brushed metallic flecks and barely visible warm ember tint near the extreme edges. Keep center dark and low contrast.
+Materials: fine matte stone, slight worn mineral variation, polished black metal undertone.
+Constraints: seamless-looking usable surface, no equipment, no objects, no figures, no UI, no border, no markings, no text, no numbers, no logo, no watermark.
+```
+
+#### デッキ裏面 `deck-back.png`
+
+```text
+Use case: stylized-concept
+Asset type: abstract artwork texture for the reverse of a 5:7 collectible card in a Japanese shisha card minigame
+Primary request: a vertical, perfectly 180-degree rotationally symmetric arrangement of glowing ember and black metal, like a quiet row of coals when cards are laid sideways. The center has one warm amber ember glow; matching smaller embers above and below. Surround it with charcoal black and deep night purple mineral texture. Leave generous dark margin for a CSS border to be added separately.
+Style: elegant premium tabletop game material illustration, restrained light, tactile stone and brushed metal, crisp enough at 36px card width.
+Constraints: pure artwork texture only; no card frame, no equipment, no objects, no symbols, no text, no digits, no logos, no watermark. Exact top-bottom symmetry is important.
+```
+
+#### 審査カード裏面 `judge-back.png`
+
+```text
+Use case: stylized-concept
+Asset type: abstract artwork texture for the reverse of a separate judge card in a 5:7 Japanese collectible card minigame
+Primary request: a vertical, perfectly 180-degree rotationally symmetric dark violet stone surface with a soft restrained ivory-gold glow at the center and paired lavender reflections above and below. It should clearly differ from a warm ember deck back while belong to the same black metal and dark stone family. Leave generous quiet dark margin for a CSS border to be added separately.
+Style: refined premium trading card surface art, tactile polished stone, subtle brushed metal reflection, legible at small card size.
+Constraints: artwork texture only; no card frame, no equipment, no people, no objects, no symbols, no text, no digits, no logos, no watermark. Exact top-bottom symmetry is important.
+```
+
+### 保存ファイル
+
+| 画像 | ピクセル数 | bytes | SHA-256 |
+|---|---:|---:|---|
+| 原画 `asset_sources/card_game/design-20261111/stage2/mat.png` | 1672×941 | 2267395 | `bbc9265503c98464d954afdfbdca55d67a574c73075a1b52e2a06fe8e5c6e344` |
+| 素材 PNG `assets/ui/ichidai/table/mat.png` | 1672×941 | 2267395 | `bbc9265503c98464d954afdfbdca55d67a574c73075a1b52e2a06fe8e5c6e344` |
+| 使用 WebP `remake/img/ui/ichidai/table/mat.webp` | 1280×720 | 25618 | `de8fd60c66a4c1b34e0f6ae20fa18f81e5bb8bc45af738eeab9336bc0fe0c294` |
+| 原画 `asset_sources/card_game/design-20261111/stage2/deck-back.png` | 1060×1484 | 1994979 | `9fd867c69da1d4c288b25660659f53bf7bc3ca24fa19023e075f22ced939d698` |
+| 素材 PNG `assets/ui/ichidai/back/deck.png` | 1060×1484 | 1994979 | `9fd867c69da1d4c288b25660659f53bf7bc3ca24fa19023e075f22ced939d698` |
+| 使用 WebP `remake/img/ui/ichidai/back/deck.webp` | 400×560 | 11600 | `224ed2a43ccd9e0630a79e1269e2e76d751ef7efa49546eb8b42e4e676c33811` |
+| 原画 `asset_sources/card_game/design-20261111/stage2/judge-back.png` | 1060×1484 | 1859833 | `3d039635aafcfc141a589429c2079bdf9c2add2458c772c147e9760a3eee148a` |
+| 素材 PNG `assets/ui/ichidai/back/judge.png` | 1060×1484 | 1859833 | `3d039635aafcfc141a589429c2079bdf9c2add2458c772c147e9760a3eee148a` |
+| 使用 WebP `remake/img/ui/ichidai/back/judge.webp` | 400×560 | 7502 | `6e03fc22d64d2e9c50571f90480baf6ea70a48cb20338b8c2f6e31728fbca585` |
+
+WebP への変換は `ffmpeg` で卓面 1280×720、裏面 400×560 に縮小した。裏面の縦横比は A 案の札と同じ 5:7。
+
+### 本編ショップとの機材画像照合
+
+ショップ `shop.js` は `shop-equipment-art.js` を優先し、該当しないボウルは `craft/art.js` のシーシャ作り用画像を使う。第2段階では一台勝負の炭カード（フラット、キューブ、高密度フラット）、雲窯ファンネル、ロートス／アマバースト／タヌキッシュの HMD を、ショップ採用の `shop/equipment-v2/` の同一ファイルへ揃えた。シリコン、80beat、素焼きのボウルは従来どおりショップと同じ `ui/making/` 系を参照する。炭焼き中の冷／赤／焼け／種火は機材の型を示す商品画像ではなく、進行状態を示す専用画像なので維持した。ビッグタヌキッシュとワンコールはショップに対応する専用画像がないため既存の代用表示を維持した。
+
+### 画面確認
+
+`stage2/shots/` に 1280×720 と 844×390 の両方を保存した。a は実戦の準備と葉10種・手札、b は実戦の提供、c は相手が使った札の拡大、d は審査カード、e は札13種類を4分割した一覧、f は同一人物札の C/U/R/SR 比較。b の密集画面は実戦の卓を基に炭6枚・炭焼き場3枚を撮影時だけ DOM 複製で補った。c は本体 `tcg()` の拡大札を撮影時だけ重ね、d は本体の審査カード DOM と同じ構造・既存の `PUFFS.long` の文を撮影時だけ重ねた。撮影用の変更はゲームコードへ保存していない。
+
+| 物差し | A 案・本番 | 確認結果 |
+|---|:---:|---|
+| 手札で種類と必要火力 | ○ | 左上の数字と種類別の枠、珊瑚の一口札が分かれる |
+| 小さい札の炭と種火 | ○ | 炭は灰色の絵と熱、種火は橙の裏面で区別できる |
+| 拡大札の読みやすさ | ○ | 名前・文・番号・レア度を 240px で読める |
+| レア度の段差 | ○ | C の素地、U の銀、R の金、SR の二重箔 |
+| マット上で札が主役 | ○ | 暗い石を低コントラストにし、枠より札を明るくした |
+| 札の家族感 | ○ | 黒金属の外枠と種類色の細線を共通化した |
+| 白黒での判別 | △ | 数字・★・しるしが残るが、葉の系統差は絵にも依存する |
+| 集めたくなるか | ○ | 拡大札の金属枠と R/SR の箔に段差がある |

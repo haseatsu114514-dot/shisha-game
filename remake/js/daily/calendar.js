@@ -37,6 +37,7 @@ import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocati
 import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
 import { roamerAt, meetRoamer } from "./roamers.js";
 import { recipeFindAfterVisit } from "./recipe-finds.js";
+import { petitAfterVisit } from "./petit-shuraba.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
 import { presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
@@ -205,7 +206,7 @@ async function morning() {
 /** HUD の LIME。行き先を選んでいるときだけ開ける。誘いに乗ったらマップを閉じてそのまま向かう */
 async function phoneButton({ sender = null } = {}) {
   if (!isChoosingDestination() || layers.modal.classList.contains("show")) {
-    SE.cancel();
+    SE.error();
     toast("LIME は行き先を選んでいるときに開ける");
     return;
   }
@@ -626,6 +627,8 @@ async function performSpotAction(spot) {
     if (result) {
       // 第3章以降の店の人が、配合を教える／名前を付けた一台を受け取る（#2020 G・daily/recipe-finds.js）
       if (result.used && state === actionOwner) await recipeFindAfterVisit(spot, { bg: roamerBg() });
+      // プチ修羅場（恋人が2人以上・一度きり）: 居合わせ・予約表・映画館・なるの釘。訪問は済んでいて、行動も料金も使わない
+      if (result.used && state === actionOwner) await petitAfterVisit(spot, { bg: roamerBg() });
       if (result.used && state === actionOwner) await meetRoamer(spot, scheduledRoamer, { bg: roamerBg() });
       return result;
     }
@@ -734,6 +737,7 @@ async function performSpotAction(spot) {
     if (await visitHiyoriAtShop(spot, { scheduledSpot: scheduledGuestSpot, bg: guestBg })) await consultLessons("hiyori", { bg: guestBg });
   }
   if (used) await visitCityGuestAtShop(spot, { scheduledVisit: scheduledCityVisit });
+  if (used && state === actionOwner) await petitAfterVisit(spot, { bg: roamerBg() }); // プチ修羅場（上の章の分岐と同じ）
   if (used && state === actionOwner) await meetRoamer(spot, scheduledRoamer, { bg: roamerBg() });
   return { used, exerted, slotsUsed, exp };
 }

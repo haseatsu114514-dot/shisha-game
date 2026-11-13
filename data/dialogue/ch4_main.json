@@ -460,7 +460,7 @@
           "text": "帰り際、男が自分のトングを差し出した。断る間もなく、それは俺の手の中にあった。"
         }
       ],
-      "comment": "最終行はドラフト追加（出典: 第4章本文ドラフト §4-2、Q9 の仮置き）。ch4_stranger_third の「借りたトングを返しに来た」に対応させるための一行。"
+      "comment": "Q9（トングの受け渡し）は本文で対応済み。最終行で借り、ch4_stranger_third の冒頭で返しに来る。出典: 第4章本文ドラフト §4-2。"
     },
     {
       "dialogue_id": "ch4_stranger_third",
@@ -807,6 +807,7 @@
         {
           "speaker": "",
           "face": "",
+          "duck": true,
           "text": "歓声が、一瞬だけ止んだ。男は急ぐでもなく、自分の台の前に立つ。"
         },
         {
@@ -1051,7 +1052,7 @@
         {
           "speaker": "customer",
           "face": "normal",
-          "text": "……もう一口いいか。何の香りかは、そのあとで聞く"
+          "text": "……もう一口いいか。[pause]何の香りかは、そのあとで聞く"
         },
         {
           "speaker": "",
@@ -1087,6 +1088,7 @@
         {
           "speaker": "",
           "face": "",
+          "duck": true,
           "text": "最後の一口を見届けたパッキーが、マイクを下ろしたまま黙っていた。"
         },
         {
@@ -1107,6 +1109,7 @@
         {
           "speaker": "pakki",
           "face": "smile",
+          "beat": 800,
           "text": "勝者は……日本第一代表、逢縁はじめ！"
         },
         {
@@ -1264,6 +1267,7 @@
         {
           "speaker": "sheikh",
           "face": "normal",
+          "beat": 600,
           "text": "炭吉丈一郎。君の、スミさんだ"
         },
         {
@@ -1467,6 +1471,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
+          "duck": true,
           "text": "救われたのは、俺の方だった"
         },
         {
@@ -1686,6 +1691,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
+          "beat": 800,
           "text": "……お前が店長だ。店はお前が回せ"
         },
         {
@@ -2054,6 +2060,7 @@
         {
           "speaker": "sui",
           "face": "serious",
+          "beat": 600,
           "text": "勝った方が作る約束、まだ有効か"
         },
         {
@@ -2277,7 +2284,7 @@
           "text": "（スミさんの分まで。……そう思ったら、トングが重くなった）"
         }
       ],
-      "comment": "ドラフト追加（接続済み: ch4-progress.js CH4_PROLOGUE）。出典: 第4章本文ドラフト §2-1。ch4_opening の直後に置く想定。1行目（時間帯）・2行目（Q4: 同じ宿の別室。#516 の決定で上書きの可能性）・4行目・5行目は仮置き。末尾3行は STK10（歴代の記録にスミさんの名前。答えは ch4_stranger_third、ぶり返しは ch4_final）。大会の案内は ch4_wang_reception_forced_in の「机に出しておいた大会の案内」と同じ物。"
+      "comment": "接続済み（ch4-progress.js CH4_PROLOGUE）。ch4_opening の直後、宿へ到着する場面。出典: 第4章本文ドラフト §2-1。Q4（なるの宿）は docs/spec/open_questions_ch4_ch5.md で引き続き仮置き扱いのため、2行目の「隣の部屋」は現行本文のまま保持。末尾3行は STK10（歴代の記録にスミさんの名前。答えは ch4_stranger_third、ぶり返しは ch4_final）。大会の案内は ch4_wang_reception_forced_in の「机に出しておいた大会の案内」と同じ物。"
     },
     {
       "dialogue_id": "ch4_festa_revisit",
@@ -2303,7 +2310,7 @@
           "text": "その並びを、ノートの端に書き写した。"
         }
       ],
-      "comment": "ドラフト追加（接続済み: ch4-progress.js CH4_FREE_SCENE_IDS／ch4-dubai-daily.js）。出典: 第4章本文ドラフト §2-5。ch4_festa を2回目以降に選んだときの想定で仮置き（この訪問で日が進むかは Q11 判断待ち）。"
+      "comment": "接続済み（ch4-progress.js CH4_FREE_SCENE_IDS／ch4-dubai-daily.js）。初回の ch4_festa を読んだ後、FESTAの通いの小会話として順に読む。条件を満たした太陽の段階の会話があれば、そちらを優先する。訪問は昼・夜の1行動を使う（VOL14）。出典: 第4章本文ドラフト §2-5。"
     },
     {
       "dialogue_id": "ch4_alley_cafe_quiet",
@@ -2399,7 +2406,7 @@
           "text": "（……借りたトングは、前夜に返しに来よう）"
         }
       ],
-      "comment": "ドラフト追加（接続済み: ch4-progress.js CH4_FREE_SCENE_IDS／ch4-dubai-daily.js）。出典: 第4章本文ドラフト §4-3。ch4_stranger_second を読んだ後、前夜祭の前に置く想定の訪問場面。全行仮置き。味の会話（#2028）: シェイクの好み＝グレープ（単一フレーバー）。正体を伏せる期間なので本人は出さず、路地裏の店員（shop_clerk）が「あの方」の葉として話す。ch4_stranger_third の「……グレープですね」の前振り。シェイクに好感度はないので付けない。#2028 残件4: 混ぜない理由は店員が本人の言葉を引く形で足した（本人は出さない）。ミントを三口で返した話は ch4_stranger_first の「昨日、ミントを薦められて三口で返した」と同じ出来事。"
+      "comment": "接続済み（ch4-progress.js CH4_FREE_SCENE_IDS／ch4-dubai-daily.js）。ch4_stranger_second 読了後、自由行動の路地裏のカフェで読む通いの小会話。出典: 第4章本文ドラフト §4-3。味の会話（#2028）: シェイクの好みはグレープ単一。正体を伏せる期間なので本人は出さず、店員（shop_clerk）が「あの方」の葉と、混ぜない理由を話す。ch4_stranger_third の「……グレープですね」の前振り。シェイクへの好感度は付けない。ミントを三口で返した話は ch4_stranger_first と同じ出来事。"
     },
     {
       "dialogue_id": "ch4_stranger_first_forced_in",
@@ -2415,7 +2422,7 @@
           "text": "買い足しに出て、香辛料の匂いがする方へ、足が向いた。"
         }
       ],
-      "comment": "ドラフト追加（接続済み: ch4-progress.js CH4_MANDATORY／ch4-dubai-daily.js）。出典: 第4章新規ドラフト NEW-TEXT.md §1。強制発生用の繋ぎ（接続済み）。期限日等の接続条件は未定義（TEXT.md §3-2 に先行定義なし、Q11 判断待ち）。本文2行は全体仮置き。演出想定: first の期限日にマップを経由せず発生させ、ch4_stranger_first の直前に置く。スークを一度も選ばずに期限日を迎えた場合だけ使う想定も仮置き。first の期限日は second や reception より前に置き、second の「数日後」が大会前に収まる想定だが、期限日の開始点と数え方・強制発生の共通条件は未定義で、日数は決めていない。"
+      "comment": "接続済み（ch4-progress.js CH4_MANDATORY／ch4-dubai-daily.js dueMandatory）。ch4_stranger_first を強制発生させる際の繋ぎ。現行の14日行程ではドバイDAY8以降の夜、先行する必須の出会いを読み終え、first と ch4_dubai_souq が未読のとき、first の直前に読む。前夜の未読回収でも、スーク既読ならこの繋ぎは省く。second は first を読んだ日から2日以降に解放される。出典: 第4章新規ドラフト NEW-TEXT.md §1。"
     },
     {
       "dialogue_id": "ch4_wang_reception_forced_in",
@@ -2439,7 +2446,7 @@
           "text": "上着を取って、部屋を出た。"
         }
       ],
-      "comment": "ドラフト追加（接続済み: ch4-progress.js CH4_MANDATORY）。出典: 第4章新規ドラフト NEW-TEXT.md §2。強制発生用の繋ぎ（接続済み）。期限日等の接続条件は未定義（TEXT.md §3-2 に先行定義なし、Q11 判断待ち）。本文3行（地の文2行・独白1行）は全体仮置き。演出想定: 前夜祭の日の夜、マップを経由せず発生させ、ch4_wang_reception の直前に置く。時刻と、third も強制発生させる場合の ch4_wang_reception → third の繋ぎ → ch4_stranger_third の順番も仮置き。期限日の開始点と数え方・強制発生の共通条件は未定義。1行目は TEXT.md §2-2 の大会の案内を取り出す描写に対応する主文面を採用。TEXT.md §1 の案内の行を削った場合は「スマホの案内に、前夜祭の通知が出ていた。」へ替える代替案がある。前夜祭の場所や客の描写には踏み込まない。"
+      "comment": "接続済み（ch4-progress.js CH4_MANDATORY）。大会前夜、未読の ch4_wang_reception の直前に読む繋ぎ。現行の14日行程では前夜はドバイDAY13。必須場面は festa → stranger_first → stranger_second → wang_reception → stranger_third の順に未読を回収する。1行目の大会の案内は ch4_arrival_inn で机に広げたもの。出典: 第4章新規ドラフト NEW-TEXT.md §2。"
     },
     {
       "dialogue_id": "ch4_dubai_souq_revisit",
@@ -2500,7 +2507,7 @@
           "text": "店主はもう、次の客へ顔を向けていた。礼を言って、店を離れた。"
         }
       ],
-      "comment": "ドラフト追加（接続済み: ch4-progress.js CH4_FREE_SCENE_IDS／ch4-dubai-daily.js）。出典: 第4章新規ドラフト NEW-TEXT.md §3。スークの2回目以降の訪問を想定。既存の ch4_dubai_souq の代わりに再生するか、その前に差し込むかは仮置き。ch4_stranger_first が起きる訪問では出さない想定も仮置き。spice_merchant（スパイス屋の店主）の人物・話者IDは新規の仮置き（立ち絵なしの単発話者として face は空文字）。香辛料のカルダモンも仮置き。最後は既存の choice「ホテルに戻る」（ch4_return）へつなぐ想定のみで、choice・接続は追加しない。能力上昇・数値は追加しない。"
+      "comment": "接続済み（ch4-progress.js CH4_FREE_SCENE_IDS／ch4-dubai-daily.js）。スークでは初回の ch4_dubai_souq と ch4_stranger_first を先に読み、その後の訪問で通いの小会話を順に読む。spice_merchant は立ち絵のないスパイス屋の店主（face は空文字）で、本文ではカルダモンを扱う。場面末尾に帰宿の choice はなく、訪問後は日常ループで昼・夜の1行動を進める（VOL14）。出典: 第4章新規ドラフト NEW-TEXT.md §3。"
     },
     {
       "dialogue_id": "ch4_dubai_cafe_revisit",
@@ -2561,7 +2568,7 @@
           "text": "（……俺は、そこまで見てたか）"
         }
       ],
-      "comment": "ドラフト追加（接続済み: ch4-progress.js CH4_FREE_SCENE_IDS／ch4-dubai-daily.js）。出典: 第4章新規ドラフト NEW-TEXT.md §4。中心地のカフェの2回目以降の訪問を想定。既存の ch4_dubai_cafe の代わりに再生するか、その前に差し込むかは仮置き。cafe_staff（中心地のカフェの店員）の話者IDは新規の仮置き（路地裏のカフェの店員とは別人。立ち絵なしの単発話者として face は空文字）。最後は既存の choice「ホテルに戻る」（ch4_return）へつなぐ想定のみで、choice・接続は追加しない。値段や能力の数値は追加しない。"
+      "comment": "接続済み（ch4-progress.js CH4_FREE_SCENE_IDS／ch4-dubai-daily.js）。初回の ch4_dubai_cafe 読了後、中心地のカフェの通いの小会話として順に読む。cafe_staff は路地裏の店員とは別人で、立ち絵なし（face は空文字）。場面末尾に帰宿の choice はなく、訪問後は日常ループで昼・夜の1行動を進める（VOL14）。出典: 第4章新規ドラフト NEW-TEXT.md §4。"
     },
     {
       "dialogue_id": "ch4_samechan_dubai_evening",
@@ -2683,7 +2690,7 @@
           "text": "並んで歩き出す。ひよりの歩幅に合わせて、少しだけ足をゆるめた。"
         }
       ],
-      "comment": "接続済み（IR18）。前夜祭の日、ch4_hiyori_dubai_girlfriend（別便の到着）を読んだ後、前夜祭が始まる前に任意で一度読める（remake/js/chapters/ch4-progress.js の chapterFourArrivalEveningsDue、ch4.js の renderEve）。同行者には到着場面が無いので出ない。出典: 第4章新規ドラフト NEW-TEXT.md §6。話者IDは ch4_visitors.json の hiyori に合わせた。到着は前夜祭の日なので、散歩の約束は「会場に行く前」にした。結果には触れていない。はじめからひよりへの呼び方を素材で確かめられなかったため、呼びかけは使っていない（素材の仮置き事項）。"
+      "comment": "接続済み（IR18）。前夜祭の日、ch4_hiyori_dubai_girlfriend（別便の到着）を読んだ後、前夜祭が始まる前に任意で一度読める（remake/js/chapters/ch4-progress.js の chapterFourArrivalEveningsDue、ch4.js の renderEve）。同行者には到着場面が無いので出ない。出典: 第4章新規ドラフト NEW-TEXT.md §6。話者IDは ch4_visitors.json の hiyori に合わせた。到着は前夜祭の日なので、散歩の約束は「会場に行く前」。結果には触れず、はじめからひよりへの呼びかけを使わずに会話を完結させている。"
     },
     {
       "dialogue_id": "ch4_inn_tool_care",
@@ -2744,7 +2751,7 @@
           "text": "（よし。明日も、これで作る）"
         }
       ],
-      "comment": "ドラフト追加（接続済み: ch4-progress.js CH4_FREE_SCENE_IDS／ch4-dubai-daily.js）。出典: 第4章新規ドラフト NEW-TEXT.md §7。宿の部屋での道具の手入れ。2日目以降にマップで「宿」を選んだとき、その日を終える前に任意で読む想定。「道具の手入れをする」等の選択肢の文言と出す条件は仮置きで、choice・条件フィールドは追加しない。この場面を読むことで日が進むかは未定義（Q11 判断待ち）。TEXT.md §2-3 の初日の夜の回想ブロックや ch4_arrival_inn とは別の場面。second の後にも読む可能性があるため、借りたトングには触れていない。地の文の「宿」と既存 choice の「ホテルに戻る」の表記差は素材の仮置き事項として保持し、既存 choice は変更しない。"
+      "comment": "接続済み（ch4-progress.js CH4_FREE_SCENE_IDS／ch4-dubai-daily.js visitInn）。ドバイDAY2以降の自由行動で宿を選ぶと、未読なら休む・試作する選択より先に一度読む。前日リハーサルが来ている場合はそちらが優先。宿の共通処理で体力を回復し、昼・夜の1行動を使う（VOL14）。手入れ専用の choice や帰宿の choice は置かない。ch4_arrival_inn とは別の場面で、second の後にも読めるため、借りたトングには触れない。出典: 第4章新規ドラフト NEW-TEXT.md §7。"
     }
   ]
 }

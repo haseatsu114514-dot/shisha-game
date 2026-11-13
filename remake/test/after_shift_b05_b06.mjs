@@ -87,6 +87,7 @@ async function realModule(name, path) {
   return mod;
 }
 
+await realModule("shift-pay.js", "remake/js/core/shift-pay.js");
 await realModule("stat-step-tables.js", "remake/js/core/stat-step-tables.js");
 await realModule("chapter-features.js", "remake/js/core/chapter-features.js");
 
@@ -245,3 +246,4 @@ state.flags._axe_throw_unlocked = true;
 assert((await menuOptionTexts()).includes("ひよりと斧投げへ"), "露出フラグが立てばメニューに出る");
 
 console.log("[after-shift B05/B06] mandatory Sumi talk branch, one-line fallback, axe exposure timing/menu gating: PASS");
+
