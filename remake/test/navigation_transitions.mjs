@@ -120,8 +120,7 @@ await suite("navigation-transitions", async (check) => {
       await page.locator(".scene-curtain").waitFor();
       await page.keyboard.press("Enter");
       // 店は、幕のあとにリオの紹介（#3491・読み取りは support.mjs の installShopGreetingReader）が入ってから入口が出る。
-      // 入口を先に待つと、その頃には幕が終わっていて、幕を待って時間切れになる
-      if (spot === "shop") await page.locator('[data-test="shop-enter"]').click();
+      // 入口は、移動の演出（行き先＝応対の台詞）を確かめた後で押す（下の spot === "shop"）。
       if (spot === "rest") assert.equal(await page.locator(".vn-text").textContent(), "");
       const audit = await verify(page, selector, spot === "rest" ? "move-lights" : "move-zoom");
       assert.equal(audit.purple, false, "The move drew purple shapes");
