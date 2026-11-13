@@ -923,6 +923,7 @@
         "node remake/test/ch5_party.mjs",
         "node remake/test/petit_shuraba.mjs",
         "node remake/test/lover_strain.mjs",
+        "node remake/test/lime_names.mjs",
         "node remake/test/ch5_travel.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",

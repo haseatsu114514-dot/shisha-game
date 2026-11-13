@@ -6,7 +6,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 // 物語の節目（大会の朝・優勝の夜）だけは openPhone で必ず読ませる。
 // 見た目は旧版の LIME（ノッチ付きの端末・緑のヘッダー・白と黄緑の吹き出し・明るい返信欄）を踏襲する。
 import { el, sleep, fitOneLine, yen } from "../core/util.js";
-import { DB, displayName, faceIconUrl } from "../core/data.js";
+import { DB, displayName, limeAccountName, faceIconUrl } from "../core/data.js";
 import { customLimeIconUrl } from "./lime-icons.js";
 import { layers, toast } from "../core/ui.js";
 import { state } from "../core/state.js";
@@ -519,13 +519,13 @@ function receiveItem(m) {
   return item;
 }
 
-/** LIME の表示名。アカウント名の決まっている相手（みんと）はそれ、私用は本名。ほかは私的な場面の呼び名 */
+/** LIME の表示名。本人が付けたアカウント名（lime_name）があればそれ（名乗る前は「？？？」のまま）、私用は本名。ほかは私的な場面の呼び名 */
 const limeName = (account) => {
   if (account === "???") return "？？？";
   const id = accountOwner(account);
   const c = DB.characters?.[id];
   if (account !== id) return c?.private_name || displayName(id, state);
-  return c?.lime_name || displayName(id, state, { context: "private" });
+  return limeAccountName(id, state);
 };
 
 /** 顔ドット絵のアイコン。名乗る前の相手・絵の無い相手は頭文字の丸にする（正体を明かさない） */

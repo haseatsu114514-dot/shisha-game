@@ -35,6 +35,7 @@
   },
   {
     "id": "sumi",
+    "lime_name": "tonari 炭吉",
     "birthday": "12-22",
     "name": "スミさん / 炭吉 丈一郎（すみよし じょういちろう）",
     "role": "mentor",
@@ -71,6 +72,7 @@
   },
   {
     "id": "naru",
+    "lime_name": "鳴切亮太",
     "birthday": "01-15",
     "name": "鳴切 亮太（なるぎれ りょうた / なる）",
     "role": "rival_ch1",
@@ -103,6 +105,7 @@
   },
   {
     "id": "adam",
+    "lime_name": "アダム🍏🍎",
     "birthday": "11-05",
     "name": "アダム / 吾妻 大夢（あづま だいむ）",
     "role": "rival_ch1",
@@ -256,6 +259,7 @@
   },
   {
     "id": "steve",
+    "lime_name": "Steve A. Ash",
     "birthday": "08-20",
     "name": "スティーブ / スティーブ・A・アッシュ",
     "role": "rival_ch3",
@@ -292,6 +296,7 @@
   },
   {
     "id": "volk",
+    "lime_name": "VOLK",
     "birthday": "02-09",
     "name": "ヴォルク / ヴォルク・イヴァノフ",
     "role": "rival_ch3",
@@ -323,6 +328,7 @@
   },
   {
     "id": "rei",
+    "lime_name": "†鴉葬レヰ†",
     "birthday": "05-20",
     "name": "鴉葬レヰ（あそう れい） / 田中 健太（たなか けんた）",
     "reading": "あそう れい",
@@ -417,6 +423,7 @@
   },
   {
     "id": "tsumugi",
+    "lime_name": "猫洞つむぎ",
     "birthday": "07-12",
     "name": "つむぎ / 猫洞 つむぎ（ねこがほら つむぎ）",
     "role": "sub_character",
@@ -474,6 +481,7 @@
   },
   {
     "id": "rio",
+    "lime_name": "rio.",
     "birthday": "02-26",
     "name": "円頓寺 凛想（えんどうじ りお）",
     "display_name": "凛想",
@@ -509,6 +517,7 @@
   },
   {
     "id": "ageha",
+    "lime_name": "ぁﾚﾅﾞ(ょ☆",
     "birthday": "08-01",
     "name": "あげは / 夜長 千代子（よなが ちよこ）",
     "display_name": "あげは",
@@ -590,6 +599,7 @@
   },
   {
     "id": "kumicho",
+    "lime_name": "神崎煙草店",
     "birthday": "10-02",
     "name": "シーシャ組長 / 神崎 竜二（かんざき りゅうじ）",
     "display_name": "神崎竜二",
@@ -790,6 +800,7 @@
   },
   {
     "id": "da_silva",
+    "lime_name": "Taiyo da Silva",
     "birthday": "06-24",
     "name": "ダ・シルヴァ太陽 / エンリケ・ダ・シルヴァ・太陽",
     "role": "judge",
@@ -911,6 +922,7 @@
   },
   {
     "id": "mukai_master",
+    "lime_name": "向井然",
     "birthday": "04-13",
     "name": "ムカイさん / 向井 然（むかい しかり）",
     "role": "sub_character",
@@ -1054,7 +1066,7 @@
     "id": "hiyori",
     "birthday": "11-01",
     "name": "泡沫ひより",
-    "lime_name": "ひより💭",
+    "lime_name": "ひより(´-`).｡oO",
     "reading": "うたかた ひより",
     "display_name": "ひより",
     "role": "heroine_local",
@@ -1250,6 +1262,7 @@
   },
   {
     "id": "noor",
+    "lime_name": "Noor Al-Salim",
     "spriteAnchor": "head",
     "birthday": "09-28",
     "name": "ヌール / ヌール・アル＝サーリム（Noor Al-Salim）",
@@ -1275,6 +1288,7 @@
   },
   {
     "id": "samechan",
+    "lime_name": "🦈",
     "birthday": "06-20",
     "name": "暑海なぎさ",
     "full_name": "暑海なぎさ",
