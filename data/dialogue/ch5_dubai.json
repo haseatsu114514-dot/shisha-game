@@ -96,8 +96,8 @@
         { "speaker": "hajime", "face": "normal", "text": "相手と、相談して決めることになってて" },
         { "speaker": "", "face": "", "text": "噴水の水が、縁の石をゆっくり濡らしている。" },
         { "speaker": "sheikh", "face": "smile", "text": "決めるのは君か。なら、決めた日がいちばんいい日だ" },
-        { "speaker": "sheikh", "face": "normal", "text": "炭の火も、煽って急がせれば、葉が焦げるだけだ" },
-        { "speaker": "sheikh", "face": "serious", "text": "急ぐな。待てる者のほうが、最後の一口まで見ていられる" },
+        { "speaker": "hajime", "face": "normal", "text": "……早く決めろって、言われるかと思ってました" },
+        { "speaker": "sheikh", "face": "normal", "text": "言わない。急がせて出てきた一台を、私は吸いたくない" },
         { "speaker": "hajime", "face": "normal", "text": "（待つのも、勝負のうちか）" }
       ]
     },
@@ -106,9 +106,10 @@
       "lines": [
         { "speaker": "", "face": "", "text": "屋敷の長い廊下。使用人たちが、シェイクに深く頭を下げて通り過ぎていく。" },
         { "speaker": "hajime", "face": "normal", "text": "（頭を下げられる側は、こんなに静かなんだな）" },
-        { "speaker": "sheikh", "face": "normal", "text": "ここでは、皆が私の機嫌を見て話す" },
-        { "speaker": "sheikh", "face": "normal", "text": "悪い意味ではない。そういう立場なのだ" },
-        { "speaker": "sheikh", "face": "smile", "text": "君は、まずい時はまずいと言う。それが、ありがたい" },
+        { "speaker": "", "face": "", "text": "最後の一人が通り過ぎてから、シェイクは少しだけ歩く速さを落とした。" },
+        { "speaker": "sheikh", "face": "normal", "text": "さっきの私の一台、二口目はどうだった" },
+        { "speaker": "hajime", "face": "normal", "text": "……少し、熱かったです。炭を一つ、離したくなりました" },
+        { "speaker": "sheikh", "face": "smile", "text": "廊下で聞くと、早いな。部屋で聞くと、皆が先に「最高です」と言う" },
         { "speaker": "hajime", "face": "normal", "text": "言わないと、次の一台が良くならないので" },
         { "speaker": "sheikh", "face": "smile", "text": "職人の答えだな。……あとで、また一台頼めるか" },
         { "speaker": "hajime", "face": "smile", "text": "はい。今日は、ちゃんと客として座ってください" }
@@ -211,9 +212,9 @@
         { "speaker": "", "face": "", "text": "中庭の木陰。太陽が、パッションフルーツの一台を詰めていた。" },
         { "speaker": "da_silva", "face": "smile", "text": "大会のときの、お前の一台。手拍子ひとつ無しで……見入った、ってやつだ" },
         { "speaker": "hajime", "face": "normal", "text": "静かすぎましたか" },
-        { "speaker": "da_silva", "face": "normal", "text": "いいや。静かでも、あれはフェスタ。客が楽しんでる、それでいい" },
+        { "speaker": "da_silva", "face": "normal", "text": "いいや。客、誰も席を立たなかった。俺、審査席から見てた" },
         { "speaker": "hajime", "face": "smile", "text": "ありがとうございます。あの一台、少し怖かったんです" },
-        { "speaker": "", "face": "", "text": "太陽は、ほぐした果肉を鼻に近づけて、にっと笑った。" },
+        { "speaker": "", "face": "", "text": "太陽は、ほぐした葉を鼻に近づけて、にっと笑った。" },
         { "speaker": "da_silva", "face": "excited", "text": "でも、手拍子のフェスタも忘れんなよ！" }
       ]
     },
