@@ -6,7 +6,8 @@ import { STRAIN_IDS, STRAIN_SIGN1, STRAIN_SIGN2, STRAIN_TALK, STRAIN_MAX, STRAIN
   STRAIN_TALK_GAP, STRAIN_TALK_REST, STRAIN_KEEP_VALUE, STRAIN_EXCUSE_VALUE, STRAIN_SCENES, STRAIN_OUTCOME_FLAGS,
   strainRecord, strainOf, strainLovers, strainPaused, strainDrift, addStrain, easeStrain, strainCause, strainUnread, syncStrain,
   tickStrain, strainTalkPick, endLoverRelation, settleStrainTalk, strainSuspect, strainVisit, strainSignMessage,
-  strainTalkScenes, joinStrainScenes } from "../js/core/lover-strain.js";
+  strainTalkScenes, joinStrainScenes, strainReunionPick, deferStrainReunion, settleStrainReunion,
+  STRAIN_REUNION_WAIT, STRAIN_REUNION_DAYS, STRAIN_REUNION_FLAG } from "../js/core/lover-strain.js";
 import { FLAG_EXACT_RULES, STATE_KEY_RULES } from "../js/core/carry.js";
 
 const root = new URL("../../", import.meta.url);
@@ -199,6 +200,44 @@ strainRecord(paused, "rio").v = 11;
 assert.equal(strainTalkPick(paused), null, "Nothing happens while away");
 assert.deepEqual(tickStrain(paused), []);
 
+// ---- やり直し（復縁）: 友達に戻った相手に、章をまたいだ後、こちらから一度だけ申し込める
+const ex = save(["tsumugi"], { day: 10 });
+addStrain(ex, "tsumugi", 10, "decline");
+settleStrainTalk(ex, "tsumugi", "end");
+assert.equal(strainRecord(ex, "tsumugi").exChapter, 1);
+assert.equal(strainReunionPick(ex), null, "Not in the chapter she left");
+ex.day = 14;
+assert.equal(strainReunionPick(ex), null);
+Object.assign(ex, { chapter: 2, day: 1 });
+assert.equal(strainReunionPick(ex), "tsumugi", "From the next chapter on");
+ex.flags._ch2_region = "tokyo";
+assert.equal(strainReunionPick(ex), null, "Not while away");
+delete ex.flags._ch2_region;
+deferStrainReunion(ex, "tsumugi");
+assert.equal(strainReunionPick(ex), null, "'Not now' waits a few days");
+ex.day = STRAIN_REUNION_WAIT;
+assert.equal(strainReunionPick(ex), null);
+ex.day = 1 + STRAIN_REUNION_WAIT;
+assert.equal(strainReunionPick(ex), "tsumugi", "…and the chance is still there");
+assert.equal(settleStrainReunion(ex, "tsumugi"), true);
+assert.deepEqual([strainRecord(ex, "tsumugi").ex, strainRecord(ex, "tsumugi").reunited, strainRecord(ex, "tsumugi").askDay], [null, true, undefined]);
+ex.lovers.push("tsumugi"); delete ex.flags._friend_tsumugi; // 恋人へ戻す処理は daily/romance.js の rejoinLover
+assert.equal(strainReunionPick(ex), null);
+assert.equal(settleStrainReunion(ex, "tsumugi"), false);
+addStrain(ex, "tsumugi", 10, "unread");
+ex.day = 30;
+settleStrainTalk(ex, "tsumugi", "end");
+Object.assign(ex, { chapter: 3, day: 1 });
+assert.equal(strainReunionPick(ex), null, "Only once per lover: the second goodbye is final");
+const legacy = { ...save([], { day: 5 }), loverStrain: { by: { rio: { ex: 2 } } } };
+legacy.flags._friend_rio = true;
+assert.equal(strainReunionPick(legacy), null);
+legacy.day = 2 + STRAIN_REUNION_DAYS;
+assert.equal(strainReunionPick(legacy), "rio", "A record without its chapter waits two weeks instead");
+delete legacy.flags._friend_rio;
+assert.equal(strainReunionPick(legacy), null, "Only someone who really went back to friends");
+assert.ok(FLAG_EXACT_RULES.some(([name, kind]) => name === STRAIN_REUNION_FLAG && kind === "person"));
+
 // ---- 保存: 周回では持ち越さない。壊れた値は空から
 assert.equal(STATE_KEY_RULES.loverStrain.verdict, "reset");
 for (const flag of Object.values(STRAIN_OUTCOME_FLAGS)) {
@@ -209,7 +248,7 @@ assert.deepEqual(strainRecord(broken, "rio"), { v: 0, why: {}, sign: 0, talks: 0
 assert.equal(strainOf({ loverStrain: null }, "rio"), 0);
 
 // ---- 台本: 6人 ×（切り出し・二度目の一言・理由3つ・問いかけ）。必ず読む場面なので報酬は無い
-assert.equal(STRAIN_SCENES.length, STRAIN_IDS.length * (3 + STRAIN_CAUSES.length));
+assert.equal(STRAIN_SCENES.length, STRAIN_IDS.length * (4 + STRAIN_CAUSES.length));
 for (const id of STRAIN_SCENES) assert.ok(dialogues[id]?.lines?.length, `${id} exists`);
 assert.deepEqual(Object.keys(dialogues).sort(), [...STRAIN_SCENES].sort(), "No stray scenes");
 const allLines = scene => [...scene.lines, ...Object.values(scene.branches || {}).flat()];
@@ -241,6 +280,12 @@ for (const id of STRAIN_IDS) {
   assert.match(allLines(dialogues[`strain_talk_why_unread_${id}`]).map(l => l.text).join(""), /LIME/);
   assert.doesNotMatch(allLines(dialogues[`strain_talk_why_suspect_${id}`]).map(l => l.text).join(""), /二股|浮気|付き合ってる|ほかの女|別の女/);
   assert.match(allLines(ask).map(l => l.text || "").join(""), /友達に、戻|友に、戻/, `${id}: she says what she is asking for`);
+  // やり直しの場面: はじめが申し込み、彼女が受ける（選択肢は無い。申し込むかどうかは再生側の一拍で選ぶ）
+  const reunion = dialogues[`strain_reunion_${id}`];
+  assert.ok(reunion.lines.every(line => !line.type && !line.stats && !line.money && !line.affinity), `${id}: no choice and no reward in the reunion`);
+  assert.deepEqual([...new Set(reunion.lines.filter(line => line.speaker).map(line => line.speaker))].sort(), ["hajime", id].sort());
+  assert.match(reunion.lines.find(line => line.speaker === "hajime").text, /もう一度、付き合って/, `${id}: hajime is the one who asks`);
+  assert.equal(reunion.lines.at(-2).speaker, id, `${id}: she gives the answer`);
   // 予兆のLIME
   const sign1 = strainSignMessage(lover, id, 1, 12), sign2 = strainSignMessage(lover, id, 2, 12);
   assert.equal(sign1.id, `_lover_strain_${id}_s1_t12`);

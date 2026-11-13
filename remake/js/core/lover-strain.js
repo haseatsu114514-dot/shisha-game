@@ -27,6 +27,8 @@ export const STRAIN_TALK_GAP = 7;     // 別れ話どうしの間隔（誰とで
 export const STRAIN_TALK_REST = 14;   // 同じ相手との別れ話の間隔
 export const STRAIN_KEEP_VALUE = 1;   // 向き合うと約束して引き止めた後の値
 export const STRAIN_EXCUSE_VALUE = 5; // 言い訳で引き止めた後の値（予兆①のまま。次は早い）
+export const STRAIN_REUNION_WAIT = 5; // やり直しを「今は、やめておく」と見送った後、もう一度考えるまでの日数
+export const STRAIN_REUNION_DAYS = 14; // 別れた章が分からない記録（旧い保存）で、やり直しまでに空ける日数
 
 const AWAY_REGIONS = Object.freeze(["tokyo", "dubai"]);
 const round = n => Math.round(n * 100) / 100;
@@ -184,7 +186,7 @@ export function endLoverRelation(value, id, today = relationshipElapsedDay(value
   if (!value || !(value.lovers || []).includes(id)) return false;
   value.lovers = value.lovers.filter(other => other !== id);
   value.flags[`_friend_${id}`] = true; // 「友達のまま」と同じ印（帰り道の告白をもう一度始めない）
-  Object.assign(strainRecord(value, id), { v: 0, why: {}, sign: 0, ex: Number.isFinite(today) ? today : null });
+  Object.assign(strainRecord(value, id), { v: 0, why: {}, sign: 0, ex: Number.isFinite(today) ? today : null, exChapter: value.chapter || 1 });
   if (value.pendingInvite?.sender === id && /^date_/.test(value.pendingInvite.event || "")) value.pendingInvite = null;
   for (const item of value.inbox || []) {
     if (item?.msg?.sender !== id || !item.msg.lover || item.done || item.msg.type !== "invitation") continue;
@@ -217,6 +219,36 @@ export function settleStrainTalk(value, id, outcome, today = relationshipElapsed
   return true;
 }
 
+// ---- やり直し（復縁）: 友達に戻った相手に、章をまたいだ後、こちらから一度だけ申し込める（台帳 STR11）
+
+const awayOrBusy = value => !!value.flags?._story_shuraba_unresolved || AWAY_REGIONS.includes(value.flags?._ch2_region) || !!departurePrep(value);
+
+/** 今夜、やり直しを申し込める相手（いなければ null）。別れた章の次の章から・一人につき一度きり・見送った後は少し空ける */
+export function strainReunionPick(value, today = relationshipElapsedDay(value)) {
+  if (!value || !Number.isFinite(today) || awayOrBusy(value)) return null;
+  const by = value.loverStrain?.by || {};
+  return STRAIN_IDS.find(id => {
+    const r = by[id];
+    if (!plainObject(r) || !Number.isFinite(r.ex) || r.reunited || (value.lovers || []).includes(id) || !value.flags?.[`_friend_${id}`]) return false;
+    const later = Number.isInteger(r.exChapter) ? (value.chapter || 1) > r.exChapter : today - r.ex >= STRAIN_REUNION_DAYS;
+    return later && !(Number.isFinite(r.askDay) && today - r.askDay < STRAIN_REUNION_WAIT);
+  }) || null;
+}
+
+/** 「今は、やめておく」: 申し込む権利は残し、STRAIN_REUNION_WAIT 日後にもう一度考える */
+export function deferStrainReunion(value, id, today = relationshipElapsedDay(value)) {
+  if (value?.loverStrain?.by?.[id] && Number.isFinite(today)) value.loverStrain.by[id].askDay = today;
+}
+
+/** やり直しが決まった記録（恋人へ戻す処理は daily/romance.js の rejoinLover）。同じ相手と二度目のやり直しは無い */
+export function settleStrainReunion(value, id) {
+  const r = value?.loverStrain?.by?.[id];
+  if (!plainObject(r) || !Number.isFinite(r.ex) || r.reunited) return false;
+  Object.assign(r, { v: 0, why: {}, sign: 0, ex: null, exChapter: null, reunited: true });
+  delete r.askDay;
+  return true;
+}
+
 /** プチ修羅場に居合わせた恋人は、少し勘づく */
 export function strainSuspect(value, ids, amount = STRAIN_GAIN.petit) {
   if (strainPaused(value)) return;
@@ -243,8 +275,10 @@ export function strainSignMessage(lover, id, stage, today) {
 /** 別れ話の台本（data/dialogue/lover_strain.json）。再生する側が、使う時にまとめて読む */
 export const STRAIN_SCENES = Object.freeze(STRAIN_IDS.flatMap(id => [
   `strain_talk_open_${id}`, `strain_talk_again_${id}`,
-  ...STRAIN_CAUSES.map(cause => `strain_talk_why_${cause}_${id}`), `strain_talk_ask_${id}`,
+  ...STRAIN_CAUSES.map(cause => `strain_talk_why_${cause}_${id}`), `strain_talk_ask_${id}`, `strain_reunion_${id}`,
 ]));
+/** やり直しを申し込むかどうかの答えを台本から受け取る印（再生の前後で必ず消す） */
+export const STRAIN_REUNION_FLAG = "_strain_reunion_go";
 
 /** 選んだ答えを台本から受け取る印（再生の前後で必ず消す） */
 export const STRAIN_OUTCOME_FLAGS = Object.freeze({ keep: "_strain_keep", excuse: "_strain_excuse", end: "_strain_end" });

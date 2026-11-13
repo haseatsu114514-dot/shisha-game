@@ -252,6 +252,16 @@ export function callName(id, state, opts = {}) {
   return id === "minto" && name === DB.characters.minto?.private_name ? `${name}さん` : name;
 }
 
+/**
+ * LIMEのアカウント名（data/characters.json の lime_name。本人が自分で付けた名前で、LIMEの画面にだけ出す）。
+ * 名乗る前（表示名が「？？？」の間）は、アカウント名でも正体を明かさない。lime_name の無い相手は、私的な場面の呼び名
+ */
+export function limeAccountName(id, state) {
+  const shown = displayName(id, state, { context: "private" });
+  const own = DB.characters?.[id]?.lime_name;
+  return own && shown !== "？？？" ? own : shown;
+}
+
 // ---------------------------------------------------------------- アセット
 
 // 表示用の軽い WebP（remake/img/・tools/build_images.py が作る）。一覧に無い画像は assets/ の PNG を読む

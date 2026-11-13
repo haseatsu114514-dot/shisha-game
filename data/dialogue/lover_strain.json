@@ -1,5 +1,5 @@
 {
-  "comment": "すれ違い（恋人の裏の数値）が溜まりきった夜の別れ話（2026-11-13 オーナー「彼女のストレスみたいな裏ステータスが一定に行くと別れ話になって、引き止めないと友達に戻る」「なぜ別れ話になったかわかりやすいように、構ってくれないしとか」「引き止めは何度でも」・台帳 STR）。決まりは remake/js/core/lover-strain.js、再生は remake/js/daily/lover-strain.js。一晩に読むのは「切り出し open →（二度目からの一言 again）→ 理由 why_<理由> → 問いかけと答え ask」をつないだ一つの会話。理由は、誘いを断り続けた decline／LIMEを開かない unread／ほかの誰かの気配 suspect（女の勘。二股を言い当てたり確かめたりはしない。表に出るのは最後の修羅場）。答えは3つ: 向き合うと約束して引き止める keep／言い訳で引き止める excuse（次が早い）／受け入れる end（友達に戻る）。必ず読む場面なので能力・お金・体力の報酬は無く、数値は台詞に出さない。第5章に大会は無いので、言い訳は「店のこと」と言う。",
+  "comment": "すれ違い（恋人の裏の数値）が溜まりきった夜の別れ話（2026-11-13 オーナー「彼女のストレスみたいな裏ステータスが一定に行くと別れ話になって、引き止めないと友達に戻る」「なぜ別れ話になったかわかりやすいように、構ってくれないしとか」「引き止めは何度でも」・台帳 STR）。決まりは remake/js/core/lover-strain.js、再生は remake/js/daily/lover-strain.js。一晩に読むのは「切り出し open →（二度目からの一言 again）→ 理由 why_<理由> → 問いかけと答え ask」をつないだ一つの会話。理由は、誘いを断り続けた decline／LIMEを開かない unread／ほかの誰かの気配 suspect（女の勘。二股を言い当てたり確かめたりはしない。表に出るのは最後の修羅場）。答えは3つ: 向き合うと約束して引き止める keep／言い訳で引き止める excuse（次が早い）／受け入れる end（友達に戻る）。必ず読む場面なので能力・お金・体力の報酬は無く、数値は台詞に出さない。第5章に大会は無いので、言い訳は「店のこと」と言う。やり直し（復縁）は strain_reunion_<ID>: 友達に戻った相手に、章をまたいだ後、はじめのほうから一度だけ申し込める（台帳 STR11）。申し込むかどうかの一拍は daily/lover-strain.js が出し、ここは彼女の返事（一つだけ条件を言って受ける）。",
   "dialogues": [
     {
       "dialogue_id": "strain_talk_open_tsumugi",
@@ -1237,6 +1237,324 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "strain_reunion_tsumugi",
+      "comment": "やり直し（復縁）・つむぎ。友達に戻った後、章をまたいでから、はじめが一度だけ申し込める（再生は daily/lover-strain.js の maybeStrainReunion。読み終えると恋人に戻る）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "連絡すると、つむぎは、いつもの街灯の下まで来てくれた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "つむぎちゃん。もう一度、付き合ってほしい",
+          "beat": 400
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "surprise",
+          "text": "……えっ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あの時は、さみしい思いをさせた。今度は、ちゃんと向き合う"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……本当は、ずっと描いてました。はじめさんの煙の色"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今度、灰色になったら、すぐ言います。だから、聞いてくださいね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。約束する"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……はい。……また、よろしくお願いします"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは、スケッチブックの新しいページを開いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_reunion_minto",
+      "comment": "やり直し（復縁）・みんと（私服の栞）。友達に戻った後、章をまたいでから、はじめが一度だけ申し込める（再生は daily/lover-strain.js の maybeStrainReunion。読み終えると恋人に戻る）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "連絡すると、栞さんは、私服のまま通りの先に立っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "栞さん。もう一度、付き合ってほしい",
+          "beat": 400
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_surprise",
+          "text": "……え"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あの時は、さみしい思いをさせた。今度は、ちゃんと栞さんを見る"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "……お店では笑えるのにね。こういう時の顔は、まだ練習してないの"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……次に私が平気な顔をしてたら、ちゃんと見抜いてね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。見抜く"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……ぅん。……じゃあ、もう一回。栞を、よろしくね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞さんは、握っていたバッグの紐を、ゆっくり離した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_reunion_rio",
+      "comment": "やり直し（復縁）・凛想。友達に戻った後、章をまたいでから、はじめが一度だけ申し込める（再生は daily/lover-strain.js の maybeStrainReunion。読み終えると恋人に戻る）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "連絡すると、凛想さんは、あの自販機の横で待っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "凛想さん。もう一度、付き合ってください",
+          "beat": 400
+        },
+        {
+          "speaker": "rio",
+          "face": "surprise",
+          "text": "……へえ。君のほうから来るんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あの時は、待たせてばかりでした。今度は、ちゃんと向き合います"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "終わった実験を再開するの、本当は好きじゃないんだけど"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "条件はひとつ。待たせる時は、先に言うこと"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。必ず言います"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "じゃあ、再開。……おかえり、モルモットくん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは缶コーヒーを一本、こっちへ投げてよこした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_reunion_ageha",
+      "comment": "やり直し（復縁）・あげは。友達に戻った後、章をまたいでから、はじめが一度だけ申し込める（再生は daily/lover-strain.js の maybeStrainReunion。読み終えると恋人に戻る）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "連絡すると、あげはは、あのガードレールに腰かけて待っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あげは。もう一度、付き合ってほしい",
+          "beat": 400
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "……は？ まじで？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あの時は、さみしい思いをさせた。今度は、ちゃんと向き合う"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "……うちさ、ダチに戻るって言ったけど、全然戻れてなかったんだよね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "次に放置したら、まじで店まで乗りこむかんね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。その前に、ちゃんと行く"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……りょ！ じゃ、すきぴ復活ってことで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげははガードレールから降りて、俺の肩を二回、強めに叩いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_reunion_samechan",
+      "comment": "やり直し（復縁）・サメちゃん（コロちゃんは voice: korochan）。友達に戻った後、章をまたいでから、はじめが一度だけ申し込める（再生は daily/lover-strain.js の maybeStrainReunion。読み終えると恋人に戻る）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "連絡すると、サメちゃんは、コロちゃんを抱えて看板の下に来てくれた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "サメちゃん。もう一度、付き合ってください",
+          "beat": 400
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "……な、なんと"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あの時は、さみしい思いをさせました。今度は、ちゃんと向き合います"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、ずっと待っておった。余は知っている",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "こ、こら！ 言うでない！"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……わしは、待つのが下手じゃ。じゃから、待たせる時は、そう言うてくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。約束します"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……うむ。ならば、もう一度じゃ。勇者の誓い、二度目じゃぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんの右手で、コロちゃんが大きくうなずいた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "strain_reunion_hiyori",
+      "comment": "やり直し（復縁）・ひより。友達に戻った後、章をまたいでから、はじめが一度だけ申し込める（再生は daily/lover-strain.js の maybeStrainReunion。読み終えると恋人に戻る）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "連絡すると、ひよりさんは、会社帰りの格好のまま来てくれた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "ひよりさん。もう一度、付き合ってください",
+          "beat": 400
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……え。儚く消えたはずの女に？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "あの時は、さみしい思いをさせました。今度は、ちゃんと向き合います"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "大丈夫って言わないと決めたら、言えることが減っちゃって、困ってたの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "次は、大丈夫じゃない時に、ちゃんとそう言うから。聞いてね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。ちゃんと聞きます"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "じゃあ、もう一回。……儚くないほうの私を、よろしく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんは、社員証の紐を指に巻いて、少しだけ笑った。"
+        }
+      ]
     }
   ]
 }
