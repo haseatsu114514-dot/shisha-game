@@ -11,7 +11,7 @@ import { EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, 
   rivalRun, rivalAt, RULES_VERSION, DISPLAY, toKmh, toMeters, JUMP, SCORE, RANKS, PLAYER, NEAR, PRACTICE_WALL } from "./desert-ride-model.js";
 import { DESERT_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
-import { withMinigameLoading } from "./minigame-loading.js";
+import { withMinigameLoading, minigameLoadingFixed } from "./minigame-loading.js";
 
 // ブーストは人物を包む炎のオーラ・砂煙・周辺の速度線と効果音で伝える。曲のテンポは変えない。
 const BOT_STEP = 1 / 60; // 自動操縦の判断と物理の刻み（モデルの検査と同じ）
@@ -439,16 +439,19 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     /**
      * 走る前の準備（2026-11-11 オーナー「加速すると処理重い。ゲーム開始前に漫画付きロードとか挟んでもいい」）:
      * 絵・効果音を読み終えるまで待ち、ブーストの残像に使う色付きの絵を先に作っておく（走っている途中に作ると引っかかる）。
-     * 読み終わっていれば待たずに始める。時間がかかる時（0.22秒より長い）だけ、本編と同じ漫画つきのロード画面を出す。
+     * ゲームの中では、この訪問で最初に走る前は、揃っていても漫画のロード画面を出す（決まった場面・minigame-loading.js）。
+     * それ以外は、読み終わっていれば待たずに始める。時間がかかる時（0.22秒より長い）だけ、本編と同じ漫画つきのロード画面を出す。
      */
-    let preparing = false;
+    let preparing = false, firstRun = true;
     async function prepareAndStart(kind, who = raceWith) {
       if (preparing) return;
       preparing = true;
       try {
         const runArt = loadDesertArt({ rivals: kind === "practice" ? [] : [who] });
-        if (runArt.pending() || !rideSe.isReady()) {
-          await withMinigameLoading(() => Promise.all([runArt.whenReady(), rideSe.ready()]), { host, label: "砂丘へ向かっています…" }).catch(() => {});
+        const fixed = minigameLoadingFixed(firstRun);
+        firstRun = false;
+        if (runArt.pending() || !rideSe.isReady() || fixed) {
+          await withMinigameLoading(() => Promise.all([runArt.whenReady(), rideSe.ready()]), { host, label: "砂丘へ向かっています…", fixed }).catch(() => {});
         }
         prewarmTints();
         if (!done) startRun(kind, who);
