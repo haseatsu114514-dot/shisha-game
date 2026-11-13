@@ -207,7 +207,7 @@ export async function resumeGame() {
   // ぼかした背後にタイトルが透ける。新規開始（openingPart）と同じく、再開の入口で先に片付ける。
   // 起動直後の自動ロード（まだ何も出していない boot）は片付けるものが無いので、そのままにする
   // （test/browser/game_layout.mjs の legacy-ds-preference-auto-load-migrates が boot のままを確かめている）。
-  if (document.body.dataset.screen !== "boot") clearScreen();
+  if (globalThis.document?.body?.dataset.screen !== "boot") clearScreen();
   if (state.chapter === 2) return resumeChapterModule(() => import("./ch2.js"), m => m.resumeChapterTwo(), "第2章の街へ戻っています…");
   if (state.chapter === 3) return resumeChapterModule(() => import("./ch3.js"), m => m.resumeChapterThree(), "第3章へ戻っています…");
   if (state.chapter === 4) return resumeChapterModule(() => import("./ch4.js"), m => m.resumeChapterFour(), "第4章へ戻っています…");
