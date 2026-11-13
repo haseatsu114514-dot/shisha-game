@@ -2,24 +2,6 @@
 import { newState } from "../core/state.js";
 import { DJ_SETS } from "../minigames/dj.js";
 import { CAMEL_CUPS } from "../minigames/camel-race-model.js";
-import { foundTrpgClub, joinTrpgClub, syncTrpgStock, buyTrpgBook } from "../trpg/campaign.js";
-
-// The daytime shop stays available; the night entry prepares only this disposable state.
-export function createTrpgDebugState(catalog = null) {
-  const value = newState();
-  Object.assign(value, { chapter: 3, phase: "daily", day: 5, slot: catalog ? 1 : 0, money: 100000 });
-  if (catalog) {
-    foundTrpgClub(value, catalog);
-    for (const id of ["hiyori", "samechan", "tsumugi", "adam"]) {
-      value.met[id] = true;
-      value.flags[`_trpg_topic_${id}`] = true;
-      joinTrpgClub(value, catalog, id);
-    }
-    syncTrpgStock(value, catalog);
-    buyTrpgBook(value, catalog, "ordinary-cup");
-  }
-  return value;
-}
 
 const GAMES = [
   { id: "axe", label: "斧投げ", start: async (host, signal) => (await import("../minigames/axe.js")).runAxeThrow({ host, signal, mode: "practice", opponent: null }) },
@@ -32,22 +14,11 @@ const GAMES = [
     value.chapter = 3; value.phase = "daily"; value.day = 5;
     return (await import("../minigames/tetsuko-time.js")).openTetsukoTime({ value, visitKey: "debug", signal });
   } },
-  { id: "trpg", label: "ボドゲカフェ（昼・七つの灯り）", start: async (host, signal) => {
-    const value = createTrpgDebugState();
-    const { mountTrpgCampaign } = await import("../trpg/campaign-view.js");
-    const controller = mountTrpgCampaign(host, { getState: () => value, save: () => true, signal, closeLabel: "閉じる" });
-    await controller.ready;
-    return controller.finished;
-  } },
-  { id: "trpg-night", label: "TRPG（夜・物語）", start: async (host, signal) => {
-    const { loadTrpgLibrary } = await import("../trpg/index.js");
-    const resources = await loadTrpgLibrary({ signal, preloadAssets: false });
-    const value = createTrpgDebugState(resources.catalog);
-    const { mountTrpgCampaign } = await import("../trpg/campaign-view.js");
-    const controller = mountTrpgCampaign(host, { getState: () => value, save: () => true, signal, resources, closeLabel: "閉じる" });
-    await controller.ready;
-    return controller.finished;
-  } },
+  // ボドゲカフェは、本編と同じ本棚と卓を使い捨ての状態で開く試遊（TRF21。URL の ?trial=trpg と同じもの）。
+  { id: "trpg", label: "ボドゲカフェ（昼・七つの灯り）", start: async (host, signal) =>
+    (await import("../trpg/trial.js")).mountTrpgTrial(host, { preset: "noon", signal, exitLabel: "試遊を閉じる" }).finished },
+  { id: "trpg-night", label: "TRPG（夜・物語）", start: async (host, signal) =>
+    (await import("../trpg/trial.js")).mountTrpgTrial(host, { preset: "ready", signal, exitLabel: "試遊を閉じる" }).finished },
 ];
 
 export const DEBUG_MINIGAMES = Object.freeze(GAMES.map(({ id, label }) => ({ id, label })));

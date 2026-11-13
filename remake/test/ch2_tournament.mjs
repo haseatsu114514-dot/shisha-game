@@ -1,3 +1,4 @@
+import "./ch2_vote_commit.mjs";
 // 持ち点の不可逆性、JSON中断復元、再挑戦の消費、既存記録の保持。
 import assert from 'node:assert/strict';
 import { newState } from '../js/core/state.js';

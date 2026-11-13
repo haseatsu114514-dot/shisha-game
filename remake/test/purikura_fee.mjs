@@ -134,5 +134,24 @@ for(const cancel of [false,true])await check(`existing Ryuji greeting stays sepa
  assert.equal(await f.offer(),!cancel);assert.equal(f.state.flags._ryuji_melty_greeting,true);assert.equal(f.state.flags._ryuji_melty_visit,'2:2:0');
  assert.equal(f.log.filter(l=>l.id==='remake_ch2_ryuji_melty_greeting').length,1);assert.equal(f.state.money,cancel?1000:600);assert.equal(f.state.flags._ageha_purikura_history?.length||0,cancel?0:1);
 });
+// #3468 A案: レヰの挨拶回。場面の中で撮るので、料金・思い出の品・撮影履歴は動かさない。組長の挨拶と同じ日には重ねない。
+await check('Rei greeting plays once, later day than Ryuji, and costs nothing',async f=>{
+ f.state.met={ageha:true,kumicho:true,rei:true};f.state.flags._ch2_day1={startDay:1};f.setMode(null);
+ assert.equal(await f.offer(),true);assert.equal(f.state.flags._ryuji_melty_greeting,true);
+ assert.equal(f.log.filter(l=>l.id==='remake_ch2_rei_melty_greeting').length,0,'not on the Ryuji greeting visit');
+ f.state.slot=1;assert.equal(await f.offer(),true);assert.equal(f.log.filter(l=>l.id==='remake_ch2_rei_melty_greeting').length,0,'not later on the same day');
+ f.state.slot=0;f.next();const before=clone({money:f.state.money,keepsakes:f.state.keepsakes,history:f.state.flags._ageha_purikura_history||null});
+ assert.equal(await f.offer(),true);assert.equal(f.log.filter(l=>l.id==='remake_ch2_rei_melty_greeting').length,1);assert.equal(f.state.flags._rei_melty_greeting,3);
+ assert.deepEqual(clone({money:f.state.money,keepsakes:f.state.keepsakes,history:f.state.flags._ageha_purikura_history||null}),before);
+ f.next();assert.equal(await f.offer(),true);assert.equal(f.log.filter(l=>l.id==='remake_ch2_rei_melty_greeting').length,1,'once only');
+});
+for(const met of [{ageha:true},{ageha:true,kumicho:true}])await check(`Rei greeting needs Rei met (${Object.keys(met)})`,async f=>{
+ f.state.met=met;f.state.flags._ch2_day1={startDay:1};f.state.flags._ryuji_melty_greeting=true;f.setMode(null);f.next();
+ assert.equal(await f.offer(),true);assert.equal(f.log.filter(l=>l.id==='remake_ch2_rei_melty_greeting').length,0);assert.equal(f.state.flags._rei_melty_greeting,undefined);
+});
+await check('Rei greeting cancel keeps it unread',async f=>{
+ f.state.met={ageha:true,rei:true};f.state.flags._ch2_day1={startDay:1};f.setPlay(async id=>id==='remake_ch2_rei_melty_greeting'?{cancelled:true}:{id,visited:[]});
+ assert.equal(await f.offer(),false);assert.equal(f.state.flags._rei_melty_greeting,undefined);assert.equal(f.state.money,1000);
+});
 console.log(JSON.stringify({groups,failures,scope:'actual offer/keepsakes/travel/photo and actual addMoney; controlled VM/state/VN/UI/Map-JSON, not browser/menu LOAD'}));
 if(failures)process.exitCode=1;
