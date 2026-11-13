@@ -47,7 +47,7 @@
 .end-screen.gameover[data-layout="manga"] .go-clock::after { content: "秒"; right: 6px; bottom: 14px; transform: rotate(-6deg); }
 .end-screen.gameover[data-layout="manga"] .go-limit-note {
   top: 192px; left: 832px; right: auto; width: 190px; padding: 0; border: 0; background: none; color: #111;
-  font-size: max(16px, calc(12.5px / var(--k, 1))); font-weight: 700; line-height: 1.35; text-align: left; word-break: normal; line-break: strict; text-wrap: balance;
+  font-size: max(16px, calc(12.5px / var(--k, 1))); font-weight: 700; line-height: 1.35; text-align: left; text-wrap: balance;
 }
 /* 吹き出し */
 .end-screen.gameover[data-layout="manga"] .go-dialogue {
