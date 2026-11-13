@@ -172,13 +172,15 @@ const storyChatsRead = allMessages.filter((m) => m.type === "chat" && m.trigger_
   const got = [];
   for (let day = 20; day <= 60; day++) {
     state.day = day;
-    const msgs = phone.morningMessages({ fixedNight: () => false }).filter((m) => m.casual);
+    // その朝に届いた分はすべて読む（LM08: 朝の枠は基本2通。噂・恋人のLIMEと枠を分け合った上で、雑談の決まりを見る）
+    const arrived = phone.morningMessages({ fixedNight: () => false });
+    const msgs = arrived.filter((m) => m.casual);
     assert(msgs.length <= 1, `DAY${day}: 知り合いの雑談は朝に1通まで`);
     for (const m of msgs) {
       assert(!m.replies?.length && m.type === "chat", `${m.id}: 読むだけ`);
       got.push([day, m.sender, m.id]);
     }
-    deliver(msgs);
+    deliver(arrived);
   }
   const senders = new Set(got.map(([, s]) => s));
   assert.deepEqual([...senders].sort(), ["adam", "naru"], `♥3以上・恋人でも締めくくり後でもない相手だけ: ${JSON.stringify(got)}`);

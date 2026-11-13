@@ -386,6 +386,7 @@ export const FLAG_EXACT_RULES = [
   ["_hiyori_meeting_done", "person"],
   ["_hiyori_meeting_shop", "person"],
   ["_hiyori_message_delivered", "person"],
+  ["_hiyori_minto_seat_done", "person"], // ぺぱーみんとの相席で一度だけ（REL07・daily/hiyori.js）
   ["_hiyori_peach_talk_done", "person"],
   ["_hiyori_promise_done", "person"],
   ["_hiyori_real_self_known", "person"],

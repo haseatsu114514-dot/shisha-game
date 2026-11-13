@@ -32,6 +32,7 @@ import { afterStory, isFinaleEvent, playFinale, isFriendEvent, playFriendHangout
 import { syncSamechanKnowledge, maybeSamechanEncounter, visitSamechan } from "./samechan.js";
 
 import { invitationCost, invitationGrowth, storeInvitationSpot, storeInvitationDialogue, invitationVisitSpot, immediateInvitation } from "./invitations.js";
+import { bondInvitation } from "./lime-pacing.js";
 import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocation } from "./hiyori.js";
 import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
 import { roamerAt, meetRoamer } from "./roamers.js";
@@ -770,7 +771,8 @@ function spotExpTarget(spot) {
   if (spot.kind === "rest" || spot.kind === "fortune") return null; // 休養・占いは学びにしない
   return { key: spot.id, place: spot.id };
 }
-const invitationExp = (inv) => inv?.sender ? { key: inv.sender, person: inv.sender } : null;
+// 絆の深い相手（恋人・締めくくりを読んだ相手）からの誘いは、新鮮さで減らさず多めに入る（LM11）
+const invitationExp = (inv) => inv?.sender ? { key: inv.sender, person: inv.sender, bond: bondInvitation(inv.event, inv.sender) } : null;
 
 function postponeUnaffordableInvitation(inv) {
   const cost = invitationCost(inv.event);

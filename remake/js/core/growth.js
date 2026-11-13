@@ -51,6 +51,11 @@ export const WIN_HIDANE = 3;
 export const MILESTONE_LEVELS = [10, 20, 30, 40, 50, 60, 70, 80, 90];
 export const CHAPTER_MULT = { 1: 1, 2: 1.25, 3: 1.5, 4: 1.75, 5: 2 };
 export const EXP = { action: 30, firstPerson: 40, firstPlace: 40, affinityStep: 30, recipe: 30, golden: 20, scene: 20 };
+/**
+ * 絆の深い相手（恋人・締めくくりを読んだ相手）からの誘いに乗った行動の倍率（LM11・2026-11-12 オーナー
+ * 「絆深い相手の誘いは経験値多い」）。新鮮さでは減らさず、同じ相手の店へ通う回数にも数えない。
+ */
+export const BOND_INVITE_MULT = 1.5;
 /** その章で同じ鍵の 1・2回目 ×1.0、3回目 ×0.8、4回目 ×0.6、5回目以降 ×0.4（1.3） */
 export const FRESHNESS = [1, 1, 0.8, 0.6, 0.4];
 export const freshness = (count) => FRESHNESS[Math.min(FRESHNESS.length, Math.max(1, count)) - 1];
@@ -383,6 +388,7 @@ export function awardSlotExp(role) {
  * 体力を使った自由行動1回の経験値（X1〜X3）。
  * @param target.key 新鮮さの鍵（相手のキャラID、スポットID、行動の種類）
  * @param target.person はじめての相手（X2）／ target.place はじめての場所・遊び（X3）
+ * @param target.bond 絆の深い相手からの誘い（LM11）。新鮮さで減らさず BOND_INVITE_MULT 倍。鍵の回数にも数えない
  */
 export function awardActionExp(target, actionTime = null) {
   if (!growthEnabled() || !state) return 0;
@@ -390,13 +396,14 @@ export function awardActionExp(target, actionTime = null) {
   closeRespecOpportunity(g); // expの鍵が無い行動でも、実際に確定した最初の自由行動で閉じる。
   if (!target?.key) return 0;
   if (g.fresh.chapter !== state.chapter) g.fresh = { chapter: state.chapter, counts: {} };
-  const count = (g.fresh.counts[target.key] = (Number(g.fresh.counts[target.key]) || 0) + 1);
+  const count = target.bond ? 0 : (g.fresh.counts[target.key] = (Number(g.fresh.counts[target.key]) || 0) + 1);
   let log = g.chapterLog[state.chapter];
   if (!log || typeof log !== "object" || Array.isArray(log)) log = g.chapterLog[state.chapter] = { people: [], places: [] };
   log.people = strings(log.people); log.places = strings(log.places);
   const collection = target.person ? log.people : log.places, id = target.person || target.place || target.key;
   if (!collection.includes(id)) collection.push(id);
-  let base = EXP.action * freshness(count);
+  // 絆の深い相手からの誘い（LM11）は新鮮さで減らさない（倍率は第5章の底上げの後に掛ける）
+  let base = target.bond ? EXP.action : EXP.action * freshness(count);
   // 第5章の決戦前: 一日に最初の2枠だけ、確定した日常の学びを180XPまで底上げ。
   // 同じ枠の再通知・無料リトライは補助を増やさない。章1〜4と決戦後は従来どおり。
   let practice = false;
@@ -412,7 +419,9 @@ export function awardActionExp(target, actionTime = null) {
     }
     g.practiceDay = ledger;
   }
-  let got = gainExp(base, { key: target.key, tag: practice ? "日々の学び" : count >= 3 ? "なじみ" : null });
+  // 絆の深い相手からの誘いは、その行動の基本量（第5章の決戦前は底上げ後）の BOND_INVITE_MULT 倍
+  if (target.bond) base *= BOND_INVITE_MULT;
+  let got = gainExp(base, { key: target.key, tag: target.bond ? "絆" : practice ? "日々の学び" : count >= 3 ? "なじみ" : null });
   if (target.person && !g.firsts.people.includes(target.person)) {
     g.firsts.people.push(target.person);
     got += gainExp(EXP.firstPerson, { key: target.key, tag: "はじめて", first: true });

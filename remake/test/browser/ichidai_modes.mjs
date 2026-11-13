@@ -41,7 +41,7 @@ await suite("ichidai-modes", async (check) => {
     assert.match(await page.locator(t("ichi-guide")).innerText(), /準備 1\/6/);
     assert.deepEqual([await page.locator(t("ichi-goal")).getAttribute("data-leaves"), await page.locator(t("ichi-goal")).getAttribute("data-want")], ["0", "12"]);
     assert.match(await page.locator(t("ichi-goal")).innerText(), /葉0\/12枚[\s\S]*ダブルアップル0\/12/);
-    assert.match(await page.locator(t("ichi-market-head")).innerText(), /葉を選ぶ：0\/\d枚（2種類まで）[\s\S]*蒸らすには：葉が8枚以上要る/);
+    assert.match(await page.locator(t("ichi-market-head")).innerText(), /葉を選ぶ：0\/4枚　[\s\S]*蒸らすには：葉が8枚以上要る/);
     const fit = await page.evaluate(() => { const g = document.querySelector('[data-test="ichi-guide"]').getBoundingClientRect(), m = document.querySelector('[data-test="ichi-market"]').getBoundingClientRect(); return g.bottom <= m.top + 1; });
     assert.equal(fit, true, "案内の札は、葉の盆に隠れない");
     // 葉を選んで「詰める」と、ほかにすることが無ければ、そのまま相手の番へ進む（「ターンを終える」を押さなくてよい）
@@ -192,4 +192,46 @@ await suite("ichidai-modes", async (check) => {
     assert.deepEqual(ranks.map(Number), ranks.map(Number).slice().sort((x, y) => y - x), "点の高い順");
     assert.match(await end.locator("h2").innerText(), /^(勝ち|引き分け|[234]位)$/);
   }, page1("players=4&kit=a&tournament=open_cloud&level=1&seed=5"));
+
+  // 入門の一局（第0.7版。2026-11-13 オーナー「入門モードも作りつつ」）: 設定の画面の「基本」の棚の先頭から始める。
+  // 一台は詰めてあり、種火も置いてある。準備は炭を焼く2ターンだけ、提供は6ラウンド。一票・印象・決め手は出ない。
+  // 案内の「つぎ」の下に「なぜ」が付き、遊び方は3ページ。終わると「基本の一式へ」
+  await check("intro-match-is-short-and-teaches-coals-only", async (page) => {
+    await page.locator(t("ichi-menu-quick")).click();
+    await page.locator(t("ichi-intro-start")).click();
+    await page.waitForFunction(() => document.querySelector('[data-test="ichi-game"]')?.dataset.input === "1", null, { timeout: 30000 });
+    assert.deepEqual([await data(page, "phase"), await data(page, "wait"), await data(page, "turn")], ["prep", "prep", "me"], "葉を詰めるところと最初の火は無く、炭を焼くところから");
+    const info = await page.evaluate(() => { const G = window.__ichidai.game, me = G.P[0]; return { rounds: G.tour.sessions * 3, bowl: me.bowl, zone: me.zone.length, kits: G.P.map((p) => p.kit), level: G.P[1].level, prep: G.R.prepTurns }; });
+    assert.deepEqual(info, { rounds: 6, bowl: { blueberry: 8, ice_grape: 4 }, zone: 3, kits: ["s0", "s0"], level: 0, prep: 2 });
+    assert.equal(await page.locator(t("ichi-market")).count(), 0, "葉の盆は出ない（詰めてある）");
+    assert.match(await page.locator(t("ichi-phase")).innerText(), /準備 1\/2/);
+    assert.match(await page.locator(".ichi-guide").innerText(), /準備 1\/2：炭を焼いて、熱を上げる/);
+    // 「つぎ」の下に「なぜ」
+    const why = page.locator(t("ichi-next-why"));
+    assert.ok((await why.innerText()).length > 10, "手の理由が1行付く");
+    assert.deepEqual(await overflowed(page), [], "入門の画面で、文字が枠からはみ出していない");
+    // 遊び方は3ページだけ
+    await page.locator(t("ichi-help")).click();
+    assert.match(await page.locator(`${t("ichi-help-sheet")} header`).innerText(), /遊び方 1\/3[\s\S]*勝ち方/);
+    await page.locator(t("ichi-help-close")).click();
+    // 「おすすめで進める」だけで、提供の最初の自分のターンまで進める
+    for (let n = 0; n < 60 && !(await data(page, "phase") === "serve" && await data(page, "wait") === "main" && await data(page, "turn") === "me"); n++) {
+      if (await data(page, "turn") === "me" && await page.locator(`${t("ichi-do-hint")}:not([disabled])`).count()) await page.locator(t("ichi-do-hint")).click();
+      else await page.waitForTimeout(150);
+    }
+    assert.deepEqual([await data(page, "phase"), await data(page, "wait"), await data(page, "turn")], ["serve", "main", "me"]);
+    // 一票・印象・決め手は出ない。炭の灯（足す・外す）は出る
+    assert.deepEqual([await page.locator(t("ichi-impression")).count(), await page.locator(".ichi-leader-votes").count(), await page.locator('[data-test^="ichi-chase-"]').count()], [0, 0, 0]);
+    assert.equal(await page.locator(t("ichi-coal-left")).count(), 1);
+    assert.equal(await page.locator(t("ichi-standing")).count(), 1, "点差は出る");
+    // 最後まで: 6ラウンドで終わり、次の一歩を案内する
+    await page.evaluate(() => window.__ichidai.autoplay(40));
+    const end = page.locator(t("ichi-end-sheet"));
+    await end.waitFor({ timeout: 90000 });
+    assert.deepEqual(await page.evaluate(() => { const G = window.__ichidai.game; return [G.round, G.result.votes, G.result.bonus.length]; }), [5, [0, 0], 0]);
+    assert.match(await page.locator(t("ichi-end-next")).innerText(), /基本の一式/);
+    assert.doesNotMatch(await end.locator(".ichi-end-scores").innerText(), /票/, "点の欄に、票の数は出ない");
+    await page.locator(t("ichi-again")).click();
+    assert.deepEqual([await page.locator(t("ichi-tier-basic")).getAttribute("aria-pressed"), await page.locator(t("ichi-kit-s1")).getAttribute("aria-pressed")], ["true", "true"], "入門のあとは、基本の一式の1つ目が選ばれている");
+  }, page1("seed=11&speed=6"));
 });
