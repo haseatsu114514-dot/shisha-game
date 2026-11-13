@@ -199,12 +199,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "シフト明け。つむぎのスケッチブックに、新しい猫が増えていた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "店先のメニュー板には、つむぎの描いた猫が、今日もおすすめの横に座っていた。"
+          "text": "シフト明け。店先のメニュー板で、つむぎの描いた猫が、おすすめの横に座っていた。"
         },
         {
           "speaker": "tsumugi",
@@ -215,6 +210,11 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "消さないよ。常連さんも、あの猫で注文決めてるから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎがスケッチブックを開く。新しい猫が、一匹増えていた。"
         },
         {
           "speaker": "hajime",
@@ -327,7 +327,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "並ばなくていいって。……いちばん奥の席、空けとくから"
+          "text": "並ばなくていいって。……白いクマの隣、空けとくから"
         }
       ],
       "metadata": {
@@ -408,22 +408,27 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "今日も同意書ですか"
+          "text": "試香紙にしては、数字が書いてありますね"
         },
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "違う。指輪のサイズ、測ってきた"
+          "text": "指輪のサイズ。測ってきた"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "……俺、何て返せばいいんだろう"
+          "face": "surprise",
+          "text": "……先に、測ったんですか"
         },
         {
           "speaker": "rio",
-          "face": "normal",
-          "text": "今決めなくていい。渡したかっただけ"
+          "face": "smug",
+          "text": "先に私が確かめる。いつもどおりでしょ"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "返事は今じゃなくていい。渡したかっただけ"
         },
         {
           "speaker": "hajime",
@@ -542,8 +547,18 @@
         },
         {
           "speaker": "samechan",
-          "face": "surprise",
-          "text": "コロちゃん！　……それは、言わぬ約束じゃ"
+          "face": "normal",
+          "text": "……測る。じゃが、座って、目で測るだけじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "メジャーは、置いてきてくださいね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……小さいのなら、よいじゃろう"
         }
       ],
       "metadata": {
@@ -658,9 +673,34 @@
           "text": "約束、覚えてる？ 今度は、ハジメがガイドの番"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "彼女はスマホのリストを開いた。いちばん上に、星がひとつ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "名前の欄は、空いたままだ。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ここ、まだ空欄。通りの名前、当日教えるって言ったでしょ"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
-          "text": "もちろん。行きたい場所のリスト、全部回りましょう"
+          "text": "……名前、ないんです。店の前の、ただの通りで"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "ないの？ ……じゃあ、空欄のまま。星があれば、もう迷わないから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ほかの町も、全部回りましょう"
         },
         {
           "speaker": "noor",

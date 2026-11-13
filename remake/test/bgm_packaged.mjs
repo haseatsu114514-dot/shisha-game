@@ -187,6 +187,6 @@ assert.equal(fading.paused, true);
 {
   const trpgSource = await fs.readFile(new URL("../js/daily/trpg.js", import.meta.url), "utf8");
   assert.match(trpgSource, /showScreen\("trpg", host\); playBgm\("bgm_trpg"\)/);
-  assert.match(trpgSource, /playBgm\("kansetsu_shomei_to_black_coffee"\)/);
+  assert.match(trpgSource, /playBgm\(state\.chapter === 2 \? "bgm_yuzugaya" : "kansetsu_shomei_to_black_coffee"\)/); // 街の曲（第2章は柚ヶ谷、ほかは日常の曲）
 }
 console.log("[packaged BGM] PASS: official audio hashes, caching, gains, cancellation and playback races");

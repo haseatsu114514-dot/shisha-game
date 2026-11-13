@@ -253,7 +253,8 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "勇者はじめよ、遠征であるか。余の海の外であるぞ"
+          "text": "勇者はじめよ、遠征であるか。余の海の外であるぞ",
+          "voice": "korochan"
         },
         {
           "speaker": "samechan",
@@ -273,7 +274,8 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "側近よ、勇者の席の札は、余が書いておくのである"
+          "text": "側近よ、勇者の席の札は、余が書いておくのである",
+          "voice": "korochan"
         }
       ]
     },
@@ -521,7 +523,8 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "砂の海であるな。勇者はじめよ、制してまいれ"
+          "text": "砂の海であるな。勇者はじめよ、制してまいれ",
+          "voice": "korochan"
         },
         {
           "speaker": "samechan",

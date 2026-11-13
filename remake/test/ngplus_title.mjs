@@ -107,7 +107,7 @@ function makeFixture(opts = {}) {
       layers: { hud: { classList: { remove() {} } } },
       showScreen: (name, root) => { screens.push({ name, root }); document.body.dataset.screen = name; },
       setBg() {},
-      smokeWipe: (fn) => { calls.smokeWipe++; fn(); },
+      smokeWipe: (fn) => { calls.smokeWipe++; fn(); }, toast: () => {},
       modal: (args) => new Promise((resolve) => modalCalls.push({ args, resolve })),
     },
     "../core/state.js": {

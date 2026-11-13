@@ -394,7 +394,7 @@ await suite("ch3-tokyo-daily", async check => {
     const state = await get(page);
     assert.equal(state.finales.steve.route, "friend");
     assert.equal(state.owned.filter(id => id === "suyaki_steve").length, 1);
-    assert.equal(state.flavorStock.mountain_mist, 50, "a box of Mountain Mist comes with the hagal");
+    assert.equal(state.flavorStock?.mountain_mist || 0, 0, "the hagal only: the signature Mountain Mist stays at Smoke & Glory (2026-11-13)");
     assert.equal(state.money, 1000, "being called by Steve costs nothing, even short of the shop fee");
     const backlog = await page.evaluate(async () => (await import("./js/vn/engine.js")).backlog().map(row => row.text).join("\n"));
     assert.match(backlog, /今日は客でも偵察でもなくていい/, "read before the tournament: the before-tournament branch");

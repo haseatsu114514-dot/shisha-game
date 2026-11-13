@@ -205,11 +205,11 @@ await suite("petit-shuraba", async check => {
       };
     });
     const has = (read, needle) => read.some(text => text.includes(needle));
-    for (const needle of ["ごまかした日のことが", "あの着信", "なるの声", "全部、今日に続いていた", "濁った色。疲れのせい"])
+    for (const needle of ["ごまかした日のことが", "あの着信", "なるの声", "全部、今日に続いていた", "疲れてますかって、聞きましたよね"])
       assert(!has(result.none, needle), `Not without the petit scenes: ${needle}`);
     assert(has(result.none, "一人だけじゃ、ありません") && has(result.none, "ちゃんと聞くのは、初めてです"));
     const order = ["（……あ）", "ごまかした日のことが", "鳴りやまなかった、あの着信", "気づきかけて、聞かないでくれた顔", "なるの声",
-      "全部、今日に続いていた", "誰からともなく、俺との関係を尋ねた", "一人だけじゃ、ありません", "ちゃんと聞くのは、初めてです", "濁った色。疲れのせいじゃ、なかったんですね"];
+      "全部、今日に続いていた", "誰からともなく、俺との関係を尋ねた", "一人だけじゃ、ありません", "ちゃんと聞くのは、初めてです", "疲れてますかって、聞きましたよね"];
     const positions = order.map(needle => result.some.findIndex(text => text.includes(needle)));
     assert(positions.every((position, index) => position >= 0 && (index === 0 || position > positions[index - 1])), `Recalled in order: ${positions}`);
     for (const needle of ["送り先を間違えた", "二つの席", "二つの後ろ姿", "襟の香りのことは"]) assert(!has(result.some, needle), `Only what was read: ${needle}`);

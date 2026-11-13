@@ -6,9 +6,9 @@ import { playEntrance, CH1_EVE_NOTES } from "./tournament-entrance.js";
 import { playTournamentArrival } from "./ch1-arrival.js";
 import { DB, bgUrl, faceIconUrl, realName, displayName, loadTournamentCraftDialogue } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
-import { playChapterPoem } from "../scenes/chapter-poem.js";
+import { playChapterPoem, preparePoemPanel } from "../scenes/chapter-poem.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
-import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice } from "../core/ui.js";
+import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice, withChapterLoading } from "../core/ui.js";
 import { sceneMoment } from "../core/scene-motions.js";
 import { defeatFade, retryStroke } from "../core/transitions.js";
 import { withLoadingNotice } from "../core/module-loading.js";
@@ -149,6 +149,7 @@ async function openingPart() {
   clearScreen();
   if (!progress.introDone) {
     stopBgm();
+    void preparePoemPanel(1); // コールドオープンを読んでいる間に、続く巻頭ポエムの横長の漫画を読んでおく（OSP20）
     await setBg(null, { instant: true }); // 先に暗転を置いてから場面を重ねる（後から来た暗転に場面が隠れないように）
     // コールドオープン: 1年後の世界大会の決勝の一瞬（顔も会場の全景も見せない）。
     // 場面は背景レイヤーに置く＝会話の文字より奥（手前に置くと文字が隠れて真っ暗に見えていた）
@@ -211,6 +212,8 @@ export async function resumeGame() {
   if (state.chapter === 3) return resumeChapterModule(() => import("./ch3.js"), m => m.resumeChapterThree(), "第3章へ戻っています…");
   if (state.chapter === 4) return resumeChapterModule(() => import("./ch4.js"), m => m.resumeChapterFour(), "第4章へ戻っています…");
   if (state.chapter === 5) return resumeChapterModule(() => import("./ch5.js"), m => m.resumeChapterFive(), "第5章へ戻っています…");
+  // 第1章の保存からの再開も決まった場面: プレイヤーの既定では漫画のロード画面を出してから続ける（core/ui.js）。
+  await withChapterLoading(() => null, "続きを準備しています…");
   if (state.phase === "cleared") return showClear();
   if (state.phase === "aftermath") return finishAfterTournament();
   // 第1章の制作途中は保存しない。大会本体のLOADは当日冒頭から入場と一台をやり直す。
@@ -220,11 +223,12 @@ export async function resumeGame() {
   await dailyPart();
 }
 
-// SAVEからの再開で、次章モジュールの動的 import を軽いロード表示付きで待つ（A-1）。
+// SAVEからの再開で、次章モジュールの動的 import をロード表示付きで待つ（A-1）。セーブからの再開は決まった場面で、
+// プレイヤーの既定では待ちがなくても漫画のロード画面を出す（core/ui.js の withChapterLoading）。
 // 取得に失敗（通信断・デプロイ直後のキャッシュ不整合）しても無反応で止めず、
 // 「もう一度試す／タイトルへ戻る」で操作可能に戻す。章の中身の失敗は各章側が扱う。
 async function resumeChapterModule(load, run, label) {
-  try { return await run(await withLoadingNotice(load(), loadingNotice(label))); }
+  try { return await run(await withChapterLoading(load, label)); }
   catch { return showResumeError(); }
 }
 
@@ -930,7 +934,7 @@ export async function showClear() {
     if (playing || !root.isConnected || state !== owner) return;
     playing = true; next.disabled = true;
     try {
-      const chapter = await withLoadingNotice(import("./ch2.js"), loadingNotice("第2章の街へ向かっています…"));
+      const chapter = await withChapterLoading(() => import("./ch2.js"), "第2章の街へ向かっています…");
       if (root.isConnected && state === owner) await chapter.beginChapterTwo();
     } catch { toast("第2章を読み込めなかった。通信を確認して、もう一度試してください"); }
     finally { playing = false; next.disabled = false; }

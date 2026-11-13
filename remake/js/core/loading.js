@@ -3,12 +3,13 @@ import { buildVersioned } from "./asset-version.js";
 import { prepareImage } from "./loading-prefetch.js";
 import { LOADING_COMICS, eligibleLoadingComics } from "./loading-comics.js";
 
-let active = false, previousComic = null, upcomingComic = null, lastReadAt = -Infinity;
+let active = null, previousComic = null, upcomingComic = null, lastReadAt = -Infinity, lastComic = null;
 // Reading hold: a tap or key is accepted only after the art has been on screen this long and this long
 // after preparation finished, so taps left over from the previous screen cannot skip an unread comic.
 const READ_GUARD_SHOWN_MS = 700, READ_GUARD_READY_MS = 250;
-// A fixed point right after another comic was read (a LOAD that reloads the page and resumes, a chapter
-// that opens its bench at once) does not stack a second comic: within this gap it waits only when needed.
+// Right after a comic was read (a LOAD that reloads the page and resumes, a chapter whose script loads after
+// its module), the loading goes on as one screen: within this gap a fixed point waits only when needed, and
+// a gate that shows carries the comic just read, without a second hold.
 const FIXED_GAP_MS = 2000;
 // Comic art is given this long. Missing or slower art leaves the plain gate, which never holds.
 const COMIC_ART_TIMEOUT_MS = 4000;
@@ -93,16 +94,28 @@ export function warmNextLoadingComic(comics = LOADING_COMICS, options = {}) {
 export async function withLoading(prepare, {
   host = document.querySelector("#stage"), label = "場面を準備しています…",
   delayMs = 220, context = "default", chapter = 1, comics = LOADING_COMICS, isMet = null,
-  isRead = null, onRead = null, onProceed = null, fixed = false, signal,
+  isRead = null, onRead = null, onProceed = null, fixed = false, soft = false, signal,
 } = {}) {
   if (!host) throw new Error("Loading host is missing");
-  if (active) throw new Error("A loading gate is already active");
+  // soft: a short wait inside a scene (a conversation's art, a module). It never competes with another gate:
+  // while one is open it only waits for its preparation, and a gate that needs the screen waits for it to close.
+  while (active) {
+    if (soft) {
+      signal?.throwIfAborted();
+      return await prepare({ signal: signal || new AbortController().signal, report() {} });
+    }
+    if (!active.soft) throw new Error("A loading gate is already active");
+    await active.closed;
+  }
   signal?.throwIfAborted();
-  active = true;
+  let closeGate;
+  active = { soft, closed: new Promise(resolve => { closeGate = resolve; }) };
   // required: a shown gate always carries its comic (it waits for the art, then holds for reading).
   // forced: a fixed point shows the gate at once even when nothing needs loading.
+  // continuing: a comic was read a moment ago, so this gate goes on with it (no second hold, no record).
   const required = comicLoadingRequired();
-  const forced = fixed && required && performance.now() - lastReadAt > FIXED_GAP_MS;
+  const continuing = required && !!lastComic && performance.now() - lastReadAt <= FIXED_GAP_MS;
+  const forced = fixed && required && !continuing;
   if (forced) delayMs = 0;
   const controller = new AbortController();
   const focus = document.activeElement;
@@ -168,7 +181,7 @@ export async function withLoading(prepare, {
       if (awaitingProceed && type === "pointerdown") proceedNow();
     });
   }
-  const comic = selectLoadingComic(comics, { context, chapter, isMet, isRead });
+  const comic = continuing ? lastComic : selectLoadingComic(comics, { context, chapter, isMet, isRead });
   // The sheet (title, two 3:2 frames, note) is laid out as soon as a comic is chosen and kept hidden
   // (.is-waiting) until the art is decoded: the logo and gauge then never jump when the panels arrive.
   const frames = comic ? comic.panels.map(() => el("div.loading-panel-art")) : [];
@@ -267,7 +280,7 @@ export async function withLoading(prepare, {
     if (required && overlay.isConnected && !controller.signal.aborted) await Promise.race([comicReady, aborted]);
     // Only when a comic is actually on screen, hold for the reader: advance on tap/click/key.
     // No comic / failure / instant task returns immediately, exactly like before.
-    if (comicShown && overlay.isConnected && !controller.signal.aborted) {
+    if (comicShown && !continuing && overlay.isConnected && !controller.signal.aborted) {
       bar.classList.add("is-determinate");
       overlay.style.setProperty("--loading-progress", "1");
       // Input is accepted only after the reading guard. The ready look (準備完了 and the prompt) appears
@@ -280,7 +293,7 @@ export async function withLoading(prepare, {
       proceed.setAttribute("aria-hidden", "false");
       awaitingProceed = true;
       await Promise.race([proceeded, aborted]);
-      lastReadAt = performance.now();
+      lastReadAt = performance.now(); lastComic = comic;
       // The reader moved on by their own tap or key: that comic counts as read (record keeping only).
       try { onRead?.(comic); } catch { /* A failed record must not break the game. */ }
     }
@@ -296,10 +309,10 @@ export async function withLoading(prepare, {
     host.removeEventListener("focusin", focusGuard);
     for (const [node, inert] of locked) node.inert = inert;
     if (wasBusy === null) host.removeAttribute("aria-busy"); else host.setAttribute("aria-busy", wasBusy);
-    active = false;
+    active = null; closeGate();
     if (focus?.isConnected) focus.focus();
     // The next fixed point shows its comic at once: fetch that comic's art while the scene settles.
-    if (required && comic) setTimeout(() => warmNextLoadingComic(comics, { context, chapter, isMet, isRead }), WARM_DELAY_MS);
+    if (required && comic && !continuing) setTimeout(() => warmNextLoadingComic(comics, { context, chapter, isMet, isRead }), WARM_DELAY_MS);
   }
 }
 

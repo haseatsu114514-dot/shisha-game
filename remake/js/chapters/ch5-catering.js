@@ -254,7 +254,7 @@ export async function performCateringSpot(spot, { staminaGuard } = {}) {
   earnStat("insight", 4);
   save();
   toast(`出張の手取り ${settled.paid.toLocaleString()}円`, { kind: "good" });
-  if (settled.tickets) toast(`スミさんから、くじ券を${settled.tickets}枚もらった（Dr.fookahの限定台くじを1回ずつ引ける）`, { kind: "good" });
+  if (settled.tickets) toast(`スミさんから、くじ券を${settled.tickets}枚もらった（Dr.fookahの限定台くじを1回ずつ引ける）`, { kind: "good", se: "get" });
   else toast("出張を終えた。また頼みが来たら、スミさんから届く");
   return { used: true, exerted: true };
 }

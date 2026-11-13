@@ -576,6 +576,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "案ずるな。宇宙にもサメの王はいる。余である"
         },
         {
@@ -957,6 +958,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "当然である。王の出番がない卓など、ない"
         }
       ]
@@ -2020,6 +2022,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余も夜番に加えよ。見回りは得意である"
         },
         {
@@ -2136,6 +2139,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "ふはは、宇宙ザメの群れである。……今のは、王の冗談だ"
         },
         {

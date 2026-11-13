@@ -36,7 +36,7 @@
         {
           "speaker": "rei",
           "face": "serious",
-          "text": "……ひとり言。気にするな"
+          "text": "……ひとり言。気にしないで"
         },
         {
           "speaker": "hajime",
@@ -46,7 +46,7 @@
         {
           "speaker": "rei",
           "face": "serious",
-          "text": "……座れ"
+          "text": "……座って"
         },
         {
           "speaker": "",
@@ -293,59 +293,59 @@
           "text": "BGMのロックが低く流れている。しばらくして、新しい一台が置かれた。"
         },
         {
-          "speaker": "hajime",
+          "speaker": "rei",
           "face": "normal",
-          "text": "（……「月光花」。この前の「イエス」とは違う）"
+          "text": "……「月光花」"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "「月光花」って……なんか、友達がよく口ずさんでた曲に似てて"
+          "text": "あ、その名前。曲のほうなら、知ってます"
         },
         {
           "speaker": "rei",
-          "face": "serious",
+          "face": "surprise",
           "text": "……っ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "レヰの手が完全に止まった。それまでより長い間。"
+          "text": "レヰの手が止まった。トングの先が、炭の上で浮いたままになる。"
         },
         {
           "speaker": "rei",
-          "face": "normal",
-          "text": "……気づいてくれたのか"
+          "face": "surprise",
+          "text": "……知ってるのか"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "全部は知らないんですけど。その友達がV系好きで……"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "レヰの声のトーンが、はっきりと変わった。"
-        },
-        {
-          "speaker": "rei",
-          "face": "normal",
-          "text": "……その友達、V系を聴くのか"
+          "text": "有名ですよね。サビだけ、どこかで聴いたことがあって"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あ、俺はそんなに詳しくなくて。その友達が好きだっただけで……"
+          "text": "すみません、知ってるのはそこだけです。歌ってる人の名前も出てこなくて"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "レヰが、じっとこちらを見ている。"
+          "text": "レヰが、カウンターから身を乗り出していた。近い。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
           "text": "（……聞いてない？）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……サビを、知ってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。サビだけです"
         },
         {
           "speaker": "rei",
@@ -358,29 +358,34 @@
           "text": "え？ あの、聞いてましたか今の"
         },
         {
-          "speaker": "rei",
-          "face": "serious",
-          "text": "……聞いてた。V系、好きなんだな"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "だから友達が、という話で、俺はそんなに……"
-        },
-        {
           "speaker": "",
           "face": "",
           "text": "レヰが、俺の肩を軽く叩いた。"
         },
         {
           "speaker": "rei",
-          "face": "normal",
-          "text": "……仲間だ"
+          "face": "smile",
+          "text": "……同士だ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（仲間にされた。否定が、追いつかなかった）"
+          "text": "（同士にされた。サビだけなのに、否定が追いつかなかった）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "叩いた手を、レヰは自分で見た。それから一歩、いや二歩下がった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "sad",
+          "text": "……近かった。すまない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いえ。それより、この一台のこと、聞いてもいいですか"
         },
         {
           "speaker": "rei",
@@ -390,32 +395,27 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……月光花は、"
+          "text": "月光花は、夜に咲いて朝には消える花だ"
         },
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "夜に咲いて朝には消える花のことで……"
+          "text": "儚さと甘さが、同時にある。それを煙で出したかった"
         },
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "儚さと甘さが同時にあって、それをこのミックスで出したかった"
+          "text": "ジャスミンが土台。ブルーベリーで、夜の深さを足した"
         },
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "ジャスミンをベースに、ブルーベリーで夜の深みを足して、スモーキーな感じと、"
-        },
-        {
-          "speaker": "rei",
-          "face": "normal",
-          "text": "でも一瞬だけ甘くなる後味と……"
+          "text": "最後に一瞬だけ甘くなる。そこが、サビの前で……"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（……急にすごい喋ってる）"
+          "text": "（……急にすごい喋ってる。半分も分からないのに、聞いていたくなる）"
         },
         {
           "speaker": "rei",
@@ -425,7 +425,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "いや、ちゃんと出てますよ。吸ってたら夜の景色が浮かんで"
+          "text": "曲は分からないですけど、吸ってたら夜の景色が浮かびました"
         },
         {
           "speaker": "rei",
@@ -435,7 +435,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "いつもの短い返事。でもその顔は、さっきまでと少し違って見えた。"
+          "text": "いつもの短い返事。レヰは下がった二歩を、一歩だけ戻した。"
         },
         {
           "type": "condition",
@@ -509,6 +509,41 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（短い。でも、手を止めずにちゃんと返ってきた）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一台が、カウンターのいちばん遠い端に置かれた。腕を伸ばしても、ホースに届かない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの、レヰさん。遠くないですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……この前、近すぎた。だから、今日は離した"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "離しすぎです。吸えません"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一台が、ずず、と半分だけ戻ってきた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……このくらいか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "もう少しこっちです、……はい、そこで"
         },
         {
           "speaker": "",
@@ -610,12 +645,32 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……本名は、健太。レヰでも健太でも、同じ手で作ってる。座ってくれ"
+          "text": "……本名は、健太"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "レヰでも健太でも、同じ手で作ってる"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……急だったか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "急でした。でも、覚えました"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（健太さん。……急に、近くなった気がした）"
+          "text": "（健太さん。……この人は、一歩がいつも大きい）"
         }
       ],
       "branches": {
@@ -828,17 +883,22 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……あと、怖い人だと思ったのに、来るたびに少しずつ違う顔が見えて、気になって"
+          "text": "……あと、怖い人だと思ったのに、来るたびに予想が外れて"
         },
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……違う顔"
+          "text": "……外れた"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "笑顔の練習してたり、ミックスに曲のイメージ込めてたり。……話の続きが、聞きたくなって"
+          "text": "最初はシーシャにひとり言を言ってて。次は、肩を叩かれて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その次は歌詞で、その次は笑顔の練習でした。……続きが、気になって"
         },
         {
           "speaker": "",
@@ -1167,7 +1227,7 @@
     },
     {
       "dialogue_id": "ch2_rei_bond_finale",
-      "comment": "#2027 好感度MAXの締めくくり（友情のみ）。店を始めた頃からローズだけを詰めた素焼きのハガルを渡し、「仲間」を「友達」と言い直す。",
+      "comment": "#2027 好感度MAXの締めくくり（友情のみ）。店を始めた頃からローズだけを詰めた素焼きのハガルを渡し、「同士」を「友達」と言い直す（はじめは「月光花」のサビしか知らないと、レヰは聞いたうえで言っていた。2026-11-13 オーナー訂正）。",
       "metadata": {
         "bond_finale": "rei"
       },
@@ -1238,17 +1298,22 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……前に、仲間だって言った"
+          "text": "……前に、同士だって言った"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "V系の、ですよね"
+          "text": "サビしか知らないのに、でしたね"
         },
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……違う。あれは、半分は口実だった"
+          "text": "……聞いてた。サビだけだって、ちゃんと"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "それでも、言いたかった。半分は、口実だった"
         },
         {
           "speaker": "rei",
@@ -1261,9 +1326,24 @@
           "text": "知ってました。俺も、そのつもりです"
         },
         {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "曲は、いまだにサビしか歌えませんけど"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……それでいい。詳しい奴なら、店に来る"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "詳しくないのに聞きに来る奴は、あまりいない"
+        },
+        {
           "speaker": "",
           "face": "",
-          "text": "レヰはすぐには答えなかった。流れていた曲の、最後の音が消えるまで。"
+          "text": "レヰはすぐには続けなかった。流れていた曲の、最後の音が消えるまで。"
         },
         {
           "speaker": "rei",
@@ -1273,7 +1353,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "分かります。……あと、曲の感想。好きです"
+          "text": "分かります。……あと、この盤の感想。好きです"
         },
         {
           "speaker": "rei",
@@ -1333,7 +1413,7 @@
         },
         {
           "speaker": "customer",
-          "text": "来週の一曲目、絶対あの曲でしょ。あのイントロ、ライブで聴いたら泣く",
+          "text": "今度の一曲目、絶対あの曲でしょ。あのイントロ、ライブで聴いたら泣く",
           "face": "normal"
         },
         {
@@ -1358,7 +1438,7 @@
         },
         {
           "speaker": "customer",
-          "text": "あ、店長さん！　店長さんも来週行くんですよね。二曲目、何だと思います？",
+          "text": "あ、店長さん！　店長さんも行くんですよね。二曲目、何だと思います？",
           "face": "normal"
         },
         {
@@ -1393,7 +1473,7 @@
         },
         {
           "speaker": "rei",
-          "text": "……来週。ライブがある",
+          "text": "……今度、ライブがある",
           "face": "normal"
         },
         {
@@ -1423,8 +1503,18 @@
         },
         {
           "speaker": "hajime",
-          "text": "行きます",
-          "face": "smile"
+          "face": "normal",
+          "text": "俺、たぶん一曲も知らないですよ。それでも、いいんですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……いい。一番後ろだから。知らなくても、ばれない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、行きます"
         },
         {
           "type": "set_flag",
@@ -1467,6 +1557,11 @@
         {
           "speaker": "",
           "face": "",
+          "text": "開演前、レヰは二人分あけて立っていた。曲が始まると肩が触れて、終わるたびに半歩戻った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "一曲目は常連さんたちの予想どおりで、二曲目は、レヰが小声で言ったとおりの新曲だった。"
         },
         {
@@ -1493,7 +1588,22 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "分かります。俺も、まだ耳の中で鳴ってます"
+          "text": "俺も、まだ耳の中で鳴ってます。曲名は、一つも言えませんけど"
+        },
+        {
+          "speaker": "rei",
+          "face": "surprise",
+          "text": "……一つも"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "最後の曲以外、全部初めてでした。それでも、あっという間で"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……そうか。初めて聴く奴の顔を、隣で見たのは初めてだ"
         },
         {
           "speaker": "rei",

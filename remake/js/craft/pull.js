@@ -160,6 +160,31 @@ async function pullGame(cs, mode) {
   const renewal = renewalCraft(cs);
   // 桜井式の大会だけ（SKR04）: 温度計の上の端に「攻めの帯」。ここで終えると、その回の審査に上積み。
   const attacking = attackGuide(cs);
+  // テスト用（craftTest.aim = "attack"）: 残りの口数で、攻めの帯の内側（上下2割を除く）に入る最短の吸い方を探し、
+  // その1口目の針の位置を返す。見つからなければ null（中心ではなく帯のまん中を狙う通常の自動操作に任せる）。
+  const planAttackPull = () => {
+    const range = attackRange(bands);
+    if (!range) return null;
+    const w = range.high - range.low, lo = range.low + w * .2, hi = range.high - w * .2, mid = (lo + hi) / 2;
+    const moves = [...new Map(Array.from({ length: 99 }, (_, k) => (k + 1) / 100)
+      .map((at) => [Math.round(pullHeat(actionAt(at).delta) * 1e4), at])).entries()].map(([d, at]) => ({ d: d / 1e4, at }));
+    const need = Math.max(1, mode.min - pulls);
+    let frontier = new Map([[Math.round(T * 1000), { t: T, first: null }]]);
+    for (let depth = 1; depth <= MAX_PULLS - pulls; depth++) {
+      const next = new Map();
+      let best = null;
+      for (const node of frontier.values()) for (const { d, at } of moves) {
+        const t = node.t + d, first = node.first ?? at;
+        if (t >= DANGER_TEMP - .02 || t <= .02) continue;
+        if (depth >= need && t >= lo && t <= hi && (!best || Math.abs(t - mid) < best.gap)) best = { gap: Math.abs(t - mid), first };
+        const key = Math.round(t * 1000);
+        if (!next.has(key)) next.set(key, { t, first });
+      }
+      if (best) return best.first;
+      frontier = next;
+    }
+    return null;
+  };
   // テスト用（craftTest.aim = "attack"）: 上手な自動操作が中心ではなく攻めの帯のまん中を狙う。
   const autoGoal = () => { const r = attacking && craftTest.aim === "attack" ? attackRange(bands) : null; return r ? (r.low + r.high) / 2 : center; };
   const attackNote = attacking ? `桃色の「攻めの帯」で${mode.drift ? "整え終える" : "提供する"}と、この回の審査が伸びる（帯の上を越えると味が崩れる）。` : "";
@@ -652,14 +677,15 @@ async function pullGame(cs, mode) {
   if (auto && !failed) {
     (async () => {
       await sleep(60);
-      // テスト用に攻めの帯を狙う時（craftTest.aim = "attack"）は、帯に入るまで最大2口多く吸い、入ったらそこで出す。
-      // 決まった3口だけだと、蒸らし後の温度しだいで帯に届かない回があり、検査が揺れていた（SKR04）
-      const aimAttack = auto === "good" && attacking && craftTest.aim === "attack";
-      const times = auto === "good" ? (mode.drift ? 2 : 3) + (aimAttack ? 2 : 0) : auto === "burn" ? 5 : mode.drift ? 1 : 5;
+      // テスト用（craftTest.aim = "attack"）: 攻めの帯で終えるまで、残りの口数で帯に入る吸い方を先読みして吸う。
+      const attackAim = auto === "good" && attacking && craftTest.aim === "attack";
+      const times = attackAim ? MAX_PULLS : auto === "good" ? (mode.drift ? 2 : 3) : auto === "burn" ? 5 : mode.drift ? 1 : 5;
       for (let i = 0; i < times && running; i++) {
-        if (aimAttack && pulls >= mode.min && inAttackRange(T, attackRange(bands))) break;
         let at;
-        if (auto === "good") {
+        if (attackAim && pulls >= mode.min && inAttackRange(T, attackRange(bands))) break;
+        if (attackAim && (at = planAttackPull()) != null) {
+          // 先読みで見つけた吸い方の1口目
+        } else if (auto === "good") {
           const goal = autoGoal(), diff = goal - T, response = Math.abs(heatDelta(cs, .18));
           const keep = clamp(.5 + diff / response, .341, .659);
           const candidates = [.141, .3, keep, .75, .796];

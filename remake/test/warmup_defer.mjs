@@ -86,11 +86,13 @@ async function loadUi({ loadImage = image => image.onload?.(), imageSize = 0, no
     "scene-art.js": { renderSceneArt: () => {}, sceneArtUrls: () => [] },
     "weather.js": { rainScene: () => {}, weatherSkyTone: () => "", weatherViewKind: () => "", renderWeatherLayer: () => {} },
     "shop-haze.js": { syncShopHaze: () => {} },
-    "transitions.js": { createSceneCurtain: () => {}, nightToMorning: () => {}, isCovering: () => false, takeSceneArrival: () => null, takeParkedCover: () => null },
+    "transitions.js": { createSceneCurtain: () => {}, nightToMorning: () => {}, isCovering: () => false, takeSceneArrival: () => null, takeParkedCover: () => null, smokeArt: () => ({}), smokeIn: async () => {}, smokeOut: async () => {} },
     "store-logos.js": { allStoreLogoUrls: () => STORE_URLS },
     "chapter-title-art.js": { chapterTitleArt: () => "img/ui/chapter_title_ch1.webp" },
     "ui-theme.js": { uiThemeFrame: () => "img/ui/frame.webp" },
     "module-loading.js": { withLoadingNotice: (p) => p },
+    "loading.js": { withLoading: (prepare) => Promise.resolve().then(() => prepare({})), comicLoadingRequired: () => false },
+    "loading-context.js": { gameLoadingOptions: () => ({}) },
     "stage-fit.js": { syncBackdrop: () => {} },
     "dom-write.js": await import("../js/core/dom-write.js"), // 変化時だけ書く部品は、本物をそのまま使う（#3500）
     "loading-prefetch.js": {

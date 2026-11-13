@@ -8,6 +8,7 @@
         { "speaker": "", "face": "", "text": "別れぎわ、凛想さんが俺の上着の襟に、少しだけ顔を寄せた。" },
         { "speaker": "rio", "face": "normal", "text": "……よその店の香りがする。うちの棚には無い葉だね", "beat": 400 },
         { "speaker": "hajime", "face": "surprise", "text": "（……昼に寄った店の煙だ。襟に、残ってた）" },
+        { "speaker": "hajime", "face": "sad", "text": "（凛想さんは、何の匂いも付けない。これは、俺が持ち込んだ匂いだ）" },
         { "speaker": "rio", "face": "serious", "text": "仕事柄、鼻は確かなの。どこの店か、当ててあげようか" },
         {
           "type": "choice",
@@ -45,7 +46,7 @@
         { "speaker": "hajime", "face": "surprise", "text": "色？" },
         { "speaker": "tsumugi", "face": "sad", "text": "いつもは、あたたかい色なのに。今日は、縁が濁ってて" },
         { "speaker": "tsumugi", "face": "normal", "text": "……疲れて、ますか？ ちゃんと、寝てますか" },
-        { "speaker": "hajime", "face": "normal", "text": "（心配してくれている。……濁りの理由は、疲れじゃない）" },
+        { "speaker": "hajime", "face": "normal", "text": "（心配してくれている。……疲れのほうなら、よかったのに）" },
         {
           "type": "choice",
           "id": "petit_notice_tsumugi_answer",
@@ -56,7 +57,7 @@
           ]
         },
         { "speaker": "", "face": "", "text": "つむぎは、濁った色のことを、それ以上は口にしなかった。" },
-        { "speaker": "hajime", "face": "sad", "text": "（色まで、ごまかせるわけがないのに）" }
+        { "speaker": "hajime", "face": "sad", "text": "（訊かれたのは、体のことだ。答えなかったのは、別のことだ）" }
       ],
       "branches": {
         "sleep": [
@@ -581,8 +582,8 @@
           "type": "choice",
           "id": "petit_naru_warning_answer",
           "choices": [
-            { "text": "「どっちも友達だ」と言う", "next": "friends" },
-            { "text": "「見間違いだろ」と言う", "next": "mistake" },
+            { "text": "「どっちも友達」と言う", "next": "friends" },
+            { "text": "見間違いだと言う", "next": "mistake" },
             { "text": "何も言わない", "next": "silent" }
           ]
         },
@@ -592,11 +593,11 @@
       ],
       "branches": {
         "friends": [
-          { "speaker": "hajime", "face": "normal", "text": "……どっちも、友達だよ" },
+          { "speaker": "hajime", "face": "normal", "text": "……どっちも、友達で" },
           { "speaker": "naru", "face": "serious", "text": "友達と歩く時の顔じゃなかったぞ、両方とも" }
         ],
         "mistake": [
-          { "speaker": "hajime", "face": "normal", "text": "見間違いだろ。帽子のやつなんて、いくらでもいる" },
+          { "speaker": "hajime", "face": "normal", "text": "……帽子の人なんて、いくらでも" },
           { "speaker": "naru", "face": "normal", "text": "その帽子で、お前を見間違えるかよ" }
         ],
         "silent": [

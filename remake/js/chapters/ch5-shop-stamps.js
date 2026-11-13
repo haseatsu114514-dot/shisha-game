@@ -21,7 +21,7 @@ export function noteShopStamp(spot, value = state) {
   const result = recordShopStamp(value, spot?.id, n => grantKujiTickets(n, "shop_stamps", value));
   if (!result || value !== state) return result;
   const first = result.firstStamp ? "。LIMEの「店めぐり帳」で見られる" : "";
-  toast(`店めぐり帳に判子をもらった：${result.shop.label}（${result.shop.optional ? "任意の店" : `${result.count}/${result.total}`}）${first}`, { kind: "good", ms: 3600 });
+  toast(`店めぐり帳に判子をもらった：${result.shop.label}（${result.shop.optional ? "任意の店" : `${result.count}/${result.total}`}）${first}`, { kind: "good", ms: 3600, se: "stamp" });
   if (result.shop.optional) {
     toast(result.tickets ? `寄り道の判子。Dr.fookahから、くじ券を${result.tickets}枚もらった（${KUJI_NOTE}）`
       : "寄り道の判子。くじ券は、もう持ちきれない", { kind: "good", ms: 5200 });

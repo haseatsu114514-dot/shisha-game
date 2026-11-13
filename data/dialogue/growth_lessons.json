@@ -876,9 +876,11 @@
           "text": "タイマーを待ってる間に、余計なことを考えて崩れる日があるんです"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "待たずに立ち上げるやり方って、ありますか"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_kumicho_zero_steam",
+          "next_true": "zero_seen",
+          "next_false": "zero_unseen"
         },
         {
           "speaker": "kumicho",
@@ -935,7 +937,23 @@
           "face": "smile",
           "text": "いい返事だ。しくじったら、また顔ぁ見せな。一服つけてやりまさ"
         }
-      ]
+      ],
+      "branches": {
+        "zero_seen": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "前に見せてもらった、待たずに立ち上げるやり方。教えてもらえますか"
+          }
+        ],
+        "zero_unseen": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "待たずに立ち上げるやり方って、ありますか"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "lesson_samechan_shark",
@@ -978,7 +996,8 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "側近よ、肝心な話が抜けている。三つ噛んだ後だ"
+          "text": "側近よ、肝心な話が抜けている。三つ噛んだ後だ",
+          "voice": "korochan"
         },
         {
           "speaker": "samechan",
@@ -1013,7 +1032,8 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "よかろう。勇者はじめに、余の牙を貸してやる"
+          "text": "よかろう。勇者はじめに、余の牙を貸してやる",
+          "voice": "korochan"
         }
       ]
     },
@@ -1023,7 +1043,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "Dr.fookahの2階。黒いフィルム越しの薄明かりの中、凛想がクリップボードをめくっている。"
+          "text": "Dr.fookahの2階。黒いフィルム越しの薄明かりの中、凛想さんがクリップボードをめくっている。"
         },
         {
           "speaker": "hajime",
@@ -1053,7 +1073,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "凛想は棚の端から、見慣れたブルーベリーの袋を取り出した。"
+          "text": "凛想さんは棚の端から、見慣れたブルーベリーの袋を取り出した。"
         },
         {
           "speaker": "rio",
@@ -1088,7 +1108,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "凛想が秤に葉を載せた。2.4グラム。小皿の上で、ちゃんと山になる。"
+          "text": "凛想さんが秤に葉を載せた。2.4グラム。小皿の上で、ちゃんと山になる。"
         },
         {
           "speaker": "hajime",
@@ -1108,7 +1128,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "tonariのいつものカウンター。ひよりが紅茶の煙を、ゆっくり吐いている。"
+          "text": "tonariのいつものカウンター。ひよりさんが紅茶の煙を、ゆっくり吐いている。"
         },
         {
           "speaker": "hajime",
@@ -1188,7 +1208,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "紅茶の煙の向こうで、ひよりの背筋が少しだけ伸びていた。"
+          "text": "紅茶の煙の向こうで、ひよりさんの背筋が少しだけ伸びていた。"
         }
       ]
     },
@@ -1333,7 +1353,7 @@
         {
           "speaker": "saku",
           "face": "serious",
-          "text": "それと、嘘はつかないこと。中身を聞かれたら、ちゃんと答える"
+          "text": "それと、種は隠さないこと。中身を聞かれたら、ちゃんと答える"
         },
         {
           "speaker": "hajime",
@@ -1526,7 +1546,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ヴォルクはメモの端を指で叩いた。温度の列の隣に、客が吸った時刻が並んでいる。"
+          "text": "ヴォルクはメモの端を指で叩いた。温度の列の隣に、客に聞いた一言が並んでいる。"
         },
         {
           "speaker": "volk",

@@ -28,7 +28,7 @@
 
 `route.enabled` はtrue。未制作イベントは `missing_script` により発火しない。読了フラグは最後まで読んだ後だけ記録し、同時呼び出し・再読による二重報酬を防ぐ。
 #1434 決定Bの先行2件: 遠隔連絡 `hiyori_tokyo_contact`（既読 `_ch3_read_hiyori_tokyo_contact`）は第3章の寄り道カードで、仕事の相談読了・面識・連絡先があり、ひよりが東京に来ていない時だけ。恋人成立後の `hiyori_feelings_spoken`（`_hiyori_feelings_spoken`）は第1〜3章、恋人・絆Lv2で、LIMEのデートの帰りに一度だけ。告白 `confession_hiyori_accept` とは別の場面。遠隔応援（第4章）と第5章の友人／恋人の場面は、各章を作る時に再評価する。
-恋人の節目 `lover_hiyori_lv1`〜`lv5`（`data/dialogue/lover_events.json`・#1498）は他ヒロインと同じ共通の段階で、デート後に未読の最初の1本を読む。斧投げ→味噌ラーメン→「本日の総務、閉店」と延長申請→儚い女の設定を「見つけてもらえる」に変える→部屋で肩を借りて「捕まえてて」の順で、後日談 `epilogue_hiyori` の閉店・半透明・肩五分につなぐ。大会に触れないので、大会前後で分岐しない。
+恋人の節目 `lover_hiyori_lv1`〜`lv5`（`data/dialogue/lover_events.json`・#1498）は他ヒロインと同じ共通の段階で、デート後に未読の最初の1本を読む。斧投げ（マキと面識がある時だけ、店主の一言が入る）→その帰り道 `lover_hiyori_lv1_b`→味噌ラーメン→「本日の総務、閉店」と延長申請→儚い女の設定を「見つけてもらえる」に変える→部屋で肩を借りて「捕まえてて」の順。後日談 `epilogue_hiyori` は、考えごとで手が止まったはじめを、ひよりが夕飯で「見つける」側に回る場面（#3474）。大会に触れないので、大会前後で分岐しない。
 初対面の店は `_hiyori_meeting_shop`、一日一度の制限は章と日を含む `_hiyori_encounter_day` で保存。
 
 好感度は再会 `_hiyori_tonari_return_done` の読了まで♥3（33点）で条件待ちする。
@@ -53,7 +53,7 @@
 
 ## 斧投げ用の素材（#477）
 
-専用夜背景 `bg_axe_lounge_night` と、キャップ/Tシャツの `axe_normal`・`axe_laugh`・`axe_shout`、現在のレース衣装の `serious`・`love_blush` を追加した。旧6表情と顔アイコンのバイナリ、全表情の共通足元・縮尺は維持する。原画・生成指示・SHA・再登録手順・表示QAは [素材記録](../../asset_sources/hiyori-axe-issue477/README.md)。
+専用夜背景 `bg_axe_lounge_night` と、斧投げ用の `axe_normal`・`axe_laugh`・`axe_shout`、`serious`・`love_blush` を追加した（#664 で全表情を普段のレースブラウスで描き直した。旧斧投げキャップ/Tシャツ案は不採用）。旧6表情と顔アイコンのバイナリ、全表情の共通足元・縮尺は維持する。原画・生成指示・SHA・再登録手順・表示QAは [素材記録](../../asset_sources/hiyori-axe-issue477/README.md)。
 
 この素材登録だけでは `_hiyori_real_self_known` や仕事・恋愛・友情の読了を立てない。登録時点では正式斧投げ台本とミニゲームは未接続だった。操作は #480、タイトル5枚は #486、正式台本は #492で接続。casual/lounge/date等の他衣装と残り表情は未制作として素材記録に残す。
 
@@ -104,6 +104,6 @@
 
 MAX時の正式台本 `hiyori_bond_finale` と `confession_hiyori`/accept/rejectを追加した。二度の実回答と正式な締めくくりの読了を確認してから恋愛へ進む。途中で友人を選んだ場合は友人の結論へ進み、既存の友人/恋人は再読で分類し直さない。最終質問の保存済み0/1も同じ反応へ戻す。
 
-**専用ハガル #497 / 旧 #345 はDraftで接続・検証中。** `route.finale.gift` に `suyaki_hiyori` を登録し、採用済みB「素顔でひと休み」を単体素材化した。容量20g、非売品・売却不可。オーナー承認に基づき、ピーチ3g以上で既存の香り+4・総合ボーナス+1を使う。正式な素顔・仕事・実回答・反応読了を経た後だけ締めくくりへ進む。過去の読了や回答を好感度・所有機材から補完しない。機材未登録を明示する共通APIのfixtureと、専用機材を使う本番設定の検証を区別する。**保存/LIMEの新規テスト3件の失敗と中断待ちが残り、自然到達・表示・既存回帰・最終CIは未完。マージ・公開可の状態ではない。** [停止時の保存・失敗・再開手順](../../asset_sources/hiyori-hagal-issue497/README.md)。
+**専用ハガル #497 / 旧 #345 はDraftで接続・検証中。** `route.finale.gift` に `suyaki_hiyori` を登録し、採用済みBを単体素材化した（品名は「本日、休演」。旧名「素顔でひと休み」）。容量20g、非売品・売却不可。オーナー承認に基づき、ピーチ3g以上で既存の香り+4・総合ボーナス+1を使う。正式な素顔・仕事・実回答・反応読了を経た後だけ締めくくりへ進む。過去の読了や回答を好感度・所有機材から補完しない。機材未登録を明示する共通APIのfixtureと、専用機材を使う本番設定の検証を区別する。**保存/LIMEの新規テスト3件の失敗と中断待ちが残り、自然到達・表示・既存回帰・最終CIは未完。マージ・公開可の状態ではない。** [停止時の保存・失敗・再開手順](../../asset_sources/hiyori-hagal-issue497/README.md)。
 
 検証は `remake/test/browser/hiyori_work_relationship.mjs`。自然New Gameの仕事到達は `GOAL_HIYORI_WORK=1 node remake/test/browser/hiyori_axe_natural.mjs` で、seedだけ固定して実斧投げ→仕事相談→最初の友人回答まで通す。後続素材未登録のため本番ではfinales/恋人を増やさない。

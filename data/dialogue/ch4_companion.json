@@ -27,7 +27,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "はい。でも、描いてると、いつもの線が勝手に混ざります"
+          "text": "はい。幹がまっすぐすぎて。……三回、描き直しました"
         },
         {
           "speaker": "",
@@ -37,7 +37,12 @@
         {
           "speaker": "tsumugi",
           "face": "smile",
-          "text": "……旅先の木と、うちの猫。帰ったら、この子にします"
+          "text": "……四回目で、猫のほうが、先に登りました"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "旅先の木と、うちの猫。帰ったら、この子にします"
         },
         {
           "speaker": "hajime",
@@ -78,6 +83,11 @@
           "speaker": "tsumugi",
           "face": "normal",
           "text": "昨日の夜です。……声をかけると、手が止まりそうだったので"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "なので、今、言います。描きました"
         },
         {
           "speaker": "",
@@ -547,8 +557,14 @@
         },
         {
           "speaker": "samechan",
-          "face": "surprise",
-          "text": "コロちゃん！ それは、言わぬ約束じゃ！"
+          "face": "serious",
+          "text": "……測った。湯船の縁の高さもじゃ。よい宿は、またぎやすい"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近が開き直った。余は驚いている",
+          "voice": "korochan"
         },
         {
           "speaker": "",
@@ -599,7 +615,7 @@
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "……という側近の願いじゃ。わしは、お主と砂浜を歩きたいだけじゃ"
+          "text": "……というのは、王の願いじゃ。わしは、お主と砂浜を歩きたいだけじゃ"
         },
         {
           "speaker": "hajime",
@@ -694,7 +710,7 @@
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "読むわよ。応援係の、大事な仕事だもの"
+          "text": "読むよ。応援係の、大事な仕事だから"
         },
         {
           "speaker": "",
@@ -715,7 +731,7 @@
         {
           "speaker": "hiyori",
           "face": "love_blush",
-          "text": "……儚い女に頼るなんて、物好きね",
+          "text": "……儚い女に頼るなんて、物好きだね",
           "inner": "うれしい。ちょっと泣きそう"
         }
       ]

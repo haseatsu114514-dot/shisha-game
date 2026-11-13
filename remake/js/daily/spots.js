@@ -639,7 +639,7 @@ async function maybeCafeIdea(spot, visit) {
   await play(ideaDialogue(pick), { bg: bgRef(spot.bg), growthScene: true });
   if (state !== owner) return;
   const combo = markCafeIdea(state, pick, DB.flavors || []);
-  toast(`📝 試したい配合をメモした ──「${combo}」（配合の画面でひらめきに出る）`, { kind: "good" });
+  toast(`📝 試したい配合をメモした ──「${combo}」（配合の画面でひらめきに出る）`, { kind: "good", se: "page" });
 }
 
 /** 家で休む小品（SPV03）。順番に読み、雨の日は雨の回。体調を崩した日の「残りを全部休む」は別の一本（remake_rest_day）。 */

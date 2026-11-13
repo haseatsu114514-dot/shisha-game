@@ -73,7 +73,7 @@ config.bgmVolume = .4;
 audio.applyVolumes();
 for (const key of [
   "bgm_map", "bgm_tournament_wait", "bgm_result_emotional", "bgm_ending",
-  "bgm_rival_shop", "bgm_dubai", "bgm_world_stage", "bgm_smoke_lab", "bgm_ch5_duel",
+  "bgm_rival_shop", "bgm_dubai", "bgm_world_stage", "bgm_smoke_lab", "bgm_ch5_duel", "bgm_yuzugaya",
 ]) {
   audio.playBgm(key); step(1500);
   assert.equal(audio.currentBgm(), key, key);

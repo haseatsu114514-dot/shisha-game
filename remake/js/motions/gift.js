@@ -363,7 +363,7 @@ export async function c(gear) {
       name,
     ]);
     node.append(dim, stage, item, tag);
-    // 品名は帯の見えている幅（画面の右端まで）に収める。長い名前（ホワイトグミベア…・ひよりの「素顔でひと休み」）は字を小さく
+    // 品名は帯の見えている幅（画面の右端まで）に収める。長い名前（ホワイトグミベア…など）は字を小さく
     if (name.scrollWidth > TAG_TEXT_W) name.style.fontSize = `${Math.floor(58 * TAG_TEXT_W / name.scrollWidth)}px`;
     // 1. 元の場面が少し沈み、贈り主の絵柄が斜めに差し込む
     move(dim, [{ opacity: 0 }, { opacity: 0.45 }], 380, { easing: "ease" });

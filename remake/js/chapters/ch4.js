@@ -8,7 +8,7 @@ import { createChapterCard } from "../core/chapter-card.js";
 import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { state, save } from "../core/state.js";
-import { layers, showScreen, setBg, enterScene, chapterTitle, modal, toast } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, modal, toast, withChapterLoading, withSceneLoading } from "../core/ui.js";
 import { saveFlow } from "../scenes/saves.js";
 import { planeRide } from "../core/scene-motions.js";
 import { defeatFade } from "../core/transitions.js";
@@ -17,7 +17,7 @@ import { playChapterPoem } from "../scenes/chapter-poem.js";
 import { chapterGrowthChart } from "../daily/status.js";
 import { paidAction } from "../core/stats.js";
 import { awardChapterClearExp, awardSceneExp, presentNight, consultLessons } from "../core/growth.js";
-import { stopBgm, playBgm } from "../core/audio.js";
+import { stopBgm, playBgm, SE } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_BGM, CH4_SCENE_FILES, CH4_TOURNAMENT_SCENES,
   CH4_VISITOR_SCENE_FILES, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
@@ -99,8 +99,8 @@ async function openChapter(advance) {
   ]));
   window.addEventListener("pagehide", () => { owner.active = false; owner.controller?.abort(); }, { once: true });
   await perform(owner, async () => {
-    // 台本不足のまま第3章のクリアセーブを進めない。
-    await loadDialogues();
+    // 台本不足のまま第3章のクリアセーブを進めない。文字だけの画面の待ちは、長いと漫画のロード画面にする（core/ui.js）。
+    await withSceneLoading(loadDialogues(), "ドバイの場面を準備しています…");
     if (!current(owner)) return;
     if (advance) {
       if (!advanceToChapterFour(state)) return;
@@ -512,6 +512,8 @@ async function showChapterFourCommittedResult(result) {
     ...(result.failure ? [] : [`総合 ${result.total.toFixed(1)} ／ ${parts}`]),
     ...craftReviewLines(match?.craft)];
   const { chapterFourStandingsView } = await import("./ch4-standings.js");
+  // 結果発表: 会場の拍手（1位はファンファーレも）。制作を完了できなかった時は鳴らさない。
+  if (!result.failure) { SE.crowd?.(2.4); if (result.rank === 1) SE.fanfare?.(); }
   await modal({ title: result.failure ? "制作を完了できなかった" : `世界大会 ${result.rank}位`,
     body: match?.votes ? chapterFourStandingsView({ ...match, votes: result.votes || match.votes }, { rows: result.rows, notes, test: "ch4-result", final: true })
       : notes.join("\n"),
@@ -610,7 +612,7 @@ function chapterFourRecap(value) {
 function renderComplete(owner) {
   // 第4章側の第5章への接続点はここ1か所（状態遷移は ch5-progress.js の advanceToChapterFive）。
   const next = button(owner, "第5章へ進む", "chapter-five", async () => {
-    const mod = await import("./ch5.js");
+    const mod = await withChapterLoading(() => import("./ch5.js"), "第5章へ向かっています…");
     await mod.beginChapterFive();
   }, true);
   card(owner, "complete", "第四章・完", chapterFourRecap(state), [

@@ -10,6 +10,8 @@ await suite('tournament-story',async check=>{
   for(const touch of [false,true]) await check(`${touch?'touch':'pc'}-dialogue-pause-cancel-and-json-resume`,async page=>{
     await page.evaluate(async()=>{
       const core=await import('./js/core/state.js');core.newGame();
+      // 大会の掛け合いの台本は、各章の大会の入口と同じく必要になった時に読む（#3500でタイトルの先読みから外れた）。
+      await (await import('./js/core/data.js')).loadTournamentCraftDialogue();
       const vn=await import('./js/vn/engine.js');
       const session=await import('./js/craft/session.js');
       const story=await import('./js/craft/tournament-story.js');

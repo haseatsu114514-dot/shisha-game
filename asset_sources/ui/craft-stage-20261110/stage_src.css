@@ -360,6 +360,8 @@
 & .bench-top .bench-mode small { display: none !important; }
 /* 大会以外はレールに余白があるので、練習の種類（手順の中間チェック等）を残す */
 &:not([data-mode="tournament"]) .bench-top .bench-mode small { display: inline !important; }
+/* 3回負けて選んだ「今回のみ操作補助」は、大会でも消さない（補助が効いていることを知らせる札） */
+& .bench-top .bench-mode small.retry-assist { display: inline !important; }
 & .bench-progress { flex: none !important; }
 & .bench-progress-track { gap: 18px !important; }
 & .bench-phase:not(:last-child)::after { width: 18px !important; }
@@ -572,3 +574,11 @@
 &[data-step="holes"] .vent-preview p { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; color: #f6f1fa; text-shadow: 0 1px 4px #000; }
 &[data-step="holes"] .vent-preview p b { font-size: 24px; letter-spacing: .06em; }
 &[data-step="holes"] .vent-preview p span { font-size: 18px; color: #e7dbf3; }
+/* ---------- スマホ横持ち: 上のレールと見守る人の一言の文字は実寸 11.5px 以上（#3517） ----------
+   ステージは --k（横持ちで 0.47〜0.54）で縮むので、ステージ寸法の px のままだと実寸 6〜10px になる。
+   wide-craft.css の下限は !important のこれらの指定に負けるため、ここで割り戻した値を下限にする。 */
+&phone .bench-top > .rig-record .rig-lamp { width: max(26px, calc(17.5px / var(--k, 1))) !important; height: max(26px, calc(17.5px / var(--k, 1))) !important; }
+&phone .bench-top > .rig-record .rig-lamp b { font-size: max(13px, calc(11.5px / var(--k, 1))) !important; }
+&phone .bench-progress-track > .bench-phase.now .bench-phase-copy small { font-size: max(13px, calc(11.5px / var(--k, 1))) !important; }
+&phone .bench-audience .audience-name { font-size: max(20px, calc(11.5px / var(--k, 1))) !important; }
+&phone .bench-audience .audience-note { font-size: max(20px, calc(13px / var(--k, 1))) !important; }
