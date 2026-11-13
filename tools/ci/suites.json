@@ -1695,7 +1695,8 @@
         "remake/js/daily/night-events.js",
         "remake/test/browser/ch2_*.mjs",
         "remake/test/ch2_progress.mjs",
-        "remake/test/ch2_followups.mjs"
+        "remake/test/ch2_followups.mjs",
+        "remake/js/main.js"
       ],
       "run": [
         "node remake/test/browser/ch2_tournament.mjs",
@@ -2287,7 +2288,8 @@
         "remake/test/browser/worker_scenes.mjs",
         "remake/test/browser/craft_readiness.mjs",
         "remake/test/foil_holes.mjs",
-        "remake/test/browser/foil_skip.mjs"
+        "remake/test/browser/foil_skip.mjs",
+        "remake/js/main.js"
       ],
       "run": [
         "node remake/test/browser/worker_scenes.mjs",
