@@ -255,8 +255,14 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
           renderSceneArt(preview, pv.url);
         });
       }
+      // 行けない理由（定休日・夜から営業・お金が足りない等）を札の文字で見せる。ピンの「休」の印だけでは分からない（#3555）
+      const reason = !av.ok && av.why !== "locked" && av.why ? el("p.mi-desc.mi-reason", { text: av.why, dataset: { test: "map-reason" } }) : null;
+      // 体力の減りは選ぶ前に見せる（赤域のときだけ出る確認では遅い・#3555）。値は行き先の定義（spot.stamina）そのまま
+      const cost = av.ok && s.stamina < 0 ? el("p.mi-desc.mi-stamina", { text: `体力 ${s.stamina}`, dataset: { test: "map-stamina" } }) : null;
       info.replaceChildren(...[
         el("div.mi-banner", { text: label }),
+        reason,
+        cost,
         preview,
       ].filter(child => child != null));
     };
@@ -268,6 +274,8 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
       pins.querySelectorAll(".spot-pin").forEach((p) => p.classList.toggle("sel", p === btn));
       SE.click();
       renderInfo(s);
+      const av = availability(s);
+      if (!av.ok && av.why !== "locked" && av.why && !av.guided) toast(av.why);
     };
 
     let moving = false;

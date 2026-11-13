@@ -251,7 +251,8 @@ export function updateHud() {
   dom.slot.title = slotName;
   dom.slot.setAttribute("aria-label", slotName);
   dom.slot.dataset.slot = night ? "night" : "day";
-  dom.money.textContent = yen(state.money);
+  // 画面の「¥」の印（CSS）と二重にならないよう、「円」は読み上げ用の語に残して隠す（#3555）
+  dom.money.replaceChildren(Math.round(state.money).toLocaleString("ja-JP"), el("span.dc-unit", { text: "円" }));
   // 残り日数の行: 大会まで（tournament）は出さない（#3033）。出発まで・勝負の日までは出す。
   const goal = departurePrep(state) ? "departure" : state.chapter === 5 ? "final" : "tournament";
   if (goal === "tournament") {

@@ -1250,18 +1250,27 @@ export function openNote() {
         s.pastHints.length ? el("ul.rn-hints.past", s.pastHints.map((h) => el("li", { text: `第${h.chapter}章 DAY${h.day}「${h.text}」` }))) : null,
         el("p.rn-empty", { text: "偶数・奇数や高い・低いのヒントは確定ではないよ" }),
       ]),
-      el("span.ri-next", { text: "▼ タップで閉じる" }),
+      el("span.ri-next", { text: "▼ 閉じるは右上の ✕" }),
     ]);
     const box = el("div.reel-intro.reel-note", { role: "dialog", "aria-label": "パッキースロットノート", dataset: { test: "reel-note" } }, [panel]);
     layers.modal.replaceChildren(box);
     layers.modal.classList.add("show");
-    let page = 0;
-    box.onclick = () => {
-      page += 1;
-      if (page <= 2) { SE.click?.(); box.replaceChildren(page === 1 ? guide : details); return; }
+    // 閉じるのは右上の ✕ だけ。ページ送りのタップを重ねても閉じない（3タップで閉じていた不具合・#3555）
+    const close = () => {
       layers.modal.classList.remove("show");
       layers.modal.replaceChildren();
       resolve();
+    };
+    for (const p of [panel, guide, details]) {
+      p.prepend(el("button.rn-close", { type: "button", text: "✕", "aria-label": "閉じる", dataset: { test: "reel-note-close" },
+        onclick: (e) => { e.stopPropagation(); close(); } }));
+    }
+    let page = 0;
+    box.onclick = () => {
+      if (page >= 2) return;
+      page += 1;
+      SE.click?.();
+      box.replaceChildren(page === 1 ? guide : details);
     };
   });
 }

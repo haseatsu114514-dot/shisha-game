@@ -259,7 +259,10 @@ try {
       await (touch ? note.tap() : note.click());
       await assertGuide(mode);
       await (touch ? note.tap() : note.click());
-      await (touch ? note.tap() : note.click());
+      await (touch ? note.tap() : note.click()); // 最後のページを重ねてタップしても閉じない（#3555）
+      assert.equal(await note.count(), 1, "ノートがタップだけで閉じた");
+      const close = page.locator('[data-test="reel-note-close"]');
+      await (touch ? close.tap() : close.click());
     }
     assert.deepEqual(await page.evaluate(() => installSnapshot()), after, "ノート閲覧で報酬を増やさない");
   }, touch, preview);

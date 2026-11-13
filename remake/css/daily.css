@@ -2096,7 +2096,7 @@ body:not(:root) .map .mi-no { padding: 5px; }
 html:root[data-density="phone"] :is(#hud, .map) { --mui-text: calc(11px / var(--k, 1)); --mui-tap: calc(38px / var(--k, 1)); }
 
 /* HUD: ラベルの文字は読み上げ用に残して隠し、¥・トロフィー・ハートの印＋数値（24px）にする。札の幅・行の高さは変えない。 */
-body:not(:root) #hud .dc-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+body:not(:root) #hud :is(.dc-label, .dc-unit) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 body:not(:root) #hud :is(.dc-row, .hud-card .hud-stamina)::before {
   content: ""; flex: none; width: max(18px, var(--mui-text)); height: max(18px, var(--mui-text));
   background: currentColor; color: var(--paper-muted, var(--text-dim));

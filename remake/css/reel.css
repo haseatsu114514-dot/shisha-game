@@ -342,6 +342,12 @@
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
   color: #f2ecdf;
 }
+/* 閉じる ✕（#3555）: 札の右上に貼り付け、スクロールしても見える。押せる大きさは 44px 以上 */
+.reel-note .rn-close {
+  position: sticky; top: 0; float: right; z-index: 2; width: 44px; height: 44px; margin: -12px -16px 0 8px; padding: 0;
+  font-size: 22px; line-height: 1; color: #f2ecdf; cursor: pointer;
+  background: rgba(20, 15, 30, 0.9); border: 2px solid rgba(244, 210, 122, 0.6); border-radius: 50%;
+}
 /* 記録は1段（縦スクロール）。2段に詰めない（#2840） */
 .rn-cols { display: grid; grid-template-columns: 1fr; gap: 4px; }
 .rn-cols h3, .rn-setting-box h3 { margin: 10px 0 6px; font-size: max(18px, 11.5px / var(--k, 1)); letter-spacing: 0.12em; color: #cdb8e6; }

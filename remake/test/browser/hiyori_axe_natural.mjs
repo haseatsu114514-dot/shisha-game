@@ -227,6 +227,8 @@ try {
           const earn = catchUp || snap.money < 6000 && !snap.flags._hiyori_real_self_known;
           if (earn && await click('[data-test="tonari-baito"]')) continue;
           if (await click('[data-test="tonari-customer"]')) continue;
+          // 今日済ませた一服・シフトは押せない（#3555）。行ける行動がなければ地図へ戻る。
+          if (await click('[data-test="sub-back"]')) continue;
           // The Sumi talk already ran (mandatory, #1081 B05); just leave the shift.
           await click('[data-test="after-none"]');
         } else if (snap.map) {

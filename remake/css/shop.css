@@ -160,6 +160,8 @@ body:not(.game-ds) .shop.shop-paper, body:not(.game-ds) .shop-entry { top: 24px;
   .shop-paper .shop-row { min-height: var(--shop-tap); }
   .shop-paper .shop-product { min-height: var(--shop-tap); }
   .shop-paper .shop-filter { min-height: max(48px, calc(40px / var(--k, 1))); font-size: var(--shop-text) !important; }
+  /* チップが帯（48px）より高くなるので、帯をチップに合わせて伸ばす（はみ出して売り場タブに重なっていた・#3555） */
+  .shop-filters { height: auto; min-height: 48px; }
   /* 数量の欄は、大きくした − ＋ の分だけ広げる（固定幅のままだと − が価格に重なる） */
   .shop-paper .shop-quantity { width: auto; }
   .shop-paper .shop-step { flex: none; min-width: max(52px, calc(40px / var(--k, 1))); width: max(52px, calc(40px / var(--k, 1))); height: var(--shop-tap); font-size: var(--shop-label) !important; }

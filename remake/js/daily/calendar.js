@@ -21,7 +21,7 @@ import { isRainy, weatherOf, tomorrowForecast } from "./weather.js";
 import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, isUnlocked, storyCount, CHAR_STAT, bgRef, VISIT_BG, facilityGrowth } from "./spots.js";
 import { doFortune } from "./fortune.js";
 import { syncFortune } from "./fortune-schedule.js";
-import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
+import { tonariMenu, tonariCustomer, doBaito, TONARI_STAMINA } from "./tonari.js";
 import { openShop, visitRio, ownsFlavor } from "./shop.js";
 import { openingStatus } from "./spot-hours.js";
 import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation, invitationReadBeforeMeeting } from "./phone.js";
@@ -668,7 +668,7 @@ async function performSpotAction(spot) {
       toast(makanai ? "今日はもうまかないで練習した" : sub === "baito" ? "今日のシフトはもう終わった" : "今日はもう客席で一服した");
       return { used: false, exerted };
     }
-    if (!(await staminaGuard(sub === "baito" ? -24 : -16))) return { used: false, exerted };
+    if (!(await staminaGuard(TONARI_STAMINA[sub] ?? -16))) return { used: false, exerted };
     exerted = true;
     state.visitedDay[makanai ? "tonari_practice" : `tonari_${sub}`] = state.day;
     // #2213 B04: 「まかないで練習」はシフト上がりのメニューで選ぶ（tonari.js）。独立の行動としては選べない。

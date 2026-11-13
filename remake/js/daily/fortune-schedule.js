@@ -29,17 +29,18 @@ const fortuneDay = (save) => {
 const TOKYO_CHAPTERS = Object.freeze([3, 5]);
 
 // 現れる場所（地図に対する百分率）。ほかの店のピンと重ならない所を選んだ。area は地図の説明に出す。
+// 古町の路地は左下のスロット筐体（css/reel.css）の右に置く（x: 8 では筐体にラベルが隠れた・#3555）。
 const POSITIONS = Object.freeze({
   home: [
     { x: 64, y: 74, area: "アーケード脇" },
     { x: 78, y: 74, area: "商店街の裏道" },
-    { x: 8, y: 74, area: "古町の路地" },
+    { x: 24, y: 74, area: "古町の路地" },
   ],
   // 第5章の地元には「博士に連絡する」（64, 66）があるので、アーケード脇の代わりに右下の角を使う。
   homeChapter5: [
     { x: 78, y: 66, area: "駅へ向かう角" },
     { x: 58, y: 34, area: "商店街の裏道" },
-    { x: 8, y: 74, area: "古町の路地" },
+    { x: 24, y: 74, area: "古町の路地" },
   ],
   tokyo: [
     { x: 84, y: 28, area: "高架の向こう" },

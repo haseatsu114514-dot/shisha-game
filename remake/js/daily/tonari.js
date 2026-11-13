@@ -40,6 +40,10 @@ const ichidaiNote = () => {
 const strawberryTrialOpen = () => state.chapter === 2 && !!state.flags._ch2_read_remake_ch2_ageha_tasting
   && !state.flags._ch2_strawberry_trial && !!DB.dialogues.ch2_strawberry_trial_intro?.lines?.length;
 
+/** tonari の行動ごとの体力の減り（行動の確認・消費と、メニューの事前表示で同じ値を使う） */
+export const TONARI_STAMINA = Object.freeze({ customer: -16, baito: -24, strawberry: -16 });
+const staminaNote = (sub) => `（体力${TONARI_STAMINA[sub]}）`;
+
 export function tonariMenu() {
   return new Promise((resolve) => {
     setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
@@ -50,20 +54,25 @@ export function tonariMenu() {
     const customerStory = state.visitedDay.tonari_customer !== state.day && tsumugiPresent && hasNewStory("tsumugi");
     const shiftStory = state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi");
     const pickIt = (value) => { retire(root); resolve(value); };
-    const opt = (title, desc, value, test) =>
-      el("button.big-choice", { dataset: { test }, disabled: value === "hiyori_axe" && !hiyoriAxeAffordable(), onclick: () => { SE.select(); pickIt(value); } }, [
-        el("b", { text: title }), el("small", { text: desc }),
+    // 今日もう済ませた行動は押せなくする（押すと地図へ戻るだけだった・#3555）。calendar.js の同じ判定の事前版
+    const doneToday = (value) => value === "strawberry" ? state.visitedDay.tonari_practice === state.day || state.visitedDay.tonari_strawberry === state.day
+      : (value === "customer" || value === "baito") && state.visitedDay[`tonari_${value}`] === state.day;
+    const opt = (title, desc, value, test) => {
+      const done = doneToday(value);
+      return el("button.big-choice", { dataset: { test }, disabled: done || value === "hiyori_axe" && !hiyoriAxeAffordable(), onclick: () => { SE.select(); pickIt(value); } }, [
+        el("b", { text: title }), el("small", { text: done ? "今日はもう済んだ" : desc }),
       ]);
+    };
     const root = showScreen("tonari", el("div.sub-menu", [
       el("h2.sub-title", { text: "tonari" }),
       el("p.sub-lead", { text: manager ? "店長として任されたtonari。出かける時は、人手に合わせてスミさんが店に立ってくれる。今日はどうする？" : state.slot === 0 ? "昼のtonari。窓際でスミさんが道具を整えている。今日はどうする？" : "夜のtonari。客席から常連の笑い声が聞こえる。今日はどうする？" }),
       el("div.sub-choices", [
         opt("お客さんとして一服", `${customerStory ? "【新しい話】" : ""}${!tsumugiPresent ? "客席でゆっくり一服する"
-          : manager ? "客席でゆっくり。つむぎが接客をしている" : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる"}`, "customer", "tonari-customer"),
+          : manager ? "客席でゆっくり。つむぎが接客をしている" : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる"}${staminaNote("customer")}`, "customer", "tonari-customer"),
         // #2213 B04: 「まかないで練習」はシフト上がりのメニューへ移した（独立の行動にしない）
         // #1650: 第2章の試煙会のあと、一度だけ。試供品の苺で熱を確かめ、スミさんに吸ってもらう
-        strawberryTrialOpen() ? opt("苺を試す（まかない）", "体力を使う・1行動。試煙会の苺で一台。確かめるのは熱だけ", "strawberry", "tonari-strawberry") : null,
-        opt(manager ? "店長として店に立つ" : "シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}${manager ? "今日の営業を引き受ける。仕事終わりにはスミさんと話せる" : "接客で稼ぐ。上がったあとはスミさんと話せる。まかないで練習もできる"}。${shiftPayNote(state)}＋各種ボーナス`, "baito", "tonari-baito"),
+        strawberryTrialOpen() ? opt("苺を試す（まかない）", `体力を使う${staminaNote("strawberry")}・1行動。試煙会の苺で一台。確かめるのは熱だけ`, "strawberry", "tonari-strawberry") : null,
+        opt(manager ? "店長として店に立つ" : "シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}${manager ? "今日の営業を引き受ける。仕事終わりにはスミさんと話せる" : "接客で稼ぐ。上がったあとはスミさんと話せる。まかないで練習もできる"}。${shiftPayNote(state)}＋各種ボーナス${staminaNote("baito")}`, "baito", "tonari-baito"),
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
