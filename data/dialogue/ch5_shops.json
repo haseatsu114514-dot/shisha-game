@@ -434,6 +434,54 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch5_rio_naru_order",
+      "metadata": { "setting": "なる→凛想の続き（#3468 E案）。第5章のDr.fookahの2階で、お茶の場面（ch5_rio_naru_tea）の後、通いの小会話を2本読んだ次の来店に一度だけ（chapters/ch5-shops.js の extras）。憧れはそのまま、仕事は少し対等に。呼び名（ケムリクサさん／円頓寺さん）は変えず、凛想は好意に気づかない。お茶はご褒美ではなく、仕入れ相談に座って話すためのもの。" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "2階に上がると、応接の机でなるが注文書を広げていた。" },
+        { "speaker": "", "face": "", "text": "湯のみはまだ出ていない。なるの手には、ペンが握られている。" },
+        { "speaker": "naru", "face": "normal", "text": "よう、はじめ。……仕入れの相談中だ" },
+        { "speaker": "rio", "face": "normal", "text": "ケムリクサさん。前のバニラ、焼き菓子の台に回してたでしょ" },
+        { "speaker": "rio", "face": "normal", "text": "熱が入った後半で、焦げた砂糖に寄らないか。袋の口で何度も確かめてた" },
+        { "speaker": "", "face": "", "text": "なるのペンが、宙で止まった。" },
+        { "speaker": "naru", "face": "surprise", "text": "……覚えてたんですか" },
+        { "speaker": "rio", "face": "normal", "text": "字の丁寧な注文書は、覚えてる。仕事だから" },
+        { "speaker": "", "face": "", "text": "なるの指が、注文書の角へ伸びる。そろえかけて、そこで止まった。" },
+        { "speaker": "", "face": "", "text": "代わりに、ペン先で一行目を指した。" },
+        { "speaker": "naru", "face": "serious", "text": "円頓寺さん。今回は、条件を先に言わせてください" },
+        { "speaker": "naru", "face": "normal", "text": "甘さは二口目で引いてほしいんです。客が、そこで息をつけるように" },
+        { "speaker": "naru", "face": "normal", "text": "後半は焦がしたくない。量は少なめで回して、湿り気は前のロットくらいで" },
+        { "speaker": "", "face": "", "text": "凛想さんは伝票の束を脇へ寄せて、棚から湯のみを二つ出した。" },
+        { "speaker": "rio", "face": "normal", "text": "座って話そう。条件の多い注文は、立ったままだと聞き漏らすから" },
+        { "speaker": "", "face": "", "text": "なるは一瞬固まって、それから椅子を引いた。" },
+        { "speaker": "rio", "face": "normal", "text": "焦げに寄らないのは、こっちのロット。ただ、甘さの引きは前より早い" },
+        { "speaker": "naru", "face": "normal", "text": "早いなら、菓子の台じゃなくてパンの方に回せます" },
+        { "speaker": "rio", "face": "smile", "text": "じゃあ、二つに分けて少しずつ入れる。合わなかったら、次の便で戻す" },
+        { "speaker": "hajime", "face": "normal", "text": "（……俺が口を挟むところ、どこにもないな）" },
+        { "speaker": "", "face": "", "text": "湯のみが空になるまで、なるは一度も腰を浮かさなかった。" },
+        { "speaker": "naru", "face": "normal", "text": "ごちそうさまでした。細かいところは、注文書に書いて送ります" },
+        { "type": "condition", "condition_type": "lover", "char_id": "rio", "next_true": "naru_lover" },
+        { "speaker": "", "face": "", "text": "なるは頭を下げて、階段を降りていった。足音は、前よりゆっくりだった。" },
+        { "speaker": "", "face": "", "text": "机に残った控えを、凛想さんがクリップに挟む。" },
+        { "speaker": "", "face": "", "text": "品名と数の下に、丁寧な字で三行。二口目で引く甘さ。後半、焦がさない。湿り気は前並み。" },
+        { "speaker": "rio", "face": "smile", "text": "今回は、本人の欲しいものが書いてある" },
+        { "speaker": "rio", "face": "normal", "text": "前は、数だけだったの。余白が、いつもきれいすぎて" },
+        { "type": "condition", "condition_type": "lover", "char_id": "rio", "next_true": "lover", "next_false": "friend" }
+      ],
+      "branches": {
+        "naru_lover": [
+          { "speaker": "naru", "face": "smile", "text": "……はじめ。円頓寺さんの仕事、ちゃんと見とけよ" }
+        ],
+        "friend": [
+          { "speaker": "hajime", "face": "smile", "text": "……仕事の顔でしたね、なるさん" },
+          { "speaker": "rio", "face": "smile", "text": "うん。いい取引先だよ" }
+        ],
+        "lover": [
+          { "speaker": "hajime", "face": "smile", "text": "……仕事の顔でしたね、なるさん" },
+          { "speaker": "rio", "face": "smile", "text": "うん。君の感想と同じくらい、読みがいがある" }
+        ]
+      }
     }
   ]
 }
