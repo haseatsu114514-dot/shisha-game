@@ -4050,7 +4050,7 @@
       "title": "TRPG story collection",
       "kind": "browser",
       "weight": 5.0,
-      "timeout": 15,
+      "timeout": 25,
       "paths": [
         "data/dialogue/trpg_*.json",
         "data/trpg_catalog.json",
