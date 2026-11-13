@@ -71,6 +71,8 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
     after: ["ch3_mashiro_glass_cloth"] },
   { id: "ch3_mashiro_bench_tea", file: "ch3_mashiro", label: "裏口のベンチ", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_mashiro_leaf_rest"] },
+  // #3468 G案。ムカイさん×ヨルの開店前の曲順。大会前に読めなかった時だけ、同じ既読で。台本は大会に触れない。好感度は動かさない。
+  { id: "ch3_mukai_yoru_playlist", file: "ch3_mukai", label: "昼の曲順", location: "mukai", bg: "bg_mukai_shop", met: ["yoru"] },
 ]);
 /**
  * 好感度の段階（♥）の下限。core/stats.js の AFFINITY_RANK_PTS の写し（vm で読む試験の依存を増やさない。ch3_aftermath.mjs で照合）。

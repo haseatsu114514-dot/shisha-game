@@ -247,6 +247,23 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   for (const id of entry.AGEHA_CONFESSION_SCENES) assert(sceneData.get(id)?.lines?.length, id);
 }
 {
+  // #3468 G案: ムカイさん×針間ヨル。mukaiの二日目の後、ヨルと面識がある時に mukai で一度だけ。
+  const value = tokyo();
+  const playlist = v => offered(v).includes('ch3_mukai_yoru_playlist');
+  readUntil(value, 'ch3_mukai_intro');
+  value.met.yoru = true;
+  assert(!playlist(value), 'not before the second day at mukai');
+  readUntil(value, 'ch3_rest_before_recovery');
+  assert(playlist(value));
+  assert(!playlist({...value, met: {}}), 'needs to have met yoru');
+  assert.deepEqual(wiring.CH3_OPTIONAL_SCENES.ch3_mukai_yoru_playlist.location, 'mukai');
+  wiring.commitOptionalRead(value, 'ch3_mukai_yoru_playlist');
+  assert(!playlist(value), 'read once');
+  const lines = sceneData.get('ch3_mukai_yoru_playlist').lines;
+  assert(!lines.some(row => row.type), 'no affinity, stats, memory or flag rows');
+  assert(lines.some(row => row.speaker === 'yoru') && lines.some(row => row.speaker === 'mukai_master'));
+}
+{
   // ひよりの tokyo_contact（#1434 決定B）: 仕事の相談を読んだ面識・連絡先のある相手だけ。恋人は要らず、東京に来ている間は出さない。
   const value = tokyo();
   readUntil(value, 'ch3_mukai_intro');

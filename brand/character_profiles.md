@@ -526,7 +526,7 @@ Dr.fookahの凛想との通常訪問は夜のみ。1階の買い物は昼夜と�
 | 神崎 → あげは | MELTY PUFFへ挨拶に行き、プリクラにも真面目に応じる | `remake_ch2_ryuji_melty_greeting`、`remake_ch2_purikura_ryuji` |
 | レヰ ― 六角サイ | 夜のTRPGの仲間 | `remake_ch2_rei_trpg` |
 | ましろ ― 綾取 | 幼なじみ | 上の各人物の項 |
-| ムカイさん ― 針間ヨル | 古い夜仲間 | `ch3_club.json` |
+| ムカイさん ― 針間ヨル | 古い夜仲間。開店前のmukaiで昼の曲順を選んでいたのに、甘いお茶の横で二人の好きな夜の曲へ脱線し、その列は消さず「閉店後」に残す（#3468 G案。ヨルが先生役に固定されず、実在曲名・共演歴・昔の恋愛は足さない） | `ch3_club.json`、mukai `ch3_mukai_yoru_playlist`（ヨルと面識がある時に一度。大会前の寄り道 `chapters/ch3-story-wiring.js`、読めなかった分は大会後の寄り道 `chapters/ch3-aftermath-progress.js`） |
 | スティーブ → mukai | 客として寄る | `ch3_outing_mukai_steve` |
 | ヴォルク ― 凛想 | 上司と、日本の窓口 | `ch3_volk_first` |
 | 千須 ― チャコール博士・エミル | 旧知、職人交流会の仕事仲間 | 上の各人物の項 |

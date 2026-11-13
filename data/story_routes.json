@@ -153,7 +153,8 @@
         "ch3_mashiro_cup_warm",
         "ch3_mashiro_glass_cloth",
         "ch3_mashiro_leaf_rest",
-        "ch3_mashiro_bench_tea"
+        "ch3_mashiro_bench_tea",
+        "ch3_mukai_yoru_playlist"
       ],
       "after_eve": [
         "ch3_tournament_day",
@@ -516,6 +517,12 @@
       "seen": [
         "ch3_mashiro_leaf_rest"
       ]
+    },
+    "ch3_mukai_yoru_playlist": {
+      "seen": [
+        "ch3_mukai_intro"
+      ],
+      "comment": "#3468 G案: 開店前のmukaiで、ムカイさんとヨルが昼の曲順から夜の曲へ脱線する（ムカイさん×針間ヨル）。mukaiの二日目の後。ヨルとの面識は場面カードの置き方（ch3-story-wiring.js の met）。大会後は ch3-aftermath-progress.js の寄り道から。"
     },
     "ch3_saku_mashiro_tea_tin": {
       "seen": [

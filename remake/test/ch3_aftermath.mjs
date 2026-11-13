@@ -126,7 +126,7 @@ const detourIds = ["ch3_mukai_after_tournament", "ch3_cigarman_trace", "ch3_emil
   "ch3_volk_lime", "ch3_volk_fifth", "ch3_volk_revisit",
   "ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_first_reply",
   "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch",
-  ...MASHIRO_EXTRAS];
+  ...MASHIRO_EXTRAS, "ch3_mukai_yoru_playlist"];
 const openFirst = ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_second", "ch3_volk_after_ch3"];
 assert.deepEqual(CH3_AFTERMATH_DETOURS.map(scene => scene.id), detourIds);
 for (const scene of CH3_AFTERMATH_DETOURS) {
@@ -304,6 +304,38 @@ console.log("PASS: Chapter 3 aftermath offers Ayatori's ♥5 finale until the cl
   assert.deepEqual(open(window), [], "the cleanup morning: packing to go home that night");
 }
 console.log("PASS: Chapter 3 aftermath offers Steve's ♥5 finale with the same window, read-only");
+// #3468 G案: ムカイさん×針間ヨル。大会前に読めなかった時だけ、ヨルと面識があれば優勝の翌日から帰郷の日の朝まで mukai で一度。
+// 台本は大会に触れず（前後どちらでも読める）、好感度・フラグを動かさない。実在曲名やDJの操作説明は出さない。
+{
+  const playlist = CH3_AFTERMATH_DETOURS.find(scene => scene.id === "ch3_mukai_yoru_playlist");
+  assert.deepEqual([playlist.file, playlist.location, playlist.met, playlist.after], ["ch3_mukai", "mukai", ["yoru"], undefined]);
+  const lines = readData("dialogue/ch3_mukai").dialogues.find(row => row.dialogue_id === playlist.id).lines;
+  assert(!lines.some(line => line.type || line.affinity), "no affinity, stats, memory or flag rows");
+  assert(lines.some(line => line.speaker === "yoru") && lines.some(line => line.speaker === "mukai_master"));
+  assert(!lines.some(line => /大会|優勝|PITCH|SYNC|フェーダー|▶|小節/.test(line.text || "")), "no tournament timing, no DJ how-to");
+  assert(!lines.some(line => line.speaker && /。$/.test(line.text || "")), "spoken lines end without 。");
+  const open = value => availableAftermathDetours(value).some(scene => scene.id === playlist.id);
+  const save = winningSave();
+  save.met = { yoru: true };
+  beginChapterThreeAftermath(save);
+  assert(!open(save), "not on the victory night");
+  completeChapterThreeAftermathScene(save, "ch3_abyss_hotel");
+  assert(open(save), "the day after the win");
+  assert(!open({ ...structuredClone(save), met: {} }), "only when hajime has met Yoru");
+  for (const id of ["ch3_mashiro_recovery", "ch3_naru_reconcile"]) completeChapterThreeAftermathScene(save, id);
+  assert(open(save), "still open on the cleanup morning, like the other mukai detours");
+  const affinity = structuredClone(save.affinity);
+  assert.equal(completeAftermathDetour(save, playlist.id), true);
+  assert(!open(save), "read once");
+  assert.deepEqual(save.affinity, affinity, "reading does not change affinity");
+  const before = winningSave();
+  before.met = { yoru: true };
+  before.flags._ch3_read_ch3_mukai_yoru_playlist = true;
+  beginChapterThreeAftermath(before);
+  completeChapterThreeAftermathScene(before, "ch3_abyss_hotel");
+  assert(!open(before), "a playlist read before the tournament is not offered again");
+}
+console.log("PASS: Mukai and Yoru's opening playlist opens once at mukai after the win for hajime who has met Yoru, read-only");
 // #2028: ヴォルクのLIME交換は、鉄の煙の四度目の後・♥2で大会後の寄り道にも出る（大会前の寄り道と同じ条件）。
 // 締めくくり（♥5）の窓は、鉄の煙の寄り道・授業と同じく煙幕の片づけの朝まで。
 {
@@ -400,7 +432,7 @@ console.log("PASS: Chapter 3 aftermath offers Volk's LIME (after the fourth visi
   completeChapterThreeAftermathScene(lessonSave, "ch3_naru_reconcile");
   assert.deepEqual(who(lessonSave), ["volk"], "the cleanup morning: Ayatori is packing the shop, only Volk is left");
   // 寄り道を全部読んでも、授業だけで寄り道の入口が開く（ch3-aftermath.js は寄り道と授業の合計で入口を出す）
-  lessonSave.met = { ...lessonSave.met, emil: true, volk: true, steve: true };
+  lessonSave.met = { ...lessonSave.met, emil: true, volk: true, steve: true, yoru: true };
   lessonSave.flags._ch3_read_ch3_cigarman_rumor = true;
   lessonSave.flags._ch3_read_ch3_saku_lime = true;
   lessonSave.affinity.volk = AFFINITY_RANK_PTS[4]; // 五度目は♥4、LIME交換は♥2から

@@ -69,6 +69,10 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
     after: ["ch3_mashiro_glass_cloth"] },
   ch3_mashiro_bench_tea: { file: "ch3_mashiro", label: "裏口のベンチ", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_mashiro_leaf_rest"] },
+  // #3468 G案。開店前のmukaiで、ムカイさんとヨルが昼の曲順から夜の曲へ脱線する。ヨルと面識があり（クラブで名乗った後）、
+  // mukaiの二日目の後。台本は大会に触れないので、大会後は ch3-aftermath-progress.js の寄り道から同じ既読で読む。好感度は動かさない。
+  ch3_mukai_yoru_playlist: { file: "ch3_mukai", label: "昼の曲順", location: "mukai", bg: "bg_mukai_shop",
+    met: ["yoru"], after: ["ch3_mukai_intro"], host: "yoru" },
   // 綾取とましろの過去。ましろ側はレモンケーキの客を見た煙幕の初訪問後、綾取側はmukaiへ客として来た後。
   ch3_saku_mashiro_tea_tin: { file: "ch3_saku_mashiro", label: "茶缶の半分", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_saku_first"] },
@@ -131,7 +135,7 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
 // loadIntroDialogues が読む追加分（ファイル→場面ID）。routes の全任意場面・前夜場面と一致させる（story_routes.mjs で照合）。
 export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_double_apple: ["ch3_minto_small_lies"],
-  ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_trace"],
+  ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_trace", "ch3_mukai_yoru_playlist"],
   // 綾取・スティーブの締めくくり（#2028）は寄り道ではなく、煙幕・Smoke & Glory を訪ねた時の「〜に呼ばれる」から
   // （daily/bonds.js の条件。版3は ch3-tokyo-daily.js、優勝の翌日は ch3-aftermath.js、旧行程は ch3.js の場面カード）。
   ch3_rivals: ["ch3_emil_workshop", "ch3_saku_lime", "ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_first_reply", "ch3_saku_bond_finale", "ch3_steve_lime", "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch", "ch3_steve_bond_finale"],
