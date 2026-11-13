@@ -1,4 +1,12 @@
-// カードゲーム「一台勝負」の規則（第0.5版＋第0.6版の先行分）。DOM・保存・音に触れない純粋な状態機械。
+// カードゲーム「一台勝負」の規則（第0.7版）。DOM・保存・音に触れない純粋な状態機械。
+// 第0.7版（2026-11-13 オーナー「ゲーム全体をもう少しシンプルにしたい。カードやデッキによって難しい戦略も取れるに寄せたい。
+// ただしシーシャ作り体験は守りつつ」）: 基本の決まりを減らし、深さはカードとデッキ（一式）へ寄せる。
+//   ・炭は、1ターンに1つ足せて（焼けた炭をのせる か チャージ＆ドロー）、1つ外せる。炭カードを炭焼き場に置くのは何枚でも。
+//     第0.6版までは「チャージ1回・のせるは何回でも・外す1回」。回数の決まりを「足す1・外す1・カード1」にそろえた。
+//   ・準備: 「先手の最初の詰めるは2枚まで」と「1ターンに2種類まで」をやめ、場の山を1種16枚にした（同じ一式どうしでも取り合いで決まらない）。
+//   ・言葉: 「火力」は「熱」に、炭を「灰にする」は「外す」に、「1ラウンドに1枚」は「自分のターンに1枚」にそろえた（数は同じ）。
+//   ・一票の比べ方（印象）は変えていない（点で比べる・味値で比べる案は、一式の釣り合いが崩れた）。
+//   計りと理由は docs/design/card_game/v0.3_design.md の「9. 第0.7版」。
 // 第0.6版の先行分（2026-11-13 オーナー。改変案「ICHIDAI-REDESIGN」のパターン1。先行逃げ切りを和らげる）:
 //   ・一票の点は立場で変わる。審査の前の合計点で負けている人が取れば3点（勝っている人・並んでいる人は今までどおり2点。1-B）。
 //     改変案は「勝っている人は1点」だったが、CPU同士で計ると腕の差が縮みすぎたので、オーナーが3点／2点を選んだ（ICG59）。
@@ -21,29 +29,39 @@
 // 設計の理由と比べた結果は docs/design/card_game/v0.3_design.md。
 // 使い方: const G = createGame(cfg); → G.wait が「だれの、どの入力を待っているか」。act(G, action) で進める。
 // 画面（ichidai.js）もCPU（ichidai-ai.js）もテストも、この act だけで対戦を進める。
-// 規則の文は docs/design/card_game/ichidai_shobu_rulebook_v0.6.pdf。
+// 規則の文は docs/design/card_game/ichidai_shobu_rulebook_v0.7.pdf。
 // 人数は2〜4人（2026-11-11 オーナー「1:1もあるし1:1:1:1の4人のやつとかもある」「5もいる」）。席は index の順に時計回りで、
 // 先手から順に1人ずつ手番を回す。一票は印象がいちばん高い1人に入る（いちばん上が並んだら入らない）。相手を1人ねらうカード
 // （実況の煽り・すきま風）は、action.target で相手を選ぶ（選ばなければ、点がいちばん高い相手）。
 import { FLAVOR, FLAVORS, CARD, BOWL, HMD, JUDGE, PUFFS, TOURNAMENT, KIT, FIRST_MARKET, expandDeck } from "./ichidai-data.js";
 
 export const RULES = Object.freeze({
-  startDraw: 7, startEmbers: 3, startEmbersMin: 1, startEmbersMax: 4, coalMax: 4, prepTurns: 6, packN: 4, firstPackCut: 2, steamDraw: 2, steamLeaves: 8,
+  startDraw: 7, startEmbers: 3, startEmbersMin: 1, startEmbersMax: 4, coalMax: 4, prepTurns: 6, packN: 4, packKinds: 4, firstPackCut: 0, steamDraw: 2, steamLeaves: 8,
   // ドロー（2026-11-11 オーナー「チャージ＆ドローに加えて普通のドローもしたい。チャージ＆ドローはドローだけは無理だけど、
   // チャージしないなら普通に1ドロー」「ターン1。バディファイトと同じ。引かないと置けない」）: 自分のターンに1枚引く（普通のドロー）。
   // チャージは「チャージ＆ドロー」で、手札を1枚裏向きで置いて1枚引く。1ターンに1回。置かずに引くことも、引かずに置くこともできない。
   // 引く枚数が減るぶん、準備の「蒸らす」で引くのを2枚にして手札の量を保つ（steamDraw。計算は docs/design/card_game/v0.3_design.md）
-  draw: 1, chargeDraw: 1, cool: 1, slots: 4, heatMax: 10, handMax: 7, pile: 12, wear: 2, rich: 10, toolMax: 3,
+  draw: 1, chargeDraw: 1, cool: 1, slots: 4, heatMax: 10, handMax: 7, pile: 16, wear: 2, rich: 10, toolMax: 3,
   // 一票の点（第0.6版の先行分・1-B）: 審査の前の合計点で、負けている人が取れば voteBehind・勝っている人が取れば voteAhead・
   // 並んでいれば vote。3人・4人では「自分以外でいちばん点の高い人」と比べる（その人より低ければ負けている）
   vote: 2, voteBehind: 3, voteAhead: 2,
-  // 第0.3版: カードは必要火力を満たせば使える（払わない）。使えるのは1ラウンドに1枚（準備は1ターンに1枚）。
-  // チャージと、炭を置く・のせるは何回でも。灰にするのは1ターンに1回。決めた理由は docs/design/card_game/v0.3_design.md
+  // カードは、熱が「必要な熱」以上なら使える（払わない）。使えるのは自分のターンに1枚（cardsPerRound。1人のターンは1ラウンドに1回）。
+  // 炭を外すのは1ターンに1つ（ashPerTurn）。決めた理由は docs/design/card_game/v0.3_design.md
   cardsPerRound: 1, chargePerTurn: 1, ashPerTurn: 1,
+  // 炭を足す手（焼けた炭をのせる・チャージ＆ドロー）を、合わせて1ターンに何回まで許すか（第0.7版で 1）。
+  // 外すのは ashPerTurn。つまり「炭は1ターンに、1つ足せて、1つ外せる」。カードの効果（追い炭）は数えない
+  coalAdds: 1,
+  // 入門の一局のための切り替え（ichidai-data.js の INTRO.rules）。ふだんはどれも既定のまま
+  //   useVote=一票を入れるか／useBonus=審査員の決め手を入れるか／prepack=一台を一式の配合で詰めてから始める（準備は蒸らすターンだけ）／
+  //   autoEmbers=最初の種火を山札の上から自動で置く数（0なら、手札から自分で選ぶ）
+  useVote: true, useBonus: true, prepack: false, autoEmbers: 0,
   // 一口のカード: false＝提供の自分のターンに仕込む（第0.3版）。true＝審査カードをめくったあとに使う（第0.2版の受け方）
   reactAfterReveal: false,
   // 審査カードをめくる時: true＝ラウンドのはじめ（第0.5版。全員が見てから熱を合わせる）。false＝全員のターンのあと（第0.4版まで）
   revealFirst: true,
+  // 一票の比べ方（試作）: "impress"＝印象（味値＋帯の分＋濃厚＋カード）／"points"＝その一口の点＋カードの印象／
+  // "taste"＝味値＋カードの印象（適温かジャストでなければ一票は取れない）
+  voteBy: "impress",
   // 印象＝味値＋帯の分＋濃厚＋カード。ジャストも適温も同じにして、印象は味の強さで競う
   impress: Object.freeze({ just: 1, band: 1, off: -1, cold: -2, scorch: -3 }),
 });
@@ -125,6 +143,14 @@ export function impressionOf(p, s, extra = 0, table = RULES.impress) {
   if (!f || !leavesOf(p)) return 0;
   return f.t + table[s.zone] + (s.rich ? 1 : 0) + extra;
 }
+/** 一票を比べる数。s=scorePuff の結果、pts=その一口の点（カードの加点も入れた合計）、extra=カードの印象 */
+export function voteScore(G, p, s, pts, extra = 0) {
+  if (!FLAVOR[p.main] || !leavesOf(p)) return 0;
+  if (G.R.voteBy === "points") return pts + extra;
+  if (G.R.voteBy === "taste") return s.zone === "just" || s.zone === "band" ? FLAVOR[p.main].t + extra : NO_VOTE;
+  return impressionOf(p, s, extra, G.R.impress);
+}
+const NO_VOTE = -99;
 export function scorePuff(p, h, q, fl = {}) {
   const f = FLAVOR[p.main];
   if (!f || !leavesOf(p)) return { zone: "cold", pts: 0, parts: [{ label: "燃え尽き", n: 0 }], rich: false };
@@ -185,7 +211,14 @@ export function createGame(cfg) {
     pile: [], shown: [], judge: null, supply: {}, market: [], P: [], wait: null, stack: [], log: [], events: [], over: false, result: null,
     forceSecond: null, serveStep: 0 };
   const market = (cfg.market && cfg.market.length ? cfg.market : FIRST_MARKET).slice(0, 10);
-  if (tour.task && !market.includes(tour.task)) market[market.length - 1] = tour.task;
+  // 場に必ず入れる葉: 課題の葉と、一式のおすすめの配合の葉（基本の一式の葉は「はじめての場」に無いことがある）。
+  // 場のうしろから、必ず入れる葉でないものと入れ替える
+  const must = [...new Set([tour.task, ...cfg.players.flatMap((pc) => (pc.plan || KIT[pc.kit]?.plan || []).map(([id]) => id))].filter((id) => id && FLAVOR[id]))];
+  for (const id of must) {
+    if (market.includes(id)) continue;
+    let at = market.length - 1; while (at >= 0 && must.includes(market[at])) at--;
+    if (at >= 0) market[at] = id;
+  }
   G.market = market;
   // 場の葉の山は、2人で1種12枚。3人・4人では1人6枚ぶんずつ増やす（取り合いの厳しさを2人のときと同じにする）
   for (const id of market) G.supply[id] = pileOf(G, cfg.players.length);
@@ -195,6 +228,17 @@ export function createGame(cfg) {
   G.lead = Number.isInteger(cfg.first) && cfg.first >= 0 && cfg.first < n ? cfg.first : Math.floor(nextRand(G) * n);
   if (tour.task) for (const p of G.P) { p.bowl[tour.task] = 3; fixMain(p); }
   say(G, `${tour.name}。先手は${G.P[G.lead].name}。`);
+  if (G.R.prepack) for (const p of G.P) { // 入門: 一式の配合で詰めてある（場からは取らない）。準備は蒸らすターンだけ
+    for (const [id, k] of p.plan) { const take = Math.min(k, BOWL[p.bowlId].cap - leavesOf(p)); if (take > 0) p.bowl[id] = (p.bowl[id] || 0) + take; }
+    fixMain(p); p.steamed = true; p.packedOnce = true;
+  }
+  if (G.R.autoEmbers > 0) { // 入門: 最初の種火は、山札の上から置いてある（手札は減らない）
+    for (const p of G.P) for (let k = Math.min(G.R.autoEmbers, coalMaxOf(p)); k > 0 && p.deck.length; k--) p.zone.push(newCoal(p.deck.pop(), false));
+    G.phase = "prep"; G.prepTurn = 0; G.prepFirst = G.lead;
+    say(G, "準備フェイズ。炭を焼いて、熱を上げる。");
+    startPrepTurn(G);
+    return G;
+  }
   G.wait = { type: "embers", player: G.lead };
   return G;
 }
@@ -277,9 +321,9 @@ export function canPlay(G, p, id, target = null) {
   else if (c.when === "prep") { if (!inPrep) return fail("準備フェイズに使う"); }
   else if (c.when === "turn") { if (!inMain) return fail("提供フェイズの自分のターンに使う"); }
   else if (!(inPrep || inMain)) return fail("自分のターンに使う");
-  if ((p.cardsUsed || 0) >= G.R.cardsPerRound) return fail(G.phase === "prep" ? "カードはこのターンもう使った" : "カードはこのラウンドもう使った");
-  if (heatOf(p) < (c.need || 0)) return fail(`火力${c.need}以上で使える`);
-  if (c.pay?.fire && heatOf(p) < c.pay.fire) return fail(`落とす火力が${c.pay.fire}要る`);
+  if ((p.cardsUsed || 0) >= G.R.cardsPerRound) return fail("カードはこのターンもう使った");
+  if (heatOf(p) < (c.need || 0)) return fail(`熱${c.need}以上で使える`);
+  if (c.pay?.fire && heatOf(p) < c.pay.fire) return fail(`落とす熱が${c.pay.fire}要る`);
   if (c.pay?.leaf && (!p.main || p.bowl[p.main] < c.pay.leaf)) return fail("減らす葉がない");
   if (c.type === "tool" && p.tools.includes(id)) return fail("同じ器具はもう出ている");
   if (id === "add_coal" && !coalRoom(p)) return fail(`炭は${coalMaxOf(p)}つまで`);
@@ -295,11 +339,13 @@ export function canPlay(G, p, id, target = null) {
   if ((id === "inner" || id === "outer" || id === "loosen") && false) return OK;
   return OK;
 }
+const ADD_LIMIT = (G) => (G.R.coalAdds === 1 ? "炭を足すのは1ターンに1つ" : `炭を足すのは1ターンに${G.R.coalAdds}つまで`);
 export function canCharge(G, p) {
   const w = G.wait;
   if (!w || w.player !== p.index) return fail("いまは自分の番ではない");
   if (w.type === "prep") { if (p.turn.mode !== "steam") return fail("蒸らすターンだけ"); }
   else if (w.type !== "main") return fail("自分のターンに行う");
+  if ((p.turn.adds || 0) >= G.R.coalAdds) return fail(ADD_LIMIT(G));
   if ((p.turn.charges || 0) >= G.R.chargePerTurn) return fail(G.R.chargePerTurn === 1 ? "チャージ＆ドローは1ターンに1回" : `チャージは1ターンに${G.R.chargePerTurn}回まで`);
   // 置いたら必ず1枚引く（引かずに置くことはできない）。引く札がどこにも無ければ置けない
   if (G.R.chargeDraw > 0 && !p.deck.length && !p.ash.length) return fail("引く札が無いので置けない");
@@ -324,6 +370,7 @@ export function canPutOn(G, p, si) {
   if (w.type === "prep") { if (p.turn.mode !== "steam") return fail("蒸らすターンだけ"); }
   else if (w.type !== "main") return fail("自分のターンに行う");
   if (c.stage < 2) return fail("まだ焼けていない");
+  if ((p.turn.adds || 0) >= G.R.coalAdds) return fail(ADD_LIMIT(G));
   if (!coalRoom(p)) return fail(`炭は${coalMaxOf(p)}つまで`);
   if (heatOf(p) + CARD[c.id].heat > RULES.heatMax) return fail("熱は10まで");
   return OK;
@@ -332,14 +379,14 @@ export function canAsh(G, p) {
   const w = G.wait;
   // 立ち上げ（準備の蒸らすターン）でも、種火を外して焼けた炭と入れ替えられる
   if (!w || w.player !== p.index || !(w.type === "main" || (w.type === "prep" && p.turn.mode === "steam"))) return fail("蒸らすターンか、提供の自分のターンに行う");
-  if ((p.turn.ashes || 0) >= G.R.ashPerTurn) return fail(G.R.ashPerTurn === 1 ? "灰にするのは1ターンに1回" : `灰にするのは1ターンに${G.R.ashPerTurn}回まで`);
+  if ((p.turn.ashes || 0) >= G.R.ashPerTurn) return fail(G.R.ashPerTurn === 1 ? "炭を外すのは1ターンに1つ" : `炭を外すのは1ターンに${G.R.ashPerTurn}つまで`);
   if (!p.zone.length) return fail("炭がない");
   return OK;
 }
 /** 準備の「詰める」で、このターンに取れる枚数 */
 export function packLimit(G, p) {
-  let n = RULES.packN + (p.bowlId === "beat80" ? 1 : 0) + (p.turn?.buyout ? 2 : 0);
-  if (!p.packedOnce && p.index === G.prepFirst) n -= RULES.firstPackCut;
+  let n = G.R.packN + (p.bowlId === "beat80" ? 1 : 0) + (p.turn?.buyout ? 2 : 0);
+  if (!p.packedOnce && p.index === G.prepFirst) n -= G.R.firstPackCut;
   return Math.max(0, Math.min(n, BOWL[p.bowlId].cap - leavesOf(p)));
 }
 export function canPack(G, p) {
@@ -392,7 +439,7 @@ const HANDLERS = {
     const picks = Object.entries(a.picks || {}).filter(([, n]) => n > 0);
     const total = picks.reduce((s, [, n]) => s + n, 0);
     if (!total) return fail("葉を選ぶ");
-    if (picks.length > 2) return fail("1ターンに取れるのは2種類まで");
+    if (picks.length > G.R.packKinds) return fail(`1ターンに取れるのは${G.R.packKinds}種類まで`);
     if (total > packLimit(G, p)) return fail(`このターンは${packLimit(G, p)}枚まで`);
     for (const [id, n] of picks) if (!G.market.includes(id) || (G.supply[id] || 0) < n) return fail("場に足りない葉がある");
     for (const [id, n] of picks) { p.bowl[id] = (p.bowl[id] || 0) + n; G.supply[id] -= n; }
@@ -410,7 +457,7 @@ const HANDLERS = {
   charge(G, p, a) {
     const c = canCharge(G, p); if (!c.ok) return c;
     if (!(a.hand >= 0 && a.hand < p.hand.length)) return fail("手札を選ぶ");
-    p.zone.push(newCoal(p.hand.splice(a.hand, 1)[0], false)); p.turn.charges = (p.turn.charges || 0) + 1; p.turn.charged = true;
+    p.zone.push(newCoal(p.hand.splice(a.hand, 1)[0], false)); p.turn.charges = (p.turn.charges || 0) + 1; p.turn.adds = (p.turn.adds || 0) + 1; p.turn.charged = true;
     const cd = G.R.chargeDraw > 0; // チャージ＆ドロー: 置いたら1枚引く
     say(G, `${cd ? "チャージ＆ドロー" : "チャージ"}：種火を1枚${cd ? "置いて、1枚引く" : ""}（熱${heatOf(p)}）`, p.index); emit(G, { t: "charge", p: p.index });
     if (cd) drawCards(G, p, G.R.chargeDraw);
@@ -426,7 +473,7 @@ const HANDLERS = {
   puton(G, p, a) {
     const c = canPutOn(G, p, a.stove); if (!c.ok) return c;
     const coal = p.stove.splice(a.stove, 1)[0];
-    p.zone.push(newCoal(coal.id, true));
+    p.zone.push(newCoal(coal.id, true)); p.turn.adds = (p.turn.adds || 0) + 1;
     say(G, `${CARD[coal.id].name}をのせる（熱${heatOf(p)}）`, p.index); emit(G, { t: "puton", p: p.index, id: coal.id });
     if (coal.id === "dense_flat") drawCards(G, p, 1);
   },
@@ -434,8 +481,8 @@ const HANDLERS = {
     const c = canAsh(G, p); if (!c.ok) return c;
     const coal = p.zone[a.zone]; if (!coal) return fail("炭を選ぶ");
     p.zone.splice(a.zone, 1); p.ash.push(coal.id); p.turn.ashes = (p.turn.ashes || 0) + 1;
-    say(G, `炭を1枚灰にする（熱${heatOf(p)}）`, p.index); emit(G, { t: "ash", p: p.index, zi: a.zone, up: coal.up, id: coal.id, why: "self" });
-    if (p.hmd === "tanukish" && !p.turn.ashDraw) { p.turn.ashDraw = true; drawCards(G, p, 1); say(G, "タヌキッシュリッド：炭を落としたので1枚引く。", p.index); }
+    say(G, `炭を1つ外す（熱${heatOf(p)}）`, p.index); emit(G, { t: "ash", p: p.index, zi: a.zone, up: coal.up, id: coal.id, why: "self" });
+    if (p.hmd === "tanukish" && !p.turn.ashDraw) { p.turn.ashDraw = true; drawCards(G, p, 1); say(G, "タヌキッシュリッド：炭を外したので1枚引く。", p.index); }
   },
 
   play(G, p, a, w) {
@@ -532,7 +579,7 @@ const HANDLERS = {
 
 /** 発動するために落とす（火力を落とす＝火力ゾーンの札が減って熱が下がる／主役の葉を減らす） */
 function payCost(G, p, card) {
-  if (card.pay?.fire) { dropFire(G, p, card.pay.fire); say(G, `火力を${card.pay.fire}落として発動（熱${heatOf(p)}）`, p.index); }
+  if (card.pay?.fire) { dropFire(G, p, card.pay.fire); say(G, `熱を${card.pay.fire}落として使う（熱${heatOf(p)}）`, p.index); }
   if (card.pay?.leaf) {
     for (let k = 0; k < card.pay.leaf && p.main && p.bowl[p.main] > 0; k++) { p.bowl[p.main]--; fixMain(p); }
     emit(G, { t: "wear", p: p.index, n: card.pay.leaf });
@@ -586,13 +633,14 @@ function startPrepTurn(G) {
   const n = G.P.length, p = G.P[(G.prepFirst + G.prepTurn) % n]; // 先手から席の順に1人ずつ
   G.active = p.index; p.cardsUsed = 0; p.turn = { mode: null, charged: false, charges: 0, buyout: false };
   stoveAdvance(G, p);
+  if (G.R.prepack && p.steamed) { p.turn.mode = "steam"; drawCards(G, p, G.R.steamDraw); say(G, `蒸らす：${G.R.steamDraw}枚引く。`, p.index); } // 入門: 詰めてあるので、蒸らすターンから
   G.wait = { type: "prep", player: p.index, n: Math.floor(G.prepTurn / n) + 1 };
 }
 function endTurn(G, p, kind) {
   p.turn = null;
   if (kind === "prep") {
     G.prepTurn++;
-    if (G.prepTurn < RULES.prepTurns * G.P.length) { startPrepTurn(G); return; }
+    if (G.prepTurn < G.R.prepTurns * G.P.length) { startPrepTurn(G); return; }
     for (const x of G.P) fixMain(x);
     G.phase = "serve"; G.round = 0; G.serveStep = 0;
     say(G, "提供フェイズ。");
@@ -650,7 +698,7 @@ export function puffPreview(G, p, extra = {}) {
   const s = scorePuff(p, h, q, { blow: pf.blow || extra.blow, lastOfSession: isLastOfSession(G) });
   const good = s.zone === "just" || s.zone === "band";
   const pts = s.pts + (good ? (pf.cool || 0) : 0) + (s.zone === "just" ? 3 * (pf.allIn || 0) : 0);
-  const imp = impressionOf(p, s, (pf.impress || 0) + (s.zone === "just" ? 2 * (pf.allIn || 0) : 0) + (good ? pf.warm || 0 : 0) + (p.sessImp || 0), G.R.impress);
+  const imp = voteScore(G, p, s, pts, (pf.impress || 0) + (s.zone === "just" ? 2 * (pf.allIn || 0) : 0) + (good ? pf.warm || 0 : 0) + (p.sessImp || 0));
   return { h, ...s, pts, imp };
 }
 function resolveJudge(G) {
@@ -668,7 +716,7 @@ function resolveJudge(G) {
     if (s.usedLotus) { p.usedLotus = true; say(G, "ロートスHMD：ズレを適温として採点。", i); }
     if (s.zone === "just") p.justCount++;
     const bonus = pf.impress + (s.zone === "just" ? 2 * pf.allIn : 0) + (good ? pf.warm || 0 : 0) + (p.sessImp || 0);
-    const imp = impressionOf(p, s, bonus, G.R.impress); // 焦げで葉が減る前に数える
+    const imp = voteScore(G, p, s, pts, bonus); // 焦げで葉が減る前に数える
     let lost = null;
     if (s.zone === "scorch") {
       p.scorchCount++;
@@ -679,7 +727,7 @@ function resolveJudge(G) {
   }
   // 一票: 印象がいちばん高い1人（いちばん上が並んだら入らない）
   const top = Math.max(...res.map((r) => r.imp)); let voter = null;
-  if (res.filter((r) => r.imp === top).length === 1) {
+  if (G.R.useVote && top > NO_VOTE && res.filter((r) => r.imp === top).length === 1) {
     voter = res.findIndex((r) => r.imp === top); const w = G.P[voter];
     w.votes++; res[voter].vote = votePtsOf(G, w) + 3 * res[voter].duel; // 点を足す前（審査の前の合計点）で比べる
     // パッキー【実況】: 相手が一票を取るたび、1枚引く（第0.6版の先行分。追う側の手を増やす）
@@ -726,7 +774,7 @@ function finish(G) {
     const got = ks.map((k) => (k === top ? (solo ? n : tie) : 0));
     bonus.push({ judge: jid, pts: got }); G.P.forEach((p, i) => { p.score += got[i]; });
   };
-  for (const jid of G.tour.judges) {
+  for (const jid of G.R.useBonus ? G.tour.judges : []) {
     if (jid === "kamizono") give(jid, growthOf, 4, 2);
     if (jid === "hakase") { give(jid, (p) => -p.scorchCount, 4, 2); const extra = G.P.map((p) => (p.scorchCount ? 0 : 2)); bonus.push({ judge: jid, pts: extra, note: "焦げ0回" }); G.P.forEach((p, i) => { p.score += extra[i]; }); }
     if (jid === "sensu") give(jid, (p) => p.lastPuff, 5, 2);

@@ -1,4 +1,4 @@
-// rulebook.html の図と一覧を cards.js から組み立てる（第0.6版）。
+// rulebook.html の図と一覧を cards.js から組み立てる（第0.7版）。
 (function () {
   const byId = Object.fromEntries(FLAVORS.map((f) => [f.id, f]));
   const supByName = Object.fromEntries(SUPPORT.map((s) => [s.n, s]));
@@ -20,13 +20,13 @@
     return h + '</div>';
   }
   const kind = (k) => `<span class="kind ${k}">${KIND[k].k}</span>`;
-  // 必要火力（自分の火力がこの数以上なら使える。払わない）
-  const needHtml = (n) => (n === '—' ? '—' : `<span class="nw" style="display:inline-flex;align-items:center;gap:.5mm"><span class="fire" style="vertical-align:0" title="火力${n}以上で使える">${n}</span><span class="small">以上</span></span>`);
-  // 発動するために落とすもの（火力を落とす／葉を減らす）と「もう1枚使える」の札。ゲームの画面と同じ「火力−1」「葉−1」
-  const payShort = (s) => (s.pay?.fire ? `火力−${s.pay.fire}` : s.pay?.leaf ? `葉−${s.pay.leaf}` : '');
-  const payLong = (s) => (s.pay?.fire ? `火力を${s.pay.fire}落として発動` : s.pay?.leaf ? `葉を${s.pay.leaf}枚減らして発動` : '');
+  // 必要な熱（自分の熱がこの数以上なら使える。払わない）
+  const needHtml = (n) => (n === '—' ? '—' : `<span class="nw" style="display:inline-flex;align-items:center;gap:.5mm"><span class="fire" style="vertical-align:0" title="熱${n}以上で使える">${n}</span><span class="small">以上</span></span>`);
+  // 使うために落とすもの（熱を落とす／葉を減らす）と「もう1枚使える」の札。ゲームの画面と同じ「熱−1」「葉−1」
+  const payShort = (s) => (s.pay?.fire ? `熱−${s.pay.fire}` : s.pay?.leaf ? `葉−${s.pay.leaf}` : '');
+  const payLong = (s) => (s.pay?.fire ? `熱を${s.pay.fire}落として使う` : s.pay?.leaf ? `葉を${s.pay.leaf}枚減らして使う` : '');
   const payTag = (s) => (payShort(s) ? `<span class="paytag" title="${payLong(s)}">${payShort(s)}</span>` : '');
-  const extraTag = (s) => (s.extra ? '<span class="extratag" title="このラウンド、カードをもう1枚使える">もう1枚</span>' : '');
+  const extraTag = (s) => (s.extra ? '<span class="extratag" title="このターン、カードをもう1枚使える">もう1枚</span>' : '');
   const whenTag = (w) => `<span class="when w-${w === '一口' ? 'puff' : w === '準備' ? 'prep' : w === 'いつでも' ? 'any' : 'turn'}">${w}</span>`;
 
   function flavorCard(f) {
@@ -49,7 +49,7 @@
   function supCard(s) {
     if (s.type === '炭') return coalCard(s);
     return `<div class="card sup${s.when === '一口' ? ' puff' : ''}">
-      <div class="top"><div class="cost" title="必要火力${s.need}">${s.need}</div><div class="nm" style="${s.n.length > 7 ? 'font-size:8pt' : ''}">${s.n}</div></div>
+      <div class="top"><div class="cost" title="必要な熱${s.need}">${s.need}</div><div class="nm" style="${s.n.length > 7 ? 'font-size:8pt' : ''}">${s.n}</div></div>
       <div class="art"><span class="glyph" style="font-size:20pt;color:rgba(243,154,60,.85)">${s.type}</span></div>
       <div class="body"><div style="margin-top:.6mm"><span class="type">${s.type}</span>${whenTag(s.when)}${payTag(s)}${extraTag(s)}</div>
         <div class="txt" style="margin-top:1.4mm">${s.tx}</div></div></div>`;

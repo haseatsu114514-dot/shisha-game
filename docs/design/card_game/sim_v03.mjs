@@ -2,20 +2,20 @@
 // node docs/design/card_game/sim_v03.mjs [--games 120] [--only A,G]   … 規則の案を比べる
 // node docs/design/card_game/sim_v03.mjs --cards [--games 300]           … いまの規則で、カードごとの使われ方
 // node docs/design/card_game/sim_v03.mjs --coals [--games 240]           … いまの規則で、審査の時点の炭の数・熱・帯（第0.4版の確かめ）
-// node docs/design/card_game/sim_v03.mjs --lead [--games 2000] [--levels 2,2] [--rules '{"voteBehind":2}']
+// node docs/design/card_game/sim_v03.mjs --lead [--games 2000] [--levels 2,2] [--rules '{"voteBehind":2}'] [--kits s1,s2,a,b,c,d] [--tour crown] [--intro]
 //                                                                        … 先行逃げ切り（第1セッション首位の最終勝率・逆転・リード入替・接戦・一式）。第0.6版の先行分の計り
 // 比べるのは「一口のカードをいつ使うか」「チャージ・灰にするを1ターンに何回まで許すか」「印象の付け方」「一票の点」。
 // 結果の読み方と決めたことは v0.3_design.md。
 import { createGame, act, heatOf } from "../../../remake/js/minigames/ichidai-rules.js";
 import { FLAVOR } from "../../../remake/js/minigames/ichidai-data.js";
 import { aiAct } from "../../../remake/js/minigames/ichidai-ai.js";
-import { CARD, TOURNAMENTS, KITS } from "../../../remake/js/minigames/ichidai-data.js";
+import { CARD, TOURNAMENTS, KITS, INTRO } from "../../../remake/js/minigames/ichidai-data.js";
 
 const arg = (name, def) => { const i = process.argv.indexOf(`--${name}`); return i >= 0 ? Number(process.argv[i + 1]) : def; };
 const GAMES = arg("games", 120);
 // 第0.2版の受け方（めくったあとに一口のカード）と、印象の付け方（ジャスト2・適温1・ズレ0・外れ−1・焦げ−2）
 // 第0.6版の先行分で一票の点が立場で変わるようになったので、第0.3版の比べでは一票をいつも同じ点にする（voteBehind・voteAhead も vote と同じ）
-const V02 = { cardsPerRound: 1, chargePerTurn: 1, ashPerTurn: 1, reactAfterReveal: true, vote: 2, voteBehind: 2, voteAhead: 2, impress: { just: 2, band: 1, off: 0, cold: -1, scorch: -2 } };
+const V02 = { cardsPerRound: 1, chargePerTurn: 1, ashPerTurn: 1, coalAdds: Infinity, firstPackCut: 2, pile: 12, reactAfterReveal: true, vote: 2, voteBehind: 2, voteAhead: 2, impress: { just: 2, band: 1, off: 0, cold: -1, scorch: -2 } };
 const FLAT = { just: 1, band: 1, off: -1, cold: -2, scorch: -3 };
 const VARIANTS = [
   { name: "A めくったあとに一口のカード（チャージ1・灰1）", rules: V02 },
@@ -147,11 +147,11 @@ function coalStats(games) {
  * 先行逃げ切り（--lead）: 2人の対戦で、ラウンドごとの累積点（一口＋一票）から首位を数える。決め手は最後に足されるので、勝ち負けには入る。
  * 大会は練習試合以外の4つを順に、一式は上と同じ組み合わせ、先手は局ごとに交互、種は 20000+局番号（改変案 ICHIDAI-REDESIGN の計りと同じ）
  */
-function leadStats(games, levels, rules) {
+function leadStats(games, levels, rules, ids = KITS.map((k) => k.id), tourId = null) {
   const s = { r3n: 0, r3w: 0, midn: 0, midrev: 0, changes: 0, never: 0, margin: 0, close: 0, both: 0, rounds: 0, firstW: 0, decided: 0, tasteN: 0, tasteW: 0, aW: 0 };
   const kitW = {}, kitN = {}, pc = (a, b) => `${((100 * a) / Math.max(1, b)).toFixed(1)}%`;
   for (let g = 0; g < games; g++) {
-    const tour = TOURNAMENTS[1 + (g % (TOURNAMENTS.length - 1))].id, ka = KITS[g % KITS.length].id, kb = KITS[(g + 1 + (g >> 2) % (KITS.length - 1)) % KITS.length].id;
+    const kn = ids.length, tour = tourId || TOURNAMENTS[1 + (g % (TOURNAMENTS.length - 1))].id, ka = ids[g % kn], kb = kn > 1 ? ids[(g + 1 + (g >> 2) % (kn - 1)) % kn] : ids[0];
     const G = createGame({ seed: 20000 + g, tournament: tour, first: g % 2, rules, players: [{ name: "A", kit: ka, ai: true, level: levels[0] }, { name: "B", kit: kb, ai: true, level: levels[1] }] });
     const cum = [0, 0], leaders = []; let taste = null;
     while (!G.over) {
@@ -179,12 +179,16 @@ function leadStats(games, levels, rules) {
   console.log(`${games}局・強さ ${levels.join(" 対 ")}・規則の上書き ${JSON.stringify(rules)}`);
   console.log(`第1セッション首位の最終勝率 ${pc(s.r3w, s.r3n)}／中盤の首位が逆転される ${pc(s.midrev, s.midn)}／リード入替 ${(s.changes / games).toFixed(2)}回・一度も入れ替わらない ${pc(s.never, games)}`);
   console.log(`最終点差 ${(s.margin / games).toFixed(1)}・5点以内 ${pc(s.close, games)}／両者ジャストのラウンド ${pc(s.both, s.rounds)}／最初の先手の勝ち ${pc(s.firstW, s.decided)}`);
-  console.log(`主役の味値が高い側の勝ち ${pc(s.tasteW, s.tasteN)}／一式の勝率 ${KITS.map((k) => `${k.id}:${pc(kitW[k.id] || 0, kitN[k.id])}`).join(" ")}／A側（強さ${levels[0]}）の勝ち ${pc(s.aW, games)}`);
+  console.log(`主役の味値が高い側の勝ち ${pc(s.tasteW, s.tasteN)}／一式の勝率 ${ids.map((id) => `${id}:${pc(kitW[id] || 0, kitN[id])}`).join(" ")}／A側（強さ${levels[0]}）の勝ち ${pc(s.aW, games)}`);
 }
 if (process.argv.includes("--lead")) {
   const lv = process.argv.includes("--levels") ? process.argv[process.argv.indexOf("--levels") + 1].split(",").map(Number) : [2, 2];
   const ru = process.argv.includes("--rules") ? JSON.parse(process.argv[process.argv.indexOf("--rules") + 1]) : {};
-  leadStats(arg("games", 2000), lv, ru); process.exit(0);
+  const opt = (name) => (process.argv.includes(`--${name}`) ? process.argv[process.argv.indexOf(`--${name}`) + 1] : null);
+  // --kits s1,s2,a,b … 比べる一式（既定は上級の4つ）／--tour intro … 大会を固定／--intro … 入門の一局（一式・大会・規則の上書きを INTRO から）
+  if (process.argv.includes("--intro")) leadStats(arg("games", 2000), lv, { ...INTRO.rules, ...ru }, [INTRO.kit], INTRO.tournament.id);
+  else leadStats(arg("games", 2000), lv, ru, opt("kits")?.split(","), opt("tour"));
+  process.exit(0);
 }
 if (process.argv.includes("--cards")) { cardStats(GAMES); process.exit(0); }
 if (process.argv.includes("--coals")) { coalStats(GAMES); process.exit(0); }

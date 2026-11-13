@@ -550,6 +550,10 @@
 .ichi-imp span { font-size: 14px; font-weight: 800; }
 .ichi-imp.is-ahead { border-color: var(--ichi-gold); } .ichi-imp.is-ahead b { color: var(--ichi-gold); }
 .ichi-imp.is-behind b { color: #ff9c8c; }
+/* このターンに炭をあと足せるか・外せるか（第0.7版: 1つ足せて、1つ外せる） */
+.ichi-coal-left { display: inline-flex; gap: 4px; justify-content: center; }
+.ichi-coal-left i { font-style: normal; padding: 0 6px; border-radius: 8px; font-size: 12px; font-weight: 800; line-height: 18px; white-space: nowrap; color: #2a1606; background: linear-gradient(180deg, #ffe2a6, #e3bd6e); }
+.ichi-coal-left i.is-used { color: var(--ichi-dim); background: rgba(255, 255, 255, 0.08); font-weight: 700; }
 /* 点差（時計の1行）と、負けている人の「一票+3」（第0.6版の先行分） */
 .ichi-standing { flex-basis: 100%; font-size: 13px; font-weight: 800; color: var(--ichi-text); white-space: nowrap; }
 .ichi-standing.is-ahead { color: var(--ichi-gold); }
@@ -772,6 +776,17 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-pick b { font-size: 19px; font-weight: 900; }
 .ichi-pick span { font-size: 15px; color: #e9def2; }
 .ichi-pick.is-on { box-shadow: 0 0 0 2px var(--ichi-gold), 0 0 22px rgba(227, 189, 110, 0.4); }
+/* 一式の棚（基本／上級）と、入門の一局の札（第0.7版） */
+.ichi-kits-head { display: flex; align-items: center; gap: 12px; }
+.ichi-kits-head small { font-size: 14px; font-weight: 700; color: var(--ichi-dim); }
+.ichi-tier-tabs { display: inline-flex; gap: 6px; }
+.ichi-pick.ichi-tier { min-height: 0; padding: 3px 18px; border-radius: 10px; font-size: 15px; }
+.ichi-picks.is-kits.is-basic { grid-template-columns: minmax(0, 1.25fr) repeat(2, minmax(0, 1fr)); }
+.ichi-pick.ichi-intro { align-content: center; gap: 8px; border: 2px solid var(--ichi-ember-hi); background: linear-gradient(160deg, rgba(240, 138, 43, 0.28), rgba(46, 29, 69, 0.9) 60%); }
+.ichi-pick.ichi-intro small { font-size: 14px; font-weight: 800; color: var(--ichi-ember-hi); }
+.ichi-pick.ichi-intro b { font-size: 26px; }
+.ichi-intro-go { justify-self: start; font-style: normal; padding: 4px 14px; border-radius: 10px; font-size: 16px; font-weight: 900; color: #2a1606; background: linear-gradient(180deg, #ffd27a, #f08a2b); }
+.ichi-end-next { margin: 0; font-size: 16px; font-weight: 700; color: var(--ichi-text); text-align: center; }
 .ichi-kit-art { display: flex; align-items: center; gap: 6px; }
 .ichi-kit-art .s-mid { --cw: 60px; }
 .ichi-kit-leaf { display: flex; flex-wrap: wrap; gap: 8px; } .ichi-kit-leaf span { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; }

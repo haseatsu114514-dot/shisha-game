@@ -1,4 +1,4 @@
-// カードゲーム「一台勝負」のカードと数値。ルールの正本は docs/design/card_game/（第0.5版のルールブックと cards.js）。
+// カードゲーム「一台勝負」のカードと数値。ルールの正本は docs/design/card_game/（第0.7版のルールブックと cards.js）。
 // ここはゲーム内で動かすための写しで、名前・数値・文がルールブックとずれないことを remake/test/ichidai_rules.mjs が確かめる。
 // 画面にも規則にも依らない純データ（DOM・保存に触れない）。
 
@@ -41,7 +41,7 @@ export const BOWLS = Object.freeze([
 
 export const HMDS = Object.freeze([
   { id: "lotus", name: "ロートスHMD", ab: "【均一】各セッション1回、ズレの一口を適温として採点する。" },
-  { id: "tanukish", name: "タヌキッシュリッド", ab: "【素直】「灰にする」で炭を落としたら、カードを1枚引く（1ターンに1回）。素焼きハガルとは組めない。" },
+  { id: "tanukish", name: "タヌキッシュリッド", ab: "【素直】炭を外したら、カードを1枚引く（1ターンに1回）。素焼きハガルとは組めない。" },
   { id: "amaburst", name: "アマバースト", ab: "【高火力】自分の判定熱はつねに+1。" },
   { id: "big_tanukish", name: "ビッグタヌキッシュリッド", ab: "【熱持ち】各セッション最初の自分のターンは冷めない。" },
   // 炭1個で回す低温用のHMD（2026-11-11 オーナー「機材によっては1個でいけるのとかある。低温用の」「実際にそういう機材あるから作る」）
@@ -49,11 +49,10 @@ export const HMDS = Object.freeze([
 ]);
 
 // type: coal=炭 / tech=技 / tool=器具 / person=人物 / event=イベント
-// need: 必要火力。自分の火力（＝熱＝火力ゾーンの炭の火の合計）がこの数以上なら使える。払わない
-// pay: 発動するために落とすもの（第0.3版。2026-11-11 オーナー「炭を使うのではなく、火力を落として発動って感じ」）。
-//      fire=火力をその数だけ落とす（火力ゾーンの札が減って熱が下がる。種火 → 表向きのフラット炭の順に灰にし、
-//      表向きのキューブ炭しか無ければ裏返して1落とす）。leaf=主役の葉をその数だけ減らす。必要火力は落とす前の火力で見る
-// extra: 使ったあと、このラウンド（準備ではこのターン）にカードをもう1枚使える（1ラウンド1枚の枠を返す）
+// need: 必要な熱。自分の熱（＝火力ゾーンの炭の火の合計）がこの数以上なら使える。払わない（第0.7版で「必要火力」から言い換えた。数は同じ）
+// pay: 使うために落とすもの（第0.3版。2026-11-11 オーナー「炭を使うのではなく、火力を落として発動って感じ」。第0.7版で「熱を落として使う」）。
+//      fire=熱をその数だけ落とす（火のいちばん小さい炭から、火を1ずつ下げる）。leaf=主役の葉をその数だけ減らす。必要な熱は落とす前の熱で見る
+// extra: 使ったあと、このターンにカードをもう1枚使える（自分のターンに1枚の枠を返す）
 // when: turn=手番 / puff=一口（提供の自分のターンに、そのラウンドの自分の一口へ仕込む。めくる前に決める） / prep=準備 / any=いつでも（自分のターンならどのフェイズでも）
 // 炭カードだけ: ig=着火（焼けるまでのターン数） heat=新品の火（のせたときの火。冷めるたびに1ずつ下がり、0で灰。回復しない）
 export const CARDS = Object.freeze([
@@ -63,19 +62,19 @@ export const CARDS = Object.freeze([
   { id: "heat_in", name: "熱を入れる吸い", type: "tech", need: 1, when: "puff", tx: "この一口の判定熱+1。適温かジャストになったら、さらに印象+1。" },
   { id: "heat_out", name: "熱を逃がす吸い", type: "tech", need: 6, when: "puff", tx: "この一口の判定熱−2。適温かジャストになったら、さらに+1点。" },
   { id: "blow", name: "ブロー", type: "tech", need: 4, when: "puff", tx: "この一口、自分は焦げない。焦げライン以上なら適温として採点する。" },
-  { id: "show_smoke", name: "見せ煙", type: "tech", need: 3, pay: { leaf: 1 }, when: "puff", tx: "葉を1枚減らして発動。この一口の印象+4。" },
-  { id: "all_in", name: "渾身の一口", type: "tech", need: 6, pay: { fire: 1 }, when: "puff", tx: "火力を1落として発動。この一口がジャストなら、さらに+3点・印象+2。" },
+  { id: "show_smoke", name: "見せ煙", type: "tech", need: 3, pay: { leaf: 1 }, when: "puff", tx: "葉を1枚減らして使う。この一口の印象+4。" },
+  { id: "all_in", name: "渾身の一口", type: "tech", need: 6, pay: { fire: 1 }, when: "puff", tx: "熱を1落として使う。この一口がジャストなら、さらに+3点・印象+2。" },
   { id: "duel", name: "勝負の一服", type: "tech", need: 3, when: "puff", tx: "この審査で一票を取ったら、さらに+3点。" },
   { id: "read", name: "吸い方を読む", type: "tech", need: 0, when: "turn", tx: "次のラウンドの審査カードを、自分だけ先に見る。" },
   { id: "ash_tap", name: "灰落とし", type: "tech", need: 3, when: "turn", tx: "次の自分のターン、冷めない。" },
-  { id: "add_coal", name: "追い炭", type: "tech", need: 0, extra: 1, when: "turn", tx: "山札の上から2枚までを、裏向きのまま種火（火1）として、空いている炭の枠に置く。このラウンド、カードをもう1枚使える。" },
-  { id: "tongs", name: "トングさばき", type: "tech", need: 3, pay: { fire: 1 }, extra: 1, when: "turn", tx: "火力を1落として発動。カードを2枚引く。このラウンド、カードをもう1枚使える。" },
+  { id: "add_coal", name: "追い炭", type: "tech", need: 0, extra: 1, when: "turn", tx: "山札の上から2枚までを、裏向きのまま種火（火1）として、空いている炭の枠に置く。このターン、カードをもう1枚使える。" },
+  { id: "tongs", name: "トングさばき", type: "tech", need: 3, pay: { fire: 1 }, extra: 1, when: "turn", tx: "熱を1落として使う。カードを2枚引く。このターン、カードをもう1枚使える。" },
   { id: "fan", name: "火おこし", type: "tech", need: 1, when: "any", tx: "自分の炭焼き場の炭を、すべて1段階進める。" },
   { id: "inner", name: "内寄せ", type: "tech", need: 3, when: "turn", tx: "このセッションの終わりまで、自分の印象+1。" },
   { id: "outer", name: "外寄せ", type: "tech", need: 4, when: "turn", tx: "このセッションの終わりまで、自分の判定熱−1。" },
   { id: "loosen", name: "葉をほぐす", type: "tech", need: 3, when: "turn", tx: "このセッションの終わりに、自分の葉は減らない。" },
-  { id: "breath", name: "ひと息", type: "tech", need: 0, extra: 1, when: "turn", tx: "カードを1枚引く。このラウンド、カードをもう1枚使える。" },
-  { id: "reset", name: "仕切り直し", type: "tech", need: 5, pay: { fire: 2 }, extra: 1, when: "turn", tx: "火力を2落として発動。カードを3枚引く。このラウンド、カードをもう1枚使える。" },
+  { id: "breath", name: "ひと息", type: "tech", need: 0, extra: 1, when: "turn", tx: "カードを1枚引く。このターン、カードをもう1枚使える。" },
+  { id: "reset", name: "仕切り直し", type: "tech", need: 5, pay: { fire: 2 }, extra: 1, when: "turn", tx: "熱を2落として使う。カードを3枚引く。このターン、カードをもう1枚使える。" },
   { id: "windguard", name: "風防", type: "tool", need: 2, when: "any", tx: "風防カウンターを2個のせて出す。冷めるとき、炭の火を1下げるかわりにカウンターを1個取ってよい。0個になったら灰へ。相手のカードで自分の炭は弱まらない。" },
   { id: "chacosta", name: "チャコスタ", type: "tool", need: 3, when: "any", tx: "自分のターンのはじめ、炭焼き場に炭が3つ以上あれば、カードを1枚引く。" },
   { id: "timer", name: "キッチンタイマー", type: "tool", need: 1, when: "any", tx: "自分のターンのはじめに炭が焼けたら、カードを1枚引く（1ターンに1枚まで）。" },
@@ -87,7 +86,7 @@ export const CARDS = Object.freeze([
   { id: "go_second", name: "後の先", type: "event", need: 1, when: "turn", tx: "次のラウンド、自分が後手になる。" },
   { id: "buyout", name: "買い占め", type: "event", need: 0, when: "prep", tx: "このターンの「詰める」で、さらに2枚取れる。" },
   { id: "repack", name: "詰め直し", type: "event", need: 1, when: "prep", tx: "蒸らす前だけ。ボウルの葉を2枚まで場の山に戻し、同じ枚数を場から取る。" },
-  { id: "encore", name: "アンコール", type: "event", need: 7, pay: { fire: 2 }, when: "puff", tx: "最終セッションだけ。火力を2落として発動。この一口の点をもう一度得る。" },
+  { id: "encore", name: "アンコール", type: "event", need: 7, pay: { fire: 2 }, when: "puff", tx: "最終セッションだけ。熱を2落として使う。この一口の点をもう一度得る。" },
   { id: "sumi", name: "スミさん", type: "person", need: 3, when: "any", tx: "【炭を見る目】自分の炭カードは着火が1ターン早い（フラット炭は置いたターンにのせられる）。" },
   { id: "naru", name: "なる", type: "person", need: 2, when: "any", tx: "【甘さを追う】主役がスイートなら、ジャストの一口+1。" },
   { id: "adam", name: "アダム", type: "person", need: 3, when: "any", tx: "【手入れ大全】単品なら毎口+1。" },
@@ -120,6 +119,15 @@ export const JUDGES = Object.freeze([
   { id: "taiyo", name: "ダ・シルヴァ太陽", motto: "熱の芯", puffs: [["normal", 1], ["strong", 2], ["deep", 1]], bonus: "ジャストの一口の回数が多い作り手に+4。同数なら全員+2。" },
 ]);
 
+// 入門の一局（第0.7版）: はじめての人のための短い対戦。一台は詰めてあり、種火も置いてある。準備は「炭を焼く」2ターンだけ、
+// 提供は2セッション（6ラウンド）。一票と決め手は無く、点は一口の点だけ。審査カードは、ふつう・にこにこ・ゆっくり・長く の4種。
+// 大会の一覧（TOURNAMENTS）には入れない（設定の画面の「入門の一局」から始める）。rules は createGame の規則の上書き
+export const INTRO = Object.freeze({
+  kit: "s0", level: 0,
+  tournament: Object.freeze({ id: "intro", name: "入門の一局", sessions: 2, judges: ["kamizono", "sensu"], task: null, blurb: "はじめての人へ。炭と熱だけの、短い一局。" }),
+  rules: Object.freeze({ useVote: false, useBonus: false, prepack: true, autoEmbers: 3, prepTurns: 2, steamDraw: 1 }),
+});
+
 // 大会。sessions=セッション数（1セッション=3ラウンド） judges=審査員（空なら審査カードを使わず、毎回「ふつうに吸う」） task=課題フレーバー
 export const TOURNAMENTS = Object.freeze([
   { id: "practice", name: "練習試合", sessions: 3, judges: [], task: null, blurb: "審査カードなし。毎回「ふつうに吸う」。はじめての一戦に。" },
@@ -137,19 +145,37 @@ export const FIRST_MARKET = Object.freeze(["lemon", "mint", "blueberry", "peach"
 // 第0.5版（冷める1・審査カードを先にめくる・ダブルアップルのジャスト1つ）に合わせて、a・b・c の札を1〜2枚ずつ入れ替えた
 // （つよいCPU同士・組み合わせと席と大会をそろえた1920局で a53・b45・c51・d51）
 export const KITS = Object.freeze([
-  { id: "a", name: "ミックスの構え型", bowl: "funnel", hmd: "lotus", plan: [["blueberry", 8], ["mint", 4]],
+  { id: "a", tier: "advanced", name: "ミックスの構え型", bowl: "funnel", hmd: "lotus", plan: [["blueberry", 8], ["mint", 4]],
     blurb: "帯の真ん中に置き、吸いの技で受ける。相手は煽りで揺さぶる。",
     cards: [["flat", 8], ["dense_flat", 2], ["cube", 2], ["heat_in", 3], ["heat_out", 3], ["ash_tap", 2], ["add_coal", 2], ["breath", 1], ["inner", 2], ["blow", 2], ["all_in", 2], ["duel", 2], ["windguard", 2], ["timer", 1], ["diffuser", 1], ["hype", 2], ["go_second", 1], ["mashiro", 1], ["packy", 1]] },
-  { id: "b", name: "単品の火持ち型", bowl: "clay", hmd: "amaburst", plan: [["double_apple", 12]],
+  { id: "b", tier: "advanced", name: "単品の火持ち型", bowl: "clay", hmd: "amaburst", plan: [["double_apple", 12]],
     blurb: "キューブ炭で高い熱を保ち、濃い煙で点を重ねる。",
     cards: [["cube", 8], ["flat", 4], ["dense_flat", 1], ["heat_in", 2], ["inner", 2], ["ash_tap", 2], ["fan", 2], ["reset", 1], ["breath", 2], ["show_smoke", 3], ["all_in", 2], ["heat_out", 2], ["chacosta", 2], ["draft", 2], ["hype", 2], ["encore", 1], ["adam", 1], ["sumi", 1]] },
-  { id: "c", name: "低温の攻め型", bowl: "silicone", hmd: "tanukish", plan: [["rose", 7], ["peach", 4]],
+  { id: "c", tier: "advanced", name: "低温の攻め型", bowl: "silicone", hmd: "tanukish", plan: [["rose", 7], ["peach", 4]],
     blurb: "味値4のローズ。ジャストのすぐ上が焦げ。読む・逃がす・ブローで攻めきる。",
     cards: [["flat", 9], ["dense_flat", 2], ["heat_out", 3], ["heat_in", 3], ["blow", 2], ["read", 2], ["inner", 2], ["ash_tap", 2], ["tongs", 2], ["breath", 2], ["show_smoke", 1], ["duel", 2], ["windguard", 2], ["timer", 1], ["venue_heat", 1], ["go_second", 1], ["fan", 2], ["packy", 1]] },
-  { id: "d", name: "一つ火の低温型", bowl: "funnel", hmd: "one_coal", plan: [["peach", 8], ["rose", 5]],
+  { id: "d", tier: "advanced", name: "一つ火の低温型", bowl: "funnel", hmd: "one_coal", plan: [["peach", 8], ["rose", 5]],
     blurb: "キューブ炭1つで低い熱を保つ。炭を足す手間が少ないぶん、手札を技に回す。",
     cards: [["cube", 5], ["flat", 4], ["dense_flat", 1], ["heat_in", 3], ["show_smoke", 2], ["duel", 2], ["blow", 1], ["read", 3], ["inner", 2], ["breath", 2], ["tongs", 1], ["loosen", 2], ["ash_tap", 2], ["fan", 1], ["windguard", 1], ["timer", 1], ["diffuser", 1], ["draft", 1], ["venue_heat", 1], ["go_second", 1], ["buyout", 1], ["minto", 1], ["packy", 1]] },
 ]);
+
+// 基本のカード（第0.7版）: 文がそれだけで読めて、条件や例外を持たないもの。基本の一式はこの中だけで組む。
+// これ以外（人物・相手の判定熱を動かすカード・「もう1枚使える」と熱を落とすカードの組・条件つきの器具）は上級の一式で使う
+export const BASIC_CARDS = Object.freeze(["flat", "cube", "dense_flat", "heat_in", "heat_out", "blow", "show_smoke", "all_in", "duel", "read", "ash_tap", "fan", "inner", "breath", "windguard", "timer", "draft"]);
+// 基本の一式（第0.7版。オーナー「カードやデッキによって難しい戦略も取れるに寄せたい」）: 基本のカードと、能力の無い葉だけ。
+// 深さ（人物・イベント・条件つきの葉と機材）は、上の4つ（上級の一式）とデッキ構築で足す
+export const BASIC_KITS = Object.freeze([
+  { id: "s1", tier: "basic", name: "まんなかの一台", bowl: "silicone", hmd: "lotus", plan: [["blueberry", 8], ["ice_grape", 4]],
+    blurb: "適温が広く、焦げにくい。まずはこれ。★の熱5を保つ。",
+    cards: [["flat", 9], ["dense_flat", 2], ["cube", 2], ["heat_in", 3], ["heat_out", 3], ["blow", 2], ["all_in", 2], ["duel", 2], ["show_smoke", 2], ["read", 2], ["ash_tap", 3], ["inner", 2], ["fan", 1], ["breath", 2], ["windguard", 2], ["timer", 1]] },
+  { id: "s2", tier: "basic", name: "低い熱の一台", bowl: "funnel", hmd: "one_coal", plan: [["ice_grape", 8], ["white_gummy_bear", 2]],
+    blurb: "炭は2つまで。キューブ炭1つなら冷めない。★の熱4を、少ない手で保つ。",
+    cards: [["cube", 5], ["flat", 5], ["dense_flat", 2], ["heat_in", 3], ["blow", 2], ["show_smoke", 2], ["duel", 2], ["read", 3], ["ash_tap", 2], ["inner", 3], ["fan", 2], ["breath", 3], ["windguard", 2], ["timer", 2], ["draft", 2]] },
+]);
+/** 入門の一局の一式: 炭3種と技6種だけ（一票が無いので、印象のカードは入れない） */
+export const INTRO_KIT = Object.freeze({ id: "s0", tier: "intro", name: "はじめての一台", bowl: "silicone", hmd: "lotus", plan: [["blueberry", 8], ["ice_grape", 4]],
+  blurb: "炭と熱だけを覚える一台。",
+  cards: [["flat", 11], ["dense_flat", 3], ["cube", 8], ["heat_in", 3], ["heat_out", 3], ["blow", 3], ["ash_tap", 3], ["fan", 3], ["read", 3]] });
 
 const byId = (list) => Object.freeze(Object.fromEntries(list.map((x) => [x.id, x])));
 export const FLAVOR = byId(FLAVORS);
@@ -157,8 +183,8 @@ export const CARD = byId(CARDS);
 export const BOWL = byId(BOWLS);
 export const HMD = byId(HMDS);
 export const JUDGE = byId(JUDGES);
-export const TOURNAMENT = byId(TOURNAMENTS);
-export const KIT = byId(KITS);
+export const TOURNAMENT = byId([...TOURNAMENTS, INTRO.tournament]);
+export const KIT = byId([...BASIC_KITS, ...KITS, INTRO_KIT]);
 
 /** [id, 枚数] の並びを、カードidの配列にする */
 export const expandDeck = (list) => list.flatMap(([id, n]) => Array(n).fill(id));
