@@ -68,7 +68,7 @@ const TOURNAMENT_CRAFT_DIALOGUE_FILE = "tournament_craft";
 const VENUE_ARRIVAL_DIALOGUE_FILE = "venue_arrivals";
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
 const JSON_TIMEOUT_MS = 15000;
-const JSON_CONCURRENCY = 4;
+const JSON_CONCURRENCY = 8;
 
 async function getJSON(path) {
   const controller = new AbortController();
@@ -152,7 +152,7 @@ export async function loadAll(onProgress = () => {}) {
   ];
   let done = 0, next = 0, failed = false;
   const results = [];
-  // ローカルサーバーの接続待ちを溢れさせないよう、同時に JSON_CONCURRENCY 本まで。
+  // 同時に JSON_CONCURRENCY 本まで（公開側は HTTP/2、手元のプレビューサーバーもスレッド型なので 8 本でも溢れない。#3552 の波状取得対策）。
   // 組ごとに全員を待たず、1本終わるたびに次の1本を始める（遅い1本が組全体を止めない。#3500 A-18）。
   // 失敗したら新しい取得は始めない。
   const worker = async () => {
