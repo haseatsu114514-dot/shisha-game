@@ -9,7 +9,7 @@ import { el } from "../core/util.js";
 import { SE, unlockAudio, createDesertRideSe, desertZapGap, currentBgm, playBgm, preloadBgm, resetBgmTempo } from "../core/audio.js";
 import { EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, botControl,
   rivalRun, rivalAt, RULES_VERSION, DISPLAY, toKmh, toMeters, JUMP, SCORE, RANKS, PLAYER, NEAR, PRACTICE_WALL } from "./desert-ride-model.js";
-import { DESERT_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
+import { DESERT_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose, spinFrames } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
 import { withMinigameLoading, minigameLoadingFixed } from "./minigame-loading.js";
 
@@ -1963,6 +1963,38 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const spinTilt = spinning && !reducedMotion ? Math.sin(game.rot * Math.PI * 2) * FEEL.spinTilt * (game.spinDir || 1) : 0;
       if (spinning) drawSpinWhirl(cx, baseY, unit, game.rot, game.spinDir || Math.sign(game.rot) || 1, "back");
       if (poseArt && baseArt) {
+        // 回転姿（Issue #3563・はじめ）: 空中トリックの間は角度ごとの絵をクロスフェードで切り替える。
+        // 必要な絵がまだ届いていない時は、このまま下の「縮めて裏返す」描き方に倒れる。
+        if (spinning && pose === "riderJump" && game.spinDir !== 0) {
+          const cur = spinFrames(game.rot);
+          const fromImg = art.get(cur.from.name), toImg = art.get(cur.to.name);
+          if (fromImg && toImg) {
+            const drawSpin = (frame, image, alpha) => {
+              const d = DESERT_ART[frame.name];
+              const h = unit * 2.45 * image.naturalHeight / baseArt.naturalHeight, w = h * image.naturalWidth / image.naturalHeight;
+              ctx.save();
+              ctx.globalAlpha = alpha;
+              ctx.translate(cx, baseY);
+              ctx.rotate(lean * 0.12 + spinTilt);
+              if (game.air > 0) ctx.translate(0, -Math.sin(airT * Math.PI) * unit * 0.1);
+              ctx.scale((frame.flip ? -1 : 1) * squash[0], squash[1]);
+              const ax = frame.flip ? 1 - d.anchor.x : d.anchor.x;
+              ctx.drawImage(image, -ax * w, -d.anchor.y * h, w, h);
+              ctx.restore();
+            };
+            if (!reducedMotion) {
+              for (let k = FEEL.spinGhosts; k >= 1; k--) {
+                const g = spinFrames(game.rot - Math.sign(game.rot || game.spinDir) * FEEL.spinGhostStep * k).from;
+                const gImg = art.get(g.name);
+                if (gImg) drawSpin(g, gImg, 0.32 - 0.08 * k);
+              }
+            }
+            drawSpin(cur.from, fromImg, 1);
+            if (cur.fade > 0) drawSpin(cur.to, toImg, cur.fade);
+            drawSpinWhirl(cx, baseY, unit, game.rot, game.spinDir || Math.sign(game.rot) || 1, "front");
+            return;
+          }
+        }
         const def = DESERT_ART[pose];
         // 大きさは背面Bの高さ（unit×2.45）に対する比。どの姿勢も同じ縮尺で描かれている
         const dh = unit * 2.45 * poseArt.naturalHeight / baseArt.naturalHeight, dw = dh * poseArt.naturalWidth / poseArt.naturalHeight;

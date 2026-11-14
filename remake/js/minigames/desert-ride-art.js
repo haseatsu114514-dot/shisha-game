@@ -20,6 +20,12 @@ export const DESERT_ART = Object.freeze({
   riderJump: Object.freeze({ file: "ui/desert_ride/rider_jump.webp", size: Object.freeze([537, 670]), anchor: Object.freeze({ x: 0.5761, y: 0.8388 }) }),
   riderBrace: Object.freeze({ file: "ui/desert_ride/rider_brace.webp", size: Object.freeze([561, 644]), anchor: Object.freeze({ x: 0.558, y: 0.8198 }) }),
   riderFall: Object.freeze({ file: "ui/desert_ride/rider_fall.webp", size: Object.freeze([554, 655]), anchor: Object.freeze({ x: 0.5256, y: 0.9569 }) }),
+  // 回転姿（Issue #3563・はじめのみ。Codex C 生成→後処理で検品済み）。寸法・基準点は asset_sources/desert-ride-spin/adoption.json と同じ値（build.py が書き出す）。
+  // 人物の実寸は riderJump と同じにそろえてあり、anchor は各絵の板の重心。225〜315° は 135・90・45 の左右反転で使う。
+  hajimeSpin045: Object.freeze({ file: "ui/desert_ride/spin_hajime_045.webp", size: Object.freeze([657, 821]), anchor: Object.freeze({ x: 0.5104, y: 0.779 }) }),
+  hajimeSpin090: Object.freeze({ file: "ui/desert_ride/spin_hajime_090.webp", size: Object.freeze([811, 1014]), anchor: Object.freeze({ x: 0.4872, y: 0.7795 }) }),
+  hajimeSpin135: Object.freeze({ file: "ui/desert_ride/spin_hajime_135.webp", size: Object.freeze([572, 825]), anchor: Object.freeze({ x: 0.5241, y: 0.7638 }) }),
+  hajimeSpin180: Object.freeze({ file: "ui/desert_ride/spin_hajime_180.webp", size: Object.freeze([670, 768]), anchor: Object.freeze({ x: 0.4898, y: 0.808 }) }),
   // ヌールの背面6ポーズ。既存 rider_* と同じキャンバス寸法と板の基準点を使う。
   noorRider: Object.freeze({ file: "ui/desert_ride/rider_noor_ride.webp", size: Object.freeze([489, 768]), anchor: Object.freeze({ x: 0.6125, y: 0.833 }) }),
   noorRiderLeft: Object.freeze({ file: "ui/desert_ride/rider_noor_lean_left.webp", size: Object.freeze([536, 724]), anchor: Object.freeze({ x: 0.6294, y: 0.8209 }) }),
@@ -72,6 +78,19 @@ export function riderPose(game, previous = "rider") {
   if (previous === "riderRight" ? vx > 0.2 : vx > 0.32) return "riderRight";
   if (previous === "riderLeft" ? vx < -0.2 : vx < -0.32) return "riderLeft";
   return "rider";
+}
+
+/**
+ * 回転の角度（rot は回転数）から、今と次の回転姿と、間の寄せ具合を返す（Issue #3563）。
+ * 並びは 45°ごとで、225〜315° は 135・90・45° の絵を左右反転（flip）して使う。
+ * 絵が無い人物・読み込み前は呼び出し側が従来の「縮めて裏返す」描き方に倒す。
+ */
+const SPIN_ORDER = Object.freeze(["riderJump", "hajimeSpin045", "hajimeSpin090", "hajimeSpin135", "hajimeSpin180", "hajimeSpin135", "hajimeSpin090", "hajimeSpin045"]);
+export function spinFrames(rot) {
+  const pos = (((rot % 1) + 1) % 1) * 8;
+  const i = Math.floor(pos) % 8;
+  const at = k => ({ name: SPIN_ORDER[k], flip: k >= 5 });
+  return { from: at(i), to: at((i + 1) % 8), fade: pos - Math.floor(pos) };
 }
 
 let images = null;
