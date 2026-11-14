@@ -47,14 +47,17 @@ export const SCORE = Object.freeze({ finish: 1200, timePar: 85, // 時間ボー�
 // 2つ岩の真ん中（余白 0.15）は 1つ 約49点・ゲージ 約0.07。跳び越えた岩は横の危険を取っていないので真ん中の値（airCloseness）。
 export const NEAR = Object.freeze({ width: 0.22, minPoints: 30, maxPoints: 90, minGauge: 0.04, maxGauge: 0.14, airCloseness: 0.5 });
 // 競走の相手。ヌールは着地が少し遅い滑り（ブーストは使う）。なる（ヌールに勝った後に来る強敵）は 720 まで回って着地も完璧、ブーストも使う。
-// startSpeed: スタートの速さ。ヌールは砂丘のガイドなので、出だしが少しだけうまい（同じ滑りでは並べない）。
+// startSpeed: スタートの速さ。ヌールは当初「砂丘のガイドなので出だしが少しだけうまい（+0.6）」だったが、
+// 2026-11-14 オーナー判断で撤廃（S評価の滑りでも勝てないことがある体感への対応）。主人公と同速スタートにする。
 // なるは 2026-11-13 オーナー「なるが弱かった」で強くした（それまでは 360 止まり・出だしは主人公と同じで、理想の滑りに 0.6〜2.2秒差で負けていた）:
 // 720 まで回る（主人公の理想の滑りと同じ腕前）。出だしだけ少し遅く（startSpeed −1.5）、回って着地も決める理想の滑りでやっと勝てる差にした。
 // easeOff: 大きく離した時の手加減（RUBBER）。なるは手加減しない（追いつかれたら追い返すのは同じ）。
 export const RIVALS = Object.freeze({
 // charge・boostAt（2026-11-13 オーナー「ライバルももっとブースト使って接戦っぽくしたい」）: 貯まる量の倍率と、使い始めるゲージの量。
-// 満タンまで待たず小刻みに使うので、ブーストの回数が増えて目に入る。速くなりすぎる分は出だし（startSpeed）で合わせた。
-  noor: Object.freeze({ skill: "rival", startX: -0.42, only360: false, startSpeed: SPEED.start + 0.6, charge: 1.15, boostAt: 0.3 }),
+// 満タンまで待たず小刻みに使うので、ブーストの回数が増えて目に入る。
+// ヌールの charge は当初 1.15 だったが、2026-11-14 オーナー判断で 1 に戻した（素のゴールタイムは全コース 59.1〜59.4 秒で、
+// 着地を決めてブーストを使う滑り（A評価の目安）に 1.3〜2.3 秒差、着地の甘い滑り（B評価の目安）とは互角になる）。boostAt 0.3 は据え置き。
+  noor: Object.freeze({ skill: "rival", startX: -0.42, only360: false, startSpeed: SPEED.start, charge: 1, boostAt: 0.3 }),
   naru: Object.freeze({ skill: "expert", startX: 0.42, only360: false, startSpeed: SPEED.start - 2.6, easeOff: false, charge: 1, boostAt: 0.3 }),
 });
 // 空中トリック: 大ジャンプ中に ← か → を押している間だけ回る（rate 回転/秒）。離すと次の半回転まで finishRate で回り切る。
