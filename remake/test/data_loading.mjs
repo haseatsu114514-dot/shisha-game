@@ -108,7 +108,7 @@ assert.deepEqual(Array.from(all.DB.lime.slice(-73, -43), m => m.id), [
 // L01〜L43 の増量候補を末尾に足した（番号は固定）
 assert.deepEqual(Array.from(all.DB.lime.slice(-43), m => m.id), Array.from({ length: 43 }, (_, i) => `L${String(i + 1).padStart(2, "0")}`));
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.limeTemplates)), realJSON("../data/lime_messages.json").templates);
-assert.equal(all.DB.lime.length, 161); // 139 + 王煙楼8・アダム2・レヰ2（好感度キャラのLIMEをそろえる）+ 太陽6（RVE03）+ 王煙楼の大会後1（RVE07）+ スティーブ×綾取の後日1（#3468 C案）+ ヌールの帰国後の時差2
+assert.equal(all.DB.lime.length, 161); // 139 + 王煙楼8・アダム2・クラウド2（好感度キャラのLIMEをそろえる）+ 太陽6（RVE03）+ 王煙楼の大会後1（RVE07）+ スティーブ×綾取の後日1（#3468 C案）+ ヌールの帰国後の時差2
 assert(!all.DB.lime.some(m => m.accept_event === "__hiyori_shop__"));
 assert.equal(all.DB.samechan.lime, undefined);
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
@@ -120,9 +120,9 @@ assert(Array.isArray(all.DB.gallery.items), "the approved gallery catalog is loa
 assert.equal(all.DB.characters.hiyori.name, "泡沫ひより");
 assert.equal(all.DB.characters.hiyori.reading, "うたかた ひより");
 assert.equal(all.DB.characters.saku.name, "綾取 陣（あやとり じん）");
-assert.equal(all.DB.characters.rei.reading, "あそう れい");
+assert.equal(all.DB.characters.rei.reading, "くらうど");
 assert.equal(all.realName("saku"), "綾取陣");
-assert.equal(all.realName("rei"), "鴉葬レヰ");
+assert.equal(all.realName("rei"), "†玖羅雨℃†");
 assert.equal(all.realName("hiyori"), "ひより");
 assert.equal(all.DB.characters.hiyori.age, 25);
 assert.equal(all.DB.hiyori.route, undefined);

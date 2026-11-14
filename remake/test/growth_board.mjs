@@ -360,7 +360,7 @@ core.state.affinity.adam = 0;
   const gg = growth.ensureGrowth();
   const known = (id) => board.lessonKnown(N[id], gg);
   assert.equal(board.lessonShown(N["M-B2"], gg), true, "授業のマスはいつも盤に出る");
-  assert.equal(known("M-B2"), false, "まだ会っていないレヰの授業は伏せる");
+  assert.equal(known("M-B2"), false, "まだ会っていないクラウドの授業は伏せる");
   assert.equal(board.nodeStatus(N["M-B2"], gg, board.replay(gg, [])), "locked", "第1章では第2章の授業は封");
   assert.equal(board.NODES.filter((n) => n.trail).length, 0, "授業だけにつながる小道のマスは無い");
   assert.equal(known("M-S1"), true, "スミさんは最初から");
@@ -459,7 +459,7 @@ core.state.affinity.adam = 0;
   const gg = growth.ensureGrowth();
   const keep = { nodes: [...gg.nodes], learned: [...gg.learned] };
   gg.nodes.push("M-B2", "M-S2");
-  assert.deepEqual(growth.readyLessons("rei").map((l) => l.id), ["M-B2"], "レヰの授業も会った時に相談できる（SBD70）");
+  assert.deepEqual(growth.readyLessons("rei").map((l) => l.id), ["M-B2"], "クラウドの授業も会った時に相談できる（SBD70）");
   assert.deepEqual(growth.readyLessons("adam").map((l) => l.id), ["M-S2"], "場面がある授業は会った時に相談できる");
   Object.assign(gg, keep);
 }

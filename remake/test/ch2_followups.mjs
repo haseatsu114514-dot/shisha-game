@@ -58,7 +58,7 @@ const mocks = {
   "../daily/trpg.js": { trpgSpot: () => null, maybeRecruitTrpgMember: async () => false },
   "../daily/shop.js": { openShop: async () => null },
   "./ch2-purikura.js": { offerAgehaPurikura: async () => true },
-  // MELTY PUFFでのレヰの挨拶回の後日（#3468 A案）。判定は実物を使う
+  // MELTY PUFFでのクラウドの挨拶回の後日（#3468 A案）。判定は実物を使う
   "../core/ryuji-visit.js": { reiStickerDue },
   // あげはの♥3の質問（#1988）は affinity_stages.mjs で確認する。ここでは質問が無い通常訪問だけを見る
   // 締めくくりの記録・贈り物は bonds.mjs / affinity_stages.mjs が確認する。ここでは訪問の分岐と精算だけを見る（#2027）
@@ -219,14 +219,14 @@ for (const id of ids) {
   assert.equal(state.flags._ch2_followup_done[id], true);
 }
 
-// あげはの店に通う回は、神崎・レヰの段階会話と同じ+16。いつもの会話だけ+8（VOL06・AFB01）。
+// あげはの店に通う回は、神崎・クラウドの段階会話と同じ+16。いつもの会話だけ+8（VOL06・AFB01）。
 {
   await setup(1); state.flags._ch2_followup_done = { ageha: true };
   agehaStory = "remake_ch2_ageha_gyaru";
   DB.dialogues.remake_ch2_ageha_gyaru = { dialogue_id: agehaStory, lines: [{ speaker: "ageha", face: "smile", text: "a" }] };
   assert.equal((await visit("ageha")).used, true);
   assert.equal(played.at(-1), agehaStory);
-  assert.deepEqual(state.affinity, [["ageha", 16]], "An Ageha story visit gains like the Kanzaki/レヰ stages");
+  assert.deepEqual(state.affinity, [["ageha", 16]], "An Ageha story visit gains like the Kanzaki/クラウド stages");
   assert.equal(state.flags._ch2_read_remake_ch2_ageha_gyaru, true);
   agehaStory = null;
   await visit("ageha");
@@ -319,10 +319,10 @@ for (const id of validatedIds) {
   assert.deepEqual(loaderDB.dialogues, { preserved: true });
 }
 fixture = preparation; await loader.namespace.loadPreparationDialogues();
-// 31 本 + あげはの♥3の質問（#1988）＋あげは♥5の締めくくり（#2023）+ 神崎・レヰの小会話6本と締めくくり2本（#2027）
-// + 今回の日常3本（#3097）+ レヰのライブの夜（RVE07）
+// 31 本 + あげはの♥3の質問（#1988）＋あげは♥5の締めくくり（#2023）+ 神崎・クラウドの小会話6本と締めくくり2本（#2027）
+// + 今回の日常3本（#3097）+ クラウドのライブの夜（RVE07）
 // + あげはの小会話3本と地元の第2章の会話7本、tonariの大会準備9本（VOL13）＋中間の確認4本（#2032）
-// + レヰのMELTY PUFFの挨拶回とシールの後日2本（#3468 A案）
+// + クラウドのMELTY PUFFの挨拶回とシールの後日2本（#3468 A案）
 assert.equal(Object.keys(loaderDB.dialogues).length, 70 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
 for (const suffix of ["b", "c", "d"]) assert(loaderDB.dialogues[`remake_ch2_ageha_repeat_${suffix}`], `ageha small talk ${suffix}`);
 for (const id of ["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze", "ch2_rio_taste", "ch2_rio_strawberry"]) assert(loaderDB.dialogues[id], id);
@@ -383,7 +383,7 @@ console.log("PASS: actual preparation/loader, three owners, old saves, once-only
     else assert.equal(played.at(-1), expected, `DAY${chapterDay}`);
   }
 }
-// #2027: 神崎・レヰの小会話は5種を巡回し、その前だけ昼夜の店のあいさつ。訪問列を読み終えた♥5で締めくくり、定休日は入れない。
+// #2027: 神崎・クラウドの小会話は5種を巡回し、その前だけ昼夜の店のあいさつ。訪問列を読み終えた♥5で締めくくり、定休日は入れない。
 const allStoriesRead = id => { for (const entry of CH2_VISIT_STORIES[id]) {
   if (entry.done) (state.flags[entry.done] ||= {})[id] = true; else state.flags[`_ch2_read_${entry.scene}`] = true;
 } };
@@ -481,7 +481,7 @@ for (const id of ids) {
 }
 console.log("PASS: three everyday talks are loaded, rotate, retain normal fees/rewards, and leave no settlement on interruption");
 
-// RVE07: レヰのライブの夜。第2章で余りチケットを受け取った人が、第3章の東京へ発つ前の準備期間にレヰの店へ来たら、
+// RVE07: クラウドのライブの夜。第2章で余りチケットを受け取った人が、第3章の東京へ発つ前の準備期間にクラウドの店へ来たら、
 // いつもの会話・段階より先に一度だけ。終演後の場面なので夜だけ。チケットが無い・第2章・出発後は出さない。中断では既読にしない。
 {
   const live = "ch3_prep_rei_live";

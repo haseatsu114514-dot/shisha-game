@@ -1,5 +1,5 @@
 // 第5章の最初の来店で一度だけ読む会話（N3・chapters/ch5-first-talks.js）を、実際の地図の来店で確かめる。
-// 柚ヶ谷: 神崎煙草店の最初の来店は第2章の後日談（世界大会の後の版）→ 零-ZERO- の最初の来店はレヰの会話 → 次の日の神崎の店は
+// 柚ヶ谷: 神崎煙草店の最初の来店は第2章の後日談（世界大会の後の版）→ 零-ZERO- の最初の来店はクラウドの会話 → 次の日の神崎の店は
 // いつもの来店（昼のあいさつ＋通い訪問の小会話）。地元: EDEN の最初の来店は任意場面「二つのダブルアップル」、次の日のEDENがアダムの会話。
 // 代金・好感度（第5章の通い +5）・回数は元の店の来店と同じ。
 import assert from "node:assert/strict";
@@ -141,7 +141,7 @@ await suite("ch5-home-talks", async check => {
     assert.equal(state.flags._ch2_talks?.kumicho, (before.flags._ch2_talks?.kumicho || 0) + 1, "counted as a regular visit");
     assert.equal(state.visits.kumicho, (before.visits.kumicho || 0) + 1);
     assert.equal(state.flags._ch5.part, "free", "the talk does not move the Chapter 5 story");
-    // 2. 夜の零-ZERO-: レヰの第5章の会話を一度だけ。夜を越えると地元へ帰る。
+    // 2. 夜の零-ZERO-: クラウドの第5章の会話を一度だけ。夜を越えると地元へ帰る。
     before = state;
     await visit(page, "ch2_rei");
     await mapReady(page, { day: 52, slot: 0 });

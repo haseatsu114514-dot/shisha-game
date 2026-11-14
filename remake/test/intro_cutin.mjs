@@ -90,13 +90,13 @@ try {
   // 1a) 名前の書き方: 「漢字《よみ》」でふりがな、「｜」で範囲を明示、半角空白は苗字と名前のあいだの小さな空き
   const split = await page.evaluate(async () => {
     const { nameParts, plainName } = await import("./js/vn/intro-art.js");
-    const cases = ["綾取《あやとり》 陣《じん》", "神崎《かんざき》 竜二《りゅうじ》（組長《くみちょう》）", "鴉葬《あそう》｜レヰ《れい》", "占《うらな》いオババ", "あげは"];
+    const cases = ["綾取《あやとり》 陣《じん》", "神崎《かんざき》 竜二《りゅうじ》（組長《くみちょう》）", "｜†玖羅雨℃†《くらうど》", "占《うらな》いオババ", "あげは"];
     return cases.map((text) => ({ parts: nameParts(text), plain: plainName(text) }));
   });
   assert.deepEqual(split, [
     { parts: [{ text: "綾取", ruby: "あやとり" }, { gap: true }, { text: "陣", ruby: "じん" }], plain: "綾取陣" },
     { parts: [{ text: "神崎", ruby: "かんざき" }, { gap: true }, { text: "竜二", ruby: "りゅうじ" }, { text: "（" }, { text: "組長", ruby: "くみちょう" }, { text: "）" }], plain: "神崎竜二（組長）" },
-    { parts: [{ text: "鴉葬", ruby: "あそう" }, { text: "レヰ", ruby: "れい" }], plain: "鴉葬レヰ" },
+    { parts: [{ text: "†玖羅雨℃†", ruby: "くらうど" }], plain: "†玖羅雨℃†" },
     { parts: [{ text: "占", ruby: "うらな" }, { text: "いオババ" }], plain: "占いオババ" },
     { parts: [{ text: "あげは" }], plain: "あげは" },
   ], "名前の書き方の読み取り");
@@ -146,7 +146,7 @@ try {
     .map((id) => [id, T.intro.introName(id).main])));
   assert.deepEqual(rule, {
     hajime: "逢縁はじめ", sumi: "炭吉丈一郎", naru: "鳴切亮太（なる）", adam: "アダム", minto: "みんと", shisha_9000: "SHISHA-9000",
-    saku: "綾取陣", steve: "スティーブ・A・アッシュ", volk: "ヴォルク・イヴァノフ", rei: "鴉葬レヰ", master_hookah: "王煙楼",
+    saku: "綾取陣", steve: "スティーブ・A・アッシュ", volk: "ヴォルク・イヴァノフ", rei: "†玖羅雨℃†", master_hookah: "王煙楼",
     tsumugi: "猫洞つむぎ", rio: "円頓寺凛想", ageha: "あげは", kumicho: "神崎竜二（組長）", dr_kemuri: "チャコール博士", pakki: "パッキー",
     sui: "千須豪", emil: "エミル・ユルマズ", sheikh: "シェイク・ナジュム", da_silva: "ダ・シルヴァ・太陽", mashiro: "黒葉ましろ",
     uranaishi: "占いオババ", mukai_master: "向井然", maezono: "上園文太郎", oneesan: "お姉さん", hiyori: "泡沫ひより",
@@ -195,8 +195,8 @@ try {
     return out;
   });
   assert(!/栞|木成頼/.test(hidden.minto), `みんとのカットインに本名が出ている: ${hidden.minto}`);
-  assert(!/田中|健太/.test(hidden.rei), `鴉葬レヰのカットインに本名が出ている: ${hidden.rei}`);
-  assert(hidden.rei.includes("鴉葬レヰ"), "活動名を紹介に出す");
+  assert(!/田中|健太/.test(hidden.rei), `†玖羅雨℃†のカットインに本名が出ている: ${hidden.rei}`);
+  assert(hidden.rei.includes("†玖羅雨℃†"), "活動名を紹介に出す");
 
   // 3) 会話の中: 「？？？」の間は出ず、名乗り（_met_）の直後の台詞の前に一度だけ出る
   await page.evaluate(() => {

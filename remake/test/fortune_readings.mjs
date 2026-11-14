@@ -91,7 +91,7 @@ assert.equal(hasAffinity('hiyori'), true);
 assert.equal(all.length, 95);
 assert(Object.values(trivia.characters).every(entries => entries.length === 5));
 assert.equal(new Set(all.map(x => x.id)).size, 95);
-// 追加分は吹き出し1枚に収め、本名や正体を先出ししない（レヰの本名・ましろの噂の正体・組長の過去）。
+// 追加分は吹き出し1枚に収め、本名や正体を先出ししない（クラウドの本名・ましろの噂の正体・組長の過去）。
 for (const char of castIds) for (const entry of trivia.characters[char]) {
   for (const text of [entry.teller, entry.reaction]) {
     assert.equal(paginate(text).length, 1, `${entry.id} spills onto a second page: ${text}`);
@@ -325,7 +325,7 @@ const db = { dialogues: Object.fromEntries(base.map(d => [d.dialogue_id, d])), f
 registerFortuneReadings(db);
 // 三日間の「赤く見える」は、選択肢の注記で光りうる相手にだけ約束する（恋愛の注記は表示が切られている間は数えない）。
 const sightLine = d => d.lines.some(l => /赤く見える/.test(l.text || ''));
-// 第2〜5章の場面の注記で、レヰ・サメちゃん・ましろも加わった（#2704）。
+// 第2〜5章の場面の注記で、クラウド・サメちゃん・ましろも加わった（#2704）。
 const hinted = new Set(['ageha', 'mashiro', 'minto', 'naru', 'rei', 'rio', 'samechan', 'sumi', 'tsumugi']);
 // 判定は注記があるかだけで、章や既読は見ない。凛想の注記は初対面の ch1_rio_first の中、スミさんは第1章DAY5の場面だけなので、
 // 第2章以降や初対面の後は、約束しても光らないことがある（既知の限界。#2704 のPR本文の「残り」に記載）。

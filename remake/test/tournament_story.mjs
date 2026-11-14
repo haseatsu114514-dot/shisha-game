@@ -29,7 +29,7 @@ assert.equal(new Set(['sui','emil','dr_kemuri'].map(id=>JUDGE_LOOK[id].color)).s
 assert.match(feedbackLine('emil','pull',evaluationOf(90)),/奥の味/);
 const nationalBroadcast=JSON.parse(fs.readFileSync(new URL('../data/broadcast.json',import.meta.url))).chapter3;
 assert(nationalBroadcast.rivalComments.length && nationalBroadcast.rivalFeed.length);
-assert(!/なる選手|あげは|神崎|レヰ|アダム|みんと/.test(JSON.stringify(nationalBroadcast)));
+assert(!/なる選手|あげは|神崎|クラウド|アダム|みんと/.test(JSON.stringify(nationalBroadcast)));
 for (const [pack,expected] of [['fluffy',/ふわっと/],['normal',/均等/],['firm',/しっかり/]]) {
  const lines=text('packed',{...cs,pack});assert.match(lines,expected);assert.match(lines,/ミント 8g、ストロベリー 4g/);
  assert(!/成功|失敗|完璧/.test(lines));
@@ -215,7 +215,7 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
  assert.equal(JSON.stringify(c4),before,'Chapter 4 dialogue must not alter craft/results');
  // 客席のコメント: 第1〜3章の顔ぶれを出さず、工程×出来ごとに2本以上。調整のコメントは1回目・2回目のどちらでも出る。
  const world=JSON.parse(fs.readFileSync(new URL('../data/broadcast.json',import.meta.url))).chapter4;
- assert.doesNotMatch(JSON.stringify(world),/綾取|スティーブ|ヴォルク|あげは|神崎|レヰ|アダム|みんと|\d+点/);
+ assert.doesNotMatch(JSON.stringify(world),/綾取|スティーブ|ヴォルク|あげは|神崎|クラウド|アダム|みんと|\d+点/);
  for (const step of ['holes','heat','steam','pull','care']) for (const kind of ['perfect','great','good','miss'])
   assert(world.completion[step][kind].length>=2,`chapter4 completion ${step}.${kind}`);
  for (const kind of ['perfect','good','miss']) assert(world.nico[kind].length>=5,`chapter4 nico ${kind}`);

@@ -181,7 +181,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_read_ch2_rei_fifth", "person"],
   ["_ch2_read_ch2_rei_fourth", "person"],
   ["_ch2_read_ch2_rei_sixth", "person"],
-  ["_ch2_read_ch2_rei_third", "person"], // レヰの本名の回。LIME lime_rei_bond_a の条件
+  ["_ch2_read_ch2_rei_third", "person"], // クラウドの本名の回。LIME lime_rei_bond_a の条件
   ["_ch2_read_ch2_slump_taste", "progression"],
   ["_ch2_read_ch2_sofa_burn", "progression"],
   ["_ch2_read_ch2_strawberry_sample", "progression"],
@@ -571,7 +571,7 @@ export const FLAG_EXACT_RULES = [
   // 凛想が味の不調に気づいた回（第2章）を読んだか。第3・4章の出発前の凛想の会話が分岐に使う（data/dialogue/ch3_ch4_home.json）
   ["_talk_seen_ch2_rio_taste", "person"],
   // 第3章の出発前に凛想から「向こうの顔」を頼まれたか。第4章の出発前の凛想の会話が、その報告の分岐に使う
-  ["_talk_seen_ch3_prep_rei_live", "person"], // レヰのライブの夜（第3章の準備期間・RVE07）
+  ["_talk_seen_ch3_prep_rei_live", "person"], // クラウドのライブの夜（第3章の準備期間・RVE07）
   ["_talk_seen_ch3_prep_rio", "person"],
   ["_tsumugi_contest_art_seen", "person"],
   ["_tsumugi_contest_draft_hands", "person"],

@@ -8,7 +8,7 @@ export function ryujiGreetingDue(value) {
 export function ryujiAtMeltyPuff(value) {
   return ryujiGreetingDue(value) || value.chapter === 2 && value.flags._ryuji_melty_visit === visitStamp(value);
 }
-// レヰの挨拶回（#3468 A案）。組長の挨拶と同じ窓で、組長の挨拶と同じ日には重ねない。場面の中で撮り終えて帰る。
+// クラウドの挨拶回（#3468 A案）。組長の挨拶と同じ窓で、組長の挨拶と同じ日には重ねない。場面の中で撮り終えて帰る。
 export function reiGreetingDue(value) {
   const start = value.flags._ch2_day1?.startDay;
   return value.chapter === 2 && Number.isInteger(start) && value.day > start && value.day < start + 13

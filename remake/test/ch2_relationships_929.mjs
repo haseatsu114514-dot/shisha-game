@@ -1,4 +1,4 @@
-// 第2章のオーナー採用改稿（#929）: なるとだけ本当に傷つき、あげは・神崎・レヰは見捨てない。
+// 第2章のオーナー採用改稿（#929）: なるとだけ本当に傷つき、あげは・神崎・クラウドは見捨てない。
 // 台本の構造で確かめる（表示・保存はブラウザの ch2_story / ch2_tournament / story_canon が確認する）。
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -50,7 +50,7 @@ assert.equal(text(main.ch2_slump_taste).match(/いつもの(お前|はじめ)/g)
 const eve = main.ch2_pre_tournament_realisation.lines;
 assert.match(eve[1].text, /戻ってきた/); assert.doesNotMatch(text(main.ch2_pre_tournament_realisation), /何してんの/);
 
-// DAY14: あげはは消えない。悔しさと祝福を両立し、関係は続く。神崎・レヰも勝者を認める
+// DAY14: あげはは消えない。悔しさと祝福を両立し、関係は続く。神崎・クラウドも勝者を認める
 const farewell = text(tournament.ch2_tournament_farewell);
 assert.doesNotMatch(farewell, /理由は、聞かないで|消えた|もう帰るんですか/);
 assert.match(farewell, /悔しい/); assert.match(farewell, /おめでと、ハジメっち/); assert.match(farewell, /うちの店/);
@@ -63,7 +63,7 @@ for (const id of ["kumicho", "rei", "ageha"]) assert(waiting.some((l) => l.speak
 assert(waiting.some((l) => ["maezono", "dr_kemuri", "sui"].includes(l.speaker)), "審査員の短い反応");
 assert.doesNotMatch(waiting.map((l) => l.text).join("\n"), /やもん|決めてん/);
 
-// レヰ再訪: 一回目は分からなかったと言ってから、曲の感想に具体的に答え、同じ空返事を繰り返さない（2026-11-13 はじめは詳しくない）
+// クラウド再訪: 一回目は分からなかったと言ってから、曲の感想に具体的に答え、同じ空返事を繰り返さない（2026-11-13 はじめは詳しくない）
 const rei = prep.remake_ch2_rei_repeat.lines.filter((l) => l.speaker === "hajime").map((l) => l.text);
 assert.match(rei[1], /サビ|音/); assert.equal(new Set(rei).size, rei.length);
 
@@ -160,7 +160,7 @@ for (const scene of [half, back, thermo]) {
   assert.doesNotMatch(text(scene), /が(少し|かなり|大きく)?上がった/, `${scene.dialogue_id}: 報酬の文を置かない`);
 }
 
-// C4: 顔色に気づいて水を出す役は、つむぎとレヰだけ。アダムは続けてきた人の言葉で返し、スミの訓示は手の動きへ
+// C4: 顔色に気づいて水を出す役は、つむぎとクラウドだけ。アダムは続けてきた人の言葉で返し、スミの訓示は手の動きへ
 const adam = isolation.ch2_adam_distance;
 assert.doesNotMatch(text(adam), /水|グラス|何点/);
 assert.match(text(adam), /また分かる日に吸え/, "第3章・第5章で回収する一言を残す");
@@ -201,7 +201,7 @@ assert(!all(heart).some((l) => ["apply", "note", "set_flag"].includes(l.type)));
 assert.match(craft.tournament_craft_waiting_2.lines.map((l) => l.text).join("\n"), /あげはの目が、こっちの手元/, "制作中の小さな伏線");
 
 // 第3章のライバルの偵察（#929）: 名乗らない「？？？」が顔だけ見せて現れる。第2章では名前・面識・会話を持たせない。
-// 目撃は試煙会と大会の客席の2回（全体講評S18・C4）。前夜は出さず、レヰの一曲からあげはの場面へそのまま続ける
+// 目撃は試煙会と大会の客席の2回（全体講評S18・C4）。前夜は出さず、クラウドの一曲からあげはの場面へそのまま続ける
 for (const scene of [ageha.remake_ch2_ageha_tasting, tournament.ch2_tournament_entrance]) {
   const lines = all(scene), said = lines.filter((l) => l.speaker === "volk").map((l) => l.text);
   assert(said.length >= 1 && said.every((t) => t === "……"), `${scene.dialogue_id}: 台詞は無言だけ`);
@@ -212,7 +212,7 @@ for (const scene of [ageha.remake_ch2_ageha_tasting, tournament.ch2_tournament_e
 }
 assert(ageha.remake_ch2_ageha_tasting.lines.some((l) => l.type === "set_flag" && l.flag === "_ch2_scout_seen"), "第3章の面識判定は、必ず読む試煙会の目撃で立つ");
 assert(!all(remake.remake_ch2_eve_rei).some((l) => l.speaker === "volk" || l.char_id === "volk" || l.flag === "_ch2_scout_seen"), "前夜に偵察の男を出さない");
-assert.match(remake.remake_ch2_eve_rei.lines.at(-1).text, /^レヰは.*歩いていった。$/, "一曲の余韻のまま、あげはの場面へ続く");
+assert.match(remake.remake_ch2_eve_rei.lines.at(-1).text, /^クラウドは.*歩いていった。$/, "一曲の余韻のまま、あげはの場面へ続く");
 assert.doesNotMatch(text(main.ch2_pre_tournament_realisation), /背の高い|うちの店にも来てた|メモだけ/, "前夜のあげはの噂話も外す");
 assert(!all(main.ch2_pre_tournament_realisation).some((l) => /^_ch2_scout/.test(l.flag || "")), "前夜は偵察の記録で分岐しない");
 assert.doesNotMatch(text(tournament.ch2_tournament_entrance), /会場の外/, "入場の独白は前夜の目撃を前提にしない");
@@ -245,4 +245,4 @@ for (const outing of [...CITY_OUTINGS.filter((o) => o.kind === "outing"), CITY_C
 }
 assert.equal(CITY_OUTINGS.find((o) => o.id === "ch2_aquarium").stat, undefined, "水族館に能力値を一律で足さない");
 
-console.log("[ch2 relationships 929] PASS: Naru rupture on screen, choice depth, no forced arrogance, burn safety, Ageha stays, Kanzaki/レヰ moments, ch3 bridge, new forced nights, Ageha\'s last inner voice, anonymous scout");
+console.log("[ch2 relationships 929] PASS: Naru rupture on screen, choice depth, no forced arrogance, burn safety, Ageha stays, Kanzaki/クラウド moments, ch3 bridge, new forced nights, Ageha\'s last inner voice, anonymous scout");

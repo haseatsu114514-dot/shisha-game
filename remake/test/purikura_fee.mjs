@@ -12,7 +12,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 async function fixture() {
  let state={chapter:2,day:2,slot:0,phase:'daily',money:1000,stamina:77,inventory:{lemon:12},story:{ageha:1},keepsakes:[],flags:{_ageha_first_purikura:true,_ageha_purikura_offer:'2:1:0'}};
  const log=[],saved=[],memory=new Map();let mode='solo',guest='kumicho',playImpl=async id=>({id,visited:[]}),modalImpl=null;
- let present=[{id:'kumicho',role:'guest',known:true,name:'神崎'},{id:'rei',role:'guest',known:true,name:'レヰ'}];
+ let present=[{id:'kumicho',role:'guest',known:true,name:'神崎'},{id:'rei',role:'guest',known:true,name:'クラウド'}];
  const ctx=vm.createContext({console,WeakSet});
  const fixed=(id,values)=>new vm.SyntheticModule(Object.keys(values),function(){for(const [k,v] of Object.entries(values))this.setExport(k,v);},{context:ctx,identifier:id});
  let stateModule=fixed('core/state.js',{state,save:()=>{saved.push(clone(state));memory.set('save',JSON.stringify(state));}});
@@ -134,7 +134,7 @@ for(const cancel of [false,true])await check(`existing Ryuji greeting stays sepa
  assert.equal(await f.offer(),!cancel);assert.equal(f.state.flags._ryuji_melty_greeting,true);assert.equal(f.state.flags._ryuji_melty_visit,'2:2:0');
  assert.equal(f.log.filter(l=>l.id==='remake_ch2_ryuji_melty_greeting').length,1);assert.equal(f.state.money,cancel?1000:600);assert.equal(f.state.flags._ageha_purikura_history?.length||0,cancel?0:1);
 });
-// #3468 A案: レヰの挨拶回。場面の中で撮るので、料金・思い出の品・撮影履歴は動かさない。組長の挨拶と同じ日には重ねない。
+// #3468 A案: クラウドの挨拶回。場面の中で撮るので、料金・思い出の品・撮影履歴は動かさない。組長の挨拶と同じ日には重ねない。
 await check('Rei greeting plays once, later day than Ryuji, and costs nothing',async f=>{
  f.state.met={ageha:true,kumicho:true,rei:true};f.state.flags._ch2_day1={startDay:1};f.setMode(null);
  assert.equal(await f.offer(),true);assert.equal(f.state.flags._ryuji_melty_greeting,true);

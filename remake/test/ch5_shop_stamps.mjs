@@ -37,7 +37,7 @@ const mandatoryMet = (() => {
   assert(ch1 && ch3, "第1章・第3章の大会で面識を付ける行がある");
   assert.match(ch2, /markMet\("ageha"\)/, "第2章の大会であげはに会う");
   const ch2Loop = ch2.match(/for \(const who of \[([^\]]+)\]\) markMet\(who\)/);
-  assert(ch2Loop, "第2章の大会で神崎・レヰに会う");
+  assert(ch2Loop, "第2章の大会で神崎・クラウドに会う");
   const ids = text => [...text.matchAll(/"([a-z_]+)"/g)].map(m => m[1]);
   return new Set([...ids(ch1[1]), "ageha", ...ids(ch2Loop[1]), ...ids(ch3[1])]);
 })();

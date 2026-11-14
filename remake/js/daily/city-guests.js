@@ -14,7 +14,7 @@ const VISITS = {
   rei: { spotId: "tonari", bg: "bg_tonari_inside" },
 };
 const sceneId = (id, repeat) => `ch2_city_guest_${id}_${repeat ? "repeat" : "first"}`;
-// 2回目からの来店は、繰り返しの回を順に巡回する（2026-11-11 オーナー「推奨で全部」RVE07。神崎・レヰは3本、あげはは1本のまま）。
+// 2回目からの来店は、繰り返しの回を順に巡回する（2026-11-11 オーナー「推奨で全部」RVE07。神崎・クラウドは3本、あげはは1本のまま）。
 // 巡回の位置は `_city_guest_count_<id>`（読み終えた繰り返しの回数）。無い旧保存は0として、従来どおり `_repeat` から。
 const REPEATS = Object.freeze({ ageha: ["repeat"], kumicho: ["repeat", "repeat_b", "repeat_c"], rei: ["repeat", "repeat_b", "repeat_c"] });
 const repeatIds = id => (REPEATS[id] || ["repeat"]).map(suffix => `ch2_city_guest_${id}_${suffix}`);

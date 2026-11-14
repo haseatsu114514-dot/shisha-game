@@ -374,7 +374,7 @@ console.log("[#2024] PASS Dubai story LIME: once each in its Dubai window, none 
     assert(hits.length === 1 && hits[0].region === "home", `${id}: 東京にいる間は待ち、帰ってから届く（${JSON.stringify(hits)}）`);
   }
   // 神崎の店で第5章の会話（世界一の祝い）を読んだ後は、同じ祝いのLIMEを重ねない。
-  // レヰの店の会話は動画の話で祝いの言葉を言わないので、LIMEはその前後どちらでも読める文にしてある。
+  // クラウドの店の会話は動画の話で祝いの言葉を言わないので、LIMEはその前後どちらでも読める文にしてある。
   const met = run({ ch2_kumicho_after_ch2_done: true, _talk_seen_ch5_rei_shop: true }, 10).map((g) => g.id);
   assert(met.includes("lime_ch5_saku_title") && met.includes("lime_ch5_rei_title") && !met.includes("lime_ch5_kumicho_title"),
     `神崎の店で第5章の会話を読んだ後は、神崎の祝いのLIMEを重ねない: ${met}`);

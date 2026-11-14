@@ -301,7 +301,7 @@ await suite('ch2-main', async check => {
     await setup(page, { knownDoctor: true, knownRei: true }); await begin(page); await visit(page, 'rei');
     const text = await page.evaluate(async () => (await import('./js/vn/engine.js')).backlog().map(line => line.text).join('\n'));
     assert(!text.includes('私はチャコール博士'));
-    assert(!text.includes('店長の、レヰ。レヰ'));
+    assert(!text.includes('店長の、クラウド。クラウド'));
     assert(text.includes('街を見てるのか'));
   });
 
