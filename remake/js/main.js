@@ -17,7 +17,7 @@ import { installLooks } from "./looks/index.js";
 import { installRotateGuard } from "./core/rotate-guard.js";
 import { imgFileUrl } from "./core/img-file.js";
 import { warmInBackground } from "./core/loading-prefetch.js";
-import { withLoading, comicLoadingRequired, preferLoadingComic, primeLoadingArt } from "./core/loading.js";
+import { withLoading, comicLoadingRequired, preferLoadingComic, primeLoadingArt, warmNextLoadingComic } from "./core/loading.js";
 import { gameLoadingOptions } from "./core/loading-context.js";
 import { vnTest, enableSeenLinePersistence, tapAdvance } from "./vn/engine.js";
 import { initSideArea } from "./core/side-area.js";
@@ -136,6 +136,10 @@ async function warmUp() {
     () => warmUiArt({ deferStores: true }),
     // 制作の枠・札・ゲージの絵（CSSの背景）。初めての作業台で枠が遅れて出ないように（CRN）
     () => import("./craft/skin.js").then(m => m.warmCraftStyleImages()),
+    // 次のロード画面の漫画を先に決めて2コマを取得しておく（core/loading.js の warmNextLoadingComic は
+    // 呼び手が無く、先読みが効いていなかった。2026-11-14 オーナー「読み込み漫画が遅い」への対応）。
+    // 起動の漫画を読んだ直後のゲートは同じ話の続き（carriedArt）なので、ここで温めるのは最初の実ゲート向け。
+    () => { if (comicLoadingRequired()) warmNextLoadingComic(undefined, gameLoadingOptions(peekSave())); },
   ];
   if (chapter === 1) {
     const bgs = ["bg_osu_map_day", "bg_tonari_inside_day", "bg_home_day"];

@@ -137,6 +137,6 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
   bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px);
 }
 html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
-  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 94px);
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 112px);
 }
 :root[data-side-pad="on"].side-probe #hud .hud-right > :is(.hud-lime, .hud-menu) { visibility: inherit !important; }

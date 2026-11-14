@@ -68,7 +68,7 @@
 
 /* Logo: the same pearl logo as the title screen. The image lives on ::after so a soft mist (::before) can
    sit behind it; a small gap keeps the EN:CODE line clear of the card top (budget: 102 + 8 + 6 = 116u). Purely decorative (title text lives in the art); contain keeps it undistorted. */
-.loading-logo { position: relative; z-index: 1; flex: none; width: calc(360 * var(--loading-unit)); height: calc(102 * var(--loading-unit)); margin: calc(8 * var(--loading-unit)) 0 calc(6 * var(--loading-unit)); }
+.loading-logo { position: relative; z-index: 1; flex: none; width: calc(360 * var(--loading-unit)); height: calc(102 * var(--loading-unit)); margin: calc(6 * var(--loading-unit)) 0 calc(4 * var(--loading-unit)); }
 .loading-logo::after { content: ""; position: absolute; inset: 0; background: var(--loading-logo) center / contain no-repeat; filter: drop-shadow(0 calc(4 * var(--loading-unit)) calc(10 * var(--loading-unit)) #000000d9) drop-shadow(0 0 calc(20 * var(--loading-unit)) #b45cf059); animation: loading-logo-in 420ms ease-out both; }
 .loading-logo::before { content: ""; position: absolute; inset: -34% -14% -6%; pointer-events: none;
   background:
@@ -79,13 +79,15 @@
 .loading-gate:not(.has-logo) .loading-logo { display: none; }
 
 /* Card: 88.6% of the reference width, capped by the gate height so the full stack always fits:
-   fixed parts (logo 116 + card chrome 114 + gauge 30 + status 40 + proceed 42 = 342u) leave
-   (100cqh - 342u) for the panel height; panel width = ratio × that; two panels + side padding 36u
-   + gutter 22u + border 2px. Paper with a printed grain, a hairline inner frame and a deep shadow. */
+   fixed parts (logo 112 + card chrome 102 + gauge 26 + status 40 + proceed 42 = 322u) leave
+   (100cqh - 322u) for the panel height; panel width = ratio × that; two panels + side padding 36u
+   + gutter 22u + border 2px. Paper with a printed grain, a hairline inner frame and a deep shadow.
+   2026-11-14: chrome margins trimmed (logo 8/6→6/4, card padding 16/14→13/11, title/caption gaps,
+   gauge margin 16→12) so height-bound screens give the panels ~19u more room. */
 .loading-card {
   position: relative; isolation: isolate; box-sizing: border-box; flex: none;
-  width: min(calc(1134 * var(--loading-unit)), calc(2 * (var(--loading-panel-ratio)) * (100cqh - 342 * var(--loading-unit)) + 60 * var(--loading-unit)));
-  padding: calc(16 * var(--loading-unit)) calc(18 * var(--loading-unit)) calc(14 * var(--loading-unit));
+  width: min(calc(1134 * var(--loading-unit)), calc(2 * (var(--loading-panel-ratio)) * (100cqh - 322 * var(--loading-unit)) + 60 * var(--loading-unit)));
+  padding: calc(13 * var(--loading-unit)) calc(18 * var(--loading-unit)) calc(11 * var(--loading-unit));
   border-radius: calc(3 * var(--loading-unit));
   background: linear-gradient(170deg, var(--loading-paper-hi) 0%, var(--loading-paper) 45%, var(--loading-paper-lo) 100%);
   border: 1px solid #fff8ea99;
@@ -104,7 +106,7 @@
 .loading-card.is-waiting { visibility: hidden; animation: none; }
 .loading-card.is-waiting figure { animation: none; }
 /* Title row: a lavender ink tab, the episode title, and a double rule (ink + faint echo). One line in landscape. */
-.loading-comic-title { display: flex; align-items: center; gap: calc(10 * var(--loading-unit)); margin: 0 0 calc(12 * var(--loading-unit)); padding: 0 calc(2 * var(--loading-unit)) calc(7 * var(--loading-unit)); color: #2e1a33; font-size: calc(28 * var(--loading-unit)); font-weight: 900; line-height: 1.2; letter-spacing: .06em; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+.loading-comic-title { display: flex; align-items: center; gap: calc(10 * var(--loading-unit)); margin: 0 0 calc(9 * var(--loading-unit)); padding: 0 calc(2 * var(--loading-unit)) calc(7 * var(--loading-unit)); color: #2e1a33; font-size: calc(28 * var(--loading-unit)); font-weight: 900; line-height: 1.2; letter-spacing: .06em; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   background: linear-gradient(var(--loading-ink-soft), var(--loading-ink-soft)) left bottom / 100% 2px no-repeat, linear-gradient(#4a2c4455, #4a2c4455) left calc(100% - 4px) / 100% 1px no-repeat; }
 .loading-comic-title::before { content: ""; flex: none; width: calc(9 * var(--loading-unit)); height: .95em; border-radius: calc(1.5 * var(--loading-unit)); background: linear-gradient(180deg, #8a63a8, var(--loading-lavender)); box-shadow: inset 0 0 0 1px #ffffff40; }
 /* Two panels, left → right, with a small ink arrow in the gutter as the reading-order cue. */
@@ -124,14 +126,14 @@
 /* Optional text bubbles: bubble shape is in the art, the words are live DOM text (typo-fixable). */
 .loading-bubble { position: absolute; margin: 0; color: #20161f; font-weight: 800; line-height: 1.25; text-align: center; white-space: pre-line; transform: translate(-50%, -50%); pointer-events: none; }
 /* Beginner-friendly one-line note under the panels (per-comic data), led by a small amber mark. */
-.loading-comic-caption { display: flex; align-items: center; gap: calc(8 * var(--loading-unit)); margin: calc(10 * var(--loading-unit)) calc(2 * var(--loading-unit)) 0; color: #4b3640; font-size: calc(15 * var(--loading-unit)); font-weight: 700; line-height: 1.4; letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.loading-comic-caption { display: flex; align-items: center; gap: calc(8 * var(--loading-unit)); margin: calc(7 * var(--loading-unit)) calc(2 * var(--loading-unit)) 0; color: #4b3640; font-size: calc(15 * var(--loading-unit)); font-weight: 700; line-height: 1.4; letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .loading-comic-caption::before { content: ""; flex: none; width: calc(7 * var(--loading-unit)); height: calc(7 * var(--loading-unit)); transform: rotate(45deg); background: var(--loading-amber); box-shadow: 0 0 0 1px #ffffff66 inset; }
 
 /* Gauge: a short neon bar with smoke flourishes at both ends, as in the mockup. Until the first real
    report(done, total) arrives, the fill is an indeterminate sliding segment: the bar never shows an
    invented percentage. The first report adds .is-determinate and the width follows the real counts;
    a shine sweep runs while work continues. At the reading hold (.is-ready) the bar rests at 100%. */
-.loading-gauge { position: relative; flex: none; display: flex; justify-content: center; margin-top: calc(16 * var(--loading-unit)); }
+.loading-gauge { position: relative; flex: none; display: flex; justify-content: center; margin-top: calc(12 * var(--loading-unit)); }
 /* End ornaments: a hairline fading outward with a small amber diamond beside the bar (same amber mark as the caption). */
 .loading-gauge::before, .loading-gauge::after { content: ""; position: absolute; top: 50%; width: calc(64 * var(--loading-unit)); height: calc(10 * var(--loading-unit)); pointer-events: none; opacity: .85;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 10'%3E%3Cdefs%3E%3ClinearGradient id='f'%3E%3Cstop offset='0' stop-color='%23d9c6f0' stop-opacity='0'/%3E%3Cstop offset='1' stop-color='%23d9c6f0' stop-opacity='.75'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect y='4.5' width='53' height='1' fill='url(%23f)'/%3E%3Cpath d='M59 1.6 62.4 5 59 8.4 55.6 5z' fill='%23e8c27a'/%3E%3C/svg%3E") center / 100% 100% no-repeat; }
@@ -203,7 +205,8 @@
    (core/loading.js adds .is-viewport), so cq units are the real screen. The logo gives its height to the
    panels, the sheet may use the full width between the safe areas, and the small texts get a floor in real
    pixels (note / prompt 12px, status 13px, title 16px) instead of shrinking with the 1280x720 unit.
-   Fixed height around the panels: 119u + 1.2*title + 1.4*note + 1.6*status + 1.3*prompt (+ bottom safe area). */
+   Fixed height around the panels: 107u + 1.2*title + 1.4*note + 1.6*status + 1.3*prompt (+ bottom safe area).
+   (107u tracks the shared chrome after the 2026-11-14 margin trims: card padding -6u, title gap -3u, caption gap -3u.) */
 @media (orientation: landscape) and (max-height: 500px) {
   .loading-gate.is-viewport {
     --loading-title-size: max(calc(28 * var(--loading-unit)), 16px);
@@ -212,7 +215,7 @@
     --loading-proceed-size: max(calc(14 * var(--loading-unit)), 12px);
     --loading-side: max(12px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
     --loading-foot: env(safe-area-inset-bottom, 0px);
-    --loading-fixed: calc(119 * var(--loading-unit) + 1.2 * var(--loading-title-size) + 1.4 * var(--loading-note-size) + 1.6 * var(--loading-status-size) + 1.3 * var(--loading-proceed-size) + var(--loading-foot) + 6px);
+    --loading-fixed: calc(107 * var(--loading-unit) + 1.2 * var(--loading-title-size) + 1.4 * var(--loading-note-size) + 1.6 * var(--loading-status-size) + 1.3 * var(--loading-proceed-size) + var(--loading-foot) + 6px);
     padding-bottom: var(--loading-foot);
   }
   .loading-gate.is-viewport .loading-logo { display: none; }
