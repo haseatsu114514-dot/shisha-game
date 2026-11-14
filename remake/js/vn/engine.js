@@ -407,7 +407,9 @@ export function play(idOrDlg, opts = {}) {
     // #2447 item10: metadata.lift_scene_props の場面だけ、背景の台（卓上・床）を本文ボックスの
     // 上辺まで持ち上げて、下半分が会話ウィンドウに隠れないようにする。既定の家の場面には付けない。
     document.body.classList.toggle("vn-lift-props", !!meta.lift_scene_props);
-    const bgmReady = preloadBgm(meta.bgm || currentBgm());
+    // BGM の準備は並行して進めるだけにして、会話の開始は待たせない。
+    // 再生は playBgm 側が準備完了を待って始めるので、曲は用意でき次第フェードインする。
+    preloadBgm(meta.bgm || currentBgm());
     if (hooks.onEnter) hooks.onEnter(dlg.dialogue_id || "", dlg);
     dropRetired(); // 選び終えた前の画面（マップ等）を会話の後ろに残さない
     // 会話の間は、まだ片付いていない画面（大会の作業台・結果表など）も後ろに見せない（会話が終われば戻る）
@@ -424,7 +426,7 @@ export function play(idOrDlg, opts = {}) {
     // 画像の待ち時間は場面転換の幕で覆う。短い固定待ちで読み込みを打ち切らない。
     // 最初の行を出す前に名前欄と本文の明朝を待つ。失敗時は代替書体で続ける。
     const fontsReady = loadVnFonts().catch(() => []);
-    const assetsReady = Promise.all([settingsReady, fontsReady, bgReady.assetsReady || bgReady, bgmReady, ...portraitsReady.map((u) => imageReady(u, 15000))]);
+    const assetsReady = Promise.all([settingsReady, fontsReady, bgReady.assetsReady || bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]);
     waitSceneAssets(bgReady, me, assetsReady).then(() => {
       if (running !== me) return;
       sceneBgm(meta);
@@ -728,13 +730,14 @@ function jumpTo(id) {
     running.slots = {};
   }
   running.visited.push(id);
-  const bgmReady = target.metadata?.bgm ? preloadBgm(target.metadata.bgm) : Promise.resolve();
+  // 場面移動でも BGM の準備完了は待たない（playBgm 側が完了後に鳴らす）。
+  if (target.metadata?.bgm) preloadBgm(target.metadata.bgm);
   if (hooks.onEnter) hooks.onEnter(id, target);
   prefetch(target);
   if (target.metadata?.bg || target.metadata?.bgm) {
     const r = running;
     r.ready = false;
-    waitSceneAssets(Promise.all([sceneSetBg(target.metadata.bg, firstPortraits(target)), bgmReady]), r).then(() => { if (running === r) { sceneBgm(target.metadata); r.ready = true; next(); } });
+    waitSceneAssets(Promise.all([sceneSetBg(target.metadata.bg, firstPortraits(target))]), r).then(() => { if (running === r) { sceneBgm(target.metadata); r.ready = true; next(); } });
     return true;
   }
   return false;
