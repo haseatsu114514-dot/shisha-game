@@ -19,6 +19,7 @@ import { awardTournamentExp, awardChapterClearExp } from "../core/growth.js";
 import { playBgm, preloadBgm, stopBgm, SE } from "../core/audio.js";
 import { play, hooks } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
+import { openMenu } from "../daily/menu.js";
 import { syncNightQueue, runNightPlan, finishDeferredNights } from "../daily/night-events.js";
 import { initHud, showHud, daysLeft } from "../daily/hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
@@ -648,6 +649,17 @@ function startTournamentCraft() {
   return cs;
 }
 
+function openTournamentBench(cs) {
+  openBench(cs, { steps: STEPS_ALL });
+  showHud(true);
+}
+
+function openTournamentMenu() {
+  const inBench = () => state?.phase === "tournament" && document.body.dataset.screen === "bench";
+  if (!inBench()) return;
+  return openMenu({ canSave: inBench, current: inBench, saveRule: "このセーブから再開すると、大会の作業は最初からやり直す。" });
+}
+
 async function tournamentDay() {
   await loadTournamentCraftDialogue();
   // DAY14から再開しても、実際に延期した準備だけを本番の前に救済する。
@@ -661,7 +673,7 @@ async function tournamentDay() {
   // SKIPで会場の会話がすぐ終わっても、操作は素材の準備完了まで始めない。
   const assetsReady = warmCraftAssets("tournament");
   clearScreen();
-  initHud({});
+  initHud({ menu: () => openTournamentMenu() });
   const newTournament = state.phase !== "tournament";
   if (newTournament) await enterTournamentDay();
   showHud(false);
@@ -694,7 +706,7 @@ async function tournamentDay() {
   await roundCut("ROUND 1", "準備");
   await play("remake_round1_intro", { bg: STAGE });
   await playTournamentEvent(cs, "opening", { bg: STAGE });
-  openBench(cs, { steps: STEPS_ALL });
+  openTournamentBench(cs);
   await waitBenchReady(cs);
   tickerSay("パッキー「さあ4人一斉にスタート！ 制限時間は60分ッ！」");
   // 工程の頭でパッキーが前振り、出来に応じて観客のコメントが流れる（生放送レイヤー）。
@@ -726,7 +738,7 @@ async function tournamentDay() {
 
   // ROUND 2 ── 吸い出し・提供
   await roundCut("ROUND 2", "吸い出し・提供");
-  openBench(cs, { steps: STEPS_ALL });
+  openTournamentBench(cs);
   await waitBenchReady(cs);
   bc.block(cs, "pull");
   if (await runPull(cs) === false) return;
@@ -751,7 +763,7 @@ async function tournamentDay() {
   // ROUND 3・4 ── 同じ一台を2回調整する。温度・炭交換・葉の持ちは連続する。
   for (const round of [1, 2]) {
     await roundCut(`ROUND ${round + 2}`, `調整 ${round}回目`);
-    openBench(cs, { steps: STEPS_ALL });
+    openTournamentBench(cs);
     await waitBenchReady(cs);
     bc.block(cs, "adjust");
     await runCare(cs, { round });
