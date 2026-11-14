@@ -161,7 +161,8 @@ await suite("loading-gate", async check => {
     assert.match(await page.locator('#result').textContent(), /準備完了/);
   }, { viewport: { width: 390, height: 844 } });
   await check("phone-landscape-readable", async page => {
-    // A phone held sideways leaves the letterboxed #stage like portrait does: no logo, panels that use the
+    // A phone held sideways leaves the letterboxed #stage like portrait does: the logo stays (owner call,
+    // 2026-11-15: logo and comic both show), sized down for the short screen, panels that use the
     // screen width, and small texts with a real-pixel floor (they used to shrink to about 8px).
     await page.locator('[data-demo="comic"]').click();
     await page.locator('.loading-gate').waitFor();
@@ -183,7 +184,7 @@ await suite("loading-gate", async check => {
       };
     });
     assert(layout.viewport, 'Short landscape renders the gate at viewport scale, outside #stage');
-    assert.equal(layout.logo, 'none', 'The logo gives its height to the panels');
+    assert.equal(layout.logo, 'block', 'The logo stays visible in short landscape too');
     assert(layout.sideBySide && layout.panelWidths.every(width => width >= 340), `Panels must be large and side by side, got ${layout.panelWidths}`);
     assert(layout.fonts.caption >= 12 && layout.fonts.proceed >= 12 && layout.fonts.status >= 13 && layout.fonts.title >= 16,
       `Small texts keep a readable floor, got ${JSON.stringify(layout.fonts)}`);
