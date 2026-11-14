@@ -31,8 +31,10 @@ const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: img
 // ゲージ・札の絵の部品（#3207・AXR14）と、見出しの板・投げ数の溝・黒板の窓・ランクの丸・帯・木片（#3423・AXQ03）。
 // 木片以外は CSS の border-image で描く。読み込み中に先に解いておき、構えた瞬間や結果の出遅れを防ぐ。
 const UI_ART = ["gauge-frame", "gauge-needle", "button-throw-orange", "button-throw-green", "tag-slate", "tag-slate-blue", "tag-selected", "tag-selected-amber",
-  "hud-plate", "score-slot", "chalk-window", "rank-medallion", "banner-orange", "banner-green", "wood-chips"]
+  "hud-plate", "score-slot", "chalk-window", "rank-medallion", "banner-orange", "banner-green", "wood-chips", "cut-mark"]
   .map(name => imgFileUrl("ui/axe_throw/" + name + ".webp"));
+// 刺さった跡の絵（cut-mark.webp 128×256）。残った投の跡はこの絵を下に敷き、その上に点数を出す。
+const CUT_MARK = imgFileUrl("ui/axe_throw/cut-mark.webp");
 // 木片の絵（wood-chips.webp 512×256・4×2 のマス、1マス128）。刺さった所から飛ぶ破片を、マスごとに切り出して描く。
 const CHIPS = { src: imgFileUrl("ui/axe_throw/wood-chips.webp"), cell: 128, cols: 4, rows: 2, size: 26 };
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
@@ -942,6 +944,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (cuts.dataset.record !== cutRecord) {
       cuts.dataset.record = cutRecord;
       cuts.replaceChildren(...currentShots.flatMap((s, i) => halfOf(i, rules.throws) === currentHalf && s.stuck && !(shown && i === currentShots.length - 1) && !sd ? [svg("g", { transform: `translate(${CX + s.landing.x * R} ${CY + s.landing.y * R})` }, [
+        svg("image", { href: CUT_MARK, x: -bladePx * .55, y: -bladePx * 1.1, width: bladePx * 1.1, height: bladePx * 2.2, opacity: .9 }),
         svg("path", { d: `M0 ${-bladePx * .9}V${bladePx * .9}`, stroke: "#2a1a10", "stroke-width": 2.6, "stroke-linecap": "round", opacity: .85 }),
         svg("text", { x: 7, y: 7, fill: "#f6e5c8", "font-size": 22, "font-weight": 900, "paint-order": "stroke", stroke: "#1b120c", "stroke-width": 2.5 }, [String(s.score)]),
       ])] : []));
