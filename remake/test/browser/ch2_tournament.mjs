@@ -744,7 +744,10 @@ await suite('ch2-tournament',async check=>{
     assert.deepEqual(await page.evaluate(()=>window.__chapterThreeTrace),ordered.slice(1).flatMap(scene=>
       scene.id === 'ch3_mukai_intro' ? [scene.id, 'ch3_delivery_offer', 'ch3_delivery_saku',
         'ch3_delivery_steve', 'ch3_delivery_volk', 'ch3_delivery_return']
-        : scene.id === 'ch3_saku_mukai_visit' ? [scene.id, 'ch3_saku_mukai_served'] : [scene.id]));
+        : scene.id === 'ch3_saku_mukai_visit' ? [scene.id, 'ch3_saku_mukai_served']
+        // 大会前夜は、灯せる火種が残っていれば内省が強制で差し込まれる（SPEC 2.8・#1690）。
+        // この導入の流れでは前夜の時点で火種が残るため、導入→場所の場面の順で必ず再生される（#3650）
+        : scene.id === 'ch3_tournament_eve' ? [scene.id, 'reflect_eve', 'reflect_tokyo_shrine'] : [scene.id]));
     for (const who of ['saku', 'steve', 'volk']) assert.equal(s.flags[`_ch3_delivery_${who}`], true);
     assert.equal(await page.getByText(/全国大会・優勝|第三章・完/).count(),0,'The introduction cannot award a national win');
     for(const key of ['money','stats','flavorStock','lovers','loverSince','keepsakes','tournament'])
