@@ -1248,7 +1248,7 @@ function showChoices(line) {
       "aria-label": shortfall > 0 ? `${c.text || "……"}${hint ? `（${hint}）` : ""}` : hint ? `${c.text}（${hint}）` : null,
       "aria-describedby": shortfall > 0 ? reasonId : null,
       "aria-disabled": shortfall > 0 ? "true" : null,
-      style: { animationDelay: `${i * 80}ms` },
+      style: { animationDelay: `${i * 45}ms` },
       dataset: { test: `choice-${i}` },
       onclick: (e) => { e.stopPropagation(); if (shortfall <= 0) pickChoice(line, c); },
     });

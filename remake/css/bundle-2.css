@@ -1443,9 +1443,10 @@ html:root[data-ui-theme] body:not(:root) .vn-next.show { animation-name:vn-next-
 html:root[data-ui-theme] body:not(:root) .vn-choices {
   bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px);
 }
-/* 2択は会話欄の上 94px（3択以上は 62px）。YHK14: 142px は高すぎ、62px は低すぎた。 */
+/* 2択は会話欄の上 112px（3択以上は 62px）。YHK14: 142px は高すぎ、62px は低すぎたので 94px に。
+   2026-11-14 オーナー「もう少し上へ」で 94px → 112px（+18）。 */
 html:root[data-ui-theme] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
-  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 94px);
+  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 112px);
 }
 /* 各原画の縁を窓の上辺に合わせる。中央に見出し用の空白は取らない。 */
 html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(:root) .vn-box::before,
@@ -3096,12 +3097,12 @@ html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-name { font-s
 html:root[data-density="phone"] body:not(:root) .vn-choice { width: 880px; max-width: 100%; min-height: var(--phone-tap); font-size: max(28px, calc(var(--phone-text) + 4px)); }
 /* 操作ボタンが上へ伸びた分だけ、選択肢を上げて間隔を保つ。 */
 html:root[data-density="phone"] body:not(:root) .vn-choices { bottom: calc(262px + var(--phone-tap) - 44px); }
-html:root[data-density="phone"] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: calc(338px + var(--phone-tap) - 44px); }
+html:root[data-density="phone"] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: calc(356px + var(--phone-tap) - 44px); }
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-choices {
   bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px + var(--phone-tap) - 44px);
 }
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
-  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 94px + var(--phone-tap) - 44px);
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 112px + var(--phone-tap) - 44px);
 }
 /* 選択肢が高くなるので、5択から（従来は6択から）画面上端と操作欄の間でスクロールさせる。 */
 html:root[data-density="phone"] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(5)) {
@@ -4326,7 +4327,7 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
   bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px);
 }
 html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
-  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 94px);
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 112px);
 }
 :root[data-side-pad="on"].side-probe #hud .hud-right > :is(.hud-lime, .hud-menu) { visibility: inherit !important; }
 
@@ -4822,6 +4823,10 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
   gap: 12px;
   counter-reset: neo-choice;
 }
+/* 2026-11-14 オーナー「二択をもう少し上へ」: 2択だけ帯との間隔を 12px → 30px に広げる（vn.css の 338→356px と同じ +18）。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
+  bottom: calc(var(--neo-band-h) + 30px);
+}
 /* 多い時のスクロール領域は、画面の上端（現行と同じ 16px）から帯の上まで。幅は選択肢の幅＋左右 20px。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choices:has(> .vn-choice:nth-child(6)) { top: 16px; width: 840px; }
 :root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn .vn-choices:has(> .vn-choice:nth-child(5)) { top: 16px; width: 960px; }
@@ -4829,6 +4834,10 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 :root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn .vn-choices,
 :root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
   bottom: calc(max(var(--neo-band-h), var(--neo-band-h) - var(--neo-rule-top) + var(--phone-tap)) + 12px);
+}
+/* 2択だけ帯との間隔を +18 広げる（上のデスクトップ側と同じ調整）。 */
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
+  bottom: calc(max(var(--neo-band-h), var(--neo-band-h) - var(--neo-rule-top) + var(--phone-tap)) + 30px);
 }
 :root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choice {
   --neo-c-fill: rgba(33, 20, 52, .9);

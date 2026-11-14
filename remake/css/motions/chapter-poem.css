@@ -57,7 +57,7 @@
   position: relative; max-height: 78%;
   writing-mode: vertical-rl; text-orientation: mixed;
   font-family: "Suien Blue Mincho", "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", serif; font-weight: 400;
-  font-size: 30px; line-height: 2.25; letter-spacing: .16em;
+  font-size: 32px; line-height: 2.25; letter-spacing: .16em;
 }
 .cp-line {
   margin: 0; white-space: pre;
@@ -65,8 +65,9 @@
   transition: opacity 1300ms ease, filter 1300ms ease, transform 1500ms cubic-bezier(.2, .7, .2, 1), color 1600ms ease, text-shadow 1800ms ease;
 }
 .cp-line.on { opacity: 1; filter: none; transform: none; }
-/* コマ絵があるときは、詩の領域が狭くなるので、字を少し小さく・列の高さを領域いっぱいまで使う */
-.chapter-poem.has-panel .cp-body { font-size: 22px; max-height: 96%; }
+/* コマ絵があるときは、詩の領域が狭くなるので、字を少し小さく・列の高さを領域いっぱいまで使う。
+   2026-11-14 オーナー「ポエムの文字をもう少し大きく」: 22px → 26px（既定も 30px → 32px）。 */
+.chapter-poem.has-panel .cp-body { font-size: 26px; max-height: 96%; }
 /* 最後の場面の最後の行は少しだけ明るく、差し色の光をまとう */
 .cp-page.last .cp-line:last-child.on { color: #fff7e4; text-shadow: 0 0 22px rgba(var(--cp-accent), .55); }
 .cp-line ruby { ruby-align: center; }

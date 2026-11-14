@@ -109,9 +109,10 @@ html:root[data-ui-theme] body:not(:root) .vn-next.show { animation-name:vn-next-
 html:root[data-ui-theme] body:not(:root) .vn-choices {
   bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 62px);
 }
-/* 2択は会話欄の上 94px（3択以上は 62px）。YHK14: 142px は高すぎ、62px は低すぎた。 */
+/* 2択は会話欄の上 112px（3択以上は 62px）。YHK14: 142px は高すぎ、62px は低すぎたので 94px に。
+   2026-11-14 オーナー「もう少し上へ」で 94px → 112px（+18）。 */
 html:root[data-ui-theme] body:not(:root) .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
-  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 94px);
+  bottom:calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 112px);
 }
 /* 各原画の縁を窓の上辺に合わせる。中央に見出し用の空白は取らない。 */
 html:root:is([data-ui-theme="smoke"],[data-ui-theme="smoke-purple"]) body:not(:root) .vn-box::before,

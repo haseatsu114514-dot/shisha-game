@@ -175,7 +175,7 @@ export async function withLoading(prepare, {
   overlay.classList.add("has-logo");
   const card = el("div.loading-card", [content]);
   overlay.append(logo, card, gauge, status, proceed);
-  let settled = false, comicShown = false, comicShownAt = 0, guardTimer = null, awaitingProceed = false, resolveProceed;
+  let settled = false, comicShown = false, comicShownAt = 0, guardTimer = null, creepFrame = 0, awaitingProceed = false, resolveProceed;
   const proceeded = new Promise(resolve => { resolveProceed = resolve; });
   // Runs inside the tap or key event itself, so it may start sound that needs a user gesture (boot).
   const proceedNow = () => {
@@ -323,11 +323,23 @@ export async function withLoading(prepare, {
     // No comic / failure / instant task returns immediately, exactly like before.
     if (comicShown && !continuing && overlay.isConnected && !controller.signal.aborted) {
       bar.classList.add("is-determinate");
-      overlay.style.setProperty("--loading-progress", "1");
       // Input is accepted only after the reading guard. The ready look (準備完了 and the prompt) appears
       // at that same moment, so what the screen says always matches what a tap does.
       const wait = Math.max(READ_GUARD_READY_MS, comicShownAt + READ_GUARD_SHOWN_MS - performance.now());
+      // The bar used to snap to full the moment the comic appeared, then sit at 100% through the
+      // whole guard (owner 2026-11-14: it looked finished while still waiting). Creep it from
+      // wherever preparation left it to full across the guard instead; it lands on 1 when ready.
+      const from = Math.max(0, Math.min(1, parseFloat(overlay.style.getPropertyValue("--loading-progress")) || 0));
+      const creepStart = performance.now();
+      const creep = () => {
+        const t = Math.min(1, (performance.now() - creepStart) / Math.max(1, wait));
+        overlay.style.setProperty("--loading-progress", String(from + (1 - from) * t));
+        if (t < 1 && !settled && !controller.signal.aborted) creepFrame = requestAnimationFrame(creep);
+      };
+      creep();
       await Promise.race([new Promise(resolve => { guardTimer = setTimeout(resolve, wait); }), aborted]);
+      cancelAnimationFrame(creepFrame);
+      overlay.style.setProperty("--loading-progress", "1");
       overlay.classList.add("is-ready");
       statusText.textContent = "準備完了";
       status.setAttribute("aria-label", "準備完了");
@@ -340,7 +352,7 @@ export async function withLoading(prepare, {
     }
     return result;
   } finally {
-    settled = true; clearTimeout(timer); clearTimeout(guardTimer); controller.abort();
+    settled = true; clearTimeout(timer); clearTimeout(guardTimer); cancelAnimationFrame(creepFrame); controller.abort();
     void comicReady;
     for (const mq of viewportMqs) mq.removeEventListener?.("change", onOrient);
     leaveLoading(overlay, { cancelled: !!signal?.aborted });
