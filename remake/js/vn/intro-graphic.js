@@ -18,7 +18,7 @@ export const GRAPHIC_FRAME = { width: 720, left: -88, top: 0 };
 // 測った頭の位置は asset_sources/character-intros/graphic-20261031/heads.json。fade=下を薄くする%、right=これより右を薄く消す%。
 // FRAMES:BEGIN tools/intro_graphic_frames.py が heads.json から書き出す（手で直さない）
 const FRAME_OVERRIDES = {
-  adam: {width: 831, left: -110, top: -4, right: 90.2},
+  adam: {width: 808, left: -110, top: 4, right: 92.9},
   ageha: {width: 691, left: -94, top: -11, fade: 14},
   da_silva: {width: 900, left: -185, top: -5, right: 91.6},
   dr_kemuri: {width: 699, left: -38, top: 0, fade: 14, right: 96.9},
@@ -29,7 +29,7 @@ const FRAME_OVERRIDES = {
   maezono: {width: 765, left: -102, top: -10, right: 97.1},
   maki: {width: 940, left: -217, top: -7, right: 91.1},
   mashiro: {width: 831, left: -135, top: 0, right: 93.2},
-  master_hookah: {width: 910, left: -176, top: -36, right: 89.7},
+  master_hookah: {width: 856, left: -154, top: -30, right: 92.8},
   minto: {width: 755, left: -109, top: -2, right: 99.3},
   mukai_master: {width: 1024, left: -200, top: -108, right: 82.0},
   naru: {width: 831, left: -109, top: 0, right: 90.1},
@@ -39,9 +39,9 @@ const FRAME_OVERRIDES = {
   rio: {width: 808, left: -136, top: -4, right: 96.1},
   sai: {width: 819, left: -142, top: 4, right: 95.4},
   saku: {width: 699, left: -93, top: -4, fade: 14},
-  samechan: {width: 765, left: -126, top: -51, fade: 14},
   salaryman: {width: 1078, left: -121, top: 3, right: 70.6},
-  sheikh: {width: 1638, left: -540, top: -182, right: 72.0},
+  samechan: {width: 765, left: -126, top: -51, fade: 14},
+  sheikh: {width: 1738, left: -547, top: -191, right: 68.3},
   shisha_9000: {width: 869, left: -180, top: -43, right: 94.4},
   steve: {width: 989, left: -273, top: -13, right: 92.3},
   sui: {width: 972, left: -157, top: -12, right: 82.0},
@@ -49,7 +49,7 @@ const FRAME_OVERRIDES = {
   tsumugi: {width: 765, left: -114, top: 0, right: 98.7},
   uranaishi: {width: 1195, left: -292, top: -77, right: 78.0},
   volk: {width: 956, left: -240, top: -12, right: 92.0},
-  yoru: {width: 925, left: -202, top: -123, right: 91.0},
+  yoru: {width: 808, left: -130, top: -94, fade: 14, right: 95.4},
 };
 // FRAMES:END
 
