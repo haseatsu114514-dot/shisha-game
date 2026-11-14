@@ -39,6 +39,7 @@ export async function playTonariOpening({ signal, dialogue = DB.dialogues.ch1_op
     el("div.to-departure"),
   ]);
   layers.bg.append(scene);
+  delete layers.bg.dataset.tone; // 開幕の絵には時間帯の色を付けない（以前の #bg の最後の絵で判定していた時と同じ）
   const previous = hooks.onLine;
   const onLine = (id, line) => {
     previous?.(id, line);

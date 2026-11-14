@@ -449,20 +449,22 @@
 /* 2画面表示には新版を当てないので、光の層も出さない。 */
 :root[data-look="neo"] body.game-ds :is(.neo-light, .neo-amb) { display: none; }
 
-/* 時間帯の色（背景の絵の名前と、夜の色調補正 data-tint から判定。#bg の最後の絵がいまの場面） */
-:root[data-look="neo"] body:not(.game-ds) #stage:has(#bg > .bg-img:last-child:is([style*="_day."], [data-scene-bg*="_day."], [style*="_morning."])) #vn {
+/* 時間帯の色。背景を替えた時に core/ui.js の setBg が #bg[data-tone]（day／overcast／dusk／night）を付ける（判定は sceneTone）。
+   以前は #stage:has(#bg > .bg-img:last-child …) で判定していたが、:has() の中の :last-child や inline の style は、
+   ページ内のどこで要素を足し引き・書き換えしてもページ全体の見た目の計算をやり直させ、ミニゲームが毎フレーム重くなった（CRN） */
+:root[data-look="neo"] body:not(.game-ds) #stage > #bg[data-tone="day"] ~ #vn {
   --neo-key: rgba(255, 246, 220, .58);
   --neo-fill: rgba(122, 160, 222, .32);
 }
-:root[data-look="neo"] body:not(.game-ds) #stage:has(#bg > .bg-img:last-child:is([style*="_overcast_day."], [data-scene-bg*="_overcast_day."])) #vn {
+:root[data-look="neo"] body:not(.game-ds) #stage > #bg[data-tone="overcast"] ~ #vn {
   --neo-key: rgba(216, 226, 242, .5);
   --neo-fill: rgba(92, 106, 144, .38);
 }
-:root[data-look="neo"] body:not(.game-ds) #stage:has(#bg > .bg-img:last-child:is([style*="_dusk."], [style*="_evening."], [style*="_sunset."])) #vn {
+:root[data-look="neo"] body:not(.game-ds) #stage > #bg[data-tone="dusk"] ~ #vn {
   --neo-key: rgba(255, 146, 84, .82);
   --neo-fill: rgba(126, 62, 142, .52);
 }
-:root[data-look="neo"] body:not(.game-ds) #stage:has(#bg > .bg-img:last-child:is([data-tint="night"], [style*="_night."], [data-scene-bg*="_night."])) #vn {
+:root[data-look="neo"] body:not(.game-ds) #stage > #bg[data-tone="night"] ~ #vn {
   --neo-key: rgba(255, 180, 104, .72);
   --neo-fill: rgba(92, 52, 150, .55);
 }

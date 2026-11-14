@@ -73,6 +73,8 @@ const stubMods = {
   "../core/stats.js": synth("stats", ["tier01"], { tier01: noop }),
   "./session.js": synth("session", ["craftTest", "presentBenchResult"], { craftTest: { auto: null }, presentBenchResult: noop }),
   "../core/condition.js": synth("condition", ["craftCondition"], { craftCondition: noop }),
+  // シーシャ作りの版（CRN16）。版の無い一台はリニューアル
+  "../core/craft-version.js": synth("craft-version", ["renewalCraft"], { renewalCraft: (cs) => cs?.craftVersion !== "sakurai" }),
 };
 
 // common-main.js を無改変で評価する。

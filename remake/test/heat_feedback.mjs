@@ -171,14 +171,17 @@ try {
         });
       });
       const expected = [];
+      // CRN09: 同じ秒に抽選された炭も、取り頃の開き始めは readyGap ずつ後ろへずれる（炭 i は 5.8＋readyGap×i 秒）
+      await page.evaluate(async () => { QA.gap = (await import("./js/craft/heat_logic.js")).HEAT_TUNING.readyGap; });
       for (let i = 0; i < count; i++) {
         const phase = excellentOnly ? "just" : ["raw", "pre", "just", "over"][i];
         const grade = { raw: ["MISS", 15], pre: ["GOOD", 78], just: ["PERFECT", 100], over: ["MISS", 68] }[phase];
         expected.push({ phase, rating: grade[0], score: grade[1] });
-        await page.evaluate(({ phase }) => {
-          const time = { raw: 1, pre: 5.7, just: QA.ideal, over: 9.5 }[phase];
+        await page.evaluate(({ phase, i }) => {
+          const ready = 5.8 + i * QA.gap;
+          const time = { raw: 1, pre: ready - .1, just: ready + QA.justSeconds / 2, over: ready * 9.5 / 5.8 }[phase];
           window.coalClock = 1000 + time * 1000;
-        }, { phase });
+        }, { phase, i });
         await page.waitForTimeout(30);
         const coal = page.locator(`[data-test="coal-${i}"]`);
         // 実際に見えていて入力が届く位置でタップする。

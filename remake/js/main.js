@@ -134,6 +134,8 @@ async function warmUp() {
     () => loadVnFonts(),
     () => loadDeferredDialogues(),
     () => warmUiArt({ deferStores: true }),
+    // 制作の枠・札・ゲージの絵（CSSの背景）。初めての作業台で枠が遅れて出ないように（CRN）
+    () => import("./craft/skin.js").then(m => m.warmCraftStyleImages()),
   ];
   if (chapter === 1) {
     const bgs = ["bg_osu_map_day", "bg_tonari_inside_day", "bg_home_day"];

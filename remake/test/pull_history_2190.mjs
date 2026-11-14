@@ -1,5 +1,6 @@
 // Real runPull/runCare and production thermal/leaf calculations; DOM, audio and clocks are controlled ports.
 import assert from "node:assert/strict";
+import * as craftVersion from "../js/core/craft-version.js";
 import fs from "node:fs";
 import vm from "node:vm";
 
@@ -88,6 +89,8 @@ async function harness({ learned = false, noWobble = false } = {}) {
     "./thermometer.js": { buildThermometer: () => ({ root: new Node(), update: noop, preview: noop, pop: noop }) },
     // 桜井式の攻めの帯（SKR04）。この一台は練習なので帯は出ないが、読み込みは本物を使う。
     "./attack-band.js": attackBand,
+    // シーシャ作りの版（CRN16）は本物を使う。この一台は版を持たないのでリニューアル
+    "../core/craft-version.js": { ...craftVersion },
     "./flavor-life.js": life, "./coals.js": coals, "./temperature-model.js": model,
     "./flavor-guide.js": { actualExpressionCard: () => "Recorded expression" },
     "./clock.js": { createCraftClock: () => ({ now: () => now, paused: false, dispose: noop }) },

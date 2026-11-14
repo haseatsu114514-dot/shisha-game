@@ -643,6 +643,8 @@ function startTournamentCraft() {
   cs.retryAssist = state.tournament.retryAssist === true;
   // 桜井式の試合だけ、吸い出し・調整の温度計に「攻めの帯」を出す（craft/attack-band.js）。
   if (isSakuraiVotes(state.tournament.voteAttempt)) cs.voteStyle = "sakurai";
+  // シーシャ作りの版（CRN16）は、試合を始めた時の審査の方式にそろえる（桜井式＝桜井版・いままで＝リニューアル）。試合の途中で設定を変えても混ざらない
+  if (state.tournament.voteAttempt) cs.craftVersion = cs.voteStyle === "sakurai" ? "sakurai" : "renewal";
   return cs;
 }
 

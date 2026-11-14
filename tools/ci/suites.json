@@ -4915,13 +4915,37 @@
       ]
     },
     {
+      "id": "craft-version",
+      "title": "シーシャ作りの版（CRN16）: 桜井版はリニューアル前の作業台（次のリングへ・毎回3・2・1・前のお手本・行き先や弧なし）、リニューアルは新しい作業台",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/craft-version.js",
+        "remake/js/core/ui.js",
+        "remake/js/craft/holes.js",
+        "remake/js/craft/pull.js",
+        "remake/js/craft/steam.js",
+        "remake/js/craft/heat.js",
+        "remake/js/craft/session.js",
+        "remake/js/craft/demo.js",
+        "remake/js/craft/preview.js",
+        "remake/css/craft.css",
+        "remake/test/browser/craft_version.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/craft_version.mjs"
+      ]
+    },
+    {
       "id": "ch1-vote-style",
-      "title": "第1章の大会の審査の方式（SKR04）: 桜井式といままでの切替と保存・?vote=・攻めの帯・途中経過の見る所・競技規則の第四条",
+      "title": "シーシャ作りの版（CRN16）と第1章の大会の審査の方式（SKR04）: リニューアル／桜井版の切替と保存・?craft=・作業台の版・攻めの帯・途中経過の見る所・競技規則の第四条",
       "kind": "browser",
       "weight": 2.4,
       "timeout": 6,
       "paths": [
         "remake/js/core/vote-style.js",
+        "remake/js/core/craft-version.js",
         "remake/js/craft/attack-band.js",
         "remake/js/craft/ch1-votes.js",
         "remake/js/craft/pull.js",

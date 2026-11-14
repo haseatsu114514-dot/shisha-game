@@ -2,8 +2,45 @@
 import { DB, makingUrl } from "../core/data.js";
 
 const SKINS = { button: "ui_craft_button.png", refresh: "ui_refresh_button.png", panel: "ui_craft_panel.png", inhale: "ui_mockup_inhale_button.png" };
-// 初期画面の枠とボタンだけ。蒸らし・吸引の固有UIはその工程のreadinessで待つ。
-export const craftSkinUrls = () => [SKINS.button, SKINS.panel].map(makingUrl).filter(Boolean);
+// 初期画面の枠とボタンに加えて、制作のCSSが使う枠・札・ボタンの絵（温度帯ゲージの外枠など）も待つ。
+// CSSの背景の絵は、その部品が初めて出た時にやっと読みにいくので、待たないと画面が出てから枠が遅れて現れる（CRN・温度帯ゲージの読み込み）。
+// 蒸らし・吸引の固有UIはその工程のreadinessで待つ。
+export const craftSkinUrls = () => [...[SKINS.button, SKINS.panel].map(makingUrl).filter(Boolean), ...craftStyleImageUrls()];
+
+const CRAFT_SHEET = /\/css\/(craft[\w-]*|steam|craft-rank|wide-craft)\.css(\?|$)/;
+let styleImages = null;
+/** 制作のスタイルシートが使う絵の URL（重複なし）。一度だけ数えて覚えておく。DOM の無い環境では空 */
+export function craftStyleImageUrls() {
+  if (styleImages) return styleImages;
+  const sheets = globalThis.document?.styleSheets;
+  if (!sheets) return [];
+  const found = new Set();
+  const walk = (rules, base) => {
+    for (const rule of rules || []) {
+      if (rule.cssRules) walk(rule.cssRules, base);
+      for (const m of String(rule.cssText || "").matchAll(/url\(\s*["']?([^"')]+?\.(?:webp|png|jpe?g))["']?\s*\)/gi)) {
+        try { found.add(new URL(m[1], base).href); } catch { /* 読めない指定は飛ばす */ }
+      }
+    }
+  };
+  for (const sheet of sheets) {
+    if (!CRAFT_SHEET.test(sheet.href || "")) continue;
+    try { walk(sheet.cssRules, sheet.href); } catch { /* 別オリジンなどで読めないシートは飛ばす */ }
+  }
+  // スタイルシートがまだ揃っていない時は覚えず、次に呼ばれた時に数え直す
+  if (found.size) styleImages = [...found];
+  return [...found];
+}
+
+/** 起動後の空き時間に、制作の枠の絵を先に読んでおく（初めての作業台で待たないように）。読み込みの順位は低く */
+export function warmCraftStyleImages() {
+  return Promise.all(craftStyleImageUrls().map(url => new Promise(resolve => {
+    const img = new Image();
+    img.fetchPriority = "low";
+    img.onload = img.onerror = () => resolve();
+    img.src = url;
+  })));
+}
 
 export function applyCraftSkin(root) {
   for (const [id, file] of Object.entries(SKINS)) {

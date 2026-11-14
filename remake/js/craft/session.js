@@ -7,7 +7,8 @@ import { el, sleep, rand } from "../core/util.js";
 import { showScreen, setBg, retire, layers, flash, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { bgUrl } from "../core/data.js";
-import { state, timeOfDay, save } from "../core/state.js";
+import { state, timeOfDay, save, config } from "../core/state.js";
+import { craftVersionFrom, renewalCraft } from "../core/craft-version.js";
 import { currentCondition, addStamina, tier01 } from "../core/stats.js";
 import { growthSkill, growthCraftCondition, growthLesson, LESSON_TUNING, SKILL_TUNING } from "../core/growth-effects.js";
 import { noteGrowthCraftOwner } from "../core/growth-memory.js";
@@ -36,8 +37,8 @@ import { prepareBenchEntry } from "./loading.js";
 import { applyCoalTraining } from "./coals.js";
 import { attachBenchAppearance } from "../appearance/bench.js";
 import { mountCraftRank, craftRankProgress } from "./rank-hud.js";
-import { CRAFT_RANK_THRESHOLDS } from "./common.js";
-import { provisionalCraftScore } from "./score.js";
+import { craftRankThresholds } from "./common.js";
+import { climbingCraftScore, provisionalCraftScore } from "./score.js";
 import { buildRigRecord } from "./rig-record.js";
 import { buildRivalWindows } from "./rival-windows.js";
 import { demoFor, openDemoSheet } from "./demo.js";
@@ -67,6 +68,8 @@ export function newSession(mode) {
   const steamVariation = { offset: rand(-.065, .065), transfer: rand(.9, 1.1) };
   const cs = {
     mode,
+    // シーシャ作りの版（リニューアル／桜井版・CRN16）。一台の途中では変えない
+    craftVersion: craftVersionFrom(config),
     ...(growthLesson(state,"M-B3")?{blindVariance:rand(-LESSON_TUNING.blindSwing,LESSON_TUNING.blindSwing)}:{}),
     chapter: state.chapter,
     audienceIds: audienceFor(mode, state.chapter),
@@ -159,7 +162,8 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   // TH62: 顔のバッジは廃止。疲れは作業中のはじめの表情と汗で見せる。
   const leaf = buildLeafIcon();
   worker.footer.append(leaf.root);
-  const root = el("div.bench", { dataset: { mode: cs.mode } }, [
+  // 版（リニューアル／桜井版・CRN16）は CSS とカウントダウン（core/ui.js）が見る
+  const root = el("div.bench", { dataset: { mode: cs.mode, craftVersion: renewalCraft(cs) ? "renewal" : "sakurai" } }, [
     el("div.bench-top", [el("span.bench-mode", [craftMode(cs, MODE_LABEL), el(cs.retryAssist ? "small.retry-assist" : "small", { text: cs.retryAssist ? "今回のみ操作補助" : craftModeNote(cs, MODE_NOTE) })]), progress]),
     el("div.bench-left", [
       worker.root,
@@ -260,6 +264,7 @@ function waitGuideRead(b, current, panelId, text) {
   return new Promise(resolve => {
     const finish = ok => {
       guide.removeEventListener("toggle", closed);
+      b.root.removeEventListener?.("pointerdown", tapAway, true);
       observer.disconnect();
       styles.forEach(({ node, previous }) => Object.assign(node.style, previous));
       if (current() || note.textContent === text) note.textContent = fullNote;
@@ -273,6 +278,13 @@ function waitGuideRead(b, current, panelId, text) {
     const closed = () => { if (!guide.open) finish(current()); };
     const observer = new MutationObserver(() => { if (!current()) finish(false); });
     guide.addEventListener("toggle", closed);
+    // CRN07: 説明は、閉じるボタンだけでなく画面のどこを押しても閉じる（説明の中の「お手本を見る」などはそのまま押せる）
+    const tapAway = (event) => {
+      if (guide.contains(event.target)) return;
+      event.preventDefault(); event.stopPropagation();
+      guide.open = false;
+    };
+    if (renewalCraft(b.cs)) b.root.addEventListener?.("pointerdown", tapAway, true); // 桜井版は閉じるボタンだけ（CRN16）
     observer.observe(b.root.ownerDocument.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "data-step"] });
     guide.open = true;
     // toggleの配送を待たず、この描画から操作を止める。
@@ -343,7 +355,7 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.hint.textContent = lesson?.brief || brief;
   b.guide.root.querySelector(".bench-demo-link")?.remove();
   b.guide.root.querySelector(".bench-guide-extra")?.remove(); // 前の工程が「?」へ足した補足（詰め方の一覧など）
-  if (demoFor(lessonStep)) {
+  if (demoFor(lessonStep, b.root.dataset.craftVersion)) {
     const link = el("button.bench-demo-link", { type: "button", text: "お手本を見る" });
     link.addEventListener("click", () => {
       if (bench === b && b.panel.dataset.step === id && !b.root.dataset.demoPaused) openDemoSheet(b.root, lessonStep);
@@ -379,7 +391,7 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
 /** 初回レッスンの工程だけ、操作開始前にお手本を一度見せる。 */
 export async function showStepDemo(cs, step) {
   const b = bench;
-  if (cs.mode !== "tutorial" || craftTest.auto || !demoFor(step) || !b || b.cs !== cs || !b.root.isConnected) return;
+  if (cs.mode !== "tutorial" || craftTest.auto || !b || !demoFor(step, b.root.dataset.craftVersion) || b.cs !== cs || !b.root.isConnected) return;
   const seenDemo = state.flags.seenDemo ||= {};
   if (seenDemo[step]) return;
   seenDemo[step] = true; // とばしても既読。再度見たいときは brief のリンクから開ける。
@@ -553,12 +565,19 @@ function updateBenchRank() {
   if (!bench?.rankHud) return;
   const cs = bench.cs;
   const final = !!cs.parts && Number.isFinite(cs.total);
-  const score = final ? cs.total : provisionalCraftScore(cs);
-  const progress = score === null ? null : craftRankProgress(score, CRAFT_RANK_THRESHOLDS);
+  // リニューアル: 制作中は最初がDで、工程を終えるたびに1段ずつ上がっていく（CRN01）。最後は最終の総合へ届く。
+  // 桜井版（CRN16）: リニューアル前のとおり、終えた工程の平均（はじめは「—」）
+  const renewal = renewalCraft(cs), thresholds = craftRankThresholds(cs);
+  const score = final ? cs.total : renewal ? climbingCraftScore(cs, bench.sequence, thresholds) : provisionalCraftScore(cs);
+  const progress = score === null ? null : craftRankProgress(score, thresholds);
   const before = bench.rankGrade ?? null;
   bench.rankHud.update(progress && { ...progress, artwork: { wide: rankArt(progress.grade), compact: rankArt(progress.grade) } });
   bench.rankGrade = progress?.grade ?? null;
-  if (progress?.grade && progress.grade !== before) burstRank(bench, progress.grade);
+  // 大きく出すのは上がった時だけ。開いた時のDは帯に置くだけにする。
+  const order = ["D", "C", "B", "A", "S", "SS", "SSS"]; // rank-hud.js の CRAFT_GRADES と同じ並び
+  // 雑念よけの最中は大きく出さない（雑念の場を隠すと避けられない）。帯の札だけが上がる（CRN12）
+  const dodging = !!cs.steamLive && !cs.steam;
+  if (renewal ? progress?.grade && before && !dodging && order.indexOf(progress.grade) > order.indexOf(before) : progress?.grade && progress.grade !== before) burstRank(bench, progress.grade);
   bench.rankHud.root.dataset.provisional = String(!final);
   bench.rankHud.root.setAttribute("aria-label", final ? "制作ランク" : "制作ランク（暫定）");
   bench.rankHud.root.querySelector(".craft-rank-caption").textContent = final ? "RANK" : "RANK（暫定）";

@@ -1,6 +1,9 @@
 // 本編と同じ工程を、保存済みのゲームを読み書きせず試す入口。
+// ?step= pack（既定）/holes/heat/water/steam/pull/care/full。full は機材選びから調整2回目までの通しの一台（CRN・P0）。
+// ?mode=rehearsal|tournament で場面（ランク・ライバルの小窓の出方）を切り替える（既定はリハーサル。pack〜heat・water は従来どおりレッスン）。
 import { loadAll } from "../core/data.js";
-import { newGame } from "../core/state.js";
+import { newGame, state, config } from "../core/state.js";
+import { CRAFT_VERSIONS, craftVersionFrom } from "../core/craft-version.js";
 import { initLayers, layers } from "../core/ui.js";
 import { initStageFit } from "../core/stage-fit.js";
 import { initSideArea } from "../core/side-area.js";
@@ -8,18 +11,67 @@ import { unlockAudio, SE } from "../core/audio.js";
 import { installRotateGuard } from "../core/rotate-guard.js";
 import { el } from "../core/util.js";
 import { newSession, openBench, stepPanel } from "./session.js";
-import { stepPack } from "./steps.js";
-import { runHoles } from "./holes.js";
+import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "./steps.js";
+import { stepWater } from "./water-view.js";
+import { runHoles, HOLES_TUNING } from "./holes.js";
 import { runHeat } from "./heat.js";
+import { runSteamDodge, STEAM_TUNING } from "./steam.js";
+import { runPull, runCare, PULL_TUNING } from "./pull.js";
+import { HEAT_TUNING } from "./heat_logic.js";
+import { finalize } from "./score.js";
+import { newCarePracticeSession, CRAFT_STEPS } from "./practice.js";
 import { mountWaterPour } from "./water-pour-view.js";
 import { initCraftStage } from "./stage-layout.js";
+import { craftRankProgress } from "./rank-hud.js";
+import { craftRankThresholds } from "./common.js";
+
+const STEPS = ["pack", "holes", "heat", "water", "steam", "pull", "care", "full"];
+// 1工程だけ遊ぶときに、前の工程の結果として置く値（session.js の drill() と同じ前提）
+const AFTER_HEAT = { place: "triangle", heat: { score: 80, heatPower: 60, heatStability: 60, burnRisk: 30, aromaRetention: 60, startup: 60, picks: ["just", "just", "pre"], just: 2 } };
+const AFTER_HOLES = { holes: { score: 85, total: 24, outer: 12, middle: 12, inner: 0, evenness: .85, outerEven: .85, precision: .85, completion: 1, innerExcess: 0, minimumComplete: true } };
 
 function activeStep(step) {
+  const version = craftVersionFrom(config);
   document.querySelectorAll("[data-preview-step]").forEach(link => {
     if (link.dataset.previewStep === step) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
+    // 工程のリンクも、いま選んでいる版のまま開く
+    if (version !== "renewal") { const url = new URL(link.getAttribute("href"), location.href); url.searchParams.set("craft", version); link.setAttribute("href", `${url.pathname.split("/").pop()}${url.search}`); }
   });
+  // シーシャ作りの版（CRN16）: 同じ工程を、もう片方の版で開き直す
+  const nav = document.querySelector(".craft-preview-nav");
+  if (nav && !nav.querySelector("[data-test='preview-craft-version']")) {
+    const links = CRAFT_VERSIONS.map(({ id, label }) => {
+      const url = new URL(location.href); url.searchParams.set("craft", id);
+      return el("a", { text: label, href: `${url.pathname.split("/").pop()}${url.search}`, "aria-current": id === version ? "page" : null, dataset: { previewCraft: id } });
+    });
+    nav.querySelector("small")?.before(el("span.craft-preview-version", { dataset: { test: "preview-craft-version" } }, [el("span", { text: "版：" }), ...links]));
+  }
 }
+
+function endCard(title, links, grade = null) {
+  layers.screen.append(el("section.craft-preview-end", [
+    grade ? el("img.craft-preview-rank", { src: `img/ui/craft-rank/rank-${grade}.webp`, alt: `ランク ${grade}`, dataset: { test: "preview-final-rank" } }) : null,
+    el("h1", { text: title }),
+    el("p", { text: "上のメニューから、何度でも試せます。" }),
+    ...links.map(([text, href], i) => el(`a.btn${i ? "" : ".primary"}`, { href, text })),
+  ]));
+}
+
+// ?tune=heat.readyGap:1,pull.period:1.2,holes.goodDeg:14,steam.hitPenalty:10 で、この試遊の間だけ手触りの値を差し替える（本編は読まない）
+const TUNING = { heat: HEAT_TUNING, pull: PULL_TUNING, holes: HOLES_TUNING, steam: STEAM_TUNING };
+function applyTune(text) {
+  const applied = [];
+  for (const pair of String(text || "").split(",")) {
+    const [path, raw] = pair.split(":"), [group, key] = String(path).split("."), value = Number(raw);
+    const table = TUNING[group];
+    if (!table || !(key in table) || !Number.isFinite(value) || typeof table[key] !== "number") continue;
+    table[key] = value; applied.push(`${group}.${key}=${value}`);
+  }
+  if (applied.length) console.info("[craft preview] tune:", applied.join(" "));
+  return applied;
+}
+
 export async function boot() {
   initStageFit(document.getElementById("stage"), document.getElementById("viewport"));
   initSideArea({ stage: document.getElementById("stage"), standalone: true }); // 左右の余白の煙と縁（YHK）
@@ -30,12 +82,22 @@ export async function boot() {
   await Promise.all([loadAll(), document.fonts.ready]);
   newGame(); // メモリ上の一台だけ。load / save / 設定の読込は呼ばない。
   const query = new URLSearchParams(location.search);
-  const step = ["holes", "heat", "water"].includes(query.get("step")) ? query.get("step") : "pack";
-  const cs = newSession("tutorial");
+  applyTune(query.get("tune"));
+  const step = STEPS.includes(query.get("step")) ? query.get("step") : "pack";
+  const late = ["steam", "pull", "care", "full"].includes(step);
+  const mode = ["rehearsal", "tournament", "tutorial"].includes(query.get("mode")) ? query.get("mode") : late ? "rehearsal" : "tutorial";
+  // 通しの一台は持ち込みの葉を用意しておく（ショップを通らないため）
+  state.flavorStock = { double_apple: 50, mint: 50, blueberry: 50, lemon: 50 };
+  state.flavors = ["double_apple", "mint", "blueberry", "lemon"];
+  const cs = step === "care" ? newCarePracticeSession() : newSession(mode);
   cs.preview = true; // 試遊中のデモ既読は保存データへ書かない。
-  cs.mix = { double_apple: 10, mint: 2 };
-  if (step !== "pack") cs.pack = "normal";
+  if (step !== "care") cs.mix = { double_apple: 10, mint: 2 };
+  if (step !== "pack" && step !== "full" && step !== "care") cs.pack = "normal";
   if (step === "heat") cs.equip.charcoal = query.get("charcoal") === "cube" ? "cube_charcoal" : "flat_charcoal";
+  if (["full", "holes", "pack"].includes(step)) cs.foilOptIn = true; // 試遊では穴あけを必ず見せる（アルミの無いHMDでも）
+  if (step === "steam" || step === "pull") Object.assign(cs, AFTER_HOLES, AFTER_HEAT, { steamSeconds: 300, steamMin: 5 });
+  const temp = Number(query.get("temp"));
+  if (step === "pull" && Number.isFinite(temp) && query.has("temp")) cs.steam = { temp, hits: 0, score: 100, seconds: 300, min: 5 };
   const loadingPreview = query.get("loading") === "comic";
   if (loadingPreview) {
     const plain = query.get("look") === "plain";
@@ -49,9 +111,12 @@ export async function boot() {
       el("small", { text: "確認用に約2秒で制作へ移ります・セーブには影響しません" }),
     );
   }
+  const steps = step === "full" ? CRAFT_STEPS : step === "care" ? CRAFT_STEPS.filter(([id]) => id.startsWith("care"))
+    : step === "steam" || step === "pull" ? CRAFT_STEPS.filter(([id]) => ["steam", "pull"].includes(id)) : [];
   // Only this preview supplies a simulated extra asset. The game never adds a delay.
-  await openBench(cs, { entryAssets: loadingPreview ? new Promise(resolve => setTimeout(resolve, 2200)) : null }).ready;
+  await openBench(cs, { steps, entryAssets: loadingPreview ? new Promise(resolve => setTimeout(resolve, 2200)) : null }).ready;
   document.getElementById("craft-preview-loading").hidden = true;
+  globalThis.__craftPreview = { cs, step, done: false }; // 確認用の読み取り口
   async function play() {
     activeStep(step);
     if (step === "water") {
@@ -62,24 +127,40 @@ export async function boot() {
     }
     if (step === "heat") {
       await runHeat(cs);
-      layers.screen.append(el("section.craft-preview-end", [
-        el("h1", { text: "炭焼き、おつかれさま。" }),
-        el("a.btn.primary", { href: "craft-preview.html?step=heat", text: "フラット炭でもう一度" }),
-        el("a.btn", { href: "craft-preview.html?step=heat&charcoal=cube", text: "キューブ炭で試す" }),
-      ]));
+      endCard("炭焼き、おつかれさま。", [["フラット炭でもう一度", "craft-preview.html?step=heat"], ["キューブ炭で試す", "craft-preview.html?step=heat&charcoal=cube"]]);
+      return;
+    }
+    if (step === "steam") {
+      await runSteamDodge(cs);
+      endCard("蒸らし、おつかれさま。", [["もう一度", location.search], ["続けて吸い出し", "craft-preview.html?step=pull"]]);
+      return;
+    }
+    if (step === "pull") {
+      await runPull(cs);
+      endCard("一服、おつかれさま。", [["もう一度", location.search], ["調整で遊ぶ", "craft-preview.html?step=care"]]);
+      return;
+    }
+    if (step === "care") {
+      for (const round of [1, 2]) { await runCare(cs, { round }); if (cs.failed) break; }
+      endCard("調整、おつかれさま。", [["もう一度", location.search], ["通しで一台", "craft-preview.html?step=full"]]);
+      return;
+    }
+    if (step === "full") {
+      await stepSetup(cs); await stepWater(cs); await stepMix(cs); await stepPack(cs);
+      await runHoles(cs); await stepPlace(cs); await runHeat(cs); await stepSteamTime(cs); await runSteamDodge(cs);
+      await runPull(cs);
+      for (const round of [1, 2]) { if (cs.failed) break; await runCare(cs, { round }); }
+      finalize(cs);
+      const grade = craftRankProgress(cs.total, craftRankThresholds(cs)).grade;
+      endCard(`一台、できあがり。総合 ${cs.total}`, [["もう一台", location.search], ["大会の雰囲気で", "craft-preview.html?step=full&mode=tournament"]], grade);
       return;
     }
     if (step === "pack") await stepPack(cs);
     activeStep("holes");
     await runHoles(cs);
-    layers.screen.append(el("section.craft-preview-end", [
-      el("h1", { text: "一枚、できあがり。" }),
-      el("p", { text: "上のメニューから、何度でも試せます。" }),
-      el("a.btn.primary", { href: "craft-preview.html?step=holes", text: "もう一度、穴あけをする" }),
-      el("a.btn", { href: "craft-preview.html", text: "詰め方を見比べる" }),
-    ]));
+    endCard("一枚、できあがり。", [["もう一度、穴あけをする", "craft-preview.html?step=holes"], ["詰め方を見比べる", "craft-preview.html"]]);
   }
-  play().catch(error => {
+  play().then(() => { globalThis.__craftPreview.done = true; }, error => {
     const loading = document.getElementById("craft-preview-loading");
     loading.textContent = "試遊を続けられませんでした。ページを再読み込みしてください。";
     loading.hidden = false; console.error(error);

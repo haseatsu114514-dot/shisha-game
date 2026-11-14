@@ -93,7 +93,7 @@
    「?」へ移した説明・欄の並びだけを足す（同じ文字の大きさを二か所で決めない）。 */
 /* 「?」は全工程で押せる大きさに（従来は 34px＝iPhone 横で実寸18px。実寸38px以上） */
 html:root[data-density="phone"] body:not(:root) .bench .bench-guide summary { width: max(64px, calc(38px / var(--k, 1))); height: max(64px, calc(38px / var(--k, 1))); }
-html:root[data-density="phone"] body:not(:root) .bench .bench-guide-tip :is(b, p, small, li) { font-size: var(--phone-sub); line-height: 1.45; }
+html:root[data-density="phone"] body:not(:root) .bench .bench-guide-tip :is(b, p, small, li, .bench-demo-link) { font-size: var(--phone-sub); line-height: 1.45; }
 /* 「?」へ移した説明（スマホだけ画面から外す。PCは画面にも残す・water-view.js / pull.js） */
 html:root[data-density="phone"] body:not(:root) .bench :is(.craft-water-help, .care-coals-calm) { display: none; }
 

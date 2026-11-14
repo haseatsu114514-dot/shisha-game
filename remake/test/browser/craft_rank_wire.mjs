@@ -69,14 +69,21 @@ await suite('craft-rank-wire', async check => {
     assert.equal(await page.locator('.craft-rank').count(), 1);
     assert.equal(await page.locator('.bench-mode').count(), 1);
     await assertFits(page, '.bench-mode');
-    assert.equal(await page.locator('.craft-rank-wide .craft-rank-grade').textContent(), '—');
+    // 制作中のランクはDから上がっていく（CRN01）
+    assert.equal(await page.locator('.craft-rank').getAttribute('data-grade'), 'D');
     await page.evaluate(() => { T.session.craftTest.auto = 'good'; window.heatRun = T.heat.runHeat(T.cs); });
     await page.evaluate(() => window.heatRun);
     assert.notEqual(await page.locator('.craft-rank').getAttribute('data-grade'), 'unavailable');
     // Use the actual session fields and refresh path; no production score override hook.
-    for (const [grade, score, progress] of [['B', 70, '33'], ['S', 92.5, '50'], ['SS', 96, '33'], ['SSS', 99, '100'], ['B', 70, '33']]) {
+    for (const [grade, score, progress] of [['B', 70, '33'], ['S', 91.5, '50'], ['SS', 94, '33'], ['SSS', 99, '100'], ['B', 70, '33']]) {
       await page.evaluate(score => {
+        // 積み上げ（CRN01）なので、全工程に同じ点を置いてその点のランクを見る
         T.cs.heat.score = score;
+        T.cs.holes = { score };
+        T.cs.pullDone = true;
+        T.cs.stats = { craftQuality: score };
+        T.cs.careHistory = [{ score }, { score }];
+        T.cs.steam = { score };
         T.session.refreshBench();
       }, score);
       assert.equal(await page.locator('.craft-rank').getAttribute('data-grade'), grade);
