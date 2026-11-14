@@ -6,6 +6,12 @@
 <meta name="theme-color" content="#0b0812">
 <!-- 版の名札。公開時に remake/tools/stamp_deploy.py がコミットの短いハッシュと公開日時を書く（手元は dev） -->
 <meta name="suien-build" content="dev" data-built="">
+<!-- 最初の画面（タイトル）に必要なものだけ先読みする。本文フォント（font-display: block のため
+     届くまで文字が出ない）と、タイトルの背景・ロゴ。 -->
+<link rel="preload" as="font" type="font/woff2" href="fonts/ZenKakuGothicNew-Medium.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="fonts/ZenKakuGothicNew-Bold.woff2" crossorigin>
+<link rel="preload" as="image" href="img/backgrounds/bg_title.webp">
+<link rel="preload" as="image" href="img/ui/ui_title_logo_rich.webp">
 <title>水煙前線 -EN:CODE-</title>
 <!-- 起動画面の漫画（2026-11-13 オーナー「ロード画面でも漫画が出ない時がたまにある。必ず出るようにしたい」）。
      ゲームの本体を読み込む間（遅い回線では数十秒）も、ロード画面に漫画を出す。ここに書くのは、新しいゲームの開始時に
