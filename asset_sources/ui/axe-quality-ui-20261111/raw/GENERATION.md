@@ -71,9 +71,9 @@ Save as: asset_sources/ui/axe-quality-ui-20261111/raw/cut-mark.png
 | `banner-orange.png` | 1536×384 RGBA | `8632e753125752cb6ee09903bd4d0ad5ef7d52f6f92ad9af6ce10ec2dfe84f9f` | 透過・無文字・正面・余白を目視確認 |
 | `banner-green.png` | 1536×384 RGBA | `8eefb757c5603d112a5d4b68aacae695aa284927c4e958fb87b9196763a64fa1` | 透過・無文字・正面・余白を目視確認、橙帯と alpha マスク一致 |
 | `wood-chips.png` | 1024×512 RGBA | `26b083af9e6fa8ac8b359945dd25cb6e4df4450b0188c366266fbe993957cc3b` | 4×2・各マス内の分離と余白を確認 |
-| `cut-mark.png` | — | — | 3回とも安全判定で生成不可。未採用・欠品 |
+| `cut-mark.png` | 256×512 RGBA | `07c216ea1857bff5623cb2e7f840c9800ec62bfa69b9588d8d1a1a6839fca736` | 2026-11-14 に言い回しを変えて再挑戦し生成成功（下記）。生成そのままは `cut-mark-source.png`（1086×1448）。後処理で裂け目を中心に切り出し、楕円フェードで周囲を板に馴染ませた。実物の的ボードへ合成して目視確認 |
 
 ## 未解決
 
-- `cut-mark.png` は生成サービスが3回とも出力を拒否したため欠品。Issue 指定のプロンプト全文は上に保存した。
-- ゲームへの組み込み、配信用 WebP、manifest、画面テストは Claude 側の担当であり未実施。
+- （2026-11-14 解消）`cut-mark.png` は初回3回とも安全判定で拒否されたが、オーナー判断で「斧・武器の語を外し、松板の縦の割れ目という素材表現に言い換える」方針で Codex C が1回で生成成功。OpenAI API 経路は同日クレジット枯渇で使用不可だった。
+- ゲームへの組み込み（刺さった跡の表示へ）と配信用 WebP（`remake/img/ui/axe_throw/cut-mark.webp` 128×256）は 2026-11-14 に実施。
