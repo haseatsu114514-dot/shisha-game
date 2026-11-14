@@ -12,6 +12,8 @@ const inFlight = new WeakMap();
 export const rioAcquainted = value => !!(value?.met?.rio || value?.flags?._met_rio || value?.story?.rio > 0 || value?.visits?.rio > 0);
 
 export function shopGreetingScene(value, opts = {}) {
+  // 第5章では第1章用の店頭応対を流さない（#3619・オーナー決定）。買い物そのものは通常どおり開く。
+  if (value.chapter === 5) return null;
   if (value.day % 7 === RIO_AWAY_DAY) return "ch1_shop_clerk";
   if (!rioAcquainted(value)) return "ch1_shop_rio_first";
   if (opts.errand) return "ch1_shop_rio_errand";
