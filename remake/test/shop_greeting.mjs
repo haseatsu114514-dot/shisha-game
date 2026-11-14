@@ -83,6 +83,21 @@ for (const branch of ['tokyo','dubai','widehanga']) {
   s=fresh({chapter:branch==='dubai'?4:3}); await shop.openShop({branch}); assert.equal(entered.length,0); assert.equal(counters.length,1);
 }
 console.log('PASS absent employee, buying still available, branch shops unchanged');
+// #3619: 第5章では第1章用の店頭応対を流さない（初対面・顔なじみ・店員のみの日でも）。本店の買い物はそのまま開ける。
+for (const day of [1,2,5]) for (const knownAs of ['none','met','story','visits','flag']) {
+  s = fresh({chapter:5,day});
+  if (knownAs === 'met') s.met.rio = true;
+  if (knownAs === 'story') s.story.rio = 2;
+  if (knownAs === 'visits') s.visits.rio = 1;
+  if (knownAs === 'flag') s.flags._met_rio = true;
+  assert.equal(greeting.shopGreetingScene(s), null);
+  assert.equal(greeting.shopGreetingScene(s, { errand:'lemon' }), null);
+  before = economy(s);
+  assert.equal(await shop.openShop({ direct:true }), 'bought');
+  assert.equal(entered.length,0); assert.equal(counters.length,1); assert.equal(floors.length,0);
+  assert.equal(economy(s),before); assert.equal(awards.length,0);
+}
+console.log('PASS chapter 5 home shop skips chapter 1 greeting, counter opens directly');
 for (const afterName of [false,true]) {
   s=fresh(); before=economy(s); const controller=new AbortController();
   interrupt=() => { if(afterName&&!s.flags._met_rio)return false; controller.abort(); return true; };
