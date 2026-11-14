@@ -303,7 +303,7 @@ test("courses are longer and more varied: gates, slaloms and S-bends, every row 
   assert(gates >= 10 && slaloms >= 5, `gates (${gates}) and slaloms (${slaloms}) appear across the courses`);
 });
 
-test("rivals boost often and the race stays close, without changing who can win (2026-11-13)", () => {
+test("rivals boost often and the race stays close, without changing who can win (2026-11-13, ヌールの接戦度は 2026-11-14 に調整)", () => {
   const starts = run => run.samples.filter((s, i) => i && s.boostT > 0 && run.samples[i - 1].boostT <= 0).length;
   for (const pack of COURSE_PACKS) {
     const course = buildCourse({ id: pack.id });
@@ -312,13 +312,14 @@ test("rivals boost often and the race stays close, without changing who can win 
     assert(starts(naru) >= 5, `${pack.id}: Naru boosts often (${starts(naru)})`);
   }
   assert(RIVALS.noor.boostAt < 0.5 && RIVALS.naru.boostAt < 0.5, "rivals do not wait for a full gauge");
-  // 接戦: 着地を決める滑りとヌール、理想の滑りとなるは、差 15m 以内で滑る時間が半分以上
+  // 接戦: 理想の滑りとなるは、差 15m 以内で滑る時間が半分以上。
+  // ヌールは 2026-11-14 に弱めた（出だし同速・溜まり 1 倍）ので、着地を決める滑りとは中盤まで競って終盤に離れる（約44%）。勝敗は変わらない
   const course = buildCourse({ id: "ridge" });
-  for (const [who, skill] of [["noor", "perfect"], ["naru", "expert"]]) {
+  for (const [who, skill, minClose] of [["noor", "perfect", 0.4], ["naru", "expert", 0.5]]) {
     const rival = rivalRun(course, { who }), game = createGame(course, { rival }), memo = {};
     let close = 0, all = 0;
     while (!game.finished && game.t < 200) { botStep(game, skill, memo, DT); all++; if (Math.abs(game.z - rivalAt(rival, game.rivalClock).z) < 15) close++; }
-    assert(close / all > 0.5, `${who} vs ${skill}: close for ${Math.round(100 * close / all)}% of the run`);
+    assert(close / all > minClose, `${who} vs ${skill}: close for ${Math.round(100 * close / all)}% of the run`);
     assert.equal(game.race.won, true, `${skill} still beats ${who}`);
   }
 });
@@ -434,9 +435,9 @@ test("the single course rates S / A / B / C by skill: spins = S, clean landings 
   assert.equal(none.rank, "C");
   assert.equal(lazy.rank, "C");
   assert(expert.score > perfect.score && perfect.score > good.score && good.score > none.score && none.score > lazy.score);
-  // ヌールとの競走: 着地を決めてブーストを使えば勝てる。ヌールと同じ滑り（着地が遅い）では届かない。跳ばないと負ける
+  // ヌールとの競走: 着地を決めてブーストを使えば勝てる。ヌールと同じ滑り（着地が遅い）では互角（2026-11-14 にヌールを弱めて同速・同溜まりにした: このコースでは 0.1 秒差。コースにより勝敗が割れる）。跳ばないと負ける
   assert.equal(expert.race.won, true); assert.equal(perfect.race.won, true);
-  assert.equal(good.race.won, false); assert.equal(none.race.won, false);
+  assert(Math.abs(good.race.gap) <= 0.5, `the same riding as Noor is a dead heat (${good.race.gap}s)`); assert.equal(none.race.won, false);
   // 同じ seed・同じ操作なら同じ結果
   assert.deepEqual(run("expert"), expert);
   // 2026-11-13 にコースを組み替えた（最初の起伏・連続起伏・終盤の山）ので、不器用な人は本番の4本で見る: どれも完走して C、どこかで転ぶ
@@ -1049,8 +1050,9 @@ test("the autopilot looks ahead: it holds its line through curves, never dithers
   assert.deepEqual(botControl(a, "perfect", {}), botControl(b, "perfect", {}));
 });
 
-test("rivals: Noor starts a touch quicker than the rider, Naru boosts and spins in the recorded run", () => {
-  assert(RIVALS.noor.startSpeed > SPEED.start && RIVALS.noor.startSpeed < SPEED.start + 1.5);
+test("rivals: Noor starts level with the rider (2026-11-14), Naru boosts and spins in the recorded run", () => {
+  // 2026-11-14 オーナー判断: ヌールの出だしの上乗せ（+0.6）は撤廃し、主人公と同速スタート
+  assert.equal(RIVALS.noor.startSpeed, SPEED.start);
   // 2026-11-13 オーナー「なるが弱かった」: なるは 720 まで回る腕前。出だしだけ少し遅くして、理想の滑りでやっと勝てる差にした
   // 2026-11-13「ライバルももっとブースト使って」: こまめに使う分だけ速くなるので、出だしをもう少し遅くした
   assert(RIVALS.naru.startSpeed < SPEED.start && RIVALS.naru.startSpeed >= SPEED.start - 3);
