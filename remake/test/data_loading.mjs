@@ -294,7 +294,7 @@ for (const [response, expected] of [
   });
   await assert.rejects(failed.loadAll(), expected);
   await pause(20); // 同時に始まった残りのリクエストを終わらせる
-  assert.equal(started.length, 4);
+  assert.equal(started.length, 8);
   assert.equal(Object.keys(failed.DB.characters).length, 0);
   assert.equal(Object.keys(failed.DB.dialogues).length, 0);
 }
