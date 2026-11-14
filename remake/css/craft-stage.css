@@ -584,6 +584,10 @@ html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="holes"] .vent-p
    wide-craft.css の下限は !important のこれらの指定に負けるため、ここで割り戻した値を下限にする。 */
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp { width: max(26px, calc(17.5px / var(--k, 1))) !important; height: max(26px, calc(17.5px / var(--k, 1))) !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp b { font-size: max(13px, calc(11.5px / var(--k, 1))) !important; }
+/* スマホでは灯が 17.5px/k まで大きくなるので、光彩（::before の inset:-18%）を箱の中に収める padding も
+   同じ割り戻しに連動させる（灯の 18% ＋ 1px）。固定値のままだと光彩が箱からはみ出し、
+   .rig-record の scroll 寸法が client 寸法を超える（#3650）。負マージンで相殺するのでレールの配置は変わらない */
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record { padding: calc(3.15px / var(--k, 1) + 1px); margin-top: calc(-3.15px / var(--k, 1) - 1px); margin-right: calc(-3.15px / var(--k, 1) - 1px); margin-bottom: calc(-3.15px / var(--k, 1) - 1px); }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .bench-phase.now .bench-phase-copy small { font-size: max(13px, calc(11.5px / var(--k, 1))) !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-name { font-size: max(20px, calc(11.5px / var(--k, 1))) !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-note { font-size: max(20px, calc(13px / var(--k, 1))) !important; }
@@ -603,7 +607,7 @@ html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mod
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-progress-track > .bench-phase.now { padding: 0 10px 0 42px !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-phase.now .bench-phase-copy b { min-width: 0; letter-spacing: 0; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-phase.now .bench-phase-step:not(:empty) { min-width: 0; margin-left: 6px; padding-left: 6px; letter-spacing: 0; }
-html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top > .rig-record { gap: 2px !important; padding: 2px; margin: -2px -2px -2px auto; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top > .rig-record { gap: 2px !important; margin-left: auto; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top > .rival-windows { gap: 3px !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top > .rival-windows .rival-card { grid-template-columns: minmax(28px, max-content); padding: 2px 3px 3px; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top > .rival-windows .rival-face { width: 28px !important; height: 28px !important; }
