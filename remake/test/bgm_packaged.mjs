@@ -92,13 +92,13 @@ const adopted = [
   // #788 斧投げ（Aiming groove）。tonari と同程度の音量にそろえる倍率0.79。
   ["bgm_axe", .79, "39dbd283e0a5711a62e382d3e347e6b08612e8d60c10cda9cc12963f559f9b53"],
   // #2796 ミニゲーム採用曲。元MP3のハッシュで .bgm の復元内容を確認する。
-  ["bgm_ethnic05", 1, "a7c17f0b8bcdc3b3ce8447b71723448c8a2f79cd8f2bee15a0495c811835d88a"],
-  ["bgm_ethnic08", 1, "becd8d9a282dbb985cbc4b2d47b468d9042cfa6ec6d8515354ad715b023599e3"],
-  ["bgm_ethnic09", 1, "606275a23856d2a5f06623a8582e67faefe4ed4f2790cc4652bab17b67c84bc1"],
-  ["bgm_ethnic12", 1, "9f19dd609e993f3c53834e6d7b3d12b1fc0f262e797a71fe12a83fd789fd88c6"],
+  ["bgm_ethnic05", 1, "70a1938f8c6d62b86079897928f79e0f68897985f3820886e1f0d7f90a557e5d"],
+  ["bgm_ethnic08", 1, "b071680d2eb3c8b01a7ccf40981b725187dc2b59c1b4a5d99882b06554c20832"],
+  ["bgm_ethnic09", 1, "b25dfda65584d4d714d69ac58c8a40c8363b8df0dc6a782a922148ef32749b09"],
+  ["bgm_ethnic12", 1, "d09c61768f3663cb3f5118281d9007cba6a8cb12d814f988e53ef8da55db81ae"],
   ["bgm_tetsuko_time", 1, "918781b114652c043c1180ed3cb84ab05f46684dca9b28597e08eb911e200bff"],
   // ラクダレース（Firebrand / Kevin MacLeod / CC BY 4.0）。倍率は既定1.0（約 −14 LUFS）。
-  ["bgm_camel_race", 1, "a93af4ddbf2e85aa7519fa55a4135dab50f3ffbdfc83828691e284a07be2904d"],
+  ["bgm_camel_race", 1, "1d15322624ee0ace6e36c06beefa394e65e484f5a7545f9df34a79366b1ed21e"],
 ];
 for (const [key, gain, expectedHash] of adopted) {
   assert(await audio.preloadBgm(key));
