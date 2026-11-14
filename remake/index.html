@@ -90,8 +90,10 @@
 @media (prefers-reduced-motion: reduce) { .boot-comic-panels img { transition: none; } }
 .boot-comic-caption { margin: 0; font-size: 17px; letter-spacing: 0.04em; }
 #boot.has-comic { gap: 14px; }
-#boot.has-comic .boot-logo { font-size: 40px; }
-#boot.has-comic .boot-subtitle { display: none; }
+/* ロゴは本体のロード画面（css/loading.css の .loading-logo）と同寸の絵ロゴ。フォント到着に依存しないので、
+   最初の一枚から正しい姿で出る。寸法はこのインライン側にも持たせ、バンドルCSSの到着前でも崩れない。 */
+.boot-logo { display: block; width: 360px; height: auto; }
+#boot.has-comic .boot-logo { width: 248px; }
 </style>
 </head>
 <body data-screen="boot">
@@ -109,8 +111,7 @@
     <div id="modal"></div>
     <div id="boot">
       <div class="boot-brand">
-        <div class="boot-logo">水煙前線</div>
-        <div class="boot-subtitle">-EN:CODE-</div>
+        <img class="boot-logo" src="img/ui/ui_title_logo_rich.webp" alt="水煙前線 -EN:CODE-" width="1538" height="512" fetchpriority="high" decoding="async">
       </div>
       <div class="boot-comic" hidden>
         <div class="boot-comic-title"></div>
