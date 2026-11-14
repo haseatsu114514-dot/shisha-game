@@ -133,7 +133,8 @@ assert.equal((narration.match(/^\d+\. /gm) || []).length, 10, "一行ナレー�
 
 // 3) 接続点 ----------------------------------------------------------------
 assert.match(read("remake/js/core/data.js"), /DIALOGUE_FILES = \[[\s\S]*"chapter_poems"[\s\S]*?\];/, "データローダに chapter_poems がない");
-assert.match(read("remake/index.html"), /<link rel="stylesheet" href="css\/motions\/chapter-poem\.css">/, "index.html にスタイルシートがない");
+assert.match(read("remake/index.html"), /<link rel="stylesheet" href="css\/motions\/bundle\.css">/, "index.html にスタイルシートがない");
+assert(JSON.parse(read("remake/css/bundles.json")).segments.some((s) => s.out === "motions/bundle.css" && s.files.includes("motions/chapter-poem.css")), "motions バンドルに chapter-poem.css が入っている");
 assert.ok(fs.existsSync(path.join(root, "remake/css/motions/chapter-poem.css")), "スタイルシートがない");
 const module = read("remake/js/scenes/chapter-poem.js");
 for (const [id] of EXPECTED) assert.ok(module.includes(`"${id}"`), `chapter-poem.js に ${id} がない`);

@@ -31,8 +31,11 @@ function cssFiles(dir) {
 
 const found = [];
 let checked = 0;
+// 生成バンドル（bundles.json の out）は元 CSS の逐語コピーで、鮮度は build_css_bundles.py --check が担保する。二重に数えない。
+const bundleOuts = new Set(JSON.parse(fs.readFileSync(path.join(root, "remake/css/bundles.json"), "utf8")).segments.map((s) => `remake/css/${s.out}`));
 for (const abs of cssFiles(path.join(root, "remake/css"))) {
   const file = path.relative(root, abs).split(path.sep).join("/");
+  if (bundleOuts.has(file)) continue;
   const css = fs.readFileSync(abs, "utf8").replace(/\/\*[\s\S]*?\*\//g, (c) => c.replace(/[^\n]/g, " "));
   for (const rule of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
     const [, selectorText, body] = rule;

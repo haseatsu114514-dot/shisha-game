@@ -43,7 +43,9 @@ try {
 
   // index.html の CSS はすべて版付き。フォントの先読み・画像は変えない（CSS 側と URL がずれて二重に読まないように）
   const links = [...html.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map((m) => m[1]);
-  assert(links.length > 10);
+  // CSS はバンドル化されているので、本数は bundles.json の区間の数と一致する
+  const bundleCount = JSON.parse(fs.readFileSync(path.join(remake, "css/bundles.json"), "utf8")).segments.length;
+  assert.equal(links.length, bundleCount);
   for (const href of links) assert.match(href, /^css\/[\w./-]+\.css\?v=abc1234$/, href);
   assert.match(html, /href="fonts\/ZenKakuGothicNew-Medium\.woff2"/);
   assert.match(html, /url\("img\/ui\/loading\/loading_bg\.webp"\)/);

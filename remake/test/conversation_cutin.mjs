@@ -137,7 +137,15 @@ assert.match(engine, /if \(v\) \{ cutin\?\.clear\(\); setAuto\(false\); \}/);
 assert.match(engine, /function openLog\(\) \{\n  cutin\?\.clear\(\);/);
 assert.match(engine, /function finish\(cancelled = false\) \{[\s\S]{0,900}cutin\?\.clear\(\);/);
 for (const page of ["index.html", "conversation-preview.html"]) {
-  assert(fs.readFileSync(path.join(root, "remake", page), "utf8").includes('href="css/vn/conversation-cutin.css"'), `${page} が CSS を読む`);
+  const html = fs.readFileSync(path.join(root, "remake", page), "utf8");
+  if (page === "index.html") {
+    // 本編は CSS バンドル経由で読む（bundles.json に vn/conversation-cutin.css が入っていること）
+    const bundles = JSON.parse(fs.readFileSync(path.join(root, "remake/css/bundles.json"), "utf8"));
+    assert(html.includes('href="css/vn/bundle.css"'), "index.html が vn バンドルを読む");
+    assert(bundles.segments.some((s) => s.out === "vn/bundle.css" && s.files.includes("vn/conversation-cutin.css")), "vn バンドルに conversation-cutin.css が入っている");
+  } else {
+    assert(html.includes('href="css/vn/conversation-cutin.css"'), `${page} が CSS を読む`);
+  }
 }
 
 console.log(`conversation-cutin: ${CUES.length} 行（採用7件）の置き場・出せる条件・出入り PASS`);

@@ -1,0 +1,97 @@
+{
+ "segments": [
+  {
+   "out": "bundle-1.css",
+   "files": [
+    "base.css",
+    "axe-throw.css",
+    "camel-race.css",
+    "ichidai.css",
+    "ichidai-skin-signs.css",
+    "ichidai-lines.css",
+    "desert-ride.css",
+    "tetsuko-time.css",
+    "tetsuko-theme.css",
+    "trpg.css",
+    "vn.css",
+    "intro.css",
+    "tonari-opening.css",
+    "daily.css",
+    "rule-sheet.css",
+    "ch2-preview.css",
+    "ch2-tournament.css",
+    "ch3-wayfinding.css",
+    "store-logos.css",
+    "craft.css",
+    "craft-rank.css",
+    "reel.css",
+    "extras.css",
+    "ui-art.css",
+    "ui-inner.css",
+    "shop.css",
+    "steam.css",
+    "worker-scenes.css",
+    "craft-header.css",
+    "tournament.css",
+    "motions.css"
+   ]
+  },
+  {
+   "out": "motions/bundle.css",
+   "files": [
+    "motions/cheki.css",
+    "motions/tarot.css",
+    "motions/gift.css",
+    "motions/shift.css",
+    "motions/shark.css",
+    "motions/sketch.css",
+    "motions/door.css",
+    "motions/dawn.css",
+    "motions/garagara.css",
+    "motions/purikura.css",
+    "motions/chapter-title.css",
+    "motions/chapter-poem.css",
+    "motions/lime.css",
+    "motions/plane.css",
+    "motions/shinkansen.css",
+    "motions/moments.css",
+    "motions/gaze.css"
+   ]
+  },
+  {
+   "out": "vn/bundle.css",
+   "files": [
+    "vn/shisha-diagram.css",
+    "vn/conversation-cutin.css"
+   ]
+  },
+  {
+   "out": "bundle-2.css",
+   "files": [
+    "continue.css",
+    "staff-roll.css",
+    "result.css",
+    "facility-icons.css",
+    "vn-lounge.css",
+    "ui-themes.css",
+    "vn-composition.css",
+    "ui-paper.css",
+    "settings.css",
+    "craft-landscape.css",
+    "flavor-guide.css",
+    "craft-paper.css",
+    "daily-menu.css",
+    "phone-density.css",
+    "wide-screens.css",
+    "wide-craft.css",
+    "phone-layout.css",
+    "craft-stage.css",
+    "side-area.css",
+    "look-neo.css",
+    "look-neo-board.css",
+    "look-neo-art.css",
+    "look-retro.css"
+   ]
+  }
+ ]
+}

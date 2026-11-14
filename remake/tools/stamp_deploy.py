@@ -70,7 +70,12 @@ def stamp(site: Path, build: str, built_at: str) -> None:
         f'<meta name="suien-build" content="{build}" data-built="{built_at}">', "版の meta",
     )
     html = version_css_refs(html, "", remake, build)
-    if f'href="css/base.css?v={build}"' not in html:
+    # 版付けの確認は、先頭の CSS リンク（バンドル化後は bundles.json の先頭）で行う
+    first_css = "css/base.css"
+    bundles_file = remake / "css" / "bundles.json"
+    if bundles_file.is_file():
+        first_css = "css/" + json.loads(bundles_file.read_text(encoding="utf-8"))["segments"][0]["out"]
+    if f'href="{first_css}?v={build}"' not in html:
         sys.exit("stamp_deploy: index.html の CSS に版を付けられなかった")
     index.write_text(html, encoding="utf-8")
 
