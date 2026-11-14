@@ -221,10 +221,11 @@ async function visit(stop) {
     if (!current(owner)) return;
     state.flags._ch2_rules_read = true; save();
   }
-  // 配達は挨拶と同じ店頭（背景を替えない）で読む。室内の絵は店内の場面で初めて出す（#1706）。
+  // 配達の受け渡しは店内で読む（2026-11-15 オーナー指示・#3652。#1706 の店頭受け渡しを改める）。
+  // 挨拶は店頭のまま、受け渡しだけ店内の絵（ROOMS）へ替える。この後の店内の場面と同じ絵なので流れは切れない。
   // 街の遊び場の紹介（ボドゲカフェ・水族館・銭湯）は初日に続けて読まず、DAY2以降にその店へ初めて通った時に読む（VOL13・ch2-preparation.js）。
   if (delivering) {
-    if (!await scene(`remake_ch2_delivery_${stop.id}`)) return;
+    if (!await scene(`remake_ch2_delivery_${stop.id}`, ROOMS[stop.id])) return;
     finishChapterTwoDelivery(state, stop.id); save();
   }
   // J05: 配達で来たら、そのまま店内へ入って店主と話す（「店内をのぞく」は出さない）。
