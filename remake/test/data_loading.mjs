@@ -81,7 +81,7 @@ assert.equal(new Set(requests).size, 43);
 for (const file of ["hiyori", "cinema", "tournament_craft"]) {
   assert(!requests.includes(`../data/dialogue/${file}.json`));
 }
-assert.equal(maximum, 4);
+assert.equal(maximum, 8);
 assert.equal(active, 0);
 assert.equal(progress.length, 43);
 assert.equal(all.DB.dialogues.samechan_cinema_introduction, undefined);
@@ -294,7 +294,7 @@ for (const [response, expected] of [
   });
   await assert.rejects(failed.loadAll(), expected);
   await pause(20); // 同時に始まった残りのリクエストを終わらせる
-  assert.equal(started.length, 4);
+  assert.equal(started.length, 8);
   assert.equal(Object.keys(failed.DB.characters).length, 0);
   assert.equal(Object.keys(failed.DB.dialogues).length, 0);
 }
