@@ -23,8 +23,12 @@ B2〜B9も作成し、第4・5章の `lineMedia` を有効化。以下の旧依�
 | `st_noor_morning` | おはよう！ | `lover.morningStamp.noor` | `5eb1701b5fe4f5e7ad596a0e7238e706e6be2216e54fed1f7021575098096a88` |
 | `st_saku_ack` | 了解 | `casual_lime.people.saku` | `9c04cb199e21f209795ce28f9b1223d20ff0f69ece28a376ac34580ddd9de010` |
 | `st_saku_guess` | 予想どおり | `casual_lime.people.saku` | `dc4383b032b0f531e77c38d31f224040bc3576e9395dc42883f3a5cd6861deee` |
-| `st_steve_ok` | オーケー | `casual_lime.people.steve` | `f68fd58264b5399f7891ebf2feb5621ee0bb9addd3f9e682a600aa8fc702ed15` |
-| `st_steve_wait` | 急ぐなよ | `casual_lime.people.steve` | `279f8543b227d98943a7aa46dfd9199585963c48530909179583f954d47c8a0f` |
+| `st_steve_ok` | オーケー | `casual_lime.people.steve` | `26d46d53b300c33cf665ee58efd79e784a2245ee79bf7854ef289474d1ff7afb` |
+| `st_steve_wait` | 急ぐなよ | `casual_lime.people.steve` | `6c50c321347b579db91bda758c81642893579c20d10f3a037fd3961f848b59f3` |
+
+## スティーブ2枚の描き直し（2026-11-15、Issue #3617）
+
+旧原画は画風参照から茶色のキャップが付いていた（帽子は向井さんの要素）ため、Gemini（agy の image-generator）で葉っぱだけの姿に描き直し、オーナー承認を経て差し替えた。変換は本書の変換手順どおり（白背景の辺接続領域のみ透過、文言は Noto Sans CJK Bold 108px・中心 (512,943)・#3A261A・白縁9px、ゲーム用は 320px）。旧原画の SHA-256 は ok `f68fd58264b5399f7891ebf2feb5621ee0bb9addd3f9e682a600aa8fc702ed15`／wait `279f8543b227d98943a7aa46dfd9199585963c48530909179583f954d47c8a0f`（git 履歴に保持）。
 
 ## B1原画の当初依頼・履歴
 
