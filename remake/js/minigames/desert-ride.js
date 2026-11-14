@@ -243,8 +243,12 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
   // メニューで選んでいる間にパック曲の取得・復号を済ませる。
   for (const key of Object.values(RIDE_BGM)) void preloadBgm(key);
   const art = loadDesertArt({ rivals: [] });
+  // 対戦相手の絵も、メニューで選んでいる間に読み始めておく（走る前の門で待ち直さない）。
+  if (rivals.length) void loadDesertArt({ rivals }).whenReady().catch(() => {});
   const promise = new Promise(resolve => {
     const rideSe = createDesertRideSe();
+    // 効果音もメニューの間に読み始めておく（同上）。
+    void rideSe.ready().catch(() => {});
     const results = [];
     let practiced = false, done = false, frame = 0, runId = 0, currentBest = best?.rulesVersion === RULES_VERSION ? best : null;
     const oldBest = legacyBest || (best && best.rulesVersion !== RULES_VERSION ? best : null);
@@ -466,10 +470,13 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         const runArt = loadDesertArt({ rivals: kind === "practice" ? [] : [who] });
         const fixed = minigameLoadingFixed(firstRun);
         firstRun = false;
+        const tintWho = kind === "practice" ? null : rivals.includes(who) ? who : "noor";
         if (runArt.pending() || !rideSe.isReady() || fixed) {
-          await withMinigameLoading(() => Promise.all([runArt.whenReady(), rideSe.ready()]), { host, label: "砂丘へ向かっています…", fixed }).catch(() => {});
+          // 色付きの絵の先作りも門の中（漫画を読んでいる間）に済ませ、門が開いた直後の固まりをなくす。
+          await withMinigameLoading(() => Promise.all([runArt.whenReady(), rideSe.ready()]).then(() => prewarmTints(tintWho)), { host, label: "砂丘へ向かっています…", fixed }).catch(() => {});
+        } else {
+          prewarmTints(tintWho);
         }
-        prewarmTints(kind === "practice" ? null : rivals.includes(who) ? who : "noor");
         if (!done) startRun(kind, who);
       } finally { preparing = false; }
     }
