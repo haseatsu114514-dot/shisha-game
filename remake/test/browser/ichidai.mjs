@@ -554,10 +554,16 @@ await suite("ichidai", async (check) => {
       window.__run = runIchidai({ host: document.getElementById("stage"), config: { kit: "a", tournament: "practice", level: 1 }, seed: 7, opponent: { id: "sumi", name: "スミさん" } });
     });
     await page.locator(`${t("ichi-hand")} .ichi-card .ichi-gem`).first().waitFor({ timeout: 15000 });
-    const signs = await page.evaluate(() => ({
-      sheet: [...document.styleSheets].some((s) => /\/css\/ichidai-skin-signs\.css(\?|$)/.test(s.href || "")),
-      mark: getComputedStyle(document.querySelector('[data-test="ichi-hand"] .ichi-card .ichi-gem'), "::before").maskImage,
-    }));
+    const signs = await page.evaluate(async () => {
+      // CSS バンドル化（#3631）以降は個別ファイルでなく、それを含むバンドルが読まれる。bundles.json で所在を引く。
+      const bundles = await (await fetch("css/bundles.json")).json();
+      const seg = (bundles.segments || []).find((g) => (g.files || []).includes("ichidai-skin-signs.css"));
+      const hrefs = [...document.styleSheets].map((s) => s.href || "");
+      return {
+        sheet: hrefs.some((h) => /\/css\/ichidai-skin-signs\.css(\?|$)/.test(h)) || (!!seg && hrefs.some((h) => h.endsWith("/css/" + seg.out))),
+        mark: getComputedStyle(document.querySelector('[data-test="ichi-hand"] .ichi-card .ichi-gem'), "::before").maskImage,
+      };
+    });
     assert.ok(signs.sheet, "本編も ichidai-skin-signs.css を読む");
     assert.match(signs.mark, /img\/ui\/ichidai\/signs\/\w+\.svg/, "左上の印に、しるしが重なる");
     // 拡大札（相手が使った札の見せ方と同じ組み）: 人物の顔は欄の中に全部入る。どの札も文が切れない

@@ -4196,7 +4196,7 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 /* ---- HUD ---- */
 .dr-hud { position: absolute; inset: 14px 22px auto; display: flex; justify-content: space-between; align-items: flex-start; pointer-events: none; }
 .dr-hud small { display: block; font-size: 18px; letter-spacing: .3em; color: rgba(60,40,30,.75); }
-.dr-hud-left, .dr-hud-right { min-width: 220px; padding: 10px 16px 12px; background: rgba(255,248,236,.72); border: 1px solid rgba(120,80,50,.3); border-radius: 12px; backdrop-filter: blur(4px); }
+.dr-hud-left, .dr-hud-right { min-width: 220px; padding: 10px 16px 12px; background: rgba(255,248,236,.88); border: 1px solid rgba(120,80,50,.3); border-radius: 12px; }
 .dr-hud-right { text-align: right; }
 .dr-score { display: block; font-size: 40px; line-height: 1; font-weight: 900; letter-spacing: .02em; color: #3a2520; font-variant-numeric: tabular-nums; }
 .dr-combo { display: block; min-height: 22px; margin-top: 4px; font-size: 18px; font-weight: 800; color: #d4521f; letter-spacing: .06em; }
@@ -4259,7 +4259,7 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .dr-controls { position: absolute; inset: auto 0 0; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 18px 16px; pointer-events: none; }
 .dr-controls[hidden] { display: none; }
 .dr-touch-pair { display: flex; gap: 14px; }
-.dr-touch { pointer-events: auto; width: 150px; height: 118px; border: 2px solid rgba(255,245,230,.55); border-radius: 22px; background: rgba(60,38,34,.42); color: #fff6e8; font: 700 20px/1 var(--font); letter-spacing: .06em; display: grid; place-items: center; cursor: pointer; backdrop-filter: blur(3px); touch-action: none; -webkit-tap-highlight-color: transparent; }
+.dr-touch { pointer-events: auto; width: 150px; height: 118px; border: 2px solid rgba(255,245,230,.55); border-radius: 22px; background: rgba(60,38,34,.58); color: #fff6e8; font: 700 20px/1 var(--font); letter-spacing: .06em; display: grid; place-items: center; cursor: pointer; touch-action: none; -webkit-tap-highlight-color: transparent; }
 .dr-touch span { pointer-events: none; }
 .dr-touch.dr-left span::before { content: "◀ "; }
 .dr-touch.dr-right span::after { content: " ▶"; }

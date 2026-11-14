@@ -368,7 +368,7 @@ await suite("axe-polish", async check => {
     ["touch-landscape", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
   ]) await check(`${label}-focus-layout`, async page => {
     const parts = new Set();
-    page.on("response", response => { const name = response.url().match(/ui\/axe_throw\/((?:gauge|button-throw|tag|hud|score|chalk|rank|banner|wood)-[a-z-]+\.webp)$/)?.[1]; if (name && response.ok()) parts.add(name); });
+    page.on("response", response => { const name = response.url().match(/ui\/axe_throw\/((?:gauge|button-throw|tag|hud|score|chalk|rank|banner|wood|cut)-[a-z-]+\.webp)$/)?.[1]; if (name && response.ok()) parts.add(name); });
     const before = await start(page, { mode: "league", opponent: "hiyori", seed: 11, division: "am" });
     const box = selector => page.locator(selector).first().evaluate(node => { const r = node.getBoundingClientRect(); return { left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width, height: r.height }; });
     const shown = selector => page.locator(selector).first().evaluate(node => node.getClientRects().length > 0 && getComputedStyle(node).visibility !== "hidden");
@@ -417,7 +417,7 @@ await suite("axe-polish", async check => {
     assert.match((await art('[data-call="upper-left"]', "::after")).image, /tag-slate-blue\.webp/);
     assert.match((await art('[data-test="axe-throw"] .axe-throw-button', "::before")).image, /button-throw-orange\.webp/);
     assert.equal((await art('[data-test="axe-throw"] .axe-throw-button', "::after")).opacity, 0);
-    assert.deepEqual([...parts].sort(), ["banner-green.webp", "banner-orange.webp", "button-throw-green.webp", "button-throw-orange.webp", "chalk-window.webp", "gauge-frame.webp", "gauge-needle.webp",
+    assert.deepEqual([...parts].sort(), ["banner-green.webp", "banner-orange.webp", "button-throw-green.webp", "button-throw-orange.webp", "chalk-window.webp", "cut-mark.webp", "gauge-frame.webp", "gauge-needle.webp",
       "hud-plate.webp", "rank-medallion.webp", "score-slot.webp", "tag-selected-amber.webp", "tag-selected.webp", "tag-slate-blue.webp", "tag-slate.webp", "wood-chips.webp"], "all parts are loaded before the first throw");
     // #3423: the header plate, the score slots, the total and the companion's chalkboard are drawn from the generated art, not flat CSS boxes.
     assert.match((await art(".axe-header", "::before")).image, /hud-plate\.webp/);
