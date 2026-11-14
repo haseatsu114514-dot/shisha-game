@@ -18,7 +18,7 @@ import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
 import { uiThemeFrame } from "./ui-theme.js";
 import { withLoadingNotice } from "./module-loading.js";
-import { withLoading, comicLoadingRequired } from "./loading.js";
+import { withLoading, comicLoadingRequired, loadingContinues } from "./loading.js";
 import { gameLoadingOptions } from "./loading-context.js";
 import { loadingPrefetch, prepareImage } from "./loading-prefetch.js";
 
@@ -266,6 +266,9 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
       if (fast) next.classList.add("fast");
       if (tint) next.dataset.tint = tint;
       host.append(next);
+      // 時間帯の色（css/look-neo.css の #bg[data-tone] ~ #vn）。いま出した絵の名前と色調から決める
+      const tone = sceneTone(next.dataset.sceneBg, tint);
+      if (tone) host.dataset.tone = tone; else delete host.dataset.tone;
       syncBackdrop(url, tint, instant);
     }
     // 場面はここで確定する。絵が読めず前の背景を残したときも、入店の合図は落とさない（進行は止めない）。
@@ -483,7 +486,9 @@ export function withChapterLoading(load, label) {
  * プレイヤーの既定では、0.5秒を超えたら漫画のロード画面にする（直前の漫画を読んだばかりなら、その続きの画面で閉じる）。
  */
 export function withSceneLoading(task, label) {
-  return comicLoadingRequired() ? withLoadingNotice(task, loadingNotice(label)) : task;
+  if (!comicLoadingRequired()) return task;
+  // 漫画を読んだすぐ後（章のプログラムの直後など）は、文字だけの画面を挟まず、同じ漫画の画面をすぐ続ける。
+  return withLoadingNotice(task, { ...loadingNotice(label), delayMs: loadingContinues() ? 0 : 500 });
 }
 
 /** VN開始前などの画像待ちにだけ添える通知。play()自体は包まない。 */
@@ -702,12 +707,17 @@ function paintedBox(node) {
 }
 
 /** 選択肢つきのモーダル。options: [{label, value, primary, test}] */
+// ブラウザの文節の判定が「上｜書き」の間で折ることがある（「このデータで上／書きされます」。TXW07）。
+// 確認の文を表示する時だけ、語の中に改行しない印（U+2060）を入れる。渡された文字列そのものは変えない。
+const KEEP_WORDS = ["上書き"];
+const keepWords = (html) => KEEP_WORDS.reduce((s, word) => s.replaceAll(word, [...word].join("\u2060")), html);
+
 export function modal({ title = "", body = "", options = [{ label: "OK", value: true, primary: true }], className = "" }) {
   return new Promise((resolve) => {
     const previousFocus = document.activeElement;
     const box = el(`div.modal-box${className ? "." + className : ""}`, [
       title ? el("h3", { text: title }) : null,
-      typeof body === "string" ? el("div.modal-body", { html: body }) : el("div.modal-body", [body]),
+      typeof body === "string" ? el("div.modal-body", { html: keepWords(body) }) : el("div.modal-body", [body]),
       el("div.modal-actions", options.map((o) =>
         el(`button.btn${o.primary ? ".primary" : ""}`, {
           text: o.label,
@@ -742,24 +752,64 @@ export function modal({ title = "", body = "", options = [{ label: "OK", value: 
 // ---------------------------------------------------------------- 演出パーツ
 
 /** タイミング系ミニゲームの前に必ず挟む 3・2・1（CLAUDE.md の約束） */
-export async function countdown(host = layers.fx) {
+/**
+ * 3-2-1-GO! のカウントダウン（制作のミニゲーム）。
+ * CRN07: 同じ作業台で2回目以降（レッスンを除く）は「GO!」だけにする。short で明示もできる。
+ * カウント中のタップ・キーで残りを飛ばして、すぐ GO! へ進める。
+ * シーシャ作りの桜井版（作業台の data-craft-version="sakurai"・CRN16）は、リニューアル前のとおり毎回 3・2・1 で飛ばさない。
+ */
+export async function countdown(host = layers.fx, { short } = {}) {
+  const bench = globalThis.document?.querySelector?.(".bench:not(.done)");
+  const seen = Number(bench?.dataset.countdowns || 0);
+  if (bench) bench.dataset.countdowns = String(seen + 1);
+  const renewal = bench?.dataset.craftVersion !== "sakurai";
+  const quick = short ?? (renewal && !!bench && bench.dataset.mode !== "tutorial" && seen > 0);
   const c = el("div.countdown");
   host.append(c);
-  for (const n of ["3", "2", "1"]) {
-    c.textContent = n;
-    c.classList.remove("pop");
-    void c.offsetWidth;
-    c.classList.add("pop");
-    SE.tick();
-    await sleep(560);
+  let skip;
+  const skipped = new Promise((resolve) => { skip = resolve; });
+  const onSkip = () => skip();
+  const opts = { capture: true, once: true };
+  if (renewal) {
+    globalThis.window?.addEventListener?.("pointerdown", onSkip, opts);
+    globalThis.window?.addEventListener?.("keydown", onSkip, opts);
+  }
+  let cut = false;
+  skipped.then(() => { cut = true; });
+  try {
+    for (const n of quick ? [] : ["3", "2", "1"]) {
+      if (cut) break;
+      c.textContent = n;
+      c.classList.remove("pop");
+      void c.offsetWidth;
+      c.classList.add("pop");
+      SE.tick();
+      await Promise.race([sleep(560), skipped]);
+    }
+  } finally {
+    globalThis.window?.removeEventListener?.("pointerdown", onSkip, opts);
+    globalThis.window?.removeEventListener?.("keydown", onSkip, opts);
   }
   c.textContent = "GO!";
   c.classList.remove("pop");
   void c.offsetWidth;
   c.classList.add("pop", "go");
   SE.select();
-  await sleep(380);
+  await sleep(quick || cut ? 300 : 380);
   c.remove();
+}
+
+/**
+ * 背景の絵の名前（data-scene-bg）と夜の色調から、時間帯の色の種類を決める（css/look-neo.css の #bg[data-tone]）。
+ * 判定の順は以前の CSS と同じ（後ろほど優先: 昼 < 曇りの昼 < 夕方 < 夜）。
+ */
+export function sceneTone(file = "", tint = "") {
+  const name = String(file || "");
+  if (tint === "night" || /_night\./.test(name)) return "night";
+  if (/_(dusk|evening|sunset)\./.test(name)) return "dusk";
+  if (/_overcast_day\./.test(name)) return "overcast";
+  if (/_(day|morning)\./.test(name)) return "day";
+  return "";
 }
 
 /** 判定スタンプ（PERFECT / JUST IGNITION!! など）。host の中央に一瞬出す */

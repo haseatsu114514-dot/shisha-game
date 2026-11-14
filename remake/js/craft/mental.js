@@ -21,7 +21,7 @@ export function buildMentalTrace(width, height, pressureInputs = {}) {
       caption.textContent = MIND_LABELS[level];
       trace.setAttribute("aria-label", `心の状態：${caption.textContent}。被弾${hits}回`);
     }
-    trace.dataset.tension = stress.toFixed(2);
+    { const tension = stress.toFixed(2); if (trace.dataset.tension !== tension) trace.dataset.tension = tension; } // 同じ値は書かない
     if (time - lastDraw < .05) return level;
     lastDraw = time;
     let d = "";

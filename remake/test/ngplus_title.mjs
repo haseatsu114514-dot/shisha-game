@@ -4,6 +4,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
+import * as craftVersion from "../js/core/craft-version.js";
 
 const read = (path) => fs.readFile(new URL(path, import.meta.url), "utf8");
 const flush = async () => { for (let i = 0; i < 6; i++) await new Promise((r) => setTimeout(r, 0)); };
@@ -111,6 +112,7 @@ function makeFixture(opts = {}) {
     },
     "../core/state.js": {
       peekSave: () => opts.save ?? null,
+      peekLatestSave: () => opts.save ?? null,
       newGame: () => { calls.newGame++; },
       wipeSave: () => { calls.wipeSave++; },
       config: {}, saveConfig() {},
@@ -126,12 +128,13 @@ function makeFixture(opts = {}) {
     "../core/ngplus-difficulty.js": { difficultyForRun },
     "../core/ui-theme.js": { createUiThemeSelect: () => el("select") },
     "../core/look.js": { LOOKS: [{ id: "classic", label: "現行" }, { id: "neo", label: "新版" }, { id: "retro", label: "DS風" }], normalizeLook: (value) => value || "classic", setLook() {} },
+    "../core/craft-version.js": { CRAFT_VERSIONS: craftVersion.CRAFT_VERSIONS, normalizeCraftVersion: craftVersion.normalizeCraftVersion },
     "../core/side-area.js": { refreshSideArea() {} },
     "./save-transfer.js": { fullscreenButton: () => null, saveTransferRow: () => el("div") },
     "../chapters/ch1.js": { startNewGame: () => { calls.startNewGame++; }, resumeGame() {} },
     "../vn/engine.js": { clearLog() {} },
     "./gallery.js": { openGallery: async () => {} },
-    "./saves.js": { loadWithRecovery: async () => false },
+    "./saves.js": { loadWithRecovery: async () => false, saveHeadline: () => "" },
     "./title-art.js": {
       pickTitleArt: () => ({ character: "sumi", file: "sumi.webp", url: "blob:sumi", ready: true }),
       prepareTitleArt: async (art) => art,

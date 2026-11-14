@@ -1,4 +1,4 @@
-.craft-preview-nav { position: fixed; inset: 0 0 auto; height: 52px; z-index: 40; display: flex; align-items: center; gap: 18px; padding: 0 20px; background: #16101c; border-bottom: 1px solid #8e745055; font-size: 14px; }
+.craft-preview-nav { position: fixed; inset: 0 0 auto; height: 52px; z-index: 40; display: flex; align-items: center; gap: 18px; padding: 0 20px; overflow-x: auto; white-space: nowrap; scrollbar-width: none; background: #16101c; border-bottom: 1px solid #8e745055; font-size: 14px; }
 .craft-preview-nav a { display: flex; align-items: center; min-height: 44px; color: #d8c7ac; text-decoration: none; padding: 0 8px; }
 .craft-preview-nav a[aria-current] { color: #fff1d2; border-bottom: 3px solid #d7ae71; }
 .craft-preview-nav a:focus-visible { outline: 2px solid #fff1d2; }
@@ -22,3 +22,7 @@
 #stage[data-loading-study="plain"] .loading-status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
 #stage[data-loading-study="plain"] .loading-comic-title { display: none; }
+.craft-preview-end .craft-preview-rank { width: 420px; max-width: 70vw; justify-self: center; animation: craft-preview-rank-in .6s cubic-bezier(.2,.8,.3,1.2); }
+@keyframes craft-preview-rank-in { from { opacity: 0; transform: scale(1.6); } }
+/* シーシャ作りの版の切替（CRN16） */
+.craft-preview-nav .craft-preview-version { display: flex; align-items: center; gap: 2px; padding-left: 12px; border-left: 1px solid #8e745055; color: #b9aa9c; }

@@ -1,5 +1,6 @@
 import { growthEnabled } from "../core/growth-mode.js";
 import { naruFinishGuide, naruFinishRange, inNaruFinishRange } from "../core/naru-finish.js";
+import { attackRange, inAttackRange } from "./attack-band.js";
 // 蒸らし・吸い出し・熱管理で同じ温度の目盛り・適温帯を使う。
 // 管は一本のグラデーション（クリーム→黄→適温のミント→橙→赤→深紅）。薄い横目盛りを重ね、現在地より上だけ少し暗くする。
 // 文字の目盛りは置かず、管の中の印で示す。低め・高めを作り分ける配合では、中央だけを虹で強調しない。
@@ -22,7 +23,7 @@ const SCALE_COLORS = [[0, "#fff4d2"], [.13, "#ffedb0"], [.26, "#ffe270"], [.37, 
   [.44, "#4fcf98"], [.54, "#74e0b0"], [.64, "#4fcf98"], [.66, "#79d9a9"], [.71, "#ffb247"], [.76, "#ff8a2a"],
   [.83, "#ff3f17"], [.89, "#eb210d"], [.94, "#b0140a"], [1, "#650609"]];
 
-export function buildThermometer({ cs, compact = false, bandPreview = false, unsteady = false, finishGuide = false, coldLimit = null, height = 440, width = 76 } = {}) {
+export function buildThermometer({ cs, compact = false, bandPreview = false, unsteady = false, finishGuide = false, attackGuide = false, coldLimit = null, height = 440, width = 76 } = {}) {
   let bands;
   const mark = el("i.thermo-mark"), dim = el("i.thermo-dim");
   // 管の外から今の温度を指す、目立つ矢印（TH30）。黒い縁取りで金枠・背景に埋もれさせない（TH85）。
@@ -33,6 +34,14 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
   const finishMark = el("i.thermo-naru-finish", { hidden: true, "aria-hidden": "true", title: "焼き際の目安",
     dataset: { test: "naru-finish-range" }, style: { position: "absolute", left: "0", right: "0", boxSizing: "border-box",
       boxShadow: "inset 0 1px #8a4500, inset 0 -1px #8a4500", background: "#ffd16699", pointerEvents: "none", zIndex: "3" } });
+  // 桜井式の大会の「攻めの帯」（craft/attack-band.js・SKR04）。適温帯の上の端に、桃色の斜線で重ねる。
+  const attackMark = attackGuide ? el("i.thermo-attack", { title: "攻めの帯：ここで終えると審査が伸びる。上を越えると味が崩れる",
+    "aria-hidden": "true", dataset: { test: "attack-band" }, style: { position: "absolute", left: "0", right: "0", boxSizing: "border-box",
+      // 虹（.thermo-optimal・z-index 5）が適温帯いっぱいに広がる配合でも隠れないよう、虹より上に重ねる。
+      background: "repeating-linear-gradient(135deg, #ff2d9bdd 0 5px, #ff2d9b55 5px 10px)",
+      boxShadow: "inset 0 3px #b0105c, inset 0 -2px #b0105c, 0 0 8px #ff2d9b99", pointerEvents: "none", zIndex: "6" } }) : null;
+  const attackNote = attackGuide ? el("span.thermo-range-note.thermo-attack-note", { text: "攻め", "aria-hidden": "true",
+    dataset: { test: "attack-band-note" }, style: { color: "#c2186b", fontWeight: "800" } }) : null;
   const projectedLabel = el("span.thermo-projected-label", { hidden: true, text: "点線：止めたらここ", dataset: { test: "pull-projection" } });
   const tube = el("div.thermo-tube", [
     el("div.thermo-scale"),
@@ -42,7 +51,7 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
     coldLimit ? el("div.thermo-cold", { style: { height: pct(coldLimit) }, title: "冷え切り", dataset: { test: "thermo-cold" } }, [el("i.thermo-icon.snow", { html: SNOW })]) : null,
     el("div.thermo-zone", { title: "適温" }),
     el("div.thermo-optimal", { title: "最適温", dataset: { test: bandPreview ? "mix-optimal" : compact ? "steam-optimal" : "pull-optimal" } }),
-    projected, range, finishMark, mark,
+    projected, range, finishMark, attackMark, mark,
   ]);
   const framed = !!makingUrl("ui_temperature_frame.png");
   const frameWidth = width;
@@ -68,6 +77,7 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
     pointer,
     projectedLabel,
     rangeNote,
+    attackNote,
   ]);
   const zone = tube.querySelector(".thermo-zone"), optimal = tube.querySelector(".thermo-optimal"), heat = tube.querySelector(".thermo-heat");
   // プレビューは現在温度を持たず、実プレイと同じ管・緑・虹だけを見せる。
@@ -93,6 +103,15 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
       && bands?.expressionWeight === next.expressionWeight && bands?.selected === next.selected
       && bands?.damageScale === next.damageScale) return bands;
     bands = next;
+    const attack = attackMark ? attackRange(bands) : null;
+    if (attackMark) {
+      attackMark.hidden = attackNote.hidden = !attack;
+      if (attack) {
+        attackMark.style.bottom = pct(attack.low); attackMark.style.height = pct(attack.high - attack.low);
+        Object.assign(attackMark.dataset, { low: attack.low, high: attack.high });
+        attackNote.style.bottom = `calc(var(--thermo-inset) + ${(attack.low + attack.high) / 2} * (100% - 2 * var(--thermo-inset)) - 9px)`;
+      }
+    }
     const expressive = fullExpression(bands);
     zone.style.bottom = pct(bands.ideal[0]); zone.style.height = pct(bands.ideal[1] - bands.ideal[0]);
     zone.title = expressive ? "おいしく作れる範囲" : "適温の目安";
@@ -116,6 +135,7 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
     dim.style.bottom = pct(temp);
     pointer.style.bottom = `calc(var(--thermo-inset) + ${temp} * (100% - 2 * var(--thermo-inset)) - 15px)`;
     root.classList.toggle("ok", isIdealTemperature(temp, bands));
+    if (attackMark) root.classList.toggle("attack", inAttackRange(temp, attackRange(bands)));
     root.classList.toggle("optimal", isRainbowTemperature(temp, bands));
     root.classList.toggle("danger", temp >= DANGER_TEMP);
     root.classList.toggle("hot", temp > bands.ideal[1] && temp < DANGER_TEMP);

@@ -28,8 +28,13 @@ export function buildWorkerHoles() {
     .then(results => { available = results.every(Boolean); });
   const ready = Promise.resolve();
   const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+  // 枠の大きさは覚えておき、穴を開けるたびに測り直さない（毎回測ると、その場で配置の計算をやり直させて重い・CRN）。
+  // 大きさが変わった時（ResizeObserver）と、表示し直した時だけ測る。
+  let size = null;
+  const measure = () => { size = [root.clientWidth, root.clientHeight]; };
   const positionHand = () => {
-    const scale = Math.min(root.clientWidth / FOIL_VIEW.width, root.clientHeight / FOIL_VIEW.height);
+    if (!size?.[0] || !size?.[1]) measure();
+    const scale = Math.min(size[0] / FOIL_VIEW.width, size[1] / FOIL_VIEW.height);
     const x = FOIL_VIEW.cx + target[0] * FOIL_VIEW.rx - FOIL_VIEW.tipX;
     const y = FOIL_VIEW.cy + target[1] * FOIL_VIEW.ry - FOIL_VIEW.tipY;
     hands.style.transform = `translate(${x * scale}px, ${y * scale}px)`;
@@ -40,7 +45,7 @@ export function buildWorkerHoles() {
       frame.img.style.transform = `translate(${dx * scale}px, ${dy * scale}px)`;
     });
   };
-  const resize = typeof ResizeObserver === "function" ? new ResizeObserver(positionHand) : null;
+  const resize = typeof ResizeObserver === "function" ? new ResizeObserver(() => { measure(); positionHand(); }) : null;
   const pose = name => {
     root.dataset.pose = name;
     frames.forEach(frame => { frame.img.hidden = frame.pose !== name; });
@@ -57,7 +62,7 @@ export function buildWorkerHoles() {
     show(visible) {
       root.hidden = !visible || !available;
       if (root.hidden) { clearTimers(); resize?.disconnect(); }
-      else { positionHand(); resize?.observe(root); }
+      else { measure(); positionHand(); resize?.observe(root); }
     },
     punch(event) {
       if (root.hidden || !root.isConnected) return;

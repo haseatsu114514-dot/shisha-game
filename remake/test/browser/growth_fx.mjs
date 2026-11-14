@@ -252,6 +252,35 @@ await suite("growth-fx", async (check) => {
       assert.deepEqual(result.g.hidane, { any: 10, body: 1, sense: 0, wisdom: 0 });
       await page.locator(".gain-card", { hasText: "空気を読む" }).waitFor();
     }, options);
+
+    // スキルの漫画のコマ（SBD129）は絵の欄いっぱいに敷き、中央で切り抜く。
+    // 欄は grid なので、height: 100% だけではコマが元の比の高さのまま上に寄り、スマホ横で顔の上半分しか見えなかった（2026-11-13 オーナー「漫画の位置ズレてました」）
+    await check(`${label}-skill-manga-fills-the-art`, async (page) => {
+      await setupDaily(page, { chapter: 4 });
+      await page.evaluate(async () => {
+        __remake.state.flags._board_starter_given = true; __remake.state.flags._board_tutorial_done = true;
+        void (await import("./js/core/growth.js")).openGrowthBoard({ place: "kannon" });
+      });
+      await page.locator(`${t("growth-board")}[data-art]`).waitFor();
+      for (const [tab, id] of [["body", "K12"], ["sense", "K15"], ["wisdom", "K02"]]) {
+        await page.locator(t(`board-tab-${tab}`)).click();
+        await page.locator(t(`board-node-${id}`)).click({ force: true });
+        const art = page.locator(".gb-art.has-skill-art");
+        await art.waitFor();
+        await page.waitForFunction(() => document.querySelector(".gb-skill-art")?.complete && document.querySelector(".gb-skill-art").naturalWidth > 0);
+        const box = await art.evaluate((node) => {
+          const outer = node.getBoundingClientRect(), img = node.querySelector(".gb-skill-art").getBoundingClientRect(), cs = getComputedStyle(node);
+          const inner = { top: outer.top + parseFloat(cs.borderTopWidth), bottom: outer.bottom - parseFloat(cs.borderBottomWidth),
+            left: outer.left + parseFloat(cs.borderLeftWidth), right: outer.right - parseFloat(cs.borderRightWidth) };
+          const style = getComputedStyle(node.querySelector(".gb-skill-art"));
+          return { gaps: [img.top - inner.top, inner.bottom - img.bottom, img.left - inner.left, inner.right - img.right].map((v) => Math.round(v * 10) / 10),
+            fit: style.objectFit, position: style.objectPosition };
+        });
+        assert(box.gaps.every((gap) => Math.abs(gap) <= 1), `${id}: コマは絵の欄の内側いっぱい（上下左右のずれ 1px 以内） ${JSON.stringify(box)}`);
+        assert.equal(box.fit, "cover", `${id}: コマは欄に合わせて切り抜く`);
+        assert.equal(box.position, "50% 50%", `${id}: 切り抜きは中央（顔と動きは原画の高さの 25〜75% に描いてある）`);
+      }
+    }, options);
   }
 
   // 動きを減らす設定: 光もカットインも出さず、待たずに閉じる。灯した結果は同じ

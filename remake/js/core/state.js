@@ -723,6 +723,9 @@ export const config = {
   staffRollSeen: false, // スタッフロールを一度最後まで見たか。見た端末では2回目から飛ばせる（#517）
   // 左右の余白（横長のスマホでステージの外に余る所・YHK）。"full"＝煙と縁・縦書きの帯・親指ボタン／"plain"＝これまでどおり、ぼかしだけ
   sideArea: "full",
+  // シーシャ作りの版（core/craft-version.js・CRN16）。未選択（null）はリニューアル。"sakurai" で桜井版
+  // （リニューアル前の作業台＋第1章の大会の桜井式の審査・SKR04）
+  craftVersion: null,
 };
 
 setPortraitStyleSource(() => config.portraitStyle);

@@ -19,6 +19,26 @@ import { waterComfort } from "./water.js";
 
 const WATER_TASTE_FACTOR = .5;
 
+/**
+ * 攻めた構成の見返りと代償（CRN・P7）。完成品の計算と、選ぶ画面の札の両方がこの表を読む（二重管理しない）。
+ * 値は完成品ステータス（0〜100）へ足す量。
+ */
+export const CONFIG_EFFECTS = Object.freeze({
+  place: Object.freeze({ four: Object.freeze({ smoke: 14, burnRisk: 16 }) }),
+  pack: Object.freeze({
+    fluffy: Object.freeze({ draw: 12, taste: -6, burnRisk: 5 }),
+    normal: Object.freeze({}),
+    firm: Object.freeze({ draw: -12, taste: 14, duration: 10 }),
+  }),
+});
+const EFFECT_WORDS = { smoke: "煙", burnRisk: "焦げやすさ", draw: "吸い心地の軽さ", taste: "味の濃さ", duration: "持ち" };
+/** 選ぶ画面の札の文字（例: 「煙＋14・焦げやすさ＋16」） */
+export function configEffectLabel(group, value) {
+  const fx = CONFIG_EFFECTS[group]?.[value];
+  if (!fx) return "";
+  return Object.entries(fx).map(([key, n]) => `${EFFECT_WORDS[key] || key}${n >= 0 ? "＋" : "−"}${Math.abs(n)}`).join("・");
+}
+
 export const WEIGHTS = { holes: .2, heat: .2, shisha: .2, care1: .2, care2: .2 };
 /** 千須が持ち点を動かす基準（これ未満なら千須票は入らず、普通に負ける） */
 export const SUI_BAR = 90.8; // MEASURE.md: 第1章・mid 初回突破率 74.2%（742/1000）。
@@ -58,8 +78,10 @@ export function computeShisha(cs) {
   const st = cs.steam || { min: 5, hits: 2, score: 70 };
   const care = cs.careHistory?.length ? { score: cs.careHistory.reduce((sum, item) => sum + item.score, 0) / cs.careHistory.length } : cs.care || { score: 60 };
   const grams = m.total || 12;
-  const packDraw = { fluffy: 12, normal: 0, firm: -12 }[cs.pack] || 0;
+  const packFx = CONFIG_EFFECTS.pack[cs.pack] || {};
+  const packDraw = packFx.draw || 0;
   const four = cs.place === "four";
+  const fourFx = four ? CONFIG_EFFECTS.place.four : {};
   // HMDの熱安定は性能表（equipSpecOf の stabilityBonus）を正とする。表示と採点で値をずらさない。
   const hms = equipSpecOf(cs.equip?.hms)?.stabilityBonus || 0;
   const steamSeconds = steamSecondsOf(cs);
@@ -70,19 +92,19 @@ export function computeShisha(cs) {
   const baseDraw = 42 + holeDraw + packDraw;
   const { drawW } = waterComfort(cs.water);
   const draw = clamp(baseDraw + maker.bonuses.draw + drawW, 0, 100);
-  const smoke = clamp(baseDraw * 0.45 + c.heatPower * 0.35 + (four ? 14 : 0) + opening * 6 + coal.smokeBonus + maker.bonuses.smoke, 0, 100);
+  const smoke = clamp(baseDraw * 0.45 + c.heatPower * 0.35 + (fourFx.smoke || 0) + opening * 6 + coal.smokeBonus + maker.bonuses.smoke, 0, 100);
   const baseHeatStability = h.outerEven * 45 + c.heatStability * 0.38 + care.score * 0.12 + hms + foilHeatProfile(h).stability;
   const heatStability = clamp(baseHeatStability + maker.bonuses.heatStability, 0, 100);
   const safePulls = 3 + (maker.safePullsBonus || 0);
   const extraPulls = Math.max(0, (p.pulls || 3) - safePulls);
   const overheatedRisk = overheated ? Math.round(12 * (1 - 0.5 * (maker.makerWeights?.dobaj || 0))) : 0;
-  const burnRisk = clamp(8 + h.innerExcess * 9 + c.burnRisk * 0.55 + (four ? 16 : 0) + steamBurnRisk(steamSeconds) + overheatedRisk + (cs.pack === "fluffy" ? 5 : 0) + extraPulls * 5 + coal.burnRisk, 0, 100);
+  const burnRisk = clamp(8 + h.innerExcess * 9 + c.burnRisk * 0.55 + (fourFx.burnRisk || 0) + steamBurnRisk(steamSeconds) + overheatedRisk + (packFx.burnRisk || 0) + extraPulls * 5 + coal.burnRisk, 0, 100);
   const gift = giftBowlEffect(cs);
   const mastery = mixMasteryProfile(cs.masteryAtStart ? { flavorMastery: cs.masteryAtStart } : state, cs.mix, DB.flavorById);
   // 慣れた葉ほど香りを再現しやすい。甘さ・清涼感などの強さを品質点にしない。
   const aroma = clamp(m.score * 0.38 + c.aromaRetention * 0.28 + p.score * 0.22 + st.score * 0.12 - burnRisk * 0.2 + 10 + (gift?.aroma || 0) + maker.bonuses.aroma + mastery.aromaBonus, 0, 100);
-  const taste = clamp(38 + (grams - 12) * 4 + (cs.pack === "firm" ? 14 : cs.pack === "fluffy" ? -6 : 0) + opening * 8 + (m.intensity - 5) * 3 + maker.bonuses.taste + WATER_TASTE_FACTOR * drawW, 0, 100);
-  const duration = clamp(baseHeatStability * 0.55 + (grams - 12) * 3 + (cs.pack === "firm" ? 10 : 0) + care.score * 0.25 + maker.bonuses.duration, 0, 100);
+  const taste = clamp(38 + (grams - 12) * 4 + (packFx.taste || 0) + opening * 8 + (m.intensity - 5) * 3 + maker.bonuses.taste + WATER_TASTE_FACTOR * drawW, 0, 100);
+  const duration = clamp(baseHeatStability * 0.55 + (grams - 12) * 3 + (packFx.duration || 0) + care.score * 0.25 + maker.bonuses.duration, 0, 100);
   const rawQuality = aroma * 0.25 + heatStability * 0.15 + (100 - burnRisk) * 0.15 + taste * 0.10 + smoke * 0.10
     + duration * 0.05 + draw * 0.05 + m.score * 0.08 + p.score * 0.07;
   const craftQuality = Math.round(clamp(rawQuality, 0, 100));
@@ -157,6 +179,41 @@ export function provisionalCraftScore(cs) {
   const entries = Object.entries(scoreWeights(cs)).filter(([key]) => Number.isFinite(parts[key]));
   const weight = entries.reduce((sum, [, w]) => sum + w, 0);
   return weight ? clamp(entries.reduce((sum, [key, w]) => sum + parts[key] * (w / weight), 0), 0, 100) : null;
+}
+
+/**
+ * 制作中のランク（CRN01・CRN12）。作業台を開いた時はDで、工程を終えるたびに1段ずつ上がっていく。
+ * 表示の点 = min(採点に入る工程の平均, 進み具合の上限)。進み具合は 穴・炭・蒸らし・提供・調整1・調整2 の6つ（その台で行う分だけ）。
+ * 上限は進み具合に合わせて D→C→B→A→S→SS と1段ずつ開き、全部終えると外れて最終の総合（ボーナス前）と一致する（最後に SSS へ届く）。
+ * 蒸らし（雑念よけ）は採点の平均には入らないが、進み具合には入る。蒸らしの最中は、雑念に当たっていない時間の分だけ
+ * 進み具合がじわじわ増える（cs.steamLive.progress、0〜1）。出来の悪い工程があれば平均の方で抑えられる。
+ * steps はその作業台で行う工程（openBench の steps の id）。調整なしの台は、その分を数えない。
+ */
+export function climbingCraftScore(cs, steps = null, thresholds = [0, 50, 65, 80, 90, 93, 96]) {
+  const parts = {
+    holes: cs.holes?.skipped ? undefined : cs.holes?.score,
+    heat: cs.heat?.score,
+    shisha: cs.pullDone ? (cs.stats || computeShisha(cs)).craftQuality : undefined,
+    care1: cs.careHistory?.[0]?.score,
+    care2: cs.careHistory?.[1]?.score,
+  };
+  const planned = Array.isArray(steps) && steps.length ? new Set(steps) : null;
+  const stepOf = { holes: "holes", heat: "heat", shisha: "pull", care1: "care1", care2: "care2" };
+  const entries = Object.entries(scoreWeights(cs)).filter(([key]) => !planned || planned.has(stepOf[key]));
+  const steamPlanned = !planned || planned.has("steam");
+  const units = entries.length + (steamPlanned ? 1 : 0);
+  if (!entries.length) return null;
+  const done = entries.filter(([key]) => Number.isFinite(parts[key]));
+  const steamDone = !steamPlanned ? 0 : cs.steam ? 1 : clamp(Number(cs.steamLive?.progress) || 0, 0, 1);
+  if (!done.length) return 0;
+  const weight = done.reduce((sum, [, w]) => sum + w, 0);
+  const average = clamp(done.reduce((sum, [key, w]) => sum + parts[key] * (w / weight), 0), 0, 100);
+  const fraction = (done.length + steamDone) / units;
+  if (fraction >= 1) return average;
+  // 進み具合 → 上限の点。ランクの境目の間を、進み具合に比例して1段ずつ開ける
+  const top = thresholds.length - 1, g = fraction * top, i = Math.floor(g);
+  const cap = thresholds[i] + (g - i) * ((thresholds[i + 1] ?? 100) - thresholds[i]);
+  return Math.min(average, cap);
 }
 
 export function finalize(cs) {

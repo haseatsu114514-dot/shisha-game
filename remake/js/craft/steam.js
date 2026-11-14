@@ -14,7 +14,8 @@ import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemper
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel, SHORT_DODGE_SECONDS } from "./steam-time.js";
 import { buildDigitalClock } from "./digital-clock.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
-import { craftConditions, temperatureAfterSteam } from "./conditions.js";
+import { craftConditions, temperatureAfterSteam, steamFocusNote } from "./conditions.js";
+import { renewalCraft } from "../core/craft-version.js";
 import { buildSteamTemperature } from "./steam-forecast.js";
 import { steamClimate } from "./steam-climate.js";
 import { buildSteamWorld, HEART_ART, BULLET_ART } from "./steam-art.js";
@@ -39,6 +40,11 @@ const OBJECTS = ["coal", "orb", "orb", "smoke"];
 
 // SF63: 一度に1回分を持ち、使用後8秒でリチャージ。根性は範囲と回復に効く。
 export const REFRESH_RECHARGE_SECONDS = 8;
+/**
+ * 雑念よけの手触りの調整値（CRN・P8）。試遊ページの ?tune=steam.hitPenalty:10 で差し替えて試せる。
+ * hitPenalty: 1回当たるごとに下がる点／invulnerable: 当たった後に無敵になる秒／speed・preciseSpeed: 心の移動の速さ（px/秒）
+ */
+export const STEAM_TUNING = { hitPenalty: 14, invulnerable: 0.9, speed: 290, preciseSpeed: 120 };
 // dodge枠は784×414px。根性1段の半径90pxから10段の画面全体まで広がる。
 // SB01: 基本1回。根性★4（内部値61〜・7段）と★5（81〜・9段）で1回ずつ増え、盤のK06の1回と合算する。
 // 第1章は根性の上限48なので★では増えない。回数が多すぎればバランス再測定で調整する（オーナー仮判断・合算案）。
@@ -141,7 +147,9 @@ export async function runSteamDodge(cs) {
   heart.style.setProperty("--heart-size", `${HEART_SIZE}px`);
   heart.style.setProperty("--hit-diameter", `${hitR * 2}px`);
   const spawnEvery = pace.spawnEvery * (1 + 0.25 * tier01("insight")) * focus;
-  let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
+  let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock, unhitTime = 0, rankTick = -1;
+  // ランクがじわじわ上がる・集中の効き目の一文（CRN10・12）はリニューアルだけ（CRN16）
+  const renewal = renewalCraft(cs);
   let refreshesUsed = 0, refreshReadyAt = 0, slashesUsed = 0, slashReadyAt = 0;
   let wordsCut = 0, totalWordsCut = 0, maxCombo = 0, slashCooldown = SLASH_RECHARGE_SECONDS;
   let afterglowUntil = 0, afterglows = 0, sharkPulses = 0;
@@ -208,15 +216,16 @@ export async function runSteamDodge(cs) {
   const clearBullets = (radius = Infinity) => removeBullets(b => Math.hypot(hx - clamp(hx, b.x, b.x + b.w), hy - clamp(hy, b.y, b.y + b.h)) <= radius);
   // ボタンの表示は毎フレーム組み立てるが、DOM へは値が変わった所だけ書く（#3500 F-4）。
   const shownRecharge = new WeakMap(); // ボタンごとに、最後に書いた --recharge
-  const rechargeLabel = (button, caption, remaining, duration, label) => {
+  const rechargeLabel = (button, caption, remaining, duration, label, locked = false) => {
     const rounded = Math.ceil(remaining * 10) / 10;
     setData(button, "cooldown", rounded.toFixed(1));
     setData(button, "cooling", running && remaining > 0);
     const recharge = String(1 - remaining / duration);
     if (shownRecharge.get(button) !== recharge) { shownRecharge.set(button, recharge); button.style.setProperty("--recharge", recharge); }
     setText(caption, running && rounded > 0 ? `${rounded.toFixed(1)}秒` : "");
-    setAttr(button, "aria-label", `${label}。${!running ? "操作停止中" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
-    setFlag(button, "disabled", !running || remaining > 0);
+    // 使えない（未習得の）ボタンは、ここで一度に「使用不可」と書く（いったん使用可能と書いてから戻すと毎フレーム2回書き換わる）
+    setAttr(button, "aria-label", locked ? "アタック。使用不可" : `${label}。${!running ? "操作停止中" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
+    setFlag(button, "disabled", locked || !running || remaining > 0);
   };
   const refreshLabel = () => {
     setData(refreshBtn, "remaining", refreshes);
@@ -226,16 +235,12 @@ export async function runSteamDodge(cs) {
   };
   const slashLabel = () => {
     const profile = slashProfile(wordsCut), remaining = Math.max(0, slashReadyAt - time);
-    rechargeLabel(slashBtn, slashCharge, remaining, slashCooldown,
-      `アタック。上側の前方の雑念を斬る。移動中も方向は固定。Zキーでも使用。コンボ${wordsCut}。射程${profile.reach}px、リチャージ${profile.recharge}秒`);
     const learned = hasAttackTraining(state.flags);
+    rechargeLabel(slashBtn, slashCharge, remaining, slashCooldown,
+      `アタック。上側の前方の雑念を斬る。移動中も方向は固定。Zキーでも使用。コンボ${wordsCut}。射程${profile.reach}px、リチャージ${profile.recharge}秒`, !learned);
     setData(slashBtn, "locked", !learned);
     setFlag(slashLock, "hidden", learned);
     setAttr(slashBtn, "title", learned ? "Z／ボタン／標準ゲームパッド下ボタンでアタック" : "アタック：使用不可");
-    if (!learned) {
-      setFlag(slashBtn, "disabled", true);
-      setAttr(slashBtn, "aria-label", "アタック。使用不可");
-    }
     setData(slashBtn, "cutWords", wordsCut);
     setData(slashBtn, "totalWordsCut", totalWordsCut);
     setData(slashBtn, "maxCombo", maxCombo);
@@ -391,7 +396,7 @@ export async function runSteamDodge(cs) {
         let y = axisY + (keysDown.has("d") ? 1 : 0) - (keysDown.has("u") ? 1 : 0);
         const length = Math.max(1, Math.hypot(x, y));
         if (padPointer === null) knob.style.transform = x || y ? `translate(${x / length * 26}px, ${y / length * 26}px)` : "";
-        const speed = precise ? 120 : 290;
+        const speed = precise ? STEAM_TUNING.preciseSpeed : STEAM_TUNING.speed;
         moveTo(hx + x / length * speed * dt, hy + y / length * speed * dt);
         if (time >= nextSpawn && time < dur - 0.8) { spawn(); nextSpawn = time + spawnEvery * rand(0.8, 1.15) * (1 - 0.2 * time / dur); }
         if (time >= nextWave && time < dur - 2) {
@@ -402,17 +407,20 @@ export async function runSteamDodge(cs) {
           nextWave = time + pace.waveEvery;
         }
         if (warning && time >= warning.due) { launchWave(warning); warning = null; }
-        inv = Math.max(0, inv - dt); heart.classList.toggle("shield", inv > 0);
+        inv = Math.max(0, inv - dt); if (heart.classList.contains?.("shield") !== inv > 0) heart.classList.toggle("shield", inv > 0);
+        // CRN12: 雑念に当たっていない時間の分だけ、制作中のランクがじわじわ上がる（毎フレームではなく 0.25 秒ごとに知らせる）
+        if (!inv) unhitTime += dt;
+        if (renewal && time - rankTick >= .25) { rankTick = time; cs.steamLive = { progress: Math.min(1, unhitTime / dur) }; refreshBench(); }
         const afterglow = time < afterglowUntil;
-        box.dataset.afterglow = String(afterglow);
-        box.classList.toggle("afterglow",afterglow);
-        box.dataset.bulletSpeed = String(afterglow ? SKILL_TUNING.afterglowSpeed : 1);
+        setData(box, "afterglow", afterglow);
+        if (box.classList.contains?.("afterglow") !== afterglow) box.classList.toggle("afterglow",afterglow);
+        setData(box, "bulletSpeed", afterglow ? SKILL_TUNING.afterglowSpeed : 1);
         const bulletDt = dt * (afterglow ? SKILL_TUNING.afterglowSpeed : 1);
         for (let i = bullets.length - 1; i >= 0; i--) {
           const b = bullets[i]; b.x += b.vx * bulletDt; b.y += b.vy * bulletDt;
           b.node.style.transform = `translate(${b.x}px, ${b.y}px)`;
           if (!inv && heartTouchesBullet(b, hx, hy, hitR)) {
-            hits++; inv = 0.9;
+            hits++; inv = STEAM_TUNING.invulnerable;
             wordsCut = 0;
             slashFeedback.textContent = "被弾。コンボが途切れた";
             slashLabel();
@@ -426,7 +434,7 @@ export async function runSteamDodge(cs) {
         }
         clock.update(Math.max(0, Math.ceil((dur - time) * seconds / dur)));
         const level = mental.update(time, hits);
-        setPlayerMental(cs, level); box.dataset.mental = level;
+        setPlayerMental(cs, level); setData(box, "mental", level);
         if (MIND_LEVELS.indexOf(level) > MIND_LEVELS.indexOf(peakMind)) peakMind = level;
         if (level === "clear") clearSeconds += dt;
         world.draw(time, hx, hy, bullets, warning, level);
@@ -439,7 +447,8 @@ export async function runSteamDodge(cs) {
       raf = requestAnimationFrame(loop);
     });
   } finally {
-    running = false; precisionBtn.disabled = true; cancelAnimationFrame(raf); unkey(); input.abort(); resetPad(); clearBullets(); refreshLabel(); slashLabel();
+    running = false; precisionBtn.disabled = true; cancelAnimationFrame(raf);
+    if (!cs.steam) delete cs.steamLive; /* 途中で抜けた時は、じわじわ上がった分を残さない */ unkey(); input.abort(); resetPad(); clearBullets(); refreshLabel(); slashLabel();
     transients.forEach(({ node }) => node.remove());
     world.draw(time + 1, hx, hy);
     heart.classList.remove("shield"); box.classList.remove("warning");
@@ -450,20 +459,24 @@ export async function runSteamDodge(cs) {
     }
   }
   if (!isCurrent()) return;
-  const score = clamp(100 - hits * 14, 0, 100);
+  const score = clamp(100 - hits * STEAM_TUNING.hitPenalty, 0, 100);
   clock.update(0);
   const temp = temperatureAfterSteam(cs, seconds, heatJitter);
   renderTemperature(temp);
   // 舞台・難度表・心の経過はこの実行のローカル値だけ。保存される制作結果には加えない。
+  delete cs.steamLive; // 終えた蒸らしは進み具合の1つ分として数える（score.js の climbingCraftScore）
   cs.steam = { min, seconds, temp, hits, score, refreshesUsed, slashesUsed, wordsCut: totalWordsCut, combo: wordsCut, maxCombo, afterglows, sharkPulses, warmingFactor: steamClimate(cs.environment).transfer };
   settleGrowthPhase(state, cs, "steam", cs.steam, hits === 0);
   scoreStep(cs, "steam", cs.steam.score, "蒸らし");
   refreshBench();
   popStamp(panel, hits === 0 ? "無心" : hits <= 2 ? "持ちこたえた" : "雑念まみれ", hits === 0 ? "just" : hits <= 2 ? "good" : "bad", "50%", "40%");
-  await sleep(400);
+  await sleep(renewal ? 120 : 400); // 結果前の間（CRN08）。桜井版はリニューアル前の 400ms
   if (!isCurrent()) return;
+  // CRN10: 雑念よけの出来が、次の吸い出しの針と芯にどう効くかを、ボタンを押す前に読めるようにする
+  const focusNote = renewal ? steamFocusNote(cs) : null; // 桜井版は出さない（CRN16）
   await resultCard(panel, {
     title: "蒸らし 結果",
+    summary: [hits === 0 ? "雑念に一度もつかまらなかった" : `雑念に${hits}回つかまった`, focusNote?.line].filter(Boolean),
     lines: [
       rainy ? "雨の日は熱の立ち上がりが少し遅い。吸い出しで温度を確かめよう" : "",
       `${steamTimeLabel(seconds)}蒸らした。${hits === 0 ? "最後まで一度も揺れなかった" : `雑念に${hits}回つかまった`}`,

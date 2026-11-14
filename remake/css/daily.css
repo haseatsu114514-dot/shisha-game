@@ -3,23 +3,55 @@
    ============================================================ */
 
 /* ---------------------------------------------------------------- タイトル */
-.title { position: absolute; inset: 0; overflow: hidden; }
+/* 構図（2026-11-13 オーナー依頼「タイトル画面のクオリティを上げたい」）: 左にロゴとメニュー、中央にシーシャの台、右に人物の絵。
+   背景（1280×720）は title が自分で描き（.title-bg）、--title-bg-shift だけ左へ寄せる。元の位置では台（x=880）が
+   人物の絵の真下に隠れ、卓の縁だけが見えていた。寄せて空く右端は人物の絵が覆う（絵が読めない時は暗がりへ溶かす）。 */
+.title { position: absolute; inset: 0; overflow: hidden; --title-bg-shift: 232px; --title-art-w: 500px; }
+.title-bg {
+  position: absolute;
+  inset: 0;
+  background: #0b0712 calc(-1 * var(--title-bg-shift)) 0 / 1280px 720px no-repeat;
+}
+.title-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 64%, #0b0712 81%);
+}
+/* 火皿の残り火。ぼかした煙は足さず、灯りの明るさだけをゆっくり揺らす（息づかい）。 */
+.title-ember {
+  position: absolute;
+  left: calc(878px - var(--title-bg-shift) - 80px);
+  top: 186px;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 190, 130, 0.42), rgba(255, 120, 160, 0.16) 42%, transparent 68%);
+  mix-blend-mode: screen;
+  opacity: 0.55;
+  animation: title-ember 5.6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes title-ember {
+  0%, 100% { opacity: 0.4; transform: scale(0.94); }
+  45% { opacity: 0.95; transform: scale(1.06); }
+  60% { opacity: 0.8; transform: scale(1.02); }
+}
 .title-art {
   position: absolute;
-  right: -40px;
+  right: 0;
   top: 0;
-  width: 560px;
+  width: var(--title-art-w);
   height: 100%;
   background: center 20% / cover no-repeat;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
-  mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.5) 12%, #000 26%);
+  mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.5) 12%, #000 26%);
   opacity: 0;
-  image-rendering: pixelated;
 }
 .title-art.ready { animation: title-art-in 1s 0.1s var(--ease-out) forwards; }
 /* メニューを閉じただけの再描画は、絵を動かさずそのまま見せる（切替を繰り返さない）。 */
-.title-art.ready.shown { animation: none; opacity: 0.95; transform: none; }
-@keyframes title-art-in { from { opacity: 0; transform: translateX(24px); } to { opacity: 0.95; transform: none; } }
+.title-art.ready.shown { animation: none; opacity: 0.97; transform: none; }
+@keyframes title-art-in { from { opacity: 0; transform: translateX(24px); } to { opacity: 0.97; transform: none; } }
 .title-smoke i {
   position: absolute;
   width: 700px;
@@ -42,14 +74,15 @@
   flex-direction: column;
   align-items: flex-start;
 }
+/* 文字の下の暗がり。台に掛けないよう、ロゴの右端あたりで消える。 */
 .title-left::before {
   content: "";
   position: absolute;
   left: -70px;
   top: -40px;
-  width: 700px;
+  width: 640px;
   height: 720px;
-  background: linear-gradient(90deg, rgba(7, 5, 12, 0.88), rgba(7, 5, 12, 0.55) 70%, transparent);
+  background: linear-gradient(90deg, rgba(7, 5, 12, 0.84), rgba(7, 5, 12, 0.6) 58%, transparent);
   z-index: -1;
 }
 .title-brand { position: relative; isolation: isolate; width: 520px; height: 278px; }
@@ -80,11 +113,6 @@
   75% { transform: translate(12px, -188px) scale(1.3, 1.4); opacity: 0.3; }
   100% { transform: translate(0, -270px) scale(1.55, 1.6); opacity: 0; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .title-logo-smoke i { animation: none; opacity: 0.18; transform: translateY(-70px); }
-  .title-smoke i { animation: none; }
-  .title-art.ready { animation: none; opacity: 0.95; transform: none; }
-}
 @keyframes logo-in { from { opacity: 0; transform: translateY(12px); } }
 /* #2863: 行の高さ72px以上・行間16px。スマホ横持ち（--k 0.47〜0.54）でも実寸38px以上を保つ。文字はそのまま。 */
 .title-menu { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
@@ -104,6 +132,8 @@
 .title-item:disabled { opacity: 0.35; cursor: default; }
 .ti-en { font-family: var(--font); font-size: 26px; line-height: 1.25; letter-spacing: 0.16em; }
 .ti-ja { font-size: 15px; color: var(--text-dim); letter-spacing: 0.04em; }
+/* 「つづきから」に添える、いちばん新しいセーブの章と日付（開く前に、どこから再開するかが分かる）。主文の下の行。 */
+.ti-note { flex-basis: 100%; font-size: 15px; line-height: 1.3; color: var(--gold); letter-spacing: 0.06em; white-space: nowrap; }
 /* 副題（はじめから等）は残す（2026-11-08 オーナー指示）。通常版では主文のすぐ右に、下端（ベースライン）をそろえて並べ、
    その1行を行の高さの中央に置く（flex-wrap + align-content。折り返さない幅は検査で確かめる）。
    スマホ横持ちのタッチ端末では副題を実寸11px以上（ステージ上 21〜24px。丸め誤差で11pxを割らないよう11.2pxで割る）に上げ、主文（26px）より一段小さいまま。
@@ -111,15 +141,37 @@
 .title:not(:root) .title-item { flex-wrap: wrap; align-items: baseline; align-content: center; gap: 0 16px; }
 .title:not(:root) .ti-ja { white-space: nowrap; }
 @media (pointer: coarse) and (hover: none) {
-  .title:not(:root) .ti-ja { font-size: max(15px, calc(11.2px / var(--k, 1))); }
+  .title:not(:root) :is(.ti-ja, .ti-note) { font-size: max(15px, calc(11.2px / var(--k, 1))); }
 }
 /* NEXT CYCLE が出て5行になるときは、ロゴの上下の余白を詰めて720pxに収める。 */
 .title:not(:root) .title-left:has(.title-menu > :nth-child(5)) { top: 16px; }
 .title:not(:root) .title-left:has(.title-menu > :nth-child(5)) .title-brand { height: 200px; }
 .title:not(:root) .title-left:has(.title-menu > :nth-child(5)) .title-logo { top: 20px; }
-.title-item:hover:not(:disabled), .title-item:focus-visible { color: var(--gold-hi); transform: translateX(10px); outline: none; }
-.title-item:hover:not(:disabled) .ti-en::before { content: "◆ "; font-size: 18px; color: var(--gold); }
+/* 選んでいる行（.is-current）はいつも1つ。開いた時はおすすめの行に付き、マウス・Tab・↑↓で動く（scenes/title.js）。
+   マウスを乗せた行・フォーカスのある行も同じ見た目（script が is-current をそこへ移すので、2行が同時に光ることはない）。 */
+.title-item:is(.is-current, :hover, :focus-visible):not(:disabled) { color: var(--gold-hi); transform: translateX(10px); outline: none; }
+/* 印（◆）は行の左の余白に出す（主文と、その下の添え書きの左端をそろえたまま）。 */
+.ti-en { position: relative; }
+.title-item:is(.is-current, :hover):not(:disabled) .ti-en::before { content: "◆"; position: absolute; right: 100%; top: 50%; margin-right: 12px; translate: 0 -50%; font-size: 16px; letter-spacing: 0; color: var(--gold); }
+/* 押した行は一瞬白く光る（決定の手応え。確認の小窓や煙の幕より先に出る）。 */
+.title-item.is-picked:not(:disabled) .ti-en { animation: title-pick 0.32s ease-out; }
+@keyframes title-pick { 0% { color: #fff; text-shadow: 0 0 18px rgba(255, 226, 166, 0.95); } 100% { text-shadow: 0 0 0 rgba(255, 226, 166, 0); } }
+/* 入ってきた時だけ、メニューを上から順に出す（合計0.5秒ほど。出ている途中でも押せる）。 */
+.title.enter .title-item { animation: title-item-in 0.36s var(--ease-out) backwards; }
+.title.enter .title-item:nth-child(2) { animation-delay: 0.05s; }
+.title.enter .title-item:nth-child(3) { animation-delay: 0.1s; }
+.title.enter .title-item:nth-child(4) { animation-delay: 0.15s; }
+.title.enter .title-item:nth-child(5) { animation-delay: 0.2s; }
+@keyframes title-item-in { from { opacity: 0; translate: -14px 0; } }
 .title-ver { position: absolute; right: 20px; bottom: 20px; z-index: 2; font-size: max(13px, calc(11.2px / var(--k, 1))); letter-spacing: 0.02em; color: rgba(255, 255, 255, 0.55); text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85); pointer-events: none; }
+@media (prefers-reduced-motion: reduce) {
+  .title-logo-smoke i { animation: none; opacity: 0.18; transform: translateY(-70px); }
+  .title-smoke i { animation: none; }
+  .title-art.ready { animation: none; opacity: 0.97; transform: none; }
+  .title-ember { animation: none; }
+  .title.enter .title-item, .title-item.is-picked .ti-en { animation: none; }
+}
+body.reduce-shake .title-ember, body.reduce-shake .title.enter .title-item, body.reduce-shake .title-item.is-picked .ti-en { animation: none; }
 /* 版の表示を5回続けて押すとデバッグの道具を出し入れする（title.js の debugTapToggle）。押しやすいよう周りに余白を取る */
 .title-ver { pointer-events: auto; padding: 10px; margin: -10px; cursor: default; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
 .cfg { display: flex; flex-direction: column; gap: 14px; min-width: 420px; }
@@ -1875,7 +1927,10 @@ html:root[data-density="phone"] body:not(:root) .gfx-cutin-count { font-size: 16
 /* 右のパネルの立ち絵（SBD82）: 授業は教える人、スキルははじめ。顔の幅と目の高さをそろえ、胸から上だけ見せる */
 .gb-art.has-skill-art { overflow: hidden; border: 1px solid #f4f1eb; background: #fff; }
 .gb-art.has-skill-art > span { display: none; }
-.gb-skill-art { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; pointer-events: none; user-select: none; }
+/* コマは絵の欄（PC 150px・スマホ横 84px）いっぱいに敷き、中央で切り抜く。欄は grid なので height: 100% が効かず、
+   コマが元の比（960×360）の高さのまま上に寄って下が切れていた（スマホ横では顔の上半分だけになった）。
+   顔と動きは原画の高さの 25〜75% に描いてある（asset_sources/ui/growth-board-skill-manga-20261112/README.md）ので、中央で切ればスマホ横でも見える */
+.gb-skill-art { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; pointer-events: none; user-select: none; }
 .gb-art.shadow .gb-skill-art { filter: brightness(0.13) contrast(1.2); }
 .gb-art.has-portrait { overflow: hidden; }
 .gb-art.has-portrait > span { display: none; }
@@ -2043,7 +2098,7 @@ body:not(:root) #hud .hud-card .hud-stamina {
 }
 body:not(:root) #hud .dc-row { justify-content: space-between; }
 body:not(:root) #hud .dc-meta > :last-child:not([hidden]),
-body:not(:root) #hud .dc-meta > .hud-stamina:has(+ [hidden]) { border-bottom: 0; }
+body:not(:root) #hud .dc-meta > .hud-stamina:has(+ .hud-exp[hidden]) { border-bottom: 0; }
 body:not(:root) #hud .dc-row span,
 body:not(:root) #hud .hud-card .hud-stamina > span:first-child { flex: none; width: auto; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 body:not(:root) #hud .dc-row.money b { font-size: 20px; line-height: 1; }
@@ -2198,3 +2253,17 @@ body:not(:root) .map .map-notice { font-size: max(14px, var(--mui-text)); }
 .xfer-text { width: 100%; box-sizing: border-box; min-height: 120px; padding: 10px; font-size: 20px; line-height: 1.4; word-break: break-all; background: var(--ink-2); color: var(--text); border: 1px solid var(--panel-edge); border-radius: 4px; resize: none; }
 .xfer-help p { margin: 0 0 12px; font-size: 24px; line-height: 1.6; }
 .xfer-slots { margin: 8px 0 0; font-size: 24px; font-family: inherit; white-space: pre-wrap; }
+
+/* 地図のプレビュー: 料金・使う体力・入れない理由の小さな札（#3555）。説明文は増やさず（#2853）、写真の下端に重ねる */
+body:not(:root) .map .mi-tags { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 6px; }
+body:not(:root) .map .map-info:has(> .mi-preview) > .mi-tags { grid-row: 1; align-self: end; z-index: 1; margin: 6px; }
+body:not(:root) .map .mi-tag {
+  padding: 2px 9px; border-radius: 999px; background: rgba(20, 14, 30, 0.84); color: #fff;
+  font-size: max(13px, var(--mui-text)); font-weight: 700; line-height: 1.4; white-space: nowrap;
+}
+body:not(:root) .map .mi-tag.mi-why { background: #a8343a; }
+html:root[data-density="phone"] body:not(:root) .map .mi-tag { font-size: var(--phone-sub); }
+
+/* 時間帯と残りの行動回数の札（☀残り2・☂・大会当日 など）は画面に出さない（MAP06・2026-11-13 オーナー「よくわからないから消して、
+   その分UIのスペースをコンパクトに」）。読み上げ用に要素と文は残す（昼夜はマップの絵で分かる）。 */
+body:not(:root) #hud .dc-slot { position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

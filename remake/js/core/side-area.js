@@ -252,6 +252,8 @@ export function initSideArea({ stage, advance, standalone: alone = false, readSe
     const saved = savedConfig();
     if (saved.sideArea === "plain") config.sideArea = "plain";
     html().dataset.sideCalm = saved.reduceShake ? "on" : "off";
+    // 単体ページには本編の起動処理（main.js）が無いので、設定「揺れ・閃光を減らす」をここで body へも反映する（#3557）
+    document.body.classList.toggle("reduce-shake", !!saved.reduceShake);
   }
   dom = build(stage.parentElement);
   onStageFit(layout);

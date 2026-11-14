@@ -14,6 +14,11 @@
 .ch2-contest-growth .radar { width:220px; height:220px; flex:none; }
 .ch2-contest-actions { margin-top:auto; display:flex; gap:16px; }
 .ch2-contest .btn { min-height:52px; padding:10px 24px; font-size:21px; }
+/* 第4章の古い進み方（版1）の自由行動: 行き先7つが1列に並び、最後の「宿へ戻って、この日を終える」がカードの外へはみ出していた。
+   行き先を幅240pxにそろえ、列は横に動かせるようにする（TXW07） */
+.ch2-contest-actions:has(> .ch4-destination) { overflow-x: auto; overscroll-behavior-x: contain; padding-bottom: 10px; scroll-snap-type: x proximity; }
+.ch2-contest-actions > .ch4-destination { flex: 0 0 240px; scroll-snap-align: start; }
+.ch4-destination-purpose { text-wrap: balance; }
 .ch2-contest-ranking { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
 .ch2-contest-rival { display:grid; grid-template-columns:30px 42px 1fr 100px; align-items:center; gap:12px; padding:3px 14px; background:#263644; border-radius:6px; }
 .ch2-contest-avatar { position:relative; display:block; width:36px; height:36px; overflow:hidden; }

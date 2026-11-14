@@ -9,9 +9,31 @@
           "text": "できた一台を、客席へ運んだ。"
         },
         {
+          "speaker": "",
+          "text": "客は食後のコーヒーを脇へ置いて、ホースの先をそっと手に取った"
+        },
+        {
+          "speaker": "",
+          "text": "最初の一息は、細く長く"
+        },
+        {
           "speaker": "customer",
           "face": "smile",
           "text": "コーヒーの続きみたいだ。香ばしいのに、口が重くならない"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "食後の一杯の香りが、そのまま煙に移ったみたいで悪くない"
+        },
+        {
+          "speaker": "",
+          "text": "もう一口、今度は少し深く吸って、背もたれに体を預ける"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "重くなりそうなのに、ならないんだな。もう一口、いきたくなる"
         },
         {
           "speaker": "hajime",
@@ -28,9 +50,27 @@
           "text": "できた一台を、客席へ運んだ。"
         },
         {
+          "speaker": "",
+          "text": "客は一口吸って、ホースを持つ手を止めた"
+        },
+        {
           "speaker": "customer",
           "face": "normal",
           "text": "紅茶か。……うん、口の中がさっぱりした"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "食後だっていうのに、口の中が軽い。コーヒーの後は、もっと残るものだと思ってた"
+        },
+        {
+          "speaker": "",
+          "text": "客は肩の力を抜いて、ソファに深くもたれた"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "紅茶みたいに軽いのに、ちゃんと食後の一台だ。ここでゆっくりできるな"
         },
         {
           "speaker": "hajime",
@@ -337,14 +377,33 @@
           "text": "キャラメルにコーヒーを合わせて、ラテのような一台を客席へ運んだ。"
         },
         {
+          "speaker": "",
+          "text": "客は一口目を含んで、少し間を置いた。"
+        },
+        {
           "speaker": "customer",
           "face": "smile",
           "text": "甘くて、ちょっと苦い。……都会の喫茶店って感じだ"
         },
         {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "甘さの後から苦さが来る。この釣り合い、嫌いじゃない"
+        },
+        {
           "speaker": "mukai_master",
           "face": "smile",
           "text": "うちのラテの真似か"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "真似でもいいよ。仕事帰りに寄りたくなる味だ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "言うじゃないか。苦さが勝ったら、ただのコーヒーだ"
         },
         {
           "speaker": "hajime",
@@ -366,9 +425,23 @@
           "text": "ミルクにハニーを少し合わせて、柔らかい一台を客席へ運んだ。"
         },
         {
+          "speaker": "",
+          "text": "客はカップを両手で包んだまま、肩の力を少しずつ抜いていく。"
+        },
+        {
           "speaker": "customer",
           "face": "surprise",
           "text": "……ほっとする。東京に来て、初めて息をついた気がする"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ずっと気を張ってたんだな、俺"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "気を張る街だからな。ここでは抜いていけ"
         },
         {
           "speaker": "hajime",
@@ -385,6 +458,10 @@
           "text": "レッドチェリーにローズを重ねて、香りの立つ一台を客席へ運んだ。"
         },
         {
+          "speaker": "",
+          "text": "ひと口目の煙が、席の空気をぱっと明るくした。"
+        },
+        {
           "speaker": "customer",
           "face": "smile",
           "text": "おお、華やかだ。乾杯って感じがする"
@@ -393,6 +470,21 @@
           "speaker": "customer",
           "face": "normal",
           "text": "同期が、やっと昇進してさ。こういうのが似合う日なんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "おめでとうの席に合う一台にしました"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "いいね。本人の前でも、この香りで乾杯したい"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "祝う側が楽しそうなのは、いい店の証拠だ"
         },
         {
           "speaker": "hajime",
@@ -409,14 +501,33 @@
           "text": "ビスケットに紅茶を合わせて、軽くて長く吸える一台を客席へ運んだ。"
         },
         {
+          "speaker": "",
+          "text": "客はソファに深く座り直して、煙をゆっくり吐いた。"
+        },
+        {
           "speaker": "customer",
           "face": "normal",
           "text": "派手じゃないけど……話が止まらないな、これ"
         },
         {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "同じ話を、さっきから三周してる"
+        },
+        {
           "speaker": "mukai_master",
           "face": "smile",
           "text": "祝いの話は、長いほうがいい"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "つき合わせて悪いな。でも、まだ終わらせたくない"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "気にするな。紅茶が冷めるまでは、うちの時間だ"
         },
         {
           "speaker": "hajime",

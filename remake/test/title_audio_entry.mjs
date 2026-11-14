@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
+import * as craftVersion from "../js/core/craft-version.js";
 const read = path => fs.readFile(new URL(path, import.meta.url), "utf8");
 const flush = async () => { for (let i = 0; i < 8; i++) await Promise.resolve(); };
 async function load(code, values, globals = {}) {
@@ -150,7 +151,7 @@ const body = { dataset: { screen: "title" } };
 function el(selector, attrs = {}, children = []) {
   if (Array.isArray(attrs)) { children = attrs; attrs = {}; }
   const node = { selector, children: [...children], ...attrs, dataset: attrs.dataset || {}, style: {},
-    classList: { add() {} }, complete: true, naturalWidth: 1,
+    classList: { add() {}, toggle() {} }, complete: true, naturalWidth: 1,
     append(...nodes) { this.children.push(...nodes); }, addEventListener() {},
     querySelector(sel) {
       const match = n => sel.startsWith(".") ? n.selector?.split(".").includes(sel.slice(1)) : n.selector?.split(".")[0] === sel;
@@ -174,6 +175,7 @@ const title = await load(await read("../js/scenes/title.js"), {
   pickTitleArt: () => ({ ready: true, file: `art-${++picks}`, character: `character-${picks}`, url: "test" }),
   createUiThemeSelect: () => el("select"),
   LOOKS: [{ id: "classic", label: "現行" }, { id: "neo", label: "新版" }, { id: "retro", label: "DS風" }], normalizeLook: (value) => value || "classic", setLook() {},
+  CRAFT_VERSIONS: craftVersion.CRAFT_VERSIONS, normalizeCraftVersion: craftVersion.normalizeCraftVersion,
   config: {},
 }, { document: { body }, performance: { now: () => 0 }, window: {} });
 const art = { ready: true, file: "test", character: "test", url: "test" };

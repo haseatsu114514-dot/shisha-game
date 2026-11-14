@@ -176,7 +176,7 @@ await suite("worker-scenes", async check => {
       await page.waitForFunction(() => document.querySelector(".worker-punch")?.dataset.pose === "hover");
       assert.equal(await page.locator(".worker-punch-hand:visible").count(), 1);
       assert.equal(await page.evaluate(async () => cs.holes), null, "Presentation completed the minigame");
-      await assertFits(page, '[data-test="hole-punch"], [data-test="hole-done"]');
+      await assertFits(page, '[data-test="hole-punch"]');
       await capture(page, `${name}-real-holes`);
       await page.evaluate(async () => await T.show("heat", "炭焼き"));
       assert(await page.locator(".worker-punch").isHidden());

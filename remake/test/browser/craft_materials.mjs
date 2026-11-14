@@ -252,7 +252,9 @@ await suite("craft-materials", async check => {
       assert(await page.locator('[data-test="foil"] .foil-cursor').isHidden());
       const locations = await page.locator(".foil-holes .foil-hole").evaluateAll(ns => ns.map(n => [n.style.left, n.style.top]));
       await capture(page, `${device}-foil-outer-complete`);
-      await click(page, '[data-test="hole-next"]', touch);
+      // CRN02: リングが埋まると、少し間を置いて次のリングへ自動で進む（ボタンは無い）
+      assert.equal(await page.locator('[data-test="hole-next"], [data-test="hole-done"]').count(), 0);
+      await page.waitForFunction(() => !document.querySelector('[data-test="hole-punch"]').disabled);
       assert.deepEqual(await page.locator(".foil-holes .foil-hole").evaluateAll(ns => ns.map(n => [n.style.left, n.style.top])), locations);
       await advance(900 * slow); // 弧の奥の端で休んでいる針
       await pressHold('[data-test="foil"]', 250); // Off-target puncture: it stands as that mark's hole (#3023).
@@ -265,17 +267,17 @@ await suite("craft-materials", async check => {
       assert.equal(await page.locator(".foil-holes .foil-hole").count(), 24);
       assert.equal(await page.locator(".foil-markers .next").count(), 0);
       assert.equal(await page.locator(".worker-punch-dots ellipse").count(), 24, "Hand illustration lost the real holes");
-      assert(!await page.locator('[data-test="hole-done"]').isDisabled());
-      const finalBar = await page.locator('.hr-time-bar b').evaluate(n=>n.style.width);
-      await page.evaluate(async () => {
+      // 完成した時点で時間の帯は止まり、そのあと自動で結果へ進む（CRN02）
+      const bars = await page.evaluate(async () => {
+        const before = document.querySelector('.hr-time-bar b').style.width;
         F.clock += 60000;
         await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+        return [before, document.querySelector('.hr-time-bar b')?.style.width ?? before];
       });
-      assert.equal(await page.locator('.hr-time-bar b').evaluate(n=>n.style.width),finalBar);
-      assert.equal(await page.evaluate(()=>F.cs.holes),null,'Completed foil advanced without confirmation');
-      assert.equal(await page.locator('[data-test="step-next"]').count(),0);
-      await click(page, '[data-test="hole-done"]', touch);
+      assert.equal(bars[1], bars[0]);
       await page.waitForFunction(() => F.cs.holes !== null);
+      // 結果のときも、開けたアルミは舞台に残る（CRN08）
+      assert.equal(await page.locator('[data-test="foil"] .foil-holes .foil-hole').count(), 24);
       const result = await page.evaluate(() => ({ template: F.cs.holes.templateId, outer: F.cs.holes.outer, middle: F.cs.holes.middle, inner: F.cs.holes.inner }));
       assert.deepEqual(result, { template: "outer12-middle12", outer: 12, middle: 12, inner: 0 });
       await click(page, '[data-test="step-next"]', touch);

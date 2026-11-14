@@ -462,9 +462,11 @@ await suite("growth-levelup", async (runCheck) => {
       window.phaseWidth=.5*(await import("./js/craft/common.js")).skill.window(phaseCs);
     });
     await page.waitForFunction(()=>document.querySelector('[data-test="coal-0"]')?.dataset.phase==="raw");
-    await page.evaluate(()=>{phaseClock=1000+5790;});
-    await page.locator(t("coal-0")).click();await page.locator(t("coal-1")).click();
-    await page.evaluate(()=>{phaseClock=1000+(5.8+phaseWidth/2)*1000;});await page.locator(t("coal-2")).click();
+    // CRN09: 炭 i の取り頃は 5.8＋readyGap×i 秒に開く（同じ秒に抽選されても重ならない）
+    await page.evaluate(async()=>{window.phaseGap=(await import("./js/craft/heat_logic.js")).HEAT_TUNING.readyGap;});
+    await page.evaluate(()=>{phaseClock=1000+5790;});await page.locator(t("coal-0")).click();
+    await page.evaluate(()=>{phaseClock=1000+5790+phaseGap*1000;});await page.locator(t("coal-1")).click();
+    await page.evaluate(()=>{phaseClock=1000+(5.8+2*phaseGap+phaseWidth/2)*1000;});await page.locator(t("coal-2")).click();
     await page.locator(t("step-next")).waitFor();
     const result=await page.evaluate(()=>({score:phaseCs.heat.score,base:phaseCs.heat.growthBaseScore,criticals:phaseCs.heat.criticals,accuracy:phaseCs.heat.timingAccuracy,bonus:phaseCs.heat.growthPhaseBonus}));
     assert.deepEqual(result,{score:88.5,base:86.5,criticals:1,accuracy:85,bonus:2});

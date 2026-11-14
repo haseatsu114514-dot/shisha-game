@@ -39,7 +39,16 @@
 .judge-pips b.on { background: var(--c); box-shadow: 0 0 6px color-mix(in srgb, var(--c) 70%, transparent); }
 .judge-left { font-size: 14px; color: #b8afc2; }
 .judge-chip:has(.judge-deduction):not(:has(.judge-face)) { grid-template-columns: minmax(0, 1fr); }
+/* 顔の無い札（第4章の途中順位）は、46px の顔の列へ文字を入れない（「ダ・／シル／ヴァ」「投入／3」と細かく折れていた。TXW07）。
+   1段目に名前と「投入 N ／ 残り N」、2段目に粒。減点の理由が付く最終の札は上の1列のまま */
+.judge-chip:not(:has(.judge-face, .judge-deduction)) { grid-template-columns: minmax(0, 1fr) auto; grid-auto-flow: row dense; }
+.judge-chip:not(:has(.judge-face, .judge-deduction)) > :is(.judge-pips, .judge-focus, .judge-pick) { grid-column: 1 / -1; }
+.judge-chip:not(:has(.judge-face, .judge-deduction)) > .judge-left { align-self: baseline; text-align: right; }
 .judge-deduction { grid-column: 1 / -1; min-width: 0; font-size: 12px; line-height: 1.5; color: #cfc4d8; white-space: normal; overflow-wrap: anywhere; }
+/* 桜井式の審査（第1章・SKR04）: 審査員ごとの見る所と、この回の入れ先 */
+.judge-focus, .judge-pick { grid-column: 2 / -1; min-width: 0; font-size: 13px; font-weight: 700; line-height: 1.35; overflow-wrap: anywhere; }
+.judge-focus { color: color-mix(in srgb, var(--c) 70%, #fff); }
+.judge-pick { color: #f6d68e; }
 .judge-chip.held { background: linear-gradient(110deg, #3a2a0c, #140f19 75%); }
 .judge-chip.held .judge-pips b { background: repeating-linear-gradient(135deg, #f6c95e33 0 3px, #f6c95e12 3px 6px); }
 .judge-chip.held .judge-left { color: #f6d68e; font-weight: 700; }

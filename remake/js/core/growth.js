@@ -109,7 +109,8 @@ export function newGrowth() {
     nodes: [],             // 盤で灯したマスID（確定済みだけ。紋は数えない。取った授業も入る）
     paid: {},              // マスID -> 払った火種 { any: n, body: n, … }（組み直しで同じ種類に戻す）
     ringsOpen: 1,          // 開いている章の範囲（周回で引き継ぐ）
-    gifted: {},            // ♥5で色つきの火種を受け取った人（周回で空に戻す）
+    gifted: {},            // この周回で♥5になり色つきの火種を受け取った人（周回で空に戻す）
+    giftedAll: {},         // 全周回を通じて♥5の色つきの火種を受け取った人（周回でも引き継ぐ）
     litSince: {},          // 前の節目から盤ごとに灯した火種（節目の色を決める。1.5）
     target: null,          // 目標のマス（2.4）
     learned: [],           // 相談を終えて習得した授業（盤で灯した授業は「相談できる」。次に会った時に相談して習得）
@@ -186,6 +187,8 @@ export function ensureGrowth(s = state) {
   }
   g.ringsOpen = Math.min(5, Math.max(1, Math.floor(num(g.ringsOpen, 1))));
   if (!g.gifted || typeof g.gifted !== "object" || Array.isArray(g.gifted)) g.gifted = {};
+  if (!g.giftedAll || typeof g.giftedAll !== "object" || Array.isArray(g.giftedAll)) g.giftedAll = {};
+  for (const [id, given] of Object.entries(g.gifted)) if (given) g.giftedAll[id] = true;
   g.litSince = Object.fromEntries(BOARD_KEYS.map((k) => [k, Math.floor(num(g.litSince?.[k]))]));
   if (!VALID_IDS.has(g.target)) g.target = null;
   if (!g.rewards || typeof g.rewards !== "object" || Array.isArray(g.rewards)) g.rewards = {};
@@ -523,13 +526,14 @@ export function awardAffinityStepExp(id, steps) {
   return got;
 }
 
-/** ♥5になった人から、その人のタイプの色の火1つと白火1つ（1.5・2.7・SBD109）。周回ごとに1回。戻り値=渡した内訳 */
+/** ♥5になった人から、その人のタイプの色の火1つと白火1つ（1.5・2.7・SBD109）。全周回を通じて1人1回。戻り値=渡した内訳 */
 export function giftAtMaxHeart(id) {
   const color = CHAR_TYPE[id];
   if (!growthEnabled() || !state || !color || affinityLevel(id) < 5) return null;
   const g = ensureGrowth();
-  if (g.gifted[id]) return null;
+  if (g.gifted[id] || g.giftedAll[id]) return null;
   g.gifted[id] = true;
+  g.giftedAll[id] = true;
   const parts = giveSet(g, { [color]: KEY_GIFT.color, any: KEY_GIFT.any });
   if (parts.length) announceGift({ who: id, parts });
   return parts;
@@ -675,6 +679,9 @@ function applyLevels(g, s = state) {
 export function settleGrowth() {
   if (!growthEnabled() || !state) return null;
   const g = ensureGrowth();
+  // 無料LIME・物語（強制イベント）で♥5になった場合も、未受領の♥5の贈り物をここで回収する。EXPは付けない。
+  // gifted / giftedAll で管理し、周回をまたいでも同じ相手の♥5の贈り物は二重に渡さない。
+  for (const id of Object.keys(CHAR_TYPE)) giftAtMaxHeart(id);
   return { ...applyLevels(g), boardFull: boardAllLit(g) };
 }
 

@@ -7,7 +7,8 @@
 import { flickPower, flickRead } from './axe-pull-model.js';
 
 // prepare: 的に触れた時、狙う前に呼ぶ（結果の表示中に的へ触れたら、次の投へ進めてそのまま狙う。2026-11-13 指摘8）。
-export function attachAxePullInput({ root, board, handle, signal, canAim, canPull, onAim, onPower, onRelease, onCancel, prepare = () => {}, target = { x: 330, y: 245, radius: 164 } }) {
+// aimOnTouch: false なら、的に触れても狙いは動かさず、投げられる時（canPull）だけそこから弾ける（狙いはゲージで決める。2026-11-13）。
+export function attachAxePullInput({ root, board, handle, signal, canAim, canPull, onAim, onPower, onRelease, onCancel, prepare = () => {}, aimOnTouch = true, target = { x: 330, y: 245, radius: 164 } }) {
   const doc = root.ownerDocument, win = doc.defaultView;
   const lifetime = new AbortController(), options = { signal: lifetime.signal };
   const listen = (node, type, fn, extra = {}) => node.addEventListener(type, fn, { ...options, ...extra });
@@ -79,6 +80,12 @@ export function attachAxePullInput({ root, board, handle, signal, canAim, canPul
   }
   listen(board, 'pointerdown', e => {
     if (e.button !== 0 || !e.isPrimary || pointers.size > 1 || dead) return;
+    if (!aimOnTouch) {
+      if (!available() || !Number.isFinite(e.clientX) || !Number.isFinite(e.clientY)) return;
+      e.preventDefault();
+      if (begin(e.pointerId, sampleOf(e), true)) board.setPointerCapture?.(e.pointerId);
+      return;
+    }
     if (!canAim()) prepare();
     if (!canAim()) return;
     const ctm = board.getScreenCTM();

@@ -909,11 +909,12 @@
 .trpg-root.trpg-cinematic .trpg-topic:hover:not(:disabled) { border-color: #ffe6b0; transform: translateY(-2px); }
 .trpg-note-card[data-kind="talk"] { border-left: 3px solid #d8963f; }
 /* Ten books: the shelf becomes a scrolling three-column case with compact covers. */
-.trpg-library[data-many="true"] .trpg-library-books { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 318px; gap: 16px; overflow-y: auto; padding-right: 6px; }
+.trpg-library[data-many="true"] .trpg-library-books { grid-template-columns: repeat(3, 1fr); grid-auto-rows: max-content; gap: 16px; overflow-y: auto; padding-right: 6px; }
+.trpg-library[data-many="true"] .trpg-library-book { min-height: 318px; }
 .trpg-library[data-many="true"] .trpg-library-art { height: 112px; }
 .trpg-library[data-many="true"] .trpg-library-number { font-size: 24px; }
 .trpg-library[data-many="true"] .trpg-library-genre { font-size: 12px; padding: 3px 9px; top: 12px; }
-.trpg-library[data-many="true"] .trpg-library-copy { padding: 10px 14px 12px; }
+.trpg-library[data-many="true"] .trpg-library-copy { padding: 10px 14px 12px; flex: 1 0 auto; } /* 説明やキャストが2行に折れても、下のボタンが札から切れないよう、中身の高さを行の高さに数える（#3557） */
 .trpg-library[data-many="true"] .trpg-library-copy h2 { font-size: 20px; margin: 3px 0; }
 .trpg-library[data-many="true"] .trpg-library-copy > p { font-size: 13px; line-height: 1.5; }
 .trpg-library[data-many="true"] .trpg-library-details { font-size: 12px; gap: 10px; margin: 6px 0; }

@@ -71,6 +71,24 @@ export function pullFocusFromSteam(cs) {
   return { slow: 0.82 + focus * 0.28, window: 0.8 + focus * 0.35 };
 }
 
+/**
+ * 蒸らしの集中が吸い出しにどう効くかを、画面に出す言葉にする（CRN10）。値は pullFocusFromSteam と同じ。
+ * slowPct: 針がゆっくりになる割合（負なら速い）、windowPct: 芯が広くなる割合（負なら狭い）。tag は吸い出しの札（null なら出さない）。
+ */
+export function steamFocusNote(cs) {
+  if (!Number.isFinite(cs?.steam?.score)) return null;
+  const { slow, window } = pullFocusFromSteam(cs);
+  const slowPct = Math.round((slow - 1) * 100), windowPct = Math.round((window - 1) * 100);
+  const focus = Math.round(clamp(cs.steam.score / 100, 0, 1) * 100);
+  const needle = slowPct >= 0 ? `針が${slowPct}%ゆっくり` : `針が${-slowPct}%速い`;
+  const core = windowPct >= 0 ? `芯が${windowPct}%広い` : `芯が${-windowPct}%狭い`;
+  const hits = cs.steam.hits ?? 0;
+  // 札は短く（スマホでは葉の持ちの欄に並ぶ）。詳しい数字は札の title と蒸らしの結果で読む
+  const tag = hits === 0 ? { text: "針ゆっくり", tone: "calm" }
+    : hits >= 3 ? { text: "針が速い", tone: "rush" } : null;
+  return { focus, slowPct, windowPct, line: `集中 ${focus}% → 吸い出しは${needle}・${core}`, tag };
+}
+
 export function craftConditions(cs) {
   const { sparsity } = foilHeatProfile(cs.holes);
   return { rainy: !!cs.environment?.rainy, sparsity };

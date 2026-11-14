@@ -32,6 +32,12 @@ async function seed(page, { lovers = ["tsumugi", "minto", "rio", "samechan", "hi
     void social.openTokyoLime();
   }, { lovers, schema });
 }
+// 端末は下から少し動いて出てくる（.phone の transition）。#3556 で横持ちの端末が舞台の高さいっぱいになり、
+// 出てくる最初の一瞬だけ下の「スマホを閉じる」が画面の下に少しはみ出す。大きさは、出終わって止まってから測る（判定は緩めない）
+async function phoneSettled(page) {
+  await page.locator(".phone").evaluate((node) => Promise.all([node, node.parentElement]
+    .flatMap((n) => n.getAnimations()).map((a) => a.finished.catch(() => {}))));
+}
 async function open(page) { await page.evaluate(() => { void import("./js/chapters/ch3-social.js").then(module => module.openTokyoLime()); }); }
 async function close(page) { await page.locator(t("lime-back")).click(); await page.locator(t("phone-close")).click(); await page.locator(".phone-overlay").waitFor({ state: "detached" }); }
 await suite("tokyo-visits", async check => {
@@ -79,6 +85,7 @@ await suite("tokyo-visits", async check => {
     // The function deliberately remains pending while its phone is open.
     await seed(page);
     await page.locator(t("lime-contact-tsumugi")).waitFor();
+    await phoneSettled(page);
     await assertFits(page, ".phone button");
     await page.locator(t("lime-contact-tsumugi")).click();
     const before = await get(page);

@@ -1,5 +1,6 @@
 // Real steam module; deferred asset/help/countdown/timer and DOM ports isolate lifetime boundaries.
 import assert from 'node:assert/strict';
+import * as craftVersion from '../js/core/craft-version.js';
 import { readFile } from 'node:fs/promises';
 import vm from 'node:vm';
 import { test } from 'node:test';
@@ -55,7 +56,7 @@ async function harness({ manual = false, craft = {} } = {}) {
     './steam-time.js': { steamSecondsOf: () => 300, steamPlaySeconds: () => 30, steamTimeLabel: () => '5min', SHORT_DODGE_SECONDS: 8 },
     './digital-clock.js': { buildDigitalClock: () => ({ root: new Node(), update: noop }) },
     './common.js': { autoSkill: () => manual ? null : 'good', resultCard: async () => { metrics.result++; }, keys: () => () => metrics.unkey++, popStamp: noop },
-    './conditions.js': { craftConditions: () => ({ rainy: false }), temperatureAfterSteam: () => .5 },
+    './conditions.js': { craftConditions: () => ({ rainy: false }), temperatureAfterSteam: () => .5, steamFocusNote: () => null },
     './steam-forecast.js': { buildSteamTemperature: () => ({ root: new Node(), update: noop }) },
     './steam-climate.js': { steamClimate: () => ({ transfer: 1 }) },
     './steam-art.js': { buildSteamWorld: (_w, _h, level) => { metrics.worldInitial = level; return { root: new Node(), draw: noop }; }, HEART_ART: '', BULLET_ART: {} },
@@ -67,6 +68,8 @@ async function harness({ manual = false, craft = {} } = {}) {
     './steam-patterns.js': { ...patterns },
     './steam-mind.js': { ...mind },
     './clock.js': { createCraftClock: () => ({ now: () => 0, paused: true, dispose: () => metrics.clockDisposed++ }) },
+    // シーシャ作りの版（CRN16）は本物を使う。この一台は版を持たないのでリニューアル
+    '../core/craft-version.js': { ...craftVersion },
   };
   const mod = new vm.SourceTextModule(source, { context });
   const link = spec => {
@@ -128,7 +131,7 @@ test('LOAD during manually paused play disposes clock and clears old guide lock'
 test('LOAD in post-score delay prevents a stale result card', async () => {
   const h = await harness(); await h.startCountdown(); h.countdown.resolve(); await flush();
   h.sleeps[0].resolve(); await flush();
-  assert.equal(h.metrics.score, 1); assert.equal(h.sleeps[1].ms, 400);
+  assert.equal(h.metrics.score, 1); assert.equal(h.sleeps[1].ms, 120); // CRN08: 結果の前の間は 400→120ms
   h.replaceState(); h.sleeps[1].resolve(); await h.run;
   assert.equal(h.metrics.result, 0); assert.equal(h.metrics.unkey, 1); assert.equal(h.metrics.abort, 1);
 });

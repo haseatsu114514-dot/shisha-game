@@ -27,8 +27,11 @@ export function buildSteamTemperature(cs) {
     thermometer.update(temp);
     const bands = temperatureBands(cs);
     const expressive = bands.expressionWeight >= .999;
-    state.textContent = expressive && isIdealTemperature(temp, bands) ? "適温" : thermometer.root.getAttribute("aria-valuetext");
-    read.dataset.tone = temp >= DANGER_TEMP ? "danger" : isRainbowTemperature(temp, bands) ? "optimal" : isIdealTemperature(temp, bands) ? "ok" : temp > bands.ideal[1] ? "hot" : "cool";
+    // 毎フレーム呼ばれるので、変わった時だけ書く（同じ文字でも書くとページ全体の再計算が走って重い・CRN）
+    const text = expressive && isIdealTemperature(temp, bands) ? "適温" : thermometer.root.getAttribute("aria-valuetext");
+    if (state.textContent !== text) state.textContent = text;
+    const tone = temp >= DANGER_TEMP ? "danger" : isRainbowTemperature(temp, bands) ? "optimal" : isIdealTemperature(temp, bands) ? "ok" : temp > bands.ideal[1] ? "hot" : "cool";
+    if (read.dataset.tone !== tone) read.dataset.tone = tone;
   } };
 }
 

@@ -338,6 +338,8 @@ html .bench[data-mode] .pull-read[data-tone="hot"] .pull-state { color: var(--wa
 html .bench[data-mode] .pull-read[data-tone="danger"] .pull-state { color: var(--bad-ink); }
 html .bench[data-mode] .pull-read[data-tone="cold"] .pull-state { color: var(--cool-ink); }
 html .bench[data-mode] .pull-read[data-tone="cool"] .pull-state { color: var(--paper-muted); }
+html .bench[data-mode] .pull-read[data-tone="attack"] .pull-state { color: #c2186b; }
+html .bench[data-mode] .pull > .thermo .pull-read[data-tone="attack"] { border-color: #c2186b; }
 html .bench[data-mode] .pull-drift { color: var(--cool-ink); }
 html .bench[data-mode] .pull-tag { color: var(--lavender); background: var(--paper-card); border-color: var(--lavender-line); }
 html .bench[data-mode] .pull-summary { border: 1px solid var(--paper-line); background: var(--paper-card); }
@@ -419,8 +421,11 @@ html .bench[data-mode] .craft-water-status[data-band="none"] { color: var(--bad-
 html .bench[data-mode] .craft-water-actions button:focus-visible { outline-color: var(--amber); }
 
 /* カウントダウンは作業台の外（fx 層）。変数の継承に頼らず紫の上で読める白と金にする。 */
-html:has(.bench[data-mode]:not(.done)) .countdown { color: #fcf8f2; text-shadow: 0 0 18px #24152f, 0 0 40px #24152f, 0 2px 2px #160b2480; }
-html:has(.bench[data-mode]:not(.done)) .countdown.go { color: #f3ce89; }
+/* 作業台の画面のカウントダウン。body[data-screen="bench"]（showScreen が付ける）で判定する。
+   以前の html:has(.bench[data-mode]:not(.done)) は、:has() の中の :not() のせいで、ページ内のどんな小さな書き換えでも
+   ページ全体の見た目を計算し直させ、穴あけ・炭焼き・吸い出しが毎回重くなっていた（CRN） */
+body[data-screen="bench"] .countdown { color: #fcf8f2; text-shadow: 0 0 18px #24152f, 0 0 40px #24152f, 0 2px 2px #160b2480; }
+body[data-screen="bench"] .countdown.go { color: #f3ce89; }
 
 /* ================================================================ 工程ごとの舞台（CUI05）
    小道具（コンロ・炭壺・アルミ・タイマー・ボウル）を紙の上に浮かせず、生成した天板に置く。

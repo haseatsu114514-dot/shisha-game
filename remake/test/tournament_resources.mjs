@@ -4,7 +4,8 @@ import fs from "node:fs";
 import vm from "node:vm";
 import * as core from "../js/core/state.js";
 import { captureEntryResources, restoreEntryResources, applyAssistRecovery } from "../js/chapters/tournament-resources.js";
-import { beginCh1Votes } from "../js/craft/ch1-votes.js";
+import { beginCh1Votes, isSakuraiVotes } from "../js/craft/ch1-votes.js";
+import { voteStyleFrom } from "../js/core/vote-style.js";
 globalThis.document ||= { addEventListener() {} };
 globalThis.window ||= {};
 const { regulationFor } = await import("../js/craft/steps.js");
@@ -88,7 +89,7 @@ const prefix = boundaries + source.slice(start, end) + '  return startTournament
 core.newGame(); // regulationFor closes over the real core.state, not the sandbox's `state`; reset it to Chapter 1 defaults
 const entrant = core.newState();
 Object.assign(entrant, { phase: "daily", day: 14, stamina: 52, flavorStock: {} });
-const saves = [], sessions = [], notices = [], played = [], stub = () => {};
+const saves = [], sessions = [], notices = [], played = [], stub = () => {}, session = {};
 const context = vm.createContext({
   state: entrant, TOURNAMENT_DAY: 14, NIGHT_EVENTS: [], SHOP_FLAVORS: ["lemon"], TONARI: "", TONARI_N: "", STAGE: "",
   syncNightQueue: stub, runNightPlan: stub, playTsumugiStory: stub, sketchScene: stub,
@@ -96,10 +97,12 @@ const context = vm.createContext({
   showHud: stub, playBgm: stub, dayCard: stub, morningMessages: () => [], openPhone: stub,
   play: id => played.push(id),
   captureEntryResources, restoreEntryResources, applyAssistRecovery, beginCh1Votes, maxStamina: () => 130, regulationFor,
+  // 審査の方式（SKR04）は試合を始める時のシーシャ作りの版で決まる（CRN16）。ここでは桜井版を選んだ端末として流す。
+  voteStyleFrom: (config) => voteStyleFrom(config, ""), config: { craftVersion: "sakurai" }, isSakuraiVotes, SAKURAI_RULE_LINES: [],
   save: () => saves.push(copy(entrant)), toast: stub,
   markMet: stub, preloadBgm: stub, warmGameOver: stub, smokeWipe: fn => fn(),
   playTournamentArrival: () => played.push("arrival-sequence"),
-  entrance: stub, newSession: () => { sessions.push(copy(entrant)); return {}; },
+  entrance: stub, newSession: () => { sessions.push(copy(entrant)); return session; },
   loadingNotice: label => ({ label }),
   withLoadingNotice: async (task, notice) => { notices.push(notice); return await task; },
   loadTournamentCraftDialogue: async () => {},
@@ -110,6 +113,9 @@ assert(played.indexOf("arrival-sequence") < played.indexOf("ch1_tournament_openi
 assert.deepEqual(saves[0].tournament.entryResources.flavorStock, {}, "entry does not grant private lemon");
 assert(!played.includes("remake_flavor_rescue") && !played.includes("remake_flavor_brought"), "morning does not branch on private stock");
 assert.equal(sessions[0].stamina, 52);
+assert.equal(entrant.tournament.voteAttempt.style, "sakurai", "試合を始める時の設定の方式で票の記録を始める");
+assert.equal(session.voteStyle, "sakurai", "桜井式の試合の一台には攻めの帯の印が付く");
+assert.equal(session.craftVersion, "sakurai", "桜井式の試合の一台は桜井版の作業台（試合の途中で設定を変えても混ざらない・CRN16）");
 entrant.stamina = 48; entrant.flavorStock.lemon = 0;
 await vm.runInContext("tournamentDay()", context);
 // #2536: 再挑戦でも版確定と票の初期化を保存するようになったため、保存回数ではなく

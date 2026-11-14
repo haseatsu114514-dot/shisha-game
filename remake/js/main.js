@@ -17,7 +17,7 @@ import { installLooks } from "./looks/index.js";
 import { installRotateGuard } from "./core/rotate-guard.js";
 import { imgFileUrl } from "./core/img-file.js";
 import { warmInBackground } from "./core/loading-prefetch.js";
-import { withLoading, comicLoadingRequired } from "./core/loading.js";
+import { withLoading, comicLoadingRequired, preferLoadingComic, primeLoadingArt } from "./core/loading.js";
 import { gameLoadingOptions } from "./core/loading-context.js";
 import { vnTest, enableSeenLinePersistence, tapAdvance } from "./vn/engine.js";
 import { initSideArea } from "./core/side-area.js";
@@ -74,6 +74,12 @@ export async function boot() {
   // 読み終えてタップ・キーで進むとタイトルが開く。そのタップで音も鳴らせるようにする（ブラウザは最初の操作まで音を止める）。
   // 漫画は続きのセーブで会った人の話から選ぶ（セーブがなければ新しいゲームの開始時に会っている人だけ。core/loading-context.js）。
   // 自動操作のブラウザ（既存の検査）では、従来どおり漫画のない起動画面（boot 文脈には登録がない）で、読む待ちも入らない。
+  // ゲームを読み込む間の静的な起動画面（index.html の #boot）に先に出した漫画があれば、同じ話のまま続ける（絵は取得済み）。
+  if (comicLoadingRequired()) {
+    const bootComic = $("#boot")?.dataset.comic;
+    preferLoadingComic(bootComic);
+    primeLoadingArt(bootComic, [...($("#boot")?.querySelectorAll(".boot-comic img") || [])]);
+  }
   const bootComic = comicLoadingRequired()
     ? { ...gameLoadingOptions(peekSave()), fixed: true, onProceed: unlockAudio }
     : { context: "boot", chapter: 1 };
@@ -128,6 +134,8 @@ async function warmUp() {
     () => loadVnFonts(),
     () => loadDeferredDialogues(),
     () => warmUiArt({ deferStores: true }),
+    // 制作の枠・札・ゲージの絵（CSSの背景）。初めての作業台で枠が遅れて出ないように（CRN）
+    () => import("./craft/skin.js").then(m => m.warmCraftStyleImages()),
   ];
   if (chapter === 1) {
     const bgs = ["bg_osu_map_day", "bg_tonari_inside_day", "bg_home_day"];

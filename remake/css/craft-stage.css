@@ -41,9 +41,13 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .b
   background: linear-gradient(180deg, #4a2f6b, #2e1d45); color: #f6f1fa; box-shadow: 0 0 18px #c9a7e655;
 }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-phase.now .bench-phase-copy b { font-size: 23px; font-weight: 800; letter-spacing: .06em; }
+/* 今の工程の名前は長さが工程ごとに違う（炭焼き／パッキング）。いちばん長い名前の幅を取っておき、右の灯・ランクが工程ごとに横へずれないようにする */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-phase.now .bench-phase-copy b { display: inline-block; min-width: 5.3em; }
 /* 見出しの中の、いまの作業名（水入れ・配合・詰め・通気） */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-phase-step { display: none; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-phase.now .bench-phase-step:not(:empty) { display: block; flex: none; align-self: center; width: auto; height: auto; margin: 0 0 0 12px; padding: 0 0 0 12px; border: 0; border-left: 2px solid #c9a7e666; background: none; box-shadow: none; line-height: 1.2; font-size: 19px; font-weight: 700; letter-spacing: .06em; white-space: nowrap; color: #e7dbf3; }
+/* 作業名は2〜3字（配合・詰め／水入れ・穴あけ）。いちばん長い3字の幅を取っておき、パッキングの中で作業が替わるたびにレールが横へずれないようにする */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-phase.now .bench-phase-step:not(:empty) { box-sizing: content-box; min-width: 3.3em; text-align: left; }
 /* 工程の灯（一台の記録）とライバルの小窓は、レールに並べる */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record { position: static; flex: none; gap: 6px; margin-left: 4px; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp { width: 30px; height: 30px; }
@@ -54,8 +58,9 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .craft-rank {
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rival-windows ~ .craft-rank, html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .craft-rank ~ .rival-windows { margin-left: 0; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .craft-rank { order: 8; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rival-windows { order: 7; }
-/* 「外観を選ぶ」は機材を選ぶ工程だけ */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .bench-appearance-button { order: 9; }
+/* 「外観を選ぶ」は機材を選ぶ工程だけ。ランクの左に出して、出入りでランクが横へずれないようにする（CRN・位置ずれ） */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .bench-appearance-button { order: 7; margin-left: auto; }
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="setup"] .bench-top > .craft-rank { margin-left: 12px; }
 html body.craft-stage:not(.game-ds) .bench[data-mode]:not([data-step="setup"]) .bench-top > .bench-appearance-button { display: none !important; }
 /* 機材を選ぶ工程は工程の灯もライバルの灯もまだ1つも点かない。大会ではライバル・ランクで行が溢れ、「外観を選ぶ」が
    「?」の裏・画面外へ押し出されるので、この工程だけ灯と小窓を隠して場所を空ける（#3516）。 */
@@ -94,12 +99,19 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-person figcaption { display: none; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-speech { flex: 1; min-width: 0; height: auto !important; display: block !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-heading { display: flex !important; min-height: 0 !important; padding: 0 !important; margin: 0 0 2px !important; gap: 8px; align-items: baseline; }
+/* 評価の印（◎○△）は名前の後ろへ。印が出入りしても名前と一言の頭がずれない */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-heading > .audience-name { order: 1; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-heading > :not(.audience-name):not(.audience-rating) { order: 2; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-heading > .audience-rating { order: 3; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-name { font-size: 20px !important; font-weight: 800; color: #c9a7e6; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-note { margin: 0; font-size: 20px !important; line-height: 1.34 !important; font-weight: 600; max-height: none !important; overflow: visible !important; }
+/* 一言は1行のことも2行のこともある。2行ぶんの高さを取っておき、言葉が変わるたびに名前の行が上下しないようにする */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-note { min-height: 2.68em; }
 
 /* ---------- 舞台: 枠なしで右側いっぱい ---------- */
+/* 右上の「？」（.bench-head）は .bench-right の中に固定配置されるため、.bench-top（z-index: 6）より上の重ね順にする */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right {
-  position: absolute; left: 410px !important; right: 16px !important; top: 96px !important; bottom: 12px !important; z-index: 2;
+  position: absolute; left: 410px !important; right: 16px !important; top: 96px !important; bottom: 12px !important; z-index: 7;
   padding: 0 !important; border: 0 !important; border-radius: 0; background: none !important; box-shadow: none !important; border-image: none !important;
 }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right > .panel-smoke { display: none; }
@@ -151,7 +163,8 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo.mix-t
 /* 状態の札（ぬるい・適温…）: 吸い出し・提供・調整だけ。柱のいちばん上に置く */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read {
   position: absolute !important; left: 50% !important; right: auto !important; top: -52px !important; transform: translateX(-50%);
-  min-width: 124px; height: 42px; min-height: 0 !important; padding: 0 14px; justify-content: center; border-radius: 21px !important;
+  /* 「ぬるい」「適温・低」の幅の差で札が伸び縮みしないよう、よく出る言葉が収まる幅を取っておく */
+  min-width: 152px; height: 42px; min-height: 0 !important; padding: 0 14px; justify-content: center; border-radius: 21px !important;
   flex-wrap: nowrap; gap: 4px; /* 余熱の矢印（↓）を札の中の同じ行に置く */
   background: #1b112af2 !important; border-width: 1.5px !important; box-shadow: 0 4px 10px #0009;
 }
@@ -218,11 +231,28 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rival-window
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rival-windows .rival-face { grid-row: 1; width: 34px; height: 34px; }
 
 /* ---------- 操作の案内文は常設しない（「？」と初回の説明で読む・CSL15） ---------- */
-html body.craft-stage:not(.game-ds) .bench[data-mode] :is(.mix-list-caption, .mix-life-note, .mix-taste .flavor-guide-note, .care-coals-calm, .hr-plan[data-tone="hint"]) { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] :is(.mix-list-caption, .mix-life-note, .mix-taste .flavor-guide-note, .care-coals-calm) { display: none !important; }
+/* 穴あけの知らせ（リング完成・時間評価の終了）は、出ていない間も場所を取っておく。出た時に上の札が持ち上がらない */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .hr-plan { min-height: 52px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .hr-plan[data-tone="hint"] { visibility: hidden !important; }
 
 /* ---------- 吸い出し・調整: 炭を選ぶ間はダイヤルを隠す（[hidden] を上書きしない） ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-play[hidden] { display: none !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals { flex: 1; justify-content: center; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals { flex: 1; justify-content: center; gap: 22px; }
+/* 炭の交換の選択は、舞台の中で小さく浮かないよう大きく見せる（上下の空きを詰める） */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .care-coals-lead { font-size: 20px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .care-places .btn.care-place { min-height: 84px; font-size: 19px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .care-coals-ask { font-size: 30px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .care-coal-btns { gap: 14px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .btn.care-coal { min-height: 250px; }
+/* 炭の絵（craft-paper.css の ::before）も箱に合わせて約1.4倍に。拡大は背景の大きさと位置で行う（transform だと箱からはみ出す扱いになる） */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .btn.care-coal::before { min-height: 140px; background-size: 90px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .btn.care-coal[data-test="care-coal-2"]::before { background: url("../img/ui/making/coal_just.webp") calc(50% - 42px) 70% / 81px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 42px) 70% / 81px no-repeat; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .btn.care-coal[data-test="care-coal-3"]::before { background: url("../img/ui/making/coal_just.webp") 50% 18% / 70px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% - 39px) 88% / 70px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 39px) 88% / 70px no-repeat; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .btn.care-coal[data-test="care-coal-4"]::before { background: url("../img/ui/making/coal_just.webp") calc(50% - 35px) 18% / 64px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 35px) 18% / 64px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% - 35px) 88% / 64px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 35px) 88% / 64px no-repeat; }
+/* 水入れは舞台の真ん中に、大きく（上に小さく寄って下が空くのを避ける） */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel:has(> .craft-water) { display: grid !important; place-items: center; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel > .craft-water { transform: scale(1.32); transform-origin: center; }
 
 /* ---------- 配合: 葉の行に商品パッケージを大きく、4種が一度に見える ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix { height: 100% !important; display: grid !important; grid-template-columns: 250px minmax(0, 1fr) !important; grid-template-rows: minmax(0, 1fr) 100px !important; gap: 10px 16px !important; }
@@ -342,9 +372,9 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record {
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp { width: 26px !important; height: 26px !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp b { font-size: 13px !important; }
 
-/* ---------- 上のレールの箱は押せない（右上の「？」を覆わない）。レールの中の部品だけ押せる ---------- */
+/* ---------- 上のレールの箱は押せない（右上の「？」を覆わない）。レールの中のボタン類だけ押せる ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top { pointer-events: none; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > * { pointer-events: auto; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > :is(button, a, .bench-appearance-button, .ch2-tournament-menu) { pointer-events: auto; }
 
 /* ---------- 「？」はスマホでも押しやすい大きさ（実寸38px以上）。熱の柱の矢印は管の目盛りと同じ基準 ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-guide summary { width: 84px !important; height: 84px !important; }
@@ -408,6 +438,16 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-current-zone {
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp { isolation: isolate; overflow: visible; background: none !important; border: 0 !important; box-shadow: none !important; }
 /* 光彩（::before の外側18% ≒ 5px）を灯の列の箱の中に収める。余白と同じだけ外へ広げ、レールでの大きさと位置は変えない */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record { padding: 5px; margin: -5px -5px -5px -1px; }
+/* 工程の灯はランクの隣に固定する。レールの長さは工程で変わる（パッキングだけ作業名が付く）ので、灯がレールの後ろについて横へ動かないように、空きはレールと灯の間に置く */
+html body.craft-stage:not(.game-ds) .bench[data-mode]:not([data-step="setup"]) .bench-top > .rig-record { margin-left: auto; }
+html body.craft-stage:not(.game-ds) .bench[data-mode]:not([data-step="setup"]) .bench-top > .craft-rank { margin-left: 14px; }
+/* 大会はライバルの小窓が並ぶぶん帯が混む。部品の間隔・大会名の字・レールの間隔を詰めて、パッキングの作業名が付いても帯の中（右上の「?」の手前）に収め、灯・小窓・ランクが工程ごとに動かないようにする */
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-mode="tournament"] .bench-top { gap: 10px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-mode="tournament"] .bench-top .bench-mode { font-size: 16px; letter-spacing: .03em; }
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-mode="tournament"] .bench-progress-track { gap: 10px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-mode="tournament"] .bench-phase:not(:last-child)::after { width: 10px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-mode="tournament"] .bench-phase.now .bench-phase-step:not(:empty) { margin-left: 6px; padding-left: 6px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-mode="tournament"] .bench-top > .craft-rank { margin-left: 6px; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp::before {
   content: ""; position: absolute; inset: -18%; z-index: -1; pointer-events: none;
   background: url("../img/ui/craft-stage/lamp-off.webp") center / contain no-repeat;
@@ -430,6 +470,7 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .b
   border: 0 !important; box-shadow: none !important; background: url("../img/ui/craft-glass/bead.webp") -.5px 0 / 37.3px 39px no-repeat !important;
 }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .bench-phase.seen:not(.now) { filter: brightness(1.18) saturate(1.1); }
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-mode="tournament"] .bench-progress-track > .bench-phase.now { padding-right: 14px !important; }
 /* ---------- 見守る人の一言の板（紫の革に縫い目・左のガラスの座に顔） ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-left .bench-audience {
   padding: 8px 14px 8px 20.6px !important; gap: 15px; border: 0 solid transparent !important; border-radius: 0 !important; background: none !important; box-shadow: none !important;
@@ -546,3 +587,24 @@ html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .ben
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .bench-phase.now .bench-phase-copy small { font-size: max(13px, calc(11.5px / var(--k, 1))) !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-name { font-size: max(20px, calc(11.5px / var(--k, 1))) !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-note { font-size: max(20px, calc(13px / var(--k, 1))) !important; }
+
+/* ---------- スマホ横持ち: 拡大した工程番号が白い玉から切れないようにし、大会の帯を「？」の手前に収める ---------- */
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .bench-phase:not(.now) .bench-phase-copy small {
+  width: auto; height: auto; max-width: none; max-height: none;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .bench-phase.now { padding-left: 42px !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .bench-phase.now .bench-phase-copy small {
+  left: 3.5px; width: max(24px, 1.6em); height: max(24px, 1.45em); margin: 0; transform: translateY(-50%); line-height: 1;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top { gap: 6px !important; padding: 0 104px 0 12px !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top .bench-mode { letter-spacing: 0; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-progress-track { gap: 4px !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-phase:not(:last-child)::after { width: 4px !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-progress-track > .bench-phase.now { padding: 0 10px 0 42px !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-phase.now .bench-phase-copy b { min-width: 0; letter-spacing: 0; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-phase.now .bench-phase-step:not(:empty) { min-width: 0; margin-left: 6px; padding-left: 6px; letter-spacing: 0; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top > .rig-record { gap: 2px !important; padding: 2px; margin: -2px -2px -2px auto; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top > .rival-windows { gap: 3px !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top > .rival-windows .rival-card { grid-template-columns: minmax(28px, max-content); padding: 2px 3px 3px; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top > .rival-windows .rival-face { width: 28px !important; height: 28px !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top > .craft-rank { flex: 0 0 100px !important; width: 100px !important; margin-left: 4px !important; }

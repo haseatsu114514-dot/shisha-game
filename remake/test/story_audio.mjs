@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { STORY_BGM, STORY_SE, storyBgm, chapterHubBgm, cityBgm } from "../js/core/story-audio.js";
+import { STORY_BGM, STORY_SE, storyBgm, chapterHubBgm, cityBgm, homeBgm } from "../js/core/story-audio.js";
 import { CH4_DEFAULT_BGM, CH4_SCENE_BGM } from "../js/chapters/ch4-progress.js";
 import { CH5_DEFAULT_BGM, CH5_SCENE_BGM, CH5_ENDING_IDS } from "../js/chapters/ch5-progress.js";
 const staffSrc = readFileSync(new URL("../js/scenes/staff-roll.js", import.meta.url), "utf8");
@@ -84,6 +84,19 @@ assert(afterTrpg && atCounter, "trpg.js / shop.js town track expressions");
 for (const chapter of [1, 2, 3, 4, 5]) {
   assert.equal(pick(afterTrpg, { state: { chapter } }), cityBgm(chapter), `after the board-game cafe in chapter ${chapter}`);
   assert.equal(pick(atCounter, { stockChapter: chapter }), cityBgm(chapter), `shop counter of chapter ${chapter}`);
+}
+// 家に帰る・家で休む時は、店の曲（tonari・ライバル店）を持ち帰らず、街の曲へ戻す（オーナー「店の音楽が家に帰っても流れてる」）。
+const homeExpr = file => [...source(file).matchAll(/playBgm\((state\.chapter === 2 \? [^;]+)\);/g)].map(m => m[1]);
+const homecoming = homeExpr("remake/js/daily/calendar.js")[1];
+const resting = homeExpr("remake/js/daily/spots.js")[0];
+assert(homecoming && resting, "calendar.js homecoming / spots.js rest track expressions");
+assert(/const athome = [^\n]+\n[^\n]+\n[^\n]+\n\s+playBgm\(state\.chapter === 2/.test(source("remake/js/daily/calendar.js")), "homecoming switches the track before the walk home");
+assert(/export async function restAtHome[^\n]+\n\s+const owner = state;\n[^\n]+\n\s+playBgm\(/.test(source("remake/js/daily/spots.js")), "resting at home switches the track first");
+for (const chapter of [1, 2, 3, 4, 5]) {
+  assert.equal(pick(homecoming, { state: { chapter } }), homeBgm(chapter), `homecoming in chapter ${chapter}`);
+  assert.equal(pick(resting, { state: { chapter } }), homeBgm(chapter), `rest at home in chapter ${chapter}`);
+  assert.notEqual(homeBgm(chapter), STORY_BGM.shopHome, `no shop music at home in chapter ${chapter}`);
+  assert.notEqual(homeBgm(chapter), STORY_BGM.rivalShop, `no rival shop music at home in chapter ${chapter}`);
 }
 assert.match(source("remake/js/chapters/ch2.js"), new RegExp(`const CITY_BGM = "${STORY_BGM.yuzugaya}";`), "chapter 2 town track");
 

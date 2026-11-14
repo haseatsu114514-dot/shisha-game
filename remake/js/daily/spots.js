@@ -67,7 +67,7 @@ export const SPOTS = [
     desc: "甘い香りの人気店。凄腕がいるらしい。", stamina: -16 },
   { id: "adam", kind: "rival", charId: "adam", label: "EDEN", area: "下町", x: 46, y: 48, theme: "rival", glyph: "煙", face: "adam", cost: VISIT_COST, closedOn: 5,
     desc: "アニスが香る店。いつもダブルアップル。", stamina: -16 },
-  { id: "minto", kind: "rival", charId: "minto", label: "PEPPERMINT", area: "繁華街", x: 28, y: 62, theme: "rival", glyph: "煙", face: "minto", cost: VISIT_COST, closedOn: 6,
+  { id: "minto", kind: "rival", charId: "minto", label: "PEPPERMINT", area: "繁華街", x: 32, y: 59, theme: "rival", glyph: "煙", face: "minto", cost: VISIT_COST, closedOn: 6,
     desc: "SNSで人気の、コンカフェ風の店。", stamina: -16 },
   { id: "shop", kind: "shop", label: "Dr.fookah", area: "問屋街", x: 36, y: 30, theme: "shop", glyph: "卸",
     desc: "1階で買い物。夜は2階で相談できる。" },
@@ -648,6 +648,8 @@ export const REST_RAIN_SCENES = Object.freeze(["remake_rest_rain"]);
 
 export async function restAtHome(spot, { fullDay = false } = {}) {
   const owner = state;
+  // 家で休む間は、直前の店の曲（tonari・ライバル店など）を流し続けない。帰宅と同じ街の曲へ戻す。
+  playBgm(state.chapter === 2 ? "bgm_yuzugaya" : state.chapter === 4 ? "bgm_dubai" : "kansetsu_shomei_to_black_coffee");
   addStamina(spot.stamina);
   delete state.flags._cold_pending;
   delete state.flags._overwork;

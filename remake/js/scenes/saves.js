@@ -33,6 +33,15 @@ function slotInfo(data) {
   return { chapter: badge ? `${badge}・第${chapter}章` : `第${chapter}章`, day: `DAY ${chapterDay(data)}${time ? `・${time}` : ""}`, phase, money: `所持金 ${yen(data.money || 0)}`, when };
 }
 
+/** タイトルの「つづきから」に添える1行（章・日付・時間帯）。枠の見出しと同じ言葉を使う。読めない保存は空文字。 */
+export function saveHeadline(data) {
+  if (!data || typeof data !== "object") return "";
+  try {
+    const info = slotInfo(data);
+    return `${info.chapter}　${info.day}`;
+  } catch { return ""; }
+}
+
 /** 保存データの能力を10段と細いゲージで表示する。 */
 function statGauges(stats) {
   return el("span.ss-stats", STAT_KEYS.map((k) => {
@@ -104,7 +113,19 @@ function slotBody(data) {
  */
 function pickSlot(mode) {
   return new Promise((resolve) => {
-    const close = (v) => { layers.modal.classList.remove("show"); layers.modal.replaceChildren(); resolve(v); };
+    // Esc で「やめる」と同じく閉じる（#3556。ほかの確認窓と同じ操作）。
+    const onKey = (e) => {
+      if (e.key !== "Escape" || e.repeat || !box.isConnected) return;
+      e.preventDefault();
+      SE.cancel();
+      close(null);
+    };
+    const close = (v) => {
+      window.removeEventListener("keydown", onKey);
+      layers.modal.classList.remove("show");
+      layers.modal.replaceChildren();
+      resolve(v);
+    };
     const rows = SAVE_SLOTS.map((s, i) => {
       const data = readSlot(s.key);
       const future = isFutureSave(data);
@@ -134,6 +155,7 @@ function pickSlot(mode) {
     ]);
     layers.modal.replaceChildren(el("div.modal-backdrop"), box);
     layers.modal.classList.add("show");
+    window.addEventListener("keydown", onKey);
   });
 }
 

@@ -16,6 +16,12 @@
       "run": ["node --experimental-vm-modules remake/test/rest_variations.mjs"]
     },
     {
+      "id": "affection-max-heart-gift",
+      "title": "Max-heart gifts reached through free LIME or story are recovered at settle, without EXP or duplicates",
+      "kind": "quick",
+      "run": ["node remake/test/affection_regressions.mjs"]
+    },
+    {
       "id": "play-mastery",
       "title": "Mini-game mastery, cumulative progress, save/NG+ rewards and chapter-five paid growth",
       "kind": "quick",
@@ -1875,6 +1881,12 @@
       "title": "Chapter 1 deterministic tournament votes",
       "kind": "quick",
       "run": ["node remake/test/ch1_votes.mjs"]
+    },
+    {
+      "id": "ch1-votes-sakurai",
+      "title": "第1章の桜井式の審査（試作・SKR04）: 1回ごとの勝負・審査員の見る所・攻めの帯・千須の最後の1点・方式の切替",
+      "kind": "quick",
+      "run": ["node remake/test/ch1_votes_sakurai.mjs"]
     },
     {
       "id": "ch4-tournament",
@@ -4911,6 +4923,53 @@
       ],
       "run": [
         "node remake/test/browser/look_default.mjs"
+      ]
+    },
+    {
+      "id": "craft-version",
+      "title": "シーシャ作りの版（CRN16）: 桜井版はリニューアル前の作業台（次のリングへ・毎回3・2・1・前のお手本・行き先や弧なし）、リニューアルは新しい作業台",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/craft-version.js",
+        "remake/js/core/ui.js",
+        "remake/js/craft/holes.js",
+        "remake/js/craft/pull.js",
+        "remake/js/craft/steam.js",
+        "remake/js/craft/heat.js",
+        "remake/js/craft/session.js",
+        "remake/js/craft/demo.js",
+        "remake/js/craft/preview.js",
+        "remake/css/craft.css",
+        "remake/test/browser/craft_version.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/craft_version.mjs"
+      ]
+    },
+    {
+      "id": "ch1-vote-style",
+      "title": "シーシャ作りの版（CRN16）と第1章の大会の審査の方式（SKR04）: リニューアル／桜井版の切替と保存・?craft=・作業台の版・攻めの帯・途中経過の見る所・競技規則の第四条",
+      "kind": "browser",
+      "weight": 2.4,
+      "timeout": 6,
+      "paths": [
+        "remake/js/core/vote-style.js",
+        "remake/js/core/craft-version.js",
+        "remake/js/craft/attack-band.js",
+        "remake/js/craft/ch1-votes.js",
+        "remake/js/craft/pull.js",
+        "remake/js/craft/thermometer.js",
+        "remake/js/craft/result.js",
+        "remake/js/craft/tournament-graphics.js",
+        "remake/js/scenes/rule-sheet.js",
+        "remake/js/scenes/title.js",
+        "remake/js/chapters/ch1.js",
+        "remake/test/browser/ch1_vote_style.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/ch1_vote_style.mjs"
       ]
     },
     {
