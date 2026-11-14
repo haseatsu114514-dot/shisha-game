@@ -528,7 +528,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "幽霊の客席ですか。レヰさんらしい舞台ですね"
+          "text": "幽霊の客席ですか。クラウドさんらしい舞台ですね"
         },
         {
           "speaker": "rei",
@@ -1087,7 +1087,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "レヰさんの語り、本物のライブみたいでした"
+          "text": "クラウドさんの語り、本物のライブみたいでした"
         },
         {
           "speaker": "rei",
@@ -2044,7 +2044,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "レヰさんの物語、最後まで楽しかったです"
+          "text": "クラウドさんの物語、最後まで楽しかったです"
         }
       ]
     },
@@ -2540,7 +2540,7 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "ライブの裏方か……。レヰさんの本、楽しみです"
+          "text": "ライブの裏方か……。クラウドさんの本、楽しみです"
         }
       ]
     },
@@ -3246,7 +3246,7 @@
       ]
     }
   ],
-  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。GMのレヰが家令・伯爵・幽霊の客席の声も兼ねる。",
+  "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。GMのクラウドが家令・伯爵・幽霊の客席の声も兼ねる。",
   "presentation": {
     "theme": "castle",
     "number": "11",

@@ -213,7 +213,7 @@ export const LESSONS = [
     hint: "盤の道が届いたら、スミさんが相性の悪い葉のつなぎ方を教えてくれる",
     text: "配合にカルダモンを一つまみ足すと、相性の悪い組み合わせのぶつかりがやわらぐ", scene: "lesson_sumi_cardamom" },
   { id: "M-B2", cell: "-4,-1", board: "body", who: "rei", need: 5, ring: 2, sig: true, reward: "special", name: "花を重ねる",
-    hint: "レヰと仲良くなると、香りの重ね方を教えてもらえそう",
+    hint: "クラウドと仲良くなると、香りの重ね方を教えてもらえそう",
     text: "花の葉を2種以上重ねると香りの層ができ、調整のたびに次の層が立つ", scene: "lesson_rei_layers" },
   { id: "M-S4", cell: "5,-1", board: "sense", who: "ageha", need: 5, ring: 2, sig: true, reward: "skill", name: "ズボーって",
     hint: "あげはと仲良くなると、感覚の吸い方を教えてもらえそう",

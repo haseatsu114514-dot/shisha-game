@@ -50,17 +50,17 @@ export async function loadChapterTwoDialogues() {
 export async function loadPreparationDialogues() {
   const required = ["ageha", "kumicho", "rei"].flatMap(id => ["chat", "followup", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
   required.push(...["kumicho", "rei"].map(id => `remake_ch2_${id}_revisit`));
-  // 神崎・レヰの通い訪問の小会話（#2027）
+  // 神崎・クラウドの通い訪問の小会話（#2027）
   required.push(...["kumicho", "rei"].flatMap(id => ["b", "c", "d"].map(suffix => `remake_ch2_${id}_repeat_${suffix}`)));
   // 店の手入れ・出前・CDの入れ替え。大会の前後を問わない通いの日常（#3097）。
   required.push(...["ageha", "kumicho", "rei"].map(id => `remake_ch2_${id}_repeat_e`));
   // 好感度MAXの締めくくり（daily/bonds.js の BOND_FINALES・#2027）
   const files = { ch2_preparation: required, ch2_deliveries: [...PURIKURA_IDS, ...DISCOVERY_IDS, ...OUTING_IDS],
     ch2_kumicho: ["ch2_kumicho_bond_finale"],
-    // レヰのライブの夜（第3章の出発前の準備期間だけ。ch2-preparation.js の reiLiveDue・RVE07）
+    // クラウドのライブの夜（第3章の出発前の準備期間だけ。ch2-preparation.js の reiLiveDue・RVE07）
     ch2_rei: ["ch2_rei_bond_finale", "ch3_prep_rei_live"] };
   for (const step of CH2_NIGHTS.flatMap(night => night.steps)) (files[step.file] ||= []).push(step.id);
-  // 神崎・レヰの長い段階会話（味の学習を含む）も通常訪問列として公開する（#1648）。
+  // 神崎・クラウドの長い段階会話（味の学習を含む）も通常訪問列として公開する（#1648）。
   for (const entry of Object.values(CH2_VISIT_STORIES).flat()) if (entry.file) (files[entry.file] ||= []).push(entry.scene);
   // 店に通う回（#626）と♥3の質問（#1988）、♥5の締めくくり（#2023）、通い訪問の小会話 b〜d（VOL13）
   const agehaVisits = [...(AGEHA_VISITS || []), AGEHA_BADDAY?.id, "ch2_ageha_bond_question", "ch2_ageha_bond_finale",

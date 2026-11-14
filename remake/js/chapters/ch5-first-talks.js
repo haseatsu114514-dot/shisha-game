@@ -1,16 +1,16 @@
 // 第5章の最初の来店で一度だけ読む会話（N3）。通い店（ch5-shops.js の CH5_SHOPS）に入れていない常連の店に、
 // 世界大会の後・博士との勝負の前の一言を足す。読んだ後は、いつもの来店（通い訪問の小会話）に戻る。
 //   アダム（EDEN・地元）: 第5章の任意場面「二つのダブルアップル」（ch5_free_eden_adam）がEDENの最初の来店なので、その次の来店
-//   レヰ（零-ZERO-・柚ヶ谷）: 第5章の最初の来店
+//   クラウド（零-ZERO-・柚ヶ谷）: 第5章の最初の来店
 //   神崎（神崎煙草店・柚ヶ谷）: 未接続だった第2章の後日談 ch2_kumicho_after_ch2 を、世界大会の後の場面に書き直して読む
 //     （STP07 J-6・オーナー判断 C13 Q3=A）。第5章の柚ヶ谷では第2章の物語の場面を出さない（#2033・ch2-preparation.js）
 //     ことの、ただ一つの例外。旧ID ch2_kumicho_after_ch2_firstshop は台本の jump で同じ場面へ進む。
-// 台詞は data/dialogue/ch5_shops.json（アダム・レヰ）と ch2_kumicho.json（神崎）。代金・体力・好感度・能力は
+// 台詞は data/dialogue/ch5_shops.json（アダム・クラウド）と ch2_kumicho.json（神崎）。代金・体力・好感度・能力は
 // 来店の処理（ch5-shops.js の performChapterFiveShop）が付け、既読も来店の精算と一緒に付ける（中断・LOADでは残さない）。
 // DOMに触れないので、remake/test/ch5_first_talks.mjs が node で読み込んで判定を確かめる。
 import { chapterFiveProgress, chapterFiveRead } from "./ch5-progress.js";
 
-// stat はいつもの来店で上がる能力（アダムは daily/spots.js の CHAR_STAT、神崎・レヰは ch2-preparation.js の通い訪問と同じ）。
+// stat はいつもの来店で上がる能力（アダムは daily/spots.js の CHAR_STAT、神崎・クラウドは ch2-preparation.js の通い訪問と同じ）。
 export const CH5_FIRST_TALKS = Object.freeze({
   adam: Object.freeze({ file: "ch5_shops", scene: "ch5_adam_shop", region: "home", stat: "guts", after: "ch5_free_eden_adam" }),
   rei: Object.freeze({ file: "ch5_shops", scene: "ch5_rei_shop", region: "widehanga", stat: "charm" }),

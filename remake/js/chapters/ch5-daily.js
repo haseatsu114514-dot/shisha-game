@@ -184,7 +184,7 @@ const reflectable = spot => !spot.reflect || canReflect(state);
 /** 柚ヶ谷の支店（第2章の「県大会向け」の説明は使わない）。 */
 const CH5_CITY_SHOP = Object.freeze({ ...CITY_SHOP, desc: "隣町の支店。仕入れはここでも。" });
 
-/** 第5章の柚ヶ谷の行き先: 神崎・レヰ・あげはの店（会ったことがあれば）・支店・ボドゲカフェ（知っていれば）。 */
+/** 第5章の柚ヶ谷の行き先: 神崎・クラウド・あげはの店（会ったことがあれば）・支店・ボドゲカフェ（知っていれば）。 */
 export function chapterFiveCitySpots() {
   return [...cityRegularSpots(), ...chapterFiveCityShops(), CH5_CITY_SHOP, trpgSpot()].filter(Boolean);
 }

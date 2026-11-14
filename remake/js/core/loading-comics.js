@@ -502,10 +502,10 @@ export const LOADING_COMICS = [
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-rei-castle-cake）",
-    caption: "黒と赤が好きなレヰは、ケーキの飾りでも全力。",
+    caption: "黒と赤が好きなクラウドは、ケーキの飾りでも全力。",
     panels: [
-      { src: imgFileUrl("loading/rei-castle-cake-1.webp"), alt: "赤いテーブルの店で、はじめが小さなショートケーキを差し出して「飾り、頼めます？」。絞り袋を持ったレヰが目を閉じて「……任せて。」。" },
-      { src: imgFileUrl("loading/rei-castle-cake-2.webp"), alt: "ケーキが黒と赤の何段もの城になり、黒い薔薇と銀の鎖で飾られている。レヰは小さく親指を立てる。はじめ「城になった。」。" },
+      { src: imgFileUrl("loading/rei-castle-cake-1.webp"), alt: "赤いテーブルの店で、はじめが小さなショートケーキを差し出して「飾り、頼めます？」。絞り袋を持ったクラウドが目を閉じて「……任せて。」。" },
+      { src: imgFileUrl("loading/rei-castle-cake-2.webp"), alt: "ケーキが黒と赤の何段もの城になり、黒い薔薇と銀の鎖で飾られている。クラウドは小さく親指を立てる。はじめ「城になった。」。" },
     ],
   },
   {
@@ -517,8 +517,8 @@ export const LOADING_COMICS = [
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-rei-mamachari）",
     caption: "見た目は夜の住人。でも移動は、ふつうの自転車。",
     panels: [
-      { src: imgFileUrl("loading/rei-mamachari-1.webp"), alt: "夜の店先で、紙袋を両手に提げたはじめが「駅まで遠いな…」。黒と赤のロングコートのレヰが「……送っていく。」。" },
-      { src: imgFileUrl("loading/rei-mamachari-2.webp"), alt: "レヰが押してきたのは、かごにネギとトイレットペーパーを入れた水色のママチャリ。はじめ「ママチャリだ。」。" },
+      { src: imgFileUrl("loading/rei-mamachari-1.webp"), alt: "夜の店先で、紙袋を両手に提げたはじめが「駅まで遠いな…」。黒と赤のロングコートのクラウドが「……送っていく。」。" },
+      { src: imgFileUrl("loading/rei-mamachari-2.webp"), alt: "クラウドが押してきたのは、かごにネギとトイレットペーパーを入れた水色のママチャリ。はじめ「ママチャリだ。」。" },
     ],
   },
   {

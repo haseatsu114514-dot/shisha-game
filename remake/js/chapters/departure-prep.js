@@ -1,7 +1,7 @@
 // 遠出する章（第3章の東京・第4章のドバイ）の、出発前に地元で過ごす準備期間（VOL02・2026-11-02 オーナー指示
 // 「3も4も14日　ただ遠出する章は3日前に準備期間をあげたい(実質17日)」）。
 // 第2章と同じ日常ループ（daily/calendar.js の runDaily）で、地元・橙須と隣町・柚ヶ谷を行き来できる。
-// 柚ヶ谷の店は第2章の通い訪問そのもの（神崎・レヰ・あげはの段階会話の続き・締めくくりも読める）。
+// 柚ヶ谷の店は第2章の通い訪問そのもの（神崎・クラウド・あげはの段階会話の続き・締めくくりも読める）。
 // 準備の最後の日の夜を越えると出発の朝になり、ループが終わって章の側（出発の場面）へ戻る。
 // 保存: 第3章は flags._ch3_prep、第4章は flags._ch4_prep = { startDay, days, step, departed }。日付の数え方は core/chapter-clock.js の departurePrep。
 import { state, save, timeOfDay } from "../core/state.js";
@@ -52,7 +52,7 @@ export function markDeparted(value = state) {
   return true;
 }
 
-// レヰのライブの夜が待っている間は、零-ZERO- に「！」（chapters/ch2-preparation.js の reiLiveDue・RVE07）
+// クラウドのライブの夜が待っている間は、零-ZERO- に「！」（chapters/ch2-preparation.js の reiLiveDue・RVE07）
 const withReiLive = spot => spot.charId === "rei" ? { ...spot, hasNew: () => reiLiveDue(state) || !!spot.hasNew?.() } : spot;
 const cityRegion = () => [...PREPARATION_SPOTS.map(withReiLive), CITY_SHOP, ...knownCityOutings(state).filter(spot => spot.kind !== "trpg"), trpgSpot()].filter(Boolean);
 const atHome = spot => (spot?.region || "home") === "home";

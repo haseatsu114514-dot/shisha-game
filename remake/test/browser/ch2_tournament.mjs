@@ -448,7 +448,7 @@ await suite('ch2-tournament',async check=>{
     await assertFits(page,'.ch2-contest .btn');await page.locator(t('start')).click();await phone(page);
     await page.locator(t('ready')).waitFor();
     const texts=await page.evaluate(()=>window.__texts.join('\n'));
-    assert.match(texts,/名前を聞くのは初めて/);assert.match(texts,/零-ZERO-のレヰ/);
+    assert.match(texts,/名前を聞くのは初めて/);assert.match(texts,/零-ZERO-のクラウド/);
     assert.match(texts,/神崎煙草店の神崎竜二でさ/);
     assert.match(texts,/今日は、いち職人として来た。文句なら、俺の煙に言いな/);
     assert.doesNotMatch(texts,/昔は組を張って|足は洗った/);

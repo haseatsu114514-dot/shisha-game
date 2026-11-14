@@ -288,7 +288,7 @@ const chat = (id, msgId, v) => ({
 
 /** 通常のデートは定休日の午後か仕事後。大事な物語は夜の予定と重なる日に臨時休暇を取れる。 */
 export function dateSchedule(id, { day = state.day, fixedNight = () => false, allowTemporaryClosure = false } = {}) {
-  // 神崎・レヰは第2章の店の定休日（chapters/ch2-preparation.js の CH2_CLOSED_ON と同じ曜日）。
+  // 神崎・クラウドは第2章の店の定休日（chapters/ch2-preparation.js の CH2_CLOSED_ON と同じ曜日）。
   const closedOn = { minto: 6, naru: 3, adam: 5, kumicho: 0, rei: 1 }[id];
   if (closedOn != null && day % 7 === closedOn) return { time_slot: "noon", closed_on: closedOn };
   if (fixedNight(day)) return allowTemporaryClosure ? { time_slot: "noon", temporary_closed: true } : null;

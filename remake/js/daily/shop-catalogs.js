@@ -4,7 +4,7 @@ export const WIDEHANGA_FLAVORS = [
   "strawberry", "mint", "double_apple", "dragonfruit", "kiwi", "cool_mint",
   "blueberry_mint", "caramel", "cappuccino", "black_tea", "sakura", "jasmine", "rose",
   "white_gummy_bear", "red_gummy_bear", "spring_water",
-  // 第2章の新入荷（いちごミルク・レヰの「イエス」・あげはの南国系）。ライム・ビスケットは発売章（第3章）を過ぎた第5章から並ぶ。
+  // 第2章の新入荷（いちごミルク・クラウドの「イエス」・あげはの南国系）。ライム・ビスケットは発売章（第3章）を過ぎた第5章から並ぶ。
   "milk", "cherry", "passion_fruit", "lime", "biscuit",
 ];
 export const WIDEHANGA_SHOP_NAME = `Dr.fookah ${CH2_CITY_NAME}店`;

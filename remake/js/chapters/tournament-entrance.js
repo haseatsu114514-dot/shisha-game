@@ -17,7 +17,7 @@ export const ENTRANCE_CARDS = Object.freeze({
   2: [
     { id: "ageha", ring: "MELTY PUFF の直感", note: "あげはは理屈より先に手が動く。あれを真似しようとするな" },
     { id: "kumicho", ring: "スジを通す煙", note: "神崎さんの煙は穏やかだ。派手さで勝とうとしたら負ける" },
-    { id: "rei", ring: "薔薇の余韻", note: "レヰは間で聴かせる。お前は自分の拍で作れ" },
+    { id: "rei", ring: "薔薇の余韻", note: "クラウドは間で聴かせる。お前は自分の拍で作れ" },
     { id: "hajime", ring: "県大会の挑戦者", note: "前の大会の自分と比べろ。隣は見なくていい" },
   ],
   3: [

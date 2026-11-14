@@ -68,7 +68,7 @@ NAME_TO_ID = {
     "神崎 竜二": "kumicho",
     "神崎竜二": "kumicho",
     "田中 健太": "rei",
-    "鴉葬レヰ": "rei",
+    "†玖羅雨℃†": "rei",
     "チャコール博士": "dr_kemuri",
     "チャコール博士 / 火浦 理一": "dr_kemuri",
     "黒葉 ましろ": "mashiro",
