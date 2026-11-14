@@ -249,7 +249,9 @@ await suite("affinity-gates", async check => {
         G.core.save(); G.core.load();
         const skipped = await G.romance.maybeConfession(() => { throw Error("Held confession played early"); });
         const saved = structuredClone(G.core.state);
-        G.core.state.day = 11; G.vn.vnTest.choose = () => 0;
+        // 恋人がいるので、告白を受ける前に迷いが2段入る（#3475）。旧来の「それでも、気持ちに応えたい」と同じく
+        // 迷いでは「それでも〜」を選ぶ（「いったん飲み込む」は元の返事へ戻り、先頭を選び続けると終わらない）。
+        G.core.state.day = 11; G.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(label => label.startsWith("それでも")));
         const confessed = await G.romance.maybeConfession(async () => {});
         return { legacy, oldFriend, guaranteed, publicBond, skipped, saved, confessed,
           accepted: G.core.state.lovers, pending: G.core.state.flags._confession_due ?? null };

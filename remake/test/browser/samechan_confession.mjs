@@ -110,8 +110,17 @@ await suite("samechan-confession", async check => {
         s.day++; const wait = await K.romance.maybeConfession(async () => {});
         s.day++; s.lovers.push("rio"); s.loveLevel.rio = 3; s.lovePts.rio = 34;
         s.loverSince.rio = 4; s.loveCarry.rio = 0.5;
-        const stay = await K.romance.maybeConfession(async () => {}), stayed = K.snap();
-        s.day += 3; K.vn.vnTest.choose = () => 0;
+        // 恋人がいる時は、交際の答えを選んだ直後に迷いが2段入る（#3475。夜の旧一段警告「今は目の前の人を大切にする」の
+        // 3日保留はこの共通の流れへまとめた）。1回目は「いったん、言葉を飲み込む」で元の質問へ戻り、
+        // 断りや友情を勝手に確定しないこと・罪悪感が増えないことを確かめてから、「それでも〜」で交際を確定する。
+        const asked = []; let cancelled = false, reasked = null;
+        K.vn.vnTest.choose = (_, labels) => {
+          asked.push(labels.slice());
+          const back = labels.indexOf("いったん、言葉を飲み込む");
+          if (back >= 0 && !cancelled) { cancelled = true; return back; }
+          if (cancelled && !reasked && labels[0]?.startsWith("好きです")) reasked = { guilt: s.guilt || 0, lovers: s.lovers.slice() };
+          return Math.max(0, labels.findIndex(label => label.startsWith("それでも")));
+        };
         const accept = await K.romance.maybeConfession(async () => {}), accepted = K.snap();
         const shuraba = await K.romance.maybeShuraba();
         const afterShuraba = K.snap();
@@ -119,12 +128,15 @@ await suite("samechan-confession", async check => {
         s.lovers.push("tsumugi"); const ch1Pair = await K.romance.maybeShuraba();
         const ch1Guilt = s.guilt, repeat = await K.romance.maybeShuraba();
         K.core.save(); K.core.load();
-        return { busy, defer, deferred, wait, stay, stayed, accept, accepted, shuraba, afterShuraba,
+        return { busy, defer, deferred, wait, asked, cancelled, reasked, accept, accepted, shuraba, afterShuraba,
           ch1Pair, ch1Guilt, repeat, loaded: K.snap() };
       });
-      assert(!r.busy && r.defer && !r.wait && r.stay && r.accept);
+      assert(!r.busy && r.defer && !r.wait && r.accept);
       assert.equal(r.deferred.flags._confession_due, "samechan"); assert.deepEqual(r.deferred.lovers, []);
-      assert.equal(r.stayed.guilt, 0); assert.deepEqual(r.stayed.lovers, ["rio"]);
+      // 迷いの1段目で飲み込むと、同じ告白の質問へ戻る（その時点で罪悪感も恋人も変わらない）
+      assert(r.cancelled, `hesitation was not offered: ${JSON.stringify(r.asked)}`);
+      assert.deepEqual(r.reasked, { guilt: 0, lovers: ["rio"] });
+      assert(r.asked.some(labels => labels.includes("それでも、付き合うと伝える")), JSON.stringify(r.asked));
       assert.deepEqual(r.accepted.lovers, ["rio", "samechan"]); assert.equal(r.accepted.guilt, 3);
       assert.equal(r.accepted.loveLevel.rio, 3); assert.equal(r.accepted.lovePts.rio, 34);
       assert.equal(r.accepted.loveCarry.rio, 0.5); assert.equal(r.accepted.loverSince.rio, 4);

@@ -258,7 +258,8 @@ try {
         friend.day += 4;
         const friendLime = bonds.friendMessages().map((m) => m.sender);
         await bonds.playFriendHangout("hiyori");
-        const friendInner = vn.backlog().some((l) => l.inner?.includes("会社の電話"));
+        // 1回目の友人の一服は hangouts[0]。#3546 の添削で並びが入れ替わり、1本目は「休演」の回（心の声は空いたグラス）になった
+        const friendInner = vn.backlog().some((l) => l.inner?.includes("空いたグラス見つけちゃった"));
         return { missing, workTooEarly, beforeEnd, concurrent, replay, stablePts, story, heartsDone, withoutGift, romantic, lovers, publicUnchanged, dateInner, friendRoute, noConfession, friendLime, friendInner };
       } finally {
         data.DB.hiyori = original;

@@ -24,6 +24,23 @@ recordPlayMastery(s,'axe',axe(.62),'4');
 assert(masteryRecord(s,'axe').done);
 const fast=core.newState();recordPlayMastery(fast,'axe',axe(.8),'1');assert(masteryRecord(fast,'axe').done);
 const practice=core.newState();recordPlayMastery(practice,'axe',{...axe(1),throwCount:3,throws:[{},{},{}]},'1');assert(!masteryRecord(practice,'axe').done);
+{
+ // 通知は進み具合が変わった時だけ。数えない記録（3投練習・基準に届かない投げ・認定後の遊び）のたびには出さない。
+ const seen=[];const off=on('play-mastery',e=>seen.push(e));
+ const n=core.newState();
+ recordPlayMastery(n,'axe',{...axe(1),throwCount:3,throws:[{},{},{}]},'p1');
+ recordPlayMastery(n,'axe',axe(.45),'p2');
+ assert.equal(seen.length,0,'practice and below-line throws change nothing, so no notice');
+ recordPlayMastery(n,'axe',axe(.62),'p3');
+ assert.equal(seen.length,1);assert.equal(seen[0].newly,false,'progress 1/3 notifies once');
+ recordPlayMastery(n,'axe',axe(.8),'p4');
+ assert.equal(seen.length,2);assert.equal(seen[1].newly,true,'new mastery notifies as newly mastered');
+ recordPlayMastery(n,'axe',axe(.9),'p5');
+ const afterCount=seen.length;assert.equal(masteryRecord(n,'axe').count,3,'the count still fills up to 3/3 after mastery');
+ recordPlayMastery(n,'axe',axe(.9),'p6');recordPlayMastery(n,'axe',axe(1),'p7');
+ assert.equal(seen.length,afterCount,'once nothing more can change, further games do not notify');
+ if(typeof off==='function')off();
+}
 for(const set of [1,1]) recordDjResult(s,{set,rank:'A',total:75,floor:50});
 assert.equal(masteryRecord(s,'dj').count,1);
 recordDjResult(s,{set:2,rank:'A',total:75,floor:50});assert(masteryRecord(s,'dj').done);

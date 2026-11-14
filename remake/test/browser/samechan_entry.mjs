@@ -120,6 +120,10 @@ await suite("samechan-entry", async check => {
         saved.affinity.samechan = 66; saved.lovers = ["rio"]; saved.lovePts.rio = 40;
         delete saved.romanceChoices;
         localStorage.setItem(K.core.SAVE_KEY, JSON.stringify(saved)); K.core.load();
+        // 恋人（凛想）がいるので、サメちゃんへの好意の答えの前に迷いが2段入る（#3475）。
+        // 「いったん飲み込む」は元の質問へ戻るため、常に先頭を選ぶと同じ質問を繰り返し続ける。
+        // 迷いでは「それでも〜」を選び、これまでどおり先頭の答えを確定させる。
+        K.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(label => label.startsWith("それでも")));
         const before = K.snapshot(), first = K.samechan.samechanVisitDialogue();
         await K.visit(); const afterSeat = K.snapshot();
         await K.visit(1); await K.visit(); const after = K.snapshot();

@@ -1,10 +1,10 @@
 /* 両案共通の意味を持つ SVG しるし。文字と数値は元の DOM を使う。 */
+/* 拡大札の絵の欄は 112px まで。文が長い札（風防・追い炭・葉の札など）は、文が切れないぶんだけ絵の欄を縮める（48px まで） */
 .ichi-game:is(:not([data-skin]), [data-skin="a"], [data-skin="b"]) .ichi-card.s-big { gap: 4px; padding: 10px; }
-.ichi-game:is(:not([data-skin]), [data-skin="a"], [data-skin="b"]) .ichi-card.s-big:not(.t-flavor) { grid-template-rows: auto 112px auto minmax(0, 1fr) auto; }
-.ichi-game:is(:not([data-skin]), [data-skin="a"], [data-skin="b"]) .ichi-card.s-big.t-flavor { grid-template-rows: auto 112px auto 12px minmax(0, 1fr) auto; }
+.ichi-game:is(:not([data-skin]), [data-skin="a"], [data-skin="b"]) .ichi-card.s-big:not(.t-flavor) { grid-template-rows: auto minmax(48px, 112px) auto minmax(min-content, 1fr) auto; }
+.ichi-game:is(:not([data-skin]), [data-skin="a"], [data-skin="b"]) .ichi-card.s-big.t-flavor { grid-template-rows: auto minmax(48px, 112px) auto 12px minmax(min-content, 1fr) auto; }
 .ichi-game:is(:not([data-skin]), [data-skin="a"], [data-skin="b"]) .ichi-card.s-big .ichi-card-text { min-height: 0; font-size: 14px; line-height: 1.36; padding: 6px 8px; }
 .ichi-game:is(:not([data-skin]), [data-skin="a"], [data-skin="b"]) .ichi-card.s-big.t-person .ichi-card-art .m-face { object-fit: contain; }
-.ichi-game:is(:not([data-skin]), [data-skin="a"], [data-skin="b"]) .ichi-gem { position: relative; }
 .ichi-game:is(:not([data-skin]), [data-skin="a"], [data-skin="b"]) .ichi-gem::before { content: ""; position: absolute; right: 1px; top: 1px; width: 8px; height: 8px; background: currentColor; opacity: .95; mask: var(--sign) center / contain no-repeat; pointer-events: none; }
 .ichi-game:is(:not([data-skin]), [data-skin="a"], [data-skin="b"]) .ichi-gem.is-cost { --sign: url("../img/ui/ichidai/signs/firepower.svg"); }
 .ichi-game:is(:not([data-skin]), [data-skin="a"], [data-skin="b"]) .ichi-gem.is-heat { --sign: url("../img/ui/ichidai/signs/heat.svg"); }

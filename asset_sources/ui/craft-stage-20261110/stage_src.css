@@ -294,7 +294,8 @@
 &phone .fr-name .fr-feature b { font-size: 26px; }
 &phone .fr-reg { grid-row: 2 !important; grid-column: 2 / -1 !important; }
 &phone .fr-mastery { grid-row: 3 !important; grid-column: 2 !important; }
-&phone .fr-ratio { grid-row: 4 !important; grid-column: 2 !important; min-height: 0 !important; }
+/* 比率の行は空の間も1行ぶん取っておく（1g目で比率が出ても行の中身が動かない。play_feedback の mix-reserves-ratio-space）。 */
+&phone .fr-ratio { grid-row: 4 !important; grid-column: 2 !important; min-height: 1.25em !important; }
 &phone .flavor-row :is(.fr-reg, .fr-mastery, .fr-ratio) { font-size: 22px !important; line-height: 1.25 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 &phone .fr-btn { grid-row: 3 / 5 !important; width: 60px !important; height: 60px !important; min-width: 0 !important; }
 &phone .fr-btn:first-of-type { grid-column: 3 !important; }
@@ -386,6 +387,8 @@
 & .pull-btns.with-options > .btn .btn-label { font-size: 18px !important; line-height: 1.1; }
 & .pull-btns > .btn .pull-serve-icon { display: none !important; }
 & .fr-name :is(.fr-reg, .fr-mastery, .fr-ratio) { font-size: 17px !important; line-height: 1.25 !important; margin: 0 !important; }
+/* 17px・行高1.25の比率は21.25px。空の間の取り置き（craft.css の21px）も同じ高さにする。 */
+& .fr-name .fr-ratio { min-height: 1.25em; }
 
 /* ==========================================================================
    絵の部品。CSL16 で夜紫の部品（../img/ui/craft-stage/）を当て、CSL18 でオーナーが選んだ方向B「ガラスと革」

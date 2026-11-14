@@ -707,11 +707,11 @@
     },
     {
       "id": "ichidai",
-      "title": "Card game Ichidai Shobu: standalone page (setup, embers, prep, serve, judge, help, quit, touch) and the in-game tonari entry (off by default, record saved, no time used) (ICG)",
+      "title": "Card game Ichidai Shobu: standalone page (setup, embers, prep, serve, judge, help, quit, touch) and the in-game tonari entry (off by default, record saved, no time used, cards in the adopted design: signs, big-card face, leaf names) (ICG)",
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
-      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/daily/ichidai-table.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/css/ichidai-lines.css", "remake/js/daily/tonari.js", "remake/test/browser/ichidai.mjs", "remake/test/browser/ichidai_support.mjs"],
+      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/daily/ichidai-table.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/css/ichidai-skin-signs.css", "remake/css/ichidai-lines.css", "remake/js/daily/tonari.js", "remake/test/browser/ichidai.mjs", "remake/test/browser/ichidai_support.mjs"],
       "run": ["node remake/test/browser/ichidai.mjs"]
     },
     {
@@ -720,7 +720,7 @@
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
-      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/css/ichidai-lines.css", "data/dialogue/ichidai_lines.json", "remake/test/browser/ichidai_modes.mjs", "remake/test/browser/ichidai_support.mjs"],
+      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/css/ichidai-skin-signs.css", "remake/css/ichidai-lines.css", "data/dialogue/ichidai_lines.json", "remake/test/browser/ichidai_modes.mjs", "remake/test/browser/ichidai_support.mjs"],
       "run": ["node remake/test/browser/ichidai_modes.mjs"]
     },
     {
@@ -1819,7 +1819,8 @@
         "remake/js/daily/night-events.js",
         "remake/test/browser/ch2_*.mjs",
         "remake/test/ch2_progress.mjs",
-        "remake/test/ch2_followups.mjs"
+        "remake/test/ch2_followups.mjs",
+        "remake/js/main.js"
       ],
       "run": [
         "node remake/test/browser/ch2_tournament.mjs",
@@ -2437,7 +2438,8 @@
         "remake/test/browser/worker_scenes.mjs",
         "remake/test/browser/craft_readiness.mjs",
         "remake/test/foil_holes.mjs",
-        "remake/test/browser/foil_skip.mjs"
+        "remake/test/browser/foil_skip.mjs",
+        "remake/js/main.js"
       ],
       "run": [
         "node remake/test/browser/worker_scenes.mjs",
@@ -2650,7 +2652,9 @@
         "remake/js/core/scene-art.js",
         "remake/js/daily/shop.js",
         "remake/css/shop.css",
-        "remake/test/browser/visual_continuity_3203.mjs"
+        "remake/test/browser/visual_continuity_3203.mjs",
+        "remake/js/daily/shop-greeting.js",
+        "remake/test/browser/shop_greeting_reader.mjs"
       ],
       "run": [
         "node remake/test/browser/visual_continuity_3203.mjs"
@@ -3120,7 +3124,9 @@
         "remake/test/navigation_transitions.mjs",
         "remake/test/load_recorder.mjs",
         "remake/tools/load-recorder.mjs",
-        "remake/tools/measure_load.mjs"
+        "remake/tools/measure_load.mjs",
+        "remake/js/daily/shop-greeting.js",
+        "remake/test/browser/shop_greeting_reader.mjs"
       ],
       "run": [
         "node remake/test/load_recorder.mjs",
@@ -3265,7 +3271,8 @@
         "data/dialogue/*samechan*.json",
         "remake/js/daily/romance.js",
         "remake/test/browser/ch1_feedback.mjs",
-        "remake/test/relationship_memories.mjs"
+        "remake/test/relationship_memories.mjs",
+        "remake/css/craft-stage.css"
       ],
       "run": [
         "node remake/test/browser/play_feedback.mjs",
@@ -3341,7 +3348,7 @@
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
-      "paths": ["remake/js/core/rotate-guard.js", "remake/css/base.css", "remake/js/daily/shop.js", "remake/test/browser/portrait_shop_fallback.mjs"],
+      "paths": ["remake/js/core/rotate-guard.js", "remake/css/base.css", "remake/js/daily/shop.js", "remake/test/browser/portrait_shop_fallback.mjs", "remake/js/daily/shop-greeting.js", "remake/test/browser/shop_greeting_reader.mjs"],
       "run": ["node remake/test/browser/portrait_shop_fallback.mjs"]
     },
     {
@@ -3617,7 +3624,9 @@
         "remake/test/browser/home_practice_leaves.mjs",
         "remake/js/daily/practice*.js",
         "remake/test/ui_polish.mjs",
-        "remake/css/wide-screens.css"
+        "remake/css/wide-screens.css",
+        "remake/css/vn-composition.css",
+        "remake/css/vn.css"
       ],
       "run": [
         "node remake/test/browser/title_layout.mjs",
@@ -3739,7 +3748,9 @@
         "remake/css/facility-icons.css",
         "remake/facility-icons-preview.html",
         "assets/ui/map-facilities-*.webp",
-        "remake/css/wide-screens.css"
+        "remake/css/wide-screens.css",
+        "remake/js/daily/shop-greeting.js",
+        "remake/test/browser/shop_greeting_reader.mjs"
       ],
       "run": [
         "node remake/test/store_logos.mjs",
@@ -5071,7 +5082,9 @@
         "remake/js/scenes/title.js",
         "remake/js/core/ui.js",
         "remake/test/browser/look_chapter_seeds.mjs",
-        "remake/test/browser/look_neo_portrait.mjs"
+        "remake/test/browser/look_neo_portrait.mjs",
+        "remake/js/daily/shop-greeting.js",
+        "remake/test/browser/shop_greeting_reader.mjs"
       ],
       "run": [
         "node remake/test/browser/look_neo_portrait.mjs"
