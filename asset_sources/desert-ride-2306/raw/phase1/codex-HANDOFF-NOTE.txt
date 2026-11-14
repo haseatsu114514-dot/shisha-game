@@ -1,1 +1,0 @@
-Public candidate handoff: NOT ADOPTED. Reference artwork bytes excluded. README references/ describes local generation provenance only, not contents of this transfer. Original candidate PNG bytes preserved. SHA256SUMS regenerated for this transfer. No game integration or PC/mobile gameplay QA.

@@ -1,1 +1,0 @@
-Noor DSR11 / PR2382: person and background REVIEW candidates, NOT ADOPTED. Two candidates have separate QA. Reference-image bytes excluded. See person/README.md and background/README.md. Do not adopt or integrate automatically.
