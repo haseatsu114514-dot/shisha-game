@@ -15,9 +15,8 @@ const GAMES = [
     return (await import("../minigames/tetsuko-time.js")).openTetsukoTime({ value, visitKey: "debug", signal });
   } },
   // ボドゲカフェは、本編と同じ本棚と卓を使い捨ての状態で開く試遊（TRF21。URL の ?trial=trpg と同じもの）。
-  { id: "trpg", label: "ボドゲカフェ（昼・七つの灯り）", start: async (host, signal) =>
-    (await import("../trpg/trial.js")).mountTrpgTrial(host, { preset: "noon", signal, exitLabel: "試遊を閉じる" }).finished },
-  { id: "trpg-night", label: "TRPG（夜・物語）", start: async (host, signal) =>
+  // 入口は1つに統一し、夜・物語（ready）から始める。昼（noon）は中の「試遊の設定」から選び直せる。
+  { id: "trpg", label: "ボドゲカフェ（TRPG）", start: async (host, signal) =>
     (await import("../trpg/trial.js")).mountTrpgTrial(host, { preset: "ready", signal, exitLabel: "試遊を閉じる" }).finished },
 ];
 

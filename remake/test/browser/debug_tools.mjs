@@ -13,7 +13,7 @@ await suite("debug-tools", async check => {
     const games = [
       ["axe", "axe-game"], ["camel", "camel-game"], ["desert", "desert-ride"],
       ["dj-1", "dj-frame"], ["dj-2", "dj-frame"], ["dj-3", "dj-frame"],
-      ["tetsuko", "tetsuko-cat"], ["trpg", "trpg-day-trial"], ["trpg-night", "trpg-play-ordinary-cup"], ["ichidai", "ichi-game"],
+      ["tetsuko", "tetsuko-cat"], ["trpg", "trpg-play-ordinary-cup"], ["ichidai", "ichi-game"],
     ];
     await page.evaluate(() => localStorage.setItem("suien_remake_save", '{"debugSentinel":true}'));
     for (const [id, screen] of games) {
@@ -24,7 +24,7 @@ await suite("debug-tools", async check => {
       assert.equal(await close.isVisible(), false, `${id}: no return button is overlaid on the game`);
       assert.equal(await close.evaluate(node => node.parentElement.dataset.test), "debug-panel");
       assert.match(await page.locator(t("debug-toggle")).innerText(), /終了/, "the visible toggle tells how to exit");
-      if (id === "trpg-night") {
+      if (id === "trpg") {
         assert.ok(await page.locator(t(screen)).isEnabled(), "night debug has an actual playable story");
         await page.locator(t(screen)).click();
         await page.locator(t("trpg-skip")).click(); // 初回の店長の説明は残し、ここでは表紙へ進める
