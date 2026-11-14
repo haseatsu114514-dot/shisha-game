@@ -1,5 +1,0 @@
-NOT ADOPTED. Reference image bytes and reference-comparison QA sheets excluded; textual QA/provenance retained. Candidate PNG bytes unchanged. Checksum list regenerated for this public transfer. Full game PC/mobile QA not done. Cutin2269: ALL NOT APPROVED; NEVER SET READY.
-Excluded paths:
-references/ageha-v1.png
-references/hajime-pr2306.png
-references/minto-service-v2.png
