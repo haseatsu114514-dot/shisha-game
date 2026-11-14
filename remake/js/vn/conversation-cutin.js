@@ -33,6 +33,9 @@ export const KINDS = {
 // 置き場（#2990 の配置判断）。id は Issue の案番号（5b・4m は同じ見せ方の別場面）
 export const CUES = [
   { id: "2a", kind: "2a", dialogue: "ch2_tsumugi_color", speaker: "tsumugi", face: "sad", text: "はい。……お水が要る顔でした" },
+  // #3660: 序盤のアピール用（2026-11-15 オーナー指示）。最初の場面と、つむぎ初回の会話にも置く
+  { id: "3", kind: "3", dialogue: "ch1_opening", speaker: "hajime", face: "serious", text: "なんか、負けられないなあ" },
+  { id: "2a", kind: "2a", dialogue: "ch1_tsumugi_first", speaker: "tsumugi", face: "surprise", text: "……猫です。葉っぱと煙が、ついてるだけで" },
   { id: "2c", kind: "2c", dialogue: "ch1_tsumugi_third", speaker: "tsumugi", face: "surprise", text: "……急に、そんな顔しないでください" },
   { id: "5", kind: "5", dialogue: "samechan_bond_finale", speaker: "hajime", face: "smile", text: "大事に使います。ありがとうございます" },
   { id: "5b", kind: "5", dialogue: "ch1_sumi_bond_finale", speaker: "hajime", face: "smile", text: "……ありがとうございます。大事に使います" },
