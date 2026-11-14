@@ -43,7 +43,7 @@
 | 11 | 〃 | 自由行動 | 自由行動 | つむぎの応募（`_ev_tsumugi_sketch`） | — |
 | 12 | 〃 | 自由行動 | 自由行動 | なし | — |
 | 13 | 〃 | 自由行動 | 自由行動 | 大会前夜（`_ev_rehearsal`、`lastNight`） | つむぎの絵→過ごし方の選択（`ch1_day7_last_night`）。practice=本番通し＋2調整リハ（`rehearsal` `ch1.js:415`、冒頭で `prepareFlavorStock`）／drill／sleep_early（全回復） |
-| 14 | DAYカード・応援LIME | 大会本番（4ラウンド：組み立て→提供→調整×2） | — | — | **規則 recap**（`ch1_tournament_rule_recap` `ch1.js:494-500`）。レモン<12なら**当日朝の救済**（`remake_flavor_rescue`＋`addFlavorStock` `ch1.js:473-476`）。優勝賞金 `PRIZE=30000` |
+| 14 | DAYカード・応援LIME | 大会本番（4ラウンド：組み立て→提供→調整×2） | — | — | **規則 recap**（`ch1_tournament_rule_recap` `ch1.js:494-500`）。レモン<12なら**当日朝の救済**（`remake_flavor_rescue`＋`addFlavorStock` `ch1.js:473-476`）。優勝賞金 `PRIZE=50000` |
 
 補足:
 - 「自由行動」は slot0/slot1 の2枠で任意のスポットへ。tonari を選ぶと `tonariMenu`（`tonari.js:25-50`）で「お客さんとして一服／まかないで練習／シフトに入る／（条件付き）ひよりと斧投げ」。
