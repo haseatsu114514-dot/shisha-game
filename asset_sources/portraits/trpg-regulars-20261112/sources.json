@@ -1,0 +1,245 @@
+{
+  "issue": 3503,
+  "base_main": "3da1f351338b16b970a90215dfd141df09fdbff5",
+  "status": "unselected candidates; no game references changed",
+  "references": [
+    {
+      "id": "sui",
+      "path": "assets/sprites/characters/sui/chr_sui_normal.png",
+      "sha256": "c29ed0b480b049f2dd069ff401abd7e702b0825449ed9652e1d8768772778ba1",
+      "size": [
+        896,
+        1200
+      ],
+      "alpha_bounds_ge16": [
+        241,
+        60,
+        625,
+        1172
+      ],
+      "source": "3da1f351338b16b970a90215dfd141df09fdbff5",
+      "role": "proportions only"
+    },
+    {
+      "id": "rio",
+      "path": "assets/sprites/characters/rio/chr_rio_normal.png",
+      "sha256": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+      "size": [
+        896,
+        1200
+      ],
+      "alpha_bounds_ge16": [
+        279,
+        173,
+        608,
+        1173
+      ],
+      "source": "3da1f351338b16b970a90215dfd141df09fdbff5",
+      "role": "proportions only"
+    },
+    {
+      "id": "minto",
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "sha256": "7a778a53e35050f7daf38d08a16ec3ff9cbf0b506324a01aa6770c47ec6c8d71",
+      "size": [
+        896,
+        1200
+      ],
+      "alpha_bounds_ge16": [
+        348,
+        239,
+        668,
+        1176
+      ],
+      "source": "3da1f351338b16b970a90215dfd141df09fdbff5",
+      "role": "style only"
+    },
+    {
+      "id": "ageha",
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "sha256": "4feae480de82264133aa3e4170c58318748b314e1a4c14c8de5199f68964ccfe",
+      "size": [
+        896,
+        1200
+      ],
+      "alpha_bounds_ge16": [
+        296,
+        203,
+        681,
+        1176
+      ],
+      "source": "3da1f351338b16b970a90215dfd141df09fdbff5",
+      "role": "style only"
+    }
+  ],
+  "lineup": [
+    {
+      "id": "sui",
+      "path": "assets/sprites/characters/sui/chr_sui_normal.png",
+      "sha256": "c29ed0b480b049f2dd069ff401abd7e702b0825449ed9652e1d8768772778ba1",
+      "size": [
+        896,
+        1200
+      ],
+      "alpha_bounds_ge16": [
+        241,
+        60,
+        625,
+        1172
+      ],
+      "source": "3da1f351338b16b970a90215dfd141df09fdbff5",
+      "role": "proportions only",
+      "points": {
+        "crown": [
+          406,
+          64
+        ],
+        "chin": [
+          414,
+          224
+        ],
+        "cheeks": [
+          371,
+          461,
+          168
+        ]
+      }
+    },
+    {
+      "id": "rio",
+      "path": "assets/sprites/characters/rio/chr_rio_normal.png",
+      "sha256": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+      "size": [
+        896,
+        1200
+      ],
+      "alpha_bounds_ge16": [
+        279,
+        173,
+        608,
+        1173
+      ],
+      "source": "3da1f351338b16b970a90215dfd141df09fdbff5",
+      "role": "proportions only",
+      "points": {
+        "crown": [
+          404,
+          176
+        ],
+        "chin": [
+          423,
+          329
+        ],
+        "cheeks": [
+          371,
+          454,
+          295
+        ]
+      }
+    },
+    {
+      "id": "regulara",
+      "path": "asset_sources/portraits/trpg-regulars-20261112/delivery/chr_regulara_normal.png",
+      "size": [
+        896,
+        1200
+      ],
+      "alpha_bounds_ge16": [
+        270,
+        60,
+        625,
+        1140
+      ],
+      "points": {
+        "crown": [
+          432.711,
+          66.395
+        ],
+        "chin": [
+          425.605,
+          220.579
+        ],
+        "eyes": [
+          [
+            398.605,
+            150.237
+          ],
+          [
+            437.684,
+            147.395
+          ]
+        ],
+        "cheeks": [
+          386.526,
+          468.947,
+          168.711
+        ]
+      }
+    },
+    {
+      "id": "regularb",
+      "path": "asset_sources/portraits/trpg-regulars-20261112/delivery/chr_regularb_normal.png",
+      "size": [
+        896,
+        1200
+      ],
+      "alpha_bounds_ge16": [
+        299,
+        60,
+        596,
+        1140
+      ],
+      "points": {
+        "crown": [
+          457.049,
+          60.732
+        ],
+        "chin": [
+          450.463,
+          204.878
+        ],
+        "eyes": [
+          [
+            425.585,
+            156.585
+          ],
+          [
+            468.756,
+            147.073
+          ]
+        ],
+        "cheeks": [
+          421.195,
+          487.78,
+          169.024
+        ]
+      }
+    }
+  ],
+  "generations": [
+    {
+      "candidate": "regulara",
+      "version": 1,
+      "tool_file": "exec-942cca0a-c274-47c1-8031-a6f0b0a9d8cb.png",
+      "status": "superseded; cutout refinement attempted"
+    },
+    {
+      "candidate": "regularb",
+      "version": 1,
+      "tool_file": "exec-26a75a93-1bd8-41c3-a0b6-3bfc3688b583.png",
+      "status": "rejected; head larger than standard class"
+    },
+    {
+      "candidate": "regulara",
+      "version": 2,
+      "tool_file": "exec-94855bf9-9259-461c-9359-d301e241e3c2.png",
+      "status": "final unselected candidate"
+    },
+    {
+      "candidate": "regularb",
+      "version": 2,
+      "tool_file": "exec-e174a486-c908-47b4-9e80-b674537c95da.png",
+      "status": "final unselected candidate"
+    }
+  ]
+}

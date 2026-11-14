@@ -1,0 +1,124 @@
+{
+  "baseMain": "3da1f351338b16b970a90215dfd141df09fdbff5",
+  "mode": "local route overrides, candidate art and measured crops only",
+  "results": [
+    {
+      "label": "pc",
+      "errors": [],
+      "failedResources": [],
+      "captured": [
+        "cover",
+        "regulara",
+        "regularb"
+      ],
+      "snapshot": {
+        "scenarioId": "regular-harbor",
+        "version": 2,
+        "seed": 17,
+        "phase": "listen",
+        "profileId": "quiet",
+        "clues": [],
+        "consulted": [],
+        "hypothesis": null,
+        "plan": {
+          "aroma": null,
+          "seat": null,
+          "approach": null,
+          "tactic": null
+        },
+        "pressure": 0,
+        "teamwork": 2,
+        "heat": 0,
+        "momentum": 0,
+        "heatLog": [],
+        "extraQuestions": 0,
+        "hints": {},
+        "used": {
+          "hajime": false,
+          "regulara": false,
+          "regularb": false
+        },
+        "acted": {},
+        "checks": [],
+        "pending": null,
+        "asked": [],
+        "search": null,
+        "pc": {
+          "name": "フィン",
+          "title": "見習い店番",
+          "archetype": "apprentice",
+          "stats": {
+            "eye": 3,
+            "hand": 2,
+            "talk": 4,
+            "nerve": 2
+          }
+        },
+        "companions": {
+          "regulara": "pippin",
+          "regularb": "leaf"
+        }
+      },
+      "status": "passed"
+    },
+    {
+      "label": "touch",
+      "errors": [],
+      "failedResources": [],
+      "captured": [
+        "cover",
+        "regulara",
+        "regularb"
+      ],
+      "snapshot": {
+        "scenarioId": "regular-harbor",
+        "version": 2,
+        "seed": 17,
+        "phase": "listen",
+        "profileId": "quiet",
+        "clues": [],
+        "consulted": [],
+        "hypothesis": null,
+        "plan": {
+          "aroma": null,
+          "seat": null,
+          "approach": null,
+          "tactic": null
+        },
+        "pressure": 0,
+        "teamwork": 2,
+        "heat": 0,
+        "momentum": 0,
+        "heatLog": [],
+        "extraQuestions": 0,
+        "hints": {},
+        "used": {
+          "hajime": false,
+          "regulara": false,
+          "regularb": false
+        },
+        "acted": {},
+        "checks": [],
+        "pending": null,
+        "asked": [],
+        "search": null,
+        "pc": {
+          "name": "フィン",
+          "title": "見習い店番",
+          "archetype": "apprentice",
+          "stats": {
+            "eye": 3,
+            "hand": 2,
+            "talk": 4,
+            "nerve": 2
+          }
+        },
+        "companions": {
+          "regulara": "pippin",
+          "regularb": "leaf"
+        }
+      },
+      "status": "passed"
+    }
+  ]
+}
