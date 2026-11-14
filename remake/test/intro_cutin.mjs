@@ -90,7 +90,7 @@ try {
   // 1a) 名前の書き方: 「漢字《よみ》」でふりがな、「｜」で範囲を明示、半角空白は苗字と名前のあいだの小さな空き
   const split = await page.evaluate(async () => {
     const { nameParts, plainName } = await import("./js/vn/intro-art.js");
-    const cases = ["綾取《あやとり》 陣《じん》", "神崎《かんざき》 竜二《りゅうじ》（組長《くみちょう》）", "†玖羅雨℃†《くらうど》", "占《うらな》いオババ", "あげは"];
+    const cases = ["綾取《あやとり》 陣《じん》", "神崎《かんざき》 竜二《りゅうじ》（組長《くみちょう》）", "｜†玖羅雨℃†《くらうど》", "占《うらな》いオババ", "あげは"];
     return cases.map((text) => ({ parts: nameParts(text), plain: plainName(text) }));
   });
   assert.deepEqual(split, [
