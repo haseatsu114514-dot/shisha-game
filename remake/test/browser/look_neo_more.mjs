@@ -61,6 +61,36 @@ const ART_FILES = [];
   assert(ART_FILES.length >= 4, "絵の部品を読めている");
 }
 
+/** 絵の部品（look-neo-art.css）だけを外す／戻す。
+ * CSS バンドル化（#3631）で個別の link は無くなったため、外す時は対象を含むバンドルを無効化し、
+ * bundles.json の同じセグメントから look-neo-art.css 以外を個別 link で読み直す（カスケードの順序は保たれる）。
+ * 戻す時は個別 link を消してバンドルを有効化する。 */
+async function setNeoArt(page, enabled) {
+  await page.evaluate(async (enabled) => {
+    const ART = "look-neo-art.css";
+    const data = await (await fetch("css/bundles.json")).json();
+    const seg = data.segments.find((s) => s.files.includes(ART));
+    const bundle = document.querySelector(`link[href*="${seg.out}"]`);
+    const settle = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    if (enabled) {
+      document.querySelectorAll("link[data-neo-art-off]").forEach((n) => n.remove());
+      if (bundle) bundle.disabled = false;
+      await settle();
+      return;
+    }
+    if (bundle) bundle.disabled = true;
+    await Promise.all(seg.files.filter((f) => f !== ART).map((f) => new Promise((resolve) => {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = `css/${f}`;
+      link.dataset.neoArtOff = "1";
+      link.onload = link.onerror = () => resolve();
+      document.head.appendChild(link);
+    })));
+    await settle();
+  }, enabled);
+}
+
 /** 見出しの下の飾り罫（LK19 第2弾）: 元の金の線（グラデーション）の上に絵が重なり、絵を外すと線だけ。見出しの箱の大きさは変わらない。 */
 async function headingRule(page, selector) {
   const read = () => page.locator(selector).first().evaluate((node) => {
@@ -68,9 +98,9 @@ async function headingRule(page, selector) {
     return { image: cs.backgroundImage, rect: [r.left, r.top, r.width, r.height].map((v) => Math.round(v * 10) / 10) };
   });
   const now = await read();
-  await page.evaluate(() => { document.querySelector('link[href*="look-neo-art.css"]').disabled = true; });
+  await setNeoArt(page, false);
   const plain = await read();
-  await page.evaluate(() => { document.querySelector('link[href*="look-neo-art.css"]').disabled = false; });
+  await setNeoArt(page, true);
   assert(now.image.includes("img/ui/neo/heading-rule.webp") && now.image.includes("linear-gradient") && now.image.includes("227, 189, 110"),
     `${selector}: 金の線に飾り罫の絵が重なる ${now.image}`);
   assert(!plain.image.includes("heading-rule") && plain.image.includes("227, 189, 110"), `${selector}: 絵を外すと元の金の線 ${plain.image}`);
@@ -468,9 +498,9 @@ await suite("look-neo-more", async (check) => {
       return { frame: cs.borderImageSource, slice: cs.borderImageSlice, border: cs.borderTopWidth, rect: [r.left, r.top, r.width, r.height].map((v) => Math.round(v * 10) / 10) };
     });
     const withoutArt = async (selector) => {
-      await page.evaluate(() => { document.querySelector('link[href*="look-neo-art.css"]').disabled = true; });
+      await setNeoArt(page, false);
       const plain = await art(selector);
-      await page.evaluate(() => { document.querySelector('link[href*="look-neo-art.css"]').disabled = false; });
+      await setNeoArt(page, true);
       return plain;
     };
     // 設定の小窓: 板の絵と、金の「閉じる」。重ねても箱の大きさは同じ（縁の幅は 0 のまま）。
@@ -522,9 +552,9 @@ await suite("look-neo-more", async (check) => {
         rule: [after.top, after.height, after.backgroundImage], narration: box.classList.contains("narration") };
     });
     const speech = await band();
-    await page.evaluate(() => { document.querySelector('link[href*="look-neo-art.css"]').disabled = true; });
+    await setNeoArt(page, false);
     const plainBand = await band();
-    await page.evaluate(() => { document.querySelector('link[href*="look-neo-art.css"]').disabled = false; });
+    await setNeoArt(page, true);
     assert(speech.image.includes("img/ui/neo/heading-rule.webp") && speech.image.includes("img/ui/neo/band-smoke.webp"), `会話の帯に煙と飾り罫 ${JSON.stringify(speech)}`);
     assert(speech.image.includes("linear-gradient") && !plainBand.image.includes("img/ui/neo/"), "帯の暗いグラデーションは残し、絵を外すと元の帯だけ");
     assert.deepEqual(speech.rect, plainBand.rect, "絵を重ねても会話の帯の位置と大きさは変わらない");
