@@ -61,25 +61,26 @@ const pips = (n, total, label) => el("span.dm-pips", { role: "img", "aria-label"
  * @param o.canSave () => boolean。手動セーブ・タイトルへ戻る前の保存ができる時か（日常では地図で行き先を選んでいる時）
  * @param o.current () => boolean。開いた場面がまだ続いているか（違えば操作を走らせない）
  * @param o.leave () => void。ロード・タイトルへ戻るで再読み込みする直前の後片付け
+ * @param o.saveRule セーブできる場面と再開地点の説明
  */
-export async function openMenu({ tab = "status", canSave = () => true, current = () => true, leave = () => {} } = {}) {
+export async function openMenu({ tab = "status", canSave = () => true, current = () => true, leave = () => {}, saveRule = SAVE_RULE } = {}) {
   if (busy || !state || !layers.modal) return null;
   busy = true;
   const owner = state;
   try {
     SE.select();
     // 紙の絵（img/ui/paper/menu-bg.webp）は起動時に他のUIの絵と一緒に読んである（core/ui.js）。読めなくても同じ色の紙と帯で開く。
-    const action = await showMenu(MENU_TABS.some((t) => t.id === tab) ? tab : "status", { saveOk: !!canSave() });
+    const action = await showMenu(MENU_TABS.some((t) => t.id === tab) ? tab : "status", { saveOk: !!canSave(), saveRule });
     if (!action || state !== owner || !current()) return null;
-    await runAction(action, { canSave, leave });
+    await runAction(action, { canSave, leave, saveRule });
     return action;
   } finally { busy = false; }
 }
 
-async function runAction(action, { canSave, leave }) {
+async function runAction(action, { canSave, leave, saveRule }) {
   if (action === "save") {
-    // 会話や作業の途中の状態は残さない（#638）。ボタンは無効にしてあるが、開いた後に状況が変わった時も守る。
-    if (!canSave()) { toast(SAVE_RULE); return; }
+    // 開いた後に場面が変わった時も保存可否を確認する。大会作業台の保存は試合の開始地点から再開する。
+    if (!canSave()) { toast(saveRule); return; }
     await saveFlow();
   }
   if (action === "load") {
@@ -103,7 +104,7 @@ function menuOrigin() {
   return { x: Math.round((b.left + b.width / 2 - h.left) / k), y: Math.round((b.top + b.height / 2 - h.top) / k) };
 }
 
-function showMenu(initial, { saveOk }) {
+function showMenu(initial, { saveOk, saveRule }) {
   return new Promise((resolve) => {
     const previousFocus = document.activeElement;
     const tabs = new Map();
@@ -157,7 +158,7 @@ function showMenu(initial, { saveOk }) {
 
     const render = (id) => id === "people" ? peopleTab()
       : id === "items" ? itemsTab(openRecipe)
-      : id === "system" ? systemTab(choose, saveOk)
+      : id === "system" ? systemTab(choose, saveOk, saveRule)
       : statusTab(choose);
 
     const tablist = el("div.dm-tabs", { role: "tablist", "aria-label": "メニューのタブ", "aria-orientation": "vertical" },
@@ -490,16 +491,16 @@ function systemFullscreenButton() {
   return [button];
 }
 
-function systemTab(choose, saveOk) {
+function systemTab(choose, saveOk, saveRule) {
   return [
-    ...tabHeading("システム", ["行動のたびに自動でセーブされている。", SAVE_RULE, "タイトルへ戻ると、行動前のオートセーブから再開する。"], "system"),
+    ...tabHeading("システム", ["行動のたびに自動でセーブされている。", saveRule, "タイトルへ戻ると、行動前のオートセーブから再開する。"], "system"),
     el("div.dm-system", SYSTEM.map((s) => el(`button.dm-btn.dm-sys${s.primary ? ".primary" : ""}`, {
       type: "button", text: s.label, dataset: { test: `menu-${s.id}` },
       disabled: s.id === "save" && !saveOk,
       onclick: () => choose(s.id),
     })).concat(systemFullscreenButton())),
     // セーブできない時だけ理由を出す（いつも自動で保存されている説明は「?」へ）
-    saveOk ? null : el("p.dm-note", { dataset: { test: "menu-save-note" }, text: `今はセーブできない。${SAVE_RULE}` }),
+    saveOk ? null : el("p.dm-note", { dataset: { test: "menu-save-note" }, text: `今はセーブできない。${saveRule}` }),
   ];
 }
 
