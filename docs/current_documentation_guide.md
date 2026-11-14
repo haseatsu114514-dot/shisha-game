@@ -3,7 +3,7 @@
 ## 正本と優先順位
 
 1. 最新の明示的なオーナー指示と取得済み承認。依頼された仕様変更に再承認を求めない。結果を大きく変える曖昧さだけ確認する。
-2. 開発・Git安全ルール: `AGENTS.md` が唯一の正本。Claude Code は `CLAUDE.md` から読み込む。
+2. 開発・Git安全ルール: `AGENTS.md` が唯一の正本。Claude Code は `CLAUDE.md` から読み込む。作業別の詳細手順は [tools/agent_rules_reference.md](tools/agent_rules_reference.md)、自動チェックの担保範囲は [tools/checks_index.md](tools/checks_index.md)。
 3. 実際に動く現行コード・データ: `remake/`（起動・テストは [remake/README.md](../remake/README.md)）、`data/`（台詞・共有データ）、`assets/`（素材）。
 4. 仕様・オーナー要望: [master_spec.md](master_spec.md)（採用済みの最新仕様を新しい順に。2026-06 の第1〜4部は `archive/` へ移した）と [owner_requests.md](owner_requests.md)（2026-10 以降の新しい順の台帳。冒頭の「読み方」から。2026-09 以前は `archive/`）。
 5. 物語・人物: [brand/](../brand/README.md)（`story_and_structure.md`・`character_profiles.md`）と `data/characters.json`・`data/story_routes.json`。
@@ -36,7 +36,7 @@
 | [stat-design/](stat-design/SPEC.md) | 成長（経験値・レベル・心得の盤）の決定と仕様 | `ADDENDUM-BOARD-LAYOUT.md`、`SPEC.md` |
 | [prompts/](prompts/) | 画像・音・レビューの発注書とガイド（人やAIに渡す文面） | `asset_gen_prompts.md`、`image_generation_guide.md`、`bgm_suno_prompts.md`、`cg_production_plan.md`、`story_review_prompt.md` |
 | [marketing/](marketing/) | SNS・集客の運用ルール | `sns_operation.md` |
-| [tools/](tools/) | ツール・開発者コンソールの手引き（任意の試作ツールの説明もここ） | `text_editor_manual.md`、`dev_inspector.md`、`remake_browser_checks.md`、`sequential_merge.md` |
+| [tools/](tools/) | ツール・開発者コンソールの手引き（任意の試作ツールの説明もここ） | `text_editor_manual.md`、`dev_inspector.md`、`remake_browser_checks.md`、`sequential_merge.md`、`agent_rules_reference.md`、`checks_index.md` |
 | [design/](design/)・[reports/](reports/) | オーナー未決定の提案・設計案・調査（採用扱いにしない） | |
 | [archive/](archive/README.md) | 日付付きの引き継ぎ・計画・記録・二次資料（履歴。根拠にしない） | |
 | `qa/` | テストが読む基準ファイルだけ（検証記録は2026-11-02に削除。過去の記録はgit履歴にある） | |
