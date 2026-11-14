@@ -730,11 +730,16 @@
 /* 上はヘッダー、下は実況テロップを避けて流す。操作の邪魔をしない */
 .bc-lane { position: absolute; left: 0; right: 0; top: 76px; bottom: 145px; z-index: 6; overflow: hidden; pointer-events: none; user-select: none; container-type: inline-size;
   mask-image: linear-gradient(90deg, #000 0 36%, #000b 46% 96%, #000d 100%);
-  clip-path: polygon(0 0, calc(100% - 180px) 0, calc(100% - 180px) 80px, 100% 80px, 100% 100%, 0 100%); }
-/* ワイド時（#3007 の会話幅拡張に合わせる）: 弾幕の帯も横を少し使う。鮮明に見える範囲を右へ伸ばし、右上の切り欠きを少し狭める。通常時は上の形のまま */
+  /* 切り欠きは吸い出しのゾーンラベル2つを避ける形（#3558 項目3・2026-11-14 実測、舞台1280×720座標）。
+     ラベル実寸: 左「熱を逃がす吸い」x480〜692・右「熱を入れる吸い」x1044〜1256、どちらも y104〜174。
+     帯の原点（top:76px）から見た高さは 174-76=98px。周囲8pxの余白を足して深さ106px・左は472〜700px・右は右端から244pxを空ける。
+     以前の右上だけの切り欠き（180px×80px）はラベルより小さく、1行目のコメントがラベルの左端と下端に重なっていた。 */
+  clip-path: polygon(0 0, 472px 0, 472px 106px, 700px 106px, 700px 0, calc(100% - 244px) 0, calc(100% - 244px) 106px, 100% 106px, 100% 100%, 0 100%); }
+/* ワイド時（#3007 の会話幅拡張に合わせる）: 弾幕の帯も横を少し使う。鮮明に見える範囲を右へ伸ばす。
+   ゾーンラベルの位置はワイドでも同じため、切り欠きの形は通常時と共通にする */
 #stage[data-wide] .bc-lane {
   mask-image: linear-gradient(90deg, #000 0 48%, #000b 60% 96%, #000d 100%);
-  clip-path: polygon(0 0, calc(100% - 120px) 0, calc(100% - 120px) 80px, 100% 80px, 100% 100%, 0 100%); }
+  clip-path: polygon(0 0, 472px 0, 472px 106px, 700px 106px, 700px 0, calc(100% - 244px) 0, calc(100% - 244px) 106px, 100% 106px, 100% 100%, 0 100%); }
 .nico {
   position: absolute;
   left: 0;

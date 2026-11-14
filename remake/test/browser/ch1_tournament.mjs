@@ -271,6 +271,63 @@ await suite("ch1-tournament", async check => {
     assert.equal(await page.locator('.nico').count(), 0, "Old comments leaked after fast transition");
   });
 
+  // #3558 項目3: 吸い出しの結果確認で流れるコメントが、ゾーンラベル（熱を入れる吸い／熱を逃がす吸い）に重ならない。
+  // コメントは .bc-lane の clip-path で切り取られるので、ラベル矩形（帯座標）が多角形の外にあることを幾何で確かめる。
+  await check("pull-label-comment-clearance", async page => {
+    await init(page);
+    await page.evaluate(async () => {
+      window.cs = T.session.newSession("tournament");
+      await T.open(cs);
+      cs.mix = { blueberry: 9, mint: 3 }; cs.mixInfo = T.steps.evaluateMix(cs); cs.pack = "normal"; cs.water = 0.5;
+      cs.holes = { score: 95, outerEven: .95, innerExcess: 0, outer: 24, middle: 0, inner: 0 };
+      cs.steam = { score: 100, seconds: 480, temp: .54 }; cs.steamSeconds = 480;
+      window.pullPromise = T.pull.runPull(cs); // 入力待ちのままにしてラベルを表示させ続ける
+    });
+    await page.locator(".pull-zone-label.l-up").waitFor();
+    await page.evaluate(() => T.broadcast.completed(cs, "pull", 95));
+    await page.locator(".nico").first().waitFor();
+    const geo = await page.evaluate(() => {
+      const lane = document.querySelector(".bc-lane");
+      const lr = lane.getBoundingClientRect();
+      const rel = (r) => ({ x: r.x - lr.x, y: r.y - lr.y, w: r.width, h: r.height });
+      return {
+        lane: { w: lr.width, h: lr.height },
+        clip: getComputedStyle(lane).clipPath,
+        up: rel(document.querySelector(".pull-zone-label.l-up").getBoundingClientRect()),
+        down: rel(document.querySelector(".pull-zone-label.l-down").getBoundingClientRect()),
+        row0: rel(document.querySelector('.nico[data-row="0"]').getBoundingClientRect()),
+      };
+    });
+    assert(geo.clip.startsWith("polygon("), `bc-lane has no clip polygon: ${geo.clip}`);
+    const coord = (token, dim) => {
+      const calc = token.match(/^calc\(100% - ([\d.]+)px\)$/);
+      if (calc) return dim - Number(calc[1]);
+      if (token.endsWith("%")) return dim * Number(token.slice(0, -1)) / 100;
+      return Number(token.replace("px", ""));
+    };
+    const poly = geo.clip.slice("polygon(".length, -1).split(",").map((point) => {
+      const tokens = point.trim().match(/calc\([^)]*\)|\S+/g);
+      return [coord(tokens[0], geo.lane.w), coord(tokens[1], geo.lane.h)];
+    });
+    const inside = (x, y) => {
+      let isIn = false;
+      for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        const [xi, yi] = poly[i], [xj, yj] = poly[j];
+        if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) isIn = !isIn;
+      }
+      return isIn;
+    };
+    // 前提: 1行目のコメント帯はラベルの高さ帯と重なっている（重ならないなら検査自体が無意味）
+    assert(geo.row0.y < geo.up.y + geo.up.h && geo.row0.y + geo.row0.h > geo.up.y, "row0 does not cross the label band");
+    for (const [name, r] of [["l-up", geo.up], ["l-down", geo.down]]) {
+      const samples = [
+        [r.x + 1, r.y + 1], [r.x + r.w - 1, r.y + 1], [r.x + 1, r.y + r.h - 1], [r.x + r.w - 1, r.y + r.h - 1],
+        [r.x + r.w / 2, r.y + r.h / 2], [r.x + r.w / 2, r.y + 1], [r.x + r.w / 2, r.y + r.h - 1],
+      ];
+      for (const [x, y] of samples) assert(!inside(x, y), `${name} label point (${x}, ${y}) is inside the comment lane clip`);
+    }
+  });
+
   await check("preparation-low-money-stock-and-save", async page => {
     await init(page);
     await page.evaluate(() => {
