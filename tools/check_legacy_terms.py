@@ -84,8 +84,14 @@ LEGACY_ERROR_CURRENT = {
     "炭場 創": "チャコール博士の本名は火浦 理一",
     "炭場創": "チャコール博士の本名は火浦 理一",
     "前園": "上園 文太郎（ID maezono）に統一",
+    # 2026-11-14 追加（オーナー決定）: rei の芸名「鴉葬レヰ」→「†玖羅雨℃†」（読みはクラウド、単名。本名の田中健太と内部ID rei は維持）。
+    "鴉葬レヰ": "†玖羅雨℃†（rei・読みはクラウド）に統一",
+    "鴉葬": "†玖羅雨℃†（rei）に統一",
+    "レヰ": "クラウド（rei）に統一",
+    "あそう れい": "くらうど（rei）に統一",
 }
-HISTORY_PATHS = ("docs/archive/", "docs/qa/", "docs/owner_requests.md")
+# 2026-11-14: docs/reports/ も日付つきの検証記録（履歴）として扱う。鴉葬レヰ時代のレポートを現行の事実へ書き換えないため。
+HISTORY_PATHS = ("docs/archive/", "docs/qa/", "docs/owner_requests.md", "docs/reports/")
 
 LEGACY_STAT_ERROR = {
     "技術力": "技術",
@@ -132,12 +138,12 @@ IDENTITY_TEXT_EXTENSIONS = EXTENSIONS | {".mjs", ".cjs", ".html", ".css", ".yml"
 #   remake/README.md など走査対象外にも残っていたので全追跡ファイルで禁止する。地名（伏見稲荷・伏見区・伏見桃山など）は許す。
 # 2026-11-07 追加（#2792）: samechan の姓「熱海」→「暑海（あつみ）」。リポジトリ内の出現は全て苗字としての用例だったため、全追跡ファイルでの禁止に含める。
 RENAMED_CHARACTER_RE = re.compile(r"久世|熱海|くぜ さく|朝霧 ?ひより|あさぎり ひより|零-REI-|匂坂|さぎさか|サギサカ|\bSagisaka\b|サイーフ|\bSaif\b|凛(?!とし|々|然|冽|想)|水瀬|白木 ?つむぎ|さぎさか りん|南雲|なぐも しゅうじ|デイビス|Steve Davis|波多野|ラシード|\bRashid\b|アゲハ(?!蝶|チョウ)|路上占い師|\bPak(?:i|ie)\b|サラリーマンさん|宵永|伏見(?!稲荷|区|桃山|城|港|駅|大社|の酒)|ふしみ|フシミ")
-RENAMED_CHARACTER_FIX = "旧キャラ名 → 綾取 陣（saku）／鴉葬レヰ（rei・本名と店名は維持）／泡沫ひより（hiyori・国名の朝霧は維持）／円頓寺 凛想（rio）／猫洞 つむぎ（tsumugi）／黒葉 ましろ（mashiro）／千須 豪（sui）／スティーブ・A・アッシュ（steve）／暑海 なぎさ（samechan）／ハリール（khalil）／あげは（ageha・本名 夜長 千代子）／辻占のオババ（uranaishi）／Packy（pakki）／鉄仮面さん（salaryman）／ファーリス（faris）に統一（#2474・#2528）"
+RENAMED_CHARACTER_FIX = "旧キャラ名 → 綾取 陣（saku）／†玖羅雨℃†（rei・本名と店名は維持）／泡沫ひより（hiyori・国名の朝霧は維持）／円頓寺 凛想（rio）／猫洞 つむぎ（tsumugi）／黒葉 ましろ（mashiro）／千須 豪（sui）／スティーブ・A・アッシュ（steve）／暑海 なぎさ（samechan）／ハリール（khalil）／あげは（ageha・本名 夜長 千代子）／辻占のオババ（uranaishi）／Packy（pakki）／鉄仮面さん（salaryman）／ファーリス（faris）に統一（#2474・#2528）"
 MINTO_HAIR_RE = re.compile(r"(?:mint|light)[ -]green (?:hair|twin)|black twin[ -]?tails|ミント(?:グリーン|色)のツイン|黒髪ツインテール|角ツインテール", re.IGNORECASE)
 # 2026-11-04 追加（#2528 残骸チェック）: 改名済みキャラの旧ローマ字。英字は前後が英数字でない時だけ検出する
 # （内部ID kuyuri / sui / maezono / samechan / dr_kemuri の小文字表記・ファイル名は対象外）。
 RENAMED_ROMAJI_RE = re.compile(r"(?<![A-Za-z0-9_])(?:Kuze|KUZE|Asagiri|ASAGIRI|REI|Rin|RIN|Nagumo|NAGUMO|Maezono|MAEZONO|Hatano|HATANO|Fushimi|FUSHIMI)(?![A-Za-z0-9_])|Dr\.? ?Kemuri")
-RENAMED_ROMAJI_FIX = "旧キャラ名（英字・旧表記） → Ayatori（saku）／Usuba（hiyori）／鴉葬レヰ（rei）／Rio（rio）／Sui・姓は Sensu（sui）／Uezono（maezono）／Shiomi（samechan）／Dr. Charcoal（dr_kemuri）に統一（#2528）"
+RENAMED_ROMAJI_FIX = "旧キャラ名（英字・旧表記） → Ayatori（saku）／Usuba（hiyori）／†玖羅雨℃†（rei）／Rio（rio）／Sui・姓は Sensu（sui）／Uezono（maezono）／Shiomi（samechan）／Dr. Charcoal（dr_kemuri）に統一（#2528）"
 
 
 JSON_STRING_RE = re.compile(r'"(?:[^"\\]|\\.)*"')

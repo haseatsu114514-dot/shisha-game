@@ -6,7 +6,7 @@
 //   PEPPERMINT（みんと）・SHISHARK（サメちゃん）・MELTY PUFF（あげは・柚ヶ谷）: ヒロインの店。恋人でも友人でも
 //     不自然にならない、店での会話にする（オーナー指定 2026-11-02）。恋人の好感度は店では深まらない（core/stats.js）。
 // 代金・体力・能力は元の店の来店と同じ。好感度は第5章の通いの +5。台詞は data/dialogue/ch5_shops.json。
-// 通い店でない常連（アダム・レヰ・神崎）の、第5章の最初の来店で一度だけ読む会話も、ここで同じ精算で出す（ch5-first-talks.js）。
+// 通い店でない常連（アダム・クラウド・神崎）の、第5章の最初の来店で一度だけ読む会話も、ここで同じ精算で出す（ch5-first-talks.js）。
 import { state, timeOfDay, markMet } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";
 import { setBg, toast } from "../core/ui.js";
@@ -76,7 +76,7 @@ export const chapterFiveShopById = id => allShops().find(entry => entry.id === i
 
 /**
  * 第5章の最初の来店で一度だけ読む会話がある常連の店（ch5-first-talks.js）。通い店と同じ精算で、いつもの会話の代わりに読む。
- * 無ければ null（いつもの来店へ。EDEN は日常ループの来店、柚ヶ谷の神崎・レヰは ch2-preparation.js の visitCityRegular）。
+ * 無ければ null（いつもの来店へ。EDEN は日常ループの来店、柚ヶ谷の神崎・クラウドは ch2-preparation.js の visitCityRegular）。
  */
 function firstTalkShop(spot) {
   const id = spot?.charId, talk = id ? chapterFiveFirstTalkDue(id, state) : null;
@@ -154,7 +154,7 @@ export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
   if (entry.talkWith) { gainAffinity(entry.talkWith, entry.affinity || 5); markMet(entry.talkWith); }
   if (entry.stat) earnStat(entry.stat, 4);
   // 心得の盤の授業（SPEC 2.6・SBD61）: 通い店で会った人に、灯した授業があれば相談する（なる・みんと・サメちゃん・あげは。
-  // 一度だけの会話を読んだアダム・レヰ・神崎も、いつもの来店と同じく相談する）
+  // 一度だけの会話を読んだアダム・クラウド・神崎も、いつもの来店と同じく相談する）
   if (entry.talkWith && state === owner) await consultLessons(entry.talkWith, { bg: entry.bgUrl || sceneBg(entry.bg, timeOfDay()).url });
   return { used: true, exerted: true };
 }

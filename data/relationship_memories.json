@@ -172,19 +172,19 @@
       "id": "rei_listen",
       "char_id": "rei",
       "dialogue_id": "ch2_rei_first",
-      "echo": "（レヰさんの沈黙を、俺もすぐに言葉で埋めなくなった）"
+      "echo": "（クラウドさんの沈黙を、俺もすぐに言葉で埋めなくなった）"
     },
     {
       "id": "rei_smile",
       "char_id": "rei",
       "dialogue_id": "ch2_rei_fourth",
-      "echo": "（レヰさんの小さな笑顔は、二人で話した時に出てきた）"
+      "echo": "（クラウドさんの小さな笑顔は、二人で話した時に出てきた）"
     },
     {
       "id": "rei_voice",
       "char_id": "rei",
       "dialogue_id": "ch2_rei_fifth",
-      "echo": "（レヰさんの話を待つうちに、俺も自分の感想を急がなくなった）"
+      "echo": "（クラウドさんの話を待つうちに、俺も自分の感想を急がなくなった）"
     },
     {
       "id": "kumicho_taste_first",
@@ -202,7 +202,7 @@
       "id": "rei_reach",
       "char_id": "rei",
       "dialogue_id": "ch2_rei_sixth",
-      "echo": "（レヰさんの「嘘」を、最初に吸ったのは俺だった）"
+      "echo": "（クラウドさんの「嘘」を、最初に吸ったのは俺だった）"
     },
     {
       "id": "volk_measure",

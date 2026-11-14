@@ -31,7 +31,7 @@ export async function offerAgehaPurikura(background, spot = { id: "ch2_ageha", k
       state.flags._ryuji_melty_visit = visitorStamp(state);
       save();
     } else if (reiGreetingDue(state)) {
-      // レヰの挨拶回（#3468 A案）。二人で撮る場面まで台本の中。料金・思い出の品・好感度は動かさない。
+      // クラウドの挨拶回（#3468 A案）。二人で撮る場面まで台本の中。料金・思い出の品・好感度は動かさない。
       if (!await read("remake_ch2_rei_melty_greeting")) return false;
       state.flags._rei_melty_greeting = state.day;
       save();

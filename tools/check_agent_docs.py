@@ -13,6 +13,8 @@ FILES = [
     "docs/current_documentation_guide.md",
     "docs/gameplay_agent_reference.md",
     "docs/asset_ai_guidance.md",
+    "docs/tools/agent_rules_reference.md",
+    "docs/tools/checks_index.md",
 ]
 LINK = re.compile(r"(?<!!)\[[^\]]+\]\(([^)]+)\)")
 FENCE = re.compile(r"^\s*(?:```|~~~)")
@@ -56,6 +58,36 @@ if "project.godot" not in agents or "remake/" not in agents:
     errors.append("AGENTS.md: missing current/legacy distinction")
 if len(claude.splitlines()) > 80:
     errors.append("CLAUDE.md: entrypoint is too large (>80 lines)")
+
+# Issue reservation was abolished on 2026-10-23: its procedure must not
+# survive in skill instructions or guidance docs (the abolition notices in
+# AGENTS.md / CLAUDE.md and the owner-request ledger are history, not
+# procedure, and are not scanned here).
+RESERVATION_TOKEN = "/issue-claim"
+skills_dir = ROOT / ".claude" / "skills"
+if skills_dir.is_dir():
+    for skill_file in sorted(skills_dir.rglob("*.md")):
+        if RESERVATION_TOKEN in skill_file.read_text(encoding="utf-8"):
+            errors.append(
+                f"{skill_file.relative_to(ROOT)}: abolished reservation procedure remains"
+            )
+for name in FILES:
+    if name in ("AGENTS.md", "CLAUDE.md"):
+        continue
+    path = ROOT / name
+    if path.is_file() and RESERVATION_TOKEN in path.read_text(encoding="utf-8"):
+        errors.append(f"{name}: abolished reservation procedure remains")
+
+# Workflows are fixed to the three files named in AGENTS.md; adding one is
+# an owner-requested change, not an implementation detail.
+workflows_dir = ROOT / ".github" / "workflows"
+if workflows_dir.is_dir():
+    actual = sorted(p.name for p in workflows_dir.glob("*.yml"))
+    expected = ["ci.yml", "deploy-pages.yml", "sequential-merge.yml"]
+    if actual != expected:
+        errors.append(
+            f".github/workflows: expected {expected}, found {actual}"
+        )
 
 if errors:
     print("\n".join("ERROR " + e for e in errors), file=sys.stderr)

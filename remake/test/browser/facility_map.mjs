@@ -123,7 +123,7 @@ try {
       const wanted = { ...expected };
       if (scenario === 'chapter2') {
         const trpg = pins.find(p => p.id === 'trpg_bar');
-        assert(trpg, 'レヰ-introduced TRPG bar must appear');
+        assert(trpg, 'クラウド-introduced TRPG bar must appear');
         assert.equal(trpg.logo, 'trpg_bar', 'TRPG bar uses the adopted store logo');
         assert.equal(trpg.facility, null, 'store logo replaces the generic facility sticker');
       }

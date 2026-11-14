@@ -1,5 +1,5 @@
 // 第5章の最初の来店で一度だけ読む会話（N3・chapters/ch5-first-talks.js）の判定と台本。
-// アダム（EDEN）・レヰ（零-ZERO-）・神崎（神崎煙草店。第2章の後日談 ch2_kumicho_after_ch2 を世界大会の後に書き直したもの）。
+// アダム（EDEN）・クラウド（零-ZERO-）・神崎（神崎煙草店。第2章の後日談 ch2_kumicho_after_ch2 を世界大会の後に書き直したもの）。
 // 実際の来店（代金・好感度・既読の付け方）は remake/test/browser/ch5_home_talks.mjs が確かめる。
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -25,7 +25,7 @@ function freeSave() {
 }
 const due = (id, value) => chapterFiveFirstTalkDue(id, value)?.scene || null;
 
-// 第5章の自由行動: レヰ・神崎は最初の来店で読む。アダムはEDENの任意場面（二つのダブルアップル）の後だけ。
+// 第5章の自由行動: クラウド・神崎は最初の来店で読む。アダムはEDENの任意場面（二つのダブルアップル）の後だけ。
 {
   const value = freeSave();
   assert.equal(due("rei", value), "ch5_rei_shop");
@@ -120,7 +120,7 @@ for (const [id, talk] of Object.entries(CH5_FIRST_TALKS)) {
   const alias = scenesOf("ch2_kumicho").ch2_kumicho_after_ch2_firstshop;
   assert.deepEqual(alias.lines, [{ type: "jump", next_id: "ch2_kumicho_after_ch2" }]);
 }
-// はじめは店主たちに敬語で話す（レヰ 25歳・アダム 28歳・神崎 53歳。第2章までの場面と同じ）。
+// はじめは店主たちに敬語で話す（クラウド 25歳・アダム 28歳・神崎 53歳。第2章までの場面と同じ）。
 for (const [file, id] of [["ch5_shops", "ch5_rei_shop"], ["ch5_shops", "ch5_adam_shop"], ["ch2_kumicho", "ch2_kumicho_after_ch2"]]) {
   const hajime = scenesOf(file)[id].lines.filter(line => line.speaker === "hajime" && !/^（/.test(line.text)).map(line => line.text);
   assert(hajime.length >= 2, id);
@@ -128,7 +128,7 @@ for (const [file, id] of [["ch5_shops", "ch5_rei_shop"], ["ch5_shops", "ch5_adam
 }
 
 // ---- 接続 ----------------------------------------------------------------------------
-// 能力はいつもの来店と同じ（アダムは daily/spots.js の CHAR_STAT、神崎・レヰは ch2-preparation.js の通い訪問）。
+// 能力はいつもの来店と同じ（アダムは daily/spots.js の CHAR_STAT、神崎・クラウドは ch2-preparation.js の通い訪問）。
 assert.match(read("remake/js/daily/spots.js"), new RegExp(`CHAR_STAT = \\{[^}]*adam: "${CH5_FIRST_TALKS.adam.stat}"`));
 assert.match(read("remake/js/chapters/ch2-preparation.js"),
   new RegExp(`const stat = \\{[^}]*kumicho: "${CH5_FIRST_TALKS.kumicho.stat}", rei: "${CH5_FIRST_TALKS.rei.stat}"`));

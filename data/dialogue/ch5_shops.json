@@ -1,5 +1,5 @@
 {
-  "comment": "第5章の地元の店（#2033 F）。なるはKEMURIKUSAを再開している（第4章 ch4_naru_dubai_3）。はじめは第4章の世界大会の後の新しい王者。C.STATIONの常連（old_man）は第1章の cs_regular_chat の人。ヒロインの店（PEPPERMINT・SHISHARK・MELTY PUFF）は、恋人でも友人でも不自然にならない店での会話にする（オーナー指定 2026-11-02）。アダム（EDEN）とレヰ（零-ZERO-）の ch5_adam_shop・ch5_rei_shop は、通い店ではない常連の店で第5章に一度だけ読む会話（chapters/ch5-first-talks.js）。好感度・代金・体力は台詞に書かず、chapters/ch5-shops.js が付ける。",
+  "comment": "第5章の地元の店（#2033 F）。なるはKEMURIKUSAを再開している（第4章 ch4_naru_dubai_3）。はじめは第4章の世界大会の後の新しい王者。C.STATIONの常連（old_man）は第1章の cs_regular_chat の人。ヒロインの店（PEPPERMINT・SHISHARK・MELTY PUFF）は、恋人でも友人でも不自然にならない店での会話にする（オーナー指定 2026-11-02）。アダム（EDEN）とクラウド（零-ZERO-）の ch5_adam_shop・ch5_rei_shop は、通い店ではない常連の店で第5章に一度だけ読む会話（chapters/ch5-first-talks.js）。好感度・代金・体力は台詞に書かず、chapters/ch5-shops.js が付ける。",
   "dialogues": [
     {
       "dialogue_id": "ch5_naru_shop",
@@ -212,18 +212,18 @@
     },
     {
       "dialogue_id": "ch5_rei_shop",
-      "comment": "第5章の一度だけの会話（N3・chapters/ch5-first-talks.js）。零-ZERO-の第5章の最初の来店で読む。世界大会の後・博士との勝負の前。レヰは客と自分から曲の話をするようになっている（characters.json の growth_stats）。『終わったあとの三秒』は第2章の大会（ch2_tournament）でレヰが言った言葉。博士は第2章の大会の審査員。",
+      "comment": "第5章の一度だけの会話（N3・chapters/ch5-first-talks.js）。零-ZERO-の第5章の最初の来店で読む。世界大会の後・博士との勝負の前。クラウドは客と自分から曲の話をするようになっている（characters.json の growth_stats）。『終わったあとの三秒』は第2章の大会（ch2_tournament）でクラウドが言った言葉。博士は第2章の大会の審査員。",
       "lines": [
-        { "speaker": "", "face": "", "text": "零-ZERO-のカウンターで、レヰが常連の客にCDのジャケットを見せていた。" },
+        { "speaker": "", "face": "", "text": "零-ZERO-のカウンターで、クラウドが常連の客にCDのジャケットを見せていた。" },
         { "speaker": "rei", "face": "normal", "text": "……この曲、二番のあとで音が全部止まる。そこが、好きで" },
         { "speaker": "customer", "face": "normal", "text": "分かります、あそこ。息止めて聴いちゃうんですよね" },
         { "speaker": "rei", "face": "smile", "text": "……うん。俺も" },
-        { "speaker": "", "face": "", "text": "客が席へ戻るのを待って、レヰがこちらに気づいた。耳が、少し赤い。" },
-        { "speaker": "hajime", "face": "smile", "text": "レヰさん、お客さんと曲の話をしてましたね" },
+        { "speaker": "", "face": "", "text": "客が席へ戻るのを待って、クラウドがこちらに気づいた。耳が、少し赤い。" },
+        { "speaker": "hajime", "face": "smile", "text": "クラウドさん、お客さんと曲の話をしてましたね" },
         { "speaker": "rei", "face": "normal", "text": "……前より、少しだけ出る。言葉が" },
         { "speaker": "rei", "face": "normal", "text": "世界大会の動画、店で流した。常連と、黙って観た" },
         { "speaker": "rei", "face": "normal", "text": "最後の調整のあと、お前が手を離してから三秒。……誰も、しゃべらなかった" },
-        { "speaker": "hajime", "face": "surprise", "text": "（終わったあとの三秒。レヰさんが、県大会の日に言ってた）" },
+        { "speaker": "hajime", "face": "surprise", "text": "（終わったあとの三秒。クラウドさんが、県大会の日に言ってた）" },
         { "speaker": "rei", "face": "smile", "text": "……いい終わり方だった。曲みたいに" },
         { "speaker": "hajime", "face": "normal", "text": "次の相手は、博士の作った機械なんです。ダブルアップルで勝負します" },
         { "speaker": "rei", "face": "normal", "text": "……県大会の、審査員の人か" },

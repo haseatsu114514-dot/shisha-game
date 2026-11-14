@@ -94,7 +94,7 @@ function busySpots(value) {
   try { const hiyori = hiyoriShopLocation(); if (hiyori) busy.add(hiyori); } catch {}
   try { const city = cityGuestVisit(); if (city?.spotId) busy.add(city.spotId); } catch {}
   if (ryujiAtMeltyPuff(value)) busy.add("ch2_ageha"); // 組長が MELTY PUFF に来ている時間帯
-  if (reiGreetingDue(value)) busy.add("ch2_ageha"); // レヰが MELTY PUFF へ挨拶に来る回（#3468）
+  if (reiGreetingDue(value)) busy.add("ch2_ageha"); // クラウドが MELTY PUFF へ挨拶に来る回（#3468）
   return busy;
 }
 
