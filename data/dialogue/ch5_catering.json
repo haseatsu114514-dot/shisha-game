@@ -789,6 +789,10 @@
           "text": "スイカに、ミントを少しだけ重ねた。"
         },
         {
+          "speaker": "",
+          "text": "ホースを渡すと、客は一口吸って、ゆっくり息を吐いた。"
+        },
+        {
           "speaker": "customer",
           "face": "smile",
           "text": "子どもの頃の、縁側の匂いだ。汗がすっとひく"
@@ -796,7 +800,21 @@
         {
           "speaker": "customer",
           "face": "normal",
+          "text": "掃除でこもった熱が、ふっと抜けていく"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
           "text": "大将も、甘くていいって。風が吹いても、ちゃんと香る"
+        },
+        {
+          "speaker": "",
+          "text": "風が路地を抜けていったが、香りは散らずに残っていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "ほら、みんなも一服どうぞ"
         },
         {
           "speaker": "hajime",
@@ -813,6 +831,10 @@
           "text": "レモンとミントで、すっきりにまとめた。"
         },
         {
+          "speaker": "",
+          "text": "ホースを渡すと、客は一口吸って、目を細めた。"
+        },
+        {
           "speaker": "customer",
           "face": "smile",
           "text": "汗が一気にひきます。これはいい"
@@ -820,7 +842,21 @@
         {
           "speaker": "customer",
           "face": "normal",
+          "text": "ミントの涼しさが、あとから追いかけてくる"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
           "text": "大将は、もうちょい甘いのがよかったって。わがままでしょ"
+        },
+        {
+          "speaker": "",
+          "text": "大将は腕を組んだまま、それでも二口目を吸っていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "でも、顔は笑ってたし。次の掃除も頼みたいくらいです"
         },
         {
           "speaker": "hajime",
@@ -837,14 +873,32 @@
           "text": "ラベンダーとカモミールの、落ち着いた一台にした。"
         },
         {
+          "speaker": "",
+          "text": "ホースを渡すと、客は目を閉じて、深く吸い込んだ。"
+        },
+        {
           "speaker": "customer",
           "face": "normal",
           "text": "いい匂い……あ、風で飛んじゃった"
         },
         {
+          "speaker": "",
+          "text": "ほのかな花の香りは、通りの風にさらわれていった。"
+        },
+        {
           "speaker": "customer",
           "face": "smile",
           "text": "でも、ほっとしました。掃除のあとに一服って、いいもんですね"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "汗も引いたし、肩が軽くなりました"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "ラベンダー、嫌いじゃないですよ"
         },
         {
           "speaker": "hajime",
