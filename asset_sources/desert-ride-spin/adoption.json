@@ -1,0 +1,54 @@
+{
+  "spin_hajime_045": {
+    "source": "asset_sources/desert-ride-spin/hajime/spin_hajime_045.png",
+    "webp": "remake/img/ui/desert_ride/spin_hajime_045.webp",
+    "size": [
+      657,
+      821
+    ],
+    "anchor": {
+      "x": 0.5104,
+      "y": 0.779
+    },
+    "scale": 0.5855
+  },
+  "spin_hajime_090": {
+    "source": "asset_sources/desert-ride-spin/hajime/spin_hajime_090.png",
+    "webp": "remake/img/ui/desert_ride/spin_hajime_090.webp",
+    "size": [
+      811,
+      1014
+    ],
+    "anchor": {
+      "x": 0.4872,
+      "y": 0.7795
+    },
+    "scale": 0.7229
+  },
+  "spin_hajime_135": {
+    "source": "asset_sources/desert-ride-spin/hajime/spin_hajime_135.png",
+    "webp": "remake/img/ui/desert_ride/spin_hajime_135.webp",
+    "size": [
+      572,
+      825
+    ],
+    "anchor": {
+      "x": 0.5241,
+      "y": 0.7638
+    },
+    "scale": 0.5374
+  },
+  "spin_hajime_180": {
+    "source": "asset_sources/desert-ride-spin/hajime/spin_hajime_180.png",
+    "webp": "remake/img/ui/desert_ride/spin_hajime_180.webp",
+    "size": [
+      670,
+      768
+    ],
+    "anchor": {
+      "x": 0.4898,
+      "y": 0.808
+    },
+    "scale": 0.548
+  }
+}

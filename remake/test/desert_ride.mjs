@@ -1089,6 +1089,34 @@ test("Naru's rider art (Issue #3222) is rebuilt to the protagonist's scale with 
   }
 });
 
+test("Hajime's spin art (Issue #3563) matches its adoption record, and the frame picker walks the full turn", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { execFileSync } = await import("node:child_process");
+  const root = new URL("../../", import.meta.url);
+  const tracked = path => execFileSync("git", ["ls-files", "--", path], { cwd: root }).toString().trim() === path;
+  const { DESERT_ART, spinFrames } = await import("../js/minigames/desert-ride-art.js");
+  const record = JSON.parse(readFileSync(new URL("asset_sources/desert-ride-spin/adoption.json", root), "utf8"));
+  for (const angle of ["045", "090", "135", "180"]) {
+    const entry = record[`spin_hajime_${angle}`], art = DESERT_ART[`hajimeSpin${angle}`];
+    assert(art, `spin art ${angle} exists`);
+    assert.equal(`remake/img/${art.file}`, entry.webp, `${angle} file`);
+    assert.deepEqual([...art.size], entry.size, `${angle} size`);
+    assert.deepEqual({ ...art.anchor }, entry.anchor, `${angle} anchor`);
+    assert(entry.scale > 0.45 && entry.scale < 0.8, `${angle} is rescaled to the riderJump figure size (${entry.scale})`);
+    assert(tracked(entry.webp) && tracked(entry.source), `${angle} files are committed`);
+  }
+  assert.equal(spinFrames(0).from.name, "riderJump");
+  assert.equal(spinFrames(0).from.flip, false);
+  assert.equal(spinFrames(0.5).from.name, "hajimeSpin180");
+  assert.equal(spinFrames(0.75).from.name, "hajimeSpin090");
+  assert.equal(spinFrames(0.75).from.flip, true);
+  assert.equal(spinFrames(-0.25).from.name, "hajimeSpin090", "negative rot wraps to the same frame");
+  const mid = spinFrames(0.0625);
+  assert.equal(mid.from.name, "riderJump");
+  assert.equal(mid.to.name, "hajimeSpin045");
+  assert(Math.abs(mid.fade - 0.5) < 1e-9, "midpoint between frames fades evenly");
+});
+
 test("a close race: the rival eases off when far ahead and catches up when far behind, but the result stays the rider's skill", () => {
   // ずれの上限: 追いついた分は6割地点まで持てて、ゴール手前で 0。手加減は終盤に keep 秒まで戻す
   assert.equal(rubberCaps(0).lead, RUBBER.lead); assert.equal(rubberCaps(RUBBER.holdUntil).lead, RUBBER.lead);
