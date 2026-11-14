@@ -244,7 +244,8 @@ export async function resultCountdown(cs, kind, attempt = null) {
     SE.count();
     if (n <= 4) SE.heartbeat();
     if (n > 0 && n <= 9) {
-      const c = el("div.rc-cut", { text: cutWords[(10 - n) % cutWords.length], style: { left: `${rand(8, 70)}%`, top: `${rand(12, 70)}%`, "--r": `${rand(-8, 8)}deg` } });
+      // 出現位置は見出し帯（上部34px〜約125px＝約17%）を避ける。12%からだと見出しに重なる（#3558 項目6）
+      const c = el("div.rc-cut", { text: cutWords[(10 - n) % cutWords.length], style: { left: `${rand(8, 70)}%`, top: `${rand(20, 70)}%`, "--r": `${rand(-8, 8)}deg` } });
       cuts.append(c);
       setTimeout(() => c.remove(), 900);
     }
