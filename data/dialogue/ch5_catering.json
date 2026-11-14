@@ -644,6 +644,10 @@
           "text": "ダブルアップルだけを、12グラム詰めた。"
         },
         {
+          "speaker": "",
+          "text": "吸い口を拭いて渡すと、最初の一人が、ゆっくり一口目を吸い込んだ。"
+        },
+        {
           "speaker": "customer",
           "face": "smile",
           "text": "おお、これこれ。アニスの匂いがする"
@@ -652,6 +656,15 @@
           "speaker": "customer",
           "face": "normal",
           "text": "一口で分かるな。昔、旅先で吸ったのと同じだ"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "夜行列車の待ち時間でね。隣のおじさんが、同じ匂いをさせてたよ"
+        },
+        {
+          "speaker": "",
+          "text": "吸い口を回すたび、「どうぞ、先に」「いやいや」と声が行き交った。"
         },
         {
           "speaker": "hajime",
@@ -668,6 +681,10 @@
           "text": "ダブルアップルに、オレンジを少し足した。"
         },
         {
+          "speaker": "",
+          "text": "吸い口を渡すと、一口目で、客の眉がわずかに動いた。"
+        },
+        {
           "speaker": "customer",
           "face": "normal",
           "text": "うん、うまい。……昔のとは、ちょっと違うな"
@@ -675,7 +692,21 @@
         {
           "speaker": "customer",
           "face": "smile",
+          "text": "オレンジかい。吸ったあとに、ふわっと明るくなるね"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
           "text": "若い人には、こっちの方がいいかもしれん。ありがとね"
+        },
+        {
+          "speaker": "",
+          "text": "隣へ回すと、「あら、ほんと。軽いわね」と笑い声が起きた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "孫が来たら、吸わせてやりたいくらいだ"
         },
         {
           "speaker": "hajime",
@@ -692,9 +723,18 @@
           "text": "ダブルアップルに、ミントを少し重ねた。"
         },
         {
+          "speaker": "",
+          "text": "吸い口を渡しても、しばらく誰も何も言わなかった。"
+        },
+        {
           "speaker": "customer",
           "face": "normal",
           "text": "……おっと、喉にすうっと来た。ミントだね"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "昔のは、もっと土っぽかったんだがね"
         },
         {
           "speaker": "hajime",
@@ -702,9 +742,19 @@
           "text": "（入れないでくれって、言われてたのに）"
         },
         {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（聞いたとおりに詰めていれば、こうはならなかった）"
+        },
+        {
           "speaker": "customer",
           "face": "smile",
           "text": "まあまあ、お祭りだから。休まず回してくれて、助かったよ"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "暑いなか、ずっと立ちっぱなしだったろ。麦茶でも飲んでいきな"
         }
       ]
     },
