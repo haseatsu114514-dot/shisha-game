@@ -13,7 +13,7 @@
 @font-face { font-family: "Suien Gothic"; src: url("../fonts/ZenKakuGothicNew-Bold.woff2") format("woff2"); font-weight: 600 799; font-display: block; }
 @font-face { font-family: "Suien Gothic"; src: url("../fonts/ZenKakuGothicNew-Black.woff2") format("woff2"); font-weight: 800 900; font-display: block; }
 /* HUDの日付・時間帯などのドット書体（DotGothic16・SIL OFL）。廃止した予告のCSSから移した。 */
-@font-face { font-family: "Suien Dot"; src: url("../../assets/fonts/DotGothic16-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "Suien Dot"; src: url("../../assets/fonts/DotGothic16-Regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
 
 :root {
   /* 日常パート: 閉店後のtonariの色（夜の藍・琥珀の灯り） */
@@ -9458,9 +9458,13 @@ body[data-screen="boot"] #hud, body[data-screen="title"] #hud { display: none; }
 }
 body.in-vn .hud, body.vn-open .hud { opacity: 0; visibility: hidden; pointer-events: none; }
 body.in-vn .hud-right, body.vn-open .hud-right { pointer-events: none; }
-/* 作業台・集計・結果では見えないHUDを押せないようにする（見えないMENUから作業の途中を保存しない・#638） */
+/* 作業台・集計・結果では見えないHUDを押せないようにする（第1章大会の作業台だけ下で例外にする）。 */
 body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen="result"] .hud { opacity: 0; visibility: hidden; pointer-events: none; }
 body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body[data-screen="result"] .hud-right { pointer-events: none; }
+/* 第1章大会の作業台だけ、MENUと手動セーブの入口を残す。 */
+body[data-screen="bench"]:not(.in-vn):not(.vn-open):has(.bench[data-mode="tournament"][data-chapter="1"]) #hud.show .hud { opacity: 1; visibility: visible; pointer-events: none; }
+body[data-screen="bench"]:has(.bench[data-mode="tournament"][data-chapter="1"]) #hud.show .hud-right { pointer-events: auto; }
+body[data-screen="bench"]:has(.bench[data-mode="tournament"][data-chapter="1"]) #hud.show :is(.hud-card, .hud-lime) { display: none; }
 
 /* 左上の DAY カード（墨×金・角飾り） */
 .hud-card, .hud-level, .hud-menu, .hud-stamina {
