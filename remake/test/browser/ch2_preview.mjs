@@ -10,7 +10,7 @@ const evidence = path.join(root, "docs/qa/ch2-preview");
 const route = new URL("chapter2-preview.html", baseURL).href;
 const test = name => `[data-test="ch2-preview-${name}"]`;
 const pins = ["ageha", "kumicho", "rei", "c_station"];
-const names = { ageha: "あげは", kumicho: "神崎竜二", rei: "クラウド", volk: "ヴォルク" };
+const names = { ageha: "あげは", kumicho: "神崎竜二", rei: "†玖羅雨℃†", volk: "ヴォルク" };
 fs.mkdirSync(evidence, { recursive: true });
 
 async function seedAndOpen(page, prepare = null) {
