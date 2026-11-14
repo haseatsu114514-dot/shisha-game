@@ -216,21 +216,22 @@
     --loading-proceed-size: max(calc(14 * var(--loading-unit)), 12px);
     --loading-side: max(12px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
     --loading-foot: env(safe-area-inset-bottom, 0px);
-    --loading-fixed: calc(107 * var(--loading-unit) + 1.2 * var(--loading-title-size) + 1.4 * var(--loading-note-size) + 1.6 * var(--loading-status-size) + 1.3 * var(--loading-proceed-size) + var(--loading-foot) + 58px);
+    --loading-fixed: calc(107 * var(--loading-unit) + 1.2 * var(--loading-title-size) + 1.4 * var(--loading-note-size) + 1.6 * var(--loading-status-size) + 1.3 * var(--loading-proceed-size) + var(--loading-foot) + 28px);
     padding-bottom: var(--loading-foot);
   }
-  /* ロゴは背の低い横画面でも省略しない（2026-11-15 オーナー指示「ロゴありのレイアウトを採用」）。
-     小さな寸法で残し、高さ52px（44＋上下マージン）は --loading-fixed に足してある。 */
-  .loading-gate.is-viewport .loading-logo { width: 132px; height: 44px; margin: 6px 0 2px; }
-  .loading-gate.is-viewport .loading-card {
+  /* ロゴは背の低い横画面でも省略しない（2026-11-15 オーナー指示「ロゴと漫画が出るのがいい」）。
+     小さな寸法で残し、高さ44px（36＋上下マージン）は --loading-fixed に足してある。
+     パネル幅の下限（テストで340px）を守るため、残りの留保は詰めてある。 */
+  .loading-gate.is-viewport .loading-logo { width: 108px; height: 36px; margin: 2px 0 0; }
+  .loading-gate.is-viewport .loading-card { margin-top: 0;
     width: min(calc(100cqw - 2 * var(--loading-side)), calc(2 * (var(--loading-panel-ratio)) * (100cqh - var(--loading-fixed)) + 60 * var(--loading-unit)));
     margin-top: calc(10 * var(--loading-unit));
   }
-  .loading-gate.is-viewport .loading-comic-title { font-size: var(--loading-title-size); }
-  .loading-gate.is-viewport .loading-comic-caption { font-size: var(--loading-note-size); }
-  .loading-gate.is-viewport .loading-gauge { margin-top: calc(12 * var(--loading-unit)); }
-  .loading-gate.is-viewport .loading-status { margin-top: calc(6 * var(--loading-unit)); font-size: var(--loading-status-size); }
-  .loading-gate.is-viewport .loading-proceed { margin: calc(4 * var(--loading-unit)) 0 calc(8 * var(--loading-unit)); min-height: 0; padding: calc(3 * var(--loading-unit)) calc(16 * var(--loading-unit)); font-size: var(--loading-proceed-size); line-height: 1.3; }
+  .loading-gate.is-viewport .loading-comic-title { font-size: var(--loading-title-size); margin-bottom: calc(2 * var(--loading-unit)); }
+  .loading-gate.is-viewport .loading-comic-caption { font-size: var(--loading-note-size); margin-top: calc(2 * var(--loading-unit)); }
+  .loading-gate.is-viewport .loading-gauge { margin-top: calc(10 * var(--loading-unit)); }
+  .loading-gate.is-viewport .loading-status { margin-top: calc(4 * var(--loading-unit)); font-size: var(--loading-status-size); }
+  .loading-gate.is-viewport .loading-proceed { margin: calc(4 * var(--loading-unit)) 0 calc(4 * var(--loading-unit)); min-height: 0; padding: calc(3 * var(--loading-unit)) calc(16 * var(--loading-unit)); font-size: var(--loading-proceed-size); line-height: 1.3; }
 }
 
 @media (prefers-reduced-motion: reduce) {
