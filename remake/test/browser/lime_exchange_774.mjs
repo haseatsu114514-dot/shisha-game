@@ -10,8 +10,10 @@ const root = path.resolve(fileURLToPath(new URL('../../..', import.meta.url)));
 const out = path.resolve(process.env.QA_OUT || '.codex/artifacts/lime-exchange-774');
 await fs.mkdir(out, { recursive: true });
 // Use the production shell/styles. Deliberately omit boot/loadAll and unrelated assets.
-const html = (await fs.readFile(path.join(root, 'remake/index.html'), 'utf8'))
-  .split('<script>')[0] + '</body></html>';
+// 本体の起動スクリプトは #boot の後ろ。#boot より前の小さな先読み（LDC41 の漫画の先読み・<head> 内）は動かさない。
+const indexHtml = await fs.readFile(path.join(root, 'remake/index.html'), 'utf8');
+const html = indexHtml.slice(0, indexHtml.indexOf('<script>', indexHtml.indexOf('id="boot"')))
+  .replace(/<script>[\s\S]*?<\/script>/g, '') + '</body></html>';
 const mime = { '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css',
   '.json': 'application/json', '.html': 'text/html', '.png': 'image/png',
   '.webp': 'image/webp', '.woff2': 'font/woff2' };

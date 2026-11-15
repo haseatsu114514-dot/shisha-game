@@ -2965,7 +2965,7 @@
       "id": "lime_hiyori_dream",
       "sender": "hiyori",
       "trigger_condition": "flag",
-      "trigger_flag": "_hiyori_tonari_return_done",
+      "trigger_flag": "_hiyori_tonari_followup_done",
       "type": "chat",
       "messages": [
         {

@@ -498,12 +498,14 @@ reset({ chapter: 1, day: 6, contacts: ["hiyori"], flags: { _lime_contact_hiyori:
 assert(phone.morningMessages().some((m) => m.id === "lime_hiyori_charm"), "相席のあと、席の話が届く");
 reset({ chapter: 1, day: 6, contacts: ["hiyori"], flags: { _lime_contact_hiyori: true, _hiyori_peach_talk_done: true } });
 assert(phone.morningMessages().some((m) => m.id === "lime_hiyori_peach"), "桃の話のあと、本音のひとことが届く");
-// 夢の話（SPC11）: 一通目が「朝まで……」で止まり、続きで飲み明かす夢と分かる。tonariでの再会の後に届く。
-reset({ chapter: 1, day: 6, contacts: ["hiyori"], flags: { _lime_contact_hiyori: true } });
-assert(!phone.morningMessages().some((m) => m.id === "lime_hiyori_dream"), "tonariでの再会の前は夢の話が届かない");
-// 同じ人からは1朝1話題。外出の誘い（lime_outing_hiyori_1）を受け取った後の朝で確かめる
+// 夢の話（SPC11）: 一通目が「朝まで……」で止まり、続きで飲み明かす夢と分かる。
+// 涙の再会の翌朝には届けず、再会の続き（hiyori_tonari_followup）を読んだ後に届く。
+const hiyoriDream = () => phone.morningMessages().some((m) => m.id === "lime_hiyori_dream");
 reset({ chapter: 1, day: 6, contacts: ["hiyori"], flags: { _lime_contact_hiyori: true, _hiyori_tonari_return_done: true, _invited_lime_outing_hiyori_1: true } });
-assert(phone.morningMessages().some((m) => m.id === "lime_hiyori_dream"), "再会のあと、夢の話が届く");
+assert(!hiyoriDream(), "再会の直後には夢の話が届かない");
+// 同じ人からは1朝1話題。外出の誘い（lime_outing_hiyori_1）を受け取った後の朝で確かめる
+reset({ chapter: 1, day: 6, contacts: ["hiyori"], flags: { _lime_contact_hiyori: true, _hiyori_tonari_return_done: true, _hiyori_tonari_followup_done: true, _invited_lime_outing_hiyori_1: true } });
+assert(hiyoriDream(), "再会の続きのあと、夢の話が届く");
 reset({ day: 3, contacts: ["naru"] }); const naruDayOff = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert(naruDayOff); assert(naruDayOff.messages.some((line) => /休み/.test(typeof line === "string" ? line : line.text)));
 state.day = 4; const naruTemporary = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert.equal(naruTemporary.time_slot, "noon"); assert(naruTemporary.temporary_closed);
 // 次の私服の約束を定休日だけに縛らない。配信した時点で本文と予約時刻を一緒に確定。
@@ -972,8 +974,6 @@ assert.equal(state.pendingInvite.visitSpot, "naru");
 assert.equal(state.inbox[0].result, "accepted");
 assert(state.flags._invited__hiyori_shop_c2_d8);
 await closeThread(session);
-// 同じ再会の旗で届く夢の話（SPC11）は、この朝より前に受け取って読んだことにする（数えるのは保存済みの誘いだけ）
-state.inbox.push(item(allMessages.find((m) => m.id === "lime_hiyori_dream"), { read: true, done: true }));
 assert.equal(phone.deliverMorning(), 0, "Saved dynamic ID must not be delivered twice");
 assert.equal(JSON.stringify(db.limeTemplates), templateBefore);
 console.log("PASS #2035: old saved dynamic ID, acceptance event, destination and history");
