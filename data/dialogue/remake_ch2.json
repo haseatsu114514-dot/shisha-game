@@ -6,6 +6,7 @@
       "lines": [
         {
           "speaker": "",
+          "face": "",
           "text": "なるとの約束を果たした、その翌朝。tonariのカウンターに、次の大会の案内が置かれていた。"
         },
         {
@@ -21,45 +22,42 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "ああ。今日は先に、会場まで行ってこい。C.STATION柚ヶ谷店と同じビルのホールだ"
+          "text": "ああ。ちょうどいい。今日は柚ヶ谷まで、配達を頼みたかったところだ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "会場はC.STATION柚ヶ谷店と同じビルのホールだ。入口と搬入場所も、ついでに見とけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "配達のついでに、会場の下見ですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "柚ヶ谷は、県でいちばんシーシャ屋が多い街だ。客も多いが、合わねえ店はすぐ消える"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "あの街で店を続けてるってだけで、腕は本物だ。県大会の上のほうは、毎年ほとんど柚ヶ谷の店主だよ"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "同じC.STATIONでも、ホールは違うんですね"
+          "text": "……その街の大会に、俺が出るんですね"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "規模も違う。入口と搬入場所、今のうちに見とけ"
+          "text": "届け先も、そういう店だ。渡すついでに、顔を見てこい"
         },
         {
           "speaker": "",
+          "face": "",
           "text": "案内を折って、鞄にしまう。大会の採点表も、その下に入っていた。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……周りのお店も、少し見ていいですか？"
-        },
-        {
-          "speaker": "sumi",
-          "face": "smile",
-          "text": "いいぞ。会場だけ分かれば、寄り道もしてこい"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "じゃあ、行ってきます"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "おう。帰ってきたら、見たもんを聞かせろ"
-        },
-        {
-          "speaker": "",
-          "text": "案内を入れた鞄の口を閉じて、出発の準備を整える。"
         }
       ]
     },
