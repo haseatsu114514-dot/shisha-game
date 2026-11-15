@@ -312,7 +312,7 @@
     },
     {
       "dialogue_id": "ch4_steve_dubai",
-      "comment": "SPC21（2026-11-15 オーナー決定）。♥5の男の友人の到着。スティーブはSmoke & Gloryの本社の出張（中東の店のレシピの見直し）。日程が大会と重なったのは「偶然」。体格や食べ物の好みを笑いの種にしない。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
+      "comment": "SPC21・SPC23（2026-11-15 オーナー指示「スティーブは個人店でいい　でも店開けて来てくれる」）。♥5の男の友人の到着。Smoke & Gloryはスティーブの個人店で、店を閉めて来る。タイマーの癖を一つ。体格や食べ物の好みを笑いの種にしない。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
       "lines": [
         {
           "speaker": "",
@@ -332,42 +332,42 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "スティーブさん！？ どうしてドバイに"
+          "text": "スティーブさん！？ お店は……"
         },
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "出張だ。本社が、中東の店のレシピを見直したいらしい"
-        },
-        {
-          "speaker": "steve",
-          "face": "normal",
-          "text": "日本支部から一人出せと言われてな。手を挙げたのは、俺だけだった"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "ほかの皆さんは、来たがらなかったんですか"
-        },
-        {
-          "speaker": "steve",
-          "face": "normal",
-          "text": "時差があるからな。それに、日程がちょうど大会と重なってた"
+          "text": "閉めてきた。俺の店だ、閉める日も俺が決める"
         },
         {
           "speaker": "steve",
           "face": "smile",
-          "text": "……偶然だ。イエス、完全な偶然だ"
+          "text": "入口の札の横に、タイマーを置いてきた。帰る日の開店時刻に合わせてある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そんなに長く、電池が持つんですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "ノー、ノー。……それは考えてなかった"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "（日程を組んだのは、たぶん本人だ）"
+          "text": "（帰ったら、たぶん止まってる）"
         },
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "会議は明日の朝で終わる。あとは客席で、ハジメの熱の待ち方を見る"
+          "text": "いいんだ。待つのは得意だが、ハジメの世界の卓は、待ってくれないからな"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "明日は客席で、ハジメの熱の待ち方を見る"
         },
         {
           "speaker": "",

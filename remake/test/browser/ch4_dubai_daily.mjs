@@ -634,7 +634,7 @@ await suite("ch4-dubai-daily", async check => {
     }
     const eveCard = `${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`;
     await page.locator(eveCard).waitFor({ timeout: 60000 });
-    assert((await backlog(page)).some(line => line.includes("完全な偶然だ")), "Steve's arrival was read");
+    assert((await backlog(page)).some(line => line.includes("それは考えてなかった")), "Steve's arrival was read");
     const before = await get(page);
     await page.locator(dt("ch4-go-beach")).click();
     await page.locator(dt("ch4-beach")).waitFor({ timeout: 60000 });
