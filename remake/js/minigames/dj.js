@@ -67,6 +67,29 @@ export const DJ_NIGHT = Object.freeze({ id: "dj", place: "club", label: "クラ�
 export const DJ_NIGHT_FIRST = Object.freeze({ id: "dj", place: "club_unknown", label: "地下から低い音がする店をのぞく",
   reasonText: "路地の下から、音が上がってくる" });
 export const clubKnown = value => value?.flags?.[CLUB_MET_FLAG] === true;
+
+// セットの後のヨルとの会話（ミニゲームのドラマ・2026-11-15 オーナー「始めるきっかけや途中や一区切り」・SPC26）。
+// きっかけ＝初めての夜（ch3_club_first）、最初の手応え＝初めてAランク以上（ch3_club_a_talk）、
+// 途中＝通算3セット目で常連から初めてのリクエスト（ch3_club_request）、
+// 一区切り＝三つのセットすべてでA以上を出した夜、閉店前の三十分をヨルと交代で回す（ch3_club_last_set）。
+// どれも一度だけで、1回のセットの後に読むのは一つまで（先に来たものから）。時間・お金・体力・好感度は変えない。
+export const CLUB_A_TALK_FLAG = "_club_yoru_a_talk";
+export const CLUB_REQUEST_FLAG = "_club_yoru_request";
+export const CLUB_LAST_SET_FLAG = "_club_yoru_last_set";
+export const CLUB_REQUEST_PLAYS = 3;
+const high = rank => rank === "A" || rank === "S";
+/** 今のセットの結果（results）の後に読む会話 { scene, flag }。無ければ null。状態は変えない。 */
+export function djTalkAfterSet(s, results = []) {
+  const flags = s?.flags || {};
+  if (results.some(item => high(item?.rank)) && flags[CLUB_A_TALK_FLAG] !== true) return { scene: "ch3_club_a_talk", flag: CLUB_A_TALK_FLAG };
+  const { sets } = djRecords(s);
+  if (flags[CLUB_A_TALK_FLAG] === true && flags[CLUB_LAST_SET_FLAG] !== true && DJ_SETS.every(set => high(sets[set.id].best?.rank))) {
+    return { scene: "ch3_club_last_set", flag: CLUB_LAST_SET_FLAG };
+  }
+  const plays = Object.values(sets).reduce((sum, item) => sum + item.plays, 0);
+  if (plays >= CLUB_REQUEST_PLAYS && flags[CLUB_REQUEST_FLAG] !== true) return { scene: "ch3_club_request", flag: CLUB_REQUEST_FLAG };
+  return null;
+}
 export function djNightChoices(value, window) {
   if (value?.chapter !== 3 || !window || window.slot !== 1) return [];
   return [{ ...(clubKnown(value) ? DJ_NIGHT : DJ_NIGHT_FIRST), ok: true, consumes: false, dj: true }];

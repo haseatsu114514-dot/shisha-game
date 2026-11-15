@@ -136,7 +136,7 @@ check("the club owner is a venue host with an intro cut-in; the club script name
   const yoru = JSON.parse(fs.readFileSync(new URL("../../data/characters.json", import.meta.url), "utf8")).find(c => c.id === "yoru");
   assert.equal(yoru.role, "venue_host"); assert.equal(yoru.display_name, "針間ヨル"); assert.equal(yoru.affiliation, "クラブSEAM"); assert.ok(yoru.intro_cutin?.title && yoru.intro_cutin.line);
   const script = Object.fromEntries(JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_club.json", import.meta.url), "utf8")).dialogues.map(d => [d.dialogue_id, d]));
-  for (const id of ["ch3_club_first", "ch5_club_first", "ch3_club_first_after", "ch3_club_a_talk", "venue_yoru_greet", "venue_yoru_return", ...dj.DJ_RANKS.map(rank => `venue_yoru_set_${rank}`)]) assert.ok(script[id]?.lines?.length, id);
+  for (const id of ["ch3_club_first", "ch5_club_first", "ch3_club_first_after", "ch3_club_a_talk", "ch3_club_request", "ch3_club_last_set", "venue_yoru_greet", "venue_yoru_return", ...dj.DJ_RANKS.map(rank => `venue_yoru_set_${rank}`)]) assert.ok(script[id]?.lines?.length, id);
   for (const id of ["ch3_club_first", "ch5_club_first"]) {
     const before = script[id].lines;
     assert.match(before.at(-1).text, /針間ヨル/, `${id}: the first part ends with her name; dj-club.js plays her cut-in before the rest`);
@@ -149,6 +149,33 @@ check("the club owner is a venue host with an intro cut-in; the club script name
   assert.ok(!JSON.stringify(script).includes("set_flag"), "met and cut-in come from playIntro, not from new literal flags");
   for (const d of Object.values(script)) for (const line of d.lines) if (line.speaker !== undefined) assert.ok(["", "hajime", "yoru"].includes(line.speaker), line.speaker);
   assert.doesNotMatch(JSON.stringify(script), /大会|全国|味覚|恋人/, "no tournament, taste or romance assumptions (no before/after branch needed)");
+});
+check("talks after a set (SPC26): first A, then a regular's request on the 3rd set, then the closing B2B once every set is A or better", () => {
+  const talk = (s, results = []) => dj.djTalkAfterSet(s, results)?.scene ?? null;
+  const s = { chapter: 3, day: 12, flags: {} };
+  dj.recordDjResult(s, msg(1, "B", 70));
+  assert.equal(talk(s, [msg(1, "B", 70)]), null, "nothing after a first B");
+  dj.recordDjResult(s, msg(1, "A", 82));
+  assert.equal(talk(s, [msg(1, "A", 82)]), "ch3_club_a_talk", "the first A comes first");
+  s.flags[dj.CLUB_A_TALK_FLAG] = true;
+  assert.equal(talk(s, [msg(1, "A", 82)]), null, "two sets only: no request yet");
+  dj.recordDjResult(s, msg(2, "B", 66));
+  assert.equal(talk(s, [msg(2, "B", 66)]), "ch3_club_request", "the third set brings the regular's request");
+  s.flags[dj.CLUB_REQUEST_FLAG] = true;
+  assert.equal(talk(s, [msg(2, "B", 66)]), null);
+  dj.recordDjResult(s, msg(2, "A", 84)); dj.recordDjResult(s, msg(3, "B", 61));
+  assert.equal(talk(s, [msg(3, "B", 61)]), null, "SET 3 still below A");
+  dj.recordDjResult(s, msg(3, "S", 93));
+  assert.equal(talk(s, [msg(3, "S", 93)]), "ch3_club_last_set", "every set A or better: the closing B2B");
+  s.flags[dj.CLUB_LAST_SET_FLAG] = true;
+  assert.equal(talk(s, [msg(3, "S", 93)]), null, "once each");
+  // 一度に一つまで: 初めてのAと全セットA以上が同じ夜に重なっても、先に初めてのAだけ
+  const both = { flags: {} };
+  for (const set of [1, 2, 3]) dj.recordDjResult(both, msg(set, "A", 80));
+  assert.equal(talk(both, [msg(3, "A", 80)]), "ch3_club_a_talk");
+  both.flags[dj.CLUB_A_TALK_FLAG] = true;
+  assert.equal(talk(both, [msg(3, "A", 80)]), "ch3_club_last_set");
+  assert.equal(dj.djTalkAfterSet(null), null);
 });
 check("SBD39: an A (or S) best gives one sense ember at bedtime, once; B does not", () => {
   const s = { chapter: 3, flags: {}, trpg: { cleared: {} }, kuji: {} };

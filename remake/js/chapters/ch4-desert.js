@@ -142,7 +142,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       if (markNaruMet(owner)) save();
       showScreen("none", null);
     }
-    let firstWin = false, firstNaruWin = false;
+    let firstWin = false, firstNaruWin = false, thirdWin = false;
     const { results } = await runDesertRide({
       host: host || document.getElementById("stage") || layers.screen, signal, tutorial: status.first,
       best: before.best, legacyBest: before.legacyBest,
@@ -155,6 +155,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
         save();
         if (saved.firstWin) firstWin = true;
         if (saved.firstNaruWin) firstNaruWin = true;
+        if (saved.thirdWin) thirdWin = true;
         const best = saved.newBest && !saved.firstClear ? " 自己ベスト更新" : "";
         if (saved.who === "naru") toast(`${naruName}「${firstLine(saved.won ? DESERT_NARU_LINES.win : DESERT_NARU_LINES.lose)}」${best}`, { kind: "good" });
         else toast(`${name}「${firstLine(saved.won ? DESERT_RACE_WIN_LINE : `venue_noor_result_${result.rank}`)}」${best}`, { kind: "good" });
@@ -168,6 +169,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     if (firstWin && !await read(DESERT_SCENES.raceFirstWin, bgUrl(DESERT_BG))) return changed;
     // 初めてなるに勝った日も、夕日の前に一言
     if (firstNaruWin && !await read(DESERT_SCENES.naruFirstWin, bgUrl(DESERT_BG))) return changed;
+    // ヌールに3回目に勝った日は、夕日の写真をもらう（一区切り・SPC26。勝ち数で一度だけ決まるので既読の旗は要らない）
+    if (thirdWin && !await read(DESERT_SCENES.raceThirdWin, bgUrl(DESERT_BG))) return changed;
     if (confessionDay) {
       const { romanceRouteOpen } = await import("../daily/romance.js");
       if (current() && romanceRouteOpen(DESERT_GUIDE)) {

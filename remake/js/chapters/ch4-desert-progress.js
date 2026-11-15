@@ -47,7 +47,10 @@ export const DESERT_RIDE_PRICE = 6000; // 2回目以降のサンドボード（2
 // 好感度の段階の境目（core/stats.js の AFFINITY_RANK_PTS と同じ。このファイルは単体で読み込めるよう import しない）
 const HEART_PTS = Object.freeze([0, 9, 20, 33, 48, 66]);
 export const DESERT_SCENES = Object.freeze({ arrive: "ch4_desert_arrive", again: "ch4_desert_again", sunsetFirst: "ch4_desert_sunset_first", sunsetAgain: "ch4_desert_sunset_again",
-  raceFirstWin: "ch4_desert_race_first_win", naruArrive: "ch4_desert_naru_arrive", naruFirstWin: "ch4_desert_naru_first_win" });
+  raceFirstWin: "ch4_desert_race_first_win", naruArrive: "ch4_desert_naru_arrive", naruFirstWin: "ch4_desert_naru_first_win",
+  // 一区切り（ミニゲームのドラマ・SPC26）: 競走でヌールに3回目に勝った日、夕日の写真をもらう
+  raceThirdWin: "ch4_desert_race_third_win" });
+export const DESERT_THIRD_WIN = 3;
 /** 競走でヌールに勝った完走のひとこと（ランクのひとことの代わり）。 */
 export const DESERT_RACE_WIN_LINE = "venue_noor_race_win";
 /** なる（裏の相手）との競走のひとこと。 */
@@ -252,7 +255,7 @@ export function markNaruMet(value) {
  * 完走を記録する。自己ベストは点数で比べる。初めての完走だけ awardExp（growth.js の awardActionExp）を呼ぶ。二度目以降は呼ばない。
  * 競走でヌールに勝った回数（wins）も数える。
  * なる（裏の相手）に勝った回数は naruWins。
- * 戻り値: { entry, newBest, firstClear, exp, won, firstWin, who, firstNaruWin } か、形の合わない結果なら null。
+ * 戻り値: { entry, newBest, firstClear, exp, won, firstWin, who, firstNaruWin, thirdWin } か、形の合わない結果なら null。
  */
 export function recordDesertResult(value, data, { awardExp = null } = {}) {
   const result = readResult(data);
@@ -267,6 +270,7 @@ export function recordDesertResult(value, data, { awardExp = null } = {}) {
   const firstClear = !before.firstClear;
   const who = result.race?.who === "naru" ? "naru" : "noor", won = result.race?.won === true;
   const firstWin = won && who === "noor" && before.wins === 0, firstNaruWin = won && who === "naru" && before.naruWins === 0;
+  const thirdWin = won && who === "noor" && before.wins === DESERT_THIRD_WIN - 1;
   const desert = { ...(legacyBest ? { legacyBest } : {}), runs: before.runs + 1, best: newBest ? result : before.best,
     firstClear: before.firstClear || { chapter: Number.isInteger(value.chapter) ? value.chapter : null, day: Number.isInteger(value.day) ? value.day : 0 },
     rewarded: before.rewarded, wins: before.wins + (won && who === "noor" ? 1 : 0), naruMet: before.naruMet, naruWins: before.naruWins + (won && who === "naru" ? 1 : 0) };
@@ -278,7 +282,7 @@ export function recordDesertResult(value, data, { awardExp = null } = {}) {
   desert.bestRank = before.bestRank && rankAtLeast(before.bestRank, desert.best.rank) ? before.bestRank : desert.best.rank;
   value.desert = desert;
   recordPlayMastery(value, "desert", result, `${value.cycle || 1}:${desert.runs}`);
-  return { entry: result, newBest, firstClear, exp, won, firstWin, who, firstNaruWin };
+  return { entry: result, newBest, firstClear, exp, won, firstWin, who, firstNaruWin, thirdWin };
 }
 
 /** 遊びのご褒美の判定（growth.js が読む）: 自己ベストが need 以上か。 */

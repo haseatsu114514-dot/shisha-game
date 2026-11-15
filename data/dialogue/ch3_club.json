@@ -99,6 +99,39 @@
     { "dialogue_id": "venue_yoru_set_S", "lines": [{ "speaker": "yoru", "face": "smile", "text": "最後まで手が上がってた。今夜のSEAMは、はじめくんの夜だね" }] },
     { "dialogue_id": "venue_yoru_set_A", "lines": [{ "speaker": "yoru", "face": "smile", "text": "いいつなぎ。つなぎ目、誰も気づいてなかったよ" }] },
     { "dialogue_id": "venue_yoru_set_B", "lines": [{ "speaker": "yoru", "face": "normal", "text": "悪くない。入りは頭で、フェーダーはもう少しゆっくり" }] },
-    { "dialogue_id": "venue_yoru_set_C", "lines": [{ "speaker": "yoru", "face": "normal", "text": "最初はみんなそう。次は、数字の0で▶だけ考えてみな" }] }
+    { "dialogue_id": "venue_yoru_set_C", "lines": [{ "speaker": "yoru", "face": "normal", "text": "最初はみんなそう。次は、数字の0で▶だけ考えてみな" }] },
+    {
+      "dialogue_id": "ch3_club_request",
+      "comment": "ミニゲームのドラマの途中（SPC26・2026-11-15 オーナー指示）。通算3セット目の後に一度だけ（dj.js の djTalkAfterSet）。常連から初めてのリクエスト。同じ注文に同じじゃない一台、という店の話へつなぐ。時間・お金・体力・好感度は変えない。",
+      "lines": [
+        { "speaker": "", "text": "ブースを降りかけた時、フロアの端から声が飛んできた。" },
+        { "speaker": "", "text": "常連らしい人が、指を一本立てて叫んでいる。「さっきの二曲目のつなぎ、もう一回！」" },
+        { "speaker": "hajime", "face": "surprise", "text": "（……俺に、リクエスト？）" },
+        { "speaker": "yoru", "face": "smile", "text": "来たね。この店で最初のリクエストをもらったら、もう客じゃない" },
+        { "speaker": "hajime", "face": "normal", "text": "でも、同じつなぎをもう一回できる自信がないです" },
+        { "speaker": "yoru", "face": "normal", "text": "同じじゃなくていいの。あの人は、さっきの夜の続きが聴きたいだけ" },
+        { "speaker": "", "text": "もう一度ブースに戻る。同じ曲の、さっきとは違う八小節で渡した。" },
+        { "speaker": "", "text": "さっきの常連が、両手を上げた。「……あ、今のもいい！」" },
+        { "speaker": "hajime", "face": "smile", "text": "（同じ注文に、同じじゃない一台……店と同じだ）" },
+        { "speaker": "yoru", "face": "smile", "text": "ほらね。リクエストは宿題じゃなくて、手紙なんだよ" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_club_last_set",
+      "comment": "ミニゲームのドラマの一区切り（SPC26・2026-11-15 オーナー指示）。三つのセットすべてでA以上を出した夜に一度だけ（dj.js の djTalkAfterSet）。閉店前の三十分をヨルと交代で回す（B2B）。時間・お金・体力・好感度は変えない。",
+      "lines": [
+        { "speaker": "", "text": "閉店の三十分前。ヨルさんが、ブースの横からヘッドホンを差し出した。" },
+        { "speaker": "yoru", "face": "normal", "text": "今夜の最後の三十分、あたしと交代で回して" },
+        { "speaker": "hajime", "face": "surprise", "text": "最後って、一番大事なところじゃないですか" },
+        { "speaker": "yoru", "face": "smile", "text": "だから頼んでるの。三つのセット、全部でフロアを揺らした人にしか頼まない" },
+        { "speaker": "", "text": "一曲ずつ交代でつないでいく。ヨルさんの八小節に、俺の八小節を重ねる。" },
+        { "speaker": "hajime", "face": "normal", "text": "（相手の曲を消さないように、片方を少し引く。……ヨルさんも、同じことをしてる）" },
+        { "speaker": "", "text": "最後の曲が終わって、フロアの明かりが上がった。誰かが、小さく拍手をした。" },
+        { "speaker": "yoru", "face": "smile", "text": "いい夜だった。……はじめくんの名前、黒板に書いといていい？" },
+        { "speaker": "hajime", "face": "normal", "text": "黒板、ですか" },
+        { "speaker": "yoru", "face": "normal", "text": "「今夜のB2B」。消すのは、次にあたしが誰かと回した夜" },
+        { "speaker": "hajime", "face": "smile", "text": "（人の曲だけで作った夜に、俺の名前が残る）" }
+      ]
+    }
   ]
 }

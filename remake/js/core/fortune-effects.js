@@ -107,3 +107,12 @@ export function fortuneChoiceIndex(save, dialogueId, line, data) {
   const c = line.choices[index];
   return !c || c.condition_type === 'money' && save.money < Number(c.threshold || 0) ? -1 : index;
 }
+
+// 占ってもらった回数と、一区切りの場面（ミニゲームのドラマ・2026-11-15 オーナー「始めるきっかけや途中や一区切り」・SPC26）。
+// きっかけ＝初対面（remake_fortune_first）、一区切り＝通算 FORTUNE_STORY_AT 回目の後に一度（remake_fortune_story。daily/fortune.js）。
+export const FORTUNE_READINGS = "_fortune_readings";
+export const FORTUNE_STORY_FLAG = "_fortune_story_done";
+export const FORTUNE_STORY = "remake_fortune_story";
+export const FORTUNE_STORY_AT = 3;
+export const fortuneReadings = value => Number.isInteger(value?.flags?.[FORTUNE_READINGS]) && value.flags[FORTUNE_READINGS] > 0 ? value.flags[FORTUNE_READINGS] : 0;
+export const fortuneStoryDue = value => fortuneReadings(value) >= FORTUNE_STORY_AT && value?.flags?.[FORTUNE_STORY_FLAG] !== true;
