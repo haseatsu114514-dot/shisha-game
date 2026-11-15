@@ -1,9 +1,9 @@
 {
-  "comment": "♥5の男の友人の到着（SPC21・2026-11-15 オーナー決定）。友人ルートの締めくくりを済ませ、ドバイへ来る自分の理由がある3人（アダム・スティーブ・ヴォルク）だけ。出発前の同行の選択で確定する（core/overseas-companion.js の overseasGuestVisitors）。神崎は来たいが店を空けられない（LIME）。綾取は福岡で配信を見る。クラウドは来ない。",
+  "comment": "♥5の男の友人の到着（SPC21・SPC22・2026-11-15 オーナー指示）。友人ルートの締めくくり（♥5）を済ませた6人（アダム・神崎・クラウド・綾取・スティーブ・ヴォルク）。出発前の同行の選択で確定する（core/overseas-companion.js の overseasGuestVisitors）。スミさんはtonariの留守番で来ない。",
   "dialogues": [
     {
       "dialogue_id": "ch4_adam_dubai",
-      "comment": "SPC21（2026-11-15 オーナー決定・同日訂正）。♥5の男の友人の到着。アダムは本場のダブルアップルを吸いに来る。私生活のポンコツ（服の裏表）を一つだけ。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
+      "comment": "SPC21・SPC22（2026-11-15 オーナー指示）。♥5の男の友人の到着。アダムは本場のダブルアップルと、はじめの世界の卓を見に来る。私生活のポンコツ（服の裏表）を一つだけ。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
       "lines": [
         {
           "speaker": "",
@@ -23,7 +23,7 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "本場のダブルアップルを、本場の空気で吸いに来た"
+          "text": "目的は二つ。本場のダブルアップルと、お前の世界の卓だ"
         },
         {
           "speaker": "hajime",
@@ -73,12 +73,7 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "礼を言う。……それと、お前の大会も見ていく"
-        },
-        {
-          "speaker": "adam",
-          "face": "serious",
-          "text": "同じ卓で負けた者として、見届けねばならん"
+          "text": "礼を言う。……同じ卓で負けた者として、明日は客席で見届ける"
         },
         {
           "speaker": "hajime",
@@ -94,6 +89,224 @@
           "speaker": "adam",
           "face": "normal",
           "text": "明日の客席でリンゴの匂いがしたら、それは俺だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_kumicho_dubai",
+      "comment": "SPC22（2026-11-15 オーナー指示「神崎は部下に任せる」）。♥5の男の友人の到着。神崎は店を部下（うちの若いの）に任せて来る。ついでにサウナ巡り。正体は断定しない。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーの空気が、少し張りつめていた。白いチェックのスーツが、受付の前に立っている。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう、あんちゃん。砂の国でも、ちゃんと飯は食ってなさるかい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "神崎さん！？ お店は……"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "うちの若いのに任せてきやした。長い休みなんざ、何年ぶりですかね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "炭の番は一から叩き込んである。俺がいなくても、煙は穏やかでさ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "わざわざ、俺の大会のために……"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "そいつが半分。もう半分は、こっちでさ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんが、上着の内側から折りたたんだ紙を出した。手書きで「ドバイ サウナ巡り」とある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ドバイまで来て、サウナですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "砂の国の熱波師が、どんな風を送るか。確かめねえで帰れやせん"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "水風呂がシングルの店を、三つ見つけてありやす。大会の後、一軒付き合いなせえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……大会が終わったら、ぜひ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今夜、前夜祭があるんです。少し顔を出してきます"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう、いってらっしゃい。俺は一軒目で、汗を流してきやす"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_rei_dubai",
+      "comment": "SPC22（2026-11-15 オーナー指示「クラウドは店開けてきてくれる」）。♥5の男の友人の到着。クラウドは店を閉めて（札は「遠征のため休演」）来る。人見知りで、近づきすぎては引きすぎる。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーの柱の陰から、黒いロングコートの裾がはみ出していた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……クラウドさん？"
+        },
+        {
+          "speaker": "rei",
+          "face": "surprise",
+          "text": "……見つかった"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "店は、閉めてきた。札には「遠征のため休演」って書いた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "休演……ライブみたいですね"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "同士の世界大会だ。……行かない理由が、なかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それで、どうして柱の陰に"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……ロビーで「来たよ」って言う練習を、機内で三十回した。本番に弱い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（それで、柱から出られなかったのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "コートの下は半袖だった。十二月のドバイは、コートには少し暑い。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……コートは、衣装だから。脱げない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今夜、前夜祭があるんです。少し顔を出してきます"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……うん。明日、客席で手を上げる。たぶん、小さく"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_saku_dubai",
+      "comment": "SPC22（2026-11-15 オーナー指示「あやとりは地元帰る前に時間あるしくる　地元でバイトもいる設定に」）。♥5の男の友人の到着。綾取は全国大会の後、福岡へ戻る前に時間ができて来る。福岡の店にはバイトがいる。来た保存では福岡にいる前提の第4章のLIME（lime_ch4_saku_stream・lime_ch4_saku_steve_note）は届かない（phone.js）。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーのソファで、墨黒の仕事着の男が、白紙のカードを指で回していた。"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "はじめくん。僕、今ごろ福岡にいる予定だったんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "綾取さん！？ どうしてドバイに"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "戻る前に、少しだけ時間ができてね。福岡の店は、バイトの子が回してくれてる"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "戻ったら、また店に立ちっぱなしだから。その前に、世界の卓を見ておきたかった"
+        },
+        {
+          "speaker": "saku",
+          "face": "smug",
+          "text": "……っていうのは、半分。残りは、君の答えの空欄を埋めに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "世界大会の後に書くって、言ってましたもんね"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "ましろには、まだ言ってない。驚く顔を、予想しておきたいから"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "予想しとく。ましろは驚かない。「やっぱり」って顔をする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "その予想、また外れる気がします"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "でしょ。外れるのを見に来たのも、少しある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今夜、前夜祭があるんです。少し顔を出してきます"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "いってらっしゃい。僕は、明日の客席で香りが読める位置を探しておく"
         }
       ]
     },
@@ -190,7 +403,7 @@
     },
     {
       "dialogue_id": "ch4_volk_dubai",
-      "comment": "SPC21（2026-11-15 オーナー指示「星5でくる男性キャラはもっと増やしたい」）。♥5の男の友人の到着。ヴォルクは中東の市場調査（この国の店でナイトサイドがどう届くか）。日程は大会に合わせたと正直に言う。測るのは室温と外気だけで、客の数字は数えない（人物設定）。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
+      "comment": "SPC21・SPC22（2026-11-15 オーナー指示「ヴォルク、りおはスポンサーで関係者として来る」）。♥5の男の友人の到着。ナイトサイドが大会のスポンサーで、ヴォルクは関係者として来る。測るのは室温と外気だけで、客の数字は数えない（人物設定）。凛想が来ているかには触れない（凛想は♥5か恋人の時だけ来る）。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
       "lines": [
         {
           "speaker": "",
@@ -220,17 +433,22 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "市場調査だ。この国の店で、ナイトサイドがどう届くかを見る"
+          "text": "ナイトサイドは、この大会のスポンサーだ。関係者として来た"
         },
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "日程は、大会に合わせた。お前の火も、調べる店の一つだ"
+          "text": "関係者のパスで、席は最前列にされた"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "最前列は、炭の熱で室温が違う。後ろに替えてもらう"
         },
         {
           "speaker": "hajime",
-          "face": "smile",
-          "text": "俺の火も、ですか"
+          "face": "normal",
+          "text": "（スポンサーの特等席を、温度で断る人を初めて見た）"
         },
         {
           "speaker": "volk",
@@ -238,19 +456,9 @@
           "text": "明日は客席でノートを開く。書くのは数字ではない。客席の言葉だ"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "ヴォルクさんは温度計をしまい、少しだけ声を落とした。"
-        },
-        {
           "speaker": "volk",
-          "face": "serious",
-          "text": "……凛想には言うな。休めと言った手前、俺がここで働いていると困る"
-        },
-        {
-          "speaker": "hajime",
           "face": "normal",
-          "text": "（送信の時刻で、たぶん、もうばれている）"
+          "text": "……お前の火も、その一行に入れる"
         },
         {
           "speaker": "hajime",

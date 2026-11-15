@@ -10,11 +10,12 @@ export const OVERSEAS_HEROINES = Object.freeze(["tsumugi", "minto", "rio", "ageh
 // ましろは第3章クリアが条件（mukaiの視察）。つむぎは tonari の常連として、はじめの大会を見に来る（2026-11-15 オーナー決定・SPC17）。
 const ALWAYS_SUPPORT = Object.freeze({ mashiro: value => value?.flags?._ch3_cleared === true, tsumugi: () => true });
 // ほかのヒロインは、恋人か、友人ルートの締めくくり（♥5）を済ませた友人なら応援に来る（2026-11-15 オーナー決定・SPC17）。
-// 男の友人（ヒロインではない応援）。締めくくり（♥5）を済ませていて、ドバイへ来る自分の理由がある人だけ（2026-11-15 オーナー決定・SPC21）:
-// アダムは本場のダブルアップルを吸いに、スティーブは本社の出張、ヴォルクは中東の市場調査。
-// 神崎は来たいが店を空けられない（第4章のLIME lime_ch4_kumicho_shop）。綾取は福岡で配信を見る（lime_ch4_saku_stream）。クラウドは来ない。
-// なるは選手として本編で来るので含めない。到着場面だけで、砂浜（ch4-beach.js）・前夜の過ごし方・修羅場には出さない。
-export const OVERSEAS_GUESTS = Object.freeze(["adam", "steve", "volk"]);
+// 男の友人（ヒロインではない応援）。締めくくり（♥5）を済ませた人が、それぞれの理由で来る（2026-11-15 オーナー決定・SPC21・SPC22）:
+// アダムは本場のダブルアップルとはじめの卓を見に、神崎は店を部下に任せて、クラウドは店を閉めて、綾取は福岡へ戻る前の空き時間に
+// （福岡の店にはバイトがいる）、スティーブは本社の出張、ヴォルクはスポンサー（ナイトサイド）の関係者として。
+// スミさんはtonariの留守番で来ない。なるは選手として本編で来るので含めない。
+// 到着場面だけで、砂浜（ch4-beach.js）・前夜の過ごし方・修羅場には出さない。
+export const OVERSEAS_GUESTS = Object.freeze(["adam", "kumicho", "rei", "saku", "steve", "volk"]);
 const KEY = "_overseas_companion";
 
 /** 保存された選択。無い・壊れている場合は未選択（decided:false、同行なし）。 */

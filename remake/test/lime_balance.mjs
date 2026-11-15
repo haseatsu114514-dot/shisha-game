@@ -234,7 +234,7 @@ const storyChatsRead = allMessages.filter((m) => m.type === "chat" && m.trigger_
 // #2024: 第3〜5章の物語のLIME（region で届く街を決める）と、遠征中に地元の誘いを帰るまで止めること。
 const awayStory = {
   3: ["lime_ch3_sumi_tokyo_settle"],
-  4: ["lime_ch4_sumi_settle", "lime_ch4_tsumugi_counter", "lime_ch4_mashiro_mukai", "lime_ch4_ageha_melty", "lime_ch4_saku_stream", "lime_ch4_kumicho_shop", "lime_ch4_sumi_eve"],
+  4: ["lime_ch4_sumi_settle", "lime_ch4_tsumugi_counter", "lime_ch4_mashiro_mukai", "lime_ch4_ageha_melty", "lime_ch4_saku_stream", "lime_ch4_sumi_eve"],
   5: ["lime_ch5_saku_title", "lime_ch5_kumicho_title", "lime_ch5_rei_title"],
 };
 const limeById = (id) => allMessages.find((m) => m.id === id);
@@ -325,8 +325,7 @@ for (const companion of ["ageha", null]) {
   reset({ chapter: 4, day: 60, flags: { ...storyDone, _ch2_region: "home", _ch4_prep: { startDay: 60, days: 3, step: 0, departed: false },
     _ch4: { startDay: 63, day: 1, stage: 0, part: "prologue", read: {} },
     _overseas_companion: { decided: true, companion, supports: ["tsumugi", "mashiro"] } },
-    contacts: ["sumi", "tsumugi", "mashiro", "ageha", "saku", "kumicho"], lovers: ["ageha", "tsumugi"], loverSince: { ageha: 1, tsumugi: 1 }, loveLevel: { ageha: 1, tsumugi: 1 },
-    finales: { kumicho: { day: 30, chapter: 2, route: "friend" } } }); // 神崎の「店を空けられない」（SPC21）は♥5の友人にだけ届く
+    contacts: ["sumi", "tsumugi", "mashiro", "ageha", "saku"], lovers: ["ageha", "tsumugi"], loverSince: { ageha: 1, tsumugi: 1 }, loveLevel: { ageha: 1, tsumugi: 1 } });
   const got = [];
   for (let day = 60; day <= 74; day++) {
     state.day = day;
@@ -346,15 +345,13 @@ for (const companion of ["ageha", null]) {
   if (companion) assert(!got.some((g) => g.dubai && g.sender === companion), `同行者（${companion}）はドバイでLIMEを送ってこない`);
   assert(got.some((g) => g.dubai && g.id.startsWith("_lover_morning_tsumugi")), "ドバイにいない恋人の朝のひとことは届く");
 }
-// 神崎の「応援に行きたいが店を空けられない」（SPC21）は、締めくくり（♥5）を済ませた時だけ。連絡先だけでは届かない。
-{
-  reset({ chapter: 4, day: 72, flags: { ...storyDone, _ch2_region: "dubai", _ch4_prep: { startDay: 60, days: 3, step: 0, departed: true },
-    _ch4: { startDay: 63, day: 10, stage: 0, part: "free", read: {} },
-    _overseas_companion: { decided: true, companion: null, supports: ["tsumugi", "mashiro"] } }, contacts: ["kumicho"] });
-  assert(!phone.morningMessages({ fixedNight: () => false, invitations: false }).some(m => m.id === "lime_ch4_kumicho_shop"), "♥5の前は届かない");
-  state.finales = { kumicho: { day: 30, chapter: 2, route: "friend" } };
-  assert(phone.morningMessages({ fixedNight: () => false, invitations: false }).some(m => m.id === "lime_ch4_kumicho_shop"), "♥5の後なら同じ朝に届く");
-  assert.equal(limeById("lime_ch4_kumicho_shop").route, "friend");
+// 綾取が福岡へ戻る前にドバイへ応援に来た保存（SPC22）では、福岡にいる前提の第4章のLIMEは届かない。来ていなければ届く。
+for (const guests of [["saku"], []]) {
+  reset({ chapter: 4, day: 71, flags: { ...storyDone, _ch2_region: "dubai", _ch4_prep: { startDay: 60, days: 3, step: 0, departed: true },
+    _ch4: { startDay: 63, day: 9, stage: 0, part: "free", read: {} }, _ch3_read_ch3_saku_steve_notes: true,
+    _overseas_companion: { decided: true, companion: null, supports: ["tsumugi", "mashiro"], guests } }, contacts: ["saku"] });
+  const ids = phone.morningMessages({ fixedNight: () => false, invitations: false }).map(m => m.id);
+  assert.equal(ids.some(id => /^lime_ch4_saku_/.test(id)), guests.length === 0, `綾取のドバイ来訪 ${JSON.stringify(guests)}: ${ids}`);
 }
 console.log("[#2024] PASS Dubai story LIME: once each in its Dubai window, none on prep days, nothing from the companion");
 

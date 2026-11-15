@@ -76,6 +76,9 @@ export const CH4_SCENE_BG = Object.freeze({
   ch4_samechan_dubai_friend: "bg_dubai_inn_day",
   ch4_hiyori_dubai_friend: "bg_dubai_inn_day",
   ch4_adam_dubai: "bg_dubai_inn_day",
+  ch4_kumicho_dubai: "bg_dubai_inn_day",
+  ch4_rei_dubai: "bg_dubai_inn_day",
+  ch4_saku_dubai: "bg_dubai_inn_day",
   ch4_steve_dubai: "bg_dubai_inn_day",
   ch4_volk_dubai: "bg_dubai_inn_day",
   // 到着の後の夕方（任意・IR18・#3097）。宿のロビー・食堂で過ごす。
@@ -204,7 +207,7 @@ export const CH4_VISITOR_SCENE_FILES = Object.freeze({
   ch4_minto_dubai: Object.freeze(["ch4_minto_dubai_girlfriend", "ch4_minto_dubai_friend"]),
   ch4_rio_dubai: Object.freeze(["ch4_rio_dubai_girlfriend", "ch4_rio_dubai_friend"]),
   ch4_ageha_dubai: Object.freeze(["ch4_ageha_dubai_girlfriend", "ch4_ageha_dubai_friend"]),
-  ch4_guests_dubai: Object.freeze(["ch4_adam_dubai", "ch4_steve_dubai", "ch4_volk_dubai"]),
+  ch4_guests_dubai: Object.freeze(["ch4_adam_dubai", "ch4_kumicho_dubai", "ch4_rei_dubai", "ch4_saku_dubai", "ch4_steve_dubai", "ch4_volk_dubai"]),
 });
 
 // 別便の応援の到着場面。恋人は data/story_routes.json の romance[id].arrival と同じ（ch4_progress.mjs が一致を確認）。
@@ -222,7 +225,8 @@ export const CH4_FRIEND_ARRIVAL_SCENES = Object.freeze({
 });
 // ♥5の男の友人の到着（SPC21）。友人だけなので一人一本。ヒロインの到着の後に OVERSEAS_GUESTS の順で読む。夕方・砂浜は無い。
 export const CH4_GUEST_ARRIVAL_SCENES = Object.freeze({
-  adam: "ch4_adam_dubai", steve: "ch4_steve_dubai", volk: "ch4_volk_dubai",
+  adam: "ch4_adam_dubai", kumicho: "ch4_kumicho_dubai", rei: "ch4_rei_dubai", saku: "ch4_saku_dubai",
+  steve: "ch4_steve_dubai", volk: "ch4_volk_dubai",
 });
 // 前夜祭（王煙楼の招待）が始まった印。ここから先は到着を足さない（ロビーの出迎えを前夜祭の後に回さない）。
 export const CH4_FESTIVAL_STARTED = Object.freeze(["ch4_wang_reception_forced_in", "ch4_wang_reception"]);
