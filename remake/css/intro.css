@@ -25,9 +25,10 @@
 /* 一言とフレーバーは下端を基準に積む。1行／2行・フレーバー有無で上へ伸びる（2026-10-31） */
 /* 苗字と名前のあいだの小さな空き（綾取 陣・神崎 竜二など） */
 .art-intro .ci-name-gap { display:inline-block; width:.22em; }
-/* 2行目の小さい名前（sub_name。本名をちょろっと添える時）: 主の名前と違い、斜めにも太くもせず普通に置く */
-.art-intro .ci-name-line.has-sub { flex-direction:column; align-items:flex-start; justify-content:center; }
-.art-intro .ci-name-sub { all:unset; display:inline-block; white-space:nowrap; margin-top:8px; font-weight:700; line-height:1.25; letter-spacing:.03em; color:#3d434c; }
+/* 2行目の小さい名前（sub_name。本名をちょろっと添える時）: 主の名前と違い、斜めにも太くもせず普通に置く。
+   色は主の名前とそろえ、主の名前の幅の中で中央に置く（ci-name-stack が主の名前の幅で縮む） */
+.art-intro .ci-name-stack { display:flex; flex-direction:column; align-items:center; }
+.art-intro .ci-name-sub { all:unset; display:inline-block; white-space:nowrap; margin-top:8px; font-weight:700; line-height:1.25; letter-spacing:.03em; color:#090e15; }
 /* 漢字の上の小さいふりがな（NAMES-1106・全員共通）。ふりがなのある名前は上に読みの分だけ空けて、帯の中に収める */
 .cutin .ci-name.has-ruby { padding-top:.26em; }
 .cutin .ci-ruby { position:relative; display:inline-block; }

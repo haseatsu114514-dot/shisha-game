@@ -82,8 +82,9 @@ export function illustratedIntro(id, variant, intro, main, portrait, art, backgr
       el("div.ci-art-meta", [
         el("div.ci-title", { text: intro.title || "" }),
         el(`div.ci-name-line${intro.sub_name ? ".has-sub" : ""}`, [
-          nameNode("span.ci-name", main),
-          ...(intro.sub_name ? [nameNode("span.ci-name-sub", intro.sub_name)] : []),
+          ...(intro.sub_name
+            ? [el("div.ci-name-stack", [nameNode("span.ci-name", main), nameNode("span.ci-name-sub", intro.sub_name)])]
+            : [nameNode("span.ci-name", main)]),
         ]),
       ]),
     ]),

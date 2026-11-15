@@ -170,6 +170,8 @@ try {
       nameSize: name ? parseFloat(getComputedStyle(name).fontSize) : 0,
       subSize: sub ? parseFloat(getComputedStyle(sub).fontSize) : 0,
       nameBottom: name ? name.offsetTop + name.offsetHeight : 0, subTop: sub?.offsetTop,
+      nameCx: name ? name.getBoundingClientRect().x + name.getBoundingClientRect().width / 2 : 0,
+      subCx: sub ? sub.getBoundingClientRect().x + sub.getBoundingClientRect().width / 2 : 0,
       subRuby: sub ? sub.querySelectorAll(".ci-ruby").length : -1,
     };
     await p;
@@ -179,6 +181,7 @@ try {
   assert.equal(reiLayout.subText, "（田中健太）");
   assert(reiLayout.subSize < reiLayout.nameSize * 0.5, `本名が大きすぎる: 本名 ${reiLayout.subSize}px / 芸名 ${reiLayout.nameSize}px`);
   assert(reiLayout.subTop >= reiLayout.nameBottom - 4, "本名が芸名の2行目に出ていない");
+  assert(Math.abs(reiLayout.subCx - reiLayout.nameCx) < 40, `本名が芸名の中央に無い: 芸名の中心 ${reiLayout.nameCx} / 本名の中心 ${reiLayout.subCx}`);
   assert.equal(reiLayout.subRuby, 0, "本名にふりがなを付けない");
   // 肩書きは別欄: スミは「はじめの師匠」、王煙楼は「マスターフーカー」。名前にはふりがなだけを付ける
   const titled = await page.evaluate(() => ["sumi", "master_hookah"].map((id) => [T.DB.characters[id].intro_cutin.title, T.intro.introName(id).source]));
