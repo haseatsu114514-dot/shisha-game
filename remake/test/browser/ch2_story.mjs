@@ -255,9 +255,12 @@ await suite('ch2-story', async check => {
     await seed(page, { day: 2 }); await atMap(page, 2, 0);
     const start = await state(page);
     let readBeforeLoad = [];
+    // DAY6・8 は朝の場面（耳鼻科・なるの店のまかない。SPC28）で昼の行動を使うので、夜の行動から
+    const morningScene = day => day === 6 || day === 8;
     for (let day = 2; day <= 13; day++) {
-      await rest(page); await atMap(page, day, 1); await rest(page);
-      if (day < 13) await atMap(page, day + 1, 0);
+      if (!morningScene(day)) { await rest(page); await atMap(page, day, 1); }
+      await rest(page);
+      if (day < 13) await atMap(page, day + 1, morningScene(day + 1) ? 1 : 0);
       if (day === 6) { // DAY7朝の保存を実LOADし、ロード前の状態が一致して既読場面を再生しないことを確かめる
         const mid = await state(page);
         readBeforeLoad = await page.evaluate(() => window.__storyTrace.slice());
