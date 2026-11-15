@@ -25,7 +25,7 @@ import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy,
   CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour, chapterFourRead,
   chapterFourDaily, enterChapterFourEve, chapterFourEveDay, chapterFourTournamentDay, chapterFourArrivalsDue,
-  CH4_ARRIVAL_SCENES, CH4_FRIEND_ARRIVAL_SCENES, chapterFourArrivalEveningsDue } from "./ch4-progress.js";
+  CH4_ARRIVAL_SCENES, CH4_FRIEND_ARRIVAL_SCENES, CH4_GUEST_ARRIVAL_SCENES, chapterFourArrivalEveningsDue } from "./ch4-progress.js";
 
 const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
@@ -492,7 +492,7 @@ async function renderBeachHub(owner) {
 async function renderArrival(owner, arrival) {
   await enterScene(bgUrl(CH4_SCENE_BG[arrival.scene]));
   if (!current(owner)) return;
-  const another = [...Object.values(CH4_ARRIVAL_SCENES), ...Object.values(CH4_FRIEND_ARRIVAL_SCENES)]
+  const another = [CH4_ARRIVAL_SCENES, CH4_FRIEND_ARRIVAL_SCENES, CH4_GUEST_ARRIVAL_SCENES].flatMap(Object.values)
     .some(id => chapterFourRead(state, id));
   const text = another ? "別の便で応援に来てくれる人が、もう一人着いたらしい。" : "別の便で応援に来てくれる人が、ドバイに着いたらしい。";
   card(owner, "arrival", `DAY ${chapterFourEveDay(state)}・前夜祭の日`, text, [

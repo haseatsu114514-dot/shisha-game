@@ -619,26 +619,28 @@ await suite("ch4-dubai-daily", async check => {
       p.firstDay = 1;
       value.day = p.startDay + 11; value.slot = 1; p.day = 12;
       value.lovers = ["rio"]; value.met.rio = true; value.contacts.push("rio");
-      value.flags._overseas_companion = { decided: true, companion: null, supports: ["tsumugi", "rio", "mashiro"] };
+      // ♥5の男の友人（SPC21）のスティーブも別便で来る。到着だけで、砂浜には来ない。
+      value.flags._overseas_companion = { decided: true, companion: null, supports: ["tsumugi", "rio", "mashiro"], guests: ["steve"] };
     });
     await loadSlot(page, 0);
     await dubaiMap(page, { day: 60, slot: 1 });
     await go(page, "ch4_dubai_inn");
     await page.locator(dt("ch4-rehearsal-rest")).waitFor();
     await page.locator(dt("ch4-rehearsal-rest")).click();
-    for (const scene of ["ch4_tsumugi_dubai_friend", "ch4_rio_dubai_girlfriend", "ch4_mashiro_dubai_friend"]) {
+    for (const scene of ["ch4_tsumugi_dubai_friend", "ch4_rio_dubai_girlfriend", "ch4_mashiro_dubai_friend", "ch4_steve_dubai"]) {
       await page.locator(`${dt("ch4-arrival")}[data-scene="${scene}"]`).waitFor({ timeout: 60000 });
       assert.equal(await page.locator(dt("ch4-go-beach")).count(), 0, "Arrivals come before the beach");
       await page.locator(dt("ch4-continue")).click();
     }
     const eveCard = `${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`;
     await page.locator(eveCard).waitFor({ timeout: 60000 });
+    assert((await backlog(page)).some(line => line.includes("それは考えてなかった")), "Steve's arrival was read");
     const before = await get(page);
     await page.locator(dt("ch4-go-beach")).click();
     await page.locator(dt("ch4-beach")).waitFor({ timeout: 60000 });
     assert.match(await page.locator(dt("ch4-beach")).innerText(), /あと3か所、遊べる/);
     for (const id of ["tsumugi", "rio", "mashiro"]) assert.equal(await page.locator(dt(`ch4-beach-${id}`)).count(), 1, id);
-    for (const id of ["minto", "ageha", "samechan", "hiyori", "noor"]) assert.equal(await page.locator(dt(`ch4-beach-${id}`)).count(), 0, `${id} is not there`);
+    for (const id of ["minto", "ageha", "samechan", "hiyori", "noor", "steve"]) assert.equal(await page.locator(dt(`ch4-beach-${id}`)).count(), 0, `${id} is not there`);
     await page.locator(dt("ch4-beach-rio")).click();
     await page.locator(dt("ch4-beach")).filter({ hasText: "あと2か所" }).waitFor({ timeout: 60000 });
     assert.equal(await page.locator(dt("ch4-beach-rio")).count(), 0, "Each person once");

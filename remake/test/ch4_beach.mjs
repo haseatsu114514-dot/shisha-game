@@ -80,6 +80,17 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
   // 好感度の数値・告白待ちの恋愛ルートだけでは来ない（出発前の顔ぶれで決まる）。
   assert(!chapterFourBeachCast(value).includes("ageha"));
 }
+// ---- ♥5の男の友人（SPC21）は到着だけで、砂浜には来ない。到着を読むまで砂浜は出ない（到着が先）。
+{
+  const value = eveSave({ finales: { adam: { day: 9, chapter: 1, route: "friend" }, steve: { day: 30, chapter: 3, route: "friend" } } });
+  assert.deepEqual(chapterFourArrivalsDue(value).map(entry => entry.id), ["tsumugi", "mashiro", "adam", "steve"]);
+  for (const { scene } of chapterFourArrivalsDue(value).slice(0, 2)) assert(completeChapterFourScene(value, scene));
+  assert.equal(chapterFourBeachDue(value), false, "The male friends arrive before the beach");
+  arriveAll(value);
+  assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "mashiro"], "The male friends do not come to the beach");
+  assert.equal(chapterFourBeachDue(value), true);
+  assert.equal(commitChapterFourBeach(value, ["tsumugi", "adam"]), false);
+}
 // ---- 会ったことのないヌールは来ない。
 {
   const value = arriveAll(eveSave({ lovers: ["ageha"] }));
