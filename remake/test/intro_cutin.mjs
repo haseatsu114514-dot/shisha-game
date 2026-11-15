@@ -90,13 +90,13 @@ try {
   // 1a) 名前の書き方: 「漢字《よみ》」でふりがな、「｜」で範囲を明示、半角空白は苗字と名前のあいだの小さな空き
   const split = await page.evaluate(async () => {
     const { nameParts, plainName } = await import("./js/vn/intro-art.js");
-    const cases = ["綾取《あやとり》 陣《じん》", "神崎《かんざき》 竜二《りゅうじ》（組長《くみちょう》）", "｜†玉羅雨℃†《くらうど》", "占《うらな》いオババ", "あげは"];
+    const cases = ["綾取《あやとり》 陣《じん》", "神崎《かんざき》 竜二《りゅうじ》（組長《くみちょう》）", "｜†紅羅雨℃†《くらうど》", "占《うらな》いオババ", "あげは"];
     return cases.map((text) => ({ parts: nameParts(text), plain: plainName(text) }));
   });
   assert.deepEqual(split, [
     { parts: [{ text: "綾取", ruby: "あやとり" }, { gap: true }, { text: "陣", ruby: "じん" }], plain: "綾取陣" },
     { parts: [{ text: "神崎", ruby: "かんざき" }, { gap: true }, { text: "竜二", ruby: "りゅうじ" }, { text: "（" }, { text: "組長", ruby: "くみちょう" }, { text: "）" }], plain: "神崎竜二（組長）" },
-    { parts: [{ text: "†玉羅雨℃†", ruby: "くらうど" }], plain: "†玉羅雨℃†" },
+    { parts: [{ text: "†紅羅雨℃†", ruby: "くらうど" }], plain: "†紅羅雨℃†" },
     { parts: [{ text: "占", ruby: "うらな" }, { text: "いオババ" }], plain: "占いオババ" },
     { parts: [{ text: "あげは" }], plain: "あげは" },
   ], "名前の書き方の読み取り");
@@ -142,22 +142,22 @@ try {
 
   // 2) 名前の出し方（NAMES-1106「カットインの名前表示ルール」2026-11-06）
   //    本名タイプはフルネーム（あだ名がある人は「本名（あだ名）」）、通り名タイプは通り名。外国人は本名タイプで短縮あり
-  //    例外（2026-11-15 オーナー決定）: †玉羅雨℃†は芸名を大きく出し、本名は sub_name で2行目に小さく添える（本名にふりがなは付けない）
+  //    例外（2026-11-15 オーナー決定）: †紅羅雨℃†は芸名を大きく出し、本名は sub_name で2行目に小さく添える（本名にふりがなは付けない）
   const rule = await page.evaluate(() => Object.fromEntries(Object.keys(T.DB.characters).filter((id) => T.DB.characters[id].intro_cutin)
     .map((id) => [id, T.intro.introName(id).main])));
   assert.deepEqual(rule, {
     hajime: "逢縁はじめ", sumi: "炭吉丈一郎", naru: "鳴切亮太（なる）", adam: "アダム", minto: "みんと", shisha_9000: "SHISHA-9000",
-    saku: "綾取陣", steve: "スティーブ・A・アッシュ", volk: "ヴォルク・イヴァノフ", rei: "†玉羅雨℃†", master_hookah: "王煙楼",
+    saku: "綾取陣", steve: "スティーブ・A・アッシュ", volk: "ヴォルク・イヴァノフ", rei: "†紅羅雨℃†", master_hookah: "王煙楼",
     tsumugi: "猫洞つむぎ", rio: "円頓寺凛想", ageha: "あげは", kumicho: "神崎竜二（組長）", dr_kemuri: "チャコール博士", pakki: "パッキー",
     sui: "千須豪", emil: "エミル・ユルマズ", sheikh: "シェイク・ナジュム", da_silva: "ダ・シルヴァ・太陽", mashiro: "黒葉ましろ",
     uranaishi: "占いオババ", mukai_master: "向井然", maezono: "上園文太郎", oneesan: "お姉さん", hiyori: "泡沫ひより",
     maki: "斧崎マキ", sai: "六角サイ", salaryman: "鉄仮面さん", yoru: "針間ヨル", noor: "ヌール・サーリム", samechan: "サメちゃん",
   });
-  // 2行目の小さい名前（sub_name）: 今のところ†玉羅雨℃†の本名だけ。芸名の落差を見せるための例外（2026-11-15 オーナー決定）
+  // 2行目の小さい名前（sub_name）: 今のところ†紅羅雨℃†の本名だけ。芸名の落差を見せるための例外（2026-11-15 オーナー決定）
   const subs = await page.evaluate(() => Object.fromEntries(Object.keys(T.DB.characters).filter((id) => T.DB.characters[id].intro_cutin)
     .map((id) => [id, T.intro.introName(id).subMain])));
-  assert.equal(subs.rei, "（田中健太）", "†玉羅雨℃†の本名は2行目の小さい名前で出す");
-  assert(Object.entries(subs).every(([id, sub]) => id === "rei" || !sub), "sub_name を持つのは今のところ†玉羅雨℃†だけ");
+  assert.equal(subs.rei, "（田中健太）", "†紅羅雨℃†の本名は2行目の小さい名前で出す");
+  assert(Object.entries(subs).every(([id, sub]) => id === "rei" || !sub), "sub_name を持つのは今のところ†紅羅雨℃†だけ");
   // 画面でも: 本名は芸名より小さく、その2行目に出て、ふりがなは付かない
   const reiLayout = await page.evaluate(async () => {
     T.core.state.met.rei = true;
@@ -177,7 +177,7 @@ try {
     await p;
     return out;
   });
-  assert.equal(reiLayout.nameText, "†玉羅雨℃†");
+  assert.equal(reiLayout.nameText, "†紅羅雨℃†");
   assert.equal(reiLayout.subText, "（田中健太）");
   assert(reiLayout.subSize < reiLayout.nameSize * 0.5, `本名が大きすぎる: 本名 ${reiLayout.subSize}px / 芸名 ${reiLayout.nameSize}px`);
   assert(reiLayout.subTop >= reiLayout.nameBottom - 4, "本名が芸名の2行目に出ていない");
@@ -226,9 +226,9 @@ try {
     return out;
   });
   assert(!/栞|木成頼/.test(hidden.minto), `みんとのカットインに本名が出ている: ${hidden.minto}`);
-  assert(hidden.rei.includes("†玉羅雨℃†"), "活動名を紹介に出す");
-  // †玉羅雨℃†は例外として本名を2行目の小さい名前で添える（2026-11-15 オーナー決定）
-  assert(hidden.rei.includes("田中健太"), `†玉羅雨℃†のカットインに本名の添え書きが無い: ${hidden.rei}`);
+  assert(hidden.rei.includes("†紅羅雨℃†"), "活動名を紹介に出す");
+  // †紅羅雨℃†は例外として本名を2行目の小さい名前で添える（2026-11-15 オーナー決定）
+  assert(hidden.rei.includes("田中健太"), `†紅羅雨℃†のカットインに本名の添え書きが無い: ${hidden.rei}`);
 
   // 3) 会話の中: 「？？？」の間は出ず、名乗り（_met_）の直後の台詞の前に一度だけ出る
   await page.evaluate(() => {
