@@ -90,6 +90,12 @@ export const CH4_SCENE_BG = Object.freeze({
   ch4_samechan_dubai_evening: "bg_dubai_inn_night",
   ch4_hiyori_dubai_evening: "bg_dubai_inn_night",
   ch4_mashiro_dubai_friend_evening: "bg_dubai_inn_night",
+  // ドバイの本筋の夜（SPC27・下の CH4_STORY_NIGHTS と同じ）
+  ch4_story_briefing: "bg_dubai_grand_smoke_stage",
+  ch4_story_venue: "bg_dubai_grand_smoke_stage",
+  ch4_story_market: "bg_dubai_souq_day",
+  ch4_story_sumi_call: "bg_dubai_inn_night",
+  ch4_story_press: "bg_dubai_grand_smoke_stage",
 });
 
 // ---- BGM の対応表（差し替えは remake/js/core/story-audio.js の STORY_BGM）--------------
@@ -228,6 +234,16 @@ export const CH4_GUEST_ARRIVAL_SCENES = Object.freeze({
   adam: "ch4_adam_dubai", kumicho: "ch4_kumicho_dubai", rei: "ch4_rei_dubai", saku: "ch4_saku_dubai",
   steve: "ch4_steve_dubai", volk: "ch4_volk_dubai",
 });
+// ドバイの本筋の夜（2026-11-15 オーナー「本筋の補充」・SPC27）。day 以降の夜に、前のものを読んでから一つずつ
+// （ch4-dubai-daily.js の夜。期限の出会いや店の手伝いがある夜は次の夜へ送る）。前夜（DAY13）に入ったら、未読でも足さない。
+export const CH4_STORY_NIGHTS = Object.freeze([
+  { id: "ch4_story_briefing", day: 1, label: "出場者説明会", beat: "夜。大会の運営に呼ばれて、会場の会議室へ──", bg: "bg_dubai_grand_smoke_stage" },
+  { id: "ch4_story_venue", day: 3, label: "会場の下見", beat: "夜。本番の会場を、一度見ておくことにした──", bg: "bg_dubai_grand_smoke_stage" },
+  { id: "ch4_story_market", day: 5, label: "勝負の炭と葉", beat: "夕方。勝負に使う炭と葉を探しに、スークへ──", bg: "bg_dubai_souq_day" },
+  { id: "ch4_story_sumi_call", day: 7, label: "時差の電話", beat: "夜。宿の部屋で、スマホが鳴った──", bg: "bg_dubai_inn_night" },
+  { id: "ch4_story_press", day: 9, label: "記者会見", beat: "夜。日本代表の記者会見に呼ばれた──", bg: "bg_dubai_grand_smoke_stage" },
+].map(entry => Object.freeze(entry)));
+export const CH4_STORY_FILES = Object.freeze({ ch4_dubai_story: Object.freeze(CH4_STORY_NIGHTS.map(entry => entry.id)) });
 // 前夜祭（王煙楼の招待）が始まった印。ここから先は到着を足さない（ロビーの出迎えを前夜祭の後に回さない）。
 export const CH4_FESTIVAL_STARTED = Object.freeze(["ch4_wang_reception_forced_in", "ch4_wang_reception"]);
 
@@ -345,6 +361,14 @@ export function chapterFourMandatory(value) {
   }));
 }
 
+/** 今夜読む本筋の夜（{ id, label, beat, bg }）。自由行動の間だけ、未読の先頭が day に達していれば。無ければ null。 */
+export function chapterFourStoryNightDue(value) {
+  const progress = chapterFourProgress(value);
+  if (progress.part !== "free") return null;
+  const next = CH4_STORY_NIGHTS.find(entry => progress.read[entry.id] !== true);
+  return next && progress.day >= next.day ? next : null;
+}
+
 /**
  * 前夜祭の日に読む、別便の応援の到着場面（未読だけ。{id, scene} を OVERSEAS_HEROINES の順）。
  * 出発前に決めた supports（同行者を除く恋人・♥5の友人・第3章クリア済みのましろ・つむぎ）だけが対象。恋人は恋人版、恋人でない人は友人版。
@@ -427,6 +451,11 @@ export function completeChapterFourScene(value, id) {
   if (part === "free") {
     syncChapterFourDay(value);
     // 版2: 期限の夜に読むスークの出会い（寄らなかった時の繋ぎ場面つき）も自由行動の間に確定できる。
+    // ドバイの本筋の夜（SPC27）: 今夜の分だけ確定できる。
+    if (chapterFourStoryNightDue(value)?.id === id) {
+      progress.read[id] = true;
+      return true;
+    }
     if (chapterFourDaily(value) && id === "ch4_stranger_first_forced_in") {
       if (progress.read[id] === true || progress.read[FREE_SCENES.first] === true) return false;
       progress.read[id] = true;

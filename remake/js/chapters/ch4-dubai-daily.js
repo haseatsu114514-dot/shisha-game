@@ -30,7 +30,7 @@ import { openingStatus, MOSQUE_VISITING_HOURS } from "../daily/spot-hours.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_DAILY_EVE_DAY, CH4_FREE_SCENE_IDS, chapterFourProgress, syncChapterFourDay,
-  chapterFourSecondAvailable } from "./ch4-progress.js";
+  chapterFourSecondAvailable, chapterFourStoryNightDue } from "./ch4-progress.js";
 import { CAMEL_DAILY_SPOT_ID, camelDailySpot, camelSceneBg } from "./ch4-camel-progress.js";
 import { overseasCompanion } from "../core/overseas-companion.js";
 import { chainStageAt } from "./visit-chains.js";
@@ -260,7 +260,7 @@ function dubaiNightEvent(io) {
   const staff = chapterFourStaffNightEvent();
   if (staff) return { ...staff, run: () => keepDailyHud(() => staff.run()) };
   const due = dueMandatory();
-  if (!due) return null;
+  if (!due) return storyNightEvent(io);
   const last = due[due.length - 1];
   return {
     id: `dubai-night:${last.id}`, schedule: "fixed", pin: null, label: "ドバイの夜", beat: last.beat,
@@ -271,6 +271,17 @@ function dubaiNightEvent(io) {
         if (!await keepDailyHud(() => io.readAndCommit(scene.id))) return;
       }
     },
+  };
+}
+
+// ドバイの本筋の夜（説明会・下見・買い出し・時差の電話・記者会見。SPC27）。期限の出会いや店の手伝いが無い夜に一つ。
+function storyNightEvent(io) {
+  const story = chapterFourStoryNightDue(state);
+  if (!story) return null;
+  return {
+    id: `dubai-story:${story.id}`, schedule: "fixed", pin: null, label: story.label, beat: story.beat,
+    done: () => read(story.id),
+    run: async () => { if (!read(story.id)) await keepDailyHud(() => io.readAndCommit(story.id)); },
   };
 }
 

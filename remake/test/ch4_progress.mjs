@@ -10,6 +10,7 @@ import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_SCENE_FILES, CH4_VISITOR_SCENE_FILES, C
   chapterFourSecondAvailable, chapterFourSheikhRevealed, revealChapterFourSheikh,
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE,
   CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour, chapterFourDaily, syncChapterFourDay, enterChapterFourEve,
+  CH4_STORY_NIGHTS, CH4_STORY_FILES, chapterFourStoryNightDue,
   chapterFourEveDay, chapterFourTournamentDay, CH4_DAILY_EVE_DAY, CH4_DAILY_TOURNAMENT_DAY } from "../js/chapters/ch4-progress.js";
 import { chapterFourMapModel, DUBAI_MAP_PLACES } from "../js/chapters/ch4-map-model.js";
 import { OVERSEAS_HEROINES, OVERSEAS_GUESTS, chooseOverseasCompanion } from "../js/core/overseas-companion.js";
@@ -549,6 +550,56 @@ console.log("PASS: Chapter 4 runner state keeps the Dubai days, mandatory scenes
   assert.equal(finishChapterFourEve(daily), true);
   assert.deepEqual([p.part, p.day, daily.day], ["tournament", 14, p.startDay + 13], "The world tournament is Dubai DAY14");
   console.log("PASS: Chapter 4 daily route keeps Dubai DAY1-12 free, the DAY13 eve and the DAY14 tournament");
+}
+
+// ドバイの本筋の夜（SPC27）: 説明会・下見・買い出し・時差の電話・記者会見。決まった日以降の夜に、前のものから一つずつ。
+// 自由行動の間だけで、前夜（DAY13）に入ったら未読でも足さない。台本・背景・story_routes の並びと一致する。
+{
+  assert.deepEqual(CH4_STORY_NIGHTS.map(entry => [entry.id, entry.day]), [["ch4_story_briefing", 1], ["ch4_story_venue", 3],
+    ["ch4_story_market", 5], ["ch4_story_sumi_call", 7], ["ch4_story_press", 9]]);
+  const rows = readData("dialogue/ch4_dubai_story").dialogues;
+  assert.deepEqual([...CH4_STORY_FILES.ch4_dubai_story].sort(), rows.map(row => row.dialogue_id).sort(), "ch4_dubai_story: all scenes registered");
+  for (const entry of CH4_STORY_NIGHTS) {
+    assert.equal(CH4_SCENE_BG[entry.id], entry.bg, entry.id);
+    const row = rows.find(item => item.dialogue_id === entry.id);
+    assert(row.lines.every(line => typeof line.text === "string" && !line.type), `${entry.id}: plain lines, no rewards`);
+    assert(!/シェイク|ナジュム|王煙楼|太陽|千須|エミル/.test(row.lines.map(line => line.text).join("")), `${entry.id}: no early reveal of the other players or judges`);
+  }
+  const before = readData("story_routes").chapters["4"].before_eve;
+  assert.deepEqual(before.slice(before.indexOf("ch4_opening") + 1, before.indexOf("ch4_opening") + 1 + CH4_STORY_NIGHTS.length),
+    CH4_STORY_NIGHTS.map(entry => entry.id), "story_routes lists the story nights right after the arrival");
+  const v = clearedSave();
+  assert(advanceToChapterFour(v));
+  for (const id of CH4_PREP_SCENES) assert(completeChapterFourScene(v, id));
+  v.day += 3;
+  assert(departChapterFour(v));
+  assert.equal(chapterFourStoryNightDue(v), null, "Not during the prologue");
+  for (const scene of CH4_PROLOGUE.slice(CH4_PREP_SCENES.length)) assert(completeChapterFourScene(v, scene.id));
+  const p = v.flags._ch4;
+  assert.equal(chapterFourStoryNightDue(v).id, "ch4_story_briefing", "DAY1 night: the briefing");
+  assert.equal(completeChapterFourScene(v, "ch4_story_venue"), false, "Only tonight's story");
+  assert(completeChapterFourScene(v, "ch4_story_briefing"));
+  assert.equal(chapterFourStoryNightDue(v), null, "The venue waits for DAY3");
+  v.day = p.startDay + 3; syncChapterFourDay(v);
+  assert.equal(p.day, 4);
+  assert.equal(chapterFourStoryNightDue(v).id, "ch4_story_venue", "A later night still gets the venue first");
+  assert(completeChapterFourScene(v, "ch4_story_venue"));
+  assert.equal(chapterFourStoryNightDue(v), null, "The market waits for DAY5");
+  v.day = p.startDay + 10; syncChapterFourDay(v);
+  for (const id of ["ch4_story_market", "ch4_story_sumi_call", "ch4_story_press"]) {
+    assert.equal(chapterFourStoryNightDue(v).id, id, `${id}: one per night in order`);
+    assert(completeChapterFourScene(v, id));
+  }
+  assert.equal(chapterFourStoryNightDue(v), null);
+  const late = clearedSave();
+  assert(advanceToChapterFour(late));
+  for (const id of CH4_PREP_SCENES) assert(completeChapterFourScene(late, id));
+  late.day += 3; assert(departChapterFour(late));
+  for (const scene of CH4_PROLOGUE.slice(CH4_PREP_SCENES.length)) assert(completeChapterFourScene(late, scene.id));
+  late.day = late.flags._ch4.startDay + 12; assert(enterChapterFourEve(late));
+  assert.equal(chapterFourStoryNightDue(late), null, "Not added on the eve");
+  assert.equal(completeChapterFourScene(late, "ch4_story_press"), false);
+  console.log("PASS: Chapter 4 story nights (SPC27): briefing, venue, market, Sumi's call and the press, one a night from their day, free days only");
 }
 
 // 別便の応援の到着（前夜祭の日）: 出発前に決めた supports だけ、前夜の part の前夜祭より前に、1人ずつ順に確定する。
