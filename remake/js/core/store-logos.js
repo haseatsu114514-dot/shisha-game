@@ -11,7 +11,7 @@ const BASE_LOGOS = {
   choizap: { name: "CHOI-ZAP", file: "choizap", ext: "webp", sheet: [2172, 724], frame: [754, 89, 693, 547] },
   ch2_ageha: { name: "MELTY PUFF", file: "melty-puff", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
   ch2_kumicho: { name: "神崎煙草店", file: "kanzaki", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
-  ch2_rei: { name: "零-ZERO-", file: "zero", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
+  ch2_rei: { name: "貴方ノ為ノ此ノ煙。", file: "zero", ext: "webp", sheet: [768, 512], frame: [0, 0, 768, 512] },
 };
 export const STORE_LOGOS = Object.freeze({ ...BASE_LOGOS,
   ch2_shop: { ...BASE_LOGOS.shop, name: "Dr.fookah 柚ヶ谷店" },

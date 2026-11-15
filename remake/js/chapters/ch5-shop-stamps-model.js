@@ -13,7 +13,7 @@
 // 必須の店（SHOP_STAMP_REGIONS）: 第5章の地図に、運や好感度に関係なく必ず出る、一台を吸うシーシャ屋。
 //   地元: KEMURIKUSA・EDEN・PEPPERMINT・C.STATION（なる・アダム・みんとには第1章の大会で必ず会う。C.STATION は第1章の初日に
 //     スミさんに頼まれて KEMURIKUSA へ偵察に行くと地図に出る＝大会の参加登録の店）
-//   柚ヶ谷: MELTY PUFF・神崎煙草店・零-ZERO-（あげは・神崎・クラウドには第2章の大会で必ず会う）
+//   柚ヶ谷: MELTY PUFF・神崎煙草店・貴方ノ為ノ此ノ煙。（あげは・神崎・クラウドには第2章の大会で必ず会う）
 //   東京: Smoke & Glory・鉄の煙（スティーブ・ヴォルクには第3章の大会で必ず会う）
 //   ドバイ: 路地裏のカフェ（いつでも行ける）
 //   任意の店: SHISHARK はサメちゃんに会った保存だけ、カフェ・オアシスはヌールの締めくくりまで。
@@ -47,7 +47,7 @@ export const SHOP_STAMP_REGIONS = Object.freeze([
     shop("shishark", "SHISHARK", true),
   ]),
   region("widehanga", `隣町・${CH2_CITY_NAME}`, [
-    shop("ch2_ageha", "MELTY PUFF"), shop("ch2_kumicho", "神崎煙草店"), shop("ch2_rei", "零-ZERO-"),
+    shop("ch2_ageha", "MELTY PUFF"), shop("ch2_kumicho", "神崎煙草店"), shop("ch2_rei", "貴方ノ為ノ此ノ煙。"),
   ]),
   region("tokyo", "東京", [shop("ch5_tokyo_steve", "Smoke & Glory"), shop("ch5_tokyo_volk", "鉄の煙")]),
   region("dubai", "ドバイ", [shop("ch5_dubai_alley", "路地裏のカフェ"), shop("ch4_dubai_tour_desk", "カフェ・オアシス", true)]),

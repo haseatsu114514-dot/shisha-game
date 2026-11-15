@@ -14,7 +14,7 @@ export const STATION = "../assets/backgrounds/bg_widehanga_station_day.webp";
 export const STOPS = [
   { id: "ageha", name: "MELTY PUFF", x: 81, y: 46 },
   { id: "kumicho", name: "神崎煙草店", x: 63, y: 65 },
-  { id: "rei", name: "零-ZERO-", x: 42, y: 78 },
+  { id: "rei", name: "貴方ノ為ノ此ノ煙。", x: 42, y: 78 },
   { id: "c_station", name: "県大会ホール", x: 85, y: 30 },
 ];
 // 神崎（kumicho）は採用済みの内装 bg_ch2_kumicho_entry.webp を使う。#962 で街の店舗画像
