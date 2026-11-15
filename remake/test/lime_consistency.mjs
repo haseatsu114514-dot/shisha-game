@@ -498,6 +498,14 @@ reset({ chapter: 1, day: 6, contacts: ["hiyori"], flags: { _lime_contact_hiyori:
 assert(phone.morningMessages().some((m) => m.id === "lime_hiyori_charm"), "相席のあと、席の話が届く");
 reset({ chapter: 1, day: 6, contacts: ["hiyori"], flags: { _lime_contact_hiyori: true, _hiyori_peach_talk_done: true } });
 assert(phone.morningMessages().some((m) => m.id === "lime_hiyori_peach"), "桃の話のあと、本音のひとことが届く");
+// 夢の話（SPC11）: 一通目が「朝まで……」で止まり、続きで飲み明かす夢と分かる。
+// 涙の再会の翌朝には届けず、再会の続き（hiyori_tonari_followup）を読んだ後に届く。
+const hiyoriDream = () => phone.morningMessages().some((m) => m.id === "lime_hiyori_dream");
+reset({ chapter: 1, day: 6, contacts: ["hiyori"], flags: { _lime_contact_hiyori: true, _hiyori_tonari_return_done: true, _invited_lime_outing_hiyori_1: true } });
+assert(!hiyoriDream(), "再会の直後には夢の話が届かない");
+// 同じ人からは1朝1話題。外出の誘い（lime_outing_hiyori_1）を受け取った後の朝で確かめる
+reset({ chapter: 1, day: 6, contacts: ["hiyori"], flags: { _lime_contact_hiyori: true, _hiyori_tonari_return_done: true, _hiyori_tonari_followup_done: true, _invited_lime_outing_hiyori_1: true } });
+assert(hiyoriDream(), "再会の続きのあと、夢の話が届く");
 reset({ day: 3, contacts: ["naru"] }); const naruDayOff = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert(naruDayOff); assert(naruDayOff.messages.some((line) => /休み/.test(typeof line === "string" ? line : line.text)));
 state.day = 4; const naruTemporary = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert.equal(naruTemporary.time_slot, "noon"); assert(naruTemporary.temporary_closed);
 // 次の私服の約束を定休日だけに縛らない。配信した時点で本文と予約時刻を一緒に確定。

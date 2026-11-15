@@ -25,7 +25,7 @@ import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy,
   CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour, chapterFourRead,
   chapterFourDaily, enterChapterFourEve, chapterFourEveDay, chapterFourTournamentDay, chapterFourArrivalsDue,
-  CH4_ARRIVAL_SCENES, CH4_FRIEND_ARRIVAL_SCENES, chapterFourArrivalEveningsDue } from "./ch4-progress.js";
+  CH4_ARRIVAL_SCENES, CH4_FRIEND_ARRIVAL_SCENES, CH4_GUEST_ARRIVAL_SCENES, chapterFourArrivalEveningsDue } from "./ch4-progress.js";
 
 const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
@@ -38,6 +38,8 @@ import { buildGameOver, warmGameOver } from "./gameover.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 import { TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
 import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
+import { CH4_BEACH_SCENES, CH4_BEACH_SCENE_FILES, CH4_BEACH_BG, chapterFourBeachCast, chapterFourBeachDue,
+  chapterFourBeachPickCount, commitChapterFourBeach } from "./ch4-beach.js";
 import { CH4_EVENING_DIALOGUE_FILES, CH4_EVENING_BG, selectChapterFourEvening, chapterFourEveningPartner,
   chapterFourEveningRecord } from "./ch4-story-wiring.js";
 import { CH4_CAMEL_SCENE_FILES, camelSceneBg, visitCamelRace } from "./ch4-camel-race.js";
@@ -69,7 +71,8 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
 
 /** 必要な台本をすべて確認してから DB に公開する。欠けていれば状態を進めない。 */
 async function loadDialogues() {
-  const files = { ...CH4_SCENE_FILES, ...CH4_VISITOR_SCENE_FILES, ...CH4_EVENING_DIALOGUE_FILES, ...CH4_CAMEL_SCENE_FILES };
+  const files = { ...CH4_SCENE_FILES, ...CH4_VISITOR_SCENE_FILES, ...CH4_EVENING_DIALOGUE_FILES, ...CH4_CAMEL_SCENE_FILES,
+    ...CH4_BEACH_SCENE_FILES };
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => [ids, await readDialogues(file, ids)]));
   for (const [ids, dialogues] of groups) {
     Object.assign(DB.dialogues, Object.fromEntries(ids.map(id => [id, dialogues[id]])));
@@ -140,7 +143,8 @@ async function readScene(owner, id) {
     await planeRide(() => setBg(bgUrl(CH4_SCENE_BG[id]), { instant: true }), { to: "home" });
     if (!current(owner)) return false;
   }
-  await setBg(bgUrl(CH4_SCENE_BG[id] || camelSceneBg(id) || CH4_EVENING_BG));
+  await setBg(bgUrl(CH4_SCENE_BG[id] || camelSceneBg(id) || (CH4_BEACH_SCENE_FILES.ch4_beach.includes(id) ? CH4_BEACH_BG : null)
+    || CH4_EVENING_BG));
   if (!current(owner)) return false;
   playBgm(CH4_SCENE_BGM[id] || CH4_DEFAULT_BGM);
   // 読了のcheckpointまで保存を出さない。会話中のMENUは置かない。
@@ -424,23 +428,61 @@ async function renderEve(owner) {
   // ましろはほかの章の入口と同じく「ましろちゃん」と呼ぶ（恋人版・友人版とも）。
   const evenings = chapterFourArrivalEveningsDue(state);
   const eveningName = id => id === "mashiro" ? "ましろちゃん" : displayName(id, state, { context: "private" });
+  // 水着回（SPC18）: 来てくれた人たちと宿の裏の砂浜へ（任意で一度）。前夜祭が始まると、もう出ない。
+  const beach = chapterFourBeachDue(state);
+  const dusk = evenings.length > 0 || beach;
   await enterScene(bgUrl(CH4_SCENE_BG[next.lead || next.id]));
   if (!current(owner)) return;
-  card(owner, "eve", `DAY ${chapterFourEveDay(state)}・${evenings.length ? "前夜祭の日" : "前夜"}`,
-    evenings.length ? "夕方になった。前夜祭の前に、少し時間がある。" : "夜になった。大会の前に、済ませておくことが残っている。", [
+  card(owner, "eve", `DAY ${chapterFourEveDay(state)}・${dusk ? "前夜祭の日" : "前夜"}`,
+    dusk ? "夕方になった。前夜祭の前に、少し時間がある。" : "夜になった。大会の前に、済ませておくことが残っている。", [
       button(owner, "続きを読む", "continue", async () => {
         for (const id of [next.lead, next.id].filter(Boolean)) {
           if (!await readAndCommit(owner, id)) return;
         }
         await renderStage(owner);
       }, true),
+      ...(beach ? [button(owner, "みんなで砂浜へ行く", "go-beach", async () => { await renderBeach(owner); })] : []),
       ...evenings.map(evening => button(owner, `${eveningName(evening.id)}と夕方を過ごす`,
         `arrival-evening-${evening.id}`, async () => {
           // 最後まで読んだ時だけ確定・保存する。読んだ後は同じカードに戻り、前夜祭へ進む。
           if (!await readAndCommit(owner, evening.scene)) return;
           await renderStage(owner);
         })),
-    ], evenings.length ? "夕方を過ごしても、明日の大会には影響しません。前夜祭が始まると、夕方の時間は終わります。" : "", next.id);
+    ], dusk ? "夕方を過ごしても、明日の大会には影響しません。前夜祭が始まると、夕方の時間は終わります。" : "", next.id);
+}
+
+/**
+ * 水着回（SPC18・Issue #3657）。導入を読み、砂浜にいる人から遊ぶ相手を選んで一人ずつ読み、締めを読む。
+ * 最後まで読んだ時だけ遊んだ相手を確定・保存する。途中でやめた・LOADした時は何も残さず、前夜のカードからやり直せる。
+ * 恋人かどうかでセリフは変えない（台本は一人一本）。好感度・能力・お金・日付は動かさない。
+ */
+async function renderBeach(owner) {
+  if (!chapterFourBeachDue(state)) return renderStage(owner);
+  if (!await readScene(owner, CH4_BEACH_SCENES.open)) return;
+  owner.beach = { picks: [] };
+  await renderBeachHub(owner);
+}
+
+async function renderBeachHub(owner) {
+  const run = owner.beach;
+  if (!run || !current(owner) || !chapterFourBeachDue(state)) { owner.beach = null; return renderStage(owner); }
+  const cast = chapterFourBeachCast(state);
+  const need = chapterFourBeachPickCount(state);
+  const name = id => id === "mashiro" ? "ましろちゃん"
+    : displayName(id, state, { context: (state.lovers || []).includes(id) ? "private" : undefined });
+  await enterScene(bgUrl(CH4_BEACH_BG));
+  if (!current(owner)) return;
+  card(owner, "beach", `DAY ${chapterFourEveDay(state)}・前夜祭の日`,
+    `宿の裏の砂浜。あと${need - run.picks.length}か所、遊べる。`,
+    cast.filter(id => !run.picks.includes(id)).map(id => button(owner, `${name(id)}と遊ぶ`, `beach-${id}`, async () => {
+      if (!await readScene(owner, CH4_BEACH_SCENES.people[id])) return;
+      run.picks.push(id);
+      if (run.picks.length < need) { await renderBeachHub(owner); return; }
+      if (!await readScene(owner, CH4_BEACH_SCENES.close)) return;
+      if (commitChapterFourBeach(state, run.picks)) save();
+      owner.beach = null;
+      await renderStage(owner);
+    })), "誰と遊んでも、好感度や明日の大会には影響しません。", CH4_BEACH_SCENES.open);
 }
 
 /**
@@ -450,7 +492,7 @@ async function renderEve(owner) {
 async function renderArrival(owner, arrival) {
   await enterScene(bgUrl(CH4_SCENE_BG[arrival.scene]));
   if (!current(owner)) return;
-  const another = [...Object.values(CH4_ARRIVAL_SCENES), ...Object.values(CH4_FRIEND_ARRIVAL_SCENES)]
+  const another = [CH4_ARRIVAL_SCENES, CH4_FRIEND_ARRIVAL_SCENES, CH4_GUEST_ARRIVAL_SCENES].flatMap(Object.values)
     .some(id => chapterFourRead(state, id));
   const text = another ? "別の便で応援に来てくれる人が、もう一人着いたらしい。" : "別の便で応援に来てくれる人が、ドバイに着いたらしい。";
   card(owner, "arrival", `DAY ${chapterFourEveDay(state)}・前夜祭の日`, text, [

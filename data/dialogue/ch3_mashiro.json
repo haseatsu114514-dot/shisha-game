@@ -571,8 +571,58 @@
         },
         {
           "speaker": "mashiro",
-          "text": "でしょ。消さないで、足すの。僕、その足し算が一番好きだよぉ",
+          "text": "でしょ。消さないで、足すの",
           "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "マウスピースを付け替えて、ホースを渡す。ましろは目を閉じて、ゆっくり長く吸った。",
+          "face": ""
+        },
+        {
+          "speaker": "mashiro",
+          "text": "……ん。おいしいねぇ、このブラックティー",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "うん。ましろちゃんの一割のおかげだよ",
+          "face": "smile"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "僕……はじめくんのが……一番……濃くて……好き",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "吸いかけの煙が、変なところに入った。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "げほっ……！",
+          "face": "surprise"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "……むせた？ はじめくんの一台の中でね、今日のが一番濃いの",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "（……煙の話だ。分かってた。分かってたけど）",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "顔、赤いよぉ。炭、熱すぎた？",
+          "face": "surprise"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……うん。たぶん、炭のせい",
+          "face": "normal"
         },
         {
           "speaker": "hajime",

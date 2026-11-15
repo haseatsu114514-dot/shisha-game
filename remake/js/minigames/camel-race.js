@@ -519,9 +519,10 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     }
   }
 
-  let art = null;
+  let art = null, artSettled = false;
   void loadCamelArt().then(value => {
     art = value;
+    artSettled = true;
     if (done) return;
     root.dataset.art = value ? "sprites" : "canvas";
     root.dataset.dust = value?.dust ? "sprites" : "canvas";
@@ -530,7 +531,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     root.dataset.convoy = value?.rivalSuvs ? "sprites" : "none";
     root.dataset.road = value?.ground.paintedRoad ? "sprites" : "canvas";
     root.dataset.marker = value?.marker ? "sprites" : "canvas";
-    if (phase === "tutorial" || phase === "loading") draw();
+    if (phase === "tutorial" || phase === "loading" || phase === "cups") draw();
   });
   let race = null, phase = "loading", raf = 0, last = null, goalAt = 0, feedbackTimer = 0, bannerTimer = 0, countdownLeft = 0, countdownShown = -1;
   let lastStaminaNotice = -99;
@@ -909,6 +910,9 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       el("div.camel-tutorial-visual", [
         el("div.camel-tutorial-icon", { dataset: { kind: step.icon }, html: ICONS[step.icon] }),
         el("img.camel-tutorial-art", { src: imgFileUrl(`ui/camel_race/ui/${step.art}.webp`), alt: "", dataset: { test: "camel-tutorial-art" },
+          // 読み終えるまで見せない（#3643: ページごとに空白の箱→絵のポップインが出た）。読めなければ従来どおり外す。
+          style: { opacity: "0" },
+          onload: event => { event.currentTarget.style.opacity = "1"; },
           onerror: event => { event.currentTarget.remove(); } }),
       ]),
       el("div.camel-tutorial-body", [
@@ -1327,6 +1331,9 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
 
   // ---- 描写 -----------------------------------------------------------------------------------------
   function draw() {
+    // 絵の読み込みが確定するまでは舞台を描かない（#3643: 確定前のコード描画が一瞬見え、絵に切り替わって見えた）。
+    // レース開始は prepareRace が同じ読み込みを待ってからなので、レース中（race あり）は通常どおり描く。
+    if (!artSettled && !race) return;
     const t = (race?.t || 0) + afterGoal();
     camAt = race ? viewDistance(race.player) - (playerX() - PLAYER_SCREEN_X) / PX_PER_M : 0;
     const camX = camAt;

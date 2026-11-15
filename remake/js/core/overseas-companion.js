@@ -1,12 +1,21 @@
-// 海外（第4章ドバイ）同行の正本。同行は恋人1名または「同行なし」。他の恋人・ましろは別便の応援として別に持つ。
+// 海外（第4章ドバイ）同行の正本。同行は恋人1名または「同行なし」。他の恋人・♥5の友人・ましろ・つむぎは別便の応援として別に持つ。
+// ♥5の男の友人（OVERSEAS_GUESTS）は、ヒロインの応援（supports）とは分けて guests に持つ（SPC21）。
 // 保存は flags._overseas_companion（SCHEMA は変えない。キーが無い旧セーブは「未選択＝同行なし」として読む）。
 // 好感度・恋人状態・複数交際は一切変更しない。辞退・連絡不足・遠距離による好感度低下や破局は起こさない。
 import { tokyoVisitState, syncTokyoVisits } from "./tokyo-visits.js";
 
 // data/story_routes.json の heroine_ids と同じ順（テストで一致を確認）。ドバイに住むヌール（romance.noor.resident）は渡航しないので含めない。
 export const OVERSEAS_HEROINES = Object.freeze(["tsumugi", "minto", "rio", "ageha", "mashiro", "samechan", "hiyori"]);
-// 恋愛状態に関係なくドバイへ来る唯一のキャラ（第3章クリアが条件。gameplay_agent_reference.md の登場条件表）。
-const ALWAYS_SUPPORT = "mashiro";
+// 恋愛状態に関係なくドバイへ来るキャラ（gameplay_agent_reference.md の登場条件表）。
+// ましろは第3章クリアが条件（mukaiの視察）。つむぎは tonari の常連として、はじめの大会を見に来る（2026-11-15 オーナー決定・SPC17）。
+const ALWAYS_SUPPORT = Object.freeze({ mashiro: value => value?.flags?._ch3_cleared === true, tsumugi: () => true });
+// ほかのヒロインは、恋人か、友人ルートの締めくくり（♥5）を済ませた友人なら応援に来る（2026-11-15 オーナー決定・SPC17）。
+// 男の友人（ヒロインではない応援）。締めくくり（♥5）を済ませた人が、それぞれの理由で来る（2026-11-15 オーナー決定・SPC21・SPC22）:
+// アダムは本場のダブルアップルとはじめの卓を見に、神崎は店を部下に任せて、クラウドは店を閉めて、綾取は福岡へ戻る前の空き時間に
+// （福岡の店にはバイトがいる）、スティーブは個人店を閉めて、ヴォルクはスポンサー（ナイトサイド）の関係者として。
+// スミさんはtonariの留守番で来ない。なるは選手として本編で来るので含めない。
+// 到着の後は砂浜（ch4-beach.js）の男の枠に入る（SPC24）。前夜の過ごし方・修羅場には出さない。
+export const OVERSEAS_GUESTS = Object.freeze(["adam", "kumicho", "rei", "saku", "steve", "volk"]);
 const KEY = "_overseas_companion";
 
 /** 保存された選択。無い・壊れている場合は未選択（decided:false、同行なし）。 */
@@ -26,11 +35,42 @@ export function overseasCompanionCandidates(value) {
   return OVERSEAS_HEROINES.filter(id => lovers.has(id));
 }
 
-/** 別便で応援に来る人。恋人（同行者を除く）とましろ（第3章クリア済みなら恋人でなくても）。同行者とは重ならない。 */
+/**
+ * 友人ルートの締めくくり（♥5）を済ませた友人か（daily/bonds.js の settledFriend と同じ条件）。
+ * 締めくくりを読み、恋人ではなく、友情の着地か告白で「友達のまま」を選んだ人。告白を待つ恋愛ルートの相手は含めない。
+ * 好感度の数値や回答からは推測しない（読了の記録だけ）。
+ */
+export function overseasMaxFriend(value, id) {
+  const finale = value?.finales?.[id];
+  if (!finale || (value?.lovers || []).includes(id)) return false;
+  return finale.route === "friend" || value?.flags?.[`_friend_${id}`] === true;
+}
+
+/**
+ * 別便で応援に来る人。同行者とは重ならない。
+ * 恋人（同行者を除く）・友人ルートの締めくくりを済ませた友人・いつも来る人（第3章クリア済みのましろ、つむぎ）。
+ * 恋人でない人は友人版の到着場面で来る（ch4-progress.js の CH4_FRIEND_ARRIVAL_SCENES）。
+ */
 export function overseasSupportVisitors(value, companion = null) {
   const lovers = new Set(value?.lovers || []);
   return OVERSEAS_HEROINES.filter(id => id !== companion
-    && (lovers.has(id) || (id === ALWAYS_SUPPORT && value?.flags?._ch3_cleared === true)));
+    && (lovers.has(id) || overseasMaxFriend(value, id) || !!ALWAYS_SUPPORT[id]?.(value)));
+}
+
+/** 別便で応援に来る男の友人（OVERSEAS_GUESTS の順）。締めくくり（♥5）を済ませた人だけ。好感度の数値だけでは来ない。 */
+export function overseasGuestVisitors(value) {
+  return OVERSEAS_GUESTS.filter(id => overseasMaxFriend(value, id));
+}
+
+/**
+ * 出発前に確定した男の友人の応援（flags._overseas_companion.guests）。同行の選択が無い・壊れている保存や、
+ * guests を持たない旧保存（SPC21 より前に出発した保存）は空。出発後の保存には足さない。
+ */
+export function overseasGuests(value) {
+  if (!overseasCompanion(value).decided) return [];
+  const raw = value.flags[KEY].guests;
+  return Array.isArray(raw) && raw.every(id => OVERSEAS_GUESTS.includes(id)) && new Set(raw).size === raw.length
+    ? OVERSEAS_GUESTS.filter(id => raw.includes(id)) : [];
 }
 
 /** 選択を出してよいか。第4章の導入（最初の場面の前）で、まだ決めていないときだけ。 */
@@ -47,7 +87,7 @@ export function canChooseOverseasCompanion(value) {
 export function chooseOverseasCompanion(value, id) {
   if (!canChooseOverseasCompanion(value)) return false;
   if (id !== null && !overseasCompanionCandidates(value).includes(id)) return false;
-  value.flags[KEY] = { decided: true, companion: id, supports: overseasSupportVisitors(value, id) };
+  value.flags[KEY] = { decided: true, companion: id, supports: overseasSupportVisitors(value, id), guests: overseasGuestVisitors(value) };
   reconcileVisitsForDeparture(value);
   return true;
 }

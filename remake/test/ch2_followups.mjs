@@ -18,7 +18,7 @@ const AGEHA_LATER_SCENES = [
   { id: "ch1_ageha_gummy_share", flag: "_ageha_gummy_share_done" },
   { id: "ch1_ageha_bear_seat", flag: "_ageha_bear_seat_done" },
 ];
-const isRepeat = (id, scene) => /^remake_ch2_(ageha|kumicho|rei)_repeat(_[bcde])?$/.test(scene) && scene.includes(id);
+const isRepeat = (id, scene) => /^remake_ch2_(ageha|kumicho|rei)_repeat(_[bcdef])?$/.test(scene) && scene.includes(id);
 const ids = ["ageha", "kumicho", "rei"];
 const DB = { dialogues: { ...all } };
 const states = new vm.SyntheticModule(["state", "save", "markMet", "timeOfDay"], function () {

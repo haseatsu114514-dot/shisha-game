@@ -591,7 +591,9 @@ await suite("ch4-dubai-daily", async check => {
     await page.waitForFunction(() => window.__remake.state.flags._ch4.read.ch4_samechan_dubai_evening === true, null, { timeout: 60000 });
     await page.locator(eveCard).waitFor({ timeout: 60000 });
     assert.equal(await page.locator(evening).count(), 0, "The evening is read once");
-    assert.match(await page.locator(dt("ch4-eve")).innerText(), /夜になった/);
+    // 砂浜（水着回・SPC18）はまだ行っていないので、夕方のまま。行かずに前夜祭へ進めば、そのまま出ない。
+    assert.match(await page.locator(dt("ch4-eve")).innerText(), /夕方になった/);
+    assert.equal(await page.locator(dt("ch4-go-beach")).count(), 1, "The beach is still there");
     assert((await backlog(page)).some(text => text.includes("印をつけておいた。夕飯はここ")), "The evening scene was played");
     let state = await get(page);
     assert.equal(state.flags._ch4.read.ch4_wang_reception, undefined, "The evening does not move the eve");
@@ -605,6 +607,56 @@ await suite("ch4-dubai-daily", async check => {
     await page.waitForFunction(() => !!window.__remake.state.flags._ch4_evening, null, { timeout: 60000 });
     state = await get(page);
     assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["samechan"] });
+    assert.equal(state.flags._ch4_beach, undefined, "Skipping the beach leaves no record");
+  });
+  // 水着回（SPC18・Issue #3657）: 前夜祭の日の夕方、到着した人たちと砂浜へ。砂浜にいる人から3人まで選んで遊ぶ。
+  // 恋人でも友人でも同じ台本。最後まで読んだ時だけ遊んだ相手を確定し、好感度・お金は動かさない。一度だけ。
+  await check("the-festival-day-beach-with-the-people-who-arrived", async page => {
+    await seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      for (const id of ["ch4_dubai_souq", "ch4_stranger_first", "ch4_festa", "ch4_inn_tool_care", "ch4_stranger_second"]) p.read[id] = true;
+      p.firstDay = 1;
+      value.day = p.startDay + 11; value.slot = 1; p.day = 12;
+      value.lovers = ["rio"]; value.met.rio = true; value.contacts.push("rio");
+      // ♥5の男の友人（SPC21）のスティーブも別便で来る。到着を読めば、なると一緒に砂浜の男の枠に入る（SPC24）。
+      value.flags._overseas_companion = { decided: true, companion: null, supports: ["tsumugi", "rio", "mashiro"], guests: ["steve"] };
+    });
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 60, slot: 1 });
+    await go(page, "ch4_dubai_inn");
+    await page.locator(dt("ch4-rehearsal-rest")).waitFor();
+    await page.locator(dt("ch4-rehearsal-rest")).click();
+    for (const scene of ["ch4_tsumugi_dubai_friend", "ch4_rio_dubai_girlfriend", "ch4_mashiro_dubai_friend", "ch4_steve_dubai"]) {
+      await page.locator(`${dt("ch4-arrival")}[data-scene="${scene}"]`).waitFor({ timeout: 60000 });
+      assert.equal(await page.locator(dt("ch4-go-beach")).count(), 0, "Arrivals come before the beach");
+      await page.locator(dt("ch4-continue")).click();
+    }
+    const eveCard = `${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`;
+    await page.locator(eveCard).waitFor({ timeout: 60000 });
+    assert((await backlog(page)).some(line => line.includes("それは考えてなかった")), "Steve's arrival was read");
+    const before = await get(page);
+    await page.locator(dt("ch4-go-beach")).click();
+    await page.locator(dt("ch4-beach")).waitFor({ timeout: 60000 });
+    assert.match(await page.locator(dt("ch4-beach")).innerText(), /あと3か所、遊べる/);
+    for (const id of ["tsumugi", "rio", "mashiro", "naru", "steve"]) assert.equal(await page.locator(dt(`ch4-beach-${id}`)).count(), 1, id);
+    for (const id of ["minto", "ageha", "samechan", "hiyori", "noor", "adam", "volk"]) assert.equal(await page.locator(dt(`ch4-beach-${id}`)).count(), 0, `${id} is not there`);
+    await page.locator(dt("ch4-beach-rio")).click();
+    await page.locator(dt("ch4-beach")).filter({ hasText: "あと2か所" }).waitFor({ timeout: 60000 });
+    assert.equal(await page.locator(dt("ch4-beach-rio")).count(), 0, "Each person once");
+    assert.equal((await get(page)).flags._ch4_beach, undefined, "Nothing is committed until the end");
+    await page.locator(dt("ch4-beach-tsumugi")).click();
+    await page.locator(dt("ch4-beach")).filter({ hasText: "あと1か所" }).waitFor({ timeout: 60000 });
+    await page.locator(dt("ch4-beach-steve")).click();
+    await page.locator(eveCard).waitFor({ timeout: 60000 });
+    const state = await get(page);
+    assert.deepEqual(state.flags._ch4_beach, { picks: ["rio", "tsumugi", "steve"] });
+    assert.deepEqual([state.money, state.affinity, state.stats, state.day, state.flags._ch4.part],
+      [before.money, before.affinity, before.stats, before.day, "eve"], "The beach pays nothing and keeps the day");
+    assert.equal(await page.locator(dt("ch4-go-beach")).count(), 0, "The beach is once");
+    const lines = await backlog(page);
+    for (const text of ["十二月なのに", "使用感のテスト", "体が足りないので", "これも二口目の色だ", "前夜祭の時間だ"])
+      assert(lines.some(line => line.includes(text)), text);
   });
 });
 

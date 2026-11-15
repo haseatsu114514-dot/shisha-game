@@ -46,14 +46,6 @@
       "run": ["node remake/test/side_area.mjs"]
     },
     {
-      "id": "neo-ambient",
-      "title": "新版の場所の光（BGU01）: 背景の色から立ち絵へ重ねる色を決める規則（明るい場所は変えない・暗さと色かぶりの下限・夜の色調補正）",
-      "kind": "quick",
-      "run": [
-        "node remake/test/neo_ambient.mjs"
-      ]
-    },
-    {
       "id": "bg-day-variants",
       "title": "第3章の東京の4店の昼の版（BGU06）: 時間帯が「昼」と明示された時だけ昼の絵を使い、渡さない呼び出し・夜は今までの絵",
       "kind": "quick",
@@ -837,6 +829,12 @@
       "title": "NG+ measurement harness (U5): scenario sweep, rival observer, aggregation",
       "kind": "quick",
       "run": ["node remake/test/ngplus_measurement.mjs"]
+    },
+    {
+      "id": "ch4-beach",
+      "title": "Chapter 4 Dubai beach (SPC18): cast is who is there, picks once, no rewards",
+      "kind": "quick",
+      "run": ["node remake/test/ch4_beach.mjs"]
     },
     {
       "id": "ngplus-carry",

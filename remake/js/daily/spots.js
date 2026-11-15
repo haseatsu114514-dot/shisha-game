@@ -39,7 +39,8 @@ export const CHAR_STAT = { sumi: "technique", tsumugi: "sense", naru: "insight",
 export { VISIT_SEQ } from "../core/affinity-stages.js";
 import { VISIT_SEQ, visitStorySkipped } from "../core/affinity-stages.js";
 const REPEAT_POOL = {
-  rio: ["ch1_rio_repeat", "ch1_rio_repeat_b", "ch1_rio_repeat_c"],
+  // d（試し吸いの言葉・SPC09）は早めに読めるよう2番目に置く
+  rio: ["ch1_rio_repeat", "ch1_rio_repeat_d", "ch1_rio_repeat_b", "ch1_rio_repeat_c"],
 };
 // 固有会話をいくつ見たら LIME を交換済みとみなすか（交換シーンは固有会話の中にある）
 // アダムは総督回を挟むので、交換の場面（ch1_adam_third）は4本目
@@ -214,6 +215,12 @@ export const tsumugiStoryExtraDue = () => {
   if (!state.finales?.tsumugi || storyCount("tsumugi") < (VISIT_SEQ.tsumugi?.length || 0)) return null;
   return TSUMUGI_STORY_EXTRAS.find((id) => !state.flags[`_spot_seen_${id}`] && DB.dialogues[id]?.lines?.length) || null;
 };
+/** 煙がピンク（SPC13）。煙の色を打ち明けた固有会話（ch1_tsumugi_smoke_color）まで読んだあと、新しい話が無い来店で一度。 */
+const TSUMUGI_PINK = "ch1_tsumugi_pink_smoke";
+const TSUMUGI_PINK_SEEN = "_tsumugi_pink_smoke_done";
+export const tsumugiPinkDue = () => !state.flags[TSUMUGI_PINK_SEEN]
+  && storyCount("tsumugi") >= (VISIT_SEQ.tsumugi?.length || 0)
+  && !!DB.dialogues[TSUMUGI_PINK]?.lines?.length;
 /** 端の席（#3081）。固有会話を読み終え、店で正体がつながったあと、新しい話が無い来店で一度。
  * 正面の映え席と、カウンター横の席。大会の前後どちらでも、今の店の話だけにする。 */
 const MINTO_SIDE_SEAT = "ch1_minto_side_seat";
@@ -242,6 +249,12 @@ export const mintoTimerHandDue = () => !state.flags[MINTO_TIMER_HAND_SEEN]
 export const mintoChekiKeepDue = () => !state.flags[MINTO_CHEKI_KEEP_SEEN]
   && !!state.flags[MINTO_TIMER_HAND_SEEN]
   && !!DB.dialogues[MINTO_CHEKI_KEEP]?.lines?.length;
+/** チェキの次の来店で、新作「極冷ミント」の味見を一度だけ（SPC15）。 */
+const MINTO_COOL_MINT = "ch1_minto_cool_mint";
+const MINTO_COOL_MINT_SEEN = "_minto_cool_mint_done";
+export const mintoCoolMintDue = () => !state.flags[MINTO_COOL_MINT_SEEN]
+  && !!state.flags[MINTO_CHEKI_KEEP_SEEN]
+  && !!DB.dialogues[MINTO_COOL_MINT]?.lines?.length;
 /**
  * 章が明けて最初の来店で一度だけ読む後日談（#2026）。第1章で実際に通った店主だけ（regulars は
  * 章の切り替え時の記録。ch2-progress.js）。既読は台本末尾の set_flag。第2章の地元の地図だけが入口。
@@ -316,8 +329,8 @@ export function hasNewStory(charId) {
   if (charId === "rio" && rioPrototypeDue()) return true;
   if (charId === "rio" && rioBlueberryDue()) return true;
   if (charId === "rio" && rioStoryExtraDue()) return true;
-  if (charId === "tsumugi" && tsumugiStoryExtraDue()) return true;
-  if (charId === "minto" && (mintoSideSeatDue() || mintoQuietHelloDue() || mintoTimerHandDue() || mintoChekiKeepDue())) return true;
+  if (charId === "tsumugi" && (tsumugiPinkDue() || tsumugiStoryExtraDue())) return true;
+  if (charId === "minto" && (mintoSideSeatDue() || mintoQuietHelloDue() || mintoTimerHandDue() || mintoChekiKeepDue() || mintoCoolMintDue())) return true;
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
   if (id && !visitStorySkipped(state, charId, id)) return storyAvailable(id);
   return questionVisitDue(charId) || finaleAtVisit(charId);
@@ -525,6 +538,11 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
       if (!await read(scene, {})) return false;
       state.flags[`_spot_seen_${scene}`] = true;
       gainAffinity(charId, visitAffinity("talk"), affinityOptions);
+    } else if (charId === "tsumugi" && tsumugiPinkDue()) {
+      // 完読してから既読。中断では旗を残さず、次の来店で読み直せる。
+      if (!await read(TSUMUGI_PINK, DB.dialogues[TSUMUGI_PINK].metadata?.bg ? {} : { bg })) return false;
+      state.flags[TSUMUGI_PINK_SEEN] = true;
+      gainAffinity(charId, visitAffinity("talk"), affinityOptions);
     } else if (charId === "tsumugi" && tsumugiStoryExtraDue()) {
       const scene = tsumugiStoryExtraDue();
       if (!await read(scene, { bg })) return false;
@@ -546,6 +564,11 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     } else if (charId === "minto" && mintoChekiKeepDue()) {
       if (!await read(MINTO_CHEKI_KEEP, DB.dialogues[MINTO_CHEKI_KEEP].metadata?.bg ? {} : { bg })) return false;
       state.flags[MINTO_CHEKI_KEEP_SEEN] = true;
+      gainAffinity(charId, visitAffinity("story"), affinityOptions);
+    } else if (charId === "minto" && mintoCoolMintDue()) {
+      // 完読してから既読。中断では旗を残さず、次の来店で読み直せる。
+      if (!await read(MINTO_COOL_MINT, DB.dialogues[MINTO_COOL_MINT].metadata?.bg ? {} : { bg })) return false;
+      state.flags[MINTO_COOL_MINT_SEEN] = true;
       gainAffinity(charId, visitAffinity("story"), affinityOptions);
     } else {
       const rainy = isRainy();

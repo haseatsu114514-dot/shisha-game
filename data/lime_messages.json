@@ -1352,7 +1352,7 @@
         },
         {
           "text": "ゆっくり休んでください",
-          "response": "……うん。お前も",
+          "response": "……うん。キミも",
           "affinity": 1
         }
       ]
@@ -1405,7 +1405,7 @@
         },
         {
           "sender": "rei",
-          "text": "最初に頼んだ客の感想、お前と同じだった"
+          "text": "最初に頼んだ客の感想、キミと同じだった"
         }
       ],
       "replies": [
@@ -1416,7 +1416,7 @@
         },
         {
           "text": "クラウドさんの煙だからです",
-          "response": "……お前は、すぐそういうことを言う",
+          "response": "……キミは、すぐそういうことを言う",
           "affinity": 1
         }
       ]
@@ -1439,7 +1439,7 @@
         },
         {
           "sender": "rei",
-          "text": "お前は、何を聴く？"
+          "text": "キミは、何を聴く？"
         }
       ],
       "replies": [
@@ -2958,6 +2958,52 @@
           "text": "紅茶の日も、いいです",
           "response": "ふふ。どっちの日も、隣は君がいい",
           "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_hiyori_dream",
+      "sender": "hiyori",
+      "trigger_condition": "flag",
+      "trigger_flag": "_hiyori_tonari_followup_done",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "hiyori",
+          "text": "昨日ね、はじめくんと二人きりで、朝まで……"
+        },
+        {
+          "sender": "hiyori",
+          "text": "……"
+        },
+        {
+          "sender": "hiyori",
+          "text": "飲み明かす夢を見たの"
+        },
+        {
+          "sender": "hiyori",
+          "text": "起きたら、ちゃんと一人だった"
+        },
+        {
+          "sender": "hiyori",
+          "text": "……儚くない？ 夢って"
+        }
+      ],
+      "replies": [
+        {
+          "text": "一通目で、変な汗かきました",
+          "response": "？ 汗？ ……朝まで飲む夢、そんなに儚かった？",
+          "affinity": 2
+        },
+        {
+          "text": "いい夢ですね",
+          "response": "……うん。起きたら、ちゃんと消えてたけど",
+          "affinity": 1
+        },
+        {
+          "text": "今度、ほんとに飲みましょう",
+          "response": "……ほんと？ じゃあ朝までは無理でも、終電までなら",
+          "affinity": 2
         }
       ]
     },

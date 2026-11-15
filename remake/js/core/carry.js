@@ -264,6 +264,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_room_rests", "progression"], // 東京の奥の部屋で休んだ回数（ch3-tokyo-daily.js の小品の巡回）。周回では持ち越さない
   ["_ch4", "progression"],
   ["_camel_cups", "unlock"], // 大会の解放・中級認定・上級称号を周回へ残す
+  ["_ch4_beach", "progression"], // ドバイの水着回（前夜祭の日の夕方・遊んだ相手。ch4-beach.js・SPC18）。周回では持ち越さない
   ["_ch4_camel", "progression"], // ドバイのラクダレース（段階・自己ベスト）。周回では持ち越さない
   ["_ch4_cafe_orders", "progression"], // ドバイのカフェで頼んだ一台の回数（メニューごと・ch4-dubai-cafe.js）
   ["_ch4_cleared", "progression"],
@@ -461,6 +462,7 @@ export const FLAG_EXACT_RULES = [
   ["_met_tsumugi", "person"],
   ["_met_volk", "person"],
   ["_minto_cheki_keep_done", "person"],
+  ["_minto_cool_mint_done", "person"], // 極冷ミントの味見（SPC15・daily/spots.js）
   ["_minto_fifth_done", "person"],
   ["_minto_history_shared", "person"],
   ["_minto_identity_revealed", "person"],
@@ -522,6 +524,7 @@ export const FLAG_EXACT_RULES = [
   ["_samechan_nickname_known", "person"],
   ["_samechan_own_seat_done", "person"],
   ["_samechan_quiet_seat_done", "person"],
+  ["_samechan_sofa_test_done", "person"],
   ["_samechan_swimming_known", "person"],
   ["_samechan_unwell_done", "person"],
   ["_samechan_visit", "person"],
@@ -580,6 +583,7 @@ export const FLAG_EXACT_RULES = [
   ["_tsumugi_contest_progress", "person"],
   ["_tsumugi_contest_research", "person"],
   ["_tsumugi_contest_submitted", "person"],
+  ["_tsumugi_pink_smoke_done", "person"], // 煙がピンク（SPC13・daily/spots.js）
   ["_tsumugi_story_day", "person"],
   ["_trpg_tutorial_seen", "ui"],          // 店長のTRPGの遊び方説明を既読（表紙の「はじめての人へ」でいつでも見直せる）
   ["_tutorial_done", "progression"],

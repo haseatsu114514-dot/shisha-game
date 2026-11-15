@@ -1205,7 +1205,8 @@ await check('Rio #3081: seven story scenes follow the blueberry report, once eac
   assert.equal(f.spots.rioStoryExtraDue(), null);
   assert.equal(f.spots.hasNewStory('rio'), false);
   assert.equal(await f.spots.visitChar('rio'), true);
-  assert.equal(sceneIds(f)[0], 'ch1_rio_repeat_b');
+  // 物語系を読み終えたら、いつもの小会話（訪問数で巡回。SPC09 で ch1_rio_repeat_d を2番目に足した）へ戻る
+  assert.equal(sceneIds(f)[0], 'ch1_rio_repeat_c');
   const cancelled = rioAt(f, 6);
   cancelled.flags._spot_seen_ch1_rio_blueberry_report = true;
   cancelled.finales.rio = { day: 9, chapter: 1, route: 'friend' };
@@ -1231,6 +1232,15 @@ await check('Tsumugi #3081: five story scenes follow the finale, once each, at t
   early.slot = 0;
   early.flags._tsumugi_contest_submitted = true;
   early.flags[f.stages.questionDoneKey('tsumugi')] = true;
+  // 煙がピンク（SPC13）: 煙の色を打ち明けた固有会話まで読んだあと、新しい話の無い来店で一度だけ（締めくくりの前でも）。
+  assert.equal(f.spots.tsumugiPinkDue(), true);
+  assert.equal(f.spots.hasNewStory('tsumugi'), true, 'the pink smoke is offered once after the color talk');
+  f.plays.length = 0;
+  assert.equal(await f.spots.visitChar('tsumugi'), true);
+  assert.deepEqual(sceneIds(f), ['ch1_tsumugi_pink_smoke']);
+  assert.equal(early.flags._tsumugi_pink_smoke_done, true);
+  assert.equal(f.spots.tsumugiPinkDue(), false, 'the pink smoke is read once');
+  early.slot = 0;
   assert.equal(f.spots.tsumugiStoryExtraDue(), null, 'the finale stays ahead of the new scenes');
   assert.equal(f.bonds.finaleAtVisit('tsumugi'), false, 'the finale stays a night visit');
   assert.equal(f.spots.hasNewStory('tsumugi'), false, 'noon before the finale does not offer the extras');
@@ -1253,7 +1263,8 @@ await check('Tsumugi #3081: five story scenes follow the finale, once each, at t
   assert.equal(f.spots.tsumugiStoryExtraDue(), null);
   assert.equal(f.spots.hasNewStory('tsumugi'), false);
   assert.equal(await f.spots.visitChar('tsumugi'), true);
-  assert.equal(sceneIds(f)[0], 'remake_repeat_tsumugi_1');
+  // 訪問数で巡回する小会話へ戻る（ピンクの来店が1回あるので、ひとつ先の小会話）
+  assert.equal(sceneIds(f)[0], 'remake_repeat_tsumugi_2');
   const cancelled = f.fresh();
   cancelled.met.tsumugi = true;
   cancelled.story.tsumugi = 6;

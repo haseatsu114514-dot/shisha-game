@@ -1583,6 +1583,130 @@
       ]
     },
     {
+      "dialogue_id": "samechan_shop_sofa_test",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan",
+        "setting": "SPC08（2026-11-15 オーナー採用）。新しいソファの沈み具合を、客の目で確かめる。サメちゃんは家具を確かめているだけで最後まで気づかず、はじめが勝手に想像する。静かな席（samechan_shop_quiet_seat）の後、いつもの来店の代わりに一度だけ（daily/samechan.js）。恋愛の状態に触れない。"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に入ると、奥の壁際に、見慣れない大きなソファが据えてあった。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "おお、来たか！ 見よ、新しいソファじゃ。寝そべれる大きさのやつじゃぞ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "客の目で確かめてほしいのじゃ。お主、そこに横になってみい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "横に、ですか……こうですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われるまま仰向けになる。クッションが、ふわりと体を受け止めた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "うむ。では、わしも上に乗るぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんがソファの端に膝をついて、ぐっと体重をかけてきた。クッションが大きく傾く。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "二人分で、どこまで沈むか見たいのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……動くぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（ちょ、ちょっと待って。この体勢は）"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "もっと激しくいくぞ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……どうじゃ、きしむか？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ソファが、ぎしぎしと鳴った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "き、きしんでます！ すごく！"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "なんと。やはり、二人で乗ると鳴るか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近よ。勇者の顔が、茹でたタコのようである",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……む？ 暑いのか。奥の席は、照明が近いからのう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……照明のせいにしておこう）"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "脚の下に、フェルトをもう一枚噛ませるかの。念のためじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "助かったぞ。やはり、客の目で見てもらうと違うのう"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者はじめよ。次は余も乗せよ",
+          "voice": "korochan"
+        }
+      ]
+    },
+    {
       "dialogue_id": "samechan_shop_own_seat",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_shishark.png",

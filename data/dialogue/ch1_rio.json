@@ -1276,6 +1276,121 @@
       ]
     },
     {
+      "dialogue_id": "ch1_rio_repeat_d",
+      "comment": "SPC09（2026-11-15 オーナー採用）。通いの小会話。新しいボウルの試し吸いで、仕事に集中した凛想の言葉（浅く・痛くない？・奥まで）をはじめが勝手に誤解する。凛想は最後まで気づかず、赤い顔を試作品のせいにしてメモに書く。大会・恋愛に触れない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "2階のデスクに、見慣れない細長いボウルが置いてあった。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "来たね、モルモットくん。今日は本国の新しいボウル。葉はロットC-03"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは先に一口吸って煙の具合を確かめてから、吸い口を替えた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "……うん、通る。はい、君の番"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "これ、初めてでしょ。最初は浅く、ゆっくりね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われたとおり、浅く吸う。"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "……痛くない？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "喉。このロット、慣れないうちはヒリつくって報告があるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……あ、喉。大丈夫です"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "じゃあ、もう一回。今度はもっと深く。……奥まで、ゆっくり入れて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……煙の話だ。凛想さんは、仕事の話をしてる）"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "止めないで。そのまま、全部"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吐いた煙が、ショールームの暗がりに長く伸びた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……うん、いい吸い方。で、どうだった？ 初めての感想は"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……甘いのに、最後だけ少し苦いです"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "もらった。……何、その顔。むせた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "む、むせてません"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "ふうん。顔、赤いけど。……このロット、体が火照るって報告も追加ね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは真顔のまま、メモに一行書き足した。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 1
+          }
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch1_rio_prototype_night",
       "comment": "#1696 オーナー決定: 夜の2階のデスクで試作品を試す一度きりの回。固有会話3本目の後、新しい話の無い来店で spots.js が一度だけ再生する。大会前後どちらでも読める内容にする。",
       "metadata": {
