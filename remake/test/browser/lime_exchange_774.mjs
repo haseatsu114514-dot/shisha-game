@@ -10,8 +10,9 @@ const root = path.resolve(fileURLToPath(new URL('../../..', import.meta.url)));
 const out = path.resolve(process.env.QA_OUT || '.codex/artifacts/lime-exchange-774');
 await fs.mkdir(out, { recursive: true });
 // Use the production shell/styles. Deliberately omit boot/loadAll and unrelated assets.
+// index.html の頭にもロード画面用の <script> がある（#3632）ので、最初の <script> で切ると #boot ごと落ちる。script タグだけを外す。
 const html = (await fs.readFile(path.join(root, 'remake/index.html'), 'utf8'))
-  .split('<script>')[0] + '</body></html>';
+  .replace(/<script\b[\s\S]*?<\/script>/g, '');
 const mime = { '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css',
   '.json': 'application/json', '.html': 'text/html', '.png': 'image/png',
   '.webp': 'image/webp', '.woff2': 'font/woff2' };
