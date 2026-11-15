@@ -107,12 +107,92 @@
         {
           "speaker": "",
           "face": "",
+          "text": "暖簾をくぐった途端、足が止まった。濃い木の壁、黒革のソファ。白い大理石の床が光っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥には大きな机と神棚。壁の肖像写真も、金の屏風も、映画で見た事務所そのままだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……スミさん、住所、間違えてないよな？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鞄からメモを出す。「神崎煙草店」。暖簾の字と、一字も違わない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの……煙草店、ですよね？"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "看板にもそう書いてありやしょう"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "それより、あんちゃん。身分証、出してもらおうか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（み、身分証……？ ここで、取られる……？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "財布を握ったまま、半歩下がった。神崎さんは黙って、大きな手のひらを差し出している。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あの……ちゃんと、返してもらえるんでしょうか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……見たら返しやす。年齢確認でさ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "煙を出す店は、二十歳前の客を座らせられねえ。スミんとこの若えのでも、決まりは決まりでね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "身分証を渡すと、神崎さんは生年月日を指で押さえて確かめ、両手で返してくれた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……年齢確認、だったのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "鞄から、神崎さん宛ての包みを取り出した。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "スミさんから、こちらを預かってきました"
+          "text": "あの、今日はお客じゃなくて……スミさんから、こちらを預かってきました"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "surprise",
+          "text": "……なんでえ、配達かい。先に言ってくんな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（言う前に、身分証だったんですけど……）"
         },
         {
           "speaker": "",
