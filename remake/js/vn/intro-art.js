@@ -124,7 +124,7 @@ export function layoutIntro(host, id, variant, intro) {
   const sub = host.querySelector(".ci-name-sub");
   // ふりがなの分だけ上に空けるので、帯（高さ148px）に収まるよう最大の字を小さくする
   // 2行目の小さい名前（sub_name）がある時は主の名前を少し抑え、2行分を帯の中へ収める
-  fitWidth(name, .86, sub ? 100 : (name.classList.contains("has-ruby") ? 116 : 150), 40, 596 - shift);
+  fitWidth(name, .86, sub ? 112 : (name.classList.contains("has-ruby") ? 116 : 150), 40, 596 - shift);
   if (sub) fitWidth(sub, 1, 32, 18, 596 - shift);
   const title = host.querySelector(".ci-title");
   title.style.fontSize = "28px";

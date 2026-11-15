@@ -122,7 +122,7 @@ assert.equal(all.DB.characters.hiyori.reading, "うたかた ひより");
 assert.equal(all.DB.characters.saku.name, "綾取 陣（あやとり じん）");
 assert.equal(all.DB.characters.rei.reading, "くらうど");
 assert.equal(all.realName("saku"), "綾取陣");
-assert.equal(all.realName("rei"), "†玖羅雨℃†");
+assert.equal(all.realName("rei"), "†玉羅雨℃†");
 assert.equal(all.realName("hiyori"), "ひより");
 assert.equal(all.DB.characters.hiyori.age, 25);
 assert.equal(all.DB.hiyori.route, undefined);

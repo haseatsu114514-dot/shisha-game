@@ -328,9 +328,9 @@
   },
   {
     "id": "rei",
-    "lime_name": "†玖羅雨℃†",
+    "lime_name": "†玉羅雨℃†",
     "birthday": "05-20",
-    "name": "†玖羅雨℃†（くらうど） / 田中 健太（たなか けんた）",
+    "name": "†玉羅雨℃†（くらうど） / 田中 健太（たなか けんた）",
     "reading": "くらうど",
     "role": "rival_ch2",
     "age": 25,
@@ -378,9 +378,9 @@
     ],
     "intro_cutin": {
       "title": "爆煙の堕天使",
-      "display_name": "｜†玖羅雨℃†《くらうど》",
+      "display_name": "｜†玉羅雨℃†《くらうど》",
       "sub_name": "（田中健太）",
-      "line": "もう少し煙っててもいいくらい",
+      "line": "少し煙っててもいいぐらい",
       "face": "normal",
       "color": "#b0102a",
       "name": "alias",
