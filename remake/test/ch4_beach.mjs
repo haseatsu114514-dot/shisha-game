@@ -12,6 +12,9 @@ import { CH4_BEACH_SCENES, CH4_BEACH_SCENE_FILES, CH4_BEACH_PICKS, CH4_BEACH_RES
 import { classifyFlag } from "../js/core/carry.js";
 import { CH4_MORNING_SCENES, CH4_MORNING_FILES, CH4_MORNING_FLAG, CH4_MORNING_CHEERS_MAX, chapterFourMorningCheers,
   chapterFourMorningDue, chapterFourMorningScript } from "../js/chapters/ch4-morning.js";
+import { CH4_LOVERS_CALL, CH4_LOVERS_FILES, CH4_LOVERS_FLAG, CH4_LOVERS_PETIT, CH4_LOVERS_SCENES, chapterFourLoversDue, chapterFourLoversHere,
+  chapterFourLoversScript } from "../js/chapters/ch4-lovers.js";
+import { PETIT_KEYS, PETIT_LAST_FLAG, petitSeenFlag } from "../js/core/petit-shuraba.js";
 
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url), "utf8"));
 
@@ -192,5 +195,70 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
   value.flags[CH4_MORNING_FLAG] = true;
   assert.equal(chapterFourMorningDue(value, false), false, "once");
   assert.equal(classifyFlag(CH4_MORNING_FLAG), "progression");
+}
+// ---- 「みんな来ちゃった」（4-2・SPC28）: 日本から来た恋人が2人以上の時、砂浜の前に一度。内心のあと、読める時はノックが重なる
+{
+  const rows = readData("dialogue/ch4_lovers").dialogues;
+  assert.deepEqual([...CH4_LOVERS_FILES.ch4_lovers].sort(), rows.map(row => row.dialogue_id).sort(), "ch4_lovers: all scenes registered");
+  const dialogues = Object.fromEntries(rows.map(row => [row.dialogue_id, row]));
+  // ノック・反応は本人だけが話し、ほかの人の名前を出さない（相手が誰でも通じる）
+  for (const id of OVERSEAS_HEROINES) {
+    for (const scene of [CH4_LOVERS_SCENES.knock[id], CH4_LOVERS_SCENES.look[id]]) {
+      const lines = dialogues[scene].lines;
+      assert.deepEqual([...new Set(lines.map(line => line.speaker))], [id], scene);
+      const others = Object.entries(CH4_LOVERS_CALL).filter(([other]) => other !== id).map(([, name]) => name.replace(/さん$|ちゃん$/, ""));
+      for (const name of others) assert(!lines.some(line => line.text.includes(name)), `${scene}: no ${name}`);
+    }
+  }
+  assert(PETIT_KEYS.includes(CH4_LOVERS_PETIT), "the Dubai knock is a petit shuraba");
+  assert.equal(classifyFlag(petitSeenFlag(CH4_LOVERS_PETIT)), "progression");
+  assert.equal(classifyFlag(CH4_LOVERS_FLAG), "progression");
+  // 最後の修羅場（第5章の打ち上げ・スタッフロール後）で一行返る
+  for (const [file, scene] of [["ch5_party", "ch5_party_shuraba_open"], ["relationship_conflicts", "shuraba_open"]]) {
+    const row = readData(`dialogue/${file}`).dialogues.find(item => item.dialogue_id === scene);
+    assert(row.lines.some(line => line.flag === "_petit_seen_dubai" && line.next_true === "petit_recall_dubai"), `${scene}: recall condition`);
+    assert(row.branches.petit_recall_dubai?.length, `${scene}: recall line`);
+  }
+
+  // 同行者（凛想）と別便の恋人2人。到着を読み終えるまでは出さない（砂浜と同じ時）
+  const value = eveSave({ lovers: ["minto", "rio", "samechan"], companion: "rio" });
+  assert.equal(chapterFourLoversDue(value), false, "not before the arrivals");
+  arriveAll(value);
+  assert.deepEqual(chapterFourLoversHere(value), ["minto", "rio", "samechan"]);
+  assert.equal(chapterFourLoversDue(value), true);
+  const before = keep(value);
+  const { script, knockers } = chapterFourLoversScript(value, dialogues);
+  assert.deepEqual(keep(value), before, "building the script changes nothing");
+  assert.deepEqual(knockers, ["minto", "rio"], "the first two of those who came knock");
+  const texts = script.lines.map(line => line.text);
+  assert(texts.includes("（栞さん、凛想さん、サメちゃん……みんな、来てくれた）"), "counts everyone who came");
+  assert(texts.includes(dialogues[CH4_LOVERS_SCENES.many].lines[0].text));
+  assert(!texts.includes(dialogues[CH4_LOVERS_SCENES.two].lines[0].text));
+  for (const id of knockers) assert(texts.includes(dialogues[CH4_LOVERS_SCENES.knock[id]].lines[0].text), id);
+  assert(!texts.includes(dialogues[CH4_LOVERS_SCENES.knock.samechan].lines[0].text), "only two knock");
+  assert.equal(texts.at(-1), dialogues[CH4_LOVERS_SCENES.knockClose].lines.at(-1).text);
+  // 前のプチ修羅場から日が浅ければ、内心だけ（ノックは無し）
+  const recent = structuredClone(value);
+  recent.flags[PETIT_LAST_FLAG] = 999999;
+  const quiet = chapterFourLoversScript(recent, dialogues);
+  assert.equal(quiet.knockers, null);
+  assert.equal(quiet.script.lines.at(-1).text, dialogues[CH4_LOVERS_SCENES.close].lines.at(-1).text);
+  // 2人なら「二人とも」の一行
+  const pair = arriveAll(eveSave({ lovers: ["tsumugi", "hiyori"], companion: "hiyori" }));
+  assert.deepEqual(chapterFourLoversHere(pair), ["tsumugi", "hiyori"]);
+  assert(chapterFourLoversScript(pair, dialogues).script.lines.some(line => line.text === dialogues[CH4_LOVERS_SCENES.two].lines[0].text));
+  // 恋人が1人・ヌールは「来た」人に数えない・一度きり・砂浜の後は出さない
+  const one = arriveAll(eveSave({ lovers: ["tsumugi"], companion: "tsumugi" }));
+  assert.equal(chapterFourLoversDue(one), false, "one lover: nothing to juggle");
+  const withNoor = arriveAll(eveSave({ lovers: ["tsumugi", "noor"], companion: "tsumugi", met: { noor: true } }));
+  assert.deepEqual(chapterFourLoversHere(withNoor), ["tsumugi"], "Noor lives in Dubai; she did not come");
+  assert.equal(chapterFourLoversDue(withNoor), false);
+  const done = structuredClone(value);
+  done.flags[CH4_LOVERS_FLAG] = true;
+  assert.equal(chapterFourLoversDue(done), false, "once");
+  const beached = structuredClone(value);
+  assert(commitChapterFourBeach(beached, chapterFourBeachCast(beached).slice(0, chapterFourBeachPickCount(beached))));
+  assert.equal(chapterFourLoversDue(beached), false, "not after the beach");
+  assert.equal(chapterFourLoversDue(eveSave({ lovers: ["minto", "rio"], companion: "rio", eve: false })), false, "not during the daily days");
 }
 console.log("PASS ch4 beach: cast is who is actually there (with Naru and the ♥5 male friends as the lively slots), picks once without rewards, before the festival only");

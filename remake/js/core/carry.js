@@ -224,6 +224,7 @@ export const FLAG_EXACT_RULES = [
   ["_petit_last_day", "progression"],
   ["_petit_seen_cinema", "progression"],
   ["_petit_seen_cross", "progression"],
+  ["_petit_seen_dubai", "progression"], // ドバイの宿でノックが重なった（ch4-lovers.js・SPC28）
   ["_petit_seen_date_call", "progression"],
   ["_petit_seen_lime_misfire", "progression"],
   ["_petit_seen_naru", "progression"],
@@ -269,6 +270,8 @@ export const FLAG_EXACT_RULES = [
   ["_club_yoru_request", "progression"], // クラブSEAMの常連のリクエスト（SPC26）
   ["_club_yoru_last_set", "progression"], // 閉店前にヨルと交代で回す夜（SPC26）
   ["_ch4_morning_done", "progression"], // 大会当日の朝を読み終えた（ch4-morning.js・SPC28）。周回では持ち越さない
+  ["_ch4_tour", "progression"], // ドバイDAY1の初日の街回り（回った相手。ch4-tour.js・SPC28）。周回では持ち越さない
+  ["_ch4_lovers_inner", "progression"], // 前夜祭の日の「みんな来ちゃった」の内心を読んだ（ch4-lovers.js・SPC28）。周回では持ち越さない
   ["_ch4_beach", "progression"], // ドバイの水着回（前夜祭の日の夕方・遊んだ相手。ch4-beach.js・SPC18）。周回では持ち越さない
   ["_ch4_camel", "progression"], // ドバイのラクダレース（段階・自己ベスト）。周回では持ち越さない
   ["_ch4_cafe_orders", "progression"], // ドバイのカフェで頼んだ一台の回数（メニューごと・ch4-dubai-cafe.js）

@@ -837,6 +837,12 @@
       "run": ["node remake/test/ch4_beach.mjs"]
     },
     {
+      "id": "ch4-tour",
+      "title": "Chapter 4 first-day city walk (SPC28 4-1): DAY1 noon once, lover or Naru, no rewards",
+      "kind": "quick",
+      "run": ["node remake/test/ch4_tour.mjs"]
+    },
+    {
       "id": "ngplus-carry",
       "title": "NG+ save migration, carry classification coverage and package extraction (#1228)",
       "kind": "quick",
@@ -1928,6 +1934,9 @@
       "timeout": 9,
       "paths": [
         "remake/js/chapters/ch4-dubai-daily.js",
+        "remake/js/chapters/ch4-tour.js",
+        "remake/js/chapters/ch4-lovers.js",
+        "remake/js/core/petit-shuraba.js",
         "remake/js/chapters/ch4-dubai-cafe.js",
         "remake/js/chapters/ch4-dubai-local.js",
         "remake/js/chapters/ch4-longlong.js",
@@ -1945,6 +1954,8 @@
         "data/dialogue/ch4_visitors.json",
         "data/dialogue/ch4_*_dubai.json",
         "data/dialogue/ch4_arrival_daily.json",
+        "data/dialogue/ch4_tour.json",
+        "data/dialogue/ch4_lovers.json",
         "data/dialogue/tournament_dates.json",
         "remake/test/browser/ch4_dubai_daily.mjs"
       ],

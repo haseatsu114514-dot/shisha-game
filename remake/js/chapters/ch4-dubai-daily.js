@@ -17,7 +17,7 @@
 //     ドバイの値段には約何ディルハムかを添える
 // 読了の確定は ch4-progress.js の completeChapterFourScene だけ（本筋の場面）。現在地は flags._ch2_region = "dubai"。
 import { state, save, timeOfDay } from "../core/state.js";
-import { DB, bgUrl, displayName } from "../core/data.js";
+import { DB, bgUrl, callName, displayName } from "../core/data.js";
 import { layers, setBg, toast, modal } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
@@ -51,6 +51,8 @@ import { INN_TRIAL_FLAG, INN_TRIAL_IDS, innTrialDue, innTrialResult } from "./ch
 import { REHEARSAL_FLAG, REHEARSAL_IDS, rehearsalDue, rehearsalResult } from "./ch4-rehearsal.js";
 import { COMPANION_TIME_FILE, COMPANION_TIME_IDS, companionLover, companionTimeOpen, spendCompanionTime } from "./companion-time.js";
 import { chapterFourStaffNightEvent } from "./ch4-staff-work.js";
+import { CH4_TOUR_BG, CH4_TOUR_FLAG, CH4_TOUR_IDS, CH4_TOUR_SCENES, chapterFourTourCompanion, chapterFourTourDue, chapterFourTourPartner,
+  chapterFourTourScript } from "./ch4-tour.js";
 
 export const DUBAI = "dubai";
 const INN_REST_SCENES = ["ch4_inn_rest", "ch4_inn_rest_b", "ch4_inn_rest_c"];
@@ -214,6 +216,8 @@ export function chapterFourDubaiDefinition(io) {
       return true;
     },
     beforeInvitation: () => true,
+    // 初日の街回り（4-1・SPC28）: DAY1の昼の行動を使う強制イベント。読み終えた時だけ行動を一つ使う
+    slotEvent: () => tourSlotEvent(),
     wakeBackground: () => CH4_PLACE_BG.inn,
     // ドバイでは恋人の誘い・デート・節目（lover_events）を出さず、遠くの恋人からのLIMEだけ続く（IR17）。
     // 同行した恋人は一緒にいるのでLIMEを送ってこない（ch4.js の恋人の入口と同じ）。
@@ -233,6 +237,8 @@ export async function runChapterFourDubai(io) {
     await readDialogues("taiyo_bond", FESTA_BOND_IDS), creekSpotScenes(await readDialogues("ch4_spots", CREEK_SPOT_IDS)));
   // 同行した恋人と宿で過ごす場面（BLC08・companion-time.js）。読めなくても地図は開き、宿の選択肢に出ないだけ
   if (companionLover(owner)) await readDialogues(COMPANION_TIME_FILE, COMPANION_TIME_IDS).then(found => Object.assign(DB.dialogues, found)).catch(() => {});
+  // 初日の街回り（ch4-tour.js）。まだ回っていないDAY1の昼だけ読む。読めなければ街回りは出さずに地図を開く
+  if (chapterFourTourDue(owner)) await readDialogues("ch4_tour", CH4_TOUR_IDS).then(found => Object.assign(DB.dialogues, found)).catch(() => {});
   // LOAD・再開でも最初の地図から、ヌールの MENU の案内（♥5の締めくくり・告白を選べる）を合わせる。どちらも台詞が読み込まれているかを見る
   // （daily/bonds.js の finaleDue・daily/romance.js の romanceRouteOpen。第5章は ch5-dubai.js の preloadNoorScenes）。読めなくても地図は開く
   if (owner.met?.noor) await import("./ch4-desert.js").then(desert => desert.loadDesertDialogues()).catch(() => {});
@@ -296,6 +302,33 @@ function naruTalkNightEvent() {
       if (!await readPlain(scene, TALK_BG[scene] || CH4_SCENE_BG[scene], owner) || state !== owner) return;
       countTalk("naru");
       save();
+    },
+  };
+}
+
+// 初日の街回り（4-1・SPC28）。なると、同行の恋人がいればその人とどちらと回るかを選ぶ（ch4-tour.js）。
+// 選んだ相手の続きは会話エンジンの next_id で飛ぶ先（DB.dialogues）に置き、読み終えた visited で相手を知る。
+function tourSlotEvent() {
+  if (!chapterFourTourDue(state) || !DB.dialogues[CH4_TOUR_SCENES.open]) return null;
+  const owner = state;
+  return {
+    run: async () => {
+      if (!chapterFourTourDue(owner)) return false;
+      const companion = chapterFourTourCompanion(owner);
+      const { script, picks } = chapterFourTourScript(owner, DB.dialogues,
+        { companionLabel: companion ? callName(companion, owner, { context: "private" }) : "" });
+      Object.assign(DB.dialogues, picks);
+      const url = bgUrl(CH4_TOUR_BG);
+      const result = await keepDailyHud(async () => {
+        await setBg(url);
+        return state === owner ? play(script, { bg: url }) : null;
+      });
+      if (state !== owner || !result || result.cancelled) return false;
+      const partner = chapterFourTourPartner(owner, result.visited || []);
+      if (!partner) return false;
+      owner.flags[CH4_TOUR_FLAG] = { with: partner };
+      save();
+      return true;
     },
   };
 }

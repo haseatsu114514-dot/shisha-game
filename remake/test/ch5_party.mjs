@@ -111,9 +111,9 @@ const recall = dialogue => ({
 });
 assert.deepEqual(recall(dialogues.ch5_party_shuraba_open), recall(dialogues.shuraba_open), "Both openings recall the same petit scenes");
 const recalled = recall(open);
-assert.equal(recalled.lines.length, 9);
+assert.equal(recalled.lines.length, 10); // 開き・7場面・ドバイのノック（SPC28 4-2）・締め
 for (const line of recalled.lines) assert(recalled.branches[line.next_true]?.length, `${line.next_true}: recall branch exists`);
-for (const key of ["date_call", "lime_misfire", "notice", "cross", "sumi", "cinema", "naru"])
+for (const key of ["date_call", "lime_misfire", "notice", "cross", "sumi", "cinema", "naru", "dubai"])
   assert(recalled.lines.some(line => line.flag === `_petit_seen_${key}`), `${key}: recalled at the final shuraba`);
 // 「気づきかけ」を読んだ恋人は、反応の中で一行返す（8人ぶん。読んでいない保存には出ない）。
 for (const id of routes.heroine_ids) {

@@ -39,6 +39,9 @@ import { craftContinueContext, recordContinueContext, clearContinueHistory } fro
 import { TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
 import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
 import { CH4_MORNING_FILES, CH4_MORNING_FLAG, chapterFourMorningDue, chapterFourMorningScript } from "./ch4-morning.js";
+import { CH4_LOVERS_FILES, CH4_LOVERS_FLAG, CH4_LOVERS_PETIT, CH4_LOVERS_SCENE, chapterFourLoversDue, chapterFourLoversScript } from "./ch4-lovers.js";
+import { markPetit } from "../core/petit-shuraba.js";
+import { strainSuspect } from "../core/lover-strain.js";
 import { CH4_BEACH_SCENES, CH4_BEACH_SCENE_FILES, CH4_BEACH_BG, chapterFourBeachCast, chapterFourBeachDue,
   chapterFourBeachPickCount, commitChapterFourBeach } from "./ch4-beach.js";
 import { CH4_EVENING_DIALOGUE_FILES, CH4_EVENING_BG, selectChapterFourEvening, chapterFourEveningPartner,
@@ -73,7 +76,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
 /** 必要な台本をすべて確認してから DB に公開する。欠けていれば状態を進めない。 */
 async function loadDialogues() {
   const files = { ...CH4_SCENE_FILES, ...CH4_VISITOR_SCENE_FILES, ...CH4_EVENING_DIALOGUE_FILES, ...CH4_CAMEL_SCENE_FILES,
-    ...CH4_BEACH_SCENE_FILES, ...CH4_STORY_FILES, ...CH4_MORNING_FILES };
+    ...CH4_BEACH_SCENE_FILES, ...CH4_STORY_FILES, ...CH4_MORNING_FILES, ...CH4_LOVERS_FILES };
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => [ids, await readDialogues(file, ids)]));
   for (const [ids, dialogues] of groups) {
     Object.assign(DB.dialogues, Object.fromEntries(ids.map(id => [id, dialogues[id]])));
@@ -413,7 +416,21 @@ async function renderEve(owner) {
   const [arrival] = chapterFourArrivalsDue(state);
   if (arrival) { await renderArrival(owner, arrival); return; }
   // 水着回（SPC18。2026-11-15 オーナー指示で強制イベント・SPC25）: 到着を読み終えたら、前夜祭の前に必ず一度、砂浜へ行く。
-  if (chapterFourBeachDue(state)) { await renderBeach(owner); return; }
+  if (chapterFourBeachDue(state)) {
+    // 「みんな来ちゃった」（4-2・SPC28）: 日本から来た恋人が2人以上いれば、砂浜の前に一度、はじめの内心と、
+    // 読める時はプチ修羅場（ノックが重なる）。読み終えた時だけ記録し、そのまま砂浜へ。
+    if (chapterFourLoversDue(state)) {
+      const { script, knockers } = chapterFourLoversScript(state, DB.dialogues);
+      DB.dialogues[CH4_LOVERS_SCENE] = script;
+      if (!await readScene(owner, CH4_LOVERS_SCENE)) return;
+      state.flags[CH4_LOVERS_FLAG] = true;
+      if (knockers && markPetit(state, CH4_LOVERS_PETIT)) strainSuspect(state, knockers);
+      save();
+      if (!current(owner)) return;
+    }
+    await renderBeach(owner);
+    return;
+  }
   const [next] = chapterFourMandatory(state);
   if (!next) {
     // 必須場面の後、大会日へ進む前に、前夜の過ごし方を一度だけ確定する（#1895）。

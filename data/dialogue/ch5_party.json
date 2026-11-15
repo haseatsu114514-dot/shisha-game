@@ -356,6 +356,7 @@
         { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_sumi", "next_true": "petit_recall_sumi" },
         { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_cinema", "next_true": "petit_recall_cinema" },
         { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_naru", "next_true": "petit_recall_naru" },
+        { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_dubai", "next_true": "petit_recall_dubai" },
         { "type": "condition", "condition_type": "flag_count", "flag": "_petit_count", "threshold": 1, "next_true": "petit_recall_close" },
         { "speaker": "", "face": "", "text": "誰からともなく、俺との関係を尋ねた。", "beat": 300 },
         {
@@ -399,6 +400,9 @@
         ],
         "petit_recall_naru": [
           { "speaker": "", "face": "", "text": "「言うのは、俺じゃないだろ」という、なるの声。" }
+        ],
+        "petit_recall_dubai": [
+          { "speaker": "", "face": "", "text": "ドバイの宿の廊下で、重なった二つのノック。" }
         ],
         "petit_recall_close": [
           { "speaker": "", "face": "", "text": "どれも、うまく切り抜けたつもりだった。" },
