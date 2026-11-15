@@ -488,7 +488,7 @@ console.log("PASS: three everyday talks are loaded, rotate, retain normal fees/r
   const homeScript = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_rei.json", root), "utf8")).dialogues
     .find(d => d.dialogue_id === live);
   assert(homeScript?.lines?.length, "the live night script exists in ch2_rei.json");
-  assert(loaderDB.dialogues[live], "the preparation loader publishes it with Rei's scripts");
+  assert(loaderDB.dialogues[live], "the preparation loader publishes it with Cloud's scripts");
   assert(homeScript.lines.some(line => line.type === "set_flag" && line.flag === `_talk_seen_${live}`), "the script marks itself read");
   const prepSave = (extra = {}) => {
     state.chapter = 3; state.slot = 1; state.flags._ch3_prep = { startDay: 1, days: 3, departed: false }; Object.assign(state.flags, extra);
@@ -519,5 +519,5 @@ console.log("PASS: three everyday talks are loaded, rotate, retain normal fees/r
   await setup(2); DB.dialogues[live] = homeScript; prepSave({ _ch2_rei_ticket: true });
   await visit("kumicho"); assert.notEqual(played.at(-1), live);
 }
-console.log("PASS: Rei's live night appears once during the chapter 3 departure prep for ticket holders");
+console.log("PASS: Cloud's live night appears once during the chapter 3 departure prep for ticket holders");
 
