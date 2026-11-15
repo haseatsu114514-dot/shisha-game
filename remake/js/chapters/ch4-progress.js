@@ -217,7 +217,7 @@ export const CH4_FRIEND_ARRIVAL_SCENES = Object.freeze({
   samechan: "ch4_samechan_dubai_friend", hiyori: "ch4_hiyori_dubai_friend",
 });
 // 前夜祭（王煙楼の招待）が始まった印。ここから先は到着を足さない（ロビーの出迎えを前夜祭の後に回さない）。
-const CH4_FESTIVAL_STARTED = Object.freeze(["ch4_wang_reception_forced_in", "ch4_wang_reception"]);
+export const CH4_FESTIVAL_STARTED = Object.freeze(["ch4_wang_reception_forced_in", "ch4_wang_reception"]);
 
 const PARTS = Object.freeze(["prologue", "free", "eve", "tournament", "resolution", "cleared"]);
 const STRATEGY_BRANCHES = Object.freeze(["sakura", "peach", "tea"]);
