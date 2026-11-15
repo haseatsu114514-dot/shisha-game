@@ -7,7 +7,7 @@ import vm from "node:vm";
 
 const root = new URL("../../", import.meta.url);
 const read = file => fs.readFileSync(new URL(file, root), "utf8");
-const dialogues = Object.fromEntries(["ch2_isolation", "ch2_main", "ch2_ageha_story", "remake_ch2", "ch2_choice_echoes"]
+const dialogues = Object.fromEntries(["ch2_isolation", "ch2_main", "ch2_ageha_story", "remake_ch2", "ch2_choice_echoes", "ch2_story_extra"]
   .flatMap(file => JSON.parse(read(`data/dialogue/${file}.json`)).dialogues).map(scene => [scene.dialogue_id, scene]));
 const WORK_SCENES = new Set(["ch2_naru_warm", "ch2_naru_confrontation", "ch2_coal_together", "ch2_lingering_smell", "ch2_sumi_silence"]);
 const START = 15, abs = day => START + day - 1;

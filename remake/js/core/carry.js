@@ -187,6 +187,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_read_ch2_strawberry_sample", "progression"],
   ["_ch2_read_ch2_tournament_ageha_heart", "person"],
   ["_ch2_read_ch2_tsumugi_color", "person"],
+  ["_ch2_read_remake_ch2_ageha_scout", "progression"], // DAY3の夜のなるの写真（ch2_photo_buzz・SPC28）を、偵察を読んだ保存には足さない
   ["_ch2_read_remake_ch2_ageha_tasting", "progression"],
   ["_ch2_region", "progression"],
   ["_ch2_rei_ticket", "progression"],

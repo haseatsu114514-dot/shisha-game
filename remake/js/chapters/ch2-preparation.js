@@ -17,7 +17,7 @@ import { offerAgehaPurikura } from "./ch2-purikura.js";
 import { openShop } from "../daily/shop.js";
 import { MAP, STOPS, ROOMS } from "./ch2-city-data.js";
 import { dayOneProgress, recordCityVisit } from "./ch2-progress.js";
-import { chapterTwoNights, storyVisitDue, readStoryVisit } from "./ch2-story.js";
+import { chapterTwoNights, storyVisitDue, readStoryVisit, readChapterTwoDayScene } from "./ch2-story.js";
 import { craftPrepDue, offerCraftPrep } from "./ch2-craft-prep.js";
 import { agehaStoryScene, agehaLaterScene, AGEHA_BADDAY, AGEHA_LATER_SCENES, syncAgehaVibes } from "./ch2-story-data.js";
 import { CH2_VISIT_STORIES, ch2VisitDone, ch2VisitReady } from "../core/affinity-stages.js";
@@ -315,7 +315,8 @@ export async function runChapterTwoPreparation() {
   state.flags._ch2_region ||= "home";
   save();
   await runDaily({
-    morningDeparture: chooseMorningCity, beforeHomecoming: returnCityHome,
+    // 昼の本筋（耳鼻科・なるの店のまかない。SPC28）は出かける前の朝に読み、昼の行動を使う。その後で今日の行き先を選ぶ
+    morningDeparture: async () => { await readChapterTwoDayScene(state.day - startDay + 1); await chooseMorningCity(); }, beforeHomecoming: returnCityHome,
     // 地元の予定の前だけ帰る。柚ヶ谷の試煙会などは現地のまま開く。
     beforeNightEvent: event => allSpots().some(spot => spot.id === event.pin && (spot.region || "home") === "home")
       ? returnCityHome() : true,

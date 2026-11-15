@@ -18,6 +18,8 @@ export const C_STATION_TASTING_BG = CITY_BACKGROUNDS.c_station_night;
 export const CH2_NIGHTS = [
   { day: 3, pin: "naru", label: "なるの祝福", beat: "夜。なるの話を聞きに、KEMURIKUSAへ──", doneFlag: "_ch2_naru_warm_done", steps: [
     { id: "ch2_naru_warm", file: "ch2_isolation" },
+    // 2-5 C（SPC28）: 祝いの後、なるが県大会の公式ページの「盛りすぎた写真」を見せる。DAY3の夜を読み終えた保存には足さない
+    { id: "ch2_photo_buzz", file: "ch2_story_extra", when: ({ flags }) => !flags._ch2_read_remake_ch2_ageha_scout },
     { id: "remake_ch2_ageha_scout", file: "ch2_ageha_story", met: "ageha" },
     // 全体講評S6: あげはを見送ったあと、優勝目当ての客が大会の一台を半分残す。DAY4の居残りと炭の事故の前段。
     // DAY3の夜を読み終えた保存には足さない（夜ごと完了済み）。
@@ -51,6 +53,9 @@ export const CH2_NIGHTS = [
     { id: "ch2_kemuri_thermometer", file: "ch2_main", bg: C_STATION_TASTING_BG, when: ({ flags }) =>
       !flags._ch2_read_remake_ch2_ageha_tasting },
     { id: "remake_ch2_ageha_tasting", file: "ch2_ageha_story", bg: C_STATION_TASTING_BG },
+    // 2-5 A（SPC28）: 試煙会の終わりに、あげはが初めての二人組へ吸い方を教える。苺を受け取った保存には足さない
+    { id: "ch2_ageha_lesson", file: "ch2_story_extra", bg: C_STATION_TASTING_BG, when: ({ flags }) =>
+      !flags._ch2_read_ch2_strawberry_sample },
     // #1650: 帰り際に試供品の苺を受け取り、tonariのまかないで熱だけを試す導線にする
     { id: "ch2_strawberry_sample", file: "ch2_main", bg: C_STATION_TASTING_BG, sample: true },
   ] },
@@ -82,6 +87,22 @@ export const CH2_NIGHTS = [
     { id: "ch2_pre_tournament_realisation", file: "ch2_main", bg: CH2_SCENE_BACKGROUNDS.venueBench, flag: "_ch2_eve_done" },
   ] },
 ];
+
+// 昼の本筋（SPC28・2026-11-15 オーナー「2.4章の本筋を強化したい」→「2の2」「2の4」）。その章内日の朝、出かける前に読み、
+// 読み終えたら昼の行動を使う（第3章の準備の再診と同じ）。中断・LOADは未読のまま、同じ朝に戻る。その日の朝を過ぎたら出さない
+// （旧保存を後の日に読ませない）。読了の印は夜の本編と同じ _ch2_read_<ID>。報酬なし。
+// 2-2 耳鼻科の受診（DAY6）: DAY5の夜に味が遠くなった保存だけ。夜の ch2_lingering_smell でスミさんに伝える。
+// 2-4 なるの店で昼（DAY8）: 祝い（DAY3）と決裂（DAY11）の間のまかない。
+export const CH2_DAY_SCENES = Object.freeze([
+  Object.freeze({ day: 6, id: "ch2_ent_clinic", file: "ch2_story_extra", bg: "bg_street_day", when: ({ flags }) => !!flags._ch2_taste_distant }),
+  Object.freeze({ day: 8, id: "ch2_naru_lunch", file: "ch2_story_extra", bg: "kemurikusa" }),
+]);
+/** 今朝読む昼の本筋（無ければ null）。day は章内日。dialogues は台詞の表（読めない台本は出さない）。 */
+export function chapterTwoDaySceneDue(save, day, dialogues) {
+  if (save?.chapter !== 2 || save.slot !== 0) return null;
+  return CH2_DAY_SCENES.find(scene => scene.day === day && !save.flags?.[`_ch2_read_${scene.id}`]
+    && (!scene.when || scene.when(save)) && !!dialogues?.[scene.id]?.lines?.length) || null;
+}
 
 // まかない練習で一度だけ読む苺の試作（#1650）。結果は熱の一点で gentle / hot / thin、苺なしはやり直し。
 export const STRAWBERRY_TRIAL_IDS = ["ch2_strawberry_trial_intro", ...["gentle", "hot", "thin", "no_berry"].map(r => `ch2_strawberry_trial_${r}`)];

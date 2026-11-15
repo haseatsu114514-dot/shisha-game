@@ -843,6 +843,12 @@
       "run": ["node remake/test/ch4_tour.mjs"]
     },
     {
+      "id": "ch2-story-extra",
+      "title": "Chapter 2 main-story additions (SPC28 2-2/2-4/2-5): ENT visit and Naru's lunch on their mornings, light scenes in the fixed nights, canon checks",
+      "kind": "quick",
+      "run": ["node remake/test/ch2_story_extra.mjs"]
+    },
+    {
       "id": "ngplus-carry",
       "title": "NG+ save migration, carry classification coverage and package extraction (#1228)",
       "kind": "quick",
@@ -1724,6 +1730,7 @@
         "data/dialogue/ch2_preparation.json",
         "data/dialogue/ch2_isolation.json",
         "data/dialogue/ch2_main.json",
+        "data/dialogue/ch2_story_extra.json",
         "data/dialogue/ch2_tournament.json",
         "data/dialogue/tournament_craft.json",
         "remake/js/craft/tournament-story*.js",

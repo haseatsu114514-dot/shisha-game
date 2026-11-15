@@ -132,9 +132,12 @@ await suite('ch2-story', async check => {
   await check('day4-through-eve-actual-calendar-and-preserved-relationships', async page => {
     await seed(page); await atMap(page, 4, 0);
     const before = await state(page);
+    // 昼の本筋（SPC28）: DAY6（耳鼻科）とDAY8（なるの店のまかない）は朝に読んで昼の行動を使うので、その日は夜の行動から
+    const morningScene = day => day === 6 || day === 8;
     for (let day = 4; day <= 13; day++) {
-      await rest(page); await atMap(page, day, 1); await rest(page);
-      if (day < 13) await atMap(page, day + 1, 0);
+      if (!morningScene(day)) { await rest(page); await atMap(page, day, 1); }
+      await rest(page);
+      if (day < 13) await atMap(page, day + 1, morningScene(day + 1) ? 1 : 0);
     }
     await page.locator(end).waitFor(); const s = await state(page);
     assert.equal(s.day, 28); assert.equal(s.slot, 0); assert.equal(s.chapter, 2);
@@ -151,8 +154,9 @@ await suite('ch2-story', async check => {
     assert(s.met.ageha); assert(!s.contacts.includes('ageha')); assert(!s.visits.ageha); assert(!s.met.volk);
     const trace = await page.evaluate(() => window.__storyTrace);
     // VOL13: アダム（DAY7〜）とみんと（DAY12の夜）は店で読む本編。一度も行かなければDAY12の夜に救済で読む
-    const expected = ['ch2_sofa_burn','ch2_abyss_baito','ch2_kumicho_greeting','ch2_slump_taste','ch2_lingering_smell',
-      'remake_ch2_ageha_tasting','ch2_sumi_silence','ch2_naru_confrontation','ch2_adam_distance','ch2_minto_warning','ch2_naru_window','ch2_tsumugi_color',
+    // SPC28: DAY6の朝の耳鼻科・DAY8の朝のまかない・DAY9の試煙会の後の吸い方講座
+    const expected = ['ch2_sofa_burn','ch2_abyss_baito','ch2_kumicho_greeting','ch2_slump_taste','ch2_ent_clinic','ch2_lingering_smell',
+      'ch2_naru_lunch','remake_ch2_ageha_tasting','ch2_ageha_lesson','ch2_sumi_silence','ch2_naru_confrontation','ch2_adam_distance','ch2_minto_warning','ch2_naru_window','ch2_tsumugi_color',
       'remake_ch2_eve_arrival','remake_ch2_eve_rei','ch2_pre_tournament_realisation'];
     assert.deepEqual(trace.filter(id => expected.includes(id)), expected);
     const texts = await page.evaluate(() => window.__storyTexts.join('\n'));
@@ -251,9 +255,12 @@ await suite('ch2-story', async check => {
     await seed(page, { day: 2 }); await atMap(page, 2, 0);
     const start = await state(page);
     let readBeforeLoad = [];
+    // DAY6・8 は朝の場面（耳鼻科・なるの店のまかない。SPC28）で昼の行動を使うので、夜の行動から
+    const morningScene = day => day === 6 || day === 8;
     for (let day = 2; day <= 13; day++) {
-      await rest(page); await atMap(page, day, 1); await rest(page);
-      if (day < 13) await atMap(page, day + 1, 0);
+      if (!morningScene(day)) { await rest(page); await atMap(page, day, 1); }
+      await rest(page);
+      if (day < 13) await atMap(page, day + 1, morningScene(day + 1) ? 1 : 0);
       if (day === 6) { // DAY7朝の保存を実LOADし、ロード前の状態が一致して既読場面を再生しないことを確かめる
         const mid = await state(page);
         readBeforeLoad = await page.evaluate(() => window.__storyTrace.slice());

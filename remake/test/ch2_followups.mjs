@@ -74,7 +74,7 @@ const mocks = {
   "./ch2-city-data.js": { MAP: { day: "map" }, STOPS: ids.map(id => ({ id, name: id })), ROOMS: Object.fromEntries(ids.map(id => [id, id])) },
   "./ch2-progress.js": { dayOneProgress: () => ({ startDay: 15 }), recordCityVisit: () => {}, scheduleChapterTwoTrpgNight },
   // 地元の店で読む第2章の本編（VOL13）は ch2_story_visits.mjs で確認する
-  "./ch2-story.js": { chapterTwoNights: () => ({}), storyVisitDue: () => null, readStoryVisit: async () => false },
+  "./ch2-story.js": { chapterTwoNights: () => ({}), storyVisitDue: () => null, readStoryVisit: async () => false, readChapterTwoDayScene: async () => false },
   // tonariの大会準備（VOL13）は ch2_craft_prep.mjs で確認する
   "./ch2-craft-prep.js": { craftPrepDue: () => null, offerCraftPrep: async () => null },
   // あげはの店に通う回は ch2_ageha_story.mjs で確認する。ここでは従来の chat/followup/repeat だけを見る
@@ -299,10 +299,10 @@ const loaderContext = vm.createContext({ console, AbortController, setTimeout, c
     return name === "ch2_preparation" ? fixture : JSON.parse(fs.readFileSync(new URL(`data/dialogue/${name}.json`, root)));
   } }) });
 const loader = new vm.SourceTextModule(fs.readFileSync(new URL("remake/js/chapters/ch2-city-data.js", root), "utf8"), { context: loaderContext });
-await loader.link(async spec => spec.includes("chapter-data") ? new vm.SourceTextModule(fs.readFileSync(new URL("remake/js/core/chapter-data.js", root), "utf8"), { context: loaderContext }) : spec.includes("affinity-stages") ? new vm.SourceTextModule(stagesSource, { context: loaderContext }) : new vm.SyntheticModule(spec.includes("city-locations") ? ["CITY_BACKGROUNDS"] : spec.includes("core/data") ? ["DB"] : ["CH2_NIGHTS", "AGEHA_VISITS", "AGEHA_BADDAY", "STRAWBERRY_TRIAL_IDS"], function () {
+await loader.link(async spec => spec.includes("chapter-data") ? new vm.SourceTextModule(fs.readFileSync(new URL("remake/js/core/chapter-data.js", root), "utf8"), { context: loaderContext }) : spec.includes("affinity-stages") ? new vm.SourceTextModule(stagesSource, { context: loaderContext }) : new vm.SyntheticModule(spec.includes("city-locations") ? ["CITY_BACKGROUNDS"] : spec.includes("core/data") ? ["DB"] : ["CH2_NIGHTS", "CH2_DAY_SCENES", "AGEHA_VISITS", "AGEHA_BADDAY", "STRAWBERRY_TRIAL_IDS"], function () {
   if (spec.includes("city-locations")) this.setExport("CITY_BACKGROUNDS", { kumicho: "room" });
   else if (spec.includes("core/data")) this.setExport("DB", loaderDB);
-  else { this.setExport("CH2_NIGHTS", []); this.setExport("AGEHA_VISITS", []); this.setExport("AGEHA_BADDAY", null); this.setExport("STRAWBERRY_TRIAL_IDS", []); }
+  else { this.setExport("CH2_NIGHTS", []); this.setExport("CH2_DAY_SCENES", []); this.setExport("AGEHA_VISITS", []); this.setExport("AGEHA_BADDAY", null); this.setExport("STRAWBERRY_TRIAL_IDS", []); }
 }, { context: loaderContext }));
 await loader.evaluate();
 const validatedIds = [

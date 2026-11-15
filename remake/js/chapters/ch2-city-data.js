@@ -3,7 +3,7 @@ import { DB } from "../core/data.js";
 // 台本の読み込みは core/chapter-data.js（#2035）。この章の読み込みでも使う。
 import { readDialogues } from "../core/chapter-data.js";
 export { readDialogues };
-import { CH2_NIGHTS, AGEHA_VISITS, AGEHA_BADDAY, STRAWBERRY_TRIAL_IDS } from "./ch2-story-data.js";
+import { CH2_NIGHTS, CH2_DAY_SCENES, AGEHA_VISITS, AGEHA_BADDAY, STRAWBERRY_TRIAL_IDS } from "./ch2-story-data.js";
 import { CH2_VISIT_STORIES } from "../core/affinity-stages.js";
 
 export const MAP = {
@@ -60,6 +60,8 @@ export async function loadPreparationDialogues() {
     // クラウドのライブの夜（第3章の出発前の準備期間だけ。ch2-preparation.js の reiLiveDue・RVE07）
     ch2_rei: ["ch2_rei_bond_finale", "ch3_prep_rei_live"] };
   for (const step of CH2_NIGHTS.flatMap(night => night.steps)) (files[step.file] ||= []).push(step.id);
+  // 昼の本筋（耳鼻科・なるの店のまかない。SPC28）
+  for (const scene of CH2_DAY_SCENES) (files[scene.file] ||= []).push(scene.id);
   // 神崎・クラウドの長い段階会話（味の学習を含む）も通常訪問列として公開する（#1648）。
   for (const entry of Object.values(CH2_VISIT_STORIES).flat()) if (entry.file) (files[entry.file] ||= []).push(entry.scene);
   // 店に通う回（#626）と♥3の質問（#1988）、♥5の締めくくり（#2023）、通い訪問の小会話 b〜d（VOL13）

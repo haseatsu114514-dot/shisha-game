@@ -137,21 +137,6 @@
           "text": "ノートには葉と炭の位置、客ごとに違う味の名前が並んでいた。"
         },
         {
-          "speaker": "saku",
-          "face": "normal",
-          "text": "次に吸うなら、材料から見る？　味の名を伏せる？　選んでいい"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "次は、材料から見たいです"
-        },
-        {
-          "speaker": "saku",
-          "face": "normal",
-          "text": "了解。答えを当てる試験じゃないし"
-        },
-        {
           "speaker": "hajime",
           "face": "normal",
           "text": "実は、全国の課題がチョコなんです。綾取さんなら、どう組みますか"
@@ -197,11 +182,6 @@
           "text": "（素材は全部知ってるのに、ほうじ茶にしか思えない）"
         },
         {
-          "speaker": "saku",
-          "face": "normal",
-          "text": "毎回同じに出せる、とは言わないけどね。今日の君と、この一台だけの話"
-        },
-        {
           "speaker": "hajime",
           "face": "normal",
           "text": "大会でも、これを出すんですか"
@@ -230,11 +210,6 @@
           "speaker": "saku",
           "face": "normal",
           "text": "……ありがと。この話の続きは、また今度"
-        },
-        {
-          "speaker": "saku",
-          "face": "normal",
-          "text": "ましろって、同じものを見ても違う答えを返すんだ。昔から、それが面白くて"
         },
         {
           "speaker": "hajime",

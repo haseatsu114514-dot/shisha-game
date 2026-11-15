@@ -3,7 +3,7 @@ import { state, save, markMet } from "../core/state.js";
 import { imageReady, setBg } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { MAP, ROOMS } from "./ch2-city-data.js";
-import { CH2_NIGHTS, CH2_FREE_NIGHTS, syncAgehaVibes } from "./ch2-story-data.js";
+import { CH2_NIGHTS, CH2_FREE_NIGHTS, chapterTwoDaySceneDue, syncAgehaVibes } from "./ch2-story-data.js";
 import { grantStrawberrySample } from "./ch2-strawberry-trial.js";
 import { recordSentLime } from "./ch2-lime.js";
 
@@ -36,6 +36,25 @@ async function readStep(step) {
   recordSentLime(owner);
   syncAgehaVibes(owner.flags);
   save();
+}
+
+/**
+ * 昼の本筋（CH2_DAY_SCENES）を、出かける前の朝に読む。最後まで読んだ時だけ印を付け、昼の行動を使う。
+ * day は章内日（呼ぶ側の ch2-preparation.js が第2章の開始日から数える）。背景が読めない・中断・LOAD は何もしない（同じ朝にもう一度）。
+ */
+export async function readChapterTwoDayScene(day) {
+  const owner = state;
+  const scene = chapterTwoDaySceneDue(owner, day, DB.dialogues);
+  if (!scene) return false;
+  const place = bgUrl(scene.bg, "day") || bgUrl(scene.bg);
+  if (place && await imageReady(place, 15000)) await setBg(place);
+  if (state !== owner) return false;
+  const result = await play(scene.id);
+  if (state !== owner || !result || result.cancelled) return false;
+  owner.flags[`_ch2_read_${scene.id}`] = true;
+  owner.slot = Math.max(owner.slot, 1);
+  save();
+  return true;
 }
 
 export function chapterTwoNights(startDay) {

@@ -103,8 +103,8 @@ assert.match(window.branches.listened.map((l) => l.text).join("\n"), /もう一�
 
 // 全体講評（2026-11-11）S6: 優勝目当ての客。DAY3に大会の一台を半分残し、DAY6に軽い一台を最後まで吸う。
 // 夜は増やさず、既存の夜の場面として足す。DAY3を見ていない保存には、続きの場面を足さない
-assert.deepEqual(ids(3), ["ch2_naru_warm", "remake_ch2_ageha_scout", "ch2_title_customer_half"]);
-assert.equal(night(3).steps[2].flag, "_stk_title_customer_half");
+assert.deepEqual(ids(3), ["ch2_naru_warm", "ch2_photo_buzz", "remake_ch2_ageha_scout", "ch2_title_customer_half"]); // 写真（SPC28 2-5 C）
+assert.equal(night(3).steps[3].flag, "_stk_title_customer_half");
 assert.deepEqual(ids(6), ["ch2_title_customer_back", "ch2_coal_together", "ch2_lingering_smell"]);
 assert.equal(night(6).steps[0].flag, "_stk_title_customer_back");
 assert(!when(6, "ch2_title_customer_back", {}), "DAY3の場面を見ていない保存には足さない");
@@ -136,7 +136,7 @@ assert.match(main.ch2_sofa_burn.branches[practice.next_true].map((l) => l.text).
 assert(main.ch2_sofa_burn.lines.indexOf(practice) < main.ch2_sofa_burn.lines.findIndex((l) => /炭を、落とした/.test(l.text || "")));
 
 // S13: DAY9の開場前、博士が吸う間隔から不調に気づき、温度計を貸そうとする。選択は記録だけ（効果なし）
-assert.deepEqual(ids(9), ["ch2_kemuri_thermometer", "remake_ch2_ageha_tasting", "ch2_strawberry_sample"]);
+assert.deepEqual(ids(9), ["ch2_kemuri_thermometer", "remake_ch2_ageha_tasting", "ch2_ageha_lesson", "ch2_strawberry_sample"]); // 吸い方講座（SPC28 2-5 A）
 assert(when(9, "ch2_kemuri_thermometer", {}) && !when(9, "ch2_kemuri_thermometer", { _ch2_read_remake_ch2_ageha_tasting: true }), "試煙会の後へ差し込まない");
 const doctor = all(thermo).filter((l) => l.speaker === "dr_kemuri");
 assert(doctor.length >= 3 && doctor.every((l) => ["normal", "smile"].includes(l.face)), "博士に悪い顔をさせない");
