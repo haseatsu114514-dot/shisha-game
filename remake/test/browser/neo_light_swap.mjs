@@ -37,7 +37,7 @@ await suite("neo-light-swap", async (check) => {
       window.__samples = [];
       window.__stop = false;
       const sample = () => {
-        for (const kind of ["neo-light", "neo-amb"]) {
+        for (const kind of ["neo-light"]) {
           const layer = document.querySelector(`.vn-portraits .${kind}`);
           const mask = layer?.style.getPropertyValue("--neo-mask") || "";
           window.__samples.push({ kind, present: !!layer, shown: !!layer && getComputedStyle(layer).display !== "none",

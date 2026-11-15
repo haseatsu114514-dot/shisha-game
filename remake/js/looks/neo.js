@@ -6,14 +6,12 @@
 //   1. 場面の光: 立ち絵（.vn-portraits > img.portrait）1枚ごとに、同じ位置・同じ大きさの <i class="neo-light"> を直後へ置く。
 //      立ち絵の絵を型（mask）にして、色は CSS が soft-light で重ねる。立ち絵の img 自体には触らない。
 //   2. 名前の縦線の色: 話している人の色（characters.json の intro_cutin.color）を #vn の --neo-speaker へ入れる。
-//   3. 場所の光（BGU01）: 光の層のすぐ後ろへ、同じ型の <i class="neo-amb"> を置く。色は、いまの背景の絵の
-//      立ち絵が立つあたりの平均色から決め（neo/ambient.js）、#vn の --neo-amb へ入れて CSS が乗算で重ねる。
-//      暗い店・夜道では人物も少し暗く、その場所の色へ寄る。背景が替わった時に一度だけ測る（同じ絵は測り直さない）。
+// 場所の色は人物へ移さない（2026-11-15 オーナー決定で「場所の光（BGU01）」を廃止。人物は本来の色で出し、
+// 話していない人は立ち絵自体の filter で暗くするだけにする）。
 // 会話エンジン（vn/engine.js）は立ち絵を img だけで数え、登場を img.getAnimations() で待つ。
 // そのため img には要素もクラスも動きも足さない（呼吸は CSS が .vn-portraits の層ごと動かす）。
 import { DB, realName } from "../core/data.js";
 import { setActive as setMenuFigure } from "./neo/menu-figure.js";
-import { ambientColor, ambientCss, sampleBackground } from "./neo/ambient.js";
 
 // 縦持ち（LK11）: 縦長の画面（スマホの縦持ち・縦長の PC の窓）では、DS風の外枠＋高解像度の上画面＋ドット調の下画面で見せる。
 // 外枠の部品は looks/retro.js を高解像度（hd）・縦長だけの条件で動かす。縦長になった時に初めて読み込む
@@ -44,10 +42,8 @@ function setPortrait(on) {
 }
 
 const LIGHT = "neo-light";
-const AMBIENT = "neo-amb";
 const SPEAKER_VAR = "--neo-speaker";
 const MASK_VAR = "--neo-mask";
-const AMBIENT_VAR = "--neo-amb";
 
 let active = false;
 let host = null;          // #vn
@@ -57,21 +53,17 @@ let hostObserver = null;
 let portraitObserver = null;
 let nameObserver = null;
 let nameIndex = null;     // 表示名 → キャラID（立ち絵の無い話者の色を引く）
-const lights = new Map(); // img → { light: 場面の光の層, ambient: 場所の光の層 }
-let bgHost = null;        // #bg
-let bgObserver = null;
-let ambientKey = null;    // いま色を決めた背景（絵の URL と色調補正）
-let ambientRun = 0;
+const lights = new Map(); // img → 場面の光の層
 
 const canMask = () => typeof CSS !== "undefined"
   && (CSS.supports("mask-image", "none") || CSS.supports("-webkit-mask-image", "none"))
-  && CSS.supports("mix-blend-mode", "soft-light") && CSS.supports("mix-blend-mode", "multiply");
+  && CSS.supports("mix-blend-mode", "soft-light");
 
 function setIfChanged(node, name, value) {
   if (node.style.getPropertyValue(name) !== value) node.style.setProperty(name, value);
 }
 
-/** 立ち絵1枚ぶんの光の層（場面の光・場所の光のどちらも）を、立ち絵の今の状態（位置・大きさ・表情の絵・話者かどうか）に合わせる。 */
+/** 立ち絵1枚ぶんの光の層を、立ち絵の今の状態（位置・大きさ・表情の絵・話者かどうか）に合わせる。 */
 function syncLight(img, light, name) {
   const cls = `${name}${img.classList.contains("active") ? " active" : ""}${img.classList.contains("enter") ? " enter" : ""}`;
   if (light.className !== cls) light.className = cls;
@@ -128,67 +120,30 @@ function setMask(light, src, ratio) {
 function syncLights() {
   if (!portraits) return;
   const imgs = [...portraits.querySelectorAll(":scope > img.portrait")];
-  for (const [img, pair] of lights) {
+  for (const [img, light] of lights) {
     if (imgs.includes(img)) continue;
-    pair.light.remove();
-    pair.ambient.remove();
+    light.remove();
     lights.delete(img);
   }
   for (const img of imgs) {
-    let pair = lights.get(img);
-    if (!pair) {
-      pair = { light: document.createElement("i"), ambient: document.createElement("i") };
-      pair.light.setAttribute("aria-hidden", "true");
-      pair.ambient.setAttribute("aria-hidden", "true");
-      lights.set(img, pair);
+    let light = lights.get(img);
+    if (!light) {
+      light = document.createElement("i");
+      light.setAttribute("aria-hidden", "true");
+      lights.set(img, light);
     }
     // 重なりの順を立ち絵に合わせる（光は自分の立ち絵のすぐ上、次の立ち絵より下）。
-    if (img.nextSibling !== pair.light) img.after(pair.light);
-    if (pair.light.nextSibling !== pair.ambient) pair.light.after(pair.ambient);
-    syncLight(img, pair.light, LIGHT);
-    syncLight(img, pair.ambient, AMBIENT);
+    if (img.nextSibling !== light) img.after(light);
+    syncLight(img, light, LIGHT);
   }
   // 自分の書き換えで監視を回し続けない。
   portraitObserver?.takeRecords();
 }
 
 function clearLights() {
-  for (const pair of lights.values()) {
-    pair.light.remove();
-    pair.ambient.remove();
-  }
+  for (const light of lights.values()) light.remove();
   lights.clear();
-  portraits?.querySelectorAll(`.${LIGHT}, .${AMBIENT}`).forEach((node) => node.remove());
-}
-
-/** いま見えている背景の絵の要素。煙でほどけて消えていく途中の前の絵は数えない。 */
-function currentBg() {
-  const nodes = [...bgHost.querySelectorAll(":scope > .bg-img")];
-  return nodes.filter((node) => !node.dataset.dissolving).pop() || nodes.pop() || null;
-}
-
-/** 背景の要素から絵の URL を取る（小物を重ねる場面は、絵が中の svg に入っている。core/scene-art.js）。 */
-function bgUrl(node) {
-  const match = /url\((["']?)(.*?)\1\)/.exec(node.style.backgroundImage || "");
-  return match?.[2] || node.querySelector(":scope > .scene-art > image")?.getAttribute("href") || "";
-}
-
-/** 場所の光の色を、いまの背景に合わせる。背景の層が出入りした時にだけ呼ばれ、同じ背景なら何もしない。 */
-function syncAmbient() {
-  if (!host || !bgHost) return;
-  const node = currentBg();
-  const url = node ? bgUrl(node) : "";
-  const tint = node?.dataset.tint || "";
-  const key = `${url}|${tint}`;
-  if (key === ambientKey) return;
-  ambientKey = key;
-  const run = ++ambientRun;
-  sampleBackground(url).then((mean) => {
-    if (run !== ambientRun || !active || !host) return;
-    // 絵が無い（暗転）・測れない時は色を外す（CSS の既定は白＝人物をそのまま見せる）。
-    if (mean) setIfChanged(host, AMBIENT_VAR, ambientCss(ambientColor(mean, tint)));
-    else host.style.removeProperty(AMBIENT_VAR);
-  });
+  portraits?.querySelectorAll(`.${LIGHT}`).forEach((node) => node.remove());
 }
 
 const colorOf = (id) => DB.characters?.[id]?.intro_cutin?.color || "";
@@ -257,24 +212,12 @@ export function setActive(on) {
     hostObserver = new MutationObserver(attachParts);
     hostObserver.observe(host, { childList: true });
     attachParts();
-    bgHost = document.getElementById("bg");
-    if (bgHost && canMask()) {
-      bgObserver = new MutationObserver(syncAmbient);
-      bgObserver.observe(bgHost, { childList: true });
-      syncAmbient();
-    }
     return;
   }
   hostObserver?.disconnect();
   hostObserver = null;
-  bgObserver?.disconnect();
-  bgObserver = null;
-  bgHost = null;
-  ambientKey = null;
-  ambientRun++;
   detachParts();
   host?.style.removeProperty(SPEAKER_VAR);
-  host?.style.removeProperty(AMBIENT_VAR);
   if (host && !host.getAttribute("style")) host.removeAttribute("style");
   host = null;
   nameIndex = null;
