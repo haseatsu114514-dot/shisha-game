@@ -12,7 +12,7 @@
 import { MAX_MONEY } from "../core/rules.js";
 import { DEPARTURE_PREP_DAYS } from "../core/chapter-clock.js";
 import { resetChapterFourCraft } from "./ch4-tournament-state.js";
-import { OVERSEAS_HEROINES, overseasCompanion } from "../core/overseas-companion.js";
+import { OVERSEAS_HEROINES, overseasCompanion, overseasGuests } from "../core/overseas-companion.js";
 import { STORY_BGM } from "../core/story-audio.js";
 
 // 新規優勝のみ: 第1章50,000円／第2章100,000円／第3章200,000円／第4章500,000円／第5章は賞金なし。
@@ -75,6 +75,9 @@ export const CH4_SCENE_BG = Object.freeze({
   ch4_ageha_dubai_friend: "bg_dubai_inn_day",
   ch4_samechan_dubai_friend: "bg_dubai_inn_day",
   ch4_hiyori_dubai_friend: "bg_dubai_inn_day",
+  ch4_adam_dubai: "bg_dubai_inn_day",
+  ch4_kumicho_dubai: "bg_dubai_inn_day",
+  ch4_steve_dubai: "bg_dubai_inn_day",
   // 到着の後の夕方（任意・IR18・#3097）。宿のロビー・食堂で過ごす。
   ch4_tsumugi_dubai_evening: "bg_dubai_inn_night",
   ch4_minto_dubai_evening: "bg_dubai_inn_night",
@@ -201,6 +204,7 @@ export const CH4_VISITOR_SCENE_FILES = Object.freeze({
   ch4_minto_dubai: Object.freeze(["ch4_minto_dubai_girlfriend", "ch4_minto_dubai_friend"]),
   ch4_rio_dubai: Object.freeze(["ch4_rio_dubai_girlfriend", "ch4_rio_dubai_friend"]),
   ch4_ageha_dubai: Object.freeze(["ch4_ageha_dubai_girlfriend", "ch4_ageha_dubai_friend"]),
+  ch4_guests_dubai: Object.freeze(["ch4_adam_dubai", "ch4_kumicho_dubai", "ch4_steve_dubai"]),
 });
 
 // 別便の応援の到着場面。恋人は data/story_routes.json の romance[id].arrival と同じ（ch4_progress.mjs が一致を確認）。
@@ -215,6 +219,10 @@ export const CH4_FRIEND_ARRIVAL_SCENES = Object.freeze({
   tsumugi: "ch4_tsumugi_dubai_friend", minto: "ch4_minto_dubai_friend", rio: "ch4_rio_dubai_friend",
   ageha: "ch4_ageha_dubai_friend", mashiro: "ch4_mashiro_dubai_friend",
   samechan: "ch4_samechan_dubai_friend", hiyori: "ch4_hiyori_dubai_friend",
+});
+// ♥5の男の友人の到着（SPC21）。友人だけなので一人一本。ヒロインの到着の後に OVERSEAS_GUESTS の順で読む。夕方・砂浜は無い。
+export const CH4_GUEST_ARRIVAL_SCENES = Object.freeze({
+  adam: "ch4_adam_dubai", kumicho: "ch4_kumicho_dubai", steve: "ch4_steve_dubai",
 });
 // 前夜祭（王煙楼の招待）が始まった印。ここから先は到着を足さない（ロビーの出迎えを前夜祭の後に回さない）。
 export const CH4_FESTIVAL_STARTED = Object.freeze(["ch4_wang_reception_forced_in", "ch4_wang_reception"]);
@@ -336,6 +344,7 @@ export function chapterFourMandatory(value) {
 /**
  * 前夜祭の日に読む、別便の応援の到着場面（未読だけ。{id, scene} を OVERSEAS_HEROINES の順）。
  * 出発前に決めた supports（同行者を除く恋人・♥5の友人・第3章クリア済みのましろ・つむぎ）だけが対象。恋人は恋人版、恋人でない人は友人版。
+ * その後に、出発前に決めた♥5の男の友人（guests・SPC21）の到着。
  * 前夜の part の間で、前夜祭が始まる前・前夜の過ごし方を記録する前だけ。大会の後や、同行の選択が無い旧保存には足さない。
  * 好感度からは到着を作らない（到着の記録は読了フラグだけ）。
  */
@@ -345,9 +354,11 @@ export function chapterFourArrivalsDue(value) {
     || CH4_FESTIVAL_STARTED.some(id => progress.read[id] === true)) return [];
   const lovers = new Set(value.lovers || []);
   const { supports } = overseasCompanion(value);
-  return OVERSEAS_HEROINES.filter(id => supports.includes(id))
-    .map(id => ({ id, scene: lovers.has(id) ? CH4_ARRIVAL_SCENES[id] : CH4_FRIEND_ARRIVAL_SCENES[id] }))
-    .filter(entry => entry.scene && progress.read[entry.scene] !== true);
+  return [
+    ...OVERSEAS_HEROINES.filter(id => supports.includes(id))
+      .map(id => ({ id, scene: lovers.has(id) ? CH4_ARRIVAL_SCENES[id] : CH4_FRIEND_ARRIVAL_SCENES[id] })),
+    ...overseasGuests(value).map(id => ({ id, scene: CH4_GUEST_ARRIVAL_SCENES[id] })),
+  ].filter(entry => entry.scene && progress.read[entry.scene] !== true);
 }
 
 /**

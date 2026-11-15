@@ -1,4 +1,5 @@
 // 海外（第4章ドバイ）同行の正本。同行は恋人1名または「同行なし」。他の恋人・♥5の友人・ましろ・つむぎは別便の応援として別に持つ。
+// ♥5の男の友人（OVERSEAS_GUESTS）は、ヒロインの応援（supports）とは分けて guests に持つ（SPC21）。
 // 保存は flags._overseas_companion（SCHEMA は変えない。キーが無い旧セーブは「未選択＝同行なし」として読む）。
 // 好感度・恋人状態・複数交際は一切変更しない。辞退・連絡不足・遠距離による好感度低下や破局は起こさない。
 import { tokyoVisitState, syncTokyoVisits } from "./tokyo-visits.js";
@@ -9,6 +10,11 @@ export const OVERSEAS_HEROINES = Object.freeze(["tsumugi", "minto", "rio", "ageh
 // ましろは第3章クリアが条件（mukaiの視察）。つむぎは tonari の常連として、はじめの大会を見に来る（2026-11-15 オーナー決定・SPC17）。
 const ALWAYS_SUPPORT = Object.freeze({ mashiro: value => value?.flags?._ch3_cleared === true, tsumugi: () => true });
 // ほかのヒロインは、恋人か、友人ルートの締めくくり（♥5）を済ませた友人なら応援に来る（2026-11-15 オーナー決定・SPC17）。
+// 男の友人（ヒロインではない応援）。締めくくり（♥5）を済ませていて、ドバイへ来る自分の理由がある3人だけ（2026-11-15 オーナー決定・SPC21）:
+// アダムはダブルアップルの本場で研修、神崎は店を若い衆に任せて長期休暇（ついでにサウナ巡り）、スティーブは本社の仕事。
+// クラウド・綾取は来ない（店をやっている人が全員「店を休んで来る」にしない）。なるは選手として本編で来るので含めない。
+// 到着場面だけで、砂浜（ch4-beach.js）・前夜の過ごし方・修羅場には出さない。
+export const OVERSEAS_GUESTS = Object.freeze(["adam", "kumicho", "steve"]);
 const KEY = "_overseas_companion";
 
 /** 保存された選択。無い・壊れている場合は未選択（decided:false、同行なし）。 */
@@ -50,6 +56,22 @@ export function overseasSupportVisitors(value, companion = null) {
     && (lovers.has(id) || overseasMaxFriend(value, id) || !!ALWAYS_SUPPORT[id]?.(value)));
 }
 
+/** 別便で応援に来る男の友人（OVERSEAS_GUESTS の順）。締めくくり（♥5）を済ませた人だけ。好感度の数値だけでは来ない。 */
+export function overseasGuestVisitors(value) {
+  return OVERSEAS_GUESTS.filter(id => overseasMaxFriend(value, id));
+}
+
+/**
+ * 出発前に確定した男の友人の応援（flags._overseas_companion.guests）。同行の選択が無い・壊れている保存や、
+ * guests を持たない旧保存（SPC21 より前に出発した保存）は空。出発後の保存には足さない。
+ */
+export function overseasGuests(value) {
+  if (!overseasCompanion(value).decided) return [];
+  const raw = value.flags[KEY].guests;
+  return Array.isArray(raw) && raw.every(id => OVERSEAS_GUESTS.includes(id)) && new Set(raw).size === raw.length
+    ? OVERSEAS_GUESTS.filter(id => raw.includes(id)) : [];
+}
+
 /** 選択を出してよいか。第4章の導入（最初の場面の前）で、まだ決めていないときだけ。 */
 export function canChooseOverseasCompanion(value) {
   const progress = value?.flags?._ch4;
@@ -64,7 +86,7 @@ export function canChooseOverseasCompanion(value) {
 export function chooseOverseasCompanion(value, id) {
   if (!canChooseOverseasCompanion(value)) return false;
   if (id !== null && !overseasCompanionCandidates(value).includes(id)) return false;
-  value.flags[KEY] = { decided: true, companion: id, supports: overseasSupportVisitors(value, id) };
+  value.flags[KEY] = { decided: true, companion: id, supports: overseasSupportVisitors(value, id), guests: overseasGuestVisitors(value) };
   reconcileVisitsForDeparture(value);
   return true;
 }

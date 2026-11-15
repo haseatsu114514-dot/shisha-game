@@ -97,7 +97,7 @@ await suite("ch4-full-flow", async check => {
     await page.locator(dt("ch4-companion")).waitFor({ timeout: 60000 });
     await page.locator(dt("ch4-companion-none")).click();
     assert.deepEqual((await get(page)).flags._overseas_companion,
-      { decided: true, companion: null, supports: ["tsumugi", "mashiro"] });
+      { decided: true, companion: null, supports: ["tsumugi", "mashiro"], guests: [] });
 
     // 2. 出発前の準備3日（VOL02）: 1日目の昼にスミさんとの特訓、夜に持っていく配合 → 2・3日目は自由 → 出発の朝にドバイ。
     await prepMap(page, { day: 46, slot: 1 });

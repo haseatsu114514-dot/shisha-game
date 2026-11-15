@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { newState, setState, saveToSlot, loadFromSlot, SAVE_KEY } from "../js/core/state.js";
 import { advanceToChapterFour } from "../js/chapters/ch4-progress.js";
-import { OVERSEAS_HEROINES, overseasCompanion, overseasCompanionCandidates, overseasSupportVisitors, overseasMaxFriend,
-  canChooseOverseasCompanion, chooseOverseasCompanion, isSeparateFlightSupport } from "../js/core/overseas-companion.js";
+import { OVERSEAS_HEROINES, OVERSEAS_GUESTS, overseasCompanion, overseasCompanionCandidates, overseasSupportVisitors, overseasMaxFriend,
+  overseasGuestVisitors, overseasGuests, canChooseOverseasCompanion, chooseOverseasCompanion, isSeparateFlightSupport } from "../js/core/overseas-companion.js";
 
 const memory = new Map();
 globalThis.localStorage = { getItem: key => memory.get(key) ?? null, setItem: (key, value) => memory.set(key, String(value)) };
@@ -91,6 +91,44 @@ const kept = value => Object.fromEntries(keptKeys.map(key => [key, structuredClo
   value.flags._ch3_cleared = false;
   assert.deepEqual(overseasSupportVisitors(value), ["tsumugi"]);
 }
+// ♥5の男の友人（SPC21）: 締めくくりを済ませたアダム・神崎・スティーブだけが、ヒロインの応援とは別に guests で来る。
+// クラウド・綾取は締めくくりを済ませていても来ない。好感度の数値だけでは来ない。出発後の保存には足さない。
+{
+  const characters = JSON.parse(readFileSync(new URL("../../data/characters.json", import.meta.url)));
+  for (const id of OVERSEAS_GUESTS) assert(characters.some(c => c.id === id), id);
+  assert.deepEqual([...OVERSEAS_GUESTS], ["adam", "kumicho", "steve"]);
+  const none = atDeparture([]);
+  none.affinity = { ...none.affinity, adam: 999, kumicho: 999, steve: 999 };
+  assert.deepEqual(overseasGuestVisitors(none), [], "好感度の数値だけでは来ない");
+  assert(chooseOverseasCompanion(none, null));
+  assert.deepEqual(overseasGuests(none), []);
+  assert.deepEqual(none.flags._overseas_companion.guests, []);
+
+  const value = atDeparture(["tsumugi"]), before = kept(value);
+  value.finales = {
+    steve: { day: 30, chapter: 3, route: "friend" }, adam: { day: 9, chapter: 1, route: "friend" },
+    rei: { day: 20, chapter: 2, route: "friend" }, saku: { day: 31, chapter: 3, route: "friend" },
+  };
+  assert.deepEqual(overseasGuestVisitors(value), ["adam", "steve"]);
+  assert(chooseOverseasCompanion(value, "tsumugi"));
+  assert.deepEqual(overseasGuests(value), ["adam", "steve"]);
+  assert.deepEqual(overseasCompanion(value), { decided: true, companion: "tsumugi", supports: ["mashiro"] }, "ヒロインの応援には混ぜない");
+  assert.deepEqual(kept(value), before);
+  value.finales.kumicho = { day: 70, chapter: 4, route: "friend" };
+  assert.deepEqual(overseasGuests(value), ["adam", "steve"], "出発後に締めくくりを読んでも足さない");
+
+  const old = atDeparture([]);
+  old.finales = { adam: { day: 9, chapter: 1, route: "friend" } };
+  old.flags._overseas_companion = { decided: true, companion: null, supports: ["tsumugi", "mashiro"] }; // SPC21 より前に出発した保存
+  assert.equal(overseasCompanion(old).decided, true);
+  assert.deepEqual(overseasGuests(old), [], "guests の無い旧保存には足さない");
+  for (const guests of ["adam", ["rei"], ["adam", "adam"], [null]]) {
+    old.flags._overseas_companion.guests = guests;
+    assert.deepEqual(overseasGuests(old), [], JSON.stringify(guests));
+    assert.equal(overseasCompanion(old).decided, true, "壊れた guests でも同行の選択は残す");
+  }
+  assert.deepEqual(overseasGuests(atDeparture([])), [], "未選択なら来ない");
+}
 // 通常訪問の予約競合：出発時に未了の予約は渡航のため終了。好感度・申し出は触れない。
 {
   const value = atDeparture(["tsumugi", "minto"]);
@@ -114,11 +152,14 @@ for (const raw of [{ decided: true, companion: "x", supports: [] }, { decided: t
 // SAVE/LOAD：4つのセーブ枠で選択が残る。
 {
   const value = atDeparture(["tsumugi", "minto"]);
+  value.finales = { kumicho: { day: 25, chapter: 2, route: "friend" } };
   assert(chooseOverseasCompanion(value, "minto"));
+  assert.deepEqual(overseasGuests(value), ["kumicho"]);
   setState(value);
   for (const key of [SAVE_KEY, "suien_remake_slot1", "suien_remake_slot2", "suien_remake_slot3"]) {
     assert(saveToSlot(key));
     assert.deepEqual(overseasCompanion(loadFromSlot(key)), overseasCompanion(value));
+    assert.deepEqual(overseasGuests(loadFromSlot(key)), overseasGuests(value));
   }
 }
 console.log("overseas_companion OK");

@@ -1,0 +1,273 @@
+{
+  "comment": "♥5の男の友人の到着（SPC21・2026-11-15 オーナー決定）。友人ルートの締めくくりを済ませ、ドバイへ来る自分の理由がある3人（アダム・神崎・スティーブ）だけ。出発前の同行の選択で確定する（core/overseas-companion.js の overseasGuestVisitors）。クラウド・綾取は来ない。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_adam_dubai",
+      "comment": "SPC21（2026-11-15 オーナー決定）。♥5の男の友人の到着。アダムはダブルアップルの本場で研修を兼ねて来る（EDENは「研修中」の貼り紙）。私生活のポンコツ（服の裏表）を一つだけ。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーのソファで、赤と緑の髪の男が、スーツケースを抱えて目を閉じていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "アダムさん！？"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "……来たか、同志よ。いや、来たのは俺のほうか"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "研修だ。ダブルアップルの本場の空気を、肺で学びに来た"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "研修……お店は大丈夫なんですか"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "「研修中」と貼ってきた。うちの常連は、在庫切れには慣れている"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（それは慣れちゃいけないやつだ）"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "空港を出た瞬間に分かった。この国の空気は、うっすらリンゴの顔をしている"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺は砂の匂いしかしませんでしたけど"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "それは、まだ浅い顔だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ふと見ると、アダムさんのシャツは裏返しだった。タグが、首の後ろで揺れている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "アダムさん、シャツ、裏表が逆です"
+        },
+        {
+          "speaker": "adam",
+          "face": "surprise",
+          "text": "……機内で着替えた。十一時間、誰も言わなかった"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "礼を言う。……それと、お前の大会も見ていく"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "同じ卓で負けた者として、見届けねばならん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます。今夜は前夜祭なので、少し顔を出してきます"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "うむ。俺は市場で、この国のダブルアップルの顔を数えてくる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_kumicho_dubai",
+      "comment": "SPC21（2026-11-15 オーナー決定）。♥5の男の友人の到着。神崎は店を若い衆に任せて長期休暇を取り、ついでにドバイのサウナ巡り。正体は断定しない。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーの空気が、少し張りつめていた。白いチェックのスーツが、受付の前に立っている。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう、あんちゃん。砂の国でも、ちゃんと飯は食ってなさるかい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "神崎さん！？ お店は……"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "若い衆に任せてきやした。長い休みなんざ、何年ぶりですかね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "炭の番は一から叩き込んである。俺がいなくても、煙は穏やかでさ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "わざわざ、俺の大会のために……"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "そいつが半分。もう半分は、こっちでさ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんが、上着の内側から折りたたんだ紙を出した。手書きで「ドバイ サウナ巡り」とある。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "砂の国のサウナ。こいつで、ととのわねえ道理がねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "外がもう、サウナみたいなものじゃないですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "あんちゃん。外は暑い、サウナは熱い。字が違うんでさ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（字の話だったのか）"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "水風呂がシングルの店を、三つ見つけてありやす。大会の後、一軒付き合いなせえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……大会が終わったら、ぜひ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今夜、前夜祭があるんです。少し顔を出してきます"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう、いってらっしゃい。俺は一軒目で、汗を流してきやす"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_steve_dubai",
+      "comment": "SPC21（2026-11-15 オーナー決定）。♥5の男の友人の到着。スティーブはSmoke & Gloryの本社の出張（中東の店のレシピの見直し）。日程が大会と重なったのは「偶然」。体格や食べ物の好みを笑いの種にしない。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーの奥から、聞き覚えのある声がした。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、ハジメ！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "柄シャツに眼鏡のスティーブさんが、レシピカードの束を振っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "スティーブさん！？ どうしてドバイに"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "出張だ。本社が、中東の店のレシピを見直したいらしい"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "日本支部から一人出せと言われてな。手を挙げたのは、俺だけだった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ほかの皆さんは、来たがらなかったんですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "時差があるからな。それに、日程がちょうど大会と重なってた"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "……偶然だ。イエス、完全な偶然だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（日程を組んだのは、たぶん本人だ）"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "会議は明日の朝で終わる。あとは客席で、ハジメの熱の待ち方を見る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブさんの胸ポケットで、小さなタイマーが鳴った。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "おっと。チェックインの十五分前だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "旅先でも、タイマーなんですね"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "急ぐと、柑橘も旅も飛ぶからな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今夜、前夜祭があるんです。少し顔を出してきます"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "オーケー。熱を急がずに、楽しんでこい"
+        }
+      ]
+    }
+  ]
+}
