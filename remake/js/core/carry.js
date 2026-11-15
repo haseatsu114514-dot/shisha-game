@@ -268,6 +268,7 @@ export const FLAG_EXACT_RULES = [
   ["_camel_master_done", "progression"], // 上級を勝ち切った日の房飾り（SPC26）
   ["_club_yoru_request", "progression"], // クラブSEAMの常連のリクエスト（SPC26）
   ["_club_yoru_last_set", "progression"], // 閉店前にヨルと交代で回す夜（SPC26）
+  ["_ch4_morning_done", "progression"], // 大会当日の朝を読み終えた（ch4-morning.js・SPC28）。周回では持ち越さない
   ["_ch4_beach", "progression"], // ドバイの水着回（前夜祭の日の夕方・遊んだ相手。ch4-beach.js・SPC18）。周回では持ち越さない
   ["_ch4_camel", "progression"], // ドバイのラクダレース（段階・自己ベスト）。周回では持ち越さない
   ["_ch4_cafe_orders", "progression"], // ドバイのカフェで頼んだ一台の回数（メニューごと・ch4-dubai-cafe.js）

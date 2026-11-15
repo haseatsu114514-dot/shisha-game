@@ -103,4 +103,31 @@ assert.equal(spot('souq').hasNew(), true, 'loaded scene restores the real remain
 reset();
 for (const id of first.souq) state.flags._ch4.read[id] = true;
 assert.equal(spot('souq').hasNew(), true, 'NG+ reset permits revisits again');
+// なるとの会話の期限の夜（4-3・SPC28）: 地図で読まなかった分は 2・4・10 日目以降の夜に。先に読めば来ない。自由行動の間だけ。
+{
+  const { dueNaruTalk, NARU_TALK_DEADLINES } = module.namespace;
+  const naru = ['ch4_naru_dubai_1', 'ch4_naru_dubai_2', 'ch4_naru_dubai_3'];
+  for (const id of naru) DB.dialogues[id] = { dialogue_id: id, lines: [{ text: id }] };
+  assert.deepEqual([...NARU_TALK_DEADLINES], [2, 4, 10]);
+  const at = (day, count = 0, part = 'free') => ({ flags: { _ch4: { part, day, read: {} }, _ch4_dubai_talks: { naru: count } } });
+  assert.equal(dueNaruTalk(at(1)), null, 'not on DAY1');
+  assert.equal(dueNaruTalk(at(2)), naru[0], 'DAY2: the first talk');
+  assert.equal(dueNaruTalk(at(3, 1)), null, 'the second waits for DAY4');
+  assert.equal(dueNaruTalk(at(4, 1)), naru[1]);
+  assert.equal(dueNaruTalk(at(9, 2)), null, 'the third waits for DAY10');
+  assert.equal(dueNaruTalk(at(11, 2)), naru[2], 'a later night still brings it');
+  assert.equal(dueNaruTalk(at(12, 3)), null, 'all read on the map: nothing more');
+  assert.equal(dueNaruTalk(at(4, 0)), naru[0], 'one at a time, in order');
+  assert.equal(dueNaruTalk(at(13, 0, 'eve')), null, 'not on the eve');
+  // 夜の出来事として出る（期限の出会いが無い夜）。読むと巡回の回数が進み、地図の「なると会う」の残りと同じになる。
+  state.flags = { _ch4: { startDay: 49, part: 'free', day: 2, read: { ch4_festa: true, ch4_stranger_first: true, ch4_stranger_second: true } } };
+  const events = chapterFourDubaiDefinition(io).nightEvents;
+  const night = Object.values(events)[0];
+  assert.equal(night?.id, 'dubai-naru:ch4_naru_dubai_1');
+  played.length = 0;
+  await night.run();
+  assert.deepEqual(played, ['ch4_naru_dubai_1']);
+  assert.equal(state.flags._ch4_dubai_talks.naru, 1);
+  assert.equal(night.done(), true);
+}
 console.log('PASS Dubai new-talk markers: four pools, actual visits, completion, repeat, interruption, load, missing scripts and reset');

@@ -318,6 +318,7 @@ await suite("ch4-full-flow", async check => {
     assert.equal(state.day, startDay + 4);
     for (const id of ["ch4_stranger_first", "ch4_stranger_second", "ch4_tsumugi_dubai_friend", "ch4_mashiro_dubai_friend", "ch4_wang_reception",
       "ch4_stranger_third", ...prologue, ...resolution]) assert.equal(state.flags._ch4.read[id], true, `${id} must be read`);
+    assert.equal(state.flags._ch4_morning_done, true, "The tournament morning (4-4) was read before the tournament");
     assert.deepEqual(state.flags._ch4_evening, { kind: "rest", participants: [] }, "No lover is present on the eve");
     // 完了後に保存データを読み直しても、完了カードに戻り場面は再演されない。
     assert.equal(await page.evaluate(async () => {

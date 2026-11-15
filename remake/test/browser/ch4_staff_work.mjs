@@ -42,6 +42,7 @@ async function seed(page) {
       ch4_stranger_first: true, ch4_stranger_second: true });
     // ドバイの本筋の夜（説明会など・SPC27）も読了済み。手伝いの夜だけを確かめる。
     for (const entry of progress.CH4_STORY_NIGHTS) value.flags._ch4.read[entry.id] = true;
+    value.flags._ch4_dubai_talks = { naru: 3 }; // なるとの会話の期限の夜（SPC28）も読了済み
     value.flags._ch4.firstDay = 1;
     value.day = value.flags._ch4.startDay + 2;
     value.flags._ch4.day = 3;
