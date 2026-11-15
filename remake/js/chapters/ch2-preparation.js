@@ -316,7 +316,7 @@ export async function runChapterTwoPreparation() {
   save();
   await runDaily({
     // 昼の本筋（耳鼻科・なるの店のまかない。SPC28）は出かける前の朝に読み、昼の行動を使う。その後で今日の行き先を選ぶ
-    morningDeparture: async () => { await readChapterTwoDayScene(); await chooseMorningCity(); }, beforeHomecoming: returnCityHome,
+    morningDeparture: async () => { await readChapterTwoDayScene(state.day - startDay + 1); await chooseMorningCity(); }, beforeHomecoming: returnCityHome,
     // 地元の予定の前だけ帰る。柚ヶ谷の試煙会などは現地のまま開く。
     beforeNightEvent: event => allSpots().some(spot => spot.id === event.pin && (spot.region || "home") === "home")
       ? returnCityHome() : true,
