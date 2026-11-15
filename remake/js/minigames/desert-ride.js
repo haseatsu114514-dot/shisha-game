@@ -2517,6 +2517,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         for (let i = 0; i < n && !game.finished; i++) step(game, input, dt);
       },
       start(kind = "run", who = "noor") { if (!mode) startRun(kind, who); }, leave: finish,
+      // 検査用: 次の本番からコースを固定する（無い id は外す）。普段のコースは毎回ランダム
+      setCourse(id) { courseId = COURSE_PACKS.some(pack => pack.id === id) ? id : undefined; },
       pause(value) { paused = !!value; if (!paused) { last = performance.now(); } },
       redraw() { if (game) { updateHud(); simulateParticles(0); draw(1 / 60); } },
       rawBoost() { return boost(game); },

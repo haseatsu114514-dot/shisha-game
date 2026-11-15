@@ -90,6 +90,8 @@ export const CH4_SCENE_BG = Object.freeze({
   ch4_samechan_dubai_evening: "bg_dubai_inn_night",
   ch4_hiyori_dubai_evening: "bg_dubai_inn_night",
   ch4_mashiro_dubai_friend_evening: "bg_dubai_inn_night",
+  // 大会当日の朝（4-4・SPC28・ch4-morning.js が組み立てる）。宿のロビー
+  ch4_tournament_morning: "bg_dubai_inn_day",
   // ドバイの本筋の夜（SPC27・下の CH4_STORY_NIGHTS と同じ）
   ch4_story_briefing: "bg_dubai_grand_smoke_stage",
   ch4_story_venue: "bg_dubai_grand_smoke_stage",

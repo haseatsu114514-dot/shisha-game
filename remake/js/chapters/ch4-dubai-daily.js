@@ -260,7 +260,7 @@ function dubaiNightEvent(io) {
   const staff = chapterFourStaffNightEvent();
   if (staff) return { ...staff, run: () => keepDailyHud(() => staff.run()) };
   const due = dueMandatory();
-  if (!due) return storyNightEvent(io);
+  if (!due) return naruTalkNightEvent() || storyNightEvent(io);
   const last = due[due.length - 1];
   return {
     id: `dubai-night:${last.id}`, schedule: "fixed", pin: null, label: "ドバイの夜", beat: last.beat,
@@ -270,6 +270,32 @@ function dubaiNightEvent(io) {
         if (read(scene.id)) continue;
         if (!await keepDailyHud(() => io.readAndCommit(scene.id))) return;
       }
+    },
+  };
+}
+
+// なるとの会話（4-3・SPC28）: 地図の「なると会う」で読まなかった分は、この章内日の夜に読む（期限の夜）。
+// 本筋の夜（説明会3・下見・買い出し・電話・記者会見の 1/3/5/7/9 日目）と重ならない日。地図で先に読めば、その分は来ない。
+// 期限の夜に読んだ分は好感度を付けない（強制イベント）。巡回の回数は地図で読んだ時と同じく数える。
+export const NARU_TALK_DEADLINES = Object.freeze([2, 4, 10]);
+export function dueNaruTalk(value = state) {
+  const count = value?.flags?.[TALKS_FLAG]?.naru || 0;
+  const scene = TALKS.naru[count];
+  if (!scene || chapterFourProgress(value).part !== "free") return null;
+  return chapterFourProgress(value).day >= NARU_TALK_DEADLINES[count] ? scene : null;
+}
+function naruTalkNightEvent() {
+  const scene = dueNaruTalk();
+  if (!scene) return null;
+  const owner = state;
+  return {
+    id: `dubai-naru:${scene}`, schedule: "fixed", pin: null, label: "なると話す", beat: "夜。なるから「少し話そう」とメッセージが来た──",
+    done: () => dueNaruTalk(owner) !== scene,
+    run: async () => {
+      if (dueNaruTalk(owner) !== scene) return;
+      if (!await readPlain(scene, TALK_BG[scene] || CH4_SCENE_BG[scene], owner) || state !== owner) return;
+      countTalk("naru");
+      save();
     },
   };
 }

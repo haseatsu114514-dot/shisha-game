@@ -1,0 +1,233 @@
+{
+  "comment": "第4章の大会当日の朝（4-4・SPC28）。導入 → 来てくれた人の一言（その場にいる人だけ・恋人を先に・最大4人）→ 締め。ch4-morning.js が組み立てて、大会の場面の前に一度だけ読む。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_tournament_morning_open",
+      "comment": "導入。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会の朝。宿のロビーに下りると、なるが靴紐を結んでいた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……眠れたか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "半分くらい"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "俺もだ。会場まで歩くぞ。走らないから安心しろ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tournament_morning_crowd",
+      "comment": "来てくれた人が一人以上いる時だけ、一言の前に読む。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーには、来てくれた人たちが待っていてくれた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tournament_morning_more",
+      "comment": "一言の人数（ch4-morning.js の CH4_MORNING_CHEERS_MAX）より多く来ている時だけ。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ほかのみんなも、客席で待ってると手を振ってくれた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tournament_morning_close",
+      "comment": "締め。なると会場まで歩く。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿を出ると、朝の空気はもう熱かった。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "なあ。……どっちが勝っても、店に帰ったら最初の一台は、自分の客に出せよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。なるもね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会場の扉の前で、二人同時に、長く息を吐いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_morning_cheer_tsumugi",
+      "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……客席の一番後ろから、描いてます。はじめさんの手"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_morning_cheer_minto",
+      "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "いってらっしゃい♡ 終わったら、みんとが一番に褒めてあげる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_morning_cheer_rio",
+      "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "最重要サンプル、行っておいで。データは客席で取る"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_morning_cheer_ageha",
+      "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、とりま深呼吸！ 最前で叫ぶから"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_morning_cheer_mashiro",
+      "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "はじめくん、いってらっしゃい……僕、ちゃんと見てるからねぇ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_morning_cheer_samechan",
+      "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "お主、背筋じゃ。客席の座り心地は、わしが確かめておく"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_morning_cheer_hiyori",
+      "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "泣いてたら、砂のせいだからね……いってらっしゃい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_morning_cheer_noor",
+      "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ハジメ！ 砂丘で鍛えた足腰、見せてきて！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_morning_cheer_adam",
+      "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "同志よ。客席でリンゴの匂いがしたら、それは俺だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_morning_cheer_kumicho",
+      "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんちゃん。筋だけは、通してきなせえ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_morning_cheer_rei",
+      "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……キミの一曲目、楽しみにしてる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_morning_cheer_saku",
+      "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "予想しとく。君は最初に客席を見る……外れたら、ノートに書くね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_morning_cheer_steve",
+      "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、ハジメ。熱を急ぐなよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_morning_cheer_volk",
+      "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "舞台の上は、今朝の時点で28度……それだけだ"
+        }
+      ]
+    }
+  ]
+}

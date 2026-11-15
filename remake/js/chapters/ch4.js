@@ -38,6 +38,7 @@ import { buildGameOver, warmGameOver } from "./gameover.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 import { TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
 import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
+import { CH4_MORNING_FILES, CH4_MORNING_FLAG, chapterFourMorningDue, chapterFourMorningScript } from "./ch4-morning.js";
 import { CH4_BEACH_SCENES, CH4_BEACH_SCENE_FILES, CH4_BEACH_BG, chapterFourBeachCast, chapterFourBeachDue,
   chapterFourBeachPickCount, commitChapterFourBeach } from "./ch4-beach.js";
 import { CH4_EVENING_DIALOGUE_FILES, CH4_EVENING_BG, selectChapterFourEvening, chapterFourEveningPartner,
@@ -72,7 +73,7 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
 /** 必要な台本をすべて確認してから DB に公開する。欠けていれば状態を進めない。 */
 async function loadDialogues() {
   const files = { ...CH4_SCENE_FILES, ...CH4_VISITOR_SCENE_FILES, ...CH4_EVENING_DIALOGUE_FILES, ...CH4_CAMEL_SCENE_FILES,
-    ...CH4_BEACH_SCENE_FILES, ...CH4_STORY_FILES };
+    ...CH4_BEACH_SCENE_FILES, ...CH4_STORY_FILES, ...CH4_MORNING_FILES };
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => [ids, await readDialogues(file, ids)]));
   for (const [ids, dialogues] of groups) {
     Object.assign(DB.dialogues, Object.fromEntries(ids.map(id => [id, dialogues[id]])));
@@ -563,6 +564,13 @@ async function showChapterFourCommittedResult(result) {
 
 async function runTournament(owner) {
   const { start, win, loss } = CH4_TOURNAMENT_SCENES;
+  // 大会当日の朝（4-4・SPC28）: なると宿のロビーから会場へ。来てくれた人の一言つき。一度だけ・読み終えた時だけ旗を立てる。
+  if (chapterFourMorningDue(state, !!chapterFourProgress(state).read[start])) {
+    DB.dialogues.ch4_tournament_morning = chapterFourMorningScript(state, DB.dialogues);
+    if (!await readScene(owner, "ch4_tournament_morning")) return;
+    state.flags[CH4_MORNING_FLAG] = true;
+    save();
+  }
   if (!chapterFourProgress(state).read[start]) {
     // 読み始める時点でシェイクの正体を明かす（DRAFT §3）。
     revealChapterFourSheikh(state);

@@ -10,6 +10,8 @@ import { OVERSEAS_HEROINES, OVERSEAS_GUESTS, chooseOverseasCompanion } from "../
 import { CH4_BEACH_SCENES, CH4_BEACH_SCENE_FILES, CH4_BEACH_PICKS, CH4_BEACH_RESIDENTS, CH4_BEACH_RIVALS, chapterFourBeachCast,
   chapterFourBeachDue, chapterFourBeachPickCount, chapterFourBeachRecord, commitChapterFourBeach } from "../js/chapters/ch4-beach.js";
 import { classifyFlag } from "../js/core/carry.js";
+import { CH4_MORNING_SCENES, CH4_MORNING_FILES, CH4_MORNING_FLAG, CH4_MORNING_CHEERS_MAX, chapterFourMorningCheers,
+  chapterFourMorningDue, chapterFourMorningScript } from "../js/chapters/ch4-morning.js";
 
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url), "utf8"));
 
@@ -159,5 +161,36 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
   const free = eveSave({ eve: false });
   assert.equal(free.flags._ch4.part, "free");
   assert.equal(chapterFourBeachDue(free), false, "Not during the Dubai daily days");
+}
+// ---- 大会当日の朝（4-4・SPC28）: その場にいる人の一言（恋人を先に・最大4人・なるは一緒に歩くので入れない）
+{
+  const rows = readData("dialogue/ch4_morning").dialogues;
+  assert.deepEqual([...CH4_MORNING_FILES.ch4_morning].sort(), rows.map(row => row.dialogue_id).sort(), "ch4_morning: all scenes registered");
+  for (const [id, scene] of Object.entries(CH4_MORNING_SCENES.cheers)) {
+    const row = rows.find(item => item.dialogue_id === scene);
+    assert.deepEqual(row.lines.map(line => line.speaker), [id], `${id}: one line by themselves`);
+  }
+  const dialogues = Object.fromEntries(rows.map(row => [row.dialogue_id, row]));
+  const value = arriveAll(eveSave({ lovers: ["minto", "rio", "samechan"], companion: "rio", met: { noor: true },
+    finales: { adam: { day: 9, chapter: 1, route: "friend" } } }));
+  const { cheers, more } = chapterFourMorningCheers(value);
+  assert.equal(CH4_MORNING_CHEERS_MAX, 4);
+  assert.deepEqual(cheers, ["minto", "rio", "samechan", "tsumugi"], "lovers first, then the others in order, up to four");
+  assert.equal(more, true, "Mashiro, Noor and Adam are also there");
+  assert(!cheers.includes("naru"));
+  const script = chapterFourMorningScript(value, dialogues).lines.map(line => line.text);
+  assert.equal(script[0], dialogues[CH4_MORNING_SCENES.open].lines[0].text);
+  assert.equal(script.at(-1), dialogues[CH4_MORNING_SCENES.close].lines.at(-1).text);
+  for (const id of cheers) assert(script.includes(dialogues[CH4_MORNING_SCENES.cheers[id]].lines[0].text), id);
+  assert(script.includes(dialogues[CH4_MORNING_SCENES.more].lines[0].text));
+  // 誰もいない（旧保存）: 一言の前置き・続きは入れない
+  const alone = eveSave({ eve: false });
+  const lonely = chapterFourMorningScript(alone, dialogues).lines.map(line => line.text);
+  assert(!lonely.includes(dialogues[CH4_MORNING_SCENES.crowd].lines[0].text));
+  assert.equal(chapterFourMorningDue(value, false), true);
+  assert.equal(chapterFourMorningDue(value, true), false, "not once the tournament scene was read");
+  value.flags[CH4_MORNING_FLAG] = true;
+  assert.equal(chapterFourMorningDue(value, false), false, "once");
+  assert.equal(classifyFlag(CH4_MORNING_FLAG), "progression");
 }
 console.log("PASS ch4 beach: cast is who is actually there (with Naru and the ♥5 male friends as the lively slots), picks once without rewards, before the festival only");
