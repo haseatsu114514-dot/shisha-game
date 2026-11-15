@@ -383,13 +383,33 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
         y: (rect.top - frame.top + cameraScale * point.y) / stageScale };
     };
     // しぐさの絵（届いた物だけ）。歩いている間は歩きの絵、届いていなければ表情の絵と CSS の姿勢。
+    // しぐさの絵は読み込みが確定してから差し替える（Issue #3643 の横展開。ラクダレース PR #3674 と同じ考え方）。
+    // 先に data-art を立てると表情フレームが先に消え、絵が届くまで猫が消えたように見え、その後に絵がポップインする。
+    // 読み込み中は今の見た目（表情／表示済みのしぐさ）を保ったまま先読みだけ進め、読めなかった絵は表情表示のままにする。
+    const poseLoads = new Map(); // src -> "loading" | "ready" | "failed"
+    let poseWanted = null; // 直近に求めた絵。歩行の切り替えで、古い読み込みの完了が後から効かないようにする
+    function applyPose(art, src) {
+      cat.dataset.art = art;
+      pose.hidden = false;
+      if (pose.getAttribute("src") !== src) pose.src = src;
+    }
     function renderPose() {
       const walking = !!cat.dataset.walk && hasPose(walkFrame);
       const art = walking ? walkFrame : session.cat.art;
       const src = hasPose(art) ? poseUrl(art) : null;
-      cat.dataset.art = src ? art : "";
-      pose.hidden = !src;
-      if (src && pose.getAttribute("src") !== src) pose.src = src;
+      poseWanted = src;
+      if (!src) { cat.dataset.art = ""; pose.hidden = true; return; }
+      const load = poseLoads.get(src);
+      if (load === "ready" || typeof Image === "undefined") { applyPose(art, src); return; }
+      if (load === "failed") { cat.dataset.art = ""; pose.hidden = true; return; }
+      if (!load) {
+        poseLoads.set(src, "loading");
+        const image = new Image();
+        image.onload = () => { poseLoads.set(src, "ready"); if (poseWanted === src) renderPose(); };
+        image.onerror = () => { poseLoads.set(src, "failed"); if (poseWanted === src) renderPose(); };
+        image.src = src;
+      }
+      // 読み込み中は何も変えない（今の見た目のまま）
     }
     function renderButtons() {
       for (const item of DOCK) {

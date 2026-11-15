@@ -63,8 +63,11 @@ export function playVersus({ host, players, speed = 1, signal = null } = {}) {
     const [cx, cy, k] = layout.face[i], f = g.frame;
     return el(`div.ichi-vs-panel.p-${i}.has-art`, { "aria-hidden": "true" }, [
       g.background ? el("i.ichi-vs-bg", { style: { backgroundImage: `url("${g.background}")` } }) : null,
+      // 人物絵の入場は読み込みが終わってから始める（Issue #3643 の横展開。ラクダレース PR #3674 と同じ考え方）。
+      // 挿入と同時にアニメーションを始めると、読み込みが遅れた絵だけ後から動きなしでポップインする。
       el("img.ichi-vs-art", { src: g.portrait, alt: "", draggable: "false", dataset: { test: `ichi-vs-art-${i}` },
         style: { width: `${(f.width * k).toFixed(1)}px`, left: `${(cx - (HEAD[0] - f.left) * k).toFixed(1)}px`, top: `${(cy - (HEAD[1] - f.top) * k).toFixed(1)}px` },
+        onload: (e) => { e.currentTarget.classList.add("is-in"); },
         onerror: (e) => { const host = e.currentTarget.closest(".ichi-vs"); e.currentTarget.remove(); host?.querySelector(`.ichi-vs-player.p-${i}`)?.prepend(el("span.ichi-vs-ring", face(list[i]))); } }),
     ]);
   };
@@ -121,6 +124,8 @@ export function playVersus({ host, players, speed = 1, signal = null } = {}) {
     el("small.ichi-vs-skip", { text: "タップでとばす" }),
   ]);
   host.append(node);
+  // キャッシュ済みで挿入前に読み終わっていた絵は load イベントを取りこぼすので、ここで入場させる
+  node.querySelectorAll(".ichi-vs-art").forEach((img) => { if (img.complete && img.naturalWidth > 0) img.classList.add("is-in"); });
 
   return new Promise((resolve) => {
     const timers = []; let done = false;
