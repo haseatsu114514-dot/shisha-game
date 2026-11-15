@@ -601,27 +601,32 @@
         },
         {
           "speaker": "hajime",
-          "text": "げほっ……！ ましろちゃん、今の、言い方……",
+          "text": "げほっ……！",
           "face": "surprise"
         },
         {
           "speaker": "mashiro",
-          "text": "……？ 煙の話だよぉ。はじめくんの一台で、今日のが一番濃いの",
+          "text": "……むせた？ はじめくんの一台の中でね、今日のが一番濃いの",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "（……煙の話だ。分かってた。分かってたけど）",
           "face": "normal"
         },
         {
           "speaker": "mashiro",
-          "text": "……はじめくん、顔、真っ赤だよぉ……えっち",
-          "face": "smile"
+          "text": "顔、赤いよぉ。炭、熱すぎた？",
+          "face": "surprise"
         },
         {
           "speaker": "hajime",
-          "text": "（……絶対、言い方のせいだ）",
+          "text": "……うん。たぶん、炭のせい",
           "face": "normal"
         },
         {
           "speaker": "hajime",
-          "text": "……話、戻すね。ましろちゃん、吸うのはダークなのに、足し方は詳しいんだね",
+          "text": "ましろちゃん、自分で吸うのはダークなのに、足し方はすごく詳しいんだね",
           "face": "normal"
         },
         {
