@@ -140,6 +140,21 @@
           },
           {
             "speaker": "hajime",
+            "face": "normal",
+            "text": "それと、クラウドさんから伝言です。宛名は、店の名前で書いてほしいって"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "……知ってる"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（知ってて、「田中様」なんだ）"
+          },
+          {
+            "speaker": "hajime",
             "face": "smile",
             "text": "店の名前だけじゃなくて、どんな人がいるのかも分かりました"
           },

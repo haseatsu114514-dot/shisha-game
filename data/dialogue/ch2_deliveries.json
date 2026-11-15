@@ -22,12 +22,12 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "MELTY PUFF、神崎煙草店、零-ZERO-。まとめて持っていけ"
+          "text": "MELTY PUFF、神崎煙草店、「貴方ノ為ノ此ノ煙。」の三軒だ。まとめて持っていけ"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "あげはにはグミベア、神崎にはドラゴンフルーツ、クラウドにはローズのフレーバーだ"
+          "text": "あげはにはグミベア、神崎にはドラゴンフルーツ、田中さんにはローズのフレーバーだ"
         },
         {
           "speaker": "hajime",
@@ -145,6 +145,31 @@
           "text": "鞄の中から、フレーバーの包みを取り出した。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "宛名には、スミさんの字で「田中様」とある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの……田中さん、ですか？"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……そう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（「貴方ノ為ノ此ノ煙。」の†玖羅雨℃†さんが、田中さん……）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "スミさんは、昔からそっちで呼ぶ"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "スミさんからの荷物です。ローズのフレーバーだそうです"
@@ -158,6 +183,11 @@
           "speaker": "",
           "face": "normal",
           "text": "クラウドは包みを受け取ると、宛名をそっと指でなぞった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……店の名前で書いてくれって、何度も頼んでる"
         },
         {
           "speaker": "rei",
