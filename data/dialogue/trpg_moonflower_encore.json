@@ -646,6 +646,136 @@
               "role": "PL／卓の会話"
             }
           }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……語りすぎたついでに、古城の魔物表を一回振る"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……出た。『服だけを溶かすスライム』"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……俺が作った表じゃない。ルールブックの表だ"
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "服だけ！？ やば、なにそれ。ウケるんだけど",
+          "variants": {
+            "regulara": {
+              "text": "服だけ……？ 魔物表に、そんなものまで載っているのか",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "（……それは、まずい魔物なのでは）"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "serious",
+          "text": "シャンデリアの上から、ぷるりと光るものが垂れてくる"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "狙いは最前列。手を振る{pc:ageha}の、真上だ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "surprise",
+          "text": "{pc:ageha}、上！ 上を見て！"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "intense",
+          "text": "下がっていろ。{pc:adam}が、柱の陰から飛び込む！",
+          "variants": {
+            "regularb": {
+              "text": "……{pc:adam}が前に出ます。盾くらいには、なれるので",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "ぼとり。スライムが包んだのは、{pc:adam}だった"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "normal",
+          "text": "……溶けたのは、服だけ。{pc:adam}は無傷だ。服以外は"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "恥じることはない。これは楽園の、原点の姿だ",
+          "variants": {
+            "regularb": {
+              "text": "……寒そうですね。{pc:adam}の服、どこで買い直そう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "ageha",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "見せなくていいから！ GMさん、なんか隠すやつ！",
+          "variants": {
+            "regulara": {
+              "text": "……GM、何か隠すものを出してやってくれ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        },
+        {
+          "speaker": "hajime",
+          "role": "{pc}／物語",
+          "face": "surprise",
+          "text": "これ、幕の切れ端です！ 早く巻いてください！"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／場面",
+          "face": "smile",
+          "text": "幕は巻けた。スライムは満足そうに、天井へ帰っていく"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "……今の、誰が得したんですか"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "……誰も。物語に戻る"
         }
       ]
     },

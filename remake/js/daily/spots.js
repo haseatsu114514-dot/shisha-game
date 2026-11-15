@@ -39,7 +39,8 @@ export const CHAR_STAT = { sumi: "technique", tsumugi: "sense", naru: "insight",
 export { VISIT_SEQ } from "../core/affinity-stages.js";
 import { VISIT_SEQ, visitStorySkipped } from "../core/affinity-stages.js";
 const REPEAT_POOL = {
-  rio: ["ch1_rio_repeat", "ch1_rio_repeat_b", "ch1_rio_repeat_c"],
+  // d（試し吸いの言葉・SPC09）は早めに読めるよう2番目に置く
+  rio: ["ch1_rio_repeat", "ch1_rio_repeat_d", "ch1_rio_repeat_b", "ch1_rio_repeat_c"],
 };
 // 固有会話をいくつ見たら LIME を交換済みとみなすか（交換シーンは固有会話の中にある）
 // アダムは総督回を挟むので、交換の場面（ch1_adam_third）は4本目

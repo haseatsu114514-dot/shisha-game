@@ -1344,6 +1344,117 @@
       ]
     },
     {
+      "dialogue_id": "remake_ch2_ageha_repeat_f",
+      "comment": "SPC02（2026-11-15 オーナー「あげはのズボーって吸うの！は店内で誤解されるの入れよう」）。通いの小会話。初めての客に吸い方を教える声が、満席の店内で誤解される。物語の進行・恋愛関係に依存しない。既存の訪問精算で読む。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のMELTY PUFFは満席だった。あげはが、初めてのお客さんの横にしゃがんでいる。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "すみません……煙、全然出なくて"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "遠慮しすぎ！ もっとしっかり咥えて、奥までグッて"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "で、思いっきりズボーって吸うの。ほっぺがへこむまで"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "こ、こうですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そ、上手！ もっと強く！ ズボーって！ 一気にいっちゃって！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の席のお兄さんがむせた。奥のカップルが、そろってこっちを向いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……店じゅうの視線が、あげはさんに集まってる）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "え、なに？ みんな、どしたの？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あげはさん。今の、言い方が……ちょっと"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "言い方？ 奥までグッて、ズボーって……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはが自分の台詞を小声で繰り返す。三回目で、耳まで真っ赤になった。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "ちがっ……シェイク！ ストローでシェイク吸う、あのズボーだから！"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "みんな何想像してんの！？ うち、奥まで咥えてって言っただけで……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言い終わる前に、本人が固まった。隣のお兄さんが、もう一度むせた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……あげはさん。一回、黙りましょう"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "……うん。ハジメっち、今の全部聞かなかったことにして"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その横で、初めてのお客さんが、細く白い煙を吐いていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "あ、出た……おいしい"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ほらね！ ……ズボーは、正しいんだから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（教え方は、本当に上手なんだよな……言い方以外は）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_ch2_kumicho_repeat_e",
       "comment": "#3097 大会進行・恋愛関係に依存しない通いの日常。既存の訪問精算で読む。",
       "lines": [

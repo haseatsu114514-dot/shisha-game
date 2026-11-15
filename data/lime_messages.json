@@ -2962,6 +2962,52 @@
       ]
     },
     {
+      "id": "lime_hiyori_dream",
+      "sender": "hiyori",
+      "trigger_condition": "flag",
+      "trigger_flag": "_hiyori_tonari_followup_done",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "hiyori",
+          "text": "昨日ね、はじめくんと二人きりで、朝まで……"
+        },
+        {
+          "sender": "hiyori",
+          "text": "……"
+        },
+        {
+          "sender": "hiyori",
+          "text": "飲み明かす夢を見たの"
+        },
+        {
+          "sender": "hiyori",
+          "text": "起きたら、ちゃんと一人だった"
+        },
+        {
+          "sender": "hiyori",
+          "text": "……儚くない？ 夢って"
+        }
+      ],
+      "replies": [
+        {
+          "text": "一通目で、変な汗かきました",
+          "response": "？ 汗？ ……朝まで飲む夢、そんなに儚かった？",
+          "affinity": 2
+        },
+        {
+          "text": "いい夢ですね",
+          "response": "……うん。起きたら、ちゃんと消えてたけど",
+          "affinity": 1
+        },
+        {
+          "text": "今度、ほんとに飲みましょう",
+          "response": "……ほんと？ じゃあ朝までは無理でも、終電までなら",
+          "affinity": 2
+        }
+      ]
+    },
+    {
       "id": "lime_ch3_sumi_tokyo_settle",
       "sender": "sumi",
       "chapter": 3,

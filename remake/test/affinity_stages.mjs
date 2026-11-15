@@ -1205,7 +1205,8 @@ await check('Rio #3081: seven story scenes follow the blueberry report, once eac
   assert.equal(f.spots.rioStoryExtraDue(), null);
   assert.equal(f.spots.hasNewStory('rio'), false);
   assert.equal(await f.spots.visitChar('rio'), true);
-  assert.equal(sceneIds(f)[0], 'ch1_rio_repeat_b');
+  // 物語系を読み終えたら、いつもの小会話（訪問数で巡回。SPC09 で ch1_rio_repeat_d を2番目に足した）へ戻る
+  assert.equal(sceneIds(f)[0], 'ch1_rio_repeat_c');
   const cancelled = rioAt(f, 6);
   cancelled.flags._spot_seen_ch1_rio_blueberry_report = true;
   cancelled.finales.rio = { day: 9, chapter: 1, route: 'friend' };
