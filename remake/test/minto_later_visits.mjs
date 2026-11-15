@@ -10,6 +10,7 @@ const read = p => fs.readFileSync(new URL(p, root), "utf8");
 const file = JSON.parse(read("data/dialogue/ch1_minto.json"));
 const timer = file.dialogues.find(d => d.dialogue_id === "ch1_minto_timer_hand");
 const cheki = file.dialogues.find(d => d.dialogue_id === "ch1_minto_cheki_keep");
+const coolMint = file.dialogues.find(d => d.dialogue_id === "ch1_minto_cool_mint");
 const textOf = scene => (scene.lines || []).map(line => line.text || "").join("\n");
 
 for (const scene of [timer, cheki]) {
@@ -95,7 +96,7 @@ function save(patch = {}) {
 }
 
 state = save({ story: { minto: 5 } });
-DB.dialogues = { ch1_minto_timer_hand: timer, ch1_minto_cheki_keep: cheki, remake_repeat_minto_0: { dialogue_id: "remake_repeat_minto_0", lines: [{ speaker: "minto", text: "repeat" }] } };
+DB.dialogues = { ch1_minto_timer_hand: timer, ch1_minto_cheki_keep: cheki, ch1_minto_cool_mint: coolMint, remake_repeat_minto_0: { dialogue_id: "remake_repeat_minto_0", lines: [{ speaker: "minto", text: "repeat" }] } };
 assert.equal(spots.mintoTimerHandDue(), false);
 state = save({ flags: {} });
 assert.equal(spots.mintoTimerHandDue(), false);
@@ -115,6 +116,16 @@ played = []; affinity = [];
 assert.equal(await spots.visitChar("minto"), true);
 assert.deepEqual(played, ["ch1_minto_cheki_keep"]);
 assert.equal(state.flags._minto_cheki_keep_done, true);
+// 極冷ミントの味見（SPC15）: チェキの次の来店で一度だけ。チェキの前には出ない。
+assert.equal(spots.mintoCoolMintDue(), true);
+assert.equal(spots.hasNewStory("minto"), true);
+
+played = []; affinity = [];
+assert.equal(await spots.visitChar("minto"), true);
+assert.deepEqual(played, ["ch1_minto_cool_mint"]);
+assert.equal(state.flags._minto_cool_mint_done, true);
+assert.deepEqual(affinity, [["minto", 16]]);
+assert.equal(spots.mintoCoolMintDue(), false);
 assert.equal(spots.hasNewStory("minto"), false);
 
 played = []; affinity = [];
@@ -126,6 +137,14 @@ state = save(); played = []; playMode = "cancel";
 assert.equal(await spots.visitChar("minto"), false);
 assert.equal(state.flags._minto_timer_hand_done, undefined);
 playMode = "ok";
+
+// 極冷ミント（SPC15）も、中断では既読にせず、チェキを読み終えていなければ出ない。
+state = save({ flags: { _minto_identity_revealed: true, _minto_timer_hand_done: true, _minto_cheki_keep_done: true } }); played = []; playMode = "cancel";
+assert.equal(await spots.visitChar("minto"), false);
+assert.equal(state.flags._minto_cool_mint_done, undefined, "cancel leaves the cool mint unread");
+playMode = "ok";
+state = save({ flags: { _minto_identity_revealed: true, _minto_timer_hand_done: true } });
+assert.equal(spots.mintoCoolMintDue(), false, "not before the cheki talk");
 
 state = save(); finaleOpen = true; played = [];
 assert.equal(await spots.visitChar("minto"), true);
@@ -140,4 +159,4 @@ assert.equal(await spots.visitChar("minto"), true);
 assert.deepEqual(played, ["ch3_prep_minto"]);
 assert.equal(state.flags._minto_timer_hand_done, undefined);
 
-console.log("OK: minto timer hand then unposted cheki, once each");
+console.log("OK: minto timer hand, unposted cheki, then the cool mint, once each");

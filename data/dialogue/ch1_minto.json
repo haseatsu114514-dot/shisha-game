@@ -2673,6 +2673,130 @@
           "text": "トレイの下の一枚は、最後まで渡す山へは戻らなかった"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_minto_cool_mint",
+      "comment": "SPC15（2026-11-15 オーナー「1でいこう」）。みんとの極冷ミントの味見。ひとりで確かめる時の小さい声の感想（奥までスースーする・こんなの初めて）を、はじめが勝手に想像して慌てる。みんとは冷たさの話をしているだけで、最後まで気づかず、メニューに「思わず声が出ちゃう」と書く。チェキの回（ch1_minto_cheki_keep）の次の来店で一度（daily/spots.js）。恋愛・大会の状態に触れない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼のPEPPERMINT。カウンターに、いつもより色の濃い葉の小皿が置いてあった"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくんっ♡ いいとこに来た！ 新作の味見、手伝って♪"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "その名も「極冷ミント」♡ メンソール、いつもの三倍だよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "三倍……！？ お客さんに出して、大丈夫なやつ？"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "だから、出す前に確かめるの。まず、みんとが吸うね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとは一口目をゆっくり吸って、目を閉じた。店の声が、すっと小さくなる"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……ん……すごい……奥まで、スースーする……"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……こんなの……初めて……もう一口……ほしい……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……ミックスの感想だ。そう、ミントの感想だ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（店の声じゃないから、余計に）"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……はい、はじめくんの番……ゆっくり、吸って……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マウスピースを替えて受け取る。吸い込むと、冷たさが鼻の奥まで一気に抜けた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "っ……冷たっ！ 鼻の奥まで、抜けた……！"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "……あ。強すぎた？ はじめくん、顔、赤いよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "だ、大丈夫。冷たすぎて、びっくりしただけ"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "そっか。冷えすぎて、のぼせちゃう人もいるんだ……メモしとく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとはくるりと店の声に戻って、メニューの端にペンを走らせた"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "決めた♡ 「思わず声が出ちゃう、極冷ミント」って書く！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "それ、誤解されない？"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "え？ 声が出るくらい冷たいって意味だよ？ ほかに、ある？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ない、です"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "だよね♡ はじめくんの感想、ちゃんと広告に使わせてもらうね♪"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとはミント色のペンで、メニューの一行に大きく丸を付けた"
+        }
+      ]
     }
   ]
 }

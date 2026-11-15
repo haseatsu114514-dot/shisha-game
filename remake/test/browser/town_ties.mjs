@@ -27,7 +27,7 @@ async function setup(page) {
     Object.assign(s.flags, { _gym_member: true, _lime_tut: true, _errand_scout_done: true, _delivery_adam_done: true,
       _delivery_minto_done: true, _hiyori_meeting_done: true, _hiyori_message_delivered: true, _cafe_introduced: true,
       _minto_identity_revealed: true, _minto_side_seat_done: true, _minto_quiet_hello_done: true,
-      _minto_timer_hand_done: true, _minto_cheki_keep_done: true });
+      _minto_timer_hand_done: true, _minto_cheki_keep_done: true, _minto_cool_mint_done: true });
     for (let seed = 0; seed < 100; seed++) { s.weatherSeed = seed; if (!E.weather.isRainy()) break; }
     E.clear = () => { E.vn.backlog().length = 0; E.trace = []; };
     E.clear();

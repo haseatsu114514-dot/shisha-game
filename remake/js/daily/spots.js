@@ -249,6 +249,12 @@ export const mintoTimerHandDue = () => !state.flags[MINTO_TIMER_HAND_SEEN]
 export const mintoChekiKeepDue = () => !state.flags[MINTO_CHEKI_KEEP_SEEN]
   && !!state.flags[MINTO_TIMER_HAND_SEEN]
   && !!DB.dialogues[MINTO_CHEKI_KEEP]?.lines?.length;
+/** チェキの次の来店で、新作「極冷ミント」の味見を一度だけ（SPC15）。 */
+const MINTO_COOL_MINT = "ch1_minto_cool_mint";
+const MINTO_COOL_MINT_SEEN = "_minto_cool_mint_done";
+export const mintoCoolMintDue = () => !state.flags[MINTO_COOL_MINT_SEEN]
+  && !!state.flags[MINTO_CHEKI_KEEP_SEEN]
+  && !!DB.dialogues[MINTO_COOL_MINT]?.lines?.length;
 /**
  * 章が明けて最初の来店で一度だけ読む後日談（#2026）。第1章で実際に通った店主だけ（regulars は
  * 章の切り替え時の記録。ch2-progress.js）。既読は台本末尾の set_flag。第2章の地元の地図だけが入口。
@@ -324,7 +330,7 @@ export function hasNewStory(charId) {
   if (charId === "rio" && rioBlueberryDue()) return true;
   if (charId === "rio" && rioStoryExtraDue()) return true;
   if (charId === "tsumugi" && (tsumugiPinkDue() || tsumugiStoryExtraDue())) return true;
-  if (charId === "minto" && (mintoSideSeatDue() || mintoQuietHelloDue() || mintoTimerHandDue() || mintoChekiKeepDue())) return true;
+  if (charId === "minto" && (mintoSideSeatDue() || mintoQuietHelloDue() || mintoTimerHandDue() || mintoChekiKeepDue() || mintoCoolMintDue())) return true;
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
   if (id && !visitStorySkipped(state, charId, id)) return storyAvailable(id);
   return questionVisitDue(charId) || finaleAtVisit(charId);
@@ -558,6 +564,11 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     } else if (charId === "minto" && mintoChekiKeepDue()) {
       if (!await read(MINTO_CHEKI_KEEP, DB.dialogues[MINTO_CHEKI_KEEP].metadata?.bg ? {} : { bg })) return false;
       state.flags[MINTO_CHEKI_KEEP_SEEN] = true;
+      gainAffinity(charId, visitAffinity("story"), affinityOptions);
+    } else if (charId === "minto" && mintoCoolMintDue()) {
+      // 完読してから既読。中断では旗を残さず、次の来店で読み直せる。
+      if (!await read(MINTO_COOL_MINT, DB.dialogues[MINTO_COOL_MINT].metadata?.bg ? {} : { bg })) return false;
+      state.flags[MINTO_COOL_MINT_SEEN] = true;
       gainAffinity(charId, visitAffinity("story"), affinityOptions);
     } else {
       const rainy = isRainy();
