@@ -461,6 +461,7 @@ export const FLAG_EXACT_RULES = [
   ["_met_tsumugi", "person"],
   ["_met_volk", "person"],
   ["_minto_cheki_keep_done", "person"],
+  ["_minto_cool_mint_done", "person"], // 極冷ミントの味見（SPC15・daily/spots.js）
   ["_minto_fifth_done", "person"],
   ["_minto_history_shared", "person"],
   ["_minto_identity_revealed", "person"],
