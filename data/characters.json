@@ -328,9 +328,9 @@
   },
   {
     "id": "rei",
-    "lime_name": "†玖羅雨℃†",
+    "lime_name": "†黒羅雨℃†",
     "birthday": "05-20",
-    "name": "†玖羅雨℃†（くらうど） / 田中 健太（たなか けんた）",
+    "name": "†黒羅雨℃†（くらうど） / 田中 健太（たなか けんた）",
     "reading": "くらうど",
     "role": "rival_ch2",
     "age": 25,
@@ -339,7 +339,7 @@
     "play_style": "「薔薇の余韻を、曲間のように聴かせる」",
     "description": "V系コンセプトカフェ「貴方ノ為ノ此ノ煙。」の店長兼シーシャ職人。第2章の県大会に出場する。\nV系の音楽とファッションが本当に好きな一般の青年。黒とワインレッドで髪と服を作り込むが、ステージのスターやバンドのフロントマンではない。人見知りで口数は少ないが、慣れると気の良い友人になる。\n使うミックス名は好きなV系バンドへのオマージュ。代表作は「イエス」「月光花」「嘘」「CASSIS MEMORIAL」「DOLLS REQUIEM」「FILTH IN AMBER」。\nフローラル系フレーバーを重ね、香りの余韻を曲と曲の間のように聴かせる。制作中は目を閉じて拍を取り、煙が上がる間を待つ。",
     "background_secret": "作り込んだ見た目のクラウドも、人見知りの健太も本人。私生活を偽の顔と断定しない。煙のタトゥーは、初めて客として行ったライブの帰りに決めた図案で、スミとは無関係。第2章ではじめに敗れる。",
-    "favorite_flavor": "ローズ",
+    "favorite_flavor": "カシス",
     "specialty_flavor": "フローラル系全般（薔薇・ジャスミン・ラベンダーの重ね掛け）",
     "signature_mixes": [
       {
@@ -377,9 +377,10 @@
       "Face icon of the same 25-year-old ZERO cafe owner, matching the approved chr_rei_normal.png and face_rei.png. Same slightly androgynous face and layered black hair with irregular deep burgundy mesh/streaks across both sides, not a half-black half-red division. Retain the approved black embroidered coat collar and visible neck tattoo details only as shown; do not intensify makeup or add tattoo coverage or accessories. Quiet, approachable normal expression, same rendering as the approved portrait, transparent background, no stage lighting, text or logos"
     ],
     "intro_cutin": {
-      "title": "余韻に耳を澄ます店長",
-      "display_name": "｜†玖羅雨℃†《くらうど》",
-      "line": "……一曲だけ、聴く？",
+      "title": "爆煙の堕天使",
+      "display_name": "｜†黒羅雨℃†《くらうど》",
+      "sub_name": "（田中健太）",
+      "line": "少し煙っててもいいぐらい",
       "face": "normal",
       "color": "#b0102a",
       "name": "alias",
