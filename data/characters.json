@@ -638,6 +638,7 @@
   },
   {
     "id": "dr_kemuri",
+    "spriteAnchor": "body",
     "birthday": "05-08",
     "name": "チャコール博士 / 火浦 理一（ひうら りいち）",
     "role": "judge_and_hidden_boss",
