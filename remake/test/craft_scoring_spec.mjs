@@ -32,7 +32,7 @@ DB.ngMixes = [];
 DB.characters = Object.fromEntries(characters.map((c) => [c.id, c]));
 
 // 1. データ整合性: メーカー6社・表記統一・禁止語チェック
-assert.equal(flavors.length, 84); // 人物に結びつく11種・マウンテンミスト・サメちゃんのスプリングウォーター・新フレーバー7種（NF01）
+assert.equal(flavors.length, 85); // 人物に結びつく12種（カシス追加）・マウンテンミスト・サメちゃんのスプリングウォーター・新フレーバー7種（NF01）
 const expectedPrefixToMaker = {
   "アルファーヘブン": "af",
   "ドバジ": "dobaj",
