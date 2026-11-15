@@ -670,8 +670,8 @@
     },
     "rei": {
       "stat": "charm",
-      "call": "レヰさん",
-      "place": "零-ZERO-",
+      "call": "クラウドさん",
+      "place": "「貴方ノ為ノ此ノ煙。」",
       "bg": "bg_ch2_rei_entry.webp",
       "invite": {
         "messages": [

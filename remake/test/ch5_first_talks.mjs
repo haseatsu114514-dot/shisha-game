@@ -1,5 +1,5 @@
 // 第5章の最初の来店で一度だけ読む会話（N3・chapters/ch5-first-talks.js）の判定と台本。
-// アダム（EDEN）・クラウド（零-ZERO-）・神崎（神崎煙草店。第2章の後日談 ch2_kumicho_after_ch2 を世界大会の後に書き直したもの）。
+// アダム（EDEN）・クラウド（貴方ノ為ノ此ノ煙。）・神崎（神崎煙草店。第2章の後日談 ch2_kumicho_after_ch2 を世界大会の後に書き直したもの）。
 // 実際の来店（代金・好感度・既読の付け方）は remake/test/browser/ch5_home_talks.mjs が確かめる。
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";

@@ -191,7 +191,7 @@ for (const id of ids) {
   assert.deepEqual(old, oldBefore); assert.deepEqual(state, fresh(9), "LOAD target must receive no old action effects");
 }
 
-// #3468 A案: MELTY PUFFでの挨拶回の翌日以降、零の小会話を一度だけシールの後日に置き換える。代金・好感度・能力は小会話と同じ。
+// #3468 A案: MELTY PUFFでの挨拶回の翌日以降、クラウドの店の小会話を一度だけシールの後日に置き換える。代金・好感度・能力は小会話と同じ。
 {
   await setup(1); await visit("rei"); heartLevel = 0;
   state.day = 20; state.flags._rei_melty_greeting = 20;
@@ -204,7 +204,7 @@ for (const id of ids) {
   assert.deepEqual(state.affinity, [["rei", 8]]); assert.deepEqual(state.growth, [["charm", 4]]);
   await visit("rei"); assert(isRepeat("rei", played.at(-1)), "after scene is read once");
   await setup(1); await visit("rei"); heartLevel = 0; state.day = 21; state.flags._rei_melty_greeting = 20;
-  await visit("ageha"); assert.notEqual(played.at(-1), "remake_ch2_rei_purikura_after", "only at ZERO");
+  await visit("ageha"); assert.notEqual(played.at(-1), "remake_ch2_rei_purikura_after", "only at the rei shop");
 }
 
 // ♥0の再訪はrepeatで正規報酬を得る。♥1になった時だけ既存followupへ。

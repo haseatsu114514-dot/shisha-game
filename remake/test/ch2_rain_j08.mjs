@@ -75,7 +75,7 @@ for (const bg of ["img/backgrounds/bg_station_walk_night.webp", "img/backgrounds
   assert.deepEqual(rainScene(bg, "ch2-city"), { mode: "outdoor", windows: [] }, `屋外背景が outdoor になっていない: ${bg}`);
 }
 
-// 3. 第2章の窓なし室内（MELTY PUFF・神崎煙草店奥・零-ZERO-・閉店後あげは店・TRPGカフェ・神崎煙草店店先）は部屋の中に雨を降らせない
+// 3. 第2章の窓なし室内（MELTY PUFF・神崎煙草店奥・貴方ノ為ノ此ノ煙。・閉店後あげは店・TRPGカフェ・神崎煙草店店先）は部屋の中に雨を降らせない
 for (const bg of [
   ROOMS.ageha,
   ROOMS.kumicho,

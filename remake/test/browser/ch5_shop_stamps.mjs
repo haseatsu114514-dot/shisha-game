@@ -141,7 +141,7 @@ await suite("ch5-shop-stamps", async check => {
     }
     assert.equal(await panel.locator('li[data-stamped="1"]').count(), 10);
     assert.match(await panel.textContent(), /SHISHARK（任意）.*カフェ・オアシス（任意）/);
-    assert.match(await panel.textContent(), /地元・橙須.*KEMURIKUSA.*EDEN.*PEPPERMINT.*C\.STATION.*隣町・柚ヶ谷.*MELTY PUFF.*神崎煙草店.*零-ZERO-.*東京.*Smoke & Glory.*鉄の煙.*ドバイ.*路地裏のカフェ/);
+    assert.match(await panel.textContent(), /地元・橙須.*KEMURIKUSA.*EDEN.*PEPPERMINT.*C\.STATION.*隣町・柚ヶ谷.*MELTY PUFF.*神崎煙草店.*貴方ノ為ノ此ノ煙。.*東京.*Smoke & Glory.*鉄の煙.*ドバイ.*路地裏のカフェ/);
     await page.locator(dt("shop-stamps-close")).click();
     await mapReady(page, { day: 51, slot: 1 });
     const after = await get(page);
