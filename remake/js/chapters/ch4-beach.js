@@ -1,4 +1,4 @@
-// 第4章ドバイの水着回（SPC18・Issue #3657）。前夜祭の日の夕方、来てくれた人たちと宿の裏の砂浜へ行く（任意で一度）。
+// 第4章ドバイの水着回（SPC18・Issue #3657）。前夜祭の日の夕方、来てくれた人たちと宿の裏の砂浜へ行く（2026-11-15 オーナー指示で強制イベント・SPC25。必ず一度）。
 // 顔ぶれ・出せる時・確定だけを持つ（DOMを持たない）。再生とボタンは ch4.js の renderBeach。
 // - 顔ぶれは「その場に実際にいる人」だけ: 同行者（同じ便）、到着場面を読んだ別便の人（恋人版・友人版のどちらでも）、
 //   会ったことのあるヌール（ドバイに住む）。好感度・渡航予定・同行の選択だけでは足さない（location_contract）。
@@ -58,13 +58,15 @@ export function chapterFourBeachRecord(value) {
 
 /**
  * 砂浜へ行けるか。前夜の part の間、別便の到着を読み終えた後、前夜祭が始まる前、前夜の過ごし方を記録する前、
- * まだ行っていない時だけ。誰もいなければ出さない。大会の後には出さない（任意なので、行かずに進めばそのまま）。
+ * まだ行っていない時だけ。誰もいなければ出さない。大会の後・前夜祭が始まった後の保存には足さない（強制イベントだが、旧保存へ遡って差し込まない）。
  */
 export function chapterFourBeachDue(value) {
   const progress = chapterFourProgress(value);
   if (progress.part !== "eve" || value?.flags?._ch4_evening || chapterFourBeachRecord(value)
     || CH4_FESTIVAL_STARTED.some(id => progress.read[id] === true) || chapterFourArrivalsDue(value).length) return false;
-  return chapterFourBeachCast(value).length > 0;
+  // 水着回なので、ヒロイン（ドバイに住むヌールを含む）が一人もいない時は出さない（男の枠だけの砂浜にしない）。
+  const men = new Set([...CH4_BEACH_RIVALS, ...OVERSEAS_GUESTS]);
+  return chapterFourBeachCast(value).some(id => !men.has(id));
 }
 
 /**

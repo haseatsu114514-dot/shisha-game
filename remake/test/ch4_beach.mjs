@@ -73,6 +73,14 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
   assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "mashiro"]);
   assert.equal(chapterFourBeachPickCount(value), 2, "Fewer people than picks: play with everyone");
 }
+// ---- 男の枠だけ（ヒロインもヌールもいない旧保存）なら水着回は出さない（強制イベントなので、男だけの砂浜にしない）。
+{
+  const value = eveSave();
+  value.flags._overseas_companion = { decided: true, companion: null, supports: [], guests: ["adam"] };
+  assert(completeChapterFourScene(value, "ch4_adam_dubai"));
+  assert.deepEqual(chapterFourBeachCast(value), ["naru", "adam"]);
+  assert.equal(chapterFourBeachDue(value), false, "No swimsuit episode with only the men");
+}
 // ---- 顔ぶれ: 同行者は最初からいる。別便の恋人・♥5の友人は到着を読んだら。会ったことのあるヌールも来る。
 {
   const value = eveSave({ lovers: ["minto", "rio", "samechan"], companion: "rio",

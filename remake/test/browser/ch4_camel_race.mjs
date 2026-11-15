@@ -160,9 +160,9 @@ await suite("ch4-camel-race", async check => {
     // 盤が隠れている旧しくみ（?growth=0）では成長の記録を作らない。心得の盤（通常プレイの既定・#2166）では能力は直接伸びず、経験値の記録だけが残る。
     if (await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled())) assert.equal(typeof state.growth, "object");
     else assert.equal(state.growth, undefined, "no growth ledger is created while the board is hidden");
-    // 大会の進行は変わらない: 宿へ戻ると前夜へ。
+    // 大会の進行は変わらない: 宿へ戻ると前夜へ。会ったヒロイン（ヌール）がいれば、前夜のカードの前に砂浜（水着回・強制・SPC25）が出る。
     await page.locator(dt("ch4-go-inn")).click();
-    await page.locator(dt("ch4-eve")).waitFor({ timeout: 60000 });
+    await page.locator(`${dt("ch4-eve")}, ${dt("ch4-beach")}`).first().waitFor({ timeout: 60000 });
     assert.equal((await get(page)).flags._ch4.part, "eve");
   });
 });
