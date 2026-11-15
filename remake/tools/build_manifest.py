@@ -53,8 +53,8 @@ def load_characters():
 
 
 def measure(png: Path, anchor="feet"):
-    """本体の bbox と横アンカー。通常は足元、指定時は頭部の重心を使う。"""
-    if anchor not in ("feet", "head"):
+    """本体の bbox と横アンカー。通常は足元、指定時は頭部の重心、"body" は全身の重心を使う。"""
+    if anchor not in ("feet", "head", "body"):
         raise ValueError(f"Unknown spriteAnchor: {anchor}")
     im = Image.open(png).convert("RGBA")
     w, h = im.size
@@ -76,12 +76,14 @@ def measure(png: Path, anchor="feet"):
     ys, xs = np.where(mask)
     x0, x1, y0, y1 = int(xs.min()), int(xs.max()) + 1, int(ys.min()), int(ys.max()) + 1
     band = max(1, int((y1 - y0) * 0.2))
-    anchor_top, anchor_bottom = (y0, y0 + band) if anchor == "head" else (y1 - band, y1)
+    anchor_top, anchor_bottom = (y0, y1) if anchor == "body" else (y0, y0 + band) if anchor == "head" else (y1 - band, y1)
     _, fxs = np.where(mask[anchor_top:anchor_bottom])
     feet = float(fxs.mean()) if len(fxs) else (x0 + x1) / 2
     return {"top": y0 / h, "bottom": y1 / h, "ax": feet / w, "aspect": w / h}
 
 
+# 全身で横位置を合わせる人（spriteAnchor: "body"）: 体を傾けて立つ絵で、足元の中心に置くと頭と上半身が片側へ寄って見える人。
+# 全身の重心（不透明部分の横の平均）を全表情の中間で使う。チャコール博士（2026-11-15 オーナー「左に寄ってたので姿勢的にやや右側に」）。
 # 頭で横位置を合わせる人（spriteAnchor: "head"）のうち、表情ごとのポーズの差で頭の重心が左右に動く人。
 # 「通常」だけを基準にすると、ほかの表情の頭が画面の中央から1pxを超えて外れるので、
 # 全表情の頭の重心の最小と最大の中間に合わせる（どの表情も中央から同じ幅に収まる。絵は動かさない）。
@@ -117,7 +119,8 @@ def portraits(character_ids=None, base=None, style=None):
             bottom = max(r["bottom"] for r in metrics.values())
             ref = metrics.get("normal") or next(iter(metrics.values()))
             ax = ref["ax"]
-            if (style, d.name) in HEAD_ANCHOR_MIDRANGE and anchor_modes.get(d.name) == "head":
+            # 全身の重心で合わせる人（spriteAnchor: "body"）も、表情ごとのポーズ差を全表情の中間で吸収する
+            if ((style, d.name) in HEAD_ANCHOR_MIDRANGE and anchor_modes.get(d.name) == "head") or anchor_modes.get(d.name) == "body":
                 spread = [r["ax"] for r in metrics.values()]
                 ax = (min(spread) + max(spread)) / 2
             # 新絵は通常の人物高を保つ。高く掲げた小物で本人を縮めない。
@@ -131,8 +134,8 @@ def portraits(character_ids=None, base=None, style=None):
             })
             if style and frame_top - top > 0.002:
                 entry["topOverhang"] = round(frame_top - top, 4)
-        if anchor_modes.get(d.name) == "head":
-            entry["anchor"] = "head"
+        if anchor_modes.get(d.name) in ("head", "body"):
+            entry["anchor"] = anchor_modes[d.name]
         out[d.name] = entry
     return out
 

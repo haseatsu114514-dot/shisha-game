@@ -7,27 +7,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "出発の前、カウンターの奥からスミさんに呼び止められた。"
+          "text": "スミさんが、カウンターの奥から小さな包みを三つと、店名を書いたメモを出してきた。"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "そうだ。隣町の三軒に、荷物を届けてくれ"
-        },
-        {
-          "speaker": "",
-          "face": "normal",
-          "text": "スミさんが、小さな包みを三つと、店名を書いたメモを並べた。"
+          "text": "MELTY PUFF、神崎煙草店、「貴方ノ為ノ此ノ煙。」の三軒だ。まとめて持っていけ"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "MELTY PUFF、神崎煙草店、貴方ノ為ノ此ノ煙。まとめて持っていけ"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "あげはにはグミベア、神崎にはドラゴンフルーツ、クラウドにはカシスのフレーバーだ"
+          "text": "あげはにはグミベア、神崎にはドラゴンフルーツ、田中さんにはカシスのフレーバーだ"
         },
         {
           "speaker": "hajime",
@@ -42,12 +32,17 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "配達しながら、ご挨拶してくればいいんですね"
+          "text": "三軒とも、柚ヶ谷で続いてるお店なんですね"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "ああ。回る順番は任せる。会場の下見も忘れんなよ"
+          "text": "ああ。当日、どこかで顔を合わせるかもしれねえな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "回る順番は任せる。会場の下見も忘れんなよ"
         },
         {
           "speaker": "hajime",
@@ -61,7 +56,7 @@
         },
         {
           "speaker": "",
-          "face": "normal",
+          "face": "",
           "text": "包みを鞄へ入れる。知らない店の名前が、今日の行き先になった。"
         }
       ]
@@ -107,12 +102,97 @@
         {
           "speaker": "",
           "face": "",
+          "text": "暖簾をくぐった途端、足が止まった。濃い木の壁、黒革のソファ。白い大理石の床が光っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥には大きな机と神棚。壁の肖像写真も、金の屏風も、映画で見た事務所そのままだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……スミさん、住所、間違えてないよな？）"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "あんちゃん。身分証、見せな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、あの、俺は──"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "話は後でさ。まずは身分証だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大きな体が、一歩、また一歩と近づいてくる。色付き眼鏡の奥が、まったく読めない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（み、身分証……？ ここで、取られる……？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "気づけば、財布から身分証を出していた。差し出す指先が、少し震えている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんは生年月日を指で押さえて確かめ、両手で丁寧に返してくれた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……よし。手間ぁ取らせやしたな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（か、返ってきた……）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの……ここ、シーシャ屋さん、ですよね？"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "どっからどう見ても、そうでさ。さっきのは、年齢確認でね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "煙を出す店は、二十歳前の客を座らせられねえ。スミさんとこの若えのでも、決まりは決まりでさ"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "鞄から、神崎さん宛ての包みを取り出した。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "スミさんから、こちらを預かってきました"
+          "text": "あの、今日はお客じゃなくて……配達です。スミさんから、こちらを預かってきました"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "surprise",
+          "text": "……なんでえ、配達かい。先に言ってくんな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（言う暇、なかったんですけど……）"
         },
         {
           "speaker": "",
@@ -122,7 +202,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "おう、ドラゴンフルーツか。俺の好みを覚えてるところが、スミらしいや"
+          "text": "おう、ドラゴンフルーツか。俺の好みを覚えてるところが、スミさんらしいや"
         },
         {
           "speaker": "kumicho",
@@ -145,6 +225,31 @@
           "text": "鞄の中から、フレーバーの包みを取り出した。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "宛名には、スミさんの字で「田中様」とある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの……田中さん、ですか？"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……そう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（「貴方ノ為ノ此ノ煙。」の†黒羅雨℃†さんが、田中さん……）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "スミさんは、昔からそっちで呼ぶ"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "スミさんからの荷物です。カシスのフレーバーだそうです"
@@ -158,6 +263,11 @@
           "speaker": "",
           "face": "normal",
           "text": "クラウドは包みを受け取ると、宛名をそっと指でなぞった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……店の名前で書いてくれって、何度も頼んでる"
         },
         {
           "speaker": "rei",
@@ -976,7 +1086,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "こんにちは。貴方ノ為ノ此ノ煙。の、クラウドです"
+          "text": "こんにちは。「貴方ノ為ノ此ノ煙。」の、クラウドです"
         },
         {
           "speaker": "ageha",

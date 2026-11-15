@@ -147,7 +147,7 @@ await suite("ch5-home-talks", async check => {
     await mapReady(page, { day: 52, slot: 0 });
     state = await get(page);
     text = await logText(page);
-    assert.match(text, /世界大会の動画、店で流した/, "Rei's Chapter 5 talk");
+    assert.match(text, /世界大会の動画、店で流した/, "Cloud's Chapter 5 talk");
     assert.equal(state.flags._talk_seen_ch5_rei_shop, true);
     assert.equal(state.affinity.rei, before.affinity.rei + 5);
     assert.equal(state.flags._ch2_talks?.rei, (before.flags._ch2_talks?.rei || 0) + 1);

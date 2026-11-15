@@ -142,7 +142,7 @@ const edenFreeAt = daily.indexOf('"ch5_free_eden_adam"');
 assert(shopCallAt >= 0 && edenFreeAt >= 0, "ch5-daily.js: performChapterFiveShop の呼び出しと EDEN の任意場面が見つからない");
 assert(shopCallAt < edenFreeAt);
 
-console.log("PASS: Chapter 5 first talks (Adam, Rei, Kanzaki): gating, read once, carry and scripts");
+console.log("PASS: Chapter 5 first talks (Adam, Cloud, Kanzaki): gating, read once, carry and scripts");
 
 // 日程を決める前の必須場面も、この quick 入口で検査する。
 await import("./ch5_unrecorded.mjs");

@@ -251,7 +251,7 @@ async function visit(stop) {
 function renderStop(stop, failed = false) {
   session.scene = "stop";
   showScreen("ch2-stop", el("main.ch2-shell.ch2-stop", { dataset: { test: test("stop"), stop: stop.id } }, [el("div.ch2-stop-card.panel", [
-    el("p.ch2-kicker", { text: "第2章・DAY1 / 配達とご挨拶" }),
+    el("p.ch2-kicker", { text: "第2章・DAY1 / 配達" }),
     storeLogo(`ch2_${stop.id}`, { width: 240, height: 140 }),
     el("h1", { text: stop.sceneLabel || stop.name }),
     el("p", { text: "少し中を見せてもらうか、次の場所へ向かおう。" }),
