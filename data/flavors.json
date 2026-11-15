@@ -117,6 +117,35 @@
       "maker": "af"
     },
     {
+      "id": "cassis",
+      "name": "アルファーヘブン カシス",
+      "short_name": "AF カシス",
+      "category": "fruit",
+      "price": 1550,
+      "description": "黒すぐりの深い甘酸っぱさ。ベリーの濃さがミックスの底を支える。",
+      "heat_tolerance": 0.95,
+      "smoke_weight": 1.0,
+      "steam_bias": 0.0,
+      "chapter_min": 1,
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 5,
+        "sweet_natural": 6,
+        "sweet_confection": 3,
+        "cooling": 1,
+        "assertiveness": 5,
+        "acquired_taste": 3,
+        "smoke_body": 5,
+        "sourness": 6,
+        "spiciness": 1,
+        "floral": 2,
+        "nicotine": 3
+      },
+      "ng_flavors": [],
+      "maker": "af"
+    },
+    {
       "id": "pistachio",
       "name": "アルファーヘブン ピスタチオ",
       "short_name": "AF ピスタチオ",

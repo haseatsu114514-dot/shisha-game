@@ -603,6 +603,11 @@
             "text": "入口で、そのポスターの角を押さえている人がいた。"
           },
           {
+            "speaker": "",
+            "face": "",
+            "text": "扉の隙間から、甘い煙が細く流れてくる。"
+          },
+          {
             "speaker": "hajime",
             "face": "normal",
             "text": "こんにちは。こちら、シーシャのお店ですよね？"
@@ -620,7 +625,17 @@
           {
             "speaker": "rei",
             "face": "normal",
-            "text": "そう、店長の†玖羅雨℃†。クラウドでいい。……今、店で流す曲を選んでた"
+            "text": "……煙、平気か"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "平気です。毎日、煙の中で働いてるので"
+          },
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "そう。……店長の†黒羅雨℃†。クラウドでいい"
           },
           {
             "type": "set_flag",
@@ -629,7 +644,7 @@
           {
             "speaker": "rei",
             "face": "normal",
-            "text": "開店の準備中なんだ"
+            "text": "……今、店で流す曲を選んでた。開店の準備中なんだ"
           },
           {
             "speaker": "hajime",

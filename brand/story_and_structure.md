@@ -46,7 +46,7 @@ tonariで昔の約束を続ける二人と、ケムリクサで勝者だけで�
 | 章 | 章題 | 大会／相手 | 課題 |
 |---|---|---|---|
 | 1 | 煙がつなぐ街 | SMOKE CROWN CUP／なる・アダム・みんと | レモン2g以上 |
-| 2 | 才能の壁（Hollow Crown） | HAZE: OPEN CLOUD／あげは・神崎竜二・†玖羅雨℃† | ストロベリー |
+| 2 | 才能の壁（Hollow Crown） | HAZE: OPEN CLOUD／あげは・神崎竜二・†黒羅雨℃† | ストロベリー |
 | 3 | 嘘つきたちの夜（SMOKE AND MIRRORS） | HAZE: NATIONAL TOKYO／綾取陣・スティーブ・ヴォルク | チョコ4g以上（ドバジ チョコレート支給）、ましろと作戦会議 |
 | 4 | 継承の煙（Legacy Smoke） | HAZE: GRAND SMOKE／なる・王煙楼・シェイク | 自由。はじめは和の一台、ダブルアップルは混ぜない（はじめの作戦。配合では検証しない） |
 | 5 | 機械仕掛けの神（Deus Ex Machina） | SHISHA-9000との二本勝負 | 同条件のダブルアップル単体12g |

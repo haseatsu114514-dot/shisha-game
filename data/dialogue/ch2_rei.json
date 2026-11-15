@@ -548,12 +548,42 @@
         {
           "speaker": "",
           "face": "",
-          "text": "店には他に客が2〜3人。クラウドの言葉は最小限なのに、誰もが満足そうな顔をしている。"
+          "text": "店には、ほかに客が三人。クラウドの言葉は最小限なのに、誰もが満足そうな顔をしている。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
           "text": "（ほとんど喋らないのに居心地がいい。シーシャが全部語ってるみたいだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席の客が深く吸って、ゆっくり吐いた。白い煙が天井まで広がり、店の灯りが薄く霞む。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "出た、爆煙の堕天使の本気。今日もすごいな"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……届いたか"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "一番奥まで、ばっちり届いてる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（爆煙の堕天使……。大げさな呼び名だと思ったけど、あの煙を見たら笑えない）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……少し煙ってるくらいが、ちょうどいい"
         },
         {
           "speaker": "rei",

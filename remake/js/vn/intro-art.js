@@ -81,7 +81,11 @@ export function illustratedIntro(id, variant, intro, main, portrait, art, backgr
     el("div.ci-ribbon", [
       el("div.ci-art-meta", [
         el("div.ci-title", { text: intro.title || "" }),
-        el("div.ci-name-line", [nameNode("span.ci-name", main)]),
+        el(`div.ci-name-line${intro.sub_name ? ".has-sub" : ""}`, [
+          ...(intro.sub_name
+            ? [el("div.ci-name-stack", [nameNode("span.ci-name", main), nameNode("span.ci-name-sub", intro.sub_name)])]
+            : [nameNode("span.ci-name", main)]),
+        ]),
       ]),
     ]),
     el("img.ci-portrait", {
@@ -117,8 +121,11 @@ export function layoutIntro(host, id, variant, intro) {
   // グラフィック絵柄は人物が大きいので、名前の欄を右へ寄せたぶん幅を詰める（intro.css と同じ値）
   const shift = host.dataset.art === "graphic" ? GRAPHIC_META_SHIFT : 0;
   const name = host.querySelector(".ci-name");
+  const sub = host.querySelector(".ci-name-sub");
   // ふりがなの分だけ上に空けるので、帯（高さ148px）に収まるよう最大の字を小さくする
-  fitWidth(name, .86, name.classList.contains("has-ruby") ? 116 : 150, 40, 596 - shift);
+  // 2行目の小さい名前（sub_name）がある時は主の名前を少し抑え、2行分を帯の中へ収める
+  fitWidth(name, .86, sub ? 124 : (name.classList.contains("has-ruby") ? 116 : 150), 40, 596 - shift);
+  if (sub) fitWidth(sub, 1, 26, 16, 596 - shift);
   const title = host.querySelector(".ci-title");
   title.style.fontSize = "28px";
   if (title.scrollWidth > 580 - shift) fitWidth(title, 1, 27, 20, 580 - shift);

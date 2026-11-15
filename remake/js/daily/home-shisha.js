@@ -105,6 +105,7 @@ const FLAVOR_IMPRESSIONS = {
   red_gummy_bear: "ベリーの甘酸っぱさがあるんだな",
   cola: "スパイスと柑橘がコーラらしく香るんだな",
   raspberry: "甘さだけじゃなく、酸味もはっきりしてる",
+  cassis: "黒い実の酸味と渋みがぎゅっと詰まってる",
   pistachio: "青い香ばしさに、穏やかな甘さがある",
   gum_cinnamon: "ガムの甘さにシナモンの刺激が重なるんだ",
   bombshell: "ベリーと花の香りが重なるんだな",
