@@ -1,12 +1,14 @@
-// 海外（第4章ドバイ）同行の正本。同行は恋人1名または「同行なし」。他の恋人・ましろは別便の応援として別に持つ。
+// 海外（第4章ドバイ）同行の正本。同行は恋人1名または「同行なし」。他の恋人・♥5の友人・ましろ・つむぎは別便の応援として別に持つ。
 // 保存は flags._overseas_companion（SCHEMA は変えない。キーが無い旧セーブは「未選択＝同行なし」として読む）。
 // 好感度・恋人状態・複数交際は一切変更しない。辞退・連絡不足・遠距離による好感度低下や破局は起こさない。
 import { tokyoVisitState, syncTokyoVisits } from "./tokyo-visits.js";
 
 // data/story_routes.json の heroine_ids と同じ順（テストで一致を確認）。ドバイに住むヌール（romance.noor.resident）は渡航しないので含めない。
 export const OVERSEAS_HEROINES = Object.freeze(["tsumugi", "minto", "rio", "ageha", "mashiro", "samechan", "hiyori"]);
-// 恋愛状態に関係なくドバイへ来る唯一のキャラ（第3章クリアが条件。gameplay_agent_reference.md の登場条件表）。
-const ALWAYS_SUPPORT = "mashiro";
+// 恋愛状態に関係なくドバイへ来るキャラ（gameplay_agent_reference.md の登場条件表）。
+// ましろは第3章クリアが条件（mukaiの視察）。つむぎは tonari の常連として、はじめの大会を見に来る（2026-11-15 オーナー決定・SPC17）。
+const ALWAYS_SUPPORT = Object.freeze({ mashiro: value => value?.flags?._ch3_cleared === true, tsumugi: () => true });
+// ほかのヒロインは、恋人か、友人ルートの締めくくり（♥5）を済ませた友人なら応援に来る（2026-11-15 オーナー決定・SPC17）。
 const KEY = "_overseas_companion";
 
 /** 保存された選択。無い・壊れている場合は未選択（decided:false、同行なし）。 */
@@ -26,11 +28,26 @@ export function overseasCompanionCandidates(value) {
   return OVERSEAS_HEROINES.filter(id => lovers.has(id));
 }
 
-/** 別便で応援に来る人。恋人（同行者を除く）とましろ（第3章クリア済みなら恋人でなくても）。同行者とは重ならない。 */
+/**
+ * 友人ルートの締めくくり（♥5）を済ませた友人か（daily/bonds.js の settledFriend と同じ条件）。
+ * 締めくくりを読み、恋人ではなく、友情の着地か告白で「友達のまま」を選んだ人。告白を待つ恋愛ルートの相手は含めない。
+ * 好感度の数値や回答からは推測しない（読了の記録だけ）。
+ */
+export function overseasMaxFriend(value, id) {
+  const finale = value?.finales?.[id];
+  if (!finale || (value?.lovers || []).includes(id)) return false;
+  return finale.route === "friend" || value?.flags?.[`_friend_${id}`] === true;
+}
+
+/**
+ * 別便で応援に来る人。同行者とは重ならない。
+ * 恋人（同行者を除く）・友人ルートの締めくくりを済ませた友人・いつも来る人（第3章クリア済みのましろ、つむぎ）。
+ * 恋人でない人は友人版の到着場面で来る（ch4-progress.js の CH4_FRIEND_ARRIVAL_SCENES）。
+ */
 export function overseasSupportVisitors(value, companion = null) {
   const lovers = new Set(value?.lovers || []);
   return OVERSEAS_HEROINES.filter(id => id !== companion
-    && (lovers.has(id) || (id === ALWAYS_SUPPORT && value?.flags?._ch3_cleared === true)));
+    && (lovers.has(id) || overseasMaxFriend(value, id) || !!ALWAYS_SUPPORT[id]?.(value)));
 }
 
 /** 選択を出してよいか。第4章の導入（最初の場面の前）で、まだ決めていないときだけ。 */

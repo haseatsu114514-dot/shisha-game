@@ -1,5 +1,5 @@
 {
-  "comment": "来訪予定が確定し、実際に到着した恋人用。同行者の決定だけで再生しない。前夜祭の日の昼、前夜祭より前に読む。前夜の過ごし方（誘う・ひとりで休む・重なった予定の保留）のどれにもつながるよう、夜の約束はしない。",
+  "comment": "来訪予定が確定し、実際に到着した恋人用。同行者の決定だけで再生しない。前夜祭の日の昼、前夜祭より前に読む。前夜の過ごし方（誘う・ひとりで休む・重なった予定の保留）のどれにもつながるよう、夜の約束はしない。 友人版（*_dubai_friend）は SPC17 で追加。恋人でない人の到着で、恋愛を示す台詞は無い。",
   "dialogues": [
     {
       "dialogue_id": "ch4_minto_dubai_girlfriend",
@@ -119,6 +119,87 @@
       "metadata": {
         "private_scene": true
       }
+    },
+    {
+      "dialogue_id": "ch4_minto_dubai_friend",
+      "comment": "SPC17（2026-11-15 オーナー決定）。恋人でない人の到着（友人版）。友人ルートの締めくくりを済ませた友人として、店を臨時休業して応援に来る。前夜祭の日の昼、前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue）。友人なので恋愛を示す台詞・夜の約束はしない。友人は前夜の過ごし方・修羅場の人数に数えない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーへ下りると、大きなサングラスの女の人が手を振っていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくんっ♡ 来ちゃった♪ みんと、海外遠征でーす！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "みんと！？ お店は？"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "臨時休業♡ 『みんと、世界進出のためお休みします』って貼ってきた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "世界進出……"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "あ、入国の時のパスポート、見えてないよね？ 年齢のとこ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "見てない、見てない"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "よろしい♡ みんとは、ドバイでも二十歳です"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……お店の外で誰かを応援するの、ずっとしてなかったから"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "たまには、お客さんの側に座ってみたいの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "来てくれて、ありがとう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今夜、大会の前夜祭があるんだ。少し顔を出してくる"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "いってらっしゃい♡ みんとは、時差ボケを可愛く直しとく"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "明日は最前列でうちわ振るから。名前、でっかく書いてきたよ♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スーツケースのすき間から、手作りのうちわの柄がのぞいていた。"
+        }
+      ]
     }
   ]
 }

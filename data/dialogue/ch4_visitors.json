@@ -1,5 +1,5 @@
 {
-  "comment": "休暇・店の休みと渡航予定を確定し、到着した実際の恋人のみを扱う。前夜祭の日に別便の応援だけ再生。",
+  "comment": "休暇・店の休みと渡航予定を確定し、到着した実際の恋人のみを扱う。前夜祭の日に別便の応援だけ再生。 友人版（*_dubai_friend）は SPC17 で追加。恋人でない人の到着で、恋愛を示す台詞は無い。",
   "dialogues": [
     {
       "dialogue_id": "ch4_samechan_dubai_girlfriend",
@@ -86,6 +86,129 @@
           "face": "smile",
           "text": "ん……約束。目覚ましは、三回かけておく",
           "inner": "三回目で起きる。会うために来たんだから"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_samechan_dubai_friend",
+      "comment": "SPC17（2026-11-15 オーナー決定）。恋人でない人の到着（友人版）。友人ルートの締めくくりを済ませた友人として、店の休みと留守の段取りを済ませて来る。大会には興味が無いが、常連の煙は見たい。前夜祭の日の昼、前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue）。友人なので恋愛を示す台詞・夜の約束はしない。友人は前夜の過ごし方・修羅場の人数に数えない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーへ下りると、サメちゃんが大きな鞄の横で、地図を広げていた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "おお、お主。休みの札も、留守の段取りも済ませてきたのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "サメちゃん！？ 大会には、興味ないって……"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "大会はどうでもよい……じゃが、常連の煙は見ておきたいのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、お主が来ぬ間に、店の席を三度も拭き直しておった",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "そ、それは掃除じゃ！ 店主の務めじゃ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "来てくれて、うれしいです"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "うむ。まず荷物を置こう。この国の店の椅子も、座って確かめたいのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "明日は客席で、一番座り心地のよい席を見つけて、そこで見る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鞄の取っ手で、几帳面な字の荷札が揺れていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_hiyori_dubai_friend",
+      "comment": "SPC17（2026-11-15 オーナー決定）。恋人でない人の到着（友人版）。友人ルートの締めくくりを済ませた友人として、有給を取って応援に来る。元バイトの先輩として、後輩の晴れ舞台を見る。前夜祭の日の昼、前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue）。友人なので恋愛を示す台詞・夜の約束はしない。友人は前夜の過ごし方・修羅場の人数に数えない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーへ下りると、ひよりさんがスーツケースに腰かけて、遠くを見ていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……来ちゃった。砂の国まで、儚く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ひよりさん！？ 会社は……"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "有給。ためてた分、ここで消えるために使うの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "消えないでください"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "ふふ……ほんとはね、元バイトの後輩の晴れ舞台だから。見ないわけ、ないでしょ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "スミさん仕込みの手が、世界でどう動くか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "先輩として、ちゃんと見る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……ありがとうございます"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "明日、もし私が客席で泣いてたら、それは砂のせいだから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今夜、大会の前夜祭があるんです。少し顔を出してきます"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "いってらっしゃい。私は、時差と一緒に少し消えてる……つまり、寝る"
         }
       ]
     }
