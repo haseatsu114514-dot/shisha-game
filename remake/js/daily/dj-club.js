@@ -1,6 +1,6 @@
 import { masteryLine } from "../core/play-mastery.js";
 // 東京の路地の地下のクラブ「SEAM」（第3章の夜の自由時間・DJS10/DJS12。第5章の東京に泊まっている夜も同じ・#2033）。店主は針間ヨル（characters.json の yoru）。
-// 初めて入る夜だけ出会いの場面（名乗るまで → 登場カットイン → ch3_club_first_after）、初めてAランク以上を出した夜だけヨルとの会話（ch3_club_a_talk）を流す。
+// 初めて入る夜だけ出会いの場面（名乗るまで → 登場カットイン → ch3_club_first_after）、初めてAランク以上を出した夜だけヨルとの会話（ch3_club_a_talk）、通算3セット目の常連のリクエスト（ch3_club_request）、全セットA以上の夜の閉店前の交代（ch3_club_last_set）を一度ずつ流す（dj.js の djTalkAfterSet・SPC26）。
 // ミニゲームなので時間・お金・体力・好感度は変えない（#2113）。記録（state.dj）と既読フラグだけを保存する。
 // お金が動くのは、メニューでモニターヘッドホン（VOL07）を買うときだけ。
 // 入口は chapters/ch3.js の freeTimeChoices（djNightChoices）と openTokyoMap（action.dj → visitDjClub）、
@@ -19,13 +19,13 @@ import { venueHost } from "../core/venue-host.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { play } from "../vn/engine.js";
 import { playIntro } from "../vn/intro.js";
-import { CLUB_MET_FLAG, DJ_SETS, djRecords, djSetOpen, recordDjResult, runDjSet } from "../minigames/dj.js";
+import { CLUB_MET_FLAG, CLUB_A_TALK_FLAG, DJ_SETS, djRecords, djSetOpen, djTalkAfterSet, recordDjResult, runDjSet } from "../minigames/dj.js";
 import { gearOffer, ownsGear } from "../core/hobby-gear.js";
 import { arrivalGreeted, markArrival, playArrival } from "./venue-arrivals.js";
 
 export { DJ_NIGHT, DJ_NIGHT_FIRST, djNightChoices, clubKnown } from "../minigames/dj.js";
-export const CLUB_A_TALK_FLAG = "_club_yoru_a_talk";
-const DIALOGUE_IDS = ["ch3_club_first", "ch5_club_first", "ch3_club_first_after", "ch3_club_a_talk", "venue_yoru_greet", "venue_yoru_return",
+export { CLUB_A_TALK_FLAG };
+const DIALOGUE_IDS = ["ch3_club_first", "ch5_club_first", "ch3_club_first_after", "ch3_club_a_talk", "ch3_club_request", "ch3_club_last_set", "venue_yoru_greet", "venue_yoru_return",
   "venue_yoru_set_S", "venue_yoru_set_A", "venue_yoru_set_B", "venue_yoru_set_C", "ch3_club_floor_edge", "ch3_club_low_corner"];
 /** 初めて入る夜の、ヨルが名乗るまでの場面。第5章で初めて会うなら第5章の場面（2026-11-07 オーナー）。 */
 export const clubFirstScene = value => value?.chapter === 5 ? "ch5_club_first" : "ch3_club_first";
@@ -128,10 +128,12 @@ export async function visitDjClub({ isCurrent = () => true, signal = null } = {}
       if (bgmBefore) playBgm(bgmBefore);
       const last = results.at(-1);
       if (last) toast(`針間ヨル「${firstLine(dialogues, `venue_yoru_set_${last.rank}`)}」`);
-      if (results.some(item => item.rank === "A" || item.rank === "S") && owner.flags[CLUB_A_TALK_FLAG] !== true) {
+      // セットの後のヨルとの会話（初めてのA・常連のリクエスト・閉店前の交代。一度ずつ、1回に一つまで・SPC26）
+      const talk = djTalkAfterSet(owner, results);
+      if (talk) {
         await setBg(INSIDE(), { fast: true });
-        if (!current() || !await read("ch3_club_a_talk")) break;
-        done(CLUB_A_TALK_FLAG);
+        if (!current() || !await read(talk.scene)) break;
+        done(talk.flag);
       }
     }
     return false;

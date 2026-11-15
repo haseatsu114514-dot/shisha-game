@@ -151,6 +151,16 @@ test("records keep the best by score, count runs, and reward the first finish on
   const naruWon = recordDesertResult(value, { ...result(9300, "A"), race: { won: true, gap: 0.6, who: "naru" } }, { awardExp });
   assert.deepEqual({ firstNaruWin: naruWon.firstNaruWin, firstWin: naruWon.firstWin }, { firstNaruWin: true, firstWin: false });
   assert.deepEqual([desertRecords(value).wins, desertRecords(value).naruWins], [2, 1], "a win over Naru is not a win over Noor");
+  assert.equal(naruWon.thirdWin, false, "a win over Naru never counts toward the third win over Noor");
+  // 一区切り（ミニゲームのドラマ・SPC26）: ヌールに3回目に勝った時だけ thirdWin（夕日の写真の場面）。4回目からは出ない
+  const lostAgain = recordDesertResult(value, { ...result(9000, "A"), race: { won: false, gap: 0.2 } }, { awardExp });
+  assert.equal(lostAgain.thirdWin, false);
+  const third = recordDesertResult(value, { ...result(9000, "A"), race: { won: true, gap: 0.5 } }, { awardExp });
+  assert.deepEqual({ thirdWin: third.thirdWin, firstWin: third.firstWin }, { thirdWin: true, firstWin: false });
+  const fourth = recordDesertResult(value, { ...result(9000, "A"), race: { won: true, gap: 0.5 } }, { awardExp });
+  assert.equal(fourth.thirdWin, false, "once");
+  assert.equal(desertRecords(value).wins, 4);
+  assert(DESERT_DIALOGUE_IDS.includes(DESERT_SCENES.raceThirdWin), "the third-win scene is loaded with the desert file");
   // 遊びのご褒美（心得の盤）の判定と、growth-board-data の登録
   assert.equal(desertRankAtLeast(value, "A"), true); assert.equal(desertRankAtLeast(value, "S"), false);
   assert.equal(desertRankAtLeast(fresh(), "C"), false);

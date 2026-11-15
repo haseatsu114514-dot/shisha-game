@@ -12,6 +12,12 @@ import {
   naruRiftActive,
   isFortuneTargetAvailable,
   fortuneTargets,
+  FORTUNE_READINGS,
+  FORTUNE_STORY,
+  FORTUNE_STORY_FLAG,
+  FORTUNE_STORY_AT,
+  fortuneReadings,
+  fortuneStoryDue,
 } from '../js/core/fortune-effects.js';
 import { openingStatus, spotTimeNote } from '../js/daily/spot-hours.js';
 import { paginate } from '../js/vn/text.js';
@@ -384,6 +390,21 @@ w=Image.open(root/'remake/img/sprites/characters/uranaishi/chr_uranaishi_normal.
 m=json.loads((root/'remake/data/manifest.json').read_text());assert m['portraits']['uranaishi']['faces']==['normal','sad','serious','smile','surprise']
 `, new URL('../../', import.meta.url).pathname], { encoding: 'utf8' });
 assert.equal(art.status, 0, art.stderr);
+// ミニゲームのドラマ（SPC26）: 3回目の後に一度だけ、オババの一区切りの場面。回数は壊れた値を0として読む。
+{
+  const v = { flags: {} };
+  assert.equal(fortuneReadings(v), 0);
+  for (const bad of [-1, 1.5, '3', null]) { v.flags[FORTUNE_READINGS] = bad; assert.equal(fortuneReadings(v), 0, String(bad)); }
+  assert.equal(FORTUNE_STORY_AT, 3);
+  v.flags[FORTUNE_READINGS] = 2; assert.equal(fortuneStoryDue(v), false, 'not before the third reading');
+  v.flags[FORTUNE_READINGS] = 3; assert.equal(fortuneStoryDue(v), true);
+  v.flags[FORTUNE_STORY_FLAG] = true; assert.equal(fortuneStoryDue(v), false, 'once');
+  v.flags[FORTUNE_READINGS] = 7; assert.equal(fortuneStoryDue(v), false);
+  const scene = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/remake_ch1.json', import.meta.url), 'utf8')).dialogues.find(d => d.dialogue_id === FORTUNE_STORY);
+  assert(scene?.lines?.some(line => line.speaker === 'uranaishi'));
+  assert(!scene.lines.some(line => line.type === 'apply' || /上がった|下がった|好感度/.test(line.text || '')), 'no reward');
+  assert(!scene.lines.some(line => /素顔|正体/.test(line.text || '')), 'her face stays hidden');
+}
 console.log('PASS fortune: 95 final readings across 19 characters, selection review, 2-cycle nonrepeat, legacy mask migration, Naru rift exclusion, save/RNG, inclusive three days, independent bonus, guarded choice hints, daylight hours and authored annotations');
 
 // 第1章は噂を読むまで出ない（#780 の噂の門は第1章だけ残す）。出方は章で1〜2回・予定の無い昼か夜（2026-11-02 台帳 URA）。

@@ -40,6 +40,8 @@ async function seed(page) {
     // 既存の出会いは訪問済み。DAY9の再実行でFESTA等の別の期限救済を混ぜない。
     Object.assign(value.flags._ch4.read, { ch4_festa: true, ch4_dubai_souq: true,
       ch4_stranger_first: true, ch4_stranger_second: true });
+    // ドバイの本筋の夜（説明会など・SPC27）も読了済み。手伝いの夜だけを確かめる。
+    for (const entry of progress.CH4_STORY_NIGHTS) value.flags._ch4.read[entry.id] = true;
     value.flags._ch4.firstDay = 1;
     value.day = value.flags._ch4.startDay + 2;
     value.flags._ch4.day = 3;

@@ -21,7 +21,21 @@ export const CAMEL_SCENES = Object.freeze({
   meet: "ch4_camel_meet", invite: "ch4_camel_invite", watch: "ch4_camel_watch",
   win: "ch4_camel_result_win", place: "ch4_camel_result_place", last: "ch4_camel_result_last",
   replay: "ch4_camel_replay", replayBest: "ch4_camel_replay_best", replayUsual: "ch4_camel_replay_usual",
+  name: "ch4_camel_name", master: "ch4_camel_master",
 });
+// レースの後の会話（ミニゲームのドラマ・2026-11-15 オーナー「始めるきっかけや途中や一区切り」・SPC26）。
+// きっかけ＝ファーリスとの出会い〜本番の見学、途中＝通算3回目でハビーバの名前の由来、一区切り＝上級を初めて勝ち切った日に房飾り。
+// どれも一度だけで、その回の結果の会話（replayBest・replayUsual）の代わりに読む。初めての完走の日は結果の会話を優先する。
+export const CAMEL_NAME_FLAG = "_camel_name_done";
+export const CAMEL_MASTER_FLAG = "_camel_master_done";
+export const CAMEL_NAME_PLAYS = 3;
+/** 今のレースの後に読む会話 { scene, flag }。無ければ null（状態は変えない）。 */
+export function camelTalkAfterRace(value) {
+  const camel = camelRaceRecord(value), flags = value?.flags || {};
+  if (camel.cups.expert.mastered && flags[CAMEL_MASTER_FLAG] !== true) return { scene: CAMEL_SCENES.master, flag: CAMEL_MASTER_FLAG };
+  if (camel.plays >= CAMEL_NAME_PLAYS && flags[CAMEL_NAME_FLAG] !== true) return { scene: CAMEL_SCENES.name, flag: CAMEL_NAME_FLAG };
+  return null;
+}
 export const CH4_CAMEL_SCENE_FILES = Object.freeze({ ch4_camel_race: Object.freeze(Object.values(CAMEL_SCENES)) });
 // 砂漠のレース場の朝（Codex CR-BG01 の A 案・2026-11-02 採用）。見学・結果・再挑戦の会話の背景。
 export const CAMEL_TRACK_BG = "bg_dubai_camel_track_morning";

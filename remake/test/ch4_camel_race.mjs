@@ -6,6 +6,7 @@ import { advanceToChapterFour, completeChapterFourScene, endChapterFourDay, CH4_
 import { chapterFourMapModel } from "../js/chapters/ch4-map-model.js";
 import { CAMEL_FLAG, CAMEL_SCENES, CH4_CAMEL_SCENE_FILES, CAMEL_STAGES, camelRaceRecord, camelRaceDestination, camelRaceOpen,
   recordCamelRaceResult, consumeCamelRaceDaytime, advanceCamelRaceStage, resultSceneFor, camelSceneBg, CAMEL_TRACK_BG, CAMEL_SHOP_BG,
+  camelTalkAfterRace, CAMEL_NAME_FLAG, CAMEL_MASTER_FLAG, CAMEL_NAME_PLAYS,
   CAMEL_DAILY_SPOT_ID, camelDailySpot, availableCamelCups, CH5_CAMEL_MEET, chapterFiveCamelMeetDue, advanceChapterFiveCamelMeet } from "../js/chapters/ch4-camel-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
 import { newGrowth, claimPlayRewards } from "../js/core/growth.js";
@@ -374,6 +375,33 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   }
   const chapterFive = readFileSync(new URL("../js/chapters/ch5-dubai.js", import.meta.url), "utf8");
   assert.match(chapterFive, /replayIntro: !owner\.flags\[CAMEL_AGAIN\.flag\]/, "Chapter 5 requests only its unread reunion");
+}
+
+// レースの後の会話（ミニゲームのドラマ・SPC26）: 通算3回目でハビーバの名前、上級を初めて勝ち切った日に房飾り。一度ずつ、上級が先。
+{
+  const value = newState();
+  value.flags[CAMEL_FLAG] = { stage: CAMEL_STAGES.unlocked, plays: 2 };
+  assert.equal(CAMEL_NAME_PLAYS, 3);
+  assert.equal(camelTalkAfterRace(value), null, "two plays: nothing yet");
+  value.flags[CAMEL_FLAG].plays = 3;
+  assert.deepEqual(camelTalkAfterRace(value), { scene: CAMEL_SCENES.name, flag: CAMEL_NAME_FLAG });
+  value.flags[CAMEL_NAME_FLAG] = true;
+  assert.equal(camelTalkAfterRace(value), null);
+  value.flags._camel_cups = { rookie: { qualified: true }, standard: { qualified: true, mastered: true }, expert: { qualified: true, mastered: true } };
+  assert.deepEqual(camelTalkAfterRace(value), { scene: CAMEL_SCENES.master, flag: CAMEL_MASTER_FLAG });
+  value.flags[CAMEL_MASTER_FLAG] = true;
+  assert.equal(camelTalkAfterRace(value), null, "once each");
+  const both = newState();
+  both.flags[CAMEL_FLAG] = { stage: CAMEL_STAGES.unlocked, plays: 5 };
+  both.flags._camel_cups = { expert: { mastered: true } };
+  assert.equal(camelTalkAfterRace(both).scene, CAMEL_SCENES.master, "the milestone comes before the name story");
+  for (const flag of [CAMEL_NAME_FLAG, CAMEL_MASTER_FLAG]) assert.equal(classifyFlag(flag), "progression", flag);
+  const rows = JSON.parse(readFileSync(new URL("../../data/dialogue/ch4_camel_race.json", import.meta.url), "utf8")).dialogues;
+  for (const id of [CAMEL_SCENES.name, CAMEL_SCENES.master]) {
+    const row = rows.find(item => item.dialogue_id === id);
+    assert(row?.lines?.length && row.lines.every(line => ["", "hajime", "faris", "khalil"].includes(line.speaker)), id);
+    assert.equal(camelSceneBg(id), CAMEL_TRACK_BG, `${id} is at the track`);
+  }
 }
 
 console.log("ch4_camel_race: ok");

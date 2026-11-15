@@ -593,6 +593,123 @@
           "text": "はい。次は、ちゃんと息を合わせます"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch4_camel_name",
+      "comment": "途中: 通算3回目の練習レースの後に一度だけ（ch4-camel-progress.js の camelTalkAfterRace）。ハビーバの名前の由来。ミニゲームのドラマ（SPC26・2026-11-15 オーナー「始めるきっかけや途中や一区切り」）。時間・お金・体力・好感度は変えない。大会の予告・結果に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レースの後、ハリールさんがハビーバの首をなでながら、水桶を寄せた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ハビーバって、どういう意味なんですか"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "「大事な人」。女の子にも、恋人にも使う"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "生まれた夜、母親が冷えてな。一晩中、この腕で抱いて温めた"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "朝、最初に鳴いた時、こいつは私の声の方を向いていた"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "だから大事な子だ。速いからではない"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "でも遅いと、叔父さん怒るよね"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "……怒らない。悲しい顔をするだけだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（それは、怒られるよりつらい）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハビーバが、俺の肩に鼻先を押しつけた。砂と、干し草の匂いがした。"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "ほら。ハジメも、大事な人に入った"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_master",
+      "comment": "一区切り: 上級のレースを初めて勝ち切った後に一度だけ（camelTalkAfterRace）。勝ったラクダの房飾りを一本、はじめの鞄に結ぶ（話の中だけで、持ち物は増やさない）。ミニゲームのドラマ（SPC26・2026-11-15 オーナー「始めるきっかけや途中や一区切り」）。時間・お金・体力・好感度は変えない。大会の予告・結果に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "上級のレースを抜けると、ハリールさんが車を降りて、黙ってコースに立った。"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "……上級で勝ち切った客は、ここ十年で三人目だ"
+        },
+        {
+          "speaker": "faris",
+          "face": "surprise",
+          "text": "叔父さんが、数えてた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハリールさんは鞍から赤い房飾りを一本ほどいて、俺の鞄の持ち手に結んだ。"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "勝ったラクダの房だ。勝った者が、一本持って帰る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺がもらっていいんですか。走ったのはハビーバです"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "声をかけたのはお前だ。……ハビーバも、そう言っている"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハビーバが、低く一度鳴いた。"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "叔父さんの通訳、たぶん適当だよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（鞄で揺れる赤い房。炭の匂いの中に、砂の匂いが一つ混ざった）"
+        }
+      ]
     }
   ]
 }

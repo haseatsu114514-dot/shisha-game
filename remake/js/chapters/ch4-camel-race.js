@@ -7,7 +7,7 @@ import { growthEnabled } from "../core/growth.js";
 import { runCamelRace, loadCamelArt } from "../minigames/camel-race.js";
 import { playArrival } from "../daily/venue-arrivals.js";
 import { CAMEL_SCENES, CAMEL_STAGES, camelRaceRecord, camelRaceDestination, recordCamelRaceResult, consumeCamelRaceDaytime,
-  advanceCamelRaceStage, resultSceneFor, availableCamelCups } from "./ch4-camel-progress.js";
+  advanceCamelRaceStage, resultSceneFor, availableCamelCups, camelTalkAfterRace } from "./ch4-camel-progress.js";
 export * from "./ch4-camel-progress.js";
 
 /**
@@ -71,6 +71,12 @@ export async function visitCamelRace({ read, signal = null, isCurrent = () => tr
   else if (outcome.newBest) toast(`自己ベスト更新！ スコア ${best.total}（${best.grade}・${best.rank}位）`, { kind: "good" });
   if (!isCurrent() || state !== value) return { used: true, exerted: true, slotsUsed: 0 };
   // 結果の会話。読み切れなくても記録・消費は済んでいる（二重に付かない）。
+  // 通算3回目・上級を初めて勝ち切った日は、結果の会話の代わりに一度だけの会話（SPC26）。読み終えた時だけ既読にする。
+  const talk = first ? null : camelTalkAfterRace(value);
+  if (talk) {
+    if (await read(talk.scene) && isCurrent() && state === value) { value.flags[talk.flag] = true; save(); }
+    return { used: true, exerted: true, slotsUsed: 0 };
+  }
   await read(first ? resultSceneFor(best.rank) : outcome.newBest ? CAMEL_SCENES.replayBest : CAMEL_SCENES.replayUsual);
   return { used: true, exerted: true, slotsUsed: 0 };
 }

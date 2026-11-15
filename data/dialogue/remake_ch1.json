@@ -3594,6 +3594,74 @@
       ]
     },
     {
+      "dialogue_id": "remake_fortune_story",
+      "comment": "ミニゲームのドラマの一区切り（SPC26・2026-11-15 オーナー指示）。辻占のオババに3回占ってもらった後に一度だけ（daily/fortune.js）。お代を取らず、はじめ自身の札を一枚めくる。素顔・正体は明かさない。お金・好感度・時間は変えない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "札を片づける皺だらけの手が、ふと止まった。"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "……三度も座った子は、久しぶりだ。一枚、おまけをめくってやろう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "おまけ、ですか"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "smile",
+          "text": "誰の縁でもない、アンタ自身の札さ。お代はいらないよ"
+        },
+        {
+          "type": "motion",
+          "id": "tarot"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "めくられた札には、杯を両手で差し出す人が描かれていた。"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "杯の札……注いだものを、自分で飲まずに人へ渡す手だ"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "昔、同じ札が出た男がいてね。そいつも、煙の匂いを連れて歩いてた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その人は、今……"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "smile",
+          "text": "……ヒヒ。札は、聞かれたことにしか答えないのさ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "フードの奥の顔は、やっぱり見えなかった。ただ、声がさっきより少しやわらかい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（自分で飲まずに、人へ渡す手……悪くない札だと思う）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_round1_intro",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tournament_stage.png"

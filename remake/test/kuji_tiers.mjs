@@ -170,4 +170,33 @@ for (const [gradeId, g] of Object.entries(kuji.grades)) for (const prize of [...
   for (const id of [prize.flavorId, ...(prize.flavors || []).map(f => f.id)].filter(Boolean))
     assert(!['absal_double_apple', 'absal_mint', 'dobaj_double_apple', 'dobaj_mint'].includes(id), `${gradeId} の ${prize.name} にドバイの葉を入れない`);
 }
+// 6. 棚の前のひとこと（ミニゲームのドラマ・SPC26）: 箱の中身だけから決める。初めて・外れ続き（10回）・S賞・ラストワン賞。
+{
+  const start = source.indexOf("export const KUJI_DRY_STREAK"), end = source.indexOf("/** ショップの「くじ」タブの中身");
+  assert(start > 0 && end > start, "kuji.js の kujiClerkLine が見つかる");
+  const ctx = {};
+  vm.runInNewContext(`${source.slice(start, end).replace(/\bexport /g, "")}; result = { kujiClerkLine, kujiDryStreak, KUJI_DRY_STREAK };`, ctx);
+  const { kujiClerkLine, kujiDryStreak, KUJI_DRY_STREAK } = ctx.result;
+  const prizes = [{ rank: "S" }, { rank: "A" }, { rank: "B" }, { rank: "C" }];
+  const box = (ranks, size = 50, lastOne = { rank: "LAST" }) => {
+    const order = ranks.map(rank => prizes.findIndex(p => p.rank === rank));
+    while (order.length < size) order.push(3);
+    return { order, drawn: ranks.length, prizes, lastOne };
+  };
+  assert.equal(KUJI_DRY_STREAK, 10);
+  assert.equal(kujiClerkLine(undefined), null, "no box yet");
+  assert.equal(kujiClerkLine(undefined, { first: true }).kind, "first", "the first look: the clerk explains");
+  assert.equal(kujiClerkLine(undefined, { first: true, rio: true }), null, "Rio's existing first line covers the first look");
+  assert.equal(kujiClerkLine(box(["C", "B"])), null);
+  assert.equal(kujiDryStreak(box(["A", ...Array(9).fill("C")])), 9);
+  assert.equal(kujiClerkLine(box(["A", ...Array(9).fill("C")])), null, "nine misses: nothing yet");
+  const dry = kujiClerkLine(box(["A", ...Array(10).fill("B")]));
+  assert.deepEqual([dry.kind, dry.who], ["dry", "clerk"]);
+  assert.match(kujiClerkLine(box(Array(12).fill("C")), { rio: true, rioName: "凛想さん" }).text, /^凛想さん「/);
+  assert.equal(kujiClerkLine(box([...Array(12).fill("C"), "S"])).kind, "top", "an S right after a dry run is the top line");
+  assert.equal(kujiClerkLine(box(["S", "C"])), null, "only right after the S");
+  assert.equal(kujiClerkLine(box(Array(50).fill("C"), 50)).kind, "last_one", "the box emptied: the last-one prize");
+  assert.equal(kujiClerkLine(box(Array(50).fill("C"), 50, null)).kind, "dry", "no last-one prize in old boxes");
+  for (const bad of [null, {}, { order: "x", drawn: 1, prizes }]) assert.equal(kujiClerkLine(bad), null);
+}
 console.log(`[kuji tiers] PASS: ${Object.keys(kuji.grades).length} grades, chapter gates 1-5, gear prizes, duplicate cash, ch5 limited tier`);

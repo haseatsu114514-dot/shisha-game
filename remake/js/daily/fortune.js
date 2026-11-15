@@ -9,7 +9,8 @@ import { addMoney } from "../core/stats.js";
 import { play } from "../vn/engine.js";
 import { bgRef } from "./spots.js";
 import { fortuneHere, fortuneIndexHere, markFortuneUsed } from "./fortune-schedule.js";
-import { grantFortuneReading, fortuneResultId, fortuneTargets, isFortuneTargetAvailable } from "../core/fortune-effects.js";
+import { grantFortuneReading, fortuneResultId, fortuneTargets, isFortuneTargetAvailable,
+  FORTUNE_READINGS, FORTUNE_STORY, FORTUNE_STORY_FLAG, fortuneReadings, fortuneStoryDue } from "../core/fortune-effects.js";
 
 export const FORTUNE_FEE = 3000;
 const BG = "bg_street";
@@ -57,7 +58,13 @@ export async function doFortune() {
   const trivia = grantFortuneReading(state, picked, DB.fortuneTrivia);
   state.fortuneDay = state.day; // 旧版の記録（互換のため残す）
   markFortuneUsed(state); // この出現はおしまい。次に会うのは次の予定
+  state.flags[FORTUNE_READINGS] = fortuneReadings(state) + 1;
   save();
   await play(trivia ? fortuneResultId(trivia) : "remake_fortune_result", { bg }); // {fortuneName} は interpolate で相手の名前になる
+  // 一区切り（SPC26）: 3回目の後に一度だけ、オババがお代を取らずにはじめ自身の札をめくる。読み終えた時だけ既読にする。
+  if (fortuneStoryDue(state) && DB.dialogues[FORTUNE_STORY]?.lines?.length) {
+    const result = await play(FORTUNE_STORY, { bg });
+    if (result && !result.cancelled) { state.flags[FORTUNE_STORY_FLAG] = true; save(); }
+  }
   return true;
 }

@@ -112,6 +112,48 @@ function lineup(g, box) {
   ]);
 }
 
+// シーシャくじの棚の前のひとこと（ミニゲームのドラマ・2026-11-15 オーナー「始めるきっかけや途中や一区切り」・SPC26）。
+// きっかけ＝初めて棚を見た時の説明、途中＝上の賞（A・S）なしが10回続いた時の同情、一区切り＝S賞かラストワン賞を引いた直後。
+// 箱の中身（今の箱で引いた順）だけから決めるので、新しい保存の値は持たない。お金・景品・好感度は変えない。
+// 地元の本店で凛想が居る時は凛想が、ほかは店員が言う（凛想は地元の Dr.fookah の2階の人）。
+export const KUJI_DRY_STREAK = 10;
+const HIGH = new Set(["S", "A"]);
+
+/** 今の箱で引いた景品（古い順）。形の合わない箱は空。 */
+function drawnPrizes(box) {
+  if (!box || !Array.isArray(box.order) || !Array.isArray(box.prizes) || !Number.isInteger(box.drawn)) return [];
+  return box.order.slice(0, Math.max(0, box.drawn)).map(index => box.prizes[index]).filter(Boolean);
+}
+
+/** 末尾から数えた、A・S賞なしの連続回数。 */
+export function kujiDryStreak(box) {
+  const drawn = drawnPrizes(box);
+  let streak = 0;
+  for (let i = drawn.length - 1; i >= 0 && !HIGH.has(drawn[i].rank); i--) streak++;
+  return streak;
+}
+
+/**
+ * 棚の前のひとこと。{ who: "rio" | "clerk", kind, text } か null。
+ * first: 初めて棚を見た（凛想が居れば既存の凛想の一言に任せるので null）。rio: 凛想が居るか。rioName: 凛想の呼び名。
+ */
+export function kujiClerkLine(box, { first = false, rio = false, rioName = "凛想" } = {}) {
+  const say = (kind, rioText, clerkText) => rio
+    ? { who: "rio", kind, text: `${rioName}「${rioText}」` }
+    : { who: "clerk", kind, text: `店員「${clerkText}」` };
+  const drawn = drawnPrizes(box);
+  const last = drawn.at(-1);
+  const emptied = drawn.length > 0 && drawn.length >= box.order.length && !!box.lastOne;
+  if (emptied) return say("last_one", "最後の一枚、持っていったね。箱、空っぽ……ちょっと寂しいね",
+    "最後の一枚、おめでとうございます。空の箱、記念に持っていきます？ ……冗談です");
+  if (last?.rank === "S") return say("top", "……出たね。引いた時の顔、試香の時より正直だった",
+    "出ました！ ……すみません、思わず鐘を鳴らしそうになりました");
+  if (kujiDryStreak(box) >= KUJI_DRY_STREAK) return say("dry", "十回続けて、上の賞なし。統計的には、そろそろ……統計は、慰めにならないけど",
+    "あの……今日は、もうやめておきます？ いえ、止めはしないですけど");
+  if (first && !rio) return say("first", "", "くじは一回ごとに、この箱から一枚です。引く時は、だいたいみんな無言になります");
+  return null;
+}
+
 /** ショップの「くじ」タブの中身。shop はその店（grades を参照） */
 export function kujiRows(rerender, shop = "home") {
   const view = currentRows = {};
@@ -130,6 +172,9 @@ export function kujiRows(rerender, shop = "home") {
   state.flags._kuji_seen = true;
   // 初回にリオが居る時のひと言は台詞なのでそのまま出し、棚の案内は「?」を押して開く。
   if (firstSeen && staffed) rows.push(el("p.kuji-note", { text: `${displayName("rio", state)}「これ、実は在庫しょぶ……なんでもない。引きは引き。直感で行きなさい」` }));
+  // 棚の前のひとこと（初めて・外れ続き・S賞やラストワン賞の直後。上の kujiClerkLine・SPC26）。凛想は地元の本店に居る時だけ
+  const clerk = kujiClerkLine(state.kuji[list[0].id], { first: firstSeen, rio: staffed && shop === "home", rioName: displayName("rio", state) });
+  if (clerk) rows.push(el("p.kuji-note", { text: clerk.text, dataset: { test: "kuji-clerk", kind: clerk.kind } }));
   // 「?」は専用の行を作らず、最初のくじの見出しの横に小さく置く（行を押した時の詳細は開かない）。
   let help = el("button.kuji-help", {
     text: "?", "aria-label": "くじの案内", dataset: { test: "kuji-help" },

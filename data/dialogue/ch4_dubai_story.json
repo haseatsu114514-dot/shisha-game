@@ -1,0 +1,470 @@
+{
+  "comment": "第4章ドバイの本筋の夜（SPC27・2026-11-15 オーナー「本筋の補充」）。説明会・会場の下見・スークの買い出し・スミさんとのビデオ通話・記者会見。DAY1〜9の決まった日以降の夜に一つずつ（ch4-progress.js の CH4_STORY_NIGHTS・ch4-dubai-daily.js の夜）。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_story_briefing",
+      "comment": "DAY1の夜。出場者説明会。推薦選手（王煙楼）と現王者（シェイク）は欠席で、名前・顔を出さない（前夜祭・大会当日の登場を守る）。審査員の名前も当日まで伏せる（太陽が審査員だと分からせない）。第4章ドバイの本筋の夜（SPC27・2026-11-15 オーナー「本筋の補充」で採用）。ch4-progress.js の CH4_STORY_NIGHTS の日以降の夜に、前のものから一つずつ読む（ch4-dubai-daily.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会の運営から届いた案内に従って、会場の会議室へ向かった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "長い机に、名札が四つ。俺となるの名札の横に、空席が二つ並んでいる。"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "日本のお二人、ようこそドバイへーッ！ GRAND SMOKE の説明会、始めますよッ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "パッキー！？ 世界大会も、パッキーなんですか"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "世界のパッキーですからッ！ 着ぐるみも、ちゃんと夏用です"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……残りの二席は？"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "推薦選手さんは、前夜祭で正式にご挨拶。現王者さまは、いつも当日までお顔を見せないんですッ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（世界の王者がどんな人かも分からないまま、当日を迎えるのか）"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "ルールは一つだけ。四人同時に始めて、四人同時に出す。持ち時間も同じ"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "審査員は三名。お名前は、当日のお楽しみですッ"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "四人同時か。隣の台の匂いも、全部混ざるな"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "そこが世界の面白いところ！ 混ざった中で、誰の煙が残るか、ですッ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "配られた資料の最後の頁に、会場の見取り図があった。舞台の上に、台が四つ扇の形に並んでいる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（俺の台は、一番右……なるの隣だ）"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "隣同士だな。煙、こっちに流すなよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "そっちこそ"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "いいですねえ、その感じ！ 当日まで取っておいてくださいねッ、ぷぷぷっ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_story_venue",
+      "comment": "DAY3の夜（昼の下見を夜に読む）。会場の冷房で炭とボウルが冷える、と気づく。ヴォルクの「部屋を見てから火を決める」が手に残っている。第4章ドバイの本筋の夜（SPC27・2026-11-15 オーナー「本筋の補充」で採用）。ch4-progress.js の CH4_STORY_NIGHTS の日以降の夜に、前のものから一つずつ読む（ch4-dubai-daily.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "説明会でもらった通行証で、会場に入れてもらった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席はまだ空っぽで、舞台の上に台だけが四つ並んでいる。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……でかいな。県大会の会場が、ロビーにすっぽり入る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それに、寒い。外は夏みたいなのに"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "舞台の上には、冷房の風がずっと吹き下ろしていた。手の甲が、すぐ冷たくなる。"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "この冷え方だと、炭の立ち上がりが遅れるな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ボウルも冷える。最初の一口が、日本よりずっと軽くなる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "気づけば、ヴォルクさんみたいに、手のひらを宙にかざしていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（温度計は持ってないけど……部屋を見てから、火を決める）"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "お前、いつからそんな職人みたいなことするようになった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "東京で、いろんな人に教わったから"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……そうか、俺も旅で、似たようなことを覚えた"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "寒い店だと、客は最初の一口を急ぐ。温まりたいからな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "それ、今言っていいの？"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "いいんだよ。分かってても、うまく出せるかは別の話だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で舞台の端に座って、しばらく、空っぽの客席を眺めた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ここが、全部埋まる……この中の誰の顔を、俺は見るんだろう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_story_market",
+      "comment": "DAY5。勝負の炭と練習用の葉の買い出し（スーク）。炭が大きく着きが遅い・空気が乾いて葉の水分が飛ぶ、と準備の気づき。「王族御用達」の炭は中身が普通（笑い）。第4章ドバイの本筋の夜（SPC27・2026-11-15 オーナー「本筋の補充」で採用）。ch4-progress.js の CH4_STORY_NIGHTS の日以降の夜に、前のものから一つずつ読む（ch4-dubai-daily.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "勝負に使う炭と、練習用の葉を探しに、スークへ来た。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭の店の棚には、四角い炭がぎっしり。日本で見るのより、ひと回り大きい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（同じ椰子殻の炭でも、角の固さが違う……割れ方を見たい）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一つ割らせてほしいと通訳アプリで頼むと、店主が黙って金槌を貸してくれた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "断面は、目が詰まっていた。火持ちはよさそうだけど、着くまでに時間がかかる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（会場は冷えてた。この炭だと、立ち上がりがもっと遅れる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店主が奥から、金色の箱を出してきた。アプリが「王族御用達」と読み上げる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "値段、さっきの十倍なんですけど"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店主は胸を張った。アプリが「火が王族のように堂々と着く」と訳した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……ちょっと気になる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "結局、普通の炭を一箱と、金色の箱から一個だけ、ばら売りしてもらった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りに、葉の店にも寄った。棚の葉は、どれも少し乾いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（空気が乾いてるから、葉の水分がすぐ飛ぶ。持ってきた配合も、袋の口を閉めておかないと）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿に戻って、金色の炭を割ってみた。中身は、普通の炭と同じだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……授業料だと思おう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_story_sumi_call",
+      "comment": "DAY7の夜。tonariで留守番中のスミさんとのビデオ通話（日本は夜中の一時）。スミさんの過去（ドバイの路地裏の店・シェイク）には触れない。第4章ドバイの本筋の夜（SPC27・2026-11-15 オーナー「本筋の補充」で採用）。ch4-progress.js の CH4_STORY_NIGHTS の日以降の夜に、前のものから一つずつ読む（ch4-dubai-daily.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜、宿の部屋でスマホが鳴った。画面に「tonari」と出ている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "スミさん？ ……あの、映ってるの、天井です"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……どこを押せばいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "右下の、カメラの絵のところです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面がぐるりと回って、スミさんの鼻の穴が大写しになった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "近いです"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "……難しいな、これは"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ようやく、閉店後のカウンターが映った。椅子は、もう全部上がっている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そっち、もう夜中ですよね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "一時だ……店は回ってる。常連も、変わらず来てる"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "鉄仮面さんは、お前の席を見て、何も言わずに帰った"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（それは、鉄仮面さんなりの、何かなんだろう）"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そっちの炭はどうだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大きくて、着くのが遅いです。会場も冷えてて"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そうか……なら、焦るな。遅いのは炭のせいで、お前のせいじゃない"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "冷えた部屋の客は、最初の一口を急ぐ。そこで合わせるなよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "なるにも、同じことを言われました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "……そうか、あいつも、いい旅をしたんだな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "言うことは、それだけだ……もう寝ろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "切れる直前、画面の端に、カウンターを拭く布が映った。いつもの、俺の布だった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_story_press",
+      "comment": "DAY9の夜。日本代表の二人の記者会見。はじめが固まり、なるが助け舟を出す。パッキーが見出しを盛る（笑い）。第4章ドバイの本筋の夜（SPC27・2026-11-15 オーナー「本筋の補充」で採用）。ch4-progress.js の CH4_STORY_NIGHTS の日以降の夜に、前のものから一つずつ読む（ch4-dubai-daily.js）。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "日本代表の二人だけの、小さな記者会見だった。それでも、カメラが十台以上並んでいる。"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "では、質問どうぞーッ！ 通訳はわたくしパッキーが、いい感じに盛ります！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "盛らないでください"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最初の記者が手を挙げた。アプリが訳す。「世界大会への意気込みを」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "えっと……あの……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "フラッシュが一斉に光って、頭の中が真っ白になった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（何か言わないと。何か……）"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "こいつ、店では客の前で黙らないんですよ。カメラが客に見えてないだけで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "記者たちから、小さな笑いが起きた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "だから、カメラの向こうに客がいると思って答えろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……一番近くの人に、届く一台を作ります。世界でも、それは同じだと思うので"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "決まりましたーッ！ 「世界の真ん中で、目の前の一人へ」！ 見出し、これでいきます！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "そんなこと言ってません"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "いいじゃねえか。だいたい合ってる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次の質問は、なるへだった。「日本の二人は、ライバルですか」"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "ライバルです……だから、明日の朝も一緒に走ります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "走らないよ！？"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "仲良しですねえ。見出しの二本目、これでいきますッ、ぷぷぷっ！"
+        }
+      ]
+    }
+  ]
+}
