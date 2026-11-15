@@ -52,7 +52,7 @@ export function markDeparted(value = state) {
   return true;
 }
 
-// クラウドのライブの夜が待っている間は、零-ZERO- に「！」（chapters/ch2-preparation.js の reiLiveDue・RVE07）
+// クラウドのライブの夜が待っている間は、貴方ノ為ノ此ノ煙。 に「！」（chapters/ch2-preparation.js の reiLiveDue・RVE07）
 const withReiLive = spot => spot.charId === "rei" ? { ...spot, hasNew: () => reiLiveDue(state) || !!spot.hasNew?.() } : spot;
 const cityRegion = () => [...PREPARATION_SPOTS.map(withReiLive), CITY_SHOP, ...knownCityOutings(state).filter(spot => spot.kind !== "trpg"), trpgSpot()].filter(Boolean);
 const atHome = spot => (spot?.region || "home") === "home";
