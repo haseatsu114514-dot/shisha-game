@@ -3,11 +3,32 @@
   "dialogues": [
     {
       "dialogue_id": "ch2_tournament_lobby",
+      "comment": "控室。冒頭は 2-5 B（SPC28・2026-11-15 オーナー採用「県大会控室で縮んだエプロンを撮られる」）: DAY4の焦げの匂いを落とそうと熱いお湯で洗ったエプロンが縮み、あげはに撮られる。笑ったあげはの指が鞄を握ったまま、の後半へつなぐ。",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "県大会の控室。あげはが、ドアの前で足を止めた。"
+          "text": "県大会の控室。鞄からエプロンを出して、首にかけたところで手が止まった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "丈が、へその上までしかない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……焦げの匂いを落とそうとして、熱いお湯で洗ったからだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ドアの方で、カシャ、と音がした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはが、スマホを構えたまま、ドアの前で足を止めていた。"
         },
         {
           "type": "condition",
@@ -43,10 +64,25 @@
           {
             "speaker": "ageha",
             "face": "smile",
-            "text": "ハジメっち。来たね。今日は、同じ舞台だ"
+            "text": "ハジメっち。来たね。てか、そのエプロン、子ども用？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "……今、撮りました？"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "撮った。県大会の記念。今日は、同じ舞台だ"
           }
         ],
         "first": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "……あ、ごめん。そのエプロン、つい撮っちゃった"
+          },
           {
             "speaker": "ageha",
             "face": "normal",
