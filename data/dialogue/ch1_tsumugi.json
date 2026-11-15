@@ -2633,6 +2633,92 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch1_tsumugi_pink_smoke",
+      "comment": "SPC13（2026-11-15 オーナー「つむぎはピンク入れよう共感覚で」）。煙の色を打ち明けた固有会話（ch1_tsumugi_smoke_color）を読み終えたあと、tonariの来店で新しい話が無い時に一度（daily/spots.js）。つむぎは煙の色をそのまま言っているだけで、ピンクの別の意味には最後まで気づかない。はじめが勝手に想像する。色は彼女のその時の受け取り方で、はじめの心を読む力にはしない。大会・恋愛の状態に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんに断って、つむぎちゃんの一台を作った。今日はラベンダーに、桃を少しだけ足してみた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎはゆっくり一口吸って、煙の行き先を目で追った。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさんの煙、今日は、ピンク"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ピ、ピンク！？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……待って。色って、俺の何が見えてるんだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（今日は、変なことは考えてない……たぶん）"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……濃いピンク。……ふわっとして、甘くて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（濃い……！？）"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……桃の色です。おいしそう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……あ。桃。桃を、足したから"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。ラベンダーの紫に、桃のピンク。混ざって、きれい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……煙の色の話だ。最初から、ずっと）"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "surprise",
+          "text": "……はじめさん、顔も、ピンクです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "こ、これは、炭の熱のせいで"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……？ ……炭、ここから遠いです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎはそれ以上は聞かずに、ペンを取った。タブレットの猫の耳に、薄いピンクが一枚足された。"
+        }
+      ]
     }
   ]
 }
