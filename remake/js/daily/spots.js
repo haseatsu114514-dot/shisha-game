@@ -215,6 +215,12 @@ export const tsumugiStoryExtraDue = () => {
   if (!state.finales?.tsumugi || storyCount("tsumugi") < (VISIT_SEQ.tsumugi?.length || 0)) return null;
   return TSUMUGI_STORY_EXTRAS.find((id) => !state.flags[`_spot_seen_${id}`] && DB.dialogues[id]?.lines?.length) || null;
 };
+/** 煙がピンク（SPC13）。煙の色を打ち明けた固有会話（ch1_tsumugi_smoke_color）まで読んだあと、新しい話が無い来店で一度。 */
+const TSUMUGI_PINK = "ch1_tsumugi_pink_smoke";
+const TSUMUGI_PINK_SEEN = "_tsumugi_pink_smoke_done";
+export const tsumugiPinkDue = () => !state.flags[TSUMUGI_PINK_SEEN]
+  && storyCount("tsumugi") >= (VISIT_SEQ.tsumugi?.length || 0)
+  && !!DB.dialogues[TSUMUGI_PINK]?.lines?.length;
 /** 端の席（#3081）。固有会話を読み終え、店で正体がつながったあと、新しい話が無い来店で一度。
  * 正面の映え席と、カウンター横の席。大会の前後どちらでも、今の店の話だけにする。 */
 const MINTO_SIDE_SEAT = "ch1_minto_side_seat";
@@ -317,7 +323,7 @@ export function hasNewStory(charId) {
   if (charId === "rio" && rioPrototypeDue()) return true;
   if (charId === "rio" && rioBlueberryDue()) return true;
   if (charId === "rio" && rioStoryExtraDue()) return true;
-  if (charId === "tsumugi" && tsumugiStoryExtraDue()) return true;
+  if (charId === "tsumugi" && (tsumugiPinkDue() || tsumugiStoryExtraDue())) return true;
   if (charId === "minto" && (mintoSideSeatDue() || mintoQuietHelloDue() || mintoTimerHandDue() || mintoChekiKeepDue())) return true;
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
   if (id && !visitStorySkipped(state, charId, id)) return storyAvailable(id);
@@ -525,6 +531,11 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
       const scene = rioStoryExtraDue();
       if (!await read(scene, {})) return false;
       state.flags[`_spot_seen_${scene}`] = true;
+      gainAffinity(charId, visitAffinity("talk"), affinityOptions);
+    } else if (charId === "tsumugi" && tsumugiPinkDue()) {
+      // 完読してから既読。中断では旗を残さず、次の来店で読み直せる。
+      if (!await read(TSUMUGI_PINK, DB.dialogues[TSUMUGI_PINK].metadata?.bg ? {} : { bg })) return false;
+      state.flags[TSUMUGI_PINK_SEEN] = true;
       gainAffinity(charId, visitAffinity("talk"), affinityOptions);
     } else if (charId === "tsumugi" && tsumugiStoryExtraDue()) {
       const scene = tsumugiStoryExtraDue();
