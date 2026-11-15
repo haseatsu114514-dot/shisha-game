@@ -6,8 +6,8 @@ import { readFileSync } from "node:fs";
 import { newState } from "../js/core/state.js";
 import { CH4_PROLOGUE, CH4_PREP_SCENES, CH4_DAILY_TOURNAMENT_DAY, advanceToChapterFour, chapterFourArrivalsDue, completeChapterFourScene,
   departChapterFour, enterChapterFourEve, syncChapterFourDay } from "../js/chapters/ch4-progress.js";
-import { OVERSEAS_HEROINES, chooseOverseasCompanion } from "../js/core/overseas-companion.js";
-import { CH4_BEACH_SCENES, CH4_BEACH_SCENE_FILES, CH4_BEACH_PICKS, CH4_BEACH_RESIDENTS, chapterFourBeachCast,
+import { OVERSEAS_HEROINES, OVERSEAS_GUESTS, chooseOverseasCompanion } from "../js/core/overseas-companion.js";
+import { CH4_BEACH_SCENES, CH4_BEACH_SCENE_FILES, CH4_BEACH_PICKS, CH4_BEACH_RESIDENTS, CH4_BEACH_RIVALS, chapterFourBeachCast,
   chapterFourBeachDue, chapterFourBeachPickCount, chapterFourBeachRecord, commitChapterFourBeach } from "../js/chapters/ch4-beach.js";
 import { classifyFlag } from "../js/core/carry.js";
 
@@ -36,7 +36,7 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
 // ---- 台本: 全員分の場面があり、読み込み一覧と一致する
 {
   const rows = readData("dialogue/ch4_beach").dialogues;
-  assert.deepEqual(Object.keys(CH4_BEACH_SCENES.people), [...OVERSEAS_HEROINES, ...CH4_BEACH_RESIDENTS]);
+  assert.deepEqual(Object.keys(CH4_BEACH_SCENES.people), [...OVERSEAS_HEROINES, ...CH4_BEACH_RESIDENTS, ...CH4_BEACH_RIVALS, ...OVERSEAS_GUESTS]);
   assert.deepEqual([...CH4_BEACH_SCENE_FILES.ch4_beach].sort(), rows.map(row => row.dialogue_id).sort(), "ch4_beach: all scenes registered");
   for (const id of CH4_BEACH_SCENE_FILES.ch4_beach) {
     const row = rows.find(item => item.dialogue_id === id);
@@ -59,42 +59,65 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
 }
 
 // ---- 顔ぶれ: 恋人ゼロ・同行なし → いつも来るつむぎ・ましろ（友人版）。到着を読むまでは砂浜にいない。
+// なる（第二代表）は第4章の最初から同じ宿にいるので、最初から砂浜にいる（男の枠・SPC24）。
 {
   const value = eveSave();
-  assert.deepEqual(chapterFourBeachCast(value), [], "No one has arrived yet");
+  assert.deepEqual(chapterFourBeachCast(value), ["naru"], "Only Naru, who came on the same trip, before the arrivals");
   assert.equal(chapterFourBeachDue(value), false, "The beach waits for the arrivals");
   arriveAll(value);
-  assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "mashiro"]);
+  assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "mashiro", "naru"]);
   assert.equal(chapterFourBeachDue(value), true);
+  assert.equal(chapterFourBeachPickCount(value), 3);
+  // 顔ぶれが遊べる回数より少なければ全員（旧保存などで、なるの宿の場面を読んでいない場合）
+  delete value.flags._ch4.read.ch4_arrival_inn;
+  assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "mashiro"]);
   assert.equal(chapterFourBeachPickCount(value), 2, "Fewer people than picks: play with everyone");
 }
 // ---- 顔ぶれ: 同行者は最初からいる。別便の恋人・♥5の友人は到着を読んだら。会ったことのあるヌールも来る。
 {
   const value = eveSave({ lovers: ["minto", "rio", "samechan"], companion: "rio",
     finales: { hiyori: { day: 21, chapter: 2, route: "friend" } }, met: { noor: true } });
-  assert.deepEqual(chapterFourBeachCast(value), ["rio", "noor"], "The companion and Noor are already in Dubai");
+  assert.deepEqual(chapterFourBeachCast(value), ["rio", "noor", "naru"], "The companion, Noor and Naru are already in Dubai");
   assert.equal(chapterFourBeachDue(value), false, "Arrivals first");
   arriveAll(value);
-  assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "minto", "rio", "mashiro", "samechan", "hiyori", "noor"]);
+  assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "minto", "rio", "mashiro", "samechan", "hiyori", "noor", "naru"]);
   assert.equal(chapterFourBeachPickCount(value), CH4_BEACH_PICKS);
   // 好感度の数値・告白待ちの恋愛ルートだけでは来ない（出発前の顔ぶれで決まる）。
   assert(!chapterFourBeachCast(value).includes("ageha"));
 }
-// ---- ♥5の男の友人（SPC21）は到着だけで、砂浜には来ない。到着を読むまで砂浜は出ない（到着が先）。
+// ---- ♥5の男の友人（SPC24）も、到着を読んだら砂浜に来る（ネタとにぎやかしの枠）。到着を読むまでは来ない。
 {
-  const value = eveSave({ finales: { adam: { day: 9, chapter: 1, route: "friend" }, steve: { day: 30, chapter: 3, route: "friend" } } });
-  assert.deepEqual(chapterFourArrivalsDue(value).map(entry => entry.id), ["tsumugi", "mashiro", "adam", "steve"]);
-  for (const { scene } of chapterFourArrivalsDue(value).slice(0, 2)) assert(completeChapterFourScene(value, scene));
+  const value = eveSave({ finales: { adam: { day: 9, chapter: 1, route: "friend" }, steve: { day: 30, chapter: 3, route: "friend" },
+    rei: { day: 20, chapter: 2, route: "friend" } } });
+  assert.deepEqual(chapterFourArrivalsDue(value).map(entry => entry.id), ["tsumugi", "mashiro", "adam", "rei", "steve"]);
+  for (const { scene } of chapterFourArrivalsDue(value).slice(0, 3)) assert(completeChapterFourScene(value, scene));
+  assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "mashiro", "naru", "adam"], "Rei and Steve have not arrived yet");
   assert.equal(chapterFourBeachDue(value), false, "The male friends arrive before the beach");
   arriveAll(value);
-  assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "mashiro"], "The male friends do not come to the beach");
+  assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "mashiro", "naru", "adam", "rei", "steve"]);
   assert.equal(chapterFourBeachDue(value), true);
-  assert.equal(commitChapterFourBeach(value, ["tsumugi", "adam"]), false);
+  assert.equal(commitChapterFourBeach(value, ["adam", "naru", "steve"]), true, "Three men is fine: a lively beach, not a harem");
+  assert.deepEqual(chapterFourBeachRecord(value), { picks: ["adam", "naru", "steve"] });
+  // 締めくくりを済ませていない男キャラ（到着が無い）は来ない
+  assert(!chapterFourBeachCast(value).includes("kumicho") && !chapterFourBeachCast(value).includes("volk"));
+}
+// ---- 男の枠の台本: その人とはじめ（と地の文）だけで、恋愛を示す台詞・ほかの人の名前・報酬は無い。
+{
+  const rows = readData("dialogue/ch4_beach").dialogues;
+  const names = /つむぎ|みんと|栞|凛想|あげは|ましろ|サメちゃん|ひより|ヌール|アダム|神崎|クラウド|綾取|スティーブ|ヴォルク/g; // 「なる」は普通の言葉に混ざるので見ない
+  const self = { naru: "なる", adam: "アダム", kumicho: "神崎", rei: "クラウド", saku: "綾取", steve: "スティーブ", volk: "ヴォルク" };
+  for (const id of [...CH4_BEACH_RIVALS, ...OVERSEAS_GUESTS]) {
+    const row = rows.find(item => item.dialogue_id === CH4_BEACH_SCENES.people[id]);
+    assert(row.lines.every(line => ["", "hajime", id].includes(line.speaker)), `${id}: only the two of them`);
+    const others = (row.lines.map(line => line.text).join("").match(names) || []).filter(name => name !== self[id]);
+    assert.deepEqual(others, [], `${id}: no one else is named`);
+    assert(!row.lines.some(line => /好き|ドキ|かわい|可愛/.test(line.text || "")), `${id}: no romance`);
+  }
 }
 // ---- 会ったことのないヌールは来ない。
 {
   const value = arriveAll(eveSave({ lovers: ["ageha"] }));
-  assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "ageha", "mashiro"]);
+  assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "ageha", "mashiro", "naru"]);
 }
 
 // ---- 確定: ちょうど遊べる回数・顔ぶれから重ならずに。好感度・お金・日付・前夜の記録は変えない。一度だけ。
@@ -129,4 +152,4 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
   assert.equal(free.flags._ch4.part, "free");
   assert.equal(chapterFourBeachDue(free), false, "Not during the Dubai daily days");
 }
-console.log("PASS ch4 beach: cast is who is actually there, picks once without rewards, before the festival only");
+console.log("PASS ch4 beach: cast is who is actually there (with Naru and the ♥5 male friends as the lively slots), picks once without rewards, before the festival only");

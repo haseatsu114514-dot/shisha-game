@@ -2,20 +2,27 @@
 // 顔ぶれ・出せる時・確定だけを持つ（DOMを持たない）。再生とボタンは ch4.js の renderBeach。
 // - 顔ぶれは「その場に実際にいる人」だけ: 同行者（同じ便）、到着場面を読んだ別便の人（恋人版・友人版のどちらでも）、
 //   会ったことのあるヌール（ドバイに住む）。好感度・渡航予定・同行の選択だけでは足さない（location_contract）。
+// - 男の枠（SPC24・2026-11-15 オーナー「水着回に男性も混ぜたい　ハーレムにならないようにとネタやワイワイ枠で」）:
+//   第4章の最初から同じ宿にいるなる（第二代表）と、到着場面を読んだ♥5の男の友人（overseasGuests）。ネタとにぎやかしの場面。
 // - 恋人かどうかでセリフは変えない。仲間の遊びとして描き、前夜の過ごし方・修羅場には数えない（present を書き換えない）。
 // - 人数で尺が変わらないよう、遊べるのは CH4_BEACH_PICKS か所まで（顔ぶれが少なければ全員）。好感度・能力は付けない。
-import { OVERSEAS_HEROINES, overseasCompanion } from "../core/overseas-companion.js";
+import { OVERSEAS_HEROINES, OVERSEAS_GUESTS, overseasCompanion, overseasGuests } from "../core/overseas-companion.js";
 import { chapterFourProgress, chapterFourArrivalsDue, CH4_ARRIVAL_SCENES, CH4_FRIEND_ARRIVAL_SCENES,
-  CH4_FESTIVAL_STARTED } from "./ch4-progress.js";
+  CH4_GUEST_ARRIVAL_SCENES, CH4_FESTIVAL_STARTED } from "./ch4-progress.js";
 
 /** ドバイに住んでいて、会ったことがあれば砂浜に来る人。並びは渡航してきた人の後ろ。 */
 export const CH4_BEACH_RESIDENTS = Object.freeze(["noor"]);
+/** 第4章の最初から同じ宿にいる選手（なる・第二代表。ch4_arrival_inn で一緒に着く）。男の枠の先頭。 */
+export const CH4_BEACH_RIVALS = Object.freeze(["naru"]);
+const RIVALS_ARRIVED = "ch4_arrival_inn";
 export const CH4_BEACH_SCENES = Object.freeze({
   open: "ch4_beach_open",
   close: "ch4_beach_close",
   people: Object.freeze({
     tsumugi: "ch4_beach_tsumugi", minto: "ch4_beach_minto", rio: "ch4_beach_rio", ageha: "ch4_beach_ageha",
     mashiro: "ch4_beach_mashiro", samechan: "ch4_beach_samechan", hiyori: "ch4_beach_hiyori", noor: "ch4_beach_noor",
+    naru: "ch4_beach_naru", adam: "ch4_beach_adam", kumicho: "ch4_beach_kumicho", rei: "ch4_beach_rei",
+    saku: "ch4_beach_saku", steve: "ch4_beach_steve", volk: "ch4_beach_volk",
   }),
 });
 /** 台本の読み込み対象（ch4.js が FILES に使う）。 */
@@ -28,14 +35,16 @@ export const CH4_BEACH_BG = "bg_dubai_map_dusk";
 export const CH4_BEACH_PICKS = 3;
 const KEY = "_ch4_beach";
 
-/** 今、砂浜にいる人（OVERSEAS_HEROINES の順、その後にドバイに住む人）。状態は変えない。 */
+/** 今、砂浜にいる人（OVERSEAS_HEROINES の順、ドバイに住む人、なる、♥5の男の友人の順）。状態は変えない。 */
 export function chapterFourBeachCast(value) {
   const { read } = chapterFourProgress(value);
   const { companion, supports } = overseasCompanion(value);
   const arrived = id => read[CH4_ARRIVAL_SCENES[id]] === true || read[CH4_FRIEND_ARRIVAL_SCENES[id]] === true;
   const travelers = OVERSEAS_HEROINES.filter(id => (companion && id === companion) || (supports.includes(id) && arrived(id)));
   const residents = CH4_BEACH_RESIDENTS.filter(id => !!value?.met?.[id]);
-  return [...travelers, ...residents];
+  const rivals = read[RIVALS_ARRIVED] === true ? [...CH4_BEACH_RIVALS] : [];
+  const guests = overseasGuests(value).filter(id => read[CH4_GUEST_ARRIVAL_SCENES[id]] === true);
+  return [...travelers, ...residents, ...rivals, ...OVERSEAS_GUESTS.filter(id => guests.includes(id))];
 }
 
 /** 遊べる回数。顔ぶれが CH4_BEACH_PICKS より少なければ全員。 */
