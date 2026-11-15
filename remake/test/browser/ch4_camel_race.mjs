@@ -197,6 +197,7 @@ async function seedDaily(page, camel = null) {
     value.day += 3;
     if (!progress.departChapterFour(value)) throw new Error("Departure failed");
     for (const id of ["ch4_opening", "ch4_arrival_inn"]) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
+    value.flags._ch4_tour = { with: "naru" }; // 初日の街回り（DAY1の昼の強制イベント・SPC28）は済ませた。ここでは昼の行動を確かめる
     if (camel) value.flags._ch4_camel = { ...camel, inviteDay: value.day - 1, meetDay: value.day - 2 };
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
     core.saveConfig();

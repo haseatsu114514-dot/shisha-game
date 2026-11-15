@@ -612,6 +612,7 @@ await suite("desert-ride", async check => {
       value.day += 3;
       if (!progress.departChapterFour(value)) throw new Error("Departure failed");
       value.flags._ch4_desert = { v: 2, talks: 3, chats: 0, lastTalkDay: null, outings: 0, lastOutingDay: null }; // カフェで3つ話した後
+      value.flags._ch4_tour = { with: "naru" }; // 初日の街回り（DAY1の昼の強制イベント・SPC28）は済ませた。ここでは昼の行動を確かめる
       value.affinity = { ...(value.affinity || {}), noor: 33 }; // ♥3
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
       core.saveConfig(); Object.assign(core.state, value); core.save(); core.requestResumeOnBoot();
@@ -751,6 +752,7 @@ await suite("desert-ride", async check => {
       if (!progress.departChapterFour(value)) throw new Error("Departure failed");
       // カフェの段階を全部読み、♥3の問いに恋愛寄りで答え、砂丘へも一度行った♥5
       value.flags._ch4_desert = { v: 2, talks: 6, chats: 0, lastTalkDay: null, outings: 1, lastOutingDay: null };
+      value.flags._ch4_tour = { with: "naru" }; // 初日の街回り（DAY1の昼の強制イベント・SPC28）は済ませた
       value.flags._noor_affinity_question_done = true;
       value.romanceChoices = { bond_q1_noor: { char: "noor", value: 1, day: value.day } };
       value.affinity = { ...(value.affinity || {}), noor: 66 };

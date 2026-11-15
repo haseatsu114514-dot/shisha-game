@@ -1,0 +1,1112 @@
+{
+  "comment": "第4章の初日の街回り（4-1・SPC28・2026-11-15 オーナー「いろんなとこを初日はなるか恋人と回る、彼女がいたら彼女と（誰と行こうかって選ぶ）も候補に出す」）。ドバイの日常（版2）のDAY1の昼の行動を使う強制イベント。ch4-tour.js が組み立てて、ch4-dubai-daily.js の slotEvent で一度だけ読む。同行の恋人がいれば、その人となるのどちらと回るかを選ぶ（恋人が先）。金のスーク・クリーク・夕方のモスクを外から回るだけで、スパイスの試し・旅装の男（ch4_stranger_first）・渡し舟（ch4_creek_abra）・モスクの見学・龍龍水煙所・FESTA は先取りしない。好感度・能力・お金・持ち物は動かさない。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_tour_open",
+      "comment": "導入（共通）。ドバイDAY1の昼（ch4-tour.js・ch4-dubai-daily.js の slotEvent）。到着の宿（ch4_arrival_inn）で会場の下見へ出たなるが、通行証が無くて戻ってくる。通行証は今夜の説明会（ch4_story_briefing）で配り、DAY3 の下見（ch4_story_venue）で使う。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "荷ほどきを終えてロビーへ下りると、なるがソファに沈んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "もう戻ったの？ 夜まで別行動のはずじゃ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "門前払いだ。通行証は、今夜の説明会で配るんだと"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "おかげで、夜まで暇になった"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……街、少し歩くか？ 宿にいても、時差でぼんやりするだけだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_alone",
+      "comment": "同行の恋人がいない時。選択肢は出さず、なると回る。",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "行こう。迷ったら、二人で迷えばいい"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "地図は見ないぞ。迷うのも下見のうちだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_choose",
+      "comment": "同行の恋人が誘った後（共通）。この後に選択肢（恋人と回る／なると回る）をコードで足す。",
+      "lines": [
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "……誘いが二つ来たな。お前が決めろ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_naru_leaves",
+      "comment": "恋人と回ると決めた時。なるは一人で走りに行く。",
+      "lines": [
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "だろうな。俺は走ってくる。説明会、遅れんなよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは片手を上げて、日差しの中へ出ていった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_ask_tsumugi",
+      "comment": "同行の恋人（つむぎ）がロビーで誘う。この後に ch4_tour_choose と選択肢。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "階段から、つむぎがスケッチブックを抱えて下りてきた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん。街、見に行きませんか"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "部屋の窓からだと、描きたいものの半分しか見えなくて"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_ask_minto",
+      "comment": "同行の恋人（みんと（栞））がロビーで誘う。この後に ch4_tour_choose と選択肢。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "エレベーターの扉が開いて、栞さんが日傘を手に出てきた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "はじめくん、見つけた。お散歩、行こ？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "せっかくお店を閉めてきたんだもん。今日は、休みの人をやるの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_ask_rio",
+      "comment": "同行の恋人（凛想）がロビーで誘う。この後に ch4_tour_choose と選択肢。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーの奥から、凛想さんが地図を畳みながら歩いてきた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "ちょうどよかった。印をつけた所、一緒に回らない？"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "仕事の下見じゃないよ。半分くらいは"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_ask_ageha",
+      "comment": "同行の恋人（あげは）がロビーで誘う。この後に ch4_tour_choose と選択肢。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帽子とサングラスで固めたあげはが、階段を駆け下りてきた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、街行こ！ 着替えたのに、宿にいたらもったいなくない？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_ask_mashiro",
+      "comment": "同行の恋人（ましろ）がロビーで誘う。この後に ch4_tour_choose と選択肢。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんが、薄手の上着を腕にかけてロビーへ来た。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん、お出かけするの？ 僕も、街を見ておきたいなぁ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ムカイさんへの報告書、最初の一枚は、街の写真にしたいの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_ask_samechan",
+      "comment": "同行の恋人（サメちゃん）がロビーで誘う。この後に ch4_tour_choose と選択肢。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんが、コロちゃんを抱えてロビーの真ん中に立っていた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "お主！ 街へ出るぞ。王が、領地の視察を所望しておる"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "余の領地ではない。だが、見る"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_ask_hiyori",
+      "comment": "同行の恋人（ひより）がロビーで誘う。この後に ch4_tour_choose と選択肢。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんが、日焼け止めを塗り終えた腕をさすりながら下りてきた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "はじめくん、少し歩かない？ 部屋にいると、私、溶けちゃいそう"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……外に出ても、溶けるけど"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_stay_tsumugi",
+      "comment": "同行の恋人（つむぎ）がいて、なると回ると決めた時の一言。この後に ch4_tour_with_naru。",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。じゃあ、宿の中庭を描いてます"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "帰ってきたら、街の話を聞かせてください。描けなかった分"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_stay_minto",
+      "comment": "同行の恋人（みんと（栞））がいて、なると回ると決めた時の一言。この後に ch4_tour_with_naru。",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "ふうん。男同士の下見、ってやつだ"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "いいよ。テラスでミントティーの甘さを調べとく。夜は、私の番ね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_stay_rio",
+      "comment": "同行の恋人（凛想）がいて、なると回ると決めた時の一言。この後に ch4_tour_with_naru。",
+      "lines": [
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "振られちゃった。いいよ、君の鼻が、仕事の顔になってる"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "私は一人で香の店を回る。帰ったら、何を嗅いだか教えて"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_stay_ageha",
+      "comment": "同行の恋人（あげは）がいて、なると回ると決めた時の一言。この後に ch4_tour_with_naru。",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "え、うちじゃないの！？ ……まあ、ライバルとの下見は大事か"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "じゃ、うちはテラスでネイル直しとく。夜、写真いっぱい撮るかんね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_stay_mashiro",
+      "comment": "同行の恋人（ましろ）がいて、なると回ると決めた時の一言。この後に ch4_tour_with_naru。",
+      "lines": [
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "そっかぁ。大会の前だもんね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "じゃあ僕は、宿の近くのパン屋さんを探しておくよぉ。明日の朝ごはん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_stay_samechan",
+      "comment": "同行の恋人（サメちゃん）がいて、なると回ると決めた時の一言。この後に ch4_tour_with_naru。",
+      "lines": [
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……うむ。勝負の前の、男同士の散歩じゃな。邪魔はせぬ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "余は、宿の廊下の視察に切り替える"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_stay_hiyori",
+      "comment": "同行の恋人（ひより）がいて、なると回ると決めた時の一言。この後に ch4_tour_with_naru。",
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……そっか。私は部屋で、儚く溶けてるね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "冗談。気をつけてね。夜の説明会の案内、私が先に読んどくから"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_with_naru",
+      "comment": "なると回る。金のスーク → クリーク（渡し舟は岸から見るだけ） → 夕方のモスク（見学の時間の後・外から）。背景は行の bg で切り替える。",
+      "lines": [
+        {
+          "type": "bg",
+          "bg": "bg_dubai_souq_day"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "旧市街の市場の一角は、通りの両側の窓が、全部金色だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "首飾り、腕輪、それから人の頭より大きい冠。"
+        },
+        {
+          "speaker": "naru",
+          "face": "surprise",
+          "text": "……これ、全部本物か？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "値札の桁、数えないほうがいいよ"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "数えた。ゼロが、思ってたより二つ多い"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "金の店の並びが切れた所で、なるの足が止まった。菓子屋の店先に、蜜で光る焼き菓子が積んである。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……蜂蜜と、ピスタチオと、焦がしたバター。生地は、紙みたいに薄い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "嗅いだだけで、そこまで分かるんだ"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "菓子は、得意分野だからな。今日は嗅ぐだけだ。試合前に、舌を甘やかさない"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_map"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水辺へ抜ける途中、見覚えのあるロゴの看板があった。Dr.fookah ドバイ店。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "知ってる看板があると、ちょっと安心するな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クリークの岸に出ると、木の渡し舟が何艘も、向こう岸と行き来していた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "乗るか？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日はやめとく。乗ったら、向こう岸で二人して迷いそう"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "違いねえ"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_map_dusk"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "日が傾いたころ、白い回廊のモスクの前に出た。祈りの声が、街に広がっていく。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……知らない街だと、こういう声で時間が分かるな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "夕方だ、って？"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "ああ。説明会まで、あと少しだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "戻ろう。この街の匂い、少し覚えた"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "それが今日の下見だ。合格だな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_with_tsumugi",
+      "comment": "同行の恋人（つむぎ）と回る。金のスーク → クリーク（渡し舟は岸から見るだけ） → 夕方のモスク（見学の時間の後・外から）。背景は行の bg で切り替える。",
+      "lines": [
+        {
+          "type": "bg",
+          "bg": "bg_dubai_souq_day"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "金のスークは、通りの両側の窓が、全部金色だった。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "surprise",
+          "text": "……金色って、一色じゃないんですね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "赤っぽい金と、白っぽい金と、緑っぽい金。鉛筆が、三本足りません"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは窓の前にしゃがみこんで、首飾りを一つだけ写し始めた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "全部じゃなくていいの？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "全部描いたら、明日になっちゃうので"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_map"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クリークの岸。木の渡し舟が、向こう岸と行き来している。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……舟の数が、描いてるうちに変わります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "描き終わるまで、待ってくれないもんね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。なので、ずっと止まってる舟を、一艘だけ描きました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ページの端の舟には、見慣れない帽子の船頭と、見慣れた猫が乗っていた。"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_map_dusk"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "日が傾いたころ、白い回廊のモスクの前に出た。壁が、少しずつ橙に染まっていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは鉛筆を持ったまま、一度も紙に下ろさなかった。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今のは、描かないで、覚えておきます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どうして？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "描いたら、紙の色になっちゃうので。はじめさんと見た色は、こっちに"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは、自分の胸のあたりを指さした。帰り道、その指先が、俺の袖を一度だけつまんだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_with_minto",
+      "comment": "同行の恋人（みんと（栞））と回る。金のスーク → クリーク（渡し舟は岸から見るだけ） → 夕方のモスク（見学の時間の後・外から）。背景は行の bg で切り替える。",
+      "lines": [
+        {
+          "type": "bg",
+          "bg": "bg_dubai_souq_day"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "金のスークは、通りの両側の窓が、全部金色だった。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_surprise",
+          "text": "わあ……指輪、ショーケースの端から端まで"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "ねえ、はじめくん。ここで二人で指輪を見てたら、どう見えると思う？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……それは、その"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "冗談だよ。半分だけね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞さんは店の人に小さく手を振って、ショーケースの前から一歩下がった。"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_map"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クリークの岸。水の上を渡る風が、栞さんの手首のリボンを揺らした。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……この街、ミントの匂いがどこにもしない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "寂しい？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "ちょっとだけ。でも、はじめくんの上着から、たまにするよ。うちのお店の匂い"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_map_dusk"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "日が傾いたころ、白い回廊のモスクの前に出た。祈りの声が、街に広がっていく。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……今日、お店のこと、一回も考えなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "休みの人、できてるね"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "でしょ。このまま手をつないで帰ったら、満点"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事の代わりに手を出すと、栞さんは、リボンを巻いた手首ごと預けてきた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_with_rio",
+      "comment": "同行の恋人（凛想）と回る。金のスーク → クリーク（渡し舟は岸から見るだけ） → 夕方のモスク（見学の時間の後・外から）。背景は行の bg で切り替える。",
+      "lines": [
+        {
+          "type": "bg",
+          "bg": "bg_dubai_souq_day"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "金のスークは、通りの両側の窓が、全部金色だった。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "金は匂わないけど、店ごとに焚いてる香が違う。ここは乳香、隣は沈香"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "歩きながら、全部分かるんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "当ててごらん。三軒先は？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……甘くて、少し煙たい。バラ、ですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "正解。君、やっぱりいい鼻してる"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_map"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クリークの岸。渡し舟のエンジンの匂いに、潮と香辛料が混ざっている。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "水辺の匂いは、どこの街でも少し似てる。でも、ここは香辛料が勝つ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "仕事の顔になってますよ"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "なってないよ。君の鼻の、抜き打ち試験の最中なだけ"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_map_dusk"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "日が傾いたころ、白い回廊のモスクの前に出た。祈りの声が、街に広がっていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは、急に何も言わなくなった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……香りの話、しないんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "ここでは、やめておく。今は、君と見るだけにしたいの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんの肩が、俺の腕に軽く当たった。そのまま、離れなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_with_ageha",
+      "comment": "同行の恋人（あげは）と回る。金のスーク → クリーク（渡し舟は岸から見るだけ） → 夕方のモスク（見学の時間の後・外から）。背景は行の bg で切り替える。",
+      "lines": [
+        {
+          "type": "bg",
+          "bg": "bg_dubai_souq_day"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "金のスークは、通りの両側の窓が、全部金色だった。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "やば、全部ギラギラ！ ハジメっち、ここ、ここで撮ろ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "金に負けない顔して。はい、負けてる。もう一回"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "金に勝てる顔って、どんな顔"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "今のちょっと困ってる顔。それ採用"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_map"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クリークの岸。水の上を渡る風が、あげはの前髪を真上に持ち上げた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "ちょ、待って、前髪死んだ！ 撮らないで！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "さっきの仕返し"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……ハジメっちに撮られるなら、まあ、いっか。一枚だけね"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_map_dusk"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "日が傾いたころ、白い回廊のモスクの前に出た。祈りの声が、街に広がっていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげははスマホを構えかけて、そっと鞄にしまった。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……ここは、撮らないでおく。なんか、そういう場所な気がする"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "その代わり、手。今日は震えてないから、つないでも大丈夫な日"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出された手は、日差しの名残で、少しだけ熱かった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_with_mashiro",
+      "comment": "同行の恋人（ましろ）と回る。金のスーク → クリーク（渡し舟は岸から見るだけ） → 夕方のモスク（見学の時間の後・外から）。背景は行の bg で切り替える。",
+      "lines": [
+        {
+          "type": "bg",
+          "bg": "bg_dubai_souq_day"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "金のスークは、通りの両側の窓が、全部金色だった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "わぁ……ムカイさんへの報告書に、金の値段って要るかなぁ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "たぶん、要らないと思う"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "だよねぇ。あ、はじめくん、あっち。パンの匂いがする"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "金の店の間に、小さな焼き菓子の屋台が挟まっていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんは、迷わずそっちを撮った。"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_map"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クリークの岸。買った焼き菓子を半分に割って、水辺の段差に並んで座った。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "はい、はじめくんの分。大きいほう、あげる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いいの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。明日から、はじめくんは頑張る人だから"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_map_dusk"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "日が傾いたころ、白い回廊のモスクの前に出た。祈りの声が、街に広がっていく。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……僕、こういう静かな場所、好き。知らない言葉なのに、落ち着く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "報告書に書く？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "書かない。これは、はじめくんと聞いた分だから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんは、俺の袖の端を、指で一回だけ引いた。帰ろう、の合図だった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_with_samechan",
+      "comment": "同行の恋人（サメちゃん）と回る。金のスーク → クリーク（渡し舟は岸から見るだけ） → 夕方のモスク（見学の時間の後・外から）。背景は行の bg で切り替える。",
+      "lines": [
+        {
+          "type": "bg",
+          "bg": "bg_dubai_souq_day"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "金のスークは、通りの両側の窓が、全部金色だった。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "余の冠より、大きい冠がある。けしからん"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……それより、この通りの幅じゃ。店先から店先まで、ちょうど三歩"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんはポケットからメジャーを出しかけて、店の人の視線に気づいた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……ここで測ると、何か盗みに来た者に見えるのう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "歩幅で測りましょう"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_map"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クリークの岸。木の渡し舟が、向こう岸と行き来している。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……あの舟の座席、幅はちょうど二人分じゃな"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、乗りたがっている"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "わしは乗りたいとは言うておらぬ。今日は、見るだけじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、乗る日も決めておきましょう"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_map_dusk"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "日が傾いたころ、白い回廊のモスクの前に出た。祈りの声が、街に広がっていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんは、コロちゃんを胸に抱き直して、黙って聞いていた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……知らぬ言葉でも、大事なことを言うておるのは分かる"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "帰るぞ、お主。袖、借りるぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事を待たずに、小さな手が俺の袖をつかんだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_tour_with_hiyori",
+      "comment": "同行の恋人（ひより）と回る。金のスーク → クリーク（渡し舟は岸から見るだけ） → 夕方のモスク（見学の時間の後・外から）。背景は行の bg で切り替える。",
+      "lines": [
+        {
+          "type": "bg",
+          "bg": "bg_dubai_souq_day"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "金のスークは、通りの両側の窓が、全部金色だった。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……眩しい。金って、私みたいな女には眩しすぎるのよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "今日の設定は、そっちですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "そっち。でも、一個だけ見ちゃった。あの細い鎖の"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんは値札を見る前に、ショーケースから目をそらした。"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_map"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クリークの岸。渡し舟が、向こう岸の人を乗せて戻ってくる。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……ねえ、会社の昼休みって、何時だったっけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "忘れたんですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "忘れた。こういうの、旅って感じがする"
+        },
+        {
+          "type": "bg",
+          "bg": "bg_dubai_map_dusk"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "日が傾いたころ、白い回廊のモスクの前に出た。祈りの声が、街に広がっていく。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "……はじめくん。明日からは、応援係の顔をするね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "だから、今日のうちに言っておくね。一緒に歩けて、楽しかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺もです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿までの帰り道、ひよりさんは一度も「溶ける」と言わなかった。"
+        }
+      ]
+    }
+  ]
+}

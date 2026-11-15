@@ -837,6 +837,12 @@
       "run": ["node remake/test/ch4_beach.mjs"]
     },
     {
+      "id": "ch4-tour",
+      "title": "Chapter 4 first-day city walk (SPC28 4-1): DAY1 noon once, lover or Naru, no rewards",
+      "kind": "quick",
+      "run": ["node remake/test/ch4_tour.mjs"]
+    },
+    {
       "id": "ngplus-carry",
       "title": "NG+ save migration, carry classification coverage and package extraction (#1228)",
       "kind": "quick",

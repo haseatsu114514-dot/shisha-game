@@ -1225,6 +1225,7 @@ await suite("growth-levelup", async (runCheck) => {
       value.flags._overseas_companion = { decided: true, companion: null, supports: [] }; value.flags._ch4.titleSeen = true;
       for (const id of progress.CH4_PREP_SCENES) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
       value.day += 3; if (!progress.departChapterFour(value)) throw new Error("departure");
+      value.flags._ch4_tour = { with: "naru" }; // 初日の街回り（DAY1の昼の強制イベント・SPC28）は済ませた。昼の地図から確かめる
       if (value.day % 7 === 5) throw new Error("金曜午前は見学なし。日付を変えて"); // MOSQUE_VISITING_HOURS
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
       Object.assign(core.state, value);
@@ -1500,6 +1501,7 @@ await suite("growth-levelup", async (runCheck) => {
       value.flags._overseas_companion = { decided: true, companion: null, supports: [] }; value.flags._ch4.titleSeen = true;
       for (const id of progress.CH4_PREP_SCENES) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
       value.day += 3; if (!progress.departChapterFour(value)) throw new Error("departure");
+      value.flags._ch4_tour = { with: "naru" }; // 初日の街回り（DAY1の昼の強制イベント・SPC28）は済ませた
       value.met.da_silva = true; value.affinity.da_silva = 66;
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
       Object.assign(core.state, value);
