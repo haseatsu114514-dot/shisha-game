@@ -120,24 +120,24 @@
           "text": "（……スミさん、住所、間違えてないよな？）"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "鞄からメモを出す。「神崎煙草店」。暖簾の字と、一字も違わない。"
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "あんちゃん。身分証、見せな"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "あの……煙草店、ですよね？"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "看板にもそう書いてありやしょう"
+          "face": "surprise",
+          "text": "え、あの、俺は──"
         },
         {
           "speaker": "kumicho",
           "face": "serious",
-          "text": "それより、あんちゃん。身分証、出してもらおうか"
+          "text": "話は後でさ。まずは身分証だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大きな体が、一歩、また一歩と近づいてくる。色付き眼鏡の奥が、まったく読めない。"
         },
         {
           "speaker": "hajime",
@@ -147,32 +147,37 @@
         {
           "speaker": "",
           "face": "",
-          "text": "財布を握ったまま、半歩下がった。神崎さんは黙って、大きな手のひらを差し出している。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "あの……ちゃんと、返してもらえるんでしょうか"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "……見たら返しやす。年齢確認でさ"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "煙を出す店は、二十歳前の客を座らせられねえ。スミんとこの若えのでも、決まりは決まりでね"
+          "text": "気づけば、財布から身分証を出していた。差し出す指先が、少し震えている。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "身分証を渡すと、神崎さんは生年月日を指で押さえて確かめ、両手で返してくれた。"
+          "text": "神崎さんは生年月日を指で押さえて確かめ、両手で丁寧に返してくれた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……よし。手間ぁ取らせやしたな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（か、返ってきた……）"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……年齢確認、だったのか）"
+          "text": "あの……ここ、シーシャ屋さん、ですよね？"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "どっからどう見ても、そうでさ。さっきのは、年齢確認でね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "煙を出す店は、二十歳前の客を座らせられねえ。スミさんとこの若えのでも、決まりは決まりでさ"
         },
         {
           "speaker": "",
@@ -182,7 +187,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あの、今日はお客じゃなくて……スミさんから、こちらを預かってきました"
+          "text": "あの、今日はお客じゃなくて……配達です。スミさんから、こちらを預かってきました"
         },
         {
           "speaker": "kumicho",
@@ -192,7 +197,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（言う前に、身分証だったんですけど……）"
+          "text": "（言う暇、なかったんですけど……）"
         },
         {
           "speaker": "",
@@ -202,7 +207,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "おう、ドラゴンフルーツか。俺の好みを覚えてるところが、スミらしいや"
+          "text": "おう、ドラゴンフルーツか。俺の好みを覚えてるところが、スミさんらしいや"
         },
         {
           "speaker": "kumicho",
