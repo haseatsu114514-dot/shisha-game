@@ -4789,7 +4789,7 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-total, html:root[dat
 .tetsuko-time[data-tool="brush"] .tt-cat { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='%23f7f3ed' stroke='%2369497e' stroke-width='1.6'%3E%3Crect x='3.5' y='4.5' width='11' height='7' rx='2'/%3E%3Cpath d='M12.8 7.2 20.5 18.6a1.6 1.6 0 0 1-2.7 1.7L10.6 9'/%3E%3C/svg%3E") 6 6, pointer; }
 .tetsuko-time[data-tool="toy"] .tt-yard { cursor: none; }
 /* しぐさの絵（1024×768・体が地面に触れる線 y=736・中心 x=512。立ち絵と同じ縮尺＝枠の 0.754 倍）。届いた物だけ表示 */
-.tt-cat-pose { position: absolute; left: -251px; top: -281px; width: 772px; height: auto; max-width: none; pointer-events: none; }
+.tt-cat-pose { position: absolute; left: -251px; top: -275px; width: 772px; height: auto; max-width: none; pointer-events: none; }
 .tt-cat[data-art]:not([data-art=""]) .tt-cat-frame { opacity: 0; }
 /* 歩く（居場所を移る間だけ、小さく弾む） */
 .tt-cat[data-walk] .tt-cat-frame, .tt-cat[data-walk] .tt-cat-pose { animation: tt-trot .3s ease-in-out 3; }
@@ -4804,7 +4804,7 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-total, html:root[dat
 .tt-cat-shadow { position: absolute; left: 14%; right: 14%; bottom: -8px; height: 26px; border-radius: 50%; background: radial-gradient(rgba(0, 0, 0, .38), rgba(0, 0, 0, 0) 70%); }
 .tt-cat-frame { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 100%; transition: translate .5s ease, transform .35s ease, scale .2s ease, opacity .3s ease; }
 /* 5表情は同じ切り出し枠（元絵 896×1200 の x278〜636・y786〜1158）。どの表情も同じ位置に重ねる */
-.tt-cat-img { position: absolute; left: -77.65%; top: -211.29%; width: 250.28%; height: auto; max-width: none; opacity: 0; transition: opacity .18s ease, translate .5s ease; pointer-events: none; }
+.tt-cat-img { position: absolute; left: -77.65%; top: -208.6%; width: 250.28%; height: auto; max-width: none; opacity: 0; transition: opacity .18s ease, translate .5s ease; pointer-events: none; }
 .tt-cat[data-face="normal"] .tt-cat-img[data-face="normal"], .tt-cat[data-face="smile"] .tt-cat-img[data-face="smile"],
 .tt-cat[data-face="serious"] .tt-cat-img[data-face="serious"], .tt-cat[data-face="surprise"] .tt-cat-img[data-face="surprise"],
 .tt-cat[data-face="sleep"] .tt-cat-img[data-face="sleep"] { opacity: 1; }
