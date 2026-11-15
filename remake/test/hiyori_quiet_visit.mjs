@@ -129,7 +129,9 @@ await check('samechan and C.STATION repeat classification preserves pending intr
   if(s.met.minto){assert.equal(f.spots.shortNormalVisit(shark),false);s.flags._spot_seen_samechan_shop_minto_gift=true;}
   assert.equal(f.spots.shortNormalVisit(shark),true);
   s.flags._samechan_quiet_seat_done=true;assert.equal(f.spots.shortNormalVisit(shark),false);
-  s.flags._samechan_cinema_introduced=true;assert.equal(f.spots.shortNormalVisit(shark),true);
+  // 新しいソファの沈み具合（SPC08）も、静かな席の後の一度きりの話。読むまでは短い通常来店として扱わない。
+  s.flags._samechan_cinema_introduced=true;assert.equal(f.spots.shortNormalVisit(shark),false);
+  s.flags._samechan_sofa_test_done=true;assert.equal(f.spots.shortNormalVisit(shark),true);
   s.flags._samechan_visit={stamp:`2:${s.day}:${s.slot}`,dialogue:'samechan_shop_first'};
   assert.equal(f.spots.shortNormalVisit(shark),false);
   const cs=f.spots.allSpots().find(p=>p.id==='c_station');

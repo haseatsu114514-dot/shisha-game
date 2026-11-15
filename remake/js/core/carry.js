@@ -522,6 +522,7 @@ export const FLAG_EXACT_RULES = [
   ["_samechan_nickname_known", "person"],
   ["_samechan_own_seat_done", "person"],
   ["_samechan_quiet_seat_done", "person"],
+  ["_samechan_sofa_test_done", "person"],
   ["_samechan_swimming_known", "person"],
   ["_samechan_unwell_done", "person"],
   ["_samechan_visit", "person"],

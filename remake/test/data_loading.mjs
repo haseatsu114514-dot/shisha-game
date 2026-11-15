@@ -92,10 +92,10 @@ assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 const limeMessages = realJSON("../data/lime_messages.json").messages;
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.lime)), limeMessages);
 assert.equal(new Set(all.DB.lime.map(m => m.id)).size, all.DB.lime.length);
-assert.deepEqual(Array.from(all.DB.lime.slice(-82, -73), m => m.id), [
+assert.deepEqual(Array.from(all.DB.lime.slice(-83, -73), m => m.id), [
   "lime_samechan_opening",
   "lime_outing_samechan_1", "lime_after_outing_samechan", "lime_outing_rio_1", "lime_after_outing_rio",
-  "lime_outing_hiyori_1", "lime_after_outing_hiyori", "lime_hiyori_charm", "lime_hiyori_peach",
+  "lime_outing_hiyori_1", "lime_after_outing_hiyori", "lime_hiyori_charm", "lime_hiyori_peach", "lime_hiyori_dream",
 ]);
 // 第3〜5章の物語のLIME（東京・ドバイ・帰郷後。#2024）は L01 の直前に残る。王煙楼（龍龍水煙所で交換）の9通・太陽（FESTAで交換）の6通、
 // ヌールの帰国後の時差の2通（第5章の地元・恋人だけ）もここ
@@ -108,7 +108,7 @@ assert.deepEqual(Array.from(all.DB.lime.slice(-73, -43), m => m.id), [
 // L01〜L43 の増量候補を末尾に足した（番号は固定）
 assert.deepEqual(Array.from(all.DB.lime.slice(-43), m => m.id), Array.from({ length: 43 }, (_, i) => `L${String(i + 1).padStart(2, "0")}`));
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.limeTemplates)), realJSON("../data/lime_messages.json").templates);
-assert.equal(all.DB.lime.length, 161); // 139 + 王煙楼8・アダム2・クラウド2（好感度キャラのLIMEをそろえる）+ 太陽6（RVE03）+ 王煙楼の大会後1（RVE07）+ スティーブ×綾取の後日1（#3468 C案）+ ヌールの帰国後の時差2
+assert.equal(all.DB.lime.length, 162); // 139 + 王煙楼8・アダム2・クラウド2（好感度キャラのLIMEをそろえる）+ 太陽6（RVE03）+ 王煙楼の大会後1（RVE07）+ スティーブ×綾取の後日1（#3468 C案）+ ヌールの帰国後の時差2 + ひよりの夢の話1（SPC11）
 assert(!all.DB.lime.some(m => m.accept_event === "__hiyori_shop__"));
 assert.equal(all.DB.samechan.lime, undefined);
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
