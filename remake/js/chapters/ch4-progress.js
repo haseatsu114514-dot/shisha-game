@@ -223,7 +223,7 @@ export const CH4_FRIEND_ARRIVAL_SCENES = Object.freeze({
   ageha: "ch4_ageha_dubai_friend", mashiro: "ch4_mashiro_dubai_friend",
   samechan: "ch4_samechan_dubai_friend", hiyori: "ch4_hiyori_dubai_friend",
 });
-// ♥5の男の友人の到着（SPC21）。友人だけなので一人一本。ヒロインの到着の後に OVERSEAS_GUESTS の順で読む。夕方・砂浜は無い。
+// ♥5の男の友人の到着（SPC21）。友人だけなので一人一本。ヒロインの到着の後に OVERSEAS_GUESTS の順で読む。夕方は無い（砂浜は男の枠・SPC24）。
 export const CH4_GUEST_ARRIVAL_SCENES = Object.freeze({
   adam: "ch4_adam_dubai", kumicho: "ch4_kumicho_dubai", rei: "ch4_rei_dubai", saku: "ch4_saku_dubai",
   steve: "ch4_steve_dubai", volk: "ch4_volk_dubai",

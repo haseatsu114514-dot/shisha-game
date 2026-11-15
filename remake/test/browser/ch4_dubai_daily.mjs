@@ -619,7 +619,7 @@ await suite("ch4-dubai-daily", async check => {
       p.firstDay = 1;
       value.day = p.startDay + 11; value.slot = 1; p.day = 12;
       value.lovers = ["rio"]; value.met.rio = true; value.contacts.push("rio");
-      // ♥5の男の友人（SPC21）のスティーブも別便で来る。到着だけで、砂浜には来ない。
+      // ♥5の男の友人（SPC21）のスティーブも別便で来る。到着を読めば、なると一緒に砂浜の男の枠に入る（SPC24）。
       value.flags._overseas_companion = { decided: true, companion: null, supports: ["tsumugi", "rio", "mashiro"], guests: ["steve"] };
     });
     await loadSlot(page, 0);
@@ -639,23 +639,23 @@ await suite("ch4-dubai-daily", async check => {
     await page.locator(dt("ch4-go-beach")).click();
     await page.locator(dt("ch4-beach")).waitFor({ timeout: 60000 });
     assert.match(await page.locator(dt("ch4-beach")).innerText(), /あと3か所、遊べる/);
-    for (const id of ["tsumugi", "rio", "mashiro"]) assert.equal(await page.locator(dt(`ch4-beach-${id}`)).count(), 1, id);
-    for (const id of ["minto", "ageha", "samechan", "hiyori", "noor", "steve"]) assert.equal(await page.locator(dt(`ch4-beach-${id}`)).count(), 0, `${id} is not there`);
+    for (const id of ["tsumugi", "rio", "mashiro", "naru", "steve"]) assert.equal(await page.locator(dt(`ch4-beach-${id}`)).count(), 1, id);
+    for (const id of ["minto", "ageha", "samechan", "hiyori", "noor", "adam", "volk"]) assert.equal(await page.locator(dt(`ch4-beach-${id}`)).count(), 0, `${id} is not there`);
     await page.locator(dt("ch4-beach-rio")).click();
     await page.locator(dt("ch4-beach")).filter({ hasText: "あと2か所" }).waitFor({ timeout: 60000 });
     assert.equal(await page.locator(dt("ch4-beach-rio")).count(), 0, "Each person once");
     assert.equal((await get(page)).flags._ch4_beach, undefined, "Nothing is committed until the end");
     await page.locator(dt("ch4-beach-tsumugi")).click();
     await page.locator(dt("ch4-beach")).filter({ hasText: "あと1か所" }).waitFor({ timeout: 60000 });
-    await page.locator(dt("ch4-beach-mashiro")).click();
+    await page.locator(dt("ch4-beach-steve")).click();
     await page.locator(eveCard).waitFor({ timeout: 60000 });
     const state = await get(page);
-    assert.deepEqual(state.flags._ch4_beach, { picks: ["rio", "tsumugi", "mashiro"] });
+    assert.deepEqual(state.flags._ch4_beach, { picks: ["rio", "tsumugi", "steve"] });
     assert.deepEqual([state.money, state.affinity, state.stats, state.day, state.flags._ch4.part],
       [before.money, before.affinity, before.stats, before.day, "eve"], "The beach pays nothing and keeps the day");
     assert.equal(await page.locator(dt("ch4-go-beach")).count(), 0, "The beach is once");
     const lines = await backlog(page);
-    for (const text of ["十二月なのに", "使用感のテスト", "体が足りないので", "流されてる", "前夜祭の時間だ"])
+    for (const text of ["十二月なのに", "使用感のテスト", "体が足りないので", "これも二口目の色だ", "前夜祭の時間だ"])
       assert(lines.some(line => line.includes(text)), text);
   });
 });

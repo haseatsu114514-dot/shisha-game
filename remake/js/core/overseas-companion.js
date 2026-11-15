@@ -14,7 +14,7 @@ const ALWAYS_SUPPORT = Object.freeze({ mashiro: value => value?.flags?._ch3_clea
 // アダムは本場のダブルアップルとはじめの卓を見に、神崎は店を部下に任せて、クラウドは店を閉めて、綾取は福岡へ戻る前の空き時間に
 // （福岡の店にはバイトがいる）、スティーブは個人店を閉めて、ヴォルクはスポンサー（ナイトサイド）の関係者として。
 // スミさんはtonariの留守番で来ない。なるは選手として本編で来るので含めない。
-// 到着場面だけで、砂浜（ch4-beach.js）・前夜の過ごし方・修羅場には出さない。
+// 到着の後は砂浜（ch4-beach.js）の男の枠に入る（SPC24）。前夜の過ごし方・修羅場には出さない。
 export const OVERSEAS_GUESTS = Object.freeze(["adam", "kumicho", "rei", "saku", "steve", "volk"]);
 const KEY = "_overseas_companion";
 
