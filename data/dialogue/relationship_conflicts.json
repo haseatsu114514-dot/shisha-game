@@ -296,6 +296,12 @@
         },
         {
           "type": "condition",
+          "condition_type": "flag",
+          "flag": "_petit_seen_dubai",
+          "next_true": "petit_recall_dubai"
+        },
+        {
+          "type": "condition",
           "condition_type": "flag_count",
           "flag": "_petit_count",
           "threshold": 1,
@@ -377,6 +383,13 @@
             "speaker": "",
             "face": "",
             "text": "「言うのは、俺じゃないだろ」という、なるの声。"
+          }
+        ],
+        "petit_recall_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ドバイの宿の廊下で、重なった二つのノック。"
           }
         ],
         "petit_recall_close": [
