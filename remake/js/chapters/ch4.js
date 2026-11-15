@@ -411,6 +411,8 @@ async function visit(owner, id) {
 async function renderEve(owner) {
   const [arrival] = chapterFourArrivalsDue(state);
   if (arrival) { await renderArrival(owner, arrival); return; }
+  // 水着回（SPC18。2026-11-15 オーナー指示で強制イベント・SPC25）: 到着を読み終えたら、前夜祭の前に必ず一度、砂浜へ行く。
+  if (chapterFourBeachDue(state)) { await renderBeach(owner); return; }
   const [next] = chapterFourMandatory(state);
   if (!next) {
     // 必須場面の後、大会日へ進む前に、前夜の過ごし方を一度だけ確定する（#1895）。
@@ -428,9 +430,7 @@ async function renderEve(owner) {
   // ましろはほかの章の入口と同じく「ましろちゃん」と呼ぶ（恋人版・友人版とも）。
   const evenings = chapterFourArrivalEveningsDue(state);
   const eveningName = id => id === "mashiro" ? "ましろちゃん" : displayName(id, state, { context: "private" });
-  // 水着回（SPC18）: 来てくれた人たちと宿の裏の砂浜へ（任意で一度）。前夜祭が始まると、もう出ない。
-  const beach = chapterFourBeachDue(state);
-  const dusk = evenings.length > 0 || beach;
+  const dusk = evenings.length > 0;
   await enterScene(bgUrl(CH4_SCENE_BG[next.lead || next.id]));
   if (!current(owner)) return;
   card(owner, "eve", `DAY ${chapterFourEveDay(state)}・${dusk ? "前夜祭の日" : "前夜"}`,
@@ -441,7 +441,6 @@ async function renderEve(owner) {
         }
         await renderStage(owner);
       }, true),
-      ...(beach ? [button(owner, "みんなで砂浜へ行く", "go-beach", async () => { await renderBeach(owner); })] : []),
       ...evenings.map(evening => button(owner, `${eveningName(evening.id)}と夕方を過ごす`,
         `arrival-evening-${evening.id}`, async () => {
           // 最後まで読んだ時だけ確定・保存する。読んだ後は同じカードに戻り、前夜祭へ進む。
@@ -453,7 +452,7 @@ async function renderEve(owner) {
 
 /**
  * 水着回（SPC18・Issue #3657）。導入を読み、砂浜にいる人から遊ぶ相手を選んで一人ずつ読み、締めを読む。
- * 最後まで読んだ時だけ遊んだ相手を確定・保存する。途中でやめた・LOADした時は何も残さず、前夜のカードからやり直せる。
+ * 最後まで読んだ時だけ遊んだ相手を確定・保存する。途中でやめた・LOADした時は何も残さず、導入からやり直す（強制・SPC25）。
  * 恋人かどうかでセリフは変えない（台本は一人一本）。好感度・能力・お金・日付は動かさない。
  */
 async function renderBeach(owner) {

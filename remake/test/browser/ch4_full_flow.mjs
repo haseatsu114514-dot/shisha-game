@@ -197,7 +197,7 @@ await suite("ch4-full-flow", async check => {
     assert.deepEqual((await get(page)).stats, beforeRevisit.stats, "Revisit must not add stat growth");
     assert.equal((await get(page)).money, beforeRevisit.money);
 
-    // 5. DAY4 の宿で前夜へ。別便で来たつむぎ・ましろちゃん（友人版）の到着を1人ずつ → 前夜祭（繋ぎ→本編）→ stranger_third を強制消化して大会日へ。
+    // 5. DAY4 の宿で前夜へ。別便で来たつむぎ・ましろちゃん（友人版）の到着を1人ずつ → 砂浜（水着回・強制）→ 前夜祭（繋ぎ→本編）→ stranger_third を強制消化して大会日へ。
     await page.locator(dt("ch4-go-inn")).click();
     await freeDay(page, 4);
     await page.locator(dt("ch4-go-inn")).click();
@@ -213,7 +213,15 @@ await suite("ch4-full-flow", async check => {
     assert.equal(state.flags._ch4.part, "eve");
     assert.equal(state.flags._ch4.read.ch4_mashiro_dubai_friend, undefined, "The arrival commits only after it is read");
     await page.locator(dt("ch4-continue")).click();
+    // 到着の後は、必ず砂浜へ（水着回は強制イベント・SPC25）。つむぎ・ましろちゃん・なる（同じ宿の第二代表）の3人と遊ぶ。
+    await page.locator(dt("ch4-beach")).waitFor({ timeout: 60000 });
+    assert.match(await page.locator(dt("ch4-beach")).innerText(), /あと3か所、遊べる/);
+    for (const [i, id] of ["tsumugi", "mashiro", "naru"].entries()) {
+      await page.locator(dt("ch4-beach")).filter({ hasText: `あと${3 - i}か所` }).waitFor({ timeout: 60000 });
+      await page.locator(dt(`ch4-beach-${id}`)).click();
+    }
     await page.locator(`${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`).waitFor();
+    assert.deepEqual((await get(page)).flags._ch4_beach, { picks: ["tsumugi", "mashiro", "naru"] });
     state = await get(page);
     assert.equal(state.flags._ch4.read.ch4_tsumugi_dubai_friend, true);
     assert.equal(state.flags._ch4.read.ch4_mashiro_dubai_friend, true);
