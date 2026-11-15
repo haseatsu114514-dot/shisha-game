@@ -20,7 +20,7 @@ export const CH4_EVENING_BG = "bg_dubai_street_night";
  * 前夜の context（location_contract 準拠）。好感度・渡航予定だけから恋人や到着を作らない。
  * - present: 出発前に選んだ同行者（同じ便で来ている）と、別便の応援のうち到着場面（routes.romance[id].arrival）を
  *   読み終えた人。到着の記録が無い別便の人は、その場に出さない。到着場面は前夜祭の日に ch4.js の renderEve で
- *   読む（ch4-progress.js の chapterFourArrivalsDue）。友人版で来たましろは視察の別行動なので数えない。
+ *   読む（ch4-progress.js の chapterFourArrivalsDue）。友人版で来た人（ましろ・つむぎ・♥5の友人）は恋人ではないので数えない。
  * - selected/accepted: 前夜の約束。第4章にはLIMEの予約が無いので、前夜カードで本人を誘った時だけ渡す。
  * - unresolved: 常に空。重なった予定は保留し、本格的な修羅場はエンディング後（第3章と同じ）。
  * - ドバイに住む恋人（ヌール・romance[id].resident === "dubai"・DSR20）は到着場面なしで、前夜も同じ街にいる。

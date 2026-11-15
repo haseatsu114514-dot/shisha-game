@@ -554,11 +554,12 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   value = dubaiEve(['minto'], null, {arrived: ['minto']});
   assert.equal(ch4.chapterFourEveningPartner(routes, value), 'minto');
   // 前夜祭の日の到着（ch4-progress.js）: 前夜祭より前に到着を確定した別便の恋人が、前夜に誘える相手になる。
-  // 友人版で来たましろ（視察の別行動）はその場に数えない。
+  // 友人版で来たましろ（視察の別行動）・つむぎ（tonariの常連・SPC17）はその場に数えない。
   value = dubaiEve(['minto'], null);
   for (const entry of ch4Progress.CH4_MANDATORY) delete value.flags._ch4.read[entry.id]; // 前夜祭の前の前夜
   assert.deepEqual(ch4Progress.chapterFourArrivalsDue(value).map(entry => entry.scene),
-    [routes.romance.minto.arrival, 'ch4_mashiro_dubai_friend']);
+    ['ch4_tsumugi_dubai_friend', routes.romance.minto.arrival, 'ch4_mashiro_dubai_friend']);
+  assert(ch4Progress.completeChapterFourScene(value, 'ch4_tsumugi_dubai_friend'));
   assert(ch4Progress.completeChapterFourScene(value, routes.romance.minto.arrival));
   assert(ch4Progress.completeChapterFourScene(value, 'ch4_mashiro_dubai_friend'));
   for (const entry of ch4Progress.CH4_MANDATORY) value.flags._ch4.read[entry.id] = true;

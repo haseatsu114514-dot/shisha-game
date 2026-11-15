@@ -1,0 +1,665 @@
+{
+  "comment": "第4章ドバイの水着回（SPC18・Issue #3657）。前夜祭の日の夕方に任意で一度。導入 → 砂浜にいる人から選んだ一人ずつの場面（最大3人） → 締め。顔ぶれ・確定は remake/js/chapters/ch4-beach.js、再生は ch4.js の renderBeach。恋人でも友人でも同じ台本で、好感度・能力は付けない。水着の立ち絵が届くまでは通常の立ち絵の表情を使う。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_beach_open",
+      "comment": "SPC18（2026-11-15 オーナー決定・Issue #3657）。ドバイの水着回。前夜祭の日の夕方、宿の裏の砂浜（ch4-beach.js・ch4.js の renderBeach）。導入。人数に触れない（一人でも全員でも成り立つ）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前夜祭まで、まだ少し時間がある。宿の裏手の砂浜へ下りた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "十二月なのに、日差しは日本の夏みたいだった。足の裏の砂が、まだ温かい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（地元は今ごろ、こたつの季節なのに）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（せっかくだし、水着に着替えてきてよかった）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "波打ち際から、聞き慣れた声がした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_beach_tsumugi",
+      "comment": "SPC18（2026-11-15 オーナー決定・Issue #3657）。ドバイの水着回。前夜祭の日の夕方、宿の裏の砂浜（ch4-beach.js・ch4.js の renderBeach）。砂浜にいる人から選んだ一人と遊ぶ場面。恋人でも友人でも同じ台本で、恋愛を示す台詞は無い。ほかの人の名前を出さない（誰がいても成り立つ）。好感度・能力は付けない。つむぎは砂で葉っぱ耳の猫を作り、はじめを胴体にする。波で崩れても、混ざったまま受け入れる。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "砂浜にしゃがんで、つむぎが砂を盛っていた。水着の上に、薄い上着を羽織ったまま。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "つむぎちゃん、何を作ってるの？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……猫です。葉っぱの耳の"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん。そこに、寝てください"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、寝るの？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……体が足りないので。はじめさんを、胴体にします"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われるまま仰向けになると、つむぎは黙々と砂をかけ始めた。首から下が、みるみる埋まっていく。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……耳、つけます。しっぽも"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（動けない。顔の横で、葉っぱの耳が二つ増えた）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そこへ、大きめの波が一つ、足もとまで来た。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "つむぎちゃん、波！ 波が来てる！"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。崩れるところも、描きます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "波が引くと、猫の半分はさらわれていた。つむぎは、それでも満足そうにスケッチブックを開いた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……混ざりました。海と、はじめさんと"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_beach_minto",
+      "comment": "SPC18（2026-11-15 オーナー決定・Issue #3657）。ドバイの水着回。前夜祭の日の夕方、宿の裏の砂浜（ch4-beach.js・ch4.js の renderBeach）。砂浜にいる人から選んだ一人と遊ぶ場面。恋人でも友人でも同じ台本で、恋愛を示す台詞は無い。ほかの人の名前を出さない（誰がいても成り立つ）。好感度・能力は付けない。みんとは日焼け対策で完全防備。水着回で一番着込んでいる。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "パラソルの下に、つばの広い帽子と、長袖の上着に手袋まで着けた人が座っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……みんと？"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "はーい、みんとだよ♡ 日焼けは、お肌の天敵なの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "水着で来たのに、一番着込んでるね"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "二十歳のお肌は、守らないとね♪"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……それに、お店の外で水着って、ちょっと恥ずかしいの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お店の衣装のほうが、よっぽど……"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "あ、あれは衣装！ 営業だからいいの！"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "見たいなら、みんとの水着姿は、お店の有料オプションでーす♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "そんなオプション、あるの？"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……ない。今、考えた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとは小さく笑って、手袋を片方だけ外した。指先で、そっと海の水に触れる。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……冷たくて、気持ちいい。来てよかった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_beach_rio",
+      "comment": "SPC18（2026-11-15 オーナー決定・Issue #3657）。ドバイの水着回。前夜祭の日の夕方、宿の裏の砂浜（ch4-beach.js・ch4.js の renderBeach）。砂浜にいる人から選んだ一人と遊ぶ場面。恋人でも友人でも同じ台本で、恋愛を示す台詞は無い。ほかの人の名前を出さない（誰がいても成り立つ）。好感度・能力は付けない。凛想は無香料の日焼け止めの試作品の使用感テストを頼む。仕事のつもりで最後まで気づかず、はじめが勝手に慌てる。人前なので、恋人でも友人でも「モルモットくん」。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ビーチチェアで、凛想さんがラベルのない小瓶を振っていた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "モルモットくん、いいところに。新作の日焼け止め、無香料の試作品"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "背中、塗って。自分じゃ手が届かないから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "せ、背中ですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "使用感のテスト。伸び方と、べたつきと、乾く時間"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは髪をまとめて、うつ伏せになった。差し出された小瓶を、おそるおそる受け取る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……仕事。これは仕事だ。凛想さんは、仕事の話をしてる）"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……手、止まってる。データが取れない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "す、すみません"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "もう少し、ゆっくり……うん、伸びはいい。べたつきもない"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "君の手、温度が高いね。乾くのが少し早い"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……メモしとく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "起き上がった凛想さんは、真顔で手帳に一行書き足した。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "「塗る人の手の温度で、乾き方が変わる」……いいデータだよ、モルモットくん"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_beach_ageha",
+      "comment": "SPC18（2026-11-15 オーナー決定・Issue #3657）。ドバイの水着回。前夜祭の日の夕方、宿の裏の砂浜（ch4-beach.js・ch4.js の renderBeach）。砂浜にいる人から選んだ一人と遊ぶ場面。恋人でも友人でも同じ台本で、恋愛を示す台詞は無い。ほかの人の名前を出さない（誰がいても成り立つ）。好感度・能力は付けない。あげはは海と夕日を盛れる角度で撮ろうとして、二人で波をかぶる。病弱の秘密には触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "波打ち際で、あげはがスマホを高く掲げていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、こっちこっち！ 海と夕日、いっしょに盛れる角度、見つけた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "撮るの？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そ。もっと寄って。……あ、海入れたいから、もうちょい下がって"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われるまま一歩下がる。その足もとに、思ったより大きな波が来た。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "ちょ、待っ……！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人そろって、膝まで波をかぶった。あげはのグミの袋が、波に揺れて浮かんでいる。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "グミ！ うちのホワイトグミベア！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "取った！ ……袋、ちゃんと閉まってる"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "セーフ！ ハジメっち、ナイスキャッチ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シャッターの音は、その間もずっと鳴っていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……見て。びしょびしょで笑ってるの、これが一番盛れてる"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "これ、待ち受けにしよ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……あ、ハジメっちは半目だった。レアだから、このままね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_beach_mashiro",
+      "comment": "SPC18（2026-11-15 オーナー決定・Issue #3657）。ドバイの水着回。前夜祭の日の夕方、宿の裏の砂浜（ch4-beach.js・ch4.js の renderBeach）。砂浜にいる人から選んだ一人と遊ぶ場面。恋人でも友人でも同じ台本で、恋愛を示す台詞は無い。ほかの人の名前を出さない（誰がいても成り立つ）。好感度・能力は付けない。ましろは浮き輪でうとうとして沖へ流され、はじめが連れ戻す。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "浮き輪に乗ったましろちゃんが、波の上でゆらゆら揺れていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……はじめくん。海、あったかいねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "気持ちよさそうだね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "yawn",
+          "text": "……うん。……揺れてると、眠くなる……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事が途切れた。浮き輪は、少しずつ沖のほうへ流されていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ましろちゃん？ ……ましろちゃん、流されてる！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "慌てて泳いで追いつき、浮き輪の紐をつかんで、浅瀬まで引き戻した。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sleep",
+          "text": "……ん。はじめくん、どこ行ってたのぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "行ってたのは、ましろちゃんのほうだよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……そうなの？ ……海、広いねぇ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "じゃあ次は、はじめくんが紐を持ってて。そしたら、寝ても大丈夫"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "結局、浮き輪の紐を持ったまま、しばらく一緒に波に揺られていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_beach_samechan",
+      "comment": "SPC18（2026-11-15 オーナー決定・Issue #3657）。ドバイの水着回。前夜祭の日の夕方、宿の裏の砂浜（ch4-beach.js・ch4.js の renderBeach）。砂浜にいる人から選んだ一人と遊ぶ場面。恋人でも友人でも同じ台本で、恋愛を示す台詞は無い。ほかの人の名前を出さない（誰がいても成り立つ）。好感度・能力は付けない。サメちゃんは浜のいちばん見晴らしのよい場所に陣取る。泳げないことは、私的な会話（_samechan_swimming_known）を読んで知っている時だけ本人が言う。知らない時は「浜の見張り」で通す。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "砂浜のいちばん見晴らしのいい場所に、サメちゃんが陣取っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水着の上にも、サメのフードはそのまま。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "おお、お主。見よ、この浜の見晴らし。椅子を置くならここじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "海には入らないんですか"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_samechan_swimming_known",
+          "next_true": "swim_known",
+          "next_false": "swim_unknown"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "店の椅子も、この浜みたいに座りやすくしたいのう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "帰ったら、また座りに行きます"
+        }
+      ],
+      "branches": {
+        "swim_known": [
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "……知っておろう。わしは、泳げぬのじゃ"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "サメの王の側近が泳げぬとは、余は嘆かわしい",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "samechan",
+            "face": "surprise",
+            "text": "う、うるさい！ ……じゃから、浮き輪は持ってきたのじゃ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "サメの形の浮き輪を抱えて、サメちゃんは波打ち際で、つま先だけ海に浸けた。"
+          },
+          {
+            "speaker": "samechan",
+            "face": "smile",
+            "text": "……足だけなら、こわくない。お主、そこにおれよ"
+          }
+        ],
+        "swim_unknown": [
+          {
+            "speaker": "samechan",
+            "face": "serious",
+            "text": "わしは今日は、浜の見張りじゃ。海は、コロちゃんに任せておる"
+          },
+          {
+            "speaker": "samechan",
+            "face": "ventriloquism",
+            "text": "余の海である。苦しゅうない",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "コロちゃんだけが、波打ち際でちゃぷちゃぷと海に浸かっていた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……本人は、ずっと砂浜にいる）"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_beach_hiyori",
+      "comment": "SPC18（2026-11-15 オーナー決定・Issue #3657）。ドバイの水着回。前夜祭の日の夕方、宿の裏の砂浜（ch4-beach.js・ch4.js の renderBeach）。砂浜にいる人から選んだ一人と遊ぶ場面。恋人でも友人でも同じ台本で、恋愛を示す台詞は無い。ほかの人の名前を出さない（誰がいても成り立つ）。好感度・能力は付けない。ひよりは儚い女として波に溶けるつもりが、波をかぶって素が出る。本当は泳ぎが得意。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "波打ち際に、ひよりさんが一人で立って、遠くの水平線を見つめていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……はじめくん。私、このまま波に溶けて、消えちゃうかも"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "足もと、波が来てますよ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "いいの。儚い女は、波と一緒に……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少し大きな波が来て、ひよりさんの足をすくった。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "冷たっ！！ しょっぱ！！ ちょっと、目に入ったんだけど！！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "大丈夫ですか！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "起き上がったひよりさんは髪をしぼると、なぜか真顔で、沖のブイを指さした。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "……はじめくん。あのブイまで、競争"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事をする前に、ひよりさんはきれいなクロールで泳ぎ出していた。速い。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（学生のころ、絶対なにかやってた泳ぎだ）"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "私の勝ち！ ……あ、今のは、見なかったことにして"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……儚い女は、本当は、泳げないの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_beach_noor",
+      "comment": "SPC18（2026-11-15 オーナー決定・Issue #3657）。ドバイの水着回。前夜祭の日の夕方、宿の裏の砂浜（ch4-beach.js・ch4.js の renderBeach）。砂浜にいる人から選んだ一人と遊ぶ場面。恋人でも友人でも同じ台本で、恋愛を示す台詞は無い。ほかの人の名前を出さない（誰がいても成り立つ）。好感度・能力は付けない。ヌールはドバイに住んでいて、会ったことがあれば仕事帰りに寄る。着替えずに裾をまくった服のまま（水着の描写はしない）。砂の城の勝負。日本語の語録は使わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "波打ち際で、ヌールさんが砂を山のように積み上げていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "仕事帰りの服のまま、裾だけまくっている。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ハジメ！ ちょうどいい。砂のお城、競走しよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ヌールさん、砂のプロじゃないですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "砂漠の砂と、海の砂は違うよ。海の砂は、水を入れると固くなる"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……見てて。水をこうやって、少しずつ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんの手の中で、湿った砂が塔の形に立ち上がっていく。俺の城は、三回目で崩れた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "なんで、そんなに高く立つんですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "線を引くのと同じ。砂を見て、決めるの"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメのは、水が多すぎ。……ほら、手、こうして"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手の上から、ヌールさんの手が重なって、砂を固める。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……近い）"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "できた！ ハジメのお城、私のより小さいけど、かわいいね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_beach_close",
+      "comment": "SPC18（2026-11-15 オーナー決定・Issue #3657）。ドバイの水着回。前夜祭の日の夕方、宿の裏の砂浜（ch4-beach.js・ch4.js の renderBeach）。締め。人数に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "日が傾いて、砂浜の色がゆっくり変わっていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "海の向こうで、モスクの塔に明かりが灯った。そろそろ、前夜祭の時間だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（明日は大会だ。……でも、今日の海のことも、ちゃんと覚えておこう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "濡れた髪のまま、宿へ戻った。"
+        }
+      ]
+    }
+  ]
+}

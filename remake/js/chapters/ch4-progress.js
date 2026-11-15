@@ -69,6 +69,12 @@ export const CH4_SCENE_BG = Object.freeze({
   ch4_samechan_dubai_girlfriend: "bg_dubai_inn_day",
   ch4_hiyori_dubai_girlfriend: "bg_dubai_inn_day",
   ch4_mashiro_dubai_friend: "bg_dubai_inn_day",
+  ch4_tsumugi_dubai_friend: "bg_dubai_inn_day",
+  ch4_minto_dubai_friend: "bg_dubai_inn_day",
+  ch4_rio_dubai_friend: "bg_dubai_inn_day",
+  ch4_ageha_dubai_friend: "bg_dubai_inn_day",
+  ch4_samechan_dubai_friend: "bg_dubai_inn_day",
+  ch4_hiyori_dubai_friend: "bg_dubai_inn_day",
   // 到着の後の夕方（任意・IR18・#3097）。宿のロビー・食堂で過ごす。
   ch4_tsumugi_dubai_evening: "bg_dubai_inn_night",
   ch4_minto_dubai_evening: "bg_dubai_inn_night",
@@ -189,23 +195,29 @@ export const CH4_SCENE_FILES = Object.freeze({
 // ヒロイン来訪の台本。前夜祭の日、別便の応援の到着だけ ch4.js の renderEve で再生する（chapterFourArrivalsDue）。
 export const CH4_VISITOR_SCENE_FILES = Object.freeze({
   ch4_mashiro_dubai: Object.freeze(["ch4_mashiro_dubai_friend", "ch4_mashiro_dubai_girlfriend"]),
-  ch4_visitors: Object.freeze(["ch4_samechan_dubai_girlfriend", "ch4_hiyori_dubai_girlfriend"]),
-  ch4_tsumugi_dubai: Object.freeze(["ch4_tsumugi_dubai_girlfriend"]),
-  ch4_minto_dubai: Object.freeze(["ch4_minto_dubai_girlfriend"]),
-  ch4_rio_dubai: Object.freeze(["ch4_rio_dubai_girlfriend"]),
-  ch4_ageha_dubai: Object.freeze(["ch4_ageha_dubai_girlfriend"]),
+  ch4_visitors: Object.freeze(["ch4_samechan_dubai_girlfriend", "ch4_hiyori_dubai_girlfriend",
+    "ch4_samechan_dubai_friend", "ch4_hiyori_dubai_friend"]),
+  ch4_tsumugi_dubai: Object.freeze(["ch4_tsumugi_dubai_girlfriend", "ch4_tsumugi_dubai_friend"]),
+  ch4_minto_dubai: Object.freeze(["ch4_minto_dubai_girlfriend", "ch4_minto_dubai_friend"]),
+  ch4_rio_dubai: Object.freeze(["ch4_rio_dubai_girlfriend", "ch4_rio_dubai_friend"]),
+  ch4_ageha_dubai: Object.freeze(["ch4_ageha_dubai_girlfriend", "ch4_ageha_dubai_friend"]),
 });
 
 // 別便の応援の到着場面。恋人は data/story_routes.json の romance[id].arrival と同じ（ch4_progress.mjs が一致を確認）。
-// 恋人でないましろ（第3章クリアで来る）は友人版。同行者は同じ便なので到着場面を持たない。
+// 恋人でない人は友人版: 第3章クリアで来るましろ、いつも来るつむぎ、友人ルートの締めくくり（♥5）を済ませた友人（SPC17）。
+// 同行者は同じ便なので到着場面を持たない。友人版の夕方はましろだけ（ほかの友人は到着のみ）。
 export const CH4_ARRIVAL_SCENES = Object.freeze({
   tsumugi: "ch4_tsumugi_dubai_girlfriend", minto: "ch4_minto_dubai_girlfriend", rio: "ch4_rio_dubai_girlfriend",
   ageha: "ch4_ageha_dubai_girlfriend", mashiro: "ch4_mashiro_dubai_girlfriend",
   samechan: "ch4_samechan_dubai_girlfriend", hiyori: "ch4_hiyori_dubai_girlfriend",
 });
-export const CH4_FRIEND_ARRIVAL_SCENES = Object.freeze({ mashiro: "ch4_mashiro_dubai_friend" });
+export const CH4_FRIEND_ARRIVAL_SCENES = Object.freeze({
+  tsumugi: "ch4_tsumugi_dubai_friend", minto: "ch4_minto_dubai_friend", rio: "ch4_rio_dubai_friend",
+  ageha: "ch4_ageha_dubai_friend", mashiro: "ch4_mashiro_dubai_friend",
+  samechan: "ch4_samechan_dubai_friend", hiyori: "ch4_hiyori_dubai_friend",
+});
 // 前夜祭（王煙楼の招待）が始まった印。ここから先は到着を足さない（ロビーの出迎えを前夜祭の後に回さない）。
-const CH4_FESTIVAL_STARTED = Object.freeze(["ch4_wang_reception_forced_in", "ch4_wang_reception"]);
+export const CH4_FESTIVAL_STARTED = Object.freeze(["ch4_wang_reception_forced_in", "ch4_wang_reception"]);
 
 const PARTS = Object.freeze(["prologue", "free", "eve", "tournament", "resolution", "cleared"]);
 const STRATEGY_BRANCHES = Object.freeze(["sakura", "peach", "tea"]);
@@ -323,7 +335,7 @@ export function chapterFourMandatory(value) {
 
 /**
  * 前夜祭の日に読む、別便の応援の到着場面（未読だけ。{id, scene} を OVERSEAS_HEROINES の順）。
- * 出発前に決めた supports（同行者を除く恋人と、第3章クリア済みのましろ）だけが対象。恋人は恋人版、恋人でないましろは友人版。
+ * 出発前に決めた supports（同行者を除く恋人・♥5の友人・第3章クリア済みのましろ・つむぎ）だけが対象。恋人は恋人版、恋人でない人は友人版。
  * 前夜の part の間で、前夜祭が始まる前・前夜の過ごし方を記録する前だけ。大会の後や、同行の選択が無い旧保存には足さない。
  * 好感度からは到着を作らない（到着の記録は読了フラグだけ）。
  */

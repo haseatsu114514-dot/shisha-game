@@ -839,6 +839,12 @@
       "run": ["node remake/test/ngplus_measurement.mjs"]
     },
     {
+      "id": "ch4-beach",
+      "title": "Chapter 4 Dubai beach (SPC18): cast is who is there, picks once, no rewards",
+      "kind": "quick",
+      "run": ["node remake/test/ch4_beach.mjs"]
+    },
+    {
       "id": "ngplus-carry",
       "title": "NG+ save migration, carry classification coverage and package extraction (#1228)",
       "kind": "quick",

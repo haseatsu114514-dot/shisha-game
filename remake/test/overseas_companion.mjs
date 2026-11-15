@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { newState, setState, saveToSlot, loadFromSlot, SAVE_KEY } from "../js/core/state.js";
 import { advanceToChapterFour } from "../js/chapters/ch4-progress.js";
-import { OVERSEAS_HEROINES, overseasCompanion, overseasCompanionCandidates, overseasSupportVisitors,
+import { OVERSEAS_HEROINES, overseasCompanion, overseasCompanionCandidates, overseasSupportVisitors, overseasMaxFriend,
   canChooseOverseasCompanion, chooseOverseasCompanion, isSeparateFlightSupport } from "../js/core/overseas-companion.js";
 
 const memory = new Map();
@@ -30,13 +30,13 @@ const kept = value => Object.fromEntries(keptKeys.map(key => [key, structuredClo
   assert.deepEqual(overseasCompanion(value), { decided: false, companion: null, supports: [] });
   assert(canChooseOverseasCompanion(value));
 }
-// 同行0人：恋人0でも「同行なし」で進める。ましろだけが別便応援。
+// 同行0人：恋人0でも「同行なし」で進める。いつも来るつむぎ（tonariの常連・SPC17）とましろ（第3章クリア）だけが別便応援。
 {
   const value = atDeparture([]), before = kept(value);
   assert.deepEqual(overseasCompanionCandidates(value), []);
   assert(!chooseOverseasCompanion(value, "tsumugi"), "非恋人は同行不可");
   assert(chooseOverseasCompanion(value, null));
-  assert.deepEqual(overseasCompanion(value), { decided: true, companion: null, supports: ["mashiro"] });
+  assert.deepEqual(overseasCompanion(value), { decided: true, companion: null, supports: ["tsumugi", "mashiro"] });
   assert.deepEqual(kept(value), before);
   assert(!canChooseOverseasCompanion(value) && !chooseOverseasCompanion(value, null), "決定後は変更不可");
 }
@@ -59,6 +59,37 @@ const kept = value => Object.fromEntries(keptKeys.map(key => [key, structuredClo
   assert(!overseasCompanion(value).decided);
   assert(chooseOverseasCompanion(value, "tsumugi"));
   assert(!overseasCompanion(value).supports.includes("samechan"));
+}
+// 友人ルートの締めくくり（♥5）を済ませた友人は、別便の応援に来る（SPC17）。同行はできない。
+// 締めくくり前の友人・告白を待つ恋愛ルートの相手は来ない。好感度の数値だけでは来ない。
+{
+  const value = atDeparture(["minto"]);
+  value.affinity = { ...value.affinity, rio: 999, ageha: 999 }; // 好感度の数値だけでは来ない
+  value.finales = {
+    samechan: { day: 20, chapter: 2, route: "friend" },     // 友情の着地
+    hiyori: { day: 21, chapter: 2, route: "romance" },      // 告白で「友達のまま」
+    rio: { day: 9, chapter: 1, route: "romance" },          // 告白を待つ恋愛ルート（まだ友人ではない）
+  };
+  value.flags._friend_hiyori = true;
+  const keptNow = kept(value);
+  for (const id of ["samechan", "hiyori"]) assert(overseasMaxFriend(value, id), id);
+  for (const id of ["rio", "ageha", "minto", "tsumugi", "mashiro"]) assert(!overseasMaxFriend(value, id), id);
+  assert(!overseasCompanionCandidates(value).includes("samechan"), "友人は同行不可");
+  assert(chooseOverseasCompanion(value, "minto"));
+  assert.deepEqual(overseasCompanion(value).supports, ["tsumugi", "mashiro", "samechan", "hiyori"]);
+  assert.deepEqual(kept(value), keptNow, "好感度・恋人は変えない");
+}
+// 恋人のつむぎを同行者にすると、つむぎは別便には入らない（同行者と重ならない）。
+{
+  const value = atDeparture(["tsumugi"]);
+  assert(chooseOverseasCompanion(value, "tsumugi"));
+  assert.deepEqual(overseasCompanion(value), { decided: true, companion: "tsumugi", supports: ["mashiro"] });
+}
+// 第3章を終えていない保存でも、つむぎは来る（ましろは第3章クリアが条件のまま）。
+{
+  const value = atDeparture([]);
+  value.flags._ch3_cleared = false;
+  assert.deepEqual(overseasSupportVisitors(value), ["tsumugi"]);
 }
 // 通常訪問の予約競合：出発時に未了の予約は渡航のため終了。好感度・申し出は触れない。
 {
