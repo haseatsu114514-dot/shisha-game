@@ -746,13 +746,14 @@ console.log("PASS: Chapter 4 runner state keeps the Dubai days, mandatory scenes
     settledFriends.finales = { ...(settledFriends.finales || {}), minto: { day: 9, chapter: 1, route: "friend" },
       samechan: { day: 20, chapter: 2, route: "romance" }, hiyori: { day: 21, chapter: 2, route: "romance" } };
     settledFriends.flags._friend_hiyori = true; // ひよりは告白で「友達のまま」。サメちゃんは告白待ちなので来ない
-    // ♥5の男の友人（SPC21）: スティーブと神崎は来る。クラウドは締めくくりを済ませていても来ない。
+    // ♥5の男の友人（SPC21）: スティーブとヴォルクは来る。神崎・クラウドは締めくくりを済ませていても来ない。
     Object.assign(settledFriends.finales, { steve: { day: 30, chapter: 3, route: "friend" },
-      kumicho: { day: 22, chapter: 2, route: "friend" }, rei: { day: 23, chapter: 2, route: "friend" } });
+      volk: { day: 33, chapter: 3, route: "friend" }, kumicho: { day: 22, chapter: 2, route: "friend" },
+      rei: { day: 23, chapter: 2, route: "friend" } });
     assert(advanceToChapterFour(settledFriends));
     assert(chooseOverseasCompanion(settledFriends, null));
     assert.deepEqual(settledFriends.flags._overseas_companion.supports, ["tsumugi", "minto", "rio", "mashiro", "hiyori"]);
-    assert.deepEqual(settledFriends.flags._overseas_companion.guests, ["kumicho", "steve"]);
+    assert.deepEqual(settledFriends.flags._overseas_companion.guests, ["steve", "volk"]);
     for (const id of CH4_PREP_SCENES) assert(completeChapterFourScene(settledFriends, id));
     settledFriends.day += 3;
     assert(departChapterFour(settledFriends));
@@ -760,8 +761,8 @@ console.log("PASS: Chapter 4 runner state keeps the Dubai days, mandatory scenes
     settledFriends.day = settledFriends.flags._ch4.startDay + 11; syncChapterFourDay(settledFriends);
     toEve(settledFriends);
     assert.deepEqual(due(settledFriends), ["ch4_tsumugi_dubai_friend", "ch4_minto_dubai_friend", "ch4_rio_dubai_girlfriend",
-      "ch4_mashiro_dubai_friend", "ch4_hiyori_dubai_friend", "ch4_kumicho_dubai", "ch4_steve_dubai"], "The male friends arrive after the heroines");
-    assert.deepEqual(chapterFourArrivalsDue(settledFriends).slice(-2).map(entry => entry.id), ["kumicho", "steve"]);
+      "ch4_mashiro_dubai_friend", "ch4_hiyori_dubai_friend", "ch4_steve_dubai", "ch4_volk_dubai"], "The male friends arrive after the heroines");
+    assert.deepEqual(chapterFourArrivalsDue(settledFriends).slice(-2).map(entry => entry.id), ["steve", "volk"]);
     for (const scene of due(settledFriends).slice(0, -2)) assert(completeChapterFourScene(settledFriends, scene));
     assert.deepEqual(evenings(settledFriends), [], "Arrivals first, then the evenings");
     for (const scene of due(settledFriends)) assert(completeChapterFourScene(settledFriends, scene));

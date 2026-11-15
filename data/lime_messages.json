@@ -3249,6 +3249,46 @@
       ]
     },
     {
+      "id": "lime_ch4_kumicho_shop",
+      "sender": "kumicho",
+      "chapter": 4,
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 10,
+      "region": "dubai",
+      "route": "friend",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "kumicho",
+          "text": "あんちゃん。そっちは十二月でも暑いそうですね"
+        },
+        {
+          "sender": "kumicho",
+          "text": "本当は、応援に飛んでいきてえところでさ。けど、店は空けられねえ"
+        },
+        {
+          "sender": "kumicho",
+          "text": "うちでしか一服できねえお客が、何人もいるんでさ。……すまねえ"
+        },
+        {
+          "sender": "kumicho",
+          "text": "配信は、店のテレビで見やす。お客と一緒にな"
+        }
+      ],
+      "replies": [
+        {
+          "text": "その気持ちだけで、十分です",
+          "response": "……泣かせること言いなさんな。いや、映画の話でさ",
+          "affinity": 2
+        },
+        {
+          "text": "帰ったら、店に顔を出します",
+          "response": "おう。土産話は、ドラゴンフルーツで待ってやす",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_ch4_sumi_eve",
       "sender": "sumi",
       "chapter": 4,

@@ -1,9 +1,9 @@
 {
-  "comment": "♥5の男の友人の到着（SPC21・2026-11-15 オーナー決定）。友人ルートの締めくくりを済ませ、ドバイへ来る自分の理由がある3人（アダム・神崎・スティーブ）だけ。出発前の同行の選択で確定する（core/overseas-companion.js の overseasGuestVisitors）。クラウド・綾取は来ない。",
+  "comment": "♥5の男の友人の到着（SPC21・2026-11-15 オーナー決定）。友人ルートの締めくくりを済ませ、ドバイへ来る自分の理由がある3人（アダム・スティーブ・ヴォルク）だけ。出発前の同行の選択で確定する（core/overseas-companion.js の overseasGuestVisitors）。神崎は来たいが店を空けられない（LIME）。綾取は福岡で配信を見る。クラウドは来ない。",
   "dialogues": [
     {
       "dialogue_id": "ch4_adam_dubai",
-      "comment": "SPC21（2026-11-15 オーナー決定）。♥5の男の友人の到着。アダムはダブルアップルの本場で研修を兼ねて来る（EDENは「研修中」の貼り紙）。私生活のポンコツ（服の裏表）を一つだけ。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
+      "comment": "SPC21（2026-11-15 オーナー決定・同日訂正）。♥5の男の友人の到着。アダムは本場のダブルアップルを吸いに来る。私生活のポンコツ（服の裏表）を一つだけ。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
       "lines": [
         {
           "speaker": "",
@@ -23,17 +23,17 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "研修だ。ダブルアップルの本場の空気を、肺で学びに来た"
+          "text": "本場のダブルアップルを、本場の空気で吸いに来た"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "研修……お店は大丈夫なんですか"
+          "text": "お店は大丈夫なんですか"
         },
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "「研修中」と貼ってきた。うちの常連は、在庫切れには慣れている"
+          "text": "「本場へ行く」と貼ってきた。うちの常連は、在庫切れには慣れている"
         },
         {
           "speaker": "hajime",
@@ -88,93 +88,12 @@
         {
           "speaker": "adam",
           "face": "smile",
-          "text": "うむ。俺は市場で、この国のダブルアップルの顔を数えてくる"
-        }
-      ]
-    },
-    {
-      "dialogue_id": "ch4_kumicho_dubai",
-      "comment": "SPC21（2026-11-15 オーナー決定）。♥5の男の友人の到着。神崎は店を若い衆に任せて長期休暇を取り、ついでにドバイのサウナ巡り。正体は断定しない。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
-      "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ロビーの空気が、少し張りつめていた。白いチェックのスーツが、受付の前に立っている。"
+          "text": "うむ。俺は今夜、この国のダブルアップルを片っ端から吸ってくる"
         },
         {
-          "speaker": "kumicho",
+          "speaker": "adam",
           "face": "normal",
-          "text": "おう、あんちゃん。砂の国でも、ちゃんと飯は食ってなさるかい"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "神崎さん！？ お店は……"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "若い衆に任せてきやした。長い休みなんざ、何年ぶりですかね"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "smile",
-          "text": "炭の番は一から叩き込んである。俺がいなくても、煙は穏やかでさ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "わざわざ、俺の大会のために……"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "そいつが半分。もう半分は、こっちでさ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "神崎さんが、上着の内側から折りたたんだ紙を出した。手書きで「ドバイ サウナ巡り」とある。"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "serious",
-          "text": "砂の国のサウナ。こいつで、ととのわねえ道理がねえ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "外がもう、サウナみたいなものじゃないですか"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "serious",
-          "text": "あんちゃん。外は暑い、サウナは熱い。字が違うんでさ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（字の話だったのか）"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "水風呂がシングルの店を、三つ見つけてありやす。大会の後、一軒付き合いなせえ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "……大会が終わったら、ぜひ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "今夜、前夜祭があるんです。少し顔を出してきます"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "おう、いってらっしゃい。俺は一軒目で、汗を流してきやす"
+          "text": "明日の客席でリンゴの匂いがしたら、それは俺だ"
         }
       ]
     },
@@ -266,6 +185,82 @@
           "speaker": "steve",
           "face": "smile",
           "text": "オーケー。熱を急がずに、楽しんでこい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_volk_dubai",
+      "comment": "SPC21（2026-11-15 オーナー指示「星5でくる男性キャラはもっと増やしたい」）。♥5の男の友人の到着。ヴォルクは中東の市場調査（この国の店でナイトサイドがどう届くか）。日程は大会に合わせたと正直に言う。測るのは室温と外気だけで、客の数字は数えない（人物設定）。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーの隅で、大柄な男が細い温度計を宙にかざしていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ヴォルクさん！？"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "……ロビー、室温19度。外は27度。十二月の外気ではない"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "国の十二月は、零下20度だ。差が47度ある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どうしてドバイに……"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "市場調査だ。この国の店で、ナイトサイドがどう届くかを見る"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "日程は、大会に合わせた。お前の火も、調べる店の一つだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺の火も、ですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "明日は客席でノートを開く。書くのは数字ではない。客席の言葉だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクさんは温度計をしまい、少しだけ声を落とした。"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "……凛想には言うな。休めと言った手前、俺がここで働いていると困る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（送信の時刻で、たぶん、もうばれている）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今夜、前夜祭があるんです。少し顔を出してきます"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "行け。冷えた部屋から急に外へ出るな。扉の前で、一度息を整えろ"
         }
       ]
     }

@@ -91,14 +91,14 @@ const kept = value => Object.fromEntries(keptKeys.map(key => [key, structuredClo
   value.flags._ch3_cleared = false;
   assert.deepEqual(overseasSupportVisitors(value), ["tsumugi"]);
 }
-// ♥5の男の友人（SPC21）: 締めくくりを済ませたアダム・神崎・スティーブだけが、ヒロインの応援とは別に guests で来る。
-// クラウド・綾取は締めくくりを済ませていても来ない。好感度の数値だけでは来ない。出発後の保存には足さない。
+// ♥5の男の友人（SPC21）: 締めくくりを済ませたアダム・スティーブ・ヴォルクだけが、ヒロインの応援とは別に guests で来る。
+// 神崎（店を空けられない）・クラウド・綾取は締めくくりを済ませていても来ない。好感度の数値だけでは来ない。出発後の保存には足さない。
 {
   const characters = JSON.parse(readFileSync(new URL("../../data/characters.json", import.meta.url)));
   for (const id of OVERSEAS_GUESTS) assert(characters.some(c => c.id === id), id);
-  assert.deepEqual([...OVERSEAS_GUESTS], ["adam", "kumicho", "steve"]);
+  assert.deepEqual([...OVERSEAS_GUESTS], ["adam", "steve", "volk"]);
   const none = atDeparture([]);
-  none.affinity = { ...none.affinity, adam: 999, kumicho: 999, steve: 999 };
+  none.affinity = { ...none.affinity, adam: 999, steve: 999, volk: 999 };
   assert.deepEqual(overseasGuestVisitors(none), [], "好感度の数値だけでは来ない");
   assert(chooseOverseasCompanion(none, null));
   assert.deepEqual(overseasGuests(none), []);
@@ -108,13 +108,14 @@ const kept = value => Object.fromEntries(keptKeys.map(key => [key, structuredClo
   value.finales = {
     steve: { day: 30, chapter: 3, route: "friend" }, adam: { day: 9, chapter: 1, route: "friend" },
     rei: { day: 20, chapter: 2, route: "friend" }, saku: { day: 31, chapter: 3, route: "friend" },
+    kumicho: { day: 25, chapter: 2, route: "friend" },
   };
   assert.deepEqual(overseasGuestVisitors(value), ["adam", "steve"]);
   assert(chooseOverseasCompanion(value, "tsumugi"));
   assert.deepEqual(overseasGuests(value), ["adam", "steve"]);
   assert.deepEqual(overseasCompanion(value), { decided: true, companion: "tsumugi", supports: ["mashiro"] }, "ヒロインの応援には混ぜない");
   assert.deepEqual(kept(value), before);
-  value.finales.kumicho = { day: 70, chapter: 4, route: "friend" };
+  value.finales.volk = { day: 70, chapter: 4, route: "friend" };
   assert.deepEqual(overseasGuests(value), ["adam", "steve"], "出発後に締めくくりを読んでも足さない");
 
   const old = atDeparture([]);
@@ -152,9 +153,9 @@ for (const raw of [{ decided: true, companion: "x", supports: [] }, { decided: t
 // SAVE/LOAD：4つのセーブ枠で選択が残る。
 {
   const value = atDeparture(["tsumugi", "minto"]);
-  value.finales = { kumicho: { day: 25, chapter: 2, route: "friend" } };
+  value.finales = { volk: { day: 35, chapter: 3, route: "friend" } };
   assert(chooseOverseasCompanion(value, "minto"));
-  assert.deepEqual(overseasGuests(value), ["kumicho"]);
+  assert.deepEqual(overseasGuests(value), ["volk"]);
   setState(value);
   for (const key of [SAVE_KEY, "suien_remake_slot1", "suien_remake_slot2", "suien_remake_slot3"]) {
     assert(saveToSlot(key));

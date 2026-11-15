@@ -572,8 +572,8 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, ['rio']);
   assert.equal(ch4.chapterFourEveningPartner(routes, value), 'rio');
   // ♥5の男の友人（SPC21）も、到着を読んでいても前夜の人数に入らない。
-  value.flags._overseas_companion.guests = ['adam', 'kumicho', 'steve'];
-  for (const scene of ['ch4_adam_dubai', 'ch4_kumicho_dubai', 'ch4_steve_dubai']) value.flags._ch4.read[scene] = true;
+  value.flags._overseas_companion.guests = ['adam', 'steve', 'volk'];
+  for (const scene of ['ch4_adam_dubai', 'ch4_steve_dubai', 'ch4_volk_dubai']) value.flags._ch4.read[scene] = true;
   assert.deepEqual(ch4.chapterFourEveningContext(routes, value).present, ['rio']);
   assert.equal(ch4.chapterFourEveningPartner(routes, value), 'rio');
   // 同じ場所の恋人が二人以上: 第4章ではスティーブの茶化しを出さず、重なった予定を保留する。誘いの選択は出さない。
