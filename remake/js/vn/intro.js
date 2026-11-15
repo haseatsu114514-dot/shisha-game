@@ -5,7 +5,7 @@
 // 載せる言葉は名前・二つ名・一言＋小さく好きなフレーバー。初対面の顔だけを書く（2026-10-31）
 // 名前の出し方（NAMES-1106「カットインの名前表示ルール」2026-11-06 オーナー策定）: intro_cutin.display_name に書く。
 //   本名タイプはフルネーム（あだ名がある人は「本名（あだ名）」）、通り名タイプは通り名。漢字には「漢字《よみ》」でふりがな。
-//   例外（2026-11-15 オーナー決定）: †玖羅雨℃†は「通り名（本名）」で併記し、大げさな芸名と普通の本名の落差を見せる。
+//   例外（2026-11-15 オーナー決定）: †玖羅雨℃†は芸名を大きく出し、本名は sub_name で2行目に小さく添える（本名にふりがなは付けない）。大げさな芸名と普通の本名の落差を見せるため。
 //   display_name_after: { flag, display_name } は、その到達フラグが立った後の名前（みんとは本名を聞いた後に木成頼栞）
 // 既読は flags._intro_<id>。明示的な未知版は _intro_<id>_<variant> へ分ける。
 import { el, sleep } from "../core/util.js";
@@ -45,7 +45,8 @@ export function introName(id, variant = "", override = {}) {
   const intro = { ...introOf(id, variant), ...override };
   const after = intro.display_name_after;
   const source = (after?.flag && state.flags[after.flag] && after.display_name) || intro.display_name || displayName(id, state);
-  return { source, main: plainName(source) };
+  const subSource = intro.sub_name || "";
+  return { source, main: plainName(source), subSource, subMain: plainName(subSource) };
 }
 
 /** 1行に収める字の大きさ（半角は約半分の幅で数える） */
@@ -72,7 +73,7 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
   if (!introOf(id, variant)) return;
   if (variant !== "unknown") markMet(id);
   markIntroSeen(id, variant);
-  const { source: nameSource, main } = introName(id, variant, override);
+  const { source: nameSource, main, subSource } = introName(id, variant, override);
   const standingInfo = portraitInfo(id, intro.face || "normal");
   // 登場カットインの配置は現行原画用。会話の画風設定と独立して選ぶ。
   let p = portraitInfo(id, intro.face || "normal", "classic");
@@ -138,6 +139,7 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
     el("div.ci-meta", [
       el("div.ci-title", { text: intro.title || "" }),
       nameNode("div.ci-name", nameSource, { style: `font-size: ${fitSize(main, 570, 116)}px` }),
+      ...(subSource ? [nameNode("div.ci-name-sub", subSource)] : []),
     ].filter(Boolean)),
     intro.line ? el("div.ci-line", { text: `「${plainLine(intro.line)}」`, style: `font-size: ${fitSize(`「${plainLine(intro.line)}」`, 575, 30)}px` }) : null,
   ].filter(Boolean));
