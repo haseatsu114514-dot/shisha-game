@@ -4,6 +4,7 @@ import fs from "node:fs";
 import vm from "node:vm";
 import { scheduleChapterTwoTrpgNight } from "../js/chapters/ch2-progress.js";
 import { reiStickerDue } from "../js/core/ryuji-visit.js";
+import { bondAfterNext, markBondAfterRead } from "../js/core/bond-after.js";
 
 const root = new URL("../../", import.meta.url);
 const preparation = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_preparation.json", root)));
@@ -60,6 +61,8 @@ const mocks = {
   "./ch2-purikura.js": { offerAgehaPurikura: async () => true },
   // MELTY PUFFでのクラウドの挨拶回の後日（#3468 A案）。判定は実物を使う
   "../core/ryuji-visit.js": { reiStickerDue },
+  // #3693 ♥5後の会話。判定は本物を使い、台本の読み込みは何もしない（このテストの保存は締めくくり前）
+  "../core/bond-after.js": { bondAfterNext, markBondAfterRead, loadBondAfterScenes: async () => {} },
   // あげはの♥3の質問（#1988）は affinity_stages.mjs で確認する。ここでは質問が無い通常訪問だけを見る
   // 締めくくりの記録・贈り物は bonds.mjs / affinity_stages.mjs が確認する。ここでは訪問の分岐と精算だけを見る（#2027）
   "../daily/bonds.js": { BOND_QUESTIONS: { ageha: { host: "remake_ch2_ageha_newcomer", dialogue: "ch2_ageha_bond_question" } },
