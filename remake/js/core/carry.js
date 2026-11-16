@@ -129,6 +129,7 @@ export const FLAG_EXACT_RULES = [
   ["_axe_throw_unlocked", "person"],
   ["_board_starter_given", "ui"],
   ["_board_tutorial_done", "ui"],
+  ["_bond_after", "person"], // ♥5の締めくくりの後の会話の既読と、短い汎用の巡回（core/bond-after.js・#3693）
   ["_c_station_registered", "unlock"],
   ["_cafe_idea_wait", "pending"],
   ["_cafe_introduced", "progression"],

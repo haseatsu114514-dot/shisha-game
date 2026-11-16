@@ -25,6 +25,7 @@ import { BOND_QUESTIONS, BOND_FINALES, playQuestionVisit, questionVisitDue, fina
 import { consultLessons } from "../core/growth.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { reiStickerDue } from "../core/ryuji-visit.js";
+import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
 
 const stat = { ageha: "sense", kumicho: "guts", rei: "charm" };
 // day % 7（1=月曜）。第2章の準備期間（通算16〜27日）では各店とも1日だけ休む（#2027）。
@@ -107,15 +108,26 @@ export async function visitCityRegular(spot, { staminaGuard }) {
     toast("室内を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます");
     return { used: false, exerted: false };
   }
+  // ♥5の締めくくりの後（#3693）: いつもの小会話の代わりに、♥5後の場面を一度ずつ。読み終えたら短い汎用（core/bond-after.js）。
+  const after = bondAfterNext(state, id);
+  if (after) {
+    try { await loadBondAfterScenes(DB); } catch {
+      toast("会話を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます");
+      return { used: false, exerted: false };
+    }
+    if (state !== owner) return { used: false, exerted: false };
+  }
   await withScenePreparation(setBg(ROOMS[id]));
   if (state !== owner) return { used: false, exerted: false };
-  const welcome = `venue_${id}_${timeOfDay()}`;
-  if (DB.dialogues[welcome]?.lines?.length) {
+  // ♥5後の場面は自前の導入があるので、昼夜の店のあいさつは挟まない（短い汎用の前は挟む）。
+  const welcome = after?.kind === "story" ? null : `venue_${id}_${timeOfDay()}`;
+  if (welcome && DB.dialogues[welcome]?.lines?.length) {
     const greeted = await play(welcome);
     if (state !== owner || !greeted || greeted.cancelled) return { used: false, exerted: false };
   }
-  const result = await play(repeatScene(id));
+  const result = await play(after?.scene || repeatScene(id));
   if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
+  markBondAfterRead(state, id, after);
   addMoney(-spot.cost); addStamina(spot.stamina);
   const talks = state.flags._ch2_talks ||= {};
   talks[id] = (talks[id] || 0) + 1;
@@ -209,8 +221,17 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   const repeat = !first && !followup && !story && !stage && !finale && !later && !live;
   // MELTY PUFFでの挨拶回を読んだ日より後に一度だけ、いつもの小会話の代わりにシールの後日（#3468 A案）。好感度・能力は小会話と同じ。
   const sticker = id === "rei" && repeat && reiStickerDue(state) && DB.dialogues[REI_STICKER_SCENE]?.lines?.length ? REI_STICKER_SCENE : null;
+  // ♥5の締めくくりの後（#3693）: いつもの小会話の代わりに、♥5後の場面を一度ずつ。読み終えたら短い汎用（core/bond-after.js）。
+  const after = repeat && !sticker ? bondAfterNext(state, id) : null;
+  if (after) {
+    try { await loadBondAfterScenes(DB); } catch {
+      toast("会話を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます");
+      return { used: false, exerted: false };
+    }
+    if (state !== owner) return { used: false, exerted: false };
+  }
   const scene = live || story || stage?.scene || (finale ? BOND_FINALES[id].dialogue
-    : first ? `remake_ch2_${id}_chat` : followup ? `remake_ch2_${id}_followup` : later || sticker || repeatScene(id));
+    : first ? `remake_ch2_${id}_chat` : followup ? `remake_ch2_${id}_followup` : later || sticker || after?.scene || repeatScene(id));
   const dialogue = DB.dialogues[scene];
   const followupDialogue = followup ? DB.dialogues[`remake_ch2_${id}_followup`] : null;
   if (!dialogue?.lines?.length || (followup || stage?.done) && !(followupDialogue || dialogue)?.lines?.every(line => line && !line.type
@@ -239,8 +260,8 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
     const result = await play(`remake_ch2_${id}_followup`, { growthScene: true });
     if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
   }
-  // 通い訪問の小会話の前だけ、昼夜の店のあいさつを挟む（段階会話・締めくくりは自前の導入がある）。
-  const welcome = repeat && REPEAT_POOL[id] ? `venue_${id}_${timeOfDay()}` : null;
+  // 通い訪問の小会話の前だけ、昼夜の店のあいさつを挟む（段階会話・締めくくり・♥5後の場面は自前の導入がある。短い汎用は挟む）。
+  const welcome = repeat && after?.kind !== "story" && REPEAT_POOL[id] ? `venue_${id}_${timeOfDay()}` : null;
   if (welcome && DB.dialogues[welcome]?.lines?.length) {
     const greeted = await play(welcome);
     if (state !== owner || !greeted || greeted.cancelled) return { used: false, exerted: false };
@@ -276,6 +297,7 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   if (story) { state.flags[`_ch2_read_${story}`] = true; syncAgehaVibes(state.flags); }
   if (live) state.flags[`_talk_seen_${live}`] = true;
   if (sticker) state.flags._rei_purikura_after = true;
+  markBondAfterRead(state, id, after);
   if (later) {
     const extra = AGEHA_LATER_SCENES.find(item => item.id === later);
     if (extra) state.flags[extra.flag] = true;
