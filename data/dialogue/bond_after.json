@@ -3,10 +3,10 @@
   "dialogues": [
     {
       "dialogue_id": "bond_after_kumicho_1",
-      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。一本目は締めくくりの「何分の兄弟かは、こいつで作った煙を吸ってから決めやす」の回収。素焼き（suyaki_kumicho）を持っている時だけ。",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。一本目は締めくくりの「何分の兄弟かは、こいつで作った煙を吸ってから決めやす」の回収。兄弟の盃（締めくくり）の後なので、神崎ははじめを「あんちゃん」でなく「兄弟」と呼び、上下なく対等に話す（2026-11-16 オーナー指示。5本と短い汎用すべて）。素焼き（suyaki_kumicho）を持っている時だけ。",
       "lines": [
         {"speaker": "", "face": "", "text": "閉店の札を返した神崎煙草店。黒革のソファの前に、竜の湯呑みが二つ並んでいた。"},
-        {"speaker": "kumicho", "face": "normal", "text": "あんちゃん、例のハガルは持ってきなすったかい"},
+        {"speaker": "kumicho", "face": "normal", "text": "兄弟、例のハガルは持ってきたかい"},
         {"speaker": "hajime", "face": "normal", "text": "はい。今日は、これで一台作らせてください"},
         {"speaker": "", "face": "", "text": "包みをほどく。水だけで洗ってきた素焼きは、まだかすかに甘い匂いがした。"},
         {"speaker": "", "face": "", "text": "葉を詰めて、炭を置く。神崎さんは腕を組んだまま、一度も口を挟まなかった。"},
@@ -24,7 +24,7 @@
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。店番を頼まれ、素性を匂わせる昔馴染みの客（character_profiles）がはじめを兄弟分と聞いて恐縮する。正体は断定しない。",
       "lines": [
         {"speaker": "", "face": "", "text": "神崎煙草店の暖簾をくぐると、神崎さんが上着を羽織っていた。"},
-        {"speaker": "kumicho", "face": "normal", "text": "ちょうどいい。あんちゃん、半刻ばかり店を見ててくんな"},
+        {"speaker": "kumicho", "face": "normal", "text": "ちょうどいい。兄弟、半刻ばかり店を見ててくんな"},
         {"speaker": "hajime", "face": "surprise", "text": "え、俺がですか"},
         {"speaker": "kumicho", "face": "normal", "text": "仕入れの話が長引きそうでね。客が来たら、茶だけ出しといてくれりゃいい"},
         {"speaker": "", "face": "", "text": "神崎さんが出て行って、五分。入口の暖簾が揺れた。"},
@@ -49,9 +49,9 @@
         {"speaker": "kumicho", "face": "serious", "text": "急いで出りゃ、ただの冷てえ水。待てば、体の方が静かになる"},
         {"speaker": "hajime", "face": "normal", "text": "……シーシャの、蒸らしみたいですね"},
         {"speaker": "kumicho", "face": "smile", "text": "そういうこってす。熱も冷たさも、待った分だけ返ってくる"},
-        {"speaker": "kumicho", "face": "normal", "text": "今度、あんちゃんも行きやしょう。刺青のある客でも入れる、ありがてえ湯でさ"},
+        {"speaker": "kumicho", "face": "normal", "text": "今度、兄弟も行きやしょう。刺青のある客でも入れる、ありがてえ湯でさ"},
         {"speaker": "hajime", "face": "normal", "text": "はい。先に出たら、待ってます"},
-        {"speaker": "kumicho", "face": "smug", "text": "先に出る気でいなさるかい。そいつは甘えな"}
+        {"speaker": "kumicho", "face": "smug", "text": "先に出る気かい。そいつは甘えな"}
       ]
     },
     {
@@ -59,15 +59,15 @@
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。神崎が若い客の注文ではじめに相談する（兄弟分として対等になった回）。",
       "lines": [
         {"speaker": "", "face": "", "text": "カウンターの上に、フレーバーの缶が三つ。神崎さんは腕を組んで、それをにらんでいた。"},
-        {"speaker": "kumicho", "face": "serious", "text": "あんちゃん、ちょいと知恵を貸してくんな"},
-        {"speaker": "hajime", "face": "surprise", "text": "神崎さんが、俺にですか"},
+        {"speaker": "kumicho", "face": "serious", "text": "兄弟、ちょいと知恵を貸してくんな"},
+        {"speaker": "hajime", "face": "normal", "text": "俺でよければ。どうしたんですか"},
         {"speaker": "kumicho", "face": "normal", "text": "若い客が「派手なのを」と言うんでさ。俺ぁ、ドラゴンフルーツの奥しか知らねえ"},
         {"speaker": "hajime", "face": "normal", "text": "その人、甘いのとすっきりするの、どっちが好きそうでした？"},
         {"speaker": "kumicho", "face": "normal", "text": "炭酸ばっかり飲んでやしたな"},
         {"speaker": "hajime", "face": "normal", "text": "じゃあ、ドラゴンフルーツにライムを少しだけ。最初の一口が、ぱっと明るくなります"},
         {"speaker": "", "face": "", "text": "神崎さんは缶を一つ足して、しばらく黙って配合を書き留めた。"},
-        {"speaker": "kumicho", "face": "smile", "text": "……あんちゃんに教わる日が来るたあね"},
-        {"speaker": "kumicho", "face": "normal", "text": "兄弟分の言うこった。試させてもらいやす"}
+        {"speaker": "kumicho", "face": "smile", "text": "……持つべきものは、兄弟でさ"},
+        {"speaker": "kumicho", "face": "normal", "text": "兄弟が詰まった時は、今度は俺が知恵を貸しやす"}
       ]
     },
     {
@@ -77,7 +77,7 @@
         {"speaker": "", "face": "", "text": "閉店後の神崎煙草店。奥のテレビで、古い任侠映画が流れていた。"},
         {"speaker": "", "face": "", "text": "画面の中で、若い衆が親分に盃を返している。神崎さんは、湯呑みを持ったまま動かない。"},
         {"speaker": "hajime", "face": "normal", "text": "……神崎さん？"},
-        {"speaker": "kumicho", "face": "sad", "text": "……おう。来てなすったか"},
+        {"speaker": "kumicho", "face": "sad", "text": "……おう。来てたのかい"},
         {"speaker": "", "face": "", "text": "色付き眼鏡の奥を、神崎さんが指の背で一度だけ拭った。"},
         {"speaker": "kumicho", "face": "normal", "text": "……映画の話でさ"},
         {"speaker": "hajime", "face": "smile", "text": "はい。今日は本当に、映画ですね"},
@@ -90,7 +90,7 @@
       "dialogue_id": "bond_after_kumicho_short_a",
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用（いつもの昼夜のあいさつの後に読む）。",
       "lines": [
-        {"speaker": "kumicho", "face": "normal", "text": "おう、あんちゃん。湯呑みは出しときやした"},
+        {"speaker": "kumicho", "face": "normal", "text": "おう、兄弟。湯呑みは出しときやした"},
         {"speaker": "hajime", "face": "smile", "text": "いただきます"}
       ]
     },
@@ -108,7 +108,7 @@
       "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用。",
       "lines": [
         {"speaker": "", "face": "", "text": "神崎さんは黙って、竜の湯呑みに番茶を注いだ。"},
-        {"speaker": "kumicho", "face": "normal", "text": "ゆっくりしていきなせえ"}
+        {"speaker": "kumicho", "face": "normal", "text": "ゆっくりしていきな"}
       ]
     },
     {
@@ -138,13 +138,20 @@
     },
     {
       "dialogue_id": "bond_after_rei_2",
-      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。本名ネタ（#3667）。実家からの荷物の宛名は田中健太。本名（健太）は ch2_rei_third で打ち明け済み、二つ名は同じ回で客から聞いている（締めくくりはその後）。",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。本名ネタ（#3667）。実家は農家（田中農園・2026-11-16 オーナー決定）で、毎月の野菜が営業中に宅配便で届き、配達員が本名を呼ぶ。本名（健太）は ch2_rei_third で打ち明け済み、二つ名は同じ回で客から聞いている（締めくくりはその後）。",
       "lines": [
-        {"speaker": "", "face": "", "text": "カウンターの上に、段ボール箱が一つ。伝票には大きな字で「田中健太様」とあった。"},
-        {"speaker": "hajime", "face": "normal", "text": "田中さん、荷物来てますよ"},
-        {"speaker": "rei", "face": "surprise", "text": "……店では、クラウド"},
-        {"speaker": "", "face": "", "text": "クラウドが箱を開ける。新聞紙に包まれたキャベツと玉ねぎ、それに手紙が一枚。"},
-        {"speaker": "rei", "face": "normal", "text": "……実家から。毎月、来る"},
+        {"speaker": "", "face": "", "text": "営業中の店。ろうそくの灯りの下で、常連が二人、静かに煙を吐いていた。"},
+        {"speaker": "", "face": "", "text": "入口の扉が勢いよく開く。宅配便の制服の人が、段ボール箱を抱えていた。"},
+        {"speaker": "", "face": "", "text": "「田中健太さーん！　お届け物でーす！」"},
+        {"speaker": "", "face": "", "text": "常連の二人が、ゆっくりとカウンターの方を見た。"},
+        {"speaker": "rei", "face": "surprise", "text": "……"},
+        {"speaker": "hajime", "face": "normal", "text": "（……返事をしないと、帰らない気がする）"},
+        {"speaker": "rei", "face": "serious", "text": "……はい。俺です"},
+        {"speaker": "", "face": "", "text": "判を押して受け取る。箱の横には、大きく「田中農園」の文字。"},
+        {"speaker": "customer", "face": "surprise", "text": "店長、田中さんだったんですか"},
+        {"speaker": "rei", "face": "normal", "text": "……店では、クラウド"},
+        {"speaker": "", "face": "", "text": "箱の中は、新聞紙に包まれたキャベツと玉ねぎ。それに、手紙が一枚。"},
+        {"speaker": "rei", "face": "normal", "text": "……実家、農家。毎月、来る"},
         {"speaker": "hajime", "face": "smile", "text": "爆煙の堕天使に、キャベツ"},
         {"speaker": "rei", "face": "serious", "text": "……その名前で、キャベツの話をしないで"},
         {"speaker": "", "face": "", "text": "手紙の一行目に「健太へ　ちゃんと食べてる？」と見えた。クラウドは素早く畳んだ。"},
