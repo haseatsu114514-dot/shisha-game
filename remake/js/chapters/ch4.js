@@ -418,13 +418,13 @@ async function renderEve(owner) {
   // 水着回（SPC18。2026-11-15 オーナー指示で強制イベント・SPC25）: 到着を読み終えたら、前夜祭の前に必ず一度、砂浜へ行く。
   if (chapterFourBeachDue(state)) {
     // 「みんな来ちゃった」（4-2・SPC28）: 日本から来た恋人が2人以上いれば、砂浜の前に一度、はじめの内心と、
-    // 読める時はプチ修羅場（ノックが重なる）。読み終えた時だけ記録し、そのまま砂浜へ。
+    // 読める時はプチ修羅場（同じ六時の約束が重なる）。読み終えた時だけ記録し、そのまま砂浜へ。
     if (chapterFourLoversDue(state)) {
-      const { script, knockers } = chapterFourLoversScript(state, DB.dialogues);
+      const { script, pair } = chapterFourLoversScript(state, DB.dialogues);
       DB.dialogues[CH4_LOVERS_SCENE] = script;
       if (!await readScene(owner, CH4_LOVERS_SCENE)) return;
       state.flags[CH4_LOVERS_FLAG] = true;
-      if (knockers && markPetit(state, CH4_LOVERS_PETIT)) strainSuspect(state, knockers);
+      if (pair && markPetit(state, CH4_LOVERS_PETIT)) strainSuspect(state, pair);
       save();
       if (!current(owner)) return;
     }

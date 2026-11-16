@@ -103,8 +103,8 @@ assert.match(window.branches.listened.map((l) => l.text).join("\n"), /もう一�
 
 // 全体講評（2026-11-11）S6: 優勝目当ての客。DAY3に大会の一台を半分残し、DAY6に軽い一台を最後まで吸う。
 // 夜は増やさず、既存の夜の場面として足す。DAY3を見ていない保存には、続きの場面を足さない
-assert.deepEqual(ids(3), ["ch2_naru_warm", "ch2_photo_buzz", "remake_ch2_ageha_scout", "ch2_title_customer_half"]); // 写真（SPC28 2-5 C）
-assert.equal(night(3).steps[3].flag, "_stk_title_customer_half");
+assert.deepEqual(ids(3), ["ch2_naru_warm", "remake_ch2_ageha_scout", "ch2_title_customer_half"]);
+assert.equal(night(3).steps[2].flag, "_stk_title_customer_half");
 assert.deepEqual(ids(6), ["ch2_title_customer_back", "ch2_coal_together", "ch2_lingering_smell"]);
 assert.equal(night(6).steps[0].flag, "_stk_title_customer_back");
 assert(!when(6, "ch2_title_customer_back", {}), "DAY3の場面を見ていない保存には足さない");

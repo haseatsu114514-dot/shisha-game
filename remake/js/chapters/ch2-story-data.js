@@ -18,8 +18,6 @@ export const C_STATION_TASTING_BG = CITY_BACKGROUNDS.c_station_night;
 export const CH2_NIGHTS = [
   { day: 3, pin: "naru", label: "なるの祝福", beat: "夜。なるの話を聞きに、KEMURIKUSAへ──", doneFlag: "_ch2_naru_warm_done", steps: [
     { id: "ch2_naru_warm", file: "ch2_isolation" },
-    // 2-5 C（SPC28）: 祝いの後、なるが県大会の公式ページの「盛りすぎた写真」を見せる。DAY3の夜を読み終えた保存には足さない
-    { id: "ch2_photo_buzz", file: "ch2_story_extra", when: ({ flags }) => !flags._ch2_read_remake_ch2_ageha_scout },
     { id: "remake_ch2_ageha_scout", file: "ch2_ageha_story", met: "ageha" },
     // 全体講評S6: あげはを見送ったあと、優勝目当ての客が大会の一台を半分残す。DAY4の居残りと炭の事故の前段。
     // DAY3の夜を読み終えた保存には足さない（夜ごと完了済み）。

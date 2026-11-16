@@ -1,5 +1,5 @@
 {
-  "comment": "第4章の「みんな来ちゃった」（4-2・SPC28・2026-11-15 オーナー「恋人が複数いるときみんな来ちゃったみたいな修羅場の内心を作りたいのと、プチ修羅場イベント現地でも欲しい」）。前夜祭の日、別便の到着を読み終えて砂浜へ行く前に一度だけ、日本から来た恋人が2人以上いる時に読む（ch4-lovers.js・ch4.js の renderEve）。はじめの内心のあと、プチ修羅場（ノックが二つ重なる）が読める時だけ続ける。ごまかして、そのまま砂浜へ。好感度・能力・お金は動かさず、謝罪・和解・破局も決めない。",
+  "comment": "第4章の「みんな来ちゃった」（4-2・SPC28・2026-11-15 オーナー「恋人が複数いるときみんな来ちゃったみたいな修羅場の内心を作りたいのと、プチ修羅場イベント現地でも欲しい」）。前夜祭の日、別便の到着を読み終えて砂浜へ行く前に一度だけ、日本から来た恋人が2人以上いる時に読む（ch4-lovers.js・ch4.js の renderEve）。はじめの内心のあと、プチ修羅場（二人に同じ六時の約束を返していて、ロビーで鉢合わせ。2026-11-15 オーナー「ノック二つはありえないのでスケジュールかぶるとかで」）が読める時だけ続ける。ごまかして、そのまま砂浜へ。好感度・能力・お金は動かさず、謝罪・和解・破局も決めない。",
   "dialogues": [
     {
       "dialogue_id": "ch4_lovers_inner_open",
@@ -41,7 +41,7 @@
     },
     {
       "dialogue_id": "ch4_lovers_inner_close",
-      "comment": "内心の締め（共通）。プチ修羅場が無ければ、ここで終わって砂浜へ。",
+      "comment": "内心の締め（共通）。予定が重なっていなければ、ここで終わって砂浜へ。",
       "lines": [
         {
           "speaker": "hajime",
@@ -61,55 +61,70 @@
         {
           "speaker": "",
           "face": "",
-          "text": "深呼吸を一つした。吐き終わる前に、ドアが鳴った。"
+          "text": "深呼吸を一つした。"
         }
       ]
     },
     {
-      "dialogue_id": "ch4_petit_knock_open",
-      "comment": "プチ修羅場（core/petit-shuraba.js の dubai）の導入。この後に、ノックした2人の一言（ch4_petit_knock_<ID>）を順に足す。",
+      "dialogue_id": "ch4_petit_clash_open",
+      "comment": "プチ修羅場（core/petit-shuraba.js の dubai）の導入。到着のばたばたの中で、二人に同じ六時の約束を返していた。この後に、二人の誘い（ch4_petit_invite_<ID>）を順に足す。",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "コン、コン。……コン、コン。"
+          "text": "スマホの予定を開いて、指が止まった。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ノックが、二つ重なった。"
+          "text": "夕方の六時の欄に、約束が二つ並んでいる。"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（……二つ？）"
+          "text": "（……どっちも、着いた時に『いいよ』って返してる）"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ドアを開けると、廊下に二人が並んでいた。"
+          "text": "荷物を運びながら聞いた二つの声が、順番によみがえった。"
         }
       ]
     },
     {
-      "dialogue_id": "ch4_petit_knock_meet",
-      "comment": "2人が顔を合わせる（共通）。この後に、2人の反応（ch4_petit_look_<ID>）を順に足す。",
+      "dialogue_id": "ch4_petit_clash_meet",
+      "comment": "二人が六時のロビーで顔を合わせる（共通）。この後に、二人の反応（ch4_petit_look_<ID>）を順に足す。",
       "lines": [
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（どっちかを断る？ 今から？ 何て言って？）"
+        },
         {
           "speaker": "",
           "face": "",
-          "text": "二人の目が合った。廊下の空気が、一拍だけ止まった。"
+          "text": "決められないうちに、時計が六時を指した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ロビーへ下りると、二人がちょうど、別々の方向から歩いてきたところだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人の目が合った。ロビーの空気が、一拍だけ止まった。"
         }
       ]
     },
     {
-      "dialogue_id": "ch4_petit_knock_close",
+      "dialogue_id": "ch4_petit_clash_close",
       "comment": "締め（共通）。はじめは「みんなで砂浜へ」でごまかし、そのまま砂浜（水着回）へ。謝罪・和解・破局は決めない。",
       "lines": [
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "す、砂浜！ みんなで砂浜に行こうって、ちょうど誘いに行くところで！"
+          "text": "す、砂浜！ みんなで砂浜に行こうって、ちょうど言いに来たところで！"
         },
         {
           "speaker": "",
@@ -124,85 +139,85 @@
       ]
     },
     {
-      "dialogue_id": "ch4_petit_knock_tsumugi",
-      "comment": "つむぎがドアの前で言う一言（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
+      "dialogue_id": "ch4_petit_invite_tsumugi",
+      "comment": "つむぎが到着の時にした、六時の誘い（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
       "lines": [
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……はじめさん。夕方の空、一緒に見ませんか"
+          "text": "……はじめさん。六時に、屋上で。夕方の空、一緒に見ませんか"
         }
       ]
     },
     {
-      "dialogue_id": "ch4_petit_knock_minto",
-      "comment": "みんと（栞）がドアの前で言う一言（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
+      "dialogue_id": "ch4_petit_invite_minto",
+      "comment": "みんと（栞）が到着の時にした、六時の誘い（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
       "lines": [
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "はじめくん、いる？ 前夜祭の前に、ちょっとだけお茶しよ"
+          "text": "はじめくん、六時にロビーでお茶しよ。前夜祭の前に、ちょっとだけ"
         }
       ]
     },
     {
-      "dialogue_id": "ch4_petit_knock_rio",
-      "comment": "凛想がドアの前で言う一言（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
+      "dialogue_id": "ch4_petit_invite_rio",
+      "comment": "凛想が到着の時にした、六時の誘い（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
       "lines": [
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "入ってもいい？ 前夜祭の前に、君の手を見ておきたくて"
+          "text": "六時に、中庭で。前夜祭の前に、君の手を見ておきたいの"
         }
       ]
     },
     {
-      "dialogue_id": "ch4_petit_knock_ageha",
-      "comment": "あげはがドアの前で言う一言（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
+      "dialogue_id": "ch4_petit_invite_ageha",
+      "comment": "あげはが到着の時にした、六時の誘い（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
       "lines": [
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "ハジメっち〜！ 前夜祭の服、どっちがいいか見て！"
+          "text": "ハジメっち、六時にうちの部屋ね！ 前夜祭の服、どっちがいいか見て！"
         }
       ]
     },
     {
-      "dialogue_id": "ch4_petit_knock_mashiro",
-      "comment": "ましろがドアの前で言う一言（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
+      "dialogue_id": "ch4_petit_invite_mashiro",
+      "comment": "ましろが到着の時にした、六時の誘い（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
       "lines": [
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "はじめくん、ごはん食べた？ パン、多めに買っちゃったの"
+          "text": "はじめくん、六時に食堂でパン食べよぉ。多めに買っちゃったの"
         }
       ]
     },
     {
-      "dialogue_id": "ch4_petit_knock_samechan",
-      "comment": "サメちゃんがドアの前で言う一言（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
+      "dialogue_id": "ch4_petit_invite_samechan",
+      "comment": "サメちゃんが到着の時にした、六時の誘い（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
       "lines": [
         {
           "speaker": "samechan",
           "face": "excited",
-          "text": "お主、おるか！ 夕日を見に行くぞ。王の命令じゃ"
+          "text": "お主、六時に浜で夕日じゃ。王の命令じゃ"
         }
       ]
     },
     {
-      "dialogue_id": "ch4_petit_knock_hiyori",
-      "comment": "ひよりがドアの前で言う一言（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
+      "dialogue_id": "ch4_petit_invite_hiyori",
+      "comment": "ひよりが到着の時にした、六時の誘い（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
       "lines": [
         {
           "speaker": "hiyori",
           "face": "normal",
-          "text": "はじめくん、前夜祭の案内、読んでおいたよ。説明、いる？"
+          "text": "六時にロビーで、前夜祭の案内を説明するね。全部読んでおいたから"
         }
       ]
     },
     {
       "dialogue_id": "ch4_petit_look_tsumugi",
-      "comment": "つむぎが、廊下でもう一人と顔を合わせた時の反応（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
+      "comment": "つむぎが、六時のロビーでもう一人と顔を合わせた時の反応（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
       "lines": [
         {
           "speaker": "tsumugi",
@@ -218,40 +233,40 @@
     },
     {
       "dialogue_id": "ch4_petit_look_minto",
-      "comment": "みんと（栞）が、廊下でもう一人と顔を合わせた時の反応（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
+      "comment": "みんと（栞）が、六時のロビーでもう一人と顔を合わせた時の反応（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
       "lines": [
         {
           "speaker": "minto",
           "face": "ura_smug",
-          "text": "あら……奇遇だね。同じ時間に、同じドア"
+          "text": "あら……奇遇だね。同じ六時に、同じはじめくん"
         }
       ]
     },
     {
       "dialogue_id": "ch4_petit_look_rio",
-      "comment": "凛想が、廊下でもう一人と顔を合わせた時の反応（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
+      "comment": "凛想が、六時のロビーでもう一人と顔を合わせた時の反応（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
       "lines": [
         {
           "speaker": "rio",
           "face": "smug",
-          "text": "へえ……君、人気者だね"
+          "text": "へえ……君の六時、二つあるんだ"
         }
       ]
     },
     {
       "dialogue_id": "ch4_petit_look_ageha",
-      "comment": "あげはが、廊下でもう一人と顔を合わせた時の反応（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
+      "comment": "あげはが、六時のロビーでもう一人と顔を合わせた時の反応（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
       "lines": [
         {
           "speaker": "ageha",
           "face": "surprise",
-          "text": "え、ハジメっちの部屋、受付制？"
+          "text": "え、ハジメっちの六時、予約制？"
         }
       ]
     },
     {
       "dialogue_id": "ch4_petit_look_mashiro",
-      "comment": "ましろが、廊下でもう一人と顔を合わせた時の反応（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
+      "comment": "ましろが、六時のロビーでもう一人と顔を合わせた時の反応（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
       "lines": [
         {
           "speaker": "mashiro",
@@ -262,12 +277,12 @@
     },
     {
       "dialogue_id": "ch4_petit_look_samechan",
-      "comment": "サメちゃんが、廊下でもう一人と顔を合わせた時の反応（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
+      "comment": "サメちゃんが、六時のロビーでもう一人と顔を合わせた時の反応（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
       "lines": [
         {
           "speaker": "samechan",
           "face": "serious",
-          "text": "……むう。先客か"
+          "text": "……むう。先約か"
         },
         {
           "speaker": "samechan",
@@ -278,7 +293,7 @@
     },
     {
       "dialogue_id": "ch4_petit_look_hiyori",
-      "comment": "ひよりが、廊下でもう一人と顔を合わせた時の反応（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
+      "comment": "ひよりが、六時のロビーでもう一人と顔を合わせた時の反応（相手が誰でも通じる書き方。ほかの人の名前は出さない）。",
       "lines": [
         {
           "speaker": "hiyori",
