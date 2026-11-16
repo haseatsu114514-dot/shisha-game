@@ -241,7 +241,7 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (m.id === "lime_outing_rio_1" && !chapterFeatureEnabled(state.chapter || 1, "rioHomeOuting")) return false;
   // ひよりの♥3の外出（#2025）は第1章の昼だけ。tonariでの再会（スミさんのLIME）の後に届き、夜や締めくくりの前提は増やさない。
   if (m.id === "lime_outing_hiyori_1" && !(chapterFeatureEnabled(state.chapter, "hiyoriHomeOuting") && state.flags._hiyori_tonari_return_done)) return false;
-  // 綾取が福岡へ戻る前にドバイへ応援に来た保存（SPC22。core/overseas-companion.js の guests）では、福岡にいる前提の第4章のLIMEは届かない。
+  // 綾取がドバイへ応援に来た保存（SPC22。core/overseas-companion.js の guests）では、東京の煙幕から配信を見る前提の第4章のLIMEは届かない。
   const guests = state.flags?._overseas_companion?.guests;
   if (/^lime_ch4_saku_/.test(m.id) && Array.isArray(guests) && guests.includes("saku")) return false;
   if (cond === "hiyori_tonari") return hiyoriEventStatus("tonari_return") === "ready";

@@ -3,11 +3,12 @@
 // 交通（FIN13・オーナー「東京は配送便で」）: 問屋街から東京店へ葉を運ぶ車に乗せてもらうので運賃はかからない。
 // 便は昼に出て夜に着く（その日の昼と夜の2行動）。帰りも同じ。決まりは chapters/ch5-travel.js。
 // 最初に乗る日は、Dr.fookah の裏口で店員に乗せてもらう話になる（ch5_tokyo_van_first）。
-// 行き先: mukai（手伝い）・Smoke & Glory（スティーブ）・鉄の煙（ヴォルク）・公園・裏口のてつこ・東京の店・屋根裏・地元へ帰る。
+// 行き先: mukai（手伝い）・Smoke & Glory（スティーブ）・鉄の煙（ヴォルク）・煙幕（綾取）・公園・裏口のてつこ・東京の店・屋根裏・地元へ帰る。
 // 第3章の東京と同じく、CHOI-ZAP（会員の時だけ）とクラブSEAM（夜だけ・時間は使わない）にも寄れる（#2033）。
 // ましろ（ヒロイン）は第5章の店の会話に出さない。恋人の時だけ、mukai で「ましろちゃんと過ごす（恋人）」を選べる
 // （BLC03・chapters/mashiro-time.js。地元の恋人のデートにあたり、恋人の節目の続きをここで読む）。
-// 綾取は第3章の後に福岡へ戻ったので煙幕は出さない。
+// 綾取の煙幕は、期間限定の間借りが好評につき全国大会のあとも延長営業している（#3676・2026-11-15 オーナー指示）。
+// 第3章の帰郷の朝（ch3_enmaku_cleanup）で延長が決まる。福岡の店はバイトが回している。
 // 台詞は data/dialogue/ch5_tokyo.json（てつこと夜の公園は第3章の場面を使う）。現在地は flags._ch2_region = "tokyo"。
 import { state, save, timeOfDay, markMet } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";
@@ -62,6 +63,12 @@ export const TOKYO_SPOTS = Object.freeze([
   rivalSpot({ id: "ch5_tokyo_volk", charId: "volk", label: "鉄の煙", area: "ヴォルクの店", x: 55.9, y: 40.4, theme: "rival", glyph: "煙", face: "volk",
     preview: "bg_volk_shop", stamina: -16, stat: "insight",
     talks: ["ch5_tokyo_volk", "ch5_tokyo_volk_b", "ch5_tokyo_volk_c"], desc: "温度計の立つ店。測ってから、客に聞く。" }),
+  // 綾取の煙幕（延長営業・#3676）。第3章の東京の地図の位置（45.3, 49.7）は、第5章だけにある帰りの配送便の札・屋根裏と重なるので、
+  // 鉄の煙と公園のあいだの空いた所に置く（PC・スマホ横の両方で、ほかのピンや札と重ならないことを確かめた）。
+  // ♥5の締めくくりは第3章だけなので TOKYO_FINALES には入れない。会っている保存だけ地図に出る（charId）。
+  rivalSpot({ id: "ch5_tokyo_saku", charId: "saku", label: "煙幕", area: "綾取の店", x: 58, y: 62, theme: "rival", glyph: "煙", face: "saku",
+    preview: "bg_yohaku_shop", stamina: -16, stat: "insight",
+    talks: ["ch5_tokyo_saku", "ch5_tokyo_saku_b", "ch5_tokyo_saku_c"], desc: "好評につき延長中の間借り店。お茶と、ノートの続き。" }),
   spot({ id: "ch5_tokyo_park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園", preview: "bg_tokyo_park",
     stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
   // 裏口のてつこは地図の行き先にせず、mukai のシフトの帰りに会う（VOL11）。

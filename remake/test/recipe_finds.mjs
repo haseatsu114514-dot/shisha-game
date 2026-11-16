@@ -129,7 +129,7 @@ const hearts = levels => id => levels[id] || 0;
   assert.equal(recipeFindAt(s, "ch5_tokyo_steve", recipes, hearts({ steve: 3 }))?.kind, "return");
 }
 {
-  // 綾取は第3章の後に福岡へ戻る（第5章の東京に煙幕は無い）: 第5章ではヒントも返す会話も出ない
+  // 返す会話は第3章の煙幕の通い（ch3_tokyo_enmaku）に限る。第5章の延長営業の煙幕（ch5_tokyo_saku・#3676）では、ヒントも返す会話も出ない
   const s = fresh(5, { met: { saku: true }, recipes: { weekend_citron: { day: 40 } } });
   assert.equal(recipeFindAt(s, "ch3_tokyo_enmaku", recipes, hearts({ saku: 5 })), null);
   s.flags[hintFlag(recipes.find(r => r.id === "weekend_citron"))] = true;

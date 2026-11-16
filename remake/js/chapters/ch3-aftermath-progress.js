@@ -5,7 +5,7 @@ export const CH3_AFTERMATH_SCENES = Object.freeze([
   { id: "ch3_abyss_hotel", dayAfterWin: 0, slot: 1, label: "優勝の夜", location: "mukai", bg: "bg_mukai_shop" },
   { id: "ch3_mashiro_recovery", dayAfterWin: 1, slot: 0, label: "いつもの席", location: "mukai", bg: "bg_mukai_shop" },
   { id: "ch3_naru_reconcile", dayAfterWin: 1, slot: 1, label: "自分からの報告", location: "東京", bg: "bg_mukai_shop" },
-  { id: "ch3_enmaku_cleanup", dayAfterWin: 2, slot: 0, label: "煙幕の片づけ", location: "煙幕", bg: "bg_yohaku_shop" },
+  { id: "ch3_enmaku_cleanup", dayAfterWin: 2, slot: 0, label: "煙幕の延長", location: "煙幕", bg: "bg_yohaku_shop" },
   // 帰郷した夜は三場面（STK23・全体講評C5）。新幹線を降りた足でMELTY PUFF、tonariでつむぎの絵、最後に帰郷の客。
   // 章の最後の画を「客の返事を待つ」にする。homecoming=新幹線の車窓を見せる最初の地元の場面。
   { id: "ch3_ageha_reunion", dayAfterWin: 2, slot: 1, label: "続いていた約束", location: "MELTY PUFF", bg: "bg_ageha_shop", homecoming: true },

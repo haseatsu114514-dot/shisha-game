@@ -6,7 +6,7 @@
 //   来店の中身・代金・体力・好感度・能力は、それぞれの店のいつもの来店のまま（この仕組みは何も足さない・減らさない）。
 //   代金を取らない物語の来店（EDENの「二つのダブルアップル」、東京の♥5の締めくくり）も、店で一台を吸うので判子を押す。
 // 報酬: お金ではなく、限定台くじのくじ券（渡すのは ch5-shop-stamps.js）。地域の判子がそろうごとに REGION_TICKETS 枚、
-//   全部そろうと、さらに COMPLETE_BONUS_TICKETS 枚。必須10店で5枚、任意の2店で各1枚（最大7枚）。
+//   全部そろうと、さらに COMPLETE_BONUS_TICKETS 枚。必須10店で5枚、任意の3店で各1枚（最大8枚）。
 //   出張シーシャの依頼は1回の行動で最大2枚なので、それより少なめ。来店そのものの好感度・能力・経験値は別にもらえる）。
 //   火種・心得の盤・大会・エンディング・進行の条件にはつながない（#2455）。周回では帳面を持ち越さない（core/carry.js）。
 //
@@ -17,6 +17,7 @@
 //   東京: Smoke & Glory・鉄の煙（スティーブ・ヴォルクには第3章の大会で必ず会う）
 //   ドバイ: 路地裏のカフェ（いつでも行ける）
 //   任意の店: SHISHARK はサメちゃんに会った保存だけ、カフェ・オアシスはヌールの締めくくりまで。
+//     煙幕（綾取）は期間限定の間借りが好評につき延長営業している店（#3676・2026-11-15）。必須10店の設計は変えず任意に足す。
 //   行けない保存でも必須10店の達成を妨げない。tonari・mukai は働く店なので載せない。
 //
 // 保存（flags._ch5_shop_stamps）:
@@ -49,7 +50,7 @@ export const SHOP_STAMP_REGIONS = Object.freeze([
   region("widehanga", `隣町・${CH2_CITY_NAME}`, [
     shop("ch2_ageha", "MELTY PUFF"), shop("ch2_kumicho", "神崎煙草店"), shop("ch2_rei", "貴方ノ為ノ此ノ煙。"),
   ]),
-  region("tokyo", "東京", [shop("ch5_tokyo_steve", "Smoke & Glory"), shop("ch5_tokyo_volk", "鉄の煙")]),
+  region("tokyo", "東京", [shop("ch5_tokyo_steve", "Smoke & Glory"), shop("ch5_tokyo_volk", "鉄の煙"), shop("ch5_tokyo_saku", "煙幕", true)]),
   region("dubai", "ドバイ", [shop("ch5_dubai_alley", "路地裏のカフェ"), shop("ch4_dubai_tour_desk", "カフェ・オアシス", true)]),
 ]);
 export const SHOP_STAMP_TOTAL = SHOP_STAMP_REGIONS.reduce((n, entry) => n + entry.shops.filter(item => !item.optional).length, 0);
