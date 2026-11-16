@@ -61,7 +61,8 @@ const mocks = {
   "remake/js/core/affinity-stages.js": { AGEHA_AFFINITY_VISITS: [], CH2_VISIT_STORIES: {}, ch2VisitDone: () => false, ch2VisitReady: () => true },
   "remake/js/chapters/ch2-craft-prep.js": { craftPrepDue: () => prepDue, offerCraftPrep: async () => ({ used: true, exerted: true }) },
 };
-const REAL = ["remake/js/chapters/ch2-preparation.js", "remake/js/chapters/ch2-story.js", "remake/js/chapters/ch2-story-data.js", "remake/js/chapters/ch2-outings.js"];
+const REAL = ["remake/js/chapters/ch2-preparation.js", "remake/js/chapters/ch2-story.js", "remake/js/chapters/ch2-story-data.js", "remake/js/chapters/ch2-outings.js",
+  "remake/js/core/bond-after.js"]; // ♥5後の会話（#3693）の判定は実物。台本の読み込みは上の chapter-data の差し替えを使う
 const modules = new Map([["remake/js/core/state.js", statePort]]);
 async function moduleAt(p) {
   if (modules.has(p)) return modules.get(p);

@@ -62,6 +62,8 @@ function harness(id, initial = 9) {
   vm.runInContext(strip(read('remake/js/chapters/ch2-story-data.js'))+'\nObject.assign(this,{agehaStoryScene,agehaLaterScene,AGEHA_BADDAY,AGEHA_LATER_SCENES,syncAgehaVibes});',c);
   for(const p of ['samechan','ch2_preparation','ch2_ageha_story'])for(const d of JSON.parse(read(`data/dialogue/${p}.json`)).dialogues)c.DB.dialogues[d.dialogue_id]=d;
   vm.runInContext(strip(read('remake/js/daily/samechan.js'))+'\nthis.visitSamechan=visitSamechan;this.samechanVisitDialogue=samechanVisitDialogue;',c);
+  // ♥5後の会話（#3693・core/bond-after.js）の判定は実物。名前が ch2-preparation の定数とぶつからないよう関数の中で読み、使う3つだけを出す
+  vm.runInContext(`(()=>{${strip(read('remake/js/core/bond-after.js'))}\nObject.assign(globalThis,{bondAfterNext,markBondAfterRead,loadBondAfterScenes});})();`,c);
   vm.runInContext(strip(read('remake/js/chapters/ch2-preparation.js'))+'\nthis.visitPreparationSpot=visitPreparationSpot;',c);
   const spot=id==='samechan'?{id:'shishark',cost:3000,stamina:-16}:{id:'ch2_ageha',charId:'ageha',region:'widehanga',kind:'rival',cost:3000,stamina:-16};
   const visit=()=>id==='samechan'?c.visitSamechan(spot):c.visitPreparationSpot(spot,{staminaGuard:async()=>true});

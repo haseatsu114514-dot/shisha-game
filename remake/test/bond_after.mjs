@@ -7,8 +7,9 @@ import { BOND_AFTER, BOND_AFTER_SCENE_IDS, bondAfterEligible, bondAfterNext, mar
 const data = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/bond_after.json", import.meta.url), "utf8"));
 const scenes = Object.fromEntries(data.dialogues.map(d => [d.dialogue_id, d]));
 const characters = Object.fromEntries(JSON.parse(fs.readFileSync(new URL("../../data/characters.json", import.meta.url), "utf8")).map(c => [c.id, c]));
-const faces = id => fs.readdirSync(new URL(`../../assets/sprites/characters/${id}/`, import.meta.url))
-  .map(f => f.match(new RegExp(`^chr_${id}_(.+)\\.png$`))?.[1]).filter(Boolean);
+// 表情は立ち絵の目録から読む（CI の quick は画像を取得しないので、画像のフォルダは見ない）
+const manifest = JSON.parse(fs.readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8"));
+const faces = id => manifest.portraits?.[id]?.faces || [];
 
 // 台本: 全場面がそろい、話者と表情が実在する。報酬キュー・手動改行・大会を前提にした言い回しを入れない
 for (const id of BOND_AFTER_SCENE_IDS) assert(scenes[id]?.lines?.length, `${id} の台本がない`);
