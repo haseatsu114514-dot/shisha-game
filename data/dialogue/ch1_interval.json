@@ -122,7 +122,7 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "お疲れ。今日の一台、いい煙だった",
+          "text": "お疲れ。昨日の一台、いい煙だった",
           "portrait": false
         },
         {
@@ -383,7 +383,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "この数日で、tonariに「配信で見ました」という新規のお客さんが2人来た。"
+            "text": "この数日で、tonariに「配信で見ました」という新規のお客さんが二人来た。"
           }
         ],
         "eve_title_customer": [
