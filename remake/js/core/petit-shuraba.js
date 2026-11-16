@@ -10,7 +10,7 @@ export const PETIT_LAST_FLAG = "_petit_last_day"; // 最後に読んだ通算日
 export const PETIT_GAP_DAYS = 2;                  // 前のプチ修羅場から空ける日数
 /** 「気づきかけ」のある恋人（data/story_routes.json の heroine_ids と同じ8人。petit_shuraba.mjs が一致を確かめる） */
 export const PETIT_NOTICE_IDS = Object.freeze(["tsumugi", "minto", "rio", "ageha", "mashiro", "samechan", "hiyori", "noor"]);
-// dubai: 第4章の前夜祭の日、日本から来た恋人2人のノックが重なる（ch4-lovers.js・data/dialogue/ch4_lovers.json・SPC28 4-2）
+// dubai: 第4章の前夜祭の日、日本から来た恋人2人との六時の約束が重なる（ch4-lovers.js・data/dialogue/ch4_lovers.json・SPC28 4-2）
 export const PETIT_KEYS = Object.freeze(["date_call", "lime_misfire", "cross", "sumi", "cinema", "naru", "dubai",
   ...PETIT_NOTICE_IDS.map(id => `notice_${id}`)]);
 export const petitSeenFlag = key => `_petit_seen_${key}`;

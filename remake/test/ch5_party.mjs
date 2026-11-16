@@ -111,7 +111,7 @@ const recall = dialogue => ({
 });
 assert.deepEqual(recall(dialogues.ch5_party_shuraba_open), recall(dialogues.shuraba_open), "Both openings recall the same petit scenes");
 const recalled = recall(open);
-assert.equal(recalled.lines.length, 10); // 開き・7場面・ドバイのノック（SPC28 4-2）・締め
+assert.equal(recalled.lines.length, 10); // 開き・7場面・ドバイの約束の重なり（SPC28 4-2）・締め
 for (const line of recalled.lines) assert(recalled.branches[line.next_true]?.length, `${line.next_true}: recall branch exists`);
 for (const key of ["date_call", "lime_misfire", "notice", "cross", "sumi", "cinema", "naru", "dubai"])
   assert(recalled.lines.some(line => line.flag === `_petit_seen_${key}`), `${key}: recalled at the final shuraba`);

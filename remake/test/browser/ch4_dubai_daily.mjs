@@ -609,8 +609,8 @@ await suite("ch4-dubai-daily", async check => {
   });
 
   // 「みんな来ちゃった」（SPC28 4-2）: 同じ便のひよりと、別便の栞さん。到着を読み終えたら、砂浜の前に一度、はじめの内心と、
-  // ノックが二つ重なるプチ修羅場（core/petit-shuraba.js の dubai）。ごまかして、そのまま砂浜へ。好感度・お金は変えない。
-  await check("two-lovers-in-dubai-inner-voice-and-double-knock-before-the-beach", async page => {
+  // 二人に返した六時の約束が重なるプチ修羅場（core/petit-shuraba.js の dubai）。ごまかして、そのまま砂浜へ。好感度・お金は変えない。
+  await check("two-lovers-in-dubai-inner-voice-and-six-oclock-clash-before-the-beach", async page => {
     await seed(page, (value, progress) => {
       const p = value.flags._ch4;
       for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
@@ -637,15 +637,15 @@ await suite("ch4-dubai-daily", async check => {
     await playBeach(page, ["minto", "hiyori", "naru"]);
     const state = await get(page);
     assert.equal(state.flags._ch4_lovers_inner, true, "the inner voice is read once before the beach");
-    assert.equal(state.flags._petit_seen_dubai, true, "the double knock counts as a petit shuraba");
+    assert.equal(state.flags._petit_seen_dubai, true, "the six o'clock clash counts as a petit shuraba");
     assert.equal(state.flags._petit_count, 1);
     assert.deepEqual(state.lovers, before.lovers, "nobody is dumped or reconciled");
     assert.deepEqual({ minto: state.affinity.minto, hiyori: state.affinity.hiyori }, { minto: before.affinity.minto, hiyori: before.affinity.hiyori });
     assert.equal(state.money, before.money);
     const log = await backlog(page);
-    for (const text of ["（栞さん、ひよりさん……みんな、来てくれた）", "（二人とも、この宿の、この廊下のどこかにいる）", "ノックが、二つ重なった。",
-      "はじめくん、いる？ 前夜祭の前に、ちょっとだけお茶しよ", "はじめくん、前夜祭の案内、読んでおいたよ。説明、いる？",
-      "す、砂浜！ みんなで砂浜に行こうって、ちょうど誘いに行くところで！"])
+    for (const text of ["（栞さん、ひよりさん……みんな、来てくれた）", "（二人とも、この宿の、この廊下のどこかにいる）", "夕方の六時の欄に、約束が二つ並んでいる。",
+      "はじめくん、六時にロビーでお茶しよ。前夜祭の前に、ちょっとだけ", "六時にロビーで、前夜祭の案内を説明するね。全部読んでおいたから",
+      "す、砂浜！ みんなで砂浜に行こうって、ちょうど言いに来たところで！"])
       assert(log.includes(text), `the lovers scene: ${text}`);
     // 前夜祭の前の地図へ。読み直しはしない（LOADしても出ない）
     await page.locator(`${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`).waitFor({ timeout: 60000 });

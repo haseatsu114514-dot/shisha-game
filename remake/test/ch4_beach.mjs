@@ -201,16 +201,16 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
   const rows = readData("dialogue/ch4_lovers").dialogues;
   assert.deepEqual([...CH4_LOVERS_FILES.ch4_lovers].sort(), rows.map(row => row.dialogue_id).sort(), "ch4_lovers: all scenes registered");
   const dialogues = Object.fromEntries(rows.map(row => [row.dialogue_id, row]));
-  // ノック・反応は本人だけが話し、ほかの人の名前を出さない（相手が誰でも通じる）
+  // 誘い・反応は本人だけが話し、ほかの人の名前を出さない（相手が誰でも通じる）
   for (const id of OVERSEAS_HEROINES) {
-    for (const scene of [CH4_LOVERS_SCENES.knock[id], CH4_LOVERS_SCENES.look[id]]) {
+    for (const scene of [CH4_LOVERS_SCENES.invite[id], CH4_LOVERS_SCENES.look[id]]) {
       const lines = dialogues[scene].lines;
       assert.deepEqual([...new Set(lines.map(line => line.speaker))], [id], scene);
       const others = Object.entries(CH4_LOVERS_CALL).filter(([other]) => other !== id).map(([, name]) => name.replace(/さん$|ちゃん$/, ""));
       for (const name of others) assert(!lines.some(line => line.text.includes(name)), `${scene}: no ${name}`);
     }
   }
-  assert(PETIT_KEYS.includes(CH4_LOVERS_PETIT), "the Dubai knock is a petit shuraba");
+  assert(PETIT_KEYS.includes(CH4_LOVERS_PETIT), "the Dubai schedule clash is a petit shuraba");
   assert.equal(classifyFlag(petitSeenFlag(CH4_LOVERS_PETIT)), "progression");
   assert.equal(classifyFlag(CH4_LOVERS_FLAG), "progression");
   // 最後の修羅場（第5章の打ち上げ・スタッフロール後）で一行返る
@@ -227,26 +227,28 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
   assert.deepEqual(chapterFourLoversHere(value), ["minto", "rio", "samechan"]);
   assert.equal(chapterFourLoversDue(value), true);
   const before = keep(value);
-  const { script, knockers } = chapterFourLoversScript(value, dialogues);
+  const { script, pair } = chapterFourLoversScript(value, dialogues);
   assert.deepEqual(keep(value), before, "building the script changes nothing");
-  assert.deepEqual(knockers, ["minto", "rio"], "the first two of those who came knock");
+  assert.deepEqual(pair, ["minto", "rio"], "the first two of those who came both got a yes for six");
   const texts = script.lines.map(line => line.text);
   assert(texts.includes("（栞さん、凛想さん、サメちゃん……みんな、来てくれた）"), "counts everyone who came");
   assert(texts.includes(dialogues[CH4_LOVERS_SCENES.many].lines[0].text));
   assert(!texts.includes(dialogues[CH4_LOVERS_SCENES.two].lines[0].text));
-  for (const id of knockers) assert(texts.includes(dialogues[CH4_LOVERS_SCENES.knock[id]].lines[0].text), id);
-  assert(!texts.includes(dialogues[CH4_LOVERS_SCENES.knock.samechan].lines[0].text), "only two knock");
-  assert.equal(texts.at(-1), dialogues[CH4_LOVERS_SCENES.knockClose].lines.at(-1).text);
-  // 前のプチ修羅場から日が浅ければ、内心だけ（ノックは無し）
+  for (const id of pair) assert(texts.includes(dialogues[CH4_LOVERS_SCENES.invite[id]].lines[0].text), id);
+  assert(!texts.includes(dialogues[CH4_LOVERS_SCENES.invite.samechan].lines[0].text), "only two invitations clash");
+  assert(!texts.some(text => /ノック/.test(text)), "no double knock (2026-11-15 owner)");
+  for (const id of pair) assert.match(dialogues[CH4_LOVERS_SCENES.invite[id]].lines.map(line => line.text).join(""), /六時/, `${id}: the same six o'clock`);
+  assert.equal(texts.at(-1), dialogues[CH4_LOVERS_SCENES.clashClose].lines.at(-1).text);
+  // 前のプチ修羅場から日が浅ければ、内心だけ（約束の重なりは無し）
   const recent = structuredClone(value);
   recent.flags[PETIT_LAST_FLAG] = 999999;
   const quiet = chapterFourLoversScript(recent, dialogues);
-  assert.equal(quiet.knockers, null);
+  assert.equal(quiet.pair, null);
   assert.equal(quiet.script.lines.at(-1).text, dialogues[CH4_LOVERS_SCENES.close].lines.at(-1).text);
   // 2人なら「二人とも」の一行
-  const pair = arriveAll(eveSave({ lovers: ["tsumugi", "hiyori"], companion: "hiyori" }));
-  assert.deepEqual(chapterFourLoversHere(pair), ["tsumugi", "hiyori"]);
-  assert(chapterFourLoversScript(pair, dialogues).script.lines.some(line => line.text === dialogues[CH4_LOVERS_SCENES.two].lines[0].text));
+  const twoLovers = arriveAll(eveSave({ lovers: ["tsumugi", "hiyori"], companion: "hiyori" }));
+  assert.deepEqual(chapterFourLoversHere(twoLovers), ["tsumugi", "hiyori"]);
+  assert(chapterFourLoversScript(twoLovers, dialogues).script.lines.some(line => line.text === dialogues[CH4_LOVERS_SCENES.two].lines[0].text));
   // 恋人が1人・ヌールは「来た」人に数えない・一度きり・砂浜の後は出さない
   const one = arriveAll(eveSave({ lovers: ["tsumugi"], companion: "tsumugi" }));
   assert.equal(chapterFourLoversDue(one), false, "one lover: nothing to juggle");

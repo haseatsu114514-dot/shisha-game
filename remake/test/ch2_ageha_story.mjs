@@ -11,10 +11,10 @@ const story = Object.fromEntries(read("data/dialogue/ch2_ageha_story.json").dial
 // 2日目と8日目（サメのTRPG）は自由に使える夜として空けたまま（#639）
 const night = (day) => CH2_NIGHTS.find((n) => n.day === day);
 // 偵察返しのあとに、優勝目当ての客が大会の一台を半分残す場面が続く（全体講評S6）
-assert.deepEqual(night(3).steps.map((s) => s.id), ["ch2_naru_warm", "ch2_photo_buzz", "remake_ch2_ageha_scout", "ch2_title_customer_half"]);
+assert.deepEqual(night(3).steps.map((s) => s.id), ["ch2_naru_warm", "remake_ch2_ageha_scout", "ch2_title_customer_half"]);
 // 連絡先は台本の set_flag で交換する（交換の演出が出る・#2023）。偵察の夜も店の初回も、つながっていない時だけ
-assert.equal(night(3).steps[2].contact, undefined, "コードで連絡先を付けない");
-assert.equal(night(3).steps[2].met, "ageha", "偵察の夜に会ったら面識を記録する");
+assert.equal(night(3).steps[1].contact, undefined, "コードで連絡先を付けない");
+assert.equal(night(3).steps[1].met, "ageha", "偵察の夜に会ったら面識を記録する");
 {
   const chat = read("data/dialogue/ch2_preparation.json").dialogues.find((d) => d.dialogue_id === "remake_ch2_ageha_chat");
   for (const d of [story.remake_ch2_ageha_scout, chat]) {

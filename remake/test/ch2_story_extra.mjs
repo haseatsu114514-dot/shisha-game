@@ -1,5 +1,5 @@
 // 第2章の本筋の補充（SPC28）: 2-2 耳鼻科の受診（DAY6の朝）・2-4 なるの店で昼（DAY8の朝）・2-5 A 吸い方講座（DAY9の夜）・
-// C 盛りすぎた写真（DAY3の夜）・B 縮んだエプロン（県大会の控室）。出す時・台本・正本との食い違いが無いこと。
+// B 縮んだエプロン（県大会の控室）。出す時・台本・正本との食い違いが無いこと。
 // node remake/test/ch2_story_extra.mjs
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -34,13 +34,12 @@ const night = day => CH2_NIGHTS.find(entry => entry.day === day);
   for (const day of [2, 3, 4, 5, 9, 10, 11, 12, 13]) assert.equal(due(day, { _ch2_taste_distant: true }), null, `DAY${day}`);
   assert.equal(chapterTwoDaySceneDue({ chapter: 3, slot: 0, flags: { _ch2_taste_distant: true } }, 6, dialogues), null, "chapter 2 only");
   assert.equal(chapterTwoDaySceneDue(save(6, { _ch2_taste_distant: true }), 6, {}), null, "not without the script");
-  // 夜の本編: 写真はなるの祝いの後・偵察の前、吸い方講座は試煙会の後・苺の前。読み終えた保存には足さない
+  // 夜の本編: 吸い方講座は試煙会の後・苺の前。読み終えた保存には足さない
   const ids = day => night(day).steps.map(step => step.id);
-  assert.deepEqual(ids(3).slice(0, 3), ["ch2_naru_warm", "ch2_photo_buzz", "remake_ch2_ageha_scout"]);
+  // C（盛りすぎた写真）は 2026-11-15 オーナー指示で外した（SPC29）
+  assert.deepEqual(ids(3).slice(0, 2), ["ch2_naru_warm", "remake_ch2_ageha_scout"]);
   assert.deepEqual(ids(9).slice(1, 4), ["remake_ch2_ageha_tasting", "ch2_ageha_lesson", "ch2_strawberry_sample"]);
   const step = (day, id) => night(day).steps.find(entry => entry.id === id);
-  assert(step(3, "ch2_photo_buzz").when({ flags: {} }));
-  assert(!step(3, "ch2_photo_buzz").when({ flags: { _ch2_read_remake_ch2_ageha_scout: true } }));
   assert(step(9, "ch2_ageha_lesson").when({ flags: {} }));
   assert(!step(9, "ch2_ageha_lesson").when({ flags: { _ch2_read_ch2_strawberry_sample: true } }));
   // 夜の数は増やさない（DAY2・8 は空けたまま）
@@ -62,7 +61,6 @@ const night = day => CH2_NIGHTS.find(entry => entry.day === day);
   assert.doesNotMatch(lunch, /寝ろ|食えよ|ちゃんと食/, "no lecture on food and sleep (STK22)");
   assert.match(lunch, /常連の親子/); assert.match(lunch, /苺/, "the request Naru fulfils on DAY11");
   assert.deepEqual([...new Set(dialogues.ch2_naru_lunch.lines.map(line => line.speaker))].sort(), ["", "hajime", "naru"]);
-  assert.deepEqual([...new Set(dialogues.ch2_photo_buzz.lines.map(line => line.speaker))].sort(), ["", "hajime", "naru"]);
   assert.deepEqual([...new Set(dialogues.ch2_ageha_lesson.lines.map(line => line.speaker))].sort(), ["", "ageha", "hajime"]);
   assert.match(text("ch2_ageha_lesson"), /太くて長いのを、奥まで、ゆっくり/);
   // B: 控室の冒頭。あげはの「手を隠した日」の枝はそのまま残す
