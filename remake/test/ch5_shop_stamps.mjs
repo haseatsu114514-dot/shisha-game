@@ -65,8 +65,8 @@ const regionSpots = (value, region) => {
 assert.deepEqual(M.SHOP_STAMP_REGIONS.map(r => r.id), ["home", "widehanga", "tokyo", "dubai"], "地図の地域と同じ並び");
 assert.equal(M.SHOP_STAMP_TOTAL, flat.filter(s => !s.optional).length);
 assert.equal(new Set(flat.map(s => s.id)).size, flat.length, "店のIDが重ならない");
-assert.deepEqual(M.SHOP_STAMP_REGIONS.map(r => r.shops.length), [5, 3, 2, 2]);
-assert.equal(flat.filter(s => s.optional).length, 2);
+assert.deepEqual(M.SHOP_STAMP_REGIONS.map(r => r.shops.length), [5, 3, 3, 2]);
+assert.equal(flat.filter(s => s.optional).length, 3); // SHISHARK・カフェ・オアシス・煙幕（延長営業 #3676）
 for (const region of M.SHOP_STAMP_REGIONS) {
   // 昼と夜、どの曜日でも地図に出る（定休日は週に一日まで。地図からは消えず、別の日に行ける）
   for (const slot of [0, 1]) for (let dow = 0; dow < 7; dow++) {
@@ -115,7 +115,7 @@ for (const region of M.SHOP_STAMP_REGIONS) {
   const plain = freeSave();
   assert(!regionSpots(plain, "home").some(s => s.id === "shishark"), "サメちゃんに会っていなければ SHISHARK は出ない");
   for (const id of Object.keys(EXCLUDED)) assert.equal(M.shopStampEntry(id), null, `${id}（${EXCLUDED[id]}）は載せない`);
-  for (const id of ["shishark", "ch4_dubai_tour_desk"]) assert(M.shopStampEntry(id)?.shop.optional, `${id} は任意の店`);
+  for (const id of ["shishark", "ch4_dubai_tour_desk", "ch5_tokyo_saku"]) assert(M.shopStampEntry(id)?.shop.optional, `${id} は任意の店`);
 }
 // 東京とドバイには第5章でいつでも行ける（東京は配送便・ドバイは最初の手紙）。第5章の遠出の決まりと同じ
 {
@@ -193,13 +193,13 @@ const grantTo = value => n => grantKujiTickets(n, "shop_stamps", value);
   assert(progress.regions.every(r => r.complete && r.rewarded));
   for (const id of order) assert.equal(M.recordShopStamp(value, id, grant), null, "そろった後は何も増えない");
   assert.equal(value.kujiTickets, 5);
-  for (const id of ["shishark", "ch4_dubai_tour_desk"]) {
+  for (const id of ["shishark", "ch4_dubai_tour_desk", "ch5_tokyo_saku"]) {
     const extra = M.recordShopStamp(value, id, grant);
     assert.equal(extra.tickets, 1, `${id}: 任意の店は1枚`);
     assert.equal(extra.count, 10, "必須の判子数は増えない");
   }
-  assert.equal(value.kujiTickets, 7, "12店で最大7枚");
-  assert.equal(M.shopStampsProgress(value).optionalCount, 2);
+  assert.equal(value.kujiTickets, 8, "13店で最大8枚");
+  assert.equal(M.shopStampsProgress(value).optionalCount, 3);
 }
 {
   const value = freeSave();
@@ -278,4 +278,4 @@ const grantTo = value => n => grantKujiTickets(n, "shop_stamps", value);
   assert.equal(calendar.filter(line => !/^\s*\/\//.test(line)).length, 1, "calendar.js は afterSpot を一度だけ呼ぶ");
 }
 
-console.log("[ch5 shop stamps] PASS: required shops on the ch5 maps, optional shops, one stamp per shop, tickets (1×4+1+2 optional, no money), NG+ reset, #2455");
+console.log("[ch5 shop stamps] PASS: required shops on the ch5 maps, optional shops, one stamp per shop, tickets (1×4+1+3 optional, no money), NG+ reset, #2455");

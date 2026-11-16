@@ -345,7 +345,7 @@ for (const companion of ["ageha", null]) {
   if (companion) assert(!got.some((g) => g.dubai && g.sender === companion), `同行者（${companion}）はドバイでLIMEを送ってこない`);
   assert(got.some((g) => g.dubai && g.id.startsWith("_lover_morning_tsumugi")), "ドバイにいない恋人の朝のひとことは届く");
 }
-// 綾取が福岡へ戻る前にドバイへ応援に来た保存（SPC22）では、福岡にいる前提の第4章のLIMEは届かない。来ていなければ届く。
+// 綾取がドバイへ応援に来た保存（SPC22）では、東京の煙幕から配信を見る前提の第4章のLIMEは届かない。来ていなければ届く。
 for (const guests of [["saku"], []]) {
   reset({ chapter: 4, day: 71, flags: { ...storyDone, _ch2_region: "dubai", _ch4_prep: { startDay: 60, days: 3, step: 0, departed: true },
     _ch4: { startDay: 63, day: 9, stage: 0, part: "free", read: {} }, _ch3_read_ch3_saku_steve_notes: true,
