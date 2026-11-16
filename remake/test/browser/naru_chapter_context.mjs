@@ -26,7 +26,7 @@ await suite('naru-chapter-context', async check => {
         }
         return out;
       });
-      const premature=/いよいよ大会|大会前|大会が近い|大会の日の煙|大会の……お守り|大会でも、ちゃんと|なのに大会では|君の大会、見に行けない/;
+      const premature=/いよいよ大会|大会前|大会が近い|大会の日の煙|大会の……お守り|大会でも、ちゃんと|大会では、あの『可愛さ』|君の大会、見に行けない/;
       for(const result of results) {
         assert.equal(result.completed,true,result.id);
         assert.equal(result.story,result.expected,`${result.id}: real visit and LOAD retain progression`);
