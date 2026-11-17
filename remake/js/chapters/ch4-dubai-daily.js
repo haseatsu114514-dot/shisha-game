@@ -53,6 +53,7 @@ import { COMPANION_TIME_FILE, COMPANION_TIME_IDS, companionLover, companionTimeO
 import { chapterFourStaffNightEvent } from "./ch4-staff-work.js";
 import { CH4_TOUR_BG, CH4_TOUR_FLAG, CH4_TOUR_IDS, CH4_TOUR_SCENES, chapterFourTourCompanion, chapterFourTourDue, chapterFourTourPartner,
   chapterFourTourScript } from "./ch4-tour.js";
+import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
 
 export const DUBAI = "dubai";
 const INN_REST_SCENES = ["ch4_inn_rest", "ch4_inn_rest_b", "ch4_inn_rest_c"];
@@ -371,7 +372,7 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   // 夜がにぎわう店（ch4-dubai-local.js）: 先に店の夜を読む。初めての夜は短い場面、二度目からは最初の一行だけ。
   const night = nightVisit(state, entry.place);
   if (night && !await readNight(night, entry, owner)) return unused;
-  let done = false, longlong = null, innTrial = false, festaBond = null, withCompanion = false;
+  let done = false, longlong = null, innTrial = false, festaBond = null, withCompanion = false, after = null;
   if (entry.place === "inn") {
     const visit = await visitInn(io, owner, staminaGuard);
     done = visit.done; innTrial = visit.trial; withCompanion = !!visit.companion;
@@ -395,7 +396,14 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
     }
     // 必要ハートに届いた最古の未読の段階、無ければ小会話（ch4-longlong.js）。読み終えた時だけ記録する。
     longlong = nextLonglongVisit(state, affinityLevel(LONGLONG_CHAR));
-    done = await readPlain(longlong.id, LONGLONG_BG, owner);
+    // ♥5の締めくくりの後（#3693）: 小会話の代わりに♥5後の場面を一度ずつ、読み終えたら短い汎用（core/bond-after.js）。
+    // 小会話の巡回は進めない。代金・好感度・能力は小会話と同じ。台本を読めなければ小会話のまま。
+    after = longlong.kind === "talk" ? bondAfterNext(state, LONGLONG_CHAR) : null;
+    if (after) {
+      try { await loadBondAfterScenes(DB); } catch { after = null; }
+      if (state !== owner) return unused;
+    }
+    done = await readPlain(after?.scene || longlong.id, LONGLONG_BG, owner);
   }
   else if (entry.place === "festa" && (festaBond = festaBondDue())) {
     // 太陽の段階の会話（chapters/dubai-bonds.js）。初対面の後、必要ハートに届いた最古の未読を、小会話の代わりに一本読む。
@@ -404,7 +412,8 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   else done = await visitPlace(entry, io, owner);
   if (!done || state !== owner) return unused;
   if (night) recordNightVisit(state, entry.place);
-  if (longlong) recordLonglongVisit(state, longlong);
+  if (longlong && !after) recordLonglongVisit(state, longlong);
+  markBondAfterRead(state, LONGLONG_CHAR, after);
   if (festaBond) recordDubaiBondRead(state, festaBond);
   if (entry.cost) addMoney(-entry.cost);
   // 同行者と過ごした回は、休んだ扱いにしない（体力は戻らない）

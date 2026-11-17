@@ -495,7 +495,8 @@ test("Noor and Faris share one café break after hajime has met both, then a sho
   assert.equal(noorFarisDue(late, 61), again);
   assert(Object.keys(NOOR_FARIS_FLAGS).every(key => NOOR_FARIS_FLAGS[key].startsWith("_noor_story_")), "not carried to the next cycle");
   const desert = readFileSync(new URL("../js/chapters/ch4-desert.js", import.meta.url), "utf8");
-  assert.match(desert, /const pair = id === "ch4_noor_bond_question" \? null : noorFarisDue\(owner, day\);\n\s+if \(!await read\(scene\(id\)/,
+  // ♥5後の場面（#3693）を選ぶ数行を挟んでも、ファーリスの場面は来店の会話を読む前に決める
+  assert.match(desert, /const pair = id === "ch4_noor_bond_question" \? null : noorFarisDue\(owner, day\);\n(?:(?!await read)[\s\S]){0,700}?if \(!await read\(after\?\.scene \|\| scene\(id\)/,
     "decided before the visit's talk, so the first-meeting visit does not show it");
 });
 
@@ -654,7 +655,8 @@ test("chapter 5 Dubai: Café Oasis until Noor's finale, the dunes once invited; 
   assert.match(desert, /const rivals = !naru \|\| \(confessionDay && !before\.naruMet\) \? \["noor"\] : desertRivals\(owner\)/);
   assert.match(desert, /visitDesert\(\{ kind: cafe \? "desert_talk" : "desert", ok: true \}, \{ day, paid: cafe, naru, scene \}\)/);
   assert.match(desert, /naru = true, scene = id => id \}/, "Chapter 4 passes no scene and reads its own lines");
-  assert.match(desert, /read\(scene\(id\), bgUrl\("bg_dubai_cafe_salim_day"\)\)/);
+  // ♥5後の場面（#3693）が無い来店は、第5章の書き出しの差し替え（scene）を通して読む
+  assert.match(desert, /read\(after\?\.scene \|\| scene\(id\), bgUrl\("bg_dubai_cafe_salim_day"\)\)/);
   assert.match(desert, /owner\.flags\[NOOR_VISIT_CONFESSION_FLAG\] = \(owner\.finales\?\.\[DESERT_GUIDE\]\?\.chapter \|\| 0\) >= 5/);
   assert.match(desert, /delete owner\.flags\[NOOR_VISIT_CONFESSION_FLAG\]/);
 });

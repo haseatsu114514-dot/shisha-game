@@ -40,6 +40,7 @@ import { addRoamerSpots } from "../daily/roamers.js";
 import { openTetsukoTime, settleTetsukoTime, tetsukoVisitKey } from "../minigames/tetsuko-time.js";
 import { chainStageAt } from "./visit-chains.js";
 import { chainVisitDue, playChainStage } from "./visit-chain-play.js";
+import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
 
 export const TOKYO = "tokyo";
 const BG = name => bgUrl(name, timeOfDay());
@@ -123,6 +124,7 @@ function spotHasNew(entry) {
   if (chainStageAt(state, entry.place)) return true; // 通いの続きの次の段（chapters/visit-chains.js）
   if (["mukai", "enmaku", "steve", "volk"].includes(entry.place) && optionalAt(entry.place).length) return true;
   if (rivalFinaleAt(entry.place)) return true; // 綾取・スティーブ・ヴォルクの締めくくり（IR22・#2028）
+  if (bondAfterStoryAt(entry.place)) return true; // ♥5後の場面（#3693）
   if (entry.place === "mukai") return mukaiBondDue() || outingsAt("mukai").some(outing => !outing.repeat);
   return outingsAt(entry.place).some(outing => !outing.repeat);
 }
@@ -130,6 +132,9 @@ function spotHasNew(entry) {
 const outingsAt = place => chapterThreeOutingCandidates(state).filter(outing => outing.place === place && outing.id !== "tetsuko");
 const mashiroMilestoneDue = () => loverMilestonesDue(["mashiro"]).length > 0;
 const mukaiBondDue = () => mashiroMilestoneDue() || questionVisitDue("mashiro") || finaleAtVisit("mashiro");
+/** その場所の人の♥5後の場面（物語の5本）がまだ残っているか（#3693。短い汎用は新着にしない）。 */
+const bondAfterStoryAt = place => bondAfterNext(state, place === "mukai" ? "mashiro"
+  : TOKYO_TEACHERS[place] || null)?.kind === "story";
 
 const ROAMER_TOKYO_SPOTS = () => state.chapter === 3 ? chapterThreeTokyoSpots() : [];
 
@@ -465,9 +470,17 @@ async function goOuting(outing, staminaGuard, owner) {
   if (outing.stamina < 0 && !(await staminaGuard(outing.stamina))) return unused;
   const bg = outing.bg || visitBg[outing.place] || "bg_street";
   const gains = outingAffinity(state, outing); // 回数を数える前に（通いの1回目か2回目以降か）
-  const sceneId = outingDialogueId(state, outing);
+  // ♥5の締めくくりの後（#3693）: 通いの小会話の代わりに、その人の♥5後の場面を一度ずつ。読み終えたら短い汎用（core/bond-after.js）。
+  // 代金・体力・好感度・能力・回数はいつもの通いと同じ。台本を読めなければ小会話のまま。
+  let after = outing.regular && outing.affinityWith ? bondAfterNext(state, outing.affinityWith) : null;
+  if (after) {
+    try { await loadBondAfterScenes(DB); } catch { after = null; }
+    if (state !== owner) return unused;
+  }
+  const sceneId = after?.scene || outingDialogueId(state, outing);
   const outingSlot = state.slot;
   if (!await readPlain(sceneId, bg, owner)) return unused;
+  markBondAfterRead(state, outing.affinityWith, after);
   addStamina(outing.stamina);
   if (outing.money) addMoney(outing.money);
   if (outing.stat) earnStat(outing.stat, 4);
@@ -556,12 +569,14 @@ async function readRivalFinale(who, place, staminaGuard, owner) {
  */
 async function visitMukai(io, staminaGuard, owner) {
   // 恋人のましろとは、節目が無い日も一日に一度いっしょに過ごせる（BLC03・chapters/mashiro-time.js）。
-  const bond = mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() }) ? "lover" : questionVisitDue("mashiro") ? "question" : finaleAtVisit("mashiro") ? "finale" : null;
+  // 締めくくりを友人として迎えた後は、♥5後の場面を「ましろちゃんと話す」で読む（#3693。5本の後は短い汎用）。
+  const bond = mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() }) ? "lover" : questionVisitDue("mashiro") ? "question"
+    : finaleAtVisit("mashiro") ? "finale" : bondAfterNext(state, "mashiro") ? "after" : null;
   const scenes = optionalAt("mukai");
   const outings = outingsAt("mukai");
   const trials = availableChapterThreeTrials(state);
   const options = [
-    ...(bond ? [{ label: bond === "lover" ? "ましろちゃんと過ごす（恋人）" : bond === "question" ? "ましろちゃんと話す" : "ましろちゃんに呼ばれる", value: `bond:${bond}` }] : []),
+    ...(bond ? [{ label: bond === "lover" ? "ましろちゃんと過ごす（恋人）" : ["question", "after"].includes(bond) ? "ましろちゃんと話す" : "ましろちゃんに呼ばれる", value: `bond:${bond}` }] : []),
     ...scenes.map(scene => ({ label: scene.label, value: `scene:${scene.id}` })),
     ...outings.map(outing => ({ label: outing.id === "mukai_help" ? `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）` : outing.label, value: `outing:${outing.id}` })),
     ...trials.map(trial => ({ label: `作業台で${trial.label}（時間は進まない）`, value: `trial:${trial.id}` })),
@@ -636,6 +651,17 @@ async function readMashiroBond(kind, staminaGuard, owner) {
     if (done && state === owner) await petitAfterDate("mashiro"); // プチ修羅場（恋人が2人以上・一度きり。daily/petit-shuraba.js）
   }
   else if (kind === "question") done = await playQuestionVisit("mashiro", { bg });
+  else if (kind === "after") {
+    // ♥5後の場面（#3693）。読めなければ行動を使わずに戻る。中断したら既読にしない
+    const after = bondAfterNext(state, "mashiro");
+    if (!after) return unused;
+    try { await loadBondAfterScenes(DB); } catch {
+      toast("会話を読み込めませんでした。行動は使っていません");
+      return unused;
+    }
+    done = state === owner && await readPlain(after.scene, "bg_mukai_shop", owner);
+    if (done) markBondAfterRead(state, "mashiro", after);
+  }
   else done = await playFinale("mashiro", { bg });
   if (!done || state !== owner) return unused;
   addStamina(-10);

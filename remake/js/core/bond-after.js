@@ -6,7 +6,7 @@
 // - 好感度・能力・代金は、呼出元のいつもの来店と同じ（♥5後の場面で報酬は増やさない）
 // - 物語の場面・段階会話・締めくくり・一度きりの後日談が来る来店では、呼出元がそちらを優先する
 // - requires: その場面の前提になる持ち物（締めくくりの贈り物など）。持っていない保存では飛ばし、汎用へ進む
-// あげは（chapters/ch2-story-data.js の agehaLaterScene）が先にこの形を始めた。ほかの人は Issue #3693 の順で足していく。
+// あげは（chapters/ch2-story-data.js の agehaLaterScene）が先にこの形を始めた。締めくくりのある人は全員ここにいる（#3693）。
 import { readDialogues } from "./chapter-data.js";
 
 export const BOND_AFTER_FILE = "bond_after";
@@ -71,6 +71,58 @@ export const BOND_AFTER = Object.freeze({
     scenes: ["bond_after_hiyori_1", "bond_after_hiyori_2", "bond_after_hiyori_3",
       "bond_after_hiyori_4", "bond_after_hiyori_5"],
     shorts: ["bond_after_hiyori_short_a", "bond_after_hiyori_short_b", "bond_after_hiyori_short_c", "bond_after_hiyori_short_d"],
+  }),
+  // あげは（柚ヶ谷の店 chapters/ch2-preparation.js・第5章の街の店。後日の三本 agehaLaterScene が先）・
+  // ましろ（東京の mukai に足した「ましろちゃんと話す」。第3章 chapters/ch3-tokyo-daily.js・第5章 chapters/ch5-tokyo.js）・
+  // 綾取（煙幕の通い。第3章は外出の小会話、第5章は東京の店の小会話の代わり）
+  ageha: entry("ageha", {
+    scenes: [{ id: "bond_after_ageha_1", requires: "suyaki_ageha" }, "bond_after_ageha_2", "bond_after_ageha_3",
+      "bond_after_ageha_4", "bond_after_ageha_5"],
+    shorts: ["bond_after_ageha_short_a", "bond_after_ageha_short_b", "bond_after_ageha_short_c", "bond_after_ageha_short_d"],
+  }),
+  mashiro: entry("mashiro", {
+    scenes: [{ id: "bond_after_mashiro_1", requires: "suyaki_mashiro" }, "bond_after_mashiro_2", "bond_after_mashiro_3",
+      "bond_after_mashiro_4", "bond_after_mashiro_5"],
+    shorts: ["bond_after_mashiro_short_a", "bond_after_mashiro_short_b", "bond_after_mashiro_short_c", "bond_after_mashiro_short_d"],
+  }),
+  saku: entry("saku", {
+    scenes: [{ id: "bond_after_saku_1", requires: "suyaki_saku" }, "bond_after_saku_2", "bond_after_saku_3",
+      "bond_after_saku_4", "bond_after_saku_5"],
+    shorts: ["bond_after_saku_short_a", "bond_after_saku_short_b", "bond_after_saku_short_c", "bond_after_saku_short_d"],
+  }),
+  // スティーブ・ヴォルク（東京の店の通い。第3章は外出の小会話、第5章は東京の店の小会話の代わり）・
+  // 王煙楼（第4章ドバイの龍龍水煙所の小会話の代わり。chapters/ch4-dubai-daily.js）
+  steve: entry("steve", {
+    scenes: [{ id: "bond_after_steve_1", requires: "suyaki_steve" }, "bond_after_steve_2", "bond_after_steve_3",
+      "bond_after_steve_4", "bond_after_steve_5"],
+    shorts: ["bond_after_steve_short_a", "bond_after_steve_short_b", "bond_after_steve_short_c", "bond_after_steve_short_d"],
+  }),
+  volk: entry("volk", {
+    scenes: [{ id: "bond_after_volk_1", requires: "suyaki_volk" }, "bond_after_volk_2", "bond_after_volk_3",
+      "bond_after_volk_4", "bond_after_volk_5"],
+    shorts: ["bond_after_volk_short_a", "bond_after_volk_short_b", "bond_after_volk_short_c", "bond_after_volk_short_d"],
+  }),
+  master_hookah: entry("master_hookah", {
+    scenes: [{ id: "bond_after_master_hookah_1", requires: "suyaki_master_hookah" }, "bond_after_master_hookah_2", "bond_after_master_hookah_3",
+      "bond_after_master_hookah_4", "bond_after_master_hookah_5"],
+    shorts: ["bond_after_master_hookah_short_a", "bond_after_master_hookah_short_b", "bond_after_master_hookah_short_c", "bond_after_master_hookah_short_d"],
+  }),
+  // ヌール（第4章ドバイのカフェ・オアシスの雑談の代わり。chapters/ch4-desert.js）・太陽とシェイク（第5章のシェイクの屋敷の
+  // 小会話の代わり。chapters/ch5-dubai.js。第5章なので5本だけ）
+  noor: entry("noor", {
+    scenes: [{ id: "bond_after_noor_1", requires: "suyaki_noor" }, "bond_after_noor_2", "bond_after_noor_3",
+      "bond_after_noor_4", "bond_after_noor_5"],
+    shorts: ["bond_after_noor_short_a", "bond_after_noor_short_b", "bond_after_noor_short_c", "bond_after_noor_short_d"],
+  }),
+  da_silva: entry("da_silva", {
+    scenes: [{ id: "bond_after_da_silva_1", requires: "suyaki_da_silva" }, "bond_after_da_silva_2", "bond_after_da_silva_3",
+      "bond_after_da_silva_4", "bond_after_da_silva_5"],
+    shorts: ["bond_after_da_silva_short_a", "bond_after_da_silva_short_b", "bond_after_da_silva_short_c", "bond_after_da_silva_short_d"],
+  }),
+  sheikh: entry("sheikh", {
+    scenes: [{ id: "bond_after_sheikh_1", requires: "suyaki_sheikh" }, "bond_after_sheikh_2", "bond_after_sheikh_3",
+      "bond_after_sheikh_4", "bond_after_sheikh_5"],
+    shorts: ["bond_after_sheikh_short_a", "bond_after_sheikh_short_b", "bond_after_sheikh_short_c", "bond_after_sheikh_short_d"],
   }),
 });
 
