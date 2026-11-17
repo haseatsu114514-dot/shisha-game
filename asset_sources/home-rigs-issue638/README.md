@@ -24,3 +24,9 @@ v3原画を無変更で `assets/ui/scene_props/shisha_home_tabletop.png`／`shis
 晴れ／曇天の昼夜と無印の家背景、本編の家・帰宅・一服・朝・マッププレビュー・家の練習窓で同じ合成と所持判定を使う。原画の半透明の縁は実背景上で確認し、デザインの再生成やアルファの加工は行っていない。
 
 登録は `python3 remake/tools/build_manifest.py --scene-props-only shisha_home_tabletop.png shisha_home_pro.png`。指定2点だけ目録と配信WebPへ追加し、他の背景や画像を再ビルドしない。[比較画像と検証記録](../../docs/qa/home-rig-backgrounds/README.md)を参照。
+
+## 2026-11-18 ホースなし化と「最新1台だけ」表示（オーナー指示）
+
+- #640 の「両方所持で両方を表示する」は、オーナー指示（2026-11-18）で置き換えられた: 自室に置くのは、いちばん後に手に入れた1台だけ（全台横断）。実装は `remake/js/core/scene-art.js` の homeProps。
+- 置き場所の微調整: 特注台系はキッチン前の床（接地点 1000,563）へ移し、絵の下端に合わせた切り取りで接地させる。
+- ホース付きで残っていた台（特注台・くじ限定3種・ウォールナット台）の自室版を、ホースなし版へ差し替えた（#638 の「家に置く時はホースつけない」の原仕様に合わせる）。特注台とウォールナット台のホースなし原画は本フォルダの `shisha_home_stand_custom.png`／`shisha_home_stand_walnut.png`、くじ限定3種は `asset_sources/kuji-equipment-3019-20261111/home/` の各原画を差し替え。
