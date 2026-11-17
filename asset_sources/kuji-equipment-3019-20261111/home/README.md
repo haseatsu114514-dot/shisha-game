@@ -67,3 +67,13 @@ FINISH: Engraved limited colorway, the same as image 2. ALL metal parts are matt
 
 [B]
 （Issue #3418 §4 の [B] と同一文。構造・縮尺の一般規則＋ボウル未装着の指定）
+
+## 2026-11-18 ホースなし版への差し替え（オーナー指示）
+
+オーナー指示「基本はホースつけないで置いておきたい」を受け、3枚ともホースとハンドルを取り除いた版へ差し替えた（Codex A で生成、接続口は開いたまま残す）。デザイン・色・刻印（「逢縁」）は不変。あわせて自室の表示は「いちばん後に手に入れた1台だけ」に変更（全台横断、`remake/js/core/scene-art.js`）。ホース付きの旧原画は git 履歴（PR #3729 時点）で参照できる。
+
+| ファイル | bytes | SHA-256 |
+|---|---|---|
+| `shisha_home_stand_custom_melty.png` | 1,345,000 | （差し替え後の原画。以後の正本はこちら） |
+| `shisha_home_stand_custom_tosu.png` | 1,416,850 | 同上 |
+| `shisha_home_stand_custom_engraved.png` | 1,131,595 | 同上 |

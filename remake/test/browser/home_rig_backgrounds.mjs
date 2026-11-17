@@ -9,7 +9,8 @@ const baseline = process.env.HOME_RIG_BASELINE === "1";
 const variants = [[], ["home_rig_set"], ["home_rig_pro"], ["home_rig_set", "home_rig_pro"]];
 const names = ["none", "tabletop", "pro", "both"];
 const rigs = (page, host = "#bg > :last-child") => page.locator(`${host} [data-home-rig]`).evaluateAll(ns => ns.map(n => n.dataset.homeRig));
-const expectedRigs = owned => baseline ? [] : owned;
+// 自室に置くのは、いちばん後に手に入れた1台だけ（2026-11-18 オーナー指示）。
+const expectedRigs = owned => baseline ? [] : owned.slice(-1);
 const hit = (page, label, selector) => label === "touch" ? page.locator(selector).tap() : page.locator(selector).click();
 
 // DOMの背景枚数だけでは縮小stageの鏡像反復を検出できない。
@@ -259,7 +260,7 @@ await suite("home-rig-backgrounds", async check => {
       await home(page, variants[3], "night");
       for (const file of ["bg_home.png", "bg_home_overcast_day.png", "bg_home_overcast_night.png"]) {
         await page.evaluate(async file => HQ.ui.setBg(HQ.data.img(`backgrounds/${file}`), { instant: true }), file);
-        assert.deepEqual(await rigs(page), variants[3], file);
+        assert.deepEqual(await rigs(page), expectedRigs(variants[3]), file);
       }
       await page.evaluate(async () => HQ.ui.setBg(HQ.data.bgUrl("bg_street", "day"), { instant: true }));
       assert.deepEqual(await rigs(page), [], "No props on unrelated backgrounds");
@@ -276,9 +277,11 @@ await suite("home-rig-backgrounds", async check => {
       assert.deepEqual(await rigs(page), ["stand_custom_tosu"]);
       await home(page, ["stand_custom_tosu", "stand_custom"], "day");
       assert.deepEqual(await rigs(page), ["stand_custom"]);
-      // 別の場所の台とは同時に置ける。
+      // 別の場所の台でも同時には置かず、いちばん後に手に入れた1台だけを置く。
       await home(page, ["home_rig_set", "stand_custom_engraved"], "day");
-      assert.deepEqual(await rigs(page), ["home_rig_set", "stand_custom_engraved"]);
+      assert.deepEqual(await rigs(page), ["stand_custom_engraved"]);
+      await home(page, ["stand_custom_engraved", "home_rig_set"], "day");
+      assert.deepEqual(await rigs(page), ["home_rig_set"]);
     }, opts);
 
     await check(`${label}-acquire-save-load-new-game`, async page => {
@@ -300,7 +303,7 @@ await suite("home-rig-backgrounds", async check => {
       });
       await hit(page, label, '[data-test="kuji-g1000"]');
       await page.locator(".kuji-card.reveal").waitFor();
-      assert.deepEqual(await rigs(page), variants[3], "Kuji acquisition updates the current home without a new setBg");
+      assert.deepEqual(await rigs(page), expectedRigs(variants[3]), "Kuji acquisition updates the current home without a new setBg");
       await hit(page, label, '[data-test="kuji-reveal"]');
       await page.evaluate(() => { document.getElementById("qa-kuji")?.remove(); });
 
@@ -316,7 +319,7 @@ await suite("home-rig-backgrounds", async check => {
           return { original, restored, manualUnchanged: manual === localStorage.getItem("suien_remake_slot1") };
         });
         assert.deepEqual(result.restored, result.original); assert(result.manualUnchanged);
-        assert.deepEqual(await rigs(page), owned, `${names[i]} manual LOAD refreshes the same visible host`);
+        assert.deepEqual(await rigs(page), expectedRigs(owned), `${names[i]} manual LOAD refreshes the same visible host`);
         await page.reload();
         await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });
         await page.locator("#boot").waitFor({ state: "detached" });
@@ -325,7 +328,7 @@ await suite("home-rig-backgrounds", async check => {
           HQ.core.load(); HQ.ui.showScreen("home", document.createElement("div"));
           await HQ.ui.setBg(HQ.data.bgUrl("bg_home", HQ.core.timeOfDay()), { instant: true });
         });
-        assert.deepEqual(await rigs(page), owned, `${names[i]} browser reload + real autosave load`);
+        assert.deepEqual(await rigs(page), expectedRigs(owned), `${names[i]} browser reload + real autosave load`);
         await page.evaluate(() => HQ.core.newGame());
         assert.deepEqual(await rigs(page), [], "NEW GAME clears the already visible old home");
       }
@@ -334,7 +337,7 @@ await suite("home-rig-backgrounds", async check => {
       await page.evaluate(() => { HQ.core.saveToSlot("suien_remake_slot1"); HQ.core.newGame(); HQ.core.saveToSlot("suien_remake_slot2"); });
       for (let n = 0; n < 2; n++) {
         await page.evaluate(() => HQ.core.loadFromSlot("suien_remake_slot1"));
-        assert.deepEqual(await rigs(page), variants[3]);
+        assert.deepEqual(await rigs(page), expectedRigs(variants[3]));
         await page.evaluate(() => HQ.core.loadFromSlot("suien_remake_slot2"));
         assert.deepEqual(await rigs(page), []);
       }
@@ -349,7 +352,7 @@ await suite("home-rig-backgrounds", async check => {
           window.homeScene = HQ.vn.play(id, { signal: homeAbort.signal });
         }, id);
         await page.locator("#vn.active .vn-box").waitFor();
-        assert.deepEqual(await rigs(page), variants[3], id);
+        assert.deepEqual(await rigs(page), expectedRigs(variants[3]), id);
         await assertFits(page, ".vn-box");
         await page.screenshot({ path: `${out}/${label}-${id}.jpg`, type: "jpeg", quality: 82 });
         await page.evaluate(async () => { homeAbort.abort(); await homeScene; });
@@ -360,7 +363,7 @@ await suite("home-rig-backgrounds", async check => {
         void (await import("./js/daily/home-shisha.js")).runHomeShisha();
       });
       await page.locator('[data-test="home-shisha-skip"]').waitFor();
-      assert.deepEqual(await rigs(page), variants[3]);
+      assert.deepEqual(await rigs(page), expectedRigs(variants[3]));
       await assertFits(page, ".home-shisha-dialog .modal-actions button");
       await page.screenshot({ path: `${out}/${label}-bedtime.jpg`, type: "jpeg", quality: 82, animations: "disabled" });
       if (label === "touch") await assertTouchModalBackground(page);
@@ -371,7 +374,7 @@ await suite("home-rig-backgrounds", async check => {
         window.homeScene = HQ.vn.play(home.homeShishaDialogue({ taste: "fine", stat: null }, { id: "home_rig_pro" }), { signal: homeAbort.signal });
       });
       await page.locator("#vn.active .vn-box").waitFor();
-      assert.deepEqual(await rigs(page), variants[3], "Bedtime dialogue background");
+      assert.deepEqual(await rigs(page), expectedRigs(variants[3]), "Bedtime dialogue background");
       await page.evaluate(async () => { homeAbort.abort(); await homeScene; });
 
       for (const tod of ["day", "night"]) {
@@ -381,8 +384,8 @@ await suite("home-rig-backgrounds", async check => {
           void map.chooseSpot();
         });
         await hit(page, label, '[data-test="pin-rest"]');
-        await page.waitForFunction(() => document.querySelectorAll(".mi-preview [data-home-rig]").length === 2);
-        assert.deepEqual(await rigs(page, ".mi-preview"), variants[3]);
+        await page.waitForFunction(() => document.querySelectorAll(".mi-preview [data-home-rig]").length === 1);
+        assert.deepEqual(await rigs(page, ".mi-preview"), expectedRigs(variants[3]));
         await assertFits(page, '[data-test="map-go"]');
         await page.screenshot({ path: `${out}/${label}-preview-${tod}.jpg`, type: "jpeg", quality: 82 });
         await page.evaluate(() => homeMap.interruptMap("rest"));
@@ -399,7 +402,7 @@ await suite("home-rig-backgrounds", async check => {
       assert.deepEqual(await page.evaluate(() => HQ.art.sceneArtUrls(HQ.data.bgUrl("bg_home", HQ.core.timeOfDay()), { homeRigs: false }).length), 1);
       // 制作を終えて家の場面へ戻れば、所持品の台はそのまま出る。
       await page.evaluate(async () => HQ.ui.setBg(HQ.data.bgUrl("bg_home", HQ.core.timeOfDay()), { instant: true }));
-      assert.deepEqual(await rigs(page), variants[3], "Home scene keeps the owned rigs after crafting");
+      assert.deepEqual(await rigs(page), expectedRigs(variants[3]), "Home scene keeps the owned rig after crafting");
     }, opts);
 
     await check(`${label}-real-night-to-morning`, async page => {
@@ -430,7 +433,7 @@ await suite("home-rig-backgrounds", async check => {
       await hit(page, label, '[data-test="title-load"]'); await hit(page, label, '[data-test="slot-0"]');
       await page.waitForFunction(() => __remake.state.day === 9 && document.querySelector('[data-destination-selection]:not(.done)'), null, { timeout: 30000 });
       const frames = await page.evaluate(() => homeWakeFrames);
-      assert(frames.some(f => /bg_home_(?:overcast_)?day\.webp$/.test(f.url) && f.rigs.join(",") === variants[3].join(",")), "Real advanceDay renders both rigs on the morning home before the map");
+      assert(frames.some(f => /bg_home_(?:overcast_)?day\.webp$/.test(f.url) && f.rigs.join(",") === expectedRigs(variants[3]).join(",")), "Real advanceDay renders the latest rig on the morning home before the map");
     }, opts);
   }
 });
