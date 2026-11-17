@@ -25,6 +25,38 @@ function sketchFilter(ink, { clear = false } = {}) {
   return { defs, id };
 }
 
+/** 線画をワーカーで作る（#3653）。canvas に url(#filter) を掛けると輪郭の計算でメインスレッドが数百ms止まるため、
+ * sketchFilter と同じ式（sketch-lines.js）を別スレッドで計算する。使えない環境・失敗・時間切れは null（従来の方法へ） */
+const LINES_WORKER = new URL("../motions/sketch-lines-worker.js", import.meta.url);
+function renderLinesOffThread(img, ink, clear, timeoutMs = 4000) {
+  if (!img.naturalWidth || typeof Worker !== "function" || typeof OffscreenCanvas !== "function") return Promise.resolve(null);
+  return new Promise((resolve) => {
+    let worker = null, timer = 0;
+    const done = (url) => { clearTimeout(timer); worker?.terminate(); resolve(url); };
+    try {
+      const c = document.createElement("canvas");
+      c.width = W;
+      c.height = H;
+      const ctx = c.getContext("2d", { willReadFrequently: true });
+      // 1段目（輝度）は canvas の filter で済ませる（SVG の saturate とビット一致・軽い）。使えなければワーカーで計算する
+      ctx.filter = "saturate(0)";
+      const gray = ctx.filter === "saturate(0)";
+      const s = Math.max(W / img.naturalWidth, H / img.naturalHeight); // object-fit: cover と同じ切り抜き（renderLines と同じ）
+      const w = img.naturalWidth * s, h = img.naturalHeight * s;
+      ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+      const pixels = ctx.getImageData(0, 0, W, H).data;
+      const rgb = [1, 3, 5].map((i) => parseInt(ink.slice(i, i + 2), 16));
+      worker = new Worker(LINES_WORKER, { type: "module" });
+      timer = setTimeout(() => done(null), timeoutMs);
+      worker.onmessage = ({ data }) => done(data?.blob ? URL.createObjectURL(data.blob) : null);
+      worker.onerror = (e) => { e.preventDefault?.(); done(null); };
+      worker.postMessage({ w: W, h: H, pixels, ink: rgb, clear, gray }, [pixels.buffer]);
+    } catch {
+      done(null);
+    }
+  });
+}
+
 /** 線画を一度だけ画像にしておく（ページを動かすたびに輪郭を計算し直さない）。描けない環境では null */
 async function renderLines(img, filterId) {
   if (!img.naturalWidth) return null;
@@ -256,7 +288,7 @@ export async function b(mid, bgUrl) {
   // 線画は始まる前に一度だけ用意する（動いている途中に重い計算を挟まない）
   const { defs, id: ink } = sketchFilter(P.deep, { clear: true });
   document.body.append(defs);
-  const drawn = await renderLines(img, ink).catch(() => null);
+  const drawn = (await renderLinesOffThread(img, P.deep, true)) || (await renderLines(img, ink).catch(() => null));
   await stagePlay("sketch", async (node) => {
     const id = `mo-book-${++serial}`;
     const route = strokeRoute();
@@ -419,7 +451,7 @@ export async function c(mid, bgUrl) {
   await Promise.race([Promise.all([img.decode().catch(() => {}), ...art]), sleep(1500)]);
   const { defs, id: ink } = sketchFilter(P.deep, { clear: true });
   document.body.append(defs);
-  const drawn = await renderLines(img, ink).catch(() => null);
+  const drawn = (await renderLinesOffThread(img, P.deep, true)) || (await renderLines(img, ink).catch(() => null));
   await stagePlay("sketch", async (node) => {
     node.dataset.sketch = "tablet";
     const id = `mo-tab-${++serial}`;
