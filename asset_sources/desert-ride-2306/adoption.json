@@ -1,5 +1,5 @@
 {
-  "source": "Codex image_gen candidates delivered on PR #2306 and #2333 (gigafile ZIPs, SHA-256 checked against the handoff comments)",
+  "source": "Codex image_gen candidates delivered on PR #2306 and #2333 (gigafile ZIPs, SHA-256 checked against the handoff comments) — 遠景（backdrop / backdrop_dusk）は Issue #3713・asset_sources/desert-ride-slope-3686 の坂の絵に差し替え（PR #3719）。絵の縁（lip）を HORIZON に合わせ、54px 下げの回避をやめた。他の採用画像は #2306 / #2333 のまま。",
   "adopt": {
     "backdrop": {
       "raw": "raw/phase1/backdrop_day-B-raw.png",
@@ -65,59 +65,59 @@
   "backdrop": {
     "sky": {
       "png": "assets/ui/desert_ride/backdrop_day_sky.png",
-      "png_sha256": "44092efdbf67cd4515eafa8ad13a726adecf49fe7d1576b99334a54bbc024f09",
+      "png_sha256": "352b536b02f4fd9dc0abe53a03bd013fa9b186dc619a81e1b589d7f47b32d32e",
       "webp": "remake/img/ui/desert_ride/backdrop_day_sky.webp",
-      "webp_sha256": "a7c805907b0f10b51805ff47c597c9642bf1cc21a7ba7119e941ca674047e1d4",
+      "webp_sha256": "54ace58d8bc48716b09cafbe1c84a5cc91cac221bec421e5205e3318e8535e77",
       "size": [
         1800,
-        412
+        416
       ]
     },
     "land": {
       "png": "assets/ui/desert_ride/backdrop_day_land.png",
-      "png_sha256": "33b6dbe4a78f9cda5a2f549d286df71afb22ff80f2b435969da0e1f80a020862",
+      "png_sha256": "c53f28e6e314de62230eba67cd8db97520658d4a4dec9f1843810f4180986c97",
       "webp": "remake/img/ui/desert_ride/backdrop_day_land.webp",
-      "webp_sha256": "73515960d351af90aa28b22568f29f03da78c23c5e8db818147097577afb5920",
+      "webp_sha256": "399834642544d031275996be4387604c95f97bfed2f359da7264532379499495",
       "size": [
         1800,
-        451
+        500
       ]
     },
     "width": 1800,
     "height": 720,
-    "horizon": 404,
-    "duneTop": 281,
-    "landTop": 269,
+    "horizon": 405,
+    "duneTop": 232,
+    "landTop": 220,
     "sandHorizon": [
-      253,
-      210,
-      122
+      226,
+      166,
+      83
     ],
     "sandNear": [
-      253,
-      196,
-      98
+      238,
+      156,
+      65
     ]
   },
   "backdrop_dusk": {
     "sky": {
       "png": "assets/ui/desert_ride/backdrop_dusk_sky.png",
-      "png_sha256": "a1f87535dc744af4950ee29590ea285d768337615c49fe405eb995a79b5b7045",
+      "png_sha256": "8e1fb503710056984e15d3f8c63edbaebd39731b21f45d067cdd96326d8dc1ea",
       "webp": "remake/img/ui/desert_ride/backdrop_dusk_sky.webp",
-      "webp_sha256": "bb957c23745064967c6e884f9842b8963baa95cc624519b84bf8b4c1625b1b91",
+      "webp_sha256": "653e8b54a2226012747a7cb778bd323483d6bf257c8e9713d5bea23443fd6e48",
       "size": [
         1800,
-        412
+        416
       ]
     },
     "land": {
       "png": "assets/ui/desert_ride/backdrop_dusk_land.png",
-      "png_sha256": "326511acc411207f704f4cbf53ade460c595821cc56408c6cf9711dcdf4c808e",
+      "png_sha256": "f7d0b7c6f2713ce62d9b776f3525c6f41acfe86fe8dac055d4f956f25e9ba0fa",
       "webp": "remake/img/ui/desert_ride/backdrop_dusk_land.webp",
-      "webp_sha256": "a8556ba0e1fef52203604bfbe8eba48809e471f806078414a8e1e5d6529f422e",
+      "webp_sha256": "26beb2dfc99f488dabb54aa4a7f26897cab94df759e2ea4397940ed03b3c8632",
       "size": [
         1800,
-        451
+        500
       ]
     }
   },

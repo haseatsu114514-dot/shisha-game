@@ -1,6 +1,6 @@
 // DESERT RIDE（第4章ドバイ・サンドボード）の画面。後方視点の疑似3Dを Canvas に描き、入力・HUD・練習・リザルトを持つ。
 // 規則と採点は desert-ride-model.js。本編との接続（行動枠・報酬・保存）は chapters/ch4-desert.js で、ここは保存を読まない。
-// 絵（遠景・主人公の背面・岩・旗・ゴール・砂煙）は Codex 生成の採用画像（desert-ride-art.js）。読み込み前・失敗時は Canvas の図形で描く。
+// 絵（遠景・主人公の背面・岩・旗・ゴール・砂煙）は採用画像（desert-ride-art.js。遠景の坂は #3713、ほかは #2306/#2333）。読み込み前・失敗時は Canvas の図形で描く。
 // 起伏・路面・太陽・夕方の色は Canvas で描く。左右・ジャンプ・着地・転倒の姿勢は第4弾の差分の絵（riderPose）。
 // 2026-11-02 オーナー「もっとスピード感やエフェクトを派手に」: 速さで広がる視界（人物の大きさは保つ）・傾くカメラ・強いスピード線・砂しぶき・
 // 着地の輪・得点の浮き出し・トリックのスロー・ブーストの残像。動き軽減ではカメラの動き・揺れ・スロー・閃光・速度線を止める。
@@ -36,13 +36,11 @@ const W = 1280, H = 720;
 const GOAL_POLE = 9;
 const HORIZON = 262;             // 地平線の高さ（路面＝斜面の消失線。斜面はここで向こうへ落ち込む）
 /**
- * 坂の見え方（2026-11-17 #3686 オーナー「坂っぽくない。平らに見えて、なぜ滑れているのか謎」）。見た目だけの値で、規則・物理は変えない。
- * それまでは遠くの砂丘の足元が路面の消失線にそのまま乗り、平らな砂原を進んでいるように見えた。
- * 斜面の先を「縁」にする: 遠くの砂丘を edgePx だけ下げ、その足元を斜面の砂で隠す（砂丘が縁の向こうの低い所から立ち上がって見える）。
- * 縁の向こうは谷の空気で霞ませ、縁には日の当たった細い線。下るほど谷底へ近づくので砂丘が持ち上がり、ゴール手前 runout m で縁が消える。
- * （帯を開けて谷底を見せる案は「同じ画像が2枚重なって見える」「空いたスペースが変」で、同日やめた）
+ * 坂の見え方（2026-11-17 #3686・#3713）。見た目だけの値で、規則・物理は変えない。
+ * 採用した坂の絵（desert-ride-slope-3686）は、見下ろした谷と斜面の縁（lip）が描いてある。絵の horizon を画面の HORIZON に合わせるので、
+ * 遠くの砂丘を下げて隠す回避（かつての edgePx 54）は使わない。runout は互換のため残す（edgePx が 0 なら縁の深さは常に 0）。
  */
-const SLOPE = Object.freeze({ edgePx: 54, runout: 260 });
+const SLOPE = Object.freeze({ edgePx: 0, runout: 260 });
 const CAM = { depth: 1.5, height: 2.0, back: 4.5, meterPerLane: 1.6 }; // 疑似3Dのカメラ（人物の4.5m後ろ・高さ2m。lane 1 = 1.6m）
 const COUNTDOWN = 2.4;           // 本番のスタートの合図（3・2・1・GO）の秒数（その相手との最初の一本）
 /**
@@ -1112,8 +1110,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const race = result.race;
       const racePoints = race?.won ? (race.who === "naru" ? SCORE.raceWinNaru : SCORE.raceWin) : 0;
       const { next, tip } = nextGoal(result);
-      // 2026-11-17 オーナー「リザルト画面がなんか CSS 感強い」: 白いカードと表をやめ、左に評価のメダル（判を押すように出る）と合計、
-      // 右に記録の板（行が順に滑り込む）、下にゲームの札の形のボタン。中身・文言・data-test は前と同じ
+      // 2026-11-17 オーナー「リザルト画面がなんか CSS 感強い」→ #3713 の絵を敷く: 左に評価のメダル（文字はコード）と合計、
+      // 右に記録の板（9-slice）とボタンの絵（ラベルはコード）。中身・文言・data-test は前と同じ
       let rowIndex = 0;
       const statRow = (label, value, test) => { const node = row(label, value, test); node.style.setProperty("--i", rowIndex++); return node; };
       panel.replaceChildren(el("div.dr-card.dr-result", { dataset: { test: "desert-result", rank: result.rank } }, [
@@ -1351,7 +1349,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       ctx.fillText(text, 0, 1);
       ctx.restore();
     }
-    /** 斜面の縁の深さ（px）: 遠くの砂丘を下げて足元を縁に隠す量。スタートが最も深く、下るほど浅くなり、ふもとで 0。 */
+    /** 斜面の縁の深さ（px）。採用した坂の絵では edgePx=0（絵の lip が HORIZON）。正の値は旧い下げ回避用に残してある。 */
     function slopeEdgeAt(z) {
       const s = Math.min(1, Math.max(0, z / Math.max(1, game.course.length - SLOPE.runout)));
       return SLOPE.edgePx * (1 - s) ** 0.8;
@@ -1397,7 +1395,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       g.fillStyle = glow; g.fillRect(sunX - r * 3.2, sunY - r * 3.2, r * 6.4, r * 6.4);
       g.fillStyle = mixColor([255, 248, 220], [255, 170, 90], dusk);
       g.beginPath(); g.arc(sunX, sunY, r, 0, Math.PI * 2); g.fill();
-      // 陸: 稜線〜地平線は空と同じ倍率、地平線より下（平らな砂）は画面の下端まで伸ばす
+      // 陸: 稜線〜縁（lip）は空と同じ倍率、縁より下（手前の斜面の砂）は画面の下端まで伸ばす
       const landX = baseX - yawPx, above = B.horizon - DESERT_ART.land.top, below = B.height - B.horizon;
       // ブースト中は遠景を左右に少しずらして重ね、流れているように見せる
       const smear = !reducedMotion && (view.boost || 0) > 0.2 ? 14 * (view.boost || 0) : 0;
@@ -1405,7 +1403,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         if (!image) continue;
         for (const [shift, a] of smear ? [[0, alpha], [smear, alpha * 0.28], [-smear, alpha * 0.28]] : [[0, alpha]]) {
           g.globalAlpha = a;
-          // 砂丘は edge だけ下げ、その足元は手前の斜面の砂（絵の平らな砂を消失線から下へ）で隠す
+          // 砂丘は edge だけ下げる（採用した坂の絵では edgePx=0 なので、縁は HORIZON に乗る）。縁より下は手前の斜面の砂
           wrapImage(g, image, 0, 0, B.width, above, landX + shift, HORIZON + edge - above * k, dw, above * k);
           wrapImage(g, image, 0, above, B.width, below, landX + shift, HORIZON, dw, H - HORIZON);
         }
