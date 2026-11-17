@@ -12,6 +12,8 @@
 <link rel="preload" as="font" type="font/woff2" href="fonts/ZenKakuGothicNew-Bold.woff2" crossorigin>
 <link rel="preload" as="image" href="img/backgrounds/bg_title.webp">
 <link rel="preload" as="image" href="img/ui/ui_title_logo_rich.webp">
+<!-- 起動画面の背景（css/loading.css の --loading-backdrop-art。CSS より先に取り始める） -->
+<link rel="preload" as="image" href="img/ui/loading/loading_bg.webp">
 <title>水煙前線 -EN:CODE-</title>
 <!-- 起動画面の漫画（2026-11-13 オーナー「ロード画面でも漫画が出ない時がたまにある。必ず出るようにしたい」）。
      ゲームの本体を読み込む間（遅い回線では数十秒）も、ロード画面に漫画を出す。ここに書くのは、新しいゲームの開始時に
@@ -72,28 +74,13 @@
   <link rel="stylesheet" href="css/vn/bundle.css">
   <link rel="stylesheet" href="css/bundle-2.css">
 <style>
-/* 起動直後（モジュール読込前）の #boot も、共通ロード画面と同じ背景イラスト（案B「霞と奥行き」）で見せる。
-   素材は css/loading.css の --loading-backdrop-art と同じもの。暗幕はロゴと文言の可読性のため。
-   ゲージの色も共通ロード画面の --loading-bar-gradient に合わせる。 */
-#boot { background: linear-gradient(rgba(7, 5, 12, 0.62), rgba(7, 5, 12, 0.62)), url("img/ui/loading/loading_bg.webp") center / cover no-repeat, #07050c; }
-.boot-bar i { background: linear-gradient(90deg, #ff5fa8 0%, #b45cf0 50%, #3fd0e8 100%); }
-/* 起動画面の漫画（#boot-comics）。本体のロード画面（css/loading.css）と同じ紙面・2コマ・一行解説。 */
-.boot-comic { display: flex; flex-direction: column; gap: 10px; width: 940px; box-sizing: border-box; padding: 14px 20px 12px;
-  background: #f1e6cf; border-radius: 4px; box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55); color: #2a1d2e; }
-.boot-comic[hidden] { display: none; }
-.boot-comic-title { font-size: 24px; font-weight: 700; letter-spacing: 0.06em; padding: 0 0 6px 12px;
-  border-left: 5px solid #5a3f6b; border-bottom: 2px solid #4b3a52; }
-.boot-comic-panels { display: flex; gap: 12px; }
-.boot-comic-panels span { flex: 1; aspect-ratio: 3 / 2; border: 3px solid #2a1d2e; background: #eee3cf; overflow: hidden; }
-.boot-comic-panels img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.3s ease; }
-.boot-comic.is-ready .boot-comic-panels img { opacity: 1; }
-@media (prefers-reduced-motion: reduce) { .boot-comic-panels img { transition: none; } }
-.boot-comic-caption { margin: 0; font-size: 17px; letter-spacing: 0.04em; }
-#boot.has-comic { gap: 14px; }
-/* ロゴは本体のロード画面（css/loading.css の .loading-logo）と同寸の絵ロゴ。フォント到着に依存しないので、
-   最初の一枚から正しい姿で出る。寸法はこのインライン側にも持たせ、バンドルCSSの到着前でも崩れない。 */
-.boot-logo { display: block; width: 360px; height: auto; }
-#boot.has-comic .boot-logo { width: 248px; }
+/* 起動直後（モジュール読込前）の #boot は、共通ロード画面（css/loading.css の .loading-gate / .boot-gate）と同じ部品・同じ CSS で組む
+   （2026-11-17 LPOS03: 起動画面から次のロード画面へ替わるとき、ロゴ・漫画・ゲージの位置が動かないように）。
+   ここには起動画面だけの差分を置く。失敗したときは紙面・LOADING・「進む」を畳み、ロゴ・ゲージの下に知らせと「もう一度読み込む」を出す。 */
+#boot.is-failed :is(.loading-card, .loading-status, .loading-proceed) { display: none; }
+#boot.is-failed .loading-gauge { margin-top: 16px; }
+#boot .boot-msg { margin: 8px 0 0; }
+#boot .boot-retry { margin: 8px 0; }
 </style>
 </head>
 <body data-screen="boot">
@@ -109,29 +96,33 @@
     <div id="banners"></div>
     <div id="wipe"><i></i><i></i><i></i><i></i><i></i></div>
     <div id="modal"></div>
-    <div id="boot">
-      <div class="boot-brand">
-        <img class="boot-logo" src="img/ui/ui_title_logo_rich.webp" alt="水煙前線 -EN:CODE-" width="1538" height="512" fetchpriority="high" decoding="async">
+    <!-- 起動画面。中身は共通ロード画面（js/core/loading.js が組む .loading-gate）と同じ並び・同じクラス（外枠だけ .boot-gate。css/loading.css が両方に効く）。
+         漫画が無い間も、同じ大きさの見えない紙面（is-blank）を置く。横持ち・縦持ちのスマホでは下のスクリプトが body へ移す。 -->
+    <section id="boot" class="boot-gate has-logo" aria-label="読み込み">
+      <div class="loading-logo" aria-hidden="true"></div>
+      <div class="loading-card boot-comic is-blank">
+        <div class="loading-comic" aria-hidden="true">
+          <div class="loading-blank-title boot-comic-title"></div>
+          <div class="loading-panels boot-comic-panels"><figure><div class="loading-panel-art"><div class="loading-panel-crop" style="width:100%;height:100%"><img alt="" decoding="async"></div></div></figure><figure><div class="loading-panel-art"><div class="loading-panel-crop" style="width:100%;height:100%"><img alt="" decoding="async"></div></div></figure></div>
+          <p class="loading-blank-caption boot-comic-caption"></p>
+        </div>
       </div>
-      <div class="boot-comic" hidden>
-        <div class="boot-comic-title"></div>
-        <div class="boot-comic-panels"><span><img alt="" decoding="async"></span><span><img alt="" decoding="async"></span></div>
-        <p class="boot-comic-caption"></p>
-      </div>
-      <div class="boot-bar"><i></i></div>
-      <div class="boot-msg">読み込み中……</div>
+      <div class="loading-gauge" aria-hidden="true"><div class="loading-bar"><div class="loading-bar-fill"></div></div></div>
+      <p class="loading-status" role="status" aria-label="読み込み中"><svg class="loading-emblem" viewBox="0 0 36 52" aria-hidden="true"><path class="emblem-glow" d="M16 6.4c3.9 0 7 1.5 7 3.3S19.9 13 16 13s-7-1.5-7-3.3 3.1-3.3 7-3.3z"/><path class="emblem-body" d="M15 6h2v1.5h-2z M11 7.5h10l.5 1.2V12h-11V8.7z M10.8 12.4h10.4c0 2.7-1.7 4.6-3.4 5.4h-3.6c-1.7-.8-3.4-2.7-3.4-5.4z M15.2 17.8h1.6v2.8h-1.6z M4 20.6h24c-.6 1.4-3.6 2.1-12 2.1s-11.4-.7-12-2.1z M15.15 22.7h1.7V47h-1.7z M16.85 31h2.7v1.4h-2.7z M14.2 37H17.8V38.8C21.6 40 23.8 42.4 23.8 45.6C23.8 48 22.6 50 21.4 51H10.6C9.4 50 8.2 48 8.2 45.6C8.2 42.4 10.4 40 14.2 38.8Z M15.3 39.6C11.6 40.8 9.4 42.9 9.4 45.6C9.4 47.6 10.3 49.1 11.1 49.8H20.9C21.7 49.1 22.6 47.6 22.6 45.6C22.6 42.9 20.4 40.8 16.7 39.6Z M9.7 45.4H22.3C22.2 47.4 21.5 48.9 20.9 49.8H11.1C10.5 48.9 9.8 47.4 9.7 45.4Z M28.6 40.57l1.8.86 2.8-5.79-1.8-.87z M31.8 34.96l1 .48.8-1.7-1-.48z"/><path class="emblem-hose" d="M19.5 31.7C24.5 32 26 42.6 29.5 41"/></svg><span>LOADING…</span></p>
+      <p class="boot-msg" hidden></p>
+      <p class="loading-proceed" aria-hidden="true">タップで進む</p>
       <button class="btn boot-retry" type="button" hidden>もう一度読み込む</button>
-    </div>
+    </section>
   </div>
 </div>
 <script>
-// 起動画面の漫画を出す（選んだ話と絵の取得は <head> のスクリプト）。紙面はすぐ、絵は2コマとも描けてから出す。
+// 起動画面を共通ロード画面と同じ場所に置き、漫画を出す（選んだ話と絵の取得は <head> のスクリプト）。
 (() => {
   const comic = window.SUIEN_BOOT_COMIC;
   const boot = document.getElementById("boot");
-  if (!comic || !boot) return;
+  if (!boot) return;
   // 本体が読み込まれるまでは、ステージ（1280×720）を画面に収める倍率がまだ入っていない（js/core/stage-fit.js の fitStage と同じ計算）。
-  // スマホでも漫画の紙面が画面に収まるよう、ここで先に入れる。本体が読み込まれたら fitStage が同じ値で置き直す。
+  // ここで先に入れる。本体が読み込まれたら fitStage が同じ値で置き直す。
   const stage = document.getElementById("stage");
   const fit = () => {
     const view = window.visualViewport;
@@ -140,20 +131,36 @@
   };
   fit();
   window.addEventListener("resize", fit);
+  // 縦持ち・横持ちのスマホでは、共通ロード画面はステージの外（画面いっぱい）に出る（js/core/loading.js の placeOverlay）。
+  // 起動画面も同じ条件で同じ場所へ移す。条件は loading.js の viewportMqs と同じにしておく。
+  const queries = ["(orientation: portrait)", "(orientation: landscape) and (max-height: 500px)"].map((query) => window.matchMedia(query));
+  const place = () => {
+    if (!boot.isConnected) return;
+    const viewport = queries.some((query) => query.matches);
+    boot.classList.toggle("is-viewport", viewport);
+    const parent = viewport ? document.body : stage;
+    if (boot.parentNode !== parent) parent.append(boot);
+  };
+  place();
+  for (const query of queries) query.addEventListener("change", place);
+  // 「進む」の行は見えないまま場所だけ取る（共通ロード画面と同じ文言で同じ高さ）。
+  if (!window.matchMedia("(pointer: coarse)").matches) boot.querySelector(".loading-proceed").textContent = "クリック・Enter で進む";
+  if (!comic) return;
   const sheet = boot.querySelector(".boot-comic");
   const images = [...sheet.querySelectorAll("img")];
   sheet.querySelector(".boot-comic-title").textContent = comic.title;
-  sheet.querySelector(".boot-comic-caption").textContent = comic.caption;
+  sheet.querySelector(".boot-comic-caption").textContent = comic.caption || "";
   boot.dataset.comic = comic.id;
   images.forEach((image, i) => { image.alt = comic.panels[i].alt; image.setAttribute("fetchpriority", "high"); image.src = "img/" + comic.panels[i].src; });
-  // 紙面（題・一行解説・2コマの枠）は最初から出す。絵は2コマとも描けてから一緒に出す（半分だけの絵を見せない）。
-  sheet.hidden = false;
+  // 紙面は場所を取ったまま隠しておき、絵が2コマとも描けてから一緒に出す（共通ロード画面の is-waiting と同じ。半分だけの絵を見せない）。
+  sheet.classList.replace("is-blank", "is-waiting");
   boot.classList.add("has-comic");
   Promise.all(images.map((image) => image.decode())).then(() => {
+    sheet.classList.remove("is-waiting");
     sheet.classList.add("is-ready");
   }, () => {
-    // 絵が届かないとき（通信が切れた等）は、空の紙面を残さず従来の起動画面に戻す。
-    sheet.hidden = true;
+    // 絵が届かないとき（通信が切れた等）は、漫画のない起動画面に戻す（紙面の場所はそのまま）。
+    sheet.classList.replace("is-waiting", "is-blank");
     boot.classList.remove("has-comic");
   });
 })();
@@ -180,6 +187,8 @@ if ("serviceWorker" in navigator) {
     message.textContent = slow
       ? "読み込みに時間がかかっています。通信を確認して、もう一度お試しください。"
       : "読み込みに失敗しました。通信を確認して、もう一度お試しください。";
+    message.hidden = false;
+    bootScreen.classList.add("is-failed");
     retry.hidden = false;
     console.error("ゲームの起動に失敗しました", error);
   };

@@ -46,10 +46,10 @@ for (const [label, options] of [["pc", {}], ["phone-touch", { viewport: { width:
     assert(freshTitles.has(title), `Without a save, the boot comic is one of the people a new game has met, got ${title}`);
     assert.equal(await page.locator('[data-test="title-new"]').count(), 0, "The title waits until the reader moves on");
     if (options.touch) {
-      assert.equal(await page.locator(".loading-proceed").innerText(), "タップで進む");
+      assert.equal(await page.locator(".loading-gate .loading-proceed").innerText(), "タップで進む");
       await page.locator(".loading-gate").tap();
     } else {
-      assert.equal(await page.locator(".loading-proceed").innerText(), "クリック・Enter で進む");
+      assert.equal(await page.locator(".loading-gate .loading-proceed").innerText(), "クリック・Enter で進む");
       await page.keyboard.press("Enter");
     }
     await page.locator('[data-test="title-new"]').waitFor();
@@ -72,6 +72,11 @@ for (const [label, options] of [["pc", {}], ["phone-touch", { viewport: { width:
     assert(fits, "The boot screen's comic sheet fits the screen before the stage is fitted");
     await page.locator(".loading-gate.is-ready").waitFor();
     assert.equal(await page.locator(".loading-comic-title").innerText(), staticTitle, "The loading screen goes on with the same comic");
+    // The boot screen is built from the loading screen's parts (owner 2026-11-17: the stack must not move),
+    // so when the game's loading screen takes over, the logo, sheet, gauge, status and prompt stay put.
+    const stacks = await page.evaluate(() => ["#boot", ".loading-gate"].map(root => [".loading-logo", ".loading-card", ".loading-bar", ".loading-status", ".loading-proceed"]
+      .map(part => { const box = document.querySelector(`${root} ${part}`).getBoundingClientRect(); return [Math.round(box.top), Math.round(box.height)]; })));
+    assert.deepEqual(stacks[1], stacks[0], "The loading screen takes over the boot screen at the same place");
     await page.keyboard.press("Enter");
     await page.locator('[data-test="title-new"]').waitFor();
   }, { mode: "always", delayGame: 2500, ...options });

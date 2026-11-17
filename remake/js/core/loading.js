@@ -36,6 +36,8 @@ export function comicLoadingRequired() {
 let stylesheet;
 function loadStyle() {
   if (!stylesheet) stylesheet = new Promise((resolve, reject) => {
+    // The game page (index.html) already has this sheet in css/bundle-2.css for its static boot screen.
+    if (getComputedStyle(document.documentElement).getPropertyValue("--loading-sheet").trim() === "1") return resolve();
     const link = el("link", { rel: "stylesheet", href: buildVersioned(new URL("../../css/loading.css", import.meta.url).href) });
     link.onload = resolve;
     link.onerror = () => { link.remove(); stylesheet = null; reject(new Error("Loading stylesheet failed")); };
@@ -173,6 +175,8 @@ export async function withLoading(prepare, {
   const proceed = el("p.loading-proceed", { "aria-hidden": "true", text: touchFirst ? "タップで進む" : "クリック・Enter で進む" });
   const content = el("div.loading-comic");
   overlay.classList.add("has-logo");
+  // Over the static boot screen (the same stack at the same place) the gate takes over without entrance animations.
+  if (document.querySelector("#boot:not(.done)")) overlay.classList.add("is-takeover");
   const card = el("div.loading-card", [content]);
   overlay.append(logo, card, gauge, status, proceed);
   let settled = false, comicShown = false, comicShownAt = 0, guardTimer = null, creepFrame = 0, awaitingProceed = false, resolveProceed;
