@@ -23,8 +23,13 @@ export const STOPS = [
 export const ROOMS = Object.fromEntries(["ageha", "kumicho", "rei"].map((id) => [id, `../assets/backgrounds/bg_ch2_${id}_entry.webp`]));
 const PURIKURA_IDS = ["remake_ch2_ryuji_melty_greeting", "remake_ch2_purikura_ryuji", "remake_ch2_rei_melty_greeting", "remake_ch2_rei_purikura_after", "remake_ch2_ageha_purikura", ...["invite", "solo", "pair", "guest"].map(id => `remake_ch2_purikura_${id}`)];
 const DISCOVERY_IDS = ["remake_ch2_rei_trpg", "remake_ch2_ageha_aquarium", "remake_ch2_kumicho_sento"];
+// #3097 第1弾: tonariのシフト上がりの会話（daily/tonari.js の CH2_SHIFT_TALKS と同じ並び。読み込みを軽くするため名前を並べる。一致は remake/test/ch2_shift_talks.mjs）
+export const CH2_SHIFT_TALK_IDS = Object.freeze(["ch2_shift_talk_fare", "ch2_shift_talk_three_shops", "ch2_shift_talk_supper",
+  "ch2_shift_talk_receipts", "ch2_shift_talk_student", "ch2_shift_talk_tsumugi_board", "ch2_shift_talk_one_hose"]);
 export const CH2_HOME_IDS = Object.freeze(["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze",
   "ch2_rio_taste", "ch2_rio_strawberry",
+  // #3097 第1弾: 施設の寄り道4本と、凛想・みんと・アダムの第2章の会話（spot-encounters.js の ENCOUNTERS・spots.js の CHAPTER_TALKS）
+  "cafe_ch2_foam", "kannon_ch2_omikuji", "choizap_ch2_stairs", "cs_ch2_new_staff", "ch2_rio_city_scent", "ch2_minto_commute_frame", "ch2_adam_ticket_machine",
   // tonariの大会準備で一台作る場面（ch2-craft-prep.js の CH2_CRAFT_PREP_IDS と同じ。読み込みを軽くするため名前を並べる）
   "ch2_prep_basics_intro", "ch2_prep_basics_end", "ch2_prep_basics_failed",
   "ch2_prep_midcheck_intro", "ch2_prep_midcheck_good", "ch2_prep_midcheck_rough", "ch2_prep_midcheck_failed", "ch2_prep_rehearsal_intro",
@@ -71,6 +76,8 @@ export async function loadPreparationDialogues() {
   if (STRAWBERRY_TRIAL_IDS.length) (files.ch2_main ||= []).push(...STRAWBERRY_TRIAL_IDS); // まかないの苺の試作（#1650）
   // 地元の施設の第2章の寄り道（daily/spot-encounters.js）と凛想の会話（daily/spots.js の CHAPTER_TALKS）（VOL13）
   files.ch2_home = [...CH2_HOME_IDS];
+  // tonariのシフト上がりの会話（daily/tonari.js の CH2_SHIFT_TALKS・#3097）
+  files.ch2_tonari_talks = [...CH2_SHIFT_TALK_IDS];
   // 全台本を検証してから、接続するIDだけ公開。旧導入・大会結果は日常へ混ぜない。
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => {
     const dialogues = await readDialogues(file, ids);

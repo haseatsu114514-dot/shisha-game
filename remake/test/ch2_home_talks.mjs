@@ -18,7 +18,9 @@ const plain = v => JSON.parse(JSON.stringify(v));
 
 // ---- ① 施設の寄り道 ---------------------------------------------------------------
 const encounters = await import(new URL("remake/js/daily/spot-encounters.js", root));
-const CH2 = { cafe: ["cafe_ch2_commute", "cafe_ch2_taste"], kannon: ["kannon_ch2_wish"], choizap: ["choizap_ch2_numbers"], c_station: ["cs_ch2_haze"] };
+// #3097 第1弾: 各施設の第2章の回を1本ずつ足した（既存の回の後ろ）
+const CH2 = { cafe: ["cafe_ch2_commute", "cafe_ch2_taste", "cafe_ch2_foam"], kannon: ["kannon_ch2_wish", "kannon_ch2_omikuji"],
+  choizap: ["choizap_ch2_numbers", "choizap_ch2_stairs"], c_station: ["cs_ch2_haze", "cs_ch2_new_staff"] };
 const save = (chapter, flags = {}, extra = {}) => ({ chapter, slot: 0, met: { naru: true, adam: true, minto: true, dr_kemuri: true },
   flags: { _gym_member: true, ...flags }, ...extra });
 for (const [spot, ids] of Object.entries(CH2)) {
@@ -131,7 +133,9 @@ assert(!played.includes("ch2_rio_strawberry"), "read once");
 await visitRio({ flags: { _ch2_taste_distant: true } });
 assert.deepEqual(played, ["ch2_rio_taste"]);
 await visitRio(); assert.deepEqual(played, ["ch2_rio_strawberry"]);
-await visitRio(); assert(!played.some(id => id.startsWith("ch2_rio_")), "both read");
+// #3097 第1弾: 柚ヶ谷の匂いの回は、苺の回の後に一本
+await visitRio(); assert.deepEqual(played, ["ch2_rio_city_scent"]);
+await visitRio(); assert(!played.some(id => id.startsWith("ch2_rio_")), "all three read");
 // 中断したら既読にしない
 state = rioSave({ flags: { _ch2_taste_distant: true } }); playMode = "cancel";
 played = []; affinity = [];
@@ -147,6 +151,15 @@ state = rioSave({ story: {} }); assert.equal(spots.chapterTalkDue("rio"), null, 
 for (const chapter of [1, 3]) { state = rioSave({ chapter }); assert.equal(spots.chapterTalkDue("rio"), null, `chapter ${chapter}`); }
 state = rioSave(); const saved = DB.dialogues; DB.dialogues = {}; assert.equal(spots.chapterTalkDue("rio"), null); DB.dialogues = saved;
 assert.equal(spots.chapterTalkDue("adam"), null);
+// #3097 第1弾: アダム・みんとの第2章の会話。初めて話した後の第2章だけ、一度きり
+for (const [id, scene] of [["adam", "ch2_adam_ticket_machine"], ["minto", "ch2_minto_commute_frame"]]) {
+  state = rioSave({ story: { [id]: 2 } });
+  assert.equal(spots.chapterTalkDue(id), scene, `${id}: chapter 2 talk`);
+  state = rioSave({ story: { [id]: 2 }, flags: { [`_talk_seen_${scene}`]: true } });
+  assert.equal(spots.chapterTalkDue(id), null, `${id}: read once`);
+  for (const chapter of [1, 3]) { state = rioSave({ chapter, story: { [id]: 2 } }); assert.notEqual(spots.chapterTalkDue(id), scene, `${id}: not in chapter ${chapter}`); }
+  state = rioSave({ story: {} }); assert.equal(spots.chapterTalkDue(id), null, `${id}: first meeting comes first`);
+}
 
 // ---- ③ あげはの通い訪問の小会話6種と昼夜のあいさつ（実 ch2-preparation.js） --------------------
 let prepState, prepPlayed, slotOfDay = "day";

@@ -1030,6 +1030,907 @@
           "text": "道具を片づけると、肩の力が少しだけ抜けていた。"
         }
       ]
+    },
+    {
+      "dialogue_id": "cafe_ch2_foam",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の喫茶こはく。マスターが、ミルクピッチャーを見つめて首をかしげていた。"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "隣町では、泡を山のように盛ったコーヒーが流行っていると伺いまして"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "泡の山、ですか"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "ご覧になりましたか。毎日、通っていらっしゃるので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……すみません。シーシャ屋しか、見てなくて"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "では、シーシャ屋さんの泡は、どんな具合です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ボトルの中で、ぼこぼこ言ってます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マスターは真面目な顔で頷いた。メモ帳に「ぼこぼこ」と書いたのが見えた。"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "試しに、作ってみました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カップの上に、白い泡がそびえていた。傾いている。ゆっくり、窓の方へ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "倒れます、倒れます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人でスプーンを構えた。泡は途中で止まり、斜めのまま動かなくなった。"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "……塔のようですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "有名な、傾いてる塔みたいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの端で新聞を読んでいた常連さんが、眼鏡をずらしてこちらを見た。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "マスター、その斜めのを、私にも"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "……同じ角度にできるかは、お約束できませんが"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "斜めなら、どっちでもいいよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マスターはピッチャーを持ち直した。二杯目の泡は、反対側へ傾いた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "おお。こっちのほうが、うちの方角だ"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "流行には、少し遅れて着くくらいが、うちにはちょうどいいのかもしれません"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "泡の下のラテは、いつもの温度だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（向こうの街も、今度はちゃんと見てこよう。泡の山も）"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cafe_ch2_foam"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kannon_ch2_omikuji",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の観音堂。賽銭箱の横で、老人がおみくじの紙を腕いっぱいに伸ばしていた。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "にいちゃん、ちょうどいい。これ、読んでくれんか。眼鏡を家に置いてきた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いいですよ、……中吉です"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "ほう。で、待ち人は"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "待ち人。「来る。ただし遅し」"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "遅いのはかまわん。来るならな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "失せ物。「出る。足元を見よ」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "老人はすぐに自分の足元を見た。つられて、俺も見た。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "石畳の隙間に、眼鏡が落ちていた。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "……家に置いてきたと、思っとった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "出ましたね、失せ物"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "観音さん、仕事が早いね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "まだ続きがあります。争い事、「勝つ。ただし相手をよく見よ」"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "争い事なんぞ、孫と将棋を指すくらいだよ。わしが勝つと、孫が泣く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、相手をよく見るって"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "泣きそうな顔になったら、一手ゆるめる。観音さんは、よく分かってらっしゃる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "老人は眼鏡を掛けて、おみくじを最後まで自分で読み直した。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "学問、「焦るな。積めば届く」。……にいちゃんも一本引いていくかい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日はやめておきます。悪いのが出たら、気にしそうなので"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "気にする人間は、良いのが出ても気にするもんだよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……それは、そうかもしれません"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "老人は笑って、おみくじを枝に結び始めた。中吉なのに、結ぶらしい。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "良いのは持って帰る。でもこれは、半分くらい良かったからね"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "半分は持って帰って、半分は置いていく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙の端が、ちょうど半分だけ枝から垂れていた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_kannon_ch2_omikuji"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "choizap_ch2_stairs",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "CHOI-ZAPのステップマシン。画面の段数が、前よりずっと伸びていた。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "最近、脚の数字がいいですね。何か始めました？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何も……あ、柚ヶ谷の駅の階段かもしれません"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "乗り換えの通路が長くて、エスカレーターがいつも混んでるので"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "通勤で鍛えてるんですね。何段あるんですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……数えたことないです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣のマシンで、いつかの老人が足を止めた。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "数えてないのに伸びとるのか。それが一番いい伸び方だよ"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "あの、どうして画面にタオルを掛けてるんですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "老人のマシンの画面は、タオルで隠されていた。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "数字を見ると、昨日の自分と喧嘩したくなる。年寄りは喧嘩に弱い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "前は、窓の外を見て歩くって言ってましたよね"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "窓の外に、工事の足場が建ってね。見るものがなくなった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スタッフが吹き出しかけて、咳払いでごまかした。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "わしも昔は、毎朝同じ電車で通っとった。四十年、駅の階段を上り下りしてね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "四十年……何段か、数えたことあります？"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "一度もない。覚えとるのは、改札の駅員さんの顔だけだ"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "毎朝、同じ声で『いってらっしゃい』と言う人がいてね。定年の日に、初めて名前を聞いた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "老人はタオルの端を直して、また静かに踏み始めた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……俺も、今日は隠してみます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "タオルを画面に掛けて、踏み続けた。何段かは分からない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "脚が重くなったところで、やめた。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "お疲れさまです、……数字、見ます？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "来週まで、取っておきます"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_choizap_ch2_stairs"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_rio_city_scent",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "Dr.fookahの2階。入荷表から顔を上げないまま、凛想さんが鼻先を少しだけこちらへ向けた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……モルモットくん。今日、柚ヶ谷に寄ってきたでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "なんで分かるんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "匂い。駅ビルのパン屋、電車の座席。それと、綿あめみたいな甘い匂い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……MELTY PUFFだ。あげはさんのお店です"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "私は商品の香りを邪魔したくないから、洗剤も無香料にしてる"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "だから、人が外から連れてくる匂いには、すぐ気づく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "凛想さんの前だと、隠しごとできないですね"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "匂いのある隠しごとだけね"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "で。その甘い店の人たち、どんな顔で吸ってた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "顔、ですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "入荷の数なら、私のほうが知ってる。柚ヶ谷でグミベアがよく出てることも"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "でも、吸ってる人の顔は、数字に載らない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……二人組のお客さんが、煙の輪っかを作るたびに写真を撮ってました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "三回目でやっと撮れて。二人とも、吸う前より大きい声で笑ってました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんはペンを持ったまま聞いていた。メモは、取らなかった。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……そう。輪っかが出るなら、煙の濃さは足りてるんだ"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "いいの持ってきたね。今日の報告、受け取りました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "報告、だったんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "モニターでしょ。外の顔を持ってくるのが、君の仕事"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "次は、黒い服の人の店の匂いも連れてきて。たぶん、ろうそくと炭"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "クラウドさんの店、行ったことあるんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "ない。卸の伝票に、ろうそくの業者と同じ住所があっただけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……匂いより、伝票のほうが怖いです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、階段の踊り場で、自分の袖の匂いを嗅いでみた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "何の匂いがするのかは、自分ではよく分からなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_minto_commute_frame",
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "PEPPERMINTに入ると、みんとがチェキの機械を構えて待ち構えていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくん、いいところに来たっ♡ ちょうど試し撮りの相手を探してたの！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "試し撮り？"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "新しいフレームだよっ。じゃーん、『通勤おつかれさまフレーム』♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "枠には、電車の絵と「きょうもえらい！」の文字。吊り革が、ハートの形をしている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……なんで電車なんですか"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "最近ね、隣町へ通ってるお客さんが増えたの。帰りの電車の前に、一服していく人"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "疲れた顔で来て、元気な顔で帰ってもらう。それが、みんとのお仕事♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、毎日通ってます。柚ヶ谷まで"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "知ってるよ〜？ だから、いちばん似合うモデルさんなの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの前に立たされた。吊り革を持つ手の形をしろ、と言われる。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "もっと疲れた顔して〜。……あ、それは疲れすぎ。心配になっちゃう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "難しいです"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "今日いちばん長く立ってた時のこと、思い出して"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "乗り換えの通路。混んだエスカレーター。……気づくと、少し笑っていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "あれっ。笑っちゃった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シャッターの音。チェキには、ハートの吊り革を握って、なぜか満足げな俺が写っていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "……うん、これでいいかも。疲れてるけど、楽しそう。いちばん売れる顔♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "売るんですか、これ"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "見本として飾るだけ♡ モデル料は、このチェキ代がタダっ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……見本なら、もともとタダですよね"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "バレた♪ じゃあ、みんとの笑顔もつけちゃう。プライスレスでーす♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、レジ横の見本の位置に、さっきのチェキが貼られていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電車の絵の中で、俺だけがやけに楽しそうだった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_adam_ticket_machine",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "EDENに入ると、アダムがカウンターで紙ナプキンに何かを描いていた。四角の中に、小さな丸がたくさん。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "来たか。……ちょうどいい。これを見ろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何ですか、これ"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "券売機だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "券売機"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "柚ヶ谷の百貨店の地下に、季節の林檎が並ぶと聞いた。行かねばならぬ"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "だが、あの機械は丸が多すぎる。どれを押せば、柚ヶ谷に着く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "アダムさん、電車に乗ったこと……"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "ある。遠い昔にな。切符は、連れが買った"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙ナプキンの丸に、一つずつ数字を書き込んでいく。二百円の丸に、赤いペンで林檎の印をつけた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ここを押して、出てきた切符を改札に通すだけです。帰りは、向こうの駅で同じのを買います"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "帰りも、か。……行きの切符で帰れぬのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "片道ずつです。俺も、毎日四百円です"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "毎日。……お前は、毎日あの丸と戦っているのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "もう慣れました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは紙ナプキンを丁寧に二つ折りにして、胸ポケットにしまった。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "礼だ。座れ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出てきたのは、いつものダブルアップル。それと、皮が一本につながったままの林檎が一皿。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "今朝の果実だ。この皮が途切れずに剥けた日は、遠出に向いている"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ、占いですか"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "俺の決まりだ。……途切れたら、行かぬ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、今日は行けますね"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "無論"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、店の扉に小さな貼り紙が増えていた。「林檎の買い出しのため、臨時休業あり」。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "日付の欄は、まだ空いていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cs_ch2_new_staff",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "C.STATIONの客席。カウンターの奥で、見慣れない若いスタッフが炭台の前に立っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トングを持つ手が、遠目にも分かるくらい震えている。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "あ、tonariさん。今日から入った子なんです。炭、初めてで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……見てても、いいですか"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "どうぞどうぞ。むしろ、何か言ってあげてください"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新人さんは炭をつまみ、HMDの上で止まった。置く場所が決まらないまま、炭だけが赤くなっていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（あれ、俺だ。最初の頃の）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの。置く前に、一回だけ息を吐くといいですよ"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "……息、ですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺、最初は息を止めて置いてたんです。そしたら、手が震えて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "師匠に、ずっと見られてたみたいで。あとで言われました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新人さんは、ふう、と小さく吐いた。炭が一つ、二つ、三つ。三角に並んだ。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "……置けました"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "おお、きれい。私の時より上手いかも"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "よかったです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新人さんは何度も頭を下げて、次の台の準備へ走っていった。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "いいんですか、よその店の子に教えちゃって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "教えたのは、息の吐き方だけです。炭は、あの人が自分で置きました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "チェーン店のシーシャを一服。広い店内を見回す。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "さっきの新人さんの台から、まっすぐな煙が上がっていた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cs_ch2_new_staff"
+        }
+      ]
     }
   ]
 }

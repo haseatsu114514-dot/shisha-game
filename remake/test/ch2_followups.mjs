@@ -326,9 +326,12 @@ fixture = preparation; await loader.namespace.loadPreparationDialogues();
 // + 今回の日常3本（#3097）+ クラウドのライブの夜（RVE07）
 // + あげはの小会話3本と地元の第2章の会話7本、tonariの大会準備9本（VOL13）＋中間の確認4本（#2032）
 // + クラウドのMELTY PUFFの挨拶回とシールの後日2本（#3468 A案）
-assert.equal(Object.keys(loaderDB.dialogues).length, 70 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+// + 地元の第2章の会話7本と、tonariのシフト上がりの会話7本（ch2_tonari_talks.json・#3097 第1弾）
+assert.equal(Object.keys(loaderDB.dialogues).length, 84 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
 for (const suffix of ["b", "c", "d"]) assert(loaderDB.dialogues[`remake_ch2_ageha_repeat_${suffix}`], `ageha small talk ${suffix}`);
 for (const id of ["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze", "ch2_rio_taste", "ch2_rio_strawberry"]) assert(loaderDB.dialogues[id], id);
+for (const id of ["cafe_ch2_foam", "kannon_ch2_omikuji", "choizap_ch2_stairs", "cs_ch2_new_staff", "ch2_rio_city_scent", "ch2_minto_commute_frame", "ch2_adam_ticket_machine",
+  ...["fare", "three_shops", "supper", "receipts", "student", "tsumugi_board", "one_hose"].map(id => `ch2_shift_talk_${id}`)]) assert(loaderDB.dialogues[id], `#3097: ${id}`);
 for (const id of ["ch2_prep_basics_intro", "ch2_prep_basics_end", "ch2_prep_basics_failed", "ch2_prep_rehearsal_intro",
   ...["intro", "good", "rough", "failed"].map(result => `ch2_prep_midcheck_${result}`),
   ...["great", "good", "rough", "burnt", "drill"].map(result => `ch2_prep_rehearsal_${result}`)]) assert(loaderDB.dialogues[id], `craft prep ${id} is published`);

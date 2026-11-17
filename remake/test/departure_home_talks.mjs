@@ -146,7 +146,9 @@ none("before the first meeting", save(3, { story: {} }));
 state = save(3); DB.dialogues = {}; for (const id of ids) assert.equal(spots.chapterTalkDue(id), null, "script not loaded"); DB.dialogues = { ...all };
 // 第2章の凛想の会話は今までどおり（第2章だけ）
 state = save(2, { flags: {} }); assert.equal(spots.chapterTalkDue("rio"), "ch2_rio_strawberry");
-assert.equal(spots.chapterTalkDue("adam"), null);
+// #3097 第1弾: アダム・みんとにも第2章だけの会話が一本ずつ（第3章の送り出しとは別。第3章では下のとおり出ない）
+assert.equal(spots.chapterTalkDue("adam"), "ch2_adam_ticket_machine");
+assert.equal(spots.chapterTalkDue("minto"), "ch2_minto_commute_frame");
 state = save(3); assert.equal(spots.chapterTalkDue("rio"), "ch3_prep_rio", "chapter 2 talks are not read in chapter 3");
 // 一度だけ。来店の会話として読み、昼夜のあいさつは重ねない。好感度は通いの値
 state = save(3); played = []; affinity = [];
