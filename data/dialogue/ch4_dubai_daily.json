@@ -118,6 +118,64 @@
       ]
     },
     {
+      "dialogue_id": "ch4_festa_talk_e",
+      "comment": "FESTA再訪。太陽が客席へガンザ（ブラジルの振る楽器）を投げ入れる。太陽は客席全体への呼びかけと身ぶりだけで、はじめとは話さない（ファイル冒頭の決まり）。現地の客は身ぶり、店員は shop_clerk。審査員だと分かる言葉なし。時間帯に触れない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "FESTAの前の方で、太陽が客席へ小さな筒を投げ入れていた。" },
+        { "speaker": "", "face": "", "text": "振ると、中で豆のような音がする。" },
+        { "speaker": "da_silva", "face": "excited", "text": "受け取ったやつ、振れー！　手拍子の隣の音だ！" },
+        { "speaker": "", "face": "", "text": "一本が、こちらの膝に落ちてきた。拾い上げると、手の中で、しゃらっと鳴る。" },
+        { "speaker": "shop_clerk", "face": "", "text": "ガンザっていう楽器です。振るだけで、ちゃんと音になりますよ" },
+        { "speaker": "", "face": "", "text": "振ってみると、手拍子より半拍遅れた。" },
+        { "speaker": "", "face": "", "text": "隣の客が笑って、こちらの拍に寄せてくれる。言葉は分からないが、親指が立っていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "……すみません、ずれてます" },
+        { "speaker": "", "face": "", "text": "舞台の上で、太陽が両手を大きく振った。ずれた拍の方へ、手拍子ごと寄せていく。" },
+        { "speaker": "shop_clerk", "face": "", "text": "太陽さん、ずれた拍を見つけると、そっちに全部合わせちゃうんです" },
+        { "speaker": "hajime", "face": "surprise", "text": "全部、ですか" },
+        { "speaker": "shop_clerk", "face": "", "text": "「一人で合ってるより、みんなでずれた方がフェスタだ」って" },
+        { "speaker": "", "face": "", "text": "曲が終わると、店員がガンザの籠を持って回ってきた。" },
+        { "speaker": "", "face": "", "text": "返す前に、もう一度だけ振ってみる。" },
+        { "speaker": "hajime", "face": "smile", "text": "（次は、半拍まで合わせよう）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_festa_talk_f",
+      "comment": "FESTA再訪。裏で店員がパッションフルーツ（太陽の好物・characters.json）を割る。太陽は出ない。審査員だと分かる言葉なし。時間帯・季節に触れない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ブースの裏で、店員が丸い紫の実を半分に割っていた。" },
+        { "speaker": "", "face": "", "text": "中から、種の混じった黄色い果肉がのぞく。" },
+        { "speaker": "shop_clerk", "face": "", "text": "パッションフルーツです。太陽さんの飲み物用。合間に、これだけは飲むんですよ" },
+        { "speaker": "hajime", "face": "normal", "text": "シーシャの葉も、パッションフルーツが好きなんですか" },
+        { "speaker": "shop_clerk", "face": "", "text": "好きどころか。「これが無いとフェスタが始まらない」って" },
+        { "speaker": "", "face": "", "text": "店員はスプーンで果肉をすくい、氷の入ったグラスに落とした。種が、底で小さく鳴る。" },
+        { "speaker": "shop_clerk", "face": "", "text": "一つ、飲んでいきます？　割るのは、手伝ってもらいますけど" },
+        { "speaker": "", "face": "", "text": "渡された実は、思ったより軽かった。皮が、しわしわにしぼんでいる。" },
+        { "speaker": "hajime", "face": "normal", "text": "これ、古くないですか" },
+        { "speaker": "shop_clerk", "face": "", "text": "しわしわの方が、中が甘いんです。太陽さんいわく「笑いじわと一緒」" },
+        { "speaker": "", "face": "", "text": "割った実から、甘酸っぱい匂いが立った。舞台の方で、ちょうど次の手拍子が始まる。" },
+        { "speaker": "hajime", "face": "smile", "text": "（……笑いじわ、か）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_festa_talk_g",
+      "comment": "FESTA再訪。どの台にも挿す手作りの紙の旗（裏に一本ずつポルトガル語の一語）。はじめのは「Alegria（喜び）」。太陽は舞台で遠く見えるだけで、はじめとは話さない。審査員だと分かる言葉なし。時間帯に触れない。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "運ばれてきた一台のボウルの縁に、指ほどの紙の旗が一本挿してあった。" },
+        { "speaker": "", "face": "", "text": "緑と黄色を、手で塗った旗だ。" },
+        { "speaker": "hajime", "face": "normal", "text": "この旗、全部の台に付いてるんですか" },
+        { "speaker": "shop_clerk", "face": "", "text": "付いてます。太陽さんの手作りです。店を開ける前に、一人で作ってるんですよ" },
+        { "speaker": "", "face": "", "text": "旗の裏に、細いペンで小さな字が書いてあった。知らない単語が一つ。" },
+        { "speaker": "shop_clerk", "face": "", "text": "一本ずつ、違う言葉なんです。「乾杯」とか「友だち」とか" },
+        { "speaker": "hajime", "face": "normal", "text": "俺のは、何て書いてあるんですか" },
+        { "speaker": "shop_clerk", "face": "", "text": "……「Alegria」。喜び、です。当たりですよ" },
+        { "speaker": "shop_clerk", "face": "", "text": "いちばん多く書いてる言葉なので、いちばんよく当たるんですけど" },
+        { "speaker": "hajime", "face": "smile", "text": "いちばん多いのに、当たりなんですね" },
+        { "speaker": "shop_clerk", "face": "", "text": "太陽さんいわく、「喜びは、いくつあってもハズレじゃない」" },
+        { "speaker": "", "face": "", "text": "舞台の方で、太陽が煙の輪を三つ続けて吹いた。客席の旗が、いっせいに揺れる。" },
+        { "speaker": "", "face": "", "text": "吸い終えて、旗を手帳に挟んだ。緑と黄色の端が、ページから少しはみ出している。" }
+      ]
+    },
+    {
       "dialogue_id": "ch4_cafe_talk_b",
       "comment": "中心地の高級カフェ再訪（ch4_dubai_cafe_revisit の後の想定）。強い冷房と、頼まれる前の肩掛け。店員は cafe_staff。",
       "lines": [

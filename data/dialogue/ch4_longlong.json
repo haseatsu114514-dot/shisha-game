@@ -1,5 +1,5 @@
 {
-  "comment": "龍龍水煙所のドバイの店（2026-11-02 オーナー「マスターフーカーの店に行けたり」「普通に他の章のライバルと同じ扱い」）。王煙楼は58歳の現役職人・一人称「私」・短く落ち着いた言葉（老人語にしない）。シェイクの師であることは出さない（シェイクの正体は大会の朝まで伏せる）。スミさんの弟子・旧友にしない。呼び名は王煙楼（「煙楼先生」とは呼ばない）。ライチの話は前夜祭（ch4_wang_reception）の味の会話なので、ここでは別の葉を出す。店はドバイの日常（DAY1〜12）だけの地図にあり、今は大会後に読めないが、大会に触れる行は tournament_finished（第4章）で大会後の言い方に分ける。好感度・能力・代金はコード側（ch4-dubai-daily.js）。 段階の会話は first〜fifth を一訪問一本（必要ハートは core/affinity-stages.js の LONGLONG_VISIT_STORIES）、読み終えた後は visit_b・visit_c を巡回する。背景は bg_longlong_shop（コード側で指定）。",
+  "comment": "龍龍水煙所のドバイの店（2026-11-02 オーナー「マスターフーカーの店に行けたり」「普通に他の章のライバルと同じ扱い」）。王煙楼は58歳の現役職人・一人称「私」・短く落ち着いた言葉（老人語にしない）。シェイクの師であることは出さない（シェイクの正体は大会の朝まで伏せる）。スミさんの弟子・旧友にしない。呼び名は王煙楼（「煙楼先生」とは呼ばない）。ライチの話は前夜祭（ch4_wang_reception）の味の会話なので、ここでは別の葉を出す。店はドバイの日常（DAY1〜12）だけの地図にあり、今は大会後に読めないが、大会に触れる行は tournament_finished（第4章）で大会後の言い方に分ける。好感度・能力・代金はコード側（ch4-dubai-daily.js）。 段階の会話は first〜fifth を一訪問一本（必要ハートは core/affinity-stages.js の LONGLONG_VISIT_STORIES）、読み終えた後は visit_b〜visit_g を巡回する。背景は bg_longlong_shop（コード側で指定）。",
   "dialogues": [
     {
       "dialogue_id": "ch4_longlong_first",
@@ -927,7 +927,7 @@
     },
     {
       "dialogue_id": "ch4_longlong_visit_d",
-      "comment": "段階の会話の合間・読み終えた後の通い（小会話。visit_b・visit_c と巡回。2026-11-11 RVE07）。♥が足りない間も読むので、初回（first）の後なら成り立つ文にする。店員（shop_clerk）から見た店主。初回の『まず水を一杯』を、王煙楼は客より先に、走り回る店員にもする。大会・前夜祭・シェイクに触れない。時間帯を言わない。",
+      "comment": "段階の会話の合間・読み終えた後の通い（小会話。visit_b〜visit_g と巡回。2026-11-11 RVE07）。♥が足りない間も読むので、初回（first）の後なら成り立つ文にする。店員（shop_clerk）から見た店主。初回の『まず水を一杯』を、王煙楼は客より先に、走り回る店員にもする。大会・前夜祭・シェイクに触れない。時間帯を言わない。",
       "lines": [
         {
           "speaker": "",
@@ -968,6 +968,199 @@
           "speaker": "",
           "face": "",
           "text": "こちらの席にも、水の杯が一つ、先に置かれていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_longlong_visit_e",
+      "comment": "段階の会話の合間・読み終えた後の通い（小会話。visit_b〜visit_g を巡回）。♥が足りない間も読むので、初回（first）の後なら成り立つ文にする。龍の煙を頼む観光客に「見せる場所でやる。ここは吸う場所」。長く吸える一台で、龍は吸う人の中に。大会・前夜祭・シェイクに触れない。時間帯を言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "龍龍水煙所の入口で、観光客らしい二人が王煙楼に何か頼んでいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "指で、空中に長い形を描いている。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ドラゴン！　あの、煙の。動画で見たんです"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "あれは、見せる場所でやる。ここは、吸う場所だよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人は少し残念そうに、それでも席に着いた。王煙楼は、急がずに炭を起こしはじめる。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "毎日、何組かは頼まれるんです。店主、毎回同じ返事で"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一度くらい、見せてもいいのに"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "私も、最初はそう思ってました。見ててください"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人の台から立った煙が、ゆっくり長く伸びて、天井の手前で細くほどけた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "龍の形ではない。それでも二人は、顔を見合わせて小さく笑った。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "長く吸える一台にした。龍は、吸う人の中にいればいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（見せるんじゃなくて、吸わせて見せたんだ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_longlong_visit_f",
+      "comment": "段階の会話の合間・読み終えた後の通い（小会話。visit_b〜visit_g を巡回）。♥が足りない間も読むので、初回（first）の後なら成り立つ文にする。日本の店で覚えた「お疲れさまでした」（日本語は日本の店で覚えた・characters.json）。通じなくても声の温度は届く。大会・前夜祭・シェイクに触れない。時間帯を言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰っていく客に、王煙楼が「お疲れさまでした」と声をかけた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は英語で礼を言って、手を振って出ていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "日本語で、見送るんですね"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "日本の店で覚えた言葉だ。帰る客に、皆がそう言っていた"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "意味は、ずいぶん後で知った。疲れていない客にも、言っていた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "疲れてなくても、言っていいと思います"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "そうらしいね。だから、ここでも使う。通じなくても、声の温度は届く"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店員が、こっそりこちらへ身を寄せた。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "私も最初、何の呪文かと思いました。今は、私も言います"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次の客が立ち上がる。店員と王煙楼の声が、少しずれて重なった。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "ずれたね、……それも、いい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_longlong_visit_g",
+      "comment": "段階の会話の合間・読み終えた後の通い（小会話。visit_b〜visit_g を巡回）。♥が足りない間も読むので、初回（first）の後なら成り立つ文にする。目を閉じて炭の弾ける間を数える。見て分かることは耳でも分かる、両方あれば客の顔を見る目が空く。大会・前夜祭・シェイクに触れない。時間帯を言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "龍龍水煙所の奥で、炭が小さな音を立てていた。ぱち、ぱち、と間を空けて弾ける。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "目を閉じてごらん。何が聞こえる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……炭の音です。弾ける音"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "数えなさい。弾ける間が、どう変わるか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "目を閉じたまま数える。初めは速かった音が、少しずつ間を空けていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "やがて、ほとんど聞こえなくなった。"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "今だ。目を開けてごらん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭は、角まで白く灰をかぶっていた。見ていなかったのに、置きどきの色だと分かった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "見なくても、分かるんですね"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "normal",
+          "text": "見て分かることは、耳でも分かる。両方あれば、客の顔を見る目が空く"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "私はまだ、ずっと炭をにらんでます。耳が追いつかなくて"
+        },
+        {
+          "speaker": "master_hookah",
+          "face": "smile",
+          "text": "にらむ目は、そのうち休める。耳は、急がなくていい"
         }
       ]
     },

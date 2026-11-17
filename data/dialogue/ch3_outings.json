@@ -1262,7 +1262,7 @@
     },
     {
       "dialogue_id": "ch3_outing_enmaku_visit_b",
-      "comment": "煙幕に通う（_b〜_d を巡回）。大げさな噂は自分で流し、片付けは自分でする（characters.json）。",
+      "comment": "煙幕に通う（_b〜_g を巡回）。大げさな噂は自分で流し、片付けは自分でする（characters.json）。",
       "lines": [
         {
           "speaker": "",
@@ -1312,7 +1312,7 @@
     },
     {
       "dialogue_id": "ch3_outing_enmaku_visit_c",
-      "comment": "煙幕に通う（_b〜_d を巡回）。はじめの手帳。結びは「書記」の勧誘を繰り返さず（ノートの話 ch3_outing_enmaku_notes にあるため。添削表の提案9）、綾取の予想の列に「？」が無いことを見せる。",
+      "comment": "煙幕に通う（_b〜_g を巡回）。はじめの手帳。結びは「書記」の勧誘を繰り返さず（ノートの話 ch3_outing_enmaku_notes にあるため。添削表の提案9）、綾取の予想の列に「？」が無いことを見せる。",
       "lines": [
         {
           "speaker": "",
@@ -1422,7 +1422,7 @@
     },
     {
       "dialogue_id": "ch3_outing_steve_visit_b",
-      "comment": "Smoke & Glory に通う（2回目以降は _b・_c を巡回）。味覚回復・昼夜を問わず成立する食事の小会話。",
+      "comment": "Smoke & Glory に通う（2回目以降は _b〜_f を巡回）。味覚回復・昼夜を問わず成立する食事の小会話。",
       "lines": [
         {
           "speaker": "",
@@ -1930,6 +1930,219 @@
       ]
     },
     {
+      "dialogue_id": "ch3_outing_enmaku_visit_e",
+      "comment": "煙幕に通う（_b〜_g を巡回）。間借りの店の、届かない棚（小柄・characters.json）。どこまでが自分の場所か。ましろ・大会・味覚・時間帯に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙幕の奥で、綾取が丸椅子に乗って、棚の上へ手を伸ばしていた。"
+        },
+        {
+          "speaker": "saku",
+          "face": "nervous",
+          "text": "あ、ちょうどいい所に。上の箱、取れる？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "椅子を降りてもらって、代わりに手を伸ばす。埃をかぶった缶が、指に当たった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "これですか。……「借りた人は触らないこと」って書いてあります"
+        },
+        {
+          "speaker": "saku",
+          "face": "surprise",
+          "text": "えっ、……本当だ。じゃあ、戻して、そっと"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "缶を元に戻すと、奥に紙の袋が見えた。綾取の字で「予備の炭」とある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "取りたかったの、こっちですよね"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "そう、それ。なんで僕、届かない所に自分の物を置いたんだろう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "置いた日は、椅子に乗ったんじゃないですか"
+        },
+        {
+          "speaker": "saku",
+          "face": "smug",
+          "text": "乗った。……次も乗ればいいって、その日の僕は思ったんだね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取は炭の袋を受け取って、手の届く棚の、いちばん端に置き直した。"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "間借りの店って、どこまでが僕の場所か、まだ分からなくて"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "届く所だけ僕の、ってことにしておく"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_enmaku_visit_f",
+      "comment": "煙幕に通う（_b〜_g を巡回）。店を貸してくれた人の鉢を、心配で少しずつ水をやって枯らしかけている。客の記録はするのに植物には聞かなかった。ましろ・大会・味覚・時間帯に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙幕の窓辺で、綾取が小さな鉢に水をやっていた。葉の先が、少し茶色い。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "店の植物ですか"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "店を貸してくれた人のね。「枯らしたら家賃倍」って言われてる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……枯れかけてません？"
+        },
+        {
+          "speaker": "saku",
+          "face": "nervous",
+          "text": "だよね。毎日見てるのに、何が足りないのか分からない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉢の土に指を入れてみた。表面は湿っているのに、少し下はからからだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "上だけ濡れてます。水、ちょっとずつ何回もあげてませんか"
+        },
+        {
+          "speaker": "saku",
+          "face": "surprise",
+          "text": "……あげてる。心配だから、来るたびに少しだけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一回で、底から出るくらいにした方がいいかもです。前に、そう教わりました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取は鉢を流しへ運んで、底の穴から水が落ちるまで注いだ。"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "客の好みは書き留めるのに、この子には聞かなかったな"
+        },
+        {
+          "speaker": "saku",
+          "face": "smug",
+          "text": "君、今日から鉢の係ね。家賃が倍になったら、半分出してもらうから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "枯らしかけたのは、俺が来る前の分です"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_enmaku_visit_g",
+      "comment": "煙幕に通う（_b〜_g を巡回）。三回目の客の「いつもの」。ノートで覚えている顔をする（自己評価が低く、読み切れない）。ましろ・大会・味覚・時間帯に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙幕の扉が開いて、スーツの客が入ってきた。座る前に、もう指を一本立てている。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "いつもので"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "はーい。いつもの、ね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取は腰のポーチからノートを抜いて、後ろの方のページを開いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客からは見えない角度だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……見てる）"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "今日は少し、ミントを減らしておきますね。この前、三口目でむせてたから"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "よく覚えてるなあ。ここ、ずっと前から通ってる気がするよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客が煙を吐くのを見届けてから、綾取は小声でこちらに言った。"
+        },
+        {
+          "speaker": "saku",
+          "face": "smug",
+          "text": "三回目なんだよ、あの人。「いつもの」になってから、まだ二回"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "書いておけば、三回目でも常連なんですね"
+        },
+        {
+          "speaker": "saku",
+          "face": "serious",
+          "text": "書かないと、僕はすぐ忘れるから。覚えてる顔をするのは、得意なんだけど"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートのその行には、「ミント少なめ・むせる」とだけ書いてあった。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_outing_steve_visit_c",
       "comment": "#3097 東京の仕事・大会から離れた日常。味覚回復・恋愛の成立に依存しない。報酬は既存の外出精算だけ。",
       "lines": [
@@ -1992,6 +2205,199 @@
           "speaker": "",
           "face": "",
           "text": "スティーブは自分でメモを書き、ほどいたエプロンと一緒に奥へ持っていった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_steve_visit_d",
+      "comment": "Smoke & Glory に通う（_b〜_f を巡回）。レシピカードの余白の日本語（客の反応を書き足す・characters.json）。大きな手と細いペン。大会・味覚・時間帯に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "Smoke & Glory。スティーブが、レシピカードの束を輪ゴムで留め直していた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、ハジメ。これ、読めるか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出されたカードの余白に、小さな日本語がびっしり書き込まれている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「二口目、かるい」「笑った」……お客さんの反応ですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "イエス。日本語で書く練習も兼ねてる。字が合ってるか、見てくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "合ってます。……あ、ここだけ「軽い」が「車い」になってます"
+        },
+        {
+          "speaker": "steve",
+          "face": "surprise",
+          "text": "……ノー、ノー。車は重い。逆だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブは大きな手で、細いペンを持ち直した。一画ずつ、ゆっくり足していく。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "炭なら数ミリでも動かせるのに、字は思ったところに行かない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭より、ゆっくりでいいと思います"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "オーケー。じゃあ、タイマーなしで書く"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "書き直した「軽い」は、ほかの字より一回り大きかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_steve_visit_e",
+      "comment": "Smoke & Glory に通う（_b〜_f を巡回）。地元の友だちのスモーカー（低い熱で半日焼く肉）とタイマー。家族の設定は足さない。大会・味覚・時間帯に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "Smoke & Glory。スティーブが、スマホの画面をこちらへ向けた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、ハジメ。見るか。地元の友だちの店だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面に、黒くて大きな鉄の箱が写っていた。煙突から、細い煙が上がっている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "これ、何ですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "スモーカー。肉を低い熱で、半日かけて焼く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "半日、ですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "火を急ぐと、外だけ焦げて中が固い。……どこかで聞いた話だろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "聞いたことあります。この店で、毎回"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "あいつは時計を見ない。肉の色を見て、薪を一本だけ動かす"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "俺は、それがまだできない。だから、タイマーを置いてる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブは画面を消して、カウンターのタイマーを指で一度だけ叩いた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "でも、あいつの肉より俺のレモンの方がうまい。これは本当だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_steve_visit_f",
+      "comment": "Smoke & Glory に通う（_b〜_f を巡回）。毎日替えるレトロな柄シャツ（characters.json）と、柄を書いたカレンダー。見た目で一台の印象まで決まる。大会・味覚・時間帯に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今日のスティーブのシャツは、黄色い地に小さなパイナップルが並んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そのシャツ、何枚持ってるんですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "店に置いてるのは七枚だ。一週間で、一回りする"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "客は俺の名前より、シャツを覚えてる。「パイナップルの日の人」ってな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "名前より、そっちの方が早いかもしれません"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "前に、同じ柄を二日続けて着た。そしたら客に「昨日の続き？」って聞かれた"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "一台は毎日違うのに、シャツが同じだと、同じ一台だと思われる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "見た目で、一台の印象まで決まっちゃうんですね"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "イエス。だからシャツは毎日替える。レモンライムは、毎日同じでいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、レジの横に、柄の名前を書いた小さなカレンダーが貼ってあるのに気づいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……これも、ちゃんと記録してるんだ）"
         }
       ]
     },
@@ -2073,7 +2479,7 @@
     },
     {
       "dialogue_id": "ch3_outing_volk_visit_b",
-      "comment": "鉄の煙に通う（_b・_c を巡回）。雨の日。壁の計器を先に見る順番は変えず、客が拭き終わるまで炭を置かない。貸し傘の帳面で、戻らなかった三本を「三人が濡れずに帰った」と数える。大会・時間帯に触れない。",
+      "comment": "鉄の煙に通う（_b〜_f を巡回）。雨の日。壁の計器を先に見る順番は変えず、客が拭き終わるまで炭を置かない。貸し傘の帳面で、戻らなかった三本を「三人が濡れずに帰った」と数える。大会・時間帯に触れない。",
       "lines": [
         {
           "speaker": "",
@@ -2144,7 +2550,7 @@
     },
     {
       "dialogue_id": "ch3_outing_volk_visit_c",
-      "comment": "鉄の煙に通う（_b・_c を巡回）。氷水で温度計を合わせる日課。いつもの一本がずれていても買い替えずに札を掛ける（ずれを知っていれば使える。2026-11-13 オーナー訂正「計測を盛りすぎない」で五本→一本）。はじめの舌の揺れ（第3章は味が戻った後も回復の途中）に、白紙の札を一枚。味覚の不調の中身は話さない。大会・時間帯に触れない。",
+      "comment": "鉄の煙に通う（_b〜_f を巡回）。氷水で温度計を合わせる日課。いつもの一本がずれていても買い替えずに札を掛ける（ずれを知っていれば使える。2026-11-13 オーナー訂正「計測を盛りすぎない」で五本→一本）。はじめの舌の揺れ（第3章は味が戻った後も回復の途中）に、白紙の札を一枚。味覚の不調の中身は話さない。大会・時間帯に触れない。",
       "lines": [
         {
           "speaker": "",
@@ -2210,6 +2616,224 @@
           "speaker": "",
           "face": "",
           "text": "ヴォルクは余った札を一枚、こちらの手帳に挟んだ。まだ何も書かれていない。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_volk_visit_d",
+      "comment": "鉄の煙に通う（_b〜_f を巡回）。扉が閉まる四秒（扉の開け閉めまで気にする・characters.json）。決める前に客に聞く。計測を盛りすぎない。大会・時間帯に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉄の煙の扉は、手を離しても、すぐには閉まらなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゆっくり戻って、最後に小さく鳴る。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "四秒だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "扉が、ですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "閉まるまで。速いと、客の踵に当たる。遅いと、部屋の熱が逃げる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "扉の上の金具に、小さなねじ回しが引っかけたままになっていた。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "聞く。四秒は、長いか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……荷物を持ってたら、ちょうどいいと思います。手ぶらだと、少し待ちます"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "荷物のある客と、ない客。どちらが多いかは、まだ書いていない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクはノートを開き、日付の横に「扉　四秒　荷物」とだけ書いた。"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "決めるのは、もう少し書いてからだ。それまでは、四秒のままにする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "次に来た時も、また聞かれそうですね"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "聞く。来た客には"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_volk_visit_e",
+      "comment": "鉄の煙に通う（_b〜_f を巡回）。客がホースを置いたら書く手を止めて本人に尋ねる（characters.json）。聞いた答えだけを言葉で一行書く。計測を盛りすぎない。大会・時間帯に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉄の煙の奥の席で、客がホースを卓に置いた。ヴォルクの書く手が、そこで止まる。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "熱いか"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "いや、電話。ちょっと出てくるだけ"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "分かった。炭は、戻るまで端に寄せておく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客が出ていくと、ヴォルクはトングで炭を一つずつ、ボウルの縁へずらした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "熱いのかと思いました。俺なら、炭を減らしてたかもしれません"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "俺も前は、そうした。置いた理由を、聞かずに決めていた"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "戻った客が、薄いと言った。電話の間に、俺が一台を変えていた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートのその日の行に、数字の下へ、短い言葉が一つ書き足された。「電話」。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "数字の下に、言葉も書くんですね"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "聞いた答えだけだ。客の顔は、書かない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客が戻ってきて、ホースを取った。ヴォルクは炭を元の位置へ戻し、黙って頷いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_volk_visit_f",
+      "comment": "鉄の煙に通う（_b〜_f を巡回）。看板の読み方（Железный Дым＝ジェレーズヌイ・ドゥイム）と、日本語を上に書いた理由。測れないものは回数で合わせる。大会・時間帯に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉄の煙の看板の下で、立ち止まった。日本語の下に、読めない字が並んでいる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "これ、どう読むんですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "ジェレーズヌイ・ドゥイム"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ジェレ……ズヌイ、ドゥ……"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "最後は、短く。息を残すな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ドゥイム"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "近い。半分は、通じる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に入ると、ヴォルクは自分の席から、看板の方をあごで示した。"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "日本の客は、ほとんど「鉄の煙」と呼ぶ。だから、日本語を上に書いた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "下の字の方が、大きくてもよかったんじゃないですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "読めない字を大きくしても、客は入ってこない。扉の前で迷うだけだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの端に、看板の下書きらしい紙が残っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「鉄の煙」の三文字が、何度も書き直してある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……日本語の方、練習したんですね"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "測れないものは、回数で合わせる"
         }
       ]
     }
