@@ -266,6 +266,21 @@ await suite("home-rig-backgrounds", async check => {
     }, opts);
 
     if (baseline) continue;
+    await check(`${label}-custom-slot-latest`, async page => {
+      await setup(page);
+      // くじ限定の台だけを持っていても部屋に置かれる（#3418）。
+      await home(page, ["stand_custom_melty"], "day");
+      assert.deepEqual(await rigs(page), ["stand_custom_melty"]);
+      // 特注台と同じ場所には、いちばん後に手に入れた1台だけを置く（重ならない）。
+      await home(page, ["stand_custom", "stand_custom_tosu"], "day");
+      assert.deepEqual(await rigs(page), ["stand_custom_tosu"]);
+      await home(page, ["stand_custom_tosu", "stand_custom"], "day");
+      assert.deepEqual(await rigs(page), ["stand_custom"]);
+      // 別の場所の台とは同時に置ける。
+      await home(page, ["home_rig_set", "stand_custom_engraved"], "day");
+      assert.deepEqual(await rigs(page), ["home_rig_set", "stand_custom_engraved"]);
+    }, opts);
+
     await check(`${label}-acquire-save-load-new-game`, async page => {
       await setup(page); await home(page, [], "day");
       // 実際の卓上台受取を通す。使用中の台の判定は使わない。

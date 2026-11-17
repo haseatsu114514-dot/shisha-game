@@ -5,11 +5,16 @@ import { on } from "./bus.js";
 
 // 承認済みv3原画をそのまま使う。cropは透明な余白だけを表示から外す座標。
 // x/yは接地点、hは台本体の高さ。机の手前左と、その右側の床へ置く。
+// 特注台と、それをもとにしたくじ限定の台3種（equipment.json の base: "stand_custom"）は同じ場所に1台だけ置く。
+const CUSTOM_SPOT = { slot: "stand_custom", x: 1090, y: 563, h: 236, ratio: 1024 / 1536, crop: [0, 0, 1024, 1536], size: [1024, 1536] };
 const HOME_SCENE_PROPS = [
   { owned: "home_rig_set", file: "shisha_home_tabletop.png", x: 563, y: 552, h: 126, ratio: 648 / 1048, crop: [286, 181, 648, 1048], size: [1222, 1287] },
   { owned: "home_rig_pro", file: "shisha_home_pro.png", x: 914, y: 563, h: 236, ratio: 464 / 1489, crop: [280, 21, 464, 1489], size: [1024, 1536] },
   { owned: "stand_walnut", file: "shisha_home_stand_walnut.png", x: 760, y: 563, h: 236, ratio: 1024 / 1536, crop: [0, 0, 1024, 1536], size: [1024, 1536] },
-  { owned: "stand_custom", file: "shisha_home_stand_custom.png", x: 1090, y: 563, h: 236, ratio: 1024 / 1536, crop: [0, 0, 1024, 1536], size: [1024, 1536] },
+  { owned: "stand_custom", file: "shisha_home_stand_custom.png", ...CUSTOM_SPOT },
+  { owned: "stand_custom_melty", file: "shisha_home_stand_custom_melty.png", ...CUSTOM_SPOT },
+  { owned: "stand_custom_tosu", file: "shisha_home_stand_custom_tosu.png", ...CUSTOM_SPOT },
+  { owned: "stand_custom_engraved", file: "shisha_home_stand_custom_engraved.png", ...CUSTOM_SPOT },
 ];
 const isHome = (url) => /^bg_home(?:_(?:overcast_)?(?:day|night))?\.png$/.test(sceneFile(url));
 
@@ -62,11 +67,21 @@ export const SCENE_PROPS = {
 
 const sceneFile = (url) => String(url || "").split(/[?#]/)[0].split("/").pop().replace(/\.webp$/, ".png");
 // homeRigs:false は制作画面用。作業中は大会用の台だけを見せ、所持品の台を背景に置かない（#873）。
+// 同じ slot の台は、いちばん後に手に入れた1台（state.owned の後ろ）だけを置く。絵が目録に無い台は数えない。
+function homeProps(available) {
+  const owned = state?.owned || [];
+  const picked = new Map();
+  for (const p of HOME_SCENE_PROPS) {
+    if (!owned.includes(p.owned) || !available.has(p.file)) continue;
+    const key = p.slot || p.owned, cur = picked.get(key);
+    if (!cur || owned.lastIndexOf(p.owned) > owned.lastIndexOf(cur.owned)) picked.set(key, p);
+  }
+  return HOME_SCENE_PROPS.filter((p) => picked.get(p.slot || p.owned) === p);
+}
 function propsFor(url, { homeRigs = true } = {}) {
   const available = new Set(DB.manifest.sceneProps || []);
-  const props = isHome(url) ? (homeRigs ? HOME_SCENE_PROPS.filter((p) => state?.owned?.includes(p.owned)) : [])
-    : SCENE_PROPS[sceneFile(url)] || [];
-  return props.filter((p) => available.has(p.file));
+  if (isHome(url)) return homeRigs ? homeProps(available) : [];
+  return (SCENE_PROPS[sceneFile(url)] || []).filter((p) => available.has(p.file));
 }
 export function sceneArtUrls(url, options) {
   if (!url) return [];

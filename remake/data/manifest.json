@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-17 07:12 UTC",
+ "generated": "2026-11-17 15:02 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -751,6 +751,9 @@
   "shisha_hideaway.png",
   "shisha_home_pro.png",
   "shisha_home_stand_custom.png",
+  "shisha_home_stand_custom_engraved.png",
+  "shisha_home_stand_custom_melty.png",
+  "shisha_home_stand_custom_tosu.png",
   "shisha_home_stand_walnut.png",
   "shisha_home_tabletop.png"
  ],
@@ -3681,6 +3684,9 @@
   "ui/scene_props/shisha_hideaway.png",
   "ui/scene_props/shisha_home_pro.png",
   "ui/scene_props/shisha_home_stand_custom.png",
+  "ui/scene_props/shisha_home_stand_custom_engraved.png",
+  "ui/scene_props/shisha_home_stand_custom_melty.png",
+  "ui/scene_props/shisha_home_stand_custom_tosu.png",
   "ui/scene_props/shisha_home_stand_walnut.png",
   "ui/scene_props/shisha_home_tabletop.png",
   "ui/title_arts/title_art_adam_01_sunset_proclamation.png",

@@ -247,7 +247,8 @@ const files = [...walk("remake/js/"), ...walk("remake/data/"), ...walk("data/")]
 assert(files.length > 100, "走査が働いている");
 const RULES = [
   // shop-equipment-art.js は tools/build_shop_equipment_art.py が作る絵の対応表（絵の場所だけで、性能・入手の判定は無い）
-  [new RegExp(`\\b(${[...onlyIds, "g20000"].join("|")})\\b`), ["data/equipment.json", "data/kuji.json", "remake/js/core/rules.js", "remake/js/daily/shop-equipment-art.js"]],
+  // scene-art.js は自室に置く絵の対応（#3418。置く台の見た目だけで、性能・入手の判定は無い）
+  [new RegExp(`\\b(${[...onlyIds, "g20000"].join("|")})\\b`), ["data/equipment.json", "data/kuji.json", "remake/js/core/rules.js", "remake/js/daily/shop-equipment-art.js", "remake/js/core/scene-art.js"]],
   [/\b(KUJI_LIMITED_GRADES|KUJI_ONLY_EQUIPMENT)\b/, ["remake/js/core/rules.js", "remake/js/core/carry.js", "remake/js/core/cycle-start.js", "remake/js/core/growth.js", "remake/js/core/growth-board-data.js"]],
   // くじ券を渡してよい寄り道: 第5章の出張シーシャの依頼（DLV・chapters/ch5-catering.js）と各地の店めぐり帳（MGR・chapters/ch5-shop-stamps.js）。
   // どちらもお金・火種は動かさない
