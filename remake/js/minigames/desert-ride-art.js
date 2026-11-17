@@ -1,16 +1,16 @@
-// DESERT RIDE の絵（Codex 生成・PR #2306・#2333 のコメントで受け渡し）。原画・採否・加工の手順は asset_sources/desert-ride-2306/（build.py・adoption.json）。
-// 寸法と基準点は adoption.json と同じ値（remake/test/desert_ride.mjs が照合する）。
+// DESERT RIDE の絵（人物・岩・旗などは Codex 生成・PR #2306・#2333。原画・採否は asset_sources/desert-ride-2306/）。
+// 遠景の空と陸は Issue #3713 の坂の絵（asset_sources/desert-ride-slope-3686）に差し替え。寸法と基準点は desert-ride-2306/adoption.json と同じ値（remake/test/desert_ride.mjs が照合する）。
 // 読み込みは非同期で、届くまで・失敗した時は desert-ride.js が Canvas の図形で描く（遊びは止めない）。
 import { imgFileUrl } from "../core/img-file.js";
 
 export const DESERT_ART = Object.freeze({
-  // 遠景（Codex B）。空と陸を分け、沈む太陽を陸の後ろに描く。horizon は平らな砂が始まる行、duneTop は稜線のいちばん上
-  sky: Object.freeze({ file: "ui/desert_ride/backdrop_day_sky.webp", size: Object.freeze([1800, 412]) }),
-  land: Object.freeze({ file: "ui/desert_ride/backdrop_day_land.webp", size: Object.freeze([1800, 451]), top: 269 }),
-  backdrop: Object.freeze({ width: 1800, height: 720, horizon: 404, duneTop: 281 }),
-  // 同じ構図の夕方（第4弾）。ゴールへ近づくほど昼の上に重ねる。陸の透明度は昼と同じ
-  duskSky: Object.freeze({ file: "ui/desert_ride/backdrop_dusk_sky.webp", size: Object.freeze([1800, 412]) }),
-  duskLand: Object.freeze({ file: "ui/desert_ride/backdrop_dusk_land.webp", size: Object.freeze([1800, 451]), top: 269 }),
+  // 遠景（#3713 の坂の絵）。空と陸を分け、沈む太陽を陸の後ろに描く。horizon は斜面の縁（lip）の行、duneTop は稜線のいちばん上
+  sky: Object.freeze({ file: "ui/desert_ride/backdrop_day_sky.webp", size: Object.freeze([1800, 416]) }),
+  land: Object.freeze({ file: "ui/desert_ride/backdrop_day_land.webp", size: Object.freeze([1800, 500]), top: 220 }),
+  backdrop: Object.freeze({ width: 1800, height: 720, horizon: 405, duneTop: 232 }),
+  // 同じ構図の夕方。ゴールへ近づくほど昼の上に重ねる。陸の寸法・基準点は昼と同じ
+  duskSky: Object.freeze({ file: "ui/desert_ride/backdrop_dusk_sky.webp", size: Object.freeze([1800, 416]) }),
+  duskLand: Object.freeze({ file: "ui/desert_ride/backdrop_dusk_land.webp", size: Object.freeze([1800, 500]), top: 220 }),
   // 主人公の背面（Codex B）。anchor は板の重心（足元の基準点・画像に対する比率）
   rider: Object.freeze({ file: "ui/desert_ride/rider_ride.webp", size: Object.freeze([489, 768]), anchor: Object.freeze({ x: 0.6125, y: 0.833 }) }),
   // 背面の差分（第4弾）。背面Bと同じ縮尺（大きさは rider の高さ 768 に対する比で描く）。左右は画面の左右。

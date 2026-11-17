@@ -622,7 +622,7 @@ test("the hidden rival Naru (after beating Noor) spins 360s, lands clean and boo
   for (let seed = 1; seed <= 30; seed++) assert.equal(rivalRun(generateCourse(seed), { who: "naru" }).falls, 0, `Naru never falls on seed ${seed}`);
 });
 
-test("the adopted Codex art (PR #2306, #2333) matches its adoption record: sizes, anchors and runtime files", async () => {
+test("the adopted Codex art (PR #2306, #2333; backdrop replaced in #3719 / #3713) matches its adoption record: sizes, anchors and runtime files", async () => {
   const { readFileSync } = await import("node:fs");
   const { execFileSync } = await import("node:child_process");
   // CI の quick は画像を checkout しない（sparse）。存在は git の索引で確かめる

@@ -1,0 +1,123 @@
+{
+  "source": "Issue #3713 part A (Grok image generation). Raw PNG and prompts in asset_sources/desert-ride-result-3686/. In-game WebP is 2x (medals 512; others keep the authored size).",
+  "parts": {
+    "medal_s": {
+      "png": "assets/ui/desert_ride_result/medal_s.png",
+      "png_sha256": "f80f974eb13e77fa43edc4dcd82a417e9f2952644b87ba37f75f6aed2a83d6a5",
+      "webp": "remake/img/ui/desert_ride_result/medal_s.webp",
+      "webp_sha256": "2639b3ed471720edb23879e69814fd923111113b0d27a58b03744fdada92b508",
+      "size": [
+        512,
+        512
+      ]
+    },
+    "medal_a": {
+      "png": "assets/ui/desert_ride_result/medal_a.png",
+      "png_sha256": "4e0813710f82cc7f59c0520235ebf2f96a4c3aa044f55f3713fcd626ec81d0cf",
+      "webp": "remake/img/ui/desert_ride_result/medal_a.webp",
+      "webp_sha256": "801822dd6946a1501454d799205a4dbe5dfc599644f225f20e1e24de5a58c3d1",
+      "size": [
+        512,
+        512
+      ]
+    },
+    "medal_b": {
+      "png": "assets/ui/desert_ride_result/medal_b.png",
+      "png_sha256": "7c5b66c6b9d07237dd1cd4527a4127ce81461c52b0f348cb64c8319b1da3d59a",
+      "webp": "remake/img/ui/desert_ride_result/medal_b.webp",
+      "webp_sha256": "e9935b3abdb4c7fe1d7da91adfdeec8f065b7b97d5e269285760c0a27b83f773",
+      "size": [
+        512,
+        512
+      ]
+    },
+    "medal_c": {
+      "png": "assets/ui/desert_ride_result/medal_c.png",
+      "png_sha256": "c0a40ec338f26fde39be960ffad716e36e351c499e31a4c0c375e36840e003a1",
+      "webp": "remake/img/ui/desert_ride_result/medal_c.webp",
+      "webp_sha256": "ddce4fa1b59c13eab1b352437a0a90a7777df3064e962cba8979935605100075",
+      "size": [
+        512,
+        512
+      ]
+    },
+    "ribbon_win": {
+      "png": "assets/ui/desert_ride_result/ribbon_win.png",
+      "png_sha256": "59e7fddbe749f4963686d8846684714fb5a5fc8ea95ddd52e55ea4936e5b3afd",
+      "webp": "remake/img/ui/desert_ride_result/ribbon_win.webp",
+      "webp_sha256": "d30fa95da4a7eb2721d0c9e6f3d09f3ebc6119b358ef7a953c491e44dcd76260",
+      "size": [
+        1040,
+        200
+      ]
+    },
+    "ribbon_lose": {
+      "png": "assets/ui/desert_ride_result/ribbon_lose.png",
+      "png_sha256": "64e6e7f58550f4981b3cea4d36c6772844418156b5490269b916f00f54423aa2",
+      "webp": "remake/img/ui/desert_ride_result/ribbon_lose.webp",
+      "webp_sha256": "fcd8892f471cf5c5638a5f867d2398d30ddffb888bf1c063df6695e699a22278",
+      "size": [
+        1040,
+        200
+      ]
+    },
+    "board": {
+      "png": "assets/ui/desert_ride_result/board.png",
+      "png_sha256": "b9ac1c8efe9e42981a0a65ccb023bd83316591f71e427b8410ee61b6976f6486",
+      "webp": "remake/img/ui/desert_ride_result/board.webp",
+      "webp_sha256": "cdaac8c8fa4d501f89c17480c33ed32d1fadd310c549910c7c5c0778dee1c97a",
+      "size": [
+        1400,
+        600
+      ]
+    },
+    "button_primary": {
+      "png": "assets/ui/desert_ride_result/button_primary.png",
+      "png_sha256": "c15c3273b0e1810abf2aceaf41c8946e021dd3b8229efc72f67bf32b7a0de9a6",
+      "webp": "remake/img/ui/desert_ride_result/button_primary.webp",
+      "webp_sha256": "da71d3aee20ca7bbc63f8cfa4f3a65dba11b23af62e17914a6b1e803696f4fe7",
+      "size": [
+        520,
+        200
+      ]
+    },
+    "button_secondary": {
+      "png": "assets/ui/desert_ride_result/button_secondary.png",
+      "png_sha256": "267e961d37187c628518d18f5cfb2ffd665829d6bc4ddece6917d255ca521944",
+      "webp": "remake/img/ui/desert_ride_result/button_secondary.webp",
+      "webp_sha256": "9fd2ed7f143ce341033c8bac99937645f1a9322e083213025af4a17cc11f0529",
+      "size": [
+        520,
+        200
+      ]
+    }
+  },
+  "medal": {
+    "source_size": [
+      1024,
+      1024
+    ],
+    "coin_center": [
+      513,
+      422
+    ],
+    "coin_radius": 329,
+    "empty_disc": 0.62,
+    "ingame_size": [
+      512,
+      512
+    ]
+  },
+  "board_slice": {
+    "left": 74,
+    "top": 39,
+    "right": 74,
+    "bottom": 39,
+    "content": [
+      59,
+      25,
+      1339,
+      574
+    ]
+  }
+}

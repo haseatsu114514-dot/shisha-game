@@ -2,7 +2,7 @@
 
 Issue https://github.com/haseatsu114514-dot/shisha-game/issues/3713 の A（結果画面の部品 9 枚）。
 
-Grok の画像生成で作成した未採用の候補です。ゲームへの組み込み（WebP 化・CSS 接続）は、オーナー採用後に別作業とします。この PR ではマージしません。
+オーナー採用（2026-11-17「サンドボードのは実装まで」）。ゲームへ組み込み済み（WebP は 2 倍寸法、`remake/img/ui/desert_ride_result/`。PNG 原寸の実装コピーは `assets/ui/desert_ride_result/`。採否とハッシュは `adoption.json`）。文字・数字・ラベルは焼き込まず、コードが描く。マージはオーナー確認後。
 
 ## 配置
 
@@ -18,3 +18,12 @@ Grok の画像生成で作成した未採用の候補です。ゲームへの組
 - `inspection.md` — 検品メモ
 
 生成器は本物の α を出せず、出力は JPEG でした。単色のクロマ背景（指定は #FF00FF。実際の画素は純色からややズレる）で生成し、キー処理と縁の整理をしています。詳細は検品メモへ。
+
+
+## 実装
+
+- WebP（透過・quality 90 / method 6）: `remake/img/ui/desert_ride_result/*.webp`
+  - メダルは 1024→512（表示の円盤 約 193px に対して 2.5 倍）。リボン・板・ボタンは原画寸法のまま（表示の約 2 倍）。
+- 接続: `remake/css/desert-ride.css`（`.dr-rank` の背景、`.dr-race-result` のリボン、`.dr-rows` の 9-slice、`.dr-button` の背景）。`remake/css/bundle-1.css` は `build_css_bundles.py` で再生成。
+- メダルの文字は円盤の中心（原画 1024 での円の中心 513, 422）に置く。リボンは勝敗の文言の後ろ。板は `border-image-slice: 44 80`。
+- 出典・プロンプト・参照 SHA-256・検品は本ディレクトリの `prompts.md` / `references.md` / `inspection.md`。生成器は本物の α を出せず、クロマキーしている（検品メモ）。
