@@ -1405,41 +1405,46 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         }
       }
       g.globalAlpha = 1;
-      if (gap > 2) drawValley(g, FAR, gap, dusk, yawPx, land, dusk > 0 ? duskLand : null, landX, dw);
+      if (gap > 2) drawValley(g, FAR, gap, dusk, yawPx);
       }
       ctx.drawImage(backdropLayer, -BACKDROP_MARGIN, 0);
       return true;
     }
     /**
-     * 坂の先に見下ろす谷（#3686）。遠くの地平線（far）と斜面の消失線（HORIZON）の間の帯に、低いところの砂丘を重ねる。
-     * 奥ほど小さく・淡く・ゆっくり流れ、手前（下）ほど大きく・濃く・速く流れる。斜面のすぐ向こうは谷の影で少し沈め、
-     * 斜面の先が「落ちている」ことを分ける。絵は遠景の砂丘の列をそのまま使う（新しい素材は足さない）。
+     * 坂の先に見下ろす谷（#3686）。遠くの地平線（far）と斜面の消失線（HORIZON）の間の帯は、遠景の絵の平らな砂（谷の底）。
+     * 遠景の砂丘の絵を縮めて重ねると「同じ絵が2枚重なって見える」（2026-11-17 オーナー）ので、絵は重ねず、
+     * ① 遠い谷の底を空気の色で霞ませ、② なだらかな低いうねりを淡い図形で2列だけ描き（遠景の砂丘とは形も濃さも違う）、
+     * ③ 斜面の縁のすぐ向こうを谷の影で沈め、縁に日の当たった細い明るい線を引く。斜面の明るい砂が、そこで落ち込んで見える。
      */
-    function drawValley(g, far, gap, dusk, yawPx, land, duskLand, landX, dw) {
-      const B = DESERT_ART.backdrop, ridge = B.horizon - DESERT_ART.land.top, t = gap / SLOPE.px;
-      const hazeRgb = mixColor([252, 236, 208], [255, 196, 150], dusk).slice(4, -1), shadeRgb = mixColor([150, 96, 70], [120, 62, 70], dusk).slice(4, -1);
-      // 谷の底: 遠いほど空気の色に霞む
-      const air = g.createLinearGradient(0, far - 4, 0, HORIZON);
-      air.addColorStop(0, `rgba(${hazeRgb},0.62)`); air.addColorStop(0.5, `rgba(${hazeRgb},0.3)`); air.addColorStop(1, `rgba(${hazeRgb},0.08)`);
-      g.fillStyle = air; g.fillRect(-BACKDROP_MARGIN, far - 4, W + BACKDROP_MARGIN * 2, gap + 4);
-      // 谷の砂丘の列（奥→手前）。at＝帯の中の足元の位置、size＝絵の倍率、drift＝横へ流れる速さ（遠景の陸が 1）
-      for (const [at, size, drift, offset, haze] of [[0.42, 0.42, 1.25, 0.37, 0.34], [0.78, 0.62, 1.6, 0.71, 0.16], [1.12, 0.9, 2.1, 0.13, 0]]) {
-        const h = ridge * size * BACKDROP_SCALE * Math.min(1, 0.35 + 0.65 * t), w = Math.round(dw * size), foot = far + gap * at;
-        const x = landX * drift / 1 - yawPx * (drift - 1) + offset * w;
-        for (const [image, alpha] of [[land, 1], [duskLand, dusk]]) {
-          if (!image) continue;
-          g.globalAlpha = alpha;
-          wrapImage(g, image, 0, 0, B.width, ridge, x, foot - h, w, h);
-          // 足元から下は、同じ絵の平らな砂でつなぐ（次の列か斜面に隠れる）
-          wrapImage(g, image, 0, ridge, B.width, 40, x, foot, w, Math.max(0, HORIZON + 6 - foot));
+    function drawValley(g, far, gap, dusk, yawPx) {
+      const t = Math.min(1, gap / SLOPE.px), x0 = -BACKDROP_MARGIN, wAll = W + BACKDROP_MARGIN * 2;
+      const hazeRgb = mixColor([246, 228, 204], [255, 196, 152], dusk).slice(4, -1), shadeRgb = mixColor([164, 112, 78], [132, 70, 72], dusk).slice(4, -1);
+      // ① 谷の底: 遠いほど空気の色。全体を少し淡くして、手前の斜面より遠いことを見せる
+      const air = g.createLinearGradient(0, far - 2, 0, HORIZON);
+      air.addColorStop(0, `rgba(${hazeRgb},0.7)`); air.addColorStop(0.6, `rgba(${hazeRgb},0.42)`); air.addColorStop(1, `rgba(${hazeRgb},0.3)`);
+      g.fillStyle = air; g.fillRect(x0, far - 2, wAll, gap + 2);
+      // ② 谷の低いうねり（奥→手前）。上は日の当たる面、下は影。横へは遠景の陸より少し速く流れる
+      for (const [at, amp, freq, drift, phase, alpha] of [[0.45, 0.16, 0.0042, 1.15, 0.7, 0.5], [0.8, 0.26, 0.0029, 1.4, 2.1, 0.62]]) {
+        const base = far + gap * at, top = base - gap * amp * 1.6, shift = yawPx * drift;
+        const body = g.createLinearGradient(0, top, 0, HORIZON);
+        body.addColorStop(0, `rgba(${mixColor([250, 222, 172], [252, 186, 128], dusk).slice(4, -1)},${alpha})`);
+        body.addColorStop(0.5, `rgba(${mixColor([226, 182, 128], [222, 142, 104], dusk).slice(4, -1)},${alpha})`);
+        body.addColorStop(1, `rgba(${mixColor([214, 166, 116], [206, 124, 96], dusk).slice(4, -1)},${alpha})`);
+        g.fillStyle = body;
+        g.beginPath(); g.moveTo(x0, HORIZON + 4);
+        for (let x = x0; x <= W + BACKDROP_MARGIN; x += 12) {
+          const u = (x + shift) * freq;
+          const swell = 0.6 * (0.5 + 0.5 * Math.sin(u + phase)) + 0.4 * (0.5 + 0.5 * Math.sin(u * 2.3 + phase * 1.7));
+          g.lineTo(x, base - gap * amp * 1.6 * swell);
         }
-        g.globalAlpha = 1;
-        if (haze) { g.fillStyle = `rgba(${hazeRgb},${haze})`; g.fillRect(-BACKDROP_MARGIN, foot - h, W + BACKDROP_MARGIN * 2, HORIZON + 6 - foot + h); }
+        g.lineTo(W + BACKDROP_MARGIN, HORIZON + 4); g.closePath(); g.fill();
       }
-      // 斜面のすぐ向こう: 谷の影（下ほど濃い）。斜面の明るい砂との境目が、落ち込む縁に見える
-      const shade = g.createLinearGradient(0, HORIZON - gap * 0.55, 0, HORIZON + 4);
-      shade.addColorStop(0, `rgba(${shadeRgb},0)`); shade.addColorStop(1, `rgba(${shadeRgb},${0.34 * Math.min(1, t)})`);
-      g.fillStyle = shade; g.fillRect(-BACKDROP_MARGIN, HORIZON - gap * 0.55, W + BACKDROP_MARGIN * 2, gap * 0.55 + 4);
+      // ③ 斜面の縁のすぐ向こうは谷の影（縁に向かって濃い）。縁には日の当たった細い線
+      const shade = g.createLinearGradient(0, HORIZON - gap * 0.4, 0, HORIZON);
+      shade.addColorStop(0, `rgba(${shadeRgb},0)`); shade.addColorStop(1, `rgba(${shadeRgb},${0.42 * t})`);
+      g.fillStyle = shade; g.fillRect(x0, HORIZON - gap * 0.4, wAll, gap * 0.4);
+      g.fillStyle = `rgba(${mixColor([255, 244, 214], [255, 214, 168], dusk).slice(4, -1)},${0.75 * t})`;
+      g.fillRect(x0, HORIZON - 1, wAll, 2);
     }
     /** 横へ流れる遠景を、面を覆うまで並べて描く。隣は左右反転した同じ絵なので絵柄がつながり、整数の位置に置くので隙間も重なりも出ない。 */
     function wrapImage(g, image, sx, sy, sw, sh, x, y, dw, dh) {
