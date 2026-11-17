@@ -86,6 +86,16 @@ async function openMenu(page) {
   await settle(page);
 }
 
+// ギャラリー（タイトルの GALLERY）: #3726 A-2 の巡回で文字が実寸 6.5〜9.8px だった
+async function openGalleryScreen(page) {
+  await page.evaluate(async () => {
+    (await import("./js/core/ui.js")).clearScreen();
+    window.PD = (await import("./js/scenes/gallery.js")).openGallery();
+  });
+  await page.locator(".gal-close").waitFor();
+  await settle(page);
+}
+
 // 開く・閉じる演出（無限に回る飾りは除く）が終わるまで待つ
 function settle(page) {
   return page.waitForFunction(() => document.getAnimations().every(a => a.playState !== "running" || a.effect?.getComputedTiming().iterations === Infinity));
@@ -103,6 +113,8 @@ const SCREENS = [
   { id: "shop-entry", open: openShopEntry, targets: ['[data-test="shop-entry-back"]'], texts: [] },
   { id: "shop-floor", open: openShopFloor, targets: ['[data-test="shop-leave"]'], texts: [] },
   { id: "menu", open: openMenu, targets: ['[data-test="menu-close"]'], texts: [] },
+  { id: "gallery", open: openGalleryScreen, targets: [".gal-tabs > .gal-tab", ".gal-close"],
+    texts: [".gal-head", ".gal-characters", ".gal-note", "#gallery-items"] },
 ];
 
 // ノッチ（safe-area）の模擬（#3001）。headless では env(safe-area-inset-*) が 0 なので、base.css の --stage-safe-l/r と同じ式で
