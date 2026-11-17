@@ -2,6 +2,7 @@
 // 炭はかなり焼けた状態から始まり、黒い面が消えて全面が赤くなり白い灰をまとう“取り頃”でタップして取る。
 // ゲージ停止ではなく、炭の見た目（赤い面が広がる→全面赤→灰かぶり）を観察して取り出す。
 import { el, sleep, clamp, rand } from "../core/util.js";
+import { craftStageEnabled } from "./stage-layout.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady } from "./session.js";
@@ -168,7 +169,7 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
     c.node.addEventListener("click", e => { if (e.detail === 0) pick(c); });
   });
 
-  await countdown();
+  await countdown(craftStageEnabled() ? view.info : undefined);
   SE.crackle();
   t0 = gameClock.now();
   view.root.setAttribute("aria-busy", "false");

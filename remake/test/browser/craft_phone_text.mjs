@@ -97,6 +97,20 @@ await suite('craft-phone-text', async check => {
     assert.equal(mix.masteryVisible, true, '熟練度が見えない');
     assert.deepEqual(await page.evaluate(scan, MIN_FONT), [], 'mix: small text');
 
+    // Scroll the last pair fully into view and hit both centers above the fixed footer.
+    const last = page.locator('.flavor-row').last();
+    await last.scrollIntoViewIfNeeded();
+    for (const button of await last.locator('.fr-btn').all()) {
+      const target = await button.evaluate(node => {
+        const box = node.getBoundingClientRect();
+        const list = node.closest('.mix-list').getBoundingClientRect();
+        const footer = document.querySelector('.mix-footer').getBoundingClientRect();
+        return { width: box.width, height: box.height, inList: box.top >= list.top - 1 && box.bottom <= list.bottom + 1,
+          aboveFooter: box.bottom <= footer.top, hit: node.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)) };
+      });
+      assert(target.width >= 44 && target.height >= 44 && target.inList && target.aboveFooter && target.hit, JSON.stringify(target));
+    }
+
     await page.evaluate(async () => {
       const { showStandings } = await import('./js/craft/result.js');
       window.__standP = showStandings(1, 80, window.cs, { rulesVersion: 2, voteAttempt: { votes: {}, views: [], picks: [], attacks: [] } });
