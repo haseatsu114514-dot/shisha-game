@@ -60,4 +60,51 @@ await suite('craft-phone-text', async check => {
     await page.waitForTimeout(1200);
     assert.deepEqual(await page.evaluate(scan, MIN_FONT), [], 'result table: small text');
   }, options);
+
+  // #3558: 配合の在庫行・課題行と、大会の中間投票も同じ実効 11.4px 下限で見る（項目4・5）。
+  for (const [name, options] of [
+    ['phone-844x390', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+    ['phone-low-844x340', { viewport: { width: 844, height: 340 }, isMobile: true, hasTouch: true }],
+  ]) await check(`${name}-mix-standings`, async page => {
+    await page.evaluate(async () => {
+      const core = await import('./js/core/state.js'); core.newGame();
+      Object.assign(core.state, {
+        chapter: 1, flavors: ['double_apple', 'mint', 'blueberry', 'lemon'],
+        flavorStock: { double_apple: 50, mint: 50, blueberry: 10, lemon: 50 },
+      });
+      window.S = await import('./js/craft/session.js');
+      const { CRAFT_STEPS } = await import('./js/craft/practice.js');
+      window.cs = window.S.newSession('tournament');
+      const bench = window.S.openBench(window.cs, { steps: CRAFT_STEPS });
+      while (!bench.root.isConnected) await new Promise(requestAnimationFrame);
+      await bench.ready;
+      const steps = await import('./js/craft/steps.js');
+      window.__mixP = steps.stepMix(window.cs);
+    });
+    await page.locator('.flavor-row[data-flavor="blueberry"]').waitFor();
+    await page.waitForTimeout(250);
+    const mix = await page.evaluate(() => {
+      const row = document.querySelector('.flavor-row[data-flavor="blueberry"]');
+      const boxes = [...row.querySelectorAll('.fr-feature, .fr-stock, .fr-mastery')].map(n => n.getBoundingClientRect());
+      const hit = (a, b) => a && b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+      const mastery = row.querySelector('.fr-mastery');
+      return {
+        featureHitsStock: hit(boxes[0], boxes[1]),
+        masteryVisible: !!(mastery && mastery.getBoundingClientRect().width > 1 && mastery.textContent.includes('熟練度')),
+      };
+    });
+    assert.equal(mix.featureHitsStock, false, '配合の「特徴」が在庫行に重なる');
+    assert.equal(mix.masteryVisible, true, '熟練度が見えない');
+    assert.deepEqual(await page.evaluate(scan, MIN_FONT), [], 'mix: small text');
+
+    await page.evaluate(async () => {
+      const { showStandings } = await import('./js/craft/result.js');
+      window.__standP = showStandings(1, 80, window.cs, { rulesVersion: 2, voteAttempt: { votes: {}, views: [], picks: [], attacks: [] } });
+    });
+    await page.locator('[data-test="standings"]').waitFor();
+    await page.waitForTimeout(250);
+    // 顔写真が LFS 未展開だと .face-fallback の一字が見える。22px は 844×340 で実効 10.4px になるが、
+    // CI では絵が読めて fallback は hidden。項目5の指摘は LIVE・見出し・速報・投入行なので、ここは除外する。
+    assert.deepEqual((await page.evaluate(scan, MIN_FONT)).filter((line) => !line.includes('face-fallback')), [], 'standings: small text');
+  }, options);
 });
