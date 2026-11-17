@@ -160,8 +160,8 @@ async function pullGame(cs, mode) {
   const renewal = renewalCraft(cs);
   // 桜井式の大会だけ（SKR04）: 温度計の上の端に「攻めの帯」。ここで終えると、その回の審査に上積み。
   const attacking = attackGuide(cs);
-  // テスト用（craftTest.aim = "attack"）: 残りの口数で、攻めの帯の内側（上下2割を除く）に入る最短の吸い方を探し、
-  // その1口目の針の位置を返す。見つからなければ null（中心ではなく帯のまん中を狙う通常の自動操作に任せる）。
+  // テスト用（craftTest.aim = "attack"）: 安全な口数の範囲で、攻めの帯の内側（上下2割を除く）に入る最短の吸い方を探し、
+  // その1口目の針の位置を返す。内側が無ければ帯の全体、それも無ければ口数の上限まで探す。それでも無ければ null。
   const planAttackPull = () => {
     const range = attackRange(bands);
     if (!range) return null;
@@ -169,21 +169,28 @@ async function pullGame(cs, mode) {
     const moves = [...new Map(Array.from({ length: 99 }, (_, k) => (k + 1) / 100)
       .map((at) => [Math.round(pullHeat(actionAt(at).delta) * 1e4), at])).entries()].map(([d, at]) => ({ d: d / 1e4, at }));
     const need = Math.max(1, mode.min - pulls);
-    let frontier = new Map([[Math.round(T * 1000), { t: T, first: null }]]);
-    for (let depth = 1; depth <= MAX_PULLS - pulls; depth++) {
-      const next = new Map();
-      let best = null;
-      for (const node of frontier.values()) for (const { d, at } of moves) {
-        const t = node.t + d, first = node.first ?? at;
-        if (t >= DANGER_TEMP - .02 || t <= .02) continue;
-        if (depth >= need && t >= lo && t <= hi && (!best || Math.abs(t - mid) < best.gap)) best = { gap: Math.abs(t - mid), first };
-        const key = Math.round(t * 1000);
-        if (!next.has(key)) next.set(key, { t, first });
+    // 吸いすぎの減点（1口ごとに8）を避けるため、安全な口数の範囲で帯に入る吸い方を先に探す。
+    // 内側（上下2割を除く）を優先し、見つからなければ帯の全体。それでも無ければ従来どおり口数の上限まで探す。
+    const safeLeft = Math.max(need, safeLimit - pulls);
+    const search = (maxDepth, innerOnly) => {
+      let frontier = new Map([[Math.round(T * 1000), { t: T, first: null }]]);
+      for (let depth = 1; depth <= maxDepth; depth++) {
+        const next = new Map();
+        let best = null;
+        for (const node of frontier.values()) for (const { d, at } of moves) {
+          const t = node.t + d, first = node.first ?? at;
+          if (t >= DANGER_TEMP - .02 || t <= .02) continue;
+          const inBand = innerOnly ? (t >= lo && t <= hi) : (t >= range.low && t <= range.high);
+          if (depth >= need && inBand && (!best || Math.abs(t - mid) < best.gap)) best = { gap: Math.abs(t - mid), first };
+          const key = Math.round(t * 1000);
+          if (!next.has(key)) next.set(key, { t, first });
+        }
+        if (best) return best.first;
+        frontier = next;
       }
-      if (best) return best.first;
-      frontier = next;
-    }
-    return null;
+      return null;
+    };
+    return search(safeLeft, true) ?? search(safeLeft, false) ?? search(MAX_PULLS - pulls, true);
   };
   // テスト用（craftTest.aim = "attack"）: 上手な自動操作が中心ではなく攻めの帯のまん中を狙う。
   const autoGoal = () => { const r = attacking && craftTest.aim === "attack" ? attackRange(bands) : null; return r ? (r.low + r.high) / 2 : center; };
@@ -698,6 +705,9 @@ async function pullGame(cs, mode) {
           if (isBurnt(T + pullHeat(actionAt(at).delta) + 0.03)) at = .25;
         }
         await doPull(at);
+        // 帯に入ったら、口と口のあいだの待ち（冷却が進む）を挟まずすぐ終える。
+        // 待ちのあいだに帯の下へ落ちると、安全な口数を超えて吸い直し、攻めの帯の点でも最後の1点が取れなくなる。
+        if (attackAim && pulls >= mode.min && inAttackRange(T, attackRange(bands))) break;
         await sleep(40);
       }
       serve();
