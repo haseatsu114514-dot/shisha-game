@@ -13,6 +13,7 @@ import { maybeRecruitTrpgMember } from "./trpg.js";
 import { allSpots, isClosed, isUnlocked, shortNormalVisit } from "./spots.js";
 import { hiyoriFirstMeetingReady, axeBarRumorDue } from "../core/axe-bar-discovery.js";
 import { playAxeBarRumor } from "./axe-bar-discovery.js";
+import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
 
 let active = false;
 let extraShopSource = () => [];
@@ -166,14 +167,17 @@ export async function visitHiyoriAtShop(spot, { bg, scheduledSpot = hiyoriShopLo
       } finally { active = false; }
     } else {
       const n = Number(state.flags._hiyori_repeat_count || 0);
-      const id = `hiyori_shop_repeat_${n % 4}`;
+      const after = await bondAfterScene(owner);
+      if (state !== owner || signal?.aborted || active || isPlaying()) return false;
+      const id = after?.scene || `hiyori_shop_repeat_${n % 4}`;
       if (!DB.dialogues[id]?.lines?.length) return false;
-      const owner = state;
       active = true;
       try {
         const result = await play(id, options);
         if (state !== owner || signal?.aborted || !result || result.cancelled) return false;
-        state.flags._hiyori_repeat_count = n + 1;
+        // ♥5後の場面は、いつもの相席の巡回を進めない（読み終えた記録は bond-after 側）
+        if (after) markBondAfterRead(state, "hiyori", after);
+        else state.flags._hiyori_repeat_count = n + 1;
         gainAffinity("hiyori", 10);
       } finally { active = false; }
     }
@@ -186,22 +190,39 @@ export async function visitHiyoriAtShop(spot, { bg, scheduledSpot = hiyoriShopLo
   return true;
 }
 
+/**
+ * ♥5の締めくくりの後（#3693）: いつもの相席の小会話の代わりに読む、ひよりの♥5後の場面（core/bond-after.js）。
+ * 友人ルートでなければ null。台本を読めなければ null（いつもの小会話のまま）。
+ */
+async function bondAfterScene(owner) {
+  const after = bondAfterNext(state, "hiyori");
+  if (!after) return null;
+  try { await loadBondAfterScenes(DB); } catch { return null; }
+  return state === owner ? after : null;
+}
+
 /** 返信で予約した店で既存の短い交流を読む。予約なしの確定出現は増やさない。 */
 export async function playHiyoriHangout(options = {}) {
   if (!hiyoriFirstMeetingReady(state)) return false;
   const stamp = `${state.chapter}:${state.day}`;
   if (active || isPlaying() || state.flags._hiyori_encounter_day === stamp) return false;
   const n = Number(state.flags._hiyori_repeat_count || 0);
+  const owner = state;
+  // ♥5後の場面は、どの店でも・約束でも通る書き出し。約束の入りより先に読む
+  const after = await bondAfterScene(owner);
+  if (state !== owner || active || isPlaying()) return false;
   // 約束して来た店では、偶然の相席ではなく約束の入りを読む（再会後の最初の一本）
   const promised = state.flags._hiyori_tonari_return_done && n % 4 === 0;
-  const id = promised ? "hiyori_shop_repeat_0_promised" : `hiyori_shop_repeat_${n % 4}`;
+  const id = after?.scene || (promised ? "hiyori_shop_repeat_0_promised" : `hiyori_shop_repeat_${n % 4}`);
   if (!DB.dialogues[id]?.lines?.length) return false;
-  const owner = state;
   active = true;
   try {
-    await play(id, options);
+    const result = await play(id, options);
     if (state !== owner) return false;
-    state.flags._hiyori_repeat_count = n + 1;
+    if (after) {
+      // 途中でやめた♥5後の場面は既読にしない（次の約束で読み直す）。いつもの相席の巡回は進めない
+      if (result && !result.cancelled) markBondAfterRead(state, "hiyori", after);
+    } else state.flags._hiyori_repeat_count = n + 1;
     state.flags._hiyori_encounter_day = stamp;
     gainAffinity("hiyori", 10);
     await maybeRecruitTrpgMember("hiyori");

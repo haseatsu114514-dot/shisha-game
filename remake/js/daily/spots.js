@@ -346,20 +346,21 @@ function repeatVisitDialogue(charId) {
     ? rain : pool[(state.visits[charId] || 0) % pool.length];
 }
 
-/** ひよりのsoft priority用。初対面・専用回・紹介・未取得台本を短日常と扱わない。 */
+/** ひよりのsoft priority用。初対面・専用回・紹介・未取得台本・♥5後の場面（#3693）を短日常と扱わない。 */
 export function shortNormalVisit(spot) {
   const valid = id => !!DB.dialogues[id]?.lines?.length;
+  const bondAfterStory = id => bondAfterNext(state, id)?.kind === "story";
   if (spot?.kind === "samechan") {
     if (!state.met?.samechan || cinemaIntroductionDue(state)) return false;
     const receipt = state.flags._samechan_visit;
     const id = receipt?.stamp === `${state.chapter}:${state.day}:${state.slot}`
       ? receipt.dialogue : samechanVisitDialogue();
-    return !!id?.startsWith("samechan_shop_repeat_") && valid(id);
+    return !!id?.startsWith("samechan_shop_repeat_") && valid(id) && !bondAfterStory("samechan");
   }
   if (spot?.kind === "rival") {
     const id = spot.charId;
     if (!id || !state.met?.[id] || !storyCount(id) || id === "naru" && naruRiftActive(state)
-      || hasNewStory(id) || finaleAtVisit(id) || spotFollowupDue(id, state, DB.dialogues)) return false;
+      || hasNewStory(id) || finaleAtVisit(id) || spotFollowupDue(id, state, DB.dialogues) || bondAfterStory(id)) return false;
     if (id === "naru" && storyCount(id) >= 2 && !state.flags._cafe_introduced
       && DB.dialogues.ch1_naru_cafe_intro) return false;
     return valid(repeatVisitDialogue(id));
