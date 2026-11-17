@@ -1,12 +1,11 @@
 // セーブ／ロードの枠選び（オートセーブ＋手動1枠）。タイトルの「ロード」と、日常の MENU から開く。
 import { el, yen } from "../core/util.js";
 import { layers, modal, toast } from "../core/ui.js";
-import { SCHEMA, SAVE_SLOTS, STAT_KEYS, STAT_JA, readSlot, saveToSlotResult, loadFromSlot, state } from "../core/state.js";
+import { SCHEMA, SAVE_SLOTS, readSlot, saveToSlotResult, loadFromSlot, state } from "../core/state.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { cycleBadgeText, overwriteCycleNote } from "../core/cycle-display.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { SE } from "../core/audio.js";
-import { stepOfValue } from "../core/stat-progress.js";
 import { growthEnabled } from "../core/growth-mode.js";
 import { HIDANE_KEYS } from "../core/growth.js";
 import { BOARD_KEYS, BOARD_JA, statCount, statTotal } from "../core/growth-board.js";
@@ -42,22 +41,10 @@ export function saveHeadline(data) {
   } catch { return ""; }
 }
 
-/** 保存データの能力を10段と細いゲージで表示する。 */
-function statGauges(stats) {
-  return el("span.ss-stats", STAT_KEYS.map((k) => {
-    const v = Math.max(0, Math.min(100, Number(stats?.[k]) || 0));
-    const step = stepOfValue(v);
-    return el("span.ss-stat", { title: `${STAT_JA[k]} ${step}段`, "aria-label": `${STAT_JA[k]} ${step}段` }, [
-      el("small", { text: STAT_JA[k] }),
-      el("i", { style: { "--v": `${v}%` } }),
-    ]);
-  }));
-}
-
-/** 盤がある枠は、保存済みの育成だけを読む。旧能力や保存データは更新しない。 */
+/** 盤がある枠は、保存済みの育成だけを読む。保存データは更新しない。 */
 function growthSummary(data) {
   const g = data.growth;
-  if (!growthEnabled() || !g || typeof g !== "object" || Array.isArray(g)) return statGauges(data.stats);
+  if (!growthEnabled() || !g || typeof g !== "object" || Array.isArray(g)) return null;
   const lit = new Set(Array.isArray(g.nodes) ? g.nodes : []);
   const level = Number.isInteger(g.level) && g.level > 0 ? g.level : 1;
   const hidane = HIDANE_KEYS.reduce((sum, key) => sum +

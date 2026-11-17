@@ -18,7 +18,7 @@ async function load(url) {
 const stateModule = await load(new URL("state.js", root)); await stateModule.evaluate();
 const catalogModule = await load(new URL("gallery-catalog.js", root)); await catalogModule.evaluate();
 const core = stateModule.namespace, g = modules.get(new URL("gallery-progress.js", root).href).namespace;
-const { galleryEntries, galleryStats, galleryHint, CHAR_LABELS } = catalogModule.namespace;
+const { galleryEntries, galleryStats, galleryHint, CHAR_LABELS, GALLERY_TABS } = catalogModule.namespace;
 const copy = v => JSON.parse(JSON.stringify(v));
 const photo = { chapter: 2, day: 18, slot: 1, mode: "guest", people: ["hajime", "samechan"] };
 // First upgraded LOAD: seed pre-feature disk data directly, without save() or a gallery scan.
@@ -142,17 +142,20 @@ assert.deepEqual(copy(g.readGalleryProgress().clearedChapters), [1, 2], "loading
 assert.equal(core.state.money, value.money, "gallery persistence leaves gameplay resources alone");
 const manifest = { cgs: ["cg_story.png", "cg_minto_first_cheki.png", "cg_ageha_first_purikura.png", "cg_story.png"] };
 const comic = { id: "approved_comic", kind: "comic", title: "採用済みの漫画", approved: true, requiredChapter: 1, pages: ["img/comics/one.webp", "img/comics/two.webp"] };
-const movie = { id: "approved_movie", kind: "movie", title: "採用済みの動画", approved: true, requiredChapter: 3, src: "movies/one.webm" };
-const items = [comic, movie, { ...comic, id: "candidate", approved: false }, { ...comic, id: "missing_approval", approved: undefined },
+const lateComic = { id: "late_comic", kind: "comic", title: "未来の漫画", approved: true, requiredChapter: 3, pages: ["img/comics/late.webp"] };
+const movie = { id: "approved_movie", kind: "movie", title: "採用済みの動画", approved: true, requiredChapter: 1, src: "movies/one.webm" };
+const items = [comic, lateComic, movie, { ...comic, id: "candidate", approved: false }, { ...comic, id: "missing_approval", approved: undefined },
   { ...comic, id: "missing_gate", requiredChapter: undefined }, { ...comic, id: "archive", pages: ["../asset_sources/candidate.png"] },
-  { ...movie, id: "outside", src: "https://example.test/movie.mp4" }, null, { ...comic }];
-const entries = galleryEntries(manifest, { items }, progress, new Set(["cg_story"]));
+  null, { ...comic }];
+const entries = galleryEntries(manifest, { items }, progress, new Set(["cg_story", movie.id]));
+assert.deepEqual(copy(GALLERY_TABS.map(([kind]) => kind)), ["all", "still", "cheki", "purikura", "comic"]);
 assert.equal(entries.filter(e => e.id === "cg_story").length, 1, "duplicate manifest ids produce one card");
 assert(entries.find(e => e.id === "cg_minto_first_cheki").unlocked, "owned cheki works without a legacy seen-CG record");
 assert(!entries.find(e => e.id === "cg_ageha_first_purikura").unlocked);
 assert(entries.find(e => e.id === comic.id).unlocked);
-assert(!entries.find(e => e.id === movie.id).unlocked, "a later-chapter movie remains locked");
-assert.equal(entries.filter(e => ["comic", "movie"].includes(e.kind)).length, 2, "candidates and invalid entries never enter the collection");
+assert(!entries.find(e => e.id === lateComic.id).unlocked, "a later-chapter comic remains locked");
+assert.equal(entries.find(e => e.id === movie.id), undefined, "movie entries and legacy movie IDs are ignored");
+assert.equal(entries.filter(e => e.kind === "comic").length, 2, "candidates, movies and invalid entries never enter the collection");
 assert.equal(entries.filter(e => e.photo).length, 1);
 const empty = { clearedChapters: [], keepsakes: [], purikura: [], routeRecords: {}, completeAnnounced: false };
 assert(!galleryEntries(manifest, { items: [comic] }, empty, new Set()).find(e => e.id === comic.id).unlocked);
@@ -208,7 +211,8 @@ g.recordGalleryProgress({ flags: { _ch1_cleared: true } });
 assert.equal(g.readGalleryProgress().completeAnnounced, true, "他の進捗更新でも告知済みを維持");
 for (const s of Object.values(fullStats.byChar)) assert.equal(s.rate, 100);
 const withPhotos = galleryStats(galleryEntries(actualManifest, actualCatalog, { ...empty, purikura: [photo, { ...photo, day: 19 }] }, new Set()));
-assert.deepEqual(copy(withPhotos), { ...copy(actualStats), purikuraPhotos: 2 });
+assert.deepEqual(copy(withPhotos), copy(actualStats));
+assert.equal(Object.hasOwn(withPhotos, "purikuraPhotos"), false);
 const thirds = [
   { kind: "still", char: "minto", unlocked: true },
   { kind: "still", char: "minto", unlocked: false },
@@ -221,20 +225,22 @@ assert.equal(partialStats.byKind.still.rate, 33);
 assert.equal(partialStats.byChar.minto.rate, 33);
 assert.deepEqual(thirds, thirdsBefore, "aggregation does not mutate entries");
 assert.equal(galleryStats([]).rate, 0);
-assert.equal(partialStats.byKind.movie.rate, 0);
+assert.equal(partialStats.byKind.comic.rate, 0);
+assert.equal(partialStats.byKind.movie, undefined);
 assert.equal(partialStats.byChar.other.rate, 0);
 const adopted = galleryEntries(actualManifest, { items: [
-  { ...comic, char: "ageha" }, { ...movie, char: "unknown" },
+  { ...comic, char: "ageha" }, { ...lateComic, char: "unknown" }, { ...movie, char: "unknown" },
   { ...comic, id: "not_approved", approved: false },
   { ...comic, id: "not_explicitly_approved", approved: undefined },
-] }, { ...empty, clearedChapters: [1] }, new Set());
+] }, { ...empty, clearedChapters: [1] }, new Set([movie.id]));
 const adoptedStats = galleryStats(adopted);
-assert.equal(adoptedStats.total, 33, "only approved comic and movie add to T");
+assert.equal(adoptedStats.total, 33, "only approved comics add to T");
 assert.equal(adoptedStats.unlocked, 1);
-assert.deepEqual(copy(adoptedStats.byKind.comic), { total: 1, unlocked: 1, rate: 100 });
-assert.deepEqual(copy(adoptedStats.byKind.movie), { total: 1, unlocked: 0, rate: 0 });
+assert.deepEqual(copy(adoptedStats.byKind.comic), { total: 2, unlocked: 1, rate: 50 });
+assert.equal(adoptedStats.byKind.movie, undefined);
 assert.equal(adopted.find(e => e.id === comic.id).char, "ageha");
-assert.equal(adopted.find(e => e.id === movie.id).char, "other");
+assert.equal(adopted.find(e => e.id === lateComic.id).char, "other");
+assert.equal(adopted.find(e => e.id === movie.id), undefined);
 assert.equal(entries.find(e => e.id === comic.id).char, "other", "missing character falls back to other");
 assert.equal(Object.values(adoptedStats.byChar).reduce((sum, s) => sum + s.total, 0), adoptedStats.total);
 console.log(`REAL DATA: raw CGs=${actualManifest.cgs.length}, total=${actualStats.total}, empty seen=${actualStats.unlocked}/${actualStats.total} (${actualStats.rate}%), all seen=${fullStats.unlocked}/${fullStats.total} (${fullStats.rate}%)`);

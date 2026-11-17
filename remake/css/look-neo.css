@@ -2,7 +2,7 @@
    対象はすべての章とタイトル（1280×720 と横持ちスマホ。LK13 で第2〜5章へ広げた）。2画面表示（body.game-ds）には当てない。
    会話（1〜5）に続けて、地図と HUD・全画面 MENU・モーダル・タイトル・章の場面カードを同じ言葉づかい
    （夜紫の半透明の面・金の細い罫線・ラベンダーの縁・白い文字・小さめの角）へ揃える（7〜15）。
-   ショップ・レベルアップ・日付の幕・ギャラリーも同じ言葉づかい（16〜）。商品の絵・写真・漫画・動画などの絵そのものは変えない。
+   ショップ・レベルアップ・日付の幕・ギャラリーも同じ言葉づかい（16〜）。商品の絵・写真・漫画などの絵そのものは変えない。
    実物をまねた画面（LIME＝スマホのメッセージアプリ）と、固有の見た目を持つミニゲームには当てない（LK18・LK20）。
    紙とラベンダーのまま残っていた部品（LK17）は末尾の 20〜。心得の盤は css/look-neo-board.css。
    面・札・ボタンに重ねる絵の部品（LK19）は css/look-neo-art.css（ここの面はその下敷き・絵が読めない時の姿）。
@@ -1789,9 +1789,6 @@
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .saveload-modal .save-slot.auto .ss-label,
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .saveload-modal .save-slot.auto .ss-label small { color: var(--neo-ui-gold-hi); }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .saveload-modal .ss-chapter { color: var(--neo-ui-gold-hi); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .saveload-modal .ss-stat i { background: rgba(246, 241, 250, .14); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .saveload-modal .ss-stat i::after { background: linear-gradient(90deg, #a47fd0, var(--neo-ui-lav)); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .saveload-modal .save-slot.auto .ss-stat i::after { background: linear-gradient(90deg, #c79a3c, var(--neo-ui-gold-hi)); }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .saveload-modal .ss-face { background: #1b1029; border-color: rgba(246, 241, 250, .6); }
 
 /* 用語集: 分類の札は丸い札、選んだ分類だけ金。古い STATUS の窓（daily/status.js）のタブも同じ札（LK17）。 */
@@ -2242,7 +2239,7 @@
 :root[data-look="neo"] body:not(.game-ds) #stage .tr-dawn-rule { background: linear-gradient(to right, var(--neo-ui-gold), rgba(227, 189, 110, .3) 60%, rgba(227, 189, 110, 0)); }
 :root[data-look="neo"] body:not(.game-ds) #stage .tr-dawn-sub > .tr-flip { color: var(--neo-ui-gold-hi); }
 
-/* ---------------------------------------------------------------- 19. ギャラリー（scenes/gallery.js）: 一覧の面・タブ・閉じる・閲覧中の操作の帯。写真・漫画・動画の鑑賞面は変えない */
+/* ---------------------------------------------------------------- 19. ギャラリー（scenes/gallery.js）: 一覧の面・タブ・閉じる・閲覧中の操作の帯。写真・漫画の鑑賞面は変えない */
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .gal-overlay { background-color: rgba(12, 6, 22, .74); }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .gal {
   --text: var(--neo-ui-ink);
@@ -2265,7 +2262,7 @@
 }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .gal-head h2 { color: #fff; }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal :is(.gal-rate, .gal-complete) { color: var(--neo-ui-gold-hi); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal :is(.gal-count, .gal-photos, .gal-characters, .gal-note, .gal-empty) { color: var(--neo-ui-dim); }
+:root[data-look="neo"] body:not(.game-ds) #stage #modal :is(.gal-count, .gal-characters, .gal-note, .gal-empty) { color: var(--neo-ui-dim); }
 /* タブ・閉じる: 夜紫の札にラベンダーの縁。選んだタブは金。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #modal :is(.gal-tab, .gal-close) {
   color: var(--neo-ui-ink);

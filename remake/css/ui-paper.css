@@ -41,7 +41,6 @@ html:root[data-ui-theme="paper"] .saveload-modal .save-slot.auto { border-left-c
 html:root[data-ui-theme="paper"] .saveload-modal .save-slot.blank { border-style: dashed; border-left-style: solid; }
 html:root[data-ui-theme="paper"] .saveload-modal .save-slot.auto .ss-label,
 html:root[data-ui-theme="paper"] .saveload-modal .save-slot.auto .ss-label small { color: var(--amber-ink); }
-html:root[data-ui-theme="paper"] .saveload-modal .save-slot.auto .ss-stat i::after { background: var(--amber); }
 
 /* 紙の上の小さな面（入れ子の豪華な枠を作らない。GUI31） */
 html:root[data-ui-theme="paper"] :is(.st-row, .shop-item, .dc-row, .hud-level, .hud-menu, .hud-stamina) {
