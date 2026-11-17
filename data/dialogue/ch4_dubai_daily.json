@@ -39,6 +39,46 @@
       ]
     },
     {
+      "dialogue_id": "ch4_souq_talk_e",
+      "comment": "スーク再訪（#3097）。スパイス屋の乳香の香炉。炭で樹脂を溶かして香りを立てる話を、熱の加減に重ねる。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "スパイス屋の店先で、小さな素焼きの香炉から細い煙が上がっていた。" },
+        { "speaker": "spice_merchant", "face": "", "text": "乳香だよ。木の樹脂。炭の上で溶かすと、香りになる" },
+        { "speaker": "", "face": "", "text": "香炉の中には小さな炭。その上で黄色い粒が溶けて、甘く乾いた香りが立った。" },
+        { "speaker": "hajime", "face": "normal", "text": "炭で香りを立てるの、シーシャと同じですね" },
+        { "speaker": "spice_merchant", "face": "", "text": "炭が強いと、焦げて煙たいだけ。弱いと、溶けない。……あんたの仕事も、そうかい" },
+        { "speaker": "hajime", "face": "normal", "text": "（ほとんど同じだ。……熱の加減は、どこの国でも難しいんだな）" },
+        { "speaker": "", "face": "", "text": "香炉の煙は、店の奥まで細く流れていった。服に、しばらく香りが残った。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_souq_talk_f",
+      "comment": "スーク再訪（#3097）。サフランの量り売り。少ない量から、待って色と香りを引き出す。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "スパイス屋の奥のガラスケースに、赤い糸のようなものが小瓶に入っていた。" },
+        { "speaker": "spice_merchant", "face": "", "text": "サフラン。一グラムで、この通りの昼ごはん何回分かになる" },
+        { "speaker": "hajime", "face": "surprise", "text": "（高い……！）" },
+        { "speaker": "spice_merchant", "face": "", "text": "でも、使うのは数本だけ。お湯に浸けて待つと、色と香りが全部出る" },
+        { "speaker": "", "face": "", "text": "店主がグラスの湯に数本落とすと、金色がゆっくり広がっていった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（量を増やすんじゃなくて、待って引き出す……）" },
+        { "speaker": "hajime", "face": "normal", "text": "（高い葉ほど、少しずつ丁寧に、か。帰ったら、詰める量も見直そう）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_souq_talk_g",
+      "comment": "スーク再訪（#3097）。路地で迷い、年配の店主にスパイスの匂いのほうへ歩けと教わる。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "スークの路地を何本か曲がったら、来た道が分からなくなった。" },
+        { "speaker": "", "face": "", "text": "どの角にも、同じような布と籠が並んでいる。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……完全に迷った）" },
+        { "speaker": "", "face": "", "text": "店先に座っていた年配の男が、こちらの顔を見て、通りの奥を指さした。" },
+        { "speaker": "old_man", "face": "", "text": "スパイスの匂いのほうへ歩け。そっちが大通りだ" },
+        { "speaker": "", "face": "", "text": "言われたとおり、鼻を頼りに歩く。香辛料の匂いが濃くなるにつれて、人の声も増えていった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（匂いで道を覚えるのか。……地元の商店街なら、俺にもできるかもしれない）" },
+        { "speaker": "", "face": "", "text": "大通りに出て振り返ると、さっきの路地は、もうどれだったか分からなかった。" }
+      ]
+    },
+    {
       "dialogue_id": "ch4_festa_talk_b",
       "comment": "FESTAの出張ブース再訪（ch4_festa の後）。踊り疲れた人の席と、頼まれる前に注ぐ水。店員は shop_clerk。",
       "lines": [
@@ -497,6 +537,47 @@
         { "speaker": "hajime", "face": "normal", "text": "すみません、この盤、やり方を知らなくて" },
         { "speaker": "old_man", "face": "", "text": "知らなくていい。丁寧に吸われるより、負けながら話してくれ" },
         { "speaker": "", "face": "", "text": "負けるのは、すぐだった。老人は声を出して笑って、駒をもう一度並べはじめた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_alley_talk_d",
+      "comment": "路地裏のカフェ再訪（#3097）。吸い終えた後、店員が素焼きのボウルを洗って干す。使い込んだボウルの色。注文と味わいの後に読む（TALKS_AFTER_ORDER）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "吸い終えて台を返すと、店員が流しで素焼きのボウルを洗っていた。" },
+        { "speaker": "shop_clerk", "face": "", "text": "素焼きは水を吸うので、洗ったら一晩干します" },
+        { "speaker": "", "face": "", "text": "棚の上には、洗い終えたボウルが逆さに並んでいた。どれも、少しずつ色が違う。" },
+        { "speaker": "hajime", "face": "normal", "text": "使い込むと、色が変わるんですか" },
+        { "speaker": "shop_clerk", "face": "", "text": "ええ。葉の色が少しずつ移ります。この濃いのは、私が来る前からある子です" },
+        { "speaker": "hajime", "face": "normal", "text": "（道具にも、店の年月が染みていくんだな）" },
+        { "speaker": "", "face": "", "text": "店員は濡れたボウルを一つずつ布で拭いて、端から順に並べていった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_alley_talk_e",
+      "comment": "路地裏のカフェ再訪（#3097）。奥の盤の席の年配の常連（ch4_alley_culture_majlis の人）に、駒をひとつだけ教わる。注文と味わいの後に読む（TALKS_AFTER_ORDER）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "吸っていると、奥の盤の席の老人が、また手招きした。" },
+        { "speaker": "old_man", "face": "", "text": "今日は、駒をひとつだけ教えてやる" },
+        { "speaker": "", "face": "", "text": "老人は駒を一つつまんで、盤の上で動き方を見せた。前へ、それから斜めへ。" },
+        { "speaker": "old_man", "face": "", "text": "全部覚えなくていい。これだけ動かせれば、負け方が変わる" },
+        { "speaker": "", "face": "", "text": "その駒だけを動かして指してみる。負けたのは同じだったが、さっきより長く続いた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（一度に全部じゃなくて、ひとつずつ……）" },
+        { "speaker": "old_man", "face": "", "text": "次に来たら、もうひとつ教える。だから、また来い" },
+        { "speaker": "", "face": "", "text": "老人は駒を並べ直しながら、声を出して笑った。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_alley_talk_f",
+      "comment": "路地裏のカフェ再訪（#3097）。会計の後、店員と「ありがとう」と「シュクラン」を交換する。注文と味わいの後に読む（TALKS_AFTER_ORDER）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "会計を済ませると、店員が少し迷ってから、日本語で「ありがとう」と言った。" },
+        { "speaker": "hajime", "face": "normal", "text": "上手ですね" },
+        { "speaker": "shop_clerk", "face": "", "text": "日本のお客さんに習いました。合っていますか？" },
+        { "speaker": "hajime", "face": "normal", "text": "はい。じゃあ、こちらの言葉では、何て言うんですか" },
+        { "speaker": "shop_clerk", "face": "", "text": "シュクラン。短く、軽く" },
+        { "speaker": "hajime", "face": "normal", "text": "シュクラン" },
+        { "speaker": "", "face": "", "text": "店員は、満足そうにうなずいた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（言葉ひとつで、店を出る時の気分がずいぶん違う）" }
       ]
     },
     {

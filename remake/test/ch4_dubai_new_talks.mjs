@@ -8,10 +8,10 @@ const source = readFileSync(new URL('../js/chapters/ch4-dubai-daily.js', import.
 const state = { chapter: 4, day: 50, slot: 0, flags: {} };
 const DB = { dialogues: {} };
 const pools = {
-  souq: ['ch4_dubai_souq_revisit', 'ch4_souq_talk_b', 'ch4_souq_talk_c', 'ch4_souq_talk_d'],
+  souq: ['ch4_dubai_souq_revisit', 'ch4_souq_talk_b', 'ch4_souq_talk_c', 'ch4_souq_talk_d', 'ch4_souq_talk_e', 'ch4_souq_talk_f', 'ch4_souq_talk_g'],
   festa: ['ch4_festa_revisit', 'ch4_festa_talk_b', 'ch4_festa_talk_c', 'ch4_festa_talk_d'],
   center_cafe: ['ch4_dubai_cafe_revisit', 'ch4_cafe_talk_b', 'ch4_cafe_culture_hose', 'ch4_cafe_talk_c', 'ch4_cafe_culture_coffee', 'ch4_cafe_talk_d'],
-  alley_cafe: ['ch4_alley_cafe_quiet', 'ch4_alley_culture_clay', 'ch4_alley_talk_c', 'ch4_alley_culture_majlis'],
+  alley_cafe: ['ch4_alley_cafe_quiet', 'ch4_alley_culture_clay', 'ch4_alley_talk_c', 'ch4_alley_culture_majlis', 'ch4_alley_talk_d', 'ch4_alley_talk_e', 'ch4_alley_talk_f'],
 };
 const first = {
   souq: ['ch4_dubai_souq', 'ch4_stranger_first'], festa: ['ch4_festa'],
@@ -94,11 +94,13 @@ cancelled = false;
 await perform(spot('souq'));
 state.flags = JSON.parse(JSON.stringify(state.flags));
 assert.equal(spot('souq').hasNew(), true, 'partially read pool survives SAVE/LOAD');
-state.flags._ch4_dubai_talks.souq = 3;
-const missing = DB.dialogues.ch4_souq_talk_d;
-delete DB.dialogues.ch4_souq_talk_d;
+// 最後の1本だけ残った状態で、その台本が読めなければ新着にしない（#3097 でスークの巡回は7本）
+const lastSouq = pools.souq.at(-1);
+state.flags._ch4_dubai_talks.souq = pools.souq.length - 1;
+const missing = DB.dialogues[lastSouq];
+delete DB.dialogues[lastSouq];
 assert.equal(spot('souq').hasNew(), false, 'missing scene is excluded just as it is during a visit');
-DB.dialogues.ch4_souq_talk_d = missing;
+DB.dialogues[lastSouq] = missing;
 assert.equal(spot('souq').hasNew(), true, 'loaded scene restores the real remaining visit');
 reset();
 for (const id of first.souq) state.flags._ch4.read[id] = true;

@@ -617,6 +617,181 @@
       ]
     },
     {
+      "dialogue_id": "remake_ch2_aquarium_repeat_d",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "水槽の上の小窓が開いて、飼育員さんが餌の入ったカップを持ってきた。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "餌が落ちる前から、魚たちはもう水面の近くへ集まっている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（音もしないのに、分かるんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "飼育員さんは一度に撒かず、端から少しずつ落としていく。小さな魚にも届くように。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一度に全部じゃなくて、全員に届く順番か。……炭を置く順番と、少し似てる）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "群れが落ち着くまで、飼育員さんは水面から目を離さなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_aquarium_repeat_e",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "水槽の横の名札と見比べながら、魚の名前をひとつずつ確かめていった。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "似た色の魚が多くて、三匹目あたりからもう分からなくなる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（初めてのお客さんには、フレーバーの一覧もこう見えてるのかも）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "名札の下には、手書きで「この子はいつも岩の陰にいます」と書き足してあった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（名前より、どこにいるか。……覚えやすいのは、そっちだな）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（メニューも、味の名前だけじゃなくて、どんな時の一台かを書いてみようかな）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_aquarium_repeat_f",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "大水槽の前だけ、照明が少し落としてあった。青が、ほかの水槽より深く見える。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "ネクタイをゆるめたスーツの人が、ベンチに座ったまま、じっと水槽を見ていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（あの人、たぶん魚を見に来たんじゃない。ぼんやりしに来たんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "大きな魚がゆっくり横切るたび、その人の肩が少しずつ下がっていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（何もしない時間を、わざわざ取りに来る。……シーシャも、そういうものかもしれない）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "しばらくして、その人は小さく伸びをして立ち上がった。来た時より、足取りが軽く見えた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_aquarium_repeat_g",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "大水槽の中を、ダイバーがゆっくり泳いでいた。手には、ガラスを磨く道具を持っている。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "魚たちは慣れているのか、すぐ横を平気ですり抜けていく。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "ガラス越しの子どもに気づいて、ダイバーが小さく手を振った。子どもは、両手で振り返す。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（掃除してるところなのに、ちゃんと見せ物になってる）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（片付けや手入れも、見られて恥ずかしくない手つきなら、店の景色になるのか）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "磨き終わったガラスの向こうは、さっきより少しだけ青が澄んで見えた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_aquarium_repeat_h",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "順路の奥に、照明をほとんど落とした小部屋があった。深海の生き物の展示らしい。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "入ってすぐは、水槽の中に何がいるのか分からない。目が慣れるまで、しばらく待った。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "やがて、白く細い脚がゆっくり動くのが見えた。最初から、そこにいたらしい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（見えなかったんじゃなくて、俺の目が追いついてなかったんだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（煙の味も、きっとそうだ。慣れるまで待てば、奥にあるものが見えてくる）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "小部屋を出ると、明るい通路が少しまぶしかった。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_ch2_sento_visit",
       "lines": [
         {
@@ -738,6 +913,191 @@
           "speaker": "",
           "face": "normal",
           "text": "二セット目は下の段で、砂時計が落ちきるまで座った。風が来ても、さっきより息が楽だった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_sento_repeat_d",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "入口の黒板に、今日の薬湯の名前が白いチョークで書いてあった。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "湯船に近づくだけで、ほのかに草の香りがする。湯の色も、いつもより少し濃い。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "肩まで浸かると、香りは鼻より先に、胸のあたりで広がった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（香りって、温まると立つんだな。……葉も、温度で香りの出方が変わる）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "隣のおじさんが「今日のは当たりだ」とつぶやいて、目を閉じた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（日替わりだと、次は何だろうって楽しみになる。……うちにも、そういう一台があってもいい）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_sento_repeat_e",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "サウナ室の前の通路で、熱波師さんが大きなタオルを肩に掛けて休んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "さっきの風、すごかったです。腕、疲れませんか？"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "熱波師さんは笑って、「腕で振ると、すぐ腕がなくなるんですよ」と腰を軽く叩いた。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "「風は腰で送るんです。腕は、向きを決めるだけ」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（力を入れる場所と、向きを決める場所は別なのか）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（手先だけで何とかしようとしてる時、俺にもあるな）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "休憩が終わると、熱波師さんはタオルをひと振りして、またサウナ室へ入っていった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_sento_repeat_f",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "サウナ室の砂時計が、ちょうど落ちきるところだった。誰かが黙って、ひっくり返す。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "段の上には五、六人。誰も話さないのに、居心地は悪くない。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "ひとりが立つと、ほかの人が少しずつ詰めて、入ってきた人の場所を空ける。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（言葉はないのに、順番も場所も、ちゃんと回ってる）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（店も、混んでる時ほど、声より目配りなんだよな）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "砂時計が二回落ちたところで、そっと外へ出た。水風呂が、いつもより気持ちよかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_sento_repeat_g",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "湯上がり、番台の横の冷蔵庫の前で迷っていると、おばあさんが顔を上げた。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "「牛乳かい、コーヒー牛乳かい。迷ったら、コーヒーのほうが人気だよ」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、コーヒー牛乳で"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "瓶はよく冷えているのに、持つ指が痛くならない。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "おばあさんは「うちは冷やしすぎないの。湯上がりにきついからね」と笑った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（湯上がりの体に合わせた温度か。……出す温度も、相手から決めるんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "一息で半分飲んで、残りはゆっくり飲んだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_sento_repeat_h",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "外気浴の椅子で、前に下の段を勧めてくれた常連のおじさんと隣になった。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "「兄ちゃん、だいぶ慣れたな。仕事は何してんだい」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "シーシャのお店で働いてます。水たばこの"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "おじさんは少し考えて、「湯気と煙か。似たようなもんだな」と笑った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（似てる……のかな。どっちも、座ってゆっくりするための場所ではあるけど）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "店の場所を聞かれて地元の町の名前を言うと、「ちょっと遠いな」とおじさんはまた笑った。"
         }
       ]
     },
@@ -1522,6 +1882,181 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "戻ったら、うちの常連さんの好みも、もう一度ちゃんと思い出しておこう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_chain_repeat_d",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "カウンターの奥で、新しく入ったらしいスタッフが炭を並べていた。横で先輩が見ている。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "先輩は手を出さず、トングの角度だけを一度直した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（全部やって見せるんじゃなくて、一か所だけ直すんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "新人のスタッフは、直された角度のまま、次の炭を同じように置いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一か所だけなら、覚えて帰れる。……教え方って、こういうことか）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "先輩は小さく頷いて、自分の持ち場へ戻っていった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_chain_repeat_e",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "今日は、入口の前に小さな列ができていた。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "スタッフが列の後ろまで来て、「今だと二十分ほどです」と一人ずつに伝えている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（待つ時間が分かるだけで、並ぶ顔が全然違うな）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "並んでいる人の手には、ラミネートのメニューが一枚ずつ渡されていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（並んでる間に選んでもらえば、席に着いてからが早い。待つ時間も、ちゃんと使ってる）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "席に通される頃には、前の二人連れもとっくに注文を決めていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_chain_repeat_f",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "今日は客席が半分ほどで、店の中はゆったりしていた。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "手の空いたスタッフが、洗い終えたホースを一本ずつ光にかざして確かめている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（空いてる時間に、混む時間の準備をしてるんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "別のスタッフは、HMDを並べて、ひとつずつ汚れを拭き取っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（暇そうに見える時間が、いちばん手が動いてる）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……戻ったら、うちの道具の棚も見直そう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_chain_repeat_g",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "隣の席の二人連れが、スマホを構えて煙の輪を作ろうとしていた。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "何度やっても、輪になる前にほどけてしまう。二人は顔を見合わせて笑った。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "通りかかったスタッフが、「口の形はそのままで、喉でポンと押す感じです」と一言だけ添えた。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "三回目で、小さな輪がふわりと浮いた。二人が小さく歓声を上げる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（教えすぎない。でも、ちょうどいいところで背中を押す）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ああいう一言で、その日の一台が思い出になるんだ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_chain_repeat_h",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "帰る客がいるたび、近くのスタッフが手を止めて入口まで見送っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "預かっていた上着を渡して、ドアを押さえる。ほんの数秒のことだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（一台の味だけじゃなくて、帰り際まで店の時間なんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "見送られた客は、ドアの外で一度だけ振り返って、軽く頭を下げた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（最後に覚えてるのが、あの数秒だったりするのかも）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（うちは小さい店だけど、帰り際の一言なら、俺にもすぐできる）"
         }
       ]
     }

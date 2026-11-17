@@ -65,10 +65,10 @@ const DEADLINE = Object.freeze({ festa: 6, first: 8, second: 11 });
 // 再訪の会話（data/dialogue/ch4_dubai_daily.json）。既存の再訪（ch4_main.json）と並べて巡回する。
 // カフェの *_culture_* は現地のシーシャ文化の話（吸いながら店の人・常連から聞く。注文の後に読む）。
 const TALKS = Object.freeze({
-  souq: ["ch4_dubai_souq_revisit", "ch4_souq_talk_b", "ch4_souq_talk_c", "ch4_souq_talk_d"],
+  souq: ["ch4_dubai_souq_revisit", "ch4_souq_talk_b", "ch4_souq_talk_c", "ch4_souq_talk_d", "ch4_souq_talk_e", "ch4_souq_talk_f", "ch4_souq_talk_g"],
   festa: ["ch4_festa_revisit", "ch4_festa_talk_b", "ch4_festa_talk_c", "ch4_festa_talk_d"],
   center_cafe: ["ch4_dubai_cafe_revisit", "ch4_cafe_talk_b", "ch4_cafe_culture_hose", "ch4_cafe_talk_c", "ch4_cafe_culture_coffee", "ch4_cafe_talk_d"],
-  alley_cafe: ["ch4_alley_cafe_quiet", "ch4_alley_culture_clay", "ch4_alley_talk_c", "ch4_alley_culture_majlis"],
+  alley_cafe: ["ch4_alley_cafe_quiet", "ch4_alley_culture_clay", "ch4_alley_talk_c", "ch4_alley_culture_majlis", "ch4_alley_talk_d", "ch4_alley_talk_e", "ch4_alley_talk_f"],
   naru: ["ch4_naru_dubai_1", "ch4_naru_dubai_2", "ch4_naru_dubai_3"],
   practice: ["ch4_practice_hall_1", "ch4_practice_hall_2"],
 });
@@ -78,7 +78,7 @@ const TALK_BG = Object.freeze({
   ch4_practice_hall_1: CH4_PLACE_BG.venue, ch4_practice_hall_2: CH4_PLACE_BG.venue,
 });
 export const DUBAI_DAILY_IDS = Object.freeze([
-  ...["souq", "festa", "center_cafe", "alley_cafe", "naru", "practice"].flatMap(id => TALKS[id].filter(scene => /_(talk_[b-d]|dubai_\d|hall_\d|culture_[a-z]+)$/.test(scene))),
+  ...["souq", "festa", "center_cafe", "alley_cafe", "naru", "practice"].flatMap(id => TALKS[id].filter(scene => /_(talk_[b-z]|dubai_\d|hall_\d|culture_[a-z]+)$/.test(scene))),
   "ch4_creek_walk_day", "ch4_creek_walk_night", ...INN_REST_SCENES, ...INN_TRIAL_IDS, ...REHEARSAL_IDS, ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
 ]);
 

@@ -83,6 +83,190 @@
       ]
     },
     {
+      "dialogue_id": "ch3_outing_mukai_help_lost_b",
+      "comment": "#3097 mukaiのシフトの導入の巡回。味が戻る前（_lost_*）と後（_b・_c）で読み分け、戻った後は最初に ch3_outing_mukai_help を読む。好感度・大会の前後には触れない。日当・能力は既存のシフト精算だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "mukaiの開店前。カウンターを拭いていると、ましろがあくびをしながら奥から出てきた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "yawn",
+          "text": "ふぁ……はじめくん、早いねぇ。僕、まだ半分寝てる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭、先に起こしておくよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭に火を入れ、色が変わっていく順番を目で追う。味が分からなくても、火の具合は見える。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "すみません、ちょっと煙が少ないかも"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭の位置を少し動かして、しばらく待つ。戻した台から、白い煙がふわりと立った。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。今の、ちょうどいい量だねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（舌の代わりに、目と手を使えばいい）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店まで手伝い、ムカイさんから日当を受け取った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_mukai_help_lost_c",
+      "comment": "#3097 mukaiのシフトの導入の巡回。味が戻る前（_lost_*）と後（_b・_c）で読み分け、戻った後は最初に ch3_outing_mukai_help を読む。好感度・大会の前後には触れない。日当・能力は既存のシフト精算だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "mukaiの仕込み。ホースを一本ずつ洗って、光にかざす。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん、それ、丁寧だねぇ。僕、いつも二回くらいで終わっちゃう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今は、こういうところで役に立ちたいから"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……うん。きれいなホースだと、お客さんの一口目が、ちゃんとその葉の味になるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（俺には分からない一口目を、お客さんは味わってくれてるんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開店すると、常連のお客さんが「ここのは、いつも匂いが残らないね」と言った。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "だって。……はじめくんのおかげだよぉ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店まで手伝い、ムカイさんから日当を受け取った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_mukai_help_b",
+      "comment": "#3097 mukaiのシフトの導入の巡回。味が戻る前（_lost_*）と後（_b・_c）で読み分け、戻った後は最初に ch3_outing_mukai_help を読む。好感度・大会の前後には触れない。日当・能力は既存のシフト精算だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろが作った一台を、お客さんへ出す前に確かめてほしいと頼まれた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕の好きな、重いダークリーフ。はじめくんの舌だと、どう？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自分の吸い口を付けて、一口だけ確かめる。苦さの奥に、干した果物のような甘さがあった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……重いのに、奥のほうが甘い"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "わかる？ そこ、分かってもらえるの、うれしいなぁ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ましろの好きな味の真ん中が、少し分かった気がする）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店まで手伝い、ムカイさんから日当を受け取った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_mukai_help_c",
+      "comment": "#3097 mukaiのシフトの導入の巡回。味が戻る前（_lost_*）と後（_b・_c）で読み分け、戻った後は最初に ch3_outing_mukai_help を読む。好感度・大会の前後には触れない。日当・能力は既存のシフト精算だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "mukaiの客席で、初めて来たらしい二人連れが、メニューの前で困っていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "おすすめって、どれですか？ 甘いのがいいんですけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "果物みたいな軽い甘さと、お菓子みたいな甘さ、どっちが好きですか？"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……果物、かな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "葉を選んで台を作り、出す前に一口だけ確かめる。甘さが、ちゃんと前に出ていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "聞き方、上手だねぇ。僕、つい自分の好きなのを勧めちゃう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（味が分かると、お客さんに聞けることも増えるんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店まで手伝い、ムカイさんから日当を受け取った。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_outing_enmaku_notes",
       "lines": [
         {
@@ -1394,6 +1578,98 @@
       ]
     },
     {
+      "dialogue_id": "ch3_outing_park_walk_day_d",
+      "comment": "#3097 東京の仕事・大会から離れた日常。味覚回復・恋愛の成立に依存しない。報酬は既存の外出精算だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "木陰のベンチで、おじいさん二人が将棋を指していた。まわりに、見物の人が三人。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（誰も口を出さないんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一人が駒を持ったまま、長いこと止まる。見物の人たちも、黙って盤を見ている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "やがて、ぱちんと小さな音がした。見物の一人が、ふうっと息を吐く。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（待ってる間も、ちゃんと勝負の一部なんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次の一手を見届けずに、そっとその場を離れた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（続きは、誰かが見ててくれる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "池の向こうの木立が、風で一度だけ大きく揺れた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_park_walk_day_e",
+      "comment": "#3097 東京の仕事・大会から離れた日常。味覚回復・恋愛の成立に依存しない。報酬は既存の外出精算だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "池に、ボートが三艘ゆっくり浮かんでいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一艘だけ、同じところをくるくる回っている。漕いでいる二人が、声を上げて笑った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（オールの力が、左右でそろってないんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらくすると、片方がオールを止めた。もう片方だけで漕ぐと、ボートはまっすぐ進み出す。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（二人で同じだけ力を入れるより、片方が休むほうが進むこともあるのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ボートは岸の近くまで来て、また少し曲がった。二人はまた笑っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……まあ、まっすぐ進まなくても、楽しそうだからいいか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "岸沿いの道を、ボートと同じくらいの速さで歩いた。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_outing_park_walk_night_b",
       "comment": "#3097 東京の仕事・大会から離れた日常。味覚回復・恋愛の成立に依存しない。報酬は既存の外出精算だけ。",
       "lines": [
@@ -1482,6 +1758,98 @@
           "speaker": "",
           "face": "",
           "text": "立ち上がると、冷たい風が足首を通り抜けた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_park_walk_night_d",
+      "comment": "#3097 東京の仕事・大会から離れた日常。味覚回復・恋愛の成立に依存しない。報酬は既存の外出精算だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の池のほとりで、ギターケースを背負った人がベンチに座っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ケースは開けないまま、膝の上で指だけが小さく動いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（弾かずに、練習してるのかな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "指が止まると、その人は空を見上げて、何かを小さく口ずさんだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（人のいないところで、音を出さずにさらう時間か）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（俺も、炭を置く手を頭の中で何回もなぞってたな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "邪魔にならないよう、少し遠回りして池をひと回りした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "戻ってきた時、ベンチにはもう誰もいなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_park_walk_night_e",
+      "comment": "#3097 東京の仕事・大会から離れた日常。味覚回復・恋愛の成立に依存しない。報酬は既存の外出精算だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の公園を歩いていると、動物園の方から、聞いたことのない鳴き声がした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……今の、何の声だ？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "もう一度、低く長く鳴く。近くを歩いていた人も、足を止めて同じ方を見た。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "目が合うと、その人は少し照れたように笑って、「何でしょうね」と言った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何でしょうね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それきり声はしなかった。二人とも、答えを知らないまま歩き出す。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（分からないまま帰るのも、たまにはいいか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "池沿いの道を、さっきより少しゆっくり歩いた。"
         }
       ]
     },
