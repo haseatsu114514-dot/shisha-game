@@ -1015,6 +1015,12 @@
       "run": ["node --experimental-vm-modules remake/test/vn_preload_queue.mjs"]
     },
     {
+      "id": "save-failed-notice",
+      "title": "端末に保存できない時は遊びを止めず一度だけ知らせ、保存できたら戻る（#3726 B-7）",
+      "kind": "quick",
+      "run": ["node remake/test/save_failed_notice.mjs"]
+    },
+    {
       "id": "manifest-dependencies",
       "title": "Manifest generator required dependency diagnostics",
       "kind": "quick",
