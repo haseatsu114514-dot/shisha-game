@@ -1,6 +1,9 @@
 # Normalize EOL for all files that Git considers text files.
 * text=auto eol=lf
 
+# Generated JS boot bundle (#3552). Keep exact esbuild bytes.
+remake/js/bundle/main.js -text
+
 # Git LFS for game images (added 2026-10 / chore/lfs-new-images).
 # assets/ and remake/img/: only NEW images are stored as LFS pointers. Images
 # that already existed are pinned as ordinary Git files by the generated block

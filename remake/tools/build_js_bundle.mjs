@@ -8,6 +8,7 @@
 // import.meta.url の相対（../../img、../../../assets）は、出力先を js/bundle/ に置くことで
 // 元ファイル（js/<dir>/file.js）と同じ深さになり、差し替えない。
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
@@ -22,10 +23,10 @@ const CHECK = process.argv.includes("--check");
 function resolveEsbuild() {
   const require = createRequire(import.meta.url);
   const dirs = [
-    process.env.ESBUILD_NODE_MODULES,
-    "/tmp/esbuild-pkg/node_modules",
     path.join(TOOLS, "node_modules"),
+    process.env.ESBUILD_NODE_MODULES,
     path.join(REMAKE, "node_modules"),
+    "/tmp/esbuild-pkg/node_modules",
   ].filter(Boolean);
   for (const dir of dirs) {
     const file = path.join(dir, "esbuild/lib/main.js");
@@ -69,27 +70,52 @@ async function buildTo(dir) {
   return { files, result };
 }
 
+function sha256(buf) {
+  return createHash("sha256").update(buf).digest("hex");
+}
+
+function describeMismatch(name, rebuilt, committed) {
+  if (rebuilt.length !== committed.length) {
+    return `${name} 長さが違います: 再生成 ${rebuilt.length} / コミット ${committed.length}`;
+  }
+  let i = 0;
+  while (i < rebuilt.length && rebuilt[i] === committed[i]) i++;
+  return `${name} 先頭の差 @${i} sha256 再生成=${sha256(rebuilt).slice(0, 16)} コミット=${sha256(committed).slice(0, 16)}`;
+}
+
+function compareBundle(dir) {
+  const expected = fs.readdirSync(dir).sort();
+  const actual = fs.existsSync(OUTDIR) ? fs.readdirSync(OUTDIR).sort() : [];
+  const problems = [];
+  if (expected.length !== actual.length || expected.some((n, i) => n !== actual[i])) {
+    problems.push(`js/bundle の構成が古いです。再生成してください: ${actual.join(", ")} != ${expected.join(", ")}`);
+  } else {
+    for (const name of expected) {
+      const a = fs.readFileSync(path.join(dir, name));
+      const b = fs.readFileSync(path.join(OUTDIR, name));
+      if (Buffer.compare(a, b) !== 0) problems.push(`バンドルが古いです。再生成してください: js/bundle/${name}（${describeMismatch(name, a, b)}）`);
+    }
+  }
+  return problems;
+}
+
 if (CHECK) {
   const tmp = fs.mkdtempSync(path.join(fs.realpathSync("/tmp"), "js-bundle-"));
   try {
     await buildTo(tmp);
-    const expected = fs.readdirSync(tmp).sort();
-    const actual = fs.existsSync(OUTDIR) ? fs.readdirSync(OUTDIR).sort() : [];
-    const problems = [];
-    if (expected.length !== actual.length || expected.some((n, i) => n !== actual[i])) {
-      problems.push(`js/bundle の構成が古いです。再生成してください: ${actual.join(", ")} != ${expected.join(", ")}`);
-    } else {
-      for (const name of expected) {
-        const a = fs.readFileSync(path.join(tmp, name));
-        const b = fs.readFileSync(path.join(OUTDIR, name));
-        if (Buffer.compare(a, b) !== 0) problems.push(`バンドルが古いです。再生成してください: js/bundle/${name}`);
-      }
+    let problems = compareBundle(tmp);
+    if (problems.length) {
+      // 稀な非決定性に備えて一度だけ作り直して比べる
+      fs.rmSync(tmp, { recursive: true, force: true });
+      fs.mkdirSync(tmp, { recursive: true });
+      await buildTo(tmp);
+      problems = compareBundle(tmp);
     }
     if (problems.length) {
       for (const p of problems) console.error(p);
       process.exit(1);
     }
-    console.log(`js bundle ok (${expected.length} files)`);
+    console.log(`js bundle ok (${fs.readdirSync(tmp).length} files)`);
   } finally {
     fs.rmSync(tmp, { recursive: true, force: true });
   }
