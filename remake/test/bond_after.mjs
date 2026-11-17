@@ -34,6 +34,9 @@ for (const [id, scene] of Object.entries(scenes)) {
     assert.doesNotMatch(line.text, /大会|本番|明日の/, `${id}: 大会の前後どちらでも読めるよう、大会を前提にしない`);
   }
 }
+// コロちゃんの代弁に、本人の語尾（じゃ・のう・おる）を混ぜない（samechan_story.mjs と同じ決まり）
+for (const scene of Object.values(scenes)) for (const line of scene.lines)
+  if (line.voice === "korochan") assert.doesNotMatch(line.text, /じゃ|のう|おる/, `${scene.dialogue_id}: コロちゃんの語尾`);
 // なる: 和解の前は「なるさん」と敬語、後は「なる」とタメ口（締めくくり ch1_naru_bond_finale と同じ。#3693）
 for (const id of BOND_AFTER.naru.scenes.map(scene => scene.id)) {
   const branches = Object.entries(scenes[id].branches || {});
@@ -57,7 +60,7 @@ assert.equal(bondAfterNext(save(), "kumicho"), null, "締めくくりの前は�
 assert.equal(bondAfterEligible(save({ finales: { rei: { route: "romance" } } }), "rei"), false, "恋愛ルートは出さない");
 assert.equal(bondAfterEligible(save({ finales: { rei: { route: "friend" } }, lovers: ["rei"] }), "rei"), false, "恋人には出さない");
 assert.equal(bondAfterEligible(save({ finales: { rei: { route: "romance" } }, flags: { _friend_rei: true } }), "rei"), true, "後から友人に落ち着いた人は出す");
-assert.equal(bondAfterNext(friendOf("minto"), "minto"), null, "まだ5本を書いていない人は対象外（いつもの来店のまま）");
+assert.equal(bondAfterNext(friendOf("ageha"), "ageha"), null, "まだ5本を書いていない人は対象外（いつもの来店のまま）");
 
 // 順番: 5本を一度ずつ順に。読んだ記録は場面のIDで持つ
 {
@@ -79,7 +82,15 @@ assert.equal(bondAfterNext(friendOf("minto"), "minto"), null, "まだ5本を書�
 }
 
 // 前提の持ち物: 一本目が締めくくりの素焼きの回収になっている人は、素焼きを持っている時だけ
-for (const id of ["kumicho", "naru", "adam", "tsumugi", "sumi"]) assert.equal(BOND_AFTER[id].scenes[0].requires, `suyaki_${id}`, `${id}: 一本目は素焼きが前提`);
+for (const id of ["kumicho", "naru", "adam", "tsumugi", "sumi", "minto", "rio", "samechan"]) assert.equal(BOND_AFTER[id].scenes[0].requires, `suyaki_${id}`, `${id}: 一本目は素焼きが前提`);
+// ひよりの素焼きの一台は友人の一服（friends.json）が描くので、一本目に前提を置かない
+assert.equal(BOND_AFTER.hiyori.scenes.some(scene => scene.requires), false);
+// サメちゃんの来店（daily/samechan.js）は背景を渡さないので、台本の metadata に店の背景を持つ。ひよりは私的な場面
+for (const id of [...BOND_AFTER.samechan.scenes.map(scene => scene.id), ...BOND_AFTER.samechan.shorts]) assert.match(scenes[id].metadata?.bg || "", /bg_shishark/, id);
+for (const id of [...BOND_AFTER.hiyori.scenes.map(scene => scene.id), ...BOND_AFTER.hiyori.shorts]) assert.equal(scenes[id].metadata?.private_scene, true, id);
+// みんとは営業中の店なので、私服の立ち絵（ura_*）を使わない
+for (const id of [...BOND_AFTER.minto.scenes.map(scene => scene.id), ...BOND_AFTER.minto.shorts])
+  for (const line of scenes[id].lines) assert.doesNotMatch(line.face || "", /^ura_/, `${id}: 営業の姿の表情`);
 // 神崎の一本目は締めくくりの素焼きを持っている時だけ。無い保存では飛ばし、持てば読む
 {
   const without = friendOf("kumicho");

@@ -49,6 +49,29 @@ export const BOND_AFTER = Object.freeze({
       "bond_after_sumi_4", "bond_after_sumi_5"],
     shorts: ["bond_after_sumi_short_a", "bond_after_sumi_short_b", "bond_after_sumi_short_c", "bond_after_sumi_short_d"],
   }),
+  // ヒロインの友人ルート: みんと（visitChar・第5章のPEPPERMINT）・凛想（visitRio→visitChar・第5章の2階）・
+  // サメちゃん（daily/samechan.js の visitSamechan・第5章のSHISHARK）・ひより（daily/hiyori.js の他店の相席と約束した店。
+  // 素焼きの一台は友人の一服 friends.json が描くので、一本目に前提を置かない）
+  minto: entry("minto", {
+    scenes: [{ id: "bond_after_minto_1", requires: "suyaki_minto" }, "bond_after_minto_2", "bond_after_minto_3",
+      "bond_after_minto_4", "bond_after_minto_5"],
+    shorts: ["bond_after_minto_short_a", "bond_after_minto_short_b", "bond_after_minto_short_c", "bond_after_minto_short_d"],
+  }),
+  rio: entry("rio", {
+    scenes: [{ id: "bond_after_rio_1", requires: "suyaki_rio" }, "bond_after_rio_2", "bond_after_rio_3",
+      "bond_after_rio_4", "bond_after_rio_5"],
+    shorts: ["bond_after_rio_short_a", "bond_after_rio_short_b", "bond_after_rio_short_c", "bond_after_rio_short_d"],
+  }),
+  samechan: entry("samechan", {
+    scenes: [{ id: "bond_after_samechan_1", requires: "suyaki_samechan" }, "bond_after_samechan_2", "bond_after_samechan_3",
+      "bond_after_samechan_4", "bond_after_samechan_5"],
+    shorts: ["bond_after_samechan_short_a", "bond_after_samechan_short_b", "bond_after_samechan_short_c", "bond_after_samechan_short_d"],
+  }),
+  hiyori: entry("hiyori", {
+    scenes: ["bond_after_hiyori_1", "bond_after_hiyori_2", "bond_after_hiyori_3",
+      "bond_after_hiyori_4", "bond_after_hiyori_5"],
+    shorts: ["bond_after_hiyori_short_a", "bond_after_hiyori_short_b", "bond_after_hiyori_short_c", "bond_after_hiyori_short_d"],
+  }),
 });
 
 /** 全員の台本のID（読み込みと検証用）。 */

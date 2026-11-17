@@ -713,6 +713,423 @@
         {"speaker": "sumi", "face": "normal", "text": "また頼む"},
         {"speaker": "hajime", "face": "smile", "text": "はい。また入ります"}
       ]
+    },
+    {
+      "dialogue_id": "bond_after_minto_1",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。PEPPERMINTの来店（営業中なので営業の姿の表情だけ。ura_* は私服の立ち絵なので使わない。小さな声の時も normal）。はじめは店では「みんと」とタメ口。一本目は締めくくりの「次はお店で、『みんと』に作ってね。この一台で」の回収。素焼き（suyaki_minto）を持っている時だけ。チョコミントは実家の喫茶店の看板パフェ（character_profiles）。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "PEPPERMINTのカウンターに、布の包みを置いた。"},
+        {"speaker": "minto", "face": "surprise", "text": "あっ、それ……！"},
+        {"speaker": "minto", "face": "smile", "text": "約束、覚えててくれたんだ♡ じゃあ今日は、みんとがお客さんね♪"},
+        {"speaker": "", "face": "", "text": "ミントしか詰めたことのない素焼きに、葉を詰める。最後に、チョコレートをひとつまみ足した。"},
+        {"speaker": "", "face": "", "text": "一口吸ったみんとの声が、すっと小さくなった。"},
+        {"speaker": "minto", "face": "normal", "text": "……チョコミント。……昔のお店の、いちばん上の段のメニュー"},
+        {"speaker": "hajime", "face": "normal", "text": "ミント以外を入れたの、怒られるかと思った"},
+        {"speaker": "minto", "face": "smile", "text": "……怒らないよ。上書きじゃない匂い、久しぶりにした"},
+        {"speaker": "", "face": "", "text": "奥の席から呼ばれて、みんとはぱっと顔を上げた。"},
+        {"speaker": "minto", "face": "wink", "text": "はーいっ♡ ……はじめくん、これ、あとでもう一口ちょうだいね♪"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_minto_2",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。PEPPERMINTの来店（営業中なので営業の姿の表情だけ。ura_* は私服の立ち絵なので使わない。小さな声の時も normal）。はじめは店では「みんと」とタメ口。キャストはみんとひとりなのに「人気No.1」の持ちネタ。ひとりで回す店主の誇り。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "PEPPERMINTの壁に、手書きの「今月の人気ランキング」が貼ってあった。"},
+        {"speaker": "", "face": "", "text": "一位、みんと。二位から下は、ずっと空欄だった。"},
+        {"speaker": "hajime", "face": "normal", "text": "……一位しかいないね"},
+        {"speaker": "minto", "face": "wink", "text": "二位からは、いつでも募集中だよ♡ はじめくん、どう？"},
+        {"speaker": "hajime", "face": "surprise", "text": "俺がキャストは無理だって"},
+        {"speaker": "minto", "face": "smile", "text": "知ってる♪ 言ってみただけ"},
+        {"speaker": "minto", "face": "normal", "text": "……ひとりで回すの、ほんとは嫌いじゃないの。全部の席が、ちゃんと見えるから"},
+        {"speaker": "minto", "face": "wink", "text": "だから一位は、ずーっとみんと♡ 文句は受け付けませーん♪"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_minto_3",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。PEPPERMINTの来店（営業中なので営業の姿の表情だけ。ura_* は私服の立ち絵なので使わない。小さな声の時も normal）。はじめは店では「みんと」とタメ口。チョコミントのパフェの試作（友人のLIMEの続き。番号は付けない）。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "カウンターに、背の高いグラスがひとつ置かれた。緑と茶色の層が、きれいに重なっている。"},
+        {"speaker": "minto", "face": "smile", "text": "みんと特製、チョコミントパフェ♡ ……の、試作だよ♪"},
+        {"speaker": "minto", "face": "normal", "text": "はじめくん、正直に言ってね。歯みがき粉って言ったら、泣くけど"},
+        {"speaker": "", "face": "", "text": "一口すくう。ミントは強いのに、最後にチョコレートが追いかけてきた。"},
+        {"speaker": "hajime", "face": "smile", "text": "おいしい。ミント、ちょうどいいと思う"},
+        {"speaker": "minto", "face": "normal", "text": "……昔のお店のより、ちょっとだけミント強め、……わざとなの"},
+        {"speaker": "minto", "face": "smile", "text": "今のみんとのお店の味だからね♪ メニューに載せるのは、あと一回直してから"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_minto_4",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。PEPPERMINTの来店（営業中なので営業の姿の表情だけ。ura_* は私服の立ち絵なので使わない。小さな声の時も normal）。はじめは店では「みんと」とタメ口。身分証と「20歳は、お店の中だけ」（ch1_minto_identity_reveal で、はじめが内緒にすると約束）。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "入口で、初めての客が身分証を出していた。みんとは笑顔のまま、年をしっかり確かめていた。"},
+        {"speaker": "minto", "face": "smile", "text": "はーい、確認しました♡ ようこそ、ぺぱーみんとへ♪"},
+        {"speaker": "hajime", "face": "normal", "text": "（ちゃんと見るんだな、……当たり前か）"},
+        {"speaker": "minto", "face": "wink", "text": "なに見てるの、はじめくん。みんとの身分証は、見せられないよ？"},
+        {"speaker": "hajime", "face": "smile", "text": "知ってる。内緒にするって言ったし"},
+        {"speaker": "minto", "face": "normal", "text": "……うん。あの時、きみが黙って返してくれたの、ちょっと助かったんだよ"},
+        {"speaker": "minto", "face": "wink", "text": "お礼に、今日のミントはひとつまみ多め♡ ……年の数ぶんは、入れないからね？"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_minto_5",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。PEPPERMINTの来店（営業中なので営業の姿の表情だけ。ura_* は私服の立ち絵なので使わない。小さな声の時も normal）。はじめは店では「みんと」とタメ口。実家の喫茶店の古いコースターを、こっそり大切に使っている（character_profiles の裏設定）。はじめは喫茶店の話を聞いている。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "グラスの下のコースターだけ、ほかの席のと柄が違った。色あせた、コーヒーカップの絵。"},
+        {"speaker": "hajime", "face": "normal", "text": "このコースター、ほかと違うね"},
+        {"speaker": "minto", "face": "surprise", "text": "あ……それ、みんとの私物なの。まちがえて出しちゃった"},
+        {"speaker": "minto", "face": "normal", "text": "……喫茶店だった頃の。何枚か、取ってあるの"},
+        {"speaker": "hajime", "face": "normal", "text": "替えようか？"},
+        {"speaker": "minto", "face": "smile", "text": "ううん。はじめくんの席なら、いいや。……汚したら、怒るけどね♡"},
+        {"speaker": "", "face": "", "text": "それから、そのコースターは、俺の席にだけ出てくるようになった。"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_minto_short_a",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。PEPPERMINTの来店（営業中なので営業の姿の表情だけ。ura_* は私服の立ち絵なので使わない。小さな声の時も normal）。はじめは店では「みんと」とタメ口。5本の後の短い汎用（いつもの昼夜のあいさつの後に読む）。",
+      "lines": [
+        {"speaker": "minto", "face": "smile", "text": "おかえりなさーいっ♡ はじめくんの席、空けといたよ♪"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_minto_short_b",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。PEPPERMINTの来店（営業中なので営業の姿の表情だけ。ura_* は私服の立ち絵なので使わない。小さな声の時も normal）。はじめは店では「みんと」とタメ口。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "minto", "face": "wink", "text": "今日のミントは、ひとつまみ多め♡ ……内緒ね"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_minto_short_c",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。PEPPERMINTの来店（営業中なので営業の姿の表情だけ。ura_* は私服の立ち絵なので使わない。小さな声の時も normal）。はじめは店では「みんと」とタメ口。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "みんとは奥の席を回りながら、すれ違いざまに小さく手を振った。"},
+        {"speaker": "minto", "face": "normal", "text": "……あとでね"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_minto_short_d",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。PEPPERMINTの来店（営業中なので営業の姿の表情だけ。ura_* は私服の立ち絵なので使わない。小さな声の時も normal）。はじめは店では「みんと」とタメ口。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "minto", "face": "smile", "text": "パフェの試作、また直したの♡ ……次こそ、メニューに載せるもん"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_rio_1",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。Dr.fookah の2階（夜のショールーム）。凛想ははじめを「モルモットくん」、はじめは「凛想さん」と敬語。一本目は締めくくりで受け取った私物の素焼き（ブルーベリー・suyaki_rio）で、はじめが一台を出す。持っている時だけ。ライチは締めくくりで話した「二口目で笑った常連」。友人の「試香の欄に一行足しとく」の続き（その分岐を読んでいなくても通る言い方）。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "2階のデスクで、凛想さんがクリップボードをめくっていた。"},
+        {"speaker": "rio", "face": "normal", "text": "来たね、モルモットくん。今日の試香は、君が出す番"},
+        {"speaker": "hajime", "face": "surprise", "text": "俺が、ですか"},
+        {"speaker": "rio", "face": "smug", "text": "あの素焼き、持ってきたでしょ。鞄の形で分かる"},
+        {"speaker": "", "face": "", "text": "使い込まれた素焼きに、ブルーベリーを詰める。上に、ライチをひとつまみ足した。"},
+        {"speaker": "", "face": "", "text": "凛想さんはいつもの癖でペンを構えて、一口吸ったところでペンを置いた。"},
+        {"speaker": "rio", "face": "normal", "text": "……ライチ。前に話してくれた、二口目で笑った人の"},
+        {"speaker": "hajime", "face": "smile", "text": "はい。あの人の顔を、凛想さんの素焼きに入れてみました"},
+        {"speaker": "rio", "face": "smile", "text": "……これ、レポートに書けないやつだね"},
+        {"speaker": "rio", "face": "smug", "text": "……書くけど"},
+        {"speaker": "rio", "face": "normal", "text": "欄の名前は「モルモットくんの一台」。評価は、内緒"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_rio_2",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。Dr.fookah の2階（夜のショールーム）。凛想ははじめを「モルモットくん」、はじめは「凛想さん」と敬語。同意書の持ちネタを、業務外の一服に。グレーの線引きが正確な人（characters.json）。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "デスクの上に、見慣れた同意書が一枚。いつもより、ずっと短かった。"},
+        {"speaker": "rio", "face": "normal", "text": "はい、サイン"},
+        {"speaker": "hajime", "face": "normal", "text": "今日は、何のロットですか"},
+        {"speaker": "rio", "face": "smug", "text": "ロットじゃないよ。読んでみなよ"},
+        {"speaker": "", "face": "", "text": "『本日の一服は業務外です。感想は、言っても言わなくてもよい』。署名欄が、二つあった。"},
+        {"speaker": "hajime", "face": "smile", "text": "凛想さんの欄もあるんですね"},
+        {"speaker": "rio", "face": "normal", "text": "当たり前でしょ。私も吸うんだから"},
+        {"speaker": "rio", "face": "normal", "text": "……仕事じゃない一服にも、線は引いとかないと落ち着かないの"},
+        {"speaker": "rio", "face": "smile", "text": "……はい、君の字。うん、受理"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_rio_3",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。Dr.fookah の2階（夜のショールーム）。凛想ははじめを「モルモットくん」、はじめは「凛想さん」と敬語。吸う人の顔を知らない側の人（characters.json の秘密）が、1階の試飲席で自分の卸した香りを吸う客の顔を見る。はじめがいつも持って帰る「外の顔」の答え合わせ。",
+      "metadata": {"bg": "res://assets/backgrounds/bg_shop.png"},
+      "lines": [
+        {"speaker": "", "face": "", "text": "珍しく、凛想さんが1階の試飲席の隅に座っていた。"},
+        {"speaker": "hajime", "face": "surprise", "text": "凛想さんが下にいるの、初めて見ました"},
+        {"speaker": "rio", "face": "serious", "text": "しーっ。今、あそこの人がうちの新作を吸うとこ"},
+        {"speaker": "", "face": "", "text": "カウンターの客が一口吸って、首をかしげ、もう一口吸った。それから、連れに何か言って笑った。"},
+        {"speaker": "rio", "face": "surprise", "text": "……今の、見た？ 二口目"},
+        {"speaker": "hajime", "face": "smile", "text": "笑いましたね"},
+        {"speaker": "rio", "face": "smile", "text": "……ふうん。報告書の百倍、分かりやすい"},
+        {"speaker": "rio", "face": "normal", "text": "君がいつも持って帰ってくるの、これなんだね。……たまには、自分で取りに来るか"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_rio_4",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。Dr.fookah の2階（夜のショールーム）。凛想ははじめを「モルモットくん」、はじめは「凛想さん」と敬語。1階の常連の呼び名「二階の魔女」（ch1_rio_fourth）。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "作業台に、封筒が一通。宛名は『二階の魔女さんへ』。"},
+        {"speaker": "rio", "face": "normal", "text": "1階のレジに置いてあったんだって。……開けるの、ちょっと怖い"},
+        {"speaker": "hajime", "face": "normal", "text": "苦情ですかね"},
+        {"speaker": "rio", "face": "serious", "text": "その可能性もある、……君、先に読んで"},
+        {"speaker": "", "face": "", "text": "中には、丁寧な字で一行。『前に勧めてもらったブルーベリー、うちの店の定番になりました』。"},
+        {"speaker": "hajime", "face": "smile", "text": "苦情じゃなかったです"},
+        {"speaker": "rio", "face": "surprise", "text": "……私、勧めたっけ"},
+        {"speaker": "rio", "face": "smile", "text": "勧めたんだね、たぶん。……魔女って呼ばれるのも、悪くないか"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_rio_5",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。Dr.fookah の2階（夜のショールーム）。凛想ははじめを「モルモットくん」、はじめは「凛想さん」と敬語。商材の香りを邪魔しないよう、暮らしごと香りを避ける人（character_profiles）。差し入れのカレーで慌てる。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "差し入れの紙袋を作業台に置いた瞬間、凛想さんが立ち上がった。"},
+        {"speaker": "rio", "face": "shock", "text": "ちょっと待って。それ、何"},
+        {"speaker": "hajime", "face": "normal", "text": "近くのカレー屋の、持ち帰りです"},
+        {"speaker": "rio", "face": "serious", "text": "……ここ、香りを測る部屋。カレーは、一週間残る"},
+        {"speaker": "hajime", "face": "surprise", "text": "すみません、外で食べます！"},
+        {"speaker": "rio", "face": "normal", "text": "……非常階段ね。ドアは閉めて"},
+        {"speaker": "", "face": "", "text": "非常階段に並んで座って、カレーを食べた。凛想さんは、思ったよりよく食べた。"},
+        {"speaker": "rio", "face": "smile", "text": "……おいしいね。仕事の部屋じゃなければ、毎日でもいい"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_rio_short_a",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。Dr.fookah の2階（夜のショールーム）。凛想ははじめを「モルモットくん」、はじめは「凛想さん」と敬語。5本の後の短い汎用（いつもの昼夜のあいさつの後に読む）。",
+      "lines": [
+        {"speaker": "rio", "face": "normal", "text": "ん、モルモットくん。今日はサンプルなし、……座ってく？"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_rio_short_b",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。Dr.fookah の2階（夜のショールーム）。凛想ははじめを「モルモットくん」、はじめは「凛想さん」と敬語。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "rio", "face": "smug", "text": "君の鼻、今日も借りていい？ ……冗談。休みの顔してるし"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_rio_short_c",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。Dr.fookah の2階（夜のショールーム）。凛想ははじめを「モルモットくん」、はじめは「凛想さん」と敬語。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "凛想さんは顔も上げずに、デスクの隅の椅子を足で押し出した。"},
+        {"speaker": "rio", "face": "normal", "text": "座れば"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_rio_short_d",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。Dr.fookah の2階（夜のショールーム）。凛想ははじめを「モルモットくん」、はじめは「凛想さん」と敬語。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "rio", "face": "smile", "text": "1階で、また『魔女』って呼ばれた、……慣れてきたかも"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_samechan_1",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。SHISHARKの来店（第2章から）。はじめは客として通う（店の作業は手伝わない）。本名・泳ぎの話は出さない。コロちゃんの代弁（voice korochan）は、ばらす→ツッコむの形だけにしない（character_profiles）。一本目は締めくくりの「まだ、何の香りにも染まっておらん。お主の一台で、これから育ててほしい」と、友人のLIME「あの素焼き、育っておるか」の回収。素焼き（suyaki_samechan）を持っている時だけ。",
+      "metadata": {"bg": "res://assets/backgrounds/bg_shishark.png", "min_chapter": 2, "bgm": "sweets_or_sweets", "bgm_on_speaker": "samechan"},
+      "lines": [
+        {"speaker": "", "face": "", "text": "SHISHARKのいちばん奥の席で、布の包みを開いた。"},
+        {"speaker": "hajime", "face": "normal", "text": "あの素焼き、持ってきました。少しは、育ったと思います"},
+        {"speaker": "samechan", "face": "excited", "text": "おお！ 見せるのじゃ、見せるのじゃ"},
+        {"speaker": "", "face": "", "text": "真っ白だった縁が、薄く色づいている。サメちゃんは顔を近づけて、目を閉じた。"},
+        {"speaker": "samechan", "face": "normal", "text": "……柑橘と、何かの花じゃな。それから、ほんの少しだけ、スプリングウォーター"},
+        {"speaker": "hajime", "face": "smile", "text": "分かりますか。一回だけ、真似してみたんです"},
+        {"speaker": "samechan", "face": "surprise", "text": "わ、わしの好きな葉を、わしの渡した素焼きで……。お主、ずるいのじゃ"},
+        {"speaker": "samechan", "face": "ventriloquism", "text": "側近、耳まで赤いのである", "voice": "korochan"},
+        {"speaker": "samechan", "face": "serious", "text": "……それは、言わんでよいのじゃ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_samechan_2",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。SHISHARKの来店（第2章から）。はじめは客として通う（店の作業は手伝わない）。本名・泳ぎの話は出さない。コロちゃんの代弁（voice korochan）は、ばらす→ツッコむの形だけにしない（character_profiles）。店作りに真面目で、客の目を聞く（はじめは客の目の一言だけ）。コロちゃんが勇者に乗る形。",
+      "metadata": {"bg": "res://assets/backgrounds/bg_shishark.png", "min_chapter": 2, "bgm": "sweets_or_sweets", "bgm_on_speaker": "samechan"},
+      "lines": [
+        {"speaker": "", "face": "", "text": "カウンターに、新しいメニュー表が立ててあった。"},
+        {"speaker": "samechan", "face": "excited", "text": "お主、見るのじゃ。新しいメニューじゃ！"},
+        {"speaker": "", "face": "", "text": "『ホオジロ』『シュモク』『ジンベエ』。名前の下には、何も書いていなかった。"},
+        {"speaker": "hajime", "face": "normal", "text": "……名前は格好いいですけど、味が分からないです"},
+        {"speaker": "samechan", "face": "surprise", "text": "なんと。ジンベエと聞けば、大きくて甘いと分かるじゃろう"},
+        {"speaker": "hajime", "face": "normal", "text": "分かるのは、サメが好きな人だけかもしれません"},
+        {"speaker": "samechan", "face": "ventriloquism", "text": "うむ、勇者の申す通りである。下に、味を書き添えよ", "voice": "korochan"},
+        {"speaker": "samechan", "face": "normal", "text": "……コロちゃんまで。……うむ、客の目には勝てん。書き足すのじゃ"},
+        {"speaker": "", "face": "", "text": "帰る頃には、名前の下へ小さな字が足されていた。『ジンベエ（マンゴーとミルク）』。"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_samechan_3",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。SHISHARKの来店（第2章から）。はじめは客として通う（店の作業は手伝わない）。本名・泳ぎの話は出さない。コロちゃんの代弁（voice korochan）は、ばらす→ツッコむの形だけにしない（character_profiles）。サメ映画の話。怖い場面は目をそらすが、平気だと強がる（characters.json）。",
+      "metadata": {"bg": "res://assets/backgrounds/bg_shishark.png", "min_chapter": 2, "bgm": "sweets_or_sweets", "bgm_on_speaker": "samechan"},
+      "lines": [
+        {"speaker": "", "face": "", "text": "サメちゃんが、スマホの画面をこちらへ向けた。新しいサメ映画の予告編らしい。"},
+        {"speaker": "samechan", "face": "excited", "text": "ここからじゃ。ここから、背びれが来るのじゃ"},
+        {"speaker": "", "face": "", "text": "水面が揺れて、低い音が二つ鳴る。次の瞬間、サメちゃんはコロちゃんで自分の目を覆っていた。"},
+        {"speaker": "hajime", "face": "normal", "text": "……サメちゃん、見えてます？"},
+        {"speaker": "samechan", "face": "serious", "text": "見ておる。コロちゃんの目で、見ておるのじゃ"},
+        {"speaker": "samechan", "face": "ventriloquism", "text": "余は、側近の目をふさいでいるだけである", "voice": "korochan"},
+        {"speaker": "samechan", "face": "surprise", "text": "……う、うむ。……お主、終わったら教えるのじゃ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_samechan_4",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。SHISHARKの来店（第2章から）。はじめは客として通う（店の作業は手伝わない）。本名・泳ぎの話は出さない。コロちゃんの代弁（voice korochan）は、ばらす→ツッコむの形だけにしない（character_profiles）。店主が座って休む時間（はじめとの関係の軸）。本人が先に引き取る形（「……それは、わしが言う」）。客の炭を追う店主の目は残す。",
+      "metadata": {"bg": "res://assets/backgrounds/bg_shishark.png", "min_chapter": 2, "bgm": "sweets_or_sweets", "bgm_on_speaker": "samechan"},
+      "lines": [
+        {"speaker": "", "face": "", "text": "客の少ない時間。サメちゃんが、湯呑みを二つ持って奥の席へ来た。"},
+        {"speaker": "samechan", "face": "normal", "text": "少し、座ってもよいか"},
+        {"speaker": "hajime", "face": "smile", "text": "もちろんです"},
+        {"speaker": "", "face": "", "text": "座ってからも、彼女の目はしばらく、ほかの席の炭を追っていた。"},
+        {"speaker": "samechan", "face": "ventriloquism", "text": "側近よ。今そなたは──", "voice": "korochan"},
+        {"speaker": "samechan", "face": "smile", "text": "……それは、わしが言う。ちゃんと休めておるぞ。この席は、目が勝手に休むのじゃ"},
+        {"speaker": "hajime", "face": "normal", "text": "炭、まだ見てましたけど"},
+        {"speaker": "samechan", "face": "surprise", "text": "……あれは癖じゃ。数に入れんでよい"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_samechan_5",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。SHISHARKの来店（第2章から）。はじめは客として通う（店の作業は手伝わない）。本名・泳ぎの話は出さない。コロちゃんの代弁（voice korochan）は、ばらす→ツッコむの形だけにしない（character_profiles）。コロちゃんをサメの王として扱う。はじめが繕うのは店の作業ではなく、王の身なり。",
+      "metadata": {"bg": "res://assets/backgrounds/bg_shishark.png", "min_chapter": 2, "bgm": "sweets_or_sweets", "bgm_on_speaker": "samechan"},
+      "lines": [
+        {"speaker": "", "face": "", "text": "コロちゃんの背びれの縫い目が、少しほつれていた。"},
+        {"speaker": "samechan", "face": "surprise", "text": "む。……王の背びれが、ほどけかけておる"},
+        {"speaker": "hajime", "face": "normal", "text": "直しましょうか。裁縫、少しならできます"},
+        {"speaker": "samechan", "face": "serious", "text": "王の身なりを、客に任せるわけには……"},
+        {"speaker": "samechan", "face": "ventriloquism", "text": "よい。勇者に任せる", "voice": "korochan"},
+        {"speaker": "samechan", "face": "surprise", "text": "コロちゃん！？"},
+        {"speaker": "", "face": "", "text": "針を三回通して、背びれをまっすぐ留め直した。"},
+        {"speaker": "samechan", "face": "ventriloquism", "text": "見事である。褒美に、奥の席を生涯許す", "voice": "korochan"},
+        {"speaker": "samechan", "face": "smile", "text": "……生涯は、言いすぎじゃ、……まあ、よいがの"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_samechan_short_a",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。SHISHARKの来店（第2章から）。はじめは客として通う（店の作業は手伝わない）。本名・泳ぎの話は出さない。コロちゃんの代弁（voice korochan）は、ばらす→ツッコむの形だけにしない（character_profiles）。5本の後の短い汎用。",
+      "metadata": {"bg": "res://assets/backgrounds/bg_shishark.png", "min_chapter": 2, "bgm": "sweets_or_sweets", "bgm_on_speaker": "samechan"},
+      "lines": [
+        {"speaker": "samechan", "face": "smile", "text": "来たな、お主。奥の席、空けておいたのじゃ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_samechan_short_b",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。SHISHARKの来店（第2章から）。はじめは客として通う（店の作業は手伝わない）。本名・泳ぎの話は出さない。コロちゃんの代弁（voice korochan）は、ばらす→ツッコむの形だけにしない（character_profiles）。5本の後の短い汎用。",
+      "metadata": {"bg": "res://assets/backgrounds/bg_shishark.png", "min_chapter": 2, "bgm": "sweets_or_sweets", "bgm_on_speaker": "samechan"},
+      "lines": [
+        {"speaker": "samechan", "face": "ventriloquism", "text": "勇者はじめ、本日も入店を許す", "voice": "korochan"},
+        {"speaker": "samechan", "face": "smile", "text": "……うむ。ゆっくりしていくのじゃ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_samechan_short_c",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。SHISHARKの来店（第2章から）。はじめは客として通う（店の作業は手伝わない）。本名・泳ぎの話は出さない。コロちゃんの代弁（voice korochan）は、ばらす→ツッコむの形だけにしない（character_profiles）。5本の後の短い汎用。",
+      "metadata": {"bg": "res://assets/backgrounds/bg_shishark.png", "min_chapter": 2, "bgm": "sweets_or_sweets", "bgm_on_speaker": "samechan"},
+      "lines": [
+        {"speaker": "", "face": "", "text": "サメちゃんは、ほかの客の炭を直しながら、こちらへ小さくうなずいた。"},
+        {"speaker": "samechan", "face": "normal", "text": "あとで行くのじゃ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_samechan_short_d",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。SHISHARKの来店（第2章から）。はじめは客として通う（店の作業は手伝わない）。本名・泳ぎの話は出さない。コロちゃんの代弁（voice korochan）は、ばらす→ツッコむの形だけにしない（character_profiles）。5本の後の短い汎用。",
+      "metadata": {"bg": "res://assets/backgrounds/bg_shishark.png", "min_chapter": 2, "bgm": "sweets_or_sweets", "bgm_on_speaker": "samechan"},
+      "lines": [
+        {"speaker": "samechan", "face": "normal", "text": "今日もスプリングウォーターかの。……聞くまでもなかったのう"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_hiyori_1",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。ひよりは他店の相席（daily/hiyori.js の visitHiyoriAtShop）と、約束した店（playHiyoriHangout）で読むので、どの店でも・偶然でも約束でも通る書き出しにする。店主の名前を出さない。inner は本人の本心（プレイヤーにだけ見える）。斧の正体を知った後（締めくくりの前提）。一本目は締めくくりの「気を遣わずに笑える友達」の続き。素焼きの一台（休演日）は友人の一服（friends.json）が描くので、ここでは前提にしない。",
+      "metadata": {"private_scene": true},
+      "lines": [
+        {"speaker": "", "face": "", "text": "席に着くと、ひよりさんは儚い顔を作りかけて、途中でやめた。"},
+        {"speaker": "hiyori", "face": "smile", "text": "……いいや。友達の前で儚くしても、元が取れないし", "inner": "演技の燃費、地味に悪いんだよね"},
+        {"speaker": "hajime", "face": "smile", "text": "元、取ろうとしてたんですか"},
+        {"speaker": "hiyori", "face": "normal", "text": "そりゃあ。儚い女は、高くつくの"},
+        {"speaker": "hiyori", "face": "smile", "text": "今日は普通に話すね。……普通の私、声大きいけど、いい？", "inner": "会社では封印してる声量。ここなら解禁"},
+        {"speaker": "hajime", "face": "normal", "text": "知ってます。斧の時に聞きました"},
+        {"speaker": "hiyori", "face": "surprise", "text": "そこは、覚えてなくていいから！"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_hiyori_2",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。ひよりは他店の相席（daily/hiyori.js の visitHiyoriAtShop）と、約束した店（playHiyoriHangout）で読むので、どの店でも・偶然でも約束でも通る書き出しにする。店主の名前を出さない。inner は本人の本心（プレイヤーにだけ見える）。斧の正体を知った後（締めくくりの前提）。一台を出すより店が一日ちゃんと回るほうが好きだった総務の目（character_profiles）。",
+      "metadata": {"private_scene": true},
+      "lines": [
+        {"speaker": "", "face": "", "text": "ひよりさんは煙を吐きながら、店の奥を目で追っていた。"},
+        {"speaker": "hiyori", "face": "sad", "text": "……あの棚、三歩ぶん遠い。毎回、ああやって往復してるの", "inner": "総務の血が騒ぐ。動線、引き直したい"},
+        {"speaker": "hajime", "face": "normal", "text": "店の人に、言います？"},
+        {"speaker": "hiyori", "face": "surprise", "text": "言わない言わない！ よその店だよ！"},
+        {"speaker": "hiyori", "face": "normal", "text": "……でも、tonariだったら言ってた。スミさん、すぐ棚を動かしてくれるから"},
+        {"speaker": "hajime", "face": "smile", "text": "tonariの棚、今もひよりさんがいた頃のままですよ"},
+        {"speaker": "hiyori", "face": "smile", "text": "……知ってる。この前、数えたもん", "inner": "あの店、ちゃんと回ってる。えらい"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_hiyori_3",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。ひよりは他店の相席（daily/hiyori.js の visitHiyoriAtShop）と、約束した店（playHiyoriHangout）で読むので、どの店でも・偶然でも約束でも通る書き出しにする。店主の名前を出さない。inner は本人の本心（プレイヤーにだけ見える）。斧の正体を知った後（締めくくりの前提）。ゆるいキャラクターグッズが好き（characters.json の趣味）。儚い演技が物欲で崩れる。",
+      "metadata": {"private_scene": true},
+      "lines": [
+        {"speaker": "", "face": "", "text": "ひよりさんの鞄に、気の抜けた顔のクマのキーホルダーが増えていた。"},
+        {"speaker": "hajime", "face": "normal", "text": "それ、新しいですね"},
+        {"speaker": "hiyori", "face": "sad", "text": "……拾ったの。行き場のない子だったから", "inner": "ガチャ七回目でやっと出た。本命"},
+        {"speaker": "hajime", "face": "normal", "text": "値札のシール、付いたままですけど"},
+        {"speaker": "hiyori", "face": "surprise", "text": "……っ！"},
+        {"speaker": "hiyori", "face": "smile", "text": "……七回。七回、回しました。儚さより、物欲が勝ちました"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_hiyori_4",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。ひよりは他店の相席（daily/hiyori.js の visitHiyoriAtShop）と、約束した店（playHiyoriHangout）で読むので、どの店でも・偶然でも約束でも通る書き出しにする。店主の名前を出さない。inner は本人の本心（プレイヤーにだけ見える）。斧の正体を知った後（締めくくりの前提）。客の席に座ると今でも炭を数える元バイトの先輩（character_profiles）が、はじめの疲れを数える。「疲れた日は、休演する」をはじめに返す。",
+      "metadata": {"private_scene": true},
+      "lines": [
+        {"speaker": "", "face": "", "text": "あくびを噛み殺したところを、ひよりさんにしっかり見られた。"},
+        {"speaker": "hiyori", "face": "serious", "text": "……はじめくん。今の、三回目", "inner": "先輩センサー、まだ現役"},
+        {"speaker": "hajime", "face": "surprise", "text": "数えてたんですか"},
+        {"speaker": "hiyori", "face": "normal", "text": "炭を数えるのと同じ。……疲れてる日は、ちゃんと疲れた顔していいんだよ"},
+        {"speaker": "hiyori", "face": "smile", "text": "私が言うと、説得力あるでしょ。儚いの、半分は本当に疲れてたし"},
+        {"speaker": "hajime", "face": "smile", "text": "……じゃあ今日は、俺が休演します"},
+        {"speaker": "hiyori", "face": "smile", "text": "よろしい。今日の私は、元気な方で付き合ってあげる", "inner": "立場が逆。ちょっと楽しい"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_hiyori_5",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。ひよりは他店の相席（daily/hiyori.js の visitHiyoriAtShop）と、約束した店（playHiyoriHangout）で読むので、どの店でも・偶然でも約束でも通る書き出しにする。店主の名前を出さない。inner は本人の本心（プレイヤーにだけ見える）。斧の正体を知った後（締めくくりの前提）。儚い女ごっこは治るものにせず、これからも続ける（character_profiles）。新作の台詞の採点。",
+      "metadata": {"private_scene": true},
+      "lines": [
+        {"speaker": "", "face": "", "text": "ひよりさんが、手帳の最後のページをこっそり開いた。"},
+        {"speaker": "hiyori", "face": "serious", "text": "……新作の儚い台詞、できたの。採点して"},
+        {"speaker": "hajime", "face": "normal", "text": "どうぞ"},
+        {"speaker": "hiyori", "face": "sad", "text": "……私ね、次の雨が上がる頃には、霞になってると思うの", "inner": "三日かけた。自信作"},
+        {"speaker": "hajime", "face": "normal", "text": "七十点です。霞は、わりと元気そうなので"},
+        {"speaker": "hiyori", "face": "surprise", "text": "霞が元気って何！？"},
+        {"speaker": "", "face": "", "text": "大きな声が店に響いた。ひよりさんは慌てて口を押さえ、小さく咳払いをした。"},
+        {"speaker": "hiyori", "face": "smile", "text": "……今のは、霞の最後の叫び。次は、八十点取るから", "inner": "手帳に「霞、却下」って書いとこう"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_hiyori_short_a",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。ひよりは他店の相席（daily/hiyori.js の visitHiyoriAtShop）と、約束した店（playHiyoriHangout）で読むので、どの店でも・偶然でも約束でも通る書き出しにする。店主の名前を出さない。inner は本人の本心（プレイヤーにだけ見える）。斧の正体を知った後（締めくくりの前提）。5本の後の短い汎用（相席・約束の席のいつもの入りの代わり）。",
+      "metadata": {"private_scene": true},
+      "lines": [
+        {"speaker": "hiyori", "face": "sad", "text": "……あ、来た。今日の私、半分くらい透けてるからね", "inner": "透けてない。全然元気"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_hiyori_short_b",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。ひよりは他店の相席（daily/hiyori.js の visitHiyoriAtShop）と、約束した店（playHiyoriHangout）で読むので、どの店でも・偶然でも約束でも通る書き出しにする。店主の名前を出さない。inner は本人の本心（プレイヤーにだけ見える）。斧の正体を知った後（締めくくりの前提）。5本の後の短い汎用。",
+      "metadata": {"private_scene": true},
+      "lines": [
+        {"speaker": "", "face": "", "text": "ひよりさんは手帳を閉じて、隣の席の荷物をどけてくれた。"},
+        {"speaker": "hiyori", "face": "smile", "text": "どうぞ。今日は、仕事ちゃんと置いてきた"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_hiyori_short_c",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。ひよりは他店の相席（daily/hiyori.js の visitHiyoriAtShop）と、約束した店（playHiyoriHangout）で読むので、どの店でも・偶然でも約束でも通る書き出しにする。店主の名前を出さない。inner は本人の本心（プレイヤーにだけ見える）。斧の正体を知った後（締めくくりの前提）。5本の後の短い汎用。",
+      "metadata": {"private_scene": true},
+      "lines": [
+        {"speaker": "hiyori", "face": "normal", "text": "桃か紅茶か、まだ決めてないの、……一緒に選んで"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_hiyori_short_d",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。ひよりは他店の相席（daily/hiyori.js の visitHiyoriAtShop）と、約束した店（playHiyoriHangout）で読むので、どの店でも・偶然でも約束でも通る書き出しにする。店主の名前を出さない。inner は本人の本心（プレイヤーにだけ見える）。斧の正体を知った後（締めくくりの前提）。5本の後の短い汎用。",
+      "metadata": {"private_scene": true},
+      "lines": [
+        {"speaker": "hiyori", "face": "smile", "text": "今日の儚さは、三割くらい。残りは、ラーメンの予定で埋まってる"},
+        {"speaker": "hajime", "face": "smile", "text": "正直ですね"}
+      ]
     }
   ]
 }

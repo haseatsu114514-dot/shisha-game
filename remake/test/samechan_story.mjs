@@ -80,7 +80,9 @@ const modulePorts = new Map();
 await samechanModule.link(async spec=>{
  if(modulePorts.has(spec))return modulePorts.get(spec);
  let mod;
- if(spec==='../core/cinema-discovery.js'||spec==='./cinema.js'||spec==='../core/affinity-stages.js')mod=new vm.SourceTextModule(await read(spec==='./cinema.js'?'js/daily/cinema.js':spec.replace('../','js/')),{context});
+ if(spec==='../core/cinema-discovery.js'||spec==='./cinema.js'||spec==='../core/affinity-stages.js'||spec==='../core/bond-after.js')mod=new vm.SourceTextModule(await read(spec==='./cinema.js'?'js/daily/cinema.js':spec.replace('../','js/')),{context});
+ // ♥5後の会話（#3693）は実 bond-after.js。台本の読み込みだけ、手元の bond_after.json を返す
+ else if(spec==='./chapter-data.js')mod=new vm.SyntheticModule(['readDialogues'],function(){this.setExport('readDialogues',async()=>Object.fromEntries(JSON.parse(await fs.readFile(new URL('../../data/dialogue/bond_after.json',import.meta.url),'utf8')).dialogues.map(d=>[d.dialogue_id,d])));},{context});
  else {const d=deps[spec];assert(d,spec);mod=new vm.SyntheticModule(Object.keys(d),function(){for(const[k,v]of Object.entries(d))this.setExport(k,v);},{context});}
  modulePorts.set(spec,mod);return mod;
 });await samechanModule.evaluate();
@@ -148,6 +150,14 @@ state.met.minto=true;assert.equal(k.samechanVisitDialogue(),'samechan_shop_minto
 state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_minto_gift');
 assert.equal(state.flags._spot_seen_samechan_shop_minto_gift,true);assert.deepEqual([...rewards.at(-1)],['samechan',8],'開店祝いの話はいつもの来店と同じ');
 assert.match(k.samechanVisitDialogue(),/^samechan_shop_repeat_/,'開店祝いの話は一度だけ');
+// #3693: 締めくくりを友人として迎えた後は、いつもの小会話の代わりに♥5後の場面を一度ずつ。素焼きが無ければ一本目を飛ばす。好感度はいつもの来店と同じ
+state.finales={samechan:{chapter:2,day:3,route:'friend'}};state.owned=[];
+state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'bond_after_samechan_2');
+assert.deepEqual([...state.flags._bond_after.samechan],['bond_after_samechan_2']);assert.deepEqual([...rewards.at(-1)],['samechan',8]);
+assert.match(k.samechanVisitDialogue(),/^samechan_shop_repeat_/,'新着の判定はいつもの小会話のまま');
+state.owned=['suyaki_samechan'];state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'bond_after_samechan_1','素焼きを持てば一本目');
+state.lovers=['samechan'];state.day++;await k.visitSamechan(open);assert.match(played.at(-1),/^samechan_shop_repeat_/,'恋人には出さない');
+delete state.lovers;delete state.finales;delete state.flags._bond_after;state.owned=[];
 for(const id of ['samechan_shop_first','samechan_shop_quiet_seat','samechan_shop_closing_check','samechan_shop_heart4','samechan_shop_heart5','samechan_shop_own_seat','samechan_shop_look_away','samechan_bond_finale'])assert.equal(k.samechanVisitAffinityKind(id),'story',id);
 for(const id of ['samechan_shop_bond_question','samechan_shop_repeat_0','samechan_shop_repeat_1','samechan_shop_cinema_impression','samechan_shop_unwell','samechan_shop_minto_gift','samechan_shop_sofa_test','ch3_prep_samechan','ch4_prep_samechan'])assert.equal(k.samechanVisitAffinityKind(id),'talk',id);
 for(const id of ['samechan_shop_heart4','samechan_shop_heart5']){const scene=story.dialogues.find(d=>d.dialogue_id===id);

@@ -87,6 +87,12 @@ await check('quiet heart2.5 and oldest unread heart2 at high affinity match actu
   const before=JSON.stringify(s); assert.equal(f.spots.shortNormalVisit(p),true); assert.equal(JSON.stringify(s),before);
   assert.equal(await f.spots.visitChar('naru'),true); assert.equal(s.story.naru,3);
   assert.match(f.plays[0][0],/^remake_repeat_naru_/);
+  // #3693: 店主の♥5後の場面（物語の5本）が出る来店は、静かな来店に数えない。5本を読み終えた後の短い汎用は静かな来店のまま
+  s.finales.naru={day:6,chapter:1,route:'friend'};
+  assert.equal(f.spots.shortNormalVisit(p),false,'a host bond-after scene is not a quiet visit');
+  s.flags._bond_after={naru:[1,2,3,4,5].map(n=>`bond_after_naru_${n}`)};
+  assert.equal(f.spots.shortNormalVisit(p),true,'host short generics stay quiet');
+  delete s.finales.naru;delete s.flags._bond_after;
   s.story.naru=2;s.affinity.naru=48;f.plays.length=0;
   assert.equal(f.spots.shortNormalVisit(p),false);
   assert.equal(await f.spots.visitChar('naru'),true);
@@ -205,6 +211,32 @@ await check('after tonari return, the charm visit plays once and repeats resume'
   assert.equal(f.plays.at(-1)[0],'hiyori_shop_repeat_0');
   assert.equal(s.flags._hiyori_repeat_count,1);
   assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),false);
+});
+// #3693: 締めくくりを友人として迎えた後は、相席・約束の席のいつもの小会話の代わりに♥5後の場面を一度ずつ。巡回は進めない。
+// 途中でやめた約束の席は既読にしない。台本を読めない時はいつもの小会話。恋人には出さない
+await check('bond-after scenes replace the shop and promised-seat repeats after a friend finale',async f=>{
+  const s=f.core.state,p=f.spots.spotById('naru');
+  Object.assign(s.flags,{_hiyori_tonari_return_done:true,_hiyori_charm_done:true});s.finales.hiyori={day:6,chapter:1,route:'friend'};
+  f.setPlay(async()=>done);
+  assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),true);
+  assert.equal(f.plays.at(-1)[0],'hiyori_shop_repeat_0','offline script load falls back to the repeat');
+  s.flags._hiyori_repeat_count=0;
+  for(const d of JSON.parse(fs.readFileSync(new URL('../../data/dialogue/bond_after.json',import.meta.url))).dialogues)f.db.dialogues[d.dialogue_id]=d;
+  s.day++;delete s.flags._hiyori_encounter_day;
+  assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),true);
+  assert.equal(f.plays.at(-1)[0],'bond_after_hiyori_1');
+  assert.deepEqual([...s.flags._bond_after.hiyori],['bond_after_hiyori_1']);assert.equal(s.flags._hiyori_repeat_count,0,'repeat rotation does not advance');
+  s.day++;delete s.flags._hiyori_encounter_day;
+  f.setPlay(async()=>({cancelled:true,visited:[]}));
+  await f.hiyori.playHiyoriHangout({});
+  assert.equal(f.plays.at(-1)[0],'bond_after_hiyori_2','the promised seat reads the next scene before the promised opener');
+  assert.deepEqual([...s.flags._bond_after.hiyori],['bond_after_hiyori_1'],'an interrupted promised seat stays unread');
+  s.day++;delete s.flags._hiyori_encounter_day;f.setPlay(async()=>done);
+  assert.equal(await f.hiyori.playHiyoriHangout({}),true);
+  assert.deepEqual([...s.flags._bond_after.hiyori],['bond_after_hiyori_1','bond_after_hiyori_2']);
+  s.lovers=['hiyori'];s.day++;delete s.flags._hiyori_encounter_day;
+  assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),true);
+  assert.match(f.plays.at(-1)[0],/^hiyori_shop_repeat_/,'not for a lover');
 });
 await check('multiple host repeats and rain use the same existing scripts in preview and actual visit',async f=>{
   const s=f.core.state,p=host(f,'naru',{read:3,points:20});
