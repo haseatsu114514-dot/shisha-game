@@ -1015,6 +1015,18 @@
       "run": ["node --experimental-vm-modules remake/test/vn_preload_queue.mjs"]
     },
     {
+      "id": "save-fixtures",
+      "title": "凍結した過去の版のセーブ（remake/test/fixtures/saves）が今の版で読め、保存し直しても同じ形になる（#3726 B-7）",
+      "kind": "quick",
+      "run": ["node remake/test/save_fixtures.mjs"]
+    },
+    {
+      "id": "chapter-volume",
+      "title": "章ごとの台詞ボリュームの物差し（#3097・#3726 A-3）: chN 接頭辞のファイルの text を空白抜きで数え、第2〜4章の第1章までの差を出す",
+      "kind": "quick",
+      "run": ["python3 -B tools/test_chapter_volume.py"]
+    },
+    {
       "id": "manifest-dependencies",
       "title": "Manifest generator required dependency diagnostics",
       "kind": "quick",
