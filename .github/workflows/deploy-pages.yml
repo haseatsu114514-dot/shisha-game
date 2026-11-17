@@ -83,6 +83,15 @@ jobs:
           path: .deploy-js-history
           key: deploy-js-v1-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: deploy-js-v1-
+      # 起動の JS を 1 本にまとめる（#3552）。生成物はコミットせず、公開のたびに作る。
+      # 失敗したら公開しない（stamp_deploy がバンドル無しを止める）。
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build JS boot bundle
+        run: |
+          npm ci --prefix remake/tools --prefer-offline --no-audit --no-fund
+          node remake/tools/build_js_bundle.mjs
       - name: Prepare site
         run: |
           mkdir -p _site/tools

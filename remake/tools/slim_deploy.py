@@ -68,6 +68,12 @@ def served_texts(site: Path):
         rel = path.relative_to(site).as_posix()
         if rel.startswith("assets/") or any(rel.startswith(d + "/") for d in DEV_ONLY):
             continue  # 開発用フォルダの中の assets/ の書き方は「直接の参照」に数えない
+        # 生成バンドル（js/bundle・公開時の js-<版>/bundle）は js/ の写し。
+        # 同じ文字列をここで数えると WEBP_AWARE の場所判定が外れる
+        # （css/*/bundle.css は対象外）。
+        parts = Path(rel).parts
+        if len(parts) >= 3 and parts[0] == "remake" and (parts[1] == "js" or parts[1].startswith("js-")) and parts[2] == "bundle":
+            continue
         if path.is_file() and path.suffix in TEXT_SUFFIXES and rel not in SKIP_TEXT:
             text = path.read_text(encoding="utf-8", errors="replace")
             yield rel, without_link_only(text, LINK_ONLY_KEYS[rel]) if rel in LINK_ONLY_KEYS else text

@@ -4,9 +4,9 @@
 Pages はファイルを10分キャッシュさせ、スマホは開いたままのタブを読み直さないので、
 名札が同じままだと自分で開いたリンクだけ古い版が出る。公開のたびに次を行う。
 
-- remake/js を js-<版>/ へ複製し、index.html の本体の読み込み先をそこへ向ける
-  （ESモジュールは互いを相対で読むので、フォルダごと変えれば全部が新しくなる。
-  プレビュー用のページや、キャッシュに残った古い index.html のために js/ も残す）
+- remake/js を js-<版>/ へ複製し、index.html の本体（js/bundle/main.js）の読み込み先を
+  js-<版>/bundle/main.js へ向ける。プレビュー用のページや、キャッシュに残った古い
+  index.html のために js/ も残す
 - index.html の CSS と、CSS の @import に ?v=<版>（スクリプトから差し込む CSS は
   js/core/asset-version.js が同じ版を付ける）
 - index.html の <meta name="suien-build"> に版と公開日時を書く（タイトル画面の右下に出す）
@@ -61,10 +61,22 @@ def stamp(site: Path, build: str, built_at: str) -> None:
         sys.exit(f"stamp_deploy: {index} が無い")
 
     js_dir = f"js-{build}"
+    # 起動バンドルは公開時に build_js_bundle.mjs が作る（コミットしない）。無いまま公開すると起動しない
+    if not (remake / "js" / "bundle" / "main.js").is_file():
+        sys.exit("stamp_deploy: remake/js/bundle/main.js が無い（先に node remake/tools/build_js_bundle.mjs）")
     shutil.copytree(remake / "js", remake / js_dir, dirs_exist_ok=True)
 
     html = index.read_text(encoding="utf-8")
-    html = replace_required(html, r'import\("\./js/main\.js"\)', f'import("./{js_dir}/main.js")', "本体の import")
+    html = replace_required(html, r'import\("\./js/main\.js"\)', f'import("./{js_dir}/bundle/main.js")', "本体の import")
+    # 公開版だけバンドルを先読みする（手元の index は正本のモジュールを読むので preload しない）
+    preload = f'<link rel="modulepreload" href="{js_dir}/bundle/main.js">\n'
+    anchor = '<link rel="preload" as="image" href="img/backgrounds/bg_title.webp">'
+    if preload.strip() not in html:
+        if anchor not in html:
+            sys.exit("stamp_deploy: 本体の modulepreload を付ける場所が無い")
+        html = html.replace(anchor, preload + anchor, 1)
+    if f'href="{js_dir}/bundle/main.js"' not in html:
+        sys.exit("stamp_deploy: 本体の modulepreload を付けられなかった")
     html = replace_required(
         html, re.escape(BUILD_META),
         f'<meta name="suien-build" content="{build}" data-built="{built_at}">', "版の meta",

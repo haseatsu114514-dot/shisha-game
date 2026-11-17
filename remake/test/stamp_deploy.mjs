@@ -18,24 +18,38 @@ const TRIAL_PAGES = ["desert-ride.html", "camel-race.html", "axe-throw.html", "i
 const out = path.join(site, "remake");
 try {
   fs.mkdirSync(path.join(out, "js/core"), { recursive: true });
+  fs.mkdirSync(path.join(out, "js/bundle"), { recursive: true });
   fs.copyFileSync(path.join(remake, "index.html"), path.join(out, "index.html"));
   for (const page of TRIAL_PAGES) fs.copyFileSync(path.join(remake, page), path.join(out, page));
   fs.copyFileSync(path.join(remake, "conversation-preview.html"), path.join(out, "conversation-preview.html"));
   fs.cpSync(path.join(remake, "css"), path.join(out, "css"), { recursive: true });
   fs.writeFileSync(path.join(out, "js/main.js"), 'import "./core/a.js";\nexport function boot() {}\n');
+  fs.writeFileSync(path.join(out, "js/bundle/main.js"), 'export function boot() {}\n');
   fs.writeFileSync(path.join(out, "js/core/a.js"), "export {};\n");
 
   const source = fs.readFileSync(path.join(remake, "index.html"), "utf8");
   assert.match(source, /<meta name="suien-build" content="dev" data-built="">/, "手元の index.html は dev のまま");
 
+  // 起動バンドル（公開時に生成・コミットしない）が無ければ公開しない（#3552）
+  fs.renameSync(path.join(out, "js/bundle"), path.join(out, "js/bundle-off"));
+  const noBundle = spawnSync("python3", [script, site, "--build", "abc1234"], { encoding: "utf8" });
+  assert.notEqual(noBundle.status, 0, "missing js/bundle/main.js must stop the deploy");
+  assert.match(noBundle.stderr, /bundle\/main\.js が無い/);
+  assert(!fs.existsSync(path.join(out, "js-abc1234")), "nothing is stamped when the bundle is missing");
+  fs.renameSync(path.join(out, "js/bundle-off"), path.join(out, "js/bundle"));
+
   execFileSync("python3", [script, site, "--build", "abc1234", "--built-at", "2026-11-06 21:00"]);
   const html = fs.readFileSync(path.join(out, "index.html"), "utf8");
 
   // 本体はフォルダごと新しい名前で読む。プレビュー用・古い index.html のために js/ も残す
-  assert.match(html, /import\("\.\/js-abc1234\/main\.js"\)/);
+  assert.match(html, /import\("\.\/js-abc1234\/bundle\/main\.js"\)/);
   assert.doesNotMatch(html, /import\("\.\/js\/main\.js"\)/);
+  assert.doesNotMatch(html, /import\("\.\/js\/bundle\/main\.js"\)/);
+  assert.match(html, /href="js-abc1234\/bundle\/main\.js"/);
+  assert(fs.existsSync(path.join(out, "js-abc1234/bundle/main.js")));
   assert(fs.existsSync(path.join(out, "js-abc1234/core/a.js")));
   assert(fs.existsSync(path.join(out, "js/main.js")));
+  assert(fs.existsSync(path.join(out, "js/bundle/main.js")));
 
   // 版と公開日時（タイトル右下の ver.）
   assert.match(html, /<meta name="suien-build" content="abc1234" data-built="2026-11-06 21:00">/);
@@ -77,7 +91,7 @@ try {
   assert.equal(fs.readFileSync(path.join(out, "conversation-preview.html"), "utf8"), fs.readFileSync(path.join(remake, "conversation-preview.html"), "utf8"));
 
   // 書き方が変わって名札を付けられないときは、黙って公開せず失敗する
-  fs.writeFileSync(path.join(out, "index.html"), html.replace('import("./js-abc1234/main.js")', 'import("./app.js")'));
+  fs.writeFileSync(path.join(out, "index.html"), html.replace('import("./js-abc1234/bundle/main.js")', 'import("./app.js")'));
   const broken = spawnSync("python3", [script, site, "--build", "def5678"], { encoding: "utf8" });
   assert.notEqual(broken.status, 0);
   assert.match(broken.stderr, /本体の import/);

@@ -1311,7 +1311,9 @@
         "node --test tools/sequential_merge/test.mjs",
         "python3 -B -m unittest discover -s tools -p 'test*job_checkpoint*.py'",
         "node remake/test/dev_inspector.mjs",
-        "python3 remake/tools/build_css_bundles.py --check"
+        "python3 remake/tools/build_css_bundles.py --check",
+        "npm ci --prefix remake/tools --prefer-offline --no-audit --no-fund",
+        "node remake/tools/build_js_bundle.mjs --check"
       ]
     },
     {

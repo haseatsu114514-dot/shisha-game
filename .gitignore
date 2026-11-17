@@ -11,3 +11,7 @@ remake/test/shots/
 # 1ファイル配布版（約65MB）は生成物。Pagesのデプロイでビルドする（コミットしない・2026-10-04）
 # 作業ごとの結果メモはPR本文に書く。ルートの RESULT.md はコミットしない（PRのたびに競合していた・2026-11-11）
 /RESULT.md
+
+# esbuild for remake/tools/build_js_bundle.mjs と、その生成物（公開の deploy-pages.yml で毎回作る・#3552）
+remake/tools/node_modules/
+remake/js/bundle/
