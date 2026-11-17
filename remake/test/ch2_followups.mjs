@@ -80,6 +80,7 @@ const mocks = {
   "./ch2-story.js": { chapterTwoNights: () => ({}), storyVisitDue: () => null, readStoryVisit: async () => false, readChapterTwoDayScene: async () => false },
   // tonariの大会準備（VOL13）は ch2_craft_prep.mjs で確認する
   "./ch2-craft-prep.js": { craftPrepDue: () => null, offerCraftPrep: async () => null },
+  "./visit-chain-play.js": { chainVisitDue: async () => null, playChainStage: async () => false }, // 通いの続き（#3097）は visit_chains.mjs・ch2_story_visits.mjs
   // あげはの店に通う回は ch2_ageha_story.mjs で確認する。ここでは従来の chat/followup/repeat だけを見る
   "./ch2-story-data.js": { agehaStoryScene: () => agehaStory, agehaLaterScene: () => agehaLater, AGEHA_BADDAY: { id: "remake_ch2_ageha_badday", fromDay: 7 }, AGEHA_LATER_SCENES, syncAgehaVibes: () => 0 },
   // 心得の盤の授業の相談（SBD70）。盤が無効な時と同じく何もしない
