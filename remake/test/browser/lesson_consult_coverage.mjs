@@ -161,7 +161,8 @@ await suite("lesson-consult-coverage", async (check) => {
         return { result, spent: money - s.money, text: vn.backlog().map((row) => row.text).join("\n"),
           talks: s.flags._ch5_tokyo_talks?.[id] ?? 0, learned: [...s.growth.learned],
           finales: JSON.parse(JSON.stringify(s.finales || {})), steveHagal: count("suyaki_steve"), volkHagal: count("suyaki_volk"),
-          mint: s.flavorStock?.nightside_blast_mint || 0, steveLime: !!s.flags._lime_contact_steve, volkLime: !!s.flags._lime_contact_volk };
+          mint: s.flavorStock?.nightside_blast_mint || 0, steveLime: !!s.flags._lime_contact_steve, volkLime: !!s.flags._lime_contact_volk,
+          bondAfter: [...(s.flags._bond_after?.volk || [])] };
       };
       const steve = await visit("ch5_tokyo_steve");
       const volk = await visit("ch5_tokyo_volk");
@@ -198,7 +199,10 @@ await suite("lesson-consult-coverage", async (check) => {
     assert.deepEqual(friendLime, [["steve", "chat"], ["volk", "chat"]], "friend LIMEs can arrive from both afterwards");
     assert.deepEqual(volkAgain.result, { used: true, exerted: true });
     assert.equal(volkAgain.spent, 4000, "the next visit is an ordinary paid visit");
-    assert.equal(volkAgain.talks, 1);
+    // #3693: 締めくくりの次の来店は、小会話の代わりに♥5後の一本目（締めくくりで受け取った素焼きの回収）。小会話の巡回は進めない
+    assert.equal(volkAgain.talks, 0, "the bond-after scene replaces the small talk without advancing the rotation");
+    assert.deepEqual(volkAgain.bondAfter, ["bond_after_volk_1"], "Volk's first bond-after scene (he now owns the hagal)");
+    assert.match(volkAgain.text, /刻みの入った素焼き/);
     assert.deepEqual(volkAgain.learned, ["M-W5"], "the lesson comes on the next visit");
     assert.doesNotMatch(volkAgain.text, /祖母に言われたこと|連絡先を登録し/, "the finale and the exchange play once");
     assert.equal(volkAgain.volkHagal, 1);
