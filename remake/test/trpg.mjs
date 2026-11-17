@@ -737,10 +737,10 @@ test("a full session talks to the story's character, survives a twist and reads 
   }
 });
 
-test("role costumes: 95 origin outfits are keyed, and a built sheet resolves to that character's art", async () => {
+test("role costumes: 99 origin outfits are keyed, and a built sheet resolves to that character's art", async () => {
   const { COSTUME_KEYS, hasCostume, costumeUrl, costumeKey } = await import("../js/trpg/costumes.js");
   const retired = ["リラ", "りら", "かこ", "ナンディ", "チャド", "焚口ショウ", "mystery_girl", "カフカ", "lira", "kako", "nandi", "chad", "takiguchi", "kafka"];
-  assert.equal(COSTUME_KEYS.size, 95);
+  assert.equal(COSTUME_KEYS.size, 99);
   for (const key of COSTUME_KEYS) {
     const [scenarioId, characterId, roleId] = key.split("/");
     assert(scenarioId && characterId && roleId, key);
@@ -767,6 +767,12 @@ test("role costumes: 95 origin outfits are keyed, and a built sheet resolves to 
   assert(hasCostume("regular-mail", "sumi", "yura"));
   assert(hasCostume("regular-mail", "sumi", "neri"));
   assert.match(costumeUrl("regular-mail", "sumi", "yura"), /\/img\/ui\/trpg\/costumes\/regular-mail\/sumi_yura\.webp$/);
+  assert(hasCostume("purikura-hero", "sai", "shopkeep"));
+  assert(hasCostume("regular-harbor", "sai", "oru"));
+  assert(hasCostume("regular-mail", "sai", "mitten"));
+  assert(hasCostume("mist-kingdom", "sai", "herald"));
+  assert.match(costumeUrl("mist-kingdom", "sai", "herald"), /\/img\/ui\/trpg\/costumes\/mist-kingdom\/sai_herald\.webp$/);
+  assert.match(costumeUrl("regular-harbor", "sai", "oru"), /\/img\/ui\/trpg\/costumes\/regular-harbor\/sai_oru\.webp$/);
   // Regular tables restage leaf-mail / ordinary-cup, so those books' costumes still resolve.
   assert(hasCostume("regular-mail", "hajime", "watch"));
   assert.match(costumeUrl("regular-mail", "hajime", "watch"), /\/img\/ui\/trpg\/costumes\/leaf-mail\/hajime_watch\.webp$/);
@@ -778,4 +784,8 @@ test("role costumes: 95 origin outfits are keyed, and a built sheet resolves to 
   assert(table.sheets.regulara.option);
   assert.equal(table.sheets.sumi, undefined);
   assert.equal(table.sheets.salaryman, undefined);
+  const sai = mail.cast.find(c => c.id === "sai");
+  assert.equal(sai?.part, "GM");
+  assert.equal(sai?.costumeRole, "mitten");
+  assert(hasCostume(mail.id, "sai", sai.costumeRole));
 });

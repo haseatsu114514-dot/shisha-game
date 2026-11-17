@@ -49,7 +49,8 @@
       "id": "sai",
       "part": "GM",
       "role": "案内と、霧の王国",
-      "color": "#c9b8de"
+      "color": "#c9b8de",
+      "costumeRole": "herald"
     },
     {
       "id": "hajime",
