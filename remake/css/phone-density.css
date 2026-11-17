@@ -170,3 +170,5 @@ html:root[data-density="phone"] body:not(:root) .gal .gal-cell.locked span { fon
 html:root[data-density="phone"] body:not(:root) .gal :is(.gal-tab, .gal-close) { min-height: var(--phone-tap); font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) .gal .gal-characters { gap: 2px 14px; margin-bottom: 8px; }
 html:root[data-density="phone"] body:not(:root) .gal .gal-tabs { gap: var(--phone-gap); }
+/* セーブ・ロードの空き枠「── 空き ──」（同じ巡回で 8.7px）。補助文の大きさにそろえる */
+html:root[data-density="phone"] body:not(:root) .saveload-modal .ss-info.empty { font-size: var(--phone-sub); }
