@@ -9,7 +9,7 @@ const state = { chapter: 4, day: 50, slot: 0, flags: {} };
 const DB = { dialogues: {} };
 const pools = {
   souq: ['ch4_dubai_souq_revisit', 'ch4_souq_talk_b', 'ch4_souq_talk_c', 'ch4_souq_talk_d', 'ch4_souq_talk_e', 'ch4_souq_talk_f', 'ch4_souq_talk_g'],
-  festa: ['ch4_festa_revisit', 'ch4_festa_talk_b', 'ch4_festa_talk_c', 'ch4_festa_talk_d'],
+  festa: ['ch4_festa_revisit', 'ch4_festa_talk_b', 'ch4_festa_talk_c', 'ch4_festa_talk_d', 'ch4_festa_talk_e', 'ch4_festa_talk_f', 'ch4_festa_talk_g'],
   center_cafe: ['ch4_dubai_cafe_revisit', 'ch4_cafe_talk_b', 'ch4_cafe_culture_hose', 'ch4_cafe_talk_c', 'ch4_cafe_culture_coffee', 'ch4_cafe_talk_d', 'ch4_cafe_talk_e', 'ch4_cafe_talk_f'],
   alley_cafe: ['ch4_alley_cafe_quiet', 'ch4_alley_culture_clay', 'ch4_alley_talk_c', 'ch4_alley_culture_majlis', 'ch4_alley_talk_d', 'ch4_alley_talk_e', 'ch4_alley_talk_f'],
 };

@@ -29,7 +29,8 @@ export const TOKYO_OUTINGS = Object.freeze([
     stamina: -10, stat: "sense", affinityWith: "saku", reason: "どうしたいか、綾取に答えを返しに行く" },
   // 煙幕に通う（AFB02）。一度きりの話を読み終えてから、何度でも寄れる。
   { id: "enmaku_visit", place: "enmaku", after: "ch3_saku_first", label: "煙幕で一服する", repeat: true, regular: true,
-    talks: ["ch3_outing_enmaku_visit", "ch3_outing_enmaku_visit_b", "ch3_outing_enmaku_visit_c", "ch3_outing_enmaku_visit_d"],
+    talks: ["ch3_outing_enmaku_visit", "ch3_outing_enmaku_visit_b", "ch3_outing_enmaku_visit_c", "ch3_outing_enmaku_visit_d",
+      "ch3_outing_enmaku_visit_e", "ch3_outing_enmaku_visit_f", "ch3_outing_enmaku_visit_g"], // #3097: e〜g
     stamina: -10, stat: "insight", affinityWith: "saku", reason: "綾取の店で、少し一緒に過ごす" },
   // スティーブがmukaiへ客として来る（#1696）。タイマー越しに香りの山を逃す癖と、全国へ来た理由。店を訪ねる前まで
   // 何度でも来る（AFB02。2回目からは合図を試す回と、客の顔の回を交互）。
@@ -42,12 +43,14 @@ export const TOKYO_OUTINGS = Object.freeze([
     stamina: -10, stat: "technique", affinityWith: "steve", reason: "タイマーを置く場所を、もう一度見せてもらう" },
   // Smoke & Glory に通う（AFB02）。味の会話の後に、何度でも寄れる。
   { id: "steve_visit", place: "steve", after: "ch3_steve_low_heat", label: "Smoke & Glory で一服する", repeat: true, regular: true,
-    talks: ["ch3_outing_steve_visit", "ch3_outing_steve_visit_b", "ch3_outing_steve_visit_c"],
+    talks: ["ch3_outing_steve_visit", "ch3_outing_steve_visit_b", "ch3_outing_steve_visit_c",
+      "ch3_outing_steve_visit_d", "ch3_outing_steve_visit_e", "ch3_outing_steve_visit_f"], // #3097: d〜f
     stamina: -10, stat: "technique", affinityWith: "steve", reason: "スティーブの店で、少し一緒に過ごす" },
   // 鉄の煙に通う（2026-11-11 オーナー「推奨で全部」RVE07）。綾取・スティーブと同じく、初来店（DAY12夜）の後に何度でも寄れる。
   // 大会の前後どちらでも読む小会話（再訪・LIME交換などの段階の寄り道は ch3-story-wiring.js の任意場面のまま）。
   { id: "volk_visit", place: "volk", after: "ch3_volk_first", label: "鉄の煙で一服する", repeat: true, regular: true,
-    talks: ["ch3_outing_volk_visit", "ch3_outing_volk_visit_b", "ch3_outing_volk_visit_c"],
+    talks: ["ch3_outing_volk_visit", "ch3_outing_volk_visit_b", "ch3_outing_volk_visit_c",
+      "ch3_outing_volk_visit_d", "ch3_outing_volk_visit_e", "ch3_outing_volk_visit_f"], // #3097: d〜f
     stamina: -10, stat: "technique", affinityWith: "volk", reason: "ヴォルクの店で、少し一緒に過ごす" },
   { id: "park_walk", place: "park", label: "公園を歩く", repeat: true, stamina: 20,
     reason: "何も決めずに歩いて、少し体を休める" },
@@ -102,6 +105,8 @@ export const OUTING_DIALOGUE_IDS = Object.freeze([...MUKAI_HELP_TALKS.lost, ...M
   "ch3_outing_mukai_steve_b", "ch3_outing_mukai_steve_c", "ch3_outing_steve_visit", "ch3_outing_steve_visit_b",
   "ch3_outing_enmaku_visit_d", "ch3_outing_steve_visit_c",
   "ch3_outing_volk_visit", "ch3_outing_volk_visit_b", "ch3_outing_volk_visit_c",
+  ...["enmaku_visit_e", "enmaku_visit_f", "enmaku_visit_g", "steve_visit_d", "steve_visit_e", "steve_visit_f",
+    "volk_visit_d", "volk_visit_e", "volk_visit_f"].map(id => `ch3_outing_${id}`),
   ...["day", "night"].flatMap(time => PARK_REVISITS.map(suffix => `ch3_outing_park_walk_${time}_${suffix}`))]);
 
 /**
