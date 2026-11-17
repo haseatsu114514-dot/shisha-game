@@ -860,10 +860,21 @@ function releaseCg() {
   visualSettled(cg).then(() => { if (!cg.classList.contains("show")) cg.style.backgroundImage = ""; }, () => {});
 }
 
-/** CSSの表示・退場が終わるまで待つ。SKIPでも途中の透明な絵を次の行で消さない。 */
-async function visualSettled(node) {
+/** CSSの表示・退場が終わるまで待つ。SKIPでも途中の透明な絵を次の行で消さない。
+ * 終わらない動き（infinite）は待たない。入場の transition が環境で片付かないときも、
+ * 本文を出さずに止めたままにしない（上限を超えたら次へ進む）。 */
+async function visualSettled(node, ms = 800) {
   await nextFrame();
-  await Promise.all(node.getAnimations().map((animation) => animation.finished.catch(() => {})));
+  const animations = node.getAnimations().filter((animation) => {
+    const iterations = animation.effect?.getTiming?.()?.iterations;
+    return iterations !== Infinity && animation.playState !== "idle";
+  });
+  if (!animations.length) return;
+  let timer;
+  await Promise.race([
+    Promise.all(animations.map((animation) => animation.finished.catch(() => {}))),
+    new Promise((resolve) => { timer = setTimeout(resolve, ms); }),
+  ]).finally(() => clearTimeout(timer));
 }
 
 // ---------------------------------------------------------------- 台詞行
@@ -908,7 +919,13 @@ async function showLine(line) {
   const fontReady = Promise.all([dom.text, dom.name].map(node => {
     const type = getComputedStyle(node);
     const font = `${type.fontStyle} ${type.fontWeight} ${type.fontSize} ${type.fontFamily}`;
-    return document.fonts.load(font, node === dom.text ? String(line.text || "あ") : "あ").catch(() => []);
+    const sample = node === dom.text ? String(line.text || "あ") : "あ";
+    // 書体待ちが止まると本文が出ない。先読み（vn-fonts.js）と同じ上限で、届き次第差し替える。
+    let timer;
+    return Promise.race([
+      document.fonts.load(font, sample).catch(() => []),
+      new Promise((resolve) => { timer = setTimeout(resolve, 4000, []); }),
+    ]).finally(() => clearTimeout(timer));
   }));
   // 先読み16枚の外にある表情も、実際に使う行でデコードを待つ。
   const frameReady = imageReady(uiThemeFrame(document.documentElement.dataset.uiTheme), 15000, { keep:true });
