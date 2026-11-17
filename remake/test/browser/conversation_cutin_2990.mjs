@@ -28,6 +28,15 @@ async function start(page, id) {
     const at = dlg.lines.findIndex((l) => cut.conversationCutinCue(cue.dialogue, l) === cue);
     // 初登場カットインに入らないよう、出てくる人物は面識あり・紹介済みにしておく
     for (const l of dlg.lines) for (const who of [l.speaker, l.portrait]) if (typeof who === "string" && who && who !== "hajime") { core.markMet(who); intro.markIntroSeen(who); }
+    // fromLine より前の set_flag は再生されないので、置いた行の手前の状態だけ先に揃える
+    const from = Math.max(0, at - 6);
+    for (const l of dlg.lines.slice(0, from)) {
+      if (l.type === "set_flag" && l.flag) {
+        core.state.flags[l.flag] = true;
+        const met = /^_met_(.+)$/.exec(l.flag);
+        if (met) { core.markMet(met[1]); intro.markIntroSeen(met[1]); }
+      }
+    }
     window.cutinQA = { core, vn, cue, events: [], controller: new AbortController(), openedAt: performance.now() };
     const layer = () => document.querySelector(".vn-cutin-layer");
     vn.play(cue.dialogue, { fromLine: Math.max(0, at - 6), toLine: at + 2, signal: cutinQA.controller.signal });
@@ -42,12 +51,36 @@ async function start(page, id) {
   }, id);
 }
 /** 行を送りながら、置き場の行の文を出し終えるまで進める */
+async function waitAdvanceReady(page) {
+  // raf 待ち（waitForFunction の既定）は、画面の動きが重いときに進まないことがあるので、
+  // evaluate で定期的に見る。選択肢の行では .vn-next.show が出ない。
+  const deadline = Date.now() + 10000;
+  while (Date.now() < deadline) {
+    const kind = await page.evaluate(() => {
+      if (document.querySelector('[data-test="choice-0"]')) return "choice";
+      if (document.querySelector(".vn-next.show")) return "next";
+      return "";
+    });
+    if (kind) return kind;
+    await new Promise((r) => setTimeout(r, 50));
+  }
+  throw new Error("送り待ちが切れた");
+}
 async function reachCue(page) {
-  for (let i = 0; i < 12; i++) {
-    await page.locator(".vn-next.show").waitFor();
-    await page.waitForFunction(() => performance.now() - cutinQA.openedAt > 340);
+  // 置き場の少し前から再生するため、途中の選択肢（例: ch1_tsumugi_first の出し方）も進める。
+  for (let i = 0; i < 20; i++) {
+    const kind = await waitAdvanceReady(page);
+    await page.evaluate(async () => {
+      while (performance.now() - (window.cutinQA?.openedAt || 0) <= 340) {
+        await new Promise((r) => setTimeout(r, 20));
+      }
+    });
     const atCue = await page.evaluate(() => cutinQA.events.some((e) => e.type === "add"));
     if (atCue) return;
+    if (kind === "choice") {
+      await page.locator('[data-test="choice-0"]').click();
+      continue;
+    }
     await page.locator(".vn-box").click();
   }
   throw new Error("置き場の行まで届かない");
