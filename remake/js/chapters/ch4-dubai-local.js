@@ -32,10 +32,11 @@ export const dubaiDaytime = slot => (slot ?? 0) === 0;
  * 歩く場面は ch4_dubai_daily.json、荷積みと釣りは ch4_spots.json（CREEK_SPOT_IDS）。
  */
 export const CREEK_SCENES = Object.freeze({
-  day: Object.freeze(["ch4_creek_walk_day", "ch4_creek_dhow"]),
-  night: Object.freeze(["ch4_creek_walk_night", "ch4_creek_fishing"]),
+  // #3097: 昼夜それぞれ2本→4本（カモメ・冷水の箱／食事船・家族との通話）
+  day: Object.freeze(["ch4_creek_walk_day", "ch4_creek_dhow", "ch4_creek_gulls", "ch4_creek_water_box"]),
+  night: Object.freeze(["ch4_creek_walk_night", "ch4_creek_fishing", "ch4_creek_dinner_boat", "ch4_creek_call_home"]),
 });
-export const CREEK_SPOT_IDS = Object.freeze(["ch4_creek_dhow", "ch4_creek_fishing"]);
+export const CREEK_SPOT_IDS = Object.freeze(["ch4_creek_dhow", "ch4_creek_fishing", "ch4_creek_gulls", "ch4_creek_water_box", "ch4_creek_dinner_boat", "ch4_creek_call_home"]);
 export const CREEK_TURN = "dubai_creek";
 /** ch4_spots.json から、クリーク沿いの場面だけを取り出す（本筋のスーク・カフェの台本を上書きしない）。 */
 export const creekSpotScenes = rows => Object.fromEntries(CREEK_SPOT_IDS.map(id => [id, rows[id]]));
