@@ -185,11 +185,13 @@ try {
     // Frozen pre-#694 sheet for the before/after screenshots; see the kuji fixture note above.
     const baseline = fs.readFileSync(path.join(root, "remake/test/fixtures/craft-css-legacy.css"), "utf8");
     // Disable the entire new sheet: layering the old sheet alone would leave new-only selectors active.
-    await page.locator('link[href$="css/craft.css"]').evaluate(n => { n.disabled = true; });
+    // 本編 index.html は css/craft.css を css/bundle-1.css にまとめている（#3631）。試遊ページは個別 link のまま。
+    const craftCss = 'link[href$="css/craft.css"], link[href$="css/bundle-1.css"]';
+    await page.locator(craftCss).evaluate(n => { n.disabled = true; });
     const oldStyle = await page.addStyleTag({ content: baseline });
     await page.locator(".stove").screenshot({ path: path.join(output, label + "-before.png") });
     await oldStyle.evaluate(n => n.remove());
-    await page.locator('link[href$="css/craft.css"]').evaluate(n => { n.disabled = false; });
+    await page.locator(craftCss).evaluate(n => { n.disabled = false; });
     await page.locator(".stove").screenshot({ path: path.join(output, label + "-after.png") });
     const glow = await page.locator(".coal.pikan .c-core").first().evaluate(n => ({
       width: getComputedStyle(n).width, opacity: getComputedStyle(n).opacity,

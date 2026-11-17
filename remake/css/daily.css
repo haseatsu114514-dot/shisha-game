@@ -1318,8 +1318,9 @@ html:root[data-density="phone"] body:not(:root) .lvup-fire b { font-size: 42px; 
 html:root[data-density="phone"] body:not(:root) .lvup-tag { font-size: var(--phone-text) !important; }
 html:root[data-density="phone"] body:not(:root) .lvup-face { width: 64px; height: 64px; }
 /* 札の板と後ろの光は絵（GB04・SBD123。asset_sources/ui/growth-board-20261111/）。levelup.js が両方読めた時だけ has-art を付ける。読めない時は上の CSS の形のまま。
-   板は九分割: 上下を高さの半分ずつにして絵を高さに合わせて同じ比で縮め、左右の端の火花の飾りを伸ばさない。下に今の面の色を敷いたまま、角の丸みを絵に合わせる。 */
-.lvup { --plate-h: 86px; }
+   板は九分割: 上下を高さの半分ずつにして絵を高さに合わせて同じ比で縮め、左右の端の火花の飾りを伸ばさない。下に今の面の色を敷いたまま、角の丸みを絵に合わせる。
+   高さは、Lv の数字が弾ける動き（lvup-lv-pop が一度 1.2 倍を少し超える）でも文字が板の中に収まる大きさにする。86px だと弾ける途中で scrollHeight が板を 2〜3px 超え、検査の textFits が落ちることがあった。 */
+.lvup { --plate-h: 104px; }
 .lvup.has-art .lvup-plate { box-sizing: border-box; height: var(--plate-h); align-content: center; padding: 0 calc(var(--plate-h) * 0.64) 0 calc(var(--plate-h) * 0.62);
   border: 1px solid transparent; border-radius: calc(var(--plate-h) * 0.24); background-clip: padding-box;
   border-image: url(../img/ui/growth_board/levelup_plate.webp) 49 56 fill / calc(var(--plate-h) * 0.49) calc(var(--plate-h) * 0.56) stretch;
@@ -1332,7 +1333,7 @@ html:root[data-density="phone"] body:not(:root) .lvup-face { width: 64px; height
 .lvup.has-art.milestone::before { content: ""; position: absolute; left: 50%; top: 50%; width: 560px; height: 560px; margin: -280px 0 0 -280px; pointer-events: none;
   background: url(../img/ui/growth_board/levelup_crest.webp) center / contain no-repeat; }
 .lvup.has-art.gift .lvup-rays { opacity: 0.45; }
-html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 116px; }
+html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 140px; }
 
 /* ---------------------------------------------------------------- レベルアップと火種の演出の強化（2026-11-11 オーナー「見た目や演出など全面的にパワーアップさせて」SBD103）
    部品は js/daily/growth-fx.js。動くのは transform と opacity だけ（広い面のぼかし・ノイズは使わない）。動きを減らす設定では止める */
