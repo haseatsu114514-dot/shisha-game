@@ -219,9 +219,33 @@ await suite("loading-gate", async check => {
     await page.locator('[data-demo="plain"]').click();
     await page.locator('.loading-gate').waitFor();
     assert.equal(await page.locator('.loading-comic img').count(), 0);
+    // The stack never moves (owner 2026-11-17): a gate without a comic keeps a blank sheet of the full size,
+    // so its logo, gauge and status sit exactly where they do on a gate that shows a comic.
+    const stack = () => page.evaluate(() => {
+      const gate = document.querySelector('.loading-gate');
+      const box = selector => gate.querySelector(selector).getBoundingClientRect();
+      return { tops: ['.loading-logo', '.loading-bar', '.loading-status', '.loading-proceed'].map(selector => Math.round(box(selector).top)),
+        card: getComputedStyle(gate.querySelector('.loading-card')).visibility,
+        above: box('.loading-logo').top - gate.getBoundingClientRect().top, below: gate.getBoundingClientRect().bottom - box('.loading-proceed').bottom };
+    });
+    const plain = await stack();
+    assert.equal(plain.card, 'hidden', 'No sheet is drawn without a comic');
+    assert(Math.abs(plain.above - plain.below) <= 2, `The stack is centred between the top and bottom edges, got ${JSON.stringify(plain)}`);
     // No comic means no reading hold: the gate never becomes ready-to-advance and closes on its own.
     assert.equal(await page.locator('.loading-gate.is-ready').count(), 0);
     await page.getByText('準備完了。次の場面を開始できます。', { exact: true }).waitFor();
+    await page.locator('.loading-gate').waitFor({ state: 'detached' });
+    await page.locator('[data-demo="comic"]').click();
+    await page.locator('.loading-panels img').first().waitFor();
+    const comic = await stack();
+    assert.deepEqual(comic.tops, plain.tops, 'A gate with a comic and one without share the same positions');
+    // A comic without a note keeps the note's line: the sheet height does not depend on the note.
+    const noted = await page.locator('.loading-card').evaluate(node => node.getBoundingClientRect().height);
+    await page.locator('.loading-comic-caption').evaluate(node => { node.className = 'loading-blank-caption'; node.textContent = ''; });
+    assert.equal(await page.locator('.loading-card').evaluate(node => node.getBoundingClientRect().height), noted, 'The sheet height is the same without a note');
+    await page.locator('.loading-gate.is-ready').waitFor();
+    await page.locator('.loading-status').click();
+    await page.locator('.loading-gate').waitFor({ state: 'detached' });
     assert.equal(await page.locator('.loading-gate').count(), 0);
   });
   // Short waits inside a scene (core/ui.js loadingNotice, the conversation's art) open soft gates: the same
