@@ -120,6 +120,11 @@ export function flushSeenLines() {
 }
 function markSeenLine(key) {
   if (!key || readSeenLines().has(key)) return;
+  // デバッグ／検査用の仮台本は本編の既読として残さない（画風プレビューなどが進行を変えない）
+  try {
+    const id = JSON.parse(key)?.[0];
+    if (typeof id === "string" && (id.startsWith("debug-") || id.startsWith("__"))) return;
+  } catch { /* 通常の [id, branch, index] 以外の鍵はそのまま記録する */ }
   seenLines.add(key);
   if (seenLines.size > SEEN_LINES_LIMIT) trimSeenLines();
   if (!seenLinePersistence) return;

@@ -321,8 +321,9 @@ try {
     const storiesFirst = { story: state.story.tsumugi, seen: !!state.finales.tsumugi };
     const beforeSubmission = bonds.finaleDue("tsumugi");
     await window.T.submitTsumugi();
-    // 締めくくりは閉店後（夜）だけ
+    // 締めくくりは閉店後（夜）だけ。煙がピンク（SPC13）は締めくくりの前でも、昼の来店で一度出る。
     state.slot = 0;
+    if (spots.tsumugiPinkDue()) await spots.visitChar("tsumugi");
     const noonBadge = spots.hasNewStory("tsumugi");
     await spots.visitChar("tsumugi");
     const noon = !!state.finales.tsumugi;
