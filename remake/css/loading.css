@@ -9,7 +9,12 @@
    through the CSS variables declared on .loading-gate below.
    Sizes use --loading-unit (1px on the 1280x720 stage, scaled to the gate), so the whole stack
    fits any landscape host; the card width is also capped by height (see .loading-card). */
-.loading-gate {
+/* Marker read by core/loading.js: the game's own page (index.html) carries this sheet in css/bundle-2.css
+   for its static boot screen, so the script does not load it a second time. The boot screen (index.html #boot)
+   is built from the same parts under .boot-gate, so every rule below applies to it too (2026-11-17 LPOS03:
+   the stack stays put when the boot screen hands over to the game's first loading screen). */
+:root { --loading-sheet: 1; }
+:is(.loading-gate, .boot-gate) {
   /* --- Swappable placeholders: replace these in one place when the final art arrives. --- */
   --loading-logo: url("../img/ui/ui_title_logo_rich.webp");    /* 上中央のロゴ（タイトル画面と同じ光沢ロゴ。起動時に読込済み） */
   --loading-bar-gradient: linear-gradient(90deg, #ff5fa8 0%, #b45cf0 50%, #3fd0e8 100%); /* 進捗バーの色 */
@@ -45,7 +50,7 @@
 }
 /* Exhaled-smoke haze drifting slowly along the bottom, behind the gauge and LOADING (not attached to any
    hardware). Soft blurred gradients only, transform/opacity animation; still under reduced motion. */
-.loading-gate::before { content: ""; position: absolute; left: -12%; right: -12%; bottom: -8%; height: 38%; z-index: -1; pointer-events: none;
+:is(.loading-gate, .boot-gate)::before { content: ""; position: absolute; left: -12%; right: -12%; bottom: -8%; height: 38%; z-index: -1; pointer-events: none;
   background:
     radial-gradient(ellipse 22% 38% at 24% 62%, #d9c6f02e 0%, transparent 70%),
     radial-gradient(ellipse 26% 34% at 52% 70%, #c8d5eb24 0%, transparent 72%),
@@ -53,7 +58,7 @@
     radial-gradient(ellipse 60% 30% at 50% 88%, #b45cf01f 0%, transparent 75%);
   filter: blur(18px); animation: loading-haze 26s ease-in-out infinite alternate; }
 /* Right-hand lounge window (CSS approximation, used only when no backdrop art is set). */
-.loading-gate::after {
+:is(.loading-gate, .boot-gate)::after {
   content: ""; position: absolute; top: 4%; bottom: 20%; right: -1%; width: 31%; z-index: -1; pointer-events: none;
   background:
     linear-gradient(90deg, transparent calc(50% - 2px), #08050ecc calc(50% - 2px) calc(50% + 2px), transparent calc(50% + 2px)),
@@ -76,7 +81,7 @@
     radial-gradient(ellipse 28% 38% at 64% 46%, #c8d5eb33 0%, transparent 70%),
     radial-gradient(ellipse 46% 34% at 50% 74%, #b45cf02e 0%, transparent 74%);
   filter: blur(calc(16 * var(--loading-unit))); animation: loading-logo-mist 14s ease-in-out infinite alternate; }
-.loading-gate:not(.has-logo) .loading-logo { display: none; }
+:is(.loading-gate, .boot-gate):not(.has-logo) .loading-logo { display: none; }
 
 /* Card: 88.6% of the reference width, capped by the gate height so the full stack always fits:
    fixed parts (logo 112 + card chrome 102 + gauge 26 + status 40 + proceed 42 = 322u) leave
@@ -95,6 +100,9 @@
     0 calc(24 * var(--loading-unit)) calc(56 * var(--loading-unit)) #000000c4, 0 0 calc(48 * var(--loading-unit)) #b45cf024;
   animation: loading-sheet 260ms cubic-bezier(.2,.65,.3,1) both;
 }
+/* A gate that opens over the static boot screen (index.html #boot, the same stack at the same place) takes
+   over without its entrance animations, so the logo and the comic do not blink at the change. */
+:is(.loading-gate, .boot-gate).is-takeover, :is(.loading-gate, .boot-gate).is-takeover .loading-logo::after, :is(.loading-gate, .boot-gate).is-takeover .loading-card, :is(.loading-gate, .boot-gate).is-takeover .loading-panels figure { animation: none; }
 /* Printed-paper grain (tileable fractal noise, multiplied over the sheet). */
 .loading-card::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; opacity: .55; mix-blend-mode: multiply; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .26 0 0 0 0 .2 .28 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"); }
 /* Hairline inner frame, like a printed margin rule. */
@@ -105,7 +113,7 @@
 .loading-card.is-blank { visibility: hidden; animation: none; }
 /* The title row and the note have a fixed height (not the height of their glyphs, which differs by a few
    pixels between fonts and scripts), and blank stand-ins hold the same rows when there is no text to show. */
-.loading-blank-caption { visibility: hidden; }
+.loading-blank-caption:empty { visibility: hidden; }
 /* A chosen comic whose art is still decoding: the sheet already has its full size but stays hidden, so the
    logo and gauge do not jump when the panels arrive. Removing .is-waiting starts the entrance animations. */
 .loading-card.is-waiting { visibility: hidden; animation: none; }
@@ -154,10 +162,10 @@
 /* A small spark at the head of the fill. */
 .loading-bar-fill::after { content: ""; position: absolute; right: calc(-3 * var(--loading-unit)); top: 50%; width: calc(16 * var(--loading-unit)); height: calc(16 * var(--loading-unit)); transform: translateY(-50%); border-radius: 50%; background: radial-gradient(circle, #ffffffee 0%, #ffffff66 35%, transparent 70%); }
 .loading-bar.is-determinate .loading-bar-fill { width: calc(var(--loading-progress, 0) * 100%); animation: none; transform: none; transition: width .3s ease; }
-.loading-gate.is-ready .loading-bar-fill { width: 100%; animation: none; transform: none; }
-.loading-gate.is-ready .loading-bar { box-shadow: inset 0 0 0 1px #ffffff30, 0 0 calc(8 * var(--loading-unit)) #ff5fa8b3, 0 0 calc(22 * var(--loading-unit)) #b45cf080, 0 0 calc(40 * var(--loading-unit)) #3fd0e84d; }
+:is(.loading-gate, .boot-gate).is-ready .loading-bar-fill { width: 100%; animation: none; transform: none; }
+:is(.loading-gate, .boot-gate).is-ready .loading-bar { box-shadow: inset 0 0 0 1px #ffffff30, 0 0 calc(8 * var(--loading-unit)) #ff5fa8b3, 0 0 calc(22 * var(--loading-unit)) #b45cf080, 0 0 calc(40 * var(--loading-unit)) #3fd0e84d; }
 .loading-bar::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, transparent, #ffffff55, transparent); transform: translateX(-100%); animation: loading-bar-sweep 1.6s ease-in-out infinite; }
-.loading-gate.is-ready .loading-bar::after { animation: none; opacity: 0; }
+:is(.loading-gate, .boot-gate).is-ready .loading-bar::after { animation: none; opacity: 0; }
 
 /* Upright, wide-tracked LOADING led by the small shisha mark. The coal heat over the HMD breathes as a warm
    glow (the only motion: smoke is never drawn coming out of hardware, docs/shisha_reference.md §4.1). */
@@ -166,11 +174,11 @@
 .loading-emblem .emblem-body { fill: currentColor; opacity: .92; }
 .loading-emblem .emblem-hose { fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; opacity: .92; }
 .loading-emblem .emblem-glow { fill: #ffa060; transform-box: fill-box; transform-origin: 50% 55%; filter: blur(1.2px) drop-shadow(0 0 2.5px #ff7a3d); animation: loading-coal 2.6s ease-in-out infinite; }
-.loading-gate.is-ready .emblem-glow { animation-duration: 4.2s; }
+:is(.loading-gate, .boot-gate).is-ready .emblem-glow { animation-duration: 4.2s; }
 /* "Tap/click/key to continue" pill, revealed only once preparation is done and a comic is shown.
    Its line is always reserved (and budgeted) so the stack never shifts when it appears. */
 .loading-proceed { box-sizing: border-box; flex: none; margin: calc(6 * var(--loading-unit)) 0 calc(9 * var(--loading-unit)); min-height: calc(24 * var(--loading-unit)); padding: calc(3 * var(--loading-unit)) calc(16 * var(--loading-unit)); border-radius: 999px; border: 1px solid #ffffff2e; background: #0b071380; color: #f3e7cc; font-size: calc(14 * var(--loading-unit)); font-weight: 700; line-height: 1.3; letter-spacing: .08em; opacity: 0; transition: opacity .2s ease; }
-.loading-gate.is-ready .loading-proceed { opacity: .92; animation: loading-proceed-pulse 1.6s ease-in-out infinite; }
+:is(.loading-gate, .boot-gate).is-ready .loading-proceed { opacity: .92; animation: loading-proceed-pulse 1.6s ease-in-out infinite; }
 
 @keyframes loading-appear { from { opacity: 0; } to { opacity: 1; } }
 @keyframes loading-sheet { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -186,13 +194,13 @@
 /* Portrait: break out of the scaled #stage and cover the real viewport, so panels and bubble text can
    be sized against the visible area and stay readable. Kept below #rotate-hint (z-index 999) so touch
    phones still get the "rotate to landscape" hint; tablets / narrow windows that skip that hint see the large layout. */
-.loading-gate.is-viewport { position: fixed; z-index: 900; }
+:is(.loading-gate, .boot-gate).is-viewport { position: fixed; z-index: 900; }
 
 /* Phone/tablet portrait: stack the two panels nearly full-width so each is large and the text reads.
    cq units here are the gate (= visible viewport). The card width is capped by height:
    R/2 * (77.8cqh - 160px) + 4.4cqw + 2px keeps logo + two panels + gauge + status + proceed on screen. */
 @media (orientation: portrait) {
-  .loading-gate { --loading-unit: calc(100cqw / 720); --loading-backdrop-art-pos: 70% 50%; --loading-gutter: 1.2cqh; }
+  :is(.loading-gate, .boot-gate) { --loading-unit: calc(100cqw / 720); --loading-backdrop-art-pos: 70% 50%; --loading-gutter: 1.2cqh; }
   .loading-logo { width: min(260px, 52cqw); height: 6.6cqh; margin: 2cqh 0 .8cqh; }
   .loading-card { width: min(94cqw, calc((var(--loading-panel-ratio)) / 2 * (77.8cqh - 160px) + 4.4cqw + 2px)); padding: 1.2cqh 2.2cqw; }
   :is(.loading-comic-title, .loading-blank-title) { font-size: clamp(18px, 5.2cqw, 30px); margin-bottom: 1cqh; padding-bottom: .8cqh; }
@@ -214,7 +222,7 @@
    Fixed height around the panels: 107u + 1.2*title + 1.4*note + 1.6*status + 1.3*prompt (+ bottom safe area).
    (107u tracks the shared chrome after the 2026-11-14 margin trims: card padding -6u, title gap -3u, caption gap -3u.) */
 @media (orientation: landscape) and (max-height: 500px) {
-  .loading-gate.is-viewport {
+  :is(.loading-gate, .boot-gate).is-viewport {
     --loading-title-size: max(calc(28 * var(--loading-unit)), 16px);
     --loading-note-size: max(calc(15 * var(--loading-unit)), 12px);
     --loading-status-size: max(calc(20 * var(--loading-unit)), 13px);
@@ -222,29 +230,30 @@
     --loading-side: max(12px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
     --loading-foot: env(safe-area-inset-bottom, 0px);
     /* The stack is centred on the whole screen (owner 2026-11-17: it sat high, because only the bottom was
-       padded by the home-indicator area). The height kept free for that area stays in the budget, so the
-       panels keep their size and the prompt still ends above the indicator bar. */
-    --loading-fixed: calc(107 * var(--loading-unit) + 1.2 * var(--loading-title-size) + 1.4 * var(--loading-note-size) + 1.6 * var(--loading-status-size) + 1.3 * var(--loading-proceed-size) + var(--loading-foot) + 28px);
+       padded by the home-indicator area). The same height is now kept free at the top and the bottom, so the
+       stack stays centred and the prompt still ends above the indicator bar. */
+    --loading-fixed: calc(107 * var(--loading-unit) + 1.2 * var(--loading-title-size) + 1.4 * var(--loading-note-size) + 1.6 * var(--loading-status-size) + 1.3 * var(--loading-proceed-size) + 2 * var(--loading-foot) + 28px);
+    padding-block: var(--loading-foot);
   }
   /* ロゴは背の低い横画面でも省略しない（2026-11-15 オーナー指示「ロゴと漫画が出るのがいい」）。
      小さな寸法で残し、高さ44px（36＋上下マージン）は --loading-fixed に足してある。
      パネル幅の下限（テストで340px）を守るため、残りの留保は詰めてある。 */
-  .loading-gate.is-viewport .loading-logo { width: 108px; height: 36px; margin: calc(4 * var(--loading-unit)) 0 0; }
-  .loading-gate.is-viewport .loading-card { margin-top: 0;
+  :is(.loading-gate, .boot-gate).is-viewport .loading-logo { width: 108px; height: 36px; margin: calc(4 * var(--loading-unit)) 0 0; }
+  :is(.loading-gate, .boot-gate).is-viewport .loading-card { margin-top: 0;
     width: min(calc(100cqw - 2 * var(--loading-side)), calc(2 * (var(--loading-panel-ratio)) * (100cqh - var(--loading-fixed)) + 60 * var(--loading-unit)));
     margin-top: calc(10 * var(--loading-unit));
   }
-  .loading-gate.is-viewport :is(.loading-comic-title, .loading-blank-title) { font-size: var(--loading-title-size); margin-bottom: calc(2 * var(--loading-unit)); }
-  .loading-gate.is-viewport :is(.loading-comic-caption, .loading-blank-caption) { font-size: var(--loading-note-size); margin-top: calc(2 * var(--loading-unit)); }
-  .loading-gate.is-viewport .loading-gauge { margin-top: calc(10 * var(--loading-unit)); }
-  .loading-gate.is-viewport .loading-status { margin-top: calc(4 * var(--loading-unit)); font-size: var(--loading-status-size); }
-  .loading-gate.is-viewport .loading-proceed { margin: calc(4 * var(--loading-unit)) 0 calc(4 * var(--loading-unit)); min-height: 0; padding: calc(3 * var(--loading-unit)) calc(16 * var(--loading-unit)); font-size: var(--loading-proceed-size); line-height: 1.3; }
+  :is(.loading-gate, .boot-gate).is-viewport :is(.loading-comic-title, .loading-blank-title) { font-size: var(--loading-title-size); margin-bottom: calc(2 * var(--loading-unit)); }
+  :is(.loading-gate, .boot-gate).is-viewport :is(.loading-comic-caption, .loading-blank-caption) { font-size: var(--loading-note-size); margin-top: calc(2 * var(--loading-unit)); }
+  :is(.loading-gate, .boot-gate).is-viewport .loading-gauge { margin-top: calc(10 * var(--loading-unit)); }
+  :is(.loading-gate, .boot-gate).is-viewport .loading-status { margin-top: calc(4 * var(--loading-unit)); font-size: var(--loading-status-size); }
+  :is(.loading-gate, .boot-gate).is-viewport .loading-proceed { margin: calc(4 * var(--loading-unit)) 0 calc(4 * var(--loading-unit)); min-height: 0; padding: calc(3 * var(--loading-unit)) calc(16 * var(--loading-unit)); font-size: var(--loading-proceed-size); line-height: 1.3; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .loading-gate, .loading-gate::before, .loading-logo::before, .loading-logo::after, .loading-card, .loading-panels figure, .loading-emblem path, .loading-bar::after, .loading-bar-fill, .loading-proceed { animation: none; }
-  .loading-emblem .emblem-glow, .loading-gate.is-ready .emblem-glow { animation: none; opacity: .7; }
-  .loading-gate.is-ready .loading-proceed { opacity: .92; }
+  :is(.loading-gate, .boot-gate), :is(.loading-gate, .boot-gate)::before, .loading-logo::before, .loading-logo::after, .loading-card, .loading-panels figure, .loading-emblem path, .loading-bar::after, .loading-bar-fill, .loading-proceed { animation: none; }
+  .loading-emblem .emblem-glow, :is(.loading-gate, .boot-gate).is-ready .emblem-glow { animation: none; opacity: .7; }
+  :is(.loading-gate, .boot-gate).is-ready .loading-proceed { opacity: .92; }
 }
 
 /* ロード画面の出口（core/loading.js leaveLoading・#2688 A14）。同じ下地と背景の絵の面が、もやの晴れるように薄れる */

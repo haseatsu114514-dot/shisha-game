@@ -190,6 +190,21 @@ await suite("loading-gate", async check => {
       `Small texts keep a readable floor, got ${JSON.stringify(layout.fonts)}`);
     assert(layout.within, 'The whole stack stays on screen');
     assert.equal(layout.prompt, 'タップで進む', 'A touch screen is only told to tap');
+    // Centred on the whole screen (owner 2026-11-17: it sat high), yet the prompt stays clear of a home
+    // indicator area (iPhone landscape: 21px, given here in place of env(safe-area-inset-bottom)).
+    const edges = await page.evaluate(async () => {
+      const gate = document.querySelector('.loading-gate');
+      const measure = () => ({ above: gate.querySelector('.loading-logo').getBoundingClientRect().top,
+        below: window.innerHeight - gate.querySelector('.loading-proceed').getBoundingClientRect().bottom });
+      const centred = measure();
+      gate.style.setProperty('--loading-foot', '21px');
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const withFoot = measure();
+      gate.style.removeProperty('--loading-foot');
+      return { centred, withFoot };
+    });
+    assert(Math.abs(edges.centred.above - edges.centred.below) <= 2, `The stack is centred on the screen, got ${JSON.stringify(edges)}`);
+    assert(edges.withFoot.below >= 21, `The prompt ends above the home indicator area, got ${JSON.stringify(edges)}`);
     await page.screenshot({ path: path.resolve('.codex/artifacts/remake-browser/loading-comic-phone-landscape.png') });
     await page.locator('.loading-status').tap();
     await page.locator('.loading-gate').waitFor({ state: 'detached' });
@@ -242,7 +257,8 @@ await suite("loading-gate", async check => {
     // A comic without a note keeps the note's line: the sheet height does not depend on the note.
     const noted = await page.locator('.loading-card').evaluate(node => node.getBoundingClientRect().height);
     await page.locator('.loading-comic-caption').evaluate(node => { node.className = 'loading-blank-caption'; node.textContent = ''; });
-    assert.equal(await page.locator('.loading-card').evaluate(node => node.getBoundingClientRect().height), noted, 'The sheet height is the same without a note');
+    const bare = await page.locator('.loading-card').evaluate(node => node.getBoundingClientRect().height);
+    assert(Math.abs(bare - noted) < 0.5, `The sheet height is the same without a note, got ${noted} and ${bare}`);
     await page.locator('.loading-gate.is-ready').waitFor();
     await page.locator('.loading-status').click();
     await page.locator('.loading-gate').waitFor({ state: 'detached' });

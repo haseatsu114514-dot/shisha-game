@@ -771,22 +771,13 @@ small.dc-sub { font-size: 20px; color: #f1e7d6; }
 .round-cut-band small { position: absolute; left: 30%; bottom: 100%; background: #2a1638; color: #f4ecda; font-size: 24px; line-height: 1.5; letter-spacing: 0.24em; font-weight: 700; padding: 5px 18px; white-space: nowrap; }
 
 /* ---------------------------------------------------------------- 起動 */
-#boot {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 22px;
-  background: #07050c;
-  transition: opacity 0.6s ease;
-}
+/* 起動画面の組み方は共通ロード画面（css/loading.css の .loading-gate）と同じ（index.html・2026-11-17 LPOS03）。
+   ここは起動画面だけの分: 役目を終えるときの消え方と、失敗したときの知らせ。 */
+/* 最初の一枚なので出の動き（loading-appear）は付けない。付けると fill の 1 が残り、done の薄れが効かない。 */
+#boot { transition: opacity 0.6s ease; animation: none; }
 #boot.done { opacity: 0; pointer-events: none; }
-.boot-brand { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-/* 絵ロゴ（タイトル画面・本体ロード画面と同一素材）。旧・文字ロゴはフォント到着前後に姿が変わり、
-   本体ロード画面の絵ロゴとも別物で、切り替わりと「しょぼく見える」瞬間を作っていた（2026-11-15 オーナー指示で統一）。 */
-.boot-logo { display: block; width: 360px; height: auto; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.85)); }
-.boot-bar { width: 360px; height: 3px; background: rgba(255, 255, 255, 0.12); border-radius: 2px; overflow: hidden; }
-.boot-bar i { display: block; height: 100%; width: 0; background: var(--gold); transition: width 0.2s; }
+/* スマホで画面いっぱいに出すとき（body 直下）。本体のロード画面（z-index 900）はその上に重なる。 */
+#boot.is-viewport { z-index: 899; }
 .boot-msg { max-width: 900px; font-size: 15px; color: var(--text-dim); letter-spacing: 0.04em; text-align: center; line-height: 1.8; }
 .boot-retry[hidden] { display: none; }
 
