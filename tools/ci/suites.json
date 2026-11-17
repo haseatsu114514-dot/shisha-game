@@ -1946,8 +1946,8 @@
       "id": "ch4-dubai-daily",
       "title": "Chapter 4 Dubai days on the shared daily loop (VOL04), one shisha at the local cafes, the Longlong shop, the eve acquaintance branch, daytime heat, lively nights and the souq stall (DBS)",
       "kind": "browser",
-      "weight": 0.8,
-      "timeout": 9,
+      "weight": 9,
+      "timeout": 15,
       "paths": [
         "remake/js/chapters/ch4-dubai-daily.js",
         "remake/js/chapters/ch4-tour.js",
