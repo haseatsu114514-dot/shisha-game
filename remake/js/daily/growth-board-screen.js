@@ -174,6 +174,8 @@ export function openBoard({ place = null } = {}) {
     world.style.width = `${Math.round(W * zoom)}px`; world.style.height = `${Math.round(H * zoom)}px`;
     stage.style.transform = `scale(${zoom})`;
     viewport.dataset.zoom = zoom.toFixed(2);
+    viewport.dataset.hit = zoom >= 1.2 ? "wide" : "tight";
+    viewport.style.setProperty("--gb-zoom", String(zoom));
     viewport.scrollLeft = anchor ? a.x * zoom - (anchor.vx ?? vw / 2) : a.x * zoom - vw / 2;
     viewport.scrollTop = anchor ? a.y * zoom - (anchor.vy ?? vh / 2) : a.y * zoom - vh / 2;
     renderZoomBar();
