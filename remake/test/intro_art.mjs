@@ -122,7 +122,19 @@ try {
         T.core.markMet(id); T.intro.markIntroSeen(id);
         T.talk = T.vn.play({ dialogue_id: "__adopted_portrait", lines: [{ speaker: id, face, text: `${id}:${face}` }] });
       }, { id, face });
-      await page.waitForFunction((text) => document.querySelector(".vn-text")?.textContent.includes(text), `${id}:${face}`);
+      try {
+        await page.waitForFunction((text) => document.querySelector(".vn-text")?.textContent.includes(text), `${id}:${face}`);
+      } catch (error) {
+        const display = await page.evaluate(() => {
+          const text = document.querySelector(".vn-text");
+          const box = text?.getBoundingClientRect();
+          return { text: text?.textContent, name: document.querySelector(".vn-name")?.textContent,
+            active: !!document.querySelector("#vn.active"), width: box?.width, height: box?.height,
+            viewport: [innerWidth, innerHeight], font: text && getComputedStyle(text).font };
+        });
+        error.message += `\nportrait ${id}:${face}: ${JSON.stringify({ display, errors })}`;
+        throw error;
+      }
       if (id === "hajime") {
         assert.equal(await page.locator(".vn-portraits img").count(), 0, "通常会話で主人公の立ち絵が出た");
       } else {
