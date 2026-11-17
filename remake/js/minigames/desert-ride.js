@@ -34,15 +34,15 @@ const RIVAL_ART_SCALE = Object.freeze({ noor: 0.977, naru: 1.02 });
 const W = 1280, H = 720;
 // ゴールの竿の高さ（m）。2026-11-13 オーナー「ゴールの旗が低すぎる」で 2.6 → 5.2、同「まだ低い」で 9（人物の約3.5倍。遠くからも門だと分かる）
 const GOAL_POLE = 9;
-const HORIZON = 262;             // 路面（斜面）の消失線の高さ。遠くの本当の地平線は、坂のぶんだけこれより上（SLOPE）
+const HORIZON = 262;             // 地平線の高さ（路面＝斜面の消失線。斜面はここで向こうへ落ち込む）
 /**
  * 坂の見え方（2026-11-17 #3686 オーナー「坂っぽくない。平らに見えて、なぜ滑れているのか謎」）。見た目だけの値で、規則・物理は変えない。
- * それまでは路面の消失線と遠景の地平線が同じ高さで、平らな砂原を進んでいるように見えた。下り坂を見下ろすと、
- * 斜面の先（消失線）より上に、ずっと低い谷の底と遠くの砂丘が見える。その帯（px）を作る:
- * px＝ふだんの帯の高さ（540px が画角の1なので、約9度の下り）、wave＝場所ごとの急・緩（地平線がゆっくり上下する）、
- * runout＝ゴール手前でふもとの平らへ出る距離（m。帯が閉じて、ゴールの夕日はこれまでの構図になる）。
+ * それまでは遠くの砂丘の足元が路面の消失線にそのまま乗り、平らな砂原を進んでいるように見えた。
+ * 斜面の先を「縁」にする: 遠くの砂丘を edgePx だけ下げ、その足元を斜面の砂で隠す（砂丘が縁の向こうの低い所から立ち上がって見える）。
+ * 縁の向こうは谷の空気で霞ませ、縁には日の当たった細い線。下るほど谷底へ近づくので砂丘が持ち上がり、ゴール手前 runout m で縁が消える。
+ * （帯を開けて谷底を見せる案は「同じ画像が2枚重なって見える」「空いたスペースが変」で、同日やめた）
  */
-const SLOPE = Object.freeze({ px: 86, wave: 12, runout: 260 });
+const SLOPE = Object.freeze({ edgePx: 54, runout: 260 });
 const CAM = { depth: 1.5, height: 2.0, back: 4.5, meterPerLane: 1.6 }; // 疑似3Dのカメラ（人物の4.5m後ろ・高さ2m。lane 1 = 1.6m）
 const COUNTDOWN = 2.4;           // 本番のスタートの合図（3・2・1・GO）の秒数（その相手との最初の一本）
 /**
@@ -1112,37 +1112,45 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const race = result.race;
       const racePoints = race?.won ? (race.who === "naru" ? SCORE.raceWinNaru : SCORE.raceWin) : 0;
       const { next, tip } = nextGoal(result);
+      // 2026-11-17 オーナー「リザルト画面がなんか CSS 感強い」: 白いカードと表をやめ、左に評価のメダル（判を押すように出る）と合計、
+      // 右に記録の板（行が順に滑り込む）、下にゲームの札の形のボタン。中身・文言・data-test は前と同じ
+      let rowIndex = 0;
+      const statRow = (label, value, test) => { const node = row(label, value, test); node.style.setProperty("--i", rowIndex++); return node; };
       panel.replaceChildren(el("div.dr-card.dr-result", { dataset: { test: "desert-result", rank: result.rank } }, [
-        el("p.dr-kicker", { text: "RESULT" }),
-        race ? el("p.dr-race-result", { dataset: { test: "desert-race", won: String(race.won), who: race.who } }, [
-          el("b", { text: race.won ? `${RIVAL_NAMES[race.who]}に勝った！` : `${RIVAL_NAMES[race.who]}の勝ち` }),
-          el("span", { text: race.won ? `${race.gap.toFixed(1)}秒差` : race.gap > 0 ? `あと ${race.gap.toFixed(1)}秒` : "同時…わずかに届かず" }),
-          race.won ? el("em", { text: `+${racePoints.toLocaleString("ja-JP")}点`, dataset: { test: "desert-race-points" } }) : null,
-        ]) : null,
-        el("div.dr-rank", { dataset: { test: "desert-rank" } }, [el("b", { text: result.rank }), el("span", { text: RANK_WORDS[result.rank] })]),
-        el("p.dr-total", { dataset: { test: "desert-total" } }, [el("small", { text: "TOTAL" }), el("strong", { text: result.score.toLocaleString("ja-JP") }), el("small", { text: "点" }),
-          // 目標を目の前に: 次の評価までの点（合計のすぐ横）と、今回いちばん伸びる所のひとこと（下の1行）
-          next ? el("b.dr-next-rank", { text: `次の評価 ${next.rank} まで あと ${next.points.toLocaleString("ja-JP")}点`, dataset: { test: "desert-next-rank" } }) : null]),
-        tip ? el("p.dr-next", { text: tip, dataset: { test: "desert-tip" } }) : null,
-        el("div.dr-rows", [
-          row("滑走時間", `${result.time.toFixed(1)} 秒`, "desert-time"),
-          row("最高コンボ", `${result.maxCombo}`, "desert-combo"),
-          row("転倒", `${result.falls} 回`, "desert-falls"),
-          row("大ジャンプ", `${result.bigJumps} 回`, "desert-jumps"),
-          row("着地", `完璧 ${result.perfect} ／ 良い ${result.good}`, "desert-landings"),
-          row("岩をかすめた", `${result.nearMiss} 回`, "desert-near"),
-          row("トリック", result.tricks ? `${result.tricks} 回（最高 ${result.bestTrick}）` : "0 回", "desert-tricks"),
-          row("ブースト", `${result.boosts} 回${result.smashed ? `（岩を ${result.smashed} 個粉砕）` : ""}`, "desert-boosts"),
-          result.recoveries ? row("リカバリー", `${result.recoveries} 回`, "desert-recoveries") : null,
-          result.carves ? row("カービング", `${result.carves} 回`, "desert-carves") : null,
-          result.courseName ? row("コース", result.courseName, "desert-result-course") : null,
+        el("div.dr-result-hero", [
+          el("p.dr-kicker", { text: "RESULT" }),
+          race ? el("p.dr-race-result", { dataset: { test: "desert-race", won: String(race.won), who: race.who } }, [
+            el("b", { text: race.won ? `${RIVAL_NAMES[race.who]}に勝った！` : `${RIVAL_NAMES[race.who]}の勝ち` }),
+            el("span", { text: race.won ? `${race.gap.toFixed(1)}秒差` : race.gap > 0 ? `あと ${race.gap.toFixed(1)}秒` : "同時…わずかに届かず" }),
+            race.won ? el("em", { text: `+${racePoints.toLocaleString("ja-JP")}点`, dataset: { test: "desert-race-points" } }) : null,
+          ]) : null,
+          el("div.dr-rank", { dataset: { test: "desert-rank" } }, [el("i.dr-rank-rays"), el("b", { text: result.rank }), el("span", { text: RANK_WORDS[result.rank] })]),
+          el("p.dr-total", { dataset: { test: "desert-total" } }, [el("small", { text: "TOTAL" }), el("strong", { text: result.score.toLocaleString("ja-JP") }), el("small", { text: "点" }),
+            // 目標を目の前に: 次の評価までの点（合計のすぐ下）と、今回いちばん伸びる所のひとこと
+            next ? el("b.dr-next-rank", { text: `次の評価 ${next.rank} まで あと ${next.points.toLocaleString("ja-JP")}点`, dataset: { test: "desert-next-rank" } }) : null]),
+          tip ? el("p.dr-next", { text: tip, dataset: { test: "desert-tip" } }) : null,
+          el("p.dr-best", { text: newBest ? "自己ベスト更新！" : `自己ベスト ${currentBest.score.toLocaleString("ja-JP")}点 ／ ${currentBest.rank}`, dataset: { test: "desert-best", new: String(!!newBest) } }),
         ]),
-        el("p.dr-best", { text: newBest ? "自己ベスト更新！" : `自己ベスト ${currentBest.score.toLocaleString("ja-JP")}点 ／ ${currentBest.rank}`, dataset: { test: "desert-best" } }),
-        el("div.dr-actions", [
-          el("button.btn.primary.dr-button", { type: "button", text: "もう一度滑る", dataset: { test: "desert-retry" }, onclick: () => prepareAndStart("run", raceWith) }),
-          rivals.includes("naru") ? el("button.btn.dr-button", { type: "button", text: raceWith === "naru" ? "ヌールと競走" : "なると勝負",
-            dataset: { test: raceWith === "naru" ? "desert-start-noor" : "desert-start-naru" }, onclick: () => prepareAndStart("run", raceWith === "naru" ? "noor" : "naru") }) : null,
-          el("button.btn.ghost.dr-button", { type: "button", text: "砂丘を下りる", dataset: { test: "desert-leave" }, onclick: finish }),
+        el("div.dr-result-side", [
+          el("div.dr-rows", [
+            statRow("滑走時間", `${result.time.toFixed(1)} 秒`, "desert-time"),
+            statRow("最高コンボ", `${result.maxCombo}`, "desert-combo"),
+            statRow("転倒", `${result.falls} 回`, "desert-falls"),
+            statRow("大ジャンプ", `${result.bigJumps} 回`, "desert-jumps"),
+            statRow("着地", `完璧 ${result.perfect} ／ 良い ${result.good}`, "desert-landings"),
+            statRow("岩をかすめた", `${result.nearMiss} 回`, "desert-near"),
+            statRow("トリック", result.tricks ? `${result.tricks} 回（最高 ${result.bestTrick}）` : "0 回", "desert-tricks"),
+            statRow("ブースト", `${result.boosts} 回${result.smashed ? `（岩を ${result.smashed} 個粉砕）` : ""}`, "desert-boosts"),
+            result.recoveries ? statRow("リカバリー", `${result.recoveries} 回`, "desert-recoveries") : null,
+            result.carves ? statRow("カービング", `${result.carves} 回`, "desert-carves") : null,
+            result.courseName ? statRow("コース", result.courseName, "desert-result-course") : null,
+          ].filter(Boolean)),
+          el("div.dr-actions", [
+            el("button.btn.primary.dr-button", { type: "button", text: "もう一度滑る", dataset: { test: "desert-retry" }, onclick: () => prepareAndStart("run", raceWith) }),
+            rivals.includes("naru") ? el("button.btn.dr-button", { type: "button", text: raceWith === "naru" ? "ヌールと競走" : "なると勝負",
+              dataset: { test: raceWith === "naru" ? "desert-start-noor" : "desert-start-naru" }, onclick: () => prepareAndStart("run", raceWith === "naru" ? "noor" : "naru") }) : null,
+            el("button.btn.ghost.dr-button", { type: "button", text: "砂丘を下りる", dataset: { test: "desert-leave" }, onclick: finish }),
+          ]),
         ]),
       ]));
       panel.querySelector("button")?.focus();
@@ -1269,8 +1277,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const head = headingAt(game.course, game.z);
       const lookAhead = headingAt(game.course, Math.min(game.course.length, game.z + 110));
       world.yaw += (head + (lookAhead - head) * 0.45 - world.yaw) * Math.min(1, dt * 3.2);
-      // 坂の傾き（見た目だけ）: 遠くの地平線を、坂のぶんだけ路面の消失線より上へ置く。急なところでは高く、ふもとで閉じる
-      const slopeTarget = slopePxAt(game.z);
+      // 坂（見た目だけ）: 遠くの砂丘の足元を斜面の縁に隠す深さ。下るほど浅く、ふもとで 0
+      const slopeTarget = slopeEdgeAt(game.z);
       world.slope = world.slope == null ? slopeTarget : world.slope + (slopeTarget - world.slope) * Math.min(1, dt * 2.5);
       // 速いほど視界が広がる（遠くが小さく流れる）。カメラの距離も同じ割合で縮め、人物の大きさは変えない。
       // GO とブーストの瞬間は一度ぐっと広がる。ブースト中はさらに少し引く。動き軽減では固定
@@ -1343,15 +1351,12 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       ctx.fillText(text, 0, 1);
       ctx.restore();
     }
-    /** 坂の帯の高さ（px）。コースの場所で決まる（同じ場所は同じ見え方）。動き軽減では上下させない。 */
-    function slopePxAt(z) {
-      const left = Math.min(1, Math.max(0, (game.course.length - z) / SLOPE.runout)), out = left * left * (3 - 2 * left);
-      const wave = reducedMotion ? 0 : Math.sin(z * 0.011) * 0.6 + Math.sin(z * 0.0047 + 1.3) * 0.4;
-      return (SLOPE.px + SLOPE.wave * wave) * out;
+    /** 斜面の縁の深さ（px）: 遠くの砂丘を下げて足元を縁に隠す量。スタートが最も深く、下るほど浅くなり、ふもとで 0。 */
+    function slopeEdgeAt(z) {
+      const s = Math.min(1, Math.max(0, z / Math.max(1, game.course.length - SLOPE.runout)));
+      return SLOPE.edgePx * (1 - s) ** 0.8;
     }
-    /** 遠くの本当の地平線の高さ。路面の消失線（HORIZON）より、坂のぶんだけ上。 */
-    const farHorizon = () => HORIZON - Math.round(world.slope || 0);
-    /** 絵の遠景（空・太陽・谷・陸）。絵がまだ無ければ false（図形の空と砂丘で描く）。 */
+    /** 絵の遠景（空・太陽・陸）。絵がまだ無ければ false（図形の空と砂丘で描く）。 */
     const BACKDROP_SCALE = 0.95, BACKDROP_MARGIN = 60; // 余白は、傾き・揺れで見える画面の外
     // 遠景は傾けない別の面に整数の位置で並べてから、傾いた画面へ1枚で貼る（並べた絵の継ぎ目に線が出ないように）
     let backdropLayer = null, backdropKey = "";
@@ -1362,8 +1367,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       // 遠景の変化は yaw・夕方・進み具合・ブーストの滲みだけ。量子化した鍵が同じなら前回の面をそのまま貼る（2026-11-14 軽量化: 毎フレームの大判 blit 10〜15枚を 1 枚に）
       const yawPx0 = world.yaw * YAW_PX * (reducedMotion ? 0.5 : 1);
       const smearKey = !reducedMotion && (view.boost || 0) > 0.2 ? Math.round((view.boost || 0) * 5) : 0;
-      const FAR = farHorizon(), gap = HORIZON - FAR;
-      const key = `${Math.round(yawPx0 / 4)}|${Math.round(dusk * 40)}|${Math.round(progress * 600)}|${smearKey}|${FAR}`;
+      const edge = Math.round(world.slope || 0);
+      const key = `${Math.round(yawPx0 / 4)}|${Math.round(dusk * 40)}|${Math.round(progress * 600)}|${smearKey}|${edge}`;
       if (key !== backdropKey) {
         backdropKey = key;
       const g = backdropLayer.getContext("2d");
@@ -1372,21 +1377,21 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       // 空はゆっくり、陸は速く横へ流れる（カーブに合わせたパララックス）。絵の地平線の行を HORIZON に合わせる。
       // 曲がっている間は遠くの砂丘が横へ流れ続ける（2026-11-11 オーナー「カーブがほんとにしてるのか分かりづらい」）
       const yawPx = world.yaw * YAW_PX * (reducedMotion ? 0.5 : 1);
-      wrapImage(g, sky, 0, 0, B.width, sky.naturalHeight, baseX - yawPx * 0.5, FAR - B.horizon * k, dw, sky.naturalHeight * k);
+      wrapImage(g, sky, 0, 0, B.width, sky.naturalHeight, baseX - yawPx * 0.5, HORIZON - B.horizon * k, dw, sky.naturalHeight * k);
       const duskSky = art.get("duskSky"), duskLand = art.get("duskLand");
       if (dusk > 0 && duskSky && duskLand) {
         // 同じ構図の夕方の絵を、ゴールへ近づくほど濃く重ねる
         g.globalAlpha = dusk;
-        wrapImage(g, duskSky, 0, 0, B.width, duskSky.naturalHeight, baseX - yawPx * 0.5, FAR - B.horizon * k, dw, duskSky.naturalHeight * k);
+        wrapImage(g, duskSky, 0, 0, B.width, duskSky.naturalHeight, baseX - yawPx * 0.5, HORIZON - B.horizon * k, dw, duskSky.naturalHeight * k);
         g.globalAlpha = 1;
       } else if (dusk > 0) {
-        const tint = g.createLinearGradient(0, 0, 0, FAR + 10);
+        const tint = g.createLinearGradient(0, 0, 0, HORIZON + 10);
         tint.addColorStop(0, `rgba(120,72,110,${dusk * 0.85})`); tint.addColorStop(0.62, `rgba(245,150,84,${dusk * 0.8})`); tint.addColorStop(1, `rgba(255,208,140,${dusk * 0.7})`);
-        g.fillStyle = tint; g.fillRect(-BACKDROP_MARGIN, 0, W + BACKDROP_MARGIN * 2, FAR + 10);
+        g.fillStyle = tint; g.fillRect(-BACKDROP_MARGIN, 0, W + BACKDROP_MARGIN * 2, HORIZON + 10);
       }
       // 太陽: 進むほど大きく低く。ゴールの手前では砂丘の稜線の後ろへ沈みかける。
       // 曲がり始めに横へ動き、その先は画面に残る（ゴールの夕日を見失わない）
-      const sunX = W * 0.5 - Math.tanh(world.yaw * 0.8) * 300 + 180 * (1 - progress), sunY = lerp(Math.min(70, FAR - 96), FAR - 34, Math.min(1, progress * 1.05)), r = lerp(30, 72, progress);
+      const sunX = W * 0.5 - Math.tanh(world.yaw * 0.8) * 300 + 180 * (1 - progress), sunY = lerp(70, HORIZON - 34 + edge, Math.min(1, progress * 1.05)), r = lerp(30, 72, progress);
       const glow = g.createRadialGradient(sunX, sunY, r * 0.4, sunX, sunY, r * 3.2);
       glow.addColorStop(0, `rgba(255,230,170,${0.55 + 0.3 * dusk})`); glow.addColorStop(1, "rgba(255,200,120,0)");
       g.fillStyle = glow; g.fillRect(sunX - r * 3.2, sunY - r * 3.2, r * 6.4, r * 6.4);
@@ -1400,51 +1405,32 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         if (!image) continue;
         for (const [shift, a] of smear ? [[0, alpha], [smear, alpha * 0.28], [-smear, alpha * 0.28]] : [[0, alpha]]) {
           g.globalAlpha = a;
-          wrapImage(g, image, 0, 0, B.width, above, landX + shift, FAR - above * k, dw, above * k);
-          wrapImage(g, image, 0, above, B.width, below, landX + shift, FAR, dw, H - FAR);
+          // 砂丘は edge だけ下げ、その足元は手前の斜面の砂（絵の平らな砂を消失線から下へ）で隠す
+          wrapImage(g, image, 0, 0, B.width, above, landX + shift, HORIZON + edge - above * k, dw, above * k);
+          wrapImage(g, image, 0, above, B.width, below, landX + shift, HORIZON, dw, H - HORIZON);
         }
       }
       g.globalAlpha = 1;
-      if (gap > 2) drawValley(g, FAR, gap, dusk, yawPx);
+      if (edge > 1) drawSlopeEdge(g, edge, dusk);
       }
       ctx.drawImage(backdropLayer, -BACKDROP_MARGIN, 0);
       return true;
     }
     /**
-     * 坂の先に見下ろす谷（#3686）。遠くの地平線（far）と斜面の消失線（HORIZON）の間の帯は、遠景の絵の平らな砂（谷の底）。
-     * 遠景の砂丘の絵を縮めて重ねると「同じ絵が2枚重なって見える」（2026-11-17 オーナー）ので、絵は重ねず、
-     * ① 遠い谷の底を空気の色で霞ませ、② なだらかな低いうねりを淡い図形で2列だけ描き（遠景の砂丘とは形も濃さも違う）、
-     * ③ 斜面の縁のすぐ向こうを谷の影で沈め、縁に日の当たった細い明るい線を引く。斜面の明るい砂が、そこで落ち込んで見える。
+     * 斜面の縁（#3686）。縁の向こう（下げた砂丘の足元側）は谷の空気で霞ませ、遠く低い所にあることを見せる。
+     * 縁には日の当たった細い明るい線、そのすぐ手前の斜面は少しだけ明るく（向こうへ落ち込む肩）。
      */
-    function drawValley(g, far, gap, dusk, yawPx) {
-      const t = Math.min(1, gap / SLOPE.px), x0 = -BACKDROP_MARGIN, wAll = W + BACKDROP_MARGIN * 2;
-      const hazeRgb = mixColor([246, 228, 204], [255, 196, 152], dusk).slice(4, -1), shadeRgb = mixColor([164, 112, 78], [132, 70, 72], dusk).slice(4, -1);
-      // ① 谷の底: 遠いほど空気の色。全体を少し淡くして、手前の斜面より遠いことを見せる
-      const air = g.createLinearGradient(0, far - 2, 0, HORIZON);
-      air.addColorStop(0, `rgba(${hazeRgb},0.7)`); air.addColorStop(0.6, `rgba(${hazeRgb},0.42)`); air.addColorStop(1, `rgba(${hazeRgb},0.3)`);
-      g.fillStyle = air; g.fillRect(x0, far - 2, wAll, gap + 2);
-      // ② 谷の低いうねり（奥→手前）。上は日の当たる面、下は影。横へは遠景の陸より少し速く流れる
-      for (const [at, amp, freq, drift, phase, alpha] of [[0.45, 0.16, 0.0042, 1.15, 0.7, 0.5], [0.8, 0.26, 0.0029, 1.4, 2.1, 0.62]]) {
-        const base = far + gap * at, top = base - gap * amp * 1.6, shift = yawPx * drift;
-        const body = g.createLinearGradient(0, top, 0, HORIZON);
-        body.addColorStop(0, `rgba(${mixColor([250, 222, 172], [252, 186, 128], dusk).slice(4, -1)},${alpha})`);
-        body.addColorStop(0.5, `rgba(${mixColor([226, 182, 128], [222, 142, 104], dusk).slice(4, -1)},${alpha})`);
-        body.addColorStop(1, `rgba(${mixColor([214, 166, 116], [206, 124, 96], dusk).slice(4, -1)},${alpha})`);
-        g.fillStyle = body;
-        g.beginPath(); g.moveTo(x0, HORIZON + 4);
-        for (let x = x0; x <= W + BACKDROP_MARGIN; x += 12) {
-          const u = (x + shift) * freq;
-          const swell = 0.6 * (0.5 + 0.5 * Math.sin(u + phase)) + 0.4 * (0.5 + 0.5 * Math.sin(u * 2.3 + phase * 1.7));
-          g.lineTo(x, base - gap * amp * 1.6 * swell);
-        }
-        g.lineTo(W + BACKDROP_MARGIN, HORIZON + 4); g.closePath(); g.fill();
-      }
-      // ③ 斜面の縁のすぐ向こうは谷の影（縁に向かって濃い）。縁には日の当たった細い線
-      const shade = g.createLinearGradient(0, HORIZON - gap * 0.4, 0, HORIZON);
-      shade.addColorStop(0, `rgba(${shadeRgb},0)`); shade.addColorStop(1, `rgba(${shadeRgb},${0.42 * t})`);
-      g.fillStyle = shade; g.fillRect(x0, HORIZON - gap * 0.4, wAll, gap * 0.4);
-      g.fillStyle = `rgba(${mixColor([255, 244, 214], [255, 214, 168], dusk).slice(4, -1)},${0.75 * t})`;
-      g.fillRect(x0, HORIZON - 1, wAll, 2);
+    function drawSlopeEdge(g, edge, dusk) {
+      const t = Math.min(1, edge / SLOPE.edgePx), x0 = -BACKDROP_MARGIN, wAll = W + BACKDROP_MARGIN * 2;
+      const haze = mixColor([248, 230, 204], [255, 198, 154], dusk).slice(4, -1), rim = mixColor([255, 246, 220], [255, 218, 172], dusk).slice(4, -1);
+      const top = HORIZON - edge * 1.6;
+      const air = g.createLinearGradient(0, top, 0, HORIZON);
+      air.addColorStop(0, `rgba(${haze},0)`); air.addColorStop(0.7, `rgba(${haze},${0.42 * t})`); air.addColorStop(1, `rgba(${haze},${0.62 * t})`);
+      g.fillStyle = air; g.fillRect(x0, top, wAll, HORIZON - top);
+      const shoulder = g.createLinearGradient(0, HORIZON, 0, HORIZON + 14);
+      shoulder.addColorStop(0, `rgba(${rim},${0.5 * t})`); shoulder.addColorStop(1, `rgba(${rim},0)`);
+      g.fillStyle = shoulder; g.fillRect(x0, HORIZON, wAll, 14);
+      g.fillStyle = `rgba(${rim},${0.85 * t})`; g.fillRect(x0, HORIZON - 1, wAll, 2);
     }
     /** 横へ流れる遠景を、面を覆うまで並べて描く。隣は左右反転した同じ絵なので絵柄がつながり、整数の位置に置くので隙間も重なりも出ない。 */
     function wrapImage(g, image, sx, sy, sw, sh, x, y, dw, dh) {
@@ -1458,13 +1444,12 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       }
     }
     function drawSky(dusk, progress) {
-      const FAR = farHorizon();
       const top = mixColor([92, 158, 226], [120, 72, 110], dusk), mid = mixColor([176, 212, 240], [245, 150, 84], dusk), bottom = mixColor([236, 226, 206], [255, 208, 140], dusk);
-      const sky = ctx.createLinearGradient(0, 0, 0, FAR + 20);
+      const sky = ctx.createLinearGradient(0, 0, 0, HORIZON + 20);
       sky.addColorStop(0, top); sky.addColorStop(0.62, mid); sky.addColorStop(1, bottom);
-      ctx.fillStyle = sky; ctx.fillRect(0, 0, W, FAR + 20);
+      ctx.fillStyle = sky; ctx.fillRect(0, 0, W, HORIZON + 20);
       // 太陽: 進むほど大きく低く。ゴールの手前では地平線に触れる
-      const sunX = W * 0.5 - Math.tanh(world.yaw * 0.8) * 300 + 180 * (1 - progress), sunY = lerp(Math.min(70, FAR - 96), FAR - 14, Math.min(1, progress * 1.05)), r = lerp(30, 72, progress);
+      const sunX = W * 0.5 - Math.tanh(world.yaw * 0.8) * 300 + 180 * (1 - progress), sunY = lerp(70, HORIZON - 14 + (world.slope || 0), Math.min(1, progress * 1.05)), r = lerp(30, 72, progress);
       const glow = ctx.createRadialGradient(sunX, sunY, r * 0.4, sunX, sunY, r * 3.2);
       glow.addColorStop(0, `rgba(255,230,170,${0.55 + 0.3 * dusk})`); glow.addColorStop(1, "rgba(255,200,120,0)");
       ctx.fillStyle = glow; ctx.fillRect(sunX - r * 3.2, sunY - r * 3.2, r * 6.4, r * 6.4);
@@ -1473,13 +1458,12 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     }
     function drawDunes(dusk) {
       // 遠景の砂丘は3層。横へは向きに合わせ、奥ほどゆっくり流れる（パララックス）
-      // 坂のぶんだけ上へ置き、その下（斜面の消失線まで）は見下ろす谷の色で埋める
-      const FAR = farHorizon();
+      // 斜面の縁の深さだけ下げる（足元は drawGround の砂が隠す）
+      const FAR = HORIZON + (world.slope || 0);
       const layers = [
         { amp: 26, freq: 0.0032, speed: 0.08, base: FAR - 36, color: mixColor([226, 196, 150], [214, 136, 104], dusk) },
         { amp: 40, freq: 0.0046, speed: 0.17, base: FAR - 14, color: mixColor([232, 206, 158], [226, 150, 108], dusk) },
         { amp: 54, freq: 0.0068, speed: 0.3, base: FAR + 10, color: mixColor([240, 216, 168], [236, 168, 118], dusk) },
-        { amp: 16, freq: 0.0105, speed: 0.5, base: FAR + (HORIZON - FAR) * 0.62, color: mixColor([226, 192, 142], [218, 142, 104], dusk) },
       ];
       for (const [i, layer] of layers.entries()) {
         const shift = world.yaw * YAW_PX * 0.5 * (i + 1) + game.z * layer.speed * 6 * (1 + 0.7 * (view.boost || 0));
@@ -1545,8 +1529,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         }
       }
       // 地平線のかすみ（遠くの砂を空の色へ溶かす）
-      // 坂の帯が開いている間は、斜面の先だけを霞ませる（谷を白く覆わない。谷の霞は drawValley）
-      const hazeTop = HORIZON - Math.max(4, 30 - (world.slope || 0));
+      const hazeTop = HORIZON - 30;
       const haze = ctx.createLinearGradient(0, hazeTop, 0, HORIZON + 120);
       haze.addColorStop(0, `rgba(${mixColor([250, 232, 200], [255, 190, 140], dusk).slice(4, -1)},0)`);
       haze.addColorStop(0.25, `rgba(${mixColor([250, 232, 200], [255, 190, 140], dusk).slice(4, -1)},0.5)`);
