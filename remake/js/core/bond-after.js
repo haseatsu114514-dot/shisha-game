@@ -72,6 +72,24 @@ export const BOND_AFTER = Object.freeze({
       "bond_after_hiyori_4", "bond_after_hiyori_5"],
     shorts: ["bond_after_hiyori_short_a", "bond_after_hiyori_short_b", "bond_after_hiyori_short_c", "bond_after_hiyori_short_d"],
   }),
+  // あげは（柚ヶ谷の店 chapters/ch2-preparation.js・第5章の街の店。後日の三本 agehaLaterScene が先）・
+  // ましろ（東京の mukai に足した「ましろちゃんと話す」。第3章 chapters/ch3-tokyo-daily.js・第5章 chapters/ch5-tokyo.js）・
+  // 綾取（煙幕の通い。第3章は外出の小会話、第5章は東京の店の小会話の代わり）
+  ageha: entry("ageha", {
+    scenes: [{ id: "bond_after_ageha_1", requires: "suyaki_ageha" }, "bond_after_ageha_2", "bond_after_ageha_3",
+      "bond_after_ageha_4", "bond_after_ageha_5"],
+    shorts: ["bond_after_ageha_short_a", "bond_after_ageha_short_b", "bond_after_ageha_short_c", "bond_after_ageha_short_d"],
+  }),
+  mashiro: entry("mashiro", {
+    scenes: [{ id: "bond_after_mashiro_1", requires: "suyaki_mashiro" }, "bond_after_mashiro_2", "bond_after_mashiro_3",
+      "bond_after_mashiro_4", "bond_after_mashiro_5"],
+    shorts: ["bond_after_mashiro_short_a", "bond_after_mashiro_short_b", "bond_after_mashiro_short_c", "bond_after_mashiro_short_d"],
+  }),
+  saku: entry("saku", {
+    scenes: [{ id: "bond_after_saku_1", requires: "suyaki_saku" }, "bond_after_saku_2", "bond_after_saku_3",
+      "bond_after_saku_4", "bond_after_saku_5"],
+    shorts: ["bond_after_saku_short_a", "bond_after_saku_short_b", "bond_after_saku_short_c", "bond_after_saku_short_d"],
+  }),
 });
 
 /** 全員の台本のID（読み込みと検証用）。 */

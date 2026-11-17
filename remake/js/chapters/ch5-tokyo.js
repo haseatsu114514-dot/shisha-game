@@ -33,6 +33,7 @@ import { keepDailyHud } from "../daily/hud.js";
 import { finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { mashiroTimeOpen, spendMashiroTime, MASHIRO_TIME_FILE, MASHIRO_TIME_SCENES } from "./mashiro-time.js";
 import { petitAfterDate } from "../daily/petit-shuraba.js";
+import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
 
 export const TOKYO = "tokyo";
 const ATTIC_FLAG = "_ch5_tokyo_attic"; // ムカイさんに屋根裏を貸してもらった（最初の到着の場面を読んだ）
@@ -252,7 +253,28 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   if (!spot.talks) return null;
   if (spot.shift) {
     // 恋人のましろがいる時は、シフトに入るか、二人で過ごすかを選ぶ（BLC03）。恋人でなければ今までどおりシフトだけ。
+    // 締めくくりを友人として迎えた後は、シフトか「ましろちゃんと話す」（♥5後の場面・#3693）を選ぶ。
     const mashiroMilestoneDue = () => loverMilestonesDue(["mashiro"]).length > 0;
+    const friendTalk = bondAfterNext(state, "mashiro");
+    if (friendTalk && !mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() })) {
+      const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
+        { label: "ましろちゃんと話す", value: "friend", test: "tokyo-mukai-friend", primary: friendTalk.kind === "story" },
+        { label: `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）`, value: "shift", test: "tokyo-mukai-shift" },
+        { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
+      if (!pick || state !== owner) return { used: false, exerted: false };
+      if (pick === "friend") {
+        try { await loadBondAfterScenes(DB); } catch {
+          toast("会話を読み込めませんでした。行動は使っていません");
+          return { used: false, exerted: false };
+        }
+        if (state !== owner || staminaGuard && !(await staminaGuard(MASHIRO_TIME_STAMINA))) return { used: false, exerted: false };
+        if (!await read(friendTalk.scene, spot.preview, owner)) return { used: false, exerted: false };
+        markBondAfterRead(state, "mashiro", friendTalk);
+        addStamina(MASHIRO_TIME_STAMINA);
+        gainAffinity("mashiro", visitAffinity("talk"));
+        return { used: true, exerted: true };
+      }
+    }
     if (mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() })) {
       const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
         { label: "ましろちゃんと過ごす（恋人）", value: "lover", test: "tokyo-mukai-lover", primary: true },
@@ -298,12 +320,21 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   // 小会話の巡回は進めない（段を読み終えると、また小会話に戻る）。
   const chain = await chainVisitDue(spot.id);
   if (state !== owner) return { used: false, exerted: false };
-  const scene = spot.talks[visits % spot.talks.length];
+  // ♥5の締めくくりの後（#3693）: 小会話の代わりに、その人の♥5後の場面（5本）を一度ずつ。読み終えた後は短い汎用ではなく
+  // 第5章の小会話に戻す（第5章の店の様子を残す。ch5-shops.js と同じ）。巡回は進めない。台本を読めなければ小会話のまま。
+  let after = !chain && spot.charId ? bondAfterNext(state, spot.charId) : null;
+  if (after?.kind !== "story") after = null;
+  if (after) {
+    try { await loadBondAfterScenes(DB); } catch { after = null; }
+    if (state !== owner) return { used: false, exerted: false };
+  }
+  const scene = after?.scene || spot.talks[visits % spot.talks.length];
   if (!await (chain ? playChainStage(chain, id => read(id, spot.preview, owner)) : read(scene, spot.preview, owner))) return { used: false, exerted: false };
+  markBondAfterRead(state, spot.charId, after);
   if (fee) addMoney(-fee);
   if (spot.pay) addMoney(spot.pay);
   addStamina(spot.stamina);
-  if (!chain) talks[spot.id] = visits + 1;
+  if (!chain && !after) talks[spot.id] = visits + 1;
   // 好感度は通いと同じ値（core/stats.js の visitAffinity。第5章はゆっくりの 10・5）。1回目は段階会話、2回目からは小会話。
   // ヴォルクは第3章の終盤に会うので、ここへ通って♥5に届き、授業（♥5）を相談できる（IR23）
   if (spot.charId) { gainAffinity(spot.charId, visitAffinity(visits ? "talk" : "story")); markMet(spot.charId); }

@@ -60,7 +60,7 @@ assert.equal(bondAfterNext(save(), "kumicho"), null, "締めくくりの前は�
 assert.equal(bondAfterEligible(save({ finales: { rei: { route: "romance" } } }), "rei"), false, "恋愛ルートは出さない");
 assert.equal(bondAfterEligible(save({ finales: { rei: { route: "friend" } }, lovers: ["rei"] }), "rei"), false, "恋人には出さない");
 assert.equal(bondAfterEligible(save({ finales: { rei: { route: "romance" } }, flags: { _friend_rei: true } }), "rei"), true, "後から友人に落ち着いた人は出す");
-assert.equal(bondAfterNext(friendOf("ageha"), "ageha"), null, "まだ5本を書いていない人は対象外（いつもの来店のまま）");
+assert.equal(bondAfterNext(friendOf("noor"), "noor"), null, "まだ5本を書いていない人は対象外（いつもの来店のまま）");
 
 // 順番: 5本を一度ずつ順に。読んだ記録は場面のIDで持つ
 {
@@ -82,7 +82,7 @@ assert.equal(bondAfterNext(friendOf("ageha"), "ageha"), null, "まだ5本を書�
 }
 
 // 前提の持ち物: 一本目が締めくくりの素焼きの回収になっている人は、素焼きを持っている時だけ
-for (const id of ["kumicho", "naru", "adam", "tsumugi", "sumi", "minto", "rio", "samechan"]) assert.equal(BOND_AFTER[id].scenes[0].requires, `suyaki_${id}`, `${id}: 一本目は素焼きが前提`);
+for (const id of ["kumicho", "naru", "adam", "tsumugi", "sumi", "minto", "rio", "samechan", "ageha", "mashiro", "saku"]) assert.equal(BOND_AFTER[id].scenes[0].requires, `suyaki_${id}`, `${id}: 一本目は素焼きが前提`);
 // ひよりの素焼きの一台は友人の一服（friends.json）が描くので、一本目に前提を置かない
 assert.equal(BOND_AFTER.hiyori.scenes.some(scene => scene.requires), false);
 // サメちゃんの来店（daily/samechan.js）は背景を渡さないので、台本の metadata に店の背景を持つ。ひよりは私的な場面
