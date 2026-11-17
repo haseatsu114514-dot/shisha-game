@@ -1019,6 +1019,8 @@
       "title": "端末に保存できない時は遊びを止めず一度だけ知らせ、保存できたら戻る（#3726 B-7）",
       "kind": "quick",
       "run": ["node remake/test/save_failed_notice.mjs"]
+    },
+    {
       "id": "save-fixtures",
       "title": "凍結した過去の版のセーブ（remake/test/fixtures/saves）が今の版で読め、保存し直しても同じ形になる（#3726 B-7）",
       "kind": "quick",
