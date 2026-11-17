@@ -18,7 +18,8 @@ const definitions = JSON.parse(fs.readFileSync(new URL("../../data/tokyo_visits.
 const data = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_activities.json", import.meta.url)));
 // 再訪で順番に読む小品（#3097 の3本と SPV03 の1本）も同じ制約で読む。昼・夜の束（TOKYO_GYM_SCENES）は台本と過不足が無い
 assert.deepEqual(data.dialogues.map(scene => scene.dialogue_id),
-  ["ch3_choizap_day", "ch3_choizap_night", "ch3_choizap_app", "ch3_choizap_lunch", "ch3_choizap_locker", "ch3_choizap_train"]);
+  ["ch3_choizap_day", "ch3_choizap_night", "ch3_choizap_app", "ch3_choizap_lunch", "ch3_choizap_locker", "ch3_choizap_mirror", "ch3_choizap_cleaning",
+    "ch3_choizap_train", "ch3_choizap_squat", "ch3_choizap_regular"]); // #3097 で昼夜それぞれ2本ずつ足した
 assert.deepEqual([...activity.TOKYO_GYM_IDS].sort(), data.dialogues.map(scene => scene.dialogue_id).sort());
 assert.equal(activity.TOKYO_GYM_SCENES.day[0], "ch3_choizap_day"); assert.equal(activity.TOKYO_GYM_SCENES.night[0], "ch3_choizap_night");
 assert(activity.TOKYO_GYM_SCENES.day.length >= 3 && activity.TOKYO_GYM_SCENES.night.length >= 3);
