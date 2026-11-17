@@ -276,6 +276,411 @@
       }
     },
     {
+      "dialogue_id": "ch2_chain_newcomer_1",
+      "comment": "第2章 C.STATION 柚ヶ谷店の通いの続き（#3097）1/3。3回通った後、再訪の会話の代わりに読む。席を一人で任された新人のスタッフ（再訪の会話 _d で先輩に炭の置き方を直されていた人）。炭の替えどきを聞かれてどう答えるか（newcomer_coal）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今日の担当は、前に先輩に炭の置き方を直されていた新人のスタッフだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "名札に、小さく「研修中」と書いてある。トングを持つ手が、少しだけ固い。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "お待たせしました。……あの、炭、これで替えどきって合ってますか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新人の人は声を落として、こちらの台の炭を見た。先輩は、ほかの席で手が離せないらしい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（灰がうっすら白くなりかけてる。替えるには、まだ少し早いけど）"
+        },
+        {
+          "type": "choice",
+          "id": "newcomer_coal",
+          "choices": [
+            {
+              "text": "「合ってると思います」",
+              "next": "yes"
+            },
+            {
+              "text": "「あと少し待ってもいいかも」",
+              "next": "wait"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新人の人は小さく頭を下げて、次の席へ向かった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "振り返らずに歩く背中が、さっきより少しだけまっすぐだった。"
+        }
+      ],
+      "branches": {
+        "yes": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "合ってると思います。ちょうど、替えてほしかったので"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "新人の人はほっとした顔で、手早く炭を替えていった。"
+          }
+        ],
+        "wait": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あと少し待っても大丈夫だと思います。灰がもう少し白くなってからで"
+          },
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "……灰の色。見てみます"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_chain_newcomer_2",
+      "comment": "第2章 C.STATION の通いの続き 2/3（1/3の翌日以降）。隣の席の客に「煙が薄い」と言われて困る新人のスタッフ。どう答えるか（newcomer_thin）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新人のスタッフが、隣の席の客に何か言われて困った顔をしていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「煙が薄い」と言われたらしい。炭を足そうとして、トングが止まっている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "こちらに気づくと、新人の人は台の陰で小さく聞いてきた。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "こういう時、どうしてますか。炭、足していいのかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（炭を足すのは簡単だけど、足しすぎると、すぐ焦げる）"
+        },
+        {
+          "type": "choice",
+          "id": "newcomer_thin",
+          "choices": [
+            {
+              "text": "「先に、吸い方を聞いてみる」",
+              "next": "ask"
+            },
+            {
+              "text": "「足す前に、炭を寄せてみる」",
+              "next": "move"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新人の人は小さく頷いて、隣の席へ戻っていった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらくして、隣の席から、満足そうな煙がゆっくり上がった。"
+        }
+      ],
+      "branches": {
+        "ask": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "先に、どんな吸い方をしてるか聞いてみてください。浅く吸うと、薄く感じるので"
+          },
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "……吸い方。聞いてみます"
+          }
+        ],
+        "move": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "足す前に、炭を真ん中へ寄せてみてください。熱が集まるので"
+          },
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "寄せる……。やってみます"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_chain_newcomer_3",
+      "comment": "第2章 C.STATION の通いの続き 3/3（2/3の翌日以降）。研修中が取れた新人のスタッフ。1/3と2/3の答えで言葉が変わる",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新人のスタッフの名札から、「研修中」の文字が消えていた。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "いらっしゃいませ。今日は、私が担当です"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch2_chain_newcomer_1",
+          "pick": "yes",
+          "next_true": "first_yes",
+          "next_false": "first_wait"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch2_chain_newcomer_2",
+          "pick": "ask",
+          "next_true": "thin_ask",
+          "next_false": "thin_move"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会計の時、新人の人は伝票の端に小さく何か書き足していた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "のぞくと、走り書きのメモが、余白にびっしり並んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（俺も、最初はメモばっかりだったな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店を出ると、高架の上を電車がゆっくり通っていった。"
+        }
+      ],
+      "branches": {
+        "first_yes": [
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "最初の日、合ってるって言ってもらえて、あれで手が動くようになりました"
+          }
+        ],
+        "first_wait": [
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "最初の日、灰の色を見てって言われてから、ずっと灰ばかり見てます"
+          }
+        ],
+        "thin_ask": [
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "煙が薄いって言われたら、まず吸い方を聞くようにしてます"
+          },
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "たいてい、それで済むんです"
+          }
+        ],
+        "thin_move": [
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "煙が薄いって言われたら、足す前に寄せるようにしてます"
+          },
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "焦がしちゃうの、減りました"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_chain_question_1",
+      "comment": "第2章 水族館の通いの続き（#3097）1/2。3回通った後、再訪の会話の代わりに読む。出口の「質問カード」の箱に、何を書くか（question_card）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出口の手前に、小さな木の箱が置いてあった。「飼育員への質問カード」と書いてある。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の掲示板には、来館者の質問と、飼育員の手書きの答えがびっしり貼られていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「サメはねむるの？」「タコはなんで赤いの？」。子どもの字が多い。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（答えのほうも、ちゃんと子どもに読める字で書いてある）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉛筆を一本借りて、カードを一枚取った。"
+        },
+        {
+          "type": "choice",
+          "id": "question_card",
+          "choices": [
+            {
+              "text": "「魚は眠りますか」",
+              "next": "sleep"
+            },
+            {
+              "text": "「クラゲの前はどっちですか」",
+              "next": "front"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カードを二つに折って、箱の細い口へ落とした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（大人の字の質問、ちょっと浮いてるかもな）"
+        }
+      ],
+      "branches": {
+        "sleep": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「魚は、眠りますか」と書いた。大水槽の魚が、一度も止まって見えなかったからだ。"
+          }
+        ],
+        "front": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「クラゲの前は、どっちですか」と書いた。どの向きにも、同じ形に見えたからだ。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_chain_question_2",
+      "comment": "第2章 水族館の通いの続き 2/2（1/2の翌日以降）。掲示板に自分の質問の答えが貼られている。1/2の答えで言葉が変わる",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出口の掲示板に、新しい紙が増えていた。見覚えのある、角ばった大人の字がある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……俺のだ）"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch2_chain_question_1",
+          "pick": "sleep",
+          "next_true": "answer_sleep",
+          "next_false": "answer_front"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "答えの下に、小さな魚のイラストが添えてあった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "掲示板の前で、子どもがその紙を指さして、母親に読み上げてもらっている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（俺の質問で、誰かがひとつ覚えて帰るのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出口を出ると、街の音がいつもより少し明るく聞こえた。"
+        }
+      ],
+      "branches": {
+        "answer_sleep": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「眠ります。まぶたが無いので、目は開けたまま。夜は岩の陰でじっとしている子が多いです」"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（休んでるように見えなくても、ちゃんと休んでるのか）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（店で動き回ってる時も、どこかで力を抜く場所を作らないとな）"
+          }
+        ],
+        "answer_front": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「クラゲに、前も後ろもありません。どこから見ても同じ形で、傘の向いたほうへ進みます」"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（決まった前が無いから、どっちにも行けるのか）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（決めつけないで向きを変えられるのも、強さなのかもしれない）"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "ch3_chain_tofu_1",
       "comment": "第3章 mukai の通いの続き（#2020 D）1/3。手伝い・店番を2回した後。味が分からない日に読んでも成り立つよう、はじめは味を語らない。最初に直す一つを選ぶ（tofu_first）",
       "lines": [
@@ -1138,6 +1543,250 @@
             "speaker": "customer",
             "face": "",
             "text": "失敗した台の話は、ここだと長くなる。いい話だ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_chain_spice_1",
+      "comment": "第4章 スークの通いの続き（#3097）1/3。スークの再訪の会話を3本読んだ後、再訪の会話の代わりに読む。スパイス屋の店主に、近所のカフェの茶に入れる香辛料のどちらを前に出すか聞かれる（spice_pick）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スパイス屋の店主が、小さな皿を二つ並べて待っていた。"
+        },
+        {
+          "speaker": "spice_merchant",
+          "face": "",
+          "text": "日本の兄ちゃん、鼻を貸してくれ。近所のカフェに、茶に入れる香辛料を頼まれてね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一つ目の皿はカルダモンが強く、二つ目は乾かしたレモンが前に出ている。"
+        },
+        {
+          "speaker": "spice_merchant",
+          "face": "",
+          "text": "どっちを前に出すか、迷ってる。煙の仕事の鼻なら、どっちだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（どっちも香りが立つ。……あとは、茶と合わせた時か）"
+        },
+        {
+          "type": "choice",
+          "id": "spice_pick",
+          "choices": [
+            {
+              "text": "カルダモンを前に",
+              "next": "cardamom"
+            },
+            {
+              "text": "乾かしたレモンを前に",
+              "next": "lemon"
+            }
+          ]
+        },
+        {
+          "speaker": "spice_merchant",
+          "face": "",
+          "text": "よし、決めた。今日のうちに挽いて、届けてくる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店主は皿を片づけながら、鼻歌まじりに袋の口を縛った。"
+        }
+      ],
+      "branches": {
+        "cardamom": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "カルダモンを前に。甘い茶なら、負けないと思います"
+          },
+          {
+            "speaker": "spice_merchant",
+            "face": "",
+            "text": "甘さに負けない、か。なるほどな"
+          }
+        ],
+        "lemon": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "乾かしたレモンを前に。甘い茶に少し酸っぱさがあると、軽くなるので"
+          },
+          {
+            "speaker": "spice_merchant",
+            "face": "",
+            "text": "軽くする、か。暑い日にはいいな"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_chain_spice_2",
+      "comment": "第4章 スークの通いの続き 2/3（1/3の翌日以降）。カフェの主人に「香りが強すぎて茶の味が分からない」と言われた店主。どう直すか（spice_fix）。粗く挽く案は ch4_souq_talk_c（割り方で香りの出る速さが変わる）を受ける",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スパイス屋の店主が、こちらを見るなり手招きした。眉が少し下がっている。"
+        },
+        {
+          "speaker": "spice_merchant",
+          "face": "",
+          "text": "カフェの主人に言われちまった。「香りが強すぎて、茶の味が分からない」とさ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前に出しすぎたのかもしれない）"
+        },
+        {
+          "speaker": "spice_merchant",
+          "face": "",
+          "text": "兄ちゃんの店なら、どう直す"
+        },
+        {
+          "type": "choice",
+          "id": "spice_fix",
+          "choices": [
+            {
+              "text": "量を半分にしてみる",
+              "next": "less"
+            },
+            {
+              "text": "粗めに挽いてみる",
+              "next": "coarse"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店主は、もう一度袋を開けて、香りを確かめた。"
+        },
+        {
+          "speaker": "spice_merchant",
+          "face": "",
+          "text": "明日、もう一回だけ持っていってみる。礼は、結果が出てからだ"
+        }
+      ],
+      "branches": {
+        "less": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "量を半分にしてみてください。少ないほうが、奥まで届く香りもあるので"
+          },
+          {
+            "speaker": "spice_merchant",
+            "face": "",
+            "text": "半分か。……もったいない気もするが、やってみる"
+          }
+        ],
+        "coarse": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "粗めに挽いてみてください。香りが、ゆっくり出るので"
+          },
+          {
+            "speaker": "spice_merchant",
+            "face": "",
+            "text": "割り方で、出る速さが変わる……。前に、俺が言った話だな"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_chain_spice_3",
+      "comment": "第4章 スークの通いの続き 3/3（2/3の翌日以降）。カフェの主人が礼を言いに来る。1/3と2/3の答えで言葉が変わる",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スパイス屋の前に、白い服の年配の男が立っていた。店主が、こちらを指さす。"
+        },
+        {
+          "speaker": "spice_merchant",
+          "face": "",
+          "text": "この人だ。カフェの主人"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「あなたが、日本の煙の人か」と、カフェの主人が笑った。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch4_chain_spice_1",
+          "pick": "cardamom",
+          "next_true": "pick_cardamom",
+          "next_false": "pick_lemon"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch4_chain_spice_2",
+          "pick": "less",
+          "next_true": "fix_less",
+          "next_false": "fix_coarse"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カフェの主人は、小さな紙袋をこちらの手に載せた。中から、あの香辛料の匂いがする。"
+        },
+        {
+          "speaker": "spice_merchant",
+          "face": "",
+          "text": "礼だ。宿で、湯に少しだけ入れてみな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（鼻を貸しただけなのに、……でも、うれしい）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙袋は、宿へ戻るまでずっと、ポケットの中で香っていた。"
+        }
+      ],
+      "branches": {
+        "pick_cardamom": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カフェの主人は「カルダモンが、甘い茶をしっかり支えてくれる」と言った。"
+          }
+        ],
+        "pick_lemon": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カフェの主人は「レモンのおかげで、暑い日の茶が軽くなった」と言った。"
+          }
+        ],
+        "fix_less": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「量を半分にしてから、茶の味まで届くようになった。客が、二杯目を頼むんだ」"
+          }
+        ],
+        "fix_coarse": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「粗く挽いたら、香りが最後まで続く。最後のひと口がいちばんうまいと言われたよ」"
           }
         ]
       }
