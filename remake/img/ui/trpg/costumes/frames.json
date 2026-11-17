@@ -4105,5 +4105,177 @@
       "face_frac": 0.46,
       "eye_y_frac": 0.42
     }
+  },
+  {
+    "scenario": "purikura-hero",
+    "character": "sai",
+    "role_id": "shopkeep",
+    "file": "costumes/purikura-hero/sai_shopkeep.webp",
+    "box": [
+      359,
+      68,
+      562,
+      270
+    ],
+    "box_exact": [
+      359.41,
+      67.59,
+      561.59,
+      269.76
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 460.5,
+      "cy": 162.25,
+      "w": 93,
+      "eye_l": [
+        427.0,
+        152.0
+      ],
+      "eye_r": [
+        492.0,
+        153.0
+      ],
+      "eye_y": 152.5,
+      "cheeks": [
+        414,
+        507,
+        172
+      ],
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "regular-harbor",
+    "character": "sai",
+    "role_id": "oru",
+    "file": "costumes/regular-harbor/sai_oru.webp",
+    "box": [
+      358,
+      67,
+      561,
+      269
+    ],
+    "box_exact": [
+      358.41,
+      66.59,
+      560.59,
+      268.76
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 459.5,
+      "cy": 160.75,
+      "w": 93,
+      "eye_l": [
+        427.0,
+        151.0
+      ],
+      "eye_r": [
+        491.0,
+        152.0
+      ],
+      "eye_y": 151.5,
+      "cheeks": [
+        413,
+        506,
+        170
+      ],
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "regular-mail",
+    "character": "sai",
+    "role_id": "mitten",
+    "file": "costumes/regular-mail/sai_mitten.webp",
+    "box": [
+      369,
+      82,
+      573,
+      287
+    ],
+    "box_exact": [
+      368.83,
+      82.17,
+      573.17,
+      286.52
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 471.0,
+      "cy": 177.0,
+      "w": 94,
+      "eye_l": [
+        438.0,
+        168.0
+      ],
+      "eye_r": [
+        503.0,
+        168.0
+      ],
+      "eye_y": 168.0,
+      "cheeks": [
+        424,
+        518,
+        186
+      ],
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "mist-kingdom",
+    "character": "sai",
+    "role_id": "herald",
+    "file": "costumes/mist-kingdom/sai_herald.webp",
+    "box": [
+      369,
+      47,
+      565,
+      242
+    ],
+    "box_exact": [
+      369.17,
+      46.83,
+      564.83,
+      242.48
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 467.0,
+      "cy": 137.0,
+      "w": 90,
+      "eye_l": [
+        437.0,
+        128.0
+      ],
+      "eye_r": [
+        500.0,
+        130.0
+      ],
+      "eye_y": 129.0,
+      "cheeks": [
+        422,
+        512,
+        145
+      ],
+      "figtop": 39,
+      "figbot": 1138
+    }
   }
 ]

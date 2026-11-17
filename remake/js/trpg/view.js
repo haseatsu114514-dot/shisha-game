@@ -257,7 +257,9 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   // matches the character's standing-portrait metrics (same head height / centre).
   function roleIdOf(id) {
     const sheet = session.sheets[seatOf(id)] || session.sheets[id];
-    return sheet?.archetype || sheet?.option || null;
+    const member = scenario.cast.find(c => c.id === id);
+    // GM seats have no PC sheet; costumeRole is the in-fiction part they portray.
+    return sheet?.archetype || sheet?.option || member?.costumeRole || null;
   }
   function speakerPortrait(id, face = "normal") {
     return costumeUrl(scenario.id, id, roleIdOf(id)) || portrait(id, face);

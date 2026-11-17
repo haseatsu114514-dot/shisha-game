@@ -2,7 +2,7 @@
   "id": "regular-mail",
   "version": 2,
   "title": "月夜の常連郵便",
-  "subtitle": "スミと常連が届ける、宛名のにじんだ手紙",
+  "subtitle": "サイと常連が届ける、宛名のにじんだ手紙",
   "author": "灯森こはる",
   "collection": "常連卓 02",
   "duration": "約10分",
@@ -17,7 +17,8 @@
       "id": "sai",
       "part": "GM",
       "role": "案内と、郵便猫ミトン",
-      "color": "#b8a3cc"
+      "color": "#b8a3cc",
+      "costumeRole": "mitten"
     },
     {
       "id": "hajime",
