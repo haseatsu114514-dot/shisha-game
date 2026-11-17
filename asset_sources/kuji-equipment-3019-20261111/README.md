@@ -14,4 +14,4 @@ Codex内蔵生成、2026-11-11。過去の納品記録はwork/配下で、main�
 
 ## 採用と組み込み（2026-11-11）
 
-オーナーが3種とも採用した。`asset_sources/premium-equipment-vol08/sources.json` に登録し、`python3 tools/build_shop_equipment_art.py` で店とくじの札の絵（`remake/img/shop/equipment-v2/stand_custom_{melty,tosu,engraved}.webp`）を作った。自室に置いたときの絵はまだ無い。今の部屋の台の置き方（`remake/js/core/scene-art.js` の `HOME_SCENE_PROPS`）にくじの台3種が入っていないので、**くじの台だけを持っていると部屋には何も出ない**（元の特注台も持っていれば、元の特注台の絵が出る）。自室版の絵は #3418 で Codex に依頼中。部屋に置く台の決め方（何台も持っているときにどれを置くか）のコードは Claude 側の残り。
+オーナーが3種とも採用した。`asset_sources/premium-equipment-vol08/sources.json` に登録し、`python3 tools/build_shop_equipment_art.py` で店とくじの札の絵（`remake/img/shop/equipment-v2/stand_custom_{melty,tosu,engraved}.webp`）を作った。自室に置いたときの絵はまだ無い。今の部屋の台の置き方（`remake/js/core/scene-art.js` の `HOME_SCENE_PROPS`）にくじの台3種が入っていないので、**くじの台だけを持っていると部屋には何も出ない**（元の特注台も持っていれば、元の特注台の絵が出る）。自室版の絵は #3418 で制作し、2026-11-17 に組み込み済み（`home/` に原画、生成記録は `home/README.md`）。部屋に置く台の決め方は、特注台と同じ場所（slot）には「いちばん後に手に入れた1台」だけを置く形で `scene-art.js` に実装した。
