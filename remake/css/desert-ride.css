@@ -440,7 +440,7 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-total, html:root[dat
 
 /* 評価のメダル: 夕日の円盤に、縁取りの太い大きな文字。下に評価のひとことの札 */
 .dr-result .dr-rank { --medal-a: #ffe9a8; --medal-b: #f0a43a; --medal-c: #a8551c; --letter-a: #fff6c8; --letter-b: #ffb92e; --letter-edge: #6a2a08;
-  position: relative; display: grid; place-items: center; width: 206px; height: 206px; margin: 6px 0 22px; border-radius: 50%;
+  position: relative; display: grid; place-items: center; width: 206px; height: 206px; margin: 18px 0 30px; border-radius: 50%;
   background: radial-gradient(circle at 38% 30%, var(--medal-a), var(--medal-b) 52%, var(--medal-c) 100%);
   box-shadow: 0 0 0 6px rgba(255, 236, 190, .9), 0 0 0 10px var(--medal-c), 0 12px 0 10px rgba(30, 10, 6, .35), 0 0 60px 10px rgba(255, 180, 80, .35);
   animation: dr-medal-stamp .5s cubic-bezier(.2, 1.6, .4, 1) both; }
@@ -492,13 +492,13 @@ html:root .desert-ride .dr-card.dr-result .dr-button.dr-button:is(:hover, :focus
 html:root .desert-ride .dr-card.dr-result .dr-button.dr-button:active { transform: translateY(3px); }
 
 /* 出し方は小さい所から弾ませる（大きい所から縮めると、出ている間だけカードの外へはみ出して数えられる） */
-@keyframes dr-medal-stamp { 0% { transform: scale(.35) rotate(-24deg); opacity: 0; } 55% { opacity: 1; } 100% { transform: scale(1) rotate(-4deg); opacity: 1; } }
+@keyframes dr-medal-stamp { 0% { transform: scale(.35) rotate(-24deg); opacity: 0; } 55% { opacity: 1; } 100% { transform: none; opacity: 1; } }
 @keyframes dr-best-stamp { 0% { transform: scale(.4) rotate(-12deg); opacity: 0; } 100% { transform: scale(1) rotate(-4deg); opacity: 1; } }
 @keyframes dr-rays { to { transform: rotate(360deg); } }
 @keyframes dr-row-in { from { transform: translateX(28px); opacity: 0; } to { transform: none; opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { .dr-result .dr-rank, .dr-result .dr-rank-rays, .dr-result .dr-row, .dr-result .dr-best { animation: none !important; } .dr-result .dr-rank { transform: rotate(-4deg); } }
+@media (prefers-reduced-motion: reduce) { .dr-result .dr-rank, .dr-result .dr-rank-rays, .dr-result .dr-row, .dr-result .dr-best { animation: none !important; } .dr-result .dr-rank { transform: none; } }
 .desert-ride[data-reduced-motion="true"] :is(.dr-result .dr-rank, .dr-result .dr-rank-rays, .dr-result .dr-row, .dr-result .dr-best) { animation: none !important; }
-.desert-ride[data-reduced-motion="true"] .dr-result .dr-rank { transform: rotate(-4deg); }
+.desert-ride[data-reduced-motion="true"] .dr-result .dr-rank { transform: none; }
 
 /* スマホ: 文字は舞台上 24px 以上。メダルを少し小さくして、記録の板と並べたまま収める */
 html:root[data-density="phone"] .desert-ride .dr-card.dr-result { grid-template-columns: 380px minmax(0, 1fr); gap: 0 30px; width: 1220px; }
@@ -516,3 +516,12 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-row { padding: 6px 2
 html:root[data-density="phone"] .desert-ride .dr-result .dr-row strong { font-size: 1em; }
 html:root[data-density="phone"] .desert-ride .dr-result .dr-rows { gap: 0 20px; padding: 10px 20px; }
 html:root[data-density="phone"] .desert-ride .dr-card.dr-result .dr-button.dr-button { min-width: 0; flex: 1 1 0; font-size: 28px; }
+
+/* 2026-11-17 オーナー「ランクのメダルの位置とか変」: メダルと評価の札を傾けず、左の列の真ん中にまっすぐ置く。
+   リボンとメダルの間を空け（リボンがメダルの頭にかからない）、左右の列は上をそろえる。文字は斜体をやめて円盤の中心に置く */
+.desert-ride .dr-card.dr-result { align-items: start; }
+.dr-result .dr-result-side { padding-top: 34px; }
+.dr-result .dr-rank b { font-style: normal; margin-top: -6px; }
+.dr-result .dr-rank span { bottom: -22px; }
+html:root[data-density="phone"] .desert-ride .dr-result .dr-rank { margin: 18px 0 32px; }
+html:root[data-density="phone"] .desert-ride .dr-result .dr-result-side { padding-top: 20px; }
