@@ -35,7 +35,7 @@ const FRAME_OVERRIDES = {
   naru: {width: 831, left: -109, top: 0, right: 90.1},
   noor: {width: 688, left: -48, top: -5, fade: 14},
   oneesan: {width: 843, left: -127, top: 4, right: 91.0},
-  rei: {width: 1024, left: -228, top: 6, right: 84.8},
+  rei: {width: 1220, left: -310, top: 2, right: 77.9},
   rio: {width: 808, left: -136, top: -4, right: 96.1},
   sai: {width: 819, left: -142, top: 4, right: 95.4},
   saku: {width: 699, left: -93, top: -4, fade: 14},
@@ -65,3 +65,4 @@ export function graphicIntro(id, style) {
     frame: { ...GRAPHIC_FRAME, ...FRAME_OVERRIDES[id] },
   };
 }
+

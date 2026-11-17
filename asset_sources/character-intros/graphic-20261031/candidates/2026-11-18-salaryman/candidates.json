@@ -1,0 +1,77 @@
+[
+  {
+    "id": "A",
+    "file": "A-source.png",
+    "sha256": "f8c13f3a8396682d2e8e22a8d8f1bc175d93862c0b20db5a596ce6a4e176228e",
+    "size": [
+      1199,
+      1312
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      255
+    ],
+    "adopted": false
+  },
+  {
+    "id": "B",
+    "file": "B-source.png",
+    "sha256": "fe300243e777ab38c58825db894f559ebf08e43cfd21752eb8cad41561e01059",
+    "size": [
+      1199,
+      1312
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      255
+    ],
+    "adopted": false
+  },
+  {
+    "id": "C",
+    "file": "C-source.png",
+    "sha256": "2f2c0b0ea759f9ca76393d5637bd69b6b7e3fea30ba6fe9235e5beb4321a9c89",
+    "size": [
+      1199,
+      1312
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      255
+    ],
+    "adopted": false
+  },
+  {
+    "id": "D",
+    "file": "D-source.png",
+    "sha256": "0ed0c5853cce5497b5cb71bfc066d12d3302b706405f44f803a50f2bd5b3ef75",
+    "size": [
+      1199,
+      1312
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      255
+    ],
+    "adopted": false
+  },
+  {
+    "id": "E",
+    "file": "E-source.png",
+    "sha256": "8df0c670b784d973471cd8e4e66d5ef6a8cdf2f4979bf10df217e1dffab5b6c8",
+    "size": [
+      1199,
+      1312
+    ],
+    "mode": "RGBA",
+    "alpha": [
+      0,
+      255
+    ],
+    "adopted": false
+  }
+]
