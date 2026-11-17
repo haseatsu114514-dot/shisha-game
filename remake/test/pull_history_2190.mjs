@@ -106,7 +106,10 @@ async function harness({ learned = false, noWobble = false } = {}) {
   const source = fs.readFileSync(new URL("../js/craft/pull.js", import.meta.url), "utf8");
   const mod = new vm.SourceTextModule(source, { context });
   await mod.link(spec => {
-    if (spec === "./pull-draw.js") return new vm.SourceTextModule(fs.readFileSync(new URL("../js/craft/pull-draw.js", import.meta.url), "utf8"), { context });
+    if (["./pull-draw.js", "./stage-layout.js"].includes(spec)) {
+      const source = fs.readFileSync(new URL(`../js/craft/${spec}`, import.meta.url), "utf8");
+      return new vm.SourceTextModule(source, { context });
+    }
     const exports = imports[spec]; assert(exports, `Unexpected import: ${spec}`);
     return new vm.SyntheticModule(Object.keys(exports), function () { for (const [name, value] of Object.entries(exports)) this.setExport(name, value); }, { context });
   });

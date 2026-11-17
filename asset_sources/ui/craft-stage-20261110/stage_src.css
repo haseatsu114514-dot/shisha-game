@@ -184,11 +184,19 @@
 /* ---------- 吸い出し・調整の吸う場面: ダイヤルを大きく、金の「吸う」は右下の親指の位置 ---------- */
 & .pull-play { display: grid !important; grid-template-columns: minmax(0, 1fr) 190px 270px; grid-template-rows: minmax(0, 1fr) 100px; gap: 12px 14px; height: 100%; }
 & .pull-dial-row { grid-column: 1 / -1; grid-row: 1; height: auto !important; min-height: 0; }
-& .pull-dial { left: 50% !important; bottom: 64px !important; width: 680px !important; max-width: none; }
+& .pull-dial { left: 50% !important; bottom: 112px !important; width: 590px !important; max-width: none; }
 & .pull-zone-label { top: 8px !important; }
 & .pull-zone-label.l-down { left: 70px !important; }
 & .pull-zone-label.l-up { right: 8px !important; }
-& .pull-current-zone { left: 50% !important; top: auto !important; bottom: 0 !important; transform: translateX(-50%); }
+& .pull-current-zone { left: auto !important; right: 0; top: auto !important; bottom: 0 !important; transform: none; min-width: 310px; padding: 7px 24px; }
+& .pull-current-zone:not([hidden]) { display: grid; grid-template-columns: auto auto; align-items: baseline; justify-content: center; gap: 0 10px; }
+& .pull-current-zone .pull-destination { grid-column: 1 / -1; }
+& .pull-dial-row > .pull-tags { position: absolute; left: 0; bottom: 0; max-width: calc(100% - 360px); flex-wrap: wrap; }
+& .pull-dial-row > .pull-omen { left: 0; right: 360px; bottom: 42px; }
+& .pull-summary .pull-life { justify-content: space-between; gap: 6px; }
+& .pull-life-leaves .leaf-icon { gap: 3px; }
+& .pull-life-leaves .flavor-leaf { width: 26px; height: 26px; }
+& .bench-panel:has(> .result-card) :is(.pull-btns > button, .pull-summary, .pull-dial-row > .pull-tags, .pull-omen) { display: none !important; }
 & .pull-summary { grid-column: 1; grid-row: 2; display: grid !important; grid-template-rows: 1fr 1fr; gap: 8px; min-width: 0; }
 & .pull-summary .pull-life { min-height: 0; padding: 0 14px; }
 & .pull-btns { display: contents !important; }
@@ -251,7 +259,13 @@
 & .care-coals .btn.care-coal[data-test="care-coal-4"]::before { background: url("../img/ui/making/coal_just.webp") calc(50% - 35px) 18% / 64px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 35px) 18% / 64px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% - 35px) 88% / 64px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 35px) 88% / 64px no-repeat; }
 /* 水入れは舞台の真ん中に、大きく（上に小さく寄って下が空くのを避ける） */
 & .bench-panel:has(> .craft-water) { display: grid !important; place-items: center; }
-& .bench-panel > .craft-water { transform: scale(1.32); transform-origin: center; }
+& .bench-panel > .craft-water { width: min(100%, 760px); padding: 16px; }
+& .craft-water-meter { flex-basis: 160px; height: 250px; }
+& .craft-water-tip { padding-left: 28px; font-size: max(16px, var(--bench-small, 0px)); }
+& .craft-water-display p { margin-block: 8px; }
+& .craft-water-actions { gap: 12px; margin-top: 16px; }
+&phone .craft-water-meter { flex-basis: 180px; }
+&:has(.craft-water) .bench-worker-stage { --hero-x: -112px; }
 
 /* ---------- 配合: 葉の行に商品パッケージを大きく、4種が一度に見える ---------- */
 & .mix { height: 100% !important; display: grid !important; grid-template-columns: 250px minmax(0, 1fr) !important; grid-template-rows: minmax(0, 1fr) 100px !important; gap: 10px 16px !important; }
@@ -279,27 +293,32 @@
 & .mix-footer > .btn { height: 100px; min-height: 0; margin: 0; font-size: 26px; }
 /* スマホ: 左の列は器を小さくして予想を全部見せる。葉の行は名前を一行で読めるよう、−／＋を名前の下の段へ。
    色の見方は柱の左上（はじめの頭の上）へ逃がし、上の余白をなくす。字は22px以上（実寸12px） */
-&phone .mix { grid-template-columns: 300px minmax(0, 1fr) !important; }
+&phone { --bench-tap: calc(44.1px / var(--k, 1)); --bench-small: calc(11.6px / var(--k, 1)); }
+&phone .mix { grid-template-columns: 270px minmax(0, 1fr) !important; }
 &phone .mix-side, &phone .packing { padding-top: 0 !important; }
+&phone .packing { row-gap: 8px !important; }
 &phone .mix-vessel { width: 300px !important; height: 64px !important; }
 &phone .mix-vessel-art { transform: scale(.2) !important; transform-origin: 50% 100% !important; }
-&phone .mix-taste :is(b, small, p, summary, .flavor-axis, .flavor-heat-choices, .flavor-heat-choices span) { font-size: 22px !important; line-height: 1.3 !important; }
+&phone .mix-taste :is(b, small, p, summary, .flavor-axis, .flavor-heat-choices, .flavor-heat-choices span) { font-size: max(22px, var(--bench-small)) !important; line-height: 1.3 !important; }
 &phone .mix-taste .flavor-axis { min-height: 0 !important; }
-&phone .mix-temperature-preview > .mix-temperature-legend { left: auto !important; right: 408px !important; top: 0 !important; width: auto; flex-direction: column; gap: 0; align-items: flex-end; }
-&phone .flavor-row { display: grid !important; height: auto !important; grid-template-columns: 80px minmax(0, 1fr) 60px 52px 60px; grid-template-rows: auto auto auto auto; column-gap: 8px !important; row-gap: 2px !important; padding: 6px 10px 6px 6px !important; align-items: center !important; }
+&phone .mix-temperature-preview > .mix-temperature-legend { left: auto !important; right: 408px !important; top: 0 !important; width: auto; padding-bottom: 4px; flex-direction: column; gap: 0; align-items: flex-end; }
+&phone .flavor-row { display: grid !important; height: auto !important; grid-template-columns: 64px minmax(0, 1fr) var(--bench-tap) 44px var(--bench-tap); grid-template-rows: auto auto auto auto; column-gap: 8px !important; row-gap: 2px !important; padding: 6px 10px 6px 6px !important; align-items: center !important; }
 &phone .flavor-row > .fr-name { display: contents !important; }
-&phone .fr-package { grid-row: 1 / -1 !important; grid-column: 1 !important; width: 80px !important; height: 104px !important; }
+&phone .fr-package { grid-row: 1 / -1 !important; grid-column: 1 !important; width: 64px !important; height: 104px !important; }
 &phone .fr-package > .shop-product-art { transform: scale(2); }
 &phone .fr-feature { grid-row: 1 !important; grid-column: 2 / -1 !important; min-width: 0; white-space: nowrap; }
 &phone .fr-name .fr-feature b { font-size: 26px; }
-&phone .fr-reg { grid-row: 2 !important; grid-column: 2 / -1 !important; }
+&phone .fr-name > small:first-of-type { grid-row: 2 !important; grid-column: 2 / -1 !important; }
+&phone .fr-mastery + .fr-stock { grid-column: 2 / -1 !important; }
 &phone .fr-mastery { grid-row: 3 !important; grid-column: 2 !important; }
 /* 比率の行は空の間も1行ぶん取っておく（1g目で比率が出ても行の中身が動かない。play_feedback の mix-reserves-ratio-space）。 */
 &phone .fr-ratio { grid-row: 4 !important; grid-column: 2 !important; min-height: 1.25em !important; }
-&phone .flavor-row :is(.fr-reg, .fr-mastery, .fr-ratio) { font-size: 22px !important; line-height: 1.25 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-&phone .fr-btn { grid-row: 3 / 5 !important; width: 60px !important; height: 60px !important; min-width: 0 !important; }
+/* .fr-stock（残り○g・香り）も同じ大きさに。置かないと 12〜18px のまま縮み、実効 9px 台になる（#3558 項目4）。 */
+&phone .flavor-row :is(.fr-reg, .fr-stock, .fr-mastery, .fr-ratio) { font-size: max(22px, calc(11.5px / var(--k, 1))) !important; line-height: 1.25 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+&phone :is(.mix-ideal, .mix-optimal, .reg-line, .mix-amount .reg-line) { font-size: max(22px, calc(11.5px / var(--k, 1))) !important; line-height: 1.3 !important; }
+&phone .fr-btn { grid-row: 3 / 5 !important; width: var(--bench-tap) !important; height: var(--bench-tap) !important; min-width: 0 !important; }
 &phone .fr-btn:first-of-type { grid-column: 3 !important; }
-&phone .fr-g { grid-row: 3 / 5 !important; grid-column: 4 !important; min-width: 0; width: 52px; font-size: 24px !important; }
+&phone .fr-g { grid-row: 3 / 5 !important; grid-column: 4 !important; min-width: 0; width: 44px; font-size: max(24px, var(--bench-small)) !important; }
 &phone .fr-btn:last-of-type { grid-column: 5 !important; }
 
 /* ---------- 詰め方: 決めるボタンは右下 ---------- */
@@ -338,6 +357,7 @@
 & .heat-info .heat-carrier-head { flex: none; display: flex; align-items: baseline; gap: 14px; padding: 0 !important; }
 & .heat-info .coal-carrier-view { flex: none; width: 195px !important; height: 232px !important; transform: scale(.4); transform-origin: 0 50%; margin-right: -117px; }
 & .heat-info .heat-feedback { flex: 1; height: auto !important; justify-content: flex-start; }
+& .heat-info .countdown { left: auto; right: 20px; top: 50%; transform: translateY(-50%); font-size: 44px; line-height: 1; animation: none; }
 & .heat-info .heat-feedback .stamp { font-size: 22px !important; }
 
 /* ---------- はみ出しで画面が流れないように: はじめの絵が下へ出ても作業台はスクロールさせない ---------- */
@@ -583,6 +603,10 @@
    wide-craft.css の下限は !important のこれらの指定に負けるため、ここで割り戻した値を下限にする。 */
 &phone .bench-top > .rig-record .rig-lamp { width: max(26px, calc(17.5px / var(--k, 1))) !important; height: max(26px, calc(17.5px / var(--k, 1))) !important; }
 &phone .bench-top > .rig-record .rig-lamp b { font-size: max(13px, calc(11.5px / var(--k, 1))) !important; }
+/* スマホでは灯が 17.5px/k まで大きくなるので、光彩（::before の inset:-18%）を箱の中に収める padding も
+   同じ割り戻しに連動させる（灯の 18% ＋ 1px）。固定値のままだと光彩が箱からはみ出し、
+   .rig-record の scroll 寸法が client 寸法を超える（#3650）。負マージンで相殺するのでレールの配置は変わらない */
+&phone .bench-top > .rig-record { padding: calc(3.15px / var(--k, 1) + 1px); margin-top: calc(-3.15px / var(--k, 1) - 1px); margin-right: calc(-3.15px / var(--k, 1) - 1px); margin-bottom: calc(-3.15px / var(--k, 1) - 1px); }
 &phone .bench-progress-track > .bench-phase.now .bench-phase-copy small { font-size: max(13px, calc(11.5px / var(--k, 1))) !important; }
 &phone .bench-audience .audience-name { font-size: max(20px, calc(11.5px / var(--k, 1))) !important; }
 &phone .bench-audience .audience-note { font-size: max(20px, calc(13px / var(--k, 1))) !important; }
@@ -602,8 +626,23 @@ html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mod
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-progress-track > .bench-phase.now { padding: 0 10px 0 42px !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-phase.now .bench-phase-copy b { min-width: 0; letter-spacing: 0; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-phase.now .bench-phase-step:not(:empty) { min-width: 0; margin-left: 6px; padding-left: 6px; letter-spacing: 0; }
-html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top > .rig-record { gap: 2px !important; padding: 2px; margin: -2px -2px -2px auto; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top > .rig-record { gap: 2px !important; margin-left: auto; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top > .rival-windows { gap: 3px !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top > .rival-windows .rival-card { grid-template-columns: minmax(28px, max-content); padding: 2px 3px 3px; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top > .rival-windows .rival-face { width: 28px !important; height: 28px !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-mode="tournament"] .bench-top > .craft-rank { flex: 0 0 100px !important; width: 100px !important; margin-left: 4px !important; }
+
+/* 横持ちの実寸。詳細を開いても本文だけをスクロールできるようにする。 */
+&phone :is(.bench-appearance-button, .craft-water-actions .btn, .packing .pack-choice, .care-coals .care-place, .timer-button, .rc-next, .rc-details > summary, .bench-demo-link) { min-height: var(--bench-tap) !important; }
+&phone .bench-guide summary { min-width: var(--bench-tap); min-height: var(--bench-tap); background-size: 102% 107% !important; }
+&phone .bench-guide-tip { max-height: 570px; overflow-y: auto; }
+&phone :is(.fr-name > small:not([class]), .heat-info .heat-error, .heat-info .heat-feedback .stamp, .pull > .thermo .pull-state, .pull-destination, .pull-tag, .care-coals-lead, .care-coals .btn-label, .timer-button, .steam-weather, .thermo-range-note, .rc-lines .flavor-actual > b, .rc-lines .flavor-axis, .rc-lines .flavor-guide-caption),
+&phone[data-step="holes"] .vent-preview p span { font-size: var(--bench-small) !important; }
+&phone .timer-button[data-test="timer-reset"] { width: 19%; white-space: nowrap; letter-spacing: 0; }
+&phone .thermo-range-note { left: auto; right: 100%; width: max-content; }
+&phone .result-card:has(.rc-details[open]) { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto minmax(0, 1fr); overflow: hidden; }
+&phone .result-card:has(.rc-details[open]) > .rc-summary { grid-area: 1 / 1 / 2 / -1; }
+&phone .result-card:has(.rc-details[open]) > .rc-title { grid-area: 2 / 1; }
+&phone .result-card:has(.rc-details[open]) > .rc-next { grid-area: 2 / 2; }
+&phone .result-card .rc-details[open] { grid-area: 3 / 1 / 4 / -1; min-height: 0; overflow-y: auto; }
+&phone .result-card .rc-details[open] .rc-lines { max-height: none; overflow: visible; }
