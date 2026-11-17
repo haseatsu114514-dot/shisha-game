@@ -60,6 +60,15 @@ export const TOKYO_OUTINGS = Object.freeze([
     toast: "てつこに、少し元気をもらった", reason: "裏口のベンチで、看板猫のてつこを構う" },
 ]);
 export const OUTINGS_FLAG = "_ch3_outings";
+// mukaiのシフトの導入（#3097・RLS03）。味が戻る前は手伝いの回数で、戻った後は戻ってからの回数（mukai_help_back）で巡回する。
+// 戻った後の1回目は、いつも「味、ちゃんと戻ってきたねぇ」の場面から。
+const MUKAI_HELP_TALKS = Object.freeze({
+  lost: Object.freeze(["ch3_outing_mukai_help_lost", "ch3_outing_mukai_help_lost_b", "ch3_outing_mukai_help_lost_c"]),
+  back: Object.freeze(["ch3_outing_mukai_help", "ch3_outing_mukai_help_b", "ch3_outing_mukai_help_c"]),
+});
+// 公園の2回目からの巡回（昼夜それぞれ。#3097 で b・c に d・e を足した）
+const PARK_REVISITS = Object.freeze(["b", "c", "d", "e"]);
+const visitCount = raw => Math.max(0, Math.floor(Number(raw)) || 0);
 const RECOVERY_SCENE = "ch3_taste_return";
 
 /** 台本ID。手伝いは味が戻る前後、公園は昼夜、通う行き先は回数で読み分ける。 */
@@ -72,16 +81,19 @@ export function outingDialogueId(value, outing, window = null) {
     const count = outingCounts(value)[outing.id] || 0;
     return count === 0 || outing.talks.length === 1 ? outing.talks[0] : outing.talks[1 + (count - 1) % (outing.talks.length - 1)];
   }
-  if (outing.id === "mukai_help") return tasteRecovered(value) ? "ch3_outing_mukai_help" : "ch3_outing_mukai_help_lost";
+  if (outing.id === "mukai_help") {
+    const back = tasteRecovered(value), talks = MUKAI_HELP_TALKS[back ? "back" : "lost"];
+    return talks[visitCount(outingCounts(value)[back ? "mukai_help_back" : "mukai_help"]) % talks.length];
+  }
   if (outing.id === "park_walk") {
     const base = `ch3_outing_park_walk_${(window?.slot ?? value.slot) ? "night" : "day"}`;
     const count = outingCounts(value)[`park_walk_${(window?.slot ?? value.slot) ? "night" : "day"}`] || 0;
     // 昼夜を別に数える。旧セーブの合計から時間帯を推測せず、それぞれの初回から読む（SPV04）。
-    return count ? `${base}_${count % 2 ? "b" : "c"}` : base;
+    return count ? `${base}_${PARK_REVISITS[(count - 1) % PARK_REVISITS.length]}` : base;
   }
   return `ch3_outing_${outing.id}`;
 }
-export const OUTING_DIALOGUE_IDS = Object.freeze(["ch3_outing_mukai_help_lost", "ch3_outing_mukai_help",
+export const OUTING_DIALOGUE_IDS = Object.freeze([...MUKAI_HELP_TALKS.lost, ...MUKAI_HELP_TALKS.back,
   "ch3_outing_enmaku_notes", "ch3_outing_enmaku_answer", "ch3_outing_mukai_steve", "ch3_outing_steve_timer",
   "ch3_outing_park_walk_day", "ch3_outing_park_walk_night", "ch3_outing_tetsuko",
   "ch3_outing_tetsuko_brush", "ch3_outing_tetsuko_wait", "ch3_outing_tetsuko_trust",
@@ -90,7 +102,7 @@ export const OUTING_DIALOGUE_IDS = Object.freeze(["ch3_outing_mukai_help_lost", 
   "ch3_outing_mukai_steve_b", "ch3_outing_mukai_steve_c", "ch3_outing_steve_visit", "ch3_outing_steve_visit_b",
   "ch3_outing_enmaku_visit_d", "ch3_outing_steve_visit_c",
   "ch3_outing_volk_visit", "ch3_outing_volk_visit_b", "ch3_outing_volk_visit_c",
-  ...["day", "night"].flatMap(time => ["b", "c"].map(suffix => `ch3_outing_park_walk_${time}_${suffix}`))]);
+  ...["day", "night"].flatMap(time => PARK_REVISITS.map(suffix => `ch3_outing_park_walk_${time}_${suffix}`))]);
 
 /**
  * この外出で付く好感度（人物ID→pt。確定の前に呼ぶ）。一度きりの話と通いの1回目は段階会話、通いの2回目からは小会話（AFB02）。
@@ -120,6 +132,8 @@ export function recordChapterThreeOuting(value, id, slot = value.slot) {
     const key = `park_walk_${slot ? "night" : "day"}`;
     next[key] = (counts[key] || 0) + 1;
   }
+  // mukaiの手伝いは、味が戻ってからの回数も数える（導入の巡回を、戻った後の1回目から始めるため）
+  if (id === "mukai_help" && tasteRecovered(value)) next.mukai_help_back = visitCount(counts.mukai_help_back) + 1;
   value.flags[OUTINGS_FLAG] = next;
 }
 

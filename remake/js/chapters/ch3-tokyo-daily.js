@@ -26,7 +26,7 @@ import { chapterDay } from "../core/chapter-clock.js";
 import { tokyoTime, TOKYO_FREE_TIMES_V3, timeNumber } from "../core/tokyo-clock.js";
 import { dueTokyoVisit, completeTokyoVisitAction, visitContacts, syncTokyoVisits } from "../core/tokyo-visits.js";
 import { CH3_DAILY_PLAN, chapterThreeScenes, chapterThreeProgress, completeChapterThreeScene } from "./ch3-progress.js";
-import { OUTINGS_FLAG, OUTING_DIALOGUE_IDS, outingCounts, outingDialogueId, outingAffinity, outingReason, chapterThreeOutingCandidates, recordChapterThreeOuting } from "./ch3-outing-progress.js";
+import { OUTING_DIALOGUE_IDS, outingCounts, outingDialogueId, outingAffinity, outingReason, chapterThreeOutingCandidates, recordChapterThreeOuting } from "./ch3-outing-progress.js";
 import { availableChapterThreeTrials } from "./ch3-trial-progress.js";
 import { runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { availableOptionalScenes, commitOptionalRead, selectChapterThreeEvening,
@@ -614,7 +614,7 @@ async function mukaiShift(owner, { called = false } = {}) {
   };
   const done = await runMukaiShift({ called, intro });
   if (!done || state !== owner) return false;
-  state.flags[OUTINGS_FLAG] = { ...outingCounts(state), mukai_help: (outingCounts(state).mukai_help || 0) + 1 };
+  recordChapterThreeOuting(state, "mukai_help"); // 手伝いの回数（味が戻った後の回数も）
   return true;
 }
 
