@@ -10,6 +10,7 @@ import { maybeRecruitTrpgMember } from "./trpg.js";
 import { CINEMA_INTRO, cinemaIntroductionDue } from "../core/cinema-discovery.js";
 import { SAMECHAN_HEART_EVENTS, samechanHeartEventDone, questionDoneKey } from "../core/affinity-stages.js";
 import { readCinemaIntroduction } from "./cinema.js";
+import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
 
 export const SAMECHAN_NICKNAME_TOPIC = "lime_naru_samechan_nickname";
 export const SAMECHAN_BOND_CHOICE = "bond_q1_samechan";
@@ -185,7 +186,19 @@ export async function visitSamechan(spot, { signal = null } = {}) {
   // 同じ行動への再入では、料金・報酬を再処理せずcalendarに返す。
   if (pending && receipt.complete === true) return true;
   const count = state.story.samechan || 0;
-  const dialogue = pending ? receipt.dialogue : samechanVisitDialogue();
+  let dialogue = pending ? receipt.dialogue : samechanVisitDialogue();
+  // ♥5の締めくくりの後（#3693）: いつもの小会話（samechan_shop_repeat_*）の代わりに、♥5後の場面を一度ずつ。読み終えたら短い汎用
+  // （core/bond-after.js）。物語の場面・段階・締めくくりが残る来店はそちらが先。台本を読めなければ小会話のまま。
+  let bondAfter = pending ? receipt.bondAfter || null : null;
+  if (!pending && String(dialogue || "").startsWith("samechan_shop_repeat_")) {
+    bondAfter = bondAfterNext(state, "samechan");
+    if (bondAfter) {
+      const beforeLoad = state;
+      try { await loadBondAfterScenes(DB); dialogue = bondAfter.scene; } catch { bondAfter = null; }
+      if (state !== beforeLoad || visiting || isPlaying() || signal?.aborted
+        || `${state.chapter}:${state.day}:${state.slot}` !== stamp) return false;
+    }
+  }
   if (!DB.dialogues[dialogue]?.lines?.length) return false;
   // 片付けのあと、同じ席で話を聞く流れのまま問いかける。別の来店や追加報酬には数えない。
   // 既存の回答は visitScript が引き継ぎ、反応を読み終えるまで質問済みにはしない。
@@ -208,7 +221,7 @@ export async function visitSamechan(spot, { signal = null } = {}) {
   visiting = true;
   try {
     if (!pending) {
-      state.flags._samechan_visit = { stamp, dialogue, cinemaIntroduction: introduceCinema, complete: false };
+      state.flags._samechan_visit = { stamp, dialogue, cinemaIntroduction: introduceCinema, complete: false, ...(bondAfter ? { bondAfter } : {}) };
       save();
     }
     if (dialogue === BOND_FINALES.samechan.dialogue) {
@@ -233,6 +246,7 @@ export async function visitSamechan(spot, { signal = null } = {}) {
     const event = [...entryEvents, ...SAMECHAN_HEART_EVENTS, cinemaImpression, unwellVisit, sofaTest, mintoGift, ...laterVisits].find(e => e.dialogue === dialogue);
     if (event) state.flags[event.flag] = true;
     if (isPrepTalk(dialogue)) state.flags[`_talk_seen_${dialogue}`] = true;
+    markBondAfterRead(state, "samechan", bondAfter);
     if (readQuestion) {
       state.flags[questionDoneKey("samechan")] = true;
       releaseAffinity("samechan");
