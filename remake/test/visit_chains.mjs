@@ -36,6 +36,16 @@ const save = (extra = {}) => ({ chapter: 3, day: 40, slot: 0, phase: "daily", fl
   assert.equal(chainStageAt(steve, "ch5_tokyo_volk"), null, "ヴォルクの店には無い");
   const alley = save({ chapter: 5, flags: { _ch5_dubai_talks: { ch5_dubai_alley: 3 } } });
   assert.equal(chainStageAt(alley, "ch5_dubai_alley")?.stage.id, "ch5_chain_gift_1");
+  // 第2章の銭湯（#3097）: 初回＋再訪2回で開く。ほかの遊び場・ほかの章では開かない
+  const sento = save({ chapter: 2, flags: { _ch2_outing_visits_ch2_sento: 2 } });
+  assert.equal(chainStageAt(sento, "ch2_sento"), null, "銭湯2回では開かない");
+  sento.flags._ch2_outing_visits_ch2_sento = 3;
+  assert.equal(chainStageAt(sento, "ch2_sento")?.stage.id, "ch2_chain_bandai_1");
+  assert.equal(chainStageAt(sento, "ch2_aquarium"), null, "水族館には無い");
+  assert.equal(chainStageAt({ ...sento, chapter: 3 }, "ch2_sento"), null, "第2章の外では開かない");
+  for (const broken of [null, "x", -5, []]) {
+    assert.equal(chainStageAt(save({ chapter: 2, flags: { _ch2_outing_visits_ch2_sento: broken } }), "ch2_sento"), null, `壊れた回数 ${JSON.stringify(broken)}`);
+  }
 }
 
 // ---- 後日・夜・一度だけ。読み取りは保存を変えない ----------------------------------------------------------
@@ -158,6 +168,7 @@ function readStage(value, chainId, stage, choose, factsNow = {}) {
 }
 const combos = lists => lists.reduce((all, list) => all.flatMap(prefix => list.map(item => [...prefix, item])), [[]]);
 const opened = {
+  ch2_bandai: { chapter: 2, flags: { _ch2_outing_visits_ch2_sento: 3 } },
   ch3_tofu: { chapter: 3, flags: { _ch3_outings: { mukai_help: 2 } } },
   ch4_second_bowl: { chapter: 4, flags: { _ch4_dubai_talks: { center_cafe: 3 } } },
   ch5_steve_guest: { chapter: 5, flags: { _ch5_tokyo_talks: { ch5_tokyo_steve: 3 } } },

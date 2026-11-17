@@ -2,6 +2,280 @@
   "comment": "通いの続きの小さな出来事（#2020 D・2026-11-06 再調査の推奨案）。同じ店の小会話を一通り読んだ後に、後日へ続く2〜3段の出来事を一本ずつ置く。段の順・開く条件・記録は remake/js/chapters/visit-chains.js、読む処理は visit-chain-play.js と各章の行き先。条件 chain_pick は前の段（読んでいる段を含む）で選んだ分岐名、chain_fact は呼び出し側が渡す事実（第4章の宿の試作の結果）。第3・4章は大会前の日常でだけ読み、第5章は世界大会の後",
   "dialogues": [
     {
+      "dialogue_id": "ch2_chain_bandai_1",
+      "comment": "第2章 銭湯の通いの続き（#3097）1/3。銭湯に3回通った後、再訪の会話の代わりに読む。番台を継ぐ孫の人。最初の日に何をするか（bandai_first）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "番台に、見慣れない若い女の人が座っていた。いつものおばあさんは、その隣の丸椅子にいる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「孫なの。来月から、ここに座るのよ」と、おばあさんが言った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "孫の人は、小銭を数える手がまだ少し遅い。後ろに並んだ客を、ちらちらと気にしている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（最初のころの俺も、あんな顔してたな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自分の番が来た。孫の人が、少し緊張した顔でこちらを見上げる。"
+        },
+        {
+          "type": "choice",
+          "id": "bandai_first",
+          "choices": [
+            {
+              "text": "「ゆっくりで大丈夫ですよ」",
+              "next": "wait"
+            },
+            {
+              "text": "小銭をちょうどで置く",
+              "next": "exact"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "湯から上がると、番台からおばあさんの「湯冷めしないようにね」が聞こえた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "孫の人は、その声を横で聞きながら、口の中で小さく同じ言葉をなぞっていた。"
+        }
+      ],
+      "branches": {
+        "wait": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ゆっくりで大丈夫ですよ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "孫の人は、ほっとしたように小さく笑って、丁寧にお釣りを数えた。"
+          }
+        ],
+        "exact": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "財布から、入浴料ちょうどの小銭を出して台に置いた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "孫の人はぱっと顔を上げて、ぺこりと頭を下げた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_chain_bandai_2",
+      "comment": "第2章 銭湯の通いの続き 2/3（1/3の翌日以降）。ひとりで番台に座る孫の人が、おばあさんの決まり文句を自分が言うと嘘っぽいと打ち明ける。どう答えるか（bandai_word）",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今日は、番台に孫の人がひとりで座っていた。おばあさんの姿は見えない。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "いらっしゃいませ、……あ、いつもの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "小銭を受け取ると、孫の人は少し迷ってから、声を落とした。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "おばあちゃんの「湯冷めしないようにね」、私が言うと、なんだか嘘っぽくて"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "でも、言わないのも違う気がするんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（受け継ぐ言葉か。……俺も最初は、誰かの言い方を借りてた）"
+        },
+        {
+          "type": "choice",
+          "id": "bandai_word",
+          "choices": [
+            {
+              "text": "そのまま借りてもいいと思う",
+              "next": "same"
+            },
+            {
+              "text": "自分の言いやすい言葉でいい",
+              "next": "own"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "湯船に浸かりながら、さっきの顔を思い出していた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りがけに番台の前を通ると、孫の人が小さく手を振った。"
+        }
+      ],
+      "branches": {
+        "same": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "そのまま借りてもいいと思います。言ってるうちに、自分のになるので"
+          },
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "……借りる、か。それなら、言えるかも"
+          }
+        ],
+        "own": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "自分の言いやすい言葉でいいと思います。気持ちが同じなら、伝わるので"
+          },
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "私の言葉……。ちょっと、考えてみます"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch2_chain_bandai_3",
+      "comment": "第2章 銭湯の通いの続き 3/3（2/3の翌日以降）。番台に慣れた孫の人と、客として湯に来たおばあさん。1/3と2/3の答えで言葉が変わる",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "番台の孫の人は、小銭を数える手がもう速くなっていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "おばあさんは、今日は番台の外にいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "湯上がりの客として、扇風機の前の椅子に座っている。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch2_chain_bandai_1",
+          "pick": "wait",
+          "next_true": "first_wait",
+          "next_false": "first_exact"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch2_chain_bandai_2",
+          "pick": "same",
+          "next_true": "word_same",
+          "next_false": "word_own"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りがけ、おばあさんがこちらを見て、ひとつ頷いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「あの子、やっと自分で座れるようになったよ」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（受け継ぐって、同じことをするだけじゃないんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "暖簾をくぐると、湯上がりの熱が、背中からゆっくり逃げていった。"
+        }
+      ],
+      "branches": {
+        "first_wait": [
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "最初の日、ゆっくりでいいって言ってくれましたよね"
+          },
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "あれから、お客さんの顔を見る余裕ができました"
+          }
+        ],
+        "first_exact": [
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "最初の日、小銭をちょうどで置いてくれましたよね"
+          },
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "ああいうの、本当に助かるんです。今は、私がお釣りを用意する側ですけど"
+          }
+        ],
+        "word_same": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "湯から上がると、番台から「湯冷めしないようにね」と聞こえた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "おばあさんと同じ言葉なのに、声はちゃんと孫の人のものだった。"
+          }
+        ],
+        "word_own": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "湯から上がると、番台から「ぽかぽかのまま、帰ってくださいね」と聞こえた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "おばあさんとは違う言葉なのに、言われた時の気持ちは、不思議と同じだった。"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "ch3_chain_tofu_1",
       "comment": "第3章 mukai の通いの続き（#2020 D）1/3。手伝い・店番を2回した後。味が分からない日に読んでも成り立つよう、はじめは味を語らない。最初に直す一つを選ぶ（tofu_first）",
       "lines": [

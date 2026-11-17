@@ -13,7 +13,7 @@ const dialogues = Object.fromEntries(["ch2_isolation", "ch2_main", "ch2_ageha_st
   .flatMap(file => JSON.parse(read(`data/dialogue/${file}.json`)).dialogues).map(d => [d.dialogue_id, d]));
 const START = 15, abs = day => START + day - 1;
 const context = vm.createContext({ console, AbortController, setTimeout, clearTimeout });
-let state, played, mode, saves, visitDue, lessons, prepDue = null;
+let state, played, mode, saves, visitDue, lessons, prepDue = null, chainDue = null;
 const DB = { dialogues };
 const statePort = new vm.SyntheticModule(["state", "save", "markMet", "timeOfDay"], function () {
   this.setExport("state", state); this.setExport("save", () => saves++);
@@ -34,6 +34,7 @@ const mocks = {
     played.push([id, opts?.bg || null]);
     if (mode === "cancel" && id === "ch2_naru_window") return { cancelled: true };
     if (mode === "cancel-intro" && /_(trpg|aquarium|sento)$/.test(id)) return { cancelled: true };
+    if (mode === "cancel-chain" && /^ch2_chain_/.test(id)) return { cancelled: true };
     if (mode === "replace-state") { state = fresh(); statePort.setExport("state", state); }
     return { id };
   } },
@@ -60,6 +61,9 @@ const mocks = {
   "remake/js/core/ryuji-visit.js": { reiStickerDue: () => false },
   "remake/js/core/affinity-stages.js": { AGEHA_AFFINITY_VISITS: [], CH2_VISIT_STORIES: {}, ch2VisitDone: () => false, ch2VisitReady: () => true },
   "remake/js/chapters/ch2-craft-prep.js": { craftPrepDue: () => prepDue, offerCraftPrep: async () => ({ used: true, exerted: true }) },
+  // 通いの続き（#3097）。段の判定と記録は visit_chains.mjs が実物で確かめる。ここは来店の分岐と精算だけ
+  "remake/js/chapters/visit-chain-play.js": { chainVisitDue: async place => chainDue?.stage.place === place ? chainDue : null,
+    playChainStage: async (due, read) => !!(await read(due.stage.id)) },
 };
 const REAL = ["remake/js/chapters/ch2-preparation.js", "remake/js/chapters/ch2-story.js", "remake/js/chapters/ch2-story-data.js", "remake/js/chapters/ch2-outings.js",
   "remake/js/core/bond-after.js"]; // ♥5後の会話（#3693）の判定は実物。台本の読み込みは上の chapter-data の差し替えを使う
@@ -183,6 +187,30 @@ for (const [charId, intro, flag] of [["rei", "remake_ch2_rei_trpg", "_rei_trpg_i
 await setup({ chapter: 3, met: { rei: true } });
 await go({ id: "ch2_rei", kind: "rival", charId: "rei", region: "widehanga", cost: 3000, stamina: -16 });
 assert(!played.some(([id]) => id === "remake_ch2_rei_trpg"), "no city introduction outside chapter 2");
+// 通いの続き（#3097）: 段がある日は、銭湯の再訪の会話の代わりに段を読む。代金・体力・能力はいつもの来店と同じで、巡回は進めない
+{
+  const SENTO = { id: "ch2_sento", kind: "outing", region: "widehanga" };
+  const sentoFlags = () => ({ _ch2_day1: { startDay: START }, _kumicho_sento_introduced: true, _ch2_visited_ch2_sento: true, _ch2_outing_visits_ch2_sento: 3 });
+  await setup({ flags: sentoFlags() });
+  const before = { money: state.money, stamina: state.stamina };
+  assert.equal((await go(SENTO)).used, true);
+  assert.equal(played.at(-1)[0], "remake_ch2_sento_repeat_c", "no chain: the ordinary revisit");
+  const usual = { money: state.money - before.money, stamina: state.stamina - before.stamina, growth: plain(state.growth) };
+  assert.equal(state.flags._ch2_outing_visits_ch2_sento, 4);
+  chainDue = { id: "ch2_bandai", stage: { id: "ch2_chain_bandai_1", place: "ch2_sento" } };
+  await setup({ flags: sentoFlags() });
+  assert.equal((await go(SENTO)).used, true);
+  assert.deepEqual(played.map(([id]) => id), ["ch2_chain_bandai_1"], "the chain stage replaces the revisit");
+  assert.deepEqual({ money: state.money - before.money, stamina: state.stamina - before.stamina, growth: plain(state.growth) }, usual, "same price, stamina and growth");
+  assert.equal(state.flags._ch2_outing_visits_ch2_sento, 3, "the revisit rotation does not advance");
+  await setup({ flags: sentoFlags() }); mode = "cancel-chain";
+  const kept = plain(state);
+  assert.equal((await go(SENTO)).used, false);
+  assert.deepEqual(plain(state), kept, "a cancelled chain stage keeps nothing");
+  await setup({ flags: sentoFlags() });
+  assert.equal((await go({ id: "ch2_aquarium", kind: "outing", region: "widehanga" })).used, false, "not introduced: no aquarium");
+  chainDue = null;
+}
 const intro = dialogues.remake_ch2_ageha_aquarium.lines.map(line => line.text).join("\n");
 assert(!/初めて|配達|会場はあっち|大会/.test(intro), "the aquarium introduction no longer assumes DAY1 or the tournament");
 

@@ -69,11 +69,12 @@ Object.assign(DB.dialogues, await readDialogues('ch4_dubai_daily', [...inn.names
 const cases = [
   ['ch5_tokyo_attic', 'ch5_tokyo_attic_rest', () => tokyo.namespace.performTokyoSpot(tokyo.namespace.TOKYO_SPOTS.find(s=>s.id==='ch5_tokyo_attic'))],
   ['ch5_dubai_guest', 'ch5_dubai_guest_rest', () => dubai.namespace.performDubaiSpot(dubai.namespace.DUBAI_SPOTS.find(s=>s.id==='ch5_dubai_guest'))],
-  ['ch4_dubai_inn', 'ch4_inn_rest', () => inn.namespace.performDubaiSpot(inn.namespace.CH4_DUBAI_SPOTS.find(s=>s.place==='inn'), {}, {staminaGuard:async()=>true})],
+  ['ch4_dubai_inn', 'ch4_inn_rest', () => inn.namespace.performDubaiSpot(inn.namespace.CH4_DUBAI_SPOTS.find(s=>s.place==='inn'), {}, {staminaGuard:async()=>true}), ['_b', '_c', '_d', '_e']], // #3097 で宿は5本
 ];
-for (const [spot,base,visit] of cases) {
+const revisits = rest => rest || ['_b', '_c'];
+for (const [spot,base,visit,rest] of cases) {
   replace(newState()); current.money=12345; current.stamina=10; scenes.length=0;
-  for (const suffix of ['', '_b', '_c', '']) {
+  for (const suffix of ['', ...revisits(rest), '']) {
     const before=current.stamina; assert.equal((await visit()).used,true);
     assert.equal(scenes.at(-1),base+suffix,spot+' visit order');
     assert(current.stamina>before); assert.equal(current.money,12345); assert.equal(rewards,0);
@@ -94,7 +95,7 @@ trial=true; choices=['cancel']; assert.equal((await cases[2][2]()).used,false);
 choices=['rest']; assert.equal((await cases[2][2]()).used,true); assert.equal(scenes.at(-1),'ch4_inn_rest');
 trial=false; rehearsal=true; choices=['rest']; await cases[2][2](); assert.equal(scenes.at(-1),'ch4_inn_rest_b');
 rehearsal=false; await cases[2][2](); assert.equal(scenes.at(-1),'ch4_inn_rest_c');
-for (const [,base] of cases) for (const suffix of ['_b','_c']) {
+for (const [,base,,rest] of cases) for (const suffix of revisits(rest)) {
   const scene=DB.dialogues[base+suffix]; assert(scene && !scene.metadata);
   for (const line of scene.lines) {
     assert(!line.type); assert(['','hajime'].includes(line.speaker));

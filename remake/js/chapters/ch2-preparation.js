@@ -26,6 +26,7 @@ import { consultLessons } from "../core/growth.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { reiStickerDue } from "../core/ryuji-visit.js";
 import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
+import { chainVisitDue, playChainStage } from "./visit-chain-play.js";
 
 const stat = { ageha: "sense", kumicho: "guts", rei: "charm" };
 // day % 7（1=月曜）。第2章の準備期間（通算16〜27日）では各店とも1日だけ休む（#2027）。
@@ -183,12 +184,21 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   const outing = knownCityOutings(state).find(item => item.id === spot.id && item.kind === "outing");
   if (outing) {
     if (spendableMoney(state) < outing.cost) return { used: false, exerted: false };
-    const dialogueId = outingDialogue(outing, state.flags);
-    const result = await play(dialogueId, { bg: outing.previewUrl || MAP[timeOfDay()], growthScene: true }); // 自分で選んだ外出の固有場面（X5）
-    if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
+    const bg = outing.previewUrl || MAP[timeOfDay()];
+    // 通いの続き（chapters/visit-chains.js・#3097）の段があれば、再訪の会話の代わりに読む（巡回は進めない）。代金・体力・能力はいつもの来店と同じ
+    const chain = await chainVisitDue(outing.id);
+    if (state !== owner) return { used: false, exerted: false };
+    if (chain) {
+      const read = await playChainStage(chain, async id => { const r = await play(id, { bg, growthScene: true }); return !!r && !r.cancelled; });
+      if (state !== owner || !read) return { used: false, exerted: false };
+    } else {
+      const dialogueId = outingDialogue(outing, state.flags);
+      const result = await play(dialogueId, { bg, growthScene: true }); // 自分で選んだ外出の固有場面（X5）
+      if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
+    }
     addMoney(-outing.cost); addStamina(outing.stamina);
     if (outing.stat) earnStat(outing.stat, 2);
-    recordOutingVisit(state.flags, outing);
+    if (!chain) recordOutingVisit(state.flags, outing);
     return { used: true, exerted: outing.stamina < 0 };
   }
   if (spot.kind === "trpg") return null;
