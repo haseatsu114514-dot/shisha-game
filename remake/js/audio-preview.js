@@ -1,6 +1,6 @@
 // 効果音の試聴ページ（audio-preview.html）。新しく入れた録音と、前の合成音を聴き比べる。
 // 音はゲーム本編と同じ core/audio.js をそのまま鳴らす。出典は asset_sources/music/main-se-20261111/。
-import { SE, SYNTH_SE, unlockAudio, preloadSe, applyVolumes } from "./core/audio.js";
+import { SE, SYNTH_SE, unlockAudio, preloadSe, applyVolumes, playBgm, stopBgm } from "./core/audio.js";
 import { config } from "./core/state.js";
 
 // now: 今ゲームで鳴る音。before: 前に鳴っていた音（null は「前は無音」）。
@@ -40,8 +40,8 @@ export const AUDIO_PREVIEW_ROWS = [
 export const BGM_PREVIEW_ROWS = [
   { name: "柚ヶ谷の街（第2章）", file: "bgm_yuzugaya.mp3", where: "第2章の朝・柚ヶ谷の地図と店先・柚ヶ谷の仕入れの店・ボドゲカフェを出た後",
     src: "Pro Sensory「Mocha Frapp」（CC0）。J04 の曲ができるまでの仮の曲。今までは下の「日常の曲」が第2章でも鳴っていた" },
-  { name: "日常の曲（比べる用。第1・3章はこのまま）", file: "kansetsu_shomei_to_black_coffee.mp3", where: "第1章・第3章の朝と地図",
-    src: "「間接照明とブラックコーヒー」" },
+  { name: "日常の曲（比べる用。第1・3章はこのまま）", key: "kansetsu_shomei_to_black_coffee", where: "第1章・第3章の朝と地図",
+    src: "オオヒラセイジ「間接照明とブラックコーヒー」（OpenTracks・旧DOVA-SYNDROME）" },
   { name: "ドバイの街（第4章）", file: "bgm_dubai.mp3", where: "第4章のドバイ（到着・自由行動・訪問・宿）",
     src: "yd「Desert theme」（CC0・約95秒）。今までの曲は27秒の繰り返しだった（DJ CrisP「Desert Travel (Loop)」）" },
 ];
@@ -86,17 +86,35 @@ for (const [index, row] of AUDIO_PREVIEW_ROWS.entries()) {
 
 const bgmList = document.getElementById("bgm-list");
 const players = [];
+const stopPacked = () => stopBgm(0);
 for (const [index, row] of BGM_PREVIEW_ROWS.entries()) {
-  const player = make("audio", { controls: true, preload: "none", src: `../assets/audio/bgm/${row.file}`, id: `bgm-${index}` });
-  // 1曲ずつ鳴らす: 再生を始めたら、ほかの曲を止める。
-  player.addEventListener("play", () => { for (const other of players) if (other !== player) other.pause(); });
-  players.push(player);
-  bgmList.append(make("section", { className: "row bgm" }, [
-    make("div", {}, [
-      make("h2", { textContent: row.name }),
-      make("p", { className: "where", textContent: `鳴る場面: ${row.where}` }),
-      make("p", { className: "src", textContent: `曲: ${row.src}` }),
-    ]),
-    player,
-  ]));
+  const info = [
+    make("h2", { textContent: row.name }),
+    make("p", { className: "where", textContent: `鳴る場面: ${row.where}` }),
+    make("p", { className: "src", textContent: `曲: ${row.src}` }),
+  ];
+  // 梱包した曲（.bgm）は raw の <audio> では鳴らせない。ゲームと同じ playBgm で再生する（単体ファイルを公開しない）。
+  let control;
+  if (row.key) {
+    const button = make("button", { type: "button", textContent: "再生", id: `bgm-${index}` });
+    button.addEventListener("click", async () => {
+      await unlock();
+      for (const other of players) other.pause();
+      if (button.dataset.playing === "1") { stopPacked(); button.dataset.playing = ""; button.textContent = "再生"; return; }
+      playBgm(row.key);
+      button.dataset.playing = "1"; button.textContent = "停止";
+    });
+    control = button;
+  } else {
+    const player = make("audio", { controls: true, preload: "none", src: `../assets/audio/bgm/${row.file}`, id: `bgm-${index}` });
+    player.addEventListener("play", () => {
+      stopPacked();
+      const packedBtn = document.querySelector("#bgm-list button[data-playing='1']");
+      if (packedBtn) { packedBtn.dataset.playing = ""; packedBtn.textContent = "再生"; }
+      for (const other of players) if (other !== player) other.pause();
+    });
+    players.push(player);
+    control = player;
+  }
+  bgmList.append(make("section", { className: "row bgm" }, [make("div", {}, info), control]));
 }

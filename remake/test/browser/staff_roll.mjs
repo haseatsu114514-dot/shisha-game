@@ -292,7 +292,7 @@ await suite("staff-roll", async check => {
     assert.equal(await page.locator(".staff-roll-music .staff-roll-role").textContent(), "使用楽曲");
     assert.deepEqual(await page.locator(".staff-roll-source").allTextContents(), ["音楽：魔王魂", "音楽：甘茶の音楽工房", "音楽：OpenGameArt.org（CC0）", "音楽：Kevin MacLeod（incompetech.com）– Licensed under Creative Commons: By Attribution 4.0 License http://creativecommons.org/licenses/by/4.0/"]);
     assert.deepEqual(await page.locator(".staff-roll-song-credit").allTextContents(),
-      ["作曲 秋山裕和（H/MIX GALLERY）", "作曲 shimtone（OpenTracks）", "作曲 Napi（M-ART）",
+      ["作曲 秋山裕和（H/MIX GALLERY）", "作曲 shimtone（OpenTracks）", "作曲 オオヒラセイジ（OpenTracks）", "作曲 Napi（M-ART）",
         "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 甘茶（甘茶の音楽工房）",
         "作曲 Kevin MacLeod（incompetech.com・CC BY 4.0）",
         ...["Eldritch Grim", "Aureolus_Omicron", "congusbongus", "TAD", "controllerhead", "yd", "Kistol", "northivanastan", "Bobjt", "Aureolus_Omicron",
@@ -310,7 +310,8 @@ await suite("staff-roll", async check => {
       ["Mixkit Sound Effects（Free License）", "Kenney", "Joseph Sardin（BigSoundBank / La Sonothèque）（CC0）", "AntumDeluge（原音 craigsmith / Freesound 437937）（CC0）"]);
     assert.deepEqual((await page.locator(".staff-roll-sound-desert p").allTextContents()).map(t => t.split("：")[1].split(" – ")[0]),
       ["Mixkit Sound Effects（Free License）", "Kenney", "Joseph Sardin（BigSoundBank / La Sonothèque）（CC0）"]);
-    assert(!text.includes("間接照明とブラックコーヒー"), "A song without a recorded source is not credited yet");
+    assert(text.includes("間接照明とブラックコーヒー"), "Daily BGM is credited now that the OpenTracks source is recorded");
+    assert(!text.includes("Shared Discovery") && !text.includes("Aiming groove"), "Owner-made Suno tracks stay off the third-party list until the owner decides");
     assert.deepEqual(await page.locator(".staff-roll-sound-trpg p").allTextContents(),
       ["効果音（TRPG）：Kenney – Casino Audio / RPG Audio / Music Jingles（CC0） – https://kenney.nl/"]);
     for (const key of ["Escape", "Enter", " "]) await page.keyboard.press(key);

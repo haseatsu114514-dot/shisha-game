@@ -13,15 +13,17 @@ TRPGの効果音・シナリオ別BGM（CC0・2026-11-10の仮採用）は [trpg
 
 | ファイル | 曲名 | 出典 | 使用先 |
 |---|---|---|---|
-| `kansetsu_shomei_to_black_coffee.mp3` | 間接照明とブラックコーヒー | フリーBGM（配布元・作曲者は未記入） | 日常パート（`assets/audio/bgm/kansetsu_shomei_to_black_coffee.mp3`） |
+| `assets/audio/bgm/kansetsu_shomei_to_black_coffee.bgm` | 間接照明とブラックコーヒー | OpenTracks（旧DOVA-SYNDROME）・作曲 オオヒラセイジ。クレジット任意だが推奨。詳細は [kansetsu-shomei-opentracks-20261118.md](kansetsu-shomei-opentracks-20261118.md) | 日常パート（第1・3章の朝と地図など） |
 | `sweets_or_sweets.ogg` | おいしいお菓子を捧げよ！ | M-ART（http://mart.kitunebi.com）・作曲 Napi | サメちゃんのテーマ（mp3へ変換して `assets/audio/bgm/sweets_or_sweets.mp3`） |
 | `morning_cafe.mp3` | morning cafe（ファイル名より） | 未記入 | 保留（使い道が決まるまで未使用） |
 | `assets/audio/bgm/bgm_tournament_edm.bgm` | Overture! | H/MIX GALLERY・作曲 秋山裕和 | 大会開幕の挨拶〜選手入場 |
 | `assets/audio/bgm/bgm_tournament_craft.bgm` | Mind Duel | OpenTracks（旧DOVA-SYNDROME）・作曲 shimtone | 大会のシーシャ制作（ROUND 1〜3） |
-| `assets/audio/bgm/bgm_trpg.bgm` | Shared Discovery | ユーザー添付・2026-10-20採用（配布元・作者は未記入） | ボドゲカフェ（TRPG） |
-| `assets/audio/bgm/bgm_axe.bgm` | Aiming groove | ユーザー添付・2026-10-20採用（配布元・作者は未記入） | 斧投げBAR・ひよりとの斧投げ |
+| `assets/audio/bgm/bgm_trpg.bgm` | Shared Discovery | オーナー作成（Suno。埋め込みタグ: artist `atk114514`、`made with suno`、created 2026-10-20）。第三者の配布曲ではない | ボドゲカフェ（TRPG） |
+| `assets/audio/bgm/bgm_axe.bgm` | Aiming groove | オーナー作成（Suno。埋め込みタグ: artist `atk114514`、`made with suno`、created 2026-10-20）。第三者の配布曲ではない | 斧投げBAR・ひよりとの斧投げ |
 | `assets/audio/bgm/bgm_trpg_*.mp3`（10曲） | TRPGのシナリオ別BGM（仮） | OpenGameArt・CC0（作者は各曲） | TRPGの卓（シナリオのテーマ別） |
 | `assets/audio/bgm/bgm_camel_race.bgm` | Firebrand | incompetech.com・作曲 Kevin MacLeod・CC BY 4.0 | ラクダレース（出走〜リザルト）。砂漠ライド練習の `bgm_ethnic12` はそのまま |
+
+日常曲「間接照明とブラックコーヒー」も OpenTracks の利用条件（音源MP3の単体公開・容易な取り出しを禁止）に合わせ、公式配布音源は公開リポジトリに置かず、大会曲と同じゲーム専用形式で保存する。スタッフロールの使用楽曲に1行足した（FIN08）。
 
 大会の2曲は公式配布元から取得し、単体音源を公開しないゲーム専用形式で保存。
 [出典・利用条件・音量測定・再変換手順](confirmed-tournament-bgm-20261009.md)を参照。

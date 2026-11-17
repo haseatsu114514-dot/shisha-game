@@ -7,8 +7,8 @@
 
 | 曲（ファイル名） | 出典 | 使用先 | 元音源 |
 |---|---|---|---|
-| Shared Discovery（`Shared Discovery.mp3`） | ユーザー添付（配布元・作者は未記入） | `assets/audio/bgm/bgm_trpg.bgm`：ボドゲカフェ（TRPG）の入店から退店まで | MP3・48 kHz・ステレオ・198.16秒・4,528,970 bytes・カバーアート埋込あり |
-| Aiming groove（`Aiming groove.mp3`） | ユーザー添付（配布元・作者は未記入） | `assets/audio/bgm/bgm_axe.bgm`：斧投げBARの入店から退店まで、ひよりとの斧投げの実プレイ中 | MP3・48 kHz・ステレオ・91.00秒・2,127,635 bytes・カバーアート埋込あり |
+| Shared Discovery（`Shared Discovery.mp3`） | オーナー作成（Suno。ID3: title「Shared Discovery」、artist `atk114514`、comment `made with suno; created=2026-10-20T12:44:38Z; id=6edd507b-c5aa-455b-8c8c-3ef230101018`） | `assets/audio/bgm/bgm_trpg.bgm`：ボドゲカフェ（TRPG）の入店から退店まで | MP3・48 kHz・ステレオ・198.16秒・4,528,970 bytes・カバーアート埋込あり |
+| Aiming groove（`Aiming groove.mp3`） | オーナー作成（Suno。ID3: title「Aiming groove」、artist `atk114514`、comment `made with suno; created=2026-10-20T12:45:18Z; id=be576255-9a6f-4286-ae4e-d13d46038339`） | `assets/audio/bgm/bgm_axe.bgm`：斧投げBARの入店から退店まで、ひよりとの斧投げの実プレイ中 | MP3・48 kHz・ステレオ・91.00秒・2,127,635 bytes・カバーアート埋込あり |
 
 byte数は #788 の採用記録と一致。元MP3は公開リポジトリに置かず、[大会BGMと同じ形式](confirmed-tournament-bgm-20261009.md#利用条件と保存形式)（`SUIENBGM1`・AES-256-GCM）に変換した。元音源のバイト列は変更していない（再圧縮・カバーアート除去なし）。
 

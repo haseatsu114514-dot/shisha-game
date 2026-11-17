@@ -33,6 +33,7 @@ export const STAFF_CREDITS = Object.freeze([
 export const STAFF_MUSIC = Object.freeze([
   { title: "Overture!", composer: "秋山裕和", source: "H/MIX GALLERY" },
   { title: "Mind Duel", composer: "shimtone", source: "OpenTracks" },
+  { title: "間接照明とブラックコーヒー", composer: "オオヒラセイジ", source: "OpenTracks" },
   { title: "おいしいお菓子を捧げよ！", composer: "Napi", source: "M-ART" },
   { title: "民族12 アラブの商人", composer: "魔王魂", source: "魔王魂" },
   { title: "民族08 ピラミッド アレンジ版", composer: "魔王魂", source: "魔王魂" },
