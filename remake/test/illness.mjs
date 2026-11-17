@@ -66,6 +66,7 @@ const values = {
   "status.js": { openStatus: async () => {} }, "menu.js": { openMenu: async () => null }, "reel.js": { onAction: noop, presentNow: async () => {}, installReel: noop, changeSetting: () => false },
   "romance.js": { maybeConfession: async () => false, playDate: async () => {} },
   "samechan-date.js": { samechanDateReady: () => false, playSamechanDate: async () => ({ done: false, spent: 0 }) },
+  "bond-after.js": { bondAfterNext: () => null, markBondAfterRead() {}, loadBondAfterScenes: async () => {} },
   "bonds.js": { afterStory: async () => {}, isFinaleEvent: () => false, playFinale: async () => {}, isFriendEvent: () => false, playFriendHangout: async () => {},
     questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false },
   "samechan.js": { syncSamechanKnowledge: noop, maybeSamechanEncounter: async opts => { homecomingChecks.push({ day: state.day, ...opts }); return false; }, visitSamechan: async () => false, samechanSpot: () => null, samechanVisitDialogue: () => null },

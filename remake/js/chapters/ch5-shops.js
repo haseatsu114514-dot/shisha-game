@@ -18,6 +18,7 @@ import { SPOTS, CHAR_STAT, VISIT_BG, isClosed } from "../daily/spots.js";
 import { PREPARATION_SPOTS } from "./ch2-preparation.js";
 import { consultLessons } from "../core/growth.js";
 import { CH5_FIRST_TALKS, chapterFiveFirstTalkDue, chapterFiveFirstTalkSeenFlag } from "./ch5-first-talks.js";
+import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
 
 const TALKS_FLAG = "_ch5_shop_talks"; // 小会話の巡回の回数（店ごと）
 
@@ -137,7 +138,15 @@ export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
   if (staminaGuard && !(await staminaGuard(entry.stamina))) return unused;
   const talks = state.flags[TALKS_FLAG] ||= {};
   const extra = entry.firstTalk ? null : chapterFiveShopExtraDue(entry, state);
-  const scene = entry.firstTalk ? entry.firstTalk.scene : extra || entry.talks[(talks[entry.id] || 0) % entry.talks.length];
+  // ♥5の締めくくりの後（#3693）: 通いの小会話の代わりに、その人の♥5後の場面（5本）を一度ずつ（core/bond-after.js）。
+  // 5本を読み終えた後は、短い汎用ではなく第5章の通いの小会話を巡回する（第5章の店の様子を残すため）。台本を読めなければ小会話のまま。
+  let after = !entry.firstTalk && !extra && entry.talkWith ? bondAfterNext(state, entry.talkWith) : null;
+  if (after?.kind !== "story") after = null;
+  if (after) {
+    try { await loadBondAfterScenes(DB); } catch { after = null; }
+    if (state !== owner) return unused;
+  }
+  const scene = entry.firstTalk ? entry.firstTalk.scene : extra || after?.scene || entry.talks[(talks[entry.id] || 0) % entry.talks.length];
   if (entry.bgUrl) await setBg(entry.bgUrl);
   else {
     const { url, tint } = sceneBg(entry.bg, timeOfDay());
@@ -150,6 +159,7 @@ export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
   addStamina(entry.stamina || -16);
   if (entry.firstTalk) recordFirstTalk(entry);
   else if (extra) state.flags[extraSeenFlag(extra)] = true; // 通いの小会話の巡回は進めない（次はいつもの続きから）
+  else if (after) markBondAfterRead(state, entry.talkWith, after); // 同じく、巡回は進めない
   else talks[entry.id] = (talks[entry.id] || 0) + 1;
   if (entry.talkWith) { gainAffinity(entry.talkWith, entry.affinity || 5); markMet(entry.talkWith); }
   if (entry.stat) earnStat(entry.stat, 4);

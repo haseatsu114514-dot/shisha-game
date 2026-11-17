@@ -34,6 +34,7 @@ const values = {
   "story-knowledge.js": { syncMintoKnowledge() {} },
   "session.js": { runDrill: async () => 0, DRILLS: {} },
   "samechan.js": { samechanSpot: () => null, samechanVisitDialogue: () => null },
+  "bond-after.js": { bondAfterNext: () => null, markBondAfterRead() {}, loadBondAfterScenes: async () => {} },
   "bonds.js": { afterStory: async () => {}, questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false, playFinale: async () => false },
   "scene-motions.js": { shiftClose: async () => {} },
   "bus.js": { emit() {}, on: () => () => {} },

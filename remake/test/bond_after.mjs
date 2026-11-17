@@ -1,5 +1,6 @@
 // #3693 好感度MAX（♥5）の締めくくりの後の会話: 対象（友人ルートだけ）・順番・前提の持ち物・短い汎用の巡回・台本の揃い。
-// 実際の来店（第2〜4章の visitPreparationSpot・第5章の visitCityRegular）は remake/test/browser/ で見る。
+// 実際の来店は、店の来店 visitChar が first_meeting_affinity.mjs、スミさんのバイト上がりが after_shift_b05_b06.mjs、
+// 柚ヶ谷の店（第2〜4章の visitPreparationSpot・第5章の visitCityRegular）が remake/test/browser/ で見る。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { BOND_AFTER, BOND_AFTER_SCENE_IDS, bondAfterEligible, bondAfterNext, markBondAfterRead } from "../js/core/bond-after.js";
@@ -15,15 +16,31 @@ const faces = id => manifest.portraits?.[id]?.faces || [];
 for (const id of BOND_AFTER_SCENE_IDS) assert(scenes[id]?.lines?.length, `${id} の台本がない`);
 assert.deepEqual(Object.keys(scenes).sort(), [...BOND_AFTER_SCENE_IDS].sort(), "台本と bond-after.js の一覧が一致する");
 for (const [id, scene] of Object.entries(scenes)) {
-  for (const line of scene.lines) {
+  // 分岐（なるへの敬語・タメ口）は、第3章の和解（tournament_finished 3）で分ける。分岐先がそろっている
+  for (const line of scene.lines.filter(line => line.type === "condition")) {
+    assert.equal(line.condition_type, "tournament_finished", `${id}: 分岐は大会の前後だけ`);
+    for (const key of [line.next_true, line.next_false]) assert(scene.branches?.[key]?.length, `${id}: 分岐 ${key} が無い`);
+  }
+  const lines = [...scene.lines, ...Object.values(scene.branches || {}).flat()].filter(line => line.type !== "condition");
+  for (const line of lines) {
     if (!line.speaker) continue;
     if (line.speaker === "customer") continue;
     assert(characters[line.speaker], `${id}: 話者 ${line.speaker}`);
     assert(faces(line.speaker).includes(line.face), `${id}: ${line.speaker} の表情 ${line.face} が無い`);
   }
-  for (const line of scene.lines) {
+  for (const line of lines) {
+    assert.equal(typeof line.text, "string", `${id}: 台詞の行には text がある`);
     assert.doesNotMatch(line.text, /\n|が(少し|かなり|大きく)?上がった。/, `${id}: 手動改行・報酬の言い回しを入れない`);
     assert.doesNotMatch(line.text, /大会|本番|明日の/, `${id}: 大会の前後どちらでも読めるよう、大会を前提にしない`);
+  }
+}
+// なる: 和解の前は「なるさん」と敬語、後は「なる」とタメ口（締めくくり ch1_naru_bond_finale と同じ。#3693）
+for (const id of BOND_AFTER.naru.scenes.map(scene => scene.id)) {
+  const branches = Object.entries(scenes[id].branches || {});
+  assert(branches.length, `${id}: はじめの台詞を敬語・タメ口に分ける`);
+  for (const [key, list] of branches) for (const line of list) {
+    if (key.startsWith("keigo_")) assert.doesNotMatch(line.text, /なる(?!さん)/, `${id}/${key}: 和解の前は「なるさん」`);
+    else assert.doesNotMatch(line.text, /なるさん|です|ます/, `${id}/${key}: 和解の後はタメ口`);
   }
 }
 for (const [id, item] of Object.entries(BOND_AFTER)) {
@@ -40,7 +57,7 @@ assert.equal(bondAfterNext(save(), "kumicho"), null, "締めくくりの前は�
 assert.equal(bondAfterEligible(save({ finales: { rei: { route: "romance" } } }), "rei"), false, "恋愛ルートは出さない");
 assert.equal(bondAfterEligible(save({ finales: { rei: { route: "friend" } }, lovers: ["rei"] }), "rei"), false, "恋人には出さない");
 assert.equal(bondAfterEligible(save({ finales: { rei: { route: "romance" } }, flags: { _friend_rei: true } }), "rei"), true, "後から友人に落ち着いた人は出す");
-assert.equal(bondAfterNext(friendOf("sumi"), "sumi"), null, "まだ5本を書いていない人は対象外（いつもの来店のまま）");
+assert.equal(bondAfterNext(friendOf("minto"), "minto"), null, "まだ5本を書いていない人は対象外（いつもの来店のまま）");
 
 // 順番: 5本を一度ずつ順に。読んだ記録は場面のIDで持つ
 {
@@ -61,7 +78,9 @@ assert.equal(bondAfterNext(friendOf("sumi"), "sumi"), null, "まだ5本を書い
   assert.deepEqual(value.flags._bond_after.rei, order, "5本の記録は増えない");
 }
 
-// 前提の持ち物: 神崎の一本目は締めくくりの素焼きを持っている時だけ。無い保存では飛ばし、持てば読む
+// 前提の持ち物: 一本目が締めくくりの素焼きの回収になっている人は、素焼きを持っている時だけ
+for (const id of ["kumicho", "naru", "adam", "tsumugi", "sumi"]) assert.equal(BOND_AFTER[id].scenes[0].requires, `suyaki_${id}`, `${id}: 一本目は素焼きが前提`);
+// 神崎の一本目は締めくくりの素焼きを持っている時だけ。無い保存では飛ばし、持てば読む
 {
   const without = friendOf("kumicho");
   assert.equal(bondAfterNext(without, "kumicho").scene, "bond_after_kumicho_2", "素焼きが無ければ一本目を飛ばす");

@@ -27,6 +27,28 @@ export const BOND_AFTER = Object.freeze({
     scenes: ["bond_after_rei_1", "bond_after_rei_2", "bond_after_rei_3", "bond_after_rei_4", "bond_after_rei_5"],
     shorts: ["bond_after_rei_short_a", "bond_after_rei_short_b", "bond_after_rei_short_c", "bond_after_rei_short_d"],
   }),
+  // なる・アダムは店（daily/spots.js の visitChar・第2〜4章の準備・第5章の街の店）、つむぎは tonari の客（daily/tonari.js の tonariCustomer）、
+  // スミさんはバイト上がりの会話（daily/tonari.js の afterShiftSumiTalk）で出す
+  naru: entry("naru", {
+    scenes: [{ id: "bond_after_naru_1", requires: "suyaki_naru" }, "bond_after_naru_2", "bond_after_naru_3",
+      "bond_after_naru_4", "bond_after_naru_5"],
+    shorts: ["bond_after_naru_short_a", "bond_after_naru_short_b", "bond_after_naru_short_c", "bond_after_naru_short_d"],
+  }),
+  adam: entry("adam", {
+    scenes: [{ id: "bond_after_adam_1", requires: "suyaki_adam" }, "bond_after_adam_2", "bond_after_adam_3",
+      "bond_after_adam_4", "bond_after_adam_5"],
+    shorts: ["bond_after_adam_short_a", "bond_after_adam_short_b", "bond_after_adam_short_c", "bond_after_adam_short_d"],
+  }),
+  tsumugi: entry("tsumugi", {
+    scenes: [{ id: "bond_after_tsumugi_1", requires: "suyaki_tsumugi" }, "bond_after_tsumugi_2", "bond_after_tsumugi_3",
+      "bond_after_tsumugi_4", "bond_after_tsumugi_5"],
+    shorts: ["bond_after_tsumugi_short_a", "bond_after_tsumugi_short_b", "bond_after_tsumugi_short_c", "bond_after_tsumugi_short_d"],
+  }),
+  sumi: entry("sumi", {
+    scenes: [{ id: "bond_after_sumi_1", requires: "suyaki_sumi" }, "bond_after_sumi_2", "bond_after_sumi_3",
+      "bond_after_sumi_4", "bond_after_sumi_5"],
+    shorts: ["bond_after_sumi_short_a", "bond_after_sumi_short_b", "bond_after_sumi_short_c", "bond_after_sumi_short_d"],
+  }),
 });
 
 /** 全員の台本のID（読み込みと検証用）。 */
@@ -72,11 +94,12 @@ export function markBondAfterRead(value, id, next) {
 }
 
 let loading = null;
-/** 台本を DB へ読み込む（足りない時だけ）。失敗したら投げる（呼出元は代金も行動も使わずに戻る）。 */
+/**
+ * 台本を DB へ読み込む（足りない時だけ）。失敗したら投げる（呼出元は代金も行動も使わずに戻る）。
+ * 同時の呼び出しは一つの読み込みを待つ。読み込みが済んだら次の呼び出しは台本の有無から見直す（DB が入れ替わっても読み直せる）。
+ */
 export async function loadBondAfterScenes(DB) {
   if (BOND_AFTER_SCENE_IDS.every(scene => DB.dialogues[scene]?.lines?.length)) return;
-  loading ||= readDialogues(BOND_AFTER_FILE, BOND_AFTER_SCENE_IDS)
-    .then(scenes => { Object.assign(DB.dialogues, scenes); })
-    .catch(error => { loading = null; throw error; });
-  await loading;
+  loading ||= readDialogues(BOND_AFTER_FILE, BOND_AFTER_SCENE_IDS).finally(() => { loading = null; });
+  Object.assign(DB.dialogues, await loading);
 }

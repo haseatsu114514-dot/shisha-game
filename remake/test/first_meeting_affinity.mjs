@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const root = process.env.HEART1_ROOT || fileURLToPath(new URL('../js/', import.meta.url));
 const sourceRoot = process.env.HIYORI_SOURCE_ROOT || root;
 const supportRoot = process.env.HIYORI_SUPPORT_ROOT || root;
-const realPaths = ['core/util.js','core/axe-bar-discovery.js','daily/hiyori.js','daily/spot-encounters.js','core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
+const realPaths = ['core/bond-after.js','core/chapter-data.js','core/util.js','core/axe-bar-discovery.js','daily/hiyori.js','daily/spot-encounters.js','core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js'];
 const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rio','ch1_bonds','samechan','hiyori','lover_events','cinema','remake_ch1','ch1_spots'];
 const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))));
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -278,6 +278,32 @@ await check('naru after-return visit opens the closed shop once during the chapt
  assert.equal(f.spots.afterChapterVisitDue('naru'),null,'not after leaving for Dubai');
  const unmet=f.fresh();delete unmet.met.naru;unmet.chapter=4;unmet.flags._ch4_prep={startDay:1,days:3,step:0,departed:false};
  assert.equal(f.spots.afterChapterVisitDue('naru'),null,'only when they have met');
+});
+// #3693: ♥5の締めくくりを友人として迎えた後の来店は、いつもの小会話の代わりに♥5後の場面を一度ずつ（場面は自前の導入なので店のあいさつを挟まない）。
+// 5本を読んだら、あいさつ＋短い汎用。物語の場面が残る来店はそちらが先。
+await check('bond-after scenes replace the repeat talk after a friend finale (adam via visitChar)',async f=>{
+ const s=f.fresh();s.met.adam=true;s.story.adam=f.stages.VISIT_SEQ.adam.length;s.affinity.adam=66;s.finales.adam={day:6,chapter:1,route:'friend'};
+ for(const d of JSON.parse(fs.readFileSync(new URL('../../data/dialogue/bond_after.json',import.meta.url))).dialogues)f.db.dialogues[d.dialogue_id]=d;
+ f.db.dialogues.venue_adam_day={dialogue_id:'venue_adam_day',lines:[{speaker:'',text:'いらっしゃい'}]};
+ assert.equal(f.spots.hasNewStory('adam'),false,'no story, question or finale left');
+ const ids=from=>f.plays.slice(from).map(args=>typeof args[0]==='string'?args[0]:args[0].dialogue_id);
+ let mark=f.plays.length;
+ assert.equal(await f.spots.visitChar('adam',{welcome:'venue_adam_day'}),true);
+ assert.deepEqual(ids(mark),['bond_after_adam_2'],'without the gift the first scene waits; no shop greeting before a scene');
+ assert.deepEqual([...s.flags._bond_after.adam],['bond_after_adam_2']);
+ s.owned.push('suyaki_adam');mark=f.plays.length;
+ assert.equal(await f.spots.visitChar('adam',{welcome:'venue_adam_day'}),true);
+ assert.deepEqual(ids(mark),['bond_after_adam_1'],'the gift scene once the bowl is owned');
+ s.flags._bond_after.adam=[1,2,3,4,5].map(n=>`bond_after_adam_${n}`);mark=f.plays.length;
+ assert.equal(await f.spots.visitChar('adam',{welcome:'venue_adam_day'}),true);
+ assert.deepEqual(ids(mark),['venue_adam_day','bond_after_adam_short_a'],'after the five: greeting and a short generic');
+ f.setPlay(async scene=>({id:typeof scene==='string'?scene:scene.dialogue_id,cancelled:true,visited:[]}));
+ assert.equal(await f.spots.visitChar('adam',{welcome:'venue_adam_day'}),false);
+ assert.equal(s.flags._bond_after.adam_short,1,'an interrupted visit does not advance');
+ const lover=f.fresh();lover.met.naru=true;lover.story.naru=f.stages.VISIT_SEQ.naru.length;lover.finales.naru={day:6,chapter:1,route:'romance'};
+ f.setPlay(async scene=>({id:typeof scene==='string'?scene:scene.dialogue_id,visited:[]}));mark=f.plays.length;
+ await f.spots.visitChar('naru');
+ assert(!ids(mark).some(id=>id.startsWith('bond_after_')),'not on a non-friend route');
 });
 console.log(JSON.stringify({groups,failures,scope:'actual modules with controlled VN/UI and isolated Map storage; not real browser/menu LOAD'}));
 if(failures)process.exitCode=1;

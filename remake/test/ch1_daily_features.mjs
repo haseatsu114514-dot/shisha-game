@@ -37,7 +37,7 @@ const ports = {
   staffFlavors: () => [], staffStock: () => 0,
 };
 const ctx = vm.createContext({ console, queueMicrotask, AbortController });
-const actual = new Set(['core/shift-pay.js', 'core/chapter-features.js', 'core/stat-step-tables.js', 'daily/home-rig.js', 'daily/tonari.js', 'daily/tsumugi-schedule.js']);
+const actual = new Set(['core/shift-pay.js', 'core/chapter-features.js', 'core/stat-step-tables.js', 'daily/home-rig.js', 'daily/tonari.js', 'daily/tsumugi-schedule.js', 'core/bond-after.js', 'core/chapter-data.js']);
 const modules = new Map();
 function get(id) {
   if (!modules.has(id)) modules.set(id, new vm.SourceTextModule(fs.readFileSync(new URL(id, root), 'utf8'), { context: ctx, identifier: id }));

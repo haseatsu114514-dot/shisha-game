@@ -238,6 +238,481 @@
         {"speaker": "rei", "face": "normal", "text": "……新しい盤、届いた。あとで、サビだけ聴かせる"},
         {"speaker": "hajime", "face": "smile", "text": "サビなら、覚えられるかもしれません"}
       ]
+    },
+    {
+      "dialogue_id": "bond_after_naru_1",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。はじめの台詞は、第3章の和解（tournament_finished 3）の前は敬語・後はタメ口に分ける（締めくくり ch1_naru_bond_finale と同じ）。一本目は締めくくりの「次はお前の煙を吸わせろ。こいつで作った、お前の一台をな」の回収。素焼き（suyaki_naru）を持っている時だけ。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "KEMURIKUSAに入ると、なるがカウンターを空けて、腕を組んで待っていた。"},
+        {"speaker": "naru", "face": "normal", "text": "約束だろ。あの素焼きで作った、お前の一台"},
+        {"type": "condition", "condition_type": "tournament_finished", "next_true": "reconciled_1", "next_false": "keigo_1", "tournament_chapter": 3},
+        {"speaker": "", "face": "", "text": "焼き菓子みたいな色の縁に、葉を詰める。バニラの染みた土の上に、自分で選んだ葉を重ねた。"},
+        {"speaker": "", "face": "", "text": "なるは黙って一口吸い、もう一口吸って、天井を見た。"},
+        {"speaker": "naru", "face": "serious", "text": "……甘さの置き方が、俺と違う。後ろに隠すんだな"},
+        {"speaker": "naru", "face": "smile", "text": "悔しいけど、旨い。……台は丸見えにしとけよ。盗むから"},
+        {"type": "condition", "condition_type": "tournament_finished", "next_true": "reconciled_2", "next_false": "keigo_2", "tournament_chapter": 3},
+        {"speaker": "naru", "face": "excited", "text": "言ったな。次は、俺の番だ"}
+      ],
+      "branches": {
+        "keigo_1": [
+          {"speaker": "hajime", "face": "normal", "text": "……はい。作らせてください"}
+        ],
+        "reconciled_1": [
+          {"speaker": "hajime", "face": "normal", "text": "……うん。作らせて"}
+        ],
+        "keigo_2": [
+          {"speaker": "hajime", "face": "smile", "text": "なるさんに盗まれるなら、本望です"}
+        ],
+        "reconciled_2": [
+          {"speaker": "hajime", "face": "smile", "text": "なるに盗まれるなら、本望だよ"}
+        ]
+      }
+    },
+    {
+      "dialogue_id": "bond_after_naru_2",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。はじめの台詞は、第3章の和解（tournament_finished 3）の前は敬語・後はタメ口に分ける（締めくくり ch1_naru_bond_finale と同じ）。菓子の味から組み立てる理論派（character_profiles）。二人の舌が割れても、それを次の一台にする。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "KEMURIKUSAのカウンターに、焼き菓子の箱が三つ並んでいた。"},
+        {"speaker": "naru", "face": "normal", "text": "近所に新しくできた店のだ。どれがバニラに合うか、二人で決めようぜ"},
+        {"type": "condition", "condition_type": "tournament_finished", "next_true": "reconciled_1", "next_false": "keigo_1", "tournament_chapter": 3},
+        {"speaker": "naru", "face": "smile", "text": "一口ずつな。……煙の前に、舌を合わせとくんだ"},
+        {"speaker": "", "face": "", "text": "マドレーヌ、フィナンシェ、塩のクッキー。なるは一つ食べるたびに、ノートへ一行書いた。"},
+        {"speaker": "naru", "face": "serious", "text": "俺はフィナンシェ。焦がしバターが、バニラの後ろで鳴る"},
+        {"type": "condition", "condition_type": "tournament_finished", "next_true": "reconciled_2", "next_false": "keigo_2", "tournament_chapter": 3},
+        {"speaker": "naru", "face": "surprise", "text": "……割れたな"},
+        {"speaker": "naru", "face": "smile", "text": "いいんだよ。割れた方が、次の一台が二つ作れる"}
+      ],
+      "branches": {
+        "keigo_1": [
+          {"speaker": "hajime", "face": "surprise", "text": "全部、食べていいんですか"}
+        ],
+        "reconciled_1": [
+          {"speaker": "hajime", "face": "surprise", "text": "全部、食べていいの？"}
+        ],
+        "keigo_2": [
+          {"speaker": "hajime", "face": "normal", "text": "俺は塩のクッキーです。甘さが、最後にもう一回来るので"}
+        ],
+        "reconciled_2": [
+          {"speaker": "hajime", "face": "normal", "text": "俺は塩のクッキー。甘さが、最後にもう一回来る"}
+        ]
+      }
+    },
+    {
+      "dialogue_id": "bond_after_naru_3",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。はじめの台詞は、第3章の和解（tournament_finished 3）の前は敬語・後はタメ口に分ける（締めくくり ch1_naru_bond_finale と同じ）。ノートの交換（締めくくりの「ノートも見せた」）。潰れた店と続く店を調べてきたこと（実家の洋菓子屋）には深入りしない。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "なるが、表紙のすり切れたノートをカウンターに置いた。"},
+        {"speaker": "naru", "face": "normal", "text": "お前のノートと、一晩だけ交換しねえか"},
+        {"type": "condition", "condition_type": "tournament_finished", "next_true": "reconciled_1", "next_false": "keigo_1", "tournament_chapter": 3},
+        {"speaker": "naru", "face": "normal", "text": "厚さじゃねえよ。何を書いたかだ"},
+        {"speaker": "", "face": "", "text": "交換したノートの端に、店の名前と日付が並んでいた。閉まった店と、続いている店。"},
+        {"speaker": "hajime", "face": "normal", "text": "（……続けることを、ずっと調べてきたんだ）"},
+        {"speaker": "naru", "face": "smile", "text": "お前のノート、字が汚えな。でも、迷った跡が全部残ってる"},
+        {"type": "condition", "condition_type": "tournament_finished", "next_true": "reconciled_2", "next_false": "keigo_2", "tournament_chapter": 3},
+        {"speaker": "naru", "face": "excited", "text": "おう。赤ペンでな"}
+      ],
+      "branches": {
+        "keigo_1": [
+          {"speaker": "hajime", "face": "surprise", "text": "俺のノート、なるさんのに比べたら薄いですよ"}
+        ],
+        "reconciled_1": [
+          {"speaker": "hajime", "face": "surprise", "text": "俺のノート、なるのに比べたら薄いよ"}
+        ],
+        "keigo_2": [
+          {"speaker": "hajime", "face": "smile", "text": "返す時、感想も書いておいてください"}
+        ],
+        "reconciled_2": [
+          {"speaker": "hajime", "face": "smile", "text": "返す時、感想も書いといて"}
+        ]
+      }
+    },
+    {
+      "dialogue_id": "bond_after_naru_4",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。はじめの台詞は、第3章の和解（tournament_finished 3）の前は敬語・後はタメ口に分ける（締めくくり ch1_naru_bond_finale と同じ）。常連の頼みのミントで、なるがはじめの手を借りる（教える側と教わる側を終えた後の対等な貸し借り）。看板はバニラのまま（基礎のミントは教えられる・character_profiles）。一本目の「甘さを後ろに隠す」の続き。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "なるが、珍しくミントの缶を開けていた。"},
+        {"type": "condition", "condition_type": "tournament_finished", "next_true": "reconciled_1", "next_false": "keigo_1", "tournament_chapter": 3},
+        {"speaker": "naru", "face": "normal", "text": "常連の頼みでな。冷たすぎねえミント、だとよ"},
+        {"speaker": "naru", "face": "serious", "text": "俺がやると、どうしても甘く寄せちまう。お前ならどうする"},
+        {"speaker": "", "face": "", "text": "詰め方を少し変えて、熱を一段下げた。なるは吸って、しばらく黙った。"},
+        {"speaker": "naru", "face": "smile", "text": "……すっきりしてんのに、冷たくねえ。どうやった"},
+        {"type": "condition", "condition_type": "tournament_finished", "next_true": "reconciled_2", "next_false": "keigo_2", "tournament_chapter": 3},
+        {"speaker": "naru", "face": "excited", "text": "結局バニラかよ！"},
+        {"speaker": "naru", "face": "smile", "text": "……いや、正解だ。甘さは、隠すと効くんだな"}
+      ],
+      "branches": {
+        "keigo_1": [
+          {"speaker": "hajime", "face": "surprise", "text": "なるさんが、ミントですか"}
+        ],
+        "reconciled_1": [
+          {"speaker": "hajime", "face": "surprise", "text": "なるが、ミント？"}
+        ],
+        "keigo_2": [
+          {"speaker": "hajime", "face": "normal", "text": "最後に、バニラをひとつまみ入れました"}
+        ],
+        "reconciled_2": [
+          {"speaker": "hajime", "face": "normal", "text": "最後に、バニラをひとつまみ入れた"}
+        ]
+      }
+    },
+    {
+      "dialogue_id": "bond_after_naru_5",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。はじめの台詞は、第3章の和解（tournament_finished 3）の前は敬語・後はタメ口に分ける（締めくくり ch1_naru_bond_finale と同じ）。閉店後のラーメン。シーシャの話をしない友達の時間。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "帰り際。エプロンを外したなるが、こちらを振り返った。"},
+        {"speaker": "naru", "face": "normal", "text": "腹減った。近くのラーメン屋、行かねえか"},
+        {"type": "condition", "condition_type": "tournament_finished", "next_true": "reconciled_1", "next_false": "keigo_1", "tournament_chapter": 3},
+        {"speaker": "", "face": "", "text": "カウンター席で並んで、湯気の立つ丼をすすった。シーシャの話は、一つも出なかった。"},
+        {"speaker": "naru", "face": "smile", "text": "……たまには、煙のねえ話もいいな"},
+        {"type": "condition", "condition_type": "tournament_finished", "next_true": "reconciled_2", "next_false": "keigo_2", "tournament_chapter": 3},
+        {"speaker": "naru", "face": "excited", "text": "大事な話だろ。二玉目で、店の本気が分かるんだよ"}
+      ],
+      "branches": {
+        "keigo_1": [
+          {"speaker": "hajime", "face": "smile", "text": "行きます"}
+        ],
+        "reconciled_1": [
+          {"speaker": "hajime", "face": "smile", "text": "行く"}
+        ],
+        "keigo_2": [
+          {"speaker": "hajime", "face": "normal", "text": "なるさん、さっきから替え玉の話しかしてないですよ"}
+        ],
+        "reconciled_2": [
+          {"speaker": "hajime", "face": "normal", "text": "なる、さっきから替え玉の話しかしてないよ"}
+        ]
+      }
+    },
+    {
+      "dialogue_id": "bond_after_naru_short_a",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。はじめの台詞は、第3章の和解（tournament_finished 3）の前は敬語・後はタメ口に分ける（締めくくり ch1_naru_bond_finale と同じ）。5本の後の短い汎用（いつもの昼夜のあいさつの後に読む）。",
+      "lines": [
+        {"speaker": "naru", "face": "normal", "text": "おう。台なら丸見えだぞ。好きに見てけ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_naru_short_b",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。はじめの台詞は、第3章の和解（tournament_finished 3）の前は敬語・後はタメ口に分ける（締めくくり ch1_naru_bond_finale と同じ）。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "naru", "face": "smile", "text": "バニラ、新しいの入ったんだ。あとで嗅がせてやる"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_naru_short_c",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。はじめの台詞は、第3章の和解（tournament_finished 3）の前は敬語・後はタメ口に分ける（締めくくり ch1_naru_bond_finale と同じ）。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "なるはこちらを見ると、何も言わずにカウンターの端を空けた。"},
+        {"speaker": "naru", "face": "normal", "text": "座れよ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_naru_short_d",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。はじめの台詞は、第3章の和解（tournament_finished 3）の前は敬語・後はタメ口に分ける（締めくくり ch1_naru_bond_finale と同じ）。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "naru", "face": "smile", "text": "今日の客、菓子の話ばっかりしてった。いい日だったな"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_adam_1",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。一本目は締めくくりの「十二頁は暗唱できるように……冗談だ、七頁目まででいい」の回収。素焼き（suyaki_adam）を持っている時だけ。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "EDENに入ると、アダムが黒板の前で腕を組んでいた。黒板には大きく「口頭試問」。"},
+        {"speaker": "adam", "face": "intense", "text": "来たか、同志よ。手入れ大全、七頁目までの試問を行う"},
+        {"speaker": "hajime", "face": "surprise", "text": "本当にやるんですか！？"},
+        {"speaker": "adam", "face": "normal", "text": "第一問。素焼きを洗う時、使ってはならぬものは"},
+        {"speaker": "hajime", "face": "normal", "text": "洗剤です。水で洗って、逆さで一晩"},
+        {"speaker": "adam", "face": "serious", "text": "……第二問。欠けた縁は"},
+        {"speaker": "hajime", "face": "normal", "text": "削らない。そこが一番よく香る"},
+        {"speaker": "adam", "face": "smile", "text": "満点だ。褒美に、第十三頁を授ける"},
+        {"speaker": "", "face": "", "text": "渡された紙には、一行だけ。「同志と詰める日は、炭を一つ多めに起こすこと」。"},
+        {"speaker": "hajime", "face": "smile", "text": "……今日、ですか"},
+        {"speaker": "adam", "face": "normal", "text": "今日だ。炭は、もう起こしてある"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_adam_2",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。利きダブルアップル。同じダブルアップルの「顔」を見分ける（character_profiles）。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "カウンターに、同じ形のボウルが三つ並んでいた。"},
+        {"speaker": "adam", "face": "intense", "text": "利きダブルアップルだ。三つのうち、一つだけメーカーが違う"},
+        {"speaker": "hajime", "face": "normal", "text": "……全部、同じ匂いに見えます"},
+        {"speaker": "adam", "face": "normal", "text": "見るな。吸え"},
+        {"speaker": "", "face": "", "text": "三つ目の吐き終わりに、ほんの少しだけ、蜂蜜みたいな丸さがあった。"},
+        {"speaker": "hajime", "face": "normal", "text": "三つ目だと思います。最後が少し丸いです"},
+        {"speaker": "adam", "face": "surprise", "text": "……正解だ"},
+        {"speaker": "adam", "face": "smile", "text": "去年の俺は、二つ目と答えた。……同志よ、それは黙っておけ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_adam_3",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。ダブルアップルは果物の林檎ではなく、アニスとリコリスで描いた林檎（2026-07-20確定）。差し入れの林檎で、その話をする。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "手土産に、八百屋で林檎を三つ買ってきた。"},
+        {"speaker": "hajime", "face": "smile", "text": "アダムさん、差し入れです。リンゴ"},
+        {"speaker": "adam", "face": "surprise", "text": "……果実の方か"},
+        {"speaker": "hajime", "face": "surprise", "text": "え、だめでした？"},
+        {"speaker": "adam", "face": "serious", "text": "いいか、同志。ダブルアップルは林檎ではない。アニスとリコリスで描いた、林檎の姿だ"},
+        {"speaker": "adam", "face": "normal", "text": "……だが、元の姿を知らぬ者に、描いた姿は語れぬ"},
+        {"speaker": "", "face": "", "text": "アダムは林檎を一つ手に取ると、無言で包丁を出した。"},
+        {"speaker": "", "face": "", "text": "剥かれた皮は、一本の長い帯になっていた。私生活はあんなに危ういのに、刃物の扱いだけは妙にうまい。"},
+        {"speaker": "adam", "face": "smile", "text": "……食え。それから、さっきの一台をもう一度吸え。顔が変わる"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_adam_4",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。新しい配合の名前をはじめに付けさせる。締めくくりの「コーヒーと合わせる」顔の続き。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "アダムが、白紙のメニュー札を一枚、こちらへ滑らせた。"},
+        {"speaker": "adam", "face": "intense", "text": "新しい配合ができた。名前を、同志に付けてもらいたい"},
+        {"speaker": "hajime", "face": "surprise", "text": "俺がですか。アダムさんの店の札ですよね"},
+        {"speaker": "adam", "face": "normal", "text": "お前と悩んだ日から生まれた配合だ。半分は、お前の舌でできている"},
+        {"speaker": "", "face": "", "text": "吸うと、ダブルアップルの奥に、煎ったコーヒー豆の匂いが一瞬だけ顔を出した。"},
+        {"speaker": "hajime", "face": "normal", "text": "……「朝のEDEN」はどうですか。仕込みの朝みたいな匂いがするので"},
+        {"speaker": "adam", "face": "serious", "text": "……悪くない。だが、この店の客は夜に来る"},
+        {"speaker": "adam", "face": "smile", "text": "ゆえに、名は「まだ来ない朝」。決まりだ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_adam_5",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。私生活の破綻（服の裏表が逆・character_profiles）。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "EDENに入ると、アダムが堂々と立っていた。シャツの縫い目が、全部外を向いている。"},
+        {"speaker": "hajime", "face": "normal", "text": "……アダムさん、シャツ、裏表です"},
+        {"speaker": "adam", "face": "surprise", "text": "……"},
+        {"speaker": "adam", "face": "serious", "text": "気づいていた。これは、裏から世界を見る修行だ"},
+        {"speaker": "hajime", "face": "smile", "text": "さっき、常連さんにも言われてましたよね"},
+        {"speaker": "adam", "face": "normal", "text": "……三人目だ。着替えてくる"},
+        {"speaker": "", "face": "", "text": "奥から戻ったアダムは、今度は前後が逆だった。"},
+        {"speaker": "hajime", "face": "smile", "text": "（……言うべきか、言わざるべきか）"},
+        {"speaker": "adam", "face": "intense", "text": "同志よ。何も言うな。今日の一台は、このまま作る"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_adam_short_a",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用（いつもの昼夜のあいさつの後に読む）。",
+      "lines": [
+        {"speaker": "adam", "face": "normal", "text": "来たか、同志。今日の顔は、甘い方だ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_adam_short_b",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "adam", "face": "normal", "text": "ダブルアップルか、それ以外か。聞くまでもないな"},
+        {"speaker": "hajime", "face": "smile", "text": "ダブルアップルで"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_adam_short_c",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "アダムは無言で、いつもの席の灰皿を新しいものに替えた。"},
+        {"speaker": "adam", "face": "normal", "text": "座れ、同志"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_adam_short_d",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用。締めくくりで渡された手入れ大全（全十二頁）。",
+      "lines": [
+        {"speaker": "adam", "face": "smile", "text": "手入れ大全、何頁まで覚えた"},
+        {"speaker": "hajime", "face": "normal", "text": "九頁です"},
+        {"speaker": "adam", "face": "smile", "text": "……伸びたな"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_tsumugi_1",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。tonari の客として。一本目は締めくくりで受け取った素焼き（いつも彼女に出していた一台・suyaki_tsumugi）を持ってきて、はじめの配合で彼女に出す。持っている時だけ。色は彼女の受け取り方（character_profiles）。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "いつもの席で、つむぎがラベンダーを頼んだ。"},
+        {"speaker": "hajime", "face": "normal", "text": "今日は、あの素焼きを持ってきたんだ。それで作ってもいいかな"},
+        {"speaker": "tsumugi", "face": "surprise", "text": "……私が、渡した"},
+        {"speaker": "hajime", "face": "smile", "text": "うん。家では、ラベンダーに柑橘を少し足してる。その一台"},
+        {"speaker": "", "face": "", "text": "スミさんにカウンターを借りて、飴色の素焼きに葉を詰める。"},
+        {"speaker": "", "face": "", "text": "炭を置くと、ラベンダーの奥から、柑橘が小さく顔を出した。"},
+        {"speaker": "tsumugi", "face": "normal", "text": "……同じ素焼きなのに、知らない色がします"},
+        {"speaker": "tsumugi", "face": "smile", "text": "……はじめさんの家の色、ですね。少し、明るい"},
+        {"speaker": "hajime", "face": "surprise", "text": "家の色、あるんだ"},
+        {"speaker": "tsumugi", "face": "normal", "text": "……あります。描けたら、見せます"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_tsumugi_2",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。tonari の客として。葉の耳と煙の尾の猫の新しい一匹に、はじめが名前を付ける。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "つむぎのタブレットに、葉の耳と煙の尾の猫が、また一匹増えていた。"},
+        {"speaker": "tsumugi", "face": "normal", "text": "……この子、まだ名前がないんです。はじめさんが、付けてくれませんか"},
+        {"speaker": "hajime", "face": "normal", "text": "俺が？　……じゃあ、「けむり」"},
+        {"speaker": "tsumugi", "face": "surprise", "text": "……そのまま、ですね"},
+        {"speaker": "hajime", "face": "smile", "text": "そのままが、いちばん呼びやすいかなって"},
+        {"speaker": "", "face": "", "text": "つむぎは少し考えてから、絵の隅に小さく「けむり」と書き足した。"},
+        {"speaker": "tsumugi", "face": "smile", "text": "……呼んだら、振り向きそうです"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_tsumugi_3",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。tonari の客として。スミさんの手を描く（tonari の人や手つきを描く・character_profiles）。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "つむぎが、カウンターの奥のスミさんを、鉛筆でそっと描いていた。"},
+        {"speaker": "hajime", "face": "normal", "text": "スミさん、描いてるの？"},
+        {"speaker": "tsumugi", "face": "normal", "text": "……手だけです。顔を描くと、気づかれるので"},
+        {"speaker": "", "face": "", "text": "紙の上で、トングを持つ大きな手が、炭の上で止まっていた。"},
+        {"speaker": "sumi", "face": "normal", "text": "……聞こえてるぞ"},
+        {"speaker": "tsumugi", "face": "surprise", "text": "……っ"},
+        {"speaker": "sumi", "face": "smile", "text": "描くなら、詰める時の手にしとけ。そっちの方が、まだ見られる"},
+        {"speaker": "", "face": "", "text": "つむぎは小さくお辞儀をして、新しいページをめくった。"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_tsumugi_4",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。tonari の客として。SNSで絵が広く見られて、次の一枚が怖くなる。はじめは心を与える役にしない（自分で描き続ける彼女を、いつもの席で待つだけ）。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "つむぎが、スマホの画面を伏せてカウンターに置いた。"},
+        {"speaker": "tsumugi", "face": "sad", "text": "……昨日の絵、たくさん見られてしまって"},
+        {"speaker": "hajime", "face": "surprise", "text": "いいことじゃないの？"},
+        {"speaker": "tsumugi", "face": "normal", "text": "……数が増えると、次の一枚が少し怖くなるんです"},
+        {"speaker": "hajime", "face": "normal", "text": "じゃあ、次の一枚は数を見る前に、ここで見せてよ"},
+        {"speaker": "tsumugi", "face": "normal", "text": "……いつもの席で、ですか"},
+        {"speaker": "tsumugi", "face": "smile", "text": "……はい。それなら、いつもどおり描けそうです"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_tsumugi_5",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。tonari の客として。tonari を描いた絵を、スミさんの許しで店の壁に掛ける。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "つむぎが、小さな額に入った絵を両手で抱えてきた。"},
+        {"speaker": "tsumugi", "face": "normal", "text": "……tonariの絵です。スミさんに、飾っていいか聞きたくて"},
+        {"speaker": "", "face": "", "text": "夜のカウンター。スミさんの背中と、炭を置く俺の手と、いつもの席で丸くなる猫。"},
+        {"speaker": "sumi", "face": "thinking", "text": "……俺の背中、こんなに丸いか"},
+        {"speaker": "tsumugi", "face": "normal", "text": "……丸いです"},
+        {"speaker": "sumi", "face": "smile", "text": "正直だな。……そこの壁が空いてる。好きに掛けろ"},
+        {"speaker": "", "face": "", "text": "絵が壁に掛かる。いつもの店に、もう一つ窓ができたみたいだった。"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_tsumugi_short_a",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用（tonari の客として）。",
+      "lines": [
+        {"speaker": "tsumugi", "face": "normal", "text": "……はじめさん。今日も、いつもので"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_tsumugi_short_b",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "つむぎは小さく会釈して、いつもの席でタブレットを開いた。"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_tsumugi_short_c",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "tsumugi", "face": "smile", "text": "……今日の煙、少し明るい色です"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_tsumugi_short_d",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "tsumugi", "face": "normal", "text": "……描きかけ、あとで見てください"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sumi_1",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。バイト上がりの会話（daily/tonari.js の afterShiftSumiTalk。昼にも夜にもあるので、閉店とは書かない）。一本目は締めくくりの「お任せ」「詰めが半歩甘い」「金を取るなら半額」の回収。素焼き（suyaki_sumi）を持っている時だけ。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "シフト上がり。スミさんが、棚の下の箱を指でとんと叩いた。"},
+        {"speaker": "sumi", "face": "normal", "text": "渡した素焼き、ちゃんと使ってるか"},
+        {"speaker": "hajime", "face": "normal", "text": "はい。今日、持ってきてます"},
+        {"speaker": "sumi", "face": "normal", "text": "なら作れ。客は俺だ。注文は「お任せ」"},
+        {"speaker": "", "face": "", "text": "角の丸い素焼きに、カルダモンを詰める。あの日より、半歩だけ深く。"},
+        {"speaker": "", "face": "", "text": "スミさんは一口吸って、長く煙を吐いた。"},
+        {"speaker": "sumi", "face": "smile", "text": "……今日は定価だな"},
+        {"speaker": "hajime", "face": "surprise", "text": "半額から、定価に"},
+        {"speaker": "sumi", "face": "normal", "text": "気前のいい客だって言ったろ。……払いは、まかないの大盛りでいいか"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sumi_2",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。バイト上がりの会話。仕入れをはじめにも決めさせる（店に立つ者として）。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "片づけの終わったカウンターに、スミさんが新しい葉の缶を三つ並べた。"},
+        {"speaker": "sumi", "face": "normal", "text": "来月の仕入れだ。どれを入れるか、お前も決めろ"},
+        {"speaker": "hajime", "face": "surprise", "text": "俺がですか"},
+        {"speaker": "sumi", "face": "normal", "text": "店に立ってるのは、俺だけじゃねえだろ"},
+        {"speaker": "", "face": "", "text": "三つを順に嗅ぐ。ひとつだけ、常連さんの顔が先に浮かんだ。"},
+        {"speaker": "hajime", "face": "normal", "text": "これです。吸ってる顔が、先に浮かんだので"},
+        {"speaker": "sumi", "face": "smile", "text": "……理由がそれなら、上等だ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sumi_3",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。バイト上がりの会話。肩を揉む。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "シフト上がり。スミさんが、肩を回しながら小さく息を吐いた。"},
+        {"speaker": "hajime", "face": "normal", "text": "肩、凝ってます？"},
+        {"speaker": "sumi", "face": "serious", "text": "……年寄り扱いすんな"},
+        {"speaker": "hajime", "face": "normal", "text": "揉みましょうか"},
+        {"speaker": "sumi", "face": "normal", "text": "いらん。……いや、三十秒だけ頼む"},
+        {"speaker": "", "face": "", "text": "肩に手を置くと、思ったより固かった。毎日、同じ角度でトングを持ってきた肩だった。"},
+        {"speaker": "sumi", "face": "smile", "text": "……お前の手、炭を置く時より落ち着いてるな"},
+        {"speaker": "hajime", "face": "smile", "text": "揉む方が、緊張しないので"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sumi_4",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。バイト上がりの会話。カウンターのおすすめの札を任される（店の顔を決める側へ）。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "シフト上がり。スミさんが、白い札とペンをこちらへ寄越した。"},
+        {"speaker": "sumi", "face": "normal", "text": "カウンターに置く、おすすめの札だ。次のは、お前が書け"},
+        {"speaker": "hajime", "face": "surprise", "text": "俺の字で、ですか"},
+        {"speaker": "sumi", "face": "normal", "text": "字は下手でいい。何を勧めるかで、店の顔が決まる"},
+        {"speaker": "", "face": "", "text": "少し考えて、カルダモンとオレンジの名前を並べた。端に、小さく煙の絵も描いた。"},
+        {"speaker": "sumi", "face": "smile", "text": "……いい顔だ"},
+        {"speaker": "hajime", "face": "smile", "text": "字の方は、どうですか"},
+        {"speaker": "sumi", "face": "normal", "text": "それは、聞くな"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sumi_5",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。バイト上がりの会話。帳簿の途中で寝ているスミさん。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "シフト上がり。奥の席で帳簿をつけていたスミさんの手が、止まっていた。"},
+        {"speaker": "", "face": "", "text": "腕を組んだまま、静かに寝息を立てている。奥から膝掛けを持ってきて、そっと肩に掛けた。"},
+        {"speaker": "sumi", "face": "normal", "text": "……寝てねえぞ"},
+        {"speaker": "hajime", "face": "surprise", "text": "起きてたんですか"},
+        {"speaker": "sumi", "face": "normal", "text": "目を閉じて、帳簿の数字を考えてただけだ"},
+        {"speaker": "hajime", "face": "smile", "text": "いびき、かいてましたけど"},
+        {"speaker": "sumi", "face": "smile", "text": "……それは、考えてる音だ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sumi_short_a",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用（バイト上がり。いつもの「お疲れさん」の代わり）。",
+      "lines": [
+        {"speaker": "sumi", "face": "normal", "text": "お疲れさん。……今日の詰め、悪くなかった"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sumi_short_b",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "sumi", "face": "smile", "text": "上がっていいぞ。気をつけて帰れ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sumi_short_c",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "スミさんは黙って、カウンターに湯呑みを二つ置いた。"},
+        {"speaker": "sumi", "face": "normal", "text": "飲んでから帰れ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sumi_short_d",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "sumi", "face": "normal", "text": "また頼む"},
+        {"speaker": "hajime", "face": "smile", "text": "はい。また入ります"}
+      ]
     }
   ]
 }
