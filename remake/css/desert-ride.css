@@ -414,3 +414,105 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-total, html:root[dat
 .desert-ride:is([data-phase="result"], [data-phase="practiced"], [data-phase="menu"]) .dr-fx { opacity: 0; }
 .dr-gauge[data-gain="on"] { box-shadow: 0 0 0 2px rgba(255, 236, 170, .95), 0 0 16px rgba(255, 196, 80, .9); }
 .dr-gauge[data-gain="on"] i { filter: brightness(1.35); }
+
+/* ---- 結果の画面（2026-11-17 オーナー「リザルト画面がなんか CSS 感強い」）:
+   白いカードと表をやめる。左に評価のメダル（判を押すように落ちてくる・S と A は後ろに光の筋が回る）と合計、
+   右に煙色の記録の板（行が順に滑り込む）、下にゲームの札の形のボタン。中身・文言・data-test は前と同じ。動き軽減では動かさない ---- */
+.desert-ride[data-phase="result"] .dr-panel { background: radial-gradient(ellipse 70% 80% at 32% 46%, rgba(255, 196, 120, .16), rgba(30, 14, 16, .74) 72%), linear-gradient(180deg, rgba(40, 18, 20, .25), rgba(24, 10, 12, .62)); }
+.desert-ride .dr-card.dr-result { width: 1180px; max-width: 96%; max-height: 96%; overflow: visible; padding: 14px 0; /* 上下の余白は、傾けた判がはみ出してもカードの中に収めるため */ border: 0; border-radius: 0; background: none; box-shadow: none;
+  display: grid; grid-template-columns: 440px minmax(0, 1fr); gap: 0 44px; align-items: center; text-align: center; color: #fff4e2; }
+.dr-result-hero { display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
+.dr-result-side { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.dr-result .dr-kicker { font-size: 18px; font-weight: 900; letter-spacing: .6em; color: #ffd79a; text-shadow: 0 2px 0 rgba(60, 24, 10, .6); }
+
+/* 勝敗の帯: 両端に切れ込みのある布のリボン */
+.dr-result .dr-race-result { position: relative; margin: 2px 0 6px; padding: 8px 46px; max-width: none; border-radius: 0; gap: 12px;
+  background: linear-gradient(180deg, #7d8a46, #5b6630); clip-path: polygon(0 0, 100% 0, calc(100% - 22px) 50%, 100% 100%, 0 100%, 22px 50%);
+  box-shadow: none; filter: drop-shadow(0 4px 0 rgba(40, 20, 10, .35)); }
+.dr-result .dr-race-result :is(b, span, em) { white-space: nowrap; }
+.dr-result .dr-race-result b { font-size: 26px; color: #fffbe8; text-shadow: 0 2px 0 rgba(30, 30, 10, .45); }
+.dr-result .dr-race-result span { color: #f4ecc8; font-size: 17px; }
+.dr-result .dr-race-result em { color: #fffbe8; font-size: 20px; }
+.dr-result .dr-race-result[data-won="true"] { background: linear-gradient(180deg, #ffd65a, #f08a2c); }
+.dr-result .dr-race-result[data-won="true"] b { color: #5a1f08; text-shadow: 0 2px 0 rgba(255, 240, 190, .7); }
+.dr-result .dr-race-result[data-won="true"] span { color: #6a2a0e; }
+.dr-result .dr-race-result[data-won="true"] em { color: #7a2a08; }
+
+/* 評価のメダル: 夕日の円盤に、縁取りの太い大きな文字。下に評価のひとことの札 */
+.dr-result .dr-rank { --medal-a: #ffe9a8; --medal-b: #f0a43a; --medal-c: #a8551c; --letter-a: #fff6c8; --letter-b: #ffb92e; --letter-edge: #6a2a08;
+  position: relative; display: grid; place-items: center; width: 206px; height: 206px; margin: 6px 0 22px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 30%, var(--medal-a), var(--medal-b) 52%, var(--medal-c) 100%);
+  box-shadow: 0 0 0 6px rgba(255, 236, 190, .9), 0 0 0 10px var(--medal-c), 0 12px 0 10px rgba(30, 10, 6, .35), 0 0 60px 10px rgba(255, 180, 80, .35);
+  animation: dr-medal-stamp .5s cubic-bezier(.2, 1.6, .4, 1) both; }
+.dr-result .dr-rank b { position: relative; z-index: 1; font-size: 154px; line-height: 1; font-weight: 900; font-style: italic; margin-top: -12px;
+  color: var(--letter-b); background: linear-gradient(180deg, var(--letter-a) 18%, var(--letter-b) 70%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 7px var(--letter-edge); paint-order: stroke fill; filter: drop-shadow(0 6px 0 rgba(40, 12, 4, .45)); }
+.dr-result .dr-rank span { position: absolute; z-index: 2; bottom: -20px; left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 6px 26px;
+  font-size: 22px; font-weight: 900; letter-spacing: .12em; color: #fff7e8; background: linear-gradient(180deg, #c44a1c, #8a2a0e); border-radius: 6px;
+  box-shadow: 0 3px 0 rgba(40, 12, 4, .5), inset 0 0 0 2px rgba(255, 210, 150, .55); }
+.dr-rank-rays { position: absolute; inset: -70px; border-radius: 50%; pointer-events: none; opacity: 0;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 230, 160, .32) 0deg 7deg, rgba(255, 230, 160, 0) 7deg 22.5deg);
+  -webkit-mask: radial-gradient(circle, #000 30%, transparent 70%); mask: radial-gradient(circle, #000 30%, transparent 70%); }
+.dr-result:is([data-rank="S"], [data-rank="A"]) .dr-rank-rays { opacity: 1; animation: dr-rays 14s linear infinite; }
+.dr-result[data-rank="S"] .dr-rank { --medal-a: #fff4c4; --medal-b: #ffc94a; --medal-c: #b8741a; --letter-a: #ffffff; --letter-b: #ffd23a; --letter-edge: #7a3e06; }
+.dr-result[data-rank="A"] .dr-rank { --medal-a: #ffd9a8; --medal-b: #f0782e; --medal-c: #96340e; --letter-a: #fff0dc; --letter-b: #ff7a2a; --letter-edge: #5e1a04; }
+.dr-result[data-rank="B"] .dr-rank { --medal-a: #d8ecff; --medal-b: #6aa0e0; --medal-c: #2c4f86; --letter-a: #ffffff; --letter-b: #8cc4ff; --letter-edge: #1c3360; box-shadow: 0 0 0 6px rgba(230, 240, 255, .9), 0 0 0 10px #2c4f86, 0 12px 0 10px rgba(10, 16, 30, .35), 0 0 50px 6px rgba(120, 170, 255, .3); }
+.dr-result[data-rank="C"] .dr-rank { --medal-a: #efe4d8; --medal-b: #b09a88; --medal-c: #5e4c40; --letter-a: #ffffff; --letter-b: #d8c8b8; --letter-edge: #3e3028; box-shadow: 0 0 0 6px rgba(240, 230, 220, .85), 0 0 0 10px #5e4c40, 0 12px 0 10px rgba(20, 12, 8, .35); }
+.dr-result[data-rank="B"] .dr-rank span { background: linear-gradient(180deg, #3a64a8, #22406e); }
+.dr-result[data-rank="C"] .dr-rank span { background: linear-gradient(180deg, #7a6656, #4e3e32); }
+
+/* 合計: 暗い板に大きな数字 */
+.dr-result .dr-total { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; column-gap: 8px; row-gap: 6px; margin: 0; font-size: 18px; color: #ffd79a; font-weight: 900; letter-spacing: .12em; }
+.dr-result .dr-total strong { margin: 0 2px; font-size: 60px; line-height: 1; letter-spacing: .02em; color: #fffaf0; text-shadow: 0 3px 0 #8a3a12, 0 6px 14px rgba(0, 0, 0, .45); }
+.dr-result .dr-next-rank { flex-basis: 100%; margin: 0 auto; width: max-content; padding: 4px 16px; letter-spacing: .04em; color: #ffe2b4; background: rgba(140, 50, 16, .7); border: 1px solid rgba(255, 190, 120, .6); }
+.dr-result .dr-next { margin: 0; max-width: 420px; font-size: 16px; color: #ffe9cc; }
+/* 自己ベスト: 更新した時は赤い判、そうでない時は小さな行 */
+.dr-result .dr-best { margin: 2px 0 0; font-size: 17px; color: #ffd79a; }
+.dr-result .dr-best[data-new="true"] { padding: 4px 18px; font-size: 22px; letter-spacing: .1em; color: #fff; background: #d23b1e; border: 2px solid #ffe0b0; border-radius: 4px;
+  transform: rotate(-4deg); box-shadow: 0 3px 0 rgba(60, 10, 4, .5); animation: dr-best-stamp .4s .45s cubic-bezier(.2, 1.6, .4, 1) both; }
+
+/* 記録の板: 煙色の板に金の線。行は点線でつなぎ、上から順に滑り込む */
+.dr-result .dr-rows { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 0 26px; margin: 0; max-width: none; padding: 16px 26px;
+  background: linear-gradient(180deg, rgba(36, 18, 18, .78), rgba(24, 12, 14, .84)); border-top: 2px solid rgba(255, 200, 120, .75); border-bottom: 2px solid rgba(255, 200, 120, .75);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, .35); }
+.dr-result .dr-row { position: relative; align-items: baseline; gap: 8px; padding: 9px 2px; border-radius: 0; background: none; border-bottom: 1px dashed rgba(255, 210, 160, .22);
+  font-size: 19px; color: #f2d9b8; animation: dr-row-in .32s calc(.35s + var(--i, 0) * .05s) ease-out both; }
+.dr-result .dr-row span { white-space: nowrap; }
+.dr-result .dr-row strong { white-space: nowrap; color: #fffaf0; font-size: 1.1em; }
+
+/* ボタン: 主はジャンプの札と同じ橙、ほかは革色・煙色（紙のテーマの .btn より強く当てる） */
+.desert-ride .dr-result .dr-actions { gap: 16px; justify-content: flex-end; }
+html:root .desert-ride .dr-card.dr-result .dr-button.dr-button { min-width: 210px; min-height: 76px; padding: 10px 26px; align-items: center; justify-content: center; text-align: center;
+  font-size: 24px; font-weight: 900; letter-spacing: .08em; color: #fff7ea; border-radius: 14px;
+  border: 3px solid #e8b86a; background: linear-gradient(180deg, #8a5a3a, #5a3420); box-shadow: inset 0 2px 0 rgba(255, 230, 190, .45), inset 0 -4px 0 rgba(30, 10, 4, .35), 0 5px 0 #2e1608, 0 10px 18px rgba(0, 0, 0, .35);
+  text-shadow: 0 2px 0 rgba(30, 10, 4, .5); }
+html:root .desert-ride .dr-card.dr-result .dr-button.dr-button.primary { border-color: #ffe08a; background: linear-gradient(180deg, #ff9a3c, #e0541c 60%, #b83c10); box-shadow: inset 0 2px 0 rgba(255, 240, 200, .6), inset 0 -4px 0 rgba(90, 20, 0, .35), 0 5px 0 #6e2206, 0 10px 18px rgba(0, 0, 0, .35); }
+html:root .desert-ride .dr-card.dr-result .dr-button.dr-button.ghost { border-color: rgba(255, 220, 170, .55); background: rgba(30, 14, 14, .55); box-shadow: 0 5px 0 rgba(10, 4, 4, .5); }
+html:root .desert-ride .dr-card.dr-result .dr-button.dr-button:is(:hover, :focus-visible) { transform: translateY(-2px); filter: brightness(1.08); outline: 3px solid rgba(255, 236, 170, .9); outline-offset: 3px; }
+html:root .desert-ride .dr-card.dr-result .dr-button.dr-button:active { transform: translateY(3px); }
+
+/* 出し方は小さい所から弾ませる（大きい所から縮めると、出ている間だけカードの外へはみ出して数えられる） */
+@keyframes dr-medal-stamp { 0% { transform: scale(.35) rotate(-24deg); opacity: 0; } 55% { opacity: 1; } 100% { transform: scale(1) rotate(-4deg); opacity: 1; } }
+@keyframes dr-best-stamp { 0% { transform: scale(.4) rotate(-12deg); opacity: 0; } 100% { transform: scale(1) rotate(-4deg); opacity: 1; } }
+@keyframes dr-rays { to { transform: rotate(360deg); } }
+@keyframes dr-row-in { from { transform: translateX(28px); opacity: 0; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .dr-result .dr-rank, .dr-result .dr-rank-rays, .dr-result .dr-row, .dr-result .dr-best { animation: none !important; } .dr-result .dr-rank { transform: rotate(-4deg); } }
+.desert-ride[data-reduced-motion="true"] :is(.dr-result .dr-rank, .dr-result .dr-rank-rays, .dr-result .dr-row, .dr-result .dr-best) { animation: none !important; }
+.desert-ride[data-reduced-motion="true"] .dr-result .dr-rank { transform: rotate(-4deg); }
+
+/* スマホ: 文字は舞台上 24px 以上。メダルを少し小さくして、記録の板と並べたまま収める */
+html:root[data-density="phone"] .desert-ride .dr-card.dr-result { grid-template-columns: 380px minmax(0, 1fr); gap: 0 30px; width: 1220px; }
+html:root[data-density="phone"] .desert-ride .dr-result .dr-rank { width: 196px; height: 196px; margin-bottom: 24px; }
+html:root[data-density="phone"] .desert-ride .dr-result .dr-rank b { font-size: 146px; }
+html:root[data-density="phone"] .desert-ride .dr-result .dr-rank span,
+html:root[data-density="phone"] .desert-ride .dr-result .dr-race-result b,
+html:root[data-density="phone"] .desert-ride .dr-result .dr-best { font-size: 26px; }
+html:root[data-density="phone"] .desert-ride .dr-result .dr-race-result span, html:root[data-density="phone"] .desert-ride .dr-result .dr-race-result em, html:root[data-density="phone"] .desert-ride .dr-result .dr-total { font-size: 24px; }
+/* スマホでは帯が左の列より広くなるので、勝敗の一言と秒差・加点を2行に分ける */
+html:root[data-density="phone"] .desert-ride .dr-result .dr-race-result { flex-wrap: wrap; row-gap: 0; max-width: 100%; padding: 6px 40px; }
+html:root[data-density="phone"] .desert-ride .dr-result .dr-race-result b { flex-basis: 100%; }
+html:root[data-density="phone"] .desert-ride .dr-result .dr-total strong { font-size: 58px; }
+html:root[data-density="phone"] .desert-ride .dr-result .dr-row { padding: 6px 2px; font-size: 24px; }
+html:root[data-density="phone"] .desert-ride .dr-result .dr-row strong { font-size: 1em; }
+html:root[data-density="phone"] .desert-ride .dr-result .dr-rows { gap: 0 20px; padding: 10px 20px; }
+html:root[data-density="phone"] .desert-ride .dr-card.dr-result .dr-button.dr-button { min-width: 0; flex: 1 1 0; font-size: 28px; }
