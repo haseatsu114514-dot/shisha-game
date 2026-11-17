@@ -13,6 +13,7 @@ import { samechanSpot, samechanVisitDialogue } from "./samechan.js";
 import { cinemaSpot, visitCinema } from "./cinema.js";
 import { cinemaDiscovered, cinemaIntroductionDue } from "../core/cinema-discovery.js";
 import { afterStory, questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "./bonds.js";
+import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
 import { installReel } from "./reel.js";
 import { toast } from "../core/ui.js";
 import { cafeIdeaDue, pickCafeIdea, ideaDialogue, markCafeIdea } from "./cafe-ideas.js";
@@ -487,12 +488,19 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     const bg = bgRef(VISIT_BG[charId] || "bg_tonari_inside");
     const followup = spotFollowupDue(charId, state, DB.dialogues);
     if (followup && !await read(followup, { bg })) return false;
+    // ♥5の締めくくりの後（#3693）: 物語の場面・段階・締めくくりが無い来店で、いつもの小会話の代わりに♥5後の場面を一度ずつ。
+    // 読み終えたら短い汎用（core/bond-after.js）。施設の話の続きを読んだ来店は、いつもの小会話のまま。台本を読めなければ小会話へ戻す。
+    let bondAfter = !followup && !hasNewStory(charId) ? bondAfterNext(state, charId) : null;
+    if (bondAfter) {
+      try { await loadBondAfterScenes(DB); } catch { bondAfter = null; }
+      if (!live()) return false;
+    }
     const afterChapter = afterChapterVisitDue(charId);
     // 正体がつながる回・途中の質問を読む来店では、章の間だけの会話は次の来店へ残す（下の分岐の順と同じ）。
     const mintoReveal = charId === "minto" && mintoIdentityRevealDue() && !!DB.dialogues.ch1_minto_identity_reveal;
     const chapterTalk = afterChapter || mintoReveal || questionVisitDue(charId) ? null : chapterTalkDue(charId);
-    // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。章明けの再訪・章の間だけの会話は自前の来店描写があるので挨拶を挟まない。
-    if (welcome && state === owner && idx > 0 && !afterChapter && !chapterTalk && DB.dialogues[welcome]) {
+    // 施設で交わした話の続きは、店舗の昼夜挨拶より先に返す。章明けの再訪・章の間だけの会話・♥5後の場面は自前の来店描写があるので挨拶を挟まない。
+    if (welcome && state === owner && idx > 0 && !afterChapter && !chapterTalk && bondAfter?.kind !== "story" && DB.dialogues[welcome]) {
       if (!await read(welcome, { bg })) return false;
     }
     if (afterChapter) {
@@ -570,6 +578,10 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
       if (!await read(MINTO_COOL_MINT, DB.dialogues[MINTO_COOL_MINT].metadata?.bg ? {} : { bg })) return false;
       state.flags[MINTO_COOL_MINT_SEEN] = true;
       gainAffinity(charId, visitAffinity("story"), affinityOptions);
+    } else if (bondAfter) {
+      if (!await read(bondAfter.scene, DB.dialogues[bondAfter.scene].metadata?.bg ? {} : { bg })) return false;
+      markBondAfterRead(state, charId, bondAfter);
+      gainAffinity(charId, visitAffinity("talk"), affinityOptions);
     } else {
       const rainy = isRainy();
       const id = repeatVisitDialogue(charId);

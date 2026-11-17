@@ -136,6 +136,13 @@ synthetic("axe-bar-discovery.js", { hiyoriFirstMeetingReady: () => false });
 const practiceRuns = [];
 synthetic("practice.js", { runFullPractice: async (opts) => { practiceRuns.push(opts); return { masteryGained: true }; } });
 
+// ♥5の締めくくりの後の会話（#3693）は実 bond-after.js。台本の読み込みだけ差し替える（読めない日を作れる）
+let bondAfterLoadFails = false;
+synthetic("chapter-data.js", { readDialogues: async (name, ids) => {
+  if (bondAfterLoadFails) throw new Error("offline");
+  return Object.fromEntries(ids.map((id) => [id, { dialogue_id: id, lines: [{ speaker: "sumi", face: "normal", text: id }] }]));
+} });
+await realModule("bond-after.js", "remake/js/core/bond-after.js");
 await realModule("spot-encounters.js", "remake/js/daily/spot-encounters.js");
 await realModule("hiyori-route.js", "remake/js/core/hiyori-route.js");
 const axe = (await realModule("hiyori-axe.js", "remake/js/daily/hiyori-axe.js")).namespace;
@@ -172,6 +179,36 @@ assert.equal(plays.filter((id) => id === "remake_sumi_after_shift").length, 1, "
 const afterMenuTexts = texts(screens.at(-1).node);
 assert(!afterMenuTexts.includes("スミさんと話す"), "シフト上がりメニューにスミ会話の選択肢は無い");
 assert(afterMenuTexts.includes("まっすぐ上がる"), "特訓・授業以外の締めの選択肢は残る");
+
+// --- #3693: スミさんの締めくくりを友人として迎えた後は、定型の一言の代わりに♥5後の場面を一度ずつ。読み終えたら短い汎用 ---
+{
+  const friend = { finales: { sumi: { day: 9, chapter: 1, route: "friend" } } };
+  reset(friend);
+  await tonari.doBaito();
+  assert.deepEqual(plays.filter((id) => /sumi_after_shift|bond_after_sumi/.test(id)), ["bond_after_sumi_2"],
+    "素焼きを持っていなければ一本目（素焼きの回収）を飛ばし、定型の一言は出さない");
+  assert.deepEqual(state.flags._bond_after.sumi, ["bond_after_sumi_2"], "読み終えた場面を記録する");
+  reset({ ...friend, owned: ["suyaki_sumi"], flags: { _bond_after: { sumi: ["bond_after_sumi_2"] } } });
+  await tonari.doBaito();
+  assert(plays.includes("bond_after_sumi_1"), "素焼きを持っていれば一本目を読む");
+  reset({ ...friend, owned: ["suyaki_sumi"], flags: { _bond_after: { sumi: [1, 2, 3, 4, 5].map((n) => `bond_after_sumi_${n}`) } } });
+  await tonari.doBaito();
+  assert(plays.includes("bond_after_sumi_short_a") && !plays.includes("remake_sumi_after_shift"), "5本の後は短い汎用");
+  assert.equal(state.flags._bond_after.sumi_short, 1);
+  reset(friend); storyReady = true;
+  await tonari.doBaito();
+  assert.deepEqual(visitCalls, ["sumi"], "固有会話がある日はそちらが先（♥5後の場面は次の上がりへ）");
+  assert.equal(state.flags._bond_after, undefined);
+  for (const id of Object.keys(db.dialogues)) if (id.startsWith("bond_after_")) delete db.dialogues[id];
+  reset(friend); bondAfterLoadFails = true;
+  await tonari.doBaito();
+  bondAfterLoadFails = false;
+  assert(plays.includes("remake_sumi_after_shift"), "台本を読めない日は定型の一言");
+  assert.equal(state.flags._bond_after, undefined, "読めなかった場面は既読にしない");
+  reset({ finales: { sumi: { day: 9, chapter: 1, route: "romance" } }, lovers: ["sumi"] });
+  await tonari.doBaito();
+  assert(plays.includes("remake_sumi_after_shift"), "友人ルート以外は定型の一言のまま");
+}
 
 // --- #2213 B04: まかない練習はシフト上がりで選んだ日だけ。選ばなければ練習しない ---
 assert(afterMenuTexts.includes("まかないで練習"), "シフト上がりでまかない練習を選べる");

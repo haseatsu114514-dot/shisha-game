@@ -25,6 +25,7 @@ import { canStudyAttack, studyAttack } from "./attack-lesson.js";
 import { readyLessons, consultLessons } from "../core/growth.js";
 import { canStudyCubeCoals, studyCubeCoals } from "./coal-lesson.js";
 import { tsumugiAtTonari } from "./tsumugi-schedule.js";
+import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
 
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 // カードゲーム「一台勝負」の入口の切替（ICG12）。入・切は daily/ichidai-table.js が起動時に端末へ書き、ここは読むだけにする
@@ -347,7 +348,14 @@ async function afterShiftSumiTalk() {
   if (hasNewStory("sumi") || spotFollowupDue("sumi", state, DB.dialogues)) {
     await visitChar("sumi");
   } else {
-    await play("remake_sumi_after_shift", { bg: TONARI_BG });
+    // ♥5の締めくくりの後（#3693）: 定型の一言の代わりに、スミさんの♥5後の場面を一度ずつ。読み終えたら短い汎用（core/bond-after.js）。
+    // 報酬はいつものバイト上がりと同じ（増やさない）。台本を読めなければ定型の一言へ戻す。中断したら既読にせず、次の上がりで読み直す。
+    const owner = state;
+    let after = bondAfterNext(state, "sumi");
+    if (after) { try { await loadBondAfterScenes(DB); } catch { after = null; } }
+    if (state !== owner) return;
+    const result = await play(after?.scene || "remake_sumi_after_shift", { bg: TONARI_BG });
+    if (state === owner && result && !result.cancelled) markBondAfterRead(state, "sumi", after);
   }
   if (!axeThrowExposed() && hiyoriAxePrereqsMet()) {
     await play("remake_sumi_axe_hint", { bg: TONARI_BG });
