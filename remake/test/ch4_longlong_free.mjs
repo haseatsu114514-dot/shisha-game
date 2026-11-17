@@ -9,7 +9,7 @@ const spotSource = source.slice(source.indexOf("const spotNow ="), source.indexO
 const actionSource = source.slice(source.indexOf("async function performDubaiSpot("), source.indexOf("/**\n * ラクダレース。"));
 assert(spotSource && actionSource, "read actual production functions");
 const entry = Object.freeze({ id: "ch4_dubai_longlong", region: "dubai", place: "longlong", kind: "ch4_dubai", cost: 6000, stamina: -12, stat: "insight" });
-let due = true, cancel = false, switchOnBg = false, night = null;
+let due = true, cancel = false, switchOnBg = false, night = null, bondAfter = null, bondAfterLoad = true, bondAfterMarked = [];
 let payments = [], stamina = [], learned = [], played = [], guards = [];
 const state = money => ({ money, flags: {}, finales: {}, stamina: 100 });
 const context = vm.createContext({
@@ -31,11 +31,15 @@ const context = vm.createContext({
   recordLonglongVisit: s => { s.flags.talks = (s.flags.talks || 0) + 1; },
   recordNightVisit: () => {}, gainAffinity: () => {}, visitAffinity: () => 8,
   STALL_PLACE: "souq", consultLessons: () => {},
+  // ♥5後の会話（#3693）: 対象外なら null。読めた場面の記録を見る
+  DB: { dialogues: {} }, bondAfterNext: (s, id) => id === "master_hookah" ? bondAfter : null,
+  loadBondAfterScenes: async () => { if (!bondAfterLoad) throw new Error("offline"); },
+  markBondAfterRead: (s, id, next) => { if (next) bondAfterMarked.push([id, next.scene]); },
 });
 vm.runInContext(`${spotSource}\n${actionSource}\nthis.mapSpot = spotNow; this.perform = performDubaiSpot;`, context);
 const reset = money => {
   context.state = state(money); due = true; cancel = false; switchOnBg = false; night = null;
-  payments = []; stamina = []; learned = []; played = []; guards = [];
+  payments = []; stamina = []; learned = []; played = []; guards = []; bondAfter = null; bondAfterLoad = true; bondAfterMarked = [];
 };
 const run = e => context.perform(e, {}, { staminaGuard: async n => { guards.push(n); return true; } });
 for (const money of [0, 5999, 6000]) {
@@ -73,4 +77,13 @@ assert.equal(context.mapSpot(entry).cost, 0, "cancel leaves free finale availabl
 reset(0); switchOnBg = true;
 assert.equal((await run(entry)).used, false);
 assert.equal(context.state.money, 99); assert.deepEqual(payments, []); assert.deepEqual(stamina, []);
-console.log("longlong free finale: map, execution, 0/5999/6000 yen, stale entry, read record roundtrip, normal visit, cancel and state switch passed");
+// #3693: 締めくくりの後は、小会話の代わりに♥5後の場面。代金・体力は小会話と同じで、小会話の巡回は進めない
+reset(6000); due = false; bondAfter = { kind: "story", scene: "bond_after_master_hookah_2" };
+assert.equal((await run(entry)).used, true);
+assert.deepEqual(played, ["bond_after_master_hookah_2"]); assert.deepEqual(payments, [-6000]);
+assert.deepEqual(bondAfterMarked, [["master_hookah", "bond_after_master_hookah_2"]]); assert.equal(context.state.flags.talks, undefined);
+reset(6000); due = false; bondAfter = { kind: "short", scene: "bond_after_master_hookah_short_a" }; bondAfterLoad = false;
+assert.equal((await run(entry)).used, true);
+assert.deepEqual(played, ["ordinary"], "unreadable bond-after scripts fall back to the ordinary talk");
+assert.deepEqual(bondAfterMarked, []); assert.equal(context.state.flags.talks, 1);
+console.log("longlong free finale: map, execution, 0/5999/6000 yen, stale entry, read record roundtrip, normal visit, cancel and state switch, bond-after talk passed");

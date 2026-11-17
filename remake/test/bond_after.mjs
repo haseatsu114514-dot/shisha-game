@@ -82,7 +82,7 @@ assert.equal(bondAfterNext(friendOf("noor"), "noor"), null, "まだ5本を書い
 }
 
 // 前提の持ち物: 一本目が締めくくりの素焼きの回収になっている人は、素焼きを持っている時だけ
-for (const id of ["kumicho", "naru", "adam", "tsumugi", "sumi", "minto", "rio", "samechan", "ageha", "mashiro", "saku"]) assert.equal(BOND_AFTER[id].scenes[0].requires, `suyaki_${id}`, `${id}: 一本目は素焼きが前提`);
+for (const id of ["kumicho", "naru", "adam", "tsumugi", "sumi", "minto", "rio", "samechan", "ageha", "mashiro", "saku", "steve", "volk", "master_hookah"]) assert.equal(BOND_AFTER[id].scenes[0].requires, `suyaki_${id}`, `${id}: 一本目は素焼きが前提`);
 // ひよりの素焼きの一台は友人の一服（friends.json）が描くので、一本目に前提を置かない
 assert.equal(BOND_AFTER.hiyori.scenes.some(scene => scene.requires), false);
 // サメちゃんの来店（daily/samechan.js）は背景を渡さないので、台本の metadata に店の背景を持つ。ひよりは私的な場面
