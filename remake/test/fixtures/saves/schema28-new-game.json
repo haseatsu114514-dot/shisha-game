@@ -1,0 +1,146 @@
+{
+  "schema": 28,
+  "cycle": 1,
+  "cycleId": "fixture_cycle_28",
+  "cycleStartStats": {
+    "technique": 10,
+    "sense": 10,
+    "guts": 10,
+    "charm": 10,
+    "insight": 10
+  },
+  "carryOptions": null,
+  "tokyoVisits": {
+    "version": 1,
+    "plans": [],
+    "offers": {},
+    "closedSlots": [],
+    "chats": {}
+  },
+  "chapter": 1,
+  "phase": "opening",
+  "day": 1,
+  "slot": 0,
+  "money": 30000,
+  "stamina": 100,
+  "stats": {
+    "technique": 10,
+    "sense": 10,
+    "guts": 10,
+    "charm": 10,
+    "insight": 10
+  },
+  "statXp": {},
+  "statsAtChapterStart": {
+    "technique": 10,
+    "sense": 10,
+    "guts": 10,
+    "charm": 10,
+    "insight": 10
+  },
+  "flags": {},
+  "restDay": null,
+  "deferredNightEvents": [],
+  "met": {
+    "sumi": true,
+    "tsumugi": true
+  },
+  "affinityCarry": {},
+  "loveCarry": {},
+  "baitoRecent": [],
+  "affinity": {
+    "sumi": 9,
+    "tsumugi": 9
+  },
+  "story": {},
+  "visits": {},
+  "visitedDay": {},
+  "owned": [
+    "silicone_bowl",
+    "lotos_hagal",
+    "flat_charcoal"
+  ],
+  "equip": {
+    "bowl": "silicone_bowl",
+    "hms": "lotos_hagal",
+    "charcoal": "flat_charcoal"
+  },
+  "flavors": [],
+  "flavorMastery": {},
+  "flavorLessons": [],
+  "staffPractice": null,
+  "flavorStock": {},
+  "weatherSeed": 4242,
+  "baitoCount": 0,
+  "lastBaitoDay": 0,
+  "usedBaito": [],
+  "contacts": [
+    "sumi"
+  ],
+  "limeRead": [],
+  "pendingInvite": null,
+  "inbox": [],
+  "relationshipMemories": [],
+  "trpg": {
+    "stock": [],
+    "owned": [],
+    "cleared": {},
+    "shifts": [],
+    "club": {
+      "founded": null,
+      "members": {}
+    }
+  },
+  "recipes": {},
+  "keepsakes": [],
+  "best": {},
+  "rehearsal": null,
+  "tournament": {
+    "attempts": 0,
+    "lastRank": null,
+    "losses": 0,
+    "lastLossAttempt": null,
+    "retryAssist": false
+  },
+  "reel": {
+    "seed": 123456789,
+    "count": 0,
+    "missRun": 0,
+    "bonusGap": 0,
+    "zoneLeft": 0,
+    "bonusCount": 0,
+    "freezeCount": 0,
+    "recent": [],
+    "pending": [],
+    "installed": false,
+    "introDone": false,
+    "lastChapter": 0,
+    "note": {},
+    "setting": 0,
+    "settingDraws": 0,
+    "settingSince": null,
+    "settingNotice": false,
+    "resetNext": false,
+    "lock": null,
+    "settingGuideDone": false
+  },
+  "kuji": {},
+  "kujiTickets": 0,
+  "goods": [],
+  "lovers": [],
+  "loveLevel": {},
+  "lovePts": {},
+  "loverSince": {},
+  "lastDate": {},
+  "loverEventsSeen": [],
+  "guilt": 0,
+  "loverStrain": {},
+  "romance": {},
+  "romanceChoices": {},
+  "finales": {},
+  "friendHangouts": {},
+  "seed": 777,
+  "playMs": 0,
+  "playMsFull": true,
+  "savedAt": 1794960000000
+}
