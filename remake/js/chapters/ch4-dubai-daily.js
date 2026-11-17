@@ -372,7 +372,7 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   // 夜がにぎわう店（ch4-dubai-local.js）: 先に店の夜を読む。初めての夜は短い場面、二度目からは最初の一行だけ。
   const night = nightVisit(state, entry.place);
   if (night && !await readNight(night, entry, owner)) return unused;
-  let done = false, longlong = null, innTrial = false, festaBond = null, withCompanion = false, after = null;
+  let done = false, longlong = null, innTrial = false, festaBond = null, withCompanion = false, after = null, souqChain = null;
   if (entry.place === "inn") {
     const visit = await visitInn(io, owner, staminaGuard);
     done = visit.done; innTrial = visit.trial; withCompanion = !!visit.companion;
@@ -408,6 +408,11 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   else if (entry.place === "festa" && (festaBond = festaBondDue())) {
     // 太陽の段階の会話（chapters/dubai-bonds.js）。初対面の後、必要ハートに届いた最古の未読を、小会話の代わりに一本読む。
     done = await readPlain(festaBond, entry.preview, owner);
+  }
+  else if (entry.place === "souq" && (souqChain = await chainVisitDue("souq"))) {
+    // 通いの続き（chapters/visit-chains.js・#3097）。スークの再訪の会話の代わりに読む（巡回は進めない）。代金・体力・屋台・能力はいつものスークと同じ
+    if (state !== owner) return unused;
+    done = await playChainStage(souqChain, id => readPlain(id, entry.preview, owner));
   }
   else done = await visitPlace(entry, io, owner);
   if (!done || state !== owner) return unused;

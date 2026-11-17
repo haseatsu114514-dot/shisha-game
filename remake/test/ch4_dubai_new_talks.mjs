@@ -18,7 +18,7 @@ const first = {
   center_cafe: ['ch4_dubai_cafe'], alley_cafe: ['ch4_stranger_second'],
 };
 for (const id of Object.values(pools).flat()) DB.dialogues[id] = { dialogue_id: id, lines: [{ text: id }] };
-let canReadSecond = false, cancelled = false;
+let canReadSecond = false, cancelled = false, chainDue = null;
 const played = [];
 const context = vm.createContext({ console });
 const module = new vm.SourceTextModule(source, { context });
@@ -35,6 +35,9 @@ const overrides = {
   spendableMoney: () => 100000, stallChoices: () => [],
   setBg: async () => {}, bgUrl: id => id,
   play: async dialogue => { played.push(dialogue.dialogue_id); return { cancelled }; },
+  // 通いの続き（#3097）。段の判定・記録は visit_chains.mjs が実物で確かめる。ここはスークの来店の分岐だけ
+  chainVisitDue: async place => chainDue?.stage.place === place ? chainDue : null,
+  playChainStage: async (due, read) => !!(await read(due.stage.id)),
 };
 const bindings = new Map();
 for (const match of source.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)) {
@@ -105,6 +108,24 @@ assert.equal(spot('souq').hasNew(), true, 'loaded scene restores the real remain
 reset();
 for (const id of first.souq) state.flags._ch4.read[id] = true;
 assert.equal(spot('souq').hasNew(), true, 'NG+ reset permits revisits again');
+// 通いの続き（#3097）: 段がある日は、スークの再訪の会話の代わりに段を読み、巡回は進めない
+{
+  reset();
+  for (const id of first.souq) state.flags._ch4.read[id] = true;
+  state.flags._ch4_dubai_talks = { souq: 3 };
+  DB.dialogues.ch4_chain_spice_1 = { dialogue_id: 'ch4_chain_spice_1', lines: [{ text: 'spice' }] };
+  chainDue = { id: 'ch4_spice_blend', stage: { id: 'ch4_chain_spice_1', place: 'souq' } };
+  assert.equal((await perform(spot('souq')))?.used, true);
+  assert.equal(played.at(-1), 'ch4_chain_spice_1', 'the chain stage replaces the souq revisit');
+  assert.equal(state.flags._ch4_dubai_talks.souq, 3, 'the souq revisit rotation does not advance');
+  cancelled = true;
+  const before = JSON.stringify(state.flags);
+  assert.notEqual((await perform(spot('souq')))?.used, true, 'a cancelled chain stage is not a visit');
+  assert.equal(JSON.stringify(state.flags), before, 'a cancelled chain stage keeps nothing');
+  cancelled = false; chainDue = null;
+  await perform(spot('souq'));
+  assert.equal(played.at(-1), pools.souq[3], 'without a stage, the next revisit');
+}
 // なるとの会話の期限の夜（4-3・SPC28）: 地図で読まなかった分は 2・4・10 日目以降の夜に。先に読めば来ない。自由行動の間だけ。
 {
   const { dueNaruTalk, NARU_TALK_DEADLINES } = module.namespace;
