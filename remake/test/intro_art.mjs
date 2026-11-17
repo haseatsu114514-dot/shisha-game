@@ -20,6 +20,9 @@ try {
     const intro = await import("./js/vn/intro.js"), vn = await import("./js/vn/engine.js");
     const map = await import("./js/daily/map.js"), worker = await import("./js/craft/worker.js");
     core.newGame();
+    // 会話を直接起動する試験なので、背後のタイトルを片付ける。
+    // 単独カットインのEnterが「はじめから」を動かすと、表情検査が冒頭会話で上書きされる。
+    document.querySelector("#screen").replaceChildren();
     // この試験は旧絵柄（立ち絵）の表情別の配置を見る。新しいグラフィック絵柄は intro_cutin.mjs で検査する
     core.config.introArtStyle = "classic";
     window.T = { core, DB, intro, vn, map, worker, seen: [] };
@@ -122,7 +125,19 @@ try {
         T.core.markMet(id); T.intro.markIntroSeen(id);
         T.talk = T.vn.play({ dialogue_id: "__adopted_portrait", lines: [{ speaker: id, face, text: `${id}:${face}` }] });
       }, { id, face });
-      await page.waitForFunction((text) => document.querySelector(".vn-text")?.textContent.includes(text), `${id}:${face}`);
+      try {
+        await page.waitForFunction((text) => document.querySelector(".vn-text")?.textContent.includes(text), `${id}:${face}`);
+      } catch (error) {
+        const display = await page.evaluate(() => {
+          const text = document.querySelector(".vn-text");
+          const box = text?.getBoundingClientRect();
+          return { text: text?.textContent, name: document.querySelector(".vn-name")?.textContent,
+            active: !!document.querySelector("#vn.active"), width: box?.width, height: box?.height,
+            viewport: [innerWidth, innerHeight], font: text && getComputedStyle(text).font };
+        });
+        error.message += `\nportrait ${id}:${face}: ${JSON.stringify({ display, errors })}`;
+        throw error;
+      }
       if (id === "hajime") {
         assert.equal(await page.locator(".vn-portraits img").count(), 0, "通常会話で主人公の立ち絵が出た");
       } else {

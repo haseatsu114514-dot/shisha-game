@@ -32,9 +32,9 @@ MIN_BOTTOM = 680  # 寄りの絵を縮めすぎない（絵の下端をこの高
 FADE = 14       # 絵の下端が画面の下に届かないとき、下から何%を薄くするか
 RIGHT_EDGE = 640  # 人物はこの線より右に出さない（名前・一言の側）
 SKIP = {"pakki"}  # マスコットは全身で見せるので、共通の配置のまま
-SAFE_TOP_IDS = {"master_hookah", "emil", "da_silva", "yoru", "sheikh", "mukai_master"}
+SAFE_TOP_IDS = {"master_hookah", "emil", "da_silva", "yoru", "sheikh", "mukai_master", "rei"}
 MAX_FRAME_WIDTH = {"da_silva": 900, "emil": 1024, "mukai_master": 1024}
-SAFE_HAND_LEFT = {"adam": -110, "emil": -170, "mukai_master": -200}
+SAFE_HAND_LEFT = {"adam": -110, "emil": -170, "mukai_master": -200, "rei": -310}
 
 
 def touches(alpha, box):
@@ -118,3 +118,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
