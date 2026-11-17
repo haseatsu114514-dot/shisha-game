@@ -33,6 +33,7 @@ import { chainStageAt } from "./visit-chains.js";
 import { chainVisitDue, playChainStage } from "./visit-chain-play.js";
 import { CREEK_SCENES, CREEK_SPOT_IDS, CREEK_TURN, creekSpotScenes } from "./ch4-dubai-local.js";
 import { quietTurn } from "../daily/spots.js";
+import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
 
 export const DUBAI = "dubai";
 // 手紙・切符・飛んだ回数・帰った日の旗は chapters/ch5-travel.js が持つ。
@@ -222,11 +223,20 @@ export async function performDubaiSpot(spot, { staminaGuard } = {}) {
   if (staminaGuard && !(await staminaGuard(spot.stamina))) return unused;
   const talks = state.flags[TALKS_FLAG] ||= {};
   const visits = talks[spot.id] || 0;
-  const scene = spot.talks[visits % spot.talks.length];
+  // ♥5の締めくくりの後（#3693）: 小会話の代わりに、その人の♥5後の場面（5本）を一度ずつ。読み終えた後は第5章の小会話に戻す
+  // （第5章の通い店と同じ）。小会話の巡回は進めない。台本を読めなければ小会話のまま。
+  let after = spot.charId ? bondAfterNext(state, spot.charId) : null;
+  if (after?.kind !== "story") after = null;
+  if (after) {
+    try { await loadBondAfterScenes(DB); } catch { after = null; }
+    if (state !== owner) return unused;
+  }
+  const scene = after?.scene || spot.talks[visits % spot.talks.length];
   if (!await read(scene, spot.preview, owner)) return unused;
   if (spot.cost) addMoney(-spot.cost);
   addStamina(spot.stamina);
-  talks[spot.id] = visits + 1;
+  if (after) markBondAfterRead(state, spot.charId, after);
+  else talks[spot.id] = visits + 1;
   // 好感度は会うたびに通いと同じ値（core/stats.js の visitAffinity。第5章はゆっくりの 10・5。東京と同じ。台帳 AFB01）。
   // 1回目は段階会話、2回目からは小会話（第3章の通いと同じ）。シェイク・太陽はここで♥5に届き、♥5の授業を相談できる（IR23）
   if (spot.charId) { gainAffinity(spot.charId, visitAffinity(visits ? "talk" : "story")); markMet(spot.charId); }

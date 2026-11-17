@@ -1711,6 +1711,288 @@
       "lines": [
         {"speaker": "master_hookah", "face": "smile", "text": "ごゆっくり。……君には、二番目に覚えた言葉だ"}
       ]
+    },
+    {
+      "dialogue_id": "bond_after_noor_1",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第4章ドバイのカフェ・オアシス（chapters/ch4-desert.js の雑談の代わり）。はじめは「ヌールさん」と敬語、ヌールは「ハジメ」「私」。友だちに教わった変わった日本語は、その部分だけ片仮名で、ときどき。はじめの大会・味覚・恋愛には踏み込まない（character_profiles）。お父さんは台詞を持たない。一本目は締めくくりで受け取ったダブルアップルの素焼き（suyaki_noor）で一台。持っている時だけ。店では三口しか吸えない彼女（character_profiles）と、父の席（締めくくり）。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "カフェ・オアシスのテーブルに、りんごの匂いの素焼きを置いた。"},
+        {"speaker": "noor", "face": "surprise", "text": "あ、持ってきたの？ 日本に帰ってから使うんだと思ってた"},
+        {"speaker": "hajime", "face": "normal", "text": "一回目は、ここで作りたくて。お父さんの席で、いいですか"},
+        {"speaker": "noor", "face": "surprise", "text": "父の席？"},
+        {"speaker": "", "face": "", "text": "奥の席で、ダブルアップルを詰める。いつもより、ほんの少しだけ火を弱くした。"},
+        {"speaker": "", "face": "", "text": "ヌールさんは父の席に座って、三口だけ吸った。それから、四口目を吸った。"},
+        {"speaker": "noor", "face": "smile", "text": "……四口目、吸っちゃった。三口までって決めてるのに"},
+        {"speaker": "hajime", "face": "smile", "text": "火を弱くしたので、長く持ちます"},
+        {"speaker": "noor", "face": "smile", "text": "ずるい。……アリガトナス、ハジメ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_noor_2",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第4章ドバイのカフェ・オアシス（chapters/ch4-desert.js の雑談の代わり）。はじめは「ヌールさん」と敬語、ヌールは「ハジメ」「私」。友だちに教わった変わった日本語は、その部分だけ片仮名で、ときどき。はじめの大会・味覚・恋愛には踏み込まない（character_profiles）。お父さんは台詞を持たない。地図の×は、前の日の線をなぞって車を埋めた所。消さずに毎朝見てから線を引く（character_profiles）。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "ツアーデスクに、手描きの砂丘の地図が広げてあった。"},
+        {"speaker": "", "face": "", "text": "ところどころに、小さな×が付いている。"},
+        {"speaker": "hajime", "face": "normal", "text": "この×、何ですか"},
+        {"speaker": "noor", "face": "normal", "text": "車を埋めたところ。前の日の線をなぞったら、砂が変わってたの"},
+        {"speaker": "noor", "face": "smile", "text": "消さないで、毎朝見てから線を引くの。同じ失敗、二回したくないから"},
+        {"speaker": "hajime", "face": "normal", "text": "俺のノートにも、そういう×、いっぱいあります"},
+        {"speaker": "noor", "face": "surprise", "text": "ほんと？ じゃあ、見せっこしよ。×の多い方が、ジュースおごりね"},
+        {"speaker": "hajime", "face": "smile", "text": "……負ける気がしないのが、なんだか悔しいです"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_noor_3",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第4章ドバイのカフェ・オアシス（chapters/ch4-desert.js の雑談の代わり）。はじめは「ヌールさん」と敬語、ヌールは「ハジメ」「私」。友だちに教わった変わった日本語は、その部分だけ片仮名で、ときどき。はじめの大会・味覚・恋愛には踏み込まない（character_profiles）。お父さんは台詞を持たない。ネットの友だちに教わった日本語（character_profiles）。はじめは笑わず、意味は合っていると伝える。",
+      "lines": [
+        {"speaker": "noor", "face": "smile", "text": "ハジメ、新しい日本語、覚えたよ。『チョベリグ』"},
+        {"speaker": "hajime", "face": "surprise", "text": "……どこで覚えたんですか"},
+        {"speaker": "noor", "face": "normal", "text": "ネットの友だち。とってもいい、って意味でしょ？"},
+        {"speaker": "hajime", "face": "normal", "text": "意味は合ってます。ただ、ちょっと昔の言葉かもしれません"},
+        {"speaker": "noor", "face": "surprise", "text": "昔？ ……私の日本語、変？"},
+        {"speaker": "hajime", "face": "smile", "text": "変じゃないです。スミさんが聞いたら、懐かしがると思います"},
+        {"speaker": "noor", "face": "smile", "text": "じゃあ、スミさんに会えたら言う。チョベリグ！"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_noor_4",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第4章ドバイのカフェ・オアシス（chapters/ch4-desert.js の雑談の代わり）。はじめは「ヌールさん」と敬語、ヌールは「ハジメ」「私」。友だちに教わった変わった日本語は、その部分だけ片仮名で、ときどき。はじめの大会・味覚・恋愛には踏み込まない（character_profiles）。お父さんは台詞を持たない。負けず嫌い（character_profiles）。煙の輪で勝負して負け、「次は負けないからね」。",
+      "lines": [
+        {"speaker": "noor", "face": "smile", "text": "ハジメ、勝負しよ。煙の輪っか、どっちが多く出せるか"},
+        {"speaker": "hajime", "face": "surprise", "text": "急ですね"},
+        {"speaker": "", "face": "", "text": "ヌールさんは口をすぼめて、ぽ、ぽ、と小さな輪を三つ出した。俺の番。……四つ、出た。"},
+        {"speaker": "noor", "face": "surprise", "text": "……え。四つ？"},
+        {"speaker": "hajime", "face": "smile", "text": "スミさんの店で、練習したので"},
+        {"speaker": "noor", "face": "normal", "text": "ずるい。練習してたなんて聞いてない"},
+        {"speaker": "noor", "face": "smile", "text": "次は負けないからね。砂丘でも、輪っかでも"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_noor_5",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第4章ドバイのカフェ・オアシス（chapters/ch4-desert.js の雑談の代わり）。はじめは「ヌールさん」と敬語、ヌールは「ハジメ」「私」。友だちに教わった変わった日本語は、その部分だけ片仮名で、ときどき。はじめの大会・味覚・恋愛には踏み込まない（character_profiles）。お父さんは台詞を持たない。ツアーが長引いた日は、父が黙ってお盆を運ぶ（聞くと「運んでない」と言う。character_profiles）。父は台詞なしで首を振るだけ。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "ツアー帰りのヌールさんが、砂だらけの靴のまま店に駆け込んできた。"},
+        {"speaker": "noor", "face": "surprise", "text": "ごめん、ハジメ！ 待った？ ……あれ、お茶、出てる"},
+        {"speaker": "", "face": "", "text": "テーブルには、いつの間にか湯気の立つお茶と、焼き菓子の皿が置いてあった。"},
+        {"speaker": "noor", "face": "normal", "text": "父でしょ、これ。……ねえ、父、運んだ？"},
+        {"speaker": "", "face": "", "text": "カウンターの奥で、ヌールさんのお父さんは新聞から顔を上げずに、首を横に振った。"},
+        {"speaker": "noor", "face": "smile", "text": "ほらね。運んでないって。いつも、そうなの"},
+        {"speaker": "hajime", "face": "smile", "text": "おいしいです、って伝えてください"},
+        {"speaker": "noor", "face": "smile", "text": "伝える。たぶん、また首を振るけど"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_noor_short_a",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第4章ドバイのカフェ・オアシス（chapters/ch4-desert.js の雑談の代わり）。はじめは「ヌールさん」と敬語、ヌールは「ハジメ」「私」。友だちに教わった変わった日本語は、その部分だけ片仮名で、ときどき。はじめの大会・味覚・恋愛には踏み込まない（character_profiles）。お父さんは台詞を持たない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "noor", "face": "smile", "text": "あ、ハジメ。今日の砂、いい感じだったよ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_noor_short_b",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第4章ドバイのカフェ・オアシス（chapters/ch4-desert.js の雑談の代わり）。はじめは「ヌールさん」と敬語、ヌールは「ハジメ」「私」。友だちに教わった変わった日本語は、その部分だけ片仮名で、ときどき。はじめの大会・味覚・恋愛には踏み込まない（character_profiles）。お父さんは台詞を持たない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "noor", "face": "smile", "text": "カシコマリ！ いつもの席、空いてるよ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_noor_short_c",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第4章ドバイのカフェ・オアシス（chapters/ch4-desert.js の雑談の代わり）。はじめは「ヌールさん」と敬語、ヌールは「ハジメ」「私」。友だちに教わった変わった日本語は、その部分だけ片仮名で、ときどき。はじめの大会・味覚・恋愛には踏み込まない（character_profiles）。お父さんは台詞を持たない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "ヌールさんはツアーの予約表を書きながら、こちらに小さく手を振った。"},
+        {"speaker": "noor", "face": "normal", "text": "三口だけ、付き合ってね"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_noor_short_d",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第4章ドバイのカフェ・オアシス（chapters/ch4-desert.js の雑談の代わり）。はじめは「ヌールさん」と敬語、ヌールは「ハジメ」「私」。友だちに教わった変わった日本語は、その部分だけ片仮名で、ときどき。はじめの大会・味覚・恋愛には踏み込まない（character_profiles）。お父さんは台詞を持たない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "noor", "face": "normal", "text": "今日も父、何も言わずにお盆運んでた。ハジメの分も"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_da_silva_1",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷の中庭（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「太陽さん」と敬語。太陽の日本語は元からつたない（助詞の抜け・言い直し・短く区切る程度。character_profiles）。「カカッテコイ」は太陽が連発しない。一本目は締めくくりの「お前の店にも、帰りそびれるやつ、来る。そいつに詰めてやれ」と、椅子と水の順番の回収。素焼き（suyaki_da_silva）を持っている時だけ。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "中庭の日よけの下で、太陽さんにもらった素焼きを出した。"},
+        {"speaker": "da_silva", "face": "surprise", "text": "それ、持ってきたか！"},
+        {"speaker": "hajime", "face": "normal", "text": "今日は、俺が詰めます。太陽さんが、帰りそびれた人の役で"},
+        {"speaker": "da_silva", "face": "excited", "text": "ハハ！ 俺が客か。いいぞ、座る！"},
+        {"speaker": "", "face": "", "text": "パッションフルーツを詰めて、炭を置く。その前に、水のグラスを太陽さんの前に置いた。"},
+        {"speaker": "da_silva", "face": "smile", "text": "……水、先。俺の順番だ"},
+        {"speaker": "", "face": "", "text": "太陽さんは一口吸って、しばらく噴水の音を聞いていた。"},
+        {"speaker": "da_silva", "face": "normal", "text": "静か。……でも、祭りのあとの味。いい一台"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_da_silva_2",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷の中庭（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「太陽さん」と敬語。太陽の日本語は元からつたない（助詞の抜け・言い直し・短く区切る程度。character_profiles）。「カカッテコイ」は太陽が連発しない。締めくくりの手拍子。はじめに歓迎の手拍子を教える。",
+      "lines": [
+        {"speaker": "da_silva", "face": "excited", "text": "ハジメ、手拍子、覚えろ。歓迎の手拍子"},
+        {"speaker": "hajime", "face": "surprise", "text": "今ですか"},
+        {"speaker": "da_silva", "face": "normal", "text": "今。……速い、速い、ゆっくり、ぱん！"},
+        {"speaker": "", "face": "", "text": "何度か外して、四回目でやっと揃った。回廊の奥から、使用人たちの手拍子が重なった。"},
+        {"speaker": "da_silva", "face": "smile", "text": "それ。tonariで、帰りそびれたやつに、それやれ"},
+        {"speaker": "hajime", "face": "smile", "text": "スミさんに怒られない程度に、やってみます"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_da_silva_3",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷の中庭（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「太陽さん」と敬語。太陽の日本語は元からつたない（助詞の抜け・言い直し・短く区切る程度。character_profiles）。「カカッテコイ」は太陽が連発しない。店を閉めて床を拭く（締めくくり）。床拭きは店主の最後の仕事。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "使用人たちが帰ったあと、太陽さんは自分で、中庭の床を拭いていた。"},
+        {"speaker": "hajime", "face": "normal", "text": "手伝います"},
+        {"speaker": "da_silva", "face": "normal", "text": "いい。これ、俺の。……店主の、最後の仕事"},
+        {"speaker": "da_silva", "face": "smile", "text": "祭り、楽しい。でも、汚れたまま次の朝が来ると……楽しくない"},
+        {"speaker": "hajime", "face": "normal", "text": "スミさんも、閉めたあと、必ず灰を払ってます"},
+        {"speaker": "da_silva", "face": "excited", "text": "スミサン！ いい店主だ。会いたい"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_da_silva_4",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷の中庭（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「太陽さん」と敬語。太陽の日本語は元からつたない（助詞の抜け・言い直し・短く区切る程度。character_profiles）。「カカッテコイ」は太陽が連発しない。締めくくりの「静かなのも、静かなまま、フェスタだ」の続き。静かな一台に挑む。",
+      "lines": [
+        {"speaker": "da_silva", "face": "serious", "text": "ハジメ。今日、静かな一台、やってみる。お前みたいな"},
+        {"speaker": "", "face": "", "text": "太陽さんは黙って炭を置き、黙って葉を整えた。……十秒ほどで、鼻歌が漏れはじめた。"},
+        {"speaker": "hajime", "face": "smile", "text": "太陽さん、歌ってます"},
+        {"speaker": "da_silva", "face": "surprise", "text": "……歌ってたか？"},
+        {"speaker": "da_silva", "face": "excited", "text": "無理だ！ 静か、むずかしい。……でも、煙は静か。そこは、できた"},
+        {"speaker": "hajime", "face": "smile", "text": "味は、ちゃんと静かでした"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_da_silva_5",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷の中庭（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「太陽さん」と敬語。太陽の日本語は元からつたない（助詞の抜け・言い直し・短く区切る程度。character_profiles）。「カカッテコイ」は太陽が連発しない。締めくくりの「椅子は、ちゃんと回しておきます」「カカッテコイ」の練習。はじめが言う。",
+      "lines": [
+        {"speaker": "da_silva", "face": "normal", "text": "ハジメ。椅子、回す練習、したか"},
+        {"speaker": "hajime", "face": "surprise", "text": "あの、入口でやるやつですか"},
+        {"speaker": "da_silva", "face": "excited", "text": "そう！ やってみろ。俺、客"},
+        {"speaker": "", "face": "", "text": "空いた椅子を両手で持って、くるりと太陽さんの方へ回した。水のグラスを置く。"},
+        {"speaker": "hajime", "face": "normal", "text": "……カカッテコイ"},
+        {"speaker": "da_silva", "face": "surprise", "text": "……"},
+        {"speaker": "da_silva", "face": "excited", "text": "声、小さい！ でも、椅子はいい。七十点！"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_da_silva_short_a",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷の中庭（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「太陽さん」と敬語。太陽の日本語は元からつたない（助詞の抜け・言い直し・短く区切る程度。character_profiles）。「カカッテコイ」は太陽が連発しない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "da_silva", "face": "excited", "text": "来たな、ハジメ！ 椅子、水、どうぞ！"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_da_silva_short_b",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷の中庭（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「太陽さん」と敬語。太陽の日本語は元からつたない（助詞の抜け・言い直し・短く区切る程度。character_profiles）。「カカッテコイ」は太陽が連発しない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "da_silva", "face": "smile", "text": "今日、静か？ にぎやか？ どっちでも、フェスタだ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_da_silva_short_c",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷の中庭（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「太陽さん」と敬語。太陽の日本語は元からつたない（助詞の抜け・言い直し・短く区切る程度。character_profiles）。「カカッテコイ」は太陽が連発しない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "太陽さんは噴水の縁に腰かけて、こちらに大きく手を振った。"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_da_silva_short_d",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷の中庭（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「太陽さん」と敬語。太陽の日本語は元からつたない（助詞の抜け・言い直し・短く区切る程度。character_profiles）。「カカッテコイ」は太陽が連発しない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "da_silva", "face": "normal", "text": "パッションフルーツ、新しいの来た。あとで、詰める"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sheikh_1",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「シェイクさん」と敬語、シェイクは「私」「君」「ハジメ」で短く、急がず話す。決勝・金の台には触れない。一本目は締めくくりで受け取った旅人の素焼き（葡萄・suyaki_sheikh）を、屋敷で使う。持っている時だけ。路地裏の店の手順（先に水・縁まで盛る・炭三つ）。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "屋敷の客間で、葡萄色の縁の素焼きを出した。"},
+        {"speaker": "sheikh", "face": "surprise", "text": "……ここで、それを使うのか"},
+        {"speaker": "hajime", "face": "normal", "text": "旅人のシェイクさんの器ですけど、今日は屋敷で吸ってほしくて"},
+        {"speaker": "", "face": "", "text": "葉より先に、水を一杯。葡萄を縁まで盛って、炭を三つ。路地裏の店と同じ手順で作った。"},
+        {"speaker": "sheikh", "face": "normal", "text": "……屋敷で、路地裏の煙がする"},
+        {"speaker": "sheikh", "face": "smile", "text": "悪くない。二人の私が、同じ席に座っているようだ"},
+        {"speaker": "hajime", "face": "smile", "text": "外套、着てきてもいいですよ"},
+        {"speaker": "sheikh", "face": "smile", "text": "いや。今日は白い服のまま、吸おう"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sheikh_2",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「シェイクさん」と敬語、シェイクは「私」「君」「ハジメ」で短く、急がず話す。決勝・金の台には触れない。締めくくりの「俺の外套も、市場で選んでください」「誰も道を空けないのを、選んでやる」の続き。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "使用人が、たたまれた砂色の布を持ってきた。"},
+        {"speaker": "sheikh", "face": "normal", "text": "約束の外套だ。市場で選んだ"},
+        {"speaker": "hajime", "face": "surprise", "text": "本当に、選んでくれたんですか"},
+        {"speaker": "sheikh", "face": "smile", "text": "誰も道を空けないものを、三軒回って探した"},
+        {"speaker": "", "face": "", "text": "袖を通すと、少し大きかった。鏡の中の俺は、どこにでもいる旅人に見えた。"},
+        {"speaker": "sheikh", "face": "normal", "text": "いい。それなら、市場で押される"},
+        {"speaker": "hajime", "face": "smile", "text": "押されるのが、楽しみになってきました"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sheikh_3",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「シェイクさん」と敬語、シェイクは「私」「君」「ハジメ」で短く、急がず話す。決勝・金の台には触れない。王座ゆえの孤独（character_profiles）。断られることが少ない人が、断られて喜ぶ。手紙の往復の切符。",
+      "lines": [
+        {"speaker": "sheikh", "face": "normal", "text": "ハジメ。次の帰りの切符は、一等にしておいた"},
+        {"speaker": "hajime", "face": "surprise", "text": "え、いつもの席で大丈夫です"},
+        {"speaker": "sheikh", "face": "surprise", "text": "……断るのか"},
+        {"speaker": "hajime", "face": "normal", "text": "はい。いつもの席の方が、隣の人と話せるので"},
+        {"speaker": "sheikh", "face": "smile", "text": "そうか。……断られたのは、久しぶりだ"},
+        {"speaker": "sheikh", "face": "smile", "text": "いつもの席に変えておこう。少し、うれしいものだな"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sheikh_4",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「シェイクさん」と敬語、シェイクは「私」「君」「ハジメ」で短く、急がず話す。決勝・金の台には触れない。マジュリスで杯を振る作法（ch5_sheikh_bond_2）の続き。杯と言葉の両方で伝える。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "マジュリスで、小さな杯に三杯目が注がれた。俺は杯を、小さく左右に振った。"},
+        {"speaker": "sheikh", "face": "smile", "text": "覚えていたか"},
+        {"speaker": "hajime", "face": "normal", "text": "日本だと、こういう時は『ごちそうさま』って言います"},
+        {"speaker": "sheikh", "face": "normal", "text": "ゴチソウサマ"},
+        {"speaker": "", "face": "", "text": "シェイクさんは自分の杯を左右に振りながら、もう一度、小さく口の中で繰り返した。"},
+        {"speaker": "sheikh", "face": "smile", "text": "杯と言葉、両方で伝えるのが、いちばん確かだ"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sheikh_5",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「シェイクさん」と敬語、シェイクは「私」「君」「ハジメ」で短く、急がず話す。決勝・金の台には触れない。袖のしわを自分で伸ばす人（ch5_sheikh_bond_1）。旅の間は自分で茶を淹れる。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "屋敷の厨房で、シェイクさんが自分で湯を沸かしていた。"},
+        {"speaker": "", "face": "", "text": "入口では、使用人たちがおろおろしている。"},
+        {"speaker": "hajime", "face": "surprise", "text": "シェイクさんが、お茶を？"},
+        {"speaker": "sheikh", "face": "normal", "text": "旅の間は、自分で淹れる。屋敷に戻ると、やらせてもらえない"},
+        {"speaker": "", "face": "", "text": "湯が沸くと、シェイクさんは手際よく茶葉を落とした。"},
+        {"speaker": "", "face": "", "text": "使用人たちは、黙って見守るしかなかった。"},
+        {"speaker": "sheikh", "face": "smile", "text": "君の分も淹れた。屋敷で私の茶を飲むのは、君が初めてだ"},
+        {"speaker": "hajime", "face": "smile", "text": "光栄です。……使用人の皆さんの視線が、ちょっと痛いですけど"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sheikh_short_a",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「シェイクさん」と敬語、シェイクは「私」「君」「ハジメ」で短く、急がず話す。決勝・金の台には触れない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "sheikh", "face": "smile", "text": "来たか、ハジメ。座るといい"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sheikh_short_b",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「シェイクさん」と敬語、シェイクは「私」「君」「ハジメ」で短く、急がず話す。決勝・金の台には触れない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "sheikh", "face": "normal", "text": "外套は、今日も掛けたままだ。いつでも出られるようにな"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sheikh_short_c",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「シェイクさん」と敬語、シェイクは「私」「君」「ハジメ」で短く、急がず話す。決勝・金の台には触れない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "シェイクさんは窓辺で本を閉じ、向かいの席を手で示した。"}
+      ]
+    },
+    {
+      "dialogue_id": "bond_after_sheikh_short_d",
+      "comment": "#3693 好感度MAX（♥5）の締めくくりの後の会話（友人ルートだけ・恋人には出さない）。core/bond-after.js が、締めくくりの次の来店から一度ずつ順に出す。大会の前後・どの章でも読めるよう、大会や章の出来事を前提にしない。第5章のシェイクの屋敷（chapters/ch5-dubai.js の小会話の代わり。第5章なので5本だけ）。はじめは「シェイクさん」と敬語、シェイクは「私」「君」「ハジメ」で短く、急がず話す。決勝・金の台には触れない。5本の後の短い汎用。",
+      "lines": [
+        {"speaker": "sheikh", "face": "smile", "text": "杯は、三杯目で振るといい。……君は、もう知っていたな"}
+      ]
     }
   ]
 }

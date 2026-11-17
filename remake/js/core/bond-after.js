@@ -6,7 +6,7 @@
 // - 好感度・能力・代金は、呼出元のいつもの来店と同じ（♥5後の場面で報酬は増やさない）
 // - 物語の場面・段階会話・締めくくり・一度きりの後日談が来る来店では、呼出元がそちらを優先する
 // - requires: その場面の前提になる持ち物（締めくくりの贈り物など）。持っていない保存では飛ばし、汎用へ進む
-// あげは（chapters/ch2-story-data.js の agehaLaterScene）が先にこの形を始めた。ほかの人は Issue #3693 の順で足していく。
+// あげは（chapters/ch2-story-data.js の agehaLaterScene）が先にこの形を始めた。締めくくりのある人は全員ここにいる（#3693）。
 import { readDialogues } from "./chapter-data.js";
 
 export const BOND_AFTER_FILE = "bond_after";
@@ -106,6 +106,23 @@ export const BOND_AFTER = Object.freeze({
     scenes: [{ id: "bond_after_master_hookah_1", requires: "suyaki_master_hookah" }, "bond_after_master_hookah_2", "bond_after_master_hookah_3",
       "bond_after_master_hookah_4", "bond_after_master_hookah_5"],
     shorts: ["bond_after_master_hookah_short_a", "bond_after_master_hookah_short_b", "bond_after_master_hookah_short_c", "bond_after_master_hookah_short_d"],
+  }),
+  // ヌール（第4章ドバイのカフェ・オアシスの雑談の代わり。chapters/ch4-desert.js）・太陽とシェイク（第5章のシェイクの屋敷の
+  // 小会話の代わり。chapters/ch5-dubai.js。第5章なので5本だけ）
+  noor: entry("noor", {
+    scenes: [{ id: "bond_after_noor_1", requires: "suyaki_noor" }, "bond_after_noor_2", "bond_after_noor_3",
+      "bond_after_noor_4", "bond_after_noor_5"],
+    shorts: ["bond_after_noor_short_a", "bond_after_noor_short_b", "bond_after_noor_short_c", "bond_after_noor_short_d"],
+  }),
+  da_silva: entry("da_silva", {
+    scenes: [{ id: "bond_after_da_silva_1", requires: "suyaki_da_silva" }, "bond_after_da_silva_2", "bond_after_da_silva_3",
+      "bond_after_da_silva_4", "bond_after_da_silva_5"],
+    shorts: ["bond_after_da_silva_short_a", "bond_after_da_silva_short_b", "bond_after_da_silva_short_c", "bond_after_da_silva_short_d"],
+  }),
+  sheikh: entry("sheikh", {
+    scenes: [{ id: "bond_after_sheikh_1", requires: "suyaki_sheikh" }, "bond_after_sheikh_2", "bond_after_sheikh_3",
+      "bond_after_sheikh_4", "bond_after_sheikh_5"],
+    shorts: ["bond_after_sheikh_short_a", "bond_after_sheikh_short_b", "bond_after_sheikh_short_c", "bond_after_sheikh_short_d"],
   }),
 });
 
