@@ -826,7 +826,7 @@
         {
           "speaker": "old_man",
           "face": "",
-          "text": "去年の優勝はKEMURIKUSAのなるだよ。県じゃ負けたけどな"
+          "text": "ところでSMOKE CROWN CUP、去年の優勝はKEMURIKUSAのなるだよ。県じゃ負けたけどな"
         },
         {
           "speaker": "old_man",
@@ -872,7 +872,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（なるさんの一台なら、俺も知ってる、……あれは離せない）"
+            "text": "（なるさんの一台なら、俺も知ってる。……あれは離せない）"
           }
         ]
       }
@@ -1020,7 +1020,7 @@
           {
             "speaker": "dr_kemuri",
             "face": "normal",
-            "text": "記録した数値は忘れないよ。tonariの炭は、スミさんのところのだったね。あの人の炭は数値が美しい"
+            "text": "記録した数値は忘れないよ。tonariは、スミさんのところだったね。あの人の炭は数値が美しい"
           }
         ],
         "new_greeting": [
@@ -1034,7 +1034,7 @@
           {
             "speaker": "dr_kemuri",
             "face": "normal",
-            "text": "おや、きみ。今日は何を吸いに来たんだい？"
+            "text": "おや、逢縁くん。今日は何を吸いに来たんだい？"
           }
         ]
       }
