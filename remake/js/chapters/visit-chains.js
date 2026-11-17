@@ -1,13 +1,17 @@
 // 通いの続きに置く、2〜3回で区切りのつく小さな出来事（#2020 D・2026-11-06 再調査の推奨案）。
 // 同じ店に通っても短い会話の巡回に戻るだけだったので、巡回を一通り読んだ後に、後日へ続く出来事を一本ずつ置く。
+//   第2章 銭湯: 番台を継ぐ孫の人に出会う → 決まり文句をどう言うか相談される → 自分で座れるようになった日（#3097）
+//   第2章 C.STATION 柚ヶ谷店: 一人で席を任された新人に炭の替えどきを聞かれる → 「煙が薄い」の直し方 → 研修中が取れた日（#3097）
+//   第2章 水族館: 出口の質問カードに書く → 掲示板に答えが貼られる（#3097）
 //   第3章 mukai: 豆腐屋の常連さんの相談を聞く → 常連さんの台で一台を試す → 後日、家で作った報告を聞く
 //   第4章 中心地のカフェ→宿→カフェ: ボウルだけ替える頼み方を知る → 宿で二つ目を試す → 店で感想を交わす
+//   第4章 スーク: スパイス屋の店主に鼻を貸す → 強すぎた香りの直し方 → カフェの主人の礼（#3097）
 //   第5章 Smoke & Glory: tonariで作った一台を覚えている客 → スティーブの台で作る → スティーブのカードの余白
 //   第5章 路地裏のカフェ: いつもの一台を出してくれる店員に、閉店後の一台を渡す
 // 先の段で選んだ答え（choice の分岐名）を記録し、後の段の台本が条件 chain_pick で読む。実際の制作の結果など、その場で
 // 決まる事実は呼び出し側が facts で渡し、台本は条件 chain_fact で読む（chapters/visit-chain-play.js）。
 // 交流の記憶は後の段の台本の remember 行（data/relationship_memories.json）で残し、大会前夜の振り返りに出る。
-// ここは DOM を持たない判定と記録だけ。再生・代金・体力・能力は各章（ch3-tokyo-daily.js・ch4-dubai-daily.js・
+// ここは DOM を持たない判定と記録だけ。再生・代金・体力・能力は各章（ch2-preparation.js・ch3-tokyo-daily.js・ch4-dubai-daily.js・
 // ch5-tokyo.js・ch5-dubai.js）。台詞は data/dialogue/visit_chains.json。周回では持ち越さない（core/carry.js の progression）。
 
 export const VISIT_CHAINS_FLAG = "_visit_chains";
@@ -29,6 +33,36 @@ const stage = fields => Object.freeze({ ...fields, picks: Object.freeze([...(fie
  * 2段目からは、前の段を読んだ日より後（後日）に開く。
  */
 export const VISIT_CHAINS = Object.freeze({
+  // 第2章の柚ヶ谷（#3097）。銭湯に3回通う（初回＋再訪2回）と開く。段は再訪の会話の代わりに読み、巡回は進めない。
+  // 遊び場は昼にも夜にも行けるので時刻に触れず、大会の前後どちらでも成り立つ台本にする（街の人とはじめだけ）。
+  ch2_bandai: Object.freeze({
+    chapter: 2,
+    opens: value => count(value?.flags?._ch2_outing_visits_ch2_sento) >= 3,
+    stages: Object.freeze([
+      stage({ id: "ch2_chain_bandai_1", place: "ch2_sento", choice: "bandai_first", picks: ["wait", "exact"] }),
+      stage({ id: "ch2_chain_bandai_2", place: "ch2_sento", choice: "bandai_word", picks: ["same", "own"] }),
+      stage({ id: "ch2_chain_bandai_3", place: "ch2_sento" }),
+    ]),
+  }),
+  // 第2章の柚ヶ谷（#3097）。C.STATION 柚ヶ谷店に3回通うと開く。銭湯と同じく、再訪の会話の代わりに読み、巡回は進めない。
+  ch2_newcomer: Object.freeze({
+    chapter: 2,
+    opens: value => count(value?.flags?._ch2_outing_visits_ch2_c_station) >= 3,
+    stages: Object.freeze([
+      stage({ id: "ch2_chain_newcomer_1", place: "ch2_c_station", choice: "newcomer_coal", picks: ["yes", "wait"] }),
+      stage({ id: "ch2_chain_newcomer_2", place: "ch2_c_station", choice: "newcomer_thin", picks: ["ask", "move"] }),
+      stage({ id: "ch2_chain_newcomer_3", place: "ch2_c_station" }),
+    ]),
+  }),
+  // 第2章の柚ヶ谷（#3097）。水族館に3回通うと開く。2段。
+  ch2_question: Object.freeze({
+    chapter: 2,
+    opens: value => count(value?.flags?._ch2_outing_visits_ch2_aquarium) >= 3,
+    stages: Object.freeze([
+      stage({ id: "ch2_chain_question_1", place: "ch2_aquarium", choice: "question_card", picks: ["sleep", "front"] }),
+      stage({ id: "ch2_chain_question_2", place: "ch2_aquarium" }),
+    ]),
+  }),
   // 第3章の東京（大会前の14日）。mukai で2回働く（手伝い・店番）と、常連さんの顔を覚える。
   // 第3章の東京の日常は大会の朝で終わるので、大会後の分岐は要らない。味が分からない日に読んでも成り立つ台本にする
   // （はじめは味を確かめず、炭・葉・待つ時間と、常連さんの顔で見る）。
@@ -50,6 +84,17 @@ export const VISIT_CHAINS = Object.freeze({
       stage({ id: "ch4_chain_bowl_1", place: "center_cafe" }),
       stage({ id: "ch4_chain_bowl_2", place: "inn", label: "二つ目のボウルを試す", choice: "bowl_second", picks: ["same", "follow", "light"] }),
       stage({ id: "ch4_chain_bowl_3", place: "center_cafe" }),
+    ]),
+  }),
+  // 第4章のドバイ（#3097）。スークの再訪の会話を3本読むと開く（乾燥レモンの割り方の回まで）。再訪の会話の代わりに読み、巡回は進めない。
+  // 代金・体力・屋台・能力はいつものスークと同じ（ch4-dubai-daily.js）。
+  ch4_spice_blend: Object.freeze({
+    chapter: 4,
+    opens: value => talksRead(value, "_ch4_dubai_talks", "souq") >= 3,
+    stages: Object.freeze([
+      stage({ id: "ch4_chain_spice_1", place: "souq", choice: "spice_pick", picks: ["cardamom", "lemon"] }),
+      stage({ id: "ch4_chain_spice_2", place: "souq", choice: "spice_fix", picks: ["less", "coarse"] }),
+      stage({ id: "ch4_chain_spice_3", place: "souq" }),
     ]),
   }),
   // 第5章の東京。Smoke & Glory の小会話を一通り読むと開く（♥5の締めくくりの来店はそちらが先）。

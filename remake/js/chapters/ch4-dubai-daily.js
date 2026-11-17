@@ -56,7 +56,7 @@ import { CH4_TOUR_BG, CH4_TOUR_FLAG, CH4_TOUR_IDS, CH4_TOUR_SCENES, chapterFourT
 import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
 
 export const DUBAI = "dubai";
-const INN_REST_SCENES = ["ch4_inn_rest", "ch4_inn_rest_b", "ch4_inn_rest_c"];
+const INN_REST_SCENES = ["ch4_inn_rest", "ch4_inn_rest_b", "ch4_inn_rest_c", "ch4_inn_rest_d", "ch4_inn_rest_e"]; // #3097: 3本→5本
 const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと）
 
 // 必須の出会いの期限（ドバイDAY。この日の夜までに寄らなければ、その夜に読む）。路地裏は出会いの2日後から。
@@ -65,10 +65,10 @@ const DEADLINE = Object.freeze({ festa: 6, first: 8, second: 11 });
 // 再訪の会話（data/dialogue/ch4_dubai_daily.json）。既存の再訪（ch4_main.json）と並べて巡回する。
 // カフェの *_culture_* は現地のシーシャ文化の話（吸いながら店の人・常連から聞く。注文の後に読む）。
 const TALKS = Object.freeze({
-  souq: ["ch4_dubai_souq_revisit", "ch4_souq_talk_b", "ch4_souq_talk_c", "ch4_souq_talk_d"],
+  souq: ["ch4_dubai_souq_revisit", "ch4_souq_talk_b", "ch4_souq_talk_c", "ch4_souq_talk_d", "ch4_souq_talk_e", "ch4_souq_talk_f", "ch4_souq_talk_g"],
   festa: ["ch4_festa_revisit", "ch4_festa_talk_b", "ch4_festa_talk_c", "ch4_festa_talk_d"],
-  center_cafe: ["ch4_dubai_cafe_revisit", "ch4_cafe_talk_b", "ch4_cafe_culture_hose", "ch4_cafe_talk_c", "ch4_cafe_culture_coffee", "ch4_cafe_talk_d"],
-  alley_cafe: ["ch4_alley_cafe_quiet", "ch4_alley_culture_clay", "ch4_alley_talk_c", "ch4_alley_culture_majlis"],
+  center_cafe: ["ch4_dubai_cafe_revisit", "ch4_cafe_talk_b", "ch4_cafe_culture_hose", "ch4_cafe_talk_c", "ch4_cafe_culture_coffee", "ch4_cafe_talk_d", "ch4_cafe_talk_e", "ch4_cafe_talk_f"],
+  alley_cafe: ["ch4_alley_cafe_quiet", "ch4_alley_culture_clay", "ch4_alley_talk_c", "ch4_alley_culture_majlis", "ch4_alley_talk_d", "ch4_alley_talk_e", "ch4_alley_talk_f"],
   naru: ["ch4_naru_dubai_1", "ch4_naru_dubai_2", "ch4_naru_dubai_3"],
   practice: ["ch4_practice_hall_1", "ch4_practice_hall_2"],
 });
@@ -78,7 +78,7 @@ const TALK_BG = Object.freeze({
   ch4_practice_hall_1: CH4_PLACE_BG.venue, ch4_practice_hall_2: CH4_PLACE_BG.venue,
 });
 export const DUBAI_DAILY_IDS = Object.freeze([
-  ...["souq", "festa", "center_cafe", "alley_cafe", "naru", "practice"].flatMap(id => TALKS[id].filter(scene => /_(talk_[b-d]|dubai_\d|hall_\d|culture_[a-z]+)$/.test(scene))),
+  ...["souq", "festa", "center_cafe", "alley_cafe", "naru", "practice"].flatMap(id => TALKS[id].filter(scene => /_(talk_[b-z]|dubai_\d|hall_\d|culture_[a-z]+)$/.test(scene))),
   "ch4_creek_walk_day", "ch4_creek_walk_night", ...INN_REST_SCENES, ...INN_TRIAL_IDS, ...REHEARSAL_IDS, ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
 ]);
 
@@ -372,7 +372,7 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   // 夜がにぎわう店（ch4-dubai-local.js）: 先に店の夜を読む。初めての夜は短い場面、二度目からは最初の一行だけ。
   const night = nightVisit(state, entry.place);
   if (night && !await readNight(night, entry, owner)) return unused;
-  let done = false, longlong = null, innTrial = false, festaBond = null, withCompanion = false, after = null;
+  let done = false, longlong = null, innTrial = false, festaBond = null, withCompanion = false, after = null, souqChain = null;
   if (entry.place === "inn") {
     const visit = await visitInn(io, owner, staminaGuard);
     done = visit.done; innTrial = visit.trial; withCompanion = !!visit.companion;
@@ -408,6 +408,11 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   else if (entry.place === "festa" && (festaBond = festaBondDue())) {
     // 太陽の段階の会話（chapters/dubai-bonds.js）。初対面の後、必要ハートに届いた最古の未読を、小会話の代わりに一本読む。
     done = await readPlain(festaBond, entry.preview, owner);
+  }
+  else if (entry.place === "souq" && (souqChain = await chainVisitDue("souq"))) {
+    // 通いの続き（chapters/visit-chains.js・#3097）。スークの再訪の会話の代わりに読む（巡回は進めない）。代金・体力・屋台・能力はいつものスークと同じ
+    if (state !== owner) return unused;
+    done = await playChainStage(souqChain, id => readPlain(id, entry.preview, owner));
   }
   else done = await visitPlace(entry, io, owner);
   if (!done || state !== owner) return unused;

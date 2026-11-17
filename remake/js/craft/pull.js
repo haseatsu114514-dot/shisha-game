@@ -37,6 +37,7 @@ import { actualExpressionCard } from "./flavor-guide.js";
 import { createCraftClock } from "./clock.js";
 import { effectVisible, effectBadge, effectLine, senseExtra, effectTier } from "./effect-visual.js";
 import { waterComfort } from "./water.js";
+import { craftStageEnabled } from "./stage-layout.js";
 import { waterComfortLine } from "./pull-water.js";
 
 export { IDEAL } from "./conditions.js";
@@ -311,6 +312,7 @@ async function pullGame(cs, mode) {
     el("div.pull-life", [el("span.pull-life-label", { text: "フレーバーの持ち" }), lifeLeaves, tags, drawStatus]),
     el("div.pull-life.pull-count-box", [el("span.pull-life-label", { text: mode.drift ? "吸った回数" : "吸い出し回数" }), counter]),
   ]);
+  if (craftStageEnabled()) dialRow.append(tags);
   if(omen)dialRow.append(omen);
   const actionButtons=[pullBtn,deepBtn,blindBtn,serveBtn].filter(Boolean);
   const controls=el(`div.pull-btns${actionButtons.length>2?".with-options":""}`,{style:actionButtons.length>2?{gridTemplateColumns:`minmax(0,1.75fr) repeat(${actionButtons.length-1},minmax(0,1fr))`}:{}},actionButtons);

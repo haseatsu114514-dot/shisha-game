@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { suite } from './support.mjs';
 
-// 横持ちスマホ（#3518）: 結果カードの「詳しく見る」と「?」の中の「お手本を見る」は、実寸の高さ 30px 以上で押せる。
-const MIN_TAP = 30;
+// 横持ちスマホ（#3518）: 結果カードの「詳しく見る」と「?」の中の「お手本を見る」は、実寸の高さ 44px 以上で押せる。
+const MIN_TAP = 44;
 
 await suite('craft-phone-detail-links', async check => {
   for (const [name, options] of [
@@ -28,9 +28,18 @@ await suite('craft-phone-detail-links', async check => {
       await demo.click({ trial: true });
     }
     await page.locator('.bench-guide summary').click();
+    // The pull step always offers a demo inside the open guide.
+    await page.evaluate(() => S.stepPanel('pull', '吸い出し', '吸い出し'));
+    await page.locator('.bench-guide summary').click();
+    assert((await demo.boundingBox()).height >= MIN_TAP);
+    await demo.click({ trial: true });
+    await page.locator('.bench-guide summary').click();
     await page.evaluate(async () => {
+      const { actualExpressionCard } = await import('./js/craft/flavor-guide.js');
+      const cs = S.newSession('practice');
+      cs.mix = { lemon: 6, mint: 6 };
       const { resultCard } = await import('./js/craft/common.js');
-      window.card = resultCard(document.querySelector('.bench-panel'), { title: '炭焼き', lines: ['炭1 PERFECT 3 GOOD 1 誤差 +0.4秒'], summary: ['炭は良い'], advice: 'もう少し' });
+      window.card = resultCard(document.querySelector('.bench-panel'), { title: '炭焼き', lines: ['炭1 PERFECT 3 GOOD 1 誤差 +0.4秒', actualExpressionCard(cs, .5), '5回吸った'], summary: ['炭は良い'], advice: 'もう少し' });
     });
     const details = page.locator('[data-test="step-details"]');
     await details.waitFor();
@@ -39,7 +48,15 @@ await suite('craft-phone-detail-links', async check => {
     assert(box.height >= MIN_TAP, `「詳しく見る」の高さ ${box.height}px`);
     await details.click();
     assert.equal(await page.locator('.rc-details').getAttribute('open'), '', '「詳しく見る」で根拠が開く');
-    await page.locator('[data-test="step-next"]').click();
+    const last = page.locator('.rc-lines > li').last();
+    await last.scrollIntoViewIfNeeded();
+    assert(await last.evaluate(node => {
+      const r = node.getBoundingClientRect();
+      return node.contains(document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2));
+    }), '結果の末尾まで読める');
+    const next = page.locator('[data-test="step-next"]');
+    assert((await next.boundingBox()).height >= MIN_TAP);
+    await next.click();
     await page.evaluate(() => window.card);
   }, options);
 });

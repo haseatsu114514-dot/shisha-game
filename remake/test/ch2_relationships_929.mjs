@@ -236,10 +236,13 @@ assert.doesNotMatch(meet.branches[knownScout.next_false].map((l) => l.text).join
 const deliveries = read("ch2_deliveries");
 for (const outing of [...CITY_OUTINGS.filter((o) => o.kind === "outing"), CITY_CHAIN]) {
   const flags = {}, seen = [];
-  for (let i = 0; i < 5; i += 1) { seen.push(outingDialogue(outing, flags)); recordOutingVisit(flags, outing); }
+  const laps = outing.repeat.length; // 再訪の本数（#3097 で各3本→8本）
+  assert(laps >= 3, `${outing.id}: 再訪は3本以上`);
+  for (let i = 0; i < laps + 2; i += 1) { seen.push(outingDialogue(outing, flags)); recordOutingVisit(flags, outing); }
   assert.equal(seen[0], outing.first, `${outing.id}: 初回`);
-  assert.deepEqual(seen.slice(1, 4), outing.repeat, `${outing.id}: 再訪は順に変わる`);
-  assert.equal(seen[4], outing.repeat[0], `${outing.id}: 一巡したら最初へ`);
+  assert.deepEqual(seen.slice(1, laps + 1), outing.repeat, `${outing.id}: 再訪は順に変わる`);
+  assert.equal(seen[laps + 1], outing.repeat[0], `${outing.id}: 一巡したら最初へ`);
+  assert.equal(new Set(outing.repeat).size, laps, `${outing.id}: 再訪の台本は重複しない`);
   for (const id of seen) assert(deliveries[id]?.lines?.length, `${id} の台本がある`);
   assert.equal(outingDialogue(outing, { [`_ch2_visited_${outing.id}`]: true }), outing.repeat[0], `${outing.id}: 旧セーブ`);
 }

@@ -405,6 +405,47 @@ function nextWindow(value) {
   }
 }
 
+// #3097: mukaiのシフトの導入は、味が戻る前は手伝いの回数で、戻った後は戻ってからの回数で巡回する。
+// 戻った後の1回目は必ず「戻ってきた」場面。回数は確定の時だけ進み、選ぶだけでは保存を変えない。
+{
+  const mukai = TOKYO_OUTINGS.find(item => item.id === "mukai_help");
+  const { value } = at("d5-noon");
+  assert(!tasteRecovered(value));
+  for (const [count, expected] of [[0, "lost"], [1, "lost_b"], [2, "lost_c"], [3, "lost"], [4, "lost_b"]]) {
+    value.flags[OUTINGS_FLAG] = { mukai_help: count };
+    const before = structuredClone(value);
+    assert.equal(outingDialogueId(value, mukai), `ch3_outing_mukai_help_${expected}`);
+    assert.deepEqual(value, before, "Selecting the shift intro must not change the save");
+  }
+  for (const broken of ["a", -5, null, 2.7]) {
+    value.flags[OUTINGS_FLAG] = { mukai_help: broken };
+    assert(OUTING_DIALOGUE_IDS.includes(outingDialogueId(value, mukai)), `broken count ${broken} still picks a loaded scene`);
+  }
+  value.flags[OUTINGS_FLAG] = { mukai_help: 2 };
+  recordChapterThreeOuting(value, "mukai_help");
+  assert.deepEqual(value.flags[OUTINGS_FLAG], { mukai_help: 3 }, "Before the taste returns, only the shift count moves");
+
+  const late = at("d12-noon").value;
+  assert(tasteRecovered(late));
+  late.flags[OUTINGS_FLAG] = { mukai_help: 5 };
+  assert.equal(outingDialogueId(late, mukai), "ch3_outing_mukai_help", "The first shift after the taste returns reads the return scene");
+  for (const expected of ["_b", "_c", "", "_b"]) {
+    recordChapterThreeOuting(late, "mukai_help");
+    assert.equal(outingDialogueId(late, mukai), `ch3_outing_mukai_help${expected}`);
+  }
+  assert.deepEqual(late.flags[OUTINGS_FLAG], { mukai_help: 9, mukai_help_back: 4 });
+
+  const data = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_outings.json", import.meta.url)));
+  const byId = Object.fromEntries(data.dialogues.map(scene => [scene.dialogue_id, scene]));
+  for (const id of ["lost_b", "lost_c", "b", "c"].map(suffix => `ch3_outing_mukai_help_${suffix}`)) {
+    assert(OUTING_DIALOGUE_IDS.includes(id), `${id}: real loader requests the new scene`);
+    assert(byId[id].lines.length >= 7);
+    assert(byId[id].lines.every(line => !line.type && typeof line.text === "string" && line.text.length > 0));
+    assert.equal(byId[id].metadata, undefined, `${id}: no extra reward or background override`);
+    assert.equal(byId[id].lines.at(-1).text, "閉店まで手伝い、ムカイさんから日当を受け取った。", `${id}: ends like the existing shift intro`);
+  }
+}
+
 assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
 console.log("ch3 outings: ok");
 
@@ -443,15 +484,16 @@ console.log("ch3 outings: ok");
       value.flags[OUTINGS_FLAG] = { park_walk: count + 7, [`park_walk_${slot ? "night" : "day"}`]: count };
       value.slot = 1 - slot;
       const before = structuredClone(value);
-      assert.equal(outingDialogueId(value, park, { slot }), count ? `${base}_${count % 2 ? "b" : "c"}` : base);
+      const revisit = count ? `${base}_${["b", "c", "d", "e"][(count - 1) % 4]}` : base;
+      assert.equal(outingDialogueId(value, park, { slot }), revisit);
       assert.deepEqual(value, before, "Selecting a park revisit must not mark a visit or change the save");
       value.slot = slot;
-      assert.equal(outingDialogueId(value, park), count ? `${base}_${count % 2 ? "b" : "c"}` : base);
+      assert.equal(outingDialogueId(value, park), revisit);
     }
   }
   const data = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_outings.json", import.meta.url)));
   const byId = Object.fromEntries(data.dialogues.map(scene => [scene.dialogue_id, scene]));
-  const newIds = ["enmaku_visit_d", "steve_visit_c", ...["day", "night"].flatMap(time => ["b", "c"].map(suffix => `park_walk_${time}_${suffix}`))].map(id => `ch3_outing_${id}`);
+  const newIds = ["enmaku_visit_d", "steve_visit_c", ...["day", "night"].flatMap(time => ["b", "c", "d", "e"].map(suffix => `park_walk_${time}_${suffix}`))].map(id => `ch3_outing_${id}`);
   for (const id of newIds) {
     assert(OUTING_DIALOGUE_IDS.includes(id), `${id}: real loader requests the new scene`);
     assert(byId[id].lines.length >= 8);
@@ -474,7 +516,7 @@ console.log("ch3 outings: ok");
 }
 console.log("PASS: six everyday scenes load and rotate; park recovery and ordinary visit affinity remain unchanged");
 
-// 日常ループの完読記録: 昼夜交互でもb/cを両方読み、実SAVE/LOADでも続きが残る。
+// 日常ループの完読記録: 昼夜交互でもb〜eを順に読み、実SAVE/LOADでも続きが残る。
 {
   const storage = new Map();
   globalThis.localStorage = { getItem: key => storage.get(key) ?? null,
@@ -483,7 +525,7 @@ console.log("PASS: six everyday scenes load and rotate; park recovery and ordina
   const park = TOKYO_OUTINGS.find(item => item.id === "park_walk");
   value.flags[OUTINGS_FLAG] = { park_walk: 81, mukai_help: 4 };
   const stamina = value.stamina, money = value.money;
-  for (const suffix of ["", "_b", "_c", "_b", "_c"]) {
+  for (const suffix of ["", "_b", "_c", "_d", "_e", "_b"]) { // #3097 で巡回を b・c から b〜e へ
     for (const slot of [0, 1]) {
       value.slot = slot;
       const expected = `ch3_outing_park_walk_${slot ? "night" : "day"}${suffix}`;
@@ -495,7 +537,7 @@ console.log("PASS: six everyday scenes load and rotate; park recovery and ordina
       assert(value);
     }
   }
-  assert.deepEqual(value.flags[OUTINGS_FLAG], { park_walk: 91, mukai_help: 4, park_walk_day: 5, park_walk_night: 5 });
+  assert.deepEqual(value.flags[OUTINGS_FLAG], { park_walk: 93, mukai_help: 4, park_walk_day: 6, park_walk_night: 6 });
   assert.equal(value.stamina, stamina);
   assert.equal(value.money, money);
 }

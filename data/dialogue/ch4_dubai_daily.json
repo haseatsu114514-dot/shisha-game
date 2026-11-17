@@ -39,6 +39,46 @@
       ]
     },
     {
+      "dialogue_id": "ch4_souq_talk_e",
+      "comment": "スーク再訪（#3097）。スパイス屋の乳香の香炉。炭で樹脂を溶かして香りを立てる話を、熱の加減に重ねる。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "スパイス屋の店先で、小さな素焼きの香炉から細い煙が上がっていた。" },
+        { "speaker": "spice_merchant", "face": "", "text": "乳香だよ。木の樹脂。炭の上で溶かすと、香りになる" },
+        { "speaker": "", "face": "", "text": "香炉の中には小さな炭。その上で黄色い粒が溶けて、甘く乾いた香りが立った。" },
+        { "speaker": "hajime", "face": "normal", "text": "炭で香りを立てるの、シーシャと同じですね" },
+        { "speaker": "spice_merchant", "face": "", "text": "炭が強いと、焦げて煙たいだけ。弱いと、溶けない。……あんたの仕事も、そうかい" },
+        { "speaker": "hajime", "face": "normal", "text": "（ほとんど同じだ。……熱の加減は、どこの国でも難しいんだな）" },
+        { "speaker": "", "face": "", "text": "香炉の煙は、店の奥まで細く流れていった。服に、しばらく香りが残った。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_souq_talk_f",
+      "comment": "スーク再訪（#3097）。サフランの量り売り。少ない量から、待って色と香りを引き出す。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "スパイス屋の奥のガラスケースに、赤い糸のようなものが小瓶に入っていた。" },
+        { "speaker": "spice_merchant", "face": "", "text": "サフラン。一グラムで、この通りの昼ごはん何回分かになる" },
+        { "speaker": "hajime", "face": "surprise", "text": "（高い……！）" },
+        { "speaker": "spice_merchant", "face": "", "text": "でも、使うのは数本だけ。お湯に浸けて待つと、色と香りが全部出る" },
+        { "speaker": "", "face": "", "text": "店主がグラスの湯に数本落とすと、金色がゆっくり広がっていった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（量を増やすんじゃなくて、待って引き出す……）" },
+        { "speaker": "hajime", "face": "normal", "text": "（高い葉ほど、少しずつ丁寧に、か。帰ったら、詰める量も見直そう）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_souq_talk_g",
+      "comment": "スーク再訪（#3097）。路地で迷い、年配の店主にスパイスの匂いのほうへ歩けと教わる。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "スークの路地を何本か曲がったら、来た道が分からなくなった。" },
+        { "speaker": "", "face": "", "text": "どの角にも、同じような布と籠が並んでいる。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……完全に迷った）" },
+        { "speaker": "", "face": "", "text": "店先に座っていた年配の男が、こちらの顔を見て、通りの奥を指さした。" },
+        { "speaker": "old_man", "face": "", "text": "スパイスの匂いのほうへ歩け。そっちが大通りだ" },
+        { "speaker": "", "face": "", "text": "言われたとおり、鼻を頼りに歩く。香辛料の匂いが濃くなるにつれて、人の声も増えていった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（匂いで道を覚えるのか。……地元の商店街なら、俺にもできるかもしれない）" },
+        { "speaker": "", "face": "", "text": "大通りに出て振り返ると、さっきの路地は、もうどれだったか分からなかった。" }
+      ]
+    },
+    {
       "dialogue_id": "ch4_festa_talk_b",
       "comment": "FESTAの出張ブース再訪（ch4_festa の後）。踊り疲れた人の席と、頼まれる前に注ぐ水。店員は shop_clerk。",
       "lines": [
@@ -114,6 +154,32 @@
         { "speaker": "cafe_staff", "face": "", "text": "新しい炭をお持ちしましょうか。それとも、お水だけにいたしますか" },
         { "speaker": "", "face": "", "text": "客は笑って水を頼み、また窓の外を眺めはじめた。" },
         { "speaker": "hajime", "face": "normal", "text": "（tonariなら、炭が小さくなった時に、声をかけてた）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_cafe_talk_e",
+      "comment": "高級カフェ再訪（#3097）。予約の札の席と、時間どおりに来る常連の台を逆算して用意する店員。店員は cafe_staff。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "中心地のカフェ。窓際の一席にだけ、小さな予約の札が立っていた。" },
+        { "speaker": "", "face": "", "text": "店員が、その席の台に炭を載せはじめた。まだ、誰も座っていない。" },
+        { "speaker": "hajime", "face": "normal", "text": "もう用意するんですか？" },
+        { "speaker": "cafe_staff", "face": "", "text": "あの方は、いつもこの時間にいらっしゃいます。着いた時に、ちょうどよくなるように" },
+        { "speaker": "", "face": "", "text": "五分ほどして、年配の客が扉を開けた。札が下げられ、温まった台がすぐに運ばれていく。" },
+        { "speaker": "hajime", "face": "normal", "text": "（来る時間から逆算して、炭を置いてるんだ）" },
+        { "speaker": "hajime", "face": "normal", "text": "（待たせないのは、早く作ることじゃなくて、早く始めることか）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_cafe_talk_f",
+      "comment": "高級カフェ再訪（#3097）。空調の吹き出しを見て、煙が隣へ流れない席へ案内する店員。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "店に入ると、店員がいつもと違う奥の席へ案内してくれた。" },
+        { "speaker": "hajime", "face": "normal", "text": "今日は、窓際じゃないんですね" },
+        { "speaker": "cafe_staff", "face": "", "text": "今日は、空調の風が窓際から奥へ流れます。窓際だと、煙が隣のお席へ参りますので" },
+        { "speaker": "", "face": "", "text": "言われて見上げると、天井の吹き出し口の羽根が、奥へ向けてあった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（煙の行き先まで見て、席を決めてるのか）" },
+        { "speaker": "", "face": "", "text": "奥の席は、たしかに煙がまっすぐ上へ抜けていった。隣の家族連れは、何も気にせず笑っている。" },
+        { "speaker": "hajime", "face": "normal", "text": "（誰も気づかないところで、誰も困らないようにしてる）" }
       ]
     },
 
@@ -500,6 +566,47 @@
       ]
     },
     {
+      "dialogue_id": "ch4_alley_talk_d",
+      "comment": "路地裏のカフェ再訪（#3097）。吸い終えた後、店員が素焼きのボウルを洗って干す。使い込んだボウルの色。注文と味わいの後に読む（TALKS_AFTER_ORDER）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "吸い終えて台を返すと、店員が流しで素焼きのボウルを洗っていた。" },
+        { "speaker": "shop_clerk", "face": "", "text": "素焼きは水を吸うので、洗ったら一晩干します" },
+        { "speaker": "", "face": "", "text": "棚の上には、洗い終えたボウルが逆さに並んでいた。どれも、少しずつ色が違う。" },
+        { "speaker": "hajime", "face": "normal", "text": "使い込むと、色が変わるんですか" },
+        { "speaker": "shop_clerk", "face": "", "text": "ええ。葉の色が少しずつ移ります。この濃いのは、私が来る前からある子です" },
+        { "speaker": "hajime", "face": "normal", "text": "（道具にも、店の年月が染みていくんだな）" },
+        { "speaker": "", "face": "", "text": "店員は濡れたボウルを一つずつ布で拭いて、端から順に並べていった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_alley_talk_e",
+      "comment": "路地裏のカフェ再訪（#3097）。奥の盤の席の年配の常連（ch4_alley_culture_majlis の人）に、駒をひとつだけ教わる。注文と味わいの後に読む（TALKS_AFTER_ORDER）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "吸っていると、奥の盤の席の老人が、また手招きした。" },
+        { "speaker": "old_man", "face": "", "text": "今日は、駒をひとつだけ教えてやる" },
+        { "speaker": "", "face": "", "text": "老人は駒を一つつまんで、盤の上で動き方を見せた。前へ、それから斜めへ。" },
+        { "speaker": "old_man", "face": "", "text": "全部覚えなくていい。これだけ動かせれば、負け方が変わる" },
+        { "speaker": "", "face": "", "text": "その駒だけを動かして指してみる。負けたのは同じだったが、さっきより長く続いた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（一度に全部じゃなくて、ひとつずつ……）" },
+        { "speaker": "old_man", "face": "", "text": "次に来たら、もうひとつ教える。だから、また来い" },
+        { "speaker": "", "face": "", "text": "老人は駒を並べ直しながら、声を出して笑った。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_alley_talk_f",
+      "comment": "路地裏のカフェ再訪（#3097）。会計の後、店員と「ありがとう」と「シュクラン」を交換する。注文と味わいの後に読む（TALKS_AFTER_ORDER）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "会計を済ませると、店員が少し迷ってから、日本語で「ありがとう」と言った。" },
+        { "speaker": "hajime", "face": "normal", "text": "上手ですね" },
+        { "speaker": "shop_clerk", "face": "", "text": "日本のお客さんに習いました。合っていますか？" },
+        { "speaker": "hajime", "face": "normal", "text": "はい。じゃあ、こちらの言葉では、何て言うんですか" },
+        { "speaker": "shop_clerk", "face": "", "text": "シュクラン。短く、軽く" },
+        { "speaker": "hajime", "face": "normal", "text": "シュクラン" },
+        { "speaker": "", "face": "", "text": "店員は、満足そうにうなずいた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（言葉ひとつで、店を出る時の気分がずいぶん違う）" }
+      ]
+    },
+    {
       "dialogue_id": "ch4_dubai_night_festa",
       "comment": "夜がにぎわう店（2026-11-02 オーナー「2以外は採用」の1。ch4-dubai-local.js）。夜にFESTAへ行くと、店の場面の前に読む。初めての夜は全部、二度目からは最初の一行だけ（どの再訪の場面・最初の ch4_festa の前にも置けるように、太陽・なるには触れない）。季節・気温は書かない。",
       "lines": [
@@ -604,6 +711,31 @@
         {"speaker": "", "face": "", "text": "充電の線を、枕もとへ引き寄せた。"},
         {"speaker": "", "face": "", "text": "灯りを一段落とすと、冷房の低い音だけが残った。"},
         {"speaker": "", "face": "", "text": "鍵だけ取りやすい所に寄せた。枕に頬をつけると、廊下の話し声が遠くなった。"}
+      ]
+    },
+    {
+      "dialogue_id": "ch4_inn_rest_d",
+      "comment": "宿で休む（昼・夜どちらでも読める）。#3097。浴室でシャツを洗って干す。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "宿の浴室で、汗を吸ったシャツを手で洗った。" },
+        { "speaker": "", "face": "", "text": "水を替えるたびに、少しずつ濁りが薄くなっていく。三回目で、水はほとんど透明になった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（毎日これだけ汗をかいてるんだな）" },
+        { "speaker": "", "face": "", "text": "絞ったシャツをハンガーに掛けて、冷房の風が当たる所へ吊るした。" },
+        { "speaker": "", "face": "", "text": "ベッドに腰を下ろして、揺れる袖をしばらく眺めていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（乾くまでの間、何もしなくていい理由ができた）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_inn_rest_e",
+      "comment": "宿で休む（昼・夜どちらでも読める）。#3097。冷房の温度を一度ずつ探る。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "宿の部屋の冷房は、強いか弱いかの二つしかないみたいに感じる。" },
+        { "speaker": "", "face": "", "text": "リモコンの表示を一度だけ上げて、しばらく待った。少し暑い。" },
+        { "speaker": "", "face": "", "text": "一度戻して、風の向きだけ変えてみる。今度は、顔にだけ冷たい風が当たる。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……炭を一つ動かすのと、同じくらい難しいな）" },
+        { "speaker": "", "face": "", "text": "風を天井へ向けると、部屋の空気がゆっくり混ざって、やっと落ち着いた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（数字を変えるより、流れを変えるほうが効くこともあるのか）" },
+        { "speaker": "", "face": "", "text": "ちょうどいい部屋で横になると、すぐにまぶたが重くなった。" }
       ]
     }
   ]
