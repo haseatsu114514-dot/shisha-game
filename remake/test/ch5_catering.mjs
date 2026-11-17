@@ -252,7 +252,7 @@ assert.equal(M.cateringServedTotal(save({ flags: { [M.CATERING_FLAG]: { served: 
   const walk = (dir, out = []) => {
     for (const e of fs.readdirSync(new URL(dir, root), { withFileTypes: true })) {
       const rel = `${dir}${e.name}`;
-      if (e.isDirectory()) { if (e.name !== "node_modules") walk(`${rel}/`, out); }
+      if (e.isDirectory()) { if (e.name !== "node_modules" && e.name !== "bundle") walk(`${rel}/`, out); }
       else if (/\.(js|json)$/.test(e.name)) out.push(rel);
     }
     return out;

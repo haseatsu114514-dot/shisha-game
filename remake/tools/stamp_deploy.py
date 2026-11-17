@@ -4,9 +4,9 @@
 Pages はファイルを10分キャッシュさせ、スマホは開いたままのタブを読み直さないので、
 名札が同じままだと自分で開いたリンクだけ古い版が出る。公開のたびに次を行う。
 
-- remake/js を js-<版>/ へ複製し、index.html の本体の読み込み先をそこへ向ける
-  （ESモジュールは互いを相対で読むので、フォルダごと変えれば全部が新しくなる。
-  プレビュー用のページや、キャッシュに残った古い index.html のために js/ も残す）
+- remake/js を js-<版>/ へ複製し、index.html の本体（js/bundle/main.js）の読み込み先を
+  js-<版>/bundle/main.js へ向ける。プレビュー用のページや、キャッシュに残った古い
+  index.html のために js/ も残す
 - index.html の CSS と、CSS の @import に ?v=<版>（スクリプトから差し込む CSS は
   js/core/asset-version.js が同じ版を付ける）
 - index.html の <meta name="suien-build"> に版と公開日時を書く（タイトル画面の右下に出す）
@@ -64,7 +64,8 @@ def stamp(site: Path, build: str, built_at: str) -> None:
     shutil.copytree(remake / "js", remake / js_dir, dirs_exist_ok=True)
 
     html = index.read_text(encoding="utf-8")
-    html = replace_required(html, r'import\("\./js/main\.js"\)', f'import("./{js_dir}/main.js")', "本体の import")
+    html = replace_required(html, r'import\("\./js/bundle/main\.js"\)', f'import("./{js_dir}/bundle/main.js")', "本体の import")
+    html = replace_required(html, r'href="js/bundle/main\.js"', f'href="{js_dir}/bundle/main.js"', "本体の modulepreload")
     html = replace_required(
         html, re.escape(BUILD_META),
         f'<meta name="suien-build" content="{build}" data-built="{built_at}">', "版の meta",

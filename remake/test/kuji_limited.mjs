@@ -238,7 +238,7 @@ for (const [raw, want] of [[-2, 0], ["5", 0], [2.5, 0], [500, KUJI_TICKET_MAX], 
 const walk = (dir, out = []) => {
   for (const e of fs.readdirSync(new URL(dir, root), { withFileTypes: true })) {
     const rel = `${dir}${e.name}`;
-    if (e.isDirectory()) { if (e.name !== "node_modules") walk(`${rel}/`, out); }
+    if (e.isDirectory()) { if (e.name !== "node_modules" && e.name !== "bundle") walk(`${rel}/`, out); }
     else if (/\.(js|mjs|json)$/.test(e.name)) out.push(rel);
   }
   return out;
