@@ -1423,9 +1423,10 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     function drawSlopeEdge(g, edge, dusk) {
       const t = Math.min(1, edge / SLOPE.edgePx), x0 = -BACKDROP_MARGIN, wAll = W + BACKDROP_MARGIN * 2;
       const haze = mixColor([248, 230, 204], [255, 198, 154], dusk).slice(4, -1), rim = mixColor([255, 246, 220], [255, 218, 172], dusk).slice(4, -1);
-      const top = HORIZON - edge * 1.6;
+      // 霞は縁のすぐ上の細い帯だけ、薄く。広く濃くかけると、霞んだ砂丘の下半分が「うっすら重なったもう1枚」に見えた（2026-11-17 オーナー）
+      const top = HORIZON - 12;
       const air = g.createLinearGradient(0, top, 0, HORIZON);
-      air.addColorStop(0, `rgba(${haze},0)`); air.addColorStop(0.7, `rgba(${haze},${0.42 * t})`); air.addColorStop(1, `rgba(${haze},${0.62 * t})`);
+      air.addColorStop(0, `rgba(${haze},0)`); air.addColorStop(1, `rgba(${haze},${0.22 * t})`);
       g.fillStyle = air; g.fillRect(x0, top, wAll, HORIZON - top);
       const shoulder = g.createLinearGradient(0, HORIZON, 0, HORIZON + 14);
       shoulder.addColorStop(0, `rgba(${rim},${0.5 * t})`); shoulder.addColorStop(1, `rgba(${rim},0)`);
@@ -1529,7 +1530,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         }
       }
       // 地平線のかすみ（遠くの砂を空の色へ溶かす）
-      const hazeTop = HORIZON - 30;
+      // 縁が開いている間は、縁より上（下げた砂丘）を霞ませない（砂丘がくっきり1組に見えるように）。ふもとでは元の地平線の霞
+      const hazeTop = HORIZON - 30 * (1 - Math.min(1, (world.slope || 0) / 12));
       const haze = ctx.createLinearGradient(0, hazeTop, 0, HORIZON + 120);
       haze.addColorStop(0, `rgba(${mixColor([250, 232, 200], [255, 190, 140], dusk).slice(4, -1)},0)`);
       haze.addColorStop(0.25, `rgba(${mixColor([250, 232, 200], [255, 190, 140], dusk).slice(4, -1)},0.5)`);

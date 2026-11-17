@@ -83,7 +83,7 @@ const BOWL_ART = {
 // 贈り物の専用ハガル（suyaki_<贈り主> → bowl_empty_<贈り主>.png）。[中身の幅, rim]
 const BOND_HAGALS = {
   sumi: [784, .23], naru: [799, .23], adam: [820, .19], rio: [813, .21], tsumugi: [801, .26], minto: [775, .23],
-  samechan: [795, .21], ageha: [816, .22], mashiro: [817, .20], kumicho: [884, .20], rei: [815, .20], saku: [813, .20],
+  samechan: [795, .21], ageha: [816, .22], mashiro: [817, .20], kumicho: [884, .20], rei: [769, .22], saku: [813, .20],
   noor: [815, .21], steve: [805, .20], volk: [812, .20], master_hookah: [818, .21], da_silva: [816, .22], sheikh: [820, .21],
 };
 for (const [who, [contentW, rim]] of Object.entries(BOND_HAGALS)) BOWL_ART[`suyaki_${who}`] = goblet(`bowl_empty_${who}.png`, contentW, rim);
