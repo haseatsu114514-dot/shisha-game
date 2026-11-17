@@ -7,11 +7,11 @@
 <!-- 版の名札。公開時に remake/tools/stamp_deploy.py がコミットの短いハッシュと公開日時を書く（手元は dev） -->
 <meta name="suien-build" content="dev" data-built="">
 <!-- 最初の画面（タイトル）に必要なものだけ先読みする。本文フォント（font-display: block のため
-     届くまで文字が出ない）、起動用の JS バンドル（#3552）、タイトルの背景・ロゴ。 -->
+     届くまで文字が出ない）と、タイトルの背景・ロゴ。公開時は stamp_deploy が起動 JS を
+     js-<版>/bundle/main.js に差し替えて先読みする（#3552）。手元と検査は正本のモジュールを読む。 -->
 <link rel="preload" as="font" type="font/woff2" href="fonts/ZenKakuGothicNew-Medium.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/ZenKakuGothicNew-Bold.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/ZenKakuGothicNew-Black.woff2" crossorigin>
-<link rel="modulepreload" href="js/bundle/main.js">
 <link rel="preload" as="image" href="img/backgrounds/bg_title.webp">
 <link rel="preload" as="image" href="img/ui/ui_title_logo_rich.webp">
 <!-- 起動画面の背景（css/loading.css の --loading-backdrop-art。CSS より先に取り始める） -->
@@ -254,7 +254,7 @@ if ("serviceWorker" in navigator) {
       openBuild(info.build);
       return;
     }
-    const { boot } = await import("./js/bundle/main.js");
+    const { boot } = await import("./js/main.js");
     await boot();
   })().then(() => clearTimeout(watchdog), fail);
 })();

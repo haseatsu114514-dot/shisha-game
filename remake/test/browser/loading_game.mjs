@@ -20,7 +20,7 @@ async function check(label, body, { mode = null, viewport = { width: 1280, heigh
   if (mode) await context.addInitScript(value => localStorage.setItem("suien_loading_comics", value), mode);
   const page = await context.newPage();
   // Hold the game's entry module so the static boot screen (index.html) stays up long enough to look at.
-  if (delayGame) await page.route("**/js/bundle/main.js*", async route => { await new Promise(resolve => setTimeout(resolve, delayGame)); await route.continue(); });
+  if (delayGame) await page.route("**/js/main.js*", async route => { await new Promise(resolve => setTimeout(resolve, delayGame)); await route.continue(); });
   const errors = [];
   page.on("pageerror", error => errors.push(error.message));
   page.setDefaultTimeout(30000);

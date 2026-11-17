@@ -64,8 +64,16 @@ def stamp(site: Path, build: str, built_at: str) -> None:
     shutil.copytree(remake / "js", remake / js_dir, dirs_exist_ok=True)
 
     html = index.read_text(encoding="utf-8")
-    html = replace_required(html, r'import\("\./js/bundle/main\.js"\)', f'import("./{js_dir}/bundle/main.js")', "本体の import")
-    html = replace_required(html, r'href="js/bundle/main\.js"', f'href="{js_dir}/bundle/main.js"', "本体の modulepreload")
+    html = replace_required(html, r'import\("\./js/main\.js"\)', f'import("./{js_dir}/bundle/main.js")', "本体の import")
+    # 公開版だけバンドルを先読みする（手元の index は正本のモジュールを読むので preload しない）
+    preload = f'<link rel="modulepreload" href="{js_dir}/bundle/main.js">\n'
+    anchor = '<link rel="preload" as="image" href="img/backgrounds/bg_title.webp">'
+    if preload.strip() not in html:
+        if anchor not in html:
+            sys.exit("stamp_deploy: 本体の modulepreload を付ける場所が無い")
+        html = html.replace(anchor, preload + anchor, 1)
+    if f'href="{js_dir}/bundle/main.js"' not in html:
+        sys.exit("stamp_deploy: 本体の modulepreload を付けられなかった")
     html = replace_required(
         html, re.escape(BUILD_META),
         f'<meta name="suien-build" content="{build}" data-built="{built_at}">', "版の meta",

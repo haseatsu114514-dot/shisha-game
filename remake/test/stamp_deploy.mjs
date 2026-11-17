@@ -35,6 +35,7 @@ try {
 
   // 本体はフォルダごと新しい名前で読む。プレビュー用・古い index.html のために js/ も残す
   assert.match(html, /import\("\.\/js-abc1234\/bundle\/main\.js"\)/);
+  assert.doesNotMatch(html, /import\("\.\/js\/main\.js"\)/);
   assert.doesNotMatch(html, /import\("\.\/js\/bundle\/main\.js"\)/);
   assert.match(html, /href="js-abc1234\/bundle\/main\.js"/);
   assert(fs.existsSync(path.join(out, "js-abc1234/bundle/main.js")));

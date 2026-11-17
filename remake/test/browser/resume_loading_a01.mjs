@@ -14,8 +14,8 @@ await suite("resume-loading-a01", async check => {
     await page.route(/\/remake\/(?:index\.html)?(?:\?.*)?$/, async route => {
       const response = await route.fetch();
       const html = await response.text();
-      assert(html.includes('import("./js/bundle/main.js")'));
-      await route.fulfill({ response, body: html.replace('import("./js/bundle/main.js")', `import("./js-deploy-${published}/bundle/main.js")`) });
+      assert(html.includes('import("./js/main.js")'));
+      await route.fulfill({ response, body: html.replace('import("./js/main.js")', `import("./js-deploy-${published}/main.js")`) });
     });
     await page.route(/\/remake\/js-deploy-(old|new)\//, async route => {
       const [, version, relative] = new URL(route.request().url()).pathname.match(/\/js-deploy-(old|new)\/(.+)$/);
