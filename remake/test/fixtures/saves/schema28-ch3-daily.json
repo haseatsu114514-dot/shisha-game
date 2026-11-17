@@ -1,0 +1,197 @@
+{
+  "schema": 28,
+  "cycle": 1,
+  "cycleId": "fixture_cycle_28",
+  "cycleStartStats": {
+    "technique": 10,
+    "sense": 10,
+    "guts": 10,
+    "charm": 10,
+    "insight": 10
+  },
+  "carryOptions": null,
+  "tokyoVisits": {
+    "version": 1,
+    "plans": [],
+    "offers": {},
+    "closedSlots": [],
+    "chats": {}
+  },
+  "chapter": 3,
+  "phase": "daily",
+  "day": 6,
+  "slot": 1,
+  "money": 41200,
+  "stamina": 72,
+  "stats": {
+    "technique": 38,
+    "sense": 41,
+    "guts": 33,
+    "charm": 29,
+    "insight": 36
+  },
+  "statXp": {
+    "technique": 0.4,
+    "sense": 0.15,
+    "guts": 0.9,
+    "charm": 0,
+    "insight": 0.5
+  },
+  "statsAtChapterStart": {
+    "technique": 30,
+    "sense": 32,
+    "guts": 28,
+    "charm": 25,
+    "insight": 30
+  },
+  "flags": {
+    "fixture_note": "schema28-ch3"
+  },
+  "restDay": null,
+  "deferredNightEvents": [],
+  "met": {
+    "sumi": true,
+    "tsumugi": true,
+    "minto": true,
+    "rio": true,
+    "naru": true,
+    "adam": true,
+    "ageha": true,
+    "mashiro": true,
+    "kumicho": true,
+    "rei": true
+  },
+  "affinityCarry": {},
+  "loveCarry": {},
+  "baitoRecent": [],
+  "affinity": {
+    "sumi": 48,
+    "tsumugi": 61,
+    "minto": 37,
+    "rio": 22,
+    "naru": 30,
+    "adam": 26,
+    "ageha": 18,
+    "mashiro": 40,
+    "kumicho": 15,
+    "rei": 12
+  },
+  "story": {},
+  "visits": {},
+  "visitedDay": {},
+  "owned": [
+    "silicone_bowl",
+    "lotos_hagal",
+    "flat_charcoal",
+    "suyaki_hagal",
+    "cube_charcoal",
+    "tanukish_lid",
+    "suyaki_tsumugi"
+  ],
+  "equip": {
+    "bowl": "suyaki_tsumugi",
+    "hms": "tanukish_lid",
+    "charcoal": "cube_charcoal"
+  },
+  "flavors": [
+    "mint",
+    "double_apple",
+    "blueberry",
+    "cassis",
+    "pistachio"
+  ],
+  "flavorMastery": {},
+  "flavorLessons": [],
+  "staffPractice": null,
+  "flavorStock": {
+    "mint": 120,
+    "double_apple": 80,
+    "blueberry": 45
+  },
+  "weatherSeed": 4242,
+  "baitoCount": 23,
+  "lastBaitoDay": 5,
+  "usedBaito": [],
+  "contacts": [
+    "sumi",
+    "tsumugi",
+    "minto",
+    "rio",
+    "naru",
+    "mashiro"
+  ],
+  "limeRead": [],
+  "pendingInvite": null,
+  "inbox": [],
+  "relationshipMemories": [],
+  "trpg": {
+    "stock": [],
+    "owned": [],
+    "cleared": {},
+    "shifts": [],
+    "club": {
+      "founded": null,
+      "members": {}
+    }
+  },
+  "recipes": {},
+  "keepsakes": [],
+  "best": {},
+  "rehearsal": null,
+  "tournament": {
+    "attempts": 0,
+    "lastRank": null,
+    "losses": 0,
+    "lastLossAttempt": null,
+    "retryAssist": false
+  },
+  "reel": {
+    "seed": 123456789,
+    "count": 0,
+    "missRun": 0,
+    "bonusGap": 0,
+    "zoneLeft": 0,
+    "bonusCount": 0,
+    "freezeCount": 0,
+    "recent": [],
+    "pending": [],
+    "installed": false,
+    "introDone": false,
+    "lastChapter": 0,
+    "note": {},
+    "setting": 0,
+    "settingDraws": 0,
+    "settingSince": null,
+    "settingNotice": false,
+    "resetNext": false,
+    "lock": null,
+    "settingGuideDone": false
+  },
+  "kuji": {},
+  "kujiTickets": 2,
+  "goods": [],
+  "lovers": [
+    "tsumugi"
+  ],
+  "loveLevel": {
+    "tsumugi": 2
+  },
+  "lovePts": {
+    "tsumugi": 18
+  },
+  "loverSince": {
+    "tsumugi": 2
+  },
+  "lastDate": {},
+  "loverEventsSeen": [],
+  "guilt": 0,
+  "loverStrain": {},
+  "romance": {},
+  "romanceChoices": {},
+  "finales": {},
+  "friendHangouts": {},
+  "seed": 777,
+  "playMs": 18123456,
+  "playMsFull": true,
+  "savedAt": 1794960000000
+}

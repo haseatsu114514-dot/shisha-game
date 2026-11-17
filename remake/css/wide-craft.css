@@ -115,6 +115,8 @@ html:root[data-density="phone"] body #stage .bench :is(
 
 /* 工程の結果カードと見守る人の札（#3517）。実寸 11.5px 以上 */
 html:root[data-density="phone"] body #stage .bench :is(.audience-caption, .audience-rating) { font-size: max(var(--wide-small), 1em); }
+/* 配合の在庫行・課題行・温度帯の補足（#3558 項目4）。ここを上げないと実効 9px 台のまま */
+html:root[data-density="phone"] body #stage .bench :is(.fr-stock, .fr-reg, .mix-ideal, .mix-optimal, .reg-line) { font-size: var(--wide-small); }
 html:root[data-density="phone"] body #stage .bench .result-card :is(.rc-title, .rc-summary, .rc-details) { font-size: var(--wide-text); }
 html:root[data-density="phone"] body #stage .bench .result-card .rc-lines { font-size: var(--wide-text); line-height: 1.6; }
 

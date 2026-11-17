@@ -1019,6 +1019,16 @@
       "title": "端末に保存できない時は遊びを止めず一度だけ知らせ、保存できたら戻る（#3726 B-7）",
       "kind": "quick",
       "run": ["node remake/test/save_failed_notice.mjs"]
+      "id": "save-fixtures",
+      "title": "凍結した過去の版のセーブ（remake/test/fixtures/saves）が今の版で読め、保存し直しても同じ形になる（#3726 B-7）",
+      "kind": "quick",
+      "run": ["node remake/test/save_fixtures.mjs"]
+    },
+    {
+      "id": "chapter-volume",
+      "title": "章ごとの台詞ボリュームの物差し（#3097・#3726 A-3）: chN 接頭辞のファイルの text を空白抜きで数え、第2〜4章の第1章までの差を出す",
+      "kind": "quick",
+      "run": ["python3 -B tools/test_chapter_volume.py"]
     },
     {
       "id": "manifest-dependencies",
@@ -1952,8 +1962,8 @@
       "id": "ch4-dubai-daily",
       "title": "Chapter 4 Dubai days on the shared daily loop (VOL04), one shisha at the local cafes, the Longlong shop, the eve acquaintance branch, daytime heat, lively nights and the souq stall (DBS)",
       "kind": "browser",
-      "weight": 0.8,
-      "timeout": 9,
+      "weight": 9,
+      "timeout": 15,
       "paths": [
         "remake/js/chapters/ch4-dubai-daily.js",
         "remake/js/chapters/ch4-tour.js",

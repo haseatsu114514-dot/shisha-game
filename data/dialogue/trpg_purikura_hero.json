@@ -19,7 +19,8 @@
       "id": "sai",
       "part": "GM",
       "role": "案内と、写真屋のおじいさん",
-      "color": "#73b8df"
+      "color": "#73b8df",
+      "costumeRole": "shopkeep"
     },
     {
       "id": "hajime",

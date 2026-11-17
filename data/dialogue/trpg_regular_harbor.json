@@ -2,7 +2,7 @@
   "id": "regular-harbor",
   "version": 2,
   "title": "閉店後の港町",
-  "subtitle": "スミと常連が囲む、港町の小さな卓",
+  "subtitle": "サイと常連が囲む、港町の小さな卓",
   "author": "汐見しお",
   "collection": "常連卓 01",
   "duration": "約10分",
@@ -17,7 +17,8 @@
       "id": "sai",
       "part": "GM",
       "role": "案内と、旅人オル",
-      "color": "#dab978"
+      "color": "#dab978",
+      "costumeRole": "oru"
     },
     {
       "id": "hajime",

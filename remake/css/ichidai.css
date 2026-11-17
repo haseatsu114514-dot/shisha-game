@@ -1210,3 +1210,164 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-market-close:hover { background: rgba(227, 189, 110, 0.25); }
 /* 手札の「フラット炭」「キューブ炭」: 名前の欄（65px）に1行で収める（「炭」だけが次の行へ落ちないように） */
 .ichi-game .ichi-card.s-hand .ichi-card-name.is-tight { font-size: 12px; letter-spacing: 0; }
+
+/* ---------------------------------------------------------------- 一台勝負の文字と押せる箱（#3557）
+   横持ちスマホでは舞台の --k（約0.54）で縮むため、12〜18px の文字が実寸 6.5〜9px、
+   炭の「？」が 24px など押せる箱も小さくなっていた。配合（#3721・#2851）と同じ床にする:
+   文字は実効 11.5px（--phone-sub / --phone-text）、押せる箱は実寸 40px 以上
+   （--help-hit と同じ max(44px, 40px / --k)）。並べ方は変えず、極小のトークン札
+   （s-tiny / s-mini の印）は枠に収まらないので対象外。 */
+
+/* PC でも 24px・40px の箱は 44px 以上にする。炭の「？」は見た目の丸は小さく、透明な余白で広げる */
+.ichi-coal-help { position: relative; }
+.ichi-coal-help::after { content: ""; position: absolute; left: 50%; top: 50%; width: 44px; height: 44px; transform: translate(-50%, -50%); }
+.ichi-assist-btn { min-height: 44px; height: 44px; }
+.ichi-leader { min-height: 44px; }
+
+html:root[data-density="phone"] body:not(:root) .ichi-coal-help {
+  font-size: var(--phone-sub);
+}
+html:root[data-density="phone"] body:not(:root) .ichi-coal-help::after {
+  width: max(44px, calc(40px / var(--k, 1)));
+  height: max(44px, calc(40px / var(--k, 1)));
+}
+html:root[data-density="phone"] body:not(:root) .ichi-assist-btn {
+  min-height: max(44px, calc(40px / var(--k, 1)));
+  height: max(44px, calc(40px / var(--k, 1)));
+  font-size: var(--phone-sub);
+}
+html:root[data-density="phone"] body:not(:root) .ichi-btn {
+  min-height: max(46px, calc(40px / var(--k, 1)));
+  font-size: var(--phone-sub);
+}
+html:root[data-density="phone"] body:not(:root) .ichi-btn.is-primary {
+  min-height: max(54px, calc(40px / var(--k, 1)));
+  font-size: var(--phone-text);
+}
+html:root[data-density="phone"] body:not(:root) .ichi-btn.is-small,
+html:root[data-density="phone"] body:not(:root) .ichi-detail-buttons.is-targets .ichi-btn,
+html:root[data-density="phone"] body:not(:root) .ichi-detail-buttons.is-targets .ichi-btn:not(.is-primary) {
+  min-height: max(44px, calc(40px / var(--k, 1)));
+  font-size: var(--phone-sub);
+}
+html:root[data-density="phone"] body:not(:root) .ichi-leader { min-height: max(44px, calc(40px / var(--k, 1))); }
+html:root[data-density="phone"] body:not(:root) .ichi-menu p,
+html:root[data-density="phone"] body:not(:root) .ichi-setup-head p,
+html:root[data-density="phone"] body:not(:root) .ichi-setup h2,
+html:root[data-density="phone"] body:not(:root) .ichi-kits-head small,
+html:root[data-density="phone"] body:not(:root) .ichi-pick span,
+html:root[data-density="phone"] body:not(:root) .ichi-tour span,
+html:root[data-density="phone"] body:not(:root) .ichi-end-next,
+html:root[data-density="phone"] body:not(:root) .ichi-game small,
+html:root[data-density="phone"] body:not(:root) .ichi-guide > span,
+html:root[data-density="phone"] body:not(:root) .ichi-guide small,
+html:root[data-density="phone"] body:not(:root) .ichi-guide li,
+html:root[data-density="phone"] body:not(:root) .ichi-guide i,
+html:root[data-density="phone"] body:not(:root) .ichi-guide .is-now,
+html:root[data-density="phone"] body:not(:root) .ichi-leader-name,
+html:root[data-density="phone"] body:not(:root) .ichi-leader-votes,
+html:root[data-density="phone"] body:not(:root) .ichi-counter,
+html:root[data-density="phone"] body:not(:root) .ichi-count,
+html:root[data-density="phone"] body:not(:root) .ichi-zone-tab,
+html:root[data-density="phone"] body:not(:root) .ichi-fire-now,
+html:root[data-density="phone"] body:not(:root) .ichi-coal-count,
+html:root[data-density="phone"] body:not(:root) .ichi-line-sub,
+html:root[data-density="phone"] body:not(:root) .ichi-say,
+html:root[data-density="phone"] body:not(:root) .ichi-target-ask,
+html:root[data-density="phone"] body:not(:root) .ichi-count-pick small,
+html:root[data-density="phone"] body:not(:root) .ichi-card-left i,
+html:root[data-density="phone"] body:not(:root) .ichi-post.is-old > p.is-me > b:first-child,
+html:root[data-density="phone"] body:not(:root) .ichi-market-close,
+html:root[data-density="phone"] body:not(:root) .ichi-empty,
+html:root[data-density="phone"] body:not(:root) .ichi-chip,
+html:root[data-density="phone"] body:not(:root) .ichi-taste,
+html:root[data-density="phone"] body:not(:root) .ichi-taste small,
+html:root[data-density="phone"] body:not(:root) .ichi-kind,
+html:root[data-density="phone"] body:not(:root) .ichi-pay,
+html:root[data-density="phone"] body:not(:root) .ichi-card-foot span,
+html:root[data-density="phone"] body:not(:root) .ichi-card-line span,
+html:root[data-density="phone"] body:not(:root) .ichi-line-sub,
+html:root[data-density="phone"] body:not(:root) .ichi-end.is-many .ichi-end-scores small,
+html:root[data-density="phone"] body:not(:root) .ichi-result-row > small.ichi-result-wear {
+  font-size: var(--phone-sub);
+  line-height: 1.25;
+}
+html:root[data-density="phone"] body:not(:root) .ichi-guide > b {
+  font-size: var(--phone-text);
+}
+html:root[data-density="phone"] body:not(:root) .ichi-card:not(.s-tiny):not(.s-mini) .ichi-card-name,
+html:root[data-density="phone"] body:not(:root) .ichi-card:not(.s-tiny):not(.s-mini) .ichi-card-name.is-tight,
+html:root[data-density="phone"] body:not(:root) .ichi-game .ichi-card.s-hand .ichi-card-name.is-tight,
+html:root[data-density="phone"] body:not(:root) .ichi-card.s-pile .ichi-card-name,
+html:root[data-density="phone"] body:not(:root) .ichi-card.s-mid .ichi-card-name,
+html:root[data-density="phone"] body:not(:root) .ichi-card.s-big .ichi-card-name {
+  font-size: var(--phone-sub);
+}
+html:root[data-density="phone"] body:not(:root) .ichi-card:not(.s-tiny):not(.s-mini) .ichi-rar {
+  font-size: var(--phone-sub);
+  line-height: 1.2;
+}
+html:root[data-density="phone"] body:not(:root) .z-cold,
+html:root[data-density="phone"] body:not(:root) .ichi-fire-gauge i.is-next::before {
+  font-size: var(--phone-sub);
+}
+/* 手札・場の中札は文字を上げても3行に収まるよう、幅を少しだけ広げる */
+html:root[data-density="phone"] body:not(:root) .s-mid { --cw: 96px; }
+html:root[data-density="phone"] body:not(:root) .s-pile { --cw: 112px; }
+
+html:root[data-density="phone"] body:not(:root) .ichi-clock > b,
+html:root[data-density="phone"] body:not(:root) .ichi-goal b,
+html:root[data-density="phone"] body:not(:root) .ichi-goal span,
+html:root[data-density="phone"] body:not(:root) .ichi-goal i,
+html:root[data-density="phone"] body:not(:root) .ichi-next span,
+html:root[data-density="phone"] body:not(:root) .ichi-next i,
+html:root[data-density="phone"] body:not(:root) .ichi-next small,
+html:root[data-density="phone"] body:not(:root) .ichi-feed > header > b,
+html:root[data-density="phone"] body:not(:root) .ichi-feed > header > small,
+html:root[data-density="phone"] body:not(:root) .ichi-pointer b,
+html:root[data-density="phone"] body:not(:root) .ichi-round-btn.ichi-fast > span {
+  font-size: var(--phone-sub);
+}
+html:root[data-density="phone"] body:not(:root) .ichi-pointer b { line-height: 1.3; padding: 4px 10px; }
+
+/* 炭の「？」は見た目の丸は小さく、要素そのものを押せる箱にする（負のマージンで並びは変えない） */
+.ichi-coal-help {
+  --ichi-coal-hit: 44px;
+  width: var(--ichi-coal-hit); height: var(--ichi-coal-hit); min-width: var(--ichi-coal-hit); min-height: var(--ichi-coal-hit);
+  margin: calc((var(--ichi-coal-hit) - 24px) / -2);
+  box-sizing: border-box;
+}
+.ichi-coal-help::after { display: none; }
+html:root[data-density="phone"] body:not(:root) .ichi-coal-help {
+  --ichi-coal-hit: max(44px, calc(40px / var(--k, 1)));
+}
+
+html:root[data-density="phone"] body:not(:root) .ichi-feed > header { align-items: flex-start; flex-wrap: wrap; }
+html:root[data-density="phone"] body:not(:root) .ichi-feed > header > :is(b, small, span) {
+  font-size: var(--phone-sub);
+  white-space: normal;
+  overflow: visible;
+  line-height: 1.3;
+  text-overflow: unset;
+}
+html:root[data-density="phone"] body:not(:root) .ichi-card.s-mid .ichi-card-name,
+html:root[data-density="phone"] body:not(:root) .ichi-card.s-pile .ichi-card-name,
+html:root[data-density="phone"] body:not(:root) .ichi-card.s-hand .ichi-card-name {
+  max-height: calc(1.2em * 4 + 2px);
+}
+html:root[data-density="phone"] body:not(:root) .s-mid { --cw: 104px; }
+
+html:root[data-density="phone"] body:not(:root) .ichi-post > header b,
+html:root[data-density="phone"] body:not(:root) .ichi-post > header span,
+html:root[data-density="phone"] body:not(:root) .ichi-post > p.is-me > span,
+html:root[data-density="phone"] body:not(:root) .ichi-post > p.is-me > b,
+html:root[data-density="phone"] body:not(:root) .ichi-post small,
+html:root[data-density="phone"] body:not(:root) .ichi-post > p.is-me > .ichi-zone-chip,
+html:root[data-density="phone"] body:not(:root) .ichi-post > header .ichi-face.is-judge {
+  font-size: var(--phone-sub);
+}
+html:root[data-density="phone"] body:not(:root) .ichi-post > header span {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
