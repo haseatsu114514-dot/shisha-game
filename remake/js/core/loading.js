@@ -207,14 +207,28 @@ export async function withLoading(prepare, {
   let comic = continuing ? lastComic : selectLoadingComic(comics, { context, chapter, isMet, isRead });
   // The sheet (title, two 3:2 frames, note) is laid out as soon as a comic is chosen and kept hidden
   // (.is-waiting) until the art is decoded: the logo and gauge then never jump when the panels arrive.
+  // Every sheet has the same height: a comic without a note still holds the note's line, and a gate with no
+  // comic holds a blank sheet of the full size (not drawn, css .is-blank). The logo, gauge and status are
+  // therefore at the same place on every loading screen (owner 2026-11-17: the stack must not move).
   let frames = [];
   const layout = shown => {
     frames = shown.panels.map(() => el("div.loading-panel-art"));
+    card.classList.remove("is-blank");
     card.classList.add("is-waiting");
+    content.removeAttribute("aria-hidden");
     content.setAttribute("role", "group");
     content.setAttribute("aria-label", shown.title);
-    content.replaceChildren(el("h2.loading-comic-title", { text: shown.title }), el("div.loading-panels", frames.map(art => el("figure", [art]))));
-    if (shown.caption) content.append(el("p.loading-comic-caption", { text: shown.caption }));
+    content.replaceChildren(el("h2.loading-comic-title", { text: shown.title }), el("div.loading-panels", frames.map(art => el("figure", [art]))),
+      shown.caption ? el("p.loading-comic-caption", { text: shown.caption }) : el("p.loading-blank-caption", { "aria-hidden": "true" }));
+  };
+  const layoutBlank = () => {
+    frames = [];
+    card.classList.remove("is-waiting");
+    card.classList.add("is-blank");
+    content.removeAttribute("role"); content.removeAttribute("aria-label");
+    content.setAttribute("aria-hidden", "true");
+    content.replaceChildren(el("div.loading-blank-title"), el("div.loading-panels", [0, 1].map(() => el("figure", [el("div.loading-panel-art")]))),
+      el("p.loading-blank-caption"));
   };
   const artTimeout = required ? REQUIRED_ART_TIMEOUT_MS : COMIC_ART_TIMEOUT_MS;
   const loadArt = shown => {
@@ -224,7 +238,7 @@ export async function withLoading(prepare, {
     if (images) return Promise.all(images.map(img => (img.complete && img.naturalWidth > 0 ? Promise.resolve() : img.decode()).then(() => img)));
     return Promise.all(shown.panels.map(panel => prepareImage(panel.src, { timeoutMs: artTimeout, signal: controller.signal })));
   };
-  if (comic) layout(comic);
+  if (comic) layout(comic); else layoutBlank();
   const comicReady = comic ? loadArt(comic).catch(error => {
     // A comic is a must for players: when this one's art cannot be fetched, show the comic read last.
     const backup = required && lastComic && lastComic !== comic && !settled && !controller.signal.aborted ? lastComic : null;
@@ -266,9 +280,8 @@ export async function withLoading(prepare, {
     // A gate that goes on with this comic (continuing) moves these decoded images in: the art never blinks.
     carriedArt = { comic, images };
   }).catch(() => {
-    // Missing art: fall back to the plain gate (no sheet, no reading hold).
-    card.classList.remove("is-waiting");
-    content.replaceChildren(); content.removeAttribute("role"); content.removeAttribute("aria-label");
+    // Missing art: fall back to the plain gate (no sheet drawn, no reading hold). The blank sheet keeps the size.
+    layoutBlank();
   }) : Promise.resolve();
   // A quick task never flashes a loading screen. Styles are loaded only on use.
   const styleReady = loadStyle();

@@ -67,8 +67,8 @@
 }
 
 /* Logo: the same pearl logo as the title screen. The image lives on ::after so a soft mist (::before) can
-   sit behind it; a small gap keeps the EN:CODE line clear of the card top (budget: 102 + 8 + 6 = 116u). Purely decorative (title text lives in the art); contain keeps it undistorted. */
-.loading-logo { position: relative; z-index: 1; flex: none; width: calc(360 * var(--loading-unit)); height: calc(102 * var(--loading-unit)); margin: calc(6 * var(--loading-unit)) 0 calc(4 * var(--loading-unit)); }
+   sit behind it (9u above = the 9u under the prompt, so the stack is centred); a small gap keeps the EN:CODE line clear of the card top (budget: 102 + 8 + 6 = 116u). Purely decorative (title text lives in the art); contain keeps it undistorted. */
+.loading-logo { position: relative; z-index: 1; flex: none; width: calc(360 * var(--loading-unit)); height: calc(102 * var(--loading-unit)); margin: calc(9 * var(--loading-unit)) 0 calc(4 * var(--loading-unit)); }
 .loading-logo::after { content: ""; position: absolute; inset: 0; background: var(--loading-logo) center / contain no-repeat; filter: drop-shadow(0 calc(4 * var(--loading-unit)) calc(10 * var(--loading-unit)) #000000d9) drop-shadow(0 0 calc(20 * var(--loading-unit)) #b45cf059); animation: loading-logo-in 420ms ease-out both; }
 .loading-logo::before { content: ""; position: absolute; inset: -34% -14% -6%; pointer-events: none;
   background:
@@ -99,16 +99,21 @@
 .loading-card::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; opacity: .55; mix-blend-mode: multiply; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .26 0 0 0 0 .2 .28 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"); }
 /* Hairline inner frame, like a printed margin rule. */
 .loading-card::after { content: ""; position: absolute; inset: calc(7 * var(--loading-unit)); z-index: -1; border: 1px solid #3b1f3f2b; border-radius: calc(1.5 * var(--loading-unit)); pointer-events: none; }
-/* With no decoded comic, the intermission remains just the ink and its mark. */
-.loading-card:has(.loading-comic:empty) { visibility: hidden; }
+/* With no comic (none chosen, or its art never arrived) the sheet is not drawn, but it keeps the full size of
+   a real sheet (core/loading.js lays out blank stand-ins): the logo, gauge and status sit at the same place
+   on every loading screen, with or without a comic (owner 2026-11-17: the stack must not move). */
+.loading-card.is-blank { visibility: hidden; animation: none; }
+/* The title row and the note have a fixed height (not the height of their glyphs, which differs by a few
+   pixels between fonts and scripts), and blank stand-ins hold the same rows when there is no text to show. */
+.loading-blank-caption { visibility: hidden; }
 /* A chosen comic whose art is still decoding: the sheet already has its full size but stays hidden, so the
    logo and gauge do not jump when the panels arrive. Removing .is-waiting starts the entrance animations. */
 .loading-card.is-waiting { visibility: hidden; animation: none; }
 .loading-card.is-waiting figure { animation: none; }
 /* Title row: a lavender ink tab, the episode title, and a double rule (ink + faint echo). One line in landscape. */
-.loading-comic-title { display: flex; align-items: center; gap: calc(10 * var(--loading-unit)); margin: 0 0 calc(9 * var(--loading-unit)); padding: 0 calc(2 * var(--loading-unit)) calc(7 * var(--loading-unit)); color: #2e1a33; font-size: calc(28 * var(--loading-unit)); font-weight: 900; line-height: 1.2; letter-spacing: .06em; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+:is(.loading-comic-title, .loading-blank-title) { display: flex; align-items: center; gap: calc(10 * var(--loading-unit)); margin: 0 0 calc(9 * var(--loading-unit)); padding: 0 calc(2 * var(--loading-unit)) calc(7 * var(--loading-unit)); color: #2e1a33; font-size: calc(28 * var(--loading-unit)); font-weight: 900; line-height: 1.2; height: 1.2em; letter-spacing: .06em; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   background: linear-gradient(var(--loading-ink-soft), var(--loading-ink-soft)) left bottom / 100% 2px no-repeat, linear-gradient(#4a2c4455, #4a2c4455) left calc(100% - 4px) / 100% 1px no-repeat; }
-.loading-comic-title::before { content: ""; flex: none; width: calc(9 * var(--loading-unit)); height: .95em; border-radius: calc(1.5 * var(--loading-unit)); background: linear-gradient(180deg, #8a63a8, var(--loading-lavender)); box-shadow: inset 0 0 0 1px #ffffff40; }
+:is(.loading-comic-title, .loading-blank-title)::before { content: ""; flex: none; width: calc(9 * var(--loading-unit)); height: .95em; border-radius: calc(1.5 * var(--loading-unit)); background: linear-gradient(180deg, #8a63a8, var(--loading-lavender)); box-shadow: inset 0 0 0 1px #ffffff40; }
 /* Two panels, left → right, with a small ink arrow in the gutter as the reading-order cue. */
 .loading-panels { position: relative; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: var(--loading-gutter); }
 .loading-panels::after { content: ""; position: absolute; left: 50%; top: 50%; width: calc(14 * var(--loading-unit)); height: calc(14 * var(--loading-unit)); transform: translate(-50%, -50%); opacity: .5; pointer-events: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M4 1.5 9.5 7 4 12.5' fill='none' stroke='%232c1f2a' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; }
@@ -126,8 +131,8 @@
 /* Optional text bubbles: bubble shape is in the art, the words are live DOM text (typo-fixable). */
 .loading-bubble { position: absolute; margin: 0; color: #20161f; font-weight: 800; line-height: 1.25; text-align: center; white-space: pre-line; transform: translate(-50%, -50%); pointer-events: none; }
 /* Beginner-friendly one-line note under the panels (per-comic data), led by a small amber mark. */
-.loading-comic-caption { display: flex; align-items: center; gap: calc(8 * var(--loading-unit)); margin: calc(7 * var(--loading-unit)) calc(2 * var(--loading-unit)) 0; color: #4b3640; font-size: calc(15 * var(--loading-unit)); font-weight: 700; line-height: 1.4; letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.loading-comic-caption::before { content: ""; flex: none; width: calc(7 * var(--loading-unit)); height: calc(7 * var(--loading-unit)); transform: rotate(45deg); background: var(--loading-amber); box-shadow: 0 0 0 1px #ffffff66 inset; }
+:is(.loading-comic-caption, .loading-blank-caption) { display: flex; align-items: center; gap: calc(8 * var(--loading-unit)); margin: calc(7 * var(--loading-unit)) calc(2 * var(--loading-unit)) 0; color: #4b3640; font-size: calc(15 * var(--loading-unit)); font-weight: 700; line-height: 1.4; height: 1.4em; letter-spacing: .02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(.loading-comic-caption, .loading-blank-caption)::before { content: ""; flex: none; width: calc(7 * var(--loading-unit)); height: calc(7 * var(--loading-unit)); transform: rotate(45deg); background: var(--loading-amber); box-shadow: 0 0 0 1px #ffffff66 inset; }
 
 /* Gauge: a short neon bar with smoke flourishes at both ends, as in the mockup. Until the first real
    report(done, total) arrives, the fill is an indeterminate sliding segment: the bar never shows an
@@ -164,7 +169,7 @@
 .loading-gate.is-ready .emblem-glow { animation-duration: 4.2s; }
 /* "Tap/click/key to continue" pill, revealed only once preparation is done and a comic is shown.
    Its line is always reserved (and budgeted) so the stack never shifts when it appears. */
-.loading-proceed { box-sizing: border-box; flex: none; margin: calc(6 * var(--loading-unit)) 0 calc(12 * var(--loading-unit)); min-height: calc(24 * var(--loading-unit)); padding: calc(3 * var(--loading-unit)) calc(16 * var(--loading-unit)); border-radius: 999px; border: 1px solid #ffffff2e; background: #0b071380; color: #f3e7cc; font-size: calc(14 * var(--loading-unit)); font-weight: 700; line-height: 1.3; letter-spacing: .08em; opacity: 0; transition: opacity .2s ease; }
+.loading-proceed { box-sizing: border-box; flex: none; margin: calc(6 * var(--loading-unit)) 0 calc(9 * var(--loading-unit)); min-height: calc(24 * var(--loading-unit)); padding: calc(3 * var(--loading-unit)) calc(16 * var(--loading-unit)); border-radius: 999px; border: 1px solid #ffffff2e; background: #0b071380; color: #f3e7cc; font-size: calc(14 * var(--loading-unit)); font-weight: 700; line-height: 1.3; letter-spacing: .08em; opacity: 0; transition: opacity .2s ease; }
 .loading-gate.is-ready .loading-proceed { opacity: .92; animation: loading-proceed-pulse 1.6s ease-in-out infinite; }
 
 @keyframes loading-appear { from { opacity: 0; } to { opacity: 1; } }
@@ -190,11 +195,11 @@
   .loading-gate { --loading-unit: calc(100cqw / 720); --loading-backdrop-art-pos: 70% 50%; --loading-gutter: 1.2cqh; }
   .loading-logo { width: min(260px, 52cqw); height: 6.6cqh; margin: 2cqh 0 .8cqh; }
   .loading-card { width: min(94cqw, calc((var(--loading-panel-ratio)) / 2 * (77.8cqh - 160px) + 4.4cqw + 2px)); padding: 1.2cqh 2.2cqw; }
-  .loading-comic-title { font-size: clamp(18px, 5.2cqw, 30px); margin-bottom: 1cqh; padding-bottom: .8cqh; }
+  :is(.loading-comic-title, .loading-blank-title) { font-size: clamp(18px, 5.2cqw, 30px); margin-bottom: 1cqh; padding-bottom: .8cqh; }
   .loading-panels { grid-template-columns: 1fr; }
   .loading-panels::after { transform: translate(-50%, -50%) rotate(90deg); }
-  .loading-comic-caption { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; white-space: normal; font-size: clamp(12px, 3.6cqw, 18px); margin-top: 1cqh; line-height: 1.35; }
-  .loading-comic-caption::before { display: none; }
+  :is(.loading-comic-caption, .loading-blank-caption) { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; white-space: normal; font-size: clamp(12px, 3.6cqw, 18px); margin-top: 1cqh; line-height: 1.35; height: 2.7em; }
+  :is(.loading-comic-caption, .loading-blank-caption)::before { display: none; }
   .loading-gauge { margin-top: 1.6cqh; }
   .loading-bar { width: 62cqw; height: clamp(8px, 1.1cqh, 14px); }
   .loading-status { margin-top: 1.2cqh; font-size: clamp(15px, 4.2cqw, 22px); }
@@ -216,19 +221,21 @@
     --loading-proceed-size: max(calc(14 * var(--loading-unit)), 12px);
     --loading-side: max(12px, env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
     --loading-foot: env(safe-area-inset-bottom, 0px);
+    /* The stack is centred on the whole screen (owner 2026-11-17: it sat high, because only the bottom was
+       padded by the home-indicator area). The height kept free for that area stays in the budget, so the
+       panels keep their size and the prompt still ends above the indicator bar. */
     --loading-fixed: calc(107 * var(--loading-unit) + 1.2 * var(--loading-title-size) + 1.4 * var(--loading-note-size) + 1.6 * var(--loading-status-size) + 1.3 * var(--loading-proceed-size) + var(--loading-foot) + 28px);
-    padding-bottom: var(--loading-foot);
   }
   /* ロゴは背の低い横画面でも省略しない（2026-11-15 オーナー指示「ロゴと漫画が出るのがいい」）。
      小さな寸法で残し、高さ44px（36＋上下マージン）は --loading-fixed に足してある。
      パネル幅の下限（テストで340px）を守るため、残りの留保は詰めてある。 */
-  .loading-gate.is-viewport .loading-logo { width: 108px; height: 36px; margin: 2px 0 0; }
+  .loading-gate.is-viewport .loading-logo { width: 108px; height: 36px; margin: calc(4 * var(--loading-unit)) 0 0; }
   .loading-gate.is-viewport .loading-card { margin-top: 0;
     width: min(calc(100cqw - 2 * var(--loading-side)), calc(2 * (var(--loading-panel-ratio)) * (100cqh - var(--loading-fixed)) + 60 * var(--loading-unit)));
     margin-top: calc(10 * var(--loading-unit));
   }
-  .loading-gate.is-viewport .loading-comic-title { font-size: var(--loading-title-size); margin-bottom: calc(2 * var(--loading-unit)); }
-  .loading-gate.is-viewport .loading-comic-caption { font-size: var(--loading-note-size); margin-top: calc(2 * var(--loading-unit)); }
+  .loading-gate.is-viewport :is(.loading-comic-title, .loading-blank-title) { font-size: var(--loading-title-size); margin-bottom: calc(2 * var(--loading-unit)); }
+  .loading-gate.is-viewport :is(.loading-comic-caption, .loading-blank-caption) { font-size: var(--loading-note-size); margin-top: calc(2 * var(--loading-unit)); }
   .loading-gate.is-viewport .loading-gauge { margin-top: calc(10 * var(--loading-unit)); }
   .loading-gate.is-viewport .loading-status { margin-top: calc(4 * var(--loading-unit)); font-size: var(--loading-status-size); }
   .loading-gate.is-viewport .loading-proceed { margin: calc(4 * var(--loading-unit)) 0 calc(4 * var(--loading-unit)); min-height: 0; padding: calc(3 * var(--loading-unit)) calc(16 * var(--loading-unit)); font-size: var(--loading-proceed-size); line-height: 1.3; }
