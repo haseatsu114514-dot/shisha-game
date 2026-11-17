@@ -1123,6 +1123,12 @@
       "run": ["node --experimental-vm-modules remake/test/ch2_home_talks.mjs"]
     },
     {
+      "id": "ch2-shift-talks",
+      "title": "Chapter 2 tonari shift-end talks: chapter 2 only, read once in order, gated by chapter day, met, story reads and Tsumugi's presence; scripts loaded and command-free (#3097)",
+      "kind": "quick",
+      "run": ["node remake/test/ch2_shift_talks.mjs"]
+    },
+    {
       "id": "departure-home-talks",
       "title": "Chapter 3/4 prep days at home: one send-off talk each from Adam, Minto, Rio and Samechan, read once on a prep-day visit (N3a)",
       "kind": "quick",

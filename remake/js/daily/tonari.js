@@ -337,6 +337,31 @@ async function afterShift() {
   if (String(pickAfter).startsWith("lesson:")) await consultLessons("sumi", { only: pickAfter.slice(7), bg: TONARI_BG });
 }
 
+// #3097 第1弾: 第2章のシフト上がりの会話（data/dialogue/ch2_tonari_talks.json・第2章の準備期間に読み込む）。
+// 固有会話も♥5後の場面も無い日に、定型の一言の代わりに未読を先頭から一本ずつ・一度だけ（既読 _talk_seen_<ID>）。
+// 報酬はいつものバイト上がりと同じ。条件は章・章内日・面識・本編の既読だけで、ルート・恋人・♥段階は見ない。
+// 章内日は保存の通算日と _ch2_day1.startDay（DAY1）から数える（core/chapter-clock.js と同じ起点）。
+const ch2DayOf = (s) => { const start = s?.flags?._ch2_day1?.startDay; return Number.isInteger(start) ? s.day - start + 1 : null; };
+export const CH2_SHIFT_TALKS = Object.freeze([
+  // 柚ヶ谷へ通い始めた後（DAY2以降）
+  { id: "ch2_shift_talk_fare", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  // DAY1の配達で三軒に入り、三人と面識がある時
+  { id: "ch2_shift_talk_three_shops", when: (s) => !!(s.met?.ageha && s.met?.kumicho && s.met?.rei) },
+  // DAY6の「しばらく飯はうちで食ってけ」の後
+  { id: "ch2_shift_talk_supper", when: (s) => !!s.flags?._ch2_read_ch2_lingering_smell },
+  { id: "ch2_shift_talk_receipts", when: (s) => (ch2DayOf(s) ?? 3) >= 3 },
+  { id: "ch2_shift_talk_student", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  // つむぎが店にいる時だけ。DAY13（つむぎの色の夜）とは別の日
+  { id: "ch2_shift_talk_tsumugi_board", when: (s, { tsumugiHere }) => !!s.met?.tsumugi && tsumugiHere && ch2DayOf(s) !== 13 },
+  { id: "ch2_shift_talk_one_hose", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+]);
+/** 今日のシフト上がりに読む第2章の会話（無ければ null）。台本が読み込まれていない時は出さない。 */
+export function ch2ShiftTalkDue(s, dialogues, context = {}) {
+  if (s?.chapter !== 2) return null;
+  return CH2_SHIFT_TALKS.find(talk => !s.flags?.[`_talk_seen_${talk.id}`] && dialogues?.[talk.id]?.lines?.length
+    && talk.when(s, context))?.id || null;
+}
+
 /**
  * #1081 B05: シフト上がりのスミ会話は選択式でなく必ず流れる。
  * 固有会話（次の段階会話・節目・店側の続き）がある日はそれ、無い日は定型の一言。
@@ -354,8 +379,12 @@ async function afterShiftSumiTalk() {
     let after = bondAfterNext(state, "sumi");
     if (after) { try { await loadBondAfterScenes(DB); } catch { after = null; } }
     if (state !== owner) return;
-    const result = await play(after?.scene || "remake_sumi_after_shift", { bg: TONARI_BG });
-    if (state === owner && result && !result.cancelled) markBondAfterRead(state, "sumi", after);
+    const ch2Talk = after ? null : ch2ShiftTalkDue(state, DB.dialogues, { tsumugiHere: tsumugiAtTonari(state) });
+    const result = await play(after?.scene || ch2Talk || "remake_sumi_after_shift", { bg: TONARI_BG });
+    if (state === owner && result && !result.cancelled) {
+      markBondAfterRead(state, "sumi", after);
+      if (ch2Talk) state.flags[`_talk_seen_${ch2Talk}`] = true;
+    }
   }
   if (!axeThrowExposed() && hiyoriAxePrereqsMet()) {
     await play("remake_sumi_axe_hint", { bg: TONARI_BG });
