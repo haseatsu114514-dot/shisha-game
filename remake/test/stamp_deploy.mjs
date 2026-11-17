@@ -30,6 +30,14 @@ try {
   const source = fs.readFileSync(path.join(remake, "index.html"), "utf8");
   assert.match(source, /<meta name="suien-build" content="dev" data-built="">/, "手元の index.html は dev のまま");
 
+  // 起動バンドル（公開時に生成・コミットしない）が無ければ公開しない（#3552）
+  fs.renameSync(path.join(out, "js/bundle"), path.join(out, "js/bundle-off"));
+  const noBundle = spawnSync("python3", [script, site, "--build", "abc1234"], { encoding: "utf8" });
+  assert.notEqual(noBundle.status, 0, "missing js/bundle/main.js must stop the deploy");
+  assert.match(noBundle.stderr, /bundle\/main\.js が無い/);
+  assert(!fs.existsSync(path.join(out, "js-abc1234")), "nothing is stamped when the bundle is missing");
+  fs.renameSync(path.join(out, "js/bundle-off"), path.join(out, "js/bundle"));
+
   execFileSync("python3", [script, site, "--build", "abc1234", "--built-at", "2026-11-06 21:00"]);
   const html = fs.readFileSync(path.join(out, "index.html"), "utf8");
 

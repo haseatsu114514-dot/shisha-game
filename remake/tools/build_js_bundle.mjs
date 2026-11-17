@@ -2,13 +2,15 @@
 // 起動時に 300 本超の ES モジュールを波状取得しないよう、本編の静的グラフを 1 本にまとめる（#3552）。
 // 動的 import も含めて 1 本にまとめる（初回の往復を減らす）。正本は remake/js/ の各ファイル。
 //
-//   node remake/tools/build_js_bundle.mjs           # 再生成
-//   node remake/tools/build_js_bundle.mjs --check   # 鮮度チェック（CI）
+//   node remake/tools/build_js_bundle.mjs           # 生成（公開の deploy-pages.yml が毎回実行する）
+//   node remake/tools/build_js_bundle.mjs --check   # 一時フォルダに作れるかだけ確かめる（CI）
+//
+// 生成物 js/bundle/ はコミットしない（.gitignore）。コミットすると remake/js を触る PR が
+// 全部バンドルの再生成と競合を抱えるため、公開時にだけ作る。
 //
 // import.meta.url の相対（../../img、../../../assets）は、出力先を js/bundle/ に置くことで
 // 元ファイル（js/<dir>/file.js）と同じ深さになり、差し替えない。
 import { spawnSync } from "node:child_process";
-import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
@@ -70,52 +72,22 @@ async function buildTo(dir) {
   return { files, result };
 }
 
-function sha256(buf) {
-  return createHash("sha256").update(buf).digest("hex");
-}
-
-function describeMismatch(name, rebuilt, committed) {
-  if (rebuilt.length !== committed.length) {
-    return `${name} 長さが違います: 再生成 ${rebuilt.length} / コミット ${committed.length}`;
-  }
-  let i = 0;
-  while (i < rebuilt.length && rebuilt[i] === committed[i]) i++;
-  return `${name} 先頭の差 @${i} sha256 再生成=${sha256(rebuilt).slice(0, 16)} コミット=${sha256(committed).slice(0, 16)}`;
-}
-
-function compareBundle(dir) {
-  const expected = fs.readdirSync(dir).sort();
-  const actual = fs.existsSync(OUTDIR) ? fs.readdirSync(OUTDIR).sort() : [];
-  const problems = [];
-  if (expected.length !== actual.length || expected.some((n, i) => n !== actual[i])) {
-    problems.push(`js/bundle の構成が古いです。再生成してください: ${actual.join(", ")} != ${expected.join(", ")}`);
-  } else {
-    for (const name of expected) {
-      const a = fs.readFileSync(path.join(dir, name));
-      const b = fs.readFileSync(path.join(OUTDIR, name));
-      if (Buffer.compare(a, b) !== 0) problems.push(`バンドルが古いです。再生成してください: js/bundle/${name}（${describeMismatch(name, a, b)}）`);
-    }
-  }
-  return problems;
-}
-
 if (CHECK) {
   const tmp = fs.mkdtempSync(path.join(fs.realpathSync("/tmp"), "js-bundle-"));
   try {
-    await buildTo(tmp);
-    let problems = compareBundle(tmp);
-    if (problems.length) {
-      // 稀な非決定性に備えて一度だけ作り直して比べる
-      fs.rmSync(tmp, { recursive: true, force: true });
-      fs.mkdirSync(tmp, { recursive: true });
-      await buildTo(tmp);
-      problems = compareBundle(tmp);
-    }
+    const { files, result } = await buildTo(tmp);
+    const problems = [];
+    if (result.errors.length) problems.push(`esbuild のエラー ${result.errors.length} 件`);
+    if (result.warnings.length) problems.push(`esbuild の警告 ${result.warnings.length} 件（直してから公開する）`);
+    if (files.join(",") !== "main.js") problems.push(`出力が main.js 1 本ではありません: ${files.join(", ")}`);
+    const code = fs.readFileSync(path.join(tmp, "main.js"), "utf8");
+    if (!/export\s*\{[^}]*\bboot\b[^}]*\}/.test(code)) problems.push("バンドルが boot を export していません（index.html の起動が失敗する）");
+    if (/\bimport\s*\(\s*["'`]\.{1,2}\//.test(code)) problems.push("相対パスの動的 import が残っています（bundle/ からだと読み先がずれる）");
     if (problems.length) {
       for (const p of problems) console.error(p);
       process.exit(1);
     }
-    console.log(`js bundle ok (${fs.readdirSync(tmp).length} files)`);
+    console.log(`js bundle ok (main.js ${(code.length / 1024).toFixed(0)} KB, ${Object.keys(result.metafile.inputs).length} modules)`);
   } finally {
     fs.rmSync(tmp, { recursive: true, force: true });
   }

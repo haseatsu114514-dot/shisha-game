@@ -61,6 +61,9 @@ def stamp(site: Path, build: str, built_at: str) -> None:
         sys.exit(f"stamp_deploy: {index} が無い")
 
     js_dir = f"js-{build}"
+    # 起動バンドルは公開時に build_js_bundle.mjs が作る（コミットしない）。無いまま公開すると起動しない
+    if not (remake / "js" / "bundle" / "main.js").is_file():
+        sys.exit("stamp_deploy: remake/js/bundle/main.js が無い（先に node remake/tools/build_js_bundle.mjs）")
     shutil.copytree(remake / "js", remake / js_dir, dirs_exist_ok=True)
 
     html = index.read_text(encoding="utf-8")
