@@ -552,6 +552,7 @@ export const FLAG_EXACT_RULES = [
   ["_spot_follow_naru_rio", "person"],
   ["_spot_follow_rio_naru", "person"],
   ["_spot_seen_cafe_ch2_commute", "progression"],
+  ["_spot_seen_cafe_ch2_foam", "progression"], // #3097 第1弾（daily/spot-encounters.js の第2章の回）
   ["_spot_seen_cafe_ch2_taste", "progression"],
   ["_spot_seen_cafe_maezono_break", "person"],
   ["_spot_seen_cafe_master_quiz", "progression"],
@@ -559,16 +560,19 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_cafe_naru_rio", "person"],
   ["_spot_seen_ch1_tsumugi_low_water", "person"],
   ["_spot_seen_choizap_ch2_numbers", "progression"],
+  ["_spot_seen_choizap_ch2_stairs", "progression"], // #3097 第1弾
   ["_spot_seen_choizap_minto", "person"],
   ["_spot_seen_choizap_naru", "person"],
   ["_spot_seen_choizap_oldman", "progression"],
   ["_spot_seen_cs_ch2_haze", "progression"],
+  ["_spot_seen_cs_ch2_new_staff", "progression"], // #3097 第1弾
   ["_spot_seen_cs_kemuri_sample", "person"],
   ["_spot_seen_hiyori_shop_minto_seat", "person"], // ぺぱーみんとの夜の相席で一度だけ（#3468 B案・daily/hiyori.js）
   ["_spot_seen_kannon_adam", "person"],
   ["_spot_seen_kannon_adam_lunch", "person"],
   ["_spot_seen_kannon_adam_pakki", "person"],
   ["_spot_seen_kannon_ch2_wish", "progression"],
+  ["_spot_seen_kannon_ch2_omikuji", "progression"], // #3097 第1弾
   ["_spot_seen_kannon_oldman", "progression"],
   ["_spot_seen_samechan_shop_minto_gift", "person"],
   ["_stk_kemuri_thermo_borrowed", "progression"],

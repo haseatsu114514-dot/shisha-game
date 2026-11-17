@@ -288,14 +288,20 @@ export const CHAPTER_TALKS = Object.freeze({
     // 「……君、今日は煙の褒め方が嘘だね」（characters.json の凛想）。味の不調に誰より早く気づく
     { chapter: 2, scene: "ch2_rio_taste", flag: "_ch2_taste_distant" },
     { chapter: 2, scene: "ch2_rio_strawberry" },
+    // #3097 第1弾: 柚ヶ谷の匂いを嗅ぎ当て、吸う人の顔の報告を受け取る（ルート・♥段階・大会の前後に依存しない普段の会話）
+    { chapter: 2, scene: "ch2_rio_city_scent" },
     { chapter: 3, scene: "ch3_prep_rio", prep: true },
     { chapter: 4, scene: "ch4_prep_rio", prep: true },
   ]),
   adam: Object.freeze([
+    // #3097 第1弾: 柚ヶ谷の林檎を買いに行くため、券売機の押し方を習う（はじめは吸った感想を言わない）
+    { chapter: 2, scene: "ch2_adam_ticket_machine" },
     { chapter: 3, scene: "ch3_prep_adam", prep: true },
     { chapter: 4, scene: "ch4_prep_adam", prep: true },
   ]),
   minto: Object.freeze([
+    // #3097 第1弾: 通勤客向けのチェキのフレームの試し撮り。営業中の口調だけで、正体・ルート・♥段階に依存しない
+    { chapter: 2, scene: "ch2_minto_commute_frame" },
     { chapter: 3, scene: "ch3_prep_minto", prep: true },
     { chapter: 4, scene: "ch4_prep_minto", prep: true },
   ]),
