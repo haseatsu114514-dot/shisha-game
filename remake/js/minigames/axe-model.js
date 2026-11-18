@@ -64,7 +64,7 @@ export const BOARD = { left: -23.125 * INCH, right: 23.125 * INCH, top: -24 * IN
 export const AIM_RANGE = 1.2;
 /** strain: how much a rotation outside the green band shakes the arm (power off the band by .12, the stick window's edge, sways 1.48x).
  *  Visible on the white blade marker while the power is live (2026-11-13 指摘7: 「帯内＝揺れが収まる」). */
-export const SWAY = { min: .03, max: .17, fatigueStart: 1500, fatigueFull: 8000, focusDuration: 1200, focusScale: .18, strain: 4 };
+export const SWAY = { min: .03, max: .11, fatigueStart: 3000, fatigueFull: 16000, focusDuration: 1200, focusScale: .18, strain: 4 };
 export const CALLS = 2;
 export function finite(...values) {
   if (!values.every(Number.isFinite)) throw new RangeError("Finite gauge values required");

@@ -187,7 +187,7 @@ test("waiting and overgripping increase visible sway; focus genuinely reduces it
 });
 test("a locked centre is no longer an automatic bull; timely focus restores precision", () => {
   let misses = 0;
-  for (let ms = 3500; ms < 9000; ms += 100) {
+  for (let ms = 7000; ms < 18000; ms += 100) {
     const input = { x: 0, y: 0 }, moving = releaseAimAt(input, ms, .62, 0, false), steady = releaseAimAt(input, ms, .62, 0, true);
     if (resolveThrow({ ...moving, power: .62 }).score < 6) misses++;
     assert.equal(resolveThrow({ ...steady, power: .62 }).score, 6);
