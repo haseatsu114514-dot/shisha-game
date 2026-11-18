@@ -74,4 +74,43 @@ await suite("ichidai-phone-text", async (check) => {
     assert.deepEqual(await page.evaluate(scanText, MIN_FONT), [], "game: small text");
     assert.deepEqual(await page.evaluate(scanTaps, MIN_TAP), [], "game: small taps");
   }, { ...phone, pageEntry: `${baseURL}ichidai.html?kit=a&tournament=practice&level=1&seed=33`, pageReadySelector: t("ichi-menu-start") });
+
+  // 葉の盆: 2行名が右上の残り枚数の丸に隠れないこと（#3557。844x390 実プレイで ダブルアップル→「アッ」等）
+  await check("market-846x393-leaf-names", async (page) => {
+    await enterGame(page);
+    await page.locator(t("ichi-do-hint")).click();
+    await page.locator(t("ichi-market")).waitFor({ timeout: 15000 });
+    await page.waitForFunction(() => {
+      const nodes = [...document.querySelectorAll("*")].filter((n) => /あなたのターン/.test(n.textContent || ""));
+      return !nodes.some((n) => {
+        const r = n.getBoundingClientRect();
+        const o = getComputedStyle(n);
+        return r.width > 200 && o.opacity !== "0" && o.visibility !== "hidden" && o.display !== "none";
+      });
+    }, null, { timeout: 8000 }).catch(() => {});
+    const problems = await page.evaluate(() => {
+      const need = ["ダブルアップル", "ブラックティー", "ブルーベリー"];
+      const overlap = (a, b) => {
+        const x = Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left));
+        const y = Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+        return x * y;
+      };
+      const out = [];
+      for (const name of need) {
+        const card = [...document.querySelectorAll("[data-test^='ichi-market-'] .ichi-card")].find((n) => (n.querySelector(".ichi-card-name")?.textContent || "").replace(/\u200b/g, "").includes(name));
+        if (!card) { out.push(`missing ${name}`); continue; }
+        const title = card.querySelector(".ichi-card-name");
+        const count = card.closest(".ichi-pile-card")?.querySelector(".ichi-count");
+        if (!count) continue;
+        const cr = count.getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(title);
+        let area = 0;
+        for (const r of range.getClientRects()) area += overlap(r, cr);
+        if (area > 1) out.push(`重なり ${name} ${area.toFixed(0)}px²`);
+      }
+      return out;
+    });
+    assert.deepEqual(problems, [], "market leaf names");
+  }, { ...phone, pageEntry: `${baseURL}ichidai.html?kit=a&tournament=practice&level=1&seed=33`, pageReadySelector: t("ichi-menu-start") });
 });

@@ -1314,6 +1314,13 @@ html:root[data-density="phone"] body:not(:root) .ichi-fire-gauge i.is-next::befo
 /* 手札・場の中札は文字を上げても3行に収まるよう、幅を少しだけ広げる */
 html:root[data-density="phone"] body:not(:root) .s-mid { --cw: 96px; }
 html:root[data-density="phone"] body:not(:root) .s-pile { --cw: 112px; }
+/* #3723 で名前を実効11.5pxへ上げた結果、2行名の高さが増え、top:30px の残り枚数の丸が
+   2行目に重なった（ダブルアップル→「アッ」、ブラックティー、ブルーベリー。#3557）。
+   スマホだけ、丸を2行名の下（絵の右上）へ移す。PCの top:30px は変えない。 */
+html:root[data-density="phone"] body:not(:root) .ichi-pile-foot .ichi-count {
+  top: calc(8px + var(--phone-sub) * 2.6);
+  right: -4px;
+}
 
 html:root[data-density="phone"] body:not(:root) .ichi-clock > b,
 html:root[data-density="phone"] body:not(:root) .ichi-goal b,
