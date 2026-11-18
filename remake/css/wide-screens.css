@@ -110,14 +110,13 @@ body #stage[data-wide] .saveload-modal .ss-label small { font-size: max(24px, va
 body #stage[data-wide] .saveload-modal .ss-info b { font-size: max(28px, var(--wide-min)); }
 body #stage[data-wide] .saveload-modal :is(.ss-chapter, .ss-phase, .ss-info small) { font-size: max(24px, var(--wide-min)); }
 body #stage[data-wide] .saveload-modal .ss-stat small { font-size: max(24px, var(--wide-min)); }
-body #stage[data-wide] .saveload-modal .ss-stat i { height: 8px; }
 body #stage[data-wide] .saveload-modal .modal-actions .btn { min-height: max(54px, var(--wide-tap)); font-size: max(20px, var(--wide-min)); }
 
 /* ギャラリー: 見出し・収集率・種類のタブ・閉じるを一段大きく、タブと閉じるは押しやすい高さに */
 body #stage[data-wide] .gal-overlay > .gal { max-height: 672px; }
 body #stage[data-wide] .gal-head h2 { font-size: 32px; }
 body #stage[data-wide] .gal :is(.gal-collection, .gal-count) { font-size: max(18px, var(--wide-min)); }
-body #stage[data-wide] .gal :is(.gal-photos, .gal-characters, .gal-note, .gal-empty, .gal-caption, .gal-cell.locked small) { font-size: max(15px, var(--wide-min)); }
+body #stage[data-wide] .gal :is(.gal-characters, .gal-note, .gal-empty, .gal-caption, .gal-cell.locked small) { font-size: max(15px, var(--wide-min)); }
 body #stage[data-wide] .gal .gal-cell.locked span { font-size: 22px; }
 body #stage[data-wide] .gal :is(.gal-tab, .gal-close) { min-height: max(48px, var(--wide-tap)); font-size: max(17px, var(--wide-min)); }
 body #stage[data-wide] .gal .gal-tab { flex: 1 0 auto; padding: 0 16px; }

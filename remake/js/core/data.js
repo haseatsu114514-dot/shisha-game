@@ -41,7 +41,7 @@ export const DB = {
   statusTexts: { statPurpose: {}, statTierFx: {} }, // ステの説明・★効果
   broadcast: { nico: {}, step: {}, mc: {}, rivalFeed: [], ticker: {} }, // 大会の実況コメント（remake/data/broadcast.json）
   manifest: { portraits: {}, backgrounds: [], cgs: [], faceIcons: [], making: [], bgm: [] },
-  gallery: { items: [] }, // 採用済み漫画・ムービー。候補画像はここへ登録しない。
+  gallery: { items: [] }, // 採用済み漫画。候補画像はここへ登録しない。
 };
 
 const DIALOGUE_FILES = [

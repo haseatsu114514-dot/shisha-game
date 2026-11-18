@@ -160,3 +160,15 @@ html:root[data-density="phone"] body:not(:root) .log-row { font-size: var(--phon
 html:root[data-density="phone"] body:not(:root) :is(.log-row b, .log-inner) { font-size: var(--phone-sub); }
 /* 起動に失敗した時の案内（8.1px だった）。再読込のボタンは .btn の規格がもう効いている。 */
 html:root[data-density="phone"] body:not(:root) .boot-msg { font-size: var(--phone-text); }
+
+/* ---------------------------------------------------------------- ギャラリー（#3726 A-2 の巡回で実測: 844×390 で人物別の進み具合 6.5px・件数と説明 7.6px・タブと閉じる 8.7px）
+   読ませる文字は補助文の大きさ（実寸 11.5px 以上）、押す所はタブと閉じるを規格の高さにする。
+   「0 / 31（0%）」は同じ行の「収集率 0%（0/31）」と同じ数なので、スマホでは出さない（対の規則 c）。 */
+html:root[data-density="phone"] body:not(:root) .gal :is(.gal-collection, .gal-characters, .gal-note, .gal-empty, .gal-caption, .gal-cell.locked small) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .gal .gal-count { display: none; }
+html:root[data-density="phone"] body:not(:root) .gal .gal-cell.locked span { font-size: var(--phone-text); }
+html:root[data-density="phone"] body:not(:root) .gal :is(.gal-tab, .gal-close) { min-height: var(--phone-tap); font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .gal .gal-characters { gap: 2px 14px; margin-bottom: 8px; }
+html:root[data-density="phone"] body:not(:root) .gal .gal-tabs { gap: var(--phone-gap); }
+/* セーブ・ロードの空き枠「── 空き ──」（同じ巡回で 8.7px）。補助文の大きさにそろえる */
+html:root[data-density="phone"] body:not(:root) .saveload-modal .ss-info.empty { font-size: var(--phone-sub); }

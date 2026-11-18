@@ -1524,7 +1524,6 @@ html:root[data-ui-theme="paper"] .saveload-modal .save-slot.auto { border-left-c
 html:root[data-ui-theme="paper"] .saveload-modal .save-slot.blank { border-style: dashed; border-left-style: solid; }
 html:root[data-ui-theme="paper"] .saveload-modal .save-slot.auto .ss-label,
 html:root[data-ui-theme="paper"] .saveload-modal .save-slot.auto .ss-label small { color: var(--amber-ink); }
-html:root[data-ui-theme="paper"] .saveload-modal .save-slot.auto .ss-stat i::after { background: var(--amber); }
 
 /* 紙の上の小さな面（入れ子の豪華な枠を作らない。GUI31） */
 html:root[data-ui-theme="paper"] :is(.st-row, .shop-item, .dc-row, .hud-level, .hud-menu, .hud-stamina) {
@@ -3145,6 +3144,18 @@ html:root[data-density="phone"] body:not(:root) :is(.log-row b, .log-inner) { fo
 /* 起動に失敗した時の案内（8.1px だった）。再読込のボタンは .btn の規格がもう効いている。 */
 html:root[data-density="phone"] body:not(:root) .boot-msg { font-size: var(--phone-text); }
 
+/* ---------------------------------------------------------------- ギャラリー（#3726 A-2 の巡回で実測: 844×390 で人物別の進み具合 6.5px・件数と説明 7.6px・タブと閉じる 8.7px）
+   読ませる文字は補助文の大きさ（実寸 11.5px 以上）、押す所はタブと閉じるを規格の高さにする。
+   「0 / 31（0%）」は同じ行の「収集率 0%（0/31）」と同じ数なので、スマホでは出さない（対の規則 c）。 */
+html:root[data-density="phone"] body:not(:root) .gal :is(.gal-collection, .gal-characters, .gal-note, .gal-empty, .gal-caption, .gal-cell.locked small) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .gal .gal-count { display: none; }
+html:root[data-density="phone"] body:not(:root) .gal .gal-cell.locked span { font-size: var(--phone-text); }
+html:root[data-density="phone"] body:not(:root) .gal :is(.gal-tab, .gal-close) { min-height: var(--phone-tap); font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .gal .gal-characters { gap: 2px 14px; margin-bottom: 8px; }
+html:root[data-density="phone"] body:not(:root) .gal .gal-tabs { gap: var(--phone-gap); }
+/* セーブ・ロードの空き枠「── 空き ──」（同じ巡回で 8.7px）。補助文の大きさにそろえる */
+html:root[data-density="phone"] body:not(:root) .saveload-modal .ss-info.empty { font-size: var(--phone-sub); }
+
 /* ===== css/wide-screens.css ===== */
 /* ワイドステージ（#2861）でメニュー・タイトル等を横幅いっぱいまで使う（オーナー指示 2026-11-08「メニューとかタイトルとか諸々もワイドモードへ」）。
    #screen・#modal・#fx は base.css で中央1280（inset: 0 var(--stage-gutter)）に置かれている。ここでは画面ごとに根元の要素を
@@ -3258,14 +3269,13 @@ body #stage[data-wide] .saveload-modal .ss-label small { font-size: max(24px, va
 body #stage[data-wide] .saveload-modal .ss-info b { font-size: max(28px, var(--wide-min)); }
 body #stage[data-wide] .saveload-modal :is(.ss-chapter, .ss-phase, .ss-info small) { font-size: max(24px, var(--wide-min)); }
 body #stage[data-wide] .saveload-modal .ss-stat small { font-size: max(24px, var(--wide-min)); }
-body #stage[data-wide] .saveload-modal .ss-stat i { height: 8px; }
 body #stage[data-wide] .saveload-modal .modal-actions .btn { min-height: max(54px, var(--wide-tap)); font-size: max(20px, var(--wide-min)); }
 
 /* ギャラリー: 見出し・収集率・種類のタブ・閉じるを一段大きく、タブと閉じるは押しやすい高さに */
 body #stage[data-wide] .gal-overlay > .gal { max-height: 672px; }
 body #stage[data-wide] .gal-head h2 { font-size: 32px; }
 body #stage[data-wide] .gal :is(.gal-collection, .gal-count) { font-size: max(18px, var(--wide-min)); }
-body #stage[data-wide] .gal :is(.gal-photos, .gal-characters, .gal-note, .gal-empty, .gal-caption, .gal-cell.locked small) { font-size: max(15px, var(--wide-min)); }
+body #stage[data-wide] .gal :is(.gal-characters, .gal-note, .gal-empty, .gal-caption, .gal-cell.locked small) { font-size: max(15px, var(--wide-min)); }
 body #stage[data-wide] .gal .gal-cell.locked span { font-size: 22px; }
 body #stage[data-wide] .gal :is(.gal-tab, .gal-close) { min-height: max(48px, var(--wide-tap)); font-size: max(17px, var(--wide-min)); }
 body #stage[data-wide] .gal .gal-tab { flex: 1 0 auto; padding: 0 16px; }
@@ -4377,7 +4387,7 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
    対象はすべての章とタイトル（1280×720 と横持ちスマホ。LK13 で第2〜5章へ広げた）。2画面表示（body.game-ds）には当てない。
    会話（1〜5）に続けて、地図と HUD・全画面 MENU・モーダル・タイトル・章の場面カードを同じ言葉づかい
    （夜紫の半透明の面・金の細い罫線・ラベンダーの縁・白い文字・小さめの角）へ揃える（7〜15）。
-   ショップ・レベルアップ・日付の幕・ギャラリーも同じ言葉づかい（16〜）。商品の絵・写真・漫画・動画などの絵そのものは変えない。
+   ショップ・レベルアップ・日付の幕・ギャラリーも同じ言葉づかい（16〜）。商品の絵・写真・漫画などの絵そのものは変えない。
    実物をまねた画面（LIME＝スマホのメッセージアプリ）と、固有の見た目を持つミニゲームには当てない（LK18・LK20）。
    紙とラベンダーのまま残っていた部品（LK17）は末尾の 20〜。心得の盤は css/look-neo-board.css。
    面・札・ボタンに重ねる絵の部品（LK19）は css/look-neo-art.css（ここの面はその下敷き・絵が読めない時の姿）。
@@ -6164,9 +6174,6 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .saveload-modal .save-slot.auto .ss-label,
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .saveload-modal .save-slot.auto .ss-label small { color: var(--neo-ui-gold-hi); }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .saveload-modal .ss-chapter { color: var(--neo-ui-gold-hi); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .saveload-modal .ss-stat i { background: rgba(246, 241, 250, .14); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .saveload-modal .ss-stat i::after { background: linear-gradient(90deg, #a47fd0, var(--neo-ui-lav)); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .saveload-modal .save-slot.auto .ss-stat i::after { background: linear-gradient(90deg, #c79a3c, var(--neo-ui-gold-hi)); }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .saveload-modal .ss-face { background: #1b1029; border-color: rgba(246, 241, 250, .6); }
 
 /* 用語集: 分類の札は丸い札、選んだ分類だけ金。古い STATUS の窓（daily/status.js）のタブも同じ札（LK17）。 */
@@ -6617,7 +6624,7 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 :root[data-look="neo"] body:not(.game-ds) #stage .tr-dawn-rule { background: linear-gradient(to right, var(--neo-ui-gold), rgba(227, 189, 110, .3) 60%, rgba(227, 189, 110, 0)); }
 :root[data-look="neo"] body:not(.game-ds) #stage .tr-dawn-sub > .tr-flip { color: var(--neo-ui-gold-hi); }
 
-/* ---------------------------------------------------------------- 19. ギャラリー（scenes/gallery.js）: 一覧の面・タブ・閉じる・閲覧中の操作の帯。写真・漫画・動画の鑑賞面は変えない */
+/* ---------------------------------------------------------------- 19. ギャラリー（scenes/gallery.js）: 一覧の面・タブ・閉じる・閲覧中の操作の帯。写真・漫画の鑑賞面は変えない */
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .gal-overlay { background-color: rgba(12, 6, 22, .74); }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .gal {
   --text: var(--neo-ui-ink);
@@ -6640,7 +6647,7 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .gal-head h2 { color: #fff; }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal :is(.gal-rate, .gal-complete) { color: var(--neo-ui-gold-hi); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal :is(.gal-count, .gal-photos, .gal-characters, .gal-note, .gal-empty) { color: var(--neo-ui-dim); }
+:root[data-look="neo"] body:not(.game-ds) #stage #modal :is(.gal-count, .gal-characters, .gal-note, .gal-empty) { color: var(--neo-ui-dim); }
 /* タブ・閉じる: 夜紫の札にラベンダーの縁。選んだタブは金。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #modal :is(.gal-tab, .gal-close) {
   color: var(--neo-ui-ink);

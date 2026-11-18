@@ -72,18 +72,20 @@ await suite("save-load", async check => {
     const layout = await page.evaluate(() => {
       const panel = document.querySelector(".saveload-modal").getBoundingClientRect();
       const cards = [...document.querySelectorAll(".save-slot")].map(node => node.getBoundingClientRect());
-      const label = document.querySelector(".ss-stat small");
+      const label = document.querySelector(".ss-info small");
       const scale = label.getBoundingClientRect().height / label.offsetHeight;
       return { panel: { x: panel.x, y: panel.y, right: panel.right, bottom: panel.bottom },
         cards: cards.map(r => ({ x: r.x, y: r.y, right: r.right, bottom: r.bottom, width: r.width, height: r.height })),
-        statFont: parseFloat(getComputedStyle(label).fontSize) * scale,
+        infoFont: parseFloat(getComputedStyle(label).fontSize) * scale,
+        oldStats: document.querySelectorAll(".ss-stat, .ss-stat i").length,
         background: getComputedStyle(document.querySelector(".save-slot")).backgroundColor };
     });
     assert.equal(layout.cards.length, 2);
+    assert.equal(layout.oldStats, 0);
     assert(layout.panel.x >= 0 && layout.panel.y >= 0 && layout.panel.right <= 844 && layout.panel.bottom <= 390, JSON.stringify(layout));
     assert(layout.cards.every(card => card.x >= layout.panel.x && card.right <= layout.panel.right && card.y >= layout.panel.y && card.bottom <= layout.panel.bottom), JSON.stringify(layout));
     assert(layout.cards.every(card => card.width >= 200 && card.height >= 150), JSON.stringify(layout));
-    assert(layout.statFont >= 11.5, JSON.stringify(layout));
+    assert(layout.infoFont >= 11.5, JSON.stringify(layout));
     assert.notEqual(layout.background, "rgba(0, 0, 0, 0)");
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
 
@@ -252,6 +254,7 @@ await suite("save-load", async check => {
       await page.locator(`[data-test="menu-${menu}"]`).click();
       assert.deepEqual(await summary(0), expected);
       assert.deepEqual(await summary(1), expected);
+      assert.equal(await page.locator(".ss-stat i").count(), 0);
       assert.equal(await retiredSlotHidden(), 0);
       await assertGrowthFits();
       await assertFits(page, ".save-slot, [data-test='slot-cancel']");
@@ -262,15 +265,40 @@ await suite("save-load", async check => {
       technique: 10, sense: 10, guts: 10, charm: 10, insight: 10,
     });
 
-    // 旧方式に切り替えた端末では、盤のある枠も従来の5能力を表示する。
+    // 旧方式に切り替えた端末でも、廃止された旧5能力ゲージは SAVE／LOAD のどちらにも出さない。
     await page.evaluate(() => localStorage.setItem("suien_growth_preview", "0"));
-    await page.locator('[data-test="hud-menu"]').click();
-    await page.locator('[data-test="menu-tab-system"]').click();
-    await page.locator('[data-test="menu-load"]').click();
-    assert.equal(await page.locator('[data-test="slot-0"] .ss-growth').count(), 0);
-    assert.deepEqual(await page.locator('[data-test="slot-0"] .ss-stat small').allTextContents(),
-      ["技術", "センス", "根性", "魅力", "洞察"]);
-    await page.locator('[data-test="slot-cancel"]').click();
+    for (const menu of ["save", "load"]) {
+      await page.locator('[data-test="hud-menu"]').click();
+      await page.locator('[data-test="menu-tab-system"]').click();
+      await page.locator(`[data-test="menu-${menu}"]`).click();
+      assert.equal(await page.locator('[data-test="slot-0"] .ss-growth').count(), 0);
+      assert.equal(await page.locator(".save-slot .ss-stat").count(), 0);
+      assert.equal(await page.locator(".save-slot .ss-stat i").count(), 0);
+      await page.locator('[data-test="slot-cancel"]').click();
+    }
+    // 盤の育成がない保存枠も旧5能力ゲージを出さず、読み込み自体は維持する。
+    await page.evaluate(() => {
+      localStorage.removeItem("suien_growth_preview");
+      const slot1 = JSON.parse(localStorage.getItem(QA.core.SAVE_SLOTS[1].key));
+      delete slot1.growth;
+      localStorage.setItem(QA.core.SAVE_SLOTS[1].key, JSON.stringify(slot1));
+    });
+    for (const menu of ["save", "load"]) {
+      await page.locator('[data-test="hud-menu"]').click();
+      await page.locator('[data-test="menu-tab-system"]').click();
+      await page.locator(`[data-test="menu-${menu}"]`).click();
+      assert.deepEqual(await summary(0), expected);
+      assert.equal(await page.locator('[data-test="slot-1"] .ss-stat').count(), 0);
+      assert.equal(await page.locator(".save-slot .ss-stat i").count(), 0);
+      await page.locator('[data-test="slot-cancel"]').click();
+    }
+    const nonGrowthLoaded = await page.evaluate(() => {
+      const loaded = QA.core.loadFromSlot(QA.core.SAVE_SLOTS[1].key);
+      return loaded ? { day: loaded.day, stats: loaded.stats, growth: loaded.growth ?? null } : null;
+    });
+    assert.deepEqual(nonGrowthLoaded, {
+      day: 6, stats: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 }, growth: null,
+    });
   }, options);
 
   for (const [label, options] of [

@@ -1,10 +1,10 @@
-// タイトルのコレクション。見たCG・受取写真と、章クリアで開く採用済み漫画/動画。
+// タイトルのコレクション。見たCG・受取写真と、章クリアで開く採用済み漫画。
 import { el } from "../core/util.js";
 import { DB, cgUrl, cgThumbUrl, realName } from "../core/data.js";
 import { layers, loadingNotice } from "../core/ui.js";
 import { withLoadingNotice } from "../core/module-loading.js";
-import { state, SAVE_SLOTS, readSlot, config } from "../core/state.js";
-import { SE, currentBgm, playBgm, stopBgm } from "../core/audio.js";
+import { state, SAVE_SLOTS, readSlot } from "../core/state.js";
+import { SE } from "../core/audio.js";
 import { readGalleryProgress, recordGalleryProgress, shouldAnnounceCompletion, markCompletionAnnounced } from "../core/gallery-progress.js";
 import { CHAR_LABELS, GALLERY_TABS, galleryEntries, galleryStats, galleryHint } from "../core/gallery-catalog.js";
 import { stickerPhoto } from "../core/purikura-photo.js";
@@ -34,19 +34,17 @@ export function openGallery() {
   const announceComplete = shouldAnnounceCompletion(stats, progress);
   if (announceComplete) markCompletionAnnounced();
   const fraction = s => `${s.unlocked} / ${s.total}（${s.rate}%）`;
-  // 中身が1つも無い札（採用前の漫画・ムービー）は「0/0」でなく「準備中」と読ませる
+  // 中身が1つも無い札（採用前の漫画）は「0/0」でなく「準備中」と読ませる
   const tabCount = s => s.total === 0 ? "準備中" : `${s.unlocked}/${s.total}`;
   return new Promise(resolve => {
     let tab = "all", closed = false, active = null, page = 0, trigger = null;
-    let video = null, movieBgm = null, observer;
+    let observer;
     let cancelImageLoad = null;
-    const galleryOwner = document.body.dataset.screen;
     const count = el("span.gal-count");
     const collection = el("div.gal-collection", [
       el("strong.gal-rate", { text: `収集率 ${stats.rate}%（${stats.unlocked}/${stats.total}）` }),
       stats.total > 0 && stats.rate === 100 ? el("span.gal-complete", { text: "★コンプリート" }) : null,
       announceComplete ? el("span.gal-complete-notice", { text: "収集率100%を達成しました" }) : null,
-      el("small.gal-photos", { text: `プリクラ撮影記録 ${stats.purikuraPhotos}枚` }),
     ]);
     const characters = el("div.gal-characters", { "aria-label": "キャラ別収集率" },
       Object.entries(CHAR_LABELS).filter(([char]) => stats.byChar[char].total > 0).map(([char, label]) => {
@@ -65,40 +63,32 @@ export function openGallery() {
       ])),
     ]) : null;
     const grid = el("div.gal-grid", { id: "gallery-items", role: "tabpanel" });
-    const note = el("p.gal-note", { text: "見た一枚や受け取った写真が残ります。漫画・ムービーは章クリアで解放。" });
+    const note = el("p.gal-note", { text: "見た一枚や受け取った写真が残ります。漫画は章クリアで解放。" });
     const tools = el("div.gal-viewer-tools");
     const content = el("div.gal-viewer-content");
     const viewer = el("div.gal-viewer", { role: "dialog", "aria-modal": "true", "aria-label": "作品の閲覧", onclick: e => {
       // ページ送りで押したボタンが置換されても、元のイベント経路を使う。
-      if (!e.composedPath().includes(tools) && !e.target.closest("video, .gal-comic-scroll")) closeViewer();
+      if (!e.composedPath().includes(tools) && !e.target.closest(".gal-comic-scroll")) closeViewer();
     } }, [tools, content]);
     const closeButton = el("button.gal-close", { text: "閉じる", dataset: { test: "gallery-close" }, onclick: () => close() });
     const tabs = el("div.gal-tabs", { role: "tablist", "aria-label": "コレクションの種類" }, GALLERY_TABS.map(([kind, name]) =>
-      // 札は「名前 解放数/総数」だけ（割合は札の title と上の収集率で読む）。6枚の札が横1列に収まり、押せる大きさを保つ
+      // 札は「名前 解放数/総数」だけ（割合は札の title と上の収集率で読む）。5枚の札が横1列に収まり、押せる大きさを保つ
       el("button.gal-tab", { text: `${name} ${tabCount(kind === "all" ? stats : stats.byKind[kind])}`, title: fraction(kind === "all" ? stats : stats.byKind[kind]), role: "tab", "aria-controls": "gallery-items", "aria-selected": kind === tab ? "true" : "false",
         dataset: { kind, test: "gallery-tab-" + kind }, onclick: () => { tab = kind; render(); SE.select(); } })));
     const box = el("div.gal", [
       el("div.gal-head", [el("h2", { text: "GALLERY" }), collection, count, closeButton]), tabs, characters, routes, grid, note,
     ]);
     const overlay = el("div.gal-overlay", [box, viewer]);
-    const restoreMusic = () => {
-      if (movieBgm && overlay.isConnected && document.body.dataset.screen === galleryOwner && !currentBgm()) playBgm(movieBgm);
-      movieBgm = null;
-    };
-    function releaseVideo() {
-      if (video) { video.pause(); video.removeAttribute("src"); video.load(); video = null; }
-      restoreMusic();
-    }
     function closeViewer() {
       cancelImageLoad?.();
-      releaseVideo(); active = null; content.replaceChildren(); tools.replaceChildren();
+      active = null; content.replaceChildren(); tools.replaceChildren();
       viewer.classList.remove("show");
       trigger?.focus({ preventScroll: true }); SE.cancel();
     }
     function close() {
       if (closed) return;
       cancelImageLoad?.();
-      releaseVideo(); closed = true; observer?.disconnect();
+      closed = true; observer?.disconnect();
       document.removeEventListener("keydown", onKey);
       if (overlay.parentNode === layers.modal) { layers.modal.classList.remove("show"); layers.modal.replaceChildren(); }
       resolve(); SE.cancel();
@@ -106,7 +96,7 @@ export function openGallery() {
     function onKey(e) {
       if (e.key === "Tab") {
         const root = active ? viewer : box;
-        const nodes = [...root.querySelectorAll("button:not(:disabled), video[controls], [tabindex='0']")].filter(n => n.getClientRects().length);
+        const nodes = [...root.querySelectorAll("button:not(:disabled), [tabindex='0']")].filter(n => n.getClientRects().length);
         const first = nodes[0], last = nodes.at(-1);
         if (first && (!root.contains(document.activeElement) || e.shiftKey && document.activeElement === first || !e.shiftKey && document.activeElement === last)) {
           e.preventDefault(); (e.shiftKey ? last : first).focus();
@@ -151,7 +141,7 @@ export function openGallery() {
     }
     function show(entry, button) {
       if (!entry.unlocked || closed) return;
-      releaseVideo(); active = entry; page = 0; trigger = button;
+      active = entry; page = 0; trigger = button;
       viewer.classList.add("show"); drawViewer(); SE.select();
     }
     function drawViewer() {
@@ -169,20 +159,6 @@ export function openGallery() {
         } });
         controls.splice(1, 0, previous, el("span", { text: (page + 1) + " / " + pages.length, dataset: { test: "gallery-page-count" } }), next, zoom);
         content.append(scroll);
-      } else if (active.kind === "movie") {
-        video = el("video.gal-movie", { src: active.src, controls: true, playsinline: true, preload: "metadata", "aria-label": active.title,
-          onplay: e => {
-            if (video !== e.target || !overlay.isConnected) { e.target.pause(); return; }
-            if (!movieBgm) { movieBgm = currentBgm(); stopBgm(0); }
-          },
-          onended: e => { if (video === e.target) restoreMusic(); },
-          onerror: e => {
-            if (video !== e.target) return;
-            restoreMusic(); content.append(el("p.gal-media-error", { text: "動画を読み込めませんでした。閉じて、もう一度開いてください。" }));
-          },
-        });
-        video.volume = config.mute || config.muted ? 0 : config.bgmVolume;
-        content.append(video);
       } else if (active.photo) {
         content.append(stickerPhoto(active.photo.people, active.photo.mode, photoName));
       } else {
@@ -214,11 +190,11 @@ export function openGallery() {
         else if (entry.photo) {
           const thumb = stickerPhoto(entry.photo.people, entry.photo.mode, photoName); thumb.classList.add("gal-photo-thumb"); button.append(thumb);
         }
-        else button.append(el("span.gal-media-symbol", { text: entry.kind === "movie" ? "▶" : "PHOTO" }));
+        else button.append(el("span.gal-media-symbol", { text: "PHOTO" }));
         button.append(el("span.gal-caption", { text: entry.title }));
         return button;
       }));
-      if (!items.length) grid.append(el("p.gal-empty", { text: tab === "comic" ? "漫画は準備中です。" : tab === "movie" ? "ムービーは準備中です。" : "物語で出会った一枚が、ここに並びます。" }));
+      if (!items.length) grid.append(el("p.gal-empty", { text: tab === "comic" ? "漫画は準備中です。" : "物語で出会った一枚が、ここに並びます。" }));
     }
     render(); layers.modal.replaceChildren(overlay); layers.modal.classList.add("show");
     document.addEventListener("keydown", onKey);

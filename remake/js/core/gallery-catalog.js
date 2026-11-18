@@ -2,7 +2,7 @@ import { PHOTO_KEEPSAKES, purikuraId } from "./gallery-progress.js";
 
 export const GALLERY_TABS = [
   ["all", "すべて"], ["still", "スチル"], ["cheki", "チェキ"],
-  ["purikura", "プリクラ"], ["comic", "漫画"], ["movie", "ムービー"],
+  ["purikura", "プリクラ"], ["comic", "漫画"],
 ];
 export const CHAR_LABELS = {
   minto: "みんと", ageha: "あげは", tsumugi: "つむぎ", naru: "なる",
@@ -32,17 +32,16 @@ export function galleryHint(entry) {
   return [chapter, char].filter(Boolean).join("・");
 }
 
-/** 撮影ごとに増えるプリクラ記録は収集率に含めず、件数だけを返す。 */
+/** 撮影ごとに増えるプリクラ記録は収集率に含めない。 */
 export function galleryStats(entries) {
   const counter = () => ({ total: 0, unlocked: 0, rate: 0 });
   const stats = {
     ...counter(),
     byKind: Object.fromEntries(GALLERY_TABS.slice(1).map(([kind]) => [kind, counter()])),
     byChar: Object.fromEntries(Object.keys(CHAR_LABELS).map(char => [char, counter()])),
-    purikuraPhotos: 0,
   };
   for (const entry of entries) {
-    if (Object.hasOwn(entry, "photo")) { stats.purikuraPhotos++; continue; }
+    if (Object.hasOwn(entry, "photo")) continue;
     for (const group of [stats, stats.byKind[entry.kind], stats.byChar[charTag(entry.char)]]) {
       group.total++;
       if (entry.unlocked) group.unlocked++;
@@ -62,7 +61,7 @@ const labels = {
   cg_ch2_ageha_purikura_strip: "あげはと半分このプリクラ",
 };
 const localAsset = (path, extensions) => typeof path === "string"
-  && /^(?:img|movies|\.\.\/assets)\/[a-zA-Z0-9_./-]+$/.test(path)
+  && /^(?:img|\.\.\/assets)\/[a-zA-Z0-9_./-]+$/.test(path)
   && !path.split("/").slice(path.startsWith("../") ? 1 : 0).includes("..")
   && extensions.test(path);
 
@@ -85,13 +84,12 @@ export function galleryEntries(manifest, catalog, progress, seen) {
   }));
   const used = new Set(entries.map(e => e.id));
   for (const item of Array.isArray(catalog?.items) ? catalog.items : []) {
-    if (!item || item.approved !== true || !["comic", "movie"].includes(item.kind)
+    if (!item || item.approved !== true || item.kind !== "comic"
       || typeof item.id !== "string" || !/^[a-z][a-z0-9_-]*$/.test(item.id) || used.has(item.id)
       || typeof item.title !== "string" || !item.title.trim()
-      || !Number.isInteger(item.requiredChapter) || item.requiredChapter < 1 || item.requiredChapter > 5) continue;
-    if (item.kind === "comic" && (!Array.isArray(item.pages) || !item.pages.length
-      || !item.pages.every(p => localAsset(p, /\.(?:png|webp|jpe?g)$/i)))) continue;
-    if (item.kind === "movie" && !localAsset(item.src, /\.(?:webm|mp4)$/i)) continue;
+      || !Number.isInteger(item.requiredChapter) || item.requiredChapter < 1 || item.requiredChapter > 5
+      || !Array.isArray(item.pages) || !item.pages.length
+      || !item.pages.every(p => localAsset(p, /\.(?:png|webp|jpe?g)$/i))) continue;
     used.add(item.id);
     entries.push({ ...item, char: charTag(item.char), unlocked: progress.clearedChapters.includes(item.requiredChapter) });
   }

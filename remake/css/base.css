@@ -863,9 +863,6 @@ small.dc-sub { font-size: 20px; color: #f1e7d6; }
 .ss-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
 .ss-stat { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .ss-stat small { font-size: 24px; font-weight: 700; line-height: 1.1; letter-spacing: 0; white-space: nowrap; color: var(--text-dim); }
-.ss-stat i { display: block; height: 7px; border-radius: 4px; background: var(--panel-edge); overflow: hidden; }
-.ss-stat i::after { content: ""; display: block; width: var(--v); height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-hi)); }
-.save-slot.auto .ss-stat i::after { background: linear-gradient(90deg, #7fb8d4, #a9d6ec); }
 .ss-faces { flex: none; display: flex; flex-wrap: wrap; justify-content: flex-start; align-content: center; gap: 8px; min-height: 42px; }
 .ss-face { width: 40px; height: 40px; object-fit: cover; image-rendering: pixelated; background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 4px; }
 .ss-more { align-self: center; font-size: 17px; color: var(--text-dim); }
