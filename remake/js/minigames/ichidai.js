@@ -773,13 +773,15 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   }
   /** 前の描画より後に置かれた札か（はじめの描画では動かさない） */
   const isFresh = (kind, p, i) => !!ui.seen && i >= ui.seen[kind][p.index];
+  /** いま手番を進めている席か（データ上の data-turn と同じ基準で、はじめの炭からも一致させる） */
+  const isTurn = (i) => !G.over && (G.wait ? G.wait.player : G.active) === i;
   /** 相手の席: バストアップ（顔が変わったときだけ差し替える）と、持っている手札の裏。4人対戦は、顔の横に小さな札（点・票・熱・葉） */
   function renderSeat(op) {
     const st = seats[op.index]; if (!st) return;
     const seat = st.node, rival = !!st.plate, id = info[op.index]?.id;
     const key = `${id}:${portraitOf(op.index) ? ui.moods[op.index] || "normal" : "icon"}`;
     if (st.key !== key) { const first = !st.key; st.key = key; seat.dataset.key = key; st.bust.replaceChildren(bustOf(op.index, rival ? "rival" : "seat")); if (!first) seatMotion("pop", op.index); }
-    seat.classList.toggle("is-active", G.active === op.index && !G.over);
+    seat.classList.toggle("is-active", isTurn(op.index));
     seat.setAttribute("aria-label", `${op.name}の一台を見る`);
     const n = op.hand.length, shown = Math.min(n, rival ? 5 : 7);
     st.hand.title = `相手の手札 ${n}枚・山札 ${op.deck.length}枚`;
@@ -804,7 +806,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     const serve = G.phase === "serve";
     return el("div.ichi-half.ichi-rivals-mat", { dataset: { test: "ichi-rivals" } }, rivalIds().map((i) => {
       const p = G.P[i], cards = serve && p.puff?.cards?.length && !p.puff.scored ? p.puff.cards : [];
-      return zoneBox(p.name, `.is-rival-mat${G.active === i && !G.over ? ".is-active" : ""}`, { dataset: { test: `ichi-rival-mat-${i}` } }, [
+      return zoneBox(p.name, `.is-rival-mat${isTurn(i) ? ".is-active" : ""}`, { dataset: { test: `ichi-rival-mat-${i}` } }, [
         el("span.ichi-rival-chip", { "aria-hidden": "true" }, faceNode(info[i]?.id, p.name)),
         el("div.ichi-row.is-rival-coals", { dataset: { test: `ichi-rival-zone-${i}`, count: String(p.zone.length), heat: String(heatOf(p)), fire: String(fireOf(p)) } }, p.zone.length
           ? p.zone.map((c, k) => coalCard(c, { size: "mini", fresh: isFresh("zone", p, k), glow: true }))
@@ -842,9 +844,9 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   /** 顔・名前・点・票。タップでその人の一台（葉・セッティング・出しているカード）を開く */
   function leader(p, who) {
     const mine = who === "me";
-    return el(`button.ichi-leader.is-${who}${G.active === p.index && !G.over ? ".is-active" : ""}`, { type: "button", dataset: { test: `ichi-score-${who}`, score: String(p.score), votes: String(p.votes) },
+    return el(`button.ichi-leader.is-${who}${isTurn(p.index) ? ".is-active" : ""}`, { type: "button", dataset: { test: `ichi-score-${who}`, score: String(p.score), votes: String(p.votes) },
       "aria-label": `${mine ? "あなた" : p.name} ${p.score}点 票${p.votes}。一台を見る`, onclick: () => { sfx("select"); openRig(p, mine); } }, [
-      mine ? el("span.ichi-leader-ring", faceNode("hajime", p.name)) : null,
+      el("span.ichi-leader-ring", faceNode(mine ? "hajime" : info[p.index]?.id, p.name)),
       el("span.ichi-leader-plate", [
         el("span.ichi-leader-name", { text: mine ? "あなた" : p.name }),
         el("span.ichi-leader-score", [el("b", { text: String(p.score) }), el("small", { text: "点" })]),
@@ -1008,7 +1010,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   function turnOrder() {
     const n = G.P.length, order = G.phase === "serve" && G.order ? G.order : G.P.map((_, k) => ((G.prepFirst ?? G.lead) + k) % n);
     return zoneBox("手番の順", ".is-order", { dataset: { test: "ichi-order", order: order.join(",") } }, el("div.ichi-row", order.map((i) =>
-      el(`span.ichi-order-chip${G.active === i && !G.over ? ".is-now" : ""}${i === ME ? ".is-me" : ""}`, { title: i === ME ? "あなた" : G.P[i].name }, faceNode(info[i]?.id, G.P[i].name)))));
+      el(`span.ichi-order-chip${isTurn(i) ? ".is-now" : ""}${i === ME ? ".is-me" : ""}`, { title: i === ME ? "あなた" : G.P[i].name }, faceNode(info[i]?.id, G.P[i].name)))));
   }
   /** いまの審査カード（提供でめくられていれば、それ。準備のあいだと練習試合は「ふつうに吸う」） */
   const judgeNow = () => (G.phase === "serve" && G.judge) || PUFFS.normal;

@@ -3232,6 +3232,7 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 .ichi-leader-ring { display: grid; width: 92px; height: 92px; padding: 4px; border-radius: 50%; background: linear-gradient(135deg, #f6e2a8, #b98c3a 55%, #6d4f1c); box-shadow: 0 5px 14px rgba(0, 0, 0, 0.65); transition: box-shadow 0.2s; }
 .ichi-leader.is-foe .ichi-leader-ring { background: linear-gradient(135deg, #e6d3f5, #9b78c4 55%, #4a3470); }
 .ichi-leader.is-active .ichi-leader-ring { box-shadow: 0 0 0 3px rgba(255, 210, 122, 0.95), 0 0 24px rgba(240, 138, 43, 0.85); }
+.ichi-leader.is-foe.is-active .ichi-leader-ring { box-shadow: 0 0 0 3px rgba(230, 211, 245, 0.95), 0 0 20px rgba(155, 120, 196, 0.9); }
 .ichi-face { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #150d22; display: block; }
 .ichi-face.is-blank { display: grid; place-items: center; font-size: 34px; font-weight: 900; color: var(--ichi-gold); }
 .ichi-leader-plate { display: grid; gap: 0; justify-items: start; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8); }
@@ -3429,9 +3430,9 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 .ichi-seat { animation: ichi-seat-in 0.9s var(--ease-out) 0.15s both; }
 @keyframes ichi-board-in { from { transform: translateY(260px) rotateX(66deg) scale(0.8); } }
 @keyframes ichi-seat-in { from { transform: translateY(18px) scale(0.94); opacity: 0; } }
-/* 番が替わると、卓の見え方が少し動く（相手の番は相手の方へ目を上げる） */
+/* 番が替わると、卓の見え方が少し動く（相手の番は相手の方へ目を上げる。4人対戦では手番の相手だけ寄せる） */
 .ichi-game[data-turn="foe"] .ichi-board { transform: translateY(7px) rotateX(50.5deg) scale(0.985); }
-.ichi-game[data-turn="foe"] .ichi-seat { transform: scale(1.06); }
+.ichi-game[data-turn="foe"] .ichi-seat.is-active { transform: scale(1.06); }
 /* マットの半分（相手と自分で同じ並び・同じ大きさ。卓のまんなかで点対称）。相手の札は向こう向き */
 .ichi-half { display: grid; gap: 10px; align-items: stretch; min-height: 0; }
 .ichi-mine { grid-template-columns: 128px minmax(0, 1fr) 128px 72px; }
@@ -3446,10 +3447,14 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 /* ── HUD 左上: 相手の点・票、熱と帯、主役の葉と体力 ── */
 .ichi-hud-left { position: absolute; left: 12px; top: 8px; width: 280px; display: grid; gap: 6px; justify-items: start; pointer-events: none; }
 .ichi-hud-left > * { pointer-events: auto; }
-.ichi-foe-panel { position: relative; width: 280px; display: grid; gap: 5px; padding: 8px 12px 9px; border-radius: 12px; background: rgba(21, 13, 34, 0.82); border: 1px solid rgba(201, 167, 230, 0.45); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5); }
-.ichi-foe-panel > .ichi-leader { display: block; }
-.ichi-foe-panel .ichi-leader-plate { display: flex; align-items: baseline; gap: 10px; }
-.ichi-foe-panel .ichi-leader-score b { font-size: 34px; }
+.ichi-foe-panel { position: relative; width: 280px; display: grid; gap: 5px; padding: 8px 12px 9px; border-radius: 12px; background: rgba(21, 13, 34, 0.82); border: 1px solid rgba(201, 167, 230, 0.45); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5); transition: border-color 0.3s, box-shadow 0.3s; }
+.ichi-game[data-turn="foe"] .ichi-foe-panel { border-color: var(--ichi-lav); box-shadow: 0 0 0 2px rgba(201, 167, 230, 0.82), 0 0 24px rgba(155, 120, 196, 0.4), 0 6px 16px rgba(0, 0, 0, 0.5); }
+.ichi-foe-panel > .ichi-leader { grid-template-columns: auto minmax(0, 1fr); gap: 8px; width: 100%; }
+.ichi-foe-panel .ichi-leader-ring { width: 46px; height: 46px; padding: 2px; }
+.ichi-foe-panel .ichi-face.is-blank { font-size: 24px; }
+.ichi-foe-panel .ichi-leader-plate { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; min-width: 0; }
+.ichi-foe-panel .ichi-leader-name { flex: 1 0 100%; line-height: 1.15; white-space: normal; }
+.ichi-foe-panel .ichi-leader-score b { font-size: 26px; }
 .ichi-foe-gauge { display: grid; gap: 4px; }
 .ichi-foe-heat { display: flex; align-items: center; gap: 6px; max-width: 100%; }
 .ichi-foe-heat b { font-size: 24px; font-weight: 900; line-height: 1; font-family: var(--font-dot); color: #e6d3f5; min-width: 20px; text-align: center; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8); }
