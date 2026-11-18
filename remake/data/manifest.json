@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-18 02:40 UTC",
+ "generated": "2026-11-18 07:07 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -496,6 +496,8 @@
  "backgrounds": [
   "bg_ageha_cafe_day.png",
   "bg_ageha_shop.png",
+  "bg_axe_lane.png",
+  "bg_axe_lane_aim.png",
   "bg_axe_lounge_night.png",
   "bg_c_station_day.png",
   "bg_c_station_lobby.png",
@@ -2816,6 +2818,8 @@
  "webp": [
   "backgrounds/bg_ageha_cafe_day.png",
   "backgrounds/bg_ageha_shop.png",
+  "backgrounds/bg_axe_lane.png",
+  "backgrounds/bg_axe_lane_aim.png",
   "backgrounds/bg_axe_lounge_night.png",
   "backgrounds/bg_c_station_day.png",
   "backgrounds/bg_c_station_lobby.png",
@@ -3432,6 +3436,8 @@
   "sprites/characters/pakki/chr_pakki_smile.png",
   "sprites/characters/pakki/chr_pakki_smoke.png",
   "sprites/characters/pakki/chr_pakki_surprise.png",
+  "sprites/characters/regulara/chr_regulara_normal.png",
+  "sprites/characters/regularb/chr_regularb_normal.png",
   "sprites/characters/rei/chr_rei_normal.png",
   "sprites/characters/rei/chr_rei_sad.png",
   "sprites/characters/rei/chr_rei_serious.png",
@@ -3756,9 +3762,7 @@
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
-  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
-  "sprites/characters/regulara/chr_regulara_normal.png",
-  "sprites/characters/regularb/chr_regularb_normal.png"
+  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
