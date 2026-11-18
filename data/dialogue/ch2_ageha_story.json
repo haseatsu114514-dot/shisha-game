@@ -2262,6 +2262,159 @@
           "text": "（ちゃんと、覚えられていた。……少しだけ、肩の力が抜けた）"
         }
       ]
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_repeat_g",
+      "comment": "#3097（RLS03）通い訪問の小会話（ch2-preparation.js の REPEAT_POOL）。物語の進み具合・恋愛の進行に依存しない（出発前の準備期間でも読む）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの上に、ラインストーンで飾ったマウスピースが並んでいた。一本ずつ、柄が違う。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "新作のデコ。常連の子の、推しの色に合わせてんの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "全部、手作りなんですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "そ。ピンセットで一粒ずつ、……肩バキバキ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "並んだ中に一本だけ、何も付いていない銀色のマウスピースがあった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "これだけ、まだ途中ですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ううん、それで完成。キラキラ苦手な子もいるじゃん。その子用"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "何も付けないのも、デコのうち。……その子、毎回それ選ぶんだよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（飾るのが好きな人が、飾らない一本を用意してる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_repeat_h",
+      "comment": "#3097（RLS03）通い訪問の小会話（ch2-preparation.js の REPEAT_POOL）。物語の進み具合・恋愛の進行に依存しない（出発前の準備期間でも読む）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはが、カウンターで新しいメニューのカードを書いていた。ペンは、ピンクのラメ入りだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「ピーチ×ミント：あまあま→スーッ→また吸いたくなるやつ」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……これ、説明なんですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "説明だよ。見て、ちゃんと順番書いてあんじゃん。最初あまあま、次スーッ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "たしかに、吸った時の順番どおりです"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "葉っぱの名前と産地を書いても、初めての子は分かんないっしょ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "だから、吸った時の気持ちで書くの。そのほうが、頼む時に迷わない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "書き終えたカードの端に、あげはは小さなクマの絵を描き足した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（……tonariのメニューも、一枚くらい、こうしてみようかな）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_repeat_i",
+      "comment": "#3097（RLS03）通い訪問の小会話（ch2-preparation.js の REPEAT_POOL）。物語の進み具合・恋愛の進行に依存しない（出発前の準備期間でも読む）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レジの横に、色とりどりのヘアゴムが詰まった瓶が置いてあった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "これ、売り物ですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ううん、貸し出し用。髪の長い子が炭のほう向いたら、危ないじゃん"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「結ぶ？」って聞くと、だいたいみんな結ぶの。かわいいのから選べるし"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "瓶の中には、リボン付きや、星の飾りが付いたものも混ざっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "返ってこないのも、ありそうですね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "あるある。でも、それでいいの。次に来た時、同じの付けてくる子いるし"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "そしたら、「あ、あの日の子だ」って分かるっしょ。うちの目印"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（安全のためのゴムが、お客さんを覚える目印にもなってる）"
+        }
+      ]
     }
   ]
 }
