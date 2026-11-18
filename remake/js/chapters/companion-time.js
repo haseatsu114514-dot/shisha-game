@@ -1,9 +1,9 @@
 // 第4章のドバイで、同じ便で来た恋人（同行者）と宿で過ごす時間（BLC08）。
 // 別便で来る恋人には到着の場面と夕方の場面があるのに、同行者にはドバイの12日間に固有の場面が無かった。
-// - 宿で「（名前）と過ごす（同行）」を一日に一度選べる。その人の二本を順に読み、読み切ったら出さない
+// - 宿で「（名前）と過ごす（同行）」を一日に一度選べる。その人の四本を順に読み、読み切ったら出さない（#3097 で二本→四本）
 // - デート1回と同じ量の絆が入る（恋人の絆は core/stats.js で半分。ドバイでは節目 lover_events は読まない・IR17）
 // - 話し合いの済んでいない保存（_story_shuraba_unresolved）・恋人でなくなった相手には出さない
-// 台本は data/dialogue/ch4_companion.json（ch4_companion_<id>_1・_2）。行動・体力は呼び出し側（ch4-dubai-daily.js の宿）が持つ。
+// 台本は data/dialogue/ch4_companion.json（ch4_companion_<id>_1〜_4）。行動・体力は呼び出し側（ch4-dubai-daily.js の宿）が持つ。
 // DOM に触れないので、remake/test/companion_time.mjs が node で読み込んで確かめる。
 import { state } from "../core/state.js";
 import { DB } from "../core/data.js";
@@ -12,7 +12,7 @@ import { OVERSEAS_HEROINES, overseasCompanion } from "../core/overseas-companion
 
 export const COMPANION_TIME_FILE = "ch4_companion";
 export const COMPANION_TIME_SCENES = Object.freeze(Object.fromEntries(OVERSEAS_HEROINES.map(id =>
-  [id, Object.freeze([`ch4_companion_${id}_1`, `ch4_companion_${id}_2`])])));
+  [id, Object.freeze([1, 2, 3, 4].map(n => `ch4_companion_${id}_${n}`))])));
 export const COMPANION_TIME_IDS = Object.freeze(Object.values(COMPANION_TIME_SCENES).flat());
 export const COMPANION_TIME_FLAG = "_ch4_companion_time"; // { read: [読んだ場面], day: 最後に過ごした通算日 }
 /** デート1回と同じ（daily/romance.js の playDate）。 */

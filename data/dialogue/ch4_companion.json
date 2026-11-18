@@ -1,5 +1,5 @@
 {
-  "comment": "第4章ドバイの同行者（同じ便で来た恋人）と、宿で過ごす時間（BLC08）。二本を順に、一日に一度。chapters/companion-time.js が読む。",
+  "comment": "第4章ドバイの同行者（同じ便で来た恋人）と、宿で過ごす時間（BLC08）。四本を順に（#3097 で二本→四本）、一日に一度。chapters/companion-time.js が読む。",
   "dialogues": [
     {
       "dialogue_id": "ch4_companion_tsumugi_1",
@@ -117,6 +117,116 @@
       ]
     },
     {
+      "dialogue_id": "ch4_companion_tsumugi_3",
+      "comment": "BLC08・#3097（RLS03）で各人2本→4本。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、順に。大会前の場面なので、結果や前夜祭の後のことには触れない。ほかの恋人・別便の人は出さない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_inn_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿の部屋。つむぎが窓辺に座って、色鉛筆を一本ずつ明かりにかざしていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……砂の色、日本の色鉛筆だと、ないんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "黄土色じゃ、だめなの？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "黄土色だと、重たくなります。……ここの砂、もっと軽くて、白っぽくて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは二本の色鉛筆を、紙の端で何度も重ねてみせた。黄色と、薄い灰色。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……できました。二本で、一つの砂"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "配合みたいだね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "surprise",
+          "text": "……あ。ほんとですね。はじめさんの、葉っぱみたい"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "じゃあ、これ、はじめさん色って呼びます、……誰にも言いません"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_companion_tsumugi_4",
+      "comment": "BLC08・#3097（RLS03）で各人2本→4本。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、順に。大会前の場面なので、結果や前夜祭の後のことには触れない。ほかの恋人・別便の人は出さない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_inn_day.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿のロビーのソファで、つむぎがスケッチブックを開かずに、膝に抱えていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今日は、描かない日にしました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "珍しいね。疲れた？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "いえ。……描いてると、ずっと下を向いてるので。今日は、前を見ます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎはそう言って、ロビーを行き交う人を、静かに眺めはじめた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大きな荷物の家族、急ぎ足の人、のんびり歩く年配の夫婦。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……描かないと、ちゃんと覚えようとします。不思議です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、メモしない日の方が、客の顔を覚えてるかも"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……じゃあ、今日は二人とも、覚える日です"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch4_companion_minto_1",
       "comment": "BLC08。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、二本を順に。大会前の場面なので、結果や前夜祭の後のことには触れない。",
       "metadata": {
@@ -222,6 +332,111 @@
       ]
     },
     {
+      "dialogue_id": "ch4_companion_minto_3",
+      "comment": "BLC08・#3097（RLS03）で各人2本→4本。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、順に。大会前の場面なので、結果や前夜祭の後のことには触れない。ほかの恋人・別便の人は出さない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_inn_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿の部屋。栞さんが、鏡の前で髪をほどいていた。お店に出る時の結び方とは、違う形だ。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……あんまり見ないで。これ、お休みの日の頭なんだから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "初めて見たかも"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "でしょ。常連さんにも、見せたことないよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞さんはブラシを置いて、鏡越しにこちらを見た。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "お店のみんとは、いつも元気で、いつも同じ顔。……そういうお仕事だから"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "でもここだと、今日の私でいられるの。眠い顔も、まだ乾いてない髪も"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どっちの栞さんも、好きだよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_surprise",
+          "text": "……そういうの、急に言わないで。鏡、見られなくなる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_companion_minto_4",
+      "comment": "BLC08・#3097（RLS03）で各人2本→4本。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、順に。大会前の場面なので、結果や前夜祭の後のことには触れない。ほかの恋人・別便の人は出さない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_inn_day.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の宿の中庭。栞さんが、ミントの鉢植えの前でしゃがみこんでいた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_surprise",
+          "text": "はじめくん、見て。ここのミント、葉っぱが丸い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "日本のと、違うの？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "うちのは、もっと尖ってるの。……種類が違うのかな、匂いも甘い"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞さんは葉を一枚だけ指でこすって、手首にそっと香りを移した。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "お店に帰ったら、お客さんに話しちゃおう。「ドバイのミントは丸い」って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "摘んで持って帰るのは、だめだよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "分かってる。だから、匂いだけ連れて帰るの。……ほら、はじめくんの手首にも"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch4_companion_rio_1",
       "comment": "BLC08。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、二本を順に。大会前の場面なので、結果や前夜祭の後のことには触れない。",
       "metadata": {
@@ -318,6 +533,116 @@
           "speaker": "rio",
           "face": "smile",
           "text": "知ってる。だから、後。……今は、手を空けておいて"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_companion_rio_3",
+      "comment": "BLC08・#3097（RLS03）で各人2本→4本。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、順に。大会前の場面なので、結果や前夜祭の後のことには触れない。ほかの恋人・別便の人は出さない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_inn_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿の部屋。凛想さんが、手首の内側に小さな紙片を当てて、目を閉じていた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……スークの香水のお店で、もらったの。試し嗅ぎの紙"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どんな香りですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "当ててみて。……君の鼻、最近ちゃんと仕事してるでしょ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出された紙片を嗅ぐ。甘い木の香りの奥に、かすかな薔薇がいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "木と、……奥に、花。薔薇ですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "正解。半分だけね。もう半分は、私の手首の匂い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "それ、当てようがないじゃないですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "当てなくていいの。覚えておいて。帰ってから、どこかで嗅いだら思い出すように"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_companion_rio_4",
+      "comment": "BLC08・#3097（RLS03）で各人2本→4本。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、順に。大会前の場面なので、結果や前夜祭の後のことには触れない。ほかの恋人・別便の人は出さない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_inn_day.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の宿のロビー。凛想さんのスマホが、さっきから何度も震えている。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……会社から。見ないって決めてるのに、震えると気になるね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "出ていいですよ。俺、待ってます"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "出ない。今回は、仕事の私は日本に置いてきたから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんはスマホを裏返して、テーブルの真ん中に置いた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "その代わり、君が見張ってて。私が手を伸ばしたら、止めること"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "責任重大ですね"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "そうだよ。……ほら、今もう手が動いた。止めて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "伸びてきた凛想さんの手を、テーブルの上でそっと押さえた。そのまま、しばらく離さなかった。"
         }
       ]
     },
@@ -422,6 +747,121 @@
       ]
     },
     {
+      "dialogue_id": "ch4_companion_ageha_3",
+      "comment": "BLC08・#3097（RLS03）で各人2本→4本。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、順に。大会前の場面なので、結果や前夜祭の後のことには触れない。ほかの恋人・別便の人は出さない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_inn_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿のテラス。あげはが、ネイルの小瓶を並べて、どれにするか真剣に悩んでいた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "……大会の日の色、決めなきゃなんだよね。応援ネイル"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "応援にも、ネイルがあるんだ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "あるある。てか、作る。ハジメっちの店の色、何色？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何色……だろう。考えたことなかった"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "じゃ、うちが決める。……煙の色で、ちょっと透けてるやつ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは灰色がかった透明の小瓶を選んで、爪の先にひと塗りした。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "どう？　煙っぽくない？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……うん。それ、すごくいい"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "っしょ。当日は、これで手、振るから。見つけて"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_companion_ageha_4",
+      "comment": "BLC08・#3097（RLS03）で各人2本→4本。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、順に。大会前の場面なので、結果や前夜祭の後のことには触れない。ほかの恋人・別便の人は出さない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_inn_day.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の宿の部屋。あげはが、ハンドクリームのチューブを手のひらで温めていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ハジメっち、手、出して。炭いじりすぎて、指の先カッサカサじゃん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "そんなに？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そんなに。……ほら、ここ。親指の付け根、固くなってる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはの指が、手のひらの真ん中をゆっくり押していく。思ったより、力が強い。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うち、手が震える日、自分でこれやるんだ。ぎゅってすると、ちょっと落ち着くの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……効く。肩まで、ゆるむ気がする"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "っしょ。……だから今日は、うちの番じゃなくて、ハジメっちの番"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "塗り終えた手を、あげはは自分の両手で、もう一度だけ包んだ。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch4_companion_mashiro_1",
       "comment": "BLC08。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、二本を順に。大会前の場面なので、結果や前夜祭の後のことには触れない。",
       "metadata": {
@@ -518,6 +958,111 @@
           "speaker": "mashiro",
           "face": "smile",
           "text": "分かったよぉ。でも、直したのも見てた。だから、言わなくてよかった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_companion_mashiro_3",
+      "comment": "BLC08・#3097（RLS03）で各人2本→4本。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、順に。大会前の場面なので、結果や前夜祭の後のことには触れない。ほかの恋人・別便の人は出さない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_inn_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿の部屋。ましろちゃんが、窓の外の塔の灯りを、ぼんやり数えていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……十二、十三。はじめくん、あの塔、窓がいくつあると思う？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "数えきれないよ、たぶん"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "だよねぇ。……僕、途中で、眠くなっちゃった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんは窓辺を離れてソファの端に座り、俺の肩に頭を預けた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "mukaiの窓から見えるのは、高架だけでしょ。電車が通ると、揺れるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ここは、揺れないね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "yawn",
+          "text": "うん。……揺れないと、逆に眠れないかも。はじめくん、ちょっとだけ揺らして"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われた通りに肩を小さく揺らすと、寝息が聞こえるまで、そう時間はかからなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_companion_mashiro_4",
+      "comment": "BLC08・#3097（RLS03）で各人2本→4本。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、順に。大会前の場面なので、結果や前夜祭の後のことには触れない。ほかの恋人・別便の人は出さない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_inn_day.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の宿の中庭。ましろちゃんが、スークで買った小さな真鍮のトングを、日にかざしていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "見て。ちっちゃいでしょ。お土産に、mukaiの作業台に置くの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ムカイさん、使ってくれるかな"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "使わないと思う。……でも、きっと毎日、手に取って戻すよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "それ、使ってるのと同じじゃない？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。お店って、そういう物があるといいの。手が覚えてる、意味のない物"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんはトングを布でくるんで、道具箱のいちばん上にしまった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくんのtonariにも、きっとあるよ。帰ったら、探してみて"
         }
       ]
     },
@@ -630,6 +1175,116 @@
       ]
     },
     {
+      "dialogue_id": "ch4_companion_samechan_3",
+      "comment": "BLC08・#3097（RLS03）で各人2本→4本。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、順に。大会前の場面なので、結果や前夜祭の後のことには触れない。ほかの恋人・別便の人は出さない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_inn_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿の部屋。サメちゃんが、ベッドの上に布を広げて、コロちゃんの背びれを縫い直していた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……飛行機の棚で、少しほつれたのじゃ。王の背びれは、まっすぐでなくてはならぬ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "余は、痛くない。だが、格好が悪い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "手伝いましょうか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "ならば、ここを押さえておいてくれ。……指は、針から遠くじゃぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背びれの根元を押さえると、サメちゃんは小さな針目で、ゆっくり縫い進めた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……できた。お主の指のおかげで、まっすぐじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "余は、そなたを側近補佐に任ずる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "謹んで、お受けします"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_companion_samechan_4",
+      "comment": "BLC08・#3097（RLS03）で各人2本→4本。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、順に。大会前の場面なので、結果や前夜祭の後のことには触れない。ほかの恋人・別便の人は出さない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_inn_day.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の宿のロビー。サメちゃんが、壁の水槽の前から動かなくなっていた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "お主、見よ！　魚じゃ。縞の、黄色い魚じゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "宿に水槽があるの、知りませんでした"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "わしは、来た日から知っておった。毎朝、挨拶しておる"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "余の臣下にしてやってもよい。黄色いのは、よく働きそうじゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "黄色い魚は、サメちゃんの指先を追って、ガラスの向こうを右へ左へ泳いだ。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……お主が台に向かっておる間、わしはここで待っておる。退屈ではないぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。……でも、たまには一緒に見に来ます"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "うむ。そのときは、魚の名前を一緒に考えるのじゃ"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch4_companion_hiyori_1",
       "comment": "BLC08。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、二本を順に。大会前の場面なので、結果や前夜祭の後のことには触れない。",
       "metadata": {
@@ -733,6 +1388,121 @@
           "face": "love_blush",
           "text": "……儚い女に頼るなんて、物好きだね",
           "inner": "うれしい。ちょっと泣きそう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_companion_hiyori_3",
+      "comment": "BLC08・#3097（RLS03）で各人2本→4本。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、順に。大会前の場面なので、結果や前夜祭の後のことには触れない。ほかの恋人・別便の人は出さない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_inn_night.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿の部屋。ひよりさんが、ベッドの端で日記帳を開いていた。表紙に「旅の記録」とある。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……今日の日記、書き出しが決まらないの。「異国の夜、女は一人」……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "一人じゃないですよ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "そうなの。そこが問題なの。……一人じゃないと、儚くならないの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんはペンを置いて、日記帳をこちらに向けた。まだ一行も書いていない。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "はじめくん、書き出し、一緒に考えて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ……「異国の夜、二人で、冷房が強すぎた」"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……それ、ただの事実じゃない"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "でも、いいね。それにする。……事実の方が、あとで読んで笑えるもの"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_companion_hiyori_4",
+      "comment": "BLC08・#3097（RLS03）で各人2本→4本。第4章ドバイ（DAY1〜12）で、同じ便で来た恋人（同行者）と宿で過ごす時間（chapters/companion-time.js）。一日に一度、順に。大会前の場面なので、結果や前夜祭の後のことには触れない。ほかの恋人・別便の人は出さない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_dubai_inn_day.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の宿の部屋。ひよりさんが、スーツケースの中身を床いっぱいに広げていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "……おかしい。持ってきた服の数と、着た服の数が合わない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "総務の人の、荷物チェック……"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "癖なの。棚卸しっていうの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……あ、あった。一枚、たたんだまま忘れてた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出てきたのは、まだ値札のついたワンピースだった。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "「旅先で着る勝負服」のつもりで買ったの。……勝負の日が、来なかったのね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "まだ、日にちはありますよ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……そうね。じゃあ、はじめくんの大会の日に着る。応援係の、勝負服"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんは値札を丁寧に外して、ワンピースをハンガーに掛けた。"
         }
       ]
     }

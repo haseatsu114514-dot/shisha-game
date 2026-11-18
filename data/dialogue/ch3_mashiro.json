@@ -2231,6 +2231,226 @@
           "text": "店に戻るまで、彼女は左の三つ編みを、何度も指でたしかめていた。"
         }
       ]
+    },
+    {
+      "dialogue_id": "mashiro_time_cat",
+      "comment": "BLC03。恋人のましろとmukaiで過ごす時間（一日に一度・巡回）。第3章の東京と第5章の東京の両方で読むので、大会・味・滞在の長さには触れない。 #3097（RLS03）で4本→8本。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "裏口のベンチで、ましろちゃんの膝の上に、てつこが丸くなっていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "しーっ。今、寝たとこなの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……いいなあ、そこ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "でしょ。僕の膝、てつこの指定席だからねぇ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣に座ると、ましろちゃんは空いている方の手で、俺の袖を引いた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくんの席は、こっち。肩のところ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "肩も、指定席なの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。今、決めた。……てつこが起きるまで、二人とも動いちゃだめ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "てつこは、長い寝息を立てていた。しばらく、誰も動かなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mashiro_time_towel",
+      "comment": "BLC03。恋人のましろとmukaiで過ごす時間（一日に一度・巡回）。第3章の東京と第5章の東京の両方で読むので、大会・味・滞在の長さには触れない。 #3097（RLS03）で4本→8本。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの端で、ましろちゃんがおしぼりを一本ずつ巻いていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくんも巻く？　僕のやり方、教えてあげる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "端を三角に折って、くるくる。ましろちゃんの巻いたおしぼりは、どれも同じ太さだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……俺のだけ、太い"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "いいの。太いのは、はじめくんが巻いたって、僕だけ分かるから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "見分けるの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。お客さんに出すのは、細いの。……太いのは、二人の分"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "巻き終えたおしぼりの山から、彼女は太い一本を取って、俺の手を拭いた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ほら。ちゃんと、あったかい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mashiro_time_jacket",
+      "comment": "BLC03。恋人のましろとmukaiで過ごす時間（一日に一度・巡回）。第3章の東京と第5章の東京の両方で読むので、大会・味・滞在の長さには触れない。 #3097（RLS03）で4本→8本。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "休憩の時間。ましろちゃんがカウンターに頬をつけたまま、目を閉じていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……寝てる？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "寝てないよぉ。目を休ませてるだけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そう言った三秒後には、静かな寝息になっていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の部屋から上着を一枚持ってきて、肩にかける。袖が、カウンターまで垂れた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……はじめくんの匂いがする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "起きてたの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "いま起きた。……この上着、あと五分だけ借りるね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "五分は、結局十五分になった。俺は隣で、彼女が起きるのを待った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mashiro_time_mug",
+      "comment": "BLC03。恋人のましろとmukaiで過ごす時間（一日に一度・巡回）。第3章の東京と第5章の東京の両方で読むので、大会・味・滞在の長さには触れない。 #3097（RLS03）で4本→8本。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "mukaiの棚に、マグカップが並んでいる。取っ手に、それぞれ名前の札が下がっていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「ムカイ」「ましろ」。その隣に、札の付いていないカップが一つ。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "それ、はじめくんの。名前、まだ書いてないの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺のカップ、あったんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "前からあったよぉ。気づいてくれるの、待ってた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "渡された札とペンで、名前を書く。少し考えて、ひらがなにした。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……ふふ。僕の隣だねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "並べたの、ましろちゃんでしょ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。……ムカイさんには、内緒"
+        }
+      ]
     }
   ]
 }
