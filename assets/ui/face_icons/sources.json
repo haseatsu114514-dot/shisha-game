@@ -353,6 +353,25 @@
   "sprite": "assets/sprites/character_variants/new/yoru/chr_yoru_normal.png",
   "blob": "5edf17b268713794db659accaf818a130e3ecff1",
   "webp": "72255ec49d1df6b3790998cc3de3fb6f8a47ccb6"
+ },
+ "face_regulara.png": {
+  "sprite": "assets/sprites/characters/regulara/chr_regulara_normal.png",
+  "blob": "3a8b616303c7d250e5c466e829ef8ccac5f2af6f",
+  "webp": "83257e0b935be13033cd51881678588a119a9970"
+ },
+ "face_regularb.png": {
+  "sprite": "assets/sprites/characters/regularb/chr_regularb_normal.png",
+  "blob": "182df0af399dfc4f1e0e069eeedbc309d7835bbb",
+  "webp": "a893f3396a5343fb402aaf7b8fb2519ad30a1f51"
+ },
+ "new/face_regulara.png": {
+  "sprite": "assets/sprites/character_variants/new/regulara/chr_regulara_normal.png",
+  "blob": "3a8b616303c7d250e5c466e829ef8ccac5f2af6f",
+  "webp": "83257e0b935be13033cd51881678588a119a9970"
+ },
+ "new/face_regularb.png": {
+  "sprite": "assets/sprites/character_variants/new/regularb/chr_regularb_normal.png",
+  "blob": "182df0af399dfc4f1e0e069eeedbc309d7835bbb",
+  "webp": "a893f3396a5343fb402aaf7b8fb2519ad30a1f51"
  }
 }
-
