@@ -372,6 +372,102 @@
       ]
     },
     {
+      "dialogue_id": "ch3_mukai_no_hat",
+      "comment": "RLS10（第3章はムカイさんを厚く描く・2026-11-18）。渋い見た目（ハット・髭）と、実はとても優しい本人（characters.json の visual_concepts）。ハットを洗って干した日（ラテをこぼした）。天気に依存しない、常連が店主だと気づかない。シガーマンの話・大会・味覚には触れない。報酬なし。猫のラテの後、大会前のmukaiで一度。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開店してすぐのmukai。入口の脇で、見慣れたハットが逆さまに干されていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの中には、髪をタオルで拭いている、知らないおじさんがいる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……ムカイさん？"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "他に誰がいる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ハット、どうしたんですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "洗った、……ラテを、こぼした"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ハットがないと、ムカイさん、すっごく優しい顔なんだよぉ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……だから、かぶってる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ドアベルが鳴って、常連のおじいさんが入ってきた。窓際の席に座り、きょろきょろと店の中を見回す。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "今日は、マスターは休みかい"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……ここにいる"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "おや、これは失礼。新しい人かと思った"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは何も言わずに、いつものコーヒーをおじいさんの前へ置いた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……ああ、この味だ。マスターだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（顔より先に、コーヒーで分かるんだ）"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "はじめくん。ハットが乾いたら、教えてくれ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "乾かなくてもいいのにねぇ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……乾いたら、だ"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_cigarman_trace",
       "lines": [
         {

@@ -223,6 +223,10 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert(offered(value).includes('ch3_mukai_latte_cat'));
   wiring.commitOptionalRead(value, 'ch3_mukai_latte_cat');
   assert(!offered(value).includes('ch3_mukai_latte_cat'), 'read once only');
+  assert(offered(value).includes('ch3_mukai_no_hat'), 'the hatless day follows the latte');
+  wiring.commitOptionalRead(value, 'ch3_mukai_no_hat');
+  assert(!offered(value).includes('ch3_mukai_no_hat'));
+  assert.doesNotMatch(sceneData.get('ch3_mukai_no_hat').lines.map(line => line.text || '').join('\n'), /シガーマン|大会|味覚|舌/);
   const latte = sceneData.get('ch3_mukai_latte_cat').lines;
   assert(latte.filter(line => line.speaker === 'mukai_master').length >= 5, 'Mukai speaks');
   assert.doesNotMatch(latte.map(line => line.text || '').join('\n'), /大会|味覚|舌|屋根裏|鍵/);

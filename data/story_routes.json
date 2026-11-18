@@ -123,6 +123,7 @@
         "ch3_cigarman_rumor",
         "ch3_cigarman_shadow",
         "ch3_mukai_latte_cat",
+        "ch3_mukai_no_hat",
         "ch3_cigarman_trace",
         "ch3_emil_workshop",
         "ch3_mashiro_play_1",
@@ -496,6 +497,12 @@
         "ch3_individuality_doubt"
       ],
       "comment": "RLS10。二日目にムカイさんが撮っていた猫のラテは本人の練習。翌日から大会前のmukaiで一度。"
+    },
+    "ch3_mukai_no_hat": {
+      "seen": [
+        "ch3_mukai_latte_cat"
+      ],
+      "comment": "RLS10。猫のラテの後、大会前のmukaiで一度。ラテをこぼしてハットを干した日（天気に依存しない）。"
     },
     "ch3_cigarman_trace": {
       "seen": [
