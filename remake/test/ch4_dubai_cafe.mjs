@@ -5,7 +5,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { CAFE_ORDERS_FLAG, CAFE_MENU, CAFE_PLACES, CAFE_TASTE_IDS, OMAKASE, OMAKASE_LINE, SMOKED_IN_SCENE, TALKS_AFTER_ORDER,
-  cafeOrders, tasteScene, tasteSceneId, omakaseChoice, resolveCafeOrder, recordCafeOrder } from "../js/chapters/ch4-dubai-cafe.js";
+  cafeOrders, tasteScene, tasteSceneId, omakaseChoice, resolveCafeOrder, recordCafeOrder, AGAIN_SUFFIXES, againSceneIds } from "../js/chapters/ch4-dubai-cafe.js";
 import { classifyFlag, flagVerdict } from "../js/core/carry.js";
 
 const read = rel => readFileSync(new URL(rel, import.meta.url), "utf8");
@@ -34,6 +34,12 @@ assert.equal(recordCafeOrder(value, "double_apple"), true);
 assert.equal(recordCafeOrder(value, "nope"), false);
 assert.deepEqual(value.flags[CAFE_ORDERS_FLAG], { double_apple: 1 });
 assert.equal(tasteScene(value, "double_apple"), "ch4_dubai_taste_double_apple_again", "二度目からは短い方");
+// #3097: 二度目からの短い方は、頼んだ回数で巡回する（選ぶだけでは保存を変えない）
+for (const [orders, suffix] of [[2, "_b"], [3, "_c"], [4, ""], [5, "_b"]]) {
+  const sample = { day: 50, flags: { [CAFE_ORDERS_FLAG]: { double_apple: orders } } };
+  assert.equal(tasteScene(sample, "double_apple"), `ch4_dubai_taste_double_apple_again${suffix}`, `${orders}回頼んだ後`);
+}
+assert.equal(tasteScene({ flags: { [CAFE_ORDERS_FLAG]: { mint: "x" } } }, "mint"), "ch4_dubai_taste_mint", "壊れた回数は初めての一台");
 assert.equal(omakaseChoice(value), "grape_mint", "おまかせは次の未体験の一台");
 for (const id of ["grape_mint", "lemon_mint", "mint"]) recordCafeOrder(value, id);
 for (const day of [48, 49, 50, 51]) assert.equal(omakaseChoice({ ...value, day }), CAFE_MENU[day % 4].id, "全部頼んだ後は日付で回す");
@@ -43,11 +49,19 @@ assert.equal(classifyFlag(CAFE_ORDERS_FLAG), "progression");
 assert.equal(flagVerdict(CAFE_ORDERS_FLAG), "reset", "周回では持ち越さない");
 
 // ---- 味わいの台本 -----------------------------------------------------------------------
-assert.deepEqual([...CAFE_TASTE_IDS], CAFE_MENU.flatMap(item => [tasteSceneId(item.id), tasteSceneId(item.id, true)]));
+assert.deepEqual([...AGAIN_SUFFIXES], ["", "_b", "_c"]);
+assert.deepEqual([...CAFE_TASTE_IDS], CAFE_MENU.flatMap(item => [tasteSceneId(item.id), ...againSceneIds(item.id)]));
 for (const item of CAFE_MENU) {
   const first = daily[tasteSceneId(item.id)], again = daily[tasteSceneId(item.id, true)];
   assert(first?.lines?.length >= 4, `${item.id} の初めての一台`);
   assert(again?.lines?.length >= 2 && again.lines.length < first.lines.length, `${item.id} の二度目は短い`);
+  for (const id of againSceneIds(item.id)) {
+    const scene = daily[id];
+    assert(scene?.lines?.length >= 2 && scene.lines.length < first.lines.length, `${id} は短い`);
+    assert.equal(scene.metadata, undefined, `${id} は熟練度を付けない`);
+    assert(scene.lines[0].text.includes(item.label), `${id}: 頼んだ一台の名前から始まる`);
+    for (const line of scene.lines) assert(["", "hajime"].includes(line.speaker), `${id}: 店員は出さない`);
+  }
   const lesson = first.metadata?.flavor_lesson;
   assert(lesson && Object.keys(lesson).length, `${item.id} は初めての一台で熟練度が少し伸びる`);
   for (const id of Object.keys(lesson)) assert(flavors.has(id), `${item.id}: ${id} は実在の葉`);

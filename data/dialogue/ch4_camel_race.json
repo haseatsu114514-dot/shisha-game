@@ -555,6 +555,96 @@
       ]
     },
     {
+      "dialogue_id": "ch4_camel_replay_best_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電光の数字が変わった瞬間、ファーリスが車の窓から身を乗り出した。"
+        },
+        {
+          "speaker": "faris",
+          "face": "excited",
+          "text": "更新！　ハジメ、今の最後の直線、声がぴったりだった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ハビーバが、先に耳を向けてくれたので"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "……悪くない"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "出た、最高評価"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "ただし、今日のは今日のだ。明日の砂は、また違う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。……今日の砂、覚えておきます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハリールさんは返事をせずに、窓から腕を伸ばして、ハビーバの首を二度、軽く叩いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_replay_best_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゴールを抜けたハビーバが、こちらの車の横まで歩いてきて、窓の外で止まった。"
+        },
+        {
+          "speaker": "faris",
+          "face": "surprise",
+          "text": "え、自分から来た。ハビーバ、いつもは叔父さんの車にしか寄らないのに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……どうすれば"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "声をかけてやれ。今日の声の礼だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……ありがとう。速かったよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハビーバは鼻を一度鳴らして、満足したように柵の方へ戻っていった。"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "記録も更新、ハビーバの機嫌も更新。今日はいい日だ"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "浮かれるな。次も、同じ声で"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch4_camel_replay_usual",
       "lines": [
         {
@@ -591,6 +681,156 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "はい。次は、ちゃんと息を合わせます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_replay_usual_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゴールの先で、ハビーバが水桶に首を突っこんだ。電光の数字を読んで、ファーリスが肩をすくめる。"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "自己ベストには、ちょっと届かず。でも今日は、ハビーバがずっと前を見てた"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "三つ目の曲がりで、声が早かった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……分かりました？　前のラクダに並んだので、つい"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "並んだ時に声をかけると、ラクダは横を見る。前を見ている時に、かけろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（隣の席を見てる客に話しかけても、届かないのと同じだ）"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "叔父さん、今日は二回もしゃべった。ハジメ、期待されてるよ"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "期待はしていない、……覚えているだけだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_replay_usual_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゴールしたハビーバは、まだ走り足りなそうに、柵の内側をもう半周した。"
+        },
+        {
+          "speaker": "faris",
+          "face": "surprise",
+          "text": "見て、まだ走ってる。今日は、ハジメの方が先に息切れしたね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "リモコンを持つ手に、力が入りすぎました"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "指を見せろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開いた手のひらに、リモコンの縁の跡が赤く残っていた。"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "握るな。持つだけでいい。ボタンは、押す時だけ押せ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……師匠にも、トングで同じことを言われた気がします"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "トング？　ああ、炭をつまむやつ。ハジメの話は、全部そこに戻るね"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "戻る場所がある者は、迷わない。悪くない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_camel_replay_usual_d",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レースが終わると、ファーリスがクーラーボックスから冷えた水の瓶を三本出した。"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "叔父さんの決まり。走った後は、ラクダも人も、まず水"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハリールさんは瓶を受け取ると、先にハビーバの水桶をのぞいてから、自分の瓶を開けた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "順番、ハビーバが先なんですね"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "走ったのは、あいつだ"
+        },
+        {
+          "speaker": "faris",
+          "face": "normal",
+          "text": "俺が子どもの頃、先に飲んだら、叔父さんに瓶を取り上げられた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "取り上げられたんですか"
+        },
+        {
+          "speaker": "faris",
+          "face": "smile",
+          "text": "ハビーバの水桶に、全部注がれた。あれは悔しかったなあ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハビーバが顔を上げて、口の端から水を垂らした。ハリールさんは、それを見てから一口飲んだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（客が一口吸うのを見てから、自分の手を動かす。……tonariと同じ順番だ）"
         }
       ]
     },

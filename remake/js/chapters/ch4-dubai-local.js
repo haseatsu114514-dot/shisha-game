@@ -99,7 +99,11 @@ export const STALL_MENU = Object.freeze([
 export const STALL_NONE = "none";
 export const STALL_PLACE = "souq";
 export const stallSceneId = id => `ch4_souq_stall_${id}`;
-export const STALL_SCENE_IDS = Object.freeze(STALL_MENU.map(item => stallSceneId(item.id)));
+// 同じ品を買うたびに読む場面は、品ごとに3本を巡回する（#3097・RLS03。daily/spots.js の quietTurn。鍵は STALL_TURN）
+export const STALL_TALKS = Object.freeze(Object.fromEntries(STALL_MENU.map(item =>
+  [item.id, Object.freeze(["", "_b", "_c"].map(suffix => `${stallSceneId(item.id)}${suffix}`))])));
+export const STALL_TURN = id => `dubai_stall_${id}`;
+export const STALL_SCENE_IDS = Object.freeze(STALL_MENU.flatMap(item => STALL_TALKS[item.id]));
 
 /** 屋台の選択肢の文字（「シャワルマ 500円（約10ディルハム）」）。 */
 export const stallLabel = item => `${item.label} ${priceText(item.price)}`;

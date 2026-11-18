@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { YEN_PER_DIRHAM, dirhamOf, dirhamText, priceText, dubaiDaytime, DUBAI_HEAT, dubaiSpotAt,
   DUBAI_NIGHT_PLACES, NIGHT_SCENE_IDS, NIGHT_FLAG, nightSceneId, dubaiNights, nightVisit, recordNightVisit,
-  STALL_MENU, STALL_NONE, STALL_PLACE, STALL_SCENE_IDS, stallSceneId, stallLabel, stallChoices, stallItem } from "../js/chapters/ch4-dubai-local.js";
+  STALL_MENU, STALL_NONE, STALL_PLACE, STALL_SCENE_IDS, STALL_TALKS, STALL_TURN, stallSceneId, stallLabel, stallChoices, stallItem } from "../js/chapters/ch4-dubai-local.js";
 import { classifyFlag, flagVerdict } from "../js/core/carry.js";
 
 const read = rel => readFileSync(new URL(rel, import.meta.url), "utf8");
@@ -105,7 +105,19 @@ assert.deepEqual(stallChoices(499).map(item => item.id), ["karak"], "買えな�
 assert.deepEqual(stallChoices(99), []);
 assert.deepEqual(stallChoices(undefined), []);
 assert.equal(stallItem("shawarma").price, 500); assert.equal(stallItem(STALL_NONE), null); assert.equal(stallItem("nope"), null);
-assert.deepEqual([...STALL_SCENE_IDS], STALL_MENU.map(item => stallSceneId(item.id)));
+// #3097: 品ごとに3本を巡回（買った回数は quietTurn の _spot_turn_dubai_stall_<品>。周回では持ち越さない）
+for (const item of STALL_MENU) assert.deepEqual([...STALL_TALKS[item.id]], ["", "_b", "_c"].map(suffix => `${stallSceneId(item.id)}${suffix}`));
+assert.deepEqual([...STALL_SCENE_IDS], STALL_MENU.flatMap(item => STALL_TALKS[item.id]));
+assert.equal(STALL_TURN("karak"), "dubai_stall_karak");
+assert.equal(classifyFlag(`_spot_turn_${STALL_TURN("karak")}`), "progression");
+assert.match(dailySource, /const turn = quietTurn\(STALL_TURN\(item\.id\), STALL_TALKS\[item\.id\]\);\n\s*if \(await readPlain\(turn\?\.id \|\| stallSceneId\(item\.id\), CH4_PLACE_BG\.souq, owner\) && turn && state === owner\) state\.flags\[turn\.key\] = turn\.count \+ 1;/,
+  "読み終えた時だけ巡回を進める");
+for (const id of STALL_SCENE_IDS) {
+  const scene = daily[id];
+  assert(scene?.lines?.length >= 3, `${id} の場面`);
+  assert.equal(scene.metadata, undefined, `${id}: 熟練度・能力を付けない`);
+  for (const line of scene.lines) assert(!/【(技術|センス|根性|魅力|洞察)】|体力/.test(line.text), `${id}: 報酬・体力の文を書かない`);
+}
 const taste = { karak: /カルダモン/, shawarma: /削いで[\s\S]*巻いた/, luqaimat: /揚げ[\s\S]*蜜/ };
 for (const item of STALL_MENU) {
   const scene = daily[stallSceneId(item.id)];

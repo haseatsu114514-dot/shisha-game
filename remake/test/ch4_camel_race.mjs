@@ -6,7 +6,7 @@ import { advanceToChapterFour, completeChapterFourScene, endChapterFourDay, CH4_
 import { chapterFourMapModel } from "../js/chapters/ch4-map-model.js";
 import { CAMEL_FLAG, CAMEL_SCENES, CH4_CAMEL_SCENE_FILES, CAMEL_STAGES, camelRaceRecord, camelRaceDestination, camelRaceOpen,
   recordCamelRaceResult, consumeCamelRaceDaytime, advanceCamelRaceStage, resultSceneFor, camelSceneBg, CAMEL_TRACK_BG, CAMEL_SHOP_BG,
-  camelTalkAfterRace, CAMEL_NAME_FLAG, CAMEL_MASTER_FLAG, CAMEL_NAME_PLAYS,
+  camelTalkAfterRace, CAMEL_NAME_FLAG, CAMEL_MASTER_FLAG, CAMEL_NAME_PLAYS, CAMEL_RESULT_TALKS, camelResultTalk,
   CAMEL_DAILY_SPOT_ID, camelDailySpot, availableCamelCups, CH5_CAMEL_MEET, chapterFiveCamelMeetDue, advanceChapterFiveCamelMeet } from "../js/chapters/ch4-camel-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
 import { newGrowth, claimPlayRewards } from "../js/core/growth.js";
@@ -402,6 +402,26 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
     assert(row?.lines?.length && row.lines.every(line => ["", "hajime", "faris", "khalil"].includes(line.speaker)), id);
     assert.equal(camelSceneBg(id), CAMEL_TRACK_BG, `${id} is at the track`);
   }
+}
+
+// #3097（RLS03）: 二度目からの結果の会話は、通算の完走回数で巡回する。2回目のレースは従来どおり先頭（保存の値は増やさない）
+{
+  assert.deepEqual([...CAMEL_RESULT_TALKS.best], [CAMEL_SCENES.replayBest, "ch4_camel_replay_best_b", "ch4_camel_replay_best_c"]);
+  assert.deepEqual([...CAMEL_RESULT_TALKS.usual], [CAMEL_SCENES.replayUsual, ...["b", "c", "d"].map(suffix => `ch4_camel_replay_usual_${suffix}`)]);
+  assert.deepEqual([2, 3, 4, 5, 6, 7].map(plays => camelResultTalk(plays, false)),
+    [CAMEL_SCENES.replayUsual, ...["b", "c", "d"].map(suffix => `ch4_camel_replay_usual_${suffix}`), CAMEL_SCENES.replayUsual, "ch4_camel_replay_usual_b"]);
+  assert.deepEqual([2, 3, 4, 5].map(plays => camelResultTalk(plays, true)),
+    [CAMEL_SCENES.replayBest, "ch4_camel_replay_best_b", "ch4_camel_replay_best_c", CAMEL_SCENES.replayBest]);
+  for (const broken of [undefined, null, "x", -3, 0, 1]) assert.equal(camelResultTalk(broken, false), CAMEL_SCENES.replayUsual, `plays ${broken}`);
+  const rows = Object.fromEntries(JSON.parse(readFileSync(new URL("../../data/dialogue/ch4_camel_race.json", import.meta.url), "utf8")).dialogues
+    .map(row => [row.dialogue_id, row]));
+  for (const id of [...CAMEL_RESULT_TALKS.best, ...CAMEL_RESULT_TALKS.usual]) {
+    assert(rows[id]?.lines?.length >= 6, `${id} has a script`);
+    assert(CH4_CAMEL_SCENE_FILES.ch4_camel_race.includes(id), `${id} is loaded in chapters 4 and 5`);
+    assert.equal(camelSceneBg(id), CAMEL_TRACK_BG, `${id} is read at the track`);
+  }
+  const race = readFileSync(new URL("../js/chapters/ch4-camel-race.js", import.meta.url), "utf8");
+  assert.match(race, /first \? resultSceneFor\(best\.rank\) : camelResultTalk\(outcome\.plays, outcome\.newBest\)/);
 }
 
 console.log("ch4_camel_race: ok");

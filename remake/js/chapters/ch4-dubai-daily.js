@@ -43,7 +43,7 @@ import { LONGLONG_BG, LONGLONG_CHAR, LONGLONG_IDS, LONGLONG_LOAD_IDS, nextLonglo
 import { finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { FESTA_BOND_IDS, nextDubaiBondStory, recordDubaiBondRead } from "./dubai-bonds.js";
 import { NIGHT_SCENE_IDS, STALL_NONE, STALL_PLACE, STALL_SCENE_IDS, dubaiSpotAt, nightVisit, recordNightVisit, priceText,
-  stallChoices, stallItem, stallLabel, stallSceneId, CREEK_SCENES, CREEK_SPOT_IDS, CREEK_TURN, creekSpotScenes } from "./ch4-dubai-local.js";
+  stallChoices, stallItem, stallLabel, stallSceneId, STALL_TALKS, STALL_TURN, CREEK_SCENES, CREEK_SPOT_IDS, CREEK_TURN, creekSpotScenes } from "./ch4-dubai-local.js";
 import { quietTurn } from "../daily/spots.js";
 import { runFullPractice } from "../craft/practice.js";
 import { computeShisha } from "../craft/score.js";
@@ -70,7 +70,7 @@ const TALKS = Object.freeze({
   center_cafe: ["ch4_dubai_cafe_revisit", "ch4_cafe_talk_b", "ch4_cafe_culture_hose", "ch4_cafe_talk_c", "ch4_cafe_culture_coffee", "ch4_cafe_talk_d", "ch4_cafe_talk_e", "ch4_cafe_talk_f"],
   alley_cafe: ["ch4_alley_cafe_quiet", "ch4_alley_culture_clay", "ch4_alley_talk_c", "ch4_alley_culture_majlis", "ch4_alley_talk_d", "ch4_alley_talk_e", "ch4_alley_talk_f"],
   naru: ["ch4_naru_dubai_1", "ch4_naru_dubai_2", "ch4_naru_dubai_3"],
-  practice: ["ch4_practice_hall_1", "ch4_practice_hall_2"],
+  practice: ["ch4_practice_hall_1", "ch4_practice_hall_2", "ch4_practice_hall_3", "ch4_practice_hall_4", "ch4_practice_hall_5", "ch4_practice_hall_6"],
 });
 // 再訪の会話の背景（行き先の既定と違う場面だけ）。なるの2回目は練習会場、3回目はクリーク沿い。
 const TALK_BG = Object.freeze({
@@ -632,7 +632,9 @@ async function visitStall(owner) {
   if (state !== owner || !item || item.price > spendableMoney(state)) return;
   addMoney(-item.price);
   addStamina(item.stamina);
-  await readPlain(stallSceneId(item.id), CH4_PLACE_BG.souq, owner);
+  // 品ごとに巡回する（#3097）。中断したら巡回は進めない（代金と体力は選んだ時に確定済み）
+  const turn = quietTurn(STALL_TURN(item.id), STALL_TALKS[item.id]);
+  if (await readPlain(turn?.id || stallSceneId(item.id), CH4_PLACE_BG.souq, owner) && turn && state === owner) state.flags[turn.key] = turn.count + 1;
 }
 
 /** 行き先で最初に読む本筋の場面（未読のものだけ、順に）。 */
