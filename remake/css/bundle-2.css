@@ -271,6 +271,10 @@
   background: radial-gradient(ellipse at 50% 100%, #ffc27a 0, #ff7a1ad0 26%, #c4370e66 52%, transparent 76%);
   opacity: calc(.85 - var(--go-look-p) * .5); animation: go-ember-breathe 2.6s ease-in-out infinite alternate;
 }
+.end-screen.gameover[data-layout="ember"] .go-ember-coal::after {
+  content: ""; position: absolute; inset: 0; background: inherit; pointer-events: none;
+  opacity: .22; animation: go-ember-glow 2.6s ease-in-out infinite alternate;
+}
 .end-screen.gameover[data-layout="ember"] .go-ember-sparks { position: absolute; inset: 0; opacity: calc(1 - var(--go-look-p) * .5); }
 .end-screen.gameover[data-layout="ember"] .go-ember-sparks i {
   position: absolute; left: var(--x); bottom: -14px; width: var(--s); height: var(--s); border-radius: 50%;
@@ -366,7 +370,8 @@
 .end-screen.gameover[data-layout="ember"][data-choice="retry"] .go-ember-flare { animation: go-ember-flare 1.1s ease-out both; }
 .end-screen.gameover[data-layout="ember"][data-choice="quit"] :is(.go-ember-coal, .go-ember-sparks) { opacity: .25; transition: opacity 1.2s; }
 /* 残り5秒: 火が消えかけて脈を打つ。 */
-.end-screen.gameover[data-layout="ember"].go-urgent .go-ember-coal { animation: go-ember-gasp .5s ease-in-out infinite alternate; }
+.end-screen.gameover[data-layout="ember"].go-urgent .go-ember-coal { animation: none; }
+.end-screen.gameover[data-layout="ember"].go-urgent .go-ember-coal::after { animation: go-ember-gasp .5s ease-in-out infinite alternate; }
 .end-screen.gameover[data-layout="ember"].go-urgent .go-count { background-image: linear-gradient(180deg, #ffffff 26%, #ffd0bc 58%, #ff6a4a 92%); filter: drop-shadow(0 0 2px #ff5a3a) drop-shadow(0 0 12px #ff3d1fcc) drop-shadow(0 3px 2px #1a0700); }
 .end-screen.gameover[data-layout="ember"].go-urgent .go-veil { box-shadow: inset 0 0 80px #ff3d1f24; }
 /* 時間切れ: 火が消える。灰色の文字に、最後の残り火だけがしばらく灯る。 */
@@ -387,8 +392,9 @@
   from { filter: grayscale(.2) sepia(1) saturate(3) hue-rotate(-16deg) drop-shadow(0 0 22px #ff5a1f); }
   to { filter: grayscale(1) brightness(.9) drop-shadow(0 0 0 #ff5a1f00); }
 }
-@keyframes go-ember-breathe { from { transform: scaleY(.94); filter: brightness(.86); } to { transform: scaleY(1.04); filter: brightness(1.08); } }
-@keyframes go-ember-gasp { from { filter: brightness(.45); } to { filter: brightness(1.25); } }
+@keyframes go-ember-breathe { from { transform: scaleY(.94); } to { transform: scaleY(1.04); } }
+@keyframes go-ember-glow { from { opacity: .06; } to { opacity: .34; } }
+@keyframes go-ember-gasp { from { opacity: 0; } to { opacity: .55; } }
 @keyframes go-ember-rise {
   0% { transform: translate(0, 0) scale(1); opacity: 0; }
   10% { opacity: .95; }
@@ -4076,6 +4082,7 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-current-zone {
 }
 /* ---------- 工程の灯（lamp-*・CSL16 のまま）: 輪は灯の箱いっぱい、光彩は外へ ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp { isolation: isolate; overflow: visible; background: none !important; border: 0 !important; box-shadow: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp[data-tier="brilliant"]::after { content: none; animation: none; }
 /* 光彩（::before の外側18% ≒ 5px）を灯の列の箱の中に収める。余白と同じだけ外へ広げ、レールでの大きさと位置は変えない */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record { padding: 5px; margin: -5px -5px -5px -1px; }
 /* 工程の灯はランクの隣に固定する。レールの長さは工程で変わる（パッキングだけ作業名が付く）ので、灯がレールの後ろについて横へ動かないように、空きはレールと灯の間に置く */
@@ -5613,7 +5620,7 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 /* 居る人の顔と「!」: 縁を夜紫の面に合わせる。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .map .spot-pin .pin-person { border-color: #f6f1fa; box-shadow: 0 0 0 1px rgba(21, 13, 34, .6), 0 2px 5px rgba(8, 3, 16, .55); }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .map .evt-badge:not(.hidane-badge) { color: #26160a; background: var(--neo-ui-gold); border-color: #fbe6b4; box-shadow: 0 0 10px rgba(227, 189, 110, .85); }
-:root[data-look="neo"] body.reduce-shake:not(.game-ds) #stage #screen .map :is(.evt-badge, .spot-pin.guide .shield) { animation: none; }
+:root[data-look="neo"] body.reduce-shake:not(.game-ds) #stage #screen .map :is(.evt-badge, .evt-badge::after, .spot-pin.guide .shield) { animation: none; }
 
 /* 案内の板（右下）: 夜紫の半透明の板＋上辺の金の罫線。行き先を選んだ後は、板ごと押して移動する。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .map :is(.map-info, .map-notice, .map-guide) {
@@ -7291,6 +7298,8 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 /* 外枠を出している間は、隠れている現行の立ち絵の呼吸（新版の .vn-portraits の伸び縮み）を止める。
    見えない所の動きで、上画面を毎フレーム描き直さないため（見た目は変わらない）。 */
 :root[data-look="neo"][data-retro-shell="on"] body:not(:root) #stage #vn .vn-portraits { animation: none; }
+/* 外枠で隠れている間の現行画面（#viewport）側の常時アニメーションも停止する（見た目は変わらない） */
+:root:is([data-look="retro"], [data-look="neo"])[data-retro-shell="on"] #viewport :is(#weather *, .title-smoke i, .title-logo-smoke i, .title-ember, .spot-pin.guide .shield, .evt-badge, .evt-badge::after, .hud-stamina.low .hud-bar b, .vn-next.show) { animation: none !important; }
 /* 高解像度の絵は、拡大の補間をふつうに（ドット絵の pixelated にしない） */
 .retro-shell[data-paint="hd"] .retro-canvas,
 .retro-shell[data-paint="hd"] .retro-face canvas { image-rendering: auto; }

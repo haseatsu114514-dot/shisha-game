@@ -130,9 +130,13 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
   };
 
   const loop = (now) => {
+    raf = 0;
     if (finished) return;
     const t = (gameClock.now() - t0) / 1000;
-    if (gameClock.paused) { raf = requestAnimationFrame(loop); return; }
+    if (gameClock.paused) {
+      if (!gameClock.onPauseChange) raf = requestAnimationFrame(loop);
+      return;
+    }
     for (const c of coals) {
       if (c.picked) continue;
       c.p = t / c.tj;
@@ -156,10 +160,15 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
     if (!finished) raf = requestAnimationFrame(loop);
   };
 
+  gameClock.onPauseChange?.((paused) => {
+    if (!paused && !finished && !raf && t0 !== null) raf = requestAnimationFrame(loop);
+  });
+
   const finish = () => {
     if (finished) return;
     finished = true;
     cancelAnimationFrame(raf);
+    raf = 0;
     gameClock.dispose();
     done();
   };
@@ -173,7 +182,7 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
   SE.crackle();
   t0 = gameClock.now();
   view.root.setAttribute("aria-busy", "false");
-  raf = requestAnimationFrame(loop);
+  if (!gameClock.onPauseChange || !gameClock.paused) raf = requestAnimationFrame(loop);
 
   const auto = autoSkill();
   if (auto) {

@@ -88,7 +88,7 @@ const INDOOR_WINDOWS_BY_BG = [
 
 /** 見えている背景と画面に対応する雨。抽選とセーブ値は既存 isRainy を使う。 */
 export function rainScene(background, screen) {
-  if (["title", "end", "result", "count"].includes(screen)) return null;
+  if (["title", "end", "result", "count", "trpg", "staff-roll"].includes(screen)) return null;
   const file = String(background || "").split(/[?#]/)[0].split("/").pop().replace(/\.webp$/, ".png")
     .replace(/_overcast_(day|night)\.png$/, "_$1.png");
   // ドバイの背景にも雨を重ねない（第5章でドバイへ発つ機内の場面は、街の札が変わる前に読む）

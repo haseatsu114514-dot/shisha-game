@@ -64,18 +64,21 @@
 .rig-lamp[data-tier="good"] { background: #5a3a1ee6; border-color: #e0a060; color: #ffe2bd; box-shadow: 0 0 6px #ff9a3a66; }
 .rig-lamp[data-tier="great"] { background: #b8601ce6; border-color: #ffc27a; color: #fff4e0; box-shadow: 0 0 10px #ff9a3acc; }
 .rig-lamp[data-tier="brilliant"] { background: radial-gradient(circle at 40% 35%, #fff6cf, #ffc21a 55%, #c97a00); border-color: #fff1b0; color: #4a2600;
-  box-shadow: 0 0 6px #fff1b0, 0 0 16px #ffc21acc; animation: rig-lamp-glow 2.4s ease-in-out infinite; }
-.rig-lamp.lit { animation: rig-lamp-pop .5s cubic-bezier(.2, 1.6, .4, 1); }
-.rig-lamp[data-tier="brilliant"].lit { animation: rig-lamp-pop .5s cubic-bezier(.2, 1.6, .4, 1), rig-lamp-glow 2.4s ease-in-out .5s infinite; }
+  box-shadow: 0 0 6px #fff1b0, 0 0 16px #ffc21acc; }
+.rig-lamp[data-tier="brilliant"]::after { content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none;
+  box-shadow: 0 0 10px #fff1b0, 0 0 26px #ffc21a; opacity: 0; animation: rig-lamp-glow 2.4s ease-in-out infinite; }
+.rig-lamp.lit, .rig-lamp[data-tier="brilliant"].lit { animation: rig-lamp-pop .5s cubic-bezier(.2, 1.6, .4, 1); }
+.rig-lamp[data-tier="brilliant"].lit::after { animation-delay: .5s; }
 @keyframes rig-lamp-pop { 0% { transform: scale(.4); } 60% { transform: scale(1.35); } 100% { transform: scale(1); } }
-@keyframes rig-lamp-glow { 50% { box-shadow: 0 0 10px #fff1b0, 0 0 26px #ffc21a; } }
+@keyframes rig-lamp-glow { 50% { opacity: 1; } }
 /* 灯った分だけ作業風景に満ちる暖かい気配。全工程が輝くと縁がゆっくり脈打つ */
 .rig-aura { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: var(--rig-aura, 0); transition: opacity 1.2s ease;
   background: radial-gradient(120% 70% at 62% 78%, #ffb04a38, transparent 62%); box-shadow: inset 0 0 40px #ffb04a55; }
-.rig-aura[data-full="true"] { animation: rig-aura-breathe 3s ease-in-out infinite; }
-@keyframes rig-aura-breathe { 50% { box-shadow: inset 0 0 64px #ffc21a88; } }
+.rig-aura::after { content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 64px #ffc21a88; opacity: 0; }
+.rig-aura[data-full="true"]::after { animation: rig-aura-breathe 3s ease-in-out infinite; }
+@keyframes rig-aura-breathe { 50% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
-  .rig-lamp.lit, .rig-lamp[data-tier="brilliant"], .rig-lamp[data-tier="brilliant"].lit, .rig-aura[data-full="true"] { animation: none; }
+  .rig-lamp.lit, .rig-lamp[data-tier="brilliant"], .rig-lamp[data-tier="brilliant"]::after, .rig-lamp[data-tier="brilliant"].lit, .rig-aura[data-full="true"]::after { animation: none; }
 }
 /* ライバルの小窓（CFX04・js/craft/rival-windows.js）: 大会だけ。隣の台の進みを工程の灯で見せる。数字・順位は出さない */
 .rival-windows { position: absolute; right: 10px; top: 38%; display: flex; flex-direction: column; gap: 6px; z-index: 3; pointer-events: none; }
@@ -142,7 +145,7 @@
 .bench-demo-stage video { display: block; width: 100%; height: 100%; object-fit: contain; }
 .bench-demo-arrow { position: absolute; font-size: clamp(34px, 5vw, 72px); line-height: 1; color: #ffd94d; text-shadow: 0 2px 8px #000; transform: translate(-50%, -50%); pointer-events: none; animation: bench-demo-bob .9s ease-in-out infinite alternate; }
 .bench-demo-arrow[hidden] { display: none; }
-@keyframes bench-demo-bob { from { margin-top: -5px; } to { margin-top: 5px; } }
+@keyframes bench-demo-bob { from { translate: 0 -5px; } to { translate: 0 5px; } }
 .bench-demo-caption { flex: none; min-height: 3em; margin: 10px 0; color: #f2e9dc; font-size: 17px; line-height: 1.5; }
 .bench-demo-status, .bench-demo-instructions { color: inherit; font-size: 16px; line-height: 1.6; }
 .bench-demo-status { flex: none; margin: 10px 0; }
@@ -201,7 +204,7 @@
 .rig-water i:nth-child(3) { left: 48%; animation-delay: 0.6s; }
 .rig-water i:nth-child(4) { left: 60%; animation-delay: 0.9s; }
 @keyframes bubble-up { 0% { opacity: 0; transform: translateY(0) scale(0.6); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-80px) scale(1.2); } }
-@keyframes ember { from { filter: drop-shadow(0 0 6px rgba(255, 110, 30, 0.7)) brightness(0.95); } to { filter: drop-shadow(0 0 14px rgba(255, 150, 60, 1)) brightness(1.15); } }
+@keyframes ember { from { opacity: 0.82; scale: 0.98; } to { opacity: 1; scale: 1.03; } }
 .rig-smoke { position: absolute; z-index: 9; left: 0 !important; right: 0; height: 300px; transform: none !important; pointer-events: none; }
 .rig-smoke i {
   position: absolute;
@@ -455,8 +458,8 @@
 .coal.pikan .coal-corners, .coal:focus-visible .coal-corners { border-color: #fff3bf; filter: drop-shadow(0 0 7px #ffb45c); }
 .coal.pikan .c-core { opacity: 1; }
 .coal.pikan .c-hot { opacity: 1; filter: brightness(2.2) saturate(.75) drop-shadow(0 0 10px #ffe1a0); }
-.coal.pikan .coal-corners { animation: heat-ready .35s ease-in-out infinite alternate; }
-@keyframes heat-ready { to { opacity: .35; filter: drop-shadow(0 0 12px #ff6b36); } }
+.coal.pikan .coal-corners { filter: drop-shadow(0 0 9px #ff8e47); animation: heat-ready .35s ease-in-out infinite alternate; }
+@keyframes heat-ready { to { opacity: .35; } }
 .coal.soon .coal-corners { border-color: #e6a160; }
 .heat.insight-visible .coal.soon .coal-corners { border-color: var(--stat-insight); box-shadow: 0 0 12px var(--stat-insight); animation: insight-soon .5s ease-in-out infinite alternate; }
 .coal .effect-insight { display: none; position: absolute; right: -15px; top: -12px; }
@@ -967,7 +970,7 @@
 .thermo.optimal .thermo-tube { box-shadow: 0 0 16px #ffffffaa, 0 0 30px #ffd56a99; border-color: #fff3c4; }
 .thermo.danger .thermo-tube { box-shadow: 0 0 26px #ff2a00cc; }
 @keyframes thermo-flame { from { transform: translateY(0); } to { transform: translateY(-40px); } }
-@keyframes thermo-alarm { from { transform: translate(-50%, -50%) scale(1); filter: brightness(1); } to { transform: translate(-50%, -50%) scale(1.3); filter: brightness(1.6); } }
+@keyframes thermo-alarm { from { transform: translate(-50%, -50%) scale(1); opacity: 0.78; } to { transform: translate(-50%, -50%) scale(1.3); opacity: 1; } }
 @keyframes thermo-rainbow { to { background-position: -200% 0; } }
 @keyframes thermo-sheen { 0% { transform: translateX(-120%); } 65%, 100% { transform: translateX(260%); } }
 @media (prefers-reduced-motion: reduce) { .thermo-heat::before, .thermo-optimal::after, .thermo.danger .thermo-danger .thermo-icon, .thermo.freezing .thermo-cold .thermo-icon { animation: none; } }

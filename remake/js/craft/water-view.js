@@ -80,6 +80,7 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
     }
     direction = null; input = null; last = null;
     render();
+    if (Math.abs(wave) >= 0.01 || Math.abs(velocity) >= 0.01) wake();
   }
   function start(flow, token) {
     if (!available() || input) return;
@@ -87,6 +88,7 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
     if (q !== (flow === "pour" ? 1 : 0)) { SE.pour(); nextWaterSound = last + 260; }
     velocity += flow === "pour" ? 15 : -12;
     render();
+    wake();
   }
   for (const [button, flow] of [[pour, "pour"], [drain, "drain"]]) {
     listen(button, "pointerdown", event => {
@@ -154,7 +156,13 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
   });
   observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "inert", "open"] });
   let previous = performance.now();
+  function wake() {
+    if (done || raf || !root.isConnected || !isCurrent() || panel.closest('.done') || signal?.aborted) return;
+    previous = performance.now();
+    raf = requestAnimationFrame(frame);
+  }
   function frame(now) {
+    raf = 0;
     if (!root.isConnected || !isCurrent() || panel.closest('.done')) { cancel(); return; }
     if (!available()) stop();
     advance(now);
@@ -165,11 +173,13 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
     // 波だけ安定化用にdtを制限する。実qには制限せず実経過秒を使う。
     velocity += (-wave * 24 - velocity * 7 + (direction === "pour" ? Math.sin(now / 90) * 12 : 0)) * dt;
     wave = Math.max(-7, Math.min(7, wave + velocity * dt));
-    render(); raf = requestAnimationFrame(frame);
+    const settled = !direction && Math.abs(wave) < 0.01 && Math.abs(velocity) < 0.01;
+    if (settled) { wave = 0; velocity = 0; }
+    render();
+    if (!settled) raf = requestAnimationFrame(frame);
   }
   render();
   if (signal?.aborted) cancel();
-  else raf = requestAnimationFrame(frame);
   return { root, result, stop, cancel, confirm: finish };
 }
 

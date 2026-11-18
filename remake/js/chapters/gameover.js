@@ -171,12 +171,13 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   }
   function availabilityChanged() {
     if (!started) begin();
-    else if (available()) tick();
+    else if (available()) { tick(); startCaption(); }
   }
   function setMotion() {
     reduce = reducedMotion || !!motion?.matches;
     root.dataset.reducedMotion = String(reduce);
-    if (reduce) view.reveal();
+    if (reduce) { cancelAnimationFrame(frame); frame = 0; view.reveal(); }
+    else startCaption();
   }
   setMotion();
   motion?.addEventListener?.("change", setMotion);
@@ -195,12 +196,18 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
         : Math.min(1, Math.max(0, elapsed - cue.at) / typeTime(cue.text, slot)));
     }
   }
+  function startCaption() {
+    if (!frame && active && started && !reduce && !pauseReasons.size && choice !== "timeout" && !view.isRevealed() && root.isConnected) {
+      frame = requestAnimationFrame(animateCaption);
+    }
+  }
   function animateCaption() {
+    frame = 0;
     if (!active || !root.isConnected) return;
     available();
     if (!active) return;
     revealCaption();
-    frame = requestAnimationFrame(animateCaption);
+    startCaption();
   }
 
   function sync(at, sound = true, countAt = at) {
@@ -224,6 +231,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
       audio.quiet();
     }
     revealCaption(elapsed);
+    startCaption();
     const remaining = Math.max(0, Math.ceil(DECISION_SECONDS - countAt));
     view.setCount(!timed && remaining === 0 ? "∞" : remaining, countAt / DECISION_SECONDS);
     root.classList.toggle("go-urgent", timed && remaining > 0 && remaining <= 5);
@@ -258,7 +266,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     if (!timed || !available() || !started || choice) return;
     if (performance.now() - start < DECISION_SECONDS * 1000) return armDeadline();
     choice = "timeout";
-    clearTimeout(entry); clearTimeout(deadline); clearTimeout(boundary); clearInterval(ticker);
+    clearTimeout(entry); clearTimeout(deadline); clearTimeout(boundary); clearInterval(ticker); cancelAnimationFrame(frame); frame = 0;
     root.dataset.phase = "gameover";
     root.dataset.timedOut = "true";
     root.classList.remove("go-urgent");
@@ -339,6 +347,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     const data = script.reactions[choice];
     view.setCaption(data.text[index], data.word);
     view.reveal(reduce ? 1 : 0);
+    startCaption();
   }
   function decide(value) {
     if (!available() || choice) return;
@@ -361,6 +370,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   function begin() {
     if (started) return;
     cancelAnimationFrame(frame);
+    frame = 0;
     if (!available()) {
       // CSS media queries can change the actual hint without a DOM mutation.
       // Keep checking an attached, initially blocked screen until it can start.
@@ -378,8 +388,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     entry = window.setTimeout(() => { if (available() && !choice) audio.title(); }, 400);
     ticker = window.setInterval(tick, 70);
     armDeadline();
-    cancelAnimationFrame(frame);
-    frame = requestAnimationFrame(animateCaption);
+    startCaption();
   }
   view.retry.addEventListener("click", () => decide("retry"));
   view.quit.addEventListener("click", () => decide("quit"));

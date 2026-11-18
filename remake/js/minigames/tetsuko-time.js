@@ -738,6 +738,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     };
     const toyHome = () => { const c = catCenter(); return { x: Math.min(1100, c.x + 150), y: c.y - 30 }; };
     const clampTip = point => ({ x: Math.max(60, Math.min(1220, point.x)), y: Math.max(130, Math.min(600, point.y)) });
+    const TOY_STICK_LEN = 420;
     function placeToy() {
       if (tool !== "toy") { toy.hidden = true; return; }
       toy.hidden = false;
@@ -745,8 +746,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       const dx = tip.x - HAND_AT.x, dy = tip.y - HAND_AT.y;
       toy.style.setProperty("--tx", `${tip.x}px`);
       toy.style.setProperty("--ty", `${tip.y}px`);
-      toyStick.style.width = `${Math.hypot(dx, dy)}px`;
-      toyStick.style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
+      toyStick.style.transform = `rotate(${Math.atan2(dy, dx)}rad) scaleX(${Math.hypot(dx, dy) / TOY_STICK_LEN})`;
     }
     function springToy() {
       toyFrame = 0;

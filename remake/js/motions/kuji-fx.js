@@ -40,6 +40,7 @@ export function createFx(host, { className = "kj-fx" } = {}) {
   const ctx = canvas.getContext("2d");
   let parts = [], raf = 0, prev = 0, ox = 0, rate = 1, alive = true, blank = true;
   let ambient = null, rain = null;
+  const wake = () => { if (alive && !raf) { prev = 0; raf = requestAnimationFrame(frame); } };
 
   function fit() {
     const w = Math.max(1, host.clientWidth || 1280), h = Math.max(1, host.clientHeight || 720);
@@ -47,7 +48,7 @@ export function createFx(host, { className = "kj-fx" } = {}) {
     if (canvas.width !== cw || canvas.height !== ch) { canvas.width = cw; canvas.height = ch; }
     ox = (w - 1280) / 2;
   }
-  const add = (p) => { if (parts.length < MAX) parts.push(p); };
+  const add = (p) => { if (parts.length < MAX) { parts.push(p); wake(); } };
 
   function draw(p) {
     const k = p.age / p.life; // 0→1
@@ -150,7 +151,12 @@ export function createFx(host, { className = "kj-fx" } = {}) {
       }
       if (rain.left <= 0) rain = null;
     }
-    // 粒が無いあいだは描かない（何も変わらない canvas を毎フレーム合成させない）
+    // 粒と生成元が無いあいだは描かず、rAF も止める（何も変わらない canvas を毎フレーム回さない）
+    if (!parts.length && !ambient && !rain) {
+      if (!blank) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, canvas.width, canvas.height); blank = true; }
+      raf = 0;
+      return;
+    }
     if (!parts.length) {
       if (!blank) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, canvas.width, canvas.height); blank = true; }
       raf = requestAnimationFrame(frame);
@@ -177,9 +183,9 @@ export function createFx(host, { className = "kj-fx" } = {}) {
     parts.length = n;
     ctx.globalAlpha = 1;
     ctx.globalCompositeOperation = "source-over";
+    if (!parts.length && !ambient && !rain) { raf = 0; return; }
     raf = requestAnimationFrame(frame);
   }
-  raf = requestAnimationFrame(frame);
 
   return {
     canvas,
@@ -204,9 +210,9 @@ export function createFx(host, { className = "kj-fx" } = {}) {
       add({ kind: "ring", x, y, r0, r1, width, color, alpha, life, age: 0, flat });
     },
     /** 灯りの中を漂うほこり（colors を渡すと出し続け、null で止める） */
-    motes(colors, perSecond = 9) { ambient = colors ? { colors, rate: perSecond, acc: 0 } : null; },
+    motes(colors, perSecond = 9) { ambient = colors ? { colors, rate: perSecond, acc: 0 } : null; if (ambient) wake(); },
     /** 上から降る紙吹雪（seconds のあいだ） */
-    confetti(colors, { seconds = 2.4, perSecond = 46 } = {}) { rain = { colors, rate: perSecond, acc: 0, left: seconds }; },
+    confetti(colors, { seconds = 2.4, perSecond = 46 } = {}) { rain = { colors, rate: perSecond, acc: 0, left: seconds }; wake(); },
     slow(k = 1) { rate = k; },
     clear() { parts = []; ambient = rain = null; },
     destroy() { alive = false; cancelAnimationFrame(raf); canvas.remove(); parts = []; },

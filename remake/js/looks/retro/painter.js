@@ -13,6 +13,8 @@ import {
 const CACHE_MAX = 10;
 const cache = new Map(); // url → { img, ready, failed, levels }
 let version = 0;         // 画像が読めるたびに進める（描き直しの合図）
+const readyListeners = new Set();
+const notifyReady = () => { for (const fn of readyListeners) fn(); };
 const SS = 2;            // 2倍の大きさで描いてから 2×2 の平均で縮める（面積平均）
 const TILE_MAX = 72, PALETTE_MAX = 48;
 const BG_COLORS = 64, SPRITE_COLORS = 48, PROP_COLORS = 24;
@@ -75,7 +77,8 @@ function entryFor(url) {
     entry.alpha = hasAlpha(entry.levels[0]);
     entry.ready = true;
     version++;
-  }, () => { entry.failed = true; version++; });
+    notifyReady();
+  }, () => { entry.failed = true; version++; notifyReady(); });
   cache.set(url, entry);
   while (cache.size > CACHE_MAX) {
     const [oldUrl, old] = cache.entries().next().value;
@@ -291,13 +294,14 @@ function buildSpriteTile({ url, dw, dh, row0 = 0, rows = dh, flip = false, crop 
 const opacityLevel = (opacity) => (opacity >= 0.9 ? 16 : Math.max(0, Math.min(15, Math.round(opacity * 16))));
 const brightStep = (bright) => Math.round(Math.max(0, Math.min(1, bright)) * 8) / 8;
 
-export function createPainter(canvas) {
+export function createPainter(canvas, { onReady } = {}) {
+  if (typeof onReady === "function") readyListeners.add(onReady);
   const small = document.createElement("canvas");
   small.width = W; small.height = H;
   const smallCtx = small.getContext("2d");
   const frame = smallCtx.createImageData(W, H);
   const out = new Uint32Array(frame.data.buffer);
-  let shownSig = "", wanted = [], fresh = true;
+  let shownSig = "", wanted = [], fresh = true, pendingBuild = false;
   // 場面の切り替えは網点のコマ送り: 新しい絵を 4/16 ずつ出していく。from は切り替え前の絵（無ければ暗い画面）
   let veil = null;
   const veilTag = (now) => {
@@ -325,6 +329,7 @@ export function createPainter(canvas) {
   }
   /** 積んだ物を、時間を区切って作る（元の画像が読めていない物は後回し）。 */
   function pump() {
+    pendingBuild = false;
     const started = performance.now();
     for (const job of wanted) {
       if (tiles.has(job.key)) continue;
@@ -336,7 +341,7 @@ export function createPainter(canvas) {
       remember(tiles, job.key, tile, TILE_MAX);
       const took = performance.now() - began;
       stats.jobs++; stats.ms += took; stats.slowest = Math.max(stats.slowest, took);
-      if (performance.now() - started > BUDGET_MS) break;
+      if (performance.now() - started > BUDGET_MS) { pendingBuild = true; break; }
     }
     wanted = [];
   }
@@ -611,7 +616,9 @@ export function createPainter(canvas) {
     refresh: present,
     stats,
     get version() { return version; },
+    get busy() { return !!veil || plan.length > 0 || pendingBuild; },
     dispose() {
+      if (typeof onReady === "function") readyListeners.delete(onReady);
       for (const entry of cache.values()) { entry.dropped = true; entry.levels = null; }
       cache.clear();
       tiles.clear();
