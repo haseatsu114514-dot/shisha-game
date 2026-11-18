@@ -37,6 +37,7 @@ body:not(.game-ds) .shop.shop-paper, body:not(.game-ds) .shop-entry { top: 24px;
 .shop-paper .shop-row:first-child { border-top: 1px solid var(--shop-line); }
 .shop-paper .shop-row.selected { background: #e9dfef99; box-shadow: inset 3px 0 #ad8cbe; }
 .shop-paper .shop-row.errand { outline: none; background: #eee3f2; box-shadow: inset 4px 0 var(--shop-purple); animation: none; }
+.shop-paper .shop-row.errand::after { content: none; animation: none; }
 .shop-product { display: flex; gap: 14px; align-items: center; flex: 1; min-width: 0; padding: 0; border: 0; text-align: left; background: transparent; color: var(--shop-ink); }
 .shop-product:hover b { text-decoration: underline; text-underline-offset: 5px; }
 .shop-product-art { display: flex; flex: none; width: 76px; height: 66px; align-items: center; justify-content: center; }

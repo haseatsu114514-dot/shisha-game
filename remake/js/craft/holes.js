@@ -403,9 +403,13 @@ export async function runHoles(cs) {
     putStyle(timeBar.querySelector("b"), "width", `${Math.round(clamp(100 - (elapsed / limit) * 100, 0, 100) * 2) / 2}%`);
   };
   const loop = () => {
+    raf = 0;
     if (finished || complete()) return;
     elapsed = clockNow();
-    if (gameClock.paused) { raf = requestAnimationFrame(loop); return; }
+    if (gameClock.paused) {
+      if (!gameClock.onPauseChange) raf = requestAnimationFrame(loop);
+      return;
+    }
     // 押しすぎは離さなくても刺し抜ける。押しっぱなしで止まらない。
     if (press && elapsed - press.start >= pressLimit(slow)) pressEnd();
     if (complete()) return;
@@ -416,6 +420,9 @@ export async function runHoles(cs) {
     hud();
     raf = requestAnimationFrame(loop);
   };
+  gameClock.onPauseChange?.((paused) => {
+    if (!paused && !finished && !complete() && !raf && t0 !== null) raf = requestAnimationFrame(loop);
+  });
 
   let done;
   const finishedP = new Promise((r) => { done = r; });
@@ -423,6 +430,7 @@ export async function runHoles(cs) {
     if (finished || !complete()) return;
     finished = true;
     cancelAnimationFrame(raf);
+    raf = 0;
     gameClock.dispose();
     unkey();
     globalThis.window?.removeEventListener("pointerup", pointerEnd);
@@ -456,7 +464,7 @@ export async function runHoles(cs) {
   drawNeedle(0);
   await countdown();
   t0 = gameClock.now();
-  raf = requestAnimationFrame(loop);
+  if (!gameClock.onPauseChange || !gameClock.paused) raf = requestAnimationFrame(loop);
 
   const auto = autoSkill();
   if (auto) simulate(auto);

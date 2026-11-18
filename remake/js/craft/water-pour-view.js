@@ -63,7 +63,14 @@ export function mountWaterPour(panel, {
   const bottle = new Image();
   bottle.decoding = "async";
   let needsDraw = true;
-  bottle.onload = () => { needsDraw = true; };
+  let raf = 0, last = performance.now();
+  let active = true, gradeTimer = 0;
+  function wake() {
+    if (!active || raf || !root.isConnected) return;
+    last = performance.now();
+    raf = requestAnimationFrame(frame);
+  }
+  bottle.onload = () => { needsDraw = true; wake(); };
   bottle.src = bottleSrc;
 
   // ---- 状態（この画面だけの寿命）
@@ -83,13 +90,13 @@ export function mountWaterPour(panel, {
     for (const b of [pourBtn, tiltBtn, decideBtn]) b.disabled = false;
     status.textContent = "目安線まで注ぐ";
     spilledOut.textContent = "0ml";
+    wake();
   }
   reset();
 
   let resolveResult, rejectResult;
   const done = new Promise((yes, no) => { resolveResult = yes; rejectResult = no; });
   let settled = false;
-  let active = true, gradeTimer = 0;
 
   // ---- 入力。押している間だけ動き、指が外れる・画面が隠れるなどで止める。
   const listeners = [];
@@ -98,8 +105,9 @@ export function mountWaterPour(panel, {
     on = on && active && !locked;
     if (on && !holdingPour) { pours++; sound.click?.(); }
     holdingPour = on; root.dataset.pour = on ? "on" : "off";
+    if (holdingPour) wake();
   }
-  function setTilt(on) { holdingTilt = on && active && !locked; root.dataset.tilt = holdingTilt ? "on" : "off"; }
+  function setTilt(on) { holdingTilt = on && active && !locked; root.dataset.tilt = holdingTilt ? "on" : "off"; if (holdingTilt) wake(); }
   function stopAll() { setPour(false); setTilt(false); }
   for (const [button, set] of [[pourBtn, setPour], [tiltBtn, setTilt]]) {
     listen(button, "pointerdown", e => {
@@ -256,6 +264,7 @@ export function mountWaterPour(panel, {
     scale = Math.min(w / VIEW.w, ht / VIEW.h);
     ox = (w - VIEW.w * scale) / 2 - VIEW.x * scale;
     oy = (ht - VIEW.h * scale) / 2 - VIEW.y * scale;
+    wake();
   }
   const resize = globalThis.ResizeObserver ? new ResizeObserver(fit) : null;
   resize?.observe(stage);
@@ -417,6 +426,7 @@ export function mountWaterPour(panel, {
       spilledMl: Math.round(toMl(spilledArea)), pours,
     };
     needsDraw = true;
+    wake();
     status.textContent = "";
     const stampText = timingLabel(grade.kind);
     result.replaceChildren(
@@ -438,12 +448,12 @@ export function mountWaterPour(panel, {
   }
 
   // ---- ループ
-  let raf = 0, last = performance.now();
   function frame(now) {
+    raf = 0;
     if (!active) return;
     if (!root.isConnected) { cancel(); return; }
     const dt = Math.min(1 / 30, Math.max(0, (now - last) / 1000)); last = now;
-    // 水と瓶が静止している間は同じ canvas を再描画しない。入力・画像の読込・寸法変更・判定で再開する。
+    // 水と瓶が静止している間は rAF 自体を止め、入力・画像の読込・寸法変更・判定で再開する。
     const still = !holdingPour && !holdingTilt && !valve && !tilt && !tiltVel
       && !stream.length && !spill.length && !drops.length
       && Math.abs(slosh) < .00001 && Math.abs(sloshVel) < .0001
@@ -452,14 +462,14 @@ export function mountWaterPour(panel, {
       const { points, base } = step(dt, now);
       draw(points, base);
       needsDraw = false;
+      raf = requestAnimationFrame(frame);
     }
-    raf = requestAnimationFrame(frame);
   }
-  raf = requestAnimationFrame(frame);
+  wake();
 
   function cleanup() {
     clearTimeout(gradeTimer); gradeTimer = 0;
-    cancelAnimationFrame(raf); resize?.disconnect();
+    cancelAnimationFrame(raf); raf = 0; resize?.disconnect();
     for (const remove of listeners) remove();
   }
   function cancel() {
@@ -470,8 +480,8 @@ export function mountWaterPour(panel, {
   }
   // テスト・確認用の読み取り口（判定値には影響しない）
   const debug = {
-    get volume() { return volume; }, set volume(v) { volume = Math.max(0, Math.min(capacityArea, v)); needsDraw = true; },
-    get target() { return target; }, set target(y) { target = y; needsDraw = true; },
+    get volume() { return volume; }, set volume(v) { volume = Math.max(0, Math.min(capacityArea, v)); needsDraw = true; wake(); },
+    get target() { return target; }, set target(y) { target = y; needsDraw = true; wake(); },
     get tilt() { return tilt; }, get spilledArea() { return spilledArea; },
     get waveAmp() { let m = 0; for (const v of wave) m = Math.max(m, Math.abs(v)); return m + Math.abs(slosh) * 300; },
   };

@@ -456,6 +456,7 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-current-zone {
 }
 /* ---------- 工程の灯（lamp-*・CSL16 のまま）: 輪は灯の箱いっぱい、光彩は外へ ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp { isolation: isolate; overflow: visible; background: none !important; border: 0 !important; box-shadow: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp[data-tier="brilliant"]::after { content: none; animation: none; }
 /* 光彩（::before の外側18% ≒ 5px）を灯の列の箱の中に収める。余白と同じだけ外へ広げ、レールでの大きさと位置は変えない */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record { padding: 5px; margin: -5px -5px -5px -1px; }
 /* 工程の灯はランクの隣に固定する。レールの長さは工程で変わる（パッキングだけ作業名が付く）ので、灯がレールの後ろについて横へ動かないように、空きはレールと灯の間に置く */

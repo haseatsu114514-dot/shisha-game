@@ -58,7 +58,10 @@ function start({ paint = "dot", mode = "retro" } = {}) {
   const root = document.documentElement;
   const hd = paint === "hd";
   const shell = createShell({ paint });
-  const painter = hd ? createHdPainter(shell.canvas, { dotScale: shell.dotScale }) : createPainter(shell.canvas);
+  let wake = () => {};
+  const painter = hd
+    ? createHdPainter(shell.canvas, { dotScale: shell.dotScale, onReady: () => wake(300) })
+    : createPainter(shell.canvas, { onReady: () => wake(300) });
   root.dataset.retroPaint = paint;
   // 新版の縦持ち: 回転案内の文を差し替える（元の文は CSS で隠すだけで、書き換えない）
   const hint = hd ? document.getElementById("rotate-hint") : null;
@@ -77,10 +80,10 @@ function start({ paint = "dot", mode = "retro" } = {}) {
   shell.mount();
   window.__retroLook = { stats: painter.stats, paint, mode }; // 確認・検査用（重い処理の回数と時間）
 
-  let stopped = false, frame = 0;
+  let stopped = false, frame = 0, timer = 0;
   let engaged = "off", scene = null, candidate = null, streak = 0;
   let fresh = true; // 起動・向きの切り替えの直後。最初に見つけた対応済みの場面は待たずに出す（現行の画面を一瞬見せない）
-  let dirty = true, detectSoon = true, lastDetect = 0, lastSync = 0, unsupportedSince = 0;
+  let dirty = true, detectSoon = true, needPaint = true, lastDetect = 0, lastSync = 0, paintUntil = 0, unsupportedSince = 0;
   let holdSince = 0, pressable = false, gap = false; // 覆い・あいだの待ちに入った時刻、覆いがタップを待っているか、あいだの待ちか
   let noneSince = 0, hold = false; // 新版の縦持ち: 未対応の場面になってから、回転案内を出すまで外枠のまま待つ間
   let coverBlocked = false;        // 待ちすぎて引っ込めた覆い（場面が変わるまで外枠へ戻さない）
@@ -122,6 +125,8 @@ function start({ paint = "dot", mode = "retro" } = {}) {
       painter.enter(!!previous); // 外枠が出たままの切り替えは、今の絵から網点のコマ送りでつなぐ
       shell.setNotices([]);
       dirty = true;
+      needPaint = true;
+      paintUntil = Math.max(paintUntil, performance.now() + 1150);
     } else {
       delete root.dataset.retroShell;
       shell.setNotices([]);
@@ -204,10 +209,8 @@ function start({ paint = "dot", mode = "retro" } = {}) {
     shell.setNotices(lines);
   }
 
-  function tick(now) {
-    if (stopped) return;
-    frame = requestAnimationFrame(tick);
-    const periodic = now - lastDetect >= DETECT_MS;
+  function runStep(now, fromTimer = false) {
+    const periodic = fromTimer || now - lastDetect >= DETECT_MS;
     if (detectSoon || periodic) {
       detectSoon = false;
       if (periodic) lastDetect = now;
@@ -219,9 +222,47 @@ function start({ paint = "dot", mode = "retro" } = {}) {
       lastSync = now;
       scenes[scene].sync({ pressable, gap, hold });
       syncNotices();
+      needPaint = true;
     }
-    scenes[scene].paint(now);
+    if (needPaint || now < paintUntil || painter.busy) {
+      needPaint = false;
+      scenes[scene].paint(now);
+    }
   }
+
+  function scheduleNext(now) {
+    if (stopped || document.hidden) return;
+    if (scene && (needPaint || now < paintUntil || painter.busy)) {
+      if (!frame) frame = requestAnimationFrame(tick);
+      return;
+    }
+    if (!timer) {
+      const delay = !scene || scene === "cover" || unsupportedSince ? DETECT_MS : SYNC_MS;
+      timer = setTimeout(poll, delay);
+    }
+  }
+
+  function tick(now) {
+    frame = 0;
+    if (stopped || document.hidden) return;
+    runStep(now, false);
+    scheduleNext(performance.now());
+  }
+
+  function poll() {
+    timer = 0;
+    if (stopped || document.hidden) return;
+    runStep(performance.now(), true);
+    scheduleNext(performance.now());
+  }
+
+  wake = (ms = 0) => {
+    if (stopped || document.hidden) return;
+    if (ms > 0) paintUntil = Math.max(paintUntil, performance.now() + ms);
+    needPaint = true;
+    if (timer) { clearTimeout(timer); timer = 0; }
+    if (!frame) frame = requestAnimationFrame(tick);
+  };
 
   // 現行の DOM の変化を見張る。自分の外枠の中の変化は数えない。会話の文字送りだけの変化では場面の確認を急がない。
   const observer = new MutationObserver((records) => {
@@ -241,29 +282,43 @@ function start({ paint = "dot", mode = "retro" } = {}) {
       scenes[scene].sync({ pressable, gap, hold });
       syncNotices();
     }
+    if (!typed || detectSoon) wake(1150);
   });
   observer.observe(document.documentElement, {
     subtree: true, childList: true, characterData: true, attributes: true,
-    attributeFilter: ["class", "hidden", "style", "src", "disabled", "aria-disabled", "aria-pressed", "data-screen", "data-revealing", "data-slot", "data-health", "data-tab", "aria-selected", "aria-expanded", "aria-checked", "title"],
+    attributeFilter: ["class", "hidden", "style", "src", "disabled", "aria-disabled", "aria-pressed", "data-screen", "data-revealing", "data-slot", "data-health", "data-tab", "aria-selected", "aria-expanded", "aria-checked", "title", "data-rain"],
   });
 
-  const onResize = () => { if (shell.layout()) painter.refresh(); detectSoon = true; dirty = true; };
-  const onTopTap = () => { if (scene) scenes[scene].tapTop?.(); };
+  const onResize = () => { if (shell.layout()) painter.refresh(); detectSoon = true; dirty = true; wake(500); };
+  const onTopTap = () => { if (scene) scenes[scene].tapTop?.(); wake(500); };
+  const onVisibility = () => {
+    if (stopped) return;
+    if (document.hidden) {
+      cancelAnimationFrame(frame); frame = 0;
+      clearTimeout(timer); timer = 0;
+      return;
+    }
+    detectSoon = true; dirty = true;
+    wake(500);
+  };
   window.addEventListener("resize", onResize);
   window.addEventListener("orientationchange", onResize);
   window.visualViewport?.addEventListener("resize", onResize);
+  document.addEventListener("visibilitychange", onVisibility);
   shell.top.addEventListener("click", onTopTap);
-  frame = requestAnimationFrame(tick);
+  wake(1150);
 
   return {
     stop() {
       if (stopped) return;
       stopped = true;
       cancelAnimationFrame(frame);
+      clearTimeout(timer);
       observer.disconnect();
       window.removeEventListener("resize", onResize);
       window.removeEventListener("orientationchange", onResize);
       window.visualViewport?.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibility);
       shell.top.removeEventListener("click", onTopTap);
       setScene(null);
       shell.unmount();

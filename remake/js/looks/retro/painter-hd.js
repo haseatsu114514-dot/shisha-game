@@ -37,6 +37,8 @@ const smooth = (ctx) => { ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQu
 
 const sources = new Map(); // url → { url, ready, failed, dropped, levels: [絵, 半分, 1/4, …], alpha }
 let version = 0;
+const readyListeners = new Set();
+const notifyReady = () => { for (const fn of readyListeners) fn(); };
 
 /** 展開（decode）は fetch → createImageBitmap で裏のスレッドに任せる。使えない環境では <img> で読む。 */
 async function loadSource(url) {
@@ -75,7 +77,8 @@ function sourceFor(url) {
     entry.alpha = hasAlpha(source);
     entry.ready = true;
     version++;
-  }, () => { entry.failed = true; version++; });
+    notifyReady();
+  }, () => { entry.failed = true; version++; notifyReady(); });
   sources.set(url, entry);
   while (sources.size > SOURCE_MAX) {
     const [oldUrl, old] = sources.entries().next().value;
@@ -272,10 +275,11 @@ function buildSpriteTile(entry, { w, h, r0, r1, flip }, scale, blur) {
 
 // ---------------------------------------------------------------- 描く
 
-export function createHdPainter(canvas, { dotScale = () => 1 } = {}) {
+export function createHdPainter(canvas, { dotScale = () => 1, onReady } = {}) {
+  if (typeof onReady === "function") readyListeners.add(onReady);
   const stats = { jobs: 0, ms: 0, slowest: 0, frames: 0 };
   let ctx = smooth(canvas.getContext("2d"));
-  let shownSig = "", lastPaint = -Infinity, presented = false, waitingSince = 0, budgetLeft = BUDGET_MS;
+  let shownSig = "", lastPaint = -Infinity, presented = false, waitingSince = 0, budgetLeft = BUDGET_MS, lastBusy = false;
   // 寄り・引き: from → to を ZOOM_MS かけて動かす
   let view = null, zoomFrom = null, zoomTo = null, zoomAt = 0;
   // 場面の切り替え: 前の絵（fade）を FADE_MS かけて薄くする
@@ -314,14 +318,15 @@ export function createHdPainter(canvas, { dotScale = () => 1 } = {}) {
 
   /** 1 フレームを描くか決める。sig が同じで動きも無ければ描かない。描いたら true。 */
   function frame(now, sig, animating, draw) {
-    if (sig === shownSig && !animating) return false;
-    if (now - lastPaint < FRAME_MS) return false;
+    if (sig === shownSig && !animating) { lastBusy = false; return false; }
+    if (now - lastPaint < FRAME_MS) { lastBusy = true; return false; }
     budgetLeft = BUDGET_MS;
     if (canvas.width !== ctx.canvas.width) ctx = smooth(canvas.getContext("2d"));
     // 絵がそろうまでは前の絵のままにしておく（立ち絵が一瞬消えて見えないように）。待ちすぎたら、そろった分だけで描く
     const plan = draw(false);
     if (!plan.ready && presented && (!waitingSince || now - waitingSince < WAIT_MS)) {
       waitingSince ||= now;
+      lastBusy = budgetLeft <= 0 || animating;
       return false;
     }
     waitingSince = 0;
@@ -344,6 +349,7 @@ export function createHdPainter(canvas, { dotScale = () => 1 } = {}) {
     lastPaint = now;
     shownSig = plan.complete ? sig : "";
     presented = true;
+    lastBusy = animating || fade.on || budgetLeft <= 0;
     stats.frames++;
     return true;
   }
@@ -701,17 +707,21 @@ export function createHdPainter(canvas, { dotScale = () => 1 } = {}) {
       shownSig = "";
       view = null; zoomFrom = zoomTo = null;
       bgLookKey = "";
+      lastBusy = true;
       delete canvas.dataset.zoom;
     },
     /** canvas の大きさを変えた直後に呼ぶ（次の機会に描き直す）。 */
     refresh() {
       shownSig = "";
       fade.on = false;
+      lastBusy = true;
       ctx = smooth(canvas.getContext("2d"));
     },
     stats,
     get version() { return version; },
+    get busy() { return lastBusy || fade.on || (!!zoomFrom && !!zoomTo && !sameView(view, zoomTo)) || waitingSince > 0; },
     dispose() {
+      if (typeof onReady === "function") readyListeners.delete(onReady);
       for (const entry of sources.values()) { entry.dropped = true; entry.levels?.[0]?.close?.(); entry.levels = null; }
       sources.clear();
       tiles.clear();

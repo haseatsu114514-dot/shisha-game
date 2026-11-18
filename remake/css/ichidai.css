@@ -186,7 +186,7 @@
 .ichi-coal-btn.is-cooled { opacity: 0.72; }
 .ichi-coal-btn.can { animation: ichi-pulse 1.2s ease-in-out infinite; }
 .ichi-coal-btn.is-sel { outline: 2px solid #fff; outline-offset: 2px; }
-@keyframes ichi-pulse { 50% { filter: brightness(1.45); } }
+@keyframes ichi-pulse { 0%, 100% { opacity: 0.72; } 50% { opacity: 1; } }
 .ichi-stove-coal { position: relative; display: grid; place-items: center; padding: 0; border: 0; background: none; cursor: default; flex: none; width: var(--cw); height: calc(var(--cw) * 1.4); }
 .ichi-stove-coal .ichi-card { transition: transform 0.2s var(--ease-out); }
 .ichi-stove-coal.st-0 .ichi-card { transform: rotate(90deg) scale(0.74); filter: brightness(0.62) saturate(0.6); }
@@ -962,10 +962,10 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-btn.is-assist { display: grid; justify-items: center; gap: 0; min-height: 46px; padding: 3px 8px; line-height: 1.15; font-size: 16px; border: 2px solid var(--ichi-gold); background: rgba(34, 21, 52, 0.94); color: #fff6dc; }
 .ichi-btn.is-assist small { font-size: 12px; font-weight: 800; color: var(--ichi-gold); }
 /* 押す場所: 金色の輪がゆっくり明滅する（形は変えない） */
-.is-hint { outline: 3px solid #ffd27a; outline-offset: 2px; border-radius: 10px; animation: ichi-hint 1.1s ease-in-out infinite; }
+.is-hint { outline: 3px solid #ffd27a; outline-offset: 2px; border-radius: 10px; box-shadow: 0 0 14px 2px rgba(255, 210, 122, 0.45); animation: ichi-hint 1.1s ease-in-out infinite; }
 .ichi-hand-card.is-hint { outline-offset: -2px; z-index: 5; }
 .ichi-board .is-hint { outline-width: 4px; }
-@keyframes ichi-hint { 0%, 100% { outline-color: rgba(255, 210, 122, 0.35); box-shadow: 0 0 0 0 rgba(255, 210, 122, 0); } 50% { outline-color: #ffd27a; box-shadow: 0 0 18px 4px rgba(255, 210, 122, 0.55); } }
+@keyframes ichi-hint { 0%, 100% { opacity: 0.76; } 50% { opacity: 1; } }
 .ichi-pointer { position: absolute; z-index: 7; width: 0; height: 0; pointer-events: none; animation: ichi-pointer 0.9s ease-in-out infinite; }
 .ichi-pointer b { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); padding: 1px 9px; border-radius: 11px; background: #ffd27a; color: #1d1206; font-size: 13px; font-weight: 900; line-height: 20px; white-space: nowrap; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6); }
 .ichi-pointer b::after { content: ""; position: absolute; left: 50%; top: 100%; margin-left: -6px; border: 6px solid transparent; border-top: 7px solid #ffd27a; border-bottom: 0; }
@@ -1186,13 +1186,13 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 /* 炭焼き場: 黒い → 赤くなりかけ → 焼けて光る */
 .ichi-stove-coal .ichi-coal-sprite.is-cold { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.8)); }
 .ichi-stove-coal .ichi-coal-sprite.is-warm { filter: drop-shadow(0 0 5px rgba(200, 64, 47, 0.8)); }
-.ichi-stove-coal .ichi-coal-sprite.is-hot { filter: drop-shadow(0 0 7px rgba(255, 176, 92, 0.95)); animation: ichi-coal-breathe 1.6s ease-in-out infinite; }
+.ichi-stove-coal .ichi-coal-sprite.is-hot { filter: drop-shadow(0 0 8px rgba(255, 188, 104, 0.9)); animation: ichi-coal-breathe 1.6s ease-in-out infinite; }
 .ichi-stove-coal.st-0 .ichi-card { filter: brightness(0.5) saturate(0.4); }
 .ichi-stove-coal.st-1 .ichi-card { filter: brightness(0.72) saturate(0.8); box-shadow: 0 0 0 1px #b4501c, 0 0 9px rgba(200, 64, 47, 0.6), 0 3px 0 #0b0612, 0 9px 12px rgba(0, 0, 0, 0.6); }
-@keyframes ichi-coal-breathe { 0%, 100% { filter: drop-shadow(0 0 5px rgba(255, 176, 92, 0.8)) brightness(1); } 50% { filter: drop-shadow(0 0 11px rgba(255, 210, 122, 1)) brightness(1.18); } }
+@keyframes ichi-coal-breathe { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.04); opacity: 1; } }
 /* 火力ゾーン: 新品の火＝赤く光る → 弱った＝赤黒い → 火1＝白く灰をかぶる。札は横向き、炭の絵はまっすぐ */
 .ichi-coal-btn > .ichi-coal-sprite { top: 50%; z-index: 3; width: auto; max-width: none; height: min(150%, calc(var(--cw, 54px) * 0.92)); }
-.ichi-coal-btn > .ichi-coal-sprite.is-hot { filter: drop-shadow(0 0 7px rgba(255, 190, 100, 0.95)); animation: ichi-coal-breathe 1.6s ease-in-out infinite; }
+.ichi-coal-btn > .ichi-coal-sprite.is-hot { filter: drop-shadow(0 0 8px rgba(255, 196, 112, 0.92)); animation: ichi-coal-breathe 1.6s ease-in-out infinite; }
 .ichi-coal-btn > .ichi-coal-sprite.is-warm { filter: drop-shadow(0 0 5px rgba(200, 64, 47, 0.85)); }
 .ichi-coal-btn > .ichi-coal-sprite.is-ember { filter: drop-shadow(0 0 3px rgba(190, 190, 200, 0.6)) brightness(0.92); }
 .ichi-coal-btn.is-up.s-hot { background: linear-gradient(90deg, rgba(255, 196, 96, 0.42), rgba(240, 110, 43, 0.22)); box-shadow: inset 0 0 0 1.5px rgba(255, 214, 130, 0.85), inset 0 0 16px rgba(255, 176, 92, 0.5); }

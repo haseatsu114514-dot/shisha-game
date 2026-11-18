@@ -1194,7 +1194,7 @@
 /* 居る人の顔と「!」: 縁を夜紫の面に合わせる。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .map .spot-pin .pin-person { border-color: #f6f1fa; box-shadow: 0 0 0 1px rgba(21, 13, 34, .6), 0 2px 5px rgba(8, 3, 16, .55); }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .map .evt-badge:not(.hidane-badge) { color: #26160a; background: var(--neo-ui-gold); border-color: #fbe6b4; box-shadow: 0 0 10px rgba(227, 189, 110, .85); }
-:root[data-look="neo"] body.reduce-shake:not(.game-ds) #stage #screen .map :is(.evt-badge, .spot-pin.guide .shield) { animation: none; }
+:root[data-look="neo"] body.reduce-shake:not(.game-ds) #stage #screen .map :is(.evt-badge, .evt-badge::after, .spot-pin.guide .shield) { animation: none; }
 
 /* 案内の板（右下）: 夜紫の半透明の板＋上辺の金の罫線。行き先を選んだ後は、板ごと押して移動する。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .map :is(.map-info, .map-notice, .map-guide) {

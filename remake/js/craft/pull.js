@@ -398,12 +398,16 @@ async function pullGame(cs, mode) {
   let stopBubbles = () => {};
   let period = PULL_TUNING.period * slowNow();
   const loop = (now) => {
+    raf = 0;
     if (!running || drawing || finished) return;
     if (state!==owner || !play.isConnected) { abandoned = true; running = false; serve(); return; }
     const current = gameClock.now();
     const dt = Math.min(0.05, (current - last) / 1000);
     last = current;
-    if (gameClock.paused) { raf = requestAnimationFrame(loop); return; }
+    if (gameClock.paused) {
+      if (!gameClock.onPauseChange) raf = requestAnimationFrame(loop);
+      return;
+    }
     pos += (dir * dt * 2) / period;
     if (pos >= 1) { pos = 1; dir = -1; }
     if (pos <= 0) { pos = 0; dir = 1; }
@@ -417,6 +421,12 @@ async function pullGame(cs, mode) {
     render();
     raf = requestAnimationFrame(loop);
   };
+  gameClock.onPauseChange?.((paused) => {
+    if (!paused && running && !drawing && !finished && !abandoned && !raf && play.isConnected) {
+      last = gameClock.now();
+      raf = requestAnimationFrame(loop);
+    }
+  });
 
   const actionAt = (at) => {
     const z = ZONES.find((zz) => at >= zz.from && at <= zz.to) || ZONES[1];
@@ -453,6 +463,7 @@ async function pullGame(cs, mode) {
       ? { z:{...ZONES[2],label:"ズボー",mark:"▲▲"}, isJust:false, delta:LESSON_TUNING.deepHeat, critical:false } : actionAt(landed);
     drawing = true;
     cancelAnimationFrame(raf);
+    raf = 0;
     moveNeedle(landed);
     // CRN06: 押した瞬間に返す。針先と止めた帯が光り、芯ならその帯の芯が強く光る（判定の文字は出さない・TH36）
     if (renewal) {
@@ -555,7 +566,7 @@ async function pullGame(cs, mode) {
       if (!failed && !finished && !abandoned && play.isConnected) {
         render();
         last = gameClock.now();
-        raf = requestAnimationFrame(loop);
+        if (!raf && (!gameClock.onPauseChange || !gameClock.paused)) raf = requestAnimationFrame(loop);
       }
     }
   };
@@ -677,7 +688,7 @@ async function pullGame(cs, mode) {
     else {
     running = true;
     last = gameClock.now();
-    raf = requestAnimationFrame(loop);
+    if (!raf && (!gameClock.onPauseChange || !gameClock.paused)) raf = requestAnimationFrame(loop);
     render();
     }
   } else serve();

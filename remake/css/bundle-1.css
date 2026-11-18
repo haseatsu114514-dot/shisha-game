@@ -2314,8 +2314,9 @@ html:root[data-density="phone"] body:not(:root) .axe-bar-menu[data-view="gear"] 
   background: linear-gradient(180deg, rgba(48,32,18,.9), rgba(20,13,7,.92)); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 -3px 0 rgba(0,0,0,.35), 0 6px 16px rgba(0,0,0,.4);
   touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; transition: transform .08s, box-shadow .15s, border-color .15s; }
 .camel-signal { --tone: var(--cr-amber); }
-.camel-control-icon { display: grid; place-items: center; width: max(34px, 3.6cqw); height: max(34px, 3.6cqw); border-radius: 50%; color: var(--cr-ink);
+.camel-control-icon { position: relative; display: grid; place-items: center; width: max(34px, 3.6cqw); height: max(34px, 3.6cqw); border-radius: 50%; color: var(--cr-ink);
   background: radial-gradient(circle at 35% 30%, #fff6d6, var(--tone) 60%, color-mix(in srgb, var(--tone) 70%, #000)); box-shadow: 0 0 0 3px rgba(0,0,0,.35), inset 0 -2px 0 rgba(0,0,0,.2); }
+.camel-control::before, .camel-control-icon::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; }
 .camel-control-icon svg { width: 58%; height: 58%; }
 .camel-control-text { display: grid; gap: .3em; min-width: 0; font-size: clamp(12px, 1.2cqw, 16px); }
 .camel-control-text strong { font-size: 1.3em; font-weight: 900; letter-spacing: .06em; line-height: 1.15; }
@@ -2334,13 +2335,13 @@ html:root[data-density="phone"] body:not(:root) .axe-bar-menu[data-view="gear"] 
 .camel-stamina[data-state="tired"] .camel-stamina-bar i { background: linear-gradient(90deg, #e08a2c, #ffcf5c); }
 .camel-stamina[data-state="spent"] .camel-stamina-bar i { background: linear-gradient(90deg, #c8433b, #ff8e7a); }
 .camel-stamina-mark { position: absolute; left: calc(var(--x) * 100%); top: 0; bottom: 0; width: 1px; background: rgba(0,0,0,.45); }
-.camel-signal[data-stamina="spent"] { animation: camel-blink 1s steps(2) infinite; }
-@keyframes camel-blink { 50% { border-color: rgba(255,142,122,.85); } }
+.camel-signal[data-stamina="spent"]::before { box-shadow: inset 0 0 0 2px rgba(255,142,122,.85); animation: camel-opacity 1s steps(2) infinite; }
+@keyframes camel-opacity { 50% { opacity: 1; } }
+@keyframes camel-opacity-alt { from { opacity: 0; } to { opacity: 1; } }
 .camel-control:active { transform: translateY(2px) scale(.985); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), inset 0 -1px 0 rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.35); }
 .camel-control:focus-visible { outline: 2px solid var(--cr-gold); outline-offset: 2px; }
 .camel-voice[data-cue="on"] { border-color: rgba(255,215,122,.75); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(255,215,122,.35), 0 0 22px rgba(255,215,122,.35); }
-.camel-voice[data-cue="on"] .camel-control-icon { animation: camel-ring 1.25s ease-in-out infinite; }
-@keyframes camel-ring { 0%, 100% { box-shadow: 0 0 0 3px rgba(0,0,0,.35); } 50% { box-shadow: 0 0 0 3px rgba(0,0,0,.35), 0 0 0 7px rgba(255,215,122,.25); } }
+.camel-voice[data-cue="on"] .camel-control-icon::before { box-shadow: 0 0 0 7px rgba(255,215,122,.25); animation: camel-opacity 1.25s ease-in-out infinite; }
 .camel-control-cool { position: absolute; inset: 0; transform-origin: left; transform: scaleX(var(--cool, 0)); background: rgba(0,0,0,.42); pointer-events: none; transition: transform .1s linear; }
 .camel-signal[data-state="cooling"] .camel-control-icon { filter: grayscale(.7) brightness(.8); }
 .camel-signal[data-state="spurt"] { border-color: rgba(255,179,71,.8); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(255,179,71,.35), 0 0 24px rgba(255,179,71,.45); }
@@ -2473,7 +2474,7 @@ html:root[data-density="phone"] body:not(:root) .axe-bar-menu[data-view="gear"] 
 @media (prefers-reduced-motion: reduce) {
   .camel-result .camel-medal, .camel-result .camel-grade-letter, .camel-result .camel-score-bar i, .camel-flash.show,
   .camel-signal[data-state="whipping"] .camel-control-icon,
-  .camel-feedback.show, .camel-banner.show, .camel-countdown.show, .camel-standings li[data-move], .camel-voice[data-cue="on"] .camel-control-icon, .camel-stamina[data-state="spent"] { animation: none; }
+  .camel-feedback.show, .camel-banner.show, .camel-countdown.show, .camel-standings li[data-move], .camel-voice[data-cue="on"] .camel-control-icon::before, .camel-signal[data-stamina="spent"]::before, .camel-control[data-duel="on"]::before { animation: none; }
   .camel-standings li { transition: none; }
 }
 
@@ -2797,9 +2798,9 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 /* 風よけの間はスタミナのゲージが緑に脈打つ。競り合いの間は2つのボタンの縁が朱色に脈打つ。 */
 .camel-stamina[data-draft="on"] .camel-stamina-bar { box-shadow: 0 0 0 1px #9ff0cf, 0 0 10px rgba(159,240,207,.7); }
 .camel-signal[data-draft="on"] .camel-signal-note { color: #9ff0cf; }
-.camel-control[data-duel="on"] { animation: camel-duel .5s ease-in-out infinite alternate; }
+.camel-control[data-duel="on"] { border-color: #d97c52; box-shadow: inset 0 0 0 2px #120b06, 0 0 0 2px rgba(255,138,92,.4), 0 0 20px rgba(255,110,70,.45); }
+.camel-control[data-duel="on"]::before { box-shadow: inset 0 0 0 2px #ff8a5c, inset 0 0 18px rgba(255,110,70,.5); animation: camel-opacity-alt .5s ease-in-out infinite alternate; }
 .camel-signal[data-duel="on"] .camel-signal-note { color: #ffb09a; }
-@keyframes camel-duel { from { border-color: #8a6a34; } to { border-color: #ff8a5c; box-shadow: inset 0 0 0 2px #120b06, 0 0 0 2px rgba(255,138,92,.45), 0 0 22px rgba(255,110,70,.5); } }
 
 /* 大きな字: 板をやめて、太い濃茶の縁取りの字に。後ろに左右へ消える細い帯。 */
 .camel-banner { display: grid; justify-items: center; gap: .1em; top: 29%; padding: .12em 2.2em .16em; border: 0; border-radius: 0; width: max-content; max-width: 96%;
@@ -2875,10 +2876,13 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 .camel-game.cr-remote .camel-control-icon { position: absolute; left: calc(var(--rh) * 12 / 240 - 2px); top: calc(var(--rh) * 28 / 240 - 2px);
   width: calc(var(--rh) * 180 / 240); height: calc(var(--rh) * 180 / 240); background: none; box-shadow: none; animation: none; filter: none; }
 .camel-game.cr-remote .camel-control-icon svg { display: none; }
-.camel-game.cr-remote .camel-voice[data-cue="on"] .camel-control-icon { animation: camel-remote-ring 1.25s ease-in-out infinite; }
-@keyframes camel-remote-ring {
-  0%, 100% { box-shadow: 0 0 0 calc(var(--rh) * 6 / 240) rgba(255,215,122,.55); }
-  50% { box-shadow: 0 0 0 calc(var(--rh) * 11 / 240) rgba(255,215,122,.9), 0 0 calc(var(--rh) * 40 / 240) calc(var(--rh) * 8 / 240) rgba(255,215,122,.65); } }
+.camel-game.cr-remote :is(.camel-voice[data-cue="on"], .camel-signal[data-coach="on"]) .camel-control-icon {
+  box-shadow: 0 0 0 calc(var(--rh) * 6 / 240) rgba(255,215,122,.55);
+}
+.camel-game.cr-remote :is(.camel-voice[data-cue="on"], .camel-signal[data-coach="on"]) .camel-control-icon::before {
+  box-shadow: 0 0 0 calc(var(--rh) * 11 / 240) rgba(255,215,122,.9), 0 0 calc(var(--rh) * 40 / 240) calc(var(--rh) * 8 / 240) rgba(255,215,122,.65);
+  animation: camel-opacity 1.25s ease-in-out infinite;
+}
 /* 従来は枠の色で示していた状態（声の合図＝金・スパート＝橙・ムチ＝朱・息が少ない＝黄・息が空＝点滅）を、絵の縁に細い線で示す */
 .camel-game.cr-remote .camel-control { outline: 2px solid var(--remote-edge, transparent); outline-offset: -2px; }
 .camel-game.cr-remote .camel-control:focus-visible { outline: 2px solid var(--cr-gold); outline-offset: 2px; }
@@ -2886,11 +2890,12 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 .camel-signal[data-stamina="low"] { --remote-edge: #ffd06a; }
 .camel-signal[data-state="spurt"] { --remote-edge: #ffb347; }
 .camel-signal.held, .camel-signal[data-state="whipping"] { --remote-edge: #ff6e46; }
-.camel-game.cr-remote .camel-signal[data-stamina="spent"] { animation: camel-remote-blink 1s steps(2) infinite; }
-@keyframes camel-remote-blink { 50% { outline-color: rgba(255,142,122,.85); } }
+.camel-game.cr-remote .camel-signal[data-stamina="spent"]::before { animation: camel-opacity 1s steps(2) infinite; }
 @media (prefers-reduced-motion: reduce) {
-  .camel-game.cr-remote .camel-voice[data-cue="on"] .camel-control-icon { animation: none; box-shadow: 0 0 0 calc(var(--rh) * 11 / 240) rgba(255,215,122,.9); }
-  .camel-game.cr-remote .camel-signal[data-stamina="spent"] { animation: none; --remote-edge: rgba(255,142,122,.85); }
+  .camel-game.cr-remote .camel-voice[data-cue="on"] .camel-control-icon { box-shadow: 0 0 0 calc(var(--rh) * 11 / 240) rgba(255,215,122,.9); }
+  .camel-game.cr-remote :is(.camel-voice[data-cue="on"], .camel-signal[data-coach="on"]) .camel-control-icon::before { animation: none; }
+  .camel-game.cr-remote .camel-signal[data-stamina="spent"]::before { animation: none; }
+  .camel-game.cr-remote .camel-signal[data-stamina="spent"] { --remote-edge: rgba(255,142,122,.85); }
 }
 
 /* ---- 2026-11-13 桜井スキルでの添削（CRF13〜） ---- */
@@ -2902,8 +2907,6 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 .camel-pause-card { width: min(660px, 100%); text-align: center; }
 /* 最初の1本でムチを教える間、ムチのボタンを声の輪の時と同じ金の光で示す */
 .camel-signal[data-coach="on"] { --remote-edge: #ffd77a; border-color: #ffd77a; box-shadow: inset 0 0 0 2px #120b06, 0 0 0 2px rgba(255,215,122,.4), 0 0 20px rgba(255,215,122,.4); }
-.camel-game.cr-remote .camel-signal[data-coach="on"] .camel-control-icon { animation: camel-remote-ring 1.25s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) { .camel-game.cr-remote .camel-signal[data-coach="on"] .camel-control-icon { animation: none; } }
 /* 結果の「次の目標」に足した行: ほめる言葉（金）・最下位が続いた時の一行 */
 .camel-next-praise b { margin-right: 14px; }
 .camel-next-ease { opacity: .9; }
@@ -3097,7 +3100,7 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 .ichi-coal-btn.is-cooled { opacity: 0.72; }
 .ichi-coal-btn.can { animation: ichi-pulse 1.2s ease-in-out infinite; }
 .ichi-coal-btn.is-sel { outline: 2px solid #fff; outline-offset: 2px; }
-@keyframes ichi-pulse { 50% { filter: brightness(1.45); } }
+@keyframes ichi-pulse { 0%, 100% { opacity: 0.72; } 50% { opacity: 1; } }
 .ichi-stove-coal { position: relative; display: grid; place-items: center; padding: 0; border: 0; background: none; cursor: default; flex: none; width: var(--cw); height: calc(var(--cw) * 1.4); }
 .ichi-stove-coal .ichi-card { transition: transform 0.2s var(--ease-out); }
 .ichi-stove-coal.st-0 .ichi-card { transform: rotate(90deg) scale(0.74); filter: brightness(0.62) saturate(0.6); }
@@ -3873,10 +3876,10 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-btn.is-assist { display: grid; justify-items: center; gap: 0; min-height: 46px; padding: 3px 8px; line-height: 1.15; font-size: 16px; border: 2px solid var(--ichi-gold); background: rgba(34, 21, 52, 0.94); color: #fff6dc; }
 .ichi-btn.is-assist small { font-size: 12px; font-weight: 800; color: var(--ichi-gold); }
 /* 押す場所: 金色の輪がゆっくり明滅する（形は変えない） */
-.is-hint { outline: 3px solid #ffd27a; outline-offset: 2px; border-radius: 10px; animation: ichi-hint 1.1s ease-in-out infinite; }
+.is-hint { outline: 3px solid #ffd27a; outline-offset: 2px; border-radius: 10px; box-shadow: 0 0 14px 2px rgba(255, 210, 122, 0.45); animation: ichi-hint 1.1s ease-in-out infinite; }
 .ichi-hand-card.is-hint { outline-offset: -2px; z-index: 5; }
 .ichi-board .is-hint { outline-width: 4px; }
-@keyframes ichi-hint { 0%, 100% { outline-color: rgba(255, 210, 122, 0.35); box-shadow: 0 0 0 0 rgba(255, 210, 122, 0); } 50% { outline-color: #ffd27a; box-shadow: 0 0 18px 4px rgba(255, 210, 122, 0.55); } }
+@keyframes ichi-hint { 0%, 100% { opacity: 0.76; } 50% { opacity: 1; } }
 .ichi-pointer { position: absolute; z-index: 7; width: 0; height: 0; pointer-events: none; animation: ichi-pointer 0.9s ease-in-out infinite; }
 .ichi-pointer b { position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); padding: 1px 9px; border-radius: 11px; background: #ffd27a; color: #1d1206; font-size: 13px; font-weight: 900; line-height: 20px; white-space: nowrap; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6); }
 .ichi-pointer b::after { content: ""; position: absolute; left: 50%; top: 100%; margin-left: -6px; border: 6px solid transparent; border-top: 7px solid #ffd27a; border-bottom: 0; }
@@ -4097,13 +4100,13 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 /* 炭焼き場: 黒い → 赤くなりかけ → 焼けて光る */
 .ichi-stove-coal .ichi-coal-sprite.is-cold { filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.8)); }
 .ichi-stove-coal .ichi-coal-sprite.is-warm { filter: drop-shadow(0 0 5px rgba(200, 64, 47, 0.8)); }
-.ichi-stove-coal .ichi-coal-sprite.is-hot { filter: drop-shadow(0 0 7px rgba(255, 176, 92, 0.95)); animation: ichi-coal-breathe 1.6s ease-in-out infinite; }
+.ichi-stove-coal .ichi-coal-sprite.is-hot { filter: drop-shadow(0 0 8px rgba(255, 188, 104, 0.9)); animation: ichi-coal-breathe 1.6s ease-in-out infinite; }
 .ichi-stove-coal.st-0 .ichi-card { filter: brightness(0.5) saturate(0.4); }
 .ichi-stove-coal.st-1 .ichi-card { filter: brightness(0.72) saturate(0.8); box-shadow: 0 0 0 1px #b4501c, 0 0 9px rgba(200, 64, 47, 0.6), 0 3px 0 #0b0612, 0 9px 12px rgba(0, 0, 0, 0.6); }
-@keyframes ichi-coal-breathe { 0%, 100% { filter: drop-shadow(0 0 5px rgba(255, 176, 92, 0.8)) brightness(1); } 50% { filter: drop-shadow(0 0 11px rgba(255, 210, 122, 1)) brightness(1.18); } }
+@keyframes ichi-coal-breathe { 0%, 100% { transform: scale(1); opacity: 0.9; } 50% { transform: scale(1.04); opacity: 1; } }
 /* 火力ゾーン: 新品の火＝赤く光る → 弱った＝赤黒い → 火1＝白く灰をかぶる。札は横向き、炭の絵はまっすぐ */
 .ichi-coal-btn > .ichi-coal-sprite { top: 50%; z-index: 3; width: auto; max-width: none; height: min(150%, calc(var(--cw, 54px) * 0.92)); }
-.ichi-coal-btn > .ichi-coal-sprite.is-hot { filter: drop-shadow(0 0 7px rgba(255, 190, 100, 0.95)); animation: ichi-coal-breathe 1.6s ease-in-out infinite; }
+.ichi-coal-btn > .ichi-coal-sprite.is-hot { filter: drop-shadow(0 0 8px rgba(255, 196, 112, 0.92)); animation: ichi-coal-breathe 1.6s ease-in-out infinite; }
 .ichi-coal-btn > .ichi-coal-sprite.is-warm { filter: drop-shadow(0 0 5px rgba(200, 64, 47, 0.85)); }
 .ichi-coal-btn > .ichi-coal-sprite.is-ember { filter: drop-shadow(0 0 3px rgba(190, 190, 200, 0.6)) brightness(0.92); }
 .ichi-coal-btn.is-up.s-hot { background: linear-gradient(90deg, rgba(255, 196, 96, 0.42), rgba(240, 110, 43, 0.22)); box-shadow: inset 0 0 0 1.5px rgba(255, 214, 130, 0.85), inset 0 0 16px rgba(255, 176, 92, 0.5); }
@@ -5119,14 +5122,14 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-result-side { paddin
 .tt-toy { --tx: 700px; --ty: 420px; position: absolute; left: 1310px; top: 540px; width: 0; height: 0; z-index: 7; pointer-events: none; }
 .tt-toy[hidden] { display: none; }
 .tt-toy-stick { position: absolute; left: 0; top: -2px; width: 420px; height: 5px; border-radius: 3px; background: linear-gradient(90deg, #6d4a2a, #b48a58); transform-origin: 0 50%; }
-.tt-toy-tip { position: absolute; left: calc(var(--tx) - 1310px - 26px); top: calc(var(--ty) - 540px - 26px); width: 52px; height: 52px; border-radius: 50%;
+.tt-toy-tip { position: absolute; left: -26px; top: -26px; translate: calc(var(--tx) - 1310px) calc(var(--ty) - 540px); width: 52px; height: 52px; border-radius: 50%;
   background: radial-gradient(circle at 40% 38%, #fff6d8 0 18%, #f6c75a 46%, #e0903a 78%, rgba(224, 144, 58, 0) 80%),
     conic-gradient(from 10deg, rgba(255, 240, 210, .9), rgba(246, 199, 90, .2), rgba(255, 240, 210, .9), rgba(246, 199, 90, .2), rgba(255, 240, 210, .9));
   filter: drop-shadow(0 4px 3px rgba(0, 0, 0, .25)); }
 .tetsuko-time[data-toy="out"] .tt-toy-tip { animation: tt-toy-tip 1.1s ease-in-out infinite; }
 @keyframes tt-toy-tip { 50% { transform: translate(4px, -6px) rotate(14deg); } }
 /* 猫じゃらしの絵: 先（羽と毛）は指・マウスの位置に先端の房が来るよう少し下げ、棒は絵を伸ばして使う */
-.tetsuko-time[data-art-props~="teaser"] .tt-toy-tip { width: 76px; height: 102px; left: calc(var(--tx) - 1310px - 38px); top: calc(var(--ty) - 540px - 30px); border-radius: 0;
+.tetsuko-time[data-art-props~="teaser"] .tt-toy-tip { width: 76px; height: 102px; left: -38px; top: -30px; border-radius: 0;
   background: url("../img/ui/tetsuko/prop_teaser_tip.webp") center top / contain no-repeat; filter: drop-shadow(0 4px 3px rgba(0, 0, 0, .2)); transform-origin: 50% 10%; }
 .tetsuko-time[data-art-props~="teaser"] .tt-toy-stick { top: -6px; height: 12px; border-radius: 0; background: url("../img/ui/tetsuko/prop_teaser_stick.webp") 0 50% / 100% 100% no-repeat; }
 
@@ -5231,10 +5234,11 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-result-side { paddin
 .tt-slot-hit[data-slot="bench"] { left: 400px; top: 440px; }
 .tt-slot-hit[data-slot="floor"] { left: 770px; top: 556px; }
 .tt-slot-hit[data-slot="bed"] { left: 1012px; top: 556px; }
-.tt-slot-hit[data-allowed="true"] { border-color: var(--tt-amber); background: rgba(255, 233, 196, .22); animation: tt-glow 1.2s ease-in-out infinite; }
+.tt-slot-hit[data-allowed="true"] { border-color: var(--tt-amber); background: rgba(255, 233, 196, .22); }
+.tt-slot-hit[data-allowed="true"]::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: rgba(255, 233, 196, .23); pointer-events: none; opacity: 0; animation: tt-glow 1.2s ease-in-out infinite; }
 .tt-slot-hit[data-allowed="false"][data-filled="true"] { border-color: rgba(247, 243, 237, .6); }
 .tt-slot-hit:disabled { cursor: default; }
-@keyframes tt-glow { 50% { background: rgba(255, 233, 196, .4); } }
+@keyframes tt-glow { 50% { opacity: 1; } }
 .tt-slot-label { position: absolute; left: 50%; top: -16px; transform: translateX(-50%); padding: 1px 10px; border-radius: 10px; background: var(--tt-paper); color: var(--tt-lav); font-size: 14px; font-weight: 700; opacity: 0; }
 .tt-slot-hit[data-allowed="true"] .tt-slot-label, .tt-slot-hit[data-filled="true"] .tt-slot-label { opacity: 1; }
 
@@ -5427,6 +5431,7 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-result-side { paddin
    飾りの絵（小物・小皿・膝）はタップを受けない（見えない小皿が、しっぽへのタップを奪っていた） */
 .tt-prop > i, .tt-plate, .tt-lap { pointer-events: none; }
 .tetsuko-time .tt-slot-hit[data-mode="play"] { z-index: 3; border-color: transparent; background: none; animation: none; }
+.tetsuko-time .tt-slot-hit[data-mode="play"]::before { content: none; animation: none; }
 .tt-slot-hit[data-mode="play"] .tt-slot-label { display: none; }
 
 /* ---- 手帳: ごきげんにした通算の回数 */
@@ -9995,10 +10000,13 @@ body[data-screen="bench"]:has(.bench[data-mode="tournament"][data-chapter="1"]) 
 .spot-pin.guided-off { opacity: 0.45; }
 .spot-pin.guided-off .shield { filter: grayscale(0.7) brightness(0.7); }
 .spot-pin.guide { z-index: 6; }
-.spot-pin.guide .shield { animation: pin-guide 1.3s ease-in-out infinite; }
+.spot-pin.guide .shield {
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.55), 0 0 0 3px rgba(244, 210, 122, 0.7), 0 0 24px rgba(244, 210, 122, 0.65);
+  animation: pin-guide 1.3s ease-in-out infinite;
+}
 @keyframes pin-guide {
-  0%, 100% { box-shadow: 0 8px 18px rgba(0, 0, 0, 0.55), 0 0 0 0 rgba(244, 210, 122, 0.8); }
-  50% { box-shadow: 0 8px 18px rgba(0, 0, 0, 0.55), 0 0 0 8px rgba(244, 210, 122, 0), 0 0 30px rgba(244, 210, 122, 0.7); }
+  0%, 100% { scale: 1; opacity: 0.9; }
+  50% { scale: 1.05; opacity: 1; }
 }
 .map-guide {
   position: absolute;
@@ -10046,7 +10054,18 @@ body[data-screen="bench"]:has(.bench[data-mode="tournament"][data-chapter="1"]) 
   animation: evt-pulse 1.4s ease-in-out infinite;
   pointer-events: none;
 }
-@keyframes evt-pulse { 50% { transform: scale(1.18); box-shadow: 0 0 16px rgba(255, 211, 94, 1); } }
+.evt-badge:not(.story)::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  box-shadow: 0 0 16px rgba(255, 211, 94, 1);
+  opacity: 0;
+  pointer-events: none;
+  animation: evt-glow 1.4s ease-in-out infinite;
+}
+@keyframes evt-pulse { 50% { transform: scale(1.18); } }
+@keyframes evt-glow { 50% { opacity: 1; } }
 /* 新しいイベントも丸い「!」。連続する点滅は増やさない。 */
 .evt-badge.story { animation: none; }
 
@@ -10218,8 +10237,9 @@ p.gear-offer.owned b { color: var(--gold); }
 .shop-errand::before { content: "!"; display: inline-grid; place-items: center; width: 20px; height: 20px; margin-right: 10px; font-size: 13px; color: #1a1018; background: var(--gold); border-radius: 50%; }
 .shop-errand.done { color: #cdeccd; background: linear-gradient(90deg, rgba(40, 110, 60, 0.45), rgba(255, 255, 255, 0.03)); border-left-color: #7fd49a; }
 .shop-errand.done::before { display: none; }
-.shop-row.errand { outline: 2px solid var(--gold); background: rgba(244, 210, 122, 0.12); animation: errand-row 1.3s ease-in-out infinite; }
-@keyframes errand-row { 50% { box-shadow: 0 0 18px rgba(244, 210, 122, 0.45); } }
+.shop-row.errand { position: relative; outline: 2px solid var(--gold); background: rgba(244, 210, 122, 0.12); }
+.shop-row.errand::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 0 18px rgba(244, 210, 122, 0.45); opacity: 0; pointer-events: none; animation: errand-row 1.3s ease-in-out infinite; }
+@keyframes errand-row { 50% { opacity: 1; } }
 .shop-tab { padding: 7px 20px; border-radius: 999px; border: 1px solid var(--panel-edge); background: transparent; color: var(--text-dim); cursor: pointer; font-size: 15px; }
 .shop-tab.on { background: var(--gold); color: #1b1208; border-color: var(--gold); font-weight: 700; }
 .shop-body { flex: 1; overflow-y: auto; padding-right: 8px; display: flex; flex-direction: column; gap: 6px; }
@@ -10355,10 +10375,10 @@ p.gear-offer.owned b { color: var(--gold); }
 .lime-row.peer .lime-bubble { background: #fff; color: #222; border-bottom-left-radius: 4px; }
 .lime-row.me .lime-bubble { background: #8de055; color: #173311; border-bottom-right-radius: 4px; }
 .lime-row.typing .lime-bubble { display: flex; gap: 4px; padding: 12px 14px; }
-.lime-row.typing i { width: 6px; height: 6px; border-radius: 50%; background: #9aa4b2; animation: lime-dot 0.9s infinite; }
+.lime-row.typing i { width: 6px; height: 6px; border-radius: 50%; background: #7b8696; animation: lime-dot 0.9s infinite; }
 .lime-row.typing i:nth-child(2) { animation-delay: 0.15s; }
 .lime-row.typing i:nth-child(3) { animation-delay: 0.3s; }
-@keyframes lime-dot { 30% { transform: translateY(-3px); background: #5d6878; } }
+@keyframes lime-dot { 0%, 100% { opacity: 0.55; } 30% { transform: translateY(-3px); opacity: 1; } }
 .lime-note {
   align-self: center;
   margin: 4px 0;
@@ -10533,9 +10553,19 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
   border-radius: 18px;
   box-shadow: 0 0 0 4000px rgba(4, 3, 8, 0.66), 0 0 24px rgba(255, 233, 168, 0.8);
   cursor: pointer;
+}
+.lc-hole::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border: 2px solid #fff;
+  border-radius: inherit;
+  box-shadow: 0 0 36px rgba(255, 233, 168, 1);
+  opacity: 0;
+  pointer-events: none;
   animation: lc-pulse 1.3s ease-in-out infinite;
 }
-@keyframes lc-pulse { 50% { border-color: #fff; box-shadow: 0 0 0 4000px rgba(4, 3, 8, 0.66), 0 0 36px rgba(255, 233, 168, 1); } }
+@keyframes lc-pulse { 50% { opacity: 1; } }
 .lc-bubble {
   position: absolute;
   display: flex;
@@ -10997,7 +11027,7 @@ html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 140px; }
 .gb-node.skill.s-pending .gb-face::before, .gb-node.lesson.s-pending .gb-face::before { background: color-mix(in srgb, var(--c) 40%, #1d1426); }
 .gb-node.s-available .gb-face { border-color: var(--c); color: var(--c); animation: gb-breathe 1.8s ease-in-out infinite; }
 .gb-node.skill.s-available .gb-face, .gb-node.lesson.s-available .gb-face { animation: gb-breathe-skill 1.8s ease-in-out infinite; }
-.gboard.view-only .gb-node.s-available .gb-face { animation: none; }
+.gboard.view-only .gb-node.s-available .gb-face, .gboard.view-only .gb-node.gate .gb-face::after, .gboard.view-only .gb-node.gate .gb-gate-gem { animation: none; }
 .gb-node.s-short .gb-face { border-color: color-mix(in srgb, var(--c) 55%, transparent); }
 .gb-node.s-far .gb-face { opacity: 0.45; }
 .gb-node.s-sealed .gb-face { opacity: 0.6; filter: grayscale(0.5); }
@@ -11014,7 +11044,7 @@ html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 140px; }
 .gb-quality { position: absolute; right: 2px; top: 0; font-size: 13px; font-style: normal; color: #ffe08a; text-shadow: 0 0 4px #000; pointer-events: none; }
 .gb-cost { position: absolute; bottom: -8px; right: -4px; min-width: 16px; height: 16px; border-radius: 8px; display: grid; place-items: center; font-size: 12px; font-weight: 800;
   color: #2a1406; background: #ffb43c; pointer-events: none; }
-@media (prefers-reduced-motion: reduce) { .gb-node .gb-face { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .gb-node .gb-face, .gb-node.gate .gb-face::after, .gb-node.gate .gb-gate-gem { animation: none !important; } }
 .gb-side { display: flex; flex-direction: column; gap: 6px; padding: 14px 18px 10px 8px; min-width: 0; overflow: auto; font-size: 15px; line-height: 1.5; }
 .gb-side p { margin: 0; }
 .gb-art { position: relative; flex: none; display: grid; place-items: center; height: 150px; border-radius: 10px; border: 1px solid rgba(244, 210, 122, 0.25);
@@ -11127,7 +11157,7 @@ html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 140px; }
 /* 下の帯 */
 .gb-footer { background: linear-gradient(0deg, rgba(8, 5, 12, 0.95), rgba(8, 5, 12, 0.7)); border-top-color: rgba(244, 210, 122, 0.22); }
 .gb-wallet { padding: 6px 12px; border-radius: 10px; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 180, 60, 0.18); }
-@media (prefers-reduced-motion: reduce) { .gb-node .gb-face { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .gb-node .gb-face, .gb-node.gate .gb-face::after, .gb-node.gate .gb-gate-gem { animation: none !important; } }
 /* ================= 生成画像を重ねる（GB03 7.1・SBD72）。画像が全部読めた時だけ .has-art が付く。下の図形はそのまま残す ================= */
 .gboard.has-art { background: #07050b url(../img/ui/growth_board/screen_backdrop.webp) center / cover no-repeat; }
 .gboard.has-art .gb-board { background: radial-gradient(ellipse 34% 40% at 50% 80%, color-mix(in srgb, var(--board-c) 9%, transparent), transparent 70%),
@@ -11556,8 +11586,12 @@ html:root[data-density="phone"] body:not(:root) .gfx-cutin-count { font-size: 16
 @keyframes gb-socket-aura { 50% { transform: scale(1.12); opacity: 0.7; } }
 .gboard.has-art .gb-node.gate .gb-gate-gem, .gboard.has-art .gb-node.gate.s-locked .gb-gate-gem, .gboard.has-art .gb-node.gate.s-far .gb-gate-gem {
   width: 58%; height: 58%; opacity: 1; animation: none; filter: brightness(1) saturate(1) drop-shadow(0 0 3px var(--board-c)) drop-shadow(0 0 7px var(--board-c)); }
-.gboard.has-art .gb-node.gate.s-available .gb-gate-gem, .gboard.has-art .gb-node.gate.s-short .gb-gate-gem { animation: gb-gem-pulse 1.4s ease-in-out infinite; }
-@keyframes gb-gem-pulse { 50% { transform: scale(1.12); filter: brightness(1.25) drop-shadow(0 0 6px var(--board-c)) drop-shadow(0 0 14px var(--board-c)); } }
+.gboard.has-art .gb-node.gate.s-available .gb-gate-gem, .gboard.has-art .gb-node.gate.s-short .gb-gate-gem {
+  filter: brightness(1.08) saturate(1.05) drop-shadow(0 0 4px var(--board-c)) drop-shadow(0 0 10px var(--board-c));
+  animation: gb-gem-pulse 1.4s ease-in-out infinite;
+}
+.gboard.has-art .gb-node.gate:is(.s-available, .s-short) .gb-face::after { animation-duration: 1.4s; }
+@keyframes gb-gem-pulse { 0%, 100% { opacity: 0.86; } 50% { transform: scale(1.12); opacity: 1; } }
 .gboard.has-art .gb-node.gate.s-pending .gb-gate-gem, .gboard.has-art .gb-node.gate.s-unlocked .gb-gate-gem { width: 66%; height: 66%;
   filter: brightness(1.3) drop-shadow(0 0 6px var(--board-c)) drop-shadow(0 0 16px var(--board-c)); }
 .gboard.has-art .gb-node.gate.s-unlocked .gb-face::after { inset: -16px; background: radial-gradient(circle, color-mix(in srgb, var(--board-c) 75%, transparent), color-mix(in srgb, var(--board-c) 25%, transparent) 55%, transparent 75%); }
@@ -11833,6 +11867,10 @@ html:root[data-density="phone"] body:not(:root) .map .mi-tag { font-size: var(--
 /* 時間帯と残りの行動回数の札（☀残り2・☂・大会当日 など）は画面に出さない（MAP06・2026-11-13 オーナー「よくわからないから消して、
    その分UIのスペースをコンパクトに」）。読み上げ用に要素と文は残す（昼夜はマップの絵で分かる）。 */
 body:not(:root) #hud .dc-slot { position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (prefers-reduced-motion: reduce) {
+  .spot-pin.guide .shield, .evt-badge, .evt-badge::after, .shop-row.errand::after, .lime-row.typing i, .lc-hole::after { animation: none; }
+}
 
 /* ===== css/rule-sheet.css ===== */
 .modal-box.rule-sheet-modal { width: min(560px, 94%); max-height: min(96%, 700px); padding: 12px 24px; }
@@ -12266,18 +12304,21 @@ body:not(:root) .map .spot-pin.pin-station { width: auto; min-width: 112px; }
 .rig-lamp[data-tier="good"] { background: #5a3a1ee6; border-color: #e0a060; color: #ffe2bd; box-shadow: 0 0 6px #ff9a3a66; }
 .rig-lamp[data-tier="great"] { background: #b8601ce6; border-color: #ffc27a; color: #fff4e0; box-shadow: 0 0 10px #ff9a3acc; }
 .rig-lamp[data-tier="brilliant"] { background: radial-gradient(circle at 40% 35%, #fff6cf, #ffc21a 55%, #c97a00); border-color: #fff1b0; color: #4a2600;
-  box-shadow: 0 0 6px #fff1b0, 0 0 16px #ffc21acc; animation: rig-lamp-glow 2.4s ease-in-out infinite; }
-.rig-lamp.lit { animation: rig-lamp-pop .5s cubic-bezier(.2, 1.6, .4, 1); }
-.rig-lamp[data-tier="brilliant"].lit { animation: rig-lamp-pop .5s cubic-bezier(.2, 1.6, .4, 1), rig-lamp-glow 2.4s ease-in-out .5s infinite; }
+  box-shadow: 0 0 6px #fff1b0, 0 0 16px #ffc21acc; }
+.rig-lamp[data-tier="brilliant"]::after { content: ""; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none;
+  box-shadow: 0 0 10px #fff1b0, 0 0 26px #ffc21a; opacity: 0; animation: rig-lamp-glow 2.4s ease-in-out infinite; }
+.rig-lamp.lit, .rig-lamp[data-tier="brilliant"].lit { animation: rig-lamp-pop .5s cubic-bezier(.2, 1.6, .4, 1); }
+.rig-lamp[data-tier="brilliant"].lit::after { animation-delay: .5s; }
 @keyframes rig-lamp-pop { 0% { transform: scale(.4); } 60% { transform: scale(1.35); } 100% { transform: scale(1); } }
-@keyframes rig-lamp-glow { 50% { box-shadow: 0 0 10px #fff1b0, 0 0 26px #ffc21a; } }
+@keyframes rig-lamp-glow { 50% { opacity: 1; } }
 /* 灯った分だけ作業風景に満ちる暖かい気配。全工程が輝くと縁がゆっくり脈打つ */
 .rig-aura { position: absolute; inset: 0; z-index: 1; pointer-events: none; opacity: var(--rig-aura, 0); transition: opacity 1.2s ease;
   background: radial-gradient(120% 70% at 62% 78%, #ffb04a38, transparent 62%); box-shadow: inset 0 0 40px #ffb04a55; }
-.rig-aura[data-full="true"] { animation: rig-aura-breathe 3s ease-in-out infinite; }
-@keyframes rig-aura-breathe { 50% { box-shadow: inset 0 0 64px #ffc21a88; } }
+.rig-aura::after { content: ""; position: absolute; inset: 0; pointer-events: none; box-shadow: inset 0 0 64px #ffc21a88; opacity: 0; }
+.rig-aura[data-full="true"]::after { animation: rig-aura-breathe 3s ease-in-out infinite; }
+@keyframes rig-aura-breathe { 50% { opacity: 1; } }
 @media (prefers-reduced-motion: reduce) {
-  .rig-lamp.lit, .rig-lamp[data-tier="brilliant"], .rig-lamp[data-tier="brilliant"].lit, .rig-aura[data-full="true"] { animation: none; }
+  .rig-lamp.lit, .rig-lamp[data-tier="brilliant"], .rig-lamp[data-tier="brilliant"]::after, .rig-lamp[data-tier="brilliant"].lit, .rig-aura[data-full="true"]::after { animation: none; }
 }
 /* ライバルの小窓（CFX04・js/craft/rival-windows.js）: 大会だけ。隣の台の進みを工程の灯で見せる。数字・順位は出さない */
 .rival-windows { position: absolute; right: 10px; top: 38%; display: flex; flex-direction: column; gap: 6px; z-index: 3; pointer-events: none; }
@@ -12344,7 +12385,7 @@ body:not(:root) .map .spot-pin.pin-station { width: auto; min-width: 112px; }
 .bench-demo-stage video { display: block; width: 100%; height: 100%; object-fit: contain; }
 .bench-demo-arrow { position: absolute; font-size: clamp(34px, 5vw, 72px); line-height: 1; color: #ffd94d; text-shadow: 0 2px 8px #000; transform: translate(-50%, -50%); pointer-events: none; animation: bench-demo-bob .9s ease-in-out infinite alternate; }
 .bench-demo-arrow[hidden] { display: none; }
-@keyframes bench-demo-bob { from { margin-top: -5px; } to { margin-top: 5px; } }
+@keyframes bench-demo-bob { from { translate: 0 -5px; } to { translate: 0 5px; } }
 .bench-demo-caption { flex: none; min-height: 3em; margin: 10px 0; color: #f2e9dc; font-size: 17px; line-height: 1.5; }
 .bench-demo-status, .bench-demo-instructions { color: inherit; font-size: 16px; line-height: 1.6; }
 .bench-demo-status { flex: none; margin: 10px 0; }
@@ -12403,7 +12444,7 @@ body:not(:root) .map .spot-pin.pin-station { width: auto; min-width: 112px; }
 .rig-water i:nth-child(3) { left: 48%; animation-delay: 0.6s; }
 .rig-water i:nth-child(4) { left: 60%; animation-delay: 0.9s; }
 @keyframes bubble-up { 0% { opacity: 0; transform: translateY(0) scale(0.6); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-80px) scale(1.2); } }
-@keyframes ember { from { filter: drop-shadow(0 0 6px rgba(255, 110, 30, 0.7)) brightness(0.95); } to { filter: drop-shadow(0 0 14px rgba(255, 150, 60, 1)) brightness(1.15); } }
+@keyframes ember { from { opacity: 0.82; scale: 0.98; } to { opacity: 1; scale: 1.03; } }
 .rig-smoke { position: absolute; z-index: 9; left: 0 !important; right: 0; height: 300px; transform: none !important; pointer-events: none; }
 .rig-smoke i {
   position: absolute;
@@ -12657,8 +12698,8 @@ body:not(:root) .map .spot-pin.pin-station { width: auto; min-width: 112px; }
 .coal.pikan .coal-corners, .coal:focus-visible .coal-corners { border-color: #fff3bf; filter: drop-shadow(0 0 7px #ffb45c); }
 .coal.pikan .c-core { opacity: 1; }
 .coal.pikan .c-hot { opacity: 1; filter: brightness(2.2) saturate(.75) drop-shadow(0 0 10px #ffe1a0); }
-.coal.pikan .coal-corners { animation: heat-ready .35s ease-in-out infinite alternate; }
-@keyframes heat-ready { to { opacity: .35; filter: drop-shadow(0 0 12px #ff6b36); } }
+.coal.pikan .coal-corners { filter: drop-shadow(0 0 9px #ff8e47); animation: heat-ready .35s ease-in-out infinite alternate; }
+@keyframes heat-ready { to { opacity: .35; } }
 .coal.soon .coal-corners { border-color: #e6a160; }
 .heat.insight-visible .coal.soon .coal-corners { border-color: var(--stat-insight); box-shadow: 0 0 12px var(--stat-insight); animation: insight-soon .5s ease-in-out infinite alternate; }
 .coal .effect-insight { display: none; position: absolute; right: -15px; top: -12px; }
@@ -13169,7 +13210,7 @@ body:not(:root) .map .spot-pin.pin-station { width: auto; min-width: 112px; }
 .thermo.optimal .thermo-tube { box-shadow: 0 0 16px #ffffffaa, 0 0 30px #ffd56a99; border-color: #fff3c4; }
 .thermo.danger .thermo-tube { box-shadow: 0 0 26px #ff2a00cc; }
 @keyframes thermo-flame { from { transform: translateY(0); } to { transform: translateY(-40px); } }
-@keyframes thermo-alarm { from { transform: translate(-50%, -50%) scale(1); filter: brightness(1); } to { transform: translate(-50%, -50%) scale(1.3); filter: brightness(1.6); } }
+@keyframes thermo-alarm { from { transform: translate(-50%, -50%) scale(1); opacity: 0.78; } to { transform: translate(-50%, -50%) scale(1.3); opacity: 1; } }
 @keyframes thermo-rainbow { to { background-position: -200% 0; } }
 @keyframes thermo-sheen { 0% { transform: translateX(-120%); } 65%, 100% { transform: translateX(260%); } }
 @media (prefers-reduced-motion: reduce) { .thermo-heat::before, .thermo-optimal::after, .thermo.danger .thermo-danger .thermo-icon, .thermo.freezing .thermo-cold .thermo-icon { animation: none; } }
@@ -13757,21 +13798,62 @@ body.craft-stage .craft-rank-burst { --from-x: 837px; --from-y: 330px; }
   inset: calc((50px * var(--slot-scale) - max(50px * var(--slot-scale), 44px / var(--k, 1))) / 2);
   border-radius: 50%;
 }
-.rw-face { display: block; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+.rw-lamp-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+}
+.rw-face { position: relative; z-index: 1; display: block; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
 .rw-face.txt { display: grid; place-items: center; color: var(--gold); font-weight: 800; font-size: calc(20px * var(--slot-scale, 1)); }
 .rw-lamp .rw-face { opacity: 0.5; transition: opacity 0.2s; }
-.rw-lamp.lit { border-color: #ffe27a; animation: rw-peka 0.55s infinite alternate, rw-peka-pop 0.5s cubic-bezier(0.2, 2.4, 0.4, 1); }
+.rw-lamp.lit {
+  border-color: #ffe27a;
+  background: radial-gradient(circle at 35% 30%, #ffdf7e, #c98a2a 75%);
+  box-shadow: 0 0 8px 2px rgba(255, 220, 90, 0.75), 0 0 30px 8px rgba(255, 160, 60, 0.45);
+  animation: rw-peka-pop 0.5s cubic-bezier(0.2, 2.4, 0.4, 1);
+}
+.rw-lamp.lit::before,
+.reel-widget.lamp-premium .rw-lamp.lit::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+}
+.rw-lamp.lit::before {
+  background: radial-gradient(circle at 35% 30%, #fff3c0, #e8a93e 75%);
+  animation: rw-opacity-alt 0.55s ease-in-out infinite alternate;
+}
+.reel-widget.lamp-lit .rw-lamp-wrap::before,
+.rc-machine.lamp-lit .rw-lamp-wrap::before {
+  box-shadow: 0 0 16px 6px rgba(255, 235, 140, 0.95), 0 0 46px 16px rgba(255, 170, 70, 0.6);
+  animation: rw-opacity-alt 0.55s ease-in-out infinite alternate;
+}
 .rw-lamp.lit .rw-face { opacity: 1; }
-.reel-widget.lamp-premium .rw-lamp.lit { animation: rw-peka-rainbow 0.7s infinite; }
-@keyframes rw-peka {
-  from { box-shadow: 0 0 8px 2px rgba(255, 220, 90, 0.75), 0 0 30px 8px rgba(255, 160, 60, 0.45); background: radial-gradient(circle at 35% 30%, #ffdf7e, #c98a2a 75%); }
-  to { box-shadow: 0 0 16px 6px rgba(255, 235, 140, 0.95), 0 0 46px 16px rgba(255, 170, 70, 0.6); background: radial-gradient(circle at 35% 30%, #fff3c0, #e8a93e 75%); }
+.reel-widget.lamp-premium .rw-lamp.lit {
+  background: radial-gradient(circle at 35% 30%, #ffd2d2, #d2604f 75%);
+  box-shadow: 0 0 14px 5px rgba(255, 190, 210, 0.85);
 }
-@keyframes rw-peka-rainbow {
-  0%, 100% { box-shadow: 0 0 14px 5px rgba(255, 110, 110, 0.9); background: radial-gradient(circle at 35% 30%, #ffd2d2, #d2604f 75%); }
-  33% { box-shadow: 0 0 14px 5px rgba(120, 200, 255, 0.9); background: radial-gradient(circle at 35% 30%, #d3ecff, #4f86d2 75%); }
-  66% { box-shadow: 0 0 14px 5px rgba(160, 255, 150, 0.9); background: radial-gradient(circle at 35% 30%, #e0ffd8, #58b35a 75%); }
+.reel-widget.lamp-premium .rw-lamp.lit::before {
+  background: radial-gradient(circle at 35% 30%, #d3ecff, #4f86d2 75%);
+  animation: rw-rainbow-b 0.7s infinite;
 }
+.reel-widget.lamp-premium .rw-lamp.lit::after {
+  background: radial-gradient(circle at 35% 30%, #e0ffd8, #58b35a 75%);
+  animation: rw-rainbow-g 0.7s infinite;
+}
+.reel-widget.lamp-premium.lamp-lit .rw-lamp-wrap::before {
+  box-shadow: 0 0 14px 5px rgba(220, 235, 255, 0.9);
+}
+@keyframes rw-opacity-alt { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rw-opacity-pulse { 50% { opacity: 1; } }
+@keyframes rw-rainbow-b { 0%, 16%, 58%, 100% { opacity: 0; } 33% { opacity: 1; } }
+@keyframes rw-rainbow-g { 0%, 42%, 90%, 100% { opacity: 0; } 66% { opacity: 1; } }
 @keyframes rw-peka-pop { 0% { transform: scale(0.72); } 55% { transform: scale(1.22); } 100% { transform: scale(1); } }
 /* GOGOランプ風の光条 */
 .rw-lamp-rays {
@@ -13791,8 +13873,11 @@ body.craft-stage .craft-rank-burst { --from-x: 837px; --from-y: 330px; }
 }
 @keyframes rw-rays { to { transform: rotate(360deg); } }
 /* 天井が近いときのほんのり予熱（数値は出さない・気配だけ） */
-.reel-widget.warm .rw-lamp { border-color: rgba(255, 196, 100, 0.85); animation: rw-warm 2.4s ease-in-out infinite; }
-@keyframes rw-warm { 50% { box-shadow: 0 0 15px rgba(255, 175, 65, 0.5); } }
+.reel-widget.warm .rw-lamp { border-color: rgba(255, 196, 100, 0.85); }
+.reel-widget.warm .rw-lamp-wrap::before {
+  box-shadow: 0 0 15px rgba(255, 175, 65, 0.5);
+  animation: rw-opacity-pulse 2.4s ease-in-out infinite;
+}
 
 .rw-machine {
   position: relative;
@@ -13940,6 +14025,11 @@ body.craft-stage .craft-rank-burst { --from-x: 837px; --from-y: 330px; }
 @keyframes rw-setting-sweep { to { background-position: 250% 0; } }
 @media (prefers-reduced-motion: reduce) {
   .rw-bubble.cue-red,
+  .rw-lamp.lit,
+  .rw-lamp.lit::before,
+  .rw-lamp.lit::after,
+  .rw-lamp-wrap::before,
+  .rc-board.reach .rc-reels::after,
   .reel-widget.setting-change .rw-machine, .reel-widget.setting-change .rw-machine::before { animation: none; }
 }
 
@@ -13965,8 +14055,17 @@ body.craft-stage .craft-rank-burst { --from-x: 837px; --from-y: 330px; }
 .rc-strip.spinning { animation: rw-spin 0.32s linear infinite; filter: blur(1.6px); }
 .rc-strip.land { transition: transform 0.14s cubic-bezier(0.2, 1.6, 0.4, 1); }
 /* 7・7 と止まって、最後の1リールを待つ間 */
-.rc-board.reach .rc-reels { border-color: #ffe27a; animation: rc-reach 0.5s ease-in-out infinite alternate; }
-@keyframes rc-reach { from { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 10px rgba(255, 210, 90, 0.35); } to { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 34px rgba(255, 210, 90, 0.85); } }
+.rc-board.reach .rc-reels { border-color: #ffe27a; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 10px rgba(255, 210, 90, 0.35); }
+.rc-board.reach .rc-reels::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: 0 0 34px rgba(255, 210, 90, 0.85);
+  opacity: 0;
+  animation: rw-opacity-alt 0.5s ease-in-out infinite alternate;
+}
 .rc-label { margin-top: 12px; font-size: 30px; font-weight: 900; letter-spacing: 0.14em; color: rgba(255, 255, 255, 0.22); transition: color 0.2s, text-shadow 0.2s; }
 .rc-board.done.big .rc-reels { border-color: #ffe27a; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 50px rgba(255, 200, 80, 0.8); }
 .rc-board.done.big .rc-label { color: #ffd95e; text-shadow: 0 0 18px rgba(255, 170, 60, 0.9); animation: rc-title 0.35s cubic-bezier(0.2, 1.6, 0.4, 1); }
@@ -14719,6 +14818,7 @@ body:not(.game-ds) .shop.shop-paper, body:not(.game-ds) .shop-entry { top: 24px;
 .shop-paper .shop-row:first-child { border-top: 1px solid var(--shop-line); }
 .shop-paper .shop-row.selected { background: #e9dfef99; box-shadow: inset 3px 0 #ad8cbe; }
 .shop-paper .shop-row.errand { outline: none; background: #eee3f2; box-shadow: inset 4px 0 var(--shop-purple); animation: none; }
+.shop-paper .shop-row.errand::after { content: none; animation: none; }
 .shop-product { display: flex; gap: 14px; align-items: center; flex: 1; min-width: 0; padding: 0; border: 0; text-align: left; background: transparent; color: var(--shop-ink); }
 .shop-product:hover b { text-decoration: underline; text-underline-offset: 5px; }
 .shop-product-art { display: flex; flex: none; width: 76px; height: 66px; align-items: center; justify-content: center; }
