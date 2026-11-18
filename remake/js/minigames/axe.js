@@ -42,6 +42,10 @@ const CHIPS = { src: imgFileUrl("ui/axe_throw/wood-chips.webp"), cell: 128, cols
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
 if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});
 const { x: CX, y: CY, radius: R } = TARGET;
+// 一人称の的の見せ方（#3639 オーナー指示 2026-11-18 差し替え）: 板は 85% に縮めて中心を少し上げ、
+// 下にレーンの床・左右に壁とネットが見える構図で「奥にある」感じを出す。板ローカル座標（CX/CY/R）と
+// 判定は一切変えず、表示変換はこの transform だけが担う（クリック変換は変換グループの CTM で追随する）。
+const FPS_BOARD_TRANSFORM = `translate(${CX} 215) scale(.85) translate(${-CX} ${-CY})`;
 // Solid plank edges inside the 1254px artwork (alpha 250+, asset_sources/ui/axe-watl-20261101/adoption.json); the transparent margin is not wood.
 const OPAQUE = { left: 69 / 1254, right: 1185 / 1254, top: 61 / 1254, bottom: 1190 / 1254 };
 const PLANK = { left: CX + BOARD.left * R, right: CX + BOARD.right * R, top: CY + BOARD.top * R, bottom: CY + BOARD.bottom * R };
@@ -140,8 +144,13 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     // #2834: 「やめる」も「？」と同じ丸い札（✕）。名前は読み上げ用の文字で付ける。
     el("button.axe-button.axe-close.axe-help", { type: "button", title: "やめる", dataset: { test: "axe-cancel" }, onclick: () => cleanup(false) },
       [el("span", { "aria-hidden": "true", text: "✕" }), el("span.axe-quiet", { text: "やめる" })])]);
+  // 一人称ではスコア類（REC・各投・合計・投数・連続）を上部バーから外し、下部中央の細いピルへ寄せる
+  // （#3639 オーナー指示 2026-11-18 差し替え）。上部には ？／× だけを残してレーンの奥行きを見せる。
+  // 中身の作り・更新は従来どおりで、置き場所だけが変わる。
+  const scorePill = tapPull ? el("div.axe-score-pill", { dataset: { test: "axe-score-pill" } }) : null;
+  if (scorePill) scorePill.append(round);
   const divisionBadge = el("span.axe-division", { text: DIVISIONS[division].short, title: DIVISIONS[division].name + "：" + DIVISIONS[division].note, dataset: { test: "axe-division" } });
-  heading.insertBefore(divisionBadge, round);
+  if (scorePill) scorePill.append(divisionBadge); else heading.insertBefore(divisionBadge, round);
   const matchScore = el("div.axe-match-score", { hidden: !versus, "aria-live": "polite", dataset: { test: "axe-match-score" } });
   const matchRecords = el("div.axe-match-records", { hidden: true, dataset: { test: "axe-match-records" } });
   const totalValue = el("strong", { text: "0" });
@@ -150,9 +159,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const total = el("div.axe-total", { dataset: { test: "axe-total" } }, [
     el("small", { text: versus ? "あなたの合計" : "合計点" }), totalValue, el("span", { text: "/ " + rules.max + "点" }), nextGoal,
   ]);
-  heading.insertBefore(total, round);
+  if (scorePill) scorePill.append(total); else heading.insertBefore(total, round);
   const heat = el("span.axe-heat", { hidden: true, "aria-live": "polite", dataset: { test: "axe-heat" } });
-  heading.insertBefore(heat, round);
+  if (scorePill) scorePill.append(heat); else heading.insertBefore(heat, round);
   const scoreboard = el("div.axe-scoreboard", { role: "table", "aria-label": "各投の得点", dataset: { test: "axe-scoreboard" } });
   const goals = el("ul.axe-challenges", { hidden: !challengeIds.length, "aria-label": "この回のチャレンジ", dataset: { test: "axe-challenges" } });
   const portrait = el("img.axe-portrait", { alt: companion?.name || "", dataset: { test: "axe-portrait" } });
@@ -160,6 +169,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const companionCard = companion ? el("div.axe-companion", [el("div.axe-portrait-frame", [portrait]), el("div", [el("strong", { text: companion.name }), comment])]) : null;
   // 描画は2枚に分ける（2026-11-10）: 木の板・塗装・過去の切れ込みは動かない下の層（.axe-target-art）、
   // 照準・針・飛ぶ斧・着弾の演出は上の層（.axe-target）。毎フレーム描き直すのは上の層だけになる。
+  let boardScaleG = null; // 一人称の表示変換グループ（上の層）。構築の最後に board の中身をここへ寄せる
   const artBoard = svg("svg", { viewBox: `${VIEW.x} ${VIEW.y} ${VIEW.size} ${VIEW.size}`, class: "axe-target-art", "aria-hidden": "true" });
   const board = svg("svg", { viewBox: `${VIEW.x} ${VIEW.y} ${VIEW.size} ${VIEW.size}`, class: "axe-target", role: "button", tabindex: "0",
     "aria-label": "的。ゲージ操作中はタップでも止められます。構える前は青をタップして宣言できます", "data-test": "axe-target" });
@@ -179,7 +189,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (cycles[phase]) { act(); return; }
     if (phase !== "choice" || actor !== "player" || isPaused() || suddenDeath()) return;
     const point = board.createSVGPoint(); point.x = event.clientX; point.y = event.clientY;
-    const ctm = board.getScreenCTM(); if (!ctm) return;
+    const ctm = (boardScaleG || board).getScreenCTM(); if (!ctm) return; // 一人称では変換グループの CTM で板ローカル座標へ戻す
     const p = point.matrixTransform(ctm.inverse());
     const nearest = KILLS.map(k => ({ id: k.id, d: Math.hypot(p.x - (CX + k.x * R), p.y - (CY + k.y * R)) })).sort((a, b) => a.d - b.d)[0];
     if (nearest.d <= 26) selectCall(nearest.id);
@@ -196,9 +206,20 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const artId = "axe-art-" + (++instances), vignetteId = artId + "-vignette";
   const art = svg("g", { id: artId, class: "axe-art" }, [plank,
     svg("rect", { class: "axe-vignette", x: PLANK.left, y: PLANK.top, width: PLANK.right - PLANK.left, height: PLANK.bottom - PLANK.top, fill: `url(#${vignetteId})` })]);
+  // 静止層も一人称では同じ表示変換で縮める。寄り表示（zoom）は <use> が art 自体を参照するので変換を受けず、
+  // 板ローカル座標のまま従来どおり大きく見える。板の足元にはレーンの床へ柔らかい影を落として奥行きを出す。
+  const floorShadowId = artId + "-floor-shadow";
+  const boardScaleArt = svg("g", { class: "axe-board-scale" });
+  if (tapPull) boardScaleArt.setAttribute("transform", FPS_BOARD_TRANSFORM);
+  boardScaleArt.append(art);
   artBoard.append(svg("defs", {}, [svg("radialGradient", { id: vignetteId, cx: CX, cy: CY, r: R * 1.62, gradientUnits: "userSpaceOnUse" }, [
     svg("stop", { offset: "0", "stop-color": "#fff3d6", "stop-opacity": .08 }), svg("stop", { offset: ".55", "stop-color": "#000", "stop-opacity": 0 }),
-    svg("stop", { offset: "1", "stop-color": "#000", "stop-opacity": .58 })])]), art);
+    svg("stop", { offset: "1", "stop-color": "#000", "stop-opacity": .58 })]),
+    svg("radialGradient", { id: floorShadowId }, [
+      svg("stop", { offset: "0", "stop-color": "#000", "stop-opacity": .42 }), svg("stop", { offset: ".7", "stop-color": "#000", "stop-opacity": .2 }),
+      svg("stop", { offset: "1", "stop-color": "#000", "stop-opacity": 0 })])]),
+    ...(tapPull ? [svg("ellipse", { class: "axe-floor-shadow", cx: CX, cy: 414, rx: 210, ry: 17, fill: `url(#${floorShadowId})`, "aria-hidden": "true" })] : []),
+    boardScaleArt);
   // 一人称レーンの背景絵（#3639）: レーンの中に立った視点の絵を全面に敷き、狙いの間だけ構え（右手と斧）の絵を重ねる。
   // 絵の中の的は無地の円盤で、得点の盤面はこれまでどおり板とSVGが担う（判定・座標は一切変えない）。
   let laneAimImage = null;
@@ -329,6 +350,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   // 狙いの間は laneAim の絵が手元を担い、投げた瞬間に素のレーンへ戻って飛ぶ斧（SVG）へ繋ぐ。hands は常に null（姿勢まわりの分岐は休眠）。
   const hands = null;
   if (hands) board.append(hands);
+  // 一人称では上の層（照準・針・飛ぶ斧・着弾）も静止層と同じ表示変換で縮める。中身はすべて板ローカル座標のまま。
+  boardScaleG = svg("g", { class: "axe-board-scale" });
+  if (tapPull) boardScaleG.setAttribute("transform", FPS_BOARD_TRANSFORM);
+  while (board.firstChild) boardScaleG.append(board.firstChild);
+  board.append(boardScaleG);
   // 構えの姿勢（回転の中心は画面の右下の外＝肘のあたり）。flight は tick がフォロースルーを描く
   // 回転の中心は握り（手の斧の柄の下）。構えは迷ったら1.5倍（#028）で、腕が上がったと分かる大きさに
   const HAND_PIVOT = " 615 430", HAND_POSES = { rest: "", ready: "translate(0 -27) rotate(-6" + HAND_PIVOT + ")", windup: "translate(4 -46) rotate(-9" + HAND_PIVOT + ")" };
@@ -428,8 +454,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     panel = el("aside.axe-panel", [matchRecords, steps, liveScore, resultCard, note, feedback, steadiness, stability, keyhint, controls, throwZone]);
   const body = el("div.axe-body", [side, boardPane, timing, panel]);
   // #2729 (2026-11-08): the per-throw strip shares the sign's row (between the title and the total), so the board gets that row's height.
-  heading.insertBefore(scoreboard, total);
+  if (scorePill) scorePill.append(scoreboard); else heading.insertBefore(scoreboard, total);
   root.append(heading, body, announcement);
+  if (scorePill) root.append(scorePill);
   // #2718: 始まった瞬間の切り替えの幕。見た目だけ（文字はCSSで描き、読み上げ・入力・時計・判定には触れない）。動きを減らす設定では出さない。
   if (!reducedMotion) {
     const label = tutorial ? "マキの無料1投レッスン" : versus ? rivalName + "と対戦" : mode === "league" ? "10投ゲーム" : "3投の練習";
