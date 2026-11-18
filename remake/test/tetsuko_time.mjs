@@ -47,13 +47,14 @@ const keep = reaction => {
   assert.equal(CAT.stamina, TETSUKO_STAMINA, "回復は内部値12のまま（二重化しない）");
 }
 
-// 回帰の砦: 既存の外出定義（4段階＋巡回3本・能力やお金の報酬なし。#1993）を壊していない。
+// 回帰の砦: 既存の外出定義（4段階＋巡回・能力やお金の報酬なし。#1993。巡回は #3097 で3本→6本）を壊していない。
 {
   assert.equal(CAT.place, "mukai");
   assert(CAT.repeat === true);
   assert(!CAT.stat && !CAT.money && !CAT.affinityWith, "能力・お金・好感度の報酬は付かない");
   assert.deepEqual(CAT.stages, ["ch3_outing_tetsuko", "ch3_outing_tetsuko_brush", "ch3_outing_tetsuko_wait", "ch3_outing_tetsuko_trust"]);
-  assert.deepEqual(CAT.loop, ["ch3_outing_tetsuko_lap", "ch3_outing_tetsuko_belly", "ch3_outing_tetsuko_door"]);
+  assert.deepEqual(CAT.loop, ["ch3_outing_tetsuko_lap", "ch3_outing_tetsuko_belly", "ch3_outing_tetsuko_door",
+    "ch3_outing_tetsuko_box", "ch3_outing_tetsuko_sit", "ch3_outing_tetsuko_tongue"]);
 }
 
 // 周回: 記録は来訪記録と同じく持ち越さない。

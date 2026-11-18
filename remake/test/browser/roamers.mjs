@@ -281,7 +281,7 @@ await suite("roamers", async check => {
       return { order, seenBefore: seenBefore.length, places: [...places].sort(), face };
     });
     assert.deepEqual(result.order, ["ch3_outing_tetsuko", "ch3_outing_tetsuko_brush", "ch3_outing_tetsuko_wait", "ch3_outing_tetsuko_trust",
-      "ch3_outing_tetsuko_lap", "ch3_outing_tetsuko_belly", "ch3_outing_tetsuko_door", "ch3_outing_tetsuko_lap"]);
+      "ch3_outing_tetsuko_lap", "ch3_outing_tetsuko_belly", "ch3_outing_tetsuko_door", "ch3_outing_tetsuko_box"]); // #3097: 巡回は6本
     assert.equal(result.seenBefore, 0, "裏口で構う前は、外で見かけない");
     assert(result.places.length > 0 && result.places.every(place => ["park", "enmaku", "steve", "volk"].includes(place)), result.places.join(","));
     assert(result.face?.known && result.face.name === "てつこ", "地図には名前と顔で出る");

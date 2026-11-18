@@ -36,13 +36,25 @@ export function camelTalkAfterRace(value) {
   if (camel.plays >= CAMEL_NAME_PLAYS && flags[CAMEL_NAME_FLAG] !== true) return { scene: CAMEL_SCENES.name, flag: CAMEL_NAME_FLAG };
   return null;
 }
-export const CH4_CAMEL_SCENE_FILES = Object.freeze({ ch4_camel_race: Object.freeze(Object.values(CAMEL_SCENES)) });
+// 二度目からの結果の会話（#3097・RLS03）。通算の完走回数で巡回し、2回目のレースはいつも先頭（replayBest・replayUsual）から。
+// 新しい保存の値は持たない（記録の plays だけで決める）。第5章のレースも同じ巡回を読む。
+export const CAMEL_RESULT_TALKS = Object.freeze({
+  best: Object.freeze([CAMEL_SCENES.replayBest, "ch4_camel_replay_best_b", "ch4_camel_replay_best_c"]),
+  usual: Object.freeze([CAMEL_SCENES.replayUsual, "ch4_camel_replay_usual_b", "ch4_camel_replay_usual_c", "ch4_camel_replay_usual_d"]),
+});
+/** 二度目からのレースの結果の会話。plays は記録した後の通算の完走回数。 */
+export function camelResultTalk(plays, newBest) {
+  const pool = CAMEL_RESULT_TALKS[newBest ? "best" : "usual"];
+  return pool[Math.max(0, Math.floor(Number(plays) || 0) - 2) % pool.length];
+}
+export const CH4_CAMEL_SCENE_FILES = Object.freeze({ ch4_camel_race: Object.freeze([...new Set([...Object.values(CAMEL_SCENES),
+  ...CAMEL_RESULT_TALKS.best, ...CAMEL_RESULT_TALKS.usual])]) });
 // 砂漠のレース場の朝（Codex CR-BG01 の A 案・2026-11-02 採用）。見学・結果・再挑戦の会話の背景。
 export const CAMEL_TRACK_BG = "bg_dubai_camel_track_morning";
 export const CAMEL_SHOP_BG = "bg_shop"; // Dr.fookah ドバイ店（NF03 と同じ流用）
 // 通いの朝のやり取り（camel_arrival_*・data/dialogue/venue_arrivals.json）もレース場の朝。
 export const camelSceneBg = id => id === CAMEL_SCENES.meet || id === CAMEL_SCENES.invite ? CAMEL_SHOP_BG
-  : Object.values(CAMEL_SCENES).includes(id) || String(id).startsWith("camel_arrival_") ? CAMEL_TRACK_BG : null;
+  : Object.values(CAMEL_SCENES).includes(id) || CH4_CAMEL_SCENE_FILES.ch4_camel_race.includes(id) || String(id).startsWith("camel_arrival_") ? CAMEL_TRACK_BG : null;
 export const CAMEL_PLACE = Object.freeze({ id: "camel", x: 66, y: 84 });
 export const CAMEL_STAGES = Object.freeze({ unknown: 0, met: 1, invited: 2, unlocked: 3 });
 

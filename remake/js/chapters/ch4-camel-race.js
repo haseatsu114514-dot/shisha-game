@@ -7,7 +7,7 @@ import { growthEnabled } from "../core/growth.js";
 import { runCamelRace, loadCamelArt } from "../minigames/camel-race.js";
 import { playArrival } from "../daily/venue-arrivals.js";
 import { CAMEL_SCENES, CAMEL_STAGES, camelRaceRecord, camelRaceDestination, recordCamelRaceResult, consumeCamelRaceDaytime,
-  advanceCamelRaceStage, resultSceneFor, availableCamelCups, camelTalkAfterRace } from "./ch4-camel-progress.js";
+  advanceCamelRaceStage, resultSceneFor, availableCamelCups, camelTalkAfterRace, camelResultTalk } from "./ch4-camel-progress.js";
 export * from "./ch4-camel-progress.js";
 
 /**
@@ -77,7 +77,8 @@ export async function visitCamelRace({ read, signal = null, isCurrent = () => tr
     if (await read(talk.scene) && isCurrent() && state === value) { value.flags[talk.flag] = true; save(); }
     return { used: true, exerted: true, slotsUsed: 0 };
   }
-  await read(first ? resultSceneFor(best.rank) : outcome.newBest ? CAMEL_SCENES.replayBest : CAMEL_SCENES.replayUsual);
+  // 二度目からは結果の会話を巡回する（#3097。2回目のレースは従来どおり replayBest・replayUsual）
+  await read(first ? resultSceneFor(best.rank) : camelResultTalk(outcome.plays, outcome.newBest));
   return { used: true, exerted: true, slotsUsed: 0 };
 }
 

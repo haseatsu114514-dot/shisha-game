@@ -59,7 +59,8 @@ export const TOKYO_OUTINGS = Object.freeze([
   // その後は懐いた後の場面を巡回する（stages の順に読み、尽きたら loop を回す）。
   { id: "tetsuko", place: "mukai", label: "裏口のてつこに会う", repeat: true, stamina: 12, bg: "bg_street",
     stages: ["ch3_outing_tetsuko", "ch3_outing_tetsuko_brush", "ch3_outing_tetsuko_wait", "ch3_outing_tetsuko_trust"],
-    loop: ["ch3_outing_tetsuko_lap", "ch3_outing_tetsuko_belly", "ch3_outing_tetsuko_door"],
+    loop: ["ch3_outing_tetsuko_lap", "ch3_outing_tetsuko_belly", "ch3_outing_tetsuko_door",
+      "ch3_outing_tetsuko_box", "ch3_outing_tetsuko_sit", "ch3_outing_tetsuko_tongue"], // #3097: 懐いた後の巡回を6本に
     toast: "てつこに、少し元気をもらった", reason: "裏口のベンチで、看板猫のてつこを構う" },
 ]);
 export const OUTINGS_FLAG = "_ch3_outings";
@@ -101,6 +102,7 @@ export const OUTING_DIALOGUE_IDS = Object.freeze([...MUKAI_HELP_TALKS.lost, ...M
   "ch3_outing_park_walk_day", "ch3_outing_park_walk_night", "ch3_outing_tetsuko",
   "ch3_outing_tetsuko_brush", "ch3_outing_tetsuko_wait", "ch3_outing_tetsuko_trust",
   "ch3_outing_tetsuko_lap", "ch3_outing_tetsuko_belly", "ch3_outing_tetsuko_door",
+  "ch3_outing_tetsuko_box", "ch3_outing_tetsuko_sit", "ch3_outing_tetsuko_tongue",
   "ch3_outing_enmaku_visit", "ch3_outing_enmaku_visit_b", "ch3_outing_enmaku_visit_c",
   "ch3_outing_mukai_steve_b", "ch3_outing_mukai_steve_c", "ch3_outing_steve_visit", "ch3_outing_steve_visit_b",
   "ch3_outing_enmaku_visit_d", "ch3_outing_steve_visit_c",

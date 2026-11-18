@@ -1085,6 +1085,179 @@
       ]
     },
     {
+      "dialogue_id": "ch3_outing_tetsuko_box",
+      "comment": "てつこが懐いた後のお世話（ROAM06・#3097 で巡回を6本に）。小さすぎる段ボール箱に乗る。ましろ・時間帯・天気に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "裏口のベンチの下に、野菜の段ボール箱が一つ置いてあった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "縁から、茶色と白の背中がはみ出している。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……てつこ？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "箱の中で、てつこがぎゅうぎゅうに丸まっていた。体の半分は、縁からあふれている。"
+        },
+        {
+          "speaker": "tetsuko",
+          "face": "normal",
+          "text": "……にゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "入ってないだろ、それ。乗ってるだけだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "てつこは目だけこちらに向けて、動かない。ここが自分の場所だ、という顔をしている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣にしゃがんで、箱の縁を少しだけ広げてやった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "てつこは一度だけ体をよじって、さっきより深く沈んだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……満足そうだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "箱の側面に、ムカイさんの字で「てつこ用・捨てるな」と書いてあった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_tetsuko_sit",
+      "comment": "てつこが懐いた後のお世話（ROAM06・#3097 で巡回を6本に）。壁にもたれるスコ座り（characters.json）をまねる。ましろ・時間帯・天気に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ベンチの端で、てつこが壁にもたれて座っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "後ろ足を前に投げ出して、お腹を見せたまま、背中だけ壁に預けている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……人みたいな座り方だ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣に腰を下ろして、同じように壁にもたれてみた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "てつこが横目でこちらを見て、短く鼻を鳴らした。"
+        },
+        {
+          "speaker": "tetsuko",
+          "face": "normal",
+          "text": "……ふすっ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "まねしただけだよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらく、並んで壁にもたれていた。裏口の換気扇が、ゆっくり回っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "先に飽きたのは、こちらだった。立ち上がっても、てつこは同じ格好のまま動かない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（座り方では、勝てない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_tetsuko_tongue",
+      "comment": "てつこが懐いた後のお世話（ROAM06・#3097 で巡回を6本に）。差し出した指をなめて、毛づくろいの続きにする。ましろ・時間帯・天気に触れない。味の話はしない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ベンチで手を差し出すと、てつこが指先のにおいを確かめた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それから、ざらりと一度なめた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "痛っ……くはないけど、ざらざらだな"
+        },
+        {
+          "speaker": "tetsuko",
+          "face": "normal",
+          "text": "……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "てつこは真面目な顔で、指の付け根まで丁寧になめていく。毛づくろいの続きのつもりらしい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（炭のにおい、するのかな。……今日も、ずっと炭を触ってた）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひと通りなめ終えると、てつこは満足したように、自分の前足をなめはじめた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "こちらの手は、もう用済みらしい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（……俺の手は、前足の前座だったのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "湿った指先が、裏口の風で少しひんやりした。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_outing_mukai_steve_b",
       "comment": "スティーブがまた客として来る（AFB02）。前回ましろちゃんが言った「合図」を試すが、まだタイマーから目を離せない（成長は大会で）。好感度は任意の外出の確定時に付ける（ch3-outing-progress.js の affinity）。",
       "lines": [

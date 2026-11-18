@@ -1,7 +1,7 @@
 // 第4章ドバイのカフェで一台頼んで吸う（2026-11-02 オーナー「カフェで吸えたりとかにしよう」「一台注文して味わう」）。
 // 中心地のカフェと路地裏のカフェは、来店のたびに現地のメニューから一台を選んで味わう（再生は ch4-dubai-daily.js）。
 // ここは DOM を持たない判定と記録だけ。台詞は data/dialogue/ch4_dubai_daily.json の ch4_dubai_taste_*（初めての一台は
-// metadata の flavor_lesson で熟練度が少し伸びる。二度目からは短い *_again）。代金は来店の値段（カフェは一台3,000円）に入っている。
+// metadata の flavor_lesson で熟練度が少し伸びる。二度目からは短い *_again・*_again_b・*_again_c を巡回）。代金は来店の値段（カフェは一台3,000円）に入っている。
 
 /** 頼んだ回数（メニューごと）。周回では持ち越さない（core/carry.js の progression）。 */
 export const CAFE_ORDERS_FLAG = "_ch4_cafe_orders";
@@ -33,8 +33,11 @@ export const OMAKASE_LINE = Object.freeze({
 });
 
 export const tasteSceneId = (id, again = false) => `ch4_dubai_taste_${id}${again ? "_again" : ""}`;
+// 二度目からの短い味わいは、頼んだ回数で巡回する（#3097・RLS03。_again → _again_b → _again_c → _again …）
+export const AGAIN_SUFFIXES = Object.freeze(["", "_b", "_c"]);
+export const againSceneIds = id => AGAIN_SUFFIXES.map(suffix => `${tasteSceneId(id, true)}${suffix}`);
 /** 味わいの台詞（ch4_dubai_daily.json）。読み込みの一覧に使う。 */
-export const CAFE_TASTE_IDS = Object.freeze(CAFE_MENU.flatMap(item => [tasteSceneId(item.id), tasteSceneId(item.id, true)]));
+export const CAFE_TASTE_IDS = Object.freeze(CAFE_MENU.flatMap(item => [tasteSceneId(item.id), ...againSceneIds(item.id)]));
 
 export function cafeOrders(value) {
   const record = value?.flags?.[CAFE_ORDERS_FLAG];
@@ -43,10 +46,11 @@ export function cafeOrders(value) {
 
 const known = id => CAFE_MENU.some(item => item.id === id);
 
-/** 今の一台の味わいの場面。初めての一台は本編、二度目からは短い方。 */
+/** 今の一台の味わいの場面。初めての一台は本編、二度目からは短い方を頼んだ回数で巡回する。 */
 export function tasteScene(value, id) {
   if (!known(id)) return null;
-  return tasteSceneId(id, (Number(cafeOrders(value)[id]) || 0) > 0);
+  const orders = Math.max(0, Math.floor(Number(cafeOrders(value)[id]) || 0));
+  return orders ? againSceneIds(id)[(orders - 1) % AGAIN_SUFFIXES.length] : tasteSceneId(id);
 }
 
 /** おまかせ: まだ頼んでいない一台を先に（メニュー順）。全部頼んだ後は日付で回す。保存は変えない。 */
