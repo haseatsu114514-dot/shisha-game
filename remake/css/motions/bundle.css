@@ -1032,6 +1032,8 @@ html:root[data-density="phone"] body:not(.game-ds) .kj-actions .btn { min-height
 .mo-recall-veil { position: absolute; inset: 0; background: #0b0814; opacity: 0; }
 .mo-haze { position: absolute; left: -4%; right: -4%; top: 125%; height: 50%; background: center / 100% 100% no-repeat; opacity: 0; mix-blend-mode: screen; pointer-events: none; }
 .mo-dragon-dim { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 55%, transparent 30%, #0b081499 100%); }
+/* A5 龍の煙の一枚絵（TMG53）: 全画面に敷き、JS 側でゆっくり寄る */
+.mo-dragon-cg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .mo-scan-slice { position: absolute; left: 0; right: 0; background: #dcd1f41a; mix-blend-mode: screen; }
 .mo-scan-lines { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, #0000 0 3px, #dcd1f41f 3px 4px); mix-blend-mode: screen; }
 .mo-scan-bar { position: absolute; left: 0; right: 0; height: 10%; background: linear-gradient(transparent, #9fd8ff55, transparent); }
