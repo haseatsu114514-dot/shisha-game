@@ -315,7 +315,7 @@ await suite("spot-encounters", async check => {
       assert(resumed.unchanged && resumed.seen);
       assert.equal(resumed.chosen, point === "before-choice");
       assert.equal(resumed.choices, point === "before-choice" ? 1 : 0);
-      assert(resumed.lines.some(t => t.includes(point === "before-choice" ? "ひと口分は俺に" : "ケーキ頼んで感想")));
+      assert(resumed.lines.some(t => t.includes(point === "before-choice" ? "一口分は俺に" : "ケーキ頼んで感想")));
     });
   }
 
