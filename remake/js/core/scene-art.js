@@ -6,16 +6,18 @@ import { on } from "./bus.js";
 // 承認済みv3原画をそのまま使う。cropは透明な余白だけを表示から外す座標。
 // x/yは接地点、hは台本体の高さ。机の手前左と、その右側の床へ置く。
 // 特注台と、それをもとにしたくじ限定の台3種（equipment.json の base: "stand_custom"）は同じ場所に置く。
-// crop の下端は絵ごとに、ホースなし版の原画の透明でない下端へ合わせる（接地のため）。h は本体の見かけの高さが揃うよう調整。
-const CUSTOM_SPOT = { x: 1000, y: 563, size: [1024, 1536] };
+// crop は絵ごとに、ホースなし版の原画の不透明範囲（実測）へ合わせる（接地のため）。
+// 以前の crop は下端が実物より 200px 以上深く、台が接地点から浮いて見えた（#3418）。
+// 特注台系は床ではなく部屋中央のローテーブルの天板へ置く（#3418・オーナー「テーブルの上とかに置けるとベスト」）。
+const CUSTOM_SPOT = { x: 700, y: 524, size: [1024, 1536] };
 const HOME_SCENE_PROPS = [
   { owned: "home_rig_set", file: "shisha_home_tabletop.png", x: 563, y: 552, h: 126, ratio: 648 / 1048, crop: [286, 181, 648, 1048], size: [1222, 1287] },
   { owned: "home_rig_pro", file: "shisha_home_pro.png", x: 914, y: 563, h: 236, ratio: 464 / 1489, crop: [280, 21, 464, 1489], size: [1024, 1536] },
-  { owned: "stand_walnut", file: "shisha_home_stand_walnut.png", x: 1000, y: 563, h: 236, ratio: 1024 / 1536, crop: [0, 0, 1024, 1536], size: [1024, 1536] },
-  { owned: "stand_custom", file: "shisha_home_stand_custom.png", ...CUSTOM_SPOT, h: 225, ratio: 1024 / 1515, crop: [0, 0, 1024, 1515] },
-  { owned: "stand_custom_melty", file: "shisha_home_stand_custom_melty.png", ...CUSTOM_SPOT, h: 225, ratio: 1024 / 1513, crop: [0, 0, 1024, 1513] },
-  { owned: "stand_custom_tosu", file: "shisha_home_stand_custom_tosu.png", ...CUSTOM_SPOT, h: 215, ratio: 1024 / 1445, crop: [0, 0, 1024, 1445] },
-  { owned: "stand_custom_engraved", file: "shisha_home_stand_custom_engraved.png", ...CUSTOM_SPOT, h: 220, ratio: 1024 / 1483, crop: [0, 0, 1024, 1483] },
+  { owned: "stand_walnut", file: "shisha_home_stand_walnut.png", x: 1000, y: 563, h: 197, ratio: 523 / 1289, crop: [130, 47, 523, 1289], size: [1024, 1536] },
+  { owned: "stand_custom", file: "shisha_home_stand_custom.png", ...CUSTOM_SPOT, h: 175, ratio: 504 / 1184, crop: [197, 68, 504, 1184] },
+  { owned: "stand_custom_melty", file: "shisha_home_stand_custom_melty.png", ...CUSTOM_SPOT, h: 175, ratio: 515 / 1190, crop: [191, 66, 515, 1190] },
+  { owned: "stand_custom_tosu", file: "shisha_home_stand_custom_tosu.png", ...CUSTOM_SPOT, h: 175, ratio: 507 / 1185, crop: [195, 68, 507, 1185] },
+  { owned: "stand_custom_engraved", file: "shisha_home_stand_custom_engraved.png", ...CUSTOM_SPOT, h: 175, ratio: 508 / 1190, crop: [196, 67, 508, 1190] },
 ];
 const isHome = (url) => /^bg_home(?:_(?:overcast_)?(?:day|night))?\.png$/.test(sceneFile(url));
 
@@ -123,10 +125,27 @@ export function renderSceneArt(host, url, { homeRigs = true } = {}) {
     return node;
   };
   picture(url, 0, 0, 1280, 720);
+  // 自室の所持品の影は、平らな楕円だと「貼った」感じが強いので、中心が濃く縁へ消える放射グラデにする（#3418）
+  if (props.some((p) => p.owned)) {
+    const defs = document.createElementNS(ns, "defs");
+    const grad = document.createElementNS(ns, "radialGradient");
+    grad.setAttribute("id", "home-prop-shadow");
+    for (const [offset, opacity] of [["0%", "0.34"], ["62%", "0.20"], ["100%", "0"]]) {
+      const stop = document.createElementNS(ns, "stop");
+      stop.setAttribute("offset", offset);
+      stop.setAttribute("stop-color", "#1a0f08");
+      stop.setAttribute("stop-opacity", opacity);
+      grad.append(stop);
+    }
+    defs.append(grad);
+    svg.append(defs);
+  }
   for (const p of props) {
     const width = p.h * p.ratio;
     const shadow = document.createElementNS(ns, "ellipse");
-    for (const [k, v] of Object.entries({ cx: p.x, cy: p.y + (p.owned ? 1 : -2), rx: width * (p.owned ? 0.44 : 0.29), ry: p.h * (p.owned ? 0.018 : 0.012), fill: "rgba(0,0,0,0.24)" })) shadow.setAttribute(k, String(v));
+    for (const [k, v] of Object.entries(p.owned
+      ? { cx: p.x, cy: p.y + 1, rx: width * 0.46, ry: p.h * 0.032, fill: "url(#home-prop-shadow)" }
+      : { cx: p.x, cy: p.y - 2, rx: width * 0.29, ry: p.h * 0.012, fill: "rgba(0,0,0,0.24)" })) shadow.setAttribute(k, String(v));
     svg.append(shadow);
     let node;
     if (p.crop) {
@@ -139,6 +158,10 @@ export function renderSceneArt(host, url, { homeRigs = true } = {}) {
     } else node = picture(img(`ui/scene_props/${p.file}`), p.x - width / 2, p.y - p.h, width, p.h);
     node.classList.add("scene-prop");
     if (/_night\.png$/.test(file)) node.style.filter = "brightness(0.74)";
+    // 自室の所持品は、部屋の暖かい光に合わせて色を寄せる（無補正だと合成感が強い・#3418）
+    if (p.owned && /^bg_home/.test(file)) {
+      node.style.filter = /_night\.png$/.test(file) ? "brightness(0.74) sepia(0.18)" : "sepia(0.25) saturate(0.95) brightness(1.02)";
+    }
   }
   host.prepend(svg);
 }
