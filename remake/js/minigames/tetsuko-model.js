@@ -22,8 +22,8 @@ export const MAIN_ACTIONS = Object.freeze(["pet", "play", "catch", "miss", "brus
 export const JOY_MAX = 100;
 export const JOY_HEARTS = 5;
 export const JOY = Object.freeze({
-  pet: 6, sweet: 12, shy: 3, look: 4, stalk: 5, paw: 8, catch: 14, miss: 8, brush: 7, bliss: 12, treat: 22, watch: 6,
-  auto: 3, found: 8, wish: 10, invite: 5,
+  pet: 4, sweet: 7, shy: 2, look: 3, stalk: 3, paw: 5, catch: 8, miss: 5, brush: 4, bliss: 7, treat: 10, watch: 4,
+  auto: 2, found: 5, wish: 6, invite: 3,
 });
 // なでる場所（広い範囲で分ける。しっぽだけは触らせてくれない）。今日のお気に入りは日によって変わる。
 export const PET_ZONES = Object.freeze(["head", "chin", "back", "tail"]);
@@ -187,7 +187,7 @@ export function createSession(value, { visitKey = null } = {}) {
     cat: { spot: stage >= 3 ? "front" : "bench", pose: "sit", face: stage === 0 ? "serious" : "normal", flip: false, inside: null, art: null },
     moment: null,
     last: null, lastAuto: null, autoTicks: 0,
-    petStreak: 0, swings: 0, watches: 0, brushes: 0, misses: 0,
+    petStreak: 0, petZone: null, petZoneStreak: 0, swings: 0, watches: 0, brushes: 0, misses: 0,
     mashiroPassed: false, said: [],
     curiousProp: null,
     // ごきげん・今日のお気に入りの場所・おねだり（どれも保存しない。通算の回数だけ peaks として記録に足す）
@@ -267,7 +267,18 @@ function react(session, kind, { text, face = "normal", pose = "sit", spot = sess
   const known = line && (line.speaker !== "mukai_master" || session.metMukai);
   const said = known && !session.said.includes(line.id) ? (session.said.push(line.id), line) : null;
   const granted = grantWish(session, kind, usedProp || inside);
-  const gained = gainJoy(session, joy + (found ? JOY.found : 0) + (granted ? JOY.wish : 0));
+  // 同じ場所を続けてなでると、ごきげんの伸びは小さくなる（観察して合わせる遊びに寄せる・#3642）。
+  let baseJoy = joy;
+  if (kind === "pet" && zone) {
+    session.petZoneStreak = zone === session.petZone ? session.petZoneStreak + 1 : 1;
+    session.petZone = zone;
+    if (baseJoy > 0 && session.petZoneStreak > 1)
+      baseJoy = Math.max(1, Math.round(baseJoy * (session.petZoneStreak === 2 ? 0.5 : 0.25)));
+  } else if (kind !== "pet") {
+    session.petZone = null;
+    session.petZoneStreak = 0;
+  }
+  const gained = gainJoy(session, baseJoy + (found ? JOY.found : 0) + (granted ? JOY.wish : 0));
   return { kind, text, face, pose, spot, fx, moment, found, art, pop, zone, sweet, pounce, granted, joy: gained,
     line: said ? { speaker: said.speaker, text: said.text } : null };
 }
