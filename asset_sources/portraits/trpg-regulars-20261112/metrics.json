@@ -1,0 +1,250 @@
+{
+  "regulara": {
+    "status": "unselected candidate; not canon or integrated",
+    "class": "standard",
+    "original": {
+      "file": "originals/regulara-normal.png",
+      "sha256": "b7d001529ccc462135ebf1983ef4203828edbf593d0a7ebf6fcd084e1911acce",
+      "size": [
+        1024,
+        1536
+      ],
+      "alpha_bounds_ge16": [
+        258,
+        7,
+        757,
+        1527
+      ],
+      "points": {
+        "crown": [
+          487,
+          16
+        ],
+        "chin": [
+          477,
+          233
+        ],
+        "eyes": [
+          [
+            439,
+            134
+          ],
+          [
+            494,
+            130
+          ]
+        ],
+        "cheeks": [
+          422,
+          538,
+          160
+        ]
+      },
+      "figure_height": 1511,
+      "head_height": 217,
+      "head_count": 6.9631
+    },
+    "fit": {
+      "method": "LANCZOS downscale and placement only",
+      "scale": 0.7105263157894737,
+      "canvas": [
+        896,
+        1200
+      ],
+      "figure_height": 1080,
+      "feet_y": 1140,
+      "points": {
+        "crown": [
+          432.711,
+          66.395
+        ],
+        "chin": [
+          425.605,
+          220.579
+        ],
+        "eyes": [
+          [
+            398.605,
+            150.237
+          ],
+          [
+            437.684,
+            147.395
+          ]
+        ],
+        "cheeks": [
+          386.526,
+          468.947,
+          168.711
+        ]
+      }
+    },
+    "portrait_manifest_candidate": {
+      "h": 0.9,
+      "b": 0.05,
+      "ax": 0.5,
+      "aspect": 0.7466666666666667
+    },
+    "trpg_face_frame_candidate": {
+      "src": [
+        896,
+        1200
+      ],
+      "box": [
+        295,
+        16,
+        561,
+        282
+      ],
+      "face": {
+        "cx": 427.7365
+      }
+    },
+    "files": [
+      {
+        "path": "delivery/chr_regulara_normal.png",
+        "sha256": "ab4cee721e8e33516bd57110057cd57e4d0860ef585a3b93ac2e014570162e5c",
+        "bytes": 1423154
+      },
+      {
+        "path": "delivery/chr_regulara_normal.webp",
+        "sha256": "7d8c32d29fffc76ce50f87f21924ab2cfa82897dd64cff9e9e0ce73ef666e891",
+        "bytes": 263504
+      },
+      {
+        "path": "delivery/face_regulara.png",
+        "sha256": "36247b27dd4c0fec14e7e63c85252a1d1050dbe8f1530955ac94c4c921e69fce",
+        "bytes": 55838
+      },
+      {
+        "path": "delivery/face_regulara.webp",
+        "sha256": "f14992c26b812871df210774617d831ad908074d25a84df0229020c9a7a4aee6",
+        "bytes": 13556
+      }
+    ]
+  },
+  "regularb": {
+    "status": "unselected candidate; not canon or integrated",
+    "class": "standard",
+    "original": {
+      "file": "originals/regularb-normal.png",
+      "sha256": "b4297e3478919305ddbff9cbb672095f6f1abf6f064d15078cc970f6b987547f",
+      "size": [
+        1024,
+        1536
+      ],
+      "alpha_bounds_ge16": [
+        302,
+        45,
+        708,
+        1521
+      ],
+      "points": {
+        "crown": [
+          518,
+          46
+        ],
+        "chin": [
+          509,
+          243
+        ],
+        "eyes": [
+          [
+            475,
+            177
+          ],
+          [
+            534,
+            164
+          ]
+        ],
+        "cheeks": [
+          469,
+          560,
+          194
+        ]
+      },
+      "figure_height": 1475,
+      "head_height": 197,
+      "head_count": 7.4873
+    },
+    "fit": {
+      "method": "LANCZOS downscale and placement only",
+      "scale": 0.7317073170731707,
+      "canvas": [
+        896,
+        1200
+      ],
+      "figure_height": 1080,
+      "feet_y": 1140,
+      "points": {
+        "crown": [
+          457.049,
+          60.732
+        ],
+        "chin": [
+          450.463,
+          204.878
+        ],
+        "eyes": [
+          [
+            425.585,
+            156.585
+          ],
+          [
+            468.756,
+            147.073
+          ]
+        ],
+        "cheeks": [
+          421.195,
+          487.78,
+          169.024
+        ]
+      }
+    },
+    "portrait_manifest_candidate": {
+      "h": 0.9,
+      "b": 0.05,
+      "ax": 0.5,
+      "aspect": 0.7466666666666667
+    },
+    "trpg_face_frame_candidate": {
+      "src": [
+        896,
+        1200
+      ],
+      "box": [
+        330,
+        14,
+        579,
+        263
+      ],
+      "face": {
+        "cx": 454.48749999999995
+      }
+    },
+    "files": [
+      {
+        "path": "delivery/chr_regularb_normal.png",
+        "sha256": "f1e9392b2019eba185564acf92ba46bedf15917cc065e7d323736b9a79cdc1e3",
+        "bytes": 1198260
+      },
+      {
+        "path": "delivery/chr_regularb_normal.webp",
+        "sha256": "80b2f7ec1dbb852a11cac1d0477befd7c749048035bc7c4f914ec082f2fff08e",
+        "bytes": 205030
+      },
+      {
+        "path": "delivery/face_regularb.png",
+        "sha256": "7471dcb9dd3ce95e3b692c28f780b178443c61ab5d267113b6bb764bb3f5a37e",
+        "bytes": 58031
+      },
+      {
+        "path": "delivery/face_regularb.webp",
+        "sha256": "b708a9de0345d08b5c433eafcec69b6e949551bb67886c353fb1375e14228f3f",
+        "bytes": 12802
+      }
+    ]
+  }
+}
