@@ -563,6 +563,14 @@ export function newGame() {
 }
 
 let lastComplementedAutosaveRaw = null;
+// 端末に保存できない状態（容量いっぱい・保存を禁止した設定など）が続いている間は true。
+// 失敗し始めた最初の1回だけ "save-failed" を知らせ、保存できたら "save-recovered" で戻す（#3726 B-7）。
+let saveFailing = false;
+function noteSaveResult(saved) {
+  if (saved === !saveFailing) return;
+  saveFailing = !saved;
+  try { emit(saved ? "save-recovered" : "save-failed"); } catch { /* 通知の失敗で遊びを止めない */ }
+}
 
 function writeSave(target = state) {
   if (!target) return { raw: null, saved: false };
@@ -583,9 +591,11 @@ function writeSave(target = state) {
     raw = JSON.stringify(target);
     localStorage.setItem(SAVE_KEY, raw);
     lastComplementedAutosaveRaw = raw;
+    noteSaveResult(true);
     return { raw, saved: true };
   } catch {
-    /* プライベートウィンドウ等で失敗しても遊べるようにする */
+    /* プライベートウィンドウ等で失敗しても遊べるようにする（画面には一度だけ知らせる） */
+    noteSaveResult(false);
     return { raw, saved: false };
   }
 }
