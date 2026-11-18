@@ -461,7 +461,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   // 左は見守りの一言とチャレンジ（投げている間は消える）、右は結果と操作のボタンだけ。
   const throwZone = el("div.axe-throw", { dataset: { test: "axe-throw" } }, [action, retry]);
   // 狙いの案内（#3639・UI案A）: 的の上に「どこを狙う？」を浮かべ、今が狙う位置を決める場面だと一目で分かるようにする。
-  // 宣言中は見出しが「○○の青を狙う」に替わる。タッチは一切受けない（pointer-events: none はCSS）。
+  // 宣言中は同じ場所の宣言札に切り替える。タッチは一切受けない（pointer-events: none はCSS）。
   const aimPromptTitle = el("strong.axe-aim-prompt-title", { text: "どこを狙う？" });
   const aimPromptSub = el("span.axe-aim-prompt-sub", { text: "的に触れて位置を決め、上へ弾いて投げる" });
   const aimPrompt = tapPull ? el("div.axe-aim-prompt", { hidden: true, dataset: { test: "axe-aim-prompt" }, "aria-hidden": "true" }, [aimPromptTitle, aimPromptSub]) : null;
@@ -862,10 +862,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (laneAimImage) laneAimImage.setAttribute("opacity", aimShown);
     if (handFrontImage) handFrontImage.setAttribute("opacity", aimShown);
     if (aimPrompt) {
-      const show = actor === "player" && ["choice", "horizontal", "vertical"].includes(phase) && !isPaused();
+      // 宣言中は同じ位置の宣言札で狙いを示す。構え・回転中にも残す。
+      const show = !called && actor === "player" && ["choice", "horizontal", "vertical"].includes(phase) && !isPaused();
       aimPrompt.hidden = !show;
       if (show) {
-        const title = called ? killPlaces[called] + "の青を狙う" : "どこを狙う？";
+        const title = "どこを狙う？";
         if (aimPromptTitle.textContent !== title) aimPromptTitle.textContent = title;
         const firstThrow = shots.length === 0 && gameIndex === 0 && (!versus || match.opponent.length === 0);
         const sub = phase === "horizontal" ? "横の針を、金の印で止める" : phase === "vertical" ? "縦の針を、金の印で止める"
@@ -953,7 +954,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
         return el("div.axe-score-row", { role: "row", dataset: { thrower: id, active: String(mine) } }, [
           // #2834: ひとりで投げる時の「各投」は帯を見れば分かるので読み上げ用だけ。対戦の名前は見せる。
           el(versus ? "span.axe-score-name" : "span.axe-score-name.axe-quiet", { text: versus ? (id === "player" ? "あなた" : rivalName) : "各投" }),
-          el("div.axe-score-tiles", [...tiles, ...sdTiles]),
+          el("div.axe-score-tiles", tapPull ? { tabindex: "0", role: "group", "aria-label": "各投の得点。延長戦は横にスクロール" } : {}, [...tiles, ...sdTiles]),
           // #2834: 宣言の残りは青いバッジ1つ（斧のマーク＋数）。
           el("span.axe-score-calls", { role: "img", title: "キルショットの宣言 残り" + ks.remaining + "回", "aria-label": "宣言 残り" + ks.remaining + "回", dataset: { remaining: String(Math.max(ks.remaining, 0)) } },
             [axeMark(), el("b", { "aria-hidden": "true", text: String(Math.max(ks.remaining, 0)) })]),
@@ -976,7 +977,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const ks = killState(currentShots, rules.throws);
     // #2834: 残り回数の文は青いバッジと読み上げに任せ、画面には宣言中・サドンデスの時だけ出す。
     status.dataset.kind = sd ? "sudden-death" : called ? "called" : "remaining";
-    status.textContent = sd ? "サドンデス：" + killPlaces[called] + "の青 · 刃が触れれば勝ち" : called ? "宣言中：" + killPlaces[called] + "の青 · 青以外0点"
+    status.textContent = sd ? "サドンデス：" + killPlaces[called] + "の青 · 刃が触れれば勝ち" : called ? (tapPull ? "キルショット宣言\n" : "宣言中：") + killPlaces[called] + "の青 · 青以外0点"
       : "キルショット 残り" + ks.remaining + "回" + (ks.bonus ? "（落下で+" + ks.bonus + "）" : "") + (ks.mustRow ? " · " + (ks.mustRow === "upper" ? "上" : "下") + "の青だけ" : "");
     for (const button of calls.children) {
       const id = button.dataset.call;
