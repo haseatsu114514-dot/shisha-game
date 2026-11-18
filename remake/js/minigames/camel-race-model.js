@@ -14,7 +14,7 @@ export const RACE = Object.freeze({
   rivals: 3,
   spurtFrom: 0.75,       // ここから「ラストスパート」区間（ムチの効きが強い）
   maxTime: 95,           // ここまでに着かなければ強制的にゴール扱い（画面の保険）
-  countdown: 3,
+  countdown: 1.5,        // 最初の1本のカウントダウン秒数（3・2・1・GO!。以前は 3 秒）
 });
 
 // 練習は従来の1000mを維持。大会は同じ操作で短距離から順に挑戦する。
@@ -34,6 +34,10 @@ export const PLAYER = Object.freeze({
   base: 18.3,            // 基本速度 m/s（調子が最大で ×(floor+span)、最低で ×floor）
   rhythmFloor: 0.9, rhythmSpan: 0.14,
   rhythmStart: 0.6,
+  startSpeed: 1.0,       // スタート時の初速（base に対する倍率。以前は 0.95）
+  startSurge: 0.5,       // スタート直後の一伸び m/s（CUE.surgeFade で減衰）
+  startEase: 0.3,        // 序盤（startSeconds 秒まで）の加速時定数（秒）
+  startSeconds: 1.5,
   ease: 0.6,             // 速度が目標へ寄る時定数（秒）
   staminaDrain: 0.9,     // ムチを入れていない間の消耗（1秒あたり）
   staminaRecover: 2.6,   // ムチを入れていない間の回復 ×調子（調子0.9なら +2.3/秒）
@@ -135,8 +139,8 @@ export function createRace({ seed = 1, cup = "practice", length = camelCup(cup).
   });
   return {
     seed, cup: event.id, length, t: 0, finished: false, finishedAt: null, rank: null,
-    player: { id: "player", name: PLAYER_CAMEL.name, color: PLAYER_CAMEL.color, index: 0, distance: 0, speed: PLAYER.base * 0.95,
-      rhythm: PLAYER.rhythmStart, stamina: 100, finishedAt: null, surge: 0,
+    player: { id: "player", name: PLAYER_CAMEL.name, color: PLAYER_CAMEL.color, index: 0, distance: 0, speed: PLAYER.base * PLAYER.startSpeed,
+      rhythm: PLAYER.rhythmStart, stamina: 100, finishedAt: null, surge: PLAYER.startSurge,
       whipHeld: false, whipping: false, whipLocked: false, lastVoice: -Infinity, exhausted: false,
       drafting: null, duel: null },
     cues: scheduleCues(random), spurtCues: false,
@@ -364,7 +368,8 @@ export function stepRace(state, dt) {
   const staminaFactor = player.stamina >= PLAYER.tired ? 1 : 0.84 + 0.16 * (player.stamina / PLAYER.tired);
   const boost = player.whipping ? (spurt ? WHIP.spurtBoost : WHIP.boost) : 0;
   const target = PLAYER.base * (PLAYER.rhythmFloor + PLAYER.rhythmSpan * player.rhythm) * staminaFactor + player.surge + boost;
-  player.speed += (target - player.speed) * Math.min(1, dt / (player.whipping ? WHIP.ease : PLAYER.ease));
+  const ease = state.t < PLAYER.startSeconds ? PLAYER.startEase : PLAYER.ease;
+  player.speed += (target - player.speed) * Math.min(1, dt / (player.whipping ? Math.min(WHIP.ease, ease) : ease));
   player.distance += player.speed * dt;
   // ライバル。
   for (const rival of state.rivals) {

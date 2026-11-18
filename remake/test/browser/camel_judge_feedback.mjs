@@ -74,15 +74,18 @@ await suite("camel-judge-feedback", async check => {
 
   // ---- 手応え（2026-11-13・CRF）。数値は __camelRace.feel、今の状態は __camelRace.fx ----
   const fx = page => page.evaluate(() => window.__camelRace.fx);
-  const open = async (page, query) => {
+  const open = async (page, query, { countdown = false } = {}) => {
     await page.goto(new URL(`camel-race.html?${query}`, baseURL).href);
     await page.locator(quick).click();
-    await page.waitForFunction(() => window.__camelRace?.fx.phase === "countdown");
+    await page.waitForFunction(needCountdown => {
+      const phase = window.__camelRace?.fx.phase;
+      return needCountdown ? phase === "countdown" : phase === "countdown" || phase === "race";
+    }, countdown);
   };
 
   await check("hit-stop-freezes-clock-and-keeps-input", async page => {
-    await open(page, "pilot=perfect");
-    assert.equal((await fx(page)).countdownTotal, 3, "最初の1本の合図は3秒");
+    await open(page, "pilot=perfect", { countdown: true });
+    assert.equal((await fx(page)).countdownTotal, 1.5, "最初の1本の合図は1.5秒");
     // スタート前に押しても黙らない（ボタンが沈み、判定はしない）。
     await page.evaluate(() => document.querySelector('[data-test="camel-voice"]').dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, pointerId: 1, pointerType: "mouse" })));
     assert.equal(await page.evaluate(() => document.querySelector('[data-test="camel-voice"]').classList.contains("held")), true, "スタート前の声でもボタンが沈む");
@@ -124,11 +127,22 @@ await suite("camel-judge-feedback", async check => {
     const next = await page.locator('[data-test="camel-next"]').innerText();
     assert.match(next, /次の評価 [SAB] まで あと \d+点|評価 S/, "結果に次の目標が出る");
     // 2本目からの合図は短い。
+    await page.evaluate(() => {
+      window.__retryCountdown = null;
+      const game = document.querySelector('[data-test="camel-game"]');
+      const observer = new MutationObserver(() => {
+        if (game.dataset.phase === "countdown" && !window.__retryCountdown) {
+          window.__retryCountdown = window.__camelRace.fx;
+          observer.disconnect();
+        }
+      });
+      observer.observe(game, { attributes: true, attributeFilter: ["data-phase"] });
+    });
     await page.locator('[data-test="camel-retry"]').click();
-    await page.waitForFunction(() => window.__camelRace.fx.phase === "countdown");
-    const retry = await fx(page);
-    assert.equal(retry.countdownTotal, 1.5, "2本目からの合図は1.5秒");
-    assert(retry.countdown > 0 && retry.countdown <= 1.5);
+    await page.waitForFunction(() => !!window.__retryCountdown);
+    const retry = await page.evaluate(() => window.__retryCountdown);
+    assert.equal(retry.countdownTotal, 0.9, "2本目からの合図は0.9秒");
+    assert(retry.countdown > 0 && retry.countdown <= 0.9);
     // ゴールした後の「やめる」は、閉じずに結果へ（走り切った記録を捨てない）。
     await page.waitForFunction(() => window.__camelRace.fx.phase === "goal", null, { timeout: 60000 });
     await page.locator('[data-test="camel-close"]').click();
@@ -172,7 +186,7 @@ await suite("camel-judge-feedback", async check => {
     await page.waitForFunction(() => window.__camelRace.fx.phase === "countdown" && window.__camelRace.fx.paused === false);
     const again = await fx(page);
     assert.equal(again.runs, 0, "やり直しは記録に入らない");
-    assert.equal(again.countdownTotal, 1.5, "やり直しの合図は短い");
+    assert.equal(again.countdownTotal, 0.9, "やり直しの合図は短い");
     // カードの「やめる」で閉じる。
     await page.keyboard.press("p");
     await page.locator('[data-test="camel-pause-quit"]').click();

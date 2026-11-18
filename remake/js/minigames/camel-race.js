@@ -130,8 +130,8 @@ const FEEL = {
   mark: { perfect: [50, 8, 0.18], good: [32, 6, 0.13], duelWon: [60, 10, 0.24] },
   // 【火花の数：PERFECT】【火花の数：GOOD】【火花の数：外れ】【火花の寿命】[最短, 幅]（秒）。数を絞って寿命を短く、粒は大きめに
   sparks: { perfect: 12, good: 7, miss: 5, life: [0.3, 0.2] },
-  // 【2本目からの合図】（秒。最初の1本は RACE.countdown＝3秒。数字は3・2・1のまま速く数える）【一時停止から戻る合図】（秒。3・2・1 を数える間、レースは止まったまま）
-  countdownRetry: 1.5, pauseLead: 0.9,
+  // 【2本目からの合図】（秒。最初の1本は RACE.countdown＝1.5秒。数字は3・2・1のまま速く数える）【一時停止から戻る合図】（秒。3・2・1 を数える間、レースは止まったまま）
+  countdownRetry: 0.9, pauseLead: 0.9,
   // 【ゴールの余韻】（結果のカードまで・スロー込みの見た目の秒）【ゴールのスローの長さ】【ゴールのスローの速さ】【余韻を飛ばせるまで】（秒）
   goalAfter: 2.3, goalSlow: 1.1, goalSlowRate: 0.32, goalSkipAfter: 0.7,
   // 【教える間の速さ】最初の1本の最初の輪は、縮む間だけレース全体をこの速さにして見せる。【教え直す回数】外したら次の輪でもう一度（この回数まで）
@@ -634,6 +634,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   resizer?.observe(canvas);
   const dust = [], confetti = [], sparks = [], waves = [], floaters = [];
   const streaks = Array.from({ length: 26 }, (_, i) => ({ x: (i * 211) % W, y: 120 + ((i * 97) % 520), len: 60 + (i * 37) % 140, v: 0.7 + ((i * 13) % 10) / 12 }));
+  const fgPebbles = Array.from({ length: 18 }, (_, i) => ({ x: (i * 197) % W, y: ROAD_BOTTOM + 5 + ((i * 11) % Math.max(8, H - ROAD_BOTTOM - 9)), w: 12 + (i * 7) % 24, light: i % 3 === 0 }));
   const rivalSeed = () => (seed ?? crypto.getRandomValues(new Uint32Array(1))[0]) >>> 0;
   const pilotPolicy = typeof pilot === "function" ? pilot : pilot ? POLICIES[pilot] : null;
   if (pilot && !pilotPolicy) { active.delete(host); root.remove(); return Promise.reject(new RangeError(`Unknown pilot: ${pilot}`)); }
@@ -999,9 +1000,9 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     // 遊び方から入った最初の1本は、走りながら教える（最初の輪はゆっくり見せ、当てたらムチ、入れたら離し時）。
     coach = tutorial && raceCount === 1 ? { step: "voice", tries: 0, due: 0, asked: 0 } : null;
     setPhase("countdown");
-    announce(`スタートまで${countdownTotal === RACE.countdown ? "3秒" : "まもなく"}。手前の金のゼッケンが自分のラクダ（ハビーバ）。`);
+    announce("まもなくスタート。手前の金のゼッケンが自分のラクダ（ハビーバ）。");
     say(CALLS.intro, true);
-    hajime("よし、いくぞ", "serious", 2.4);
+    hajime("よし、いくぞ", "serious", Math.min(2.4, countdownTotal));
     root.focus({ preventScroll: true });
     buildStandings();
     renderStandings();
@@ -1018,7 +1019,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     last = now;
     if (phase === "countdown") {
       countdownLeft -= dt;
-      const shown = Math.ceil(countdownLeft / countdownTotal * RACE.countdown - 1e-9);
+      const shown = Math.ceil(countdownLeft / countdownTotal * 3 - 1e-9);
       if (shown !== countdownShown) {
         countdownShown = shown;
         // 数字が替わるたびに、字を出し直して弾ませる（以前は「3」の時だけ弾み、2・1 は字が替わるだけだった）。
@@ -1026,15 +1027,19 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         if (shown > 0) { countdownNode.textContent = String(shown); countdownNode.dataset.word = String(shown); countdownNode.classList.add("show"); sfx("count"); }
         else {
           countdownNode.textContent = "GO!"; countdownNode.dataset.word = "go"; countdownNode.classList.add("show"); sfx("count"); sfx("reelLever"); setPhase("race"); goTime = 0;
-          announce("スタート。輪が重なったら声をかける。"); setTimeout(() => countdownNode.classList.remove("show"), 500);
+          announce("スタート。輪が重なったら声をかける。"); setTimeout(() => { if (countdownNode.dataset.word === "go") countdownNode.classList.remove("show"); }, 450);
           say(CALLS.go, true);
           // 柵が上がって4頭が一斉に飛び出す: 体が前へ伸び、蹄で画面が縦に揺れ、足元から砂が爆ぜる。
-          setShake("go");
+          setShake("go"); kick(14);
           for (const lane of LANES) setStretch(lane.id, FEEL.stretchGo);
           if (whipDown) onWhip(true); // 押したまま GO を迎えたムチは、そのまま入る
           if (!reducedMotion) {
-            for (const lane of LANES) for (let i = 0; i < puffCount(10); i++) {
-              dust.push({ lane: lane.id, x: playerX() - 20 + Math.random() * 60, y: lane.y + 26 * lane.scale, r: 8 + Math.random() * 14, a: 0.6, vx: -(60 + Math.random() * 140), vy: -(20 + Math.random() * 50), s: lane.scale });
+            for (const lane of LANES) for (let i = 0; i < puffCount(14); i++) {
+              dust.push({ lane: lane.id, x: playerX() - 20 + Math.random() * 60, y: lane.y + 26 * lane.scale, r: 8 + Math.random() * 14, a: 0.65, vx: -(140 + Math.random() * 160), vy: -(20 + Math.random() * 50), s: lane.scale });
+            }
+            const suv = suvPosition();
+            for (let i = 0; i < puffCount(6); i++) {
+              dust.push({ lane: "suv", x: suv.x - 60 + Math.random() * 40, y: suv.y + 26, r: 10 + Math.random() * 12, a: 0.4, vx: -(160 + Math.random() * 120), vy: -(12 + Math.random() * 24), s: 1 });
             }
           }
         }
@@ -1269,13 +1274,14 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       updateHud();
       if (!reducedMotion) {
         const boosting = race.player.whipping;
+        const openDust = goTime >= 0 && goTime < 2.5 ? 0.72 : 1;
         for (const camel of [race.player, ...race.rivals]) {
           const lane = laneOf(camel.id);
           const sx = screenX(camel);
           if (sx < -80 || sx > W + 80) continue;
           const me = camel.id === "player", big = me && boosting ? 1.6 : 1;
-          if (kickedUp(camel.id, viewDistance(camel), DUST_ART.step / Math.min(big, DUST_ART.whipStep))) {
-            dust.push({ lane: camel.id, x: sx - 30 * lane.scale * BODY, y: lane.y + 10, r: (6 + Math.random() * 8) * big * BODY, a: 0.42, vx: -(40 + Math.random() * 40) * big, vy: -(14 + Math.random() * 18), s: lane.scale });
+          if (kickedUp(camel.id, viewDistance(camel), (DUST_ART.step * openDust) / Math.min(big, DUST_ART.whipStep))) {
+            dust.push({ lane: camel.id, x: sx - 30 * lane.scale * BODY, y: lane.y + 10, r: (6 + Math.random() * 8) * big * BODY, a: 0.44, vx: -(130 + Math.random() * 90) * big, vy: -(14 + Math.random() * 18), s: lane.scale });
           }
           // 調子がいい間（調子の棒4本以上）は、自分の足元から金の粒がこぼれる。
           if (me && phase === "race" && race.player.rhythm >= 0.75 && Math.random() < 0.6) {
@@ -1283,8 +1289,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
           }
         }
         const suv = suvPosition();
-        if (kickedUp("suv", viewDistance(race.player), DUST_ART.suvStep)) {
-          dust.push({ lane: "suv", x: suv.x - 70, y: suv.y + 26, r: 10 + Math.random() * 12, a: 0.32, vx: -(90 + Math.random() * 60), vy: -(10 + Math.random() * 20), s: 1 });
+        if (kickedUp("suv", viewDistance(race.player), DUST_ART.suvStep * openDust)) {
+          dust.push({ lane: "suv", x: suv.x - 70, y: suv.y + 26, r: 10 + Math.random() * 12, a: 0.34, vx: -(170 + Math.random() * 100), vy: -(10 + Math.random() * 20), s: 1 });
         }
       }
     }
@@ -1392,6 +1398,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         drawNameTag(screenX(camel), lane.y, lane.scale, camel);
       }
       drawForegroundFlags(camX);
+      drawForegroundScroll(camX);
       drawSpeedLines(1);
       drawDraft();
       drawBreath();
@@ -1668,8 +1675,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     const me = camel.id === "player";
     ctx.save();
     ctx.fillStyle = "rgba(70,38,12,0.28)"; ctx.beginPath(); ctx.ellipse(x + 22 * s * BODY, y + 31 * s, 66 * s * BODY, 7 * s * BODY, 0, 0, Math.PI * 2); ctx.fill();
-    // ムチの間と声で大きく伸びた直後は、自分のラクダの後ろに残像を2つ。
-    if (me && !reducedMotion && race && (race.player.whipping || race.player.surge > 1.2) && phase === "race") {
+    // ムチの間と声・スタート直後で大きく伸びた時は、自分のラクダの後ろに残像を2つ。
+    if (me && !reducedMotion && race && (race.player.whipping || race.player.surge > 1.2 || (goTime >= 0 && goTime < 0.65)) && phase === "race") {
       for (const [back, alpha] of [[46, 0.16], [24, 0.28]]) { ctx.globalAlpha = alpha; ctx.drawImage(image, dx - back * s, dy, iw, ih); }
       ctx.globalAlpha = 1;
     }
@@ -1982,7 +1989,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   function drawStartBar(camX) {
     const sx = PLAYER_SCREEN_X + (0 - camX) * PX_PER_M + 118;
     if (sx < -60 || sx > W + 60) return;
-    const lift = goTime < 0 ? 0 : Math.min(1, goTime / 0.45);
+    const lift = goTime < 0 ? 0 : Math.min(1, goTime / 0.28);
     const rise = (1 - (1 - lift) ** 3) * 300;
     if (rise >= 300) return;
     ctx.save(); ctx.globalAlpha = 1 - lift * 0.6;
@@ -1994,12 +2001,25 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ctx.strokeStyle = "rgba(40,20,6,0.55)"; ctx.lineWidth = 1.5; ctx.strokeRect(0, -5, len, 10);
     ctx.restore();
   }
-  /** 速さの線: 自分の速さ・ムチ・スパートで濃く、数を増やす。layer 0 は奥（空と柵の上）、1 は手前。 */
+  /** 手前の砂地を旗と同じ視差（1.35倍）で流す砂粒・筋。序盤から手前のスピード感を見せる。 */
+  function drawForegroundScroll(camX) {
+    if (reducedMotion || !race || phase !== "race") return;
+    const move = camX * PX_PER_M * FLAG_ART.parallax, span = W + 80;
+    ctx.save();
+    for (const p of fgPebbles) {
+      const x = W + 40 - (((p.x + move) % span) + span) % span;
+      ctx.fillStyle = p.light ? "rgba(255,232,190,0.22)" : "rgba(48,26,10,0.26)";
+      ctx.fillRect(x, p.y, p.w, 2.5);
+    }
+    ctx.restore();
+  }
+  /** 速さの線: 自分の速さ・スタートの飛び出し・ムチ・スパートで濃く、数を増やす。layer 0 は奥（空と柵の上）、1 は手前。 */
   function drawSpeedLines(layer) {
     if (reducedMotion || !race || phase !== "race") return;
     const boosting = race.player.whipping;
-    const fast = clamp((race.player.speed - 17) / 5, 0, 1);
-    const power = clamp(fast * 0.55 + (boosting ? 0.5 : 0) + (inSpurt(race) ? 0.3 : 0), 0, 1);
+    const fast = clamp((race.player.speed - 15.5) / 5.5, 0, 1);
+    const launch = goTime >= 0 && goTime < 2.2 ? (1 - goTime / 2.2) * 0.42 : 0;
+    const power = clamp(fast * 0.6 + launch + (boosting ? 0.45 : 0) + (inSpurt(race) ? 0.3 : 0), 0, 1);
     if (power < 0.08) return;
     const move = viewDistance(race.player) * PX_PER_M;
     ctx.save();
