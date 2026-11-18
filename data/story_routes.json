@@ -129,6 +129,7 @@
         "ch3_mashiro_play_3",
         "ch3_mashiro_practice",
         "ch3_mashiro_black_tea",
+        "ch3_saku_bakery",
         "ch3_saku_mashiro_tea_tin",
         "ch3_saku_mashiro_soon_back",
         "ch3_mashiro_mukai_syrup_shelf",
@@ -543,6 +544,12 @@
         "ch3_mukai_intro"
       ],
       "comment": "#3468 G案: 開店前のmukaiで、ムカイさんとヨルが昼の曲順から夜の曲へ脱線する（ムカイさん×針間ヨル）。mukaiの二日目の後。ヨルとの面識は場面カードの置き方（ch3-story-wiring.js の met）。大会後は ch3-aftermath-progress.js の寄り道から。"
+    },
+    "ch3_saku_bakery": {
+      "seen": [
+        "ch3_saku_first"
+      ],
+      "comment": "RLS10。煙幕の初訪問の後、大会前に一度。はじめと綾取の、東京でのお客さん同士の友情。"
     },
     "ch3_saku_mashiro_tea_tin": {
       "seen": [

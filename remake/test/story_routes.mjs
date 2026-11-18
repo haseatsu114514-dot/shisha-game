@@ -213,6 +213,18 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.doesNotMatch(shadow, /正体|僕が、?シガーマン|角を|内側に向け|大会|味覚|舌/, 'no reveal, no hand tell, no tournament or taste');
 }
 {
+  // RLS10: パン屋の紙袋（はじめと綾取の友情）は煙幕の初訪問の後、大会前に一度。ましろ・大会の策・嘘つきの話に触れない。
+  const value = tokyo();
+  readUntil(value, 'ch3_naru_work');
+  assert(!offered(value).includes('ch3_saku_bakery'), 'not before the first Enmaku visit');
+  readUntil(value, 'ch3_saku_mukai_visit');
+  assert(offered(value).includes('ch3_saku_bakery'));
+  wiring.commitOptionalRead(value, 'ch3_saku_bakery');
+  assert(!offered(value).includes('ch3_saku_bakery'), 'read once only');
+  const bakery = sceneData.get('ch3_saku_bakery').lines.map(line => line.text || '').join('\n');
+  assert.doesNotMatch(bakery, /ましろ|大会|最初の一口|嘘つき|味覚|舌/, 'friendship only');
+}
+{
   // #1930: ましろの告白の入口。任意4場面の読了だけが条件で、好感度・面識からは開かない。返事で着地したら出さない。
   const entry = await import(new URL('remake/js/chapters/ch3-romance-entry.js', root));
   const value = tokyo();
