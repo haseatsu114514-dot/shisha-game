@@ -175,6 +175,122 @@
       ]
     },
     {
+      "dialogue_id": "ch3_cigarman_shadow",
+      "comment": "RLS10（第3章はましろを厚く描く・2026-11-18）。客席の噂話（ch3_cigarman_rumor）の後、大会前のmukaiで一度。シガーマンの噂は「ハットの大きな男」として遠くから近づける。正体を告げない・ましろは最後まで気づかない・常連もムカイさんも答えを言わない（2026-10-30 オーナー決定）。手元の癖は大会後の ch3_cigarman_trace に残し、ここでは出さない。大会・味覚には触れない。報酬なし（客席の噂話と同じ）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店のゴミをまとめて裏口へ向かうと、ましろが戸の前で立ち止まっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃん？　出さないの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……さっきのお客さんがね、シガーマンさんを、この辺の路地で見たって"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ハットをかぶった、すっごく大きい人なんだって。僕、ちょっと出にくくて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、一緒に行くよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ほんと？　……はじめくん、前ね。僕、後ろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "戸を開けると、ベンチの脇に、大きな影がしゃがんでいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハットのつばが、ゆっくりこちらを向く。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "ひゃっ……"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……何だ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "なんだぁ、ムカイさんかぁ……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんの前には、てつこのごはん皿。てつこは皿の向こうで、そっぽを向いていた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "食べないんだよ。俺が見てると"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろがしゃがむと、てつこはすぐに寄ってきて、皿に顔をうずめた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……そういうことだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ムカイさん。シガーマンさんって、ほんとにいると思う？"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……さあな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんはハットのつばを下げて、空になった皿を拾った。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "片手で炭を五つ持つ人だよ。会ったら、トング使ってって言わないと"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（怖がってるのに、心配はするんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゴミを出して戻るあいだ、ましろは一度も前に出なかった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "帰りも、はじめくんが前ねぇ"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_cigarman_trace",
       "lines": [
         {

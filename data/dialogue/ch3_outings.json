@@ -267,6 +267,392 @@
       ]
     },
     {
+      "dialogue_id": "ch3_outing_mukai_help_lost_d",
+      "comment": "#3097・RLS10 mukaiのシフトの導入の巡回（味が戻る前）。第3章はムカイさんを厚く描く（2026-11-18 オーナー指定）。ムカイさん本人が話す回。好感度・大会の前後・はじめの味覚の事情には触れない。日当・能力は既存のシフト精算だけ。 客の座り方を覚えて、店と常連の居場所を自分で築いてきた（characters.json）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開店前。ムカイさんが、客席の椅子を一脚ずつ床へ下ろしていく。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "はじめくん。窓際の椅子は、背もたれを少し引いておいてくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何か決まりがあるんですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "いつも来るじいさんの席だ。新聞を広げるから、肘が当たる"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "奥の二人掛けは、仕事帰りの子。……先に、水を置いておく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "全部、覚えてるんですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "最初の年は、客が三人だった。覚えるしかなかったんだよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ムカイさん、今でもお客さんのこと、ノートに書いてるもんねぇ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "名前じゃない。座り方だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開店すると、新聞を抱えたおじいさんが窓際に座った。広げた肘は、どこにも当たらなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（椅子一脚ぶんでも、ここが自分の席だって分かるんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店まで手伝い、ムカイさんから日当を受け取った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_mukai_help_lost_e",
+      "comment": "#3097・RLS10 mukaiのシフトの導入の巡回（味が戻る前）。第3章はムカイさんを厚く描く（2026-11-18 オーナー指定）。ムカイさん本人が話す回。好感度・大会の前後・はじめの味覚の事情には触れない。日当・能力は既存のシフト精算だけ。 スミさんとは仕入れの共同発注で知り合った同業者で、師弟ではない。姉妹店とは人手や仕入れを助け合う（characters.json）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "裏口に、葉の箱が三つ届いていた。納品書の端に、小さく「tonari分 別送」と書いてある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "tonari……。スミさんの店と、一緒に頼んでるんですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "箱でまとめると、安くなる。スミとは、それで知り合った"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "師匠と弟子、とかじゃないんですね"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "serious",
+          "text": "違う。……あいつの前で言うなよ。図に乗る"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "葉をまとめて頼んで、手が足りない時は人を貸し借りする。それだけの縁だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……じゃあ、俺も貸し借りの一つなんですね"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "返すときに、少し育ってる。悪くない取引だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "箱を開けて、棚へ移す。地元で見慣れた銘柄の箱が、少しだけ懐かしかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（スミさんの店とここは、箱一つでつながってるんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店まで手伝い、ムカイさんから日当を受け取った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_mukai_help_lost_f",
+      "comment": "#3097・RLS10 mukaiのシフトの導入の巡回（味が戻る前）。第3章はムカイさんを厚く描く（2026-11-18 オーナー指定）。ムカイさん本人が話す回。好感度・大会の前後・はじめの味覚の事情には触れない。日当・能力は既存のシフト精算だけ。 渋い見た目からシガーマンと思われがちだが、重い葉は苦手（characters.json）。ましろが正体だとは誰も言わない。ましろは別に怖い人がいると思っている（2026-10-30 オーナー決定）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハットを深くかぶったムカイさんの前で、初めての客が背筋を伸ばしていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "あの……シガーマンさん、ですよね。いちばん重いの、お願いします"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……ましろ、頼む"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はーい。重いのは、僕の好きなやつだねぇ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろが黒っぽい葉を詰めている間、ムカイさんはずっと同じカップを拭いていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "うわ、重い。……でも、ちゃんとおいしい。さすがシガーマンの店だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客が帰ると、ムカイさんはハットのつばを少しだけ下げた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "違うって、言わないんですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "何度か言った。誰も信じなかった"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "俺が重い葉を作ると、軽くなる。苦手なものは、手に出るんだよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "シガーマンさん、ほんとはどこにいるんだろうねぇ。僕、ちょっと怖いなぁ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ムカイさんじゃないなら、シガーマンって誰なんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店まで手伝い、ムカイさんから日当を受け取った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_mukai_help_d",
+      "comment": "#3097・RLS10 mukaiのシフトの導入の巡回（味が戻った後）。第3章はムカイさんを厚く描く（2026-11-18 オーナー指定）。ムカイさん本人が話す回。好感度・大会の前後には触れない。日当・能力は既存のシフト精算だけ。 コーヒーとお茶系のビターミックス（得意）、甘いラテも好き、重い葉は苦手（characters.json）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客が引いた時間に、ムカイさんが自分用の一台をカウンターに置いた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "はじめくん。一口、見てくれ。俺のいつもの配合だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自分の吸い口を付けて、一口だけ確かめる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "コーヒーの苦さのあとに、ミルクのような丸さが来た。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……苦いのに、後ろが丸い。ラテみたいです"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "ラテだからな"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ムカイさんのは、いつも軽いんだよぉ。僕には、ほとんどお水"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "苦いだけのは、俺が吸えない。……甘いのは、逃げ道だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "逃げ道、ですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "客にも要る。苦いのを頼んだ客ほど、最後に一息つきたがる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（苦い一台にも、休める場所を残しておくんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店まで手伝い、ムカイさんから日当を受け取った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_mukai_help_e",
+      "comment": "#3097・RLS10 mukaiのシフトの導入の巡回（味が戻った後）。第3章はムカイさんを厚く描く（2026-11-18 オーナー指定）。ムカイさん本人が話す回。好感度・大会の前後には触れない。日当・能力は既存のシフト精算だけ。 東京で疲れた若者の止まり木（characters.json の growth_stats）。はじめがましろに座らせてもらった「作れない日の席」（ch3_rest_before_recovery・壁際のソファ席）は、味が戻る前に必ず読んでいる。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スーツの若い人が一人で入ってきて、注文もせずに奥の席へ座った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "メニュー、持っていきますね"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "待て。先に、水だけでいい"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "あの子は、座りに来てる。注文は、肩が下りてからだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水を置いて戻る。しばらくすると、その人はネクタイを少しゆるめて、手を挙げた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "すみません。軽いの、一つ、……なんでもいいです"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "東京は、立ってる時間が長い街だ。座る場所くらいは、こっちで用意する"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、作れない日に、ここに座らせてもらいました"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "知ってる。ソファのクッションが、二つへこんでた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんはそれ以上は言わずに、豆を挽きはじめた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この店は、座った人の跡まで覚えてるんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店まで手伝い、ムカイさんから日当を受け取った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_mukai_help_f",
+      "comment": "#3097・RLS10 mukaiのシフトの導入の巡回（味が戻った後）。第3章はムカイさんを厚く描く（2026-11-18 オーナー指定）。ムカイさん本人が話す回。好感度・大会の前後には触れない。日当・能力は既存のシフト精算だけ。 渋い店主の顔と、甘いもの好きの顔のどちらも本人（characters.json）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店の少し前。ムカイさんが、珍しく自分から客席に座った。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "はじめくん。一台、頼めるか。……重いのは勘弁してくれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、コーヒーに合う甘さで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "葉を選んで台を作り、出す前に一口だけ確かめる。甘さの奥に、少しだけ苦さを残した。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……甘いな"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "いい甘さだ。苦いのが、ちゃんと後ろにいる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ムカイさん、顔がゆるんでるよぉ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "常連には言うなよ。渋い店主で通ってるんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ハットの下は、たぶんずっとこういう顔なんだろうな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店まで手伝い、ムカイさんから日当を受け取った。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_outing_enmaku_notes",
       "lines": [
         {

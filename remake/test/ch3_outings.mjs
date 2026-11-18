@@ -412,7 +412,8 @@ function nextWindow(value) {
   const mukai = TOKYO_OUTINGS.find(item => item.id === "mukai_help");
   const { value } = at("d5-noon");
   assert(!tasteRecovered(value));
-  for (const [count, expected] of [[0, "lost"], [1, "lost_b"], [2, "lost_c"], [3, "lost"], [4, "lost_b"]]) {
+  // RLS10: ムカイさんが話す回（d〜f）を、ましろの回と交互に読む
+  for (const [count, expected] of [[0, "lost"], [1, "lost_d"], [2, "lost_b"], [3, "lost_e"], [4, "lost_c"], [5, "lost_f"], [6, "lost"], [7, "lost_d"]]) {
     value.flags[OUTINGS_FLAG] = { mukai_help: count };
     const before = structuredClone(value);
     assert.equal(outingDialogueId(value, mukai), `ch3_outing_mukai_help_${expected}`);
@@ -430,20 +431,29 @@ function nextWindow(value) {
   assert(tasteRecovered(late));
   late.flags[OUTINGS_FLAG] = { mukai_help: 5 };
   assert.equal(outingDialogueId(late, mukai), "ch3_outing_mukai_help", "The first shift after the taste returns reads the return scene");
-  for (const expected of ["_b", "_c", "", "_b"]) {
+  for (const expected of ["_d", "_b", "_e", "_c", "_f", "", "_d"]) {
     recordChapterThreeOuting(late, "mukai_help");
     assert.equal(outingDialogueId(late, mukai), `ch3_outing_mukai_help${expected}`);
   }
-  assert.deepEqual(late.flags[OUTINGS_FLAG], { mukai_help: 9, mukai_help_back: 4 });
+  assert.deepEqual(late.flags[OUTINGS_FLAG], { mukai_help: 12, mukai_help_back: 7 });
 
   const data = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_outings.json", import.meta.url)));
   const byId = Object.fromEntries(data.dialogues.map(scene => [scene.dialogue_id, scene]));
-  for (const id of ["lost_b", "lost_c", "b", "c"].map(suffix => `ch3_outing_mukai_help_${suffix}`)) {
+  for (const id of ["lost_b", "lost_c", "lost_d", "lost_e", "lost_f", "b", "c", "d", "e", "f"].map(suffix => `ch3_outing_mukai_help_${suffix}`)) {
     assert(OUTING_DIALOGUE_IDS.includes(id), `${id}: real loader requests the new scene`);
     assert(byId[id].lines.length >= 7);
     assert(byId[id].lines.every(line => !line.type && typeof line.text === "string" && line.text.length > 0));
     assert.equal(byId[id].metadata, undefined, `${id}: no extra reward or background override`);
     assert.equal(byId[id].lines.at(-1).text, "閉店まで手伝い、ムカイさんから日当を受け取った。", `${id}: ends like the existing shift intro`);
+  }
+  // RLS10: d〜f はムカイさん本人が話す回。シフトはどの時間帯にも入れるので、昼夜の言葉は使わない。
+  for (const id of ["lost_d", "lost_e", "lost_f", "d", "e", "f"].map(suffix => `ch3_outing_mukai_help_${suffix}`)) {
+    assert(byId[id].lines.filter(line => line.speaker === "mukai_master").length >= 3, `${id}: Mukai speaks`);
+    assert.doesNotMatch(byId[id].lines.map(line => line.text).join("\n"), /昼|夜|午後|朝|大会/, `${id}: no time of day or tournament`);
+  }
+  // 味が戻る前の回は、はじめの舌の話をしない（シフトは「作れない日」より前にも入れる）
+  for (const id of ["lost_d", "lost_e", "lost_f"].map(suffix => `ch3_outing_mukai_help_${suffix}`)) {
+    assert.doesNotMatch(byId[id].lines.map(line => line.text).join("\n"), /舌|味が/, `${id}: no taste talk before the return`);
   }
 }
 
