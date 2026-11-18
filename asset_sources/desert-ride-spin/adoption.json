@@ -50,5 +50,109 @@
       "y": 0.808
     },
     "scale": 0.548
+  },
+  "spin_noor_045": {
+    "source": "asset_sources/desert-ride-spin/noor/spin_noor_045.png",
+    "webp": "remake/img/ui/desert_ride/spin_noor_045.webp",
+    "size": [
+      588,
+      805
+    ],
+    "anchor": {
+      "x": 0.501,
+      "y": 0.802
+    },
+    "scale": 0.5484
+  },
+  "spin_noor_090": {
+    "source": "asset_sources/desert-ride-spin/noor/spin_noor_090.png",
+    "webp": "remake/img/ui/desert_ride/spin_noor_090.webp",
+    "size": [
+      672,
+      919
+    ],
+    "anchor": {
+      "x": 0.5216,
+      "y": 0.842
+    },
+    "scale": 0.6266
+  },
+  "spin_noor_135": {
+    "source": "asset_sources/desert-ride-spin/noor/spin_noor_135.png",
+    "webp": "remake/img/ui/desert_ride/spin_noor_135.webp",
+    "size": [
+      595,
+      815
+    ],
+    "anchor": {
+      "x": 0.463,
+      "y": 0.7921
+    },
+    "scale": 0.5553
+  },
+  "spin_noor_180": {
+    "source": "asset_sources/desert-ride-spin/noor/spin_noor_180.png",
+    "webp": "remake/img/ui/desert_ride/spin_noor_180.webp",
+    "size": [
+      591,
+      809
+    ],
+    "anchor": {
+      "x": 0.4865,
+      "y": 0.8268
+    },
+    "scale": 0.5512
+  },
+  "spin_naru_045": {
+    "source": "asset_sources/desert-ride-spin/naru/spin_naru_045.png",
+    "webp": "remake/img/ui/desert_ride/spin_naru_045.webp",
+    "size": [
+      597,
+      817
+    ],
+    "anchor": {
+      "x": 0.525,
+      "y": 0.7812
+    },
+    "scale": 0.5567
+  },
+  "spin_naru_090": {
+    "source": "asset_sources/desert-ride-spin/naru/spin_naru_090.png",
+    "webp": "remake/img/ui/desert_ride/spin_naru_090.webp",
+    "size": [
+      714,
+      977
+    ],
+    "anchor": {
+      "x": 0.5038,
+      "y": 0.7778
+    },
+    "scale": 0.666
+  },
+  "spin_naru_135": {
+    "source": "asset_sources/desert-ride-spin/naru/spin_naru_135.png",
+    "webp": "remake/img/ui/desert_ride/spin_naru_135.webp",
+    "size": [
+      596,
+      816
+    ],
+    "anchor": {
+      "x": 0.5186,
+      "y": 0.7831
+    },
+    "scale": 0.5562
+  },
+  "spin_naru_180": {
+    "source": "asset_sources/desert-ride-spin/naru/spin_naru_180.png",
+    "webp": "remake/img/ui/desert_ride/spin_naru_180.webp",
+    "size": [
+      717,
+      895
+    ],
+    "anchor": {
+      "x": 0.4988,
+      "y": 0.785
+    },
+    "scale": 0.6386
   }
 }

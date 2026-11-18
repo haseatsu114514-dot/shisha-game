@@ -1119,6 +1119,31 @@ test("Hajime's spin art (Issue #3563) matches its adoption record, and the frame
   assert(Math.abs(mid.fade - 0.5) < 1e-9, "midpoint between frames fades evenly");
 });
 
+test("The rivals' spin art (Issue #3563) matches its adoption record, and their frame pickers walk the full turn", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { execFileSync } = await import("node:child_process");
+  const root = new URL("../../", import.meta.url);
+  const tracked = path => execFileSync("git", ["ls-files", "--", path], { cwd: root }).toString().trim() === path;
+  const { DESERT_ART, spinFrames } = await import("../js/minigames/desert-ride-art.js");
+  const record = JSON.parse(readFileSync(new URL("asset_sources/desert-ride-spin/adoption.json", root), "utf8"));
+  for (const who of ["noor", "naru"]) {
+    for (const angle of ["045", "090", "135", "180"]) {
+      const entry = record[`spin_${who}_${angle}`], art = DESERT_ART[`${who}Spin${angle}`];
+      assert(art, `${who} spin art ${angle} exists`);
+      assert.equal(`remake/img/${art.file}`, entry.webp, `${who} ${angle} file`);
+      assert.deepEqual([...art.size], entry.size, `${who} ${angle} size`);
+      assert.deepEqual({ ...art.anchor }, entry.anchor, `${who} ${angle} anchor`);
+      assert(entry.scale > 0.45 && entry.scale < 0.8, `${who} ${angle} is rescaled to the riderJump figure size (${entry.scale})`);
+      assert(tracked(entry.webp) && tracked(entry.source), `${who} ${angle} files are committed`);
+    }
+    assert.equal(spinFrames(0, who).from.name, `${who}RiderJump`);
+    assert.equal(spinFrames(0.5, who).from.name, `${who}Spin180`);
+    assert.equal(spinFrames(0.75, who).from.name, `${who}Spin090`);
+    assert.equal(spinFrames(0.75, who).from.flip, true);
+    assert.equal(spinFrames(-0.25, who).from.name, `${who}Spin090`, `${who}: negative rot wraps to the same frame`);
+  }
+});
+
 test("a close race: the rival eases off when far ahead and catches up when far behind, but the result stays the rider's skill", () => {
   // ずれの上限: 追いついた分は6割地点まで持てて、ゴール手前で 0。手加減は終盤に keep 秒まで戻す
   assert.equal(rubberCaps(0).lead, RUBBER.lead); assert.equal(rubberCaps(RUBBER.holdUntil).lead, RUBBER.lead);
@@ -1202,22 +1227,22 @@ test("scoped art loading defers unselected rivals and waits through decode", asy
   try {
     const { DESERT_ART, loadDesertArt } = await import("../js/minigames/desert-ride-art.js?scoped");
     const common = loadDesertArt({ rivals: [] });
-    const commonCount = Object.keys(DESERT_ART).filter(key => DESERT_ART[key].file && !/^(noor|naru)Rider/.test(key)).length;
+    const commonCount = Object.keys(DESERT_ART).filter(key => DESERT_ART[key].file && !/^(noor|naru)(Rider|Spin)/.test(key)).length;
     assert.equal(requested.length, commonCount);
     assert.equal(common.pending(), true, "HTTP completion is not decode completion");
     decode.splice(0).forEach(resolve => resolve());
     await common.whenReady();
     assert.equal(common.pending(), false);
     const noor = loadDesertArt({ rivals: ["noor"] });
-    assert.equal(requested.length, commonCount + 6);
+    assert.equal(requested.length, commonCount + 10);
     assert.equal(common.pending(), false, "another scope does not delay common assets");
     assert.equal(requested.some(url => /rider_naru/.test(url)), false);
     decode.splice(0).forEach(resolve => resolve());
     await noor.whenReady();
     loadDesertArt({ rivals: ["noor"] });
-    assert.equal(requested.length, commonCount + 6, "retry reuses images");
+    assert.equal(requested.length, commonCount + 10, "retry reuses images");
     const naru = loadDesertArt({ rivals: ["naru"] });
-    assert.equal(requested.length, commonCount + 12);
+    assert.equal(requested.length, commonCount + 20);
     decode.splice(0).forEach(resolve => resolve());
     await naru.whenReady();
     assert(naru.get("naruRider"));
