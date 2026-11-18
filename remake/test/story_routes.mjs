@@ -201,6 +201,18 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.deepEqual(wiring.availableOptionalScenes(routes, {...value, chapter: 4}), []);
 }
 {
+  // RLS10: 裏口の大きな影は、客席の噂話を読んだ後の大会前に一度だけ。正体を告げず、手元の癖も出さない（2026-10-30 オーナー決定）。
+  const value = tokyo();
+  readUntil(value, 'ch3_mukai_intro');
+  assert(!offered(value).includes('ch3_cigarman_shadow'), 'needs the rumor first');
+  wiring.commitOptionalRead(value, 'ch3_cigarman_rumor');
+  assert(offered(value).includes('ch3_cigarman_shadow'));
+  wiring.commitOptionalRead(value, 'ch3_cigarman_shadow');
+  assert(!offered(value).includes('ch3_cigarman_shadow'), 'read once only');
+  const shadow = sceneData.get('ch3_cigarman_shadow').lines.map(line => line.text || '').join('\n');
+  assert.doesNotMatch(shadow, /正体|僕が、?シガーマン|角を|内側に向け|大会|味覚|舌/, 'no reveal, no hand tell, no tournament or taste');
+}
+{
   // #1930: ましろの告白の入口。任意4場面の読了だけが条件で、好感度・面識からは開かない。返事で着地したら出さない。
   const entry = await import(new URL('remake/js/chapters/ch3-romance-entry.js', root));
   const value = tokyo();

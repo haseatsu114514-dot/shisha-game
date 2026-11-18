@@ -121,6 +121,7 @@
       "optional": [
         "ch3_minto_small_lies",
         "ch3_cigarman_rumor",
+        "ch3_cigarman_shadow",
         "ch3_cigarman_trace",
         "ch3_emil_workshop",
         "ch3_mashiro_play_1",
@@ -478,6 +479,12 @@
         "confession_minto"
       ],
       "comment": "年齢の告白を聞いた友人/恋人。告白未読なら嘘の詳細を知っている会話を出さない。"
+    },
+    "ch3_cigarman_shadow": {
+      "seen": [
+        "ch3_cigarman_rumor"
+      ],
+      "comment": "RLS10。客席の噂話の後、大会前のmukaiで一度。正体は告げない（2026-10-30 オーナー決定）。"
     },
     "ch3_cigarman_trace": {
       "seen": [
