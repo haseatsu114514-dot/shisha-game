@@ -213,6 +213,36 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.doesNotMatch(shadow, /正体|僕が、?シガーマン|角を|内側に向け|大会|味覚|舌/, 'no reveal, no hand tell, no tournament or taste');
 }
 {
+  // MST01: ましろのスターサインティー。はじめのおひつじ座は作れない日の後・味が戻る前だけ、ましろのいて座は味の会話の後・前夜の前だけ。
+  // 占い師ではない（当てない・意味を借りる）。味の回復の理由にしない。
+  const value = tokyo();
+  readUntil(value, 'ch3_rest_before_recovery');
+  assert(!offered(value).includes('ch3_mashiro_star_tea'), 'not before the day he could not make one');
+  readUntil(value, 'ch3_daily_cup_1');
+  assert(offered(value).includes('ch3_mashiro_star_tea'));
+  readUntil(value, 'ch3_abyss_recovery');
+  assert(!offered(value).includes('ch3_mashiro_star_tea'), 'closed once the taste has come back');
+  assert(!offered(value).includes('ch3_mashiro_star_tea_arrow'), 'the arrow waits for the taste conversation');
+  readUntil(value, 'ch3_volk_first');
+  assert(offered(value).includes('ch3_mashiro_star_tea_arrow'));
+  wiring.commitOptionalRead(value, 'ch3_mashiro_star_tea_arrow');
+  assert(!offered(value).includes('ch3_mashiro_star_tea_arrow'), 'read once only');
+  const late = tokyo();
+  readUntil(late, 'ch3_tournament_eve');
+  assert(offered(late).includes('ch3_mashiro_star_tea_arrow'));
+  progress.completeChapterThreeScene(late, 'ch3_tournament_eve');
+  assert(!offered(late).includes('ch3_mashiro_star_tea_arrow'), 'closed after the eve');
+  for (const id of ['ch3_mashiro_star_tea', 'ch3_mashiro_star_tea_arrow']) {
+    const lines = sceneData.get(id).lines, text = lines.map(line => line.text || '').join('\n');
+    assert.match(text, /占い/, `${id}: says she is not telling fortunes`);
+    assert.match(text, /意味/, `${id}: borrows the meaning`);
+    assert.doesNotMatch(text, /治|戻った|回復/, `${id}: the tea is not the reason the taste returns`);
+    assert(lines.some(row => row.type === 'apply' && row.affinity?.mashiro > 0), id);
+  }
+  assert.match(sceneData.get('ch3_mashiro_star_tea').lines.map(line => line.text || '').join(''), /四月八日[\s\S]*おひつじ座[\s\S]*四月十三日/);
+  assert.match(sceneData.get('ch3_mashiro_star_tea_arrow').lines.map(line => line.text || '').join(''), /いて座[\s\S]*十二月七日/);
+}
+{
   // RLS10: 猫のラテ（ムカイさん）は二日目の会場の下見の後、大会前に一度。大会・味覚に触れない。
   const value = tokyo();
   readUntil(value, 'ch3_mukai_intro');

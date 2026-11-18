@@ -165,6 +165,8 @@
         "ch3_mashiro_toolbox",
         "ch3_mashiro_doze",
         "ch3_mashiro_heavy_room",
+        "ch3_mashiro_star_tea",
+        "ch3_mashiro_star_tea_arrow",
         "ch3_mukai_yoru_playlist"
       ],
       "after_eve": [
@@ -571,6 +573,18 @@
       "seen": [
         "ch3_mashiro_doze"
       ]
+    },
+    "ch3_mashiro_star_tea": {
+      "seen": [
+        "ch3_rest_before_recovery"
+      ],
+      "comment": "MST01。作れない日の席の後、味が戻る前だけ（味が戻った後は ch3-story-wiring.js の before で閉じる）。"
+    },
+    "ch3_mashiro_star_tea_arrow": {
+      "seen": [
+        "ch3_steve_low_heat"
+      ],
+      "comment": "MST01。味の会話の後、大会の前夜の前だけ（before で閉じる）。"
     },
     "ch3_mukai_yoru_playlist": {
       "seen": [
