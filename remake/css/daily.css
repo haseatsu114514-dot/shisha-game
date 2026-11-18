@@ -2087,6 +2087,9 @@ html:root[data-density="phone"] body:not(:root) .gboard.has-art .gb-hidane i { w
 html:root[data-density="phone"] body:not(:root) .gboard .gb-nodes .gb-node > :is(.gb-cost, .gb-mystery),
 html:root[data-density="phone"] body:not(:root) .gboard.has-art .gb-nodes .gb-node > :is(.gb-cost, .gb-mystery) { min-width: max(28px, calc(11.5px / var(--k, 1) + 12px)); width: max(28px, calc(11.5px / var(--k, 1) + 12px)); height: max(28px, calc(11.5px / var(--k, 1) + 12px)); font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-header .gb-icon { width: max(44px, calc(40px / var(--k, 1))); height: max(44px, calc(40px / var(--k, 1))); font-size: var(--phone-sub); }
+/* #3724 修正: 上のアイコンは実効40px（レイアウト約74px）で盤の固定行（60px）より高く、上下中央寄せの分だけ盤の上端からはみ出して閉じるボタンが画面外に出る。スマホ密度ではヘッダー行をアイコンの高さまで広げ、差分はマス表示の行で吸収する */
+html:root[data-density="phone"] body:not(:root) .gboard { grid-template-rows: max(60px, calc(40px / var(--k, 1))) minmax(0, 1fr) 112px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-left { grid-template-rows: 60px minmax(0, 1fr); }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-bar-glyph,
 html:root[data-density="phone"] body:not(:root) .gboard .gb-glyph,
 html:root[data-density="phone"] body:not(:root) .gboard .gb-quality,
