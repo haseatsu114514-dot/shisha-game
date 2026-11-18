@@ -27,7 +27,9 @@ function decodeArt(url) {
   return artReady.get(url);
 }
 // The WATL board (five 2x10 planks, calm light centre) from Codex, #2198 / AXR06. The older square board stays in the repository.
-const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_c_800.webp") };
+const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_c_800.webp"),
+  // 一人称レーンの背景（#3639）。laneAim は同じレーンに右手の構えを描き込んだ狙い中専用の絵で、自分の狙いの間だけ重ねる。
+  lane: imgFileUrl("backgrounds/bg_axe_lane.webp"), laneAim: imgFileUrl("backgrounds/bg_axe_lane_aim.webp") };
 // ゲージ・札の絵の部品（#3207・AXR14）と、見出しの板・投げ数の溝・黒板の窓・ランクの丸・帯・木片（#3423・AXQ03）。
 // 木片以外は CSS の border-image で描く。読み込み中に先に解いておき、構えた瞬間や結果の出遅れを防ぐ。
 const UI_ART = ["gauge-frame", "gauge-needle", "button-throw-orange", "button-throw-green", "tag-slate", "tag-slate-blue", "tag-selected", "tag-selected-amber",
@@ -40,6 +42,17 @@ const CHIPS = { src: imgFileUrl("ui/axe_throw/wood-chips.webp"), cell: 128, cols
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
 if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});
 const { x: CX, y: CY, radius: R } = TARGET;
+// 一人称の的の見せ方（#3639 オーナー指示 2026-11-18 差し替え＋同日第4弾で寄せ）: 板の中心は少し上げた
+// (CX, 215) のまま、写真側を 1.15 倍に寄せて「的の近くから投げる」感じにする。板も同じ中心で同率に
+// 拡げるため、表示変換は scale .85×1.15＝.9775 だけになる。板ローカル座標（CX/CY/R）と判定は一切
+// 変えず、表示変換はこの transform だけが担う（クリック変換は変換グループの CTM で追随する）。
+const FPS_BOARD_TRANSFORM = `translate(${CX} 215) scale(.9775) translate(${-CX} ${-CY})`;
+// 手元の型（#3639 オーナー指示 2026-11-18 第3弾「手元をレイヤー上に」＋第4弾で両手構えへ差し替え）: 構え絵
+// （bg_axe_lane_aim）に焼き込まれた両手と斧の輪郭。素のレーン絵との差分の最大輪郭を実測し、写真の寄せ
+// （x=-245, y=-107, 1150×646.875）に合わせて画像座標（1280×720）から viewBox 座標へ換算したもの。
+// 右下は「横を止める」ボタンに被らないよう、ボタンの範囲を画像座標へ戻した x>=965 かつ y>=575 を切り落としてある。
+// 表示だけの型で、判定・座標には使わない。
+const HAND_SILHOUETTE = "M613.9 84.4L581.6 67.3L558.2 74.5L525.0 52.9L497.1 21.5L486.3 26.9L445.9 84.4L437.8 123.0L440.5 147.3L471.1 130.2L516.0 118.5L516.0 110.4L503.4 109.5L503.4 96.9L498.0 112.2L489.9 111.3L488.1 86.2L498.0 81.7L524.1 88.9L524.1 78.1L508.8 77.2L508.8 56.5L525.0 60.1L533.9 72.7L540.2 122.1L533.9 123.0L498.0 208.4L455.8 229.0L459.4 248.8L446.8 256.0L434.2 311.7L441.4 333.2L435.1 345.8L401.0 348.5L390.2 363.8L383.0 363.8L374.0 348.5L326.4 349.4L310.2 371.9L312.9 387.1L283.3 381.8L283.3 396.1L268.0 400.6L267.1 408.7L224.9 412.3L248.2 418.6L246.4 436.6L256.3 431.2L257.2 422.2L278.8 431.2L273.4 444.6L283.3 445.5L281.5 466.2L271.6 467.1L262.6 479.7L222.2 479.7L221.3 470.7L194.3 486.0L134.1 482.4L122.5 491.4L120.7 505.7L144.9 517.4L164.7 517.4L171.9 504.8L180.9 504.8L183.6 513.8L206.9 511.1L207.8 519.2L191.6 525.5L186.2 539.0L195.2 539.0L201.5 529.1L229.4 529.1L230.3 539.0L363.2 539.0L385.7 516.5L395.6 518.3L397.4 539.0L434.2 539.0L435.1 532.7L444.1 532.7L444.1 525.5L435.1 523.7L439.6 508.4L467.5 512.0L474.6 526.4L494.4 521.9L500.7 533.6L507.9 533.6L509.7 523.7L520.5 522.8L521.4 503.9L511.5 503.9L509.7 495.0L482.7 479.7L452.2 478.8L452.2 467.1L466.6 463.5L459.4 453.6L461.2 441.9L469.3 441.0L464.8 424.9L478.2 423.1L478.2 410.5L462.1 402.4L462.1 390.7L482.7 388.0L472.9 364.7L478.2 350.3L486.3 349.4L584.3 433.9L579.8 459.9L588.8 443.7L606.7 453.6L605.8 469.8L590.5 468.0L587.0 474.3L601.3 479.7L605.8 506.6L621.1 506.6L614.8 500.3L621.1 453.6L592.3 430.3L592.3 422.2L621.1 424.9L621.1 394.3L636.4 396.1L632.8 408.7L708.2 407.8L615.7 334.1L579.8 314.4L569.0 300.9L566.3 276.6L551.9 262.3L550.1 247.0L533.9 234.4L557.3 188.6L551.9 176.0L560.0 173.3L560.9 163.4L576.2 172.4L577.1 157.1L569.9 152.6L574.4 139.2L561.8 132.0L561.8 122.1L574.4 118.5L580.7 95.1L598.6 92.5L614.8 98.7Z";
 // Solid plank edges inside the 1254px artwork (alpha 250+, asset_sources/ui/axe-watl-20261101/adoption.json); the transparent margin is not wood.
 const OPAQUE = { left: 69 / 1254, right: 1185 / 1254, top: 61 / 1254, bottom: 1190 / 1254 };
 const PLANK = { left: CX + BOARD.left * R, right: CX + BOARD.right * R, top: CY + BOARD.top * R, bottom: CY + BOARD.bottom * R };
@@ -138,8 +151,13 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     // #2834: 「やめる」も「？」と同じ丸い札（✕）。名前は読み上げ用の文字で付ける。
     el("button.axe-button.axe-close.axe-help", { type: "button", title: "やめる", dataset: { test: "axe-cancel" }, onclick: () => cleanup(false) },
       [el("span", { "aria-hidden": "true", text: "✕" }), el("span.axe-quiet", { text: "やめる" })])]);
+  // 一人称ではスコア類（REC・各投・合計・投数・連続）を上部バーから外し、右上の細いピルへ寄せる
+  // （#3639 オーナー指示 2026-11-18 第3弾: 下部中央から右上へ移し、下部は手元と操作のために開ける）。
+  // ？／× はピルの右隣に並ぶ。中身の作り・更新は従来どおりで、置き場所だけが変わる。
+  const scorePill = tapPull ? el("div.axe-score-pill", { dataset: { test: "axe-score-pill" } }) : null;
+  if (scorePill) scorePill.append(round);
   const divisionBadge = el("span.axe-division", { text: DIVISIONS[division].short, title: DIVISIONS[division].name + "：" + DIVISIONS[division].note, dataset: { test: "axe-division" } });
-  heading.insertBefore(divisionBadge, round);
+  if (scorePill) scorePill.append(divisionBadge); else heading.insertBefore(divisionBadge, round);
   const matchScore = el("div.axe-match-score", { hidden: !versus, "aria-live": "polite", dataset: { test: "axe-match-score" } });
   const matchRecords = el("div.axe-match-records", { hidden: true, dataset: { test: "axe-match-records" } });
   const totalValue = el("strong", { text: "0" });
@@ -148,9 +166,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const total = el("div.axe-total", { dataset: { test: "axe-total" } }, [
     el("small", { text: versus ? "あなたの合計" : "合計点" }), totalValue, el("span", { text: "/ " + rules.max + "点" }), nextGoal,
   ]);
-  heading.insertBefore(total, round);
+  if (scorePill) scorePill.append(total); else heading.insertBefore(total, round);
   const heat = el("span.axe-heat", { hidden: true, "aria-live": "polite", dataset: { test: "axe-heat" } });
-  heading.insertBefore(heat, round);
+  if (scorePill) scorePill.append(heat); else heading.insertBefore(heat, round);
   const scoreboard = el("div.axe-scoreboard", { role: "table", "aria-label": "各投の得点", dataset: { test: "axe-scoreboard" } });
   const goals = el("ul.axe-challenges", { hidden: !challengeIds.length, "aria-label": "この回のチャレンジ", dataset: { test: "axe-challenges" } });
   const portrait = el("img.axe-portrait", { alt: companion?.name || "", dataset: { test: "axe-portrait" } });
@@ -158,6 +176,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const companionCard = companion ? el("div.axe-companion", [el("div.axe-portrait-frame", [portrait]), el("div", [el("strong", { text: companion.name }), comment])]) : null;
   // 描画は2枚に分ける（2026-11-10）: 木の板・塗装・過去の切れ込みは動かない下の層（.axe-target-art）、
   // 照準・針・飛ぶ斧・着弾の演出は上の層（.axe-target）。毎フレーム描き直すのは上の層だけになる。
+  let boardScaleG = null; // 一人称の表示変換グループ（上の層）。構築の最後に board の中身をここへ寄せる
   const artBoard = svg("svg", { viewBox: `${VIEW.x} ${VIEW.y} ${VIEW.size} ${VIEW.size}`, class: "axe-target-art", "aria-hidden": "true" });
   const board = svg("svg", { viewBox: `${VIEW.x} ${VIEW.y} ${VIEW.size} ${VIEW.size}`, class: "axe-target", role: "button", tabindex: "0",
     "aria-label": "的。ゲージ操作中はタップでも止められます。構える前は青をタップして宣言できます", "data-test": "axe-target" });
@@ -177,7 +196,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (cycles[phase]) { act(); return; }
     if (phase !== "choice" || actor !== "player" || isPaused() || suddenDeath()) return;
     const point = board.createSVGPoint(); point.x = event.clientX; point.y = event.clientY;
-    const ctm = board.getScreenCTM(); if (!ctm) return;
+    const ctm = (boardScaleG || board).getScreenCTM(); if (!ctm) return; // 一人称では変換グループの CTM で板ローカル座標へ戻す
     const p = point.matrixTransform(ctm.inverse());
     const nearest = KILLS.map(k => ({ id: k.id, d: Math.hypot(p.x - (CX + k.x * R), p.y - (CY + k.y * R)) })).sort((a, b) => a.d - b.d)[0];
     if (nearest.d <= 26) selectCall(nearest.id);
@@ -194,19 +213,38 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const artId = "axe-art-" + (++instances), vignetteId = artId + "-vignette";
   const art = svg("g", { id: artId, class: "axe-art" }, [plank,
     svg("rect", { class: "axe-vignette", x: PLANK.left, y: PLANK.top, width: PLANK.right - PLANK.left, height: PLANK.bottom - PLANK.top, fill: `url(#${vignetteId})` })]);
+  // 静止層も一人称では同じ表示変換で縮める。寄り表示（zoom）は <use> が art 自体を参照するので変換を受けず、
+  // 板ローカル座標のまま従来どおり大きく見える。板の足元にはレーンの床へ柔らかい影を落として奥行きを出す。
+  const floorShadowId = artId + "-floor-shadow";
+  const boardScaleArt = svg("g", { class: "axe-board-scale" });
+  if (tapPull) boardScaleArt.setAttribute("transform", FPS_BOARD_TRANSFORM);
+  boardScaleArt.append(art);
   artBoard.append(svg("defs", {}, [svg("radialGradient", { id: vignetteId, cx: CX, cy: CY, r: R * 1.62, gradientUnits: "userSpaceOnUse" }, [
     svg("stop", { offset: "0", "stop-color": "#fff3d6", "stop-opacity": .08 }), svg("stop", { offset: ".55", "stop-color": "#000", "stop-opacity": 0 }),
-    svg("stop", { offset: "1", "stop-color": "#000", "stop-opacity": .58 })])]), art);
+    svg("stop", { offset: "1", "stop-color": "#000", "stop-opacity": .58 })]),
+    svg("radialGradient", { id: floorShadowId }, [
+      svg("stop", { offset: "0", "stop-color": "#000", "stop-opacity": .42 }), svg("stop", { offset: ".7", "stop-color": "#000", "stop-opacity": .2 }),
+      svg("stop", { offset: "1", "stop-color": "#000", "stop-opacity": 0 })])]),
+    ...(tapPull ? [svg("ellipse", { class: "axe-floor-shadow", cx: CX, cy: 414, rx: 210, ry: 17, fill: `url(#${floorShadowId})`, "aria-hidden": "true" })] : []),
+    boardScaleArt);
+  // 一人称レーンの背景絵（#3639）: レーンの中に立った視点の絵を全面に敷き、狙いの間だけ構え（右手と斧）の絵を重ねる。
+  // 絵の中の的は無地の円盤で、得点の盤面はこれまでどおり板とSVGが担う（判定・座標は一切変えない）。
+  let laneAimImage = null, handFront = null, handFrontImage = null;
   if (tapPull) {
+    laneAimImage = svg("image", { class: "axe-lane-aim", href: ART.laneAim, x: -245, y: -107, width: 1150, height: 646.875, preserveAspectRatio: "xMidYMid slice", opacity: 0 });
     const lane = svg("g", { class: "axe-fps-lane" }, [
       svg("rect", { x: -170, y: -65, width: 1000, height: 562.5, fill: "#171f22" }),
-      svg("path", { d: "M75 -65H585L570 480H90Z", fill: "#44392d" }),
-      svg("path", { d: "M-170 497L90 480H570L830 497Z", fill: "#293232" }),
-      ...[-100, -20, 60].map(x => svg("path", { d: `M${x} -65L90 480M${660-x} -65L570 480`, fill: "none", stroke: "#56605b", "stroke-width": 3, opacity: .35 })),
-      ...[90, 200, 310, 420].map(y => svg("path", { d: `M-170 ${y}L90 ${y*.8+80}M830 ${y}L570 ${y*.8+80}`, fill: "none", stroke: "#58625b", "stroke-width": 2, opacity: .3 })),
-      svg("path", { d: "M190 -43H470", stroke: "#dab479", "stroke-width": 5 }),
+      svg("image", { class: "axe-lane-bg", href: ART.lane, x: -245, y: -107, width: 1150, height: 646.875, preserveAspectRatio: "xMidYMid slice" }),
+      laneAimImage,
     ]);
     artBoard.insertBefore(lane, artBoard.firstChild);
+    // 手元を最前面へ（#3639 オーナー指示 2026-11-18 第3弾）: 構え絵は背景に焼き込まれているため、同じ絵を
+    // 右手と斧の輪郭（HAND_SILHOUETTE）で型抜きした複写を別層で重ね、スコアピル等より上に描く。
+    // 元の構え絵とピクセル単位で重なるので見た目は変わらず、手元だけが前面に来る。タッチは受けない（CSS）。
+    const handClipId = artId + "-hand-clip";
+    handFrontImage = svg("image", { class: "axe-hand-front-img", href: ART.laneAim, x: -245, y: -107, width: 1150, height: 646.875, preserveAspectRatio: "xMidYMid slice", opacity: 0, "clip-path": `url(#${handClipId})` });
+    handFront = svg("svg", { viewBox: "-170 -65 1000 562.5", class: "axe-hand-front", "aria-hidden": "true" }, [
+      svg("defs", {}, [svg("clipPath", { id: handClipId }, [svg("path", { d: HAND_SILHOUETTE })])]), handFrontImage]);
   }
   // Painted markings at the official proportions: 20 mm black lines, red bulls, blue killshots.
   // WATL: the inner killshot is outlined in red pen, the outer may be red; the pen lines sit inside each circle so the blue reads at its true size.
@@ -279,8 +317,14 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const crosshair = svg("g", { class: "axe-crosshair" }, [
     svg("path", { class: "axe-crosshair-outline", d: bladeShape, stroke: "#160f0a", "stroke-width": 8, "stroke-linecap": "round", fill: "none", opacity: .8 }),
     svg("circle", { class: "axe-crosshair-outline", r: 3.6, fill: "none", stroke: "#160f0a", "stroke-width": 6, opacity: .8 }), ...crosshairLines]);
-  const fixedAim = svg("g", { class: "axe-fixed-aim" }, [svg("circle", { r: 7, fill: "none", stroke: "#e5bd70", "stroke-width": 2 }),
-    svg("path", { d: "M-12 0H12 M0-12V12", stroke: "#e5bd70", "stroke-width": 1 })]);
+  // 狙いの印（#3639）: 指先でつまんで動かせる二重リング＋上下左右のノッチ＋中心の縦スリット（斧の刃の向き）。
+  // 暗い木目でも沈まないよう暗い下地の輪を敷く。座標・判定は従来どおり aim の位置そのもの。
+  const fixedAim = svg("g", { class: "axe-fixed-aim" }, [
+    svg("circle", { r: 19, fill: "none", stroke: "#160f0a", "stroke-width": 6, opacity: .5 }),
+    svg("circle", { r: 17, fill: "none", stroke: "#fff3dc", "stroke-width": 2.5 }),
+    svg("circle", { r: 7, fill: "none", stroke: "#fff3dc", "stroke-width": 2 }),
+    svg("path", { d: "M0 -22V-13 M0 13V22 M-22 0H-13 M13 0H22", stroke: "#fff3dc", "stroke-width": 2.5, "stroke-linecap": "round" }),
+    svg("path", { d: "M0 -4.5V4.5", stroke: "#fff3dc", "stroke-width": 2, "stroke-linecap": "round" })]);
   // 弾き方の小さな見本（指摘13）: はじめの一投の構えで、狙いの下から指が「上へ弾く」動きを2回だけ見せる。読む代わりに見せる
   const flickHint = svg("g", { class: "axe-flick-hint", opacity: 0, "aria-hidden": "true", "pointer-events": "none", "data-test": "axe-flick-hint" });
   function playFlickHint() {
@@ -316,18 +360,15 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   board.append(zoneHalo, calledRing, powerShift, releaseDot, contactShadow, impacts, impactMark, trail, ...ghosts, flying, fixedAim, crosshair, flickHint, impactFx,
     gaugeLabel(CX, VIEW.y + VIEW.size - 10, tapPull ? "↔ 横 · 金の印でタップ" : "↔ 横", "#a9dcef", "middle", "horizontal"),
     gaugeLabel(tapPull ? PLANK.right - 30 : VIEW.x + VIEW.size - 8, CY - 26, "↕ 縦", "#f1c983", "end", "vertical"), guideX, guideY, xNeedle, yNeedle, sdBadge);
-  // 一人称の手（指摘2）: 待機→構え（触れた瞬間）→引き（弾いている間）→振り抜き→フォロースルー。姿勢は補間せず瞬時に変える（#049）。
-  const hands = tapPull ? svg("g", { class: "axe-fps-hands", "aria-hidden": "true" }, [
-    svg("path", { d: "M830 498H645L587 438 600 398 636 411Z", fill: "#222a31", stroke: "#11191e", "stroke-width": 5 }),
-    svg("path", { d: "M602 423L589 391Q585 375 598 374L622 382 636 409 625 432Z", fill: "#cba37d", stroke: "#72513a", "stroke-width": 2 }),
-    svg("path", { d: "M617 419L593 244", fill: "none", stroke: equipment.handle, "stroke-width": 14 }),
-    svg("path", { d: "M592 244L545 224 527 256 585 278 606 268 604 244Z", fill: "#46545c", stroke: "#172126", "stroke-width": 3 }),
-    svg("path", { d: "M545 224L527 256 540 263 557 231Z", fill: "#b7c2c0" }),
-    svg("path", { d: "M613 404L617 431", stroke: equipment.grip, "stroke-width": 15 }),
-    svg("path", { d: "M710 498H556L593 444 622 429 648 446Z", fill: "#252c32", stroke: "#11191e", "stroke-width": 5 }),
-    svg("path", { d: "M607 445L597 427Q594 416 606 416L631 424Q643 432 632 450L620 459Z", fill: "#d1aa83", stroke: "#72513a", "stroke-width": 2 }),
-  ]) : null;
+  // 一人称の手（指摘2）: 以前はSVGの手と斧を重ねていたが、#3639 で構えの絵（背景に描き込んだ右手と斧）に置き換えた。
+  // 狙いの間は laneAim の絵が手元を担い、投げた瞬間に素のレーンへ戻って飛ぶ斧（SVG）へ繋ぐ。hands は常に null（姿勢まわりの分岐は休眠）。
+  const hands = null;
   if (hands) board.append(hands);
+  // 一人称では上の層（照準・針・飛ぶ斧・着弾）も静止層と同じ表示変換で縮める。中身はすべて板ローカル座標のまま。
+  boardScaleG = svg("g", { class: "axe-board-scale" });
+  if (tapPull) boardScaleG.setAttribute("transform", FPS_BOARD_TRANSFORM);
+  while (board.firstChild) boardScaleG.append(board.firstChild);
+  board.append(boardScaleG);
   // 構えの姿勢（回転の中心は画面の右下の外＝肘のあたり）。flight は tick がフォロースルーを描く
   // 回転の中心は握り（手の斧の柄の下）。構えは迷ったら1.5倍（#028）で、腕が上がったと分かる大きさに
   const HAND_PIVOT = " 615 430", HAND_POSES = { rest: "", ready: "translate(0 -27) rotate(-6" + HAND_PIVOT + ")", windup: "translate(4 -46) rotate(-9" + HAND_PIVOT + ")" };
@@ -354,6 +395,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const calls = el("div.axe-calls", [el("button.axe-button", { text: "通常", dataset: { call: "normal" }, onclick: () => selectCall(null) }),
     ...KILLS.map(target => el("button.axe-button", { text: killPlaces[target.id] + "の青",
       dataset: { call: target.id }, onclick: () => selectCall(target.id) }))]);
+  // 宣言の札の見出し（#3639 オーナー指示 2026-11-18 第3弾「左上のどこを狙うUIが分かりにくい」）:
+  // 札の真上に「ねらい」の小さな札を浮かべ、何を選ぶ場所か一目で分かるようにする。表示条件は札本体とそろえる。
+  const callsLabel = tapPull ? el("div.axe-calls-label", { dataset: { test: "axe-calls-label" }, text: "ねらい" }) : null;
   const liveValue = el("strong"), liveReason = el("span.axe-live-reason");
   const liveScore = el("div.axe-live-score", { hidden: true, dataset: { test: "axe-live-score" } }, [el("span.axe-live-label", { text: "今の刃先" }), liveValue, liveReason]);
   const needle = el("span.axe-needle", { dataset: { test: "axe-needle" } });
@@ -416,14 +460,20 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   // 的は中央。狙いの札（通常・青の宣言）は的の上に重ね、構えたら消える。回転ゲージは的のすぐ右に縦で立つ。
   // 左は見守りの一言とチャレンジ（投げている間は消える）、右は結果と操作のボタンだけ。
   const throwZone = el("div.axe-throw", { dataset: { test: "axe-throw" } }, [action, retry]);
+  // 狙いの案内（#3639・UI案A）: 的の上に「どこを狙う？」を浮かべ、今が狙う位置を決める場面だと一目で分かるようにする。
+  // 宣言中は同じ場所の宣言札に切り替える。タッチは一切受けない（pointer-events: none はCSS）。
+  const aimPromptTitle = el("strong.axe-aim-prompt-title", { text: "どこを狙う？" });
+  const aimPromptSub = el("span.axe-aim-prompt-sub", { text: "的に触れて位置を決め、上へ弾いて投げる" });
+  const aimPrompt = tapPull ? el("div.axe-aim-prompt", { hidden: true, dataset: { test: "axe-aim-prompt" }, "aria-hidden": "true" }, [aimPromptTitle, aimPromptSub]) : null;
   const boardPane = el("div.axe-board-pane", [
-    el("p.axe-legend", { text: "赤6 · 5の円 · リング4〜1 · 宣言した青7／8" }), artBoard, board, zoom, calls, status]),
+    el("p.axe-legend", { text: "赤6 · 5の円 · リング4〜1 · 宣言した青7／8" }), artBoard, board, zoom, calls, callsLabel, status, aimPrompt, handFront]),
     side = el("aside.axe-side", { dataset: { test: "axe-side" } }, [matchScore, goals, companionCard]),
     panel = el("aside.axe-panel", [matchRecords, steps, liveScore, resultCard, note, feedback, steadiness, stability, keyhint, controls, throwZone]);
   const body = el("div.axe-body", [side, boardPane, timing, panel]);
   // #2729 (2026-11-08): the per-throw strip shares the sign's row (between the title and the total), so the board gets that row's height.
-  heading.insertBefore(scoreboard, total);
+  if (scorePill) scorePill.append(scoreboard); else heading.insertBefore(scoreboard, total);
   root.append(heading, body, announcement);
+  if (scorePill) root.append(scorePill);
   // #2718: 始まった瞬間の切り替えの幕。見た目だけ（文字はCSSで描き、読み上げ・入力・時計・判定には触れない）。動きを減らす設定では出さない。
   if (!reducedMotion) {
     const label = tutorial ? "マキの無料1投レッスン" : versus ? rivalName + "と対戦" : mode === "league" ? "10投ゲーム" : "3投の練習";
@@ -806,6 +856,25 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       const pose = ["horizontal", "vertical", "power"].includes(phase) && actor === "player" ? (pullInput?.pulling ? "windup" : "ready") : "rest";
       if (hands.dataset.pose !== pose) { hands.dataset.pose = pose; hands.setAttribute("transform", HAND_POSES[pose]); hands.setAttribute("opacity", 1); }
     }
+    // 一人称の構え絵と狙いの案内（#3639）: 自分が狙う間だけ構え（右手と斧）の絵を重ね、投げた瞬間に素のレーンへ戻して飛ぶ斧へ繋ぐ。
+    // 最前面の手元（型抜き複写）も同じ条件で出し入れする。
+    const aimShown = actor === "player" && ["choice", "horizontal", "vertical", "power"].includes(phase) ? 1 : 0;
+    if (laneAimImage) laneAimImage.setAttribute("opacity", aimShown);
+    if (handFrontImage) handFrontImage.setAttribute("opacity", aimShown);
+    if (aimPrompt) {
+      // 宣言中は同じ位置の宣言札で狙いを示す。構え・回転中にも残す。
+      const show = !called && actor === "player" && ["choice", "horizontal", "vertical"].includes(phase) && !isPaused();
+      aimPrompt.hidden = !show;
+      if (show) {
+        const title = "どこを狙う？";
+        if (aimPromptTitle.textContent !== title) aimPromptTitle.textContent = title;
+        const firstThrow = shots.length === 0 && gameIndex === 0 && (!versus || match.opponent.length === 0);
+        const sub = phase === "horizontal" ? "横の針を、金の印で止める" : phase === "vertical" ? "縦の針を、金の印で止める"
+          : firstThrow || tutorial ? "的に触れて位置を決め、上へ弾いて投げる" : "";
+        if (aimPromptSub.textContent !== sub) aimPromptSub.textContent = sub;
+        aimPromptSub.hidden = !sub;
+      }
+    }
     root.dataset.outcome = displayedShot?.outcome || "";
     root.dataset.special = String(Boolean(displayedShot) && impactFeedback(displayedShot).special);
     root.dataset.focused = String(moving && held < focusUntil);
@@ -885,7 +954,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
         return el("div.axe-score-row", { role: "row", dataset: { thrower: id, active: String(mine) } }, [
           // #2834: ひとりで投げる時の「各投」は帯を見れば分かるので読み上げ用だけ。対戦の名前は見せる。
           el(versus ? "span.axe-score-name" : "span.axe-score-name.axe-quiet", { text: versus ? (id === "player" ? "あなた" : rivalName) : "各投" }),
-          el("div.axe-score-tiles", [...tiles, ...sdTiles]),
+          el("div.axe-score-tiles", tapPull ? { tabindex: "0", role: "group", "aria-label": "各投の得点。延長戦は横にスクロール" } : {}, [...tiles, ...sdTiles]),
           // #2834: 宣言の残りは青いバッジ1つ（斧のマーク＋数）。
           el("span.axe-score-calls", { role: "img", title: "キルショットの宣言 残り" + ks.remaining + "回", "aria-label": "宣言 残り" + ks.remaining + "回", dataset: { remaining: String(Math.max(ks.remaining, 0)) } },
             [axeMark(), el("b", { "aria-hidden": "true", text: String(Math.max(ks.remaining, 0)) })]),
@@ -908,7 +977,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const ks = killState(currentShots, rules.throws);
     // #2834: 残り回数の文は青いバッジと読み上げに任せ、画面には宣言中・サドンデスの時だけ出す。
     status.dataset.kind = sd ? "sudden-death" : called ? "called" : "remaining";
-    status.textContent = sd ? "サドンデス：" + killPlaces[called] + "の青 · 刃が触れれば勝ち" : called ? "宣言中：" + killPlaces[called] + "の青 · 青以外0点"
+    status.textContent = sd ? "サドンデス：" + killPlaces[called] + "の青 · 刃が触れれば勝ち" : called ? (tapPull ? "キルショット宣言\n" : "宣言中：") + killPlaces[called] + "の青 · 青以外0点"
       : "キルショット 残り" + ks.remaining + "回" + (ks.bonus ? "（落下で+" + ks.bonus + "）" : "") + (ks.mustRow ? " · " + (ks.mustRow === "upper" ? "上" : "下") + "の青だけ" : "");
     for (const button of calls.children) {
       const id = button.dataset.call;
@@ -986,7 +1055,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       zoomPower.textContent = "回転 " + Math.round(zoomShot.power * 100) + "%";
       zoom.setAttribute("aria-label", "刃の着地点の拡大。" + zoomShot.score + "点・" + label + "・" + zoomPower.textContent);
     }
-    calls.hidden = (tapPull ? !["choice", "power"].includes(phase) || pullInput?.pulling : phase !== "choice") || sd; reaim.hidden = !cycles[phase]; retry.hidden = !allowRetry || phase !== "summary" || Boolean(series && !seriesWinner());
+    calls.hidden = (tapPull ? !["choice", "power"].includes(phase) || pullInput?.pulling : phase !== "choice") || sd; if (callsLabel) callsLabel.hidden = calls.hidden;
+    reaim.hidden = !cycles[phase]; retry.hidden = !allowRetry || phase !== "summary" || Boolean(series && !seriesWinner());
     controls.hidden = steadiness.hidden = !moving;
     focusButton.disabled = isPaused() || focusUsed || performance.now() - lastAction < T.guard;
     const remaining = Math.max(0, focusUntil - held);

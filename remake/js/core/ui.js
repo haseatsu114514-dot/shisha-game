@@ -140,6 +140,13 @@ export function imageReady(url, ms = 1500, { keep = false, pin = false } = {}) {
   });
 }
 
+/** URL がすでに読み込み・デコード済みでキャッシュに残っているかを同期で返す。 */
+imageReady.isReady = (url) => {
+  if (!url) return false;
+  const entry = bgReady.get(url);
+  return !!entry?.done && (!entry.keep || !!entry.image);
+};
+
 // ---------------------------------------------------------------- UIの絵の先読み
 
 // 会話枠・ボタン・看板・ハート・ゲージ・通知の生成画像とスロットの図柄・枠は CSS の背景なので、

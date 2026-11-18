@@ -53,6 +53,28 @@
    "blob": "ee9cdc46ee73b32f66e8d8eb7c632bc819aebdcc",
    "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
   },
+  "bg_axe_lane.png": {
+   "place": "axe_lane",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 44,
+   "blob": "876a12e342cdf89a7372b759a3cd5a48e387ed63"
+  },
+  "bg_axe_lane_aim.png": {
+   "place": "axe_lane_aim",
+   "time": "",
+   "weather": "",
+   "size": [
+    1280,
+    720
+   ],
+   "luma": 45,
+   "blob": "d9d979c28527b496e07e16e2f9c7f4ff985f0c96"
+  },
   "bg_axe_lounge_night.png": {
    "place": "axe_lounge",
    "time": "night",

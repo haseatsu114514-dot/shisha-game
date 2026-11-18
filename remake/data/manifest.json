@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-18 12:01 UTC",
+ "generated": "2026-11-18 11:02 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -618,7 +618,9 @@
   "trpg_purikura-hero_room.png",
   "trpg_shark-island_room.png",
   "trpg_smoke-robot_room.png",
-  "trpg_stage-ghost_room.png"
+  "trpg_stage-ghost_room.png",
+  "bg_axe_lane.png",
+  "bg_axe_lane_aim.png"
  ],
  "cgs": [
   "cg_ageha_confession.png",
@@ -781,6 +783,7 @@
   "shisha_home_stand_custom_engraved.png",
   "shisha_home_stand_custom_melty.png",
   "shisha_home_stand_custom_tosu.png",
+  "shisha_home_stand_stainless.png",
   "shisha_home_stand_walnut.png",
   "shisha_home_tabletop.png"
  ],
@@ -3772,7 +3775,10 @@
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
-  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png"
+  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
+  "backgrounds/bg_axe_lane.png",
+  "backgrounds/bg_axe_lane_aim.png",
+  "ui/scene_props/shisha_home_stand_stainless.png"
  ],
  "limeMedia": {
   "st_adam_bless": {

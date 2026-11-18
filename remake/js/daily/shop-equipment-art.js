@@ -14,4 +14,5 @@ export const SHOP_EQUIPMENT_ART = {
   "amaburst_hms": { url: new URL("../../img/shop/equipment-v2/amaburst_hms.webp", import.meta.url).href, size: [512, 512], box: [126, 171, 270, 175] },
   "tanukish_lid": { url: new URL("../../img/shop/equipment-v2/tanukish_lid.webp", import.meta.url).href, size: [512, 512], box: [130, 141, 278, 237] },
   "winkwink_hagal": { url: new URL("../../img/shop/equipment-v2/winkwink_hagal.webp", import.meta.url).href, size: [512, 512], box: [100, 150, 328, 239] },
+  "stand_stainless": { url: new URL("../../img/shop/equipment-v2/stand_stainless.webp", import.meta.url).href, size: [512, 512], box: [197, 84, 118, 347] },
 };

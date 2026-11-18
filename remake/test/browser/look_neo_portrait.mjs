@@ -914,8 +914,9 @@ await suite("look_neo_portrait", async (check) => {
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_config") || "{}").look), "classic");
     assert.equal(await page.locator(`${t("cfg-look")} button[value="classic"]`).getAttribute("aria-checked"), "true");
     await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true");
-    // 新版へ戻すと、開いたままの設定が再びシートに写る
-    await page.locator(`${t("cfg-look")} button[value="neo"]`).evaluate((node) => node.click());
+    // 新版へ戻すと、開いたままの設定が再びシートに写る（LK23: 新版は設定UIからは選べないため、プログラム経由で戻す）
+    assert.equal(await page.locator(`${t("cfg-look")} button[value="neo"]`).count(), 0);
+    await page.evaluate(async () => (await import("./js/core/look.js")).setLook("neo"));
     await page.locator('.retro-sheet[data-kind="modal"]').waitFor();
     await page.waitForFunction(() => !document.documentElement.dataset.rotateGuard);
     await page.locator(t("sheet-cfg-close")).tap();

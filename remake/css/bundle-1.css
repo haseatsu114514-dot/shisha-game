@@ -1982,9 +1982,9 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-game.axe-in-stage .axe-calls [data-call="lower-left"] { left: 10px; bottom: 10px; }
 .axe-game.axe-in-stage .axe-calls [data-call="lower-right"] { right: 10px; bottom: 10px; }
 .axe-game.axe-in-stage .axe-calls [data-call="normal"] { left: 50%; bottom: 10px; width: 132px; margin-left: -66px; }
-/* 「宣言中：…」の一言は画面に出さない（2026-11-11 オーナー指示）。選んだ札そのものを目立たせ、宣言した青は輪で囲む。文は読み上げ用に残す。
+/* ゲージ式では選択札と青の輪を使い、宣言文は読み上げ用に残す。一人称は末尾の宣言札を使う（#3807）。
    サドンデスは札が出ないので、狙う青の一言を的の上に1行で出す。 */
-.axe-game.axe-in-stage .axe-board-pane > .axe-call-status[data-kind="called"] { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important;
+.axe-game.axe-in-stage:not(.axe-first-person) .axe-board-pane > .axe-call-status[data-kind="called"] { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important;
   overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
 .axe-game.axe-in-stage .axe-board-pane > .axe-call-status[data-kind="sudden-death"] { position: absolute; left: 50%; top: 44px; z-index: 2; transform: translateX(-50%); margin: 0; padding: 4px 16px;
   border: 1px solid #7fc4ee; border-radius: 999px; background: #0b1211eb; color: #dff2ff; white-space: nowrap; pointer-events: none; }
@@ -2139,7 +2139,9 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
    Keep #3472's header/score/chalk artwork; scope every layout change to the new input. */
 .axe-game[data-input-mode="tap-pull"].axe-first-person { padding: 0; gap: 0; overflow: hidden; background: #172025; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-body { display: block !important; position: absolute; inset: 0; grid-template-columns: none; }
-.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-header { position: absolute; z-index: 5; top: 18px; left: 24px; right: 24px; min-height: 72px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-header { position: absolute; z-index: 5; top: 18px; right: 24px; }
+/* スコア類は右上のピルへ寄せたので、上部バーは ？／× だけを残し、看板の板（::before）も外してレーンの奥行きを見せる */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-header::before { display: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-board-pane { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; aspect-ratio: auto; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: hidden; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person :is(.axe-target-art, .axe-target) { position: absolute; inset: 0; display: block; width: 100%; height: 100%; max-width: none; max-height: none; aspect-ratio: auto; margin: 0; border: 0; border-radius: 0; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-target { z-index: 1; touch-action: none; }
@@ -2237,6 +2239,67 @@ html:root[data-density="phone"] body:not(:root) .axe-bar-menu[data-view="gear"] 
 .axe-game[data-on-target="true"] .axe-aim-guide path { fill: #8ff0a4; }
 /* 横・縦の針を止めている間は「今の刃先」と止めるボタン・息を整えるが並ぶので、右下の枠を上へ広げる（今の刃先が切れないように） */
 .axe-game[data-input-mode="tap-pull"].axe-first-person:is([data-phase="horizontal"],[data-phase="vertical"]) .axe-panel { max-height: 64%; }
+
+/* 2026-11-18 #3639 一人称画面の仕上げ: レーン背景絵・構え絵・狙いの案内・HUD削減・フォントの雰囲気。
+   すべて tap-pull（一人称）だけに効かせ、ゲージ式の画面と判定・操作には触れない。 */
+/* 構え絵は狙いの間だけふわりと重なる */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-lane-aim { transition: opacity .3s ease; }
+/* 狙いの案内（的の上・中央）: 明朝の見出し＋真鍮色の添え字。タッチは受けない */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt { position: absolute; z-index: 4; left: 50%; top: 15%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 3px; pointer-events: none; text-align: center; white-space: nowrap; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt[hidden] { display: none !important; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt-title { font-family: "Craft Mincho", var(--font), serif; font-size: 27px; font-weight: 700; letter-spacing: .08em; line-height: 1.25; color: #f5ead6; text-shadow: 0 2px 10px rgba(0,0,0,.82), 0 0 20px rgba(214,152,68,.18); }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt-sub { font-size: 14px; font-weight: 600; letter-spacing: .04em; color: #e5be7e; text-shadow: 0 1px 6px rgba(0,0,0,.9); }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt-sub[hidden] { display: none !important; }
+/* HUD削減: プレイ中に要らないタイトル・副題と合計の分母（/ ○○点）は一人称では出さない。合計は明朝の大数字を主役にする */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-header > div:first-child { display: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-total > span { display: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-total strong { font-family: "Craft Mincho", var(--font), serif; font-size: 40px; color: #f5ead6; text-shadow: 0 2px 10px rgba(0,0,0,.82), 0 0 20px rgba(214,152,68,.18); }
+/* 結果の英語見出し（BULL'S EYE 等）も明朝で格調を出す */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-result-label { font-family: "Craft Mincho", var(--font), serif; letter-spacing: .1em; }
+/* 盤面のリング番号は白フチをやめ、木に焼き付けたステンシル調に（一人称の板だけ） */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-markings text { fill: rgba(38,24,12,.76); stroke: none; font-weight: 600; }
+/* 最上端の警告ストライプ（工事現場の印象）は一人称では外し、天井の梁とスポットライトまで抜く */
+.axe-game[data-input-mode="tap-pull"].axe-first-person::after { display: none; }
+/* #3807: 明るいランプの前でも宣言ボタンを読めるよう、不透明な暗色を敷く（一人称だけ）。 */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-calls .axe-button { background-color: #101c25; color: #effbff; border-radius: 10px; }
+/* #3807: 右上のスコア欄は情報と得点表を別段にする。10投分の幅を確保し、名前・宣言残数との取り合いをなくす。
+   ？／×の左隣。延長戦が増えた場合だけ得点列を横スクロールできる。 */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill { position: absolute; z-index: 5; top: 14px; right: 136px; display: grid; grid-template-columns: auto auto minmax(0,1fr) auto; align-items: center; gap: 4px 12px; box-sizing: border-box; width: 820px; max-width: calc(100% - 160px); padding: 4px 14px; line-height: 1.2; border: 1px solid rgba(232, 184, 110, .5); border-radius: 12px; background: #080b0aeb; box-shadow: 0 4px 14px rgba(0, 0, 0, .35); pointer-events: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-division { order: 1; margin: 0; padding: 2px 7px; font-size: 12px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-scoreboard { order: 6; grid-column: 1 / -1; min-width: 0; width: 100%; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-score-row { grid-template-columns: 4em minmax(0,1fr) auto 2.5em; gap: 8px; font-size: 18px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-score-row:has(> .axe-score-name.axe-quiet) { grid-template-columns: minmax(0,1fr) auto; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-score-name { min-width: 0; font-size: 18px; overflow-wrap: anywhere; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-score-tiles { overflow-x: auto; padding: 2px; pointer-events: auto; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-score-tiles:focus-visible { outline: 2px solid #9cecff; outline-offset: 1px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-tile i { font-size: 12px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-tile { padding: 0; flex: 1 0 32px; display: flex; align-items: center; justify-content: center; gap: 2px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-tile-sd { flex-basis: 64px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-tile strong { font-size: 18px; line-height: 1.1; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-tile em { position: static; transform: none; font-size: 12px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-score-calls { font-size: 18px; line-height: 1; padding: 1px 7px; gap: 3px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-score-total { min-width: 0; font-size: 20px; line-height: 1; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total { order: 3; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total small { font-size: 12px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total strong { font-size: 24px; line-height: 1; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total-next { font-size: 12px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-round { order: 4; margin: 0; padding: 0; border: 0; max-width: none; font-size: 18px; white-space: normal; overflow-wrap: anywhere; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-heat { order: 5; margin: 0; padding: 2px 6px; font-size: 16px; }
+/* 手元を最前面へ（#3639 オーナー指示 2026-11-18 第3弾）: 構え絵から右手と斧だけを型抜きした複写（.axe-hand-front）を
+   スコアピル（z 5）より上に重ねる。元の構え絵とピクセル単位で重なるため見た目は変わらず、手元が隠れなくなる。タッチは受けない */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-hand-front { position: absolute; inset: 0; z-index: 6; display: block; width: 100%; height: 100%; pointer-events: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-hand-front-img { transition: opacity .3s ease; }
+/* 宣言の札の見出し（#3639 オーナー指示 2026-11-18 第3弾）: 札の真上に「ねらい」の小さな札を浮かべ、何を選ぶ場所か一目で分かるようにする */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-calls-label { position: absolute; z-index: 3; left: 3%; top: 20%; transform: translateY(calc(-100% - 8px)); padding: 3px 12px 4px; border: 1px solid rgba(232, 184, 110, .35); border-radius: 999px; background: rgba(8, 11, 10, .55); color: #f5ead6; font-size: 14px; font-weight: 700; letter-spacing: .14em; pointer-events: none; }
+/* #3807: 宣言は一瞬の演出に頼らず、通常の狙い案内と同じ場所に投げ終わるまで残す。
+   文字の背景は不透明にし、手元より前に出す。入力・ゲームの時計には干渉しない。 */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-board-pane > .axe-call-status:is([data-kind="called"], [data-kind="sudden-death"]) {
+  display: block; position: absolute; z-index: 7; left: 50%; right: auto; top: 15%; transform: translateX(-50%);
+  box-sizing: border-box; width: 44%; max-width: none; margin: 0; padding: 8px 14px; border: 2px solid #9cecff; border-radius: 10px;
+  background: #091923; color: #effbff; font-size: 26px; font-weight: 800; line-height: 1.35; text-align: center; white-space: pre-line; pointer-events: none;
+}
+.axe-game[data-input-mode="tap-pull"].axe-first-person:is([data-phase="result"], [data-phase="summary"]) .axe-board-pane > .axe-call-status { display: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-calls .axe-button[aria-pressed="true"] { background-color: #163e59; color: #fff; }
 
 /* ===== css/camel-race.css ===== */
 /* CAMEL RACE（第4章ドバイ編の任意ミニゲーム）。本編の #stage（1280×720）に重ねる。
@@ -3184,6 +3247,7 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 .ichi-leader-ring { display: grid; width: 92px; height: 92px; padding: 4px; border-radius: 50%; background: linear-gradient(135deg, #f6e2a8, #b98c3a 55%, #6d4f1c); box-shadow: 0 5px 14px rgba(0, 0, 0, 0.65); transition: box-shadow 0.2s; }
 .ichi-leader.is-foe .ichi-leader-ring { background: linear-gradient(135deg, #e6d3f5, #9b78c4 55%, #4a3470); }
 .ichi-leader.is-active .ichi-leader-ring { box-shadow: 0 0 0 3px rgba(255, 210, 122, 0.95), 0 0 24px rgba(240, 138, 43, 0.85); }
+.ichi-leader.is-foe.is-active .ichi-leader-ring { box-shadow: 0 0 0 3px rgba(230, 211, 245, 0.95), 0 0 20px rgba(155, 120, 196, 0.9); }
 .ichi-face { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #150d22; display: block; }
 .ichi-face.is-blank { display: grid; place-items: center; font-size: 34px; font-weight: 900; color: var(--ichi-gold); }
 .ichi-leader-plate { display: grid; gap: 0; justify-items: start; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8); }
@@ -3381,9 +3445,9 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 .ichi-seat { animation: ichi-seat-in 0.9s var(--ease-out) 0.15s both; }
 @keyframes ichi-board-in { from { transform: translateY(260px) rotateX(66deg) scale(0.8); } }
 @keyframes ichi-seat-in { from { transform: translateY(18px) scale(0.94); opacity: 0; } }
-/* 番が替わると、卓の見え方が少し動く（相手の番は相手の方へ目を上げる） */
+/* 番が替わると、卓の見え方が少し動く（相手の番は相手の方へ目を上げる。4人対戦では手番の相手だけ寄せる） */
 .ichi-game[data-turn="foe"] .ichi-board { transform: translateY(7px) rotateX(50.5deg) scale(0.985); }
-.ichi-game[data-turn="foe"] .ichi-seat { transform: scale(1.06); }
+.ichi-game[data-turn="foe"] .ichi-seat.is-active { transform: scale(1.06); }
 /* マットの半分（相手と自分で同じ並び・同じ大きさ。卓のまんなかで点対称）。相手の札は向こう向き */
 .ichi-half { display: grid; gap: 10px; align-items: stretch; min-height: 0; }
 .ichi-mine { grid-template-columns: 128px minmax(0, 1fr) 128px 72px; }
@@ -3398,10 +3462,14 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 /* ── HUD 左上: 相手の点・票、熱と帯、主役の葉と体力 ── */
 .ichi-hud-left { position: absolute; left: 12px; top: 8px; width: 280px; display: grid; gap: 6px; justify-items: start; pointer-events: none; }
 .ichi-hud-left > * { pointer-events: auto; }
-.ichi-foe-panel { position: relative; width: 280px; display: grid; gap: 5px; padding: 8px 12px 9px; border-radius: 12px; background: rgba(21, 13, 34, 0.82); border: 1px solid rgba(201, 167, 230, 0.45); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5); }
-.ichi-foe-panel > .ichi-leader { display: block; }
-.ichi-foe-panel .ichi-leader-plate { display: flex; align-items: baseline; gap: 10px; }
-.ichi-foe-panel .ichi-leader-score b { font-size: 34px; }
+.ichi-foe-panel { position: relative; width: 280px; display: grid; gap: 5px; padding: 8px 12px 9px; border-radius: 12px; background: rgba(21, 13, 34, 0.82); border: 1px solid rgba(201, 167, 230, 0.45); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5); transition: border-color 0.3s, box-shadow 0.3s; }
+.ichi-game[data-turn="foe"] .ichi-foe-panel { border-color: var(--ichi-lav); box-shadow: 0 0 0 2px rgba(201, 167, 230, 0.82), 0 0 24px rgba(155, 120, 196, 0.4), 0 6px 16px rgba(0, 0, 0, 0.5); }
+.ichi-foe-panel > .ichi-leader { grid-template-columns: auto minmax(0, 1fr); gap: 8px; width: 100%; }
+.ichi-foe-panel .ichi-leader-ring { width: 46px; height: 46px; padding: 2px; }
+.ichi-foe-panel .ichi-face.is-blank { font-size: 24px; }
+.ichi-foe-panel .ichi-leader-plate { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; min-width: 0; }
+.ichi-foe-panel .ichi-leader-name { flex: 1 0 100%; line-height: 1.15; white-space: normal; }
+.ichi-foe-panel .ichi-leader-score b { font-size: 26px; }
 .ichi-foe-gauge { display: grid; gap: 4px; }
 .ichi-foe-heat { display: flex; align-items: center; gap: 6px; max-width: 100%; }
 .ichi-foe-heat b { font-size: 24px; font-weight: 900; line-height: 1; font-family: var(--font-dot); color: #e6d3f5; min-width: 20px; text-align: center; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8); }
@@ -9236,6 +9304,7 @@ body:is(.reduce-shake, .vn-skip) .tx-shiver { animation: none; }
   cursor: pointer;
 }
 .vn-ctl:hover, .vn-ctl:focus-visible { color: var(--text); border-color: var(--gold); }
+.vn-ctl:focus:not(:focus-visible) { outline: none; }
 .vn-ctl:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 .vn-ctl.on { color: #1a1206; background: var(--gold); border-color: var(--gold); }
 
@@ -10788,10 +10857,10 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .hud-exp[hidden], .hidane-badge[hidden] { display: none; }
 .hud-exp { position: relative; display: flex; align-items: center; gap: 6px; height: 18px; padding: 0 9px; font-size: 13px; color: var(--gold); }
 .hud-exp .hx-lv { font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; min-width: 3.2em; }
-.hud-exp .hx-bar { position: relative; flex: 1 1 auto; min-width: 30px; height: 6px; border-color: rgba(244, 210, 122, 0.6); }
-.hud-exp .hx-bar b { position: absolute; left: 0; top: 0; bottom: 0; width: 0; }
-.hud-exp .hx-today { background: rgba(255, 226, 150, 0.55); }
-.hud-exp .hx-settled { z-index: 1; background: linear-gradient(90deg, #c08a2a, #f4d27a); }
+.hud-exp .hx-bar { position: relative; flex: 1 1 auto; min-width: 30px; height: 8px; border-color: rgba(244, 210, 122, 0.6); }
+.hud-exp .hx-bar b { position: absolute; left: 0; top: 0; bottom: 0; width: 0; height: auto; }
+.hud-exp .hx-today { background: rgba(255, 186, 102, 0.55); }
+.hud-exp .hx-settled { z-index: 1; background: linear-gradient(90deg, #e07b24, #ffad42); }
 .hud-exp .hx-left { font-size: 12px; font-weight: 700; color: var(--text-dim); white-space: nowrap; }
 .hud-exp .hx-target { flex: none; font-size: 12px; font-weight: 700; color: #b8741a; white-space: nowrap; }
 .hud-exp .hx-target[hidden] { display: none; }
@@ -11683,7 +11752,7 @@ body:not(:root) #hud .hud-card :is(.hud-stamina, .hud-exp) { gap: 8px; }
 /* 経験値のゲージも体力と同じ太さ・同じ角の丸み・同じ内側の余白にする（オーナー指示 2026-11-08「太さ同じにしたい」） */
 /* 長さも体力と共通の 120px にそろえて少し短くする（#3034・オーナー指示 2026-11-09）。「今夜 Lv UP」等の文字が出る時は、その分だけ縮んでよい（潰れすぎない範囲で）。 */
 body:not(:root) #hud .hud-card .hud-exp .hx-bar { box-sizing: border-box; height: 12px; border-radius: 6px; flex: 0 1 120px; }
-body:not(:root) #hud .hud-card .hud-exp .hx-bar b { top: 1px; bottom: 1px; left: 1px; max-width: calc(100% - 2px); border-radius: 4px; }
+body:not(:root) #hud .hud-card .hud-exp .hx-bar b { top: 1px; bottom: 1px; left: 1px; height: auto; max-width: calc(100% - 2px); border-radius: 4px; }
 body:not(:root) #hud .hud-card .hud-exp[data-milestone="true"] .hx-bar::after { top: 4px; }
 
 /* 地図の案内パネル: 選んだスポットの写真と名前だけを表示する。 */
@@ -12191,7 +12260,7 @@ body:not(:root) .bench-top:has(> .ch2-tournament-menu) .bench-progress { padding
 .spot-pin .pin-visual:has(.pin-person:nth-child(3)) .evt-badge { top: 16px; }
 /* 店主とゲストを看板の左上に並べる。クリックは親のピンへ通す。 */
 .spot-pin .pin-people { position: absolute; top: -24px; left: -4px; right: auto; display: flex; justify-content: flex-start; gap: 2px; pointer-events: none; }
-.spot-pin .pin-person { display: block; flex: 0 0 30px; width: 30px; min-width: 0; height: 30px; border: 2px solid #e2d9c7; border-radius: 50%; object-fit: contain; background: #211c2b; box-shadow: 0 2px 4px #0008; }
+.spot-pin .pin-person { display: block; flex: 0 0 30px; width: 30px; min-width: 0; height: 30px; border: 2px solid #e2d9c7; border-radius: 50%; overflow: hidden; object-fit: contain; background: #211c2b; box-shadow: 0 2px 4px #0008; }
 .spot-pin .pin-unknown { position: relative; color: #f2e8d1; }
 .pin-unknown svg { display: block; width: 100%; height: 100%; fill: #666171; }
 .pin-unknown b { position: absolute; inset: 0; display: grid; place-items: center; font: bold 16px/1 var(--font); text-shadow: 0 1px 2px #000; }

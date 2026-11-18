@@ -29,7 +29,8 @@ await suite("premium-shop", async check => {
     await tap(page, "detail-stand_stainless");
     assert.match(await page.locator(".shop-current").innerText(), /家で使用中：ミャア 卓上台/);
     assert.match(await page.locator(".shop-detail .equipment-guide").innerText(), /点数は変わらない/);
-    assert.equal(await page.locator(".shop-detail .shop-type-mark").innerText(), "台", "画像が届くまで短い文字の箱");
+    assert.equal(await page.locator(".shop-detail .shop-type-mark").count(), 0, "絵が届いたので短い文字の箱は出ない");
+    assert.match(await page.locator('.shop-detail .shop-product-art[data-product-art="stand_stainless"] img').getAttribute("src"), /stand_stainless\.webp/, "丸いボトルの専用の絵が出る");
     assert.equal(await page.locator(".shop-detail .shop-detail-category").innerText(), "シーシャ台");
     await tap(page, "shop-detail-close");
     await tap(page, "buy-stand_stainless");

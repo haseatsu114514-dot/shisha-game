@@ -122,6 +122,8 @@
         "ch3_minto_small_lies",
         "ch3_cigarman_rumor",
         "ch3_cigarman_shadow",
+        "ch3_mukai_latte_cat",
+        "ch3_mukai_no_hat",
         "ch3_cigarman_trace",
         "ch3_emil_workshop",
         "ch3_mashiro_play_1",
@@ -160,6 +162,11 @@
         "ch3_mashiro_glass_cloth",
         "ch3_mashiro_leaf_rest",
         "ch3_mashiro_bench_tea",
+        "ch3_mashiro_toolbox",
+        "ch3_mashiro_doze",
+        "ch3_mashiro_heavy_room",
+        "ch3_mashiro_star_tea",
+        "ch3_mashiro_star_tea_arrow",
         "ch3_mukai_yoru_playlist"
       ],
       "after_eve": [
@@ -193,6 +200,7 @@
         "ch4_story_market",
         "ch4_story_sumi_call",
         "ch4_story_press",
+        "ch4_story_yosegaki",
         "ch4_festa",
         "ch4_stranger_first",
         "ch4_stranger_second",
@@ -487,6 +495,18 @@
       ],
       "comment": "RLS10。客席の噂話の後、大会前のmukaiで一度。正体は告げない（2026-10-30 オーナー決定）。"
     },
+    "ch3_mukai_latte_cat": {
+      "seen": [
+        "ch3_individuality_doubt"
+      ],
+      "comment": "RLS10。二日目にムカイさんが撮っていた猫のラテは本人の練習。翌日から大会前のmukaiで一度。"
+    },
+    "ch3_mukai_no_hat": {
+      "seen": [
+        "ch3_mukai_latte_cat"
+      ],
+      "comment": "RLS10。猫のラテの後、大会前のmukaiで一度。ラテをこぼしてハットを干した日（天気に依存しない）。"
+    },
     "ch3_cigarman_trace": {
       "seen": [
         "ch3_cigarman_rumor",
@@ -538,6 +558,33 @@
       "seen": [
         "ch3_mashiro_leaf_rest"
       ]
+    },
+    "ch3_mashiro_toolbox": {
+      "seen": [
+        "ch3_mashiro_bench_tea"
+      ]
+    },
+    "ch3_mashiro_doze": {
+      "seen": [
+        "ch3_mashiro_toolbox"
+      ]
+    },
+    "ch3_mashiro_heavy_room": {
+      "seen": [
+        "ch3_mashiro_doze"
+      ]
+    },
+    "ch3_mashiro_star_tea": {
+      "seen": [
+        "ch3_rest_before_recovery"
+      ],
+      "comment": "MST01。作れない日の席の後、味が戻る前だけ（味が戻った後は ch3-story-wiring.js の before で閉じる）。"
+    },
+    "ch3_mashiro_star_tea_arrow": {
+      "seen": [
+        "ch3_steve_low_heat"
+      ],
+      "comment": "MST01。味の会話の後、大会の前夜の前だけ（before で閉じる）。"
     },
     "ch3_mukai_yoru_playlist": {
       "seen": [

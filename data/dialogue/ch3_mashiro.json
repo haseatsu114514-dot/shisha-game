@@ -116,7 +116,7 @@
         },
         {
           "speaker": "",
-          "text": "ましろは、さっきまで揃いにしようとしていた手を、一度テーブルに戻した。",
+          "text": "ましろは、さっきまでお揃いにしようとしていた手を、一度テーブルに戻した。",
           "face": ""
         },
         {
@@ -536,7 +536,7 @@
         },
         {
           "speaker": "",
-          "text": "こちらの指が、ついもう少し多めに摘もうとした。ましろが、手首を軽く押さえる。",
+          "text": "こちらの指が、ついもう少し多めにつまもうとした。ましろが、手首を軽く押さえる。",
           "face": ""
         },
         {
@@ -667,7 +667,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "試しに摘んでみる。ましろが小皿をのぞき込んで、葉をほんの少しだけ戻した。"
+          "text": "試しにつまんでみる。ましろが小皿をのぞき込んで、葉をほんの少しだけ戻した。"
         },
         {
           "speaker": "mashiro",
@@ -1142,7 +1142,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ましろは自分のカップの残りを、俺のカップの底へ薄く回した。"
+          "text": "ましろは自分のカップの残りを、俺のカップの底に注いで薄く回した。"
         },
         {
           "speaker": "mashiro",
@@ -1660,6 +1660,501 @@
       }
     },
     {
+      "dialogue_id": "ch3_mashiro_toolbox",
+      "comment": "RLS10（第3章はましろを厚く描く・2026-11-18）。#3081 の物語系の続き（裏口のベンチの後、mukaiで一度ずつ）。大会・恋愛の成立・味覚の回復には触れない（大会の前後どちらでも、恋人でもそうでなくても読める）。 ましろの道具箱。道具は使う人の手の形になる。シガーマンの手元の癖（炭の角）は出さない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開店前のmukai。ましろが、カウンターの下から古い木の道具箱を出していた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ、ましろちゃんの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。この店に来たときから、ずっと一緒の"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ふたを開けると、トングが三本、細いブラシ、穴あけの道具。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "どれも持ち手の色が、少しずつ剥げていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "トングはね、重い葉の日用と、軽い葉の日用と、予備"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "葉で、トングまで替えるんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "替えなくてもいいんだけど……持ち替えると、頭も替わるの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくんのトング、ちょっと貸して"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは俺のトングを布で拭いて、先の開き具合を指で確かめた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "先が少し開いてるね。炭をつかむとき、ちょっとだけ余計に力が要るの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "一回なら平気。でも毎日だと、手首が先に疲れちゃう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……気づかなかった"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "道具は、使う人の手の形になっていくから。気づくの、いつも遅れるんだよねぇ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは予備のトングを一本、俺の手のひらにのせた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "今日は、こっち使って。軽い葉の日用だから、はじめくんのブロンドに合うよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとう。大事に使う"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "yawn",
+          "text": "……うん。返すときは、拭いてねぇ"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_mashiro_doze",
+      "comment": "RLS10（第3章はましろを厚く描く・2026-11-18）。#3081 の物語系の続き（裏口のベンチの後、mukaiで一度ずつ）。大会・恋愛の成立・味覚の回復には触れない（大会の前後どちらでも、恋人でもそうでなくても読める）。 眠たげなましろ（characters.json）。炭の音で起きる。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客の引いたmukai。炭を火にかけて待つあいだ、ましろはカウンターに頬杖をついていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事が、だんだん短くなる。まぶたが、ゆっくり下りていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ましろちゃん？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sleep",
+          "text": "……起きてるよぉ……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "起きていない。肩から、カーディガンが少しずり落ちた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（起こさないでおこう。炭は、俺が見てればいい）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭のはぜる音が、小さく一度。ましろの目が、ぱちりと開いた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "あ、今。炭、ちょうどだね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "寝てたのに、分かるの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "音で起きるの。ちょうどの炭って、ぱちって、一回だけ言うから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トングを持つ手は、さっきまで眠っていた人のものとは思えないほど、迷わなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（寝起きのほうが、手が迷わないのかもしれない）"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "yawn",
+          "text": "……置いたら、もう一回寝てもいい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "お客さんが来たら、起こすよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ふふ。じゃあ、はじめくんが僕の炭の音ねぇ"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_mashiro_heavy_room",
+      "comment": "RLS10（第3章はましろを厚く描く・2026-11-18）。#3081 の物語系の続き（裏口のベンチの後、mukaiで一度ずつ）。大会・恋愛の成立・味覚の回復には触れない（大会の前後どちらでも、恋人でもそうでなくても読める）。 一緒に作り、吸った人の言葉を聞くうち、重い煙にもゆっくり楽しめる間を残すようになる（characters.json の growth_stats）。ましろの好みは変えない。はじめに許されて変わる形にしない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のmukai。ましろが、自分用の重い一台を俺の前に置いた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん、今日は僕のを吸ってみて。いちばん重いやつ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口目から、濃い煙が喉の奥まで来る。焦がした木のような苦さが、舌の上に長く残った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……重い。二口目まで、少し待ちたくなる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "待ちたくなる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。嫌な重さじゃないんだけど、息をつく場所がない感じ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは黙ってホースを受け取り、自分でも一口吸った。それから、しばらく炭を見ていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……僕、ずっと、自分が息できる重さで作ってた"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "一緒に吸う人の息のこと、あんまり考えてなかったかも"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは炭を一つだけ外し、少し待ってから、ホースをこちらへ戻した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "重さはそのままなのに、二口目の前に、ふっと煙が引く間があった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "あ、今の、待てる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ふふ。じゃあ、これはお客さん用の重いやつにしよっかな"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕のは、僕のまま。……はじめくんの言葉は、メモしとくね"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_mashiro_star_tea",
+      "comment": "MST01（2026-11-18 オーナー「ましろは占い師ではないけど、スターサインティーっていう12星座モチーフの紅茶も好きで、それを入れて励ましてくれる。意味とかを伝えて」）。ましろは当てるのではなく、星座の意味を借りて添える。スターサインティーはゲーム内の紅茶のシリーズ名（実在の商品の配合・意匠に寄せない）。誕生日は characters.json（はじめ 4/8・ムカイさん 4/13 はおひつじ座、ましろ 12/7 はいて座）。 作れない日の席（ch3_rest_before_recovery）の後、味が戻る前（ch3_taste_return）だけ、mukaiで一度。味の回復の理由にしない（意味を飲むだけ）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客の引いたmukai。ましろが、棚の奥から平たい箱を下ろしてきた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ふたを開けると、小さな缶が十二個。どの缶にも、星座の絵が描いてある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ、全部紅茶？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。スターサインティーっていう、十二星座の紅茶なの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "僕、これ好きでねぇ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん、誕生日いつ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "四月八日"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "じゃあ、おひつじ座だぁ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは赤い缶を取り出して、湯を沸かしはじめた。缶の裏に、小さなカードが貼ってある。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "おひつじ座はね、十二星座のいちばん最初。はじまりの星なんだって"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "まだ誰も行ってないところへ、まっさきに飛び込んでいく、火の星座"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……俺、今、何も始められてないけど"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。だから、今日はこれにしたの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕、占い師じゃないよ。当てたいんじゃなくて、意味を借りるだけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "白いカップに、赤みの強い紅茶が注がれた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "味は、やっぱり遠い。それでも、両手で包んだカップの温かさは、ちゃんと分かった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "味は、今は遠くてもいいの。意味だけ、先に飲んじゃお"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（はじまりの星、か。……もう一回、ここから始めればいいんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥から、ムカイさんが空のカップを一つ持って出てきた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……俺のも、いれてくれ。同じやつで"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ムカイさんも、おひつじ座なんだよぉ。四月十三日"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "砂糖は、二つだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（同じ星座でも、飲み方は違うんだな）"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_mashiro_star_tea_arrow",
+      "comment": "MST01（2026-11-18 オーナー「ましろは占い師ではないけど、スターサインティーっていう12星座モチーフの紅茶も好きで、それを入れて励ましてくれる。意味とかを伝えて」）。ましろは当てるのではなく、星座の意味を借りて添える。スターサインティーはゲーム内の紅茶のシリーズ名（実在の商品の配合・意匠に寄せない）。誕生日は characters.json（はじめ 4/8・ムカイさん 4/13 はおひつじ座、ましろ 12/7 はいて座）。 スティーブの店の味の会話（ch3_steve_low_heat）の後、大会の前夜（ch3_tournament_eve）の前だけ、mukaiで一度。味が戻った後なので、香りを言葉にできる。大会の朝に飲む一回分を渡す（お守りではなく、意味をポケットに入れておくだけ）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のmukai。ましろが、星座の紅茶の箱から、青い缶を一つ選んでいた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "今日は、僕の星座。いて座なの。十二月七日"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いて座って、どんな意味があるの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "遠くへ矢を放つ星座。自由で、まだ見たことないところへ行きたがるの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……僕、出不精だから、ぜんぜん当たってないけどねぇ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "湯気の向こうで、ましろは小さく笑った。カップを受け取って、一口飲む。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "渋みのあとに、果物みたいな香りが、ふっと遠くへ抜けていく。今日は、ちゃんと分かった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……おいしい。香りが、遠くまで抜けていく"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "でしょ。だから、いて座なのかもねぇ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "いて座の人はね、的の真ん中より、その向こうを見てるんだって"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "的ばっかり見ると、手が固くなるでしょ。向こうを見てると、腕がのびるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……点の向こう、か"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。はじめくんなら、その一台を吸う人の顔"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは箱から赤い缶を取り出して、小さな袋に一回分だけ分けた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "これ、はじめくんの。おひつじ座の。大会の朝に、飲んでねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとう、……お守りみたいだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "占いじゃないよぉ。意味を、ポケットに入れとくだけ"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 2
+          }
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_mashiro_mukai_syrup_shelf",
       "comment": "#3468 H案。ましろ×ムカイさん「店用、と書いた新しい瓶」。mukaiの棚整理で、届いたシロップの置き場所を二人で一つずつ決める。ムカイさんは店のメニューの話から自分が飲みたいことまで認め、試飲の瓶に「ムカイ用」。続けてムカイさんが、ましろが自分で買って分けた葉の缶を示し、そちらにも「ましろ用」。本人用は試飲（自分で払う）と私物として区別し、店の在庫・経費の話にはしない。ましろは説教役にせず、双方に返しがある。シガーマン・猫ラテの撮影はオチにしない。はじめは居合わせるだけ。mukaiの二日目（ch3_mukai_intro）の後に一度。大会前は寄り道（ch3-story-wiring.js）、大会後は ch3-aftermath-progress.js の寄り道から同じ既読で読む。台本は大会・恋愛に触れない。好感度・フラグは動かさない。",
       "metadata": {
@@ -1968,7 +2463,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ましろは笑って、下の段にしゃがんだ。缶の蓋が、小さく鳴る。"
+          "text": "ましろは笑って、下の段の前にしゃがんだ。缶の蓋が、小さく鳴る。"
         },
         {
           "speaker": "mukai_master",

@@ -255,7 +255,7 @@ export async function runChapterThreeTokyo(io) {
 const OUTING_IDS = OUTING_DIALOGUE_IDS; // 通いの小会話（AFB02）も含む外出の台本
 // 奥の部屋で休む: 初回は ch3_tokyo_room_rest、2回目からは日常の小品を巡回する（#3097。公園の散歩と同じ読み分け）。
 const ROOM_REST_FLAG = "_ch3_room_rests";
-const ROOM_REST_AGAIN = Object.freeze(["b", "c", "d", "e", "f", "g", "h"].map(suffix => `ch3_tokyo_room_rest_${suffix}`)); // #3097 第2弾で f〜h
+const ROOM_REST_AGAIN = Object.freeze(["b", "c", "d", "e", "f", "g", "h", "i", "j", "k"].map(suffix => `ch3_tokyo_room_rest_${suffix}`)); // #3097 第2弾で f〜h、RLS09 で i〜k
 export function roomRestId(value = state) {
   const count = Math.max(0, Math.floor(Number(value.flags?.[ROOM_REST_FLAG]) || 0));
   return count ? ROOM_REST_AGAIN[(count - 1) % ROOM_REST_AGAIN.length] : "ch3_tokyo_room_rest";

@@ -375,7 +375,15 @@ const neoTraces = (page) => page.evaluate(() => [
 async function pickLook(page, look) {
   await page.locator('[data-test="vn-config"]').click();
   await page.locator("#modal.show").waitFor();
-  await page.locator(`[data-test="cfg-look"] button[value="${look}"]`).click();
+  const button = page.locator(`[data-test="cfg-look"] button[value="${look}"]`);
+  if (await button.count() === 0) {
+    // LK23 で設定から選べなくなった様式は、ボタンが無いことを確かめてからプログラム側で切り替える。
+    await page.locator("#modal .modal-actions button").last().click();
+    await page.locator("#modal.show").waitFor({ state: "hidden" });
+    await setLook(page, look);
+    return;
+  }
+  await button.click();
   await page.waitForFunction((look) => document.documentElement.dataset.look === look, look);
   await page.locator("#modal .modal-actions button").last().click();
   await page.locator("#modal.show").waitFor({ state: "hidden" });
@@ -1210,7 +1218,12 @@ const CHAPTER_MAPS = {
       for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
       for (const id of ["ch4_festa", "ch4_dubai_souq", "ch4_stranger_first", "ch4_stranger_second", "ch4_dubai_cafe", "ch4_inn_tool_care"]) p.read[id] = true;
       p.firstDay = 1; p.secondDay = 3;
+      value.flags._ch4_tour = { with: "naru" };
       value.day = p.startDay + 4; value.slot = 0; p.day = 5;
+      // 遠征中のスミさんの地元向け雑談は届かず（#3529 LM10）、DAY2 宛の連絡も DAY5 には期限外となるため、未読の LIME を明示的に入れる。
+      const settle = (await import("./js/core/data.js")).DB.lime.find((m) => m.id === "lime_ch4_sumi_settle");
+      if (!settle) throw new Error("lime_ch4_sumi_settle が見つからない");
+      value.inbox.push({ id: settle.id, originId: settle.id, day: p.startDay + 1, chapter: 4, read: false, done: false, replyState: "waiting", log: [], msg: { ...settle } });
       await (0, eval)(common)(core, value, 4);
       Object.assign(core.state, value); core.save();
     }, SEED_COMMON);

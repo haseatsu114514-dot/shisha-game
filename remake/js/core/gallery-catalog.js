@@ -17,6 +17,8 @@ const cgChars = Object.fromEntries(Object.entries({
   mashiro: ["cg_ch3_childhood_offered_hand", "cg_saku_mashiro_childhood", "cg_mashiro_double_apple", "cg_mashiro_confession"],
 }).flatMap(([char, ids]) => ids.map(id => [id, char])));
 const charTag = char => Object.hasOwn(CHAR_LABELS, char) ? char : "other";
+// IDに cheki を含むが通常のスチルとして扱うもの（オーナー指示 2026-11-18: cg_minto_cheki はツーショット写真でありチェキではない）。
+const cgKindOverrides = { cg_minto_cheki: "still" };
 // IDに章がないCGは、実際の表示先の台本で章を確認できたものだけ記載する。
 const cgChapters = {
   cg_ageha_first_purikura: 2, cg_ryuji_purikura: 2,
@@ -56,7 +58,7 @@ const labels = {
   cg_naru_after_hours: "なる・旅先のやり直し",
   cg_naru_last_chance: "なる・勝って帰る日",
   cg_naru_next_entry: "なる・もう一つの予選",
-  cg_minto_first_cheki: "みんとの初来店チェキ", cg_minto_cheki: "みんととのチェキ",
+  cg_minto_first_cheki: "みんとの初来店チェキ", cg_minto_cheki: "みんととのツーショット",
   cg_ageha_first_purikura: "あげはとの初プリ", cg_ryuji_purikura: "神崎との職人プリ",
   cg_ch2_ageha_purikura_strip: "あげはと半分このプリクラ",
 };
@@ -75,7 +77,7 @@ export function galleryEntries(manifest, catalog, progress, seen) {
     id, cg: id, char: cgChars[id] || "other",
     ...(id.match(/cg_ch([1-5])_/) ? { chapter: Number(id.match(/cg_ch([1-5])_/)[1]) }
       : Object.hasOwn(cgChapters, id) ? { chapter: cgChapters[id] } : {}),
-    kind: id.includes("cheki") ? "cheki" : id.includes("purikura") ? "purikura" : "still",
+    kind: cgKindOverrides[id] || (id.includes("cheki") ? "cheki" : id.includes("purikura") ? "purikura" : "still"),
     title: labels[id] || "物語のスチル " + (i + 1), unlocked: got.has(id),
   }));
   progress.purikura.forEach(p => entries.push({

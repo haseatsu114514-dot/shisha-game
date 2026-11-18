@@ -14,6 +14,7 @@ const HOME_SCENE_PROPS = [
   { owned: "home_rig_set", file: "shisha_home_tabletop.png", x: 563, y: 552, h: 126, ratio: 648 / 1048, crop: [286, 181, 648, 1048], size: [1222, 1287] },
   { owned: "home_rig_pro", file: "shisha_home_pro.png", x: 914, y: 563, h: 236, ratio: 464 / 1489, crop: [280, 21, 464, 1489], size: [1024, 1536] },
   { owned: "stand_walnut", file: "shisha_home_stand_walnut.png", x: 1000, y: 563, h: 197, ratio: 523 / 1289, crop: [130, 47, 523, 1289], size: [1024, 1536] },
+  { owned: "stand_stainless", file: "shisha_home_stand_stainless.png", x: 1000, y: 563, h: 215, ratio: 485 / 1389, crop: [270, 88, 485, 1389], size: [1024, 1536] },
   { owned: "stand_custom", file: "shisha_home_stand_custom.png", ...CUSTOM_SPOT, h: 175, ratio: 504 / 1184, crop: [197, 68, 504, 1184] },
   { owned: "stand_custom_melty", file: "shisha_home_stand_custom_melty.png", ...CUSTOM_SPOT, h: 175, ratio: 515 / 1190, crop: [191, 66, 515, 1190] },
   { owned: "stand_custom_tosu", file: "shisha_home_stand_custom_tosu.png", ...CUSTOM_SPOT, h: 175, ratio: 507 / 1185, crop: [195, 68, 507, 1185] },
@@ -83,7 +84,12 @@ function homeProps(available) {
 }
 function propsFor(url, { homeRigs = true } = {}) {
   const available = new Set(DB.manifest.sceneProps || []);
-  if (isHome(url)) return homeRigs ? homeProps(available) : [];
+  if (isHome(url)) {
+    // 昼・夜の自室背景は台をローテーブルの真ん中へ描き込んだ絵（#3418・2026-11-18 オーナー採用の背景リメイク、昼夜ペア）。
+    // 所持品の台を重ねると台が二重になるので、昼と夜は小道具を出さない。曇天は描き込みが無いので従来どおり重ねる。
+    if (sceneFile(url) === "bg_home_day.png" || sceneFile(url) === "bg_home_night.png") return [];
+    return homeRigs ? homeProps(available) : [];
+  }
   return (SCENE_PROPS[sceneFile(url)] || []).filter((p) => available.has(p.file));
 }
 export function sceneArtUrls(url, options) {

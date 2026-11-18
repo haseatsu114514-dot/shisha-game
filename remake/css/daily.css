@@ -1247,10 +1247,10 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .hud-exp[hidden], .hidane-badge[hidden] { display: none; }
 .hud-exp { position: relative; display: flex; align-items: center; gap: 6px; height: 18px; padding: 0 9px; font-size: 13px; color: var(--gold); }
 .hud-exp .hx-lv { font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; min-width: 3.2em; }
-.hud-exp .hx-bar { position: relative; flex: 1 1 auto; min-width: 30px; height: 6px; border-color: rgba(244, 210, 122, 0.6); }
-.hud-exp .hx-bar b { position: absolute; left: 0; top: 0; bottom: 0; width: 0; }
-.hud-exp .hx-today { background: rgba(255, 226, 150, 0.55); }
-.hud-exp .hx-settled { z-index: 1; background: linear-gradient(90deg, #c08a2a, #f4d27a); }
+.hud-exp .hx-bar { position: relative; flex: 1 1 auto; min-width: 30px; height: 8px; border-color: rgba(244, 210, 122, 0.6); }
+.hud-exp .hx-bar b { position: absolute; left: 0; top: 0; bottom: 0; width: 0; height: auto; }
+.hud-exp .hx-today { background: rgba(255, 186, 102, 0.55); }
+.hud-exp .hx-settled { z-index: 1; background: linear-gradient(90deg, #e07b24, #ffad42); }
 .hud-exp .hx-left { font-size: 12px; font-weight: 700; color: var(--text-dim); white-space: nowrap; }
 .hud-exp .hx-target { flex: none; font-size: 12px; font-weight: 700; color: #b8741a; white-space: nowrap; }
 .hud-exp .hx-target[hidden] { display: none; }
@@ -2142,7 +2142,7 @@ body:not(:root) #hud .hud-card :is(.hud-stamina, .hud-exp) { gap: 8px; }
 /* 経験値のゲージも体力と同じ太さ・同じ角の丸み・同じ内側の余白にする（オーナー指示 2026-11-08「太さ同じにしたい」） */
 /* 長さも体力と共通の 120px にそろえて少し短くする（#3034・オーナー指示 2026-11-09）。「今夜 Lv UP」等の文字が出る時は、その分だけ縮んでよい（潰れすぎない範囲で）。 */
 body:not(:root) #hud .hud-card .hud-exp .hx-bar { box-sizing: border-box; height: 12px; border-radius: 6px; flex: 0 1 120px; }
-body:not(:root) #hud .hud-card .hud-exp .hx-bar b { top: 1px; bottom: 1px; left: 1px; max-width: calc(100% - 2px); border-radius: 4px; }
+body:not(:root) #hud .hud-card .hud-exp .hx-bar b { top: 1px; bottom: 1px; left: 1px; height: auto; max-width: calc(100% - 2px); border-radius: 4px; }
 body:not(:root) #hud .hud-card .hud-exp[data-milestone="true"] .hx-bar::after { top: 4px; }
 
 /* 地図の案内パネル: 選んだスポットの写真と名前だけを表示する。 */

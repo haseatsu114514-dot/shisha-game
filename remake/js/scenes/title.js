@@ -14,7 +14,7 @@ import { openGallery } from "./gallery.js";
 import { loadWithRecovery, saveHeadline } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
 import { createUiThemeSelect } from "../core/ui-theme.js";
-import { LOOKS, normalizeLook, setLook } from "../core/look.js";
+import { LOOKS, DISABLED_LOOKS, normalizeLook, setLook } from "../core/look.js";
 import { CRAFT_VERSIONS, normalizeCraftVersion } from "../core/craft-version.js";
 import { refreshSideArea } from "../core/side-area.js";
 import { fullscreenButton, saveTransferRow } from "./save-transfer.js";
@@ -430,8 +430,8 @@ export async function openConfig(opts = {}) {
     String(config.autoSpeed), (v) => setConfig("autoSpeed", Number(v)));
   const skipMode = segRow("SKIPの範囲", "cfg-skip-mode", [["seen", "既読"], ["all", "全部"]],
     config.skipSeenOnly ? "seen" : "all", (v) => setConfig("skipSeenOnly", v === "seen"));
-  // 見た目の様式（LK01）。既定は新版（LK09）。新版・旧版・DS風のどれも、すべての章でいつでも切り替えられる（LK13・LK21）。
-  const look = segRow("見た目", "cfg-look", LOOKS.map(({ id, label }) => [id, label]),
+  // 見た目の様式（LK01）。既定は旧版（LK23）。新版は選べない（コードは残してある）。DS風はすべての章でいつでも切り替えられる（LK21）。
+  const look = segRow("見た目", "cfg-look", LOOKS.filter(({ id }) => !DISABLED_LOOKS.includes(id)).map(({ id, label }) => [id, label]),
     normalizeLook(config.look), (v) => { setConfig("look", v); setLook(v); });
   // シーシャ作りの版（CRN16）。リニューアル＝新しい作業台＋いままでの審査、桜井版＝リニューアル前の作業台＋第1章の大会の桜井式の審査（SKR04）。
   // どちらを残すかオーナーが遊んで決める。次に始める一台（大会は次に始める試合）から効く。

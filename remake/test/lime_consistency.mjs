@@ -451,7 +451,7 @@ const afterOutings = allMessages.filter((m) => m.id.startsWith("lime_after_outin
 for (const message of afterOutings) { const text = JSON.stringify(message); assert(!/昨日|昨夜/.test(text)); assert(text.includes("この前")); }
 const privateMinto = allMessages.filter((m) => m.sender === "minto" && m.id !== "lime_minto_day4");
 for (const message of privateMinto) assert(!/♡|生きてる〜|おはよっ|チェキ/.test(JSON.stringify(message)), message.id);
-assert(JSON.stringify(allMessages.find((m) => m.id === "lime_minto_day4")).includes("チェキ"));
+assert(JSON.stringify(allMessages.find((m) => m.id === "lime_minto_day4")).includes("ツーショット"));
 
 // 朝文面と本名の先行表示。通知の親layerはpointer-events:noneでもボタン自身を操作可能にする。
 const rumor = allMessages.find((m) => m.id === "rumor_minto_late_night");

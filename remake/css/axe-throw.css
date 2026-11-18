@@ -1029,9 +1029,9 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-game.axe-in-stage .axe-calls [data-call="lower-left"] { left: 10px; bottom: 10px; }
 .axe-game.axe-in-stage .axe-calls [data-call="lower-right"] { right: 10px; bottom: 10px; }
 .axe-game.axe-in-stage .axe-calls [data-call="normal"] { left: 50%; bottom: 10px; width: 132px; margin-left: -66px; }
-/* 「宣言中：…」の一言は画面に出さない（2026-11-11 オーナー指示）。選んだ札そのものを目立たせ、宣言した青は輪で囲む。文は読み上げ用に残す。
+/* ゲージ式では選択札と青の輪を使い、宣言文は読み上げ用に残す。一人称は末尾の宣言札を使う（#3807）。
    サドンデスは札が出ないので、狙う青の一言を的の上に1行で出す。 */
-.axe-game.axe-in-stage .axe-board-pane > .axe-call-status[data-kind="called"] { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important;
+.axe-game.axe-in-stage:not(.axe-first-person) .axe-board-pane > .axe-call-status[data-kind="called"] { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important;
   overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
 .axe-game.axe-in-stage .axe-board-pane > .axe-call-status[data-kind="sudden-death"] { position: absolute; left: 50%; top: 44px; z-index: 2; transform: translateX(-50%); margin: 0; padding: 4px 16px;
   border: 1px solid #7fc4ee; border-radius: 999px; background: #0b1211eb; color: #dff2ff; white-space: nowrap; pointer-events: none; }
@@ -1186,7 +1186,9 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
    Keep #3472's header/score/chalk artwork; scope every layout change to the new input. */
 .axe-game[data-input-mode="tap-pull"].axe-first-person { padding: 0; gap: 0; overflow: hidden; background: #172025; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-body { display: block !important; position: absolute; inset: 0; grid-template-columns: none; }
-.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-header { position: absolute; z-index: 5; top: 18px; left: 24px; right: 24px; min-height: 72px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-header { position: absolute; z-index: 5; top: 18px; right: 24px; }
+/* スコア類は右上のピルへ寄せたので、上部バーは ？／× だけを残し、看板の板（::before）も外してレーンの奥行きを見せる */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-header::before { display: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-board-pane { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; aspect-ratio: auto; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: hidden; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person :is(.axe-target-art, .axe-target) { position: absolute; inset: 0; display: block; width: 100%; height: 100%; max-width: none; max-height: none; aspect-ratio: auto; margin: 0; border: 0; border-radius: 0; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-target { z-index: 1; touch-action: none; }
@@ -1284,3 +1286,64 @@ html:root[data-density="phone"] body:not(:root) .axe-bar-menu[data-view="gear"] 
 .axe-game[data-on-target="true"] .axe-aim-guide path { fill: #8ff0a4; }
 /* 横・縦の針を止めている間は「今の刃先」と止めるボタン・息を整えるが並ぶので、右下の枠を上へ広げる（今の刃先が切れないように） */
 .axe-game[data-input-mode="tap-pull"].axe-first-person:is([data-phase="horizontal"],[data-phase="vertical"]) .axe-panel { max-height: 64%; }
+
+/* 2026-11-18 #3639 一人称画面の仕上げ: レーン背景絵・構え絵・狙いの案内・HUD削減・フォントの雰囲気。
+   すべて tap-pull（一人称）だけに効かせ、ゲージ式の画面と判定・操作には触れない。 */
+/* 構え絵は狙いの間だけふわりと重なる */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-lane-aim { transition: opacity .3s ease; }
+/* 狙いの案内（的の上・中央）: 明朝の見出し＋真鍮色の添え字。タッチは受けない */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt { position: absolute; z-index: 4; left: 50%; top: 15%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 3px; pointer-events: none; text-align: center; white-space: nowrap; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt[hidden] { display: none !important; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt-title { font-family: "Craft Mincho", var(--font), serif; font-size: 27px; font-weight: 700; letter-spacing: .08em; line-height: 1.25; color: #f5ead6; text-shadow: 0 2px 10px rgba(0,0,0,.82), 0 0 20px rgba(214,152,68,.18); }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt-sub { font-size: 14px; font-weight: 600; letter-spacing: .04em; color: #e5be7e; text-shadow: 0 1px 6px rgba(0,0,0,.9); }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt-sub[hidden] { display: none !important; }
+/* HUD削減: プレイ中に要らないタイトル・副題と合計の分母（/ ○○点）は一人称では出さない。合計は明朝の大数字を主役にする */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-header > div:first-child { display: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-total > span { display: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-total strong { font-family: "Craft Mincho", var(--font), serif; font-size: 40px; color: #f5ead6; text-shadow: 0 2px 10px rgba(0,0,0,.82), 0 0 20px rgba(214,152,68,.18); }
+/* 結果の英語見出し（BULL'S EYE 等）も明朝で格調を出す */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-result-label { font-family: "Craft Mincho", var(--font), serif; letter-spacing: .1em; }
+/* 盤面のリング番号は白フチをやめ、木に焼き付けたステンシル調に（一人称の板だけ） */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-markings text { fill: rgba(38,24,12,.76); stroke: none; font-weight: 600; }
+/* 最上端の警告ストライプ（工事現場の印象）は一人称では外し、天井の梁とスポットライトまで抜く */
+.axe-game[data-input-mode="tap-pull"].axe-first-person::after { display: none; }
+/* #3807: 明るいランプの前でも宣言ボタンを読めるよう、不透明な暗色を敷く（一人称だけ）。 */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-calls .axe-button { background-color: #101c25; color: #effbff; border-radius: 10px; }
+/* #3807: 右上のスコア欄は情報と得点表を別段にする。10投分の幅を確保し、名前・宣言残数との取り合いをなくす。
+   ？／×の左隣。延長戦が増えた場合だけ得点列を横スクロールできる。 */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill { position: absolute; z-index: 5; top: 14px; right: 136px; display: grid; grid-template-columns: auto auto minmax(0,1fr) auto; align-items: center; gap: 4px 12px; box-sizing: border-box; width: 820px; max-width: calc(100% - 160px); padding: 4px 14px; line-height: 1.2; border: 1px solid rgba(232, 184, 110, .5); border-radius: 12px; background: #080b0aeb; box-shadow: 0 4px 14px rgba(0, 0, 0, .35); pointer-events: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-division { order: 1; margin: 0; padding: 2px 7px; font-size: 12px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-scoreboard { order: 6; grid-column: 1 / -1; min-width: 0; width: 100%; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-score-row { grid-template-columns: 4em minmax(0,1fr) auto 2.5em; gap: 8px; font-size: 18px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-score-row:has(> .axe-score-name.axe-quiet) { grid-template-columns: minmax(0,1fr) auto; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-score-name { min-width: 0; font-size: 18px; overflow-wrap: anywhere; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-score-tiles { overflow-x: auto; padding: 2px; pointer-events: auto; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-score-tiles:focus-visible { outline: 2px solid #9cecff; outline-offset: 1px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-tile i { font-size: 12px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-tile { padding: 0; flex: 1 0 32px; display: flex; align-items: center; justify-content: center; gap: 2px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-tile-sd { flex-basis: 64px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-tile strong { font-size: 18px; line-height: 1.1; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-tile em { position: static; transform: none; font-size: 12px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-score-calls { font-size: 18px; line-height: 1; padding: 1px 7px; gap: 3px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-score-total { min-width: 0; font-size: 20px; line-height: 1; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total { order: 3; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total small { font-size: 12px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total strong { font-size: 24px; line-height: 1; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total-next { font-size: 12px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-round { order: 4; margin: 0; padding: 0; border: 0; max-width: none; font-size: 18px; white-space: normal; overflow-wrap: anywhere; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-heat { order: 5; margin: 0; padding: 2px 6px; font-size: 16px; }
+/* 手元を最前面へ（#3639 オーナー指示 2026-11-18 第3弾）: 構え絵から右手と斧だけを型抜きした複写（.axe-hand-front）を
+   スコアピル（z 5）より上に重ねる。元の構え絵とピクセル単位で重なるため見た目は変わらず、手元が隠れなくなる。タッチは受けない */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-hand-front { position: absolute; inset: 0; z-index: 6; display: block; width: 100%; height: 100%; pointer-events: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-hand-front-img { transition: opacity .3s ease; }
+/* 宣言の札の見出し（#3639 オーナー指示 2026-11-18 第3弾）: 札の真上に「ねらい」の小さな札を浮かべ、何を選ぶ場所か一目で分かるようにする */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-calls-label { position: absolute; z-index: 3; left: 3%; top: 20%; transform: translateY(calc(-100% - 8px)); padding: 3px 12px 4px; border: 1px solid rgba(232, 184, 110, .35); border-radius: 999px; background: rgba(8, 11, 10, .55); color: #f5ead6; font-size: 14px; font-weight: 700; letter-spacing: .14em; pointer-events: none; }
+/* #3807: 宣言は一瞬の演出に頼らず、通常の狙い案内と同じ場所に投げ終わるまで残す。
+   文字の背景は不透明にし、手元より前に出す。入力・ゲームの時計には干渉しない。 */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-board-pane > .axe-call-status:is([data-kind="called"], [data-kind="sudden-death"]) {
+  display: block; position: absolute; z-index: 7; left: 50%; right: auto; top: 15%; transform: translateX(-50%);
+  box-sizing: border-box; width: 44%; max-width: none; margin: 0; padding: 8px 14px; border: 2px solid #9cecff; border-radius: 10px;
+  background: #091923; color: #effbff; font-size: 26px; font-weight: 800; line-height: 1.35; text-align: center; white-space: pre-line; pointer-events: none;
+}
+.axe-game[data-input-mode="tap-pull"].axe-first-person:is([data-phase="result"], [data-phase="summary"]) .axe-board-pane > .axe-call-status { display: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-calls .axe-button[aria-pressed="true"] { background-color: #163e59; color: #fff; }
