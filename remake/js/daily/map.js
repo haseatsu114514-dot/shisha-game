@@ -198,6 +198,46 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
 
     const freeGuide = (s) => isFreeGuide(s, guide);
     const availability = (s) => spotAvailability(s, { guide, visitBlock });
+    const spotPreview = (s) => {
+      const previewId = s.preview || SPOT_PREVIEW[s.id];
+      return s.previewUrl ? { url: s.previewUrl, tint: null } : previewId ? sceneBg(previewId, tod) : null;
+    };
+    let foregroundLoads = 0;
+    let warmGeneration = 0;
+    const foregroundWaiters = [];
+    const wakeWarm = () => {
+      while (foregroundWaiters.length) foregroundWaiters.shift()();
+    };
+    const waitForegroundIdle = () => foregroundLoads <= 0
+      ? Promise.resolve()
+      : new Promise((resolve) => foregroundWaiters.push(resolve));
+    const beginForegroundLoad = () => { foregroundLoads++; };
+    const endForegroundLoad = () => {
+      foregroundLoads = Math.max(0, foregroundLoads - 1);
+      if (foregroundLoads === 0) wakeWarm();
+    };
+    const startWarm = () => {
+      const gen = ++warmGeneration;
+      // 見えている行先だけを2通信ずつ準備。今すぐ行ける場所の写真を最優先に、閉まっている場所と立ち絵は後ろに回す（LD05・#3823）。
+      const visible = mapSpots().filter((s) => spotVisible(s) && (s.kind !== "fortune" || fortuneToday()) && availability(s).why !== "locked");
+      const available = [], unavailable = [];
+      for (const s of visible) (availability(s).ok ? available : unavailable).push(s);
+      const ordered = [...available, ...unavailable];
+      const queue = [...new Set([
+        ...ordered.flatMap((s) => sceneArtUrls(spotPreview(s)?.url)),
+        ...ordered.map(spotPortrait).filter(Boolean),
+      ])];
+      let at = 0;
+      const warm = async () => {
+        while (gen === warmGeneration && root.isConnected && !root.classList.contains("done") && at < queue.length) {
+          if (foregroundLoads > 0) { await waitForegroundIdle(); continue; }
+          const url = queue[at++];
+          if (imageReady.isReady?.(url)) continue;
+          await imageReady(url, 8000);
+        }
+      };
+      void Promise.all([warm(), warm()]);
+    };
 
     // 残りの行動回数は HUD の札（☀残り2）へ移した。ここには明日の天気だけを添える（#2853）。
     const forecastFoot = () => tomorrowForecast() ? el("div.mi-foot", { text: `明日は${tomorrowForecast()}` }) : null;
@@ -232,9 +272,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
     const renderInfo = (s) => {
       const av = availability(s);
       const known = knowsOwner(s);
-      // 選んだ行き先の人物を、裏の準備より先に読み始める（もう一度押して入店するまでの間に届くように）
       const portrait = av.ok ? spotPortrait(s) : null;
-      if (portrait) void imageReady(portrait, 15000);
       const label = av.why === "locked" ? "？？？" : known ? spotDetailLabel(s) : s.unknownLabel || s.label;
       info.classList.add("spot-selected");
       info.setAttribute("role", "button");
@@ -248,26 +286,45 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
         event.preventDefault();
         go(s);
       };
-      const previewId = s.preview || SPOT_PREVIEW[s.id];
-      const pv = av.why === "locked" ? null : s.previewUrl ? { url: s.previewUrl, tint: null } : previewId ? sceneBg(previewId, tod) : null;
+      const pv = av.why === "locked" ? null : spotPreview(s);
       const preview = pv?.url ? el("div.mi-preview", { dataset: { tint: pv.tint || "" } }) : null;
       if (preview) {
-        preview.classList.add("loading");
-        preview.setAttribute("role", "status");
-        preview.setAttribute("aria-label", `${label}の写真を読み込んでいます`);
-        Promise.all(sceneArtUrls(pv.url).map((url) => imageReady(url, 15000))).then((loaded) => {
-          if (!info.contains(preview)) return;
-          preview.classList.remove("loading");
-          if (!loaded.every(Boolean)) {
-            preview.replaceChildren();
-            preview.setAttribute("aria-label", `${label}の写真を表示できませんでした`);
-            return;
-          }
-          preview.replaceChildren();
-          preview.removeAttribute("role");
-          preview.removeAttribute("aria-label");
+        const previewUrls = sceneArtUrls(pv.url);
+        const allReady = previewUrls.length > 0 && previewUrls.every((url) => imageReady.isReady?.(url));
+        if (allReady) {
+          for (const url of previewUrls) void imageReady(url, 15000);
           renderSceneArt(preview, pv.url);
-        });
+          if (portrait) void imageReady(portrait, 15000);
+        } else {
+          preview.classList.add("loading");
+          preview.setAttribute("role", "status");
+          preview.setAttribute("aria-label", `${label}の写真を読み込んでいます`);
+          // 選択した場所の写真を最優先で届けるため、待機中は裏の先読みを一時停止し、人物の立ち絵も写真の後で読み始める。
+          beginForegroundLoad();
+          let settled = false;
+          const finishForeground = () => {
+            if (settled) return;
+            settled = true;
+            endForegroundLoad();
+          };
+          Promise.all(previewUrls.map((url) => imageReady(url, 15000))).then((loaded) => {
+            finishForeground();
+            if (portrait && info.contains(preview)) void imageReady(portrait, 15000);
+            if (!info.contains(preview)) return;
+            preview.classList.remove("loading");
+            if (!loaded.every(Boolean)) {
+              preview.replaceChildren();
+              preview.setAttribute("aria-label", `${label}の写真を表示できませんでした`);
+              return;
+            }
+            preview.replaceChildren();
+            preview.removeAttribute("role");
+            preview.removeAttribute("aria-label");
+            renderSceneArt(preview, pv.url);
+          }, finishForeground);
+        }
+      } else if (portrait) {
+        void imageReady(portrait, 15000);
       }
       // 今は入れない行き先は、理由（本日定休日・夜から営業・今日はもう行った 等）を見える文字で添える（#3555。読み上げだけだった）。
       // 説明文は増やさず（#2853 の「店名と写真だけ」）、小さな札で見せる。入れる行き先は料金、入れない時はその理由。
@@ -320,7 +377,7 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
                 if (!stationActive()) return;
                 await setMapBackground();
                 if (!stationActive()) return;
-                renderPins(); idleInfo();
+                renderPins(); idleInfo(); startWarm();
                 root.dataset.stationArrived = item.id;
               });
               // 徒歩は電車の演出を使わない。体力の減りはHUDと一言で伝える。
@@ -366,6 +423,8 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
         SE.select();
         stationTrip?.cancel(); stationTrip = null;
         cueMove(pins.querySelector(`[data-spot="${s.id}"] .shield`), s);
+        warmGeneration++;
+        wakeWarm();
         stopReveal();
         retire(root);
         info.classList.add("leaving");
@@ -499,22 +558,9 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
     // ワイドステージでは絵とピンを横いっぱいに拡大し、上下の切り方をピンの位置から決める（画面の向き・大きさが変わったら決め直す）
     const refit = () => { if (!root.isConnected) { globalThis.removeEventListener?.("resize", refit); return; } fitMapCrop(pins); };
     globalThis.addEventListener?.("resize", refit);
-    interrupt = (v) => { stationTrip?.cancel(); stationTrip = null; interrupt = null; stopReveal(); retire(root); resolve(v); };
+    interrupt = (v) => { stationTrip?.cancel(); stationTrip = null; interrupt = null; warmGeneration++; wakeWarm(); stopReveal(); retire(root); resolve(v); };
     mapShown = true;
     showPrompts();
-    // 今行ける場所だけを2通信ずつ準備。マップ表示やボタン操作は待たせない。
-    // 先に行き先の写真（入店した場面の背景）、続けてその場所の人物の立ち絵（通常の表情）を読む（LD05）。
-    const open = mapSpots().filter(isUnlocked);
-    const previews = [...new Set([
-      ...open.flatMap((spot) => sceneArtUrls(spot.previewUrl || sceneBg(spot.preview || SPOT_PREVIEW[spot.id], tod).url)),
-      ...open.map(spotPortrait).filter(Boolean),
-    ])];
-    let at = 0;
-    const warm = async () => {
-      while (root.isConnected && !root.classList.contains("done") && at < previews.length) {
-        await imageReady(previews[at++], 8000);
-      }
-    };
-    void Promise.all([warm(), warm()]);
+    startWarm();
   });
 }

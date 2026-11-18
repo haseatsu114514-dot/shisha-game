@@ -891,6 +891,12 @@
       "run": ["node --experimental-vm-modules remake/test/warmup_defer.mjs"]
     },
     {
+      "id": "map-preview-loading",
+      "title": "Map preview: warm order, foreground pause, portrait deferral, synchronous cache hit",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/map_preview_loading.mjs"]
+    },
+    {
       "id": "store-logo-fallback",
       "title": "Failed store logos retain full names in the available frame",
       "kind": "quick",
