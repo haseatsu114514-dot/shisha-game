@@ -8,7 +8,7 @@ import { newDayTrial, rollDayTrial, stopDayTrial } from "./day-trial.js";
 import { loadTrpgLibrary, preloadTrpgAssets, runTrpg } from "./index.js";
 import { playTrpgEntrance } from "./entrance.js";
 import { shelfHelpButton } from "./shelf-help.js";
-import { displayName, portraitUrl, portraitAx, portraitTop, sceneArt } from "./presentation.js";
+import { displayName, portraitBoxStyle, portraitUrl, sceneArt } from "./presentation.js";
 import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable, keepTrpgBookmark, trpgBookmarkFor, clubRecord, clubGain, trpgBookProgress } from "./campaign.js";
 
 // 店の決まりは画面に常に出さず、右上の「？」で読む（#2719・ミニゲーム共通のUI方針）。
@@ -138,7 +138,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       // 興味の一言はスマホでは札に出さず、長押し・ポインタの title で読む（#2729）
       party.append(el("div.trpg-campaign-person", { title: member ? status.reason : person.interestHint, dataset: { test: "trpg-person-" + person.id, available: status.ok, member: String(member) } }, [
         el("span.trpg-campaign-face", el("img", { src: portraitUrl(manifest, person.id), alt: "",
-          style: { top: portraitTop(manifest, person.id, 180, 4), transform: "translateX(-" + portraitAx(manifest, person.id) * 100 + "%)" } })),
+          style: portraitBoxStyle(manifest, person.id, { faceFrac: 0.4, eyeFrac: 0.44, fallbackWidth: 180, fallbackHeadY: 4 }) })),
         el("div", [el("strong", [name(person.id), member ? el("i", { text: " · 部員" }) : null].filter(Boolean)),
           el("small", { text: member ? status.reason : recruitment.reason }),
           !member && el("small", { text: person.interestHint })]),
