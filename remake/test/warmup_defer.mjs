@@ -121,8 +121,11 @@ const storeRequests = (requested) => requested.filter((u) => STORE_URLS.includes
 // 場面で一度読んだ画像も、後から固定UI用に keep へ昇格できる。
 {
   const { ui, requested } = await loadUi();
+  assert.equal(ui.imageReady.isReady('bench.webp'), false);
   assert.equal(await ui.imageReady('bench.webp'), true);
+  assert.equal(ui.imageReady.isReady('bench.webp'), true);
   assert.equal(await ui.imageReady('bench.webp', 1500, { keep: true }), true);
+  assert.equal(ui.imageReady.isReady('bench.webp'), true);
   assert.equal(requested.length, 2, 'released image is prepared again before keep resolves');
   await ui.imageReady('bench.webp', 1500, { keep: true });
   await ui.imageReady('bench.webp');
@@ -135,12 +138,14 @@ const storeRequests = (requested) => requested.filter((u) => STORE_URLS.includes
   const { ui, requested } = await loadUi({ loadImage: image => pending.push(image) });
   const first = ui.imageReady('slow.webp', 5);
   const kept = ui.imageReady('slow.webp', 5, { keep: true });
+  assert.equal(ui.imageReady.isReady('slow.webp'), false, 'in-flight image is not ready');
   assert.deepEqual(await Promise.all([first, kept]), [false, false]);
   assert.equal(await ui.imageReady('slow.webp', 5, { keep: true }), false);
   assert.equal(requested.length, 1, 'pending upgrade and expired wait share one request');
   const longer = ui.imageReady('slow.webp', 1500, { keep: true });
   pending.shift().onload();
   assert.equal(await longer, true);
+  assert.equal(ui.imageReady.isReady('slow.webp'), true);
   assert.equal(await ui.imageReady('slow.webp', 5, { keep: true }), true);
   assert.equal(requested.length, 1, 'late completion clears the expired wait');
 }
@@ -150,7 +155,9 @@ const storeRequests = (requested) => requested.filter((u) => STORE_URLS.includes
   let calls = 0;
   const { ui } = await loadUi({ loadImage: image => ++calls === 1 ? image.onerror() : image.onload() });
   assert.equal(await ui.imageReady('retry.webp', 1500, { keep: true }), false);
+  assert.equal(ui.imageReady.isReady('retry.webp'), false, 'failed image is not marked ready');
   assert.equal(await ui.imageReady('retry.webp', 1500, { keep: true }), true);
+  assert.equal(ui.imageReady.isReady('retry.webp'), true);
   assert.equal(await ui.imageReady('retry.webp', 1500, { keep: true }), true);
   assert.equal(calls, 2);
 }
@@ -262,6 +269,7 @@ console.log("[warmup defer] PASS: store logos defer to idle only on the title pa
   for (const u of ['a', 'b', 'c', 'd']) await ui.imageReady(u, 100, { keep: true });
   await ui.imageReady('d', 100, { keep: true });
   assert.equal(requested.length, 4, 'recent kept art is still reused');
+  assert.equal(ui.imageReady.isReady('a'), false, 'evicted kept art is no longer marked ready');
   await ui.imageReady('a', 100, { keep: true });
   assert.equal(requested.length, 5, 'oldest decoded reference was released');
 }
@@ -278,6 +286,8 @@ console.log("[warmup defer] PASS: store logos defer to idle only on the title pa
 {
   const { ui, requested } = await loadUi();
   for (let i = 0; i < 150; i++) await ui.imageReady(`scene-${i}`, 100);
+  assert.equal(ui.imageReady.isReady('scene-149'), true);
+  assert.equal(ui.imageReady.isReady('scene-0'), false);
   await ui.imageReady('scene-149', 100);
   assert.equal(requested.length, 150);
   await ui.imageReady('scene-0', 100);
