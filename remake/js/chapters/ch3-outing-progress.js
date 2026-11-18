@@ -66,9 +66,12 @@ export const TOKYO_OUTINGS = Object.freeze([
 export const OUTINGS_FLAG = "_ch3_outings";
 // mukaiのシフトの導入（#3097・RLS03）。味が戻る前は手伝いの回数で、戻った後は戻ってからの回数（mukai_help_back）で巡回する。
 // 戻った後の1回目は、いつも「味、ちゃんと戻ってきたねぇ」の場面から。
+// d〜f はムカイさんが話す回（RLS10・第3章はムカイさんを厚く描く）。少ない回数でも読めるよう、ましろの回と交互に置く。
 const MUKAI_HELP_TALKS = Object.freeze({
-  lost: Object.freeze(["ch3_outing_mukai_help_lost", "ch3_outing_mukai_help_lost_b", "ch3_outing_mukai_help_lost_c"]),
-  back: Object.freeze(["ch3_outing_mukai_help", "ch3_outing_mukai_help_b", "ch3_outing_mukai_help_c"]),
+  lost: Object.freeze(["ch3_outing_mukai_help_lost", "ch3_outing_mukai_help_lost_d", "ch3_outing_mukai_help_lost_b",
+    "ch3_outing_mukai_help_lost_e", "ch3_outing_mukai_help_lost_c", "ch3_outing_mukai_help_lost_f"]),
+  back: Object.freeze(["ch3_outing_mukai_help", "ch3_outing_mukai_help_d", "ch3_outing_mukai_help_b",
+    "ch3_outing_mukai_help_e", "ch3_outing_mukai_help_c", "ch3_outing_mukai_help_f"]),
 });
 // 公園の2回目からの巡回（昼夜それぞれ。#3097 で b・c に d・e、さらに f・g を足した）
 const PARK_REVISITS = Object.freeze(["b", "c", "d", "e", "f", "g"]);
