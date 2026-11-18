@@ -40,7 +40,7 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
   const drain = el("button.btn", { type: "button", text: "少しこぼす（長押し）", dataset: { test: "water-drain" } });
   const confirm = el("button.btn.primary", { type: "button", text: "この水量で進む", dataset: { test: "water-confirm" } });
   const root = el("section.craft-water", { dataset: { test: "water-step" } }, [
-    el("div.craft-water-display", [meter, el("div", [status, el("p", { text: "目安：ステムが少し浸かるまで（二本の線のあいだ）" })])]),
+    el("div.craft-water-display", [meter, el("div.craft-water-reading", [status, el("p", { text: "目安：ステムが少し浸かるまで（二本の線のあいだ）" })])]),
     el("p.craft-water-help", { text: WATER_HELP }),
     el("div.craft-water-actions", [pour, drain, confirm]),
   ]);
