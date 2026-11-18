@@ -5,7 +5,15 @@ import { yen } from "../core/util.js";
 import { isUnlocked, isClosed, isTemporaryClosed, visitedToday } from "./spots.js";
 import { openingStatus } from "./spot-hours.js";
 
-export const freeGuide = (s, guide) => !!guide?.free && guide.pin === s.id;
+const deliveryPendingSpot = (s, save = state) => {
+  const id = s?.charId || s?.id;
+  if ((save?.chapter || 1) !== 1 || !["minto", "adam"].includes(id)) return false;
+  const f = save?.flags || {};
+  if (f[`_delivery_${id}_done`]) return false;
+  return !!(f[`_delivery_${id}_told`] || f[`_delivery_${id}`] || f._delivery_batch_started);
+};
+
+export const freeGuide = (s, guide) => !!(guide?.free && guide.pin === s.id) || deliveryPendingSpot(s);
 
 // 表示も入店も同じ解放判定へ。定休日等はピンを隠す理由にはしない。
 export const spotVisible = s => isUnlocked(s);
