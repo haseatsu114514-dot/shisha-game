@@ -59,26 +59,52 @@ export async function leafWave(mid) {
 
 // ---------------------------------------------------------------- A5 龍の煙（第4章の前夜祭）
 
-/** 煙のリボンがS字に二度うねって輪になり、金の縁で一瞬止まってから散る（約1.8秒）。鱗や顔は描かない */
+const DRAGON_CG = new URL("../../img/cgs/cg_ch4_dragon_smoke.webp", import.meta.url).href;
+
+/** 龍の煙の一枚絵（TMG53・#3413）を読み込む。失敗しても演出は止めない */
+function loadDragonCg() {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = DRAGON_CG;
+  });
+}
+
+/**
+ * 龍の煙の一枚絵を全画面で見せ、ゆっくり寄りながら煙を重ねて散らす（約3.4秒・TMG53 #3413）。
+ * 以前の白い線1本の描画は廃止し、絵そのものが場面を見せる。絵が読めない時は線の演出へ戻す。
+ */
 export async function dragonSmoke() {
   if (skip() || !fx()) return;
+  const cg = await loadDragonCg();
   const node = layer("mo-dragon", "dragon");
-  const d = "M 120 600 C 300 380, 480 640, 640 420 S 980 200, 1080 360 C 1180 520, 920 600, 840 470 C 780 370, 900 300, 980 340";
-  const blur = svg("path", { d, fill: "none", stroke: "#f4eefc", "stroke-width": 44, "stroke-linecap": "round", "stroke-dasharray": 2600, "stroke-dashoffset": 2600, filter: "url(#mo-dragon-blur)", opacity: 0.75 });
-  const core = svg("path", { d, fill: "none", stroke: "#ffffff", "stroke-width": 8, "stroke-linecap": "round", "stroke-dasharray": 2600, "stroke-dashoffset": 2600, opacity: 0.9 });
-  const gold = svg("path", { d, fill: "none", stroke: "#f6dcaf", "stroke-width": 3, "stroke-linecap": "round", "stroke-dasharray": 2600, "stroke-dashoffset": 2600, opacity: 0 });
-  const art = stageSvg([
-    svg("defs", {}, [svg("filter", { id: "mo-dragon-blur", x: "-20%", y: "-20%", width: "140%", height: "140%" }, [svg("feGaussianBlur", { stdDeviation: 10 })])]),
-    blur, core, gold,
-  ]);
-  node.append(el("div.mo-dragon-dim"), art);
+  if (!cg) {
+    const d = "M 120 600 C 300 380, 480 640, 640 420 S 980 200, 1080 360 C 1180 520, 920 600, 840 470 C 780 370, 900 300, 980 340";
+    const blur = svg("path", { d, fill: "none", stroke: "#f4eefc", "stroke-width": 44, "stroke-linecap": "round", "stroke-dasharray": 2600, "stroke-dashoffset": 2600, filter: "url(#mo-dragon-blur)", opacity: 0.75 });
+    const core = svg("path", { d, fill: "none", stroke: "#ffffff", "stroke-width": 8, "stroke-linecap": "round", "stroke-dasharray": 2600, "stroke-dashoffset": 2600, opacity: 0.9 });
+    const art = stageSvg([
+      svg("defs", {}, [svg("filter", { id: "mo-dragon-blur", x: "-20%", y: "-20%", width: "140%", height: "140%" }, [svg("feGaussianBlur", { stdDeviation: 10 })])]),
+      blur, core,
+    ]);
+    node.append(el("div.mo-dragon-dim"), art);
+    await covering(node, async () => {
+      const draw = [{ strokeDashoffset: 2600 }, { strokeDashoffset: 0 }];
+      move(blur, draw, 1000, { easing: EASE.inOut });
+      await move(core, draw, 1000, { easing: EASE.inOut });
+      await Promise.all([blur, core].map((p) => move(p, [{ opacity: Number(p.getAttribute("opacity")), strokeWidth: p === blur ? 44 : 8 }, { opacity: 0, strokeWidth: p === blur ? 110 : 2 }], 520, { easing: "ease-out" })));
+    });
+    return;
+  }
+  cg.className = "mo-dragon-cg";
+  cg.alt = "";
+  node.append(cg, el("div.mo-dragon-dim"));
   await covering(node, async () => {
-    const draw = [{ strokeDashoffset: 2600 }, { strokeDashoffset: 0 }];
-    move(blur, draw, 1000, { easing: EASE.inOut });
-    await move(core, draw, 1000, { easing: EASE.inOut });
-    gold.style.strokeDashoffset = "0";
-    await move(gold, [{ opacity: 0 }, { opacity: 1 }, { opacity: 0 }], 420);
-    await Promise.all([blur, core].map((p) => move(p, [{ opacity: Number(p.getAttribute("opacity")), strokeWidth: p === blur ? 44 : 8 }, { opacity: 0, strokeWidth: p === blur ? 110 : 2 }], 520, { easing: "ease-out" })));
+    move(cg, [{ opacity: 0, transform: "scale(1)" }, { opacity: 1, transform: "scale(1.015)", offset: 0.18 }, { opacity: 1, transform: "scale(1.07)" }], 2600, { easing: "ease-out", fill: "forwards" });
+    await sleep(500);
+    hazeRise(node, 2100);
+    await sleep(1600);
+    await move(cg, [{ opacity: 1 }, { opacity: 0 }], 800, { easing: "ease-in" });
   });
 }
 
