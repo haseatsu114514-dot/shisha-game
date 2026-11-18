@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-17 17:35 UTC",
+ "generated": "2026-11-18 02:40 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -473,6 +473,24 @@
    "b": 0.0433,
    "ax": 0.5054,
    "aspect": 0.7467
+  },
+  "regulara": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.9,
+   "b": 0.05,
+   "ax": 0.5082,
+   "aspect": 0.7467
+  },
+  "regularb": {
+   "faces": [
+    "normal"
+   ],
+   "h": 0.9,
+   "b": 0.05,
+   "ax": 0.5315,
+   "aspect": 0.7467
   }
  },
  "backgrounds": [
@@ -652,6 +670,8 @@
   "face_naru.png",
   "face_noor.png",
   "face_pakki.png",
+  "face_regulara.png",
+  "face_regularb.png",
   "face_rei.png",
   "face_rio.png",
   "face_sai.png",
@@ -3214,6 +3234,8 @@
   "sprites/character_variants/new/pakki/chr_pakki_smile.png",
   "sprites/character_variants/new/pakki/chr_pakki_smoke.png",
   "sprites/character_variants/new/pakki/chr_pakki_surprise.png",
+  "sprites/character_variants/new/regulara/chr_regulara_normal.png",
+  "sprites/character_variants/new/regularb/chr_regularb_normal.png",
   "sprites/character_variants/new/rei/chr_rei_normal.png",
   "sprites/character_variants/new/rei/chr_rei_sad.png",
   "sprites/character_variants/new/rei/chr_rei_serious.png",
@@ -3554,6 +3576,8 @@
   "ui/face_icons/face_naru.png",
   "ui/face_icons/face_noor.png",
   "ui/face_icons/face_pakki.png",
+  "ui/face_icons/face_regulara.png",
+  "ui/face_icons/face_regularb.png",
   "ui/face_icons/face_rei.png",
   "ui/face_icons/face_rio.png",
   "ui/face_icons/face_sai.png",
@@ -3589,6 +3613,8 @@
   "ui/face_icons/new/face_mukai_master.png",
   "ui/face_icons/new/face_naru.png",
   "ui/face_icons/new/face_pakki.png",
+  "ui/face_icons/new/face_regulara.png",
+  "ui/face_icons/new/face_regularb.png",
   "ui/face_icons/new/face_rei.png",
   "ui/face_icons/new/face_rio.png",
   "ui/face_icons/new/face_sai.png",
@@ -3730,7 +3756,9 @@
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
-  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png"
+  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
+  "sprites/characters/regulara/chr_regulara_normal.png",
+  "sprites/characters/regularb/chr_regularb_normal.png"
  ],
  "limeMedia": {
   "st_adam_bless": {
@@ -4606,6 +4634,24 @@
     "ax": 0.4798,
     "aspect": 0.7467,
     "anchor": "head"
+   },
+   "regulara": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.5082,
+    "aspect": 0.7467
+   },
+   "regularb": {
+    "faces": [
+     "normal"
+    ],
+    "h": 0.9,
+    "b": 0.05,
+    "ax": 0.5315,
+    "aspect": 0.7467
    }
   },
   "nanami": {
@@ -5054,6 +5100,8 @@
    "face_mukai_master.png",
    "face_naru.png",
    "face_pakki.png",
+   "face_regulara.png",
+   "face_regularb.png",
    "face_rei.png",
    "face_rio.png",
    "face_sai.png",
@@ -5098,18 +5146,6 @@
     ],
     "unit": 120.7
    },
-   "da_silva": {
-    "box": [
-     387,
-     4,
-     208
-    ],
-    "eye": [
-     490,
-     113
-    ],
-    "unit": 120.5
-   },
    "dr_kemuri": {
     "box": [
      317,
@@ -5121,30 +5157,6 @@
      196
     ],
     "unit": 111.3
-   },
-   "emil": {
-    "box": [
-     359,
-     8,
-     199
-    ],
-    "eye": [
-     458,
-     108
-    ],
-    "unit": 115.5
-   },
-   "faris": {
-    "box": [
-     319,
-     49,
-     219
-    ],
-    "eye": [
-     428,
-     162
-    ],
-    "unit": 126.8
    },
    "hajime": {
     "box": [
@@ -5169,18 +5181,6 @@
      312
     ],
     "unit": 112.2
-   },
-   "khalil": {
-    "box": [
-     321,
-     54,
-     203
-    ],
-    "eye": [
-     422,
-     164
-    ],
-    "unit": 117.8
    },
    "kumicho": {
     "box": [
@@ -5230,18 +5230,6 @@
     ],
     "unit": 115.7
    },
-   "master_hookah": {
-    "box": [
-     329,
-     2,
-     184
-    ],
-    "eye": [
-     421,
-     102
-    ],
-    "unit": 106.5
-   },
    "minto": {
     "box": [
      399,
@@ -5253,18 +5241,6 @@
      354
     ],
     "unit": 108.1
-   },
-   "mukai_master": {
-    "box": [
-     328,
-     3,
-     198
-    ],
-    "eye": [
-     428,
-     115
-    ],
-    "unit": 115.0
    },
    "naru": {
     "box": [
@@ -5278,24 +5254,36 @@
     ],
     "unit": 111.8
    },
-   "noor": {
-    "box": [
-     317,
-     12,
-     187
-    ],
-    "eye": [
-     410,
-     134
-    ],
-    "unit": 108.3
-   },
    "pakki": {
     "box": [
      153,
      190,
      674
     ]
+   },
+   "regulara": {
+    "box": [
+     331,
+     50,
+     194
+    ],
+    "eye": [
+     428,
+     148
+    ],
+    "unit": 112.7
+   },
+   "regularb": {
+    "box": [
+     370,
+     52,
+     169
+    ],
+    "eye": [
+     454,
+     152
+    ],
+    "unit": 98.2
    },
    "rei": {
     "box": [
@@ -5333,18 +5321,6 @@
     ],
     "unit": 115.4
    },
-   "saku": {
-    "box": [
-     322,
-     2,
-     202
-    ],
-    "eye": [
-     424,
-     136
-    ],
-    "unit": 117.2
-   },
    "salaryman": {
     "box": [
      323,
@@ -5368,6 +5344,162 @@
      396
     ],
     "unit": 118.8
+   },
+   "sui": {
+    "box": [
+     313,
+     45,
+     207
+    ],
+    "eye": [
+     416,
+     157
+    ],
+    "unit": 120.0
+   },
+   "sumi": {
+    "box": [
+     344,
+     98,
+     192
+    ],
+    "eye": [
+     440,
+     198
+    ],
+    "unit": 111.4
+   },
+   "tsumugi": {
+    "box": [
+     322,
+     283,
+     220
+    ],
+    "eye": [
+     432,
+     420
+    ],
+    "unit": 127.7
+   },
+   "uranaishi": {
+    "box": [
+     295,
+     2,
+     241
+    ],
+    "eye": [
+     416,
+     144
+    ],
+    "unit": 107.7
+   },
+   "volk": {
+    "box": [
+     372,
+     4,
+     190
+    ],
+    "eye": [
+     468,
+     103
+    ],
+    "unit": 110.5
+   },
+   "da_silva": {
+    "box": [
+     387,
+     4,
+     208
+    ],
+    "eye": [
+     490,
+     113
+    ],
+    "unit": 120.5
+   },
+   "emil": {
+    "box": [
+     359,
+     8,
+     199
+    ],
+    "eye": [
+     458,
+     108
+    ],
+    "unit": 115.5
+   },
+   "faris": {
+    "box": [
+     319,
+     49,
+     219
+    ],
+    "eye": [
+     428,
+     162
+    ],
+    "unit": 126.8
+   },
+   "khalil": {
+    "box": [
+     321,
+     54,
+     203
+    ],
+    "eye": [
+     422,
+     164
+    ],
+    "unit": 117.8
+   },
+   "master_hookah": {
+    "box": [
+     329,
+     2,
+     184
+    ],
+    "eye": [
+     421,
+     102
+    ],
+    "unit": 106.5
+   },
+   "mukai_master": {
+    "box": [
+     328,
+     3,
+     198
+    ],
+    "eye": [
+     428,
+     115
+    ],
+    "unit": 115.0
+   },
+   "noor": {
+    "box": [
+     317,
+     12,
+     187
+    ],
+    "eye": [
+     410,
+     134
+    ],
+    "unit": 108.3
+   },
+   "saku": {
+    "box": [
+     322,
+     2,
+     202
+    ],
+    "eye": [
+     424,
+     136
+    ],
+    "unit": 117.2
    },
    "sheikh": {
     "box": [
@@ -5405,30 +5537,6 @@
     ],
     "unit": 135.3
    },
-   "sui": {
-    "box": [
-     313,
-     45,
-     207
-    ],
-    "eye": [
-     416,
-     157
-    ],
-    "unit": 120.0
-   },
-   "sumi": {
-    "box": [
-     344,
-     98,
-     192
-    ],
-    "eye": [
-     440,
-     198
-    ],
-    "unit": 111.4
-   },
    "tetsuko": {
     "box": [
      359,
@@ -5440,42 +5548,6 @@
      860
     ],
     "unit": 130.8
-   },
-   "tsumugi": {
-    "box": [
-     322,
-     283,
-     220
-    ],
-    "eye": [
-     432,
-     420
-    ],
-    "unit": 127.7
-   },
-   "uranaishi": {
-    "box": [
-     295,
-     2,
-     241
-    ],
-    "eye": [
-     416,
-     144
-    ],
-    "unit": 107.7
-   },
-   "volk": {
-    "box": [
-     372,
-     4,
-     190
-    ],
-    "eye": [
-     468,
-     103
-    ],
-    "unit": 110.5
    },
    "yoru": {
     "box": [
@@ -5702,6 +5774,30 @@
      632
     ]
    },
+   "regulara": {
+    "box": [
+     331,
+     50,
+     194
+    ],
+    "eye": [
+     428,
+     148
+    ],
+    "unit": 112.7
+   },
+   "regularb": {
+    "box": [
+     370,
+     52,
+     169
+    ],
+    "eye": [
+     454,
+     152
+    ],
+    "unit": 98.2
+   },
    "rei": {
     "box": [
      360,
@@ -5713,6 +5809,18 @@
      162
     ],
     "unit": 119.8
+   },
+   "rio": {
+    "box": [
+     315,
+     37,
+     196
+    ],
+    "eye": [
+     412,
+     157
+    ],
+    "unit": 113.7
    },
    "sai": {
     "box": [
@@ -5881,18 +5989,6 @@
      164
     ],
     "unit": 111.3
-   },
-   "rio": {
-    "box": [
-     315,
-     37,
-     196
-    ],
-    "eye": [
-     412,
-     157
-    ],
-    "unit": 113.7
    }
   }
  },
@@ -6047,6 +6143,43 @@
      "cx": 0.46875,
      "top": 0.04583,
      "size": 0.17667
+    }
+   },
+   "rio": {
+    "normal": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "sad": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "serious": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "shock": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "smile": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "smug": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
+    },
+    "surprise": {
+     "cx": 0.46094,
+     "top": 0.03083,
+     "size": 0.16333
     }
    },
    "ageha": {
@@ -6209,43 +6342,6 @@
     "tears": {
      "cx": 0.57254,
      "top": 0.1125,
-     "size": 0.16333
-    }
-   },
-   "rio": {
-    "normal": {
-     "cx": 0.46094,
-     "top": 0.03083,
-     "size": 0.16333
-    },
-    "sad": {
-     "cx": 0.46094,
-     "top": 0.03083,
-     "size": 0.16333
-    },
-    "serious": {
-     "cx": 0.46094,
-     "top": 0.03083,
-     "size": 0.16333
-    },
-    "shock": {
-     "cx": 0.46094,
-     "top": 0.03083,
-     "size": 0.16333
-    },
-    "smile": {
-     "cx": 0.46094,
-     "top": 0.03083,
-     "size": 0.16333
-    },
-    "smug": {
-     "cx": 0.46094,
-     "top": 0.03083,
-     "size": 0.16333
-    },
-    "surprise": {
-     "cx": 0.46094,
-     "top": 0.03083,
      "size": 0.16333
     }
    }
