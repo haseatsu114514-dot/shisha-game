@@ -14,6 +14,7 @@ const HOME_SCENE_PROPS = [
   { owned: "home_rig_set", file: "shisha_home_tabletop.png", x: 563, y: 552, h: 126, ratio: 648 / 1048, crop: [286, 181, 648, 1048], size: [1222, 1287] },
   { owned: "home_rig_pro", file: "shisha_home_pro.png", x: 914, y: 563, h: 236, ratio: 464 / 1489, crop: [280, 21, 464, 1489], size: [1024, 1536] },
   { owned: "stand_walnut", file: "shisha_home_stand_walnut.png", x: 1000, y: 563, h: 197, ratio: 523 / 1289, crop: [130, 47, 523, 1289], size: [1024, 1536] },
+  { owned: "stand_stainless", file: "shisha_home_stand_stainless.png", x: 1000, y: 563, h: 215, ratio: 485 / 1389, crop: [270, 88, 485, 1389], size: [1024, 1536] },
   { owned: "stand_custom", file: "shisha_home_stand_custom.png", ...CUSTOM_SPOT, h: 175, ratio: 504 / 1184, crop: [197, 68, 504, 1184] },
   { owned: "stand_custom_melty", file: "shisha_home_stand_custom_melty.png", ...CUSTOM_SPOT, h: 175, ratio: 515 / 1190, crop: [191, 66, 515, 1190] },
   { owned: "stand_custom_tosu", file: "shisha_home_stand_custom_tosu.png", ...CUSTOM_SPOT, h: 175, ratio: 507 / 1185, crop: [195, 68, 507, 1185] },

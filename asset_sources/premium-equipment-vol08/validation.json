@@ -230,6 +230,27 @@
         0,
         255
       ]
+    },
+    {
+      "id": "stand_stainless",
+      "source": "asset_sources/premium-equipment-vol08/stand_stainless.png",
+      "delivery": "remake/img/shop/equipment-v2/stand_stainless.webp",
+      "sha256": "039ca349782755dff3ee7f25141002a611b7f2c6c0acb2d8e35af280eacf1f64",
+      "delivery_sha256": "96eb75b26d56b49cb13be2fef430a682a425ff2ee452b52a9e76e3ee9378b0bb",
+      "size": [
+        512,
+        512
+      ],
+      "box": [
+        197,
+        84,
+        118,
+        347
+      ],
+      "alpha": [
+        0,
+        255
+      ]
     }
   ]
 }

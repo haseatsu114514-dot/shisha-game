@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-18 02:40 UTC",
+ "generated": "2026-11-18 09:05 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -774,6 +774,7 @@
   "shisha_home_stand_custom_engraved.png",
   "shisha_home_stand_custom_melty.png",
   "shisha_home_stand_custom_tosu.png",
+  "shisha_home_stand_stainless.png",
   "shisha_home_stand_walnut.png",
   "shisha_home_tabletop.png"
  ],
@@ -3432,6 +3433,8 @@
   "sprites/characters/pakki/chr_pakki_smile.png",
   "sprites/characters/pakki/chr_pakki_smoke.png",
   "sprites/characters/pakki/chr_pakki_surprise.png",
+  "sprites/characters/regulara/chr_regulara_normal.png",
+  "sprites/characters/regularb/chr_regularb_normal.png",
   "sprites/characters/rei/chr_rei_normal.png",
   "sprites/characters/rei/chr_rei_sad.png",
   "sprites/characters/rei/chr_rei_serious.png",
@@ -3713,6 +3716,7 @@
   "ui/scene_props/shisha_home_stand_custom_engraved.png",
   "ui/scene_props/shisha_home_stand_custom_melty.png",
   "ui/scene_props/shisha_home_stand_custom_tosu.png",
+  "ui/scene_props/shisha_home_stand_stainless.png",
   "ui/scene_props/shisha_home_stand_walnut.png",
   "ui/scene_props/shisha_home_tabletop.png",
   "ui/title_arts/title_art_adam_01_sunset_proclamation.png",
@@ -3756,9 +3760,7 @@
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
-  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
-  "sprites/characters/regulara/chr_regulara_normal.png",
-  "sprites/characters/regularb/chr_regularb_normal.png"
+  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png"
  ],
  "limeMedia": {
   "st_adam_bless": {

@@ -65,6 +65,12 @@
       "source": "asset_sources/equipment-art-2741-20261111/winkwink_hagal.png",
       "delivery": "remake/img/shop/equipment-v2/winkwink_hagal.webp",
       "sha256": "12a9b1866948a84535ed0cb5054eab960f66f64c147f6c194a2cf9ae801cc1a9"
+    },
+    {
+      "id": "stand_stainless",
+      "source": "asset_sources/premium-equipment-vol08/stand_stainless.png",
+      "delivery": "remake/img/shop/equipment-v2/stand_stainless.webp",
+      "sha256": "039ca349782755dff3ee7f25141002a611b7f2c6c0acb2d8e35af280eacf1f64"
     }
   ]
 }
