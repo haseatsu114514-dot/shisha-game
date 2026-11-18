@@ -91,7 +91,12 @@ await suite("ch4-dubai-daily", async check => {
     }).then(async () => {
       if (completed) await page.evaluate(async chains => {
         const core = await import("./js/core/state.js");
-        core.state.flags._ch4_dubai_talks = { souq: 4, festa: 4, center_cafe: 6, alley_cafe: 5 };
+        // 一巡＝各行き先の再訪の会話を全部読んだ回数。#3097 で通いの小会話が増えるたびに数え直さないよう、
+        // 実際に読み込む台本の一覧（初回の再訪 ch4_main の1本＋ch4_dubai_daily の追加分）から数える。
+        const { DUBAI_DAILY_IDS } = await import("./js/chapters/ch4-dubai-daily.js");
+        const pool = pattern => 1 + DUBAI_DAILY_IDS.filter(id => pattern.test(id)).length;
+        core.state.flags._ch4_dubai_talks = { souq: pool(/^ch4_souq_talk_/), festa: pool(/^ch4_festa_talk_/),
+          center_cafe: pool(/^ch4_cafe_(talk|culture)_/), alley_cafe: pool(/^ch4_alley_(talk|culture)_/) };
         if (chains) core.state.flags._visit_chains = chains;
         core.save();
       }, chains);
