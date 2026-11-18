@@ -19,8 +19,9 @@ const plain = v => JSON.parse(JSON.stringify(v));
 // ---- ① 施設の寄り道 ---------------------------------------------------------------
 const encounters = await import(new URL("remake/js/daily/spot-encounters.js", root));
 // #3097 第1弾: 各施設の第2章の回を1本ずつ足した（既存の回の後ろ）
-const CH2 = { cafe: ["cafe_ch2_commute", "cafe_ch2_taste", "cafe_ch2_foam"], kannon: ["kannon_ch2_wish", "kannon_ch2_omikuji"],
-  choizap: ["choizap_ch2_numbers", "choizap_ch2_stairs"], c_station: ["cs_ch2_haze", "cs_ch2_new_staff"] };
+// #3097 第2弾: さらに各施設に1本（時計・香炉・首のストレッチ・帰りの飴）
+const CH2 = { cafe: ["cafe_ch2_commute", "cafe_ch2_taste", "cafe_ch2_foam", "cafe_ch2_clock"], kannon: ["kannon_ch2_wish", "kannon_ch2_omikuji", "kannon_ch2_incense"],
+  choizap: ["choizap_ch2_numbers", "choizap_ch2_stairs", "choizap_ch2_neck"], c_station: ["cs_ch2_haze", "cs_ch2_new_staff", "cs_ch2_candy"] };
 const save = (chapter, flags = {}, extra = {}) => ({ chapter, slot: 0, met: { naru: true, adam: true, minto: true, dr_kemuri: true },
   flags: { _gym_member: true, ...flags }, ...extra });
 for (const [spot, ids] of Object.entries(CH2)) {

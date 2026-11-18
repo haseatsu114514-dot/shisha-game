@@ -14,6 +14,8 @@ const ENCOUNTERS = {
     { id: "cafe_ch2_taste", chapter: 2, flag: "_ch2_taste_distant" },
     // #3097 第1弾: 隣町で流行りの泡のコーヒーをマスターが試す（味の感想は書かない）
     { id: "cafe_ch2_foam", chapter: 2 },
+    // #3097 第2弾: 柚ヶ谷へ通う客のために五分進めた時計（大会・味に触れない）
+    { id: "cafe_ch2_clock", chapter: 2 },
     { id: "cafe_naru_break", met: "naru", rift: true },
     // 仕入れ帰りのなると、持ち帰りのコーヒーを買いに来た凛想（REL01）
     { id: "cafe_naru_rio", met: ["naru", "rio"], rift: true, rioIn: true },
@@ -24,6 +26,8 @@ const ENCOUNTERS = {
     { id: "kannon_ch2_wish", chapter: 2, slot: 0 },
     // #3097 第1弾: 老人のおみくじを読む。wish の「半分くらい」を受けるので、その後ろ
     { id: "kannon_ch2_omikuji", chapter: 2, slot: 0 },
+    // #3097 第2弾: 香炉の煙を手にかける（吸わずに浴びる煙）
+    { id: "kannon_ch2_incense", chapter: 2, slot: 0 },
     { id: "kannon_adam", met: "adam", slot: 0 },
     // 荷が届いた話（EDENでの続き）を聞いた後。なるがアダムに昼飯を食べさせている（REL02）
     { id: "kannon_adam_lunch", met: ["adam", "naru"], flag: "_spot_follow_adam", slot: 0, rift: true },
@@ -35,6 +39,8 @@ const ENCOUNTERS = {
     { id: "choizap_ch2_numbers", chapter: 2 },
     // #3097 第1弾: 柚ヶ谷の駅の階段。numbers の「窓の外を見る」を受けるので、その後ろ
     { id: "choizap_ch2_stairs", chapter: 2 },
+    // #3097 第2弾: 電車通いの首のストレッチ
+    { id: "choizap_ch2_neck", chapter: 2 },
     { id: "choizap_minto", met: "minto", flag: "_minto_identity_revealed" },
     { id: "choizap_naru", met: "naru", rift: true },
     { id: "choizap_oldman" },
@@ -44,6 +50,8 @@ const ENCOUNTERS = {
     { id: "cs_ch2_haze", chapter: 2 },
     // #3097 第1弾: 炭が初めての新人スタッフに、息の吐き方だけを伝える（大会の前後を問わない）
     { id: "cs_ch2_new_staff", chapter: 2 },
+    // #3097 第2弾: マニュアルに無い帰りの飴（チェーンの店ごとの一個）
+    { id: "cs_ch2_candy", chapter: 2 },
     // 博士の二面性をそれとなく見せる一度きりの回（#1696）。面識は登録時の顔合わせか大会でできる。
     { id: "cs_kemuri_sample", met: "dr_kemuri" },
   ],

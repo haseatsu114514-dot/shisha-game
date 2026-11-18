@@ -1159,6 +1159,128 @@
       ]
     },
     {
+      "dialogue_id": "cafe_ch2_clock",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "喫茶こはくのカウンターで、スーツの人が壁の時計を見て、慌てて腰を浮かせた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "マスター、お会計！　電車が"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "ご安心ください。あの時計は、五分進めてあります"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……え、そうなの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スーツの人はスマホを見て、座り直した。残りのコーヒーを、今度はゆっくり飲んでいる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "時計、わざと進めてるんですか"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "柚ヶ谷へ通う方が、近ごろ増えましたので。先月から、五分だけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も、その一人ですね"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "ええ。ですから、ご安心を、……ただし"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マスターは、カウンターの端の小さな置き時計を指した。こちらは、進めていない時計らしい。"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "進めた時計に慣れると、人は五分、遅く出るようになります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、……それだと、意味がないですね"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "ええ。ですから、時々、三分に戻します"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "時々、ですか"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "何分進んでいるか分からないくらいが、ちょうどいいのです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "新聞を広げていた常連さんが、紙面から顔を上げずに言った。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "おかげで、わしは毎朝走っとる"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "走れるうちは、走っていただいて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スーツの人は、きっちり五分前に店を出ていった。ドアのベルが、軽く鳴る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……マスター、今日は何分進んでるんですか"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "それは、お教えできません"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（次に柚ヶ谷へ行く前に、ここの時計とスマホを見比べよう）"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cafe_ch2_clock"
+        }
+      ]
+    },
+    {
       "dialogue_id": "kannon_ch2_omikuji",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_kannon_day.png"
@@ -1296,6 +1418,108 @@
       ]
     },
     {
+      "dialogue_id": "kannon_ch2_incense",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "観音堂の前の大きな香炉から、線香の煙が細く立ちのぼっていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お参りの人たちが、手で煙をすくって、自分の頭や肩へかけている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……煙を、浴びてる？）"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "にいちゃん、初めてかい。悪いところに、煙をかけるんだよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "悪いところに、ですか"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "わしは膝。あっちの奥さんは腰。学生さんは、だいたい頭だな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われて見ると、制服の子が二人、笑いながら頭に煙をかけ合っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "煙って、そういう使い方もあるんですね"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "にいちゃんは、どこにかける"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少し考えて、両手を香炉の上にかざした。煙が、指の間を抜けていく。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "手か。職人さんかい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "シーシャ屋で働いてます。炭を置く手が、もう少し落ち着くようにって"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "シーシャ……ああ、あの、ぶくぶくいうやつか。あれも煙だなあ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "同じ煙でも、こっちは吸わないんですね"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "吸ったら、むせるわい。浴びるだけでいい煙もある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "香炉の煙は、風が止むたびにまっすぐになって、また揺れた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（炭の煙は、吸ってもらうために作ってる。……浴びてもらう煙、か）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、手のひらを見た。煙はもう見えないのに、指先が少しだけ温かい気がした。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_kannon_ch2_incense"
+        }
+      ]
+    },
+    {
       "dialogue_id": "choizap_ch2_stairs",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_choizap.png"
@@ -1424,6 +1648,113 @@
         {
           "type": "set_flag",
           "flag": "_spot_seen_choizap_ch2_stairs"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "choizap_ch2_neck",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "CHOI-ZAPのストレッチ台で首を回すと、ごきっと鳴った。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "うわ、いい音、……電車通いの人の首ですね、それ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "分かるんですか"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "最近、同じ音を出す会員さんが多くて。柚ヶ谷に通い出した人、増えましたから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "座ると、ずっとスマホを見ちゃうので"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "下を向いた首は、ボウリングの球を一個、ぶら下げてるのと同じなんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "そんなに"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "電車でできるやつ、一個だけ教えますね。あごを引いて、後ろへ、すーっと"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われた通りにあごを引くと、首の後ろが、じわっと伸びた。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "二重あごになったら、正解です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……なってます、たぶん"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "電車の窓に映っても、気にしないでくださいね。みんなやってるので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣のマットで、年配の会員さんが同じ二重あごを作っていた。目が合って、二人で少し笑う。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "にいちゃんも柚ヶ谷かい。わしは、孫の顔を見に通っとる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺は、仕事です、……たぶん、仕事です"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "たぶん、か。いいねえ"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "はい、もう一回。あごを引いて、後ろへ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人並んで、もう一度、二重あごを作った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（次の電車で、やってみよう。……窓は見ないようにして）"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_choizap_ch2_neck"
         }
       ]
     },
@@ -1929,6 +2260,95 @@
         {
           "type": "set_flag",
           "flag": "_spot_seen_cs_ch2_new_staff"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cs_ch2_candy",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "C.STATIONのレジで会計を済ませると、店員がスタンプカードを差し出した。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "作っておきますか？　柚ヶ谷店でも、同じカードが使えるんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "柚ヶ谷にもありますよね。同じ看板の店"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "ありますあります。前を通ったこと、あります？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あります。同じ看板で、同じ色で……入口の前に、植木鉢が並んでました"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "あー、それ、向こうの店長の趣味です。マニュアルに無いやつ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店員は、レジ横の小さな籠から、包み紙の飴を一つ取った。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "うちのは、これ。帰りに一個。前の店長が始めて、誰もやめなくて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "チェーン店って、全部決まってるんだと思ってました"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "決まってるのは、炭の数と時間と、葉のグラムまで。……あとは、店の人の分です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "飴の包み紙には、手書きで小さく「おつかれさま」とあった。字が、一枚ずつ少しずつ違う。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "包み紙に書くのは、手が空いた時のバイトの仕事です。私のは、丸い字のやつ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "これ、丸いです"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "当たり。……カード、スタンプ押しときますね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カードに、一つ目の判が押された。飴をポケットに入れて、店を出る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（同じ看板の下に、その店だけの一個がある。……tonariなら、何だろう）"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cs_ch2_candy"
         }
       ]
     }
