@@ -1787,7 +1787,7 @@ html:root[data-density="phone"] body:not(:root) .gh-plain .gh-row { grid-templat
 .gb-world { position: relative; width: 760px; height: 488px; }
 .gb-stage { position: absolute; left: 0; top: 0; width: 760px; height: 488px; transform-origin: 0 0; }
 .gb-zoom { position: absolute; right: 10px; top: 10px; display: flex; gap: 6px; z-index: 2; }
-.gb-zoom .gb-icon { width: auto; min-width: 30px; height: 30px; padding: 0 9px; border-radius: 15px; font-size: 14px; line-height: 1; background: rgba(10, 6, 16, 0.8); }
+.gb-zoom .gb-icon { width: auto; min-width: 44px; height: 44px; padding: 0 12px; border-radius: 22px; font-size: 16px; line-height: 1; background: rgba(10, 6, 16, 0.8); }
 .gb-zoom .gb-icon:disabled { opacity: 0.35; cursor: default; }
 /* ================= 盤の演出の強化（2026-11-11 SBD104）: 仮置きで火種が飛ぶ・道を光が走る・決定のカットイン・昇る火の粉・近い目的地 =================
    部品は js/daily/growth-fx.js。盤の面・札・台座・結界・顔のデザイン（#2129）は変えず、光を足すだけ */
@@ -1863,7 +1863,7 @@ html:root[data-density="phone"] body:not(:root) .gfx-cutin-count { font-size: 16
 .gb-hidane b { min-width: 1.2em; text-align: left; font-variant-numeric: tabular-nums; }
 .gb-footer-gap { flex: 1; }
 /* 右のパネル: 恩恵はアイコン・棒・数字 */
-.gb-bar { grid-template-columns: 30px 1fr auto; align-items: center; gap: 0 10px; width: 100%; min-height: 36px; margin: 0; padding: 2px 4px; border: 0; border-radius: 8px; background: none; color: inherit; font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+.gb-bar { grid-template-columns: 30px 1fr auto; align-items: center; gap: 0 10px; width: 100%; min-height: 44px; margin: 0; padding: 2px 4px; border: 0; border-radius: 8px; background: none; color: inherit; font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
 .gb-bar:is(:hover, :focus-visible, .open) { background: color-mix(in srgb, var(--c) 12%, transparent); outline: none; }
 .gb-bar-sum.zero { opacity: 0.45; }
 .gb-bar-note { display: flex; flex-wrap: wrap; gap: 2px 10px; margin: 0; padding: 6px 10px; border-radius: 8px; border-left: 3px solid var(--c); background: color-mix(in srgb, var(--c) 10%, transparent); font-size: 14px; line-height: 1.5; }
@@ -2061,7 +2061,7 @@ html:root[data-density="phone"] body:not(:root) .gboard .gb-tab { gap: 10px; pad
 html:root[data-density="phone"] body:not(:root) .gboard :is(.gb-tab-body, .gb-tab-body b) { font-size: var(--phone-sub); line-height: 1.42; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-tab-head { width: 34px; height: 34px; font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-tab-ready { min-width: 26px; height: 26px; font-size: 17px; }
-html:root[data-density="phone"] body:not(:root) .gboard .gb-zoom .gb-icon { min-width: 46px; height: 46px; border-radius: 23px; font-size: var(--phone-sub); --pill-cap: 23px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-zoom .gb-icon { min-width: max(44px, calc(40px / var(--k, 1))); height: max(44px, calc(40px / var(--k, 1))); border-radius: calc(max(44px, calc(40px / var(--k, 1))) / 2); font-size: var(--phone-sub); --pill-cap: calc(max(44px, calc(40px / var(--k, 1))) / 2); }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-side { gap: 3px; font-size: var(--phone-sub); line-height: 1.42; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-p-title { font-size: var(--phone-text); line-height: 1.42; }
 html:root[data-density="phone"] body:not(:root) .gboard :is(.gb-p-sub, .gb-p-state, .gb-bar, .gb-bar-sum, .gb-bar-note, .gb-feat, .gb-goals-head, .gb-goal-name, .gb-goal-fire b, .gb-goal-lock, .gb-goal-now) { font-size: var(--phone-sub); }
@@ -2073,7 +2073,7 @@ html:root[data-density="phone"] body:not(:root) .gboard .gb-art-mystery { top: a
 /* 台座の補足（ほかの色の火・上限の後の白火）は「？」の見方（火種・決まり）にもあるので、スマホ横では出さない（規格の「説明文は ? に逃がす」） */
 html:root[data-density="phone"] body:not(:root) .gboard .gb-art.k-gate ~ .gb-p-sub { display: none; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-bars { gap: 2px; margin: 2px 0; }
-html:root[data-density="phone"] body:not(:root) .gboard .gb-bar { grid-template-columns: 38px 1fr auto; min-height: 40px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-bar { grid-template-columns: 38px 1fr auto; min-height: 44px; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-bar-name { width: 36px; height: 36px; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-goals { gap: 4px; }
 /* 近い目的地はスマホ横では近い2つまで（3つ目は盤の上の光るマスと「目標にする」で分かる） */
@@ -2084,7 +2084,27 @@ html:root[data-density="phone"] body:not(:root) .gboard .gb-goal-fire i { width:
 html:root[data-density="phone"] body:not(:root) .gboard .gb-hidane { gap: 6px; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-hidane b { font-size: var(--phone-text); }
 html:root[data-density="phone"] body:not(:root) .gboard.has-art .gb-hidane i { width: 32px; height: 32px; }
-html:root[data-density="phone"] body:not(:root) .gboard.has-art .gb-nodes .gb-node > :is(.gb-cost, .gb-mystery) { min-width: 28px; width: 28px; height: 28px; font-size: 17px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-nodes .gb-node > :is(.gb-cost, .gb-mystery),
+html:root[data-density="phone"] body:not(:root) .gboard.has-art .gb-nodes .gb-node > :is(.gb-cost, .gb-mystery) { min-width: max(28px, calc(11.5px / var(--k, 1) + 12px)); width: max(28px, calc(11.5px / var(--k, 1) + 12px)); height: max(28px, calc(11.5px / var(--k, 1) + 12px)); font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-header .gb-icon { width: max(44px, calc(40px / var(--k, 1))); height: max(44px, calc(40px / var(--k, 1))); font-size: var(--phone-sub); }
+/* #3724 修正: 上のアイコンは実効40px（レイアウト約74px）で盤の固定行（60px）より高く、上下中央寄せの分だけ盤の上端からはみ出して閉じるボタンが画面外に出る。スマホ密度ではヘッダー行をアイコンの高さまで広げ、差分はマス表示の行で吸収する */
+html:root[data-density="phone"] body:not(:root) .gboard { grid-template-rows: max(60px, calc(40px / var(--k, 1))) minmax(0, 1fr) 112px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-left { grid-template-rows: 60px minmax(0, 1fr); }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-bar-glyph,
+html:root[data-density="phone"] body:not(:root) .gboard .gb-glyph,
+html:root[data-density="phone"] body:not(:root) .gboard .gb-quality,
+html:root[data-density="phone"] body:not(:root) .gboard .gb-tab-ready,
+html:root[data-density="phone"] body:not(:root) .gboard .gb-node > .gb-node-state,
+html:root[data-density="phone"] body:not(:root) .gboard .gb-node b,
+html:root[data-density="phone"] body:not(:root) .gboard .gb-face b,
+html:root[data-density="phone"] body:not(:root) .gboard .gb-goal-icon b { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-node > .gb-node-state { width: max(18px, calc(11.5px / var(--k, 1) + 10px)); height: max(18px, calc(11.5px / var(--k, 1) + 10px)); }
+/* 拡大時だけマスのクリック箱を実効44pxまで広げる（等倍では隣と重なるので広げない）（#3121） */
+html:root[data-density="phone"] body:not(:root) .gb-board[data-hit="wide"] .gb-node {
+  --gb-hit: max(44px, calc(44px / var(--k, 1) / var(--gb-zoom, 1)));
+  width: var(--gb-hit); height: var(--gb-hit);
+  margin: calc(var(--gb-hit) / -2) 0 0 calc(var(--gb-hit) / -2);
+}
 
 /* 左上の日付カード（2026-10-31 DUI13）: 紙の色になる前の配置（左に日付、右に所持金・大会まで・体力の3行）を薄く組み直す。
    行ごとの枠は付けず、細い線で区切る。幅は固定（所持金の桁・時間帯・最大体力で板が動かない）。 */
