@@ -80,7 +80,7 @@ html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.gc-badge:not(.face),.st-
 html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.hud-bar,.gc-meter) {
   background: #0007; border: 1px solid var(--inner-edge); border-radius: var(--ui-button-radius);
 }
-html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.hud-bar b,.gc-meter i) {
+html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.hud-bar:not(.hx-bar) b,.gc-meter i) {
   background: var(--stamina-fill,var(--gc,var(--gold))); mask: none; -webkit-mask: none; border-radius: var(--ui-button-radius);
 }
 /* 体力の緑/黄/赤、能力の5色は意味を持つためテーマ色で置き換えない。 */

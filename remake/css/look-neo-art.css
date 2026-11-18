@@ -86,10 +86,10 @@
   border-image: url("../img/ui/craft-night/window.webp") 40 fill / 14px / 0 stretch;
 }
 
-/* ---------------------------------------------------------------- 6. 小さな札（会話の操作・用語集や STATUS のタブ・ショップのタブ・ギャラリーのタブ・地図の「行く」）
-   ふだんは夜紫のガラスの札、選んでいるタブは金の札。 */
+/* ---------------------------------------------------------------- 6. 小さな札（用語集や STATUS のタブ・ショップのタブ・ギャラリーのタブ・地図の「行く」）
+   ふだんは夜紫のガラスの札、選んでいるタブは金の札。会話の操作（.vn-ctl）は44pxの透明な押し箱の内側（::after）に丸い札を描く作りなので、外箱に矩形の枠線を重ねない。 */
 :root[data-look="neo"] body:not(.game-ds) #viewport #stage :is(
-  #vn .vn-controls .vn-ctl, #modal .gl-tab, #modal .st-tab, #modal .gal-tab, #modal .gal-close, #screen .shop-paper .shop-tab,
+  #modal .gl-tab, #modal .st-tab, #modal .gal-tab, #modal .gal-close, #screen .shop-paper .shop-tab,
   #screen .map .map-notice, #screen .map .map-guide, #screen .map .mi-go
 ) {
   border-style: solid;
