@@ -14,6 +14,7 @@ import { advanceToChapterTwo, dayOneProgress } from "../chapters/ch2-progress.js
 import { advanceToChapterThree, chapterThreeProgress } from "../chapters/ch3-progress.js";
 import { advanceToChapterFour, chapterFourProgress } from "../chapters/ch4-progress.js";
 import { advanceToChapterFive, chapterFiveProgress } from "../chapters/ch5-progress.js";
+import { CRAFT_VERSIONS, craftVersionFrom } from "../core/craft-version.js";
 import { craftTest } from "../craft/session.js";
 import { growthEnabled, gainExp, ensureGrowth } from "../core/growth.js";
 import { emit } from "../core/bus.js";
@@ -167,6 +168,19 @@ export function mountDebugPanel() {
   const craftRow = el("div", { className: "dbg-row" }, CRAFT_MODES.map(mode => el("button", { type: "button", textContent: mode.label,
     dataset: { value: mode.value, test: `debug-craft-${mode.value || "manual"}` },
     onclick: () => { craftTest.auto = mode.value || null; store.set(CRAFT_KEY, mode.value); pressed(craftRow, mode.value); } })));
+  const versionRow = el("div", { className: "dbg-row" }, CRAFT_VERSIONS.map(({ id, label }) => el("button", {
+    type: "button", textContent: label, dataset: { value: id, test: `debug-craft-version-${id}` },
+    onclick: () => {
+      const url = new URL(location.href);
+      if (url.searchParams.has("craft")) {
+        url.searchParams.delete("craft");
+        history.replaceState(history.state, "", url);
+      }
+      config.craftVersion = id;
+      saveConfig();
+      pressed(versionRow, craftVersionFrom(config));
+    },
+  })));
   const portraitSelect = el("select", { dataset: { test: "debug-portrait-style" }, title: "会話の立ち絵の画風",
     onchange: () => { config.portraitStyle = portraitSelect.value; saveConfig(); refreshPortraits(); } },
     [["new", "新バージョン"], ["classic", "現行"]].map(([value, label]) => el("option", { value, textContent: label })));
@@ -250,7 +264,8 @@ export function mountDebugPanel() {
   pressed(craftRow, craftTest.auto || "");
   panel.append(
     el("h4", { textContent: "速さ（音は変わらない）" }), speedRow,
-    el("h4", { textContent: "シーシャ作り" }), craftRow,
+    el("h4", { textContent: "シーシャ作りの版（次の一台から）" }), versionRow,
+    el("h4", { textContent: "シーシャ作りの操作" }), craftRow,
     el("h4", { textContent: "会話の立ち絵" }), portraitRow,
     el("div", { className: "dbg-note", textContent: "通常の設定と共通。未導入の人物・衣装は現行、未導入の表情は同じ画風の通常絵。進行・セーブは変えない。" }),
     el("h4", { textContent: "背景プレビュー" }), backgroundPreview.row,
@@ -265,7 +280,7 @@ export function mountDebugPanel() {
     el("div", { className: "dbg-note", textContent: "会話の早送りは、会話の SKIP。経験値は寝ると精算される。" }),
     el("div", { className: "dbg-note", textContent: "この道具を消す: URL に ?debug=0。リリース前には remake/js/dev/ を消す。" }),
   );
-  const open = show => { panel.hidden = !show; if (show) { backgroundPreview.refresh(); syncPortraitStyle(); status.textContent = stateText(); if (state) syncRelationship(); } };
+  const open = show => { panel.hidden = !show; if (show) { backgroundPreview.refresh(); pressed(versionRow, craftVersionFrom(config)); syncPortraitStyle(); status.textContent = stateText(); if (state) syncRelationship(); } };
   toggle.addEventListener("click", () => open(panel.hidden));
   document.addEventListener("keydown", event => {
     if (event.key === "`" && !event.repeat && !/^(INPUT|TEXTAREA|SELECT)$/.test(event.target?.tagName || "")) open(panel.hidden);
