@@ -268,6 +268,7 @@ body:is(.reduce-shake, .vn-skip) .tx-shiver { animation: none; }
   cursor: pointer;
 }
 .vn-ctl:hover, .vn-ctl:focus-visible { color: var(--text); border-color: var(--gold); }
+.vn-ctl:focus:not(:focus-visible) { outline: none; }
 .vn-ctl:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 .vn-ctl.on { color: #1a1206; background: var(--gold); border-color: var(--gold); }
 
