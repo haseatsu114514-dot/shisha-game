@@ -84,9 +84,9 @@ function homeProps(available) {
 function propsFor(url, { homeRigs = true } = {}) {
   const available = new Set(DB.manifest.sceneProps || []);
   if (isHome(url)) {
-    // 昼の自室背景は台をローテーブルの真ん中へ描き込んだ絵（#3418・2026-11-18 オーナー採用の背景リメイク）。
-    // 所持品の台を重ねると台が二重になるので、昼だけ小道具を出さない。夜・曇天は描き込みが無いので従来どおり重ねる。
-    if (sceneFile(url) === "bg_home_day.png") return [];
+    // 昼・夜の自室背景は台をローテーブルの真ん中へ描き込んだ絵（#3418・2026-11-18 オーナー採用の背景リメイク、昼夜ペア）。
+    // 所持品の台を重ねると台が二重になるので、昼と夜は小道具を出さない。曇天は描き込みが無いので従来どおり重ねる。
+    if (sceneFile(url) === "bg_home_day.png" || sceneFile(url) === "bg_home_night.png") return [];
     return homeRigs ? homeProps(available) : [];
   }
   return (SCENE_PROPS[sceneFile(url)] || []).filter((p) => available.has(p.file));
