@@ -753,7 +753,7 @@ html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="pc"] .trpg-speaker-art
   filter: var(--trpg-pawn-edge) drop-shadow(0 8px 14px #000b);
   animation: trpg-figure-in .32s ease-out both;
 }
-html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="pc"] .trpg-speaker-art img { width: 520px !important; filter: none; }
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="pc"] .trpg-speaker-art img { width: 520px; height: auto; filter: none; }
 @keyframes trpg-figure-in { from { opacity: 0; translate: -18px 0; } to { opacity: 1; translate: 0 0; } }
 /* 語り: 立ち絵は出さず、字を中央に置く（物語の地の文）。語っているGMは名前だけ小さく添える。 */
 html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="narration"] .trpg-speaker-art { display: none; }
@@ -829,6 +829,12 @@ html:root .trpg-root.trpg-cinematic .trpg-cutin-figure img { position: absolute;
 html:root .trpg-root.trpg-cinematic .trpg-cutin-copy { position: relative; display: grid; gap: 2px; min-width: 300px; }
 html:root .trpg-root.trpg-cinematic .trpg-cutin-copy small { font-size: 24px; font-weight: 700; letter-spacing: .08em; color: #e9e2cc; }
 html:root .trpg-root.trpg-cinematic .trpg-cutin-copy strong { transform-origin: left center; font-size: 62px; font-weight: 700; letter-spacing: .06em; line-height: 1.15; color: var(--cut); text-shadow: 0 4px 0 #0009, 0 0 30px color-mix(in srgb, var(--cut) 50%, transparent); }
+/* 判定のカットインが出ている間は、立ち絵側（発言欄の人物）を下げて隠し、カットインが消えたら元へ戻す。 */
+html:root .trpg-root.trpg-cinematic .trpg-dock .trpg-speaker-art { transition: opacity .18s ease, translate .2s ease, visibility 0s linear 0s; }
+html:root .trpg-root.trpg-cinematic:is([data-cutin="true"], :has(> .trpg-fx-layer > .trpg-cutin)) .trpg-dock:is([data-kind], [data-layer]) .trpg-speaker-art {
+  opacity: 0; visibility: hidden; translate: 0 44px; animation: none; pointer-events: none;
+  transition: opacity .16s ease, translate .2s ease, visibility 0s linear .16s;
+}
 
 /* ---- 画面の衝撃（揺れは stage-fx.js、ここは光）---- */
 html:root .trpg-root.trpg-cinematic .trpg-impact { position: absolute; inset: 0; z-index: 54; opacity: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 45%, var(--impact, #fff) 0%, color-mix(in srgb, var(--impact, #fff) 40%, transparent) 45%, transparent 78%); mix-blend-mode: screen; }

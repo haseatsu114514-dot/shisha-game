@@ -1,16 +1,43 @@
 // Crops for TRPG circular face icons: same cheek-to-cheek scale and eye-line height
 // for every character (and the same numbers used to write costumes/frames.json).
 import { portraitStyle } from "../core/portrait-style.js";
-import { FACE_FRAC, EYE_Y, PORTRAIT_FRAMES } from "./face-crops-data.js";
+import { FACE_FRAC, EYE_Y, PORTRAIT_FRAMES, EXTRA_PORTRAIT_FRAMES, PORTRAIT_FACE_SHIFTS } from "./face-crops-data.js";
 
-export { FACE_FRAC, EYE_Y, PORTRAIT_FRAMES };
+export { FACE_FRAC, EYE_Y, PORTRAIT_FRAMES, EXTRA_PORTRAIT_FRAMES, PORTRAIT_FACE_SHIFTS };
 
 const ALIASES = { tumugi: "tsumugi", hazime: "hajime" };
 
-export function portraitFaceFrame(id, style = portraitStyle()) {
+function manifestFaceFrame(manifest, folder, style) {
+  const ff = manifest?.faceFrames?.[style]?.[folder];
+  if (!ff?.eye || !ff?.box) return null;
+  const [bx, by, side] = ff.box;
+  if (!(side > 0)) return null;
+  const [cx, eyeY] = ff.eye;
+  return {
+    box: [bx, by, bx + side, by + side],
+    box_exact: [bx, by, bx + side, by + side],
+    src: [896, 1200],
+    face: { cx, eye_y: eyeY, w: ff.unit ? ff.unit * 0.78 : side * FACE_FRAC },
+  };
+}
+
+export function portraitFaceFrame(id, style = portraitStyle(), manifest = null) {
   const folder = ALIASES[id] || id;
-  const bucket = PORTRAIT_FRAMES[style] || PORTRAIT_FRAMES.new;
-  return bucket?.[folder] || PORTRAIT_FRAMES.classic?.[folder] || null;
+  const key = style === "classic" ? "classic" : "new";
+  return PORTRAIT_FRAMES[key]?.[folder]
+    || EXTRA_PORTRAIT_FRAMES[key]?.[folder]
+    || manifestFaceFrame(manifest, folder, key)
+    || PORTRAIT_FRAMES.classic?.[folder]
+    || EXTRA_PORTRAIT_FRAMES.classic?.[folder]
+    || manifestFaceFrame(manifest, folder, "classic")
+    || null;
+}
+
+/** Per-expression [dx, dy] head-center shift in source 896x1200 pixels relative to normal. */
+export function portraitFaceShift(id, face = "normal", style = portraitStyle()) {
+  const folder = ALIASES[id] || id;
+  const key = style === "classic" ? "classic" : "new";
+  return PORTRAIT_FACE_SHIFTS[key]?.[folder]?.[face] || [0, 0];
 }
 
 /**
@@ -39,8 +66,8 @@ export function circleFaceStyle(frame) {
 }
 
 /** Inline style for a TRPG circle, or null to keep the standing-portrait fallback. */
-export function faceIconStyle(id, style = portraitStyle()) {
-  return circleFaceStyle(portraitFaceFrame(id, style));
+export function faceIconStyle(id, style = portraitStyle(), manifest = null) {
+  return circleFaceStyle(portraitFaceFrame(id, style, manifest));
 }
 
 /**
@@ -71,4 +98,34 @@ export function bustTypicalWidths(frames) {
 export function bustCheekWidth(face, id, typical = null) {
   const base = typical > 0 ? typical * (face.w / typical) ** BUST.damp : face.w;
   return base * (BUST.fix[id] || 1);
+}
+
+function anchoredFrameStyle({ cx, eyeY, widthPx, srcW = 896, srcH = 1200, faceFrac, eyeFrac, forImg = false }) {
+  const style = {
+    position: "absolute",
+    left: "50%",
+    width: `${(faceFrac * srcW / widthPx) * 100}%`,
+    maxWidth: "none",
+    top: `${eyeFrac * 100}%`,
+    transform: `translate(-${(cx / srcW) * 100}%, -${(eyeY / srcH) * 100}%)`,
+  };
+  if (forImg) style.height = "auto";
+  return style;
+}
+
+/** Frame any role costume bust (card or speaker img) at uniform cheek scale and eye line. */
+export function bustFrameStyle(face, id, typical = null, { faceFrac = BUST.face, eyeFrac = BUST.eye, forImg = false } = {}) {
+  return anchoredFrameStyle({
+    cx: face.cx,
+    eyeY: face.eye_y,
+    widthPx: bustCheekWidth(face, id, typical),
+    faceFrac,
+    eyeFrac,
+    forImg,
+  });
+}
+
+/** Frame a standing portrait img inside any rectangular box by eye line and face center. */
+export function standingFrameStyle({ cx, eyeY, w, srcW = 896, srcH = 1200 }, { faceFrac = 0.245, eyeFrac = 0.35, forImg = true } = {}) {
+  return anchoredFrameStyle({ cx, eyeY, widthPx: w, srcW, srcH, faceFrac, eyeFrac, forImg });
 }

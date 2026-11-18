@@ -20,7 +20,7 @@ function layerOf(root) {
 }
 
 /** One overlay with its own animations and timers; everything stops and leaves together. */
-function overlay(root, node) {
+function overlay(root, node, onCleanup = null) {
   const animations = [], timers = [];
   let done = false, resolveFinished;
   const finished = new Promise(resolve => { resolveFinished = resolve; });
@@ -39,6 +39,7 @@ function overlay(root, node) {
       for (const timer of timers) clearTimeout(timer);
       for (const animation of animations) { try { animation.cancel(); } catch { /* already gone */ } }
       node.remove();
+      onCleanup?.();
       resolveFinished();
     },
   };
@@ -152,7 +153,12 @@ export function playResultCut(root, { figure = null, who = "", how = "", label =
     figure ? el("span.trpg-cutin-figure", { dataset: { cutout: String(!!figure.classList?.contains("trpg-costume")) } }, figure) : null,
     el("span.trpg-cutin-copy", [el("small", { text: [who, how].filter(Boolean).join(" · ") }), el("strong", { text: label })]),
   ].filter(Boolean));
-  const fx = overlay(root, node);
+  if (root?.dataset) root.dataset.cutin = "true";
+  const fx = overlay(root, node, () => {
+    const layer = [...(root.children || [])].find(child => child.classList?.contains?.("trpg-fx-layer"));
+    const stillActive = [...(layer?.children || [])].some(child => child.classList?.contains?.("trpg-cutin"));
+    if (!stillActive && root?.dataset) delete root.dataset.cutin;
+  });
   const ms = calm() ? 900 : special === "critical" ? 1500 : 1250;
   if (calm()) {
     fx.animate(node, [{ opacity: 0 }, { opacity: 1, offset: .2 }, { opacity: 1, offset: .75 }, { opacity: 0 }], { duration: ms, easing: "linear" });

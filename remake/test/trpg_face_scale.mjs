@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
-import { COSTUME_KEYS } from "../js/trpg/costumes.js";
-import { FACE_FRAC, EYE_Y, PORTRAIT_FRAMES, circleFaceStyle, portraitFaceFrame } from "../js/trpg/face-crops.js";
+import { COSTUME_KEYS, resolvedCostumeKey } from "../js/trpg/costumes.js";
+import { FACE_FRAC, EYE_Y, PORTRAIT_FRAMES, EXTRA_PORTRAIT_FRAMES, circleFaceStyle, portraitFaceFrame } from "../js/trpg/face-crops.js";
 
 const frames = JSON.parse(await readFile(new URL("../img/ui/trpg/costumes/frames.json", import.meta.url), "utf8"));
 const CAST = ["hajime", "hiyori", "samechan", "tsumugi", "ageha", "adam", "rei", "sumi", "salaryman"];
@@ -84,4 +84,46 @@ test("costume busts: one character keeps nearly one zoom across costumes, and ev
   assert.equal(bustCheekWidth({ w: 90 }, "nobody", 90), 90);
   // The eye line leaves room for the hair above it: the top of the head is not cut off for an ordinary haircut.
   assert.ok(BUST.eye >= 0.38 && BUST.eye <= 0.45 && BUST.face > 0.2 && BUST.face < 0.3 && BUST.damp > 0 && BUST.damp < 1);
+});
+
+test("extended cast (sai, regulars), regular-table costume aliases, speaker bust framing, and expression shifts share one eye line and center", async () => {
+  const { bustTypicalWidths, bustFrameStyle, PORTRAIT_FACE_SHIFTS } = await import("../js/trpg/face-crops.js");
+  const { portraitBoxStyle } = await import("../js/trpg/presentation.js");
+  const manifest = JSON.parse(await readFile(new URL("../data/manifest.json", import.meta.url), "utf8"));
+  for (const style of ["classic", "new"]) {
+    for (const id of ["sai", "regulara", "regularb"]) {
+      assert.ok(EXTRA_PORTRAIT_FRAMES[style]?.[id]);
+      const frame = portraitFaceFrame(id, style, manifest);
+      assert.ok(frame, `${style}/${id} resolves via portraitFaceFrame`);
+      const s = cropStats(frame);
+      assert.ok(Math.abs(s.cheek - FACE_FRAC) < 0.03, `${style}/${id} cheek frac ${s.cheek}`);
+      assert.ok(Math.abs(s.eye - EYE_Y) < 0.03, `${style}/${id} eye line ${s.eye}`);
+      assert.ok(Math.abs(s.cx - 0.5) < 0.03, `${style}/${id} face center ${s.cx}`);
+    }
+  }
+  assert.equal(resolvedCostumeKey("regular-mail", "hajime", "watch"), "leaf-mail/hajime/watch");
+  assert.equal(resolvedCostumeKey("regular-harbor", "hajime", "sailor"), "ordinary-cup/hajime/sailor");
+
+  const keyed = Object.fromEntries(frames.map(f => [`${f.scenario}/${f.character}/${f.role_id}`, f]));
+  const typical = bustTypicalWidths(keyed);
+  for (const f of frames) {
+    const st = bustFrameStyle(f.face, f.character, typical[f.character], { faceFrac: 0.24, eyeFrac: 0.4, forImg: true });
+    const wPx = 232 * parseFloat(st.width) / 100;
+    const figTop = 318 * parseFloat(st.top) / 100 - (f.face.eye_y - f.face.figtop) * (wPx / f.src[0]);
+    assert.ok(figTop >= 0, `${f.file} head/hat clipped in 232x318 dock: ${figTop}`);
+    const match = /translate\(-([\d.]+)%,/.exec(st.transform);
+    assert.ok(match && Math.abs(parseFloat(match[1]) - (f.face.cx / f.src[0] * 100)) < 0.01);
+  }
+
+  for (const id of [...CAST, "sai", "regulara", "regularb"]) {
+    const base = portraitBoxStyle(manifest, id, { face: "normal", faceFrac: 0.245, eyeFrac: 0.35 });
+    assert.equal(base.top, "35%");
+    const exprs = PORTRAIT_FACE_SHIFTS.new?.[id] || {};
+    for (const face of Object.keys(exprs)) {
+      const shifted = portraitBoxStyle(manifest, id, { face, faceFrac: 0.245, eyeFrac: 0.35 });
+      assert.equal(shifted.top, "35%");
+      assert.equal(shifted.width, base.width);
+      assert.notEqual(shifted.transform, base.transform, `new/${id}/${face} compensates canvas offset`);
+    }
+  }
 });

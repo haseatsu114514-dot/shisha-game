@@ -1,5 +1,6 @@
 import { portraitStyle } from "../core/portrait-style.js";
 import { portraitAsset, resolvePortrait } from "../core/portrait-resolver.js";
+import { portraitFaceFrame, portraitFaceShift, standingFrameStyle } from "./face-crops.js";
 
 export function displayName(characters, id) {
   const c = characters.find(c => c.id === id);
@@ -29,6 +30,29 @@ export function portraitHeadTop(manifest, id) {
 
 export function portraitAx(manifest, id) {
   return resolvePortrait(manifest, id, "normal", portraitStyle())?.ax ?? 0.5;
+}
+
+/** Frame a standing portrait by measured eye line, cheek scale, and per-expression offset. */
+export function portraitBoxStyle(manifest, id, { face = "normal", faceFrac = 0.245, eyeFrac = 0.35, fallbackWidth = 410, fallbackHeadY = 16 } = {}) {
+  const resolved = resolvePortrait(manifest, id, face, portraitStyle());
+  const style = resolved?.style || portraitStyle();
+  const actualFace = resolved?.face || face || "normal";
+  const frame = portraitFaceFrame(id, style, manifest);
+  if (frame?.face?.w > 0) {
+    const [dx, dy] = portraitFaceShift(id, actualFace, style);
+    return standingFrameStyle({
+      cx: frame.face.cx + dx,
+      eyeY: frame.face.eye_y + dy,
+      w: frame.face.w,
+      srcW: frame.src?.[0] || 896,
+      srcH: frame.src?.[1] || 1200,
+    }, { faceFrac, eyeFrac });
+  }
+  return {
+    position: "absolute", left: "50%", width: fallbackWidth + "px", maxWidth: "none",
+    top: portraitTop(manifest, id, fallbackWidth, fallbackHeadY),
+    transform: `translateX(-${portraitAx(manifest, id) * 100}%)`,
+  };
 }
 
 /** A painted room or, until the art exists, a tinted backdrop with the place name. */
