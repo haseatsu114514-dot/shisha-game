@@ -375,7 +375,15 @@ const neoTraces = (page) => page.evaluate(() => [
 async function pickLook(page, look) {
   await page.locator('[data-test="vn-config"]').click();
   await page.locator("#modal.show").waitFor();
-  await page.locator(`[data-test="cfg-look"] button[value="${look}"]`).click();
+  const button = page.locator(`[data-test="cfg-look"] button[value="${look}"]`);
+  if (await button.count() === 0) {
+    // LK23 で設定から選べなくなった様式は、ボタンが無いことを確かめてからプログラム側で切り替える。
+    await page.locator("#modal .modal-actions button").last().click();
+    await page.locator("#modal.show").waitFor({ state: "hidden" });
+    await setLook(page, look);
+    return;
+  }
+  await button.click();
   await page.waitForFunction((look) => document.documentElement.dataset.look === look, look);
   await page.locator("#modal .modal-actions button").last().click();
   await page.locator("#modal.show").waitFor({ state: "hidden" });
