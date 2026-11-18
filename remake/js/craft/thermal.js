@@ -111,10 +111,11 @@ function sprites() {
   });
 }
 
+const BACKDROP_W = 960, BACKDROP_H = 540, BACKDROP_SCALE = 0.5;
 let hazeCount = 0;
 export function buildThermalAtmosphere(host, worker, cs) {
   let bands = temperatureBands(cs);
-  const canvas = el("canvas.thermal-backdrop", { width: 960, height: 540, "aria-hidden": "true", dataset: { test: "thermal-background" } });
+  const canvas = el("canvas.thermal-backdrop", { width: BACKDROP_W * BACKDROP_SCALE, height: BACKDROP_H * BACKDROP_SCALE, "aria-hidden": "true", dataset: { test: "thermal-background" } });
   const ctx = canvas.getContext("2d");
   const warp = document.createElement("canvas");
   warp.width = canvas.width; warp.height = canvas.height;
@@ -147,11 +148,14 @@ export function buildThermalAtmosphere(host, worker, cs) {
   }
   host.prepend(canvas);
   host.append(haze);
+  // SMIL は 60fps で自走させず、描画間引きに合わせて loop() から時刻を進める。
+  hazeSvg?.pauseAnimations?.();
   equipment?.prepend(picture);
   equipment?.before(glow);
   equipment?.after(boom);
   worker.footer.append(label);
   let active = false, paused = false, temp = 0, phase = "", raf = 0, last = 0, time = 0, burstAt = -1, ruined = null;
+  let hazePx = 0, lastDrawnTemp = -1;
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   /** 根元から先端へ揺れながら細くなる炎の舌。calm=1で揺れの小さい穏やかな炎。 */
@@ -315,19 +319,28 @@ export function buildThermalAtmosphere(host, worker, cs) {
     ctx.globalAlpha = 1;
   }
   /** 背景の陽炎: 横の帯ごとに少しずらし、熱い空気越しに見ているようにゆらす。 */
-  function shimmer(amount, t, w, h) {
+  function shimmer(amount, t, cw, ch) {
     if (!warpCtx || amount <= 0) return;
-    warpCtx.clearRect(0, 0, w, h); warpCtx.drawImage(canvas, 0, 0);
-    for (let y = 0; y < h; y += 6) {
-      const dx = Math.sin(y * .045 + t * 3.4) * amount + Math.sin(y * .013 - t * 1.7) * amount * .6;
-      ctx.drawImage(warp, 0, y, w, 6, dx, y, w, 6);
+    warpCtx.globalCompositeOperation = "copy";
+    warpCtx.drawImage(canvas, 0, 0);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    const scaleAmount = amount * BACKDROP_SCALE;
+    const strip = Math.max(1, Math.round(6 * BACKDROP_SCALE));
+    for (let y = 0; y < ch; y += strip) {
+      const ly = y / BACKDROP_SCALE;
+      const dx = Math.sin(ly * .045 + t * 3.4) * scaleAmount + Math.sin(ly * .013 - t * 1.7) * scaleAmount * .6;
+      ctx.drawImage(warp, 0, y, cw, strip, dx, y, cw, strip);
     }
   }
   function draw() {
     if (!ctx) return;
     sprites();
-    const burnt = ruined === "burnt", w = canvas.width, h = canvas.height, t = reduced.matches ? 0 : time;
+    lastDrawnTemp = temp;
+    const burnt = ruined === "burnt", w = BACKDROP_W, h = BACKDROP_H, cw = canvas.width, ch = canvas.height, t = reduced.matches ? 0 : time;
     const env = ruined ? { bg: RUINED_BG[ruined] } : envAt(temp, bands), band = ruined ? RUINED[ruined] : thermalBand(temp, bands);
+    ctx.setTransform(BACKDROP_SCALE, 0, 0, BACKDROP_SCALE, 0, 0);
+    ctx.globalCompositeOperation = "source-over";
+    ctx.globalAlpha = 1;
     const gradient = ctx.createLinearGradient(0, 0, w * .4, h);
     env.bg.forEach((color, i) => gradient.addColorStop(i, color));
     ctx.fillStyle = gradient; ctx.fillRect(0, 0, w, h);
@@ -341,22 +354,33 @@ export function buildThermalAtmosphere(host, worker, cs) {
     if (env.fire > .01) fire(env, t, w, h);
     if (env.dark > .01) ceilingSmoke(t, w, h, env.dark);
     if (env.sparks >= 1) sparks(env.flame[2], t, w, h, env.sparks, .9 + env.reach * .5);
-    if (!reduced.matches) shimmer(band.haze * .7, t, w, h);
+    if (!reduced.matches) shimmer(band.haze * .7, t, cw, ch);
   }
+  const stepMs = () => (phase === "cold" || phase === "warming" || phase === "ready") && !ruined ? 80 : 48;
   function loop(now) {
     raf = 0;
-    if (!active || !host.isConnected || host.classList.contains("done")) return;
-    if (!paused && !document.hidden && now - last >= 33) {
-      time += Math.min(.1, (now - last) / 1000); last = now; draw();
+    if (!active || paused || document.hidden || reduced.matches || !host.isConnected || host.classList.contains("done")) return;
+    if (now - last >= stepMs()) {
+      time += Math.min(.1, (now - last) / 1000); last = now;
+      draw();
+      if (hazePx > 0) hazeSvg?.setCurrentTime?.(time);
     }
     raf = requestAnimationFrame(loop);
   }
-  function start() { if (active && !raf) { last = performance.now(); raf = requestAnimationFrame(loop); } }
+  function start() {
+    if (active && !paused && !document.hidden && !reduced.matches && !raf && host.isConnected && !host.classList.contains("done")) {
+      last = performance.now();
+      raf = requestAnimationFrame(loop);
+    }
+  }
   function setHaze(px) {
     const on = active && px > 0 && !reduced.matches;
-    displace?.setAttribute("scale", String(on ? px : 0));
+    hazePx = on ? px : 0;
+    displace?.setAttribute("scale", String(hazePx));
     if (stage) stage.style.filter = on ? `url(#${hazeId})` : "";
-    host.dataset.thermalHaze = on ? String(px) : "0";
+    host.dataset.thermalHaze = String(hazePx);
+    hazeSvg?.pauseAnimations?.();
+    if (on) hazeSvg?.setCurrentTime?.(time);
   }
   function paint(band) {
     phase = band.id; host.dataset.thermalBand = band.id;
@@ -369,14 +393,27 @@ export function buildThermalAtmosphere(host, worker, cs) {
     setHaze(band.haze);
     draw();
   }
-  reduced.addEventListener?.("change", () => { if (active && host.isConnected) paint(ruined ? RUINED[ruined] : thermalBand(temp, bands)); });
+  const onVisibility = () => {
+    if (!host.isConnected || host.classList.contains("done")) {
+      document?.removeEventListener?.("visibilitychange", onVisibility);
+      return;
+    }
+    if (!document.hidden) start();
+  };
+  document?.addEventListener?.("visibilitychange", onVisibility);
+  reduced.addEventListener?.("change", () => {
+    if (!active || !host.isConnected) return;
+    paint(ruined ? RUINED[ruined] : thermalBand(temp, bands));
+    if (reduced.matches) { cancelAnimationFrame(raf); raf = 0; }
+    else start();
+  });
   return {
     setStep(step) {
       active = ["steam", "pull", "care"].includes(step);
       paused = false; burstAt = -1; ruined = null; host.classList.remove("thermal-burnt", "thermal-ruined");
       host.classList.toggle("thermal-active", active);
       host.dataset.thermalPaused = "false"; label.hidden = !active;
-      hazeSvg?.unpauseAnimations?.();
+      hazeSvg?.pauseAnimations?.();
       if (!active) { cancelAnimationFrame(raf); raf = 0; delete host.dataset.thermalBand; setHaze(0); }
       else { phase = ""; this.update(temp); start(); }
     },
@@ -387,13 +424,15 @@ export function buildThermalAtmosphere(host, worker, cs) {
       if (!active || ruined) return;
       const band = thermalBand(temp, bands);
       if (phase !== band.id) paint(band);
-      else if (paused) draw(); // 止まっている間も温度の変化だけは絵に返す
+      else if (paused || (reduced.matches && Math.abs(temp - lastDrawnTemp) >= 0.002)) draw(); // 止まっている間も温度の変化だけは絵に返す
       // ベンチが会話から再接続された場合も再開する。
       start();
     },
     pause(value) {
       paused = value; host.dataset.thermalPaused = String(value); last = performance.now();
-      value ? hazeSvg?.pauseAnimations?.() : hazeSvg?.unpauseAnimations?.();
+      hazeSvg?.pauseAnimations?.();
+      if (value) { cancelAnimationFrame(raf); raf = 0; }
+      else start();
     },
     /** その一台がダメになった背景へ切り替える。焦げたら爆発のあと煙と残り火、冷え切り・フレーバー切れはくすんだ色。工程が変わるまで続く。 */
     fail(kind) {

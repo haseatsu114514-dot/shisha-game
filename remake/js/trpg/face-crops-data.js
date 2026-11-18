@@ -297,16 +297,16 @@ export const PORTRAIT_FRAMES = {
     },
     "salaryman": {
       "box": [
-        336,
-        98,
-        539,
-        300
+        317,
+        39,
+        558,
+        280
       ],
       "box_exact": [
-        336.41,
-        98.09,
-        538.59,
-        300.26
+        316.85,
+        39.15,
+        558.15,
+        280.46
       ],
       "src": [
         896,
@@ -314,20 +314,20 @@ export const PORTRAIT_FRAMES = {
       ],
       "face": {
         "cx": 437.5,
-        "eye_y": 183.0,
-        "w": 93,
+        "eye_y": 140.5,
+        "w": 111,
         "eye_l": [
           405.0,
-          187.0
+          143.0
         ],
         "eye_r": [
-          456.0,
-          179.0
+          447.0,
+          138.0
         ],
         "cheeks": [
-          391,
-          484,
-          195
+          382,
+          493,
+          155
         ]
       }
     }
@@ -481,35 +481,35 @@ export const PORTRAIT_FRAMES = {
       "box": [
         386,
         256,
-        582,
-        451
+        575,
+        445
       ],
       "box_exact": [
-        386.17,
-        255.83,
-        581.83,
-        451.48
+        385.93,
+        255.57,
+        575.07,
+        444.7
       ],
       "src": [
         896,
         1200
       ],
       "face": {
-        "cx": 484.0,
-        "eye_y": 338.0,
-        "w": 90,
+        "cx": 480.5,
+        "eye_y": 335.0,
+        "w": 87,
         "eye_l": [
-          456.0,
-          345.0
+          453.0,
+          342.0
         ],
         "eye_r": [
           504.0,
-          331.0
+          328.0
         ],
         "cheeks": [
-          439,
-          529,
-          352
+          437,
+          524,
+          360
         ]
       }
     },
@@ -623,37 +623,37 @@ export const PORTRAIT_FRAMES = {
     },
     "salaryman": {
       "box": [
-        329,
-        91,
-        507,
-        269
+        317,
+        39,
+        558,
+        280
       ],
       "box_exact": [
-        328.87,
-        90.63,
-        507.13,
-        268.89
+        316.85,
+        39.15,
+        558.15,
+        280.46
       ],
       "src": [
         896,
         1200
       ],
       "face": {
-        "cx": 418.0,
-        "eye_y": 165.5,
-        "w": 82,
+        "cx": 437.5,
+        "eye_y": 140.5,
+        "w": 111,
         "eye_l": [
-          390.0,
-          169.0
+          405.0,
+          143.0
         ],
         "eye_r": [
-          435.0,
-          162.0
+          447.0,
+          138.0
         ],
         "cheeks": [
-          377,
-          459,
-          180
+          382,
+          493,
+          155
         ]
       }
     }
@@ -1525,5 +1525,75 @@ export const NPC_FRAMES = {
         180
       ]
     }
+  }
+};
+
+/** Additional TRPG cast/regulars measured with the same FACE_FRAC/EYE_Y spec (kept outside PORTRAIT_FRAMES.new keys). */
+export const EXTRA_PORTRAIT_FRAMES = {
+  "classic": {
+    "sai": {
+      "box": [362, 24, 551, 213],
+      "box_exact": [361.93, 23.57, 551.07, 212.7],
+      "src": [896, 1200],
+      "face": { "cx": 456.5, "eye_y": 103.0, "w": 87, "eye_l": [443.0, 98.0], "eye_r": [490.0, 108.0], "cheeks": [413, 500, 115] }
+    },
+    "regulara": {
+      "box": [339, 74, 517, 252],
+      "box_exact": [338.87, 73.63, 517.13, 251.89],
+      "src": [896, 1200],
+      "face": { "cx": 428.0, "eye_y": 148.5, "w": 82, "eye_l": [399.0, 150.0], "eye_r": [438.0, 147.0], "cheeks": [387, 469, 169] }
+    },
+    "regularb": {
+      "box": [382, 91, 527, 236],
+      "box_exact": [381.67, 90.83, 527.33, 236.48],
+      "src": [896, 1200],
+      "face": { "cx": 454.5, "eye_y": 152.0, "w": 67, "eye_l": [426.0, 157.0], "eye_r": [469.0, 147.0], "cheeks": [421, 488, 169] }
+    }
+  },
+  "new": {
+    "sai": {
+      "box": [394, 82, 553, 241],
+      "box_exact": [394.15, 81.85, 552.85, 240.54],
+      "src": [896, 1200],
+      "face": { "cx": 473.5, "eye_y": 148.5, "w": 73, "eye_l": [460.0, 143.0], "eye_r": [501.0, 154.0], "cheeks": [437, 510, 162] }
+    },
+    "regulara": {
+      "box": [339, 74, 517, 252],
+      "box_exact": [338.87, 73.63, 517.13, 251.89],
+      "src": [896, 1200],
+      "face": { "cx": 428.0, "eye_y": 148.5, "w": 82, "eye_l": [399.0, 150.0], "eye_r": [438.0, 147.0], "cheeks": [387, 469, 169] }
+    },
+    "regularb": {
+      "box": [382, 91, 527, 236],
+      "box_exact": [381.67, 90.83, 527.33, 236.48],
+      "src": [896, 1200],
+      "face": { "cx": 454.5, "eye_y": 152.0, "w": 67, "eye_l": [426.0, 157.0], "eye_r": [469.0, 147.0], "cheeks": [421, 488, 169] }
+    }
+  }
+};
+
+/** Per-expression [dx, dy] head-center offset in 896x1200 pixels relative to "normal". */
+export const PORTRAIT_FACE_SHIFTS = {
+  "classic": {
+    "adam": { "intense": [-2, -2], "serious": [16, 1], "smile": [-16, -4], "surprise": [6, -3] },
+    "ageha": { "serious": [1, 2], "smile": [-10, 3], "surprise": [1, -1] },
+    "hajime": { "excited": [-34, -5], "sad": [-4, 10], "serious": [-9, 0], "smile": [-14, -6], "smug": [-31, -6], "surprise": [-12, -2] },
+    "hiyori": { "sad": [-3, 1], "serious": [3, 2], "surprise": [2, -1] },
+    "rei": { "sad": [8, 0], "serious": [1, 4], "smile": [-4, 5] },
+    "sai": { "serious": [-3, 2], "smile": [3, 3], "thinking": [-3, 2] },
+    "samechan": { "excited": [-6, -8], "serious": [1, 3], "smile": [-7, 0], "surprise": [-4, -3], "ventriloquism": [7, 3] },
+    "sumi": { "serious": [-11, -1], "surprise": [3, 1] },
+    "tsumugi": { "bow": [-14, -1], "evil": [-22, -1], "sad": [-29, 10], "serious": [-2, 4], "smile": [-16, -3], "surprise": [6, 3] }
+  },
+  "new": {
+    "adam": { "intense": [-6, 1], "serious": [16, -1], "smile": [-19, -3] },
+    "ageha": { "sad": [2, 2], "serious": [1, 1] },
+    "hajime": { "sad": [9, 2], "serious": [-2, 1], "smile": [-4, -1] },
+    "hiyori": { "sad": [2, 2], "serious": [1, 2], "smile": [5, 2], "surprise": [5, 1] },
+    "rei": { "sad": [14, -2], "serious": [0, 3] },
+    "sai": { "serious": [-4, 0], "smile": [-3, 3], "thinking": [0, 2] },
+    "samechan": { "serious": [3, 0], "surprise": [-8, 0], "ventriloquism": [11, 2] },
+    "sumi": { "serious": [2, 1], "smile": [-4, -4], "thinking": [-7, 2] },
+    "tsumugi": { "bow": [-10, -2], "surprise": [3, 0] }
   }
 };

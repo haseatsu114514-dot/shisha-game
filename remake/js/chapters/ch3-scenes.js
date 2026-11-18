@@ -1,7 +1,7 @@
 // 第3章の東京到着から全国大会前夜。読了した場面だけを確定する。
 // day は章内の日付。通算の value.day は startDay から換算する。
 const LEGACY_SCENES = Object.freeze([
-  { id: "ch3_opening", day: 1, slot: 0, label: "東京へ", location: "東京駅", bg: "bg_street_day" },
+  { id: "ch3_opening", day: 1, slot: 0, label: "東京へ", location: "東京駅", bg: "bg_tokyo_station" },
   { id: "ch3_mukai_arrival", day: 1, slot: 1, label: "mukaiの扉", location: "mukai", bg: "bg_mukai_shop" },
   { id: "ch3_mukai_intro", day: 2, slot: 0, label: "新しい店の朝", location: "mukai", bg: "bg_mukai_shop" },
   { id: "ch3_individuality_doubt", day: 2, slot: 1, label: "肩に残る勝利", location: "東京", bg: "bg_street_night" },

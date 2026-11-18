@@ -576,3 +576,78 @@ test('all 24 NPC portraits render in .trpg-speaker-art without disturbing unpict
     assert(preloaded.some(u => /\/img\/ui\/trpg\/npc\/fisher_boss\.webp$/.test(u)), 'fisher_boss.webp is preloaded for ordinary-cup');
   } finally { context.Image = prevImage; }
 });
+
+test('speaker dock aligns expressions and role costumes consistently across scenes and aliased scenarios', async () => {
+  const framesList = JSON.parse(await readFile(new URL('../img/ui/trpg/costumes/frames.json', import.meta.url), 'utf8'));
+  const costumeFrames = Object.fromEntries(framesList.map(f => [`${f.scenario}/${f.character}/${f.role_id}`, f]));
+  const mail = JSON.parse(await readFile(new URL('../../data/dialogue/trpg_regular_mail.json', import.meta.url), 'utf8'));
+  const mounted = mount(mail, { costumeFrames }), { api, root, q } = mounted;
+  const seenStyles = { table: [], pc: [] };
+  q('trpg-start').click();
+  for (let n = 0; !q('trpg-next').hidden; n++) {
+    assert(n < 120);
+    const kind = root.dataset.kind;
+    const img = root.querySelector('.trpg-speaker-art')?.querySelector('img');
+    if (img && (kind === 'table' || kind === 'pc')) {
+      seenStyles[kind].push({ src: img.getAttribute('src'), top: img.style.top, width: img.style.width, transform: img.style.transform });
+    }
+    q('trpg-next').click();
+  }
+  assert(seenStyles.table.length > 0 && seenStyles.pc.length > 0, 'both table and pc speaker portraits rendered');
+  for (const st of seenStyles.table) {
+    assert.equal(st.top, '35%', 'table standing portrait eye line stays anchored at 35%');
+    assert.match(st.width, /%$/); assert.match(st.transform, /^translate\(/);
+  }
+  for (const st of seenStyles.pc) {
+    assert.match(st.src, /costumes\/(regular-mail|leaf-mail)\//, 'aliased or native costume URL resolved');
+    assert.equal(st.top, '40%', 'PC costume speaker eye line stays anchored at 40%');
+    assert.match(st.width, /%$/); assert.match(st.transform, /^translate\(/);
+  }
+  api.destroy();
+});
+
+test('check result cut-in marks cutin state to lower/hide standing portrait and restores cleanly on completion or early cancel', async () => {
+  const framesList = JSON.parse(await readFile(new URL('../img/ui/trpg/costumes/frames.json', import.meta.url), 'utf8'));
+  const costumeFrames = Object.fromEntries(framesList.map(f => [`${f.scenario}/${f.character}/${f.role_id}`, f]));
+  reducedMotion = false;
+  Dom.prototype.animate = () => ({ cancel() {}, finished: Promise.resolve() });
+  try {
+    timers.length = 0; delays.length = 0;
+    const mounted = mount(scenarios[0], { costumeFrames }), { api, root, q, drain, declare, roll } = mounted;
+    q('trpg-start').click(); drain(); declare('listen');
+    while (timers.length) timers.shift()();
+    roll();
+    while (timers.length) timers.shift()();
+    q('trpg-settle').click();
+
+    assert.equal(root.dataset.cutin, 'true', 'cutin dataset flag is active while trpg-cutin is shown');
+    assert.ok(root.querySelector('.trpg-cutin'), 'trpg-cutin node is mounted in fx layer');
+    assert.ok(root.querySelector('.trpg-dock')?.querySelector('.trpg-speaker-art'), 'dock speaker-art container stays intact in DOM');
+
+    assert.ok(timers.length > 0, 'cut-in schedules its cleanup timer');
+    while (timers.length) timers.shift()();
+    assert.equal(root.dataset.cutin, undefined, 'cutin dataset flag clears once cut-in finishes');
+    assert.equal(root.querySelector('.trpg-cutin'), null, 'trpg-cutin is removed after timeout');
+
+    // Verify destroy() on mounted table also cancels an active cut-in and clears dataset.cutin.
+    const fxMod = await load(new URL('../js/trpg/stage-fx.js', import.meta.url)); await fxMod.evaluate();
+    const cutinFx = fxMod.namespace.playResultCut(root, { label: '成功！', grade: 'success' });
+    assert.equal(root.dataset.cutin, 'true');
+    cutinFx.cancel();
+    assert.equal(root.dataset.cutin, undefined, 'cancelling cut-in restores portrait visibility immediately');
+
+    const standaloneRoot = new Dom('section');
+    const hostRoot = new Dom('div'); hostRoot.append(standaloneRoot);
+    const fxA = fxMod.namespace.playResultCut(standaloneRoot, { label: '成功！', grade: 'success' });
+    const fxB = fxMod.namespace.playResultCut(standaloneRoot, { label: 'クリティカル！', special: 'critical' });
+    assert.equal(standaloneRoot.dataset.cutin, 'true');
+    fxA.cancel();
+    assert.equal(standaloneRoot.dataset.cutin, 'true', 'stays hidden while a second cut-in remains active');
+    fxB.cancel();
+    assert.equal(standaloneRoot.dataset.cutin, undefined, 'restores once all cut-ins cancel');
+    api.destroy();
+  } finally {
+    delete Dom.prototype.animate;
+    reducedMotion = true;
+  }
+});

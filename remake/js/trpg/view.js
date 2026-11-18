@@ -1,8 +1,8 @@
 import { el } from "../core/util.js";
 import { TrpgSession, HEAT, heatTier, DICE, STATS, PLAYER_SEAT, approachesOf, approachBase, buildPc, randomPc, grownStats, phasesOf, checkKindsOf, rewardKindOf, nearMissOf } from "./session.js";
-import { displayName, npcIdFor, npcPortraitUrl, portraitUrl, portraitAx, portraitHeadTop, portraitTop as topFor, sceneUrl } from "./presentation.js";
-import { costumeUrl } from "./costumes.js";
-import { BUST, bustCheekWidth, bustTypicalWidths, faceIconStyle, npcBustStyle } from "./face-crops.js";
+import { displayName, npcIdFor, npcPortraitUrl, portraitBoxStyle, portraitUrl, portraitAx, portraitHeadTop, portraitTop as topFor, sceneUrl } from "./presentation.js";
+import { costumeUrl, resolvedCostumeKey } from "./costumes.js";
+import { BUST, bustCheekWidth, bustFrameStyle, bustTypicalWidths, faceIconStyle, npcBustStyle, portraitFaceFrame, standingFrameStyle } from "./face-crops.js";
 import { createTrpgAudio } from "./audio.js";
 import { checkForecast, rerollOdds, rollOdds } from "./feedback.js";
 import { playTrpgEntrance } from "./entrance.js";
@@ -89,13 +89,17 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (shape !== "bust") return el("span.trpg-costume", { dataset: { shape }, style: { backgroundImage: `url("${url}")` } });
     // Every bust shows the same face size at the same eye line (オーナー 2026-11-11「みんな同じぐらいのバストアップに」):
     // the measured cheek width and eye line of each costume picture (img/ui/trpg/costumes/frames.json) set the zoom and the offset.
-    const face = costumeFrames?.[scenario.id + "/" + playerId + "/" + role]?.face;
+    const face = costumeFrames?.[resolvedCostumeKey(scenario.id, playerId, role)]?.face;
     if (face?.w > 0) {
-      const [W, H] = [896, 1200], width = BUST.face * W / bustCheekWidth(face, playerId, bustTypical[playerId]) * 100;
-      return el("span.trpg-costume", { dataset: { shape, framed: "face" } }, el("i", { style: { backgroundImage: `url("${url}")`,
-        width: width + "%", top: BUST.eye * 100 + "%", transform: `translate(-${face.cx / W * 100}%, -${face.eye_y / H * 100}%)` } }));
+      return el("span.trpg-costume", { dataset: { shape, framed: "face" } }, el("i", {
+        style: { backgroundImage: `url("${url}")`, ...bustFrameStyle(face, playerId, bustTypical[playerId]) } }));
     }
-    // Without measurements: line up the head top from the standing-portrait metrics.
+    // Without measurements: align using standing-portrait eye/cheek frame when available, else head top.
+    const fallbackFace = portraitFaceFrame(playerId, undefined, manifest)?.face;
+    if (fallbackFace?.w > 0) {
+      return el("span.trpg-costume", { dataset: { shape, framed: "face" } }, el("i", {
+        style: { backgroundImage: `url("${url}")`, ...standingFrameStyle({ cx: fallbackFace.cx, eyeY: fallbackFace.eye_y, w: fallbackFace.w }, { faceFrac: BUST.face, eyeFrac: BUST.eye, forImg: false }) } }));
+    }
     const lift = Math.max(0, portraitHeadTop(manifest, playerId) - 0.03) * 100, ax = portraitAx(manifest, playerId) * 100;
     return el("span.trpg-costume", { dataset: { shape } }, el("i", { style: { backgroundImage: `url("${url}")`, transform: `translate(-${ax}%, -${lift}%)` } }));
   }
@@ -249,9 +253,17 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     };
   }
   // Circular icons use a measured cheek/eye crop so every face has the same scale.
-  // Speaker busts keep portraitFrame (they are not circles).
   function circleStyle(id, width, headY) {
-    return faceIconStyle(id) || portraitFrame(id, width, headY);
+    return faceIconStyle(id, undefined, manifest) || portraitFrame(id, width, headY);
+  }
+  function standingSpeakerStyle(id, face = "normal") {
+    return portraitBoxStyle(manifest, id, { face, faceFrac: 0.245, eyeFrac: 0.35, fallbackWidth: 410, fallbackHeadY: 16 });
+  }
+  function pcSpeakerStyle(id, face = "normal") {
+    const rId = roleIdOf(id);
+    const cFace = costumeFrames?.[resolvedCostumeKey(scenario.id, id, rId)]?.face;
+    if (cFace?.w > 0) return bustFrameStyle(cFace, id, bustTypical[id], { faceFrac: 0.24, eyeFrac: 0.4, forImg: true });
+    return portraitBoxStyle(manifest, id, { face, faceFrac: 0.24, eyeFrac: 0.4, fallbackWidth: 520, fallbackHeadY: 16 });
   }
   // The seat's chosen origin wears the role costume when we have one. The crop
   // matches the character's standing-portrait metrics (same head height / centre).
@@ -456,13 +468,22 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       speaker.textContent = "語り"; role.textContent = name(frame.speaker);
     } else if (kind === "pc") {
       // 役として話す時は役衣装の姿と役の名前。演じている本人は小さく添える。
-      art.replaceChildren(el("img", { src: speakerPortrait(frame.speaker, frame.face), alt: name(frame.speaker), style: portraitFrame(frame.speaker, 410, 16) }));
+      const roleUrl = costumeUrl(scenario.id, frame.speaker, roleIdOf(frame.speaker));
+      art.replaceChildren(el("img", {
+        src: roleUrl || portrait(frame.speaker, frame.face),
+        alt: name(frame.speaker),
+        style: roleUrl ? pcSpeakerStyle(frame.speaker, frame.face) : standingSpeakerStyle(frame.speaker, frame.face),
+      }));
       speaker.textContent = pcOf(frame.speaker)?.name || name(frame.speaker);
       role.textContent = name(frame.speaker);
     } else {
       // 卓の会話は素の本人。表情つきの立ち絵で話す（役衣装の絵は表情が1つなので、物語の中だけで使う）。
-      art.replaceChildren(el("img", { src: portrait(frame.speaker, frame.face) || speakerPortrait(frame.speaker, frame.face), alt: name(frame.speaker),
-        style: portraitFrame(frame.speaker, 410, 16) }));
+      const tableUrl = portrait(frame.speaker, frame.face);
+      art.replaceChildren(el("img", {
+        src: tableUrl || speakerPortrait(frame.speaker, frame.face),
+        alt: name(frame.speaker),
+        style: tableUrl ? standingSpeakerStyle(frame.speaker, frame.face) : pcSpeakerStyle(frame.speaker, frame.face),
+      }));
       speaker.textContent = isPuppet(frame) ? "コロちゃん" : name(frame.speaker);
       role.textContent = roleLabel(frame);
     }

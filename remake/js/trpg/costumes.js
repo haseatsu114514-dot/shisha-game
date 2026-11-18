@@ -15,6 +15,12 @@ function costumeSourceId(scenarioId, characterId, roleId) {
   return aliased && COSTUME_KEYS.has(costumeKey(aliased, characterId, roleId)) ? aliased : null;
 }
 
+/** Canonical frames.json key for a costume, following regular-table aliases. */
+export function resolvedCostumeKey(scenarioId, characterId, roleId) {
+  const source = costumeSourceId(scenarioId, characterId, roleId);
+  return source ? costumeKey(source, characterId, roleId) : "";
+}
+
 export function hasCostume(scenarioId, characterId, roleId) {
   return costumeSourceId(scenarioId, characterId, roleId) !== null;
 }

@@ -492,6 +492,10 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     if (["naru", "adam"].includes(charId) && hasContact(charId)) {
       state.flags[`_lime_contact_${charId}`] = true;
     }
+    if (charId === "adam" && (state.chapter || 1) === 1 && !state.flags._delivery_adam_done
+      && (state.flags._delivery_adam_told || state.flags._delivery_batch_started)) {
+      state.flags._delivery_adam = true;
+    }
     const bg = bgRef(VISIT_BG[charId] || "bg_tonari_inside");
     const followup = spotFollowupDue(charId, state, DB.dialogues);
     if (followup && !await read(followup, { bg })) return false;
@@ -618,8 +622,34 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
 
 }
 
+const RIVAL_DELIVERY_PAY = 2000;
+const rivalDeliveryPending = (charId, s = state) => (s?.chapter || 1) === 1
+  && ["minto", "adam"].includes(charId) && !s?.flags?.[`_delivery_${charId}_done`]
+  && !!(s?.flags?.[`_delivery_${charId}_told`] || s?.flags?.[`_delivery_${charId}`] || s?.flags?._delivery_batch_started);
+
 export async function visitRival(spot) {
   if (!spot || isClosed(spot)) return false;
+  const owner = state;
+  if (rivalDeliveryPending(spot.charId, owner)) {
+    const charId = spot.charId;
+    const f = owner.flags;
+    refreshPlaceCue(spot.id);
+    f[`_delivery_${charId}`] = true;
+    playBgm("bgm_rival_shop");
+    if (charId === "minto") {
+      const result = await play("remake_delivery_minto_handoff", { bg: "res://assets/backgrounds/peppermint.png" });
+      if (state !== owner || !result || result.cancelled) return false;
+      f.known_name_minto = true;
+      f._met_minto = true;
+      markMet("minto");
+    } else {
+      if (!(await visitChar(charId)) || state !== owner) return false;
+    }
+    addMoney(RIVAL_DELIVERY_PAY);
+    toast(`配達の手当 +${RIVAL_DELIVERY_PAY.toLocaleString()}円（バイト代に上乗せ）`, { kind: "good" });
+    f[`_delivery_${charId}_done`] = true;
+    return true;
+  }
   refreshPlaceCue(spot.id);
   addMoney(-(spot.cost || 0));
   addStamina(spot.stamina || -16);
@@ -627,7 +657,6 @@ export async function visitRival(spot) {
   // 相席予定の日には「一人占め」の昼挨拶を出さない。台詞正本・実遭遇の処理は維持する。
   const welcome = spot.charId === "minto" && state.slot === 0 && hiyoriShopEncounterDue(spot)
     ? null : `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;
-  const owner = state;
   const completed = await visitChar(spot.charId, { welcome });
   // 配達やチュートリアルの面識ではなく、自主来店の会話を終えてから地図に出す。
   if (completed && state === owner) state.flags[`_spot_guide_${spot.charId}`] = true;

@@ -307,7 +307,7 @@ const BG_ALIASES = {
 };
 
 // 昼夜の差分がある場所（無印・_day は時間帯で切り替える。明示の _night は演出なのでそのまま）
-const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home", "bg_c_station", "bg_cafe", "bg_street", "bg_kannon", "bg_choizap", "bg_tokyo_park", "bg_mukai_backdoor", "bg_shiori_room"]); // bg_mukai_backdoor: てつこといっしょの裏口（TKT01・未着。届くまでは sceneBg が null を返し、画面は bg_street に戻る）
+const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home", "bg_c_station", "bg_cafe", "bg_street", "bg_kannon", "bg_choizap", "bg_tokyo_park", "bg_tokyo_benten", "bg_tokyo_station", "bg_mukai_backdoor", "bg_shiori_room"]); // bg_mukai_backdoor: てつこといっしょの裏口（TKT01・未着。届くまでは sceneBg が null を返し、画面は bg_street に戻る）
 // 昼の版だけが別にある店（第3章の東京の4店。#3282 B3・B4・B8・B9）。無印の絵は窓の外が夕方〜夜で、そのまま夜に使う。
 // 昼の版を使うのは、時間帯が「昼」と**明示された**時だけ（時間帯を渡さない呼び出しは今までどおり無印の絵）:
 //   時間帯を渡さない呼び出しは、昼か夜かを知らないまま呼んでいる（第3章の夜の場面にも使われる）。昼の絵へ替えると夜の場面が昼になる。

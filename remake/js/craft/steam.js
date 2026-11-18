@@ -383,11 +383,15 @@ export async function runSteamDodge(cs) {
       pollAttackPad(false);
 
       const loop = (now) => {
+        raf = 0;
         if (!isCurrent()) { gameClock.dispose(); return resolve(); }
         const current = gameClock.now();
         const dt = Math.min(0.05, (current - last) / 1000); last = current;
         pollAttackPad(!gameClock.paused);
-        if (gameClock.paused) { raf = requestAnimationFrame(loop); return; }
+        if (gameClock.paused) {
+          if (!gameClock.onPauseChange) raf = requestAnimationFrame(loop);
+          return;
+        }
         time += dt;
         if (!refreshes && time >= refreshReadyAt) refreshes = stock;
         refreshLabel(); slashLabel();
@@ -444,10 +448,17 @@ export async function runSteamDodge(cs) {
         if (time >= dur) { gameClock.dispose(); return resolve(); }
         raf = requestAnimationFrame(loop);
       };
-      raf = requestAnimationFrame(loop);
+      gameClock.onPauseChange?.((paused) => {
+        if (!paused && running && isCurrent() && !raf) {
+          last = gameClock.now();
+          pollAttackPad(false);
+          raf = requestAnimationFrame(loop);
+        }
+      });
+      if (!gameClock.onPauseChange || !gameClock.paused) raf = requestAnimationFrame(loop);
     });
   } finally {
-    running = false; precisionBtn.disabled = true; cancelAnimationFrame(raf);
+    running = false; precisionBtn.disabled = true; cancelAnimationFrame(raf); raf = 0;
     if (!cs.steam) delete cs.steamLive; /* 途中で抜けた時は、じわじわ上がった分を残さない */ unkey(); input.abort(); resetPad(); clearBullets(); refreshLabel(); slashLabel();
     transients.forEach(({ node }) => node.remove());
     world.draw(time + 1, hx, hy);

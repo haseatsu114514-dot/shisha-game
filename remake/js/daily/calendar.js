@@ -149,7 +149,7 @@ export async function runDaily(def) {
     }
     // #2213 B01: 配達はシフト後の帰り道。行動枠・体力は使わない。
     for (let delivery = dueDelivery(); delivery; delivery = dueDelivery()) {
-      await deliver(delivery);
+      if (!(await deliver(delivery))) break;
       if (state !== owner) return; // 配達中のLOADは読み込んだ日常が引き継ぐ。古い流れで次の届け先へ進まない
     }
     // 2件の納品後、最終報告のため一度だけ職場へ戻る。
@@ -376,7 +376,7 @@ const DELIVERY_PAY = 2000;
  * 旧方式で配達を済ませた保存には、後からシフトを足さない。 */
 const fixedShiftTonight = () => state.chapter === 1 && state.day === DELIVERY_LAST_DAY
   && !!state.flags._delivery_batch_started && !state.flags._ch1_day2_shift_done && !restingToday()
-  && !DELIVERIES.every(d => state.flags[`_delivery_${d.charId}_done`]);
+  && (!DELIVERIES.every(d => state.flags[`_delivery_${d.charId}_done`]) || !state.flags._delivery_report_done);
 function fixedShiftDue() {
   if (state.slot !== 1 || !fixedShiftTonight()) return false;
   const inv = state.pendingInvite;
@@ -449,14 +449,32 @@ async function reportDeliveryBatch() {
   return true;
 }
 
+function deliveryRequested(charId, f = state.flags) {
+  return !!(f?.[`_delivery_${charId}_told`] || f?.[`_delivery_${charId}`] || f?._delivery_batch_started);
+}
+
+/** 配達依頼を受けている未配達の店か。旧セーブで依頼前に自主来店済みの店は除外して完了扱いにする。 */
+function pendingDelivery(charId) {
+  if (state.chapter !== 1) return null;
+  const d = DELIVERIES.find(item => item.charId === charId);
+  if (!d) return null;
+  const f = state.flags;
+  const done = `_delivery_${d.charId}_done`;
+  if (f[done]) return null;
+  if (!deliveryRequested(d.charId, f)) {
+    if (state.day < 2 || !f._errand_scout_done
+      || (state.day > DELIVERY_LAST_DAY && !f._delivery_schedule_v2) || restingToday()) return null;
+    if (storyCount(d.charId) > 0) { f[done] = true; return null; } // もう自分で行った店
+  }
+  return d;
+}
+
 function dueDelivery() {
   // 帰り道（その日の行動枠を使い終えた後）だけ。
   if (state.chapter !== 1 || state.day < 2 || state.slot < 2 || !state.flags._errand_scout_done
     || (state.day > DELIVERY_LAST_DAY && !state.flags._delivery_schedule_v2) || restingToday()) return null;
   for (const d of DELIVERIES) {
-    const done = `_delivery_${d.charId}_done`;
-    if (state.flags[done]) continue;
-    if (storyCount(d.charId) > 0) { state.flags[done] = true; continue; } // もう自分で行った店
+    if (!pendingDelivery(d.charId)) continue;
     const spot = spotById(d.charId);
     // 先の配達先が休業なら順番を入れ替えず、次の営業枠へ延期する。
     return spot && !isClosed(spot) ? d : null;
@@ -464,31 +482,37 @@ function dueDelivery() {
   return null;
 }
 
-async function deliver({ charId, scene, text }) {
+async function deliver({ charId, scene, text }, { guide = true } = {}) {
+  const owner = state;
   const f = state.flags;
   if (!f[`_delivery_${charId}_told`]) {
-    await play(scene, { bg: TONARI_BG });
+    const result = await play(scene, { bg: TONARI_BG });
+    if (state !== owner || result?.cancelled) return false;
     f[`_delivery_${charId}_told`] = true;
     save();
   }
-  await chooseSpot({ guide: { pin: charId, text, free: "配達（帰り道・代金なし）" } });
+  if (guide) {
+    await chooseSpot({ guide: { pin: charId, text, free: "配達（帰り道・代金なし）" } });
+    if (state !== owner) return false;
+  }
   f[`_delivery_${charId}`] = true;
   playBgm("bgm_rival_shop");
   if (charId === "minto") {
     // 最初の背景・人物・台詞から店内。客としての初回接客は自由行動に残す。
-    await play("remake_delivery_minto_handoff", { bg: "res://assets/backgrounds/peppermint.png" });
+    const result = await play("remake_delivery_minto_handoff", { bg: "res://assets/backgrounds/peppermint.png" });
+    if (state !== owner || result?.cancelled) return false;
     f.known_name_minto = true;
     f._met_minto = true;
     markMet("minto");
   } else {
     // EDENの初来店は従来どおりスミさんの指定による体験。
-    await visitChar(charId);
-    state.visitedDay[charId] = state.day;
+    if ((await visitChar(charId)) === false || state !== owner) return false;
   }
   addMoney(DELIVERY_PAY);
   toast(`配達の手当 +${DELIVERY_PAY.toLocaleString()}円（バイト代に上乗せ）`, { kind: "good" });
   f[`_delivery_${charId}_done`] = true;
   save(); // 手当と納品済みを同じ境界で保存し、LOADで二重に払わない。
+  return true;
 }
 
 // ---------------------------------------------------------------- 行動
@@ -575,7 +599,8 @@ async function takeAction() {
       else limeCoach(phoneButton);
     }, // 通知を先にタップした場合は、マップが開いたところで目的のトークへ
     onBeforeGo: async (destination) => {
-      const spendsAction = !["shop", "fortune"].includes(destination.kind);
+      const spendsAction = !["shop", "fortune"].includes(destination.kind)
+        && !(typeof pendingDelivery === "function" && pendingDelivery(destination.charId));
       // 組み直しが開いている間の最初の行動は、確定する前に閉じることを一度だけ知らせる（SPEC 5.2）
       const closing = spendsAction ? takeRespecCloseWarning(state) : "";
       if (closing && await modal({ title: "心得の盤の組み直し", body: `${closing}。<br>このまま向かいますか？`,
@@ -591,6 +616,11 @@ async function takeAction() {
   if (!spot) throw new Error(`行き先が見つかりません: ${spotId}`);
   const blocked = visitBlock(spot);
   if (blocked) { toast(blocked.why); return; }
+  if (spot.kind === "rival" && typeof pendingDelivery === "function" && pendingDelivery(spot.charId)) {
+    if (!openingStatus(spot, state).ok || isClosed(spot)) return;
+    await deliver(pendingDelivery(spot.charId), { guide: false });
+    return;
+  }
   const { value: { used, exerted, slotsUsed = 1 }, spent } = await paidAction(() => performSpotAction(spot), {
     ...facilityGrowth(spot),
     consumed: (result) => result.used && spot.kind === "spot",
@@ -688,7 +718,13 @@ async function performSpotAction(spot) {
     exerted = spot.stamina < 0;
     if (used) await consultLessons("samechan"); // 心得の盤で灯した授業があれば相談する（SBD61: 会った時だけ）
   } else if (spot.kind === "rival") {
-    if (isClosed(spot) || !(await staminaGuard(spot.stamina)) || isClosed(spot)) return { used: false, exerted };
+    if (isClosed(spot)) return { used: false, exerted };
+    const delivery = pendingDelivery(spot.charId);
+    if (delivery) {
+      await deliver(delivery, { guide: false });
+      return { used: false, exerted: false, slotsUsed: 0 };
+    }
+    if (!(await staminaGuard(spot.stamina)) || isClosed(spot)) return { used: false, exerted };
     used = (await visitRival(spot)) !== false;
     // 心得の盤で灯した授業があれば、そのまま相談して話を聞く（SBD50）
     if (used) await consultLessons(spot.charId);

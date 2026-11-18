@@ -229,7 +229,7 @@ async function openChapter(advance) {
     }
     playBgm("tonari");
     if (!progress.titleSeen) {
-      await setBg(bgUrl("bg_street_day"), { instant: true });
+      await setBg(bgUrl("bg_tokyo_station_day"), { instant: true });
       if (!current(owner)) return;
       if (!await playChapterPoem(3, { owner, current })) return; // 章タイトルの前の巻頭ポエム
       await chapterTitle(chapterTitleEntry(3)); // 登録済みの章題（第4・5章と同じ・#2688 F6）
@@ -746,7 +746,8 @@ async function renderFreeTime(owner, window) {
         await renderStage(owner);
         return;
       }
-      if (!await readScene(owner, { id: `ch3_visit_${id}_${kind}`, bg: window.slot ? "bg_street_night" : "bg_street_day" })) return;
+      const bg = window.slot ? "bg_tokyo_station_night" : "bg_tokyo_station_day";
+      if (!await readScene(owner, { id: `ch3_visit_${id}_${kind}`, bg })) return;
       if (!completeTokyoVisitAction(state, definitions, plan.id, window)) return;
       completeChapterThreeFreeTime(state, window.id);
       save();

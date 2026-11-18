@@ -10,7 +10,13 @@ const calls=[], saves=[], closed=new Set(), locked=new Set();
 let installProbe=async()=>{}, displayProbe=async()=>{};
 let actionEnds=0;
 const noop=()=>{}, asyncNoop=async()=>{};
-const spots={naru:{id:'naru',charId:'naru',cost:3000,stamina:-16},minto:{id:'minto'},adam:{id:'adam'},c_station:{id:'c_station'}};
+const mapQueue=[];
+const spots={
+ naru:{id:'naru',kind:'rival',charId:'naru',cost:3000,stamina:-16},
+ minto:{id:'minto',kind:'rival',charId:'minto',cost:3000,stamina:-16},
+ adam:{id:'adam',kind:'rival',charId:'adam',cost:3000,stamina:-16},
+ c_station:{id:'c_station'}
+};
 const overrides={spendableMoney,state, DB:{flavorById:{lemon:{}},dialogues:{},lime:[]},
  save:()=>saves.push(structuredClone(state)),
  el:()=>({classList:{add:noop,remove:noop},remove:noop}), sleep:asyncNoop,
@@ -24,12 +30,12 @@ const overrides={spendableMoney,state, DB:{flavorById:{lemon:{}},dialogues:{},li
  catchesCold:()=>false,conditionForRatio:()=>({health:'green'}),
  paidAction:async fn=>({value:await fn(),spent:0}),
  play:async(id,opts)=>calls.push({type:'scene',id,opts,day:state.day,slot:state.slot}),
- chooseSpot:async opts=>{if(calls.length>100)throw Error('Calendar fixture did not make progress');calls.push({type:'map',pin:opts.guide?.pin,free:opts.guide?.free,day:state.day,slot:state.slot});return opts.guide?.pin||'rest'},
+ chooseSpot:async opts=>{if(calls.length>100)throw Error('Calendar fixture did not make progress');calls.push({type:'map',pin:opts.guide?.pin,free:opts.guide?.free,day:state.day,slot:state.slot});return opts.guide?.pin||mapQueue.shift()||'rest'},
  spotById:id=>spots[id]||{id,kind:'rest',stamina:0},ownsFlavor:()=>false,
  openShop:async()=>calls.push({type:'shop'}),
- visitRival:async spot=>{state.money-=spot.cost;state.stamina+=spot.stamina;state.story.naru=1;calls.push({type:'scout',day:state.day})},
+ visitRival:async spot=>{state.money-=spot.cost;state.stamina+=spot.stamina;state.story[spot.charId]=(state.story[spot.charId]||0)+1;calls.push(spot.id==='naru'&&state.day===1?{type:'scout',day:state.day}:{type:'rival',id:spot.charId,day:state.day,slot:state.slot,deliveryFlag:!!state.flags[`_delivery_${spot.charId}`]})},
  visitSpot:async spot=>{assert.equal(spot.cost,0);assert.equal(spot.stamina,0);state.flags._c_station_registered=true;calls.push({type:'register',day:state.day,slot:state.slot})},
- visitChar:async id=>{state.story[id]=(state.story[id]||0)+1;calls.push({type:'visit',id,day:state.day,slot:state.slot})},
+ visitChar:async id=>{state.story[id]=(state.story[id]||0)+1;calls.push({type:'visit',id,day:state.day,slot:state.slot,deliveryFlag:!!state.flags[`_delivery_${id}`]})},
  storyCount:id=>state.story[id]||0,isClosed:spot=>closed.has(spot.id),isUnlocked:spot=>!locked.has(spot.id),markMet:id=>state.met[id]=true,
  onAction:()=>actionEnds++,presentNow:(...args)=>displayProbe(...args),installReel:()=>installProbe(),
  restingToday:()=>!!state.restDay?.fullDay,
@@ -53,7 +59,7 @@ await calendar.link(async spec=>{
 });
 await calendar.evaluate();const c=calendar.namespace;
 function reset({day=2,slot=0,flags={},story={}}={}){
- Object.keys(state).forEach(k=>delete state[k]);Object.assign(state,{chapter:1,day,slot,money:10000,stamina:80,flags:{_errand_scout_done:true,_c_station_registered:true,_ch1_rules_read:true,...flags},story:{...story},met:{},visitedDay:{},stats:{},inbox:[]});calls.length=0;saves.length=0;actionEnds=0;closed.clear();locked.clear();
+ Object.keys(state).forEach(k=>delete state[k]);Object.assign(state,{chapter:1,day,slot,money:10000,stamina:80,flags:{_errand_scout_done:true,_c_station_registered:true,_ch1_rules_read:true,...flags},story:{...story},met:{},visitedDay:{},stats:{},inbox:[]});calls.length=0;saves.length=0;actionEnds=0;closed.clear();locked.clear();mapQueue.length=0;
 }
 // #2213 B01: deliveries are the free walk home after the day's slots — no slot, stamina or action end.
 reset();assert.equal(c.dueDelivery(),null);state.slot=1;assert.equal(c.dueDelivery(),null);
@@ -177,6 +183,80 @@ assert(!dialogue('remake_delivery_eden').lines[0].text.includes('戻ったか'))
 assert(!dialogue('remake_delivery_minto').lines.some(line=>line.text?.includes('戻ってこい')));
 console.log('delivery batch: morning briefing, no interim return, one report, SAVE/LOAD and old checkpoint PASS');
 
+// #3819 item 2: visiting Adam or Minto while delivery is requested prioritizes delivery over normal smoking,
+// does not advance the daytime slot to night, and allows normal smoking once delivery is completed.
+reset({day:2});
+mapQueue.push('adam','adam');
+await c.runDaily({untilDay:3,nightEvents:{}});
+assert.deepEqual(
+ calls.filter(x=>['visit','rival','shift'].includes(x.type)||x.id==='remake_delivery_minto_handoff'||x.id==='remake_delivery_report')
+  .map(x=>[x.type,x.id,x.day,x.slot,x.deliveryFlag??null]),
+ [
+  ['visit','adam',2,0,true],
+  ['rival','adam',2,0,true],
+  ['shift',undefined,2,1,null],
+  ['scene','remake_delivery_minto_handoff',2,2,null],
+  ['scene','remake_delivery_report',2,2,null],
+ ],
+ 'Adam daytime visit must run delivery first (slot 0), then allow normal smoking (slot 0->1), then shift and remaining Minto delivery'
+);
+assert.equal(state.flags._delivery_adam,true);
+assert.equal(state.flags._delivery_adam_done,true);
+assert.equal(state.flags._delivery_minto_done,true);
+assert.equal(state.flags._delivery_report_done,true);
+assert.equal(state.story.adam,2);
+assert.equal(state.visitedDay.adam,2);
+assert.equal(state.money,11000,'+4000 delivery pay (minto+adam) -3000 normal Adam visit');
+assert.equal(state.stamina,78,'80 - 16 (normal Adam visit) + 14 (sleep); delivery spent no stamina');
+assert.equal(actionEnds,2,'Only the normal customer visit and fixed shift spin the reel');
+
+reset({day:2});
+mapQueue.push('minto','minto');
+await c.runDaily({untilDay:3,nightEvents:{}});
+assert.deepEqual(
+ calls.filter(x=>['visit','rival','shift'].includes(x.type)||x.id==='remake_delivery_minto_handoff'||x.id==='remake_delivery_report')
+  .map(x=>[x.type,x.id,x.day,x.slot,x.deliveryFlag??null]),
+ [
+  ['scene','remake_delivery_minto_handoff',2,0,null],
+  ['rival','minto',2,0,true],
+  ['shift',undefined,2,1,null],
+  ['visit','adam',2,2,true],
+  ['scene','remake_delivery_report',2,2,null],
+ ],
+ 'Minto daytime visit must run handoff delivery first (slot 0), then allow normal smoking (slot 0->1), then shift and remaining Adam delivery'
+);
+assert.equal(state.flags._delivery_minto,true);
+assert.equal(state.flags._delivery_minto_done,true);
+assert.equal(state.flags._delivery_adam_done,true);
+assert.equal(state.flags._delivery_report_done,true);
+assert.equal(state.story.minto,1);
+assert.equal(state.story.adam,1);
+assert.equal(state.visitedDay.minto,2);
+assert.equal(state.money,11000,'+4000 delivery pay (minto+adam) -3000 normal Minto visit');
+assert.equal(state.stamina,78);
+assert.equal(actionEnds,2);
+
+reset({day:2});
+mapQueue.push('minto','adam');
+await c.runDaily({untilDay:3,nightEvents:{}});
+assert.deepEqual(
+ calls.filter(x=>['visit','rival','shift'].includes(x.type)||x.id==='remake_delivery_minto_handoff'||x.id==='remake_delivery_report')
+  .map(x=>[x.type,x.id,x.day,x.slot]),
+ [
+  ['scene','remake_delivery_minto_handoff',2,0],
+  ['visit','adam',2,0],
+  ['shift',undefined,2,1],
+  ['scene','remake_delivery_report',2,2],
+ ],
+ 'Completing both deliveries at noon still preserves the free noon action, the mandatory night shift, and the single report'
+);
+assert.equal(state.flags._ch1_day2_shift_done,true);
+assert.equal(state.flags._delivery_report_done,true);
+assert.equal(state.money,14000);
+assert.equal(state.stamina,94);
+assert.equal(actionEnds,2);
+console.log('delivery priority (#3819 item 2): Adam/Minto daytime delivery before normal smoking PASS');
+
 console.log('early deliveries: order, accounting, legacy checkpoints, appointments, closures and rest PASS');
 
 // Entry integration (#749): real runDaily, mocked installer/display only.
@@ -266,3 +346,131 @@ for(const wait of ['installer','display'])await entryCheck(`state replaced durin
  assert.equal(saves.length,0);
 });
 assert.deepEqual(entryFailures,[],'calendar entry regressions');
+
+// #3819 item 2: verify actual spots.js (visitRival/visitChar), spot-access.js (freeGuide/spotAvailability),
+// and actual ch1_adam.json / ch1_minto.json condition branches when delivery is pending vs completed.
+{
+ const adamDialogues=JSON.parse(await fs.readFile(new URL('../../data/dialogue/ch1_adam.json',import.meta.url),'utf8')).dialogues;
+ const mintoDialogues=JSON.parse(await fs.readFile(new URL('../../data/dialogue/ch1_minto.json',import.meta.url),'utf8')).dialogues;
+ const spotSource=await fs.readFile(new URL('../js/daily/spots.js',import.meta.url),'utf8');
+ const accessSource=await fs.readFile(new URL('../js/daily/spot-access.js',import.meta.url),'utf8');
+ const allDialogues=Object.fromEntries([...dialogueList,...adamDialogues,...mintoDialogues].map(d=>[d.dialogue_id,d]));
+ const evalDialogue=(id)=>{
+  const dlg=allDialogues[id];
+  if(!dlg) return [];
+  const lines=[];
+  const walk=(list)=>{
+   for(const line of list||[]){
+    if(line.type==='set_flag'&&line.flag) state.flags[line.flag]=true;
+    else if(line.type==='condition'){
+     const ok=line.condition_type==='met'?!!state.met[line.char_id]:!!state.flags[line.flag];
+     const branch=ok?line.next_true:line.next_false;
+     if(branch&&dlg.branches?.[branch]) walk(dlg.branches[branch]);
+    } else if(line.text) lines.push(line.text);
+   }
+  };
+  walk(dlg.lines);
+  return lines;
+ };
+ const played=[];
+ const spotContext=vm.createContext({console,Math,Set,WeakMap,Object,Array,Number,String,Promise});
+ const spotOverrides={
+  state,DB:{dialogues:allDialogues},
+  markMet:id=>{state.met[id]=true},
+  spendableMoney,returnFareReserve:()=>0,yen:n=>`¥${n}`,
+  play:async(scene)=>{const id=typeof scene==='string'?scene:scene.dialogue_id;played.push({id,texts:evalDialogue(id)});return {id}},
+  playBgm:noop,refreshPlaceCue:noop,toast:noop,
+  addMoney:n=>{state.money+=n},addStamina:n=>{state.stamina+=n},
+  earnStat:noop,gainAffinity:noop,visitAffinity:()=>16,
+  affinityLevel:id=>(state.affinity?.[id]||0)>=9?1:0,
+  releaseAffinity:noop,AFFINITY_RANK_PTS:[0,9,20,33,48,66],setStoryAffinityCap:noop,
+  ensureAffinityLevel:(id,lv)=>{state.affinity[id]=Math.max(state.affinity[id]||0,[0,9,20,33,48,66][lv]||0)},
+  VISIT_SEQ:{adam:['ch1_adam_first','ch1_adam_second'],minto:['ch1_minto_first','ch1_minto_second']},
+  visitStorySkipped:()=>false,
+  isRainy:()=>false,RAIN_SPOT_TEXTS:{},
+  afterStory:async()=>true,questionVisitDue:()=>false,playQuestionVisit:async()=>true,finaleAtVisit:()=>false,playFinale:async()=>true,
+  bondAfterNext:()=>null,markBondAfterRead:noop,loadBondAfterScenes:async()=>{},
+  openingStatus:()=>({ok:true}),rioUnavailable:()=>'',
+  spotEncounterDue:()=>null,quietSpotPool:()=>[],recordSpotEncounter:noop,spotFollowupDue:()=>null,
+  hiyoriShopEncounterDue:()=>false,meetHiyoriAtTonari:async()=>false,tsumugiAtTonari:()=>false,
+  maybeRecruitTrpgMember:async()=>false,trpgSpot:()=>null,samechanSpot:()=>null,cinemaSpot:()=>null,
+  fortuneHere:()=>false,fortunePosition:()=>({x:0,y:0,area:''}),
+  growthEnabled:()=>false,hidaneTotal:()=>0,cinemaDiscovered:()=>false,cinemaIntroductionDue:()=>false,
+  axeBarDiscovered:()=>false,AXE_BAR:{id:'axe_bar',kind:'axe'},
+  cafeIdeaDue:()=>false,pickCafeIdea:()=>null,ideaDialogue:()=>null,markCafeIdea:()=>'',
+  syncMintoKnowledge:noop,
+ };
+ const loadSpotModule=async(src,id,linked={})=>{
+  const mod=new vm.SourceTextModule(src,{context:spotContext,identifier:id});
+  const map=new Map();
+  for(const m of src.matchAll(/(?:import|export)\s*\{([^}]*)\}\s*from\s*"([^"]+)"/g)){
+   const set=map.get(m[2])||new Set();
+   for(const p of m[1].split(',').map(s=>s.trim()).filter(Boolean)) set.add(p.split(/\s+as\s+/)[0]);
+   map.set(m[2],set);
+  }
+  await mod.link(spec=>{
+   if(linked[spec]) return linked[spec];
+   const names=[...(map.get(spec)||[])];
+   return new vm.SyntheticModule(names,function(){
+    for(const n of names) this.setExport(n,n in spotOverrides?spotOverrides[n]:noop);
+   },{context:spotContext,identifier:spec});
+  });
+  await mod.evaluate();
+  return mod;
+ };
+ const spotsMod=await loadSpotModule(spotSource,'spots.js');
+ const accessMod=await loadSpotModule(accessSource,'spot-access.js',{'./spots.js':spotsMod});
+ const sp=spotsMod.namespace, acc=accessMod.namespace;
+
+ // 1) Adam: delivery pending -> delivery event (dl_open, dl_can, dl_thanks), free even at <3000 yen; then normal smoking -> ch1_adam_second
+ reset({day:2,slot:0,flags:{_delivery_batch_started:true,_delivery_adam_told:true}});
+ state.affinity={};state.visits={};state.contacts=[];state.money=1000;played.length=0;
+ const adamSpot=sp.spotById('adam');
+ assert.equal(acc.freeGuide(adamSpot,null),true,'Pending delivery spot is free on the map');
+ assert.equal(acc.spotAvailability(adamSpot).ok,true,'Pending delivery is accessible even with <3000 yen');
+ assert.equal(await sp.visitRival(adamSpot),true);
+ assert.equal(played.length,1);
+ assert.equal(played[0].id,'ch1_adam_first');
+ assert(played[0].texts.some(t=>t.includes('スミさんの届け先だ')),'Adam delivery open branch was not selected');
+ assert(played[0].texts.some(t=>t.includes('失われた果実だ')),'Adam delivery handoff branch was not selected');
+ assert(played[0].texts.some(t=>t.includes('tonariの主に伝えろ')),'Adam delivery thanks branch was not selected');
+ assert(!played[0].texts.some(t=>t.includes('勉強のために')),'Normal customer study branch ran instead of delivery');
+ assert.equal(state.flags._delivery_adam,true);
+ assert.equal(state.flags._delivery_adam_done,true);
+ assert.equal(state.flags._spot_guide_adam,undefined,'Delivery does not count as voluntary customer guide unlock');
+ assert.equal(state.money,3000,'+2000 delivery pay without charging 3000 visit cost');
+ assert.equal(state.stamina,80,'Delivery spends no stamina');
+ assert.equal(acc.freeGuide(adamSpot,null),false,'Completed delivery restores normal cost check');
+ played.length=0;
+ assert.equal(await sp.visitRival(adamSpot),true);
+ assert.equal(played[0].id,'ch1_adam_second','Subsequent visit after delivery runs normal smoking progression');
+ assert.equal(state.money,0,'Normal visit charges 3000 yen');
+ assert.equal(state.stamina,64,'Normal visit spends 16 stamina');
+ assert.equal(state.flags._spot_guide_adam,true);
+
+ // 2) Minto: delivery pending -> remake_delivery_minto_handoff; then normal smoking -> ch1_minto_first with dl_door
+ reset({day:2,slot:0,flags:{_delivery_batch_started:true,_delivery_minto_told:true}});
+ state.affinity={};state.visits={};state.contacts=[];state.money=1000;played.length=0;
+ const mintoSpot=sp.spotById('minto');
+ assert.equal(acc.freeGuide(mintoSpot,null),true);
+ assert.equal(acc.spotAvailability(mintoSpot).ok,true);
+ assert.equal(await sp.visitRival(mintoSpot),true);
+ assert.equal(played.length,1);
+ assert.equal(played[0].id,'remake_delivery_minto_handoff');
+ assert.equal(state.flags._delivery_minto,true);
+ assert.equal(state.flags._delivery_minto_done,true);
+ assert.equal(state.story.minto,undefined,'Minto handoff leaves ch1_minto_first for customer visit');
+ assert.equal(state.money,3000);
+ assert.equal(state.stamina,80);
+ assert.equal(acc.freeGuide(mintoSpot,null),false);
+ played.length=0;
+ assert.equal(await sp.visitRival(mintoSpot),true);
+ assert.equal(played[0].id,'ch1_minto_first');
+ assert(played[0].texts.some(t=>t.includes('配達してくれたはじめくんだ')),'Minto post-delivery customer branch dl_door was not selected');
+ assert(!played[0].texts.some(t=>t.includes('おかえりなさーいっ♡ はじめまして')),'Minto self_door branch ran after delivery');
+ assert.equal(state.story.minto,1);
+ assert.equal(state.money,0);
+ assert.equal(state.stamina,64);
+ assert.equal(state.flags._spot_guide_minto,true);
+ console.log('spots/spot-access delivery priority (#3819 item 2): dialogue branches and post-delivery smoking PASS');
+}

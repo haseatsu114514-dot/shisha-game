@@ -73,8 +73,9 @@
   background: linear-gradient(180deg, rgba(48,32,18,.9), rgba(20,13,7,.92)); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 -3px 0 rgba(0,0,0,.35), 0 6px 16px rgba(0,0,0,.4);
   touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; transition: transform .08s, box-shadow .15s, border-color .15s; }
 .camel-signal { --tone: var(--cr-amber); }
-.camel-control-icon { display: grid; place-items: center; width: max(34px, 3.6cqw); height: max(34px, 3.6cqw); border-radius: 50%; color: var(--cr-ink);
+.camel-control-icon { position: relative; display: grid; place-items: center; width: max(34px, 3.6cqw); height: max(34px, 3.6cqw); border-radius: 50%; color: var(--cr-ink);
   background: radial-gradient(circle at 35% 30%, #fff6d6, var(--tone) 60%, color-mix(in srgb, var(--tone) 70%, #000)); box-shadow: 0 0 0 3px rgba(0,0,0,.35), inset 0 -2px 0 rgba(0,0,0,.2); }
+.camel-control::before, .camel-control-icon::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; }
 .camel-control-icon svg { width: 58%; height: 58%; }
 .camel-control-text { display: grid; gap: .3em; min-width: 0; font-size: clamp(12px, 1.2cqw, 16px); }
 .camel-control-text strong { font-size: 1.3em; font-weight: 900; letter-spacing: .06em; line-height: 1.15; }
@@ -93,13 +94,13 @@
 .camel-stamina[data-state="tired"] .camel-stamina-bar i { background: linear-gradient(90deg, #e08a2c, #ffcf5c); }
 .camel-stamina[data-state="spent"] .camel-stamina-bar i { background: linear-gradient(90deg, #c8433b, #ff8e7a); }
 .camel-stamina-mark { position: absolute; left: calc(var(--x) * 100%); top: 0; bottom: 0; width: 1px; background: rgba(0,0,0,.45); }
-.camel-signal[data-stamina="spent"] { animation: camel-blink 1s steps(2) infinite; }
-@keyframes camel-blink { 50% { border-color: rgba(255,142,122,.85); } }
+.camel-signal[data-stamina="spent"]::before { box-shadow: inset 0 0 0 2px rgba(255,142,122,.85); animation: camel-opacity 1s steps(2) infinite; }
+@keyframes camel-opacity { 50% { opacity: 1; } }
+@keyframes camel-opacity-alt { from { opacity: 0; } to { opacity: 1; } }
 .camel-control:active { transform: translateY(2px) scale(.985); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), inset 0 -1px 0 rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.35); }
 .camel-control:focus-visible { outline: 2px solid var(--cr-gold); outline-offset: 2px; }
 .camel-voice[data-cue="on"] { border-color: rgba(255,215,122,.75); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(255,215,122,.35), 0 0 22px rgba(255,215,122,.35); }
-.camel-voice[data-cue="on"] .camel-control-icon { animation: camel-ring 1.25s ease-in-out infinite; }
-@keyframes camel-ring { 0%, 100% { box-shadow: 0 0 0 3px rgba(0,0,0,.35); } 50% { box-shadow: 0 0 0 3px rgba(0,0,0,.35), 0 0 0 7px rgba(255,215,122,.25); } }
+.camel-voice[data-cue="on"] .camel-control-icon::before { box-shadow: 0 0 0 7px rgba(255,215,122,.25); animation: camel-opacity 1.25s ease-in-out infinite; }
 .camel-control-cool { position: absolute; inset: 0; transform-origin: left; transform: scaleX(var(--cool, 0)); background: rgba(0,0,0,.42); pointer-events: none; transition: transform .1s linear; }
 .camel-signal[data-state="cooling"] .camel-control-icon { filter: grayscale(.7) brightness(.8); }
 .camel-signal[data-state="spurt"] { border-color: rgba(255,179,71,.8); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 0 1px rgba(255,179,71,.35), 0 0 24px rgba(255,179,71,.45); }
@@ -232,7 +233,7 @@
 @media (prefers-reduced-motion: reduce) {
   .camel-result .camel-medal, .camel-result .camel-grade-letter, .camel-result .camel-score-bar i, .camel-flash.show,
   .camel-signal[data-state="whipping"] .camel-control-icon,
-  .camel-feedback.show, .camel-banner.show, .camel-countdown.show, .camel-standings li[data-move], .camel-voice[data-cue="on"] .camel-control-icon, .camel-stamina[data-state="spent"] { animation: none; }
+  .camel-feedback.show, .camel-banner.show, .camel-countdown.show, .camel-standings li[data-move], .camel-voice[data-cue="on"] .camel-control-icon::before, .camel-signal[data-stamina="spent"]::before, .camel-control[data-duel="on"]::before { animation: none; }
   .camel-standings li { transition: none; }
 }
 
@@ -556,9 +557,9 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 /* 風よけの間はスタミナのゲージが緑に脈打つ。競り合いの間は2つのボタンの縁が朱色に脈打つ。 */
 .camel-stamina[data-draft="on"] .camel-stamina-bar { box-shadow: 0 0 0 1px #9ff0cf, 0 0 10px rgba(159,240,207,.7); }
 .camel-signal[data-draft="on"] .camel-signal-note { color: #9ff0cf; }
-.camel-control[data-duel="on"] { animation: camel-duel .5s ease-in-out infinite alternate; }
+.camel-control[data-duel="on"] { border-color: #d97c52; box-shadow: inset 0 0 0 2px #120b06, 0 0 0 2px rgba(255,138,92,.4), 0 0 20px rgba(255,110,70,.45); }
+.camel-control[data-duel="on"]::before { box-shadow: inset 0 0 0 2px #ff8a5c, inset 0 0 18px rgba(255,110,70,.5); animation: camel-opacity-alt .5s ease-in-out infinite alternate; }
 .camel-signal[data-duel="on"] .camel-signal-note { color: #ffb09a; }
-@keyframes camel-duel { from { border-color: #8a6a34; } to { border-color: #ff8a5c; box-shadow: inset 0 0 0 2px #120b06, 0 0 0 2px rgba(255,138,92,.45), 0 0 22px rgba(255,110,70,.5); } }
 
 /* 大きな字: 板をやめて、太い濃茶の縁取りの字に。後ろに左右へ消える細い帯。 */
 .camel-banner { display: grid; justify-items: center; gap: .1em; top: 29%; padding: .12em 2.2em .16em; border: 0; border-radius: 0; width: max-content; max-width: 96%;
@@ -634,10 +635,13 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 .camel-game.cr-remote .camel-control-icon { position: absolute; left: calc(var(--rh) * 12 / 240 - 2px); top: calc(var(--rh) * 28 / 240 - 2px);
   width: calc(var(--rh) * 180 / 240); height: calc(var(--rh) * 180 / 240); background: none; box-shadow: none; animation: none; filter: none; }
 .camel-game.cr-remote .camel-control-icon svg { display: none; }
-.camel-game.cr-remote .camel-voice[data-cue="on"] .camel-control-icon { animation: camel-remote-ring 1.25s ease-in-out infinite; }
-@keyframes camel-remote-ring {
-  0%, 100% { box-shadow: 0 0 0 calc(var(--rh) * 6 / 240) rgba(255,215,122,.55); }
-  50% { box-shadow: 0 0 0 calc(var(--rh) * 11 / 240) rgba(255,215,122,.9), 0 0 calc(var(--rh) * 40 / 240) calc(var(--rh) * 8 / 240) rgba(255,215,122,.65); } }
+.camel-game.cr-remote :is(.camel-voice[data-cue="on"], .camel-signal[data-coach="on"]) .camel-control-icon {
+  box-shadow: 0 0 0 calc(var(--rh) * 6 / 240) rgba(255,215,122,.55);
+}
+.camel-game.cr-remote :is(.camel-voice[data-cue="on"], .camel-signal[data-coach="on"]) .camel-control-icon::before {
+  box-shadow: 0 0 0 calc(var(--rh) * 11 / 240) rgba(255,215,122,.9), 0 0 calc(var(--rh) * 40 / 240) calc(var(--rh) * 8 / 240) rgba(255,215,122,.65);
+  animation: camel-opacity 1.25s ease-in-out infinite;
+}
 /* 従来は枠の色で示していた状態（声の合図＝金・スパート＝橙・ムチ＝朱・息が少ない＝黄・息が空＝点滅）を、絵の縁に細い線で示す */
 .camel-game.cr-remote .camel-control { outline: 2px solid var(--remote-edge, transparent); outline-offset: -2px; }
 .camel-game.cr-remote .camel-control:focus-visible { outline: 2px solid var(--cr-gold); outline-offset: 2px; }
@@ -645,11 +649,12 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 .camel-signal[data-stamina="low"] { --remote-edge: #ffd06a; }
 .camel-signal[data-state="spurt"] { --remote-edge: #ffb347; }
 .camel-signal.held, .camel-signal[data-state="whipping"] { --remote-edge: #ff6e46; }
-.camel-game.cr-remote .camel-signal[data-stamina="spent"] { animation: camel-remote-blink 1s steps(2) infinite; }
-@keyframes camel-remote-blink { 50% { outline-color: rgba(255,142,122,.85); } }
+.camel-game.cr-remote .camel-signal[data-stamina="spent"]::before { animation: camel-opacity 1s steps(2) infinite; }
 @media (prefers-reduced-motion: reduce) {
-  .camel-game.cr-remote .camel-voice[data-cue="on"] .camel-control-icon { animation: none; box-shadow: 0 0 0 calc(var(--rh) * 11 / 240) rgba(255,215,122,.9); }
-  .camel-game.cr-remote .camel-signal[data-stamina="spent"] { animation: none; --remote-edge: rgba(255,142,122,.85); }
+  .camel-game.cr-remote .camel-voice[data-cue="on"] .camel-control-icon { box-shadow: 0 0 0 calc(var(--rh) * 11 / 240) rgba(255,215,122,.9); }
+  .camel-game.cr-remote :is(.camel-voice[data-cue="on"], .camel-signal[data-coach="on"]) .camel-control-icon::before { animation: none; }
+  .camel-game.cr-remote .camel-signal[data-stamina="spent"]::before { animation: none; }
+  .camel-game.cr-remote .camel-signal[data-stamina="spent"] { --remote-edge: rgba(255,142,122,.85); }
 }
 
 /* ---- 2026-11-13 桜井スキルでの添削（CRF13〜） ---- */
@@ -661,8 +666,6 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 .camel-pause-card { width: min(660px, 100%); text-align: center; }
 /* 最初の1本でムチを教える間、ムチのボタンを声の輪の時と同じ金の光で示す */
 .camel-signal[data-coach="on"] { --remote-edge: #ffd77a; border-color: #ffd77a; box-shadow: inset 0 0 0 2px #120b06, 0 0 0 2px rgba(255,215,122,.4), 0 0 20px rgba(255,215,122,.4); }
-.camel-game.cr-remote .camel-signal[data-coach="on"] .camel-control-icon { animation: camel-remote-ring 1.25s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce) { .camel-game.cr-remote .camel-signal[data-coach="on"] .camel-control-icon { animation: none; } }
 /* 結果の「次の目標」に足した行: ほめる言葉（金）・最下位が続いた時の一行 */
 .camel-next-praise b { margin-right: 14px; }
 .camel-next-ease { opacity: .9; }

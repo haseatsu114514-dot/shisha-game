@@ -28,6 +28,19 @@
    "blob": "d3b824a92a2341e22064b703cf4ac83de2d90288",
    "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
   },
+  "bg_ageha_room_night.png": {
+   "place": "ageha_room",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 99,
+   "blob": "2bac074f6231fb8dcae2de89a100cfc5a85a8fe2",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う",
+   "prompt": "tools/bg_prompts.txt C6"
+  },
   "bg_ageha_shop.png": {
    "place": "ageha_shop",
    "time": "",
@@ -551,6 +564,19 @@
    "blob": "ce2ed7b692c887479df32b67d7e3ba2aa8a0face",
    "accepted": "2026-11-13 オーナー「推奨で」でa案を採用（#3446）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
   },
+  "bg_fookah_dubai.png": {
+   "place": "fookah_dubai",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 141,
+   "blob": "833807860e09d995571e2fec0a6254d2589d7d10",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う",
+   "prompt": "tools/bg_prompts.txt C9"
+  },
   "bg_fookah_showroom.png": {
    "place": "fookah_showroom",
    "time": "",
@@ -561,6 +587,20 @@
    ],
    "luma": 85,
    "blob": "df63057df5a928ff8e6c1fc629fefa4e3bbc2360"
+  },
+  "bg_fookah_tokyo.png": {
+   "place": "fookah_tokyo",
+   "time": "",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 104,
+   "blob": "cf1066a82984530c23e461d3850ac0510d7e0214",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う",
+   "prompt": "asset_sources/backgrounds/fookah-tokyo-20261111/README.md",
+   "note": "生成時READMEでは採否保留（陳列台が棚ではなくレジ台の横配置のため）。規格検品（1672x941・§4.4）は通過しており、第3・5章東京店へ仮配線"
   },
   "bg_hideaway.png": {
    "place": "hideaway",
@@ -1007,6 +1047,32 @@
    "blob": "a423cebfa5e33d50707af95b09cdcfd2978731e7",
    "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
   },
+  "bg_tokyo_benten_day.png": {
+   "place": "tokyo_benten",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 110,
+   "blob": "9558b11c387863b670bd0da6d9c55bbb00c4f7f7",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う",
+   "prompt": "tools/bg_prompts.txt PK03"
+  },
+  "bg_tokyo_benten_night.png": {
+   "place": "tokyo_benten",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 47,
+   "blob": "448ffc3ff565e97c091bc45cbd4bad483410fb7e",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う",
+   "prompt": "tools/bg_prompts.txt PK04"
+  },
   "bg_tokyo_map_day.png": {
    "place": "tokyo_map",
    "time": "day",
@@ -1054,6 +1120,32 @@
    "luma": 38,
    "blob": "a025fd92748760e2e539b015982c6c34cc3d80e7",
    "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_tokyo_station_day.png": {
+   "place": "tokyo_station",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 130,
+   "blob": "4ba0f382063a78f9e12fd2db4801042524288cf1",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う",
+   "prompt": "tools/bg_prompts.txt C3-1"
+  },
+  "bg_tokyo_station_night.png": {
+   "place": "tokyo_station",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 90,
+   "blob": "0834db726ba482b92e0a9bbc17f2a9a01500619c",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う",
+   "prompt": "tools/bg_prompts.txt C3-2"
   },
   "bg_tonari_customer_hands.png": {
    "place": "tonari_customer_hands",

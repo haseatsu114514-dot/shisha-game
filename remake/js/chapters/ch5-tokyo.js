@@ -74,7 +74,7 @@ export const TOKYO_SPOTS = Object.freeze([
     stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
   // 裏口のてつこは地図の行き先にせず、mukai のシフトの帰りに会う（VOL11）。
   spot({ id: "ch5_tokyo_shop", kind: "shop", label: "Dr.fookah 東京店", area: "駅前の店", x: 15, y: 51, theme: "shop", glyph: "卸",
-    preview: "bg_fookah_showroom", desc: "東京の店。第3章と同じ品ぞろえ。" }),
+    preview: "bg_fookah_tokyo", desc: "東京の店。第3章と同じ品ぞろえ。" }),
   spot({ id: "ch5_tokyo_attic", label: "屋根裏", area: "mukaiの上", x: 45, y: 63, theme: "rest", glyph: "休", preview: ATTIC_BG,
     stamina: 55, desc: "ムカイさんの屋根裏で休む。体力が大きく戻る。" }),
   // CHOI-ZAP（無人のジム）: 会員の時だけ地図に出す（ch5-daily.js）。gym の印で、3日間の「風邪をひきにくい」が付く（daily/calendar.js）。
@@ -87,7 +87,7 @@ export const TOKYO_SPOTS = Object.freeze([
     preview: "bg_club_seam_entrance", desc: "セットを選んで曲をつなぐ（時間は使わない）。" }),
   // 心得の盤の内省（SPEC 2.8）: 第3章と同じ池の弁天堂（IR26）。灯せる火種がある時だけ地図に出す（ch5-daily.js）。時間は使わない。
   spot({ id: "ch5_tokyo_shrine", reflect: "tokyo_shrine", label: "池の弁天堂", area: "公園の池", x: 91, y: 73, theme: "rest", glyph: "弁",
-    preview: "bg_tokyo_park", desc: "池に浮かぶ小さなお堂。学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
+    preview: "bg_tokyo_benten", desc: "池に浮かぶ小さなお堂。学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
   // 帰りも東京店から出る配送便（地図の絵は配送便のアイコン #3022。新幹線の駅の絵は使わない）。
   // ピンの位置は、駅の絵だった頃（y: 20）と同じ所に見えるよう少し下げたもの。
   spot({ id: HOME_ID, label: "地元へ帰る（配送便）", area: "Dr.fookah 東京店の帰りの便", x: 40, y: 28, theme: "rest", glyph: "便", preview: "bg_street",

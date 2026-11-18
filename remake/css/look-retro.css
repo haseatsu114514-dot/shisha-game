@@ -43,6 +43,8 @@
 /* 外枠を出している間は、隠れている現行の立ち絵の呼吸（新版の .vn-portraits の伸び縮み）を止める。
    見えない所の動きで、上画面を毎フレーム描き直さないため（見た目は変わらない）。 */
 :root[data-look="neo"][data-retro-shell="on"] body:not(:root) #stage #vn .vn-portraits { animation: none; }
+/* 外枠で隠れている間の現行画面（#viewport）側の常時アニメーションも停止する（見た目は変わらない） */
+:root:is([data-look="retro"], [data-look="neo"])[data-retro-shell="on"] #viewport :is(#weather *, .title-smoke i, .title-logo-smoke i, .title-ember, .spot-pin.guide .shield, .evt-badge, .evt-badge::after, .hud-stamina.low .hud-bar b, .vn-next.show) { animation: none !important; }
 /* 高解像度の絵は、拡大の補間をふつうに（ドット絵の pixelated にしない） */
 .retro-shell[data-paint="hd"] .retro-canvas,
 .retro-shell[data-paint="hd"] .retro-face canvas { image-rendering: auto; }
