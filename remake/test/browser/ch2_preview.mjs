@@ -344,7 +344,7 @@ await suite("ch2-preview", async check => {
       for (const [id, name] of Object.entries(people)) assert.equal(text.includes(name), itinerary.includes(id), `Unvisited person appeared in return: ${text}`);
       assert.equal(text.includes('会場、分かりました'), itinerary.includes('c_station'));
       // 2026-11-15 CH2D（9fdd9c80）で第2章の始まりを配達に統一し、帰り道の心の声も「挨拶を交わしただけ」から変わった
-      assert.equal(text.includes('荷物を届けて顔を合わせただけ'), itinerary.some(id => id !== 'c_station'));
+      assert.equal(text.includes('店先で顔を合わせただけ'), itinerary.some(id => id !== 'c_station'));
       await preserved(page, before);
       await page.locator(test('restart')).click();
       await page.locator(test('start')).waitFor();
