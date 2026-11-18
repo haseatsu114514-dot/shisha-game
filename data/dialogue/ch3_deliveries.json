@@ -65,6 +65,11 @@
           "text": "扉の隙間から、炭の匂いがかすかに流れてくる。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "店先の黒板には、手書きで「今日の噂」とだけあって、その下は白いままだった。"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "mukaiから、預かり物をお届けに来ました"
@@ -133,6 +138,11 @@
           "text": "店先のガラス越しに、壁いっぱいの棚と派手な柄の椅子カバーが見える。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの端には、小さなタイマーが三つ、きっちり等間隔に並んでいた。"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "mukaiからのお届け物です"
@@ -199,6 +209,11 @@
           "speaker": "",
           "face": "",
           "text": "看板の下の鉄の扉は閉まっていて、呼び鈴だけが小さく光っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "呼び鈴を押すと、扉の向こうで、重い鍵が一つずつ外れる音がした。"
         },
         {
           "speaker": "hajime",
@@ -287,6 +302,21 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "うん。次は、自分の用事でも訪ねてみたい"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "どのお店が、いちばん気になった？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……三軒とも。全部、店の前に立った時の空気が違った"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ふふ。それ、ちゃんと顔を見てきた人の答えだねぇ"
         },
         {
           "speaker": "mashiro",
