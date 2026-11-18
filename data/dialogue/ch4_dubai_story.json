@@ -180,6 +180,16 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（ここが、全部埋まる……この中の誰の顔を、俺は見るんだろう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、舞台袖の係の人が、台の脚の下に薄い板を一枚ずつ差し込んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（床、少し傾いてるのか。……本番は、台の水平も見よう）"
         }
       ]
     },
@@ -357,6 +367,21 @@
           "speaker": "sumi",
           "face": "smile",
           "text": "……そうか、あいつも、いい旅をしたんだな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "……飯は"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "食べてます。ちゃんと"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ならいい"
         },
         {
           "speaker": "sumi",
