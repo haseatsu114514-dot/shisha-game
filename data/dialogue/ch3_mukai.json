@@ -291,6 +291,87 @@
       ]
     },
     {
+      "dialogue_id": "ch3_mukai_latte_cat",
+      "comment": "RLS10（第3章はムカイさんを厚く描く・2026-11-18）。mukaiの二日目（ch3_mukai_intro）にムカイさんが写真に撮っていた猫のラテは、本人が練習していたもの。甘いラテ好きと渋い見た目のどちらも本人（characters.json）。てつこは店に入れない・ムカイさんに懐かない（ch3_mukai_arrival）。大会・味覚には触れない。報酬なし（客席の噂話と同じ）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のmukai。カウンターに、ラテのカップが五つ並んでいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "どのカップにも、ミルクの泡で何かが描いてある。耳が二つあるから、たぶん猫だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ……ムカイさんが？"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……見たな"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "この前の写真の猫も、俺だ。あれは三十杯目だった"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "その前の二十九杯、僕とムカイさんで飲んだんだよぉ。おなか、たぷたぷ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "客に出すつもりはない。……俺が飲む時に、猫がいると落ち着く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "てつこ、ですか"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "本物は、俺が描いても寄ってこないからな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは六つ目のカップを手に取り、ピッチャーを細かく揺らした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "泡の上に、丸い背中と、そっぽを向いた顔ができていく。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "あ、今日のは、てつこちゃんっぽい。そっぽ向いてるところが"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "……そこだけは、うまく描ける"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "六つ目の猫は、写真を撮られてから、ムカイさんの口の中へ消えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（ハットの下で、ちょっとだけ笑ってた）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_cigarman_trace",
       "lines": [
         {

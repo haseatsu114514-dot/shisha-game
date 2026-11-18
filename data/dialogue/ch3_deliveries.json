@@ -37,6 +37,11 @@
         {
           "speaker": "mashiro",
           "face": "normal",
+          "text": "三軒とも、歩いて回れるよぉ。迷ったら、高架を目印にしてね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
           "text": "戻ったら、メモは僕に返して。お茶、いれとくから"
         },
         {
@@ -100,6 +105,21 @@
           "speaker": "saku",
           "face": "normal",
           "text": "今度は用事なしでおいで。客としてなら、ゆっくり話せるから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店を離れる前に、もう一度振り返った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "白かった黒板に、「mukaiに、新しい人が来たらしい」と一行増えていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……さっきまで、何も書いてなかったのに）"
         }
       ],
       "branches": {
@@ -173,6 +193,16 @@
           "speaker": "steve",
           "face": "normal",
           "text": "配達の続き、気をつけて。今度は座っていってくれ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "話の途中で、タイマーの一つが鳴った。スティーブはぴたりと口を閉じて、そちらへ振り返った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……タイマーの方が、先なんだ）"
         }
       ],
       "branches": {
@@ -214,6 +244,16 @@
           "speaker": "",
           "face": "",
           "text": "呼び鈴を押すと、扉の向こうで、重い鍵が一つずつ外れる音がした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開いた扉の内側の壁に、温度計と湿度計が並んで掛かっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（店の入口に、温度計……）"
         },
         {
           "speaker": "hajime",
@@ -312,6 +352,21 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "……三軒とも。全部、店の前に立った時の空気が違った"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "鉄の煙のベル、押すとき、ちょっと緊張したでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "した。鍵が、三つくらい外れる音がした"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "四つだよぉ"
         },
         {
           "speaker": "mashiro",

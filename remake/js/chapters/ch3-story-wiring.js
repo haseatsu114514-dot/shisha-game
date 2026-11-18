@@ -50,6 +50,9 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   // 裏口（てつこのベンチ）の場面だが、裏口のベンチの寄り道（ch3_mashiro_bench_tea）と同じく mukai のカードから読む。
   ch3_cigarman_shadow: { file: "ch3_mukai", label: "裏口の大きな影", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_cigarman_rumor"] },
+  // RLS10: 二日目にムカイさんが撮っていた猫のラテは、本人の練習だった。翌日（DAY3）から mukai で一度。
+  ch3_mukai_latte_cat: { file: "ch3_mukai", label: "猫のラテ", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_individuality_doubt"] },
   // 台本が「大会後」。大会前のカードには出ず、勝利後は ch3-aftermath-progress.js の寄り道から読む。
   ch3_cigarman_trace: { file: "ch3_mukai", label: "大会後の客席", location: "mukai", bg: "bg_mukai_shop" },
   // エミルは大会当日に初めて名乗る審査員。面識ができる前に体験会を置かない。大会後の入口は
@@ -166,7 +169,7 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
 // loadIntroDialogues が読む追加分（ファイル→場面ID）。routes の全任意場面・前夜場面と一致させる（story_routes.mjs で照合）。
 export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_double_apple: ["ch3_minto_small_lies"],
-  ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_shadow", "ch3_cigarman_trace", "ch3_mukai_yoru_playlist"],
+  ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_shadow", "ch3_mukai_latte_cat", "ch3_cigarman_trace", "ch3_mukai_yoru_playlist"],
   // 綾取・スティーブの締めくくり（#2028）は寄り道ではなく、煙幕・Smoke & Glory を訪ねた時の「〜に呼ばれる」から
   // （daily/bonds.js の条件。版3は ch3-tokyo-daily.js、優勝の翌日は ch3-aftermath.js、旧行程は ch3.js の場面カード）。
   ch3_rivals: ["ch3_emil_workshop", "ch3_saku_bakery", "ch3_saku_lime", "ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_first_reply", "ch3_saku_bond_finale", "ch3_steve_lime", "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch", "ch3_steve_bond_finale"],

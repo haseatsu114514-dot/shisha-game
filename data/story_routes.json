@@ -122,6 +122,7 @@
         "ch3_minto_small_lies",
         "ch3_cigarman_rumor",
         "ch3_cigarman_shadow",
+        "ch3_mukai_latte_cat",
         "ch3_cigarman_trace",
         "ch3_emil_workshop",
         "ch3_mashiro_play_1",
@@ -489,6 +490,12 @@
         "ch3_cigarman_rumor"
       ],
       "comment": "RLS10。客席の噂話の後、大会前のmukaiで一度。正体は告げない（2026-10-30 オーナー決定）。"
+    },
+    "ch3_mukai_latte_cat": {
+      "seen": [
+        "ch3_individuality_doubt"
+      ],
+      "comment": "RLS10。二日目にムカイさんが撮っていた猫のラテは本人の練習。翌日から大会前のmukaiで一度。"
     },
     "ch3_cigarman_trace": {
       "seen": [

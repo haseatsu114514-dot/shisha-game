@@ -56,6 +56,26 @@
         {
           "speaker": "hajime",
           "face": "normal",
+          "text": "……ムカイさんって、どんな人なんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "会えば分かる。コーヒーがうまい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "あと、自分の店の猫に、あんまり懐かれてない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "猫……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
           "text": "（東京まで、あと三日。会っておきたい人の顔が、順に浮かんだ）"
         }
       ]
@@ -78,6 +98,11 @@
         },
         {
           "speaker": "",
+          "face": "",
+          "text": "分かることから、毎日少しずつ書き留めていけばいい、とも言われた。"
+        },
+        {
+          "speaker": "",
           "text": "向こうでも相談できるように、東京の耳鼻科の名前を書いた紙を受け取った。"
         },
         {
@@ -89,6 +114,26 @@
           "speaker": "",
           "face": "",
           "text": "紙を四つに折って、財布の一番手前にしまった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "病院を出ると、昼の光がまぶしかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "商店街の総菜屋の前で、足が止まる。飯はうちで食ってけ、と言われていたのを思い出した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "コロッケを二つ買った。一つは、スミさんの分だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（味は遠くても、揚げたての熱さは分かる）"
         }
       ]
     },
@@ -133,6 +178,16 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "……はい。見てきます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "向こうで覚えたことを、こっちのやり方に戻さなくていい。そのまま持って帰ってこい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……持って帰ってきます"
         },
         {
           "speaker": "sumi",
@@ -187,6 +242,26 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（着いたら、まず大会の受付。それからmukaiだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "発車してすぐ、スマホが震えた。スミさんからのLIMEだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面には、「飯」とだけあった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（……駅弁、買ってあります）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "膝の上の弁当のふたを開ける。箸を進めるうちに、腹の底が落ち着いてきた。"
         },
         {
           "speaker": "",

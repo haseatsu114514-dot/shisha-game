@@ -213,6 +213,21 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.doesNotMatch(shadow, /正体|僕が、?シガーマン|角を|内側に向け|大会|味覚|舌/, 'no reveal, no hand tell, no tournament or taste');
 }
 {
+  // RLS10: 猫のラテ（ムカイさん）は二日目の会場の下見の後、大会前に一度。大会・味覚に触れない。
+  const value = tokyo();
+  readUntil(value, 'ch3_mukai_intro');
+  assert(!offered(value).includes('ch3_mukai_latte_cat'), 'not on the day the latte photo is first seen');
+  readUntil(value, 'ch3_individuality_doubt');
+  assert(!offered(value).includes('ch3_mukai_latte_cat'), 'not before the venue preview is read');
+  readUntil(value, 'ch3_tokyo_shop_gap');
+  assert(offered(value).includes('ch3_mukai_latte_cat'));
+  wiring.commitOptionalRead(value, 'ch3_mukai_latte_cat');
+  assert(!offered(value).includes('ch3_mukai_latte_cat'), 'read once only');
+  const latte = sceneData.get('ch3_mukai_latte_cat').lines;
+  assert(latte.filter(line => line.speaker === 'mukai_master').length >= 5, 'Mukai speaks');
+  assert.doesNotMatch(latte.map(line => line.text || '').join('\n'), /大会|味覚|舌|屋根裏|鍵/);
+}
+{
   // RLS10: パン屋の紙袋（はじめと綾取の友情）は煙幕の初訪問の後、大会前に一度。ましろ・大会の策・嘘つきの話に触れない。
   const value = tokyo();
   readUntil(value, 'ch3_naru_work');
