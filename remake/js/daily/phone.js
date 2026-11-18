@@ -634,8 +634,96 @@ export function deliverMorning(opts = {}) {
   return msgs.length;
 }
 
-/** 朝の通知（スマホのプッシュ通知風）。件数と送り主の顔だけ見せ、中身は開くまで分からない */
-export function pushNotice(count, { onOpen = null } = {}) {
+let queuedNotice = null;
+let noticeObserver = null;
+let noticeTimer = null;
+const activeNotices = new Set();
+
+const hasActivePushNotice = () => activeNotices.size > 0;
+
+function clearVisibleNotices() {
+  for (const card of [...activeNotices]) {
+    card.remove?.();
+    activeNotices.delete(card);
+  }
+}
+
+function mapNoticeReady() {
+  if (typeof document === "undefined" || !document.body) return true;
+  const { body } = document;
+  if (body.dataset?.screen !== "map") return false;
+  if (body.classList?.contains("vn-open") || body.classList?.contains("in-vn")) return false;
+  if (layers.modal?.classList?.contains("show") || layers.fx?.querySelector?.(".day-card")) return false;
+  return Boolean(document.querySelector?.("#screen .map:not(.done):not([data-revealing='true'])"));
+}
+
+function disconnectNoticeObserver() {
+  noticeObserver?.disconnect();
+  noticeObserver = null;
+  if (noticeTimer != null) {
+    clearTimeout(noticeTimer);
+    noticeTimer = null;
+  }
+}
+
+function flushOrClearNotice() {
+  if (!mapNoticeReady()) {
+    clearVisibleNotices();
+    if (queuedNotice && (queuedNotice.owner !== state || queuedNotice.chapter !== state.chapter)) {
+      queuedNotice = null;
+    }
+    if (!queuedNotice) disconnectNoticeObserver();
+    return;
+  }
+  if (!queuedNotice) {
+    if (!hasActivePushNotice()) disconnectNoticeObserver();
+    return;
+  }
+  const pending = queuedNotice;
+  queuedNotice = null;
+  if (pending.owner === state && pending.chapter === state.chapter) {
+    const unread = unreadCount();
+    if (unread > 0) renderNotice(Math.min(pending.count, unread), { onOpen: pending.onOpen });
+  }
+  if (!hasActivePushNotice()) disconnectNoticeObserver();
+}
+
+function syncNoticeObserver() {
+  if (typeof document === "undefined" || !document.body) return;
+  if (!queuedNotice && !hasActivePushNotice()) {
+    disconnectNoticeObserver();
+    return;
+  }
+  if (!noticeObserver && typeof MutationObserver === "function") {
+    noticeObserver = new MutationObserver(() => flushOrClearNotice());
+    noticeObserver.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class", "data-screen"],
+    });
+    for (const target of [layers.modal, layers.fx]) {
+      if (target && typeof target.nodeType === "number") {
+        noticeObserver.observe(target, { childList: true, attributes: true, attributeFilter: ["class"] });
+      }
+    }
+    const screen = document.querySelector?.("#screen");
+    if (screen && typeof screen.nodeType === "number") {
+      noticeObserver.observe(screen, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["class", "data-revealing"],
+      });
+    }
+  }
+  if (noticeTimer == null && typeof setTimeout === "function") {
+    noticeTimer = setTimeout(() => {
+      noticeTimer = null;
+      flushOrClearNotice();
+    }, 0);
+  }
+}
+
+function renderNotice(count, { onOpen = null } = {}) {
   const senders = [...new Set(state.inbox.filter((i) => !i.read).map(accountOf))].slice(0, 4);
   const newest = [...state.inbox].reverse().find((i) => !i.read);
   let opened = false;
@@ -645,7 +733,9 @@ export function pushNotice(count, { onOpen = null } = {}) {
     onclick: () => {
       if (opened) return;
       opened = true;
+      activeNotices.delete(card);
       card.remove();
+      syncNoticeObserver();
       onOpen(newest ? accountOf(newest) : null);
     },
   } : {}, [
@@ -656,10 +746,40 @@ export function pushNotice(count, { onOpen = null } = {}) {
     ]),
     el("div.lp-faces", senders.map((s) => avatar(s, true))),
   ]);
+  activeNotices.add(card);
   layers.toasts.append(card);
   SE.phoneReceive();
+  syncNoticeObserver();
   requestAnimationFrame(() => card.classList.add("show"));
-  setTimeout(() => { card.classList.remove("show"); setTimeout(() => card.remove(), 500); }, 3200);
+  setTimeout(() => {
+    card.classList.remove("show");
+    setTimeout(() => {
+      activeNotices.delete(card);
+      card.remove();
+      syncNoticeObserver();
+    }, 500);
+  }, 3200);
+}
+
+/** 朝の通知（スマホのプッシュ通知風）。マップ画面でのみ表示し、会話や他画面ではマップへ戻るまで待機する */
+export function pushNotice(count, { onOpen = null } = {}) {
+  if (!count) return;
+  if (!mapNoticeReady()) {
+    const sameSession = queuedNotice && queuedNotice.owner === state
+      && queuedNotice.chapter === state.chapter && queuedNotice.day === state.day;
+    queuedNotice = {
+      owner: state,
+      chapter: state.chapter,
+      day: state.day,
+      count: sameSession ? queuedNotice.count + count : count,
+      onOpen: onOpen || queuedNotice?.onOpen || null,
+    };
+    clearVisibleNotices();
+    syncNoticeObserver();
+    return;
+  }
+  queuedNotice = null;
+  renderNotice(count, { onOpen });
 }
 
 /**
@@ -730,6 +850,20 @@ const plain = (raw) => String(hooks.interpolate ? hooks.interpolate(String(raw))
 const dayLabel = (item) => (item.chapter != null && item.chapter !== state.chapter
   ? `第${item.chapter}章 DAY ${item.day}`
   : item.day === state.day ? "今日" : item.day === state.day - 1 ? "昨日" : `DAY ${item.day}`);
+const isPastDay = (item) => {
+  if (!item) return false;
+  if (item.chapter != null && state.chapter != null && item.chapter !== state.chapter) return item.chapter < state.chapter;
+  return Number.isFinite(item.day) && Number.isFinite(state.day) && item.day < state.day;
+};
+// 個別の進行管理（返信アクションによる独自期限・日程相談）を持たない通常チャットの前日以前未返信を締切る
+const isMissedReply = (item) => {
+  const m = item?.msg;
+  if (!m || m.type === "invitation" || !m.replies?.length) return false;
+  if (m.replies.some((r) => Boolean(r?.action))) return false;
+  return isPastDay(item);
+};
+const MISSED_REPLY_NOTE = "返しそびれた";
+const needsMissedReplyFallback = (item) => !(item.log || []).length && item.replyState === "expired" && isMissedReply(item);
 const clockNow = () => (state.phase === "tournament" ? "大会の朝" : state.slot >= 1 ? "夜" : "昼");
 
 /** 端末の枠（ノッチ・ステータスバー・ヘッダー・本文・返信欄）。openLime と openPhone で共用 */
@@ -931,6 +1065,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
   if (item.done) {
     const missed = missedInvitationNote(item);
     if (missed) { ui.note(missed); return; }
+    if (needsMissedReplyFallback(item)) { ui.note(MISSED_REPLY_NOTE); return; }
     for (const entry of item.log || []) {
       if (entry.note) ui.note(entry.note);
       else await drawMessage(ui, entry, entry.me, from, false);
@@ -1014,15 +1149,29 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
         delete state.flags[`_invited_${originId(item)}`];
       }
       if (m.decline_response) item.log.push({ me: false, text: m.decline_response.text });
-      gainAffinity(m.sender, 1, { source: "lime" });
       await ui.bubble(pick.text, true);
       if (alive() && state === session && m.decline_response) await ui.bubble(m.decline_response.text, false, from);
     }
     return;
   }
   if (m.replies && m.replies.length) {
+    const expireMissedReply = () => {
+      item.done = true;
+      item.replyState = "expired";
+      item.log ||= [];
+      if (!item.log.some((entry) => entry.note === MISSED_REPLY_NOTE)) item.log.push({ note: MISSED_REPLY_NOTE });
+      ui.note(MISSED_REPLY_NOTE);
+    };
+    if (!forced && isMissedReply(item)) {
+      expireMissedReply();
+      return;
+    }
     const r = await ui.choose(m.replies);
     if (!r || !alive() || state !== session || item.done) return;
+    if (!forced && isMissedReply(item)) {
+      expireMissedReply();
+      return;
+    }
     // 返信は演出を待つ前に一度だけ確定。戻る/再入室では確定済みの履歴を表示する。
     item.done = true;
     item.replyState = "replied";
@@ -1067,8 +1216,10 @@ function drawHistory(items, ui) {
       if (!lastItem || it.day !== lastItem.day || it.chapter !== lastItem.chapter) { ui.note(dayLabel(it), ".day"); lastItem = it; }
       if (!it.read) continue;
       for (const msg of it.msg.messages || []) drawMessage(ui, msg, msg?.me === true, accountOf(it), false);
+      if (!it.done) continue;
       const missed = missedInvitationNote(it);
       if (missed) { ui.note(missed); continue; }
+      if (needsMissedReplyFallback(it)) { ui.note(MISSED_REPLY_NOTE); continue; }
       for (const l of it.log || []) {
         if (l.note) ui.note(l.note);
         else drawMessage(ui, l, l.me, accountOf(it), false);
