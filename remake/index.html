@@ -12,10 +12,10 @@
 <link rel="preload" as="font" type="font/woff2" href="fonts/ZenKakuGothicNew-Medium.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/ZenKakuGothicNew-Bold.woff2" crossorigin>
 <link rel="preload" as="font" type="font/woff2" href="fonts/ZenKakuGothicNew-Black.woff2" crossorigin>
-<link rel="preload" as="image" href="img/backgrounds/bg_title.webp">
+<!-- 起動画面の背景とロゴ（css/loading.css の --loading-backdrop-art / --loading-logo。タイトル背景より先に取り始める） -->
+<link rel="preload" as="image" href="img/ui/loading/loading_bg.webp" fetchpriority="high">
 <link rel="preload" as="image" href="img/ui/ui_title_logo_rich.webp">
-<!-- 起動画面の背景（css/loading.css の --loading-backdrop-art。CSS より先に取り始める） -->
-<link rel="preload" as="image" href="img/ui/loading/loading_bg.webp">
+<link rel="preload" as="image" href="img/backgrounds/bg_title.webp">
 <title>水煙前線 -EN:CODE-</title>
 <!-- 起動画面の漫画（2026-11-13 オーナー「ロード画面でも漫画が出ない時がたまにある。必ず出るようにしたい」）。
      ゲームの本体を読み込む間（遅い回線では数十秒）も、ロード画面に漫画を出す。ここに書くのは、新しいゲームの開始時に
@@ -30,8 +30,29 @@
 ]
 </script>
 <script>
-// 漫画を先に決め、2コマの絵をいちばん先に取りに行く（本体のプログラムより先に届くように）。表示は #boot の後ろのスクリプト。
+// 起動画面の背景・ロゴ・漫画2コマをいちばん先に取りに行き、デコードまで済ませてから完成形で一気に出す。表示は #boot の後ろのスクリプト。
 (() => {
+  const decodeAsset = (src) => {
+    const img = new Image();
+    img.decoding = "async";
+    img.setAttribute("fetchpriority", "high");
+    img.src = src;
+    const ready = (typeof img.decode === "function"
+      ? img.decode()
+      : new Promise((resolve) => { img.onload = img.onerror = resolve; })
+    ).catch(() => {});
+    return { img, ready };
+  };
+  const bg = decodeAsset("img/ui/loading/loading_bg.webp");
+  const logo = decodeAsset("img/ui/ui_title_logo_rich.webp");
+  window.SUIEN_BOOT_ASSETS = {
+    bg: bg.img,
+    logo: logo.img,
+    ready: Promise.race([
+      Promise.all([bg.ready, logo.ready]),
+      new Promise((resolve) => setTimeout(resolve, 15000)),
+    ]),
+  };
   let mode = null, read = [], list = [];
   try { mode = localStorage.getItem("suien_loading_comics"); } catch (_) { /* 保存を読めない環境はプレイヤーの既定 */ }
   // 漫画を毎回出すのはプレイヤーの既定。自動操作のブラウザ（既存の検査）は従来どおり出さない（js/core/loading.js の comicLoadingRequired と同じ）。
@@ -75,7 +96,15 @@
 <style>
 /* 起動直後（モジュール読込前）の #boot は、共通ロード画面（css/loading.css の .loading-gate / .boot-gate）と同じ部品・同じ CSS で組む
    （2026-11-17 LPOS03: 起動画面から次のロード画面へ替わるとき、ロゴ・漫画・ゲージの位置が動かないように）。
-   ここには起動画面だけの差分を置く。失敗したときは紙面・LOADING・「進む」を畳み、ロゴ・ゲージの下に知らせと「もう一度読み込む」を出す。 */
+   背景・ロゴ・書体・最初の漫画カードがすべてデコード完了するまで .is-preparing で画面自体を隠し、揃った瞬間に完成形で一気に出す。
+   失敗したときは紙面・LOADING・「進む」を畳み、ロゴ・ゲージの下に知らせと「もう一度読み込む」を出す。 */
+:is(.loading-gate, .boot-gate), :is(.loading-gate, .boot-gate) :is(.loading-logo::after, .loading-card, .loading-panels figure) { animation: none; }
+:is(.loading-gate, .boot-gate).is-preparing { opacity: 0; pointer-events: none; animation: none; transition: none; }
+:is(.loading-gate, .boot-gate) .loading-bar-fill { width: 12%; animation: none; transform: none; transition: width .3s ease; }
+:is(.loading-gate, .boot-gate) .loading-bar.is-determinate .loading-bar-fill { width: calc(max(.12, var(--loading-progress, 0)) * 100%); }
+:is(.loading-gate, .boot-gate).is-ready .loading-bar-fill { width: 100%; }
+#boot:not(.done) { transition: none; }
+#boot.is-failed { opacity: 1; pointer-events: auto; }
 #boot.is-failed :is(.loading-card, .loading-status, .loading-proceed) { display: none; }
 #boot.is-failed .loading-gauge { margin-top: 16px; }
 #boot .boot-msg { margin: 8px 0 0; }
@@ -97,7 +126,7 @@
     <div id="modal"></div>
     <!-- 起動画面。中身は共通ロード画面（js/core/loading.js が組む .loading-gate）と同じ並び・同じクラス（外枠だけ .boot-gate。css/loading.css が両方に効く）。
          漫画が無い間も、同じ大きさの見えない紙面（is-blank）を置く。横持ち・縦持ちのスマホでは下のスクリプトが body へ移す。 -->
-    <section id="boot" class="boot-gate has-logo" aria-label="読み込み">
+    <section id="boot" class="boot-gate has-logo is-preparing" aria-label="読み込み">
       <div class="loading-logo" aria-hidden="true"></div>
       <div class="loading-card boot-comic is-blank">
         <div class="loading-comic" aria-hidden="true">
@@ -144,23 +173,42 @@
   for (const query of queries) query.addEventListener("change", place);
   // 「進む」の行は見えないまま場所だけ取る（共通ロード画面と同じ文言で同じ高さ）。
   if (!window.matchMedia("(pointer: coarse)").matches) boot.querySelector(".loading-proceed").textContent = "クリック・Enter で進む";
-  if (!comic) return;
+  const fontsReady = document.fonts
+    ? Promise.race([
+        Promise.all(["500", "700", "900"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線似顔絵LOADING…準備完了クリックタップで進む"))),
+        new Promise((resolve) => setTimeout(resolve, 15000)),
+      ]).catch(() => {})
+    : Promise.resolve();
+  const chromeReady = Promise.all([window.SUIEN_BOOT_ASSETS?.ready, fontsReady]);
+  if (!comic) {
+    window.SUIEN_BOOT_READY = chromeReady.then(() => {
+      boot.classList.remove("is-preparing");
+    });
+    return;
+  }
   const sheet = boot.querySelector(".boot-comic");
   const images = [...sheet.querySelectorAll("img")];
   sheet.querySelector(".boot-comic-title").textContent = comic.title;
   sheet.querySelector(".boot-comic-caption").textContent = comic.caption || "";
   boot.dataset.comic = comic.id;
   images.forEach((image, i) => { image.alt = comic.panels[i].alt; image.setAttribute("fetchpriority", "high"); image.src = "img/" + comic.panels[i].src; });
-  // 紙面は場所を取ったまま隠しておき、絵が2コマとも描けてから一緒に出す（共通ロード画面の is-waiting と同じ。半分だけの絵を見せない）。
+  // 背景絵・ロゴ・書体・2コマの絵がすべて描ける状態になるまで画面自体（#boot）を隠しておき、揃った瞬間に完成形で一気に出す。
   sheet.classList.replace("is-blank", "is-waiting");
   boot.classList.add("has-comic");
-  Promise.all(images.map((image) => image.decode())).then(() => {
-    sheet.classList.remove("is-waiting");
-    sheet.classList.add("is-ready");
-  }, () => {
-    // 絵が届かないとき（通信が切れた等）は、漫画のない起動画面に戻す（紙面の場所はそのまま）。
-    sheet.classList.replace("is-waiting", "is-blank");
-    boot.classList.remove("has-comic");
+  const panelsReady = Promise.race([
+    Promise.all(images.map((image) => image.decode())).then(() => true, () => false),
+    new Promise((resolve) => setTimeout(() => resolve(false), 15000)),
+  ]);
+  window.SUIEN_BOOT_READY = Promise.all([chromeReady, panelsReady]).then(([, ok]) => {
+    if (ok) {
+      sheet.classList.remove("is-waiting");
+      sheet.classList.add("is-ready");
+    } else {
+      // 絵が届かないとき（通信が切れた等）は、漫画のない起動画面に戻す（紙面の場所はそのまま）。
+      sheet.classList.replace("is-waiting", "is-blank");
+      boot.classList.remove("has-comic");
+    }
+    boot.classList.remove("is-preparing");
   });
 })();
 </script>
@@ -187,6 +235,7 @@ if ("serviceWorker" in navigator) {
       ? "読み込みに時間がかかっています。通信を確認して、もう一度お試しください。"
       : "読み込みに失敗しました。通信を確認して、もう一度お試しください。";
     message.hidden = false;
+    bootScreen.classList.remove("is-preparing");
     bootScreen.classList.add("is-failed");
     retry.hidden = false;
     console.error("ゲームの起動に失敗しました", error);
