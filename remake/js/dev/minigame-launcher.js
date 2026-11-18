@@ -1,23 +1,51 @@
 // The debug menu calls the current game implementations directly. Results live only in memory.
-import { newState } from "../core/state.js";
+import { config, newState } from "../core/state.js";
+import { bgmDuckLevel, duckBgm, playBgm, requestedBgm, stopBgm } from "../core/audio.js";
 import { DJ_SETS } from "../minigames/dj.js";
 import { CAMEL_CUPS } from "../minigames/camel-race-model.js";
 
 const GAMES = [
-  { id: "axe", label: "斧投げ", start: async (host, signal) => (await import("../minigames/axe.js")).runAxeThrow({ host, signal, mode: "practice", opponent: null }) },
-  { id: "camel", label: "ラクダレース", start: async (host, signal) => (await import("../minigames/camel-race.js")).runCamelRace({ host, signal, cups: CAMEL_CUPS.map(cup => cup.id) }) },
-  { id: "desert", label: "DESERT RIDE（砂丘）", start: async (host, signal) => (await import("../minigames/desert-ride.js")).runDesertRide({ host, signal }) },
-  ...DJ_SETS.map(set => ({ id: `dj-${set.id}`, label: `DJ ${set.name}`, start: async (host, signal) => (await import("../minigames/dj.js")).runDjSet({ host, signal, set: set.id }) })),
-  { id: "ichidai", label: "一台勝負（カード）", start: async (host, signal) => (await import("../minigames/ichidai.js")).runIchidai({ host, signal, opponent: { id: "sumi", name: "スミさん" } }) },
+  { id: "axe", label: "斧投げ", start: async (host, signal) => {
+    const { runAxeThrow } = await import("../minigames/axe.js");
+    if (signal.aborted) return;
+    playBgm("bgm_axe");
+    return runAxeThrow({ host, signal, mode: "practice", opponent: null });
+  } },
+  { id: "camel", label: "ラクダレース", start: async (host, signal) => {
+    const { runCamelRace } = await import("../minigames/camel-race.js");
+    if (signal.aborted) return;
+    return runCamelRace({ host, signal, cups: CAMEL_CUPS.map(cup => cup.id) });
+  } },
+  { id: "desert", label: "DESERT RIDE（砂丘）", start: async (host, signal) => {
+    const { runDesertRide } = await import("../minigames/desert-ride.js");
+    if (signal.aborted) return;
+    return runDesertRide({ host, signal });
+  } },
+  ...DJ_SETS.map(set => ({ id: `dj-${set.id}`, label: `DJ ${set.name}`, start: async (host, signal) => {
+    const { runDjSet } = await import("../minigames/dj.js");
+    if (signal.aborted) return;
+    return runDjSet({ host, signal, set: set.id, muted: !!(config.mute || config.muted), volume: config.bgmVolume });
+  } })),
+  { id: "ichidai", label: "一台勝負（カード）", start: async (host, signal) => {
+    const { runIchidai } = await import("../minigames/ichidai.js");
+    if (signal.aborted) return;
+    return runIchidai({ host, signal, opponent: { id: "sumi", name: "スミさん" } });
+  } },
   { id: "tetsuko", label: "てつこといっしょ", start: async (_host, signal) => {
     const value = newState();
     value.chapter = 3; value.phase = "daily"; value.day = 5;
-    return (await import("../minigames/tetsuko-time.js")).openTetsukoTime({ value, visitKey: "debug", signal });
+    const { openTetsukoTime } = await import("../minigames/tetsuko-time.js");
+    if (signal.aborted) return;
+    return openTetsukoTime({ value, visitKey: "debug", signal });
   } },
   // ボドゲカフェは、本編と同じ本棚と卓を使い捨ての状態で開く試遊（TRF21。URL の ?trial=trpg と同じもの）。
   // 入口は1つに統一し、夜・物語（ready）から始める。昼（noon）は中の「試遊の設定」から選び直せる。
-  { id: "trpg", label: "ボドゲカフェ（TRPG）", start: async (host, signal) =>
-    (await import("../trpg/trial.js")).mountTrpgTrial(host, { preset: "ready", signal, exitLabel: "試遊を閉じる" }).finished },
+  { id: "trpg", label: "ボドゲカフェ（TRPG）", start: async (host, signal) => {
+    const { mountTrpgTrial } = await import("../trpg/trial.js");
+    if (signal.aborted) return;
+    playBgm("bgm_trpg");
+    return mountTrpgTrial(host, { preset: "ready", signal, exitLabel: "試遊を閉じる" }).finished;
+  } },
 ];
 
 export const DEBUG_MINIGAMES = Object.freeze(GAMES.map(({ id, label }) => ({ id, label })));
@@ -26,19 +54,47 @@ export function mountMiniGameDebug() {
   const row = document.createElement("div");
   row.className = "dbg-row";
   let current = null;
+  let epoch = 0;
+  let bgmBefore = null;
+  let duckBefore = 1;
+  let screenBefore = null;
+  let screenLost = false;
+
+  const restoreAudio = () => {
+    const key = bgmBefore;
+    const duck = duckBefore;
+    bgmBefore = null;
+    duckBefore = 1;
+    if (key) {
+      playBgm(key);
+      duckBgm(duck, 0);
+    } else {
+      stopBgm(0);
+    }
+  };
+
   for (const game of GAMES) {
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = game.label;
     button.dataset.test = `debug-minigame-${game.id}`;
     button.onclick = async () => {
-      current?.abort();
-      document.querySelector("[data-test='debug-minigame-host']")?.remove();
-      document.querySelector("[data-test='debug-minigame-close']")?.remove();
       const stage = document.getElementById("stage");
       const panel = document.querySelector("[data-test='debug-panel']");
       const toggle = document.querySelector("[data-test='debug-toggle']");
       if (!stage || !panel) return;
+      epoch += 1;
+      if (!current) {
+        bgmBefore = requestedBgm();
+        duckBefore = bgmDuckLevel();
+        screenBefore = document.body?.dataset?.screen || null;
+        screenLost = false;
+      }
+      current?.abort();
+      document.querySelector("[data-test='debug-minigame-host']")?.remove();
+      document.querySelector("[data-test='debug-minigame-close']")?.remove();
+      stopBgm(0);
+      if (game.id === "tetsuko") screenLost = true;
       const controller = new AbortController();
       current = controller;
       const host = document.createElement("div");
@@ -47,10 +103,49 @@ export function mountMiniGameDebug() {
       if (game.id !== "tetsuko") stage.append(host);
       const close = document.createElement("button");
       close.type = "button";
-      close.textContent = "ミニゲームを閉じる（タイトルへ）";
+      const returnsToTitle = screenBefore === "title" || screenLost;
+      close.textContent = returnsToTitle ? "ミニゲームを閉じる（タイトルへ）" : "ミニゲームを閉じる（元の画面へ）";
       close.dataset.test = "debug-minigame-close";
       close.style.marginBottom = "8px";
-      close.onclick = () => { controller.abort(); host.remove(); close.remove(); if (current === controller) current = null; location.reload(); };
+      close.onclick = async () => {
+        controller.abort();
+        host.remove();
+        close.remove();
+        if (current !== controller) return;
+        const closeEpoch = ++epoch;
+        current = null;
+        panel.hidden = true;
+        if (toggle) toggle.textContent = "DBG";
+        if (screenLost) {
+          const toTitle = screenBefore === "title";
+          screenLost = false;
+          screenBefore = null;
+          if (toTitle) {
+            const prevBgm = bgmBefore, prevDuck = duckBefore;
+            bgmBefore = null;
+            duckBefore = 1;
+            try {
+              const { showTitle } = await import("../scenes/title.js");
+              if (current || epoch !== closeEpoch) return;
+              showTitle();
+              if (!prevBgm) stopBgm(0);
+              else {
+                if (prevBgm !== "title") playBgm(prevBgm);
+                duckBgm(prevDuck, 0);
+              }
+              return;
+            } catch {
+              if (!current && epoch === closeEpoch) location.reload();
+              return;
+            }
+          }
+          restoreAudio();
+          location.reload();
+          return;
+        }
+        screenBefore = null;
+        restoreAudio();
+      };
       panel.prepend(close);
       if (toggle) toggle.textContent = "DBG・終了";
       panel.hidden = true;

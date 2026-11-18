@@ -946,6 +946,8 @@ const SYNTH_FALLBACK = {
 
 /** 今鳴っている曲のキー（自動再生待ちの間は null） */
 export const currentBgm = () => currentKey;
+/** 再生中または自動再生待ちで予約されている曲のキー */
+export const requestedBgm = () => currentKey || pendingBgm;
 
 /** 盤の間だけ曲を借りる。LOADや別場面の新しい曲を、閉じる処理で上書きしない。 */
 export function createGrowthBoardAudio() {
