@@ -36,6 +36,11 @@
           "text": "重くなりそうなのに、ならないんだな。もう一口、いきたくなる"
         },
         {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "コーヒー、淹れ直すか。その一台なら、もう一杯いける"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（ナッツで丸くして、コーヒーは後ろに置いた）"
@@ -73,6 +78,11 @@
           "text": "紅茶みたいに軽いのに、ちゃんと食後の一台だ。ここでゆっくりできるな"
         },
         {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "食後に紅茶か。……俺のコーヒーも、たまには休ませるか"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（コーヒーの苦さを、柑橘で流す。こういう選び方もある）"
@@ -92,6 +102,11 @@
           "text": "ミントが強すぎなくていい。これなら午後も持つ"
         },
         {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "休憩は短い。……戻る時間は、こっちで見ておく"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（レモンティーの甘さに、ミントは少しだけ足した）"
@@ -109,6 +124,11 @@
           "speaker": "customer",
           "face": "normal",
           "text": "花の香りって、こんなに軽いんだ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "ジャスミンか。店の中が、少し明るくなる匂いだ"
         },
         {
           "speaker": "hajime",
@@ -152,6 +172,11 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（チョコで底を作って、カプチーノを上に乗せた）"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "……カプチーノの方も、あとで頼む"
         }
       ]
     },
@@ -166,6 +191,11 @@
           "speaker": "customer",
           "face": "normal",
           "text": "ちゃんと重い。シナモンが後から来るのがいいな"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……重いのは、俺は遠慮しておく"
         },
         {
           "speaker": "hajime",
@@ -275,6 +305,11 @@
           "text": "これなら、今度は友達と並んで吸えるかもしれません"
         },
         {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "その時は、二人掛けを空けておく"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（憧れて来た日の一台は、怖くない方がいい）"
@@ -317,6 +352,11 @@
           "speaker": "customer",
           "face": "smile",
           "text": "頭が、すっとする。これなら戻れそうです"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "仕事が終わったら、また寄ればいい。次は、何でもよくない日に"
         },
         {
           "speaker": "hajime",

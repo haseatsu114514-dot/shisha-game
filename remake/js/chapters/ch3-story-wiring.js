@@ -27,6 +27,10 @@ export const MASHIRO_STORY_EXTRAS = Object.freeze([
   "ch3_mashiro_glass_cloth",
   "ch3_mashiro_leaf_rest",
   "ch3_mashiro_bench_tea",
+  // RLS10（第3章はましろを厚く描く）: 道具箱・炭の音で起きる・重い一台の間
+  "ch3_mashiro_toolbox",
+  "ch3_mashiro_doze",
+  "ch3_mashiro_heavy_room",
 ]);
 
 // 任意場面の置き場。file=台詞ファイル、after=この必須/既読場面を読み終えてから、met=面識がある人物だけ。
@@ -73,6 +77,12 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
     after: ["ch3_mashiro_glass_cloth"] },
   ch3_mashiro_bench_tea: { file: "ch3_mashiro", label: "裏口のベンチ", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_mashiro_leaf_rest"] },
+  ch3_mashiro_toolbox: { file: "ch3_mashiro", label: "木の道具箱", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_bench_tea"] },
+  ch3_mashiro_doze: { file: "ch3_mashiro", label: "炭の音", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_toolbox"] },
+  ch3_mashiro_heavy_room: { file: "ch3_mashiro", label: "重い一台の間", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_doze"] },
   // #3468 G案。開店前のmukaiで、ムカイさんとヨルが昼の曲順から夜の曲へ脱線する。ヨルと面識があり（クラブで名乗った後）、
   // mukaiの二日目の後。台本は大会に触れないので、大会後は ch3-aftermath-progress.js の寄り道から同じ既読で読む。好感度は動かさない。
   ch3_mukai_yoru_playlist: { file: "ch3_mukai", label: "昼の曲順", location: "mukai", bg: "bg_mukai_shop",
@@ -163,7 +173,8 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   // ♥3の質問と締めくくりは寄り道ではなく、場面カードの「ましろちゃんと話す」から（daily/bonds.js の条件）。
   ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice",
     "ch3_mashiro_black_tea", "ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_mashiro_glass_cloth",
-    "ch3_mashiro_leaf_rest", "ch3_mashiro_bench_tea", "ch3_mashiro_mukai_syrup_shelf", "ch3_mashiro_mukai_shelf_tags",
+    "ch3_mashiro_leaf_rest", "ch3_mashiro_bench_tea", "ch3_mashiro_toolbox", "ch3_mashiro_doze", "ch3_mashiro_heavy_room",
+    "ch3_mashiro_mukai_syrup_shelf", "ch3_mashiro_mukai_shelf_tags",
     "ch3_mashiro_bond_question", "ch3_mashiro_bond_finale",
     // 恋人のましろと過ごす時間（BLC03・chapters/mashiro-time.js の MASHIRO_TIME_SCENES と同じ並び）。
     "mashiro_time_counter", "mashiro_time_train", "mashiro_time_errand", "mashiro_time_braid",

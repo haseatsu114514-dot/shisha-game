@@ -160,6 +160,9 @@
         "ch3_mashiro_glass_cloth",
         "ch3_mashiro_leaf_rest",
         "ch3_mashiro_bench_tea",
+        "ch3_mashiro_toolbox",
+        "ch3_mashiro_doze",
+        "ch3_mashiro_heavy_room",
         "ch3_mukai_yoru_playlist"
       ],
       "after_eve": [
@@ -537,6 +540,21 @@
     "ch3_mashiro_bench_tea": {
       "seen": [
         "ch3_mashiro_leaf_rest"
+      ]
+    },
+    "ch3_mashiro_toolbox": {
+      "seen": [
+        "ch3_mashiro_bench_tea"
+      ]
+    },
+    "ch3_mashiro_doze": {
+      "seen": [
+        "ch3_mashiro_toolbox"
+      ]
+    },
+    "ch3_mashiro_heavy_room": {
+      "seen": [
+        "ch3_mashiro_doze"
       ]
     },
     "ch3_mukai_yoru_playlist": {

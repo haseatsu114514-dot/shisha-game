@@ -121,7 +121,7 @@ assert.deepEqual(availableAftermathDetours(value), [], "no detours once chapter 
 // IR23: 大会前に読めなかった鉄の煙の再訪（二度目→七年分→頷く順番）も、大会後に順に読める。
 const VOLK_VISITS = ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth"];
 const MASHIRO_EXTRAS = ["ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_mashiro_glass_cloth",
-  "ch3_mashiro_leaf_rest", "ch3_mashiro_bench_tea"];
+  "ch3_mashiro_leaf_rest", "ch3_mashiro_bench_tea", "ch3_mashiro_toolbox", "ch3_mashiro_doze", "ch3_mashiro_heavy_room"];
 const detourIds = ["ch3_mukai_after_tournament", "ch3_cigarman_trace", "ch3_emil_workshop", ...VOLK_VISITS, "ch3_volk_after_ch3",
   "ch3_volk_lime", "ch3_volk_fifth", "ch3_volk_revisit", "ch3_rival_volk_steve_greeting", "ch3_rival_volk_steve_seat",
   "ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_first_reply",
