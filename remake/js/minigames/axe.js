@@ -27,7 +27,9 @@ function decodeArt(url) {
   return artReady.get(url);
 }
 // The WATL board (five 2x10 planks, calm light centre) from Codex, #2198 / AXR06. The older square board stays in the repository.
-const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_c_800.webp") };
+const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_c_800.webp"),
+  // 一人称レーンの背景（#3639）。laneAim は同じレーンに右手の構えを描き込んだ狙い中専用の絵で、自分の狙いの間だけ重ねる。
+  lane: imgFileUrl("backgrounds/bg_axe_lane.webp"), laneAim: imgFileUrl("backgrounds/bg_axe_lane_aim.webp") };
 // ゲージ・札の絵の部品（#3207・AXR14）と、見出しの板・投げ数の溝・黒板の窓・ランクの丸・帯・木片（#3423・AXQ03）。
 // 木片以外は CSS の border-image で描く。読み込み中に先に解いておき、構えた瞬間や結果の出遅れを防ぐ。
 const UI_ART = ["gauge-frame", "gauge-needle", "button-throw-orange", "button-throw-green", "tag-slate", "tag-slate-blue", "tag-selected", "tag-selected-amber",
@@ -197,14 +199,15 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   artBoard.append(svg("defs", {}, [svg("radialGradient", { id: vignetteId, cx: CX, cy: CY, r: R * 1.62, gradientUnits: "userSpaceOnUse" }, [
     svg("stop", { offset: "0", "stop-color": "#fff3d6", "stop-opacity": .08 }), svg("stop", { offset: ".55", "stop-color": "#000", "stop-opacity": 0 }),
     svg("stop", { offset: "1", "stop-color": "#000", "stop-opacity": .58 })])]), art);
+  // 一人称レーンの背景絵（#3639）: レーンの中に立った視点の絵を全面に敷き、狙いの間だけ構え（右手と斧）の絵を重ねる。
+  // 絵の中の的は無地の円盤で、得点の盤面はこれまでどおり板とSVGが担う（判定・座標は一切変えない）。
+  let laneAimImage = null;
   if (tapPull) {
+    laneAimImage = svg("image", { class: "axe-lane-aim", href: ART.laneAim, x: -170, y: -65, width: 1000, height: 562.5, preserveAspectRatio: "xMidYMid slice", opacity: 0 });
     const lane = svg("g", { class: "axe-fps-lane" }, [
       svg("rect", { x: -170, y: -65, width: 1000, height: 562.5, fill: "#171f22" }),
-      svg("path", { d: "M75 -65H585L570 480H90Z", fill: "#44392d" }),
-      svg("path", { d: "M-170 497L90 480H570L830 497Z", fill: "#293232" }),
-      ...[-100, -20, 60].map(x => svg("path", { d: `M${x} -65L90 480M${660-x} -65L570 480`, fill: "none", stroke: "#56605b", "stroke-width": 3, opacity: .35 })),
-      ...[90, 200, 310, 420].map(y => svg("path", { d: `M-170 ${y}L90 ${y*.8+80}M830 ${y}L570 ${y*.8+80}`, fill: "none", stroke: "#58625b", "stroke-width": 2, opacity: .3 })),
-      svg("path", { d: "M190 -43H470", stroke: "#dab479", "stroke-width": 5 }),
+      svg("image", { class: "axe-lane-bg", href: ART.lane, x: -170, y: -65, width: 1000, height: 562.5, preserveAspectRatio: "xMidYMid slice" }),
+      laneAimImage,
     ]);
     artBoard.insertBefore(lane, artBoard.firstChild);
   }
@@ -279,8 +282,14 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const crosshair = svg("g", { class: "axe-crosshair" }, [
     svg("path", { class: "axe-crosshair-outline", d: bladeShape, stroke: "#160f0a", "stroke-width": 8, "stroke-linecap": "round", fill: "none", opacity: .8 }),
     svg("circle", { class: "axe-crosshair-outline", r: 3.6, fill: "none", stroke: "#160f0a", "stroke-width": 6, opacity: .8 }), ...crosshairLines]);
-  const fixedAim = svg("g", { class: "axe-fixed-aim" }, [svg("circle", { r: 7, fill: "none", stroke: "#e5bd70", "stroke-width": 2 }),
-    svg("path", { d: "M-12 0H12 M0-12V12", stroke: "#e5bd70", "stroke-width": 1 })]);
+  // 狙いの印（#3639）: 指先でつまんで動かせる二重リング＋上下左右のノッチ＋中心の縦スリット（斧の刃の向き）。
+  // 暗い木目でも沈まないよう暗い下地の輪を敷く。座標・判定は従来どおり aim の位置そのもの。
+  const fixedAim = svg("g", { class: "axe-fixed-aim" }, [
+    svg("circle", { r: 19, fill: "none", stroke: "#160f0a", "stroke-width": 6, opacity: .5 }),
+    svg("circle", { r: 17, fill: "none", stroke: "#fff3dc", "stroke-width": 2.5 }),
+    svg("circle", { r: 7, fill: "none", stroke: "#fff3dc", "stroke-width": 2 }),
+    svg("path", { d: "M0 -22V-13 M0 13V22 M-22 0H-13 M13 0H22", stroke: "#fff3dc", "stroke-width": 2.5, "stroke-linecap": "round" }),
+    svg("path", { d: "M0 -4.5V4.5", stroke: "#fff3dc", "stroke-width": 2, "stroke-linecap": "round" })]);
   // 弾き方の小さな見本（指摘13）: はじめの一投の構えで、狙いの下から指が「上へ弾く」動きを2回だけ見せる。読む代わりに見せる
   const flickHint = svg("g", { class: "axe-flick-hint", opacity: 0, "aria-hidden": "true", "pointer-events": "none", "data-test": "axe-flick-hint" });
   function playFlickHint() {
@@ -316,17 +325,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   board.append(zoneHalo, calledRing, powerShift, releaseDot, contactShadow, impacts, impactMark, trail, ...ghosts, flying, fixedAim, crosshair, flickHint, impactFx,
     gaugeLabel(CX, VIEW.y + VIEW.size - 10, tapPull ? "↔ 横 · 金の印でタップ" : "↔ 横", "#a9dcef", "middle", "horizontal"),
     gaugeLabel(tapPull ? PLANK.right - 30 : VIEW.x + VIEW.size - 8, CY - 26, "↕ 縦", "#f1c983", "end", "vertical"), guideX, guideY, xNeedle, yNeedle, sdBadge);
-  // 一人称の手（指摘2）: 待機→構え（触れた瞬間）→引き（弾いている間）→振り抜き→フォロースルー。姿勢は補間せず瞬時に変える（#049）。
-  const hands = tapPull ? svg("g", { class: "axe-fps-hands", "aria-hidden": "true" }, [
-    svg("path", { d: "M830 498H645L587 438 600 398 636 411Z", fill: "#222a31", stroke: "#11191e", "stroke-width": 5 }),
-    svg("path", { d: "M602 423L589 391Q585 375 598 374L622 382 636 409 625 432Z", fill: "#cba37d", stroke: "#72513a", "stroke-width": 2 }),
-    svg("path", { d: "M617 419L593 244", fill: "none", stroke: equipment.handle, "stroke-width": 14 }),
-    svg("path", { d: "M592 244L545 224 527 256 585 278 606 268 604 244Z", fill: "#46545c", stroke: "#172126", "stroke-width": 3 }),
-    svg("path", { d: "M545 224L527 256 540 263 557 231Z", fill: "#b7c2c0" }),
-    svg("path", { d: "M613 404L617 431", stroke: equipment.grip, "stroke-width": 15 }),
-    svg("path", { d: "M710 498H556L593 444 622 429 648 446Z", fill: "#252c32", stroke: "#11191e", "stroke-width": 5 }),
-    svg("path", { d: "M607 445L597 427Q594 416 606 416L631 424Q643 432 632 450L620 459Z", fill: "#d1aa83", stroke: "#72513a", "stroke-width": 2 }),
-  ]) : null;
+  // 一人称の手（指摘2）: 以前はSVGの手と斧を重ねていたが、#3639 で構えの絵（背景に描き込んだ右手と斧）に置き換えた。
+  // 狙いの間は laneAim の絵が手元を担い、投げた瞬間に素のレーンへ戻って飛ぶ斧（SVG）へ繋ぐ。hands は常に null（姿勢まわりの分岐は休眠）。
+  const hands = null;
   if (hands) board.append(hands);
   // 構えの姿勢（回転の中心は画面の右下の外＝肘のあたり）。flight は tick がフォロースルーを描く
   // 回転の中心は握り（手の斧の柄の下）。構えは迷ったら1.5倍（#028）で、腕が上がったと分かる大きさに
@@ -416,8 +417,13 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   // 的は中央。狙いの札（通常・青の宣言）は的の上に重ね、構えたら消える。回転ゲージは的のすぐ右に縦で立つ。
   // 左は見守りの一言とチャレンジ（投げている間は消える）、右は結果と操作のボタンだけ。
   const throwZone = el("div.axe-throw", { dataset: { test: "axe-throw" } }, [action, retry]);
+  // 狙いの案内（#3639・UI案A）: 的の上に「どこを狙う？」を浮かべ、今が狙う位置を決める場面だと一目で分かるようにする。
+  // 宣言中は見出しが「○○の青を狙う」に替わる。タッチは一切受けない（pointer-events: none はCSS）。
+  const aimPromptTitle = el("strong.axe-aim-prompt-title", { text: "どこを狙う？" });
+  const aimPromptSub = el("span.axe-aim-prompt-sub", { text: "的に触れて位置を決め、上へ弾いて投げる" });
+  const aimPrompt = tapPull ? el("div.axe-aim-prompt", { hidden: true, dataset: { test: "axe-aim-prompt" }, "aria-hidden": "true" }, [aimPromptTitle, aimPromptSub]) : null;
   const boardPane = el("div.axe-board-pane", [
-    el("p.axe-legend", { text: "赤6 · 5の円 · リング4〜1 · 宣言した青7／8" }), artBoard, board, zoom, calls, status]),
+    el("p.axe-legend", { text: "赤6 · 5の円 · リング4〜1 · 宣言した青7／8" }), artBoard, board, zoom, calls, status, aimPrompt]),
     side = el("aside.axe-side", { dataset: { test: "axe-side" } }, [matchScore, goals, companionCard]),
     panel = el("aside.axe-panel", [matchRecords, steps, liveScore, resultCard, note, feedback, steadiness, stability, keyhint, controls, throwZone]);
   const body = el("div.axe-body", [side, boardPane, timing, panel]);
@@ -805,6 +811,21 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (hands && phase !== "flight") {
       const pose = ["horizontal", "vertical", "power"].includes(phase) && actor === "player" ? (pullInput?.pulling ? "windup" : "ready") : "rest";
       if (hands.dataset.pose !== pose) { hands.dataset.pose = pose; hands.setAttribute("transform", HAND_POSES[pose]); hands.setAttribute("opacity", 1); }
+    }
+    // 一人称の構え絵と狙いの案内（#3639）: 自分が狙う間だけ構え（右手と斧）の絵を重ね、投げた瞬間に素のレーンへ戻して飛ぶ斧へ繋ぐ。
+    if (laneAimImage) laneAimImage.setAttribute("opacity", actor === "player" && ["choice", "horizontal", "vertical", "power"].includes(phase) ? 1 : 0);
+    if (aimPrompt) {
+      const show = actor === "player" && ["choice", "horizontal", "vertical"].includes(phase) && !isPaused();
+      aimPrompt.hidden = !show;
+      if (show) {
+        const title = called ? killPlaces[called] + "の青を狙う" : "どこを狙う？";
+        if (aimPromptTitle.textContent !== title) aimPromptTitle.textContent = title;
+        const firstThrow = shots.length === 0 && gameIndex === 0 && (!versus || match.opponent.length === 0);
+        const sub = phase === "horizontal" ? "横の針を、金の印で止める" : phase === "vertical" ? "縦の針を、金の印で止める"
+          : firstThrow || tutorial ? "的に触れて位置を決め、上へ弾いて投げる" : "";
+        if (aimPromptSub.textContent !== sub) aimPromptSub.textContent = sub;
+        aimPromptSub.hidden = !sub;
+      }
     }
     root.dataset.outcome = displayedShot?.outcome || "";
     root.dataset.special = String(Boolean(displayedShot) && impactFeedback(displayedShot).special);

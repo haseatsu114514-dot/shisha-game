@@ -1284,3 +1284,26 @@ html:root[data-density="phone"] body:not(:root) .axe-bar-menu[data-view="gear"] 
 .axe-game[data-on-target="true"] .axe-aim-guide path { fill: #8ff0a4; }
 /* 横・縦の針を止めている間は「今の刃先」と止めるボタン・息を整えるが並ぶので、右下の枠を上へ広げる（今の刃先が切れないように） */
 .axe-game[data-input-mode="tap-pull"].axe-first-person:is([data-phase="horizontal"],[data-phase="vertical"]) .axe-panel { max-height: 64%; }
+
+/* 2026-11-18 #3639 一人称画面の仕上げ: レーン背景絵・構え絵・狙いの案内・HUD削減・フォントの雰囲気。
+   すべて tap-pull（一人称）だけに効かせ、ゲージ式の画面と判定・操作には触れない。 */
+/* 構え絵は狙いの間だけふわりと重なる */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-lane-aim { transition: opacity .3s ease; }
+/* 狙いの案内（的の上・中央）: 明朝の見出し＋真鍮色の添え字。タッチは受けない */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt { position: absolute; z-index: 4; left: 50%; top: 15%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 3px; pointer-events: none; text-align: center; white-space: nowrap; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt[hidden] { display: none !important; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt-title { font-family: "Craft Mincho", var(--font), serif; font-size: 27px; font-weight: 700; letter-spacing: .08em; line-height: 1.25; color: #f5ead6; text-shadow: 0 2px 10px rgba(0,0,0,.82), 0 0 20px rgba(214,152,68,.18); }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt-sub { font-size: 14px; font-weight: 600; letter-spacing: .04em; color: #e5be7e; text-shadow: 0 1px 6px rgba(0,0,0,.9); }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-aim-prompt-sub[hidden] { display: none !important; }
+/* HUD削減: プレイ中に要らないタイトル・副題と合計の分母（/ ○○点）は一人称では出さない。合計は明朝の大数字を主役にする */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-header > div:first-child { display: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-total > span { display: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-total strong { font-family: "Craft Mincho", var(--font), serif; font-size: 40px; color: #f5ead6; text-shadow: 0 2px 10px rgba(0,0,0,.82), 0 0 20px rgba(214,152,68,.18); }
+/* 結果の英語見出し（BULL'S EYE 等）も明朝で格調を出す */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-result-label { font-family: "Craft Mincho", var(--font), serif; letter-spacing: .1em; }
+/* 盤面のリング番号は白フチをやめ、木に焼き付けたステンシル調に（一人称の板だけ） */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-markings text { fill: rgba(38,24,12,.76); stroke: none; font-weight: 600; }
+/* 最上端の警告ストライプ（工事現場の印象）は一人称では外し、天井の梁とスポットライトまで抜く */
+.axe-game[data-input-mode="tap-pull"].axe-first-person::after { display: none; }
+/* 左の金網越しはランプで明るいので、宣言ボタンの文字が沈まないよう薄い暗色を敷く（一人称だけ） */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-calls .axe-button { background-color: rgba(12,10,8,.38); border-radius: 10px; }
