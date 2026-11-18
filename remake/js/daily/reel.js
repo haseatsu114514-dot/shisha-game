@@ -265,8 +265,11 @@ function stopsFor(role, rng) {
     case "bell": return STRIPS.map((s) => stripIdx(s, "bell", rng));
     case "cherry": {
       const c = stripIdx(STRIPS[0], "cherry", rng);
-      const off = rng() < 0.5 ? 1 : -1;
-      return [(c + off + STRIPS[0].length) % STRIPS[0].length, stripIdx(STRIPS[1], "smoke", rng), stripIdx(STRIPS[2], "smoke", rng)];
+      let off = rng() < 0.5 ? 1 : -1;
+      // 左リールの下段に7が来ると、非ボーナスでも下段に7が並んで見える紛らわしい目になるため、その配置だけ反対側へ倒す（見た目だけ。役・確率・報酬・乱数の消費回数は変えない）
+      const n0 = STRIPS[0].length;
+      if (STRIPS[0][(c + off + 1 + n0) % n0] === "seven") off = -off;
+      return [(c + off + n0) % n0, stripIdx(STRIPS[1], "smoke", rng), stripIdx(STRIPS[2], "smoke", rng)];
     }
     case "rare": {
       const sym = rng() < 0.6 ? "cherry" : "pakki";
