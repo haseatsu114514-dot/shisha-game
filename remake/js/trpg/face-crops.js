@@ -1,9 +1,9 @@
 // Crops for TRPG circular face icons: same cheek-to-cheek scale and eye-line height
 // for every character (and the same numbers used to write costumes/frames.json).
 import { portraitStyle } from "../core/portrait-style.js";
-import { FACE_FRAC, EYE_Y, PORTRAIT_FRAMES, EXTRA_PORTRAIT_FRAMES, PORTRAIT_FACE_SHIFTS } from "./face-crops-data.js";
+import { FACE_FRAC, EYE_Y, PORTRAIT_FRAMES, NPC_FRAMES, EXTRA_PORTRAIT_FRAMES, PORTRAIT_FACE_SHIFTS } from "./face-crops-data.js";
 
-export { FACE_FRAC, EYE_Y, PORTRAIT_FRAMES, EXTRA_PORTRAIT_FRAMES, PORTRAIT_FACE_SHIFTS };
+export { FACE_FRAC, EYE_Y, PORTRAIT_FRAMES, NPC_FRAMES, EXTRA_PORTRAIT_FRAMES, PORTRAIT_FACE_SHIFTS };
 
 const ALIASES = { tumugi: "tsumugi", hazime: "hajime" };
 
@@ -38,6 +38,10 @@ export function portraitFaceShift(id, face = "normal", style = portraitStyle()) 
   const folder = ALIASES[id] || id;
   const key = style === "classic" ? "classic" : "new";
   return PORTRAIT_FACE_SHIFTS[key]?.[folder]?.[face] || [0, 0];
+}
+
+export function npcFaceFrame(id) {
+  return NPC_FRAMES[id] || null;
 }
 
 /**
@@ -98,6 +102,27 @@ export function bustTypicalWidths(frames) {
 export function bustCheekWidth(face, id, typical = null) {
   const base = typical > 0 ? typical * (face.w / typical) ** BUST.damp : face.w;
   return base * (BUST.fix[id] || 1);
+}
+
+/** 物語の人物（NPC）の話者欄（232×318）の規格。PC立ち絵と同じ枠の中で、頬の幅（26%）と目の高さ（上から 33%）を揃える。 */
+export const SPEAKER_NPC_BUST = Object.freeze({ face: BUST.face, eye: 0.33 });
+
+/** Inline style placing an NPC standing portrait in `.trpg-speaker-art`, or null if unmapped. */
+export function npcBustStyle(id) {
+  const frame = npcFaceFrame(id);
+  const face = frame?.face;
+  const [srcW, srcH] = frame?.src || [];
+  if (!(face?.w > 0) || !(srcW > 0) || !(srcH > 0)) return null;
+  return {
+    position: "absolute",
+    left: "50%",
+    width: `${(SPEAKER_NPC_BUST.face * srcW / face.w) * 100}%`,
+    maxWidth: "none",
+    height: "auto",
+    aspectRatio: `${srcW} / ${srcH}`,
+    top: `${SPEAKER_NPC_BUST.eye * 100}%`,
+    transform: `translate(-${(face.cx / srcW) * 100}%, -${(face.eye_y / srcH) * 100}%)`,
+  };
 }
 
 function anchoredFrameStyle({ cx, eyeY, widthPx, srcW = 896, srcH = 1200, faceFrac, eyeFrac, forImg = false }) {

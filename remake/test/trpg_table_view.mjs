@@ -100,7 +100,8 @@ for (const scenario of scenarios) {
       assert(n < 100);
       const byGm = dock().dataset.gm === 'true', kind = root.dataset.kind + (byGm && root.dataset.kind === 'table' ? ':gm' : ''), [who, aside] = label();
       seen[kind] ||= { who, aside, gm: byGm, layer: root.dataset.layer, dock: dock().dataset.layer, art: art().children.length,
-        face: art().querySelectorAll('img').length, mark: art().querySelectorAll('.trpg-gm-mark').length };
+        face: art().querySelectorAll('img').length, mark: art().querySelectorAll('.trpg-gm-mark').length,
+        portrait: art().dataset.portrait || null, src: art().querySelector('img')?.getAttribute('src') || null };
       assert.equal(art().querySelectorAll('img').some(img => img.getAttribute('alt') === gm), false, 'no portrait of the GM in any line');
       q('trpg-next').click();
     }
@@ -112,9 +113,10 @@ for (const scenario of scenarios) {
     // The GM's own voice: the mark and "ゲームマスター（name）", at the table and when narrating (the narration shows no art at all).
     assert.deepEqual([seen['table:gm'].who, seen['table:gm'].aside, seen['table:gm'].face, seen['table:gm'].mark], ['ゲームマスター', gm, 0, 1]);
     assert.deepEqual([seen.narration.who, seen.narration.aside, seen.narration.art, seen.narration.gm], ['ゲームマスター', gm, 0, true]);
-    // A character the GM plays: the silhouette card alone, credited to the game master.
+    // A character the GM plays: a standing NPC portrait when one exists (credited to the game master, never the GM's own face).
     assert.equal(seen.npc.aside, 'ゲームマスター ' + gm, 'the GM is credited beside the character they play');
-    assert.deepEqual([seen.npc.art, seen.npc.face, seen.npc.mark, seen.npc.gm], [1, 0, 0, false]);
+    assert.deepEqual([seen.npc.art, seen.npc.face, seen.npc.mark, seen.npc.gm, seen.npc.portrait], [1, 1, 0, false, 'npc']);
+    assert.match(seen.npc.src, /\/img\/ui\/trpg\/npc\/(oru|mira)\.webp$/);
     assert(seen.npc.who && seen.npc.who !== gm && !/物語|\{pc/.test(seen.npc.who), 'the story character is named: ' + seen.npc.who);
     const sheets = api.snapshot(), names = scenario.cast.filter(c => c.sheet).map(c => c.sheet.name);
     assert(names.includes(seen.pc.who) || Object.values(scenario.companionBuilds || {}).some(byPlayer => Object.values(byPlayer).flat().some(o => o.name === seen.pc.who)),
@@ -483,6 +485,96 @@ test('the shopkeeper tutorial plays on the cover, blocks the start until it ends
     assert(!said.join('').includes('{pc'), 'no name token leaks');
     api.destroy();
   }
+});
+
+test('all 24 NPC portraits render in .trpg-speaker-art without disturbing unpictured fallbacks, korochan, or asset preloading', async () => {
+  const pres = await load(new URL('../js/trpg/presentation.js', import.meta.url)); await pres.evaluate();
+  const { TRPG_NPC_BY_NAME, TRPG_NPC_IDS } = pres.namespace;
+  assert.equal(Object.keys(TRPG_NPC_BY_NAME).length, 24);
+  assert.equal(TRPG_NPC_IDS.size, 24);
+  const custom = structuredClone(scenarios[0]);
+  const gm = custom.cast.find(c => c.part === 'GM').id;
+  custom.sessionZero = null;
+  custom.listen = 'custom_mix';
+  const expectedNames = Object.entries(TRPG_NPC_BY_NAME);
+  custom.dialogues.find(d => d.dialogue_id === custom.intro).lines = [
+    ...expectedNames.map(([label]) => ({ speaker: gm, role: label + '／物語', text: label + 'の台詞' })),
+    { speaker: gm, role: '別名義', voice: 'oru', text: 'voice指定のNPC' },
+    { speaker: gm, role: '主人アルマン／物語', text: '立ち絵のない人物' },
+    { speaker: gm, role: '予告状／物語', text: '紙の読み物' },
+    { speaker: 'samechan', role: 'コロちゃん／卓の会話', voice: 'korochan', text: 'コロちゃん腹話術' },
+    { speaker: gm, role: 'GM／場面', text: '場面の語り' },
+    { speaker: 'hajime', role: '{pc}／物語', text: 'PCの台詞' },
+  ];
+  custom.dialogues.push({ dialogue_id: 'custom_mix', lines: [{ speaker: gm, role: '旅人オル', text: '終わり' }] });
+  const { api, root, q } = mount(custom);
+  const art = () => root.querySelector('.trpg-speaker-art');
+  const label = () => root.querySelector('.trpg-speaker-label').children.map(n => n.textContent);
+  q('trpg-start').click();
+  for (const [npcName, npcId] of expectedNames) {
+    assert.equal(root.dataset.kind, 'npc');
+    assert.deepEqual(label(), [npcName, 'ゲームマスター ' + gm]);
+    assert.equal(art().dataset.portrait, 'npc');
+    const img = art().querySelector('img');
+    assert(img, npcName + ' renders an <img>');
+    assert.equal(img.getAttribute('alt'), npcName);
+    assert.match(img.getAttribute('src'), new RegExp('/img/ui/trpg/npc/' + npcId + '\\.webp$'));
+    q('trpg-next').click();
+  }
+  // voice fallback resolves an NPC portrait when role lacks a mapped name
+  assert.equal(art().dataset.portrait, 'npc');
+  assert.match(art().querySelector('img').getAttribute('src'), /\/img\/ui\/trpg\/npc\/oru\.webp$/);
+  q('trpg-next').click();
+  // unpictured person NPC keeps silhouette fallback and clears data-portrait
+  assert.equal(art().dataset.portrait, undefined);
+  assert.equal(art().querySelectorAll('img').length, 0);
+  assert.equal(art().querySelector('.trpg-npc-figure').dataset.shape, 'person');
+  q('trpg-next').click();
+  // paper NPC keeps paper fallback and clears data-portrait
+  assert.equal(art().dataset.portrait, undefined);
+  assert.equal(art().querySelector('.trpg-npc-figure').dataset.shape, 'paper');
+  q('trpg-next').click();
+  // samechan korochan line keeps コロちゃん behavior unchanged
+  assert.equal(root.dataset.kind, 'table');
+  assert.equal(label()[0], 'コロちゃん');
+  assert.equal(art().dataset.portrait, undefined);
+  assert.equal(art().querySelectorAll('img').length, 1);
+  assert.doesNotMatch(art().querySelector('img').getAttribute('src'), /\/img\/ui\/trpg\/npc\//);
+  q('trpg-next').click();
+  // narration keeps art empty and clears data-portrait
+  assert.equal(root.dataset.kind, 'narration');
+  assert.equal(art().dataset.portrait, undefined);
+  assert.equal(art().children.length, 0);
+  q('trpg-next').click();
+  // pc keeps player costume and clears data-portrait
+  assert.equal(root.dataset.kind, 'pc');
+  assert.equal(art().dataset.portrait, undefined);
+  assert.equal(art().querySelectorAll('img').length, 1);
+  // drain to idle and ensure data-portrait is absent in idle too
+  while (!q('trpg-next').hidden) q('trpg-next').click();
+  q('trpg-declare-back').click();
+  assert.equal(root.dataset.layer, 'idle');
+  assert.equal(art().dataset.portrait, undefined);
+  api.destroy();
+
+  // preloadTrpgAssets includes NPC portraits alongside scenario assets
+  const preloaded = [];
+  const prevImage = context.Image;
+  context.Image = class {
+    set src(v) { preloaded.push(v); queueMicrotask(() => this.onload?.()); }
+    decode() { return Promise.resolve(); }
+  };
+  try {
+    const entry = await load(new URL('../js/trpg/index.js', import.meta.url)); await entry.evaluate();
+    const s0 = scenarios[0];
+    const manifest = { portraits: Object.fromEntries(s0.cast.map(c => [c.id, { faces: ['normal'], h: .7, b: .1, aspect: 1 }])) };
+    await entry.namespace.preloadTrpgAssets({
+      characters: s0.cast.map(c => ({ id: c.id, name: c.id })),
+      manifest, tableTalk: {}, tutorialLines: [],
+    }, s0);
+    assert(preloaded.some(u => /\/img\/ui\/trpg\/npc\/oru\.webp$/.test(u)), 'oru.webp is preloaded for ordinary-cup');
+    assert(preloaded.some(u => /\/img\/ui\/trpg\/npc\/fisher_boss\.webp$/.test(u)), 'fisher_boss.webp is preloaded for ordinary-cup');
+  } finally { context.Image = prevImage; }
 });
 
 test('speaker dock aligns expressions and role costumes consistently across scenes and aliased scenarios', async () => {

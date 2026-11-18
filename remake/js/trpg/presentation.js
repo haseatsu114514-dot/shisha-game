@@ -16,6 +16,49 @@ export function portraitUrl(manifest, id, face = "normal") {
   return portraitAsset(manifest, id, face, portraitStyle())?.src || "";
 }
 
+/** Story NPC speaker labels mapped to their portrait file key under `remake/img/ui/trpg/npc/`. */
+export const TRPG_NPC_BY_NAME = Object.freeze({
+  "執事ベルナール": "bernard",
+  "幕引きのエル": "eru",
+  "遠い町の子": "far_town_child",
+  "漁師の親方": "fisher_boss",
+  "家令ギルバート": "gilbert",
+  "無表情ゴーレム": "golem",
+  "守衛ゴードン": "gordon",
+  "狐面のコン": "kon",
+  "灯台守のおじいさん": "lighthouse_keeper",
+  "館の主リラ": "lira",
+  "海賊ばあさんマルタ": "maruta",
+  "メル": "meru",
+  "霧の王女ミナ": "mina",
+  "無線のミラ": "mira",
+  "侍従長ミルテ": "mirute",
+  "郵便猫ミトン": "miton",
+  "モヤ": "moya",
+  "管制AIナビ": "navi",
+  "屋台のおきく": "okiku",
+  "旅人オル": "oru",
+  "写真屋のおじいさん": "photo_grandpa",
+  "魔王プリズマ": "purizuma",
+  "トネリコ先生": "toneriko",
+  "伯爵ヴァレリオ": "valerio",
+});
+
+export const TRPG_NPC_IDS = Object.freeze(new Set(Object.values(TRPG_NPC_BY_NAME)));
+
+/** Resolve a story NPC portrait key from `frame.voice` or a speaker label, or null when unpictured. */
+export function npcIdFor(frame, label = "") {
+  const voice = String(frame?.voice || "").trim();
+  if (TRPG_NPC_IDS.has(voice)) return voice;
+  const clean = String(label || frame?.role || "").replace(/／物語$/, "").trim();
+  return TRPG_NPC_BY_NAME[clean] || null;
+}
+
+/** Runtime WebP URL for a story NPC portrait key, or "" if unknown. */
+export function npcPortraitUrl(id) {
+  return TRPG_NPC_IDS.has(id) ? new URL(`../../img/ui/trpg/npc/${id}.webp`, import.meta.url).href : "";
+}
+
 export function portraitTop(manifest, id, width, headY) {
   const p = resolvePortrait(manifest, id, "normal", portraitStyle());
   if (!p) return "0px";

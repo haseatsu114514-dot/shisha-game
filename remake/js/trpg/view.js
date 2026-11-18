@@ -1,8 +1,8 @@
 import { el } from "../core/util.js";
 import { TrpgSession, HEAT, heatTier, DICE, STATS, PLAYER_SEAT, approachesOf, approachBase, buildPc, randomPc, grownStats, phasesOf, checkKindsOf, rewardKindOf, nearMissOf } from "./session.js";
-import { displayName, portraitBoxStyle, portraitUrl, portraitAx, portraitHeadTop, portraitTop as topFor, sceneUrl } from "./presentation.js";
+import { displayName, npcIdFor, npcPortraitUrl, portraitBoxStyle, portraitUrl, portraitAx, portraitHeadTop, portraitTop as topFor, sceneUrl } from "./presentation.js";
 import { costumeUrl, resolvedCostumeKey } from "./costumes.js";
-import { BUST, bustFrameStyle, faceIconStyle, bustTypicalWidths, portraitFaceFrame, standingFrameStyle } from "./face-crops.js";
+import { BUST, bustCheekWidth, bustFrameStyle, bustTypicalWidths, faceIconStyle, npcBustStyle, portraitFaceFrame, standingFrameStyle } from "./face-crops.js";
 import { createTrpgAudio } from "./audio.js";
 import { checkForecast, rerollOdds, rollOdds } from "./feedback.js";
 import { playTrpgEntrance } from "./entrance.js";
@@ -444,10 +444,17 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (kind !== "table" && !incarnated && session.snapshot().phase !== "cover") { incarnated = true; incarnate(); }
     if (frame.fx) stageCue(frame.fx);
     const asGm = gmVoice(frame) && (kind === "table" || kind === "narration");
+    delete art.dataset.portrait;
     if (kind === "npc") {
-      // GMが演じる物語の人物: 立ち絵は出さず、人影の札と名前。演じているのがゲームマスターだと名札に添える。
+      // GMが演じる物語の人物: 立ち絵があれば部屋に立ち、立ち絵の無い人物・読み物は人影・紙の札と名前。演じているGMを名札に添える。
       const who = roleLabel(frame).replace(/／物語$/, "");
-      art.replaceChildren(el("span.trpg-npc-figure", { html: isPaper(who) ? NPC_PAPER : NPC_FIGURE, dataset: { shape: isPaper(who) ? "paper" : "person" } }));
+      const npcId = npcIdFor(frame, who), style = npcId ? npcBustStyle(npcId) : null, src = style ? npcPortraitUrl(npcId) : "";
+      if (src) {
+        art.dataset.portrait = "npc";
+        art.replaceChildren(el("img", { src, alt: who, style }));
+      } else {
+        art.replaceChildren(el("span.trpg-npc-figure", { html: isPaper(who) ? NPC_PAPER : NPC_FIGURE, dataset: { shape: isPaper(who) ? "paper" : "person" } }));
+      }
       speaker.textContent = who;
       role.textContent = GM_TITLE + " " + name(gm);
     } else if (asGm) {
@@ -587,6 +594,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   function idle(text) {
     if (busy) return;
+    delete art.dataset.portrait;
     art.replaceChildren(gmMark());
     art.style.backgroundColor = cast[gm].color;
     speaker.textContent = GM_TITLE; role.textContent = name(gm);

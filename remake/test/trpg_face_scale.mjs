@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 import { COSTUME_KEYS, resolvedCostumeKey } from "../js/trpg/costumes.js";
-import { FACE_FRAC, EYE_Y, PORTRAIT_FRAMES, EXTRA_PORTRAIT_FRAMES, circleFaceStyle, portraitFaceFrame } from "../js/trpg/face-crops.js";
+import { FACE_FRAC, EYE_Y, NPC_FRAMES, PORTRAIT_FRAMES, EXTRA_PORTRAIT_FRAMES, circleFaceStyle, npcBustStyle, npcFaceFrame, portraitFaceFrame } from "../js/trpg/face-crops.js";
 
 const frames = JSON.parse(await readFile(new URL("../img/ui/trpg/costumes/frames.json", import.meta.url), "utf8"));
 const CAST = ["hajime", "hiyori", "samechan", "tsumugi", "ageha", "adam", "rei", "sumi", "salaryman"];
@@ -84,6 +84,31 @@ test("costume busts: one character keeps nearly one zoom across costumes, and ev
   assert.equal(bustCheekWidth({ w: 90 }, "nobody", 90), 90);
   // The eye line leaves room for the hair above it: the top of the head is not cut off for an ordinary haircut.
   assert.ok(BUST.eye >= 0.38 && BUST.eye <= 0.45 && BUST.face > 0.2 && BUST.face < 0.3 && BUST.damp > 0 && BUST.damp < 1);
+});
+
+test("NPC frames share the standard circular crop metrics and speaker bust framing", async () => {
+  const { SPEAKER_NPC_BUST } = await import("../js/trpg/face-crops.js");
+  const { TRPG_NPC_IDS } = await import("../js/trpg/presentation.js");
+  const ids = Object.keys(NPC_FRAMES).sort();
+  assert.deepEqual(ids, [...TRPG_NPC_IDS].sort(), "NPC_FRAMES matches every wired TRPG NPC portrait");
+  assert.equal(ids.length, 24);
+  for (const id of ids) {
+    const frame = npcFaceFrame(id);
+    assert.ok(frame, `missing NPC frame for ${id}`);
+    const s = cropStats(frame);
+    assert.ok(Math.abs(s.cheek - FACE_FRAC) < 0.03, `npc/${id} cheek frac ${s.cheek}`);
+    assert.ok(Math.abs(s.eye - EYE_Y) < 0.03, `npc/${id} eye line ${s.eye}`);
+    assert.ok(Math.abs(s.cx - 0.5) < 0.03, `npc/${id} face center ${s.cx}`);
+    const bust = npcBustStyle(id);
+    assert.ok(bust, `missing npcBustStyle for ${id}`);
+    const widthPct = parseFloat(bust.width);
+    const drawnCheekFrac = (frame.face.w / frame.src[0]) * (widthPct / 100);
+    assert.ok(Math.abs(drawnCheekFrac - SPEAKER_NPC_BUST.face) < 1e-6, `npc/${id} bust cheek frac ${drawnCheekFrac}`);
+    assert.equal(bust.top, `${SPEAKER_NPC_BUST.eye * 100}%`);
+    assert.match(bust.transform, /^translate\(-[\d.]+%, -[\d.]+%\)$/);
+  }
+  assert.equal(npcFaceFrame("unknown_npc"), null);
+  assert.equal(npcBustStyle("unknown_npc"), null);
 });
 
 test("extended cast (sai, regulars), regular-table costume aliases, speaker bust framing, and expression shifts share one eye line and center", async () => {

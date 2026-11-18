@@ -430,9 +430,9 @@ try {
       seen[line.kind] ||= line;
       await next.click();
     }
-    // GMが演じる人物は人影の札だけ（GMの顔は添えない）。名札に「ゲームマスター ひより」。
+    // GMが演じる人物は本人の立ち絵（GMの顔は添えない）。名札に「ゲームマスター ひより」。
     assert.equal(seen.npc.who, "旅人オル"); assert.equal(seen.npc.aside, "ゲームマスター ひより");
-    assert.match(seen.npc.art, /trpg-npc-figure/); assert.doesNotMatch(seen.npc.art, /<img|trpg-npc-gm/, "No face of the GM beside the character they voice");
+    assert.match(seen.npc.art, /img\/ui\/trpg\/npc\/oru\.webp/); assert.doesNotMatch(seen.npc.art, /trpg-npc-gm|hiyori/, "No face of the GM beside the character they voice");
     assert.equal(seen.pc.who, pc.name, "A player in role is named by the character"); assert.equal(seen.pc.aside, "はじめ");
     assert.match(seen.pc.art, /costumes\/ordinary-cup\/hajime_/, "and wears the role costume");
     // 役の姿は札ではなく人物（TRF19）: 台紙の色も縁も無い。絵そのものも台紙を抜いてある（四隅は透明、体は不透明）。

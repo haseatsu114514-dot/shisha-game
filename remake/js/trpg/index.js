@@ -1,5 +1,5 @@
 import { mountTrpg } from "./view.js";
-import { portraitUrl, sceneUrl } from "./presentation.js";
+import { npcIdFor, npcPortraitUrl, portraitUrl, sceneUrl } from "./presentation.js";
 import { costumeUrlsFor } from "./costumes.js";
 import { isTrpgRegular } from "./regulars.js";
 
@@ -53,7 +53,14 @@ function trpgAssetUrls({ characters, manifest, tableTalk, tutorialLines = [] }, 
       if (!people.has(c.id) || !manifest.portraits[c.id] && !isTrpgRegular(c.id)) throw new Error("Missing canonical character: " + c.id);
       urls.add(portraitUrl(manifest, c.id));
     });
-    s.dialogues.forEach(d => d.lines.forEach(l => urls.add(portraitUrl(manifest, l.speaker, l.face))));
+    const gm = s.cast.find(c => c.part === "GM")?.id;
+    s.dialogues.forEach(d => d.lines.forEach(l => {
+      urls.add(portraitUrl(manifest, l.speaker, l.face));
+      if (l.speaker === gm && !/卓の会話$|はじめての人へ|場面/.test(String(l?.role ?? ""))) {
+        const npcId = npcIdFor(l);
+        if (npcId) urls.add(npcPortraitUrl(npcId));
+      }
+    }));
   });
   [...Object.values(tableTalk).flat(), ...(tutorialLines || [])].forEach(l => { if (manifest.portraits[l.speaker]) urls.add(portraitUrl(manifest, l.speaker, l.face)); });
   return urls;
