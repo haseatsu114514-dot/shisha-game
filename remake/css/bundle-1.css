@@ -5076,7 +5076,7 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-result-side { paddin
 .tt-cat-shadow { position: absolute; left: 14%; right: 14%; bottom: -8px; height: 26px; border-radius: 50%; background: radial-gradient(rgba(0, 0, 0, .38), rgba(0, 0, 0, 0) 70%); }
 .tt-cat-frame { position: absolute; inset: 0; overflow: hidden; transform-origin: 50% 100%; transition: translate .5s ease, transform .35s ease, scale .2s ease, opacity .3s ease; }
 /* 5表情は同じ切り出し枠（元絵 896×1200 の x278〜636・y786〜1158）。どの表情も同じ位置に重ねる */
-.tt-cat-img { position: absolute; left: -77.65%; top: -208.6%; width: 250.28%; height: auto; max-width: none; opacity: 0; transition: opacity .18s ease, translate .5s ease; pointer-events: none; }
+.tt-cat-img { position: absolute; left: -77.65%; top: -205.6%; width: 250.28%; height: auto; max-width: none; opacity: 0; transition: opacity .18s ease, translate .5s ease; pointer-events: none; }
 .tt-cat[data-face="normal"] .tt-cat-img[data-face="normal"], .tt-cat[data-face="smile"] .tt-cat-img[data-face="smile"],
 .tt-cat[data-face="serious"] .tt-cat-img[data-face="serious"], .tt-cat[data-face="surprise"] .tt-cat-img[data-face="surprise"],
 .tt-cat[data-face="sleep"] .tt-cat-img[data-face="sleep"] { opacity: 1; }
