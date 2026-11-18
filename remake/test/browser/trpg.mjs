@@ -510,6 +510,46 @@ try {
     });
   }
 
+  for (const [label, options, tutorial] of [["reroll-rescue-pc", {}, false],
+    ["reroll-rescue-touch", { viewport: { width: 844, height: 340 }, isMobile: true, hasTouch: true }, false],
+    ["reroll-rescue-after-aid", { reducedMotion: "reduce" }, true]]) {
+    await run(label, { seed: "8", ...(tutorial ? { tutorial: "1" } : {}) }, options, async page => {
+      if (tutorial) await nextLines(page);
+      await hit(page, '[data-test="trpg-start"]'); await nextLines(page);
+      await declare(page);
+      const before = await page.evaluate(() => __trpg.snapshot());
+      await hit(page, '[data-test="trpg-roll"]');
+      await page.locator('[data-test="trpg-settle"]').waitFor();
+      const state = await page.evaluate(() => __trpg.snapshot());
+      assert(["mixed", "trouble"].includes(await page.locator(".trpg-roll-stage").getAttribute("data-grade")));
+      assert.equal(state.teamwork, before.teamwork, "Offering a reroll spends nothing");
+      const modal = page.locator('.trpg-roll-stage');
+      assert.equal(await modal.getAttribute('data-rescue'), "true");
+      assert.match(await page.locator('[data-test="trpg-reroll-callout"]').textContent(), /はじめの切り札で振り直せる/);
+      assert.equal(await page.locator('[data-test="trpg-reroll-tip"]').count(), tutorial ? 0 : 1, "The aid tutorial and first-use tip never duplicate");
+      await page.locator('[data-test="trpg-reroll-0"]').evaluate(n => n.getAnimations().forEach(a => a.finish()));
+      const hitTargets = await page.locator('.trpg-reroll-choice').evaluateAll(nodes => nodes.map(n => {
+        const r = n.getBoundingClientRect(), hit = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
+        const box = n.closest('.trpg-modal').getBoundingClientRect();
+        const points = [[6, 6], [r.width - 6, 6], [6, r.height - 6], [r.width - 6, r.height - 6], [r.width / 2, r.height / 2]];
+        return { inside: r.top >= box.top && r.bottom <= box.bottom && r.left >= box.left && r.right <= box.right,
+          hit: points.every(([x, y]) => n.contains(document.elementFromPoint(r.x + x, r.y + y))), color: getComputedStyle(n).backgroundColor };
+      }));
+      assert.equal(hitTargets.length, 2); assert(hitTargets.every(t => t.inside && t.hit), JSON.stringify(hitTargets));
+      assert(hitTargets.every(t => t.color === 'rgb(244, 221, 164)'), "The rescue choices are visibly highlighted");
+      await fits(page);
+      await page.waitForFunction(() => getComputedStyle(document.querySelector(".trpg-dice-grade")).opacity === "1");
+      await page.screenshot({ path: path.join(artifacts, label + '-offered.png') });
+      await hit(page, '[data-test="trpg-reroll-0"]');
+      assert.equal(await page.locator('[data-test="trpg-reroll-0"]').count(), 0, "An ability cannot be offered twice");
+      assert.equal(await page.locator('[data-test="trpg-reroll-callout"]').count(), 0);
+      const spent = await page.evaluate(() => __trpg.snapshot());
+      assert.equal(spent.teamwork, state.teamwork - 1); assert.equal(spent.used.hajime, true);
+      assert.match(await page.locator('[data-test="trpg-teamwork"]').textContent(), /連携札 1\/2.*切り札 残り2\/3枚/);
+      assert.match(await page.locator('.trpg-table-person[data-speaker="hajime"] .trpg-seat-ability').textContent(), /使用済/);
+    });
+  }
+
   await run("reroll-cancel-and-low-motion", { seed: "8", traveler: "quiet" },
     { reducedMotion: "reduce" }, async page => {
       await page.locator('[data-test="trpg-start"]').click();

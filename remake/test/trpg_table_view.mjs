@@ -152,7 +152,13 @@ for (const scenario of scenarios) {
   test(scenario.id + ': support cancellation does not spend; confirmed help and reroll share seat receipts', () => {
     const mounted = mount(scenario); const { api, root, q, drain, roll, declare, interview, twist } = mounted; q('trpg-start').click(); drain(); declare('listen'); roll();
     const actor = scenario.cast.find(c => c.abilityType === 'reroll').id;
+    const offered = api.snapshot();
+    assert.match(q('trpg-teamwork').textContent, /連携札 2\/2.*切り札 残り3\/3枚/);
+    assert.equal(root.querySelector('.trpg-roll-stage').dataset.rescue, String(root.querySelector('.trpg-roll-stage').dataset.grade !== 'success'));
     q('trpg-reroll-1').click();
+    assert.equal(api.snapshot().teamwork, offered.teamwork - 1);
+    assert.match(q('trpg-teamwork').textContent, /連携札 1\/2.*切り札 残り2\/3枚/);
+    assert.equal(root.querySelectorAll('[data-test="trpg-reroll-callout"]').length, 0, 'used ability has no rescue callout');
     assert(q('trpg-reroll-receipt').textContent.includes(actor));
     assert.equal(root.querySelectorAll('.trpg-reroll-stamp').length, 1);
     for (const die of root.querySelectorAll('.trpg-die')) {
@@ -179,6 +185,7 @@ for (const scenario of scenarios) {
     const fields = scenario.flow?.serve || ['approach'];
     for (const field of fields) q('trpg-plan-' + field + '-' + scenario.options[field][0].id).click();
     q('trpg-serve-open').click(); declare('serve'); roll(); assert(!root.querySelector('[data-test="trpg-helper-receipt"]'));
+    assert.equal(root.querySelectorAll('[data-test="trpg-reroll-callout"]').length, 0, 'empty teamwork pool has no rescue callout');
     q('trpg-settle').click(); drain(); assert.equal(api.snapshot().phase, 'ending');
     assert.equal(root.querySelectorAll('.trpg-table-clue').length, 3); assert(!q('trpg-finish').disabled);
     assert.equal(api.snapshot().teamwork, 0); assert.equal(mounted.completions, 1); drain(); assert.equal(mounted.completions, 1, 'Fast advance cannot deliver completion twice'); api.destroy(); assert.equal(mounted.completions,1);

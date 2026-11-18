@@ -149,7 +149,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   const finished = new Promise(resolve => { resolveFinished = resolve; });
   const progress = el("nav.trpg-journey", { "aria-label": "物語の進行" });
   const teamwork = el("div.trpg-teamwork", { dataset: { test: "trpg-teamwork" } });
-  let shownTeamwork = null;
+  let rerollExplained = false;
   const heatMeter = el("div.trpg-heat", { dataset: { test: "trpg-heat" }, role: "meter", "aria-valuemin": "0", "aria-valuemax": String(HEAT.max) });
   // 上の帯の印は絵だけ（#2839）。押すと、その印が何かを一行で出す（TMX05）。
   const chromeTip = el("p.trpg-chrome-tip", { role: "status", dataset: { test: "trpg-chrome-tip" } });
@@ -302,14 +302,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       class: i < current ? "done" : "", "aria-current": phase === state.phase ? "step" : null,
     }, [el("i", { text: i < current ? "✓" : String(i + 1), "aria-hidden": "true" }),
       el("span", { text: phase === "ending" ? "結末" : presentation.phases[phase].kicker.split(" / ").pop() })]))));
-    const before = shownTeamwork ?? state.teamwork;
-    // 連携札は🂠×2の札だけ（文字なし・#2839）。残りは読み上げ用のラベルに持たせる。
-    teamwork.setAttribute("role", "img");
-    teamwork.setAttribute("aria-label", "連携札 " + state.teamwork + "/2");
-    teamwork.replaceChildren(
-      ...[1, 2].map(n => el("i", { "aria-hidden": "true", text: "\u{1F0A0}", class: [n > state.teamwork ? "spent" : "",
-        n > state.teamwork && n <= before ? "just-spent" : "", n <= state.teamwork && n > before ? "just-gained" : ""].filter(Boolean).join(" ") })));
-    shownTeamwork = state.teamwork;
+    syncCards(state);
     table.replaceChildren(...scenario.cast.map(c => {
       const pc = c.part === "GM" ? null : pcOf(c.id);
       return el("span.trpg-table-person", { dataset: { speaker: c.id, part: c.part === "GM" ? "gm" : "pl" }, title: c.part === "GM" ? GM_TITLE + " " + name(c.id) : null }, [
@@ -317,12 +310,14 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         // GMも本人の顔。役割は顔に重ねた小さなGMバッジで示す（#3793）。
         el("span.trpg-seat-face", { "aria-hidden": "true", dataset: c.part === "GM" ? { gm: "true", test: "trpg-seat-gm" } : { gm: "false" } },
           c.part === "GM" ? gmFace() : el("img", { src: portrait(c.id), alt: "", style: circleStyle(c.id, 160, 6) })),
-        el("span.trpg-seat-head", [el("span.trpg-seat-name", { text: name(c.id) }), el("small.trpg-seat-speaking")]),
+        el("span.trpg-seat-head", [el("span.trpg-seat-name", { text: name(c.id) }), el("small.trpg-seat-speaking"),
+          c.part === "GM" ? null : el("small.trpg-seat-ability", { text: state.used[c.id] ? "切り札 使用済" : "切り札 残り1枚",
+            dataset: { spent: String(!!state.used[c.id]) } }),
+        ].filter(Boolean)),
         pc ? el("span.trpg-seat-pc", { dataset: { test: "trpg-seat-pc-" + c.id } }, [el("strong", { text: pc.name })]) : null,
         c.part === "GM" && npcSeats.length ? el("span.trpg-seat-pc", { dataset: { test: "trpg-seat-npc" } },
           [el("strong", { text: "兼任 " + npcSeats.map(seat => sheets[seat].name).join("・") })]) : null,
-        ...(c.part === "GM" ? [] : [el("small.trpg-seat-ability", { text: state.used[c.id] ? "札 使用済" : "札 未使用",
-          dataset: { spent: String(!!state.used[c.id]) } })]),
+
       ].filter(Boolean));
     }));
     syncSpeaker(busy ? frames[cursor]?.speaker : gm);
@@ -341,6 +336,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function resourceText() {
     const state = session.snapshot();
     return `${stepText()} · 判定 ${state.checks.length}/${CHECKS.length} · 連携札 ${state.teamwork}/2`
+      + ` · 切り札 残り${scenario.cast.filter(c => c.part !== "GM" && !state.used[c.id]).length}枚`
       + (session.rules.inspectionPressure ? ` · ${RISK} ${state.pressure}/${session.rules.pressureMax}` : "");
   }
   /** Header meter plus one short pop per new moment. Tier 2/3 queue GM chatter for the next talk. */
@@ -375,8 +371,17 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     pop.addEventListener("animationend", () => pop.remove());
     root.append(pop);
   }
+  function syncCards(state) {
+    const players = scenario.cast.filter(c => c.part !== "GM");
+    const left = players.filter(c => !state.used[c.id]).length;
+    const label = "連携札 " + state.teamwork + "/2";
+    teamwork.setAttribute("role", "img");
+    teamwork.setAttribute("aria-label", label + "・切り札 残り" + left + "/" + players.length + "枚");
+    teamwork.replaceChildren(el("strong", { text: label }), el("small", { text: "切り札 残り" + left + "/" + players.length + "枚" }));
+  }
   function syncResources() {
     syncHeat();
+    syncCards(session.snapshot());
     tableStatus.hidden = session.snapshot().phase === "cover";
     tableStatus.textContent = resourceText();
     headingStep.textContent = session.snapshot().phase === "cover" ? "小さな卓の冒険" : stepText();
@@ -385,7 +390,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       const ability = node.querySelector(".trpg-seat-ability");
       if (ability) {
         const spent = !!session.snapshot().used[node.dataset.speaker];
-        ability.dataset.spent = String(spent); ability.textContent = spent ? "札 使用済" : "札 未使用";
+        ability.dataset.spent = String(spent); ability.textContent = spent ? "切り札 使用済" : "切り札 残り1枚";
       }
     });
   }
@@ -1212,9 +1217,17 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     audio.play(result.special === "critical" || result.special === "fumble" ? result.special : result.grade);
     if (result.hypothesisBonus) receipts.append(el("p.trpg-ability-receipt.trpg-roll-insight", { text: "見立て的中 ＋" + result.hypothesisBonus }));
     if (session.rules.inspectionPressure) receipts.append(el("p.trpg-ability-receipt.trpg-roll-consequence", { text: RISK + (result.grade === "success" ? " ±0" : " ＋" + session.rules.checkPressure[result.grade]) }));
-    // クリティカルは最高の出目なので振り直しは出さない。使えない時も何も出さない（決まりは「？」に）。
-    if (result.special !== "critical" && !session.snapshot().used[session.rerollActor] && session.snapshot().teamwork > 0) {
-      body.append(el("p.trpg-roll-trump", { text: name(session.rerollActor) + "の「" + cast[session.rerollActor].ability + "」 · 連携札1枚" }));
+    // 回数・消費・乱数は変えず、成功に届かなかった時だけ振り直しの札を強調する（#3791）。
+    const canReroll = result.special !== "critical" && !session.snapshot().used[session.rerollActor] && session.snapshot().teamwork > 0;
+    const rescue = canReroll && result.grade !== "success";
+    pop.box.dataset.rescue = String(rescue);
+    if (canReroll) {
+      body.append(el("p.trpg-roll-trump", { role: "status", dataset: { test: "trpg-reroll-callout" },
+        text: rescue ? name(session.rerollActor) + "の切り札で振り直せる！" : name(session.rerollActor) + "の「" + cast[session.rerollActor].ability + "」 · 連携札1枚" }));
+      if (rescue && !rerollExplained) {
+        rerollExplained = true;
+        body.append(el("p.trpg-reroll-tip", { dataset: { test: "trpg-reroll-tip" }, text: "連携札1枚で、サイコロ1個を振り直せます。新しい目を使うので、下がることもあります" }));
+      }
       body.append(el("div.trpg-rerolls", [0, 1].map(i =>
       button("", "trpg-reroll-" + i, () => {
         if (settleGuard || session.snapshot().used[session.rerollActor] || session.snapshot().teamwork < 1) return;
@@ -1222,7 +1235,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         session.reroll(i); showRollResult(pop, body, i);
       }, { class: "trpg-reroll-choice" }))));
       body.querySelectorAll(".trpg-reroll-choice").forEach((node, i) => node.append(
-        seatMark(session.rerollActor),
+        ...(rescue ? [] : [seatMark(session.rerollActor)]),
         el("strong", { text: (i + 1) + "個目（" + result.dice[i] + "）を振り直す" }),
         el("small", { text: rerollText(rerollOdds(result.dice, result.bonus, i)) }),
       ));
@@ -1369,6 +1382,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function showPanel(kind) {
     if (kind === panelKind) return;
     panelNode?.remove(); panelNode = null; panelKind = kind;
+    if (kind === "aid") rerollExplained = true; // 既存のチュートリアルと説明を重ねない
     const build = kind && PANELS[kind];
     if (!build) return;
     panelNode = el("figure.trpg-tutorial-panel", { dataset: { panel: kind, test: "trpg-tutorial-panel" }, "aria-hidden": "true" }, build());

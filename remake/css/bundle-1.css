@@ -8416,6 +8416,21 @@ html:root .trpg-root.trpg-cinematic {
   --trpg-pawn-edge: drop-shadow(2px 0 0 var(--trpg-pawn-paper)) drop-shadow(-2px 0 0 var(--trpg-pawn-paper)) drop-shadow(0 2px 0 var(--trpg-pawn-paper)) drop-shadow(0 -2px 0 var(--trpg-pawn-paper))
     drop-shadow(2px 0 0 var(--trpg-pawn-paper)) drop-shadow(-2px 0 0 var(--trpg-pawn-paper)) drop-shadow(0 2px 0 var(--trpg-pawn-paper)) drop-shadow(0 -2px 0 var(--trpg-pawn-paper));
 }
+
+/* #3791: 残りの札を文字で示し、成功に届かなかった直後の振り直しを強調する。 */
+html:root .trpg-root.trpg-cinematic .trpg-teamwork { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; line-height: 1.15; }
+html:root .trpg-root.trpg-cinematic .trpg-teamwork strong { font-size: max(22px, var(--tt-min)); color: #fff4d6; white-space: nowrap; }
+html:root .trpg-root.trpg-cinematic .trpg-teamwork small { font-size: max(18px, var(--tt-min)); color: #ffe2a0; white-space: nowrap; }
+html:root .trpg-root.trpg-cinematic .trpg-table .trpg-seat-head .trpg-seat-ability { display: block; margin-top: 2px; font-size: max(14px, var(--tt-min)); line-height: 1.2; color: #ffe2a0; }
+html:root .trpg-root.trpg-cinematic .trpg-table .trpg-seat-head .trpg-seat-ability[data-spent="true"] { color: #c6d4cb; border: 0; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-rescue="true"] .trpg-roll-trump { padding: 6px 12px; border: 2px solid #ffe2a0; border-radius: 8px; background: #563d15; color: #fff4d6; font-weight: 700; font-size: max(20px, calc(13 * var(--roll-unit))); }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-rescue="true"] .trpg-reroll-choice { border: 2px solid #ffe2a0; background: #f4dda4; color: #23180e; box-shadow: 0 0 16px #ffe2a077; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-rescue="true"] .trpg-reroll-choice small { color: #40311e; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-reroll-tip { margin: 4px 0; font-size: max(16px, calc(11 * var(--roll-unit))); line-height: 1.35; color: #fff4d6; text-wrap: balance; }
+@media (prefers-reduced-motion: no-preference) {
+  html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-rescue="true"] .trpg-reroll-choice { animation: trpg-rescue-glow 1.2s ease-in-out 2; }
+}
+@keyframes trpg-rescue-glow { 50% { box-shadow: 0 0 26px #ffe2a0cc; } }
 /* @import: trpg-phone.css */
 /* TRPGの卓: スマホ横持ちの読みやすさ（#3199・TMX01 の A）。
    本編の画面当て（core/stage-fit.js）が立てる html[data-density="phone"] のときだけ効く。PCの見た目は変えない。
