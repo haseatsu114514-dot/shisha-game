@@ -2455,8 +2455,8 @@ html:root[data-density="phone"] body:not(:root) .axe-bar-menu[data-view="gear"] 
 .camel-banner[data-kind="tired"] { color: #ff8e8e; border-color: #ff8e8e; font-size: clamp(16px, 2.4cqw, 24px); }
 @keyframes camel-banner { 0% { transform: translateX(-50%) scale(1.8); opacity: 0; } 55% { transform: translateX(-50%) scale(.94); opacity: 1; } 100% { transform: translateX(-50%) scale(1); } }
 .camel-countdown { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); font-size: clamp(56px, 12cqw, 120px); font-weight: 900; color: #fff6e5; text-shadow: 0 4px 0 rgba(0,0,0,.4), 0 0 30px rgba(0,0,0,.45); opacity: 0; pointer-events: none; }
-.camel-countdown.show { opacity: 1; animation: camel-count .9s ease-out both; }
-@keyframes camel-count { from { transform: translate(-50%, -50%) scale(1.4); opacity: 0; } 30% { opacity: 1; } to { transform: translate(-50%, -50%) scale(1); } }
+.camel-countdown.show { opacity: 1; animation: camel-count .38s ease-out both; }
+@keyframes camel-count { from { transform: translate(-50%, -50%) scale(1.38); opacity: 0; } 18% { opacity: 1; } to { transform: translate(-50%, -50%) scale(1); } }
 .camel-live { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 /* ---- 遊び方とリザルトのカード（ボタンは本編の紙のテーマより強い指定で、砂漠の金にそろえる） ---- */
