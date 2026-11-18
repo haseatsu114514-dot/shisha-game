@@ -69,12 +69,14 @@ const TALKS = Object.freeze({
   festa: ["ch4_festa_revisit", "ch4_festa_talk_b", "ch4_festa_talk_c", "ch4_festa_talk_d", "ch4_festa_talk_e", "ch4_festa_talk_f", "ch4_festa_talk_g"],
   center_cafe: ["ch4_dubai_cafe_revisit", "ch4_cafe_talk_b", "ch4_cafe_culture_hose", "ch4_cafe_talk_c", "ch4_cafe_culture_coffee", "ch4_cafe_talk_d", "ch4_cafe_talk_e", "ch4_cafe_talk_f"],
   alley_cafe: ["ch4_alley_cafe_quiet", "ch4_alley_culture_clay", "ch4_alley_talk_c", "ch4_alley_culture_majlis", "ch4_alley_talk_d", "ch4_alley_talk_e", "ch4_alley_talk_f"],
-  naru: ["ch4_naru_dubai_1", "ch4_naru_dubai_2", "ch4_naru_dubai_3"],
+  // 4本目からは期限の無い追加の小会話（#3097）。3本を読んだ後は、追加の分だけを巡回する（nextTalk）
+  naru: ["ch4_naru_dubai_1", "ch4_naru_dubai_2", "ch4_naru_dubai_3", "ch4_naru_dubai_4", "ch4_naru_dubai_5", "ch4_naru_dubai_6"],
   practice: ["ch4_practice_hall_1", "ch4_practice_hall_2", "ch4_practice_hall_3", "ch4_practice_hall_4", "ch4_practice_hall_5", "ch4_practice_hall_6"],
 });
 // 再訪の会話の背景（行き先の既定と違う場面だけ）。なるの2回目は練習会場、3回目はクリーク沿い。
 const TALK_BG = Object.freeze({
   ch4_naru_dubai_1: CH4_PLACE_BG.inn, ch4_naru_dubai_2: CH4_PLACE_BG.venue, ch4_naru_dubai_3: "bg_dubai_street_night",
+  ch4_naru_dubai_4: CH4_PLACE_BG.inn, ch4_naru_dubai_5: CH4_PLACE_BG.inn, ch4_naru_dubai_6: CH4_PLACE_BG.inn,
   ch4_practice_hall_1: CH4_PLACE_BG.venue, ch4_practice_hall_2: CH4_PLACE_BG.venue,
 });
 export const DUBAI_DAILY_IDS = Object.freeze([
@@ -164,6 +166,9 @@ function nextTalk(place, { once = false } = {}) {
   if (!pool.length) return null;
   const count = state.flags[TALKS_FLAG]?.[place] || 0;
   if (once && count >= pool.length) return null;
+  // なると会う: 期限のある3本（NARU_TALK_DEADLINES）を読んだ後は、追加の小会話だけを巡回する。1本目の「時差」の話へ戻らない（#3097）
+  const fixed = place === "naru" ? NARU_TALK_DEADLINES.length : 0;
+  if (fixed && count >= fixed && pool.length > fixed) return pool[fixed + (count - fixed) % (pool.length - fixed)];
   return pool[count % pool.length];
 }
 function countTalk(place) {
@@ -287,9 +292,10 @@ function dubaiNightEvent(io) {
 export const NARU_TALK_DEADLINES = Object.freeze([2, 4, 10]);
 export function dueNaruTalk(value = state) {
   const count = value?.flags?.[TALKS_FLAG]?.naru || 0;
-  const scene = TALKS.naru[count];
-  if (!scene || chapterFourProgress(value).part !== "free") return null;
-  return chapterFourProgress(value).day >= NARU_TALK_DEADLINES[count] ? scene : null;
+  const scene = TALKS.naru[count], deadline = NARU_TALK_DEADLINES[count];
+  // 期限があるのは最初の3本だけ。4本目からの追加の小会話は、地図で会いに行った時だけ読む（#3097）
+  if (!scene || deadline === undefined || chapterFourProgress(value).part !== "free") return null;
+  return chapterFourProgress(value).day >= deadline ? scene : null;
 }
 function naruTalkNightEvent() {
   const scene = dueNaruTalk();

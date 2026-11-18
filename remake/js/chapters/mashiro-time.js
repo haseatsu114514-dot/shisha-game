@@ -11,7 +11,8 @@ import { DB } from "../core/data.js";
 import { gainAffinity, privateBondScope } from "../core/stats.js";
 
 export const MASHIRO_TIME_FILE = "ch3_mashiro";
-export const MASHIRO_TIME_SCENES = Object.freeze(["mashiro_time_counter", "mashiro_time_train", "mashiro_time_errand", "mashiro_time_braid"]);
+export const MASHIRO_TIME_SCENES = Object.freeze(["mashiro_time_counter", "mashiro_time_train", "mashiro_time_errand", "mashiro_time_braid",
+  "mashiro_time_cat", "mashiro_time_towel", "mashiro_time_jacket", "mashiro_time_mug"]); // #3097（RLS03）で4本→8本
 export const MASHIRO_TIME_FLAG = "_mashiro_time"; // { count: 読んだ回数, day: 最後に過ごした通算日 }
 /** デート1回と同じ（daily/romance.js の playDate）。 */
 export const MASHIRO_TIME_BOND = 10;

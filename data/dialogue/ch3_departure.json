@@ -125,6 +125,21 @@
           "text": "ムカイには、よろしく言っとけ"
         },
         {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "向こうの店には、向こうのやり方がある。最初は、口より目を使え"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。見てきます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "それと、飯は抜くな。向こうでもな"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "はい"
@@ -172,6 +187,15 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（着いたら、まず大会の受付。それからmukaiだ）"
+        },
+        {
+          "speaker": "",
+          "text": "窓の外を、見慣れた川が後ろへ流れていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……帰ってくる時、俺はどんな顔をしてるんだろう）"
         }
       ]
     }

@@ -328,9 +328,9 @@ fixture = preparation; await loader.namespace.loadPreparationDialogues();
 // + あげはの小会話3本と地元の第2章の会話7本、tonariの大会準備9本（VOL13）＋中間の確認4本（#2032）
 // + クラウドのMELTY PUFFの挨拶回とシールの後日2本（#3468 A案）
 // + 地元の第2章の会話7本と、tonariのシフト上がりの会話7本（ch2_tonari_talks.json・#3097 第1弾）
-// + 施設の寄り道4本と、tonariのシフト上がりの会話5本（#3097 第2弾）
-assert.equal(Object.keys(loaderDB.dialogues).length, 93 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
-for (const suffix of ["b", "c", "d"]) assert(loaderDB.dialogues[`remake_ch2_ageha_repeat_${suffix}`], `ageha small talk ${suffix}`);
+// + 施設の寄り道4本と、tonariのシフト上がりの会話5本（#3097 第2弾）＋あげはの小会話3本（#3097）
+assert.equal(Object.keys(loaderDB.dialogues).length, 96 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+for (const suffix of ["b", "c", "d", "g", "h", "i"]) assert(loaderDB.dialogues[`remake_ch2_ageha_repeat_${suffix}`], `ageha small talk ${suffix}`);
 for (const id of ["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze", "ch2_rio_taste", "ch2_rio_strawberry"]) assert(loaderDB.dialogues[id], id);
 for (const id of ["cafe_ch2_foam", "kannon_ch2_omikuji", "choizap_ch2_stairs", "cs_ch2_new_staff", "ch2_rio_city_scent", "ch2_minto_commute_frame", "ch2_adam_ticket_machine",
   ...["fare", "three_shops", "supper", "receipts", "student", "tsumugi_board", "one_hose"].map(id => `ch2_shift_talk_${id}`),
@@ -486,7 +486,8 @@ for (const id of ids) {
     assert.deepEqual(state.lovers, before.lovers);
     assert.deepEqual(state.relationshipMemories, before.relationshipMemories);
     await visit(id);
-    assert.equal(played.at(-1), `remake_ch2_${id}_repeat`, "the next ordinary talk wraps to the existing pool");
+    // あげはは e の後に g〜i が続く（#3097）。神崎・クラウドは先頭へ戻る
+    assert.equal(played.at(-1), id === "ageha" ? "remake_ch2_ageha_repeat_g" : `remake_ch2_${id}_repeat`, "the next ordinary talk continues the pool");
   }
 }
 console.log("PASS: three everyday talks are loaded, rotate, retain normal fees/rewards, and leave no settlement on interruption");

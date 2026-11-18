@@ -194,21 +194,22 @@ prepModule.set("../core/state.js", "state", prepState);
 await prep.runChapterTwoPreparation();
 const agehaShop = prep.PREPARATION_SPOTS.find(spot => spot.charId === "ageha");
 const seen = [];
-for (let n = 0; n < 6; n++) {
+for (let n = 0; n < 9; n++) {
   slotOfDay = n % 2 ? "night" : "day"; prepPlayed = [];
   const result = await prepState.def.performSpot(agehaShop, { staminaGuard: async () => true });
   assert.equal(result.used, true);
   assert.equal(prepPlayed[0], `venue_ageha_${slotOfDay}`, "昼夜の店のあいさつを先に");
   seen.push(prepPlayed[1]);
 }
-assert.deepEqual(seen.slice().sort(), ["remake_ch2_ageha_repeat", "remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d", "remake_ch2_ageha_repeat_e", "remake_ch2_ageha_repeat_f"],
-  "六回通えば、小会話6種を一巡する");
+assert.deepEqual(seen.slice().sort(), ["remake_ch2_ageha_repeat", ...["b", "c", "d", "e", "f", "g", "h", "i"].map(s => `remake_ch2_ageha_repeat_${s}`)],
+  "九回通えば、小会話9種を一巡する（#3097 で6種→9種）");
 
 // ---- ④ 台本 ----------------------------------------------------------------------
 const tournamentSafe = id => JSON.stringify(all[id]).includes('"tournament_finished"');
 for (const id of ["cs_ch2_haze", "ch2_rio_strawberry"]) assert(tournamentSafe(id), `${id} has an after-tournament branch`);
 // あげはの小会話・あいさつ・凛想の味の回・施設の回は、大会の前後どちらでも成り立つ（出発前の準備期間でも読む）
-for (const id of ["remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d", "remake_ch2_ageha_repeat_f", "venue_ageha_day", "venue_ageha_night",
+for (const id of ["remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d", "remake_ch2_ageha_repeat_f",
+  "remake_ch2_ageha_repeat_g", "remake_ch2_ageha_repeat_h", "remake_ch2_ageha_repeat_i", "venue_ageha_day", "venue_ageha_night",
   "ch2_rio_taste", "cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers"]) {
   assert(!/大会|本番|県大会|優勝/.test(JSON.stringify(all[id])), `${id} does not presuppose the tournament`);
 }
@@ -219,5 +220,5 @@ assert(/煙の褒め方が嘘だね/.test(taste)); assert(!/心因|気のせい|
 for (const id of ["remake_ch2_aquarium_repeat", "remake_ch2_aquarium_repeat_b", "remake_ch2_aquarium_repeat_c"]) {
   assert(all[id].lines.length >= 4, `${id} has a few more lines`);
 }
-console.log("PASS ch2 home talks: chapter 2 facility encounters, Rio's two talks, Ageha's six small talks with greetings, tournament-safe scripts, aquarium revisits");
+console.log("PASS ch2 home talks: chapter 2 facility encounters, Rio's two talks, Ageha's nine small talks with greetings, tournament-safe scripts, aquarium revisits");
 

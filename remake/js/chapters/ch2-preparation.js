@@ -36,7 +36,8 @@ export const CH2_CLOSED_ON = Object.freeze({ kumicho: 0, rei: 1 });
 // あげはの b〜d は ch2_ageha_story.json（VOL13）。大会の前後どちらに読んでも成り立つ話だけにする（出発前の準備期間でも読む）。
 // あげはの f（ズボーの誤解・SPC02）は ch2_preparation.json。早めに読めるよう2番目に置く。
 const REPEAT_POOL = {
-  ageha: ["remake_ch2_ageha_repeat", "remake_ch2_ageha_repeat_f", "remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d", "remake_ch2_ageha_repeat_e"],
+  ageha: ["remake_ch2_ageha_repeat", "remake_ch2_ageha_repeat_f", "remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d", "remake_ch2_ageha_repeat_e",
+    "remake_ch2_ageha_repeat_g", "remake_ch2_ageha_repeat_h", "remake_ch2_ageha_repeat_i"], // #3097: g〜i（ch2_ageha_story.json）
   kumicho: ["remake_ch2_kumicho_repeat", "remake_ch2_kumicho_repeat_b", "remake_ch2_kumicho_repeat_c", "remake_ch2_kumicho_repeat_d", "remake_ch2_kumicho_repeat_e"],
   rei: ["remake_ch2_rei_repeat", "remake_ch2_rei_repeat_b", "remake_ch2_rei_repeat_c", "remake_ch2_rei_repeat_d", "remake_ch2_rei_repeat_e"],
 };

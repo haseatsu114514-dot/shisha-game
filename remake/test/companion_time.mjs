@@ -18,10 +18,11 @@ const text = rel => readFileSync(new URL(rel, import.meta.url), "utf8");
 const byId = name => Object.fromEntries(json(`../../data/dialogue/${name}.json`).dialogues.map(d => [d.dialogue_id, d]));
 const body = scene => [...scene.lines, ...Object.values(scene.branches || {}).flat()];
 
-// ---- 同行者の場面: 7人×2本。私的な場面で、報酬・分岐を持たず、大会の結果に触れない ----------------
+// ---- 同行者の場面: 7人×4本（#3097 で2本→4本）。私的な場面で、報酬・分岐を持たず、大会の結果に触れない ----------------
 const companion = byId(COMPANION_TIME_FILE);
 assert.deepEqual(Object.keys(COMPANION_TIME_SCENES), [...OVERSEAS_HEROINES]);
-assert.equal(COMPANION_TIME_IDS.length, OVERSEAS_HEROINES.length * 2);
+assert.equal(COMPANION_TIME_IDS.length, OVERSEAS_HEROINES.length * 4);
+for (const [who, ids] of Object.entries(COMPANION_TIME_SCENES)) assert.deepEqual([...ids], [1, 2, 3, 4].map(n => `ch4_companion_${who}_${n}`));
 for (const [who, ids] of Object.entries(COMPANION_TIME_SCENES)) for (const id of ids) {
   const scene = companion[id];
   assert(scene?.lines?.length >= 8, `${id}: 台本がある`);
@@ -63,10 +64,15 @@ function dubai(lovers = ["minto"], pick = "minto", extra = {}) {
   value.day++;
   assert.equal(companionTimeScene(value), "ch4_companion_minto_2");
   assert.equal(await spendCompanionTime({ read }), true);
+  for (const n of [3, 4]) {
+    value.day++;
+    assert.equal(companionTimeScene(value), `ch4_companion_minto_${n}`, `#3097: ${n}本目`);
+    assert.equal(await spendCompanionTime({ read }), true);
+  }
   value.day++;
-  assert.equal(companionTimeScene(value), null, "二本で終わり");
+  assert.equal(companionTimeScene(value), null, "四本で終わり");
   assert(!companionTimeOpen(value));
-  assert.deepEqual(log, ["ch4_companion_minto_1", "ch4_companion_minto_2"]);
+  assert.deepEqual(log, [1, 2, 3, 4].map(n => `ch4_companion_minto_${n}`));
   assert.deepEqual(value.loverEventsSeen, [], "ドバイでは節目を読まない（IR17）");
 }
 // 途中でやめた回は何も残さない。同行なし・恋人でない・別の章・話し合い前は出さない。壊れた保存値は空として読む。
@@ -118,4 +124,4 @@ function dubai(lovers = ["minto"], pick = "minto", extra = {}) {
   }
   assert.match(source, /\{ id: "hiyori", chapters: \[5\], at: shishaShop, ready: value => metStory\("hiyori"\)\(value\) && !!value\.flags\?\._hiyori_tonari_return_done, bond: true \}/);
 }
-console.log("PASS companion time: Dubai companion scenes once a day (2 each, date-sized bond, no milestones), ch5 Rio showroom talks, ch5 Hiyori roaming");
+console.log("PASS companion time: Dubai companion scenes once a day (4 each, date-sized bond, no milestones), ch5 Rio showroom talks, ch5 Hiyori roaming");

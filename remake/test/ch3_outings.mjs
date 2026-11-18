@@ -485,7 +485,7 @@ console.log("ch3 outings: ok");
       value.flags[OUTINGS_FLAG] = { park_walk: count + 7, [`park_walk_${slot ? "night" : "day"}`]: count };
       value.slot = 1 - slot;
       const before = structuredClone(value);
-      const revisit = count ? `${base}_${["b", "c", "d", "e"][(count - 1) % 4]}` : base;
+      const revisit = count ? `${base}_${["b", "c", "d", "e", "f", "g"][(count - 1) % 6]}` : base;
       assert.equal(outingDialogueId(value, park, { slot }), revisit);
       assert.deepEqual(value, before, "Selecting a park revisit must not mark a visit or change the save");
       value.slot = slot;
@@ -494,7 +494,7 @@ console.log("ch3 outings: ok");
   }
   const data = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_outings.json", import.meta.url)));
   const byId = Object.fromEntries(data.dialogues.map(scene => [scene.dialogue_id, scene]));
-  const newIds = ["enmaku_visit_d", "steve_visit_c", ...["day", "night"].flatMap(time => ["b", "c", "d", "e"].map(suffix => `park_walk_${time}_${suffix}`)),
+  const newIds = ["enmaku_visit_d", "steve_visit_c", ...["day", "night"].flatMap(time => ["b", "c", "d", "e", "f", "g"].map(suffix => `park_walk_${time}_${suffix}`)),
     // #3097（RLS03）: ライバル店の通いの小会話
     "enmaku_visit_e", "enmaku_visit_f", "enmaku_visit_g", "steve_visit_d", "steve_visit_e", "steve_visit_f",
     "volk_visit_d", "volk_visit_e", "volk_visit_f"].map(id => `ch3_outing_${id}`);
@@ -530,7 +530,7 @@ console.log("PASS: six everyday scenes load and rotate; park recovery and ordina
   const park = TOKYO_OUTINGS.find(item => item.id === "park_walk");
   value.flags[OUTINGS_FLAG] = { park_walk: 81, mukai_help: 4 };
   const stamina = value.stamina, money = value.money;
-  for (const suffix of ["", "_b", "_c", "_d", "_e", "_b"]) { // #3097 で巡回を b・c から b〜e へ
+  for (const suffix of ["", "_b", "_c", "_d", "_e", "_f"]) { // #3097 で巡回を b・c から b〜e、さらに b〜g へ
     for (const slot of [0, 1]) {
       value.slot = slot;
       const expected = `ch3_outing_park_walk_${slot ? "night" : "day"}${suffix}`;

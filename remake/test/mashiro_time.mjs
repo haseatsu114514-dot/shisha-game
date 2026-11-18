@@ -15,8 +15,8 @@ const text = rel => readFileSync(new URL(rel, import.meta.url), "utf8");
 const scenes = Object.fromEntries(json(`../../data/dialogue/${MASHIRO_TIME_FILE}.json`).dialogues.map(d => [d.dialogue_id, d]));
 const milestones = Object.fromEntries(json("../../data/dialogue/lover_events.json").dialogues.map(d => [d.dialogue_id, d]));
 
-// ---- 台本: 4本とも私的な場面。報酬・分岐を持たず、第3章でも第5章でも読める文にする ---------------
-assert.equal(MASHIRO_TIME_SCENES.length, 4);
+// ---- 台本: 8本とも私的な場面（#3097 で4本→8本）。報酬・分岐を持たず、第3章でも第5章でも読める文にする ---------------
+assert.equal(MASHIRO_TIME_SCENES.length, 8);
 for (const id of MASHIRO_TIME_SCENES) {
   const scene = scenes[id];
   assert(scene?.lines?.length >= 8, `${id}: 台本がある`);
@@ -81,7 +81,8 @@ const io = (value, log) => {
   assert.deepEqual(value.loverEventsSeen, [1, 2, 3, 4, 5].map(n => `lover_mashiro_lv${n}`), "節目は前の段から順に");
   assert.equal(value.loveLevel.mashiro, 5);
   const times = log.filter(id => MASHIRO_TIME_SCENES.includes(id));
-  assert.deepEqual(times.slice(0, 5), [...MASHIRO_TIME_SCENES, MASHIRO_TIME_SCENES[0]], "短い場面は巡回する");
+  assert(times.length > MASHIRO_TIME_SCENES.length, "巡回が一周するまで過ごす");
+  assert.deepEqual(times, times.map((_, i) => MASHIRO_TIME_SCENES[i % MASHIRO_TIME_SCENES.length]), "短い場面は巡回する");
   assert.equal(times.length, days - 1, "節目から始めた初日を除き、一日に一本");
   assert.equal(value.flags[MASHIRO_TIME_FLAG].count, times.length);
   console.log(`  交際の初日から Lv5 の節目まで ${days} 日（一日に一度）`);

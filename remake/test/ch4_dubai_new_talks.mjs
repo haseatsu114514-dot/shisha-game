@@ -152,5 +152,16 @@ assert.equal(spot('souq').hasNew(), true, 'NG+ reset permits revisits again');
   assert.deepEqual(played, ['ch4_naru_dubai_1']);
   assert.equal(state.flags._ch4_dubai_talks.naru, 1);
   assert.equal(night.done(), true);
+  // #3097: 4本目からは期限の無い追加の小会話。期限の夜には来ず、地図の「なると会う」で読み、3本を読んだ後は追加の分だけを巡回する
+  const extra = ['ch4_naru_dubai_4', 'ch4_naru_dubai_5', 'ch4_naru_dubai_6'];
+  for (const id of extra) DB.dialogues[id] = { dialogue_id: id, lines: [{ text: id }] };
+  assert.equal(dueNaruTalk(at(12, 3)), null, 'no deadline night for the added talks');
+  state.flags = { _ch4: { startDay: 49, part: 'free', day: 11, read: {} }, _ch4_dubai_talks: { naru: 3 } };
+  assert.equal(spot('naru').hasNew(), true, 'the added talks are new on the map');
+  played.length = 0;
+  for (let i = 0; i < 4; i++) await perform(spot('naru'));
+  assert.deepEqual(played, [...extra, extra[0]], 'added talks rotate without returning to the first (jet lag) talk');
+  assert.equal(state.flags._ch4_dubai_talks.naru, 7);
+  assert.equal(spot('naru').hasNew(), false);
 }
 console.log('PASS Dubai new-talk markers: four pools, actual visits, completion, repeat, interruption, load, missing scripts and reset');

@@ -74,7 +74,7 @@ export async function loadPreparationDialogues() {
   for (const entry of Object.values(CH2_VISIT_STORIES).flat()) if (entry.file) (files[entry.file] ||= []).push(entry.scene);
   // 店に通う回（#626）と♥3の質問（#1988）、♥5の締めくくり（#2023）、通い訪問の小会話 b〜d（VOL13）
   const agehaVisits = [...(AGEHA_VISITS || []), AGEHA_BADDAY?.id, "ch2_ageha_bond_question", "ch2_ageha_bond_finale",
-    ...["b", "c", "d"].map(suffix => `remake_ch2_ageha_repeat_${suffix}`)].filter(Boolean);
+    ...["b", "c", "d", "g", "h", "i"].map(suffix => `remake_ch2_ageha_repeat_${suffix}`)].filter(Boolean); // g〜i は #3097
   if (agehaVisits.length) (files.ch2_ageha_story ||= []).push(...agehaVisits);
   if (STRAWBERRY_TRIAL_IDS.length) (files.ch2_main ||= []).push(...STRAWBERRY_TRIAL_IDS); // まかないの苺の試作（#1650）
   // 地元の施設の第2章の寄り道（daily/spot-encounters.js）と凛想の会話（daily/spots.js の CHAPTER_TALKS）（VOL13）

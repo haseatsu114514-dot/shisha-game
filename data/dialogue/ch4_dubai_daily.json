@@ -299,6 +299,52 @@
       ]
     },
     {
+      "dialogue_id": "ch4_naru_dubai_4",
+      "comment": "なると会う（#3097・RLS03）。期限のある3本の後に、地図の「なると会う」で巡回する追加の小会話。旅の話はしない（大会の後の約束）。大会前のドバイ（DAY1〜12）で、結果・前夜祭に触れない。配合は見せ合わない。 スークのルカイマットを割って中を見る（元は菓子の作り手）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "宿のロビー。なるが、紙の舟に盛ったルカイマットを割っていた。" },
+        { "speaker": "", "face": "", "text": "一つずつ、中をのぞいている。" },
+        { "speaker": "naru", "face": "normal", "text": "食うか？　割ったやつで悪いけど" },
+        { "speaker": "hajime", "face": "surprise", "text": "なんで割ってるの" },
+        { "speaker": "naru", "face": "smile", "text": "中の気泡の大きさ。……揚げる前の生地、水が多めだな" },
+        { "speaker": "naru", "face": "normal", "text": "外はかりっとしてんのに、中がこれだけ軽い。油の温度、相当高い" },
+        { "speaker": "hajime", "face": "normal", "text": "食べながら、作り方を調べてるんだ" },
+        { "speaker": "naru", "face": "smile", "text": "癖だよ。うまいもんは、割って見る" },
+        { "speaker": "", "face": "", "text": "一つ受け取って、かじる。蜜の甘さの奥で、ほんのりスパイスが香った。" },
+        { "speaker": "naru", "face": "normal", "text": "……甘いもんは、どこの国でも、作った人の手がいちばん出る。覚えとけ" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_naru_dubai_5",
+      "comment": "なると会う（#3097・RLS03）。期限のある3本の後に、地図の「なると会う」で巡回する追加の小会話。旅の話はしない（大会の後の約束）。大会前のドバイ（DAY1〜12）で、結果・前夜祭に触れない。配合は見せ合わない。 閉めた店の前で常連が撮った写真。待ち受けにする。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "宿の中庭のベンチで、なるがスマホの画面をこちらへ向けた。" },
+        { "speaker": "", "face": "", "text": "写っていたのは、シャッターの下りた店の前で、ピースをする常連さんたちだった。" },
+        { "speaker": "naru", "face": "normal", "text": "店の張り紙の前で、勝手に撮ったらしい。「臨時休業」の字が隠れてる" },
+        { "speaker": "hajime", "face": "smile", "text": "みんな、店に来てくれてるんだ" },
+        { "speaker": "naru", "face": "normal", "text": "閉まってるって分かってて、わざわざな。……暇なんだよ、あいつら" },
+        { "speaker": "", "face": "", "text": "文句を言いながら、なるはその写真を、待ち受けに設定していた。" },
+        { "speaker": "hajime", "face": "smile", "text": "待ち受けにするんだ" },
+        { "speaker": "naru", "face": "serious", "text": "うるせえ。……見えるとこに置いとくと、寝坊しねえんだよ" },
+        { "speaker": "naru", "face": "smile", "text": "お前も、tonariの写真くらい持ってこいよ。効くぞ、あれ" }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_naru_dubai_6",
+      "comment": "なると会う（#3097・RLS03）。期限のある3本の後に、地図の「なると会う」で巡回する追加の小会話。旅の話はしない（大会の後の約束）。大会前のドバイ（DAY1〜12）で、結果・前夜祭に触れない。配合は見せ合わない。 宿の洗濯室で縮んだTシャツ。炭は見ていたが乾燥機は見ていなかった。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "宿の洗濯室で、なるが乾燥機の前にしゃがみこんでいた。" },
+        { "speaker": "naru", "face": "surprise", "text": "……縮んだ" },
+        { "speaker": "", "face": "", "text": "広げたTシャツは、どう見ても子ども用の大きさになっていた。" },
+        { "speaker": "hajime", "face": "surprise", "text": "それ、よく着てたやつだよね" },
+        { "speaker": "naru", "face": "sad", "text": "言うな、……温度の表示、読めなかったんだよ" },
+        { "speaker": "hajime", "face": "smile", "text": "炭の温度は、いつも完璧なのに" },
+        { "speaker": "naru", "face": "normal", "text": "炭は、俺が見てる。乾燥機は、見てなかった、……同じ失敗だな" },
+        { "speaker": "", "face": "", "text": "なるは縮んだTシャツをきれいに畳んで、鞄の底にしまった。" },
+        { "speaker": "naru", "face": "smile", "text": "捨てねえよ。帰ったら、店の雑巾にする、……ドバイの記念だ" }
+      ]
+    },
+    {
       "dialogue_id": "ch4_practice_hall_1",
       "comment": "公式練習会場で一台を試す前。冷房と乾いた空気。出場者は四人だけなので、他国の作り手は出展ブースの人。王煙楼は練習枠の表の名前と噂だけ（ch4_wang_reception の「名前だけは、聞いたことがあった」と両立）。",
       "lines": [
