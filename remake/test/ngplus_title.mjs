@@ -127,7 +127,7 @@ function makeFixture(opts = {}) {
     "../core/audio.js": { playBgm() {}, stopBgm() {}, SE: { select() {} }, applyVolumes() {} },
     "../core/ngplus-difficulty.js": { difficultyForRun },
     "../core/ui-theme.js": { createUiThemeSelect: () => el("select") },
-    "../core/look.js": { LOOKS: [{ id: "classic", label: "現行" }, { id: "neo", label: "新版" }, { id: "retro", label: "DS風" }], normalizeLook: (value) => value || "classic", setLook() {} },
+    "../core/look.js": { LOOKS: [{ id: "classic", label: "現行" }, { id: "neo", label: "新版" }, { id: "retro", label: "DS風" }], DISABLED_LOOKS: ["neo"], normalizeLook: (value) => value || "classic", setLook() {} },
     "../core/craft-version.js": { CRAFT_VERSIONS: craftVersion.CRAFT_VERSIONS, normalizeCraftVersion: craftVersion.normalizeCraftVersion },
     "../core/side-area.js": { refreshSideArea() {} },
     "./save-transfer.js": { fullscreenButton: () => null, saveTransferRow: () => el("div") },

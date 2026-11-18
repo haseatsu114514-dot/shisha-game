@@ -139,7 +139,7 @@ function el(selector,attrs={},children=[]) {
 }
 const configCtx = vm.createContext({config:state.config,document:{body:{dataset:{screen:'vn'}}},el,
  saveConfig(){saves++;},applyVolumes(){},createUiThemeSelect(){return {};},
- LOOKS:[{id:'classic',label:'現行'},{id:'neo',label:'新版'},{id:'retro',label:'DS風'}],normalizeLook(v){return v||'classic';},setLook(){},
+ LOOKS:[{id:'classic',label:'現行'},{id:'neo',label:'新版'},{id:'retro',label:'DS風'}],DISABLED_LOOKS:['neo'],normalizeLook(v){return v||'classic';},setLook(){},
  CRAFT_VERSIONS:craftVersion.CRAFT_VERSIONS,normalizeCraftVersion:craftVersion.normalizeCraftVersion,
  fullscreenButton(){return null;},saveTransferRow(){return {};},
  modal(args){modalArgs=args;return Promise.resolve(true);}});
