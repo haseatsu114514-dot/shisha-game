@@ -13,7 +13,7 @@ import { growthSkill, SKILL_TUNING } from "../core/growth-effects.js";
 import { cueTransition, refreshPlaceCue, cancelPlaceCue } from "../core/transitions.js";
 import { artImg } from "../craft/art.js";
 import { addMoney, addStamina } from "../core/stats.js";
-import { SE, playBgm, currentBgm } from "../core/audio.js";
+import { SE, playBgm } from "../core/audio.js";
 import { visitChar } from "./spots.js";
 import { RIO_AWAY_DAY } from "../core/rules.js";
 import { rioUnavailable as rioVisitReason } from "./spot-hours.js";
@@ -233,11 +233,6 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
   return new Promise((resolve) => {
     const session = state;
     let finished = false, confirming = false, tab = "flavor", category = "all";
-    let kujiBgmBefore = null, kujiBgmActive = false;
-    const restoreKujiBgm = () => {
-      if (kujiBgmActive && currentBgm() === "bgm_ethnic09") playBgm(kujiBgmBefore);
-      kujiBgmBefore = null; kujiBgmActive = false;
-    };
     const cart = new Map();
     // 買い出しはフレーバーID（文字列）の時だけ。真偽値などの誤用は「指定なし」として扱い、
     // 在庫の無いIDへの退出条件で店を出られなくなる事故を防ぐ。
@@ -430,7 +425,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const leave = async () => {
       if (!live() || confirming) return;
       if (errand && flavorStock(errand) < minStock) {
-        SE.error(); restoreKujiBgm(); tab = "flavor"; category = "all"; render();
+        SE.error(); tab = "flavor"; category = "all"; render();
         body.querySelector(".errand")?.scrollIntoView({ block: "nearest" });
         toast(`${errandName}を購入してから戻ろう`, { kind: "warn" }); return;
       }
@@ -442,19 +437,16 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
         confirming = false;
         if (!ok || !live()) return;
       }
-      restoreKujiBgm();
       finished = true; SE.cancel(); retire(root); resolve(null);
     };
     for (const [id, label] of [["flavor", "フレーバー"], ["equip", "機材"], ...(kuji && hasKuji(kujiShop) ? [["kuji", "シーシャくじ"]] : []), ["sell", "売却"]]) {
       tabs.append(el("button.shop-tab", { text: label, dataset: { tab: id }, onclick: () => {
         if (!live()) return;
         if (tab !== "kuji" && id === "kuji") {
-          kujiBgmBefore = currentBgm(); kujiBgmActive = true; playBgm("bgm_ethnic09");
           // 引く前に、演出の絵（その店のくじの抽選器・玉・札）を読み込んでおく（初めて回すときに部品が欠けないように）
           import("../motions/kuji-art.js").then((art) => kujiLooks(kujiShop).forEach((look) => art.warmKujiArt(look))).catch(() => {});
           import("../motions/garagara.js").catch(() => {}); // 演出のコードと、後ろの光の下ごしらえも先に済ませる
         }
-        else if (tab === "kuji" && id !== "kuji") restoreKujiBgm();
         tab = id; body.scrollTop = 0; SE.click(); render();
       } }));
     }
