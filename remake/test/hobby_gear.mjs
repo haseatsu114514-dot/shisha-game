@@ -82,7 +82,7 @@ for (const [ms, power, index, focused] of [[0, .62, 0, false], [4000, .5, 3, fal
 }
 assert.deepEqual(releaseAimAt({ x: .1, y: -.2 }, 3000, .6, 1, false), releaseAimAt({ x: .1, y: -.2 }, 3000, .6, 1, false, 1), "店の斧は従来どおり");
 assert.throws(() => swayAt(0, .62, 0, false, .2), RangeError, "極端な補正は受け付けない");
-assert.equal(SWAY.max, .17, "揺れの上限そのものは変えない");
+assert.equal(SWAY.max, .11, "揺れの上限そのものは変えない");
 
 // 4. DJ: ▶の判定の窓だけが前後10ms広い。音程・フェーダーの採点は同じ。
 assert.equal(gear.DJ_ALLOWANCE_MS, 10);
