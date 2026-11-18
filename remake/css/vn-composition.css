@@ -5,7 +5,7 @@
   font-style:normal; font-weight:400; font-display:block;
 }
 html:root[data-ui-theme] {
-  --vn-caption-top:-36px; --vn-body-top:44px; --vn-body-side:96px;
+  --vn-caption-top:-36px; --vn-body-top:50px; --vn-body-side:96px;
   --vn-command-width:420px; --vn-command-inset:68px; --vn-name-inset:68px; --vn-command-rise:16px;
   --vn-next-right:64px; --vn-next-bottom:30px;
   --vn-tab-face:linear-gradient(160deg,#17272c,#0c151c 75%);
