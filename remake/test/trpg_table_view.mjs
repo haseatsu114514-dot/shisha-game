@@ -85,8 +85,8 @@ function mount(scenario, extra = {}) {
 }
 for (const scenario of scenarios) {
   // 物語の層と卓の層（TRF10）: 台本の role から、語り・GMが演じる人物・役の台詞・卓の会話を見分けて、名札と舞台の層を切り替える。
-  // ゲームマスターは顔を出さない（TRF20）: GMの声は印と「ゲームマスター（名前）」、演じる人物は人影の札、PLは卓では本人・物語では役の姿。
-  test(scenario.id + ': each line is staged as table talk, narration, a character the GM plays, or a player in role; the GM never shows a face', () => {
+  // GMは本人の顔＋バッジ（#3793）。語りでは顔を出さず、物語の人物は固有の立ち絵を使う。
+  test(scenario.id + ': each line is staged as table talk, narration, a character the GM plays, or a player in role; the GM shows a face with a badge at the table', () => {
     const mounted = mount(scenario), { api, root, q } = mounted;
     const gm = scenario.cast.find(c => c.part === 'GM').id, seen = {};
     // The cover lists everyone as themselves, with what they will be at this table.
@@ -100,9 +100,9 @@ for (const scenario of scenarios) {
       assert(n < 100);
       const byGm = dock().dataset.gm === 'true', kind = root.dataset.kind + (byGm && root.dataset.kind === 'table' ? ':gm' : ''), [who, aside] = label();
       seen[kind] ||= { who, aside, gm: byGm, layer: root.dataset.layer, dock: dock().dataset.layer, art: art().children.length,
-        face: art().querySelectorAll('img').length, mark: art().querySelectorAll('.trpg-gm-mark').length,
+        face: art().querySelectorAll('img').length, mark: art().querySelectorAll('.trpg-gm-badge').length,
         portrait: art().dataset.portrait || null, src: art().querySelector('img')?.getAttribute('src') || null };
-      assert.equal(art().querySelectorAll('img').some(img => img.getAttribute('alt') === gm), false, 'no portrait of the GM in any line');
+      if (!byGm || kind === 'narration') assert.equal(art().querySelectorAll('img').some(img => img.getAttribute('alt') === gm), false, 'the GM does not replace fictional characters');
       q('trpg-next').click();
     }
     assert(seen.table && seen['table:gm'] && seen.narration && seen.npc && seen.pc, 'the opening of ' + scenario.id + ' uses every layer: ' + Object.keys(seen));
@@ -110,8 +110,8 @@ for (const scenario of scenarios) {
     for (const kind of ['narration', 'npc', 'pc']) { assert.equal(seen[kind].layer, 'fiction'); assert.equal(seen[kind].dock, 'fiction'); }
     // A player at the table is themselves, with their own portrait.
     assert(scenario.cast.some(c => c.part !== 'GM' && c.id === seen.table.who)); assert.equal(seen.table.face, 1); assert.equal(seen.table.gm, false);
-    // The GM's own voice: the mark and "ゲームマスター（name）", at the table and when narrating (the narration shows no art at all).
-    assert.deepEqual([seen['table:gm'].who, seen['table:gm'].aside, seen['table:gm'].face, seen['table:gm'].mark], ['ゲームマスター', gm, 0, 1]);
+    // The GM's own voice: face and badge and "ゲームマスター（name）", at the table and when narrating (the narration shows no art at all).
+    assert.deepEqual([seen['table:gm'].who, seen['table:gm'].aside, seen['table:gm'].face, seen['table:gm'].mark], ['ゲームマスター', gm, 1, 1]);
     assert.deepEqual([seen.narration.who, seen.narration.aside, seen.narration.art, seen.narration.gm], ['ゲームマスター', gm, 0, true]);
     // A character the GM plays: a standing NPC portrait when one exists (credited to the game master, never the GM's own face).
     assert.equal(seen.npc.aside, 'ゲームマスター ' + gm, 'the GM is credited beside the character they play');
@@ -127,13 +127,13 @@ for (const scenario of scenarios) {
     q('trpg-declare-back').click();
     assert.equal(root.dataset.layer, 'idle');
     assert.deepEqual(label(), ['ゲームマスター', gm]); assert.equal(dock().dataset.gm, 'true');
-    assert.equal(art().querySelectorAll('img').length, 0); assert.equal(art().querySelectorAll('.trpg-gm-mark').length, 1);
-    // The seat rail: the GM's seat is the lettered mark, every player keeps a face.
+    assert.equal(art().querySelectorAll('img').length, 1); assert.equal(art().querySelectorAll('.trpg-gm-badge').length, 1);
+    // Every seat has a face; the GM's also carries a badge.
     for (const c of scenario.cast) {
       const seat = root.querySelectorAll('.trpg-table-person').find(n => n.dataset.speaker === c.id), face = seat.querySelector('.trpg-seat-face');
       assert.equal(face.dataset.gm, String(c.id === gm));
-      assert.equal(face.querySelectorAll('img').length, c.id === gm ? 0 : 1);
-      if (c.id === gm) { assert.equal(face.querySelector('.trpg-gm-mark').dataset.lettered, 'true'); assert.equal(seat.getAttribute('title'), 'ゲームマスター ' + gm); }
+      assert.equal(face.querySelectorAll('img').length, 1);
+      if (c.id === gm) { assert.equal(face.querySelector('.trpg-gm-badge').textContent, 'GM'); assert.equal(seat.getAttribute('title'), 'ゲームマスター ' + gm); }
     }
     // The log names the game master too.
     q('trpg-log').click();
@@ -588,7 +588,7 @@ test('speaker dock aligns expressions and role costumes consistently across scen
     assert(n < 120);
     const kind = root.dataset.kind;
     const img = root.querySelector('.trpg-speaker-art')?.querySelector('img');
-    if (img && (kind === 'table' || kind === 'pc')) {
+    if (img && (kind === 'pc' || kind === 'table' && root.querySelector('.trpg-dock').dataset.gm !== 'true')) {
       seenStyles[kind].push({ src: img.getAttribute('src'), top: img.style.top, width: img.style.width, transform: img.style.transform });
     }
     q('trpg-next').click();

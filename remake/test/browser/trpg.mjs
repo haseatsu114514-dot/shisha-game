@@ -387,15 +387,15 @@ try {
     // キャラ作りの時間は卓の会話: 座席の帯が出ていて、だれも役の姿ではない。
     assert.equal(await root.getAttribute("data-layer"), "table");
     assert(await page.locator(".trpg-table").evaluate(n => n.checkVisibility({ visibilityProperty: true, opacityProperty: true })));
-    // ゲームマスターは顔を出さない（TRF20）: 最初の一行から、印と「ゲームマスター（ひより）」。座席の丸も「GM」の印で、PLは顔のまま。
+    // GMは顔＋バッジ（#3793）。物語の人物・語りの見せ方は保つ。
     const opening = await page.evaluate(() => ({ gm: document.querySelector(".trpg-dock").dataset.gm, who: document.querySelector(".trpg-speaker-label strong").textContent,
       aside: document.querySelector(".trpg-speaker-label span").textContent, open: getComputedStyle(document.querySelector(".trpg-speaker-label span"), "::before").content,
-      faces: document.querySelectorAll(".trpg-speaker-art img").length, mark: document.querySelectorAll(".trpg-speaker-art .trpg-gm-mark svg").length,
+      faces: document.querySelectorAll(".trpg-speaker-art img").length, mark: document.querySelectorAll(".trpg-speaker-art .trpg-gm-badge").length,
       seats: [...document.querySelectorAll(".trpg-table-person")].map(seat => [seat.dataset.part, seat.querySelectorAll(".trpg-seat-face img").length,
-        seat.querySelector(".trpg-seat-face .trpg-gm-mark b")?.textContent ?? null, seat.querySelector(".trpg-seat-name").textContent]) }));
-    assert.deepEqual([opening.gm, opening.who, opening.aside, opening.open, opening.faces, opening.mark], ["true", "ゲームマスター", "ひより", '"（"', 0, 1]);
-    assert.deepEqual(opening.seats, [["gm", 0, "GM", "ひより"], ["pl", 1, null, "はじめ"], ["pl", 1, null, "アダム"], ["pl", 1, null, "つむぎ"]]);
-    assert(await page.locator(".trpg-speaker-art .trpg-gm-mark, [data-test='trpg-seat-gm']").evaluateAll(nodes => { const stage = document.getElementById("stage").getBoundingClientRect();
+        seat.querySelector(".trpg-seat-face .trpg-gm-badge")?.textContent ?? null, seat.querySelector(".trpg-seat-name").textContent]) }));
+    assert.deepEqual([opening.gm, opening.who, opening.aside, opening.open, opening.faces, opening.mark], ["true", "ゲームマスター", "ひより", '"（"', 1, 1]);
+    assert.deepEqual(opening.seats, [["gm", 1, "GM", "ひより"], ["pl", 1, null, "はじめ"], ["pl", 1, null, "アダム"], ["pl", 1, null, "つむぎ"]]);
+    assert(await page.locator(".trpg-speaker-art .trpg-gm-avatar, [data-test='trpg-seat-gm']").evaluateAll(nodes => { const stage = document.getElementById("stage").getBoundingClientRect();
       return nodes.length === 2 && nodes.every(n => { const r = n.getBoundingClientRect(); return r.width > 0 && r.left >= stage.left && r.right <= stage.right && r.top >= stage.top && r.bottom <= stage.bottom; }); }),
       "The game master's marks sit on the stage");
     // 転生が出るまで送る。出た瞬間の1押しは、ページの中でまとめて行う: 演出を閉じるだけで、下の最初の一行は読み飛ばさない。
@@ -478,6 +478,38 @@ try {
     await nextLines(page);
     assert.equal(await root.getAttribute("data-layer"), "idle");
   });
+  // Every authored cast name must fit a four-seat rail, including the longest names on a short phone.
+  for (const [label, options] of [["gm-faces-and-names-pc", {}],
+    ["gm-faces-and-names-touch", { viewport: { width: 844, height: 340 }, isMobile: true, hasTouch: true }]]) {
+    await run(label, { seed: "9" }, options, async page => {
+      await page.locator('[data-test="trpg-start"]').click();
+      const report = await page.evaluate(async () => {
+        const { displayName } = await import('./js/trpg/presentation.js');
+        const [characters, catalog] = await Promise.all([fetch('../data/characters.json').then(r => r.json()), fetch('../data/trpg_catalog.json').then(r => r.json())]);
+        const scenarios = await Promise.all(catalog.scenarios.map(s => fetch('../data/' + s.file).then(r => r.json())));
+        const ids = [...new Set(scenarios.flatMap(s => s.cast.map(c => c.id)))];
+        const names = ids.map(id => displayName(characters, id));
+        const labels = [...document.querySelectorAll('.trpg-seat-name')], original = labels.map(n => n.textContent), failures = [];
+        for (const name of names) {
+          labels.forEach(n => { n.textContent = name; });
+          for (const n of labels) {
+            const text = n.getBoundingClientRect(), seat = n.closest('.trpg-table-person').getBoundingClientRect();
+            if (n.scrollWidth > n.clientWidth + 1 || n.scrollHeight > n.clientHeight + 1 || text.right > seat.right + 1 || text.bottom > seat.bottom + 1) failures.push(name);
+          }
+        }
+        labels.forEach((n, i) => { n.textContent = original[i]; });
+        const face = document.querySelector('[data-test="trpg-seat-gm"] img');
+        await face.decode();
+        const badge = document.querySelector('[data-test="trpg-seat-gm"] .trpg-gm-badge');
+        return { failures, names, src: face.src, badge: badge.textContent, dockFace: document.querySelectorAll('.trpg-speaker-art .trpg-gm-avatar img').length };
+      });
+      await page.locator(".trpg-entrance").waitFor({ state: "detached" });
+      assert.deepEqual(report.failures, [], "All cast names are fully readable");
+      assert(report.names.length >= 10, "Names sampled from every catalog scenario");
+      assert.match(report.src, /hiyori/); assert.equal(report.badge, "GM"); assert.equal(report.dockFace, 1);
+    });
+  }
+
   await run("reroll-cancel-and-low-motion", { seed: "8", traveler: "quiet" },
     { reducedMotion: "reduce" }, async page => {
       await page.locator('[data-test="trpg-start"]').click();
