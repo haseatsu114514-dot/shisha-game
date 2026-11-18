@@ -126,6 +126,62 @@
         { "speaker": "hajime", "face": "normal", "text": "（俺も、同じ葉で同じ一台を、毎朝一回だけ作ってみようかな）" },
         { "speaker": "", "text": "男の人は軽く会釈して、ロッカーのほうへ歩いていった。" }
       ]
+    },
+    {
+      "dialogue_id": "ch3_choizap_bottle",
+      "comment": "東京のCHOI-ZAP（昼）の巡回（#3097）。給水機で、縁の手前で止める人を見て、急がなければ止めどきが見える。",
+      "lines": [
+        { "speaker": "", "text": "昼のCHOI-ZAP。給水機の前に、短い列ができていた。" },
+        { "speaker": "", "text": "前の人は、大きなボトルの縁ぎりぎりまで、ゆっくり水を注いでいる。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……あふれない。目で見て止めてるんだ）" },
+        { "speaker": "", "text": "自分の番が来た。勢いよく押したら、水がボトルの口から跳ねて、袖が濡れた。" },
+        { "speaker": "hajime", "face": "sad", "text": "（……ボトルに水を張る時も、たまにこれをやる）" },
+        { "speaker": "", "text": "二本目は、最初の半分の勢いで押した。縁の少し手前で、ちゃんと止まった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（急がなければ、止めどきが見える）" },
+        { "speaker": "", "text": "濡れた袖をまくって、ベンチへ戻った。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_choizap_treadmill",
+      "comment": "東京のCHOI-ZAP（昼）の巡回（#3097）。窓の外の高架の電車と、ほんの何秒か並んで走る。",
+      "lines": [
+        { "speaker": "", "text": "昼のCHOI-ZAP。窓際のランニングマシンから、高架の線路が見えた。" },
+        { "speaker": "", "text": "歩く速さに合わせるように、電車が一本、横を追い抜いていく。" },
+        { "speaker": "hajime", "face": "normal", "text": "（電車より速く歩けたら、ここまで来なくて済むのにな）" },
+        { "speaker": "", "text": "速度のボタンを一つ上げる。息が上がる前に、次の電車が来た。" },
+        { "speaker": "", "text": "今度は、少しの間だけ、窓の外の電車と並んで走れた気がした。" },
+        { "speaker": "hajime", "face": "smile", "text": "（……並んだ）" },
+        { "speaker": "", "text": "すぐに抜かれて、速度を元に戻す。足は重いのに、頭は少し軽くなっていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（並べたのは、ほんの何秒か。それでも、並んだ）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_choizap_plank",
+      "comment": "東京のCHOI-ZAP（夜）の巡回（#3097）。秒針から目を離して息を数えると、長くもった。",
+      "lines": [
+        { "speaker": "", "text": "夜のCHOI-ZAP。マットの上で、プランクの姿勢をとった。" },
+        { "speaker": "", "text": "壁の時計の秒針を見ながら、三十秒を数える。二十秒を過ぎたあたりで、腕が震えはじめた。" },
+        { "speaker": "hajime", "face": "sad", "text": "（……長い。三十秒って、こんなに長かったか）" },
+        { "speaker": "", "text": "隣のマットの人は、同じ姿勢のまま、目を閉じて静かに呼吸していた。" },
+        { "speaker": "", "text": "まねをして、秒針から目を離し、息を数えることにした。吸って、吐いて、五回。" },
+        { "speaker": "", "text": "気づくと、時計は四十秒を指していた。" },
+        { "speaker": "hajime", "face": "surprise", "text": "（時計を見ないほうが、長くもった）" },
+        { "speaker": "hajime", "face": "normal", "text": "（炭を置いたあとも、時計ばかり見てると、待つのが苦しくなるのかもな）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_choizap_scale",
+      "comment": "東京のCHOI-ZAP（夜）の巡回（#3097）。体重が少し減っていて、貼り紙の「数字より、毎日続けること」から、ごはんを一つ多く買う。",
+      "lines": [
+        { "speaker": "", "text": "夜のCHOI-ZAP。帰りがけに、入口の体重計に乗ってみた。" },
+        { "speaker": "", "text": "画面の数字は、東京に来た日より、少しだけ減っていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……食べてるつもりだったけど）" },
+        { "speaker": "", "text": "体重計の横の貼り紙に、「数字より、毎日続けること」と手書きで書いてある。" },
+        { "speaker": "hajime", "face": "normal", "text": "（毎日続けること、……ごはんも、か）" },
+        { "speaker": "", "text": "帰り道のコンビニで、おにぎりを一つ多く買った。" },
+        { "speaker": "hajime", "face": "smile", "text": "（明日の朝の分。数字より、毎日だ）" },
+        { "speaker": "", "text": "袋を提げて、高架下の商店街を、mukaiの灯りの方へ歩いた。" }
+      ]
     }
   ]
 }
