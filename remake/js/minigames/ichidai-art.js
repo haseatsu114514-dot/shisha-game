@@ -76,5 +76,5 @@ const BOWL_ART = { silicone: ["bowl_empty_silicone", "bowl_packed_normal"], funn
   clay: ["bowl_empty_clay", "bowl_empty_clay"], beat80: ["bowl_empty_clay", "bowl_empty_clay"] };
 export const bowlArt = (bowlId, packed) => !packed && bowlId === "funnel"
   ? SHOP_EQUIPMENT_ART.kumogama_phunnel.url : making((BOWL_ART[bowlId] || BOWL_ART.clay)[packed ? 1 : 0]);
-const HMD_ART = { lotus: "lotos_hagal", amaburst: "amaburst_hms", tanukish: "tanukish_lid", big_tanukish: "tanukish_lid" };
+const HMD_ART = { lotus: "lotos_hagal", amaburst: "amaburst_hms", tanukish: "tanukish_lid", big_tanukish: "tanukish_lid", one_coal: "one_coal_lid" };
 export const hmdArt = (hmdId) => SHOP_EQUIPMENT_ART[HMD_ART[hmdId]]?.url || equip(HMD_ART[hmdId] || "lotos_hagal");
