@@ -1,0 +1,402 @@
+{
+  "method": "正本 tools/poem_panel_cut.py の find_frame と cut --dry-run、原画RGBの読み取りによる紙色との差分計測。PNGの加工・切り出し出力はしていない。",
+  "template_sha256": "41a2438c1825d3a03d4ba85ab4b19d2b7b110119cc00e33188fcfc1e61952f65",
+  "candidates": {
+    "poem_ch5_r5_3a-attempt1": {
+      "file": "asset_sources/poem-panels/candidates-3392/raw/poem_ch5_r5_3a-attempt1.png",
+      "sha256": "5c56d6c7e4c387bf57730414d0937d27e9b67051bb1fcbacd39266d42e9c11f0",
+      "bytes": 2113317,
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "official_frame_detection_note": "枠を検出: 外側 x=48〜1485 y=378〜744",
+      "official_inner_rectangle": [
+        50,
+        380,
+        1484,
+        743
+      ],
+      "detected_outer_lines_x_left_right_y_top_bottom": [
+        48,
+        1485,
+        378,
+        744
+      ],
+      "expected_outer_rectangle_edges_inclusive": [
+        48,
+        1487,
+        377,
+        646
+      ],
+      "official_template_frame_detection_note": "枠を検出: 外側 x=48〜1485 y=377〜644",
+      "expected_detected_lines_from_template": [
+        48,
+        1485,
+        377,
+        644
+      ],
+      "template_detected_lines_match_candidate_exactly": false,
+      "outside_specified_frame": {
+        "compared_pixels": 1184064,
+        "nonidentical_pixels": 1137629,
+        "nonidentical_fraction": 0.9607833698178477,
+        "mean_absolute_error_rgb": [
+          11.356359115723475,
+          8.268384985946705,
+          7.044970542132858
+        ],
+        "maximum_absolute_error_rgb": [
+          238,
+          226,
+          200
+        ],
+        "paper_rgb": [
+          238,
+          227,
+          207
+        ],
+        "excluded_rectangle_half_open": [
+          48,
+          377,
+          1488,
+          647
+        ],
+        "exact_paper_preserved": false
+      },
+      "official_cut_dry_run": {
+        "exit_code": 0,
+        "stdout": "- 原画 1536x1024\n- 枠を検出: 外側 x=48〜1485 y=378〜744\n- 枠の内側 1434x363\n- 比率 3.950（範囲から 1.2% 外れ）。上下を中央で切って 4:1 に整えた\n- 出力 1424x356（4.00:1）→ remake/img/ui/poems/poem_ch5_r5_3a-attempt1.webp\n--dry-run: 書き込まない\n",
+        "stderr": ""
+      },
+      "strict_geometry_and_paper_pass": false,
+      "adoption_status": "UNADOPTED_CANDIDATE",
+      "assessment": "切り出し可能・dry-run成功は厳密な寸法・紙面保存の合格を意味しない。原画は無加工。絵柄・人物・場面の検品は別途目視。",
+      "outside_detected_frame": {
+        "compared_pixels": 1045118,
+        "nonidentical_pixels": 998683,
+        "nonidentical_fraction": 0.9555696103215139,
+        "mean_absolute_error_rgb": [
+          1.3629944178552087,
+          1.8161480330450723,
+          1.1830884168103506
+        ],
+        "maximum_absolute_error_rgb": [
+          216,
+          216,
+          184
+        ],
+        "paper_rgb": [
+          238,
+          227,
+          207
+        ],
+        "excluded_rectangle_half_open": [
+          48,
+          378,
+          1486,
+          745
+        ],
+        "exact_paper_preserved": false
+      }
+    },
+    "poem_ch5_r5_3b-attempt1": {
+      "file": "asset_sources/poem-panels/candidates-3392/raw/poem_ch5_r5_3b-attempt1.png",
+      "sha256": "38a36284ba3a54e4aec1391e0c20e3675b8490011c96d5b9a04c93d3600acd03",
+      "bytes": 1889401,
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "official_frame_detection_note": "枠を検出: 外側 x=48〜1484 y=378〜674",
+      "official_inner_rectangle": [
+        51,
+        380,
+        1483,
+        673
+      ],
+      "detected_outer_lines_x_left_right_y_top_bottom": [
+        48,
+        1484,
+        378,
+        674
+      ],
+      "expected_outer_rectangle_edges_inclusive": [
+        48,
+        1487,
+        377,
+        646
+      ],
+      "official_template_frame_detection_note": "枠を検出: 外側 x=48〜1485 y=377〜644",
+      "expected_detected_lines_from_template": [
+        48,
+        1485,
+        377,
+        644
+      ],
+      "template_detected_lines_match_candidate_exactly": false,
+      "outside_specified_frame": {
+        "compared_pixels": 1184064,
+        "nonidentical_pixels": 1045018,
+        "nonidentical_fraction": 0.8825688476298579,
+        "mean_absolute_error_rgb": [
+          4.239443138208745,
+          3.1404662247986597,
+          2.6235051483703584
+        ],
+        "maximum_absolute_error_rgb": [
+          238,
+          224,
+          201
+        ],
+        "paper_rgb": [
+          238,
+          227,
+          207
+        ],
+        "excluded_rectangle_half_open": [
+          48,
+          377,
+          1488,
+          647
+        ],
+        "exact_paper_preserved": false
+      },
+      "official_cut_dry_run": {
+        "exit_code": 0,
+        "stdout": "- 原画 1536x1024\n- 枠を検出: 外側 x=48〜1484 y=378〜674\n- 枠の内側 1432x293\n- 比率 4.887（横長の範囲 4〜5.6 の内）。絵を欠かさずそのまま使う\n- 出力 1424x291（4.89:1）→ remake/img/ui/poems/poem_ch5_r5_3b-attempt1.webp\n--dry-run: 書き込まない\n",
+        "stderr": ""
+      },
+      "strict_geometry_and_paper_pass": false,
+      "adoption_status": "UNADOPTED_CANDIDATE",
+      "assessment": "切り出し可能・dry-run成功は厳密な寸法・紙面保存の合格を意味しない。原画は無加工。絵柄・人物・場面の検品は別途目視。",
+      "outside_detected_frame": {
+        "compared_pixels": 1146075,
+        "nonidentical_pixels": 1007029,
+        "nonidentical_fraction": 0.8786763518966909,
+        "mean_absolute_error_rgb": [
+          0.9903749754597212,
+          1.238843007656567,
+          1.066459873917501
+        ],
+        "maximum_absolute_error_rgb": [
+          226,
+          224,
+          201
+        ],
+        "paper_rgb": [
+          238,
+          227,
+          207
+        ],
+        "excluded_rectangle_half_open": [
+          48,
+          378,
+          1485,
+          675
+        ],
+        "exact_paper_preserved": false
+      }
+    },
+    "poem_ch5_r5_3a-attempt2": {
+      "file": "asset_sources/poem-panels/candidates-3392/raw/poem_ch5_r5_3a-attempt2.png",
+      "sha256": "02eb7d2f5fe888270ffa0ee6e18db5f3c0e0616d7fbb32448f9cce7b526263b2",
+      "bytes": 1853534,
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "official_frame_detection_note": "枠を検出: 外側 x=48〜1485 y=378〜694",
+      "official_inner_rectangle": [
+        50,
+        380,
+        1484,
+        692
+      ],
+      "detected_outer_lines_x_left_right_y_top_bottom": [
+        48,
+        1485,
+        378,
+        694
+      ],
+      "expected_outer_rectangle_edges_inclusive": [
+        48,
+        1487,
+        377,
+        646
+      ],
+      "official_template_frame_detection_note": "枠を検出: 外側 x=48〜1485 y=377〜644",
+      "expected_detected_lines_from_template": [
+        48,
+        1485,
+        377,
+        644
+      ],
+      "template_detected_lines_match_candidate_exactly": false,
+      "outside_specified_frame": {
+        "compared_pixels": 1184064,
+        "nonidentical_pixels": 1184014,
+        "nonidentical_fraction": 0.999957772552835,
+        "mean_absolute_error_rgb": [
+          8.146384823793309,
+          6.452730595643478,
+          4.986786187233123
+        ],
+        "maximum_absolute_error_rgb": [
+          238,
+          219,
+          196
+        ],
+        "paper_rgb": [
+          238,
+          227,
+          207
+        ],
+        "excluded_rectangle_half_open": [
+          48,
+          377,
+          1488,
+          647
+        ],
+        "exact_paper_preserved": false
+      },
+      "official_cut_dry_run": {
+        "exit_code": 0,
+        "stdout": "- 原画 1536x1024\n- 枠を検出: 外側 x=48〜1485 y=378〜694\n- 枠の内側 1434x312\n- 比率 4.596（横長の範囲 4〜5.6 の内）。絵を欠かさずそのまま使う\n- 出力 1424x310（4.59:1）→ remake/img/ui/poems/poem_ch5_r5_3a-attempt2.webp\n--dry-run: 書き込まない\n",
+        "stderr": ""
+      },
+      "strict_geometry_and_paper_pass": false,
+      "adoption_status": "UNADOPTED_CANDIDATE",
+      "assessment": "切り出し可能・dry-run成功は厳密な寸法・紙面保存の合格を意味しない。原画は無加工。絵柄・人物・場面の検品は別途目視。",
+      "outside_detected_frame": {
+        "compared_pixels": 1117018,
+        "nonidentical_pixels": 1116968,
+        "nonidentical_fraction": 0.9999552379639361,
+        "mean_absolute_error_rgb": [
+          2.6566510118905873,
+          2.965415060455606,
+          2.0570599578520667
+        ],
+        "maximum_absolute_error_rgb": [
+          214,
+          210,
+          186
+        ],
+        "paper_rgb": [
+          238,
+          227,
+          207
+        ],
+        "excluded_rectangle_half_open": [
+          48,
+          378,
+          1486,
+          695
+        ],
+        "exact_paper_preserved": false
+      }
+    },
+    "poem_ch5_r5_3b-attempt2": {
+      "file": "asset_sources/poem-panels/candidates-3392/raw/poem_ch5_r5_3b-attempt2.png",
+      "sha256": "36065027d59a8598b0c3c424677ea84c6943087fa807a0f3fe5b0d2977817fe4",
+      "bytes": 1797367,
+      "dimensions": [
+        1536,
+        1024
+      ],
+      "mode": "RGB",
+      "official_frame_detection_note": "枠を検出: 外側 x=48〜1485 y=377〜666",
+      "official_inner_rectangle": [
+        51,
+        380,
+        1484,
+        665
+      ],
+      "detected_outer_lines_x_left_right_y_top_bottom": [
+        48,
+        1485,
+        377,
+        666
+      ],
+      "expected_outer_rectangle_edges_inclusive": [
+        48,
+        1487,
+        377,
+        646
+      ],
+      "official_template_frame_detection_note": "枠を検出: 外側 x=48〜1485 y=377〜644",
+      "expected_detected_lines_from_template": [
+        48,
+        1485,
+        377,
+        644
+      ],
+      "template_detected_lines_match_candidate_exactly": false,
+      "outside_specified_frame": {
+        "compared_pixels": 1184064,
+        "nonidentical_pixels": 1184063,
+        "nonidentical_fraction": 0.9999991554510567,
+        "mean_absolute_error_rgb": [
+          4.063182395546186,
+          4.6732609048159555,
+          4.324023870331334
+        ],
+        "maximum_absolute_error_rgb": [
+          238,
+          213,
+          185
+        ],
+        "paper_rgb": [
+          238,
+          227,
+          207
+        ],
+        "excluded_rectangle_half_open": [
+          48,
+          377,
+          1488,
+          647
+        ],
+        "exact_paper_preserved": false
+      },
+      "official_cut_dry_run": {
+        "exit_code": 0,
+        "stdout": "- 原画 1536x1024\n- 枠を検出: 外側 x=48〜1485 y=377〜666\n- 枠の内側 1433x285\n- 比率 5.028（横長の範囲 4〜5.6 の内）。絵を欠かさずそのまま使う\n- 出力 1424x283（5.03:1）→ remake/img/ui/poems/poem_ch5_r5_3b-attempt2.webp\n--dry-run: 書き込まない\n",
+        "stderr": ""
+      },
+      "strict_geometry_and_paper_pass": false,
+      "adoption_status": "UNADOPTED_CANDIDATE",
+      "assessment": "切り出し可能・dry-run成功は厳密な寸法・紙面保存の合格を意味しない。原画は無加工。絵柄・人物・場面の検品は別途目視。",
+      "outside_detected_frame": {
+        "compared_pixels": 1155844,
+        "nonidentical_pixels": 1155843,
+        "nonidentical_fraction": 0.9999991348313441,
+        "mean_absolute_error_rgb": [
+          2.793645163188112,
+          3.7435925609338283,
+          3.200054678659058
+        ],
+        "maximum_absolute_error_rgb": [
+          212,
+          205,
+          178
+        ],
+        "paper_rgb": [
+          238,
+          227,
+          207
+        ],
+        "excluded_rectangle_half_open": [
+          48,
+          377,
+          1486,
+          667
+        ],
+        "exact_paper_preserved": false
+      }
+    }
+  }
+}
