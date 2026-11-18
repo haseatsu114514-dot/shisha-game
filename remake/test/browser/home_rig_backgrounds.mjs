@@ -238,7 +238,10 @@ await suite("home-rig-backgrounds", async check => {
       await setup(page);
       for (const tod of ["day", "night"]) for (const [i, owned] of variants.entries()) {
         await home(page, owned, tod);
-        assert.deepEqual(await rigs(page), expectedRigs(owned), `${tod}/${names[i]}`);
+        // 昼の晴天背景は台を描き込んだ絵なので重ね表示は出ない（#3418）。曇天・夜は従来どおり最新1台。
+        const bgFile = await page.locator("#bg > :last-child").getAttribute("data-scene-bg");
+        const want = bgFile === "bg_home_day.png" ? [] : expectedRigs(owned);
+        assert.deepEqual(await rigs(page), want, `${tod}/${names[i]}`);
         const before = await page.evaluate(() => JSON.stringify(HQ.core.state));
         const geometry = await page.locator("#bg [data-home-rig]").evaluateAll(ns => ns.map(n => ({
           id: n.dataset.homeRig, x: +n.getAttribute("x"), y: +n.getAttribute("y"),
@@ -249,7 +252,7 @@ await suite("home-rig-backgrounds", async check => {
           assert(g.x > 0 && g.y > 0 && g.x + g.w < 1280 && g.y + g.h < 720);
         }
         const preloads = await page.evaluate(() => HQ.art.sceneArtUrls(HQ.data.bgUrl("bg_home", HQ.core.timeOfDay())));
-        assert.equal(preloads.length, 1 + expectedRigs(owned).length);
+        assert.equal(preloads.length, 1 + want.length);
         assert.equal(await page.evaluate(() => JSON.stringify(HQ.core.state)), before, "Rendering must not mutate game state");
         await page.screenshot({ path: `${out}/${baseline ? "before" : "after"}-${label}-${tod}-${names[i]}.jpg`, type: "jpeg", quality: 82 });
         // 同じURLで所持品だけ変わる場合も、setBgのキャッシュに古い台を残さない。
@@ -269,23 +272,25 @@ await suite("home-rig-backgrounds", async check => {
     if (baseline) continue;
     await check(`${label}-custom-slot-latest`, async page => {
       await setup(page);
+      // 昼の晴天背景は台が描き込み済みで重ね表示が無い（#3418）ため、最新1台の判定は夜背景で検証する。
       // くじ限定の台だけを持っていても部屋に置かれる（#3418）。
-      await home(page, ["stand_custom_melty"], "day");
+      await home(page, ["stand_custom_melty"], "night");
       assert.deepEqual(await rigs(page), ["stand_custom_melty"]);
       // 特注台と同じ場所には、いちばん後に手に入れた1台だけを置く（重ならない）。
-      await home(page, ["stand_custom", "stand_custom_tosu"], "day");
+      await home(page, ["stand_custom", "stand_custom_tosu"], "night");
       assert.deepEqual(await rigs(page), ["stand_custom_tosu"]);
-      await home(page, ["stand_custom_tosu", "stand_custom"], "day");
+      await home(page, ["stand_custom_tosu", "stand_custom"], "night");
       assert.deepEqual(await rigs(page), ["stand_custom"]);
       // 別の場所の台でも同時には置かず、いちばん後に手に入れた1台だけを置く。
-      await home(page, ["home_rig_set", "stand_custom_engraved"], "day");
+      await home(page, ["home_rig_set", "stand_custom_engraved"], "night");
       assert.deepEqual(await rigs(page), ["stand_custom_engraved"]);
-      await home(page, ["stand_custom_engraved", "home_rig_set"], "day");
+      await home(page, ["stand_custom_engraved", "home_rig_set"], "night");
       assert.deepEqual(await rigs(page), ["home_rig_set"]);
     }, opts);
 
     await check(`${label}-acquire-save-load-new-game`, async page => {
-      await setup(page); await home(page, [], "day");
+      // 昼の晴天背景は台が描き込み済みで重ね表示が無い（#3418）ため、取得→即時反映の検証は夜背景で行う。
+      await setup(page); await home(page, [], "night");
       // 実際の卓上台受取を通す。使用中の台の判定は使わない。
       await page.evaluate(async () => {
         HQ.vn.vnTest.turbo = true;
@@ -384,8 +389,12 @@ await suite("home-rig-backgrounds", async check => {
           void map.chooseSpot();
         });
         await hit(page, label, '[data-test="pin-rest"]');
-        await page.waitForFunction(() => document.querySelectorAll(".mi-preview [data-home-rig]").length === 1);
-        assert.deepEqual(await rigs(page, ".mi-preview"), expectedRigs(variants[3]));
+        // プレビューも実画面と同じ合成。昼の晴天背景は台が描き込み済みで重ね表示は無い（#3418）。
+        await page.waitForFunction(() => document.querySelector(".mi-preview[data-scene-bg]"));
+        const previewBg = await page.evaluate(() => document.querySelector(".mi-preview[data-scene-bg]").dataset.sceneBg);
+        const wantPreview = previewBg === "bg_home_day.png" ? [] : expectedRigs(variants[3]);
+        if (wantPreview.length) await page.waitForFunction(() => document.querySelectorAll(".mi-preview [data-home-rig]").length === 1);
+        assert.deepEqual(await rigs(page, ".mi-preview"), wantPreview);
         await assertFits(page, '[data-test="map-go"]');
         await page.screenshot({ path: `${out}/${label}-preview-${tod}.jpg`, type: "jpeg", quality: 82 });
         await page.evaluate(() => homeMap.interruptMap("rest"));
@@ -433,7 +442,9 @@ await suite("home-rig-backgrounds", async check => {
       await hit(page, label, '[data-test="title-load"]'); await hit(page, label, '[data-test="slot-0"]');
       await page.waitForFunction(() => __remake.state.day === 9 && document.querySelector('[data-destination-selection]:not(.done)'), null, { timeout: 30000 });
       const frames = await page.evaluate(() => homeWakeFrames);
-      assert(frames.some(f => /bg_home_(?:overcast_)?day\.webp$/.test(f.url) && f.rigs.join(",") === expectedRigs(variants[3]).join(",")), "Real advanceDay renders the latest rig on the morning home before the map");
+      // 朝の自室: 曇天は従来どおり最新1台を重ね、晴天の昼背景は台が描き込み済みで重ねは無い（#3418）。
+      assert(frames.some(f => /bg_home_(?:overcast_)?day\.webp$/.test(f.url)
+        && (/_overcast_/.test(f.url) ? f.rigs.join(",") === expectedRigs(variants[3]).join(",") : f.rigs.length === 0)), "Real advanceDay renders the morning home before the map");
     }, opts);
   }
 });
