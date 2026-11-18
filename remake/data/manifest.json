@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-18 02:40 UTC",
+ "generated": "2026-11-18 12:01 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -495,6 +495,7 @@
  },
  "backgrounds": [
   "bg_ageha_cafe_day.png",
+  "bg_ageha_room_night.png",
   "bg_ageha_shop.png",
   "bg_axe_lounge_night.png",
   "bg_c_station_day.png",
@@ -533,7 +534,9 @@
   "bg_dubai_souq_day.png",
   "bg_dubai_street_night.png",
   "bg_eden_shop.png",
+  "bg_fookah_dubai.png",
   "bg_fookah_showroom.png",
+  "bg_fookah_tokyo.png",
   "bg_hideaway.png",
   "bg_home.png",
   "bg_home_day.png",
@@ -574,10 +577,14 @@
   "bg_street_overcast_day.png",
   "bg_street_overcast_night.png",
   "bg_title.png",
+  "bg_tokyo_benten_day.png",
+  "bg_tokyo_benten_night.png",
   "bg_tokyo_map_day.png",
   "bg_tokyo_map_night.png",
   "bg_tokyo_park_day.png",
   "bg_tokyo_park_night.png",
+  "bg_tokyo_station_day.png",
+  "bg_tokyo_station_night.png",
   "bg_tonari_customer_hands.png",
   "bg_tonari_inside.png",
   "bg_tonari_inside_day.png",
@@ -2815,6 +2822,7 @@
  ],
  "webp": [
   "backgrounds/bg_ageha_cafe_day.png",
+  "backgrounds/bg_ageha_room_night.png",
   "backgrounds/bg_ageha_shop.png",
   "backgrounds/bg_axe_lounge_night.png",
   "backgrounds/bg_c_station_day.png",
@@ -2853,7 +2861,9 @@
   "backgrounds/bg_dubai_souq_day.png",
   "backgrounds/bg_dubai_street_night.png",
   "backgrounds/bg_eden_shop.png",
+  "backgrounds/bg_fookah_dubai.png",
   "backgrounds/bg_fookah_showroom.png",
+  "backgrounds/bg_fookah_tokyo.png",
   "backgrounds/bg_hideaway.png",
   "backgrounds/bg_home.png",
   "backgrounds/bg_home_day.png",
@@ -2894,10 +2904,14 @@
   "backgrounds/bg_street_overcast_day.png",
   "backgrounds/bg_street_overcast_night.png",
   "backgrounds/bg_title.png",
+  "backgrounds/bg_tokyo_benten_day.png",
+  "backgrounds/bg_tokyo_benten_night.png",
   "backgrounds/bg_tokyo_map_day.png",
   "backgrounds/bg_tokyo_map_night.png",
   "backgrounds/bg_tokyo_park_day.png",
   "backgrounds/bg_tokyo_park_night.png",
+  "backgrounds/bg_tokyo_station_day.png",
+  "backgrounds/bg_tokyo_station_night.png",
   "backgrounds/bg_tonari_customer_hands.png",
   "backgrounds/bg_tonari_inside.png",
   "backgrounds/bg_tonari_inside_day.png",
@@ -3432,6 +3446,8 @@
   "sprites/characters/pakki/chr_pakki_smile.png",
   "sprites/characters/pakki/chr_pakki_smoke.png",
   "sprites/characters/pakki/chr_pakki_surprise.png",
+  "sprites/characters/regulara/chr_regulara_normal.png",
+  "sprites/characters/regularb/chr_regularb_normal.png",
   "sprites/characters/rei/chr_rei_normal.png",
   "sprites/characters/rei/chr_rei_sad.png",
   "sprites/characters/rei/chr_rei_serious.png",
@@ -3756,9 +3772,7 @@
   "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
   "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png",
   "ui/title_arts/title_art_tsumugi_04_painting_studio.png",
-  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png",
-  "sprites/characters/regulara/chr_regulara_normal.png",
-  "sprites/characters/regularb/chr_regularb_normal.png"
+  "ui/title_arts/title_art_tsumugi_05_pencil_and_hose.png"
  ],
  "limeMedia": {
   "st_adam_bless": {

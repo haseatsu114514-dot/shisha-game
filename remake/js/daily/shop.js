@@ -150,14 +150,14 @@ export async function openShop(opts = {}) {
   if (opts.branch === "tokyo") {
     // 第3章の東京と、第5章に東京へ来た時（#2033）。品ぞろえは第3章の東京店と同じ（ナイトサイドはヴォルクへの配達の後から。#1657）。
     if (![3, 5].includes(state.chapter)) return null;
-    return openCounter({ flavorIds: tokyoShopFlavors(state), stockChapter: 3, shopName: TOKYO_SHOP_NAME, kujiShop: "tokyo" });
+    return openCounter({ flavorIds: tokyoShopFlavors(state), stockChapter: 3, shopName: TOKYO_SHOP_NAME, background: bgUrl("bg_fookah_tokyo"), kujiShop: "tokyo" });
   }
   if (opts.branch === "dubai") {
     // 第4章のドバイと、第5章にドバイへ来た時（#2033 E）。シーシャくじもほかの店と同じく引ける（2026-11-02 オーナー
     // 「お金の使い道としてドクターフーカーくじを各地で」）。くじは店ごとに1種類で、ドバイ店は特注台くじ（KJ11）。
     if (![4, 5].includes(state.chapter)) return null;
     return openCounter({ flavorIds: DUBAI_FLAVORS, stockChapter: 4, shopName: DUBAI_SHOP_NAME,
-      subtitle: "日本で出た葉がそろう", branded: true, kujiShop: "dubai" });
+      subtitle: "日本で出た葉がそろう", background: bgUrl("bg_fookah_dubai"), branded: true, kujiShop: "dubai" });
   }
   if (opts.branch === "widehanga") {
     if (state.chapter < 2) return null;

@@ -51,7 +51,7 @@ export const CH4_CAMEL_SCENE_FILES = Object.freeze({ ch4_camel_race: Object.free
   ...CAMEL_RESULT_TALKS.best, ...CAMEL_RESULT_TALKS.usual])]) });
 // 砂漠のレース場の朝（Codex CR-BG01 の A 案・2026-11-02 採用）。見学・結果・再挑戦の会話の背景。
 export const CAMEL_TRACK_BG = "bg_dubai_camel_track_morning";
-export const CAMEL_SHOP_BG = "bg_shop"; // Dr.fookah ドバイ店（NF03 と同じ流用）
+export const CAMEL_SHOP_BG = "bg_fookah_dubai"; // Dr.fookah ドバイ店
 // 通いの朝のやり取り（camel_arrival_*・data/dialogue/venue_arrivals.json）もレース場の朝。
 export const camelSceneBg = id => id === CAMEL_SCENES.meet || id === CAMEL_SCENES.invite ? CAMEL_SHOP_BG
   : Object.values(CAMEL_SCENES).includes(id) || CH4_CAMEL_SCENE_FILES.ch4_camel_race.includes(id) || String(id).startsWith("camel_arrival_") ? CAMEL_TRACK_BG : null;

@@ -89,7 +89,7 @@ export const tokyoTournamentDay = (value = state) => chapterThreeProgress(value)
 
 // ---- 行き先 -----------------------------------------------------------------------------
 const spot = fields => Object.freeze({ region: TOKYO, kind: "ch3_tokyo", ...fields });
-const visitBg = { mukai: "bg_mukai_shop", enmaku: "bg_yohaku_shop", steve: "bg_steve_shop", volk: "bg_volk_shop" };
+const visitBg = { mukai: "bg_mukai_shop", enmaku: "bg_yohaku_shop", steve: "bg_steve_shop", volk: "bg_volk_shop", park: "bg_tokyo_park" };
 export const CH3_TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch3_tokyo_mukai", place: "mukai", label: "mukai", area: "高架下の商店街", x: 29.6, y: 62.7, theme: "baito", glyph: "店",
     face: "mukai_master", preview: "bg_mukai_shop", desc: "働かせてもらっている店。手伝い、ましろちゃんとの時間、作業台。帰りに裏口のてつこにも会える。" }),
@@ -102,12 +102,12 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch3_tokyo_park", place: "park", label: "公園", area: "池のある公園", x: 69, y: 62, theme: "park", glyph: "園",
     preview: "bg_tokyo_park", stamina: 20, desc: "何も決めずに歩いて、少し体を休める。" }),
   spot({ id: "ch3_tokyo_shop", place: "shop", label: "Dr.fookah 東京店", area: "駅前の店", x: 15, y: 51, theme: "shop", glyph: "卸",
-    preview: "bg_fookah_showroom", desc: "東京の店。葉を買える（時間は使わない）。" }),
+    preview: "bg_fookah_tokyo", desc: "東京の店。葉を買える（時間は使わない）。" }),
   spot({ id: "ch3_tokyo_gym", place: "gym", label: "CHOI-ZAP", area: "高架下のジム", x: 34.9, y: 75.9, theme: "gym", glyph: "体",
     preview: "bg_choizap", stamina: -8, stat: "charm", gym: true, desc: "全国の店で使える会員証で、体を動かす。" }),
   // 心得の盤の内省。公園の池に浮かぶお堂（IR26・SBD98）。id は仮置きの「路地裏の神社」の時のまま（互換）
   spot({ id: "ch3_tokyo_shrine", place: "shrine", label: "池の弁天堂", area: "公園の池", x: 91, y: 73, theme: "rest", glyph: "弁",
-    preview: "bg_tokyo_park", desc: "池に浮かぶ小さなお堂。学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
+    preview: "bg_tokyo_benten", desc: "池に浮かぶ小さなお堂。学んだことを火にして、心得の盤に灯す（時間は使わない）。" }),
   // 店名は入口で知る（DJS12）。店主の針間ヨルに会うまでは「地下の店」と出す（daily/map.js の charId・unknownLabel）。
   spot({ id: "ch3_tokyo_club", place: "club", label: "クラブSEAM", area: "路地の地下", x: 86, y: 50, theme: "stadium", glyph: "♪",
     charId: "yoru", unknownLabel: "地下の店", unknownDesc: "地下から低い音がする。のぞいてみる（時間は使わない）。",
@@ -298,7 +298,8 @@ const tokyoDefinitions = () => socialDefinitions;
 async function meetTokyoVisitor({ plan, window, definitions }) {
   const owner = state, id = plan.characterId, kind = plan.met ? "date" : "meetup", sceneId = `ch3_visit_${id}_${kind}`;
   const { value: done } = await paidAction(async () => {
-    if (!await readPlain(sceneId, window.slot ? "bg_street_night" : "bg_street_day", owner)) return false;
+    const bg = window.slot ? "bg_tokyo_station_night" : "bg_tokyo_station_day";
+    if (!await readPlain(sceneId, bg, owner)) return false;
     if (!completeTokyoVisitAction(state, definitions, plan.id, window)) return false;
     earnSceneCompletion(sceneId, owner);
     return true;
@@ -468,7 +469,7 @@ const outingById = id => chapterThreeOutingCandidates(state).find(outing => outi
 async function goOuting(outing, staminaGuard, owner) {
   if (!outing) return unused;
   if (outing.stamina < 0 && !(await staminaGuard(outing.stamina))) return unused;
-  const bg = outing.bg || visitBg[outing.place] || "bg_street";
+  const bg = outing.bg || visitBg[outing.place] || "bg_tokyo_station";
   const gains = outingAffinity(state, outing); // 回数を数える前に（通いの1回目か2回目以降か）
   // ♥5の締めくくりの後（#3693）: 通いの小会話の代わりに、その人の♥5後の場面を一度ずつ。読み終えたら短い汎用（core/bond-after.js）。
   // 代金・体力・好感度・能力・回数はいつもの通いと同じ。台本を読めなければ小会話のまま。

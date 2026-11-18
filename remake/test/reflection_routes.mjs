@@ -157,15 +157,15 @@ for (const chapter of [3, 4]) {
   const fortune = await import("../js/daily/fortune-schedule.js");
   const benten = [CH3_TOKYO_SPOTS.find(s => s.id === "ch3_tokyo_shrine"), TOKYO_SPOTS.find(s => s.id === "ch5_tokyo_shrine")];
   for (const spot of benten) {
-    assert.deepEqual([spot.label, spot.area, spot.x, spot.y, spot.preview], ["池の弁天堂", "公園の池", 91, 73, "bg_tokyo_park"], spot.id);
+    assert.deepEqual([spot.label, spot.area, spot.x, spot.y, spot.preview], ["池の弁天堂", "公園の池", 91, 73, "bg_tokyo_benten"], spot.id);
   }
   assert.deepEqual([tokyo.TOKYO_MAP_PLACES.shrine.label, tokyo.TOKYO_MAP_PLACES.shrine.x, tokyo.TOKYO_MAP_PLACES.shrine.y], ["池の弁天堂", 91, 73]);
   assert.equal(reflection.REFLECT_PLACES.tokyo_shrine.label, "池の弁天堂");
   assert.equal(PLACE_JA.tokyo_shrine, "池の弁天堂");
   // 背景は届くまで同じ公園の池の絵（昼夜で切り替わる）
-  assert.equal(reflection.REFLECT_PLACES.tokyo_shrine.bg, "bg_tokyo_park");
+  assert.equal(reflection.REFLECT_PLACES.tokyo_shrine.bg, "bg_tokyo_benten");
   const manifest = JSON.parse(fs.readFileSync(new URL("../data/manifest.json", import.meta.url), "utf8"));
-  for (const name of ["bg_tokyo_park_day.png", "bg_tokyo_park_night.png"]) assert(manifest.backgrounds.includes(name), name);
+  for (const name of ["bg_tokyo_benten_day.png", "bg_tokyo_benten_night.png"]) assert(manifest.backgrounds.includes(name), name);
   const scene = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/growth_reflection.json", import.meta.url), "utf8"))
     .dialogues.find(d => d.dialogue_id === reflection.REFLECT_PLACES.tokyo_shrine.scene).lines.map(line => line.text).join("");
   assert.match(scene, /池/); assert.match(scene, /お堂/); assert.match(scene, /願い事はしない/); assert.doesNotMatch(scene, /神社|鳥居|路地/);
