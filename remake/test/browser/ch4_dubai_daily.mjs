@@ -106,15 +106,17 @@ await suite("ch4-dubai-daily", async check => {
     await dubaiMap(page);
     for (const id of spots)
       assert.equal(await page.locator(`${dt(`pin-${id}`)} .evt-badge.story`).count(), 1, `${id}: new revisit after first scene`);
-    // 中心地のカフェは、再訪の会話を一巡した後に通いの続き（#2020 D・chapters/visit-chains.js）の段が新しく出る
+    // 中心地のカフェ（#2020 D）とスーク（#3745 のスパイスの段）は、再訪の会話を一巡した後に通いの続き
+    // （chapters/visit-chains.js）の段が新しく出る
+    const chained = ["ch4_dubai_cafe", "ch4_dubai_souq"];
     await prepare(true);
     await loadSlot(page, 0);
     await dubaiMap(page);
     for (const id of spots)
-      assert.equal(await page.locator(`${dt(`pin-${id}`)} .evt-badge.story`).count(), id === "ch4_dubai_cafe" ? 1 : 0,
-        `${id}: after all revisits, only the cafe's visit chain is new`);
+      assert.equal(await page.locator(`${dt(`pin-${id}`)} .evt-badge.story`).count(), chained.includes(id) ? 1 : 0,
+        `${id}: after all revisits, only the visit chains (cafe, souq) are new`);
     // 通いの続きも読み終えたら、一巡した行き先に「！」は残らない
-    await prepare(true, { ch4_second_bowl: { done: 3, day: 1, picks: {} } });
+    await prepare(true, { ch4_second_bowl: { done: 3, day: 1, picks: {} }, ch4_spice_blend: { done: 3, day: 1, picks: {} } });
     await loadSlot(page, 0);
     await dubaiMap(page);
     for (const id of spots)
