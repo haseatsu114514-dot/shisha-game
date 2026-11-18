@@ -87,6 +87,13 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
     after: ["ch3_mashiro_glass_cloth"] },
   { id: "ch3_mashiro_bench_tea", file: "ch3_mashiro", label: "裏口のベンチ", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_mashiro_leaf_rest"] },
+  // RLS10。大会前に読めなかった分を、同じ既読で順に（台本は大会に触れない）。
+  { id: "ch3_mashiro_toolbox", file: "ch3_mashiro", label: "木の道具箱", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_bench_tea"] },
+  { id: "ch3_mashiro_doze", file: "ch3_mashiro", label: "炭の音", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_toolbox"] },
+  { id: "ch3_mashiro_heavy_room", file: "ch3_mashiro", label: "重い一台の間", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_doze"] },
   // #3468 G案。ムカイさん×ヨルの開店前の曲順。大会前に読めなかった時だけ、同じ既読で。台本は大会に触れない。好感度は動かさない。
   { id: "ch3_mukai_yoru_playlist", file: "ch3_mukai", label: "昼の曲順", location: "mukai", bg: "bg_mukai_shop", met: ["yoru"] },
 ]);
