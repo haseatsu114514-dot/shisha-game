@@ -213,9 +213,8 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
     const idleInfo = () => {
       clearSpotInfo();
       if (guide) {
+        // 案内の文言は下中央の GUIDE 表示に一本化する。右下のパネルに同じ文言を重ねない（#3814）。
         info.replaceChildren(...[
-          el("div.mi-banner", { text: guide.title || "スミさんの頼み" }),
-          el("p.mi-desc", { text: guide.text }),
           forecastFoot(),
         ].filter(Boolean));
         return;
