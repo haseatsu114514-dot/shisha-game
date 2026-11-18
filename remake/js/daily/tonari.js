@@ -354,6 +354,12 @@ export const CH2_SHIFT_TALKS = Object.freeze([
   // つむぎが店にいる時だけ。DAY13（つむぎの色の夜）とは別の日
   { id: "ch2_shift_talk_tsumugi_board", when: (s, { tsumugiHere }) => !!s.met?.tsumugi && tsumugiHere && ch2DayOf(s) !== 13 },
   { id: "ch2_shift_talk_one_hose", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  // #3097（RLS03）第2弾: 忘れ物の箱・初めての客・古いCDラジカセ・いつもの席・指の火傷。どれも柚ヶ谷へ通い始めた後
+  { id: "ch2_shift_talk_lost_box", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  { id: "ch2_shift_talk_first_timer", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  { id: "ch2_shift_talk_cd_player", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  { id: "ch2_shift_talk_same_seat", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
+  { id: "ch2_shift_talk_burnt_finger", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
 ]);
 /** 今日のシフト上がりに読む第2章の会話（無ければ null）。台本が読み込まれていない時は出さない。 */
 export function ch2ShiftTalkDue(s, dialogues, context = {}) {

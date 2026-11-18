@@ -1,5 +1,5 @@
 {
-  "comment": "第2章のtonariのシフト上がりに、スミさんの固有会話も♥5後の会話も無い日に読む短い会話（#3097 ボリューム均し・第1弾）。daily/tonari.js の CH2_SHIFT_TALKS が条件と順番を持ち、未読を先頭から一本ずつ・一度だけ読む（既読は _talk_seen_<ID>）。報酬はいつものバイト上がりと同じで、台本は好感度・能力値・お金を動かさない。味の感想・苺の課題・大会の結果・恋愛の進行を前提にしない。",
+  "comment": "第2章のtonariのシフト上がりに、スミさんの固有会話も♥5後の会話も無い日に読む短い会話（#3097 ボリューム均し・第1弾の7本＋第2弾の5本）。daily/tonari.js の CH2_SHIFT_TALKS が条件と順番を持ち、未読を先頭から一本ずつ・一度だけ読む（既読は _talk_seen_<ID>）。報酬はいつものバイト上がりと同じで、台本は好感度・能力値・お金を動かさない。味の感想・苺の課題・大会の結果・恋愛の進行を前提にしない。",
   "dialogues": [
     {
       "dialogue_id": "ch2_shift_talk_fare",
@@ -943,6 +943,656 @@
           "speaker": "",
           "face": "",
           "text": "窓際の席を拭く。ご夫婦の座っていた椅子は、二つとも、少しだけ内側を向いていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_shift_talk_lost_box",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片づけの途中、カウンターの下に菓子箱を見つけた。ふたに、スミさんの字で「忘れ物」。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "中には、片方だけの手袋と、鍵の付いていないキーホルダーと、しおりを挟んだ文庫本。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさん、これ、いつからあるんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "古いのは、去年の冬からだな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "一年も取っておくんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "一年たったら、もう一年待つ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……それ、ずっと捨てられないやつですよね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "捨てると、取りに来る。そういうもんだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "文庫本のしおりは、最後から十ページ手前で止まっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この本の人、続き、気にならないんですかね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "気になってるから、来ねえんだろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "逆じゃないですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "終わらせたくねえ本ってのがある、……店もな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その時、閉めかけた扉が開いた。息を切らしたお客さんが、手袋の片方を握っている。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "すみません、もう閉店ですよね。あの、手袋……これの片方、ありませんでしたか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "菓子箱の中の手袋と、同じ色だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありました。ちゃんと、取ってありました"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "去年なくして。片方だけ持ってても仕方ないのに、捨てられなくて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お客さんは手袋を二つ重ねて、大事そうに鞄にしまった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……やっと、一組です。また吸いに来ますね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "扉が閉まる。スミさんは何も言わずに、菓子箱のふたを閉めた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "一年、待ってよかったですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "待ったのは、向こうだ。片方を一年、持ってたんだからな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "菓子箱を元の場所へ戻す。文庫本のしおりは、十ページ手前のままだった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_shift_talk_first_timer",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入口で、若い男の人が店の中をのぞいたまま止まっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いらっしゃいませ。どうぞ"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "あの、初めてで。……何をどうすればいいか、全然分からなくて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "席へ案内して、メニューを広げる。お客さんは、葉の名前の列を見て固まった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "甘いのと、すっきりしたのだと、どっちが好きですか"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……すっきり、ですかね。ガムは、ミント派です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、ミントの入ったものにします"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸い方を説明しようと口を開いたところで、カウンターのスミさんと目が合った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは、指を一本だけ立てていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……一つだけ、ってことか）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ゆっくり吸って、ゆっくり吐いてください。それだけで大丈夫です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お客さんは言われた通りに吸って、細く煙を吐いた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……あ、できた。思ったより、ずっと静かなんですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "静かに過ごす店なので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二口目から、お客さんの肩が下がった。スマホを伏せて、窓の外を見ている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片づけの時、カウンターでスミさんに聞いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "さっきの指、一つだけ言えってことですよね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "初めての客に十個言うと、十個とも忘れる。一つなら、一つ残る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭のこととか、ホースの持ち方とか、言いたいことはもっとありました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "次に来た時に言え。言うことが残ってりゃ、また来る理由になる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "そういうものですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "俺が最初に吸った店の親父も、一つしか言わなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何て言われたんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "「むせたら笑え」、それだけだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……一つも、吸い方じゃないですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "でも、覚えてるだろ。二十年以上たっても"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "伝票をまとめながら、さっきのお客さんの顔を、一回だけ思い出した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_shift_talk_cd_player",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片づけの途中で、店の音楽がぶつっと止まった。棚の上の古いCDラジカセが、黙っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "止まりました、……壊れました？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "叩くな。そいつは叩くと、もっと黙る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは椅子に乗って、ラジカセを下ろした。ボタンの文字が、半分消えている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "店の音楽、ずっとこれだったんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店を開けた時からな。CDも、三枚しかねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "三枚を、ずっと回してたんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "客は気づかねえ。気づくのは、毎日いるやつだけだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺、二枚目の四曲目で、だいたい閉店が近いって分かります"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……それは、気づきすぎだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ふたを開けると、CDが一枚、斜めに引っかかっていた。指で戻すと、また回りはじめる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "流れてきたのは、二枚目の四曲目だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ほら"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "うるせえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんはラジカセを棚に戻しかけて、手を止めた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "音が止まった間、店の中、どうだった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "え、……静かでした。お客さんの話し声が、急に聞こえて"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "窓際の二人、止まった途端に小声になってたな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "聞かれたくない話だったんですかね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "音楽は、客の話を隠すためにかけてる。俺のためじゃねえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われてみれば、三枚とも、静かな曲ばかりだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "新しいCD、買わないんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "新しいのを入れたら、お前の時計が狂うだろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……それ、俺のためじゃないですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは返事をせずに、ラジカセの電源を落とした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_shift_talk_same_seat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつも奥の角の席に座る常連さんが、入口で立ち止まった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "角の席には、もう別のお客さんがいる。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……ああ、今日は埋まってるか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません。ほかの席でよければ、すぐご用意します"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "いいよ、いいよ。たまには違う所から見るのも"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "常連さんは窓際の席に腰を下ろした。でも、何度も角の席の方を見ている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターに戻ると、スミさんが、いつもより一回り小さい炭を選んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いつもの炭じゃないんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "窓際は、角より風が通る。同じ炭だと、あの人には熱い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "席が変わると、炭まで変わるんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "客が同じでも、座る場所が違えば別の一台だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "運んでいくと、常連さんは一口吸って、少し意外そうな顔をした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "……いつもと同じだな。窓際なのに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "スミさんが、席に合わせてくれました"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "何も言ってないのに。……いや、言わなくても分かる店か"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらくして角の席が空くと、常連さんはホースを持ったまま、そちらへ移ろうとした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "けれど、腰を半分浮かせたところで、座り直した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "いいや。今日は、ここで最後まで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片づけの時、窓際の灰皿を下げながら、スミさんに言った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "角の席に移らなかったですね、あの人"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "窓際が、気に入ったんだろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭を変えたからですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "炭を変えたのは、最初の一口のためだけだ。残りは、あの人が決めた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓際の席を拭く。ガラスに映った店の中で、角の席がいちばんよく見えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……いつもの席を、こっちから見てたのか）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_shift_talk_burnt_finger",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "グラスを洗っていると、人差し指の先がひりっとした。赤く、小さく膨れている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "さっき、炭を急いでつまみ直した時のだ。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "見せろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、大丈夫です。ちょっと当たっただけで"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "見せろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは、こちらの手首をつかんで蛇口の下へ引っぱった。冷たい水が、ずっと流れる。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "十数えるまで、出すな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……十、数えました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "もう十だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "引き出しから、ふたの固い軟膏が出てきた。ラベルが、すっかりかすれている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "これ、いつのですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "知らねえ。効く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "知らないのに、効くんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "俺で試した。何回もな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの指の腹にも、古い白い跡がいくつもあった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "火傷の数だけ、上手くなるってことですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ならねえ。火傷は、急いだ回数だ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "炭は、端をつまむから滑る。真ん中を、一回で挟め"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……真ん中を、一回で"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "つまみ直す一秒より、最初に狙う一秒のほうが短え"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "軟膏を塗った指に、スミさんが絆創膏を一枚、雑に巻いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "曲がってます、これ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "文句があるなら、自分で巻け"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "曲がった絆創膏のまま、残りのグラスを洗った。今度は、一つずつゆっくり。"
         }
       ]
     }
