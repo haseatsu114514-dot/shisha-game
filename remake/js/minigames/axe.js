@@ -42,14 +42,17 @@ const CHIPS = { src: imgFileUrl("ui/axe_throw/wood-chips.webp"), cell: 128, cols
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
 if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});
 const { x: CX, y: CY, radius: R } = TARGET;
-// 一人称の的の見せ方（#3639 オーナー指示 2026-11-18 差し替え）: 板は 85% に縮めて中心を少し上げ、
-// 下にレーンの床・左右に壁とネットが見える構図で「奥にある」感じを出す。板ローカル座標（CX/CY/R）と
-// 判定は一切変えず、表示変換はこの transform だけが担う（クリック変換は変換グループの CTM で追随する）。
-const FPS_BOARD_TRANSFORM = `translate(${CX} 215) scale(.85) translate(${-CX} ${-CY})`;
-// 手元の型（#3639 オーナー指示 2026-11-18 第3弾「手元をレイヤー上に」）: 構え絵（bg_axe_lane_aim）に焼き込まれた
-// 右手と斧の輪郭。素のレーン絵との差分を行帯ごとに実測し、画像座標（1280×720）から viewBox 座標へ換算したもの。
-// 右端は弾く案内の文字に被らないよう画像 x=1040 で切り、下端は拳の下（y=664）まで。表示だけの型で、判定・座標には使わない。
-const HAND_SILHOUETTE = "M551.1 19.4L544.1 25.6L538.6 31.9L532.3 38.1L526.9 44.4L523.0 50.6L519.1 56.9L515.9 63.1L513.6 69.4L509.7 75.6L508.1 81.9L505.0 88.1L504.2 94.4L502.7 100.6L501.9 106.9L500.3 113.1L498.8 119.4L500.3 125.6L499.5 131.9L499.5 138.1L502.7 144.4L583.9 150.6L581.6 156.9L578.4 163.1L575.3 169.4L571.4 175.6L568.3 181.9L564.4 188.1L561.2 194.4L558.1 200.6L555.8 206.9L552.7 213.1L548.8 219.4L545.6 225.6L542.5 231.9L540.2 238.1L536.2 244.4L533.9 250.6L531.6 256.9L527.7 263.1L507.3 269.4L496.4 275.6L479.2 281.9L478.4 288.1L480.8 294.4L478.4 300.6L479.2 306.9L469.1 313.1L466.7 319.4L465.2 325.6L466.7 331.9L459.7 338.1L458.1 344.4L457.3 350.6L460.5 356.9L455.8 363.1L453.4 369.4L453.4 375.6L455.8 381.9L462.8 388.1L458.1 394.4L451.9 400.6L444.8 406.9L437.8 413.1L430.0 419.4L425.3 425.6L425.3 431.9L432.3 438.1L438.6 444.4L443.3 450.6L640.2 450.6L640.2 444.4L640.2 438.1L640.2 431.9L637.0 425.6L631.6 419.4L626.1 413.1L619.8 406.9L613.6 400.6L601.9 394.4L597.2 388.1L591.7 381.9L587.8 375.6L583.9 369.4L581.6 363.1L580.0 356.9L577.7 350.6L576.1 344.4L573.8 338.1L571.4 331.9L569.8 325.6L568.3 319.4L565.9 313.1L564.4 306.9L562.8 300.6L558.1 294.4L550.3 288.1L552.7 281.9L551.1 275.6L554.2 269.4L561.2 263.1L565.2 256.9L573.0 250.6L576.9 244.4L580.8 238.1L583.9 231.9L586.2 225.6L588.6 219.4L591.7 213.1L601.1 206.9L603.4 200.6L610.5 194.4L615.9 188.1L621.4 181.9L626.1 175.6L630.0 169.4L634.7 163.1L640.2 156.9L640.2 150.6L640.2 144.4L640.2 138.1L640.2 131.9L640.2 125.6L640.2 119.4L640.2 113.1L640.2 106.9L640.2 100.6L640.2 94.4L640.2 88.1L640.2 81.9L640.2 75.6L640.2 69.4L598.8 63.1L589.4 56.9L579.2 50.6L571.4 44.4L564.4 38.1L558.1 31.9L553.4 25.6L548.8 19.4Z";
+// 一人称の的の見せ方（#3639 オーナー指示 2026-11-18 差し替え＋同日第4弾で寄せ）: 板の中心は少し上げた
+// (CX, 215) のまま、写真側を 1.15 倍に寄せて「的の近くから投げる」感じにする。板も同じ中心で同率に
+// 拡げるため、表示変換は scale .85×1.15＝.9775 だけになる。板ローカル座標（CX/CY/R）と判定は一切
+// 変えず、表示変換はこの transform だけが担う（クリック変換は変換グループの CTM で追随する）。
+const FPS_BOARD_TRANSFORM = `translate(${CX} 215) scale(.9775) translate(${-CX} ${-CY})`;
+// 手元の型（#3639 オーナー指示 2026-11-18 第3弾「手元をレイヤー上に」＋第4弾で両手構えへ差し替え）: 構え絵
+// （bg_axe_lane_aim）に焼き込まれた両手と斧の輪郭。素のレーン絵との差分の最大輪郭を実測し、写真の寄せ
+// （x=-245, y=-107, 1150×646.875）に合わせて画像座標（1280×720）から viewBox 座標へ換算したもの。
+// 右下は「横を止める」ボタンに被らないよう、ボタンの範囲を画像座標へ戻した x>=965 かつ y>=575 を切り落としてある。
+// 表示だけの型で、判定・座標には使わない。
+const HAND_SILHOUETTE = "M613.9 84.4L581.6 67.3L558.2 74.5L525.0 52.9L497.1 21.5L486.3 26.9L445.9 84.4L437.8 123.0L440.5 147.3L471.1 130.2L516.0 118.5L516.0 110.4L503.4 109.5L503.4 96.9L498.0 112.2L489.9 111.3L488.1 86.2L498.0 81.7L524.1 88.9L524.1 78.1L508.8 77.2L508.8 56.5L525.0 60.1L533.9 72.7L540.2 122.1L533.9 123.0L498.0 208.4L455.8 229.0L459.4 248.8L446.8 256.0L434.2 311.7L441.4 333.2L435.1 345.8L401.0 348.5L390.2 363.8L383.0 363.8L374.0 348.5L326.4 349.4L310.2 371.9L312.9 387.1L283.3 381.8L283.3 396.1L268.0 400.6L267.1 408.7L224.9 412.3L248.2 418.6L246.4 436.6L256.3 431.2L257.2 422.2L278.8 431.2L273.4 444.6L283.3 445.5L281.5 466.2L271.6 467.1L262.6 479.7L222.2 479.7L221.3 470.7L194.3 486.0L134.1 482.4L122.5 491.4L120.7 505.7L144.9 517.4L164.7 517.4L171.9 504.8L180.9 504.8L183.6 513.8L206.9 511.1L207.8 519.2L191.6 525.5L186.2 539.0L195.2 539.0L201.5 529.1L229.4 529.1L230.3 539.0L363.2 539.0L385.7 516.5L395.6 518.3L397.4 539.0L434.2 539.0L435.1 532.7L444.1 532.7L444.1 525.5L435.1 523.7L439.6 508.4L467.5 512.0L474.6 526.4L494.4 521.9L500.7 533.6L507.9 533.6L509.7 523.7L520.5 522.8L521.4 503.9L511.5 503.9L509.7 495.0L482.7 479.7L452.2 478.8L452.2 467.1L466.6 463.5L459.4 453.6L461.2 441.9L469.3 441.0L464.8 424.9L478.2 423.1L478.2 410.5L462.1 402.4L462.1 390.7L482.7 388.0L472.9 364.7L478.2 350.3L486.3 349.4L584.3 433.9L579.8 459.9L588.8 443.7L606.7 453.6L605.8 469.8L590.5 468.0L587.0 474.3L601.3 479.7L605.8 506.6L621.1 506.6L614.8 500.3L621.1 453.6L592.3 430.3L592.3 422.2L621.1 424.9L621.1 394.3L636.4 396.1L632.8 408.7L708.2 407.8L615.7 334.1L579.8 314.4L569.0 300.9L566.3 276.6L551.9 262.3L550.1 247.0L533.9 234.4L557.3 188.6L551.9 176.0L560.0 173.3L560.9 163.4L576.2 172.4L577.1 157.1L569.9 152.6L574.4 139.2L561.8 132.0L561.8 122.1L574.4 118.5L580.7 95.1L598.6 92.5L614.8 98.7Z";
 // Solid plank edges inside the 1254px artwork (alpha 250+, asset_sources/ui/axe-watl-20261101/adoption.json); the transparent margin is not wood.
 const OPAQUE = { left: 69 / 1254, right: 1185 / 1254, top: 61 / 1254, bottom: 1190 / 1254 };
 const PLANK = { left: CX + BOARD.left * R, right: CX + BOARD.right * R, top: CY + BOARD.top * R, bottom: CY + BOARD.bottom * R };
@@ -228,10 +231,10 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   // 絵の中の的は無地の円盤で、得点の盤面はこれまでどおり板とSVGが担う（判定・座標は一切変えない）。
   let laneAimImage = null, handFront = null, handFrontImage = null;
   if (tapPull) {
-    laneAimImage = svg("image", { class: "axe-lane-aim", href: ART.laneAim, x: -170, y: -65, width: 1000, height: 562.5, preserveAspectRatio: "xMidYMid slice", opacity: 0 });
+    laneAimImage = svg("image", { class: "axe-lane-aim", href: ART.laneAim, x: -245, y: -107, width: 1150, height: 646.875, preserveAspectRatio: "xMidYMid slice", opacity: 0 });
     const lane = svg("g", { class: "axe-fps-lane" }, [
       svg("rect", { x: -170, y: -65, width: 1000, height: 562.5, fill: "#171f22" }),
-      svg("image", { class: "axe-lane-bg", href: ART.lane, x: -170, y: -65, width: 1000, height: 562.5, preserveAspectRatio: "xMidYMid slice" }),
+      svg("image", { class: "axe-lane-bg", href: ART.lane, x: -245, y: -107, width: 1150, height: 646.875, preserveAspectRatio: "xMidYMid slice" }),
       laneAimImage,
     ]);
     artBoard.insertBefore(lane, artBoard.firstChild);
@@ -239,7 +242,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     // 右手と斧の輪郭（HAND_SILHOUETTE）で型抜きした複写を別層で重ね、スコアピル等より上に描く。
     // 元の構え絵とピクセル単位で重なるので見た目は変わらず、手元だけが前面に来る。タッチは受けない（CSS）。
     const handClipId = artId + "-hand-clip";
-    handFrontImage = svg("image", { class: "axe-hand-front-img", href: ART.laneAim, x: -170, y: -65, width: 1000, height: 562.5, preserveAspectRatio: "xMidYMid slice", opacity: 0, "clip-path": `url(#${handClipId})` });
+    handFrontImage = svg("image", { class: "axe-hand-front-img", href: ART.laneAim, x: -245, y: -107, width: 1150, height: 646.875, preserveAspectRatio: "xMidYMid slice", opacity: 0, "clip-path": `url(#${handClipId})` });
     handFront = svg("svg", { viewBox: "-170 -65 1000 562.5", class: "axe-hand-front", "aria-hidden": "true" }, [
       svg("defs", {}, [svg("clipPath", { id: handClipId }, [svg("path", { d: HAND_SILHOUETTE })])]), handFrontImage]);
   }

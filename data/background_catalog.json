@@ -48,8 +48,8 @@
     1280,
     720
    ],
-   "luma": 37,
-   "blob": "f47bb514be29143b17206dbf991cc4e3dcc67b39"
+   "luma": 44,
+   "blob": "876a12e342cdf89a7372b759a3cd5a48e387ed63"
   },
   "bg_axe_lane_aim.png": {
    "place": "axe_lane_aim",
@@ -59,8 +59,8 @@
     1280,
     720
    ],
-   "luma": 38,
-   "blob": "0e3944eb56a10eb2a6c989e47dc6c7e659e943e6"
+   "luma": 45,
+   "blob": "0603417f46ec99645c1e7021d8adcdf89ef3e2df"
   },
   "bg_axe_lounge_night.png": {
    "place": "axe_lounge",
