@@ -71,7 +71,7 @@ const YUZUGAYA_AQUARIUM_WINDOWS = [[6,38,66,310],[152,144,84,204],[272,224,60,12
 const YUZUGAYA_SENTO_WINDOWS = [[52,114,74,110],[130,158,62,100],[218,228,82,68],[518,126,128,48]];
 const VOLK_SHOP_WINDOWS = [[2,8,64,232],[126,48,70,300],[204,80,44,264],[256,98,26,242]];
 
-const OUTDOOR_BG_RE = /^bg_(?:osu_map|map_local|widehanga_map|widehanga_station|street|kannon|tonari_outside|shishark|shishark_preparing|ch2_venue_bench|kemurikusa_outside|station_walk|toosu_park)(?:_day|_night)?\.png$/;
+const OUTDOOR_BG_RE = /^bg_(?:osu_map|map_local|widehanga_map|widehanga_station|street|kannon|tonari_outside|shishark|shishark_preparing|ch2_venue_bench|kemurikusa_outside|station_walk|toosu_park|tokyo_benten|tokyo_station)(?:_day|_night)?\.png$/;
 
 const INDOOR_WINDOWS_BY_BG = [
   [/^bg_tonari_inside_(?:day|night)\.png$/, TONARI_WINDOWS],
@@ -92,7 +92,7 @@ export function rainScene(background, screen) {
   const file = String(background || "").split(/[?#]/)[0].split("/").pop().replace(/\.webp$/, ".png")
     .replace(/_overcast_(day|night)\.png$/, "_$1.png");
   // ドバイの背景にも雨を重ねない（第5章でドバイへ発つ機内の場面は、街の札が変わる前に読む）
-  if (!file || /(?:title|tournament)/.test(file) || /^bg_dubai_/.test(file) || !isRainy()) return null;
+  if (!file || /(?:title|tournament)/.test(file) || /^bg_(?:dubai_|fookah_dubai)/.test(file) || !isRainy()) return null;
   if (OUTDOOR_BG_RE.test(file)) {
     return { mode: "outdoor", windows: [] };
   }

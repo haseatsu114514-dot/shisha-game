@@ -85,9 +85,9 @@ export const CH5_SCENE_BG = Object.freeze({
   ending_start: "bg_tonari_inside_night",            // 仮置き bg
   ending_normal: "bg_tonari_inside_night",           // 仮置き bg
   epilogue_tsumugi: "bg_tonari_inside_night",        // 仮置き bg
-  epilogue_minto: "bg_tonari_inside_night",          // 仮置き bg
+  epilogue_minto: "bg_shiori_room_night",
   epilogue_rio: "bg_tonari_inside_night",            // 仮置き bg
-  epilogue_ageha: "bg_tonari_inside_night",          // 仮置き bg
+  epilogue_ageha: "bg_ageha_room_night",
   epilogue_mashiro: "bg_tonari_inside_night",        // 仮置き bg
   epilogue_samechan: "bg_tonari_inside_night",       // 仮置き bg
   epilogue_hiyori: "bg_tonari_inside_night",         // 仮置き bg
