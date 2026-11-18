@@ -46,6 +46,10 @@ const { x: CX, y: CY, radius: R } = TARGET;
 // 下にレーンの床・左右に壁とネットが見える構図で「奥にある」感じを出す。板ローカル座標（CX/CY/R）と
 // 判定は一切変えず、表示変換はこの transform だけが担う（クリック変換は変換グループの CTM で追随する）。
 const FPS_BOARD_TRANSFORM = `translate(${CX} 215) scale(.85) translate(${-CX} ${-CY})`;
+// 手元の型（#3639 オーナー指示 2026-11-18 第3弾「手元をレイヤー上に」）: 構え絵（bg_axe_lane_aim）に焼き込まれた
+// 右手と斧の輪郭。素のレーン絵との差分を行帯ごとに実測し、画像座標（1280×720）から viewBox 座標へ換算したもの。
+// 右端は弾く案内の文字に被らないよう画像 x=1040 で切り、下端は拳の下（y=664）まで。表示だけの型で、判定・座標には使わない。
+const HAND_SILHOUETTE = "M551.1 19.4L544.1 25.6L538.6 31.9L532.3 38.1L526.9 44.4L523.0 50.6L519.1 56.9L515.9 63.1L513.6 69.4L509.7 75.6L508.1 81.9L505.0 88.1L504.2 94.4L502.7 100.6L501.9 106.9L500.3 113.1L498.8 119.4L500.3 125.6L499.5 131.9L499.5 138.1L502.7 144.4L583.9 150.6L581.6 156.9L578.4 163.1L575.3 169.4L571.4 175.6L568.3 181.9L564.4 188.1L561.2 194.4L558.1 200.6L555.8 206.9L552.7 213.1L548.8 219.4L545.6 225.6L542.5 231.9L540.2 238.1L536.2 244.4L533.9 250.6L531.6 256.9L527.7 263.1L507.3 269.4L496.4 275.6L479.2 281.9L478.4 288.1L480.8 294.4L478.4 300.6L479.2 306.9L469.1 313.1L466.7 319.4L465.2 325.6L466.7 331.9L459.7 338.1L458.1 344.4L457.3 350.6L460.5 356.9L455.8 363.1L453.4 369.4L453.4 375.6L455.8 381.9L462.8 388.1L458.1 394.4L451.9 400.6L444.8 406.9L437.8 413.1L430.0 419.4L425.3 425.6L425.3 431.9L432.3 438.1L438.6 444.4L443.3 450.6L640.2 450.6L640.2 444.4L640.2 438.1L640.2 431.9L637.0 425.6L631.6 419.4L626.1 413.1L619.8 406.9L613.6 400.6L601.9 394.4L597.2 388.1L591.7 381.9L587.8 375.6L583.9 369.4L581.6 363.1L580.0 356.9L577.7 350.6L576.1 344.4L573.8 338.1L571.4 331.9L569.8 325.6L568.3 319.4L565.9 313.1L564.4 306.9L562.8 300.6L558.1 294.4L550.3 288.1L552.7 281.9L551.1 275.6L554.2 269.4L561.2 263.1L565.2 256.9L573.0 250.6L576.9 244.4L580.8 238.1L583.9 231.9L586.2 225.6L588.6 219.4L591.7 213.1L601.1 206.9L603.4 200.6L610.5 194.4L615.9 188.1L621.4 181.9L626.1 175.6L630.0 169.4L634.7 163.1L640.2 156.9L640.2 150.6L640.2 144.4L640.2 138.1L640.2 131.9L640.2 125.6L640.2 119.4L640.2 113.1L640.2 106.9L640.2 100.6L640.2 94.4L640.2 88.1L640.2 81.9L640.2 75.6L640.2 69.4L598.8 63.1L589.4 56.9L579.2 50.6L571.4 44.4L564.4 38.1L558.1 31.9L553.4 25.6L548.8 19.4Z";
 // Solid plank edges inside the 1254px artwork (alpha 250+, asset_sources/ui/axe-watl-20261101/adoption.json); the transparent margin is not wood.
 const OPAQUE = { left: 69 / 1254, right: 1185 / 1254, top: 61 / 1254, bottom: 1190 / 1254 };
 const PLANK = { left: CX + BOARD.left * R, right: CX + BOARD.right * R, top: CY + BOARD.top * R, bottom: CY + BOARD.bottom * R };
@@ -144,9 +148,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     // #2834: 「やめる」も「？」と同じ丸い札（✕）。名前は読み上げ用の文字で付ける。
     el("button.axe-button.axe-close.axe-help", { type: "button", title: "やめる", dataset: { test: "axe-cancel" }, onclick: () => cleanup(false) },
       [el("span", { "aria-hidden": "true", text: "✕" }), el("span.axe-quiet", { text: "やめる" })])]);
-  // 一人称ではスコア類（REC・各投・合計・投数・連続）を上部バーから外し、下部中央の細いピルへ寄せる
-  // （#3639 オーナー指示 2026-11-18 差し替え）。上部には ？／× だけを残してレーンの奥行きを見せる。
-  // 中身の作り・更新は従来どおりで、置き場所だけが変わる。
+  // 一人称ではスコア類（REC・各投・合計・投数・連続）を上部バーから外し、右上の細いピルへ寄せる
+  // （#3639 オーナー指示 2026-11-18 第3弾: 下部中央から右上へ移し、下部は手元と操作のために開ける）。
+  // ？／× はピルの右隣に並ぶ。中身の作り・更新は従来どおりで、置き場所だけが変わる。
   const scorePill = tapPull ? el("div.axe-score-pill", { dataset: { test: "axe-score-pill" } }) : null;
   if (scorePill) scorePill.append(round);
   const divisionBadge = el("span.axe-division", { text: DIVISIONS[division].short, title: DIVISIONS[division].name + "：" + DIVISIONS[division].note, dataset: { test: "axe-division" } });
@@ -222,7 +226,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     boardScaleArt);
   // 一人称レーンの背景絵（#3639）: レーンの中に立った視点の絵を全面に敷き、狙いの間だけ構え（右手と斧）の絵を重ねる。
   // 絵の中の的は無地の円盤で、得点の盤面はこれまでどおり板とSVGが担う（判定・座標は一切変えない）。
-  let laneAimImage = null;
+  let laneAimImage = null, handFront = null, handFrontImage = null;
   if (tapPull) {
     laneAimImage = svg("image", { class: "axe-lane-aim", href: ART.laneAim, x: -170, y: -65, width: 1000, height: 562.5, preserveAspectRatio: "xMidYMid slice", opacity: 0 });
     const lane = svg("g", { class: "axe-fps-lane" }, [
@@ -231,6 +235,13 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       laneAimImage,
     ]);
     artBoard.insertBefore(lane, artBoard.firstChild);
+    // 手元を最前面へ（#3639 オーナー指示 2026-11-18 第3弾）: 構え絵は背景に焼き込まれているため、同じ絵を
+    // 右手と斧の輪郭（HAND_SILHOUETTE）で型抜きした複写を別層で重ね、スコアピル等より上に描く。
+    // 元の構え絵とピクセル単位で重なるので見た目は変わらず、手元だけが前面に来る。タッチは受けない（CSS）。
+    const handClipId = artId + "-hand-clip";
+    handFrontImage = svg("image", { class: "axe-hand-front-img", href: ART.laneAim, x: -170, y: -65, width: 1000, height: 562.5, preserveAspectRatio: "xMidYMid slice", opacity: 0, "clip-path": `url(#${handClipId})` });
+    handFront = svg("svg", { viewBox: "-170 -65 1000 562.5", class: "axe-hand-front", "aria-hidden": "true" }, [
+      svg("defs", {}, [svg("clipPath", { id: handClipId }, [svg("path", { d: HAND_SILHOUETTE })])]), handFrontImage]);
   }
   // Painted markings at the official proportions: 20 mm black lines, red bulls, blue killshots.
   // WATL: the inner killshot is outlined in red pen, the outer may be red; the pen lines sit inside each circle so the blue reads at its true size.
@@ -381,6 +392,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const calls = el("div.axe-calls", [el("button.axe-button", { text: "通常", dataset: { call: "normal" }, onclick: () => selectCall(null) }),
     ...KILLS.map(target => el("button.axe-button", { text: killPlaces[target.id] + "の青",
       dataset: { call: target.id }, onclick: () => selectCall(target.id) }))]);
+  // 宣言の札の見出し（#3639 オーナー指示 2026-11-18 第3弾「左上のどこを狙うUIが分かりにくい」）:
+  // 札の真上に「ねらい」の小さな札を浮かべ、何を選ぶ場所か一目で分かるようにする。表示条件は札本体とそろえる。
+  const callsLabel = tapPull ? el("div.axe-calls-label", { dataset: { test: "axe-calls-label" }, text: "ねらい" }) : null;
   const liveValue = el("strong"), liveReason = el("span.axe-live-reason");
   const liveScore = el("div.axe-live-score", { hidden: true, dataset: { test: "axe-live-score" } }, [el("span.axe-live-label", { text: "今の刃先" }), liveValue, liveReason]);
   const needle = el("span.axe-needle", { dataset: { test: "axe-needle" } });
@@ -449,7 +463,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const aimPromptSub = el("span.axe-aim-prompt-sub", { text: "的に触れて位置を決め、上へ弾いて投げる" });
   const aimPrompt = tapPull ? el("div.axe-aim-prompt", { hidden: true, dataset: { test: "axe-aim-prompt" }, "aria-hidden": "true" }, [aimPromptTitle, aimPromptSub]) : null;
   const boardPane = el("div.axe-board-pane", [
-    el("p.axe-legend", { text: "赤6 · 5の円 · リング4〜1 · 宣言した青7／8" }), artBoard, board, zoom, calls, status, aimPrompt]),
+    el("p.axe-legend", { text: "赤6 · 5の円 · リング4〜1 · 宣言した青7／8" }), artBoard, board, zoom, calls, callsLabel, status, aimPrompt, handFront]),
     side = el("aside.axe-side", { dataset: { test: "axe-side" } }, [matchScore, goals, companionCard]),
     panel = el("aside.axe-panel", [matchRecords, steps, liveScore, resultCard, note, feedback, steadiness, stability, keyhint, controls, throwZone]);
   const body = el("div.axe-body", [side, boardPane, timing, panel]);
@@ -840,7 +854,10 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       if (hands.dataset.pose !== pose) { hands.dataset.pose = pose; hands.setAttribute("transform", HAND_POSES[pose]); hands.setAttribute("opacity", 1); }
     }
     // 一人称の構え絵と狙いの案内（#3639）: 自分が狙う間だけ構え（右手と斧）の絵を重ね、投げた瞬間に素のレーンへ戻して飛ぶ斧へ繋ぐ。
-    if (laneAimImage) laneAimImage.setAttribute("opacity", actor === "player" && ["choice", "horizontal", "vertical", "power"].includes(phase) ? 1 : 0);
+    // 最前面の手元（型抜き複写）も同じ条件で出し入れする。
+    const aimShown = actor === "player" && ["choice", "horizontal", "vertical", "power"].includes(phase) ? 1 : 0;
+    if (laneAimImage) laneAimImage.setAttribute("opacity", aimShown);
+    if (handFrontImage) handFrontImage.setAttribute("opacity", aimShown);
     if (aimPrompt) {
       const show = actor === "player" && ["choice", "horizontal", "vertical"].includes(phase) && !isPaused();
       aimPrompt.hidden = !show;
@@ -1034,7 +1051,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       zoomPower.textContent = "回転 " + Math.round(zoomShot.power * 100) + "%";
       zoom.setAttribute("aria-label", "刃の着地点の拡大。" + zoomShot.score + "点・" + label + "・" + zoomPower.textContent);
     }
-    calls.hidden = (tapPull ? !["choice", "power"].includes(phase) || pullInput?.pulling : phase !== "choice") || sd; reaim.hidden = !cycles[phase]; retry.hidden = !allowRetry || phase !== "summary" || Boolean(series && !seriesWinner());
+    calls.hidden = (tapPull ? !["choice", "power"].includes(phase) || pullInput?.pulling : phase !== "choice") || sd; if (callsLabel) callsLabel.hidden = calls.hidden;
+    reaim.hidden = !cycles[phase]; retry.hidden = !allowRetry || phase !== "summary" || Boolean(series && !seriesWinner());
     controls.hidden = steadiness.hidden = !moving;
     focusButton.disabled = isPaused() || focusUsed || performance.now() - lastAction < T.guard;
     const remaining = Math.max(0, focusUntil - held);

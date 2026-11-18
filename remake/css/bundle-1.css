@@ -2140,7 +2140,7 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-game[data-input-mode="tap-pull"].axe-first-person { padding: 0; gap: 0; overflow: hidden; background: #172025; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-body { display: block !important; position: absolute; inset: 0; grid-template-columns: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-header { position: absolute; z-index: 5; top: 18px; right: 24px; }
-/* スコア類は下部中央のピルへ移したので、上部バーは ？／× だけを右上に残し、看板の板（::before）も外してレーンの奥行きを見せる */
+/* スコア類は右上のピルへ寄せたので、上部バーは ？／× だけを残し、看板の板（::before）も外してレーンの奥行きを見せる */
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-header::before { display: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-board-pane { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; max-height: none; aspect-ratio: auto; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: hidden; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person :is(.axe-target-art, .axe-target) { position: absolute; inset: 0; display: block; width: 100%; height: 100%; max-width: none; max-height: none; aspect-ratio: auto; margin: 0; border: 0; border-radius: 0; }
@@ -2262,10 +2262,9 @@ html:root[data-density="phone"] body:not(:root) .axe-bar-menu[data-view="gear"] 
 .axe-game[data-input-mode="tap-pull"].axe-first-person::after { display: none; }
 /* 左の金網越しはランプで明るいので、宣言ボタンの文字が沈まないよう薄い暗色を敷く（一人称だけ） */
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-calls .axe-button { background-color: rgba(12,10,8,.38); border-radius: 10px; }
-/* スコア類は下部中央の細いピルに小さくまとめる（#3639 オーナー指示 2026-11-18 差し替え）。上部はレーンの奥行きのために空ける。
-   結果の寄り（左・下）と重なる時だけピルを少し右へ逃がし、まとめ画面ではパネルの末尾がピルの裏へ潜らないよう余白を足す */
-.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill { position: absolute; z-index: 5; left: 50%; bottom: 2%; transform: translateX(-50%); display: flex; align-items: center; gap: 9px; max-width: 94%; padding: 4px 14px; border: 1px solid rgba(232, 184, 110, .28); border-radius: 999px; background: rgba(8, 11, 10, .55); box-shadow: 0 4px 14px rgba(0, 0, 0, .35); pointer-events: none; }
-.axe-game[data-input-mode="tap-pull"].axe-first-person[data-phase="result"] .axe-score-pill { left: 59%; }
+/* スコア類は右上の細いピルに小さくまとめる（#3639 オーナー指示 2026-11-18 第3弾: 下部中央から右上へ移し、下部を開ける）。
+   ？／×（右端・幅約124px）の左隣に置き、斧の頭（絵の上端 y≈105px）にも被らない高さに収める。タッチは受けない */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill { position: absolute; z-index: 5; top: 14px; right: 136px; display: flex; align-items: center; gap: 9px; max-width: 94%; padding: 4px 14px; border: 1px solid rgba(232, 184, 110, .28); border-radius: 999px; background: rgba(8, 11, 10, .55); box-shadow: 0 4px 14px rgba(0, 0, 0, .35); pointer-events: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-division { order: 1; margin: 0; padding: 2px 7px; font-size: 11px; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-scoreboard { order: 2; width: 216px; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-score-row { gap: 5px; }
@@ -2280,7 +2279,12 @@ html:root[data-density="phone"] body:not(:root) .axe-bar-menu[data-view="gear"] 
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total-next { font-size: 10px; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-round { order: 4; margin: 0; padding: 0; border: 0; font-size: 12px; white-space: nowrap; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-heat { order: 5; margin: 0; }
-.axe-game[data-input-mode="tap-pull"].axe-first-person[data-phase="summary"] .axe-panel { padding-bottom: 60px; }
+/* 手元を最前面へ（#3639 オーナー指示 2026-11-18 第3弾）: 構え絵から右手と斧だけを型抜きした複写（.axe-hand-front）を
+   スコアピル（z 5）より上に重ねる。元の構え絵とピクセル単位で重なるため見た目は変わらず、手元が隠れなくなる。タッチは受けない */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-hand-front { position: absolute; inset: 0; z-index: 6; display: block; width: 100%; height: 100%; pointer-events: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-hand-front-img { transition: opacity .3s ease; }
+/* 宣言の札の見出し（#3639 オーナー指示 2026-11-18 第3弾）: 札の真上に「ねらい」の小さな札を浮かべ、何を選ぶ場所か一目で分かるようにする */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-calls-label { position: absolute; z-index: 3; left: 3%; top: 20%; transform: translateY(calc(-100% - 8px)); padding: 3px 12px 4px; border: 1px solid rgba(232, 184, 110, .35); border-radius: 999px; background: rgba(8, 11, 10, .55); color: #f5ead6; font-size: 13px; font-weight: 700; letter-spacing: .18em; pointer-events: none; }
 
 /* ===== css/camel-race.css ===== */
 /* CAMEL RACE（第4章ドバイ編の任意ミニゲーム）。本編の #stage（1280×720）に重ねる。
