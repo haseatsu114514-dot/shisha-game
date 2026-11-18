@@ -3,7 +3,7 @@ import { buildVersioned } from "./asset-version.js";
 import { prepareImage } from "./loading-prefetch.js";
 import { LOADING_COMICS, eligibleLoadingComics } from "./loading-comics.js";
 
-let active = null, previousComic = null, upcomingComic = null, lastReadAt = -Infinity, lastComic = null;
+let active = null, previousComic = null, upcomingComic = null, preferredComic = null, lastReadAt = -Infinity, lastComic = null;
 // Reading hold: a tap or key is accepted only after the art has been on screen this long and this long
 // after preparation finished, so taps left over from the previous screen cannot skip an unread comic.
 const READ_GUARD_SHOWN_MS = 700, READ_GUARD_READY_MS = 250;
@@ -33,7 +33,7 @@ export function comicLoadingRequired() {
   } catch { /* 保存を読めない環境はプレイヤーの既定で動く */ }
   return !(typeof navigator !== "undefined" && navigator.webdriver === true);
 }
-let stylesheet;
+let stylesheet, chromeAssets, chromeSettled = false;
 function loadStyle() {
   if (!stylesheet) stylesheet = new Promise((resolve, reject) => {
     // The game page (index.html) already has this sheet in css/bundle-2.css for its static boot screen.
@@ -44,6 +44,41 @@ function loadStyle() {
     document.head.append(link);
   });
   return stylesheet;
+}
+
+function ensureChromeAssets() {
+  if (!chromeAssets) {
+    const bootAssets = typeof window !== "undefined" ? window.SUIEN_BOOT_ASSETS : null;
+    const decode = src => {
+      if (typeof Image === "undefined") return { img: null, ready: Promise.resolve() };
+      const img = new Image();
+      img.decoding = "async";
+      img.src = src;
+      const ready = (typeof img.decode === "function"
+        ? img.decode()
+        : new Promise(resolve => { img.onload = img.onerror = resolve; })
+      ).catch(() => {});
+      return { img, ready };
+    };
+    const bg = bootAssets?.bg ? { img: bootAssets.bg, ready: bootAssets.ready } : decode(new URL("../../img/ui/loading/loading_bg.webp", import.meta.url).href);
+    const logo = bootAssets?.logo ? { img: bootAssets.logo, ready: bootAssets.ready } : decode(new URL("../../img/ui/ui_title_logo_rich.webp", import.meta.url).href);
+    const fonts = typeof document !== "undefined" && document.fonts
+      ? Promise.race([
+          Promise.all(["500", "700", "900"].map(w => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線似顔絵LOADING…準備完了クリックタップで進む"))),
+          new Promise(resolve => setTimeout(resolve, REQUIRED_ART_TIMEOUT_MS)),
+        ]).catch(() => {})
+      : Promise.resolve();
+    const imagesReady = bootAssets?.ready || Promise.race([
+      Promise.all([bg.ready, logo.ready]),
+      new Promise(resolve => setTimeout(resolve, REQUIRED_ART_TIMEOUT_MS)),
+    ]);
+    chromeAssets = {
+      bg: bg.img,
+      logo: logo.img,
+      ready: Promise.all([imagesReady, fonts]).then(() => { chromeSettled = true; }),
+    };
+  }
+  return chromeAssets.ready;
 }
 
 function validPanel(panel) {
@@ -69,17 +104,22 @@ function comicPool(comics, { context = "default", chapter = 1, isMet = null, isR
 const draw = pool => pool.length ? pool[crypto.getRandomValues(new Uint32Array(1))[0] % pool.length] : null;
 
 export function selectLoadingComic(comics, options = {}) {
+  const eligible = eligibleLoadingComics(comics, options).filter(comic => comic.panels.every(validPanel));
   const pool = comicPool(comics, options);
-  // The comic whose art was fetched in advance (warmNextLoadingComic) is used while it is still a fair pick.
-  const chosen = pool.find(comic => comic.id === upcomingComic) || draw(pool);
-  upcomingComic = null;
+  // A comic already chosen on the static boot screen (preferLoadingComic) continues as the same episode
+  // whenever it is eligible, even if the player's save has other unread comics. A speculatively warmed
+  // comic (warmNextLoadingComic) is used while it is still a fair pick in pool.
+  const chosen = (preferredComic && eligible.find(comic => comic.id === preferredComic))
+    || pool.find(comic => comic.id === upcomingComic)
+    || draw(pool);
+  preferredComic = upcomingComic = null;
   if (chosen) previousComic = chosen.id;
   return chosen;
 }
 
 /** 次のロード画面で、出せる話ならこの話を出す（起動直後の画面に先に出した漫画を、同じ話のまま続ける。index.html）。 */
 export function preferLoadingComic(id) {
-  upcomingComic = typeof id === "string" && id ? id : upcomingComic;
+  if (typeof id === "string" && id) preferredComic = upcomingComic = id;
 }
 
 // carriedArt: the comic last painted and its decoded <img>s. A gate showing that same comic again (continuing,
@@ -175,11 +215,12 @@ export async function withLoading(prepare, {
   const proceed = el("p.loading-proceed", { "aria-hidden": "true", text: touchFirst ? "タップで進む" : "クリック・Enter で進む" });
   const content = el("div.loading-comic");
   overlay.classList.add("has-logo");
+  const bootNode = document.querySelector("#boot:not(.done)");
   // Over the static boot screen (the same stack at the same place) the gate takes over without entrance animations.
-  if (document.querySelector("#boot:not(.done)")) overlay.classList.add("is-takeover");
+  if (bootNode) overlay.classList.add("is-takeover");
   const card = el("div.loading-card", [content]);
   overlay.append(logo, card, gauge, status, proceed);
-  let settled = false, comicShown = false, comicShownAt = 0, guardTimer = null, creepFrame = 0, awaitingProceed = false, resolveProceed;
+  let settled = false, comicShown = false, comicShownAt = 0, maxProgress = 0, guardTimer = null, creepFrame = 0, awaitingProceed = false, resolveProceed;
   const proceeded = new Promise(resolve => { resolveProceed = resolve; });
   // Runs inside the tap or key event itself, so it may start sound that needs a user gesture (boot).
   const proceedNow = () => {
@@ -235,25 +276,22 @@ export async function withLoading(prepare, {
       el("p.loading-blank-caption"));
   };
   const artTimeout = required ? REQUIRED_ART_TIMEOUT_MS : COMIC_ART_TIMEOUT_MS;
-  const loadArt = shown => {
-    let images = null;
-    if (carriedArt?.comic === shown) images = carriedArt.images;
-    else if (primedArt?.id === shown.id && primedArt.images.length === shown.panels.length) { images = primedArt.images; primedArt = null; }
-    if (images) return Promise.all(images.map(img => (img.complete && img.naturalWidth > 0 ? Promise.resolve() : img.decode()).then(() => img)));
-    return Promise.all(shown.panels.map(panel => prepareImage(panel.src, { timeoutMs: artTimeout, signal: controller.signal })));
+  const takeReadyImages = shown => {
+    if (!shown) return null;
+    if (carriedArt?.comic === shown && carriedArt.images.every(img => img.complete && img.naturalWidth > 0)) {
+      return carriedArt.images;
+    }
+    if (primedArt?.id === shown.id && primedArt.images.length === shown.panels.length &&
+        primedArt.images.every(img => img.complete && img.naturalWidth > 0)) {
+      const images = primedArt.images;
+      primedArt = null;
+      return images;
+    }
+    return null;
   };
-  if (comic) layout(comic); else layoutBlank();
-  const comicReady = comic ? loadArt(comic).catch(error => {
-    // A comic is a must for players: when this one's art cannot be fetched, show the comic read last.
-    const backup = required && lastComic && lastComic !== comic && !settled && !controller.signal.aborted ? lastComic : null;
-    if (!backup) throw error;
-    comic = backup;
-    layout(backup);
-    return loadArt(backup);
-  }).then(images => {
-    if (settled || controller.signal.aborted) return;
+  const mountArt = (shown, images) => {
     images.forEach((img, i) => {
-      const panel = comic.panels[i], region = panel.region, art = frames[i];
+      const panel = shown.panels[i], region = panel.region, art = frames[i];
       img.alt = panel.alt;
       const crop = el("div.loading-panel-crop", [img]);
       if (region) {
@@ -282,11 +320,54 @@ export async function withLoading(prepare, {
     card.classList.remove("is-waiting");
     comicShown = true; comicShownAt = performance.now();
     // A gate that goes on with this comic (continuing) moves these decoded images in: the art never blinks.
-    carriedArt = { comic, images };
-  }).catch(() => {
-    // Missing art: fall back to the plain gate (no sheet drawn, no reading hold). The blank sheet keeps the size.
-    layoutBlank();
-  }) : Promise.resolve();
+    carriedArt = { comic: shown, images };
+  };
+  const loadArt = shown => {
+    let images = null;
+    if (carriedArt?.comic === shown) images = carriedArt.images;
+    else if (primedArt?.id === shown.id && primedArt.images.length === shown.panels.length) { images = primedArt.images; primedArt = null; }
+    if (images) return Promise.all(images.map(img => (img.complete && img.naturalWidth > 0 ? Promise.resolve() : img.decode()).then(() => img)));
+    return Promise.all(shown.panels.map(panel => prepareImage(panel.src, { timeoutMs: artTimeout, signal: controller.signal })));
+  };
+  const bootAlreadyPainted = !!bootNode && !bootNode.classList.contains("is-preparing");
+  if (bootAlreadyPainted) chromeSettled = true;
+  const chromeReady = Promise.all([ensureChromeAssets(), bootNode ? window.SUIEN_BOOT_READY : null]);
+  const readyImages = chromeSettled ? takeReadyImages(comic) : null;
+  if (comic) layout(comic); else layoutBlank();
+  if (readyImages) {
+    mountArt(comic, readyImages);
+  } else if (!chromeSettled || comic) {
+    overlay.classList.add("is-preparing");
+  }
+  const comicReady = readyImages
+    ? Promise.resolve()
+    : comic
+      ? Promise.all([
+          loadArt(comic).catch(error => {
+            // A comic is a must for players: when this one's art cannot be fetched, show the comic read last.
+            const backup = required && lastComic && lastComic !== comic && !settled && !controller.signal.aborted ? lastComic : null;
+            if (!backup) throw error;
+            comic = backup;
+            layout(backup);
+            return loadArt(backup);
+          }),
+          chromeReady,
+        ]).then(([images]) => {
+          if (settled || controller.signal.aborted) return;
+          mountArt(comic, images);
+          overlay.classList.remove("is-preparing");
+          bootNode?.classList.remove("is-preparing");
+        }).catch(() => {
+          // Missing art: fall back to the plain gate (no sheet drawn, no reading hold). The blank sheet keeps the size.
+          layoutBlank();
+          overlay.classList.remove("is-preparing");
+          bootNode?.classList.remove("is-preparing");
+        })
+      : chromeReady.then(() => {
+          if (settled || controller.signal.aborted) return;
+          overlay.classList.remove("is-preparing");
+          bootNode?.classList.remove("is-preparing");
+        });
   // A quick task never flashes a loading screen. Styles are loaded only on use.
   const styleReady = loadStyle();
   styleReady.catch(error => controller.abort(error));
@@ -326,8 +407,9 @@ export async function withLoading(prepare, {
         // switch to showing the reported fraction (see .loading-bar in css/loading.css).
         bar.classList.add("is-determinate");
         const value = Math.max(0, Math.min(done, total));
+        maxProgress = Math.max(maxProgress, value / total);
         status.setAttribute("aria-label", `${label} ${value} / ${total}`);
-        overlay.style.setProperty("--loading-progress", value / total);
+        overlay.style.setProperty("--loading-progress", maxProgress);
       } })),
       aborted,
     ]);
@@ -346,7 +428,7 @@ export async function withLoading(prepare, {
       // The bar used to snap to full the moment the comic appeared, then sit at 100% through the
       // whole guard (owner 2026-11-14: it looked finished while still waiting). Creep it from
       // wherever preparation left it to full across the guard instead; it lands on 1 when ready.
-      const from = Math.max(0, Math.min(1, parseFloat(overlay.style.getPropertyValue("--loading-progress")) || 0));
+      const from = Math.max(0.12, Math.min(1, parseFloat(overlay.style.getPropertyValue("--loading-progress")) || 0));
       const creepStart = performance.now();
       const creep = () => {
         const t = Math.min(1, (performance.now() - creepStart) / Math.max(1, wait));

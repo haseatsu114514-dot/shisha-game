@@ -73,8 +73,8 @@ const MUKAI_HELP_TALKS = Object.freeze({
   back: Object.freeze(["ch3_outing_mukai_help", "ch3_outing_mukai_help_d", "ch3_outing_mukai_help_b",
     "ch3_outing_mukai_help_e", "ch3_outing_mukai_help_c", "ch3_outing_mukai_help_f"]),
 });
-// 公園の2回目からの巡回（昼夜それぞれ。#3097 で b・c に d・e、さらに f・g を足した）
-const PARK_REVISITS = Object.freeze(["b", "c", "d", "e", "f", "g"]);
+// 公園の2回目からの巡回（昼夜それぞれ。#3097 で b・c に d・e、さらに f・g、RLS09 で h を足した）
+const PARK_REVISITS = Object.freeze(["b", "c", "d", "e", "f", "g", "h"]);
 const visitCount = raw => Math.max(0, Math.floor(Number(raw)) || 0);
 const RECOVERY_SCENE = "ch3_taste_return";
 

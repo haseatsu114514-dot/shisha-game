@@ -99,6 +99,7 @@ export const CH4_SCENE_BG = Object.freeze({
   ch4_story_market: "bg_dubai_souq_day",
   ch4_story_sumi_call: "bg_dubai_inn_night",
   ch4_story_press: "bg_dubai_grand_smoke_stage",
+  ch4_story_yosegaki: "bg_dubai_inn_night",
 });
 
 // ---- BGM の対応表（差し替えは remake/js/core/story-audio.js の STORY_BGM）--------------
@@ -245,6 +246,8 @@ export const CH4_STORY_NIGHTS = Object.freeze([
   { id: "ch4_story_market", day: 5, label: "勝負の炭と葉", beat: "夕方。勝負に使う炭と葉を探しに、スークへ──", bg: "bg_dubai_souq_day" },
   { id: "ch4_story_sumi_call", day: 7, label: "時差の電話", beat: "夜。宿の部屋で、スマホが鳴った──", bg: "bg_dubai_inn_night" },
   { id: "ch4_story_press", day: 9, label: "記者会見", beat: "夜。日本代表の記者会見に呼ばれた──", bg: "bg_dubai_grand_smoke_stage" },
+  // RLS09（本編・大会を第1章の量に）: 地元の常連さんたちの色紙の写真
+  { id: "ch4_story_yosegaki", day: 11, label: "地元からの色紙", beat: "夜。地元から、写真が一枚届いた──", bg: "bg_dubai_inn_night" },
 ].map(entry => Object.freeze(entry)));
 export const CH4_STORY_FILES = Object.freeze({ ch4_dubai_story: Object.freeze(CH4_STORY_NIGHTS.map(entry => entry.id)) });
 // 前夜祭（王煙楼の招待）が始まった印。ここから先は到着を足さない（ロビーの出迎えを前夜祭の後に回さない）。

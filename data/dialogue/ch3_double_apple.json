@@ -131,6 +131,21 @@
           "text": "（ましろちゃんにだけ、懐いてるのか）"
         },
         {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "寝るのは、奥の部屋だ。布団は干してある"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "干したの、僕だよぉ。ふかふかにしといた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ありがとうございます。助かります"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "荷を解いたあと、ムカイさんに言われて、いつものブロンドで一台組んだ。"
@@ -536,6 +551,16 @@
           "speaker": "",
           "face": "",
           "text": "甘さはぼんやりしていても、温かさや煙の重さはつかめる。言葉にできるものから、すこしずつ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……当たってた？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "言わないよぉ。当たってても外れてても、今日のはじめくんの答えだもん"
         },
         {
           "speaker": "mashiro",

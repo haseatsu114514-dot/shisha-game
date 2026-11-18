@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-18 09:05 UTC",
+ "generated": "2026-11-18 11:02 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -496,6 +496,8 @@
  "backgrounds": [
   "bg_ageha_cafe_day.png",
   "bg_ageha_shop.png",
+  "bg_axe_lane.png",
+  "bg_axe_lane_aim.png",
   "bg_axe_lounge_night.png",
   "bg_c_station_day.png",
   "bg_c_station_lobby.png",
@@ -2817,6 +2819,8 @@
  "webp": [
   "backgrounds/bg_ageha_cafe_day.png",
   "backgrounds/bg_ageha_shop.png",
+  "backgrounds/bg_axe_lane.png",
+  "backgrounds/bg_axe_lane_aim.png",
   "backgrounds/bg_axe_lounge_night.png",
   "backgrounds/bg_c_station_day.png",
   "backgrounds/bg_c_station_lobby.png",

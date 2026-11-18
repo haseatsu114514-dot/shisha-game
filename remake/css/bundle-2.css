@@ -3848,14 +3848,30 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .btn.care-coal
 html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .btn.care-coal[data-test="care-coal-2"]::before { background: url("../img/ui/making/coal_just.webp") calc(50% - 42px) 70% / 81px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 42px) 70% / 81px no-repeat; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .btn.care-coal[data-test="care-coal-3"]::before { background: url("../img/ui/making/coal_just.webp") 50% 18% / 70px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% - 39px) 88% / 70px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 39px) 88% / 70px no-repeat; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .btn.care-coal[data-test="care-coal-4"]::before { background: url("../img/ui/making/coal_just.webp") calc(50% - 35px) 18% / 64px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 35px) 18% / 64px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% - 35px) 88% / 64px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 35px) 88% / 64px no-repeat; }
-/* 水入れは舞台の真ん中に、大きく（上に小さく寄って下が空くのを避ける） */
+/* 水入れ: 左の水位を見ながら右で調整。水量が変わってもボタンの位置は動かさない。 */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel:has(> .craft-water) { display: grid !important; place-items: center; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel > .craft-water { width: min(100%, 760px); padding: 16px; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-meter { flex-basis: 160px; height: 250px; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-tip { padding-left: 28px; font-size: max(16px, var(--bench-small, 0px)); }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-display p { margin-block: 8px; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-actions { gap: 12px; margin-top: 16px; }
-html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-meter { flex-basis: 180px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel > .craft-water {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+  grid-template-areas: "meter reading" "meter actions" "help help";
+  width: min(100%, 820px); gap: 18px 32px; padding: 26px;
+  border: 1px solid #ae896b70; border-radius: 14px;
+  background: linear-gradient(130deg, #302334ee, #191420ef 72%); box-shadow: 0 8px 24px #100a1780;
+}
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-display { display: contents; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-meter {
+  grid-area: meter; justify-self: center; align-self: stretch; width: 100%; max-width: 220px; height: auto;
+  background: linear-gradient(90deg, #14232b, #25404a 45%, #142730); box-shadow: 0 6px 12px #100b17a0;
+}
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-tip { padding-left: 32px; font-size: max(18px, var(--bench-small, 0px)); }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-reading { grid-area: reading; align-self: end; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-status { font-weight: 700; font-size: 28px; line-height: 1.35; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-reading p { margin: 6px 0 0; color: #e0d4d0; font-size: max(20px, var(--bench-small, 0px)); line-height: 1.4; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-actions { grid-area: actions; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 4px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-actions .btn { min-width: 0; width: 100%; min-height: 70px; font-size: 24px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-help { grid-area: help; margin: 0; padding-top: 12px; border-top: 1px solid #ae896b50; color: #d6c8d4; font-size: 18px; line-height: 1.5; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel > .craft-water {
+  grid-template-areas: "meter reading" "meter actions"; gap: 14px 24px; padding: 20px;
+}
 html body.craft-stage:not(.game-ds) .bench[data-mode]:has(.craft-water) .bench-worker-stage { --hero-x: -112px; }
 
 /* ---------- 配合: 葉の行に商品パッケージを大きく、4種が一度に見える ---------- */
@@ -3913,21 +3929,31 @@ html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-btn:last-of-type { grid-column: 5 !important; }
 
 /* ---------- 詰め方: 決めるボタンは右下 ---------- */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .packing { height: 100% !important; padding-top: 0 !important; display: grid !important; grid-template-columns: 260px minmax(0, 1fr) !important; grid-template-rows: auto auto minmax(0, 1fr) 88px !important; gap: 16px 20px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing { height: 100% !important; padding-top: 0 !important; display: grid !important; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) !important; grid-template-rows: auto auto minmax(0, 1fr) max(88px, var(--bench-tap, 0px)) !important; gap: 16px 20px !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-aroma { grid-column: 1 / -1 !important; grid-row: 1 !important; margin: 0 !important; font-size: 24px !important; line-height: 1.4 !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-vessel { grid-column: 1 !important; grid-row: 2 / 4 !important; min-height: 0 !important; overflow: hidden !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-vessel-art { transform: scale(.8) !important; transform-origin: center !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-vessel { grid-column: 1 !important; grid-row: 2 / 4 !important; min-height: 0 !important; overflow: hidden !important;
+  background: radial-gradient(ellipse at 50% 46%, #76503c55, #20152290 68%); border: 1px solid #b38c684d; border-radius: 12px;
+  box-shadow: inset 0 1px 0 #edc49c1f;
+}
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-vessel-art { transform: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-choices { grid-column: 2 !important; grid-row: 2 !important; display: grid !important; grid-template-columns: 1fr !important; gap: 10px !important; padding: 4px !important; overflow: visible !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-choice { min-height: 84px !important; padding: 10px 16px !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-choice b { font-size: 26px !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-choice small { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-choice small { display: block; font-size: 18px; line-height: 1.25; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-choice small { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-caption { grid-column: 2 !important; grid-row: 3 !important; min-height: 0 !important; text-align: left !important; overflow-y: auto !important; padding: 0 8px !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-caption b { font-size: 26px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-caption b { color: #f1d6a9; font-size: 26px !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-caption p { font-size: 23px !important; line-height: 1.45 !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-footer { grid-column: 1 / -1 !important; grid-row: 4 !important; position: static !important; display: flex !important; justify-content: flex-end !important; margin: 0 !important; background: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-footer { grid-column: 2 !important; grid-row: 4 !important; position: static !important; display: flex !important; justify-content: flex-end !important; margin: 0 !important; background: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-footer > small { display: none !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-confirm { flex: 0 1 558px !important; height: 88px !important; min-height: 0 !important; font-size: 26px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-confirm { flex: 1 !important; height: 100% !important; min-height: 0 !important; font-size: 26px !important; }
 
+
+/* 低い横画面では右列を押しやすい高さのボタンに使い、説明は器の下で読む。 */
+@media (max-height: 350px) {
+  html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-vessel { grid-row: 2 !important; }
+  html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-caption { grid-column: 1 !important; grid-row: 3 / 5 !important; }
+}
 
 /* ---------- 穴あけ: アルミを大きく、「穴を開ける」は右下の親指の位置 ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .holes { height: 100%; display: grid !important; grid-template-columns: minmax(0, 1fr) 300px; gap: 12px; align-items: center; }
@@ -8239,8 +8265,12 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
     radial-gradient(ellipse 70% 60% at 20% 12%, #3b1c5a99 0%, transparent 72%),
     var(--loading-backdrop);
   color: #ede2ce; pointer-events: auto;
-  animation: loading-appear 160ms ease-out both;
+  animation: none;
 }
+/* Keep the whole screen hidden until background art, logo, fonts, and initial comic panels are all decoded,
+   then reveal the completed composition in a single frame (owner 2026-11-18: no multi-stage pop-in). */
+:is(.loading-gate, .boot-gate).is-preparing { opacity: 0; pointer-events: none; animation: none; transition: none; }
+#boot:not(.done) { transition: none; }
 /* Exhaled-smoke haze drifting slowly along the bottom, behind the gauge and LOADING (not attached to any
    hardware). Soft blurred gradients only, transform/opacity animation; still under reduced motion. */
 :is(.loading-gate, .boot-gate)::before { content: ""; position: absolute; left: -12%; right: -12%; bottom: -8%; height: 38%; z-index: -1; pointer-events: none;
@@ -8267,7 +8297,7 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 /* Logo: the same pearl logo as the title screen. The image lives on ::after so a soft mist (::before) can
    sit behind it (9u above = the 9u under the prompt, so the stack is centred); a small gap keeps the EN:CODE line clear of the card top (budget: 102 + 8 + 6 = 116u). Purely decorative (title text lives in the art); contain keeps it undistorted. */
 .loading-logo { position: relative; z-index: 1; flex: none; width: calc(360 * var(--loading-unit)); height: calc(102 * var(--loading-unit)); margin: calc(9 * var(--loading-unit)) 0 calc(4 * var(--loading-unit)); }
-.loading-logo::after { content: ""; position: absolute; inset: 0; background: var(--loading-logo) center / contain no-repeat; filter: drop-shadow(0 calc(4 * var(--loading-unit)) calc(10 * var(--loading-unit)) #000000d9) drop-shadow(0 0 calc(20 * var(--loading-unit)) #b45cf059); animation: loading-logo-in 420ms ease-out both; }
+.loading-logo::after { content: ""; position: absolute; inset: 0; background: var(--loading-logo) center / contain no-repeat; filter: drop-shadow(0 calc(4 * var(--loading-unit)) calc(10 * var(--loading-unit)) #000000d9) drop-shadow(0 0 calc(20 * var(--loading-unit)) #b45cf059); }
 .loading-logo::before { content: ""; position: absolute; inset: -34% -14% -6%; pointer-events: none;
   background:
     radial-gradient(ellipse 26% 40% at 34% 56%, #e7e0ef40 0%, transparent 70%),
@@ -8291,7 +8321,6 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
   border: 1px solid #fff8ea99;
   box-shadow: 0 0 0 1px #00000066, inset 0 0 calc(42 * var(--loading-unit)) #6b4a3a1a,
     0 calc(24 * var(--loading-unit)) calc(56 * var(--loading-unit)) #000000c4, 0 0 calc(48 * var(--loading-unit)) #b45cf024;
-  animation: loading-sheet 260ms cubic-bezier(.2,.65,.3,1) both;
 }
 /* A gate that opens over the static boot screen (index.html #boot, the same stack at the same place) takes
    over without its entrance animations, so the logo and the comic do not blink at the change. */
@@ -8318,8 +8347,7 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 /* Two panels, left → right, with a small ink arrow in the gutter as the reading-order cue. */
 .loading-panels { position: relative; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: var(--loading-gutter); }
 .loading-panels::after { content: ""; position: absolute; left: 50%; top: 50%; width: calc(14 * var(--loading-unit)); height: calc(14 * var(--loading-unit)); transform: translate(-50%, -50%); opacity: .5; pointer-events: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M4 1.5 9.5 7 4 12.5' fill='none' stroke='%232c1f2a' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat; }
-.loading-panels figure { margin: 0; min-width: 0; animation: loading-panel-in 320ms ease-out both; }
-.loading-panels figure:nth-child(2) { animation-delay: 150ms; }
+.loading-panels figure { margin: 0; min-width: 0; }
 /* Fixed display frame = 3:2 for every panel, drawn as an ink frame (box-shadow keeps the box 3:2),
    so both panels always read as the same size. A panel authored at 3:2 fills the frame edge to edge;
    a legacy region with another ratio sits centred on plain sheet inside the same frame (no distortion). */
@@ -8351,10 +8379,10 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
   box-shadow: inset 0 0 0 1px #ffffff24, inset 0 calc(2 * var(--loading-unit)) calc(4 * var(--loading-unit)) #00000080, 0 0 calc(6 * var(--loading-unit)) #ff5fa899, 0 0 calc(18 * var(--loading-unit)) #b45cf066, 0 0 calc(34 * var(--loading-unit)) #3fd0e833;
   transition: box-shadow .3s ease;
 }
-.loading-bar-fill { position: relative; height: 100%; width: 36%; border-radius: inherit; background: linear-gradient(180deg, #ffffff52 0%, transparent 55%), var(--loading-bar-gradient); animation: loading-bar-indeterminate 1.3s ease-in-out infinite alternate; }
+.loading-bar-fill { position: relative; height: 100%; width: 12%; border-radius: inherit; background: linear-gradient(180deg, #ffffff52 0%, transparent 55%), var(--loading-bar-gradient); transition: width .3s ease; }
 /* A small spark at the head of the fill. */
 .loading-bar-fill::after { content: ""; position: absolute; right: calc(-3 * var(--loading-unit)); top: 50%; width: calc(16 * var(--loading-unit)); height: calc(16 * var(--loading-unit)); transform: translateY(-50%); border-radius: 50%; background: radial-gradient(circle, #ffffffee 0%, #ffffff66 35%, transparent 70%); }
-.loading-bar.is-determinate .loading-bar-fill { width: calc(var(--loading-progress, 0) * 100%); animation: none; transform: none; transition: width .3s ease; }
+.loading-bar.is-determinate .loading-bar-fill { width: calc(max(.12, var(--loading-progress, 0)) * 100%); animation: none; transform: none; transition: width .3s ease; }
 :is(.loading-gate, .boot-gate).is-ready .loading-bar-fill { width: 100%; animation: none; transform: none; }
 :is(.loading-gate, .boot-gate).is-ready .loading-bar { box-shadow: inset 0 0 0 1px #ffffff30, 0 0 calc(8 * var(--loading-unit)) #ff5fa8b3, 0 0 calc(22 * var(--loading-unit)) #b45cf080, 0 0 calc(40 * var(--loading-unit)) #3fd0e84d; }
 .loading-bar::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, transparent, #ffffff55, transparent); transform: translateX(-100%); animation: loading-bar-sweep 1.6s ease-in-out infinite; }

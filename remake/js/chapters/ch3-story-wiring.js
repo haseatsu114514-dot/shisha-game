@@ -27,6 +27,10 @@ export const MASHIRO_STORY_EXTRAS = Object.freeze([
   "ch3_mashiro_glass_cloth",
   "ch3_mashiro_leaf_rest",
   "ch3_mashiro_bench_tea",
+  // RLS10（第3章はましろを厚く描く）: 道具箱・炭の音で起きる・重い一台の間
+  "ch3_mashiro_toolbox",
+  "ch3_mashiro_doze",
+  "ch3_mashiro_heavy_room",
 ]);
 
 // 任意場面の置き場。file=台詞ファイル、after=この必須/既読場面を読み終えてから、met=面識がある人物だけ。
@@ -35,6 +39,7 @@ export const MASHIRO_STORY_EXTRAS = Object.freeze([
 // unsettled=その人物との関係が告白の返事でまだ着地していない間だけ出す（恋人・友達のままなら出さない）。
 // heart=その人物の通常好感度がこの段階（♥）以上の時だけ出す。恋人の絆は数えない。
 // host=寄り道の相手（行動の経験値の鍵）。省略時はその場所の主（ch3-tokyo-daily.js の OPTIONAL_HOST）。
+// before=この必須/既読場面を読む前だけ出す（読んだ後は出さない。MST01 の「味が戻る前だけ」など）。
 // outings=その外出（ch3-outing-progress.js の TOKYO_OUTINGS）をこの回数以上済ませた時だけ出す。
 // outingsUntil の必須場面を読んだ後は、その外出が終わるので回数を問わない。
 export const CH3_OPTIONAL_SCENES = Object.freeze({
@@ -46,6 +51,12 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   // 裏口（てつこのベンチ）の場面だが、裏口のベンチの寄り道（ch3_mashiro_bench_tea）と同じく mukai のカードから読む。
   ch3_cigarman_shadow: { file: "ch3_mukai", label: "裏口の大きな影", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_cigarman_rumor"] },
+  // RLS10: 二日目にムカイさんが撮っていた猫のラテは、本人の練習だった。翌日（DAY3）から mukai で一度。
+  ch3_mukai_latte_cat: { file: "ch3_mukai", label: "猫のラテ", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_individuality_doubt"] },
+  // RLS10: ラテをこぼしてハットを干した日（天気に依存しない）。常連が店主だと気づかず、コーヒーで分かる。猫のラテの後に一度。
+  ch3_mukai_no_hat: { file: "ch3_mukai", label: "ハットのない日", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mukai_latte_cat"] },
   // 台本が「大会後」。大会前のカードには出ず、勝利後は ch3-aftermath-progress.js の寄り道から読む。
   ch3_cigarman_trace: { file: "ch3_mukai", label: "大会後の客席", location: "mukai", bg: "bg_mukai_shop" },
   // エミルは大会当日に初めて名乗る審査員。面識ができる前に体験会を置かない。大会後の入口は
@@ -73,6 +84,18 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
     after: ["ch3_mashiro_glass_cloth"] },
   ch3_mashiro_bench_tea: { file: "ch3_mashiro", label: "裏口のベンチ", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_mashiro_leaf_rest"] },
+  ch3_mashiro_toolbox: { file: "ch3_mashiro", label: "木の道具箱", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_bench_tea"] },
+  ch3_mashiro_doze: { file: "ch3_mashiro", label: "炭の音", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_toolbox"] },
+  ch3_mashiro_heavy_room: { file: "ch3_mashiro", label: "重い一台の間", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_doze"] },
+  // MST01（2026-11-18 オーナー）: ましろの好きな十二星座の紅茶「スターサインティー」。占い師ではなく、意味を借りて励ます。
+  // はじめのおひつじ座は作れない日の後・味が戻る前だけ、ましろのいて座は味の会話の後・大会の前夜の前だけ。
+  ch3_mashiro_star_tea: { file: "ch3_mashiro", label: "星座の紅茶", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_rest_before_recovery"], before: ["ch3_taste_return"] },
+  ch3_mashiro_star_tea_arrow: { file: "ch3_mashiro", label: "いて座の缶", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_steve_low_heat"], before: ["ch3_tournament_eve"] },
   // #3468 G案。開店前のmukaiで、ムカイさんとヨルが昼の曲順から夜の曲へ脱線する。ヨルと面識があり（クラブで名乗った後）、
   // mukaiの二日目の後。台本は大会に触れないので、大会後は ch3-aftermath-progress.js の寄り道から同じ既読で読む。好感度は動かさない。
   ch3_mukai_yoru_playlist: { file: "ch3_mukai", label: "昼の曲順", location: "mukai", bg: "bg_mukai_shop",
@@ -156,14 +179,16 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
 // loadIntroDialogues が読む追加分（ファイル→場面ID）。routes の全任意場面・前夜場面と一致させる（story_routes.mjs で照合）。
 export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_double_apple: ["ch3_minto_small_lies"],
-  ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_shadow", "ch3_cigarman_trace", "ch3_mukai_yoru_playlist"],
+  ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_shadow", "ch3_mukai_latte_cat", "ch3_mukai_no_hat", "ch3_cigarman_trace", "ch3_mukai_yoru_playlist"],
   // 綾取・スティーブの締めくくり（#2028）は寄り道ではなく、煙幕・Smoke & Glory を訪ねた時の「〜に呼ばれる」から
   // （daily/bonds.js の条件。版3は ch3-tokyo-daily.js、優勝の翌日は ch3-aftermath.js、旧行程は ch3.js の場面カード）。
   ch3_rivals: ["ch3_emil_workshop", "ch3_saku_bakery", "ch3_saku_lime", "ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_first_reply", "ch3_saku_bond_finale", "ch3_steve_lime", "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch", "ch3_steve_bond_finale"],
   // ♥3の質問と締めくくりは寄り道ではなく、場面カードの「ましろちゃんと話す」から（daily/bonds.js の条件）。
   ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice",
     "ch3_mashiro_black_tea", "ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_mashiro_glass_cloth",
-    "ch3_mashiro_leaf_rest", "ch3_mashiro_bench_tea", "ch3_mashiro_mukai_syrup_shelf", "ch3_mashiro_mukai_shelf_tags",
+    "ch3_mashiro_leaf_rest", "ch3_mashiro_bench_tea", "ch3_mashiro_toolbox", "ch3_mashiro_doze", "ch3_mashiro_heavy_room",
+    "ch3_mashiro_star_tea", "ch3_mashiro_star_tea_arrow",
+    "ch3_mashiro_mukai_syrup_shelf", "ch3_mashiro_mukai_shelf_tags",
     "ch3_mashiro_bond_question", "ch3_mashiro_bond_finale",
     // 恋人のましろと過ごす時間（BLC03・chapters/mashiro-time.js の MASHIRO_TIME_SCENES と同じ並び）。
     "mashiro_time_counter", "mashiro_time_train", "mashiro_time_errand", "mashiro_time_braid",
@@ -212,6 +237,7 @@ export function availableOptionalScenes(routes, value) {
     return place && !value.flags[optionalReadFlag(id)]
       && canReadOptionalStory(routes, value, id, { completedScenes })
       && (place.after || []).every(scene => completedScenes.includes(scene))
+      && (place.before || []).every(scene => !completedScenes.includes(scene))
       && (place.met || []).every(who => value.met?.[who])
       && (place.away || []).every(who => characterRegion(value, { characters: {} }, who) !== "tokyo")
       && (place.unsettled || []).every(who => !confessionLanded(value, who))

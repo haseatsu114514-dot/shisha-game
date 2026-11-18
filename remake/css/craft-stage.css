@@ -258,14 +258,30 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .btn.care-coal
 html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .btn.care-coal[data-test="care-coal-2"]::before { background: url("../img/ui/making/coal_just.webp") calc(50% - 42px) 70% / 81px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 42px) 70% / 81px no-repeat; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .btn.care-coal[data-test="care-coal-3"]::before { background: url("../img/ui/making/coal_just.webp") 50% 18% / 70px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% - 39px) 88% / 70px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 39px) 88% / 70px no-repeat; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .care-coals .btn.care-coal[data-test="care-coal-4"]::before { background: url("../img/ui/making/coal_just.webp") calc(50% - 35px) 18% / 64px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 35px) 18% / 64px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% - 35px) 88% / 64px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 35px) 88% / 64px no-repeat; }
-/* 水入れは舞台の真ん中に、大きく（上に小さく寄って下が空くのを避ける） */
+/* 水入れ: 左の水位を見ながら右で調整。水量が変わってもボタンの位置は動かさない。 */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel:has(> .craft-water) { display: grid !important; place-items: center; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel > .craft-water { width: min(100%, 760px); padding: 16px; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-meter { flex-basis: 160px; height: 250px; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-tip { padding-left: 28px; font-size: max(16px, var(--bench-small, 0px)); }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-display p { margin-block: 8px; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-actions { gap: 12px; margin-top: 16px; }
-html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-meter { flex-basis: 180px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel > .craft-water {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+  grid-template-areas: "meter reading" "meter actions" "help help";
+  width: min(100%, 820px); gap: 18px 32px; padding: 26px;
+  border: 1px solid #ae896b70; border-radius: 14px;
+  background: linear-gradient(130deg, #302334ee, #191420ef 72%); box-shadow: 0 8px 24px #100a1780;
+}
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-display { display: contents; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-meter {
+  grid-area: meter; justify-self: center; align-self: stretch; width: 100%; max-width: 220px; height: auto;
+  background: linear-gradient(90deg, #14232b, #25404a 45%, #142730); box-shadow: 0 6px 12px #100b17a0;
+}
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-tip { padding-left: 32px; font-size: max(18px, var(--bench-small, 0px)); }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-reading { grid-area: reading; align-self: end; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-status { font-weight: 700; font-size: 28px; line-height: 1.35; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-reading p { margin: 6px 0 0; color: #e0d4d0; font-size: max(20px, var(--bench-small, 0px)); line-height: 1.4; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-actions { grid-area: actions; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; padding: 4px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-actions .btn { min-width: 0; width: 100%; min-height: 70px; font-size: 24px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .craft-water-help { grid-area: help; margin: 0; padding-top: 12px; border-top: 1px solid #ae896b50; color: #d6c8d4; font-size: 18px; line-height: 1.5; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel > .craft-water {
+  grid-template-areas: "meter reading" "meter actions"; gap: 14px 24px; padding: 20px;
+}
 html body.craft-stage:not(.game-ds) .bench[data-mode]:has(.craft-water) .bench-worker-stage { --hero-x: -112px; }
 
 /* ---------- 配合: 葉の行に商品パッケージを大きく、4種が一度に見える ---------- */
@@ -323,21 +339,31 @@ html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-btn:last-of-type { grid-column: 5 !important; }
 
 /* ---------- 詰め方: 決めるボタンは右下 ---------- */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .packing { height: 100% !important; padding-top: 0 !important; display: grid !important; grid-template-columns: 260px minmax(0, 1fr) !important; grid-template-rows: auto auto minmax(0, 1fr) 88px !important; gap: 16px 20px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing { height: 100% !important; padding-top: 0 !important; display: grid !important; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) !important; grid-template-rows: auto auto minmax(0, 1fr) max(88px, var(--bench-tap, 0px)) !important; gap: 16px 20px !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-aroma { grid-column: 1 / -1 !important; grid-row: 1 !important; margin: 0 !important; font-size: 24px !important; line-height: 1.4 !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-vessel { grid-column: 1 !important; grid-row: 2 / 4 !important; min-height: 0 !important; overflow: hidden !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-vessel-art { transform: scale(.8) !important; transform-origin: center !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-vessel { grid-column: 1 !important; grid-row: 2 / 4 !important; min-height: 0 !important; overflow: hidden !important;
+  background: radial-gradient(ellipse at 50% 46%, #76503c55, #20152290 68%); border: 1px solid #b38c684d; border-radius: 12px;
+  box-shadow: inset 0 1px 0 #edc49c1f;
+}
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-vessel-art { transform: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-choices { grid-column: 2 !important; grid-row: 2 !important; display: grid !important; grid-template-columns: 1fr !important; gap: 10px !important; padding: 4px !important; overflow: visible !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-choice { min-height: 84px !important; padding: 10px 16px !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-choice b { font-size: 26px !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-choice small { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-choice small { display: block; font-size: 18px; line-height: 1.25; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-choice small { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-caption { grid-column: 2 !important; grid-row: 3 !important; min-height: 0 !important; text-align: left !important; overflow-y: auto !important; padding: 0 8px !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-caption b { font-size: 26px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-caption b { color: #f1d6a9; font-size: 26px !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-caption p { font-size: 23px !important; line-height: 1.45 !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-footer { grid-column: 1 / -1 !important; grid-row: 4 !important; position: static !important; display: flex !important; justify-content: flex-end !important; margin: 0 !important; background: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-footer { grid-column: 2 !important; grid-row: 4 !important; position: static !important; display: flex !important; justify-content: flex-end !important; margin: 0 !important; background: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-footer > small { display: none !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-confirm { flex: 0 1 558px !important; height: 88px !important; min-height: 0 !important; font-size: 26px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-confirm { flex: 1 !important; height: 100% !important; min-height: 0 !important; font-size: 26px !important; }
 
+
+/* 低い横画面では右列を押しやすい高さのボタンに使い、説明は器の下で読む。 */
+@media (max-height: 350px) {
+  html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-vessel { grid-row: 2 !important; }
+  html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-caption { grid-column: 1 !important; grid-row: 3 / 5 !important; }
+}
 
 /* ---------- 穴あけ: アルミを大きく、「穴を開ける」は右下の親指の位置 ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .holes { height: 100%; display: grid !important; grid-template-columns: minmax(0, 1fr) 300px; gap: 12px; align-items: center; }

@@ -556,7 +556,7 @@ console.log("PASS: Chapter 4 runner state keeps the Dubai days, mandatory scenes
 // 自由行動の間だけで、前夜（DAY13）に入ったら未読でも足さない。台本・背景・story_routes の並びと一致する。
 {
   assert.deepEqual(CH4_STORY_NIGHTS.map(entry => [entry.id, entry.day]), [["ch4_story_briefing", 1], ["ch4_story_venue", 3],
-    ["ch4_story_market", 5], ["ch4_story_sumi_call", 7], ["ch4_story_press", 9]]);
+    ["ch4_story_market", 5], ["ch4_story_sumi_call", 7], ["ch4_story_press", 9], ["ch4_story_yosegaki", 11]]);
   const rows = readData("dialogue/ch4_dubai_story").dialogues;
   assert.deepEqual([...CH4_STORY_FILES.ch4_dubai_story].sort(), rows.map(row => row.dialogue_id).sort(), "ch4_dubai_story: all scenes registered");
   for (const entry of CH4_STORY_NIGHTS) {
@@ -586,7 +586,7 @@ console.log("PASS: Chapter 4 runner state keeps the Dubai days, mandatory scenes
   assert(completeChapterFourScene(v, "ch4_story_venue"));
   assert.equal(chapterFourStoryNightDue(v), null, "The market waits for DAY5");
   v.day = p.startDay + 10; syncChapterFourDay(v);
-  for (const id of ["ch4_story_market", "ch4_story_sumi_call", "ch4_story_press"]) {
+  for (const id of ["ch4_story_market", "ch4_story_sumi_call", "ch4_story_press", "ch4_story_yosegaki"]) {
     assert.equal(chapterFourStoryNightDue(v).id, id, `${id}: one per night in order`);
     assert(completeChapterFourScene(v, id));
   }
