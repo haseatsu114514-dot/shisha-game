@@ -2446,6 +2446,43 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       // 滑る姿の絵は `<相手>Rider…`（DESERT_ART）にあれば使う。読み込み前・失敗した時は下の図形で描く。
       // 絵は主人公の背面と同じ縮尺（rider の高さ768に対する比）で、身長の差は RIVAL_ART_SCALE で付ける
       if (noorArt) {
+        // 回転姿（Issue #3563）: 空中トリックの間は、主人公と同じく角度ごとの絵をクロスフェードで切り替える。
+        // 必要な絵がまだ届いていない時は、このまま下の「縮めて裏返す」描き方に倒れる。
+        const spinBaseName = `${raceWith}RiderJump`;
+        const spin = rivalSpinning && !reducedMotion && noorPose === spinBaseName && DESERT_ART[`${raceWith}Spin045`]
+          ? spinFrames(noor.rot || 0, raceWith) : null;
+        const spinBaseImg = spin ? art.get(spinBaseName) : null;
+        const spinFromImg = spin ? art.get(spin.from.name) : null;
+        const spinToImg = spin ? art.get(spin.to.name) : null;
+        if (spin && spinBaseImg && spinFromImg && spinToImg) {
+          const baseDef = DESERT_ART[spinBaseName];
+          const baseDh = unit * 2.45 * artScale * spinBaseImg.naturalHeight / DESERT_ART.rider.size[1];
+          const spinDir = Math.sign(noor.rot || 0) || 1;
+          const drawSpinFrame = (f, alpha) => {
+            const img = art.get(f.name), fdef = DESERT_ART[f.name];
+            if (!img) return;
+            const fdh = baseDh * fdef.size[1] / baseDef.size[1], fdw = fdh * img.naturalWidth / img.naturalHeight;
+            ctx.save(); ctx.globalAlpha *= alpha;
+            if (f.flip) ctx.scale(-1, 1);
+            ctx.drawImage(img, -fdef.anchor.x * fdw, -fdef.anchor.y * fdh, fdw, fdh);
+            ctx.restore();
+          };
+          ctx.save(); ctx.translate(-p.x, -rivalY); drawSpinWhirl(p.x, rivalY, unit * artScale, noor.rot, spinDir, "back"); ctx.restore();
+          ctx.rotate(Math.sin(noor.rot * Math.PI * 2) * FEEL.spinTilt * spinDir);
+          ctx.scale(squash[0], squash[1]);
+          if (!reducedMotion) {
+            for (let k = FEEL.spinGhosts; k >= 1; k--) {
+              drawSpinFrame(spinFrames(noor.rot - spinDir * FEEL.spinGhostStep * k, raceWith).from, 0.32 - 0.08 * k);
+            }
+          }
+          drawSpinFrame(spin.from, 1);
+          if (spin.fade > 0) drawSpinFrame(spin.to, spin.fade);
+          ctx.restore();
+          drawSpinWhirl(p.x, rivalY, unit * artScale, noor.rot, spinDir, "front");
+          ctx.restore();
+          if (p.dz < 70) drawRivalName(name, look, p, height, unit);
+          return;
+        }
         const def = DESERT_ART[noorPose];
         const dh = unit * 2.45 * artScale * noorArt.naturalHeight / DESERT_ART.rider.size[1];
         const dw = dh * noorArt.naturalWidth / noorArt.naturalHeight;

@@ -20,7 +20,7 @@ export const DESERT_ART = Object.freeze({
   riderJump: Object.freeze({ file: "ui/desert_ride/rider_jump.webp", size: Object.freeze([537, 670]), anchor: Object.freeze({ x: 0.5761, y: 0.8388 }) }),
   riderBrace: Object.freeze({ file: "ui/desert_ride/rider_brace.webp", size: Object.freeze([561, 644]), anchor: Object.freeze({ x: 0.558, y: 0.8198 }) }),
   riderFall: Object.freeze({ file: "ui/desert_ride/rider_fall.webp", size: Object.freeze([554, 655]), anchor: Object.freeze({ x: 0.5256, y: 0.9569 }) }),
-  // 回転姿（Issue #3563・はじめのみ。Codex C 生成→後処理で検品済み）。寸法・基準点は asset_sources/desert-ride-spin/adoption.json と同じ値（build.py が書き出す）。
+  // 回転姿（Issue #3563・はじめ。Codex 生成→後処理で検品済み）。寸法・基準点は asset_sources/desert-ride-spin/adoption.json と同じ値（build.py が書き出す）。
   // 人物の実寸は riderJump と同じにそろえてあり、anchor は各絵の板の重心。225〜315° は 135・90・45 の左右反転で使う。
   hajimeSpin045: Object.freeze({ file: "ui/desert_ride/spin_hajime_045.webp", size: Object.freeze([657, 821]), anchor: Object.freeze({ x: 0.5104, y: 0.779 }) }),
   hajimeSpin090: Object.freeze({ file: "ui/desert_ride/spin_hajime_090.webp", size: Object.freeze([811, 1014]), anchor: Object.freeze({ x: 0.4872, y: 0.7795 }) }),
@@ -33,6 +33,11 @@ export const DESERT_ART = Object.freeze({
   noorRiderJump: Object.freeze({ file: "ui/desert_ride/rider_noor_jump.webp", size: Object.freeze([537, 670]), anchor: Object.freeze({ x: 0.5761, y: 0.8388 }) }),
   noorRiderBrace: Object.freeze({ file: "ui/desert_ride/rider_noor_brace.webp", size: Object.freeze([561, 644]), anchor: Object.freeze({ x: 0.558, y: 0.8198 }) }),
   noorRiderFall: Object.freeze({ file: "ui/desert_ride/rider_noor_fall.webp", size: Object.freeze([554, 655]), anchor: Object.freeze({ x: 0.5256, y: 0.9569 }) }),
+  // 回転姿（Issue #3563・ヌール）。寸法・基準点は asset_sources/desert-ride-spin/adoption.json と同じ値（build.py が書き出す）
+  noorSpin045: Object.freeze({ file: "ui/desert_ride/spin_noor_045.webp", size: Object.freeze([588, 805]), anchor: Object.freeze({ x: 0.501, y: 0.802 }) }),
+  noorSpin090: Object.freeze({ file: "ui/desert_ride/spin_noor_090.webp", size: Object.freeze([672, 919]), anchor: Object.freeze({ x: 0.5216, y: 0.842 }) }),
+  noorSpin135: Object.freeze({ file: "ui/desert_ride/spin_noor_135.webp", size: Object.freeze([595, 815]), anchor: Object.freeze({ x: 0.463, y: 0.7921 }) }),
+  noorSpin180: Object.freeze({ file: "ui/desert_ride/spin_noor_180.webp", size: Object.freeze([591, 809]), anchor: Object.freeze({ x: 0.4865, y: 0.8268 }) }),
   // なる（好敵手）の背面6ポーズ（Issue #3222・Codex。2026-11-11 新バージョンの服装に描き直し #3306・PR #3309）。主人公の背面と同じ縮尺に作り直し、基準点は板の中心（転倒は主人公と同じ位置関係）。
   // 寸法・基準点は asset_sources/desert-ride-naru-3222/adoption.json（build.py が書き出す）と同じ値。身長の差は描く時に掛ける（desert-ride.js の RIVAL_ART_SCALE）
   naruRider: Object.freeze({ file: "ui/desert_ride/rider_naru_ride.webp", size: Object.freeze([503, 774]), anchor: Object.freeze({ x: 0.5692, y: 0.8226 }) }),
@@ -41,6 +46,11 @@ export const DESERT_ART = Object.freeze({
   naruRiderJump: Object.freeze({ file: "ui/desert_ride/rider_naru_jump.webp", size: Object.freeze([534, 673]), anchor: Object.freeze({ x: 0.5564, y: 0.828 }) }),
   naruRiderBrace: Object.freeze({ file: "ui/desert_ride/rider_naru_brace.webp", size: Object.freeze([647, 640]), anchor: Object.freeze({ x: 0.489, y: 0.8224 }) }),
   naruRiderFall: Object.freeze({ file: "ui/desert_ride/rider_naru_fall.webp", size: Object.freeze([656, 652]), anchor: Object.freeze({ x: 0.5266, y: 0.9582 }) }),
+  // 回転姿（Issue #3563・なる）。寸法・基準点は asset_sources/desert-ride-spin/adoption.json と同じ値（build.py が書き出す）
+  naruSpin045: Object.freeze({ file: "ui/desert_ride/spin_naru_045.webp", size: Object.freeze([597, 817]), anchor: Object.freeze({ x: 0.525, y: 0.7812 }) }),
+  naruSpin090: Object.freeze({ file: "ui/desert_ride/spin_naru_090.webp", size: Object.freeze([714, 977]), anchor: Object.freeze({ x: 0.5038, y: 0.7778 }) }),
+  naruSpin135: Object.freeze({ file: "ui/desert_ride/spin_naru_135.webp", size: Object.freeze([596, 816]), anchor: Object.freeze({ x: 0.5186, y: 0.7831 }) }),
+  naruSpin180: Object.freeze({ file: "ui/desert_ride/spin_naru_180.webp", size: Object.freeze([717, 895]), anchor: Object.freeze({ x: 0.4988, y: 0.785 }) }),
   rockLarge: Object.freeze({ file: "ui/desert_ride/rock_large.webp", size: Object.freeze([512, 280]) }),
   rockSmall: Object.freeze({ file: "ui/desert_ride/rock_small.webp", size: Object.freeze([384, 211]) }),
   // 旗竿（Codex A）。foot は竿の足（画像に対する比率）
@@ -83,13 +93,19 @@ export function riderPose(game, previous = "rider") {
 /**
  * 回転の角度（rot は回転数）から、今と次の回転姿と、間の寄せ具合を返す（Issue #3563）。
  * 並びは 45°ごとで、225〜315° は 135・90・45° の絵を左右反転（flip）して使う。
+ * who は人物（"hajime" | "noor" | "naru"）。先頭の絵はその人物のジャンプ姿。
  * 絵が無い人物・読み込み前は呼び出し側が従来の「縮めて裏返す」描き方に倒す。
  */
-const SPIN_ORDER = Object.freeze(["riderJump", "hajimeSpin045", "hajimeSpin090", "hajimeSpin135", "hajimeSpin180", "hajimeSpin135", "hajimeSpin090", "hajimeSpin045"]);
-export function spinFrames(rot) {
+const SPIN_ORDERS = Object.freeze({
+  hajime: Object.freeze(["riderJump", "hajimeSpin045", "hajimeSpin090", "hajimeSpin135", "hajimeSpin180", "hajimeSpin135", "hajimeSpin090", "hajimeSpin045"]),
+  noor: Object.freeze(["noorRiderJump", "noorSpin045", "noorSpin090", "noorSpin135", "noorSpin180", "noorSpin135", "noorSpin090", "noorSpin045"]),
+  naru: Object.freeze(["naruRiderJump", "naruSpin045", "naruSpin090", "naruSpin135", "naruSpin180", "naruSpin135", "naruSpin090", "naruSpin045"]),
+});
+export function spinFrames(rot, who = "hajime") {
+  const order = SPIN_ORDERS[who] || SPIN_ORDERS.hajime;
   const pos = (((rot % 1) + 1) % 1) * 8;
   const i = Math.floor(pos) % 8;
-  const at = k => ({ name: SPIN_ORDER[k], flip: k >= 5 });
+  const at = k => ({ name: order[k], flip: k >= 5 });
   return { from: at(i), to: at((i + 1) % 8), fade: pos - Math.floor(pos) };
 }
 
@@ -101,7 +117,7 @@ let images = null;
 export function loadDesertArt({ rivals = null } = {}) {
   images ||= new Map();
   const names = Object.entries(DESERT_ART).filter(([name, def]) => def.file
-    && (rivals === null || !/^(noor|naru)Rider/.test(name) || rivals.some(who => name.startsWith(who + "Rider")))).map(([name]) => name);
+    && (rivals === null || !/^(noor|naru)(Rider|Spin)/.test(name) || rivals.some(who => name.startsWith(who + "Rider") || name.startsWith(who + "Spin")))).map(([name]) => name);
   if (typeof Image !== "undefined") {
     for (const name of names) {
       if (images.has(name)) continue;
