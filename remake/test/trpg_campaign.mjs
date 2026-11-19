@@ -573,18 +573,35 @@ test("table status guides player when companions and books are not yet ready (#1
   assert.equal(withBook.reason, "今夜来られる部員がいない。知り合いとの交流を深めよう");
 });
 
-test("the shelf snapshots the completed route once per play and keeps earlier plays when full", async () => {
-  const { TRPG_RECORDS_PER_STORY, appendTrpgPlayRecord, savedTrpgRecords, trpgReplayScenes } = await module("../js/trpg/play-record.js");
+test("the shelf records only opted-in completed routes once and never replaces old entries", async () => {
+  const { TRPG_RECORDS_PER_STORY, appendTrpgPlayRecord, saveTrpgReplay, savedTrpgRecords, trpgReplayScenes } = await module("../js/trpg/play-record.js");
   const s = own(friends(state()), ordinary.id);
-  const play = (name, seed) => {
+  let archiveWrites = 0;
+  const write = () => { archiveWrites++; return true; };
+  const play = (name, seed, keep = true) => {
     const cast = rules.castTrpgTable(s, catalog, ordinary);
     assert(cast.ok);
     const ticket = { ...cast, chapter: s.chapter, day: s.day, slot: s.slot };
     const table = rules.materializeTrpgCast(ordinary, cast.assignments);
     const result = finish(table, { pc: { name }, companions: { adam: "nico" }, seed });
-    const options = { recordTable: table };
+    let pending, offers = 0;
+    const previous = s.trpg.cleared[ordinary.id]?.records;
+    const options = { recordTable: table, onReplayOffer: build => { pending = build; offers++; } };
     assert(rules.completeTrpgTable(s, catalog, ordinary, ticket, result, options));
-    assert(!rules.completeTrpgTable(s, catalog, ordinary, ticket, result, options), "a second notification adds no record");
+    assert(!rules.completeTrpgTable(s, catalog, ordinary, ticket, result, options), "a second completion adds no record");
+    assert.equal(offers, 1);
+    assert.equal(s.slot, 2, "the night is spent before the replay decision");
+    assert.equal(s.trpg.bookmark, undefined);
+    assert.equal(s.trpg.cleared[ordinary.id].records, previous, "there is no automatic replay save");
+    if (keep) {
+      const offered = pending();
+      const saved = saveTrpgReplay(s, ordinary.id, offered, write);
+      if (saved === "saved") assert.equal(saveTrpgReplay(s, ordinary.id, offered, write), "stale");
+      else assert.equal(saved, "full");
+    } else if (keep === null) {
+      assert.equal(saveTrpgReplay(s, ordinary.id, pending(), () => false), "failed");
+      assert.equal(s.trpg.cleared[ordinary.id].records, previous, "write errors restore existing replays only");
+    }
     s.slot = 1;
     s.day++;
     return result;
@@ -610,16 +627,22 @@ test("the shelf snapshots the completed route once per play and keeps earlier pl
   assert.deepEqual([firstRecord.lines[0][1], firstRecord.lines.at(-1)[1]], companionLines);
   assert(firstRecord.lines.every(([, line]) => !/\{pc[:}]/.test(line)), "the snapshot resolves names in the saved script");
 
-  const second = play("アカ", 7);
+  play("ミドリ", 5, false);
+  assert.deepEqual(s.trpg.cleared[ordinary.id].records, [firstRecord], "a skipped second play does not replace the saved first");
+  assert.equal(archiveWrites, 1);
+  const third = play("アカ", 7);
   const memory = s.trpg.cleared[ordinary.id];
-  assert.deepEqual(memory.records.map(({ play, day }) => [play, day]), [[1, 3], [2, 4]]);
-  assert.equal(memory.records[1].ending, ordinary.endings[second.ending].title);
+  assert.deepEqual(memory.records.map(({ play, day }) => [play, day]), [[1, 3], [3, 5]]);
+  assert.equal(memory.records[1].ending, ordinary.endings[third.ending].title);
   assert.equal(memory.records[0], firstRecord, "replay leaves the earlier snapshot intact");
   const beforeLimit = structuredClone(memory.records);
+  play("イエロー", 8, null);
+  assert.deepEqual(s.trpg.cleared[ordinary.id].records, beforeLimit);
   for (let i = memory.records.length; i <= TRPG_RECORDS_PER_STORY; i++) play("アオ", i + 12);
   const full = s.trpg.cleared[ordinary.id];
   assert.equal(full.records.length, TRPG_RECORDS_PER_STORY);
-  assert.equal(full.plays, TRPG_RECORDS_PER_STORY + 1);
+  assert.equal(full.plays, TRPG_RECORDS_PER_STORY + 3);
+  assert.equal(archiveWrites, TRPG_RECORDS_PER_STORY);
   assert.deepEqual(full.records.slice(0, 2), beforeLimit);
 
   const bounded = { earlier: { records: Array.from({ length: 17 }, (_, index) => (

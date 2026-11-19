@@ -49,6 +49,8 @@
 | 台詞・会話イベントの追加・編集 | `.claude/skills/dialogue-edit`、`text-style`、`gameplay_agent_reference.md`、必要なら `shisha_reference.md` |
 | 設定の矛盾点検・ストーリー改善 | `.claude/skills/canon-check`、`story-review`、`review_scope.md`、`brand/` |
 | 画像・CG・立ち絵 | `.claude/skills/codex-image-prompt`、`portrait-fix`、`character-portrait-remaster`、`asset_ai_guidance.md`。立ち絵の頭身・顔アイコン・画風・参照画像は [portrait_standard.md](portrait_standard.md)、背景の画素数・画風・台帳は [background_standard.md](background_standard.md)。シーシャ機材が写るなら [shisha_reference.md §4](shisha_reference.md#4-画像生成の必須手順機材の形と構造) |
+| ゲーム画面・HUD・メニュー・会話窓の設計と見た目の改善 | [game-ui-frontend](../.claude/skills/game-ui-frontend/SKILL.md)（採用済みの画面方針・素材・既存実装を優先） |
+| 実画面の視認性・操作感・スクリーンショット比較 | [game-playtest](../.claude/skills/game-playtest/SKILL.md)（既存プレビュー・Playwrightで対象場面を確認） |
 | BGM | `.claude/skills/suno-bgm-prompt`、`prompts/bgm_suno_prompts.md` |
 | オーナーの要望・バグ報告 | `.claude/skills/owner-request`、`owner_requests.md` |
 | Issueの完了済み・残件・保留の整理 | `.claude/skills/issue-triage`（本文・最新コメント・関連PR・mainを照合） |

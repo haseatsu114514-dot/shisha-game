@@ -1,7 +1,7 @@
 import { recordPlayMastery, syncPlayMastery } from "../core/play-mastery.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { isTrpgRegular } from "./regulars.js";
-import { appendTrpgPlayRecord, buildTrpgPlayRecord } from "./play-record.js";
+import { buildTrpgPlayRecord } from "./play-record.js";
 // Campaign rules only. All mutations are explicit; this module has no DOM/storage.
 const clone = value => JSON.parse(JSON.stringify(value));
 const excluded = new Set(["sumi", "naru", "salaryman"]);
@@ -244,15 +244,16 @@ export function completeTrpgTable(state, catalog, scenario, ticket, result, opti
     // The player's own character, as built for this table: name, origin and stats (older saves may also carry a look).
     ...(result.pc && typeof result.pc.name === "string" ? { pc: clone(result.pc) } : {}),
   };
-  const records = options.recordTable
-    ? appendTrpgPlayRecord(state.trpg.cleared, scenario.id,
-      buildTrpgPlayRecord(options.recordTable, result, memory, state, plays, options.characters))
-    : kept?.records;
   state.trpg.cleared[scenario.id] = { ...(betterPlay(memory, kept) ? memory : kept), endingsSeen: seen, plays,
-    ...(records !== undefined ? { records } : {}) };
+    ...(kept?.records !== undefined ? { records: kept.records } : {}) };
   if (state.trpg.bookmark?.id === scenario.id) delete state.trpg.bookmark;
   state.slot++;
   recordPlayMastery(state, "trpg", result, `${state.cycle || 1}:${scenario.id}:${plays}`);
+  // 本編の完了はここで確定。再生データは選ばれた時だけ作り、進行セーブを妨げない。
+  if (options.recordTable && options.onReplayOffer) {
+    const ended = { chapter: state.chapter, day: state.day, flags: state.flags };
+    options.onReplayOffer(() => buildTrpgPlayRecord(options.recordTable, result, memory, ended, plays, options.characters));
+  }
   return true;
 }
 

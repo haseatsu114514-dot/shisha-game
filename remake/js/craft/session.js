@@ -8,7 +8,7 @@ import { showScreen, setBg, retire, layers, flash, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { bgUrl } from "../core/data.js";
 import { state, timeOfDay, save, config } from "../core/state.js";
-import { craftVersionFrom, renewalCraft } from "../core/craft-version.js";
+import { craftVersionForSession, renewalCraft } from "../core/craft-version.js";
 import { currentCondition, addStamina, tier01 } from "../core/stats.js";
 import { growthSkill, growthCraftCondition, growthLesson, LESSON_TUNING, SKILL_TUNING } from "../core/growth-effects.js";
 import { noteGrowthCraftOwner } from "../core/growth-memory.js";
@@ -24,6 +24,7 @@ import { runHeat } from "./heat.js";
 import { runSteamDodge } from "./steam.js";
 import { runPull } from "./pull.js";
 import { applyCraftSkin, craftSkinUrls } from "./skin.js";
+import { buildMixTemperatureGauge } from "./thermometer.js";
 import { buildThermalAtmosphere } from "./thermal.js";
 import { buildPanelSmoke } from "./smoke-art.js";
 import { temperatureAfterSteam } from "./conditions.js";
@@ -51,7 +52,7 @@ const RIVAL_FACE_DELAY_MS = 1200;
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
  * その腕前相当の結果を出して進む（UIの流れ自体は通常どおり通る）。
  */
-export const craftTest = { auto: null, aim: null }; // auto: "good" / "bad" / "burn"（温度を上げ続けて焦がす）。aim: "attack" で上手な自動操作が攻めの帯を狙う（桜井式の大会だけ）
+export const craftTest = { auto: null, aim: null }; // auto: "good" / "bad" / "burn"（温度を上げ続けて焦がす）。aim: "attack" で上手な自動操作が攻めの帯を狙う（桜井版の攻めの帯）
 
 export const MODE_LABEL = { tutorial: "LESSON", drill: "PRACTICE", rehearsal: "REHEARSAL", tournament: "SMOKE CROWN CUP" };
 const MODE_NOTE = { tutorial: "レッスン", drill: "練習モード", rehearsal: "リハーサル", tournament: "大会" };
@@ -68,8 +69,8 @@ export function newSession(mode) {
   const steamVariation = { offset: rand(-.065, .065), transfer: rand(.9, 1.1) };
   const cs = {
     mode,
-    // シーシャ作りの版（リニューアル／桜井版・CRN16）。一台の途中では変えない
-    craftVersion: craftVersionFrom(config),
+    // #3795: 全入口を桜井版へ。第1章大会の版は従来どおり試合の方式で確定する。
+    craftVersion: craftVersionForSession(mode, state.chapter, config),
     ...(growthLesson(state,"M-B3")?{blindVariance:rand(-LESSON_TUNING.blindSwing,LESSON_TUNING.blindSwing)}:{}),
     chapter: state.chapter,
     audienceIds: audienceFor(mode, state.chapter),
@@ -140,6 +141,9 @@ function waitForBenchAssets(b, task, assets = task, notice = true) {
  * 戻り値の panel に各工程が中身を描き、左側は作業風景の静止モックアップ。
  */
 export function openBench(cs, { steps = [], entryAssets = null } = {}) {
+  // 第2〜4章は保存済みの一台を直接復元する。完了済みの採点は保持し、再開する作業台も統一する。
+  // 第1章大会の試合記録と、独立プレビューの明示的な版比較は変更しない。
+  if (!cs.preview && (cs.mode !== "tournament" || (cs.chapter ?? state.chapter) !== 1)) cs.craftVersion = "sakurai";
   applyCoalTraining(cs, state.flags);
   // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
   // 制作中は大会用の台だけを見せる。家背景に所持品の台を重ねない（#873）。
@@ -177,8 +181,9 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   showScreen("bench", root);
   bench = { cs, owner:state, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf,
     sequence: steps.map(([id]) => id), prefetchSteps: new Set() };
-  // 固定レッスンと単工程ドリルには総合評価を出さない。
-  if (cs.mode !== "tutorial" && cs.mode !== "drill") {
+  // レッスンも大会と同じ暫定ランクを表示。配合だけの接客と、前工程を補う単工程ドリルは総合を捏造しない。
+  const rankedLesson = steps.some(([id]) => ["holes", "heat", "pull", "care1", "care2"].includes(id));
+  if (cs.mode !== "drill" && (cs.mode !== "tutorial" || rankedLesson)) {
     bench.rankHud = mountCraftRank(root.querySelector(".bench-top"), null, { preserveMode: true });
     const b = bench;
     const observer = new MutationObserver(() => {
@@ -346,6 +351,13 @@ export async function explainStepOnce(cs, id, panelId = id) {
   return true;
 }
 
+// 加熱前の共通の柱。配合・詰めのプレビューも同じ一本を使い、初回説明や結果カードで
+// 操作パネルが空になっても残す。実温度を扱う工程では各ミニゲームの温度計へ渡す。
+export function preparationGauge(cs) {
+  if (bench?.cs !== cs) return buildMixTemperatureGauge(cs, { vertical: true });
+  return bench.preheat ??= buildMixTemperatureGauge(cs, { vertical: true });
+}
+
 /** 工程の見出しを切り替え、パネルを空にして返す */
 export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id] || hintText, lessonStep = id } = {}) {
   const b = bench;
@@ -376,6 +388,11 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.panel.replaceChildren();
   b.panel.dataset.step = id;
   b.root.dataset.step = id;
+  if (craftStageEnabled() && ["setup", "mix", "pack", "holes", "place", "heat"].includes(id)) {
+    const gauge = preparationGauge(b.cs);
+    gauge.updateBands();
+    b.panel.before(gauge.root);
+  } else b.preheat?.root.remove();
   b.worker.setStep(id);
   renderFatigue();
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;

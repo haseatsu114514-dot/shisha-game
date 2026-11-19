@@ -1,3 +1,4 @@
+import { faceIconStyle } from "./face-crops.js";
 import { storeLogo } from "../core/store-logos.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { el, yen } from "../core/util.js";
@@ -9,7 +10,8 @@ import { loadTrpgLibrary, preloadTrpgAssets, runTrpg } from "./index.js";
 import { playTrpgEntrance } from "./entrance.js";
 import { shelfHelpButton } from "./shelf-help.js";
 import { openTrpgBookshelf } from "./play-record-view.js";
-import { displayName, portraitBoxStyle, portraitUrl, sceneArt } from "./presentation.js";
+import { saveTrpgReplay } from "./play-record.js";
+import { displayName, portraitUrl, sceneArt } from "./presentation.js";
 import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable, keepTrpgBookmark, trpgBookmarkFor, clubRecord, clubGain, trpgBookProgress } from "./campaign.js";
 
 // 店の決まりは画面に常に出さず、右上の「？」で読む（#2719・ミニゲーム共通のUI方針）。
@@ -83,7 +85,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       // 入口でサイと話したばかりの来店（daily/venue-arrivals.js）は、挨拶を繰り返さず棚へ促す一言にする
       : daytime ? seated("day") : seated("night")), resources));
     if (completed) {
-      root.append(el("p.trpg-campaign-notice", { role: "status", text: archiveStatus }));
+      if (archiveStatus) root.append(el("p.trpg-campaign-notice", { role: "status", text: archiveStatus }));
       if (lastGain) root.append(clubBanner(clubRecord(state, catalog), lastGain));
       if (!reflection) root.append(el("div.trpg-trial-actions", [
         button("うまくいった場面を話す", "trpg-reflect-good", () => { reflection = "after_table_good"; render(); }),
@@ -145,7 +147,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       // 興味の一言はスマホでは札に出さず、長押し・ポインタの title で読む（#2729）
       party.append(el("div.trpg-campaign-person", { title: member ? status.reason : person.interestHint, dataset: { test: "trpg-person-" + person.id, available: status.ok, member: String(member) } }, [
         el("span.trpg-campaign-face", el("img", { src: portraitUrl(manifest, person.id), alt: "",
-          style: portraitBoxStyle(manifest, person.id, { faceFrac: 0.4, eyeFrac: 0.44, fallbackWidth: 180, fallbackHeadY: 4 }) })),
+          style: faceIconStyle(person.id, undefined, manifest) })),
         el("div", [el("strong", [name(person.id), member ? el("i", { text: " · 部員" }) : null].filter(Boolean)),
           el("small", { text: member ? status.reason : recruitment.reason }),
           !member && el("small", { text: person.interestHint })]),
@@ -297,18 +299,31 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         tutorial: !state.flags?._trpg_tutorial_seen,
         onComplete: result => {
           const before = clubRecord(state, resources.catalog);
-          const previous = state.trpg?.cleared?.[scenario.id]?.records;
+          let makeReplay = null;
           if (!disposed && getState() === state && completeTrpgTable(state, resources.catalog, scenario, ticket, result, {
-            nightBusy: nightBusy(), recordTable: table, characters: resources.characters,
+            nightBusy: nightBusy(), recordTable: table, characters: resources.characters, onReplayOffer: build => { makeReplay = build; },
           })) {
             state.flags ||= {}; state.flags._trpg_tutorial_seen = true;
             completed = true;
-            const saved = save(), added = state.trpg.cleared[scenario.id].records !== previous;
-            archiveStatus = saved === false ? "本棚の記録を保存できませんでした。"
-              : added ? "本棚に記録しました。" : "本棚の保存上限に達しました。";
-            // 今夜の卓で部の実績がどれだけ増えたか。結末の画面と、カフェに戻った時の札に出す。
+            // 進行・報酬・夜の枠はリプレイの選択より前に一度だけ保存。LOADで選択を失っても卓は完了済み。
+            const progressSaved = save() !== false;
+            archiveStatus = progressSaved ? "" : "ゲームの進行を保存できませんでした。";
             lastGain = clubGain(before, clubRecord(state, resources.catalog));
-            return { club: lastGain };
+            let decided = false;
+            return { club: lastGain, chooseReplay: makeReplay && (keep => {
+              if (decided || disposed || getState() !== state) return "";
+              decided = true;
+              if (!keep) {
+                if (progressSaved) archiveStatus = "リプレイは保存しませんでした。";
+                return archiveStatus;
+              }
+              let outcome = "failed";
+              try { outcome = saveTrpgReplay(state, scenario.id, makeReplay(), save); } catch { /* 完了済みの進行は残す */ }
+              if (outcome === "saved") archiveStatus = "本棚にリプレイを保存しました。";
+              else if (outcome === "full") archiveStatus += "本棚の保存上限に達しました。前のリプレイは残っています。";
+              else if (outcome === "failed") archiveStatus += "本棚にリプレイを保存できませんでした。";
+              return archiveStatus;
+            }) };
           }
           return null;
         } });

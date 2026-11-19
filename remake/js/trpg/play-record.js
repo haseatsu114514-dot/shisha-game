@@ -124,6 +124,24 @@ export function trpgReplayScenes(record) {
   return { grouped: !ordered, scenes: [...scenes, { title: "結末・後日談", ending: true }] };
 }
 
+/**
+ * 「保存する」を選んだ時だけ、今終えた卓を本棚に追加する。進行セーブは別に確定済み。
+ * 同じ回・古い画面からの押し直しでは何もしない。書き込めなければ本棚だけ戻す。
+ */
+export function saveTrpgReplay(state, scenarioId, record, save) {
+  const cleared = state?.trpg?.cleared;
+  const entry = cleared?.[scenarioId];
+  if (!entry || !record || entry.plays !== record.play
+    || entry.records?.some?.(r => r?.play === record.play)) return "stale";
+  const prior = entry.records;
+  const next = appendTrpgPlayRecord(cleared, scenarioId, record);
+  if (next === prior) return "full";
+  entry.records = next;
+  try { if (save() !== false) return "saved"; } catch { /* 進行セーブを巻き戻さない */ }
+  if (prior === undefined) delete entry.records; else entry.records = prior;
+  return "failed";
+}
+
 export function appendTrpgPlayRecord(cleared, scenarioId, record) {
   const prior = cleared[scenarioId]?.records;
   if (prior !== undefined && !Array.isArray(prior)) return prior;

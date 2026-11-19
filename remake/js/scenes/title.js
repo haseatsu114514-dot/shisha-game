@@ -433,9 +433,8 @@ export async function openConfig(opts = {}) {
   // 見た目の様式（LK01）。既定は旧版（LK23）。新版は選べない（コードは残してある）。DS風はすべての章でいつでも切り替えられる（LK21）。
   const look = segRow("見た目", "cfg-look", LOOKS.filter(({ id }) => !DISABLED_LOOKS.includes(id)).map(({ id, label }) => [id, label]),
     normalizeLook(config.look), (v) => { setConfig("look", v); setLook(v); });
-  // シーシャ作りの版（CRN16）。リニューアル＝新しい作業台＋いままでの審査、桜井版＝リニューアル前の作業台＋第1章の大会の桜井式の審査（SKR04）。
-  // どちらを残すかオーナーが遊んで決める。次に始める一台（大会は次に始める試合）から効く。
-  const craftVersion = segRow("シーシャ作りの版", "cfg-craft-version", CRAFT_VERSIONS.map(({ id, label }) => [id, label]),
+  // #3795: 通常制作は桜井版。第1章大会の既存の切替だけ残し、次の試合から効かせる。
+  const craftVersion = segRow("第1章大会の版", "cfg-craft-version", CRAFT_VERSIONS.map(({ id, label }) => [id, label]),
     normalizeCraftVersion(config.craftVersion), (v) => setConfig("craftVersion", v));
   const portraits = segRow("会話の立ち絵", "cfg-portrait-style", [["classic", "旧"], ["new", "新"]],
     config.portraitStyle === "classic" ? "classic" : "new", (v) => setConfig("portraitStyle", v));

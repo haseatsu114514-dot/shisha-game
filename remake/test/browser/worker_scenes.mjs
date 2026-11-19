@@ -109,17 +109,18 @@ await suite("worker-scenes", async check => {
       await page.locator('[data-test="pull-stop"]:not([disabled])').waitFor();
       assert.equal(await worker(page).getAttribute("data-scene"), "pull");
       const button = page.locator('[data-test="pull-stop"]');
+      const repeatTarget = options.hasTouch ? await button.boundingBox() : null;
       if (options.hasTouch) await button.tap(); else await page.keyboard.press("Space");
+      // 1400msの一口の途中で再入力する。描画検査の往復を先に挟むと、遅い環境では次の正常な一口になる。
+      assert(await button.isDisabled());
+      if (options.hasTouch) await page.touchscreen.tap(repeatTarget.x + repeatTarget.width / 2, repeatTarget.y + repeatTarget.height / 2);
+      else await page.keyboard.press("Space");
       await page.waitForFunction(() => document.querySelector('.bench-worker')?.dataset.draw);
       assert.equal(await worker(page).getAttribute("data-scene"), "inhale");
       assert(await page.locator('.worker-action[data-scene="inhale"]').isVisible());
       await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('[data-test="worker-bubbles"]')).opacity) > 0, null, { timeout: 1000 });
       assert(Number(await page.locator('[data-test="worker-bubbles"]').evaluate(n => getComputedStyle(n).opacity)) > 0);
       assert(await button.isDisabled());
-      // 無効中の実タップ/Spaceは次の一口にならない。
-      if (options.hasTouch) {
-        const r = await button.boundingBox(); await page.touchscreen.tap(r.x + r.width / 2, r.y + r.height / 2);
-      } else await page.keyboard.press("Space");
       const overlap = await page.evaluate(async () => {
         const bottle = document.querySelector('.worker-equipment').getBoundingClientRect();
         const thermometer = document.querySelector('.thermo').getBoundingClientRect();

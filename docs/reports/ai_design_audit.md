@@ -1,5 +1,7 @@
 # ai-design-check による現行UIの点検
 
+> 2026-11-20 追記: オーナー指示により `ai-design-check` / `ai-design-fix` はリポジトリから削除した。本書と下記のコマンドは当時の監査記録で、現在の導入・実行手順ではない。新しいゲーム画面の作業は [game-ui-frontend](../../.claude/skills/game-ui-frontend/SKILL.md) と [game-playtest](../../.claude/skills/game-playtest/SKILL.md) を参照する。
+
 > 2026-11-10 追記: 本書の DS風（スマホ縦・2画面）に関する観察は、DS風の廃止（横画面一本化・`docs/owner_requests.md` LS01）で対象が無くなった。
 
 未採用の改善提案。2026-11-02、main `e78eec552dc7aafb17b88d0f9100b991bec665d5` を対象に実施。ゲーム本体の見た目・挙動・台詞は変更していない。
@@ -12,7 +14,7 @@
 
 ## 使用したもの・対象
 
-- [enmerasoftware/ai-design-check](https://github.com/enmerasoftware/ai-design-check) の `ai-design-check` / `ai-design-fix` を、`npx --yes skills add enmerasoftware/ai-design-check --agent codex --yes` でプロジェクトへ導入。実際の取得元とハッシュは `skills-lock.json`。
+- [enmerasoftware/ai-design-check](https://github.com/enmerasoftware/ai-design-check) の `ai-design-check` / `ai-design-fix` を、`npx --yes skills add enmerasoftware/ai-design-check --agent codex --yes` で当時プロジェクトへ導入した。削除前の取得元とハッシュは [当時の skills-lock.json](https://github.com/haseatsu114514-dot/shisha-game/blob/c48f876ee6c2c5740ab994f1250dbf631df6624d/skills-lock.json) に残る。
 - チェッカーは再現性のため `@enmera/ai-design-check@0.10.0` に固定。ルール一覧と `inventory` も実行した。レビューは導入したスキルの「測定してから評価」「既存の個性を残す」「件数を減らすために内容を消さない」に従った。
 - ソース検査は `remake/css`（63 CSS）・`remake/js`（376 JS）・`remake/index.html`。旧版、台詞JSON、試作HTML、外部ライブラリ、資料は対象外。CSSフォルダ内のプレビュー用CSS・他テーマ・演出も生の件数には含まれる。
 - 実画面は既定の紙テーマでタイトル・第1章DAY5の地図・MENUの4タブ・設定を1280×720、390×844、320×568で確認。スマホは通常タイトルの横向き案内を確認した後、表示設定からDS風へ切り替えた。制作は本編と同じ実装を使う `craft-preview.html` のパッキング・穴あけ・炭焼きを1280×720で確認。合計26表示状態。

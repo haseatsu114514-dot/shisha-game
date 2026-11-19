@@ -1,5 +1,6 @@
 // Crops for TRPG circular face icons: same cheek-to-cheek scale and eye-line height
 // for every character (and the same numbers used to write costumes/frames.json).
+import { resolvePortrait } from "../core/portrait-resolver.js";
 import { portraitStyle } from "../core/portrait-style.js";
 import { FACE_FRAC, EYE_Y, PORTRAIT_FRAMES, NPC_FRAMES, EXTRA_PORTRAIT_FRAMES, PORTRAIT_FACE_SHIFTS } from "./face-crops-data.js";
 
@@ -21,16 +22,14 @@ function manifestFaceFrame(manifest, folder, style) {
   };
 }
 
+function measuredPortraitFrame(folder, key, manifest) {
+  return PORTRAIT_FRAMES[key]?.[folder] || EXTRA_PORTRAIT_FRAMES[key]?.[folder] || manifestFaceFrame(manifest, folder, key);
+}
+
 export function portraitFaceFrame(id, style = portraitStyle(), manifest = null) {
   const folder = ALIASES[id] || id;
   const key = style === "classic" ? "classic" : "new";
-  return PORTRAIT_FRAMES[key]?.[folder]
-    || EXTRA_PORTRAIT_FRAMES[key]?.[folder]
-    || manifestFaceFrame(manifest, folder, key)
-    || PORTRAIT_FRAMES.classic?.[folder]
-    || EXTRA_PORTRAIT_FRAMES.classic?.[folder]
-    || manifestFaceFrame(manifest, folder, "classic")
-    || null;
+  return measuredPortraitFrame(folder, key, manifest) || measuredPortraitFrame(folder, "classic", manifest);
 }
 
 /** Per-expression [dx, dy] head-center shift in source 896x1200 pixels relative to normal. */
@@ -44,34 +43,81 @@ export function npcFaceFrame(id) {
   return NPC_FRAMES[id] || null;
 }
 
-/**
- * Position a standing portrait so its measured face crop fills a circular (or
- * square) parent. Width / top are percentages of the parent, so the same style
- * works at 68px seats, 52px companions, and the smaller phone sizes.
- */
-export function circleFaceStyle(frame) {
-  if (!frame) return null;
-  const box = frame.box_exact || frame.box;
-  const [left, top, right] = box;
-  const side = right - left;
-  if (!(side > 0)) return null;
-  const srcW = frame.src?.[0];
-  if (!(srcW > 0)) return null;
-  const cx = frame.face?.cx ?? (left + right) / 2;
-  return {
-    position: "absolute",
-    left: "50%",
-    width: `${(srcW / side) * 100}%`,
-    maxWidth: "none",
-    height: "auto",
-    top: `${(-top / side) * 100}%`,
-    transform: `translateX(-${(cx / srcW) * 100}%)`,
-  };
+// Source-pixel landmarks in the shipped illustrations: left/right iris, nose tip,
+// chin, left/right jaw. Eye spacing alone conflates head angle with zoom. Match
+// their positions to normal with one scale and translation; preserve head tilt.
+const HIYORI_LANDMARKS = {
+  "new/hiyori/normal": [482, 289, 522, 274, 499.5, 299, 517.5, 321.5, 478.5, 304.5, 540.5, 299],
+  "apple-thief/hiyori/rosa": [480, 276, 518, 262, 495.5, 285.5, 512.5, 308.5, 475, 290.5, 537, 286],
+  "apple-thief/hiyori/marta": [482, 278, 522, 265, 498.5, 288, 515.5, 310.5, 479, 293.5, 540.5, 289.5],
+  "shark-last-order/hiyori/otto": [483, 283, 524, 274, 498, 296, 512.5, 322, 479, 302, 539.5, 301],
+  "shark-last-order/hiyori/midori": [486, 289, 526, 273, 503.5, 298, 521, 322, 482.5, 304.5, 544, 300],
+  "leaf-mail/hiyori/yura": [500, 290, 544, 274, 518, 300, 535, 324.5, 497, 306, 560.5, 302.5],
+  "leaf-mail/hiyori/neri": [492, 284, 530, 269, 507.5, 293, 525, 315.5, 487, 298.5, 549.5, 294],
+  "new/hiyori/smile": [488, 294, 530, 276, 506.5, 301, 526, 323, 486, 306, 548, 299.5],
+  "new/hiyori/surprise": [485, 293, 526, 277, 503, 304, 520.5, 329.5, 482, 311.5, 546, 307],
+  "new/hiyori/sad": [484, 294, 526, 279, 502, 303.5, 519.5, 326, 480, 308, 543.5, 303.5],
+  "classic/hiyori/normal": [398, 320.5, 438, 304.5, 414.5, 327, 435, 352.5, 397.5, 338, 456, 333],
+  "classic/hiyori/smile": [398, 323, 438.5, 305, 414.5, 328.5, 435.5, 353, 397.5, 339.5, 456, 333.5],
+  "classic/hiyori/serious": [400, 323.5, 442.5, 307.5, 417, 330, 438, 357.5, 399.5, 342.5, 458, 338.5],
+  "classic/hiyori/sad": [395.5, 325.5, 436.5, 310, 410.5, 332, 431.5, 357.5, 394, 343.5, 456, 338],
+  "classic/hiyori/surprise": [397.5, 317, 438.5, 301.5, 414, 325, 433, 354.5, 396, 339, 456, 333],
+};
+const LANDMARK_WEIGHTS = [1, 1, 1, 1.5, 0.6, 0.6];
+
+// Optical trims in original source pixels after comparing at actual seat size.
+// Otto's straighter jaw and Yura's asymmetric fringe pull the lower face left.
+const OPTICAL_TRIMS = {
+  "shark-last-order/hiyori/otto": [-1.6, 1.1, 1.008],
+  "leaf-mail/hiyori/yura": [-0.7, 0.6, 0.99],
+};
+
+function landmarkMean(points) {
+  const total = LANDMARK_WEIGHTS.reduce((a, b) => a + b, 0);
+  return [0, 1].map(axis => LANDMARK_WEIGHTS.reduce((sum, weight, i) =>
+    sum + weight * points[2 * i + axis], 0) / total);
 }
 
-/** Inline style for a TRPG circle, or null to keep the standing-portrait fallback. */
-export function faceIconStyle(id, style = portraitStyle(), manifest = null) {
-  return circleFaceStyle(portraitFaceFrame(id, style, manifest));
+function alignedFace(key, style) {
+  const points = HIYORI_LANDMARKS[key];
+  if (!points) return null;
+  const reference = HIYORI_LANDMARKS[style + "/hiyori/normal"];
+  const base = portraitFaceFrame("hiyori", style).face;
+  const from = landmarkMean(points), to = landmarkMean(reference);
+  let covariance = 0, variance = 0;
+  for (let j = 0; j < points.length; j++) {
+    const axis = j % 2, delta = points[j] - from[axis], weight = LANDMARK_WEIGHTS[j >> 1];
+    covariance += weight * delta * (reference[j] - to[axis]);
+    variance += weight * delta * delta;
+  }
+  const scale = covariance / variance;
+  const [dx, dy, zoomDivisor] = OPTICAL_TRIMS[key] || [0, 0, 1];
+  return { cx: from[0] + (base.cx - to[0]) / scale + dx,
+    eye_y: from[1] + (base.eye_y - to[1]) / scale + dy, w: base.w / scale * zoomDivisor };
+}
+
+export function circleFaceStyle(frame, { face = frame?.face, offset = [0, 0] } = {}) {
+  if (!face?.w) return null;
+  const [srcW, srcH] = frame.src;
+  return standingFrameStyle({ cx: face.cx + offset[0], eyeY: face.eye_y + offset[1], w: face.w, srcW, srcH },
+    { faceFrac: FACE_FRAC, eyeFrac: EYE_Y });
+}
+
+export function costumeIconStyle(frame) {
+  if (!frame) return null;
+  const key = [frame.scenario, frame.character, frame.role_id].join("/");
+  return circleFaceStyle(frame, { face: alignedFace(key, "new") || frame.face });
+}
+
+/** Use the style and expression actually selected by the same resolver as the image URL. */
+export function faceIconStyle(id, style = portraitStyle(), manifest = null, face = "normal") {
+  const asset = manifest && resolvePortrait(manifest, id, face, style);
+  const actualStyle = asset?.style || style, actualFace = asset?.face || face;
+  const folder = asset?.folder || ALIASES[id] || id;
+  const frame = measuredPortraitFrame(folder, actualStyle, manifest);
+  const measured = alignedFace([actualStyle, folder, actualFace].join("/"), actualStyle);
+  return circleFaceStyle(frame, { face: measured || frame?.face,
+    offset: measured ? [0, 0] : portraitFaceShift(id, actualFace, actualStyle) });
 }
 
 /**
