@@ -930,8 +930,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     pop = modal("リプレイを保存しますか？", el("p.trpg-modal-intro", {
       text: "保存すると、この回の選択・出目・結末を本棚で見返せます。保存しなくても、本編の進行は残ります。",
     }), [
-      button("保存しない", "trpg-replay-save-no", () => decide(false), { style: touchTarget }),
       button("保存する", "trpg-replay-save-yes", () => decide(true), { class: "primary", style: touchTarget }),
+      button("保存しない", "trpg-replay-save-no", () => decide(false), { style: touchTarget }),
     ], { onDismiss: () => decide(false) });
     if (pop) {
       pop.box.dataset.test = "trpg-replay-save-question";
