@@ -13,10 +13,17 @@ await suite('shopping-tutorial',async check=>{
   await page.locator('[data-test="shop-leave"]').click();
   assert.doesNotMatch(await page.locator('#toasts').innerText(),/スミ/);
   await page.screenshot({path:`/tmp/1081-shop-${touch?'touch':'pc'}.png`});
+  const mint = page.locator('[data-test="buy-mint"]');
+  await mint.click(); // 仕入れ前の注意と、直後の③は別の段なので待たずに出す。
+  assert.match(await page.locator('#toasts').innerText(), /先に頼まれた.*レモン.*購入/);
   await lemon.click();await page.locator('[data-test="shop-checkout"]').click();
   assert.deepEqual(await page.evaluate(()=>({money:ST.core.state.money,stock:ST.core.state.flavorStock.lemon,paid:ST.core.state.flags._errand_lemon_expensed})),{money:30000,stock:50,paid:true});
+  await mint.click();
+  assert.match(await page.locator('#toasts').innerText(), /店を出る.*スミさんのところへ戻ろう/);
+  assert.equal(await page.locator('[data-test="quantity-mint"]').innerText(), "0");
+  assert.equal(await page.evaluate(()=>ST.core.state.money), 30000);
   await page.locator('[data-test="shop-leave"]').click();await page.waitForFunction(()=>left);
-  assert.doesNotMatch(await page.locator('#toasts').innerText(),/スミ|ご苦労/);
+  assert.doesNotMatch(await page.locator('#toasts').innerText(),/仕入れ、ご苦労/);
   const result=await page.evaluate(async()=>{
    const vn=await import('./js/vn/engine.js');vn.vnTest.turbo=true;
    await vn.play('remake_lemon_gift');const first=ST.core.state.flavorMastery.lemon;

@@ -36,7 +36,7 @@ export function buildGuide() {
   const note = el("p");
   const summary = el("summary", { text: "?", "aria-label": "操作の説明（開くと時間が止まる）", title: "操作の説明（開くと時間が止まる）" });
   const close = el("button.btn.primary", {
-    type: "button", text: "説明を閉じて進む", dataset: { test: "bench-guide-close" },
+    type: "button", text: "説明を閉じて進む", "aria-label": "説明を閉じて進む", dataset: { test: "bench-guide-close" },
     style: { display: "block", marginTop: "12px", maxWidth: "100%", whiteSpace: "normal",
       minHeight: "calc(44px / var(--k, 1))", fontSize: "calc(16px / var(--k, 1))" },
     onclick: () => {
