@@ -42,17 +42,25 @@ const CHIPS = { src: imgFileUrl("ui/axe_throw/wood-chips.webp"), cell: 128, cols
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
 if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});
 const { x: CX, y: CY, radius: R } = TARGET;
-// 一人称の的の見せ方（#3639 オーナー指示 2026-11-18 差し替え＋同日第4弾で寄せ）: 板の中心は少し上げた
-// (CX, 215) のまま、写真側を 1.15 倍に寄せて「的の近くから投げる」感じにする。板も同じ中心で同率に
-// 拡げるため、表示変換は scale .85×1.15＝.9775 だけになる。板ローカル座標（CX/CY/R）と判定は一切
-// 変えず、表示変換はこの transform だけが担う（クリック変換は変換グループの CTM で追随する）。
-const FPS_BOARD_TRANSFORM = `translate(${CX} 215) scale(.9775) translate(${-CX} ${-CY})`;
-// 手元の型（#3639 オーナー指示 2026-11-18 第3弾「手元をレイヤー上に」＋第4弾で両手構えへ差し替え）: 構え絵
-// （bg_axe_lane_aim）に焼き込まれた両手と斧の輪郭。素のレーン絵との差分の最大輪郭を実測し、写真の寄せ
-// （x=-245, y=-107, 1150×646.875）に合わせて画像座標（1280×720）から viewBox 座標へ換算したもの。
-// 右下は「横を止める」ボタンに被らないよう、ボタンの範囲を画像座標へ戻した x>=965 かつ y>=575 を切り落としてある。
-// 表示だけの型で、判定・座標には使わない。
-const HAND_SILHOUETTE = "M613.9 84.4L581.6 67.3L558.2 74.5L525.0 52.9L497.1 21.5L486.3 26.9L445.9 84.4L437.8 123.0L440.5 147.3L471.1 130.2L516.0 118.5L516.0 110.4L503.4 109.5L503.4 96.9L498.0 112.2L489.9 111.3L488.1 86.2L498.0 81.7L524.1 88.9L524.1 78.1L508.8 77.2L508.8 56.5L525.0 60.1L533.9 72.7L540.2 122.1L533.9 123.0L498.0 208.4L455.8 229.0L459.4 248.8L446.8 256.0L434.2 311.7L441.4 333.2L435.1 345.8L401.0 348.5L390.2 363.8L383.0 363.8L374.0 348.5L326.4 349.4L310.2 371.9L312.9 387.1L283.3 381.8L283.3 396.1L268.0 400.6L267.1 408.7L224.9 412.3L248.2 418.6L246.4 436.6L256.3 431.2L257.2 422.2L278.8 431.2L273.4 444.6L283.3 445.5L281.5 466.2L271.6 467.1L262.6 479.7L222.2 479.7L221.3 470.7L194.3 486.0L134.1 482.4L122.5 491.4L120.7 505.7L144.9 517.4L164.7 517.4L171.9 504.8L180.9 504.8L183.6 513.8L206.9 511.1L207.8 519.2L191.6 525.5L186.2 539.0L195.2 539.0L201.5 529.1L229.4 529.1L230.3 539.0L363.2 539.0L385.7 516.5L395.6 518.3L397.4 539.0L434.2 539.0L435.1 532.7L444.1 532.7L444.1 525.5L435.1 523.7L439.6 508.4L467.5 512.0L474.6 526.4L494.4 521.9L500.7 533.6L507.9 533.6L509.7 523.7L520.5 522.8L521.4 503.9L511.5 503.9L509.7 495.0L482.7 479.7L452.2 478.8L452.2 467.1L466.6 463.5L459.4 453.6L461.2 441.9L469.3 441.0L464.8 424.9L478.2 423.1L478.2 410.5L462.1 402.4L462.1 390.7L482.7 388.0L472.9 364.7L478.2 350.3L486.3 349.4L584.3 433.9L579.8 459.9L588.8 443.7L606.7 453.6L605.8 469.8L590.5 468.0L587.0 474.3L601.3 479.7L605.8 506.6L621.1 506.6L614.8 500.3L621.1 453.6L592.3 430.3L592.3 422.2L621.1 424.9L621.1 394.3L636.4 396.1L632.8 408.7L708.2 407.8L615.7 334.1L579.8 314.4L569.0 300.9L566.3 276.6L551.9 262.3L550.1 247.0L533.9 234.4L557.3 188.6L551.9 176.0L560.0 173.3L560.9 163.4L576.2 172.4L577.1 157.1L569.9 152.6L574.4 139.2L561.8 132.0L561.8 122.1L574.4 118.5L580.7 95.1L598.6 92.5L614.8 98.7Z";
+// #3807: frame the lane and the scoring board with one camera. The hand stays at arm's length.
+const FPS_LANE_ZOOM = 1.04;
+const FPS_CENTER_Y = 211;
+const FPS_BOARD_TRANSFORM = `translate(${CX} ${FPS_CENTER_Y}) scale(${.85 * FPS_LANE_ZOOM}) translate(${-CX} ${-CY})`;
+// Outline in the original 1280×720 aiming photo. Keep the gap between the arms open to the lane.
+const HAND_SILHOUETTE = [
+  "M825 142 Q778 177 765 224 Q756 261 766 286 Q815 250 854 255 L868 260 L825 354",
+  "Q816 350 808 359 Q802 368 787 370 Q776 372 781 382 Q782 387 790 390",
+  "Q773 390 769 402 Q765 412 777 424 Q764 423 761 434 Q757 445 768 452",
+  "Q755 454 757 465 Q758 476 769 482 L756 507 Q738 507 722 508",
+  "Q711 509 704 526 Q691 542 680 565 Q670 585 640 607 Q621 605 604 621",
+  "Q569 646 548 660 L478 720 H677 Q692 705 695 682 Q701 694 734 702",
+  "Q750 707 755 689 L763 645 Q782 649 788 636 L787 628 Q798 623 797 611",
+  "L795 606 Q809 601 806 582 L805 578 Q819 575 811 561 Q817 543 802 532",
+  "L817 502 Q839 516 878 552 Q875 575 890 596 Q931 646 960 720 H1263",
+  "Q1195 663 1116 613 Q1047 565 992 519 Q959 484 942 488 Q911 471 899 447",
+  "Q890 430 885 404 Q882 389 864 378 L923 278 L955 294 L986 245 L956 230",
+  "L959 220 Q960 210 937 201 Q915 190 910 195 L904 205 Q857 184 825 142 Z",
+].join(" ");
 // Solid plank edges inside the 1254px artwork (alpha 250+, asset_sources/ui/axe-watl-20261101/adoption.json); the transparent margin is not wood.
 const OPAQUE = { left: 69 / 1254, right: 1185 / 1254, top: 61 / 1254, bottom: 1190 / 1254 };
 const PLANK = { left: CX + BOARD.left * R, right: CX + BOARD.right * R, top: CY + BOARD.top * R, bottom: CY + BOARD.bottom * R };
@@ -218,6 +226,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const floorShadowId = artId + "-floor-shadow";
   const boardScaleArt = svg("g", { class: "axe-board-scale" });
   if (tapPull) boardScaleArt.setAttribute("transform", FPS_BOARD_TRANSFORM);
+  if (tapPull) boardScaleArt.append(svg("ellipse", { class: "axe-floor-shadow", cx: CX, cy: PLANK.bottom,
+    rx: (PLANK.right - PLANK.left) / 2, ry: 17, fill: `url(#${floorShadowId})`, "aria-hidden": "true" }));
   boardScaleArt.append(art);
   artBoard.append(svg("defs", {}, [svg("radialGradient", { id: vignetteId, cx: CX, cy: CY, r: R * 1.62, gradientUnits: "userSpaceOnUse" }, [
     svg("stop", { offset: "0", "stop-color": "#fff3d6", "stop-opacity": .08 }), svg("stop", { offset: ".55", "stop-color": "#000", "stop-opacity": 0 }),
@@ -225,26 +235,26 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     svg("radialGradient", { id: floorShadowId }, [
       svg("stop", { offset: "0", "stop-color": "#000", "stop-opacity": .42 }), svg("stop", { offset: ".7", "stop-color": "#000", "stop-opacity": .2 }),
       svg("stop", { offset: "1", "stop-color": "#000", "stop-opacity": 0 })])]),
-    ...(tapPull ? [svg("ellipse", { class: "axe-floor-shadow", cx: CX, cy: 414, rx: 210, ry: 17, fill: `url(#${floorShadowId})`, "aria-hidden": "true" })] : []),
     boardScaleArt);
-  // 一人称レーンの背景絵（#3639）: レーンの中に立った視点の絵を全面に敷き、狙いの間だけ構え（右手と斧）の絵を重ねる。
-  // 絵の中の的は無地の円盤で、得点の盤面はこれまでどおり板とSVGが担う（判定・座標は一切変えない）。
   let laneAimImage = null, handFront = null, handFrontImage = null;
   if (tapPull) {
-    laneAimImage = svg("image", { class: "axe-lane-aim", href: ART.laneAim, x: -245, y: -107, width: 1150, height: 646.875, preserveAspectRatio: "xMidYMid slice", opacity: 0 });
-    const lane = svg("g", { class: "axe-fps-lane" }, [
-      svg("rect", { x: -170, y: -65, width: 1000, height: 562.5, fill: "#171f22" }),
-      svg("image", { class: "axe-lane-bg", href: ART.lane, x: -245, y: -107, width: 1150, height: 646.875, preserveAspectRatio: "xMidYMid slice" }),
-      laneAimImage,
-    ]);
-    artBoard.insertBefore(lane, artBoard.firstChild);
-    // 手元を最前面へ（#3639 オーナー指示 2026-11-18 第3弾）: 構え絵は背景に焼き込まれているため、同じ絵を
-    // 右手と斧の輪郭（HAND_SILHOUETTE）で型抜きした複写を別層で重ね、スコアピル等より上に描く。
-    // 元の構え絵とピクセル単位で重なるので見た目は変わらず、手元だけが前面に来る。タッチは受けない（CSS）。
-    const handClipId = artId + "-hand-clip";
-    handFrontImage = svg("image", { class: "axe-hand-front-img", href: ART.laneAim, x: -245, y: -107, width: 1150, height: 646.875, preserveAspectRatio: "xMidYMid slice", opacity: 0, "clip-path": `url(#${handClipId})` });
+    const w = 1000 * FPS_LANE_ZOOM, h = w * 9 / 16;
+    artBoard.insertBefore(svg("image", { class: "axe-lane-bg", href: ART.lane,
+      x: CX - w / 2, y: FPS_CENTER_Y - h / 2, width: w, height: h }), artBoard.firstChild);
+
+    // The aiming photo includes the lane. Reuse only the foreground at its original size and position.
+    const handId = artId + "-hands", clipId = handId + "-outline", frontId = handId + "-front";
+    artBoard.append(svg("defs", {}, [
+      svg("clipPath", { id: clipId }, [svg("path", { d: HAND_SILHOUETTE })]),
+      svg("svg", { id: handId, x: -245, y: -107, width: 1150, height: 646.875, viewBox: "0 0 1280 720" }, [
+        svg("image", { href: ART.laneAim, width: 1280, height: 720, "clip-path": `url(#${clipId})` })]),
+    ]));
+    laneAimImage = svg("use", { class: "axe-lane-aim", href: "#" + handId, opacity: 0 });
+    artBoard.append(laneAimImage);
+    // Keep the lower-right sleeve behind the action button, as in the original framing.
+    handFrontImage = svg("use", { class: "axe-hand-front-img", href: "#" + handId, opacity: 0, "clip-path": `url(#${frontId})` });
     handFront = svg("svg", { viewBox: "-170 -65 1000 562.5", class: "axe-hand-front", "aria-hidden": "true" }, [
-      svg("defs", {}, [svg("clipPath", { id: handClipId }, [svg("path", { d: HAND_SILHOUETTE })])]), handFrontImage]);
+      svg("defs", {}, [svg("clipPath", { id: frontId }, [svg("path", { d: "M-170 -65H830V396H565V497.5H-170Z" })])]), handFrontImage]);
   }
   // Painted markings at the official proportions: 20 mm black lines, red bulls, blue killshots.
   // WATL: the inner killshot is outlined in red pen, the outer may be red; the pen lines sit inside each circle so the blue reads at its true size.
