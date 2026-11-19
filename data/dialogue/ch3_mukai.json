@@ -360,16 +360,96 @@
           "text": "……そこだけは、うまく描ける"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "六つ目の猫は、写真を撮られてから、ムカイさんの口の中へ消えた。"
+          "type": "choice",
+          "id": "mukai_latte_pause",
+          "choices": [
+            {
+              "text": "カップを持つ手ごと撮る",
+              "next": "latte_photo"
+            },
+            {
+              "text": "温かいうちに、と声をかける",
+              "next": "latte_warm"
+            }
+          ]
         },
         {
           "speaker": "hajime",
           "face": "smile",
           "text": "（ハットの下で、ちょっとだけ笑ってた）"
         }
-      ]
+      ],
+      "branches": {
+        "latte_photo": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ムカイさん、そのまま持っててください。撮ってもいいですか"
+          },
+          {
+            "speaker": "mukai_master",
+            "face": "normal",
+            "text": "……俺のスマホで頼む"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ましろがカップの横から、空いたピッチャーをどけた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "猫だけにしますか"
+          },
+          {
+            "speaker": "mukai_master",
+            "face": "normal",
+            "text": "……手は入れてくれ。俺が描いたって分かる"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "画面の中では、大きな手が、そっぽを向いた猫を支えていた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ムカイさんは写真を一度見てから、ラテを飲んだ。"
+          }
+        ],
+        "latte_warm": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ムカイさん、今日は温かいうちにどうですか"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ムカイさんはスマホを裏返し、カップを口に運んだ。"
+          },
+          {
+            "speaker": "mukai_master",
+            "face": "normal",
+            "text": "……あったかいな。いつも撮ってるうちにぬるくなる"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一口で、泡の耳が片方なくなった。ましろがカップをのぞき込む。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "片耳だけだ。呼んでもこない時のてつこちゃんだねぇ"
+          },
+          {
+            "speaker": "mukai_master",
+            "face": "smile",
+            "text": "……じゃあ、次はこれを描くか"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_mukai_no_hat",
