@@ -227,9 +227,15 @@ if ("serviceWorker" in navigator) {
   const message = bootScreen.querySelector(".boot-msg");
   const retry = bootScreen.querySelector(".boot-retry");
   const isLoading = () => bootScreen.isConnected && !bootScreen.classList.contains("done");
+  let watchdog, resourceObserver, gateObserver;
+  const stopWatching = () => {
+    clearTimeout(watchdog);
+    resourceObserver?.disconnect();
+    gateObserver?.disconnect();
+  };
   const fail = (error, slow = false) => {
     if (!isLoading()) return;
-    clearTimeout(watchdog);
+    stopWatching();
     message.textContent = slow
       ? "読み込みに時間がかかっています。通信を確認して、もう一度お試しください。"
       : "読み込みに失敗しました。通信を確認して、もう一度お試しください。";
@@ -240,7 +246,23 @@ if ("serviceWorker" in navigator) {
     console.error("ゲームの起動に失敗しました", error);
   };
   retry.addEventListener("click", () => location.reload());
-  const watchdog = setTimeout(() => fail(new Error("Boot timeout"), true), 30000);
+  // 30秒間、リソースの取得完了がなかった時だけ再読込を案内する。3Gでは正常な初回取得も30秒を超える。
+  // 漫画が「準備完了」なら読んでいる時間を計らない。
+  const armWatchdog = () => {
+    if (!isLoading() || bootScreen.classList.contains("is-failed")) return;
+    if (document.querySelector(".loading-gate.is-ready")) { stopWatching(); return; }
+    clearTimeout(watchdog);
+    watchdog = setTimeout(() => fail(new Error("Boot timeout"), true), 30000);
+  };
+  try {
+    resourceObserver = new PerformanceObserver(armWatchdog);
+    resourceObserver.observe({ type: "resource" });
+  } catch { /* 監視できないブラウザでは従来どおり30秒のタイマーを使う */ }
+  gateObserver = new MutationObserver(() => {
+    if (document.querySelector(".loading-gate.is-ready")) stopWatching();
+  });
+  gateObserver.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["class"] });
+  armWatchdog();
   window.addEventListener("error", (event) => fail(event.error || new Error(event.message)));
   window.addEventListener("unhandledrejection", (event) => fail(event.reason));
 
@@ -304,7 +326,7 @@ if ("serviceWorker" in navigator) {
     }
     const { boot } = await import("./js/main.js");
     await boot();
-  })().then(() => clearTimeout(watchdog), fail);
+  })().then(stopWatching, fail);
 })();
 </script>
 </body>
