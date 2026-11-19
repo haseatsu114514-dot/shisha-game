@@ -743,6 +743,12 @@ export function openBoard({ place = null } = {}) {
     nodeLayer.querySelector(`[data-test="board-node-${selected}"]`)?.classList.remove("selected");
     selected = id;
     if (sound) SE.click?.();
+    // 全体・等倍は見渡すために残す。スマホでマスを選んだら、そのマスを中心に
+    // クリック箱が実寸44pxになる倍率へ寄せ、右の説明と行き来しやすくする。
+    if (document.documentElement?.dataset?.density === "phone" && zoom < 1.2) {
+      const n = NODE_BY_ID[id], p = at(n.gx, n.gy);
+      setZoom(1.2, { x: p.x, y: p.y, vx: viewport.clientWidth / 2, vy: viewport.clientHeight / 2 });
+    }
     const node = nodeLayer.querySelector(`[data-test="board-node-${id}"]`);
     node?.classList.add("selected");
     // 選択だけでは盤・火種は変わらない。札と道を作り直さず、右の説明だけを更新する。
