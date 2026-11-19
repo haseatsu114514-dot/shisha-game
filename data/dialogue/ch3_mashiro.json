@@ -2946,6 +2946,186 @@
           "text": "うん。……ムカイさんには、内緒"
         }
       ]
+    },
+    {
+      "dialogue_id": "mashiro_time_aries_cup",
+      "comment": "MST01。恋人のましろとmukaiで過ごすスターサインティーの時間。第3章と第5章で共用する。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターに、星座の紅茶の缶が十二個並んだ。ましろちゃんはおひつじ座を俺の前へ寄せた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "今日ははじめくんの星座。僕の分も同じのを淹れるねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺のおひつじ座、赤い粒が入ってる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "胡椒の粒だよぉ。紅茶にシナモンとカルダモンも入ってるの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ふたを開けると、甘い香りの奥から、少しだけ鋭い香りが立った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "思ったより、勢いがあるな"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "おひつじ座は、十二の星座の最初。動き出す勇気を重ねるんだって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一歩って言われると、急がなきゃって思う時もある"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくんを急がせるお茶には、したくないなぁ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "立ち止まっても、また始めたくなった時に飲めるように"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんは二つのカップに紅茶を注ぎ、片方を俺の手元へ押した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、まずは一緒に一口飲もう"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。僕も、はじめくんと同じところから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カップの縁が小さく触れた。俺たちは、湯気が落ち着くのを待った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mashiro_time_sagittarius_cup",
+      "comment": "MST01。恋人のましろとmukaiで過ごすスターサインティーの時間。第3章と第5章で共用する。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんが、星座の紅茶の箱からいて座の缶を取り出した。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "今日は僕の星座。十二月七日生まれの、いて座だよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺のとは、ずいぶん違うな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紅茶の葉の間に、ラズベリーと紅花の花びらが見えた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ベルガモットの香りもするよぉ。ふた、開けてみて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、ほんとだ。ふわっと広がる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんが湯を注ぎ、茶こしを上げてから二人のカップを満たした。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "いて座はね、矢を遠くへ放つ星座なんだって"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "知らない方を見に行こうって意味を、僕は気に入ってるの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくんも、気になるものがあったら教えて。僕も一緒に見るから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、ましろちゃんは今、何を見てみたい？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うーん。はじめくんが最近気になってること"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺の？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。僕だけじゃ、そこは見えないから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんは自分のカップを両手で包み、俺の返事を待った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も、ましろちゃんに聞きたいことがある"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "じゃあ、遠くに行かなくても、二人分の景色が増えるねぇ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "小さな質問から始まって、俺たちは紅茶が冷めるまで話した。"
+        }
+      ]
     }
   ]
 }

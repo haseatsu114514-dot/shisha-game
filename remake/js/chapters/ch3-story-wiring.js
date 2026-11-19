@@ -192,7 +192,8 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
     "ch3_mashiro_bond_question", "ch3_mashiro_bond_finale",
     // 恋人のましろと過ごす時間（BLC03・chapters/mashiro-time.js の MASHIRO_TIME_SCENES と同じ並び）。
     "mashiro_time_counter", "mashiro_time_train", "mashiro_time_errand", "mashiro_time_braid",
-    "mashiro_time_cat", "mashiro_time_towel", "mashiro_time_jacket", "mashiro_time_mug"],
+    "mashiro_time_cat", "mashiro_time_towel", "mashiro_time_jacket", "mashiro_time_mug",
+    "mashiro_time_aries_cup", "mashiro_time_sagittarius_cup"],
   ch3_saku_mashiro: ["ch3_saku_mashiro_tea_tin", "ch3_saku_mashiro_soon_back"],
   hiyori: ["hiyori_tokyo_contact"],
   ch3_tsumugi: ["ch3_tsumugi_slump"],
