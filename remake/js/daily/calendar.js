@@ -24,7 +24,7 @@ import { syncFortune } from "./fortune-schedule.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRio, ownsFlavor } from "./shop.js";
 import { openingStatus } from "./spot-hours.js";
-import { deliverMorning, pushNotice, remindDayOneLime, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation, invitationReadBeforeMeeting } from "./phone.js";
+import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation, invitationReadBeforeMeeting } from "./phone.js";
 import { onAction as spinReel, presentNow as showReelNow, installReel } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
 import { samechanDateReady, playSamechanDate } from "./samechan-date.js";
@@ -199,7 +199,7 @@ async function morning() {
   const strained = strainMorning();
   const n = strained + deliverMorning({ fixedNight, invitations: chapterDef.dateInvitations !== false,
     exclude: chapterDef.withLovers?.() || [] }) + extra;
-  if (n) pushNotice(n, { onOpen: (sender) => {
+  if (n) pushNotice(n, { onDayOneHint: save, onOpen: (sender) => {
     if (isChoosingDestination() && !layers.modal.classList.contains("show")) phoneButton({ sender });
     else queuedLimeSender = sender;
   } });
@@ -306,7 +306,9 @@ async function day1Errands() {
   const f = state.flags;
   const lemon = DB.flavorById.lemon;
   if (!f._errand_shop_done && (!lemon || ownsFlavor("lemon"))) f._errand_shop_done = true;
-  const onShown = () => remindDayOneLime(sender => phoneButton({ sender }));
+  const onShown = () => pushNotice(1, {
+    dayOneReminder: true, onDayOneHint: save, onOpen: sender => phoneButton({ sender }),
+  });
   if (!f._errand_shop_done) {
     if (!f._errand_shop_told) {
       await play("remake_day1_errand_shop", { bg: TONARI_BG });

@@ -10,7 +10,7 @@ import { el, sleep, fitOneLine, yen } from "../core/util.js";
 import { DB, displayName, limeAccountName, faceIconUrl } from "../core/data.js";
 import { customLimeIconUrl } from "./lime-icons.js";
 import { layers, toast } from "../core/ui.js";
-import { state, save } from "../core/state.js";
+import { state } from "../core/state.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chapterFeatureEnabled } from "../core/chapter-features.js";
@@ -683,7 +683,7 @@ function flushOrClearNotice() {
   queuedNotice = null;
   if (pending.owner === state && pending.chapter === state.chapter) {
     const unread = unreadCount();
-    if (unread > 0) renderNotice(Math.min(pending.count, unread), { onOpen: pending.onOpen });
+    if (unread > 0) renderNotice(Math.min(pending.count, unread), pending);
   }
   if (!hasActivePushNotice()) disconnectNoticeObserver();
 }
@@ -725,19 +725,12 @@ function syncNoticeObserver() {
 
 // 初日のスミさんへの返信だけ、期限を既存の通知に添える。進行や返事は強制しない。
 function dayOneLimeReply() {
-  if (state.chapter !== 1 || state.day !== 1 || state.flags._lime_opened || state.flags._day1_lime_reminded) return null;
-  return state.inbox.find(item => originId(item) === "L21" && item.day === 1 && !item.read && !item.done
+  if (state.chapter !== 1 || state.day !== 1 || state.flags._lime_opened) return null;
+  return state.inbox.find(item => originId(item) === "L21" && item.day === 1 && !item.dayOneHintShown && !item.read && !item.done
     && item.replyState === "waiting" && !isMissedReply(item));
 }
 
-export function remindDayOneLime(onOpen) {
-  if (!dayOneLimeReply()) return;
-  // 朝の通知が待機中ならそれを使う。朝を通過済みの旧セーブでも案内を出せる。
-  if (queuedNotice?.owner === state && queuedNotice.day === state.day) flushOrClearNotice();
-  else pushNotice(1, { onOpen });
-}
-
-function renderNotice(count, { onOpen = null } = {}) {
+function renderNotice(count, { onOpen = null, onDayOneHint = null } = {}) {
   const owner = state;
   const dayOneReply = onOpen && dayOneLimeReply();
   const text = dayOneReply ? "スミさんのLIMEは今日中なら返信できます" : `新着メッセージが${count}件あります`;
@@ -748,7 +741,7 @@ function renderNotice(count, { onOpen = null } = {}) {
     type: "button", dataset: { test: "lime-notice" },
     "aria-label": dayOneReply ? `${text}。トークを開く` : "新着メッセージのトークを開く",
     onclick: () => {
-      if (opened || state !== owner || !card.isConnected) return;
+      if (opened || state !== owner || !activeNotices.has(card)) return;
       opened = true;
       activeNotices.delete(card);
       card.remove();
@@ -765,7 +758,10 @@ function renderNotice(count, { onOpen = null } = {}) {
   ]);
   activeNotices.add(card);
   layers.toasts.append(card);
-  if (dayOneReply) { state.flags._day1_lime_reminded = true; save(); }
+  if (dayOneReply) {
+    dayOneReply.dayOneHintShown = true;
+    onDayOneHint?.();
+  }
   SE.phoneReceive();
   syncNoticeObserver();
   requestAnimationFrame(() => card.classList.add("show"));
@@ -780,24 +776,30 @@ function renderNotice(count, { onOpen = null } = {}) {
 }
 
 /** 朝の通知（スマホのプッシュ通知風）。マップ画面でのみ表示し、会話や他画面ではマップへ戻るまで待機する */
-export function pushNotice(count, { onOpen = null } = {}) {
+export function pushNotice(count, { onOpen = null, onDayOneHint = null, dayOneReminder = false } = {}) {
   if (!count) return;
+  const sameSession = queuedNotice && queuedNotice.owner === state
+    && queuedNotice.chapter === state.chapter && queuedNotice.day === state.day;
+  if (dayOneReminder) {
+    if (!dayOneLimeReply()) return;
+    // 朝の通知が待機中なら再利用。朝を通過済みの旧セーブでも案内を出す。
+    if (sameSession) { flushOrClearNotice(); return; }
+  }
   if (!mapNoticeReady()) {
-    const sameSession = queuedNotice && queuedNotice.owner === state
-      && queuedNotice.chapter === state.chapter && queuedNotice.day === state.day;
     queuedNotice = {
       owner: state,
       chapter: state.chapter,
       day: state.day,
       count: sameSession ? queuedNotice.count + count : count,
       onOpen: onOpen || queuedNotice?.onOpen || null,
+      onDayOneHint: onDayOneHint || (sameSession ? queuedNotice.onDayOneHint : null),
     };
     clearVisibleNotices();
     syncNoticeObserver();
     return;
   }
   queuedNotice = null;
-  renderNotice(count, { onOpen });
+  renderNotice(count, { onOpen, onDayOneHint });
 }
 
 /**
