@@ -273,22 +273,26 @@ await suite("mix-temperature", async check => {
     // DS風は廃止（横画面一本化）。横持ちタッチの通常表示で、低め/高めの札が収まり観客の欄より前に出ることを確かめる。
     await prepare(page, "drill");
     assert.equal(await page.locator("body.game-ds").count(), 0);
-    for (const care of [false, true]) for (const high of [false, true]) {
-      await page.evaluate(async ({ care, high }) => {
+    for (const care of [false, true]) for (const band of ["low", "high", "attack"]) {
+      await page.evaluate(async ({ care, band }) => {
         const cs = QA.session.newSession("drill");
         cs.mix = { mint: 12 }; cs.mixInfo = { total: 12 }; cs.pack = "normal";
         const bands = QA.conditions.temperatureBands(cs);
-        const temp = high ? bands.ideal[1] - .04 : bands.ideal[0] + .04;
+        // 桜井版は適温の上端が「攻めの帯」。高めの味と、攻めの上書きを別々に確かめる。
+        const attack = (await import("./js/craft/attack-band.js")).attackRange(bands);
+        const highEdge = bands.ideal[0] + .65 * (bands.ideal[1] - bands.ideal[0]);
+        const temp = band === "low" ? bands.ideal[0] + .04 : band === "high"
+          ? (highEdge + attack.low) / 2 : (attack.low + attack.high) / 2;
         cs.steam = { temp, score: 100 };
         cs.holes = { total: 24, minimumComplete: true };
         if (care) cs.pull = { temp, score: 100, pulls: 2 };
         QA.cs = cs; QA.session.craftTest.auto = null;
         await QA.session.openBench(cs).ready;
         QA.run = care ? QA.pull.runCare(cs) : QA.pull.runPull(cs);
-      }, { care, high });
+      }, { care, band });
       if (care) await page.locator('[data-test="care-coal-0"]').click();
       await page.locator('[data-test="pull-stop"]:enabled').waitFor();
-      await page.locator(".pull-state").filter({ hasText: high ? "適温・高" : "適温・低" }).waitFor();
+      await page.locator(".pull-state").filter({ hasText: ({ low: "適温・低", high: "適温・高", attack: "攻めの帯" })[band] }).waitFor();
       await assertFits(page, ".pull-read");
       // 作り分ける葉の配合でも虹は出る（2026-11-10 オーナー指示）
       assert.equal(await page.locator(".thermo-optimal").isVisible(), true);
@@ -302,7 +306,7 @@ await suite("mix-temperature", async check => {
           && node.scrollHeight <= node.clientHeight + 1 && text.left >= box.left - 1 && text.right <= box.right + 1
           && text.top >= box.top - 1 && text.bottom <= box.bottom + 1 && node.contains(front);
       }), "The low/high label must fit and remain in front of the audience panel, including while coals are cooling");
-      await page.screenshot({ path: path.join(shots, `expression-${care ? "care" : "pull"}-${high ? "high" : "low"}-landscape.png`) });
+      await page.screenshot({ path: path.join(shots, `expression-${care ? "care" : "pull"}-${band}-landscape.png`) });
       // Finish each live stage before mounting the next shisha; a cancelled care is an error.
       await keep(page);
       if (!care) await keep(page);
