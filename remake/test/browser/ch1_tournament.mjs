@@ -271,7 +271,7 @@ await suite("ch1-tournament", async check => {
     assert.equal(await page.locator('.nico').count(), 0, "Old comments leaked after fast transition");
   });
 
-  // #3558 項目3: 吸い出しの結果確認で流れるコメントが、ゾーンラベル（熱を入れる吸い／熱を逃がす吸い）に重ならない。
+  // #3558 項目3: 吸い出しの結果確認で流れるコメントが、ゾーンラベル（上げ吸い／下げ吸い）に重ならない。
   // コメントは .bc-lane の clip-path で切り取られるので、ラベル矩形（帯座標）が多角形の外にあることを幾何で確かめる。
   await check("pull-label-comment-clearance", async page => {
     await init(page);

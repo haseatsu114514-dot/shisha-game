@@ -277,6 +277,12 @@ html:root[data-density="phone"] body:not(:root) .result-table .rt-detail-scroll 
 html:root[data-density="phone"] body:not(:root) .standings .sd-main { grid-template-columns: 1fr 380px; }
 html:root[data-density="phone"] body:not(:root) .standings .sd-row { grid-template-columns: 40px 48px 150px 1fr 72px; }
 html:root[data-density="phone"] body:not(:root) .standings .sd-recognition { font-size: var(--phone-sub); }
+/* 中間投票・結果表で後から出る審査理由や減点も、実寸11px以上で読めるようにする。 */
+html:root[data-density="phone"] body:not(:root) :is(.standings.tournament-board, .result-table) :is(
+  .judge-deduction, .judge-focus, .judge-pick,
+  .rt-deductions > small, .rt-detail-scroll > small
+) { font-size: max(22px, calc(11.5px / var(--k, 1))); }
+html:root[data-density="phone"] body:not(:root) .standings .judge-chip.held::after { font-size: max(22px, calc(11.5px / var(--k, 1))); }
 /* 入場の紹介カード: 少し広げて、スミさんのひと言を文節で2行までにそろえる */
 html:root[data-density="phone"] body:not(:root) .ent-card { width: 960px; }
 html:root[data-density="phone"] body:not(:root) .ent-note { line-height: 1.45; word-break: auto-phrase; text-wrap: balance; }

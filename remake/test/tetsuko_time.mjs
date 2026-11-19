@@ -631,10 +631,10 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   const pops = [...new Set(everyPop)];
   assert(pops.length >= 15, `擬音が十分にある（${pops.length}）`);
   for (const pop of pops) assert([...pop].length <= 5 && !/[。、\n]/.test(pop), `擬音は5字以内・句読点なし: ${pop}`);
-  // 「？」の文は短く、「。」で終える。画面の道具（なでる・じゃらし・ブラシ・おやつ）と、しるし（ごきげん・吹き出し・カメラ）が載っている。
+  // 「？」の文は短く、「。」で終える。画面の道具（なでる・じゃらし・ブラシ・おやつ）と、しるし（ごきげん・吹き出し）が載っている。撮影も上の道具に載る。
   const helpRows = HELP.flatMap(group => group.rows);
   for (const row of helpRows) assert(/。$/.test(row.text) && [...row.text].length <= 30, `あそびかたの文は30字以内: ${row.text}`);
-  for (const name of ["なでる", "じゃらし", "ブラシ", "おやつ", "ごきげん", "吹き出し", "カメラ", "もようがえ", "てつこ手帳", "帰る"]) assert(helpRows.some(row => row.name === name), `あそびかたに ${name} がある`);
+  for (const name of ["なでる", "じゃらし", "ブラシ", "おやつ", "ごきげん", "吹き出し", "撮影", "もようがえ", "てつこ手帳", "帰る"]) assert(helpRows.some(row => row.name === name), `あそびかたに ${name} がある`);
   const strings = [...texts, ...pops, ...helpRows.map(row => row.text), ...MOODS.flatMap(mood => [mood.label, mood.shyLabel || ""]), ...MOMENTS.flatMap(m => [m.name, m.hint]), ...PROPS.flatMap(p => [p.name, p.from])];
   for (const text of strings) assert(!/テツコ|ヤニネコ/.test(text), `旧表記を使わない: ${text}`);
   for (const mood of MOODS) assert(/。$/.test(mood.label) && (!mood.shyLabel || /。$/.test(mood.shyLabel)));

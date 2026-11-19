@@ -126,7 +126,7 @@ export const loadCinemaDialogue = dialogueLoader(CINEMA_DIALOGUE_FILE);
 export const loadTournamentCraftDialogue = dialogueLoader(TOURNAMENT_CRAFT_DIALOGUE_FILE);
 export const loadVenueArrivals = dialogueLoader(VENUE_ARRIVAL_DIALOGUE_FILE);
 
-export async function loadAll(onProgress = () => {}) {
+export async function loadAll(onProgress = () => {}, onManifest = () => {}) {
   globalThis.performance?.setResourceTimingBufferSize?.(1000);
   const jobs = [
     ["characters", `${ROOT}data/characters.json`],
@@ -160,7 +160,13 @@ export async function loadAll(onProgress = () => {}) {
       const i = next++;
       const [key, path] = jobs[i];
       try {
-        results[i] = [key, await getJSON(path)];
+        const data = await getJSON(path);
+        results[i] = [key, data];
+        // タイトル絵は manifest だけで選べる。残りの台本を待つ間に先に取り始める。
+        if (key === "manifest") {
+          useManifest(data); // WebP 対応表もそろえてからタイトル絵の URL を作る。
+          onManifest(data);
+        }
       } catch (error) {
         failed = true;
         throw error;

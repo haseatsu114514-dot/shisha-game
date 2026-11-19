@@ -10,7 +10,7 @@ import { loadAll, loadDeferredDialogues, DB, bgUrl } from "./core/data.js";
 import { loadVnFonts } from "./core/vn-fonts.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
 import { loadConfig, saveConfig, state, load, peekSave, consumeResumeOnBoot, tickPlayTime } from "./core/state.js";
-import { unlockAudio, preloadBgm } from "./core/audio.js";
+import { unlockAudio } from "./core/audio.js";
 import { applyUiTheme } from "./core/ui-theme.js";
 import { initLook, migrateLook, normalizeLook } from "./core/look.js";
 import { installLooks } from "./looks/index.js";
@@ -27,7 +27,7 @@ import { createEventPreview } from "./core/dev-event-preview.js";
 import { createIsolatedEventPlayer } from "./core/dev-isolated-player.js";
 import { craftTest } from "./craft/session.js";
 import { showTitle } from "./scenes/title.js";
-import { prepareTitleArt } from "./scenes/title-art.js";
+import { pickTitleArt, prepareTitleArt } from "./scenes/title-art.js";
 import { resumeGame } from "./chapters/ch1.js";
 import { setGrowthPreview, growthEnabled, gainExp, ensureGrowth, openGrowthBoard } from "./core/growth.js";
 installNoZoom(); // ダブルタップによる拡大を止める（#2826。ピンチは禁止しない）
@@ -85,7 +85,7 @@ export async function boot() {
   const bootComic = comicLoadingRequired()
     ? { ...gameLoadingOptions(peekSave()), fixed: true, onProceed: unlockAudio }
     : { context: "boot", chapter: 1 };
-  let titleArt;
+  let titleArt, titleArtPromise;
   await withLoading(async ({ report }) => {
     // データと一緒に書体も待つ（読み込み前の代わりの字で一瞬崩れて見えないように）。遅い回線では4秒で先へ
     const fonts = Promise.race([
@@ -100,9 +100,13 @@ export async function boot() {
     await Promise.all([loadAll((p) => {
       // ゲージはデータ読込の実績（済んだ割合）にだけ追従させる。表示の進捗で起動を止めない。
       try { report(Math.round(p * 100), 100); } catch { /* 表示だけの進捗で起動を止めない */ }
+    }, (manifest) => {
+      // 台本と並行して読む分、従来の15秒より長く待てる。途中で代替の絵へ切り替えない。
+      titleArtPromise = prepareTitleArt(pickTitleArt(manifest), 30000);
     }), fonts]);
     // 抽選した1枚だけをデコードしてから幕を開ける。全候補を起動時にダウンロードしない。
-    [titleArt] = await Promise.all([prepareTitleArt(), preloadBgm("title"), Promise.all([
+    // タイトル曲は再生許可を得た時に playBgm が読む。音声の準備でタイトル表示を待たせない。
+    [titleArt] = await Promise.all([titleArtPromise ?? prepareTitleArt(), Promise.all([
       imageReady(imgFileUrl("ui/ui_title_logo_rich.webp"), 3000),
       ...FRAME_ART.map((u) => imageReady(u, 3000, { keep: true })),
     ])]);

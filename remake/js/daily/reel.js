@@ -206,13 +206,16 @@ const VARIANTS = [
 
 // リール図柄: seven=赤7 / bar=BAR / bell=ベル / cherry=チェリー / replay=リプレイ(水の青) / smoke=煙（ジャグラーのぶどうの位置）/ pakki=パッキー柄（ピエロの位置）
 // 配列はジャグラー準拠（オーナー指定・2026-09-28）。上から下へ並べた順＝窓に上から見える順（リールは下向きに回る）
-//   左: BAR の真下にチェリー（BARを狙うと角にチェリーが見える）。7 の下にもチェリー
+//   左: 7 と一方の BAR の真下にチェリー。もう一方の BAR の2コマ上にもチェリー（当選時は上段チェリー・下段BAR）
 //   右: 7 の真下に BAR（ボーナスの最後の1リールで「7か、BARか」がギリギリまで分からない）
 const STRIPS = [
-  ["seven", "cherry", "smoke", "replay", "smoke", "bar", "cherry", "smoke", "replay", "smoke", "bell", "smoke", "replay", "smoke", "pakki", "smoke", "replay", "smoke", "bar", "cherry", "replay"],
+  ["seven", "cherry", "smoke", "cherry", "smoke", "bar", "cherry", "smoke", "replay", "smoke", "bell", "smoke", "replay", "smoke", "pakki", "smoke", "replay", "smoke", "bar", "replay", "replay"],
   ["seven", "replay", "smoke", "cherry", "smoke", "replay", "bell", "smoke", "replay", "bar", "smoke", "replay", "smoke", "pakki", "replay", "smoke", "cherry", "smoke", "replay", "smoke", "smoke"],
   ["replay", "smoke", "seven", "bar", "smoke", "replay", "cherry", "smoke", "replay", "bell", "smoke", "replay", "smoke", "seven", "smoke", "replay", "pakki", "smoke", "replay", "bar", "smoke"],
 ];
+// 角チェリーを上段に見せながら下段にBARを置ける唯一の中段位置。
+const CHERRY_BAR_STOP = STRIPS[0].findIndex((sym, i, strip) =>
+  sym === "smoke" && strip[(i - 1 + strip.length) % strip.length] === "cherry" && strip[(i + 1) % strip.length] === "bar");
 // 当選済みの後告知だけで使う表示位置。抽選用の乱数・結果には触れない。
 export function reachStops(n) {
   const spin = Number.isInteger(n) ? n : 0;
@@ -237,10 +240,16 @@ function safeSmoke(strip, rng) {
     if (strip[(i + 1) % n] === "cherry" || strip[(i - 1 + n) % n] === "cherry") return;
     cands.push(i);
   });
+  // 左の角チェリー用入れ替えでBAR下段の安全な候補が2個から1個に減る。
+  // 残る候補を2票にし、ハズレ時の安全な煙からBAR下段を引く割合（2/6）を維持する。
+  if (strip === STRIPS[0]) {
+    const barStop = cands.find((i) => strip[(i + 1) % strip.length] === "bar");
+    if (barStop !== undefined) cands.push(barStop);
+  }
   return cands[Math.floor(rng() * cands.length)] || 0;
 }
 // 左リールのBAR狙い（#1281 K01 オーナー決定 2026-10-30・見た目だけ）。実機のジャグラーで左にBARを狙ったときの
-// ハズレ目のように、ハズレ目の多くで左リールの窓にBARが見えるようにする。この配列はBARの真下がチェリーなので、
+// ハズレ目のように、ハズレ目の多くで左リールの窓にBARが見えるようにする。一方のBARの真下にはチェリーがあり、
 // BARが上段・中段だとチェリー（中段チェリー＝プレミア／角チェリー）に見えてしまう。ハズレではBARを下段に置く
 // （中段は煙・上段はリプレイ）。役・確率・報酬・出目以外の乱数の使い方は変えない（stopsFor は各回転の乱数の最後の利用）。
 const LEFT_BAR_AIM = 0.7;
@@ -264,12 +273,9 @@ function stopsFor(role, rng) {
     case "replay": return STRIPS.map((s) => stripIdx(s, "replay", rng));
     case "bell": return STRIPS.map((s) => stripIdx(s, "bell", rng));
     case "cherry": {
-      const c = stripIdx(STRIPS[0], "cherry", rng);
-      let off = rng() < 0.5 ? 1 : -1;
-      // 左リールの下段に7が来ると、非ボーナスでも下段に7が並んで見える紛らわしい目になるため、その配置だけ反対側へ倒す（見た目だけ。役・確率・報酬・乱数の消費回数は変えない）
-      const n0 = STRIPS[0].length;
-      if (STRIPS[0][(c + off + 1 + n0) % n0] === "seven") off = -off;
-      return [(c + off + n0) % n0, stripIdx(STRIPS[1], "smoke", rng), stripIdx(STRIPS[2], "smoke", rng)];
+      // 旧停止位置の抽選と同じ2回を消費し、右2リールの乱数列を維持する。
+      rng(); rng();
+      return [CHERRY_BAR_STOP, stripIdx(STRIPS[1], "smoke", rng), stripIdx(STRIPS[2], "smoke", rng)];
     }
     case "rare": {
       const sym = rng() < 0.6 ? "cherry" : "pakki";

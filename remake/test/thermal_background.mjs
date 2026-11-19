@@ -196,7 +196,7 @@ try {
   await shot('care-pulled');
   await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.run);
 
-  // E06 案A（#2213）: 置き方で戻る熱が変わる（外寄り＜内寄り）。熱管理の吸いは確かめの一口で、熱を入れる吸いのジャストでも温度は少ししか動かない。
+  // E06 案A（#2213）: 置き方で戻る熱が変わる（外寄り＜内寄り）。熱管理の吸いは確かめの一口で、上げ吸いのジャストでも温度は少ししか動かない。
   const placedSwap = async (place) => {
     await page.evaluate(() => { cs.pull.temp = .46; window.run = T.care.runCare(cs); });
     await page.waitForSelector('[data-test="care-coals"]');

@@ -1208,7 +1208,8 @@ export function playBgm(key) {
   currentKey = key;
   if (!key) return;
   const c = ensureCtx();
-  if (!c || c.state === "suspended" || c.state === "interrupted") { pendingBgm = key; currentKey = null; return; }
+  // AudioContext が操作前から running のブラウザでも、最初の操作まで曲を取得しない。
+  if ((key === "title" && !audioUnlocked) || !c || c.state === "suspended" || c.state === "interrupted") { pendingBgm = key; currentKey = null; return; }
   const url = bgmUrl(key);
   if (url) {
     const packed = url.endsWith(".bgm");

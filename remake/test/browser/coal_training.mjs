@@ -11,7 +11,7 @@ fs.mkdirSync(output, { recursive: true });
 const missing = new Set(), results = [];
 const mime = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webp": "image/webp", ".svg": "image/svg+xml", ".woff2": "font/woff2" };
 // #2136: the default paper theme uses its own dialogue frame and gothic name font.
-const vnAssets = ["/remake/img/ui/paper/dialogue.webp", "/remake/fonts/ZenKakuGothicNew-Black.woff2"];
+const vnAssets = ["/remake/img/ui/paper/dialogue.webp", "/remake/fonts/ShipporiMinchoB1-Bold.woff2"];
 const server = http.createServer((req, res) => {
   const pathname = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
   const file = path.resolve(root, "." + (pathname.endsWith("/") ? pathname + "index.html" : pathname));

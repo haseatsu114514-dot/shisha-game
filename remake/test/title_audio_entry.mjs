@@ -30,13 +30,13 @@ async function load(code, values, globals = {}) {
   return mod.namespace;
 }
 const audioCode = await read("../js/core/audio.js");
-async function audioFixture() {
+async function audioFixture({ initiallyRunning = false } = {}) {
   const media = [], frames = [], resumes = [];
   let ctx, now = 0, rejectPlay = false;
   const config = { bgmVolume: .5, seVolume: 0 };
   class AudioContext {
     constructor() { ctx = this; }
-    state = "suspended"; destination = {};
+    state = initiallyRunning ? "running" : "suspended"; destination = {};
     createGain() { return { gain: { value: 0, cancelScheduledValues() {} }, connect() {} }; }
     resume() { return new Promise((resolve, reject) => resumes.push({ resolve, reject })); }
   }
@@ -59,6 +59,13 @@ async function audioFixture() {
     rejectPlay(value) { rejectPlay = value; },
     frame(ms = 1500) { now += ms; frames.splice(0).forEach(fn => fn()); },
   };
+}
+{
+  const f = await audioFixture({ initiallyRunning: true });
+  f.audio.playBgm("title");
+  assert.equal(f.media.length, 0, "a running AudioContext must not fetch title music before a gesture");
+  f.audio.unlockAudio(); await flush();
+  assert.equal(f.media.length, 1, "the first gesture starts title music even if the context was already running");
 }
 for (const action of ["start", "stop", "replace", "repeat", "reject-resume"]) {
   const f = await audioFixture(), a = f.audio;
