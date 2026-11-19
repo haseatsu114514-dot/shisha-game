@@ -62,6 +62,16 @@ const overrides = {
   },
   spotById: id => spots[id] || { id, kind: 'rest', stamina: 0 },
   visitChar: async id => { state.story[id] = (state.story[id] || 0) + 1; calls.push({ type: 'visit', id }); },
+  // This ports-only fixture checks the night flow around the shared rival handoff.
+  deliverToRival: async ({ id }) => {
+    const done = `_delivery_${id}_done`;
+    if (state.flags[done]) return false;
+    state.flags[`_delivery_${id}`] = true;
+    if (id === 'minto') await play('remake_delivery_minto_handoff', { bg: 'res://assets/backgrounds/peppermint.png' });
+    else await overrides.visitChar(id);
+    state.flags[done] = true; overrides.addMoney(2000); overrides.save();
+    return true;
+  },
   visitSpot: async () => { state.flags._c_station_registered = true; },
   storyCount: id => state.story[id] || 0, isClosed: () => false, isUnlocked: () => true,
   markMet: id => state.met[id] = true, onAction: () => actionEnds++,

@@ -33,7 +33,18 @@ const overrides={spendableMoney,state, DB:{flavorById:{lemon:{}},dialogues:{},li
  chooseSpot:async opts=>{if(calls.length>100)throw Error('Calendar fixture did not make progress');calls.push({type:'map',pin:opts.guide?.pin,free:opts.guide?.free,day:state.day,slot:state.slot});return opts.guide?.pin||mapQueue.shift()||'rest'},
  spotById:id=>spots[id]||{id,kind:'rest',stamina:0},ownsFlavor:()=>false,
  openShop:async()=>calls.push({type:'shop'}),
- visitRival:async spot=>{state.money-=spot.cost;state.stamina+=spot.stamina;state.story[spot.charId]=(state.story[spot.charId]||0)+1;calls.push(spot.id==='naru'&&state.day===1?{type:'scout',day:state.day}:{type:'rival',id:spot.charId,day:state.day,slot:state.slot,deliveryFlag:!!state.flags[`_delivery_${spot.charId}`]})},
+ visitRival:async spot=>{state.money-=spot.cost;state.stamina+=spot.stamina;state.story[spot.charId]=(state.story[spot.charId]||0)+1;calls.push(spot.id==='naru'&&state.day===1?{type:'scout',day:state.day}:{type:'rival',id:spot.charId,day:state.day,slot:state.slot,deliveryFlag:!!state.flags[`_delivery_${spot.charId}`]});return true},
+ // Calendar owns ordering; the actual handoff implementation is tested with spots.js below.
+ deliverToRival:async ({charId:id})=>{
+  const done=`_delivery_${id}_done`;
+  if(state.flags[done])return false;
+  state.flags[`_delivery_${id}`]=true;
+  if(id==='minto'){
+   await overrides.play('remake_delivery_minto_handoff',{bg:'res://assets/backgrounds/peppermint.png'});
+   overrides.markMet(id);
+  } else await overrides.visitChar(id);
+  state.flags[done]=true;overrides.addMoney(2000);overrides.save();return true;
+ },
  visitSpot:async spot=>{assert.equal(spot.cost,0);assert.equal(spot.stamina,0);state.flags._c_station_registered=true;calls.push({type:'register',day:state.day,slot:state.slot})},
  visitChar:async id=>{state.story[id]=(state.story[id]||0)+1;calls.push({type:'visit',id,day:state.day,slot:state.slot,deliveryFlag:!!state.flags[`_delivery_${id}`]})},
  storyCount:id=>state.story[id]||0,isClosed:spot=>closed.has(spot.id),isUnlocked:spot=>!locked.has(spot.id),markMet:id=>state.met[id]=true,

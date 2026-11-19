@@ -11,7 +11,9 @@ async function go(page, id, touch = false) {
 }
 
 await suite("tutorial-growth", async check => {
-  for (const touch of [false, true]) await check(touch ? "shop-guide-touch" : "shop-guide-pc", async page => {
+  for (const [name, context] of [["pc", {}], ["touch", phone],
+    ["compact-reduced", { ...phone, viewport: { width: 740, height: 320 }, reducedMotion: "reduce" }]]) await check(`shop-guide-${name}`, async page => {
+    const touch = !!context.hasTouch;
     await page.evaluate(async()=>{
      const core=await import('./js/core/state.js');core.newGame();
      window.ST={core,shop:await import('./js/daily/shop.js')};window.left=false;
@@ -23,13 +25,28 @@ await suite("tutorial-growth", async check => {
      assert.equal(await highlighted.count(),1);
      assert.equal(await highlighted.getAttribute('data-test'),test);
      assert.equal(await page.locator('.shop-errand').getAttribute('data-guide-step'),step);
-     assert.equal(await highlighted.evaluate(el=>getComputedStyle(el).outlineStyle),'solid');
+     const marker=await highlighted.evaluate(el=>{
+      const arrow=el.querySelector('.shop-guide-arrow');
+      const b=el.getBoundingClientRect(), a=arrow?.getBoundingClientRect(), hit=document.elementFromPoint(b.x+b.width/2,b.y+b.height/2);
+      return { color:getComputedStyle(el).backgroundColor, contained:!!a&&a.width>=7&&a.left>=b.left&&a.right<=b.right&&a.top>=b.top&&a.bottom<=b.bottom,
+       hit:el.contains(hit), onScreen:b.left>=0&&b.right<=innerWidth&&b.top>=0&&b.bottom<=innerHeight,
+       pointer:getComputedStyle(arrow).pointerEvents, animations:el.getAnimations({subtree:true}).length };
+     });
+     assert.equal(marker.color,'rgb(255, 220, 98)');
+     assert(marker.contained && marker.hit && marker.onScreen && marker.pointer==='none',JSON.stringify(marker));
+     assert.equal(marker.animations,0);
+     assert.equal(await highlighted.locator('.shop-guide-arrow[aria-hidden="true"]').count(),1);
      assert.equal(await highlighted.isEnabled(),true);
      assert.equal(await highlighted.getAttribute('aria-current'),'step');
     };
     const lemon=page.locator('[data-test="buy-lemon"]');await lemon.waitFor();
     assert.equal(await page.locator('.shop-row.product').first().locator('[data-test="buy-lemon"]').count(),1);
-    const box=await lemon.boundingBox();assert(box.y>=0&&box.y+box.height< (touch?390:720));
+    const box=await lemon.boundingBox(), viewport=page.viewportSize();
+    assert(box.x>=0&&box.y>=0&&box.x+box.width<=viewport.width&&box.y+box.height<viewport.height);
+    const copy=page.locator('.shop-guide-copy');
+    assert.equal(await copy.innerText(),'レモンの「＋」を押す');
+    assert.equal(await page.locator('.shop-guide-step').innerText(),'1 / 3');
+    assert(await copy.evaluate(el=>parseFloat(getComputedStyle(el).fontSize)*el.getBoundingClientRect().height/el.offsetHeight>=13.8));
     await guide('buy-lemon','select');
     // Even after opening a different tab/filter or trying to leave, there is just one next target.
     await press(page.getByRole('button',{name:'機材',exact:true}));
@@ -44,6 +61,7 @@ await suite("tutorial-growth", async check => {
     assert.doesNotMatch(await page.locator('#toasts').innerText(),/スミ/);
     await press(lemon);
     await guide('shop-checkout','purchase');
+    assert.equal(await page.locator('.shop-guide-step').innerText(),'2 / 3');
     await page.evaluate(()=>ST.core.state.money=0);
     await press(lemon);
     await guide('minus-lemon','reduce');
@@ -60,10 +78,14 @@ await suite("tutorial-growth", async check => {
     await guide('shop-checkout','purchase');
     await press(highlighted);
     await guide('shop-leave','leave');
+    assert.equal(await page.locator('.shop-guide-step').innerText(),'3 / 3');
     assert.deepEqual(await page.evaluate(()=>({money:ST.core.state.money,stock:ST.core.state.flavorStock.lemon,paid:ST.core.state.flags._errand_lemon_expensed})),{money:30000,stock:50,paid:true});
     await press(highlighted);await page.waitForFunction(()=>left);
     assert.doesNotMatch(await page.locator('#toasts').innerText(),/スミ|ご苦労/);
-  }, touch ? phone : {});
+    await page.evaluate(()=>{ void ST.shop.openShop({direct:true}); });
+    await page.locator('.shop-paper:not(.done) [data-test="buy-lemon"]').waitFor();
+    assert.equal(await page.locator('.shop-paper:not(.done) .shop-guide-copy, .shop-paper:not(.done) .shop-guide-arrow').count(),0);
+  }, context);
 
   await check("scout-settlement-and-legacy-reload", async page => {
     await page.evaluate(async () => {
