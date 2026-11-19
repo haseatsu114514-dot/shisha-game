@@ -436,6 +436,11 @@ async function shark(page, correct) {
   await twistStep(page);
   await choosePlan(page, { tool: "citrus", route: "pier" });
   await hit(page, "trpg-prepare-open");
+  const card = page.locator("button.trpg-approach").first();
+  const plain = card.locator('[data-test="trpg-choice-success"]');
+  const insight = card.locator('[data-test="trpg-choice-insight"]');
+  assert(await plain.isVisible() && await insight.isVisible(), "Both chances are visible before declaring");
+  const shown = [await plain.innerText(), await insight.innerText()];
   await declare(page);
   await closedDetails(page);
   await forecast(page, false, true);
@@ -445,6 +450,15 @@ async function shark(page, correct) {
   await hit(page, "trpg-support-hiyori");
   await forecast(page, true, true);
   await roll(page);
+  const result = (await state(page)).pending;
+  // The aid card was selected after declaring. Compare the declaration as it was offered.
+  const unaided = result.bonus - 7;
+  let successes = 0;
+  for (let a = 1; a <= 20; a++) for (let b = 1; b <= 20; b++) {
+    if (a === 20 || b === 20 || a + b + unaided >= 30) successes++;
+  }
+  const percent = Math.round(successes / 4) + "%";
+  assert.equal(correct ? shown[1] : shown[0], (correct ? "的中時 約" : "成功 約") + percent);
   assert.equal((await state(page)).pending.bonus, (correct ? 14 : 10) + (await state(page)).pending.momentum * 4,
     "The actual insight bonus is applied only when its hypothesis matches");
   await settle(page);

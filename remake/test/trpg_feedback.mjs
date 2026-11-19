@@ -6,7 +6,7 @@ const sessionSource = await readFile(new URL("../js/trpg/session.js", import.met
 const sessionURL = "data:text/javascript;base64," + Buffer.from(sessionSource).toString("base64");
 const { TrpgSession } = await import(sessionURL);
 const source = (await readFile(new URL("../js/trpg/feedback.js", import.meta.url), "utf8")).replace('"./session.js"', JSON.stringify(sessionURL));
-const { rollOdds, checkForecast, rerollOdds } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
+const { rollOdds, checkForecast, declarationChanceLabels, rerollOdds } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
 const ordinary = JSON.parse(await readFile(new URL("../../data/dialogue/trpg_ordinary.json", import.meta.url), "utf8"));
 const shark = JSON.parse(await readFile(new URL("../../data/dialogue/trpg_shark.json", import.meta.url), "utf8"));
 
@@ -162,4 +162,31 @@ test("the odds shown before a roll carry exactly the modifiers the real roll use
     }
   }
   assert(checks >= 200 && aided > 20 && pushed > 20 && guessed > 20, JSON.stringify({ checks, aided, pushed, guessed }));
+});
+
+test("visible declaration percentages count successful rolls on the chosen sheet, with and without a matching hypothesis", () => {
+  for (const hypothesis of ["scent", "vibration"]) for (const support of [false, true]) {
+    const session = new TrpgSession(shark, { seed: 9, profileId: "scent" });
+    session.state.phase = "prepare";
+    session.state.hypothesis = hypothesis;
+    session.state.momentum = 1;
+    for (const field of session.flow.prepare) session.plan(field, shark.options[field][0].id);
+    const before = session.snapshot();
+    for (const approach of shark.checks.prepare.approaches) {
+      session.state = structuredClone(before);
+      const options = { support, approach: approach.id };
+      const forecast = checkForecast(shark, before, "prepare", { ...options, sheets: session.sheets });
+      const labels = declarationChanceLabels(forecast);
+      session.beginCheck("prepare", options);
+      let successes = 0;
+      for (let a = 1; a <= 20; a++) for (let b = 1; b <= 20; b++) {
+        session.state.pending.dice = [a, b];
+        if (session.checkResult().grade === "success") successes++;
+      }
+      const percent = Math.round(successes * 100 / 400) + "%";
+      if (hypothesis === "scent") assert.equal(labels.insight, "的中時 約" + percent);
+      else assert.equal(labels.success, "成功 約" + percent);
+    }
+  }
+  assert.equal(declarationChanceLabels(checkForecast(shark, {}, "listen")).insight, null);
 });
