@@ -84,7 +84,8 @@ try {
     assert.deepEqual(await page.evaluate(() => R.pauseSnapshot), { label: '', info: false, guide: false, shown: 1 });
     await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'));
     assert(await currentMap.locator('.map-guide').isVisible());
-    assert(await currentMap.locator('.map-info').isVisible());
+    // #3814: GUIDE 中は右下の案内箱を出さない（天気予報は GUIDE 内に表示する）
+    assert.equal(await currentMap.locator('.map-info').isVisible(), false);
     assert(await currentMap.locator('.map-notice:not(.map-unlock-notice)').isVisible());
     assert.equal(await page.evaluate(() => R.shown), 2);
     assert(await page.evaluate(() => R.shownAt - R.pauseAt >= 400), 'a visible quiet pause precedes follow-up messages');
