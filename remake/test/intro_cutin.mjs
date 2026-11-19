@@ -22,13 +22,13 @@ try {
   });
   assert(ids.length >= 20, `カットインのデータが少ない（${ids.length}人）`);
   const flavorCases = await page.evaluate(() => Object.fromEntries(
-    ["hiyori", "samechan", "saku", "steve", "master_hookah", "sheikh", "maezono", "oneesan", "ageha", "unknown"].map((id) => [id, T.introFlavor(id)]),
+    ["hiyori", "samechan", "ayatori", "steve", "master_hookah", "sheikh", "uezono", "oneesan", "ageha", "unknown"].map((id) => [id, T.introFlavor(id)]),
   ));
   assert.deepEqual(flavorCases.hiyori, { main: "マンゴー", small: "ハバネロ" });
   for (const id of ["oneesan", "unknown"]) {
     assert.equal(flavorCases[id], null, `${id}: 未確定・正体を伏せる好みを表示しない`);
   }
-  assert.deepEqual([flavorCases.saku, flavorCases.steve, flavorCases.master_hookah, flavorCases.sheikh, flavorCases.maezono],
+  assert.deepEqual([flavorCases.ayatori, flavorCases.steve, flavorCases.master_hookah, flavorCases.sheikh, flavorCases.uezono],
     [{ main: "アールグレイ" }, { main: "マウンテンミスト" }, { main: "ライチ" }, { main: "グレープ" }, { main: "レモン" }],
     "正本で決まっている好みを表示する");
   assert.deepEqual(flavorCases.samechan, { main: "スプリングウォーター" });
@@ -147,24 +147,24 @@ try {
     .map((id) => [id, T.intro.introName(id).main])));
   assert.deepEqual(rule, {
     hajime: "逢縁はじめ", sumi: "炭吉丈一郎", naru: "鳴切亮太（なる）", adam: "アダム", minto: "みんと", shisha_9000: "SHISHA-9000",
-    saku: "綾取陣", steve: "スティーブ・A・アッシュ", volk: "ヴォルク・イヴァノフ", rei: "†黒羅雨℃†", master_hookah: "王煙楼",
-    tsumugi: "猫洞つむぎ", rio: "円頓寺凛想", ageha: "あげは", kumicho: "神崎竜二（組長）", dr_kemuri: "チャコール博士", pakki: "パッキー",
-    sui: "千須豪", emil: "エミル・ユルマズ", sheikh: "シェイク・ナジュム", da_silva: "ダ・シルヴァ・太陽", mashiro: "黒葉ましろ",
-    uranaishi: "占いオババ", mukai_master: "向井然", maezono: "上園文太郎", oneesan: "お姉さん", hiyori: "泡沫ひより",
+    ayatori: "綾取陣", steve: "スティーブ・A・アッシュ", volk: "ヴォルク・イヴァノフ", kuraudo: "†黒羅雨℃†", master_hookah: "王煙楼",
+    tsumugi: "猫洞つむぎ", rio: "円頓寺凛想", ageha: "あげは", kumicho: "神崎竜二（組長）", dr_charcoal: "チャコール博士", pakki: "パッキー",
+    sensu: "千須豪", emil: "エミル・ユルマズ", sheikh: "シェイク・ナジュム", da_silva: "ダ・シルヴァ・太陽", mashiro: "黒葉ましろ",
+    uranaishi: "占いオババ", mukai_master: "向井然", uezono: "上園文太郎", oneesan: "お姉さん", hiyori: "泡沫ひより",
     maki: "斧崎マキ", sai: "六角サイ", salaryman: "鉄仮面さん", yoru: "針間ヨル", noor: "ヌール・サーリム", samechan: "サメちゃん",
   });
   // 2行目の小さい名前（sub_name）: 今のところ†黒羅雨℃†の本名だけ。芸名の落差を見せるための例外（2026-11-15 オーナー決定）
   const subs = await page.evaluate(() => Object.fromEntries(Object.keys(T.DB.characters).filter((id) => T.DB.characters[id].intro_cutin)
     .map((id) => [id, T.intro.introName(id).subMain])));
-  assert.equal(subs.rei, "（田中健太）", "†黒羅雨℃†の本名は2行目の小さい名前で出す");
-  assert(Object.entries(subs).every(([id, sub]) => id === "rei" || !sub), "sub_name を持つのは今のところ†黒羅雨℃†だけ");
+  assert.equal(subs.kuraudo, "（田中健太）", "†黒羅雨℃†の本名は2行目の小さい名前で出す");
+  assert(Object.entries(subs).every(([id, sub]) => id === "kuraudo" || !sub), "sub_name を持つのは今のところ†黒羅雨℃†だけ");
   // 画面でも: 本名は芸名より小さく、その2行目に出て、ふりがなは付かない
   const reiLayout = await page.evaluate(async () => {
-    T.core.state.met.rei = true;
-    const p = T.intro.playIntro("rei");
+    T.core.state.met.kuraudo = true;
+    const p = T.intro.playIntro("kuraudo");
     await new Promise((r) => setTimeout(r, 900));
-    const name = document.querySelector('.cutin[data-char="rei"] .ci-name');
-    const sub = document.querySelector('.cutin[data-char="rei"] .ci-name-sub');
+    const name = document.querySelector('.cutin[data-char="kuraudo"] .ci-name');
+    const sub = document.querySelector('.cutin[data-char="kuraudo"] .ci-name-sub');
     const out = {
       nameText: name?.textContent, subText: sub?.textContent,
       nameSize: name ? parseFloat(getComputedStyle(name).fontSize) : 0,
@@ -213,7 +213,7 @@ try {
     ruby: [["神崎", "かんざき", '"かんざき"'], ["竜二", "りゅうじ", '"りゅうじ"'], ["組長", "くみちょう", '"くみちょう"']] });
   const hidden = await page.evaluate(async () => {
     const out = {};
-    for (const id of ["minto", "rei"]) {
+    for (const id of ["minto", "kuraudo"]) {
       T.core.state.met[id] = true;
       const p = T.intro.playIntro(id);
       await new Promise((r) => setTimeout(r, 400));
@@ -226,9 +226,9 @@ try {
     return out;
   });
   assert(!/栞|木成頼/.test(hidden.minto), `みんとのカットインに本名が出ている: ${hidden.minto}`);
-  assert(hidden.rei.includes("†黒羅雨℃†"), "活動名を紹介に出す");
+  assert(hidden.kuraudo.includes("†黒羅雨℃†"), "活動名を紹介に出す");
   // †黒羅雨℃†は例外として本名を2行目の小さい名前で添える（2026-11-15 オーナー決定）
-  assert(hidden.rei.includes("田中健太"), `†黒羅雨℃†のカットインに本名の添え書きが無い: ${hidden.rei}`);
+  assert(hidden.kuraudo.includes("田中健太"), `†黒羅雨℃†のカットインに本名の添え書きが無い: ${hidden.kuraudo}`);
 
   // 3) 会話の中: 「？？？」の間は出ず、名乗り（_met_）の直後の台詞の前に一度だけ出る
   await page.evaluate(() => {

@@ -244,7 +244,7 @@ Object.assign(boardGrowth, {
   learned: ["M-B4", "M-W1"],
   paid: { B1: { any: 1 }, K20: { body: 2 }, K18: { any: 4 }, "M-B4": {}, "M-W1": {} },
   hidane: { any: 5, body: 0, sense: 0, wisdom: 0 }, earned: 12, ringsOpen: 5,
-  partyLast: ["saku", "mashiro"],
+  partyLast: ["ayatori", "mashiro"],
 });
 const rawStats = structuredClone(core.state.stats);
 const retainedBoard = structuredClone({ nodes: boardGrowth.nodes, learned: boardGrowth.learned, paid: boardGrowth.paid });
@@ -292,7 +292,7 @@ for (let cycle = 1; cycle <= 3; cycle++) {
   assert.equal(core.state.growth.xp, settledBoard.xp);
   assert.equal(core.state.growth.earned, settledBoard.earned);
   assert.equal(core.state.growth.ringsOpen, 5);
-  assert.deepEqual(core.state.growth.partyLast, ["saku", "mashiro"]);
+  assert.deepEqual(core.state.growth.partyLast, ["ayatori", "mashiro"]);
   assert.deepEqual(core.state.growth.firsts, { people: [], places: [] });
   const beforeResettle = structuredClone(core.state.growth);
   growth.settleGrowth();

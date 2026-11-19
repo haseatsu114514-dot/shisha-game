@@ -159,11 +159,11 @@ check("Naru and Rio at the cafe: after the pudding visit, with both met, on a da
   assert.equal(spotEncounterDue("cafe", 2, save({ met: both }), dialogues), "cafe_naru_break", "the first cafe encounter stays the same");
   const s = save({ met: both, flags: { _spot_seen_cafe_naru_break: true } });
   assert.equal(spotEncounterDue("cafe", 4, s, dialogues), "cafe_naru_rio");
-  assert.equal(spotEncounterDue("cafe", 4, save({ met: { naru: true }, flags: s.flags }), dialogues), "cafe_maezono_break", "Rio unmet");
-  assert.equal(spotEncounterDue("cafe", 4, save({ met: { rio: true }, flags: s.flags }), dialogues), "cafe_maezono_break", "Naru unmet");
-  assert.equal(spotEncounterDue("cafe", 4, { ...s, day: AWAY }, dialogues), "cafe_maezono_break", "Rio is away on business");
-  assert.equal(spotEncounterDue("cafe", 4, { ...s, day: AWAY + 7 }, dialogues), "cafe_maezono_break");
-  assert.equal(spotEncounterDue("cafe", 4, { ...s, chapter: 2, flags: { ...s.flags, ...rift } }, dialogues), "cafe_maezono_break", "Naru left town");
+  assert.equal(spotEncounterDue("cafe", 4, save({ met: { naru: true }, flags: s.flags }), dialogues), "cafe_uezono_break", "Rio unmet");
+  assert.equal(spotEncounterDue("cafe", 4, save({ met: { rio: true }, flags: s.flags }), dialogues), "cafe_uezono_break", "Naru unmet");
+  assert.equal(spotEncounterDue("cafe", 4, { ...s, day: AWAY }, dialogues), "cafe_uezono_break", "Rio is away on business");
+  assert.equal(spotEncounterDue("cafe", 4, { ...s, day: AWAY + 7 }, dialogues), "cafe_uezono_break");
+  assert.equal(spotEncounterDue("cafe", 4, { ...s, chapter: 2, flags: { ...s.flags, ...rift } }, dialogues), "cafe_uezono_break", "Naru left town");
   s.flags._spot_seen_cafe_naru_rio = true;
   assert.notEqual(spotEncounterDue("cafe", 6, s, dialogues), "cafe_naru_rio", "once");
   assert(!quietSpotPool({ id: "cafe", pool: ["cafe_herb_tea", "cafe_naru_rio"] }, 0).includes("cafe_naru_rio"));

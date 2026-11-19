@@ -105,12 +105,12 @@ try {
   assert(!(await page.locator('[data-test="craft-rating"]').isVisible()));
   await loaded(page); await capture(page, 'pakki-heat-desktop');
   await page.evaluate(() => T.session.reactAudience(cs,'good',{force:true}));
-  assert.equal(await page.locator('.bench-audience').getAttribute('data-speaker'), 'dr_kemuri');
+  assert.equal(await page.locator('.bench-audience').getAttribute('data-speaker'), 'dr_charcoal');
   assert.equal(await page.locator('.audience-person figcaption').textContent(), '？？？');
   // #2750: 開始時から知るのはスミさん（上司）とつむぎ（顔見知り）だけ。審査員の表示・反応で名前を解禁しない。
   assert.deepEqual(await page.evaluate(() => T.core.state.met), { sumi: true, tsumugi: true });
   await page.evaluate(async () => {
-    ['sui','maezono','dr_kemuri'].forEach(T.core.markMet);
+    ['sensu','uezono','dr_charcoal'].forEach(T.core.markMet);
     window.cs = T.session.newSession('tournament'); await T.openBench(cs, { steps });
     __remake.craftTest.auto = 'good';
     window.heatRun = T.heat.runHeat(cs);
@@ -119,7 +119,7 @@ try {
   await page.evaluate(() => { __remake.craftTest.auto = null; });
   await page.waitForSelector('.result-card.show'); await loaded(page);
   const moods = await page.locator('.audience-person').evaluateAll(ns => ns.map(n => [n.dataset.person, n.dataset.mood]));
-  assert.deepEqual(moods, [['dr_kemuri','nod']]);
+  assert.deepEqual(moods, [['dr_charcoal','nod']]);
   assert.equal(await page.locator('[data-test="craft-rating"]').textContent(), '◎');
   await capture(page, 'judges-heat-desktop');
   const voices=[];
@@ -133,13 +133,13 @@ try {
   await page.locator('[data-test="step-details"]').click(); assert(await page.locator('.rc-lines').isVisible());
   await page.locator('[data-test="step-details"]').click();
   await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.heatRun);
-  for (const judge of ['sui','maezono','dr_kemuri']) {
+  for (const judge of ['sensu','uezono','dr_charcoal']) {
     await page.evaluate(judge => T.session.reactAudience(cs,'just',{judge,force:true}),judge);
     assert.equal(await page.locator('.audience-person').count(),1);
     assert.equal(await page.locator('.audience-person').getAttribute('data-person'),judge);
   }
-  await page.evaluate(() => T.session.reactAudience(cs,'just',{judge:'sui',force:true}));
-  assert.match(await page.locator('[data-person="sui"] img').getAttribute('src'), /thinking/);
+  await page.evaluate(() => T.session.reactAudience(cs,'just',{judge:'sensu',force:true}));
+  assert.match(await page.locator('[data-person="sensu"] img').getAttribute('src'), /thinking/);
   // 同じスミさんでも、システム説明はチュートリアル限定。成績記号はまだ出さない。
   const modes=[];
   for (const mode of ['tutorial','rehearsal']) {
@@ -292,7 +292,7 @@ try {
   ]) {
     const p = await open(viewport, mobile);
     await p.evaluate(async () => {
-      T.core.state.stamina = 80; ['sui','maezono','dr_kemuri'].forEach(T.core.markMet);
+      T.core.state.stamina = 80; ['sensu','uezono','dr_charcoal'].forEach(T.core.markMet);
       window.cs = T.session.newSession('tournament'); await T.openBench(cs,{steps}); window.timerRun = T.steps.stepSteamTime(cs);
     });
     await loaded(p);

@@ -15,7 +15,7 @@ for (const chapter of [1,2,3]) {
 }
 for (const event of ['opening','packed','waiting','tasting']) {
  const national=tournamentStoryDialogue({...cs,chapter:3,pull:{temp:.5},careHistory:[]},event,()=>.99);
- assert(!national.lines.some(line=>['maezono','naru','adam','minto','ageha','kumicho','rei'].includes(line.speaker)),
+ assert(!national.lines.some(line=>['uezono','naru','adam','minto','ageha','kumicho','kuraudo'].includes(line.speaker)),
   `Chapter 3 ${event} used an earlier rival or judge`);
 }
 // Audience/graphics import the browser audio module, so provide its visibility observer only.
@@ -24,8 +24,8 @@ const [{audienceFor},{JUDGE_LOOK}]=await Promise.all([
  import('../js/craft/audience.js'),import('../js/craft/tournament-graphics.js'),
 ]);
 delete globalThis.document;
-assert.deepEqual(audienceFor('tournament',3),['sui','emil','dr_kemuri']);
-assert.equal(new Set(['sui','emil','dr_kemuri'].map(id=>JUDGE_LOOK[id].color)).size,3);
+assert.deepEqual(audienceFor('tournament',3),['sensu','emil','dr_charcoal']);
+assert.equal(new Set(['sensu','emil','dr_charcoal'].map(id=>JUDGE_LOOK[id].color)).size,3);
 assert.match(feedbackLine('emil','pull',evaluationOf(90)),/奥の味/);
 const nationalBroadcast=JSON.parse(fs.readFileSync(new URL('../data/broadcast.json',import.meta.url))).chapter3;
 assert(nationalBroadcast.rivalComments.length && nationalBroadcast.rivalFeed.length);
@@ -74,7 +74,7 @@ assert(tournamentStoryDialogue(cs,'interlude3',()=>0).lines.length>=4);
 for (const event of ['interlude_pull','interlude3']) {
  const d=tournamentStoryDialogue({...cs,chapter:2},event,()=>0);
  assert(d.lines.length>=4&&d.lines.length<=7,`${event}_2 line count`);
- assert(d.lines.every(l=>['','pakki','hajime','ageha','kumicho','rei'].includes(l.speaker)),`${event}_2 used another chapter's cast`);
+ assert(d.lines.every(l=>['','pakki','hajime','ageha','kumicho','kuraudo'].includes(l.speaker)),`${event}_2 used another chapter's cast`);
  assert.doesNotMatch(d.lines.map(l=>l.text).join('\n'),/優勝|県代表|震え/,`${event}_2 must not reveal results or the secret`);
 }
 // #1649: 第2章の提供後の掛け合いは、実際に投入された票（castVotes の結果）と提供の実績から選ぶ。
@@ -89,7 +89,7 @@ for (const event of ['interlude_pull','interlude3']) {
  assert(agehaOf(many)>=2); assert.match(agehaText(banter(many)),/一番に入れてくれた/);
  // はじめが全審査員の1位でも、あげはは上園の二番手として票を得る（上園の好み補正で神崎を上回る）。
  const strong=empty(); for(const r of [0,1]) T.castVotes(strong,r,98);
- assert.equal(agehaOf(strong),1); assert.equal(strong.lastVotes.maezono.second,'ageha');
+ assert.equal(agehaOf(strong),1); assert.equal(strong.lastVotes.uezono.second,'ageha');
  assert.match(agehaText(banter(strong)),/二番手/);
  // あげは0票（旧値で投じられた保存など）: 「票、入ってる」と言わない。
  const zero=empty(); for(const r of [0,1]) T.castVotes(zero,r,98);
@@ -117,7 +117,7 @@ for (const step of ['holes','heat','steam','pull','care']) for (const kind of ['
  assert(ch2Broadcast.completion[step][kind].length,`chapter2 completion ${step}.${kind}`);
 assert(!/なる選手|アダム|みんと|綾取|スティーブ|ヴォルク|エミル/.test(JSON.stringify(ch2Broadcast)),'chapter2 broadcast used another chapter cast');
 const nationalInterludeSpeakers=[1,2].flatMap(n=>tournamentStoryDialogue({...cs,chapter:3},`interlude${n}`,()=>0).lines.map(l=>l.speaker));
-assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageha','kumicho','rei'].includes(s)),
+assert(!nationalInterludeSpeakers.some(s=>['uezono','naru','adam','minto','ageha','kumicho','kuraudo'].includes(s)),
  'Chapter 3 interludes used an earlier rival or judge');
 // #2213 DR-08: 第2章は提供・調整1・調整2の区切りに、合間の掛け合いの前でパッキーと審査員の実況を読む（第1章の r2_end〜round4_end に当たる）。
 {
@@ -129,8 +129,8 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
   assert(lead,`chapter2 ${event} has a round-end call`);
   assert(lead.lines.length>=3&&lead.lines.length<=4,`chapter2 ${event} round-end line count`);
   assert.equal(lead.lines[0].speaker,'pakki');assert.match(lead.lines[0].text,opening);
-  assert(lead.lines.some(l=>['sui','maezono','dr_kemuri'].includes(l.speaker)),`chapter2 ${event} round-end has a judge`);
-  assert(lead.lines.every(l=>['pakki','sui','maezono','dr_kemuri'].includes(l.speaker)),`chapter2 ${event} round-end cast`);
+  assert(lead.lines.some(l=>['sensu','uezono','dr_charcoal'].includes(l.speaker)),`chapter2 ${event} round-end has a judge`);
+  assert(lead.lines.every(l=>['pakki','sensu','uezono','dr_charcoal'].includes(l.speaker)),`chapter2 ${event} round-end cast`);
   // 結果・点数・秘密は言わない（票の画面と講評に任せる）。
   assert.doesNotMatch(lead.lines.map(l=>l.text).join('\n'),/優勝|県代表に|\d+点|一位|1位|味がしない/,`chapter2 ${event} round-end must not reveal results`);
   // 合間の掛け合い本体の長さ（4〜7行）は変えない。
@@ -147,7 +147,7 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
  const say=(event,context,c=c4)=>tournamentStoryDialogue(c,event,()=>0,context);
  const lines=(event,context,c)=>say(event,context,c).lines.map(l=>l.text).join('\n');
  const speakers=(event,context,c)=>say(event,context,c).lines.map(l=>l.speaker);
- const others=['maezono','dr_kemuri','adam','minto','ageha','kumicho','rei','saku','steve','volk'];
+ const others=['uezono','dr_charcoal','adam','minto','ageha','kumicho','kuraudo','ayatori','steve','volk'];
  // tied: 先頭と2位が同じ持ち点（その回の出来の差で上に出ているだけ）。level: はじめも先頭と同じ持ち点。
  const naruLead={rank:2,leader:'naru',tied:false,level:false},naruTieMe={rank:2,leader:'naru',tied:true,level:true},
   naruTieOther={rank:3,leader:'naru',tied:true,level:false};
@@ -185,7 +185,7 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
  }
  assert.equal(lines('interlude2',{rank:2,leader:'sheikh'}),lines('interlude2'));
  // 開幕は第4章の審査員3人がそろい、第3章のエミルの行を繰り返さない。
- assert.deepEqual(speakers('opening').filter(s=>s!=='pakki'),['sui','emil','da_silva']);
+ assert.deepEqual(speakers('opening').filter(s=>s!=='pakki'),['sensu','emil','da_silva']);
  assert.match(lines('opening'),/誰のための一台/);assert.doesNotMatch(lines('opening'),/古い手順も新しい道具も/);
  // パッキングの講評は太陽、配合はエミル（第3章と同じ行）。詰め方の言葉は既存の判定と同じ。
  for (const [pack,expected] of [['fluffy',/ふわっと/],['normal',/均等/],['firm',/しっかり/]]) {
@@ -228,8 +228,8 @@ assert(!nationalInterludeSpeakers.some(s=>['maezono','naru','adam','minto','ageh
 {
  const {TOURNAMENT_BANTER_EVENTS}=await import('../js/craft/tournament-story-data.js');
  assert.deepEqual([...TOURNAMENT_BANTER_EVENTS],['prestart','serve','preresult']);
- const cast={1:['naru','adam','minto','maezono','sui','dr_kemuri'],2:['ageha','kumicho','rei','sui','maezono','dr_kemuri'],
-  3:['saku','steve','volk','sui','emil','dr_kemuri'],4:['naru','master_hookah','sheikh','sui','emil','da_silva']};
+ const cast={1:['naru','adam','minto','uezono','sensu','dr_charcoal'],2:['ageha','kumicho','kuraudo','sensu','uezono','dr_charcoal'],
+  3:['ayatori','steve','volk','sensu','emil','dr_charcoal'],4:['naru','master_hookah','sheikh','sensu','emil','da_silva']};
  const banter={1:['prestart','serve','preresult'],2:['serve','preresult'],3:['prestart','serve','preresult'],4:['prestart','serve','preresult']};
   for (const chapter of [1,2,3,4]) {
   const c={...base,chapter},before=JSON.stringify(c);

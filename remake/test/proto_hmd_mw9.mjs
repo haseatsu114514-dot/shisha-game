@@ -40,7 +40,7 @@ assert.equal(sellable(item), false, "売れない");
 
 // 2. 授業定義と入手経路: 灯して相談を終えた時だけ渡り、二重には渡らない
 const lesson = LESSONS.find(l => l.id === "M-W9");
-assert(lesson && lesson.scene === "lesson_dr_kemuri_hmd", "M-W9 の場面は既存の lesson_dr_kemuri_hmd");
+assert(lesson && lesson.scene === "lesson_dr_charcoal_hmd", "M-W9 の場面は既存の lesson_dr_charcoal_hmd");
 assert.deepEqual(lesson.grants, [ID]);
 core.newGame(); growth.setGrowthPreview(true);
 assert(!core.state.owned.includes(ID), "習得前は持っていない");

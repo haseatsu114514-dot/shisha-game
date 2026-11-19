@@ -10,7 +10,7 @@ import { craftContext } from "../js/craft/context.js";
 
 const index = CH3_INTRO_SCENES.findIndex(scene => scene.id === CH3_SERVICE_IDS[0]);
 const seed = () => ({ chapter: 3, day: 40, slot: 1, phase: "daily", money: 0, stamina: 1,
-  stats: { technique: 10 }, affinity: { mashiro: 0, saku: 0 }, inventory: {},
+  stats: { technique: 10 }, affinity: { mashiro: 0, ayatori: 0 }, inventory: {},
   flags: { _ch3_intro: { routeVersion: 3, startDay: 32, stage: index, titleSeen: true } } });
 const preserved = value => { const copy = structuredClone(value); delete copy.flags._ch3_intro.work; return copy; };
 const care = (score = 85, extra = {}) => ({ careHistory: [{ score, coals: 2, over: false, under: false }],
@@ -127,7 +127,7 @@ for (const change of [value => value.flags._ch3_intro.stage++, value => value.fl
 }
 
 // 自分で試した任意制作だけをノートへ載せ、良い・粗い・失敗を混ぜない。
-for (const id of ["saku", "steve"]) for (const result of ["good", "rough", "failed"]) {
+for (const id of ["ayatori", "steve"]) for (const result of ["good", "rough", "failed"]) {
   const value = seed(); value.flags[`_ch3_trial_${id}`] = { practiceDone: true, result };
   const dialogue = chapterThreeWorkDialogue(value, all.ch3_strategy);
   const expected = all.ch3_strategy.branches[`trial_${id}_${result}`][0].text;
@@ -172,13 +172,13 @@ for (const rest of ["tea", "sit"]) {
   const recovery = text({ lines: all.ch3_mashiro_recovery.lines });
   assert.match(recovery, /今日は俺が洗うよ/); assert.match(recovery, /交代で/);
   // 綾取の来店: 動画の話は綾取が先に出す。一台の後は、返事 → はじめの一言 → 手帳 → ノートの順。
-  const visit = all.ch3_saku_mukai_visit.lines.map(line => line.text || "");
+  const visit = all.ch3_ayatori_mukai_visit.lines.map(line => line.text || "");
   assert(visit.findIndex(t => /県大会の動画/.test(t)) < visit.findIndex(t => /動画、見たんですか/.test(t)));
   for (const [result, coals] of [["good", 1], ["good", 0], ["rough", 1], ["failed", 0]]) {
     const value = seed();
     value.flags._ch3_intro.work = { service: { introRead: true, careDone: true, order: "gentle", result, adjustment: { coals } } };
-    const lines = chapterThreeWorkDialogue(value, all.ch3_saku_mukai_served).lines.map(line => line.text || "");
-    const reply = lines.findIndex(t => t === all.ch3_saku_mukai_served.branches[result].at(-1).text);
+    const lines = chapterThreeWorkDialogue(value, all.ch3_ayatori_mukai_served).lines.map(line => line.text || "");
+    const reply = lines.findIndex(t => t === all.ch3_ayatori_mukai_served.branches[result].at(-1).text);
     const ask = lines.findIndex(t => /書かせてください/.test(t)), note = lines.findIndex(t => /^ノートに、/.test(t));
     assert(reply >= 0 && reply < ask, `${result}: 一台への返事が先`);
     assert.doesNotMatch(lines.join(""), /どうでしょう。今度は/, "返事の後で同じことを訊かない");

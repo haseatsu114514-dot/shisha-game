@@ -28,13 +28,13 @@ const due = (id, value) => chapterFiveFirstTalkDue(id, value)?.scene || null;
 // 第5章の自由行動: クラウド・神崎は最初の来店で読む。アダムはEDENの任意場面（二つのダブルアップル）の後だけ。
 {
   const value = freeSave();
-  assert.equal(due("rei", value), "ch5_rei_shop");
+  assert.equal(due("kuraudo", value), "ch5_kuraudo_shop");
   assert.equal(due("kumicho", value), "ch2_kumicho_after_ch2");
   assert.equal(due("adam", value), null, "Adam's first Chapter 5 visit is the EDEN free scene");
   assert.equal(completeChapterFiveScene(value, "ch5_free_eden_adam"), true);
   assert.equal(due("adam", value), "ch5_adam_shop", "Adam's talk follows the EDEN free scene");
   // 一度だけ: 読んだ印があれば出さない。
-  for (const id of ["rei", "kumicho", "adam"]) {
+  for (const id of ["kuraudo", "kumicho", "adam"]) {
     const copy = structuredClone(value);
     copy.flags[chapterFiveFirstTalkSeenFlag(CH5_FIRST_TALKS[id])] = true;
     assert.equal(due(id, copy), null, `${id}: read once`);
@@ -45,7 +45,7 @@ const due = (id, value) => chapterFiveFirstTalkDue(id, value)?.scene || null;
 }
 // 読んだ印の名前: 神崎は未接続だった頃の台本末尾の set_flag と同じ。ほかは章の間だけの会話と同じ形。
 assert.equal(chapterFiveFirstTalkSeenFlag(CH5_FIRST_TALKS.kumicho), "ch2_kumicho_after_ch2_done");
-assert.equal(chapterFiveFirstTalkSeenFlag(CH5_FIRST_TALKS.rei), "_talk_seen_ch5_rei_shop");
+assert.equal(chapterFiveFirstTalkSeenFlag(CH5_FIRST_TALKS.kuraudo), "_talk_seen_ch5_kuraudo_shop");
 assert.equal(chapterFiveFirstTalkSeenFlag(CH5_FIRST_TALKS.adam), "_talk_seen_ch5_adam_shop");
 // 旧保存に神崎の後日談の既読（ch2_kumicho_after_ch2_done）があれば、読み直させない。
 {
@@ -66,7 +66,7 @@ for (const talk of Object.values(CH5_FIRST_TALKS)) {
   assert.equal(recordChapterFiveScheduleDecision(value, "decide"), true);
   assert.equal(completeChapterFiveScene(value, "ch5_schedule_contact"), true);
   assert.equal(value.flags._ch5.part, "scheduled");
-  assert.equal(due("rei", value), "ch5_rei_shop", "the day the match is set is still before the match");
+  assert.equal(due("kuraudo", value), "ch5_kuraudo_shop", "the day the match is set is still before the match");
   assert.equal(beginChapterFiveMatch(value), true);
   for (const id of Object.keys(CH5_FIRST_TALKS)) assert.equal(due(id, value), null, `${id}: not after the match starts`);
 }
@@ -80,7 +80,7 @@ for (const broken of [value => { delete value.flags._ch5; }, value => { value.fl
   broken(value);
   for (const id of Object.keys(CH5_FIRST_TALKS)) assert.equal(due(id, value), null, `${id}: unreadable Chapter 5 save`);
 }
-assert.equal(due("rei", null), null);
+assert.equal(due("kuraudo", null), null);
 assert.equal(CH5_FREE_SCENES.some(scene => scene.id === CH5_FIRST_TALKS.adam.after), true, "Adam waits for a real free scene");
 
 // ---- 台本 ----------------------------------------------------------------------------
@@ -121,7 +121,7 @@ for (const [id, talk] of Object.entries(CH5_FIRST_TALKS)) {
   assert.deepEqual(alias.lines, [{ type: "jump", next_id: "ch2_kumicho_after_ch2" }]);
 }
 // はじめは店主たちに敬語で話す（クラウド 25歳・アダム 28歳・神崎 53歳。第2章までの場面と同じ）。
-for (const [file, id] of [["ch5_shops", "ch5_rei_shop"], ["ch5_shops", "ch5_adam_shop"], ["ch2_kumicho", "ch2_kumicho_after_ch2"]]) {
+for (const [file, id] of [["ch5_shops", "ch5_kuraudo_shop"], ["ch5_shops", "ch5_adam_shop"], ["ch2_kumicho", "ch2_kumicho_after_ch2"]]) {
   const hajime = scenesOf(file)[id].lines.filter(line => line.speaker === "hajime" && !/^（/.test(line.text)).map(line => line.text);
   assert(hajime.length >= 2, id);
   for (const text of hajime) assert.doesNotMatch(text, /(?:だよ|だね|じゃん|だよね|するよ|してたね)$/, `${id}: ${text}`);
@@ -131,7 +131,7 @@ for (const [file, id] of [["ch5_shops", "ch5_rei_shop"], ["ch5_shops", "ch5_adam
 // 能力はいつもの来店と同じ（アダムは daily/spots.js の CHAR_STAT、神崎・クラウドは ch2-preparation.js の通い訪問）。
 assert.match(read("remake/js/daily/spots.js"), new RegExp(`CHAR_STAT = \\{[^}]*adam: "${CH5_FIRST_TALKS.adam.stat}"`));
 assert.match(read("remake/js/chapters/ch2-preparation.js"),
-  new RegExp(`const stat = \\{[^}]*kumicho: "${CH5_FIRST_TALKS.kumicho.stat}", rei: "${CH5_FIRST_TALKS.rei.stat}"`));
+  new RegExp(`const stat = \\{[^}]*kumicho: "${CH5_FIRST_TALKS.kumicho.stat}", kuraudo: "${CH5_FIRST_TALKS.kuraudo.stat}"`));
 // 来店は ch5-shops.js の performChapterFiveShop が受け持つ（ch5-daily.js が全ての行き先で先に呼ぶ）。
 const shops = read("remake/js/chapters/ch5-shops.js");
 assert.match(shops, /import \{[^}]*chapterFiveFirstTalkDue[^}]*\} from "\.\/ch5-first-talks\.js";/);

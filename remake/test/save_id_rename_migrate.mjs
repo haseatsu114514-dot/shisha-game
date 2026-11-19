@@ -1,5 +1,5 @@
 // スキーマ26（IDREN01）: キャラID改名の旧セーブ付け替えテスト。
-// 旧ID（nagumo/rin/kuze/saif/rashid）で保存されたデータが、新ID（sui/rio/saku/faris/khalil）で復元されること。
+// 旧ID（nagumo/rin/kuze/saif/rashid）で保存されたデータが、新ID（sensu/rio/ayatori/faris/khalil）で復元されること。
 // 付け替え先に既存値がある場合は新ID側を優先する。
 // node --experimental-vm-modules remake/test/save_id_rename_migrate.mjs
 import assert from "node:assert/strict";
@@ -77,8 +77,8 @@ function loadSave(save) {
   assert.equal(s.schema, core.SCHEMA);
   // キーの付け替え（好感度・面識・固有会話・絆）
   assert.equal(s.affinity.rio, 40);
-  assert.equal(s.affinity.sui, undefined);
-  assert.equal(s.affinity.saku, 5);
+  assert.equal(s.affinity.sensu, undefined);
+  assert.equal(s.affinity.ayatori, 5);
   assert.equal(s.affinity.faris, undefined);
   assert.equal(s.affinity.khalil, undefined);
   assert.equal(s.affinity.sumi, 9);
@@ -87,20 +87,20 @@ function loadSave(save) {
   assert.equal(s.met.rio, true);
   assert.equal(s.story.rio, 2);
   assert.equal(s.affinityCarry.rio, 0.5);
-  assert.equal(s.loveCarry.saku, 0.25);
+  assert.equal(s.loveCarry.ayatori, 0.25);
   assert.equal(s.loveLevel.rio, 2);
   assert.equal(s.lovePts.rio, 30);
   assert.equal(s.loverSince.rio, 5);
   assert.equal(s.lastDate.rio, 6);
   assert.equal(s.romance.rio, 1);
-  assert.equal(s.finales.saku.route, "friend");
-  assert.equal(s.friendHangouts.sui, 1);
+  assert.equal(s.finales.ayatori.route, "friend");
+  assert.equal(s.friendHangouts.sensu, 1);
   // フラグキーと、_rio_sample を見る既存補完（フレーバー在庫）が新IDで効く
   assert.equal(s.flags._rio_sample, true);
   assert.equal(s.flags._read_ch1_rio_first, true);
   assert.equal(s.flavorStock.nightside_earlgrey, 50);
   // 配列・値側のID
-  assert.deepEqual(s.contacts, ["sumi", "rio", "saku"]);
+  assert.deepEqual(s.contacts, ["sumi", "rio", "ayatori"]);
   assert.deepEqual(s.lovers, ["rio"]);
   assert.equal(s.romanceChoices.q1.char, "rio");
   assert.deepEqual(s.limeRead, ["rio_1", "sumi_2"]);
@@ -113,7 +113,7 @@ function loadSave(save) {
   assert.equal(s.inbox[0].id, "rio_invite_1");
   assert.equal(s.inbox[0].msg.sender, "rio");
   assert.equal(s.inbox[0].msg.accept_event, "outing_rio_1");
-  assert.equal(s.pendingInvite.sender, "sui");
+  assert.equal(s.pendingInvite.sender, "sensu");
   // TRPG・東京訪問
   assert.equal(s.trpg.cleared.t1.gm, "faris");
   assert.deepEqual(s.trpg.cleared.t1.participants, ["rio", "sai"]);
@@ -144,3 +144,32 @@ function loadSave(save) {
 }
 
 console.log("save id rename migrate: PASS (all structures renamed, new-key priority, legacy lesson backfill, current schema untouched)");
+
+// Current cast IDs are not another save migration. Physical art and item identifiers are independent.
+{
+  const { readFileSync } = await import("node:fs");
+  const { characterArtStem, resolvePortrait } = await import("../js/core/portrait-resolver.js");
+  const { costumeUrl } = await import("../js/trpg/costumes.js");
+  const { PREPARATION_SPOTS } = await import("../js/chapters/ch2-preparation.js");
+  const json = path => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
+  const cast = json("../../data/characters.json"), manifest = json("../data/manifest.json");
+  const names = { kuraudo: "rei", uezono: "maezono", ayatori: "saku", sensu: "sui", dr_charcoal: "dr_kemuri" };
+  for (const [actor, art] of Object.entries(names)) {
+    assert.equal(cast.find(c => c.id === actor)?.art_stem, art);
+    assert.equal(characterArtStem(actor), art);
+    assert(!cast.some(c => c.id === art));
+    assert(!Object.hasOwn(core.CHAR_ID_RENAMES, art));
+    for (const style of ["new", "classic"]) {
+      const pic = resolvePortrait(manifest, actor, "normal", style);
+      assert.equal(pic.folder, actor);
+      assert(pic.rel.endsWith(`/${art}/chr_${art}_normal.png`));
+      assert(manifest.webp.includes(pic.rel), pic.rel);
+    }
+  }
+  const spot = PREPARATION_SPOTS.find(s => s.charId === "kuraudo");
+  assert.equal(spot.id, "ch2_rei");
+  assert(spot.previewUrl.endsWith("/bg_ch2_rei_entry.webp"));
+  assert.equal(json("../../data/equipment.json").equipment.find(e => e.id === "suyaki_rei").gift.from, "kuraudo");
+  assert(costumeUrl("purikura-hero", "kuraudo", "nocturne").endsWith("/rei_nocturne.webp"));
+  assert.equal(costumeUrl("purikura-hero", "rei", "nocturne"), null);
+}

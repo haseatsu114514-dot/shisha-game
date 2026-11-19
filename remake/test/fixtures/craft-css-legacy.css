@@ -70,7 +70,7 @@
 .audience-note { margin: 0; font-size: 13px; color: #d1c7b6; line-height: 1.45; overflow-wrap: anywhere; }
 .bench-audience[data-tone="bright"] .audience-rating { color: #efcf8a; }
 .bench-audience[data-tone="bright"] .audience-note { font-size: 15px; font-weight: 700; color: #ecd4a1; line-height: 1.45; }
-.bench-audience[data-speaker="sui"][data-tone="bright"] .audience-note { font-size: 14px; font-weight: 600; color: #d9e1e7; }
+.bench-audience[data-speaker="sensu"][data-tone="bright"] .audience-note { font-size: 14px; font-weight: 600; color: #d9e1e7; }
 .bench-audience[data-tone="warm"] .audience-note { font-size: 14px; color: #d3dcc6; }
 .bench-audience[data-tone="warm"] .audience-rating { color: #b7d2bc; }
 .bench-audience[data-tone="quiet"] .audience-note, .bench-audience[data-tone="quiet"] .audience-rating { color: #c4ada6; }

@@ -40,7 +40,7 @@ function harness(id, initial = 9) {
         :c.AGEHA_AFFINITY_VISITS.every(x=>f[`_ch2_read_${x}`])&&!!f._ageha_affinity_question_done;
     },
     playFinale:async who=>{const r=await c.play(c.BOND_FINALES[who].dialogue);if(r?.cancelled)return false;c.state.finales[who]={route:c.answer?'romance':'friend'};return true;},
-    STOPS:[{id:'ageha'},{id:'kumicho'},{id:'rei'}],ROOMS:{ageha:'room',kumicho:'room',rei:'room'},MAP:{day:'map',night:'map'},CITY_SHOP:{id:'shop'},
+    STOPS:[{id:'ageha'},{id:'kumicho'},{id:'kuraudo'}],ROOMS:{ageha:'room',kumicho:'room',kuraudo:'room'},MAP:{day:'map',night:'map'},CITY_SHOP:{id:'shop'},
     VISIT_COST:3000,CITY_OUTINGS:[],CH2_CITY_NAME:'city',HOME_CITY_NAME:'home',CITY_BACKGROUNDS:{},CH2_SCENE_BACKGROUNDS:{},
     spendableMoney:x=>x.money,isClosed:()=>false,knownCityOutings:()=>[],dayOneProgress:()=>({startDay:15}),
     imageReady:async()=>true,withScenePreparation:async x=>x,toast:()=>{},recordCityVisit:()=>{},offerAgehaPurikura:async()=>true,consultLessons:async()=>{},

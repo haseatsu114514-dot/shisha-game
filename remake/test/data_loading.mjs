@@ -101,8 +101,8 @@ assert.deepEqual(Array.from(all.DB.lime.slice(-83, -73), m => m.id), [
 // ヌールの帰国後の時差の2通（第5章の地元・恋人だけ）もここ
 assert.deepEqual(Array.from(all.DB.lime.slice(-73, -43), m => m.id), [
   "lime_ch3_sumi_tokyo_settle", "lime_ch4_sumi_settle", "lime_ch4_tsumugi_counter", "lime_ch4_mashiro_mukai",
-  "lime_ch4_ageha_melty", "lime_ch4_saku_stream", "lime_ch4_saku_steve_note", "lime_ch4_sumi_eve", "lime_ch5_saku_title", "lime_ch5_kumicho_title",
-  "lime_ch5_rei_title", ...Array.from({ length: 9 }, (_, i) => `lime_wang_0${i + 1}`), ...Array.from({ length: 6 }, (_, i) => `lime_taiyo_0${i + 1}`),
+  "lime_ch4_ageha_melty", "lime_ch4_ayatori_stream", "lime_ch4_ayatori_steve_note", "lime_ch4_sumi_eve", "lime_ch5_ayatori_title", "lime_ch5_kumicho_title",
+  "lime_ch5_kuraudo_title", ...Array.from({ length: 9 }, (_, i) => `lime_wang_0${i + 1}`), ...Array.from({ length: 6 }, (_, i) => `lime_taiyo_0${i + 1}`),
   "lime_noor_after_sunset", "lime_noor_missed_call", "lime_noor_noon_call", "lime_mashiro_glass_cloth",
 ]);
 // L01〜L43 の増量候補を末尾に足した（番号は固定）
@@ -119,10 +119,10 @@ for (const id of ["baito_tsumugi_01", "baito_minto_romance", "baito_ageha_romanc
 assert(Array.isArray(all.DB.gallery.items), "the approved gallery catalog is loaded from real data");
 assert.equal(all.DB.characters.hiyori.name, "泡沫ひより");
 assert.equal(all.DB.characters.hiyori.reading, "うたかた ひより");
-assert.equal(all.DB.characters.saku.name, "綾取 陣（あやとり じん）");
-assert.equal(all.DB.characters.rei.reading, "くらうど");
-assert.equal(all.realName("saku"), "綾取陣");
-assert.equal(all.realName("rei"), "†黒羅雨℃†");
+assert.equal(all.DB.characters.ayatori.name, "綾取 陣（あやとり じん）");
+assert.equal(all.DB.characters.kuraudo.reading, "くらうど");
+assert.equal(all.realName("ayatori"), "綾取陣");
+assert.equal(all.realName("kuraudo"), "†黒羅雨℃†");
 assert.equal(all.realName("hiyori"), "ひより");
 assert.equal(all.DB.characters.hiyori.age, 25);
 assert.equal(all.DB.hiyori.route, undefined);

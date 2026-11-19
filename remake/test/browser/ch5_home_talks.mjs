@@ -122,8 +122,8 @@ await suite("ch5-home-talks", async check => {
     untouched(await get(page), "dubai", finales);
   });
 
-  await check("yuzugaya-kanzaki-aftermath-and-rei-talk-read-once", async page => {
-    await seed(page, { met: { kumicho: true, rei: true }, affinity: { kumicho: 30, rei: 30 } });
+  await check("yuzugaya-kanzaki-aftermath-and-kuraudo-talk-read-once", async page => {
+    await seed(page, { met: { kumicho: true, kuraudo: true }, affinity: { kumicho: 30, kuraudo: 30 } });
     await mapReady(page, { day: 51, slot: 0 });
     await travelToCity(page, "widehanga");
     // 1. 昼の神崎煙草店: 第2章の後日談（世界大会の後の版）を一度だけ。代金・好感度は第5章の通いと同じ。
@@ -148,9 +148,9 @@ await suite("ch5-home-talks", async check => {
     state = await get(page);
     text = await logText(page);
     assert.match(text, /世界大会の動画、店で流した/, "Cloud's Chapter 5 talk");
-    assert.equal(state.flags._talk_seen_ch5_rei_shop, true);
-    assert.equal(state.affinity.rei, before.affinity.rei + 5);
-    assert.equal(state.flags._ch2_talks?.rei, (before.flags._ch2_talks?.rei || 0) + 1);
+    assert.equal(state.flags._talk_seen_ch5_kuraudo_shop, true);
+    assert.equal(state.affinity.kuraudo, before.affinity.kuraudo + 5);
+    assert.equal(state.flags._ch2_talks?.kuraudo, (before.flags._ch2_talks?.kuraudo || 0) + 1);
     assert.equal(state.flags._ch2_region, "home", "the night ends at home");
     // 3. 次の日の神崎煙草店は、いつもの来店（昼のあいさつ＋通い訪問の小会話）。後日談は読み直さない。
     await travelToCity(page, "widehanga");

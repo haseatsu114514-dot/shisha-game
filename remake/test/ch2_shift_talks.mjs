@@ -39,7 +39,7 @@ assert.equal(due(save(), {}), null, "scripts not loaded: nothing");
 assert.equal(due(save({ day: 15 }), dialogues), null, "DAY1: no shift talk yet");
 // 三軒の話は三人と面識がある時だけ
 assert.equal(due(save({ flags: seen("ch2_shift_talk_fare") }), dialogues), "ch2_shift_talk_student", "DAY2 without the three shops");
-assert.equal(due(save({ met: { ageha: true, kumicho: true, rei: true }, flags: seen("ch2_shift_talk_fare") }), dialogues), "ch2_shift_talk_three_shops");
+assert.equal(due(save({ met: { ageha: true, kumicho: true, kuraudo: true }, flags: seen("ch2_shift_talk_fare") }), dialogues), "ch2_shift_talk_three_shops");
 assert.equal(due(save({ met: { ageha: true, kumicho: true }, flags: seen("ch2_shift_talk_fare") }), dialogues) === "ch2_shift_talk_three_shops", false);
 // 夕飯の話は DAY6 の ch2_lingering_smell の後だけ
 const early = seen("ch2_shift_talk_fare", "ch2_shift_talk_three_shops");

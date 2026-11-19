@@ -26,7 +26,7 @@ const recordToasts = page => page.evaluate(() => {
 const toasts = page => page.evaluate(() => window.__toastLog || []);
 
 const START = 49;
-const MET = { naru: true, adam: true, minto: true, ageha: true, kumicho: true, rei: true, steve: true, volk: true };
+const MET = { naru: true, adam: true, minto: true, ageha: true, kumicho: true, kuraudo: true, steve: true, volk: true };
 /** 第5章の自由行動の保存を作って LOAD する（ch5_catering と同じ形。勝負の日は未定）。 */
 async function seed(page, { day = 51, slot = 0, flags = {} } = {}) {
   page.setDefaultTimeout(30000);

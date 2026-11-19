@@ -19,7 +19,7 @@ await suite('tournament-story',async check=>{
       await (await import('./js/core/data.js')).loadTournamentCraftDialogue();
       const cs=window.cs=session.newSession('tournament');
       cs.mix={mint:12};cs.pack='fluffy';cs.steam={temp:.52,score:85};
-      for(const id of ['hajime','pakki','dr_kemuri','maezono'])core.state.flags[`_intro_${id}`]=true;
+      for(const id of ['hajime','pakki','dr_charcoal','uezono'])core.state.flags[`_intro_${id}`]=true;
       Object.assign(core.config,{textSpeed:4,bgmVolume:0,seVolume:0,voiceBlip:false});
       vn.vnTest.turbo=false;
       window.T={core,vn,session,story};
