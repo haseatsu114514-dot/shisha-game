@@ -17,10 +17,19 @@ import { isRainy } from "./weather.js";
 import { chapterDay, chapterDaysLeft, chapterFinalDay, chapterGoalLabel, departurePrep } from "../core/chapter-clock.js";
 import { growthEnabled, growthView, gaugeInfo, hidaneTotal } from "../core/growth.js";
 import { NODE_BY_ID, pathTo } from "../core/growth-board.js";
+import { boardPerks, LESSON_TUNING } from "../core/growth-effects.js";
 
-// 体力バーと経験値バーの共通の長さ（px）。経験値を少し短くし、体力も同じ長さにそろえる（#3034・オーナー指示 2026-11-09）。
-// 最大体力が育成で伸びてもバー自体の長さは変えない（減り方は中身の割合で読む）。経験値側は daily.css の .hx-bar が同じ値を保つ。
+// 体力バーは従来幅の半分から、盤で増えた最大体力の分だけ伸ばす（#3821）。
+// 初期幅・見た目の上限だけを決める。実際の体力量やバランスは盤と maxStamina() が持つ。
 const HUD_GAUGE_WIDTH = 120;
+const MAX_BOARD_STAMINA = boardPerks(Object.keys(NODE_BY_ID)).stamina + LESSON_TUNING.stamina;
+
+function staminaTrackWidth() {
+  if (!growthEnabled()) return HUD_GAUGE_WIDTH; // 旧能力モードでは従来表示を保持。
+  const bonus = maxStamina() - maxStamina({ forCondition: true });
+  const progress = Math.min(1, Math.max(0, bonus / MAX_BOARD_STAMINA));
+  return HUD_GAUGE_WIDTH * (1 + progress) / 2;
+}
 
 /** 章の最終日（大会・勝負の日）まであと何日か。決まっていなければ null。台詞の {daysLeft} もこれに一本化する */
 export const daysLeft = () => chapterDaysLeft(state);
@@ -104,7 +113,7 @@ export function initHud(h) {
     left: el("b"),
     // 所持金・大会まで・体力のラベルは文字を残し（読み上げ・説明用）、画面では ¥・🏆・♥ の印に置き換える（CSS・#2853）
     leftLabel: el("span.dc-label", { text: "次の大会まで" }),
-    stamina: el("div.hud-stamina", [el("span.dc-label", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b")])])]),
+    stamina: el("div.hud-stamina", [el("span.dc-label", { text: "体力" }), el("div.hud-stamina-meter", { style: { flex: `0 0 ${HUD_GAUGE_WIDTH}px` } }, [el("i.hud-bar", [el("span.gauge-track", [el("b")])])])]),
     phone: el("button.hud-lime", { title: "LIME", "aria-label": "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
     // 経験値と次のレベルまで（SPEC 6.1a）。置き場所は情報カードの体力の下（REPORT P4・R5）
     exp: el("div.hud-exp", { hidden: true, dataset: { test: "hud-exp" } }, [
@@ -280,8 +289,8 @@ export function updateHud() {
   dom.stamina.querySelector("b").style.width = `${Math.round(r * 100)}%`;
   scheduleRecovery();
   dom.stamina.classList.toggle("low", health === "red");
-  // バーの長さは経験値ゲージと共通の固定長（#3034）。最大体力が伸びても長さは変えず、減りは割合で表す。
-  dom.stamina.querySelector(".hud-bar").style.width = `${HUD_GAUGE_WIDTH}px`;
+  // 枠の長さと現在体力の割合は別。枠が伸びても回復させず、カード全体の幅も動かさない。
+  dom.stamina.querySelector(".hud-bar").style.width = `${staminaTrackWidth()}px`;
   updateGrowth();
 }
 
