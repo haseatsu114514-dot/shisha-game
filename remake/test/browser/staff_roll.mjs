@@ -293,7 +293,7 @@ await suite("staff-roll", async check => {
     assert.deepEqual(await page.locator(".staff-roll-source").allTextContents(), ["音楽：魔王魂", "音楽：甘茶の音楽工房", "音楽：OpenGameArt.org（CC0）", "音楽：Kevin MacLeod（incompetech.com）– Licensed under Creative Commons: By Attribution 4.0 License http://creativecommons.org/licenses/by/4.0/"]);
     assert.deepEqual(await page.locator(".staff-roll-song-credit").allTextContents(),
       ["作曲 秋山裕和（H/MIX GALLERY）", "作曲 shimtone（OpenTracks）", "作曲 オオヒラセイジ（OpenTracks）", "作曲 Napi（M-ART）",
-        "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 甘茶（甘茶の音楽工房）",
+        "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 甘茶（甘茶の音楽工房）",
         "作曲 Kevin MacLeod（incompetech.com・CC BY 4.0）",
         ...["Eldritch Grim", "Aureolus_Omicron", "congusbongus", "TAD", "controllerhead", "yd", "Kistol", "northivanastan", "Bobjt", "Aureolus_Omicron",
             "omfgdude", "Umplix", "Kistol", "MintoDog", "yd", "Spring Spring", "Centurion_of_war", "tebruno99", "Pro Sensory"]

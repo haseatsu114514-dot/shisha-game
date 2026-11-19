@@ -159,8 +159,9 @@ async function pullGame(cs, mode) {
   // リニューアル（CRN03・04・06・10）: 止めた瞬間の光りと音・行き先・吸っている間の弧・良くなった一口の手応え・集中の札・結果の一語。
   // 桜井版（CRN16）はリニューアル前のとおり（芯に入った一口だけ手応え）。
   const renewal = renewalCraft(cs);
-  // 桜井式の大会だけ（SKR04）: 温度計の上の端に「攻めの帯」。ここで終えると、その回の審査に上積み。
+  // #3795: 桜井版共通の温度判定。第1章大会だけは既存の審査加点もある。
   const attacking = attackGuide(cs);
+  const attackVotes = cs.mode === "tournament" && (cs.chapter ?? 1) === 1 && cs.voteStyle === "sakurai";
   // テスト用（craftTest.aim = "attack"）: 安全な口数の範囲で、攻めの帯の内側（上下2割を除く）に入る最短の吸い方を探し、
   // その1口目の針の位置を返す。内側が無ければ帯の全体、それも無ければ口数の上限まで探す。それでも無ければ null。
   const planAttackPull = () => {
@@ -195,7 +196,7 @@ async function pullGame(cs, mode) {
   };
   // テスト用（craftTest.aim = "attack"）: 上手な自動操作が中心ではなく攻めの帯のまん中を狙う。
   const autoGoal = () => { const r = attacking && craftTest.aim === "attack" ? attackRange(bands) : null; return r ? (r.low + r.high) / 2 : center; };
-  const attackNote = attacking ? `桃色の「攻めの帯」で${mode.drift ? "整え終える" : "提供する"}と、この回の審査が伸びる（帯の上を越えると味が崩れる）。` : "";
+  const attackNote = attacking ? `桃色の「攻めの帯」で${mode.drift ? "整え終える" : "提供する"}と、${attackVotes ? "この回の審査が伸びる" : "温度の評価が満点になる"}（帯の上を越えると味が崩れる）。` : "";
   const panel = stepPanel(mode.store, mode.title, attackNote ? `${attackNote}${mode.hint}` : tutorial
     ? mode.drift ? "温度を戻すのは炭。交換する数と置き方で決まる。そのあとの吸いは味の確かめで、温度は少ししか動かない。1〜2口で整え終えよう"
     : "中央のキープは左寄りで微減、右寄りで微増。右の熱を入れる吸いは温度を上げ、左の熱を逃がす吸いは温度を下げる。雨の日は熱を入れる吸いを増やそう。吸い終わってから次の針を止める"
@@ -753,14 +754,16 @@ async function pullGame(cs, mode) {
 
   const result = pullResult(T, pulls, justs, bands, safeLimit);
   const { inZone, optimal } = result;
-  // 攻めの帯（桜井式の大会だけ）: 帯の中は温度を満点として扱い、審査の上積みは票の計算（ch1-votes.js）が足す。
+  // 攻めの帯: 帯の中は温度を満点として扱い、第1章の審査の上積みだけ票の計算（ch1-votes.js）が足す。
   const attackBand = attacking ? attackRange(bands) : null;
   const attack = !!attackBand && inAttackRange(T, attackBand);
   const baseScore = attack ? Math.max(result.score, attackScore(pulls, safeLimit)) : result.score;
   let score = Math.min(100,baseScore + (criticals ? Math.min(SKILL_TUNING.criticalCap, criticals * SKILL_TUNING.critical) : 0));
   const tasteCard = mode.store==="pull"&&cs.blindService&&growthLesson(state,"M-B3")?"白紙の味カードで提供した。味の名前は伏せ、尋ねられたら答える":actualExpressionCard(cs, T);
   cs[mode.store] = { score, grade: gradeOf(score), temp: T, startTemp: initialTemp, pulls, justs, criticals, smokeRings, coals, inZone, optimal, over: T > ideal[1], under: T < ideal[0], ...(attackBand ? { attack } : {}) };
-  const attackLine = attack ? `攻めの帯で${mode.store === "pull" ? "出した" : "整え終えた"}！ 審査員が身を乗り出した（この回の審査 +${ATTACK_BAND.bonus}）` : null;
+  const attackLine = attack ? attackVotes
+    ? `攻めの帯で${mode.store === "pull" ? "出した" : "整え終えた"}！ 審査員が身を乗り出した（この回の審査 +${ATTACK_BAND.bonus}）`
+    : `攻めの帯で${mode.store === "pull" ? "提供した" : "整え終えた"}（温度の評価は満点、吸いすぎの減点は残る）` : null;
   if (attack) {
     impact(panel, "big", { color: "#ff3fa4" });
     SE.fanfare();

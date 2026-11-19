@@ -252,8 +252,10 @@ await suite("craft-materials", async check => {
       assert(await page.locator('[data-test="foil"] .foil-cursor').isHidden());
       const locations = await page.locator(".foil-holes .foil-hole").evaluateAll(ns => ns.map(n => [n.style.left, n.style.top]));
       await capture(page, `${device}-foil-outer-complete`);
-      // CRN02: リングが埋まると、少し間を置いて次のリングへ自動で進む（ボタンは無い）
-      assert.equal(await page.locator('[data-test="hole-next"], [data-test="hole-done"]').count(), 0);
+      // #3795: 本編の桜井版は、リングが埋まってから自分で次へ進む。
+      assert.equal(await page.locator(".bench").getAttribute("data-craft-version"), "sakurai");
+      assert.equal(await page.locator('[data-test="hole-next"], [data-test="hole-done"]').count(), 2);
+      await click(page, '[data-test="hole-next"]', touch);
       await page.waitForFunction(() => !document.querySelector('[data-test="hole-punch"]').disabled);
       assert.deepEqual(await page.locator(".foil-holes .foil-hole").evaluateAll(ns => ns.map(n => [n.style.left, n.style.top])), locations);
       await advance(900 * slow); // 弧の奥の端で休んでいる針
@@ -267,7 +269,7 @@ await suite("craft-materials", async check => {
       assert.equal(await page.locator(".foil-holes .foil-hole").count(), 24);
       assert.equal(await page.locator(".foil-markers .next").count(), 0);
       assert.equal(await page.locator(".worker-punch-dots ellipse").count(), 24, "Hand illustration lost the real holes");
-      // 完成した時点で時間の帯は止まり、そのあと自動で結果へ進む（CRN02）
+      // 完成した時点で時間の帯は止まる。結果へ進むのも桜井版の完了ボタン。
       const bars = await page.evaluate(async () => {
         const before = document.querySelector('.hr-time-bar b').style.width;
         F.clock += 60000;
@@ -275,9 +277,11 @@ await suite("craft-materials", async check => {
         return [before, document.querySelector('.hr-time-bar b')?.style.width ?? before];
       });
       assert.equal(bars[1], bars[0]);
+      await click(page, '[data-test="hole-done"]', touch);
       await page.waitForFunction(() => F.cs.holes !== null);
-      // 結果のときも、開けたアルミは舞台に残る（CRN08）
-      assert.equal(await page.locator('[data-test="foil"] .foil-holes .foil-hole').count(), 24);
+      // 桜井版は穴あけ操作を片付けてから結果を見せる。24穴の記録は下で確認する。
+      await page.locator(".result-card.show").waitFor();
+      assert.equal(await page.locator('[data-test="foil"]').count(), 0);
       const result = await page.evaluate(() => ({ template: F.cs.holes.templateId, outer: F.cs.holes.outer, middle: F.cs.holes.middle, inner: F.cs.holes.inner }));
       assert.deepEqual(result, { template: "outer12-middle12", outer: 12, middle: 12, inner: 0 });
       await click(page, '[data-test="step-next"]', touch);
@@ -303,7 +307,7 @@ await suite("craft-materials", async check => {
     }, options);
   }
   await check("demo-reopen-keyboard-background", async page => {
-    await page.route("**/media/demo-holes.mp4", route => route.fulfill({ contentType: "video/mp4", body: "invalid video fixture" }));
+    await page.route("**/media/demo-holes-classic.mp4", route => route.fulfill({ contentType: "video/mp4", body: "invalid video fixture" }));
     await setup(page);
     await page.evaluate(() => { F.running = F.holes.runHoles(F.cs); });
     await page.locator(".bench-demo-skip").click();
@@ -338,7 +342,7 @@ await suite("craft-materials", async check => {
     { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
     await check(`demo-decode-error-${device}`, async page => {
       // A successful HTTP response with undecodable media exercises the real media error event.
-      await page.route("**/media/demo-holes.mp4", route => route.fulfill({ contentType: "video/mp4", body: "invalid video fixture" }));
+      await page.route("**/media/demo-holes-classic.mp4", route => route.fulfill({ contentType: "video/mp4", body: "invalid video fixture" }));
       await setup(page);
       await page.evaluate(() => { F.running = F.holes.runHoles(F.cs); });
       const sheet = page.locator(".bench-demo-sheet");
@@ -347,7 +351,7 @@ await suite("craft-materials", async check => {
       await demoKeyboardLoop(page);
       assert.match(await page.locator(".bench-demo-status").innerText(), /動画を再生できません/);
       assert.equal(await page.locator(".bench-demo-instructions").evaluate(n => n.open), true);
-      const expected = await page.evaluate(async () => (await import("./js/craft/demo.js")).STEP_DEMOS.holes.cues.map(c => c.text));
+      const expected = await page.evaluate(async () => (await import("./js/craft/demo.js")).CLASSIC_STEP_DEMOS.holes.cues.map(c => c.text));
       assert.deepEqual(await page.locator(".bench-demo-instructions li").allTextContents(), expected);
       const contrasts = await page.locator(".bench-demo-card").evaluate(card => {
         const luma = css => css.match(/[\d.]+/g).slice(0, 3).map(Number).map(n => {
@@ -382,7 +386,7 @@ await suite("craft-materials", async check => {
     }, options);
     await check(`demo-stall-and-interrupt-${device}`, async page => {
       const pending = [];
-      await page.route("**/media/demo-holes.mp4", route => { pending.push(route); });
+      await page.route("**/media/demo-holes-classic.mp4", route => { pending.push(route); });
       await setup(page);
       await page.evaluate(async () => {
         F.demo = await import("./js/craft/demo.js");

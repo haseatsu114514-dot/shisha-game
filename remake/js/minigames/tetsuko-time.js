@@ -220,7 +220,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
   return await new Promise(resolve => {
     let done = false, leaving = false, mounted = false, panel = null;
     let timer = 0, stepTimer = 0, fxTimer = 0, purrTimer = 0, walkTimer = 0, stillTimer = 0, heldTimer = 0, flashTimer = 0, quietUntil = 0;
-    let capTimer = 0, peakTimer = 0, peakGlowTimer = 0, pounceTimer = 0, ghostTimer = 0, shotTimer = 0, joyTimer = 0, wishTimer = 0, peerTimer = 0, artTimer = 0;
+    let capTimer = 0, peakTimer = 0, peakGlowTimer = 0, pounceTimer = 0, ghostTimer = 0, joyTimer = 0, wishTimer = 0, peerTimer = 0, artTimer = 0;
     let tool = "hand", stroke = null, lastPetAt = 0, lastBrushAt = 0, lastSwingAt = 0, toyTravel = 0, held = false, pouncing = false;
     let toyTip = null, toyGoal = null, toyVel = { x: 0, y: 0 }, toyFrame = 0, heldFrame = 0, toyHeading = { x: 0, y: 0 }, toyMovedAt = 0;
     let selected = null, fresh = [], bookSel = null, lastAt = null, lastX = null, stepFrames = 0, walkFrame = "walk_a";
@@ -273,29 +273,28 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     const joyBar = el("div.tt-joy", { role: "img", dataset: { test: "tetsuko-joy" } }, hearts);
     const mood = el("span.tt-mood", { role: "img", title: moodText, "aria-label": moodText, dataset: { test: "tetsuko-mood", mood: session.mood } });
     const status = el("div.tt-status", [joyBar, mood]);
-    // -- 反応の一行（左下。少しで消える）と、見つけた・撮った時の小さな札
-    const text = el("p.tt-text", { dataset: { test: "tetsuko-caption" } });
-    const line = el("p.tt-line", { hidden: true }, [el("b.tt-line-name"), el("span.tt-line-text")]);
+    // -- 左下の札は上から、発見・撮影のお知らせ、てつこの反応、人物のセリフ。
+    const text = el("p.tt-text.tt-caption-paper", { dataset: { test: "tetsuko-caption" } });
+    const line = el("p.tt-line.tt-caption-paper", { hidden: true }, [el("b.tt-line-name"), el("span.tt-line-text")]);
     const chips = el("div.tt-chips");
-    const caption = el("div.tt-caption", { role: "status", "aria-live": "polite", dataset: { stale: "false" } }, [text, line, chips]);
+    const caption = el("div.tt-caption", { role: "status", "aria-live": "polite", dataset: { stale: "false" } }, [chips, text, line]);
 
-    // -- 手元の道具（右下）と、上の道具（右上）。写真は、しぐさが見えた時だけ猫のそばに出る。
+    // -- 手元の道具（右下）と、上の道具（右上）。撮影は右上に置き、しぐさが見えている間だけ有効。
     const dockButtons = Object.fromEntries(DOCK.map(item => [item.kind,
       el("button.tt-act", { type: "button", dataset: { test: `tetsuko-${item.kind}`, kind: item.kind }, onclick: () => press(item) }, [
         el("span.tt-act-token", { html: icon(item.icon) }), el("span.tt-act-label", { text: item.label }),
       ])]));
     const dock = el("nav.tt-dock", { "aria-label": "てつことのふれあい" }, Object.values(dockButtons));
-    const tool_ = (id, label, ico, onclick) => el("button.tt-tool", { type: "button", dataset: { test: `tetsuko-${id}` }, onclick },
+    const tool_ = (id, label, ico, onclick, attrs = {}) => el("button.tt-tool", { type: "button", dataset: { test: `tetsuko-${id}` }, onclick, ...attrs },
       [el("span.tt-tool-ico", { html: icon(ico) }), el("span.tt-tool-label", { text: label })]);
     const decorButton = tool_("decor", "もようがえ", "decor", () => openDecor());
     const bookButton = tool_("book", "てつこ手帳", "book", () => openBook());
     const backButton = tool_("time-back", "帰る", "back", () => leave());
-    const shot = el("button.tt-shot", { type: "button", hidden: true, "aria-label": "写真を撮る", dataset: { test: "tetsuko-photo" }, onclick: () => snap() },
-      [el("span.tt-shot-ico", { html: icon("photo") })]);
+    const shot = tool_("photo", "撮影", "photo", () => snap(), { class: "tt-shot", disabled: true, "aria-keyshortcuts": "P" });
     // 遊び方は画面に常に出さず、「？」を開いた時だけ見せる（#2717・ミニゲーム共通の方針）。
     const helpButton = el("button.tt-tool.tt-help-btn", { type: "button", dataset: { test: "tetsuko-help" }, "aria-label": HELP_TITLE, title: HELP_TITLE,
       onclick: () => openHelp() }, [el("span.tt-help-q", { "aria-hidden": "true", text: "？" })]);
-    const tools = el("div.tt-tools", [helpButton, decorButton, bookButton, backButton]);
+    const tools = el("div.tt-tools", [shot, helpButton, decorButton, bookButton, backButton]);
     const drawer = el("div.tt-drawer", { hidden: true, dataset: { test: "tetsuko-decor-panel" } });
     const book = el("div.tt-book", { hidden: true, dataset: { test: "tetsuko-book-panel" }, role: "dialog", "aria-label": "てつこ手帳" });
     const help = el("div.tt-help", { hidden: true, dataset: { test: "tetsuko-help-panel" }, role: "dialog", "aria-label": HELP_TITLE });
@@ -306,7 +305,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       dataset: { test: "tetsuko-time-screen", stage: String(session.stage), mood: session.mood, tod, tool, reduced: String(reduced), ...artAttrs(),
         artBg: String(!!backdoor?.url), ...theme.attrs },
       "aria-label": TETSUKO_TIME.title,
-    }, [yard, status, tools, caption, dock, shot, drawer, book, help, ...theme.nodes]);
+    }, [yard, status, tools, caption, dock, drawer, book, help, ...theme.nodes]);
 
     // -- 表示の更新
     const slotOf = id => SLOTS.find(slot => session.props[slot] === id) || null;
@@ -374,7 +373,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       yard.style.setProperty("--cam-y", `${Math.round(next.y)}px`);
       if (cut) { void yard.offsetWidth; delete yard.dataset.cam; }
     }
-    const aimWhenShown = () => { if (done) return; if (host.isConnected) { aimCamera({ cut: true }); placeShot(); } else requestAnimationFrame(aimWhenShown); };
+    const aimWhenShown = () => { if (done) return; if (host.isConnected) aimCamera({ cut: true }); else requestAnimationFrame(aimWhenShown); };
     // 舞台の座標 → 画面（1280×720）の座標（手帳へ飛ぶ写真など、舞台の外に出す物の位置）
     const onScreen = point => {
       const rect = camPlay.getBoundingClientRect(), frame = host.getBoundingClientRect();
@@ -419,23 +418,16 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
         button.classList.toggle("active", !!item.tool && item.tool === tool);
         button.title = !ok && item.locked ? item.locked : "";
       }
-      // 写真: しぐさが見えている間だけ、猫のそばにカメラが出る（まだ撮っていないしぐさは光る）。
+      // 写真: しぐさが見えている間だけ撮影できる（まだ撮っていないしぐさは光る）。
       const canShoot = !!session.moment && !leaving && !panel;
-      shot.hidden = !canShoot;
+      shot.disabled = !canShoot;
       shot.classList.toggle("ready", canShoot && !session.album.some(entry => entry.moment === session.moment));
-      shot.title = session.moment ? `今のしぐさ（${momentById(session.moment)?.name}）を写真に残す` : "";
-      if (canShoot) placeShot();
+      shot.title = canShoot ? `今のしぐさ（${momentById(session.moment)?.name}）を写真に残す（P）` : "しぐさが見えると撮影できます";
       decorButton.classList.toggle("new", session.newProps.length > 0);
       for (const button of [decorButton, bookButton, helpButton]) button.disabled = leaving;
       host.dataset.tool = tool;
       host.dataset.toy = held ? "held" : tool === "toy" ? "out" : "";
       renderSlots();
-    }
-    function placeShot() {
-      if (shot.hidden || !host.isConnected) return;
-      const c = onScreen(catCenter());
-      shot.style.left = `${Math.round(Math.max(120, Math.min(1160, c.x + 176)))}px`;
-      shot.style.top = `${Math.round(Math.max(150, Math.min(470, c.y - 150)))}px`;
     }
     // ごきげんのハート（5つ。途中まで満ちた分も見える）
     function renderJoy({ bump = false } = {}) {
@@ -637,7 +629,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       next();
     }
 
-    // -- 見つけた・撮った時の小さな札（反応の帯の中）。数秒で消え、手帳に残る。
+    // -- 見つけた・撮った時の小さな札（反応の上）。数秒で消え、手帳に残る。
     // 撮った写真（photo: アルバムの1件）は、裏口の絵を背にして見せる（生成りの紙の上の切り抜きにしない）。昼夜は撮った時のもの。
     const photoScene = shot => (ART_READY.background ? data.sceneBg?.("bg_mukai_backdoor", shot?.night ? "night" : "day")?.url : null) || null;
     function thumb(momentId, { photo = null } = {}) {
@@ -1117,7 +1109,16 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       renderSlots();
     }
     function closePanel() { closePanelQuietly(); lastInputAt = Date.now(); renderButtons(); schedule(); }
-    const onKey = event => { if (event.key === "Escape" && panel) { event.preventDefault(); closePanel(); } };
+    const onKey = event => {
+      if (event.key === "Escape" && panel) { event.preventDefault(); closePanel(); return; }
+      if (event.key.toLowerCase() !== "p" || event.defaultPrevented || event.repeat || event.isComposing
+          || event.ctrlKey || event.altKey || event.metaKey || shot.disabled || !host.isConnected || !isCurrent()
+          || layers.modal?.classList.contains("show")) return;
+      const target = event.target;
+      if (target?.isContentEditable || target?.closest?.("input, textarea, select")) return;
+      event.preventDefault();
+      snap();
+    };
 
     // -- 帰る（いつでも押せる。気を許した段階で、ふれあいの後なら戸の前まで見送ってくれる）
     function leave() {
@@ -1139,7 +1140,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       done = true;
       for (const t of [timer, stepTimer, fxTimer, purrTimer, walkTimer, stillTimer, heldTimer, flashTimer, capTimer, peakTimer, peakGlowTimer, pounceTimer,
         ghostTimer, joyTimer, wishTimer, peerTimer, artTimer]) clearTimeout(t);
-      clearInterval(stepFrames); clearInterval(shotTimer);
+      clearInterval(stepFrames);
       cancelAnimationFrame(toyFrame); cancelAnimationFrame(heldFrame);
       motion?.cancel();
       theme.stop();
@@ -1164,8 +1165,6 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     aimWhenShown();
     theme.start(host);
     audio.playBgm("bgm_tetsuko_time");
-    // カメラ（写真）の札は、歩く猫と寄るカメラについていく。
-    shotTimer = setInterval(placeShot, 300);
     // 通いはじめの人には、なでる手の手本を少しだけ見せる（触ると消える）。
     if (!reduced && session.sessions < 2) ghostTimer = setTimeout(() => { if (!done && Date.now() - lastInputAt >= GHOST_MS - 50) ghost.hidden = false; }, GHOST_MS);
     lastInputAt = Date.now();

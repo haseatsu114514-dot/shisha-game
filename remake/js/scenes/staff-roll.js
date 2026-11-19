@@ -38,7 +38,6 @@ export const STAFF_MUSIC = Object.freeze([
   { title: "民族12 アラブの商人", composer: "魔王魂", source: "魔王魂" },
   { title: "民族08 ピラミッド アレンジ版", composer: "魔王魂", source: "魔王魂" },
   { title: "民族05", composer: "魔王魂", source: "魔王魂" },
-  { title: "民族09 揺れる提灯", composer: "魔王魂", source: "魔王魂" },
   { title: "月明かりの灯台", composer: "甘茶", source: "甘茶の音楽工房" },
   { title: "Firebrand", composer: "Kevin MacLeod", source: "incompetech.com・CC BY 4.0" },
   // TRPGのシナリオ別BGM（OpenGameArt・CC0。オーナー「クレジットは載せる」2026-11-10。出典は asset_sources/music/trpg-audio/）

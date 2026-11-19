@@ -1,13 +1,16 @@
 // 桜井式の「攻めの帯」（第1章の大会・試作。docs/owner_requests.md の SKR04）。
 // 適温帯の上の端。ここで提供・調整を終えると、その回の審査に上積みが乗る（craft/ch1-votes.js の SAKURAI）。
 // 帯を越えると適温を外れ、点は今までどおり下がる（崖のそばに宝を置く。桜井氏の動画 #006・#065）。
-// いままでの審査（vote-style の classic）・練習・ほかの章では出さない。帯の中の温度の点は最適温と同じ満点として扱う。
+// #3795: 練習・レッスン・後章も桜井版の帯と温度判定を使う。第1章大会は従来の試合記録を優先。
+// 帯の中の温度の点は最適温と同じ満点として扱う。
 
 /** from: 最適温の上端から適温の上端までのうち、帯が始まる位置（0＝最適温の上端・1＝適温の上端）。bonus: その回の審査の上積み */
 export const ATTACK_BAND = Object.freeze({ from: .45, bonus: 4 });
 
-/** この一台で攻めの帯を出すか。大会で、桜井式の試合のときだけ。 */
-export const attackGuide = (cs) => cs?.mode === "tournament" && cs?.voteStyle === "sakurai";
+/** 第1章大会の旧SAVE・classic試合には、新しい帯や判定を持ち込まない。 */
+export const attackGuide = (cs) => cs?.mode === "tournament" && (cs.chapter ?? 1) === 1
+  ? cs.voteStyle === "sakurai"
+  : cs?.craftVersion === "sakurai";
 
 /** 帯の範囲。葉が傷んで適温帯が細くなると、帯も一緒に細くなる。 */
 export function attackRange(bands) {

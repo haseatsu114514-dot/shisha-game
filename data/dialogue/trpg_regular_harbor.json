@@ -646,9 +646,15 @@
           "speaker": "sai",
           "role": "",
           "face": "normal",
-          "text": "私がGM、皆さんは茶房の店番です",
+          "text": "ええ、シーシャです。私はGMとして、お客さんも演じます",
           "castIntro": true,
           "smallTableText": "私がGMを務めます。空いた役もお手伝いしますね"
+        },
+        {
+          "speaker": "sai",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "{pc}は港町の茶房で、仲間と一緒にお客さんを迎える役です"
         },
         {
           "speaker": "sai",
@@ -678,13 +684,19 @@
           "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "閉店の札を裏返しかけたとき、濡れた外套の旅人が戸口に立った"
+          "text": "閉店の札を裏返しかけたとき、濡れた外套の旅人オルが戸口に立った"
         },
         {
           "speaker": "sai",
           "role": "旅人オル",
           "face": "normal",
           "text": "……まだ、いいかな。世界一普通の一台を、お願いしたい"
+        },
+        {
+          "speaker": "sai",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "オルさんに合う香りや席、声のかけ方を考えてみましょう"
         },
         {
           "speaker": "hajime",
@@ -2555,7 +2567,7 @@
           "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "では、店番の皆さん。どうしますか？"
+          "text": "オルさんの一台を出す前に、漁師たちをどう迎えましょう？"
         }
       ]
     },
