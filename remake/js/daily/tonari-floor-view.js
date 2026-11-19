@@ -170,6 +170,7 @@ export function runTonariFloor({
   let receiptDetail = false;
   let effect = null;
   let outerMenu = false;
+  let leaving = false;
   let active = true;
   let focusAfterRender = null;
   const customArt = ROOM_ART[night ? "night" : "day"];
@@ -239,15 +240,23 @@ export function runTonariFloor({
         const { openMenu } = await import("./menu.js");
         if (!active || !isCurrent()) return;
         await openMenu({
-          tab: "system", canSave: () => false, current: () => active && isCurrent(), leave: cancel,
+          tab: "system", canSave: () => false, current: () => active && isCurrent(),
+          leave: () => {
+            // Resolving the shift before reload would release calendar's save guard.
+            // The visibility autosave during unload must never persist unpaid shift changes.
+            leaving = true;
+            retire(host);
+          },
           saveRule: "営業中は保存しません。最後に保存した勤務前の場所から再開できます。",
         });
       } catch {
         if (active && isCurrent()) toast("本編メニューを開けませんでした。", { kind: "warn" });
       } finally {
-        outerMenu = false;
-        focusAfterRender = "menu";
-        render();
+        if (!leaving) {
+          outerMenu = false;
+          focusAfterRender = "menu";
+          render();
+        }
       }
     }
 
