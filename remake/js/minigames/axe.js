@@ -1146,7 +1146,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       if (comment.textContent !== text) comment.textContent = text;
       if (portraitKey) showFace(line.face);
     }
-    calledRing.setAttribute("opacity", called ? 1 : 0);
+    calledRing.setAttribute("opacity", called && (!tapPull || actor === "player") ? 1 : 0);
     fixedAim.setAttribute("opacity", moving ? .8 : 0);
     const hint = showsFlickHint();
     flickHint.setAttribute("opacity", hint ? 1 : 0);
