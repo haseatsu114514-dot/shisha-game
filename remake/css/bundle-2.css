@@ -4275,6 +4275,12 @@ html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .res
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .result-card .rc-details[open] { grid-area: 3 / 1 / 4 / -1; min-height: 0; overflow-y: auto; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .result-card .rc-details[open] .rc-lines { max-height: none; overflow: visible; }
 
+/* #3558 項目4: 配合行。#3557 の列幅調整とは別に、特徴と在庫を離し、熟練度を全文表示する。 */
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row { grid-template-rows: minmax(var(--bench-tap), auto) auto auto auto; row-gap: 4px !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-feature { overflow: hidden; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-feature b { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row .fr-mastery { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere; }
+
 /* ===== css/side-area.css ===== */
 /* 左右の余白の活用（YHK・2026-11-11 オーナー決定）。部品と追随は js/core/side-area.js。
    ステージ（固定 1280×720）の外・場面背景のぼかし（#backdrop）の上に、左と右の層を1枚ずつ置く。ステージの中は変えない。
