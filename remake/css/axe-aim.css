@@ -1,0 +1,54 @@
+/* First-person HUD: the utilities and scoreboard occupy separate corners. */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-header {
+  position: absolute; inset: 12px auto auto 22px; display: flex; width: max-content; gap: 12px;
+  min-height: var(--help-hit); padding: 0; margin: 0; border: 0; background: none; box-shadow: none;
+}
+.axe-game.axe-first-person .axe-header .axe-help { margin: 0; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill {
+  right: 20px; width: 750px; max-width: calc(100% - 220px);
+  grid-template-columns: max-content max-content minmax(0,1fr) auto;
+}
+.axe-game.axe-first-person .axe-aim-panel .axe-aim-prompt {
+  position: static; display: grid; gap: 2px; transform: none; align-items: start; text-align: left; white-space: normal;
+}
+.axe-game.axe-first-person .axe-aim-panel .axe-calls-label {
+  position: static; transform: none; margin-top: 12px; padding: 8px 0 0; border: 0; border-radius: 0; background: none;
+  letter-spacing: normal; border-top: 1px solid #536059;
+}
+.axe-game.axe-first-person .axe-aim-panel .axe-aim-prompt-title,
+.axe-game.axe-first-person .axe-aim-panel .axe-calls-label {
+  font: 650 21px/1.3 system-ui,sans-serif; color: #edc997; text-shadow: none; letter-spacing: .01em;
+}
+.axe-game.axe-first-person .axe-aim-panel .axe-aim-prompt-sub {
+  font: 750 26px/1.35 system-ui,sans-serif; color: #fff6e8; text-shadow: none; letter-spacing: 0;
+}
+.axe-first-person .axe-aim-hint { color: #c8d3ca; font: 550 21px/1.35 system-ui,sans-serif; }
+.axe-first-person:is([data-phase="horizontal"],[data-phase="vertical"]) .axe-aim-prompt-title::after {
+  content: ""; display: inline-block; width: 39px; height: 5px; margin: 0 0 .22em .6em; border-radius: 2px;
+  background: linear-gradient(to right,#e6bb79 46%,transparent 46% 54%,#45544d 54%);
+}
+.axe-first-person[data-phase="vertical"] .axe-aim-prompt-title::after {
+  background: linear-gradient(to right,#e6bb79 46%,transparent 46% 54%,#e6bb79 54%);
+}
+/* #3807: Keep aiming instructions and call selection together, off the board. */
+.axe-first-person .axe-aim-panel {
+  position: absolute; z-index: 4; top: 16%; left: 2%; width: min(312px, 26%);
+  box-sizing: border-box; padding: 14px 16px; border: 1px solid #826b4e; border-left: 4px solid #eab777;
+  border-radius: 8px; color: #f8efdc; background: #141b19f5; box-shadow: 0 4px 16px #0006;
+  font-family: system-ui, sans-serif; text-align: left; pointer-events: none;
+}
+.axe-game.axe-first-person .axe-aim-panel .axe-calls {
+  position: static; display: grid; width: 100%; margin: 6px 0 0; gap: 6px;
+  grid-template-columns: repeat(2,minmax(0,1fr)); grid-template-areas: "n n" "ul ur" "ll lr"; pointer-events: none;
+}
+.axe-game.axe-first-person .axe-aim-panel .axe-calls .axe-button {
+  position: static; width: 100%; min-width: 0; min-height: 74px; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center; gap: 5px; margin: 0;
+  padding: 4px; border: 1px solid #586b70; border-radius: 6px; color: #dcf1f7;
+  background: #23343b !important; border-color: #586b70 !important; box-shadow: none; font: 650 21px/1.25 system-ui,sans-serif;
+  outline-offset: 1px; text-shadow: none; transform: none; pointer-events: auto;
+}
+.axe-game.axe-first-person .axe-aim-panel .axe-calls .axe-button::after { content: none; }
+.axe-game.axe-first-person .axe-aim-panel .axe-calls .axe-button[aria-pressed="true"] { outline: 1px solid #eac69a; background: #514331 !important; color: #fff4db; }
+.axe-game.axe-first-person .axe-aim-panel .axe-calls .axe-button[aria-pressed="true"]::before { margin: 0; }
+.axe-game.axe-first-person .axe-aim-panel .axe-calls .axe-button:focus-visible { outline: 3px solid #fff6cd; }

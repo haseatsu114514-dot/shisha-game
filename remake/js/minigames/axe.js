@@ -1,5 +1,6 @@
 // Caller awaits preceding VN. Practice never reads or writes story/save state.
 import { el } from "../core/util.js";
+import { buildVersioned } from "../core/asset-version.js";
 import { imgFileUrl } from "../core/img-file.js";
 import { portraitStyle } from "../core/portrait-style.js";
 import { portraitAsset } from "../core/portrait-resolver.js";
@@ -41,6 +42,18 @@ const CUT_MARK = imgFileUrl("ui/axe_throw/cut-mark.webp");
 const CHIPS = { src: imgFileUrl("ui/axe_throw/wood-chips.webp"), cell: 128, cols: 4, rows: 2, size: 26 };
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
 if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});
+// Load the first-person controls only for this minigame, like the craft water UI.
+let aimStyle;
+function loadAimStyle() {
+  if (!aimStyle) aimStyle = new Promise((resolve, reject) => {
+    const href = buildVersioned(new URL("../../css/axe-aim.css", import.meta.url).href);
+    const link = el("link", { rel: "stylesheet", href });
+    link.onload = resolve;
+    link.onerror = () => { link.remove(); aimStyle = null; reject(new Error("Axe aiming styles unavailable")); };
+    document.head.append(link);
+  });
+  return aimStyle;
+}
 const { x: CX, y: CY, radius: R } = TARGET;
 // #3807: frame the lane and the scoring board with one camera. The hand stays at arm's length.
 const FPS_LANE_ZOOM = 1.04;
@@ -161,7 +174,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       [el("span", { "aria-hidden": "true", text: "✕" }), el("span.axe-quiet", { text: "やめる" })])]);
   // 一人称ではスコア類（REC・各投・合計・投数・連続）を上部バーから外し、右上の細いピルへ寄せる
   // （#3639 オーナー指示 2026-11-18 第3弾: 下部中央から右上へ移し、下部は手元と操作のために開ける）。
-  // ？／× はピルの右隣に並ぶ。中身の作り・更新は従来どおりで、置き場所だけが変わる。
+  // ？／× は独立した左上の操作欄に並ぶ。中身の作り・更新は従来どおりで、置き場所だけが変わる。
   const scorePill = tapPull ? el("div.axe-score-pill", { dataset: { test: "axe-score-pill" } }) : null;
   if (scorePill) scorePill.append(round);
   const divisionBadge = el("span.axe-division", { text: DIVISIONS[division].short, title: DIVISIONS[division].name + "：" + DIVISIONS[division].note, dataset: { test: "axe-division" } });
@@ -405,9 +418,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const calls = el("div.axe-calls", [el("button.axe-button", { text: "通常", dataset: { call: "normal" }, onclick: () => selectCall(null) }),
     ...KILLS.map(target => el("button.axe-button", { text: killPlaces[target.id] + "の青",
       dataset: { call: target.id }, onclick: () => selectCall(target.id) }))]);
-  // 宣言の札の見出し（#3639 オーナー指示 2026-11-18 第3弾「左上のどこを狙うUIが分かりにくい」）:
-  // 札の真上に「ねらい」の小さな札を浮かべ、何を選ぶ場所か一目で分かるようにする。表示条件は札本体とそろえる。
-  const callsLabel = tapPull ? el("div.axe-calls-label", { dataset: { test: "axe-calls-label" }, text: "ねらい" }) : null;
+  const callsLabel = tapPull ? el("div.axe-calls-label", { dataset: { test: "axe-calls-label" }, text: "狙う場所" }) : null;
   const liveValue = el("strong"), liveReason = el("span.axe-live-reason");
   const liveScore = el("div.axe-live-score", { hidden: true, dataset: { test: "axe-live-score" } }, [el("span.axe-live-label", { text: "今の刃先" }), liveValue, liveReason]);
   const needle = el("span.axe-needle", { dataset: { test: "axe-needle" } });
@@ -470,13 +481,19 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   // 的は中央。狙いの札（通常・青の宣言）は的の上に重ね、構えたら消える。回転ゲージは的のすぐ右に縦で立つ。
   // 左は見守りの一言とチャレンジ（投げている間は消える）、右は結果と操作のボタンだけ。
   const throwZone = el("div.axe-throw", { dataset: { test: "axe-throw" } }, [action, retry]);
-  // 狙いの案内（#3639・UI案A）: 的の上に「どこを狙う？」を浮かべ、今が狙う位置を決める場面だと一目で分かるようにする。
-  // 宣言中は同じ場所の宣言札に切り替える。タッチは一切受けない（pointer-events: none はCSS）。
-  const aimPromptTitle = el("strong.axe-aim-prompt-title", { text: "どこを狙う？" });
-  const aimPromptSub = el("span.axe-aim-prompt-sub", { text: "的に触れて位置を決め、上へ弾いて投げる" });
-  const aimPrompt = tapPull ? el("div.axe-aim-prompt", { hidden: true, dataset: { test: "axe-aim-prompt" }, "aria-hidden": "true" }, [aimPromptTitle, aimPromptSub]) : null;
+  const aimSteps = {
+    choice: ["ねらいの準備", "的をタップして構える"],
+    horizontal: ["ねらい 1 / 2", "左右の針を止める"],
+    vertical: ["ねらい 2 / 2", "上下の針を止める"],
+    power: ["投げる", "上へ弾いて投げる"],
+  };
+  const aimPromptTitle = el("span.axe-aim-prompt-title");
+  const aimPromptSub = el("strong.axe-aim-prompt-sub");
+  const aimHint = el("span.axe-aim-hint", { text: "金の印でタップ" });
+  const aimPrompt = tapPull ? el("div.axe-aim-prompt", { hidden: true, dataset: { test: "axe-aim-prompt" }, role: "status" }, [aimPromptTitle, aimPromptSub, aimHint]) : null;
+  const aimPanel = tapPull ? el("div.axe-aim-panel", [aimPrompt, callsLabel, calls]) : calls;
   const boardPane = el("div.axe-board-pane", [
-    el("p.axe-legend", { text: "赤6 · 5の円 · リング4〜1 · 宣言した青7／8" }), artBoard, board, zoom, calls, callsLabel, status, aimPrompt, handFront]),
+    el("p.axe-legend", { text: "赤6 · 5の円 · リング4〜1 · 宣言した青7／8" }), artBoard, board, zoom, aimPanel, status, handFront]),
     side = el("aside.axe-side", { dataset: { test: "axe-side" } }, [matchScore, goals, companionCard]),
     panel = el("aside.axe-panel", [matchRecords, steps, liveScore, resultCard, note, feedback, steadiness, stability, keyhint, controls, throwZone]);
   const body = el("div.axe-body", [side, boardPane, timing, panel]);
@@ -593,7 +610,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       .then(manifest => {
         if (phase === "closed") return;
         portraitManifest = manifest;
-        const lessonArt = [];
+        const lessonArt = tapPull ? [loadAimStyle()] : [];
         if (tutorial) {
           if (!manifest.portraits?.maki?.faces?.includes("normal")) throw new Error("Teacher artwork missing from catalogue");
           lessonArt.push(decodeArt(faceArt("maki", "normal").src),
@@ -872,17 +889,12 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (laneAimImage) laneAimImage.setAttribute("opacity", aimShown);
     if (handFrontImage) handFrontImage.setAttribute("opacity", aimShown);
     if (aimPrompt) {
-      // 宣言中は同じ位置の宣言札で狙いを示す。構え・回転中にも残す。
-      const show = !called && actor === "player" && ["choice", "horizontal", "vertical"].includes(phase) && !isPaused();
-      aimPrompt.hidden = !show;
-      if (show) {
-        const title = "どこを狙う？";
-        if (aimPromptTitle.textContent !== title) aimPromptTitle.textContent = title;
-        const firstThrow = shots.length === 0 && gameIndex === 0 && (!versus || match.opponent.length === 0);
-        const sub = phase === "horizontal" ? "横の針を、金の印で止める" : phase === "vertical" ? "縦の針を、金の印で止める"
-          : firstThrow || tutorial ? "的に触れて位置を決め、上へ弾いて投げる" : "";
-        if (aimPromptSub.textContent !== sub) aimPromptSub.textContent = sub;
-        aimPromptSub.hidden = !sub;
+      const step = aimSteps[phase];
+      aimPrompt.hidden = !step || actor !== "player" || isPaused();
+      if (!aimPrompt.hidden) {
+        aimHint.hidden = phase !== "horizontal" && phase !== "vertical";
+        if (aimPromptTitle.textContent !== step[0]) aimPromptTitle.textContent = step[0];
+        if (aimPromptSub.textContent !== step[1]) aimPromptSub.textContent = step[1];
       }
     }
     root.dataset.outcome = displayedShot?.outcome || "";
@@ -1065,7 +1077,10 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       zoomPower.textContent = "回転 " + Math.round(zoomShot.power * 100) + "%";
       zoom.setAttribute("aria-label", "刃の着地点の拡大。" + zoomShot.score + "点・" + label + "・" + zoomPower.textContent);
     }
-    calls.hidden = (tapPull ? !["choice", "power"].includes(phase) || pullInput?.pulling : phase !== "choice") || sd; if (callsLabel) callsLabel.hidden = calls.hidden;
+    calls.hidden = (tapPull ? !["choice", "power"].includes(phase) || pullInput?.pulling : phase !== "choice") || sd; if (callsLabel) {
+      callsLabel.hidden = calls.hidden;
+      aimPanel.hidden = actor !== "player" || isPaused() || (calls.hidden && aimPrompt.hidden);
+    }
     reaim.hidden = !cycles[phase]; retry.hidden = !allowRetry || phase !== "summary" || Boolean(series && !seriesWinner());
     controls.hidden = steadiness.hidden = !moving;
     focusButton.disabled = isPaused() || focusUsed || performance.now() - lastAction < T.guard;
