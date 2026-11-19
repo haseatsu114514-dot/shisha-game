@@ -1177,7 +1177,12 @@
   filter: none;
 }
 .vn-controls .vn-ctl.on::after { content: "·"; margin-left: 3px; color: #f0cd82; }
-.vn-controls .vn-ctl:focus-visible { outline: 2px solid #f0cd82; outline-offset: -3px; }
+.vn-controls .vn-ctl:focus-visible {
+  outline: none;
+  text-decoration: underline;
+  text-decoration-color: #f0cd82;
+  text-underline-offset: 5px;
+}
 .vn-next { right: 32px; bottom: 13px; color: #edca82; }
 
 /* ===== css/ui-themes.css ===== */
@@ -1241,6 +1246,12 @@ html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.btn,.vn-choice,.mi-go,.s
 }
 html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.btn,.vn-choice,.mi-go,.st-tab,.shop-tab,.gl-tab,.vn-ctl):focus-visible {
   outline: 2px solid var(--gold-hi); outline-offset: 2px;
+}
+/* VN 操作は文字の下線でキーボード位置を示す。押せる箱の外側に矩形の線を出さない。 */
+html[data-ui-theme]:not([data-ui-theme="classic"]) .vn-controls .vn-ctl:focus-visible {
+  outline: none;
+  text-decoration: underline;
+  text-underline-offset: 5px;
 }
 html[data-ui-theme]:not([data-ui-theme="classic"]) :is(.panel,.modal-box,.ink-panel) :is(.panel,.ink-panel,.st-row) {
   background: var(--inner-face); border-color: var(--inner-edge); box-shadow: none;
@@ -4738,10 +4749,9 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 }
 :root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl:focus-visible {
   outline: none;
-}
-:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl:focus-visible::after {
-  outline: 2px solid var(--neo-gold);
-  outline-offset: -2px;
+  text-decoration: underline;
+  text-decoration-color: var(--neo-gold);
+  text-underline-offset: 5px;
 }
 /* AUTO・SKIP の点灯: 札を金で塗り、文字を墨にする。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl.on {
