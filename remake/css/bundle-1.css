@@ -2287,7 +2287,7 @@ html:root[data-density="phone"] body:not(:root) .axe-bar-menu[data-view="gear"] 
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-score-total { min-width: 0; font-size: 20px; line-height: 1; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total { order: 3; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total small { font-size: 12px; }
-.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total strong { font-size: 24px; line-height: 1; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total strong { font-size: 24px; line-height: normal; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total-next { font-size: 12px; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-round { order: 4; margin: 0; padding: 0; border: 0; max-width: none; font-size: 18px; white-space: normal; overflow-wrap: anywhere; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-heat { order: 5; margin: 0; padding: 2px 6px; font-size: 16px; }
