@@ -7,7 +7,7 @@
 // 本番はスタートの合図のあと、ヌール（rivalRun）が横で滑る。
 import { el } from "../core/util.js";
 import { SE, unlockAudio, createDesertRideSe, desertZapGap, currentBgm, playBgm, preloadBgm, resetBgmTempo } from "../core/audio.js";
-import { EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, botControl,
+import { BOOST, EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, botControl,
   rivalRun, rivalAt, RULES_VERSION, DISPLAY, toKmh, toMeters, JUMP, SCORE, RANKS, PLAYER, NEAR, PRACTICE_WALL } from "./desert-ride-model.js";
 import { DESERT_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose, spinFrames } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
@@ -168,6 +168,7 @@ function sandTexture() {
 }
 
 const RANK_WORDS = { S: "最高の一本", A: "見事な滑り", B: "いい滑り", C: "完走" };
+const BOOST_MIN_PERCENT = BOOST.minGauge * 100;
 const TUTORIAL = {
   move: "← → で左右に動こう",
   rock: "岩に当たると転ぶ。先を見て、早めによけよう",
@@ -178,7 +179,7 @@ const TUTORIAL = {
   trickLetGo: "離すと回り切る。着地より前に離そう",
   trickDone: "回った！ 回るほど点が大きい",
   trickFall: "回りかけで着地すると転ぶ。もう少し早く離そう",
-  boost: "溜まったゲージで↓（BOOST）を押すと超加速 ── 岩も砕ける",
+  boost: "ゲージが目印まで溜まったら ↓（BOOST）で超加速 ── 岩も砕ける",
   boostGo: "そのまま、岩へ突っ込め！",
   recover: "最後に、立て直し。岩の壁にわざと当たって、すぐ ↓（BOOST）",
   recoverNow: "当たった！ すぐ ↓（BOOST）で立て直せ",
@@ -194,7 +195,7 @@ const TUTORIAL_TOUCH = {
   bump: "起伏の手前で「ジャンプ」── 大きく跳べる",
   brace: "空中ではジャンプが「LAND」に変わる。輪が重なったら押そう",
   trick: "次は、跳んだら空中で「左へ」か「右へ」を押し続けて回ろう",
-  boost: "溜まったゲージで「BOOST」を押すと超加速 ── 岩も砕ける",
+  boost: "ゲージが目印まで溜まったら「BOOST」で超加速 ── 岩も砕ける",
   recover: "最後に、立て直し。岩の壁にわざと当たって、すぐ「BOOST」",
   recoverNow: "当たった！ すぐ「BOOST」で立て直せ",
   recoverSmash: "砕いた！ ブーストが無い時に当たったら、直後に「BOOST」で立て直せる",
@@ -215,8 +216,8 @@ const HOWTO = {
     "岩は ← → でよけるか、平らな所で Space を押して跳び越える（大きい岩は跳んだ高い所で越える）",
     "起伏の手前で Space で大ジャンプ。空中ではボタンが LAND に変わり、輪が重なった時に Space で着地が決まる（加速・ブースト回復）",
     "空中で ← → を押し続けると回転。回りかけで着地すると転ぶ。岩はぎりぎりでかすめるほど、点もブーストも大きい",
-    "ゲージが満タンで ↓（BOOST）。超加速して、岩も砕く（砕くたびに少し短くなり、端の深い砂に入ると切れる）",
-    "岩に当たった直後にブーストを押すと、ゲージを使って立て直せる",
+    `ゲージが目印（${BOOST_MIN_PERCENT}%）まで溜まったら ↓（BOOST）。超加速して岩も砕く（砕くたびに少し短くなり、深い砂で切れる）`,
+    "岩に当たった直後は、ゲージが少しでもあればブーストで立て直せる",
     "カーブでは外へ流される。曲がる向きへ切り込むと踏ん張れて、ブーストも貯まる",
   ],
   touch: [
@@ -224,8 +225,8 @@ const HOWTO = {
     "岩は「左へ」「右へ」でよけるか、平らな所で「ジャンプ」して跳び越える（大きい岩は跳んだ高い所で越える）",
     "起伏の手前で「ジャンプ」で大ジャンプ。空中ではボタンが「LAND」に変わり、輪が重なった時に押すと着地が決まる（加速・ブースト回復）",
     "空中で「左へ」「右へ」を押し続けると回転。回りかけで着地すると転ぶ。岩はぎりぎりでかすめるほど、点もブーストも大きい",
-    "ゲージが溜まったら「BOOST」。超加速して、岩も砕く（砕くたびに少し短くなり、端の深い砂に入ると切れる）",
-    "岩に当たった直後に「BOOST」を押すと、ゲージを使って立て直せる",
+    `ゲージが目印（${BOOST_MIN_PERCENT}%）まで溜まったら「BOOST」。超加速して岩も砕く（砕くたびに少し短くなり、深い砂で切れる）`,
+    "岩に当たった直後は、ゲージが少しでもあれば「BOOST」で立て直せる",
     "カーブでは外へ流される。曲がる向きへ切り込むと踏ん張れて、ブーストも貯まる",
   ],
 };
@@ -338,7 +339,17 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       if (goal) { skipGoal(); return; } // ゴールの余韻は押して飛ばせる
       if (game && !game.finished && mode && countdown <= 0) { const kind = press(game); if (kind) onPress(kind); }
     };
-    const doBoost = () => { if (game && !game.finished && mode && countdown <= 0) onBoostEvent(boost(game)); };
+    const doBoost = () => {
+      if (!game || game.finished || !mode || countdown > 0) return;
+      const kind = boost(game);
+      if (kind) { onBoostEvent(kind); return; }
+      hudNodes.gaugeFeedback?.cancel();
+      const highlight = { outline: "2px solid #fff2c4", outlineOffset: "2px" };
+      hudNodes.gaugeFeedback = hudNodes.gaugeBox.animate(reducedMotion
+        ? [highlight, { outlineColor: "transparent" }]
+        : [{ ...highlight, translate: "-4px" }, { ...highlight, translate: "4px" }, { outlineColor: "transparent", translate: "0" }],
+      { duration: 260, easing: "ease-out" });
+    };
     const onKey = event => {
       if (!root.isConnected) return;
       if (["ArrowLeft", "a", "A"].includes(event.key)) { input.left = true; event.preventDefault(); }
@@ -714,7 +725,17 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       };
       // BOOST は ⚡ とゲージだけ（% の文字は出さない。#2838）
       hudNodes.gaugeZap = makeZap("dr-zap dr-zap-gauge", "0 0 200 40");
-      hudNodes.gaugeBox = el("div.dr-gauge", { dataset: { test: "desert-gauge" }, title: "BOOST" }, [hudNodes.gauge, hudNodes.gaugeZap.svg]);
+      // 本編と単独ページで同じ目印を描き、尺はモデルの最低量から取る。
+      hudNodes.gaugeMark = el("b.dr-gauge-min", {
+        "aria-hidden": "true",
+        style: {
+          position: "absolute", left: `${BOOST_MIN_PERCENT}%`, top: "0", bottom: "0",
+          width: "3px", marginLeft: "-1.5px", zIndex: "2", pointerEvents: "none",
+          backgroundColor: "#fff3d0", borderRadius: "2px", boxShadow: "0 0 0 1px #482600",
+        },
+      });
+      hudNodes.gaugeBox = el("div.dr-gauge", { dataset: { test: "desert-gauge" }, title: `BOOST · 目印（${BOOST_MIN_PERCENT}%）から使える` },
+        [hudNodes.gauge, hudNodes.gaugeMark, hudNodes.gaugeZap.svg]);
       hudNodes.speedo.append(el("div.dr-speedo-dial", [dial.svg]), el("div.dr-speedo-read", [hudNodes.kmh, el("small", { text: "km/h" })]));
       hud.replaceChildren(
         el("div.dr-hud-left", [el("small", { text: mode === "practice" ? "PRACTICE" : "SCORE" }), hudNodes.score, hudNodes.combo, feedback]),
@@ -755,8 +776,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const t = Math.max(0, Math.min(1, shownKmh / DISPLAY.dialMax));
       setAttr(hudNodes.speedFill, "stroke-dashoffset", (SPEEDO_ARC * (1 - t)).toFixed(2));
       setAttr(hudNodes.needle, "transform", `rotate(${dialAngle(shownKmh).toFixed(1)} ${DIAL.c} ${DIAL.c})`);
-      const ready = game.gauge > 0;
-      setStyle(hudNodes.gauge, "width", `${Math.round(100 * (boosting ? game.boostT / 3 : game.gauge))}%`);
+      const ready = game.gauge >= BOOST.minGauge;
+      setStyle(hudNodes.gauge, "width", `${Math.floor(100 * (boosting ? game.boostT / BOOST.duration : game.gauge))}%`);
+      setStyle(hudNodes.gaugeMark, "visibility", boosting ? "hidden" : "visible");
       setData(hudNodes.gaugeBox, "state", boosting ? "boost" : ready ? "full" : "");
       setData(root, "gauge", boosting ? "boost" : ready ? "full" : "");
       setData(root, "boost", boosting ? "on" : "");
@@ -1093,7 +1115,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const touch = touchUi();
       const tip = result.tricks === 0 ? (touch ? "空中で「左へ」か「右へ」を押し続けると回転。点がいちばん伸びる" : "空中で ← か → を押し続けると回転。点がいちばん伸びる")
         : result.perfect === 0 ? "着地は、輪がボタンに重なった時に押すと完璧"
-        : result.boosts === 0 ? (touch ? "ゲージが貯まったら「BOOST」で超加速" : "ゲージが貯まったら ↓（BOOST）で超加速")
+        : result.boosts === 0 ? (touch ? "ゲージが目印まで溜まったら「BOOST」で超加速" : "ゲージが目印まで溜まったら ↓（BOOST）で超加速")
         : result.falls > 0 && !result.recoveries ? (touch ? "岩に当たった直後に「BOOST」で立て直せる" : "岩に当たった直後に ↓（BOOST）で立て直せる")
         : next && result.bestTrick < 720 ? "長く回るほど点が大きい（360 → 540 → 720）"
         : next && result.nearMiss < 3 ? "岩はぎりぎりでかすめるほど、点もブーストも大きい" : "";

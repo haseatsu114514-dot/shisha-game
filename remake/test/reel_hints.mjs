@@ -86,6 +86,42 @@ for (let seed = 1; seed <= 128; seed++) {
   assert.equal(reel.core.LEFT_BAR_AIM, 0.7);
 }
 
+// #3822: チェリーは角に見せて左下段BAR。固定シードの10万回転で役分布と旧ハズレ目も守る。
+{
+  const { STRIPS, stopsFor, mulberry32, spinSeries, PEKA } = reel.core;
+  const left = STRIPS[0], n = left.length;
+  eq(Object.fromEntries([...new Set(left)].map((sym) => [sym, left.filter((s) => s === sym).length])),
+    { seven: 1, cherry: 3, smoke: 8, bar: 2, replay: 5, bell: 1, pakki: 1 });
+  for (let seed = 1; seed <= 2000; seed++) {
+    const stop = stopsFor("cherry", mulberry32(seed))[0];
+    eq([left[(stop - 1 + n) % n], left[stop], left[(stop + 1) % n]],
+      ["cherry", "smoke", "bar"], `チェリーの角と左下段BAR: seed=${seed}`);
+    for (const role of ["replay", "bell", "rare"]) {
+      const otherStop = stopsFor(role, mulberry32(seed))[0];
+      assert.notEqual(left[(otherStop + 1) % n], "bar", `${role} は従来どおり左下段BARを要求しない: seed=${seed}`);
+    }
+  }
+  const machine = { seed: 12345, count: 0, missRun: 0, bonusGap: 0, zoneLeft: 0,
+    bonusCount: 0, freezeCount: 0, recent: [], setting: null };
+  const roles = {}, overlaps = {};
+  let spins = 0, cherryBar = 0, missBar = 0, nonBonusLower777 = 0;
+  while (spins < 100000) for (const r of spinSeries(machine, {})) {
+    if (spins >= 100000) break;
+    spins++;
+    roles[r.role] = (roles[r.role] || 0) + 1;
+    if (r.overlap) overlaps[r.overlap] = (overlaps[r.overlap] || 0) + 1;
+    const lower = r.stops.map((stop, i) => STRIPS[i][(stop + 1) % STRIPS[i].length]);
+    if (!PEKA.includes(r.role) && !r.overlap && lower.every((sym) => sym === "seven")) nonBonusLower777++;
+    if (r.role === "cherry" && lower[0] === "bar") cherryBar++;
+    if (r.role === "miss" && lower[0] === "bar") missBar++;
+  }
+  eq(roles, { miss: 63647, cherry: 10864, replay: 13431, big: 5177, bell: 2339, reg: 4055, freeze: 1, rare: 486 });
+  eq(overlaps, { big: 306, reg: 375 });
+  assert.equal(nonBonusLower777, 0);
+  assert.equal(cherryBar, roles.cherry, "チェリー当選は左下段BARが100%");
+  assert(Math.abs(missBar / roles.miss - 51073 / 63647) < 0.01, "ハズレの左下段BAR割合は旧値と同等");
+}
+
 // 最近の不調の補い（#1281 オーナー決定）: 直近30回転の当たりが2回なら×1.25、1回以下なら×1.5。
 // 30回転そろうまでは無効。生涯の裏確変（×2.5）とは掛け合わせず大きい方だけ。
 {
@@ -280,5 +316,5 @@ for (const setting of [1, 2, 3, 4, 5, 6, 0, undefined, null, NaN]) {
   assert(typeof line === "string" && line.length > 0, `settingHint must return non-empty string for setting=${setting}`);
   assert(allHintText.includes(line), `settingHint line must belong to known hint lines: ${line}`);
 }
-console.log("[reel hints] PASS: approved odd/even lines, unchanged weights and settings, spoiler-free guide, period-separated history across same-day change, SAVE/LOAD, chapter redraw and legacy saves, guarded settingHint, period observations and ren boundaries");
+console.log("[reel hints] PASS: cherry BAR placement and 100k-spin regression, approved odd/even lines, unchanged weights and settings, spoiler-free guide, period-separated history across same-day change, SAVE/LOAD, chapter redraw and legacy saves, guarded settingHint, period observations and ren boundaries");
 

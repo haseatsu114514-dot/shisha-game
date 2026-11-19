@@ -554,7 +554,7 @@ test("boost: the gauge fills from near misses, successful big landings and spins
   assert(Math.abs(fill.gauge - (BOOST.land + BOOST.perfect) * CHARGE) < 1e-9);
 });
 
-test("boost spends any stocked gauge proportionally, even during recovery or an active boost", () => {
+test("normal boost requires 30% and spends the stocked gauge proportionally, including during an active boost", () => {
   const game = createGame(generateCourse(DEFAULT_SEED));
   chargeBoost(game, 0.4);
   game.fallT = 0.5;
@@ -562,9 +562,16 @@ test("boost spends any stocked gauge proportionally, even during recovery or an 
   assert.equal(game.gauge, 0);
   assert(Math.abs(game.boostT - BOOST.duration * 0.4) < 1e-9);
   game.fallT = 0;
-  chargeBoost(game, 0.2);
-  assert.equal(boost(game), "boost");
-  assert(Math.abs(game.boostT - BOOST.duration * 0.6) < 1e-9);
+  chargeBoost(game, 0.299);
+  const currentBoostTime = game.boostT;
+  const eventCount = game.events.length;
+  assert.equal(boost(game), null, "just below 30% cannot extend an active boost");
+  assert.equal(game.gauge, 0.299);
+  assert.equal(game.boostT, currentBoostTime);
+  assert.equal(game.events.length, eventCount);
+  game.gauge = 0.3;
+  assert.equal(boost(game), "boost", "exactly 30% can boost");
+  assert(Math.abs(game.boostT - BOOST.duration * 0.7) < 1e-9);
   assert.equal(game.stats.boosts, 2);
   assert.equal(boost(game), null, "spent stock cannot be used again");
 });
@@ -881,7 +888,7 @@ test("boost during the hit window cancels the stumble; an empty gauge or a late 
   // hit + boost with gauge: recover, keep speed, spend the gauge, no fall on the result
   let game = createGame(course);
   game.combo = 4; game.score = 1000;
-  chargeBoost(game, 0.8);
+  hold(game, 0.2); // 立て直しは通常の最低量より少なくても使える
   while (game.z < rock.z - 30) step(game, {}, DT);
   const speedBefore = game.speed, comboBefore = game.combo, scoreBefore = game.score;
   while (!game.passed.has(rock)) { game.x = rock.x; step(game, {}, DT); }
@@ -918,7 +925,7 @@ test("boost during the hit window cancels the stumble; an empty gauge or a late 
   assert.equal(game.stats.recoveries, 0);
   // timing window: a boost after recoverWindow is a normal boost, the stumble remains
   game = createGame(course);
-  chargeBoost(game, 0.7);
+  hold(game, 0.7);
   while (game.z < rock.z - 20) step(game, {}, DT);
   while (!game.passed.has(rock)) { game.x = rock.x; step(game, {}, DT); }
   assert.equal(canRecover(game), true);
@@ -939,6 +946,8 @@ test("boost during the hit window cancels the stumble; an empty gauge or a late 
   while (game.air > 0) step(game, { left: true }, DT);
   assert.equal(game.events.at(-1).reason, "spin");
   assert.equal(canRecover(game), false);
+  assert.equal(boost(game), null, "the remaining gauge is below the normal minimum");
+  game.gauge = 0.3;
   assert.equal(boost(game), "boost");
   assert(game.fallT > 0);
 });

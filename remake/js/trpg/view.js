@@ -4,7 +4,7 @@ import { displayName, npcIdFor, npcPortraitUrl, portraitBoxStyle, portraitUrl, p
 import { costumeUrl, resolvedCostumeKey } from "./costumes.js";
 import { BUST, bustCheekWidth, bustFrameStyle, bustTypicalWidths, costumeIconStyle, faceIconStyle, npcBustStyle, portraitFaceFrame, standingFrameStyle } from "./face-crops.js";
 import { createTrpgAudio } from "./audio.js";
-import { checkForecast, rerollOdds, rollOdds } from "./feedback.js";
+import { checkForecast, declarationChanceLabels, rerollOdds, rollOdds } from "./feedback.js";
 import { playTrpgEntrance } from "./entrance.js";
 import { playIncarnation, playSceneCard, playResultCut, playClueCard, impact } from "./stage-fx.js";
 import { autoWrap } from "../vn/text.js";
@@ -942,7 +942,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   /**
    * じっくり調べる（目星・TRF14）: 見立ての卓で一度だけ、自分の役の観察で 2d20。成功で2つ、ひと手間で1つ、違う見立てが分かる。
-   * 振る前は札（押せる）、振った後は出目と結果の帯。決まりは「？」に書き、ここには能力と回数だけ出す。
+   * 振る前は札（押せる）、振った後は出目と結果の帯。決まりは「？」に書き、札には観察・回数・成功率を出す。
    */
   function searchControl(search, fresh, rolled) {
     const { seat, base } = session.searchBase(), who = sheets[seat]?.name || name(seat);
@@ -962,7 +962,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         }, reduced ? 0 : 820);
       }, { class: "trpg-search", title: "成功で2つ、ひと手間で1つ、違いそうな見立てが分かる",
         "aria-label": "じっくり調べる。" + who + "の" + statLabel("eye") + "で判定。一度だけ。成功 約" + odds.success + "%で違う見立てが2つ、ひと手間 約" + odds.mixed + "%で1つ分かる" });
-      node.append(el("strong", { text: "じっくり調べる", "aria-hidden": "true" }), el("small", { text: statLabel("eye") + " ＋" + base + " · 1回", "aria-hidden": "true" }));
+      node.append(el("strong", { text: "じっくり調べる", "aria-hidden": "true" }), el("small", { text: statLabel("eye") + " ＋" + base + " · 1回 · 成功 約" + odds.success + "%", "aria-hidden": "true" }));
       return node;
     }
     const label = search.special === "critical" ? SPECIALS.critical : search.special === "fumble" ? SPECIALS.fumble : SEARCH_LABELS[search.grade];
@@ -1026,16 +1026,19 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const check = scenario.checks[kind], state = session.snapshot();
     let pop;
     // Beginners can follow the "おすすめ" mark: the approach with the best odds (the first one on a tie).
-    const oddsOf = approach => checkForecast(scenario, state, kind, { approach: approach.id, sheets }).odds.success;
-    const bestId = approaches.reduce((best, a) => oddsOf(a) > oddsOf(best) ? a : best, approaches[0]).id;
-    const cards = approaches.map(approach => {
+    const choices = approaches.map(approach => ({
+      approach, forecast: checkForecast(scenario, state, kind, { approach: approach.id, sheets }),
+    }));
+    const bestId = choices.reduce((best, choice) => choice.forecast.odds.success > best.forecast.odds.success ? choice : best).approach.id;
+    const cards = choices.map(({ approach, forecast }) => {
       const pc = sheets[approach.sheet || approach.actor];
-      const { base } = approachBase(scenario, kind, approach.id, sheets);
-      const odds = checkForecast(scenario, state, kind, { approach: approach.id, sheets }).odds;
+      const { base, odds, bestOdds, potentialBonus } = forecast;
+      const labels = declarationChanceLabels(forecast);
       const first = !state.acted[approach.actor] && !approach.npc;
       return el("button.trpg-button.trpg-approach", { type: "button", dataset: { test: "trpg-approach-" + approach.id, actor: approach.actor, best: String(approach.id === bestId) },
         title: pcText(approach.detail),
-        "aria-label": pcText(approach.label) + "。" + pcText(approach.detail) + "。" + (approach.npc ? "GMが演じる" : name(approach.actor) + "の") + (pc?.name || "") + "、" + statLabel(approach.stat) + "＋" + base + "。成功 約" + odds.success + "%、ひと手間 約" + odds.mixed + "%"
+        "aria-label": pcText(approach.label) + "。" + pcText(approach.detail) + "。" + (approach.npc ? "GMが演じる" : name(approach.actor) + "の") + (pc?.name || "") + "、" + statLabel(approach.stat) + "＋" + base + "。" + labels.success + "、ひと手間 約" + odds.mixed + "%"
+          + (potentialBonus ? "。見立て的中時は成功 約" + bestOdds.success + "%、ひと手間 約" + bestOdds.mixed + "%" : "")
           + (approach.id === bestId ? "。おすすめ" : "") + (first ? "。この役の初めての見せ場で盛り上がり＋1" : ""),
         onclick: () => {
           if (!pop || busy) return;
@@ -1052,14 +1055,15 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
           el("b", { text: statLabel(approach.stat) + " ＋" + base, dataset: { stat: approach.stat } }),
           // 見込みは帯で見せる（金＝成功・緑＝ひと手間・残り＝思わぬ出来事）。数字は成功だけ。
           el("span.trpg-odds-bar", { "aria-hidden": "true", dataset: { test: "trpg-approach-odds" }, style: { "--success": odds.success + "%", "--mixed": odds.mixed + "%" } }),
-          el("small", { text: "成功 " + odds.success + "%" }),
+          el("small", { text: labels.success, dataset: { test: "trpg-choice-success" } }),
+          labels.insight ? el("small", { text: labels.insight, dataset: { test: "trpg-choice-insight" } }) : null,
           approach.id === bestId ? el("i.trpg-approach-best", { text: "おすすめ", title: "いちばん成功しやすい", dataset: { test: "trpg-approach-best" } }) : null,
           first ? el("i.trpg-approach-first", { text: "見せ場 ＋1", title: "この役が初めて前に出る。盛り上がり＋1" }) : null,
         ].filter(Boolean)),
       ]);
     });
     // 札の「成功 N%」には、どの札にも同じく入る勢いが含まれている。札の能力の数字だけでは分からないので、題の行に書き添える（#3199）。
-    const shared = checkForecast(scenario, state, kind, { approach: approaches[0].id, sheets });
+    const shared = choices[0].forecast;
     const included = [shared.momentum ? "見込みは勢い＋" + shared.momentum * DICE.momentum + "込み" : null,
       shared.potentialBonus ? "見立てが合えば さらに＋" + shared.potentialBonus : null].filter(Boolean);
     pop = modal(presentation.declareTitle || "どうする？", el("div.trpg-declare-board", [

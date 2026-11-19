@@ -118,6 +118,7 @@ await suite("desert-ride", async check => {
     assert.equal(await page.locator(t("desert-help-panel")).isVisible(), false, "the how-to is hidden until ? is pressed");
     await page.locator(t("desert-help")).click();
     assert.match(await page.locator(t("desert-help-panel")).innerText(), /Space で大ジャンプ/);
+    assert.match(await page.locator(t("desert-help-panel")).innerText(), /目印（30%）まで溜まったら/);
     await page.keyboard.press("Escape");
     assert.equal(await page.locator(t("desert-help-panel")).isVisible(), false, "Escape closes the how-to");
     assert.equal(await page.locator(t("desert-start")).isVisible(), true);
@@ -270,13 +271,26 @@ await suite("desert-ride", async check => {
     await press(jump, 60);
     g = await game(page);
     assert(g.hops + g.bigJumps >= 1, "the jump button jumps");
-    // BOOST ボタン: ゲージが空の間は効かず、ストックがあれば部分ゲージでも超加速
+    // BOOST ボタン: 目印のすぐ下ではゲージが反応し、目印ちょうどで発動する。
+    await page.evaluate(() => {
+      const { game } = window.__desertRide;
+      game.gauge = 0.299;
+      game.chargedAt = game.t;
+    });
+    const meter = page.locator(t("desert-gauge"));
+    assert.equal(await meter.locator(".dr-gauge-min").evaluate(node => node.style.left), "30%");
     await press(boostButton, 60);
-    assert.equal(await page.evaluate(() => window.__desertRide.game.stats.boosts), 0, "an empty gauge does not boost");
-    await page.evaluate(async () => { const { chargeBoost } = await import("./js/minigames/desert-ride-model.js"); chargeBoost(window.__desertRide.game, 0.4); });
+    assert.equal(await page.evaluate(() => window.__desertRide.game.stats.boosts), 0, "just below 30% does not boost");
+    assert.equal(await page.evaluate(() => window.__desertRide.game.gauge), 0.299, "a rejected attempt keeps the charge");
+    assert(await meter.evaluate(node => node.getAnimations().length > 0), "the gauge reacts briefly");
+    await page.evaluate(() => {
+      const { game } = window.__desertRide;
+      game.gauge = 0.3;
+      game.chargedAt = game.t;
+    });
     await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]').dataset.gauge === "full");
     await press(boostButton, 60);
-    assert.equal(await page.evaluate(() => window.__desertRide.game.stats.boosts), 1, "the BOOST button spends a partial gauge");
+    assert.equal(await page.evaluate(() => window.__desertRide.game.stats.boosts), 1, "exactly 30% boosts");
     assert.equal(await page.evaluate(() => window.__desertRide.game.gauge), 0, "the BOOST button consumes the stocked gauge");
     assert(await page.evaluate(() => window.__desertRide.game.boostT > 0), "the partial gauge gives boost time");
     await page.waitForTimeout(200);
@@ -291,7 +305,7 @@ await suite("desert-ride", async check => {
     await phase(page, "practiced");
     const captions = await page.evaluate(() => window.__captions);
     assert(captions.some(text => /空中で「左へ」か「右へ」を押し続けて回ろう/.test(text)), `the lesson teaches the spin (${captions.join(" / ")})`);
-    assert(captions.some(text => /溜まったゲージで「BOOST」を押すと超加速/.test(text)), `the lesson explains stocked boost (${captions.join(" / ")})`);
+    assert(captions.some(text => /ゲージが目印まで溜まったら「BOOST」で超加速/.test(text)), `the lesson explains stocked boost (${captions.join(" / ")})`);
     assert.match(await page.locator(t("desert-practiced")).innerText(), /練習おわり/);
     await page.locator(t("desert-start")).tap();
     await phase(page, "run");

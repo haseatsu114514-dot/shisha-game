@@ -33,7 +33,7 @@ const context = vm.createContext({ Audio, window: { AudioContext }, document: { 
 });
 const module = new vm.SourceTextModule(await fs.readFile(new URL("../js/core/audio.js", import.meta.url), "utf8"), { context });
 const PACKED = new Set(["bgm_tournament_edm", "bgm_tournament_craft", "bgm_trpg", "bgm_axe", "bgm_purikura", "bgm_purikura_b", "bgm_purikura_d",
-  "bgm_ethnic05", "bgm_ethnic08", "bgm_ethnic09", "bgm_ethnic12", "bgm_tetsuko_time", "bgm_camel_race"]);
+  "bgm_ethnic05", "bgm_ethnic08", "bgm_ethnic12", "bgm_tetsuko_time", "bgm_camel_race"]);
 const urlFor = (key) => `/assets/audio/bgm/${key}.${PACKED.has(key) ? "bgm" : "mp3"}`;
 await module.link((s) => {
   const exports = s.endsWith("state.js") ? { config } : { bgmUrl: urlFor };
@@ -94,7 +94,6 @@ const adopted = [
   // #2796 ミニゲーム採用曲。元MP3のハッシュで .bgm の復元内容を確認する。
   ["bgm_ethnic05", 1, "70a1938f8c6d62b86079897928f79e0f68897985f3820886e1f0d7f90a557e5d"],
   ["bgm_ethnic08", 1, "b071680d2eb3c8b01a7ccf40981b725187dc2b59c1b4a5d99882b06554c20832"],
-  ["bgm_ethnic09", 1, "b25dfda65584d4d714d69ac58c8a40c8363b8df0dc6a782a922148ef32749b09"],
   ["bgm_ethnic12", 1, "d09c61768f3663cb3f5118281d9007cba6a8cb12d814f988e53ef8da55db81ae"],
   ["bgm_tetsuko_time", 1, "918781b114652c043c1180ed3cb84ab05f46684dca9b28597e08eb911e200bff"],
   // ラクダレース（Firebrand / Kevin MacLeod / CC BY 4.0）。倍率は既定1.0（約 −14 LUFS）。
