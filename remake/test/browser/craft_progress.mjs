@@ -260,6 +260,12 @@ await suite("craft-progress", async check => {
     const timerStart = page.locator('[data-test="timer-start"]');
     await reset.waitFor();
     await assertFits(page, '.timer-button');
+    const resetLines = await reset.evaluate(button => {
+      const text = document.createRange();
+      text.selectNodeContents(button);
+      return new Set([...text.getClientRects()].map(rect => rect.top)).size;
+    });
+    assert(resetLines <= 2, "Reset must fit the illustrated key in no more than two lines");
     await reset.tap();
     assert(await timerStart.isDisabled());
     await assertFits(page, '.timer-button');

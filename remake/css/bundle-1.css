@@ -15384,10 +15384,7 @@ html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] 
 }
 
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .timer-button[data-test="timer-reset"] {
-  white-space: normal; text-wrap: balance; overflow-wrap: anywhere;
-}
-@media (max-height: 340px) {
-  html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .timer-button[data-test="timer-reset"] { padding-inline: .55em; }
+  white-space: normal; text-wrap: balance; overflow-wrap: anywhere; line-height: 1.05;
 }
 /* 札の外寸と弾幕／スティックの座標はそのまま。絵と文字のための高さを分ける。 */
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .dodge-controls .refresh-emblem {
