@@ -37,7 +37,8 @@ export function buildHookahRig(cls) {
 
 export function buildWorkerScene(cs) {
   // 固定CSSの顔位置・汗・息と蒸らし専用絵は旧版で配置済み。同じ版を保つ。
-  const portrait = portraitInfo("hajime", "serious", "classic");
+  const lessonOpening = step => cs.mode === "tutorial" && (!step || step === "mix");
+  const portrait = portraitInfo("hajime", lessonOpening("") ? "normal" : "serious", "classic");
   const actor = portrait ? el("img.worker-actor", { src: portrait.src, alt: "", draggable: false }) : null;
   const caption = el("span.bench-worker-caption", { text: "一台を仕上げる" });
   const actions = buildWorkerActions();
@@ -104,7 +105,7 @@ export function buildWorkerScene(cs) {
   const usable = url => url && (!facesChecked || usableFaces.has(url));
   const applyFace = () => {
     const waiting = root.dataset.step === "steam";
-    const face = mental === "shaken" ? "surprise" : mental === "unsteady" ? "sad" : ["serious", "normal", "sad"][fatigue] || "serious";
+    const face = lessonOpening(root.dataset.step) ? "normal" : mental === "shaken" ? "surprise" : mental === "unsteady" ? "sad" : ["serious", "normal", "sad"][fatigue] || "serious";
     const p = portraitInfo("hajime", face, "classic");
     const calmUrl = makingUrl("hajime_steam_wait.png");
     const settled = mental === "steady" || mental === "clear"; // 無心（#2519）も目を閉じた集中の絵
@@ -114,7 +115,7 @@ export function buildWorkerScene(cs) {
     if (actor && src && actor.getAttribute("src") !== src) actor.src = src;
     root.dataset.face = face;
     root.dataset.waiting = String(!!calm);
-    const sceneKey = workerSceneKey(root.dataset.step, root.dataset.draw);
+    const sceneKey = workerSceneKey(root.dataset.step, root.dataset.draw, cs.mode);
     const scene = actions.show(sceneKey === "holes" && !holes.available ? null : sceneKey);
     holes.show(sceneKey === "holes" && !!scene);
     root.dataset.scene = scene ? sceneKey : waiting ? "focus" : "fallback";
@@ -134,7 +135,7 @@ export function buildWorkerScene(cs) {
     }
   });
   const prepare = async step => {
-    const key = workerSceneKey(step, null);
+    const key = workerSceneKey(step, null, cs.mode);
     await Promise.all([
       actions.prepare(key),
       key === "holes" ? holes.prepare() : null,

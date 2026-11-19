@@ -3604,7 +3604,7 @@ html:root[data-density="phone"] body #stage .bench :is(.rc-details > summary, .b
    作業台（.bench）の置き場所と枠だけを替える。寸法の座標系・判定・工程の中身は変えない。
    見本: remake/previews/craft-stage-layout/（1280×720 のステージ座標）
    - はじめ: 左 x0〜340（作業風景を枠から出して拡大。右端は舞台へ溶かす）
-   - 熱の柱: x338〜398・y82〜602（温度計を全工程で同じ場所へ。無い工程は消灯の柱）
+   - 熱の柱: x338〜398・y82〜602（加熱前から温度計を同じ場所へ）
    - 舞台: x410〜1264・y80〜708
    - 上のレール: y0〜76（帯なし）／左下: 見守る人の一言 */
 
@@ -3687,6 +3687,11 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-worker:is([data-sce
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-worker:is([data-scene="pack"], [data-scene="holes"]) .bench-worker-stage { --hero-x: -70px; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-worker[data-scene="heat"] .bench-worker-stage { --hero-x: -60px; }
 
+/* 初回の配合は通常の立ち絵。既存の作業絵と顔の中心が違うので、柱の左へ寄せる。 */
+html body.craft-stage:not(.game-ds) .bench[data-mode="tutorial"] .bench-worker:is([data-step=""], [data-step="mix"]) .bench-worker-stage { --hero-x: -188px; }
+/* 初回は操作の手本を優先する。帯の説明はゲージのアクセシブル名で読む。 */
+html body.craft-stage:not(.game-ds) .bench[data-mode="tutorial"]:is([data-step="mix"], [data-step="pack"]) .mix-temperature-preview > .mix-temperature-legend { display: none !important; }
+
 /* ---------- 左下: 見守る人・実況の一言 ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-left .bench-audience {
   position: absolute !important; left: 12px !important; right: auto !important; bottom: 12px !important; top: auto !important; width: 388px; height: auto !important; min-height: 96px !important; margin: 0 !important; z-index: 4;
@@ -3725,20 +3730,20 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-guide-tip { top: ca
 
 /* ---------- 熱の柱: 温度計を全工程で同じ場所・同じ大きさへ ----------
    管は y134〜602（高さ468）。その上 y82〜124 が状態の札の席で、札は吸い出し以降だけ出す。 */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo {
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo {
   --thermo-inset: 1.5% !important; --thermo-span: 60px !important;
   position: fixed !important; left: 338px !important; top: 134px !important; right: auto !important; bottom: auto !important;
   width: 60px !important; height: 468px !important; margin: 0 !important; z-index: 5; display: block !important; transform: none !important;
 }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo[hidden] { display: none !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo::after { display: none !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo .thermo-housing {
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo[hidden] { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo::after { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo .thermo-housing {
   position: absolute; inset: 0 6px; width: auto !important; height: auto !important; border-radius: 26px;
   background: linear-gradient(90deg, #0d0817, #2a1d3c 45%, #0d0817); border: 2px solid #e3bd6e99; box-shadow: 0 0 0 2px #0b0614, 0 10px 26px #000a;
 }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo .thermo-housing .thermo-skin { display: none !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo .thermo-housing .thermo-tube { left: 7px !important; right: 7px !important; top: 7px !important; bottom: 7px !important; width: auto !important; height: auto !important; border-radius: 19px; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo .thermo-pointer { left: 50px !important; right: auto !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo .thermo-housing .thermo-skin { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo .thermo-housing .thermo-tube { left: 7px !important; right: 7px !important; top: 7px !important; bottom: 7px !important; width: auto !important; height: auto !important; border-radius: 19px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo .thermo-pointer { left: 50px !important; right: auto !important; }
 /* 配合・詰め方の温度帯の予想: 包みの箱と注記は出さず、柱と見出しの札だけ */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview {
   position: fixed !important; left: 338px !important; top: 82px !important; width: 340px !important; height: 520px !important; pointer-events: none;
@@ -3746,8 +3751,8 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview {
 }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview[hidden] { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview > .thermo { pointer-events: auto; }
-/* 予想の柱には今の温度が無いので矢印を置かず、下へはみ出す点線の札も出さない（点線そのものは残る） */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview .thermo-projected-label, html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview .thermo-pointer { display: none !important; }
+/* 加熱前の針は下端のまま。予測の注記は表示しない。 */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview .thermo-projected-label { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview > :not(.thermo):not(.mix-temperature-legend) { display: none !important; }
 /* 色の見方（おいしい範囲・低め／高め）は柱の右上に小さく一行だけ */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview > .mix-temperature-legend {
@@ -3755,7 +3760,7 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview >
   font-size: 17px !important; line-height: 1.3; white-space: nowrap;
 }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-side, html body.craft-stage:not(.game-ds) .bench[data-mode] .packing { padding-top: 34px !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo.mix-temperature::before {
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before {
   content: "温度帯"; display: grid !important; place-items: center; position: absolute; left: 50%; top: -52px; transform: translateX(-50%);
   min-width: 124px; height: 42px; padding: 0 14px; border-radius: 21px; white-space: nowrap; font-size: 22px; font-weight: 900; letter-spacing: .06em;
   color: #74e0b0; background: #2e1d45; border: 1.5px solid #74e0b0; box-shadow: 0 4px 10px #0009;
@@ -3769,16 +3774,6 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read
   background: #1b112af2 !important; border-width: 1.5px !important; box-shadow: 0 4px 10px #0009;
 }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-state { font-size: 22px !important; line-height: 1.4 !important; font-weight: 900; letter-spacing: .06em; white-space: nowrap; }
-/* 温度計を持たない工程（機材・炭の配置・穴あけ・炭焼き）は、消灯の柱を同じ場所に立てる */
-html body.craft-stage:not(.game-ds) .bench[data-mode]:is([data-step="setup"], [data-step="place"], [data-step="holes"], [data-step="heat"]) .bench-right::before {
-  content: ""; position: fixed; left: 344px; top: 134px; width: 48px; height: 468px; z-index: 5; border-radius: 26px; pointer-events: none;
-  border: 2px solid #6d5a86; box-shadow: 0 0 0 2px #0b0614, 0 10px 26px #000a;
-  background:
-    linear-gradient(90deg, #0d0817 0 7px, transparent 7px calc(100% - 7px), #0d0817 calc(100% - 7px)),
-    linear-gradient(0deg, #0d0817 0 7px, transparent 7px calc(100% - 7px), #0d0817 calc(100% - 7px)),
-    repeating-linear-gradient(0deg, #0000 0 11px, #1a0f2a55 11px 12px),
-    linear-gradient(0deg, #8a8a86, #6f7072 40%, #5c6660 44%, #66706a 64%, #6a6460 71%, #4a4444 90%, #2f2a2c);
-}
 /* 熱の背景の模様は、枠が無くなったぶん控えめに（気配として残す） */
 html body.craft-stage:not(.game-ds) .bench[data-mode] > .thermal-backdrop { opacity: .32; }
 
@@ -3824,14 +3819,14 @@ html body.craft-stage:not(.game-ds) .bench[data-mode]:is([data-step="heat"], [da
 }
 
 /* ---------- 蒸らし時間・蒸らし: 状態の札（ぬるい等）は出さない（吸い出し以降だけ・CSL11）。待つ姿は寄りすぎない大きさで ---------- */
-html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="steam"] .bench-panel .thermo .pull-read { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="steam"] .bench-right .thermo .pull-read { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-worker[data-scene="focus"] .bench-worker-stage { --hero-s: 1.08; --hero-x: -46px; }
 
 /* ---------- 熱の柱の札: 舞台へはみ出さないよう、柱の右端にそろえて左へ伸ばす ---------- */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo.mix-temperature::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read {
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read {
   left: auto !important; right: -6px !important; transform: none !important; min-width: 96px !important; font-size: 20px;
 }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo.mix-temperature::before { right: 0 !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before { right: 0 !important; }
 
 /* ---------- 上のレール（大会）: ライバルは顔と灯だけ ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rival-windows .rival-name { display: none; }
@@ -4024,7 +4019,7 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > :is(button, a
 
 /* ---------- 「？」はスマホでも押しやすい大きさ（実寸38px以上）。熱の柱の矢印は管の目盛りと同じ基準 ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-guide summary { width: 84px !important; height: 84px !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo { --thermo-inset: 9px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo { --thermo-inset: 9px !important; }
 /* 炭焼きの炭壺の帯は「？」の手前で終える */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .heat-info { right: 104px !important; }
 
@@ -4046,35 +4041,24 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .fr-name .fr-ratio { min-h
 /* ---------- 熱の柱の外枠（銅とガラスの柱）: 温度計の箱を外枠ごと x327〜407・y95〜603（幅80）にし、
    上下同じ余白44（矢印の位置の計算が上下対称の前提）で窓 y139〜559 に管（幅26）を合わせる。帽子の上に札が乗る。
    絵の窓は上 38.6・下 44 なので、絵だけ 5.4 下げて置く ---------- */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo { left: 327px !important; top: 95px !important; width: 80px !important; height: 508px !important; --thermo-inset: 44px !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo .thermo-housing {
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo { left: 327px !important; top: 95px !important; width: 80px !important; height: 508px !important; --thermo-inset: 44px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo .thermo-housing {
   position: absolute; inset: 5.4px 0 0 0 !important; width: auto !important; height: auto !important;
   border-radius: 0; background: none; box-shadow: none; border: 0 solid transparent;
   border-image: url("../img/ui/craft-glass/spine-housing.webp") 91 0 90 0 fill / 58px 0 57px 0 stretch !important;
 }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo .thermo-housing .thermo-tube { left: 27.1px !important; right: 27.1px !important; top: 38.6px !important; bottom: 44px !important; border-radius: 13px; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo .thermo-pointer { left: 55px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo .thermo-housing .thermo-tube { left: 27.1px !important; right: 27.1px !important; top: 38.6px !important; bottom: 44px !important; border-radius: 13px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo .thermo-pointer { left: 55px !important; }
+/* 加熱前の針先は管の右縁のまま、矢羽を幅80の枠内に収める。 */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature .thermo-pointer { width: 25px; }
 /* 札は帽子の上（y89〜131）。柱の箱の右端にそろえ、舞台へはみ出さない */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo.mix-temperature::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read { top: -6px !important; right: 0 !important; }
-/* 温度計を持たない工程の消灯の柱も、同じ外枠に暗い管 */
-html body.craft-stage:not(.game-ds) .bench[data-mode]:is([data-step="setup"], [data-step="place"], [data-step="holes"], [data-step="heat"]) .bench-right::before {
-  left: 327px; top: 100.4px; width: 80px; height: 502.6px; border-radius: 0; box-shadow: none; border: 0 solid transparent;
-  border-image: url("../img/ui/craft-glass/spine-housing.webp") 91 0 90 0 fill / 58px 0 57px 0 stretch !important;
-  background:
-    repeating-linear-gradient(0deg, #0000 0 11px, #1a0f2a55 11px 12px) 27.1px 38.6px / 25.8px 420px no-repeat,
-    linear-gradient(0deg, #6a6a68, #56585a 40%, #4a524e 44%, #525a56 64%, #55504c 71%, #3c3838 90%, #262224) 27.1px 38.6px / 25.8px 420px no-repeat;
-}
-/* 消灯の柱には何の柱かを縦書きで添える（ラベル無しの灰色の帯に見えないように） */
-html body.craft-stage:not(.game-ds) .bench[data-mode]:is([data-step="setup"], [data-step="place"], [data-step="holes"], [data-step="heat"]) .bench-right::before {
-  content: "温度計はお休み"; display: flex; align-items: center; justify-content: center; box-sizing: border-box; padding: 38px 0 44px;
-  writing-mode: vertical-rl; font-size: 19px; font-weight: 800; letter-spacing: .14em; color: #cdbfe0; text-shadow: 0 1px 4px #000, 0 0 2px #000;
-}
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read { top: -6px !important; right: 0 !important; }
 /* ---------- 小さな札（銅の縁のガラスの札）: 柱の上の状態の札・「温度帯」の札・針の現在位置。両端の丸を残して横に伸ばす ---------- */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo.mix-temperature::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read {
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before, html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read {
   border: 0 solid transparent !important; border-radius: 21px !important; background: none !important; box-shadow: none !important;
   border-image: url("../img/ui/craft-glass/plaque.webp") 0 125 fill / 0 21.6px stretch !important;
 }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo.mix-temperature::before { z-index: 3; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right .thermo.mix-temperature::before { z-index: 3; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read { z-index: 3; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-current-zone {
   border-color: transparent !important; border-style: solid !important; border-radius: 26px !important; background: none !important; box-shadow: none !important;

@@ -85,7 +85,14 @@ await suite("mix-temperature", async check => {
       await page.locator('[data-test="mix-temperature-preview"]').waitFor();
       assert.equal(await page.locator('[data-test="mix-temperature"]').getAttribute("data-selected"), "false");
       assert.match(await page.locator(".mix-temperature-legend").textContent(), /未選択/);
-      assert.equal(await page.locator('[data-test="thermo-pointer"]').isVisible(), false);
+      const parked = page.locator('[data-test="thermo-pointer"]');
+      assert(await parked.isVisible(), "preheat pointer stays at the bottom");
+      const center = await parked.evaluate(p => {
+        const a = p.getBoundingClientRect(), tube = p.closest(".thermo").querySelector(".thermo-tube").getBoundingClientRect();
+        return Math.abs(a.top + a.height / 2 - tube.bottom);
+      });
+      assert(center < 3, "preheat pointer must line up with the bottom of the glass");
+      assert.equal(await page.locator(".thermo").getAttribute("aria-valuenow"), null, "no measured heat before steaming");
       assert.match(await page.locator(".mix-temperature").getAttribute("aria-label"), /未選択/);
       await assertFits(page, '.mix-temperature-preview, .mix-temperature, .mix-temperature-legend, [data-test="mix-ok"]');
       await repeatClick(page, "mix-plus-vanilla", 3); await repeatClick(page, "mix-plus-mint", 1);
