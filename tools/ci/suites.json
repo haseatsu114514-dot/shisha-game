@@ -4347,6 +4347,22 @@
       ]
     },
     {
+      "id": "mobile-dialogue",
+      "title": "In-game paper dialogue frame and nameplate on phone",
+      "kind": "browser",
+      "weight": 0.6,
+      "timeout": 5,
+      "paths": [
+        "remake/css/ui-paper.css",
+        "remake/css/phone-density.css",
+        "remake/img/ui/paper/dialogue.webp",
+        "remake/js/vn/name-fit.js",
+        "remake/test/browser/mobile_dialogue.mjs"
+      ],
+      "run": ["node remake/test/browser/mobile_dialogue.mjs"],
+      "chrome": "playwright"
+    },
+    {
       "id": "shisha-diagram",
       "title": "Sumi's shisha mechanism diagram (step sync, skip, load, portrait)",
       "kind": "browser",

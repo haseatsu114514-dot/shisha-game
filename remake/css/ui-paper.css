@@ -76,6 +76,17 @@ html:root[data-ui-theme="paper"] body:not(:root) .vn-box:is(.narration, .thought
   border-radius: 8px; box-shadow: inset 0 0 0 1px #69497e40;
   filter: drop-shadow(0 8px 18px #110a2240);
 }
+/* スマホは操作が窓の外にあるため、本文上の罫線だけを消す。紙の原画（2464×384）の
+   罫線 y=102–109 に、同じ絵のすぐ下の紙肌を重ねる。外枠・煙・PC の描画は変えない。 */
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) .vn-box::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  clip-path: inset(26% 4% 70.5%);
+  background: var(--vn-lounge-frame) center top -6px / 100% 100% no-repeat;
+  z-index: -1;
+  pointer-events: none;
+}
 html:root[data-ui-theme="paper"] body:not(:root) .vn-box .vn-name {
   font-family: var(--font); font-weight: 900; color: #fff; text-shadow: none;
 }

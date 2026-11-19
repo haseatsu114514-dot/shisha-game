@@ -134,8 +134,11 @@ html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-controls .vn-
    2行（46px×2）と、本心つき（1行44px＋本心2行）が枠の高さ（176px・下15px空き）に収まる行の高さにする（notifications_layout の検査）。 */
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-text { font-size: 32px; line-height: 46px; min-height: 92px; }
 html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-box.has-inner .vn-text { line-height: 44px; min-height: 44px; }
-/* 名札は補助文の大きさに上げる。名札の幅に収まらない長い名前は name-fit.js の縮小（--vn-name-fit-size）に従う。 */
-html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-name { font-size: var(--vn-name-fit-size, var(--phone-sub)); }
+/* 名札の短い名前を読みやすくする。長い名前は実際の字幅に合わせる name-fit.js に従う。 */
+html:root[data-density="phone"][data-ui-theme] body:not(:root) .vn-box .vn-name {
+  max-width: 328px;
+  font-size: var(--vn-name-fit-size, max(27px, calc(13.5px / var(--k, 1))));
+}
 /* 選択肢の文字は本文に合わせて 24→28px（iPhone 横で実寸 13→15px）。全角26字（GUI22 の上限）が縮まずに1行で入るよう、幅を 720→880px に広げる */
 html:root[data-density="phone"] body:not(:root) .vn-choice { width: 880px; max-width: 100%; min-height: var(--phone-tap); font-size: max(28px, calc(var(--phone-text) + 4px)); }
 /* 操作ボタンが上へ伸びた分だけ、選択肢を上げて間隔を保つ。 */
