@@ -44,7 +44,7 @@ const regionMatches = (save, region) => region === "home" ? !awayFromHome(save)
 const LIME_REPLY_NUDGE_DAYS = 3;
 
 // 目上の相手への返信は敬語（旧版 F6）。友達口調は同世代の相手だけ
-const POLITE = new Set(["sumi", "sui", "maezono"]);
+const POLITE = new Set(["sumi", "sensu", "uezono"]);
 const originId = (item) => item.originId || item.msg?.origin_id || item.id;
 const importantInvite = (m) => m.type === "invitation" && !!m.important;
 const needsResend = (id) => (state.inbox || []).some((item) => originId(item) === id && item.needsResend);
@@ -243,7 +243,7 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (m.id === "lime_outing_hiyori_1" && !(chapterFeatureEnabled(state.chapter, "hiyoriHomeOuting") && state.flags._hiyori_tonari_return_done)) return false;
   // 綾取がドバイへ応援に来た保存（SPC22。core/overseas-companion.js の guests）では、東京の煙幕から配信を見る前提の第4章のLIMEは届かない。
   const guests = state.flags?._overseas_companion?.guests;
-  if (/^lime_ch4_saku_/.test(m.id) && Array.isArray(guests) && guests.includes("saku")) return false;
+  if (/^lime_ch4_ayatori_/.test(m.id) && Array.isArray(guests) && guests.includes("ayatori")) return false;
   if (cond === "hiyori_tonari") return hiyoriEventStatus("tonari_return") === "ready";
   if (cond === "story_count") return (state.story[m.sender] || 0) >= (m.trigger_value || 1);
   if (cond === "lime_exchanged") {

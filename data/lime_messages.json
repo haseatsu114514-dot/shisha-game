@@ -1232,24 +1232,24 @@
       ]
     },
     {
-      "id": "lime_rei_first",
-      "sender": "rei",
+      "id": "lime_kuraudo_first",
+      "sender": "kuraudo",
       "chapter": 2,
       "type": "chat",
       "trigger_condition": "flag",
-      "trigger_flag": "_lime_contact_rei",
+      "trigger_flag": "_lime_contact_kuraudo",
       "priority": 1,
       "messages": [
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "……クラウド"
         },
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "届いてる？"
         },
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "文字だと、何を書けばいいか分からない"
         }
       ],
@@ -1267,19 +1267,19 @@
       ]
     },
     {
-      "id": "lime_rei_day5",
-      "sender": "rei",
+      "id": "lime_kuraudo_day5",
+      "sender": "kuraudo",
       "chapter": 2,
       "type": "chat",
       "trigger_condition": "lime_exchanged",
       "trigger_day": 5,
       "messages": [
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "……今日、店で最初に流す曲"
         },
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "朝に聴くと、いい。歌い出しの前の、息を吸う音が入ってる"
         }
       ],
@@ -1297,19 +1297,19 @@
       ]
     },
     {
-      "id": "lime_rei_smile",
-      "sender": "rei",
+      "id": "lime_kuraudo_smile",
+      "sender": "kuraudo",
       "chapter": 2,
       "type": "chat",
       "trigger_condition": "flag",
-      "trigger_flag": "_ch2_read_ch2_rei_fourth",
+      "trigger_flag": "_ch2_read_ch2_kuraudo_fourth",
       "messages": [
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "……今日、客に笑いかけた"
         },
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "泣かれなかった"
         }
       ],
@@ -1327,20 +1327,20 @@
       ]
     },
     {
-      "id": "lime_rei_holiday",
-      "sender": "rei",
+      "id": "lime_kuraudo_holiday",
+      "sender": "kuraudo",
       "chapter": 2,
       "type": "chat",
       "trigger_condition": "flag",
-      "trigger_flag": "_lime_contact_rei",
+      "trigger_flag": "_lime_contact_kuraudo",
       "closed_on": 1,
       "messages": [
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "……今日は店、休み"
         },
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "ライブハウスの前を通った。入らなかったけど、音だけ聞こえた"
         }
       ],
@@ -1358,23 +1358,23 @@
       ]
     },
     {
-      "id": "lime_rei_mix",
-      "sender": "rei",
+      "id": "lime_kuraudo_mix",
+      "sender": "kuraudo",
       "chapter": 2,
       "type": "chat",
       "trigger_condition": "flag",
-      "trigger_flag": "_ch2_read_ch2_rei_fifth",
+      "trigger_flag": "_ch2_read_ch2_kuraudo_fifth",
       "messages": [
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "……この前の、「嘘」の下の層"
         },
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "ミントを少し減らした。冷えるのが早すぎた"
         },
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "まだ、途中"
         }
       ],
@@ -1392,19 +1392,19 @@
       ]
     },
     {
-      "id": "lime_rei_lie",
-      "sender": "rei",
+      "id": "lime_kuraudo_lie",
+      "sender": "kuraudo",
       "chapter": 2,
       "type": "chat",
       "trigger_condition": "flag",
-      "trigger_flag": "_ch2_read_ch2_rei_sixth",
+      "trigger_flag": "_ch2_read_ch2_kuraudo_sixth",
       "messages": [
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "……「嘘」、店に出した"
         },
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "最初に頼んだ客の感想、キミと同じだった"
         }
       ],
@@ -1422,23 +1422,23 @@
       ]
     },
     {
-      "id": "lime_rei_day11",
-      "sender": "rei",
+      "id": "lime_kuraudo_day11",
+      "sender": "kuraudo",
       "chapter": 2,
       "type": "chat",
       "trigger_condition": "lime_exchanged",
       "trigger_day": 11,
       "messages": [
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "……大会、近い"
         },
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "緊張すると、手の拍がずれる。だから、いつもの曲を聴いてる"
         },
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "キミは、何を聴く？"
         }
       ],
@@ -1456,23 +1456,23 @@
       ]
     },
     {
-      "id": "lime_rei_bond_a",
-      "sender": "rei",
+      "id": "lime_kuraudo_bond_a",
+      "sender": "kuraudo",
       "chapter": 2,
       "type": "chat",
       "trigger_condition": "flag",
-      "trigger_flag": "_ch2_read_ch2_rei_third",
+      "trigger_flag": "_ch2_read_ch2_kuraudo_third",
       "messages": [
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "……健太"
         },
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "試しに、こっちで名乗ってみた"
         },
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "……変なら、戻す"
         }
       ],
@@ -1490,19 +1490,19 @@
       ]
     },
     {
-      "id": "lime_rei_bond_b",
-      "sender": "rei",
+      "id": "lime_kuraudo_bond_b",
+      "sender": "kuraudo",
       "chapter": 2,
       "type": "chat",
       "trigger_condition": "flag",
-      "trigger_flag": "_ch2_rei_ticket",
+      "trigger_flag": "_ch2_kuraudo_ticket",
       "messages": [
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "……チケットの端、折れてた。ごめん"
         },
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "渡すか迷って、ポケットの中で何回も握ってた"
         }
       ],
@@ -1524,7 +1524,7 @@
       "sender": "naru",
       "trigger_condition": "lime_exchanged",
       "type": "rumor",
-      "rumor_about": "dr_kemuri",
+      "rumor_about": "dr_charcoal",
       "messages": [
         {
           "sender": "naru",
@@ -3180,8 +3180,8 @@
       ]
     },
     {
-      "id": "lime_ch4_saku_stream",
-      "sender": "saku",
+      "id": "lime_ch4_ayatori_stream",
+      "sender": "ayatori",
       "chapter": 4,
       "trigger_condition": "lime_exchanged",
       "trigger_day": 9,
@@ -3189,15 +3189,15 @@
       "type": "chat",
       "messages": [
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "世界大会の配信、煙幕のお客さんと見るよ"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "僕が言うのも変だけど、隣の台の香りが強い時は、確かめる前に水を一口"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "鼻が前の香りに慣れたままだと、自分の台を読み違えるから"
         }
       ],
@@ -3215,23 +3215,23 @@
       ]
     },
     {
-      "id": "lime_ch4_saku_steve_note",
-      "sender": "saku",
+      "id": "lime_ch4_ayatori_steve_note",
+      "sender": "ayatori",
       "chapter": 4,
       "trigger_condition": "flag",
-      "trigger_flag": "_ch3_read_ch3_saku_steve_notes",
+      "trigger_flag": "_ch3_read_ch3_ayatori_steve_notes",
       "type": "chat",
       "messages": [
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "閉店後の煙幕で、大会のノートを開いた"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "端に黒い三角が一つ。横に僕の字で「置いた炭。スティーブさんの」って書いてあった"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "一台だけ、内から待つ順番で試した。感想を字で送ったら、返事が来た。最後の一行だけ、三角だった"
         }
       ],
@@ -3285,8 +3285,8 @@
       ]
     },
     {
-      "id": "lime_ch5_saku_title",
-      "sender": "saku",
+      "id": "lime_ch5_ayatori_title",
+      "sender": "ayatori",
       "chapter": 5,
       "trigger_condition": "ch5_started",
       "trigger_day": 2,
@@ -3294,15 +3294,15 @@
       "type": "chat",
       "messages": [
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "煙幕で、決勝の配信を見てたよ"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "最後の調整、君が自分で決めたのが、画面越しでも分かった"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "優勝おめでとう。こっちも、熱の順番を一から見直してる"
         }
       ],
@@ -3356,8 +3356,8 @@
       ]
     },
     {
-      "id": "lime_ch5_rei_title",
-      "sender": "rei",
+      "id": "lime_ch5_kuraudo_title",
+      "sender": "kuraudo",
       "chapter": 5,
       "trigger_condition": "ch5_started",
       "trigger_day": 5,
@@ -3365,11 +3365,11 @@
       "type": "chat",
       "messages": [
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "……世界大会、おめでとう"
         },
         {
-          "sender": "rei",
+          "sender": "kuraudo",
           "text": "何て送るか、ずっと考えてた。……短いのしか、残らなかった"
         }
       ],
@@ -4553,21 +4553,21 @@
       "type": "chat"
     },
     {
-      "sender": "saku",
+      "sender": "ayatori",
       "trigger_condition": "flag",
-      "trigger_flag": "_lime_contact_saku",
+      "trigger_flag": "_lime_contact_ayatori",
       "priority": 1,
       "messages": [
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "届いた。僕の番号、変じゃなかった？"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "材料の写真は、送らないよ。残したいことは、文字で書く癖があって"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "君も、見てほしい台があったら、先に言葉で聞かせて。写真より、順番が知りたい"
         }
       ],
@@ -4587,20 +4587,20 @@
       "type": "chat"
     },
     {
-      "sender": "saku",
+      "sender": "ayatori",
       "trigger_condition": "flag",
-      "trigger_flag": "_lime_contact_saku",
+      "trigger_flag": "_lime_contact_ayatori",
       "messages": [
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "予想、当たった"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "君は、夜の方が返事を書きそうだなって。ノートの端に、先に書いてあった"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "当たっても、褒めてはいけないやつ。ただ、少し嬉しい"
         }
       ],
@@ -4620,20 +4620,20 @@
       "type": "chat"
     },
     {
-      "sender": "saku",
+      "sender": "ayatori",
       "trigger_condition": "flag",
-      "trigger_flag": "_lime_contact_saku",
+      "trigger_flag": "_lime_contact_ayatori",
       "messages": [
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "今日の客に「プリンある？」って聞かれた。無いよ、って答えて、無いまま出した"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "バニラとキャラメルとミルク。種を明かしたら、「じゃあ今のプリンは嘘？」だって"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "嘘だよ、って答えた。今日いちばんいい顔で帰っていった"
         }
       ],
@@ -4653,25 +4653,25 @@
       "type": "chat"
     },
     {
-      "sender": "saku",
+      "sender": "ayatori",
       "trigger_condition": "affinity_level",
       "trigger_value": 3,
       "chapter": 4,
       "messages": [
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "煙幕、今日はもう閉めた。片付けのあと、一台だけやり直してる"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "大会の前に覚えた、熱の順番。あれを、誰もいない店で確かめてる"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "種は、まだ伏せたまま。理由だけ先に言うね。急いだ熱は、最初だけ強くて、あとが続かない"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "君が自分の順番を決めた日のこと、こっちでも思い出してる"
         }
       ],
@@ -4691,20 +4691,20 @@
       "type": "chat"
     },
     {
-      "sender": "saku",
+      "sender": "ayatori",
       "trigger_condition": "flag",
-      "trigger_flag": "_lime_contact_saku",
+      "trigger_flag": "_lime_contact_ayatori",
       "messages": [
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "胸のカード、また白紙を一枚足した"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "先に材料を見せるか、名前を伏せるか。今日の客は、伏せる方を選んだ"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "僕が決めるより、選んでもらう方が、あとの感想が面白い。君は、どっちが好き"
         }
       ],
@@ -4724,22 +4724,22 @@
       "type": "chat"
     },
     {
-      "sender": "saku",
+      "sender": "ayatori",
       "chapter": 5,
       "trigger_condition": "ch5_started",
       "trigger_day": 6,
       "region": "home",
       "messages": [
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "前に、熱の順番を一から見直してるって言ったでしょ"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "メモの一行目だけ、シェアする。『最初を強くしない。比較の基準を、客に渡さない』"
         },
         {
-          "sender": "saku",
+          "sender": "ayatori",
           "text": "自分に書いた行だよ。君に教えるための種じゃない。同じ失敗を、したくなくて"
         }
       ],

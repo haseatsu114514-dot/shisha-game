@@ -7,21 +7,21 @@ import { payTournamentPrize } from "./tournament-prize.js";
 
 // 新規優勝のみ: 第1章50,000円／第2章100,000円／第3章200,000円／第4章500,000円／第5章は賞金なし。
 export const CH2_PRIZE = 100000;
-export const CONTESTANTS = ["hajime", "ageha", "kumicho", "rei"];
-export const JUDGES = ["maezono", "dr_kemuri", "sui"];
+export const CONTESTANTS = ["hajime", "ageha", "kumicho", "kuraudo"];
+export const JUDGES = ["uezono", "dr_charcoal", "sensu"];
 export const SPEND = [2, 3, 2, 3];
 // 初期調整値。章2の比較用の出来であり、キャラクターの能力値ではない。
 // あげは77は上園の好み補正(+4)で81となり、神崎80・クラウド79を上回る（#1649）。はじめがどの出来でも
 // 上園の上位2人に入り、毎回の票に強さが出る。はじめの全審査員1位の境目（チャコール博士の83）は変えない。
-export const RIVAL_QUALITY = { ageha: 77, kumicho: 80, rei: 78 };
+export const RIVAL_QUALITY = { ageha: 77, kumicho: 80, kuraudo: 78 };
 
 // 審査員の品質比重・好み比重の正本定義（qualityWeight + prefWeight = 1.0）。
 // maxPrefDelta は設定パラメータではなく、BASE_PREF_SCALE * prefWeight から一意に導出する。
 export const BASE_PREF_SCALE = 20;
 export const JUDGE_PROFILES = Object.freeze({
-  sui: Object.freeze({ id: "sui", label: "千須", qualityWeight: 0.90, prefWeight: 0.10 }),
-  dr_kemuri: Object.freeze({ id: "dr_kemuri", label: "チャコール博士", qualityWeight: 0.85, prefWeight: 0.15 }),
-  maezono: Object.freeze({ id: "maezono", label: "上園", qualityWeight: 0.78, prefWeight: 0.22 }),
+  sensu: Object.freeze({ id: "sensu", label: "千須", qualityWeight: 0.90, prefWeight: 0.10 }),
+  dr_charcoal: Object.freeze({ id: "dr_charcoal", label: "チャコール博士", qualityWeight: 0.85, prefWeight: 0.15 }),
+  uezono: Object.freeze({ id: "uezono", label: "上園", qualityWeight: 0.78, prefWeight: 0.22 }),
 });
 
 const copy = value => JSON.parse(JSON.stringify(value));
@@ -30,7 +30,7 @@ const boundedPref = value => Math.max(-1, Math.min(1, Number(value) || 0));
 
 /** 審査員 j の最大好み振れ幅（派生値: BASE_PREF_SCALE * prefWeight） */
 export function judgeMaxPrefDelta(judgeId, profiles = JUDGE_PROFILES) {
-  const prof = profiles[judgeId] || JUDGE_PROFILES.sui;
+  const prof = profiles[judgeId] || JUDGE_PROFILES.sensu;
   return Math.round(BASE_PREF_SCALE * prof.prefWeight * 1000) / 1000;
 }
 
@@ -41,7 +41,7 @@ export function judgeMaxPrefDelta(judgeId, profiles = JUDGE_PROFILES) {
  * 二重乗算や未使用パラメータを生まない。
  */
 export function evaluateJudgeScore(judgeId, quality, prefNorm = 0, profiles = JUDGE_PROFILES) {
-  const prof = profiles[judgeId] || JUDGE_PROFILES.sui;
+  const prof = profiles[judgeId] || JUDGE_PROFILES.sensu;
   const q = bounded(quality);
   const p = boundedPref(prefNorm);
   const prefAdjusted = bounded(q + BASE_PREF_SCALE * p);
@@ -97,8 +97,8 @@ export function castVotes(p, round, performance, prefByJudge = null) {
   const quality = { ...RIVAL_QUALITY, hajime: bounded(performance) };
   const lastVotes = {};
   for (const judge of JUDGES) {
-    const bias = judge === "maezono" ? { ageha: 4, rei: 1 }
-      : judge === "dr_kemuri" ? { kumicho: 3 } : { rei: 3 };
+    const bias = judge === "uezono" ? { ageha: 4, kuraudo: 1 }
+      : judge === "dr_charcoal" ? { kumicho: 3 } : { kuraudo: 3 };
     const hajimeScore = prefByJudge && judge in prefByJudge
       ? evaluateJudgeScore(judge, quality.hajime, prefByJudge[judge])
       : quality.hajime;

@@ -21,8 +21,8 @@ export const CH4_BEACH_SCENES = Object.freeze({
   people: Object.freeze({
     tsumugi: "ch4_beach_tsumugi", minto: "ch4_beach_minto", rio: "ch4_beach_rio", ageha: "ch4_beach_ageha",
     mashiro: "ch4_beach_mashiro", samechan: "ch4_beach_samechan", hiyori: "ch4_beach_hiyori", noor: "ch4_beach_noor",
-    naru: "ch4_beach_naru", adam: "ch4_beach_adam", kumicho: "ch4_beach_kumicho", rei: "ch4_beach_rei",
-    saku: "ch4_beach_saku", steve: "ch4_beach_steve", volk: "ch4_beach_volk",
+    naru: "ch4_beach_naru", adam: "ch4_beach_adam", kumicho: "ch4_beach_kumicho", kuraudo: "ch4_beach_kuraudo",
+    ayatori: "ch4_beach_ayatori", steve: "ch4_beach_steve", volk: "ch4_beach_volk",
   }),
 });
 /** 台本の読み込み対象（ch4.js が FILES に使う）。 */

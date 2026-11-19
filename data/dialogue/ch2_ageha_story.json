@@ -1463,9 +1463,9 @@
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "rei",
-          "next_true": "rei_known",
-          "next_false": "rei_first"
+          "char_id": "kuraudo",
+          "next_true": "kuraudo_known",
+          "next_false": "kuraudo_first"
         },
         {
           "speaker": "minto",
@@ -1473,7 +1473,7 @@
           "text": "ねえ、その髪のセット、何分かかるの？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……三十分。今日は、短いほう"
         },
@@ -1513,7 +1513,7 @@
           "text": "甘い香りは、分かる。なのに舌の上で、味が形を結ばない。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……水。一口目、強かったろ"
         },
@@ -1573,7 +1573,7 @@
           "text": "クラウドは目を閉じて、テーブルを指で軽く叩いている。拍を数えるみたいに。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "甘さが消えたあと、一拍だけ残る。……曲と曲の、間みたいに"
         },
@@ -1792,7 +1792,7 @@
           "text": "違う煙を出す奴らが、同じ卓を囲む。……こいつは、悪くねえ夜だぜ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……また、こういうの、やりたいな"
         },
@@ -1880,30 +1880,30 @@
             "text": "tonariの逢縁はじめです。よろしくお願いします"
           }
         ],
-        "rei_known": [
+        "kuraudo_known": [
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……来てたんだ。そこ、空いてるよ"
           }
         ],
-        "rei_first": [
+        "kuraudo_first": [
           {
             "speaker": "",
             "face": "",
             "text": "黒とワインレッドで髪を作り込んだ人が、壁際から小さく会釈した。"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……「貴方ノ為ノ此ノ煙。」の、クラウド。県大会は、俺も出る"
           },
           {
             "type": "set_flag",
-            "flag": "_met_rei"
+            "flag": "_met_kuraudo"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "smile",
             "text": "……よろしく。そこ、空いてるよ"
           }
@@ -1930,7 +1930,7 @@
             "text": "お客さんの顔を思い浮かべるかな♡ 誰に出したいか、って"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……後味だけ、探す。最後に、何が残るか"
           }

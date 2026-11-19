@@ -28,15 +28,15 @@ function wrapNote(note) {
 }
 
 export function audienceFor(mode, chapter) {
-  if (mode === "tournament") return chapter === 3 ? ["sui", "emil", "dr_kemuri"]
-    : chapter === 4 ? ["sui", "emil", "da_silva"]
-    : [1, 2].includes(chapter) ? ["sui", "maezono", "dr_kemuri"] : [];
+  if (mode === "tournament") return chapter === 3 ? ["sensu", "emil", "dr_charcoal"]
+    : chapter === 4 ? ["sensu", "emil", "da_silva"]
+    : [1, 2].includes(chapter) ? ["sensu", "uezono", "dr_charcoal"] : [];
   if (mode === "drill") return ["hajime"];
   return mode === "tutorial" || mode === "rehearsal" ? ["sumi"] : [];
 }
 
-const STEP_JUDGE = { setup: "dr_kemuri", mix: "maezono", pack: "dr_kemuri", holes: "dr_kemuri", heat: "dr_kemuri", place: "dr_kemuri", steam: "maezono", pull: "maezono", care: "dr_kemuri" };
-const STEP_JUDGE_CH3 = { ...STEP_JUDGE, mix: "emil", steam: "emil", pull: "emil", care: "sui" };
+const STEP_JUDGE = { setup: "dr_charcoal", mix: "uezono", pack: "dr_charcoal", holes: "dr_charcoal", heat: "dr_charcoal", place: "dr_charcoal", steam: "uezono", pull: "uezono", care: "dr_charcoal" };
+const STEP_JUDGE_CH3 = { ...STEP_JUDGE, mix: "emil", steam: "emil", pull: "emil", care: "sensu" };
 // 第4章 GRAND SMOKE: 博士の席（手元の技術）をゲスト審査員ダ・シルヴァが見る。
 const STEP_JUDGE_CH4 = { ...STEP_JUDGE_CH3, setup: "da_silva", pack: "da_silva", holes: "da_silva", heat: "da_silva", place: "da_silva" };
 const MOODS = { watch: "手元を見守る", nod: "小さくうなずく", concern: "手元を気にかける", think: "静かに考える" };
@@ -55,8 +55,8 @@ function faceCrop(portrait) {
   const box = !BODY_FRAMED.has(portrait.folder) && faceFrame(portrait.folder, style)?.box;
   return box ? box.map((v) => v / 896) : null;
 }
-const faceFor = (id, mood, kind) => id === "sui" ? mood === "think" ? "thinking" : "serious"
-  : mood === "nod" ? id === "maezono" && ["perfect", "just"].includes(kind) ? "excited" : id === "dr_kemuri" ? "normal" : "smile"
+const faceFor = (id, mood, kind) => id === "sensu" ? mood === "think" ? "thinking" : "serious"
+  : mood === "nod" ? id === "uezono" && ["perfect", "just"].includes(kind) ? "excited" : id === "dr_charcoal" ? "normal" : "smile"
     : mood === "concern" || mood === "think" ? "serious" : "normal";
 
 /** 今この一台を見ている人と実況の、実際に使う表情だけ。 */
@@ -137,7 +137,7 @@ export function buildAudience(cs) {
       const id = ids.includes(judge) ? judge : ids.includes(active) ? active : primary;
       const positive = ["just", "perfect", "great", "good"].includes(kind), negative = ["bad", "miss", "close"].includes(kind);
       if (!positive && !negative && kind !== "watch") return;
-      const mood = id === "sui" ? positive ? "think" : "watch" : positive ? "nod" : negative ? "concern" : "watch";
+      const mood = id === "sensu" ? positive ? "think" : "watch" : positive ? "nod" : negative ? "concern" : "watch";
       if (!force && id === active && (mood === current || performance.now() - changedAt < 350)) return;
       showPerson(id, mood, kind);
       if (!final) {

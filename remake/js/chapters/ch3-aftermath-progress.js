@@ -49,14 +49,14 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
   { id: "ch3_rival_volk_steve_seat", file: "ch3_volk", label: "先に座る客", location: "Smoke & Glory", bg: "bg_steve_shop",
     met: ["volk", "steve"], after: ["ch3_rival_volk_steve_greeting"] },
   // 好感度補充。大会前に読めなかった煙幕・Smoke & Glory の段階を、帰郷前に順に読める。
-  { id: "ch3_saku_missed", file: "ch3_rivals", label: "外れた予想", location: "煙幕", bg: "bg_yohaku_shop",
-    after: ["ch3_saku_lime"], heart: { saku: 2 } },
-  { id: "ch3_saku_cleanup", file: "ch3_rivals", label: "消すのを遅くする", location: "煙幕", bg: "bg_yohaku_shop",
-    after: ["ch3_saku_missed"], heart: { saku: 3 } },
-  { id: "ch3_saku_liar", file: "ch3_rivals", label: "嘘つきの欄", location: "煙幕", bg: "bg_yohaku_shop",
-    after: ["ch3_saku_cleanup"], heart: { saku: 4 } },
-  { id: "ch3_saku_first_reply", file: "ch3_rivals", label: "最初の返事", location: "煙幕", bg: "bg_yohaku_shop",
-    after: ["ch3_saku_liar"], heart: { saku: 4 } },
+  { id: "ch3_ayatori_missed", file: "ch3_rivals", label: "外れた予想", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_ayatori_lime"], heart: { ayatori: 2 } },
+  { id: "ch3_ayatori_cleanup", file: "ch3_rivals", label: "消すのを遅くする", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_ayatori_missed"], heart: { ayatori: 3 } },
+  { id: "ch3_ayatori_liar", file: "ch3_rivals", label: "嘘つきの欄", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_ayatori_cleanup"], heart: { ayatori: 4 } },
+  { id: "ch3_ayatori_first_reply", file: "ch3_rivals", label: "最初の返事", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_ayatori_liar"], heart: { ayatori: 4 } },
   { id: "ch3_steve_two_timers", file: "ch3_rivals", label: "待たせたピザ", location: "Smoke & Glory", bg: "bg_steve_shop",
     met: ["steve"], heart: { steve: 1 } },
   { id: "ch3_steve_empty_seat", file: "ch3_rivals", label: "空の席の秒数", location: "Smoke & Glory", bg: "bg_steve_shop",
@@ -67,8 +67,8 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
     met: ["steve"], after: ["ch3_steve_tongs"], heart: { steve: 4 } },
   // #3468 C案。スティーブが煙幕へピザを差し入れる短い別訪問。綾取の帰り支度が始まった頃（片づけの朝の前日）だけ。
   // 窓の終わりは綾取の授業・締めくくりと同じなるへの報告まで（to）。好感度は動かさない。後日の一言は第4章のLIME。
-  { id: "ch3_saku_steve_notes", file: "ch3_rivals", label: "読めない記号", location: "煙幕", bg: "bg_yohaku_shop",
-    met: ["saku", "steve"], to: "ch3_naru_reconcile" },
+  { id: "ch3_ayatori_steve_notes", file: "ch3_rivals", label: "読めない記号", location: "煙幕", bg: "bg_yohaku_shop",
+    met: ["ayatori", "steve"], to: "ch3_naru_reconcile" },
   // #3468 H案。ましろ×ムカイさんの棚整理と、札が残る後日の一言。大会前に読めなかった分を同じ既読で順に。
   // 台本は大会に触れない。好感度は動かさない。
   { id: "ch3_mashiro_mukai_syrup_shelf", file: "ch3_mashiro", label: "店用の瓶", location: "mukai", bg: "bg_mukai_shop" },
@@ -125,7 +125,7 @@ export function availableAftermathDetours(value) {
  * スティーブの授業（ピザとシーシャの夜）はこの夜に開くので、なるへの報告を読んで開催の夜になったら出さない。
  */
 export const CH3_AFTERMATH_LESSONS = Object.freeze([
-  { who: "saku", place: "煙幕", bg: "bg_yohaku_shop", from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
+  { who: "ayatori", place: "煙幕", bg: "bg_yohaku_shop", from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
   { who: "steve", place: "Smoke & Glory", bg: "bg_steve_shop", from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
   { who: "volk", place: "鉄の煙", bg: "bg_volk_shop", from: "ch3_mashiro_recovery", to: "ch3_enmaku_cleanup" },
   { who: "mashiro", place: "mukai", bg: "bg_mukai_shop", from: "ch3_naru_reconcile", to: "ch3_naru_reconcile" },
@@ -155,7 +155,7 @@ export function availableAftermathLessons(value, ready) {
  * due(who) は daily/bonds.js の finaleDue（♥5・前提の場面・既読）。寄り道と同じく stage・日時は進めず、保存は変更しない。
  */
 export const CH3_AFTERMATH_FINALES = Object.freeze([
-  { who: "saku", file: "ch3_rivals", dialogue: "ch3_saku_bond_finale", label: "綾取に呼ばれる", place: "煙幕", bg: "bg_yohaku_shop",
+  { who: "ayatori", file: "ch3_rivals", dialogue: "ch3_ayatori_bond_finale", label: "綾取に呼ばれる", place: "煙幕", bg: "bg_yohaku_shop",
     from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },
   { who: "steve", file: "ch3_rivals", dialogue: "ch3_steve_bond_finale", label: "スティーブに呼ばれる", place: "Smoke & Glory",
     bg: "bg_steve_shop", from: "ch3_mashiro_recovery", to: "ch3_naru_reconcile" },

@@ -19,7 +19,7 @@ const ENCOUNTERS = {
     { id: "cafe_naru_break", met: "naru", rift: true },
     // 仕入れ帰りのなると、持ち帰りのコーヒーを買いに来た凛想（REL01）
     { id: "cafe_naru_rio", met: ["naru", "rio"], rift: true, rioIn: true },
-    { id: "cafe_maezono_break" },
+    { id: "cafe_uezono_break" },
     { id: "cafe_master_quiz" },
   ],
   kannon: [
@@ -53,7 +53,7 @@ const ENCOUNTERS = {
     // #3097 第2弾: マニュアルに無い帰りの飴（チェーンの店ごとの一個）
     { id: "cs_ch2_candy", chapter: 2 },
     // 博士の二面性をそれとなく見せる一度きりの回（#1696）。面識は登録時の顔合わせか大会でできる。
-    { id: "cs_kemuri_sample", met: "dr_kemuri" },
+    { id: "cs_kemuri_sample", met: "dr_charcoal" },
   ],
 };
 

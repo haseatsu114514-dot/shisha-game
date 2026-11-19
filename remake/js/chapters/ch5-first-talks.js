@@ -13,7 +13,7 @@ import { chapterFiveProgress, chapterFiveRead } from "./ch5-progress.js";
 // stat はいつもの来店で上がる能力（アダムは daily/spots.js の CHAR_STAT、神崎・クラウドは ch2-preparation.js の通い訪問と同じ）。
 export const CH5_FIRST_TALKS = Object.freeze({
   adam: Object.freeze({ file: "ch5_shops", scene: "ch5_adam_shop", region: "home", stat: "guts", after: "ch5_free_eden_adam" }),
-  rei: Object.freeze({ file: "ch5_shops", scene: "ch5_rei_shop", region: "widehanga", stat: "charm" }),
+  kuraudo: Object.freeze({ file: "ch5_shops", scene: "ch5_kuraudo_shop", region: "widehanga", stat: "charm" }),
   // 既読の名前は、未接続だった頃の台本末尾の set_flag と同じ（core/carry.js の分類も同じ）
   kumicho: Object.freeze({ file: "ch2_kumicho", scene: "ch2_kumicho_after_ch2", region: "widehanga", stat: "guts",
     doneFlag: "ch2_kumicho_after_ch2_done" }),

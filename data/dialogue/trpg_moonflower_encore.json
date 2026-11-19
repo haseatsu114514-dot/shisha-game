@@ -46,7 +46,7 @@
   },
   "cast": [
     {
-      "id": "rei",
+      "id": "kuraudo",
       "part": "GM",
       "role": "語り手と、家令ギルバート",
       "color": "#9b1b3f"
@@ -511,13 +511,13 @@
       "dialogue_id": "trpg_moonflower_encore_intro",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……じゃあ、始める。今夜の本は、俺が回す"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "キミたちは、古城のライブに居合わせた客と裏方だ。客席は、全員幽霊",
@@ -531,7 +531,7 @@
           "text": "幽霊の客席ですか。クラウドさんらしい舞台ですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……吸血鬼のバンドも出る。好きなものを、全部入れた"
@@ -563,61 +563,61 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "serious",
           "text": "月の丘。夜ごと白い花の香りに包まれる古城、月光花城"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "今宵、その大広間に鳴り響くのは、吸血鬼の楽団『ノクターン』の調べ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "百年の夜を越え、彼らは月の下でだけ奏で続けてきた"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "客席を埋めるのは、透きとおった幽霊たち。揺れる灯りは、青白い鬼火だ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "{pc}は、舞台袖で、ほどけた幕の綱を結び直している"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "{pc:ageha}は、最前列で、誰よりも大きく手を振っている"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "{pc:adam}は、柱の陰から、静かに客席を眺めている"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "serious",
           "text": "最後の曲が終わる。だが、拍手は鳴りやまない"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "幽霊の客席／物語",
           "face": "smile",
           "text": "『アンコール！ アンコール！』"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "今夜、これで九度目のアンコールだ"
@@ -629,7 +629,7 @@
           "text": "九度目……！？ 夜明けまでに終わるのかな、これ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "surprise",
           "text": "……あ。悪い、語りすぎた"
@@ -648,19 +648,19 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……語りすぎたついでに、古城の魔物表を一回振る"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "surprise",
           "text": "……出た。『服だけを溶かすスライム』"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……俺が作った表じゃない。ルールブックの表だ"
@@ -685,13 +685,13 @@
           "text": "（……それは、まずい魔物なのでは）"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "serious",
           "text": "シャンデリアの上から、ぷるりと光るものが垂れてくる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "狙いは最前列。手を振る{pc:ageha}の、真上だ"
@@ -716,13 +716,13 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "ぼとり。スライムが包んだのは、{pc:adam}だった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "……溶けたのは、服だけ。{pc:adam}は無傷だ。服以外は"
@@ -760,7 +760,7 @@
           "text": "これ、幕の切れ端です！ 早く巻いてください！"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "smile",
           "text": "幕は巻けた。スライムは満足そうに、天井へ帰っていく"
@@ -772,7 +772,7 @@
           "text": "……今の、誰が得したんですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……誰も。物語に戻る"
@@ -783,19 +783,19 @@
       "dialogue_id": "trpg_moonflower_encore_listen",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "舞台袖の暗がりに、燕尾服の老紳士がすうっと現れた。足元が、少し透けている"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "normal",
           "text": "城の家令、ギルバートと申します。皆さまを見込んで、お願いがございます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "serious",
           "text": "夜明けまでに、本当の最後の一曲を。伯爵が、幕を下ろせるように"
@@ -812,7 +812,7 @@
       "dialogue_id": "trpg_moonflower_encore_listen_success",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "アンコールの声は、まだ穏やかだ。伯爵の困り顔も、よく見える"
@@ -829,7 +829,7 @@
       "dialogue_id": "trpg_moonflower_encore_listen_mixed",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "客席の幽霊たちが、そろって激しく頭を振り始める。アンコールが一つ高まる"
@@ -853,7 +853,7 @@
       "dialogue_id": "trpg_moonflower_encore_listen_trouble",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "surprise",
           "text": "ドラムの吸血鬼が勘違いして、もう一曲始めてしまった"
@@ -865,7 +865,7 @@
           "text": "終わらせたいのに、曲が増えた！？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……アンコールは二つ高まる。でも、調べはできる"
@@ -876,7 +876,7 @@
       "dialogue_id": "trpg_moonflower_encore_prepare_success",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "大広間が、夜の色に染まる。客席から、ため息のような声がもれた"
@@ -900,7 +900,7 @@
       "dialogue_id": "trpg_moonflower_encore_prepare_mixed",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "一つ直すあいだに、客席のアンコールが一つ高まる"
@@ -924,7 +924,7 @@
       "dialogue_id": "trpg_moonflower_encore_prepare_trouble",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "surprise",
           "text": "物販のコウモリたちが、飾りをお土産と勘違いして持っていく"
@@ -943,7 +943,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……予備はある。まだ、間に合う"
@@ -954,7 +954,7 @@
       "dialogue_id": "trpg_moonflower_encore_serve_success",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "smile",
           "text": "伯爵が深く一礼する。客席が、しんと静まった"
@@ -973,7 +973,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "最後の一曲が、始まる"
@@ -984,7 +984,7 @@
       "dialogue_id": "trpg_moonflower_encore_serve_mixed",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "伯爵のマントが譜面台に引っかかり、譜面が舞い上がった"
@@ -996,7 +996,7 @@
           "text": "拾います！ 伯爵は、そのまま続けてください"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……少し崩れた。でも、それが生の音だ"
@@ -1007,7 +1007,7 @@
       "dialogue_id": "trpg_moonflower_encore_serve_trouble",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "surprise",
           "text": "伯爵が緊張のあまり、ギターの弦を一本はじき飛ばした"
@@ -1026,7 +1026,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……弦は減った。でも、曲は続く"
@@ -1063,7 +1063,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……相談とメモは、回数を使わない。好きなだけ"
@@ -1100,7 +1100,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……鋭い。いい読みだ"
@@ -1111,13 +1111,13 @@
       "dialogue_id": "trpg_moonflower_encore_preparation",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "幕間。楽屋で伯爵が、月光花の香りの一台を出してくれた"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "伯爵ヴァレリオ／物語",
           "face": "smile",
           "text": "夜に開く花の香りだ。少し休むがいい、月夜の客人たちよ"
@@ -1149,7 +1149,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……支度だ。夜明けまでに、演出と香りを選んでくれ"
@@ -1179,19 +1179,19 @@
       "dialogue_id": "trpg_moonflower_encore_serving",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "serious",
           "text": "東の空が、ほんの少しだけ薄くなる。夜明けまで、あとわずか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "伯爵がギターを抱え直し、客席をゆっくり見渡した"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "伯爵ヴァレリオ／物語",
           "face": "serious",
           "text": "客人たちよ。……最後の一曲を、どう届ければいい"
@@ -1208,7 +1208,7 @@
       "dialogue_id": "trpg_moonflower_encore_epilogue",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……これで、終演。付き合ってくれて、ありがとう"
@@ -1220,7 +1220,7 @@
           "text": "クラウドさんの語り、本物のライブみたいでした"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "surprise",
           "text": "……そうか。語りすぎた気は、する"
@@ -1252,7 +1252,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……月光花は、俺の一台の名前でもある。ジャスミンと、ブルーベリー"
@@ -1264,7 +1264,7 @@
           "text": "今夜の物語の香りですね。今度、頼みに行きます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……ああ。合う曲も、選んでおく"
@@ -1288,7 +1288,7 @@
       "dialogue_id": "trpg_moonflower_encore_clue_promise_stage",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "舞台の足元のセットリスト。線で消された最後の曲名は、『約束の曲』"
@@ -1318,7 +1318,7 @@
       "dialogue_id": "trpg_moonflower_encore_clue_promise_nameplates",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "最前列の名札に『ロゼ』。百年、毎晩この席に座っているという"
@@ -1348,7 +1348,7 @@
       "dialogue_id": "trpg_moonflower_encore_clue_promise_score",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "題名のない古い譜面。最後の小節だけ、何度も書き直した跡がある"
@@ -1378,7 +1378,7 @@
       "dialogue_id": "trpg_moonflower_encore_clue_promise_garden",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "月光花のそばのベンチに、薔薇模様のカップが二つ。片方に『また聴かせて』"
@@ -1408,7 +1408,7 @@
       "dialogue_id": "trpg_moonflower_encore_clue_promise_portrait",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "伯爵の肖像の隣に、薔薇の髪飾りの婦人。額の裏に『最初のファンへ』"
@@ -1438,13 +1438,13 @@
       "dialogue_id": "trpg_moonflower_encore_clue_promise_keys",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "鍵束に一本だけ、薔薇の飾りの鍵がある"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "serious",
           "text": "楽屋の引き出しの鍵です。伯爵は百年、開けておられません"
@@ -1461,7 +1461,7 @@
       "dialogue_id": "trpg_moonflower_encore_clue_names_stage",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "舞台の床に、色あせた薔薇の花びら。昔は終演のたびにまいていたらしい"
@@ -1491,7 +1491,7 @@
       "dialogue_id": "trpg_moonflower_encore_clue_names_nameplates",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "手作りの名札は、どれも名前が大きい。裏に『呼ばれたら手を振る』"
@@ -1521,7 +1521,7 @@
       "dialogue_id": "trpg_moonflower_encore_clue_names_score",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "古いセットリストの最後の欄に、『みんなの名前を呼ぶ』とある"
@@ -1551,13 +1551,13 @@
       "dialogue_id": "trpg_moonflower_encore_clue_names_garden",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "庭の小道に、森の方から続く小さな足跡がたくさんある"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "客席の幽霊たちは、毎晩森の村から歩いて通っているらしい"
@@ -1581,7 +1581,7 @@
       "dialogue_id": "trpg_moonflower_encore_clue_names_portrait",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "回廊に、昔の客席の絵。一人一人の顔の横に、名前が書いてある"
@@ -1611,13 +1611,13 @@
       "dialogue_id": "trpg_moonflower_encore_clue_names_keys",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "鍵束の一本で、古い出席簿の箱が開いた"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "常連の名前の横に、毎晩『今日も来てくれた』の印がある"
@@ -1634,13 +1634,13 @@
       "dialogue_id": "trpg_moonflower_encore_clue_garden_stage",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "客席の幽霊が、両手を花のように開く。月光花の夜に生まれた振りだ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……『咲き』っていう振りだ。……好きなんだ、こういうの"
@@ -1664,7 +1664,7 @@
       "dialogue_id": "trpg_moonflower_encore_clue_garden_nameplates",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "名札の裏に、月光花の押し花。日付は、どれも今夜と同じ日だ"
@@ -1694,7 +1694,7 @@
       "dialogue_id": "trpg_moonflower_encore_clue_garden_score",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "譜面の最後に、赤い字の指示。『花が開くまで、繰り返し』"
@@ -1724,13 +1724,13 @@
       "dialogue_id": "trpg_moonflower_encore_clue_garden_garden",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "月光花のつぼみが、今にもほどけそうにふくらんでいる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "ジャスミンに似た甘い香りが、夜風にのって流れてくる"
@@ -1754,7 +1754,7 @@
       "dialogue_id": "trpg_moonflower_encore_clue_garden_portrait",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "肖像画のノクターンは、城の中でなく庭にいる。皆で月光花を見上げて"
@@ -1784,13 +1784,13 @@
       "dialogue_id": "trpg_moonflower_encore_clue_garden_keys",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "鍵束で一番大きいのは、庭へ出る大扉の鍵。ぴかぴかに磨いてある"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "normal",
           "text": "年に一度、今夜だけ使う鍵でございます"
@@ -1948,25 +1948,25 @@
       "dialogue_id": "trpg_moonflower_encore_ending_promise-song",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "伯爵は楽屋の引き出しから、百年しまっていた譜面を取り出した"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "伯爵ヴァレリオ／物語",
           "face": "serious",
           "text": "最前列の、ロゼ。……君と約束した、最後の一曲だ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "薔薇の髪飾りの幽霊が、両手で口元をおさえる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "静かな旋律が流れ、アンコールの声は、ゆっくりと拍手に変わった"
@@ -1991,7 +1991,7 @@
           "text": "終わらせたくなかったんじゃなくて、届けたかったんですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……夜明けの鐘と一緒に、客席はみんな、満足そうに帰っていった"
@@ -2002,19 +2002,19 @@
       "dialogue_id": "trpg_moonflower_encore_ending_name-encore",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "伯爵は決め台詞をやめ、客席の名札を一枚ずつ読み上げた"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "伯爵ヴァレリオ／物語",
           "face": "smile",
           "text": "マーサ、トビー、ハンス、エマ……。毎晩、来てくれてありがとう"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "名前を呼ばれるたび、鬼火の灯りが高く揺れる"
@@ -2052,7 +2052,7 @@
           "text": "みんな、覚えていてほしかっただけなんですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……最後のアンコールのあと、幽霊たちは手を振って森へ帰った"
@@ -2063,25 +2063,25 @@
       "dialogue_id": "trpg_moonflower_encore_ending_moonflower-garden",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "大扉が開き、客席も楽団も、月明かりの庭へ流れ出る"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "伯爵が月光花の前でギターを鳴らす。東の空が、白みはじめた"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "smile",
           "text": "その瞬間、つぼみがほどけ、白い花がいっせいに開いた"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "伯爵ヴァレリオ／物語",
           "face": "smile",
           "text": "……これだ。この景色を、みんなで見たかった"
@@ -2106,7 +2106,7 @@
           "text": "アンコールは、花が咲くまでの時間かせぎだったんですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……花の香りの中で、幽霊たちは手を振って帰っていった"
@@ -2117,13 +2117,13 @@
       "dialogue_id": "trpg_moonflower_encore_ending_together",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "最後の一曲は、少しだけ答えから外れていた"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "それでも客席が歌い出し、楽団も裏方も、一緒に声を重ねる"
@@ -2148,13 +2148,13 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "伯爵ヴァレリオ／物語",
           "face": "smile",
           "text": "今宵の答えは、また来年探そう。ありがとう、迷える魂たちよ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……朝日の前に、幕は下りた。これも、いいライブだ"
@@ -2165,7 +2165,7 @@
       "dialogue_id": "trpg_moonflower_encore_debrief_smooth",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……アンコールが暴れる前に、届いた。いい卓だった"
@@ -2182,7 +2182,7 @@
       "dialogue_id": "trpg_moonflower_encore_debrief_with_detour",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……客席、ずっと叫んでたな。でも、最後まで誰も帰らなかった"
@@ -2215,7 +2215,7 @@
           "text": "{pc}が舞台袖へ行って、伯爵の様子を見てきます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……度胸で判定。袖の暗がりは、深いぞ。目標30"
@@ -2242,7 +2242,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……話術で判定。ファン同士の会話だ。目標30"
@@ -2269,7 +2269,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……観察で判定。熱は、どこから来てる。目標30"
@@ -2289,7 +2289,7 @@
           "text": "{pc}が舞台の前に立って、落ち着いてと呼びかけます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "serious",
           "text": "……話術で判定。客席を、つかめ。目標30"
@@ -2316,7 +2316,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……手際で判定。光で、道を作れ。目標30"
@@ -2343,7 +2343,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……度胸で判定。羽音は、すぐそこだ。目標30"
@@ -2363,7 +2363,7 @@
           "text": "{pc}が城じゅうを走って、道具を集めて組みます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……手際で判定。夜明けは、待ってくれない。目標30"
@@ -2390,7 +2390,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……手際で判定。見立てが合えば、追い風だ。目標30"
@@ -2417,7 +2417,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……観察で判定。図面は、舞台の楽譜だ。目標30"
@@ -2437,7 +2437,7 @@
           "text": "{pc}が伯爵の隣に立ちます！ 最後まで、一緒に"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "serious",
           "text": "……度胸で判定。最後の一曲の、立ち位置だ。目標30"
@@ -2464,7 +2464,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……話術で判定。その名言、届くか。目標30"
@@ -2491,7 +2491,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……話術で判定。声援も、音楽だ。目標30"
@@ -2518,7 +2518,7 @@
           "text": "うちわもペンライトも自作ね。プリ帳には、推しの写真びっしり"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……いい。ファンがいる卓は、ライブになる"
@@ -2551,7 +2551,7 @@
           "text": "グッズはとにかく盛る派。白と赤のグミベアも売ってるよ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "surprise",
           "text": "……コウモリが、グミを売るのか"
@@ -2584,7 +2584,7 @@
           "text": "だが争いは好まん。林檎は宇宙の原点、吸血鬼とも分け合える"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……平和主義のハンター。そういう役、好きだ"
@@ -2611,7 +2611,7 @@
           "text": "人前では弾かない。舞台袖で、誰かの一曲を待つのが好きな男だ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "surprise",
           "text": "……アダムが、袖に。それは、ちょっと見てみたい"
@@ -2661,7 +2661,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……始める前に、役を作る。今夜は、古城のライブの客と裏方だ"
@@ -2687,7 +2687,7 @@
           "text": "俺は{pc}。{pcTitle}でいく"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……そろったな。じゃあ、開演だ"
@@ -2701,7 +2701,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "normal",
           "text": "最初の公演のお客様は、薔薇の髪飾りのご婦人お一人でした"
@@ -2728,13 +2728,13 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "serious",
           "text": "伯爵は毎晩、最後の曲の前で手を止められます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "normal",
           "text": "楽譜を見ては首を振り、またアンコールに戻られるのです"
@@ -2748,7 +2748,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "normal",
           "text": "最前列のロゼ様は、百年、毎晩同じお席においでです"
@@ -2768,7 +2768,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "normal",
           "text": "月光花は、伯爵とロゼ様が植えた花。紅茶の時間に、よく眺めておられました"
@@ -2795,7 +2795,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "normal",
           "text": "昔は森の村の祭りの楽団。お客様の名前を、全員覚えておりました"
@@ -2822,13 +2822,13 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "serious",
           "text": "伯爵は近ごろ、皆さまを『迷える魂たちよ』としか呼ばれません"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "normal",
           "text": "かっこいいから、だそうです"
@@ -2842,7 +2842,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "normal",
           "text": "常連の皆さまは、手作りの名札を毎晩胸に付けておいでです"
@@ -2862,7 +2862,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "normal",
           "text": "月光花は、森の村の皆さまが一株ずつ、名札を付けて植えた花です"
@@ -2889,7 +2889,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "normal",
           "text": "ノクターンの最初の演奏は、庭の月光花の前でございました"
@@ -2916,7 +2916,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "normal",
           "text": "伯爵は曲の合間に、何度も窓の外を気にしておられます"
@@ -2936,7 +2936,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "normal",
           "text": "皆さまも、アンコールの合間に窓の外ばかりご覧になります"
@@ -2963,7 +2963,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "家令ギルバート／物語",
           "face": "serious",
           "text": "月光花は年に一度、今夜の夜明け前にだけ咲くのです"
@@ -3016,7 +3016,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……いい読みだ。約束は、曲にすると長持ちする"
@@ -3056,7 +3056,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……客席あっての、ライブだからな"
@@ -3096,7 +3096,7 @@
           }
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……夜明けの少し前。あの時間の空気が、一番きれいだ"
@@ -3110,19 +3110,19 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "serious",
           "text": "そのとき、天井の暗がりからコウモリの群れが舞い降りた"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "羽ばたきで燭台の火が次々と消え、客席がざわめきに包まれる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "幽霊の客席／物語",
           "face": "surprise",
           "text": "『暗いー！ でも、アンコールー！』"
@@ -3134,7 +3134,7 @@
           "text": "暗くなってもアンコールは続くんですか！？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……熱心な客席だ。さあ、どうする"
@@ -3148,7 +3148,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "三人の手拍子に、客席の幽霊たちが少しずつ合わせ始める"
@@ -3175,7 +3175,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "蝋燭が一本ずつ灯り、大広間に赤い光が戻っていく"
@@ -3195,7 +3195,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "低い子守唄に、コウモリたちが天井で丸くなって眠り始める"
@@ -3222,7 +3222,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "smile",
           "text": "燭台に灯が戻り、客席から温かい拍手が起きた"
@@ -3249,7 +3249,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "灯は戻ったが、客席は興奮したまま。アンコールが一つ高まる"
@@ -3276,7 +3276,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "surprise",
           "text": "コウモリが一匹、伯爵のマントの中にもぐりこんだ"
@@ -3288,7 +3288,7 @@
           "text": "伯爵、マントがもぞもぞしてます！"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……アンコールは二つ高まる。誰も、けがはない"
@@ -3308,7 +3308,7 @@
           "text": "今回はキララ。追っかけのファンを演じます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "では、その役で始めましょう"
@@ -3328,7 +3328,7 @@
           "text": "今回はモカ。物販担当のコウモリ娘を演じます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "では、その役で始めましょう"
@@ -3348,7 +3348,7 @@
           "text": "今回はレオン。林檎の紋章のハンターを演じます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "では、その役で始めましょう"
@@ -3368,7 +3368,7 @@
           "text": "今回はジーク。舞台袖のギター係を演じます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "では、その役で始めましょう"
@@ -3646,9 +3646,9 @@
   "campaign": {
     "seats": [
       {
-        "actor": "rei",
+        "actor": "kuraudo",
         "candidates": [
-          "rei"
+          "kuraudo"
         ],
         "required": true
       },

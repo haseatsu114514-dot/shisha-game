@@ -213,7 +213,7 @@ export function voteReason(p, cs, final = false) {
   if (parts.length) {
     const weakest = parts.reduce((low, part) => part.score < low.score ? part : low);
     const step = weakest.label === "アルミ穴あけ" ? "holes" : weakest.label === "炭の温度" ? "heat" : weakest.label.includes("調整") ? "care" : "pull";
-    const judge = step === "pull" ? "maezono" : "dr_kemuri";
+    const judge = step === "pull" ? "uezono" : "dr_charcoal";
     lines.push(`${weakest.label}：${evaluationOf(weakest.score).mark}　${displayName(judge, state)}「${feedbackLine(judge, step, evaluationOf(weakest.score))}」`);
   }
   return lines;
@@ -322,7 +322,7 @@ async function drive(owner) {
       if (!await read(owner, "entrance")) return;
       await playEntrance(2);
       if (!live(owner)) return;
-      for (const who of ["kumicho", "rei", ...JUDGES]) markMet(who);
+      for (const who of ["kumicho", "kuraudo", ...JUDGES]) markMet(who);
       state.flags._ch2_kumicho_public_reveal = true;
       checkpoint("stations");
     } else if (p.stage === "stations") {

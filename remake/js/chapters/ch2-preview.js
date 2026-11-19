@@ -32,7 +32,7 @@ function resetPreview() {
   scratch.chapter = 2;
   scratch.phase = "opening";
   // 第1章を終えた主人公の既知の顔。第2章の新しい訪問先の相手は名乗るまで未知。
-  for (const id of ["hajime", "sumi", "naru", "adam", "minto", "tsumugi", "rio", "dr_kemuri", "pakki", "sui"]) {
+  for (const id of ["hajime", "sumi", "naru", "adam", "minto", "tsumugi", "rio", "dr_charcoal", "pakki", "sensu"]) {
     scratch.met[id] = true;
     scratch.flags[`_intro_${id}`] = true;
   }
@@ -152,7 +152,7 @@ function renderStopMenu(stop, imageFailed = false) {
   layers.screen.replaceChildren(el("main.ch2-shell.ch2-stop", { dataset: { test: "ch2-preview-stop", stop: stop.id } }, [
     el("div.ch2-stop-card", [
       el("p.ch2-kicker", { text: "CHAPTER 02 / はじめての顔合わせ" }),
-      storeLogo(`ch2_${stop.id}`, { width: 240, height: 140 }),
+      storeLogo((stop.shopId || `ch2_${stop.id}`), { width: 240, height: 140 }),
       el("h1", { text: stop.sceneLabel || stop.name }),
       el("p", { text: "挨拶を終えた。少し中を見せてもらってから、次の場所へ向かおう。" }),
       imageFailed ? el("p.ch2-room-warning", { role: "status", text: "店内の背景を読み込めませんでした。再読み込みするか、地図へ戻れます。" }) : null,

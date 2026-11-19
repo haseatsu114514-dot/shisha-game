@@ -14,15 +14,19 @@ export const STATION = "../assets/backgrounds/bg_widehanga_station_day.webp";
 export const STOPS = [
   { id: "ageha", name: "MELTY PUFF", x: 81, y: 46 },
   { id: "kumicho", name: "神崎煙草店", x: 63, y: 65 },
-  { id: "rei", name: "貴方ノ為ノ此ノ煙。", x: 42, y: 78 },
+  { id: "kuraudo", shopId: "ch2_rei", name: "貴方ノ為ノ此ノ煙。", x: 42, y: 78 },
   { id: "c_station", name: "県大会ホール", x: 85, y: 30 },
 ];
 // 神崎（kumicho）は採用済みの内装 bg_ch2_kumicho_entry.webp を使う。#962 で街の店舗画像
 // bg_yuzugaya_kumicho.webp（LFS）へ一時的に差し替わり、採用内装が出ないうえ、LFS未取得の配信では
 // ポインタのまま「室内を読み込めませんでした」になっていた（#1081 A02 / #1044 A04）。
-export const ROOMS = Object.fromEntries(["ageha", "kumicho", "rei"].map((id) => [id, `../assets/backgrounds/bg_ch2_${id}_entry.webp`]));
-const PURIKURA_IDS = ["remake_ch2_ryuji_melty_greeting", "remake_ch2_purikura_ryuji", "remake_ch2_rei_melty_greeting", "remake_ch2_rei_purikura_after", "remake_ch2_ageha_purikura", ...["invite", "solo", "pair", "guest"].map(id => `remake_ch2_purikura_${id}`)];
-const DISCOVERY_IDS = ["remake_ch2_rei_trpg", "remake_ch2_ageha_aquarium", "remake_ch2_kumicho_sento"];
+export const ROOMS = {
+  ageha: "../assets/backgrounds/bg_ch2_ageha_entry.webp",
+  kumicho: "../assets/backgrounds/bg_ch2_kumicho_entry.webp",
+  kuraudo: "../assets/backgrounds/bg_ch2_rei_entry.webp",
+};
+const PURIKURA_IDS = ["remake_ch2_ryuji_melty_greeting", "remake_ch2_purikura_ryuji", "remake_ch2_kuraudo_melty_greeting", "remake_ch2_kuraudo_purikura_after", "remake_ch2_ageha_purikura", ...["invite", "solo", "pair", "guest"].map(id => `remake_ch2_purikura_${id}`)];
+const DISCOVERY_IDS = ["remake_ch2_kuraudo_trpg", "remake_ch2_ageha_aquarium", "remake_ch2_kumicho_sento"];
 // #3097 第1弾: tonariのシフト上がりの会話（daily/tonari.js の CH2_SHIFT_TALKS と同じ並び。読み込みを軽くするため名前を並べる。一致は remake/test/ch2_shift_talks.mjs）
 export const CH2_SHIFT_TALK_IDS = Object.freeze(["ch2_shift_talk_fare", "ch2_shift_talk_three_shops", "ch2_shift_talk_supper",
   "ch2_shift_talk_receipts", "ch2_shift_talk_student", "ch2_shift_talk_tsumugi_board", "ch2_shift_talk_one_hose",
@@ -50,23 +54,23 @@ export async function loadChapterTwoDialogues() {
   const data = await Promise.all([
     readDialogues("ch2_city", CITY_IDS),
     readDialogues("remake_ch2", ["remake_ch2_departure", "remake_ch2_day1_night"]),
-    readDialogues("ch2_deliveries", ["remake_ch2_delivery_offer", ...PURIKURA_IDS, ...DISCOVERY_IDS, ...OUTING_IDS, ...["ageha", "kumicho", "rei"].map(id => `remake_ch2_delivery_${id}`)]),
+    readDialogues("ch2_deliveries", ["remake_ch2_delivery_offer", ...PURIKURA_IDS, ...DISCOVERY_IDS, ...OUTING_IDS, ...["ageha", "kumicho", "kuraudo"].map(id => `remake_ch2_delivery_${id}`)]),
   ]);
   for (const dialogues of data) Object.assign(DB.dialogues, dialogues);
 }
 
 export async function loadPreparationDialogues() {
-  const required = ["ageha", "kumicho", "rei"].flatMap(id => ["chat", "followup", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
-  required.push(...["kumicho", "rei"].map(id => `remake_ch2_${id}_revisit`));
+  const required = ["ageha", "kumicho", "kuraudo"].flatMap(id => ["chat", "followup", "repeat"].map(suffix => `remake_ch2_${id}_${suffix}`));
+  required.push(...["kumicho", "kuraudo"].map(id => `remake_ch2_${id}_revisit`));
   // 神崎・クラウドの通い訪問の小会話（#2027）
-  required.push(...["kumicho", "rei"].flatMap(id => ["b", "c", "d"].map(suffix => `remake_ch2_${id}_repeat_${suffix}`)));
+  required.push(...["kumicho", "kuraudo"].flatMap(id => ["b", "c", "d"].map(suffix => `remake_ch2_${id}_repeat_${suffix}`)));
   // 店の手入れ・出前・CDの入れ替え。大会の前後を問わない通いの日常（#3097）。
-  required.push(...["ageha", "kumicho", "rei"].map(id => `remake_ch2_${id}_repeat_e`));
+  required.push(...["ageha", "kumicho", "kuraudo"].map(id => `remake_ch2_${id}_repeat_e`));
   // 好感度MAXの締めくくり（daily/bonds.js の BOND_FINALES・#2027）
   const files = { ch2_preparation: required, ch2_deliveries: [...PURIKURA_IDS, ...DISCOVERY_IDS, ...OUTING_IDS],
     ch2_kumicho: ["ch2_kumicho_bond_finale"],
-    // クラウドのライブの夜（第3章の出発前の準備期間だけ。ch2-preparation.js の reiLiveDue・RVE07）
-    ch2_rei: ["ch2_rei_bond_finale", "ch3_prep_rei_live"] };
+    // クラウドのライブの夜（第3章の出発前の準備期間だけ。ch2-preparation.js の kuraudoLiveDue・RVE07）
+    ch2_rei: ["ch2_kuraudo_bond_finale", "ch3_prep_kuraudo_live"] };
   for (const step of CH2_NIGHTS.flatMap(night => night.steps)) (files[step.file] ||= []).push(step.id);
   // 昼の本筋（耳鼻科・なるの店のまかない。SPC28）
   for (const scene of CH2_DAY_SCENES) (files[scene.file] ||= []).push(scene.id);

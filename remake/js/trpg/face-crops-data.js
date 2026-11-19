@@ -223,7 +223,7 @@ export const PORTRAIT_FRAMES = {
         ]
       }
     },
-    "rei": {
+    "kuraudo": {
       "box": [
         357,
         25,
@@ -549,7 +549,7 @@ export const PORTRAIT_FRAMES = {
         ]
       }
     },
-    "rei": {
+    "kuraudo": {
       "box": [
         367,
         82,
@@ -1579,7 +1579,7 @@ export const PORTRAIT_FACE_SHIFTS = {
     "ageha": { "serious": [1, 2], "smile": [-10, 3], "surprise": [1, -1] },
     "hajime": { "excited": [-34, -5], "sad": [-4, 10], "serious": [-9, 0], "smile": [-14, -6], "smug": [-31, -6], "surprise": [-12, -2] },
     "hiyori": { "sad": [-3, 1], "serious": [3, 2], "surprise": [2, -1] },
-    "rei": { "sad": [8, 0], "serious": [1, 4], "smile": [-4, 5] },
+    "kuraudo": { "sad": [8, 0], "serious": [1, 4], "smile": [-4, 5] },
     "sai": { "serious": [-3, 2], "smile": [3, 3], "thinking": [-3, 2] },
     "samechan": { "excited": [-6, -8], "serious": [1, 3], "smile": [-7, 0], "surprise": [-4, -3], "ventriloquism": [7, 3] },
     "sumi": { "serious": [-11, -1], "surprise": [3, 1] },
@@ -1590,7 +1590,7 @@ export const PORTRAIT_FACE_SHIFTS = {
     "ageha": { "sad": [2, 2], "serious": [1, 1] },
     "hajime": { "sad": [9, 2], "serious": [-2, 1], "smile": [-4, -1] },
     "hiyori": { "sad": [2, 2], "serious": [1, 2], "smile": [5, 2], "surprise": [5, 1] },
-    "rei": { "sad": [14, -2], "serious": [0, 3] },
+    "kuraudo": { "sad": [14, -2], "serious": [0, 3] },
     "sai": { "serious": [-4, 0], "smile": [-3, 3], "thinking": [0, 2] },
     "samechan": { "serious": [3, 0], "surprise": [-8, 0], "ventriloquism": [11, 2] },
     "sumi": { "serious": [2, 1], "smile": [-4, -4], "thinking": [-7, 2] },

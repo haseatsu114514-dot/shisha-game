@@ -9,7 +9,7 @@ import { img } from "../core/data.js";
 
 const CUSTOM_LIME_ICONS = {
   noor: "noor-b.png",
-  saku: "saku-a.png",
+  ayatori: "saku-a.png",
   steve: "steve-a.png",
   master_hookah: "master_hookah-b.png",
   da_silva: "da_silva-a.png",
@@ -19,15 +19,15 @@ const CUSTOM_LIME_ICONS = {
   minto: "minto-b.png",
   tsumugi: "tsumugi-a.png",
   ageha: "ageha-a.png",
-  dr_kemuri: "dr_kemuri-b.png",
+  dr_charcoal: "dr_kemuri-b.png",
   hiyori: "hiyori-a.png",
   kumicho: "kumicho-b.png",
-  maezono: "maezono-08.png", // 私服セットの08番をお仕事用アカウントに使う
+  uezono: "maezono-08.png", // 私服セットの08番をお仕事用アカウントに使う
   mashiro: "mashiro-b.png",
-  sui: "sui-a.png",
+  sensu: "sui-a.png",
   naru: "naru-private.png", // 私服案をお仕事用アカウントに使う（なるに私用アカウントは無い）
   pakki: "pakki-a.png",
-  rei: "rei-b.png",
+  kuraudo: "rei-b.png",
   rio: "rio-a.png",
   samechan: "samechan-koro.png",
   sumi: "sumi-b.png",

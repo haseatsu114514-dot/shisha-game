@@ -660,7 +660,7 @@
           "text": "路地の「煙幕」。開店前の店で、綾取がノートをめくっていた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "あれ、来てくれたんだ。今日は吸う？　休む？"
         },
@@ -670,12 +670,12 @@
           "text": "今日は話だけです。綾取さんのノート、何が書いてあるのか気になって"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "葉と炭の位置。それから、客が何の味だと言ったか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "同じ一台でも、答えはばらばら。外れた答えの方が、面白いことも多いよ"
         },
@@ -685,7 +685,7 @@
           "text": "外れた答えも、消さないんですね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "serious",
           "text": "消したら、その人の一口がなかったことになるじゃん"
         },
@@ -695,7 +695,7 @@
           "text": "（今は自分の舌を信じきれない。でも、客の言葉なら書き留められる）"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smug",
           "text": "君もノート、つけてみたら？　僕の組織、書記も募集中"
         },
@@ -705,7 +705,7 @@
           "text": "入りません。でも、つけてみます"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "振られた。……作業台は、いつでも空けとくよ"
         }
@@ -719,19 +719,19 @@
           "text": "昼の煙幕。綾取は客席を拭きながら、こちらに手を振った。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "来たね。で、どうしたいか決まった？"
         },
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ch3_trial_saku",
+          "flag": "_ch3_trial_ayatori",
           "next_true": "tried",
           "next_false": "untried"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "大会の日は、最初の一口だけで決めないでね"
         },
@@ -741,7 +741,7 @@
           "text": "……それ、忠告ですか？"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "さあ。半分はね"
         }
@@ -754,7 +754,7 @@
             "text": "mukaiで一台作りました。炭を急がない方が、後ろに甘さが残りました"
           },
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "surprise",
             "text": "自分の台で確かめたんだ。……それ、僕に教えてよかったの？"
           },
@@ -764,7 +764,7 @@
             "text": "綾取さんに聞いたことだから。答えも返したくて"
           },
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "smile",
             "text": "律儀だなぁ。じゃあ僕からも一つ"
           }
@@ -776,12 +776,12 @@
             "text": "まだです。大会までに、自分の台で一度確かめます"
           },
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "normal",
             "text": "うん。僕に答えを預けるより、ずっといい"
           },
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "smile",
             "text": "その代わり、僕からも一つ"
           }
@@ -1768,7 +1768,7 @@
           "text": "店主さん、コーラ味ってある？"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "コーラの葉なら、棚にあるよ。でも今日は、使わないで出していい？"
         },
@@ -1788,7 +1788,7 @@
           "text": "……え、コーラだ。しゅわっとした気までする"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smug",
           "text": "炭酸は一滴も入ってないよ。種は、そこの三つの袋"
         },
@@ -1803,7 +1803,7 @@
           "text": "綾取はノートに客の答えを書いた。笑った顔の方を、字より長く見ている。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "昼の客には、同じ三つで「薬っぽい」って言われたけどね"
         },
@@ -1813,7 +1813,7 @@
           "text": "外れたのに、うれしそうですね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "serious",
           "text": "当たったら、僕の頭の中と同じだっただけ。外れたら、その人の一口がある"
         }
@@ -1833,12 +1833,12 @@
           "text": "手伝います"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "surprise",
           "text": "え、いいの？　……じゃあ、そっちのボウルをお願い"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smug",
           "text": "そうだ。今日も噂、流しといたよ"
         },
@@ -1848,7 +1848,7 @@
           "text": "今度は、どんな噂ですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "「煙幕の店主は、客の思い出の味を出す」ってね"
         },
@@ -1858,7 +1858,7 @@
           "text": "……大げさですね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "大げさな方が、人は路地に入ってくる。入った後は、一台でちゃんと返す"
         },
@@ -1878,7 +1878,7 @@
           "text": "煙幕のカウンター。綾取が、こちらの手帳をのぞき込んだ。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "それ、手帳？　何を書いてるの"
         },
@@ -1888,7 +1888,7 @@
           "text": "客の顔と、煙の量です"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "見せて。……「二口目で黙る」って書いてある"
         },
@@ -1898,12 +1898,12 @@
           "text": "うまい時か、困った時か、まだ分からなくて"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "serious",
           "text": "分からないって書けるの、いいね。僕はすぐ、分かったことにしちゃう"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smug",
           "text": "交換ね。僕のノートも、見ていいよ"
         },
@@ -1917,7 +1917,7 @@
           "text": "……一つも、分からないって書いてないですね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "でしょ。だから、君の手帳がちょっとうらやましい"
         }
@@ -2733,7 +2733,7 @@
           "text": "綾取がノートを閉じて、持ち帰りのうどんをカウンターに置いた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smug",
           "text": "今から僕は、重要な会議に入る"
         },
@@ -2743,7 +2743,7 @@
           "text": "……ごはんですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "早いな。もう少し、もったいぶりたかったのに"
         },
@@ -2758,7 +2758,7 @@
           "text": "綾取は割り箸を二膳出しかけて、一膳だけ袋へ戻した。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "食べた？"
         },
@@ -2768,7 +2768,7 @@
           "text": "俺は、さっき済ませました。どうぞ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "じゃあ、遠慮なく。話しかけるなら、飲み込んでからね"
         },
@@ -2783,7 +2783,7 @@
           "text": "（この人も、食べてる間は普通に黙るんだ）"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "……今、失礼なこと考えたでしょ"
         },
@@ -2793,7 +2793,7 @@
           "text": "まだ何も言ってません"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "口に出すまで待ってあげたのに"
         }
@@ -2809,7 +2809,7 @@
           "text": "煙幕の奥で、綾取が丸椅子に乗って、棚の上へ手を伸ばしていた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "nervous",
           "text": "あ、ちょうどいい所に。上の箱、取れる？"
         },
@@ -2824,7 +2824,7 @@
           "text": "これですか。……「借りた人は触らないこと」って書いてあります"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "surprise",
           "text": "えっ、……本当だ。じゃあ、戻して、そっと"
         },
@@ -2839,7 +2839,7 @@
           "text": "取りたかったの、こっちですよね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "そう、それ。なんで僕、届かない所に自分の物を置いたんだろう"
         },
@@ -2849,7 +2849,7 @@
           "text": "置いた日は、椅子に乗ったんじゃないですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smug",
           "text": "乗った。……次も乗ればいいって、その日の僕は思ったんだね"
         },
@@ -2859,12 +2859,12 @@
           "text": "綾取は炭の袋を受け取って、手の届く棚の、いちばん端に置き直した。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "間借りの店って、どこまでが僕の場所か、まだ分からなくて"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "届く所だけ僕の、ってことにしておく"
         }
@@ -2885,7 +2885,7 @@
           "text": "店の植物ですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "店を貸してくれた人のね。「枯らしたら家賃倍」って言われてる"
         },
@@ -2895,7 +2895,7 @@
           "text": "……枯れかけてません？"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "nervous",
           "text": "だよね。毎日見てるのに、何が足りないのか分からない"
         },
@@ -2910,7 +2910,7 @@
           "text": "上だけ濡れてます。水、ちょっとずつ何回もあげてませんか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "surprise",
           "text": "……あげてる。心配だから、来るたびに少しだけ"
         },
@@ -2925,12 +2925,12 @@
           "text": "綾取は鉢を流しへ運んで、底の穴から水が落ちるまで注いだ。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "客の好みは書き留めるのに、この子には聞かなかったな"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smug",
           "text": "君、今日から鉢の係ね。家賃が倍になったら、半分出してもらうから"
         },
@@ -2956,7 +2956,7 @@
           "text": "いつもので"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "はーい。いつもの、ね"
         },
@@ -2976,7 +2976,7 @@
           "text": "（……見てる）"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "今日は少し、ミントを減らしておきますね。この前、三口目でむせてたから"
         },
@@ -2991,7 +2991,7 @@
           "text": "客が煙を吐くのを見届けてから、綾取は小声でこちらに言った。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smug",
           "text": "三回目なんだよ、あの人。「いつもの」になってから、まだ二回"
         },
@@ -3001,7 +3001,7 @@
           "text": "書いておけば、三回目でも常連なんですね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "serious",
           "text": "書かないと、僕はすぐ忘れるから。覚えてる顔をするのは、得意なんだけど"
         },

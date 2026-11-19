@@ -154,9 +154,9 @@
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "rei",
-          "next_true": "rei_known",
-          "next_false": "rei_first"
+          "char_id": "kuraudo",
+          "next_true": "kuraudo_known",
+          "next_false": "kuraudo_first"
         },
         {
           "speaker": "pakki",
@@ -205,16 +205,16 @@
             "text": "（あの色付き眼鏡の人も、出場者か。名前を聞くのは初めてだ）"
           }
         ],
-        "rei_known": [
+        "kuraudo_known": [
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "smile",
             "text": "また会ったな。今日の煙、聴かせてもらう"
           }
         ],
-        "rei_first": [
+        "kuraudo_first": [
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "smile",
             "text": "「貴方ノ為ノ此ノ煙。」のクラウド。今日の煙、楽しみにしてる"
           }
@@ -280,12 +280,12 @@
           "text": "客席がどっと沸いた。あげはは赤い顔のまま、台の縁を指で軽く叩いた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……いい音だ。今日は、隣の台の音も聴いてる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "でも一番は、終わったあとの三秒。今日の煙も、そこまで聴いて"
         },
@@ -446,22 +446,22 @@
           "text": "第弐条ッ！ 一台を作って提供し、二度の調整まで同じ一台で勝負です！ ぷぷぷっ！"
         },
         {
-          "speaker": "maezono",
+          "speaker": "uezono",
           "face": "serious",
           "text": "調整のたびに、全員の一台を吸わせてもらいます。楽しみだねえ"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "ブンさん、今日も楽しそうですね"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "smile",
           "text": "私たちは、一人10点ずつ持っている。気になった煙へ、途中でも投入するよ"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "serious",
           "text": "一度入れた点は戻さない。最後に合計して、県代表を決める"
         },
@@ -563,7 +563,7 @@
           "text": "……映画の話だ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……おめでとう。最後の調整、音が揃ったみたいだった"
         },
@@ -573,7 +573,7 @@
           "text": "壇上を降りかけたところで、審査員席を離れた千須が、俺の前で足を止めた。"
         },
         {
-          "speaker": "sui",
+          "speaker": "sensu",
           "face": "serious",
           "duck": true,
           "text": "見事な正解だ。だが、その煙は誰の顔を見て作った？"
@@ -589,11 +589,11 @@
         },
         {
           "type": "hide_portrait",
-          "char_id": "rei"
+          "char_id": "kuraudo"
         },
         {
           "type": "hide_portrait",
-          "char_id": "sui"
+          "char_id": "sensu"
         },
         {
           "speaker": "",

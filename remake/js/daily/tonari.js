@@ -153,18 +153,18 @@ async function baitoShift({ called, story, owner, signal }) {
   if (!current()) return false; // 本編の場面の途中で LOAD した時は、ここで止める
   if (storyId) rememberBaito(storyId, [storyId]);
   // 正体を伏せた客が一度だけ混ざる（後の章・大会当日で回収される伏線）
-  else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n === 2 && !state.flags._ev_rei_cameo) {
-    state.flags._ev_rei_cameo = true;
-    if (!await read("ch1_rei_cameo", { bg: TONARI_BG })) return false;
-    rememberBaito("ch1_rei_cameo", ["rei"]);
+  else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n === 2 && !state.flags._ev_kuraudo_cameo) {
+    state.flags._ev_kuraudo_cameo = true;
+    if (!await read("ch1_kuraudo_cameo", { bg: TONARI_BG })) return false;
+    rememberBaito("ch1_kuraudo_cameo", ["kuraudo"]);
   } else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n >= 3 && state.day >= 4 && !state.flags._ev_reviewer_cameo) {
     state.flags._ev_reviewer_cameo = true;
     if (!await read("ch1_reviewer_cameo", { bg: TONARI_BG })) return false;
     rememberBaito("ch1_reviewer_cameo", ["reviewer"]);
-  } else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n >= 4 && state.day >= 6 && !state.flags._ev_maezono_cameo) {
-    state.flags._ev_maezono_cameo = true;
-    if (!await read("ch1_maezono_cameo", { bg: TONARI_BG })) return false;
-    rememberBaito("ch1_maezono_cameo", ["maezono"]);
+  } else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n >= 4 && state.day >= 6 && !state.flags._ev_uezono_cameo) {
+    state.flags._ev_uezono_cameo = true;
+    if (!await read("ch1_uezono_cameo", { bg: TONARI_BG })) return false;
+    rememberBaito("ch1_uezono_cameo", ["uezono"]);
   } else {
     if (await customerEvent(condition, signal) === false) return false;
   }
@@ -346,7 +346,7 @@ export const CH2_SHIFT_TALKS = Object.freeze([
   // 柚ヶ谷へ通い始めた後（DAY2以降）
   { id: "ch2_shift_talk_fare", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
   // DAY1の配達で三軒に入り、三人と面識がある時
-  { id: "ch2_shift_talk_three_shops", when: (s) => !!(s.met?.ageha && s.met?.kumicho && s.met?.rei) },
+  { id: "ch2_shift_talk_three_shops", when: (s) => !!(s.met?.ageha && s.met?.kumicho && s.met?.kuraudo) },
   // DAY6の「しばらく飯はうちで食ってけ」の後
   { id: "ch2_shift_talk_supper", when: (s) => !!s.flags?._ch2_read_ch2_lingering_smell },
   { id: "ch2_shift_talk_receipts", when: (s) => (ch2DayOf(s) ?? 3) >= 3 },

@@ -810,7 +810,7 @@
           "text": "ドアベルがもう一度鳴った。白衣ではない上着の博士が、空いた席に座る。"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "少し軽めで。……時間は、一時間あります"
         },
@@ -825,12 +825,12 @@
           "text": "9000は、どうしてますか"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "ラボにいます。近ごろは最初に『本日は、どれくらいお時間がありますか』と尋ねるようになりました"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "text": "私も、白衣はラボに置いてきました。来週から、知り合いの店のカウンターに立ちます"
         },
@@ -840,7 +840,7 @@
           "text": "じゃあ、今日は偵察ですね"
         },
         {
-          "speaker": "dr_kemuri",
+          "speaker": "dr_charcoal",
           "face": "normal",
           "beat": 500,
           "text": "いえ。今日は、客です"

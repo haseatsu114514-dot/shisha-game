@@ -256,7 +256,7 @@
       }
     },
     {
-      "dialogue_id": "remake_ch2_rei_chat",
+      "dialogue_id": "remake_ch2_kuraudo_chat",
       "lines": [
         {
           "speaker": "",
@@ -264,7 +264,7 @@
           "text": "クラウドが、棚から一枚のCDを取り出した。裏返して、ケースの角を指で支える。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……最初なら、これ。聴いてみる？"
         },
@@ -274,7 +274,7 @@
           "text": "ありがとうございます。ジャケットだけでも、雰囲気が違いますね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……同じ人たちの曲でも、盤ごとに違う。好きなのだけ、飾ってる"
         },
@@ -284,13 +284,13 @@
           "text": "お客さんも、曲の話をするんですか？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……する。何も知らずに来る人もいる。ギター見て、話し始めたり"
         },
         {
           "type": "choice",
-          "id": "ch2_rei_first_chat",
+          "id": "ch2_kuraudo_first_chat",
           "choices": [
             {
               "text": "知らなくても来ていいんですね",
@@ -303,7 +303,7 @@
           ]
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……無理に詳しくならなくていい。聴いて、好きなら、それで"
         },
@@ -327,7 +327,7 @@
             }
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……俺も、最初は知らなかった。好きになってから覚えた"
           },
@@ -345,7 +345,7 @@
             }
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……いつも何を聴くか、聞く。それでも分からなければ、ひとつ流してみる"
           },
@@ -586,10 +586,10 @@
       ]
     },
     {
-      "dialogue_id": "remake_ch2_rei_repeat",
+      "dialogue_id": "remake_ch2_kuraudo_repeat",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……この間の曲、どうだった？"
         },
@@ -599,7 +599,7 @@
           "text": "一回目は、正直よく分からなくて"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……そうか"
         },
@@ -609,7 +609,7 @@
           "text": "でも三回目で、サビの前が一瞬静かになるのに気づきました"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……三回、聴いたのか"
         },
@@ -619,23 +619,23 @@
           "text": "煙を吐いたあと、すぐ次を吸わないのと、少し似てるなって"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "似てる。すぐ次を吸わなければ、余韻は残る"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……次の一枚、選んでおく。分からなかったら、分からないでいい"
         }
       ]
     },
     {
-      "dialogue_id": "remake_ch2_rei_repeat_b",
+      "dialogue_id": "remake_ch2_kuraudo_repeat_b",
       "comment": "#2027 通い訪問の小会話。初回相談と続編だけを前提にする。",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……今日の曲、分かる？"
         },
@@ -645,7 +645,7 @@
           "text": "ギターの音が、前に聴かせてもらったのと似てる気がします"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……同じ人たち。昔の曲"
         },
@@ -655,7 +655,7 @@
           "text": "有名な曲は聴いたことがあるんですけど、昔のは初めて聴きました"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "昔の方が、音が粗い。……でも、その粗いところが好きで"
         },
@@ -665,19 +665,19 @@
           "text": "煙も、整いすぎてない方がいい時ってありますか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……ある。少しざらっとしてる方が、残る"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……次も、粗いのを選んでおく。気に入ったら、そう言って"
         }
       ]
     },
     {
-      "dialogue_id": "remake_ch2_rei_repeat_c",
+      "dialogue_id": "remake_ch2_kuraudo_repeat_c",
       "comment": "#2027 通い訪問の小会話。初回相談と続編だけを前提にする。",
       "lines": [
         {
@@ -686,7 +686,7 @@
           "text": "カウンターの端に、小さなメモ帳が開いたまま置いてあった。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……あ。それは、客の好み"
         },
@@ -696,12 +696,12 @@
           "text": "全部書いてるんですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……話すの、得意じゃないから。前に何を頼んだか、書いておく"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "次に来た時、聞かなくても出せる。……聞くの、苦手だから"
         },
@@ -711,7 +711,7 @@
           "text": "それ、すごい気遣いですよ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……そうか"
         },
@@ -723,7 +723,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_ch2_rei_repeat_d",
+      "dialogue_id": "remake_ch2_kuraudo_repeat_d",
       "comment": "#2027 通い訪問の小会話。初回相談と続編だけを前提にする。",
       "lines": [
         {
@@ -732,7 +732,7 @@
           "text": "店に入ると、クラウドがろうそくの照明を一つずつ確かめていた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……明るすぎると、煙が見えない。暗すぎると、怖がられる"
         },
@@ -742,7 +742,7 @@
           "text": "ちょうどいい暗さって、難しそうですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……難しい。だから毎日、少しずつ直してる"
         },
@@ -757,12 +757,12 @@
           "text": "今日の明るさ、落ち着きます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……なら、今日はこれで"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……次に来た時も、これくらいにしておく。覚えておく"
         }
@@ -1026,8 +1026,8 @@
       ]
     },
     {
-      "dialogue_id": "remake_ch2_rei_followup",
-      "comment": "候補A12。既存 remake_ch2_rei_followup（♥1の短い続編）の改稿案。IDは維持。初回相談で見せた盤の『音がすぐには重ならない』話を、実際の間を一緒に聴く場面へ広げる。鎧やステージの人格は出さない（#1474）。長い段階会話（first のカシス、second の月光花）の開示は先取りしない。",
+      "dialogue_id": "remake_ch2_kuraudo_followup",
+      "comment": "候補A12。既存 remake_ch2_kuraudo_followup（♥1の短い続編）の改稿案。IDは維持。初回相談で見せた盤の『音がすぐには重ならない』話を、実際の間を一緒に聴く場面へ広げる。鎧やステージの人格は出さない（#1474）。長い段階会話（first のカシス、second の月光花）の開示は先取りしない。",
       "lines": [
         {
           "speaker": "",
@@ -1035,7 +1035,7 @@
           "face": ""
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……それ、気になる？",
           "face": "normal"
         },
@@ -1045,7 +1045,7 @@
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……音が、すぐには重ならない",
           "face": "normal"
         },
@@ -1055,17 +1055,17 @@
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "ひとつ鳴って、消えかけたところに、次の音が来る",
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "その間が……いい。静かになっても、まだ続きがある感じがして",
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……だから、急いで次の曲にしない",
           "face": "normal"
         },
@@ -1105,7 +1105,7 @@
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……間が、話すと、消える気がして",
           "face": "normal"
         },
@@ -1115,7 +1115,7 @@
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……うん。煙も、同じでいいと思ってる",
           "face": "normal"
         },
@@ -1135,15 +1135,15 @@
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……そうか。気になったら、また聞いて",
           "face": "smile"
         }
       ]
     },
     {
-      "dialogue_id": "remake_ch2_rei_revisit",
-      "comment": "候補A13。既存 remake_ch2_rei_revisit（♥2の再訪）の改稿案。IDは維持。#952どおり『約束どおり一枚選んでおき、店で流す前に聴いてほしい』を残し、渡すまでの躊躇を厚くする。感想を頼むのは、クラウドが自分から願う場面として着地させる。本名や私生活の顔には触れない。",
+      "dialogue_id": "remake_ch2_kuraudo_revisit",
+      "comment": "候補A13。既存 remake_ch2_kuraudo_revisit（♥2の再訪）の改稿案。IDは維持。#952どおり『約束どおり一枚選んでおき、店で流す前に聴いてほしい』を残し、渡すまでの躊躇を厚くする。感想を頼むのは、クラウドが自分から願う場面として着地させる。本名や私生活の顔には触れない。",
       "lines": [
         {
           "speaker": "",
@@ -1156,7 +1156,7 @@
           "face": ""
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……来た。これ、選んでおいた",
           "face": "normal"
         },
@@ -1166,7 +1166,7 @@
           "face": "surprise"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……前に、ほかの話も聞きたいって言ってたから",
           "face": "normal"
         },
@@ -1181,7 +1181,7 @@
           "face": ""
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……見せる前に、やめようと思った。自分の好きを、先に出すのを",
           "face": "normal"
         },
@@ -1191,7 +1191,7 @@
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……そうか",
           "face": "smile"
         },
@@ -1206,22 +1206,22 @@
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……今は、店の音が混んでる。埋もれる",
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "ここに置いてく。かける夜に、来て",
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……この人たち、音を減らして、間を広げてる",
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……かける夜は、キミに聴いてほしかった",
           "face": "normal"
         },
@@ -1231,7 +1231,7 @@
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……うん。煙が濃い夜は、これくらいがいい気がする",
           "face": "normal"
         },
@@ -1241,12 +1241,12 @@
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……そう。それ",
           "face": "smile"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……今度、店で流す。その夜に来たら、感想を聞かせて",
           "face": "normal"
         },
@@ -1256,7 +1256,7 @@
           "face": "smile"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……無理に、詳しくならなくていい。好きか、嫌いかだけで",
           "face": "normal"
         },
@@ -1531,7 +1531,7 @@
       ]
     },
     {
-      "dialogue_id": "remake_ch2_rei_repeat_e",
+      "dialogue_id": "remake_ch2_kuraudo_repeat_e",
       "comment": "#3097 大会進行・恋愛関係に依存しない通いの日常。既存の訪問精算で読む。",
       "lines": [
         {
@@ -1545,7 +1545,7 @@
           "text": "ここ、入れ替えるんですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "ずっと同じだと、置いてあるのに見なくなるから"
         },
@@ -1555,7 +1555,7 @@
           "text": "俺も、今まで下の段ばかり見てました"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "背表紙だけのやつも、たまに表に出す。好きなの、多いし"
         },
@@ -1565,7 +1565,7 @@
           "text": "一枚を持ち上げかけて、クラウドの指が止まった。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "これ、見たことある？"
         },
@@ -1575,7 +1575,7 @@
           "text": "ないです。どんな曲ですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "最初、静かで。急に音が入る。初めて聴いた時、音量間違えたと思った"
         },
@@ -1585,7 +1585,7 @@
           "text": "じゃあ、ここで流す時は気をつけないと"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "うん。お客さんのカップ、揺らしたくないから"
         },
@@ -1600,7 +1600,7 @@
           "text": "今日はジャケットから、覚えて帰ります"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……次に来た時も、見つけてやって"
         }
