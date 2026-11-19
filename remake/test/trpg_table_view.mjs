@@ -592,27 +592,36 @@ test('speaker dock aligns expressions and role costumes consistently across scen
   const costumeFrames = Object.fromEntries(framesList.map(f => [`${f.scenario}/${f.character}/${f.role_id}`, f]));
   const mail = JSON.parse(await readFile(new URL('../../data/dialogue/trpg_regular_mail.json', import.meta.url), 'utf8'));
   const mounted = mount(mail, { costumeFrames }), { api, root, q } = mounted;
-  const seenStyles = { table: [], pc: [] };
+  let enteredStory = false;
+  const seen = new Set();
   q('trpg-start').click();
   for (let n = 0; !q('trpg-next').hidden; n++) {
     assert(n < 120);
     const kind = root.dataset.kind;
-    const img = root.querySelector('.trpg-speaker-art')?.querySelector('img');
-    if (img && (kind === 'pc' || kind === 'table' && root.querySelector('.trpg-dock').dataset.gm !== 'true')) {
-      seenStyles[kind].push({ src: img.getAttribute('src'), top: img.style.top, width: img.style.width, transform: img.style.transform });
+    if (kind !== 'table') enteredStory = true;
+    const seat = root.querySelector('[data-speaker="hajime"]').querySelector('img');
+    const src = seat.getAttribute('src');
+    if (enteredStory) {
+      assert.match(src, /costumes\/leaf-mail\/hajime_\w+\.webp$/);
+      const regular = root.querySelector('[data-speaker="regulara"]');
+      assert(regular.querySelector('.trpg-missing-costume'));
+      assert.equal(regular.querySelector('img'), null);
+    } else {
+      assert.doesNotMatch(src, /costumes/);
+    }
+    const art = root.querySelector('.trpg-speaker-art');
+    const active = root.querySelectorAll('[data-speaker]').find(node => node.classList.contains('active'));
+    if (active?.dataset.speaker === 'hajime' && (kind === 'pc' || kind === 'table')) {
+      const img = art.querySelector('img');
+      if (enteredStory) assert.equal(img.getAttribute('src'), src);
+      assert.equal(img.style.top, enteredStory ? '40%' : '35%');
+      assert.match(img.style.width, /%$/);
+      assert.match(img.style.transform, /^translate\(/);
+      seen.add(enteredStory ? kind : 'prologue');
     }
     q('trpg-next').click();
   }
-  assert(seenStyles.table.length > 0 && seenStyles.pc.length > 0, 'both table and pc speaker portraits rendered');
-  for (const st of seenStyles.table) {
-    assert.equal(st.top, '35%', 'table standing portrait eye line stays anchored at 35%');
-    assert.match(st.width, /%$/); assert.match(st.transform, /^translate\(/);
-  }
-  for (const st of seenStyles.pc) {
-    assert.match(st.src, /costumes\/(regular-mail|leaf-mail)\//, 'aliased or native costume URL resolved');
-    assert.equal(st.top, '40%', 'PC costume speaker eye line stays anchored at 40%');
-    assert.match(st.width, /%$/); assert.match(st.transform, /^translate\(/);
-  }
+  assert.deepEqual([...seen].sort(), ['pc', 'prologue', 'table']);
   api.destroy();
 });
 
