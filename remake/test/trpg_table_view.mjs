@@ -49,11 +49,19 @@ const context = vm.createContext({ Node: Dom, document: documentPort, URL, struc
   Image: class { decode() { return Promise.resolve(); } }, matchMedia: () => ({ matches: reducedMotion }),
   AbortController, setTimeout: (fn, delay) => { timers.push(fn); delays.push(delay); return timers.length; }, clearTimeout() {}, setInterval: fn => { tickers.push(fn); return tickers.length; }, clearInterval() {} });
 const modules = new Map();
+function sourceModule(url) {
+  // Cache before reading: simultaneous imports of the same URL must get one module.
+  if (!modules.has(url.href)) modules.set(url.href, (async () => {
+    const code = url.pathname.endsWith('/audio.js') ? 'export function createTrpgAudio() { throw new Error("audio port required"); }' : await readFile(url, 'utf8');
+    return new vm.SourceTextModule(code, { context, identifier: url.href, initializeImportMeta: meta => { meta.url = url.href; } });
+  })());
+  return modules.get(url.href);
+}
 async function load(url) {
-  if (modules.has(url.href)) return modules.get(url.href);
-  const code = url.pathname.endsWith('/audio.js') ? 'export function createTrpgAudio() { throw new Error("audio port required"); }' : await readFile(url, 'utf8');
-  const mod = new vm.SourceTextModule(code, { context, identifier: url.href, initializeImportMeta: meta => { meta.url = url.href; } });
-  modules.set(url.href, mod); await mod.link((specifier, parent) => load(new URL(specifier, parent.identifier))); return mod;
+  const mod = await sourceModule(url);
+  // Let the root link the shared graph; the callback only supplies module instances.
+  if (mod.status === 'unlinked') await mod.link((specifier, parent) => sourceModule(new URL(specifier, parent.identifier)));
+  return mod;
 }
 const mod = await load(new URL('../js/trpg/view.js', import.meta.url)); await mod.evaluate();
 const scenarios = await Promise.all(['ordinary', 'shark'].map(async theme => JSON.parse(await readFile(new URL('../../data/dialogue/trpg_' + theme + '.json', import.meta.url), 'utf8'))));
