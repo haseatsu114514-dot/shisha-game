@@ -1,5 +1,6 @@
 // Crops for TRPG circular face icons: same cheek-to-cheek scale and eye-line height
 // for every character (and the same numbers used to write costumes/frames.json).
+import { resolvePortrait } from "../core/portrait-resolver.js";
 import { portraitStyle } from "../core/portrait-style.js";
 import { FACE_FRAC, EYE_Y, PORTRAIT_FRAMES, NPC_FRAMES, EXTRA_PORTRAIT_FRAMES, PORTRAIT_FACE_SHIFTS } from "./face-crops-data.js";
 
@@ -49,29 +50,52 @@ export function npcFaceFrame(id) {
  * square) parent. Width / top are percentages of the parent, so the same style
  * works at 68px seats, 52px companions, and the smaller phone sizes.
  */
-export function circleFaceStyle(frame) {
-  if (!frame) return null;
-  const box = frame.box_exact || frame.box;
-  const [left, top, right] = box;
-  const side = right - left;
-  if (!(side > 0)) return null;
-  const srcW = frame.src?.[0];
-  if (!(srcW > 0)) return null;
-  const cx = frame.face?.cx ?? (left + right) / 2;
-  return {
-    position: "absolute",
-    left: "50%",
-    width: `${(srcW / side) * 100}%`,
-    maxWidth: "none",
-    height: "auto",
-    top: `${(-top / side) * 100}%`,
-    transform: `translateX(-${(cx / srcW) * 100}%)`,
-  };
+// Coordinates are iris centres read from the shipped art (896 × 1200). The six
+// costumes use the new Hiyori drawing even when the table uses classic portraits.
+// Printed costume cheek scans can include hair; two matching eyes recover scale
+// and translation without changing the pose or stretching the illustration.
+const VERIFIED_EYES = {
+  "new/hiyori/smile": [488, 294, 530, 276],
+  "new/hiyori/surprise": [485, 293, 526, 277],
+  "new/hiyori/sad": [484, 294, 526, 279],
+  "apple-thief/hiyori/rosa": [480, 276, 518, 262],
+  "apple-thief/hiyori/marta": [482, 278, 522, 265],
+  "leaf-mail/hiyori/yura": [500, 290, 544, 274],
+  "leaf-mail/hiyori/neri": [492, 284, 530, 269],
+  "shark-last-order/hiyori/otto": [483, 283, 524, 274],
+  "shark-last-order/hiyori/midori": [486, 289, 526, 273],
+};
+
+export function circleFaceStyle(frame, { eyes, reference, offset = [0, 0] } = {}) {
+  if (!frame?.face?.w) return null;
+  let { cx, eye_y: eyeY, w } = frame.face;
+  if (eyes && reference?.eye_l && reference?.eye_r) {
+    const [lx, ly, rx, ry] = eyes;
+    const scale = (rx - lx) / (reference.eye_r[0] - reference.eye_l[0]);
+    cx = (lx + rx) / 2 + (reference.cx - (reference.eye_l[0] + reference.eye_r[0]) / 2) * scale;
+    eyeY = (ly + ry) / 2;
+    w = reference.w * scale;
+  }
+  const [srcW, srcH] = frame.src;
+  return standingFrameStyle({ cx: cx + offset[0], eyeY: eyeY + offset[1], w, srcW, srcH },
+    { faceFrac: FACE_FRAC, eyeFrac: EYE_Y });
 }
 
-/** Inline style for a TRPG circle, or null to keep the standing-portrait fallback. */
-export function faceIconStyle(id, style = portraitStyle(), manifest = null) {
-  return circleFaceStyle(portraitFaceFrame(id, style, manifest));
+export function costumeIconStyle(frame) {
+  if (!frame) return null;
+  const key = [frame.scenario, frame.character, frame.role_id].join("/");
+  const eyes = VERIFIED_EYES[key];
+  return circleFaceStyle(frame, { eyes, reference: eyes && portraitFaceFrame(frame.character, "new")?.face });
+}
+
+/** Use the style and expression actually selected by the same resolver as the image URL. */
+export function faceIconStyle(id, style = portraitStyle(), manifest = null, face = "normal") {
+  const asset = manifest && resolvePortrait(manifest, id, face, style);
+  const actualStyle = asset?.style || style, actualFace = asset?.face || face;
+  const frame = portraitFaceFrame(asset?.folder || id, actualStyle, manifest);
+  const eyes = VERIFIED_EYES[[actualStyle, asset?.folder || id, actualFace].join("/")];
+  return circleFaceStyle(frame, { eyes, reference: frame?.face,
+    offset: eyes ? [0, 0] : portraitFaceShift(id, actualFace, actualStyle) });
 }
 
 /**

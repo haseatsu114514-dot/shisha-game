@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 import { COSTUME_KEYS, resolvedCostumeKey } from "../js/trpg/costumes.js";
-import { FACE_FRAC, EYE_Y, NPC_FRAMES, PORTRAIT_FRAMES, EXTRA_PORTRAIT_FRAMES, circleFaceStyle, npcBustStyle, npcFaceFrame, portraitFaceFrame } from "../js/trpg/face-crops.js";
+import { FACE_FRAC, EYE_Y, NPC_FRAMES, PORTRAIT_FRAMES, EXTRA_PORTRAIT_FRAMES, circleFaceStyle, costumeIconStyle, faceIconStyle, npcBustStyle, npcFaceFrame, portraitFaceFrame } from "../js/trpg/face-crops.js";
 
 const frames = JSON.parse(await readFile(new URL("../img/ui/trpg/costumes/frames.json", import.meta.url), "utf8"));
 const CAST = ["hajime", "hiyori", "samechan", "tsumugi", "ageha", "adam", "rei", "sumi", "salaryman"];
@@ -48,12 +48,10 @@ test("circleFaceStyle fills the parent with the crop and keeps the face centered
   const frame = portraitFaceFrame("samechan", "new");
   const style = circleFaceStyle(frame);
   assert.ok(style);
-  const side = frame.box_exact[2] - frame.box_exact[0];
-  const widthPct = parseFloat(style.width);
-  assert.ok(Math.abs(widthPct - (frame.src[0] / side) * 100) < 0.01);
-  const topPct = parseFloat(style.top);
-  assert.ok(Math.abs(topPct - (-frame.box_exact[1] / side) * 100) < 0.01);
-  assert.match(style.transform, /translateX\(-/);
+  const side = frame.face.w / FACE_FRAC;
+  assert.ok(Math.abs(parseFloat(style.width) - frame.src[0] / side * 100) < 1e-6);
+  assert.equal(style.top, "42%");
+  assert.match(style.transform, /^translate\(/);
   // Samechan's shark hood must not be the crop: the face crop is tighter than 400px.
   assert.ok(side < 400, `samechan crop side ${side}`);
 });
@@ -150,5 +148,31 @@ test("extended cast (sai, regulars), regular-table costume aliases, speaker bust
       assert.equal(shifted.width, base.width);
       assert.notEqual(shifted.transform, base.transform, `new/${id}/${face} compensates canvas offset`);
     }
+  }
+});
+
+test("round icons resolve the displayed style and expression before positioning the eyes", () => {
+  const manifest = { portraits: { hiyori: { faces: ["normal", "surprise"] } },
+    portraitVariants: { new: { hiyori: { faces: ["surprise"] } } } };
+  assert.deepEqual(faceIconStyle("hiyori", "new", manifest), faceIconStyle("hiyori", "classic"));
+  assert.notDeepEqual(faceIconStyle("hiyori", "new", manifest, "surprise"), faceIconStyle("hiyori", "new"));
+  assert.deepEqual(faceIconStyle("hiyori", "classic", manifest, "missing"), faceIconStyle("hiyori", "classic"));
+});
+
+test("actual Hiyori iris pairs align across round frames and preserve her normal projected eye separation", () => {
+  const normal = faceIconStyle("hiyori", "new");
+  function iris(style, x, y) {
+    const [tx, ty] = style.transform.match(/-?[\d.]+/g).map(Number);
+    const scale = parseFloat(style.width) / 100;
+    return [0.5 + (x / 896 + tx / 100) * scale, EYE_Y + (y / 1200 + ty / 100) * scale * 1200 / 896];
+  }
+  const target = iris(normal, 502, 281.5);
+  for (const [id, left, right] of [["otto",[483,283],[524,274]], ["neri",[492,284],[530,269]],
+    ["marta",[482,278],[522,265]], ["smile",[488,294],[530,276]]]) {
+    const rec = frames.find(f => f.character === "hiyori" && f.role_id === id);
+    const st = rec ? costumeIconStyle(rec) : faceIconStyle("hiyori","new",null,id);
+    const l = iris(st,...left), r = iris(st,...right);
+    assert.ok(Math.abs((l[0]+r[0])/2-target[0]) < .001 && Math.abs((l[1]+r[1])/2-EYE_Y) < .001, id);
+    assert.ok(Math.abs(r[0]-l[0] - FACE_FRAC/2) < .001, id);
   }
 });
