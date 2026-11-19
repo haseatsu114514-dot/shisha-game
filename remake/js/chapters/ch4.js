@@ -252,7 +252,7 @@ async function renderCompanionChoice(owner) {
   card(owner, "companion", "出発前・同行の選択",
     lovers.length ? "ドバイへ一緒に行く恋人を、1人まで選べる。選ばなかった恋人も、別の便で応援に来られる。"
       : "今回は、一緒に行く恋人はいない。",
-    [...lovers.map(id => button(owner, DB.characters[id]?.name || id, `companion-${id}`, choose(id))),
+    [...lovers.map(id => button(owner, displayName(id, state, { context: "private" }), `companion-${id}`, choose(id))),
       button(owner, "同行なし", "companion-none", choose(null), !lovers.length)]);
 }
 
