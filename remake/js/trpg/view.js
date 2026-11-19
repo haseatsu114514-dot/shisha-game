@@ -925,11 +925,13 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       renderBody();
       root.querySelector('[data-test="trpg-finish"]')?.focus({ preventScroll: true });
     };
+    // ステージ縮小後も、保存・見送りのどちらにも44px以上の高さを残す。
+    const touchTarget = { minHeight: "max(54px, calc(44px / var(--k, 1)))" };
     pop = modal("リプレイを保存しますか？", el("p.trpg-modal-intro", {
       text: "保存すると、この回の選択・出目・結末を本棚で見返せます。保存しなくても、本編の進行は残ります。",
     }), [
-      button("保存しない", "trpg-replay-save-no", () => decide(false)),
-      button("保存する", "trpg-replay-save-yes", () => decide(true), { class: "primary" }),
+      button("保存しない", "trpg-replay-save-no", () => decide(false), { style: touchTarget }),
+      button("保存する", "trpg-replay-save-yes", () => decide(true), { class: "primary", style: touchTarget }),
     ], { onDismiss: () => decide(false) });
     if (pop) {
       pop.box.dataset.test = "trpg-replay-save-question";

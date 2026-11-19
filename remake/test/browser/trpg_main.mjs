@@ -418,6 +418,10 @@ await suite("trpg-main", async check => {
     await button(page, "trpg-replay-save-question").waitFor();
     assert.match(await button(page, "trpg-replay-save-question").textContent(), /リプレイを保存しますか？.*本編の進行は残ります/s);
     await assertFits(page, '[data-test="trpg-replay-save-yes"], [data-test="trpg-replay-save-no"]');
+    for (const choice of ["yes", "no"]) {
+      const rect = await button(page, "trpg-replay-save-" + choice).boundingBox();
+      assert(rect && rect.height >= 43.9, "Both replay decisions keep a 44px tap target");
+    }
     await page.screenshot({ path: (process.env.ARTIFACT_DIR || ".codex/artifacts/trpg") + "/trpg-replay-choice-" + label + ".png" });
     await hit(page, "trpg-replay-save-yes");
     await button(page, "trpg-replay-save-question").waitFor({ state: "detached" });
