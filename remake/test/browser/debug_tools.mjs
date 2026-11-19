@@ -419,5 +419,224 @@ await suite("debug-tools", async check => {
     assert.equal(saved.flags._ch2_day1.startDay, 15);
     assert.equal(saved.flags._ch2_day1.stage, "departure");
   });
-}, { entry: `${baseURL}?debug=1` });
+
+  const attachBgmAudio = page => page.evaluate(async () => {
+    window.__bgmAudio = await import("./js/core/audio.js");
+  });
+
+  const verifyTitleBgmLifecycle = async (page, games) => {
+    await attachBgmAudio(page);
+    await openPanel(page);
+    await page.waitForFunction(() => window.__bgmAudio.currentBgm() === "title"
+      && window.__bgmElements.some(a => a.src.endsWith("/title.mp3") && !a.paused && a.volume > 0));
+
+    for (const [id, screen, expectedBgm] of games) {
+      if (await page.locator(t("debug-panel")).isVisible() === false) await openPanel(page);
+      await page.locator(t(`debug-minigame-${id}`)).click();
+      await page.locator(t(screen)).waitFor({ timeout: 30000 });
+      if (screen === "dj-frame") {
+        await page.waitForFunction(() => {
+          const frame = document.querySelector('[data-test="dj-frame"]');
+          return frame?.contentDocument?.readyState === "complete";
+        });
+      }
+      await page.waitForFunction(() => window.__bgmElements
+        .filter(a => a.src.endsWith("/title.mp3"))
+        .every(a => a.paused && a.volume === 0));
+      if (expectedBgm) {
+        await page.waitForFunction(k => window.__bgmAudio.currentBgm() === k
+          && window.__bgmElements.some(a => a.src.startsWith("blob:") && !a.paused && a.volume > 0), expectedBgm);
+      } else {
+        assert.equal(await page.evaluate(() => window.__bgmAudio.currentBgm()), null, `${id} starts without title BGM`);
+        await page.waitForFunction(() => window.__bgmElements
+          .every(a => a.paused && (!window.__bgmPlayed.has(a) || a.volume === 0)));
+      }
+      await page.locator(t("debug-toggle")).click();
+      await page.locator(t("debug-minigame-close")).click();
+      await page.locator(t("title-new")).waitFor({ timeout: 30000 });
+      await page.waitForFunction(() => window.__bgmAudio.currentBgm() === "title"
+        && window.__bgmElements.some(a => a.src.endsWith("/title.mp3") && !a.paused && a.volume > 0));
+      await page.waitForFunction(() => window.__bgmElements
+        .filter(a => !a.src.endsWith("/title.mp3"))
+        .every(a => a.paused && (!window.__bgmPlayed.has(a) || a.volume === 0)));
+    }
+  };
+
+  await check("minigames-stop-title-bgm-and-restore-on-close", page => verifyTitleBgmLifecycle(page, [
+    ["axe", "axe-game", "bgm_axe"],
+    ["camel", "camel-game", null],
+    ["desert", "desert-ride", null],
+    ["dj-1", "dj-frame", null],
+  ]));
+
+  await check("minigames-stop-title-bgm-and-restore-on-close-part2", page => verifyTitleBgmLifecycle(page, [
+    ["ichidai", "ichi-game", null],
+    ["trpg", "trpg-play-ordinary-cup", "bgm_trpg"],
+    ["tetsuko", "tetsuko-cat", "bgm_tetsuko_time"],
+  ]));
+
+  await check("debug-minigame-switch-and-ingame-bgm-restore", async page => {
+    await attachBgmAudio(page);
+    await openPanel(page);
+    await page.waitForFunction(() => window.__bgmAudio.currentBgm() === "title"
+      && window.__bgmElements.some(a => a.src.endsWith("/title.mp3") && !a.paused && a.volume > 0));
+
+    // Switching directly between minigames stops the first minigame BGM and still restores title BGM on close.
+    await page.locator(t("debug-minigame-axe")).click();
+    await page.locator(t("axe-game")).waitFor({ timeout: 30000 });
+    await page.waitForFunction(() => window.__bgmAudio.currentBgm() === "bgm_axe"
+      && window.__bgmElements.some(a => a.src.startsWith("blob:") && !a.paused && a.volume > 0));
+    await openPanel(page);
+    await page.locator(t("debug-minigame-ichidai")).click();
+    await page.locator(t("ichi-game")).waitFor({ timeout: 30000 });
+    assert.equal(await page.evaluate(() => window.__bgmAudio.currentBgm()), null);
+    await page.waitForFunction(() => window.__bgmElements
+      .every(a => a.paused && (!window.__bgmPlayed.has(a) || a.volume === 0)));
+    await openPanel(page);
+    await page.locator(t("debug-minigame-close")).click();
+    await page.locator(t("title-new")).waitFor({ timeout: 30000 });
+    await page.waitForFunction(() => window.__bgmAudio.currentBgm() === "title"
+      && window.__bgmElements.some(a => a.src.endsWith("/title.mp3") && !a.paused && a.volume > 0));
+
+    // Opening from an in-game screen returns to that screen and restores its BGM and duck level.
+    await page.evaluate(() => {
+      document.body.dataset.screen = "map";
+      window.__bgmAudio.playBgm("tonari");
+      window.__bgmAudio.duckBgm(0.5, 0);
+    });
+    await page.waitForFunction(() => window.__bgmAudio.currentBgm() === "tonari"
+      && window.__bgmElements.some(a => a.src.endsWith("/tonari.mp3") && !a.paused && a.volume > 0));
+    await openPanel(page);
+    await page.locator(t("debug-minigame-ichidai")).click();
+    await page.locator(t("ichi-game")).waitFor({ timeout: 30000 });
+    assert.equal(await page.evaluate(() => window.__bgmAudio.currentBgm()), null);
+    await page.waitForFunction(() => window.__bgmElements
+      .every(a => a.paused && (!window.__bgmPlayed.has(a) || a.volume === 0)));
+    await openPanel(page);
+    await page.locator(t("debug-minigame-close")).click();
+    await page.waitForFunction(() => window.__bgmAudio.currentBgm() === "tonari"
+      && window.__bgmElements.some(a => a.src.endsWith("/tonari.mp3") && !a.paused && a.volume > 0));
+    assert.equal(await page.evaluate(() => document.body.dataset.screen), "map");
+    assert.equal(await page.evaluate(() => window.__bgmAudio.bgmDuckLevel()), 0.5);
+  });
+
+  await check("minigames-own-bgm-and-exit-restore-title", async page => {
+    await attachBgmAudio(page);
+    const waitTitleRestored = async () => {
+      await page.locator(t("title-new")).waitFor({ timeout: 30000 });
+      await page.waitForFunction(() => window.__bgmAudio.currentBgm() === "title"
+        && window.__bgmElements.some(a => a.src.endsWith("/title.mp3") && !a.paused && a.volume > 0));
+      await page.waitForFunction(() => window.__bgmElements
+        .filter(a => !a.src.endsWith("/title.mp3"))
+        .every(a => a.paused && (!window.__bgmPlayed.has(a) || a.volume === 0)));
+      assert.equal(await page.locator(t("debug-toggle")).innerText(), "DBG");
+    };
+    const waitTitleStopped = () => page.waitForFunction(() => window.__bgmElements
+      .filter(a => a.src.endsWith("/title.mp3"))
+      .every(a => a.paused && a.volume === 0));
+
+    await openPanel(page);
+    await page.waitForFunction(() => window.__bgmAudio.currentBgm() === "title"
+      && window.__bgmElements.some(a => a.src.endsWith("/title.mp3") && !a.paused && a.volume > 0));
+
+    // Camel race: starts bgm_camel_race on race start and restores title when closed via its own button.
+    await page.locator(t("debug-minigame-camel")).click();
+    await page.locator(t("camel-tutorial-skip")).click();
+    await page.waitForFunction(() => window.__bgmAudio.currentBgm() === "bgm_camel_race"
+      && window.__bgmElements.some(a => a.src.startsWith("blob:") && !a.paused && a.volume > 0));
+    await waitTitleStopped();
+    await page.locator(t("camel-close")).click();
+    await waitTitleRestored();
+
+    // DESERT RIDE: starts bgm_ethnic12 in practice and restores title when leaving via its own buttons.
+    await openPanel(page);
+    await page.locator(t("debug-minigame-desert")).click();
+    await page.locator(t("desert-practice")).click();
+    await page.waitForFunction(() => window.__bgmAudio.currentBgm() === "bgm_ethnic12"
+      && window.__bgmElements.some(a => a.src.startsWith("blob:") && !a.paused && a.volume > 0));
+    await waitTitleStopped();
+    await page.locator(t("desert-quit")).click();
+    await page.locator(t("desert-leave")).click();
+    await waitTitleRestored();
+
+    // DJ: starts its own WebAudio deck inside the iframe without title BGM and restores title on #exit.
+    await openPanel(page);
+    await page.locator(t("debug-minigame-dj-1")).click();
+    await page.locator(t("dj-frame")).waitFor({ timeout: 30000 });
+    let djFrame = null;
+    for (let i = 0; i < 100; i++) {
+      djFrame = page.frames().find(f => /previews\/dj\/index\.html/.test(f.url()));
+      if (djFrame && await djFrame.locator("#play-a").isVisible().catch(() => false)) break;
+      await page.waitForTimeout(50);
+    }
+    assert.ok(djFrame, "DJ iframe loaded");
+    await djFrame.locator("#play-a").click();
+    await page.waitForFunction(() => {
+      const f = [...document.querySelectorAll("iframe")].find(n => n.dataset.test === "dj-frame");
+      return f?.contentWindow;
+    });
+    for (let i = 0; i < 100; i++) {
+      const snap = await djFrame.evaluate(async () => (await import("./app.mjs")).snapshot());
+      if (snap.running) break;
+      await page.waitForTimeout(50);
+    }
+    assert.equal((await djFrame.evaluate(async () => (await import("./app.mjs")).snapshot())).running, true);
+    await waitTitleStopped();
+    await djFrame.locator("#exit").click();
+    await page.locator(t("dj-frame")).waitFor({ state: "detached" });
+    await waitTitleRestored();
+
+    // Axe, TRPG, and Tetsuko own exit buttons also restore title BGM and DBG toggle state.
+    await openPanel(page);
+    await page.locator(t("debug-minigame-axe")).click();
+    await page.locator(t("axe-cancel")).click();
+    await waitTitleRestored();
+
+    await openPanel(page);
+    await page.locator(t("debug-minigame-trpg")).click();
+    await page.locator(t("trpg-campaign-close")).click();
+    await page.locator(t("trpg-tryout-exit")).click();
+    await waitTitleRestored();
+
+    await openPanel(page);
+    await page.locator(t("debug-minigame-tetsuko")).click();
+    await page.locator(t("tetsuko-cat")).waitFor({ timeout: 30000 });
+    await page.waitForFunction(() => window.__bgmAudio.currentBgm() === "bgm_tetsuko_time");
+    await page.locator(t("tetsuko-time-back")).click();
+    await waitTitleRestored();
+
+    // Switching directly from tetsuko (which replaced #screen) to ichidai stops bgm_tetsuko_time and restores title on exit.
+    await openPanel(page);
+    await page.locator(t("debug-minigame-tetsuko")).click();
+    await page.locator(t("tetsuko-cat")).waitFor({ timeout: 30000 });
+    await page.waitForFunction(() => window.__bgmAudio.currentBgm() === "bgm_tetsuko_time");
+    await openPanel(page);
+    await page.locator(t("debug-minigame-ichidai")).click();
+    await page.locator(t("ichi-game")).waitFor({ timeout: 30000 });
+    assert.equal(await page.evaluate(() => window.__bgmAudio.currentBgm()), null);
+    await page.waitForFunction(() => window.__bgmElements
+      .every(a => a.paused && (!window.__bgmPlayed.has(a) || a.volume === 0)));
+    await page.locator(t("ichi-close")).click();
+    await waitTitleRestored();
+  });
+}, {
+  entry: `${baseURL}?debug=1`,
+  initScript: () => {
+    window.__bgmElements = [];
+    window.__bgmPlayed = new WeakSet();
+    const NativeAudio = window.Audio;
+    window.Audio = function (...args) {
+      const a = new NativeAudio(...args);
+      window.__bgmElements.push(a);
+      return a;
+    };
+    window.Audio.prototype = NativeAudio.prototype;
+    const nativePlay = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function (...args) {
+      if (!window.__bgmElements.includes(this)) window.__bgmElements.push(this);
+      window.__bgmPlayed.add(this);
+      return nativePlay.apply(this, args);
+    };
+  },
+});
 
