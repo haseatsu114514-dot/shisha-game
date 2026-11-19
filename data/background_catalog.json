@@ -1446,12 +1446,11 @@
    "time": "",
    "weather": "",
    "size": [
-    1672,
-    940
+    1920,
+    1080
    ],
    "luma": 67,
-   "blob": "2ff9defa1d2c3842bf677b3231dfb9b53b527134",
-   "accepted": "#3810 生成原寸を使用（規格まで拡大しない）",
+   "blob": "a2cec848ddce5f149a9f2c958d199dbe54101cab",
    "prompt": "asset_sources/issue-3810/README.md"
   },
   "peppermint.png": {
