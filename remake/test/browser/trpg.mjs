@@ -657,7 +657,7 @@ try {
     await twistStep(page);
     await finish(page, movie.choices);
     assert.equal(await page.locator('[data-test="trpg-ending-title"]').textContent(), movie.ending);
-    assert.equal((await page.evaluate(() => __trpg.snapshot())).checks.find(c => c.kind === "prepare").hypothesisBonus, 4); // d20版の見立て補正
+    assert.equal((await page.evaluate(() => __trpg.snapshot())).checks.find(c => c.kind === "prepare").hypothesisBonus, 5); // d20版の見立て補正
     await fits(page);
     if (movie.label === "shark-scent-pc") {
       await hit(page, '[data-test="trpg-replay"]');

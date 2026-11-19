@@ -112,7 +112,7 @@ async function forecast(page, supported = false, conditional = false) {
     }
     return Object.fromEntries(Object.entries(counts).map(([grade, count]) => [grade, Math.round(count / 4)]));
   };
-  const ordinary = oddsFor(0), withInsight = oddsFor(conditional ? 4 : 0);
+  const ordinary = oddsFor(0), withInsight = oddsFor(conditional ? 5 : 0);
   for (const grade of ["success", "mixed", "trouble"]) {
     const lo = Math.min(ordinary[grade], withInsight[grade]);
     const hi = Math.max(ordinary[grade], withInsight[grade]);
@@ -459,7 +459,7 @@ async function shark(page, correct) {
   }
   const percent = Math.round(successes / 4) + "%";
   assert.equal(correct ? shown[1] : shown[0], (correct ? "的中時 約" : "成功 約") + percent);
-  assert.equal((await state(page)).pending.bonus, (correct ? 14 : 10) + (await state(page)).pending.momentum * 4,
+  assert.equal((await state(page)).pending.bonus, (correct ? 15 : 10) + (await state(page)).pending.momentum * 4,
     "The actual insight bonus is applied only when its hypothesis matches");
   await settle(page);
   if (correct) {
