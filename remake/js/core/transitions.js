@@ -387,7 +387,9 @@ export async function retryStroke(mid, host = document.getElementById("fx")) {
 // 窓から差す光で朝の部屋の絵に替わる。天気は図形ではなく、窓の光（晴れ）・青みと曇りの絵（くもり）・窓の雨（雨）で伝える。
 
 function flipNumber(from, value) {
-  const span = el("span.tr-flip", [el("i", { text: String(from ?? value) }), el("i", { text: String(value) })]);
+  // 旧セーブ等から文字列の全角数字が渡っても、朝の日付は DAY1 と同じ半角で描く。
+  const asciiDigits = (number) => String(number).replace(/[０-９]/g, digit => String(digit.charCodeAt(0) - 0xff10));
+  const span = el("span.tr-flip", [el("i", { text: asciiDigits(from ?? value) }), el("i", { text: asciiDigits(value) })]);
   span.lastChild.style.transform = "translateY(100%)";
   return span;
 }

@@ -34,6 +34,7 @@ import { voteStack, judgePanel, judgeLegend, craftReviewBlock } from "../craft/t
 import { craftReviewLines } from "../craft/advice.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
+import { strawberryTournamentMemory } from "./ch2-story-data.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { chapterTwoCheers, chapterTwoCongratulations, recordSentLime } from "./ch2-lime.js";
 import { CH2_SCENE_BACKGROUNDS } from "../core/city-locations.js";
@@ -97,7 +98,8 @@ async function read(owner, name) {
   if (!DB.dialogues[key]) throw new Error(`台本がありません: ${key}`);
   showScreen("none", null); hud(owner, true);
   const controller = new AbortController(); owner.controller = controller;
-  const result = await play(key, { signal: controller.signal });
+  const script = name === "stations" ? strawberryTournamentMemory(DB.dialogues[key], state) : key;
+  const result = await play(script, { signal: controller.signal });
   if (owner.controller === controller) owner.controller = null;
   return live(owner) && !!result && !result.cancelled;
 }

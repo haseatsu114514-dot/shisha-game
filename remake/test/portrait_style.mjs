@@ -299,13 +299,19 @@ for(const choice of ['new','classic']) {
   assert.equal(state.config.portraitStyle,choice);
  });
 }
+const sceneCtx=vm.createContext({});
+vm.runInContext(executable(await read('js/craft/worker-scenes.js'))+';this.key=workerSceneKey;',sceneCtx);
+const workerSceneKey=sceneCtx.key;
 const readinessSource=await read('js/craft/readiness.js');
-const readinessCtx=vm.createContext({makingUrl:()=>null,bgUrl:()=>null,faceIconUrl:()=>null,audienceAssetUrls:()=>[],WORKER_SCENES:{},
+const readinessCtx=vm.createContext({makingUrl:()=>null,bgUrl:()=>null,faceIconUrl:()=>null,audienceAssetUrls:()=>[],WORKER_SCENES:{},workerSceneKey,bowlArtFiles:()=>[],
  portraitInfo:(...args)=>data.portraitInfo(...args)});
 vm.runInContext(executable(readinessSource)+';this.urls=craftAssetUrls;',readinessCtx);
 test('craft readiness warms the same measured worker artwork',()=>{
  state.config.portraitStyle='new';
  assert.deepEqual(Array.from(readinessCtx.urls('practice')),[data.portraitInfo('hajime','serious','classic').src]);
+ assert.deepEqual(Array.from(readinessCtx.urls('tutorial', { step: 'mix' })),[data.portraitInfo('hajime','normal','classic').src]);
+ assert.equal(workerSceneKey('mix', null, 'tutorial'),null);
+ assert.equal(workerSceneKey('mix', null, 'tournament'),'mix');
  assert.equal(state.config.portraitStyle,'new');
 });
 console.log(`FINAL ${passed}/${passed} passed`);

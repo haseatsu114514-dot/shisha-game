@@ -1506,9 +1506,9 @@
    }
   },
   "dr_kemuri": {
-   "color": "#39d7e7",
-   "secondary": "#cafaff",
-   "shadow": "#032d3a",
+   "color": "#c5a467",
+   "secondary": "#ead9ad",
+   "shadow": "#302823",
    "background": "ui/character_intros/dr_kemuri.png",
    "frames": {
     "normal": {

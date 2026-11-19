@@ -341,9 +341,56 @@
           "speaker": "hajime",
           "face": "serious",
           "text": "（舌は当てにならない。煙の白さと、ホースの重さと、手の熱で見る）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣で、あげはが迷いなくトングをそろえた。つられて、俺の指に力が入る。"
+        },
+        {
+          "cue": "strawberry_trial_memory",
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（隣が先に煙を出しても、同じ速さで作らなくていい）"
         }
       ],
       "branches": {
+        "strawberry_gentle": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（「炭は急がない」。あの苺は、待ったら香りが最後まで残ったって）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（隣が先に煙を出しても、俺は俺の頃合いまで待つ）"
+          }
+        ],
+        "strawberry_hot": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あの苺、熱を先に走らせて青臭さが残ったって言われた）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（手が急いでる。熱を上げる前に、一度待とう）"
+          }
+        ],
+        "strawberry_thin": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（「待つのと、足りねえのは別だ」。スミさん、あの時は二口も吸った）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（ただ引くだけじゃ、また薄くなる。苺が立つところまでは届ける）"
+          }
+        ],
         "secret": [
           {
             "speaker": "",

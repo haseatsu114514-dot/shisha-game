@@ -53,8 +53,9 @@ await suite("look-default", async (check) => {
     state = await look(page);
     assert.deepEqual([state.look, state.choice], ["retro", "retro"], "選び直したDS風は保たれる");
     // 旧版へ戻しても保たれる。
-    await page.locator(t("title-config")).click();
-    await page.locator(`${t("cfg-look")} button[value="classic"]`).click();
+    // DS風では、外枠のタイトルと設定シートに表示されているボタンを使う。
+    await page.locator(t("retro-title-config")).click();
+    await page.locator(`${t("sheet-cfg-look")} button[value="classic"]`).click();
     await page.reload(); await titleReady(page);
     assert.deepEqual([(await look(page)).look, (await look(page)).choice], ["classic", "classic"]);
   });

@@ -20,7 +20,7 @@ const LOADING_COMICS_MODE_KEY = "suien_loading_comics";
 const WARM_DELAY_MS = 1500;
 
 /**
- * 決まった場面（作業台に入る・ミニゲームの前・章の始め・セーブからの再開・起動）で、待ちがなくても漫画のロード画面を毎回出すか
+ * 決まった場面（章の始め・セーブからの再開・起動）で、待ちがなくても漫画のロード画面を出すか
  * （2026-11-12 オーナー「漫画はマストで出して欲しい」「決まった場面は毎回出す」）。出したロード画面には必ず漫画を載せる。
  * 自動操作のブラウザ（navigator.webdriver。既存のブラウザ検査）は従来どおり、待ちが長いときだけ出す（core/look.js・side-area.js と同じ扱い）。
  * 検査は localStorage の suien_loading_comics に "always"（毎回）／"wait"（待ちのときだけ）を入れて切り替える。
@@ -133,11 +133,6 @@ export function primeLoadingArt(id, images) {
   primedArt = typeof id === "string" && id && Array.isArray(images) && images.length === 2 ? { id, images } : null;
 }
 
-/** 漫画を読んだすぐ後で、次のロード画面がその続き（同じ漫画のまま・読む待ちなし）になるか。 */
-export function loadingContinues() {
-  return comicLoadingRequired() && !!lastComic && performance.now() - lastReadAt <= FIXED_GAP_MS;
-}
-
 /**
  * 次に出す漫画を先に決めて、2コマの絵を裏で取得しておく（デコードした絵は持たない。取得だけなので軽い）。
  * 決まった場面のロード画面は待ちがなくても出るので、絵が先に届いていれば、出た瞬間から漫画が読める。
@@ -159,7 +154,7 @@ export function warmNextLoadingComic(comics = LOADING_COMICS, options = {}) {
 export async function withLoading(prepare, {
   host = document.querySelector("#stage"), label = "場面を準備しています…",
   delayMs = 220, context = "default", chapter = 1, comics = LOADING_COMICS, isMet = null,
-  isRead = null, onRead = null, onProceed = null, fixed = false, soft = false, signal,
+  isRead = null, onRead = null, onProceed = null, fixed = false, soft = false, activity = false, signal,
 } = {}) {
   if (!host) throw new Error("Loading host is missing");
   // soft: a short wait inside a scene (a conversation's art, a module). It never competes with another gate:
@@ -182,6 +177,9 @@ export async function withLoading(prepare, {
   const continuing = required && !!lastComic && performance.now() - lastReadAt <= FIXED_GAP_MS;
   const forced = fixed && required && !continuing;
   if (forced) delayMs = 0;
+  // In-game workbench/minigame: keep input locked while the preparation runs, but promote to
+  // a full-screen comic only for a genuine long wait. The preview and boot paths are unchanged.
+  if (activity) delayMs = 1500;
   const controller = new AbortController();
   const focus = document.activeElement;
   const locked = [...host.children].map(node => [node, node.inert]);
@@ -249,7 +247,7 @@ export async function withLoading(prepare, {
       if (awaitingProceed && type === "pointerdown") proceedNow();
     });
   }
-  let comic = continuing ? lastComic : selectLoadingComic(comics, { context, chapter, isMet, isRead });
+  let comic;
   // The sheet (title, two 3:2 frames, note) is laid out as soon as a comic is chosen and kept hidden
   // (.is-waiting) until the art is decoded: the logo and gauge then never jump when the panels arrive.
   // Every sheet has the same height: a comic without a note still holds the note's line, and a gate with no
@@ -275,7 +273,7 @@ export async function withLoading(prepare, {
     content.replaceChildren(el("div.loading-blank-title"), el("div.loading-panels", [0, 1].map(() => el("figure", [el("div.loading-panel-art")]))),
       el("p.loading-blank-caption"));
   };
-  const artTimeout = required ? REQUIRED_ART_TIMEOUT_MS : COMIC_ART_TIMEOUT_MS;
+  const artTimeout = required && !activity ? REQUIRED_ART_TIMEOUT_MS : COMIC_ART_TIMEOUT_MS;
   const takeReadyImages = shown => {
     if (!shown) return null;
     if (carriedArt?.comic === shown && carriedArt.images.every(img => img.complete && img.naturalWidth > 0)) {
@@ -329,45 +327,54 @@ export async function withLoading(prepare, {
     if (images) return Promise.all(images.map(img => (img.complete && img.naturalWidth > 0 ? Promise.resolve() : img.decode()).then(() => img)));
     return Promise.all(shown.panels.map(panel => prepareImage(panel.src, { timeoutMs: artTimeout, signal: controller.signal })));
   };
-  const bootAlreadyPainted = !!bootNode && !bootNode.classList.contains("is-preparing");
-  if (bootAlreadyPainted) chromeSettled = true;
-  const chromeReady = Promise.all([ensureChromeAssets(), bootNode ? window.SUIEN_BOOT_READY : null]);
-  const readyImages = chromeSettled ? takeReadyImages(comic) : null;
-  if (comic) layout(comic); else layoutBlank();
-  if (readyImages) {
-    mountArt(comic, readyImages);
-  } else if (!chromeSettled || comic) {
-    overlay.classList.add("is-preparing");
-  }
-  const comicReady = readyImages
-    ? Promise.resolve()
-    : comic
-      ? Promise.all([
-          loadArt(comic).catch(error => {
-            // A comic is a must for players: when this one's art cannot be fetched, show the comic read last.
-            const backup = required && lastComic && lastComic !== comic && !settled && !controller.signal.aborted ? lastComic : null;
-            if (!backup) throw error;
-            comic = backup;
-            layout(backup);
-            return loadArt(backup);
-          }),
-          chromeReady,
-        ]).then(([images]) => {
-          if (settled || controller.signal.aborted) return;
-          mountArt(comic, images);
-          overlay.classList.remove("is-preparing");
-          bootNode?.classList.remove("is-preparing");
-        }).catch(() => {
-          // Missing art: fall back to the plain gate (no sheet drawn, no reading hold). The blank sheet keeps the size.
-          layoutBlank();
-          overlay.classList.remove("is-preparing");
-          bootNode?.classList.remove("is-preparing");
-        })
-      : chromeReady.then(() => {
-          if (settled || controller.signal.aborted) return;
-          overlay.classList.remove("is-preparing");
-          bootNode?.classList.remove("is-preparing");
-        });
+  const prepareComic = () => {
+    comic = continuing ? lastComic : selectLoadingComic(comics, { context, chapter, isMet, isRead });
+    const bootAlreadyPainted = !!bootNode && !bootNode.classList.contains("is-preparing");
+    if (bootAlreadyPainted) chromeSettled = true;
+    const chromeReady = Promise.all([ensureChromeAssets(), bootNode ? window.SUIEN_BOOT_READY : null]);
+    const readyImages = chromeSettled ? takeReadyImages(comic) : null;
+    if (comic) layout(comic); else layoutBlank();
+    if (readyImages) {
+      mountArt(comic, readyImages);
+    } else if (!chromeSettled || comic) {
+      overlay.classList.add("is-preparing");
+    }
+    return readyImages
+      ? Promise.resolve()
+      : comic
+        ? Promise.all([
+            loadArt(comic).catch(error => {
+              // A comic is a must for players: when this one's art cannot be fetched, show the comic read last.
+              const backup = required && lastComic && lastComic !== comic && !settled && !controller.signal.aborted ? lastComic : null;
+              if (!backup) throw error;
+              comic = backup;
+              layout(backup);
+              return loadArt(backup);
+            }),
+            chromeReady,
+          ]).then(([images]) => {
+            if (settled || controller.signal.aborted) return;
+            mountArt(comic, images);
+            overlay.classList.remove("is-preparing");
+            bootNode?.classList.remove("is-preparing");
+          }).catch(() => {
+            // Missing art: fall back to the plain gate (no sheet drawn, no reading hold). The blank sheet keeps the size.
+            layoutBlank();
+            overlay.classList.remove("is-preparing");
+            bootNode?.classList.remove("is-preparing");
+          })
+        : chromeReady.then(() => {
+            if (settled || controller.signal.aborted) return;
+            overlay.classList.remove("is-preparing");
+            bootNode?.classList.remove("is-preparing");
+          });
+  };
+  let comicReady = activity ? null : prepareComic();
+  let smallNotice;
+  const smallTimer = activity ? setTimeout(() => {
+    smallNotice = el("div.vn-loading", { role: "status", text: label });
+    host.append(smallNotice);
+  }, 500) : null;
   // A quick task never flashes a loading screen. Styles are loaded only on use.
   const styleReady = loadStyle();
   styleReady.catch(error => controller.abort(error));
@@ -389,6 +396,8 @@ export async function withLoading(prepare, {
   const show = async () => {
     try { await styleReady; } catch { return; }
     if (settled || controller.signal.aborted) return;
+    comicReady ??= prepareComic();
+    smallNotice?.remove();
     placeOverlay(); overlay.focus();
   };
   const timer = delayMs > 0 ? setTimeout(show, delayMs) : null;
@@ -417,7 +426,8 @@ export async function withLoading(prepare, {
     // A shown gate always carries its comic: when preparation ends before the art arrives, wait for it
     // (players: at most REQUIRED_ART_TIMEOUT_MS, then the comic read last; with no art at all the plain gate
     // closes without holding).
-    if (required && overlay.isConnected && !controller.signal.aborted) await Promise.race([comicReady, aborted]);
+    // In ordinary activities, never extend a real wait just to download the comic.
+    if (required && !activity && overlay.isConnected && !controller.signal.aborted) await Promise.race([comicReady, aborted]);
     // Only when a comic is actually on screen, hold for the reader: advance on tap/click/key.
     // No comic / failure / instant task returns immediately, exactly like before.
     if (comicShown && !continuing && overlay.isConnected && !controller.signal.aborted) {
@@ -452,6 +462,7 @@ export async function withLoading(prepare, {
     return result;
   } finally {
     settled = true; clearTimeout(timer); clearTimeout(guardTimer); cancelAnimationFrame(creepFrame); controller.abort();
+    clearTimeout(smallTimer); smallNotice?.remove();
     void comicReady;
     for (const mq of viewportMqs) mq.removeEventListener?.("change", onOrient);
     leaveLoading(overlay, { cancelled: !!signal?.aborted });
@@ -464,7 +475,7 @@ export async function withLoading(prepare, {
     active = null; closeGate();
     if (focus?.isConnected) focus.focus();
     // The next fixed point shows its comic at once: fetch that comic's art while the scene settles.
-    if (required && comic && !continuing) setTimeout(() => warmNextLoadingComic(comics, { context, chapter, isMet, isRead }), WARM_DELAY_MS);
+    if (required && comicReady && comic && !continuing && (!activity || comicShown)) setTimeout(() => warmNextLoadingComic(comics, { context, chapter, isMet, isRead }), WARM_DELAY_MS);
   }
 }
 

@@ -55,10 +55,10 @@ export function mountTrpgTrial(host, { preset = "ready", exitLabel = "", signal 
     host.replaceChildren(el("section.trpg-root.trpg-campaign.trpg-tryout-setup", { tabindex: "-1", dataset: { test: "trpg-tryout-setup" } }, [
       el("span.trpg-kicker", { text: "ボドゲカフェ / 試遊" }),
       el("h1", { text: "どこから試す？" }),
-      el("p.trpg-campaign-notice", { text: "本編と同じ本棚と卓です。本編のセーブは読み書きしません。閉じると最初に戻ります。" }),
+      el("p.trpg-campaign-notice", { text: "本編と同じ物語で遊べます。試遊の記録は本編に引き継がれず、閉じると消えます。" }),
       el("div.trpg-tryout-presets", TRPG_TRIAL_PRESETS.map(choose)),
       el("div.trpg-tryout-actions", [
-        state ? el("button.trpg-button", { type: "button", text: "本棚へ戻る", dataset: { test: "trpg-tryout-shelf" }, onclick: () => shelf() }) : null,
+        state ? el("button.trpg-button", { type: "button", text: "カフェへ戻る", dataset: { test: "trpg-tryout-shelf" }, onclick: () => shelf() }) : null,
         exitLabel ? el("button.trpg-button", { type: "button", text: exitLabel, dataset: { test: "trpg-tryout-exit" }, onclick: destroy }) : null,
       ].filter(Boolean)),
     ]));

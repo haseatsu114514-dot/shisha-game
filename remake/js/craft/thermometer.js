@@ -69,8 +69,6 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
     tube, skin,
   ]) : tube;
   const root = el(`div.thermo${compact ? ".steam-temperature" : ""}${bandPreview ? ".mix-temperature" : ""}${unsteady ? ".unsteady" : ""}`, {
-    // 初回も時間設定から実温度計を表示。配合中のプレビューは引き続き隠す。
-    hidden: cs?.mode === "tutorial" && bandPreview,
     role: bandPreview ? "img" : "meter", "aria-label": bandPreview ? "配合の温度帯" : "煙の温度",
     "aria-valuemin": bandPreview ? null : "0", "aria-valuemax": bandPreview ? null : "1", dataset: { test: bandPreview ? "mix-temperature" : compact ? "steam-temperature" : "pull-temperature" },
     style: { "--thermo-inset": framed ? "10%" : "0%", "--thermo-span": framed ? `${frameWidth}px` : "44px" },
@@ -82,8 +80,13 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
     attackNote,
   ]);
   const zone = tube.querySelector(".thermo-zone"), optimal = tube.querySelector(".thermo-optimal"), heat = tube.querySelector(".thermo-heat");
-  // プレビューは現在温度を持たず、実プレイと同じ管・緑・虹だけを見せる。
-  if (bandPreview) { pointer.hidden = mark.hidden = dim.hidden = true; }
+  // 加熱前は針を管の下端に駐める。計測・予測を開始したことにはしない。
+  if (bandPreview) {
+    pointer.style.animation = "none"; // 加熱前はライブ表示の脈動も止め、針を枠内の下端に置く。
+    pointer.style.bottom = "calc(var(--thermo-inset) - 15px)";
+    mark.style.bottom = "0%";
+    dim.hidden = true;
+  }
   // 焼き際の目安は、目安が変わった時だけ書き直す（毎フレーム呼ばれるため）。
   let finishKey = "";
   const updateBands = () => {
@@ -184,8 +187,8 @@ export function buildMixTemperatureGauge(cs, { vertical = false } = {}) {
       for (const node of meter.root.querySelectorAll(".thermo-zone, .thermo-danger, .thermo-heat")) node.hidden = !bands.selected;
       meter.root.querySelector(".thermo-optimal").hidden = !bands.selected;
       meter.root.setAttribute("aria-label", bands.selected
-        ? bandDescription(bands)
-        : "フレーバー未選択。葉を加えると合成温度帯を表示");
+        ? bandDescription(bands) + "。加熱前"
+        : "加熱前。フレーバー未選択。葉を加えると合成温度帯を表示");
       return bands;
     } };
   }

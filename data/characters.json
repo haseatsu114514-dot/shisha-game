@@ -662,11 +662,12 @@
     ],
     "spriteScale": 1.02,
     "intro_cutin": {
-      "title": "データの鬼",
+      "title": "シーシャ機材発明家",
       "display_name": "チャコール博士《はかせ》",
       "line": "それ作ったの、俺だもん",
       "face": "smile",
       "color": "#38f0ff",
+      "fallback_color": "#c5a467",
       "motion": "still"
     },
     "voice": {

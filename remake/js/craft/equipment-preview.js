@@ -16,7 +16,7 @@ export function equipmentPreview(cs, { candidate = false } = {}) {
     ["適温の合わせやすさ", `適温幅 ×${width.toFixed(2)}（道具一式の補正）`],
     ["熱の安定", `仕上がり補正 +${hms?.stabilityBonus || 0}`],
     ["炭3個の加熱", `×${heat.power.toFixed(2)}。${heat.power > 1 ? "熱が強く入るので、過熱に気をつけよう" : "穏やかに熱を入れる一式"}`],
-    ["熱を入れる吸い", `反応 ×${heat.pullResponse.toFixed(2)}。大きいほど1口で熱が入る`],
+    ["上げ吸い", `反応 ×${heat.pullResponse.toFixed(2)}。大きいほど1口で熱が入る`],
     ["アルミの工程", foil ? "あり：アルミを張って、穴を開ける" : "なし：穴あけを飛ばして、通気を選ぶ"],
   ];
   return el("section.equipment-guide.equipment-set-preview", { dataset: { test: "setup-preview" }, "aria-label": "一式の性能プレビュー" }, [

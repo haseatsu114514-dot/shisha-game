@@ -75,8 +75,11 @@ const HIDDEN_SPOTS = Object.freeze(["naru", "minto", "shishark", "c_station", "t
  * 第5章の地元の行き先（東京の配送便は昼だけ・ドバイは切符入りの手紙が届いている時だけ押せる）。
  * 出張シーシャは、引き受けた依頼がある日だけ（昼の会・夜の会で押せる時間帯が決まっている）。
  */
-export function chapterFiveHomeSpots() {
-  return [...allSpots().filter(spot => !HIDDEN_SPOTS.includes(spot.id)), ...chapterFiveShops(), CH5_CALL_SPOT, chapterFiveTokyoPin(), chapterFiveDubaiPin(),
+export function chapterFiveHomeSpots({ tonariDue = false } = {}) {
+  // 指定の時間帯に読める章の会話だけ、既存の「！」で案内する。普通のtonariの新着表示はそのまま。
+  const local = allSpots().filter(spot => !HIDDEN_SPOTS.includes(spot.id))
+    .map(spot => spot.id === "tonari" && tonariDue ? { ...spot, hasNew: () => true } : spot);
+  return [...local, ...chapterFiveShops(), CH5_CALL_SPOT, chapterFiveTokyoPin(), chapterFiveDubaiPin(),
     chapterFiveCateringSpot()].filter(Boolean);
 }
 
@@ -106,7 +109,7 @@ export function chapterFiveDailyDefinition(io) {
     withLovers: () => cateringBusyContacts(), // 朝の配信除外だけ。同行者や恋愛状態は変更しない
     limeShortcuts: () => [shopStampsShortcut()],
     tournamentName: "博士との勝負",
-    undatedNote: "博士との勝負の日は、まだ決まっていない",
+    undatedNote: "博士への連絡はいつでも。先に店や街で過ごしてもいい。",
     // 夜の帰り道の告白は、第4章までに恋愛ルートに入った相手だけ（第5章で初めて届いた締めくくりでは告白しない・
     // romance.js の romanceRouteOpen）。第3・4章の出発前と東京・ドバイで持ち越した告白が、帰郷後の地元の夜に届く
     // （IR33・#2024。東京・ドバイへ出ている夜は romance.js の confessionHeld が持ち越す）。恋人の誘いとデートも開いている（IR16）。
@@ -116,7 +119,7 @@ export function chapterFiveDailyDefinition(io) {
       return ({
       regionId: currentRegion(),
       regions: [
-        { id: "home", label: `地元・${HOME_CITY_NAME}`, background: () => bgUrl(`bg_osu_map_${timeOfDay()}`), spots: chapterFiveHomeSpots },
+        { id: "home", label: `地元・${HOME_CITY_NAME}`, background: () => bgUrl(`bg_osu_map_${timeOfDay()}`), spots: () => chapterFiveHomeSpots({ tonariDue: !!dueTonariScene() }) },
         { id: "widehanga", label: `隣町・${CH2_CITY_NAME}`, background: () => MAP[timeOfDay()], spots: chapterFiveCitySpots },
         { id: TOKYO, label: "東京", background: () => bgUrl(`bg_tokyo_map_${timeOfDay()}`), spots: chapterFiveTokyoSpots },
         // ドバイの地図は第4章と同じ（昼は真昼、夜は夕景）。占い師はドバイには現れない（台帳 URA）。

@@ -17,9 +17,9 @@ export const STEP_DEMOS = Object.freeze({
     title: "吸い出しのお手本",
     src: "./media/demo-pull.mp4",
     cues: [
-      { from: 0, to: 2.1, text: "吸い出しだ。針が左右に動く。右で止めると熱が入り、左で止めると熱が逃げる", arrow: { x: .654, y: .2, rotate: 90 } },
+      { from: 0, to: 2.1, text: "吸い出しだ。針が左右に動く。右は上げ吸い、左は下げ吸い", arrow: { x: .654, y: .2, rotate: 90 } },
       { from: 2.1, to: 4.0, text: "止める前に、針の下の「止めると →」と温度計の点線で、行き先を見ろ", arrow: { x: .54, y: .78, rotate: 0 } },
-      { from: 4.0, to: 5.2, text: "ぬるい時は、右の白い帯（芯）で止めると大きく熱が入る", arrow: { x: .95, y: .42, rotate: 180 } },
+      { from: 4.0, to: 5.2, text: "ぬるい時は、上げ吸いの白い帯（芯）で止めると温度が大きく上がる", arrow: { x: .95, y: .42, rotate: 180 } },
       { from: 5.2, to: 6.7, text: "吸っている間は待つ。半円の外の弧が、吸い終わりまでの残り" },
       { from: 6.7, to: 10.4, text: "次は行き先が「適温」になる所で止める。温度計の虹に入れば最適だ", arrow: { x: .36, y: .45, rotate: 180 } },
       { from: 10.4, to: 12.1, text: "適温になったら「提供する」で仕上げる", arrow: { x: .69, y: .77, rotate: 90 } },

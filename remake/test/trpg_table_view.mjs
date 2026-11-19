@@ -69,7 +69,7 @@ const { rollOdds } = feedback.namespace;
 const scenarios = await Promise.all(['ordinary', 'shark'].map(async theme => JSON.parse(await readFile(new URL('../../data/dialogue/trpg_' + theme + '.json', import.meta.url), 'utf8'))));
 function mount(scenario, extra = {}) {
   const host = new Dom();
-  const manifest = { portraits: Object.fromEntries(scenario.cast.map(c => [c.id, { faces: ['normal'], h: .7, b: .1, aspect: 1 }])) };
+  const manifest = extra.manifest || { portraits: Object.fromEntries(scenario.cast.map(c => [c.id, { faces: ['normal'], h: .7, b: .1, aspect: 1 }])) };
   const audio = { enabled: false, available: true, setTheme() {}, play() {}, silence() {}, setEnabled() {} };
   let completions = 0, result = null;
   const api = mod.namespace.mountTrpg(host, { ...extra, onComplete: r => { completions++; result = r; return extra.onComplete?.(r); }, scenario, characters: [], manifest, seed: 9, profileId: scenario.profiles[0].id, audio });
@@ -592,27 +592,36 @@ test('speaker dock aligns expressions and role costumes consistently across scen
   const costumeFrames = Object.fromEntries(framesList.map(f => [`${f.scenario}/${f.character}/${f.role_id}`, f]));
   const mail = JSON.parse(await readFile(new URL('../../data/dialogue/trpg_regular_mail.json', import.meta.url), 'utf8'));
   const mounted = mount(mail, { costumeFrames }), { api, root, q } = mounted;
-  const seenStyles = { table: [], pc: [] };
+  let enteredStory = false;
+  const seen = new Set();
   q('trpg-start').click();
   for (let n = 0; !q('trpg-next').hidden; n++) {
     assert(n < 120);
     const kind = root.dataset.kind;
-    const img = root.querySelector('.trpg-speaker-art')?.querySelector('img');
-    if (img && (kind === 'pc' || kind === 'table' && root.querySelector('.trpg-dock').dataset.gm !== 'true')) {
-      seenStyles[kind].push({ src: img.getAttribute('src'), top: img.style.top, width: img.style.width, transform: img.style.transform });
+    if (kind !== 'table') enteredStory = true;
+    const seat = root.querySelector('[data-speaker="hajime"]').querySelector('img');
+    const src = seat.getAttribute('src');
+    if (enteredStory) {
+      assert.match(src, /costumes\/leaf-mail\/hajime_\w+\.webp$/);
+      const regular = root.querySelector('[data-speaker="regulara"]');
+      assert(regular.querySelector('.trpg-missing-costume'));
+      assert.equal(regular.querySelector('img'), null);
+    } else {
+      assert.doesNotMatch(src, /costumes/);
+    }
+    const art = root.querySelector('.trpg-speaker-art');
+    const active = root.querySelectorAll('[data-speaker]').find(node => node.classList.contains('active'));
+    if (active?.dataset.speaker === 'hajime' && (kind === 'pc' || kind === 'table')) {
+      const img = art.querySelector('img');
+      if (enteredStory) assert.equal(img.getAttribute('src'), src);
+      assert.equal(img.style.top, enteredStory ? '40%' : '35%');
+      assert.match(img.style.width, /%$/);
+      assert.match(img.style.transform, /^translate\(/);
+      seen.add(enteredStory ? kind : 'prologue');
     }
     q('trpg-next').click();
   }
-  assert(seenStyles.table.length > 0 && seenStyles.pc.length > 0, 'both table and pc speaker portraits rendered');
-  for (const st of seenStyles.table) {
-    assert.equal(st.top, '35%', 'table standing portrait eye line stays anchored at 35%');
-    assert.match(st.width, /%$/); assert.match(st.transform, /^translate\(/);
-  }
-  for (const st of seenStyles.pc) {
-    assert.match(st.src, /costumes\/(regular-mail|leaf-mail)\//, 'aliased or native costume URL resolved');
-    assert.equal(st.top, '40%', 'PC costume speaker eye line stays anchored at 40%');
-    assert.match(st.width, /%$/); assert.match(st.transform, /^translate\(/);
-  }
+  assert.deepEqual([...seen].sort(), ['pc', 'prologue', 'table']);
   api.destroy();
 });
 
@@ -659,5 +668,101 @@ test('check result cut-in marks cutin state to lower/hide standing portrait and 
   } finally {
     delete Dom.prototype.animate;
     reducedMotion = true;
+  }
+});
+
+test('Hiyori’s expressive GM dialogue resolves the matching crop, while her seat uses normal', async () => {
+  const manifest = JSON.parse(await readFile(new URL('../data/manifest.json', import.meta.url), 'utf8'));
+  const { api, root, q } = mount(scenarios[0], { manifest });
+  try {
+    q('trpg-start').click();
+    for (let i = 0; i < 85 && !q('trpg-next').hidden; i++) {
+      const dock = root.querySelector('.trpg-speaker-art').querySelector('img');
+      if (dock?.getAttribute('src')?.endsWith('chr_hiyori_smile.webp')) {
+        const seat = root.querySelector('[data-speaker="hiyori"]').querySelector('img');
+        assert.match(seat.getAttribute('src'), /chr_hiyori_normal\.webp$/);
+        const crops = (await load(new URL('../js/trpg/face-crops.js', import.meta.url))).namespace;
+        for (const [img, expression] of [[seat, 'normal'], [dock, 'smile']]) {
+          const expected = crops.faceIconStyle('hiyori', 'new', manifest, expression);
+          assert.equal(img.style.width, expected.width);
+          assert.equal(img.style.transform, expected.transform);
+        }
+        return;
+      }
+      q('trpg-next').click();
+    }
+    assert.fail('expected an actual smiling Hiyori GM line');
+  } finally { api.destroy(); }
+});
+
+test('incarnation shows each seated PC once and finishes or skips without advancing the story', () => {
+  const originalMotion = reducedMotion;
+  let animated = [];
+  Dom.prototype.animate = function(frames) {
+    animated.push({ node: this, frames });
+    return { cancel() {}, finished: Promise.resolve() };
+  };
+  const startFx = mounted => {
+    mounted.q('trpg-start').click();
+    for (let n = 0; !mounted.root.querySelector('.trpg-incarnate'); n++) {
+      assert(n < 60);
+      mounted.q('trpg-next').click();
+    }
+    return mounted.root.querySelector('.trpg-incarnate');
+  };
+  const resetTimers = () => { timers.length = 0; delays.length = 0; };
+  try {
+    for (const setting of ['normal', 'system', 'game']) {
+      for (const action of ['finish', 'skip', 'leave']) {
+        resetTimers(); animated = [];
+        reducedMotion = setting === 'system';
+        documentPort.body = new Dom('body');
+        if (setting === 'game') documentPort.body.classList.add('reduce-shake');
+        const mounted = mount(scenarios[0]);
+        try {
+          const { root, q, api } = mounted;
+          const effect = startFx(mounted);
+          const cards = effect.querySelectorAll('.trpg-incarnate-card');
+          assert.equal(cards.length, scenarios[0].cast.filter(c => c.part !== 'GM').length);
+          assert(cards.every(card => !card.dataset.side));
+          const moving = animated.some(a => cards.includes(a.node) && a.frames.some(f => f.transform));
+          assert.equal(moving, setting === 'normal');
+          const beams = effect.querySelectorAll('.trpg-incarnate-streak');
+          assert.equal(beams.length, cards.length);
+          assert.equal(animated.filter(a => beams.includes(a.node)).length, setting === 'normal' ? cards.length : 0);
+          assert.equal(animated.some(a => a.node === effect.querySelector('.trpg-incarnate-lights')), setting === 'normal');
+          const line = root.querySelector('.trpg-speech').querySelector('p').textContent;
+          const snapshot = JSON.stringify(api.snapshot());
+          if (action === 'skip') {
+            const skip = q('trpg-incarnate-skip');
+            skip.focus(); skip.click(); skip.click();
+            assert.equal(documentPort.activeElement, q('trpg-next'));
+          }
+          if (action === 'leave') api.destroy();
+          const callbacks = timers.map((fn, i) => ({ fn, delay: delays[i] })).sort((a, b) => a.delay - b.delay);
+          for (const { fn } of callbacks) fn();
+          assert.equal(root.querySelector('.trpg-incarnate'), null);
+          assert.equal(root.querySelector('.trpg-incarnate-skip'), null);
+          assert(cards.every(c => action === 'finish' ? c.dataset.side === 'back' : !c.dataset.side));
+          if (action !== 'leave') {
+            assert.equal(JSON.stringify(api.snapshot()), snapshot);
+            assert.equal(root.querySelector('.trpg-speech').querySelector('p').textContent, line);
+            q('trpg-next').click();
+            assert.notEqual(root.querySelector('.trpg-speech').querySelector('p').textContent, line);
+          }
+        } finally { mounted.api.destroy(); }
+      }
+    }
+    const restored = mount(scenarios[0], { resume: { actions: [['start']] } });
+    try {
+      assert.equal(restored.api.snapshot().phase, 'listen');
+      assert.equal(restored.root.querySelector('.trpg-incarnate'), null);
+      restored.q('trpg-listen-open').click();
+      restored.declare('listen');
+      assert.equal(restored.root.querySelector('.trpg-incarnate'), null);
+    } finally { restored.api.destroy(); }
+  } finally {
+    delete Dom.prototype.animate; delete documentPort.body;
+    reducedMotion = originalMotion; resetTimers();
   }
 });

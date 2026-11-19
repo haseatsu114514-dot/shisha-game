@@ -102,6 +102,16 @@ export function chapterTwoDaySceneDue(save, day, dialogues) {
     && (!scene.when || scene.when(save)) && !!dialogues?.[scene.id]?.lines?.length) || null;
 }
 
+// 試作の講評を読んだ時にだけ残る結果を、県大会の作業台に立った瞬間に返す（第2章・#2020）。
+// 試供品所持や試煙会の既読だけでは、試作をしたことにしない。会話の中で思い返すだけで票は動かさない。
+export function strawberryTournamentMemory(source, value) {
+  if (source?.dialogue_id !== "ch2_tournament_stations" || value?.chapter !== 2) return source;
+  const result = value.flags?._ch2_strawberry_trial;
+  const memory = ["gentle", "hot", "thin"].includes(result) ? source.branches?.[`strawberry_${result}`] : null;
+  if (!memory?.length) return source;
+  return { ...source, lines: source.lines.flatMap(line => line.cue === "strawberry_trial_memory" ? memory : [line]) };
+}
+
 // まかない練習で一度だけ読む苺の試作（#1650）。結果は熱の一点で gentle / hot / thin、苺なしはやり直し。
 export const STRAWBERRY_TRIAL_IDS = ["ch2_strawberry_trial_intro", ...["gentle", "hot", "thin", "no_berry"].map(r => `ch2_strawberry_trial_${r}`)];
 /** 試煙会のあと、まだ試作の感想を聞いていない第2章だけ。台本が読めない時は出さない。 */
