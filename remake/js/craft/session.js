@@ -158,7 +158,8 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   const audience = buildAudience(cs);
   const title = el("div.bench-title");
   const hint = el("div.bench-hint");
-  const phaseProgress = buildCraftProgress(steps);
+  const iconRail = craftStageEnabled() && !renewalCraft(cs);
+  const phaseProgress = buildCraftProgress(steps, { iconRail });
   const progress = phaseProgress.root, progressCount = phaseProgress.count;
   const guide = buildGuide();
   const panel = el("div.bench-panel");
@@ -198,7 +199,13 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
     const workerStage = worker.root.querySelector(".bench-worker-stage");
     const railHost = craftStageEnabled() ? root.querySelector(".bench-top") : workerStage;
     workerStage?.append(bench.record.aura);
-    railHost?.append(bench.record.root);
+    if (iconRail) {
+      // 工程と出来栄えは別の情報。採点履歴は既存の「?」で、時計を止めて読める。
+      const record = el("section.craft-record-review", { "aria-label": "工程ごとの仕上がり" }, [
+        el("strong", { text: "この一台の仕上がり" }), bench.record.root,
+      ]);
+      guide.note.after(record);
+    } else railHost?.append(bench.record.root);
     bench.record.restore(cs);
     // ライバルの小窓（CFX04）: 大会だけ。隣の台の進み具合を工程ごとの灯で見せる
     bench.rivals = buildRivalWindows(cs);
@@ -370,7 +377,7 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.guide.root.open = false;
   b.guide.root.hidden = !hintText && !lesson;
   b.guide.note.textContent = lesson?.detail || hintText;
-  b.phaseProgress.update(id === "care" && b.cs.careRound ? `care${b.cs.careRound}` : id, titleText);
+  b.phaseProgress.update(id === "care" && b.cs.careRound ? `care${b.cs.careRound}` : id, titleText, lessonStep);
   // 短い操作案内は、隠れている見出しではなく既存のスミさんの欄へ。
   // 蒸らし弾幕中は従来どおり無言とし、説明は「?」で読み返せる。
   const coaching = lesson && lessonStep !== "steam" ? `スミ「${lesson.brief}」` : hintText;

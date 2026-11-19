@@ -157,6 +157,37 @@ await suite("craft-progress", async check => {
     }, { viewport, isMobile: mobile, hasTouch: mobile });
   }
 
+  for (const [size, viewport, touch] of [
+    ["desktop", { width: 1280, height: 720 }, false],
+    ["phone", { width: 844, height: 390 }, true],
+    ["short", { width: 740, height: 320 }, true],
+  ]) await check(`sakurai-route-and-record-${size}`, async page => {
+    await init(page);
+    await page.evaluate(async () => {
+      cs.craftVersion = "sakurai"; // 第1章大会の実在する別方式。新しい台で入口を作り直す。
+      window.iconCS = { ...cs };
+      T.session.openBench(iconCS, { steps: T.practice.CRAFT_STEPS });
+      await T.session.waitBenchReady(iconCS);
+    });
+    for (const [id, title, lessonStep] of [
+      ["setup", "水入れ"], ["mix", "配合"], ["pack", "パッキング"], ["holes", "アルミ穴あけ"],
+      ["place", "炭の配置"], ["heat", "炭焼き"], ["steam", "蒸らし", "timer"],
+      ["steam", "蒸らし"], ["pull", "吸い出し"], ["serve", "提供"], ["care", "熱管理"],
+    ]) {
+      await page.evaluate(([id,title,lessonStep]) => T.session.stepPanel(id,title,"作業の説明", {lessonStep}), [id,title,lessonStep]);
+      await assertCraftProgress(page);
+      if (lessonStep === "timer" || id === "place") assert.equal(await page.locator(".craft-route-stop.now .bench-phase-step").innerText(), lessonStep === "timer" ? "蒸らし時間" : "炭の配置");
+    }
+    const guide = page.locator(".bench-guide"), ledger = guide.locator(".rig-record");
+    assert(!await ledger.isVisible());
+    await guide.locator("summary").first().click();
+    assert(await ledger.isVisible());
+    assert.match(await ledger.getAttribute("aria-label"), /穴あけ.*炭焼き/);
+    await page.getByRole("button", {name:"説明を閉じて進む"}).click();
+    assert(!await ledger.isVisible());
+    assert(await guide.locator("summary").first().evaluate(el => el === document.activeElement));
+  }, {viewport, isMobile: touch, hasTouch: touch, reducedMotion: "reduce"});
+
   await check("failed-pull-stays-on-pull", async page => {
     await init(page);
     await page.evaluate(async () => { T.session.craftTest.auto = "burn"; await T.pull.runPull(cs); });
