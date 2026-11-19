@@ -22,16 +22,14 @@ function manifestFaceFrame(manifest, folder, style) {
   };
 }
 
+function measuredPortraitFrame(folder, key, manifest) {
+  return PORTRAIT_FRAMES[key]?.[folder] || EXTRA_PORTRAIT_FRAMES[key]?.[folder] || manifestFaceFrame(manifest, folder, key);
+}
+
 export function portraitFaceFrame(id, style = portraitStyle(), manifest = null) {
   const folder = ALIASES[id] || id;
   const key = style === "classic" ? "classic" : "new";
-  return PORTRAIT_FRAMES[key]?.[folder]
-    || EXTRA_PORTRAIT_FRAMES[key]?.[folder]
-    || manifestFaceFrame(manifest, folder, key)
-    || PORTRAIT_FRAMES.classic?.[folder]
-    || EXTRA_PORTRAIT_FRAMES.classic?.[folder]
-    || manifestFaceFrame(manifest, folder, "classic")
-    || null;
+  return measuredPortraitFrame(folder, key, manifest) || measuredPortraitFrame(folder, "classic", manifest);
 }
 
 /** Per-expression [dx, dy] head-center shift in source 896x1200 pixels relative to normal. */
@@ -45,11 +43,6 @@ export function npcFaceFrame(id) {
   return NPC_FRAMES[id] || null;
 }
 
-/**
- * Position a standing portrait so its measured face crop fills a circular (or
- * square) parent. Width / top are percentages of the parent, so the same style
- * works at 68px seats, 52px companions, and the smaller phone sizes.
- */
 // Coordinates are iris centres read from the shipped art (896 × 1200). The six
 // costumes use the new Hiyori drawing even when the table uses classic portraits.
 // Printed costume cheek scans can include hair; two matching eyes recover scale
@@ -92,8 +85,9 @@ export function costumeIconStyle(frame) {
 export function faceIconStyle(id, style = portraitStyle(), manifest = null, face = "normal") {
   const asset = manifest && resolvePortrait(manifest, id, face, style);
   const actualStyle = asset?.style || style, actualFace = asset?.face || face;
-  const frame = portraitFaceFrame(asset?.folder || id, actualStyle, manifest);
-  const eyes = VERIFIED_EYES[[actualStyle, asset?.folder || id, actualFace].join("/")];
+  const folder = asset?.folder || ALIASES[id] || id;
+  const frame = measuredPortraitFrame(folder, actualStyle, manifest);
+  const eyes = VERIFIED_EYES[[actualStyle, folder, actualFace].join("/")];
   return circleFaceStyle(frame, { eyes, reference: frame?.face,
     offset: eyes ? [0, 0] : portraitFaceShift(id, actualFace, actualStyle) });
 }

@@ -59,7 +59,7 @@ const mod = await load(new URL('../js/trpg/view.js', import.meta.url)); await mo
 const scenarios = await Promise.all(['ordinary', 'shark'].map(async theme => JSON.parse(await readFile(new URL('../../data/dialogue/trpg_' + theme + '.json', import.meta.url), 'utf8'))));
 function mount(scenario, extra = {}) {
   const host = new Dom();
-  const manifest = { portraits: Object.fromEntries(scenario.cast.map(c => [c.id, { faces: ['normal'], h: .7, b: .1, aspect: 1 }])) };
+  const manifest = extra.manifest || { portraits: Object.fromEntries(scenario.cast.map(c => [c.id, { faces: ['normal'], h: .7, b: .1, aspect: 1 }])) };
   const audio = { enabled: false, available: true, setTheme() {}, play() {}, silence() {}, setEnabled() {} };
   let completions = 0, result = null;
   const api = mod.namespace.mountTrpg(host, { ...extra, onComplete: r => { completions++; result = r; return extra.onComplete?.(r); }, scenario, characters: [], manifest, seed: 9, profileId: scenario.profiles[0].id, audio });
@@ -659,4 +659,30 @@ test('check result cut-in marks cutin state to lower/hide standing portrait and 
     delete Dom.prototype.animate;
     reducedMotion = true;
   }
+});
+
+test('Hiyori’s expressive GM dialogue resolves the matching crop, while her seat uses normal', async () => {
+  const manifest = JSON.parse(await readFile(new URL('../data/manifest.json', import.meta.url), 'utf8'));
+  const { api, root, q } = mount(scenarios[0], { manifest });
+  try {
+    q('trpg-start').click();
+    for (let i = 0; i < 85 && !q('trpg-next').hidden; i++) {
+      const dock = root.querySelector('.trpg-speaker-art').querySelector('img');
+      if (dock?.getAttribute('src')?.endsWith('chr_hiyori_smile.webp')) {
+        const seat = root.querySelector('[data-speaker="hiyori"]').querySelector('img');
+        assert.match(seat.getAttribute('src'), /chr_hiyori_normal\.webp$/);
+        for (const [img, lx, ly, rx, ry] of [[seat,482,289,522,274], [dock,488,294,530,276]]) {
+          const [tx,ty] = img.style.transform.match(/-?[\d.]+/g).map(Number);
+          const scale = parseFloat(img.style.width) / 100 / 896;
+          const eyeY = parseFloat(img.style.top)/100 + ((ly+ry)/2 + ty*12) * scale;
+          assert.ok(Math.abs(eyeY - .42) < .001);
+          assert.ok(Math.abs((rx-lx)*scale - .23) < .001);
+          assert.ok(Math.abs(.5 + ((lx+rx)/2 + tx*8.96)*scale - .43675) < .001);
+        }
+        return;
+      }
+      q('trpg-next').click();
+    }
+    assert.fail('expected an actual smiling Hiyori GM line');
+  } finally { api.destroy(); }
 });

@@ -74,8 +74,15 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   const statLabel = key => presentation.stats?.[key] || key;
   // Seats nobody filled tonight: the GM voices those PCs.
   const npcSeats = Object.keys(sheets).filter(seat => !scenario.cast.some(c => seatOf(c.id) === seat));
+  function iconImage(src, alt, style) {
+    if (style) return el("img", { src, alt, style });
+    // A missing calibration should still show this exact illustration without cropping to an unrelated face.
+    return el("img", { src, alt, title: "顔枠が未計測のため全身表示", style: {
+      position: "static", width: "100%", height: "100%", objectFit: "contain", transform: "none",
+    } });
+  }
   function realFace(id, face = "normal", alt = "") {
-    return el("img", { src: portrait(id, face), alt, style: faceIconStyle(id, undefined, manifest, face) });
+    return iconImage(portrait(id, face), alt, faceIconStyle(id, undefined, manifest, face));
   }
   function missingCostume() {
     return el("span.trpg-missing-costume", { text: "衣装未収録" });
@@ -86,7 +93,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const url = costumeUrl(scenario.id, playerId, role);
     if (!url) return missingCostume();
     const frame = costumeFrames?.[resolvedCostumeKey(scenario.id, playerId, role)];
-    return el("img", { src: url, alt: "", style: costumeIconStyle(frame) });
+    return iconImage(url, "", costumeIconStyle(frame));
   }
   // The role costume (same person, dressed as the PC) where we have one: sheets, cover, origins and declaration cards (TMX04).
   // "bust" zooms on the upper body for small cards; "full" shows the whole figure. Falls back to the round face.
