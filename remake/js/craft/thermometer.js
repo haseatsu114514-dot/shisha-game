@@ -82,6 +82,7 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
   const zone = tube.querySelector(".thermo-zone"), optimal = tube.querySelector(".thermo-optimal"), heat = tube.querySelector(".thermo-heat");
   // 加熱前は針を管の下端に駐める。計測・予測を開始したことにはしない。
   if (bandPreview) {
+    pointer.style.animation = "none"; // 加熱前はライブ表示の脈動も止め、針を枠内の下端に置く。
     pointer.style.bottom = "calc(var(--thermo-inset) - 15px)";
     mark.style.bottom = "0%";
     dim.hidden = true;

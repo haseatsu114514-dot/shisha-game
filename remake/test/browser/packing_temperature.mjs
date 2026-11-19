@@ -33,6 +33,7 @@ await suite("packing-temperature", async check => {
     assert.equal(await page.locator('[data-test="mix-temperature"]').getAttribute("data-selected"), "true");
     const parked = page.locator('[data-test="thermo-pointer"]');
     assert(await parked.isVisible(), "preheat pointer stays at the bottom");
+    assert.equal(await parked.evaluate(p => getComputedStyle(p).animationName), "none", "only a live pointer pulses");
     const center = await parked.evaluate(p => {
       const a = p.getBoundingClientRect(), tube = p.closest(".thermo").querySelector(".thermo-tube").getBoundingClientRect();
       return Math.abs(a.top + a.height / 2 - tube.bottom);
