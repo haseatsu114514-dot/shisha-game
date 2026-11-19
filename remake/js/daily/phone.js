@@ -10,7 +10,7 @@ import { el, sleep, fitOneLine, yen } from "../core/util.js";
 import { DB, displayName, limeAccountName, faceIconUrl } from "../core/data.js";
 import { customLimeIconUrl } from "./lime-icons.js";
 import { layers, toast } from "../core/ui.js";
-import { state } from "../core/state.js";
+import { state, save } from "../core/state.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { chapterFeatureEnabled } from "../core/chapter-features.js";
@@ -723,31 +723,49 @@ function syncNoticeObserver() {
   }
 }
 
+// 初日のスミさんへの返信だけ、期限を既存の通知に添える。進行や返事は強制しない。
+function dayOneLimeReply() {
+  if (state.chapter !== 1 || state.day !== 1 || state.flags._lime_opened || state.flags._day1_lime_reminded) return null;
+  return state.inbox.find(item => originId(item) === "L21" && item.day === 1 && !item.read && !item.done
+    && item.replyState === "waiting" && !isMissedReply(item));
+}
+
+export function remindDayOneLime(onOpen) {
+  if (!dayOneLimeReply()) return;
+  // 朝の通知が待機中ならそれを使う。朝を通過済みの旧セーブでも案内を出せる。
+  if (queuedNotice?.owner === state && queuedNotice.day === state.day) flushOrClearNotice();
+  else pushNotice(1, { onOpen });
+}
+
 function renderNotice(count, { onOpen = null } = {}) {
+  const owner = state;
+  const dayOneReply = onOpen && dayOneLimeReply();
+  const text = dayOneReply ? "スミさんのLIMEは今日中なら返信できます" : `新着メッセージが${count}件あります`;
   const senders = [...new Set(state.inbox.filter((i) => !i.read).map(accountOf))].slice(0, 4);
   const newest = [...state.inbox].reverse().find((i) => !i.read);
   let opened = false;
   const card = el(onOpen ? "button.lime-push" : "div.lime-push", onOpen ? {
     type: "button", dataset: { test: "lime-notice" },
-    "aria-label": "新着メッセージのトークを開く",
+    "aria-label": dayOneReply ? `${text}。トークを開く` : "新着メッセージのトークを開く",
     onclick: () => {
-      if (opened) return;
+      if (opened || state !== owner || !card.isConnected) return;
       opened = true;
       activeNotices.delete(card);
       card.remove();
       syncNoticeObserver();
-      onOpen(newest ? accountOf(newest) : null);
+      onOpen(dayOneReply ? accountOf(dayOneReply) : newest ? accountOf(newest) : null);
     },
   } : {}, [
     el("div.lp-icon", [el("span", { text: "LIME" })]),
     el("div.lp-body", [
       el("div.lp-top", [el("b", { text: "LIME" }), el("small", { text: "いま" })]),
-      el("div.lp-text", { text: `新着メッセージが${count}件あります` }),
+      el("div.lp-text", { text }),
     ]),
     el("div.lp-faces", senders.map((s) => avatar(s, true))),
   ]);
   activeNotices.add(card);
   layers.toasts.append(card);
+  if (dayOneReply) { state.flags._day1_lime_reminded = true; save(); }
   SE.phoneReceive();
   syncNoticeObserver();
   requestAnimationFrame(() => card.classList.add("show"));
@@ -758,7 +776,7 @@ function renderNotice(count, { onOpen = null } = {}) {
       card.remove();
       syncNoticeObserver();
     }, 500);
-  }, 3200);
+  }, dayOneReply ? 5000 : 3200);
 }
 
 /** 朝の通知（スマホのプッシュ通知風）。マップ画面でのみ表示し、会話や他画面ではマップへ戻るまで待機する */

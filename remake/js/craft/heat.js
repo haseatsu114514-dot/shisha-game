@@ -40,13 +40,14 @@ export async function runHeat(cs) {
     advice: heatAdvice(res),
     grade: res.grade,
     summary: [
+      `工程点：${res.score}点 ／ 取り頃：${res.just}/${timings.length}個`,
       ...timings.map((timing, i) => `${coalSpots(coalCount(cs))[i][2]} ${timing.rating}：${formatTimingError(timing.errorSeconds)}（${timing.label}${timing.automatic ? "・自動" : ""}）`),
-      res.just === coalCount(cs) ? "すべて全面が赤い取り頃で取れた" : res.just ? "取り頃で取れた炭がある" : "取り頃で取れた炭はなかった",
     ],
     lines: [
       picks.map((g) => HEAT_GRADES[g].label).join("・"),
       res.just === coalCount(cs) ? "全部、全面が赤い取り頃で取れた。火が素直だ" : res.just ? "取り頃で取れた炭がある" : "取り頃を逃した。焼け具合が読みにくい",
-      res.over ? "取り出しが遅れた炭がある。炭が減って熱が落ちやすい" : res.early ? "黒い面が残る炭がある。えぐみが出やすい" : "",
+      res.over ? "待ちすぎた炭にも火は入っているが、炭が小さくなり熱が落ちやすい。生焼けより減点は軽い" : "",
+      res.early ? "黒い面が残る炭がある。えぐみが出やすい" : "",
     ],
   });
 }

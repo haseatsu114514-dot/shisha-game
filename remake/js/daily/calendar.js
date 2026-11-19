@@ -24,7 +24,7 @@ import { syncFortune } from "./fortune-schedule.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRio, ownsFlavor } from "./shop.js";
 import { openingStatus } from "./spot-hours.js";
-import { deliverMorning, pushNotice, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation, invitationReadBeforeMeeting } from "./phone.js";
+import { deliverMorning, pushNotice, remindDayOneLime, unreadCount, actionInviteNeedingReply, openLime, limeCoach, expireInvitations, rescheduleInvitation, completeInvitation, invitationReadBeforeMeeting } from "./phone.js";
 import { onAction as spinReel, presentNow as showReelNow, installReel } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
 import { samechanDateReady, playSamechanDate } from "./samechan-date.js";
@@ -306,13 +306,14 @@ async function day1Errands() {
   const f = state.flags;
   const lemon = DB.flavorById.lemon;
   if (!f._errand_shop_done && (!lemon || ownsFlavor("lemon"))) f._errand_shop_done = true;
+  const onShown = () => remindDayOneLime(sender => phoneButton({ sender }));
   if (!f._errand_shop_done) {
     if (!f._errand_shop_told) {
       await play("remake_day1_errand_shop", { bg: TONARI_BG });
       f._errand_shop_told = true;
       save();
     }
-    await chooseSpot({ guide: { pin: "shop", text: "スミさんに頼まれた仕入れへ。Dr.fookah をタップ。もう一度タップで入る！" } });
+    await chooseSpot({ guide: { pin: "shop", text: "スミさんに頼まれた仕入れへ。Dr.fookah をタップ。もう一度タップで入る！" }, onShown });
     await openShop({ errand: "lemon", expense: true, expenseFlag: "_errand_lemon_expensed" });
     f._errand_shop_done = true;
     save();
@@ -331,7 +332,7 @@ async function day1Errands() {
     f._errand_scout_told = true;
     save();
   }
-  if (!f._errand_naru_visited) await chooseSpot({ guide: { pin: "naru", text: "KEMURIKUSAへ偵察に。KEMURIKUSA をタップ。もう一度タップで入る！" } });
+  if (!f._errand_naru_visited) await chooseSpot({ guide: { pin: "naru", text: "KEMURIKUSAへ偵察に。KEMURIKUSA をタップ。もう一度タップで入る！" }, onShown });
   if (!f._errand_naru_visited) {
     await visitRival(naru);
     state.visitedDay.naru = state.day;
