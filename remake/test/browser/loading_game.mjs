@@ -2,7 +2,7 @@
 // "漫画はマストで出して欲しい", "決まった場面は毎回出す"):
 // - boot is a fixed point: players read one comic and tap (or press Enter) to open the title;
 // - chapter starts and resumes (core/ui.js withChapterLoading) show it every time;
-// - waits inside a scene (core/ui.js loadingNotice) use the same screen once they pass 0.5 s;
+// - ordinary waits use only the compact notice; genuinely slow workbench loads still use the comic.
 // - the gallery's picture wait stays the small inline notice.
 // Automated browsers keep the old behaviour (plain boot gate, small notices), so every other browser
 // check reaches the title and its scenes as before.
@@ -102,25 +102,25 @@ await check("chapter-start-and-resume-show-a-comic-every-time", async page => {
   assert.deepEqual(await page.evaluate(() => window.__chapter), { chapter: 2 });
   await page.locator(".loading-gate").waitFor({ state: "detached" });
 }, { mode: "always" });
-await check("scene-waits-use-the-same-loading-screen", async page => {
+await check("scene-waits-stay-compact", async page => {
   await openTitle(page);
-  const quick = await page.evaluate(async () => {
+  const wait = await page.evaluate(async () => {
     const [{ loadingNotice }, { withLoadingNotice }] = await Promise.all([import("./js/core/ui.js"), import("./js/core/module-loading.js")]);
-    let seen = false;
-    const observer = new MutationObserver(() => { if (document.querySelector(".loading-gate, .vn-loading")) seen = true; });
+    const seen = { small: 0, full: 0 };
+    const observer = new MutationObserver(records => {
+      for (const { addedNodes } of records) for (const node of addedNodes) {
+        if (node.matches?.(".loading-gate")) seen.full++;
+        if (node.matches?.(".vn-loading")) seen.small++;
+      }
+    });
     observer.observe(document.body, { subtree: true, childList: true });
     await withLoadingNotice(new Promise(resolve => setTimeout(resolve, 100)), loadingNotice("場面を準備しています…"));
+    const quick = { ...seen };
+    const result = await withLoadingNotice(new Promise(resolve => setTimeout(() => resolve("prepared"), 1200)), loadingNotice("場面を準備しています…"));
     observer.disconnect();
-    window.__wait = withLoadingNotice(new Promise(resolve => setTimeout(() => resolve("prepared"), 1200)), loadingNotice("場面を準備しています…"));
-    return seen;
+    return { quick, seen, result, gone: !document.querySelector(".vn-loading") };
   });
-  assert.equal(quick, false, "A short wait inside a scene shows nothing");
-  await page.locator(".loading-gate.is-ready").waitFor();
-  assert.equal(await page.locator(".vn-loading").count(), 0, "No small notice: the same loading screen as the bench");
-  assert.equal(await page.locator(".loading-panels img").count(), 2);
-  await page.keyboard.press("Enter");
-  assert.equal(await page.evaluate(() => window.__wait), "prepared");
-  await page.waitForTimeout(2100);
+  assert.deepEqual(wait, { quick: { small: 0, full: 0 }, seen: { small: 1, full: 0 }, result: "prepared", gone: true });
   // A failed wait closes the screen without holding the reader, and the failure reaches the caller.
   const failure = await page.evaluate(async () => {
     const [{ loadingNotice }, { withLoadingNotice }] = await Promise.all([import("./js/core/ui.js"), import("./js/core/module-loading.js")]);
@@ -131,7 +131,7 @@ await check("scene-waits-use-the-same-loading-screen", async page => {
       .then(() => "resolved", error => error.message);
     await new Promise(resolve => setTimeout(resolve, 400));
     observer.disconnect();
-    return { message, ready, closed: !document.querySelector(".loading-gate") };
+    return { message, ready, closed: !document.querySelector(".loading-gate, .vn-loading") };
   });
   assert.deepEqual(failure, { message: "offline", ready: false, closed: true });
   // The gallery's picture wait (not a change of scene) keeps the small inline notice.
@@ -145,6 +145,78 @@ await check("scene-waits-use-the-same-loading-screen", async page => {
   });
   assert.equal(inline, true);
 }, { mode: "always" });
+await check("workbench-warm-and-slow-with-retry", async page => {
+  await openTitle(page);
+  // Real production bench loader, with deterministic asset response times at its boundary.
+  await page.evaluate(async () => {
+    const { prepareBenchEntry } = await import("./js/craft/loading.js");
+    window.__waitBench = prepareBenchEntry;
+    window.__benchCalls = [];
+    new MutationObserver(records => {
+      for (const { addedNodes } of records) for (const node of addedNodes) {
+        if (node.matches?.(".loading-gate, .vn-loading")) window.__benchCalls.push(node.className);
+      }
+    }).observe(document.body, { childList: true, subtree: true });
+  });
+  for (let turn = 0; turn < 4; turn++) {
+    assert.equal(await page.evaluate(() => window.__waitBench(Promise.resolve("warm"), 1)), "warm");
+  }
+  assert.deepEqual(await page.evaluate(() => window.__benchCalls), []);
+  await page.evaluate(() => {
+    const assets = new Promise((_, reject) => { window.__failBench = () => reject(new Error("offline")); });
+    window.__benchDone = window.__waitBench(assets, 1).catch(error => error.message);
+  });
+  await page.locator(".vn-loading").waitFor();
+  await page.locator(".loading-gate").waitFor();
+  assert.equal(await page.locator(".vn-loading").count(), 0, "The actual long wait escalates once");
+  assert.equal(await page.locator("#stage > #screen").evaluate(node => node.inert), true);
+  assert.equal(await page.locator(".loading-gate.is-ready").count(), 0, "Not ready while assets are pending");
+  await page.evaluate(() => window.__failBench());
+  assert.equal(await page.evaluate(() => window.__benchDone), "offline");
+  assert.equal(await page.locator(".loading-gate, .vn-loading").count(), 0);
+  assert.equal(await page.locator("#stage > #screen").evaluate(node => node.inert), false);
+  await page.evaluate(() => {
+    const assets = new Promise(resolve => { window.__finishBench = () => resolve("ready"); });
+    window.__benchDone = window.__waitBench(assets, 1);
+  });
+  await page.locator(".loading-gate").waitFor();
+  await page.locator(".loading-panels img").first().waitFor();
+  await page.evaluate(() => window.__finishBench());
+  await page.locator(".loading-gate.is-ready").waitFor();
+  assert.equal(await page.locator(".loading-panels img").count(), 2);
+  await page.keyboard.press("Enter");
+  assert.equal(await page.evaluate(() => window.__benchDone), "ready");
+  assert.equal(await page.locator(".loading-gate, .vn-loading").count(), 0);
+  // If the actual assets beat the optional comic download, do not keep the player on this gate.
+  await page.waitForTimeout(2100); // Do not reuse the comic just read.
+  let releaseArt, startedArt;
+  const holdArt = new Promise(resolve => { releaseArt = resolve; });
+  const artRequested = new Promise(resolve => { startedArt = resolve; });
+  await page.route("**/slow-optional-comic-*.webp", async route => {
+    startedArt();
+    await holdArt;
+    await route.abort().catch(() => {});
+  });
+  try {
+    await page.evaluate(async () => {
+      const { withLoading } = await import("./js/core/loading.js");
+      const assets = new Promise(resolve => { window.__finishWithoutComic = () => resolve("ready-without-comic"); });
+      const panels = [1, 2].map(n => ({ src: new URL(`slow-optional-comic-${n}.webp`, location.href).href, alt: `panel ${n}` }));
+      window.__withoutComic = withLoading(() => assets, {
+        activity: true, comics: [{ id: "test-optional", title: "test", minChapter: 1, panels }],
+      });
+    });
+    await page.locator(".loading-gate").waitFor({ state: "attached" });
+    assert(await Promise.race([artRequested.then(() => true), new Promise(resolve => setTimeout(() => resolve(false), 2000))]),
+      "The slow activity starts fetching the comic");
+    await page.evaluate(() => window.__finishWithoutComic());
+    assert.equal(await page.evaluate(() => Promise.race([
+      window.__withoutComic, new Promise(resolve => setTimeout(() => resolve("stuck"), 1000)),
+    ])), "ready-without-comic");
+    assert.equal(await page.locator(".loading-gate, .vn-loading").count(), 0);
+  } finally { releaseArt(); }
+
+}, { mode: "always", touch: true, viewport: { width: 844, height: 390 } });
 await check("automated-boot-stays-plain", async page => {
   await page.locator('[data-test="title-new"]').waitFor();
   assert.equal(await page.locator("#boot.has-comic").count(), 0, "No comic on the static boot screen for automated browsers");
