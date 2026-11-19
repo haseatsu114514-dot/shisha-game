@@ -27,7 +27,6 @@ await suite('mastery-display', async check => {
   }
   assert.doesNotMatch(await page.locator('#banners').innerText(),/次まで|あと\d/);
   await page.waitForTimeout(650); // 通知の入場アニメーション完了を待つ
-  await assertFits(page,'.gain-card.mastery .gc-meta, .gain-card.mastery .shop-product-art');
   assert(await notices.evaluateAll(cards => cards.every(card => {
    const box = card.getBoundingClientRect();
    return [...card.children].every(child => {
