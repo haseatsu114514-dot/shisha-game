@@ -78,7 +78,7 @@
   align-self: end; color: #e5d6be; font-size: 23px; min-width: 0; white-space: nowrap;
 }
 .tf-deadline {
-  position: absolute; right: 10px; bottom: 62px; padding: 2px 5px;
+  grid-column: 2; grid-row: 2; justify-self: end; align-self: start; padding: 2px 5px;
   background: #342418; color: var(--tf-dim); border: 1px solid #a88059; font-size: 18px; font-weight: 700;
 }
 .tf-table[data-due="soon"] .tf-deadline { border-color: #f7b48c; color: var(--tf-rose); }
@@ -188,3 +188,10 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; pointer-events: none
 :root[data-density="phone"] .tonari-floor :is(.tf-table-name,.tf-table-taste,.tf-deadline,.tf-tag,.tf-ticket-head p,.tf-station,.tf-receipt-note,.tf-action small) { font-size: var(--tf-small); }
 :root[data-density="phone"] .tonari-floor :is(.tf-preference,.tf-ticket-quote,.tf-table-status,.tf-helper,.tf-ticket-recipe,.tf-log,.tf-clock,.tf-receipt-line,button.tf-action) { font-size: var(--tf-body); }
 :root[data-density="phone"] .tonari-floor .tf-actions[data-split="true"] button.tf-action { font-size: var(--tf-small); }
+
+/* 長い引用は読めるままスクロールし、指を離した時の選択ボタンは常に伝票内に残す。 */
+:root[data-density="phone"] .tf-ticket { display: flex; flex-direction: column; overflow: hidden; }
+:root[data-density="phone"] .tf-ticket-copy { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+:root[data-density="phone"] .tf-actions { flex: none; }
+:root[data-density="phone"] .tf-actions:empty { display: none; }
+.tf-ticket-copy:focus-visible { outline: 2px solid #805532; outline-offset: -2px; }

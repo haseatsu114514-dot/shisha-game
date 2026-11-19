@@ -301,21 +301,23 @@ export function runTonariFloor({
           el("section.tf-ticket", {
             "aria-label": `卓${selected}の伝票`, dataset: test("ticket"),
           }, [
-            el("div.tf-ticket-head", [
-              el("span.tf-ticket-number", { text: String(selected).padStart(2, "0") }),
-              el("div", [el("h2", { text: AREA_NAMES[selected - 1] }), el("p", {
-                text: activeTable.guest ? customerName(activeTable.guest) + "・" + updatedPhase
-                  : standing && activeTable.phase === "empty" ? "入口のお客さん" : updatedPhase,
-              })]),
+            el("div.tf-ticket-copy", { tabindex: 0, role: "region", "aria-label": "卓の注文と様子" }, [
+              el("div.tf-ticket-head", [
+                el("span.tf-ticket-number", { text: String(selected).padStart(2, "0") }),
+                el("div", [el("h2", { text: AREA_NAMES[selected - 1] }), el("p", {
+                  text: activeTable.guest ? customerName(activeTable.guest) + "・" + updatedPhase
+                    : standing && activeTable.phase === "empty" ? "入口のお客さん" : updatedPhase,
+                })]),
+              ]),
+              activeGuest ? el("div.tf-ticket-profile", [
+                compact(activeGuest.preference) ? el("p.tf-preference", { text: "好み　" + compact(activeGuest.preference) }) : null,
+                el("div.tf-tags", guestFlags(activeGuest)),
+              ]) : null,
+              line ? el("p.tf-ticket-quote", { text: line }) : null,
+              recipe && !available.some((action) => ["order", "redo"].includes(action.kind))
+                ? el("p.tf-ticket-recipe", { text: "伝票　" + recipe.label }) : null,
+              helper ? el("p.tf-helper", { text: helper }) : null,
             ]),
-            activeGuest ? el("div.tf-ticket-profile", [
-              compact(activeGuest.preference) ? el("p.tf-preference", { text: "好み　" + compact(activeGuest.preference) }) : null,
-              el("div.tf-tags", guestFlags(activeGuest)),
-            ]) : null,
-            line ? el("p.tf-ticket-quote", { text: line }) : null,
-            recipe && !available.some((action) => ["order", "redo"].includes(action.kind))
-              ? el("p.tf-ticket-recipe", { text: "伝票　" + recipe.label }) : null,
-            helper ? el("p.tf-helper", { text: helper }) : null,
             el("div.tf-actions", { dataset: { split: String(available.length > 1) } }, available.map((action, i) => actionButton(action, () => perform(action, basis),
               i === 0 && !["order", "redo", "decline"].includes(action.kind)))),
           ]),
