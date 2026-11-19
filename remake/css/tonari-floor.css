@@ -1,0 +1,190 @@
+/* tonari の店内に持ち込んだ木枠の営業盤。共通ステージの拡縮と既存背景を使う。 */
+.tonari-floor {
+  position: absolute; inset: 0;
+  --tf-text: #f9ecd2; --tf-dim: #ddc9ab; --tf-gold: #f2c780;
+  --tf-edge: #a06a42; --tf-panel: #271911; --tf-green: #b9d19d; --tf-rose: #f7b48c;
+  color: var(--tf-text);
+  line-height: 1.26;
+  font-variant-numeric: tabular-nums;
+}
+.tonari-floor :is(h1,h2,p,dl,dd) { margin: 0; }
+.tonari-floor button { color: inherit; cursor: pointer; font: inherit; }
+.tonari-floor button:focus-visible { outline: 4px solid #ffd995; outline-offset: 3px; z-index: 1; }
+.tf-sr { position: absolute; clip-path: inset(50%); overflow: hidden; white-space: nowrap; width: 1px; height: 1px; }
+.tf-art, .tf-art img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.tf-art { background: rgba(17,10,6,.3); }
+.tf-art img { object-fit: cover; opacity: .9; }
+.tf-frame { position: absolute; inset: 18px 30px; }
+.tf-board {
+  display: grid; grid-template-rows: 102px 54px minmax(0,1fr) 100px; gap: 12px;
+  height: 100%; padding: 12px 18px 8px;
+  border: 2px solid var(--tf-edge);
+  box-shadow: 0 14px 30px #1009038c, inset 0 0 0 1px #ad805760;
+  background: #21160f;
+  /* ランプ・窓・深緑の椅子は店内の絵で見せ、文字が載る面は煤けた木色で保つ。 */
+  background: linear-gradient(90deg, #21160fd6 30%, #22160dbf 100%);
+}
+.tonari-floor[data-custom-art="true"] .tf-board { background: #25170d68; border-color: #a06a4268; }
+.tf-header { display: grid; grid-template-columns: minmax(250px,1fr) 210px 214px 120px; gap: 20px; align-items: center; }
+.tf-eyebrow { font: 700 18px/1.1 Georgia, serif; letter-spacing: .18em; color: var(--tf-gold); }
+.tf-title h1 { display: flex; align-items: baseline; gap: 18px; color: #ffe5ae; font: 700 58px/.98 Georgia, serif; letter-spacing: -.02em; }
+.tf-title h1 span { font: 700 24px/1 var(--font); color: var(--tf-text); letter-spacing: .06em; }
+.tf-clock { font-size: 24px; color: var(--tf-dim); display: grid; gap: 9px; }
+.tf-clock b { color: var(--tf-text); }
+.tf-clock progress { appearance: none; width: 100%; height: 6px; border: none; background: #624a35; accent-color: var(--tf-gold); }
+.tf-clock progress::-webkit-progress-bar { background: #5e4a36; }
+.tf-clock progress::-webkit-progress-value { background: var(--tf-gold); }
+.tf-clock progress::-moz-progress-bar { background: var(--tf-gold); }
+.tf-ledger { display: grid; justify-items: end; padding-right: 12px; color: var(--tf-dim); font-size: 22px; }
+.tf-ledger strong { color: var(--tf-gold); font-size: 40px; line-height: 1.05; }
+.tonari-floor :is(.tf-pause-button,.tf-wait) {
+  min-height: 100px; border: 1px solid #845b3c; background: #332318;
+  font-size: 23px; font-weight: 700;
+}
+.tf-pause-button:hover, .tf-wait:hover { background: #50321d; }
+
+.tf-stations { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; }
+.tf-station {
+  min-width: 0; display: flex; gap: 10px; align-items: center; padding: 0 14px;
+  border-block: 1px solid #65442d;
+  background: #382719;
+  font-size: 21px; white-space: nowrap;
+}
+.tf-station[data-active="true"] { border-color: #c39559; background: #47311f; }
+.tf-icon { display: inline-flex; width: 29px; height: 29px; flex: 0 0 29px; }
+.tf-icon svg { width: 100%; height: 100%; }
+.tf-station .tf-icon { color: var(--tf-gold); }
+.tf-station-title { color: var(--tf-dim); }
+.tf-station-value { overflow: hidden; text-overflow: ellipsis; }
+.tf-workspace { display: grid; grid-template-columns: minmax(0,1.77fr) minmax(0,1fr); gap: 14px; min-height: 0; }
+.tf-tables { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); grid-template-rows: repeat(2,minmax(0,1fr)); gap: 10px; min-height: 0; }
+.tf-table {
+  position: relative; isolation: isolate;
+  display: grid; grid-template-columns: auto minmax(0,1fr); grid-template-rows: min-content 1fr min-content min-content;
+  text-align: left; gap: 5px 9px; padding: 13px 12px 12px;
+  border: 2px solid #73543b; background: #312117;
+  min-width: 0; min-height: 100px;
+}
+.tf-table[data-active="true"] { border-color: #ffcf88; box-shadow: inset 0 0 0 1px #ffcf8877; background: #46311f; }
+.tf-table:hover { border-color: var(--tf-gold); }
+.tf-table[data-signal="call"]:not([data-active="true"]) { border-color: #bd7654; }
+.tf-table-number {
+  z-index: 1; align-self: center; justify-self: start; padding: 2px 7px; border: 1px solid #ac7e4b;
+  color: var(--tf-gold); background: #28190f; font: 700 20px/1 Georgia,serif;
+}
+.tf-table-name { z-index: 1; align-self: center; color: var(--tf-dim); font-size: 20px; font-weight: 700; }
+.tf-table-status {
+  grid-row: 3; grid-column: 1/-1; display: flex; align-items: center; gap: 5px;
+  align-self: end; color: #e5d6be; font-size: 23px; min-width: 0; white-space: nowrap;
+}
+.tf-deadline {
+  position: absolute; right: 10px; bottom: 62px; padding: 2px 5px;
+  background: #342418; color: var(--tf-dim); border: 1px solid #a88059; font-size: 18px; font-weight: 700;
+}
+.tf-table[data-due="soon"] .tf-deadline { border-color: #f7b48c; color: var(--tf-rose); }
+.tf-table[data-phase="ready"] .tf-table-status,
+.tf-table[data-phase="checkout"] .tf-table-status { color: var(--tf-green); }
+.tf-table[data-signal="call"] .tf-table-status { color: var(--tf-rose); }
+.tf-table-taste { grid-row: 4; grid-column: 1/-1; font-size: 18px; line-height: 1.2; color: var(--tf-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tf-diagram { position: absolute; z-index: -1; inset: 32px 10px 51px; overflow: hidden; pointer-events: none; }
+.tf-diagram i { position: absolute; display: block; }
+.tf-diagram-seat {
+  width: 60%; height: 38%; top: 10%; left: 20%;
+  border-radius: 8px 8px 3px 3px; background: #53644a; border: 1px solid #869071;
+  box-shadow: inset 0 -6px #3b4732, 0 4px 7px #1a100999;
+}
+.tf-diagram-top {
+  width: 51%; height: 44%; top: 42%; left: 24.5%;
+  border-radius: 3px; background: #845432; border: 1px solid #b68255;
+  box-shadow: 0 4px 0 #492d1b, 0 7px 10px #160d08b0;
+}
+.tf-diagram-linen { width: 34%; height: 31%; top: 49%; left: 33%; background: repeating-linear-gradient(135deg,#a98063 0 2px,#9b6a4f 2px 4px); opacity: .65; }
+.tf-diagram-coaster { width: 12px; height: 12px; top: 55%; left: 55%; background: #e8b56a; border-radius: 50%; border: 2px solid #ad7745; }
+.tf-diagram-guest {
+  width: 21px; height: 21px; top: 20%; left: 47%; border-radius: 50%;
+  background: #cca27a; border: 2px solid #6a4931; box-shadow: 0 3px 0 #35281f;
+}
+.tf-diagram-guest.pair { left: 61%; background: #b58b69; }
+.tf-diagram[data-area="bar"] .tf-diagram-seat { width: 40px; height: 28px; left: calc(53% - 20px); top: 34%; border-radius: 50%; }
+.tf-diagram[data-area="bar"] .tf-diagram-top { width: 62%; height: 28%; left: 19%; top: 59%; }
+.tf-diagram[data-area="bar"] .tf-diagram-linen { top: 62%; height: 18%; }
+.tf-diagram[data-area="bar"] .tf-diagram-coaster { top: 64%; }
+.tf-diagram[data-area="bar"] .tf-diagram-guest { top: 38%; }
+.tf-table[data-phase="empty"] .tf-diagram { opacity: .55; }
+
+.tf-ticket {
+  min-height: 0; min-width: 0; overflow: auto; overscroll-behavior: contain;
+  position: relative; align-content: start;
+  padding: 14px 16px; border: 1px solid #b88655;
+  background: #ecd9b2; color: #352317;
+  box-shadow: inset 0 0 0 3px #ad805841;
+}
+.tf-ticket-head { display: flex; align-items: center; gap: 12px; padding-bottom: 8px; border-bottom: 1px solid #b58e67; }
+.tf-ticket-head h2 { font-size: 31px; line-height: 1.1; }
+.tf-ticket-head p { color: #66492d; font-size: 20px; font-weight: 700; line-height: 1.14; }
+.tf-ticket-number {
+  flex: 0 0 44px; text-align: center; background: #6d4428; color: #fcefce;
+  border: 1px solid #8c5736; font: 700 27px/45px Georgia,serif;
+}
+.tf-ticket-profile { margin-top: 8px; }
+.tf-preference { color: #412c1d; font-size: 24px; font-weight: 700; }
+.tf-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tf-tag { display: inline-block; padding: 2px 7px; border: 1px solid currentColor; font-size: 18px; font-weight: 700; line-height: 1.05; }
+.tf-ticket .tf-tag { border-color: #a17a55; color: #664427; }
+.tf-ticket-quote, .tf-ticket-recipe, .tf-helper { margin-top: 8px !important; font-size: 22px; line-height: 1.26; }
+.tf-ticket-quote { overflow-wrap: anywhere; }
+.tf-ticket-recipe, .tf-helper { color: #644425; }
+.tf-actions { display: grid; gap: 7px; margin-top: 8px; }
+.tf-actions[data-split="true"] { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.tonari-floor .tf-actions[data-split="true"] button.tf-action { min-width: 0; padding-inline: 9px; font-size: 22px; overflow-wrap: anywhere; }
+.tf-actions[data-split="true"] .tf-action:last-child:nth-child(odd) { grid-column: 1/-1; }
+.tonari-floor button.tf-action {
+  display: grid; justify-items: start; align-content: center;
+  width: 100%; min-height: 100px; padding: 8px 14px; border: 1px solid #794f33;
+  background: #38281d; color: #fff0d4; text-align: left; font-size: 24px; font-weight: 700;
+}
+.tf-action small { color: #e2c399; font-size: 19px; font-weight: 500; line-height: 1.22; }
+.tonari-floor button.tf-action[data-primary="true"] { background: #6f4628; border-color: #a06b40; }
+.tonari-floor button.tf-action:hover { background: #57371f; }
+.tf-ticket button:focus-visible { outline-color: #703b21; }
+
+.tf-footer { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: stretch; gap: 14px; min-height: 0; }
+.tf-log { border-top: 1px solid #835e40; padding: 10px 10px 0; color: var(--tf-dim); font-size: 24px; }
+.tf-log p { display: -webkit-box; overflow: hidden; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.tf-wait { display: flex; align-items: center; gap: 10px; padding: 0 18px; }
+.tf-wait .tf-icon { color: var(--tf-gold); }
+
+.tf-pause, .tf-receipt { position: absolute; inset: 0; display: grid; place-items: center; background: #1c110be8; }
+.tf-pause-card, .tf-receipt-paper {
+  width: min(100%,650px); max-height: 100%; overflow: auto; padding: 24px 28px;
+  border: 2px solid #b7824e; box-shadow: inset 0 0 0 4px #9c6d3c60;
+  background: #ecd9b2; color: #352317;
+}
+.tf-pause-card .tf-eyebrow, .tf-receipt-paper .tf-eyebrow { color: #6d4529; }
+.tf-pause-card h2, .tf-receipt-paper h2 { font-size: 43px; margin: 4px 0 12px; }
+.tf-pause-card > p:not(.tf-eyebrow) { font-size: 25px; margin: 8px 0 12px; }
+.tf-pause-note, .tf-receipt-note { color: #624326; }
+.tf-pause-actions, .tf-receipt-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.tf-receipt-total { display: flex; justify-content: space-between; align-items: baseline; border-block: 2px solid #926542; padding: 6px 0; font-size: 25px; }
+.tf-receipt-total strong { font-size: 53px; }
+.tf-receipt-line { display: flex; justify-content: space-between; border-bottom: 1px solid #b59672; padding: 6px 0; font-size: 23px; }
+.tf-receipt-note { font-size: 20px; padding: 9px 0; }
+@media (prefers-reduced-motion: reduce) { .tonari-floor * { animation: none !important; transition: none !important; } }
+
+:root[data-density="phone"] .tf-frame { inset: 10px 16px; }
+:root[data-density="phone"] .tf-board { gap: 10px; padding-inline: 14px; }
+:root[data-density="phone"] .tf-table { padding-inline: 10px; }
+:root[data-density="phone"] .tf-table-name { font-size: 22px; }
+:root[data-density="phone"] .tf-table-status { font-size: 24px; }
+
+/* 営業盤には会計・休止がある。日常 HUD を重ねて操作を塞がず、財布と店レジを同列に出さない。 */
+body[data-screen="tonari-floor"] #hud { visibility: hidden; pointer-events: none; }
+
+/* 本編の1280×720と外側の帯は残す。縮小率に応じて注文の読み取り文字を実寸で確保。 */
+:root[data-density="phone"] .tonari-floor {
+  --tf-small: max(22px, calc(11.5px / var(--k, 1)));
+  --tf-body: max(24px, calc(13px / var(--k, 1)));
+}
+:root[data-density="phone"] .tonari-floor :is(.tf-table-name,.tf-table-taste,.tf-deadline,.tf-tag,.tf-ticket-head p,.tf-station,.tf-receipt-note,.tf-action small) { font-size: var(--tf-small); }
+:root[data-density="phone"] .tonari-floor :is(.tf-preference,.tf-ticket-quote,.tf-table-status,.tf-helper,.tf-ticket-recipe,.tf-log,.tf-clock,.tf-receipt-line,button.tf-action) { font-size: var(--tf-body); }
+:root[data-density="phone"] .tonari-floor .tf-actions[data-split="true"] button.tf-action { font-size: var(--tf-small); }

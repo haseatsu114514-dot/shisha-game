@@ -572,7 +572,22 @@ function noteSaveResult(saved) {
   try { emit(saved ? "save-recovered" : "save-failed"); } catch { /* 通知の失敗で遊びを止めない */ }
 }
 
+// 任意の長い勤務は、体力・台詞・給料・枠を分割して保存しない。LOADされた別ownerは妨げない。
+const actionSaveHolds = new WeakMap();
+export function holdActionSave(owner) {
+  actionSaveHolds.set(owner, (actionSaveHolds.get(owner) || 0) + 1);
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    const count = actionSaveHolds.get(owner) - 1;
+    if (count) actionSaveHolds.set(owner, count); else actionSaveHolds.delete(owner);
+  };
+}
+
 function writeSave(target = state) {
+  // 一時保留は容量エラーではない。最後の安全なAUTOを保ち、呼出側の行動末で通常保存する。
+  if (target && actionSaveHolds.has(target)) return { raw: null, saved: false };
   if (!target) return { raw: null, saved: false };
   // 初回の旧slot LOADでも、上書き前のオートセーブにある実績を先に補完する。
   try {
@@ -665,6 +680,7 @@ export function saveToSlot(key) {
 
 /** 手動枠と AUTO それぞれの実際の書き込み結果。既存の保存順序は維持する。 */
 export function saveToSlotResult(key) {
+  if (state && actionSaveHolds.has(state)) return { autoSaved: false, manualSaved: false };
   const { raw, saved: autoSaved } = writeSave();
   try {
     localStorage.setItem(key, raw === null ? JSON.stringify(state) : raw);
