@@ -77,7 +77,7 @@
 }
 .tonari-floor .tf-table[data-row="near"] { --tf-table-size: 194px; }
 .tonari-floor .tf-table:focus-visible { outline: 0; z-index: 3; }
-.tf-table[data-active="true"] { z-index: 2; }
+.tonari-floor .tf-table[data-active="true"] { z-index: 2; }
 .tf-table :is(.tf-ring,.tf-beat,.tf-marker,.tf-patron) { pointer-events: none; }
 .tf-patron {
   position: absolute; left: 40%; top: 10px; width: 64px; height: 76px;

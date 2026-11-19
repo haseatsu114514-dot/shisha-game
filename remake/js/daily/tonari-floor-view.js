@@ -78,6 +78,26 @@ function patron(guest, secondary = false) {
     </svg>` });
 }
 
+// Percent coordinates use the same 1280×720 projection as the painted room and the hit areas.
+function tableInDirection(id, key) {
+  const heading = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[key];
+  if (!heading) return null;
+  const [x, y] = TABLES[id - 1];
+  const [hx, hy] = heading;
+  let best = Infinity;
+  let target = null;
+  TABLES.forEach(([tx, ty], i) => {
+    const dx = (tx - x) * 12.8;
+    const dy = (ty - y) * 7.2;
+    const along = dx * hx + dy * hy;
+    const across = Math.abs(dx * hy - dy * hx);
+    if (along <= 0 || across > along * .8) return;
+    const rank = along + across * 2;
+    if (rank < best) { best = rank; target = i + 1; }
+  });
+  return target;
+}
+
 function tableControl(table, selected, turn, effect, choose) {
   const [status, glyph] = tableState(table);
   const [x, y, name] = TABLES[table.id - 1];
@@ -204,13 +224,7 @@ export function runTonariFloor({
         event.preventDefault();
         buttons[event.shiftKey ? buttons.length - 1 : 0].focus();
       } else if (!overlay && event.target instanceof HTMLButtonElement && event.target.classList.contains("tf-table")) {
-        const neighbours = {
-          ArrowLeft: selected % 3 === 1 ? null : selected - 1,
-          ArrowRight: selected % 3 === 0 ? null : selected + 1,
-          ArrowUp: selected > 3 ? selected - 3 : null,
-          ArrowDown: selected <= 3 ? selected + 3 : null,
-        };
-        const next = neighbours[event.key];
+        const next = tableInDirection(selected, event.key);
         if (!next) return;
         event.preventDefault();
         frame.querySelector(`[data-test="tonari-floor-table-${next}"]`)?.click();
@@ -363,8 +377,15 @@ export function runTonariFloor({
           stat("受渡棚", anyReady ? `卓${anyReady}へ提供` : "空き", "ready", { active: anyReady, key: "shelf" }),
         ]),
         el("div.tf-tables", { role: "group", "aria-label": "全6卓。矢印キーで選ぶ" },
-          state.tables.map((table) => tableControl(table, table.id === selected, state.turn, effect, () => {
-            if (!active || !isCurrent() || overlay || selected === table.id) return;
+          state.tables.map((table) => tableControl(table, table.id === selected, state.turn, effect, (event) => {
+            if (!active || !isCurrent() || overlay) return;
+            if (selected === table.id) {
+              // Enter / Space inspects the current order; only a separate action advances play.
+              if (event.detail === 0) {
+                (frame.querySelector(".tf-ticket .tf-action") || frame.querySelector(".tf-ticket-copy"))?.focus({ preventScroll: true });
+              }
+              return;
+            }
             selected = table.id;
             effect = null;
             SE.select();
