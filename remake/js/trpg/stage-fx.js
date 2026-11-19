@@ -55,15 +55,17 @@ function overlay(root, node, onCleanup = null) {
 export function playIncarnation(root, { cards = [], kicker = "物語の中へ", place = "", teller = "", onFlip = () => {}, onArrive = () => {} } = {}) {
   if (!live(root) || !cards.length) return IDLE;
   const cardNodes = cards.map(card => el("div.trpg-incarnate-card", [
+    el("i.trpg-incarnate-streak"),
     el("div.trpg-incarnate-face.front", [el("span.trpg-incarnate-portrait", card.real.face), el("strong", { text: card.real.name })]),
     el("div.trpg-incarnate-face.back", [el("span.trpg-incarnate-figure", card.role.figure),
       el("small", { text: card.role.title || "" }), el("strong", { text: card.role.name })]),
   ]));
   const veil = el("div.trpg-incarnate-veil"), head = el("p.trpg-incarnate-kicker", { text: kicker });
+  const lights = el("div.trpg-incarnate-lights");
   const row = el("div.trpg-incarnate-cards", cardNodes);
   const placeNode = el("div.trpg-incarnate-place", [el("small", { text: "物語の舞台" }), el("strong", { text: place }),
     teller ? el("span", { text: teller }) : null].filter(Boolean));
-  const node = el("div.trpg-incarnate", { "aria-hidden": "true" }, [veil, head, row, placeNode]);
+  const node = el("div.trpg-incarnate", { "aria-hidden": "true" }, [veil, lights, head, row, placeNode]);
   // 操作ボタンは読み上げ対象外の演出層の外。下の台詞の送りとは独立して閉じる。
   const skip = el("button.trpg-button.trpg-incarnate-skip", { type: "button", text: "変身をスキップ",
     dataset: { test: "trpg-incarnate-skip" }, onclick: () => fx.cancel() });
@@ -77,7 +79,7 @@ export function playIncarnation(root, { cards = [], kicker = "物語の中へ", 
   root.append(skip);
 
   const still = calm() || document.body?.classList.contains("reduce-shake");
-  const firstTurn = still ? 440 : 600, step = still ? 0 : 165, turnMs = still ? 0 : 430;
+  const firstTurn = still ? 440 : 490, step = still ? 0 : 195, turnMs = still ? 0 : 480;
   const arrived = firstTurn + (cardNodes.length - 1) * step + turnMs;
   const end = arrived + (still ? 790 : 990);
   node.dataset.calm = String(!!still);
@@ -88,15 +90,23 @@ export function playIncarnation(root, { cards = [], kicker = "物語の中へ", 
       if (!still) onFlip(i);
     });
     if (still) return;
-    // 札を少し浮かせて、縁が見える瞬間に役を切り替える。光は札の縁だけ。
+    // Each narrow beam leads its own card. The midpoint lands on the existing card sound.
     const options = { duration: turnMs, delay: at, easing: "ease-in-out" };
     fx.animate(card.querySelector(".front"), [{ transform: "rotateY(0)" }, { transform: "rotateY(180deg)" }], options);
     fx.animate(card.querySelector(".back"), [{ transform: "rotateY(-180deg)" }, { transform: "rotateY(0)" }], options);
-    fx.animate(card, [{ transform: "translateY(0)" }, { transform: "translateY(-9px)", offset: .5 }, { transform: "translateY(0)" }], options);
+    fx.animate(card.querySelector(".trpg-incarnate-streak"), [
+      { opacity: 0, transform: "scaleY(.08)" }, { opacity: .86, transform: "scaleY(1)", offset: .45 },
+      { opacity: 0, transform: "scaleY(.85)" }], { duration: 420, delay: at - 120 });
+    fx.animate(card, [{ transform: "translateY(0) scale(1)" }, { transform: "translateY(-19px) scale(.96)", offset: .38 },
+      { transform: "translateY(4px) scale(1.045)", offset: .72 }, { transform: "translateY(0) scale(1)" }], options);
   });
   fx.at(arrived, () => { node.dataset.arrived = "true"; onArrive(); });
   if (!still) {
-    fx.animate(node, [{ opacity: 0 }, { opacity: 1 }], { duration: 160, fill: "none" });
+    fx.animate(node, [{ opacity: 0 }, { opacity: 1 }], { duration: 180, fill: "none" });
+    fx.animate(lights, [{ opacity: .55 }, { opacity: .08, offset: .34 }, { opacity: .78 }],
+      { duration: arrived + 200, easing: "ease-in-out" });
+    fx.animate(placeNode, [{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "translateY(0)" }],
+      { duration: 240, delay: arrived, easing: "ease-out" });
     fx.animate(node, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, delay: end - 220, fill: "forwards" });
   }
   fx.at(end, fx.cancel);

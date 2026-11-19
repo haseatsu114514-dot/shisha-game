@@ -684,6 +684,10 @@ test('incarnation shows each seated PC once and finishes or skips without advanc
           assert(cards.every(card => !card.dataset.side));
           const moving = animated.some(a => cards.includes(a.node) && a.frames.some(f => f.transform));
           assert.equal(moving, setting === 'normal');
+          const beams = effect.querySelectorAll('.trpg-incarnate-streak');
+          assert.equal(beams.length, cards.length);
+          assert.equal(animated.filter(a => beams.includes(a.node)).length, setting === 'normal' ? cards.length : 0);
+          assert.equal(animated.some(a => a.node === effect.querySelector('.trpg-incarnate-lights')), setting === 'normal');
           const line = root.querySelector('.trpg-speech').querySelector('p').textContent;
           const snapshot = JSON.stringify(api.snapshot());
           if (action === 'skip') {
