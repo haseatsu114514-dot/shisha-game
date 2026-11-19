@@ -65,12 +65,17 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       el("small", { text: name(line.speaker) }), line.speaker === "hajime" && line.text.startsWith("（") ? line.text : "「" + line.text + "」",
     ]) : el("p.trpg-club-line.trpg-club-narration", { text: line.text });
     root = el("section.trpg-root.trpg-campaign", { tabindex: "-1", dataset: { phase: "campaign" } });
+    const bookshelf = button("本棚", "trpg-bookshelf-open", () => openTrpgBookshelf(root, state, scenarios, characters));
+    bookshelf.setAttribute("aria-label", "本棚（過去プレイを再生）");
+    bookshelf.replaceChildren(el("span", { style: { display: "grid" } }, [
+      el("span", { text: "本棚" }), el("small", { text: "過去プレイを再生" }),
+    ]));
     root.append(el("header.trpg-campaign-header", [
       el("div", [!readOnly ? storeLogo("trpg_bar", { width: 130, height: 72 }) : null, el("span.trpg-kicker", { text: readOnly ? "TABLETOP MEMORIES" : "ボドゲカフェ / TABLETOP CAFE" }),
         el("h1", { text: readOnly ? "遊んだ記録" : completed ? "今夜の卓を終えました" : daytime ? "昼の試遊と本選び" : "今夜、誰と物語を囲む？" })]),
       el("div.trpg-campaign-meta", [el("span", { text: state ? `CH.${state.chapter} · DAY ${chapterDay(state)} · ${yen(state.money)}` : "まだ記録がありません" }),
         shelfHelpButton(() => root, { title: "ボドゲカフェの遊び方", sections: SHOP_HELP, test: "trpg-campaign-help" }),
-        button("本棚", "trpg-bookshelf-open", () => openTrpgBookshelf(root, state, scenarios, characters)),
+        bookshelf,
         button(closeLabel, "trpg-campaign-close", close)]),
     ]));
     if (!readOnly) root.append(venueHost("sai", hostLine(completed ? reflection || "after_table" : trial

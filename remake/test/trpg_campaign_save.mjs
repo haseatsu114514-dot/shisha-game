@@ -169,7 +169,7 @@ assert.equal(fromPrevious.trpg.cleared["ordinary-cup"].records, undefined, "old 
 
 const newRecord = (play, day) => ({ play, chapter: 2, day, title: "世界一普通の一台", ending: "一緒に見つけた一台",
   endingLine: "この回の結末", participants: ["はじめ", "ひより"], choices: ["見立て：雨"], rolls: ["4 ＋ 14 ＋ 補正3 ＝ 21"],
-  lines: [["はじめ", "この回に残した台詞"]] });
+  lines: [["はじめ", "この回に残した台詞"]], stages: [["聞き込み", 0, 0, 0], ["見立て", 0, 1, -1]] });
 fromPrevious.trpg.cleared["ordinary-cup"].records = [newRecord(2, 4), newRecord(3, 6)];
 fromPrevious.trpg.cleared["ordinary-cup"].plays = 3;
 assert(core.save());

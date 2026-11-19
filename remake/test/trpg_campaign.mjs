@@ -574,7 +574,7 @@ test("table status guides player when companions and books are not yet ready (#1
 });
 
 test("the shelf snapshots the completed route once per play and keeps earlier plays when full", async () => {
-  const { TRPG_RECORDS_PER_STORY, appendTrpgPlayRecord, savedTrpgRecords } = await module("../js/trpg/play-record.js");
+  const { TRPG_RECORDS_PER_STORY, appendTrpgPlayRecord, savedTrpgRecords, trpgReplayScenes } = await module("../js/trpg/play-record.js");
   const s = own(friends(state()), ordinary.id);
   const play = (name, seed) => {
     const cast = rules.castTrpgTable(s, catalog, ordinary);
@@ -595,6 +595,16 @@ test("the shelf snapshots the completed route once per play and keeps earlier pl
   assert.equal(firstRecord.endingLine, ordinary.endings[first.ending].line);
   assert.match(firstRecord.choices.join(" "), /手書きのメニュー/);
   assert.match(firstRecord.rolls[0], new RegExp(String(first.checks[0].dice[0]) + " ＋ " + first.checks[0].dice[1]));
+  const ordered = trpgReplayScenes(firstRecord);
+  assert.equal(ordered.grouped, false);
+  assert.deepEqual(ordered.scenes[0], { title: "聞き込み", choices: [], rolls: [firstRecord.rolls[0]] });
+  assert.deepEqual(ordered.scenes.flatMap(scene => scene.rolls || []), firstRecord.rolls);
+  assert.deepEqual(ordered.scenes.flatMap(scene => scene.choices || []), firstRecord.choices);
+  assert.deepEqual(ordered.scenes.at(-1), { title: "結末・後日談", ending: true });
+  const grouped = trpgReplayScenes({ ...firstRecord, stages: undefined });
+  assert.equal(grouped.grouped, true);
+  assert.deepEqual(grouped.scenes.map(scene => scene.title), ["選んだこと", "判定結果", "結末・後日談"]);
+  assert.deepEqual(trpgReplayScenes({ ...firstRecord, stages: [["invalid", 0, 5, 99]] }), grouped);
   const companionLines = ["aside", "after"].map(part => ordinary.dialogues.find(block =>
     block.dialogue_id === "trpg_ordinary_" + part + "_adam_adam_nico").lines[0].text);
   assert.deepEqual([firstRecord.lines[0][1], firstRecord.lines.at(-1)[1]], companionLines);
