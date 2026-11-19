@@ -64,7 +64,7 @@ export const RIVALS = Object.freeze({
 // 着地の瞬間に半回転の区切りから tolerance（回転）以上ずれていると転倒。points は半回転の数ごとの得点（180, 360, 540 …）。
 // 跳んだ瞬間から押していた向きは、一度離すまで回転に使わない（よけながら跳んだだけで回り出さないように）。
 export const SPIN = Object.freeze({ rate: 1.7, finishRate: 3.2, tolerance: 0.1, points: Object.freeze([0, 150, 400, 700, 1100, 1500, 2000, 2600, 3300]) });
-// ブースト: かすめ・大ジャンプの着地・トリックでゲージ（0〜1）が貯まり、残量に比例した時間だけ発動できる。duration 秒のあいだ速度の上限が SPEED.boost になり、
+// ブースト: かすめ・大ジャンプの着地・トリックでゲージ（0〜1）が貯まり、minGauge 以上で残量に比例した時間だけ発動できる。duration 秒のあいだ速度の上限が SPEED.boost になり、
 // 当たった岩は砕ける（転倒しない）。転倒するとゲージが fallLoss 減るが、転倒前の半分は残す（空のゲージは増やさない）。岩に当たった直後（recoverWindow 秒）にゲージがあれば、ブーストで立て直せる（転倒を取り消して加速する）。
 // いい勝負（2026-11-11 オーナー「ライバルとの距離が離れすぎたらついてきたり、逆に離れすぎたら少し手加減してくれたり、いい勝負してる感を出したい」）:
 // 相手は記録した滑り（rivalRun）を、差に応じた速さで再生する（game.rivalClock）。差が gap メートルを超えると、
@@ -82,7 +82,7 @@ export const RUBBER = Object.freeze({ gap: 12, span: 40, catchUp: 1.25, easeOff:
 // 使わないと減る（同「ブーストは使わないとじわじわ減ってく仕様も欲しい」）: 最後に貯まってから decayDelay 秒たつと、毎秒 decay ずつ減る
 // （満タンから空まで約30秒。ブースト中・ゴール後は減らない）。
 export const CHARGE = 0.85;
-export const BOOST = Object.freeze({ duration: 3, land: 0.05, perfect: 0.22, good: 0.1, trickPerHalf: 0.1, fallLoss: 0.3, recoverWindow: 0.45, practiceRecoverWindow: 0.9,
+export const BOOST = Object.freeze({ minGauge: 0.3, duration: 3, land: 0.05, perfect: 0.22, good: 0.1, trickPerHalf: 0.1, fallLoss: 0.3, recoverWindow: 0.45, practiceRecoverWindow: 0.9,
   smashCost: 0.35, smashFloor: 0.2, decay: 0.033, decayDelay: 2.5 });
 // 評価の境目は DEFAULT_SEED（コース「稜線」）で合わせた: 空中で回って着地も決める＝S、回らないが着地を決めてブーストも使う＝A、
 // 着地が「良い」止まり＝B、ジャンプを使わず避けるだけ＝C（remake/test/desert_ride.mjs のボットで照合）。
@@ -363,6 +363,10 @@ export function canRecover(game) {
 
 /** ブースト（↓ ／ BOOST ボタン）。残量を使い切り、その割合だけ加速時間を得る。転倒直後なら立て直す。 */
 export function boost(game) {
+  return applyBoost(game, BOOST.minGauge);
+}
+
+function applyBoost(game, minGauge) {
   if (game.finished) return null;
   if (canRecover(game)) {
     game.gauge = game.preFallGauge;
@@ -381,7 +385,7 @@ export function boost(game) {
     game.events.push({ kind: "recover", t: game.t });
     return "recover";
   }
-  if (game.gauge <= 0) return null;
+  if (game.gauge < minGauge) return null;
   game.boostT = Math.min(BOOST.duration, game.boostT + BOOST.duration * game.gauge);
   game.gauge = 0;
   game.stats.boosts += 1;
@@ -736,6 +740,8 @@ export function readResult(value) {
 
 // 自動操作がブーストを使い始めるゲージの量。2026-11-13 にゲージが「使わないと減る」ようになったので、満タンまで待たずに使う（減る前に使い切る）
 const BOT_BOOST_AT = 0.35;
+// ライバルのゴール前の使い切りは従来どおり。プレイヤーの自動操作はプレイヤーと同じ最低量を使う。
+const RIVAL_FINISH_BOOST_AT = 0.15;
 const BOT_PLANS = Object.freeze([[0, 0], ...[-1, 1].flatMap(dir => [0.2, 0.45, 0.8, 1.4].map(hold => [dir, hold]))]);
 const BOT_LOOK = Object.freeze({ horizon: 2.2, dt: 1 / 20, every: 3, commit: 0.35 });
 /**
@@ -828,8 +834,9 @@ export function botControl(game, skill = "perfect", memo = {}) {
   else if (jumps && game.fallT <= 0) {
     // ゲージを無駄にしない使い方: 満タンで使う／加速中は、あふれない分だけ継ぎ足す／ゴールが近づいたら残りを使い切る
     const remaining = game.course.length - game.z, room = 1 - game.boostT / BOOST.duration;
-    if (game.boostT <= 0 ? game.gauge >= (memo.boostAt ?? BOT_BOOST_AT) || (game.gauge >= 0.15 && remaining <= SPEED.boost * BOOST.duration * game.gauge + 20)
-      : game.gauge >= 0.3 && game.gauge <= room) action = "boost";
+    const finishBoostAt = memo.finishBoostAt ?? BOOST.minGauge;
+    if (game.boostT <= 0 ? game.gauge >= (memo.boostAt ?? BOT_BOOST_AT) || (game.gauge >= finishBoostAt && remaining <= SPEED.boost * BOOST.duration * game.gauge + 20)
+      : game.gauge >= BOOST.minGauge && game.gauge <= room) action = "boost";
   }
   return { input, action };
 }
@@ -838,7 +845,7 @@ export function botControl(game, skill = "perfect", memo = {}) {
 export function botStep(game, skill, memo, dt) {
   const { input, action } = botControl(game, skill, memo);
   if (action === "press") press(game);
-  else if (action === "boost") boost(game);
+  else if (action === "boost") applyBoost(game, memo.finishBoostAt ?? BOOST.minGauge);
   step(game, input, dt);
   return game;
 }
@@ -850,7 +857,7 @@ const RIVAL_SAMPLE = 1 / 30;
  */
 export function rivalRun(course, { who = "noor", maxTime = 200 } = {}) {
   const { skill, startX, only360, startSpeed, easeOff = true, charge = 1, boostAt = 1 } = RIVALS[who] || RIVALS.noor;
-  const game = createGame(course, { charge }), memo = { lane: startX, only360, boostAt }, samples = [];
+  const game = createGame(course, { charge }), memo = { lane: startX, only360, boostAt, finishBoostAt: RIVAL_FINISH_BOOST_AT }, samples = [];
   game.x = startX; game.speed = startSpeed;
   const snap = () => samples.push({ t: game.t, z: game.z, x: game.x, vx: game.vx, air: game.air, airTotal: game.airTotal, airPeak: game.airPeak, airKind: game.airKind,
     landingPress: game.landingPress, fallT: game.fallT, landedAt: game.landedAt, rot: game.rot, boostT: game.boostT });

@@ -49,17 +49,27 @@ const context = vm.createContext({ Node: Dom, document: documentPort, URL, struc
   Image: class { decode() { return Promise.resolve(); } }, matchMedia: () => ({ matches: reducedMotion }),
   AbortController, setTimeout: (fn, delay) => { timers.push(fn); delays.push(delay); return timers.length; }, clearTimeout() {}, setInterval: fn => { tickers.push(fn); return tickers.length; }, clearInterval() {} });
 const modules = new Map();
+function sourceModule(url) {
+  // Cache before reading: simultaneous imports of the same URL must get one module.
+  if (!modules.has(url.href)) modules.set(url.href, (async () => {
+    const code = url.pathname.endsWith('/audio.js') ? 'export function createTrpgAudio() { throw new Error("audio port required"); }' : await readFile(url, 'utf8');
+    return new vm.SourceTextModule(code, { context, identifier: url.href, initializeImportMeta: meta => { meta.url = url.href; } });
+  })());
+  return modules.get(url.href);
+}
 async function load(url) {
-  if (modules.has(url.href)) return modules.get(url.href);
-  const code = url.pathname.endsWith('/audio.js') ? 'export function createTrpgAudio() { throw new Error("audio port required"); }' : await readFile(url, 'utf8');
-  const mod = new vm.SourceTextModule(code, { context, identifier: url.href, initializeImportMeta: meta => { meta.url = url.href; } });
-  modules.set(url.href, mod); await mod.link((specifier, parent) => load(new URL(specifier, parent.identifier))); return mod;
+  const mod = await sourceModule(url);
+  // Let the root link the shared graph; the callback only supplies module instances.
+  if (mod.status === 'unlinked') await mod.link((specifier, parent) => sourceModule(new URL(specifier, parent.identifier)));
+  return mod;
 }
 const mod = await load(new URL('../js/trpg/view.js', import.meta.url)); await mod.evaluate();
+const feedback = await load(new URL('../js/trpg/feedback.js', import.meta.url));
+const { rollOdds } = feedback.namespace;
 const scenarios = await Promise.all(['ordinary', 'shark'].map(async theme => JSON.parse(await readFile(new URL('../../data/dialogue/trpg_' + theme + '.json', import.meta.url), 'utf8'))));
 function mount(scenario, extra = {}) {
   const host = new Dom();
-  const manifest = { portraits: Object.fromEntries(scenario.cast.map(c => [c.id, { faces: ['normal'], h: .7, b: .1, aspect: 1 }])) };
+  const manifest = extra.manifest || { portraits: Object.fromEntries(scenario.cast.map(c => [c.id, { faces: ['normal'], h: .7, b: .1, aspect: 1 }])) };
   const audio = { enabled: false, available: true, setTheme() {}, play() {}, silence() {}, setEnabled() {} };
   let completions = 0, result = null;
   const api = mod.namespace.mountTrpg(host, { ...extra, onComplete: r => { completions++; result = r; return extra.onComplete?.(r); }, scenario, characters: [], manifest, seed: 9, profileId: scenario.profiles[0].id, audio });
@@ -218,7 +228,7 @@ for (const scenario of scenarios) {
     for (const spot of scenario.spots.slice(0, 3)) { q('trpg-spot-' + spot.id).click(); drain(); }
     q('trpg-interpret').click();
     const eye = api.snapshot().pc.stats.eye;
-    assert.equal(q('trpg-search').textContent, 'じっくり調べる' + scenario.presentation.stats.eye + ' ＋' + eye + ' · 1回');
+    assert.equal(q('trpg-search').textContent, 'じっくり調べる' + scenario.presentation.stats.eye + ' ＋' + eye + ' · 1回 · 成功 約' + rollOdds(eye).success + '%');
     assert.match(q('trpg-search').getAttribute('aria-label'), /一度だけ。成功 約\d+%で違う見立てが2つ、ひと手間 約\d+%で1つ分かる/);
     assert.equal(root.querySelectorAll('.trpg-hint-mark').length, 0);
     const pending = timers.length;
@@ -582,27 +592,36 @@ test('speaker dock aligns expressions and role costumes consistently across scen
   const costumeFrames = Object.fromEntries(framesList.map(f => [`${f.scenario}/${f.character}/${f.role_id}`, f]));
   const mail = JSON.parse(await readFile(new URL('../../data/dialogue/trpg_regular_mail.json', import.meta.url), 'utf8'));
   const mounted = mount(mail, { costumeFrames }), { api, root, q } = mounted;
-  const seenStyles = { table: [], pc: [] };
+  let enteredStory = false;
+  const seen = new Set();
   q('trpg-start').click();
   for (let n = 0; !q('trpg-next').hidden; n++) {
     assert(n < 120);
     const kind = root.dataset.kind;
-    const img = root.querySelector('.trpg-speaker-art')?.querySelector('img');
-    if (img && (kind === 'pc' || kind === 'table' && root.querySelector('.trpg-dock').dataset.gm !== 'true')) {
-      seenStyles[kind].push({ src: img.getAttribute('src'), top: img.style.top, width: img.style.width, transform: img.style.transform });
+    if (kind !== 'table') enteredStory = true;
+    const seat = root.querySelector('[data-speaker="hajime"]').querySelector('img');
+    const src = seat.getAttribute('src');
+    if (enteredStory) {
+      assert.match(src, /costumes\/leaf-mail\/hajime_\w+\.webp$/);
+      const regular = root.querySelector('[data-speaker="regulara"]');
+      assert(regular.querySelector('.trpg-missing-costume'));
+      assert.equal(regular.querySelector('img'), null);
+    } else {
+      assert.doesNotMatch(src, /costumes/);
+    }
+    const art = root.querySelector('.trpg-speaker-art');
+    const active = root.querySelectorAll('[data-speaker]').find(node => node.classList.contains('active'));
+    if (active?.dataset.speaker === 'hajime' && (kind === 'pc' || kind === 'table')) {
+      const img = art.querySelector('img');
+      if (enteredStory) assert.equal(img.getAttribute('src'), src);
+      assert.equal(img.style.top, enteredStory ? '40%' : '35%');
+      assert.match(img.style.width, /%$/);
+      assert.match(img.style.transform, /^translate\(/);
+      seen.add(enteredStory ? kind : 'prologue');
     }
     q('trpg-next').click();
   }
-  assert(seenStyles.table.length > 0 && seenStyles.pc.length > 0, 'both table and pc speaker portraits rendered');
-  for (const st of seenStyles.table) {
-    assert.equal(st.top, '35%', 'table standing portrait eye line stays anchored at 35%');
-    assert.match(st.width, /%$/); assert.match(st.transform, /^translate\(/);
-  }
-  for (const st of seenStyles.pc) {
-    assert.match(st.src, /costumes\/(regular-mail|leaf-mail)\//, 'aliased or native costume URL resolved');
-    assert.equal(st.top, '40%', 'PC costume speaker eye line stays anchored at 40%');
-    assert.match(st.width, /%$/); assert.match(st.transform, /^translate\(/);
-  }
+  assert.deepEqual([...seen].sort(), ['pc', 'prologue', 'table']);
   api.destroy();
 });
 
@@ -650,6 +669,30 @@ test('check result cut-in marks cutin state to lower/hide standing portrait and 
     delete Dom.prototype.animate;
     reducedMotion = true;
   }
+});
+
+test('Hiyori’s expressive GM dialogue resolves the matching crop, while her seat uses normal', async () => {
+  const manifest = JSON.parse(await readFile(new URL('../data/manifest.json', import.meta.url), 'utf8'));
+  const { api, root, q } = mount(scenarios[0], { manifest });
+  try {
+    q('trpg-start').click();
+    for (let i = 0; i < 85 && !q('trpg-next').hidden; i++) {
+      const dock = root.querySelector('.trpg-speaker-art').querySelector('img');
+      if (dock?.getAttribute('src')?.endsWith('chr_hiyori_smile.webp')) {
+        const seat = root.querySelector('[data-speaker="hiyori"]').querySelector('img');
+        assert.match(seat.getAttribute('src'), /chr_hiyori_normal\.webp$/);
+        const crops = (await load(new URL('../js/trpg/face-crops.js', import.meta.url))).namespace;
+        for (const [img, expression] of [[seat, 'normal'], [dock, 'smile']]) {
+          const expected = crops.faceIconStyle('hiyori', 'new', manifest, expression);
+          assert.equal(img.style.width, expected.width);
+          assert.equal(img.style.transform, expected.transform);
+        }
+        return;
+      }
+      q('trpg-next').click();
+    }
+    assert.fail('expected an actual smiling Hiyori GM line');
+  } finally { api.destroy(); }
 });
 
 test('incarnation shows each seated PC once and finishes or skips without advancing the story', () => {

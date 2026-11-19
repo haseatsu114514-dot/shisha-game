@@ -1,15 +1,11 @@
-// シーシャ作りの版（2026-11-13 オーナー「リニューアル版と桜井版が今あるけどどっちも遊んで試せるようにしたい。
-// どっちを採用するかはこちらで決めるので決まったら片方を消す」・docs/owner_requests.md の CRN16）。
-//   renewal（リニューアル）: 作業台のリニューアル（CRN01〜15）＋いままでの審査
-//   sakurai（桜井版）    : リニューアル前の作業台＋第1章の大会の桜井式の審査（SKR04・core/vote-style.js）
-// 版で分かれるのは遊びの手応えだけ（ランクの上がり方・穴あけ・吸い出し・待ち・炭焼き・雑念よけ・札・お手本）。
-// 軽さ（CRN13・14）と位置ずれ対策（CRN11）はどちらの版にも効く。版は一台を始める時に cs.craftVersion へ写し、
-// 作業台の途中では変えない。片方に決めたら、renewalCraft(cs) の分かれ道と、この設定を消す。
+// #3795（2026-11-19）: チュートリアル・日常・後章の作業台は桜井版に統一。
+// 第1章大会の既存の切替（CRN16/SKR04）と、独立した比較プレビューだけ旧版を保持する。
+// 一台の開始時に cs.craftVersion へ写し、途中の設定変更では変えない。
 export const CRAFT_VERSIONS = Object.freeze([
   { id: "renewal", label: "リニューアル" },
   { id: "sakurai", label: "桜井版" },
 ]);
-/** 何も選んでいない端末（自動操作のブラウザを含む）の版。 */
+/** 第1章大会の既存設定の既定値。#3795 の統一で大会の方式を変えない。 */
 export const PLAYER_DEFAULT_CRAFT_VERSION = "renewal";
 
 const known = (value) => CRAFT_VERSIONS.some((version) => version.id === value);
@@ -23,5 +19,10 @@ export function craftVersionFrom(config, search = typeof location !== "undefined
   return known(fromUrl) ? fromUrl : normalizeCraftVersion(config?.craftVersion);
 }
 
-/** この一台がリニューアルの手応えで動くか。版の無い一台（古いSAVE・部品だけのテスト）はリニューアル。 */
+/** #3795: 制作は桜井版に統一。第1章大会だけ既存の設定・試合記録による選択を保つ。 */
+export function craftVersionForSession(mode, chapter, config, search) {
+  return mode === "tournament" && chapter === 1 ? craftVersionFrom(config, search) : "sakurai";
+}
+
+/** 版のない部品は従来のリニューアル扱い。本編の旧SAVEは openBench で第1章大会以外を桜井版に揃える。 */
 export const renewalCraft = (cs) => cs?.craftVersion !== "sakurai";

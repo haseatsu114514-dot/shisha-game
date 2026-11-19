@@ -4,7 +4,7 @@ import { beginCh1Votes, castCh1Votes, isSakuraiVotes, sakuraiMine, sakuraiRival,
   CH1_JUDGES, CH1_CONTESTANTS, CH1_VOTE_VERSION, CH1_SAKURAI_VERSION } from "../js/craft/ch1-votes.js";
 import { ATTACK_BAND, attackGuide, attackRange, inAttackRange, attackScore } from "../js/craft/attack-band.js";
 import { voteStyleFrom, voteStyleForCraftVersion } from "../js/core/vote-style.js";
-import { craftVersionFrom, normalizeCraftVersion, renewalCraft, PLAYER_DEFAULT_CRAFT_VERSION } from "../js/core/craft-version.js";
+import { craftVersionFrom, craftVersionForSession, normalizeCraftVersion, renewalCraft, PLAYER_DEFAULT_CRAFT_VERSION } from "../js/core/craft-version.js";
 import { temperatureBands } from "../js/craft/temperature-model.js";
 
 const BASE_STATS = { aroma: 98, taste: 46, heatStability: 73, burnRisk: 25, draw: 80, smoke: 62, craftQuality: 79 };
@@ -133,7 +133,17 @@ for (const base of [70, 80, 90]) {
   assert.equal(attackRange({ ideal: [.4, .5], optimal: [.45, .55] }), null);
   assert.equal(attackGuide({ mode: "tournament", voteStyle: "sakurai" }), true);
   assert.equal(attackGuide({ mode: "tournament" }), false, "いままでの審査では出さない");
-  assert.equal(attackGuide({ mode: "drill", voteStyle: "sakurai" }), false, "練習では出さない");
+  assert.equal(attackGuide({ mode: "drill", voteStyle: "sakurai" }), false, "版のない旧部品には判定を足さない");
+  for (const chapter of [1, 2, 3, 4, 5]) for (const mode of ["tutorial", "rehearsal", "drill", "tournament"]) {
+    const protectedMatch = chapter === 1 && mode === "tournament";
+    for (const craftVersion of [null, "renewal", "sakurai"]) for (const search of ["", "?craft=renewal", "?craft=sakurai&vote=classic"]) {
+      const config = { craftVersion };
+      assert.equal(craftVersionForSession(mode, chapter, config, search),
+        protectedMatch ? craftVersionFrom(config, search) : "sakurai", `${chapter}/${mode}/${craftVersion}/${search}`);
+    }
+    assert.equal(attackGuide({ chapter, mode, craftVersion: "sakurai" }), !protectedMatch);
+  }
+  assert.equal(attackGuide({ chapter: 1, mode: "tournament", craftVersion: "sakurai", voteStyle: "sakurai" }), true);
 }
 
 // 方式の選び方（CRN16）: 審査の方式はシーシャ作りの版で決まる（桜井版＝桜井式・リニューアル＝いままで）。

@@ -213,7 +213,7 @@ test("all 243 shark plans finish; both risk variants exist and risk stays bounde
 test("a matching shark hypothesis improves preparation, and an unknown plan field is inert", () => {
   const correct = sharkRun(), incorrect = sharkRun({ hypothesis: "light" });
   const prep = run => run.result().checks.find(c => c.kind === "prepare");
-  assert.equal(prep(correct).bonus, prep(incorrect).bonus + 4);
+  assert.equal(prep(correct).bonus, prep(incorrect).bonus + 5);
   const s = new TrpgSession(shark, { seed: 5 });
   s.start(); s.beginCheck("listen"); s.settleCheck(); interviewDone(s);
   for (const spot of shark.spots.slice(0, 3)) s.inspect(spot.id);
@@ -693,6 +693,8 @@ test("the shopkeeper's first-table tutorial explains GM, PL, PC, the sheet, decl
   const text = tutorial.lines.map(l => l.text).join("");
   // The table itself shows short marks only (TRF07): the rules they stand for are explained here and in the "?" help.
   for (const word of ["GM", "PL", "PC", "キャラクターシート", "30以上", "おすすめ", "クリティカル", "ごほうび", "切り札", "振り直し", "連携札"]) assert(text.includes(word), word);
+  const declare = tutorial.lines.filter(line => line.panel === "declare").map(line => line.text).join("");
+  assert.match(declare, /手がかり.*見立て.*的中時.*準備の判定に＋5/);
   for (const l of tutorial.lines) assert(Array.from(l.text.replace("{gm}", "サメちゃん")).reduce((n, c) => n + (c.codePointAt(0) <= 255 ? 0.5 : 1), 0) <= 48, l.text);
 });
 

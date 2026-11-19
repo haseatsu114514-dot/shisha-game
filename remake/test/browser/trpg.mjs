@@ -311,7 +311,7 @@ try {
       const heat = (await snap()).heat;
       await hit(page, '[data-test="trpg-interpret"]');
       const look = page.locator('[data-test="trpg-search"]');
-      assert.equal(await look.textContent(), "じっくり調べる観察 ＋3 · 1回", "The card shows the stat and the limit; the rule is in the help");
+      assert.equal(await look.textContent(), "じっくり調べる観察 ＋3 · 1回 · 成功 約29%", "The search card shows its own observation roll, without momentum or aid");
       assert.match(await look.getAttribute("aria-label"), /フィンの観察で判定。一度だけ。成功 約\d+%で違う見立てが2つ、ひと手間 約\d+%で1つ分かる/);
       assert(await inStage('[data-test="trpg-search"]'), "The card stays on the stage");
       await hit(page, '[data-test="trpg-search"]');
@@ -664,7 +664,7 @@ try {
     await twistStep(page);
     await finish(page, movie.choices);
     assert.equal(await page.locator('[data-test="trpg-ending-title"]').textContent(), movie.ending);
-    assert.equal((await page.evaluate(() => __trpg.snapshot())).checks.find(c => c.kind === "prepare").hypothesisBonus, 4); // d20版の見立て補正
+    assert.equal((await page.evaluate(() => __trpg.snapshot())).checks.find(c => c.kind === "prepare").hypothesisBonus, 5); // d20版の見立て補正
     await fits(page);
     if (movie.label === "shark-scent-pc") {
       await hit(page, '[data-test="trpg-replay"]');

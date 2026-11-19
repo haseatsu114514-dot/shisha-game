@@ -29,7 +29,7 @@ export function improvementOf(cs) {
   const failed = rounds.find(([, result]) => ["cold", "burnt", "leaf"].includes(result?.failed));
   if (failed && failed[1].failed !== "leaf") return failed[1].failed === "cold"
     ? `次に変える一つ：${failed[0]}は冷え切る前に炭を交換しよう。`
-    : `次に変える一つ：${failed[0]}は熱が上がり切る前に熱を逃がす吸いを試そう。`;
+    : `次に変える一つ：${failed[0]}は熱が上がり切る前に下げ吸いを試そう。`;
   // 葉切れは別の終端原因。消耗で狭まった適温帯のずれを、熱の失敗と取り違えない。
   const exhausted = failed?.[1].failed === "leaf";
   // 後段の葉の消耗で狭まった帯を、記録済みの成功へさかのぼって当てない。

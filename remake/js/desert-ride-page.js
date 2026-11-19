@@ -1,6 +1,6 @@
 // DESERT RIDE を単体で遊ぶページ（remake/desert-ride.html）。本編の保存は読み書きしない。
 // 自己ベストはこのページだけの localStorage（suien_desert_ride_preview）に残す。
-import { RULES_VERSION } from "./minigames/desert-ride-model.js";
+import { BOOST, RULES_VERSION } from "./minigames/desert-ride-model.js";
 import { el } from "./core/util.js";
 import { initStageFit } from "./core/stage-fit.js";
 import { initSideArea } from "./core/side-area.js";
@@ -52,7 +52,7 @@ function menu(message = "狙いは、S。") {
     el("p", { style: { marginTop: "16px" } }, [el("label", [reduceBox, el("span", { text: "動きを減らす（揺れ・閃光・速度線なし）" })])]),
     best?.beatNoor ? el("p", { text: "ヌールに勝った。なるが、砂丘で待っている。", dataset: { test: "desert-page-naru" } }) : null,
     // キーの説明は PC だけ（スマホは画面のボタンと、ゲームの中の「？」で足りる）
-    el("p.dr-page-keys", { text: "PC: ← → で移動（空中では回転）、Space でジャンプ／着地、↓ でブースト。スマホ: 下のボタン。", style: { fontSize: "15px", color: "#5a3a2a" } }),
+    el("p.dr-page-keys", { text: `PC: ← → で移動（空中では回転）、Space でジャンプ／着地、ゲージが目印（${BOOST.minGauge * 100}%）に届いたら ↓ でブースト。スマホは画面のボタン。`, style: { fontSize: "15px", color: "#5a3a2a" } }),
   ].filter(Boolean));
 }
 menu();
