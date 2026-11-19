@@ -511,7 +511,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     });
     audio.play("open");
     staging = playIncarnation(root, { cards, place: presentation.location || scenario.title, teller: GM_TITLE + " " + name(gm),
-      onFlip: () => audio.play("card"), onArrive: () => { audio.play("page"); stageFx(impact(root, "arrive")); } });
+      onFlip: () => audio.play("card"), onArrive: () => audio.play("page") });
     stageFx(staging);
   }
   /** 台詞の行に付いた合図（fx）で場面を動かす。twist＝思わぬ展開の入り、ending＝結末の入り、shake／flash は台本から。 */
@@ -893,6 +893,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   function modal(title, body, actions, { dismiss = true, wide = false, skin = "" } = {}) {
     if (overlay || disposed) return null;
+    staging?.cancel();
     const previousFocus = document.activeElement;
     const box = el("section.trpg-modal", { role: "dialog", "aria-modal": "true", "aria-label": title, tabindex: "-1", class: [wide ? "trpg-modal-wide" : "", skin].filter(Boolean).join(" ") },
       [el("h2", { text: title }), el("div.trpg-modal-body", { tabindex: "0", role: "region", "aria-label": title + "の内容" }, body), el("div.trpg-modal-actions", actions)]);

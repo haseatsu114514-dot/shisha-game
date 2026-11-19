@@ -49,7 +49,7 @@ function overlay(root, node, onCleanup = null) {
 
 /**
  * 転生（TRF08）: キャラ作りが終わって物語が始まる瞬間。卓の顔ぶれの札が一枚ずつ裏返り、本人から役の姿へ変わる。
- * 最後に物語の舞台の名前が出て、光とともに部屋の絵へ抜ける。
+ * 最後に全員の役姿と舞台の名前を一緒に見せる。
  * cards: [{ real: { name, face: Node }, role: { name, title, figure: Node } }]
  */
 export function playIncarnation(root, { cards = [], kicker = "物語の中へ", place = "", teller = "", onFlip = () => {}, onArrive = () => {} } = {}) {
@@ -63,44 +63,43 @@ export function playIncarnation(root, { cards = [], kicker = "物語の中へ", 
   const row = el("div.trpg-incarnate-cards", cardNodes);
   const placeNode = el("div.trpg-incarnate-place", [el("small", { text: "物語の舞台" }), el("strong", { text: place }),
     teller ? el("span", { text: teller }) : null].filter(Boolean));
-  const flash = el("div.trpg-incarnate-flash");
-  const node = el("div.trpg-incarnate", { "aria-hidden": "true" }, [veil, head, row, placeNode, flash]);
-  const fx = overlay(root, node);
-  if (calm()) {
-    // 動きを減らす: 役の姿の札と舞台の名前を、動かさずに短く見せる。
-    for (const card of cardNodes) card.dataset.side = "back";
-    node.dataset.calm = "true";
-    onArrive();
-    fx.animate(node, [{ opacity: 1 }, { opacity: 1, offset: .8 }, { opacity: 0 }], { duration: 1500, easing: "ease" }).finished.then(fx.cancel, fx.cancel);
-    return fx;
-  }
-  const step = 300, flipAt = 820, flipMs = 560;
-  const flipped = flipAt + (cards.length - 1) * step + flipMs, placeAt = flipped + 520, end = placeAt + 1500;
-  fx.animate(veil, [{ opacity: 0 }, { opacity: 1 }], { duration: 260, easing: "ease-out" });
-  fx.animate(head, [{ opacity: 0, transform: "translateY(10px)", letterSpacing: ".5em" }, { opacity: 1, transform: "translateY(0)", letterSpacing: ".34em" }],
-    { duration: 520, delay: 120, easing: EASE.out });
-  cardNodes.forEach((card, i) => {
-    fx.animate(card, [{ opacity: 0, transform: "translateY(26px) scale(.94)" }, { opacity: 1, transform: "translateY(0) scale(1)" }],
-      { duration: 420, delay: 260 + i * 90, easing: EASE.out });
-    const turn = card, at = flipAt + i * step;
-    // 札が浮いて裏返る。裏返った瞬間に役の姿が光る。
-    fx.animate(turn.querySelector(".front"), [{ transform: "rotateY(0deg)" }, { transform: "rotateY(180deg)" }], { duration: flipMs, delay: at, easing: "ease-in-out" });
-    fx.animate(turn.querySelector(".back"), [{ transform: "rotateY(-180deg)" }, { transform: "rotateY(0deg)" }], { duration: flipMs, delay: at, easing: "ease-in-out" });
-    fx.animate(turn, [{ transform: "translateY(0) scale(1)", filter: "brightness(1)" }, { transform: "translateY(-18px) scale(1.06)", filter: "brightness(1.5)", offset: .5 },
-      { transform: "translateY(0) scale(1)", filter: "brightness(1)" }], { duration: flipMs + 120, delay: at, easing: "ease-in-out", fill: "none" });
-    fx.at(at + flipMs / 2, () => { turn.dataset.side = "back"; onFlip(i); });
+  const node = el("div.trpg-incarnate", { "aria-hidden": "true" }, [veil, head, row, placeNode]);
+  // 操作ボタンは読み上げ対象外の演出層の外。下の台詞の送りとは独立して閉じる。
+  const skip = el("button.trpg-button.trpg-incarnate-skip", { type: "button", text: "変身をスキップ",
+    dataset: { test: "trpg-incarnate-skip" }, onclick: () => fx.cancel() });
+  const fx = overlay(root, node, () => {
+    if (document.activeElement === skip) root.querySelector('[data-test="trpg-next"]')?.focus({ preventScroll: true });
+    skip.remove();
+    document.removeEventListener("visibilitychange", hide);
   });
-  // 札と見出しが上へ抜け、舞台の名前が出る。
-  fx.animate(row, [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-30px)" }], { duration: 380, delay: placeAt - 380, easing: EASE.in });
-  fx.animate(head, [{ opacity: 1 }, { opacity: 0 }], { duration: 300, delay: placeAt - 380, easing: "ease-in", composite: "replace" });
-  fx.animate(placeNode, [{ opacity: 0, transform: "translate(-50%, -44%) scale(.94)", easing: EASE.out }, { opacity: 1, transform: "translate(-50%, -50%) scale(1)", offset: .22 },
-    { opacity: 1, transform: "translate(-50%, -50%) scale(1.02)", offset: .78, easing: "ease-in" }, { opacity: 0, transform: "translate(-50%, -54%) scale(1.06)" }],
-  { duration: end - placeAt, delay: placeAt, easing: "linear" });
-  // 光って、幕が晴れると部屋の絵。
-  fx.animate(flash, [{ opacity: 0 }, { opacity: .9, offset: .35 }, { opacity: 0 }], { duration: 700, delay: end - 760, easing: "ease-out" });
-  fx.animate(veil, [{ opacity: 1 }, { opacity: 0 }], { duration: 520, delay: end - 520, easing: "ease-in", composite: "replace" });
-  fx.at(end - 520, onArrive);
-  fx.at(end + 40, fx.cancel);
+  function hide() { if (document.hidden) fx.cancel(); }
+  document.addEventListener("visibilitychange", hide);
+  root.append(skip);
+
+  const still = calm() || document.body?.classList.contains("reduce-shake");
+  const firstTurn = still ? 440 : 600, step = still ? 0 : 165, turnMs = still ? 0 : 430;
+  const arrived = firstTurn + (cardNodes.length - 1) * step + turnMs;
+  const end = arrived + (still ? 790 : 990);
+  node.dataset.calm = String(!!still);
+  cardNodes.forEach((card, i) => {
+    const at = firstTurn + i * step;
+    fx.at(at + turnMs / 2, () => {
+      card.dataset.side = "back";
+      if (!still) onFlip(i);
+    });
+    if (still) return;
+    // 札を少し浮かせて、縁が見える瞬間に役を切り替える。光は札の縁だけ。
+    const options = { duration: turnMs, delay: at, easing: "ease-in-out" };
+    fx.animate(card.querySelector(".front"), [{ transform: "rotateY(0)" }, { transform: "rotateY(180deg)" }], options);
+    fx.animate(card.querySelector(".back"), [{ transform: "rotateY(-180deg)" }, { transform: "rotateY(0)" }], options);
+    fx.animate(card, [{ transform: "translateY(0)" }, { transform: "translateY(-9px)", offset: .5 }, { transform: "translateY(0)" }], options);
+  });
+  fx.at(arrived, () => { node.dataset.arrived = "true"; onArrive(); });
+  if (!still) {
+    fx.animate(node, [{ opacity: 0 }, { opacity: 1 }], { duration: 160, fill: "none" });
+    fx.animate(node, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, delay: end - 220, fill: "forwards" });
+  }
+  fx.at(end, fx.cancel);
   return fx;
 }
 
