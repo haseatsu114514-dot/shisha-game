@@ -9,6 +9,7 @@ Codex / Claude Code 共通。Claude Code は `CLAUDE.md` の `@AGENTS.md` から
 - 旧 `web/` と Godot 版は廃止済み。`web/` は存在不要で、復元・テスト・確認要求の対象にしない。`project.godot` が残るcheckoutは古い（`tools/check_git_safety.sh` が検出する）。
 - 最新の明示的なユーザー指示を、古い仕様・Issueコメント・引き継ぎ・スキルの担当メモより優先する。依頼された仕様変更や、すでに指示された結論・得た承認に再承認を求めない。
 - 仕様・要望は `docs/master_spec.md` / `docs/owner_requests.md`、物語・人物は `brand/story_and_structure.md` / `brand/character_profiles.md` / `data/characters.json`。参照先の全体は [現行資料ガイド](docs/current_documentation_guide.md)、ゲーム・台詞は [開発資料](docs/gameplay_agent_reference.md)、レビュー範囲は [対象範囲](docs/review_scope.md)、画像・素材は [素材規約](docs/asset_ai_guidance.md)、シーシャの参照先は [シーシャ描写の参考資料](docs/shisha_reference.md) を必要時に読む。
+- ゲーム画面の設計・見た目の改善は [game-ui-frontend](.claude/skills/game-ui-frontend/SKILL.md)、実画面・操作・視認性の確認は [game-playtest](.claude/skills/game-playtest/SKILL.md) を必要時に使う。スキルが自動検出されない連携でも、このファイルから同じ手順を読む。
 - 日付付きの引き継ぎや過去のテスト記録は履歴。永続ルールは既存の正本へまとめ、履歴MDや仕組みを依頼なく増やさない。
 
 ## Issue予約は撤廃（2026-10-23 オーナー指示）
