@@ -168,7 +168,8 @@ const measure = (page) => page.evaluate(async () => {
     name: { shown: name.classList.contains("show") && getComputedStyle(name).display !== "none", rows: name.classList.contains("show") && getComputedStyle(name).display !== "none" ? rows(name) : [],
       bar: getComputedStyle(name, "::before").backgroundColor, face: getComputedStyle(name).backgroundImage, text: name.textContent,
       fontSize: parseFloat(getComputedStyle(name).fontSize), clipped: name.scrollWidth > name.clientWidth + 1 },
-    speaker: vn.style.getPropertyValue("--neo-speaker"),
+    speaker: name.style.getPropertyValue("--neo-speaker"),
+    portraitSpeakerColor: getComputedStyle(document.querySelector(".vn-portraits")).getPropertyValue("--neo-speaker"),
     controls: [...document.querySelectorAll(".vn-ctl")].map((node) => ({ id: node.dataset.test, ...px(node.getBoundingClientRect()), realHeight: node.getBoundingClientRect().height })),
     choices: choices.classList.contains("show") ? [...choices.querySelectorAll(".vn-choice")].map((node) => ({ ...px(node.getBoundingClientRect()),
       fontSize: parseFloat(getComputedStyle(node).fontSize), shrunk: node.style.fontSize, face: getComputedStyle(node).backgroundImage })) : [],
@@ -195,6 +196,7 @@ const STAGE = { left: 0, top: 0, right: 1280, bottom: 720 };
 /** 本文・名前・操作・選択肢が互いに重ならず、ステージの中にある。本文は帯の中で、行数の上限を守る。 */
 function assertLayout(m, label, { lines = 2, phone = false } = {}) {
   assert.equal(m.look, "neo", `${label}: 新版が効いている`);
+  assert.equal(m.portraitSpeakerColor, "", `${label}: 名前札の色を立ち絵の描画へ継承しない`);
   assert(!m.stage.scrollable && m.stage.scrollTop === 0, `${label}: ステージにスクロール領域を作らない ${JSON.stringify(m.stage)}`);
   assert(m.text.rows.length > 0, `${label}: 本文が出ている`);
   assert(m.text.lines <= lines && m.text.breaks <= lines - 1 && !m.text.overflow && !m.inner.overflow,
