@@ -5622,6 +5622,7 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .map .spot-pin.guided-off { opacity: .5; }
 /* 居る人の顔と「!」: 縁を夜紫の面に合わせる。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .map .spot-pin .pin-person { border-color: #f6f1fa; box-shadow: 0 0 0 1px rgba(21, 13, 34, .6), 0 2px 5px rgba(8, 3, 16, .55); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .map .spot-pin .pin-unknown { box-shadow: inset 0 2px 5px rgba(8, 3, 16, .55); }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .map .evt-badge:not(.hidane-badge) { color: #26160a; background: var(--neo-ui-gold); border-color: #fbe6b4; box-shadow: 0 0 10px rgba(227, 189, 110, .85); }
 :root[data-look="neo"] body.reduce-shake:not(.game-ds) #stage #screen .map :is(.evt-badge, .evt-badge::after, .spot-pin.guide .shield) { animation: none; }
 
