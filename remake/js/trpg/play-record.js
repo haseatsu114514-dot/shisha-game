@@ -22,10 +22,14 @@ export function savedTrpgRecords(memory) {
 export function buildTrpgPlayRecord(table, result, memory, state, play, characters = []) {
   const name = id => displayName(characters, id);
   const sheets = { ...sheetsOf(table) };
+  const companions = [];
   for (const [seat, optionId] of Object.entries(result.companions || {})) {
     const player = table.cast.find(c => (c.seat || c.id) === seat && c.part !== "GM")?.id;
     const option = table.companionBuilds?.[seat]?.[player]?.find(o => o.id === optionId);
-    if (option) sheets[seat] = option;
+    if (option) {
+      sheets[seat] = option;
+      companions.push(option);
+    }
   }
   if (result.pc) sheets[table.builder?.seat || PLAYER_SEAT] = result.pc;
   const text = value => String(value ?? "")
@@ -36,7 +40,8 @@ export function buildTrpgPlayRecord(table, result, memory, state, play, characte
 
   const ending = table.endings[result.ending];
   const scripts = new Map(table.dialogues.map(block => [block.dialogue_id, block.lines]));
-  const lines = [ending.dialogue, table.debrief?.[result.variant], table.epilogue]
+  const lines = [...companions.map(option => option.aside), ending.dialogue, table.debrief?.[result.variant], table.epilogue,
+    ...companions.map(option => option.after)]
     .flatMap(block => typeof block === "string" ? scripts.get(block) || [] : block || [])
     .map(frame => {
       const speaker = frame.speaker === "samechan" && frame.voice === "korochan" ? "コロちゃん" : name(frame.speaker);

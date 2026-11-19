@@ -581,7 +581,7 @@ test("the shelf snapshots the completed route once per play and keeps earlier pl
     assert(cast.ok);
     const ticket = { ...cast, chapter: s.chapter, day: s.day, slot: s.slot };
     const table = rules.materializeTrpgCast(ordinary, cast.assignments);
-    const result = finish(table, { pc: { name }, seed });
+    const result = finish(table, { pc: { name }, companions: { adam: "nico" }, seed });
     const options = { recordTable: table };
     assert(rules.completeTrpgTable(s, catalog, ordinary, ticket, result, options));
     assert(!rules.completeTrpgTable(s, catalog, ordinary, ticket, result, options), "a second notification adds no record");
@@ -595,7 +595,9 @@ test("the shelf snapshots the completed route once per play and keeps earlier pl
   assert.equal(firstRecord.endingLine, ordinary.endings[first.ending].line);
   assert.match(firstRecord.choices.join(" "), /手書きのメニュー/);
   assert.match(firstRecord.rolls[0], new RegExp(String(first.checks[0].dice[0]) + " ＋ " + first.checks[0].dice[1]));
-  assert(firstRecord.lines.length > 0);
+  const companionLines = ["aside", "after"].map(part => ordinary.dialogues.find(block =>
+    block.dialogue_id === "trpg_ordinary_" + part + "_adam_adam_nico").lines[0].text);
+  assert.deepEqual([firstRecord.lines[0][1], firstRecord.lines.at(-1)[1]], companionLines);
   assert(firstRecord.lines.every(([, line]) => !/\{pc[:}]/.test(line)), "the snapshot resolves names in the saved script");
 
   const second = play("アカ", 7);
