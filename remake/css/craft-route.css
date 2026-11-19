@@ -85,6 +85,24 @@ html body.craft-stage #stage .bench .hole-chooser .ht-option { flex-direction: r
 html body.craft-stage:not(.game-ds) #stage .bench[data-mode] .hole-chooser .hr-stage { grid-template-columns: minmax(0,1fr); }
 html body.craft-stage:not(.game-ds) #stage .bench[data-mode] .hole-chooser .hr-stage > .ht-preview { max-width: 100%; min-width: 0; box-sizing: border-box; }
 
+/* 機材が揃ってくると、長い名前の最小幅が2列とも広げる。カードの幅を先に決め、
+   名前・装備中の表示・注意書きは縦に折り返す。横へスワイプしなくても選べる。 */
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"][data-step="setup"] .bench-panel:has(> .opt-grid) {
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"][data-step="setup"] .bench-panel > .opt-grid.cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"][data-step="setup"] .bench-panel > .opt-grid > .opt {
+  min-width: 0;
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"][data-step="setup"] .bench-panel > .opt-grid > .opt > :is(b, small, .opt-badge) {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 /* 一枚の舞台の操作札。文字・当たり判定は縮めず、説明や絵の余白で受ける。 */
 html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .bench-guide[open] .bench-guide-tip {
   width: min(580px, calc(92vw / var(--k, 1)));

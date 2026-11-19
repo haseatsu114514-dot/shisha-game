@@ -25,6 +25,79 @@ const headerLabels = page => page.locator(".bench-phase-copy b").allTextContents
 const fits = page => assertCraftProgress(page);
 
 await suite("craft-progress", async check => {
+  for (const [size, viewport, touch] of [
+    ["desktop", { width: 1280, height: 720 }, false],
+    ["phone", { width: 844, height: 390 }, true],
+    ["short", { width: 740, height: 320 }, true],
+  ]) await check(`sakurai-equipment-fit-${size}`, async page => {
+    await page.evaluate(async () => {
+      const model = await import("./js/core/state.js");
+      const { DB } = await import("./js/core/data.js");
+      const session = await import("./js/craft/session.js");
+      const { stepSetup } = await import("./js/craft/steps.js");
+      model.newGame(); model.state.chapter = 1; model.state.day = 14;
+      const bowls = Object.values(DB.equipById).filter(item => item.type === "bowl").map(item => item.id);
+      model.state.owned = [...new Set([...model.state.owned, ...bowls, "tanukish_lid"])];
+      window.gearCS = session.newSession("tournament");
+      gearCS.craftVersion = "sakurai";
+      const { CRAFT_STEPS } = await import("./js/craft/practice.js");
+      await session.openBench(gearCS, { steps: CRAFT_STEPS }).ready;
+      window.gearRun = stepSetup(gearCS);
+    });
+    const panel = page.locator(".bench[data-step='setup'] .bench-panel");
+    const compare = page.locator('[data-test="setup-compare"]');
+    await compare.waitFor();
+    assert.equal(await page.locator(".bench").getAttribute("data-craft-version"), "sakurai");
+    const geometry = await panel.evaluate(async node => {
+      const { DB } = await import("./js/core/data.js");
+      const { equipmentUse } = await import("./js/craft/flavor-guide.js");
+      const pr = node.getBoundingClientRect();
+      const inside = (r, bounds) => r.left >= bounds.left - 1 && r.right <= bounds.right + 1;
+      const cards = [...node.querySelectorAll(".opt-grid > .opt")].map(card => {
+        const id = card.dataset.test.slice(4);
+        const equipment = DB.equipById[id], reference = equipmentUse(equipment);
+        const rect = card.getBoundingClientRect();
+        const title = card.querySelector("b"), desc = card.querySelector("small");
+        const copy = [title, desc, card.querySelector(".opt-badge")].filter(Boolean).every(line => {
+          const r = document.createRange(); r.selectNodeContents(line);
+          return [...r.getClientRects()].every(bounds => inside(bounds, rect) && inside(bounds, pr)
+            && bounds.top >= rect.top - 1 && bounds.bottom <= rect.bottom + 1);
+        });
+        return {
+          id, fit: inside(rect, pr) && copy, complete: title.textContent === equipment.name
+            && desc.textContent === (reference.use + (reference.caution ? ` ／ 注意：${reference.caution}` : "")),
+        };
+      });
+      const preview = node.querySelector('[data-test="setup-preview"]');
+      return { cards, width: [node.clientWidth, node.scrollWidth], expected: Object.values(DB.equipById).filter(item => item.type === "bowl").length,
+        preview: preview.querySelectorAll("dd").length, scrollablePreview: preview.scrollHeight > preview.clientHeight };
+    });
+    assert(geometry.cards.length > 12, "The regression requires the long, unlocked bowl inventory");
+    assert.equal(geometry.cards.length, geometry.expected);
+    assert(geometry.cards.every(card => card.fit && card.complete), JSON.stringify(geometry.cards.filter(card => !card.fit || !card.complete)));
+    assert(geometry.width[1] <= geometry.width[0] + 1, "Equipment choices must not require horizontal scrolling");
+    assert.equal(geometry.preview, 6, "Every equipment preview value is retained");
+    if (touch) assert(geometry.scrollablePreview, "The existing detailed preview can still scroll");
+    const choose = async option => { if (touch) await option.tap(); else await option.click(); };
+    const selected = panel.locator('[data-test="opt-silicone_bowl"]');
+    assert.match(await selected.textContent(), /装備中/);
+    await panel.locator('[data-test="opt-hagal_80beat"]').focus();
+    assert.match(await panel.locator('[data-test="setup-preview"]').textContent(), /この候補で組む一式.*最大15g/);
+    await choose(compare);
+    const close = page.locator('[data-test="setup-compare-close"]');
+    await close.waitFor();
+    assert.equal(await page.locator(".equipment-compare-list > section").count(), geometry.cards.length);
+    assert.match(await page.locator(".equipment-compare-list").textContent(), /80beatハガル/);
+    await choose(close);
+    const last = panel.locator(".opt-grid > .opt").last();
+    const lastGear = (await last.getAttribute("data-test")).slice(4);
+    await last.scrollIntoViewIfNeeded();
+    assert(await panel.evaluate(node => node.scrollTop > 0 && node.scrollLeft === 0), "Late equipment is reached by vertical scrolling only");
+    await choose(last);
+    await page.waitForFunction(id => gearCS.equip.bowl === id, lastGear);
+    assert.equal(await page.locator(".bench").getAttribute("data-step"), "setup");
+  }, { viewport, isMobile: touch, hasTouch: touch });
+
   for (const [name, viewport, mobile, reducedMotion] of [
     ["desktop", { width: 1280, height: 720 }, false, "no-preference"],
     ["touch", { width: 844, height: 390 }, true, "reduce"],
