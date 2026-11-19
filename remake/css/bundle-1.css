@@ -7994,15 +7994,16 @@ html:root .trpg-root.trpg-cinematic .trpg-incarnate-face strong { font-size: 30p
 html:root .trpg-root.trpg-cinematic .trpg-incarnate-face.front strong { color: #fff4d6; }
 html:root .trpg-root.trpg-cinematic .trpg-incarnate-face.back strong { color: #2a1b0c; }
 html:root .trpg-root.trpg-cinematic .trpg-incarnate-face.back small { font-size: 18px; font-weight: 700; color: #6b5637; line-height: 1.2; }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] .front { display: none; }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] .back { transform: none; }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate-place { position: absolute; left: 50%; top: 50%; display: grid; justify-items: center; gap: 10px; width: max-content; max-width: 1100px; opacity: 0; transform: translate(-50%, -50%); text-align: center; }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] .trpg-incarnate-place { top: auto; bottom: 34px; opacity: 1; transform: translateX(-50%); }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] .trpg-incarnate-place strong { font-size: 30px; }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate-place small { font-size: 20px; letter-spacing: .4em; color: #d2ae66; }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate-place strong { font-size: 58px; font-weight: 700; letter-spacing: .08em; color: #fff4d6; text-shadow: 0 4px 22px #000, 0 0 40px #f4dda455; }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate-place span { font-size: 22px; color: #e3ead9; letter-spacing: .12em; }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate-flash { position: absolute; inset: 0; opacity: 0; background: radial-gradient(circle at 50% 50%, #fff9e6 0%, #fff3cfcc 35%, #fff3cf00 72%); }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] .back { display: none; transform: none; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] [data-side="back"] .front { display: none; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] [data-side="back"] .back { display: flex; box-shadow: none; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-place { position: absolute; inset: auto 16% 36px; display: grid; justify-items: center; gap: 3px; opacity: 0; text-align: center; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-arrived="true"] .trpg-incarnate-place { opacity: 1; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-place small { font-size: 18px; letter-spacing: .2em; color: #d2ae66; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-place strong { font-size: 32px; line-height: 1.15; color: #fff4d6; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-place span { font-size: 20px; color: #e3ead9; }
+html:root .trpg-root.trpg-cinematic > .trpg-incarnate-skip { position: absolute; z-index: 71; right: 28px; bottom: 28px; min-height: 64px; padding: 0 18px; color: #fff4d6; background: #183735; border: 1px solid #c8ac71; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic > .trpg-incarnate-skip { min-height: 84px; font-size: var(--phone-sub); }
 
 /* ---- 場面の題の札（TRF10）---- */
 html:root .trpg-root.trpg-cinematic .trpg-scene-card { position: absolute; left: 0; right: 0; top: 262px; z-index: 55; height: 132px; display: grid; align-content: center; justify-items: center; gap: 4px; pointer-events: none; }
