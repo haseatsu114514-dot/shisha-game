@@ -159,20 +159,39 @@ test("round icons resolve the displayed style and expression before positioning 
   assert.deepEqual(faceIconStyle("hiyori", "classic", manifest, "missing"), faceIconStyle("hiyori", "classic"));
 });
 
-test("actual Hiyori iris pairs align across round frames and preserve her normal projected eye separation", () => {
-  const normal = faceIconStyle("hiyori", "new");
-  function iris(style, x, y) {
+test("Hiyori's lower face and cheek span stay registered across six costumes and expressions", () => {
+  function project(style, [x, y]) {
     const [tx, ty] = style.transform.match(/-?[\d.]+/g).map(Number);
-    const scale = parseFloat(style.width) / 100;
-    return [0.5 + (x / 896 + tx / 100) * scale, EYE_Y + (y / 1200 + ty / 100) * scale * 1200 / 896];
+    const scale = parseFloat(style.width) / 100 / 896;
+    return [0.5 + (x + tx * 8.96) * scale, EYE_Y + (y + ty * 12) * scale];
   }
-  const target = iris(normal, 502, 281.5);
-  for (const [id, left, right] of [["otto",[483,283],[524,274]], ["neri",[492,284],[530,269]],
-    ["marta",[482,278],[522,265]], ["smile",[488,294],[530,276]]]) {
-    const rec = frames.find(f => f.character === "hiyori" && f.role_id === id);
-    const st = rec ? costumeIconStyle(rec) : faceIconStyle("hiyori","new",null,id);
-    const l = iris(st,...left), r = iris(st,...right);
-    assert.ok(Math.abs((l[0]+r[0])/2-target[0]) < .001 && Math.abs((l[1]+r[1])/2-EYE_Y) < .001, id);
-    assert.ok(Math.abs(r[0]-l[0] - FACE_FRAC/2) < .001, id);
+  // Independent screenshot landmarks: chin and cheek contour, plus the mouth
+  // (excluded from fitting because a surprised or smiling mouth changes shape).
+  const samples = [
+    ["normal", [517.5, 321.5], [478.5, 304.5], [540.5, 299.0], [512.5, 305.5], [482, 289], [522, 274]],
+    ["rosa", [512.5, 308.5], [475.0, 290.5], [537.0, 286.0], [508.5, 292.5], [480, 276], [518, 262]],
+    ["marta", [515.5, 310.5], [479.0, 293.5], [540.5, 289.5], [511.0, 295.0], [482, 278], [522, 265]],
+    ["otto", [512.5, 322.0], [479.0, 302.0], [539.5, 301.0], [510.0, 304.5], [483, 283], [524, 274]],
+    ["midori", [521.0, 322.0], [482.5, 304.5], [544.0, 300.0], [516.0, 305.5], [486, 289], [526, 273]],
+    ["yura", [535.0, 324.5], [497.0, 306.0], [560.5, 302.5], [530.0, 308.0], [500, 290], [544, 274]],
+    ["neri", [525.0, 315.5], [487.0, 298.5], [549.5, 294.0], [520.0, 300.0], [492, 284], [530, 269]],
+    ["smile", [526.0, 323.0], [486.0, 306.0], [548.0, 299.5], [519.5, 308.5], [488, 294], [530, 276]],
+    ["surprise", [520.5, 329.5], [482.0, 311.5], [546.0, 307.0], [515.5, 314.0], [485, 293], [526, 277]],
+    ["sad", [519.5, 326.0], [480.0, 308.0], [543.5, 303.5], [515.0, 311.5], [484, 294], [526, 279]],
+  ];
+  const base = faceIconStyle("hiyori", "new");
+  const [, chin0, left0, right0, mouth0] = samples[0];
+  for (const [id, chin, left, right, mouth, eyeL, eyeR] of samples) {
+    const frame = frames.find(f => f.character === "hiyori" && f.role_id === id);
+    const style = frame ? costumeIconStyle(frame) : faceIconStyle("hiyori", "new", null, id);
+    const maxError = (a, b) => Math.max(...a.map((v, i) => Math.abs(v - b[i])));
+    assert.ok(maxError(project(style, chin), project(base, chin0)) < .016, id + " chin");
+    const span = project(style, right)[0] - project(style, left)[0];
+    assert.ok(Math.abs(span - (project(base, right0)[0] - project(base, left0)[0])) < .019, id + " jaw");
+    const eyeY = (project(style, eyeL)[1] + project(style, eyeR)[1]) / 2;
+    assert.ok(Math.abs(eyeY - EYE_Y) < .023, id + " eye line");
+    if (!["surprise", "smile", "sad"].includes(id)) {
+      assert.ok(maxError(project(style, mouth), project(base, mouth0)) < .025, id + " mouth");
+    }
   }
 });

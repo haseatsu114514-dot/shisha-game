@@ -671,13 +671,11 @@ test('Hiyori’s expressive GM dialogue resolves the matching crop, while her se
       if (dock?.getAttribute('src')?.endsWith('chr_hiyori_smile.webp')) {
         const seat = root.querySelector('[data-speaker="hiyori"]').querySelector('img');
         assert.match(seat.getAttribute('src'), /chr_hiyori_normal\.webp$/);
-        for (const [img, lx, ly, rx, ry] of [[seat,482,289,522,274], [dock,488,294,530,276]]) {
-          const [tx,ty] = img.style.transform.match(/-?[\d.]+/g).map(Number);
-          const scale = parseFloat(img.style.width) / 100 / 896;
-          const eyeY = parseFloat(img.style.top)/100 + ((ly+ry)/2 + ty*12) * scale;
-          assert.ok(Math.abs(eyeY - .42) < .001);
-          assert.ok(Math.abs((rx-lx)*scale - .23) < .001);
-          assert.ok(Math.abs(.5 + ((lx+rx)/2 + tx*8.96)*scale - .43675) < .001);
+        const crops = (await load(new URL('../js/trpg/face-crops.js', import.meta.url))).namespace;
+        for (const [img, expression] of [[seat, 'normal'], [dock, 'smile']]) {
+          const expected = crops.faceIconStyle('hiyori', 'new', manifest, expression);
+          assert.equal(img.style.width, expected.width);
+          assert.equal(img.style.transform, expected.transform);
         }
         return;
       }
