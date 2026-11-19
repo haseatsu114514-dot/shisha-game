@@ -544,7 +544,7 @@ async function serveFloorOrder(owner, signal) {
     return current();
   }
   if (!current()) return false;
-  const result = await run({ orders, seed, anchorOrderId: order.id, isCurrent: current, signal });
+  const result = await run({ orders, seed, anchorOrderId: order.id, night: owner.slot !== 0, isCurrent: current, signal });
   if (!current() || !result) return false;
   // 主卓が実際に受け取った一台だけ、既存の想起へ。未提供・取消なら前日の記録を残す。
   if (Number.isInteger(result.anchorIndex) && order.mixes[result.anchorIndex]) {

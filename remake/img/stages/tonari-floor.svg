@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
+  <title>tonari: six-table service floor</title>
+  <defs>
+    <linearGradient id="wall" x2="0" y2="1"><stop stop-color="#c2a17b"/><stop offset="1" stop-color="#a57957"/></linearGradient>
+    <linearGradient id="floor" x1=".35" y1="0" x2=".72" y2="1"><stop stop-color="#966447"/><stop offset=".54" stop-color="#b68152"/><stop offset="1" stop-color="#714626"/></linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#a77643"/><stop offset=".46" stop-color="#755039"/><stop offset="1" stop-color="#503224"/></linearGradient>
+    <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#627f91"/><stop offset="1" stop-color="#d6c1a0"/></linearGradient>
+    <radialGradient id="lampglow"><stop stop-color="#ffd284" stop-opacity=".57"/><stop offset="1" stop-color="#ffd284" stop-opacity="0"/></radialGradient>
+    <pattern id="weave" width="38" height="28" patternUnits="userSpaceOnUse">
+      <rect width="38" height="28" fill="#783e35"/>
+      <path d="m19 1 17 13-17 13L2 14zM0 0l11 7M38 0 27 7M0 28l11-7m27 7-11-7" fill="none" stroke="#ab7054" stroke-width="1.1"/>
+      <path d="m19 5 11 9-11 9-11-9z" fill="#615952" stroke="#ca9b60"/>
+      <circle cx="19" cy="14" r="3" fill="#d2af76"/>
+    </pattern>
+    <pattern id="glass" width="13" height="13" patternUnits="userSpaceOnUse">
+      <path d="M6.5 0 13 6.5 6.5 13 0 6.5z" fill="#ffe1a1"/>
+      <path d="m6.5 2 4.5 4.5L6.5 11 2 6.5z" fill="#713c36"/>
+      <circle cx="6.5" cy="6.5" r="1.5" fill="#fff5c5"/>
+    </pattern>
+    <g id="window">
+      <rect x="-6" y="-6" width="320" height="143" rx="3" fill="#4f3022" stroke="#a57550" stroke-width="4"/>
+      <rect x="1" y="0" width="304" height="130" fill="url(#sky)"/>
+      <path d="M1 89V63h30V39h25v31h14V57h35v16h20V47h28v11h33V31h41v43h23V53h27v8h29v69H1z" fill="#667980"/>
+      <path d="M2 113V84h33v-9h28v22h35V80h28v12h35v-8h30v15h32V82h28v19h22v-8h32v37H2z" fill="#4f6267"/>
+      <path d="M38 54h11m-11 9h11m37 6h9m42-12h10m-10 11h10m48-23h23m-23 12h23m-23 13h23m35-6h16m-86 30h15M11 94h11m82-7h12m167 12h18" stroke="#fde6ad" stroke-opacity=".6" stroke-width="3"/>
+      <path d="M62 0v130m97-130v130m89-130v130M1 112h303" stroke="#5b3522" stroke-width="9"/>
+      <path d="M58 0v130m98-130v130m89-130v130M1 108h303" stroke="#c09065" stroke-width="1.4"/>
+      <path d="M15 122H294" stroke="#f6d6ab" stroke-opacity=".55" stroke-width="2"/>
+    </g>
+    <g id="lantern">
+      <circle cy="1" r="62" fill="url(#lampglow)"/>
+      <path d="M0-80v55m-6 6 6-13 6 13M-5 19l5 8 5-8" fill="none" stroke="#513725" stroke-width="2"/>
+      <path d="M-8-20 C-38-11-32 10-14 17Q0 27 14 17C32 10 38-11 8-20z" fill="currentColor" stroke="#5c3a20" stroke-width="2"/>
+      <path d="M-8-19C-33-9-28 9-13 16Q0 25 13 16C28 9 33-9 8-19z" fill="url(#glass)" opacity=".52"/>
+      <path d="M-27 2c16 9 40 9 54 0m-48-14c8 5 33 5 41 0" stroke="#f6cc7f" stroke-width="1.9" fill="none"/>
+    </g>
+    <g id="plant">
+      <ellipse cx="6" cy="28" rx="23" ry="7" fill="#301e14" opacity=".48"/>
+      <path d="M-15 4h32l-5 23q-9 6-20 0z" fill="#76503b" stroke="#593325" stroke-width="2"/>
+      <ellipse cy="5" rx="16" ry="5" fill="#463629"/>
+      <path d="M0 5C4-5 6-24 7-42m3 31 15-12M-2-5l-19-13m24 1-14-15" fill="none" stroke="#424b2c" stroke-width="2"/>
+      <path d="M7-39q-14-15-10-23 18 6 10 23m2 4q10-20 28-16-7 16-28 16m-12 17q-25-1-32-14 23-10 32 14m9-1q12-17 28-11Q24-14 6-19M3-4q-27 2-26-17 19-7 26 17m6-2q11-15 23-7-2 16-23 7" fill="#656c3b" stroke="#485031" stroke-width="1.2"/>
+    </g>
+    <g id="booth">
+      <ellipse cy="-14" rx="112" ry="29" fill="#2b201a" opacity=".39"/>
+      <path d="M-102-30h204v29H-102z" fill="#462e25"/>
+      <path d="M-91-84q4-11 22-11h137q18 0 22 11l5 39-8 29H-87l-8-29z" fill="currentColor" stroke="#31362c" stroke-width="3"/>
+      <path d="M-91-68q90-11 182 0m-91-26v46" stroke="#e5dfb2" stroke-opacity=".22" stroke-width="1.8" fill="none"/>
+      <path d="M-96-44q11-9 21-7h154l16 7 1 18q-9 12-34 12h-132q-17-2-27-14z" fill="currentColor" stroke="#34392c" stroke-width="2.4"/>
+      <path d="M-81-30h164m-76-20v31" stroke="#e5dfb2" stroke-opacity=".18" stroke-width="2" fill="none"/>
+      <path d="M-109-57l19-9v64l-17 6-6-8zm201-10 19 9 3 50-6 12-16-8z" fill="url(#wood)" stroke="#523424" stroke-width="2"/>
+      <path d="m-107-55 15-7m185 1 15 6" stroke="#d9a778" stroke-width="2"/>
+      <path d="m32-70 19-13 29 21-17 23-34-12z" fill="#ac7154" stroke="#654a35" stroke-width="1.3"/>
+      <path d="m37-69 14-10 23 17-13 19-27-11z" fill="none" stroke="#e2a774" stroke-width="1.3"/>
+      <path d="m17-65 31-7 9 25-37 8z" fill="#c6a985" stroke="#806649" stroke-width="1.3"/>
+    </g>
+    <g id="candle">
+      <ellipse cy="6" rx="13" ry="5" fill="#704528" stroke="#ddad67" stroke-width="1"/>
+      <path d="M-6-11h12v16Q0 9-6 5z" fill="#cda26c" fill-opacity=".86" stroke="#f3c88e" stroke-width="1"/>
+      <path d="M0-11q-5 5-2 7 4 1 3-3z" fill="#fff2ae"/>
+    </g>
+    <g id="round">
+      <ellipse cy="34" rx="76" ry="22" fill="#301e17" opacity=".33"/>
+      <path d="M-61 11h8v32h-7zm108 2h8l3 30h-7zm-22 5h6v32h-8z" fill="#674228" stroke="#4b3023" stroke-width="2"/>
+      <ellipse cy="6" rx="68" ry="28" fill="#633926" stroke="#53331f" stroke-width="2"/>
+      <ellipse rx="69" ry="28" fill="#b78350" stroke="#d5a374" stroke-width="1.8"/>
+      <path d="M-61-13q28 7 59 5t57-9m-121 18q35 9 73 2t56-4m-109 16q42 8 76-2" fill="none" stroke="#754528" stroke-opacity=".46" stroke-width="1.5"/>
+      <use href="#candle" x="41" y="1"/>
+    </g>
+    <g id="square">
+      <ellipse cy="34" rx="78" ry="25" fill="#301e17" opacity=".37"/>
+      <path d="M-56 15h8v34h-8zm112 0h7l4 32h-9z" fill="#674228" stroke="#4b3023" stroke-width="2"/>
+      <path d="M-71 15q0 13 12 13H54q18 0 18-13l-5-29H-67z" fill="#6f472c" stroke="#553520" stroke-width="2"/>
+      <path d="M-65-23Q-64-29-54-29H54q10 0 13 8l6 30q2 13-10 13H-62q-12 0-11-13z" fill="#ae7948" stroke="#d2a16c" stroke-width="1.6"/>
+      <path d="M-62-16q63 9 119 2M-68-4q72 8 131 1m-134 12q68 6 135-.5" fill="none" stroke="#744b2e" stroke-opacity=".55" stroke-width="1.7"/>
+      <use href="#candle" x="44" y="1"/>
+    </g>
+  </defs>
+  <path fill="url(#wall)" d="M0 0h1280v330H0z"/>
+  <path d="M181 0v224m897-224v224M175 224h914" stroke="#71482e" stroke-width="12"/>
+  <path d="M0 470 177 226h908l195 245v249H0z" fill="url(#floor)"/>
+  <path d="M0 720 385 230M173 720 488 230m-133 490 229-490m-46 490 64-490m119 490-15-490m196 490-92-490m275 490-190-490m370 490L1000 230M0 477h1280M0 600h1280M43 421h1192M79 375h1123M112 336h1051M145 301h987M164 267h942M9 544h1257M0 670h1280" fill="none" stroke="#734a31" stroke-opacity=".63" stroke-width="2"/>
+  <path d="M20 540h1230M35 480h1210m-1170-60h1136M112 377h1080M4 669h1259" stroke="#d7a371" opacity=".32" fill="none" stroke-width="1.5"/>
+  <use href="#window" x="216" y="10"/><use href="#window" x="795" y="10"/>
+  <path d="M0 33 177 0v226L0 486z" fill="#976848" stroke="#5b3a28" stroke-width="4"/>
+  <path d="M0 125 98 36l34-1v269L0 452z" fill="#583c2a"/>
+  <path d="M3 134 95 50l25-3v250L3 431z" fill="#6b8a89" stroke="#aa7b50" stroke-width="4"/>
+  <path d="m0 202 118-101M0 278l118-111M0 350l118-115m-55 141V78" stroke="#593a25" stroke-width="9"/>
+  <path d="m6 171 85-76-60 140L5 267zm0 157 92-103-66 126L5 389z" fill="#fde9b6" opacity=".28"/>
+  <path d="M112 213v34" stroke="#d6a66e" stroke-width="4"/>
+  <path d="M0 465 103 349l41 15-93 140H0z" fill="#837760" stroke="#ad9473" stroke-width="3"/>
+  <path d="M1079 0h201v517l-182-216-7-107z" fill="#795037" stroke="#5d3a27" stroke-width="4"/>
+  <path d="M1117 38 1280 99v54l-162-79zM1117 102l163 84v29l-164-103z" fill="url(#wood)" stroke="#603724" stroke-width="3"/>
+  <path d="M1143 104v14q4 5 9 1v-12m7 3v14q5 7 11 2v-15m12 4v18q6 6 13 2v-17" fill="#d6ae80" stroke="#ead2a3" stroke-width="1.2"/>
+  <path d="m1109 215 171 132v216l-170-220z" fill="url(#wood)" stroke="#5a3825" stroke-width="3"/>
+  <path d="m1110 209 34-21 136 111v62z" fill="#b98049" stroke="#5b3624" stroke-width="4"/>
+  <path d="m1125 207 155 123m-120-123 118 95m-144-68v112m33-86v120m35-89v130m36-105v145" fill="none" stroke="#613b28" stroke-width="2"/>
+  <use href="#plant" transform="translate(173 278) scale(1.16)"/><use href="#plant" transform="translate(1247 293) scale(.8)"/>
+  <path d="M193 411h880l95 240H157z" fill="#ad895f" stroke="#47291f" stroke-width="6"/>
+  <path d="M199 420h868l88 220H169z" fill="url(#weave)" stroke="#5b6054" stroke-width="7"/>
+  <path d="M205 428h857l84 204H176z" fill="none" stroke="#dcb781" stroke-width="2.4"/>
+  <use href="#booth" x="340" y="241" color="#68714f"/><use href="#booth" x="640" y="241" color="#4f6761"/><use href="#booth" x="941" y="241" color="#68714f"/>
+  <use href="#round" x="335" y="262"/><use href="#square" x="640" y="262"/><use href="#round" x="939" y="262"/>
+  <use href="#booth" transform="translate(355 462) rotate(-6) scale(1.16)" color="#68714f"/>
+  <use href="#booth" transform="translate(657 461) scale(1.15)" color="#4f6761"/>
+  <use href="#booth" transform="translate(967 468) rotate(6) scale(1.16)" color="#6b7350"/>
+  <use href="#square" transform="translate(366 506) rotate(-10) scale(1.29)"/>
+  <use href="#round" transform="translate(658 497) scale(1.20 1.33)"/>
+  <use href="#square" transform="translate(959 511) rotate(9) scale(1.22)"/>
+  <g stroke="#684833" stroke-width="4" fill="#d1af83"><rect x="553" y="93" width="35" height="49"/><rect x="753" y="91" width="36" height="52"/></g>
+  <path d="m557 134 13-17 14 14m173 5 12-16 16 12" stroke="#6d7666" stroke-width="6"/>
+  <path d="M608 47h103m-100 4h98" stroke="#6c4c33" stroke-width="6"/>
+  <use href="#plant" transform="translate(626 36) scale(.5)"/>
+  <use href="#plant" transform="translate(664 36) scale(.5)"/>
+  <use href="#plant" transform="translate(697 36) scale(.5)"/>
+  <use href="#lantern" transform="translate(220 57) scale(.65)" color="#d59e52"/>
+  <use href="#lantern" transform="translate(296 96) scale(.75)" color="#ba5741"/>
+  <use href="#lantern" transform="translate(432 58) scale(.86)" color="#c75e45"/>
+  <use href="#lantern" transform="translate(494 35) scale(.73)" color="#497a8d"/>
+  <use href="#lantern" transform="translate(571 70) scale(.69)" color="#879352"/>
+  <use href="#lantern" transform="translate(771 62) scale(.62)" color="#d3aa5d"/>
+  <use href="#lantern" transform="translate(828 106) scale(.76)" color="#66879a"/>
+  <use href="#lantern" transform="translate(1003 79) scale(.78)" color="#b95c45"/>
+  <use href="#lantern" transform="translate(1063 56) scale(.58)" color="#dba968"/>
+</svg>
