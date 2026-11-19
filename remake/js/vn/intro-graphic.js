@@ -48,7 +48,7 @@ const FRAME_OVERRIDES = {
   sumi: {width: 808, left: -111, top: -16, right: 92.9},
   tsumugi: {width: 765, left: -114, top: 0, right: 98.7},
   uranaishi: {width: 1195, left: -292, top: -77, right: 78.0},
-  volk: {width: 956, left: -240, top: -12, right: 92.0},
+  volk: {width: 937, left: -286, top: 0, right: 98.8},
   yoru: {width: 808, left: -130, top: -94, fade: 14, right: 95.4},
 };
 // FRAMES:END

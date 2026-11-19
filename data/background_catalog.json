@@ -1152,68 +1152,78 @@
    "time": "",
    "weather": "",
    "size": [
-    1672,
-    941
+    1671,
+    940
    ],
-   "luma": 90,
-   "blob": "89f1328c3d8e21bf1e8289b5c94ec5e96a525a07",
-   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+   "luma": 81,
+   "blob": "39fce83460b864ce7c0cbddf1fb012d7b87e08c9",
+   "accepted": "#3810 生成原寸を使用（規格まで拡大しない）",
+   "prompt": "asset_sources/issue-3810/README.md"
   },
   "bg_tonari_inside.png": {
    "place": "tonari_inside",
    "time": "",
    "weather": "",
    "size": [
-    1280,
-    720
+    1672,
+    940
    ],
-   "luma": 52,
-   "blob": "01968ed9e8f0b6206dfcd7debb818004b5ef660c",
-   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+   "luma": 107,
+   "blob": "0f3c5eb1bba88bb1f749968b14ada9af679c5718",
+   "accepted": "#3810 生成原寸を使用（規格まで拡大しない）",
+   "prompt": "asset_sources/issue-3810/README.md"
   },
   "bg_tonari_inside_day.png": {
    "place": "tonari_inside",
    "time": "day",
    "weather": "",
    "size": [
-    1920,
-    1080
+    1672,
+    940
    ],
-   "luma": 91,
-   "blob": "19fc875e9918e41e9327ceedc2678628d19b01e1"
+   "luma": 107,
+   "blob": "0f3c5eb1bba88bb1f749968b14ada9af679c5718",
+   "accepted": "#3810 生成原寸を使用（規格まで拡大しない）",
+   "prompt": "asset_sources/issue-3810/README.md"
   },
   "bg_tonari_inside_night.png": {
    "place": "tonari_inside",
    "time": "night",
    "weather": "",
    "size": [
-    1920,
-    1080
+    1672,
+    940
    ],
-   "luma": 82,
-   "blob": "aa143fa77ed72f9f5386ca4a6464eeef6431489c"
+   "luma": 90,
+   "blob": "c3eeb44f25fb1d9af9b57cbec0d2566982a03f64",
+   "accepted": "#3810 生成原寸を使用（規格まで拡大しない）",
+   "prompt": "asset_sources/issue-3810/README.md"
   },
   "bg_tonari_inside_overcast_day.png": {
    "place": "tonari_inside",
    "time": "day",
    "weather": "overcast",
    "size": [
-    1920,
-    1080
+    1672,
+    940
    ],
-   "luma": 84,
-   "blob": "5c1457464bc55635723e9f0a43b5f18484e71519"
+   "luma": 98,
+   "blob": "007fa98055368c9f851e473d5f56fe109322da99",
+   "accepted": "#3810 生成原寸を使用（規格まで拡大しない）",
+   "prompt": "asset_sources/issue-3810/README.md"
   },
   "bg_tonari_inside_overcast_night.png": {
    "place": "tonari_inside",
    "time": "night",
    "weather": "overcast",
    "size": [
-    1920,
-    1080
+    1672,
+    940
    ],
-   "luma": 82,
-   "blob": "127d5a251a57ae6b5bb9db76e6e17c608eaf55fb"
+   "luma": 92,
+   "blob": "a5b2f90997beb5206a948df2b7c70d28c6ea9427",
+   "accepted": "#3810 生成原寸を使用（規格まで拡大しない）",
+   "prompt": "asset_sources/issue-3810/README.md"
   },
   "bg_tonari_opening_coal.png": {
    "place": "tonari_opening_coal",
@@ -1439,8 +1449,9 @@
     1920,
     1080
    ],
-   "luma": 66,
-   "blob": "70b12ca179b9c1c230600a2a4d34ce63ac0bf469"
+   "luma": 67,
+   "blob": "a2cec848ddce5f149a9f2c958d199dbe54101cab",
+   "prompt": "asset_sources/issue-3810/README.md"
   },
   "peppermint.png": {
    "place": "peppermint",

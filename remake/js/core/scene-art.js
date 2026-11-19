@@ -22,11 +22,6 @@ const HOME_SCENE_PROPS = [
 ];
 const isHome = (url) => /^bg_home(?:_(?:overcast_)?(?:day|night))?\.png$/.test(sceneFile(url));
 
-const TONARI_SCENE_PROPS = [
-  { file: "shisha_tonari.png", x: 659, y: 360, h: 133, ratio: 469 / 768 },
-  { file: "shisha_tonari.png", x: 1160, y: 347, h: 169, ratio: 469 / 768 },
-  { file: "shisha_tonari.png", x: 341, y: 642, h: 340, ratio: 469 / 768 },
-];
 const C_STATION_SCENE_PROPS = [
   { file: "shisha_c_station.png", x: 448, y: 311, h: 140, ratio: 491 / 768 },
   { file: "shisha_c_station.png", x: 160, y: 447, h: 280, ratio: 491 / 768 },
@@ -55,17 +50,10 @@ export const SCENE_PROPS = {
     { file: "shisha_kemurikusa.png", x: 390, y: 378, h: 190, ratio: 454 / 768 },
     { file: "shisha_tonari.png", x: 180, y: 406, h: 220, ratio: 469 / 768 },
   ],
-  // EDENの採用背景はテーブル・展示台上のシーシャを含む。旧位置の台を重ねない。
-  "bg_tonari_inside_day.png": TONARI_SCENE_PROPS,
-  "bg_tonari_inside_night.png": TONARI_SCENE_PROPS,
+  // tonari とケムリクサの台は店内背景に描き込み済み（#3810）。
   "peppermint.png": [
     { file: "shisha_peppermint.png", x: 900, y: 471, h: 180, ratio: 512 / 768 },
     { file: "shisha_peppermint.png", x: 950, y: 623, h: 260, ratio: 512 / 768 },
-  ],
-  "kemurikusa.png": [
-    { file: "shisha_kemurikusa.png", x: 480, y: 484, h: 190, ratio: 454 / 768 },
-    { file: "shisha_kemurikusa.png", x: 852, y: 541, h: 235, ratio: 454 / 768 },
-    { file: "shisha_kemurikusa.png", x: 781, y: 697, h: 320, ratio: 454 / 768 },
   ],
 };
 
