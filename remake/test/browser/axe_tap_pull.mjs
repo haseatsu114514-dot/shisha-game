@@ -256,6 +256,7 @@ await suite('axe-tap-pull-aim-guide', async check => {
     await phase(page, 'result');
     assert.equal(await remaining(), '1');
     assert.equal(await page.locator('.axe-call-iris').getAttribute('data-cue'), 'hit');
+    assert.equal(await page.locator('.axe-prize-score').textContent(), await page.locator('.axe-score-burst').textContent());
     assert.equal(await root(page).getAttribute('data-outcome'), 'killshot');
     assert.equal(await page.locator('[data-test="axe-call-verdict"]').getAttribute('data-result'), 'hit');
     await ready(page).click();
@@ -271,6 +272,7 @@ await suite('axe-tap-pull-aim-guide', async check => {
     await phase(page, 'result');
     assert.equal(await root(page).getAttribute('data-outcome'), 'killshot-miss');
     assert.equal(await page.locator('.axe-call-iris').getAttribute('data-cue'), 'miss');
+    assert.equal(await page.locator('.axe-prize-score').count(), 0);
     assert.equal(await page.locator('[data-test="axe-call-verdict"]').getAttribute('data-result'), 'miss');
     assert.equal(await remaining(), '0');
     await ready(page).click();

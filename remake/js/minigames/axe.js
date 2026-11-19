@@ -346,6 +346,10 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       viewBox: `${chip % CHIPS.cols * CHIPS.cell} ${Math.floor(chip / CHIPS.cols) * CHIPS.cell} ${CHIPS.cell} ${CHIPS.cell}`,
     }, [svg("image", { href: CHIPS.src, width: CHIPS.cell * CHIPS.cols, height: CHIPS.cell * CHIPS.rows })])]);
   });
+  const prizeId = artId + "-prize";
+  board.append(svg("defs", {}, [svg("linearGradient", { id: prizeId, x2: ".22", y2: "1" },
+    ["#ffffff", "#ff7996", "#ffd254", "#92f797", "#5cdfff", "#ba97ff"].map((color, i) =>
+      svg("stop", { offset: i / 5, "stop-color": color })))]));
   const burst = svg("text", { class: "axe-score-burst", "text-anchor": "middle", "font-size": 38,
     "font-weight": 900, "paint-order": "stroke", stroke: "#17120e", "stroke-width": 4 });
   const impactFx = svg("g", { class: "axe-impact-fx", opacity: 0, "aria-hidden": "true", "pointer-events": "none" }, [impactFlash, darkRing, impactRing, echoRing, ...dust, ...splinters, burst]);
@@ -510,12 +514,21 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     el("span.axe-sweet", { style: { "--from": POWER.sweetMin * 100 + "%", "--size": (POWER.sweetMax - POWER.sweetMin) * 100 + "%" } }), powerFill, needle]);
   const pullHandle = el("button.axe-pull-handle", { type: "button", "aria-label": "上へ素早く弾いて投げる（狙いはそのまま）。Space長押しでも投げられます", dataset: { test: "axe-pull-handle" } }, [
     el("span.axe-flick-emblem", { "aria-hidden": "true" }, [
-      svg("svg", { viewBox: "0 0 152 152", class: "axe-flick-arrows", fill: "none" }, [
-        svg("path", { d: "M25 113C9 83 18 48 52 27M28 125C5 99 3 64 15 40", stroke: "#eed49a", "stroke-width": 3, "stroke-linecap": "round" }),
-        svg("image", { x: 44, y: 10, width: 79, height: 125, transform: "rotate(22 83 78)", href: imgFileUrl("ui/axe_throw/throwing_axe.webp") }),
+      svg("svg", { viewBox: "0 0 112 184", class: "axe-flick-arrows", fill: "none" }, [
+        svg("path", { d: "M15 148V49Q15 23 41 19L66 15Q97 12 97 43V148Q96 176 57 180Q18 177 15 148Z", fill: "#151b1d", "fill-opacity": .93, stroke: "#e0b674", "stroke-width": 3 }),
+        svg("path", { d: "M43 137V63m26 74V63", stroke: "#886b48", "stroke-width": 2 }),
+        svg("path", { d: "M56 135V39m-17 15 17-21 17 21", stroke: "#fff2bd", "stroke-width": 6, "stroke-linecap": "round", "stroke-linejoin": "round" }),
+        svg("circle", { cx: 56, cy: 144, r: 24, fill: "#332822", stroke: "#ffda95", "stroke-width": 3 }),
+        svg("g", { class: "axe-swipe-grip" }, [
+          svg("image", { x: 31, y: 113, width: 51, height: 60, transform: "rotate(18 56 144)", href: imgFileUrl("ui/axe_throw/throwing_axe.webp") }),
+        ]),
       ]),
     ]),
   ]);
+  let swipeShown = false;
+  pullHandle.addEventListener("animationend", e => {
+    if (e.animationName === "axe-swipe-demo") pullHandle.dataset.demonstrate = "false";
+  }, { signal: lifetime.signal });
   const green = axeGreenBand(gearId);
   const pullTrack = el("div.axe-pull-track", [el("i.axe-pull-green", { style: { top: green.min * 100 + "%", height: (green.max - green.min) * 100 + "%" } }), pullHandle]);
   const timing = el("div.axe-timing", [powerLabel, powerReadout, gauge, ...(tapPull ? [pullTrack] : [])]);
@@ -581,7 +594,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   // #2729 (2026-11-08): the per-throw strip shares the sign's row (between the title and the total), so the board gets that row's height.
   if (scorePill) scorePill.append(scoreFigures, scoreboard); else heading.insertBefore(scoreboard, total);
   root.append(heading, body, announcement);
-  if (scorePill) root.append(scorePill, callVerdict);
+  if (scorePill) root.append(scorePill, callVerdict, el("i.axe-swipe-release", { "aria-hidden": "true" }));
   // #2718: 始まった瞬間の切り替えの幕。見た目だけ（文字はCSSで描き、読み上げ・入力・時計・判定には触れない）。動きを減らす設定では出さない。
   if (!reducedMotion) {
     const label = tutorial ? "マキの無料1投レッスン" : versus ? rivalName + "と対戦" : mode === "league" ? "10投ゲーム" : "3投の練習";
@@ -601,7 +614,12 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     aimOnTouch: false, canAim: () => false,
     canPull: () => actor === "player" && phase === "power" && !isPaused(),
     onAim: () => {},
-    onPower: raw => { rawPower = raw; power = axePower(raw, gearId); render(); },
+    onPower: raw => {
+      rawPower = raw; power = axePower(raw, gearId);
+      if (pullInput?.pulling) pullHandle.dataset.demonstrate = "false";
+      pullHandle.style.setProperty("--axe-swipe-y", (-85 * (pullInput?.swipeProgress || 0)).toFixed(1) + "px");
+      render();
+    },
     // lean: 弾いた向きの傾きで、狙いの横へ足すぶれ（まっすぐ弾けば 0）。狙いの記録（baseAim）は触れた所のまま
     onRelease: (lean = 0) => {
       if (actor !== "player" || phase !== "power" || isPaused()) return;
@@ -759,6 +777,13 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     declareNode = el("div.axe-declare", { "aria-hidden": "true", dataset: { test: cue.test || "axe-declare", kind: cue.kind || "declare" } }, [
       el("strong", { text: cue.label }), cue.place ? el("span", { text: cue.place }) : null,
     ]);
+    if (tapPull && cue.kind === "goal") {
+      declareNode.append(svg("svg", { class: "axe-award-sparks", viewBox: "0 0 44 92", "aria-hidden": "true" }, [
+        svg("path", { d: "m21 7 2 7 7 3-7 2-2 8-3-8-7-2 7-3zM10 62l2 5 5 2-5 2-2 5-2-5-5-2 5-2z", fill: "#ffda79" }),
+        svg("path", { d: "m32 32 2 6 5 2-5 2-2 6-2-6-5-2 5-2z", fill: "#a0efff" }),
+        svg("path", { d: "m4 43 8-10m13 48 8-11", stroke: "#ffacb2", "stroke-width": 3, "stroke-linecap": "round" }),
+      ]));
+    }
     root.append(declareNode);
     // 宣言は刃を構える「チャキッ」、最後の1投・持ち替え・延長戦は太鼓、目標達成は「シャーン」（2026-11-11 オーナー「効果音しょぼかったり」）。
     // 弾き損ねの札は軽い選択音だけ（失敗を責める音にしない）
@@ -767,7 +792,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       playAxeSe("call");
     } else if (cue.kind === "retarget") playAxeSe("stop", { rate: 1.35 });
     else if (cue.kind === "flick") SE.select();
-    else playAxeSe(cue.kind === "goal" ? "cueClear" : cue.kind === "last" || cue.kind === "half" ? "cueDrum" : "call");
+    else if (cue.kind === "goal" && tapPull) {
+      if (latest("player")?.score > 0) playAxeSe("goalFanfare");
+    } else playAxeSe(cue.kind === "goal" ? "cueClear" : cue.kind === "last" || cue.kind === "half" ? "cueDrum" : "call");
     declareTimer = setTimeout(clearDeclareCue, cue.duration || C.declare);
   }
   /** 弾き損ねの理由の札（700ms）。投げは使わない */
@@ -827,7 +854,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (next === "choice" || next === "opponent-ready" || next === "summary") callLight.replaceChildren();
     if (next === "choice" && actor === "player" && suddenDeath()) called = suddenDeathTarget(match.suddenDeath.length);
     if (next === "summary") { recordGame(); summaryJingle(); }
-    if (next === "power" && showsFlickHint()) playFlickHint();
+    if (next === "power" && tapPull) {
+      pullHandle.dataset.demonstrate = String(!swipeShown);
+      swipeShown = true;
+      if (showsFlickHint()) playFlickHint();
+    }
     phaseCue(next);
     if (next === "flight") {
       root.dataset.slowMotion = String(Boolean(pending.called) && !reducedMotion);
@@ -1057,6 +1088,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
         ? Boolean(lastDuel.opponent)
         : match.opponent.length > 0 && match.opponent.length === match.player.length);
       const recent = latest(rivalLatest ? "opponent" : "player");
+      scoreLatest.classList.toggle("axe-prize-score", phase === "result" && actor === "player" && !rivalLatest
+        && recent === shown && shown?.outcome === "killshot" && shown.score > 0);
       const values = [
         [scoreLatest, recent ? "+" + recent.score : "—"],
         [scoreLatestLabel, recent && versus ? (rivalLatest ? rivalName : "あなた") + "の投" : "直近"],
@@ -1367,8 +1400,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       shard.setAttribute("transform", `translate(${Math.cos(radian) * distance} ${Math.sin(radian) * distance + progress * progress * F.chipFall}) rotate(${angle + progress * 200}) scale(${(1 - progress * .8) * (i % 2 ? .65 : 1)})`);
     }
     burst.textContent = effect.burst;
-    burst.setAttribute("font-size", party ? 38 : 30);
-    burst.setAttribute("y", F.burstTop - progress * F.burstRise); burst.setAttribute("fill", effect.color);
+    const prize = tapPull && actor === "player" && shot.outcome === "killshot" && shot.score > 0;
+    burst.setAttribute("font-size", prize ? 47 : party ? 38 : 30);
+    burst.setAttribute("y", F.burstTop - progress * F.burstRise); burst.setAttribute("fill", prize ? `url(#${prizeId})` : effect.color);
   }
   function tick(now) {
     if (phase === "closed") return;
@@ -1438,8 +1472,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
         if (holdFrame) { holdFrame = 0; boardPane.style.transform = ""; }
         // 得点と失敗の合図は止めが明けてから重ねる（ギュッとしてパッ）。床に落ちた音も落ち切った時に
         if (!shot.stuck) playAxeSe("drop");
-        if (shot.score >= 6) playAxeSe("cheer");
-        else if (!shot.score) playAxeSe("miss");
+        if (!shot.score) playAxeSe("miss");
         // 着弾の揺れの位相を投ごとに変える（同じ揺れの繰り返しにしない）
         const n = (versus ? match.player.length + match.opponent.length + match.suddenDeath.length * 2 : shots.length) + gameIndex * 31;
         const mix = Math.imul((baseSeed ^ Math.imul(n + 1, 0x9e3779b1)) >>> 0, 0x85ebca6b) >>> 0;
@@ -1455,6 +1488,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
           impacts.append(embedded);
         }
         setPhase("result");
+        if (shot.score >= 6 && !(tapPull && declareNode?.dataset.kind === "goal")) playAxeSe("cheer");
       }
     }
     // 対戦の自動送り（タップで即。最後の投・サドンデス・集計の前は手動）

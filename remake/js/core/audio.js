@@ -736,6 +736,13 @@ export function playAxeSe(id, { scored = true, rate = 1 } = {}) {
 // 斧投げの合成音（録音が読めるまでの代わり）。共通の音量・ミュート・非表示停止を通す。
 // 風切り→木への衝突→割れ・軋みを別の帯域にする。
 function axeSynth(id, { scored = true } = {}) {
+  if (id === "goalFanfare") {
+    // A single ascending phrase through the existing SE bus, in place of the result cheer.
+    for (const [freq, delay, dur] of [[587, 0, .09], [740, .09, .09], [880, .18, .12], [1175, .30, .26]]) {
+      tone({ freq, delay, dur, type: "triangle", vol: .19, attack: .008 });
+    }
+    return;
+  }
   if (id === "killshot") { axeSynth("stick"); SE.perfect(); return; }
   if (id === "bounce") { tone({ freq: 240, to: 150, type: "triangle", dur: .08, vol: .12 }); noise({ dur: .03, vol: .08, filter: 2600 }); return; }
   if (id === "stop") { SE.select(); return; }
