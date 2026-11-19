@@ -8008,12 +8008,23 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic > .trpg-incarnate-skip
 /* 卓の照明、札ごとの金の光筋、最後の舞台銘板。動かすのは opacity / transform だけ。 */
 .trpg-incarnate-lights, .trpg-incarnate-streak { position: absolute; pointer-events: none; }
 .trpg-incarnate-lights { inset: 0; background:
-  conic-gradient(from 151deg at 16% -12%, transparent 0 6deg, #d5af6d55 8deg 16deg, transparent 19deg),
-  conic-gradient(from 178deg at 84% -12%, transparent 0 8deg, #68b6b650 11deg 23deg, transparent 27deg),
+  conic-gradient(from 151deg at 16% -12%, transparent 0 4deg, #edc87a78 6deg 16deg, transparent 21deg),
+  conic-gradient(from 178deg at 84% -12%, transparent 0 7deg, #73c5c878 10deg 23deg, transparent 28deg),
   radial-gradient(ellipse 52% 11% at 50% 79%, #daaf694a, transparent); }
 .trpg-incarnate-streak { z-index: 1; inset: -42px -11px; opacity: 0; transform-origin: 50% 72%;
   background: linear-gradient(111deg, transparent 16%, #ddb676b5 16.3%, transparent 17.4%),
               linear-gradient(111deg, transparent 80%, #ffdf9b 80.5%, transparent 81.4%); }
+.trpg-incarnate-streak::after { content: ""; position: absolute; inset: 17% -9%;
+  border: 3px solid #ffe4a1; outline: 1px solid #ddb675; outline-offset: 7px;
+  transform: rotate(45deg); box-shadow: 0 0 18px #e7ad55a3, inset 0 0 18px #f0cd7d6b; }
+.trpg-incarnate[data-calm="false"] .trpg-incarnate-veil::before { content: ""; position: absolute; inset: 0;
+  background: linear-gradient(129deg, #070e17 0 9%, #ac875f 9.05%, transparent 9.22%),
+              linear-gradient(-129deg, #070e17 0 9%, #ac875f 9.05%, transparent 9.22%); }
+.trpg-incarnate[data-calm="false"][data-arrived="true"] .trpg-incarnate-veil::after {
+  content: ""; position: absolute; inset: 74% 12% auto; height: 16%; border-top: 2px solid #daba7794;
+  border-radius: 50%; background: radial-gradient(ellipse at 50% 0%, #dba96445, transparent 68%); }
+.trpg-incarnate[data-calm="false"] .trpg-incarnate-face.back::after { content: ""; position: absolute; inset: 6px;
+  border: 1px solid #bc975b; border-radius: 10px; pointer-events: none; }
 .trpg-incarnate[data-calm="false"] .trpg-incarnate-face.front::before { content: ""; position: absolute; inset: 10px;
   border: 1px solid #cdaa6e6b; border-radius: 8px; pointer-events: none; }
 .trpg-incarnate[data-calm="false"] .trpg-incarnate-place::before,
