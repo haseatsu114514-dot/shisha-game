@@ -235,7 +235,7 @@ await check("#2500 one-set preview follows bowl, HMD, foil and coal without comm
   assert.equal(previewRows(f)["葉を詰める量"], "最大12g");
   assert.match(previewRows(f)["適温の合わせやすさ"], /×1\.04/);
   assert.match(previewRows(f)["炭3個の加熱"], /×0\.90/);
-  assert.match(previewRows(f)["熱を入れる吸い"], /×0\.94/);
+  assert.match(previewRows(f)["上げ吸い"], /×0\.94/);
   f.control("opt-kumogama_phunnel").handlers.focus();
   assert.equal(previewRows(f)["葉を詰める量"], "最大16g");
   assert.equal(cs.equip.bowl, before.equip.bowl);
@@ -256,7 +256,7 @@ await check("#2500 one-set preview follows bowl, HMD, foil and coal without comm
   assert.match(previewRows(f)["アルミの工程"], /^あり/);
   f.control("opt-cube_charcoal").handlers.pointerenter();
   assert.match(previewRows(f)["炭3個の加熱"], /×1\.13/);
-  assert.match(previewRows(f)["熱を入れる吸い"], /×1\.00/);
+  assert.match(previewRows(f)["上げ吸い"], /×1\.00/);
   assert.match(previewRows(f)["適温の合わせやすさ"], /×1\.08/); // 1.10 * 1.04 * .94
   assert.match(nodeText(f.control("setup-preview")), /キューブ/);
   assert.equal(cs.equip.charcoal, "flat_charcoal");

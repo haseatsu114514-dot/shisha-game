@@ -5,7 +5,7 @@
 // 会話に足すのは次の3つだけ（どれも会話の DOM か背景が変わった時にだけ動く。毎フレームの処理は無い）:
 //   1. 場面の光: 立ち絵（.vn-portraits > img.portrait）1枚ごとに、同じ位置・同じ大きさの <i class="neo-light"> を直後へ置く。
 //      立ち絵の絵を型（mask）にして、色は CSS が soft-light で重ねる。立ち絵の img 自体には触らない。
-//   2. 名前の縦線の色: 話している人の色（characters.json の intro_cutin.color）を #vn の --neo-speaker へ入れる。
+//   2. 名前の縦線の色: 話している人の色（characters.json の intro_cutin.color）を名前札の --neo-speaker へ入れる。
 // 場所の色は人物へ移さない（2026-11-15 オーナー決定で「場所の光（BGU01）」を廃止。人物は本来の色で出し、
 // 話していない人は立ち絵自体の filter で暗くするだけにする）。
 // 会話エンジン（vn/engine.js）は立ち絵を img だけで数え、登場を img.getAnimations() で待つ。
@@ -165,8 +165,10 @@ function syncSpeaker() {
   // 名前で引けない相手（まだ名前を知らない「？？？」など）は、話している立ち絵から引く。
   const id = nameIndex.get(name) || portraits?.querySelector(":scope > img.portrait.active")?.dataset.speaker || "";
   const color = colorOf(id);
-  if (color) setIfChanged(host, SPEAKER_VAR, color);
-  else host.style.removeProperty(SPEAKER_VAR);
+  // 会話全体へ継承させると、話者が替わるたびに立ち絵と光の型までスタイルを計算し直す。
+  // この色を使う名前札だけに置く。
+  if (color) setIfChanged(nameTag, SPEAKER_VAR, color);
+  else nameTag.style.removeProperty(SPEAKER_VAR);
 }
 
 const onPortraitLoad = (event) => { if (event.target?.matches?.("img.portrait")) syncLights(); };
@@ -177,6 +179,7 @@ function detachParts() {
   portraitObserver = nameObserver = null;
   portraits?.removeEventListener("load", onPortraitLoad, true);
   clearLights();
+  nameTag?.style.removeProperty(SPEAKER_VAR);
   portraits = nameTag = null;
 }
 

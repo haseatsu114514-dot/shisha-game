@@ -487,6 +487,7 @@ body[data-screen="bench"]:has(.bench[data-mode="tournament"][data-chapter="1"]) 
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 18px rgba(244, 210, 122, 0.35);
 }
 .map-guide b { padding: 2px 10px; font-size: 12px; letter-spacing: .02em; color: #1a1018; background: var(--gold); border-radius: 999px; }
+.map-guide-forecast { padding-left: 12px; border-left: 1px solid currentColor; }
 .evt-badge {
   position: absolute;
   top: -8px;

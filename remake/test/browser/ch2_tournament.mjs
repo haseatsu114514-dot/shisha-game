@@ -12,7 +12,7 @@ prepareAppearanceCatalog();
 const t = name => `[data-test="ch2-tournament-${name}"]`;
 const dt = name => `[data-test="${name}"]`;
 const get = page => page.evaluate(()=>structuredClone(window.__remake.state));
-async function seed(page, { known = false, stage = '', auto = 'good', progress = null } = {}) {
+async function seed(page, { known = false, stage = '', auto = 'good', progress = null, strawberryTrial = null } = {}) {
   page.setDefaultTimeout(30000);
   await page.evaluate(async opts => {
     const core = await import('./js/core/state.js'); const s = core.newGame();
@@ -21,6 +21,7 @@ async function seed(page, { known = false, stage = '', auto = 'good', progress =
       keepsakes:['qa_memory'],relationshipMemories:['tsumugi_creature'] });
     // 予告1の自動再生は chapter_preview.mjs が専任で検証する。ここでは既読にして大会本体に集中する。
     s.flags = { _elapsed_calendar:true,_ch1_cleared:true,_ch2_day1:{startDay:15,stage:'complete'},_ch2_eve_done:true,_ch2_taste_distant:true,_ch2_preview_seen:true };
+    if(opts.strawberryTrial)s.flags._ch2_strawberry_trial=opts.strawberryTrial;
     s.stats={technique:42,sense:42,guts:42,charm:42,insight:42};
     s.inbox=[{id:'qa_old',originId:'qa_old',day:20,read:true,done:true,replyState:'none',log:[{text:'大切な約束'}],msg:{sender:'minto',type:'message',messages:['また会おうね']}}];
     s.tournament.lastRank=1; s.tournament.lastTotal=88;
@@ -35,7 +36,7 @@ async function seed(page, { known = false, stage = '', auto = 'good', progress =
     vn.hooks.onLine=(id,line)=>{if(window.__trace.at(-1)!==id)window.__trace.push(id);if(line.text)window.__texts.push(line.text);};
     (await import('./js/craft/session.js')).craftTest.auto=opts.auto;
     void (await import('./js/chapters/ch2.js')).resumeChapterTwo();
-  }, {known,stage,auto,progress});
+  }, {known,stage,auto,progress,strawberryTrial});
 }
 // 応援・祝福のトークが先に並ぶ場合も、返信を選びながら最後の「スマホを閉じる」まで読む（#1653 ⑦）。
 async function phone(page,touch=false) {
@@ -185,6 +186,39 @@ async function seedChapterThreeMeeting(page,sceneId,known=[]) {
   await page.locator(`[data-test="ch3-intro-scene"][data-scene="${sceneId}"]`).waitFor();
 }
 await suite('ch2-tournament',async check=>{
+  for (const result of [null, 'hot']) await check(`strawberry-stations-${result ?? 'old'}`, async page => {
+    // Save fixture at the stations boundary. Earlier practice itself is covered
+    // by the unit suite; here the add-on is read in the real tournament runner.
+    await seed(page, { known: true, stage: 'stations', strawberryTrial: result });
+    await page.locator(t('craft-start')).waitFor();
+    const before = await get(page);
+    const trace = await page.evaluate(() => ({ lines: window.__texts.join('\n'), ids: window.__trace }));
+    assert.equal(trace.ids.filter(id => id === 'ch2_tournament_stations').length, 1);
+    assert.match(trace.lines, /舌は当てにならない/);
+    if (result) assert.match(trace.lines, /青臭さ/);
+    else {
+      assert.match(trace.lines, /同じ速さで作らなくていい/);
+      assert.doesNotMatch(trace.lines, /青臭さ|炭は急がない|足りねえのは別だ/);
+    }
+    assert.deepEqual([before.money, before.stamina, before.day, before.slot], [23456, 100, 28, 0]);
+    assert.equal(before.flags._ch2_tournament.voted, 0);
+    await page.reload();
+    await page.locator(dt('title-load')).click();
+    await page.evaluate(async () => {
+      const vn = await import('./js/vn/engine.js');
+      vn.vnTest.turbo = true;
+      window.__afterReloadScenes = [];
+      vn.hooks.onLine = id => window.__afterReloadScenes.push(id);
+    });
+    await page.locator(dt('slot-0')).click();
+    await page.locator(t('craft-start')).waitFor();
+    assert(!await page.evaluate(() => window.__afterReloadScenes.includes('ch2_tournament_stations')));
+    const after = await get(page);
+    assert.deepEqual(after.flags._ch2_tournament.votes, before.flags._ch2_tournament.votes);
+    assert.deepEqual([after.money, after.stamina, after.flags._ch2_strawberry_trial],
+      [before.money, before.stamina, before.flags._ch2_strawberry_trial]);
+  }, { reducedMotion: 'reduce' });
+
   // #1922: 本番CONTINUEのMENUからのLOAD失敗で、旧画面の寿命を失わない。
   for (const outcome of ['retry', 'reload']) await check(`continue-load-failure-${outcome}`, async page => {
     await page.clock.install();

@@ -1,6 +1,7 @@
 // 初登場カットイン: キャラが名乗って名前が出たあと、最初に一度だけ「名前・二つ名・一言」を全画面で出す。
 // 文言の正本は data/characters.json の intro_cutin。
 //   { title: 二つ名, line: 一言（「／」は2行にする時の改行位置）, face: 立ち絵の表情, color: 差し色,
+//     fallback_color: 画像なしの登場演出に限る差し色（通常会話と共有する color の上書き）
 //     motion: 動きの型 sharp/soft/still/bounce, name: "alias"=フルネームを伏せる（ネタバレになる相手）, display_name: 名前（下記） }
 // 載せる言葉は名前・二つ名・一言＋小さく好きなフレーバー。初対面の顔だけを書く（2026-10-31）
 // 名前の出し方（NAMES-1106「カットインの名前表示ルール」2026-11-06 オーナー策定）: intro_cutin.display_name に書く。
@@ -127,7 +128,7 @@ export async function playIntro(id, { onAppear = null, override = {}, variant = 
   const motif = { hajime: "smoke", adam: "duality", naru: "stripes", dr_kemuri: "science", samechan: "shark", sui: "stripes", maezono: "duality", pakki: "duality" }[id] || "smoke";
   const pattern = el("div.ci-motif", { "aria-hidden": "true" });
   pattern.innerHTML = `<svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">${motifs[motif]}</svg>`;
-  const host = el("div.cutin", { dataset: { char: id }, style: `--ci: ${intro.color || "var(--gold)"}` }, [
+  const host = el("div.cutin", { dataset: { char: id }, style: `--ci: ${intro.fallback_color || intro.color || "var(--gold)"}` }, [
     el("div.ci-left-field"),
     el("div.ci-halftone"),
     pattern,

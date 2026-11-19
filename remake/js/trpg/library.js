@@ -1,5 +1,6 @@
+import { faceIconStyle } from "./face-crops.js";
 import { el } from "../core/util.js";
-import { displayName, portraitBoxStyle, portraitUrl, sceneArt } from "./presentation.js";
+import { displayName, portraitUrl, sceneArt } from "./presentation.js";
 import { shelfHelpButton } from "./shelf-help.js";
 
 // 操作と遊び方は画面に常に出さず、右上の「？」で読む（#2719・ミニゲーム共通のUI方針）。
@@ -47,7 +48,7 @@ export function mountTrpgLibrary(host, { scenarios, characters, manifest, audio,
     const p = s.presentation, gm = s.cast.find(c => c.part === "GM");
     const cast = el("div.trpg-library-cast", s.cast.map(c => el("div", [
       el("span.trpg-library-face", { style: { "--person-color": c.color } },
-        el("img", { src: portraitUrl(manifest, c.id), alt: "", style: portraitBoxStyle(manifest, c.id, { faceFrac: 0.42, eyeFrac: 0.44, fallbackWidth: 140, fallbackHeadY: 7 }) })),
+        el("img", { src: portraitUrl(manifest, c.id), alt: "", style: faceIconStyle(c.id, undefined, manifest) })),
       el("span", { text: displayName(characters, c.id) }),
     ])));
     books.append(el("article.trpg-library-book", { dataset: { theme: p.theme } }, [

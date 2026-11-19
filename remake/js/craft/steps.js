@@ -11,7 +11,7 @@ import { rememberGrowthMix, growthRecallOptions } from "../core/growth-memory.js
 import { effectVisible, effectBadge } from "./effect-visual.js";
 import { canSeeMixHint, canSeeGoldenShort } from "../core/stat-step-tables.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, reactAudience, waitBenchReady, dockBenchLeaf, setBenchLeafVisible, benchRoot, explainStepOnce } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, waitBenchReady, dockBenchLeaf, setBenchLeafVisible, benchRoot, explainStepOnce, preparationGauge } from "./session.js";
 import { flavorMixLife, LEAF_DAMAGE } from "./flavor-life.js";
 import { autoSkill } from "./common.js";
 import { mixBowlPreview, packingBowlPreview } from "./art.js";
@@ -20,7 +20,6 @@ import { flavorStock, addFlavorStock, ownedFlavorIds, flavorPackageArt, SHOP_FLA
 import { runSteamTimer } from "./timer.js";
 import { cafeNoted } from "../daily/cafe-ideas.js";
 import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK, applyCoalTraining } from "./coals.js";
-import { buildMixTemperatureGauge } from "./thermometer.js";
 import { flavorFamilyGrams, configEffectLabel } from "./score.js";
 import { renewalCraft } from "../core/craft-version.js";
 import { FOIL_FREE_HMS } from "./holes_logic.js";
@@ -344,7 +343,7 @@ export async function stepMix(cs) {
   const taste = el("div.mix-taste", { "aria-live": "polite", dataset: { test: "mix-taste" } });
   const regLine = el("div.reg-line");
   const recipeLine = el("div.recipe-line");
-  const thermometer = buildMixTemperatureGauge(cs, { vertical: true });
+  const thermometer = preparationGauge(cs);
   const idealLine = el("span.mix-ideal"), optimalLine = el("span.mix-optimal");
   const temperatureHint = el("small", { text: "上が高温" });
   // #1081 E02: 蒸らし・吸い出しで初めて出る「フレーバーの持ち」を、葉を決めるこの工程でも左の窓で先に見せる。
@@ -354,7 +353,7 @@ export async function stepMix(cs) {
   const lifePreview = cs.mode === "tutorial" ? null : el("div.mix-life-preview", { dataset: { test: "mix-life-preview" } }, [
     el("b", { text: "フレーバーの持ち" }), lifeHost, lifeNote,
   ]);
-  const temperaturePreview = el("div.mix-temperature-preview", { hidden: cs.mode === "tutorial", dataset: { test: "mix-temperature-preview" } }, [
+  const temperaturePreview = el("div.mix-temperature-preview", { dataset: { test: "mix-temperature-preview" } }, [
     el("b", { text: "温度帯" }),
     thermometer.root,
     el("div.mix-temperature-legend", { "aria-live": "polite" }, [idealLine, optimalLine]),
@@ -572,12 +571,11 @@ export async function stepPack(cs) {
     normal: { rate: "熱は標準", note: "帯は配合どおり" },
     firm: { rate: "熱が遅い", note: "蒸らし長め" },
   };
-  const thermometer = buildMixTemperatureGauge(cs, { vertical: true });
+  const thermometer = preparationGauge(cs);
   const idealLine = el("span.mix-ideal");
   const optimalLine = el("span.mix-optimal");
   const temperatureHint = el("small", { dataset: { test: "pack-heat-hint" } });
   const temperaturePreview = el("div.mix-temperature-preview", {
-    hidden: cs.mode === "tutorial",
     dataset: { test: "pack-temperature-preview" },
   }, [
     el("b", { text: "温度帯" }),

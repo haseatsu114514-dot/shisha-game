@@ -293,10 +293,8 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
     const idleInfo = () => {
       clearSpotInfo();
       if (guide) {
-        // 案内の文言は下中央の GUIDE 表示に一本化する。右下のパネルに同じ文言を重ねない（#3814）。
-        info.replaceChildren(...[
-          forecastFoot(),
-        ].filter(Boolean));
+        // GUIDE 中は右下の案内箱を出さない。天気予報は GUIDE 側に表示する。
+        info.replaceChildren();
         return;
       }
       // 操作の説明は最初の日だけ。以後は期限の一言や明日の天気がある時だけ出す。
@@ -588,7 +586,10 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
       pins,
       notice ? el("div.map-notice", { text: notice }) : null,
       revealNotice, mapStatus,
-      guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [el("b", { text: "GUIDE" }), el("span", { text: guide.text })]) : null,
+      guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [
+        el("b", { text: "GUIDE" }), el("span", { text: guide.text }),
+        tomorrowForecast() ? el("span.map-guide-forecast", { text: `明日は${tomorrowForecast()}` }) : null,
+      ]) : null,
       info,
     ]);
     if (region) root.dataset.region = region.id;

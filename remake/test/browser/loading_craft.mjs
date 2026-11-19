@@ -131,10 +131,12 @@ await suite('loading-craft', async check => {
     // moves on from a comic, never by the preview. Unread comics are shown before any repeat.
     const KEY = 'suien_remake_loading_comics_read';
     const record = () => page.evaluate(key => JSON.parse(localStorage.getItem(key) || 'null'), KEY);
-    // The record belongs to the player default (comics at every fixed point); automated browsers keep the
+    // The record belongs to player-mode comics; automated browsers keep the
     // old behaviour and write nothing, which the pc/mobile cases above confirm.
     await page.evaluate(() => localStorage.setItem('suien_loading_comics', 'always'));
     const readShown = async () => {
+      await page.locator('.loading-gate').waitFor();
+      await page.evaluate(() => window.__finishBenchEntry?.());
       await page.locator('.loading-gate.is-ready').waitFor();
       const title = await page.locator('.loading-comic-title').innerText();
       await page.keyboard.press('Enter');
@@ -144,7 +146,7 @@ await suite('loading-craft', async check => {
     // Each entry waits past the gap in which a gate goes on with the comic just read (core/loading.js FIXED_GAP_MS).
     const enter = options => page.waitForTimeout(2100).then(() => page.evaluate(async options => {
       const { prepareBenchEntry } = await import('./js/craft/loading.js');
-      window.__benchEntry = prepareBenchEntry(new Promise(resolve => setTimeout(resolve, 1200)), 1, [], options);
+      window.__benchEntry = prepareBenchEntry(new Promise(resolve => { window.__finishBenchEntry = resolve; }), 1, [], options);
       window.__benchEntry.catch(() => {});
     }, options));
     await readShown();

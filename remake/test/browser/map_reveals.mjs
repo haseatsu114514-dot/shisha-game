@@ -90,8 +90,9 @@ try {
     assert.deepEqual(await page.evaluate(() => R.pauseSnapshot), { label: '', info: false, guide: false, shown: 1 });
     await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'));
     assert(await currentMap.locator('.map-guide').isVisible());
-    assert(await currentMap.locator('.map-info').isVisible());
-    assert.match(await currentMap.locator('.map-info').innerText(), /^明日は(?:晴れ|くもり|雨)$/);
+    // #3814: 天気予報は右下の案内箱ではなく GUIDE の中に出す。案内箱は GUIDE 中は空のまま。
+    assert.equal(await currentMap.locator('.map-info:empty').count(), 1);
+    assert.match(await currentMap.locator('.map-guide-forecast').innerText(), /^明日は(?:晴れ|くもり|雨)$/);
     assert(await currentMap.locator('.map-notice:not(.map-unlock-notice)').isVisible());
     assert.equal(await page.evaluate(() => R.shown), 2);
     assert(await page.evaluate(() => R.shownAt - R.pauseAt >= 400), 'a visible quiet pause precedes follow-up messages');
