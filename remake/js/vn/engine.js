@@ -1081,6 +1081,7 @@ function renderPage() {
   const page = r.pages[r.pageIdx];
   const raw = page.text;
   r.fullHtml = r.innerVoice ? `<span class="tx-voice">${formatHtml(raw)}</span>` : formatHtml(raw);
+  dom.text.dataset.pageLines = raw.includes("\n") ? "2" : "1";
   r.fullInnerHtml = page.inner ? formatHtml(page.inner) : "";
   r.spokenLength = visibleLength(r.fullHtml);
   const total = r.spokenLength + visibleLength(r.fullInnerHtml);

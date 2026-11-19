@@ -293,6 +293,7 @@ function openMenu() {
   return openFullMenu({ canSave: isChoosingDestination });
 }
 
+// 地図の GUIDE は「行き先＋用件」を一文に。店名を繰り返さず、共通操作（看板を2回タップ）は初回だけ添える。
 // ---------------------------------------------------------------- 1日目の案内
 
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
@@ -312,7 +313,7 @@ async function day1Errands() {
       f._errand_shop_told = true;
       save();
     }
-    await chooseSpot({ guide: { pin: "shop", text: "スミさんに頼まれた仕入れへ。Dr.fookah をタップ。もう一度タップで入る！" } });
+    await chooseSpot({ guide: { pin: "shop", text: "Dr.fookahでレモンを仕入れる。看板を2回タップ。" } });
     await openShop({ errand: "lemon", expense: true, expenseFlag: "_errand_lemon_expensed" });
     f._errand_shop_done = true;
     save();
@@ -331,7 +332,7 @@ async function day1Errands() {
     f._errand_scout_told = true;
     save();
   }
-  if (!f._errand_naru_visited) await chooseSpot({ guide: { pin: "naru", text: "KEMURIKUSAへ偵察に。KEMURIKUSA をタップ。もう一度タップで入る！" } });
+  if (!f._errand_naru_visited) await chooseSpot({ guide: { pin: "naru", text: "KEMURIKUSAへ偵察に。" } });
   if (!f._errand_naru_visited) {
     await visitRival(naru);
     state.visitedDay.naru = state.day;
@@ -347,7 +348,7 @@ async function registerTournament() {
   const venue = spotById("c_station");
   // 偵察を見送った旧保存などでは、未解放/休業の受付へ案内して進行を止めない。
   if (!venue || !isUnlocked(venue) || isClosed(venue) || state.flags._c_station_registered) return;
-  await chooseSpot({ guide: { pin: "c_station", text: "まずは大会の参加登録へ。C.STATION の受付をタップ。もう一度タップで入る！", free: "参加登録（代金なし）" } });
+  await chooseSpot({ guide: { pin: "c_station", text: "C.STATIONで大会に登録する。", free: "参加登録（代金なし）" } });
   await visitSpot({ ...venue, cost: 0, stamina: 0 });
   if (state.flags._c_station_registered && !state.flags._ch1_rules_read) {
     await (await import("../scenes/rule-sheet.js")).openRuleSheet();
@@ -366,8 +367,8 @@ async function registerTournament() {
  * 自分で先に行った旧セーブの店は飛ばし、DAY2 を過ぎた旧セーブには割り込まない
  */
 const DELIVERIES = [
-  { charId: "minto", scene: "remake_delivery_minto", text: "帰り道に、まとめ買いのミントを PEPPERMINT へ。PEPPERMINT をタップ。もう一度タップで入る！" },
-  { charId: "adam", scene: "remake_delivery_eden", text: "次は古いダブルアップルを EDEN へ。EDEN をタップ。もう一度タップで入る！" },
+  { charId: "minto", scene: "remake_delivery_minto", text: "PEPPERMINTにミントを届ける。" },
+  { charId: "adam", scene: "remake_delivery_eden", text: "EDENに古いダブルアップルを届ける。" },
 ];
 const DELIVERY_LAST_DAY = 2;
 const DELIVERY_PAY = 2000;

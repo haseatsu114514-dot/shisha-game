@@ -10004,6 +10004,10 @@ body[data-screen="bench"]:has(.bench[data-mode="tournament"][data-chapter="1"]) 
 /* ---------------------------------------------------------------- マップ */
 /* 旧版を踏襲: 看板型のピン（テーマ色のグラデ・白縁・しっぽ）＋下の白い札／右下の墨×金パネル */
 .map { position: absolute; inset: 0; }
+/* A failed or slow map keeps its destinations usable without suggesting they are inside the previous shop. */
+#bg .map-fallback { background-color: #40384a; background-image: repeating-linear-gradient(32deg, transparent 0 53px, #514758 54px 55px), repeating-linear-gradient(112deg, transparent 0 74px, #514758 75px 76px); }
+.map-backdrop-note:not([hidden]) { position: absolute; z-index: 8; bottom: 100px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; white-space: nowrap; color: #fffaf1; background: #302837; border-radius: 6px; padding: 5px 12px; font-size: max(20px, var(--mui-text, 11px)); }
+.map-backdrop-note button { font: inherit; color: #ffdf9b; padding: 5px 8px; text-decoration: underline; cursor: pointer; }
 .map::before {
   content: "";
   position: absolute;
