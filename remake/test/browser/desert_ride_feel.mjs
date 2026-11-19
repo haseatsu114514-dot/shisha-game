@@ -35,7 +35,7 @@ await suite("desert-ride-feel", async check => {
       d.feel.stopFall = 30; // 止めを長くして、止めの間の様子を見る（実行中に変えられる）
       const rock = g.course.features.find(f => f.kind === "rock" && !g.passed.has(f));
       while (g.z < rock.z - 3) d.advance(1 / 60);
-      g.x = rock.x; g.vx = 0; g.gauge = 0.6;
+      g.x = rock.x; g.vx = 0; g.gauge = 0.2; // 通常ブーストの目印に届かなくても立て直せる
       d.pause(false);
       return { glow: getComputedStyle(document.querySelector('[data-test="desert-boost"]')).filter };
     });

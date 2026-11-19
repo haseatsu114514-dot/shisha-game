@@ -45,18 +45,24 @@ try {
         window.flow = R.map.chooseSpot({ ...options, onShown: () => { R.shown++; R.shownAt = performance.now(); } });
         return saved;
       };
-      void reopen();
+      void reopen({ guide: { pin: 'rest', text: '自宅で休もう' } });
     });
     await page.locator('.map:not(.done)').waitFor();
     if (name !== 'pc') assert.equal(await page.locator('#rotate-hint').isVisible(), false, `${name}: 横持ちに回転ガードは出ない`);
     assert.equal(await page.locator('.newly-revealed').count(), 0, 'first map must not celebrate existing places');
     assert.equal(await page.evaluate(() => R.shown), 1);
+    const currentMap = page.locator('.map:not(.done)');
+    assert.equal(await currentMap.locator('.map-guide span').innerText(), '自宅で休もう');
+    assert.equal(await currentMap.locator('.map-info:empty').count(), 1);
+    assert.equal(await currentMap.locator('.map-info').isVisible(), false);
     const saved = await page.evaluate(async () => {
+      // K05 supplies a forecast. The reveal must hide this populated panel until the pause ends.
+      const { ensureGrowth } = await import('./js/core/growth.js');
+      ensureGrowth().nodes.push('K05');
       Object.assign(R.core.state.met, { adam: true, minto: true, sumi: true, tsumugi: true });
       Object.assign(R.core.state.flags, { _spot_guide_adam: true, _spot_guide_minto: true });
       return reopen({ notice: '次の予定を確認しよう', guide: { pin: 'choizap', text: '次はちょいZAPへ' } });
     });
-    const currentMap = page.locator('.map:not(.done)');
     await currentMap.locator('[data-test="map-guide"]').waitFor({ state: 'attached' });
     assert.equal(await currentMap.locator('.map-info').isVisible(), false);
     assert.equal(await currentMap.locator('.map-guide').isVisible(), false);
@@ -84,13 +90,15 @@ try {
     assert.deepEqual(await page.evaluate(() => R.pauseSnapshot), { label: '', info: false, guide: false, shown: 1 });
     await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'));
     assert(await currentMap.locator('.map-guide').isVisible());
-    // #3814: GUIDE 中は右下の案内箱を出さない（天気予報は GUIDE 内に表示する）
-    assert.equal(await currentMap.locator('.map-info').isVisible(), false);
+    // #3814: 天気予報は右下の案内箱ではなく GUIDE の中に出す。案内箱は GUIDE 中は空のまま。
+    assert.equal(await currentMap.locator('.map-info:empty').count(), 1);
+    assert.match(await currentMap.locator('.map-guide-forecast').innerText(), /^明日は(?:晴れ|くもり|雨)$/);
     assert(await currentMap.locator('.map-notice:not(.map-unlock-notice)').isVisible());
     assert.equal(await page.evaluate(() => R.shown), 2);
     assert(await page.evaluate(() => R.shownAt - R.pauseAt >= 400), 'a visible quiet pause precedes follow-up messages');
     const gym = page.locator('[data-test="pin-choizap"]'); await gym.scrollIntoViewIfNeeded(); await gym.click();
     assert(await gym.evaluate(n => n.classList.contains('sel')));
+    assert(await currentMap.locator('.map-info[data-test="map-go"]').isVisible());
     await page.waitForFunction(() => !document.querySelector('.newly-revealed'));
     await page.evaluate(() => reopen());
     await page.locator('.map:not(.done)').waitFor();

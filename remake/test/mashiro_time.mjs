@@ -15,8 +15,8 @@ const text = rel => readFileSync(new URL(rel, import.meta.url), "utf8");
 const scenes = Object.fromEntries(json(`../../data/dialogue/${MASHIRO_TIME_FILE}.json`).dialogues.map(d => [d.dialogue_id, d]));
 const milestones = Object.fromEntries(json("../../data/dialogue/lover_events.json").dialogues.map(d => [d.dialogue_id, d]));
 
-// ---- 台本: 8本とも私的な場面（#3097 で4本→8本）。報酬・分岐を持たず、第3章でも第5章でも読める文にする ---------------
-assert.equal(MASHIRO_TIME_SCENES.length, 8);
+// ---- 台本: 10本とも私的な場面（#3097 で4本→8本、#3752 で8本→10本）。報酬・分岐を持たず、第3章でも第5章でも読める文にする ---------------
+assert.equal(MASHIRO_TIME_SCENES.length, 10);
 for (const id of MASHIRO_TIME_SCENES) {
   const scene = scenes[id];
   assert(scene?.lines?.length >= 8, `${id}: 台本がある`);

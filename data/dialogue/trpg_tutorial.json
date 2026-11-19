@@ -78,6 +78,20 @@
       "speaker": "sai",
       "role": "店長／はじめての人へ",
       "face": "normal",
+      "text": "手がかりがそろったら、あなたの見立てを聞かせてください",
+      "panel": "declare"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "札に『的中時』とあれば、見立てが当たると準備の判定に＋5です",
+      "panel": "declare"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
       "text": "選んだら、サイコロを二つ。出た目に能力値を足して、30以上なら成功",
       "panel": "roll"
     },

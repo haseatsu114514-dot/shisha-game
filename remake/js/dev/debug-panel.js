@@ -264,7 +264,7 @@ export function mountDebugPanel() {
   pressed(craftRow, craftTest.auto || "");
   panel.append(
     el("h4", { textContent: "速さ（音は変わらない）" }), speedRow,
-    el("h4", { textContent: "シーシャ作りの版（次の一台から）" }), versionRow,
+    el("h4", { textContent: "第1章大会の版（次の試合から）" }), versionRow,
     el("h4", { textContent: "シーシャ作りの操作" }), craftRow,
     el("h4", { textContent: "会話の立ち絵" }), portraitRow,
     el("div", { className: "dbg-note", textContent: "通常の設定と共通。未導入の人物・衣装は現行、未導入の表情は同じ画風の通常絵。進行・セーブは変えない。" }),

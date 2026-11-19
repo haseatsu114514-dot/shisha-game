@@ -44,6 +44,43 @@ async function leaveAndSettle(page) {
 }
 
 await suite("tetsuko-feel", async check => {
+  for (const phone of [false, true]) await check(`tetsuko-shutter-and-captions-${phone ? "phone" : "desktop"}`, async page => {
+    const shot = page.locator(dt("tetsuko-photo"));
+    const note = page.locator(".tt-toast");
+    await open(page, { visits: 0 });
+    assert(await shot.isVisible() && await shot.isDisabled(), "The shutter is visible even before there is a moment");
+    await page.keyboard.press("p");
+    assert.equal(await note.count(), 0, "No photo without a moment");
+    await page.locator(dt("tetsuko-time-back")).click();
+    await shot.waitFor({ state: "detached" });
+
+    await open(page, { record: { sessions: 3, props: { floor: "box", bed: "bed" } } });
+    const bed = page.locator(dt("tetsuko-slot-bed"));
+    await bed.waitFor({ state: "visible" });
+    // ベッドに注目させると、箱のしぐさ・反応・ムカイさんのセリフが同時に出る。
+    await bed.dispatchEvent("click");
+    const reaction = page.locator(dt("tetsuko-caption"));
+    const line = page.locator(".tt-line");
+    await line.waitFor({ state: "visible" });
+    assert.match(await line.textContent(), /そっちか/);
+    await note.waitFor({ state: "visible" });
+    const bounds = await page.locator(".tt-caption .tt-chips, .tt-caption .tt-caption-paper").evaluateAll(nodes =>
+      nodes.map(node => { const { top, bottom } = node.getBoundingClientRect(); return { top, bottom }; }));
+    assert(bounds[0].bottom < bounds[1].top && bounds[1].bottom < bounds[2].top, "The notice, reaction, and dialogue have separate rows");
+    assert.match(await reaction.textContent(), /箱/);
+
+    await page.locator(dt("tetsuko-help")).click();
+    assert(await shot.isDisabled(), "The shutter is disabled while help is open");
+    await page.keyboard.press("p");
+    assert.equal(await note.getAttribute("data-kind"), "found", "The shortcut does not shoot through an open panel");
+    await page.keyboard.press("Escape");
+    if (phone) await shot.tap();
+    else await shot.click();
+    assert.equal(await note.getAttribute("data-kind"), "photo");
+    const { result } = await leaveAndSettle(page);
+    assert(result.album.some(entry => entry.moment === "box_over_bed"));
+  }, phone ? { viewport: { width: 844, height: 340 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" } : { reducedMotion: "reduce" });
+
   await check("tetsuko-feel-wish-zones-pounce-and-joy-peak", async page => {
     const screen = await open(page);
     const get = id => page.locator(dt(`tetsuko-${id}`));
@@ -90,7 +127,7 @@ await suite("tetsuko-feel", async check => {
     assert.equal(await screen.getAttribute("data-peak"), "1", "Her hearts fill up while playing");
     assert.match(await caption(), /膝に乗ってきた|頭をこすりつけて/, "A special moment at the stage she trusts you");
     assert(await joy() < 40, "The hearts start again after the special moment");
-    await page.waitForFunction(() => document.querySelector('[data-test="tetsuko-photo"]') && !document.querySelector('[data-test="tetsuko-photo"]').hidden);
+    await page.waitForFunction(() => document.querySelector('[data-test="tetsuko-photo"]')?.matches(":enabled"));
     await get("photo").click();
     // 手帳に、ごきげんにした通算の回数が出る（前の3回＋今回）。
     await get("book").click();
