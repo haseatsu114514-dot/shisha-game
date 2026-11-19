@@ -87,7 +87,7 @@ def metrics_entry(char_id: str, style: str = CLASSIC) -> dict | None:
     return (data["characters"] if style == CLASSIC else data.get("styles", {}).get(style, {})).get(char_id)
 
 
-def face_box(char_id: str, im: Image.Image, style: str = CLASSIC) -> tuple[int, int, int] | None:
+def face_box(char_id: str, im: Image.Image, style: str = CLASSIC, *, align_icon_eye: bool = True) -> tuple[int, int, int] | None:
     """顔アイコンの切り抜き枠 (x0, y0, side) を返す。TUNE で顔の大きさを全キャラ揃えてある。
     tools/make_reference_sheet.py も同じ枠を使い、シートの顔アップの大きさをアイコンと揃える。
     style は立ち絵の画風（classic / new）。その画風の通常絵で測った記録を使う"""
@@ -140,6 +140,12 @@ def face_box(char_id: str, im: Image.Image, style: str = CLASSIC) -> tuple[int, 
                 cx, cy = x0 + side / 2, y0 + side / 2
                 side = int((cy - head) / (0.5 - HEAD_ROOM)) + 1
                 x0, y0 = int(cx - side / 2), int(cy - side / 2)
+    if align_icon_eye and char_id == "hiyori" and entry and "eyes" in entry:
+        # 頭頂の余白は残し、枠を下へ広げて目を他の主要キャラと同じ高さ（上から約63%）に寄せる。
+        eye_y = sum(eye[1] for eye in entry["eyes"]) / 2
+        aligned_side = max(side, round((eye_y - y0) / 0.63))
+        x0 -= (aligned_side - side) // 2
+        side = aligned_side
     return x0, y0, side
 
 
@@ -268,7 +274,7 @@ def continue_portraits(style: str = CLASSIC) -> dict:
             if is_pointer(path):
                 sys.exit(f"{path.relative_to(REPO_ROOT)} は Git LFS のポインタ。git lfs pull --include=\"{path.relative_to(REPO_ROOT)}\" で実体を取る")
             image = Image.open(path).convert("RGBA")
-            box = face_box(character, image, style)
+            box = face_box(character, image, style, align_icon_eye=False)
             if box:
                 x, y, side = box
                 face = path.stem.removeprefix(f"chr_{character}_")
