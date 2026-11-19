@@ -35,6 +35,40 @@ const snapshot = page => page.evaluate(() => ({ money: S.core.state.money, stock
 await suite("shop-ui", async check => {
   const selected = process.env.TEST_CASES?.split(",");
   const run = (name, body, options = {}) => !selected || selected.includes(name) ? check(name, body, { reducedMotion: "reduce", ...options }) : Promise.resolve();
+  for (const [width, height, touch] of [[1280, 720, false], [844, 390, true], [740, 320, true]]) {
+    await run(`readable-vertical-catalog-${width}`, async page => {
+      await setup(page);
+      await page.evaluate(() => S.core.markMet("rio", { known: true }));
+      await open(page);
+      const list = page.locator(".shop-body");
+      const scrollable = async () => {
+        const sizes = await list.evaluate(node => {
+          const bounds = node.getBoundingClientRect();
+          const rows = [...node.querySelectorAll(".shop-row.product")];
+          const full = rows.filter(row => {
+            const r = row.getBoundingClientRect();
+            return r.top >= bounds.top - 1 && r.bottom <= bounds.bottom + 1;
+          }).length;
+          return { total: rows.length, full, overflows: node.scrollWidth > node.clientWidth + 1 ||
+            rows.some(row => row.scrollWidth > row.clientWidth + 1), scroll: node.scrollHeight > node.clientHeight };
+        });
+        assert(sizes.total > sizes.full && sizes.full >= 2 && sizes.full <= 4);
+        assert(sizes.scroll && !sizes.overflows);
+        const footer = page.locator(".shop-foot");
+        const before = await footer.boundingBox();
+        await list.locator(".shop-row.product").last().scrollIntoViewIfNeeded();
+        await assertFits(page, ".shop-row.product:last-child");
+        await assertFits(page, '[data-test="shop-leave"], [data-test="shop-checkout"]');
+        assert.deepEqual(await footer.boundingBox(), before, "Only the catalog scrolls");
+      };
+      await scrollable();
+      await page.locator('[data-category="cooling"]').click();
+      assert.equal(await list.evaluate(node => node.scrollTop), 0);
+      await page.locator('[data-tab="equip"]').click();
+      await scrollable();
+      await tap(page, "shop-leave");
+    }, { viewport: { width, height }, isMobile: touch, hasTouch: touch });
+  }
   await run('af-vanilla-stock-and-craft-art', async page => {
     await setup(page);
     await page.evaluate(() => { S.core.save(); S.core.newGame(); S.core.load(); });

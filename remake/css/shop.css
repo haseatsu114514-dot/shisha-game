@@ -38,6 +38,19 @@ body:not(.game-ds) .shop.shop-paper, body:not(.game-ds) .shop-entry { top: 24px;
 .shop-paper .shop-row.selected { background: #e9dfef99; box-shadow: inset 3px 0 #ad8cbe; }
 .shop-paper .shop-row.errand { outline: none; background: #eee3f2; box-shadow: inset 4px 0 var(--shop-purple); animation: none; }
 .shop-paper .shop-row.errand::after { content: none; animation: none; }
+.shop-paper .shop-row.product {
+  --shop-art-height: 96px;
+  min-height: 122px;
+  padding: 10px 14px;
+  gap: 20px;
+}
+.shop-row.product .shop-product { gap: 18px; }
+.shop-paper .shop-row.product .shop-product-art { width: 110px; height: var(--shop-art-height); margin: 0; }
+/* 既存の切り抜き枠ごと拡大し、商品画像の隣の絵を出さない。 */
+.shop-row.product .shop-product-art > span:not(.shop-type-mark) { transform: scale(1.35); }
+.shop-row.product .shop-product-art .art { width: 88px !important; max-height: 88px; }
+.shop-paper .shop-row.product .shop-main b { font-size: max(24px, var(--shop-label, 0px)); font-weight: 700; line-height: 1.35; }
+.shop-paper .shop-row.product .shop-main small { font-size: max(17px, var(--shop-text, 0px)); }
 .shop-product { display: flex; gap: 14px; align-items: center; flex: 1; min-width: 0; padding: 0; border: 0; text-align: left; background: transparent; color: var(--shop-ink); }
 .shop-product:hover b { text-decoration: underline; text-underline-offset: 5px; }
 .shop-product-art { display: flex; flex: none; width: 76px; height: 66px; align-items: center; justify-content: center; }

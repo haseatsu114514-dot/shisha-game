@@ -493,6 +493,7 @@ export function banner(title, sub = null) {
 /**
  * 報酬カード。kind: stat | affinity | info
  * @param o.badge 丸バッジの一字 / o.face 顔ドット絵（あればバッジの代わり）/ o.hearts {from:[%×5], to:[%×5]}
+ * @param o.mastery 熟練度通知の {level, total, packageArt: () => HTMLElement}
  * @param o.source "slot" の場合だけ当たりの枠の光と専用音。通知位置・報酬の適用は変えない。
  */
 export function gainCard(o) {
@@ -527,6 +528,15 @@ export function statBadge(key, className = "gc-badge") {
   return el(`div.${className}`, { text: STAT_BADGE[key], "aria-hidden": "true" });
 }
 
+function masterySteps({ level, total }) {
+  const capped = level === total;
+  return el("span.gc-mastery", { role: "img", "aria-label": `熟練度 ${level} / ${total}${capped ? "（最大）" : ""}` }, [
+    el("span.gc-mastery-stars", { "aria-hidden": "true" }, Array.from({ length: total }, (_, i) =>
+      el(i < level ? "span.filled" : "span", { text: i < level ? "★" : "☆" }))),
+    capped ? el("span.gc-mastery-label", { "aria-hidden": "true", text: "MAX" }) : null,
+  ]);
+}
+
 let lastAffinityChime = -Infinity;
 function pumpBanners() {
   while (bannerBusy < 3 && bannerQueue.length) {
@@ -535,8 +545,8 @@ function pumpBanners() {
     bannerBusy++;
     const hearts = o.hearts ? heartRow(o.hearts.from, { bond: !!o.bond, label: o.bond ? "恋人（♥5）" : "好感度" }) : null;
     const heading = o.top || (o.kind === "stat" ? "STATUS UP" : "");
-    const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}${o.evolution ? ".evolved" : ""}${o.source === "slot" ? ".slot-bonus" : ""}`, [
-      o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : o.icon ? artBadge(o.icon, o.badge) : el("div.gc-badge", { text: o.badge || "+" }),
+    const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}${o.evolution ? ".evolved" : ""}${o.source === "slot" ? ".slot-bonus" : ""}${o.mastery ? ".mastery" : ""}`, [
+      o.mastery ? o.mastery.packageArt() : o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : o.icon ? artBadge(o.icon, o.badge) : el("div.gc-badge", { text: o.badge || "+" }),
       el("div.gc-meta", [
         heading ? el("span.gc-top", { text: heading, "aria-hidden": o.top ? "false" : "true" }) : null,
         el("div.gc-title", [el("span.gc-main", { text: o.main }),
@@ -548,6 +558,7 @@ function pumpBanners() {
         o.kind !== "stat" && o.sub ? el("span.gc-sub", { text: o.sub }) : null,
         o.fx && o.kind !== "stat" ? el("span.gc-fx", { text: o.fx }) : null,
         hearts,
+        o.mastery ? masterySteps(o.mastery) : null,
       ]),
       o.kind === "stat" && o.progress ? el(`div.gc-next${o.progress.capped ? ".capped" : ""}`, { title: `${o.progress.label}${o.fx ? `。${o.fx}` : ""}` }, [
         el("span", { text: o.progress.label }), el("i", [el("b", { style: { width: `${o.progress.fill}%` } })]),

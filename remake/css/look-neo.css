@@ -2140,8 +2140,8 @@
   border-radius: 4px;
   box-sizing: border-box;
 }
-/* 一覧の札は行より少し低くして、上下の行の札と離す（絵の大きさは変えない）。 */
-:root[data-look="neo"] body:not(.game-ds) #stage #screen .shop-paper .shop-row .shop-product-art { height: 60px; overflow: hidden; }
+/* 一覧の札は上下の行から離す。商品行の大きい札と売却欄の小さい札を使い分ける。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .shop-paper .shop-row .shop-product-art { height: var(--shop-art-height, 60px); overflow: hidden; }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .shop-paper :is(.shop-stock, .shop-price) { color: #fff; }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .shop-paper .shop-stock small { color: var(--neo-ui-dim); }
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .shop-paper .shop-price.expense { color: var(--neo-ui-gold-hi); }
