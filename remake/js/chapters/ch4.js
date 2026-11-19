@@ -25,7 +25,7 @@ import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy,
   CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour, chapterFourRead,
   chapterFourDaily, enterChapterFourEve, chapterFourEveDay, chapterFourTournamentDay, chapterFourArrivalsDue,
-  CH4_ARRIVAL_SCENES, CH4_FRIEND_ARRIVAL_SCENES, CH4_GUEST_ARRIVAL_SCENES, chapterFourArrivalEveningsDue, chapterFourHomePhotoDue } from "./ch4-progress.js";
+  CH4_ARRIVAL_SCENES, CH4_FRIEND_ARRIVAL_SCENES, CH4_GUEST_ARRIVAL_SCENES, chapterFourArrivalEveningsDue } from "./ch4-progress.js";
 
 const CH4_SPOT_SCENES = CH4_SCENE_FILES.ch4_spots;
 import { chapterFourMapModel } from "./ch4-map-model.js";
@@ -435,9 +435,6 @@ async function renderEve(owner) {
   if (!next) {
     // 必須場面の後、大会日へ進む前に、前夜の過ごし方を一度だけ確定する（#1895）。
     if (!state.flags._ch4_evening) { await renderEvening(owner); return; }
-    // 選んだ過ごし方の後に、受け取りそびれた写真だけを読む。中断時は既読にせず、次の夜へも進まない。
-    const photo = chapterFourHomePhotoDue(state);
-    if (photo && !await readAndCommit(owner, photo)) return;
     // 夜の会話も経験に含め、精算してから内省する。既読の前夜をLOADしてもXPは積み増さない。
     await presentNight({ evePlace: "dubai_waterside" });
     if (!current(owner)) return;

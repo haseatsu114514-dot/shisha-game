@@ -239,9 +239,7 @@ export const CH4_GUEST_ARRIVAL_SCENES = Object.freeze({
   steve: "ch4_steve_dubai", volk: "ch4_volk_dubai",
 });
 // ドバイの本筋の夜（2026-11-15 オーナー「本筋の補充」・SPC27）。day 以降の夜に、前のものを読んでから一つずつ
-// （ch4-dubai-daily.js の夜。期限の出会いや店の手伝いがある夜は次の夜へ送る）。
-// 前夜（DAY13）には列ごと持ち越さず、未読なら地元からの写真だけ、宿で夜を締める前に読む。
-const HOME_PHOTO = "ch4_story_yosegaki";
+// （ch4-dubai-daily.js の夜。期限の出会いや店の手伝いがある夜は次の夜へ送る）。前夜（DAY13）に入ったら、未読でも足さない。
 export const CH4_STORY_NIGHTS = Object.freeze([
   { id: "ch4_story_briefing", day: 1, label: "出場者説明会", beat: "夜。大会の運営に呼ばれて、会場の会議室へ──", bg: "bg_dubai_grand_smoke_stage" },
   { id: "ch4_story_venue", day: 3, label: "会場の下見", beat: "夜。本番の会場を、一度見ておくことにした──", bg: "bg_dubai_grand_smoke_stage" },
@@ -249,7 +247,7 @@ export const CH4_STORY_NIGHTS = Object.freeze([
   { id: "ch4_story_sumi_call", day: 7, label: "時差の電話", beat: "夜。宿の部屋で、スマホが鳴った──", bg: "bg_dubai_inn_night" },
   { id: "ch4_story_press", day: 9, label: "記者会見", beat: "夜。日本代表の記者会見に呼ばれた──", bg: "bg_dubai_grand_smoke_stage" },
   // RLS09（本編・大会を第1章の量に）: 地元の常連さんたちの色紙の写真
-  { id: HOME_PHOTO, day: 11, label: "地元からの色紙", beat: "夜。地元から、写真が一枚届いた──", bg: "bg_dubai_inn_night" },
+  { id: "ch4_story_yosegaki", day: 11, label: "地元からの色紙", beat: "夜。地元から、写真が一枚届いた──", bg: "bg_dubai_inn_night" },
 ].map(entry => Object.freeze(entry)));
 export const CH4_STORY_FILES = Object.freeze({ ch4_dubai_story: Object.freeze(CH4_STORY_NIGHTS.map(entry => entry.id)) });
 // 前夜祭（王煙楼の招待）が始まった印。ここから先は到着を足さない（ロビーの出迎えを前夜祭の後に回さない）。
@@ -417,14 +415,6 @@ export function chapterFourArrivalEveningsDue(value) {
     .map(({ id, scene }) => ({ id, scene }));
 }
 
-/** 前夜の予定を終えて宿へ戻る時、未読なら地元からの写真だけ受け取る。日常の夜と同じ既読を使う。 */
-export function chapterFourHomePhotoDue(value) {
-  if (!chapterFourDaily(value) || !value.flags._ch4_evening) return null;
-  const progress = chapterFourProgress(value);
-  return progress.part === "eve" && progress.read[HOME_PHOTO] !== true && !chapterFourMandatory(value).length
-    ? HOME_PHOTO : null;
-}
-
 /**
  * 版2: 日常ループの今の日付を章内日（_ch4.day）に写す。日は日常ループの就寝で進む（宿で終える操作は無い）。
  * 前夜の日（DAY13）以降へは enterChapterFourEve で入る。
@@ -487,10 +477,6 @@ export function completeChapterFourScene(value, id) {
     return true;
   }
   if (part === "eve") {
-    if (id === HOME_PHOTO && chapterFourHomePhotoDue(value)) {
-      progress.read[id] = true;
-      return true;
-    }
     // 別便の応援の到着は、先頭の1人ずつ。報酬は付けない（渡航の場面）。必須場面はこれまでどおり確定できる（旧保存・LOADを止めない）。
     const [arrival] = chapterFourArrivalsDue(value);
     if (arrival && id === arrival.scene) {
