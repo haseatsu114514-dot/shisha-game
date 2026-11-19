@@ -8,7 +8,7 @@ import { createFloorShift, floorActions, stepFloorShift, floorSummary, FLOOR_TAB
 // The coordinates are the *tabletops* measured in the 16:9 room artwork, never a CSS card grid.
 const TABLES = [
   [26.2, 36.4, "奥の窓際"], [50, 36.4, "奥の青いソファ"], [73.4, 36.4, "奥の丸卓"],
-  [28.7, 70.4, "入口側の角卓"], [73.0, 70.5, "作業台側の角卓"],
+  [31.4, 67.5, "入口側の角卓"], [68.9, 67.5, "作業台側の角卓"],
 
 ];
 const ROOM_FALLBACK = new URL("../../img/stages/tonari-five.svg", import.meta.url).href;
@@ -142,7 +142,8 @@ function tableControl(table, selected, turn, effect, choose) {
     style: { "--x": x + "%", "--y": y + "%" },
     dataset: {
       ...test("table-" + table.id), phase: table.phase, active: String(selected),
-      row: table.id > 3 ? "near" : "far", party: occupied ? table.guest.party : 0,
+      row: table.id > 3 ? "near" : "far", side: table.id === 4 ? "left" : table.id === 5 ? "right" : "",
+      party: occupied ? table.guest.party : 0,
       signal: glyph === "call" ? "call" : "", due: deadline && table.due <= turn + 1 ? "soon" : "",
     },
   }, [
