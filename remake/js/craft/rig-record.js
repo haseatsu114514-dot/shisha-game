@@ -43,7 +43,7 @@ export function buildRigRecord() {
       tiers.set(step, tier);
       lamp.dataset.tier = tier;
       if (!quiet) { lamp.classList.remove("lit"); void lamp.offsetWidth; lamp.classList.add("lit"); }
-      if (!quiet && lamp.getClientRects?.().length && (tier === "brilliant" || tier === "great")) {
+      if (!quiet && (tier === "brilliant" || tier === "great") && (!lamp.getClientRects || lamp.getClientRects().length)) {
         const host = root.parentElement || root;
         const color = tier === "brilliant" ? "#ffc21a" : "#ff9a3a";
         sparks(host, { ...lampCenter(host, lamp), n: tier === "brilliant" ? 10 : 5, color, spread: 46 });
