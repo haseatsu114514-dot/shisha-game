@@ -64,6 +64,8 @@ async function load(url) {
   return mod;
 }
 const mod = await load(new URL('../js/trpg/view.js', import.meta.url)); await mod.evaluate();
+const feedback = await load(new URL('../js/trpg/feedback.js', import.meta.url));
+const { rollOdds } = feedback.namespace;
 const scenarios = await Promise.all(['ordinary', 'shark'].map(async theme => JSON.parse(await readFile(new URL('../../data/dialogue/trpg_' + theme + '.json', import.meta.url), 'utf8'))));
 function mount(scenario, extra = {}) {
   const host = new Dom();
@@ -226,7 +228,7 @@ for (const scenario of scenarios) {
     for (const spot of scenario.spots.slice(0, 3)) { q('trpg-spot-' + spot.id).click(); drain(); }
     q('trpg-interpret').click();
     const eye = api.snapshot().pc.stats.eye;
-    assert.equal(q('trpg-search').textContent, 'じっくり調べる' + scenario.presentation.stats.eye + ' ＋' + eye + ' · 1回');
+    assert.equal(q('trpg-search').textContent, 'じっくり調べる' + scenario.presentation.stats.eye + ' ＋' + eye + ' · 1回 · 成功 約' + rollOdds(eye).success + '%');
     assert.match(q('trpg-search').getAttribute('aria-label'), /一度だけ。成功 約\d+%で違う見立てが2つ、ひと手間 約\d+%で1つ分かる/);
     assert.equal(root.querySelectorAll('.trpg-hint-mark').length, 0);
     const pending = timers.length;

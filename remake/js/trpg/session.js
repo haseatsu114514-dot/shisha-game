@@ -91,7 +91,7 @@ export function randomPc(scenario, seed = Date.now(), growth = 0) {
   return buildPc(scenario, { archetype: archetype.id, stats: grownStats(builder, stats, growth) }, growth);
 }
 // Keep two dice and one-die rerolls; scale the old aids toward their original success rates.
-export const DICE = Object.freeze({ sides: 20, base: 3, support: 7, momentum: 4, hypothesis: 4, success: 30, mixed: 19 });
+export const DICE = Object.freeze({ sides: 20, base: 3, support: 7, momentum: 4, hypothesis: 5, success: 30, mixed: 19 });
 export const gradeOf = total => total >= DICE.success ? "success" : total >= DICE.mixed ? "mixed" : "trouble";
 /**
  * What the two dice mean on the table (TRF01). A 20 on either die is a critical and always a success; a 1 on a roll
