@@ -292,7 +292,7 @@ body[data-screen="bench"]:has(.bench[data-mode="tournament"][data-chapter="1"]) 
   position: relative;
   display: grid;
   place-items: center;
-  width: 34px;
+  width: 36px; /* しっぽり明朝の Latin 字形は横幅が広く、34px では吹き出しからはみ出すため 36px へ（2026-11-19 フォント変更対応） */
   height: 28px;
   padding: 2px 0 0; /* Latin capitals sit optically high in the font line box. */
   margin: 0 0 3px;
@@ -2246,7 +2246,7 @@ body:not(:root) #hud .hud-menu .hidane-badge { min-width: max(20px, var(--mui-te
 body:not(:root) .map .spot-pin .sub-label { font-size: max(13px, var(--mui-text)); }
 body:not(:root) .map .spot-pin .pin-cost { font-size: max(18px, var(--mui-text)); font-weight: 700; line-height: 1.2; }
 /* スマホ規格: 文字を下限まで大きくした分、札の余白を詰めて隣のスポットと重ならないようにする（compact_gains_map の重なりの検査） */
-html:root[data-density="phone"] body:not(:root) .map .spot-pin .sub-label { padding: 2px 5px; line-height: 1.2; }
+html:root[data-density="phone"] body:not(:root) .map .spot-pin .sub-label { padding: 2px 5px; line-height: 1.2; font-size: max(13px, calc(var(--mui-text) * .93)); letter-spacing: -0.01em; } /* しっぽり明朝の Latin 字形は横幅が広く、隣のスポットへはみ出すため札だけ少し詰める（2026-11-19 フォント変更対応） */
 html:root[data-density="phone"] body:not(:root) .map .spot-pin .pin-cost { margin-top: 1px; padding: 0 5px; line-height: 1.15; }
 html:root[data-density="phone"] body:not(:root) .map .spot-pin .pin-status:not(.pin-closed) { margin-top: 1px; padding: 0 5px; line-height: 1.15; }
 body:not(:root) .map .spot-pin .pin-status { font-size: max(14px, var(--mui-text)); }
