@@ -207,7 +207,7 @@ def cmd_sheet(out_dir: Path) -> int:
     for names in groups.values():
         names.sort(key=lambda n: (data["backgrounds"][n].get("weather", ""), TIME_ORDER.get(data["backgrounds"][n].get("time", ""), 9), n))
     try:
-        font = ImageFont.truetype(str(ROOT / "remake/fonts/ZenKakuGothicNew-Medium.woff2"), 18)
+        font = ImageFont.truetype(str(ROOT / "remake/fonts/ShipporiMinchoB1-Medium.woff2"), 18)
     except OSError:
         font = ImageFont.truetype("/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf", 18)
     TW, TH, GAP, LABEL = 400, 225, 12, 48
