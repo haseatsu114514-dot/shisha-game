@@ -1,6 +1,7 @@
 import { el } from "../core/util.js";
 import { TrpgSession, HEAT, heatTier, DICE, STATS, PLAYER_SEAT, approachesOf, approachBase, buildPc, randomPc, grownStats, phasesOf, checkKindsOf, rewardKindOf, nearMissOf } from "./session.js";
 import { displayName, npcIdFor, npcPortraitUrl, portraitBoxStyle, portraitUrl, portraitAx, portraitHeadTop, portraitTop as topFor, sceneUrl } from "./presentation.js";
+import { incarnationPortrait } from "./incarnation-portrait.js";
 import { costumeUrl, resolvedCostumeKey } from "./costumes.js";
 import { BUST, bustCheekWidth, bustFrameStyle, bustTypicalWidths, faceIconStyle, npcBustStyle, portraitFaceFrame, standingFrameStyle } from "./face-crops.js";
 import { createTrpgAudio } from "./audio.js";
@@ -507,7 +508,12 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function incarnate() {
     const cards = scenario.cast.filter(c => c.part !== "GM" && pcOf(c.id)).map(c => {
       const seat = seatOf(c.id), pc = pcOf(c.id);
-      return { real: { name: name(c.id), face: pcFace(seat, c.id) }, role: { name: pc.name, title: pc.title || "", figure: pcFigure(seat, c.id) } };
+      const role = pc.archetype || pc.option;
+      const frame = costumeFrames?.[resolvedCostumeKey(scenario.id, c.id, role)];
+      const figure = frame?.face?.w > 0
+        ? incarnationPortrait(costumeUrl(scenario.id, c.id, role), frame, bustCheekWidth(frame.face, c.id, bustTypical[c.id]))
+        : pcFigure(seat, c.id);
+      return { real: { name: name(c.id), face: pcFace(seat, c.id) }, role: { name: pc.name, title: pc.title || "", figure } };
     });
     audio.play("open");
     staging = playIncarnation(root, { cards, place: presentation.location || scenario.title, teller: GM_TITLE + " " + name(gm),
