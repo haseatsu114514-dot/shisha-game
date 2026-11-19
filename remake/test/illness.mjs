@@ -219,12 +219,15 @@ await run({ stamina: 40, answers: [false], paths: ["tonari", "rest"] });
 assert.match(guardBodies[0], /この行動の後は/);
 assert.match(guardBodies[0], /行動後の残り/);
 for (const scenario of [
-  { day: 6, chapter: 1, untilDay: 14, flags: {} },
-  { day: 20, chapter: 2, untilDay: 28, flags: { _ch2_day1: { startDay: 15 } } },
+  { day: 1, chapter: 1, untilDay: 3, flags: { _errand_scout_done: true, _c_station_registered: true, _delivery_adam_done: true, _delivery_minto_done: true }, expectedDay: 2 },
+  { day: 6, chapter: 1, untilDay: 14, flags: {}, expectedDay: 7 },
+  { day: 20, chapter: 2, untilDay: 28, flags: { _ch2_day1: { startDay: 15 } }, expectedDay: 7 },
 ]) {
   await run({ ...scenario, stamina: 100, slot: 2, paths: ["rest"] });
-  assert.equal(dawns[0].day, 7);
-  assert.equal(dawns[0].left, 7);
+  assert.equal(dawns[0].fromDay, scenario.expectedDay - 1);
+  assert.equal(dawns[0].day, scenario.expectedDay);
+  assert.equal(dawns[0].fromLeft, 15 - scenario.expectedDay);
+  assert.equal(dawns[0].left, 14 - scenario.expectedDay);
   assert.equal(dawns[0].absoluteDay, scenario.day + 1);
   assert(dawns.every(info => info.left === info.hudLeft));
   assert(dawns.every(info => info.day < 14), "大会当日は通常の夜明けカードを出さない");

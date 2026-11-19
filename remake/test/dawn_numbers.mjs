@@ -2,9 +2,10 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
+import { chapterDay, chapterDaysLeft, relationshipElapsedDay } from "../js/core/chapter-clock.js";
 
 async function checkDawn(info, { reduced = false, cancel = false, failMid = false } = {}) {
-  const snapshots = [], keyHandlers = new Set();
+  const faces = [], keyHandlers = new Set();
   let card, midCalls = 0;
   class Element {
     constructor(spec) {
@@ -34,8 +35,7 @@ async function checkDawn(info, { reduced = false, cancel = false, failMid = fals
   function sample() {
     if (!card) return;
     const numbers = descendants(card).filter(node => node.classes.has("tr-flip"));
-    snapshots.push(numbers.map(node => node.children.filter(child =>
-      Number(child.paint.opacity ?? (child.style.opacity || 1)) > 0).map(child => child.text)));
+    faces.push(numbers.map(node => node.children.map(child => child.text)));
   }
   function el(spec, attrs = {}, kids = []) {
     if (Array.isArray(attrs)) { kids = attrs; attrs = {}; }
@@ -71,17 +71,30 @@ async function checkDawn(info, { reduced = false, cancel = false, failMid = fals
   assert.equal(mod.namespace.isCovering(), false); assert.equal(keyHandlers.size, 0);
   if (failMid) return;
   if (info.eve) { assert.equal(card, undefined, "大会前夜の当日版は日付のカードを出さない（#2688 A10）"); return; }
-  assert(snapshots.length > 0);
-  for (const snapshot of snapshots) {
-    assert(snapshot[0].every(value => value === String(info.day)), "朝のカードに前日のDAYが見える");
-    if (info.left == null || info.sick) assert.equal(snapshot.length, 1);
-    else assert(snapshot[1].every(value => value === String(info.left)), "朝のカードに前日の残り日数が見える");
+  assert(faces.length > 0);
+  assert.equal(faces[0].length, info.left == null || info.sick ? 1 : 2);
+  // The first face is yesterday, the second is today; reduced motion displays today only.
+  assert.deepEqual(faces[0][0], [String(reduced ? info.day : info.fromDay ?? info.day), String(info.day)]);
+  if (info.left != null && !info.sick) {
+    assert.deepEqual(faces[0][1], [String(reduced ? info.left : info.fromLeft ?? info.left), String(info.left)]);
   }
-  assert.deepEqual(snapshots.at(-1)[0], [String(info.day)], "中断後も新しいDAYが可視状態で残る");
-  if (info.left != null && !info.sick) assert.deepEqual(snapshots.at(-1)[1], [String(info.left)]);
+  assert.deepEqual(faces.at(-1)[0], [String(info.day)], "中断後も新しいDAYが残る");
+  if (info.left != null && !info.sick) assert.deepEqual(faces.at(-1)[1], [String(info.left)]);
 }
 
+// 第1章の就寝前を保存・復元し、calendar.js と同じ順序で値を取得する。
+const saved = JSON.stringify({ chapter: 1, day: 1, flags: {} });
+const restored = JSON.parse(saved);
+const fromDay = chapterDay(restored), fromLeft = chapterDaysLeft(restored);
+restored.day += 1;
+const firstMorning = { fromDay, day: chapterDay(restored), fromLeft, left: chapterDaysLeft(restored) };
+assert.deepEqual(firstMorning, { fromDay: 1, day: 2, fromLeft: 13, left: 12 });
+assert.equal(relationshipElapsedDay(restored), 2);
+assert.equal(chapterDay(JSON.parse(JSON.stringify(restored))), 2);
+
 for (const info of [
+  firstMorning,
+  { day: 2, left: 12 }, // 旧呼び出しで前日値が無い場合も当日値を表示する
   { fromDay: 6, day: 7, fromLeft: 8, left: 7 },
   { fromDay: 12, day: 13, fromLeft: 2, left: 1, tournamentName: "県大会" },
   { fromDay: 2, day: 3, fromLeft: null, left: null, undatedNote: "勝負の日は未定" },
@@ -94,4 +107,4 @@ for (const info of [
 await checkDawn({}, { failMid: true });
 await checkDawn({ eve: true });
 await checkDawn({ eve: true }, { reduced: true });
-console.log("[dawn numbers] PASS: current day/countdown from first display, reduced motion, cancelled flips, undated/sick mornings, the eve without a date card, and cleanup");
+console.log("[dawn numbers] PASS: day 1→2 and countdown faces, reduced motion, cancelled flips, undated/sick mornings, the eve without a date card, and cleanup");

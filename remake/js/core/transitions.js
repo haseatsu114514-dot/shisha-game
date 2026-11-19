@@ -386,13 +386,12 @@ export async function retryStroke(mid, host = document.getElementById("fx")) {
 // 紫の夜の面とラベンダーの地平線をやめ、ゲームの絵で作る。眠る前の部屋の絵が暗く沈み、左下に日付の題字が出て、
 // 窓から差す光で朝の部屋の絵に替わる。天気は図形ではなく、窓の光（晴れ）・青みと曇りの絵（くもり）・窓の雨（雨）で伝える。
 
-function flipNumber(value) {
-  // 日付はすでに更新済み。送りの両面を朝の値にし、前日の数字を朝の案内に混ぜない。
-  const span = el("span.tr-flip", [el("i", { text: String(value) }), el("i", { text: String(value) })]);
+function flipNumber(from, value) {
+  const span = el("span.tr-flip", [el("i", { text: String(from ?? value) }), el("i", { text: String(value) })]);
   span.lastChild.style.transform = "translateY(100%)";
   return span;
 }
-/** 数字を下から送り入れる（両面とも朝の値）。中断されても朝の数字が見えたまま残る */
+/** 数字を下から送り入れる。中断されても朝の数字が見えたまま残る */
 async function flip(span) {
   const [before, after] = span.children;
   await Promise.all([
@@ -461,8 +460,8 @@ export async function nightToMorning(host, mid) {
       return;
     }
     // 3. 日付の題字（左下）。最終日が決まっていない章（第5章の日程未定）は残り日数を送らず、章の一言だけ出す
-    const dayFlip = flipNumber(info.day);
-    const leftFlip = info.left === null || info.left === undefined ? null : flipNumber(info.left);
+    const dayFlip = flipNumber(reduced ? info.day : info.fromDay, info.day);
+    const leftFlip = info.left === null || info.left === undefined ? null : flipNumber(reduced ? info.left : info.fromLeft, info.left);
     const label = weather ? (await import("../daily/weather.js").catch(() => ({}))).WEATHER_LABEL?.[weather] : null;
     const sub = info.sick
       ? el("div.tr-dawn-sub", [el("span", { text: "……熱っぽい" })])
