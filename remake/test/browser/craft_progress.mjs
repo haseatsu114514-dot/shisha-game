@@ -4,20 +4,21 @@ import { suite, assertFits, storageSnapshot } from "./support.mjs";
 import { assertCraftProgress } from "./craft_progress_assertions.mjs";
 
 const labels = ["パッキング", "炭焼き", "蒸らし", "吸い出し", "提供", "調整"];
-async function init(page, steps = null) {
-  await page.evaluate(async steps => {
+async function init(page, steps = null, craftVersion = null) {
+  await page.evaluate(async ({ steps, craftVersion }) => {
     const core = await import("./js/core/state.js"); core.newGame();
     window.T = { core, session: await import("./js/craft/session.js"),
       pull: await import("./js/craft/pull.js"), practice: await import("./js/craft/practice.js"),
       score: await import("./js/craft/score.js") };
     window.cs = T.session.newSession("tournament");
+    if (craftVersion) cs.craftVersion = craftVersion;
     Object.assign(cs, { water: 0.5, place: "triangle", heat: { score: 100, heatPower: 70, heatStability: 80, burnRisk: 10, aromaRetention: 80 },
       steam: { temp: .54, score: 100, seconds: 480 }, steamSeconds: 480,
       holes: { score: 95, total: 24, outerEven: .95, innerExcess: 0, outer: 24, middle: 0, inner: 0 },
       mix: { blueberry: 9, mint: 3 }, mixInfo: { score: 90, total: 12, intensity: 5 }, pack: "normal" });
     T.session.openBench(cs, { steps: steps || T.practice.CRAFT_STEPS });
     await T.session.waitBenchReady(cs);
-  }, steps);
+  }, { steps, craftVersion });
 }
 const active = page => page.locator('.bench-phase[aria-current="step"]').getAttribute("data-step");
 const headerLabels = page => page.locator(".bench-phase-copy b").allTextContents();
@@ -27,6 +28,7 @@ await suite("craft-progress", async check => {
   for (const [name, viewport, mobile, reducedMotion] of [
     ["desktop", { width: 1280, height: 720 }, false, "no-preference"],
     ["touch", { width: 844, height: 390 }, true, "reduce"],
+    ["compact-touch", { width: 740, height: 320 }, true, "reduce"],
   ]) {
     await check(`${name}-steam-guide`, async page => {
       await page.evaluate(async () => {
@@ -60,6 +62,14 @@ await suite("craft-progress", async check => {
       await page.waitForFunction(() => document.activeElement?.matches(".bench-guide summary"));
       await page.waitForFunction(() => guideStarts === 1);
       await page.waitForFunction(() => !document.querySelector('[data-test="dodge-precision"]')?.disabled);
+      if (mobile) {
+        await assertFits(page, '.dodge-action, .precision-state');
+        assert(await page.locator('[data-test="dodge-slash"]').isDisabled(), "Locked attack stays disabled");
+        const precision = page.locator('[data-test="dodge-precision"]');
+        await precision.tap();
+        assert.equal(await precision.getAttribute('aria-pressed'), 'true');
+        await assertFits(page, '.dodge-action, .precision-state');
+      }
       await page.waitForFunction(() => document.querySelector('[data-test="steam-clock"]').textContent !== "10:00");
       // Reopen through the native summary, then dismiss through the same real button.
       if (mobile) await summary.tap(); else await page.keyboard.press("Enter");
@@ -239,6 +249,42 @@ await suite("craft-progress", async check => {
       assert.deepEqual(phase.labels, labels, "Substep titles must keep the six phase labels");
     }
   });
+
+  await check("compact-sakurai-timer-and-result-actions", async page => {
+    await init(page, null, "sakurai");
+    await page.evaluate(async () => {
+      const timer = await import("./js/craft/timer.js");
+      window.timerRun = timer.runSteamTimer(cs);
+    });
+    const reset = page.locator('[data-test="timer-reset"]');
+    const timerStart = page.locator('[data-test="timer-start"]');
+    await reset.waitFor();
+    await assertFits(page, '.timer-button');
+    await reset.tap();
+    assert(await timerStart.isDisabled());
+    await assertFits(page, '.timer-button');
+    await page.locator('[data-test="timer-minute-up"]').tap();
+    assert(await timerStart.isEnabled());
+    await timerStart.tap();
+    await page.evaluate(async () => {
+      await timerRun;
+      const result = await import("./js/craft/result.js");
+      window.finalRun = result.resultTable(cs, 3);
+    });
+    const save = page.locator('[data-test="result-save"]');
+    const next = page.locator('[data-test="result-next"]');
+    await save.waitFor();
+    await assertFits(page, '[data-test="result-save"], [data-test="result-next"]');
+    const resultDetails = page.locator('.rt-detail-scroll');
+    assert(await resultDetails.evaluate(n => n.scrollHeight > n.clientHeight), "Long result remains independently scrollable");
+    await resultDetails.evaluate(n => { n.scrollTop = n.scrollHeight; });
+    await assertFits(page, '[data-test="result-save"], [data-test="result-next"]');
+    const download = page.waitForEvent("download");
+    await save.tap();
+    assert.match((await download).suggestedFilename(), /\.png$/);
+    await next.tap();
+    await page.evaluate(() => finalRun);
+  }, { viewport: { width: 740, height: 320 }, hasTouch: true, isMobile: true });
 
   await check("tutorial-progress-includes-pull-and-serve", async page => {
     await page.evaluate(async () => {

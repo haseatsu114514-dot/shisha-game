@@ -15359,6 +15359,94 @@ html body.craft-stage #stage .bench[data-craft-version="sakurai"] .bench-top:not
 html body.craft-stage #stage .bench .hole-chooser .ht-option { flex-direction: row; }
 html body.craft-stage:not(.game-ds) #stage .bench[data-mode] .hole-chooser .hr-stage { grid-template-columns: minmax(0,1fr); }
 html body.craft-stage:not(.game-ds) #stage .bench[data-mode] .hole-chooser .hr-stage > .ht-preview { max-width: 100%; min-width: 0; box-sizing: border-box; }
+
+/* 一枚の舞台の操作札。文字・当たり判定は縮めず、説明や絵の余白で受ける。 */
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .bench-guide[open] .bench-guide-tip {
+  width: min(580px, calc(92vw / var(--k, 1)));
+  max-height: calc(720px - max(84px, var(--bench-tap, 0px)) - 36px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .bench-guide [data-test="bench-guide-close"] {
+  position: sticky; bottom: 0; z-index: 1;
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .flavor-row {
+  height: auto !important; min-height: 116px !important;
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .fr-feature {
+  min-width: 0; max-width: 100%; height: auto; white-space: normal;
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .fr-feature b {
+  overflow: visible; text-overflow: clip; white-space: normal; overflow-wrap: anywhere;
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .flavor-row :is(.fr-stock, .fr-reg) {
+  white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere;
+}
+
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .timer-button[data-test="timer-reset"] {
+  white-space: normal; text-wrap: balance; overflow-wrap: anywhere;
+}
+@media (max-height: 340px) {
+  html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .timer-button[data-test="timer-reset"] { padding-inline: .55em; }
+}
+/* 札の外寸と弾幕／スティックの座標はそのまま。絵と文字のための高さを分ける。 */
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .dodge-controls .refresh-emblem {
+  width: 104px; height: 104px;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .dodge-controls .refresh-emblem img {
+  inset: -8px; width: calc(100% + 16px); height: calc(100% + 16px);
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .dodge-action {
+  justify-content: center; padding-inline: 4px;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .dodge-controls .refresh-copy {
+  white-space: normal; text-wrap: balance; overflow-wrap: anywhere; max-width: 100%;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .precision-copy { gap: 4px; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .precision-state {
+  width: auto; height: auto; padding: 2px 4px; line-height: 1.2; white-space: nowrap;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .dodge-controls .slash-growth { right: 0; }
+
+/* 「持ち」「回数」は吸う・提供の札と別の欄に収める。葉の数と残り回数は変えない。 */
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .pull-play {
+  grid-template-columns: minmax(0, 1fr) 156px 270px;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .pull-summary .pull-life {
+  padding-inline: 8px !important; gap: 4px;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .pull-life-leaves .leaf-icon,
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .pull-count-box :is(.pull-count, .pull-pips) { gap: 4px; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .pull-btns:not(.with-options) > .btn { padding-inline: 12px; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .pull-btns .btn-label {
+  min-width: 0; white-space: normal; overflow-wrap: anywhere;
+}
+
+/* 検査結果と最終順位の本文はスクロール可。前に進む札・画像保存は本文の外。 */
+html body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: 128px minmax(0, 1fr) auto;
+}
+html body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] > :is(.rt-hero, .rt-layout) { grid-column: 1 / -1; }
+html body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] > .rt-save {
+  position: relative; grid-column: 1; grid-row: 3; align-self: center; min-width: 0; overflow-wrap: anywhere;
+}
+html body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] > [data-test="result-next"] { grid-column: 2; grid-row: 3; min-height: 54px; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] :is([data-test="result-save"], [data-test="result-next"]) {
+  min-height: calc(44px / var(--k, 1));
+}
+/* 票の内訳は省略せず、狭い時だけ折り返して順位欄の中で読めるようにする。 */
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] .rt-ranking {
+  overflow-y: auto; overscroll-behavior: contain;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] .rt-row {
+  grid-template-columns: 48px 42px minmax(0, 1fr) 64px; column-gap: 8px;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] :is(.rt-rank, .rt-face) { max-width: 100%; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] .rt-name { flex-wrap: wrap; gap: 0 8px; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] .rt-votes {
+  min-width: 0; white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere;
+}
 /* body:not(:root)／.title:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds)／:not([data-layout="ds"]) と同じ詳細度を保つための置き換え。 */
 /* 工程名は上の帯へまとめ、右パネルは遊ぶための面積にする。 */
 .bench-top { height: 64px; gap: 18px; }

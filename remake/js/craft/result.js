@@ -1,4 +1,5 @@
 import { resultSaveButton } from "./result-save.js";
+import { craftStageEnabled } from "./stage-layout.js";
 import { improvementOf, goodPointOf } from "./advice.js";
 import { actualExpressionCard } from "./flavor-guide.js";
 // 大会の発表まわり: 中間発表／RESULT 10 COUNT（プチュン=1位確定・パリン=敗北）／
@@ -390,6 +391,8 @@ export function resultTable(cs, rank, attempt = null) {
       const review = evaluationOf(score || 0);
       return el(`b.craft-evaluation.${review.tone}`, { text: review.mark, "aria-label": review.label });
     };
+    const save = resultSaveButton(cs);
+    const actionsInFooter = craftStageEnabled() && !renewalCraft(cs);
     const detail = el("div.rt-detail", [el("div.rt-detail-scroll", {
       tabindex: "0", role: "region", "aria-label": "あなたの一台の評価",
     }, [
@@ -407,18 +410,18 @@ export function resultTable(cs, rank, attempt = null) {
       cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
       el("small.rt-judge-comment", { text: `上園「${judgeComment(cs)}」` }),
       el("div.rt-deductions", JUDGES.map(judge => el("small.rt-judge-deduction", { text: `${judgeName(judge.id)}：${judgeDeductionReason(cs, judge.id).text}`, dataset: { judge: judge.id } }))),
-      resultSaveButton(cs),
+      actionsInFooter ? null : save,
     ])]);
     const btn = el("button.btn.primary", { dataset: { test: "result-next" }, onclick: () => { SE.select(); retireScreen(); resolve(); } }, [
       el("span.btn-label", { text: rank === 1 ? "表彰のあとへ" : "……結果を受け止める" }),
     ]);
-    const screen = el("div.result-table", { dataset: { test: "tournament-result", rank } }, [
+    const screen = el("div.result-table", { dataset: { test: "tournament-result", rank, ...(actionsInFooter ? { craftVersion: "sakurai" } : {}) } }, [
       el("i.rt-rays", { "aria-hidden": "true" }),
       el("div.rt-hero", [
         el("span.rt-emblem", { "aria-hidden": "true", dataset: { rank } }, [el("b", { text: rank === 1 ? "1" : String(rank) }), el("small", { text: rank === 1 ? "ST" : "TH" })]),
         header("SMOKE CROWN CUP ／ FINAL RESULT", rank === 1 ? "CHAMPION" : `${rank}位`, rank === 1 ? "逢縁 はじめ · 次の舞台へ" : "この一台の記録を、次の挑戦へ。"),
       ]),
-      el("div.rt-layout", [el("section.rt-ranking", [el("div.rt-ranking-head", [el("h2", { text: "最終順位 · 審査員の持ち点" }), judgeLegend()]), el("div.rt-rows", rows)]), detail]), btn,
+      el("div.rt-layout", [el("section.rt-ranking", actionsInFooter ? { tabindex: "0", "aria-label": "最終順位 · 審査員の持ち点" } : {}, [el("div.rt-ranking-head", [el("h2", { text: "最終順位 · 審査員の持ち点" }), judgeLegend()]), el("div.rt-rows", rows)]), detail]), actionsInFooter ? save : null, btn,
     ]);
     showScreen("result", screen);
     if (rank === 1) {
