@@ -25,26 +25,26 @@ const serveFirst = (initial, { tableId = 1, match = true } = {}) => {
   return doIt(s, "serve", tableId);
 };
 
-test("six actual table actions; deterministic orders, immutable state and time-stamped inputs", () => {
+test("five actual table actions; deterministic orders, immutable state and time-stamped inputs", () => {
   const input = { seed: 321, anchorOrderId: "fruit_mint_free", orders: [{ id: "fruit_mint_free", labels: ["試験A", "試験B"] }] };
   const a = createFloorShift(input), b = createFloorShift(input);
   assert.deepEqual(a, b);
-  assert.equal(a.tables.length, 6);
-  assert.deepEqual(floorActions(a).filter(x => x.kind === "seat").map(x => x.tableId), [1, 2, 3, 4, 5, 6]);
+  assert.equal(a.tables.length, 5);
+  assert.deepEqual(floorActions(a).filter(x => x.kind === "seat").map(x => x.tableId), [1, 2, 3, 4, 5]);
   assert.equal(a.waiting[0].orderId, "fruit_mint_free");
   assert.notEqual(createFloorShift({ seed: 0 }).waiting[0].preferredRecipeId,
     createFloorShift({ seed: 4 }).waiting[0].preferredRecipeId);
-  const stale = find(a, "seat", 6);
-  const next = doIt(a, "seat", 6);
-  assert.equal(at(a, 6).phase, "empty");
-  assert.equal(at(next, 6).phase, "seated");
+  const stale = find(a, "seat", 5);
+  const next = doIt(a, "seat", 5);
+  assert.equal(at(a, 5).phase, "empty");
+  assert.equal(at(next, 5).phase, "seated");
   assert.deepEqual(floorActions(next).filter(x => x.kind === "order").map(x => x.label), ["試験A", "試験B"]);
   assert.equal(stepFloorShift(next, stale.id), next);
   assert.equal(stepFloorShift(next, "forged"), next);
   assert.equal(next.turn, 2);
 });
 
-test("all six seats can be in use concurrently and all six can serve, check out and reset", () => {
+test("five sofas fill; the sixth group waits, then reuses a cleared table", () => {
   let s = createFloorShift({ seed: 18, anchorOrderId: "citrus" });
   const order = id => { s = doIt(s, "order", id, at(s, id).guest.preferredRecipeId); };
   s = doIt(s, "seat", 1); order(1);
@@ -52,13 +52,22 @@ test("all six seats can be in use concurrently and all six can serve, check out 
   s = doIt(s, "seat", 3); order(2);
   s = doIt(s, "seat", 4); s = doIt(s, "start", 2);
   s = doIt(s, "seat", 5); order(3);
-  s = doIt(s, "seat", 6);
   assert.ok(s.tables.every(t => t.guest && t.phase !== "empty"));
+  assert.deepEqual(s.waiting.map(g => g.id), ["g6"]);
+  assert.ok(!floorActions(s).some(a => a.kind === "seat"));
   assert.equal(s.shelf.tableId, 1);
   assert.equal(s.bench.tableId, 2, "two-stage staging, not parallel workbenches");
   s = doIt(s, "serve", 1);
   assert.equal(s.shelf.tableId, 2);
   s = doIt(s, "serve", 2);
+  order(5);
+  s = doIt(s, "start", 5);
+  s = doIt(s, "checkout", 2);
+  assert.ok(!find(s, "seat", 2), "the just-paid table still needs clearing");
+  s = doIt(s, "clear", 2);
+  s = doIt(s, "seat", 2);
+  assert.equal(at(s, 2).guest.id, "g6");
+  assert.equal(s.waiting.length, 0);
   const rank = s => a => {
     const t = a.tableId ? at(s, a.tableId) : null;
     if (a.recipeId && a.kind === "order" && a.recipeId !== t.guest.preferredRecipeId) return 99;
@@ -86,7 +95,8 @@ test("all six seats can be in use concurrently and all six can serve, check out 
   assert.equal(r.sales, 16_800); // 四人＋二組、いずれも一台。
   assert.ok(Number.isInteger(r.anchorIndex));
   assert.equal(new Set(r.ledger.map(x => x.guestId)).size, 6);
-  assert.equal(new Set(r.ledger.map(x => x.tableId)).size, 6);
+  assert.equal(new Set(r.ledger.map(x => x.tableId)).size, 5);
+  assert.deepEqual(r.ledger.filter(x => x.tableId === 2).map(x => x.guestId), ["g2", "g6"]);
   assert.ok(r.ledger.every(row => !row.handedOff));
 });
 

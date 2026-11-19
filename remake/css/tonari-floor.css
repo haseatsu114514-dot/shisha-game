@@ -80,12 +80,17 @@
 .tonari-floor .tf-table[data-active="true"] { z-index: 2; }
 .tf-table :is(.tf-ring,.tf-beat,.tf-marker,.tf-patron) { pointer-events: none; }
 .tf-patron {
-  position: absolute; left: 40%; top: 10px; width: 64px; height: 76px;
+  position: absolute; left: 40%; top: -2px; width: 84px; height: 79px;
   transform: translateX(-50%); filter: drop-shadow(0 4px 3px #2b18178c);
 }
-.tf-table[data-party="2"] .tf-patron { left: 30%; transform: translateX(-50%) rotate(-6deg); }
-.tf-table[data-party="2"] .tf-patron.pair { left: 65%; transform: translateX(-50%) rotate(8deg) scale(.93); }
-.tf-table[data-row="near"] .tf-patron { width: 69px; height: 85px; top: 1px; }
+.tf-table[data-party="2"] .tf-patron { left: 29%; }
+.tf-table[data-party="2"] .tf-patron.pair { left: 60%; }
+.tf-table[data-row="near"] .tf-patron { top: -27px; left: 23%; width: 95px; height: 93px; }
+.tf-table[data-test="tonari-floor-table-4"][data-party="2"] .tf-patron { left: 16%; top: -19px; }
+.tf-table[data-test="tonari-floor-table-4"][data-party="2"] .tf-patron.pair { left: 43%; top: -32px; }
+.tf-table[data-test="tonari-floor-table-5"] .tf-patron { left: 73%; }
+.tf-table[data-test="tonari-floor-table-5"][data-party="2"] .tf-patron { left: 59%; top: -32px; }
+.tf-table[data-test="tonari-floor-table-5"][data-party="2"] .tf-patron.pair { left: 85%; top: -19px; }
 .tf-patron svg { display: block; width: 100%; height: 100%; }
 .tf-ring {
   position: absolute; left: 50%; bottom: -7px; width: var(--tf-table-size); height: 59px;

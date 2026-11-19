@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">
-  <title>tonari: six-table service floor</title>
+  <title>tonari: five-table service floor</title>
   <defs>
     <linearGradient id="wall" x2="0" y2="1"><stop stop-color="#c2a17b"/><stop offset="1" stop-color="#a57957"/></linearGradient>
     <linearGradient id="floor" x1=".35" y1="0" x2=".72" y2="1"><stop stop-color="#966447"/><stop offset=".54" stop-color="#b68152"/><stop offset="1" stop-color="#714626"/></linearGradient>
@@ -96,17 +96,15 @@
   <path d="m1110 209 34-21 136 111v62z" fill="#b98049" stroke="#5b3624" stroke-width="4"/>
   <path d="m1125 207 155 123m-120-123 118 95m-144-68v112m33-86v120m35-89v130m36-105v145" fill="none" stroke="#613b28" stroke-width="2"/>
   <use href="#plant" transform="translate(173 278) scale(1.16)"/><use href="#plant" transform="translate(1247 293) scale(.8)"/>
-  <path d="M193 411h880l95 240H157z" fill="#ad895f" stroke="#47291f" stroke-width="6"/>
-  <path d="M199 420h868l88 220H169z" fill="url(#weave)" stroke="#5b6054" stroke-width="7"/>
-  <path d="M205 428h857l84 204H176z" fill="none" stroke="#dcb781" stroke-width="2.4"/>
+  <path d="M163 500l288-57 82 153-306 66zM829 454l279 48-51 162-297-65z" fill="#ad895f" stroke="#47291f" stroke-width="6"/>
+  <path d="M172 506l274-54 75 138-289 63zM834 463l266 46-49 146-281-60z" fill="url(#weave)" stroke="#5b6054" stroke-width="7"/>
+  <path d="M180 513l262-55 69 127-275 60zM839 471l253 43-47 132-267-55z" fill="none" stroke="#dcb781" stroke-width="2.4"/>
   <use href="#booth" x="340" y="241" color="#68714f"/><use href="#booth" x="640" y="241" color="#4f6761"/><use href="#booth" x="941" y="241" color="#68714f"/>
   <use href="#round" x="335" y="262"/><use href="#square" x="640" y="262"/><use href="#round" x="939" y="262"/>
-  <use href="#booth" transform="translate(355 462) rotate(-6) scale(1.16)" color="#68714f"/>
-  <use href="#booth" transform="translate(657 461) scale(1.15)" color="#4f6761"/>
-  <use href="#booth" transform="translate(967 468) rotate(6) scale(1.16)" color="#6b7350"/>
-  <use href="#square" transform="translate(366 506) rotate(-10) scale(1.29)"/>
-  <use href="#round" transform="translate(658 497) scale(1.20 1.33)"/>
-  <use href="#square" transform="translate(959 511) rotate(9) scale(1.22)"/>
+  <use href="#booth" transform="translate(308 466) rotate(-16) scale(1.17)" color="#68714f"/>
+  <use href="#booth" transform="translate(995 468) rotate(16) scale(1.17)" color="#6b7350"/>
+  <use href="#square" transform="translate(367 507) rotate(-15) scale(1.29)"/>
+  <use href="#square" transform="translate(934 508) rotate(15) scale(1.25)"/>
   <g stroke="#684833" stroke-width="4" fill="#d1af83"><rect x="553" y="93" width="35" height="49"/><rect x="753" y="91" width="36" height="52"/></g>
   <path d="m557 134 13-17 14 14m173 5 12-16 16 12" stroke="#6d7666" stroke-width="6"/>
   <path d="M608 47h103m-100 4h98" stroke="#6c4c33" stroke-width="6"/>

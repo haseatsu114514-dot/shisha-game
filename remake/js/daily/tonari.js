@@ -78,7 +78,7 @@ export function tonariMenu() {
         // #1650: 第2章の試煙会のあと、一度だけ。試供品の苺で熱を確かめ、スミさんに吸ってもらう
         strawberryTrialOpen() ? opt("苺を試す（まかない）", "体力を使う・1行動。試煙会の苺で一台。確かめるのは熱だけ", "strawberry", "tonari-strawberry") : null,
         opt(manager ? "店長として店に立つ" : "シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}${manager ? "今日の営業を引き受ける。仕事終わりにはスミさんと話せる" : "接客で稼ぐ。上がったあとはスミさんと話せる。まかないで練習もできる"}。${shiftPayNote(state)}＋各種ボーナス`, "baito", "tonari-baito"),
-        state.chapter === 1 ? opt("六卓を担当する", "通常シフトの別の遊び方。お客さんの好みを聞いて、作業台と六つの卓を回す。日当と行動枠は同じ。特別な接客の日はいつもの進行", "baito_floor", "shift-mode-floor") : null,
+        state.chapter === 1 ? opt("五卓を担当する", "通常シフトの別の遊び方。お客さんの好みを聞いて、作業台と五つの卓を回す。日当と行動枠は同じ。特別な接客の日はいつもの進行", "baito_floor", "shift-mode-floor") : null,
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
@@ -172,7 +172,7 @@ async function baitoShift({ called, story, floor, owner, signal }) {
     regular = true;
   }
   if (!current()) return false;
-  // 六卓は任意の通常出勤だけ。既存の本編・お忍び・呼び出し・短い二択は変えない。
+  // 五卓は任意の通常出勤だけ。既存の本編・お忍び・呼び出し・短い二択は変えない。
   if (floor && regular && !story && !called && owner.chapter === 1) {
     if (!await serveFloorOrder(owner, signal)) return false;
   } else await serveShiftOrder();

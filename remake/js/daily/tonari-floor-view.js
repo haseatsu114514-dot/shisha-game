@@ -1,16 +1,17 @@
-// tonari の六卓営業ステージ。状態・金額はモデルから読むだけで、日常の資源には触れない。
+// tonari の五卓営業ステージ。状態・金額はモデルから読むだけで、日常の資源には触れない。
 import { el, yen } from "../core/util.js";
 import { showScreen, retire, toast } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { buildVersioned } from "../core/asset-version.js";
-import { createFloorShift, floorActions, stepFloorShift, floorSummary } from "./tonari-floor-model.js";
+import { createFloorShift, floorActions, stepFloorShift, floorSummary, FLOOR_TABLE_COUNT } from "./tonari-floor-model.js";
 
 // The coordinates are the *tabletops* measured in the 16:9 room artwork, never a CSS card grid.
 const TABLES = [
   [26.2, 36.4, "奥の窓際"], [50, 36.4, "奥の青いソファ"], [73.4, 36.4, "奥の丸卓"],
-  [28.6, 70.4, "入口側の角卓"], [51.4, 69.1, "手前の丸卓"], [74.9, 71.0, "作業台側の角卓"],
+  [28.7, 70.4, "入口側の角卓"], [73.0, 70.5, "作業台側の角卓"],
+
 ];
-const ROOM_FALLBACK = new URL("../../img/stages/tonari-floor.svg", import.meta.url).href;
+const ROOM_FALLBACK = new URL("../../img/stages/tonari-five.svg", import.meta.url).href;
 const ROOM_ART = { day: null, night: null }; // Add dedicated WebPs only once their Git LFS objects are published.
 const GUEST_COLORS = [
   ["#b69776", "#473729"], ["#697f8f", "#292a26"], ["#93905f", "#4a3026"],
@@ -61,24 +62,53 @@ function tableState(table) {
     : (PHASE[table.phase] || PHASE.empty);
 }
 
-// Small original, non-interactive seated silhouettes. Furniture and lighting stay in the room image.
-function patron(guest, secondary = false) {
+// These are drawn from the side at seated height. The same drawing is reflected left/right,
+// never rotated from a portrait. Open cheek/eyeline reads from the fixed room camera.
+function patron(table, secondary = false) {
+  const guest = table.guest;
   const variant = (Number(guest.id.slice(1)) - 1 + (secondary ? 2 : 0)) % GUEST_COLORS.length;
   const [shirt, hair] = GUEST_COLORS[variant];
-  return el("span.tf-patron" + (secondary ? ".pair" : ""), { "aria-hidden": true,
-    html: `<svg viewBox="0 0 70 86" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="34" cy="68" rx="29" ry="9" fill="#20190f" opacity=".34"/>
-      <path d="M15 56q-4 13 4 14h35q8-2 2-13l-9-9H24z" fill="#282c2a"/>
-      <path d="M23 28q-7 4-11 14L9 51q-2 7 5 9l15 1v-8l-10-1 7-8 1 14h18l-1-14 8 9-8 2v7l14-2q8-2 4-10l-5-11q-4-8-12-11z" fill="${shirt}" stroke="#382e26" stroke-width="1.1"/>
-      <path d="M29 27v8q6 7 13 0v-9zM21 52l9 1q7 0 6 4l-4 3-11-1zm28 2-8 1q-5 2-1 5h9z" fill="#d7ab83"/>
-      <path d="M24 16q-1-13 12-13 12 0 13 11l-1 11q-2 8-11 8-9-1-12-9z" fill="#d9af8e" stroke="#543e30" stroke-width="1"/>
-      <path d="M24 21q-7-6-2-14t16-6q11 1 13 10l-2 7-4-10-5 5-11 2-2 9z" fill="${hair}"/>
-      <path d="m31 21 2 1m8-1 2-1m-9 7q3 2 6-1" stroke="#755442" stroke-width="1" fill="none"/>
-      <path d="m29 36 7 4 7-5" stroke="#fff1cd" stroke-opacity=".4" fill="none"/>
-    </svg>` });
+  const [side, profile] = [
+    ["right", true], ["right", false], ["left", true], ["right", true], ["left", true],
+  ][table.id - 1];
+  const faceRight = secondary && table.id < 4 ? side !== "right" : side === "right";
+  const strictProfile = profile && !secondary;
+  const facing = faceRight ? "right" : "left";
+  const gesture = !secondary && (table.request || table.phase === "checkout") ? "call" : guest.quiet ? "read" : "rest";
+  const hands = gesture === "call"
+    ? `<path d="M39 52q14 1 20-7l6-13 6 2-3 16q-7 14-21 12" fill="${shirt}" stroke="#3f3028" stroke-width="1.5"/>
+       <path d="M64 31q-2-7 1-11l2 2 2-6q1-2 3 0v8q4-4 5-1-1 6-6 11z" fill="#dcb699" stroke="#745440" stroke-width="1.1"/>`
+    : gesture === "read"
+      ? '<path d="M41 59l17-8 13 4-3 15-19 1z" fill="#debc8d" stroke="#60432f" stroke-width="1.3"/><path d="m58 51-2 18" stroke="#b48162" stroke-width="1.2"/>'
+      : '<path d="M48 60q10 4 18 0l7 1q3 4-2 6l-12 1-10-1z" fill="#dcb699" stroke="#805d49" stroke-width=".8"/>';
+  return el("span.tf-patron" + (secondary ? ".pair" : ""), {
+    "aria-hidden": true, dataset: { facing, profile: strictProfile ? "side" : "quarter", gesture },
+    html: `<svg viewBox="0 0 90 92" xmlns="http://www.w3.org/2000/svg">
+      <g${faceRight ? "" : ' transform="translate(90 0) scale(-1 1)"'}>
+        <ellipse cx="39" cy="76" rx="30" ry="8" fill="#211a15" opacity=".28"/>
+        <path d="M23 62q1-8 16-8l17 5 13 11q5 6-2 10l-8 2-14-9-15 6-14-5z" fill="#32333b" stroke="#26282c" stroke-width="1.1"/>
+        <path d="M35 75l13-4 10 10q-9 5-24 3l-10-6z" fill="#41444a"/>
+        <path d="M31 37q11-2 17 7l6 16-10 6-16 2q-7-1-8-13l4-16z" fill="${shirt}" stroke="#493a30" stroke-width="1.4"/>
+        <path d="M28 44q6 10 2 18l-7 3-1-17z" fill="#342720" opacity=".2"/>
+        <path d="M30 38l4-10 12 3-1 11-5 5z" fill="#c89b7c" stroke="#6b4e3f" stroke-width=".9"/>
+        <path d="M33 44q7 2 8 7l9 8-3 8q-15-2-19-14-2-6 5-9" fill="${shirt}" stroke="#4d3d32" stroke-width="1.25"/>
+        ${hands}
+        ${strictProfile ? `
+          <path d="M30 14q3-8 14-8 11 1 13 9l-1 6 5 5q1 1-5 3l-1 4-2 1-3 6q-11 2-17-8l-5-7z" fill="#dcb699" stroke="#644939" stroke-width="1.5"/>
+          <path d="M30 36q-6-6-6-16 0-13 10-17 17-6 23 8l-3 7-5-7q-3 7-12 9l-1 13z" fill="${hair}" stroke="#44322a" stroke-width="1"/>
+          <path d="M37 23q-4-1-4 4 1 5 5 4" fill="#c78e72" stroke="#92705a" stroke-width=".9"/>
+          <path d="m49 22 5 0m-1 10 2 .2" stroke="#4d3c33" stroke-width="1.6" stroke-linecap="round"/>
+        ` : `
+          <path d="M29 13q5-8 17-7 11 1 12 12l-2 5 3 4-4 2-2 7-7 4-12-4-7-12z" fill="#dcb699" stroke="#644939" stroke-width="1.4"/>
+          <path d="M29 34q-9-9-5-20 4-12 16-12 13 0 18 9l-5 7-4-5q-4 5-16 5l-1 14z" fill="${hair}" stroke="#44322a" stroke-width="1"/>
+          <path d="M32 23q-4 0-2 5l4 2m7-7 5 .3m6-2 3-.7m-8 10q2 2 5 0" stroke="#614839" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        `}
+      </g>
+    </svg>`,
+  });
 }
 
-// Percent coordinates use the same 1280×720 projection as the painted room and the hit areas.
+// Percent coordinates share the room and hit area projection. Vertical movement from the rear centre can reach either side of the aisle.
 function tableInDirection(id, key) {
   const heading = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[key];
   if (!heading) return null;
@@ -91,7 +121,7 @@ function tableInDirection(id, key) {
     const dy = (ty - y) * 7.2;
     const along = dx * hx + dy * hy;
     const across = Math.abs(dx * hy - dy * hx);
-    if (along <= 0 || across > along * .8) return;
+    if (along <= 0 || across > along * (hy ? 1.2 : .8)) return;
     const rank = along + across * 2;
     if (rank < best) { best = rank; target = i + 1; }
   });
@@ -116,8 +146,8 @@ function tableControl(table, selected, turn, effect, choose) {
       signal: glyph === "call" ? "call" : "", due: deadline && table.due <= turn + 1 ? "soon" : "",
     },
   }, [
-    occupied ? patron(table.guest) : null,
-    occupied && table.guest.party > 1 ? patron(table.guest, true) : null,
+    occupied ? patron(table) : null,
+    occupied && table.guest.party > 1 ? patron(table, true) : null,
     el("span.tf-ring", { "aria-hidden": true }),
     el("span.tf-marker", [
       el("span.tf-table-number", { text: String(table.id) }),
@@ -180,7 +210,7 @@ export function runTonariFloor({
   if (customArt) room.append(el("img", {
     src: buildVersioned(customArt), alt: "", decoding: "async", onerror: (event) => event.currentTarget.remove(),
   }));
-  const host = el("section.tonari-floor", { "aria-label": "tonari 六卓営業", dataset: {
+  const host = el("section.tonari-floor", { "aria-label": "tonari 五卓営業", dataset: {
     ...test("screen"), night: String(night),
   } });
   const frame = el("div.tf-frame");
@@ -368,7 +398,7 @@ export function runTonariFloor({
         : null;
       const board = [
         el("header.tf-header", [
-          el("h1.tf-title", ["tonari", el("span", { text: "六卓営業" })]),
+          el("h1.tf-title", ["tonari", el("span", { text: "五卓営業" })]),
           el("div.tf-clock", [
             el("div", [el("span", { text: "手番" }), el("b", { text: ` ${state.turn} / ${state.maxTurns}` })]),
             el("progress", { value: state.turn, max: state.maxTurns, "aria-label": "営業時間" }),
@@ -385,7 +415,7 @@ export function runTonariFloor({
           stat("作業台", benchStatus, "cook", { active: running, key: "bench" }),
           stat("受渡棚", anyReady ? `卓${anyReady}へ提供` : "空き", "ready", { active: anyReady, key: "shelf" }),
         ]),
-        el("div.tf-tables", { role: "group", "aria-label": "全6卓。矢印キーで選ぶ" },
+        el("div.tf-tables", { role: "group", "aria-label": `全${FLOOR_TABLE_COUNT}卓。矢印キーで選ぶ` },
           state.tables.map((table) => tableControl(table, table.id === selected, state.turn, effect, (event) => {
             if (!active || !isCurrent() || overlay) return;
             if (selected === table.id) {

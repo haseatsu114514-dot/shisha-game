@@ -1,6 +1,7 @@
 // 店内の伝票だけを管理。本編の状態・給与・在庫・経過日数から独立した一手制。
 const PRICE = { seat: 500, drink: 400, shisha: 1600, extra: 800 };
 const MAX_TURNS = 48;
+export const FLOOR_TABLE_COUNT = 5; // Six groups arrive sequentially; the aisle is not a serving position.
 const MENU = [
   { id: "citrus", labels: ["レモン＋ミント", "オレンジ＋レモン"], tastes: [
     { tags: ["柑橘", "涼しい後味"], preference: "涼しい後味", quote: "柑橘でさっぱり。あと、口に少し涼しさが残ると嬉しいな。" },
@@ -57,7 +58,7 @@ export function createFloorShift({ seed = 0, orders = [], order = null, anchorOr
   });
   return {
     turn: 1, maxTurns: MAX_TURNS, done: false,
-    tables: Array.from({ length: 6 }, (_, i) => emptyTable(i + 1)),
+    tables: Array.from({ length: FLOOR_TABLE_COUNT }, (_, i) => emptyTable(i + 1)),
     recipes: menuRecipes(order ? [order, ...orders] : orders), waiting: [guests[0]], upcoming: guests.slice(1),
     nextArrival: guests[1].arrival, bench: null, shelf: null, anchorOrderId: anchor.id,
     sales: 0, ledger: [], served: 0, matched: 0, cleared: 0, care: 0, extras: 0, missed: 0, anchorIndex: null,
