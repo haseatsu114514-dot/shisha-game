@@ -1,6 +1,7 @@
 import { el } from "../core/util.js";
 import { TrpgSession, HEAT, heatTier, DICE, STATS, PLAYER_SEAT, approachesOf, approachBase, buildPc, randomPc, grownStats, phasesOf, checkKindsOf, rewardKindOf, nearMissOf } from "./session.js";
 import { displayName, npcIdFor, npcPortraitUrl, portraitBoxStyle, portraitUrl, portraitAx, portraitHeadTop, sceneUrl } from "./presentation.js";
+import { incarnationPortrait } from "./incarnation-portrait.js";
 import { costumeUrl, resolvedCostumeKey } from "./costumes.js";
 import { BUST, bustCheekWidth, bustFrameStyle, bustTypicalWidths, costumeIconStyle, faceIconStyle, npcBustStyle, portraitFaceFrame, standingFrameStyle } from "./face-crops.js";
 import { createTrpgAudio } from "./audio.js";
@@ -506,11 +507,16 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function incarnate() {
     const cards = scenario.cast.filter(c => c.part !== "GM" && pcOf(c.id)).map(c => {
       const seat = seatOf(c.id), pc = pcOf(c.id);
-      return { real: { name: name(c.id), face: realFace(c.id) }, role: { name: pc.name, title: pc.title || "", figure: pcFigure(seat, c.id) } };
+      const role = pc.archetype || pc.option;
+      const frame = costumeFrames?.[resolvedCostumeKey(scenario.id, c.id, role)];
+      const figure = frame?.face?.w > 0
+        ? incarnationPortrait(costumeUrl(scenario.id, c.id, role), frame, bustCheekWidth(frame.face, c.id, bustTypical[c.id]))
+        : pcFigure(seat, c.id);
+      return { real: { name: name(c.id), face: realFace(c.id) }, role: { name: pc.name, title: pc.title || "", figure } };
     });
     audio.play("open");
     staging = playIncarnation(root, { cards, place: presentation.location || scenario.title, teller: GM_TITLE + " " + name(gm),
-      onFlip: () => audio.play("card"), onArrive: () => { audio.play("page"); stageFx(impact(root, "arrive")); } });
+      onFlip: () => audio.play("card"), onArrive: () => audio.play("page") });
     stageFx(staging);
   }
   /** 台詞の行に付いた合図（fx）で場面を動かす。twist＝思わぬ展開の入り、ending＝結末の入り、shake／flash は台本から。 */
@@ -892,6 +898,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   function modal(title, body, actions, { dismiss = true, wide = false, skin = "" } = {}) {
     if (overlay || disposed) return null;
+    staging?.cancel();
     const previousFocus = document.activeElement;
     const box = el("section.trpg-modal", { role: "dialog", "aria-modal": "true", "aria-label": title, tabindex: "-1", class: [wide ? "trpg-modal-wide" : "", skin].filter(Boolean).join(" ") },
       [el("h2", { text: title }), el("div.trpg-modal-body", { tabindex: "0", role: "region", "aria-label": title + "の内容" }, body), el("div.trpg-modal-actions", actions)]);

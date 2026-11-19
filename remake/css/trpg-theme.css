@@ -805,15 +805,45 @@ html:root .trpg-root.trpg-cinematic .trpg-incarnate-face strong { font-size: 30p
 html:root .trpg-root.trpg-cinematic .trpg-incarnate-face.front strong { color: #fff4d6; }
 html:root .trpg-root.trpg-cinematic .trpg-incarnate-face.back strong { color: #2a1b0c; }
 html:root .trpg-root.trpg-cinematic .trpg-incarnate-face.back small { font-size: 18px; font-weight: 700; color: #6b5637; line-height: 1.2; }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] .front { display: none; }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] .back { transform: none; }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate-place { position: absolute; left: 50%; top: 50%; display: grid; justify-items: center; gap: 10px; width: max-content; max-width: 1100px; opacity: 0; transform: translate(-50%, -50%); text-align: center; }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] .trpg-incarnate-place { top: auto; bottom: 34px; opacity: 1; transform: translateX(-50%); }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] .trpg-incarnate-place strong { font-size: 30px; }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate-place small { font-size: 20px; letter-spacing: .4em; color: #d2ae66; }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate-place strong { font-size: 58px; font-weight: 700; letter-spacing: .08em; color: #fff4d6; text-shadow: 0 4px 22px #000, 0 0 40px #f4dda455; }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate-place span { font-size: 22px; color: #e3ead9; letter-spacing: .12em; }
-html:root .trpg-root.trpg-cinematic .trpg-incarnate-flash { position: absolute; inset: 0; opacity: 0; background: radial-gradient(circle at 50% 50%, #fff9e6 0%, #fff3cfcc 35%, #fff3cf00 72%); }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] .back { display: none; transform: none; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] [data-side="back"] .front { display: none; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] [data-side="back"] .back { display: flex; box-shadow: none; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-place { position: absolute; inset: auto 16% 36px; display: grid; justify-items: center; gap: 3px; opacity: 0; text-align: center; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-arrived="true"] .trpg-incarnate-place { opacity: 1; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-place small { font-size: 18px; letter-spacing: .2em; color: #d2ae66; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-place strong { font-size: 32px; line-height: 1.15; color: #fff4d6; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-place span { font-size: 20px; color: #e3ead9; }
+html:root .trpg-root.trpg-cinematic > .trpg-incarnate-skip { position: absolute; z-index: 71; right: 28px; bottom: 28px; min-height: 64px; padding: 0 18px; color: #fff4d6; background: #183735; border: 1px solid #c8ac71; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic > .trpg-incarnate-skip { min-height: 84px; font-size: var(--phone-sub); }
+
+/* 卓の照明、札ごとの金の光筋、最後の舞台銘板。動かすのは opacity / transform だけ。 */
+.trpg-incarnate-lights, .trpg-incarnate-streak { position: absolute; pointer-events: none; }
+.trpg-incarnate-lights { inset: 0; background:
+  conic-gradient(from 151deg at 16% -12%, transparent 0 4deg, #edc87a78 6deg 16deg, transparent 21deg),
+  conic-gradient(from 178deg at 84% -12%, transparent 0 7deg, #73c5c878 10deg 23deg, transparent 28deg),
+  radial-gradient(ellipse 52% 11% at 50% 79%, #daaf694a, transparent); }
+.trpg-incarnate-streak { z-index: 1; inset: -42px -11px; opacity: 0; transform-origin: 50% 72%;
+  background: linear-gradient(111deg, transparent 16%, #ddb676b5 16.3%, transparent 17.4%),
+              linear-gradient(111deg, transparent 80%, #ffdf9b 80.5%, transparent 81.4%); }
+.trpg-incarnate-streak::after { content: ""; position: absolute; inset: 17% -9%;
+  border: 3px solid #ffe4a1; outline: 1px solid #ddb675; outline-offset: 7px;
+  transform: rotate(45deg); box-shadow: 0 0 18px #e7ad55a3, inset 0 0 18px #f0cd7d6b; }
+.trpg-incarnate[data-calm="false"] .trpg-incarnate-veil::before { content: ""; position: absolute; inset: 0;
+  background: linear-gradient(129deg, #070e17 0 9%, #ac875f 9.05%, transparent 9.22%),
+              linear-gradient(-129deg, #070e17 0 9%, #ac875f 9.05%, transparent 9.22%); }
+.trpg-incarnate[data-calm="false"][data-arrived="true"] .trpg-incarnate-veil::after {
+  content: ""; position: absolute; inset: 74% 12% auto; height: 16%; border-top: 2px solid #daba7794;
+  border-radius: 50%; background: radial-gradient(ellipse at 50% 0%, #dba96445, transparent 68%); }
+.trpg-incarnate[data-calm="false"] .trpg-incarnate-face.back::after { content: ""; position: absolute; inset: 6px;
+  border: 1px solid #bc975b; border-radius: 10px; pointer-events: none; }
+.trpg-incarnate[data-calm="false"] .trpg-incarnate-face.front::before { content: ""; position: absolute; inset: 10px;
+  border: 1px solid #cdaa6e6b; border-radius: 8px; pointer-events: none; }
+.trpg-incarnate[data-calm="false"] .trpg-incarnate-place::before,
+.trpg-incarnate[data-calm="false"] .trpg-incarnate-place::after { content: ""; position: absolute; top: 46%;
+  width: 21%; height: 2px; background: linear-gradient(90deg, transparent, #e4b861); }
+.trpg-incarnate[data-calm="false"] .trpg-incarnate-place::before { left: 0; }
+.trpg-incarnate[data-calm="false"] .trpg-incarnate-place::after { right: 0; transform: rotate(180deg); }
+.trpg-incarnate[data-calm="true"] :is(.trpg-incarnate-lights, .trpg-incarnate-streak) { display: none; }
 
 /* ---- 場面の題の札（TRF10）---- */
 html:root .trpg-root.trpg-cinematic .trpg-scene-card { position: absolute; left: 0; right: 0; top: 262px; z-index: 55; height: 132px; display: grid; align-content: center; justify-items: center; gap: 4px; pointer-events: none; }
