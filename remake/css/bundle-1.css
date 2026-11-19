@@ -5013,7 +5013,7 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-result-side { paddin
 /* ---- 小物を置く3つの枠（下端の中央が基準点） */
 .tt-slot { position: absolute; width: 0; height: 0; }
 .tt-slot[data-slot="bench"] { left: 400px; top: 434px; }
-.tt-slot[data-slot="floor"] { left: 770px; top: 550px; }
+.tt-slot[data-slot="floor"] { left: 700px; top: 550px; }
 .tt-slot[data-slot="bed"] { left: 1012px; top: 550px; }
 .tt-prop { position: absolute; left: 0; bottom: 0; }
 .tt-prop > i { position: absolute; display: block; }
@@ -5094,9 +5094,6 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-result-side { paddin
 /* トンネルの中の猫は隠れて、奥の口（右）からしっぽだけ出る */
 .tetsuko-time[data-art-props~="tunnel"] .tt-prop[data-prop="tunnel"] > .tt-prop-tail { display: none; right: -196px; bottom: 96px; }
 .tetsuko-time[data-art-props~="tunnel"] .tt-slot.holding .tt-prop[data-prop="tunnel"] > .tt-prop-tail { display: block; }
-/* ベッド・座布団の上では、絵の高さに合わせて猫を上げる（ベッドは内側のクッション、座布団は面の上） */
-.tetsuko-time[data-art-props~="bed"] .tt-cat[data-inside="bed"] .tt-cat-frame { translate: 0 -22%; }
-.tetsuko-time[data-art-props~="cushion"] .tt-cat[data-inside="cushion"] .tt-cat-frame { translate: 0 -16%; }
 /* 道具箱の札の中の小さな絵 */
 .tetsuko-time[data-art-props~="box"] .tt-item-pic .tt-prop[data-prop="box"] { zoom: 0.27; }
 .tetsuko-time[data-art-props~="ball"] .tt-item-pic .tt-prop[data-prop="ball"] { zoom: 0.8; }
@@ -5126,7 +5123,7 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-result-side { paddin
 .tt-cat[data-at="front"] { --x: 668px; --y: 552px; --s: 1.06; }
 .tt-cat[data-at="lap"] { --x: 640px; --y: 530px; --s: .98; }
 .tt-cat[data-at="slot-bench"] { --x: 400px; --y: 436px; --s: .88; }
-.tt-cat[data-at="slot-floor"] { --x: 770px; --y: 550px; --s: 1; }
+.tt-cat[data-at="slot-floor"] { --x: 700px; --y: 550px; --s: 1; }
 .tt-cat[data-at="slot-bed"] { --x: 1012px; --y: 550px; --s: 1; }
 /* 箱の中では少し小さく（箱の幅に収める） */
 .tt-cat[data-inside="box"] { --s: .9; }
@@ -5295,7 +5292,7 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-result-side { paddin
 .tt-drawer-head b { font-size: 19px; color: var(--tt-lav); }
 .tt-drawer-head small { font-size: 14px; line-height: 1.45; color: var(--tt-ink); }
 .tt-drawer-items { display: flex; gap: 10px; flex: 1; }
-.tt-item { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px; width: 118px; padding: 6px 6px 6px;
+.tt-item { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px; width: 118px; padding: 6px 6px 6px; touch-action: none;
   border: 2px solid transparent; border-radius: 12px; background: var(--tt-paper); font: inherit; color: var(--tt-ink); cursor: pointer; box-shadow: 0 3px 0 rgba(0, 0, 0, .18); }
 .tt-item[aria-pressed="true"] { border-color: var(--tt-amber); box-shadow: 0 0 0 3px rgba(216, 150, 63, .45); transform: translateY(-3px); }
 .tt-item b { font-size: 15px; white-space: nowrap; }
@@ -5308,11 +5305,15 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-result-side { paddin
 .tt-slot-hit { position: absolute; z-index: 9; width: 250px; height: 150px; margin: -150px 0 0 -125px; border: 3px dashed transparent; border-radius: 18px; background: none; cursor: pointer; font: inherit; }
 .tt-slot-hit[hidden] { display: none; }
 .tt-slot-hit[data-slot="bench"] { left: 400px; top: 440px; }
-.tt-slot-hit[data-slot="floor"] { left: 770px; top: 556px; }
+.tt-slot-hit[data-slot="floor"] { left: 700px; top: 556px; }
 .tt-slot-hit[data-slot="bed"] { left: 1012px; top: 556px; }
 .tt-slot-hit[data-allowed="true"] { border-color: var(--tt-amber); background: rgba(255, 233, 196, .22); }
 .tt-slot-hit[data-allowed="true"]::before { content: ""; position: absolute; inset: 0; border-radius: inherit; background: rgba(255, 233, 196, .23); pointer-events: none; opacity: 0; animation: tt-glow 1.2s ease-in-out infinite; }
 .tt-slot-hit[data-allowed="false"][data-filled="true"] { border-color: rgba(247, 243, 237, .6); }
+.tt-slot-hit[data-mode="decor"][data-active="true"][data-allowed="false"], .tt-slot-hit[data-hover="invalid"] { border-color: #d33d36; background: rgba(211, 61, 54, .2); }
+.tt-slot-hit[data-hover="valid"] { border-color: var(--tt-amber); }
+.tt-slot-hit[data-mode="decor"][data-active="true"] .tt-slot-label { opacity: 1; }
+.tt-drag-ghost { position: absolute; z-index: 40; transform: translate(-50%, -50%); padding: 8px 15px; border: 2px solid var(--tt-amber); border-radius: 14px; background: var(--tt-paper); color: var(--tt-ink); font-size: 16px; font-weight: 700; pointer-events: none; white-space: nowrap; box-shadow: 0 6px 15px rgba(0, 0, 0, .28); }
 .tt-slot-hit:disabled { cursor: default; }
 @keyframes tt-glow { 50% { opacity: 1; } }
 .tt-slot-label { position: absolute; left: 50%; top: -16px; transform: translateX(-50%); padding: 1px 10px; border-radius: 10px; background: var(--tt-paper); color: var(--tt-lav); font-size: 14px; font-weight: 700; opacity: 0; }
@@ -5518,9 +5519,6 @@ html:root[data-density="phone"] .desert-ride .dr-result .dr-result-side { paddin
 .tetsuko-time[data-art-bg="true"] .tt-cat[data-at="bench"], .tetsuko-time[data-art-bg="true"] .tt-cat[data-at="slot-bench"] { --y: 424px; }
 .tetsuko-time[data-art-bg="true"] .tt-slot[data-slot="bench"] { top: 424px; }
 .tetsuko-time[data-art-bg="true"] .tt-slot-hit[data-slot="bench"] { top: 430px; }
-/* しぐさの絵も、ベッド・座布団の上ではその高さまで上げる（立ち絵の枠の -22%・-16% と同じ px） */
-.tetsuko-time[data-art-props~="bed"] .tt-cat[data-inside="bed"] .tt-cat-pose { translate: 0 -62px; }
-.tetsuko-time[data-art-props~="cushion"] .tt-cat[data-inside="cushion"] .tt-cat-pose { translate: 0 -45px; }
 /* 撮った写真: 裏口の絵を背にする（背景の絵は JS が style で入れる。ベンチと地面のあたりを写す）。少しだけ色を締めて「写真」らしく */
 .tt-thumb[data-photo="1"] { background-color: #6b5a4c; background-size: cover; background-position: 30% 78%; }
 .tt-thumb[data-photo="1"] img { filter: saturate(1.08) contrast(1.04); }

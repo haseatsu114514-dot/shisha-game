@@ -20,10 +20,10 @@ import { recordPlayMastery, syncPlayMastery, masteryLine } from "../core/play-ma
 import { TOKYO_OUTINGS } from "../chapters/ch3-outing-progress.js";
 import {
   OUTINGS_FLAG, TETSUKO_TIME_FLAG, readTetsukoRecord, tetsukoVisits, createSession, openingReaction, act, canAct, toyOut,
-  autonomous, autoDelay, placeProp, takePhoto, farewell, sessionResult, moodOf, moodLabel, propById, momentById, propUnlocked,
+  autonomous, autoDelay, placeProp, canPlaceProp, takePhoto, farewell, sessionResult, moodOf, moodLabel, propById, momentById, propUnlocked,
   MOMENTS, PROPS, SLOTS, SLOT_NAMES, discoveryGuide, invite, peakReaction, seekMoment, joyHearts, JOY_MAX, JOY_HEARTS, PLAY_AUTO_CATCH,
 } from "./tetsuko-model.js";
-import { ART_READY, hasPose, poseUrl, artAttrs, hasUi, tkIconUrl } from "./tetsuko-art.js";
+import { ART_READY, PROP_SURFACE_LIFT, hasPose, poseUrl, artAttrs, hasUi, tkIconUrl } from "./tetsuko-art.js";
 import { tetsukoTheme } from "./tetsuko-theme.js";
 import { HELP_TITLE, helpCard } from "./tetsuko-help.js";
 
@@ -110,7 +110,7 @@ const HEART_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS.heart}</s
 const WISH_ICON = Object.freeze({ pet: "hand", play: "teaser", brush: "brush", treat: "treat", watch: "watch", decor: "decor" });
 const WISH_LABEL = Object.freeze({ pet: "なでてほしい", play: "じゃらしで遊びたい", brush: "ブラシをかけてほしい", treat: "おやつがほしい", watch: "そばにいてほしい", decor: "何か置いてほしい" });
 // 居場所の x（歩く向きと、じゃらしの先の初めの位置に使う。CSS の --x と同じ値）
-const SPOT_X = Object.freeze({ bench: 292, floor: 548, bed: 1012, front: 668, lap: 640, "slot-bench": 400, "slot-floor": 770, "slot-bed": 1012 });
+const SPOT_X = Object.freeze({ bench: 292, floor: 548, bed: 1012, front: 668, lap: 640, "slot-bench": 400, "slot-floor": 700, "slot-bed": 1012 });
 const HAND_AT = Object.freeze({ x: 1310, y: 540 }); // じゃらしの棒の根元（はじめの手元＝右の外。下の操作の帯に重ねない）
 // カメラ（TKT17・てつこを主役に）: 舞台（.tt-cam）を寄せて、てつこの体の真ん中を画面の at に映す。舞台の外は映さない。
 // もようがえの間は引いて（zoom 1）置き場所を全部見せる。座標はどれも舞台（1280×720）の px。猫の枠の高さは CSS の .tt-cat と同じ。
@@ -223,7 +223,8 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     let capTimer = 0, peakTimer = 0, peakGlowTimer = 0, pounceTimer = 0, ghostTimer = 0, joyTimer = 0, wishTimer = 0, peerTimer = 0, artTimer = 0;
     let tool = "hand", stroke = null, lastPetAt = 0, lastBrushAt = 0, lastSwingAt = 0, toyTravel = 0, held = false, pouncing = false;
     let toyTip = null, toyGoal = null, toyVel = { x: 0, y: 0 }, toyFrame = 0, heldFrame = 0, toyHeading = { x: 0, y: 0 }, toyMovedAt = 0;
-    let selected = null, fresh = [], bookSel = null, lastAt = null, lastX = null, stepFrames = 0, walkFrame = "walk_a";
+    let selected = null, fresh = [], bookSel = null, lastAt = null, lastX = null, lastFootY = null, stepFrames = 0, walkFrame = "walk_a";
+    let drag = null, suppressItemClick = false, suppressSlotClick = false;
     let photoUntil = 0, free = null, lastInputAt = Date.now(), pressZone = 0, lastBitAt = 0, motion = null, asked = false;
 
     // -- 猫（5表情を重ねて置き、表情は data-face で切り替える。しぐさの絵が届いていれば .tt-cat-pose に出す）。
@@ -245,7 +246,10 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     const slots = Object.fromEntries(SLOTS.map(slot => [slot, el("div.tt-slot", { dataset: { slot } })]));
     // 置き場所の当たり: もようがえの間は「置く・片付ける」、ふだんは置いてある物をタップして、てつこを誘う。
     const slotHits = Object.fromEntries(SLOTS.map(slot => [slot, el("button.tt-slot-hit", { type: "button", hidden: true,
-      dataset: { slot, test: `tetsuko-slot-${slot}` }, "aria-label": `${SLOT_NAMES[slot]}に置く`, onclick: () => (panel === "decor" ? pickSlot(slot) : pokeProp(slot)) },
+      dataset: { slot, test: `tetsuko-slot-${slot}` }, "aria-label": `${SLOT_NAMES[slot]}に置く`, onclick: () => {
+        if (suppressSlotClick) return;
+        return panel === "decor" ? pickSlot(slot) : pokeProp(slot);
+      }, onpointerdown: event => { if (panel === "decor" && session.props[slot]) beginPropDrag(event, session.props[slot]); } },
       [el("span.tt-slot-label", { text: SLOT_NAMES[slot] })])]));
     // 擬音と小さな粒（舞台の座標。カメラと一緒に動く）
     const pops = el("div.tt-pops", { "aria-hidden": "true" });
@@ -335,8 +339,15 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       if (at === "floor" && free) at = "free";
       else if (free) clearFree();
       const toX = at === "free" ? free.x : SPOT_X[at] ?? 548;
+      const scale = at === "slot-bench" || at === "bench" ? (c.inside === "box" ? .76 : .88) : at === "lap" ? .98 : at === "front" ? 1.06 : c.inside === "box" ? .9 : 1;
+      const baseY = at === "slot-bench" || at === "bench" ? (backdoor?.url ? 424 : 436) : at === "lap" ? 530 : at === "front" ? 552 : 550;
+      const footY = at === "free" ? free.y : baseY - (PROP_SURFACE_LIFT[c.inside] || 0) * scale;
+      // 天面を離れた時や高さの違う場所へ移る時は、床を横切る空中歩行をさせない。
+      const heightChanged = lastFootY !== null && Math.abs(footY - lastFootY) > 2;
+      if (heightChanged) cat.style.transition = "none";
+      if (at !== "free") cat.style.setProperty("--y", `${footY}px`);
       // 居場所が変わる時は歩く（小さく弾む。しぐさの絵が届いていれば歩きの2枚を交互に）。
-      if (lastAt && at !== lastAt && !reduced && !pouncing) {
+      if (lastAt && at !== lastAt && !heightChanged && !reduced && !pouncing) {
         const fromX = lastX ?? 548;
         cat.dataset.walk = toX >= fromX ? "right" : "left";
         clearTimeout(walkTimer); clearInterval(stepFrames);
@@ -346,8 +357,10 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
         if (hasPose("walk_a") && hasPose("walk_b")) stepFrames = setInterval(() => { walkFrame = walkFrame === "walk_a" ? "walk_b" : "walk_a"; renderPose(); }, 220);
         walkTimer = setTimeout(() => { delete cat.dataset.walk; clearInterval(stepFrames); walkFrame = "walk_a"; renderPose(); }, travel);
       }
-      lastAt = at; lastX = toX;
+      else if (heightChanged) { delete cat.dataset.walk; clearTimeout(walkTimer); clearInterval(stepFrames); }
+      lastAt = at; lastX = toX; lastFootY = footY;
       Object.assign(cat.dataset, { at, spot: c.spot, pose: c.pose, face: c.face, flip: String(faceLeft()), inside: c.inside || "" });
+      if (heightChanged) { void cat.offsetWidth; cat.style.removeProperty("transition"); }
       lap.classList.toggle("show", c.pose === "lap");
       renderPose();
       renderProps();
@@ -1000,7 +1013,10 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
         el("div.tt-drawer-items", items.map(item => {
           const at = slotOf(item.id);
           return el("button.tt-item", { type: "button", dataset: { prop: item.id, test: `tetsuko-item-${item.id}` }, "aria-pressed": String(selected === item.id),
-            title: item.from, onclick: () => { SE.click?.(); selected = selected === item.id ? null : item.id; renderDrawer(); renderSlots(); } }, [
+            title: item.from, onpointerdown: event => beginPropDrag(event, item.id), onclick: () => {
+              if (suppressItemClick) return;
+              SE.click?.(); selected = selected === item.id ? null : item.id; renderDrawer(); renderSlots();
+            } }, [
             el("span.tt-item-pic", [propNode(item.id)]),
             el("b", { text: item.name }),
             at ? el("small.tt-item-at", { text: SLOT_NAMES[at] }) : null,
@@ -1015,10 +1031,10 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
         const hit = slotHits[slot];
         const id = session.props[slot];
         if (panel === "decor") {
-          const allowed = !!selected && propById(selected).slots.includes(slot);
+          const allowed = !!selected && canPlaceProp(session, slot, selected);
           hit.hidden = false;
-          Object.assign(hit.dataset, { mode: "decor", allowed: String(allowed), filled: String(!!id) });
-          hit.disabled = !allowed && !id;
+          Object.assign(hit.dataset, { mode: "decor", allowed: String(allowed), filled: String(!!id), active: String(!!selected) });
+          hit.disabled = !selected && !id;
           hit.setAttribute("aria-label", `${SLOT_NAMES[slot]}に置く`);
         } else {
           // ふだんは、置いてある物をタップして誘える（じゃらしを振っている間は、じゃらしに任せる）。
@@ -1038,6 +1054,58 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       selected = null;
       renderCat(); renderDrawer(); renderWish(); renderButtons();
     }
+
+    // 道具箱や置いた物からドラッグ。判定を外して離した場合は session.props を触らず、元の場所に残す。
+    function beginPropDrag(event, id) {
+      if (event.button !== 0 || panel !== "decor" || drag) return;
+      const source = event.currentTarget;
+      drag = { id, source, pointerId: event.pointerId, x: event.clientX, y: event.clientY, moved: false, ghost: null };
+      source.setPointerCapture?.(event.pointerId);
+      source.addEventListener("pointermove", movePropDrag);
+      source.addEventListener("pointerup", endPropDrag);
+      source.addEventListener("pointercancel", cancelPropDrag);
+    }
+    function dragSlot(x, y) {
+      return SLOTS.find(slot => {
+        const rect = slotHits[slot].getBoundingClientRect();
+        return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+      }) || null;
+    }
+    function movePropDrag(event) {
+      if (!drag || event.pointerId !== drag.pointerId) return;
+      if (!drag.moved && Math.hypot(event.clientX - drag.x, event.clientY - drag.y) < 6) return;
+      if (!drag.moved) {
+        drag.moved = true;
+        selected = drag.id;
+        renderSlots();
+        drag.ghost = el("span.tt-drag-ghost", { text: propById(drag.id).name, "aria-hidden": "true" });
+        host.append(drag.ghost);
+      }
+      const rect = host.getBoundingClientRect(), scale = rect.width / 1280 || 1;
+      Object.assign(drag.ghost.style, { left: `${(event.clientX - rect.left) / scale}px`, top: `${(event.clientY - rect.top) / scale}px` });
+      const target = dragSlot(event.clientX, event.clientY);
+      for (const slot of SLOTS) slotHits[slot].dataset.hover = slot === target ? (canPlaceProp(session, slot, drag.id) ? "valid" : "invalid") : "";
+    }
+    function finishPropDrag(event, cancelled) {
+      if (!drag || event.pointerId !== drag.pointerId) return;
+      const { source, pointerId, moved, id, ghost } = drag;
+      source.removeEventListener("pointermove", movePropDrag);
+      source.removeEventListener("pointerup", endPropDrag);
+      source.removeEventListener("pointercancel", cancelPropDrag);
+      source.releasePointerCapture?.(pointerId);
+      ghost?.remove();
+      for (const slot of SLOTS) slotHits[slot].dataset.hover = "";
+      drag = null;
+      if (!moved) return;
+      if (source.classList.contains("tt-item")) suppressItemClick = true;
+      else suppressSlotClick = true;
+      setTimeout(() => { suppressItemClick = false; suppressSlotClick = false; }, 0);
+      const target = !cancelled && dragSlot(event.clientX, event.clientY);
+      if (target && placeProp(session, target, id)) { SE.click?.(); selected = null; renderCat(); renderWish(); renderButtons(); }
+      renderDrawer(); renderSlots();
+    }
+    function endPropDrag(event) { finishPropDrag(event, false); }
+    function cancelPropDrag(event) { finishPropDrag(event, true); }
 
     // -- てつこ手帳: 左に12のしぐさ、右に選んだしぐさ（写真・てつこメモ）。
     function openBook(focus = null) {

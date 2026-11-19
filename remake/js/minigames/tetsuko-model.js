@@ -46,7 +46,7 @@ export const SLOTS = Object.freeze(["bench", "floor", "bed"]);
 export const SLOT_NAMES = Object.freeze({ bench: "ベンチ", floor: "床", bed: "寝床" });
 // 小物（計画 §4）。専用通貨・買い直し・耐久はない。使っていない物も失わない。
 export const PROPS = Object.freeze([
-  { id: "box", name: "段ボール箱", slots: ["bench", "floor", "bed"], stage: 0, from: "店の段ボール箱" },
+  { id: "box", name: "段ボール箱", slots: ["floor", "bed"], stage: 0, from: "店の段ボール箱" },
   { id: "ball", name: "ボール", slots: ["floor"], stage: 0, from: "店の奥で転がっていた" },
   { id: "cushion", name: "座布団", slots: ["bench", "bed"], stage: 1, from: "ムカイさんに借りた" },
   { id: "scratcher", name: "爪とぎ", slots: ["floor"], stage: 2, from: "店の奥で見つけた" },
@@ -54,6 +54,11 @@ export const PROPS = Object.freeze([
   { id: "bed", name: "猫ベッド", slots: ["bed"], stage: 3, from: "ムカイさんが買ってきた" },
 ].map(prop => Object.freeze({ ...prop, slots: Object.freeze(prop.slots) })));
 const PROP = Object.fromEntries(PROPS.map(prop => [prop.id, prop]));
+// ベンチの上は薄い座布団だけ。床の大物と寝床側の箱は、絵の占有幅が重なるため並べない。
+const floorLarge = new Set(["box", "tunnel"]);
+function propsFit(props) {
+  return !(floorLarge.has(props.floor) && props.bed === "box");
+}
 
 // しぐさ図鑑（12件・並びが図鑑の番号）。発見は自動で記録し、写真を撮らなくても失わない。
 // face は図鑑・アルバムで見せる表情（既存の5表情のどれか）、art は届いたら使うしぐさの絵（tetsuko-art.js）。
@@ -131,6 +136,7 @@ export function readTetsukoRecord(value) {
   // 同じ物が二か所にある壊れた記録は、先の枠だけ残す。
   const seen = new Set();
   for (const slot of SLOTS) { if (props[slot] && seen.has(props[slot])) props[slot] = null; else if (props[slot]) seen.add(props[slot]); }
+  if (!propsFit(props)) props.bed = null;
   const found = MOMENT_IDS.filter(id => Array.isArray(record.found) && record.found.includes(id));
   const album = [];
   for (const entry of Array.isArray(record.album) ? record.album : []) {
@@ -148,7 +154,11 @@ export function readTetsukoRecord(value) {
   };
 }
 function cleanProps(props) {
-  return Object.fromEntries(SLOTS.map(slot => [slot, PROP[props?.[slot]]?.slots.includes(slot) ? props[slot] : null]));
+  const clean = Object.fromEntries(SLOTS.map(slot => [slot, PROP[props?.[slot]]?.slots.includes(slot) ? props[slot] : null]));
+  const seen = new Set();
+  for (const slot of SLOTS) { if (seen.has(clean[slot])) clean[slot] = null; else if (clean[slot]) seen.add(clean[slot]); }
+  if (!propsFit(clean)) clean.bed = null;
+  return clean;
 }
 
 /** その小物が使えるか（段階・面識で増える。減らない）。 */
@@ -202,6 +212,16 @@ const prop = id => PROP[id] || null;
 export const slotOf = (session, id) => SLOTS.find(slot => session.props[slot] === id) || null;
 const has = (session, id) => !!slotOf(session, id);
 
+/** 置ける組み合わせか。画面の予告と確定で同じ判定を使う。 */
+export function canPlaceProp(session, slot, id) {
+  const item = prop(id);
+  if (!SLOTS.includes(slot) || !item || !item.slots.includes(slot) || !propUnlocked(item, session.stage, session.metMashiro)) return false;
+  const next = { ...session.props };
+  for (const other of SLOTS) if (next[other] === id) next[other] = null;
+  next[slot] = id;
+  return propsFit(next);
+}
+
 /** 小物を置く／片付ける（id=null）。同じ物は一か所だけ（別の枠へ置けば移る）。置けたら true。 */
 export function placeProp(session, slot, id) {
   if (!SLOTS.includes(slot)) return false;
@@ -212,13 +232,13 @@ export function placeProp(session, slot, id) {
     if (session.cat.inside === removed && removed) session.cat = { ...session.cat, inside: null, pose: "sit", spot: "floor", art: null };
     return true;
   }
-  const item = prop(id);
-  if (!item || !item.slots.includes(slot) || !propUnlocked(item, session.stage, session.metMashiro)) return false;
+  if (!canPlaceProp(session, slot, id)) return false;
+  const wasInside = slotOf(session, id) !== slot && session.cat.inside === id;
   for (const other of SLOTS) if (session.props[other] === id) session.props[other] = null;
   session.props[slot] = id;
   session.curiousProp = id;
   // 中に入っていた物が片付いたら、てつこは外へ出てくる。
-  if (session.cat.inside && !has(session, session.cat.inside)) session.cat = { ...session.cat, inside: null, pose: "sit", spot: "floor", art: null };
+  if (wasInside || (session.cat.inside && !has(session, session.cat.inside))) session.cat = { ...session.cat, inside: null, pose: "sit", spot: "floor", art: null };
   return true;
 }
 
