@@ -102,6 +102,17 @@
 }
 .axe-first-person .axe-score-reading { display: flex; align-items: baseline; justify-content: space-between; gap: 11px; white-space: nowrap; }
 .axe-first-person .axe-score-reading > strong { font-size: 46px; font-weight: 790; line-height: 1.02; color: #fff3dc; }
+/* Reuse the lesson's total value in the score display, without a second lettering box. */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total.axe-score-reading {
+  display: flex; min-width: 0; order: 0; margin: 0; padding: 0; border: 0; background: none; box-shadow: none; text-align: start;
+}
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total.axe-score-reading::before { content: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total.axe-score-reading > span {
+  display: block; color: inherit; font: inherit;
+}
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-score-pill .axe-total.axe-score-reading > strong {
+  font: 790 46px/1.42 system-ui, sans-serif; color: #fff3dc; text-shadow: inherit;
+}
 .axe-first-person .axe-score-reading[data-reading="latest"] > strong { color: #ffd290; }
 .axe-first-person .axe-score-reading[data-reading="opponent"] > strong { color: var(--axe-blue); }
 .axe-first-person .axe-score-round { order: -1; padding: 0 0 4px; color: var(--axe-brass); font-size: 20px; text-align: right; white-space: nowrap; }

@@ -2,7 +2,6 @@
 import { el } from "../core/util.js";
 import { buildVersioned } from "../core/asset-version.js";
 import { imgFileUrl } from "../core/img-file.js";
-import { onStageFit } from "../core/stage-fit.js";
 import { portraitStyle } from "../core/portrait-style.js";
 import { portraitAsset } from "../core/portrait-resolver.js";
 import { svg } from "../core/transition-kit.js";
@@ -191,19 +190,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     // #2834: 「やめる」も「？」と同じ丸い札（✕）。名前は読み上げ用の文字で付ける。
     el("button.axe-button.axe-close.axe-help", { type: "button", title: "やめる", dataset: { test: "axe-cancel" }, onclick: () => cleanup(false) },
       [el("span", { "aria-hidden": "true", text: "✕" }), el("span.axe-quiet", { text: "やめる" })])]);
-  // 一人称ではスコア類（REC・各投・合計・投数・連続）を上部バーから外し、右上の細いピルへ寄せる
-  // （#3639 オーナー指示 2026-11-18 第3弾: 下部中央から右上へ移し、下部は手元と操作のために開ける）。
-  // ？／× は独立した左上の操作欄に並ぶ。中身の作り・更新は従来どおりで、置き場所だけが変わる。
+  // 一人称の得点はレーンの端にまとめる。？／×は左上に独立させ、投げる面を空ける。
   const scorePill = tapPull ? el("div.axe-score-pill", { dataset: { test: "axe-score-pill" } }) : null;
-  const scoreLatest = el("strong"), scoreSum = el("strong"), scoreOpponent = el("strong");
+  const scoreLatest = el("strong"), scoreOpponent = el("strong");
   const scoreLatestLabel = el("span", { text: "直近" });
   const scoreRound = el("span.axe-score-round");
-  const scoreFigures = scorePill ? el("section.axe-score-figures", { "aria-label": "得点" }, [
-    el("div.axe-score-reading", { dataset: { reading: "latest" } }, [scoreLatestLabel, scoreLatest]),
-    el("div.axe-score-reading", { dataset: { reading: "total" } }, [el("span", { text: versus ? "あなた" : "累計" }), scoreSum]),
-    versus ? el("div.axe-score-reading", { dataset: { reading: "opponent" } }, [el("span", { text: rivalName }), scoreOpponent]) : null,
-    scoreRound,
-  ]) : null;
   if (scorePill) scorePill.append(round);
   const divisionBadge = el("span.axe-division", { text: DIVISIONS[division].short, title: DIVISIONS[division].name + "：" + DIVISIONS[division].note, dataset: { test: "axe-division" } });
   if (scorePill) scorePill.append(divisionBadge); else heading.insertBefore(divisionBadge, round);
@@ -212,10 +203,18 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const totalValue = el("strong", { text: "0" });
   // 次のランクまでの残り（指摘12・桜井 #023「目の前に吊られたごほうび」）。ひとりで投げる時だけ、合計点の脇に小さく
   const nextGoal = el("em.axe-total-next", { hidden: true, dataset: { test: "axe-total-next" } });
-  const total = el("div.axe-total", { dataset: { test: "axe-total" } }, [
-    el("small", { text: versus ? "あなたの合計" : "合計点" }), totalValue, el("span", { text: "/ " + rules.max + "点" }), nextGoal,
-  ]);
-  if (scorePill) scorePill.append(total); else heading.insertBefore(total, round);
+  const total = scorePill
+    ? el("div.axe-total.axe-score-reading", { dataset: { test: "axe-total", reading: "total" } }, [el("span", { text: versus ? "あなた" : "累計" }), totalValue])
+    : el("div.axe-total", { dataset: { test: "axe-total" } }, [
+      el("small", { text: versus ? "あなたの合計" : "合計点" }), totalValue, el("span", { text: "/ " + rules.max + "点" }), nextGoal,
+    ]);
+  if (!scorePill) heading.insertBefore(total, round);
+  const scoreFigures = scorePill ? el("section.axe-score-figures", { "aria-label": "得点" }, [
+    el("div.axe-score-reading", { dataset: { reading: "latest" } }, [scoreLatestLabel, scoreLatest]),
+    total,
+    versus ? el("div.axe-score-reading", { dataset: { reading: "opponent" } }, [el("span", { text: rivalName }), scoreOpponent]) : null,
+    scoreRound,
+  ]) : null;
   const heat = el("span.axe-heat", { hidden: true, "aria-live": "polite", dataset: { test: "axe-heat" } });
   if (scorePill) scorePill.append(heat); else heading.insertBefore(heat, round);
   const scoreboard = el("div.axe-scoreboard", { role: "table", "aria-label": "各投の得点", dataset: { test: "axe-scoreboard" } });
@@ -552,8 +551,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     lifetime.signal.addEventListener("abort", () => clearTimeout(timer), { once: true });
     root.append(cutin);
   }
-  host.append(root);
-  if (tapPull) observePullTrackSize();
+  host.append(root); root.focus();
   if (tapPull) pullInput = attachAxePullInput({ root, board, handle: pullHandle, signal: lifetime.signal, target: TARGET,
     // 狙いはゲージで決める。的に触れても狙いは動かさず、投げる時（power）だけ上へ弾く
     aimOnTouch: false, canAim: () => false,
@@ -582,40 +580,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   window.addEventListener("blur", () => { windowFocused = false; pullInput?.cancel(); stamp = null; render(); }, { signal: lifetime.signal });
   window.addEventListener("focus", () => { windowFocused = true; stamp = null; render(); }, { signal: lifetime.signal });
   window.addEventListener("pagehide", () => cleanup(false), { signal: lifetime.signal });
-  loadArt();
-  // Focus can force layout; apply the initial loading DOM before doing so.
-  root.focus();
-  frame = requestAnimationFrame(tick); return promise;
-  function observePullTrackSize() {
-    const stage = root.closest("#stage");
-    let sizeFrame = 0, stageScale = Number(stage?.style.getPropertyValue("--k"));
-    const resize = () => {
-      if (!root.isConnected) return;
-      const { height } = root.getBoundingClientRect();
-      if (!height) return;
-      const cssScale = height / root.clientHeight || 1;
-      const trackHeight = Math.max(80, Math.min(180, height * .26)) / cssScale + "px";
-      if (pullTrack.style.height !== trackHeight) pullTrack.style.height = trackHeight;
-    };
-    // The release track is only a visual guide. Read its size after layout,
-    // never between the DOM writes in render() or in the moving aim loop.
-    const observer = new ResizeObserver(resize);
-    observer.observe(root, { box: "border-box" });
-    const queueResize = () => {
-      if (sizeFrame) return;
-      sizeFrame = requestAnimationFrame(() => { sizeFrame = 0; resize(); });
-    };
-    // ResizeObserver does not see the transform-only scale changes of #stage.
-    const unsubscribe = stage ? onStageFit(({ stage: fitted, k }) => {
-      if (fitted === stage && k !== stageScale) { stageScale = k; queueResize(); }
-    }) : null;
-    if (!stage) window.addEventListener("resize", queueResize, { signal: lifetime.signal });
-    lifetime.signal.addEventListener("abort", () => {
-      observer.disconnect();
-      unsubscribe?.();
-      cancelAnimationFrame(sizeFrame);
-    }, { once: true });
-  }
+  loadArt(); frame = requestAnimationFrame(tick); return promise;
   function showFace(face) {
     const art = faceArt(portraitKey, face);
     if (portrait.src === art.src) return;
@@ -906,6 +871,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const strength = power < POWER.stickMin ? "弱すぎる・落下" : power > POWER.stickMax ? "強すぎる・落下"
       : power >= POWER.sweetMin && power <= POWER.sweetMax ? "適正" : "刺さる回転";
     if (tapPull) {
+      const rect = root.getBoundingClientRect(), cssScale = rect.height / root.clientHeight || 1;
+      const distance = Math.max(80, Math.min(180, rect.height * .26)) / cssScale;
+      pullTrack.style.height = distance + "px"; // 弾く台: 取っ手は下に置いたまま（強さは右の回転ゲージに出る）
       pullHandle.disabled = actor !== "player" || phase !== "power" || isPaused() || choosingCall;
       pullHandle.style.backgroundColor = equipment.grip;
       root.dataset.rawPower = String(rawPower); root.dataset.pulling = String(Boolean(pullInput?.pulling));
@@ -1038,7 +1006,6 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       const values = [
         [scoreLatest, recent ? "+" + recent.score : "—"],
         [scoreLatestLabel, recent && versus ? (rivalLatest ? rivalName : "あなた") + "の投" : "直近"],
-        [scoreSum, totalValue.textContent],
         [scoreOpponent, versus ? String(totalOf(match.opponent)) : ""],
         [scoreRound, sd ? "延長" : roundNumber + " / " + rules.throws + " 投"],
       ];
@@ -1067,14 +1034,12 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     }
     // League-style scoreboard: one row per thrower, a divider at the half, calls as axe marks.
     const rows = versus ? ["player", "opponent"] : ["player"];
-    // Aiming changes the needle, not the active score tile. Keep the existing scoreboard DOM.
-    const showingScore = phase === "result" || phase === "summary";
-    const record = rows.map(id => (versus ? match[id] : shots).map(shot => shot.score + ":" + shot.outcome + ":" + (shot.called || "")).join(",")).join("|") + "|" + (match?.suddenDeath.map(r => (r.player?.score ?? "-") + "/" + (r.opponent?.score ?? "-")).join(",") || "") + ":" + showingScore + ":" + (phase === "summary") + ":" + actor + ":" + sd;
+    const record = rows.map(id => (versus ? match[id] : shots).map(shot => shot.score + ":" + shot.outcome).join(",")).join("|") + "|" + (match?.suddenDeath.map(r => (r.player?.score ?? "-") + "/" + (r.opponent?.score ?? "-")).join(",") || "") + ":" + phase + ":" + actor + ":" + sdRound;
     if (scoreboard.dataset.record !== record) {
       scoreboard.dataset.record = record;
       scoreboard.replaceChildren(...rows.map(id => {
         const list = versus ? match[id] : shots, mine = id === actor;
-        const current = showingScore ? list.length - 1 : list.length;
+        const current = ["result", "summary"].includes(phase) ? list.length - 1 : list.length;
         const ks = killState(list, rules.throws);
         const tiles = Array.from({ length: rules.throws }, (_, i) => el("span.axe-tile", {
           dataset: { outcome: list[i]?.outcome || "", filled: String(Boolean(list[i])), current: String(mine && !sd && i === current), half: String(halfOf(i, rules.throws)) },
