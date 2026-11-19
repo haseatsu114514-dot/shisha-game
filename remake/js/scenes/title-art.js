@@ -15,8 +15,8 @@ function latestSave() {
   try { return peekLatestSave(); } catch { return null; }
 }
 
-export function pickTitleArt() {
-  const pool = DB.manifest.titleArts || [];
+export function pickTitleArt(manifest = DB.manifest) {
+  const pool = manifest.titleArts || [];
   const keyArt = (id) => pool.find((art) => art.character === id && art.file === TITLE_KEY_VISUALS[id]);
   const characters = titleArtDisplayCharacters(latestSave()).filter((id) => keyArt(id));
   if (!characters.length) return fallback();
@@ -27,8 +27,8 @@ export function pickTitleArt() {
   return { ...art, url: assetUrl(`ui/title_arts/${art.file}`) };
 }
 
-export async function prepareTitleArt(art = pickTitleArt()) {
-  if (await imageReady(art.url, 15000)) return { ...art, ready: true };
+export async function prepareTitleArt(art = pickTitleArt(), timeoutMs = 15000) {
+  if (await imageReady(art.url, timeoutMs)) return { ...art, ready: true };
   const backup = fallback();
   await imageReady(backup.url, 15000);
   return { ...backup, ready: true };

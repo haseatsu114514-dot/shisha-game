@@ -43,6 +43,7 @@ const title = elements.at(-1);
 assert.equal(title.src, "/title.mp3"); assert.equal(title.preload, "auto");
 assert.equal(settled, false); assert.equal(title.plays, 0); assert.equal(elements.length, 1);
 ready(title); assert.equal(await preparation, true); assert.equal(await duplicate, true);
+audio.unlockAudio(); // タイトル曲は最初の操作を受けてから再生する。
 audio.playBgm("title"); await flush();
 assert.equal(elements.length, 1); assert.equal(title.plays, 1); assert.equal(title.loop, true);
 now = 1500; frames.splice(0).forEach(fn => fn()); assert.equal(title.volume, .5);
