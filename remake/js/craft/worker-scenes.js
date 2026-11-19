@@ -12,7 +12,9 @@ export const WORKER_SCENES = Object.freeze({
   inhale: { file: "hajime_craft_pull.png", description: "はじめがハンドル先端の吸い口から吸っている" },
 });
 
-export function workerSceneKey(step, draw) {
+export function workerSceneKey(step, draw, mode) {
+  // 初回の配合は手本を聞く場面。考え込む作業絵は通常練習・大会に残す。
+  if (mode === "tutorial" && step === "mix") return null;
   if (["pull", "care", "serve"].includes(step)) return draw ? "inhale" : "pull";
   return WORKER_SCENES[step] ? step : null;
 }
