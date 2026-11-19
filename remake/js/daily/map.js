@@ -96,11 +96,13 @@ const backgroundOf = (region) => typeof region?.background === "function" ? regi
  */
 export async function chooseSpot(opts = {}) {
   // 初回だけ: 看板の顔とスロットの図柄が読めてから地図を出す（遅い回線でも最大2秒・GUI20・21）
-  const ready = () => Promise.all([uiArtReady(), storeLogosReady(), imageReady(FACILITY_SHEET, 2000, { keep: true }), setBg(backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`), { fast: true, brief: true })]);
+  const url = backgroundOf(regionOf(opts)) || bgUrl(`bg_osu_map_${timeOfDay()}`);
+  const backdrop = setBg(url, { fast: true, brief: true, mapBackdrop: true });
+  const ready = () => Promise.all([uiArtReady(), storeLogosReady(), imageReady(FACILITY_SHEET, 2000, { keep: true }), backdrop]);
   // プレイヤーの既定では、0.5秒を超えた待ちに作業台と同じ漫画つきのロード画面を出す（core/ui.js の loadingNotice）。
   if (comicLoadingRequired()) {
     await withLoadingNotice(ready(), loadingNotice("マップを準備しています…"));
-    return await openMap(opts);
+    return await openMap(opts, url, backdrop);
   }
   let notice = null;
   const timer = setTimeout(() => {
@@ -110,7 +112,7 @@ export async function chooseSpot(opts = {}) {
   try {
     await ready();
   } finally { clearTimeout(timer); notice?.remove(); }
-  return await openMap(opts);
+  return await openMap(opts, url, backdrop);
 }
 
 /** 行き先の場面を「移動」の幕で開く。押したピンの位置と、看板に出ている行き先の名前を渡す（core/transition-moves.js） */
@@ -171,19 +173,57 @@ function fitMapCrop(pins) {
   stage.style.setProperty("--map-crop", `${Math.round(crop)}px`);
 }
 
-function openMap({ notice = "", reminder = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null, visitBlock = null, regions = null, regionId = null, onRegionChange = null }) {
+function openMap({ notice = "", reminder = "", eventPin = null, guide = null, onShown = null, onBeforeGo = null, visitBlock = null, regions = null, regionId = null, onRegionChange = null }, initialUrl, initialBackdrop) {
   return new Promise((resolve) => {
     const night = timeOfDay() === "night";
     const tod = night ? "night" : "day";
     let region = regionOf({ regions, regionId });
     const mapSpots = () => region ? typeof region.spots === "function" ? region.spots() : region.spots : allSpots();
-    const setMapBackground = () => setBg(backgroundOf(region) || bgUrl(`bg_osu_map_${tod}`), { fast: true });
-    void setMapBackground();
     updateHud();
     const info = el("div.map-info");
     const pins = el("div.map-pins");
     let selected = null;
     const owner = state;
+    // Own the pending image by the mounted map and region, not by the shared background layer.
+    // A late image after entering a shop, changing region, or loading another save has no authority to draw.
+    let backdropRevision = 0;
+    const message = el("span", { role: "status" });
+    const retry = el("button", { type: "button", text: "地図を再読み込み", dataset: { test: "map-backdrop-retry" } });
+    const mapStatus = el("div.map-backdrop-note", { hidden: true, dataset: { test: "map-backdrop-status" } }, [message, retry]);
+    const recoverBackdrop = (url, task) => {
+      const revision = ++backdropRevision;
+      mapStatus.hidden = true;
+      if (task.isShown?.() !== false) return;
+      const active = () => revision === backdropRevision && state === owner && root.isConnected && !root.classList.contains("done");
+      const failed = () => {
+        message.textContent = "地図の背景を表示できません。";
+        retry.hidden = !url;
+      };
+      const watch = async (transfer) => {
+        message.textContent = "地図を読み込み中…";
+        retry.hidden = true;
+        if (!transfer || !await transfer) { if (active()) failed(); return; }
+        if (!active()) return;
+        const draw = setBg(url, { instant: true, mapBackdrop: true });
+        await draw;
+        if (!active()) return;
+        if (draw.isShown()) mapStatus.hidden = true;
+        else failed();
+      };
+      mapStatus.hidden = false;
+      retry.onclick = () => { if (active() && !retry.hidden) void watch(imageReady(url, null)); };
+      const pending = imageReady.pending(url);
+      if (pending) void watch(pending);
+      else failed();
+    };
+    const setMapBackground = async () => {
+      ++backdropRevision;
+      mapStatus.hidden = true;
+      const url = backgroundOf(region) || bgUrl(`bg_osu_map_${tod}`);
+      const task = setBg(url, { fast: true, mapBackdrop: true });
+      await task;
+      if (state === owner && root.isConnected && !root.classList.contains("done")) recoverBackdrop(url, task);
+    };
     let stationTrip = null;
     let revealing = false;
     let stopReveal = () => {};
@@ -547,13 +587,14 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
       rainy ? el("div.map-weather") : null, // 雨の日のオーバーレイ（ピンより下・操作を邪魔しない）
       pins,
       notice ? el("div.map-notice", { text: notice }) : null,
-      revealNotice,
+      revealNotice, mapStatus,
       guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [el("b", { text: "GUIDE" }), el("span", { text: guide.text })]) : null,
       info,
     ]);
     if (region) root.dataset.region = region.id;
     renderPins();
     showScreen("map", root);
+    recoverBackdrop(initialUrl, initialBackdrop);
     // ワイドステージでは絵とピンを横いっぱいに拡大し、上下の切り方をピンの位置から決める（画面の向き・大きさが変わったら決め直す）
     const refit = () => { if (!root.isConnected) { globalThis.removeEventListener?.("resize", refit); return; } fitMapCrop(pins); };
     globalThis.addEventListener?.("resize", refit);
