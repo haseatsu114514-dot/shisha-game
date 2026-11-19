@@ -1380,7 +1380,9 @@ function showIntro() {
     };
     // クリックの入口は1つ。ボタンはブラウザのEnter/Spaceで同じ入口を通る。
     box.addEventListener("click", (event) => {
-      if (closed || !box.isConnected || event.detail > 1) return; // 連打の2打目で次ページまで飛ばさない
+      // マウスのダブルクリックだけ2打目を抑制。タッチでは別々のタップも連続クリックとして数えられる。
+      const isTouch = event.pointerType === "touch" || event.sourceCapabilities?.firesTouchEvents === true;
+      if (closed || !box.isConnected || (!isTouch && event.detail > 1)) return;
       if (state !== owner) { close(false); return; }
       i += 1;
       if (i === 2) SE.puka();
