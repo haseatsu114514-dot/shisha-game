@@ -66,7 +66,7 @@ const HAND_SILHOUETTE = [
   "Q773 390 769 402 Q765 412 777 424 Q764 423 761 434 Q757 445 768 452",
   "Q755 454 757 465 Q758 476 769 482 L756 507 Q738 507 722 508",
   "Q711 509 704 526 Q691 542 680 565 Q670 585 640 607 Q621 605 604 621",
-  "Q569 646 548 660 L478 720 H677 Q692 705 695 682 Q701 694 734 702",
+  "Q591 635 581 642 L565 655 Q551 661 544 666 L478 720 H677 Q692 705 695 682 Q701 694 734 702",
   "Q750 707 755 689 L763 645 Q782 649 788 636 L787 628 Q798 623 797 611",
   "L795 606 Q809 601 806 582 L805 578 Q819 575 811 561 Q817 543 802 532",
   "L817 502 Q839 516 878 552 Q875 575 890 596 Q931 646 960 720 H1263",
@@ -278,8 +278,16 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   let laneAimImage = null, handFront = null, handFrontImage = null;
   if (tapPull) {
     const w = 1000 * FPS_LANE_ZOOM, h = w * 9 / 16;
-    artBoard.insertBefore(svg("image", { class: "axe-lane-bg", href: ART.lane,
-      x: CX - w / 2, y: FPS_CENTER_Y - h / 2, width: w, height: h }), artBoard.firstChild);
+    // Frame the foreground from the rear floor joint to just inside the painted foul line.
+    // Only the floor crop changes; board, reticle, camera origin and hands keep their own transforms.
+    const lane = svg("svg", { class: "axe-lane-bg", x: CX - w / 2, y: FPS_CENTER_Y - h / 2,
+      width: w, height: h, viewBox: "0 0 1280 720", overflow: "hidden" });
+    const laneId = artId + "-lane";
+    lane.append(svg("image", { id: laneId, href: ART.lane, width: 1280, height: 720 }),
+      svg("svg", { y: 482, width: 1280, height: 238, viewBox: "0 482 1280 154", preserveAspectRatio: "none", overflow: "hidden" }, [
+        svg("use", { href: "#" + laneId }),
+      ]));
+    artBoard.insertBefore(lane, artBoard.firstChild);
 
     // The aiming photo includes the lane. Reuse only the foreground at its original size and position.
     const handId = artId + "-hands", clipId = handId + "-outline", frontId = handId + "-front";
@@ -355,6 +363,23 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const contactShadow = svg("ellipse", { class: "axe-contact-shadow", rx: 0, ry: 0, fill: `url(#${shadowId})`, opacity: 0 });
   // 宣言した青を囲む輪。光らせる効果（filter）の代わりに線で描く。
   const calledRing = svg("circle", { class: "axe-called-ring", r: KILLS[0].outer * R + 5, fill: "none", stroke: "#fff5b1", "stroke-width": 3, opacity: 0 });
+  const callLight = svg("g", { class: "axe-call-light", fill: "none", "pointer-events": "none", "aria-hidden": "true" });
+  // One short cue at the chosen blue or the blade contact. It never enters the scoring art used by the zoom.
+  function lightCall(kind, point) {
+    callLight.replaceChildren();
+    if (!point || !tapPull || actor !== "player" || suddenDeath()) return;
+    callLight.setAttribute("transform", `translate(${CX + point.x * R} ${CY + point.y * R})`);
+    const iris = svg("g", { class: "axe-call-iris", "data-cue": kind }, [
+      svg("circle", { r: 25, "stroke-width": 7, opacity: .32 }),
+      svg("circle", { r: 25, "stroke-width": 2 }),
+      svg("path", { d: "M-42 0h10M32 0h10M0 -42v10M0 32v10", "stroke-width": 3, "stroke-linecap": "round" }),
+    ]);
+    if (kind === "hit") {
+      iris.append(svg("path", { d: "M-42 -23l-10 -7m18 59-9 10m56-75 6-13m16 67 12 9m6-49 10-4",
+        stroke: "#fff5c9", "stroke-width": 3, "stroke-linecap": "round" }));
+    }
+    callLight.append(iris);
+  }
   const bladePx = BLADE.halfLength * R;
   // The white blade marker is the 4 in cutting edge: the highest zone it touches scores.
   // A dark outline under the white blade keeps it readable on light and dark wood alike.
@@ -406,7 +431,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const sdBadge = svg("text", { class: "axe-sd-badge", x: CX, y: VIEW.y + 26, "text-anchor": "middle", fill: "#9cecff", "font-size": 22, "font-weight": 900, opacity: 0 }, ["SUDDEN DEATH"]);
   const gaugeLabel = (x, y, text, fill, anchor, step) => svg("text", { class: "axe-gauge-label", "data-gauge": step, x, y, "text-anchor": anchor, fill, "font-size": 22, "font-weight": 900,
     "paint-order": "stroke", stroke: "#140d08", "stroke-width": 4 }, [text]);
-  board.append(zoneHalo, calledRing, powerShift, releaseDot, contactShadow, impacts, impactMark, trail, ...ghosts, flying, fixedAim, crosshair, flickHint, impactFx,
+  board.append(zoneHalo, callLight, calledRing, powerShift, releaseDot, contactShadow, impacts, impactMark, trail, ...ghosts, flying, fixedAim, crosshair, flickHint, impactFx,
     ...(tapPull ? [] : [
       gaugeLabel(CX, VIEW.y + VIEW.size - 10, "↔ 横", "#a9dcef", "middle", "horizontal"),
       gaugeLabel(VIEW.x + VIEW.size - 8, CY - 26, "↕ 縦", "#f1c983", "end", "vertical"),
@@ -485,11 +510,10 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     el("span.axe-sweet", { style: { "--from": POWER.sweetMin * 100 + "%", "--size": (POWER.sweetMax - POWER.sweetMin) * 100 + "%" } }), powerFill, needle]);
   const pullHandle = el("button.axe-pull-handle", { type: "button", "aria-label": "上へ素早く弾いて投げる（狙いはそのまま）。Space長押しでも投げられます", dataset: { test: "axe-pull-handle" } }, [
     el("span.axe-flick-emblem", { "aria-hidden": "true" }, [
-      svg("svg", { viewBox: "0 0 64 48", class: "axe-flick-arrows" }, [
-        svg("path", { d: "m7 32 25-23 25 23-25-11z", fill: "#fff2c2", stroke: "#51331d", "stroke-width": 2.5 }),
-        svg("path", { d: "m14 43 18-16 18 16-18-7z", fill: "#ecc58c", stroke: "#51331d", "stroke-width": 2 }),
+      svg("svg", { viewBox: "0 0 152 152", class: "axe-flick-arrows", fill: "none" }, [
+        svg("path", { d: "M25 113C9 83 18 48 52 27M28 125C5 99 3 64 15 40", stroke: "#eed49a", "stroke-width": 3, "stroke-linecap": "round" }),
+        svg("image", { x: 44, y: 10, width: 79, height: 125, transform: "rotate(22 83 78)", href: imgFileUrl("ui/axe_throw/throwing_axe.webp") }),
       ]),
-      el("i.axe-flick-token"),
     ]),
   ]);
   const green = axeGreenBand(gearId);
@@ -721,7 +745,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     }
     callToggle.focus({ preventScroll: true });
     calledPlace.textContent = id ? "キルショット、" + killPlaces[id] : "通常投げ";
+    lightCall(previous ? "turn" : "declare", KILLS.find(point => point.id === id));
     if (!id) { clearDeclareCue(); return; }
+    unlockAudio();
     showDeclareCue(previous
       ? { kind: "retarget", target: id, label: killPlaces[id], duration: 320 }
       : { kind: "challenge", target: id, label: "キルショット", place: "挑戦", duration: 1000 });
@@ -736,7 +762,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     root.append(declareNode);
     // 宣言は刃を構える「チャキッ」、最後の1投・持ち替え・延長戦は太鼓、目標達成は「シャーン」（2026-11-11 オーナー「効果音しょぼかったり」）。
     // 弾き損ねの札は軽い選択音だけ（失敗を責める音にしない）
-    if (cue.kind === "flick" || cue.kind === "retarget") SE.select();
+    if (cue.kind === "challenge") {
+      playAxeSe("cueDrum", { rate: 1.18 });
+      playAxeSe("call");
+    } else if (cue.kind === "retarget") playAxeSe("stop", { rate: 1.35 });
+    else if (cue.kind === "flick") SE.select();
     else playAxeSe(cue.kind === "goal" ? "cueClear" : cue.kind === "last" || cue.kind === "half" ? "cueDrum" : "call");
     declareTimer = setTimeout(clearDeclareCue, cue.duration || C.declare);
   }
@@ -794,12 +824,14 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   function setPhase(next) {
     clearDeclareCue();
     phase = next; elapsed = 0; stamp = null;
+    if (next === "choice" || next === "opponent-ready" || next === "summary") callLight.replaceChildren();
     if (next === "choice" && actor === "player" && suddenDeath()) called = suddenDeathTarget(match.suddenDeath.length);
     if (next === "summary") { recordGame(); summaryJingle(); }
     if (next === "power" && showsFlickHint()) playFlickHint();
     phaseCue(next);
     if (next === "flight") {
       root.dataset.slowMotion = String(Boolean(pending.called) && !reducedMotion);
+      if (pending.called) lightCall("release", KILLS.find(point => point.id === pending.called));
       contacted = null; holdFrame = 0;
       for (const node of [flying, ...ghosts]) setAxePalette(node, actor === "player" ? equipment : null);
       const pose = flightPose(pending, reducedMotion ? FLIGHT.travel + FLIGHT.fall : 0);
@@ -1215,7 +1247,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     stability.setAttribute("aria-label", remaining > 0 ? "集中の残り時間" : "腕の安定");
     stability.setAttribute("aria-valuenow", String(Math.round(stabilityValue * 100)));
     const focusText = remaining > 0 ? "集中中" : focusUsed ? "集中は使用済み" : "息を整える · 1回";
-    const focusCaption = tapPull && !focusUsed ? "集中" : focusText;
+    const focusCaption = tapPull ? (remaining > 0 ? "集中中" : focusUsed ? "使用済み" : "集中") : focusText;
     if (focusButton.textContent !== focusCaption) focusButton.textContent = focusCaption;
     if (tapPull && focusButton.getAttribute("aria-label") !== focusText) focusButton.setAttribute("aria-label", focusText);
     const steadyText = remaining > 0 ? "集中 · あと" + (remaining / 1000).toFixed(1) + "秒"
@@ -1364,6 +1396,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       // 柄から当たる・回りすぎは「コンッ」。床に落ちた時の「ガシャン」は下の drop（板の外は跳ね返らない）。
       if (display >= FLIGHT.travel && contacted !== pending) {
         contacted = pending;
+        if (pending.called && actor === "player" && !suddenDeath()) {
+          const hit = pending.outcome === "killshot";
+          lightCall(hit ? "hit" : "miss", hit ? pending.landing : KILLS.find(point => point.id === pending.called));
+          if (tapPull && !hit) playAxeSe("stop", { rate: .68 });
+        }
         if (pending.stuck) playAxeSe(pending.outcome === "killshot" ? "killshot" : "stick", { scored: pending.score > 0, rate: gear?.stickRate || 1 });
         else if (pending.dropReason !== "off-board") playAxeSe("bounce");
       }

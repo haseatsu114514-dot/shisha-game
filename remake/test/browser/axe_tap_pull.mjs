@@ -249,11 +249,13 @@ await suite('axe-tap-pull-aim-guide', async check => {
       return { x: (target.x / AIM_RANGE + 1) / 2, y: (target.y / AIM_RANGE + 1) / 2 };
     });
     await picker.click();
+    assert.equal(await page.locator('.axe-call-iris').getAttribute('data-cue'), 'declare');
     await stanceAt(page, blue);
     await flickFromHandle(page);
     await page.clock.runFor(2300);
     await phase(page, 'result');
     assert.equal(await remaining(), '1');
+    assert.equal(await page.locator('.axe-call-iris').getAttribute('data-cue'), 'hit');
     assert.equal(await root(page).getAttribute('data-outcome'), 'killshot');
     assert.equal(await page.locator('[data-test="axe-call-verdict"]').getAttribute('data-result'), 'hit');
     await ready(page).click();
@@ -268,6 +270,7 @@ await suite('axe-tap-pull-aim-guide', async check => {
     await page.clock.runFor(2300);
     await phase(page, 'result');
     assert.equal(await root(page).getAttribute('data-outcome'), 'killshot-miss');
+    assert.equal(await page.locator('.axe-call-iris').getAttribute('data-cue'), 'miss');
     assert.equal(await page.locator('[data-test="axe-call-verdict"]').getAttribute('data-result'), 'miss');
     assert.equal(await remaining(), '0');
     await ready(page).click();
@@ -303,10 +306,12 @@ await suite('axe-tap-pull-aim-guide', async check => {
       assert.equal(await cancel.isVisible(), Boolean(id));
       assert.equal(await remaining.getAttribute('data-remaining'), '2');
       if (id) {
+        assert.equal(await page.locator('.axe-call-iris').getAttribute('data-cue'), index ? 'turn' : 'declare');
         assert.equal(await picker.locator('.selected').getAttribute('data-blue'), id);
         assert.equal(await page.locator('.axe-declare').getAttribute('data-kind'), index ? 'retarget' : 'challenge');
       }
     }
+    assert.equal(await page.locator('.axe-call-iris').count(), 0);
     await picker.focus();
     await page.keyboard.press('Space');
     assert.equal(await root(page).getAttribute('data-called'), 'upper-left');
