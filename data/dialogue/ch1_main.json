@@ -1299,6 +1299,82 @@
       ]
     },
     {
+      "dialogue_id": "ch1_tutorial_oneesan_dry",
+      "metadata": {},
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お姉さんが吸い口を離した。煙は出ていない。"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "ura_normal",
+          "text": "……あれ。まだ煙が出ないみたい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません。熱が入る前に出してしまって"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "ura_smile",
+          "text": "うん。急がなくていいよ、新人くん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お姉さんは、吸い口をそっと皿に戻した。"
+        },
+        {
+          "type": "choice",
+          "id": "oneesan_praise_feel",
+          "choices": [
+            {
+              "text": "（次は、ちゃんと煙を出そう）",
+              "next": "op_talent"
+            },
+            {
+              "text": "（今の一台をスミさんに相談しよう）",
+              "next": "op_report"
+            }
+          ]
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……次は、ちゃんと確かめます"
+        }
+      ],
+      "branches": {
+        "op_talent": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "次は、俺が先に一口確かめます"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "そうしろ。お客さんの一口目で試すな"
+          }
+        ],
+        "op_report": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "スミさん、煙が出ませんでした"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "熱が入ってねえな。次は、出す前に確かめろ"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "ch1_tutorial_oneesan",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside.png"

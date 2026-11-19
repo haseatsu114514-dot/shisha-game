@@ -1291,7 +1291,7 @@ export function openNote() {
   });
 }
 
-// 初回のみ: パッキーのアプリ説明（4行・タップ送り）
+// 初回のみ: パッキーのアプリ説明（タップ・キー送り）
 const INTRO_LINES = [
   "ボクはパッキー！ C.STATIONのシーシャ大会を盛り上げる、煙のマスコットだよ。よろしくね！",
   "ぷぷぷっ！ C.STATION公式アプリ『MOKUMOKUパッキー』、インストール完了〜！",
@@ -1335,17 +1335,22 @@ function showIntro() {
   if (growthEnabled()) lines[lines.length - 1] = "図柄が揃うと経験値が入るよ！ ボクの顔をタップすると、記録ノートも見られるよ！";
   const pages = [...lines.map((text) => ({ text })), { card: true }];
   return new Promise((resolve) => {
-    let i = 0;
-    const text = el("p.ri-text");
+    let i = 0, closed = false;
+    const previousFocus = document.activeElement;
+    const text = el("div.ri-text", { "aria-live": "polite" });
     const face = pakkiFace(".big");
     const app = el("span.ri-app", { text: "MOKUMOKUパッキー" });
-    const panel = el("div.ri-panel", [
-      el("div.ri-head", [face, app]),
-      text,
-      el("span.ri-next", { text: "▼ タップ" }),
-    ]);
-    const box = el("div.reel-intro", { role: "dialog", "aria-label": "MOKUMOKUパッキーの説明", dataset: { test: "reel-intro" } }, [panel]);
+    const next = el("button.btn.ri-next", {
+      type: "button", dataset: { test: "reel-intro-next" },
+      style: { marginLeft: "auto", minHeight: "calc(44px / var(--k, 1))" },
+    });
+    const panel = el("div.ri-panel", [el("div.ri-head", [face, app]), text, next]);
+    const box = el("div.reel-intro", {
+      role: "dialog", "aria-modal": "true", "aria-label": "MOKUMOKUパッキーの説明", dataset: { test: "reel-intro" },
+    }, [panel]);
     const close = (read) => {
+      if (closed) return;
+      closed = true;
       unsubscribe();
       if (box.parentElement === layers.modal) {
         box.remove();
@@ -1355,6 +1360,10 @@ function showIntro() {
         owner.reel.introDone = true;
         owner.reel.settingGuideDone = true;
         save();
+      }
+      // LOADで捨てた画面や、閉じる直前に別の画面に移った場合はフォーカスを戻さない。
+      if (state === owner && !layers.modal.childElementCount && previousFocus?.isConnected) {
+        previousFocus.focus?.({ preventScroll: true });
       }
       resolve(read);
     };
@@ -1367,18 +1376,32 @@ function showIntro() {
       panel.classList.toggle("sys", !!page.card);
       face.style.display = page.card ? "none" : ""; // .rw-face の display:block が hidden に勝つため
       app.textContent = page.card ? "パッキースロットの遊び方" : "MOKUMOKUパッキー";
+      next.textContent = page.card ? "説明を閉じる" : "次へ";
     };
-    render();
-    layers.modal.replaceChildren(box);
-    layers.modal.classList.add("show");
-    SE.phone();
-    box.onclick = () => {
+    // クリックの入口は1つ。ボタンはブラウザのEnter/Spaceで同じ入口を通る。
+    box.addEventListener("click", (event) => {
+      if (closed || !box.isConnected || event.detail > 1) return; // 連打の2打目で次ページまで飛ばさない
       if (state !== owner) { close(false); return; }
       i += 1;
       if (i === 2) SE.puka();
       if (i < pages.length) { render(); SE.click(); return; }
       close(true);
-    };
+    });
+    box.addEventListener("keydown", (event) => {
+      if (event.key === "Tab") {
+        event.preventDefault(); // ダイアログ中の操作先は1つ。背面の選択肢に移らない。
+        next.focus({ preventScroll: true });
+      }
+      if (!["Tab", "Enter", " "].includes(event.key)) return;
+      event.stopPropagation();
+      if (event.repeat) event.preventDefault();
+    });
+    box.addEventListener("keyup", (event) => { if (event.key === "Enter" || event.key === " ") event.stopPropagation(); });
+    render();
+    layers.modal.replaceChildren(box);
+    layers.modal.classList.add("show");
+    next.focus({ preventScroll: true });
+    SE.phone();
   });
 }
 
