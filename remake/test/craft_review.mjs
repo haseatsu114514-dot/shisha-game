@@ -23,7 +23,7 @@ for (const [label, key, safe] of roundCases) {
   for (const [temp, text] of [[bands.ideal[0] - .01, "少し熱を戻して"], [bands.ideal[1] + .01, "少し下げて"]]) {
     assert.match(improvementOf(withRound(key, { temp, pulls: safe + 1 })), new RegExp(`${label}.*${text}`), `${label}: temperature mismatch must precede excessive pulls`);
   }
-  for (const [failed, failedTemp, text] of [["cold", .04, "冷え切る前に炭を交換"], ["burnt", 1, "熱が上がり切る前に熱を逃がす吸い"]]) {
+  for (const [failed, failedTemp, text] of [["cold", .04, "冷え切る前に炭を交換"], ["burnt", 1, "熱が上がり切る前に下げ吸い"]]) {
     for (const temp of [failedTemp, undefined]) {
       assert.match(improvementOf(withRound(key, { failed, temp, pulls: safe + 1 })), new RegExp(`${label}.*${text}`), `${label}: recorded ${failed} failure must precede excessive pulls`);
     }
