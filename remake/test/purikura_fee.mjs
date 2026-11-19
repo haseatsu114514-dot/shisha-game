@@ -12,7 +12,7 @@ const clone = o => JSON.parse(JSON.stringify(o));
 async function fixture() {
  let state={chapter:2,day:2,slot:0,phase:'daily',money:1000,stamina:77,inventory:{lemon:12},story:{ageha:1},keepsakes:[],flags:{_ageha_first_purikura:true,_ageha_purikura_offer:'2:1:0'}};
  const log=[],saved=[],memory=new Map();let mode='solo',guest='kumicho',playImpl=async id=>({id,visited:[]}),modalImpl=null;
- let present=[{id:'kumicho',role:'guest',known:true,name:'神崎'},{id:'rei',role:'guest',known:true,name:'クラウド'}];
+ let present=[{id:'kumicho',role:'guest',known:true,name:'神崎'},{id:'kuraudo',role:'guest',known:true,name:'クラウド'}];
  const ctx=vm.createContext({console,WeakSet});
  const fixed=(id,values)=>new vm.SyntheticModule(Object.keys(values),function(){for(const [k,v] of Object.entries(values))this.setExport(k,v);},{context:ctx,identifier:id});
  let stateModule=fixed('core/state.js',{state,save:()=>{saved.push(clone(state));memory.set('save',JSON.stringify(state));}});
@@ -27,7 +27,7 @@ async function fixture() {
   if(o.options.some(x=>x.test?.startsWith('purikura-with-')))return guest;
   return mode;
  }})],
- ['core/data.js',fixed('core/data.js',{DB:{characters:{hajime:{},ageha:{},kumicho:{},rei:{}}},displayName:id=>id,portraitInfo:id=>({src:id+'.webp'})})],
+ ['core/data.js',fixed('core/data.js',{DB:{characters:{hajime:{},ageha:{},kumicho:{},kuraudo:{}}},displayName:id=>id,portraitInfo:id=>({src:id+'.webp'})})],
  ['core/util.js',fixed('core/util.js',{el})],
  ['core/bus.js',fixed('core/bus.js',{emit:(...args)=>log.push({kind:'emit',args})})],
   ['daily/spot-people.js',fixed('daily/spot-people.js',{spotPeople:()=>present})],
@@ -74,7 +74,7 @@ await check('shop visit cost and 200-yen return fare remain reserved',async f=>{
  f.state.money=3600;assert.equal(await f.offer(undefined,spot),true);assert.equal(f.state.money,3200);assert.equal(f.state.flags._ageha_purikura_history.length,1);
 });
 await check('mode and partner changes do not renew free service; history survives isolated JSON LOAD',async f=>{
- for(const [mode,guest] of [['solo',null],['pair',null],['guest','rei'],['guest','kumicho']]){
+ for(const [mode,guest] of [['solo',null],['pair',null],['guest','kuraudo'],['guest','kumicho']]){
   f.state.money=999999;f.setMode(mode);f.setGuest(guest);const before=f.state.flags._ageha_purikura_history?.length||0;
   assert.equal(await f.offer(),true);assert.equal(f.state.money,999599);assert.equal(f.state.flags._ageha_purikura_history.length,before+1);
   const row=f.state.flags._ageha_purikura_history.at(-1);assert.equal(row.mode,mode);assert.equal(row.people.join(','),mode==='solo'?'hajime':`hajime,${mode==='pair'?'ageha':guest}`);
@@ -113,7 +113,7 @@ await check('same-owner day advance during shot cannot commit to a new visit',as
 await check('receipt cancel can retry without charge; only normal receive advances solo history',async f=>{let cancel=true;f.setModal(o=>o.options.some(x=>x.test==='purikura-receive')?(cancel?null:true):'solo');assert.equal(await f.offer(),false);assert.equal(f.state.flags._ageha_purikura_history,undefined);cancel=false;assert.equal(await f.offer(),true);assert.equal(f.state.money,600);assert.equal(f.state.flags._ageha_purikura_history.length,1);});
 await check('display declares 400yen before mode choice and at receipt',async f=>{await f.offer();const choice=f.log.find(l=>l.title==='プリクラ、撮っていく？');assert.match(choice.body,/400円/);assert.doesNotMatch(choice.body,/追加の代金.*使いません/);assert(choice.options.filter(o=>o.value).every(o=>/400円/.test(o.label)));assert(f.log.find(l=>l.options?.some(o=>o.test==='purikura-receive')).options[0].label.includes('400円'));});
 await check('existing photo history and unrelated keepsakes are preserved',async f=>{
- const old={chapter:2,day:1,slot:1,people:['hajime','rei'],mode:'guest'};f.state.flags._ageha_purikura_history=[clone(old)];f.state.keepsakes=['ageha_first_purikura','minto_first_cheki'];
+ const old={chapter:2,day:1,slot:1,people:['hajime','kuraudo'],mode:'guest'};f.state.flags._ageha_purikura_history=[clone(old)];f.state.keepsakes=['ageha_first_purikura','minto_first_cheki'];
  f.setMode('pair');assert.equal(await f.offer(),true);assert.deepEqual(f.state.flags._ageha_purikura_history[0],old);assert.equal(f.state.flags._ageha_purikura_history.length,2);assert.deepEqual(f.state.keepsakes,['ageha_first_purikura','minto_first_cheki']);assert.equal(f.state.money,600);
 });
 await check('funds lost while receiving do not create photo or overdraw reserved costs',async f=>{
@@ -136,22 +136,22 @@ for(const cancel of [false,true])await check(`existing Ryuji greeting stays sepa
 });
 // #3468 A案: クラウドの挨拶回。場面の中で撮るので、料金・思い出の品・撮影履歴は動かさない。組長の挨拶と同じ日には重ねない。
 await check('Cloud greeting plays once, later day than Ryuji, and costs nothing',async f=>{
- f.state.met={ageha:true,kumicho:true,rei:true};f.state.flags._ch2_day1={startDay:1};f.setMode(null);
+ f.state.met={ageha:true,kumicho:true,kuraudo:true};f.state.flags._ch2_day1={startDay:1};f.setMode(null);
  assert.equal(await f.offer(),true);assert.equal(f.state.flags._ryuji_melty_greeting,true);
- assert.equal(f.log.filter(l=>l.id==='remake_ch2_rei_melty_greeting').length,0,'not on the Ryuji greeting visit');
- f.state.slot=1;assert.equal(await f.offer(),true);assert.equal(f.log.filter(l=>l.id==='remake_ch2_rei_melty_greeting').length,0,'not later on the same day');
+ assert.equal(f.log.filter(l=>l.id==='remake_ch2_kuraudo_melty_greeting').length,0,'not on the Ryuji greeting visit');
+ f.state.slot=1;assert.equal(await f.offer(),true);assert.equal(f.log.filter(l=>l.id==='remake_ch2_kuraudo_melty_greeting').length,0,'not later on the same day');
  f.state.slot=0;f.next();const before=clone({money:f.state.money,keepsakes:f.state.keepsakes,history:f.state.flags._ageha_purikura_history||null});
- assert.equal(await f.offer(),true);assert.equal(f.log.filter(l=>l.id==='remake_ch2_rei_melty_greeting').length,1);assert.equal(f.state.flags._rei_melty_greeting,3);
+ assert.equal(await f.offer(),true);assert.equal(f.log.filter(l=>l.id==='remake_ch2_kuraudo_melty_greeting').length,1);assert.equal(f.state.flags._kuraudo_melty_greeting,3);
  assert.deepEqual(clone({money:f.state.money,keepsakes:f.state.keepsakes,history:f.state.flags._ageha_purikura_history||null}),before);
- f.next();assert.equal(await f.offer(),true);assert.equal(f.log.filter(l=>l.id==='remake_ch2_rei_melty_greeting').length,1,'once only');
+ f.next();assert.equal(await f.offer(),true);assert.equal(f.log.filter(l=>l.id==='remake_ch2_kuraudo_melty_greeting').length,1,'once only');
 });
 for(const met of [{ageha:true},{ageha:true,kumicho:true}])await check(`Cloud greeting needs Cloud met (${Object.keys(met)})`,async f=>{
  f.state.met=met;f.state.flags._ch2_day1={startDay:1};f.state.flags._ryuji_melty_greeting=true;f.setMode(null);f.next();
- assert.equal(await f.offer(),true);assert.equal(f.log.filter(l=>l.id==='remake_ch2_rei_melty_greeting').length,0);assert.equal(f.state.flags._rei_melty_greeting,undefined);
+ assert.equal(await f.offer(),true);assert.equal(f.log.filter(l=>l.id==='remake_ch2_kuraudo_melty_greeting').length,0);assert.equal(f.state.flags._kuraudo_melty_greeting,undefined);
 });
 await check('Cloud greeting cancel keeps it unread',async f=>{
- f.state.met={ageha:true,rei:true};f.state.flags._ch2_day1={startDay:1};f.setPlay(async id=>id==='remake_ch2_rei_melty_greeting'?{cancelled:true}:{id,visited:[]});
- assert.equal(await f.offer(),false);assert.equal(f.state.flags._rei_melty_greeting,undefined);assert.equal(f.state.money,1000);
+ f.state.met={ageha:true,kuraudo:true};f.state.flags._ch2_day1={startDay:1};f.setPlay(async id=>id==='remake_ch2_kuraudo_melty_greeting'?{cancelled:true}:{id,visited:[]});
+ assert.equal(await f.offer(),false);assert.equal(f.state.flags._kuraudo_melty_greeting,undefined);assert.equal(f.state.money,1000);
 });
 console.log(JSON.stringify({groups,failures,scope:'actual offer/keepsakes/travel/photo and actual addMoney; controlled VM/state/VN/UI/Map-JSON, not browser/menu LOAD'}));
 if(failures)process.exitCode=1;

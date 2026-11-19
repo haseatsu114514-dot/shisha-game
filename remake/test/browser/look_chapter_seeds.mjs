@@ -17,8 +17,8 @@ export async function seedChapterTwoFirstDay(page) {
     Object.assign(value, { chapter: 1, phase: "cleared", day: 14, slot: 2, money: 45678, stamina: 67 });
     value.owned.push("home_rig_set");
     Object.assign(value.flags, { _ev_midcheck: true, _ch1_preview_seen: true, _minto_name_known: true, _minto_identity_known: true,
-      _lime_tut: 1, _lime_opened: true, _intro_dr_kemuri: true });
-    value.met = { hajime: true, sumi: true, minto: true, tsumugi: true, dr_kemuri: true };
+      _lime_tut: 1, _lime_opened: true, _intro_dr_charcoal: true });
+    value.met = { hajime: true, sumi: true, minto: true, tsumugi: true, dr_charcoal: true };
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
     core.save();
     (await import("./js/chapters/ch1.js")).setupHooks();
@@ -36,12 +36,12 @@ export async function seedChapterTwoDaily(page) {
     const core = await import("./js/core/state.js");
     const value = core.newGame();
     Object.assign(value, { chapter: 2, phase: "daily", day: 15, slot: 2, money: 36000, stamina: 100, weatherSeed: 7, lastBaitoDay: 15 });
-    value.flags = { _rei_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: "complete", titleSeen: true },
+    value.flags = { _kuraudo_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: "complete", titleSeen: true },
       _ch2_city_visit_c_station: true, _lime_tut: 1, _lime_opened: true, _hiyori_meeting_done: true, _hiyori_message_delivered: true };
     value.stats = { technique: 31, sense: 31, guts: 31, charm: 31, insight: 31 };
-    value.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true, ageha: true, kumicho: true, rei: true, volk: true };
+    value.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true, ageha: true, kumicho: true, kuraudo: true, volk: true };
     value.contacts = ["sumi", "naru"];
-    for (const id of ["ageha", "kumicho", "rei"]) value.flags[`_intro_${id}`] = true;
+    for (const id of ["ageha", "kumicho", "kuraudo"]) value.flags[`_intro_${id}`] = true;
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
     core.save();
     (await import("./js/chapters/ch1.js")).setupHooks();
@@ -59,7 +59,7 @@ export async function seedChapterThree(page, { cards = false } = {}) {
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
       _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
       _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
-    for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "sui"]) value.flags[`_intro_${who}`] = true;
+    for (const who of ["hajime", "sumi", "pakki", "uezono", "dr_charcoal", "sensu"]) value.flags[`_intro_${who}`] = true;
     if (!progress.advanceToChapterThree(value)) throw new Error("Chapter boundary failed");
     value.day += 3;
     if (!progress.departChapterThree(value)) throw new Error("Departure failed");
@@ -83,7 +83,7 @@ export async function seedChapterFour(page) {
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
       _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
-    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sensu", "dr_charcoal"]) value.flags[`_intro_${who}`] = true;
     Object.assign(value.met, { naru: true });
     if (!progress.advanceToChapterFour(value)) throw new Error("Chapter boundary failed");
     value.flags._overseas_companion = { decided: true, companion: null, supports: [] };

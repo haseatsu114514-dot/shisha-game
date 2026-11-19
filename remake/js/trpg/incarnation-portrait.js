@@ -53,7 +53,7 @@ export function incarnationPortrait(url, frame, cheekWidth) {
   const [sw, sh] = frame.src;
   const { cx, eye_y: eyes, figtop } = frame.face;
   const above = Math.max(1, eyes - (figtop ?? 0));
-  const faceFraction = frame.character === "rei" ? 0.295 : 0.245;
+  const faceFraction = frame.character === "kuraudo" ? 0.295 : 0.245;
   const width = faceFraction * sw / cheekWidth;
   // Guard the crown even on shallow cards. Only the lower body may run off the bottom.
 

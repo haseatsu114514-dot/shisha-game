@@ -73,7 +73,7 @@ export const CH5_SCENE_BG = Object.freeze({
   ch5_doctor_after_match_loss: "bg_smoke_lab",        // 勝負のあと・前半（負け。挙手に合わせて2通り）
   ch5_doctor_after_match_loss_close: "bg_smoke_lab",
   ch5_doctor_after_match_tie: "bg_smoke_lab",         // 勝負のあと・前半（同数）
-  ch5_sui_after_match: "bg_smoke_lab",                // 前半の末尾に続く千須への返事（表示は親場面の bg）
+  ch5_sensu_after_match: "bg_smoke_lab",                // 前半の末尾に続く千須への返事（表示は親場面の bg）
   ch5_doctor_cocreation: "bg_smoke_lab",              // 勝負のあと・後半（検品札→一緒に作る一台。勝敗共通）
   ch5_return_to_tonari: "bg_tonari_inside_night",    // 仮置き bg
   ch5_prep_answer_heat_adjusted: "bg_tonari_inside_night", // 帰店後の末尾に続く（表示は親場面の bg）
@@ -231,7 +231,7 @@ export const CH5_AFTER_MATCH_OPENINGS = Object.freeze({
   tie: "ch5_doctor_after_match_tie",
 });
 // 前半の末尾に、勝敗共通で続ける千須への返事（STK05。読了の確定は親場面と一緒）。
-export const CH5_AFTER_MATCH_TAIL = "ch5_sui_after_match";
+export const CH5_AFTER_MATCH_TAIL = "ch5_sensu_after_match";
 
 // フィナーレで再生しうる ending の全場面。ending_relationship_pending は
 // スタッフロール後段（Q20）側なので含めない。

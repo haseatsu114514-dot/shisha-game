@@ -257,7 +257,7 @@ await suite("ch5-full-flow", async check => {
 
     // 9. 後日談（勝負のあと・前半→後半→tonariへ戻る）→フィナーレ（開始→賄い→日常。鉄仮面さんの名乗りは日常に続けて読む）。
     await page.locator(dt("ch5-continue")).click();
-    // 前半の末尾に千須への返事（ch5_sui_after_match）を続けて読み、後半は別の場面として読む。
+    // 前半の末尾に千須への返事（ch5_sensu_after_match）を続けて読み、後半は別の場面として読む。
     await page.locator(scene("ch5_doctor_cocreation")).waitFor();
     state = await get(page);
     assert.equal(state.flags._ch5.read.ch5_doctor_after_match, true);
@@ -322,8 +322,8 @@ await suite("ch5-full-flow", async check => {
           read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null, aftermath: 0, finale: 0,
           finaleScenes: null, won: null, secondCup: null },
         _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true,
-        ch2_kumicho_after_ch2_done: true, _talk_seen_ch5_rei_shop: true };
-      Object.assign(value.met, { kumicho: true, rei: true, ageha: true });
+        ch2_kumicho_after_ch2_done: true, _talk_seen_ch5_kuraudo_shop: true };
+      Object.assign(value.met, { kumicho: true, kuraudo: true, ageha: true });
       value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
       Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
       // 辻占のオババ（章で1〜2回・現れる時間帯は保存の種しだい）が地図の演出を挟まないよう、第5章の出現は済んだことにする（第3・4章の検査と同じ）。
@@ -357,7 +357,7 @@ await suite("ch5-full-flow", async check => {
     state = await get(page);
     assert.equal(state.flags._ch2_region, "home", "The night ends at home");
     assert.equal(state.money, before.money - 3000 * 2 - 200, "Two visits and the train home");
-    assert.equal(state.flags._ch2_talks?.rei, (before.flags._ch2_talks?.rei || 0) + 1);
+    assert.equal(state.flags._ch2_talks?.kuraudo, (before.flags._ch2_talks?.kuraudo || 0) + 1);
     assert.equal(stationFares(page), 200, "One fare out, paid by the station UI");
   });
 
@@ -1387,9 +1387,9 @@ await suite("ch5-full-flow", async check => {
     assert(said.includes("記録にない項目です。次回から、先に尋ねます"));
     assert(!said.some(text => /正解の味/.test(text)), "The winning doctor does not concede");
     assert.deepEqual(first.slice(-4).map(([, speaker, text]) => [speaker, text]).slice(0, 3), [
-      ["sui", "一つだけ聞く。君が作れない夜に来た客は、どうする"],
+      ["sensu", "一つだけ聞く。君が作れない夜に来た客は、どうする"],
       ["hajime", "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が"],
-      ["sui", "……それを、店と呼ぶんだろうな"],
+      ["sensu", "……それを、店と呼ぶんだろうな"],
     ]);
     await page.locator(dt("ch5-continue")).click();
     await page.locator(scene("ch5_return_to_tonari")).waitFor();

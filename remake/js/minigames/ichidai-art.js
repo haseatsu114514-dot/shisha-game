@@ -1,3 +1,4 @@
+import { characterArtStem } from "../core/portrait-resolver.js";
 // カードゲーム「一台勝負」の絵の引き当て。
 // 1) このゲームのために作った絵: remake/img/ui/ichidai/<種類>/<id>.webp。下の ICHIDAI_ART に id があるものだけ読む
 //    （一覧は remake/tools/build_ichidai_art.py が書き直す。足し方は asset_sources/card_game/README.md）。
@@ -48,7 +49,7 @@ const CARD_EQUIPMENT = { flat: "flat_charcoal", cube: "cube_charcoal", dense_fla
 const CARD_SPRITE = { chacosta: "heat_stove" };
 // 人物カードと審査員 → 本編のキャラID（顔アイコン）
 export const PERSON_FACE = Object.freeze({ sumi: "sumi", naru: "naru", adam: "adam", minto: "minto", mashiro: "mashiro", tsumugi: "tsumugi", packy: "pakki" });
-export const JUDGE_FACE = Object.freeze({ kamizono: "maezono", hakase: "dr_kemuri", sensu: "sui", emir: "emil", taiyo: "da_silva" });
+export const JUDGE_FACE = Object.freeze({ kamizono: "uezono", hakase: "dr_charcoal", sensu: "sensu", emir: "emil", taiyo: "da_silva" });
 // 絵がまだ無いカードの仮の絵（成長盤の線画アイコン）
 const CARD_ICON = {
   heat_in: "skill_K16", heat_out: "skill_K22", blow: "skill_K12", show_smoke: "skill_K21", all_in: "peak", duel: "skill_K08",
@@ -58,7 +59,7 @@ const CARD_ICON = {
   hype: "skill_K13", draft: "skill_K05", venue_heat: "perk_stage", go_second: "skill_K04", buyout: "skill_K20", repack: "skill_K18", encore: "skill_K10",
 };
 /** 顔アイコン。本編のデータを読んでいれば設定の画風に合わせ、試遊ページでは現行の絵を直接読む */
-export const faceUrl = (charId) => (charId ? faceIconUrl(charId) || imgFileUrl(`ui/face_icons/face_${charId}.webp`) : null);
+export const faceUrl = (charId) => (charId ? faceIconUrl(charId) || imgFileUrl(`ui/face_icons/face_${characterArtStem(charId)}.webp`) : null);
 /** カードの絵。mode: "art"（専用の絵）/"sprite"（炭・コンロ。透過）/"face"（顔）/"icon"（線画）。無ければ null */
 export function cardArt(id) {
   return own("card", id)

@@ -4,7 +4,7 @@
 // ページは remake/index.html なので、リポジトリ直下は "../"。
 
 import { portraitStyle } from "./portrait-style.js";
-import { resolvePortrait } from "./portrait-resolver.js";
+import { characterArtStem, resolvePortrait } from "./portrait-resolver.js";
 import { registerFortuneReadings } from "./fortune-effects.js";
 
 const ROOT = "../";
@@ -388,7 +388,7 @@ export function cgThumbUrl(id) {
 export function faceIconUrl(id, state = null, { context = null, style = portraitStyle() } = {}) {
   const privateMinto = id === "oneesan" || (id === "minto" && context === "private" && state?.flags?._minto_name_known);
   const folder = SPEAKER_ALIAS[id] || id;
-  const rel = faceIconRel(privateMinto ? "face_minto_private.png" : `face_${folder}.png`, style);
+  const rel = faceIconRel(privateMinto ? "face_minto_private.png" : `face_${characterArtStem(folder)}.png`, style);
   return rel ? img(rel) : null;
 }
 

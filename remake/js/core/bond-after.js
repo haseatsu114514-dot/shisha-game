@@ -23,9 +23,9 @@ export const BOND_AFTER = Object.freeze({
       "bond_after_kumicho_4", "bond_after_kumicho_5"],
     shorts: ["bond_after_kumicho_short_a", "bond_after_kumicho_short_b", "bond_after_kumicho_short_c", "bond_after_kumicho_short_d"],
   }),
-  rei: entry("rei", {
-    scenes: ["bond_after_rei_1", "bond_after_rei_2", "bond_after_rei_3", "bond_after_rei_4", "bond_after_rei_5"],
-    shorts: ["bond_after_rei_short_a", "bond_after_rei_short_b", "bond_after_rei_short_c", "bond_after_rei_short_d"],
+  kuraudo: entry("kuraudo", {
+    scenes: ["bond_after_kuraudo_1", "bond_after_kuraudo_2", "bond_after_kuraudo_3", "bond_after_kuraudo_4", "bond_after_kuraudo_5"],
+    shorts: ["bond_after_kuraudo_short_a", "bond_after_kuraudo_short_b", "bond_after_kuraudo_short_c", "bond_after_kuraudo_short_d"],
   }),
   // なる・アダムは店（daily/spots.js の visitChar・第2〜4章の準備・第5章の街の店）、つむぎは tonari の客（daily/tonari.js の tonariCustomer）、
   // スミさんはバイト上がりの会話（daily/tonari.js の afterShiftSumiTalk）で出す
@@ -85,10 +85,10 @@ export const BOND_AFTER = Object.freeze({
       "bond_after_mashiro_4", "bond_after_mashiro_5"],
     shorts: ["bond_after_mashiro_short_a", "bond_after_mashiro_short_b", "bond_after_mashiro_short_c", "bond_after_mashiro_short_d"],
   }),
-  saku: entry("saku", {
-    scenes: [{ id: "bond_after_saku_1", requires: "suyaki_saku" }, "bond_after_saku_2", "bond_after_saku_3",
-      "bond_after_saku_4", "bond_after_saku_5"],
-    shorts: ["bond_after_saku_short_a", "bond_after_saku_short_b", "bond_after_saku_short_c", "bond_after_saku_short_d"],
+  ayatori: entry("ayatori", {
+    scenes: [{ id: "bond_after_ayatori_1", requires: "suyaki_saku" }, "bond_after_ayatori_2", "bond_after_ayatori_3",
+      "bond_after_ayatori_4", "bond_after_ayatori_5"],
+    shorts: ["bond_after_ayatori_short_a", "bond_after_ayatori_short_b", "bond_after_ayatori_short_c", "bond_after_ayatori_short_d"],
   }),
   // スティーブ・ヴォルク（東京の店の通い。第3章は外出の小会話、第5章は東京の店の小会話の代わり）・
   // 王煙楼（第4章ドバイの龍龍水煙所の小会話の代わり。chapters/ch4-dubai-daily.js）

@@ -101,13 +101,13 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   ch3_mukai_yoru_playlist: { file: "ch3_mukai", label: "昼の曲順", location: "mukai", bg: "bg_mukai_shop",
     met: ["yoru"], after: ["ch3_mukai_intro"], host: "yoru" },
   // RLS10: はじめと綾取の友情。煙幕の初訪問の後、東京育ちでも今は福岡の人の綾取と、東京のお客さん同士になる。
-  ch3_saku_bakery: { file: "ch3_rivals", label: "パン屋の紙袋", location: "煙幕", bg: "bg_yohaku_shop",
-    after: ["ch3_saku_first"] },
+  ch3_ayatori_bakery: { file: "ch3_rivals", label: "パン屋の紙袋", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_ayatori_first"] },
   // 綾取とましろの過去。ましろ側はレモンケーキの客を見た煙幕の初訪問後、綾取側はmukaiへ客として来た後。
-  ch3_saku_mashiro_tea_tin: { file: "ch3_saku_mashiro", label: "茶缶の半分", location: "mukai", bg: "bg_mukai_shop",
-    after: ["ch3_saku_first"] },
-  ch3_saku_mashiro_soon_back: { file: "ch3_saku_mashiro", label: "すぐ戻るの嘘", location: "煙幕", bg: "bg_yohaku_shop",
-    after: ["ch3_saku_mukai_visit"] },
+  ch3_ayatori_mashiro_tea_tin: { file: "ch3_saku_mashiro", label: "茶缶の半分", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_ayatori_first"] },
+  ch3_ayatori_mashiro_soon_back: { file: "ch3_saku_mashiro", label: "すぐ戻るの嘘", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_ayatori_mukai_visit"] },
   // #3468 H案。mukaiの棚整理で、ムカイさんの試飲の瓶とましろの休憩用の缶に本人用の札を付ける（ましろ×ムカイさん）。
   // mukaiの二日目の後。続きは同じ棚に札が残っている後日の一言。台本は大会・恋愛に触れないので、
   // 大会後は ch3-aftermath-progress.js の寄り道から同じ既読で読む。好感度は動かさない。
@@ -116,8 +116,8 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   ch3_mashiro_mukai_shelf_tags: { file: "ch3_mashiro", label: "棚の札", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_mashiro_mukai_syrup_shelf"] },
   // 綾取とLIMEを交換する（#2028）。助言の後、煙幕への再訪で♥1になってから。後日談の片づけで返事の欄を回収する。
-  ch3_saku_lime: { file: "ch3_rivals", label: "返事の欄", location: "煙幕", bg: "bg_yohaku_shop",
-    after: ["ch3_saku_advice"], heart: { saku: 1 } },
+  ch3_ayatori_lime: { file: "ch3_rivals", label: "返事の欄", location: "煙幕", bg: "bg_yohaku_shop",
+    after: ["ch3_ayatori_advice"], heart: { ayatori: 1 } },
   // スティーブとLIMEを交換する（#2028）。客として来るmukaiで、♥2になってから（mukaiの店番の通い1回で♥1なので一段上）。
   // Smoke & Glory は低温の話（DAY11の夜）の後にしか開かず空き時間が少ないので、mukaiに置く。締めくくり（daily/bonds.js）の条件。
   // はじめが客の顔を読むと知る店番の3回目（ch3_outing_mukai_steve_c）の後に開く。先に読むと、頼みごとの後で顔読みに驚く順になる。
@@ -142,15 +142,15 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   ch3_volk_lime: { file: "ch3_volk", label: "持ってきたメモ", location: "鉄の煙", bg: "bg_volk_shop",
     met: ["volk"], heart: { volk: 2 } },
   // 好感度補充（A02–A04）。LIME交換のあと、煙幕への再訪で♥2〜4を順に読む。締めくくりの条件。
-  ch3_saku_missed: { file: "ch3_rivals", label: "外れた予想", location: "煙幕",
-    after: ["ch3_saku_lime"], heart: { saku: 2 } },
-  ch3_saku_cleanup: { file: "ch3_rivals", label: "消すのを遅くする", location: "煙幕",
-    after: ["ch3_saku_missed"], heart: { saku: 3 } },
-  ch3_saku_liar: { file: "ch3_rivals", label: "嘘つきの欄", location: "煙幕",
-    after: ["ch3_saku_cleanup"], heart: { saku: 4 } },
+  ch3_ayatori_missed: { file: "ch3_rivals", label: "外れた予想", location: "煙幕",
+    after: ["ch3_ayatori_lime"], heart: { ayatori: 2 } },
+  ch3_ayatori_cleanup: { file: "ch3_rivals", label: "消すのを遅くする", location: "煙幕",
+    after: ["ch3_ayatori_missed"], heart: { ayatori: 3 } },
+  ch3_ayatori_liar: { file: "ch3_rivals", label: "嘘つきの欄", location: "煙幕",
+    after: ["ch3_ayatori_cleanup"], heart: { ayatori: 4 } },
   // 好感度補充（A27）。嘘つきの欄のあと、最初の返事が届く再訪（♥4）。
-  ch3_saku_first_reply: { file: "ch3_rivals", label: "最初の返事", location: "煙幕",
-    after: ["ch3_saku_liar"], heart: { saku: 4 } },
+  ch3_ayatori_first_reply: { file: "ch3_rivals", label: "最初の返事", location: "煙幕",
+    after: ["ch3_ayatori_liar"], heart: { ayatori: 4 } },
   // 好感度補充（A05–A07）。低温の話のあと Smoke & Glory で♥1・♥3・♥4。締めくくりの条件。
   ch3_steve_two_timers: { file: "ch3_rivals", label: "待たせたピザ", location: "Smoke & Glory", bg: "bg_steve_shop",
     met: ["steve"], heart: { steve: 1 }, after: ["ch3_steve_low_heat"], host: "steve" },
@@ -182,7 +182,7 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_mukai: ["ch3_cigarman_rumor", "ch3_cigarman_shadow", "ch3_mukai_latte_cat", "ch3_mukai_no_hat", "ch3_cigarman_trace", "ch3_mukai_yoru_playlist"],
   // 綾取・スティーブの締めくくり（#2028）は寄り道ではなく、煙幕・Smoke & Glory を訪ねた時の「〜に呼ばれる」から
   // （daily/bonds.js の条件。版3は ch3-tokyo-daily.js、優勝の翌日は ch3-aftermath.js、旧行程は ch3.js の場面カード）。
-  ch3_rivals: ["ch3_emil_workshop", "ch3_saku_bakery", "ch3_saku_lime", "ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_first_reply", "ch3_saku_bond_finale", "ch3_steve_lime", "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch", "ch3_steve_bond_finale"],
+  ch3_rivals: ["ch3_emil_workshop", "ch3_ayatori_bakery", "ch3_ayatori_lime", "ch3_ayatori_missed", "ch3_ayatori_cleanup", "ch3_ayatori_liar", "ch3_ayatori_first_reply", "ch3_ayatori_bond_finale", "ch3_steve_lime", "ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch", "ch3_steve_bond_finale"],
   // ♥3の質問と締めくくりは寄り道ではなく、場面カードの「ましろちゃんと話す」から（daily/bonds.js の条件）。
   ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice",
     "ch3_mashiro_black_tea", "ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_mashiro_glass_cloth",
@@ -194,7 +194,7 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
     "mashiro_time_counter", "mashiro_time_train", "mashiro_time_errand", "mashiro_time_braid",
     "mashiro_time_cat", "mashiro_time_towel", "mashiro_time_jacket", "mashiro_time_mug",
     "mashiro_time_aries_cup", "mashiro_time_sagittarius_cup"],
-  ch3_saku_mashiro: ["ch3_saku_mashiro_tea_tin", "ch3_saku_mashiro_soon_back"],
+  ch3_saku_mashiro: ["ch3_ayatori_mashiro_tea_tin", "ch3_ayatori_mashiro_soon_back"],
   hiyori: ["hiyori_tokyo_contact"],
   ch3_tsumugi: ["ch3_tsumugi_slump"],
   // ヴォルクの締めくくり（#2028）も寄り道ではなく、鉄の煙を訪ねた時の「ヴォルクに呼ばれる」から（綾取・スティーブと同じ）。

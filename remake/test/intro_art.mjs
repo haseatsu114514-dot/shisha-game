@@ -31,10 +31,10 @@ try {
     }))).observe(document.querySelector("#fx"), { childList: true });
     assertArt();
     function assertArt() {
-      const missing = ["hajime", "sumi", "tsumugi", "oneesan", "naru", "adam", "minto", "rio", "samechan", "sui", "maezono", "dr_kemuri", "pakki", "ageha", "hiyori", "kumicho", "rei"].filter(id => !DB.manifest.introArt[id]);
+      const missing = ["hajime", "sumi", "tsumugi", "oneesan", "naru", "adam", "minto", "rio", "samechan", "sensu", "uezono", "dr_charcoal", "pakki", "ageha", "hiyori", "kumicho", "kuraudo"].filter(id => !DB.manifest.introArt[id]);
       if (missing.length) throw new Error(`採用済みの登場背景がない: ${missing.join(", ")}`);
     }
-    return Object.fromEntries(["hajime", "adam", "naru", "dr_kemuri", "samechan"].map((id) => [id, DB.manifest.portraits[id].faces]));
+    return Object.fromEntries(["hajime", "adam", "naru", "dr_charcoal", "samechan"].map((id) => [id, DB.manifest.portraits[id].faces]));
   });
 
   // DAY4の実台本を高速送りしても初登場は消えず、名前も職業もまだ開示しない。

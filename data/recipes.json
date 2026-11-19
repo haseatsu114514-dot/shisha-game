@@ -125,7 +125,7 @@
       "hint_text": "綾取「シトラスを先に立たせて、ブラックティーで追いかける」",
       "memo": "綾取の話から。凍った柑橘の後に紅茶が追いかけて、入れていない焼き菓子の香りが立つ。",
       "recall": ["（綾取さんの、入れてないお菓子の話を思い出す）", "（フローズンシトラスの後に、ブラックティー。今度、試してみよう）"],
-      "find": {"person": "saku", "chapters": [3], "at": ["ch3_tokyo_enmaku"], "heart": 2}
+      "find": {"person": "ayatori", "chapters": [3], "at": ["ch3_tokyo_enmaku"], "heart": 2}
     },
     {
       "id": "lychee_jasmine_tea",

@@ -46,7 +46,7 @@
   },
   "cast": [
     {
-      "id": "rei",
+      "id": "kuraudo",
       "part": "GM",
       "role": "語り手と、館の主リラ",
       "color": "#b0102a"
@@ -502,7 +502,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……始める前に、役を決める。キミたちは、誰になる？"
@@ -522,7 +522,7 @@
           "text": "俺は{pc}。{pcTitle}でいく"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "serious",
           "text": "……役はそろった。じゃあ、館の扉を開ける"
@@ -549,7 +549,7 @@
           "text": "人形が怖い？ ないない。フリル着てる子は、みんなかわいいの"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "surprise",
           "text": "……人形を、怖がらないのか"
@@ -582,7 +582,7 @@
           "text": "教えるのは、人形のお茶会の作法。あと、プリの盛り方"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……黒のフリル。いい趣味だ"
@@ -621,7 +621,7 @@
           "text": "ひよりさん、人形の修理に斧は使わないと思います"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……か弱さと、斧。その落差、嫌いじゃない"
@@ -648,7 +648,7 @@
           "text": "お嬢さまー！ ただいま、零時の十分前でございまーす！"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "surprise",
           "text": "……今の声で、棚の人形が全員こっちを向いた"
@@ -695,13 +695,13 @@
       "dialogue_id": "trpg_doll_requiem_intro",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……今夜は、俺がGM。洋館の話だ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……キミたちは、雪の夜に館へ呼ばれた三人だ",
@@ -715,7 +715,7 @@
           "text": "クラウドさんのGM、楽しみにしてました"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "surprise",
           "text": "……そうか。期待は、ほどほどで"
@@ -733,55 +733,55 @@
           "text": "……人形の館。眠れない夜を知っている子たちね、きっと"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "serious",
           "text": "……怖すぎない話だ。約束する。じゃあ、始める"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "雪は、音を食べる。だから今夜の丘は、息を止めたように静かだ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "丘の上に、古い洋館がひとつ。名を、ラベンダー館という"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "窓という窓に灯がともり、廊下の奥から、ラベンダーと蜂蜜の香りが流れてくる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "飾り棚には、硝子の瞳の人形たち。夜ごと、その居場所が変わるという"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "{pc}は、ランタンを提げて、凍った玄関の階段をのぼる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "{pc:ageha}は、仕立て鞄を抱えて、肩の雪を払いながら後に続く"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "{pc:hiyori}は、玄関の柱にもたれて、白い息をそっと吐いている"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "serious",
           "text": "零時の鐘まで、あと少し。……人形たちが、目を覚ます刻限だ"
@@ -793,7 +793,7 @@
           "text": "クラウドさん、語りに入ると急に詩人ですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "surprise",
           "text": "……今の、喋りすぎた。続ける"
@@ -804,13 +804,13 @@
       "dialogue_id": "trpg_doll_requiem_listen",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "重い扉が開く。燭台を手にした少女が、深く頭を下げた"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "smile",
           "text": "ようこそ、ラベンダー館へ。この館を継いだ、リラと申します"
@@ -833,7 +833,7 @@
       "dialogue_id": "trpg_doll_requiem_listen_success",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "リラは燭台を置いて、ほっと息をついた。零時の鐘は、まだ遠い"
@@ -850,7 +850,7 @@
       "dialogue_id": "trpg_doll_requiem_listen_mixed",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "柱時計の針が、こつりと進む。真夜中が一つ近づいた"
@@ -867,7 +867,7 @@
       "dialogue_id": "trpg_doll_requiem_listen_trouble",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "surprise",
           "text": "棚の人形が一体、こてんと倒れた。リラが小さく悲鳴をあげる"
@@ -879,7 +879,7 @@
           "text": "倒れた！ ……あ、でも寝てるみたいで、ちょっとかわいい"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……真夜中が、二つ近づいた。でも、話はまだ聞ける"
@@ -899,7 +899,7 @@
           "text": "{pc}は暖炉の前で、リラの話をゆっくり聞きます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……話術で判定。急かさない聞き手が、いちばん強い。目標30"
@@ -919,7 +919,7 @@
           "text": "{pc:ageha}が、リラのリボンほめる！ 緊張ほぐすの、得意だから"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……話術で判定。褒め言葉は、扉を開ける鍵だ。目標30"
@@ -939,7 +939,7 @@
           "text": "{pc:hiyori}は話を聞きながら、人形の向きを見ておくわ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……観察で判定。硝子の瞳は、嘘をつかない。目標30"
@@ -959,7 +959,7 @@
           "text": "{pc}がランタンを掲げて、暗い廊下を先に進みます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "serious",
           "text": "……度胸で判定。闇は、歩く者に道を譲る。目標30"
@@ -979,7 +979,7 @@
           "text": "{pc:ageha}がみんなに声かけて、手つないで進む！ はぐれたら秒で迷子だし"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……話術で判定。明るい声は、灯りの代わりになる。目標30"
@@ -999,7 +999,7 @@
           "text": "{pc:hiyori}は耳を澄ますわ。最初に鳴った一台を探すの"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……観察で判定。音にも、始まりがある。目標30"
@@ -1019,7 +1019,7 @@
           "text": "{pc}が暖炉に薪を足して、人形たちの席を並べます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……手際で判定。迎える部屋は、言葉より先に語る。目標30"
@@ -1039,7 +1039,7 @@
           "text": "{pc:ageha}が、人形の服と髪を一体ずつ整える！ ほら、じっとしててね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……手際で判定。見立てが合っていれば、追い風だ。目標30"
@@ -1059,7 +1059,7 @@
           "text": "{pc:hiyori}がお茶を淹れるわ。……ポットは重いから、そっとね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……手際で判定。湯気が、館を温める。目標30"
@@ -1079,7 +1079,7 @@
           "text": "{pc}が人形たちの正面に立ちます。目をそらしません"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "serious",
           "text": "……度胸で判定。真夜中の主役は、キミだ。目標30"
@@ -1099,7 +1099,7 @@
           "text": "{pc:hiyori}が、やさしい声で、人形たちに語りかけるわ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……話術で判定。届くのは、静かな声だ。目標30"
@@ -1119,7 +1119,7 @@
           "text": "{pc:ageha}が、人形のちっちゃい動きを見て合図出す。任せて"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……観察で判定。合図は、一度きり。目標30"
@@ -1142,7 +1142,7 @@
           "text": "飾り棚と小さな舞台！ 人形がいちばんいそうなとこ、見たい"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……相談とメモは、何度でも。真夜中は、近づかない"
@@ -1165,7 +1165,7 @@
           "text": "書斎の日記と柱時計。館の昔と、零時の秘密が分かりそう"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……いい相談だ。相談では、時計の針は進まない"
@@ -1179,13 +1179,13 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "serious",
           "text": "そのとき、ふっと灯りが消えた。館じゅうが、闇に沈む"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "闇の底で、オルゴールがひとつ鳴る。ふたつ、みっつ……やがて館じゅうで"
@@ -1209,7 +1209,7 @@
           "text": "落ち着こう。誰も怪我はしてない"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……大丈夫。怖いことは起きない。どうする？"
@@ -1223,7 +1223,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "smile",
           "text": "灯りが戻る。オルゴールは最後の一音を鳴らし、静かになった"
@@ -1243,7 +1243,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "音はやんだが、柱時計の針が進んでいる。真夜中が一つ近づいた"
@@ -1263,7 +1263,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "surprise",
           "text": "闇の中、{pc}の背中に、何かがとん、と当たった"
@@ -1275,7 +1275,7 @@
           "text": "うわっ！ ……人形？ 抱っこされに来たのか？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……真夜中が、二つ近づいた。でも、人形には懐かれた"
@@ -1286,7 +1286,7 @@
       "dialogue_id": "trpg_doll_requiem_preparation",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……使えるのは、館にあるものだけ。繕い道具と、お茶"
@@ -1315,7 +1315,7 @@
       "dialogue_id": "trpg_doll_requiem_prepare_success",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "人形たちの席が整い、湯気が部屋を満たす。硝子の瞳が、灯を映した"
@@ -1332,7 +1332,7 @@
       "dialogue_id": "trpg_doll_requiem_prepare_mixed",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "支度に手間取るうち、柱時計が低く鳴る。真夜中が一つ近づいた"
@@ -1349,7 +1349,7 @@
       "dialogue_id": "trpg_doll_requiem_prepare_trouble",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "surprise",
           "text": "糸巻きが転がって、人形の足にくるくると絡まった。誰も怪我はない"
@@ -1361,7 +1361,7 @@
           "text": "ちょ、待って、ほどくから！ ……あ、そっと、ほどくわね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……ほどけた。支度は、まだ間に合う"
@@ -1372,19 +1372,19 @@
       "dialogue_id": "trpg_doll_requiem_serving",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "柱時計が、零時の鐘を打ちはじめる。ひとつ、ふたつ……"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "serious",
           "text": "鐘の音に合わせて、人形たちが、そっと顔を上げた"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "surprise",
           "text": "動いた……。本当に、動いています"
@@ -1401,7 +1401,7 @@
       "dialogue_id": "trpg_doll_requiem_serve_success",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "呼びかけが、人形たちの胸の奥まで、静かに届いていく"
@@ -1413,7 +1413,7 @@
           "text": "……今の、ちゃんと届いた。うち、分かる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "smile",
           "text": "人形たちが、ゆっくりと一礼した"
@@ -1424,7 +1424,7 @@
       "dialogue_id": "trpg_doll_requiem_serve_mixed",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "一体が、迷うように立ち止まる。{pc}が、そっと手を差しのべた"
@@ -1436,7 +1436,7 @@
           "text": "大丈夫。一緒に行こう"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……少しの迷いも、夜の味だ"
@@ -1447,7 +1447,7 @@
       "dialogue_id": "trpg_doll_requiem_serve_trouble",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "surprise",
           "text": "鐘が鳴りやむ。人形たちが、ぴたりと動きを止めた"
@@ -1459,7 +1459,7 @@
           "text": "止まっちゃった！？ ……あ、ま、まだ間に合うかしら"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……大丈夫。人形たちは、ちゃんと聞いている"
@@ -1470,19 +1470,19 @@
       "dialogue_id": "trpg_doll_requiem_ending_last-act",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "零時の鐘の余韻の中、子ども部屋の小さな舞台に灯がともる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "繕われた衣装をまとい、王子と魔女と雪の精が、音もなく第二幕を踊る"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "smile",
           "text": "これが、大叔母さまの第二幕……。こんなに優しいお話だったのですね"
@@ -1494,7 +1494,7 @@
           "text": "衣装、間に合ったね。みんな、最高にかわいいよ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "最後に人形たちは客席へ一礼し、小さな幕が、静かに下りた"
@@ -1506,13 +1506,13 @@
           "text": "何年越しの、第二幕だったんだろう"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……止まった曲も、最後まで弾けば、ちゃんと終われる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "surprise",
           "text": "……今の、少し格好つけた。忘れてくれ"
@@ -1523,19 +1523,19 @@
       "dialogue_id": "trpg_doll_requiem_ending_new-mistress",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "零時の鐘とともに、リボンを結んだ人形たちが、リラのまわりに輪をつくる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "surprise",
           "text": "私を……待っていてくれたのですか？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "人形たちは、そろって小さくお辞儀をした。おかえりなさい、と言うように"
@@ -1547,7 +1547,7 @@
           "text": "リラさん。みんな、ずっと一緒に遊びたかったんですよ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "smile",
           "text": "……はじめまして。いいえ、ただいま、みんな"
@@ -1565,7 +1565,7 @@
           "text": "明日から毎日お茶会じゃん。うちも呼んでほしい"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……館は、住む人がいて、ようやく館になる"
@@ -1576,25 +1576,25 @@
       "dialogue_id": "trpg_doll_requiem_ending_snow-window",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "カーテンが開く。零時の鐘と同時に、丘の下の凍った湖が光りはじめた"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "村の灯が氷に映り、降る雪がそれを照り返す。これが、雪灯りの庭だ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "surprise",
           "text": "窓の外に、こんな景色があったなんて……"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "人形たちは窓辺に並び、硝子の瞳いっぱいに光を映して、静かに目を閉じた"
@@ -1612,7 +1612,7 @@
           "text": "雪の夜は、カーテンを開けておきましょう"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……いい景色は、誰かと見ると、もっときれいに見える"
@@ -1623,7 +1623,7 @@
       "dialogue_id": "trpg_doll_requiem_ending_tea",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "十二の鐘が鳴り終わる。人形たちは、どこへも行かずに立ち止まった"
@@ -1635,13 +1635,13 @@
           "text": "あれ……読み、違ったのかな"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "smile",
           "text": "でも、みんなここにいてくれます。よければ、お茶にしませんか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "暖炉の前に、人形とカップが並ぶ。湯気の向こうで、瞳が細くなった気がした"
@@ -1659,7 +1659,7 @@
           "text": "……答えは、また次の雪の夜ね。今夜は、これで十分だわ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……謎が残る夜も、悪くない。続きは、また今度"
@@ -1670,7 +1670,7 @@
       "dialogue_id": "trpg_doll_requiem_debrief_smooth",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……慌てずに、零時を迎えられた。いい卓だった"
@@ -1687,7 +1687,7 @@
       "dialogue_id": "trpg_doll_requiem_debrief_with_detour",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……鐘ぎりぎりだった。でも、そういう夜ほど覚えてる"
@@ -1704,7 +1704,7 @@
       "dialogue_id": "trpg_doll_requiem_epilogue",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……これで、おしまい。どうだった"
@@ -1734,13 +1734,13 @@
           "text": "クラウドさんの語りも、ずっと聞いていたかったです"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "surprise",
           "text": "……そうか、……照れる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……終わったら、一台作る。ラベンダーに、ホワイトティーと蜂蜜"
@@ -1752,7 +1752,7 @@
           "text": "館のお茶と、同じ香りですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……DOLLS REQUIEM。好きな曲から名前をもらった。人形みたいに、静かな香りだ"
@@ -1772,13 +1772,13 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "serious",
           "text": "大叔母さまは毎年、雪の夜に、村の子どもたちへ人形劇を見せていました"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "normal",
           "text": "最後の冬は、第二幕の衣装が間に合わなくて……第一幕で終わったそうです"
@@ -1792,7 +1792,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "normal",
           "text": "人形たちは、大叔母さまの人形劇の一座です。王子に、魔女に、雪の精"
@@ -1812,7 +1812,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "normal",
           "text": "朝には、子ども部屋の小さな舞台に並んでいます。毎朝、立ち位置を変えて"
@@ -1832,7 +1832,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "normal",
           "text": "大叔母さまの手紙に、『第二幕は、リラに見届けてほしい』と……"
@@ -1852,13 +1852,13 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "normal",
           "text": "大叔母さまは毎朝、人形たちに一体ずつ『おはよう』と声をかけていたそうです"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "serious",
           "text": "私は、まだ一度も……あの子たちの名前を呼べていません"
@@ -1872,7 +1872,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "normal",
           "text": "人形はみんな、小さな女の子の背丈に合わせて作られているんです"
@@ -1892,7 +1892,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "serious",
           "text": "朝、扉を開けると、人形たちが私の部屋の前に並んでいるのです"
@@ -1912,7 +1912,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "serious",
           "text": "館に来てから、私は部屋にこもってばかりで……人形が、少し怖くて"
@@ -1932,13 +1932,13 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "normal",
           "text": "大叔母さまは雪の夜になると、人形たちを窓辺に並べていたそうです"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "smile",
           "text": "一緒に外を眺めるのが、何より好きだったと"
@@ -1952,7 +1952,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "normal",
           "text": "人形の瞳は、硝子でできています。雪の光を、よく映すように"
@@ -1972,7 +1972,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "serious",
           "text": "朝になると、人形たちは窓辺に集まって、外を向いているのです"
@@ -1992,7 +1992,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "館の主リラ／物語",
           "face": "serious",
           "text": "来たばかりの日、寒くて……館のカーテンを、すべて閉めてしまいました"
@@ -2009,7 +2009,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_play_shelf",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "飾り棚の段に、小さな名札。『第一幕』『第二幕』……第二幕の段だけ、空っぽだ"
@@ -2026,7 +2026,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_play_stage",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "小さな舞台の床に、白墨の印。第二幕の立ち位置だ。その上に、小さな足跡"
@@ -2049,7 +2049,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_play_diary",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "日記の最後の頁。『第二幕の衣装の繕いが、間に合わない。次の雪の夜に』"
@@ -2066,7 +2066,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_play_pane",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "窓辺に、手描きの看板が立てかけてある。『雪の夜の人形劇　第二幕、近日』"
@@ -2083,7 +2083,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_play_clock",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "振り子の箱に、紙片が一枚。『幕間は零時の鐘。ラベンダーと蜂蜜の茶を』"
@@ -2100,7 +2100,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_play_musicbox",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "オルゴールの蓋の裏に、台本の一節が貼ってある。第二幕の、最初の台詞だ"
@@ -2117,7 +2117,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_owner_shelf",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "飾り棚の人形たちが、みな同じ方を向いている。その先は、リラの部屋の扉だ"
@@ -2140,7 +2140,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_owner_stage",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "舞台の上に、豆粒ほどの招待状。『新しいご主人さまへ。お茶会にどうぞ』"
@@ -2157,7 +2157,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_owner_diary",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "日記の一頁。『新しい子が来たら、人形たちにリボンを結んで迎えさせること』"
@@ -2174,7 +2174,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_owner_pane",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "窓の外の雪に、小さな足跡が並ぶ。リラの部屋の窓の下まで、続いている"
@@ -2191,7 +2191,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_owner_clock",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "柱時計の足もとに、小さなマグが二つ。札に『温かいミルクは、子どもと一緒に』"
@@ -2208,13 +2208,13 @@
       "dialogue_id": "trpg_doll_requiem_clue_owner_musicbox",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "オルゴールの底に、小さく刻まれた文字。『リラへ』"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "流れだしたのは、やさしい子守歌だ"
@@ -2231,7 +2231,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_window_shelf",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "人形たちの硝子の瞳が、うっすらとくもっている。みな、窓の方を向いたまま"
@@ -2248,7 +2248,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_window_stage",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "舞台の背景画は、雪の夜の窓。その向こうに、光の粒がいくつも描かれている"
@@ -2265,7 +2265,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_window_diary",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "日記の一行。『雪の夜は窓辺で白いお茶を。人形たちと、雪灯りの庭を待つ』"
@@ -2282,7 +2282,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_window_pane",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "閉じたカーテンの裾に、小さな手でつかんだしわ。開けようとした跡だ"
@@ -2299,7 +2299,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_window_clock",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "文字盤の零時の位置に、雪の結晶の印。『零時、雪灯りの庭』と小さな字"
@@ -2316,7 +2316,7 @@
       "dialogue_id": "trpg_doll_requiem_clue_window_musicbox",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "オルゴールの曲名は『雪灯りの庭』。蓋には、凍った湖に灯りが映る絵"
@@ -2348,7 +2348,7 @@
           "text": "……幕が上がらないままの劇。少し、寂しいわね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……第二幕の、幕開けか。その読みで、いこう"
@@ -2374,7 +2374,7 @@
           "text": "……新しい家族に、気づいてほしいのね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……出迎えの、続きか。その読みで、いこう"
@@ -2400,7 +2400,7 @@
           "text": "……閉じたカーテンの向こうに、見たい景色があるのね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……雪の夜の、窓辺か。その読みで、いこう"
@@ -2513,7 +2513,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "廊下を回り、オルゴールの蓋を一つずつ閉じていく。音が、ひとつずつ眠る"
@@ -2533,7 +2533,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "燭台に火を移しながら進む。炎が揺れるたび、人形の影がお辞儀をする"
@@ -2553,7 +2553,7 @@
       },
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／場面",
           "face": "normal",
           "text": "オルゴールの旋律に合わせて、歌声が廊下に広がっていく"
@@ -2827,9 +2827,9 @@
   "campaign": {
     "seats": [
       {
-        "actor": "rei",
+        "actor": "kuraudo",
         "candidates": [
-          "rei"
+          "kuraudo"
         ],
         "required": true
       },

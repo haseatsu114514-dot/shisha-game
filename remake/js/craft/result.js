@@ -13,7 +13,7 @@ import { autoSkill, craftRankThresholds } from "./common.js";
 import { renewalCraft } from "../core/craft-version.js";
 import { craftRankProgress } from "./rank-hud.js";
 import { mixColor } from "./art.js";
-import { SUI_BAR } from "./score.js";
+import { SENSU_BAR } from "./score.js";
 import { castCh1Votes, isSakuraiVotes, SAKURAI, sakuraiFocusOf, ch1RoundPoints } from "./ch1-votes.js";
 import { evaluationOf, judgeComment, judgeDeductionReason } from "./feedback.js";
 import { craftRecognition } from "./recognition.js";
@@ -22,31 +22,31 @@ import { VOTE_SCALE, voteStack as stackOf, judgePanel as panelOf, judgeLegend as
 export const CONTESTANTS = ["naru", "adam", "minto", "hajime"];
 const RIVAL_COLOR = { naru: "#f0d8a0", adam: "#c9463a", minto: "#7fe0c2" };
 const JUDGES = [
-  { id: "maezono" },
-  { id: "dr_kemuri", label: "チャコール博士" },
-  { id: "sui", label: "千須" },
+  { id: "uezono" },
+  { id: "dr_charcoal", label: "チャコール博士" },
+  { id: "sensu", label: "千須" },
 ];
 
 /** 総合スコア → 結末。1位は千須票（基準超え）だけが生む（ch1の正史） */
 export function outcomeOf(total) {
-  if (total >= SUI_BAR) return { rank: 1, kind: total >= 90 ? "premium" : "win" };
-  if (total >= SUI_BAR - 12) return { rank: 3, kind: "close" };
+  if (total >= SENSU_BAR) return { rank: 1, kind: total >= 90 ? "premium" : "win" };
+  if (total >= SENSU_BAR - 12) return { rank: 3, kind: "close" };
   return { rank: 4, kind: total < 38 ? "disaster" : "lose" };
 }
 
 /** 審査員の持ち点（各10点）の最終配分。はじめは上園・博士からも点が入り上位で競り、千須の10点は「最後の一票」として締める（#1282 逆転優勝の廃止、オーナー決定 2026-10-28） */
 export function pointTable(rank) {
-  if (rank === 1) return { maezono: { hajime: 4, naru: 2, adam: 2, minto: 2 }, dr_kemuri: { hajime: 3, adam: 3, naru: 3, minto: 1 }, sui: { hajime: 10 } };
-  if (rank === 3) return { maezono: { naru: 4, adam: 3, hajime: 2, minto: 1 }, dr_kemuri: { adam: 5, minto: 2, hajime: 2, naru: 1 }, sui: { naru: 10 } };
-  return { maezono: { naru: 4, adam: 3, minto: 1, hajime: 2 }, dr_kemuri: { adam: 5, minto: 3, naru: 1, hajime: 1 }, sui: { naru: 10 } };
+  if (rank === 1) return { uezono: { hajime: 4, naru: 2, adam: 2, minto: 2 }, dr_charcoal: { hajime: 3, adam: 3, naru: 3, minto: 1 }, sensu: { hajime: 10 } };
+  if (rank === 3) return { uezono: { naru: 4, adam: 3, hajime: 2, minto: 1 }, dr_charcoal: { adam: 5, minto: 2, hajime: 2, naru: 1 }, sensu: { naru: 10 } };
+  return { uezono: { naru: 4, adam: 3, minto: 1, hajime: 2 }, dr_charcoal: { adam: 5, minto: 3, naru: 1, hajime: 1 }, sensu: { naru: 10 } };
 }
 /** 中間票は、どの最終結果にも残る確定分だけ。未投入票は最終審査まで保留する。 */
 export function interimPointTable(round) {
   return round === 1
-    ? { maezono: { naru: 2, adam: 1, minto: 1, hajime: 1 }, dr_kemuri: {}, sui: {} }
+    ? { uezono: { naru: 2, adam: 1, minto: 1, hajime: 1 }, dr_charcoal: {}, sensu: {} }
     : round === 2
-      ? { maezono: { naru: 2, adam: 2, minto: 1, hajime: 2 }, dr_kemuri: { adam: 3, minto: 1, naru: 1, hajime: 1 }, sui: {} }
-      : { maezono: { naru: 2, adam: 2, minto: 1, hajime: 2 }, dr_kemuri: { adam: 3, minto: 1, naru: 1, hajime: 1 }, sui: {} };
+      ? { uezono: { naru: 2, adam: 2, minto: 1, hajime: 2 }, dr_charcoal: { adam: 3, minto: 1, naru: 1, hajime: 1 }, sensu: {} }
+      : { uezono: { naru: 2, adam: 2, minto: 1, hajime: 2 }, dr_charcoal: { adam: 3, minto: 1, naru: 1, hajime: 1 }, sensu: {} };
 }
 
 const totals = (table, upto = JUDGES.length, baseVotes = null) => {
@@ -97,10 +97,10 @@ export async function showStandings(round, mine, cs = null, attempt = null) {
   const table = attempt?.rulesVersion >= 2 ? attempt.voteAttempt.votes : interimPointTable(round);
   const values = totals(table, JUDGES.length, attempt?.voteAttempt?.baseVotes);
   const feed = attempt?.rulesVersion >= 2 ? ["3人の審査員が、ここまでの工程に投票", `千須審査員長も${round}回目の配点を投入`] : round === 1
-    ? [`${displayName("maezono", state)}、なるに2点・はじめに1点投入！`, "千須審査員長、まだ動かず"]
+    ? [`${displayName("uezono", state)}、なるに2点・はじめに1点投入！`, "千須審査員長、まだ動かず"]
     : round === 2
       ? ["チャコール博士、アダムに3点投入！", "千須審査員長、10点まるまる温存"]
-      : [`${displayName("maezono", state)}・チャコール博士は、残りの配点を見極めている`, "千須審査員長、依然10点を温存"];
+      : [`${displayName("uezono", state)}・チャコール博士は、残りの配点を見極めている`, "千須審査員長、依然10点を温存"];
   const sakurai = attempt?.voteAttempt && isSakuraiVotes(attempt.voteAttempt) ? sakuraiBoard(attempt.voteAttempt, round - 1) : null;
   const review = evaluationOf(mine);
   const recognition = craftRecognition(cs, { careRounds: Math.max(0, round - 2) });
@@ -124,7 +124,7 @@ export async function showStandings(round, mine, cs = null, attempt = null) {
           el("b.sd-points", [String(values[id]), el("small", { text: "pt" })]),
         ]))),
       ]),
-      judgePanel(table, attempt?.rulesVersion >= 2 ? [] : ["sui"], sakurai?.extra),
+      judgePanel(table, attempt?.rulesVersion >= 2 ? [] : ["sensu"], sakurai?.extra),
     ]),
     el("div.sd-status", [el("span", { text: "ここまでの制作" }), el(`b.craft-evaluation.${review.tone}`, { text: review.mark }), el("span", { text: round === 3 ? "次は2回目の調整" : round === 2 ? "次は1回目の調整" : "次は吸い出し・提供" })]),
     recognition?.summary ? el("p.sd-recognition", { text: recognition.summary, dataset: { test: "standings-recognition" } }) : null,
@@ -186,7 +186,7 @@ export async function showStandings(round, mine, cs = null, attempt = null) {
  */
 function sakuraiBoard(p, index) {
   const info = SAKURAI.rounds[index], next = SAKURAI.rounds[index + 1];
-  const points = ch1RoundPoints("maezono", index);
+  const points = ch1RoundPoints("uezono", index);
   const views = p.views?.[index] || {}, picks = p.picks?.[index] || {};
   // 速報の行は凡例と同じ短い呼び名（上園・博士・千須）にそろえる。
   const short = (id) => JUDGE_LOOK[id]?.short || judgeName(id);
@@ -294,7 +294,7 @@ async function parin(screen, disaster) {
 
 // ---------------------------------------------------------------- 千須カットイン（持ち点の一括投入）
 
-export async function suiCutin(rank, attempt = null) {
+export async function sensuCutin(rank, attempt = null) {
   const modern = attempt?.rulesVersion >= 2;
   const table = modern ? attempt.voteAttempt.votes : pointTable(rank);
   const before = modern ? totals(attempt.voteAttempt.beforeLast, JUDGES.length, attempt.voteAttempt.baseVotes) : totals(table, 2);
@@ -306,9 +306,9 @@ export async function suiCutin(rank, attempt = null) {
     el("span.nc-pt", { text: `${before[id]}` }),
   ]));
   const bars = el("div.nc-bars", rows);
-  const art = portraitInfo("sui", "serious")?.src;
+  const art = portraitInfo("sensu", "serious")?.src;
   const cut = el("div.nc-cut", [
-    el("span.nc-cut-art", art ? [el("img", { src: art, alt: "", decoding: "async" })] : [faceOf("sui", ".nc-cut-face")]),
+    el("span.nc-cut-art", art ? [el("img", { src: art, alt: "", decoding: "async" })] : [faceOf("sensu", ".nc-cut-face")]),
     el("div.nc-cut-text", [el("small", { text: "審査員長" }), el("b", { text: "千須豪" }),
       el("div.nc-cut-pt", [el("strong", { text: modern ? "1" : "10" }), el("span", { text: modern ? "最後の調整に、残る1点" : "持ち点10、一括投入" })])]),
   ]);
@@ -329,9 +329,9 @@ export async function suiCutin(rank, attempt = null) {
   // 千須の色の帯だけが伸び、点数が数え上がる。
   for (const row of rows) {
     const id = row.dataset.id;
-    const seg = row.querySelector('.nc-bar [data-judge="sui"]');
-    seg.style.width = `${(table.sui[id] || 0) / VOTE_SCALE * 100}%`;
-    if (table.sui[id]) row.classList.add("hit");
+    const seg = row.querySelector('.nc-bar [data-judge="sensu"]');
+    seg.style.width = `${(table.sensu[id] || 0) / VOTE_SCALE * 100}%`;
+    if (table.sensu[id]) row.classList.add("hit");
     countUp(row.querySelector(".nc-pt"), before[row.dataset.id], after[id], 900);
   }
   SE.fanfare();
@@ -383,7 +383,7 @@ export function resultTable(cs, rank, attempt = null) {
     const P = cs.parts || {};
     const rows = order.map((id, i) => el(`div.rt-row${id === "hajime" ? ".me" : ""}`, { style: { "--i": String(3 - i) }, dataset: { id, rank: String(attempt?.rulesVersion >= 2 ? i + 1 : rankOf(id, t)) } }, [
       el("span.rt-rank.rank-medal", { text: `${attempt?.rulesVersion >= 2 ? i + 1 : rankOf(id, t)}位` }), faceOf(id, ".rt-face"),
-      el("span.rt-name", [nameOf(id), el("small.rt-votes", { text: `上園 ${table.maezono[id] || 0} · 博士 ${table.dr_kemuri[id] || 0} · 千須 ${table.sui[id] || 0}${baseVotes?.[id] ? ` · 基礎 ${baseVotes[id]}` : ""}` })]),
+      el("span.rt-name", [nameOf(id), el("small.rt-votes", { text: `上園 ${table.uezono[id] || 0} · 博士 ${table.dr_charcoal[id] || 0} · 千須 ${table.sensu[id] || 0}${baseVotes?.[id] ? ` · 基礎 ${baseVotes[id]}` : ""}` })]),
       voteStack(table, id, "rt-bar"), el("span.rt-pt", { text: `${t[id]} pt` }),
     ]));
     const evaluation = (score) => {

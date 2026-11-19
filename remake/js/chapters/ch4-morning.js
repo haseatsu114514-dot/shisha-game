@@ -7,7 +7,7 @@ import { chapterFourBeachCast, CH4_BEACH_RIVALS } from "./ch4-beach.js";
 export const CH4_MORNING_FLAG = "_ch4_morning_done";
 export const CH4_MORNING_CHEERS_MAX = 4;
 const CHEER_IDS = Object.freeze(["tsumugi", "minto", "rio", "ageha", "mashiro", "samechan", "hiyori", "noor",
-  "adam", "kumicho", "rei", "saku", "steve", "volk"]);
+  "adam", "kumicho", "kuraudo", "ayatori", "steve", "volk"]);
 export const CH4_MORNING_SCENES = Object.freeze({
   open: "ch4_tournament_morning_open", crowd: "ch4_tournament_morning_crowd", more: "ch4_tournament_morning_more",
   close: "ch4_tournament_morning_close",

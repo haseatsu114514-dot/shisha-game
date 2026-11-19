@@ -169,7 +169,7 @@
       ]
     },
     {
-      "dialogue_id": "ch4_rei_dubai",
+      "dialogue_id": "ch4_kuraudo_dubai",
       "comment": "SPC22（2026-11-15 オーナー指示「クラウドは店開けてきてくれる」）。♥5の男の友人の到着。クラウドは店を閉めて（札は「遠征のため休演」）来る。人見知りで、近づきすぎては引きすぎる。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
       "lines": [
         {
@@ -183,12 +183,12 @@
           "text": "……クラウドさん？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "surprise",
           "text": "……見つかった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "店は、閉めてきた。札には「遠征のため休演」って書いた"
         },
@@ -198,7 +198,7 @@
           "text": "休演……ライブみたいですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "同士の世界大会だ。……行かない理由が、なかった"
         },
@@ -208,7 +208,7 @@
           "text": "それで、どうして柱の陰に"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……ロビーで「来たよ」って言う練習を、機内で三十回した。本番に弱い"
         },
@@ -223,7 +223,7 @@
           "text": "コートの下は半袖だった。十二月のドバイは、コートには少し暑い。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……コートは、衣装だから。脱げない"
         },
@@ -233,15 +233,15 @@
           "text": "今夜、前夜祭があるんです。少し顔を出してきます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……うん。明日、客席で手を上げる。たぶん、小さく"
         }
       ]
     },
     {
-      "dialogue_id": "ch4_saku_dubai",
-      "comment": "SPC22（2026-11-15 オーナー指示「あやとりは地元帰る前に時間あるしくる　地元でバイトもいる設定に」）。♥5の男の友人の到着。綾取は全国大会の後も煙幕を延長営業していて（#3676）、煙幕を三日だけ臨時休業にして来る。福岡の店にはバイトがいる。来た保存では東京から配信を見る前提の第4章のLIME（lime_ch4_saku_stream・lime_ch4_saku_steve_note）は届かない（phone.js）。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
+      "dialogue_id": "ch4_ayatori_dubai",
+      "comment": "SPC22（2026-11-15 オーナー指示「あやとりは地元帰る前に時間あるしくる　地元でバイトもいる設定に」）。♥5の男の友人の到着。綾取は全国大会の後も煙幕を延長営業していて（#3676）、煙幕を三日だけ臨時休業にして来る。福岡の店にはバイトがいる。来た保存では東京から配信を見る前提の第4章のLIME（lime_ch4_ayatori_stream・lime_ch4_ayatori_steve_note）は届かない（phone.js）。前夜祭の日の昼、ヒロインの到着の後・前夜祭より前に読む（ch4-progress.js の chapterFourArrivalsDue・CH4_GUEST_ARRIVAL_SCENES）。到着だけで、夕方・砂浜・前夜の過ごし方・修羅場には出さない。好感度・能力・お金は付けない。",
       "lines": [
         {
           "speaker": "",
@@ -249,7 +249,7 @@
           "text": "ロビーのソファで、墨黒の仕事着の男が、白紙のカードを指で回していた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "はじめくん。煙幕、三日だけ臨時休業にしてきた"
         },
@@ -259,17 +259,17 @@
           "text": "綾取さん！？ どうしてドバイに"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "延長したら、休みも自分で決めていいって。福岡の店は、バイトの子が回してる"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "戻ったら、また煙幕に立ちっぱなしだから。その前に、世界の卓を見ておきたかった"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smug",
           "text": "……っていうのは、半分。残りは、君の答えの空欄を埋めに"
         },
@@ -279,12 +279,12 @@
           "text": "世界大会の後に書くって、言ってましたもんね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "ましろには、まだ言ってない。驚く顔を、予想しておきたいから"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "予想しとく。ましろは驚かない。「やっぱり」って顔をする"
         },
@@ -294,7 +294,7 @@
           "text": "その予想、また外れる気がします"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "でしょ。外れるのを見に来たのも、少しある"
         },
@@ -304,7 +304,7 @@
           "text": "今夜、前夜祭があるんです。少し顔を出してきます"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "いってらっしゃい。僕は、明日の客席で香りが読める位置を探しておく"
         }

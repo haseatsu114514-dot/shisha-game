@@ -212,18 +212,18 @@ export const LESSONS = [
   { id: "M-W6", cell: "-3,-2", board: "sense", who: "sumi", need: 0, ring: 2, reward: "special", name: "カルダモンの一つまみ",
     hint: "盤の道が届いたら、スミさんが相性の悪い葉のつなぎ方を教えてくれる",
     text: "配合にカルダモンを一つまみ足すと、相性の悪い組み合わせのぶつかりがやわらぐ", scene: "lesson_sumi_cardamom" },
-  { id: "M-B2", cell: "-4,-1", board: "body", who: "rei", need: 5, ring: 2, sig: true, reward: "special", name: "花を重ねる",
+  { id: "M-B2", cell: "-4,-1", board: "body", who: "kuraudo", need: 5, ring: 2, sig: true, reward: "special", name: "花を重ねる",
     hint: "クラウドと仲良くなると、香りの重ね方を教えてもらえそう",
-    text: "花の葉を2種以上重ねると香りの層ができ、調整のたびに次の層が立つ", scene: "lesson_rei_layers" },
+    text: "花の葉を2種以上重ねると香りの層ができ、調整のたびに次の層が立つ", scene: "lesson_kuraudo_layers" },
   { id: "M-S4", cell: "5,-1", board: "sense", who: "ageha", need: 5, ring: 2, sig: true, reward: "skill", name: "ズボーって",
     hint: "あげはと仲良くなると、感覚の吸い方を教えてもらえそう",
     text: "吸い出しに「ズボー（同じ長さで吸う一回）」が加わる。一回ずつ刻んで温度を立て直せる", scene: "lesson_ageha_zuboo" },
   { id: "M-W4", cell: "-4,1", board: "wisdom", who: "kumicho", need: 5, ring: 2, sig: true, reward: "skill", name: "0分立ち上げ",
     hint: "組長と仲良くなると、蒸らさない立ち上げ方を教えてもらえそう",
     text: "蒸らしを 00:00 で始められる。低温から吸いながら熱を立ち上げる", scene: "lesson_kumicho_zero" },
-  { id: "M-B3", cell: "4,-1", board: "body", who: "saku", need: 5, ring: 3, sig: true, reward: "special", name: "白紙の味カード",
+  { id: "M-B3", cell: "4,-1", board: "body", who: "ayatori", need: 5, ring: 3, sig: true, reward: "special", name: "白紙の味カード",
     hint: "綾取と仲良くなると、出し方の勝負どころを教えてもらえそう",
-    text: "提供の時に味の名前を伏せられる。審査員の受け止めの振れ幅が大きくなる", scene: "lesson_saku_blank" },
+    text: "提供の時に味の名前を伏せられる。審査員の受け止めの振れ幅が大きくなる", scene: "lesson_ayatori_blank" },
   { id: "M-S5", cell: "4,-3", board: "sense", who: "steve", need: 5, ring: 3, sig: true, reward: "special", name: "ピザとシーシャの夜",
     hint: "スティーブと仲良くなると、みんなで集まる夜に誘ってもらえそう",
     text: "仲間を誘って「ピザとシーシャの夜」を開ける。誘った人の好感度がまとめて上がる（同じ人は続けて呼べない）", scene: "lesson_steve_pizza" },
@@ -256,9 +256,9 @@ export const LESSONS = [
   { id: "M-S7", cell: "3,-7", board: "sense", who: "master_hookah", need: 0, ring: 4, reward: "skill", name: "龍の煙",
     hint: "盤の道が届いたら、王煙楼が龍の煙の出し方を教えてくれそう",
     text: "吸い出しをジャストで3回続けると、煙の輪が龍になって昇る。見ている人が静まり、その一台の残りの工程はメンタルが減らない（スモークリングが要る）", scene: "lesson_master_hookah_dragon" },
-  { id: "M-W9", cell: "3,-7", board: "wisdom", who: "dr_kemuri", need: 0, ring: 5, reward: "skill", name: "博士の試作HMD",
+  { id: "M-W9", cell: "3,-7", board: "wisdom", who: "dr_charcoal", need: 0, ring: 5, reward: "skill", name: "博士の試作HMD",
     hint: "盤の道が届いたら、博士が自慢の機材を見せてくれそう",
-    text: "HMDに「博士の試作HMD」を選べる。熱が均一に回り、熱管理のジャスト帯が広がって、炭を替えても熱がぶれにくい", scene: "lesson_dr_kemuri_hmd", grants: ["dr_kemuri_proto_hmd"] },
+    text: "HMDに「博士の試作HMD」を選べる。熱が均一に回り、熱管理のジャスト帯が広がって、炭を替えても熱がぶれにくい", scene: "lesson_dr_charcoal_hmd", grants: ["dr_kemuri_proto_hmd"] },
 ];
 export const REWARD_JA = { skill: "スキル", special: "特殊な技", stat: "能力が伸びる" };
 
@@ -267,8 +267,8 @@ export const CHAR_TYPE = {
   minto: "body", adam: "sense", naru: "wisdom",
   rio: "sense", hiyori: "body", samechan: "wisdom", mashiro: "body", sheikh: "wisdom", da_silva: "body",
   master_hookah: "sense", // 龍龍水煙所のドバイの店で♥5（DBS05）。授業 M-S7 と同じ感覚盤
-  rei: "body", ageha: "sense", kumicho: "wisdom",
-  saku: "body", steve: "sense", volk: "wisdom",
+  kuraudo: "body", ageha: "sense", kumicho: "wisdom",
+  ayatori: "body", steve: "sense", volk: "wisdom",
 };
 
 // ---------------------------------------------------------------- 遊びのご褒美（2026-10-30 オーナー指示 SBD39・SBD40）

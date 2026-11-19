@@ -39,7 +39,7 @@ export const FOURTH_FLAVOR_LESSONS = {
     ["ch1_rio_repeat", { blueberry: 1 }],
   ],
   ch2_kumicho_fourth: [["ch2_kumicho_second", { dragonfruit: 1 }]],
-  ch2_rei_fourth: [["ch2_rei_first", { rose: 1 }]],
+  ch2_kuraudo_fourth: [["ch2_kuraudo_first", { rose: 1 }]],
 };
 // 会話の最後まで読んだ回だけ。好感度や過去の訪問回数から補完しない。
 export function learnFlavorStory(s, dialogue, flavors = {}, options = {}) {

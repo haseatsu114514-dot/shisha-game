@@ -68,9 +68,9 @@
       "file": "dialogue/trpg_moonflower_encore.json",
       "price": 800,
       "stockRequires": [
-        "rei"
+        "kuraudo"
       ],
-      "member": "rei"
+      "member": "kuraudo"
     },
     {
       "id": "purikura-hero",
@@ -198,7 +198,7 @@
       "interestHint": "物語や舞台の仕掛けが好き"
     },
     {
-      "id": "rei",
+      "id": "kuraudo",
       "workLabel": "「貴方ノ為ノ此ノ煙。」の営業中",
       "shifts": [
         {

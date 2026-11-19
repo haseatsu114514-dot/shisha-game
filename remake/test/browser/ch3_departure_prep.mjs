@@ -46,8 +46,8 @@ async function seed(page, { regulars = false } = {}) {
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
       _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
       _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
-    for (const who of ["ageha", "kumicho", "rei", "hajime", "sumi"]) value.flags[`_intro_${who}`] = true;
-    Object.assign(value.met, { ageha: true, kumicho: true, rei: true });
+    for (const who of ["ageha", "kumicho", "kuraudo", "hajime", "sumi"]) value.flags[`_intro_${who}`] = true;
+    Object.assign(value.met, { ageha: true, kumicho: true, kuraudo: true });
     // 地元の常連（N3a）: 第1章でEDENに一度通った保存（初対面の固有会話の後。LIMEの交換前なので誘いは来ない）。
     // 好感度は2本目の段階会話（♥1）に届かない値にし、地図の「！」が送り出しの会話だけから付くようにする。
     if (regulars) {

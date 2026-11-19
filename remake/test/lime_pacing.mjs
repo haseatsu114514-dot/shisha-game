@@ -33,9 +33,9 @@ const byId = (id) => DB.lime.find((m) => m.id === id);
   // 物語の誘い・噂・交換した翌朝の最初の一通は必ず届く
   for (const id of ["lime_naru_day3", "lime_outing_naru_1", "lime_minto_bond_finale", "rumor_cigarman_urban_legend", "rumor_minto_late_night", "lime_kumicho_first", "L01", "L21"]) assert.equal(cls(id), "must", id);
   // 章の◯日目の連絡・章が始まって◯日目からの連絡
-  for (const id of ["lime_minto_day5", "lime_kumicho_day9", "lime_ch4_tsumugi_counter", "lime_ch5_saku_title", "L07"]) assert.equal(cls(id), "timed", id);
+  for (const id of ["lime_minto_day5", "lime_kumicho_day9", "lime_ch4_tsumugi_counter", "lime_ch5_ayatori_title", "L07"]) assert.equal(cls(id), "timed", id);
   // 場面を読んだ・外出した後の続き
-  for (const id of ["lime_kumicho_tools", "lime_rei_lie", "lime_after_outing_naru", "lime_samechan_after_seat", "lime_mashiro_glass_cloth"]) assert.equal(cls(id), "react", id);
+  for (const id of ["lime_kumicho_tools", "lime_kuraudo_lie", "lime_after_outing_naru", "lime_samechan_after_seat", "lime_mashiro_glass_cloth"]) assert.equal(cls(id), "react", id);
   // 交換の印だけ・♥だけで届く雑談
   for (const id of ["L02", "L09", "L16", "L22", "L30", "lime_kumicho_holiday", "lime_adam_bond_a", "lime_wang_02", "lime_wang_05"]) assert.equal(cls(id), "ambient", id);
   for (const m of DB.lime) assert(["must", "timed", "react", "ambient"].includes(pacing.storyPaceClass(m)), m.id);
@@ -55,7 +55,7 @@ const ambientLike = (m) => kindOf(m) === "ambient";
 const optional = (row) => row.filter((m) => !["must", "work"].includes(kindOf(m)));
 const contact = (s, ...ids) => { for (const id of ids) { if (!s.contacts.includes(id)) s.contacts.push(id); s.flags[`_lime_contact_${id}`] = true; s.met[id] = true; } };
 const level = (s, map) => { for (const [id, n] of Object.entries(map)) s.affinity[id] = PTS[n]; };
-const friend = (s, day, ...ids) => { for (const id of ids) { s.finales[id] = { route: "friend", day, chapter: s.chapter }; s.affinity[id] = PTS[5]; s.owned.push(`suyaki_${id}`); } };
+const friend = (s, day, ...ids) => { for (const id of ids) { s.finales[id] = { route: "friend", day, chapter: s.chapter }; s.affinity[id] = PTS[5]; s.owned.push(({ kuraudo: "suyaki_rei", ayatori: "suyaki_saku" })[id] || `suyaki_${id}`); } };
 const lover = (s, since, ...ids) => { for (const id of ids) { s.lovers.push(id); s.loverSince[id] = since; s.loveLevel[id] = 2; s.limeRead.push(`_lover_private_account_${id}`); s.finales[id] = { route: "lover", day: since }; } };
 const outingsDone = (s) => { for (const m of DB.lime) if (/^lime_outing_/.test(m.id)) s.flags[`_invited_${m.id}`] = true; };
 
@@ -122,12 +122,12 @@ function checkRules(name, rows) {
       s.lastBaitoDay = 15;
     },
     perDay: (s, d) => {
-      if (d >= 2) contact(s, "ageha"); if (d >= 3) contact(s, "kumicho"); if (d >= 4) contact(s, "rei"); if (d >= 5) contact(s, "samechan");
-      level(s, { ageha: Math.min(4, Math.floor(d / 3)), kumicho: Math.min(4, Math.floor((d - 1) / 3)), rei: Math.min(4, Math.floor((d - 2) / 3)), samechan: Math.min(3, Math.floor((d - 3) / 3)) });
+      if (d >= 2) contact(s, "ageha"); if (d >= 3) contact(s, "kumicho"); if (d >= 4) contact(s, "kuraudo"); if (d >= 5) contact(s, "samechan");
+      level(s, { ageha: Math.min(4, Math.floor(d / 3)), kumicho: Math.min(4, Math.floor((d - 1) / 3)), kuraudo: Math.min(4, Math.floor((d - 2) / 3)), samechan: Math.min(3, Math.floor((d - 3) / 3)) });
       if (d >= 4) s.flags._ch2_read_ch2_kumicho_third = true;
-      if (d >= 6) s.flags._ch2_read_ch2_rei_third = true;
-      if (d >= 8) Object.assign(s.flags, { _ch2_read_ch2_kumicho_fifth: true, _ch2_read_ch2_rei_fourth: true });
-      if (d >= 10) Object.assign(s.flags, { _ch2_read_ch2_kumicho_sixth: true, _ch2_read_ch2_rei_fifth: true });
+      if (d >= 6) s.flags._ch2_read_ch2_kuraudo_third = true;
+      if (d >= 8) Object.assign(s.flags, { _ch2_read_ch2_kumicho_fifth: true, _ch2_read_ch2_kuraudo_fourth: true });
+      if (d >= 10) Object.assign(s.flags, { _ch2_read_ch2_kumicho_sixth: true, _ch2_read_ch2_kuraudo_fifth: true });
       s.lastBaitoDay = s.day - (d % 3);
     } });
   checkRules("第2章", rows);
@@ -137,9 +137,9 @@ function checkRules(name, rows) {
   assert.equal(longestRun(rows, (r) => counted(r).length >= 3), 0, "第2章: 3通の朝は無い");
   assert(longestRun(rows, (r) => !r.length) <= 1, "第2章: 何も届かない朝は続かない");
   // 店で話を読んだ後の続きは、にぎやかな時期でも届く（日付の雑談より先）
-  for (const id of ["lime_kumicho_tools", "lime_kumicho_young", "lime_kumicho_cup", "lime_rei_bond_a", "lime_rei_smile", "lime_rei_mix"]) assert(ids.includes(id), `第2章: ${id} が届く`);
+  for (const id of ["lime_kumicho_tools", "lime_kumicho_young", "lime_kumicho_cup", "lime_kuraudo_bond_a", "lime_kuraudo_smile", "lime_kuraudo_mix"]) assert(ids.includes(id), `第2章: ${id} が届く`);
   // 噂（物語の伏線）と、交換した翌朝の最初の一通は必ず届く
-  for (const id of ["rumor_kemuri_experiments", "rumor_kumicho_cigarman", "lime_kumicho_first", "lime_rei_first"]) assert(ids.includes(id), `第2章: ${id} が届く`);
+  for (const id of ["rumor_kemuri_experiments", "rumor_kumicho_cigarman", "lime_kumicho_first", "lime_kuraudo_first"]) assert(ids.includes(id), `第2章: ${id} が届く`);
   // 恋人の朝のひとこと・デートの誘いも、物語の連絡に埋もれない
   assert(all.some((m) => m.lover && m.sender === "tsumugi"), "第2章: 恋人からも届く");
   console.log(`[LM08] PASS chapter 2, many contacts: ${counted(all).length} LIME in 13 days, never 3 in a morning, story follow-ups and rumors all arrive`);
@@ -149,14 +149,14 @@ function checkRules(name, rows) {
 {
   const setup = (s) => {
     Object.assign(s.flags, { _ch3_intro: { startDay: 43, stage: 3, titleSeen: true, routeVersion: 3 }, _elapsed_calendar: true, _ch2_region: "tokyo" });
-    contact(s, "sumi", "minto", "naru", "tsumugi", "rio", "adam", "ageha", "kumicho", "rei", "samechan");
+    contact(s, "sumi", "minto", "naru", "tsumugi", "rio", "adam", "ageha", "kumicho", "kuraudo", "samechan");
     level(s, { sumi: 3, minto: 4, rio: 3, ageha: 4, samechan: 3 });
-    friend(s, 12, "naru", "adam"); friend(s, 26, "kumicho", "rei"); lover(s, 11, "tsumugi"); outingsDone(s);
+    friend(s, 12, "naru", "adam"); friend(s, 26, "kumicho", "kuraudo"); lover(s, 11, "tsumugi"); outingsDone(s);
     s.limeRead.push("L21", "L22", "L39"); // スミさんの♥1の一言は読み終え、♥2〜3の分（L23ほか）が残っている
   };
   const perDay = (s, d) => {
-    if (d >= 3) contact(s, "saku"); if (d >= 4) contact(s, "steve"); if (d >= 6) contact(s, "volk");
-    level(s, { saku: Math.min(4, Math.floor(d / 3)), steve: Math.min(4, Math.floor((d - 1) / 3)), volk: Math.min(3, Math.floor((d - 3) / 3)) });
+    if (d >= 3) contact(s, "ayatori"); if (d >= 4) contact(s, "steve"); if (d >= 6) contact(s, "volk");
+    level(s, { ayatori: Math.min(4, Math.floor(d / 3)), steve: Math.min(4, Math.floor((d - 1) / 3)), volk: Math.min(3, Math.floor((d - 3) / 3)) });
   };
   const { rows, state } = run({ chapter: 3, startDay: 43, days: 13, setup, perDay, opts: () => ({ invitations: false }) });
   checkRules("第3章の東京", rows);
@@ -164,7 +164,7 @@ function checkRules(name, rows) {
   const perSender = {};
   for (const m of all) perSender[m.sender] = (perSender[m.sender] || 0) + 1;
   // 旧: ヴォルクから8日続けて届いた。新: 同じ人に偏らず、いろんな人から届く
-  for (const id of ["volk", "steve", "saku"]) assert(perSender[id] >= 2 && perSender[id] <= 4, `第3章: ${id} から${perSender[id]}通`);
+  for (const id of ["volk", "steve", "ayatori"]) assert(perSender[id] >= 2 && perSender[id] <= 4, `第3章: ${id} から${perSender[id]}通`);
   assert(Object.keys(perSender).length >= 8, `第3章: ${Object.keys(perSender).length}人から届く（${JSON.stringify(perSender)}）`);
   assert(longestRun(rows, (r) => !r.length) <= 1, "第3章: 何も届かない朝は続かない");
   assert(all.filter(needsReply).length <= 13 * 1.5, `第3章: 返事の要る連絡は1日1.5通まで（${all.filter(needsReply).length}通）`);
@@ -213,7 +213,7 @@ function checkRulesQuiet(rows) {
 {
   const setup = (s) => {
     Object.assign(s.flags, { _ch3_intro: { startDay: 43, stage: 3, titleSeen: true, routeVersion: 3 }, _elapsed_calendar: true, _ch2_region: "tokyo" });
-    contact(s, "saku", "steve", "volk", "minto", "rio", "adam", "ageha"); level(s, { saku: 3, steve: 3, volk: 3, minto: 3, rio: 3, adam: 3, ageha: 3 }); outingsDone(s);
+    contact(s, "ayatori", "steve", "volk", "minto", "rio", "adam", "ageha"); level(s, { ayatori: 3, steve: 3, volk: 3, minto: 3, rio: 3, adam: 3, ageha: 3 }); outingsDone(s);
     s.limeRead.push(...DB.lime.filter((m) => m.type === "rumor").map((m) => m.id));
   };
   const { rows, state } = run({ chapter: 3, startDay: 43, days: 10, setup, opts: () => ({ invitations: false }), read: () => false });
@@ -232,8 +232,8 @@ function checkRulesQuiet(rows) {
   const { rows } = run({ chapter: 2, startDay: 15, days: 13,
     setup: (s) => {
       Object.assign(s.flags, { _ch2_day1: { startDay: 15 }, _elapsed_calendar: true, _ch2_region: "tokyo" }); // デートの誘いが出ない街で、朝のひとことだけを見る
-      contact(s, "tsumugi", "kumicho", "rei", "ageha"); lover(s, 11, "tsumugi"); outingsDone(s);
-      level(s, { kumicho: 3, rei: 3, ageha: 3 });
+      contact(s, "tsumugi", "kumicho", "kuraudo", "ageha"); lover(s, 11, "tsumugi"); outingsDone(s);
+      level(s, { kumicho: 3, kuraudo: 3, ageha: 3 });
     } });
   const notes = rows.map((r, i) => r.some((m) => String(m.id).startsWith("_lover_morning_tsumugi")) ? i : -1).filter((i) => i >= 0);
   assert(notes.length >= 3, `恋人の朝のひとことが13日で${notes.length}通`);

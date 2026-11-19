@@ -1,7 +1,7 @@
 {
   "dialogues": [
     {
-      "dialogue_id": "ch2_rei_first",
+      "dialogue_id": "ch2_kuraudo_first",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
       },
@@ -9,12 +9,12 @@
         {
           "type": "condition",
           "condition_type": "met",
-          "char_id": "rei",
+          "char_id": "kuraudo",
           "next_true": "already_met",
           "next_false": "first_meeting"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……"
         },
@@ -24,7 +24,7 @@
           "text": "返事がない。しばらくして、クラウドが手元を見たまま、ぼそっと何か言った。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……カシス、もう少し……いや、これでいい……"
         },
@@ -34,7 +34,7 @@
           "text": "え？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……ひとり言。気にしないで"
         },
@@ -44,7 +44,7 @@
           "text": "（……俺に言ったのか、シーシャに言ったのか、よく分からなかった）"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……座って"
         },
@@ -79,7 +79,7 @@
           "text": "あの……カシス、使ってますか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……ああ"
         },
@@ -89,7 +89,7 @@
           "text": "なんか……すごく馴染んでますね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……"
         },
@@ -99,22 +99,22 @@
           "text": "カシスって甘ったるくなりがちじゃないですか。なのに全然しつこくなくて"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……扱い方次第だ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……薔薇は、攻めすぎると棘が出る。香りがとがる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "そこを越えると、芳香剤みたいになる。それが苦手な奴は多い"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "だから、上げない。中温の、ぎりぎりで止める"
         },
@@ -124,7 +124,7 @@
           "text": "クラウドさん、カシス得意なんですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……そう言われたことはある"
         },
@@ -139,7 +139,7 @@
           "text": "ほとんど言葉のないまま、時間が過ぎた。帰り際、クラウドが顔を上げた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……また来てもいい"
         },
@@ -150,7 +150,7 @@
         },
         {
           "type": "remember",
-          "memory_id": "rei_listen"
+          "memory_id": "kuraudo_listen"
         }
       ],
       "branches": {
@@ -217,7 +217,7 @@
             "text": "（……え？ あの外見で、今焦った？）"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "serious",
             "text": "……"
           },
@@ -242,7 +242,7 @@
       }
     },
     {
-      "dialogue_id": "ch2_rei_second",
+      "dialogue_id": "ch2_kuraudo_second",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
       },
@@ -253,7 +253,7 @@
           "text": "あの「イエス」の煙が頭から離れなくて、気づいたら「貴方ノ為ノ此ノ煙。」に来ていた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……また来た"
         },
@@ -263,7 +263,7 @@
           "text": "また来ました。あの……おまかせで"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……"
         },
@@ -278,7 +278,7 @@
           "text": "あの……前のイエス。チェリーも入ってましたか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……カシスと薔薇とブラックティー。言えなかった愛してる、の感じを混ぜた"
         },
@@ -293,7 +293,7 @@
           "text": "BGMのロックが低く流れている。しばらくして、新しい一台が置かれた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……「月光花」"
         },
@@ -303,7 +303,7 @@
           "text": "あ、その名前。曲のほうなら、知ってます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "surprise",
           "text": "……っ"
         },
@@ -313,7 +313,7 @@
           "text": "クラウドの手が止まった。トングの先が、炭の上で浮いたままになる。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "surprise",
           "text": "……知ってるのか"
         },
@@ -338,7 +338,7 @@
           "text": "（……聞いてない？）"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……サビを、知ってる"
         },
@@ -348,7 +348,7 @@
           "text": "はい。サビだけです"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……よく見たら。メイク、映えそうだ"
         },
@@ -363,7 +363,7 @@
           "text": "クラウドが、俺の肩を軽く叩いた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……同士だ"
         },
@@ -378,7 +378,7 @@
           "text": "叩いた手を、クラウドは自分で見た。それから一歩、いや二歩下がった。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "sad",
           "text": "……近かった。すまない"
         },
@@ -388,27 +388,27 @@
           "text": "いえ。それより、この一台のこと、聞いてもいいですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "ミックスの名前は全部、曲から取ってる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "月光花は、夜に咲いて朝には消える花だ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "儚さと甘さが、同時にある。それを煙で出したかった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "ジャスミンが土台。ブルーベリーで、夜の深さを足した"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "最後に一瞬だけ甘くなる。そこが、サビの前で……"
         },
@@ -418,7 +418,7 @@
           "text": "（……急にすごい喋ってる。半分も分からないのに、聞いていたくなる）"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……あ。余計なことを言った。忘れてくれ"
         },
@@ -428,7 +428,7 @@
           "text": "曲は分からないですけど、吸ってたら夜の景色が浮かびました"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……そうか"
         },
@@ -440,7 +440,7 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_lime_contact_rei",
+          "flag": "_lime_contact_kuraudo",
           "next_true": "",
           "next_false": "lime_exchange"
         }
@@ -453,7 +453,7 @@
             "text": "帰り際、クラウドがカウンター越しにスマホを差し出した。画面には、LIMEのQRコードが出ている。"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……ミックスの名前、決まったら送る。いやなら、いい"
           },
@@ -463,7 +463,7 @@
             "text": "いやじゃないです。楽しみにしてます"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……そうか"
           },
@@ -474,13 +474,13 @@
           },
           {
             "type": "set_flag",
-            "flag": "_lime_contact_rei"
+            "flag": "_lime_contact_kuraudo"
           }
         ]
       }
     },
     {
-      "dialogue_id": "ch2_rei_third",
+      "dialogue_id": "ch2_kuraudo_third",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
       },
@@ -491,7 +491,7 @@
           "text": "店に入ると、クラウドが炭を整えながら、ぼそぼそと何か呟いていた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……夜の底で咲く花に……あの人の名を……ちがうな……"
         },
@@ -501,7 +501,7 @@
           "text": "今日もお邪魔します"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……ん"
         },
@@ -521,7 +521,7 @@
           "text": "あの、クラウドさん。遠くないですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……この前、近すぎた。だから、今日は離した"
         },
@@ -536,7 +536,7 @@
           "text": "一台が、ずず、と半分だけ戻ってきた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……このくらいか"
         },
@@ -566,7 +566,7 @@
           "text": "出た、爆煙の堕天使の本気。今日もすごいな"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……届いたか"
         },
@@ -581,12 +581,12 @@
           "text": "（爆煙の堕天使……。大げさな呼び名だと思ったけど、あの煙を見たら笑えない）"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……少し煙ってるくらいが、ちょうどいい"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……今日は何を聞きに来た"
         },
@@ -596,7 +596,7 @@
           "text": "え？ 別に聞きに来たわけじゃ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "来るたびに……何か聞いてきた。だから今日も聞くと思った"
         },
@@ -616,7 +616,7 @@
           "text": "クラウドはトングを置いた。コートの袖の刺繍を、指で一度なぞる。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……好きで選んだ"
         },
@@ -626,17 +626,17 @@
           "text": "好きで、ですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "この服も、黒も……ずっと好きだった。ただ、人が苦手で"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "話しかけられると……何を言えばいいか、分からなくなる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "好きで着ていたら……みんな離れていった。計算外だった"
         },
@@ -646,7 +646,7 @@
           "text": "（怖い人だと思ってた。……怖がってたのは、クラウドさんのほうだったのか）"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……でも、シーシャは作れる。言葉の代わりに、煙で伝えられる。……好きな音楽と同じで"
         },
@@ -663,7 +663,7 @@
           "next_false": "cup_before"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "笑うのはまだ下手だが……伝えたい気持ちは、嘘じゃない"
         },
@@ -673,7 +673,7 @@
           "text": "ここだと、小さい声でも聞こえますよ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……本名は、健太"
         },
@@ -683,12 +683,12 @@
           "text": "え"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "クラウドでも健太でも、同じ手で作ってる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……急だったか"
         },
@@ -706,14 +706,14 @@
       "branches": {
         "cup_before": [
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "大会で出す一台は……ちゃんと伝わってほしい"
           }
         ],
         "cup_after": [
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "店で出す一台は……ちゃんと伝わってほしい"
           }
@@ -721,7 +721,7 @@
       }
     },
     {
-      "dialogue_id": "ch2_rei_fourth",
+      "dialogue_id": "ch2_kuraudo_fourth",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp",
         "flavor_lesson": {
@@ -735,7 +735,7 @@
           "text": "入り口で、クラウドと目が合った。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……あの"
         },
@@ -745,7 +745,7 @@
           "text": "（……クラウドさんのほうから？）"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……前の客が、「怖い」と言って帰った。また、失敗した"
         },
@@ -755,7 +755,7 @@
           "text": "怖い……って"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "笑いかけようとしたんだが……なぜか泣かれた。よく分からない"
         },
@@ -770,7 +770,7 @@
           "text": "……もしかして、笑顔の練習してますか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……っ！！"
         },
@@ -780,7 +780,7 @@
           "text": "クラウドの顔が、ほんのり赤くなった気がした。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……そんなことは、していない"
         },
@@ -790,12 +790,12 @@
           "text": "してますよね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……してるかもしれない"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……「笑えばいい」って、そういう歌詞があって。それが……正しいと思って"
         },
@@ -810,12 +810,12 @@
           "text": "怖くはないですよ。シーシャもちゃんと伝わってるし"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……例えば、ローズも、棘が出ないところで止める。人に届く香りに、したいから"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……"
         },
@@ -825,7 +825,7 @@
           "text": "長い沈黙の後、クラウドがほんの少しだけ、口の端を上げた。それはたぶん、笑顔の練習の成果だった。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……今のは、練習じゃなかった"
         },
@@ -841,7 +841,7 @@
         },
         {
           "type": "remember",
-          "memory_id": "rei_smile"
+          "memory_id": "kuraudo_smile"
         },
         {
           "speaker": "",
@@ -851,7 +851,7 @@
       ]
     },
     {
-      "dialogue_id": "ch2_rei_fifth",
+      "dialogue_id": "ch2_kuraudo_fifth",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
       },
@@ -864,7 +864,7 @@
           "next_false": "arrival_before"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……灯りも匂いも途切れた部屋で……ちがうな……"
         },
@@ -874,7 +874,7 @@
           "text": "新しいミックスですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……来るかと思ってた。ああ、名前を考えてる"
         },
@@ -886,7 +886,7 @@
           "next_false": "routine_before"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……ひとつ聞いていいか"
         },
@@ -896,7 +896,7 @@
           "text": "え？ はい"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "キミは……なぜ何度もここに来た。最初に「怖い」と思ったはずだ"
         },
@@ -916,7 +916,7 @@
           "text": "……あと、怖い人だと思ったのに、来るたびに予想が外れて"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……外れた"
         },
@@ -953,7 +953,7 @@
           "text": "しばらく間があって、クラウドが不意に口を開いた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……あの、さっき考えてた新しいミックスなんだが"
         },
@@ -963,27 +963,27 @@
           "text": "はい"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "「嘘」っていう曲があって"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "別れる人に、また会えるって嘘をついてしまう、あの優しい嘘の感覚、それをシーシャで出したくて"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "ダブルアップルとピーチをベースに、最初は温かくて甘い"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "下の層にミントを詰めて、途中からふっと冷えて静かになる感じにしたくて"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "あと少し燻した感じを足して、別れの重さも……"
         },
@@ -993,7 +993,7 @@
           "text": "（また止まらなくなってる。……前より、ずっと楽しそうに）"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……あ"
         },
@@ -1003,12 +1003,12 @@
           "text": "いや、続けてください"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……こうやって待たれると、少し、続きが出てくる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……その、今のは、忘れてくれ"
         },
@@ -1019,7 +1019,7 @@
         },
         {
           "type": "remember",
-          "memory_id": "rei_voice"
+          "memory_id": "kuraudo_voice"
         },
         {
           "speaker": "",
@@ -1049,7 +1049,7 @@
             "text": "大会前なのに、いつも通りですね"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……変わらない方がいい。緊張すると煙が乱れる"
           },
@@ -1066,7 +1066,7 @@
             "text": "仕込みの時も、ミックスを考えてるんですね"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……浮かぶ時は、勝手に浮かぶ。手は止めない"
           },
@@ -1078,7 +1078,7 @@
         ],
         "offering_before": [
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……大会で戦うことになるが"
           },
@@ -1088,14 +1088,14 @@
             "text": "はい"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……負けない。本気で煙を出す。だが……キミには、ちゃんと届けたい"
           }
         ],
         "offering_after": [
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……今日は、ひとつ吸っていけ"
           },
@@ -1105,7 +1105,7 @@
             "text": "はい"
           },
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……まだ名前は決まらない。だが……キミには、ちゃんと届けたい"
           }
@@ -1113,7 +1113,7 @@
       }
     },
     {
-      "dialogue_id": "ch2_rei_sixth",
+      "dialogue_id": "ch2_kuraudo_sixth",
       "comment": "#2027 ♥5。名前を探していたミックス「嘘」が仕上がり、はじめが最初に吸う。煙のタトゥーの由来（初めて客として行ったライブの帰り）を話す。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
@@ -1125,7 +1125,7 @@
           "text": "BGMの止まった「貴方ノ為ノ此ノ煙。」で、クラウドが組み上げた一台を見つめている。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……来た。ちょうどいい"
         },
@@ -1135,7 +1135,7 @@
           "text": "静かですね。今日は曲、かけないんですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……これを吸う時は、何も鳴らさないで聴いてほしかった"
         },
@@ -1150,7 +1150,7 @@
           "text": "もしかして、この前の……"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……「嘘」。やっと形になった"
         },
@@ -1165,7 +1165,7 @@
           "text": "（温かかった煙が、途中で静かになる。笑って手を振る別れ際みたいだ）"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……どう"
         },
@@ -1185,12 +1185,12 @@
           "text": "クラウドは目を閉じ、指でカウンターを一度だけ叩いた。拍を取るみたいに。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……それ。それを、出したかった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "また会えるって嘘は、もう一度会いたいから、つく"
         },
@@ -1200,17 +1200,17 @@
           "text": "クラウドは袖を少しまくり、手の甲から首へ続く煙のタトゥーを指でなぞった。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……これ。初めて客として行ったライブの帰りに、決めた"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "一番後ろで、一人で立ってた。誰とも話せなかった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "でも、音は一番後ろまで届いてた。知らない誰かの声が、俺のところまで"
         },
@@ -1220,17 +1220,17 @@
           "text": "だから、煙なんですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……煙も、届く。見えなくなっても、香りは残る"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "俺も、そういうのを出したかった。一番後ろの奴にも、届くやつを"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……「嘘」を最初に吸ったのが、キミでよかった"
         },
@@ -1240,7 +1240,7 @@
           "text": "俺も、よかったです。……次は、一番後ろの席で頼んでみます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……うん。そこ、空けとく"
         },
@@ -1251,15 +1251,15 @@
         },
         {
           "type": "remember",
-          "memory_id": "rei_reach"
+          "memory_id": "kuraudo_reach"
         }
       ]
     },
     {
-      "dialogue_id": "ch2_rei_bond_finale",
+      "dialogue_id": "ch2_kuraudo_bond_finale",
       "comment": "#2027 好感度MAXの締めくくり（友情のみ）。店を始めた頃からカシスだけを詰めた素焼きのハガルを渡し、「同士」を「友達」と言い直す（はじめは「月光花」のサビしか知らないと、クラウドは聞いたうえで言っていた。2026-11-13 オーナー訂正）。",
       "metadata": {
-        "bond_finale": "rei"
+        "bond_finale": "kuraudo"
       },
       "lines": [
         {
@@ -1275,7 +1275,7 @@
           "text": "CDプレイヤーの横に、夜明け前みたいな薄い青のジャケットが立ててあった。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……あの時の盤。感想は、曲が終わってからでいい"
         },
@@ -1290,7 +1290,7 @@
           "text": "クラウドの手が、一度だけその縁に触れて、離れる。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……薔薇しか詰めてないハガル。店を始めた頃から"
         },
@@ -1300,7 +1300,7 @@
           "text": "表に返して、カウンターの上をこちらへ滑らせる。薔薇が、ふっと香った。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "beat": 600,
           "text": "……キミに、渡したい"
@@ -1311,22 +1311,22 @@
           "text": "……伏せてあったの、あのCDの時と同じですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "serious",
           "text": "……うん。渡す前に、やめようと思った。でも、ずっと誰かに渡したかった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "薔薇は、上げすぎると棘が出る。……このハガルは、その手前を覚えてる"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "キミなら、棘の手前で止められる。何度も、話の続きを待ってくれたから"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……前に、同志だって言った"
         },
@@ -1336,17 +1336,17 @@
           "text": "サビしか知らないのに、でしたね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……聞いてた。サビだけだって、ちゃんと"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "それでも、言いたかった。半分は、口実だった"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……友達、のつもりだった。言い方が、分からなかった"
         },
@@ -1361,12 +1361,12 @@
           "text": "曲は、いまだにサビしか歌えませんけど"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……それでいい。詳しい奴なら、店に来る"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "詳しくないのに聞きに来る奴は、あまりいない"
         },
@@ -1376,7 +1376,7 @@
           "text": "クラウドはすぐには続けなかった。流れていた曲の、最後の音が消えるまで。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……今の顔は、練習じゃない"
         },
@@ -1386,7 +1386,7 @@
           "text": "分かります。……あと、この盤の感想。好きです"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……知ってた"
         },
@@ -1400,7 +1400,7 @@
       "branches": {
         "before_tournament": [
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……来た。大会の支度、忙しいはずなのに"
           },
@@ -1412,7 +1412,7 @@
         ],
         "after_tournament": [
           {
-            "speaker": "rei",
+            "speaker": "kuraudo",
             "face": "normal",
             "text": "……来た"
           },
@@ -1425,8 +1425,8 @@
       }
     },
     {
-      "dialogue_id": "ch2_rei_group_concert_prep",
-      "comment": "候補A14。既存 ch2_rei_group_concert_prep（♥2の特別回・余りチケット）の改稿案。IDは維持。フラグ _ch2_rei_ticket も維持（前夜の分岐の前提）。常連がライブの話で盛り上がり、クラウドが一言返すのに力がいること、客が帰ったあと余った一枚を渡す流れは残す。画面に出す『【洞察】が上がった』と、地の文の『仲間の認定』は外す（報酬キューの警告、説明で着地しない）。ミックス名のイエス・月光花は現行のオマージュ名のまま。鎧やステージの人格は出さない。",
+      "dialogue_id": "ch2_kuraudo_group_concert_prep",
+      "comment": "候補A14。既存 ch2_kuraudo_group_concert_prep（♥2の特別回・余りチケット）の改稿案。IDは維持。フラグ _ch2_kuraudo_ticket も維持（前夜の分岐の前提）。常連がライブの話で盛り上がり、クラウドが一言返すのに力がいること、客が帰ったあと余った一枚を渡す流れは残す。画面に出す『【洞察】が上がった』と、地の文の『仲間の認定』は外す（報酬キューの警告、説明で着地しない）。ミックス名のイエス・月光花は現行のオマージュ名のまま。鎧やステージの人格は出さない。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
       },
@@ -1457,7 +1457,7 @@
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……",
           "face": "normal"
         },
@@ -1472,7 +1472,7 @@
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……あ、その……たぶん……新曲……",
           "face": "surprise"
         },
@@ -1502,7 +1502,7 @@
           "face": ""
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……今度、ライブがある",
           "face": "normal"
         },
@@ -1512,7 +1512,7 @@
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……チケットが1枚、余ってる",
           "face": "normal"
         },
@@ -1522,7 +1522,7 @@
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……俺は行く。ただ、隣が空いてる",
           "face": "normal"
         },
@@ -1537,7 +1537,7 @@
           "text": "俺、たぶん一曲も知らないですよ。それでも、いいんですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……いい。一番後ろだから。知らなくても、ばれない"
         },
@@ -1548,10 +1548,10 @@
         },
         {
           "type": "set_flag",
-          "flag": "_ch2_rei_ticket"
+          "flag": "_ch2_kuraudo_ticket"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……そうか。声、小さくてすまなかった",
           "face": "normal"
         },
@@ -1561,15 +1561,15 @@
           "face": "normal"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "text": "……うん。曲が始まってからでいい。その方が、話さなくて済む",
           "face": "smile"
         }
       ]
     },
     {
-      "dialogue_id": "ch3_prep_rei_live",
-      "comment": "RVE07（添削表の提案6）。第3章の出発前の準備3日に、柚ヶ谷の「貴方ノ為ノ此ノ煙。」へ行ったとき一度だけ読むクラウドのライブの夜。前提は第2章で余ったチケットを受け取ったこと（ch2_rei_group_concert_prep の _ch2_rei_ticket）。大会前夜 remake_ch2_eve_rei の ticket 分岐「来週、隣は空けとく。この曲、そこでやるから」を回収する。ライブは地の文で短く回想し、場面は終演後に店へ戻ったクラウドとの会話。チケットの回（常連の一曲目の予想・クラウドの小声の「新曲」・「曲が始まってからでいい」）と前夜の曲（最後の音のあとの三秒）は前提にしてよい。ch2_rei_sixth の「一番後ろで、一人で立ってた」「一番後ろの席で」は、読んでいれば響き、読んでいなくても通る触れ方にとどめる（クラウドが後ろで聴く癖はこの場面の中で本人が言う）。大会の結果・恋愛には触れない（クラウドは友情のみ）。味覚の不調にも触れない。最後の set_flag で、最後まで読んだ時だけ既読にする。 台本は ch2_rei.json（チケットを渡す ch2_rei_group_concert_prep の続き）。柚ヶ谷の台本と一緒に ch2-city-data.js の loadPreparationDialogues が読み込み、第3章の準備期間の夜に「貴方ノ為ノ此ノ煙。」へ来た時だけ ch2-preparation.js の reiLiveDue で出す（RVE07）。",
+      "dialogue_id": "ch3_prep_kuraudo_live",
+      "comment": "RVE07（添削表の提案6）。第3章の出発前の準備3日に、柚ヶ谷の「貴方ノ為ノ此ノ煙。」へ行ったとき一度だけ読むクラウドのライブの夜。前提は第2章で余ったチケットを受け取ったこと（ch2_kuraudo_group_concert_prep の _ch2_kuraudo_ticket）。大会前夜 remake_ch2_eve_kuraudo の ticket 分岐「来週、隣は空けとく。この曲、そこでやるから」を回収する。ライブは地の文で短く回想し、場面は終演後に店へ戻ったクラウドとの会話。チケットの回（常連の一曲目の予想・クラウドの小声の「新曲」・「曲が始まってからでいい」）と前夜の曲（最後の音のあとの三秒）は前提にしてよい。ch2_kuraudo_sixth の「一番後ろで、一人で立ってた」「一番後ろの席で」は、読んでいれば響き、読んでいなくても通る触れ方にとどめる（クラウドが後ろで聴く癖はこの場面の中で本人が言う）。大会の結果・恋愛には触れない（クラウドは友情のみ）。味覚の不調にも触れない。最後の set_flag で、最後まで読んだ時だけ既読にする。 台本は ch2_rei.json（チケットを渡す ch2_kuraudo_group_concert_prep の続き）。柚ヶ谷の台本と一緒に ch2-city-data.js の loadPreparationDialogues が読み込み、第3章の準備期間の夜に「貴方ノ為ノ此ノ煙。」へ来た時だけ ch2-preparation.js の kuraudoLiveDue で出す（RVE07）。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
       },
@@ -1611,7 +1611,7 @@
           "text": "思わず、口の中で三つ数えた。拍手が起きたのは、そのあとだった。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "付き合わせて、悪い。まっすぐ帰ると、音が逃げる気がした"
         },
@@ -1621,7 +1621,7 @@
           "text": "俺も、まだ耳の中で鳴ってます。曲名は、一つも言えませんけど"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "surprise",
           "text": "……一つも"
         },
@@ -1631,12 +1631,12 @@
           "text": "最後の曲以外、全部初めてでした。それでも、あっという間で"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……そうか。初めて聴く奴の顔を、隣で見たのは初めてだ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……始まる前、何も話さなくて、すまなかった"
         },
@@ -1646,7 +1646,7 @@
           "text": "曲が始まってからでいい、って言ってたじゃないですか"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "surprise",
           "text": "……覚えてたのか"
         },
@@ -1656,7 +1656,7 @@
           "text": "クラウドはCDプレイヤーに手を伸ばしかけて、やめた。店の中は、換気扇の低い音だけになった。"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "二曲目、当たってた"
         },
@@ -1666,7 +1666,7 @@
           "text": "当たってましたね。常連さんたち、前の方からこっちを見てましたよ"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "手を振られた。振り返した。……たぶん、見えてない"
         },
@@ -1676,7 +1676,7 @@
           "text": "見えてましたよ。みんな、もっと大きく手を振ってました"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "最後の曲。終わったあと、ちゃんと三秒あった"
         },
@@ -1686,7 +1686,7 @@
           "text": "誰も手を叩きませんでしたね。あんなに人がいたのに"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "イヤホンで聴くより、少し長かった。みんなで黙ると、長くなる"
         },
@@ -1696,17 +1696,17 @@
           "text": "（イヤホンの三秒と、満員のフロアの三秒。同じ空白なのに、重さが違った）"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "ライブは、いつも一番後ろで聴く。後ろからだと、全員が見える"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "同じとこで、肩が揺れる。……今日は、隣も見えた"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "三つ、口で数えてたろ"
         },
@@ -1716,7 +1716,7 @@
           "text": "え、声に出てました？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "smile",
           "text": "……出てない。口だけ。俺も、同じとこで数えてた"
         },
@@ -1726,12 +1726,12 @@
           "text": "一番後ろでも、ちゃんと届いてましたね"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……うん。一番後ろまで、届いてた"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "東京、もうすぐだろ"
         },
@@ -1741,7 +1741,7 @@
           "text": "はい。支度が済んだら、発ちます"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "向こうでも、一番後ろの奴まで、届かせて"
         },
@@ -1757,7 +1757,7 @@
         },
         {
           "type": "set_flag",
-          "flag": "_talk_seen_ch3_prep_rei_live"
+          "flag": "_talk_seen_ch3_prep_kuraudo_live"
         }
       ]
     }

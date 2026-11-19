@@ -277,7 +277,7 @@ export const TAROT_ARCANA = Object.freeze({
   sumi: ["09-hermit", "IX", "隠者"], naru: ["01-magician", "I", "魔術師"], adam: ["06-lovers", "VI", "恋人"],
   minto: ["03-empress", "III", "女帝"], tsumugi: ["17-star", "XVII", "星"], rio: ["02-high-priestess", "II", "女教皇"],
   hiyori: ["08-strength", "VIII", "力"], samechan: ["10-wheel", "X", "運命の輪"], ageha: ["19-sun", "XIX", "太陽"],
-  kumicho: ["05-hierophant", "V", "教皇"], rei: ["18-moon", "XVIII", "月"], saku: ["00-fool", "0", "愚者"],
+  kumicho: ["05-hierophant", "V", "教皇"], kuraudo: ["18-moon", "XVIII", "月"], ayatori: ["00-fool", "0", "愚者"],
   steve: ["14-temperance", "XIV", "節制"], volk: ["04-emperor", "IV", "皇帝"], mashiro: ["12-hanged", "XII", "吊るされた男"],
   da_silva: ["20-judgement", "XX", "審判"], sheikh: ["21-world", "XXI", "世界"], master_hookah: ["11-justice", "XI", "正義"],
   noor: ["07-chariot", "VII", "戦車"],

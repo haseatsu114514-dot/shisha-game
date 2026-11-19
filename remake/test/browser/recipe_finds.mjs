@@ -41,7 +41,7 @@ async function seedTokyo(page) {
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
       _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
       _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
-    for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "sui"]) value.flags[`_intro_${who}`] = true;
+    for (const who of ["hajime", "sumi", "pakki", "uezono", "dr_charcoal", "sensu"]) value.flags[`_intro_${who}`] = true;
     if (!progress.advanceToChapterThree(value)) throw new Error("Chapter boundary failed");
     value.day += 3;
     if (!progress.departChapterThree(value)) throw new Error("Departure failed");
@@ -52,7 +52,7 @@ async function seedTokyo(page) {
     const intro = value.flags._ch3_intro;
     intro.stage = progress.CH3_INTRO_SCENES.findIndex(scene => scene.id === "ch3_strategy");
     value.day = intro.startDay + 12; value.slot = 0; value.phase = "daily";
-    Object.assign(value.met, { saku: true, steve: true, volk: true, mashiro: true, mukai_master: true });
+    Object.assign(value.met, { ayatori: true, steve: true, volk: true, mashiro: true, mukai_master: true });
     value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
     Object.assign(value.flags, { _lime_contact_steve: true, _ch3_read_ch3_steve_lime: true,
       _ch3_read_ch3_steve_two_timers: true, _ch3_read_ch3_steve_empty_seat: true, _ch3_read_ch3_steve_tongs: true, _ch3_read_ch3_steve_watch: true,

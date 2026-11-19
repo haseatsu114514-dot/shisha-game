@@ -19,7 +19,7 @@ const fresh = () => ({ chapter: 2, day: 1, slot: 0, met: {}, flags: { _ch2_deliv
 
 // 配達先は3軒で、id がそのまま char_id（_met_<id> / met[<id>]）。
 check('delivery stops are the three shop owners', () => {
-  assert.deepEqual(DELIVERY_STOPS, ['ageha', 'kumicho', 'rei']);
+  assert.deepEqual(DELIVERY_STOPS, ['ageha', 'kumicho', 'kuraudo']);
 });
 
 // snapshot→(完読せず中断)→restore：会話中に付いた面識とカットインだけ巻き戻す。
@@ -58,10 +58,10 @@ check('restore keeps prior own/other identities and relationship history', () =>
 // confirm：完読で面識と名前表示を確定。初回だけ changed=true、二度目は false（二重付与なし）。
 check('confirm commits identity once and is idempotent', () => {
   const v = fresh();
-  assert.equal(confirmDeliveryIdentity(v, 'rei'), true);
-  assert.equal(v.met.rei, true);
-  assert.equal(v.flags._met_rei, true);
-  assert.equal(confirmDeliveryIdentity(v, 'rei'), false, 'second read must not re-grant');
+  assert.equal(confirmDeliveryIdentity(v, 'kuraudo'), true);
+  assert.equal(v.met.kuraudo, true);
+  assert.equal(v.flags._met_kuraudo, true);
+  assert.equal(confirmDeliveryIdentity(v, 'kuraudo'), false, 'second read must not re-grant');
   assert.equal(confirmDeliveryIdentity(v, 'c_station'), false, 'venue is not a character');
   assert.equal(v.met.c_station, undefined);
 });
@@ -82,11 +82,11 @@ check('completed read keeps identity (snapshot then confirm)', () => {
 // SAVE移行：配達済みなのに面識が付いていない（＝「？」のまま）を読み込み時に整合。好感度は不変。
 check('reconcile fixes delivered-but-unmet saves without touching affinity', () => {
   const v = fresh();
-  v.flags._ch2_deliveries.done = { ageha: true, rei: true }; // 2軒配達済み・kumicho未
+  v.flags._ch2_deliveries.done = { ageha: true, kuraudo: true }; // 2軒配達済み・kumicho未
   v.affinity = { ageha: 42 };
   assert.equal(reconcileDeliveryIdentity(v), true);
   assert.equal(v.met.ageha, true); assert.equal(v.flags._met_ageha, true);
-  assert.equal(v.met.rei, true); assert.equal(v.flags._met_rei, true);
+  assert.equal(v.met.kuraudo, true); assert.equal(v.flags._met_kuraudo, true);
   assert.equal(v.met.kumicho, undefined, 'undelivered stop stays unmet');
   assert.deepEqual(v.affinity, { ageha: 42 }, 'affinity untouched');
   assert.equal(reconcileDeliveryIdentity(v), false, 'idempotent once reconciled');

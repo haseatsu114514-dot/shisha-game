@@ -1,3 +1,4 @@
+import { characterArtStem } from "../core/portrait-resolver.js";
 // 心得の盤の画面（SPEC 第2版 6.2、ADDENDUM-BOARD-LAYOUT）。盤の最終デザインは #2129（ネオンのラウンジ・SBD79〜90。2026-11-02 オーナー確定）。
 // 盤の面・札・台座・結界・顔は #2129 を正とし、作り直さない。外枠（見出し・タブ・凡例）の紙の色は DUI17。画像が読めない時だけ図形で描く。
 // 盤は能力ごとに3枚（上の札で入れ替え）。道は SVG、マスは HTML のボタン（キーボード・タッチで押せる）。
@@ -59,8 +60,8 @@ const iconOf = (node) => node.kind === "stat" ? (node.peak ? "peak" : node.perk 
  * 顔の大きさと高さをそろえる（SBD81・SBD82）。2026-11-06 設定で新バージョンの立ち絵を選んでいる時は、新バージョンの絵とその絵で測った記録
  * （faces/new/<人>.webp）。新バージョンの絵が無い人は、会話と同じく現行の絵
  */
-const BOARD_FACES = new Set(["sumi", "minto", "adam", "tsumugi", "naru", "rei", "ageha", "kumicho", "saku", "steve", "volk", "rio",
-  "hiyori", "samechan", "mashiro", "sheikh", "da_silva", "hajime", "master_hookah", "dr_kemuri"]);
+const BOARD_FACES = new Set(["sumi", "minto", "adam", "tsumugi", "naru", "kuraudo", "ageha", "kumicho", "ayatori", "steve", "volk", "rio",
+  "hiyori", "samechan", "mashiro", "sheikh", "da_silva", "hajime", "master_hookah", "dr_charcoal"]);
 /** 顔の幅 ÷ 顔の大きさ（make_faces.py の FACE_PER_UNIT と同じ） */
 const BOARD_FACE_PER_UNIT = 0.87;
 /** 立ち絵（896×1200）の上での [顔の中央 x, 目の高さ y, 顔の幅]。その画風で測っていなければ null */
@@ -71,7 +72,8 @@ function portraitEyes(who, style) {
 /** 札の顔の画像。今の画風で測った人はその画風の顔、ほかは現行の顔 */
 function boardFaceUrl(who, style = portraitStyle()) {
   if (!BOARD_FACES.has(who)) return null;
-  return style !== "classic" && portraitEyes(who, style) ? `${ART_DIR}faces/${style}/${who}.webp` : `${ART_DIR}faces/${who}.webp`;
+  const stem = characterArtStem(who);
+  return style !== "classic" && portraitEyes(who, style) ? `${ART_DIR}faces/${style}/${stem}.webp` : `${ART_DIR}faces/${stem}.webp`;
 }
 /** 右のパネルの立ち絵: 顔の幅をこの px に、目をパネルの上からこの px に */
 const PANEL_FACE_W = 82, PANEL_EYE_Y = 64;

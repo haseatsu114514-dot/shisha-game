@@ -11,7 +11,7 @@ for (const ch of CHAPTERS) {
   const label = `chapter=${String(ch)}`;
 
   // 綾取の締めくくり（bonds.finaleDue）: 旧 `state.chapter !== 3` と同じブロック判定を保つ。
-  assert.equal(!chapterFeatureEnabled(ch, "sakuBond"), ch !== 3, `saku: ${label}`);
+  assert.equal(!chapterFeatureEnabled(ch, "sakuBond"), ch !== 3, `ayatori: ${label}`);
   // スティーブの締めくくり（#2028・Smoke & Glory）も第3章だけ（東京にいる間の窓は bonds.js が別に見る）。
   assert.equal(chapterFeatureEnabled(ch, "steveBond"), ch === 3, `steve: ${label}`);
   // ヴォルクの締めくくり（#2028・鉄の煙）も第3章だけ（大会後の窓は bonds.js が別に見る）。

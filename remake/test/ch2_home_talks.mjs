@@ -22,7 +22,7 @@ const encounters = await import(new URL("remake/js/daily/spot-encounters.js", ro
 // #3097 第2弾: さらに各施設に1本（時計・香炉・首のストレッチ・帰りの飴）
 const CH2 = { cafe: ["cafe_ch2_commute", "cafe_ch2_taste", "cafe_ch2_foam", "cafe_ch2_clock"], kannon: ["kannon_ch2_wish", "kannon_ch2_omikuji", "kannon_ch2_incense"],
   choizap: ["choizap_ch2_numbers", "choizap_ch2_stairs", "choizap_ch2_neck"], c_station: ["cs_ch2_haze", "cs_ch2_new_staff", "cs_ch2_candy"] };
-const save = (chapter, flags = {}, extra = {}) => ({ chapter, slot: 0, met: { naru: true, adam: true, minto: true, dr_kemuri: true },
+const save = (chapter, flags = {}, extra = {}) => ({ chapter, slot: 0, met: { naru: true, adam: true, minto: true, dr_charcoal: true },
   flags: { _gym_member: true, ...flags }, ...extra });
 for (const [spot, ids] of Object.entries(CH2)) {
   // 第2章は、前の章の残りより先に第2章の回
@@ -165,7 +165,7 @@ for (const [id, scene] of [["adam", "ch2_adam_ticket_machine"], ["minto", "ch2_m
 // ---- ③ あげはの通い訪問の小会話6種と昼夜のあいさつ（実 ch2-preparation.js） --------------------
 let prepState, prepPlayed, slotOfDay = "day";
 const prepContext = vm.createContext({ console, AbortController, setTimeout, clearTimeout });
-const ROOMS = { ageha: "room_ageha", kumicho: "room_kumicho", rei: "room_rei" };
+const ROOMS = { ageha: "room_ageha", kumicho: "room_kumicho", kuraudo: "room_kuraudo" };
 const prepModule = await loadWithStubs("remake/js/chapters/ch2-preparation.js", {
   "../core/state.js": { save: () => {}, markMet: id => { prepState.met[id] = true; }, timeOfDay: () => slotOfDay },
   "../core/data.js": { DB: { dialogues: all }, bgUrl: x => x },

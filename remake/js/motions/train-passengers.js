@@ -10,7 +10,7 @@ export const PRIVATE_PASSENGERS = {
   tsumugi: { city: "home", face: "normal", bounds: [313, 305, 253, 869] },
   ageha: { city: "widehanga", face: "normal", bounds: [307, 201, 379, 977] },
   kumicho: { city: "widehanga", face: "normal", bounds: [229, 3, 445, 1184] },
-  rei: { city: "widehanga", face: "normal", bounds: [202, 2, 517, 1195] },
+  kuraudo: { city: "widehanga", face: "normal", bounds: [202, 2, 517, 1195] },
 };
 
 /** ハロウィンの開催日は未定。章イベントが期間の開始/終了でflagを切り替える。 */

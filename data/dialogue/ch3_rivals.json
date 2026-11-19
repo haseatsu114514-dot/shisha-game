@@ -1,7 +1,7 @@
 {
   "dialogues": [
     {
-      "dialogue_id": "ch3_saku_first",
+      "dialogue_id": "ch3_ayatori_first",
       "metadata": {
         "flavor_lesson": {
           "chocolate": 1
@@ -11,7 +11,7 @@
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ch3_delivery_saku",
+          "flag": "_ch3_delivery_ayatori",
           "next_true": "delivery_known_open",
           "next_false": "delivery_new_open"
         },
@@ -47,12 +47,12 @@
         },
         {
           "type": "set_flag",
-          "flag": "_met_saku"
+          "flag": "_met_ayatori"
         },
         {
           "type": "condition",
           "condition_type": "flag",
-          "flag": "_ch3_delivery_saku",
+          "flag": "_ch3_delivery_ayatori",
           "next_true": "delivery_known_greet",
           "next_false": "delivery_new_greet"
         },
@@ -62,7 +62,7 @@
           "text": "……いえ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "僕。あの評判、仕掛けたのは店主本人なんだ。拍子抜けした？"
         },
@@ -72,7 +72,7 @@
           "text": "思ったより普通の店ですね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "ひどいなぁ。普通の椅子に座ってよ。吸う？　休む？"
         },
@@ -82,7 +82,7 @@
           "text": "今日は飲み物だけで"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "もちろん。煙なしの日にも、席はあるよ"
         },
@@ -102,7 +102,7 @@
           "text": "これ、レモンケーキみたい。何を入れたの？"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "柑橘とアールグレイ。粉もバターも、ひとかけらもないよ"
         },
@@ -112,7 +112,7 @@
           "text": "え、入ってないの？　じゃあ今のケーキ、どこから来たの"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "君の二口目から。……僕の手柄は半分かな"
         },
@@ -122,12 +122,12 @@
           "text": "入ってない菓子の味を、狙って出したんですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smug",
           "text": "狙うよ。入ってない味を、あったことにする。僕の一番得意な嘘"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "予想も書く。外れた客の答えもね"
         },
@@ -142,7 +142,7 @@
           "text": "実は、全国の課題がチョコなんです。綾取さんなら、どう組みますか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "チョコか。じゃあ一台だけ、君の課題への差し入れを作るよ"
         },
@@ -167,12 +167,12 @@
           "text": "本当にチョコ、使ってます？　ほうじ茶の葉を足したんじゃなくて？"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "チョコと、アールグレイと、ぶどう。同じ量ずつ。ほうじ茶の葉は一枚もないよ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "素材を足すだけじゃ外れる。重ねる順番と熱で、別の記憶を呼ぶんだ"
         },
@@ -187,7 +187,7 @@
           "text": "大会でも、これを出すんですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "まさか。これは差し入れ。当日は別の仕掛けを用意してる"
         },
@@ -197,7 +197,7 @@
           "text": "ましろちゃんに聞きました。綾取さん、幼なじみなんですね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "ましろが僕の話を？　……嬉しい。でも、もう昔のことだし。今会っても、何を話せばいいんだろ"
         },
@@ -207,7 +207,7 @@
           "text": "そんなことないと思います。ましろちゃん、名前を聞いて懐かしそうでした"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "……ありがと。この話の続きは、また今度"
         },
@@ -217,12 +217,12 @@
           "text": "綾取さんも、全国に出るんですよね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "うん。君にも勝ちたい"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "でも今は客でいて。飲み物、冷めるよ"
         },
@@ -237,7 +237,7 @@
           "text": "手伝い、いらないんですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "東京を裏で動かす組織なのに、片付け係が僕しかいなくてさ"
         },
@@ -247,7 +247,7 @@
           "text": "俺も県外から来たんで、着いた日は心細かったです。綾取さんも、戻ってきたばかりなんですよね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "うん。僕も東京じゃ少し迷子。よかったら、大会が終わっても友達でいてよ"
         },
@@ -257,7 +257,7 @@
           "text": "はい。今日話せて、よかったです"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "作業台、空けるよ。僕の予想を外しに来てね"
         },
@@ -284,19 +284,19 @@
         ],
         "delivery_known_greet": [
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "normal",
             "text": "いらっしゃい。ほんとに用事なしで来てくれたんだ"
           },
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "smug",
             "text": "じゃあ改めて。東京の煙を裏から動かす男、って聞いたことある？"
           }
         ],
         "delivery_new_greet": [
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "smug",
             "text": "いらっしゃい。東京の煙を裏から動かす男の噂、聞いてきた？"
           }
@@ -304,7 +304,7 @@
       }
     },
     {
-      "dialogue_id": "ch3_saku_bakery",
+      "dialogue_id": "ch3_ayatori_bakery",
       "comment": "RLS10（第3章は綾取を厚く描く・2026-11-18）。煙幕の初訪問の後、大会前に一度。正本「はじめは県外から東京に来た心細さを綾取と分かち合い、友達になれそうだと感じる」の続き。東京育ちでも今は福岡の人。福岡の店はバイトが回す（characters.json）。パン屋は第3章冒頭でムカイさんが目印にした駅前の黄色い看板の店。ましろ・大会の策・幼い日の嘘つきの話・味覚には触れない。報酬は寄り道の既定（台本に報酬行を置かない）。",
       "lines": [
         {
@@ -313,7 +313,7 @@
           "text": "煙幕の戸を開けると、ちょうど綾取が紙袋を抱えて戻ってきたところだった。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "あ、いいところに。共犯になって。焼きたてが二つあるんだ"
         },
@@ -328,12 +328,12 @@
           "text": "そのパン屋、俺が東京に着いた日に、目印にしたところです"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "僕も。子どもの頃から、あそこが目印。看板の色だけ、ずっと変わらない"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "でも久しぶりに帰ってきたら、駅の出口が増えててさ。初日、普通に迷った"
         },
@@ -343,7 +343,7 @@
           "text": "東京育ちでも、迷うんですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "育ったのは東京でも、今は福岡の人だからね。どっちにいても、ちょっとお客さん"
         },
@@ -353,7 +353,7 @@
           "text": "カウンターでパンを半分に割っていると、綾取の画面が光った。「福岡・店」とある。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "うちのバイトの子だ。……『予備のトング、どこですか』だって"
         },
@@ -368,7 +368,7 @@
           "text": "全部、覚えてるんですね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "自分の店だもん。本当は、毎日電話したい。でも任せたから、聞かれたことだけ答える"
         },
@@ -378,7 +378,7 @@
           "text": "俺も、地元の店を置いてきたんで、少し分かります"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "じゃあ、置いてきた組だ。……東京で、お客さん同士"
         },
@@ -388,7 +388,7 @@
           "text": "（同じ街で迷ってる人がいると、迷うのが少しだけ平気になる）"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smug",
           "text": "パン代は、今日の一台の代金に入れとくね"
         },
@@ -405,14 +405,14 @@
       ]
     },
     {
-      "dialogue_id": "ch3_saku_mukai_visit",
+      "dialogue_id": "ch3_ayatori_mukai_visit",
       "lines": [
         {
           "speaker": "",
           "text": "mukaiの開店前。仕込み中に顔を上げると、入口に綾取がいた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "今日は客で来たよ。県大会の動画より、ここで作る一台を吸いたくて"
         },
@@ -422,7 +422,7 @@
           "text": "動画、見たんですか。……何か分かりました？"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "何回か見たよ。でも映像じゃ、最後の一口までは分からないからさ"
         },
@@ -432,7 +432,7 @@
           "text": "陣、……いらっしゃい"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "ましろ、ここで働いてるって聞いてたから。今日は一台だけ、よろしくね"
         },
@@ -441,7 +441,7 @@
           "text": "綾取はメニューを開き、ぶどうと紅茶の欄へ指を置いた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "これ、混ぜられる？　急いで帰る用事はないよ"
         },
@@ -470,7 +470,7 @@
           "text": "ぶどうと紅茶を、ゆっくり吸えるくらいで。材料の名前も先にお伝えします"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "うん。今日は答えを隠す遊びじゃなくて、普通に頼むよ"
         },
@@ -502,7 +502,7 @@
           "text": "綾取は材料を見てから吸った。最初の一口のあと、水を飲み、もう一度ホースを取る。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "最初は静かだね。……二口目で、紅茶が出てきた"
         },
@@ -511,7 +511,7 @@
           "text": "しばらく近況を話しながら吸ううち、綾取がホースを置いた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "少しぬるくなってきたかな。ここで、熱を見てもらえる？"
         },
@@ -542,7 +542,7 @@
             "text": "強さは、どのくらいがお好みですか"
           },
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "normal",
             "text": "軽めで。でも、紅茶の香りはなくしたくないな"
           },
@@ -559,7 +559,7 @@
             "text": "途中で休みながら、長く吸う感じですか"
           },
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "normal",
             "text": "うん。話しながら、ゆっくり。重すぎないとうれしい"
           },
@@ -572,7 +572,7 @@
       }
     },
     {
-      "dialogue_id": "ch3_saku_advice",
+      "dialogue_id": "ch3_ayatori_advice",
       "metadata": {
         "flavor_lesson": {
           "orange": 1
@@ -585,7 +585,7 @@
           "text": "数日後の煙幕。ましろは客席にいた。mukaiで顔を合わせた幼なじみと、ちゃんと話すのは初めてだ。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "来たね。……ましろ、本当に来てくれたんだ。顔を見た時、少し信じられなくて"
         },
@@ -595,7 +595,7 @@
           "text": "今日はちゃんと話せるね、陣。店を借りてまで出るって聞いたから、気になって"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "sad",
           "text": "心配して来てくれた？　……そうだよね。僕、まだ頼りなく見えるよね"
         },
@@ -605,7 +605,7 @@
           "text": "そこは変わってないね。昔も、最後に一人で片づけてた"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "surprise",
           "text": "え、覚えてるの？　……じゃあ僕の大きな組織、初日で解散だね"
         },
@@ -615,7 +615,7 @@
           "text": "子どもの頃はね。今の陣は、僕にもまだ分からないところがある"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "……そっか。じゃあ今日の僕を見てて。嘘はつかないよ、たぶん"
         },
@@ -625,7 +625,7 @@
           "text": "綾取は二人の前に自分の一台と葉の袋を並べた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "葉は柑橘とアールグレイ。名前を伏せるのが嫌なら、先に見て"
         },
@@ -635,7 +635,7 @@
           "text": "見てから吸います"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "うん。何に感じるかは、教えてほしいけどね"
         },
@@ -650,7 +650,7 @@
           "text": "僕には、ちゃんとお茶"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "また外した"
         },
@@ -660,17 +660,17 @@
           "text": "俺にも、柑橘と茶……だと思います。今日は、少し自信がなくて"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "同じ葉でも、炭の順番で思い出すものが変わる"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "serious",
           "text": "それを「客の思い込み」って言われると、さすがに腹が立つ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "serious",
           "text": "思い込ませたのは、僕だよ。客が勝手に間違えたみたいに言わないでほしい"
         },
@@ -685,7 +685,7 @@
           "text": "綾取は答える前に、自分で小さく笑った。ましろが、その口元を見ている。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "撤回。僕はいつも素直。……やっぱり無理があるね"
         },
@@ -695,7 +695,7 @@
           "text": "約束していた作業台を借りて、大会用の試作を一台作った。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "おいしい。最初は軽いのに、甘さが最後まで残る"
         },
@@ -705,7 +705,7 @@
           "text": "削った方がいいですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "僕に決めさせる？　それ、楽だけど損じゃない？"
         },
@@ -715,17 +715,17 @@
           "text": "僕は、後半も吸っていたいなぁ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "ほら、答えも分かれた。……でも、正直に言うとね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "最後の甘さは、少し長い。二度目の調整で炭を一つ外すと締まるよ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "決めるのは君。どうしたい？"
         },
@@ -735,12 +735,12 @@
           "text": "まだ決めません。自分の台でもう一度確かめます"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "そう来るか。僕も全国に出るんだけどな"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "おいしい相手に勝つ方が楽しい。……負けたら悔しいけど"
         },
@@ -755,18 +755,18 @@
           "text": "そこまでしてくれるんですね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "計算だよ。喉が渇いた相手に勝っても自慢できないじゃん"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "……半分はね。おいしく帰ってほしいのも、本当"
         },
         {
           "type": "remember",
-          "memory_id": "saku_decide"
+          "memory_id": "ayatori_decide"
         }
       ]
     },
@@ -969,7 +969,7 @@
       ]
     },
     {
-      "dialogue_id": "ch3_saku_lime",
+      "dialogue_id": "ch3_ayatori_lime",
       "comment": "第3章の任意場面（#2028）。助言の後、煙幕への再訪で綾取が♥1になってから。好感度は任意場面だけで付ける。後日談の ch3_enmaku_cleanup で、交換した時だけ「返事の欄」を回収する。大会の前後を前提にしない。日常ループでは昼にも夜にも読めるので、時間帯を言わない。段階2で増補。",
       "lines": [
         {
@@ -978,7 +978,7 @@
           "face": ""
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "いらっしゃい。今日は伏せないで、先に言うね。用件は君の連絡先",
           "face": "normal"
         },
@@ -988,7 +988,7 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "うん。僕のノート、客の答えはたくさんあるのに、返事の欄がないんだ",
           "face": "normal"
         },
@@ -1003,17 +1003,17 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "帰ってから「やっぱり違った」って思う人もいるでしょ。それも聞きたくて",
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "でも、煙幕は数週間だけの間借り。閉めたら、東京の客の続きは聞けない",
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "……かといって、お客さんに連絡先を聞くのも違う気がして",
           "face": "normal"
         },
@@ -1023,7 +1023,7 @@
           "face": ""
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "君は客で、作業台の常連で、ライバル。どれでもいいから、聞いていい？",
           "face": "normal"
         },
@@ -1034,7 +1034,7 @@
         },
         {
           "type": "set_flag",
-          "flag": "_lime_contact_saku"
+          "flag": "_lime_contact_ayatori"
         },
         {
           "speaker": "",
@@ -1042,7 +1042,7 @@
           "face": ""
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "書記の勧誘は、LIMEでも続けるからね",
           "face": "smile"
         },
@@ -1052,7 +1052,7 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "知ってる。……外れた予想も、送っていい？",
           "face": "normal"
         },
@@ -1062,12 +1062,12 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "外れた方が、続きを聞きたくなるんだ",
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "欄が空のまま、店を閉めたくないんだ",
           "face": "normal"
         },
@@ -1082,12 +1082,12 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "うん。肩書きを先に書くと、返事が肩書き宛てになる。僕は、答えが欲しいだけ",
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "間借りが終わっても、この頁だけは、閉じないで持っていく",
           "face": "normal"
         },
@@ -1097,23 +1097,23 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "返ってくれば、欄は生きてる。それで十分",
           "face": "smile"
         },
         {
           "type": "apply",
           "affinity": {
-            "saku": 2
+            "ayatori": 2
           }
         }
       ]
     },
     {
-      "dialogue_id": "ch3_saku_bond_finale",
-      "comment": "#2028 好感度の締めくくり（友情のみ・綾取は恋愛対象外）。LIME交換（ch3_saku_lime）と「答えを返しに行く」外出の後、第3章の場面カードから一度だけ（daily/bonds.js）。福岡から持ってきたアールグレイの素焼きを渡し、客の答えではなく友人の返事として書き残す。第3章の場面カードは大会前夜までだが、時系列ルールに沿って大会後の分岐も置く。日常ループ・大会後の寄り道では昼にも夜にも読めるので、入りの台詞で時間帯を言わない。",
+      "dialogue_id": "ch3_ayatori_bond_finale",
+      "comment": "#2028 好感度の締めくくり（友情のみ・綾取は恋愛対象外）。LIME交換（ch3_ayatori_lime）と「答えを返しに行く」外出の後、第3章の場面カードから一度だけ（daily/bonds.js）。福岡から持ってきたアールグレイの素焼きを渡し、客の答えではなく友人の返事として書き残す。第3章の場面カードは大会前夜までだが、時系列ルールに沿って大会後の分岐も置く。日常ループ・大会後の寄り道では昼にも夜にも読めるので、入りの台詞で時間帯を言わない。",
       "metadata": {
-        "bond_finale": "saku"
+        "bond_finale": "ayatori"
       },
       "lines": [
         {
@@ -1134,12 +1134,12 @@
           "face": "surprise"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "予想じゃないよ。前に君がくれた返事、ノートに書いてあったから",
           "face": "smile"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "当てるより、覚えてる方を出したかった",
           "face": "normal"
         },
@@ -1148,7 +1148,7 @@
           "text": "綾取はカウンターの奥から、布に包んだものを持ってきた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "先に中身を見る？　それとも、名前を伏せたまま当てる？"
         },
@@ -1158,7 +1158,7 @@
           "text": "見てからにします"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "だよね。君はいつもそっち"
         },
@@ -1172,17 +1172,17 @@
           "text": "アールグレイ……。綾取さんの、いつもの葉ですよね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "福岡から持ってきた一つ。入ってない菓子は、最初ぜんぶこれで焼いた"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "閉店後、客の答えを確かめる時も、ずっとこれ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "君に渡したい"
         },
@@ -1197,17 +1197,17 @@
           "face": ""
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smug",
           "text": "間借りが終わったら、荷物を減らさないといけないから"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "nervous",
           "text": "……っていうのは、半分。[pause]残りの半分は、ちゃんと言うね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "僕のノート、客の答えばかりで、返事の欄がなかったでしょ"
         },
@@ -1216,7 +1216,7 @@
           "text": "綾取はノートの最後のページを開いた。俺が外した予想と、綾取が外した予想が、交互に並んでいた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "ここだけ、客の記録じゃないんだ。君が返してくれた分"
         },
@@ -1226,17 +1226,17 @@
           "text": "俺、外してばっかりですね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "僕もね。だから続きを書きたくなる"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "serious",
           "text": "このハガルは、柑橘を先に立てて、茶を最後に残す熱の順番を覚えてる"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "君が詰めたら、別の順番を覚えるかもしれない。それを、いつか吸わせて"
         },
@@ -1251,12 +1251,12 @@
           "text": "預かります。綾取さんの予想、また外しますから"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "surprise",
           "text": "……あ、今の、読めなかった"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "やっぱり君、客じゃなくて友達の欄だね。組織じゃなくて"
         },
@@ -1266,7 +1266,7 @@
           "text": "書記にも入りませんよ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "知ってる。葉も一箱つけとく。……おいしく帰ってほしいのは、本当だから"
         },
@@ -1288,7 +1288,7 @@
             "text": "煙幕。綾取はノートを閉じ、俺の分の席だけを空けて待っていた。"
           },
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "normal",
             "text": "来てくれた。勝負の話は、今日はなしね"
           }
@@ -1299,7 +1299,7 @@
             "text": "煙幕。綾取はノートを閉じ、俺の分の席だけを空けて待っていた。"
           },
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "normal",
             "text": "来てくれた。今日の議題は、勝ち負けとは別の話"
           }
@@ -1656,7 +1656,7 @@
       }
     },
     {
-      "dialogue_id": "ch3_saku_mukai_served",
+      "dialogue_id": "ch3_ayatori_mukai_served",
       "lines": [
         {
           "speaker": "hajime",
@@ -1664,7 +1664,7 @@
           "text": "熱くなったら、また声をかけてください"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "うん。さっき聞いてくれたから、言いやすかった"
         },
@@ -1678,7 +1678,7 @@
           "text": "それも、記録するんですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "僕が吸った時のことだけ。君が何を考えたかは、聞かないと分からないよ"
         },
@@ -1698,12 +1698,12 @@
           "text": "まだ、毎回同じようには作れません"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "僕もだよ。だから、次の一台を見たい"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "……大会でもね"
         },
@@ -1733,7 +1733,7 @@
             "text": "調整した一台を運び、別の吸い口を渡した。ましろは横で味を確かめる。"
           },
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "normal",
             "text": "……うん、今は吸いやすい。紅茶が、また前に出てきた"
           }
@@ -1744,7 +1744,7 @@
             "text": "戻した一台を綾取が吸う。少し眉を上げ、ホースを置いた。"
           },
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "normal",
             "text": "さっきとは違うね。あと少しだけ、見てもらってもいい？"
           },
@@ -1769,7 +1769,7 @@
             "text": "すみません。作り直してから、お持ちしてもいいですか"
           },
           {
-            "speaker": "saku",
+            "speaker": "ayatori",
             "face": "normal",
             "text": "うん。急いでないよ。水、ありがとう"
           },
@@ -1793,15 +1793,15 @@
       }
     },
     {
-      "dialogue_id": "ch3_saku_missed",
-      "comment": "候補A02。好感度♥2の段階会話（未採用）。LIME交換（ch3_saku_lime）の後、煙幕への再訪。恋愛対象外（bonds.js）なので共有1本。♥3の恋愛／友情の質問は置かない。客の『外れた答え』を喜ぶ流儀を、返事の欄の最初の一行として見せる。幼い頃の『嘘つき』の話と、ハガルを渡す締めくくりは先取りしない。大会の前後を前提にせず、時間帯も言わない。煙幕専用の背景は未収録のため bg は指定しない（既存の ch3_saku_lime に合わせる）。",
+      "dialogue_id": "ch3_ayatori_missed",
+      "comment": "候補A02。好感度♥2の段階会話（未採用）。LIME交換（ch3_ayatori_lime）の後、煙幕への再訪。恋愛対象外（bonds.js）なので共有1本。♥3の恋愛／友情の質問は置かない。客の『外れた答え』を喜ぶ流儀を、返事の欄の最初の一行として見せる。幼い頃の『嘘つき』の話と、ハガルを渡す締めくくりは先取りしない。大会の前後を前提にせず、時間帯も言わない。煙幕専用の背景は未収録のため bg は指定しない（既存の ch3_ayatori_lime に合わせる）。",
       "lines": [
         {
           "speaker": "",
           "text": "煙幕。綾取はノートを開いたまま、入口の方を見ていた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "来たね。ちょうどいい。今日は、外れた答えの話",
           "face": "smile"
         },
@@ -1811,7 +1811,7 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "君だけじゃないよ。今、常連さんが戻ってきたところ",
           "face": "normal"
         },
@@ -1824,7 +1824,7 @@
           "text": "この前、レモンケーキって言ったけど……今日、同じ葉でも違った。雨の日の廊下、って感じで"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "雨の日の廊下！　いいな。書いていい？",
           "face": "smile"
         },
@@ -1837,12 +1837,12 @@
           "text": "字が、少し乱れている。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "当たった予想は、ここで終わるんだ。外れた予想は、続きが聞ける",
           "face": "smile"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "だから僕、外れた方が好き。店ではね",
           "face": "normal"
         },
@@ -1852,12 +1852,12 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "うん。だから今日は、君の分も先に予想しといた",
           "face": "smug"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "飲み物だけ、の日だろうと思って。水と、温かいの、どっちか当てる",
           "face": "normal"
         },
@@ -1871,7 +1871,7 @@
           "face": "smile"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "やった、外した",
           "face": "smile"
         },
@@ -1884,7 +1884,7 @@
           "text": "ノートの返事の欄に、俺の名前と『温かい』と書かれる。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "君が来ると、僕の予想、よく外れるんだ。悪い気は、しないけど",
           "face": "normal"
         },
@@ -1894,20 +1894,20 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "外して、戻ってきてほしい。返事の欄は、まだ空が多いから",
           "face": "smile"
         },
         {
           "type": "apply",
           "affinity": {
-            "saku": 2
+            "ayatori": 2
           }
         }
       ]
     },
     {
-      "dialogue_id": "ch3_saku_cleanup",
+      "dialogue_id": "ch3_ayatori_cleanup",
       "comment": "候補A03。好感度♥3の段階会話（未採用）。煙幕の閉店後。ヒロインではない（story_routes の heroine_ids 外。bonds.js も『恋愛対象外・友情の着地だけ』）。♥3の恋愛／友情の質問は置かず、神崎・クラウド・なる・スティーブと同じく通常の段階会話1本。初来店で断った片付けを、ここでは一つだけ受け取る。幼い頃の話と締めくくりのハガルは先取りしない。時間帯は閉店後のみ。",
       "lines": [
         {
@@ -1915,7 +1915,7 @@
           "text": "閉店のあと、煙幕の明かりは客席だけ落ちていた。綾取が一人で、ホースを洗っている。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "あ、ごめん。もう閉めたって、書いてなかったね",
           "face": "nervous"
         },
@@ -1925,12 +1925,12 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "初めて来た日も、そう言ってくれたね。あの日は、冗談でごまかしちゃった",
           "face": "smile"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "……今日は、グラスだけ、お願いしてもいい？　一人だと、手が足りなくて",
           "face": "normal"
         },
@@ -1939,7 +1939,7 @@
           "text": "俺がグラスを拭く。綾取は、借り物の棚を元の位置へ戻していた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "ここの棚、借りる前の印が鉛筆で残ってるんだ。閉める日に、全部戻さないと",
           "face": "normal"
         },
@@ -1949,17 +1949,17 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "うん。だから噂は、自分で少し大きくした。人が来ないと、試せないから",
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "でも、残る人は、噂じゃなくて答えの人なんだよね",
           "face": "smile"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "レモンケーキじゃなかった、って戻ってくれる人",
           "face": "smile"
         },
@@ -1968,12 +1968,12 @@
           "text": "最後のホースを掛ける手が、一度止まった。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "……今、ちょっと読もうとした。君が次に何を言うか",
           "face": "serious"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "やめた。店では、当てにいかないって決めてる。君の答えは、君が持って帰っていい",
           "face": "normal"
         },
@@ -1983,12 +1983,12 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "……それ、読めなかった",
           "face": "surprise"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "ありがとう。片付け、もういいよ。最後の電気は、僕が消す",
           "face": "smile"
         },
@@ -1997,20 +1997,20 @@
           "text": "出口まで送られて、振り返ると、綾取はまだカウンターの内側に立っていた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "君が来る日は、一つだけ、消すのを遅くする。組織の秘密、ってことで",
           "face": "smile"
         },
         {
           "type": "apply",
           "affinity": {
-            "saku": 2
+            "ayatori": 2
           }
         }
       ]
     },
     {
-      "dialogue_id": "ch3_saku_liar",
+      "dialogue_id": "ch3_ayatori_liar",
       "comment": "候補A04。好感度♥4の段階会話（未採用）。煙幕。幼い頃に『お茶に菓子の味がする』と言って笑われた話を、ここではじめて打ち明け、外れた答えを大切にする理由へつなげる。続けて「嘘つきのまま、人を幸せにできる。だからシーシャが好き」という動機を、ここで一度だけ笑わずに言う（2026-11-13 オーナー訂正。ほかの場面では動機を言葉にしない）。ましろの『お茶。でも好き』は本人の記憶として短く触れる（勝負や恋の返事には使わない）。締めくくりのハガルと『友達の欄』は先取りしない。恋愛対象外なので共有1本。大会の前後を前提にせず、時間帯も言わない。",
       "lines": [
         {
@@ -2019,7 +2019,7 @@
           "text": "煙幕の客が一段落した頃、綾取はノートではなく、白紙の味カードを指で揃えていた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "今日は、先に材料を見せる日にしよう。伏せると、昔のことを思い出すから"
         },
@@ -2029,12 +2029,12 @@
           "text": "昔のこと、ですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "小さい頃、体調を崩しやすくて。お茶を飲んで、『絵に描いた菓子の味がする』って言ったんだ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "sad",
           "text": "そしたら、嘘つきって笑われた。同じ湯なのに、僕だけ違うことを言うから"
         },
@@ -2044,17 +2044,17 @@
           "text": "カードの端が、少し曲がる。綾取は、それに気づいて手を止めた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "ましろだけは、味を合わせなかった。『お茶。でも好き』って、隣にいてくれた"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "あの一言があったから、外れた答えを消さずに書ける"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "……彼女に勝ちを贈る話じゃないよ。これは、僕の話"
         },
@@ -2064,27 +2064,27 @@
           "text": "吸わない日の席があるのも、その頃のことがあるからですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "surprise",
           "text": "……そこ、つなげるんだ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "半分はね。休んでばかりの子にも、座る場所はあった方がいい"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "残りの半分は、意地かな。あの日の嘘を、煙で本当にしたくて"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "入ってない菓子を出して、種を明かす。すると、だまされた人の方が笑うんだ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "serious",
           "text": "嘘つきのまま、人を幸せにできる。……だから僕は、シーシャが好き"
         },
@@ -2094,17 +2094,17 @@
           "text": "綾取は、笑わずに言った。言い終えてから、カードの角をそろえ直す。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "serious",
           "text": "種は、聞かれたら必ず明かす。明かせない嘘は、店に置かない"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "nervous",
           "text": "でもね。勝負になると、種を伏せたまま、同じ答えへ導きたくなる"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "その手が、店のノートに混ざらないか、ちょっと怖い"
         },
@@ -2119,12 +2119,12 @@
           "text": "俺は、自分の台で確かめます。綾取さんがそう言ってくれたから"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "だよね。君は、そっちを選ぶ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "君が『違う』って返してくれるうちは、僕の嘘は、笑える方のままだ",
           "duck": true
@@ -2132,13 +2132,13 @@
         {
           "type": "apply",
           "affinity": {
-            "saku": 2
+            "ayatori": 2
           }
         }
       ]
     },
     {
-      "dialogue_id": "ch3_saku_first_reply",
+      "dialogue_id": "ch3_ayatori_first_reply",
       "comment": "好感度補充（段階2・A27）。♥4の嘘つきの欄のあと、煙幕への再訪。最初の返事が届く。材料を全部見てから吸った客の「種を知ってるのに、家で思い出したらケーキでした」で、明かせる嘘は明かしても残ると知る。恋愛対象外なので共有1本。大会の前後を前提にせず、時間帯も言わない。締めくくりのハガルと友達の欄は先取りしない。",
       "lines": [
         {
@@ -2147,7 +2147,7 @@
           "text": "煙幕のカウンターで、綾取の画面が一度光った。ノートは、もう開かれていた。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "surprise",
           "text": "来た。最初の返事だ"
         },
@@ -2157,7 +2157,7 @@
           "text": "……誰からですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "先週の客。材料を全部見てから吸って、「紅茶ですね」って帰った人"
         },
@@ -2172,12 +2172,12 @@
           "text": "「種を知ってるのに、家で思い出したらケーキでした」。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "surprise",
           "text": "……種を明かしたら、消えると思ってた。残るんだ"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "nervous",
           "text": "これ、「客の思い込み」じゃないよね。ね？"
         },
@@ -2187,7 +2187,7 @@
           "text": "俺に聞くんですか"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "nervous",
           "text": "聞くよ。自分で言うと、また嘘つきに聞こえるから"
         },
@@ -2197,7 +2197,7 @@
           "text": "思い込みなら、家まで持って帰れないと思います"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "……それ、返事の隣に書いていい？"
         },
@@ -2207,7 +2207,7 @@
           "text": "綾取は返事の欄へ、画面の文を一字ずつ写した。要約は、しなかった。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "僕が要約すると、また外れる。返事まで外したくない"
         },
@@ -2217,7 +2217,7 @@
           "text": "店の外から返事が届いたのは、これが初めてだった。"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "normal",
           "text": "最初の一行だ。閉めても、これだけは持っていける"
         },
@@ -2232,14 +2232,14 @@
           "text": "音、残すんですね"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "うん。……返事は、早く読みたいから"
         },
         {
           "type": "apply",
           "affinity": {
-            "saku": 2
+            "ayatori": 2
           }
         }
       ]
@@ -2759,8 +2759,8 @@
       ]
     },
     {
-      "dialogue_id": "ch3_saku_steve_notes",
-      "comment": "#3468 C案。スティーブ×綾取「ノートは読めないが、熱の話は通じる」。大会後の寄り道（ch3-aftermath-progress.js）で、優勝の翌日・なるへの報告まで（綾取の帰り支度が始まった頃）だけ。煙幕の片づけ（ch3_enmaku_cleanup・帰郷の日の朝）と ch3_saku_cleanup は置き換えない。ピザは入口の小道具だけ、タイマーは出さない（ch3_steve_two_timers のオチを繰り返さない）。低温はスティーブの軸で、綾取は低温派にしない。はじめは居合わせるだけで仲介しない。好感度・恋愛は動かさない。後日の一言は第4章のLIME（lime_ch4_saku_steve_note）。",
+      "dialogue_id": "ch3_ayatori_steve_notes",
+      "comment": "#3468 C案。スティーブ×綾取「ノートは読めないが、熱の話は通じる」。大会後の寄り道（ch3-aftermath-progress.js）で、優勝の翌日・なるへの報告まで（綾取の帰り支度が始まった頃）だけ。煙幕の片づけ（ch3_enmaku_cleanup・帰郷の日の朝）と ch3_ayatori_cleanup は置き換えない。ピザは入口の小道具だけ、タイマーは出さない（ch3_steve_two_timers のオチを繰り返さない）。低温はスティーブの軸で、綾取は低温派にしない。はじめは居合わせるだけで仲介しない。好感度・恋愛は動かさない。後日の一言は第4章のLIME（lime_ch4_ayatori_steve_note）。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_yohaku_shop.png"
       },
@@ -2771,7 +2771,7 @@
           "face": ""
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "ようこそ、東京の煙を裏から動かす組織へ。……今日は、段ボールの組み立て中だけど",
           "face": "smile"
         },
@@ -2781,7 +2781,7 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "借りた店だからね。組織の本部も、鏡から順に普通の店へ戻る",
           "face": "normal"
         },
@@ -2796,7 +2796,7 @@
           "face": "smile"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "……スティーブさん。本部へようこそ。合言葉は、",
           "face": "surprise"
         },
@@ -2806,7 +2806,7 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "正解にしておく",
           "face": "smile"
         },
@@ -2821,7 +2821,7 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "うん。左が僕の予想、右が客の答え",
           "face": "normal"
         },
@@ -2851,7 +2851,7 @@
           "face": "smile"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "外されてる。スティーブさんも",
           "face": "smile"
         },
@@ -2866,7 +2866,7 @@
           "face": ""
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "……同じ所、書いてる",
           "face": "normal"
         },
@@ -2876,7 +2876,7 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "入れてない。入れてないものを、思い出してもらう一台",
           "face": "smile"
         },
@@ -2886,7 +2886,7 @@
           "face": "surprise"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "でしょ。嘘で、人がちょっと嬉しくなるなら",
           "face": "smug"
         },
@@ -2896,7 +2896,7 @@
           "face": ""
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "この、上の三角は？",
           "face": "normal"
         },
@@ -2906,7 +2906,7 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "……分からない",
           "face": "nervous"
         },
@@ -2921,12 +2921,12 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "縦線が立ち上がりで、閉じかっこが余韻。その間の波線は、客の顔がほどけた所。で、点は、",
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "……点は、点だよ",
           "face": "normal"
         },
@@ -2941,12 +2941,12 @@
           "face": ""
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "おかしいな。種明かしなら、いくらでも楽しくできるのに",
           "face": "nervous"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "……説明、やめていい？　手でやる",
           "face": "normal"
         },
@@ -2956,7 +2956,7 @@
           "face": ""
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "最初に、ここ。柑橘を先に立たせる。茶は、遅れてここから",
           "face": "normal"
         },
@@ -2971,7 +2971,7 @@
           "face": ""
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "それなら、黒い三角の意味、分かった",
           "face": "normal"
         },
@@ -2981,7 +2981,7 @@
           "face": "smile"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "僕は待たない方だけどね。先に立たせて、あとは客の記憶に任せる",
           "face": "normal"
         },
@@ -2991,7 +2991,7 @@
           "face": "serious"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "うん。譲らなくていい",
           "face": "smile"
         },
@@ -3011,7 +3011,7 @@
           "face": "smile"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "スティーブさん。福岡で試したら、感想を送ってもいい？",
           "face": "normal"
         },
@@ -3021,7 +3021,7 @@
           "face": "smile"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "そっちも",
           "face": "smile"
         },
@@ -3031,7 +3031,7 @@
           "face": ""
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "君も食べて。組織の経費だから",
           "face": "smile"
         },
@@ -3041,7 +3041,7 @@
           "face": "normal"
         },
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "text": "出してない。でも、そう言った方がおいしい",
           "face": "smile"
         }

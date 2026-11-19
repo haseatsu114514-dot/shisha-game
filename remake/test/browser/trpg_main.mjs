@@ -87,7 +87,7 @@ async function prepare(page, options = {}) {
     }
     if (club) s.trpg.club = { founded: { chapter: 2, day: 1 }, members: Object.fromEntries(
       ["hiyori", "samechan", "tsumugi", "adam"].map(id => [id, { chapter: 2, day: 2 }])) };
-    s.flags._rei_trpg_introduced = true; s.flags._qa_preserved = true; s.flavorStock.double_apple = 37; s.reel.count = 3;
+    s.flags._kuraudo_trpg_introduced = true; s.flags._qa_preserved = true; s.flavorStock.double_apple = 37; s.reel.count = 3;
     core.config.textSpeed = 4; core.config.bgmVolume = 0; core.saveConfig(); core.saveToSlot("suien_remake_slot1");
     localStorage.setItem("qa_unrelated", "keep"); sessionStorage.setItem("qa_unrelated", "keep");
   }, options);
@@ -630,7 +630,7 @@ await suite("trpg-main", async check => {
     // 既定は「夜・部員がそろっている」: 部員の本は買ってあり、すぐ遊べる。最後の一冊は、部員の物語を遊んでから。
     const ready = await trial();
     assert.deepEqual([ready.chapter, ready.phase, ready.slot], [2, "daily", 1]);
-    assert.deepEqual(Object.keys(ready.trpg.club.members).sort(), ["adam", "ageha", "hiyori", "rei", "samechan", "tsumugi"]);
+    assert.deepEqual(Object.keys(ready.trpg.club.members).sort(), ["adam", "ageha", "hiyori", "kuraudo", "samechan", "tsumugi"]);
     assert.deepEqual(ready.trpg.owned, ready.trpg.stock); assert(!ready.trpg.stock.includes("mist-kingdom"));
     assert(await button(page, "trpg-play-ordinary-cup").isEnabled());
     assert.equal(await button(page, "trpg-campaign-close").textContent(), "試遊の設定へ");

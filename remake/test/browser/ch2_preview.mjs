@@ -9,8 +9,8 @@ const root = fileURLToPath(new URL("../../../", import.meta.url));
 const evidence = path.join(root, "docs/qa/ch2-preview");
 const route = new URL("chapter2-preview.html", baseURL).href;
 const test = name => `[data-test="ch2-preview-${name}"]`;
-const pins = ["ageha", "kumicho", "rei", "c_station"];
-const names = { ageha: "あげは", kumicho: "神崎竜二", rei: "†黒羅雨℃†", volk: "ヴォルク" };
+const pins = ["ageha", "kumicho", "kuraudo", "c_station"];
+const names = { ageha: "あげは", kumicho: "神崎竜二", kuraudo: "†黒羅雨℃†", volk: "ヴォルク" };
 fs.mkdirSync(evidence, { recursive: true });
 
 async function seedAndOpen(page, prepare = null) {
@@ -75,9 +75,10 @@ async function visit(page, id, { double = false, touch = false, inside = false }
   if (id !== "c_station") {
     await page.locator(test("stop")).waitFor();
     await assertFits(page, `${test("inside")}, ${test("back-map")}`);
-    const logo = page.locator(`[data-store-logo="ch2_${id}"] img`);
+    const shopId = id === "kuraudo" ? "ch2_rei" : `ch2_${id}`;
+    const logo = page.locator(`[data-store-logo="${shopId}"] img`);
     assert.equal(await logo.evaluate(async img => { await img.decode(); return img.naturalWidth; }), 768);
-    await assertFits(page, `[data-store-logo="ch2_${id}"]`);
+    await assertFits(page, `[data-store-logo="${shopId}"]`);
     await screenshot(page, `${touch ? 'touch' : 'desktop'}-logo-${id}.png`);
     const next = page.locator(test(inside ? "inside" : "back-map"));
     if (touch) await next.tap(); else await next.click();
@@ -199,8 +200,8 @@ await suite("ch2-preview", async check => {
     await mapLayout(page);
     await screenshot(page, "desktop-map-night.png");
     await changeTime(page, "day");
-    for (const id of ["ageha", "c_station", "rei", "kumicho"]) await visit(page, id, { double: id === "ageha" });
-    assert.deepEqual(await progress(page), ["ageha", "c_station", "rei", "kumicho"]);
+    for (const id of ["ageha", "c_station", "kuraudo", "kumicho"]) await visit(page, id, { double: id === "ageha" });
+    assert.deepEqual(await progress(page), ["ageha", "c_station", "kuraudo", "kumicho"]);
     await page.locator(test("station")).dblclick({ delay: 30 });
     await page.locator(test("end")).waitFor();
     assert.match(await page.locator(test("end")).textContent(), /4|全|歩/);
@@ -222,12 +223,12 @@ await suite("ch2-preview", async check => {
     await page.locator(test("map")).waitFor();
     await mapLayout(page);
     await screenshot(page, "touch-map-day.png");
-    for (const id of ["rei", "c_station", "kumicho", "ageha"]) {
+    for (const id of ["kuraudo", "c_station", "kumicho", "ageha"]) {
       await visit(page, id, { touch: true, inside: id !== "c_station" });
       if (id !== "c_station") assert.equal(await page.evaluate(id => !!window.__ch2Preview.state.flags[`_ch2_city_inside_${id}`], id), true);
     }
-    await visit(page, "rei", { touch: true });
-    assert.deepEqual(await progress(page), ["rei", "c_station", "kumicho", "ageha"], "Revisiting counted the same destination twice");
+    await visit(page, "kuraudo", { touch: true });
+    assert.deepEqual(await progress(page), ["kuraudo", "c_station", "kumicho", "ageha"], "Revisiting counted the same destination twice");
     await changeTime(page, "night", true);
     await screenshot(page, "touch-map-night.png");
     await page.locator(test("station")).tap();
@@ -245,7 +246,7 @@ await suite("ch2-preview", async check => {
     await launch(page, false);
     const arrival = await manualToMap(page);
     assert(arrival.some(frame => frame.text), "Arrival dialogue was empty");
-    for (const id of ["ageha", "rei", "kumicho"]) {
+    for (const id of ["ageha", "kuraudo", "kumicho"]) {
       assert.equal(await page.evaluate(id => !!window.__ch2Preview.state.met[id], id), false);
       await page.locator(test(`pin-${id}`)).click();
       const frames = await manualToMap(page, { watch: id, captureUnknown: id === "ageha" ? "desktop-unknown-name.png" : null, inside: true, captureRoom: `desktop-room-${id}.png` });
@@ -333,7 +334,7 @@ await suite("ch2-preview", async check => {
 
   await check("return-remembers-only-completed-visits", async page => {
     const before = await seedAndOpen(page);
-    const people = { ageha: 'あげは', kumicho: '神崎さん', rei: 'クラウド', volk: 'ヴォルクさん' };
+    const people = { ageha: 'あげは', kumicho: '神崎さん', kuraudo: 'クラウド', volk: 'ヴォルクさん' };
     for (const itinerary of [[], ['c_station'], ['ageha']]) {
       await launch(page);
       for (const id of itinerary) await visit(page, id);

@@ -101,13 +101,13 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
 // ---- ♥5の男の友人（SPC24）も、到着を読んだら砂浜に来る（ネタとにぎやかしの枠）。到着を読むまでは来ない。
 {
   const value = eveSave({ finales: { adam: { day: 9, chapter: 1, route: "friend" }, steve: { day: 30, chapter: 3, route: "friend" },
-    rei: { day: 20, chapter: 2, route: "friend" } } });
-  assert.deepEqual(chapterFourArrivalsDue(value).map(entry => entry.id), ["tsumugi", "mashiro", "adam", "rei", "steve"]);
+    kuraudo: { day: 20, chapter: 2, route: "friend" } } });
+  assert.deepEqual(chapterFourArrivalsDue(value).map(entry => entry.id), ["tsumugi", "mashiro", "adam", "kuraudo", "steve"]);
   for (const { scene } of chapterFourArrivalsDue(value).slice(0, 3)) assert(completeChapterFourScene(value, scene));
   assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "mashiro", "naru", "adam"], "Rei and Steve have not arrived yet");
   assert.equal(chapterFourBeachDue(value), false, "The male friends arrive before the beach");
   arriveAll(value);
-  assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "mashiro", "naru", "adam", "rei", "steve"]);
+  assert.deepEqual(chapterFourBeachCast(value), ["tsumugi", "mashiro", "naru", "adam", "kuraudo", "steve"]);
   assert.equal(chapterFourBeachDue(value), true);
   assert.equal(commitChapterFourBeach(value, ["adam", "naru", "steve"]), true, "Three men is fine: a lively beach, not a harem");
   assert.deepEqual(chapterFourBeachRecord(value), { picks: ["adam", "naru", "steve"] });
@@ -118,7 +118,7 @@ const keep = value => structuredClone({ lovers: value.lovers, affinity: value.af
 {
   const rows = readData("dialogue/ch4_beach").dialogues;
   const names = /つむぎ|みんと|栞|凛想|あげは|ましろ|サメちゃん|ひより|ヌール|アダム|神崎|クラウド|綾取|スティーブ|ヴォルク/g; // 「なる」は普通の言葉に混ざるので見ない
-  const self = { naru: "なる", adam: "アダム", kumicho: "神崎", rei: "クラウド", saku: "綾取", steve: "スティーブ", volk: "ヴォルク" };
+  const self = { naru: "なる", adam: "アダム", kumicho: "神崎", kuraudo: "クラウド", ayatori: "綾取", steve: "スティーブ", volk: "ヴォルク" };
   for (const id of [...CH4_BEACH_RIVALS, ...OVERSEAS_GUESTS]) {
     const row = rows.find(item => item.dialogue_id === CH4_BEACH_SCENES.people[id]);
     assert(row.lines.every(line => ["", "hajime", id].includes(line.speaker)), `${id}: only the two of them`);

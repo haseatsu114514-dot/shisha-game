@@ -124,7 +124,7 @@ for (const route of ['friend', 'romance', 'lover']) {
 context.hooks.evalCondition = originalEval;
 console.log('PASS: Minto finale friendship/romance/lover chronology before tournament, aftermath and chapters 2–5');
 const changed = ['ch1_naru_first','ch1_naru_second','ch1_naru_third','ch1_naru_fifth','ch1_naru_bond_finale',
-  'ch1_minto_second','ch1_adam_fifth','ch1_tsumugi_fifth','ch1_tsumugi_smoke_color','ch1_rio_third','ch2_rei_first','ch2_rei_fifth','remake_ch2_kumicho_chat'];
+  'ch1_minto_second','ch1_adam_fifth','ch1_tsumugi_fifth','ch1_tsumugi_smoke_color','ch1_rio_third','ch2_kuraudo_first','ch2_kuraudo_fifth','remake_ch2_kumicho_chat'];
 let count=0;
 for (const id of changed) {
   const target=id.includes('ch2_')?2:1;
@@ -157,7 +157,7 @@ for (const id of Object.values(VISIT_SEQ).flat()) for(const known of [false,true
 for(const scene of Object.values(DB.dialogues).filter(s => s.dialogue_id.startsWith('interaction_') || s.dialogue_id.startsWith('outing_') || JSON.stringify(s).includes('tournament_finished'))) {
   for(const rows of paths(scene.dialogue_id,state(5)))assert.doesNotMatch(rows.map(r=>r.text||'').join('\n'),sensitive,scene.dialogue_id);
 }
-for(const [id,char] of [['ch1_minto_first','minto'],['ch2_rei_first','rei'],['ch2_kumicho_first','kumicho']]) {
+for(const [id,char] of [['ch1_minto_first','minto'],['ch2_kuraudo_first','kuraudo'],['ch2_kumicho_first','kumicho']]) {
   for(const rows of paths(id,state(3,'daily',{[char]:true}))) {
     assert.doesNotMatch(rows.map(r=>r.text||'').join('\n'),/はじめまして|初めまして|見ねえ顔|逢縁といいます|俺は神崎/,`${id}: already met`);
   }

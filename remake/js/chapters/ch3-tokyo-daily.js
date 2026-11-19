@@ -94,7 +94,7 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch3_tokyo_mukai", place: "mukai", label: "mukai", area: "高架下の商店街", x: 29.6, y: 62.7, theme: "baito", glyph: "店",
     face: "mukai_master", preview: "bg_mukai_shop", desc: "働かせてもらっている店。手伝い、ましろちゃんとの時間、作業台。帰りに裏口のてつこにも会える。" }),
   spot({ id: "ch3_tokyo_enmaku", place: "enmaku", label: "煙幕", area: "綾取の店", x: 45.3, y: 49.7, theme: "rival", glyph: "煙",
-    face: "saku", preview: "bg_yohaku_shop", fee: TOKYO_VISIT_COST, desc: "綾取の店。お茶と、ノートの続き。", met: "saku" }),
+    face: "ayatori", preview: "bg_yohaku_shop", fee: TOKYO_VISIT_COST, desc: "綾取の店。お茶と、ノートの続き。", met: "ayatori" }),
   spot({ id: "ch3_tokyo_steve", place: "steve", label: "Smoke & Glory", area: "スティーブの店", x: 23.3, y: 36.1, theme: "rival", glyph: "煙",
     face: "steve", preview: "bg_steve_shop", fee: TOKYO_VISIT_COST, desc: "タイマーの並ぶ店。", met: "steve" }),
   spot({ id: "ch3_tokyo_volk", place: "volk", label: "鉄の煙", area: "ヴォルクの店", x: 55.9, y: 40.4, theme: "rival", glyph: "煙",
@@ -428,7 +428,7 @@ const unused = { used: false, exerted: false };
 const personExp = id => id ? Object.freeze({ key: id, person: id }) : null;
 const MUKAI_SHIFT_EXP = Object.freeze({ key: "tokyo:mukai_help", place: "tokyo:mukai_help" });
 const GYM_EXP = Object.freeze({ key: "tokyo:gym", place: "tokyo:gym" });
-const OPTIONAL_HOST = Object.freeze({ mukai: "mashiro", enmaku: "saku", steve: "steve", volk: "volk" });
+const OPTIONAL_HOST = Object.freeze({ mukai: "mashiro", enmaku: "ayatori", steve: "steve", volk: "volk" });
 
 async function performTokyoSpot(entry, io, { staminaGuard }) {
   if (entry.region !== TOKYO) return null;
@@ -457,7 +457,7 @@ async function performTokyoSpot(entry, io, { staminaGuard }) {
  * 心得の盤の授業（SPEC 2.6・SBD50）: 会いに行った店で、灯した授業があればその人に相談して話を聞く。
  * 日常ループ（版3）でも旧行程と同じ相手に相談できるようにする（2026-11-02）。訪問を終えた時だけ。
  */
-const TOKYO_TEACHERS = Object.freeze({ enmaku: "saku", steve: "steve", volk: "volk" });
+const TOKYO_TEACHERS = Object.freeze({ enmaku: "ayatori", steve: "steve", volk: "volk" });
 async function withLesson(result, who, owner) {
   if (who && result?.used && state === owner) await keepDailyHud(() => consultLessons(who));
   return result;
@@ -519,7 +519,7 @@ async function readOptionalHere(io, scene, staminaGuard, owner, stamina = -10) {
 
 /** 店で迎える♥5の締めくくり（daily/bonds.js の条件）。煙幕は綾取（IR22）、Smoke & Glory はスティーブ、鉄の煙はヴォルク（#2028）。 */
 const RIVAL_FINALES = Object.freeze({
-  enmaku: Object.freeze({ who: "saku", label: "綾取に呼ばれる" }),
+  enmaku: Object.freeze({ who: "ayatori", label: "綾取に呼ばれる" }),
   steve: Object.freeze({ who: "steve", label: "スティーブに呼ばれる" }),
   volk: Object.freeze({ who: "volk", label: "ヴォルクに呼ばれる" }),
 });

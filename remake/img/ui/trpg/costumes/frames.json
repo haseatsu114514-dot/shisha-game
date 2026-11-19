@@ -2624,7 +2624,7 @@
   },
   {
     "scenario": "purikura-hero",
-    "character": "rei",
+    "character": "kuraudo",
     "role_id": "nocturne",
     "file": "costumes/purikura-hero/rei_nocturne.webp",
     "box": [
@@ -2667,7 +2667,7 @@
   },
   {
     "scenario": "purikura-hero",
-    "character": "rei",
+    "character": "kuraudo",
     "role_id": "shion",
     "file": "costumes/purikura-hero/rei_shion.webp",
     "box": [

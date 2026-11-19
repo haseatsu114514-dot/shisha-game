@@ -50,15 +50,15 @@ const mocks = {
   "remake/js/chapters/ch2-purikura.js": { offerAgehaPurikura: async () => true },
   "remake/js/daily/bonds.js": { BOND_QUESTIONS: { ageha: {} }, BOND_FINALES: {}, playQuestionVisit: async () => true,
     questionVisitDue: () => false, finaleAtVisit: () => false, playFinale: async () => true },
-  "remake/js/core/trpg-discovery.js": { knowsTrpgBar: value => !!value?.flags?._rei_trpg_introduced },
+  "remake/js/core/trpg-discovery.js": { knowsTrpgBar: value => !!value?.flags?._kuraudo_trpg_introduced },
   "remake/js/chapters/ch2-city-data.js": { MAP: { day: "map", night: "night" }, STOPS: [],
-    ROOMS: { ageha: "room_ageha", kumicho: "room_kumicho", rei: "room_rei" } },
+    ROOMS: { ageha: "room_ageha", kumicho: "room_kumicho", kuraudo: "room_kuraudo" } },
   "remake/js/chapters/ch2-progress.js": { dayOneProgress: () => ({ startDay: START }), recordCityVisit: () => {} },
   "remake/js/chapters/ch2-strawberry-trial.js": { grantStrawberrySample: () => {} },
   "remake/js/chapters/ch2-lime.js": { recordSentLime: () => false },
   "remake/js/core/growth.js": { consultLessons: async id => { lessons.push(id); return []; } },
   "remake/js/core/chapter-data.js": { readDialogues: async () => ({}) },
-  "remake/js/core/ryuji-visit.js": { reiStickerDue: () => false },
+  "remake/js/core/ryuji-visit.js": { kuraudoStickerDue: () => false },
   "remake/js/core/affinity-stages.js": { AGEHA_AFFINITY_VISITS: [], CH2_VISIT_STORIES: {}, ch2VisitDone: () => false, ch2VisitReady: () => true },
   "remake/js/chapters/ch2-craft-prep.js": { craftPrepDue: () => prepDue, offerCraftPrep: async () => ({ used: true, exerted: true }) },
   // 通いの続き（#3097）。段の判定と記録は visit_chains.mjs が実物で確かめる。ここは来店の分岐と精算だけ
@@ -168,7 +168,7 @@ assert.equal(nights[abs(7)].schedule, "visit"); assert.equal(nights[abs(7)].dead
 assert.equal(nights[abs(12)].schedule, "visit"); assert.equal(nights[abs(12)].deadline, abs(12));
 assert.equal(nights[abs(6)].schedule, "preparation");
 // 街の遊び場の紹介: 初日の配達では読まず、DAY2以降にその店へ初めて通った回の最後に読んで地図へ出す
-for (const [charId, intro, flag] of [["rei", "remake_ch2_rei_trpg", "_rei_trpg_introduced"],
+for (const [charId, intro, flag] of [["kuraudo", "remake_ch2_kuraudo_trpg", "_kuraudo_trpg_introduced"],
   ["ageha", "remake_ch2_ageha_aquarium", "_ageha_aquarium_introduced"], ["kumicho", "remake_ch2_kumicho_sento", "_kumicho_sento_introduced"]]) {
   await setup({ day: abs(2), met: { [charId]: true } });
   const shop = { id: `ch2_${charId}`, kind: "rival", charId, region: "widehanga", cost: 3000, stamina: -16 };
@@ -184,9 +184,9 @@ for (const [charId, intro, flag] of [["rei", "remake_ch2_rei_trpg", "_rei_trpg_i
   assert.deepEqual(plain(state), before, `${charId}: cancelled introduction keeps nothing`);
 }
 // 第3・4章の出発前の準備期間（同じ visitPreparationSpot）では、未紹介でも紹介を読まない（毎回の読み直しを防ぐ）
-await setup({ chapter: 3, met: { rei: true } });
-await go({ id: "ch2_rei", kind: "rival", charId: "rei", region: "widehanga", cost: 3000, stamina: -16 });
-assert(!played.some(([id]) => id === "remake_ch2_rei_trpg"), "no city introduction outside chapter 2");
+await setup({ chapter: 3, met: { kuraudo: true } });
+await go({ id: "ch2_rei", kind: "rival", charId: "kuraudo", region: "widehanga", cost: 3000, stamina: -16 });
+assert(!played.some(([id]) => id === "remake_ch2_kuraudo_trpg"), "no city introduction outside chapter 2");
 // 通いの続き（#3097）: 段がある日は、銭湯の再訪の会話の代わりに段を読む。代金・体力・能力はいつもの来店と同じで、巡回は進めない
 {
   const SENTO = { id: "ch2_sento", kind: "outing", region: "widehanga" };

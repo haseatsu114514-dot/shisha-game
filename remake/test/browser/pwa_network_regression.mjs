@@ -109,14 +109,14 @@ try {
           const ui = await import('./js/core/ui.js');
           const { PREPARATION_SPOTS, visitPreparationSpot } = await import('./js/chapters/ch2-preparation.js');
           ui.initLayers();
-          Object.assign(DB.dialogues, await readDialogues('ch2_preparation', ['remake_ch2_rei_chat']));
+          Object.assign(DB.dialogues, await readDialogues('ch2_preparation', ['remake_ch2_kuraudo_chat']));
           const value = core.newGame();
           Object.assign(value, { chapter: 2, day: 16, slot: 0, money: 35800, stamina: 100 });
           value.flags._ch2_day1 = { startDay: 15, stage: 'complete' };
-          value.met.rei = true;
+          value.met.kuraudo = true;
           core.save();
           const before = JSON.stringify(value), saved = localStorage.getItem('suien_remake_save');
-          const result = await visitPreparationSpot(PREPARATION_SPOTS.find(s => s.charId === 'rei'), { staminaGuard: async () => true });
+          const result = await visitPreparationSpot(PREPARATION_SPOTS.find(s => s.charId === 'kuraudo'), { staminaGuard: async () => true });
           return { result, before, after: JSON.stringify(value), saved, savedAfter: localStorage.getItem('suien_remake_save'), notice: document.querySelector('#toasts').textContent };
         });
         assert.deepEqual(visit.result, { used: false, exerted: false });

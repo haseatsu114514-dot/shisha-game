@@ -23,7 +23,7 @@ async function setup(page, id, stop = null) {
       _ch2_preparation_started: true, _ch2_region: "widehanga", _morning_16: true,
       _ch2_talks: { [id]: 9 }, _lime_tut: 1, _lime_opened: true,
       _hiyori_meeting_done: true, _hiyori_message_delivered: true };
-    for (const who of ["ageha", "kumicho", "rei"]) { v.met[who] = true; v.flags[`_intro_${who}`] = true; }
+    for (const who of ["ageha", "kumicho", "kuraudo"]) { v.met[who] = true; v.flags[`_intro_${who}`] = true; }
     v.affinity[id] = 9; // preceding chat read; followup is the heart1 scene
     v.visits[id] = 97; v.contacts = ["sumi", "ageha"]; v.flags._lime_contact_ageha = true;
     v.lovers = ["minto"]; v.loverSince = { minto: 10 }; v.relationshipMemories = ["qa_old_memory"];
@@ -60,10 +60,10 @@ function unchangedRecords(before, after) {
   }
 }
 await suite("ch2-followups", async check => {
-  for (const id of ["ageha", "kumicho", "rei"]) {
+  for (const id of ["ageha", "kumicho", "kuraudo"]) {
     await check(`${id}-legacy-save-completion-and-reload`, async page => {
       await setup(page, id); const before = await current(page);
-      await go(page, id, id === "rei");
+      await go(page, id, id === "kuraudo");
       await page.waitForFunction(() => window.__remake.state.slot === 1); await page.locator(map).waitFor();
       const after = await current(page);
       assert.equal(after.money, before.money - 3000); assert.equal(after.flags._ch2_talks[id], 10);
@@ -79,8 +79,8 @@ await suite("ch2-followups", async check => {
       await page.locator(t(`pin-ch2_${id}`)).click(); assert.equal(await page.locator(t("map-go")).count(),0);
       await reload(page); const saved = await current(page);
       for (const key of ["money","stats","slot","visitedDay","visits","flags","reel"]) assert.deepEqual(saved[key], after[key], key);
-    }, id === "rei" ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});
-    for (const stop of [{ ageha: 6, kumicho: 5, rei: 7 }[id], followups[`remake_ch2_${id}_followup`].lines.length]) {
+    }, id === "kuraudo" ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});
+    for (const stop of [{ ageha: 6, kumicho: 5, kuraudo: 7 }[id], followups[`remake_ch2_${id}_followup`].lines.length]) {
       await check(`${id}-interrupt-at-line-${stop}`, async page => {
         await setup(page,id,stop); const before = await current(page);
         await go(page,id); await page.waitForFunction(() => window.__followupStopped);

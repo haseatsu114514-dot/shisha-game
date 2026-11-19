@@ -69,10 +69,10 @@ def character_shop_name_errors(characters):
     errors = []
     for person in characters:
         fields = ('affiliation', 'description')
-        if person.get('id') == 'sui':
+        if person.get('id') == 'sensu':
             for field in fields:
                 if 'シーステーション' in person.get(field, ''):
-                    errors.append(f'characters.json:sui.{field}: 店名はC.STATION（#2015）')
+                    errors.append(f'characters.json:sensu.{field}: 店名はC.STATION（#2015）')
         if person.get('id') == 'adam':
             for field in fields:
                 if re.search(r'(?<![A-Za-z])Eden(?![A-Za-z])', person.get(field, '')):
@@ -113,7 +113,7 @@ def text_errors(row):
         unquoted = re.sub(r'「[^」]*」|『[^』]*』|“[^”]*”|‘[^’]*’', '引用', text)
         if re.search(r'(?:^|[。！？!?])\s*…*師匠(?=[、。！？!?]|$)', unquoted):
             errors.append('はじめはスミさんを師匠と呼びかけない（#1947）')
-    if speaker == 'dr_kemuri' and '僕' in text:
+    if speaker == 'dr_charcoal' and '僕' in text:
         errors.append('博士の一人称は私（機材自慢の持ちネタ「それ作ったの、俺だもん」だけ俺）')
     if speaker == 'ageha' and re.search(r'あたし|アタシ|ウチ|はじめくん', text):
         errors.append('あげははうち／ハジメっち')

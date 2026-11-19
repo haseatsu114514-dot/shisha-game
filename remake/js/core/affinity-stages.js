@@ -26,17 +26,17 @@ export const CH2_VISIT_STORIES = {
     ch2Story("ch2_kumicho", "ch2_kumicho_sixth", 5),
   ],
   // 準備期間（DAY2〜13）に締めくくりまで届くよう、クラウドの「嘘」の相談を♥4に置く（#2027）。
-  rei: [
-    { scene: "remake_ch2_rei_followup", heart: 1, done: "_ch2_followup_done" },
-    ch2Story("ch2_rei", "ch2_rei_first", 1),
-    ch2Story("ch2_rei", "ch2_rei_second", 1),
-    { scene: "remake_ch2_rei_revisit", heart: 2, done: "_ch2_revisit_done" },
-    ch2Story("ch2_rei", "ch2_rei_third", 2),
-    // 常連の集まりとライブの余りチケット（#2026）。「同士だ」の後、前夜の場面の _ch2_rei_ticket 分岐より前に読める位置。
-    ch2Story("ch2_rei", "ch2_rei_group_concert_prep", 2),
-    ch2Story("ch2_rei", "ch2_rei_fourth", 3),
-    ch2Story("ch2_rei", "ch2_rei_fifth", 4),
-    ch2Story("ch2_rei", "ch2_rei_sixth", 5),
+  kuraudo: [
+    { scene: "remake_ch2_kuraudo_followup", heart: 1, done: "_ch2_followup_done" },
+    ch2Story("ch2_rei", "ch2_kuraudo_first", 1),
+    ch2Story("ch2_rei", "ch2_kuraudo_second", 1),
+    { scene: "remake_ch2_kuraudo_revisit", heart: 2, done: "_ch2_revisit_done" },
+    ch2Story("ch2_rei", "ch2_kuraudo_third", 2),
+    // 常連の集まりとライブの余りチケット（#2026）。「同士だ」の後、前夜の場面の _ch2_kuraudo_ticket 分岐より前に読める位置。
+    ch2Story("ch2_rei", "ch2_kuraudo_group_concert_prep", 2),
+    ch2Story("ch2_rei", "ch2_kuraudo_fourth", 3),
+    ch2Story("ch2_rei", "ch2_kuraudo_fifth", 4),
+    ch2Story("ch2_rei", "ch2_kuraudo_sixth", 5),
   ],
 };
 /** 第2章の訪問列をすべて読んだか（締めくくりの前提）。 */
@@ -146,7 +146,7 @@ export function pendingAffinityStage(s, id, db = {}) {
     MASHIRO_AFFINITY_SCENES.forEach((scene, level) => stages.push({ level, scene, done: !!flags[`_ch3_read_${scene}`] }));
     stages.push({ level: 3, scene: "ch3_mashiro_bond_question", done: questionComplete(s, id) });
   }
-  if (["ageha", "kumicho", "rei"].includes(id)) {
+  if (["ageha", "kumicho", "kuraudo"].includes(id)) {
     stages.push({ level: 0, done: !!flags._ch2_talks?.[id] });
     if (CH2_VISIT_STORIES[id]) CH2_VISIT_STORIES[id].forEach(entry => stages.push({ level: entry.heart, scene: entry.scene, done: ch2VisitDone(flags, id, entry) }));
     else stages.push({ level: 1, done: !!flags._ch2_followup_done?.[id] });

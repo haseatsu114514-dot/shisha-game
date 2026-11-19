@@ -186,22 +186,22 @@
       ]
     },
     {
-      "dialogue_id": "ch4_morning_cheer_rei",
+      "dialogue_id": "ch4_morning_cheer_kuraudo",
       "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "face": "normal",
           "text": "……キミの一曲目、楽しみにしてる"
         }
       ]
     },
     {
-      "dialogue_id": "ch4_morning_cheer_saku",
+      "dialogue_id": "ch4_morning_cheer_ayatori",
       "comment": "大会当日の朝、宿のロビーで来てくれた人の一言（一人一行・恋人でも友人でも同じ）。その場にいる人だけ（砂浜の顔ぶれと同じ決まり）。大会当日の朝（4-4・SPC28・2026-11-15 オーナー採用）。大会の場面（ch4_tournament_start）の前に一度だけ（ch4-morning.js）。好感度・能力・お金は付けない。",
       "lines": [
         {
-          "speaker": "saku",
+          "speaker": "ayatori",
           "face": "smile",
           "text": "予想しとく。君は最初に客席を見る……外れたら、ノートに書くね"
         }

@@ -452,7 +452,7 @@ for (const [total, category, expected] of [[90, "steady", "win"], [76, "recovere
     assert.equal(lines(id).length, lines(loss).length, id);
     assert.deepEqual(lines(id).filter((_, index) => index !== 1 && index !== 2),
       lines(loss).filter((_, index) => index !== 1 && index !== 2), `${id}: only the doctor's first two lines differ`);
-    for (const index of [1, 2]) assert.equal(lines(id)[index].speaker, "dr_kemuri", id);
+    for (const index of [1, 2]) assert.equal(lines(id)[index].speaker, "dr_charcoal", id);
   }
   assert.equal(texts(lossClose)[1], "合計は、9000です。……なのに、二台目の票が減りました");
   assert.equal(texts(lossClose)[2], "同じ精度で出しました。減る理由が、記録にありません");
@@ -475,7 +475,7 @@ for (const [total, category, expected] of [[90, "steady", "win"], [76, "recovere
   const tail = lines(CH5_AFTER_MATCH_TAIL);
   assert(tail.some(line => line.speaker === "hajime"
     && line.text === "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が"));
-  assert(tail.some(line => line.speaker === "sui") && !tail.some(line => /点|合格|採点/.test(line.text)));
+  assert(tail.some(line => line.speaker === "sensu") && !tail.some(line => /点|合格|採点/.test(line.text)));
   // 後半（勝敗共通）: 場面の区切りの地の文で始まり、検品札 → エンコード → 味の分からない審査員 → 一緒に作る一台。
   const record = files.ch5_main.find(row => row.dialogue_id === "ch5_doctor_cocreation");
   const recordTexts = record.lines.map(line => line.text);
@@ -496,7 +496,7 @@ for (const [total, category, expected] of [[90, "steady", "win"], [76, "recovere
     ["flag", "_stk_kemuri_thermo_borrowed", "thermo", undefined]);
   assert.equal(record.lines.indexOf(thermo), order[3] + 1, "Right after the judging lines");
   assert.deepEqual(record.branches.thermo.map(line => [line.speaker, line.text]),
-    [["dr_kemuri", "県大会の前に貸した温度計。あれが、9000のいちばん古い部品です"]]);
+    [["dr_charcoal", "県大会の前に貸した温度計。あれが、9000のいちばん古い部品です"]]);
   assert(!recordTexts.includes(record.branches.thermo[0].text), "The thermometer line is only in the branch");
 }
 
@@ -532,10 +532,10 @@ for (const [total, category, expected] of [[90, "steady", "win"], [76, "recovere
     "（……違わない、のかもしれない）",
     "ですから、比べましょう。同じ葉で二本勝負です"].map(at);
   assert(s1.every((index, i) => index >= 0 && (i === 0 || index === s1[i - 1] + 1)), `S1 order: ${s1}`);
-  const sui = ["うちの新人は、三ヶ月で一人の夜に立つ。隣に、師匠はいない",
+  const sensu = ["うちの新人は、三ヶ月で一人の夜に立つ。隣に、師匠はいない",
     "その夜の客にも、外れのない一台を。私は、博士の側に立つ"].map(at);
-  assert(sui[0] > at("博士はケースをしまい、今日の注文をした。まずは客として、一台吸っていくという。") && sui[1] === sui[0] + 1);
-  for (const index of sui) assert.equal(opening[index][0], "sui");
+  assert(sensu[0] > at("博士はケースをしまい、今日の注文をした。まずは客として、一台吸っていくという。") && sensu[1] === sensu[0] + 1);
+  for (const index of sensu) assert.equal(opening[index][0], "sensu");
   // 第5章の独白は「（混ざったままで、俺だった）」の一度だけ。開幕に結論の独白を足さない。
   const everyLine = files.ch5_main.flatMap(row => [...row.lines, ...Object.values(row.branches || {}).flat()]);
   assert.equal(everyLine.filter(line => line.text === "（混ざったままで、俺だった）").length, 1);

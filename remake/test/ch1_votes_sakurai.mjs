@@ -53,7 +53,7 @@ for (const score of [60, 70, 80, 86, 90, 100]) {
 {
   const weak = match(craft({ heat: 60 })), strong = match(craft({ heat: 100 }));
   for (const round of [1, 2, 3]) assert.deepEqual(weak.views[round], strong.views[round], `${round}回目は炭焼きの点に左右されない`);
-  assert(weak.views[0].dr_kemuri.hajime < strong.views[0].dr_kemuri.hajime);
+  assert(weak.views[0].dr_charcoal.hajime < strong.views[0].dr_charcoal.hajime);
 }
 
 // 柱2: 提供の回は審査員ごとに見る所が違う。詰め方の違い（味・吸い心地）で取れる審査員が変わる。
@@ -62,11 +62,11 @@ for (const score of [60, 70, 80, 86, 90, 100]) {
   const normal = views(BASE_STATS);
   const dense = views({ ...BASE_STATS, taste: BASE_STATS.taste + 14, draw: BASE_STATS.draw - 12, smoke: BASE_STATS.smoke - 5.4 });
   const fluffy = views({ ...BASE_STATS, taste: BASE_STATS.taste - 6, draw: BASE_STATS.draw + 12, smoke: BASE_STATS.smoke + 5.4, burnRisk: BASE_STATS.burnRisk + 5 });
-  assert(dense.maezono > normal.maezono && dense.sui < normal.sui, "デンスパックは味の上園に効き、煙の千須に響く");
-  assert(fluffy.sui > normal.sui && fluffy.maezono < normal.maezono && fluffy.dr_kemuri < normal.dr_kemuri, "ふんわりは煙の千須に効く");
+  assert(dense.uezono > normal.uezono && dense.sensu < normal.sensu, "デンスパックは味の上園に効き、煙の千須に響く");
+  assert(fluffy.sensu > normal.sensu && fluffy.uezono < normal.uezono && fluffy.dr_charcoal < normal.dr_charcoal, "ふんわりは煙の千須に効く");
   const rivalBest = (judge) => Math.max(...["naru", "adam", "minto"].map(id => sakuraiRival(id, judge, 1)));
-  assert(fluffy.sui > rivalBest("sui"), "ふんわりの一台は千須の1位を取れる");
-  assert(normal.sui < rivalBest("sui"), "ふつうの一台は千須の1位を取れない");
+  assert(fluffy.sensu > rivalBest("sensu"), "ふんわりの一台は千須の1位を取れる");
+  assert(normal.sensu < rivalBest("sensu"), "ふつうの一台は千須の1位を取れない");
   for (const judge of CH1_JUDGES) assert.equal(normal[judge], Math.round(Object.entries(SAKURAI.serve[judge])
     .reduce((n, [k, w]) => n + w * (k === "safety" ? 100 - BASE_STATS.burnRisk : k === "pull" ? 100 : BASE_STATS[k]), 0) * 100) / 100);
 }
@@ -80,7 +80,7 @@ for (const score of [60, 70, 80, 86, 90, 100]) {
   // 調整2回目を真ん中で終えると、最後に攻めてくるみんとに1位と千須の最後の1点を取られる。攻めると取り返せる。
   const center = match(craft());
   assert.equal(center.lastPoint, "minto");
-  assert.equal(center.picks[3].maezono.first, "minto");
+  assert.equal(center.picks[3].uezono.first, "minto");
   const bold = match(craft({ attack: [3] }));
   assert.equal(bold.lastPoint, "hajime");
   assert.equal(bold.attacks[3], true);

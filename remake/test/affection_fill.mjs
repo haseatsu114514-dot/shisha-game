@@ -14,10 +14,10 @@ const byId = (name) => Object.fromEntries(dialogues(name).map(d => [d.dialogue_i
 const routes = read("../../data/story_routes.json");
 
 const NEW = {
-  ch3_saku_missed: { file: "ch3_rivals", who: "saku", heart: 2 },
-  ch3_saku_cleanup: { file: "ch3_rivals", who: "saku", heart: 3 },
-  ch3_saku_liar: { file: "ch3_rivals", who: "saku", heart: 4 },
-  ch3_saku_first_reply: { file: "ch3_rivals", who: "saku", heart: 4 },
+  ch3_ayatori_missed: { file: "ch3_rivals", who: "ayatori", heart: 2 },
+  ch3_ayatori_cleanup: { file: "ch3_rivals", who: "ayatori", heart: 3 },
+  ch3_ayatori_liar: { file: "ch3_rivals", who: "ayatori", heart: 4 },
+  ch3_ayatori_first_reply: { file: "ch3_rivals", who: "ayatori", heart: 4 },
   ch3_steve_two_timers: { file: "ch3_rivals", who: "steve", heart: 1 },
   ch3_steve_empty_seat: { file: "ch3_rivals", who: "steve", heart: 3 },
   ch3_steve_tongs: { file: "ch3_rivals", who: "steve", heart: 4 },

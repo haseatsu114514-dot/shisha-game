@@ -518,10 +518,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_critical",
+      "dialogue_id": "trpg_talk_kuraudo_critical",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "surprise",
           "text": "……20が出た。クリティカルだ"
@@ -533,7 +533,7 @@
           "text": "クラウドさん、今ちょっと声が上ずりました？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……ご褒美。連携札を1枚、返す"
@@ -541,10 +541,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_critical_full",
+      "dialogue_id": "trpg_talk_kuraudo_critical_full",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "surprise",
           "text": "……20が出た。クリティカルだ"
@@ -556,7 +556,7 @@
           "text": "クラウドさん、今ちょっと声が上ずりました？"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……札は満タンか。なら、拍手だけ贈る"
@@ -564,10 +564,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_fumble",
+      "dialogue_id": "trpg_talk_kuraudo_fumble",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "serious",
           "text": "……1が出た。ファンブルだ"
@@ -579,7 +579,7 @@
           "text": "うわ、ここで……"
         },
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……大丈夫。崩れたあとの一曲が、いちばん響く"
@@ -587,10 +587,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_double",
+      "dialogue_id": "trpg_talk_kuraudo_double",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……ゾロ目。いい音で揃った"
@@ -604,10 +604,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_heat_up",
+      "dialogue_id": "trpg_talk_kuraudo_heat_up",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……卓が温まってきた。語るの、楽しくなってきた"
@@ -621,10 +621,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_heat_max",
+      "dialogue_id": "trpg_talk_kuraudo_heat_max",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "serious",
           "text": "……最高潮だ。このまま、最後の曲まで行く"
@@ -906,10 +906,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_near1",
+      "dialogue_id": "trpg_talk_kuraudo_near1",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……あと1。卓では『妖怪いちたりない』って呼ぶ"
@@ -923,10 +923,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_near2",
+      "dialogue_id": "trpg_talk_kuraudo_near2",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "normal",
           "text": "……あと2。半拍、遅れただけだ"
@@ -1172,10 +1172,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_reward_question",
+      "dialogue_id": "trpg_talk_kuraudo_reward_question",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……いい出目だ。質問は、もう一つ聞いていい"
@@ -1189,10 +1189,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_reward_hint",
+      "dialogue_id": "trpg_talk_kuraudo_reward_hint",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……ご褒美だ。次の選択で、合わないものに印をつける"
@@ -1206,10 +1206,10 @@
       ]
     },
     {
-      "dialogue_id": "trpg_talk_rei_reward_finale",
+      "dialogue_id": "trpg_talk_kuraudo_reward_finale",
       "lines": [
         {
-          "speaker": "rei",
+          "speaker": "kuraudo",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "……決まった。会心のクライマックスだ。結末に印をつける"

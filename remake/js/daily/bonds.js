@@ -43,7 +43,7 @@ export const BOND_FINALES = {
   rio: { dialogue: "ch1_rio_bond_finale", gift: "suyaki_rio", question: "bond_q2_rio" },
   // 第2章の店（柚ヶ谷）で会う。訪問列（CH2_VISIT_STORIES）を読み終えた♥5の次の来店で一度だけ（#2027）
   kumicho: { dialogue: "ch2_kumicho_bond_finale", gift: "suyaki_kumicho" },
-  rei: { dialogue: "ch2_rei_bond_finale", gift: "suyaki_rei" },
+  kuraudo: { dialogue: "ch2_kuraudo_bond_finale", gift: "suyaki_rei" },
   samechan: { dialogue: "samechan_bond_finale", gift: "suyaki_samechan", night: true, question: "bond_q2_samechan" },
   // あげは（#2023）: 第2章のMELTY PUFFで。方向は♥3の答え（bond_q1_ageha）だけで決まり、最後の質問は置かない。
   // 告白は日常の予約ではなく、第3章の帰郷後に ch3-romance-entry.js が出す（laterConfession）。
@@ -53,7 +53,7 @@ export const BOND_FINALES = {
   // 綾取（#2028）: 第3章の煙幕への来店（ch3-tokyo-daily.js）・旧行程の場面カード（chapters/ch3.js）・
   // 大会後の寄り道（ch3-aftermath.js）から。恋愛対象外なので友情の着地だけ。条件はほかの人物と同じ♥5（IR22）。
   // 煙幕には何度でも通えて♥5に届く（AFB02・#2347）ので、仮の♥1（#2281）は外した。
-  saku: { dialogue: "ch3_saku_bond_finale", gift: "suyaki_saku" },
+  ayatori: { dialogue: "ch3_ayatori_bond_finale", gift: "suyaki_saku" },
   // ヌール（DSR20）: 第4章ドバイのカフェ・オアシスで（chapters/ch4-desert.js）。店の段階の会話と♥3の問いを読んだ♥5で一度だけ。
   // 告白は次の砂丘（ツアー代なし）の夕日の場面 confession_noor が担うので、夜の帰り道には予約しない。
   noor: { dialogue: "ch4_noor_bond_finale", gift: "suyaki_noor", question: "bond_q2_noor", ownConfession: true },
@@ -261,10 +261,10 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
       && state.romanceChoices?.bond_q1_samechan?.char === id)
     && samechanHeartEventsDone(state) // ♥4・♥5の来店会話（#2025）
   // 綾取: LIME交換の寄り道と、助言の後の「答えを返しに行く」外出の両方（ch3-story-wiring.js / ch3-outing-progress.js の保存キーの写し）
-  : id === "saku" ? !!state.flags._ch3_read_ch3_saku_lime && !!state.flags._lime_contact_saku
+  : id === "ayatori" ? !!state.flags._ch3_read_ch3_ayatori_lime && !!state.flags._lime_contact_ayatori
     && (state.flags._ch3_outings?.enmaku_answer || 0) > 0
-    && (["ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_first_reply"].every((scene) => !!state.flags[`_ch3_read_${scene}`])
-      || !!state.finales?.saku)
+    && (["ch3_ayatori_missed", "ch3_ayatori_cleanup", "ch3_ayatori_liar", "ch3_ayatori_first_reply"].every((scene) => !!state.flags[`_ch3_read_${scene}`])
+      || !!state.finales?.ayatori)
   : id === "noor" ? noorStoriesDone(state) && questionComplete(state, id)
   // スティーブ: LIME交換の寄り道と、味の会話（予備のタイマーを借りる外出）の両方。締めくくりはそのタイマーを受ける
   // 第5章の東京では、第3章の寄り道（LIME交換・予備のタイマー）はもう受けられないので、♥5だけで始める（#2705）
@@ -298,7 +298,7 @@ const beforeTokyoDeparture = () => state.chapter === 3 && !!state.flags?._ch3_pr
  * （スティーブの授業の窓 CH3_AFTERMATH_LESSONS と同じ）。翌朝（片づけの朝）からは、ヴォルクにはまた会える。
  */
 const NARU_RECONCILE_STAGE = 2;
-export const SAKU_LAST_AFTERMATH_STAGE = 2;
+export const AYATORI_LAST_AFTERMATH_STAGE = 2;
 export const STEVE_LAST_AFTERMATH_STAGE = 2;
 export const VOLK_LAST_AFTERMATH_STAGE = 3;
 const tokyoShopInReach = (feature, lastStage) => {
@@ -311,7 +311,7 @@ const tokyoShopInReach = (feature, lastStage) => {
 /** 第5章の東京にいる間か（chapters/ch5-tokyo.js の inTokyo と同じ判定） */
 const inChapterFiveTokyo = () => state.chapter === 5 && state.flags?._ch2_region === "tokyo";
 const TOKYO_SHOP_REACH = Object.freeze({
-  saku: () => tokyoShopInReach("sakuBond", SAKU_LAST_AFTERMATH_STAGE),
+  ayatori: () => tokyoShopInReach("sakuBond", AYATORI_LAST_AFTERMATH_STAGE),
   steve: () => inChapterFiveTokyo() || tokyoShopInReach("steveBond", STEVE_LAST_AFTERMATH_STAGE),
   volk: () => inChapterFiveTokyo() || tokyoShopInReach("volkBond", VOLK_LAST_AFTERMATH_STAGE),
 });
@@ -325,7 +325,7 @@ export function finaleDue(id) {
   // MELTY PUFFに通えるのは第2章と、第3章の東京へ発つ前の準備3日だけ（VOL02。東京にいる間は店が地図に無い）
   if (id === "ageha" && !chapterFeatureEnabled(state.chapter, "agehaVisit") && !beforeTokyoDeparture()) return false;
   if (id === "mashiro" && !chapterFeatureEnabled(state.chapter, "mashiroBond")) return false;
-  if (id === "saku" && !TOKYO_SHOP_REACH.saku()) return false; // 煙幕は第3章の東京にだけある
+  if (id === "ayatori" && !TOKYO_SHOP_REACH.ayatori()) return false; // 煙幕は第3章の東京にだけある
   if (id === "noor" && ![4, 5].includes(state.chapter)) return false; // カフェ・オアシスは第4章と第5章のドバイ（第5章は 2026-11-07 オーナー決定）
   if (id === "steve" && !TOKYO_SHOP_REACH.steve()) return false;
   if (id === "volk" && !TOKYO_SHOP_REACH.volk()) return false;
@@ -348,7 +348,7 @@ export const isFinaleEvent = (dialogueId) => Object.values(BOND_FINALES).some((d
 
 /** 締めくくりを再生し、ルート（恋人／恋愛／友情）を記録して専用ハガルを渡す。一度だけ */
 export async function playFinale(id, { bg = null, deferSave = false, signal = null } = {}) {
-  if (["hiyori", "samechan", "mashiro", "saku", "noor", "steve", "volk", "master_hookah", "da_silva", "sheikh"].includes(id) && !finaleDue(id)) return false;
+  if (["hiyori", "samechan", "mashiro", "ayatori", "noor", "steve", "volk", "master_hookah", "da_silva", "sheikh"].includes(id) && !finaleDue(id)) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[finaleDialogue(id)]) return false;
   const owner = state;
@@ -482,7 +482,7 @@ export function friendMessages({ tournamentDay = false, sceneChapter = false } =
     const chats = sent.filter((i) => i.msg.type === "chat").length;
     // 出来事前提の雑談は、前提が揃うまで chats[0] へ退避（TL-01: 素焼き贈呈・正体開示は締めくくりで保証される前提だが、旧セーブ等でも先出ししない防御）
     let pick = f.chats?.length ? chats % f.chats.length : 0;
-    if ((pick === 2 && ["minto", "tsumugi", "rio", "kumicho", "rei", "mashiro", "samechan", "saku", "steve", "volk"].includes(id) && !state.owned.includes(`suyaki_${id}`))
+    if ((pick === 2 && ["minto", "tsumugi", "rio", "kumicho", "kuraudo", "mashiro", "samechan", "ayatori", "steve", "volk"].includes(id) && !state.owned.includes(BOND_FINALES[id].gift))
       || (pick === 1 && id === "adam" && !state.owned.includes("suyaki_adam"))
       || (pick === 1 && id === "minto" && !state.flags._minto_identity_revealed)) pick = 0;
     const chat = f.chats?.length ? { id: `${FRIEND_PREFIX}chat_${id}_d${state.day}`, sender: id, type: "chat", friend: true,

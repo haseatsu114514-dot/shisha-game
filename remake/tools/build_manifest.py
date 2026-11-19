@@ -12,7 +12,7 @@
     python3 remake/tools/build_manifest.py --making-only ui_mockup_inhale_button.png ui_mockup_flavor_leaf.png
 
 新規キャラの立ち絵だけを追加するとき（他の採用済み画像を維持する）:
-    python3 remake/tools/build_manifest.py --portraits-only kumicho rei volk
+    python3 remake/tools/build_manifest.py --portraits-only kumicho kuraudo volk
 
 依存: Pillow・NumPy・SciPy（すべて必須）。pip install Pillow numpy scipy
 """
@@ -50,6 +50,15 @@ def load_characters():
     characters = {c["id"]: c for c in json.loads(
         (ROOT / "data/characters.json").read_text(encoding="utf-8"))}
     return characters
+
+
+def actor_art_ids():
+    return {c.get("art_stem", cid): cid for cid, c in load_characters().items()}
+
+
+def actor_keys(art_records):
+    ids = actor_art_ids()
+    return {ids.get(stem, stem): record for stem, record in art_records.items()}
 
 
 def measure(png: Path, anchor="feet"):
@@ -97,10 +106,12 @@ def portraits(character_ids=None, base=None, style=None):
     base = base or ASSETS / "sprites" / "characters"
     if not base.exists():
         return {}
-    anchor_modes = {cid: c.get("spriteAnchorVariants", {}).get(style, c.get("spriteAnchor", "feet"))
+    actor_ids = actor_art_ids()
+    anchor_modes = {c.get("art_stem", cid): c.get("spriteAnchorVariants", {}).get(style, c.get("spriteAnchor", "feet"))
                     for cid, c in load_characters().items()}
     for d in sorted(p for p in base.iterdir() if p.is_dir()):
-        if character_ids is not None and d.name not in character_ids:
+        cid = actor_ids.get(d.name, d.name)
+        if character_ids is not None and cid not in character_ids:
             continue
         faces, metrics = [], {}
         for png in sorted(d.glob(f"chr_{d.name}_*.png")):
@@ -136,7 +147,7 @@ def portraits(character_ids=None, base=None, style=None):
                 entry["topOverhang"] = round(frame_top - top, 4)
         if anchor_modes.get(d.name) in ("head", "body"):
             entry["anchor"] = anchor_modes[d.name]
-        out[d.name] = entry
+        out[cid] = entry
     return out
 
 
@@ -182,14 +193,14 @@ def continue_portraits(style="classic"):
     """正規立ち絵の顔を中央に寄せる。顔アイコンと同じ測定値を元画像の比で記録（tools/make_face_icons.py）。"""
     sys.path.insert(0, str(ROOT / "tools"))
     from make_face_icons import continue_portraits as measure_continue
-    return measure_continue(style)
+    return actor_keys(measure_continue(style))
 
 
 def face_frames():
     """顔アイコンと同じ顔の枠（作業台の審査員・心得の盤が使う）。tools/make_face_icons.py の frames()"""
     sys.path.insert(0, str(ROOT / "tools"))
     from make_face_icons import frames
-    return frames()
+    return {style: actor_keys(records) for style, records in frames().items()}
 
 
 def intro_art(character_ids=None):
@@ -202,14 +213,15 @@ def intro_art(character_ids=None):
     for collection in ("ch3-v1", "recent-cast"):
         records += json.loads((ROOT / f"asset_sources/character-intros/{collection}/characters.json").read_text())
     out = {}
+    actor_ids = actor_art_ids()
     for record in records:
         cid = record["id"].removesuffix("_unknown")
-        if character_ids is not None and cid not in character_ids:
+        if character_ids is not None and actor_ids.get(cid, cid) not in character_ids:
             continue
         background = ASSETS / f"ui/character_intros/{cid}.png"
         if not background.exists():
             continue
-        art = out.setdefault(cid, {
+        art = out.setdefault(actor_ids.get(cid, cid), {
             "color": record["color"], "secondary": record["secondary"],
             "shadow": record["shadow"], "background": f"ui/character_intros/{cid}.png",
             "frames": {},
@@ -280,7 +292,8 @@ def main():
     if args.portrait_variants_only:
         import build_images
         ids = set(args.portrait_variants_only)
-        if not ids <= load_characters().keys():
+        known = load_characters()
+        if not ids <= known.keys():
             parser.error("人物設定がありません")
         style = args.portrait_style
         entries = portraits(ids, ASSETS / f"sprites/character_variants/{style}", style=style)
@@ -290,8 +303,9 @@ def main():
         manifest.setdefault("portraitVariants", {}).setdefault(style, {}).update(entries)
         webp = set(manifest.get("webp", []))
         for cid, entry in entries.items():
+            stem = known[cid].get("art_stem", cid)
             for face in entry["faces"]:
-                rel = f"sprites/character_variants/{style}/{cid}/chr_{cid}_{face}.png"
+                rel = f"sprites/character_variants/{style}/{stem}/chr_{stem}_{face}.png"
                 dst = build_images.OUT / Path(rel).with_suffix(".webp")
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 dst.write_bytes(build_images.encode(ASSETS / rel, rel))
@@ -360,8 +374,9 @@ def main():
         manifest["portraits"].update(entries)
         webp = list(manifest.get("webp", []))
         for cid, entry in entries.items():
+            stem = known[cid].get("art_stem", cid)
             for face in entry["faces"]:
-                rel = f"sprites/characters/{cid}/chr_{cid}_{face}.png"
+                rel = f"sprites/characters/{stem}/chr_{stem}_{face}.png"
                 dst = build_images.OUT / Path(rel).with_suffix(".webp")
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 dst.write_bytes(build_images.encode(ASSETS / rel, rel))

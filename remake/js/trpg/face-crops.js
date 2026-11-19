@@ -128,7 +128,7 @@ export function faceIconStyle(id, style = portraitStyle(), manifest = null, face
  *       そのキャラの中央値へ寄せ、測定値の違いは damp 乗の分だけ効かせる。
  * fix:  キャラごとの補正。頬へかかる髪まで幅に入る2人（サメちゃん・クラウド）と、面長で頭が小さく写る2人（アダム・スミさん）。
  */
-export const BUST = Object.freeze({ face: 0.26, eye: 0.4, damp: 0.4, fix: Object.freeze({ samechan: 0.86, rei: 0.78, adam: 0.9, sumi: 0.92 }) });
+export const BUST = Object.freeze({ face: 0.26, eye: 0.4, damp: 0.4, fix: Object.freeze({ samechan: 0.86, kuraudo: 0.78, adam: 0.9, sumi: 0.92 }) });
 
 /** キャラごとの頬の幅の中央値。frames は { "シナリオ/キャラ/役": { face } }（costumes/frames.json から作る）。 */
 export function bustTypicalWidths(frames) {

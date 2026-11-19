@@ -355,7 +355,7 @@ export const LOADING_COMICS = [
   {
     id: "sui-stamp-card",
     title: "会長の名刺",
-    cast: ["sui"],
+    cast: ["sensu"],
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2374:allcast-sui-stamp-card）",
@@ -394,7 +394,7 @@ export const LOADING_COMICS = [
   {
     id: "sui-long-review",
     title: "一言の講評",
-    cast: ["sui"],
+    cast: ["sensu"],
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2399:allcast-sui-long-review）",
@@ -459,7 +459,7 @@ export const LOADING_COMICS = [
   {
     id: "saku-every-order",
     title: "注文当て",
-    cast: ["saku"],
+    cast: ["ayatori"],
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2407:allcast-saku-every-order）",
@@ -472,7 +472,7 @@ export const LOADING_COMICS = [
   {
     id: "saku-photo-face",
     title: "記念写真",
-    cast: ["saku"],
+    cast: ["ayatori"],
     contexts: ["craft", "minigame"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2407:allcast-saku-photo-face）",
@@ -498,7 +498,7 @@ export const LOADING_COMICS = [
   {
     id: "rei-castle-cake",
     title: "ケーキの飾り",
-    cast: ["rei"],
+    cast: ["kuraudo"],
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-rei-castle-cake）",
@@ -511,7 +511,7 @@ export const LOADING_COMICS = [
   {
     id: "rei-mamachari",
     title: "迎えの自転車",
-    cast: ["rei"],
+    cast: ["kuraudo"],
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-rei-mamachari）",
@@ -602,7 +602,7 @@ export const LOADING_COMICS = [
   {
     id: "kemuri-jar-machine",
     title: "ふたの開け方",
-    cast: ["dr_kemuri"],
+    cast: ["dr_charcoal"],
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-kemuri-jar-machine）",
@@ -615,7 +615,7 @@ export const LOADING_COMICS = [
   {
     id: "kemuri-snow-sandals",
     title: "雪の日の足元",
-    cast: ["dr_kemuri"],
+    cast: ["dr_charcoal"],
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-kemuri-snow-sandals）",
@@ -680,7 +680,7 @@ export const LOADING_COMICS = [
   {
     id: "maezono-plain-water",
     title: "ただの水",
-    cast: ["maezono"],
+    cast: ["uezono"],
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-maezono-plain-water）",
@@ -693,7 +693,7 @@ export const LOADING_COMICS = [
   {
     id: "maezono-lemon",
     title: "好物のレモン",
-    cast: ["maezono"],
+    cast: ["uezono"],
     contexts: ["craft"],
     minChapter: 1,
     note: "番外編のギャグ漫画です。左から右へお読みください。（PR2671:allcast-maezono-lemon）",
