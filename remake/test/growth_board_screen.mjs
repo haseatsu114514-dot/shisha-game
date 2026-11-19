@@ -51,7 +51,9 @@ const fx = new Element(); fx.host = true;
 const sounds = [], releases = [];
 let routeLookups = 0;
 let musicStarts = 0, ownerChanged = () => {}, stateModule;
+const resolver = await import("../js/core/portrait-resolver.js");
 const modules = {
+  "../core/portrait-resolver.js": resolver,
   "../core/util.js": { ...util, sleep: async () => {} },
   "../core/ui.js": { layers: { fx }, modal: async () => null, gainCard() {} },
   "../core/audio.js": { SE: { boardLight: () => sounds.push("light"), boardCommit: () => sounds.push("commit") },
@@ -237,7 +239,7 @@ const constants = [source.match(/const BOARD_FACES = new Set\(\[[\s\S]*?\]\);/)[
   source.match(/function portraitEyes\([\s\S]*?\n\}/)[0], source.match(/function boardFaceUrl\([\s\S]*?\n\}/)[0],
   source.match(/const PANEL_FACE_W = [^;]+;/)[0], source.match(/const PANEL_FACE = \{[\s\S]*?\n\};/)[0]].join("\n");
 const panelGrowth = { known: false }, cropCalls = [], panelRoot = new Element();
-const panelContext = vm.createContext({ el: util.el, g: panelGrowth, root: panelRoot, ART_DIR: "img/ui/growth_board/",
+const panelContext = vm.createContext({ characterArtStem: resolver.characterArtStem, el: util.el, g: panelGrowth, root: panelRoot, ART_DIR: "img/ui/growth_board/",
   lessonKnown: () => panelGrowth.known, faceFrame: data.faceFrame, portraitStyle: () => core.config.portraitStyle,
   portraitInfo: (...args) => { const p = data.portraitInfo(...args); cropCalls.push({ args, p }); return p; },
 });

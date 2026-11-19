@@ -143,14 +143,14 @@ function loadSave(save) {
   assert.deepEqual(s.affinity, { sumi: 9, tsumugi: 9, rio: 3 });
 }
 
-console.log("save id rename migrate: PASS (all structures renamed, new-key priority, legacy lesson backfill, current schema untouched)");
+
 
 // Current cast IDs are not another save migration. Physical art and item identifiers are independent.
 {
   const { readFileSync } = await import("node:fs");
   const { characterArtStem, resolvePortrait } = await import("../js/core/portrait-resolver.js");
   const { costumeUrl } = await import("../js/trpg/costumes.js");
-  const { PREPARATION_SPOTS } = await import("../js/chapters/ch2-preparation.js");
+  const { STOPS, ROOMS } = await import("../js/chapters/ch2-city-data.js");
   const json = path => JSON.parse(readFileSync(new URL(path, import.meta.url), "utf8"));
   const cast = json("../../data/characters.json"), manifest = json("../data/manifest.json");
   const names = { kuraudo: "rei", uezono: "maezono", ayatori: "saku", sensu: "sui", dr_charcoal: "dr_kemuri" };
@@ -166,10 +166,12 @@ console.log("save id rename migrate: PASS (all structures renamed, new-key prior
       assert(manifest.webp.includes(pic.rel), pic.rel);
     }
   }
-  const spot = PREPARATION_SPOTS.find(s => s.charId === "kuraudo");
-  assert.equal(spot.id, "ch2_rei");
-  assert(spot.previewUrl.endsWith("/bg_ch2_rei_entry.webp"));
+  const spot = STOPS.find(s => s.id === "kuraudo");
+  assert.equal(spot.shopId, "ch2_rei");
+  assert(ROOMS[spot.id].endsWith("/bg_ch2_rei_entry.webp"));
   assert.equal(json("../../data/equipment.json").equipment.find(e => e.id === "suyaki_rei").gift.from, "kuraudo");
   assert(costumeUrl("purikura-hero", "kuraudo", "nocturne").endsWith("/rei_nocturne.webp"));
   assert.equal(costumeUrl("purikura-hero", "rei", "nocturne"), null);
 }
+
+console.log("save id rename migrate: PASS (legacy remaps, no new migrations, canonical actors, stable art and item IDs)");
