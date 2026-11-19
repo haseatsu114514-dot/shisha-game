@@ -37,8 +37,8 @@ function friends(s, ids = catalog.participants.map(p => p.id)) {
   return s;
 }
 function own(s, id) { rules.syncTrpgStock(s, catalog); assert(rules.buyTrpgBook(s, catalog, id)); return s; }
-function finish(scenario) {
-  const session = new TrpgSession(scenario, { seed: 2 });
+function finish(scenario, options = {}) {
+  const session = new TrpgSession(scenario, { seed: 2, ...options });
   session.start(); session.beginCheck("listen"); session.settleCheck(); interviewDone(session);
   for (const spot of scenario.spots.slice(0, 3)) session.inspect(spot.id);
   session.interpret(scenario.hypotheses[0].id); twistDone(session);
@@ -571,4 +571,49 @@ test("table status guides player when companions and books are not yet ready (#1
   const withBook = rules.tableStatus(bookOnly, catalog);
   assert(withBook.ok);
   assert.equal(withBook.reason, "今夜来られる部員がいない。知り合いとの交流を深めよう");
+});
+
+test("the shelf snapshots the completed route once per play and keeps earlier plays when full", async () => {
+  const { TRPG_RECORDS_PER_STORY, appendTrpgPlayRecord, savedTrpgRecords } = await module("../js/trpg/play-record.js");
+  const s = own(friends(state()), ordinary.id);
+  const play = (name, seed) => {
+    const cast = rules.castTrpgTable(s, catalog, ordinary);
+    assert(cast.ok);
+    const ticket = { ...cast, chapter: s.chapter, day: s.day, slot: s.slot };
+    const table = rules.materializeTrpgCast(ordinary, cast.assignments);
+    const result = finish(table, { pc: { name }, seed });
+    const options = { recordTable: table };
+    assert(rules.completeTrpgTable(s, catalog, ordinary, ticket, result, options));
+    assert(!rules.completeTrpgTable(s, catalog, ordinary, ticket, result, options), "a second notification adds no record");
+    s.slot = 1;
+    s.day++;
+    return result;
+  };
+  const first = play("アオ", 2);
+  const firstRecord = s.trpg.cleared[ordinary.id].records[0];
+  assert.equal(firstRecord.ending, ordinary.endings[first.ending].title);
+  assert.equal(firstRecord.endingLine, ordinary.endings[first.ending].line);
+  assert.match(firstRecord.choices.join(" "), /手書きのメニュー/);
+  assert.match(firstRecord.rolls[0], new RegExp(String(first.checks[0].dice[0]) + " ＋ " + first.checks[0].dice[1]));
+  assert(firstRecord.lines.length > 0);
+  assert(firstRecord.lines.every(([, line]) => !/\{pc[:}]/.test(line)), "the snapshot resolves names in the saved script");
+
+  const second = play("アカ", 7);
+  const memory = s.trpg.cleared[ordinary.id];
+  assert.deepEqual(memory.records.map(({ play, day }) => [play, day]), [[1, 3], [2, 4]]);
+  assert.equal(memory.records[1].ending, ordinary.endings[second.ending].title);
+  assert.equal(memory.records[0], firstRecord, "replay leaves the earlier snapshot intact");
+  const beforeLimit = structuredClone(memory.records);
+  for (let i = memory.records.length; i <= TRPG_RECORDS_PER_STORY; i++) play("アオ", i + 12);
+  const full = s.trpg.cleared[ordinary.id];
+  assert.equal(full.records.length, TRPG_RECORDS_PER_STORY);
+  assert.equal(full.plays, TRPG_RECORDS_PER_STORY + 1);
+  assert.deepEqual(full.records.slice(0, 2), beforeLimit);
+
+  const bounded = { earlier: { records: Array.from({ length: 17 }, (_, index) => (
+    { ...firstRecord, play: index + 1, lines: [["hajime", "あ".repeat(11_000)]] }
+  )) } };
+  assert.equal(appendTrpgPlayRecord(bounded, ordinary.id, firstRecord), undefined, "aggregate cap refuses without evicting");
+  assert.equal(appendTrpgPlayRecord({}, ordinary.id, { ...firstRecord, lines: [["hajime", "あ".repeat(13_000)]] }), undefined);
+  assert.deepEqual(savedTrpgRecords({ records: [null, { ...firstRecord, rolls: "bad" }, firstRecord] }), [firstRecord]);
 });

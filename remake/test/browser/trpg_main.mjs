@@ -421,7 +421,7 @@ await suite("trpg-main", async check => {
     assert.match(await button(page, "trpg-ending-club").textContent(), /部の実績 ＋[3-6]/);
     await hit(page, "trpg-finish");
     await page.getByRole("heading", { name: "今夜の卓を終えました" }).waitFor();
-    assert.equal(await page.locator(".trpg-campaign-notice").textContent(), "遊んだ記録は、物語の一覧で見返せます。");
+    assert.equal(await page.locator(".trpg-campaign-notice").textContent(), "本棚に記録しました。");
     const returned = await snapshot(page);
     const savedReturn = JSON.parse((await storageSnapshot(page)).local.suien_remake_save);
     assert.equal(returned.slot, ending.slot, "Returning to the cafe does not spend another action");
@@ -430,6 +430,22 @@ await suite("trpg-main", async check => {
     assert(savedEnding.growth.playMastery.trpg, "The completed table records mastery before returning to the cafe");
     assert.deepEqual(savedReturn.growth.playMastery.trpg, savedEnding.growth.playMastery.trpg);
     assert.deepEqual(savedReturn.growth?.rewards, savedEnding.growth?.rewards);
+    const [first] = savedEnding.trpg.cleared[id].records;
+    assert.equal(first.play, 1);
+    assert(first.lines.length > 0, "the ending and epilogue are in the save before closing the table");
+    assert(first.rolls.length > 0 && first.choices.length > 0);
+    const storageBeforeReading = await storageSnapshot(page);
+    await hit(page, "trpg-bookshelf-open");
+    const bookshelf = button(page, "trpg-bookshelf"), firstEntry = button(page, "trpg-shelf-run-" + id + "-1");
+    assert.equal(await bookshelf.getAttribute("role"), "dialog");
+    await firstEntry.locator("summary").click();
+    assert.match(await firstEntry.locator("summary").textContent(), /第1回/);
+    assert.equal(await firstEntry.locator(".trpg-log-line").first().textContent(), first.lines[0].join(""));
+    assert(await firstEntry.getByRole("heading", { name: "判定結果" }).isVisible());
+    assert(await firstEntry.getByRole("heading", { name: "選んだこと" }).isVisible());
+    await hit(page, "trpg-bookshelf-close");
+    assert.deepEqual(await snapshot(page), returned, "reading a record does not change the active save or rewards");
+    assert.deepEqual(await storageSnapshot(page), storageBeforeReading, "opening and closing the book does not write storage");
     assert.match(await button(page, "trpg-club-rank").getAttribute("aria-label"), /実績 [3-6]。/);
     await assertFits(page, '[data-test="trpg-club-rank"]');
     await hit(page, "trpg-reflect-hard"); await hit(page, "trpg-campaign-close");
@@ -443,6 +459,20 @@ await suite("trpg-main", async check => {
     assert.match(await button(page, "trpg-memory-pc").textContent(), /演じた役/);
     await assertShelfControls(page);
     await page.screenshot({ path: (process.env.ARTIFACT_DIR || ".codex/artifacts/trpg") + "/trpg-campaign-memory-" + label + ".png" });
+    await hit(page, "trpg-bookshelf-open");
+    assert.equal(await firstEntry.count(), 1, "the record can be opened after loading");
+    await hit(page, "trpg-bookshelf-close");
+    if (label === "ordinary-pc") {
+      await play(page, id);
+      await hit(page, "trpg-finish");
+      await hit(page, "trpg-bookshelf-open");
+      assert.equal(await firstEntry.count(), 1);
+      assert.match(await button(page, "trpg-shelf-run-" + id + "-2").locator("summary").textContent(), /第2回/);
+      const replayed = await snapshot(page);
+      assert.deepEqual(replayed.trpg.cleared[id].records.map(entry => entry.play), [1, 2]);
+      await hit(page, "trpg-bookshelf-close");
+      assert.deepEqual(await snapshot(page), replayed);
+    }
     await hit(page, "trpg-campaign-close");
   }, options);
   // TRF13: the rank is counted from the shelf (no new save field), and its growth point reaches the player's first role.
@@ -456,6 +486,11 @@ await suite("trpg-main", async check => {
         ending: endings[0], endingTitle: "", variant: "smooth", plan: {}, version, stars: 2, heat: 6, night: "盛り上がった夜", endingsSeen: endings, plays: 2 };
     }, { version: shark.version, endings: Object.keys(shark.endings).slice(0, 2) });
     await open(page);
+    await hit(page, "trpg-bookshelf-open");
+    const legacy = button(page, "trpg-shelf-story-shark-last-order");
+    assert.match(await legacy.textContent(), /詳しい記録のない回は、結末の概要だけ残っています/);
+    assert.equal(await legacy.locator("details").count(), 0, "an old summary has no fabricated transcript");
+    await hit(page, "trpg-bookshelf-close");
     const banner = button(page, "trpg-club-rank");
     assert.equal(await banner.getAttribute("data-rank"), "2");
     assert.equal(await banner.getAttribute("aria-label"), "部のランク 2、なじみの部。実績 6。次のランクまで あと10。はじめの役の成長点 ＋1");
