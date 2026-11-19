@@ -513,15 +513,21 @@ try {
   await run("reroll-cancel-and-low-motion", { seed: "8", traveler: "quiet" },
     { reducedMotion: "reduce" }, async page => {
       await page.locator('[data-test="trpg-start"]').click();
-      // 動きを減らす設定: 転生は役の札を動かさずに短く見せるだけ（裏返しも光もない）。
-      let calm = null;
-      for (let presses = 0; !calm; presses++) {
-        assert(presses < 40);
-        calm = await page.evaluate(() => { const node = document.querySelector(".trpg-incarnate");
-          if (!node) { document.querySelector('[data-test="trpg-next"]').click(); return null; }
-          return { calm: node.dataset.calm, side: node.querySelector(".trpg-incarnate-card").dataset.side }; });
-      }
-      assert.deepEqual(calm, { calm: "true", side: "back" });
+      // 普段姿と役姿は静止したまま切り替え、スキップしても最初の台詞は残る。
+      const before = await page.evaluate(() => {
+        const next = document.querySelector('[data-test="trpg-next"]');
+        for (let i = 0; i < 40 && !document.querySelector(".trpg-incarnate"); i++) next.click();
+        const node = document.querySelector(".trpg-incarnate");
+        return { calm: node.dataset.calm, fronts: node.querySelectorAll('.trpg-incarnate-card:not([data-side="back"])').length,
+          animations: node.getAnimations({ subtree: true }).length, line: document.querySelector(".trpg-speech p").textContent };
+      });
+      assert.equal(before.calm, "true");
+      assert.equal(before.fronts, 3);
+      assert.equal(before.animations, 0);
+      await page.locator('.trpg-incarnate[data-arrived="true"]').waitFor();
+      assert.equal(await page.locator('.trpg-incarnate-card[data-side="back"]').count(), before.fronts);
+      await page.locator('[data-test="trpg-incarnate-skip"]').click();
+      assert.equal(await page.locator(".trpg-speech p").textContent(), before.line);
       await nextLines(page);
       await checkRoll(page, { reroll: true });
       assert.equal((await page.evaluate(() => __trpg.snapshot())).teamwork, 1);
