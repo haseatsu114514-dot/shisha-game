@@ -1,5 +1,5 @@
 {
-  "comment": "第4章ドバイの本筋の夜（SPC27・2026-11-15 オーナー「本筋の補充」）。説明会・会場の下見・スークの買い出し・スミさんとのビデオ通話・記者会見。DAY1〜9の決まった日以降の夜に一つずつ（ch4-progress.js の CH4_STORY_NIGHTS・ch4-dubai-daily.js の夜）。",
+  "comment": "第4章ドバイの本筋の夜（SPC27・2026-11-15 オーナー「本筋の補充」）。説明会・会場の下見・スークの買い出し・スミさんとのビデオ通話・記者会見・色紙の写真。DAY1〜11の決まった日以降の夜に一つずつ（ch4-progress.js の CH4_STORY_NIGHTS・ch4-dubai-daily.js の夜）。写真だけは未読ならDAY13の宿で受け取る。",
   "dialogues": [
     {
       "dialogue_id": "ch4_story_briefing",

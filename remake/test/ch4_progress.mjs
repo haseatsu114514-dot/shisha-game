@@ -10,7 +10,7 @@ import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_SCENE_FILES, CH4_VISITOR_SCENE_FILES, C
   chapterFourSecondAvailable, chapterFourSheikhRevealed, revealChapterFourSheikh,
   chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE,
   CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour, chapterFourDaily, syncChapterFourDay, enterChapterFourEve,
-  CH4_STORY_NIGHTS, CH4_STORY_FILES, chapterFourStoryNightDue,
+  CH4_STORY_NIGHTS, CH4_STORY_FILES, chapterFourStoryNightDue, chapterFourHomePhotoDue,
   chapterFourEveDay, chapterFourTournamentDay, CH4_DAILY_EVE_DAY, CH4_DAILY_TOURNAMENT_DAY } from "../js/chapters/ch4-progress.js";
 import { chapterFourMapModel, DUBAI_MAP_PLACES } from "../js/chapters/ch4-map-model.js";
 import { OVERSEAS_HEROINES, OVERSEAS_GUESTS, chooseOverseasCompanion } from "../js/core/overseas-companion.js";
@@ -553,7 +553,7 @@ console.log("PASS: Chapter 4 runner state keeps the Dubai days, mandatory scenes
 }
 
 // ドバイの本筋の夜（SPC27）: 説明会・下見・買い出し・時差の電話・記者会見。決まった日以降の夜に、前のものから一つずつ。
-// 自由行動の間だけで、前夜（DAY13）に入ったら未読でも足さない。台本・背景・story_routes の並びと一致する。
+// 通常の列は自由行動の間だけ。DAY13の宿で未読の写真1本だけ受け取れる。台本・背景・story_routes の並びと一致する。
 {
   assert.deepEqual(CH4_STORY_NIGHTS.map(entry => [entry.id, entry.day]), [["ch4_story_briefing", 1], ["ch4_story_venue", 3],
     ["ch4_story_market", 5], ["ch4_story_sumi_call", 7], ["ch4_story_press", 9], ["ch4_story_yosegaki", 11]]);
@@ -599,7 +599,41 @@ console.log("PASS: Chapter 4 runner state keeps the Dubai days, mandatory scenes
   late.day = late.flags._ch4.startDay + 12; assert(enterChapterFourEve(late));
   assert.equal(chapterFourStoryNightDue(late), null, "Not added on the eve");
   assert.equal(completeChapterFourScene(late, "ch4_story_press"), false);
-  console.log("PASS: Chapter 4 story nights (SPC27): briefing, venue, market, Sumi's call and the press, one a night from their day, free days only");
+  const photo = "ch4_story_yosegaki";
+  late.flags._ch4_evening = { kind: "rest", participants: [] };
+  assert.equal(chapterFourHomePhotoDue(late), null, "Still not at the inn if a required scene remains");
+  delete late.flags._ch4_evening;
+  for (const entry of CH4_MANDATORY) {
+    const [next] = chapterFourMandatory(late);
+    assert.equal(next.id, entry.id);
+    if (next.lead) assert(completeChapterFourScene(late, next.lead));
+    assert(completeChapterFourScene(late, next.id));
+  }
+  assert.equal(chapterFourHomePhotoDue(late), null, "The player's evening comes first");
+  late.flags._ch4_evening = { kind: "rest", participants: [] };
+  const beforePhoto = structuredClone(late);
+  assert.equal(chapterFourHomePhotoDue(late), photo, "A bottlenecked route gets only the home photo");
+  for (const id of [null, "ch4_story_sumi_call", "ch4_story_press"]) assert(!completeChapterFourScene(late, id));
+  assert.deepEqual(late, beforePhoto, "Looking up the scene or attempting another one must not mutate the save");
+  const load = JSON.parse(JSON.stringify(late));
+  assert.equal(chapterFourHomePhotoDue(load), photo, "An unread photo survives reload");
+  assert(completeChapterFourScene(load, photo));
+  const afterPhoto = structuredClone(beforePhoto);
+  afterPhoto.flags._ch4.read[photo] = true;
+  assert.deepEqual(load, afterPhoto, "Only the existing read record changes");
+  assert.equal(chapterFourHomePhotoDue(JSON.parse(JSON.stringify(load))), null, "Never repeats after a committed read");
+  assert(!completeChapterFourScene(load, photo), "Duplicate commit refused");
+  const old = structuredClone(beforePhoto);
+  delete old.flags._ch4.routeVersion;
+  old.flags._ch4.day = CH4_EVE_DAY;
+  old.flags._ch4.firstDay = 2;
+  old.day = old.flags._ch4.startDay + CH4_EVE_DAY - 1;
+  assert.equal(chapterFourHomePhotoDue(old), null, "DAY4 legacy route doesn't gain the photo");
+  assert(!completeChapterFourScene(old, photo));
+  assert(finishChapterFourEve(load));
+  assert(finishChapterFourEve(late)); // existing saves at a handoff remain valid
+  assert.equal(chapterFourHomePhotoDue(late), null, "An existing tournament save does not replay the eve");
+  console.log("PASS: Chapter 4 queued nights and the once-only home photo at the modern DAY13 handoff");
 }
 
 // 別便の応援の到着（前夜祭の日）: 出発前に決めた supports だけ、前夜の part の前夜祭より前に、1人ずつ順に確定する。
