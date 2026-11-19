@@ -2,7 +2,7 @@
 // ?step= pack（既定）/holes/heat/water/steam/pull/care/full。full は機材選びから調整2回目までの通しの一台（CRN・P0）。
 // ?mode=rehearsal|tournament で場面（ランク・ライバルの小窓の出方）を切り替える（既定はリハーサル。pack〜heat・water は従来どおりレッスン）。
 import { loadAll } from "../core/data.js";
-import { newGame, state, config } from "../core/state.js";
+import { newGame, state } from "../core/state.js";
 import { CRAFT_VERSIONS, craftVersionFrom } from "../core/craft-version.js";
 import { initLayers, layers } from "../core/ui.js";
 import { initStageFit } from "../core/stage-fit.js";
@@ -30,8 +30,11 @@ const STEPS = ["pack", "holes", "heat", "water", "steam", "pull", "care", "full"
 const AFTER_HEAT = { place: "triangle", heat: { score: 80, heatPower: 60, heatStability: 60, burnRisk: 30, aromaRetention: 60, startup: 60, picks: ["just", "just", "pre"], just: 2 } };
 const AFTER_HOLES = { holes: { score: 85, total: 24, outer: 12, middle: 12, inner: 0, evenness: .85, outerEven: .85, precision: .85, completion: 1, innerExcess: 0, minimumComplete: true } };
 
+// 通常の試遊も桜井版。旧版との比較はこの独立ページの明示URLだけに残す。
+const previewVersion = () => craftVersionFrom({ craftVersion: "sakurai" });
+
 function activeStep(step) {
-  const version = craftVersionFrom(config);
+  const version = previewVersion();
   document.querySelectorAll("[data-preview-step]").forEach(link => {
     if (link.dataset.previewStep === step) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
@@ -90,6 +93,8 @@ export async function boot() {
   state.flavorStock = { double_apple: 50, mint: 50, blueberry: 50, lemon: 50 };
   state.flavors = ["double_apple", "mint", "blueberry", "lemon"];
   const cs = step === "care" ? newCarePracticeSession() : newSession(mode);
+  cs.craftVersion = previewVersion();
+  if (mode === "tournament" && cs.craftVersion === "sakurai") cs.voteStyle = "sakurai";
   cs.preview = true; // 試遊中のデモ既読は保存データへ書かない。
   if (step !== "care") cs.mix = { double_apple: 10, mint: 2 };
   if (step !== "pack" && step !== "full" && step !== "care") cs.pack = "normal";
