@@ -8206,7 +8206,13 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-search-result sm
 html:root .trpg-root.trpg-cinematic .trpg-gm-avatar { position: relative; display: block; width: 100%; height: 100%; }
 html:root .trpg-root.trpg-cinematic .trpg-gm-crop { position: absolute; inset: 0; display: block; overflow: hidden; border-radius: 50%; background: #2c4a4a; }
 html:root .trpg-root.trpg-cinematic .trpg-gm-crop img { position: absolute; left: 50%; max-width: none; }
-html:root .trpg-root.trpg-cinematic .trpg-gm-badge { position: absolute; bottom: 0; right: 0; z-index: 1; padding: 1px 5px; border: 1px solid #ffe2a0; border-radius: 5px; background: #173b3a; color: #fff4d6; font-size: max(17px, var(--tt-min)); line-height: 1.15; font-weight: 700; }
+html:root .trpg-root.trpg-cinematic .trpg-gm-badge {
+  position: absolute; right: -5px; bottom: calc(100% + 3px); z-index: 1;
+  padding: 3px 8px 7px;
+  clip-path: polygon(0 0, 100% 0, 100% 72%, 50% 100%, 0 72%);
+  background: linear-gradient(#fff0b4, #d4a854 64%, #b07a2f);
+  color: #291808; font-size: max(17px, var(--tt-min)); line-height: 1; font-weight: 800; white-space: nowrap;
+}
 html:root .trpg-root.trpg-cinematic .trpg-seat-face[data-gm="true"],
 html:root .trpg-root.trpg-cinematic .trpg-cover-person-art:has(.trpg-gm-avatar),
 html:root .trpg-root.trpg-cinematic .trpg-tutorial-face:has(.trpg-gm-avatar) { overflow: visible; }

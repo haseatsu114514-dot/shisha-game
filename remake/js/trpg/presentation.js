@@ -3,6 +3,8 @@ import { portraitAsset, resolvePortrait } from "../core/portrait-resolver.js";
 import { portraitFaceFrame, portraitFaceShift, standingFrameStyle } from "./face-crops.js";
 
 export function displayName(characters, id) {
+  if (id === "regulara") return "常連A";
+  if (id === "regularb") return "常連B";
   const c = characters.find(c => c.id === id);
   if (!c) return id;
   if (c.display_name) return c.display_name;
