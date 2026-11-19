@@ -1018,7 +1018,8 @@ html:root .trpg-root.trpg-cinematic .trpg-gm-avatar { position: relative; displa
 html:root .trpg-root.trpg-cinematic .trpg-gm-crop { position: absolute; inset: 0; display: block; overflow: hidden; border-radius: 50%; background: #2c4a4a; }
 html:root .trpg-root.trpg-cinematic .trpg-gm-crop img { position: absolute; left: 50%; max-width: none; }
 html:root .trpg-root.trpg-cinematic .trpg-gm-badge {
-  position: absolute; right: -5px; bottom: calc(100% + 3px); z-index: 1;
+  position: absolute; left: 50%; bottom: calc(100% + 3px); z-index: 1;
+  transform: translateX(-50%);
   padding: 3px 8px 7px;
   clip-path: polygon(0 0, 100% 0, 100% 72%, 50% 100%, 0 72%);
   background: linear-gradient(#fff0b4, #d4a854 64%, #b07a2f);
