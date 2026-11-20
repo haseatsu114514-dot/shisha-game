@@ -45,7 +45,7 @@ export class DJSfx {
   clap(at) { const g = FEEL.sfx.clap; this.burst({ freq: 1500, at, dur: .09, gain: g }); this.burst({ freq: 2300, at: at + .012, dur: .07, gain: g * .7 }); }
   up(at) { const g = FEEL.sfx.up; this.tone({ type: 'triangle', from: 587.33, at, dur: .09, gain: g }); this.tone({ type: 'triangle', from: 880, at: at + .09, dur: .14, gain: g }); }
   down(at) { const g = FEEL.sfx.down; this.tone({ type: 'triangle', from: 440, at, dur: .1, gain: g }); this.tone({ type: 'triangle', from: 293.66, at: at + .1, dur: .18, gain: g }); }
-  /** name: tick / entry / combo / broken / nope / slip / fix / transition / pick / finish / stamp。鳴らしたら true。 */
+  /** name: tick / reserve / entry / combo / broken / nope / slip / fix / transition / pick / finish / stamp。鳴らしたら true。 */
   play(name, arg = {}) {
     const c = this.ready(); if (!c) return false;
     const S = FEEL.sfx, now = c.currentTime, at = Math.max(now, Number.isFinite(arg.at) ? arg.at : now);
@@ -63,6 +63,7 @@ export class DJSfx {
     } else if (name === 'broken') this.tone({ from: 95, to: 60, at, dur: .12, gain: S.thud });
     // ズレ（DJG）: レコードが滑るような、たわむ音。直した瞬間は、はまる音（高いクリック2つ）
     else if (name === 'nope') this.tone({ from: 110, to: 80, at, dur: .07, gain: S.thud * .7 }); // 押せない ▶ を押した
+    else if (name === 'reserve') { this.tone({ type: 'triangle', from: 1174.66, at, dur: .05, gain: S.reserve }); this.tone({ type: 'triangle', from: 1760, at: at + .05, dur: .06, gain: S.reserve * .8 }); } // 予約（#2456）: 早めの ▶ を受け付けた。入りの衝撃は 0 の瞬間に鳴る
     else if (name === 'slip') { this.tone({ type: 'triangle', from: 440, to: 392, at, dur: .16, gain: S.slip }); this.tone({ type: 'triangle', from: 392, to: 440, at: at + .16, dur: .14, gain: S.slip * .8 }); }
     else if (name === 'fix') { this.tone({ from: 1568, at, dur: .03, gain: S.fix }); this.tone({ from: 2093, at: at + .06, dur: .05, gain: S.fix }); this.clap(at + .06); }
     else if (name === 'transition') {

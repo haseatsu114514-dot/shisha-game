@@ -89,6 +89,10 @@ try{
   await page.locator('#howto').waitFor({state:'hidden'});assert.equal(await page.locator('#steps li.now').getAttribute('data-step'),'2');
   assert.match(await page.locator('#coaching').textContent(),/次は右の ▶/);assert.match(await page.locator('#coach-sub').textContent(),/あと \d 小節/);
   assert(await page.locator('#point-play-a').isHidden());assert(await page.locator('#point-play-b').isHidden(),'no arrow on ▶ B until the count');
+  // #2456 §4: ▶ B long before the count is not taken. It shakes its head, the navi says when it will be, and nothing changes (no penalty).
+  {const pre=await snap(page);assert(pre.remaining>5,`still well before the line: ${pre.remaining}`);const floor=pre.floor;await press('play-b');
+   const s=await until(page,'refused',x=>x.fx.refusals===1,errors);assert.deepEqual(s.playing,[true,false]);assert.equal(s.phase,'cue');assert.equal(s.cue.pressed,null);assert.equal(s.fx.nopes,2,'the same head shake and thud as a ▶ that cannot play');
+   assert(Math.abs(s.floor-floor)<.02,'no penalty');assert(await page.locator('#play-b').evaluate(e=>e.classList.contains('nope')));await until(page,'refused navi',x=>/まだ早い！ カウントが出たら右の ▶/.test(x.navi),errors);}
   if(kind==='pc'){
    // Moving the fader away before the entry fades the playing track out: the navi warns and the arrows point back to A.
    await page.locator('#crossfader').focus();await page.locator('#crossfader').press('End');
@@ -120,16 +124,19 @@ try{
    for(let x=0;x<w;x++){const r=row[x*4],g=row[x*4+1],b=row[x*4+2];if(b>120&&g>100&&r<110)cyan.push(x);}
    const f=s.cue.from;return{flag:Math.round(w*.3)+(s.cue.start-s.beats[f])*60/s.bpms[f]*(w/7),first:cyan[0]??null,count:cyan.length,w};});
   assert(lane.count>0&&lane.first>=lane.flag-8,`B is drawn from the entry flag on: ${JSON.stringify(lane)}`);assert.match(await page.locator('#coaching').textContent(),/カウント 0 で、右の ▶/);
-  await until(page,'head',s=>s.phase==='cue'&&s.remaining<=.12,errors,4000,5);
+  // PC presses a beat and a half early (#2456 §4: held for the line, 予約); touch and reduced press right on the line.
+  await until(page,'head',s=>s.phase==='cue'&&s.remaining<=(kind==='pc'?1.5:.12),errors,4000,5);
   await press('play-b');
   const entered=await until(page,'entry',s=>s.phase==='mix',errors);
-  assert.deepEqual(entered.playing,[true,true]);assert(entered.lastPlay&&['PERFECT','GOOD','OK'].includes(entered.lastPlay.grade),JSON.stringify(entered.lastPlay));assert.equal(entered.cue.pressed.beat,16,'quantized onto the entry line');
+  assert.deepEqual(entered.playing,[true,true]);assert(entered.lastPlay&&['PERFECT','GOOD','OK'].includes(entered.lastPlay.grade),JSON.stringify(entered.lastPlay));assert.equal(entered.cue.pressed.beat,16,'onto the entry line');
+  if(kind==='pc'){assert(entered.reserved&&entered.lastPlay.reserved,'held for the line');assert(entered.beats[1]<0);assert.match(entered.navi,/予約した！ B は 0 でぴったり入る/);assert.equal(entered.step,2);
+   assert.equal(await page.locator('#indicator-b').textContent(),'CUED');assert(await page.locator('#play-b').evaluate(e=>e.classList.contains('reserved')),'the ▶ stays lit while it waits');assert.match(await page.locator('#judge-sub').textContent(),/予約した！/);}
   // DJF01/02/10: the press answers at once where it was made (a ring in the grade's colour on the button, a sound), the count-in clicked on the beats before it,
   // and a good entry holds the floor for a blink and then drops it (no hold, no shake animation with reduced motion).
   {const g=entered.lastPlay.grade,good=g==='PERFECT'||g==='GOOD';
    assert(await page.locator('#burst-b').evaluate((e,c)=>e.classList.contains('go')&&e.classList.contains(c),g.toLowerCase()),'ring on ▶ B in the grade colour');assert(await page.locator('#burst-a').evaluate(e=>!e.classList.contains('go')));
    assert(entered.fx.ticks>=1&&entered.fx.ticks<=4,`count-in clicks: ${entered.fx.ticks}`);assert(entered.fx.sfx>entered.fx.ticks,'the entry has its own sound');
-   const landed=await until(page,'entry feel',s=>!s.fx.held,errors);
+   const landed=await until(page,'entry feel',s=>!s.fx.entry&&!s.fx.held&&s.beats[1]>=0,errors);
    if(good){assert.equal(landed.fx.lastShake,'drop');assert.equal(landed.fx.holds,kind==='reduced'?0:1,'a good entry is held once (never with reduced motion)');assert.equal(await page.locator('#drop').textContent(),'DROP!');
     assert.equal(await page.locator('#floor-art').evaluate(e=>e.classList.contains('shake-drop')),kind!=='reduced');}
    else{assert.equal(landed.fx.holds,0,'OK is not held');assert.equal(landed.fx.shakes,0);}
