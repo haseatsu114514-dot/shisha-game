@@ -916,6 +916,7 @@
 .staff-roll-sound p { font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); overflow-wrap: anywhere; }
 .staff-roll-sound-trpg p { font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); overflow-wrap: anywhere; }
 .staff-roll-sound-main p { font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); overflow-wrap: anywhere; }
+.staff-roll-licenses p { font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); overflow-wrap: anywhere; }
 .staff-roll-closing p {
   font-size: 40px;
   font-weight: 700;
@@ -8494,7 +8495,8 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 :is(.loading-gate, .boot-gate).is-ready .loading-bar-fill { width: 100%; animation: none; transform: none; }
 :is(.loading-gate, .boot-gate).is-ready .loading-bar { box-shadow: inset 0 0 0 1px #ffffff30, 0 0 calc(8 * var(--loading-unit)) #ff5fa8b3, 0 0 calc(22 * var(--loading-unit)) #b45cf080, 0 0 calc(40 * var(--loading-unit)) #3fd0e84d; }
 .loading-bar::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, transparent, #ffffff55, transparent); transform: translateX(-100%); animation: loading-bar-sweep 1.6s ease-in-out infinite; }
-:is(.loading-gate, .boot-gate).is-ready .loading-bar::after { animation: none; opacity: 0; }
+/* 準備完了では作業中の光の往復を止め、明るい光の筋を一度だけ端まで走らせる（下の「準備完了の合図」）。 */
+:is(.loading-gate, .boot-gate).is-ready .loading-bar::after { opacity: 0; background: linear-gradient(90deg, transparent, #fff6e0d9, transparent); animation: loading-ready-sweep .8s ease-out; }
 
 /* Upright, wide-tracked LOADING led by the small shisha mark. The coal heat over the HMD breathes as a warm
    glow (the only motion: smoke is never drawn coming out of hardware, docs/shisha_reference.md §4.1). */
@@ -8507,7 +8509,17 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 /* "Tap/click/key to continue" pill, revealed only once preparation is done and a comic is shown.
    Its line is always reserved (and budgeted) so the stack never shifts when it appears. */
 .loading-proceed { box-sizing: border-box; flex: none; margin: calc(6 * var(--loading-unit)) 0 calc(9 * var(--loading-unit)); min-height: calc(24 * var(--loading-unit)); padding: calc(3 * var(--loading-unit)) calc(16 * var(--loading-unit)); border-radius: 999px; border: 1px solid #ffffff2e; background: #0b071380; color: #f3e7cc; font-size: calc(14 * var(--loading-unit)); font-weight: 700; line-height: 1.3; letter-spacing: .08em; opacity: 0; transition: opacity .2s ease; }
-:is(.loading-gate, .boot-gate).is-ready .loading-proceed { opacity: .92; animation: loading-proceed-pulse 1.6s ease-in-out infinite; }
+/* 準備完了の合図（#3812 オーナー「ロード完了したらわかるようにしたい。気がついたら終わってて押し忘れる」）。
+   .is-ready が付いた瞬間に一度だけ、ゲージが明るく光って光の筋が走り、「準備完了」が琥珀色に灯り、「進む」の札が光の輪とともに出る。
+   その後も「準備完了」は琥珀色のまま、「進む」の札は琥珀の縁でゆっくり光り続ける（LOADING… の間と一目で見分けられる）。
+   変えるのは色・影・不透明度だけで、大きさと位置は変えない（起動画面からの引き継ぎや漫画の有無で位置を比べている）。
+   出る時刻と入力の受け付けは core/loading.js のまま。一度きりの光は「揺れ・閃光を減らす」で、動きは端末の「動きを減らす」で止める（色と縁は残す）。 */
+:is(.loading-gate, .boot-gate).is-ready .loading-bar { transition: none; animation: loading-ready-bar 1s ease-out; }
+:is(.loading-gate, .boot-gate).is-ready .loading-status { color: #ffdca0; text-shadow: 0 0 .6em #f0a84a8c, 0 1px 0 #00000080; animation: loading-ready-status 1.2s ease-out; }
+:is(.loading-gate, .boot-gate).is-ready .loading-proceed { opacity: .92; border-color: #f0c27aa6; background: #1c1020cc; color: #fff1d8; box-shadow: 0 0 .7em #f0b45c4d; transition: none;
+  animation: loading-ready-proceed .9s ease-out, loading-proceed-pulse 1.8s ease-in-out .9s infinite; }
+body.reduce-shake :is(.loading-gate, .boot-gate).is-ready :is(.loading-bar, .loading-status) { animation: none; }
+body.reduce-shake :is(.loading-gate, .boot-gate).is-ready .loading-bar::after { animation: none; }
 
 @keyframes loading-appear { from { opacity: 0; } to { opacity: 1; } }
 @keyframes loading-sheet { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
@@ -8518,7 +8530,14 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 @keyframes loading-logo-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @keyframes loading-bar-sweep { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
 @keyframes loading-bar-indeterminate { from { transform: translateX(-110%); } to { transform: translateX(300%); } }
-@keyframes loading-proceed-pulse { 0%, 100% { opacity: .75; } 50% { opacity: .95; } }
+/* 「進む」の札は琥珀の光を強めて弱める（0%・100% の影は .is-ready の静止の影）。 */
+@keyframes loading-proceed-pulse { 0%, 100% { opacity: .92; } 50% { opacity: 1; box-shadow: 0 0 1.2em #f0b45c8c; } }
+/* 準備完了の瞬間に一度だけ（0%・100% を書かない値は .is-ready の静止の見た目から・へ戻る）。 */
+@keyframes loading-ready-bar { 22% { filter: brightness(1.4) saturate(1.1); box-shadow: inset 0 0 0 1px #ffffffa6, 0 0 calc(12 * var(--loading-unit)) #fff0d6d9, 0 0 calc(30 * var(--loading-unit)) #ff5fa8cc, 0 0 calc(60 * var(--loading-unit)) #b45cf0a6; } }
+@keyframes loading-ready-sweep { 0% { opacity: 1; transform: translateX(-100%); } 70% { opacity: 1; } 100% { opacity: 0; transform: translateX(100%); } }
+@keyframes loading-ready-status { 0% { color: #f3e8d2; text-shadow: 0 0 .5em #ff5fa866, 0 1px 0 #00000080; } 22% { color: #fff6e2; text-shadow: 0 0 .3em #fff3d9, 0 0 1.1em #f0a84ae6, 0 1px 0 #00000080; } }
+/* 不透明度は 0 から始めない（準備完了と同時に「進む」が見えていることを確かめる検査がある）。 */
+@keyframes loading-ready-proceed { 0% { opacity: .4; box-shadow: 0 0 0 0 #f0c27a00, 0 0 0 #f0b45c00; } 35% { opacity: 1; box-shadow: 0 0 0 .3em #f0c27a59, 0 0 1.4em #f0b45cb3; } }
 
 /* Portrait: break out of the scaled #stage and cover the real viewport, so panels and bubble text can
    be sized against the visible area and stay readable. Kept below #rotate-hint (z-index 999) so touch
@@ -8582,6 +8601,9 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 @media (prefers-reduced-motion: reduce) {
   :is(.loading-gate, .boot-gate), :is(.loading-gate, .boot-gate)::before, .loading-logo::before, .loading-logo::after, .loading-card, .loading-panels figure, .loading-emblem path, .loading-bar::after, .loading-bar-fill, .loading-proceed { animation: none; }
   .loading-emblem .emblem-glow, :is(.loading-gate, .boot-gate).is-ready .emblem-glow { animation: none; opacity: .7; }
+  /* 準備完了の合図も動かさない。琥珀色の「準備完了」と縁の光った「進む」の札は静止したまま残す（#3812）。 */
+  :is(.loading-gate, .boot-gate).is-ready :is(.loading-bar, .loading-status, .loading-proceed) { animation: none; }
+  :is(.loading-gate, .boot-gate).is-ready .loading-bar::after { animation: none; }
   :is(.loading-gate, .boot-gate).is-ready .loading-proceed { opacity: .92; }
 }
 

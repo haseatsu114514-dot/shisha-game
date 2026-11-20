@@ -32,7 +32,7 @@ import { storySeen } from "../daily/spots.js";
 import { recordCg } from "../scenes/gallery.js";
 import { newSession, openBench, tickerSay, waitBenchReady, runDrill } from "../craft/session.js";
 import * as bc from "../craft/broadcast.js";
-import { playTournamentEvent } from "../craft/tournament-story.js";
+import { playTournamentEvent, playLive } from "../craft/tournament-story.js";
 import { servedEvaluationLines, servedMixWords, servedLemonOnly } from "../craft/served-eval.js";
 import { naruTastingLine } from "../craft/naru-tasting.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime, regulationFor } from "../craft/steps.js";
@@ -52,7 +52,7 @@ import { warmCraftAssets } from "../craft/readiness.js";
 import { playTsumugiStory, playTsumugiSketch } from "./tsumugi-story.js";
 import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
-import { outcomeOf, showStandings, resultCountdown, suiCutin, resultTable } from "../craft/result.js";
+import { outcomeOf, showStandings, resultCountdown, suiCutin, resultTable, ch1LiveStandings } from "../craft/result.js";
 import { beginCh1Votes, castCh1Votes, isSakuraiVotes } from "../craft/ch1-votes.js";
 import { craftRecognition } from "../craft/recognition.js";
 import { playCh1Title } from "./ch1-title-motion.js";
@@ -663,6 +663,19 @@ function openTournamentMenu() {
   return openMenu({ canSave: inBench, current: inBench, saveRule: "このセーブから再開すると、大会の作業は最初からやり直す。" });
 }
 
+// 会場での会話に付ける中継の枠（TSH04）。順位は確定済みの票を読むだけで、票・進行には触れない。
+let livePhase = "";
+/** 会場の会話の共通の指定（舞台の背景＋中継の枠）。場面の名前を渡すと、以後の会話の帯にも残る。 */
+function venue(scene = null, extra = {}) {
+  if (scene) livePhase = scene;
+  return { bg: STAGE, live: { event: "SMOKE CROWN CUP", phase: livePhase, standings: ch1LiveStandings(state.tournament) }, ...extra };
+}
+/** 合間のアイキャッチ。いまの順位（票が出ている時だけ）を一行添える。 */
+function interval(sub, title = "INTERVAL") {
+  const mine = ch1LiveStandings(state.tournament).find((row) => row.me);
+  return { title, sub, note: mine ? `はじめ 現在${mine.rank}位 ・ ${mine.points}pt` : "" };
+}
+
 async function tournamentDay() {
   await loadTournamentCraftDialogue();
   // DAY14から再開しても、実際に延期した準備だけを本番の前に救済する。
@@ -689,15 +702,15 @@ async function tournamentDay() {
   await playTournamentArrival();
   await withLoadingNotice(openingBgmReady, loadingNotice("音楽を準備しています…"));
   playBgm("bgm_tournament_edm");
-  await play("ch1_tournament_opening", { bg: STAGE });
+  await playLive("ch1_tournament_opening", venue("開会"));
   const regulation = regulationFor({ mode: "tournament" });
   const challenge = regulation?.flavor === "mint" ? "ミント" : "レモン";
   const source = regulation?.supply ? `${challenge}は主催者が支給！ 他の葉は持ち込みです！` : "葉は自分で持ち込むこと！";
-  await play({ dialogue_id: "ch1_tournament_rule_recap", lines: [
+  await playLive({ dialogue_id: "ch1_tournament_rule_recap", lines: [
     { speaker: "pakki", face: "excited", text: `本日の課題はッ！ ${challenge}を2g以上！ ${source}` },
     // 桜井式の試合だけ、票の取り方を先に伝える（SKR04・#171 How to Play）。
     ...(isSakuraiVotes(state.tournament.voteAttempt) ? SAKURAI_RULE_LINES : []),
-  ] }, { bg: STAGE });
+  ] }, venue());
   await withLoadingNotice(Promise.all([assetsReady, craftBgmReady]), loadingNotice("大会の準備をしています…"));
   await entrance();
 
@@ -705,10 +718,10 @@ async function tournamentDay() {
   playBgm("bgm_tournament_craft");
   const cs = startTournamentCraft();
   // 開始前の掛け合い（#3060）。入場のあと、4台の前で合図を待つ。
-  await playTournamentEvent(cs, "prestart", { bg: STAGE });
+  await playTournamentEvent(cs, "prestart", venue("ROUND 1 ／ 準備"));
   await roundCut("ROUND 1", "準備");
-  await play("remake_round1_intro", { bg: STAGE });
-  await playTournamentEvent(cs, "opening", { bg: STAGE });
+  await playLive("remake_round1_intro", venue());
+  await playTournamentEvent(cs, "opening", venue());
   openTournamentBench(cs);
   await waitBenchReady(cs);
   tickerSay("パッキー「さあ4人一斉にスタート！ 制限時間は60分ッ！」");
@@ -720,7 +733,7 @@ async function tournamentDay() {
   bc.judge(cs, bc.judgeOf(cs.mixInfo.score), "配合");
   bc.block(cs, "pack");
   await stepPack(cs);
-  await playTournamentEvent(cs, "packed", { bg: STAGE });
+  await playTournamentEvent(cs, "packed", venue());
   bc.burst(cs, "good", 1);
   bc.block(cs, "foil");
   await runHoles(cs);
@@ -728,16 +741,16 @@ async function tournamentDay() {
   bc.block(cs, "coalfire");
   await runHeat(cs);
   await stepSteamTime(cs);
-  await playTournamentEvent(cs, "waiting", { bg: STAGE });
+  await playTournamentEvent(cs, "waiting", venue());
   bc.block(cs, "steam");
   await runSteamDodge(cs);
   await sleep(900);
   bc.clearComments();
-  await play("ch1_tournament_match", { bg: STAGE });
-  await play("ch1_tournament_r1_end", { bg: STAGE });
+  await playLive("ch1_tournament_match", venue());
+  await playLive("ch1_tournament_r1_end", venue());
   await showStandings(1, avgScore(cs.holes.score, cs.heat.score), cs, state.tournament);
   save();
-  await playTournamentEvent(cs, "interlude1", { bg: STAGE });
+  await playTournamentEvent(cs, "interlude1", venue("ROUND 1 終了", { card: interval("ROUND 1 → ROUND 2") }));
 
   // ROUND 2 ── 吸い出し・提供
   await roundCut("ROUND 2", "吸い出し・提供");
@@ -750,18 +763,18 @@ async function tournamentDay() {
   const served = DB.dialogues.ch1_tournament_served;
   const servedLines = served.lines.slice();
   servedLines.splice(1, 0, ...servedEvaluationLines(cs));
-  await play({ ...served, lines: servedLines }, { bg: STAGE });
+  await playLive({ ...served, lines: servedLines }, venue("ROUND 2 ／ 吸い出し・提供"));
   cs.tournamentStory.servedAroma = computeShisha(cs).aroma;
   bc.burst(cs, "serve", 1);
   await sleep(900);
   bc.clearComments();
   // 審査員への提供開始の掛け合い（#3060）。4台が審査席に並び、一口目を待つ間。
-  await playTournamentEvent(cs, "serve", { bg: STAGE });
-  await play("ch1_tournament_r2_end", { bg: STAGE });
+  await playTournamentEvent(cs, "serve", venue());
+  await playLive("ch1_tournament_r2_end", venue());
   cs.stats = computeShisha(cs);
   await showStandings(2, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality), cs, state.tournament);
   save();
-  await playTournamentEvent(cs, "interlude2", { bg: STAGE });
+  await playTournamentEvent(cs, "interlude2", venue("ROUND 2 終了", { card: interval("ROUND 2 → ROUND 3") }));
 
   // ROUND 3・4 ── 同じ一台を2回調整する。温度・炭交換・葉の持ちは連続する。
   for (const round of [1, 2]) {
@@ -774,17 +787,17 @@ async function tournamentDay() {
     await sleep(900);
     bc.clearComments();
     cs.stats = null;
-    await play(round === 1 ? "ch1_tournament_r3_end" : "remake_round4_end", { bg: STAGE });
+    await playLive(round === 1 ? "ch1_tournament_r3_end" : "remake_round4_end", venue(`ROUND ${round + 2} ／ 調整 ${round}回目`));
     if (round === 1) { cs.stats = computeShisha(cs); await showStandings(3, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality, cs.care.score), cs, state.tournament); save(); }
   }
 
-  await playTournamentEvent(cs, "interlude3", { bg: STAGE });
+  await playTournamentEvent(cs, "interlude3", venue("全工程 終了", { card: interval("全工程 終了", "FINAL JUDGING") }));
 
   // 審査は完成品と2回の調整の実績で決まる。
   playBgm("bgm_judging");
-  await play("remake_judging_intro", { bg: STAGE });
+  await playLive("remake_judging_intro", venue("最終審査"));
   finalize(cs);
-  await playTournamentEvent(cs, "tasting", { bg: STAGE });
+  await playTournamentEvent(cs, "tasting", venue());
   // 最終工程と試飲の表示後に4回目を確定。最後の1点・同点規則はVOTE01に委ねる。
   if (state.tournament.rulesVersion >= 2) castCh1Votes(state.tournament, 3, cs);
   const rank = state.tournament.rulesVersion >= 2 ? state.tournament.voteAttempt.result.rank : outcomeOf(cs.total).rank;
@@ -802,26 +815,26 @@ async function tournamentDay() {
     const judging = DB.dialogues.ch1_tournament_judging;
     const judgingLines = judging.lines.map(line =>
       line.cue === "naru_tasting" ? { ...line, text: naruTastingLine(cs) } : line);
-    await play({ ...judging, lines: judgingLines }, { bg: STAGE });
+    await playLive({ ...judging, lines: judgingLines }, venue());
     // 結果発表前の掛け合い（#3060）。会長の二口と選手席の待ち時間の後、みんととアダムが集計を待つ。
-    await playTournamentEvent(cs, "preresult", { bg: STAGE, context: { win: true } });
+    await playTournamentEvent(cs, "preresult", venue("まもなく結果発表", { context: { win: true } }));
     await resultCountdown(cs, out.kind, state.tournament);
     retireScreen(); // カウント画面は次の場面で片付く
     playBgm("bgm_aftermath");
     await suiCutin(1, state.tournament);
-    await play("ch1_tournament_reveal", { bg: STAGE });
+    await playLive("ch1_tournament_reveal", venue("結果発表"));
     await resultTable(cs, 1, state.tournament);
     state.tournament.victory.revealed = true;
     save();
     await victory(cs);
   } else {
     // 結果発表前の掛け合い（#3060）。届かなかった流れは講評の直後、選手席で集計を待つ。
-    await playTournamentEvent(cs, "preresult", { bg: STAGE });
+    await playTournamentEvent(cs, "preresult", venue("まもなく結果発表"));
     await resultCountdown(cs, out.kind, state.tournament);
     retireScreen();
     await suiCutin(out.rank, state.tournament);
     await resultTable(cs, out.rank, state.tournament);
-    await play("ch1_tournament_defeat", { bg: STAGE });
+    await playLive("ch1_tournament_defeat", venue("結果発表"));
     await play("remake_defeat_follow", { bg: TONARI_N });
     await showGameOver({ rank: out.rank, cs });
   }

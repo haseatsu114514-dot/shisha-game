@@ -381,6 +381,52 @@ await suite("ch4-full-flow", async check => {
     assert.equal((await get(page)).flags._ch4.resolution, resolution.length);
   }, { reducedMotion: "reduce" });
 
+  // 世界大会の持ち点（TSH05・TSH06）: モーダルは夜紫の板（紙の小窓では白い点数が読めず、票の帯が潰れていた）。
+  // 票は入れる前の値から始まり、板を押すと早送り。出そろうまで「続きを作る」は押せない。
+  await check("standings-modal-is-a-readable-board-and-votes-arrive", async page => {
+    const expected = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"); core.newGame();
+      Object.assign(core.config, { bgmVolume: 0, seVolume: 0 });
+      const model = await import("./js/chapters/ch4-tournament-state.js");
+      const view = await import("./js/chapters/ch4-standings.js");
+      const empty = () => Object.fromEntries(model.CH4_JUDGES.map(judge => [judge, Object.fromEntries(model.CH4_CONTESTANTS.map(id => [id, 0]))]));
+      const before = empty(), votes = empty(), [a, b, c] = model.CH4_JUDGES;
+      Object.assign(before[a], { hajime: 1, sheikh: 1 }); Object.assign(before[b], { sheikh: 1, naru: 1 }); Object.assign(before[c], { master_hookah: 1, hajime: 1 });
+      for (const judge of model.CH4_JUDGES) Object.assign(votes[judge], before[judge]);
+      votes[a].hajime += 2; votes[a].naru += 1; votes[b].hajime += 2; votes[b].sheikh += 1; votes[c].sheikh += 2; votes[c].hajime += 1;
+      const p = { votes, baseVotes: Object.fromEntries(model.CH4_CONTESTANTS.map(id => [id, 1])), voted: 2, quality: { hajime: 90, naru: 80, master_hookah: 78, sheikh: 88 } };
+      const sum = table => Object.fromEntries(model.CH4_CONTESTANTS.map(id => [id, 1 + model.CH4_JUDGES.reduce((n, judge) => n + table[judge][id], 0)]));
+      window.boardClosed = false;
+      view.showChapterFourStandings(p, { before }).then(() => { window.boardClosed = true; });
+      return { before: sum(before), after: sum(votes) };
+    });
+    const board = page.locator(dt("ch4-standings")), next = page.locator(dt("ch4-standings-continue"));
+    await board.waitFor();
+    const points = () => board.locator("li[data-contestant]").evaluateAll(rows => Object.fromEntries(rows.map(row => [row.dataset.contestant, parseInt(row.querySelector("strong").textContent, 10)])));
+    assert.equal(await board.getAttribute("data-ceremony"), "running");
+    assert.deepEqual(await points(), expected.before);
+    assert.equal(await next.isDisabled(), true);
+    const look = await board.evaluate(node => {
+      const box = node.closest(".modal-box"), rgb = value => (value.match(/\d+/g) || []).slice(0, 3).reduce((n, v) => n + Number(v), 0);
+      const strong = node.querySelector('li[data-contestant]:not([data-rank="1"]) strong');
+      return { width: box.getBoundingClientRect().width / (document.getElementById("stage").getBoundingClientRect().width / 1280),
+        ground: rgb(getComputedStyle(box).backgroundColor), ink: rgb(getComputedStyle(strong).color),
+        bar: node.querySelector(".vote-stack").getBoundingClientRect().width, columns: getComputedStyle(node).gridTemplateColumns.split(" ").length };
+    });
+    assert(look.width > 900, `The board uses the stage width: ${look.width}`);
+    assert(look.ground < 120 && look.ink > 600, `Light points on a dark board: ${JSON.stringify(look)}`);
+    assert(look.bar > 150 && look.columns === 2, `The vote bars and the judges column have room: ${JSON.stringify(look)}`);
+    await page.locator(".judge-chip.ts-casting").first().waitFor();
+    await board.locator(".judge-legend").click();
+    await board.and(page.locator('[data-ceremony="done"]')).waitFor({ timeout: 1000 });
+    assert.deepEqual(await points(), expected.after);
+    assert.equal(await page.evaluate(() => window.boardClosed), false, "Skipping the ceremony does not close the board");
+    await next.and(page.locator(":enabled")).waitFor();
+    await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/ch4-standings-board.png` });
+    await next.click();
+    await page.waitForFunction(() => window.boardClosed === true);
+  });
+
   await check("real-craft-burnt-defeat-restores-resources-and-retry-wins", async page => {
     await seed(page);
     await arm(page);

@@ -131,6 +131,9 @@ await suite("tonari-opening", async check => {
           await page.waitForTimeout(720);
           await assertFits(page, ".vn-box, .vn-controls");
           assert.equal(await page.locator(".tonari-opening").evaluate(node => node.parentElement.id), "bg");
+          // #3812: 店内の絵は寄ったり引き戻したりしない（退店後の席 empty も店内の引きのまま）。
+          assert.equal(await page.locator(".tonari-opening .to-room").evaluate(node => getComputedStyle(node).transform), "none",
+            `The room must not zoom on the ${cue} cut`);
           if (["coal", "bowl", "hose", "empty", "lamps"].includes(cue)) {
             await page.screenshot({ path: path.join(captures, `${label}-${cue}.png`) });
           }

@@ -312,6 +312,11 @@ window.__remake = {
       }
       return null;
     },
+    // 大会のショー演出（TSH・2026-11-20）を、試合を進めずに見る: vote-1〜3（中間投票）／count・count-lose（結果発表のカウント）／
+    // final（最後の投票）／champion・lose（大見出しと順位表）／interval（合間のアイキャッチと中継の枠）／result・result-lose（通し）。※今のセーブを上書きする
+    async show(name = "vote-2") {
+      return (await import("./craft/tournament-show-dev.js")).playShow(name);
+    },
     async tournament() {
       const { newGame } = await import("./core/state.js");
       const ch1 = await import("./chapters/ch1.js");
