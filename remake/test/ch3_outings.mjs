@@ -671,9 +671,11 @@ console.log("PASS: park day/night rotation, old saves, SAVE/LOAD and duplicate c
     if (call) { read.push(call); recordHomeCall(value, call); }
   }
   assert.equal(read.length, new Set(read).size, "No call is read twice");
-  assert.deepEqual(new Set(read), new Set(HOME_CALL_IDS.filter(id => id !== "ch3_home_call_sumi_fan")), "Every call is read once");
+  const reachable = HOME_CALLS.filter(call => value.contacts.includes(call.from)).map(call => call.scene); // みんとは連絡先にいない
+  assert.deepEqual(new Set(read), new Set(reachable.filter(id => id !== "ch3_home_call_sumi_fan")), "Every call from a contact is read once");
   assert.equal(homeCallId(value, { night: true }), null);
-  assert.deepEqual(Object.keys(value.flags[HOME_CALL_FLAG]).sort(), [...HOME_CALL_IDS].sort());
+  assert.deepEqual(Object.keys(value.flags[HOME_CALL_FLAG]).sort(), [...reachable].sort());
+  assert(!value.flags[HOME_CALL_FLAG].ch3_home_call_minto_frame, "Not from someone outside the contacts");
   recordHomeCall(value, "ch3_tokyo_room_rest_b");
   assert.equal(value.flags[HOME_CALL_FLAG].ch3_tokyo_room_rest_b, undefined, "Only home calls are recorded");
   assert.equal(classifyFlag(HOME_CALL_FLAG), "progression");
