@@ -83,12 +83,12 @@ export const GUESTS = Object.freeze(Object.fromEntries([
   guest("worker", ["仕事の合間の方", "仕事帰りの方"], 1, "short", ["harsh"], ["short"]),
   guest("train", ["昼休みの二人", "終電前の二人"], 2, "short", ["glass"], ["cap", "long"]),
   guest("reader", "読書の方", 1, "long", ["focus", "glass"], ["glasses"]),
-  guest("walkers", "散歩帰りの二人", 2, "long", ["thin", "top"], ["pony", "short"]),
+  guest("walkers", "散歩帰りの二人", 2, "long", ["thin", "glass"], ["pony", "short"]),
   guest("nose", "香り好きの方", 1, "normal", ["harsh", "thin"], ["bun"]),
   guest("students", "学生の二人", 2, "normal", ["ask", "glass"], ["curly", "cap"]),
   guest("talkers", "話し込む二人", 2, "normal", ["focus", "glass"], ["long", "bob"]),
   guest("elder", "年配の方", 1, "long", ["harsh", "focus"], ["hat"]),
-  guest("friends", "友だち同士の二人", 2, "long", ["glass", "top"], ["bun", "pony"]),
+  guest("friends", "友だち同士の二人", 2, "long", ["glass", "ask"], ["bun", "pony"]),
 ].map((g) => [g.id, g])));
 
 // 手入れの言葉は固定の5つ。並びを変えない（押す位置を手が覚える）。
@@ -125,6 +125,23 @@ export const SERVE_LINES = Object.freeze({
   off: Object.freeze(["少し、思っていた香りと違うかも……", "あれ、頼んだのと違うような……"]),
   redo: Object.freeze(["こっちだ。作り直してくれて、ありがとう", "うん、今度はぴったり"]),
   top: Object.freeze(["さっきと違う香り、いいですね", "二台目みたいで得した気分"]),
+});
+
+// 会計の声かけ（お見送り）。客の顔を見て選ぶ: 笑顔＝もう少し誘える（延長）／ふつう＝お礼／曇り顔＝お詫び。並びは固定。
+// 延長はトップ替え（PRICE.top）。一卓に一度まで。売上は店のもので、はじめの所持金には入らない。
+export const SENDS = Object.freeze([
+  Object.freeze({ id: "extend", label: "もう少し、いかがですか？", note: "トップ替えをすすめる" }),
+  Object.freeze({ id: "thanks", label: "ありがとうございました", note: "お礼を言って見送る" }),
+  Object.freeze({ id: "sorry", label: "お待たせして、すみません", note: "お詫びして見送る" }),
+]);
+/** 声かけへの返事。 */
+export const SEND_LINES = Object.freeze({
+  extend: "じゃあ、もう少しだけ。違う香りも試したいな",
+  extendMiss: "いえ、今日はこれで",
+  thanks: Object.freeze(["ごちそうさま。また来ます", "いい時間でした。ありがとう"]),
+  thanksLow: "……どうも",
+  sorry: "いえ、大丈夫ですよ。また来ます",
+  sorryOdd: "え？ いえいえ、楽しかったですよ",
 });
 
 // 今日の段取り（始める前に一つ）。効き目は model の PLAN_EFFECT。

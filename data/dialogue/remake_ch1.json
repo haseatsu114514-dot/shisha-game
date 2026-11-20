@@ -1540,6 +1540,11 @@
         },
         {
           "speaker": "sumi",
+          "face": "normal",
+          "text": "会計の時は、客の顔を見ろ。掛ける言葉は、それで決まる"
+        },
+        {
+          "speaker": "sumi",
           "face": "smile",
           "text": "店がいい空気になったら、灯りが教えてくれる"
         },

@@ -1,4 +1,6 @@
-// tonari フロア営業の画面。店の時間は実時間で流れ、伝票（選ぶ窓）・休止・別タブの間は止まる。
+// tonari フロア営業の画面。店の時間は実時間で流れ、接客ビュー（卓へ寄って選ぶ）・休止・別タブの間は止まる。
+// 画面の構成: 上＝店の時計・残り時間・売上／左右＝入口・作業台／下＝選んでいる卓のドック・スミさんの一言・ボーナスタイム。
+// 卓を押して選ぶ場面（注文・合図・相談・会計）は、店内がその卓へ寄り、左に選択肢の列、下に客の様子が出る。
 // 状態と金額は tonari-floor-model.js から読むだけで、本編の所持金・在庫・日付には触れない。
 import { el, yen } from "../core/util.js";
 import { showScreen, clearScreen, retire, toast } from "../core/ui.js";
@@ -7,24 +9,32 @@ import { faceIconUrl } from "../core/data.js";
 import { buildVersioned } from "../core/asset-version.js";
 import {
   createFloorNight, floorTick, floorAct, floorTap, floorAdvice, floorResult, floorClock, floorUrgency, floorQueueUrgency,
-  floorStayLeft, floorTimeLeft,
+  floorStayLeft, floorTimeLeft, floorFace, floorSendOff, floorBill,
   pickNight, floorAirFull, floorBonusTimeLength, FLOOR_TICK_MS, FLOOR_TABLE_COUNT,
 } from "./tonari-floor-model.js";
-import { MIXES, VERBS, CALLS, PLANS, STAY_LABEL, PRICE } from "./tonari-floor-data.js";
+import { MIXES, VERBS, CALLS, SENDS, PLANS, STAY_LABEL, PRICE } from "./tonari-floor-data.js";
 import { glyph, guestArt } from "./tonari-floor-art.js";
 import { FLOOR_ART, artUrl, currentStage, spotCenter } from "./tonari-floor-stage.js";
 
-/** 検査用。manual を立てると実時間では進まず、api.tick(n) で刻みを送る。 */
-export const floorTest = { manual: false, api: null };
+/**
+ * 検査用。manual を立てると実時間では進まず、api.tick(n) で刻みを送る。
+ * verdictMs＝判定の印を見せる長さ（ミリ秒）。省くと実時間では1秒、manual では0（すぐ閉じる）。
+ */
+export const floorTest = { manual: false, api: null, verdictMs: null };
 
 const BUBBLE = {
-  seat: ["seat", "ご案内"], order: ["order", "注文"], serve: ["serve", "配膳"], top: ["top", "トップ替え"],
+  seat: ["seat", "ご案内"], order: ["order", "注文"], serve: ["serve", "配膳"],
   consult: ["consult", "相談"], bill: ["bill", "会計"], clean: ["clean", "片付け"],
 };
+// 提供した時の手応え: [言葉, 色, 判定の印]
 const POP = {
-  best: ["ぴったり！", "best"], near: ["悪くない", "near"], off: ["ちがうかも…", "off"], redo: ["作り直し成功", "best"], top: ["香りを替えた", "near"],
+  best: ["ぴったり！", "best", "best"], near: ["悪くない", "near", "good"], off: ["ちがうかも…", "off", "miss"],
+  redo: ["作り直し成功", "best", "best"], top: ["香りを替えた", "near", "good"],
 };
-const MOOD_FACE = (mood) => (mood >= 80 ? "smile" : mood >= 45 ? "flat" : "frown");
+const MARK = { best: "markBest", good: "markGood", miss: "markMiss", bad: "markBad" };
+const SEND_ICON = { extend: "top", thanks: "bill", sorry: "talk" };
+const SEND_BLOCKED = { used: "延長は一卓に一度まで", late: "そろそろ閉店", none: "今日は誘えない" };
+const quoted = (text) => (text.startsWith("（") ? text : `「${text}」`);
 const test = (key) => ({ test: `tonari-floor-${key}` });
 const stars = (n) => el("span.tf-stars", { "aria-label": `星${n}つ`, dataset: { n } }, [1, 2, 3].map((i) => glyph("star", i <= n ? "on" : "off")));
 
@@ -77,7 +87,7 @@ export function runTonariFloor({
   let state = createFloorNight({ seed, level, chapter, anchor, rainy, daytime });
   let mode = "intro"; // intro → live ⇄ panel / pause → closing → result
   let panel = null, selected = 1, speed = 1, active = true, leaving = false, outerMenu = false;
-  let carry = 0, lastAt = 0, timer = null, noteTimer = null, lastAdvice = "";
+  let carry = 0, lastAt = 0, timer = null, bannerTimer = null, verdictTimer = null, lastAdvice = "";
   const refs = { spots: [], sayTimers: new Map() };
 
   return new Promise((resolve) => {
@@ -94,6 +104,8 @@ export function runTonariFloor({
       const seat = el("button.tf-seat", { type: "button", dataset: test(`table-${id}`), onclick: tap }, [
         el("span.tf-medal", {}, [el("span.tf-mood-ring", { "aria-hidden": true }), el("span.tf-who"), el("span.tf-face")]),
       ]);
+      // マウスを乗せた卓は、下のドックに様子が出る（押さなくても見られる）
+      seat.addEventListener("pointerenter", (event) => { if (event.pointerType === "mouse" && mode === "live") select(id); });
       // 吹き出しと番号札も押せる（押す先は同じ卓）。読み上げとキーボードの入口は卓のボタン一つにする
       const bubble = el("button.tf-bubble", { type: "button", tabIndex: -1, "aria-hidden": true, onclick: tap });
       const plate = el("button.tf-plate", { type: "button", tabIndex: -1, "aria-hidden": true, onclick: tap }, [el("b", { text: String(id) })]);
@@ -123,23 +135,19 @@ export function runTonariFloor({
     });
     // 卓の前景（卓だけを抜いた絵）。客より手前・札より奥に重ねて、座った客の膝を隠す
     if (frontArt) spotsBox.append(el("img.tf-front", { src: frontArt, alt: "", decoding: "async", draggable: false, "aria-hidden": true }));
-    const stageBox = el("div.tf-stage", {}, [room, spotsBox]);
+    // 接客ビューでは、店内ごと選んだ卓へ寄る（カメラ）
+    const cam = el("div.tf-cam", {}, [room, spotsBox]);
+    const stageBox = el("div.tf-stage", {}, [cam]);
 
-    // 上の帯は、左に残り時間・右に売上（経営ゲームの定石の並び）。店の時計は小さく添える
+    // 上の帯は、左に店の時計と来店・まん中に残り時間・右に売上（経営ゲームの定石の並び）
     const clockText = el("b", { text: "0:00", dataset: test("time-left") });
-    const clockNote = el("small", { text: plan.title });
+    const clockNote = el("b", { text: plan.title });
     const clockBar = el("i");
     const visitText = el("b", { text: "0" });
     const salesText = el("strong", { text: yen(0), dataset: test("sales") });
-    const bonusButton = el("button.tf-bonus", { type: "button", dataset: test("bonus"), onclick: () => useBonusTime() }, [
-      el("span.tf-bonus-lamp", {}, [glyph("lamp"), el("i")]),
-      el("span.tf-bonus-text", {}, [el("small", { text: "店の空気" }), el("b", { text: "ボーナスタイム" })]),
-    ]);
     const top = el("header.tf-top", {}, [
-      el("div.tf-clock", {}, [glyph("clock"), el("div", {}, [el("small", {}, [el("span", { text: "残り時間" })]), clockText]),
-        el("div.tf-clock-side", {}, [clockNote, el("small.tf-visits", {}, [el("span", { text: "来店 " }), visitText])]),
-        el("span.tf-clock-bar", {}, [clockBar])]),
-      bonusButton,
+      el("div.tf-info", {}, [clockNote, el("small.tf-visits", {}, [el("span", { text: "来店 " }), visitText])]),
+      el("div.tf-clock", {}, [el("small", { text: "残り時間" }), clockText, el("span.tf-clock-bar", {}, [clockBar])]),
       el("div.tf-sales", {}, [el("small", { text: "店の売上" }), salesText]),
       el("button.tf-pause-button", { type: "button", "aria-label": "休止", dataset: test("pause"), onclick: () => openPause() }, [glyph("pause")]),
     ]);
@@ -149,8 +157,32 @@ export function runTonariFloor({
     const benchLine = el("div.tf-bench-line");
     const shelf = el("div.tf-shelf");
     const kitchen = el("aside.tf-kitchen", {}, [
-      el("h2", {}, [glyph("cook"), el("span", { text: "作業台" })]), benchNow, benchLine,
+      el("div.tf-bench-head", {}, [el("h2", {}, [glyph("cook"), el("span", { text: "作業台" })]), benchLine]), benchNow,
       el("h2", {}, [glyph("serve"), el("span", { text: "受渡棚" })]), shelf,
+    ]);
+    // 下の帯: 選んでいる卓のドック（客・注文・ご利用・顔）／スミさんの一言／店の空気（ボーナスタイム）
+    const dockNo = el("b.tf-dock-no");
+    const dockWho = el("span.tf-dock-who");
+    const dockName = el("b");
+    const dockSub = el("small");
+    const dockMood = el("i"), dockStay = el("i");
+    const dockQuote = el("span"), dockMix = el("span");
+    const dockBill = el("strong", { dataset: test("dock-bill") });
+    const dockFace = el("span.tf-dock-face");
+    const dockEmpty = el("p.tf-dock-empty");
+    const dock = el("aside.tf-dock", { "aria-label": "選んでいる卓の様子", dataset: { ...test("dock"), on: "false" } }, [
+      dockNo, dockWho,
+      el("div.tf-dock-main", {}, [dockName, dockSub,
+        el("div.tf-dock-bars", {}, [
+          el("span", {}, [el("small", { text: "満足" }), el("i.tf-bar", { dataset: { kind: "mood" } }, [dockMood])]),
+          el("span", {}, [el("small", { text: "滞在" }), el("i.tf-bar", { dataset: { kind: "stay" } }, [dockStay])]),
+        ])]),
+      el("div.tf-dock-req", {}, [
+        el("p", {}, [el("small", { text: "ご注文" }), dockQuote]),
+        el("p", {}, [el("small", { text: "一台" }), dockMix]),
+      ]),
+      el("div.tf-dock-bill", {}, [el("small", { text: "ご利用" }), dockBill]),
+      dockFace, dockEmpty,
     ]);
     const adviceText = el("p", { dataset: test("advice") });
     const sumiFace = faceIconUrl("sumi");
@@ -158,18 +190,25 @@ export function runTonariFloor({
       sumiFace ? el("img", { src: sumiFace, alt: "スミさん", draggable: false }) : el("span.tf-ticker-name", { text: "スミ" }),
       adviceText,
     ]);
+    const bonusButton = el("button.tf-bonus", { type: "button", dataset: test("bonus"), onclick: () => useBonusTime() }, [
+      el("span.tf-bonus-lamp", {}, [glyph("lamp"), el("i")]),
+      el("span.tf-bonus-text", {}, [el("small", { text: "店の空気" }), el("b", { text: "ボーナスタイム" }), el("i.tf-bonus-bar", {}, [el("i")])]),
+    ]);
+    const bottom = el("footer.tf-bottom", {}, [dock, ticker, bonusButton]);
     const layer = el("div.tf-layer");
+    const banner = el("div.tf-banner", { "aria-hidden": true });
     const announce = el("p.tf-sr", { "aria-live": "polite", "aria-atomic": "true" });
     const host = el("section.tonari-floor", { "aria-label": "tonari フロア営業", dataset: {
       ...test("screen"), night: String(night), mode, stage: layout.id, style: layout.style } }, [
-      stageBox, top, door, kitchen, ticker, el("div.tf-cutin", { "aria-hidden": true }), layer, announce,
+      stageBox, top, door, kitchen, bottom, el("div.tf-cutin", { "aria-hidden": true }), layer, banner, announce,
     ]);
 
     function settle(result) {
       if (!active) return;
       active = false;
       clearInterval(timer);
-      clearTimeout(noteTimer);
+      clearTimeout(bannerTimer);
+      clearTimeout(verdictTimer);
       for (const t of refs.sayTimers.values()) clearTimeout(t);
       signal?.removeEventListener("abort", cancel);
       document.removeEventListener("visibilitychange", onVisibility);
@@ -187,7 +226,16 @@ export function runTonariFloor({
       mode = next;
       host.dataset.mode = next;
       const blocked = next !== "live";
-      for (const node of [spotsBox, top, door, kitchen, ticker]) node.inert = blocked;
+      for (const node of [spotsBox, top, door, kitchen, ticker, bonusButton]) node.inert = blocked;
+      if (next !== "panel") cam.style.transform = "";
+    }
+    // 接客ビュー: 選んだ卓が、左の列と下のドックに隠れない所（画面の右寄り）へ来るように寄る
+    function focusCam(id) {
+      const [px, py] = spotCenter(SPOTS[id - 1]);
+      const zoom = 1.3;
+      const tx = Math.max(100 - 100 * zoom, Math.min(26, 68 - zoom * px));
+      const ty = Math.max(-40, Math.min(0, 43 - zoom * py));
+      cam.style.transform = `translate(${tx.toFixed(2)}%, ${ty.toFixed(2)}%) scale(${zoom})`;
     }
 
     // ---- 時計 ----
@@ -221,10 +269,10 @@ export function runTonariFloor({
     }
 
     // ---- 出来事の手応え ----
-    function pop(id, text, kind = "") {
+    function pop(id, text, kind = "", mark = "") {
       const spot = refs.spots[id - 1];
       if (!spot) return;
-      const node = el("span.tf-pop", { text, dataset: { kind } });
+      const node = el("span.tf-pop", { dataset: { kind } }, [mark ? glyph(MARK[mark]) : null, el("span", { text })]);
       spot.fx.append(node);
       node.addEventListener("animationend", () => node.remove(), { once: true });
       setTimeout(() => node.remove(), 1800);
@@ -232,13 +280,22 @@ export function runTonariFloor({
     function say(id, text) {
       const spot = refs.spots[id - 1];
       if (!spot || !text) return;
-      spot.say.textContent = text.startsWith("（") ? text : `「${text}」`;
+      spot.say.textContent = quoted(text);
       spot.say.dataset.on = "true";
       clearTimeout(refs.sayTimers.get(id));
       refs.sayTimers.set(id, setTimeout(() => { spot.say.dataset.on = "false"; }, 3200));
     }
     function note(text) {
       announce.textContent = text;
+    }
+    // まん中の札（延長が決まった時など、大きな出来事だけ）
+    function showBanner(title, sub = "") {
+      banner.replaceChildren(el("b", { text: title }), sub ? el("small", { text: sub }) : "");
+      banner.dataset.on = "false";
+      void banner.offsetWidth;
+      banner.dataset.on = "true";
+      clearTimeout(bannerTimer);
+      bannerTimer = setTimeout(() => { banner.dataset.on = "false"; }, 1700);
     }
     function cutin(title, sub) {
       const band = host.querySelector(".tf-cutin");
@@ -257,28 +314,36 @@ export function runTonariFloor({
           case "order": SE.click(); pop(e.tableId, "伝票"); break;
           case "ready": SE.good(); note(`${e.tableId}卓の一台が仕上がった`); break;
           case "serve": {
-            const [text, kind] = POP[e.grade] || POP.near;
+            const [text, kind, mark] = POP[e.grade] || POP.near;
             if (e.grade === "best" || e.grade === "redo") SE.perfect(); else if (e.grade === "off") SE.miss(); else SE.good();
-            pop(e.tableId, text, kind);
+            pop(e.tableId, text, kind, mark);
             say(e.tableId, e.line);
             note(`${e.tableId}卓に提供。${text}`);
             break;
           }
           case "call": SE.tick(); note(`${e.tableId}卓から合図`); break;
           case "care":
-            if (e.ok) { SE.perfect(); pop(e.tableId, e.refill ? `もう一杯 ＋${yen(PRICE.refill)}` : "いい手入れ", "best"); }
-            else { SE.miss(); pop(e.tableId, "ちがったみたい", "off"); }
+            if (e.ok) { SE.perfect(); pop(e.tableId, e.refill ? `もう一杯 ＋${yen(PRICE.refill)}` : "いい手入れ", "best", "best"); }
+            else { SE.miss(); pop(e.tableId, "ちがったみたい", "off", "bad"); }
             say(e.tableId, e.line);
             break;
           case "callLate":
-            if (!CALLS[e.call]?.quiet && e.call !== "top") { SE.miss(); pop(e.tableId, "合図を見逃した", "off"); }
+            if (!CALLS[e.call]?.quiet) { SE.miss(); pop(e.tableId, "合図を見逃した", "off"); }
             break;
-          case "top": SE.select(); say(e.tableId, refs.lastLine?.(e.tableId)); break;
+          case "extend":
+            SE.perfect(); SE.money();
+            pop(e.tableId, "延長", "best", "best");
+            say(e.tableId, e.line);
+            showBanner("延長、いただきました！", `トップ替え ＋${yen(PRICE.top)}`);
+            note(`${e.tableId}卓が延長`);
+            break;
           case "consult": SE.select(); break;
           case "billReady": SE.tick(); break;
           case "bill":
             SE.money();
+            if (e.verdict === "best") SE.good();
             pop(e.tableId, `＋${yen(e.total)}`, "coin");
+            if (e.line) say(e.tableId, e.line);
             if (e.by === "sumi" && !state.done) note(`${e.tableId}卓はスミさんが会計`);
             break;
           case "clean": SE.pour(); pop(e.tableId, "ぴかぴか", ""); break;
@@ -288,8 +353,6 @@ export function runTonariFloor({
         }
       }
     }
-    refs.lastLine = (id) => state.tables[id - 1]?.line;
-
     // ---- 画面の書き換え ----
     function bubbleFor(table, tap) {
       if (tap === "care") {
@@ -324,7 +387,7 @@ export function runTonariFloor({
         spot.who.replaceChildren(guest ? guestArt(guest, { happy, seated, art: guests }) : "");
         spot.root.dataset.party = guest ? String(guest.party) : "";
       }
-      const faceKey = guest && table.phase !== "dirty" ? MOOD_FACE(table.mood) : "";
+      const faceKey = guest && table.phase !== "dirty" ? floorFace(table.mood) : "";
       if (spot.faceKey !== faceKey) {
         spot.faceKey = faceKey;
         spot.face.replaceChildren(faceKey ? glyph(faceKey) : "");
@@ -389,12 +452,39 @@ export function runTonariFloor({
         }));
       }
     }
+    function syncDock() {
+      const table = state.tables[selected - 1];
+      const guest = table.guestId && table.phase !== "dirty" ? state.guests[table.guestId] : null;
+      const key = `${selected}/${guest?.id || table.phase}`;
+      if (dock.dataset.key !== key) {
+        dock.dataset.key = key;
+        dock.dataset.on = String(!!guest);
+        dockNo.textContent = `${selected}卓`;
+        dockWho.replaceChildren(guest ? guestArt(guest, { art: guests }) : "");
+        dockName.textContent = guest ? guest.name : "";
+        dockSub.textContent = guest ? `${guest.party}名・${STAY_LABEL[guest.stay]}` : "";
+        dockQuote.textContent = guest ? `「${guest.quote}」` : "";
+        dockEmpty.textContent = guest ? "" : table.phase === "dirty" ? "片付け待ち" : "空席";
+      }
+      if (!guest) return;
+      const face = floorFace(table.mood);
+      if (dock.dataset.mood !== face) { dock.dataset.mood = face; dockFace.replaceChildren(glyph(face)); }
+      dockMood.style.width = `${Math.round(table.mood)}%`;
+      dockStay.style.width = `${Math.round(floorStayLeft(state, selected) * 100)}%`;
+      const mix = table.mixId ? `${MIXES[table.mixId].label}${table.top === "served" ? "＋トップ替え" : ""}`
+        : table.delivery ? `${MIXES[table.delivery.mixId].label}（仕込み中）` : "これから";
+      if (dockMix.textContent !== mix) dockMix.textContent = mix;
+      const bill = yen(floorBill(state, selected)?.total || 0);
+      if (dockBill.textContent !== bill) dockBill.textContent = bill;
+    }
     function sync() {
       state.tables.forEach((table, i) => syncSpot(refs.spots[i], table));
       syncDoor();
       syncKitchen();
+      syncDock();
       clockText.textContent = floorTimeLeft(state);
-      clockNote.textContent = `${plan.title}・${floorClock(state)}`;
+      const noteText = `${plan.title}・${floorClock(state)}`;
+      if (clockNote.textContent !== noteText) clockNote.textContent = noteText;
       visitText.textContent = `${total - state.upcoming.length}／${total}組`;
       clockBar.style.width = `${Math.max(0, 100 - (state.t / state.length) * 100).toFixed(1)}%`;
       host.dataset.late = String(state.length - state.t <= 60); // 残り30秒で時計を赤くする
@@ -408,6 +498,7 @@ export function runTonariFloor({
       host.dataset.bonus = bonusOn ? "on" : full ? "ready" : "";
       bonusButton.disabled = !full || bonusOn;
       bonusButton.style.setProperty("--fill", bonusOn ? (state.bonusTimeLeft / floorBonusTimeLength).toFixed(3) : (state.air / floorAirFull).toFixed(3));
+      bonusButton.querySelector("b").textContent = bonusOn ? "ボーナスタイム中" : "ボーナスタイム";
       bonusButton.setAttribute("aria-label", bonusOn ? "ボーナスタイム中" : full ? "ボーナスタイムを使う" : `店の空気 ${Math.round(state.air)}パーセント`);
       const advice = floorAdvice(state);
       for (const spot of refs.spots) spot.root.dataset.guide = String(state.level === 0 && String(advice.tableId) === spot.root.dataset.id);
@@ -426,6 +517,7 @@ export function runTonariFloor({
         spot.root.dataset.selected = String(spot.root.dataset.id === String(id));
         spot.seat.tabIndex = spot.root.dataset.id === String(id) ? 0 : -1;
       }
+      syncDock();
       if (focus) refs.spots[id - 1].seat.focus({ preventScroll: true });
     }
     function tapTable(id) {
@@ -433,12 +525,12 @@ export function runTonariFloor({
       select(id);
       const tap = floorTap(state, id);
       const table = state.tables[id - 1];
-      if (["seat", "serve", "bill", "clean"].includes(tap)) { perform({ type: tap, tableId: id }); return; }
-      if (["order", "care", "top", "consult"].includes(tap)) { openPanel(tap, id); return; }
+      if (["seat", "serve", "clean"].includes(tap)) { perform({ type: tap, tableId: id }); return; }
+      if (["order", "care", "consult", "bill"].includes(tap)) { openPanel(tap, id); return; }
       const guest = table.guestId ? state.guests[table.guestId] : null;
       SE.click();
       if (!guest) pop(id, "空席");
-      else if (table.phase === "wait") pop(id, state.bench?.tableId === id ? "仕込み中" : "順番待ち");
+      else if (table.delivery) pop(id, state.bench?.tableId === id ? "仕込み中" : "順番待ち");
       else pop(id, "くつろいでいる");
     }
     function followAdvice() {
@@ -452,7 +544,7 @@ export function runTonariFloor({
       if (!perform({ type: "bonusTime" })) SE.error();
     }
 
-    // ---- 伝票（選ぶ窓）。開いている間、店の時間は止まる ----
+    // ---- 接客ビュー（卓へ寄って選ぶ）。開いている間、店の時間は止まる ----
     function option(label, noteText, onPick, { icon = null, primary = false, key = "" } = {}) {
       return el("button.tf-option", { type: "button", onclick: onPick, dataset: { ...test(`option${key ? "-" + key : ""}`), primary: String(primary) } }, [
         icon ? glyph(icon) : null,
@@ -460,68 +552,107 @@ export function runTonariFloor({
       ]);
     }
     function openPanel(kind, id) {
-      panel = { kind, id };
+      panel = { kind, id, locked: false };
       setMode("panel");
+      select(id);
+      focusCam(id);
       renderLayer();
-      layer.querySelector(".tf-option")?.focus({ preventScroll: true });
+      layer.querySelector(".tf-option:not(:disabled)")?.focus({ preventScroll: true });
     }
-    function closePanel(action = null) {
+    function closePanel({ cancel = true } = {}) {
       const id = panel?.id;
+      clearTimeout(verdictTimer);
       panel = null;
       setMode("live");
       renderLayer();
-      if (action) perform(action); else SE.cancel();
+      lastAt = performance.now();
+      if (cancel) SE.cancel();
       if (id && mode === "live") select(id, true);
+    }
+    // 選んだ結果の印（◎ ○ △ ×）。合図への手入れと、会計の声かけで出す
+    function verdictOf(log) {
+      for (const e of log) {
+        if (e.type === "care") return e.ok
+          ? { mark: "best", text: e.refill ? "もう一杯、いただきました" : "いい手入れ！", line: e.line }
+          : { mark: "bad", text: "ちがったみたい", line: e.line };
+        if (e.type === "extend") return { mark: "best", text: "延長！", line: e.line };
+        if (e.type === "bill" && e.verdict) {
+          return { mark: e.verdict, text: { best: "いいお見送り！", good: "お見送り", miss: "かみ合わなかった…" }[e.verdict], line: e.line };
+        }
+      }
+      return null;
+    }
+    function choose(action, button) {
+      if (!panel || mode !== "panel") return;
+      if (panel.locked) { closePanel({ cancel: false }); return; } // 印が出ている間にもう一度押したら、先へ進む
+      if (!perform(action)) { SE.error(); return; }
+      if (mode !== "panel" || !panel) return; // 営業が締まった
+      const verdict = verdictOf(state.log);
+      if (verdict) host.dataset.verdict = verdict.mark;
+      const hold = verdict ? floorTest.verdictMs ?? (floorTest.manual ? 0 : 1000) : 0;
+      if (!hold) { closePanel({ cancel: false }); return; }
+      panel.locked = true;
+      const sheet = layer.querySelector(".tf-sheet");
+      sheet.dataset.verdict = verdict.mark;
+      if (button) button.dataset.picked = "true";
+      sheet.querySelector(".tf-verdict").replaceChildren(glyph(MARK[verdict.mark]), el("b", { text: verdict.text }));
+      if (verdict.line) sheet.querySelector(".tf-sheet-quote").textContent = quoted(verdict.line);
+      verdictTimer = setTimeout(() => { if (active && panel?.locked && mode === "panel") closePanel({ cancel: false }); }, hold);
     }
     function renderPanel() {
       const table = state.tables[panel.id - 1];
       const guest = state.guests[table.guestId];
-      const head = el("header.tf-sheet-head", {}, [
-        el("span.tf-sheet-no", { text: `${table.id}卓` }), guestArt(guest, { art: guests }),
-        el("div", {}, [el("h2#tf-sheet-title", { text: guest.name }), el("small", { text: `${guest.party}名・${STAY_LABEL[guest.stay]}${guest.party > 1 ? "・一台をシェア" : ""}` })]),
-      ]);
-      let lead, options, kindLabel;
+      const pick = (action) => (event) => choose(action, event.currentTarget);
+      let lead, options, kindLabel, face = null, tip = "";
       if (panel.kind === "order") {
         kindLabel = "ご注文";
-        lead = el("p.tf-sheet-quote", { text: `「${guest.quote}」` });
+        lead = `「${guest.quote}」`;
         options = guest.options.map((mixId, i) => option(MIXES[mixId].label, MIXES[mixId].note,
-          () => closePanel({ type: "order", tableId: table.id, mixId }), { key: `mix-${i}` }));
+          pick({ type: "order", tableId: table.id, mixId }), { key: `mix-${i}` }));
       } else if (panel.kind === "care") {
         const call = CALLS[table.call.type];
         kindLabel = "合図";
-        lead = el("p.tf-sheet-quote", { dataset: { sight: String(state.hint === "sight") },
-          text: state.hint === "said" ? (call.quiet ? call.sight : `「${call.said}」`) : call.sight });
-        options = VERBS.map((verb, i) => option(verb.label, verb.note,
-          () => closePanel({ type: "care", tableId: table.id, verb: verb.id }), { icon: verb.id, key: verb.id }));
-        options.forEach((node, i) => { node.dataset.digit = String(i + 1); });
-      } else if (panel.kind === "top") {
-        const best = MIXES[guest.best];
-        const next = MIXES[`${best.family}:${1 - best.index}`];
-        kindLabel = "トップ替え";
-        lead = el("p.tf-sheet-quote", { text: "「次は、違う香りも試してみたいな」" });
-        options = [
-          option(`${next.label}に替える`, `${yen(PRICE.top)}・もう一度仕込む`, () => closePanel({ type: "top", tableId: table.id, accept: true }), { icon: "top", key: "accept" }),
-          option("今日は見送る", "手が回らない時は、断ってよい", () => closePanel({ type: "top", tableId: table.id, accept: false }), { icon: "leave", key: "decline" }),
-        ];
+        lead = state.hint === "said" ? (call.quiet ? call.sight : `「${call.said}」`) : call.sight;
+        options = VERBS.map((verb) => option(verb.label, verb.note,
+          pick({ type: "care", tableId: table.id, verb: verb.id }), { icon: verb.id, key: verb.id }));
+      } else if (panel.kind === "bill") {
+        // 会計の声かけ: 客の顔を見て選ぶ。笑顔の客は、延長（トップ替え）に応じてくれる
+        const off = floorSendOff(state, table.id);
+        kindLabel = "お会計";
+        face = off.face;
+        lead = quoted(table.line || "お会計、お願いします");
+        if (state.level < 2) tip = "顔を見て選ぶ。笑顔なら延長を誘える、曇り顔にはお詫び";
+        options = SENDS.map((send) => {
+          const open = send.id !== "extend" || off.extend === "ok";
+          const noteText = send.id !== "extend" ? send.note : open ? `${send.note}・＋${yen(PRICE.top)}` : SEND_BLOCKED[off.extend];
+          const node = option(send.label, noteText, pick({ type: "bill", tableId: table.id, reply: send.id }), { icon: SEND_ICON[send.id], key: send.id });
+          node.disabled = !open;
+          return node;
+        });
       } else {
         kindLabel = "ご相談";
-        lead = el("p.tf-sheet-quote", { text: `「${table.line}」` });
+        lead = `「${table.line}」`;
         options = [
           ...guest.options.filter((mixId) => mixId !== table.mixId && !table.redoUsed).map((mixId, i) => option(`${MIXES[mixId].label}で作り直す`, `お代はそのまま・${MIXES[mixId].note}`,
-            () => closePanel({ type: "consult", tableId: table.id, mixId }), { icon: "cook", key: `redo-${i}` })),
-          option("台代を外す", "席と飲み物だけいただく", () => closePanel({ type: "consult", tableId: table.id }), { icon: "bill", key: "waive" }),
+            pick({ type: "consult", tableId: table.id, mixId }), { icon: "cook", key: `redo-${i}` })),
+          option("台代を外す", "席と飲み物だけいただく", pick({ type: "consult", tableId: table.id }), { icon: "bill", key: "waive" }),
         ];
       }
-      const said = panel.kind === "order" ? null : el("p.tf-sheet-said", { text: `ご注文：「${guest.quote}」` });
+      options.forEach((node, i) => { node.dataset.digit = String(i + 1); });
       return el("section.tf-sheet", { role: "dialog", "aria-modal": "true", "aria-labelledby": "tf-sheet-title", dataset: { ...test("sheet"), kind: panel.kind } }, [
-        el("div.tf-sheet-paper", {}, [
-          el("span.tf-sheet-kind", { text: kindLabel }), head, lead, panel.kind === "consult" || panel.kind === "top" ? said : null,
-          el("div.tf-options", { dataset: { count: options.length } }, options),
-          el("footer.tf-sheet-foot", {}, [
-            el("small", { text: "伝票を見ている間、店の時間は止まっています" }),
-            el("button.tf-link", { type: "button", text: "あとで", dataset: test("sheet-later"), onclick: () => closePanel() }),
-          ]),
+        el("div.tf-sheet-lead", { dataset: { mood: face || "" } }, [
+          el("span.tf-sheet-kind", { text: kindLabel }),
+          el("h2#tf-sheet-title.tf-sr", { text: `${table.id}卓 ${guest.name}、${kindLabel}` }),
+          face ? el("span.tf-sheet-face", {}, [glyph(face)]) : null,
+          el("p.tf-sheet-quote", { text: lead, dataset: { sight: String(panel.kind === "care" && state.hint === "sight") } }),
         ]),
+        tip ? el("small.tf-sheet-tip", { text: tip }) : null,
+        el("div.tf-options.tf-list", { dataset: { count: options.length } }, options),
+        el("footer.tf-sheet-foot", {}, [
+          el("button.tf-link", { type: "button", text: "あとで", dataset: test("sheet-later"), onclick: () => closePanel() }),
+          el("small", { text: "選んでいる間、店の時間は止まります" }),
+        ]),
+        el("div.tf-verdict", { "aria-hidden": true }),
       ]);
     }
 
@@ -539,8 +670,9 @@ export function runTonariFloor({
         select(1, true);
       };
       const how = [
-        ["seat", "卓を押して、案内・配膳・会計・片付け"],
+        ["seat", "卓を押して、案内・配膳・片付け"],
         ["order", "注文と合図は、言葉や様子を読んで選ぶ"],
+        ["bill", "会計は、客の顔を見て声をかける"],
         ["lamp", "いい接客で灯りが溜まると、ボーナスタイム"],
       ];
       return el("section.tf-intro", { role: "dialog", "aria-modal": "true", "aria-labelledby": "tf-intro-title", dataset: test("intro") }, [
@@ -555,7 +687,7 @@ export function runTonariFloor({
               el("div.tf-options", { dataset: { count: PLANS.length } }, PLANS.map((p) => option(p.label, p.note, () => start(p.id), { key: `plan-${p.id}` }))),
             ])
             : el("div.tf-options", { dataset: { count: 1 } }, [option("フロアに出る", "店の時間が流れはじめる", () => start(), { primary: true, key: "start" })]),
-          el("small.tf-intro-note", { text: "選ぶ窓を開いている間と休止中は、時間が止まります。店の売上は、はじめの所持金には入りません。" }),
+          el("small.tf-intro-note", { text: "卓で選んでいる間と休止中は、時間が止まります。店の売上は、はじめの所持金には入りません。" }),
         ]),
       ]);
     }
@@ -616,6 +748,7 @@ export function runTonariFloor({
     }
     function closeNight() {
       if (mode === "closing" || mode === "result") return;
+      clearTimeout(verdictTimer);
       panel = null;
       setMode("closing");
       renderLayer();
@@ -646,7 +779,7 @@ export function runTonariFloor({
             tag(row) ? el("small", { text: tag(row) }) : null,
             row.missed ? el("span.tf-stars", { text: "—" }) : stars(row.stars),
           ]))),
-          el("p.tf-slip-counts", { text: `ぴったりの一台 ${result.counts.best}組・いい手入れ ${result.counts.care}回・ボーナスタイム ${result.bonusTimes}回` }),
+          el("p.tf-slip-counts", { text: `ぴったりの一台 ${result.counts.best}組・いい手入れ ${result.counts.care}回・延長 ${result.counts.extend}組・ボーナスタイム ${result.bonusTimes}回` }),
           el("p.tf-slip-sumi", {}, [
             sumiFace ? el("img", { src: sumiFace, alt: "", draggable: false }) : null,
             el("span", { text: `スミ「${result.comment}」` }),
@@ -666,6 +799,7 @@ export function runTonariFloor({
         : mode === "result" ? renderResult() : null;
       layer.replaceChildren(node || "");
       layer.dataset.on = String(!!node);
+      layer.dataset.kind = node ? mode : "";
     }
 
     // ---- 入力 ----
@@ -677,7 +811,7 @@ export function runTonariFloor({
       if (event.key === "Escape") {
         event.preventDefault();
         event.stopPropagation();
-        if (mode === "panel") closePanel();
+        if (mode === "panel") closePanel({ cancel: !panel?.locked });
         else if (mode === "pause") resume();
         else if (mode === "live") openPause();
         return;
@@ -685,7 +819,8 @@ export function runTonariFloor({
       if (mode === "live") {
         if (event.key === "b" || event.key === "B") { event.preventDefault(); useBonusTime(); return; }
         if (event.target instanceof HTMLButtonElement && event.target.classList.contains("tf-seat")) {
-          const next = spotInDirection(SPOTS, selected, event.key);
+          // 動かす起点は、いまフォーカスのある卓（マウスを乗せて選んだ卓とは別のことがある）
+          const next = spotInDirection(SPOTS, Number(event.target.closest(".tf-spot")?.dataset.id) || selected, event.key);
           if (next) { event.preventDefault(); SE.click(); select(next, true); }
         }
         return;
@@ -711,6 +846,10 @@ export function runTonariFloor({
       }
     }
 
+    // 判定の印が出ている間は、どこを押しても先へ進む
+    layer.addEventListener("click", (event) => {
+      if (mode === "panel" && panel?.locked && !event.target.closest(".tf-option")) closePanel({ cancel: false });
+    });
     signal?.addEventListener("abort", cancel, { once: true });
     document.addEventListener("visibilitychange", onVisibility);
     host.addEventListener("keydown", onKey);

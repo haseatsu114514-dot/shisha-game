@@ -34,6 +34,11 @@ const GLYPHS = {
   smile: '<circle cx="12" cy="12" r="8.5"/><path d="M8.5 13.5c1 2 6 2 7 0"/><path d="M9 9.5v.1M15 9.5v.1"/>',
   flat: '<circle cx="12" cy="12" r="8.5"/><path d="M9 14.5h6"/><path d="M9 9.5v.1M15 9.5v.1"/>',
   frown: '<circle cx="12" cy="12" r="8.5"/><path d="M8.5 15.5c1-2 6-2 7 0"/><path d="M9 9.5v.1M15 9.5v.1"/>',
+  // 判定の印（◎ ○ △ ×）。接客ビューの大きな印と、卓の手応えに使う
+  markBest: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.8"/>',
+  markGood: '<circle cx="12" cy="12" r="8.5"/>',
+  markMiss: '<path d="M12 4 21 19.5H3z"/>',
+  markBad: '<path d="M5.5 5.5l13 13M18.500 5.500l-13 13"/>',
 };
 
 export function glyph(name, className = "") {

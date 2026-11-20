@@ -56,10 +56,11 @@ export function drawFloorGuide({ night = false, zones = false } = {}) {
   }
   if (zones) {
     // Codex へ渡す配置図: ゲームが重ねる物の場所（灰＝帯と札、点線＝客の絵、白丸＝番号札、白い縦棒＝卓の上の一台、白い菱形＝卓のマーカー）
+    // 灰は上の帯・下の帯（卓のドック・スミさんの一言・ボーナスタイム。横いっぱい）・左上の入口の札・右上の作業台の札
     r.drawImage(front, 0, 0);
     r.fillStyle = "#2b2b2b99";
     r.fillRect(0, 0, W, H * 0.13);
-    r.fillRect(W * 0.26, H * 0.875, W * 0.42, H * 0.11);
+    r.fillRect(W * 0.012, H * 0.875, W * 0.976, H * 0.11);
     r.fillRect(W * 0.012, H * 0.14, W * 0.117, H * 0.14);
     r.fillRect(W * 0.8, H * 0.14, W * 0.188, H * 0.32);
     r.setLineDash([12, 8]); r.lineWidth = 4; r.strokeStyle = "#ffffff";

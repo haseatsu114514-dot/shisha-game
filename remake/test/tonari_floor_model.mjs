@@ -1,10 +1,10 @@
 // tonari フロア営業のルール（js/daily/tonari-floor-model.js）。
-// 同じ種なら同じ一晩・操作は刻みを使わない・配合の合否・合図・会計・ボーナスタイム・評価の境界を確かめる。
+// 同じ種なら同じ一晩・操作は刻みを使わない・配合の合否・合図・会計の声かけ（延長）・ボーナスタイム・評価の境界を確かめる。
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createFloorNight, floorTick, floorAct, floorTap, floorResult, floorAdvice, floorUrgency, pickNight,
-  floorAirFull, floorBonusTimeLength, FLOOR_TABLE_COUNT } from "../js/daily/tonari-floor-model.js";
-import { MIXES, WISHES, GUESTS, CALLS, NIGHTS, FAMILIES, PRICE, RANKS, VERBS } from "../js/daily/tonari-floor-data.js";
+  floorSendOff, floorBill, floorFace, floorAirFull, floorBonusTimeLength, FLOOR_TABLE_COUNT } from "../js/daily/tonari-floor-model.js";
+import { MIXES, WISHES, GUESTS, CALLS, NIGHTS, FAMILIES, PRICE, RANKS, VERBS, SENDS, SEND_LINES } from "../js/daily/tonari-floor-data.js";
 import { playFloorBot } from "./tonari_floor_bot.mjs";
 
 const at = (s, id) => s.tables[id - 1];
@@ -20,6 +20,17 @@ const until = (s, done, limit = 400) => {
 };
 const near = (guest) => guest.options.find((id) => id !== guest.best && MIXES[id].family === MIXES[guest.best].family);
 const off = (guest) => guest.options.find((id) => MIXES[id].family !== MIXES[guest.best].family);
+/** その卓が会計を頼むまで進める（合図には正しく応え、仕上がった一台は運ぶ）。 */
+function toBill(s, tableId = 1) {
+  for (let i = 0; i < 600 && floorTap(s, tableId) !== "bill"; i++) {
+    const tap = floorTap(s, tableId);
+    if (tap === "care") s = act(s, { type: "care", tableId, verb: CALLS[at(s, tableId).call.type].verb });
+    else if (tap === "serve") s = act(s, { type: "serve", tableId });
+    else s = floorTick(s);
+  }
+  assert.equal(floorTap(s, tableId), "bill");
+  return s;
+}
 /** 1卓へ案内し、選んだ配合を提供するところまで。 */
 function serveFirst(s, pick = (guest) => guest.best, tableId = 1) {
   s = until(s, (x) => x.queue.length > 0);
@@ -41,7 +52,9 @@ test("台本: 客の言葉・配合・合図・夜の種類がそろっている
   }
   const verbs = VERBS.map((v) => v.id);
   for (const [type, call] of Object.entries(CALLS)) assert.ok(verbs.includes(call.verb), type);
-  for (const guest of Object.values(GUESTS)) for (const type of guest.calls) assert.ok(type === "top" || CALLS[type], `${guest.id}:${type}`);
+  for (const guest of Object.values(GUESTS)) for (const type of guest.calls) assert.ok(CALLS[type], `${guest.id}:${type}`);
+  assert.deepEqual(SENDS.map((send) => send.id), ["extend", "thanks", "sorry"]);
+  for (const line of Object.values(SEND_LINES).flat()) assert.ok(!line.endsWith("。"), `客の台詞は句点で終えない: ${line}`);
   for (const night of Object.values(NIGHTS)) {
     assert.equal(night.arrive.length, night.cast.length, night.id);
     for (const kind of night.cast) assert.ok(GUESTS[kind], `${night.id}:${kind}`);
@@ -166,15 +179,13 @@ test("会計と片付け: 人数分の席と初杯・一台分の台代。会計
   s = act(s, { type: "seat", tableId: 5 });
   s = act(s, { type: "order", tableId: 5, mixId: pair.best });
   s = act(until(s, (x) => at(x, 5).delivery?.ready), { type: "serve", tableId: 5 });
-  while (floorTap(s, 5) !== "bill") {
-    const tap = floorTap(s, 5);
-    if (tap === "care") s = act(s, { type: "care", tableId: 5, verb: CALLS[at(s, 5).call.type].verb });
-    else if (tap === "top") s = act(s, { type: "top", tableId: 5, accept: false });
-    else s = floorTick(s);
-  }
+  s = toBill(s, 5);
   const sales = s.sales;
+  const running = floorBill(s, 5);
   s = act(s, { type: "bill", tableId: 5 });
   const row = s.results.at(-1);
+  assert.equal(running.total, row.total, "卓の「ご利用」は、会計の合計と同じ");
+  assert.equal(floorBill(s, 5), null);
   assert.equal(row.seat, 1000);
   assert.equal(row.drink, 800);
   assert.equal(row.shisha, PRICE.shisha[pair.stay]);
@@ -184,6 +195,62 @@ test("会計と片付け: 人数分の席と初杯・一台分の台代。会計
   assert.equal(floorAct(s, { type: "seat", tableId: 5 }), s, "片付け前の卓へは案内できない");
   s = act(s, { type: "clean", tableId: 5 });
   assert.equal(at(s, 5).phase, "empty");
+});
+
+test("会計の声かけ: 顔に合った一言で満足が上がる。笑顔の客は延長に応じ、一卓に一度まで", () => {
+  const s = toBill(serveFirst(createFloorNight({ seed: 4, level: 1 })));
+  const withMood = (mood) => { const x = structuredClone(s); at(x, 1).mood = mood; return x; };
+  assert.equal(floorSendOff(s, 2), null, "会計前の卓に見立ては無い");
+  assert.deepEqual([90, 80, 79, 45, 44].map(floorFace), ["smile", "smile", "flat", "flat", "frown"]);
+  // 笑顔: 延長（トップ替え）に応じてくれる。売上は、運んでから会計で入る
+  const smile = withMood(90);
+  assert.deepEqual(floorSendOff(smile, 1), { face: "smile", extend: "ok", best: "extend" });
+  const extended = act(smile, { type: "bill", tableId: 1, reply: "extend" });
+  assert.equal(at(extended, 1).phase, "enjoy");
+  assert.equal(at(extended, 1).top, "ordered");
+  assert.equal(extended.sales, smile.sales);
+  assert.equal(extended.log.at(-1).type, "extend");
+  assert.equal(extended.counts.extend, 1);
+  assert.ok(extended.air > smile.air);
+  assert.equal(floorTap(extended, 1), "info", "仕上がるまでは待つ");
+  const again = toBill(extended);
+  assert.equal(at(again, 1).top, "served");
+  assert.ok(again.t - extended.t >= 26, "延長した分だけ長く過ごす");
+  assert.deepEqual(floorSendOff(again, 1), { face: "smile", extend: "used", best: "thanks" });
+  assert.equal(floorAct(again, { type: "bill", tableId: 1, reply: "extend" }), again, "延長は一卓に一度まで");
+  const paid = act(again, { type: "bill", tableId: 1, reply: "thanks" });
+  assert.equal(paid.results.at(-1).top, PRICE.top);
+  assert.equal(paid.log.at(-1).verdict, "best");
+  // 笑顔にお礼だけ: 悪くはないが、延長の機会を逃す
+  const plain = act(smile, { type: "bill", tableId: 1 });
+  assert.equal(plain.log.at(-1).reply, "thanks");
+  assert.equal(plain.log.at(-1).verdict, "good");
+  assert.equal(plain.results.at(-1).mood, 90);
+  assert.equal(plain.results.at(-1).top, 0);
+  // ふつうの顔: お礼が合う。延長をすすめると断られて、少し気まずい
+  const flat = withMood(60);
+  assert.equal(floorSendOff(flat, 1).best, "thanks");
+  assert.equal(act(flat, { type: "bill", tableId: 1, reply: "thanks" }).results.at(-1).mood, 65);
+  const pushed = act(flat, { type: "bill", tableId: 1, reply: "extend" });
+  assert.equal(pushed.log.at(-1).verdict, "miss");
+  assert.equal(pushed.results.at(-1).mood, 54);
+  assert.equal(at(pushed, 1).phase, "dirty");
+  assert.equal(act(flat, { type: "bill", tableId: 1, reply: "sorry" }).results.at(-1).mood, 60);
+  // 曇り顔: お詫びが届く。お礼だけでは変わらない
+  const frown = withMood(40);
+  assert.equal(floorSendOff(frown, 1).best, "sorry");
+  const sorry = act(frown, { type: "bill", tableId: 1, reply: "sorry" });
+  assert.equal(sorry.results.at(-1).mood, 54);
+  assert.equal(sorry.log.at(-1).verdict, "best");
+  assert.equal(act(frown, { type: "bill", tableId: 1, reply: "thanks" }).log.at(-1).verdict, "miss");
+  // 閉店が近い時・台代を外した卓には、延長をすすめられない
+  const late = withMood(90);
+  late.t = late.length - 20;
+  assert.deepEqual(floorSendOff(late, 1), { face: "smile", extend: "late", best: "thanks" });
+  assert.equal(floorAct(late, { type: "bill", tableId: 1, reply: "extend" }), late);
+  const waived = withMood(90);
+  at(waived, 1).accepted = false;
+  assert.equal(floorSendOff(waived, 1).extend, "none");
 });
 
 test("入口: 待たせすぎると帰ってしまう。満席でも6卓目は生まれない", () => {

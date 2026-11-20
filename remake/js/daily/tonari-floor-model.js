@@ -1,7 +1,7 @@
 // tonari フロア営業のルール。時間は刻み（tick）で進み、操作は刻みを使わない。
 // 本編の状態・給与・在庫から独立した純粋な関数だけを置く（同じ種と同じ操作なら同じ一晩になる）。
-// 画面（tonari-floor-view.js）が実時間で floorTick を呼び、伝票を開いている間は呼ばない。
-import { PRICE, STAY, MIXES, WISHES, FAMILIES, GUESTS, CALLS, NIGHTS, RANKS, SERVE_LINES, CALL_MISS, CALL_DISTURBED, byTime } from "./tonari-floor-data.js";
+// 画面（tonari-floor-view.js）が実時間で floorTick を呼び、卓で選んでいる間（接客ビュー）は呼ばない。
+import { PRICE, STAY, MIXES, WISHES, FAMILIES, GUESTS, CALLS, NIGHTS, RANKS, SERVE_LINES, SEND_LINES, CALL_MISS, CALL_DISTURBED, byTime } from "./tonari-floor-data.js";
 
 export const FLOOR_TABLE_COUNT = 5;
 /** 1刻みの実時間（ミリ秒）。画面の時計と検査で同じ値を使う。 */
@@ -11,12 +11,15 @@ export const FLOOR_TICK_MS = 500;
 const T = Object.freeze({
   queue: 56, orderGrace: 18, waitGrace: 44, billGrace: 16, quickSeat: 10,
   prep: 14, topPrep: 10, shelf: 2, call: 28, consult: 30, bonusTime: 28, register: 6, topStay: 26,
+  extendMin: 40, // 閉店までこの刻みより短い時は、延長（トップ替え）をすすめられない
 });
 const MOOD = Object.freeze({
   start: 50, quickSeat: 5, best: 22, near: 8, off: -14, redoBest: 16, redoNear: 6,
   care: 8, careMiss: -8, careLate: -10, top: 6, waive: 6, decay: 0.5, bonusTime: 0.6, unserved: 40,
+  smile: 80, frown: 45, // 顔の段（笑顔は80以上、曇り顔は45未満）
+  send: 5, sorry: 14, extendMiss: -6, // 会計の声かけ（顔に合った一言・お詫びが届いた・延長を断られた）
 });
-const AIR = Object.freeze({ full: 100, best: 18, near: 8, care: 10, seat: 4, star3: 8, star2: 4, clean: 2 });
+const AIR = Object.freeze({ full: 100, best: 18, near: 8, care: 10, seat: 4, star3: 8, star2: 4, clean: 2, send: 4 });
 const PLAN_EFFECT = Object.freeze({
   prep: { prep: 9 }, coal: { call: 1.6 }, register: { register: true },
 });
@@ -47,10 +50,9 @@ export function pickNight(level = 0, seed = 0, { rainy = false, daytime = false 
   return { ...def, title: byTime(def.title, daytime), forecast: byTime(def.forecast, daytime) };
 }
 
-/** 合図の出し方。最初の夜は3種だけ、2回目から「聞きたそう」「夢中」、3回目からトップ替えの希望。 */
+/** 合図の出し方。最初の夜は3種だけ、2回目から「聞きたそう」「夢中」が加わる。 */
 function callsFor(kind, level) {
-  const allowed = level <= 0 ? ["thin", "harsh", "glass"] : level === 1 ? ["thin", "harsh", "glass", "ask", "focus"]
-    : ["thin", "harsh", "glass", "ask", "focus", "top"];
+  const allowed = level <= 0 ? ["thin", "harsh", "glass"] : ["thin", "harsh", "glass", "ask", "focus"];
   const limit = kind.stay === "short" ? 1 : 2;
   const list = kind.calls.filter((type) => allowed.includes(type)).slice(0, limit);
   if (!list.length) list.push(kind.stay === "short" ? "harsh" : "thin");
@@ -102,7 +104,7 @@ export function createFloorNight({ seed = 0, level = 0, chapter = 1, anchor = nu
     bench: null, line: [], shelf: [],
     air: 0, bonusTimeLeft: 0, bonusTimes: 0,
     sales: 0, results: [],
-    counts: { best: 0, near: 0, off: 0, care: 0, careMiss: 0, late: 0, missed: 0, cleaned: 0, top: 0, refill: 0, quick: 0 },
+    counts: { best: 0, near: 0, off: 0, care: 0, careMiss: 0, late: 0, missed: 0, cleaned: 0, top: 0, refill: 0, quick: 0, extend: 0, send: 0 },
     anchor: anchorBest ? { family: anchor.family, guestId: order[anchorAt], index: null } : null,
     log: [],
   };
@@ -256,7 +258,7 @@ function tickOnce(s) {
       if (s.t >= table.call.until) {
         const type = table.call.type;
         table.call = null;
-        if (!CALLS[type]?.quiet && type !== "top") {
+        if (!CALLS[type]?.quiet) {
           table.mood = clampMood(table.mood + MOOD.careLate);
           s.counts.late += 1;
         }
@@ -264,10 +266,7 @@ function tickOnce(s) {
       }
     } else if (!table.delivery && table.callsLeft.length && s.t >= table.callsLeft[0].at) {
       const next = table.callsLeft.shift();
-      // トップ替えは、帰りが近い卓・営業の終わり際には頼まれない。
-      if (next.type !== "top" || (table.stayEnd - s.t >= 8 && s.length - s.t >= 40)) {
-        openCall(s, table, next.type, next.type === "consult" ? T.consult : T.call);
-      }
+      openCall(s, table, next.type, next.type === "consult" ? T.consult : T.call);
     }
     if (!table.call && !table.delivery && s.t >= table.stayEnd) {
       Object.assign(table, { phase: "bill", since: s.t, line: "お会計、お願いします" });
@@ -301,7 +300,7 @@ export function floorTap(s, tableId) {
     case "wait": return table.delivery?.ready ? "serve" : "info";
     case "enjoy":
       if (table.delivery?.ready) return "serve";
-      if (table.call) return table.call.type === "top" ? "top" : table.call.type === "consult" ? "consult" : "care";
+      if (table.call) return table.call.type === "consult" ? "consult" : "care";
       return "info";
     case "bill": return "bill";
     case "dirty": return "clean";
@@ -361,7 +360,8 @@ function scheduleCalls(s, table, guest, scale) {
 
 /**
  * 操作を一つ確定する。できない操作は同じ state を返す（画面は何も進めない）。
- * action: { type: "seat" | "order" | "serve" | "care" | "top" | "consult" | "bill" | "clean" | "rush" | "bonusTime" | "finish", tableId, mixId, verb, accept }
+ * action: { type: "seat" | "order" | "serve" | "care" | "consult" | "bill" | "clean" | "rush" | "bonusTime" | "finish", tableId, mixId, verb, reply }
+ * 会計の reply は "extend"（延長をすすめる）/ "thanks"（お礼）/ "sorry"（お詫び）。省くと "thanks"。
  */
 export function floorAct(state, action) {
   if (!action || state.done) return state;
@@ -419,21 +419,6 @@ export function floorAct(state, action) {
       note(s, { type: "care", tableId: table.id, ok, line: table.line, refill: ok && !!call.refill });
       break;
     }
-    case "top": {
-      if (!can("top")) return state;
-      table.call = null;
-      if (action.accept) {
-        const best = MIXES[guest.best];
-        const mixId = `${best.family}:${1 - best.index}`;
-        table.top = "ordered";
-        table.delivery = { kind: "top", mixId, ready: false };
-        s.line.push({ tableId: table.id, mixId, kind: "top" });
-        feedBench(s);
-      }
-      table.line = action.accept ? "じゃあ、お願いします" : "また今度にしますね";
-      note(s, { type: "top", tableId: table.id, accept: !!action.accept });
-      break;
-    }
     case "consult": {
       if (!can("consult")) return state;
       const redo = action.mixId && guest.options.includes(action.mixId) && action.mixId !== table.mixId && !table.redoUsed;
@@ -455,9 +440,36 @@ export function floorAct(state, action) {
     }
     case "bill": {
       if (!can("bill")) return state;
+      // 会計の声かけ: 客の顔に合った一言（best）で満足と店の空気が上がる。笑顔の客は、延長（トップ替え）に応じてくれる。
+      const reply = ["extend", "thanks", "sorry"].includes(action.reply) ? action.reply : "thanks";
+      const off = floorSendOff(s, table.id);
+      if (reply === "extend" && off.extend !== "ok") return state;
+      const verdict = reply === off.best ? "best" : reply === "thanks" && off.face !== "frown" ? "good" : "miss";
+      if (reply === "extend" && verdict === "best") {
+        const best = MIXES[guest.best];
+        const mixId = `${best.family}:${1 - best.index}`;
+        Object.assign(table, { phase: "enjoy", since: s.t, top: "ordered", stayEnd: s.t + T.topStay,
+          delivery: { kind: "top", mixId, ready: false }, line: SEND_LINES.extend });
+        s.line.push({ tableId: table.id, mixId, kind: "top" });
+        feedBench(s);
+        s.counts.extend += 1;
+        gain(s, AIR.send);
+        note(s, { type: "extend", tableId: table.id, line: table.line });
+        break;
+      }
+      let line;
+      if (reply === "extend") { table.mood = clampMood(table.mood + MOOD.extendMiss); line = SEND_LINES.extendMiss; }
+      else if (reply === "sorry") {
+        if (verdict === "best") table.mood = clampMood(table.mood + MOOD.sorry);
+        line = verdict === "best" ? SEND_LINES.sorry : SEND_LINES.sorryOdd;
+      } else {
+        if (verdict === "best") table.mood = clampMood(table.mood + MOOD.send);
+        line = off.face === "frown" ? SEND_LINES.thanksLow : lineFor(s, SEND_LINES.thanks, table.id);
+      }
+      if (verdict === "best") { s.counts.send += 1; gain(s, AIR.send); }
       const paid = settle(s, table, "hajime");
       gain(s, paid.stars === 3 ? AIR.star3 : paid.stars === 2 ? AIR.star2 : 0);
-      note(s, { type: "bill", tableId: table.id, ...paid, by: "hajime" });
+      note(s, { type: "bill", tableId: table.id, ...paid, by: "hajime", reply, verdict, line });
       break;
     }
     case "clean":
@@ -511,6 +523,30 @@ export function floorTimeLeft(s) {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 }
 
+/** 顔の段（卓の印・会計の声かけの正解に同じ段を使う）。 */
+export const floorFace = (mood) => (mood >= MOOD.smile ? "smile" : mood >= MOOD.frown ? "flat" : "frown");
+
+/**
+ * 会計の声かけの見立て。face＝客の顔、extend＝延長をすすめられるか（"ok" / "used" 済み / "late" 閉店が近い / "none" 台代を外した卓）、
+ * best＝顔に合った一言（笑顔＝延長、もう延長できなければお礼／ふつう＝お礼／曇り顔＝お詫び）。会計前の卓は null。
+ */
+export function floorSendOff(s, tableId) {
+  const table = tableOf(s, tableId);
+  if (!table || table.phase !== "bill") return null;
+  const face = floorFace(table.mood);
+  const extend = table.top ? "used" : !table.accepted ? "none" : s.length - s.t < T.extendMin ? "late" : "ok";
+  const best = face === "frown" ? "sorry" : face === "smile" && extend === "ok" ? "extend" : "thanks";
+  return { face, extend, best };
+}
+
+/** その卓の、いままでのお代（席・初杯・台代・おかわり・トップ替え）。客がいない卓は null。 */
+export function floorBill(s, tableId) {
+  const table = tableOf(s, tableId);
+  const guest = guestAt(s, table);
+  if (!guest || table.phase === "dirty") return null;
+  return totalFor(guest, table);
+}
+
 /** スミさんの一言（今いちばん先に見るところ）。台詞なので句点で終えない。 */
 export function floorAdvice(s) {
   if (s.done) return { kind: "done", tableId: null, text: "お疲れさん" };
@@ -529,7 +565,7 @@ export function floorAdvice(s) {
   const ordering = urgent(tables.filter((t) => t.phase === "order"));
   if (ordering) return { kind: "order", tableId: ordering.id, text: `${ordering.id}卓、注文を聞いてこい` };
   const billing = urgent(tables.filter((t) => t.phase === "bill"));
-  if (billing && !planOf(s).register) return { kind: "bill", tableId: billing.id, text: `${billing.id}卓がお会計だ` };
+  if (billing && !planOf(s).register) return { kind: "bill", tableId: billing.id, text: `${billing.id}卓がお会計だ。顔を見て、ひと声かけろ` };
   const dirty = tables.find((t) => t.phase === "dirty");
   if (dirty) return { kind: "clean", tableId: dirty.id, text: s.queue.length ? `${dirty.id}卓を片付ければ、次を通せる` : `${dirty.id}卓、手が空いたら片付けだ` };
   if (s.air >= AIR.full) return { kind: "bonusTimeReady", tableId: null, text: "ボーナスタイムは、卓が埋まった時に使え" };
