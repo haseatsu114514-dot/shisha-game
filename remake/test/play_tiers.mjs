@@ -62,16 +62,17 @@ assert(!T.TIER_GAMES.ichidai, "the card game is on hold");
   assert.equal(JSON.stringify(old.growth.playTiers), before, "sync is idempotent");
   const fresh = core.newState();
   T.syncPlayTiers(fresh);
-  for (const game of Object.keys(T.TIER_GAMES)) assert.deepEqual(T.tierRecord(fresh, game).cleared, [], "nothing to import");
-  // 取り込みはその保存で一度だけ。後の結果は recordTierClear で確定するので、初めてのクリアの知らせが必ず出る
+  assert.equal(fresh.growth?.playTiers, undefined, "nothing to import, nothing written (opening a menu must not change the save)");
+  // 各ゲームの記録処理は、結果を記録したら（精算の取り込みより先に）recordTierClear で確定する。初めてのクリアの知らせが必ず出る
   fresh.desert = { wins: 1 };
-  T.syncPlayTiers(fresh);
-  assert.deepEqual(T.tierRecord(fresh, "desert").cleared, [], "a later win is not imported behind the adapter's back");
   const seen = [];
   const off = on("play-tier", e => seen.push(e));
   assert.deepEqual(T.recordTierClear(fresh, "desert", "normal"), ["easy", "normal"]);
   off();
-  assert.equal(seen.length, 1, "the first clear after the import is announced");
+  assert.equal(seen.length, 1, "the first clear is announced");
+  const after = JSON.stringify(fresh.growth.playTiers);
+  T.syncPlayTiers(fresh);
+  assert.equal(JSON.stringify(fresh.growth.playTiers), after, "a later import adds nothing");
 }
 
 // 上級クリアの白火: その場で一度だけ。保存／読込・周回（NG+）でも二度は渡さない。盤が埋まっていれば架空の+1を出さない

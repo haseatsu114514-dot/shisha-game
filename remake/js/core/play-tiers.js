@@ -125,14 +125,13 @@ const LEGACY = {
 };
 
 /**
- * 旧保存の実績を取り込む（その保存で一度だけ。何度呼んでも同じ）。claimPlayRewards の前・各ゲームのメニューを開く時に呼ぶ。
- * 一度きりにするのは、取り込みの後のクリアを必ず recordTierClear で確定させるため（記録より先に取り込みが走ると、
- * 初めてのクリアの一言や知らせが出なくなる）。済んだ印は growth.playTiers._imported（ゲーム名ではないので tierRecord は読まない）。
+ * 旧保存の実績を取り込む（何度呼んでも同じ。取り込むものが無ければ何も書かない＝メニューを開くだけでは保存が変わらない）。
+ * claimPlayRewards の前・各ゲームのメニューを開く時に呼ぶ。各ゲームの記録処理は、結果を記録したら精算（＝この取り込み）が
+ * 走る前に recordTierClear で段のクリアを確定する（達人の記録より先）。順が逆だと、取り込みが先に段を埋めて、
+ * 初めてのクリアの一言や知らせが出なくなる。
  */
 export function syncPlayTiers(s) {
-  if (!s || s.growth?.playTiers?._imported === 1) return;
-  s.growth = object(s.growth);
-  s.growth.playTiers = { ...object(s.growth.playTiers), _imported: 1 };
+  if (!s) return;
   for (const [game, read] of Object.entries(LEGACY)) {
     const found = read(s);
     if (!found.length) continue;
