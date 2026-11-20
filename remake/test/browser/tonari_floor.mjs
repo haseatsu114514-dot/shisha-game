@@ -1,5 +1,5 @@
 // tonari フロア営業（ワンオペ・ミックスを一覧から選ぶ形）: 勤務札→導入→営業→締め→日当の流れ、実画面の操作（PC／横持ちタッチ）、時計の停止、LOAD の境界。
-// 客は気分（フルーティ／スイート／リフレッシュ／リラックス）を言うだけ。注文待ち・頼みの卓を押すと「接客の画面」へ替わる（左に大きな選択肢、右に卓の様子。店内の札や帯は隠れる）。
+// 客は気分（フルーティ／スイート／刺激系／リラックス）を言うだけ。注文待ち・頼みの卓を押すと「接客の画面」へ替わる（左に大きな選択肢、右に卓の様子。店内の札や帯は隠れる）。
 // 右にミックスの一覧（ひと押しでも出せる・シャッフルは4秒かかる）。ミックスの札には属性の印（メインが大きく、サブが小さい）。
 // 炭の調整（頼まれる前に）と会計は卓を押すだけ。卓の札は、押すと進む用件の時だけ見出しを出し、手応えの言葉は見出しの所に出す（UI の上に UI を重ねない）。
 import assert from "node:assert/strict";
@@ -125,7 +125,7 @@ await suite("tonari-floor", async (check) => {
     await page.locator(t("intro")).waitFor();
     assert.match(await page.locator(t("intro")).innerText(), /はじめてのワンオペ/);
     assert.deepEqual(await page.locator(`${t("intro-wishes")} .tf-wish`).evaluateAll((list) => list.map((n) => [n.dataset.wish, n.textContent.trim(), !!n.querySelector("svg")])),
-      [["fruit", "フルーティ", true], ["sweet", "スイート", true], ["fresh", "リフレッシュ", true], ["deep", "リラックス", true]], "気分（＝属性）の色と印の見本");
+      [["fruit", "フルーティ", true], ["sweet", "スイート", true], ["fresh", "刺激系", true], ["deep", "リラックス", true]], "気分（＝属性）の色と印の見本");
     assert.equal(await page.locator(".tf-how li").count(), 4, "はじめての営業は、進め方を出す");
     assert.deepEqual(await page.evaluate(() => C.trace.filter((id) => /floor/.test(id))), ["tonari_floor_first"]);
     // 営業中は保存しない（途中の体力だけが残らない）

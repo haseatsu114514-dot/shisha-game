@@ -43,15 +43,15 @@ function toBill(s, tableId = 1) {
 }
 
 test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類がそろっている。原価は持たない", () => {
-  assert.deepEqual(WISHES.map((w) => w.label), ["フルーティ", "スイート", "リフレッシュ", "リラックス"]);
+  assert.deepEqual(WISHES.map((w) => w.label), ["フルーティ", "スイート", "刺激系", "リラックス"]);
   // 材料は、本編のフレーバー（data/flavors.json）から選ぶ。大会で使えない物・非売品は使わない。属性は本編の系統から、章は本編の解禁から決まる
   const game = Object.fromEntries(JSON.parse(readFileSync(new URL("../../data/flavors.json", import.meta.url), "utf8")).flavors.map((f) => [f.id, f]));
-  const wishOfCategory = { fruit: "fruit", sweet: "sweet", cooling: "fresh", spice: "deep", floral: "deep" };
+  const wishOfCategory = { fruit: "fruit", sweet: "sweet", cooling: "fresh", spice: "fresh", floral: "deep" };
   for (const f of Object.values(FLAVORS)) {
     const source = game[f.id];
     assert.ok(source, `${f.id}: 本編にあるフレーバー`);
     assert.ok(source.competition_legal !== false && source.serve_legal !== false && !source.not_for_sale, `${f.id}: 大会で使える`);
-    assert.equal(f.family, wishOfCategory[source.category], `${f.id}: 属性は本編の系統（${source.category}）から`);
+    assert.equal(f.family, f.id === "black_tea" ? "deep" : wishOfCategory[source.category], `${f.id}: 属性は本編の系統（${source.category}）から`);
     assert.equal(f.chapter, source.chapter_min ?? 1, `${f.id}: 出回る章は本編と同じ`);
     assert.ok(source.name.endsWith(f.label) || f.label.length <= 5, `${f.id}: 呼び名は短い`);
     // （）に出す名前は、本編のフレーバー名からメーカー名を除いたもの（わたあめ＝コットンキャンディ など、呼び名と違う物もそのまま出す）
@@ -89,7 +89,7 @@ test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類�
     const has = (wish) => mix.flavors.some((f) => FLAVORS[f].family === wish || FLAVORS[f].also.includes(wish));
     assert.ok(WISH_IDS.includes(mix.main) && mix.flavors.some((f) => FLAVORS[f].family === mix.main), `${name}: メインの属性が材料の系統にある`);
     assert.ok(mix.sub === null || (WISH_IDS.includes(mix.sub) && mix.sub !== mix.main && has(mix.sub)), `${name}: サブの属性が材料にある`);
-    if (/ミント$/.test(name)) assert.equal(mix.main, "fresh", `${name}: 「〜ミント」はリフレッシュがメイン`);
+    if (/ミント$/.test(name)) assert.equal(mix.main, "fresh", `${name}: 「〜ミント」は刺激系がメイン`);
   }
   for (const chapter of [1, 2]) for (const wish of WISH_IDS) {
     const main = mixIdsFor(chapter).filter((id) => MIXES[id].main === wish).length;
@@ -120,7 +120,11 @@ test("台本: 気分4つ・ミックスの一覧・ケア・客・夜の種類�
 
 test("ミックスの属性: メイン＝◎・サブ＝○・ほか＝×。提供した時の満足になる", () => {
   assert.deepEqual(mixRatings("lemonmint"), { fruit: "good", sweet: "none", fresh: "best", deep: "none" });
-  assert.deepEqual(mixRatings("apple"), { fruit: "good", sweet: "none", fresh: "none", deep: "best" }, "ダブルアップルは、本編の系統（スパイス）に合わせてリラックスがメイン");
+  assert.deepEqual(mixRatings("apple"), { fruit: "good", sweet: "none", fresh: "best", deep: "none" }, "ダブルアップル単は刺激系がメイン");
+  assert.equal(mixRatings("icegrape").fresh, "best");
+  assert.equal(mixRatings("gingerlemon").fresh, "best");
+  assert.deepEqual(mixRatings("honeyginger"), { fruit: "none", sweet: "best", fresh: "good", deep: "none" });
+  assert.deepEqual(mixRatings("cardamomtea"), { fruit: "none", sweet: "none", fresh: "good", deep: "best" });
   assert.deepEqual(mixRatings("caramelmilk"), { fruit: "none", sweet: "best", fresh: "none", deep: "none" });
   assert.deepEqual(mixRatings("milktea"), { fruit: "none", sweet: "good", fresh: "none", deep: "best" });
   for (const id of Object.keys(MIXES)) {
@@ -147,8 +151,8 @@ test("ミックスの属性: メイン＝◎・サブ＝○・ほか＝×。提�
   assert.equal(mixFullName("lemonmint"), "レモンミント（レモン・ミント）");
   assert.deepEqual(mixFlavorParts("cottoncandy"), [["コットン", "キャンディ"]]);
   // 3種のミックスは、仕込みが長いぶん、合った時（◎・○）の満足が少し高い（合わない時は同じ）
-  assert.deepEqual([evaluateMix("chai", { wish: "deep" }).mood, evaluateMix("chai", { wish: "sweet" }).mood, evaluateMix("chai", { wish: "fresh" }).mood], [94, 76, 30]);
-  assert.deepEqual([evaluateMix("cinnamontea", { wish: "deep" }).mood, evaluateMix("apple", { wish: "deep" }).mood], [90, 90], "2種と単品は、これまでどおり");
+  assert.deepEqual([evaluateMix("chai", { wish: "deep" }).mood, evaluateMix("chai", { wish: "sweet" }).mood, evaluateMix("chai", { wish: "fresh" }).mood], [94, 30, 76]);
+  assert.deepEqual([evaluateMix("cinnamontea", { wish: "deep" }).mood, evaluateMix("apple", { wish: "fresh" }).mood], [90, 90], "2種と単品は、これまでどおり");
   assert.deepEqual([mixFlavorNames("nothing"), mixFlavorParts("nothing")], [[], []]);
   const order = { wish: "fresh" };
   const best = evaluateMix("lemonmint", order), good = evaluateMix("watermelonkiwi", order), none = evaluateMix("caramelmilk", order);
@@ -328,6 +332,7 @@ test("調整: 炭の残りが少なくなったら、頼まれる前に自分か
   // 持続性の高いミックスほど、調整の間隔が長い
   const span = (mix) => { const x = createFloorNight({ seed: 7, level: 1 }); let y = until(x, (z) => at(z, 1).phase === "order"); y.hand[0] = mix; y = act(y, { type: "order", tableId: 1, mix }); return at(until(y, (z) => at(z, 1).phase === "enjoy"), 1).coalSpan; };
   assert.ok(span("apple") > span("lemonmint"));
+  assert.equal(span("apple"), span("rosejasmine"), "刺激系になったスパイスも花と同じ調整間隔");
 });
 
 test("頼み: 5つの手から正しい物で応える。外す・放っておくと満足が下がる", () => {
