@@ -88,7 +88,8 @@ export const hiyoriMintoRestSeatDue = spot => spot?.id === "minto" && state.slot
 // #3097 PR-C: 第2章の普段の相席（data/dialogue/ch2_home.json）。第2章のいつもの相席の代わりに一本ずつ・一度だけ、並びの順に。
 // ひびの回（_hiyori_cracks_done）の後だけ（演技と本心の差を、既存の場面の範囲で見せるため）。相席の巡回は進めない。
 // 店名を出さず、斧投げの前後・恋人／友人のどちらでも読める台本。第2章の準備期間に読み込むので、未読込なら出さない。既読は `_talk_seen_<scene>`。
-export const HIYORI_CH2_TALKS = Object.freeze(["ch2_hiyori_health_check", "ch2_hiyori_capsule_toy"]);
+// #3097 第2弾（VOL20）で ch2_hiyori_mirror_pose（儚く見える角度の研究で首がつりそうになる）を足した
+export const HIYORI_CH2_TALKS = Object.freeze(["ch2_hiyori_health_check", "ch2_hiyori_capsule_toy", "ch2_hiyori_mirror_pose"]);
 export const hiyoriChapterTalkDue = () => state.chapter === 2 && !!state.flags._hiyori_cracks_done
   && HIYORI_CH2_TALKS.find(id => !state.flags[`_talk_seen_${id}`] && !!DB.dialogues[id]?.lines?.length) || null;
 

@@ -171,7 +171,7 @@ assert.match(k.samechanVisitDialogue(),/^samechan_shop_repeat_/,'開店祝いの
   const after=lime.messages.find(m=>m.id==='lime_ch2_samechan_resting_shark');
   assert.equal(after.trigger_flag,`_talk_seen_${k.SAMECHAN_CH2_TALK}`);assert.equal(after.chapter,2);
   // #3097 PR-C: 第2章の普段の会話を2本足した（コバンザメ席・予備のグラス）。ネムリブカの回の後、並びの順に一来店に一本ずつ
-  assert.deepEqual([...k.SAMECHAN_CH2_TALKS],[k.SAMECHAN_CH2_TALK,'ch2_samechan_remora_seat','ch2_samechan_spare_teeth']);
+  assert.deepEqual([...k.SAMECHAN_CH2_TALKS],[k.SAMECHAN_CH2_TALK,'ch2_samechan_remora_seat','ch2_samechan_spare_teeth','ch2_samechan_poster']); // poster は #3097 第2弾
   const ch2Home=JSON.parse(await fs.readFile(new URL('../../data/dialogue/ch2_home.json',import.meta.url),'utf8')).dialogues;
   for(const id of k.SAMECHAN_CH2_TALKS.slice(1)){
     const talk=ch2Home.find(d=>d.dialogue_id===id);assert(talk,`${id} exists in ch2_home.json`);

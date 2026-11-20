@@ -57,7 +57,8 @@ const isPrepTalk = id => Object.values(SAMECHAN_PREP_TALKS).includes(id);
 // 台本は data/dialogue/ch2_home.json を第2章の準備期間に読み込むので、未読込なら出さない。既読は `_talk_seen_<scene>`。恋愛・♥段階に触れない。
 // #3097 PR-C で2本（コバンザメ席・予備のグラス）を足し、一来店に一本ずつ並びの順に読む。
 export const SAMECHAN_CH2_TALK = "ch2_samechan_resting_shark";
-export const SAMECHAN_CH2_TALKS = Object.freeze([SAMECHAN_CH2_TALK, "ch2_samechan_remora_seat", "ch2_samechan_spare_teeth"]);
+// #3097 第2弾（VOL20）で ch2_samechan_poster（サメ映画のポスターを、どの席からも目が合わない位置に貼る）を足した
+export const SAMECHAN_CH2_TALKS = Object.freeze([SAMECHAN_CH2_TALK, "ch2_samechan_remora_seat", "ch2_samechan_spare_teeth", "ch2_samechan_poster"]);
 const ch2TalkDue = () => state.chapter === 2
   && SAMECHAN_CH2_TALKS.find(id => !state.flags[`_talk_seen_${id}`] && !!DB.dialogues[id]?.lines?.length) || null;
 
