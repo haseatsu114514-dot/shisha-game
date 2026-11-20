@@ -35,6 +35,8 @@ import { canChooseOverseasCompanion, chooseOverseasCompanion, overseasCompanionC
 import { chapterFourFinalDialogue, chapterFourDefeatDialogue, chapterFourPlanReview } from "./ch4-verdict.js";
 import { craftReviewLines } from "../craft/advice.js";
 import { buildGameOver, warmGameOver } from "./gameover.js";
+import { retryAssistOffer } from "./retry-assist.js";
+import { chapterFourRetryContext, recordChapterFourRetryChoice } from "./ch4-tournament-state.js";
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 import { TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
 import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
@@ -657,10 +659,12 @@ async function renderDefeat(owner, variant = null, { fresh = false } = {}) {
   await warmGameOver();
   if (!current(owner)) return;
   hud();
-  const root = buildGameOver({ context, variant,
-    onRetry: () => perform(owner, async () => {
+  // 3敗目からは、再挑戦を押した同じ画面で難易度を選ぶ（WIN14）。選んだ段は次の一台の開始まで保存する。
+  const root = buildGameOver({ context, variant, difficulty: retryAssistOffer(chapterFourRetryContext(state)),
+    onRetry: level => perform(owner, async () => {
       if (!root.isConnected || chapterFourTournamentOutcome(state) !== "loss") return;
       if (!chapterFourAfterDefeat(state)) return;
+      recordChapterFourRetryChoice(state, level);
       save();
       await renderStage(owner);
     }),

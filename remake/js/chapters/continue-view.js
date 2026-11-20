@@ -91,6 +91,8 @@ export function createContinueView({ script, speaker, character, lover = speaker
       el("img.go-choice-frame.go-choice-frame-selected", { src: art("neon_retry_frame"), alt: "", "aria-hidden": "true", draggable: "false" })];
   }
   const actions = el("div.end-actions", [retry, quit]);
+  // 3敗目からの「難易度を下げる？」（WIN14）。再挑戦を押した後だけ、同じ画面の中に名前だけの選択肢を出す。
+  const picker = el("div.go-difficulty", { hidden: true, role: "group", "aria-label": "難易度を下げる？", dataset: { test: "retry-difficulty" } });
   retry.setAttribute("aria-describedby", "continue-return");
   quit.setAttribute("aria-describedby", "continue-return");
   const effectWord = el("span.go-effect-word", { "aria-hidden": "true" });
@@ -120,6 +122,7 @@ export function createContinueView({ script, speaker, character, lover = speaker
     el("div.go-effect", { "aria-hidden": "true" }, [effectWord,
       el("img.go-approval", { src: art("approval_stamp"), alt: "可決", draggable: "false" }), el("i.go-pencil"), el("i.go-scan"),
       el("i.go-wave"), el("i.go-stars", { text: "✧　·　✦" })]),
+    picker,
     el("div.go-exit", { "aria-hidden": "true" }),
   ]);
   if (look) decorateContinueLook(root, look, { character });
@@ -180,7 +183,20 @@ export function createContinueView({ script, speaker, character, lover = speaker
       image.classList.add("go-beat");
     }
   }
+  /** 難易度の選択肢（{ label, value, test, primary }）を出し、押された段を onPick へ渡す。先頭（いちばんやさしい段）に焦点。 */
+  function difficulty(options, onPick) {
+    const buttons = options.map(option => el(`button.go-difficulty-choice${option.primary ? ".primary" : ""}`, {
+      type: "button", text: option.label, dataset: { test: option.test, level: String(option.value) }, onclick: () => onPick(option.value) }));
+    picker.replaceChildren(el("p.go-difficulty-title", { text: "難易度を下げる？" }), el("div.go-difficulty-list", buttons));
+    [retry, quit].forEach(button => { button.disabled = true; });
+    actions.hidden = true;
+    picker.hidden = false;
+    buttons[0]?.focus({ preventScroll: true });
+    return buttons;
+  }
   function reaction(data, choice) {
+    // 難易度を選んだ後は、選択肢を閉じて従来の再挑戦の反応へ戻す。
+    if (!picker.hidden) { picker.hidden = true; picker.replaceChildren(); actions.hidden = false; }
     root.dataset.choice = choice;
     root.dataset.effect = data.effect;
     face(data.faces[0], root.dataset.reducedMotion !== "true");
@@ -210,9 +226,10 @@ export function createContinueView({ script, speaker, character, lover = speaker
     live.textContent = "GAME OVER";
     [retry, quit, next, dialogue, proceed].forEach(button => { button.disabled = true; });
     proceed.hidden = true;
+    picker.hidden = true;
   }
   // 読み上げ支援には文字ごとでなく、台詞のまとまりを一度だけ通知する。
   const announce = text => { live.textContent = text; };
-  return { root, caption, dialogue, count, next, proceed, retry, quit,
+  return { root, caption, dialogue, count, next, proceed, retry, quit, picker, difficulty,
     announceTime: text => { timerLive.textContent = text; }, setCaption, reveal, face, reaction, showProceed, gameOver, announce, setCount, isRevealed: () => shown >= letters.length };
 }

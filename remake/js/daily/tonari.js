@@ -384,6 +384,8 @@ export const CH2_SHIFT_TALKS = Object.freeze([
   { id: "ch2_shift_talk_three_shops", when: (s) => !!(s.met?.ageha && s.met?.kumicho && s.met?.rei) },
   // DAY6の「しばらく飯はうちで食ってけ」の後
   { id: "ch2_shift_talk_supper", when: (s) => !!s.flags?._ch2_read_ch2_lingering_smell },
+  // #3097 PR-I: 鉄仮面さんの「炭、きれいだった」（DAY6の二人の炭替え）の続き。顔に出ない客の息を見る
+  { id: "ch2_shift_talk_salaryman", when: (s) => !!s.flags?._ch2_read_ch2_coal_together },
   { id: "ch2_shift_talk_receipts", when: (s) => (ch2DayOf(s) ?? 3) >= 3 },
   { id: "ch2_shift_talk_student", when: (s) => (ch2DayOf(s) ?? 2) >= 2 },
   // つむぎが店にいる時だけ。DAY13（つむぎの色の夜）とは別の日
