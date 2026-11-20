@@ -130,15 +130,16 @@ export const SAKURAI = Object.freeze({
     dr_kemuri: Object.freeze({ heatStability: .35, safety: .35, pull: .30 }),
     sui: Object.freeze({ draw: .35, smoke: .35, pull: .30 }),
   }),
-  /** ライバルの評価。準備の回は CH1_RIVALS の穴あけ・炭焼き。なる＝味、アダム＝火、みんと＝煙が強く、最後の調整はみんとが攻めてくる */
+  /** ライバルの評価。準備の回は CH1_RIVALS の穴あけ・炭焼き。なる＝味、アダム＝火、みんと＝煙が強い。最後の調整は、なるが崩れず（100）、みんとが攻めてくる（101）。
+   * 2026-11-20（#3916）: ふつうの腕前の勝率を約7割にするため、みんとの提供を各+1、なるの調整2回目を98→100にした */
   rivals: Object.freeze({
     serve: Object.freeze({
       naru: Object.freeze({ maezono: 84, dr_kemuri: 79, sui: 80 }),
       adam: Object.freeze({ maezono: 78, dr_kemuri: 85, sui: 78 }),
-      minto: Object.freeze({ maezono: 79, dr_kemuri: 76, sui: 84 }),
+      minto: Object.freeze({ maezono: 80, dr_kemuri: 77, sui: 85 }),
     }),
     care1: Object.freeze({ naru: 98, adam: 93, minto: 96 }),
-    care2: Object.freeze({ naru: 98, adam: 92, minto: 101 }),
+    care2: Object.freeze({ naru: 100, adam: 92, minto: 101 }),
   }),
 });
 /** 途中経過に出す、その回の審査員の見る所（一語）。 */
