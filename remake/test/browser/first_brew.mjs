@@ -226,8 +226,28 @@ await suite("first-brew", async check => {
       assert.equal(actual.stock, stock, "店の支給葉は手持ちを消費しない");
       assert(actual.trace.some(l => /サッパリ/.test(l.text)), "注文が先に提示される");
       assert(actual.trace.some(l => l.id === "ch1_tutorial_oneesan" && l.text.includes(expected)), "実配合への感想がある");
+      // #3987: 注文時に言った「ミントは好き」を、ミントを入れなかった一台の感想でも拾う
+      assert.equal(actual.trace.some(l => l.id === "ch1_tutorial_oneesan" && /ミントは、また今度/.test(l.text)), flavor !== "mint" && mint === 0,
+        "ミントを入れなかった時だけ、次はミントもと返す");
     }, flavor === "orange" ? { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } : {});
   }
+
+  // #3987: 実配合ごとの感想の分岐。ミント抜き（レモン・オレンジ）だけが、注文時のミントの好みに触れる
+  await check("first-customer-mint-preference", async page => {
+    await init(page);
+    const rows = await page.evaluate(async () => {
+      const { DB } = await import("./js/core/data.js");
+      const branches = DB.dialogues.remake_first_brew_response.branches;
+      return [{ lemon: 12 }, { orange: 12 }, { lemon: 6, orange: 6 }, { lemon: 9, mint: 3 }, { orange: 9, mint: 3 }, { mint: 12 }].map(mix => {
+        const key = T.first.firstBrewResponse(mix);
+        return { mix, key, texts: (branches[key] || []).map(l => l.text) };
+      });
+    });
+    for (const { mix, key, texts } of rows) {
+      assert(texts.length, `${key} の感想がある`);
+      assert.equal(texts.some(t => /ミントは、また今度/.test(t)), !mix.mint, `${JSON.stringify(mix)}: ミント抜きの時だけ次はミントもと返す`);
+    }
+  });
 
   await check("loss-boundary-save-and-assist", async page => {
     await init(page);
