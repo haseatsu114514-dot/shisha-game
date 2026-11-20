@@ -117,8 +117,9 @@ await suite("tonari-floor", async (check) => {
     await page.evaluate(() => { const s = C.fresh(4, 0); s.flags._tonari_floor = { nights: 2, best: "A" }; C.core.save(); C.core.load(); C.ch1.resumeGame().catch((e) => { window.calendarError = e.stack; }); });
     await page.locator('.map:not(.done) [data-spot="tonari"]').click();
     await page.locator('[data-test="map-go"]').click();
+    // 予報と最高の評価は、フロアの台本を読めてから札に足される
+    await page.waitForFunction(() => /今日の予報：/.test(document.querySelector('[data-test="tonari-baito-floor"]')?.innerText || ""));
     const text = await page.locator('[data-test="tonari-baito-floor"]').innerText();
-    assert.match(text, /今日の予報：/);
     assert.match(text, /これまでの最高：上々/);
     await page.locator('[data-test="tonari-baito-floor"]').click();
     await page.locator(t("intro")).waitFor();

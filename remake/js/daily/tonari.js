@@ -26,8 +26,6 @@ import { readyLessons, consultLessons } from "../core/growth.js";
 import { canStudyCubeCoals, studyCubeCoals } from "./coal-lesson.js";
 import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
-import { pickNight } from "./tonari-floor-model.js";
-import { MIXES as FLOOR_MIXES, RANKS as FLOOR_RANKS } from "./tonari-floor-data.js";
 
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 // カードゲーム「一台勝負」の入口の切替（ICG12）。入・切は daily/ichidai-table.js が起動時に端末へ書き、ここは読むだけにする
@@ -46,13 +44,23 @@ const strawberryTrialOpen = () => state.chapter === 2 && !!state.flags._ch2_read
 // フロア営業（tonari-floor-*.js）: 案内から会計までを任される営業。日当と行動枠はいつものシフトと同じで、
 // 営業の評価に応じて店からの売上ボーナスが付く。バイトとして店に立つ第1〜2章で、最初のシフトを済ませた後に選べる。
 const floorShiftOpen = () => state.chapter <= 2 && (state.baitoCount || 0) >= 1;
-function floorShiftNote() {
-  const { nights, best } = floorProgress();
+function floorShiftNote(forecast = "", stamp = "") {
   const pay = `${shiftPayNote(state)}＋売上ボーナス`;
-  if (!nights) return `【新しい仕事】案内から会計まで、五つの卓を回す営業を任される。${pay}`;
-  const night = pickNight(nights, shiftOrderOfDay().seed, { rainy: isRainy(), daytime: timeOfDay() !== "night" });
-  const stamp = FLOOR_RANKS.find((r) => r.id === best)?.stamp;
-  return `今日の予報：${night.forecast}。案内から会計まで、五つの卓を回す。${pay}${stamp ? `（これまでの最高：${stamp}）` : ""}`;
+  if (!floorProgress().nights) return `【新しい仕事】案内から会計まで、五つの卓を回す営業を任される。${pay}`;
+  return `${forecast ? `今日の予報：${forecast}。` : ""}案内から会計まで、五つの卓を回す。${pay}${stamp ? `（これまでの最高：${stamp}）` : ""}`;
+}
+/** 勤務札の予報と最高の評価は、フロアの台本を読めてから足す（このメニューの取り込みは増やさない。読めなければ出さないだけ）。 */
+async function fillFloorForecast(card) {
+  const owner = state;
+  const { nights, best } = floorProgress();
+  if (!card || !nights) return;
+  try {
+    const [{ pickNight }, { RANKS }] = await Promise.all([import("./tonari-floor-model.js"), import("./tonari-floor-data.js")]);
+    if (state !== owner) return; // 入店の幕の間はまだ画面に載っていないので、載っているかは見ない
+    const night = pickNight(nights, shiftOrderOfDay().seed, { rainy: isRainy(), daytime: timeOfDay() !== "night" });
+    const note = card.querySelector("small");
+    if (note) note.textContent = floorShiftNote(night.forecast, RANKS.find((r) => r.id === best)?.stamp || "");
+  } catch { /* 予報なしの札のまま */ }
 }
 
 export function tonariMenu() {
@@ -82,6 +90,8 @@ export function tonariMenu() {
         el("b", { text: title }), el("small", { text: done ? `${desc} ── ${done}` : desc }),
       ]);
     };
+    const floorCard = floorShiftOpen() ? opt("フロアを任される（バイト）", floorShiftNote(), "baito_floor", "tonari-baito-floor") : null;
+    fillFloorForecast(floorCard);
     const root = showScreen("tonari", el("div.sub-menu", [
       el("h2.sub-title", { text: "tonari" }),
       el("p.sub-lead", { text: manager ? "店長として任されたtonari。出かける時は、人手に合わせてスミさんが店に立ってくれる。今日はどうする？" : state.slot === 0 ? "昼のtonari。窓際でスミさんが道具を整えている。今日はどうする？" : "夜のtonari。客席から常連の笑い声が聞こえる。今日はどうする？" }),
@@ -92,7 +102,7 @@ export function tonariMenu() {
         // #1650: 第2章の試煙会のあと、一度だけ。試供品の苺で熱を確かめ、スミさんに吸ってもらう
         strawberryTrialOpen() ? opt("苺を試す（まかない）", "体力を使う・1行動。試煙会の苺で一台。確かめるのは熱だけ", "strawberry", "tonari-strawberry") : null,
         opt(manager ? "店長として店に立つ" : "シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}${manager ? "今日の営業を引き受ける。仕事終わりにはスミさんと話せる" : "接客で稼ぐ。上がったあとはスミさんと話せる。まかないで練習もできる"}。${shiftPayNote(state)}＋各種ボーナス`, "baito", "tonari-baito"),
-        floorShiftOpen() ? opt("フロアを任される（バイト）", floorShiftNote(), "baito_floor", "tonari-baito-floor") : null,
+        floorCard,
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
@@ -571,16 +581,16 @@ async function serveFloorOrder(owner, signal) {
     return current() ? { bonus: 0, stamp: "", fallback: true } : null;
   }
   if (!current()) return null;
-  // その日の「今日の注文」の客（配合の二択がある注文だけ）。受け取った一台を、次に同じ注文が来た時の想起（#1415）へ渡す。
-  const index = ((seed >>> 3) ^ owner.day) & 1;
-  const anchor = !owner.flags[key] && FLOOR_MIXES[`${order.id}:${index}`] ? { family: order.id, index } : null;
+  // その日の「今日の注文」の客。フロアの台本にある注文（配合の二択）の時だけ、営業の中の一組として来る（画面が決める）。
+  // 受け取った一台を、次に同じ注文が来た時の想起（#1415）へ渡す。
+  const anchor = owner.flags[key] ? null : { family: order.id, index: ((seed >>> 3) ^ owner.day) & 1 };
   const night = timeOfDay() === "night";
   const result = await run({
     seed, level: progress.nights, chapter: owner.chapter, anchor, rainy: isRainy(), night,
     art: bgUrl(TONARI_BG, timeOfDay()), isCurrent: current, signal,
   });
   if (!current() || !result) return null;
-  if (anchor) {
+  if (anchor && result.anchorFamily === order.id) {
     owner.flags[key] = true; // シフトの給料・行動消費と一緒にcalendarで保存する。
     if (Number.isInteger(result.anchorIndex) && order.mixes[result.anchorIndex]) owner.flags[`_shift_mix_${order.id}`] = result.anchorIndex;
   }

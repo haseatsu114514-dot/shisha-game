@@ -46,7 +46,7 @@ assert(start >= 0);
 async function orderBoundary(mode) {
   const account = { day: 4, chapter: 1, weatherSeed: 18, flags: {}, money: 30000, inventory: { mint: 3 } };
   const context = vm.createContext({ state: account, DB: { dialogues: {} }, tsumugiAtTonari: () => false,
-    TONARI_BG: "tonari", play: async () => ({}), FLOOR_MIXES: MIXES, isRainy: () => false, timeOfDay: () => "night",
+    TONARI_BG: "tonari", play: async () => ({}), isRainy: () => false, timeOfDay: () => "night",
     bgUrl: () => "bg", setBg: async () => {}, toast: () => {} });
   const calls = [];
   const view = new vm.SyntheticModule(["runTonariFloor"], function () {
@@ -58,7 +58,8 @@ async function orderBoundary(mode) {
       }
       if (mode === "load") context.state = { ...account, flags: {} };
       if (mode === "abandon") return null;
-      return { sales: 16800, rank: calls.length === 1 ? "A" : "B", stamp: "上々", bonus: 1000, anchorIndex: mode === "unserved" ? null : 0 };
+      return { sales: 16800, rank: calls.length === 1 ? "A" : "B", stamp: "上々", bonus: 1000,
+        anchorFamily: options.anchor?.family ?? null, anchorIndex: mode === "unserved" || !options.anchor ? null : 0 };
     });
   }, { context });
   await view.link(() => { throw Error("unexpected import"); });
@@ -101,7 +102,7 @@ for (const mode of ["served", "unserved", "load", "abandon"]) await orderBoundar
   const account = { day: 4, chapter: 1, weatherSeed: 18, flags: {}, money: 30000 };
   let modals = 0;
   const context = vm.createContext({ state: account, DB: { dialogues: {} }, tsumugiAtTonari: () => false, TONARI_BG: "tonari",
-    play: async () => ({}), FLOOR_MIXES: MIXES, isRainy: () => false, timeOfDay: () => "noon", bgUrl: () => "bg", setBg: async () => {},
+    play: async () => ({}), isRainy: () => false, timeOfDay: () => "noon", bgUrl: () => "bg", setBg: async () => {},
     toast: () => {}, modal: async () => { modals++; return 0; } });
   const module = new vm.SourceTextModule(text.slice(start) + "\nexport { serveFloorOrder };", {
     context, importModuleDynamically: async () => { throw Error("offline"); },

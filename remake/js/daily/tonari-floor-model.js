@@ -519,6 +519,7 @@ export function floorAdvice(s) {
   const dirty = tables.find((t) => t.phase === "dirty");
   if (dirty) return { kind: "clean", tableId: dirty.id, text: s.queue.length ? `${dirty.id}卓を片付ければ、次を通せる` : `${dirty.id}卓、手が空いたら片付けだ` };
   if (s.chill >= CHILL.full) return { kind: "chillReady", tableId: null, text: "チルタイムは、卓が埋まった時に使え" };
+  if (tables.some((t) => t.delivery && !t.delivery.ready)) return { kind: "idle", tableId: null, text: "いま仕込んでる。上がったら運んでくれ" };
   return { kind: "idle", tableId: null, text: enjoying ? "いい調子だ。卓の様子を見ておけ" : "次のお客さんまで、少し間がある" };
 }
 

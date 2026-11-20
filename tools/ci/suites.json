@@ -10,10 +10,10 @@
   ],
   "suites": [
     {
-      "id": "tonari-six-table-shift",
-      "title": "tonari six-table service: preference, workload, checkout and shift boundaries",
+      "id": "tonari-floor",
+      "title": "tonari floor service: matching, care calls, chill time, rating and shift boundaries",
       "kind": "quick",
-      "run": ["node remake/test/tonari_floor_model.mjs", "node --experimental-vm-modules remake/test/tonari_floor_shift.mjs"]
+      "run": ["node --test remake/test/tonari_floor_model.mjs", "node --experimental-vm-modules remake/test/tonari_floor_shift.mjs"]
     },
     {
       "id": "rest-variations",
@@ -1345,6 +1345,27 @@
         "npm ci --prefix remake/tools --prefer-offline --no-audit --no-fund",
         "node remake/tools/build_js_bundle.mjs --check"
       ]
+    },
+    {
+      "id": "tonari-floor-browser",
+      "title": "tonari floor service on the real screen: shift flow, PC/touch controls, clock stops and LOAD",
+      "kind": "browser",
+      "weight": 1.6,
+      "timeout": 10,
+      "paths": [
+        "remake/js/daily/tonari-floor-*.js",
+        "remake/css/tonari-floor.css",
+        "remake/js/daily/tonari.js",
+        "remake/test/tonari_floor_bot.mjs",
+        "remake/test/browser/tonari_floor.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/tonari_floor.mjs"
+      ],
+      "env": {
+        "ARTIFACT_DIR": ".codex/artifacts/remake-browser/tonari-floor"
+      },
+      "chrome": "playwright"
     },
     {
       "id": "action-context",
