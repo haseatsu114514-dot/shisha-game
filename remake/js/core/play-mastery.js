@@ -4,7 +4,7 @@ import { emit } from './bus.js';
 
 export const PLAY_MASTERY = Object.freeze({
   axe: { title: '斧投げの達人', goal: 3, hint: '10投でSを1回、またはA以上を累計3回（部門不問）' },
-  dj: { title: 'フロアのつなぎ手', goal: 2, hint: '異なる2セットでA以上（SYNC可）' },
+  dj: { title: 'フロアのつなぎ手', goal: 2, hint: '異なる2セットでA以上' },
   camel: { title: 'ラクダレース中級認定', goal: 1, hint: '標準で3位以内・声20点・スタミナ20点・連打1回以内' },
   desert: { title: '砂丘の乗り手', goal: 3, hint: 'ヌールに1勝、またはA以上を累計3回' },
   trpg: { title: '物語の読み手', goal: 2, hint: '異なる2冊で見立てと提案を達成（出目不問）' },
