@@ -1,0 +1,152 @@
+/* ---- 判定のダイス劇場（TRF29・js/trpg/roll-show.js） ----
+   サイコロを振ってから評価が出るまでを、卓の窓ではなく画面いっぱいで見せる層。判定の幕（.trpg-overlay）の上に重なり、終わると消える。
+   寸法はステージの 1280×720 基準。動きは roll-show.js（WAAPI）が付け、ここは置き場所と色だけを決める。
+   動きを減らす設定ではこの層そのものを出さない（従来どおり、卓の窓の中で静かに結果を出す）。 */
+html:root .trpg-root .trpg-roll-show {
+  --rs: #7fb894; --rs-ink: #f6eac9;
+  position: absolute; inset: 0; z-index: 9; overflow: hidden; display: grid; place-items: center;
+  color: var(--rs-ink); cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation; contain: strict;
+}
+html:root .trpg-root .trpg-roll-show[data-tone="success"] { --rs: #f2c44e; }
+html:root .trpg-root .trpg-roll-show[data-tone="critical"] { --rs: #ffe08a; }
+html:root .trpg-root .trpg-roll-show[data-tone="mixed"] { --rs: #8fd0a6; }
+html:root .trpg-root .trpg-roll-show[data-tone="trouble"] { --rs: #e39a7e; }
+html:root .trpg-root .trpg-roll-show[data-tone="fumble"] { --rs: #9fb4d8; }
+html:root .trpg-root .trpg-roll-show :is(i, b, em, small, strong, span) { font-style: normal; }
+
+/* 幕: 卓のフェルトを真上から照らす。評価が出ると、照明がその色に変わる。 */
+html:root .trpg-root .trpg-roll-show .trpg-rs-veil {
+  position: absolute; inset: 0; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+  background:
+    radial-gradient(ellipse 58% 62% at 50% 48%, #2a8a80a6 0%, #0b3a3dbf 40%, #02090df2 100%),
+    linear-gradient(#041b2199, #02090dcc);
+  transition: filter .4s ease-out;
+}
+/* 劇場の間、下の卓の窓は見せない（フォーカスは窓に残すので、消さずに透明にする）。 */
+html:root .trpg-root .trpg-overlay:has(> .trpg-roll-show) > .trpg-modal { opacity: 0; }
+html:root .trpg-root .trpg-roll-show[data-phase="verdict"][data-tone="trouble"] .trpg-rs-veil { filter: saturate(.55) brightness(.8); }
+html:root .trpg-root .trpg-roll-show[data-phase="verdict"][data-tone="fumble"] .trpg-rs-veil { filter: saturate(.25) brightness(.55) hue-rotate(28deg); }
+html:root .trpg-root .trpg-roll-show[data-phase="verdict"]:is([data-tone="success"], [data-tone="critical"]) .trpg-rs-veil { filter: brightness(1.18) saturate(1.15); }
+/* 上下の帯: 映画の画面のように締める。真鍮の線は卓の額と同じ色。 */
+html:root .trpg-root .trpg-roll-show .trpg-rs-bar { position: absolute; left: 0; right: 0; height: 9%; background: #01070ad9; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-bar.top { top: 0; border-bottom: 2px solid #b49157; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-bar.bottom { bottom: 0; border-top: 2px solid #b49157; }
+
+html:root .trpg-root .trpg-roll-show .trpg-rs-frame { position: relative; width: 1280px; height: 720px; flex: none; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-head {
+  position: absolute; left: 0; right: 0; top: 84px; display: flex; align-items: baseline; justify-content: center; gap: 18px; opacity: 0;
+}
+html:root .trpg-root .trpg-roll-show .trpg-rs-head > small { font-size: 18px; color: #d9c79c; letter-spacing: .06em; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-head > small:empty { display: none; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-head > strong { font-size: 30px; font-weight: 700; letter-spacing: .1em; text-shadow: 0 2px 10px #000a; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-head > span {
+  padding: 4px 14px; border: 1px solid #b49157; border-radius: 999px; font-size: 17px; color: #f2dca6; background: #03141899;
+}
+
+/* ダイス: 止まる場所に置き、投げ込みは transform で動かす。体（絵）だけが回り、影は卓に落ちたまま。 */
+html:root .trpg-root .trpg-roll-show .trpg-rs-dice {
+  position: absolute; left: 0; right: 0; top: 150px; height: 250px; display: flex; align-items: center; justify-content: center; gap: 26px;
+}
+html:root .trpg-root .trpg-roll-show .trpg-rs-die { position: relative; width: 232px; height: 232px; flex: none; opacity: 0; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-held="true"] { opacity: 1; filter: saturate(.75) brightness(.82); }
+html:root .trpg-root .trpg-roll-show .trpg-rs-body {
+  position: absolute; inset: 0; background: url('../img/ui/trpg/d20-rest.webp') center / contain no-repeat;
+  filter: drop-shadow(0 6px 5px #00000070);
+}
+html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-state="tumbling"] .trpg-rs-body {
+  background-image: url('../img/ui/trpg/d20-tumble.webp'); background-size: 300% 200%;
+  animation: trpg-rs-frames .36s steps(1, end) infinite;
+}
+html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-i="1"][data-state="tumbling"] .trpg-rs-body { animation-duration: .42s; animation-direction: reverse; }
+@keyframes trpg-rs-frames {
+  0% { background-position: 0 0; } 16.6% { background-position: 50% 0; } 33.3% { background-position: 100% 0; }
+  50% { background-position: 0 100%; } 66.6% { background-position: 50% 100%; } 83.3% { background-position: 100% 100%; }
+}
+html:root .trpg-root .trpg-roll-show .trpg-rs-shadow {
+  position: absolute; left: 50%; bottom: -4px; width: 64%; height: 26px; border-radius: 50%; background: #000; filter: blur(9px); opacity: .55; transform: translate(-50%, 0);
+}
+/* 目: 止まった瞬間に、上の面へ大きく入る。面の三角より少しはみ出すので、生成りの縁で絵から浮かせる。 */
+html:root .trpg-root .trpg-roll-show .trpg-rs-num {
+  position: absolute; left: 50%; top: 53%; transform: translate(-50%, -50%); opacity: 0;
+  font-size: 84px; font-weight: 700; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; color: #241c0c;
+  -webkit-text-stroke: 7px #fff6dc; paint-order: stroke fill; text-shadow: 0 4px 0 #a98340, 0 8px 14px #0008;
+}
+html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-held="true"] .trpg-rs-num { opacity: 1; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-glow="critical"] .trpg-rs-body { filter: drop-shadow(0 0 26px #ffd36e) drop-shadow(0 0 60px #ffb84a) brightness(1.12); }
+html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-glow="critical"] .trpg-rs-num { color: #7a3c00; -webkit-text-stroke-color: #fff; text-shadow: 0 4px 0 #f2c44e, 0 0 26px #ffe08a; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-glow="fumble"] .trpg-rs-body { filter: drop-shadow(0 0 22px #5f77a8) saturate(.4) brightness(.8); }
+html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-glow="fumble"] .trpg-rs-num { color: #0e1830; -webkit-text-stroke-color: #e6edfb; text-shadow: 0 4px 0 #3b4a63; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-ring {
+  position: absolute; left: 50%; top: 50%; width: 232px; height: 232px; border-radius: 50%; opacity: 0;
+  border: 6px solid #fff3c9; box-shadow: 0 0 26px #fff3c9, inset 0 0 26px #fff3c966; transform: translate(-50%, -50%);
+}
+html:root .trpg-root .trpg-roll-show .trpg-rs-die[data-glow="critical"] .trpg-rs-ring { border-color: #ffe08a; box-shadow: 0 0 40px #ffd36e, inset 0 0 40px #ffd36e99; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-spark { position: absolute; left: 50%; top: 56%; width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 0 12px currentColor; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-plus { font-size: 46px; font-weight: 700; color: #d9c79c; opacity: 0; }
+html:root .trpg-root .trpg-roll-show[data-thrown] .trpg-rs-plus { opacity: 1; }
+/* 補正: 真鍮のチップ（卓のトレイの縁にあるチップと同じ作り）。誰の何の能力かを上に添える。 */
+html:root .trpg-root .trpg-roll-show .trpg-rs-chip {
+  display: grid; place-items: center; align-content: center; gap: 2px; width: 132px; height: 132px; flex: none; border-radius: 50%; opacity: 0;
+  color: #3a2a10; background: radial-gradient(circle at 35% 30%, #fff1c2, #d9b062 55%, #9c7430);
+  box-shadow: inset 0 0 0 5px #f6dc96, inset 0 0 0 9px #a98340, 4px 8px 12px #0009;
+}
+html:root .trpg-root .trpg-roll-show[data-thrown] .trpg-rs-chip { opacity: 1; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-chip > small { max-width: 104px; overflow: hidden; white-space: nowrap; text-overflow: clip; font-size: 16px; font-weight: 700; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-chip > b { font-size: 44px; font-weight: 700; line-height: 1; text-shadow: 0 1px 0 #fff5d1; }
+
+/* 合計: 画面の主役。数え上がって、評価の色に染まる。 */
+html:root .trpg-root .trpg-roll-show .trpg-rs-total {
+  position: absolute; left: 0; right: 0; top: 396px; height: 150px; display: flex; align-items: baseline; justify-content: center; gap: 22px; opacity: 0;
+}
+html:root .trpg-root .trpg-roll-show .trpg-rs-total > small { font-size: 28px; color: #d9c79c; letter-spacing: .2em; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-total > strong {
+  display: inline-block; min-width: 1.3em; text-align: center; font-size: 150px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums;
+  color: #fff8e6; text-shadow: 0 6px 0 #0a2d30, 0 12px 30px #000c; transition: color .18s, text-shadow .18s;
+}
+html:root .trpg-root .trpg-roll-show[data-phase="verdict"] .trpg-rs-total > strong { color: var(--rs); text-shadow: 0 6px 0 #0a2d30, 0 0 44px color-mix(in srgb, var(--rs) 70%, transparent), 0 12px 30px #000c; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-goal { padding: 5px 16px; border-radius: 8px; font-size: 24px; font-weight: 700; color: #3a2a10; background: #f2dca6; box-shadow: 0 3px 0 #a98340; }
+
+/* 評価: 斜めの帯が画面を横切り、言葉が叩きつけられる。 */
+html:root .trpg-root .trpg-roll-show .trpg-rs-verdict {
+  position: absolute; left: 0; right: 0; top: 548px; height: 96px; display: flex; align-items: center; justify-content: center; gap: 26px; opacity: 0;
+}
+html:root .trpg-root .trpg-roll-show .trpg-rs-band {
+  position: absolute; left: -8%; right: -8%; top: 0; bottom: 0; transform-origin: left center;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--rs) 88%, #000) 14%, var(--rs) 50%, color-mix(in srgb, var(--rs) 88%, #000) 86%, transparent);
+  box-shadow: 0 0 40px color-mix(in srgb, var(--rs) 55%, transparent);
+}
+html:root .trpg-root .trpg-roll-show .trpg-rs-verdict > strong {
+  position: relative; font-size: 62px; font-weight: 700; letter-spacing: .12em; color: #17110a; text-shadow: 0 2px 0 #ffffff80;
+}
+html:root .trpg-root .trpg-roll-show .trpg-rs-verdict > em {
+  position: relative; padding: 5px 16px; border-radius: 999px; font-size: 24px; font-weight: 700; color: var(--rs); background: #06181cee;
+}
+html:root .trpg-root .trpg-roll-show:is([data-tone="trouble"], [data-tone="fumble"]) .trpg-rs-verdict > strong { color: #fff4ec; text-shadow: 0 3px 0 #0009; }
+html:root .trpg-root .trpg-roll-show[data-tone="trouble"] .trpg-rs-band { background: linear-gradient(90deg, transparent, #7a3f2c 14%, #a65a40 50%, #7a3f2c 86%, transparent); }
+html:root .trpg-root .trpg-roll-show[data-tone="fumble"] .trpg-rs-band { background: linear-gradient(90deg, transparent, #26334d 14%, #3d5078 50%, #26334d 86%, transparent); }
+
+/* 成功の後光: 合計の後ろで、光の筋がゆっくり回る。 */
+html:root .trpg-root .trpg-roll-show .trpg-rs-rays {
+  position: absolute; left: 50%; top: 62%; width: 1700px; height: 1700px; margin: -850px 0 0 -850px; border-radius: 50%; opacity: 0; pointer-events: none;
+  background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--rs) 60%, transparent) 0deg 7deg, transparent 7deg 18deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0%, #0009 26%, transparent 64%); mask-image: radial-gradient(circle, #000 0%, #0009 26%, transparent 64%);
+  mix-blend-mode: screen; animation: trpg-rs-turn 22s linear infinite;
+}
+@keyframes trpg-rs-turn { to { rotate: 360deg; } }
+html:root .trpg-root .trpg-roll-show .trpg-rs-burst { position: absolute; inset: 0; pointer-events: none; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-burst > i { position: absolute; border-radius: 2px; opacity: 0; }
+html:root .trpg-root .trpg-roll-show:is([data-tone="trouble"], [data-tone="fumble"]) .trpg-rs-burst > i { border-radius: 50%; }
+html:root .trpg-root .trpg-roll-show .trpg-rs-flash {
+  position: absolute; inset: 0; opacity: 0; pointer-events: none; mix-blend-mode: screen;
+  background: radial-gradient(ellipse at 50% 60%, #fff 0%, color-mix(in srgb, var(--rs) 70%, transparent) 40%, transparent 80%);
+}
+html:root .trpg-root .trpg-roll-show:is([data-tone="trouble"], [data-tone="fumble"]) .trpg-rs-flash { mix-blend-mode: multiply; background: radial-gradient(ellipse at 50% 50%, transparent 20%, #060a14 100%); }
+html:root .trpg-root .trpg-roll-show .trpg-rs-skip { position: absolute; right: 28px; bottom: 2.6%; font-size: 15px; color: #d9c79c; opacity: 0; letter-spacing: .08em; }
+/* タブを離れている間は止める（卓のほかの演出と同じ）。 */
+html:root .trpg-root[data-paused="true"] .trpg-roll-show :is(.trpg-rs-body, .trpg-rs-rays) { animation-play-state: paused; }
+/* 劇場のあとに出る結果の卓は、もう出目も評価も見せた後なので、置き直しの動きを付けない。 */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-shown="true"] :is(.trpg-die, .trpg-die-body, .trpg-d20-value, .trpg-reroll-stamp, .trpg-dice-total, .trpg-dice-total > strong, .trpg-dice-grade, .trpg-dice-near, .trpg-roll-special, .trpg-roll-reward, .trpg-dice-row, .trpg-roll-gauge-mark) {
+  animation-duration: .01s !important; animation-delay: 0s !important; transition-duration: .01s !important; transition-delay: 0s !important;
+}
+/* 振り直しで卓に残した1個は、投げ直しの間だけ少し沈めておく。評価が出たら2個とも同じ明るさに戻す。 */
+html:root .trpg-root .trpg-roll-show[data-phase="verdict"] .trpg-rs-die[data-held="true"] { filter: none; }

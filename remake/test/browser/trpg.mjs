@@ -592,6 +592,57 @@ try {
       await page.locator("#trpg-rotate").waitFor({ state: "hidden" });
       await fits(page);
     });
+  // ダイス劇場（TRF29）: 振ってから評価が出るまでは画面いっぱい。出目・合計・評価は判定の値そのまま。タップで結果の卓へ飛ばせる。
+  for (const [label, options] of [["roll-show-pc", {}], ["roll-show-touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await run(label, { seed: "3" }, options, async page => {
+      const show = page.locator(".trpg-roll-show");
+      const seen = () => show.evaluate(node => {
+        const r = node.getBoundingClientRect();
+        return { covers: r.left <= 1 && r.top <= 1 && r.right >= innerWidth - 1 && r.bottom >= innerHeight - 1,
+          dice: [...node.querySelectorAll(".trpg-rs-num")].map(n => Number(n.textContent)), chip: node.querySelector(".trpg-rs-chip b").textContent,
+          label: node.querySelector(".trpg-rs-verdict strong").textContent, grade: node.dataset.grade, thrown: node.dataset.thrown ?? null,
+          settle: !!document.querySelector('[data-test="trpg-settle"]:not(:disabled)') };
+      });
+      await hit(page, '[data-test="trpg-start"]'); await nextLines(page); await declare(page);
+      await hit(page, '[data-test="trpg-roll"]');
+      await show.waitFor();
+      const pending = (await page.evaluate(() => __trpg.snapshot())).pending;
+      const first = await seen();
+      assert(first.covers, "The roll takes the whole screen");
+      assert.deepEqual(first.dice, pending.dice, "The show draws the session's dice");
+      assert.equal(first.chip, "＋" + pending.bonus);
+      assert.deepEqual([first.grade, first.label, first.thrown, first.settle], ["mixed", "ひと手間かかる", null, false], "Seed 3 opens with 12 and 8");
+      // 評価が出るまで待つと、劇場は自分で閉じて結果の卓になる。卓は同じ動き・音を繰り返さない。
+      await show.locator('.trpg-rs-total strong').filter({ hasText: String(pending.dice[0] + pending.dice[1] + pending.bonus) }).waitFor();
+      await page.locator('[data-test="trpg-settle"]').waitFor();
+      assert.equal(await show.count(), 0, "The show leaves by itself");
+      assert.equal(await page.locator(".trpg-roll-stage").getAttribute("data-shown"), "true");
+      // 振り直し: 選んだ1個だけが投げ直される。途中のタップで結果まで飛ぶ（卓の札は、劇場の間は押せない）。
+      await hit(page, '[data-test="trpg-reroll-0"]');
+      await show.waitFor();
+      const again = await seen(), rerolled = (await page.evaluate(() => __trpg.snapshot())).pending;
+      assert.deepEqual([again.thrown, again.settle], ["0", false]);
+      assert.equal(await page.locator('[data-test^="trpg-reroll-"]:not([data-test="trpg-reroll-receipt"])').count(), 0, "The spent reroll cards leave at once");
+      assert.deepEqual(again.dice, rerolled.dice);
+      assert.equal(rerolled.rerolled, true);
+      await page.waitForTimeout(400);
+      if (options.hasTouch) await page.touchscreen.tap(422, 195); else await page.mouse.click(640, 360);
+      await page.locator('[data-test="trpg-settle"]:not(:disabled)').waitFor();
+      assert.equal(await show.count(), 0, "A tap skips to the result");
+      assert.equal(await page.locator('[data-test="trpg-reroll-receipt"]').count(), 1);
+      assert.equal(await page.locator('[data-test="trpg-roll-total"] strong').textContent(), "合計 " + (rerolled.dice[0] + rerolled.dice[1] + rerolled.bonus));
+      await hit(page, '[data-test="trpg-settle"]'); await nextLines(page);
+      assert.equal((await page.evaluate(() => __trpg.snapshot())).checks.length, 1);
+    });
+  }
+  await run("roll-show-reduced-motion", { seed: "3" }, { reducedMotion: "reduce" }, async page => {
+    await hit(page, '[data-test="trpg-start"]'); await nextLines(page); await declare(page);
+    await page.evaluate(() => { window.__shows = 0; new MutationObserver(list => { for (const m of list) for (const n of m.addedNodes) if (n.classList?.contains("trpg-roll-show")) window.__shows++; }).observe(document.body, { childList: true, subtree: true }); });
+    await hit(page, '[data-test="trpg-roll"]');
+    await page.locator('[data-test="trpg-settle"]').waitFor();
+    assert.equal(await page.evaluate(() => window.__shows), 0, "Reduced motion keeps the quiet table");
+    assert.equal(await page.locator(".trpg-roll-stage").getAttribute("data-shown"), null);
+  });
   await run("double-input-and-integration-abort", { seed: "13", traveler: "quiet" }, {}, async page => {
     await hit(page, '[data-test="trpg-start"]'); await nextLines(page); await declare(page);
     await page.locator('[data-test="trpg-roll"]').evaluate(node => { node.click(); node.click(); });
