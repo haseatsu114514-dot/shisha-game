@@ -16123,6 +16123,8 @@ html:root[data-density="phone"] body:not(:root) .ts-live-chip em { font-size: va
 html:root[data-density="phone"] body:not(:root) .ts-live-chip b { width: 30px; height: 30px; font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) .ts-live-chip i { font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) :is(.ts-splash-tap, .ts-splash-eyebrow, .ts-sting-copy small, .ts-round-mark small) { font-size: var(--phone-sub); }
+/* 届かなかった時の一言（24px）も、低い横持ちスマホで実効 11.4px を割らないよう補助文の下限にそろえる */
+html:root[data-density="phone"] body:not(:root) .ts-splash:not(.win) .ts-splash-copy p { font-size: max(24px, var(--phone-sub)); }
 html:root[data-density="phone"] body:not(:root) #stage #modal > .modal-box.ts-contest-modal :is(.ch2-contest-note, .judge-legend, .judge-name, .judge-left) { font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) #stage #modal > .modal-box.ts-contest-modal .ch4-standings { grid-template-columns: minmax(0, 1fr) 360px; }
 
