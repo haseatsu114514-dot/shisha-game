@@ -17,7 +17,7 @@ const stepOf = (key) => (/^care\d*$/.test(key) ? "care" : key);
 
 export function buildRigRecord() {
   const lamps = new Map(RECORD_STEPS.map(([id, glyph, label]) => [id, el("i.rig-lamp", {
-    dataset: { step: id, tier: "off" }, title: label, "aria-hidden": "true",
+    dataset: { step: id, tier: "off" }, title: label, "data-label": label, "aria-hidden": "true",
   }, [el("b", { text: glyph })])]));
   const root = el("div.rig-record", { role: "img", "aria-label": "一台の記録：まだ灯っていない", dataset: { test: "rig-record" } }, [...lamps.values()]);
   const aura = el("i.rig-aura", { "aria-hidden": "true" });
@@ -43,7 +43,7 @@ export function buildRigRecord() {
       tiers.set(step, tier);
       lamp.dataset.tier = tier;
       if (!quiet) { lamp.classList.remove("lit"); void lamp.offsetWidth; lamp.classList.add("lit"); }
-      if (!quiet && (tier === "brilliant" || tier === "great")) {
+      if (!quiet && (tier === "brilliant" || tier === "great") && (!lamp.getClientRects || lamp.getClientRects().length)) {
         const host = root.parentElement || root;
         const color = tier === "brilliant" ? "#ffc21a" : "#ff9a3a";
         sparks(host, { ...lampCenter(host, lamp), n: tier === "brilliant" ? 10 : 5, color, spread: 46 });

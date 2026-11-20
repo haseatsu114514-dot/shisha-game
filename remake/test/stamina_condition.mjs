@@ -138,7 +138,7 @@ assert(Math.abs(timingCs.heat.timings[0].errorSeconds + .08) < 1e-12);
 assert.equal(timingCs.heat.score, Math.round((100 + 80 + 78) / 3));
 assert.equal(timingCs.heat.timingAccuracy, timingCs.heat.score);
 assert(Math.abs(timingCs.heat.meanAbsoluteError - .26) < 1e-12);
-assert(find("step-summary").children.at(-1).text.includes("取り頃で取れた炭がある"));
+assert.equal(find("step-summary").children[0].text, "工程点：86点 ／ 取り頃：1/3個");
 const frozen = JSON.stringify(timingCs.heat.timings);
 for (const fn of find("coal-0").listeners.pointerdown) fn({ preventDefault() {} });
 await frame(now + 2000); assert.equal(JSON.stringify(timingCs.heat.timings), frozen);
@@ -152,8 +152,9 @@ const expiredRun = heatModule.namespace.runHeat(expiredCs); await settle(); awai
 assert.equal(expiredCs.heat.over, 3);
 assert(expiredCs.heat.timings.every((timing) => timing.automatic && timing.errorSeconds > 0 && timing.rating === "MISS"));
 assert.equal(expiredCs.heat.timingAccuracy, 68);
+assert.equal(find("step-summary").children[0].text, "工程点：68点 ／ 取り頃：0/3個");
 nextButton().onclick(); await expiredRun;
-console.log("[coal timing] PASS: unchanged thresholds, ideal window center, live two-decimal early/late errors, input-time sampling, frozen per-coal results, qualitative summary and auto removal");
+console.log("[coal timing] PASS: unchanged thresholds, ideal window center, live two-decimal early/late errors, input-time sampling, frozen per-coal results, separate score and window counts, and auto removal");
 async function steam(ratio) {
   now = 1000; frames.clear(); spawned = 0;
   const cs = { mode: "tournament", condition: conditionForRatio(ratio), steamMin: 3 };

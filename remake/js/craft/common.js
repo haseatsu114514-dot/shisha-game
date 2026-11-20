@@ -91,8 +91,8 @@ export function timingLabel(kind, fallback = "") {
 }
 
 /** 画面内の座標で判定スタンプを出す（パネル基準） */
-export function popStamp(host, text, kind = "", x = "50%", y = "40%") {
-  const s = el(`div.stamp${kind ? "." + kind : ""}`, { text: timingLabel(kind, text), style: { left: x, top: y } });
+export function popStamp(host, text, kind = "", x = "50%", y = "40%", { timing = true } = {}) {
+  const s = el(`div.stamp${kind ? "." + kind : ""}`, { text: timing ? timingLabel(kind, text) : text, style: { left: x, top: y } });
   host.append(s);
   setTimeout(() => s.remove(), 1100);
 }

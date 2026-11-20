@@ -4,6 +4,31 @@ import { assertFits } from "./support.mjs";
 // 全工程のDOM名を残しながら、CUI09の「今だけ名前・済み✓・先は番号」を検査する。
 export async function assertCraftProgress(page) {
   assert.equal(await page.locator('.bench-phase[aria-current="step"]').count(), 1);
+  if (await page.locator(".craft-route-track").count()) {
+    // 桜井式: 番号ではなく、道具の絵＋現在の作業名。小さい画面でも絵と文字が札の中に入る。
+    assert.equal(await page.locator(".craft-route-track small, .bench-top .rig-record").count(), 0);
+    await assertFits(page, ".craft-route-stop, .craft-route-icon");
+    const states = await page.locator(".craft-route-stop").evaluateAll(cells => cells.map(cell => {
+      const icon = cell.querySelector("svg"), sub = cell.querySelector(".bench-phase-step");
+      const title = sub?.textContent ? sub : cell.querySelector("b");
+      const box = cell.getBoundingClientRect();
+      const inside = node => {
+        const r = node.getBoundingClientRect();
+        return r.width > 0 && r.height > 0 && r.top >= box.top - 1 && r.bottom <= box.bottom + 1
+          && r.left >= box.left - 1 && r.right <= box.right + 1;
+      };
+      return { now: cell.matches('[aria-current="step"]'), seen: cell.classList.contains("seen"),
+        state: cell.getAttribute("aria-label"), named: !!cell.querySelector("b").textContent.trim(),
+        icon: inside(icon), title: inside(title), check: getComputedStyle(icon.parentElement, "::after").content };
+    }));
+    for (const x of states) {
+      assert(x.icon && x.named, "Every phase has a contained pictogram and an accessible name");
+      assert.equal(x.title, x.now, "Only the current phase paints its current task");
+      assert(x.state.endsWith(x.now ? "（現在）" : x.seen ? "（完了）" : "（これから）"));
+      if (x.seen) assert.match(x.check, /✓/);
+    }
+    return;
+  }
   await assertFits(page, '.bench-progress, .bench-phase[aria-current="step"] .bench-phase-copy b, .bench-phase:not(.now) .bench-phase-copy small');
   const craftStage = await page.evaluate(() => document.body.classList.contains('craft-stage') && !document.body.classList.contains('game-ds'));
   if (craftStage) await assertFits(page, '.bench-phase[aria-current="step"] .bench-phase-copy small');

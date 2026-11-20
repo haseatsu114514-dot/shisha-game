@@ -209,7 +209,7 @@ async function morning() {
   const strained = strainMorning();
   const n = strained + deliverMorning({ fixedNight, invitations: chapterDef.dateInvitations !== false,
     exclude: chapterDef.withLovers?.() || [] }) + extra;
-  if (n) pushNotice(n, { onOpen: (sender) => {
+  if (n) pushNotice(n, { onDayOneHint: save, onOpen: (sender) => {
     if (isChoosingDestination() && !layers.modal.classList.contains("show")) phoneButton({ sender });
     else queuedLimeSender = sender;
   } });
@@ -317,6 +317,9 @@ async function day1Errands() {
   const owner = state, f = owner.flags;
   const lemon = DB.flavorById.lemon;
   if (!f._errand_shop_done && (!lemon || ownsFlavor("lemon"))) f._errand_shop_done = true;
+  const onShown = () => pushNotice(1, {
+    dayOneReminder: true, onDayOneHint: save, onOpen: sender => phoneButton({ sender }),
+  });
   if (!f._errand_shop_done) {
     if (!f._errand_shop_told) {
       const request = await play("remake_day1_errand_shop", { bg: TONARI_BG });
@@ -324,7 +327,7 @@ async function day1Errands() {
       f._errand_shop_told = true;
       save();
     }
-    while (await chooseSpot({ guide: { pin: "shop", text: "Dr.fookahでレモンを仕入れる。看板を2回タップ。" } }) !== "shop") {
+    while (await chooseSpot({ guide: { pin: "shop", text: "Dr.fookahでレモンを仕入れる。看板を2回タップ。" }, onShown }) !== "shop") {
       if (state !== owner) return;
     }
     if (state !== owner) return;
@@ -350,7 +353,7 @@ async function day1Errands() {
     save();
   }
   if (!f._errand_naru_visited) {
-    while (await chooseSpot({ guide: { pin: "naru", text: "KEMURIKUSAへ偵察に。" } }) !== "naru") {
+    while (await chooseSpot({ guide: { pin: "naru", text: "KEMURIKUSAへ偵察に。" }, onShown }) !== "naru") {
       if (state !== owner) return;
     }
     if (state !== owner) return;
