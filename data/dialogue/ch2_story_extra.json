@@ -260,6 +260,7 @@
           "face": "",
           "text": "水を飲んでいた俺は、盛大にむせた。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch2_ageha_lesson"},
         {
           "speaker": "ageha",
           "face": "surprise",
@@ -270,6 +271,7 @@
           "face": "normal",
           "text": "吸い方の話だけど？ 太く、長く、奥まで、ゆっくり。煙の話"
         },
+        {"type": "hide_cg"},
         {
           "speaker": "hajime",
           "face": "surprise",

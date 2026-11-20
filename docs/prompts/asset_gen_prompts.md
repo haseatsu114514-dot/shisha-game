@@ -123,6 +123,10 @@
 | `crest-gold.png` | 1024×1024・透過 | 優勝の冠と月桂冠（中央はコードが「1 ST」を書くので空ける） |
 | `curtain.png` | 1024×1536・透過 | アイキャッチの幕の左半分（右はコードで鏡写し） |
 
+## tonari フロア営業の部品（2026-11-20）
+
+第1〜2章のバイトのミニゲーム（五つの卓を一人で回す）の、板・札・印・記号・帯の部品48枚。背景は今の店内画（`bg_tonari_inside_*`）をそのまま使う。Codex へそのまま貼る依頼文（下の共通スタイル指針＋フロア営業の上乗せ指針＋部品ごとの文）と、作る物の一覧・寸法・組み込みの手順は [Issue #3960](https://github.com/haseatsu114514-dot/shisha-game/issues/3960) の本文が正本。いまの画面の見本と、前の版の依頼の記録は [`asset_sources/ui/tonari-floor-20261120/`](../../asset_sources/ui/tonari-floor-20261120/README.md)。
+
 ## 共通スタイル指針（全アセット冒頭に付ける）
 
 フレーバーの商品箱は現行採用画像のメーカー意匠を参照する。AFバニラの生成指示と参照画像は [`asset_sources/af-vanilla/prompt.txt`](../../asset_sources/af-vanilla/prompt.txt)、原画・変換・検品は[制作資料](../../asset_sources/af-vanilla/README.md)。黒箱・白い翼と独立した輪・味の筆帯は既存AFから継承し、既存10点の採用正本は変更しない。

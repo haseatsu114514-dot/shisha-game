@@ -81,7 +81,7 @@ const night = day => CH2_NIGHTS.find(entry => entry.day === day);
   assert.match(tastingBranch(smile.next_true), /昨日の昼より/);
   assert.match(tastingBranch(smile.next_false), /いつもより少しだけ、短い/);
   assert(tasting.lines.indexOf(order) < tasting.lines.indexOf(smile));
-  assert.deepEqual([...new Set(dialogues.ch2_ageha_lesson.lines.map(line => line.speaker))].sort(), ["", "ageha", "hajime"]);
+  assert.deepEqual([...new Set(dialogues.ch2_ageha_lesson.lines.filter(line => typeof line.text === "string").map(line => line.speaker))].sort(), ["", "ageha", "hajime"]);
   assert.match(text("ch2_ageha_lesson"), /太くて長いのを、奥まで、ゆっくり/);
   // B: 控室の冒頭。あげはの「手を隠した日」の枝はそのまま残す
   const lobby = read("ch2_tournament").dialogues.find(row => row.dialogue_id === "ch2_tournament_lobby");

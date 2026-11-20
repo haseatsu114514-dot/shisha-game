@@ -3091,6 +3091,8 @@ html:root[data-density="phone"] body:not(:root) .pull-btns.with-options .btn:not
 }
 
 /* ---------------------------------------------------------------- 確認ダイアログ・閉じる系 */
+/* #3203: 縮小された舞台に全画面のぼかしを掛けると、地図とHUDが四隅へ鏡写しになる場合がある。暗幕の色だけで区切る。 */
+html:root[data-density="phone"] #modal > .modal-backdrop { backdrop-filter: none; }
 html:root[data-density="phone"] body:not(:root) .modal-body { font-size: var(--phone-text); line-height: 1.6; }
 html:root[data-density="phone"] body:not(:root) .modal-actions { gap: var(--phone-gap); }
 html:root[data-density="phone"] body:not(:root) .dmenu .dm-close { min-height: var(--phone-tap); font-size: var(--phone-text); }
@@ -3301,6 +3303,50 @@ html:root[data-density="phone"] body:not(:root) .mo-garagara :is(.kj-sign-title,
 html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-title { padding-bottom: 5px; letter-spacing: 0.04em; }
 html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-row { gap: 12px; }
 html:root[data-density="phone"] body:not(:root) .mo-garagara .kj-sign-note { max-width: 6.2em; text-align: center; }
+
+/* スロット（#4035 B4）。ノートは縦スクロールを残し、初回カードは横幅を使って文字を拡大する。 */
+html:root[data-density="phone"] body:not(:root) :is(.reel-intro, .reel-night, .reel-widget, .reel-cutin) {
+  --slot-phone-text: max(24px, var(--phone-text));
+}
+html:root[data-density="phone"] body:not(:root) :is(
+  .reel-intro .ri-next, .reel-intro .rn-close,
+  .reel-intro .rn-tile-head, .reel-intro .rn-tile-body, .reel-intro .cue-chip,
+  .reel-note :is(.rn-cols h3, .rn-setting-box h3, .rn-table, .rn-history, .rn-history small,
+    .rn-hall, .rn-empty, .rn-setting, .rn-setting small, .rn-hint-head, .rn-hints),
+  .reel-night .rn-label, .reel-widget .rw-bubble,
+  .reel-cutin :is(.rc-aim, .rc-freeze-text span, .rc-freeze-sub)
+) {
+  font-size: var(--slot-phone-text);
+}
+html:root[data-density="phone"] body:not(:root) :is(.reel-intro, .reel-widget) .rw-face.txt {
+  font-size: max(var(--slot-phone-text), calc(20px * var(--slot-scale, 1)));
+}
+html:root[data-density="phone"] .reel-intro .cue-chip {
+  min-width: 1.25em;
+  min-height: 1.25em;
+}
+html:root[data-density="phone"] .reel-intro .ri-panel.sys {
+  width: min(1160px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  overflow-y: auto;
+}
+html:root[data-density="phone"] .reel-intro .ri-panel.sys .rn-card {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+html:root[data-density="phone"] body:not(:root) .reel-widget .rw-bubble.cue {
+  font-size: max(var(--slot-phone-text), calc(12px / var(--k, 1)));
+}
+html:root[data-density="phone"] .reel-note .ri-head {
+  min-height: var(--phone-tap);
+  padding-right: 136px; /* 長い見出しが右上の「閉じる」と重ならないようにする */
+}
+/* 出現直後の見出しがフリーズ演出の枠で切れないよう、拡大の始点を抑える。 */
+html:root[data-density="phone"] .reel-cutin .rc-freeze-label {
+  animation-name: rc-title-phone;
+}
+@keyframes rc-title-phone {
+  from { transform: scale(1.8); opacity: 0; }
+}
 
 /* ===== css/wide-screens.css ===== */
 /* ワイドステージ（#2861）でメニュー・タイトル等を横幅いっぱいまで使う（オーナー指示 2026-11-08「メニューとかタイトルとか諸々もワイドモードへ」）。
@@ -4416,6 +4462,28 @@ html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fla
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-feature { overflow: hidden; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-feature b { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row .fr-mastery { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; overflow-wrap: anywhere; }
+
+/* 最初の注文の支給葉は、名前と分量操作を横に並べて3種とも初期表示に収める。 */
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix:has(.mix-list-supplied) {
+  grid-template-columns: 220px minmax(0, 1fr) !important;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix:has(.mix-list-supplied) .mix-vessel { width: 100% !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .flavor-row {
+  grid-template-columns: 64px max-content minmax(0, 1fr) var(--bench-tap) 44px var(--bench-tap);
+  grid-template-rows: auto auto;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-feature { grid-column: 2 !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-name > small:first-of-type {
+  grid-area: 1 / 3 !important; min-width: 0; overflow-wrap: anywhere;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-mastery { grid-area: 2 / 2 / 3 / 4 !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-ratio {
+  grid-area: 2 / 4 / 3 / -1 !important; text-align: center;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied :is(.fr-btn, .fr-g) { grid-row: 1 !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-btn:first-of-type { grid-column: 4 !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-g { grid-column: 5 !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-supplied .fr-btn:last-of-type { grid-column: 6 !important; }
 
 /* ===== css/side-area.css ===== */
 /* 左右の余白の活用（YHK・2026-11-11 オーナー決定）。部品と追随は js/core/side-area.js。
@@ -7204,7 +7272,7 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tutorial-bubble h3 { color: var(--neo-ui-gold-hi); }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tutorial-bubble .gb-tutorial-count { color: var(--neo-ui-dim); }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tutorial-spot {
-  box-shadow: 0 0 0 9999px rgba(8, 3, 16, .58), 0 0 0 3px var(--neo-ui-gold-hi), 0 0 18px 4px rgba(246, 223, 168, .5);
+  box-shadow: 0 0 0 9999px var(--gb-tutorial-shade, rgba(8, 3, 16, .58)), 0 0 0 3px var(--neo-ui-gold-hi), 0 0 18px 4px rgba(246, 223, 168, .5);
 }
 
 /* 近い目的地（SBD104）: 紙の札をやめて、盤の色の線が左に付いた夜紫の札。 */

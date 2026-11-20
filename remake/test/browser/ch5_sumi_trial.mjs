@@ -23,9 +23,9 @@ async function go(page, pin) {
 const RESULTS = ["great", "holes", "heat", "steam", "pull", "failed"];
 
 /** 第5章の自由行動。閉店後の練習と試作の会話（熱→直す）を終えた夜の保存。 */
-async function seed(page, { slot = 1, trial = undefined } = {}) {
+async function seed(page, { slot = 1, trial = undefined, dubai = false } = {}) {
   page.setDefaultTimeout(30000);
-  await page.evaluate(async ({ slot, trial }) => {
+  await page.evaluate(async ({ slot, trial, dubai }) => {
     const core = await import("./js/core/state.js");
     const value = core.newGame();
     Object.assign(value, { chapter: 5, day: 53, slot, phase: "daily", money: 50000, stamina: 100,
@@ -39,12 +39,16 @@ async function seed(page, { slot = 1, trial = undefined } = {}) {
         prep: { trial: "heat", adjusted: true } },
       _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true,
       ...(trial ? { _ch5_sumi_trial: trial } : {}) };
+    if (dubai) {
+      value.flags._ch4_sheikh_revealed = true;
+      value.met.sheikh = true;
+    }
     value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
     Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
     const fortunePlan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 5 });
     value.flags._fortune_wander = { chapter: 5, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
     core.saveConfig(); core.save();
-  }, { slot, trial });
+  }, { slot, trial, dubai });
   await page.reload();
   await page.locator(dt("title-load")).click();
   await arm(page);
@@ -52,6 +56,48 @@ async function seed(page, { slot = 1, trial = undefined } = {}) {
 }
 
 await suite("ch5-sumi-trial", async check => {
+  for (const [name, width, height, hasTouch] of [
+    ["phone", 844, 390, true],
+    ["pc", 1280, 720, false],
+  ]) {
+    await check(`${name}-doctor-and-dubai-map-labels-select-their-own-pin`, async page => {
+      await seed(page, { slot: 0, dubai: true });
+      await mapReady(page, { day: 53, slot: 0 });
+      const ids = ["ch5_call", "ch5_to_dubai"];
+      const selector = id => `${dt(`pin-${id}`)} .sub-label`;
+      for (const id of ids) await page.locator(selector(id)).waitFor();
+
+      // 未選択の地図で、ラベルの四隅寄りと中央がそれぞれのピンに届くことを確かめる。
+      for (const id of ids) {
+        const label = page.locator(selector(id));
+        const box = await label.boundingBox();
+        assert(box && box.x >= 0 && box.y >= 0 && box.x + box.width <= width && box.y + box.height <= height,
+          `the full ${id} label is visible`);
+        const hits = await label.evaluate(node => {
+          const { x, y, width, height } = node.getBoundingClientRect();
+          return [[.1, .2], [.9, .2], [.5, .5], [.1, .8], [.9, .8]].map(([dx, dy]) =>
+            document.elementFromPoint(x + width * dx, y + height * dy)?.closest(".spot-pin")?.dataset.spot);
+        });
+        assert.deepEqual(hits, Array(5).fill(id), `all sampled points on ${id} select its own pin`);
+      }
+
+      // 詳細パネルが開くと地図上の当たり判定も変わるので、地図を開き直してから左端を押す。
+      for (const id of ids) {
+        if (id === "ch5_to_dubai") {
+          await seed(page, { slot: 0, dubai: true });
+          await mapReady(page, { day: 53, slot: 0 });
+        }
+        const box = await page.locator(selector(id)).boundingBox();
+        assert(box);
+        const x = box.x + box.width * .1;
+        const y = box.y + box.height / 2;
+        if (hasTouch) await page.touchscreen.tap(x, y);
+        else await page.mouse.click(x, y);
+        assert.equal(await page.locator(".map:not(.done) .spot-pin.sel").getAttribute("data-spot"), id);
+      }
+    }, { viewport: { width, height }, hasTouch, isMobile: hasTouch, reducedMotion: "reduce" });
+  }
+
   await check("night-tonari-offers-one-real-cup-and-sumi-answers", async page => {
     await seed(page);
     await mapReady(page, { day: 53, slot: 1 });

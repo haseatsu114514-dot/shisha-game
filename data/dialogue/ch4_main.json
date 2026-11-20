@@ -469,6 +469,7 @@
           "face": "",
           "text": "一緒に日陰へ入る。男は名乗らないまま、椅子を一つ引いた。"
         },
+        {"type": "show_cg", "cg_id": "cg_ch4_traveler_chair"},
         {
           "speaker": "traveler",
           "face": "normal",
@@ -483,7 +484,8 @@
           "speaker": "traveler",
           "face": "normal",
           "text": "そうか、ハジメ。なら今日は私が客だ。作る話は、そのあとでいい"
-        }
+        },
+        {"type": "hide_cg"}
       ],
       "comment": "old_manの正体はシェイク。表示名と正装の立ち絵は大会当日の公開まで伏せる。"
     },
@@ -2736,11 +2738,16 @@
         },
         {
           "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……スミさん。一度も、言わなかった）"
+        },
+        {
+          "speaker": "hajime",
           "face": "serious",
           "text": "（スミさんの分まで。……そう思ったら、トングが重くなった）"
         }
       ],
-      "comment": "接続済み（ch4-progress.js CH4_PROLOGUE）。ch4_opening の直後、宿へ到着する場面。出典: 第4章本文ドラフト §2-1。Q4（なるの宿）は docs/spec/open_questions_ch4_ch5.md で引き続き仮置き扱いのため、2行目の「隣の部屋」は現行本文のまま保持。末尾3行は STK10（歴代の記録にスミさんの名前。答えは ch4_stranger_third、ぶり返しは ch4_final）。大会の案内は ch4_wang_reception_forced_in の「机に出しておいた大会の案内」と同じ物。"
+      "comment": "接続済み（ch4-progress.js CH4_PROLOGUE）。ch4_opening の直後、宿へ到着する場面。出典: 第4章本文ドラフト §2-1。Q4（なるの宿）は docs/spec/open_questions_ch4_ch5.md で引き続き仮置き扱いのため、2行目の「隣の部屋」は現行本文のまま保持。末尾4行は STK10（歴代の記録にスミさんの名前。第1章ではスミさんの大会歴を明かさないため、はじめが初めて知る場面になる（2026-11-20 オーナー指示）。答えは ch4_stranger_third、ぶり返しは ch4_final）。大会の案内は ch4_wang_reception_forced_in の「机に出しておいた大会の案内」と同じ物。"
     },
     {
       "dialogue_id": "ch4_festa_revisit",

@@ -12,7 +12,8 @@
 body { margin: 0; background: #14101f; color: #f3ecdf; font: 15px/1.6 "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif; }
 main { max-width: 860px; margin: 0 auto; padding: 20px 16px 60px; }
 h1 { font-size: 20px; margin: 0 0 4px; }
-h1.section { margin-top: 36px; }
+h2.section { margin: 36px 0 4px; font-size: 20px; }
+#audition-heading { margin-top: 20px; }
 audio { width: 100%; max-width: 420px; height: 44px; }
 .row.bgm { grid-template-columns: 1fr; }
 p.lead { margin: 0 0 14px; color: #c9bfd6; font-size: 13px; }
@@ -22,19 +23,39 @@ p.lead { margin: 0 0 14px; color: #c9bfd6; font-size: 13px; }
 .row .where { margin: 2px 0 0; color: #c9bfd6; font-size: 13px; }
 .row .src { margin: 2px 0 0; color: #9d93ad; font-size: 12px; }
 .row .buttons { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-button { min-height: 44px; padding: 8px 14px; border-radius: 8px; border: 1px solid #e2b97f99; background: #b88325; color: #120d05; font: 700 14px/1.2 inherit; cursor: pointer; }
+button { min-height: 44px; padding: 8px 14px; border-radius: 8px; border: 1px solid #e2b97f99; background: #b88325; color: #120d05; font: inherit; font-weight: 700; cursor: pointer; }
 button.old { background: #2a243d; color: #f3ecdf; }
 button:active { transform: translateY(1px); }
+button:focus-visible { outline: 2px solid #ffe2a3; outline-offset: 3px; }
+button[aria-pressed="true"] { border-color: #fff0c6; box-shadow: inset 0 0 0 1px #fff0c6; }
+button:disabled { opacity: .55; cursor: default; }
+.audition-toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0 0 12px; }
+#audition-status { margin: 0; color: #c9bfd6; font-size: 13px; }
+.audition.row { grid-template-columns: 1fr; padding: 14px 0; }
+.audition h3 { margin: 0; font-size: 16px; }
+.audition fieldset { display: grid; gap: 4px; margin: 0; padding: 0; border: 0; min-width: 0; }
+.audition legend { padding: 0; color: #c9bfd6; font-size: 13px; }
+.audition .buttons { justify-content: flex-start; margin-top: 4px; }
 @media (max-width: 560px) { .row { grid-template-columns: 1fr; } .row .buttons { justify-content: flex-start; } }
 </style>
 </head>
 <body>
 <main>
 <h1>効果音・BGMの試聴</h1>
-<p class="lead">新しく入れた録音の音と、前の音（合成音）を聴き比べるページです。合わない音があれば、名前を伝えてもらえれば前の音へ戻すか、別の音に替えます。ゲームの保存データは変えません。</p>
+<section aria-labelledby="audition-heading">
+<h2 id="audition-heading" class="section">演出の効果音を聴き比べる</h2>
+<p class="lead">今の音と候補を1つずつ再生できます。録音の聴こえ方は試聴用に揃え、合成音は今の音をそのまま使っています。</p>
+<div class="audition-toolbar">
+<button id="audition-stop" class="old" type="button" disabled>試聴を停止</button>
+<p id="audition-status" role="status"></p>
+</div>
+<div id="audition-list"></div>
+</section>
+<h2 class="section">ほかの効果音</h2>
+<p class="lead">本編で使う録音と前の合成音を聴き比べられます。</p>
 <p id="status" role="status">どれかのボタンを押すと音が出るようになります。</p>
 <div id="list"></div>
-<h1 class="section">BGM</h1>
+<h2 class="section">BGM</h2>
 <p class="lead">新しく当てた曲です。再生ボタンで聴けます（1曲ずつ鳴ります）。合わなければ曲名を伝えてください。別の曲に替えるか、前の曲へ戻します。</p>
 <div id="bgm-list"></div>
 </main>

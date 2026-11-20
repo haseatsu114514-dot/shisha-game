@@ -101,9 +101,9 @@ assert(Math.abs(conditions.heatDelta(few, .1)) > Math.abs(conditions.heatDelta(o
 assert(conditions.heatDelta({ ...outerOnly, environment: { rainy: true } }, .1) < conditions.heatDelta(outerOnly, .1));
 assert.equal(conditions.heatDelta({ ...outerOnly, environment: { rainy: true } }, -.1), conditions.heatDelta(outerOnly, -.1));
 
-async function start(auto = null, templateId = "outer24") {
+async function start(auto = null, templateId = "outer24", mode = "drill") {
   now = 1000; automated = auto; panel = null; keymap = null; frames.clear(); stamps.length = 0; delayed.length = 0; results.length = 0; visualHoles.length = 0;
-  const cs = { mode: "drill", holes: null, holeTemplateId: templateId };
+  const cs = { mode, holes: null, holeTemplateId: templateId };
   const running = holes.runHoles(cs); await settle();
   if (!auto) {
     assert(find("hole-preview")); assert.equal(frames.size, 0); assert.equal(keymap, null);
@@ -284,5 +284,21 @@ assert.match(results.at(-1).lines.join("\n"), /穴の大きさ：浅い 1・小 
 assert.match(results.at(-1).lines.join("\n"), /目印の達成：24\/24か所/);
 assert(sizedResult.score < full.score - 8, "a shallow hole should substantially lower the score");
 assert.equal(winListeners.keyup.length, keyupBefore, "finished foil left a keyup listener");
+
+// #4046: 両周とも目印に合わせた短いタップ。結果の冒頭とスミの講評に次の操作を出す。
+active = await start(null, "outer12-middle12", "tutorial");
+for (let ring = 0; ring < 2; ring++) {
+  for (let hole = 0; hole < 12; hole++) await pierce(50, 400 * holes.HOLES_TUNING.lessonSlow);
+  await advance();
+}
+await active.running;
+assert.equal(active.cs.holes.tally.shallow, 24);
+assert.equal(active.cs.holes.tally.rough, 0);
+assert.equal(active.cs.holes.score, 0);
+const shallowFeedback = results.at(-1);
+assert.match(shallowFeedback.advice, /浅くなった。少し長く押してから離そう/);
+assert.equal(shallowFeedback.summary[1], shallowFeedback.advice);
+assert.equal(shallowFeedback.lines[0], shallowFeedback.advice);
+assert.match(shallowFeedback.lines.join("\n"), /目印の達成：24\/24か所/);
 
 console.log("[remake foil] PASS: template selection, exact 24/0/0 and 12/12/0, guarded completion, timeout continuation, no ring skipping, unlock flags, density and shared thermal response, near-marker needle and press depth (#2937), offset holes stand as low-score holes (#3023)");

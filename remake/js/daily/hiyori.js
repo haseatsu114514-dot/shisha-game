@@ -85,6 +85,13 @@ export const hiyoriMintoRestSeatDue = spot => spot?.id === "minto" && state.slot
   && !!state.flags._hiyori_minto_seat_done && !state.flags[MINTO_REST_SEAT_SEEN]
   && !!DB.dialogues[MINTO_REST_SEAT]?.lines?.length;
 
+// #3097 PR-C: 第2章の普段の相席（data/dialogue/ch2_home.json）。第2章のいつもの相席の代わりに一本ずつ・一度だけ、並びの順に。
+// ひびの回（_hiyori_cracks_done）の後だけ（演技と本心の差を、既存の場面の範囲で見せるため）。相席の巡回は進めない。
+// 店名を出さず、斧投げの前後・恋人／友人のどちらでも読める台本。第2章の準備期間に読み込むので、未読込なら出さない。既読は `_talk_seen_<scene>`。
+export const HIYORI_CH2_TALKS = Object.freeze(["ch2_hiyori_health_check", "ch2_hiyori_capsule_toy"]);
+export const hiyoriChapterTalkDue = () => state.chapter === 2 && !!state.flags._hiyori_cracks_done
+  && HIYORI_CH2_TALKS.find(id => !state.flags[`_talk_seen_${id}`] && !!DB.dialogues[id]?.lines?.length) || null;
+
 /** 買い物だけでは会わない。実際に一服できる他店を滞在候補にする（ショールームは除外）。 */
 export const hiyoriShopEligible = (spot) => !!spot && (spot.kind === "rival" || spot.kind === "samechan"
   || spot.id === "c_station");
@@ -97,10 +104,27 @@ function encounterRoll(spot) {
   return seeded(state.seed, salt);
 }
 
+// 東京・ドバイへ発つ前の地元の準備3日（chapters/departure-prep.js）だけ、仕事帰りに寄ったtonariで送り出しの会話を一度（#3097 PR-I。
+// daily/spots.js の CHAPTER_TALKS の prep・daily/samechan.js の SAMECHAN_PREP_TALKS と同じ扱い。来店の処理が別なのでここに持つ）。
+// tonariでの再会（_hiyori_tonari_return_done）の後・夜だけ。物語の段階・質問・締めくくりが先で、それが無いtonariの対面で読む。
+// 台本は準備期間に読み込む（第3章は data/dialogue/ch3_ch4_home.json、第4章は ch4_prep_home.json）ので、未読込なら出さない。
+// 既読は `_talk_seen_<scene>`。好感度・報酬は付けない（tonariの来店の処理のまま）。恋人でも友人でも、ドバイへ来る人でも通る会話にする。
+export const HIYORI_PREP_TALKS = Object.freeze({ 3: "ch3_prep_hiyori", 4: "ch4_prep_hiyori" });
+// 判定は core/chapter-clock.js の departurePrep と同じ（単体で読み込むテストがあるので import しない）。
+const inDeparturePrep = value => {
+  const prep = value?.chapter === 3 ? value.flags?._ch3_prep : value?.chapter === 4 ? value.flags?._ch4_prep : null;
+  return !!prep && !prep.departed && Number.isInteger(prep.startDay);
+};
+export function hiyoriPrepTalkDue(value = state) {
+  const scene = inDeparturePrep(value) && value.phase === "daily" && value.slot === 1 && !!value.met?.hiyori
+    && !!value.flags?._hiyori_tonari_return_done ? HIYORI_PREP_TALKS[value.chapter] : null;
+  return scene && !value.flags?.[`_talk_seen_${scene}`] && DB.dialogues[scene]?.lines?.length ? scene : null;
+}
+
 /** tonariの次の対面で実際にひより本人が登場する場合。スミさんへの伝言だけの日は除く。 */
 export function hiyoriAtTonari() {
   if (["tonari_followup", "tonari_afterwork", "work_talk", "peach_talk", "promise"].some(id => hiyoriEventStatus(id) === "ready")) return true;
-  return hiyoriQuestionReady() || !!state.flags._hiyori_work_talk_done && finaleAtVisit("hiyori");
+  return hiyoriQuestionReady() || !!state.flags._hiyori_work_talk_done && finaleAtVisit("hiyori") || !!hiyoriPrepTalkDue();
 }
 
 /** 時間帯ごとに一つの滞在先を選ぶ。既存のseedを使い、ロードや地図再描画で再抽選しない。 */
@@ -149,6 +173,16 @@ export async function visitHiyoriAtShop(spot, { bg, scheduledSpot = hiyoriShopLo
     } else if (hiyoriEventStatus("shop_charm") === "ready") {
       // 再会のあと他店で一度だけ。相席の繰り返しには数えない（#3081）。
       if (!await playHiyoriEvent("shop_charm", options)) return false;
+    } else if (hiyoriChapterTalkDue()) {
+      // 第2章の間しか読めないので、ぺぱーみんとの相席より先に読む
+      const scene = hiyoriChapterTalkDue();
+      active = true;
+      try {
+        const result = await play(scene, options);
+        if (state !== owner || signal?.aborted || !result || result.cancelled) return false;
+        state.flags[`_talk_seen_${scene}`] = true;
+        gainAffinity("hiyori", 10); // いつもの相席と同じ
+      } finally { active = false; }
     } else if (hiyoriMintoSeatDue(spot)) {
       active = true;
       try {
@@ -232,8 +266,11 @@ export async function playHiyoriHangout(options = {}) {
   } finally { active = false; }
 }
 
-/** バイト・客席・スミさんとの会話、いずれも次の実際の対面で一度だけ進める。 */
-export async function meetHiyoriAtTonari() {
+/**
+ * バイト・客席・スミさんとの会話、いずれも次の実際の対面で一度だけ進める。
+ * @param opts.prepTalk false なら出発前の送り出し（HIYORI_PREP_TALKS）を次の対面へ残す（客席でつむぎの新しい話を読む来店。一来店に一本）
+ */
+export async function meetHiyoriAtTonari({ prepTalk = true } = {}) {
   if (axeBarRumorDue(state)) return playAxeBarRumor();
   if (hiyoriEventStatus("sumi_message") === "ready") return playHiyoriEvent("sumi_message");
   if (hiyoriEventStatus("tonari_followup") === "ready") return playHiyoriEvent("tonari_followup");
@@ -254,7 +291,23 @@ export async function meetHiyoriAtTonari() {
     return true;
   }
   if (hiyoriEventStatus("promise") === "ready") return playHiyoriPromiseNight();
-  return playHiyoriFinaleAtVisit();
+  if (finaleAtVisit("hiyori") || !prepTalk) return playHiyoriFinaleAtVisit();
+  return playHiyoriPrepTalk();
+}
+
+/** 出発前の送り出し。最後まで読んだ時だけ既読（中断・LOADでは次の対面で読み直せる）。 */
+async function playHiyoriPrepTalk() {
+  const scene = hiyoriPrepTalkDue();
+  if (!scene || active || isPlaying()) return false;
+  const owner = state;
+  active = true;
+  try {
+    const result = await play(scene);
+    if (state !== owner || !result || result.cancelled) return false;
+    state.flags[`_talk_seen_${scene}`] = true;
+    save();
+    return true;
+  } finally { active = false; }
 }
 
 async function playHiyoriPromiseNight() {

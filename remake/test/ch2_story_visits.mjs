@@ -42,7 +42,8 @@ const mocks = {
   "remake/js/daily/spots.js": { allSpots: () => [{ id: "tonari", kind: "tonari" }], VISIT_COST: 3000,
     isClosed: spot => spot.closedOn !== undefined && state.day % 7 === spot.closedOn,
     CHAR_STAT: { adam: "guts", minto: "charm" }, VISIT_BG: { adam: "bg_eden_shop", minto: "peppermint" },
-    bgRef: name => `res://assets/backgrounds/${name}.png`, setChapterVisitDue: fn => { visitDue = fn; }, hasNewEvent: () => false },
+    bgRef: name => `res://assets/backgrounds/${name}.png`, setChapterVisitDue: fn => { visitDue = fn; }, hasNewEvent: () => false,
+    chapterTalkDue: () => null }, // 柚ヶ谷の店の出発前の送り出し（#3097 PR-I）は第3・4章だけ。ch2_followups.mjs・departure_home_talks.mjs で確認する
   "remake/js/daily/hiyori.js": { setHiyoriExtraShops: () => {} },
   "remake/js/daily/roamers.js": { addRoamerSpots: () => {} }, // よその店に居合わせる人（第2章は柚ヶ谷の店も登録する）
   "remake/js/daily/trpg.js": { trpgSpot: () => null, maybeRecruitTrpgMember: async () => false },
