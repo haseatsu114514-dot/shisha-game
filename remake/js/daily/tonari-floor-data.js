@@ -1,38 +1,27 @@
-// tonari フロア営業の台本（単価・フレーバー・客・注文・ケア・夜の種類・評価）。ルールは tonari-floor-model.js、画面は tonari-floor-view.js。
-// 2026-11-20 オーナーの「シーシャ経営ミニゲーム システム・UI設計仕様書」（ワンオペ＆30種フレーバー調合型）に合わせた形。
+// tonari フロア営業の台本（単価・気分・フレーバー・ミックス・客・ケア・夜の種類・評価）。ルールは tonari-floor-model.js、画面は tonari-floor-view.js。
+// 遊びの形（2026-11-20 オーナー）: 一人で店を回す。客は「フルーツ系が吸いたい」のように気分を言うだけで、
+// 提供は、並んでいるミックスの一覧から選ぶ（原作の、キャストを卓に着ける所にあたる。一覧はシャッフルできる）。
 // お金はすべて店のもの。はじめの所持金には入らない（日当と売上ボーナスは tonari.js が渡す）。
-// 原価・仕入れ・利益は扱わない（2026-11-20 オーナー「原価とか仕入れとか利益とかは気にしない　ただ満足させて売上をいかに上げるかのゲームにする」。
-// 東京編・ドバイ編のバイトでも同じ遊びを使うため、店ごとの事情を持ち込まない）。
+// 原価・仕入れ・利益は扱わない（「ただ満足させて売上をいかに上げるかのゲームにする」。東京編・ドバイ編のバイトでも同じ遊びを使う）。
 
 // 単価（2026-11-20 オーナー指定）: 基本（シーシャ一台）2,000円・チャージ700円（ひとり）・
-// トップ替え（おかわり＝延長）が入ると＋1,500円・ドリンクは1杯600円（初回の1杯は必ず注文。追加は居心地しだい）。
+// トップ替え（おかわり）が入ると＋1,500円・ドリンクは1杯600円（初回の1杯は必ず注文。追加は居心地しだい）。
 export const PRICE = Object.freeze({ shisha: 2000, charge: 700, top: 1500, drink: 600 });
 
-/** 吸い心地の4特性（卓の札の帯の色にも使う）。 */
-export const TRAITS = Object.freeze([
-  Object.freeze({ id: "taste", label: "味・香り", short: "香り", color: "#b592ff" }),
-  Object.freeze({ id: "chill", label: "チル", short: "チル", color: "#7fd39a" }),
-  Object.freeze({ id: "cloud", label: "爆煙", short: "爆煙", color: "#f0c060" }),
-  Object.freeze({ id: "last", label: "持続性", short: "持続", color: "#8fd6ff" }),
+/**
+ * 客の気分（どんな一台が吸いたいか）。原作の「見た目のタイプ」にあたり、ミックスごとに ◎○△× の合い方がある。
+ * id はフレーバーの系統と同じ。say＝客が吹き出しで言う言葉（台詞なので句点で終えない）。
+ */
+export const WISHES = Object.freeze([
+  Object.freeze({ id: "fruit", label: "フルーティ", color: "#ff8f6b", say: Object.freeze(["フルーツ系が吸いたいな", "果物っぽいのが吸いたいです"]) }),
+  Object.freeze({ id: "sweet", label: "スイート", color: "#f7a8d8", say: Object.freeze(["お菓子系が吸いたい", "甘いのが吸いたい気分です"]) }),
+  Object.freeze({ id: "fresh", label: "リフレッシュ", color: "#7fd8e8", say: Object.freeze(["さっぱりしたのが吸いたいな", "すっきりしたい気分です"]) }),
+  Object.freeze({ id: "deep", label: "リラックス", color: "#b9a6ff", say: Object.freeze(["まったりできるのがいいな", "落ち着くのが吸いたいです"]) }),
 ]);
-export const TRAIT_IDS = Object.freeze(TRAITS.map((t) => t.id));
+export const WISH_IDS = Object.freeze(WISHES.map((w) => w.id));
 
-/** フレーバーの4大系統（棚のタブの並び）。 */
-export const FAMILIES = Object.freeze([
-  Object.freeze({ id: "fruit", label: "フルーツ系", tab: "フルーツ" }),
-  Object.freeze({ id: "fresh", label: "スッキリ系", tab: "スッキリ" }),
-  Object.freeze({ id: "sweet", label: "甘系", tab: "甘" }),
-  Object.freeze({ id: "deep", label: "重め・スパイス系", tab: "茶葉・スパイス" }),
-]);
-export const FAMILY_LABEL = Object.freeze(Object.fromEntries(FAMILIES.map((f) => [f.id, f.label])));
-
-export const TAG_LABEL = Object.freeze({
-  mint: "ミント・清涼", citrus: "柑橘", juicy: "ジューシー", classic: "王道", herb: "ハーブ", sweet: "甘い", cream: "クリーム",
-  dessert: "デザート", nut: "ナッツ", tea: "紅茶・茶葉", floral: "フローラル", spice: "スパイス", heavy: "重め", light: "軽め",
-});
-
-// 店の棚のフレーバー（30種）。family＝系統、also＝半分だけ寄与する系統（柑橘や茶葉でスッキリ感を出す、など）、
-// tags＝特性タグ（相性とNGの判定に使う）、traits＝[味・香り, チル, 爆煙, 持続性]（0〜3）。
+// 店の棚のフレーバー（30種）。ミックスの材料。family＝系統（＝気分）、also＝半分だけ寄与する系統（柑橘や茶葉でさっぱり感を出す、など）、
+// tags＝香りの札（今は表示だけ）、traits＝[味・香り, チル, 爆煙, 持続性]（0〜3。持続性は、炭の調整の間隔に効く）。
 const flavor = (id, label, family, also, tags, traits) => Object.freeze({
   id, label, family, also: Object.freeze(also), tags: Object.freeze(tags), traits: Object.freeze(traits),
 });
@@ -73,44 +62,22 @@ export const FLAVORS = Object.freeze(Object.fromEntries([
   flavor("cinnamon", "シナモン", "deep", ["sweet"], ["spice", "sweet"], [3, 1, 2, 3]),
 ].map((f) => [f.id, f])));
 
-// 相性のいい組み合わせ（タグ同士）。二つのフレーバーが、片方ずつのタグを持つと成立する。
-export const SYNERGIES = Object.freeze([
-  ["citrus", "mint"], ["tea", "cream"], ["juicy", "spice"], ["citrus", "sweet"], ["dessert", "nut"],
-  ["floral", "juicy"], ["tea", "citrus"], ["cream", "juicy"], ["classic", "mint"], ["tea", "spice"],
-].map((pair) => Object.freeze(pair)));
-
-// NG の言い方ごとの、避けるタグ。
-export const NG = Object.freeze({
-  mint: Object.freeze({ tags: Object.freeze(["mint"]), label: "ミント無し", said: "ミント無しで" }),
-  sweet: Object.freeze({ tags: Object.freeze(["sweet", "cream", "dessert"]), label: "甘いの無し", said: "甘いのは抜きで" }),
-  heavy: Object.freeze({ tags: Object.freeze(["heavy", "spice"]), label: "重いの無し", said: "重たいのは抜きで" }),
-  citrus: Object.freeze({ tags: Object.freeze(["citrus"]), label: "酸っぱいの無し", said: "酸っぱいのは抜きで" }),
-});
-
-// 注文の言葉の部品（客の台詞なので、句点で終えない）。
-export const ORDER_WORDS = Object.freeze({
-  family: Object.freeze({ fruit: "フルーツ系", fresh: "さっぱり系", sweet: "甘い系", deep: "お茶かスパイス系" }),
-  trait: Object.freeze({ taste: "香りがしっかりめの", chill: "まったりできるの", cloud: "煙が多めの", last: "長くもつの" }),
-  omakase: Object.freeze({
-    taste: "今日はおまかせで。香りのいいのをお願いします",
-    chill: "今日はおまかせで！ なんか落ち着く感じでよろしく",
-    cloud: "おまかせします。煙がもくもく出るやつがいいな",
-    last: "おまかせで。ゆっくり長く吸えるのがいいです",
-  }),
-  // 指定フレーバー＋仕上げの向き
-  // フレーバーを一つ挙げて、あとは雰囲気で頼む（「ミントで、さっぱりお願いします」）。挙げた一種＋その雰囲気の系統を混ぜる
-  finish: Object.freeze({ fruit: "フルーツっぽく", fresh: "さっぱり", sweet: "甘めに", deep: "落ち着いた感じに" }),
-});
-
-// 完全に指定してくる客の注文（言われたとおりに、そのまま出す）。よく頼まれる組み合わせ。
-export const EXACT_MIXES = Object.freeze([
-  ["grape", "mint"], ["lemon", "mint"], ["peach", "vanilla"], ["apple"], ["mango", "milk"], ["earlgrey", "milk"], ["berry", "ice"], ["orange", "mint"],
-  ["chai", "cinnamon"], ["lychee", "rose"], ["pine", "mint"], ["caramel", "milk"], ["grapefruit", "mint"], ["jasmine", "peach"], ["mint"], ["chocolate", "mint"],
-].map((m) => Object.freeze(m)));
-
-// 店の定番ミックスの初期（はじめが覚えている4つ）。定番は最大8枠。保存は flags._tonari_floor.presets。
-export const PRESET_MAX = 8;
-export const STARTER_PRESETS = Object.freeze([["lemon", "mint"], ["peach", "vanilla"], ["apple"], ["earlgrey", "milk"]].map((m) => Object.freeze(m)));
+// ミックスの一覧（店で出せる一台）。営業中は、この中から HAND_SIZE 個が並び、選んで出す。出すと次の一つが補充され、シャッフルで全部を入れ替えられる。
+// 気分との合い方（◎○△×）は、材料の系統から決まる（model の mixRatings）。name を省くと、材料の名前をつなげる。
+const mix = (id, flavors, name = null) => Object.freeze({ id, flavors: Object.freeze(flavors), name });
+export const MIXES = Object.freeze(Object.fromEntries([
+  mix("lemonmint", ["lemon", "mint"]), mix("peachvanilla", ["peach", "vanilla"]), mix("apple", ["apple"]), mix("milktea", ["earlgrey", "milk"], "ミルクティー"),
+  mix("grapemint", ["grape", "mint"]), mix("mangomilk", ["mango", "milk"]), mix("berryice", ["berry", "ice"], "ベリーアイス"), mix("orangemint", ["orange", "mint"]),
+  mix("chai", ["chai", "cinnamon"]), mix("lycheerose", ["lychee", "rose"]), mix("pinemint", ["pine", "mint"]), mix("caramelmilk", ["caramel", "milk"]),
+  mix("limemint", ["lime", "mint"]), mix("jasminepeach", ["jasmine", "peach"]), mix("chocomint", ["chocolate", "mint"], "チョコミント"), mix("honeylemon", ["honey", "lemon"]),
+  mix("vanillacookie", ["vanilla", "cookie"]), mix("pistachiomilk", ["pistachio", "milk"]), mix("hinokijasmine", ["hinoki", "jasmine"]), mix("rosejasmine", ["rose", "jasmine"]),
+  mix("cardamomchai", ["cardamom", "chai"]), mix("guava", ["guava"]), mix("eucalyptusmint", ["eucalyptus", "mint"]), mix("lemongrasslime", ["lemongrass", "lime"], "ハーブライム"),
+  mix("icemint", ["ice", "mint"]), mix("grapeberry", ["grape", "berry"], "グレープベリー"), mix("mangoorange", ["mango", "orange"]), mix("cinnamonapple", ["cinnamon", "apple"], "シナモンアップル"),
+  mix("chocovanilla", ["chocolate", "vanilla"], "チョコバニラ"), mix("honeymilk", ["honey", "milk"]), mix("earllemon", ["earlgrey", "lemon"], "レモンティー"), mix("peachice", ["peach", "ice"]),
+  mix("peachmango", ["peach", "mango"]), mix("pineorange", ["pine", "orange"]),
+].map((m) => [m.id, m])));
+/** 一度に並ぶミックスの数。 */
+export const HAND_SIZE = 5;
 
 /** 提供してからの滞在（1刻み＝店内0.5秒相当）。 */
 export const STAY = Object.freeze({ short: 56, normal: 76, long: 100 });
@@ -133,20 +100,18 @@ export const GUESTS = Object.freeze(Object.fromEntries([
   guest("friends", "友だち同士の二人", 2, "long", "plain", "talker", 3, ["bun", "pony"]),
 ].map((g) => [g.id, g])));
 // たまに遊びに来る、本編の人物（2026-11-20 オーナー「好感度1以上の人物がたまにレアで遊びに来たりとかも入れたい」）。
-// 来る条件（顔見知り・好感度1以上・章）は tonari.js が決める。ここは注文と台詞だけ。台詞は大会の前後どちらでも通る言葉にする（交流の時系列ルール）。
-// 好感度は動かさない。chapters＝来てよい章、order＝注文（exact＝完全指定／pin＝一種＋雰囲気／normal＝雰囲気だけ）。
-const visitor = (id, name, chapters, stay, rank, drinks, order, lines) => Object.freeze({ id, name, chapters: Object.freeze(chapters), stay, rank, drinks, order: Object.freeze(order), lines: Object.freeze(lines) });
+// 来る条件（顔見知り・好感度1以上・章）は tonari.js が決める。ここは気分と台詞だけ。台詞は大会の前後どちらでも通る言葉にする（交流の時系列ルール）。
+// 好感度は動かさない。chapters＝来てよい章、wish＝気分。
+const visitor = (id, name, chapters, stay, rank, drinks, wish, quote, lines) => Object.freeze({ id, name, chapters: Object.freeze(chapters), stay, rank, drinks, wish, quote, lines: Object.freeze(lines) });
 export const VISITORS = Object.freeze(Object.fromEntries([
-  visitor("tsumugi", "つむぎ", [1, 2], "long", "plain", 1, { type: "normal", family: "deep", trait: "chill", quote: "……はじめさん。お茶っぽくて、落ち着くのを、お願いします" }, {
+  visitor("tsumugi", "つむぎ", [1, 2], "long", "plain", 1, "deep", "……はじめさん。落ち着くのを、お願いします", {
     best: "……やわらかい色、です。好きです、これ", good: "……落ち着きます。ありがとうございます", off: "……少し、にぎやかな色、ですね", bye: "……ごちそうさまでした。また、描きに来ます" }),
-  visitor("naru", "なる", [1], "normal", "keen", 1, { type: "pin", family: "sweet", trait: "taste", must: "vanilla", quote: "よう、はじめ。甘いやつ頼むわ。バニラは入れてくれ" }, {
-    best: "……うまいな。焼き菓子みたいだ", good: "いいじゃん。ちゃんと甘い", off: "ん、俺が頼んだのと違うな", bye: "ごちそうさん。また来るわ" }),
-  visitor("adam", "アダム", [1, 2], "normal", "keen", 1, { type: "exact", exact: ["apple"], quote: "……はじめよ。ダブルアップルを。それだけでいい" }, {
-    best: "……よい。この顔は、知っている", good: "……惜しい。余計な声が混ざっている", off: "……これは、ダブルアップルではない", bye: "……また来る" }),
+  visitor("naru", "なる", [1], "normal", "keen", 1, "sweet", "よう、はじめ。甘いやつ、頼むわ", {
+    best: "……うまいな。焼き菓子みたいだ", good: "いいじゃん。ちゃんと甘い", off: "ん、甘いのを頼んだんだけどな", bye: "ごちそうさん。また来るわ" }),
+  visitor("adam", "アダム", [1, 2], "normal", "keen", 1, "fruit", "……はじめよ。今日は、果実の煙を頼む", {
+    best: "……よい。果実が、まっすぐ立っている", good: "……悪くない", off: "……これは、果実ではない", bye: "……また来る" }),
 ].map((v) => [v.id, v])));
 
-/** 客層ごとの、吸い心地の要求水準（ミックスの特性値がこれ以上なら満点）。 */
-export const DEMAND = Object.freeze({ plain: 2, keen: 2.5 });
 export const RANK_LABEL = Object.freeze({ plain: "一般", keen: "こだわり" });
 
 // ケア（温度調整・接客）の言葉は固定の5つ。並びを変えない（押す位置を手が覚える）。
@@ -158,14 +123,12 @@ export const VERBS = Object.freeze([
   Object.freeze({ id: "chat", label: "雑談する", note: "感想を聞く" }),
 ]);
 
-// ケアの種類。label は卓の札の短い言葉、sight は様子を読む夜（!だけ出る夜）に出す一文、said は言葉で伝わる夜の一言。
-// good は正しく応えた時、verb が正解。coal は定期の温度調整（炭の経過）。
+// ケアの種類（客からの頼み）。label は卓の札の短い言葉、sight は様子を読む夜（!だけ出る夜）の一文、said は言葉で伝わる夜の一言、
+// good は正しく応えた時、verb が正解。炭の調整は、頼まれる前に自分から行く（model の「調整」）。放っておくと thin か harsh で頼まれる。
 export const CALLS = Object.freeze({
-  coal: Object.freeze({ verb: "add", label: "炭の時間", said: "（炭が小さくなってきた。そろそろ替え時だ）",
-    sight: "炭が白く小さくなっている。煙はまだ出ているが、細くなってきた。", good: "あ、戻ってきた。ありがとう" }),
   thin: Object.freeze({ verb: "add", label: "煙が薄い", said: "あの、煙が薄くなってきたみたいで",
     sight: "煙が細い。ホースを見て、首をかしげている。", good: "うん、しっかり出てきた" }),
-  harsh: Object.freeze({ verb: "ease", label: "焦げっぽい", said: "すみません、少し焦げっぽいかも",
+  harsh: Object.freeze({ verb: "ease", label: "熱を下げて", said: "すみません、少し熱いかも。熱、下げてもらえますか",
     sight: "眉を寄せて、ホースをそっと置いた。煙は濃い。", good: "うん、やわらかくなった" }),
   thirsty: Object.freeze({ verb: "water", label: "喉が渇いた", said: "ふう……少し喉が渇いてきたな",
     sight: "喉に手をやって、小さく咳払いをした。グラスは空だ。", good: "ありがとう。気が利きますね" }),
@@ -174,20 +137,20 @@ export const CALLS = Object.freeze({
   chatty: Object.freeze({ verb: "chat", label: "話したそう", said: "これ、おいしいですね。何を混ぜてるんですか？",
     sight: "こちらを見て、目が合うとにこっと笑った。", good: "へえ、そうなんだ。また頼もうかな" }),
 });
+
 /** 外した時の一言（ケアごとに分けない。責めない言い方にする）。 */
 export const CALL_MISS = "えっと、そうじゃなくて……";
 
 /** 提供した時の一言。 */
 export const SERVE_LINES = Object.freeze({
-  best: Object.freeze(["うん、これ。この香りが欲しかった", "わ、ぴったり。よく分かりましたね", "そうそう、こういうのです"]),
+  best: Object.freeze(["うん、これ。こういうのが吸いたかった", "わ、ぴったり。よく分かりましたね", "そうそう、こういうのです"]),
   good: Object.freeze(["うん、いいですね", "あ、こういうのもいいかも", "おいしい。ありがとう"]),
   ok: Object.freeze(["うん、悪くないね", "思ってたのと少し違うけど、おいしい"]),
-  off: Object.freeze(["少し、思っていた香りと違うかも……", "あれ、頼んだのと違うような……"]),
-  ng: Object.freeze(["あ、これ……抜いてって言ったの、入ってません？"]),
+  off: Object.freeze(["少し、思っていたのと違うかも……", "あれ、今日の気分とは違うような……"]),
 });
-/** 会計・延長の一言。 */
+/** 会計・おかわりの一言。 */
 export const SEND_LINES = Object.freeze({
-  extend: Object.freeze(["居心地いいから、もう少し吸っていきたいな", "トップ替え、お願いできますか？"]),
+  extend: Object.freeze(["居心地いいから、もう一台いきたいな", "おかわり、お願いできますか？"]),
   bye: Object.freeze(["ごちそうさま。また来ます", "いい時間でした。ありがとう"]),
   byeLow: "……ごちそうさま",
   mad: "もういいです。帰ります",
@@ -215,12 +178,12 @@ export const byTime = (value, daytime) => (Array.isArray(value) ? value[daytime 
 
 /**
  * 満足（居心地）の5段階。min＝内部値の下限。color＝顔の印の色、face＝顔の印（tonari-floor-art.js の記号）。
- * 顔は丸い顔ではなく、煙のかたまりに表情を載せた本作の形（2026-11-20 オーナー「表情アイコンが元ネタのまんまなので少し変えたい」）。
+ * 顔の印は、◎ ○ △ の形の中に顔を描く（2026-11-20 オーナー「◎○△の中に顔を描いたりとか」）: 大満足＝◎／満足＝○／普通＝△／不満＝▽／激怒＝◇。
  */
 export const MOODS = Object.freeze([
-  Object.freeze({ id: "max", label: "大満足", min: 85, color: "#ff9ec4", face: "moodMax" }),
-  Object.freeze({ id: "good", label: "満足", min: 65, color: "#ffb454", face: "moodGood" }),
-  Object.freeze({ id: "ok", label: "普通", min: 40, color: "#9fd67f", face: "moodOk" }),
+  Object.freeze({ id: "max", label: "大満足", min: 85, color: "#ffd84d", face: "moodMax" }),
+  Object.freeze({ id: "good", label: "満足", min: 65, color: "#9fe08a", face: "moodGood" }),
+  Object.freeze({ id: "ok", label: "普通", min: 40, color: "#e8dcc4", face: "moodOk" }),
   Object.freeze({ id: "low", label: "不満", min: 20, color: "#7fb2e6", face: "moodLow" }),
   Object.freeze({ id: "mad", label: "激怒", min: 0, color: "#ef6a5a", face: "moodMad" }),
 ]);

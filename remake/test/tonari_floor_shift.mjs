@@ -38,7 +38,7 @@ assert.deepEqual([game.loadFromSlot(slot).money, game.state.slot, game.state.vis
 
 // フロア営業と本編の境界（画面はここでは代役）。
 // 店の売上を財布・私物へ混ぜない。中断・LOAD では進み具合を残さない。
-// 定番ミックスと店のファンの合計は flags._tonari_floor に残り、次の営業へ渡る。
+// 店のファンの合計は flags._tonari_floor に残り、次の営業へ渡る。
 // ワンオペの営業は「今日の注文」の記録（_shift_order_・_shift_mix_）に触れない。
 // たまに遊びに来る本編の人物は、顔見知り・好感度1以上・その章に来られる人だけ。はじめての営業には来ない。好感度は動かさない。
 const VISITORS = { tsumugi: { id: "tsumugi", chapters: [1, 2] }, naru: { id: "naru", chapters: [1] }, adam: { id: "adam", chapters: [1, 2] } };
@@ -59,8 +59,8 @@ async function floorBoundary(mode) {
       if (mode === "load") context.state = { ...account, flags: {} };
       if (mode === "abandon") return null;
       return calls.length === 1
-        ? { sales: 16800, rank: "A", stamp: "上々", bonus: 1000, fans: 6, presets: [["lemon", "mint"], ["peach", "lemon"]] }
-        : { sales: 9000, rank: "B", stamp: "まずまず", bonus: 500, fans: -9, presets: [["lemon", "mint"]] };
+        ? { sales: 16800, rank: "A", stamp: "上々", bonus: 1000, fans: 6 }
+        : { sales: 9000, rank: "B", stamp: "まずまず", bonus: 500, fans: -9 };
     });
   }, { context });
   await view.link(() => { throw Error("unexpected import"); });
@@ -76,22 +76,21 @@ async function floorBoundary(mode) {
   assert.equal(calls[0].level, 0, "はじめての営業は level 0");
   assert.equal(calls[0].chapter, 1);
   assert.equal(calls[0].night, true);
-  assert.equal(calls[0].presets, null, "はじめての営業は、店の定番から始める");
+  assert.equal("presets" in calls[0], false, "定番の持ち越しは無い（ミックスは一覧から選ぶ）");
   assert.equal(calls[0].fans, 0);
   assert.equal("anchor" in calls[0], false, "今日の注文の客は、ワンオペの営業には混ぜない");
   assert.equal(calls[0].visitor, null, "はじめての営業には、本編の人物は来ない");
   if (mode === "done") {
     assert.equal(result.bonus, 1000);
     // 別realmの値なので文字列で比べる
-    assert.equal(JSON.stringify(account.flags._tonari_floor), '{"nights":1,"best":"A","presets":[["lemon","mint"],["peach","lemon"]],"fans":6}');
-    // 次の営業へ、定番とファンの合計を渡す。評価は良かったほうを残し、ファンは0を下回らない。
+    assert.equal(JSON.stringify(account.flags._tonari_floor), '{"nights":1,"best":"A","fans":6}');
+    // 次の営業へ、ファンの合計を渡す。評価は良かったほうを残し、ファンは0を下回らない。
     const second = await module.namespace.serveFloorOrder(account, signal);
     assert.equal(calls.length, 2);
     assert.equal(calls[1].level, 1);
-    assert.equal(JSON.stringify(calls[1].presets), '[["lemon","mint"],["peach","lemon"]]');
     assert.equal(calls[1].fans, 6);
     assert.equal(second.bonus, 500);
-    assert.equal(JSON.stringify(account.flags._tonari_floor), '{"nights":2,"best":"A","presets":[["lemon","mint"]],"fans":0}');
+    assert.equal(JSON.stringify(account.flags._tonari_floor), '{"nights":2,"best":"A","fans":0}');
   } else {
     assert.equal(result, null);
     assert.equal(account.flags._tonari_floor, undefined);
@@ -133,4 +132,4 @@ for (const mode of ["done", "load", "abandon"]) await floorBoundary(mode);
   assert.equal(account.flags["_shift_order_1:4"], true);
   assert.equal(account.flags._tonari_floor, undefined);
 }
-console.log("tonari floor: AUTO/manual save, owner replacement, presets/fans carry-over, progress and fallback OK");
+console.log("tonari floor: AUTO/manual save, owner replacement, fans carry-over, progress and fallback OK");

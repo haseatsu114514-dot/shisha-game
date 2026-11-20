@@ -1,13 +1,15 @@
-// tonari フロア営業のルール（ワンオペ＆フレーバー調合型）。時間は刻み（tick）で進み、操作は刻みを使わない。
+// tonari フロア営業のルール（ワンオペ・ミックスを一覧から選ぶ形）。時間は刻み（tick）で進み、操作は刻みを使わない。
 // 本編の状態・給与・在庫から独立した純粋な関数だけを置く（同じ種と同じ操作なら同じ一晩になる）。
-// 画面（tonari-floor-view.js）が実時間で floorTick を呼び、調合・ケア・会計を選んでいる間は呼ばない（時間停止）。
+// 画面（tonari-floor-view.js）が実時間で floorTick を呼び、ミックスやケアを選んでいる間は呼ばない（時間停止）。
 //
-// 卓の流れ: empty →（来店・自動で着席）→ order（注文待ち。約9秒で怒って帰る）→ prep（作成・立ち上げ。同時に2台まで）
-//   →（自動で提供）→ enjoy（滞在。定期の温度調整・接客ケア・追加ドリンク）→ bill（お会計待ち）→ cool（片付け）→ empty
-//   滞在が終わる時、居心地の良い客は自分から延長（トップ替え＝おかわり）を頼むことがある。
+// 卓の流れ: empty →（来店・自動で着席）→ order（注文待ち。約9秒で怒って帰る）→ prep（仕込み。同時に2台まで）
+//   →（自動で提供）→ enjoy（滞在。炭の調整・客からの頼み・追加ドリンク）→ bill（お会計待ち）→ cool（片付け）→ empty
+//   客は気分（フルーティ／スイート／リフレッシュ／リラックス）を言うだけ。並んでいるミックス（手札）から、合う一台を選んで出す。
+//   炭は、頼まれなくても自分から調整に行く（炭の残りが少なくなったら）。放っておくと、客から頼まれる。
+//   滞在が終わる時、居心地の良い客は自分からおかわり（トップ替え）を頼むことがある。
 import {
-  PRICE, TRAIT_IDS, FLAVORS, SYNERGIES, NG, ORDER_WORDS, EXACT_MIXES, VISITORS, STAY, GUESTS, DEMAND, CALLS, NIGHTS, RANKS, MOODS,
-  SERVE_LINES, SEND_LINES, CALL_MISS, PRESET_MAX, STARTER_PRESETS, byTime,
+  PRICE, FLAVORS, MIXES, WISHES, HAND_SIZE, VISITORS, STAY, GUESTS, CALLS, NIGHTS, RANKS, MOODS,
+  SERVE_LINES, SEND_LINES, CALL_MISS, byTime,
 } from "./tonari-floor-data.js";
 
 export const FLOOR_TABLE_COUNT = 5;
@@ -17,28 +19,30 @@ export const FLOOR_TICK_MS = 500;
 // 長さはどれも刻み。
 const T = Object.freeze({
   order: 18, orderFirst: 30, // 注文を待ってくれる長さ（約9秒。はじめての営業だけ約15秒）。過ぎると怒って帰る
-  make: Object.freeze([0, 10, 14, 18]), preset: 2, // 作成・立ち上げ（フレーバーの数ごと）。定番は手が覚えているぶん早い
-  slots: 2, // 同時に作れる台数
-  call: 22, callCap: 2, callGap: 16, // ケアを待ってくれる長さ・店全体で同時に出る上限・同じ卓の間隔
-  coal: 34, coalPerLast: 5, // 定期の温度調整の周期（ミックスの持続性が高いほど長い）
+  make: Object.freeze([0, 10, 14, 18]), // 仕込み・立ち上げ（材料の数ごと）
+  slots: 2, // 同時に仕込める台数
+  call: 22, callCap: 2, callGap: 16, // 頼みを待ってくれる長さ・店全体で同時に出る上限・同じ卓の間隔
+  coal: 34, coalPerLast: 5, // 炭の調整の間隔（持続性の高いミックスほど長い）
   drink: 44, // 追加ドリンクを判定する間隔
-  top: 30, // トップ替え（おかわり）で延びる滞在
+  top: 30, // おかわり（トップ替え）で延びる滞在
   billGrace: 16, cool: 6, // 会計を待ってくれる長さ・会計のあと次の客が入れるまで
   lastCall: 40, // 閉店までこの刻みを切ったら、新しい客は来ない
   fever: 32, feverDrink: 10,
+  shuffle: 8, // シャッフルしてから、次にシャッフルできるまで
 });
+/** 炭の残りがこの割合を切ったら、調整どき（自分から行ける）。 */
+const TEND_FROM = 0.35;
 // decay＝くつろいでいる間に炭が進んで少しずつ下がる分（持続性の高いミックスほどゆるやか）。feverAfter＝フィーバーが明けた後に残る上乗せ
-const MOOD = Object.freeze({ start: 40, base: 24, care: 5, careMiss: -8, careLate: -10, ngHit: -12, must: 10, mustMiss: -15, billDecay: 0.4,
+const MOOD = Object.freeze({ start: 40, care: 5, careMiss: -8, careLate: -10, tend: 6, tendMiss: -4, billDecay: 0.4,
   decay: 0.07, decayPerLast: 0.2, feverAfter: 10 });
-const FAM_COEF = Object.freeze({ best: 1.5, good: 1.2, weak: 0.8, none: 0.4 });
-const STEP_UP = Object.freeze({ best: "best", good: "best", weak: "good", none: "weak" });
-const FEVER = Object.freeze({ level: 100, max: 300, care: 10, best: 14, good: 7, send: 4, targets: Object.freeze([0, 2, 4, FLOOR_TABLE_COUNT]) });
+// 気分との合い方ごとの、提供した時の満足。こだわりの客は、◎でないと少し辛い
+const RATE_MOOD = Object.freeze({ best: 90, good: 72, weak: 52, none: 30 });
+const KEEN_CUT = Object.freeze({ best: 0, good: 6, weak: 6, none: 4 });
+const RATE_GRADE = Object.freeze({ best: "best", good: "good", weak: "ok", none: "off" });
+const FEVER = Object.freeze({ level: 100, max: 300, care: 10, tend: 8, best: 14, good: 7, send: 4, targets: Object.freeze([0, 2, 4, FLOOR_TABLE_COUNT]) });
 const FANS = Object.freeze({ max: 3, good: 2, ok: 1, low: 0, mad: -2, left: -3 });
-// 完全に指定された注文: そのまま出せば大満足、余計な一種を足すと満足どまり、頼まれた物が欠けると不満
-const EXACT_MOOD = Object.freeze({ same: 92, extra: 68, missing: 32 });
 const DRINK_CHANCE = Object.freeze({ max: 0.7, good: 0.4, ok: 0.1, low: 0, mad: 0 });
 const EXTEND_CHANCE = Object.freeze({ max: 0.35, good: 0.1, ok: 0, low: 0, mad: 0 });
-const NG_FOR = Object.freeze({ fruit: ["citrus", "sweet", "mint"], fresh: ["mint", "citrus"], sweet: ["heavy", "mint"], deep: ["heavy", "sweet"] });
 const clamp = (v, lo = 0, hi = 100) => Math.max(lo, Math.min(hi, v));
 
 function rng(seed) {
@@ -50,74 +54,41 @@ function rng(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-/** 営業中の抽選（追加ドリンク・延長）。state の rolls を進めて、同じ操作なら同じ結果にする。 */
+/** 営業中の抽選（追加ドリンク・おかわり・シャッフル）。state の rolls を進めて、同じ操作なら同じ結果にする。 */
 function roll(s) {
   s.rolls += 1;
   return rng((s.seed ^ Math.imul(s.rolls, 0x9e3779b1)) >>> 0)();
 }
 
-// ---- 調合 ----
-const validMix = (ids) => Array.isArray(ids) && ids.length >= 1 && ids.length <= 3 && new Set(ids).size === ids.length && ids.every((id) => FLAVORS[id]);
-/** ミックスの同一性（定番の登録・好評ランキングの集計に使う）。入れた順は区別しない。 */
-export const mixKey = (ids) => [...ids].sort().join("+");
-export const mixLabel = (ids) => ids.map((id) => FLAVORS[id].label).join("＋");
-/** 系統への寄り（0〜1）から、適性の段（◎ best / ○ good / △ weak / × none）。 */
-export const aptitude = (weight) => (weight >= 0.8 ? "best" : weight >= 0.5 ? "good" : weight >= 0.25 ? "weak" : "none");
-
-/**
- * 1〜3種のフレーバーを混ぜた一台の中身。traits＝4特性の平均、family＝系統ごとの寄り、synergies＝成立した相性（タグの組）、
- * time＝作成・立ち上げの刻み。
- */
-export function mixInfo(ids, { preset = false } = {}) {
-  if (!validMix(ids)) return null;
-  const list = ids.map((id) => FLAVORS[id]);
-  const traits = Object.fromEntries(TRAIT_IDS.map((key, i) => [key, list.reduce((sum, f) => sum + f.traits[i], 0) / list.length]));
-  const family = Object.fromEntries(["fruit", "fresh", "sweet", "deep"].map((key) =>
-    [key, list.reduce((sum, f) => sum + (f.family === key ? 1 : f.also.includes(key) ? 0.5 : 0), 0) / list.length]));
-  const synergies = [];
-  for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) {
-    const pair = SYNERGIES.find(([x, y]) => (list[i].tags.includes(x) && list[j].tags.includes(y)) || (list[i].tags.includes(y) && list[j].tags.includes(x)));
-    if (pair) synergies.push([pair[0], pair[1]]);
-  }
-  return {
-    ids: [...ids], key: mixKey(ids), label: mixLabel(ids), traits, family, synergies,
-    tags: [...new Set(list.flatMap((f) => f.tags))],
-    time: Math.max(4, T.make[list.length] - (preset ? T.preset : 0)),
-  };
+// ---- ミックス ----
+/** ミックスの名前（材料の名前をつなげる。決まった名前があればそれ）。 */
+export const mixName = (id) => MIXES[id]?.name || (MIXES[id]?.flavors || []).map((f) => FLAVORS[f].label).join("");
+/** 系統への寄り（0〜1）から、合い方の段（◎ best / ○ good / △ weak / × none）。 */
+export const aptitude = (weight) => (weight >= 0.75 ? "best" : weight >= 0.5 ? "good" : weight >= 0.25 ? "weak" : "none");
+/** ミックスと、4つの気分との合い方。材料の系統（also は半分）の平均で決まる。 */
+export function mixRatings(id) {
+  const list = (MIXES[id]?.flavors || []).map((f) => FLAVORS[f]);
+  if (!list.length) return null;
+  return Object.fromEntries(WISHES.map((w) =>
+    [w.id, aptitude(list.reduce((sum, f) => sum + (f.family === w.id ? 1 : f.also.includes(w.id) ? 0.5 : 0), 0) / list.length)]));
 }
+const mixLast = (id) => { const list = MIXES[id].flavors.map((f) => FLAVORS[f]); return list.reduce((sum, f) => sum + f.traits[3], 0) / list.length; };
+const mixTime = (id) => T.make[MIXES[id].flavors.length];
 
 /**
- * 一台を注文に当てた時の評価。mood＝提供した時の満足（0〜100）、grade＝手応え（best / good / ok / off / ng）、
- * family＝系統の適性（おまかせは null）、ratio＝求める吸い心地への到達度、ngHit＝NGのタグを混ぜた、mustOk＝指定フレーバーを入れた。
+ * 一台を、客の気分に当てた時の評価。mood＝提供した時の満足（0〜100）、rating＝合い方（best ◎ / good ○ / weak △ / none ×）、
+ * grade＝手応え（best / good / ok / off）。
  */
-export function evaluateMix(ids, order, rank = "plain") {
-  const info = mixInfo(ids);
-  if (!info || !order) return null;
-  if (order.type === "exact") {
-    // 完全指定: 言われたとおりの物だけを出すのがいちばん（系統・相性・吸い心地では測らない）
-    const has = order.exact.every((id) => ids.includes(id));
-    const same = has && ids.length === order.exact.length;
-    return { mood: same ? EXACT_MOOD.same : has ? EXACT_MOOD.extra : EXACT_MOOD.missing, grade: same ? "best" : has ? "good" : "off",
-      family: null, ratio: 1, synergies: info.synergies, ngHit: false, mustOk: has, exact: same, info };
-  }
-  const ratio = clamp(info.traits[order.trait] / (DEMAND[rank] || DEMAND.plain), 0.5, 1.25);
-  let family = order.family ? aptitude(info.family[order.family]) : null;
-  if (family && order.type === "pin") family = STEP_UP[family]; // 指定フレーバーを入れるぶん、仕上げの向きは一段甘く見る
-  const coef = family ? FAM_COEF[family] : FAM_COEF.good;
-  const synergy = 1 + (order.type === "omakase" ? 0.2 : 0.1) * info.synergies.length;
-  const ngHit = !!order.ng && info.tags.some((tag) => NG[order.ng].tags.includes(tag));
-  const mustOk = !order.must || ids.includes(order.must);
-  let mood = MOOD.start + MOOD.base * coef * synergy * ratio * (ngHit ? 0.5 : 1);
-  if (ngHit) mood += MOOD.ngHit;
-  if (order.must) mood += mustOk ? MOOD.must : MOOD.mustMiss;
-  mood = clamp(mood);
-  const grade = ngHit ? "ng" : !mustOk ? "off" : mood >= 85 ? "best" : mood >= 65 ? "good" : mood >= 50 ? "ok" : "off";
-  return { mood, grade, family, ratio, synergies: info.synergies, ngHit, mustOk, info };
+export function evaluateMix(id, order, rank = "plain") {
+  const ratings = mixRatings(id);
+  if (!ratings || !order) return null;
+  const rating = ratings[order.wish];
+  return { mood: RATE_MOOD[rating] - (rank === "keen" ? KEEN_CUT[rating] : 0), rating, grade: RATE_GRADE[rating] };
 }
 
 /** 満足（居心地）の段。 */
 export const floorStage = (mood) => MOODS.find((m) => mood >= m.min) || MOODS[MOODS.length - 1];
-/** 顔の記号（smile / flat / frown）。 */
+/** 顔の印（tonari-floor-art.js の記号の名前）。 */
 export const floorFace = (mood) => floorStage(mood).face;
 
 /** これまでフロアを回した回数と天気から、今日の営業の種類を決める（勤務札の予報と本番で同じ答え）。 */
@@ -133,55 +104,24 @@ export function pickNight(level = 0, seed = 0, { rainy = false, daytime = false 
   return { ...def, title: byTime(def.title, daytime), forecast: byTime(def.forecast, daytime) };
 }
 
-// 注文の種類。抽象的な依頼（雰囲気だけ・一種＋雰囲気・おまかせ）が多く、完全に指定してくる客もいる。
-//   normal＝雰囲気だけ（系統＋吸い心地）／pin＝フレーバーを一つ挙げて、あとは雰囲気（「ミントで、さっぱり」）／exact＝完全指定（「グレープミントで」）
-//   ng＝雰囲気＋抜いてほしい物／omakase＝おまかせ。回した回数で増える: はじめは normal と exact、2回目から pin と ng、3回目から omakase。
-function makeOrder(random, level) {
-  const pick = (list) => list[Math.floor(random() * list.length)];
-  const types = level <= 0 ? ["normal", "normal", "exact"] : level === 1 ? ["normal", "normal", "pin", "exact", "ng"]
-    : ["normal", "normal", "pin", "pin", "exact", "ng", "omakase"];
-  const type = pick(types);
-  if (type === "exact") {
-    const exact = [...pick(EXACT_MIXES)];
-    const [a, b] = exact.map((id) => FLAVORS[id].label);
-    const quote = b ? pick([`${a}${b}で`, `${a}と${b}でお願いします`, `${a}${b}、ください`]) : pick([`${a}だけで、お願いします`, `${a}を、そのままで`]);
-    return { type, family: null, trait: null, ng: null, must: null, exact, quote };
-  }
-  const family = pick(["fruit", "fresh", "sweet", "deep"]);
-  const trait = pick(TRAIT_IDS);
-  const W = ORDER_WORDS;
-  if (type === "omakase") return { type, family: null, trait, ng: null, must: null, quote: W.omakase[trait] };
-  if (type === "pin") {
-    const must = pick(Object.keys(FLAVORS));
-    return { type, family, trait: "taste", ng: null, must, quote: `${FLAVORS[must].label}で、${W.finish[family]}お願いします` };
-  }
-  if (type === "ng") {
-    const ng = pick(NG_FOR[family]);
-    return { type, family, trait, ng, must: null, quote: `${W.family[family]}で、${W.trait[trait]}。${NG[ng].said}お願いします` };
-  }
-  return { type, family, trait, ng: null, must: null, quote: `${W.family[family]}で、${W.trait[trait]}がいいな` };
+// 注文は、気分を一つ言うだけ（「フルーツ系が吸いたいな」）。フレーバーを名指ししない。
+function makeOrder(random) {
+  const wish = WISHES[Math.floor(random() * WISHES.length)];
+  return { wish: wish.id, quote: wish.say[Math.floor(random() * wish.say.length)] };
+}
+function shuffled(list, random) {
+  const out = [...list];
+  for (let i = out.length - 1; i > 0; i--) { const j = Math.floor(random() * (i + 1)); [out[i], out[j]] = [out[j], out[i]]; }
+  return out;
 }
 
-const cleanPresets = (list) => {
-  const seen = new Set();
-  const out = [];
-  for (const ids of Array.isArray(list) ? list : []) {
-    if (!validMix(ids) || seen.has(mixKey(ids))) continue;
-    seen.add(mixKey(ids));
-    out.push([...ids]);
-    if (out.length >= PRESET_MAX) break;
-  }
-  return out;
-};
-/** 保存してある定番（無ければ、はじめが覚えている4つ）。 */
-export const floorPresets = (saved) => { const list = cleanPresets(saved); return list.length ? list : STARTER_PRESETS.map((m) => [...m]); };
-
 /**
- * 一晩を作る。
- * @param opts.level これまでフロアを回した回数（夜の種類・注文の種類・ケアの見せ方）
- * @param opts.presets 店の定番ミックス（保存してあるもの）
+ * 一晩の営業を作る。
+ * @param opts.seed 同じ種なら同じ客・同じ注文・同じミックスの並び
+ * @param opts.level これまでフロアを回した回数（夜の種類・ケアの見せ方）
+ * @param opts.visitor たまに遊びに来る本編の人物（VISITORS の id。来る条件は呼び出し側が決める）
  */
-export function createFloorNight({ seed = 0, level = 0, chapter = 1, presets = null, rainy = false, daytime = false, night = null, visitor = null } = {}) {
+export function createFloorNight({ seed = 0, level = 0, chapter = 1, rainy = false, daytime = false, night = null, visitor = null } = {}) {
   const def = night ? NIGHTS[night] || NIGHTS.usual : pickNight(level, seed, { rainy, daytime });
   const random = rng((Number(seed) >>> 0) ^ 0x51ed27);
   const guests = {};
@@ -190,17 +130,16 @@ export function createFloorNight({ seed = 0, level = 0, chapter = 1, presets = n
     const id = `g${i + 1}`;
     guests[id] = {
       id, kind: kindId, name: byTime(kind.name, daytime), party: kind.party, stay: kind.stay, rank: kind.rank, trait: kind.trait,
-      drinksMax: kind.drinks, look: [...kind.look], arrive: def.arrive[i], order: makeOrder(random, level),
+      drinksMax: kind.drinks, look: [...kind.look], arrive: def.arrive[i], order: makeOrder(random),
     };
   });
-  // たまに遊びに来る本編の人物（来る条件は呼び出し側が決める）。三組目の客と入れ替わる
+  // たまに遊びに来る本編の人物。三組目の客と入れ替わる
   const who = VISITORS[visitor];
   if (who && guests.g3) {
-    const o = who.order;
     guests.g3 = { ...guests.g3, kind: `visitor-${who.id}`, charId: who.id, name: who.name, party: 1, stay: who.stay, rank: who.rank, trait: null,
-      drinksMax: who.drinks, look: ["bob"],
-      order: { type: o.type, family: o.family || null, trait: o.trait || null, ng: null, must: o.must || null, exact: o.exact ? [...o.exact] : null, quote: o.quote } };
+      drinksMax: who.drinks, look: ["bob"], order: { wish: who.wish, quote: who.quote } };
   }
+  const deck = shuffled(Object.keys(MIXES), random);
   return {
     seed: Number(seed) >>> 0, level, chapter, night: def.id, title: byTime(def.title, daytime), daytime: !!daytime,
     visitor: who && guests.g3?.charId ? who.id : null,
@@ -208,17 +147,17 @@ export function createFloorNight({ seed = 0, level = 0, chapter = 1, presets = n
     t: 0, length: def.length, done: false, closing: null, rolls: 0,
     guests, upcoming: Object.keys(guests), came: 0,
     tables: Array.from({ length: FLOOR_TABLE_COUNT }, (_, i) => emptyTable(i + 1)),
-    presets: floorPresets(presets),
+    hand: deck.slice(0, HAND_SIZE), deck: deck.slice(HAND_SIZE), shuffleAt: 0, shuffles: 0,
     fever: 0, feverLeft: 0, feverLevel: 0, fevers: 0,
     sales: 0, fans: 0, results: [], mixes: {},
-    counts: { best: 0, good: 0, ok: 0, off: 0, ng: 0, care: 0, careMiss: 0, late: 0, left: 0, drink: 0, extend: 0 },
+    counts: { best: 0, good: 0, ok: 0, off: 0, care: 0, careMiss: 0, late: 0, left: 0, drink: 0, extend: 0, tend: 0, tendLate: 0 },
     log: [],
   };
 }
 
 function emptyTable(id) {
-  return { id, phase: "empty", guestId: null, mood: 0, since: 0, mix: null, preset: false, grade: null, make: null,
-    stayEnd: 0, call: null, wants: [], coalAt: 0, nextCall: 0, drinkAt: 0, drinks: 0, extra: 0, extended: false, fever: false, feverBase: 0, wear: 1,
+  return { id, phase: "empty", guestId: null, mood: 0, since: 0, mix: null, grade: null, rating: null, make: null,
+    stayEnd: 0, call: null, wants: [], coalAt: 0, coalSpan: 1, nextCall: 0, drinkAt: 0, drinks: 0, extra: 0, extended: false, fever: false, feverBase: 0, wear: 1,
     bill: null, line: "" };
 }
 
@@ -239,6 +178,14 @@ function earn(s, table, key, amount) {
   table.bill[key] += amount;
   s.sales += amount;
 }
+/** 炭を整えた（調整・炭に関わる頼み・おかわり）。次の調整までの間隔を数え直す。 */
+function resetCoal(s, table, scale = 1) {
+  table.coalSpan = Math.max(8, Math.round((T.coal + T.coalPerLast * mixLast(table.mix)) * scale));
+  table.coalAt = s.t + table.coalSpan;
+}
+const coalLeft = (s, table) => clamp((table.coalAt - s.t) / table.coalSpan, 0, 1);
+/** 調整どき（炭の残りが少ない。頼まれる前に自分から行ける）。フィーバーの掛かった卓・頼まれている卓は除く。 */
+const tendDue = (s, table) => table.phase === "enjoy" && !table.call && !(table.fever && s.feverLeft > 0) && coalLeft(s, table) <= TEND_FROM;
 
 /** 卓の客を送り出して、結果に残す。 */
 function settle(s, table, { by = "hajime", left = false } = {}) {
@@ -249,10 +196,9 @@ function settle(s, table, { by = "hajime", left = false } = {}) {
   s.fans += fans;
   const bill = table.bill || { charge: 0, shisha: 0, drink: 0, top: 0 };
   s.results.push({ guestId: guest.id, tableId: table.id, name: guest.name, party: guest.party, mood: left ? 0 : mood, stage: left ? "mad" : stage.id,
-    ...bill, total: billTotal(bill), mix: table.mix ? [...table.mix] : null, grade: table.grade, fans, left, by, charId: guest.charId || null });
+    ...bill, total: billTotal(bill), mix: table.mix, grade: table.grade, fans, left, by, charId: guest.charId || null });
   if (table.mix && table.grade && !left) {
-    const key = mixKey(table.mix);
-    const entry = s.mixes[key] || (s.mixes[key] = { ids: [...table.mix], n: 0, sum: 0 });
+    const entry = s.mixes[table.mix] || (s.mixes[table.mix] = { id: table.mix, n: 0, sum: 0 });
     entry.n += 1;
     entry.sum += mood;
   }
@@ -274,36 +220,33 @@ function close(s, why) {
   note(s, { type: "close", why });
 }
 
-function openCall(s, table, type) {
-  table.call = { type, since: s.t, until: s.t + T.call };
-  note(s, { type: "call", tableId: table.id, call: type });
+function openCall(s, table, type, { coal = false } = {}) {
+  table.call = { type, since: s.t, until: s.t + T.call, coal };
+  note(s, { type: "call", tableId: table.id, call: type, coal });
 }
-const coalPeriod = (table) => T.coal + Math.round(T.coalPerLast * (mixInfo(table.mix)?.traits.last || 0));
 
-/** 作成が終わった一台を出す（自動）。ここで評価が決まる。 */
+/** 仕込みが終わった一台を出す（自動）。ここで評価が決まる。 */
 function serve(s, table) {
   const guest = guestAt(s, table);
   const result = evaluateMix(table.mix, guest.order, guest.rank);
   const stay = STAY[guest.stay];
-  Object.assign(table, { phase: "enjoy", since: s.t, make: null, mood: result.mood, grade: result.grade, stayEnd: s.t + stay,
-    coalAt: s.t + coalPeriod(table), nextCall: s.t + 10, drinkAt: s.t + T.drink,
-    wear: Math.max(0.3, 1 - MOOD.decayPerLast * result.info.traits.last) });
-  // 客ごとのケア: 初心者はむせやすい、話し好きは声をかけてほしい、ほかは煙・喉。はじめての営業は温度調整と案内だけ
+  Object.assign(table, { phase: "enjoy", since: s.t, make: null, mood: result.mood, grade: result.grade, rating: result.rating, stayEnd: s.t + stay,
+    nextCall: s.t + 10, drinkAt: s.t + T.drink, wear: Math.max(0.3, 1 - MOOD.decayPerLast * mixLast(table.mix)) });
+  resetCoal(s, table);
+  // 客ごとの頼み: 初めての客はむせやすい、話し好きは声をかけてほしい、ほかは喉。はじめての営業は吸い方の案内だけ
   const wants = [];
   if (guest.trait === "beginner") wants.push({ type: "cough", at: s.t + Math.round(stay * 0.2) });
   if (s.level > 0) {
     if (guest.trait === "talker") wants.push({ type: "chatty", at: s.t + Math.round(stay * 0.45) });
-    else if (guest.trait !== "beginner") wants.push({ type: ["thin", "harsh", "thirsty"][(s.seed + table.id + s.t) % 3], at: s.t + Math.round(stay * 0.5) });
-    if (guest.stay === "long") wants.push({ type: "thirsty", at: s.t + Math.round(stay * 0.75) });
+    if (guest.stay === "long" || guest.trait === null) wants.push({ type: "thirsty", at: s.t + Math.round(stay * 0.7) });
   }
   table.wants = wants;
   earn(s, table, "shisha", PRICE.shisha);
   s.counts[result.grade] += 1;
   const own = VISITORS[guest.charId]?.lines; // 本編の人物は、その人の言葉で返す
-  table.line = own ? own[result.grade === "best" ? "best" : result.grade === "good" || result.grade === "ok" ? "good" : "off"]
-    : lineFor(s, SERVE_LINES[result.grade], table.id + s.t);
+  table.line = own ? own[result.grade === "best" ? "best" : result.grade === "off" ? "off" : "good"] : lineFor(s, SERVE_LINES[result.grade], table.id + s.t);
   if (result.grade === "best") gain(s, FEVER.best); else if (result.grade === "good") gain(s, FEVER.good);
-  note(s, { type: "serve", tableId: table.id, grade: result.grade, line: table.line, mood: result.mood });
+  note(s, { type: "serve", tableId: table.id, grade: result.grade, rating: result.rating, line: table.line, mood: result.mood });
 }
 
 function addDrink(s, table, why) {
@@ -326,9 +269,9 @@ function tickOnce(s) {
     const id = s.upcoming.shift();
     Object.assign(table, emptyTable(table.id), { phase: "order", guestId: id, since: s.t, mood: MOOD.start, line: s.guests[id].order.quote });
     s.came += 1;
-    note(s, { type: "arrive", guestId: id, tableId: table.id, rare: !!s.guests[id].charId });
+    note(s, { type: "arrive", guestId: id, tableId: table.id, rare: !!s.guests[id].charId, wish: s.guests[id].order.wish, line: s.guests[id].order.quote });
   }
-  // 作成・立ち上げ: 先に受けた注文から、同時に slots 台まで進む
+  // 仕込み・立ち上げ: 先に受けた注文から、同時に slots 台まで進む
   const making = s.tables.filter((x) => x.phase === "prep").sort((a, b) => a.since - b.since || a.id - b.id);
   making.forEach((table, i) => {
     table.make.active = i < T.slots;
@@ -369,19 +312,27 @@ function tickOnce(s) {
     table.mood = clamp(table.mood - MOOD.decay * table.wear);
     if (table.call) {
       if (s.t >= table.call.until) {
-        const type = table.call.type;
+        const { coal } = table.call;
         table.call = null;
         calling -= 1;
         table.mood = clamp(table.mood + MOOD.careLate);
         table.nextCall = s.t + T.callGap;
-        if (type === "coal") table.coalAt = s.t + Math.round(coalPeriod(table) * 0.6); // 放っておくと、味が落ちるのも早い
+        if (coal) resetCoal(s, table, 0.6); // 放っておくと、味が落ちるのも早い
         s.counts.late += 1;
-        note(s, { type: "callLate", tableId: table.id, call: type });
+        note(s, { type: "callLate", tableId: table.id });
       }
     } else if (calling < T.callCap && s.t >= table.nextCall && s.t < table.stayEnd - 6) {
-      // 同時に呼ばれるのは店全体で2卓まで（ワンオペで全部の卓が同時にあふれないようにする）
-      const want = table.wants.length && s.t >= table.wants[0].at ? table.wants.shift().type : s.t >= table.coalAt ? "coal" : null;
-      if (want) { openCall(s, table, want); calling += 1; }
+      // 同時に頼まれるのは店全体で2卓まで（ワンオペで全部の卓が同時にあふれないようにする）
+      if (s.t >= table.coalAt) {
+        // 炭の調整に行かなかった: 客のほうから頼まれる（煙が薄い／熱を下げてほしい）
+        table.mood = clamp(table.mood + MOOD.tendMiss);
+        s.counts.tendLate += 1;
+        openCall(s, table, (s.seed + table.id + s.t) % 2 ? "harsh" : "thin", { coal: true });
+        calling += 1;
+      } else if (table.wants.length && s.t >= table.wants[0].at) {
+        openCall(s, table, table.wants.shift().type);
+        calling += 1;
+      }
     }
     // 追加ドリンク: 居心地が良いほど頼みやすい（客ごとの上限まで）
     if (s.t >= table.drinkAt) {
@@ -389,11 +340,11 @@ function tickOnce(s) {
       if (table.extra < guest.drinksMax && roll(s) < DRINK_CHANCE[floorStage(table.mood).id]) addDrink(s, table, "time");
     }
     if (!table.call && s.t >= table.stayEnd) {
-      // 居心地の良い客は、自分から延長（トップ替え＝おかわり）を頼むことがある。一卓に一度まで
+      // 居心地の良い客は、自分からおかわり（トップ替え）を頼むことがある。一卓に一度まで
       if (!table.extended && s.length - s.t >= T.top + 10 && roll(s) < EXTEND_CHANCE[floorStage(table.mood).id]) {
         table.extended = true;
         table.stayEnd = s.t + T.top;
-        table.coalAt = s.t + coalPeriod(table);
+        resetCoal(s, table);
         earn(s, table, "top", PRICE.top);
         s.counts.extend += 1;
         table.line = lineFor(s, SEND_LINES.extend, table.id);
@@ -420,7 +371,7 @@ function tickOnce(s) {
   else if (!s.upcoming.length && s.came > 0 && s.tables.every((x) => x.phase === "empty" || x.phase === "cool")) close(s, "clear");
 }
 
-/** 店内の時間を n 刻み進める。直前の出来事（log）は進めた分だけ入れ直す。 */
+/** 時間を n 刻み進める（操作はしない）。 */
 export function floorTick(state, n = 1) {
   if (state.done || n <= 0) return state;
   const s = structuredClone(state);
@@ -435,7 +386,7 @@ export function floorTap(s, tableId) {
   if (!table || s.done) return "none";
   switch (table.phase) {
     case "order": return "order";
-    case "enjoy": return table.call && !(table.fever && s.feverLeft > 0) ? "care" : "info";
+    case "enjoy": return table.call && !(table.fever && s.feverLeft > 0) ? "care" : tendDue(s, table) ? "tend" : "info";
     case "bill": return "bill";
     case "prep": return "info";
     default: return "none";
@@ -444,8 +395,8 @@ export function floorTap(s, tableId) {
 
 /**
  * 操作を一つ確定する。できない操作は同じ state を返す（画面は何も進めない）。
- * action: { type: "order", tableId, mix: [フレーバーID…], preset } / { type: "care", tableId, verb } / { type: "bill", tableId }
- *   / { type: "fever" } / { type: "preset", op: "add" | "remove", mix } / { type: "finish" }
+ * action: { type: "order", tableId, mix: ミックスID（並んでいる中から） } / { type: "shuffle" } / { type: "tend", tableId }
+ *   / { type: "care", tableId, verb } / { type: "bill", tableId } / { type: "fever" } / { type: "finish" }
  */
 export function floorAct(state, action) {
   if (!action || state.done) return state;
@@ -456,35 +407,62 @@ export function floorAct(state, action) {
   const can = (kind) => table && floorTap(s, table.id) === kind;
   switch (action.type) {
     case "order": {
-      if (!can("order") || !validMix(action.mix)) return state;
-      const preset = s.presets.some((ids) => mixKey(ids) === mixKey(action.mix));
-      const info = mixInfo(action.mix, { preset });
-      const active = s.tables.filter((x) => x.phase === "prep").length < T.slots; // 作成枠が空いていれば、すぐ作りはじめる
-      Object.assign(table, { phase: "prep", since: s.t, mix: [...action.mix], preset, make: { left: info.time, total: info.time, active },
+      const slot = s.hand.indexOf(action.mix);
+      if (!can("order") || slot < 0) return state;
+      const time = mixTime(action.mix);
+      const active = s.tables.filter((x) => x.phase === "prep").length < T.slots; // 仕込みの枠が空いていれば、すぐ作りはじめる
+      Object.assign(table, { phase: "prep", since: s.t, mix: action.mix, make: { left: time, total: time, active },
         bill: { charge: 0, shisha: 0, drink: 0, top: 0 }, drinks: guest.party, line: "" });
+      // 出したミックスは一覧から抜けて、次の一つが入る（山が尽きたら、出ていない物から組み直す）
+      if (!s.deck.length) s.deck = shuffled(Object.keys(MIXES).filter((id) => !s.hand.includes(id)), () => roll(s));
+      s.hand[slot] = s.deck.shift();
       // チャージと、初回のドリンク（ひとり1杯。必ず注文する）
       earn(s, table, "charge", PRICE.charge * guest.party);
       earn(s, table, "drink", PRICE.drink * guest.party);
-      note(s, { type: "order", tableId: table.id, mix: [...action.mix], preset });
+      note(s, { type: "order", tableId: table.id, mix: action.mix, rating: mixRatings(action.mix)[guest.order.wish] });
+      break;
+    }
+    case "shuffle": {
+      // 並んでいるミックスを全部入れ替える。続けては出来ない（選んでいる間は時間が止まるので、一度の注文で一回）
+      if (s.t < s.shuffleAt) return state;
+      const rest = shuffled([...s.deck, ...s.hand], () => roll(s));
+      // 同じ並びに戻らないよう、いま出ている物は後ろへ回す
+      const fresh = rest.filter((id) => !s.hand.includes(id));
+      const next = [...fresh, ...rest.filter((id) => s.hand.includes(id))];
+      s.hand = next.slice(0, HAND_SIZE);
+      s.deck = next.slice(HAND_SIZE);
+      s.shuffleAt = s.t + T.shuffle;
+      s.shuffles += 1;
+      note(s, { type: "shuffle" });
+      return s; // 開店前でも出来る（閉店の判定はしない）
+    }
+    case "tend": {
+      // 頼まれる前に、自分から炭を整える
+      if (!can("tend")) return state;
+      table.mood = clamp(table.mood + MOOD.tend);
+      resetCoal(s, table);
+      s.counts.tend += 1;
+      gain(s, FEVER.tend);
+      note(s, { type: "tend", tableId: table.id });
       break;
     }
     case "care": {
       if (!can("care")) return state;
       const call = CALLS[table.call.type];
-      const type = table.call.type;
+      const { type, coal } = table.call;
       const ok = action.verb === call.verb;
       table.call = null;
       table.nextCall = s.t + T.callGap;
-      if (type === "coal") table.coalAt = s.t + coalPeriod(table);
+      if (coal) resetCoal(s, table, ok ? 1 : 0.6);
       if (ok) {
         table.mood = clamp(table.mood + MOOD.care);
+        table.line = call.good;
         s.counts.care += 1;
         gain(s, FEVER.care);
-        table.line = call.good;
       } else {
         table.mood = clamp(table.mood + MOOD.careMiss);
-        s.counts.careMiss += 1;
         table.line = CALL_MISS;
+        s.counts.careMiss += 1;
       }
       note(s, { type: "care", tableId: table.id, call: type, ok, line: table.line });
       // 雑談がはずむと、もう一杯頼みたくなる
@@ -514,26 +492,13 @@ export function floorAct(state, action) {
       note(s, { type: "feverStart", level, tables: targets.map((x) => x.id) });
       break;
     }
-    case "preset": {
-      if (!validMix(action.mix)) return state;
-      const key = mixKey(action.mix);
-      const at = s.presets.findIndex((ids) => mixKey(ids) === key);
-      if (action.op === "remove") {
-        if (at < 0 || s.presets.length <= 1) return state;
-        s.presets.splice(at, 1);
-      } else {
-        if (at >= 0 || s.presets.length >= PRESET_MAX) return state;
-        s.presets.push([...action.mix]);
-      }
-      note(s, { type: "preset", op: action.op === "remove" ? "remove" : "add", mix: [...action.mix] });
-      return s; // 定番の編成は、営業の前後でも出来る（閉店の判定はしない）
-    }
     case "finish":
       close(s, "early");
       break;
     default:
       return state;
   }
+  if (!s.done && !s.upcoming.length && s.came > 0 && s.tables.every((x) => x.phase === "empty" || x.phase === "cool")) close(s, "clear");
   return s;
 }
 
@@ -549,7 +514,7 @@ export function floorUrgency(s, tableId) {
 }
 
 /**
- * 待たせている卓の、残りの猶予（刻み）。注文は怒って帰るまで、ケアは消えるまで、会計は満足が下がり始めるまで。
+ * 待たせている卓の、残りの猶予（刻み）。注文は怒って帰るまで、頼みは消えるまで、会計は満足が下がり始めるまで。
  * 待たせていない卓は null。
  */
 export function floorWaitLeft(s, tableId) {
@@ -564,23 +529,31 @@ export function floorWaitLeft(s, tableId) {
 /** くつろいでいる卓の、滞在の残り（1→0）。 */
 export function floorStayLeft(s, tableId) {
   const table = tableOf(s, tableId);
-  const guest = guestAt(s, table);
-  if (!guest || table.phase !== "enjoy") return 0;
-  return clamp((table.stayEnd - s.t) / STAY[guest.stay], 0, 1);
+  if (!table || table.phase !== "enjoy") return 0;
+  const span = STAY[guestAt(s, table).stay] + (table.extended ? T.top : 0);
+  return clamp((table.stayEnd - s.t) / span, 0, 1);
 }
 
-/** 炭の残り（1→0）。次の温度調整までの目安。 */
+/** くつろいでいる卓の、炭の残り（1→0）。0.35 を切ったら調整どき。 */
 export function floorCoalLeft(s, tableId) {
   const table = tableOf(s, tableId);
-  if (!table || table.phase !== "enjoy" || !table.mix) return 0;
-  return clamp((table.coalAt - s.t) / coalPeriod(table), 0, 1);
+  return table && table.phase === "enjoy" ? coalLeft(s, table) : 0;
 }
+/** 調整どきの卓か（頼まれる前に、自分から炭を整えに行ける）。 */
+export const floorTendDue = (s, tableId) => { const table = tableOf(s, tableId); return !!table && tendDue(s, table); };
 
-/** 作成中の一台（上の帯に出す）。active＝いま進んでいる（同時作成の枠の中）。 */
+/** 仕込み中の一台（先に受けた順）。active＝いま手が動いている（同時に2台まで）。 */
 export function floorMaking(s) {
   return s.tables.filter((x) => x.phase === "prep").sort((a, b) => a.since - b.since || a.id - b.id)
-    .map((x, i) => ({ tableId: x.id, label: mixLabel(x.mix), left: x.make.left, total: x.make.total, active: i < T.slots }));
+    .map((x, i) => ({ tableId: x.id, label: mixName(x.mix), left: x.make.left, total: x.make.total, active: i < T.slots }));
 }
+
+/** 並んでいるミックス（一覧）。wish を渡すと、その気分との合い方 rating も付く。 */
+export function floorHand(s, wish = null) {
+  return s.hand.map((id) => { const ratings = mixRatings(id); return { id, name: mixName(id), flavors: [...MIXES[id].flavors], ratings, rating: wish ? ratings[wish] : null }; });
+}
+/** 次にシャッフルできるまでの刻み（0 なら今できる）。 */
+export const floorShuffleLeft = (s) => Math.max(0, s.shuffleAt - s.t);
 
 /** その卓の、いままでのお代（チャージ・シーシャ・ドリンク・トップ替え）。客がいない卓は null。 */
 export function floorBill(s, tableId) {
@@ -610,8 +583,10 @@ export function floorHint(s) {
   if (calling) return { kind: "call", tableId: calling.id, text: `（${calling.id}卓の様子を見にいこう）` };
   const billing = urgent(s.tables.filter((x) => x.phase === "bill"));
   if (billing) return { kind: "bill", tableId: billing.id, text: `（${billing.id}卓のお会計だ）` };
+  const tending = s.tables.filter((x) => tendDue(s, x)).sort((a, b) => coalLeft(s, a) - coalLeft(s, b))[0];
+  if (tending) return { kind: "tend", tableId: tending.id, text: `（${tending.id}卓、そろそろ炭を見にいこう）` };
   if (floorFeverLevel(s) >= 1 && s.tables.filter((x) => x.phase === "enjoy").length >= 2) return { kind: "feverReady", tableId: null, text: "（いい空気だ。フィーバー、いける）" };
-  if (s.tables.some((x) => x.phase === "prep")) return { kind: "idle", tableId: null, text: "（いま作ってる。その間に卓を見ておこう）" };
+  if (s.tables.some((x) => x.phase === "prep")) return { kind: "idle", tableId: null, text: "（いま仕込んでる。その間に卓を見ておこう）" };
   return { kind: "idle", tableId: null, text: s.tables.some((x) => x.phase === "enjoy") ? "（いい調子だ。卓の様子を見ておこう）" : "（次のお客さんまで、少し間がある）" };
 }
 
@@ -632,8 +607,7 @@ export function floorResult(s) {
   // 「大入り」は、怒って帰った組がいない夜だけ。
   const rank = RANKS.find((r) => score >= r.min && !(r.id === "S" && (left || !groups.length))) || RANKS[RANKS.length - 1];
   const sum = (key) => groups.reduce((total, row) => total + (row[key] || 0), 0);
-  const presetKeys = new Set(s.presets.map(mixKey));
-  const mixes = Object.values(s.mixes).map((m) => ({ ids: m.ids, label: mixLabel(m.ids), n: m.n, avg: Math.round(m.sum / m.n), preset: presetKeys.has(mixKey(m.ids)) }))
+  const mixes = Object.values(s.mixes).map((m) => ({ id: m.id, label: mixName(m.id), n: m.n, avg: Math.round(m.sum / m.n) }))
     .sort((a, b) => b.avg - a.avg || b.n - a.n).slice(0, 3);
   return {
     night: s.night, title: s.title, sales: s.sales, visitor: s.visitor,
@@ -641,7 +615,7 @@ export function floorResult(s) {
     fans: s.fans, score, rank: rank.id, stamp: rank.stamp, bonus: rank.bonus, comment: rank.line,
     groups, served: groups.filter((row) => !row.left).length, came: groups.length, left,
     stages: Object.fromEntries(MOODS.map((m) => [m.id, groups.filter((row) => row.stage === m.id).length])),
-    counts: { ...s.counts }, fevers: s.fevers, closing: s.closing, mixes, presets: s.presets.map((ids) => [...ids]),
+    counts: { ...s.counts }, fevers: s.fevers, shuffles: s.shuffles, closing: s.closing, mixes,
   };
 }
 

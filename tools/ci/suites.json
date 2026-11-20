@@ -11,7 +11,7 @@
   "suites": [
     {
       "id": "tonari-floor",
-      "title": "tonari floor service (one-person): flavor mixing, presets, care calls, natural extension, fever, rating and shift boundaries",
+      "title": "tonari floor service (one-person): guest wishes, mix list and shuffle, coal tending, care calls, refills, fever, rating and shift boundaries",
       "kind": "quick",
       "run": ["node --test remake/test/tonari_floor_model.mjs", "node --experimental-vm-modules remake/test/tonari_floor_shift.mjs"]
     },
@@ -1382,7 +1382,7 @@
     },
     {
       "id": "tonari-floor-browser",
-      "title": "tonari floor service on the real screen: shift flow, mixing window, PC/touch controls, clock stops and LOAD",
+      "title": "tonari floor service on the real screen: shift flow, mix list and shuffle, coal tending, PC/touch controls, clock stops and LOAD",
       "kind": "browser",
       "weight": 1.6,
       "timeout": 10,
