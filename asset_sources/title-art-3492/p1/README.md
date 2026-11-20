@@ -1,26 +1,30 @@
 # タイトルアート P1 比較
 
-[Issue #3492](https://github.com/haseatsu114514-dot/shisha-game/issues/3492)・[#4028 項目5](https://github.com/haseatsu114514-dot/shisha-game/issues/4028)。同じ人物・衣装・所作を S1（新版立ち絵のセル影）と S2（公式 KV の柔らかい影）で比較する。選定はオーナー待ち。
+[Issue #3492](https://github.com/haseatsu114514-dot/shisha-game/issues/3492)・[#4028 項目5](https://github.com/haseatsu114514-dot/shisha-game/issues/4028)。同じ人物・衣装・所作を S1（新版立ち絵のセル影）と S2（公式 KV の柔らかい影）で比較する。共通画風は **S1** に決定。
 
 | ゲーム表示 | S1 | S2 |
 |---|---|---|
-| アゲハ04 | [![アゲハ04 S1](ageha04_s1_title_1280x720_dpr1.png)](ageha04_s1_title_1280x720_dpr1.png) | [![アゲハ04 S2](ageha04_s2_title_1280x720_dpr1.png)](ageha04_s2_title_1280x720_dpr1.png) |
+| あげは04 | [![あげは04 S1](ageha04_s1_title_1280x720_dpr1.png)](ageha04_s1_title_1280x720_dpr1.png) | [![あげは04 S2](ageha04_s2_title_1280x720_dpr1.png)](ageha04_s2_title_1280x720_dpr1.png) |
 | スミ01 | [![スミ01 S1](sumi01_s1_title_1280x720_dpr1.png)](sumi01_s1_title_1280x720_dpr1.png) | [![スミ01 S2](sumi01_s2_title_1280x720_dpr1.png)](sumi01_s2_title_1280x720_dpr1.png) |
 
 | 対象 | 原寸 PNG | 顔等倍・新版立ち絵との比較 | 560×720 切り抜き |
 |---|---|---|---|
-| アゲハ04 | [S1](ageha04_s1.png)・[S2](ageha04_s2.png) | [新版 / S1 / S2](ageha04_faces_1to1.png) | [S1](ageha04_s1_crop_560x720.png)・[S2](ageha04_s2_crop_560x720.png) |
+| あげは04 | [S1](ageha04_s1.png)・[S2](ageha04_s2.png) | [新版 / S1 / S2](ageha04_faces_1to1.png) | [S1](ageha04_s1_crop_560x720.png)・[S2](ageha04_s2_crop_560x720.png) |
 | スミ01 | [S1](sumi01_s1.png)・[S2](sumi01_s2.png) | [新版 / S1 / S2](sumi01_faces_1to1.png) | [S1](sumi01_s1_crop_560x720.png)・[S2](sumi01_s2_crop_560x720.png) |
+
+## 採用判断
+
+両キャラのタイトル表示と顔等倍を確認し、S1 を P2 の画風参照にする。あげはは目元・髪留め・グミの縁、スミは眼鏡・髭・指と布の境が縮小表示でも読み取りやすい。人物の線と影は新版立ち絵に合わせ、背景の灯りには現在の柔らかい塗りを使う。P2 はつむぎ・ましろから2案ずつ比較する。今回の選定対象は画風。P1 原画は 1024×1536 の比較用で、ゲーム用画像の差し替えは各原画の寸法・表示・圧縮を検品してから行う。
 
 ## 画風と自己検品
 
 | 対象 | S1 | S2 |
 |---|---|---|
-| アゲハ04 | 頬と前髪の影の境がはっきりしており、琥珀の目とウインクが小さな表示でも読みやすい。 | 頬と金髪にラウンジの暖色が回る。グミの透け方は自然で、目元と毛先の線は S1 より淡い。 |
+| あげは04 | 頬と前髪の影の境がはっきりしており、琥珀の目とウインクが小さな表示でも読みやすい。 | 頬と金髪にラウンジの暖色が回る。グミの透け方は自然で、目元と毛先の線は S1 より淡い。 |
 | スミ01 | 眼鏡と髭の輪郭、親指・器の縁・布の境が最も読みやすい。黒シャツのセル影は大きな面で分かれる。 | ランプの光が頬、袖、素焼きの側面へ続く。器を拭く静けさが出る一方、髭と暗い襟は S1 より近い明度になる。 |
 
-- **本人性・所作**　アゲハは色違いの熊の髪留め、ツインテール、フープ、チョーカーとハートのペンダント、豹柄、ピンクのトップスを照合。片手のグミを光にかざし、もう一方で袋を支える。顔・グミ・袋はいずれも表示内。スミは帽子、角眼鏡、口髭と顎髭、腕まくり、腰エプロンを照合。2案とも手に持った空のハガルの口縁と穴、狭まる胴、布の接触を読める。下端は指と布に隠れ、脚の全形は確認できない。口径は支える手と同程度。台への装着前で、HMD・炭・ホースは画面に出ない。
-- **画面での見え方**　現行タイトルで登場途中と静止後を比較。顔・グミ・器はメニューと重ならない。アゲハの上げた腕の外側に左マスクが掛かる。S2 はアゲハの指先と暖色背景が近いため、グミの輪郭は S1 の方が読みやすい。原画に UI、文字、透かしの焼き込みは見当たらない。
+- **本人性・所作**　あげはは色違いの熊の髪留め、ツインテール、フープ、チョーカーとハートのペンダント、豹柄、ピンクのトップスを照合。片手のグミを光にかざし、もう一方で袋を支える。顔・グミ・袋はいずれも表示内。スミは帽子、角眼鏡、口髭と顎髭、腕まくり、腰エプロンを照合。2案とも手に持った空のハガルの口縁と穴、狭まる胴、布の接触を読める。下端は指と布に隠れ、脚の全形は確認できない。口径は支える手と同程度。台への装着前で、HMD・炭・ホースは画面に出ない。
+- **画面での見え方**　現行タイトルで登場途中と静止後を比較。顔・グミ・器はメニューと重ならない。あげはの上げた腕の外側に左マスクが掛かる。S2 はあげはの指先と暖色背景が近いため、グミの輪郭は S1 の方が読みやすい。原画に UI、文字、透かしの焼き込みは見当たらない。
 - **解像度**　全点を実デコード。無加工の 1024×1536、8-bit RGB、不透明 PNG。ICC・sRGB チャンクの埋め込みは確認できず、ブラウザーの既定解釈で比較。Issue の目標 1120×1680 に幅96・高さ144 px 不足する。拡大保存は行っていない。配信 WebP の容量・圧縮、ロード時間、抽選・セーブ回帰は本編組み込み時の検証項目。
 
 ## 比較条件
@@ -42,7 +46,7 @@
 
 ## 生成記録
 
-Codex 内蔵画像生成。アゲハ各1回、スミ各2回（初稿から掌と器の口径の縮尺を補正）、提出候補は各1枚。要求寸法 1680×2520、不透明、モデルの細版・seed はツールから非開示。A/B/C/E は役割名を付けた参照ボード、F は別の実写ボードで投入した。スミ初稿で用いた E は形状の接写で、提出版では F1/F2 を追加した。
+Codex 内蔵画像生成。あげは各1回、スミ各2回（初稿から掌と器の口径の縮尺を補正）、提出候補は各1枚。要求寸法 1680×2520、不透明、モデルの細版・seed はツールから非開示。A/B/C/E は役割名を付けた参照ボード、F は別の実写ボードで投入した。スミ初稿で用いた E は形状の接写で、提出版では F1/F2 を追加した。
 
 | 役割 | 元ファイル | SHA-256 |
 |---|---|---|
@@ -67,7 +71,7 @@ E/F のパスは非公開の隣接資料リポジトリ siryou（`112d8e8ffca467
 Create one finished, opaque native 1680 × 2520 px portrait 2:3 illustration for the visual novel 水煙前線 -EN:CODE-. The attached labeled contact sheet is input only. Return one full-bleed scene. A is the approved new sprite: exact identity, facial design, proportions and clothes. B is the official key visual: use environment paint, motivated light, material rendering only. C is the adopted title: carry over its scene, expression and action. Do not reproduce the board, labels, old rendering or UI. Use clean tapered Japanese anime linework, matte skin, a softly painted lower-detail background and one motivated lamp with modest fill. Frame seated subject from head to thigh with generous headroom; place face about x67%, y31% and meaningful hands and objects between x40–85%, y22–73%, keep both ponytail clips or the full cap clear of top crop. No printed words, branding, watermark, fade, grain, glitter overlay, pixel texture, plastic gloss or excessive bloom.
 ```
 
-**アゲハ04**
+**あげは04**
 
 ```text
 Only Ageha, 22, friendly rounded youthful face with large amber eyes, gold blonde high wavy twin tails, pink bear clip on viewer left and cream bear clip on viewer right, hoop earrings, choker and gold heart pendant, leopard jacket over pink top with outlined heart and black pleated skirt. Seated in the warm pink and amber lounge of C, cheerfully winking toward the viewer as her raised right hand delicately holds translucent red and pale bear gummies to the light, just left of her face; other hand holds a little open plain pink-translucent candy pouch. Keep both hands anatomically legible.
