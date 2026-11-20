@@ -652,6 +652,9 @@ function next() {
       if (vnTest.turbo) continue;
       const run = { tarot: () => tarotFlip(), lime: () => limeExchange(line.char_id, line.context), purikura: () => purikuraShot(),
         dragon: () => sceneMoment("dragonSmoke"), // dragon: 第4章 前夜祭の龍の煙（#2688 A5）
+        taste: () => sceneMoment("tasteFade"), // taste: 第2章 一口ぶんの煙から甘さの色だけが抜ける（#3965）
+        // unveil: 第4章 四つ目の台に立つ男の影がほどけて本人の姿になる（#3965）。立ち絵は会話と同じ枠取りで渡す
+        unveil: () => sceneMoment("shadowUnveil", unveilFigure(line.char_id, line.face)),
         // gaze: 修羅場で恋人たちの視線が刺さる。その場にいる恋人は呼び出し側が play の cast で渡す（無ければ会ったことのある恋人全員）。
         // "brief": true はプチ修羅場の短い版
         gaze: () => gazeCutin(r.cast || (state.lovers || []).filter((id) => state.met?.[id]), { brief: line.brief === true }) }[line.id];
@@ -1238,6 +1241,15 @@ function updatePortraits(speaker, face, explicit = false) {
   for (const img of dom.portraits.querySelectorAll("img")) img.classList.toggle("active", img.dataset.speaker === speaker);
   layoutPortraits();
   return entrance;
+}
+
+/** 演出（motions/moments.js の shadowUnveil）へ渡す、会話と同じ大きさ・足元の立ち絵。絵が無ければ null（演出は何もしない） */
+function unveilFigure(charId, face = "normal") {
+  const info = charId ? portraitInfo(charId, face) : null;
+  if (!info) return null;
+  const img = el("img", { src: info.src, alt: "", draggable: "false" });
+  frame(img, info);
+  return img;
 }
 
 /** 透過余白の差を補正し、本体の高さ・足元位置をキャラ間でそろえる */
