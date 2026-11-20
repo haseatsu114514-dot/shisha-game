@@ -59,7 +59,7 @@ const MASHIRO_VISIT = "ch5_free_mashiro_visit";
 
 /** 博士に連絡する（勝負の日を決める）。家の電話から。閉店後の練習と試作を終えてから出す（chapterFiveCallOpen）。 */
 export const CH5_CALL_SPOT = Object.freeze({
-  id: "ch5_call", kind: "ch5_call", label: "博士に連絡する", area: "自宅の電話", x: 64, y: 66,
+  id: "ch5_call", kind: "ch5_call", label: "博士に連絡する", area: "自宅の電話", x: 74, y: 66,
   theme: "rest", glyph: "☎", preview: "bg_home",
   desc: "勝負の日を決める。決めたら、その日の残りは準備にあてて、翌日が勝負になる。",
 });
