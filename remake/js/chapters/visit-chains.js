@@ -8,6 +8,7 @@
 //   第4章 スーク: スパイス屋の店主に鼻を貸す → 強すぎた香りの直し方 → カフェの主人の礼（#3097）
 //   第5章 Smoke & Glory: tonariで作った一台を覚えている客 → スティーブの台で作る → スティーブのカードの余白
 //   第5章 路地裏のカフェ: いつもの一台を出してくれる店員に、閉店後の一台を渡す
+//   第5章 屋敷の中庭の太陽: 庭番へ渡す旗に日本の一語を書く → 太陽の書いた同じ一語を受け取る（#4010）
 // 先の段で選んだ答え（choice の分岐名）を記録し、後の段の台本が条件 chain_pick で読む。実際の制作の結果など、その場で
 // 決まる事実は呼び出し側が facts で渡し、台本は条件 chain_fact で読む（chapters/visit-chain-play.js）。
 // 交流の記憶は後の段の台本の remember 行（data/relationship_memories.json）で残し、大会前夜の振り返りに出る。
@@ -114,6 +115,16 @@ export const VISIT_CHAINS = Object.freeze({
     stages: Object.freeze([
       stage({ id: "ch5_chain_gift_1", place: "ch5_dubai_alley", choice: "gift_plan", picks: ["tonari", "house", "light"] }),
       stage({ id: "ch5_chain_gift_2", place: "ch5_dubai_alley", night: true, free: true }),
+    ]),
+  }),
+  // 第5章のドバイ（#4010）。中庭の太陽の小会話を一通り読むと開く。段階の会話・締めくくりが読める来店は、そちらが先（ch5-dubai.js）。
+  // 太陽に頼まれて、屋敷の庭番へ渡す旗に日本の一語を書く → 後日、旗の行き先を見て、太陽の書いた同じ一語を受け取る。
+  ch5_taiyo_flag: Object.freeze({
+    chapter: 5,
+    opens: value => talksRead(value, "_ch5_dubai_talks", "ch5_dubai_taiyo") >= 3,
+    stages: Object.freeze([
+      stage({ id: "ch5_chain_flag_1", place: "ch5_dubai_taiyo", choice: "flag_word", picks: ["otsukare", "mata", "arigato"] }),
+      stage({ id: "ch5_chain_flag_2", place: "ch5_dubai_taiyo" }),
     ]),
   }),
 });
