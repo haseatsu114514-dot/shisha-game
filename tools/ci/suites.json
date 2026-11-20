@@ -4729,6 +4729,19 @@
       ]
     },
     {
+      "id": "intro-wait-2444",
+      "title": "First-appearance cut-in waits like other VN asset waits: no stale next mark, loading notice, input held, art fetched once the speaker talks (#2444 obs. 4)",
+      "kind": "browser",
+      "weight": 0.8,
+      "timeout": 4,
+      "paths": [
+        "remake/js/vn/engine.js",
+        "remake/js/vn/intro.js",
+        "remake/test/browser/intro_wait_2444.mjs"
+      ],
+      "run": ["node remake/test/browser/intro_wait_2444.mjs"]
+    },
+    {
       "id": "conversation-effects-demo",
       "title": "Conversation effects demo (#2732): 12 candidates and 6 new faces (#3417), ON/OFF, one at a time",
       "kind": "browser",
