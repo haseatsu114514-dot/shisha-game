@@ -26,6 +26,8 @@ import { readyLessons, consultLessons } from "../core/growth.js";
 import { canStudyCubeCoals, studyCubeCoals } from "./coal-lesson.js";
 import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 import { bondAfterNext, markBondAfterRead, loadBondAfterScenes } from "../core/bond-after.js";
+import { pickNight } from "./tonari-floor-model.js";
+import { MIXES as FLOOR_MIXES, RANKS as FLOOR_RANKS } from "./tonari-floor-data.js";
 
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 // カードゲーム「一台勝負」の入口の切替（ICG12）。入・切は daily/ichidai-table.js が起動時に端末へ書き、ここは読むだけにする
@@ -40,6 +42,18 @@ const ichidaiNote = () => {
 // ch2-story-data.js の strawberryTrialReady と同じ条件。日常の共通画面へ第2章の台本データを読み込ませない。
 const strawberryTrialOpen = () => state.chapter === 2 && !!state.flags._ch2_read_remake_ch2_ageha_tasting
   && !state.flags._ch2_strawberry_trial && !!DB.dialogues.ch2_strawberry_trial_intro?.lines?.length;
+
+// フロア営業（tonari-floor-*.js）: 案内から会計までを任される営業。日当と行動枠はいつものシフトと同じで、
+// 営業の評価に応じて店からの売上ボーナスが付く。バイトとして店に立つ第1〜2章で、最初のシフトを済ませた後に選べる。
+const floorShiftOpen = () => state.chapter <= 2 && (state.baitoCount || 0) >= 1;
+function floorShiftNote() {
+  const { nights, best } = floorProgress();
+  const pay = `${shiftPayNote(state)}＋売上ボーナス`;
+  if (!nights) return `【新しい仕事】案内から会計まで、五つの卓を回す営業を任される。${pay}`;
+  const night = pickNight(nights, shiftOrderOfDay().seed, { rainy: isRainy(), daytime: timeOfDay() !== "night" });
+  const stamp = FLOOR_RANKS.find((r) => r.id === best)?.stamp;
+  return `今日の予報：${night.forecast}。案内から会計まで、五つの卓を回す。${pay}${stamp ? `（これまでの最高：${stamp}）` : ""}`;
+}
 
 export function tonariMenu() {
   return new Promise((resolve) => {
@@ -78,7 +92,7 @@ export function tonariMenu() {
         // #1650: 第2章の試煙会のあと、一度だけ。試供品の苺で熱を確かめ、スミさんに吸ってもらう
         strawberryTrialOpen() ? opt("苺を試す（まかない）", "体力を使う・1行動。試煙会の苺で一台。確かめるのは熱だけ", "strawberry", "tonari-strawberry") : null,
         opt(manager ? "店長として店に立つ" : "シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}${manager ? "今日の営業を引き受ける。仕事終わりにはスミさんと話せる" : "接客で稼ぐ。上がったあとはスミさんと話せる。まかないで練習もできる"}。${shiftPayNote(state)}＋各種ボーナス`, "baito", "tonari-baito"),
-        state.chapter === 1 ? opt("五卓を担当する", "通常シフトの別の遊び方。お客さんの好みを聞いて、作業台と五つの卓を回す。日当と行動枠は同じ。特別な接客の日はいつもの進行", "baito_floor", "shift-mode-floor") : null,
+        floorShiftOpen() ? opt("フロアを任される（バイト）", floorShiftNote(), "baito_floor", "tonari-baito-floor") : null,
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
@@ -144,6 +158,9 @@ async function baitoShift({ called, story, floor, owner, signal }) {
   state.baitoCount = (state.baitoCount || 0) + 1;
   state.lastBaitoDay = state.day;
   if (!await read("remake_baito_start", { bg: TONARI_BG })) return false;
+  // フロアを任される日: はじめての日はスミさんが段取りを伝える。本編の接客・呼び出しの日はいつものシフト。
+  const onFloor = floor && !story && !called && owner.chapter <= 2;
+  if (onFloor && !await read(floorProgress(owner).nights ? "tonari_floor_start" : "tonari_floor_first", { bg: TONARI_BG })) return false;
   await meetHiyoriAtTonari();
   if (!current()) return false;
   const rainy = isRainy();
@@ -152,7 +169,6 @@ async function baitoShift({ called, story, floor, owner, signal }) {
   // #2213 B02: 本編の常連の話を接客として読んだ日は、カメオ・通常の接客を重ねない
   const storyId = story ? await story() : null;
   if (!current()) return false; // 本編の場面の途中で LOAD した時は、ここで止める
-  let regular = false;
   if (storyId) rememberBaito(storyId, [storyId]);
   // 正体を伏せた客が一度だけ混ざる（後の章・大会当日で回収される伏線）
   else if (chapterFeatureEnabled(state.chapter, "baitoCameos") && n === 2 && !state.flags._ev_rei_cameo) {
@@ -169,12 +185,13 @@ async function baitoShift({ called, story, floor, owner, signal }) {
     rememberBaito("ch1_maezono_cameo", ["maezono"]);
   } else {
     if (await customerEvent(condition, signal) === false) return false;
-    regular = true;
   }
   if (!current()) return false;
-  // 五卓は任意の通常出勤だけ。既存の本編・お忍び・呼び出し・短い二択は変えない。
-  if (floor && regular && !story && !called && owner.chapter === 1) {
-    if (!await serveFloorOrder(owner, signal)) return false;
+  // フロア営業は「今日の注文」の代わり。その日の注文の客は、営業の中の一組として来る。
+  let floorNight = null;
+  if (onFloor) {
+    floorNight = await serveFloorOrder(owner, signal);
+    if (!floorNight) return false;
   } else await serveShiftOrder();
   if (!current()) return false;
   if (callingBonus && !await read("baito_minto_calling", { bg: TONARI_BG })) return false;
@@ -182,7 +199,8 @@ async function baitoShift({ called, story, floor, owner, signal }) {
   const extra = called ? CALLED_BONUS : 0;
   const rainPay = rainy ? RAIN_BAITO_BONUS : 0; // 雨の日は長居客の追加注文ぶん
   const basePay = shiftBasePay(owner);
-  const pay = basePay + bonus + extra + rainPay + condition.shiftBonus + callingBonus;
+  const floorBonus = floorNight?.bonus || 0; // 営業の評価に応じた、店からの売上ボーナス
+  const pay = basePay + bonus + extra + rainPay + condition.shiftBonus + callingBonus + floorBonus;
   await shiftClose();
   const closing = state.chapter >= 5 ? { lines: [
     { speaker: "", face: "", text: "今日の仕事を終えて、手取りを帳面に記した。" },
@@ -194,6 +212,7 @@ async function baitoShift({ called, story, floor, owner, signal }) {
   toast(`シフトの日当 +${pay.toLocaleString("ja-JP")}円（${shiftPayNote(owner)}・各種ボーナス込み）`, { kind: "good" });
   if (callingBonus) owner.flags._minto_calling_paid = shiftKey; // 同じ行動枠の再開・再入力で上乗せを重ねない。
   if (callingBonus) toast(`呼び込みの追加注文。店からの売上ボーナス +${callingBonus.toLocaleString()}円`, { kind: "good" });
+  if (floorBonus) toast(`フロアの売上ボーナス（${floorNight.stamp}）+${floorBonus.toLocaleString("ja-JP")}円`, { kind: "good" });
   if (bonus) toast(`指名ボーナス（魅力）＋${bonus.toLocaleString()}円`, { kind: config.statEffectColors !== false ? "charm-bonus" : "good" });
   if (extra) toast(`急なシフトの上乗せ +${extra.toLocaleString()}円`, { kind: "good" });
   if (rainPay) toast(`雨の日の追加注文 +${rainPay.toLocaleString()}円`, { kind: "good" });
@@ -529,26 +548,44 @@ async function serveShiftOrder() {
   return finishShiftOrder(owner, key, order, index);
 }
 
-// 店側の卓伝票は盤内だけ。主人公の財布・能力・私物は共通の勤務処理からだけ動く。
+// フロア営業の一晩。店の売上は画面の中だけで、はじめの財布・能力・私物は共通の勤務処理からだけ動く。
+// 返り値は営業の結果（中断・LOAD は null）。画面を読み込めない時は、いつもの「今日の注文」へ戻す。
+const FLOOR_RANK_ORDER = ["C", "B", "A", "S"];
+/** これまでフロアを回した回数と、いちばん良かった評価（保存は flags._tonari_floor）。 */
+function floorProgress(s = state) {
+  const saved = s.flags?._tonari_floor;
+  return { nights: Number.isInteger(saved?.nights) && saved.nights > 0 ? saved.nights : 0, best: saved?.best || null };
+}
 async function serveFloorOrder(owner, signal) {
   const current = () => state === owner && !signal.aborted;
+  if (!current()) return null;
   const key = `_shift_order_${owner.chapter}:${owner.day}`;
-  if (!current() || owner.flags[key]) return current();
-  const { order, orders, seed } = shiftOrderOfDay();
+  const { order, seed } = shiftOrderOfDay();
+  const progress = floorProgress(owner);
   let run;
   try { ({ runTonariFloor: run } = await import("./tonari-floor-view.js")); }
   catch {
-    if (!current()) return false;
-    toast("フロアを読み込めなかった。今日は一卓の注文を受ける", { kind: "warn" });
+    if (!current()) return null;
+    toast("フロアを読み込めなかった。今日はいつもの接客に入る", { kind: "warn" });
     await serveShiftOrder();
-    return current();
+    return current() ? { bonus: 0, stamp: "", fallback: true } : null;
   }
-  if (!current()) return false;
-  const result = await run({ orders, seed, anchorOrderId: order.id, night: owner.slot !== 0, isCurrent: current, signal });
-  if (!current() || !result) return false;
-  // 主卓が実際に受け取った一台だけ、既存の想起へ。未提供・取消なら前日の記録を残す。
-  if (Number.isInteger(result.anchorIndex) && order.mixes[result.anchorIndex]) {
-    if (!await finishShiftOrder(owner, key, order, result.anchorIndex) || !current()) return false;
-  } else owner.flags[key] = true;
-  return current();
+  if (!current()) return null;
+  // その日の「今日の注文」の客（配合の二択がある注文だけ）。受け取った一台を、次に同じ注文が来た時の想起（#1415）へ渡す。
+  const index = ((seed >>> 3) ^ owner.day) & 1;
+  const anchor = !owner.flags[key] && FLOOR_MIXES[`${order.id}:${index}`] ? { family: order.id, index } : null;
+  const night = timeOfDay() === "night";
+  const result = await run({
+    seed, level: progress.nights, chapter: owner.chapter, anchor, rainy: isRainy(), night,
+    art: bgUrl(TONARI_BG, timeOfDay()), isCurrent: current, signal,
+  });
+  if (!current() || !result) return null;
+  if (anchor) {
+    owner.flags[key] = true; // シフトの給料・行動消費と一緒にcalendarで保存する。
+    if (Number.isInteger(result.anchorIndex) && order.mixes[result.anchorIndex]) owner.flags[`_shift_mix_${order.id}`] = result.anchorIndex;
+  }
+  const best = FLOOR_RANK_ORDER.indexOf(result.rank) > FLOOR_RANK_ORDER.indexOf(progress.best) ? result.rank : progress.best;
+  owner.flags._tonari_floor = { nights: progress.nights + 1, best };
+  await setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
+  return current() ? result : null;
 }

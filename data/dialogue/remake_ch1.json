@@ -1508,6 +1508,62 @@
       ]
     },
     {
+      "dialogue_id": "tonari_floor_first",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開店前。スミさんが、卓の番号札を一枚ずつ置いていった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ。今日はフロアを任せる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、フロアを全部ですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "案内して、注文を聞いて、運ぶ。呼ばれたら様子を見に行け"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "仕込みは俺が持つ。お前は卓を見ろ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "店がいい空気になったら、灯りが教えてくれる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "……はい。やってみます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "tonari_floor_start",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "番号札を卓に置いて、入口に目をやる。今夜はフロアを任されている。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_baito_end",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside.png"
