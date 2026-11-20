@@ -1,5 +1,5 @@
 import { DJAudio } from './audio.mjs';
-import { beatAt, lowCutDb, PHRASE, FOLLOW_BAND, REQUESTS, phaseError, SNAP_BAND, SYNC_FLOOR, mod, gains, toward, keyMatch, energyMatch, quality, followHint, moodOf, MOODS, GRADE_FLOOR, RANK_FLOOR, PICK_FLOOR, RANK_LINES, quickEntry } from './model.mjs';
+import { beatAt, lowCutDb, PHRASE, FOLLOW_BAND, REQUESTS, phaseError, SNAP_BAND, SYNC_FLOOR, mod, gains, toward, keyMatch, energyMatch, quality, followHint, moodOf, MOODS, GRADE_FLOOR, RANK_FLOOR, PICK_FLOOR, RANK_LINES, quickEntry, entryReach } from './model.mjs';
 import { FEEL, applyFeelOverrides } from './feel.mjs';
 import { DJSfx } from './sfx.mjs';
 import { TRACKS, SETS } from './tracks.mjs';
@@ -35,7 +35,8 @@ const SHAKES = ['shake-drop', 'shake-sway', 'shake-big', 'shake-stumble'];
 const STRIPS = 7, STRIP_OVERLAP = 3; // the guests' band: 7 strips, each overlapping its neighbours by 3 % of the width (see buildBand)
 let strips = [], flash = 0, sfx = null;
 // 手応え（2026-11-13 DJF）: 止め・跳ね・揺れ・余韻のいまの状態。数値は feel.mjs の FEEL。コンソールの __dj.feel / __dj.fx で読み書きできる。
-const fx = { fixes: 0, nopes: 0, pending: null, holdUntil: 0, holdBeat: 0, holds: 0, burst: 1, burstBeat: 0, shakes: 0, lastShake: '', ticks: new Set(), tickCount: 0, combo: 0, brokenUntil: 0, result: null, count: null, played: false };
+const fx = { fixes: 0, nopes: 0, pending: null, holdUntil: 0, holdBeat: 0, holds: 0, burst: 1, burstBeat: 0, shakes: 0, lastShake: '', ticks: new Set(), tickCount: 0, combo: 0, brokenUntil: 0, result: null, count: null, played: false,
+  entry: null, refused: null, refusals: 0 }; // entry: the ▶ was taken and its track is about to come in (予約) / refused: a ▶ outside the bands, for the navi
 globalThis.__dj = { feel: FEEL, fx,
   /** 調整用: つなぎの最中に、いますぐズレを起こす（拍。+ = 入れた曲が先へ走る）。例: __dj.slip(-0.2) */
   slip(beats = .15) { const m = audio.mix; if (m.phase !== 'mix' || !m.fader || !Number.isFinite(beats) || !beats) return false; m.fader.drifts.push({ at: beatAt(m.decks[m.cue.from], audio.now) - m.cue.start, size: beats, started: false, ended: false }); return true; } };
@@ -67,7 +68,7 @@ function create() {
   $('voices').replaceChildren(); $('heat-delta').className = 'heat-delta'; $('crossfader').value = '0';
   view = { mode: 'idle' }; shownPlay = null; judgeUntil = 0; toastUntil = 0; moodShown = null; missStreak = 0; awaySince = 0; awaySaid = false; clashSince = 0; clashSaid = false; comboSaid = 0; particles = []; flash = 0;
   helpManual = fx.played ? false : null; // DJF08: the how-to board only before the very first set; a retry goes straight back to the decks
-  Object.assign(fx, { pending: null, holdUntil: 0, burst: 1, combo: 0, brokenUntil: 0, result: null, count: null }); fx.ticks.clear();
+  Object.assign(fx, { pending: null, holdUntil: 0, burst: 1, combo: 0, brokenUntil: 0, result: null, count: null, entry: null, refused: null }); fx.ticks.clear();
   $('floor-art').classList.remove('hold', ...SHAKES); $('drop').className = 'drop'; $('drop').textContent = ''; $('combo').classList.remove('broken', 'pop');
   shown = {}; message = ''; subMessage = ''; lastCount = ''; $('count').textContent = '';
   showDecks();
@@ -94,7 +95,7 @@ export function snapshot() {
     transitions: m.transitions.map(t => ({ to: t.to, grade: t.grade, parts: t.parts, total: t.total, rank: t.rank, pick: t.pick, combo: t.combo, follow: t.follow, sync: t.sync, drifts: t.drifts, fixes: t.fixes })), result: m.result,
     allowance: m.allowance, voices: audio.voices.filter(Boolean).length, rms: audio.level(), reduced: reduced.matches, embedded, muted: audio.muted, volume: audio.volume, remaining: view.remaining, progress: view.progress,
     // what the screen is telling the player (DJS20): crowd mood, step lamp, navi lines, gold arrows, fader hint
-    grid: m.grid, best, fx: { fixes: fx.fixes, nopes: fx.nopes, holds: fx.holds, held: !!fx.pending, shakes: fx.shakes, lastShake: fx.lastShake, ticks: fx.tickCount, sfx: sfx.count, lastSfx: sfx.last, afterglow: !!fx.result && !fx.result.shown, counting: !!fx.count, result: !!fx.result?.shown },
+    grid: m.grid, best, reserved: !!view.reserved, stuck: !!view.stuck, fx: { fixes: fx.fixes, nopes: fx.nopes, refusals: fx.refusals, entry: !!fx.entry, holds: fx.holds, held: !!fx.pending, shakes: fx.shakes, lastShake: fx.lastShake, ticks: fx.tickCount, sfx: sfx.count, lastSfx: sfx.last, afterglow: !!fx.result && !fx.result.shown, counting: !!fx.count, result: !!fx.result?.shown },
     mood: moodOf(m.floor), step: shown.step, navi: message, sub: subMessage, points: shown.points, hint: shown.hint, away: shown.away, arrows: !$('fader-arrows').hidden };
 }
 async function pause() { try { await audio.pause(); status('停止中。▶で再開します。'); } catch (e) { status(`停止処理: ${e.message}`); } }
@@ -107,8 +108,19 @@ async function startDeck(id) {
   if (audio.mix.decks[id].playing) return; // ▶ only starts: a deck leaves the air when its transition ends
   // after an interruption (tab hidden, audio session lost) any ▶ brings back every deck that was playing, in step
   const m = audio.mix, resume = !m.running && m.phase !== 'idle' && m.resumeDecks.length > 0;
-  try { if (await (resume ? audio.start() : audio.play(id))) { helpManual = null; fx.played = true; if (document.hidden) { await pause(); return; } status(resume ? '再開' : `${key.toUpperCase()} ON AIR`); } }
-  catch (e) { status(`${e.message}。▶から再試行できます。`); }
+  try {
+    if (await (resume ? audio.start() : audio.play(id))) { helpManual = null; fx.played = true; if (document.hidden) { await pause(); return; } status(resume ? '再開' : `${key.toUpperCase()} ON AIR`); }
+    else if (!resume) refuse(id);
+  } catch (e) { status(`${e.message}。▶から再試行できます。`); }
+}
+/** #2456 §4: a ▶ further than the OK band from the entry line is not taken. It shakes its head (like a ▶ that cannot play, DJG08) and the
+ *  navi says when it will be taken. Nothing is lost: the count comes round on the next line. */
+function refuse(id) {
+  const m = audio.mix, c = m.cue;
+  if (!c || c.to !== id || c.pressed || !m.running) return;
+  const fb = beatAt(m.decks[c.from], audio.now), head = fb - c.start > m.grid / 2 ? c.start + m.grid : c.start, b = $('play-' + (id ? 'b' : 'a'));
+  b.classList.remove('nope'); void b.offsetWidth; b.classList.add('nope'); buzz(14); document.dispatchEvent(new CustomEvent('dj-nope', { detail: b.id }));
+  fx.refused = { early: fb < head, until: performance.now() + 1600 }; fx.refusals++;
 }
 // ── お客さんの反応: 声の吹き出し・熱の増減の札・気分の言葉 ──────────────────────────────
 const VOICES = {
@@ -479,7 +491,7 @@ addEventListener('keydown', event => { if (event.key === 'Enter' || event.key ==
 /** DJF02: the count-in. A small click on each of the last beats before the entry, scheduled on the audio clock (the last one a little higher). */
 function countTicks(m, now) {
   const c = m.cue, n = Math.min(4, Math.floor(FEEL.countTicks) || 0);
-  if (!n || !c || c.pressed || m.phase !== 'cue' || !m.running) return;
+  if (!n || !c || !m.running || (m.phase === 'cue' ? c.pressed : !(m.phase === 'mix' && view.reserved))) return; // 予約 (#2456 §4): the count goes on to 0
   const from = m.decks[c.from];
   for (let k = n; k >= 1; k--) {
     const at = from.at + (c.start - k - from.beat) * 60 / from.bpm, key = `${c.start}:${k}`;
@@ -499,19 +511,34 @@ function navi(m, now, away) {
   if (m.phase === 'select') return { ...out, step: 4, main: 'お客さんの声を聞いて、次の曲をえらぼう', sub: '声に合うノリで、つながりも良い曲ならフロアが沸く', points: ['pick'] };
   if (m.phase === 'mix') {
     const to = cue.to, bar = Math.min(8, Math.floor(view.progress * 8) + 1);
+    // #2456 §4: ▶ was pressed a little early. The track is held for the entry line and comes in exactly on it (the count and the ring go on).
+    if (view.reserved) { const u = view.untilIn; return { ...out, step: 2, untilHead: u, count: u <= 4 && u > 0 ? String(Math.ceil(u)) : '', main: `予約した！ ${deckOf(to)} は 0 でぴったり入る`, sub: 'あとは待つだけ。入ったら光る枠を追いかけよう', points: [] }; }
     // DJG: the incoming track has slipped out of time. Turn its platter the way the arrows run (ahead → back, behind → on) until the gold dot is in the frame.
     if (view.sync?.off) return { ...out, step: 3, warn: true, main: `ズレた！ ${sideOf(to)}の皿を${view.sync.error > 0 ? '左回り' : '右回り'}に回そう`, sub: '金の点が枠に入れば戻る。フェーダーはそのまま', points: ['fader', `jog-${to ? 'b' : 'a'}`] };
+    // #2456 §4-2: the grace is over but the incoming track still cannot be heard. The outgoing one keeps playing until the fader is half way.
+    if (view.stuck) return { ...out, step: 3, warn: true, main: `${deckOf(to)} に移れていない！ ${sideOf(to)}へ動かそう`, sub: '真ん中を越えれば乗り換わる。曲は止まらない', points: ['fader'] };
     if (view.progress >= 1) return { ...out, step: 3, main: `最後まで${sideOf(to)}へ動かしきろう`, sub: `フェーダーが${sideOf(to)}の端に着くと、${deckOf(to)} に乗り換わる`, points: ['fader'] };
     return { ...out, step: 3, main: `横フェーダーを${sideOf(to)}へ。光る枠を追いかけよう`, sub: `8小節かけて ${deckOf(to)} へ乗り換える（${bar}／8）。拍ごとに枠の中かを見る`, points: ['fader'] };
   }
   // cue: waiting for the phrase head, then ▶ on the incoming deck
   const to = cue.to, key = to ? 'b' : 'a', from = m.decks[cue.from], late = beatAt(from, now) - cue.start;
   const untilHead = late <= 0 ? -late : cue.start + m.grid - beatAt(from, now), bars = Math.ceil(untilHead / 4), count = untilHead <= 4 && untilHead > 0 ? String(Math.ceil(untilHead)) : '';
-  // 「いま！」 only while a press still lands inside the OK window (120 ms + headphones); after that the navi sends the player to the next head
-  if (late > 0 && late * 60 / from.bpm * 1000 <= 120 + (m.allowance || 0)) return { ...out, step: 2, untilHead: 0, count: '▶', main: `いま！ ${sideOf(to)}の ▶`, sub: '0 の瞬間に近いほど、フロアが沸く', points: [`play-${key}`] };
-  if (untilHead <= 4) return { ...out, step: 2, untilHead, count, main: `カウント 0 で、${sideOf(to)}の ▶ ！`, sub: '光の輪がボタンに重なる瞬間に押す', points: [`play-${key}`] };
+  // 「いま！」 while a press is still taken (the OK band, 4 beats + headphones, #2456 §4); after that the navi sends the player to the next head
+  if (late > 0 && late <= entryReach(m, from.bpm)) return { ...out, step: 2, untilHead: 0, count: '▶', main: `いま！ ${sideOf(to)}の ▶`, sub: '遅れても頭にそろえて入る。早いほど沸く', points: [`play-${key}`] };
+  if (untilHead <= 4) return { ...out, step: 2, untilHead, count, main: `カウント 0 で、${sideOf(to)}の ▶ ！`, sub: '少し早くても大丈夫。押せば 0 でぴったり入る', points: [`play-${key}`] };
+  if (fx.refused && performance.now() < fx.refused.until) return { ...out, step: 2, untilHead, warn: true, main: fx.refused.early ? `まだ早い！ カウントが出たら${sideOf(to)}の ▶` : '遅かった！ 次のカウントで ▶', sub: `あと ${bars} 小節。カウント中に押せば 0 で入る`, points: [] };
   if (late > 0) return { ...out, step: 2, untilHead, main: '入りを逃した。次の頭を待とう', sub: `あと ${bars} 小節。カウントが出たら、0 で${sideOf(to)}の ▶`, points: [] };
   return { ...out, step: 2, untilHead, main: `次は${sideOf(to)}の ▶。カウントが出るまで待とう`, sub: `入りまで あと ${bars} 小節。金の旗が金の線に重なる瞬間が入り`, points: [] };
+}
+const JUDGE_SUB = { PERFECT: 'ぴったり！', GOOD: 'いい入り！', OK: 'まずまず', EARLY: '早すぎた…', LATE: '遅れた…' };
+/** The incoming track is in: the room answers the entry. On PERFECT / GOOD the floor is held for a moment and then lets go with DROP!
+ *  (flash, the room jumps); OK is a small pulse, EARLY / LATE a stumble. */
+function land(entry, m, now) {
+  const grade = entry.grade; fx.entry = null;
+  if (entry.reserved) { $('judge-sub').textContent = JUDGE_SUB[grade]; judgeUntil = Math.max(judgeUntil, performance.now() + 1200); }
+  if (grade !== 'PERFECT' && grade !== 'GOOD') dropText(grade === 'OK' ? 'small' : 'miss', '');
+  sfx.play('entry', { grade }); impact(grade, beatAt(m.decks[m.master], now));
+  say(grade, { big: grade === 'PERFECT' });
 }
 function showNavi(n, m) {
   if (n.main !== message) { $('coaching').textContent = n.main; message = n.main; }
@@ -544,13 +571,14 @@ function render() {
   if (m.lastPlay && m.lastPlay !== shownPlay) {
     shownPlay = m.lastPlay; const grade = shownPlay.grade; judgeUntil = performance.now() + 1800;
     $('judge').textContent = grade; $('judge').dataset.grade = grade; $('judge').classList.remove('pop'); void $('judge').offsetWidth; $('judge').classList.add('pop');
-    $('judge-sub').textContent = { PERFECT: 'ぴったり！', GOOD: 'いい入り！', OK: 'まずまず', EARLY: '早すぎた…', LATE: '遅れた…' }[grade];
-    // DJF01/02/10: the press answers at once where it was made (ring on the button, sound, vibration, the word). On PERFECT / GOOD the floor is held
-    // for a moment and then lets go with DROP! (flash, the room jumps); OK is a small pulse, EARLY / LATE a stumble.
-    if (grade !== 'PERFECT' && grade !== 'GOOD') dropText(grade === 'OK' ? 'small' : 'miss', '');
-    pressBurst(shownPlay.id, grade); buzz(FEEL.buzz[grade]); sfx.play('entry', { grade }); impact(grade, beatAt(m.decks[m.master], now));
-    say(grade, { big: grade === 'PERFECT' }); bump(GRADE_FLOOR[grade], { PERFECT: 'ぴったり入った', GOOD: 'いい入り', EARLY: '入りが早かった', LATE: '入りが遅れた' }[grade] || '');
+    $('judge-sub').textContent = shownPlay.reserved ? '予約した！ 0 で入る' : JUDGE_SUB[grade];
+    // DJF01/02/10: the press answers at once where it was made (ring on the button, vibration, the word, the heat step). The room answers when the
+    // track comes in (land): at once for a ▶ on time or a little late, on the entry line for a ▶ held there (予約, #2456 §4; a soft click meanwhile).
+    pressBurst(shownPlay.id, grade); buzz(FEEL.buzz[grade]); fx.entry = { id: shownPlay.id, grade, reserved: !!shownPlay.reserved };
+    bump(GRADE_FLOOR[grade], { PERFECT: 'ぴったり入った', GOOD: 'いい入り', EARLY: '入りが早かった', LATE: '入りが遅れた' }[grade] || '');
+    if (shownPlay.reserved) sfx.play('reserve');
   }
+  if (fx.entry && m.decks[fx.entry.id].playing && beatAt(m.decks[fx.entry.id], now) >= -.02) land(fx.entry, m, now);
   if (judgeUntil && performance.now() > judgeUntil) { $('judge').textContent = ''; $('judge-sub').textContent = ''; judgeUntil = 0; }
   if (toastUntil && performance.now() > toastUntil) { $('toast').innerHTML = ''; toastUntil = 0; }
   // the guests react to the fader beat by beat: a voice at 8 / 16 / 24 / 32 in a row, a complaint after four misses in a row
@@ -574,17 +602,20 @@ function render() {
     const key = id ? 'b' : 'a', d = m.decks[id], play = $('play-' + key);
     put('bpm-' + key, d.track ? d.bpm.toFixed(2) : '--');
     const beat = mod(beatAt(d, now), PHRASE);
-    put('beat-' + key, d.playing ? `再生・${Math.floor(beat / 4) + 1}小節 ${Math.floor(beat % 4) + 1}拍` : '停止中');
+    put('beat-' + key, d.playing && beatAt(d, now) < 0 ? '予約・0 で入る' : d.playing ? `再生・${Math.floor(beat / 4) + 1}小節 ${Math.floor(beat % 4) + 1}拍` : '停止中');
     setAttr(play, 'aria-pressed', String(d.playing)); play.disabled = audio.busy || !d.track || d.playing;
-    const mine = !!(cue && cue.to === id && !cue.pressed && m.phase === 'cue' && m.running), soon = mine && n.untilHead != null && n.untilHead <= 4 && n.untilHead > 0;
-    play.classList.toggle('cue-open', mine && n.untilHead === 0);
+    // the approach ring goes on while a ▶ pressed a little early waits for the entry line (予約): it closes onto the button as the track comes in
+    const held = !!(view.reserved && cue && cue.to === id), mine = !!(cue && cue.to === id && m.running && ((!cue.pressed && m.phase === 'cue') || held));
+    const soon = mine && n.untilHead != null && n.untilHead <= 4 && n.untilHead > 0;
+    play.classList.toggle('cue-open', mine && !held && n.untilHead === 0);
     play.classList.toggle('cue-soon', soon);
+    play.classList.toggle('reserved', held);
     play.classList.toggle('first', m.phase === 'idle' && id === 0);
     // approach ring: shrinks from 1.55× the button onto the button exactly on the phrase head
     setVar(play, '--ap', soon ? (1 + n.untilHead / 4 * .55).toFixed(3) : '1');
     setAttr($('deck-' + key), 'data-playing', String(d.playing));
     setAttr($('deck-' + key), 'data-role', !d.track ? 'empty' : d.playing && m.master === id ? 'master' : d.playing ? 'incoming' : 'next');
-    put('indicator-' + key, !d.track ? 'EMPTY' : d.playing ? 'ON AIR' : 'STANDBY');
+    put('indicator-' + key, !d.track ? 'EMPTY' : d.playing && beatAt(d, now) < 0 ? 'CUED' : d.playing ? 'ON AIR' : 'STANDBY');
     if (!fx.pending) setVar($('platter-' + key), '--rotation', `${reduced.matches || !d.playing ? 0 : (mod(beatAt(d, now), 4) * 90).toFixed(1)}deg`); // held with the floor (DJF01)
     setAttr($('platter-' + key), 'aria-valuenow', String(view.sync && view.sync.deck === id ? Math.round(view.sync.error * 100) : 0)); // how far out of time, in hundredths of a beat
     $('side-' + key).classList.toggle('goal', !!cue && cue.to === id && m.running);
