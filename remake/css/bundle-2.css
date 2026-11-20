@@ -4554,6 +4554,15 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-top > .bench-appearance-button:not([hidden]) ~ .craft-rank,
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-top:has(> .bench-appearance-button:not([hidden])) > .craft-rank { margin-left: 0 !important; }
 
+/* ---------------------------------------------------------------- 余白に親指ボタンがある時（PHN19・<html data-side-pad="on">）
+   「?」・手応えは右の余白の上、外観を選ぶは左の余白の下（めったに使わない）、ランクは右の余白の下へ大きく出す
+   （js/core/side-area.js・css/side-area.css）。上の帯には場の名前と工程だけを残す。
+   元のボタンとランクは消さずに見えなくするだけ。外観のボタンは帯の流れから外し、右の端に重ねて置く */
+html[data-density="phone"][data-side-pad="on"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-top { padding-right: 16px !important; }
+html[data-density="phone"][data-side-pad="on"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-top > .bench-appearance-button {
+  position: absolute !important; top: calc((var(--ph-rail) - var(--ph-tap)) / 2) !important; right: 16px !important; margin: 0 !important;
+}
+
 /* ================================================================ 舞台（右）・熱の柱・左下の一言 */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-right { top: var(--ph-top) !important; bottom: 12px !important; left: 410px !important; right: 16px !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-head { top: 4px !important; right: 12px !important; left: auto !important; width: var(--ph-tap) !important; height: var(--ph-tap) !important; }
@@ -5172,12 +5181,29 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 @keyframes ph-note-more { 50% { translate: 0 3px; opacity: .55; } } /* 下へ3px揺れても札の中（bottom: 5px） */
 @media (prefers-reduced-motion: reduce) { .audience-note[data-pages] > .audience-page { transition: none; } .audience-note[data-pages]::after { animation: none; } }
 
-/* ================================================================ 炭焼き: コンロを舞台の真ん中に、炭壺の札は舞台の幅いっぱい */
+/* ================================================================ 炭焼き: コンロを舞台の真ん中に（PHN19）
+   炭壺は左上の小さな札（上から見た壺の絵・「2 / 3」・取り出した時の判定）。題（炭壺・上から）は外す（札の読み上げ名は「上から見た炭壺」のまま）。
+   札の幅は判定が入る分で決めておき、取り出すたびに伸び縮みさせない。カウントダウンはコンロの上に大きく。
+   舞台の幅いっぱいの帯をやめ、コンロを舞台の高さの真ん中に置く */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-panel > .heat { position: absolute !important; inset: 0 !important; height: auto !important; padding: 0 !important; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat > .heat-info { left: 0 !important; right: 0 !important; top: 0 !important; height: 100px !important; margin: 0 !important; padding: 6px 22px !important; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat > .heat-stage { left: 43px !important; top: 104px !important; bottom: 0; display: grid; align-items: center; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info :is(.heat-carrier-head small, .heat-collected-count, .heat-feedback, .heat-feedback *) { font-size: var(--ph-sub) !important; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .heat-carrier-head h2 { font-size: var(--ph-text) !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat > .heat-info {
+  left: 0 !important; right: auto !important; top: 0 !important; width: auto !important; min-width: 480px; height: 84px !important; margin: 0 !important; padding: 4px 24px 4px 10px !important; gap: 8px !important;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat > .heat-stage { left: 43px !important; top: 0 !important; bottom: 0; display: grid; align-items: center; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .heat-carrier-head > div { display: none !important; } /* 札そのものに「上から見た炭壺」の名前がある */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .coal-carrier-view { order: -1; transform: scale(.32) !important; margin-right: -133px !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .heat-collected-count {
+  font-size: var(--ph-text) !important; font-weight: 800; letter-spacing: .04em; color: var(--ph-gold); white-space: nowrap;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .heat-feedback { flex: 1 1 auto !important; min-width: 0; margin-left: 10px !important; gap: 12px !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info :is(.heat-feedback, .heat-feedback *) { font-size: var(--ph-sub) !important; white-space: nowrap; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .heat-feedback .stamp { font-size: var(--ph-text) !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .countdown {
+  position: fixed !important; left: 837px !important; right: auto !important; top: 400px !important; transform: translate(-50%, -50%);
+  font-size: 150px !important; line-height: 1 !important;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .countdown.pop { animation: cd-pop .5s var(--ease-out) !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .countdown.go { font-size: 120px !important; }
 
 /* ================================================================ 蒸らし時間
    上にタイマー（絵を1.18倍・ボタンは実寸）、下に2枚の札: 左＝蒸らし後の温度の目安と天気、右＝雑念回避の長さ（と短縮の切替）。 */
@@ -5501,8 +5527,8 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .dodge-heart .effect-badge { min-width: 18px !important; height: 18px !important; padding: 0 2px !important; font-size: 12px !important; border-width: 1px !important; border-radius: 3px !important; }
 /* 炭焼き: 取り頃が近い炭に付く「察」は、炭の右上の角に */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .coal .effect-insight { right: -18px !important; top: -18px !important; }
-/* 炭焼き: 感の帯は炭壺の札の頭に */
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info > .craft-sense-band { align-self: center; margin-right: 18px !important; }
+/* 炭焼き: 感の帯は炭壺の札の頭に（壺の絵より前） */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info > .craft-sense-band { order: -2; align-self: center; margin-right: 10px !important; }
 
 /* ================================================================ 最後に: hidden 属性は必ず消す（上の display の指定が JS の hidden を上書きしないように） */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] [hidden][hidden][hidden][hidden][hidden][hidden] { display: none !important; }
@@ -5597,6 +5623,11 @@ body.reduce-shake .side-smoke, :root[data-side-calm="on"] .side-smoke { animatio
 /* 会話と地図の操作は同じ二席を使う。非表示ボタンの空席を下へ積まない。 */
 .side-pad.top [data-pad="glossary"], .side-pad.top [data-pad="lime"] { grid-area: 1 / 1; }
 .side-pad.top [data-pad="config"], .side-pad.top [data-pad="menu"] { grid-area: 2 / 1; }
+/* シーシャ作りの作業台（PHN19）: 右の上に「?」と手応え（大会）、左の下に外観（めったに使わない）。会話の操作とは同時に出さない */
+.side-pad.top [data-pad="help"] { grid-area: 1 / 1; }
+.side-pad.top [data-pad="reception"] { grid-area: 2 / 1; }
+.side-pad.bottom [data-pad="auto"] { grid-area: 1 / 1; }
+.side-pad.bottom [data-pad="log"], .side-pad.bottom [data-pad="look"] { grid-area: 2 / 1; }
 .side-pad.bottom { bottom: 22px; }
 /* 余白の幅の真ん中に置く。広い端末ではステージ寄り（端から 26px）で止め、外側を空ける */
 .side[data-side="l"] .side-pad { right: clamp(14px, calc((var(--side-g, 0px) - 88px) / 2), 26px); }
@@ -5625,12 +5656,29 @@ body.reduce-shake .side-smoke, :root[data-side-calm="on"] .side-smoke { animatio
 /* LIME: ステージの中の印と同じ、緑の吹き出し */
 .side-lime { position: relative; display: grid; place-items: center; width: 62px; height: 44px; padding-top: 1px; box-sizing: border-box; font-size: max(17px, calc(9.5px / var(--k, 1))); font-weight: 900; letter-spacing: 0; color: #fff; background: #06c755; border-radius: 50%; }
 .side-lime::after { content: ""; position: absolute; left: 28%; bottom: -6px; border-style: solid; border-width: 9px 5px 0 9px; border-color: #06c755 transparent transparent transparent; }
+/* 作業台の「?」: 字を大きく（説明を開いている間は押された色） */
+.side-help { font-family: Georgia, "Times New Roman", serif; font-size: 46px; font-weight: 900; line-height: 1; }
 /* MENU: 三本線と字 */
 .side-bars { position: static !important; width: 30px; height: 20px; border-top: 4px solid currentColor; border-bottom: 4px solid currentColor; box-sizing: border-box; background: linear-gradient(currentColor, currentColor) center / 100% 4px no-repeat; }
 /* 未読の数（赤）と、未使用の火種の数（火の色）、MENU の中に増えた物がある合図（金の点） */
 .side-badge { position: absolute; right: -4px; top: -4px; box-sizing: border-box; min-width: 32px; height: 32px; padding: 0 7px; font-style: normal; font-size: max(18px, calc(10px / var(--k, 1))); font-weight: 800; line-height: 32px; text-align: center; color: #fff; background: #e5484d; border-radius: 16px; box-shadow: 0 0 0 2px #1e1330; }
 .side-badge.fire { color: #2a1206; background: linear-gradient(180deg, #ffd27a, #ff9b3d); }
 .side-dot { position: absolute !important; left: 2px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: #e3bd6e; box-shadow: 0 0 0 2px #1e1330, 0 0 10px #e3bd6e; }
+
+/* ---------------------------------------------------------------- D ランク（シーシャ作りの間・親指ボタンがある時。PHN19）
+   作業台の上の帯のランクを、右の余白の下の端に大きく写す（帯の中では帯の高さまでしか大きくできないため）。
+   切り欠きの来る真ん中を避けて下の端。横はボタンの列の真ん中にそろえる。絵の切り替えは js/core/side-area.js の syncRank */
+.side-rank {
+  position: absolute; bottom: 24px; left: 10px; width: min(140px, calc(var(--side-g, 0px) - 20px));
+  display: grid; justify-items: center; gap: 2px; pointer-events: none; font-family: var(--font);
+}
+.side-rank small { font-size: max(18px, calc(10px / var(--k, 1))); font-weight: 800; line-height: 1; letter-spacing: .24em; color: #c9a7e6; text-shadow: 0 0 8px rgba(0, 0, 0, .95); }
+.side-rank img { display: block; width: 100%; height: auto; max-height: 150px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .8)); }
+.side-rank b { font-family: Georgia, "Times New Roman", serif; font-size: 60px; font-style: italic; font-weight: 700; line-height: 1.1; color: #c9a7e6; text-shadow: 0 2px 8px rgba(0, 0, 0, .9); }
+.side-rank:has(> img:not([hidden])) b { display: none; }
+.side-rank.pop img { animation: side-rank-pop .42s ease-out; }
+@keyframes side-rank-pop { from { transform: scale(.82); opacity: .7; } 60% { transform: scale(1.08); opacity: 1; } to { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .side-rank.pop img { animation: none; } }
 
 /* 余白へ出している間は、ステージの中の元のボタンを隠す（用語・設定も右上へ）。
    HUD のボタンは場所を残して見えなくするだけ（MENU を起点にする演出が元の位置を測るため）。
@@ -5650,6 +5698,14 @@ html:root[data-side-pad="on"][data-density="phone"][data-ui-theme] body:not(:roo
   bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) + 130px);
 }
 :root[data-side-pad="on"].side-probe #hud .hud-right > :is(.hud-lime, .hud-menu) { visibility: inherit !important; }
+/* シーシャ作りの作業台の「?」・外観を選ぶ・大会の手応え（PHN19）。場所は残して見えなくするだけ（押せるかを元の位置で確かめるため） */
+:root[data-side-pad="on"] #screen .bench .bench-head .bench-guide > summary,
+:root[data-side-pad="on"] #screen .bench .bench-top > .bench-appearance-button,
+:root[data-side-pad="on"] #screen .bench [data-test="judge-reception"] { visibility: hidden !important; }
+:root[data-side-rank="on"] #screen .bench .bench-top > .craft-rank { opacity: 0 !important; } /* 読み上げ（ランクの変化の知らせ）は元のランクに残す */
+:root[data-side-pad="on"].side-probe #screen .bench .bench-head .bench-guide > summary,
+:root[data-side-pad="on"].side-probe #screen .bench .bench-top > .bench-appearance-button,
+:root[data-side-pad="on"].side-probe #screen .bench [data-test="judge-reception"] { visibility: inherit !important; }
 
 /* ===== css/look-neo.css ===== */
 /* 新版（現行の画面を磨き上げた様式・LK02）。すべての規則を :root[data-look="neo"] の中に書き、現行の見た目を変えない。

@@ -564,7 +564,9 @@ function burstRank(b, grade) {
   if (!hud || !root.isConnected || craftTest.auto || document.hidden) return;
   if (globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
   root.querySelector(":scope > .craft-rank-burst")?.remove();
-  const box = root.getBoundingClientRect(), k = box.width / 1280 || 1, target = hud.getBoundingClientRect();
+  // 余白にランクを大きく写している時（スマホで親指ボタンがある時・js/core/side-area.js）は、そこへ収める
+  const side = document.querySelector('[data-test="side-rank"]:not([hidden])');
+  const box = root.getBoundingClientRect(), k = box.width / 1280 || 1, target = (side ?? hud).getBoundingClientRect();
   const burst = el("img.craft-rank-burst", { src: rankArt(grade), alt: "", draggable: false, dataset: { grade } });
   // 着地点（帯のランク）の中心と大きさを、作業台の座標で渡す。
   burst.style.setProperty("--to-x", `${((target.left + target.width / 2) - box.left) / k}px`);

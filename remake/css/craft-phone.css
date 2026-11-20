@@ -66,6 +66,15 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-top > .bench-appearance-button:not([hidden]) ~ .craft-rank,
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-top:has(> .bench-appearance-button:not([hidden])) > .craft-rank { margin-left: 0 !important; }
 
+/* ---------------------------------------------------------------- 余白に親指ボタンがある時（PHN19・<html data-side-pad="on">）
+   「?」・手応えは右の余白の上、外観を選ぶは左の余白の下（めったに使わない）、ランクは右の余白の下へ大きく出す
+   （js/core/side-area.js・css/side-area.css）。上の帯には場の名前と工程だけを残す。
+   元のボタンとランクは消さずに見えなくするだけ。外観のボタンは帯の流れから外し、右の端に重ねて置く */
+html[data-density="phone"][data-side-pad="on"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-top { padding-right: 16px !important; }
+html[data-density="phone"][data-side-pad="on"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-top > .bench-appearance-button {
+  position: absolute !important; top: calc((var(--ph-rail) - var(--ph-tap)) / 2) !important; right: 16px !important; margin: 0 !important;
+}
+
 /* ================================================================ 舞台（右）・熱の柱・左下の一言 */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-right { top: var(--ph-top) !important; bottom: 12px !important; left: 410px !important; right: 16px !important; }
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-head { top: 4px !important; right: 12px !important; left: auto !important; width: var(--ph-tap) !important; height: var(--ph-tap) !important; }
@@ -684,12 +693,29 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 @keyframes ph-note-more { 50% { translate: 0 3px; opacity: .55; } } /* 下へ3px揺れても札の中（bottom: 5px） */
 @media (prefers-reduced-motion: reduce) { .audience-note[data-pages] > .audience-page { transition: none; } .audience-note[data-pages]::after { animation: none; } }
 
-/* ================================================================ 炭焼き: コンロを舞台の真ん中に、炭壺の札は舞台の幅いっぱい */
+/* ================================================================ 炭焼き: コンロを舞台の真ん中に（PHN19）
+   炭壺は左上の小さな札（上から見た壺の絵・「2 / 3」・取り出した時の判定）。題（炭壺・上から）は外す（札の読み上げ名は「上から見た炭壺」のまま）。
+   札の幅は判定が入る分で決めておき、取り出すたびに伸び縮みさせない。カウントダウンはコンロの上に大きく。
+   舞台の幅いっぱいの帯をやめ、コンロを舞台の高さの真ん中に置く */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .bench-panel > .heat { position: absolute !important; inset: 0 !important; height: auto !important; padding: 0 !important; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat > .heat-info { left: 0 !important; right: 0 !important; top: 0 !important; height: 100px !important; margin: 0 !important; padding: 6px 22px !important; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat > .heat-stage { left: 43px !important; top: 104px !important; bottom: 0; display: grid; align-items: center; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info :is(.heat-carrier-head small, .heat-collected-count, .heat-feedback, .heat-feedback *) { font-size: var(--ph-sub) !important; }
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .heat-carrier-head h2 { font-size: var(--ph-text) !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat > .heat-info {
+  left: 0 !important; right: auto !important; top: 0 !important; width: auto !important; min-width: 480px; height: 84px !important; margin: 0 !important; padding: 4px 24px 4px 10px !important; gap: 8px !important;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat > .heat-stage { left: 43px !important; top: 0 !important; bottom: 0; display: grid; align-items: center; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .heat-carrier-head > div { display: none !important; } /* 札そのものに「上から見た炭壺」の名前がある */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .coal-carrier-view { order: -1; transform: scale(.32) !important; margin-right: -133px !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .heat-collected-count {
+  font-size: var(--ph-text) !important; font-weight: 800; letter-spacing: .04em; color: var(--ph-gold); white-space: nowrap;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .heat-feedback { flex: 1 1 auto !important; min-width: 0; margin-left: 10px !important; gap: 12px !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info :is(.heat-feedback, .heat-feedback *) { font-size: var(--ph-sub) !important; white-space: nowrap; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .heat-feedback .stamp { font-size: var(--ph-text) !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .countdown {
+  position: fixed !important; left: 837px !important; right: auto !important; top: 400px !important; transform: translate(-50%, -50%);
+  font-size: 150px !important; line-height: 1 !important;
+}
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .countdown.pop { animation: cd-pop .5s var(--ease-out) !important; }
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info .countdown.go { font-size: 120px !important; }
 
 /* ================================================================ 蒸らし時間
    上にタイマー（絵を1.18倍・ボタンは実寸）、下に2枚の札: 左＝蒸らし後の温度の目安と天気、右＝雑念回避の長さ（と短縮の切替）。 */
@@ -1013,8 +1039,8 @@ html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-ver
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .dodge-heart .effect-badge { min-width: 18px !important; height: 18px !important; padding: 0 2px !important; font-size: 12px !important; border-width: 1px !important; border-radius: 3px !important; }
 /* 炭焼き: 取り頃が近い炭に付く「察」は、炭の右上の角に */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .coal .effect-insight { right: -18px !important; top: -18px !important; }
-/* 炭焼き: 感の帯は炭壺の札の頭に */
-html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info > .craft-sense-band { align-self: center; margin-right: 18px !important; }
+/* 炭焼き: 感の帯は炭壺の札の頭に（壺の絵より前） */
+html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] .heat-info > .craft-sense-band { order: -2; align-self: center; margin-right: 10px !important; }
 
 /* ================================================================ 最後に: hidden 属性は必ず消す（上の display の指定が JS の hidden を上書きしないように） */
 html[data-density="phone"] body.craft-stage #stage #screen .bench[data-craft-version="sakurai"] [hidden][hidden][hidden][hidden][hidden][hidden] { display: none !important; }
