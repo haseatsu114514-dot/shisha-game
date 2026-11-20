@@ -239,10 +239,17 @@ await suite("kannondo-day3", async (check) => {
     assert.equal(await page.locator(t("pin-kannon")).count(), 0, "DAY2 still starts on its normal map");
     await press(t("pin-rest")); await press(t("map-go"));
     const home = page.locator(t("home-shisha-skip"));
-    await home.or(page.locator(board)).first().waitFor();
+    // 休息・卓上台の受領とお披露目・夜明け・観音堂導入を通る。本編の複数場面に単一画面の10秒を流用しない。
+    await home.or(page.locator(board)).first().waitFor({ timeout: 30000 });
     if (await home.isVisible()) await home.click();
     await page.locator(board).waitFor();
     await displayedTemple(page, testScene);
+    const trace = await page.evaluate(() => sceneTrace.slice());
+    const rest = trace.findIndex(id => id.startsWith("remake_rest"));
+    const gift = trace.indexOf("ch1_sumi_home_rig");
+    const show = trace.indexOf("ch1_sumi_home_rig_homecoming");
+    const arrival = trace.indexOf("kannon_growth_intro");
+    assert(rest >= 0 && rest < gift && gift < show && show < arrival, JSON.stringify(trace));
     assert.equal((await snapshot(page)).day, 3);
     assert.equal((await snapshot(page)).slot, 0);
     await press(t("board-tutorial-skip"));
