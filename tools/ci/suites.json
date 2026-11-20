@@ -617,7 +617,7 @@
     },
     {
       "id": "growth-fx-browser",
-      "title": "Growth level-up reward chips, colour-fire note, board light/commit effects, near goals and reduced motion (SBD102-105)",
+      "title": "Growth level-up reward chips, colour-fire note, board light/commit effects, tap-again lighting, gain pops, commit banner, lesson flow and tags, near goals and reduced motion (SBD102-105, SBD132-142)",
       "kind": "browser",
       "weight": 0.5,
       "timeout": 4,
@@ -5109,6 +5109,7 @@
         "remake/css/ui-paper.css",
         "remake/css/daily.css",
         "remake/js/daily/growth-board-screen.js",
+        "remake/js/core/mastery-notice.js",
         "remake/test/browser/board_notification_visibility.mjs"
       ],
       "run": [
