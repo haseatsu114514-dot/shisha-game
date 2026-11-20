@@ -251,8 +251,9 @@ await suite("growth-fx", async (check) => {
       await tap(t("board-node-K07"));
       await tap(t("board-towards"));
       await page.locator(".gb-fx .gfx-ring").first().waitFor({ state: "attached" });
-      assert.equal(await page.locator(".gb-node.s-pending").count(), 7, "紋から K07 まで7マス");
-      assert.match(await page.locator(t("board-wallet")).innerText(), /白火\s*10[\s\S]*紅火\s*1/, "白火10・紅火1を払う");
+      // 「空気を読む」は v14（SBD149）で色の台座のすぐ隣（授業と入れ替え）: 能力3＋台座1＋スキル1
+      assert.equal(await page.locator(".gb-node.s-pending").count(), 5, "紋から K07 まで5マス");
+      assert.match(await page.locator(t("board-wallet")).innerText(), /白火\s*12[\s\S]*紅火\s*1/, "白火8・紅火1を払う");
       await page.waitForFunction(() => !document.querySelector(".gfx-fly"));
 
       // 決定: 保存してから演出。火が走りきると、まとめの札（灯した数と増えた能力。押すと先へ。SBD136）、
@@ -261,7 +262,7 @@ await suite("growth-fx", async (check) => {
       const banner = page.locator(t("board-commit-banner"));
       await banner.waitFor();
       assert.equal(await page.evaluate(async () => (await import("./js/core/state.js")).peekSave()?.growth?.nodes?.includes("K07") ?? null), true, "演出の前に保存済み");
-      assert.match((await banner.innerText()).replace(/\s+/g, ""), /^LIGHTUP火を7つ灯した/);
+      assert.match((await banner.innerText()).replace(/\s+/g, ""), /^LIGHTUP火を5つ灯した/);
       const rows = await banner.locator(".gfx-banner-row").evaluateAll((nodes) => nodes.map((node) => [node.querySelector("em").textContent, node.querySelector(":scope > b").textContent]));
       assert(rows.length >= 2 && rows.every(([name, value]) => name && /^[＋−][\d.]+%?$/.test(value)), `増えた能力を名前と数で: ${JSON.stringify(rows)}`);
       await assertFits(page, ".gfx-banner");
@@ -279,9 +280,9 @@ await suite("growth-fx", async (check) => {
       await cutin.dispatchEvent("pointerdown");
       await board.waitFor({ state: "detached" });
       const result = await page.evaluate(async () => ({ lit: (await window.boardDone).map((n) => n.id), g: __remake.state.growth }));
-      assert.equal(result.lit.length, 7);
+      assert.equal(result.lit.length, 5);
       assert(result.lit.includes("K07") && result.lit.includes("BG1"));
-      assert.deepEqual(result.g.hidane, { any: 10, body: 1, sense: 0, wisdom: 0 });
+      assert.deepEqual(result.g.hidane, { any: 12, body: 1, sense: 0, wisdom: 0 });
       await page.locator(".gain-card", { hasText: "空気を読む" }).waitFor();
     }, options);
 
@@ -467,6 +468,6 @@ await suite("growth-fx", async (check) => {
     await page.locator(t("growth-board")).waitFor({ state: "detached" });
     assert(Date.now() - started < 1500, "演出の待ちを作らない");
     assert.equal(await page.evaluate(() => window.cutins), 0, "光・数字・まとめの札・カットインを出さない");
-    assert.equal(await page.evaluate(async () => (await window.boardDone).length), 7);
+    assert.equal(await page.evaluate(async () => (await window.boardDone).length), 5);
   }, { viewport: { width: 1331, height: 760 } });
 }, { entry: `${baseURL}?growth=1`, acknowledgeGrowth: false });
