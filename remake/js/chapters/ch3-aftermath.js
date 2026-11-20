@@ -1,3 +1,4 @@
+import { guardCompletionCardInput } from "./completion-card-input.js";
 // 全国大会の勝利後。結果発表は大会ランナーが読了・保存し、ここでは再生しない。
 import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
@@ -85,7 +86,7 @@ function menuButton(owner) {
 function card(owner, name, title, description, actions = [], note = "", sceneId = "", extra = []) {
   layers.hud.replaceChildren();
   layers.hud.classList.remove("show");
-  showScreen("ch3-aftermath", el("main.ch2-contest", { dataset: { test: test(name), scene: sceneId } }, [
+  const panel = el("main.ch2-contest", { dataset: { test: test(name), scene: sceneId } }, [
     el("header.ch2-contest-header", [
       el("div", [el("p", { text: "第三章 ／ 嘘つきたちの夜" }), el("h1", { text: title })]),
       menuButton(owner),
@@ -103,7 +104,8 @@ function card(owner, name, title, description, actions = [], note = "", sceneId 
         if (live(owner)) await renderStage(owner);
       }),
     ] : [])]),
-  ]));
+  ]);
+  showScreen("ch3-aftermath", name === "complete" ? guardCompletionCardInput(panel) : panel);
 }
 
 /** 勝利確定済み保存から再開できる。敗北・審査途中では状態を一切変更しない。 */

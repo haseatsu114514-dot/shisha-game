@@ -2388,6 +2388,21 @@
       "run": ["node remake/test/browser/tetsuko_feel.mjs"]
     },
     {
+      "id": "chapter-completion-input",
+      "title": "Chapter 2/3 completion card input across the final dialogue tap",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/completion-card-input.js",
+        "remake/js/chapters/ch2-tournament.js",
+        "remake/js/chapters/ch3-aftermath.js",
+        "remake/js/vn/engine.js",
+        "remake/test/browser/chapter_completion_input.mjs"
+      ],
+      "run": ["node remake/test/browser/chapter_completion_input.mjs"]
+    },
+    {
       "id": "ch3-full-flow",
       "title": "Chapter 3 full playthrough on one save",
       "kind": "browser",
