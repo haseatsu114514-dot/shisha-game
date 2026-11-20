@@ -32,7 +32,7 @@ export function ruleSheetPanel(chapter = state?.chapter || 1) {
 }
 
 const focusText = Object.entries(SAKURAI.focus).map(([id, f]) => `${{ maezono: "上園", dr_kemuri: "チャコール博士", sui: "千須" }[id]}は${f.detail}`).join("、");
-const SAKURAI_ARTICLE = `審査員3人が各10点を、準備・提供・調整1回目・調整2回目の4回に分けて入れる（2・3・2・3点）。各回は、その回に仕上げた工程だけで決め、1位に「その回の点−1」、2位に1点。提供の回は、${focusText}を見る。温度計の「攻めの帯」で提供・調整を終えると、その回の審査が伸びる。千須は最後の1点を、2回目の調整がいちばん良い一台へ入れる。`;
+const SAKURAI_ARTICLE = `審査員3人が各10点を、準備・提供・調整1回目・調整2回目の4回に分けて入れる（2・3・2・3点）。各回は、その回に仕上げた工程だけで決め、1位に「その回の点−1」、2位に1点。提供の回は、${focusText}を見る。温度計の「攻めの帯」で提供・調整を終えると、その回の審査が伸びる。千須は最後の1点を、もう一口吸いたい一台へ入れる。`;
 function sakuraiRules() {
   const attempt = state?.tournament?.voteAttempt;
   return attempt ? isSakuraiVotes(attempt) : voteStyleFrom(config) === "sakurai";

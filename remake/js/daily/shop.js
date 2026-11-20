@@ -250,13 +250,16 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const errandBox = errand ? el("div.shop-errand", { role: "status" }) : null;
     const live = () => !finished && state === session && root.isConnected;
     const onExpense = (id) => expense && errand === id && flavorStock(id) < minStock && !state.flags[expenseFlag];
-    let refusedAt = -Infinity;
+    const errandReady = () => flavorStock(errand) >= minStock;
+    let refusedAt = -Infinity, refusedReady;
     const refuseOtherPurchase = () => {
-      const now = performance.now();
-      if (now - refusedAt < 2600) return; // 連打でも案内を同じ注意で埋めない。
+      const now = performance.now(), ready = errandReady();
+      if (ready === refusedReady && now - refusedAt < 2600) return; // 同じ段の注意だけ連打を抑える。
       refusedAt = now;
+      refusedReady = ready;
       SE.error();
-      toast(`先に頼まれた${errandName}を購入しよう。ほかの買い物は買い出しの後で`, { kind: "warn" });
+      toast(ready ? "「店を出る」を押して、スミさんのところへ戻ろう"
+        : `先に頼まれた${errandName}を購入しよう。ほかの買い物は買い出しの後で`, { kind: "warn" });
     };
     const pointTo = (button, active) => {
       if (firstErrand) {
@@ -362,7 +365,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       let step = null;
       const affordable = spendableMoney(state) >= total;
       if (errandBox) {
-        const done = flavorStock(errand) >= minStock;
+        const done = errandReady();
         errandBox.classList.toggle("done", done);
         errandBox.textContent = done ? `✓ ${errandName}を仕入れた。店を出て戻ろう` : `${errandName}を1箱選んで、下のボタンで購入${onExpense(errand) ? "（1箱は店の経費）" : ""}`;
         if (firstErrand) {
@@ -434,7 +437,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     }
     const leave = async () => {
       if (!live() || confirming) return;
-      if (errand && flavorStock(errand) < minStock) {
+      if (errand && !errandReady()) {
         SE.error(); tab = "flavor"; category = "all"; render();
         body.querySelector(".errand")?.scrollIntoView({ block: "nearest" });
         toast(`${errandName}を購入してから戻ろう`, { kind: "warn" }); return;

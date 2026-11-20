@@ -67,6 +67,48 @@ await suite('axe-tap-pull', async check => {
     assert.deepEqual(await storageSnapshot(page), before, 'standalone input must not alter save data');
   }, context);
 
+  await check('first-touch-aim-does-not-measure-the-pull-track', async page => {
+    await start(page, true);
+    const geometry = await root(page).evaluate(node => {
+      const point = new DOMPoint(330, 245).matrixTransform(node.querySelector('.axe-target .axe-board-scale').getScreenCTM());
+      return { x: point.x, y: point.y };
+    });
+    await root(page).evaluate(node => {
+      const measure = node.getBoundingClientRect;
+      window.axeAimLayoutReads = 0;
+      window.axeFirstScoreTile = node.querySelector('.axe-tile');
+      node.getBoundingClientRect = function () {
+        window.axeAimLayoutReads++;
+        return measure.call(this);
+      };
+    });
+    await page.touchscreen.tap(geometry.x, geometry.y);
+    await phase(page, 'horizontal');
+    await page.waitForFunction(() => Number(document.querySelector('.axe-game').dataset.held) >= 300);
+    assert.equal(await page.evaluate(() => window.axeAimLayoutReads), 0,
+      'starting and animating the aim must not synchronously measure the unrelated release track');
+    assert(await root(page).evaluate(node => node.querySelector('.axe-tile') === window.axeFirstScoreTile),
+      'the unchanged score tiles stay in place when aiming starts');
+    await root(page).evaluate(node => { delete node.getBoundingClientRect; });
+
+    // Resizing the stage below the track's 80px floor changes the scale, not its internal size.
+    const trackSize = page => root(page).evaluate(node => {
+      const height = node.getBoundingClientRect().height, scale = height / node.clientHeight;
+      const expected = Math.max(80, Math.min(180, height * .26)) / scale;
+      return { expected, actual: parseFloat(node.querySelector('.axe-pull-track').style.height) };
+    });
+    const initial = await trackSize(page);
+    assert(Math.abs(initial.actual - initial.expected) < .01, 'initial release track matches the visible stage');
+    await page.setViewportSize({ width: 740, height: 290 });
+    await page.waitForFunction(() => {
+      const node = document.querySelector('.axe-game'), height = node.getBoundingClientRect().height;
+      return Math.abs(parseFloat(node.querySelector('.axe-pull-track').style.height) - 80 * node.clientHeight / height) < .01;
+    });
+    const resized = await trackSize(page);
+    assert(Math.abs(resized.actual - resized.expected) < .01 && resized.actual > initial.actual + 5,
+      'the release track still follows the viewport scale');
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+
   await check('flick-speed-lean-and-tap-only', async page => {
     await start(page);
     // 針を止めて構えた後、的に触れて離すだけ（弾かない）なら投げない。狙いも動かない

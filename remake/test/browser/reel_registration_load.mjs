@@ -73,35 +73,45 @@ async function receiptToIntro(page, touch) {
   assert.fail('Actual C.STATION receipt did not reach installation intro');
 }
 async function readIntro(page, touch) {
-  const intro = page.locator('[data-test="reel-intro"]');
+  const intro = page.getByRole('dialog', { name: 'MOKUMOKUパッキーの説明' });
   await intro.waitFor();
+  const next = intro.locator('[data-test="reel-intro-next"]');
+  assert(await next.evaluate(b => b === document.activeElement));
   const countBefore = await page.evaluate(async () =>
     (await import('./js/core/state.js')).state.reel.count);
-  // Five text pages followed by the guide. Observe the current page: receipt
-  // input may already have advanced it. Each input must transition once; no retries.
-  for (let i = 0; i < 6; i++) {
-    const shown = await intro.evaluate(root => ({
-      text: root.querySelector('.ri-text')?.textContent,
-      guide: !!root.querySelector('[data-test="reel-guide-card"]'),
-    }));
-    if (shown.guide) {
-      await page.locator('[data-test="reel-guide-card"]').waitFor();
-      assert.equal(await page.evaluate(async () =>
-        (await import('./js/core/state.js')).state.reel.count), countBefore,
-      'Drew before explanation/guide finished');
-      await tap(page, '[data-test="reel-intro"]', touch);
-      await intro.waitFor({ state: 'detached' });
-      return;
-    }
-    assert(shown.text?.trim(), 'Missing intro text before guide');
-    await tap(page, '[data-test="reel-intro"]', touch);
-    await page.waitForFunction(previous => {
-      const root = document.querySelector('[data-test="reel-intro"]');
-      return !!root && (!!root.querySelector('[data-test="reel-guide-card"]')
-        || root.querySelector('.ri-text')?.textContent !== previous);
-    }, shown.text);
+  assert.equal(await intro.getByRole('button', { name: '次へ' }).count(), 1);
+  if (!touch) {
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Shift+Tab');
+    assert(await next.evaluate(b => b === document.activeElement), 'Tab must not leave the explanation');
   }
-  assert.fail('Intro exceeded five text pages without reaching the guide');
+  // The actual C.STATION path checks all five lines and the card. A stale receipt input must not skip one.
+  const expected = [/ボクはパッキー/, /インストール完了/, /かってに1回転/, /ルールはシンプル/, /記録ノート/];
+  for (const [i, match] of expected.entries()) {
+    const current = await intro.locator('.ri-text').innerText();
+    assert.match(current, match);
+    assert.equal(await intro.getByRole('button', { name: '次へ' }).count(), 1);
+    if (touch) await next.tap();
+    else if (i === 0) {
+      // Ignore the second click of a single double click.
+      await next.dblclick();
+    } else if (i === 1) {
+      // The first keydown sends one page, the held-key repeat must not also send the next.
+      await page.keyboard.down('Enter');
+      await page.keyboard.down('Enter');
+      await page.keyboard.up('Enter');
+    } else if (i === 2) await next.press('Space');
+    else if (i === 3) await next.press('Enter');
+    else await next.click();
+  }
+  await intro.locator('[data-test="reel-guide-card"]').waitFor();
+  assert.equal(await page.evaluate(async () =>
+    (await import('./js/core/state.js')).state.reel.count), countBefore,
+  'Drew before explanation/guide finished');
+  const close = intro.getByRole('button', { name: '説明を閉じる' });
+  if (touch) await close.tap();
+  else await close.press('Space');
+  await intro.waitFor({ state: 'detached' });
 }
 async function noonMapNext(page, touch) {
   // #2213 B01/B03: after registration, DAY2 noon is the player's own action. The night is

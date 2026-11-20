@@ -78,10 +78,11 @@ export const SPOTS = [
     pool: ["cafe_herb_tea", "cafe_baked", "cafe_counter_watch", "cafe_terrace", "cafe_record", "cafe_crowd", "cafe_cold_brew", "cafe_naru_break", "cafe_master_quiz"],
     openSlots: [0], desc: "なる行きつけの喫茶。昼だけ開く。" },
   { id: "kannon", kind: "spot", label: "観音堂", area: "古町", x: 18, y: 57, theme: "park", glyph: "観", requiresMet: "adam", stat: "guts", stamina: -4,
+    get boardOnly() { return growthEnabled(); }, // 開発用の旧成長モードだけは従来の通常訪問
     first: "ch1_kannon_visit", bg: "bg_kannon_day",
     pool: ["kannon_cat", "kannon_pigeons", "kannon_sweep", "kannon_incense", "kannon_steps", "kannon_banners", "kannon_adam", "kannon_oldman"],
     nightPool: ["venue_kannon_night", "venue_kannon_night_c", "venue_kannon_night_b", "venue_kannon_night_d"],
-    desc: "昼は猫と街の人、夜は静かな境内。" },
+    desc: "心得の盤を開く場所。時間も体力も使わない。" },
   { id: "choizap", kind: "spot", label: "CHOI-ZAP", area: "ジム", x: 20, y: 24, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
     first: "ch1_choizap_first", bg: "bg_choizap",
     pool: ["choizap_lesson", "choizap_scenery", "choizap_mirror", "choizap_dumbbell", "choizap_stretch", "choizap_posture", "choizap_oldman", "choizap_minto"],
@@ -96,7 +97,7 @@ export const SPOTS = [
 /** 行き先の中の様子（マップ右下のプレビュー）。入ったときの背景と同じ絵を指す */
 export const SPOT_PREVIEW = {
   tonari: "bg_tonari_inside", naru: "kemurikusa", adam: "bg_eden_shop", minto: "peppermint",
-  shop: "bg_fookah_showroom", cafe: "bg_cafe", kannon: "bg_kannon_day", choizap: "bg_choizap",
+  shop: "bg_fookah_showroom", cafe: "bg_cafe", kannon: "bg_kannon", choizap: "bg_choizap",
   c_station: "bg_c_station", rest: "bg_home", fortune: "bg_street",
 };
 /** 第2章以降、SHISHARKを追加。保存を切り替えても古いピンを残さない。 */
@@ -384,6 +385,7 @@ export function shortNormalVisit(spot) {
 /** 店主の固有イベントと、初めて訪れる施設のイベントを同じ印で案内する。 */
 export function hasNewEvent(spot) {
   if (isClosed(spot)) return false;
+  if (spot.boardOnly) return !state.flags._kannon_growth_intro_done;
   // 章の側の行き先（第3章の東京など）は、自分で新しい話があるかを返せる。
   if (typeof spot.hasNew === "function") return !!spot.hasNew();
   if (spot.kind === "tonari") return state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi")
@@ -429,8 +431,11 @@ export function visitedToday(spotId) {
 }
 
 export function isUnlocked(spot) {
-  // 初回受領後は使い切っても内省の場所を残す。紹介・訪問の記録は変更しない。
-  if (spot.id === "kannon" && growthEnabled() && (state.growth?.earned > 0 || hidaneTotal() > 0)) return true;
+  if (spot.boardOnly) {
+    // 初回の本筋より先に盤の説明を始めない。導入済み・旧セーブでは火種を使い切っても入口を残す。
+    if (state.chapter === 1 && state.day < 3 && !state.flags._kannon_growth_intro_done) return false;
+    if (state.flags._kannon_growth_intro_done || state.flags._delivery_adam_done || state.growth?.earned > 0 || hidaneTotal() > 0) return true;
+  }
   if (spot.id === "rojiura_cinema") return cinemaDiscovered(state);
   if (spot.kind === "fortune") return fortuneHere(state);
   if (spot.id === "axe_bar" && !axeBarDiscovered(state)) return false;

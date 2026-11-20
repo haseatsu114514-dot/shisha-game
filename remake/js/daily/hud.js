@@ -107,6 +107,7 @@ export function initHud(h) {
   handlers = { ...handlers, ...h };
   dom = {
     area: el("div.dc-area", { text: HOME_CITY_EN }),
+    dayLabel: el("span.dc-day-label", { text: "日付" }),
     day: el("div.dc-day"),
     slot: el("div.dc-slot"),
     money: el("b"),
@@ -129,7 +130,7 @@ export function initHud(h) {
   const moneyRow = el("div.dc-row.money", { title: "所持金" }, [el("span.dc-label", { text: "所持金" }), dom.money]);
   const root = el("div.hud", [
     el("div.hud-card", [
-      el("div.dc-main", [dom.area, dom.day, dom.slot]),
+      el("div.dc-main", [dom.area, dom.dayLabel, dom.day, dom.slot]),
       el("div.dc-meta", [moneyRow, dom.goalRow = el("div.dc-row.goal", { dataset: { test: "hud-goal" } }, [dom.leftLabel, dom.left]), dom.stamina, dom.exp]),
     ]),
     el("div.hud-right", [dom.phone, dom.menu]),
@@ -253,7 +254,9 @@ export function updateHud() {
     el("span.dc-area-short", { text: areaName }),
   );
   const finalDay = chapterFinalDay(state);
-  dom.day.replaceChildren(...[el("b", { text: String(chapterDay(state)) }), finalDay === null ? null : el("small", { text: `/${finalDay}` })].filter(Boolean));
+  const day = chapterDay(state);
+  dom.dayLabel.title = finalDay === null ? `${day}日目` : `${finalDay}日間のうち ${day}日目`;
+  dom.day.replaceChildren(...[el("b", { text: String(day) }), finalDay === null ? null : el("small", { text: `/${finalDay}` })].filter(Boolean));
   const night = state.slot >= 1;
   const rain = isRainy() ? "・雨" : "";
   // 昼・夜の札に、今日あと何回動けるかを入れる（「☀残り2」。地図の案内箱にあった一言をここへ統合・#2853）
