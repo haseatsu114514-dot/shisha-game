@@ -113,6 +113,27 @@ assert(!T.TIER_GAMES.ichidai, "the card game is on hold");
   assert(g.rewards["camel-hard"]);
   assert(g.earned - start >= 1);
 }
+// てつこは段を持たず、来訪をまたいで溜まる好感度がハート5に届いたら白火1つ（2026-11-20 オーナー「てつこは難易度とかないや」）
+{
+  assert(!T.TIER_GAMES.tetsuko, "てつこ has no tiers");
+  assert(!PLAY_REWARDS.some(r => r.game === "tetsuko" && r.tier));
+  const reward = PLAY_REWARDS.find(r => r.id === "tetsuko-heart");
+  assert.deepEqual(reward.gift, { any: 1 });
+  const { emit } = await import("../js/core/bus.js");
+  const s = core.newState();
+  core.setState(s);
+  const g = growth.ensureGrowth();
+  const start = g.earned;
+  s.flags._tetsuko_time = { affection: growth.TETSUKO_AFFECTION_FULL - 1 };
+  growth.settleGrowth();
+  assert(!g.rewards["tetsuko-heart"], "not before five hearts");
+  s.flags._tetsuko_time.affection = growth.TETSUKO_AFFECTION_FULL;
+  emit("tetsuko-hearts", { state: s, affection: growth.TETSUKO_AFFECTION_FULL, full: true });
+  assert(g.rewards["tetsuko-heart"], "settled on the spot");
+  assert.equal(g.earned - start, 1);
+  growth.settleGrowth();
+  assert.equal(g.earned - start, 1, "never twice");
+}
 // TRPG は三段階にせず、最後の本（サイが立ちはだかる）を初めてクリアしたら白火1つ。ほかの本では出ない
 {
   const finale = PLAY_REWARDS.find(r => r.id === "trpg-finale");

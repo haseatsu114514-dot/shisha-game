@@ -7,7 +7,8 @@
 // - 上級を初めてクリアしたら白火1つ（growth-board-data.js の PLAY_REWARDS `<game>-hard`。一度だけ・周回でも二度は渡さない）。
 // - 記録は growth.playTiers[game] = { cleared: [段], last: 最後に選んだ段 }。growth ごと保存・周回（NG+）へ持ち越す。
 //   新しい state.flags は作らない。結果を確定させるアダプター（各ゲームの記録関数）だけが recordTierClear を呼ぶ。
-// - TRPG は三段階にしない（最後のシナリオで別に扱う）。一台勝負（カード）は保留中のため対象外。
+// - TRPG は三段階にしない（最後のシナリオで別に扱う）。てつこも段を持たず、来訪をまたいで溜まる好感度（ハート5）で
+//   白火を渡す（2026-11-20 オーナー「てつこは難易度とかないや」）。一台勝負（カード）は保留中のため対象外。
 import { emit } from "./bus.js";
 
 export const TIERS = Object.freeze(["easy", "normal", "hard"]);
@@ -21,7 +22,6 @@ export const TIER_GAMES = Object.freeze({
   camel: Object.freeze({ title: "ラクダレース", clear: "その大会で3位以内" }),
   desert: Object.freeze({ title: "サンドボード", clear: "その段でヌールより先にゴール" }),
   dj: Object.freeze({ title: "DJ", clear: "そのセットをBランク以上で回しきる" }),
-  tetsuko: Object.freeze({ title: "てつこといっしょ", clear: "その段で、てつこがいちばんごきげんになる" }),
 });
 
 const object = (x) => (x && typeof x === "object" && !Array.isArray(x) ? x : {});
