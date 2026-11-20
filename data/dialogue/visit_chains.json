@@ -2513,6 +2513,389 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch5_chain_flag_1",
+      "comment": "第5章 シェイクの屋敷の中庭の太陽、通いの続き（#4010）1/2。小会話3本（ch5_dubai_taiyo・_b・_c）の後。好感度の段階・締めくくりを前提にしない（誰が読んでも成り立つ文にする）。太陽が屋敷の使用人たちへ、FESTAの台に挿す紙の旗（指ほど・緑と黄色を手で塗る・裏に一本ずつ一語。ch4_festa_talk_g）を作っている。休暇で世話になった礼。はじめに日本の字の一本を頼む。渡す相手は、噴水をいつも最初に掃除している庭番の老人（名前は付けない。この段には出さない）。何と書くかを選ぶ（flag_word: otsukare／mata／arigato）。分岐は、はじめが書く→太陽が意味を聞く→一言で答える→その言葉への太陽の反応（言葉ごとに違う。まとめの決め台詞にしない）。合流後、太陽がはじめの字を指でなぞり、自分の手のひらにペンで真似る（2/2で太陽が同じ一語を書いて渡す前振り）。旗は太陽が預かって渡す。狙い: 「煙は言葉がいらない」太陽が、一語だけは手で書いて渡す人でもあること。旗の当たり外れ・「喜びは、いくつあってもハズレじゃない」（ch4_festa_talk_g）は言い直さない。ch4_festa_talk_g を読んでいない人もいるので、はじめは旗を知っている前提で話さない。家族史・育ちの話は足さない。「カカッテコイ」「〜もフェスタ」は使わない。時間帯を言わない（「俺が起きる前に」は庭番の習慣の話）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "中庭の低い卓に、指ほどの紙の旗が並んでいた。緑と黄色が、まだ乾ききっていない。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "来たか、ハジメ。座れ。今、旗、作ってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "旗、ですか"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "店じゃ、どの台にも一本、挿す。裏に、一語。一本ずつ、違うの書く"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "太陽は細いペンで、旗の裏に短い単語を書いていった。読めない綴りが、卓の端まで続く。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "今日のは、屋敷のみんなのぶん。休みの間、世話になったからな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一人ずつ、言葉を変えるんですね"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "顔、見て決める。早いぞ、俺は"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "太陽は白いままの一本を、こちらへ滑らせた。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "これ、お前が書け。日本の字のも、一本ほしい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺が、ですか。誰に渡す旗なんです？"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "庭番のじいさん。噴水、いつも最初に掃除してる人"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "俺が起きる前に、もう噴水、光ってる。まだ一回も、勝ててねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（日本語を読まない人に、一語だけ。何て書こう）"
+        },
+        {
+          "type": "choice",
+          "id": "flag_word",
+          "choices": [
+            {
+              "text": "「おつかれさま」と書く",
+              "next": "otsukare"
+            },
+            {
+              "text": "「またあした」と書く",
+              "next": "mata"
+            },
+            {
+              "text": "「ありがとう」と書く",
+              "next": "arigato"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "太陽は旗の字を指でなぞった。それから自分の手のひらに、ペンで同じ形を書きはじめる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "太陽さん、手に書いてます"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "練習。この字、あとで教えろ。俺も、一本、書く"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "旗は、俺が渡す。意味も、俺が言う。お前の字だって、ちゃんと言う"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手のひらの字は、もう汗でにじみかけていた。太陽はその上から、もう一度なぞった。"
+        }
+      ],
+      "branches": {
+        "otsukare": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ひらがなで、ゆっくり書いた。「おつかれさま」。"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "長いな。どういう意味だ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "仕事を終えた人に、かける言葉です。今日もよく働きましたね、って"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "surprise",
+            "text": "……それ、一語で言えるのか"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "smile",
+            "text": "俺の国の言葉、ぴったりのが、ねえ。いい言葉、持ってるな"
+          }
+        ],
+        "mata": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ひらがなで、ゆっくり書いた。「またあした」。"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "どういう意味だ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "明日も会う人にだけ、言える言葉です"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "smile",
+            "text": "ああ。ここの連中、帰るとき、じいさんと何か言い合ってる"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "normal",
+            "text": "毎日だ。たぶん、それと同じやつだな"
+          }
+        ],
+        "arigato": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ひらがなで、ゆっくり書いた。「ありがとう」。"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "excited",
+            "text": "それは、知ってる！　アリガトウ！"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "知ってる言葉で、よかったですか"
+          },
+          {
+            "speaker": "da_silva",
+            "face": "smile",
+            "text": "いい。知ってる言葉が、旗になる。読むたび、声が出る"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch5_chain_flag_2",
+      "comment": "第5章 シェイクの屋敷の中庭の太陽、通いの続き（#4010）2/2（1/2の翌日以降）。はじめの書いた旗が、庭番の老人のブラシの柄に糸で結んである（選んだ言葉が屋敷の誰かの毎日に残ったことを、物で見せる）。老人は日本語を話さないので、言葉は地の文にし、スマホの通訳アプリの訳として出す。訳は1/2の答え（chain_pick）で一行だけ変える: otsukare「これを読んでから、ブラシを置く」／mata「これを読んでから、帰る」／arigato「これは、私から噴水に言う言葉にした」。老人の身の上は書かない。返事を待たずに行く。その後、太陽が日本の字で書いた同じ一語の旗をはじめに渡す。字は大きくて少し右に傾く（ch4_festa_bond_2 の「太陽」の字と同じ書きぶり。読んでいなくても通る）。書き間違いは無い（間違いを笑う・訂正する会話にしない）。「一語で、一晩かかった」。この場面で残す台詞は「煙は、言葉いらねえ。ずっと、そう言ってきた」「……でも、一語は、いるな」（ch4_festa_bond_3 の「煙は、言葉いらねえ」を一歩だけ言い直す。段階3を読んでいなくても通る）。締めは、はじめが旗を胸のポケットに挿し、太陽は何も言わずに旗作りへ戻る（卓にはまだ白い紙が残っている）。まとめの独白は置かない。旗をはじめの店でどう使うかは決めない。「カカッテコイ」「〜もフェスタ」は使わない。時間帯を言わない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "噴水の縁に、柄の長いブラシが立てかけてあった。柄の先に、紙の旗が糸で結んである。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "緑と黄色の裏に、見覚えのある字。自分の字だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "回廊から、小柄な老人が歩いてきた。こちらに気づくと、旗を指で軽く叩く。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "短く、何か言われた。手の中のスマホに、訳が出る。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch5_chain_flag_1",
+          "pick": "otsukare",
+          "next_true": "said_otsukare",
+          "next_false": "said_other"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事を探しているうちに、老人はブラシを取って、噴水の向こうへ歩いていった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "柄の先で、旗が小さく揺れている。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "excited",
+          "text": "見たか、ハジメ！　じいさん、あれ、毎日連れて歩いてる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "見ました。ブラシに結ぶとは、思いませんでした"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "挿すとこ、ねえからな。糸は、じいさんが自分で持ってきた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "太陽は胸のポケットから、旗を一本出した。差し出す手が、いつもより少しゆっくりだった。"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "で、これ。俺の"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "裏返すと、ひらがなが並んでいた。大きくて、少し右に傾いている。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "chain_pick",
+          "scene": "ch5_chain_flag_1",
+          "pick": "otsukare",
+          "next_true": "wrote_otsukare",
+          "next_false": "wrote_other"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一画ずつ、止めては書いた跡があった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ、太陽さんが書いたんですか"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "normal",
+          "text": "一語で、一晩かかった。手のひら、真っ黒だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ちゃんと読めます。俺の字より、大きいです"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "serious",
+          "text": "煙は、言葉いらねえ。ずっと、そう言ってきた"
+        },
+        {
+          "speaker": "da_silva",
+          "face": "smile",
+          "text": "……でも、一語は、いるな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "旗を、胸のポケットに挿した。緑と黄色の端が、少しだけのぞく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "太陽はそれを見て、何も言わずに卓へ戻った。白い紙が、まだ何枚も残っている。"
+        }
+      ],
+      "branches": {
+        "said_otsukare": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「これを読んでから、ブラシを置く」"
+          }
+        ],
+        "said_other": [
+          {
+            "type": "condition",
+            "condition_type": "chain_pick",
+            "scene": "ch5_chain_flag_1",
+            "pick": "mata",
+            "next_true": "said_mata",
+            "next_false": "said_arigato"
+          }
+        ],
+        "said_mata": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「これを読んでから、帰る」"
+          }
+        ],
+        "said_arigato": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「これは、私から噴水に言う言葉にした」"
+          }
+        ],
+        "wrote_otsukare": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「おつかれさま」。"
+          }
+        ],
+        "wrote_other": [
+          {
+            "type": "condition",
+            "condition_type": "chain_pick",
+            "scene": "ch5_chain_flag_1",
+            "pick": "mata",
+            "next_true": "wrote_mata",
+            "next_false": "wrote_arigato"
+          }
+        ],
+        "wrote_mata": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「またあした」。"
+          }
+        ],
+        "wrote_arigato": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「ありがとう」。"
+          }
+        ]
+      }
     }
   ]
 }
