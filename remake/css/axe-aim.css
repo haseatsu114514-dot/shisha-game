@@ -221,6 +221,8 @@
 .axe-game.axe-first-person[data-phase="power"] .axe-panel .axe-controls .axe-button {
   min-height: 100px; padding: 4px 8px; color: var(--axe-ink); font: 700 23px/1.22 system-ui, sans-serif;
 }
+/* 集中中・使用済みの札も袖を透かさず、無効状態は文字色で示す。 */
+.axe-game.axe-first-person .axe-panel .axe-controls .axe-button:disabled { opacity: 1; color: #bbc1bf; }
 /* Keep the game goal clear of the blade and the judge's close-up, including on a successful call. */
 .axe-game.axe-first-person[data-phase="result"] .axe-declare[data-kind="goal"] {
   left: var(--axe-inset-l); top: calc(var(--axe-inset-t) + 210px); width: 326px; max-width: 26%;

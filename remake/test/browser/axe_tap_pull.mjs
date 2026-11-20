@@ -170,8 +170,16 @@ await suite('axe-tap-pull', async check => {
       });
     }
     const activate = locator => touch ? locator.tap() : locator.click();
-    await activate(page.locator('[data-test="axe-focus"]'));
+    const focus = page.locator('[data-test="axe-focus"]');
+    await activate(focus);
     await page.locator('.axe-stability-meter[data-focused="true"]').waitFor();
+    for (const caption of ['集中中', '使用済み']) {
+      const disabled = focus.filter({ hasText: caption });
+      await disabled.waitFor();
+      assert(await disabled.isDisabled());
+      assert.equal(await disabled.evaluate(button => getComputedStyle(button).opacity), '1',
+        `The arm must not show through the ${caption} label`);
+    }
     await activate(page.locator('[data-test="axe-reaim"]'));
     await phase(page, 'choice');
     assert.equal(await root(page).getAttribute('data-player-throws'), '0');
