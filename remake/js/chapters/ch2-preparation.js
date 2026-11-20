@@ -8,7 +8,7 @@ import { addMoney, addStamina, earnStat, gainAffinity, visitAffinity, affinityLe
 import { imageReady, setBg, toast, withScenePreparation } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
-import { allSpots, isClosed, VISIT_COST, CHAR_STAT, VISIT_BG, bgRef, setChapterVisitDue, hasNewEvent } from "../daily/spots.js";
+import { allSpots, isClosed, VISIT_COST, CHAR_STAT, VISIT_BG, bgRef, setChapterVisitDue, hasNewEvent, chapterTalkDue } from "../daily/spots.js";
 import { setHiyoriExtraShops } from "../daily/hiyori.js";
 import { addRoamerSpots } from "../daily/roamers.js";
 import { trpgSpot, maybeRecruitTrpgMember } from "../daily/trpg.js";
@@ -208,28 +208,32 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   // クラウドのライブの夜（2026-11-11 オーナー「推奨で全部」RVE07）: 第2章で余りチケットを受け取った人（_ch2_rei_ticket）が、
   // 第3章の東京へ発つ前の準備期間にクラウドの店へ来たら、いつもの会話・段階・締めくくりより先に一度だけ。
   const live = id === "rei" && !first && reiLiveDue(state) ? REI_LIVE_SCENE : null;
+  // 東京・ドバイへ発つ前の送り出しの会話（#3097 PR-I。daily/spots.js の CHAPTER_TALKS の prep）。ライブの夜と同じく、
+  // いつもの会話・続編・段階・締めくくりより先に一来店に一本・一度だけ。あげはの途中の質問が残る来店では次の来店へ残す。
+  const send = !first && !live && !(id === "ageha" && questionVisitDue("ageha")) ? chapterTalkDue(id) : null;
+  const sole = live || send;
   // 旧セーブの総訪問・好感度・思い出から、新しい会話の読了を作らない。
   const stages = CH2_VISIT_STORIES[id];
   // 神崎・クラウドは訪問列の最古の未読を、必要ハートに届いた時だけ読む。届くまではrepeat（#1648）。
   const pendingStage = !first && stages ? stages.find(entry => !ch2VisitDone(state.flags, id, entry)) : null;
   const chapterDayNow = state.day - dayOneProgress(state).startDay + 1;
   // 物語の出来事が前提の段階（組長の♥3「味は遠い」）は、その出来事の後まで待つ（#2720）。
-  const stage = !live && pendingStage && affinityLevel(id) >= pendingStage.heart && ch2VisitReady(state.flags, pendingStage, chapterDayNow) ? pendingStage : null;
+  const stage = !sole && pendingStage && affinityLevel(id) >= pendingStage.heart && ch2VisitReady(state.flags, pendingStage, chapterDayNow) ? pendingStage : null;
   const pendingFollowup = !first && !stages && !state.flags._ch2_followup_done?.[id];
-  const followup = pendingFollowup && affinityLevel(id) >= 1;
+  const followup = !sole && pendingFollowup && affinityLevel(id) >= 1;
   // 訪問列を読み終えた♥5の次の来店で、締めくくりを一度だけ（#2027）。
-  let finale = !live && !first && stages && !pendingStage && finaleAtVisit(id);
+  let finale = !sole && !first && stages && !pendingStage && finaleAtVisit(id);
   // あげはの短い続編は次の来店の冒頭に。♥が届いていれば、そのまま店に通う回へ続ける。
   // 初回来店や未読は推測せず、「この前」の話を同じ初日に繰り上げない。
-  const nextStory = id === "ageha" && !first ? agehaStoryScene(state, chapterDayNow, DB.dialogues) : null;
+  const nextStory = id === "ageha" && !first && !sole ? agehaStoryScene(state, chapterDayNow, DB.dialogues) : null;
   // 「ダメな日」は入店時から様子が違う独立した場面。明るい続編と同じ来店には束ねない。
   const story = !pendingFollowup || followup && nextStory !== AGEHA_BADDAY.id ? nextStory : null;
   // あげは: 店に通う回と♥3の質問を読み終えた♥5の次の来店は、いつもの会話の代わりに締めくくり（#2023・一度だけ）。
-  if (!finale && id === "ageha" && !first && !pendingFollowup && !story) finale = finaleAtVisit("ageha");
+  if (!finale && !sole && id === "ageha" && !first && !pendingFollowup && !story) finale = finaleAtVisit("ageha");
   // 締めくくりの次の来店から、グミ・店の言葉・白いクマの席を一度ずつ。小品の前に割り込む（#3081）
-  const later = id === "ageha" && !first && !pendingFollowup && !story && !stage && !finale
+  const later = id === "ageha" && !sole && !first && !pendingFollowup && !story && !stage && !finale
     ? agehaLaterScene(state, DB.dialogues) : null;
-  const repeat = !first && !followup && !story && !stage && !finale && !later && !live;
+  const repeat = !first && !followup && !story && !stage && !finale && !later && !sole;
   // MELTY PUFFでの挨拶回を読んだ日より後に一度だけ、いつもの小会話の代わりにシールの後日（#3468 A案）。好感度・能力は小会話と同じ。
   const sticker = id === "rei" && repeat && reiStickerDue(state) && DB.dialogues[REI_STICKER_SCENE]?.lines?.length ? REI_STICKER_SCENE : null;
   // ♥5の締めくくりの後（#3693）: いつもの小会話の代わりに、♥5後の場面を一度ずつ。読み終えたら短い汎用（core/bond-after.js）。
@@ -241,7 +245,7 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
     }
     if (state !== owner) return { used: false, exerted: false };
   }
-  const scene = live || story || stage?.scene || (finale ? BOND_FINALES[id].dialogue
+  const scene = sole || story || stage?.scene || (finale ? BOND_FINALES[id].dialogue
     : first ? `remake_ch2_${id}_chat` : followup ? `remake_ch2_${id}_followup` : later || sticker || after?.scene || repeatScene(id));
   const dialogue = DB.dialogues[scene];
   const followupDialogue = followup ? DB.dialogues[`remake_ch2_${id}_followup`] : null;
@@ -306,7 +310,7 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   if (stage?.done) (state.flags[stage.done] ||= {})[id] = true;
   else if (stage) state.flags[`_ch2_read_${stage.scene}`] = true;
   if (story) { state.flags[`_ch2_read_${story}`] = true; syncAgehaVibes(state.flags); }
-  if (live) state.flags[`_talk_seen_${live}`] = true;
+  if (sole) state.flags[`_talk_seen_${sole}`] = true;
   if (sticker) state.flags._rei_purikura_after = true;
   markBondAfterRead(state, id, after);
   if (later) {

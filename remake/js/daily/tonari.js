@@ -99,7 +99,8 @@ export async function tonariCustomer({ signal = null } = {}) {
     addStamina(-16);
     const greeting = await play(state.slot === 0 ? "venue_tonari_day" : "venue_tonari_night", { bg: TONARI_BG, signal });
     if (!live() || !greeting || greeting.cancelled) return false;
-    await meetHiyoriAtTonari();
+    // 出発前のひよりの送り出し（#3097 PR-I）は、つむぎの新しい話を読む来店では次の対面へ残す（一来店に一本）
+    await meetHiyoriAtTonari({ prepTalk: !(tsumugiAtTonari(state) && hasNewStory("tsumugi")) });
     if (!live()) return false;
     if (tsumugiAtTonari(state)) {
       if (!await visitChar("tsumugi") || !live()) return false;

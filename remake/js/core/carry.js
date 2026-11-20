@@ -279,6 +279,7 @@ export const FLAG_EXACT_RULES = [
   ["_camel_cups", "unlock"], // 大会の解放・中級認定・上級称号を周回へ残す
   ["_camel_name_done", "progression"], // ハビーバの名前の由来（ミニゲームのドラマ・SPC26）
   ["_camel_master_done", "progression"], // 上級を勝ち切った日の房飾り（SPC26）
+  ["_camel_stable_turn", "progression"], // ラクダレース場の待ち時間の場面を読んだ本数（#3097 計画 4-6・ch4-camel-progress.js）。周回では持ち越さない
   ["_club_yoru_request", "progression"], // クラブSEAMの常連のリクエスト（SPC26）
   ["_club_yoru_last_set", "progression"], // 閉店前にヨルと交代で回す夜（SPC26）
   ["_ch4_morning_done", "progression"], // 大会当日の朝を読み終えた（ch4-morning.js・SPC28）。周回では持ち越さない
@@ -617,9 +618,14 @@ export const FLAG_EXACT_RULES = [
   // #3097 PR-I: サメちゃんの第2章の会話（daily/samechan.js）と、鉄仮面さんのシフト上がり（daily/tonari.js）。後日の LIME の条件に使う
   ["_talk_seen_ch2_samechan_resting_shark", "person"],
   ["_talk_seen_ch2_shift_talk_salaryman", "person"],
+  // 第3章の出発前の送り出しを読んだか（#3097 PR-I）。第4章の出発前のその人の会話が、報告の分岐に使う（data/dialogue/ch4_prep_home.json）
+  ["_talk_seen_ch3_prep_hiyori", "person"],
+  ["_talk_seen_ch3_prep_kumicho", "person"],
+  ["_talk_seen_ch3_prep_rei", "person"],
   // 第3章の出発前に凛想から「向こうの顔」を頼まれたか。第4章の出発前の凛想の会話が、その報告の分岐に使う
   ["_talk_seen_ch3_prep_rei_live", "person"], // クラウドのライブの夜（第3章の準備期間・RVE07）
   ["_talk_seen_ch3_prep_rio", "person"],
+  ["_talk_seen_ch3_prep_tsumugi", "person"], // #3097 PR-I（上の3つと同じ）
   ["_tsumugi_contest_art_seen", "person"],
   ["_tsumugi_contest_draft_hands", "person"],
   ["_tsumugi_contest_draft_window", "person"],

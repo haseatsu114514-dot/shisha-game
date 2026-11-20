@@ -48,8 +48,25 @@ export function camelResultTalk(plays, newBest) {
   const pool = CAMEL_RESULT_TALKS[newBest ? "best" : "usual"];
   return pool[Math.max(0, Math.floor(Number(plays) || 0) - 2) % pool.length];
 }
+// 待ち時間の場面（#3097 計画 4-6・RLS03）。二度目からの訪問で、結果の会話を読み終えた後に一本。
+// _a→_b→_c の順に一度ずつ読み、三本を読み終えたら今までの再訪の流れ（結果の会話まで）に戻る。
+// 保存するのは読み終えた本数だけ（読み終えた時に進める。中断・LOAD では進めず、次の再訪で同じ回を読む）。
+// 初めてのレースの日と、一度きりの会話（camelTalkAfterRace）の日は読まない。勝敗・記録・報酬・昼の枠には触れない。
+export const CAMEL_STABLE_FLAG = "_camel_stable_turn";
+export const CAMEL_STABLE_TALKS = Object.freeze(["ch4_camel_stable_a", "ch4_camel_stable_b", "ch4_camel_stable_c"]);
+/** 次に読む待ち時間の場面。三本とも読み終えていれば null（状態は変えない）。 */
+export function camelStableTalk(value) {
+  const read = Math.max(0, Math.floor(Number(value?.flags?.[CAMEL_STABLE_FLAG]) || 0));
+  return CAMEL_STABLE_TALKS[read] || null;
+}
+/** 待ち時間の場面を読み終えた。今読むべき回のときだけ一本進める。戻り値は進んだか。 */
+export function recordCamelStableTalk(value, sceneId) {
+  if (!value?.flags || !sceneId || camelStableTalk(value) !== sceneId) return false;
+  value.flags[CAMEL_STABLE_FLAG] = CAMEL_STABLE_TALKS.indexOf(sceneId) + 1;
+  return true;
+}
 export const CH4_CAMEL_SCENE_FILES = Object.freeze({ ch4_camel_race: Object.freeze([...new Set([...Object.values(CAMEL_SCENES),
-  ...CAMEL_RESULT_TALKS.best, ...CAMEL_RESULT_TALKS.usual])]) });
+  ...CAMEL_RESULT_TALKS.best, ...CAMEL_RESULT_TALKS.usual, ...CAMEL_STABLE_TALKS])]) });
 // 砂漠のレース場の朝（Codex CR-BG01 の A 案・2026-11-02 採用）。見学・結果・再挑戦の会話の背景。
 export const CAMEL_TRACK_BG = "bg_dubai_camel_track_morning";
 export const CAMEL_SHOP_BG = "bg_fookah_dubai"; // Dr.fookah ドバイ店
