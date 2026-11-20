@@ -20,7 +20,8 @@ const plain = v => JSON.parse(JSON.stringify(v));
 const encounters = await import(new URL("remake/js/daily/spot-encounters.js", root));
 // #3097 第1弾: 各施設の第2章の回を1本ずつ足した（既存の回の後ろ）
 // #3097 第2弾: さらに各施設に1本（時計・香炉・首のストレッチ・帰りの飴）
-const CH2 = { cafe: ["cafe_ch2_commute", "cafe_ch2_taste", "cafe_ch2_foam", "cafe_ch2_clock"], kannon: ["kannon_ch2_wish", "kannon_ch2_omikuji", "kannon_ch2_incense"],
+// #3097 PR-I: 喫茶こはくに上園さんの回（面識がある時だけ・味の回の後ろ）
+const CH2 = { cafe: ["cafe_ch2_commute", "cafe_ch2_taste", "cafe_ch2_maezono", "cafe_ch2_foam", "cafe_ch2_clock"], kannon: ["kannon_ch2_wish", "kannon_ch2_omikuji", "kannon_ch2_incense"],
   choizap: ["choizap_ch2_numbers", "choizap_ch2_stairs", "choizap_ch2_neck"], c_station: ["cs_ch2_haze", "cs_ch2_new_staff", "cs_ch2_candy"] };
 const save = (chapter, flags = {}, extra = {}) => ({ chapter, slot: 0, met: { naru: true, adam: true, minto: true, dr_kemuri: true },
   flags: { _gym_member: true, ...flags }, ...extra });
@@ -44,6 +45,21 @@ for (const [spot, ids] of Object.entries(CH2)) {
 // 味の不調を知る前は、喫茶こはくの味の回を出さない。観音堂は昼だけ
 assert.equal(encounters.spotEncounterDue("cafe", 5, save(2, { _spot_seen_cafe_ch2_commute: true }), all) === "cafe_ch2_taste", false);
 assert.equal(encounters.spotEncounterDue("kannon", 5, save(2, {}, { slot: 1 }), all) === "kannon_ch2_wish", false);
+// #3097 PR-I: 上園さんの回は、面識がある時だけ。味の不調の後は、マスターの味の回を先に
+{
+  const met = { maezono: true };
+  const commuteRead = { _spot_seen_cafe_ch2_commute: true };
+  assert.equal(encounters.spotEncounterDue("cafe", 5, save(2, commuteRead, { met }), all), "cafe_ch2_maezono", "after the commute talk");
+  assert.equal(encounters.spotEncounterDue("cafe", 5, save(2, { ...commuteRead, _ch2_taste_distant: true }, { met }), all), "cafe_ch2_taste");
+  assert.equal(encounters.spotEncounterDue("cafe", 5, save(2, { ...commuteRead, _ch2_taste_distant: true, _spot_seen_cafe_ch2_taste: true }, { met }), all), "cafe_ch2_maezono");
+  assert.equal(encounters.spotEncounterDue("cafe", 5, save(2, commuteRead), all), "cafe_ch2_foam", "not before meeting him");
+  assert.notEqual(encounters.spotEncounterDue("cafe", 5, save(1, commuteRead, { met }), all), "cafe_ch2_maezono", "chapter 2 only");
+  // 味の不調の前後で、はじめの答え方だけが分かれる（どちらも同じ場面の続きへ戻る）
+  const scene = all.cafe_ch2_maezono;
+  const conditions = scene.lines.filter(line => line.type === "condition");
+  assert(conditions.length === 2 && conditions.every(line => line.flag === "_ch2_taste_distant" && scene.branches[line.next_true] && scene.branches[line.next_false]));
+  assert(!/大会|県大会|審査|採点|HAZE/.test(JSON.stringify(scene)), "a judge does not talk about the tournament with a contestant");
+}
 // 台本が読み込まれていない（第2章の準備期間の外）なら出さない
 assert.equal(encounters.spotEncounterDue("cafe", 5, save(2), {}), null);
 // #2090・RVE: なるとの決裂（第2章の対峙）以降は、店を閉めて修行に出ているので、喫茶こはく・ジムでもなるに会わない

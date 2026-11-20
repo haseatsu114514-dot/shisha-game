@@ -150,6 +150,28 @@ state.met.minto=true;assert.equal(k.samechanVisitDialogue(),'samechan_shop_minto
 state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_minto_gift');
 assert.equal(state.flags._spot_seen_samechan_shop_minto_gift,true);assert.deepEqual([...rewards.at(-1)],['samechan',8],'開店祝いの話はいつもの来店と同じ');
 assert.match(k.samechanVisitDialogue(),/^samechan_shop_repeat_/,'開店祝いの話は一度だけ');
+// #3097 PR-I: 第2章の普段の会話。第2章の台本（ch2_home.json）が読み込まれた時だけ、いつもの来店の代わりに一度。好感度はいつもの来店と同じ
+{
+  const ch2Talk=JSON.parse(await fs.readFile(new URL('../../data/dialogue/ch2_home.json',import.meta.url),'utf8')).dialogues.find(d=>d.dialogue_id===k.SAMECHAN_CH2_TALK);
+  assert(ch2Talk,'the chapter 2 talk exists in ch2_home.json');
+  assert.match(k.samechanVisitDialogue(),/^samechan_shop_repeat_/,'台本が読み込まれていなければ出さない');
+  data.DB.dialogues[k.SAMECHAN_CH2_TALK]=ch2Talk;
+  state.chapter=3;assert.match(k.samechanVisitDialogue(),/^samechan_shop_repeat_/,'第2章だけ');state.chapter=2;
+  assert.equal(k.samechanVisitDialogue(),k.SAMECHAN_CH2_TALK);
+  state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),k.SAMECHAN_CH2_TALK);
+  assert.equal(state.flags[`_talk_seen_${k.SAMECHAN_CH2_TALK}`],true);assert.deepEqual([...rewards.at(-1)],['samechan',8],'いつもの来店と同じ');
+  assert.match(k.samechanVisitDialogue(),/^samechan_shop_repeat_/,'一度だけ');
+  assert.equal(k.samechanVisitAffinityKind(k.SAMECHAN_CH2_TALK),'talk');
+  for(const row of ch2Talk.lines){
+    if(row.voice==='korochan')assert(!/じゃ|のう|おる/.test(row.text),'コロちゃんに本人の語尾が混ざらない');
+    if(row.speaker==='samechan')assert(manifest.portraits.samechan.faces.includes(row.face));
+    assert(!row.type,'命令（好感度・旗）は来店の処理が持つ');
+  }
+  assert(!/なぎさ|泳ぎ|恋人|告白|大会|手伝/.test(ch2Talk.lines.map(row=>row.text).join('\n')),'本名・泳ぎ・恋愛・大会・店の手伝いに触れない');
+  const after=lime.messages.find(m=>m.id==='lime_ch2_samechan_resting_shark');
+  assert.equal(after.trigger_flag,`_talk_seen_${k.SAMECHAN_CH2_TALK}`);assert.equal(after.chapter,2);
+  delete data.DB.dialogues[k.SAMECHAN_CH2_TALK];
+}
 // #3693: 締めくくりを友人として迎えた後は、いつもの小会話の代わりに♥5後の場面を一度ずつ。素焼きが無ければ一本目を飛ばす。好感度はいつもの来店と同じ
 state.finales={samechan:{chapter:2,day:3,route:'friend'}};state.owned=[];
 state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'bond_after_samechan_2');

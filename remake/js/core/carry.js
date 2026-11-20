@@ -569,6 +569,7 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_cafe_ch2_clock", "progression"], // #3097 第2弾（daily/spot-encounters.js の第2章の回）
   ["_spot_seen_cafe_ch2_commute", "progression"],
   ["_spot_seen_cafe_ch2_foam", "progression"], // #3097 第1弾（daily/spot-encounters.js の第2章の回）
+  ["_spot_seen_cafe_ch2_maezono", "person"], // #3097 PR-I 喫茶こはくの上園さん（第2章）
   ["_spot_seen_cafe_ch2_taste", "progression"],
   ["_spot_seen_cafe_maezono_break", "person"],
   ["_spot_seen_cafe_master_quiz", "progression"],
@@ -610,6 +611,9 @@ export const FLAG_EXACT_RULES = [
   ["_sumi_rig_received_day", "progression"],
   // 凛想が味の不調に気づいた回（第2章）を読んだか。第3・4章の出発前の凛想の会話が分岐に使う（data/dialogue/ch3_ch4_home.json）
   ["_talk_seen_ch2_rio_taste", "person"],
+  // #3097 PR-I: サメちゃんの第2章の会話（daily/samechan.js）と、鉄仮面さんのシフト上がり（daily/tonari.js）。後日の LIME の条件に使う
+  ["_talk_seen_ch2_samechan_resting_shark", "person"],
+  ["_talk_seen_ch2_shift_talk_salaryman", "person"],
   // 第3章の出発前に凛想から「向こうの顔」を頼まれたか。第4章の出発前の凛想の会話が、その報告の分岐に使う
   ["_talk_seen_ch3_prep_rei_live", "person"], // クラウドのライブの夜（第3章の準備期間・RVE07）
   ["_talk_seen_ch3_prep_rio", "person"],

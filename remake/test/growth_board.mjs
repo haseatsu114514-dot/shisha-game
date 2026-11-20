@@ -61,24 +61,41 @@ for (const k of board.BOARD_KEYS) {
     assert(reach.has(n.id), `${n.id} は関門なしで届く`);
   }
 }
-// v9（SBD62）: 紋は下の端。紋のそばの授業は第1章の人だけ（関門なし）、第2章からの人の授業は関門の先。
+// v9（SBD62）: 紋は下の端。第1章の人の授業は関門なし、第2章からの人の授業は関門の先。
 // どの関門の先にも強いスキルがある。誰の授業へ先に進んでも、ほかの授業が遠くならない。
 for (const k of board.BOARD_KEYS) {
   const hubSides = board.boardNodes(k).filter((n) => n.links.includes(board.HUB)).map((n) => n.cell).sort();
   assert.deepEqual(hubSides, ["-1,0", "0,-1", "1,0"], `${k}: 紋から出る道は左・右・上の3本`);
 }
+// v14（SBD149「すぐ授業まで行けるのに、行った時点ではまだ好感度が足りない、が起こりやすい」）: ♥が要る授業は奥へ。
+// 第1章の人は六角のスキルの先（紋から火種6〜7）、第2章からの人は色の台座の先のいちばん奥（台座から能力のマス2つ先）。
+// ♥を問わない授業（スミさんなど）は今までどおり近く。
 for (const l of board.LESSONS) {
   const route = board.pathTo(l.id, new Set()).path.filter((id) => id !== l.id);
+  const cost = board.pathTo(l.id, new Set()).cost;
   const gates = route.filter((id) => N[id].kind === "gate").length;
   if ((l.ring ?? 1) === 1) {
     assert.equal(gates, 0, `${l.id}: 第1章の人の授業は関門なし`);
-    assert(route.length <= 3, `${l.id}: 紋のそば（${route.length}マス）`);
     assert.equal(N[l.id].band, 1, `${l.id}: 近くの帯`);
+    if (l.need) {
+      assert.deepEqual(N[l.id].links.map((id) => N[id].kind), ["skill"], `${l.id}: ♥が要る授業は、六角のスキルの先だけにつながる`);
+      assert.equal(N[N[l.id].links[0]].ring, 1, `${l.id}: 第1章のスキル`);
+      assert(cost >= 6 && cost <= 7, `${l.id}: 紋から火種6〜7（${cost}）`);
+    } else {
+      assert(route.length <= 3 && cost <= 3, `${l.id}: ♥を問わない授業は紋のそば（${route.length}マス）`);
+    }
   } else {
     assert.equal(gates, 1, `${l.id}: 第2章からの人の授業は関門の先`);
     assert.equal(N[l.id].band, 3, `${l.id}: 関門の先の帯`);
+    if (l.need) {
+      const beyond = route.slice(route.findIndex((id) => N[id].kind === "gate") + 1);
+      assert.deepEqual(beyond.map((id) => N[id].kind), ["stat", "stat"], `${l.id}: ♥が要る授業は、台座から能力のマス2つ先（いちばん奥）`);
+      assert.deepEqual(N[l.id].links, [beyond[1]], `${l.id}: 道の端（その先は無い）`);
+    }
+    assert(cost <= 10, `${l.id}: 紋から遠すぎない（火種${cost}）`);
   }
-  assert(board.pathTo(l.id, new Set()).cost <= ((l.ring ?? 1) === 1 ? 3 : 10), `${l.id}: 紋から遠すぎない（火種${board.pathTo(l.id, new Set()).cost}）`);
+  // ♥が要る授業は、どれも紋から火種5以上（最初にもらう白火だけで、通りすがりに届かない）
+  if (l.need) assert(cost >= 5, `${l.id}: 紋から火種5以上（${cost}）`);
   assert.equal(N[l.id].ring, l.ring ?? 1, `${l.id}: 授業の章はデータどおり`);
   const others = new Set(board.LESSONS.filter((x) => x.id !== l.id && x.board === l.board).flatMap((x) => board.pathTo(x.id, new Set()).path));
   assert(board.pathTo(l.id, others).cost <= board.pathTo(l.id, new Set()).cost, `${l.id}: 先に進んだ道で遠くならない`);
@@ -134,8 +151,10 @@ for (const k of board.BOARD_KEYS) {
     const tolls = k === "body" ? ["K03", "K04"] : nodes.filter((n) => n.kind === "skill" && n.cost === 2).map((n) => n.id);
     for (const id of tolls) assert(byId[id].links.length >= 2, `${id}: 通行料のスキルは通り抜けられる`);
   }
-  // 授業は会う章の順に紋から遠い（SBD65）: どの章の授業も、前の章の授業より近くない
-  const costOf = (ring) => board.LESSONS.filter((l) => l.board === k && (l.ring ?? 1) === ring).map((l) => board.pathTo(l.id, new Set()).cost);
+  // 授業は会う章の順に紋から遠い（SBD65）: どの章の授業も、前の章の授業より近くない。
+  // v14（SBD149）から、これは♥を問わない授業どうしの決まり。♥が要る授業の距離は「♥5になる頃に届く」で決め（上の検査）、
+  // 章の順は色の台座と章の結界が守る（第2章からの人の授業は、その章にならないと届かない）
+  const costOf = (ring) => board.LESSONS.filter((l) => l.board === k && !l.need && (l.ring ?? 1) === ring).map((l) => board.pathTo(l.id, new Set()).cost);
   for (let r = 1; r < 4; r++) for (let r2 = r + 1; r2 <= 4; r2++) {
     const a = costOf(r), b = costOf(r2);
     if (a.length && b.length) assert(Math.max(...a) <= Math.min(...b), `${k}: 第${r}章の授業（${a}）は第${r2}章の授業（${b}）より近い`);
@@ -571,7 +590,7 @@ assert.deepEqual(growth.growthMenuItems(), []);
 growth.setGrowthPreview(true);
 assert.equal(growth.growthMenuItems().length, 1);
 growth.setGrowthPreview(false);
-console.log("[growth board] PASS: v13 ring-tree boards (loops, forked perks, 3 notables, toll skills on loops), lessons farther by chapter with lessons right behind gates, peak only after filling the board, no steps (perk totals + ✦ squares), bands near×1/mid×2/beyond-gate×3, gates by colored hidane, 22 lessons (learn only by meeting in person), chapter reach + gate-free ch1 skills, 3 equal boards of 66 (198 total, 70% of every board in run 1), connect rules, replay, color-first payment, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");
+console.log("[growth board] PASS: v13 ring-tree boards (loops, forked perks, 3 notables, toll skills on loops), heart lessons deep (ch1 behind a skill at 6-7, later at the far end beyond a gate; v14), heart-free lessons near and farther by chapter, peak only after filling the board, no steps (perk totals + ✦ squares), bands near×1/mid×2/beyond-gate×3, gates by colored hidane, 22 lessons (learn only by meeting in person), chapter reach + gate-free ch1 skills, 3 equal boards of 66 (198 total, 70% of every board in run 1), connect rules, replay, color-first payment, target path, lesson locks + flags, v2 refund, save/load, stats untouched, tonari lessons gated, menu gate");
 
 // 組み直し: 実際の経路と支払を使う保存fixture。獲得ペースの通し証明とは分ける。
 const respec = await import("../js/core/growth-respec.js");

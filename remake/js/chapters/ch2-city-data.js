@@ -25,7 +25,7 @@ const PURIKURA_IDS = ["remake_ch2_ryuji_melty_greeting", "remake_ch2_purikura_ry
 const DISCOVERY_IDS = ["remake_ch2_rei_trpg", "remake_ch2_ageha_aquarium", "remake_ch2_kumicho_sento"];
 // #3097 第1弾: tonariのシフト上がりの会話（daily/tonari.js の CH2_SHIFT_TALKS と同じ並び。読み込みを軽くするため名前を並べる。一致は remake/test/ch2_shift_talks.mjs）
 export const CH2_SHIFT_TALK_IDS = Object.freeze(["ch2_shift_talk_fare", "ch2_shift_talk_three_shops", "ch2_shift_talk_supper",
-  "ch2_shift_talk_receipts", "ch2_shift_talk_student", "ch2_shift_talk_tsumugi_board", "ch2_shift_talk_one_hose",
+  "ch2_shift_talk_salaryman", "ch2_shift_talk_receipts", "ch2_shift_talk_student", "ch2_shift_talk_tsumugi_board", "ch2_shift_talk_one_hose",
   "ch2_shift_talk_lost_box", "ch2_shift_talk_first_timer", "ch2_shift_talk_cd_player", "ch2_shift_talk_same_seat", "ch2_shift_talk_burnt_finger"]);
 export const CH2_HOME_IDS = Object.freeze(["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze",
   "ch2_rio_taste", "ch2_rio_strawberry",
@@ -33,6 +33,8 @@ export const CH2_HOME_IDS = Object.freeze(["cafe_ch2_commute", "cafe_ch2_taste",
   "cafe_ch2_foam", "kannon_ch2_omikuji", "choizap_ch2_stairs", "cs_ch2_new_staff", "ch2_rio_city_scent", "ch2_minto_commute_frame", "ch2_adam_ticket_machine",
   // #3097 第2弾: 施設の寄り道を各1本
   "cafe_ch2_clock", "kannon_ch2_incense", "choizap_ch2_neck", "cs_ch2_candy",
+  // #3097 PR-I: 喫茶こはくの上園さん（spot-encounters.js）と、SHISHARKのサメちゃんの第2章の会話（daily/samechan.js の SAMECHAN_CH2_TALK）
+  "cafe_ch2_maezono", "ch2_samechan_resting_shark",
   // tonariの大会準備で一台作る場面（ch2-craft-prep.js の CH2_CRAFT_PREP_IDS と同じ。読み込みを軽くするため名前を並べる）
   "ch2_prep_basics_intro", "ch2_prep_basics_end", "ch2_prep_basics_failed",
   "ch2_prep_midcheck_intro", "ch2_prep_midcheck_good", "ch2_prep_midcheck_rough", "ch2_prep_midcheck_failed", "ch2_prep_rehearsal_intro",
