@@ -292,6 +292,44 @@ await suite("ch3-tournament", async check => {
     // STK23: あげはの再会を帰郷した夜へ移したので、第3章は帰郷した夜（DAY 16）で終わる。
     assert.match(await page.locator('[data-test="slot-0"]').innerText(), /第3章\s*DAY 16[\s\S]*第3章クリア/);
   }, { reducedMotion: "reduce" });
+  // 結果発表（TSH10）: その場で優勝が決まると 10カウント → 板（票）→ CHAMPION → 板に紙吹雪。押す所へフォーカスが戻る。
+  await check("result-reveal-champion-splash-and-confetti", async page => {
+    // 自動操作（craftTest.auto）では演出を省くので、手で遊ぶ時と同じ状態で流す。
+    await seed(page, null);
+    await page.locator(t("entry")).waitFor();
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const model = await import("./js/chapters/ch3-tournament-state.js");
+      (await import("./js/vn/engine.js")).vnTest.turbo = false;
+      const p = model.tournamentProgress(core.state);
+      const craft = { holes: { score: 92 }, heat: { score: 92 }, mix: { chocolate: 6, mint: 6 }, careHistory: [{ score: 94 }, { score: 95 }],
+        total: 93, parts: { holes: 92, heat: 92, shisha: 90, care1: 94, care2: 95 }, tournamentStory: { seen: ["tasting", "preresult"] } };
+      Object.assign(p, { stage: "tasting", step: 11, voted: 4, attempts: 1, craft });
+      p.votes = Object.fromEntries(model.JUDGES.map(judge => [judge, { hajime: 6, saku: 2, steve: 1, volk: 1 }]));
+      p.lastVotes = Object.fromEntries(model.JUDGES.map(judge => [judge, { first: "hajime", second: "saku", points: { hajime: 2, saku: 1 } }]));
+      p.quality = { hajime: 93, saku: 82, steve: 80, volk: 84 };
+      const rows = model.standings(p);
+      p.result = { attempt: 1, total: 93, rank: rows.find(row => row.id === "hajime").rank, win: true, rows, votes: structuredClone(p.votes), careHistory: craft.careHistory };
+      p.history = [structuredClone(p.result)];
+      core.state.met.emil = true;
+      core.save();
+      void (await import("./js/chapters/ch3-tournament.js")).runChapterThreeTournament();
+    });
+    await page.locator('[data-test="result-count"]').waitFor();
+    await page.locator(t("result")).and(page.locator('[data-ceremony="done"]')).waitFor({ timeout: 30000 });
+    const splash = page.locator('[data-test="result-splash"]');
+    await splash.waitFor();
+    assert.equal(await splash.locator("h2").textContent(), "CHAMPION");
+    assert.match(await splash.locator(".ts-splash-eyebrow").textContent(), /HAZE: NATIONAL TOKYO/);
+    await page.waitForTimeout(800);
+    await assertFits(page, '[data-test="result-splash"] h2, [data-test="result-splash"] p');
+    await splash.click();
+    await splash.waitFor({ state: "detached" });
+    await page.locator(`${t("result")} .ts-confetti`).waitFor({ state: "attached" });
+    await page.locator(t("continue")).and(page.locator(":focus")).waitFor();
+    await assertFits(page, `${t("continue")}`);
+  });
+
   await check("actual-losing-rank-reads-defeat-and-retries-without-win", async page => {
     await seed(page);
     await page.locator(t("entry")).waitFor();

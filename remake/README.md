@@ -406,7 +406,7 @@ node --experimental-vm-modules remake/test/data_loading.mjs # 接続数・通信
 
 テスト用フック: `window.__remake`（state参照・ミニゲーム自動解決）。
 開発用ジャンプ: ブラウザのコンソールで `__remake.dev.tournament()`（大会当日から）／`__remake.dev.drill("heat")`（ドリル単体）。※今のセーブを上書きする。UIの見た目を変えても壊れないよう、
-大会のショー演出（2026-11-20・[要望台帳](../docs/owner_requests.md) の TSH）は、試合を進めずに見られる: コンソールで `__remake.dev.show("vote-2")`（中間投票。`vote-1`〜`vote-3`）／`("count")`・`("count-lose")`（結果発表のカウント）／`("final")`（最後の投票）／`("champion")`・`("lose")`（大見出しと順位表）／`("interval")`（合間のアイキャッチと中継の枠）／`("result")`・`("result-lose")`（カウントから順位表まで通し）。※今のセーブを上書きする。部品は `js/craft/tournament-show.js`・`css/tournament-show.css`（票が入る進行 `voteCeremony`・第2〜4章の板用 `contestCeremony`・中継の枠 `liveFrame`・アイキャッチ `eyecatch`・大見出しは `craft/result.js` の `resultSplash`）。自動操作・会話の早送り・「動きを減らす」では動かさない。
+大会のショー演出（2026-11-20・[要望台帳](../docs/owner_requests.md) の TSH。第2〜4章の結果発表と合間の会話にも同じ10カウント・大見出し・紙吹雪・アイキャッチ）は、試合を進めずに見られる: コンソールで `__remake.dev.show("vote-2")`（中間投票。`vote-1`〜`vote-3`）／`("count")`・`("count-lose")`（結果発表のカウント）／`("final")`（最後の投票）／`("champion")`・`("lose")`（大見出しと順位表）／`("interval")`（合間のアイキャッチと中継の枠）／`("result")`・`("result-lose")`（カウントから順位表まで通し）。※今のセーブを上書きする。部品は `js/craft/tournament-show.js`・`css/tournament-show.css`（票が入る進行 `voteCeremony`・第2〜4章の板用 `contestCeremony`・中継の枠 `liveFrame`・アイキャッチ `eyecatch`・大見出しは `craft/result.js` の `resultSplash`）。自動操作・会話の早送り・「動きを減らす」では動かさない。
 テストはこのフックと `data-test` 属性だけに依存する。
 
 穴あけテンプレートの追加は `js/craft/holes_templates.js` の `HOLE_TEMPLATES` にID・表示名・各リングの穴数・短い説明を登録する。交流で解放する種類は `unlockFlag` を付け、実際のイベントで既存の `state.flags` にそのフラグを立てる。未解放の種類は選択に出さず、一台の開始時に選べる種類を確定する。「外周24穴」（`_hole_outer24_unlocked`）は、スミさんの授業 M-W2 の `unlocks` で立てる（`lesson_sumi_four` の末尾で外周の配置を教わる。習得済みの旧セーブは読み込み時に立つ）。0穴のリングはプレビューの穴・プレイ対象から除外され、結果は選んだテンプレートIDと実際に開いた穴数・配置を持つ。

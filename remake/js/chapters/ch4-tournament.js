@@ -21,7 +21,7 @@ import { block, clearComments } from "../craft/broadcast.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { showChapterFourStandings, chapterFourNameOf } from "./ch4-standings.js";
-import { liveOf } from "../craft/tournament-show.js";
+import { liveOf, intervalCard } from "../craft/tournament-show.js";
 import { chapterFourMatch, startChapterFourCraft, recoverChapterFourStep, chapterFourRetryContext,
   beginChapterFourStep, finishChapterFourStep, chapterFourStandings } from "./ch4-tournament-state.js";
 import { chapterFourCraftAdvice, chapterFourCustomerLines } from "./ch4-verdict.js";
@@ -70,7 +70,9 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
         tied: rows[1]?.points === top?.points, level: me?.points === top?.points };
       // 会話には中継の枠を付ける（TSH05。票が出てからは順位の札も）。
       const told = await playTournamentEvent(p.craft, event, { context,
-        live: liveOf("HAZE: GRAND SMOKE", event, p.voted ? rows : [], chapterFourNameOf) });
+        live: liveOf("HAZE: GRAND SMOKE", event, p.voted ? rows : [], chapterFourNameOf),
+        // 合間の掛け合いの前にアイキャッチ（TSH11。いまの順位つき。既読なら出さない）。
+        card: intervalCard(event, p.voted ? rows : []) });
       requireCurrent();
       if (!told) return false;
       save();

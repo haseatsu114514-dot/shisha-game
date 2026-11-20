@@ -503,6 +503,41 @@ await suite('ch2-tournament',async check=>{
     await page.screenshot({path:`${process.env.ARTIFACT_DIR||'.codex/artifacts/remake-browser'}/ch2-vote-ceremony-${final?'result':'votes'}.png`});
   });
 
+  // 結果発表（TSH10）: その場で結果が出た時だけ、板の前に10カウント、票が出そろった後に大見出し。開き直した時は流さない。
+  await check('result-reveal-plays-once-countdown-board-and-splash',async page=>{
+    await seed(page,{stage:'entry',auto:null});await page.locator(t('entry')).waitFor();
+    const rank=await page.evaluate(async()=>{
+      const core=await import('./js/core/state.js');
+      const model=await import('./js/chapters/ch2-tournament-state.js');
+      (await import('./js/vn/engine.js')).vnTest.turbo=false;
+      // 結果発表前の掛け合いは読み終えた扱い。負けの側（決着の間を挟まない）で流れだけを見る。
+      const p=model.startAttempt(core.state,{holes:{score:40},heat:{score:40},pack:'normal',mix:{strawberry:8,mint:4},careHistory:[{score:40},{score:40}],
+        total:40,parts:{holes:40,heat:40,shisha:40,care1:40,care2:40},tournamentStory:{seen:['interlude3','tasting','preresult']}});
+      for(let round=0;round<4;round++)model.castVotes(p,round,40);
+      p.step=11;const result=model.recordResult(core.state,40);p.stage='tasting';core.save();
+      void (await import('./js/chapters/ch2-tournament.js')).runChapterTwoTournament();
+      return result.rank;
+    });
+    assert.notEqual(rank,1);
+    await page.locator('[data-test="result-count"]').waitFor();
+    assert.equal(await page.locator('.rc-card').count(),4);
+    assert.equal(await page.locator('.rc-card').last().getAttribute('data-id'),'hajime','はじめは右端（光が最後に巡る位置）');
+    const board=page.locator(t('result'));
+    await board.waitFor({timeout:20000});
+    await board.and(page.locator('[data-ceremony="done"]')).waitFor({timeout:15000});
+    const splash=page.locator('[data-test="result-splash"]');
+    await splash.waitFor();
+    assert.equal(await splash.getAttribute('data-rank'),String(rank));
+    assert.equal(await splash.locator('h2').textContent(),`${rank}位`);
+    await splash.click();await splash.waitFor({state:'detached'});
+    await page.locator(t('continue')).and(page.locator(':focus')).waitFor();
+    // 開き直し（LOAD後の再表示と同じ）: 10カウントと大見出しは流さず、板だけ
+    await page.evaluate(async()=>{void (await import('./js/chapters/ch2-tournament.js')).runChapterTwoTournament();});
+    await board.waitFor();
+    await page.waitForTimeout(1500);
+    assert.equal(await page.locator('[data-test="result-count"], [data-test="result-splash"]').count(),0,'Countdown and splash play only when the result is decided here');
+  });
+
   await check('vote-reason-low-holes-uses-actual-step-label',async page=>{
     await seed(page,{stage:'entry',auto:null});await page.locator(t('entry')).waitFor();
     const before=await page.evaluate(async()=>{

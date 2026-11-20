@@ -52,6 +52,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
     showChapterFourStandings: async p => { trace.push(`standings:${p.voted}`); shown.push(match.chapterFourStandings(p)); },
     // 会話の中継の枠（TSH05）: 帯の中身は見た目だけで、進行・票・保存には触れない。ここでは受け口だけ用意する。
     chapterFourNameOf: id => id, liveOf: (title, event, rows = []) => ({ event: title, phase: event, standings: rows }),
+    intervalCard: () => null,
     retireScreen: () => trace.push("retire"), playBgm() {}, clearComments() {}, block() {},
     play: async dialogue => { trace.push(dialogue.dialogue_id); return {}; },
     modal: async options => { trace.push(options.title);
