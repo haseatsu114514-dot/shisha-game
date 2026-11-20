@@ -33,7 +33,8 @@ import * as broadcast from "../craft/broadcast.js";
 import { voteStack, judgePanel, judgeLegend, craftReviewBlock } from "../craft/tournament-graphics.js";
 import { craftReviewLines } from "../craft/advice.js";
 import { playTournamentEvent } from "../craft/tournament-story.js";
-import { contestCeremony, liveOf } from "../craft/tournament-show.js";
+import { contestCeremony, liveOf, intervalCard, resultSplash, countdownKind, showConfetti } from "../craft/tournament-show.js";
+import { resultCountdown } from "../craft/result.js";
 import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { strawberryTournamentMemory } from "./ch2-story-data.js";
 import { readDialogues } from "../core/chapter-data.js";
@@ -128,7 +129,9 @@ async function commentary(owner, event) {
   // 掛け合いは保存済みの実際の票を読んで台詞を選ぶ（#1649）。会話には中継の枠を付ける（TSH05。票が出てからは順位の札も）。
   const p = progress();
   const result = await playTournamentEvent(owner.cs, event, { signal: controller.signal, context: { progress: clone(p) },
-    live: liveOf("HAZE: OPEN CLOUD", event, p.voted ? standings(p) : [], who => displayName(who, state)) });
+    live: liveOf("HAZE: OPEN CLOUD", event, p.voted ? standings(p) : [], who => displayName(who, state)),
+    // 合間の掛け合いの前にアイキャッチ（TSH11。いまの順位つき。既読なら出さない）。
+    card: intervalCard(event, p.voted ? standings(p) : []) });
   if (owner.controller === controller) owner.controller = null;
   if (!live(owner) || !result) return false;
   progress().craft = clone(owner.cs); save();
@@ -221,7 +224,8 @@ export function voteReason(p, cs, final = false) {
   }
   return lines;
 }
-function renderVotes(owner, final = false) {
+/** splash: この場で結果が決まった時だけ、票が出そろった後に大見出しを出す（TSH10） */
+function renderVotes(owner, final = false, { splash = false } = {}) {
   playBgm("bgm_judging");
   // 途中の持ち点は判の一打、最終結果は会場の拍手（1位はファンファーレも）。第1章の結果発表（craft/result.js）とそろえる。
   const reaction = () => {
@@ -259,8 +263,19 @@ function renderVotes(owner, final = false) {
     sting: { eyebrow: "HAZE: OPEN CLOUD", title: final ? "FINAL VOTE" : "JUDGES' VOTE", sub: final ? "最後の票が入ります" : "審査員の票が入ります" },
   });
   owner.votesShown = shown;
-  if (show.moved) show.done.then(() => { if (live(owner) && screen.isConnected) reaction(); });
-  else reaction();
+  // 票が出そろったら（TSH10）: この場で結果が決まった時だけ大見出し、優勝なら板に紙吹雪。押す所へフォーカスを戻す。
+  const finish = async () => {
+    if (!live(owner) || !screen.isConnected) return;
+    reaction();
+    if (!final || !splash) return;
+    const rank = p.result.rank;
+    await resultSplash(rank, { event: "HAZE: OPEN CLOUD", face: rank === 1 ? "normal" : null });
+    if (!live(owner) || !screen.isConnected) return;
+    if (rank === 1) showConfetti(screen, { count: 90 });
+    screen.querySelector(".ch2-contest-actions .btn.primary")?.focus({ preventScroll: true });
+  };
+  if (show.moved) show.done.then(finish);
+  else finish();
 }
 async function renderDefeat(owner, variant = null) {
   const p = progress(); broadcast.clearComments();
@@ -394,12 +409,23 @@ async function drive(owner) {
       if (!await commentary(owner, "preresult")) return;
       // 優勝のときだけ、結果カードの前に決着の間を置く。歓声より先に、口の中の空白を見せる。
       if (p.result?.rank === 1 && !await read(owner, "verdict")) return;
+      // この場で結果が決まった（LOAD後の再表示ではない）。結果の板の前に10カウントを流す印（TSH10）。
+      owner.revealNow = progress().attempts ?? true;
       checkpoint("result");
     } else if (p.stage === "votes") { renderVotes(owner); return; }
     else if (p.stage === "result") {
       // この場で結果を出したことを覚える。敗北の入り（#2688 A19）は、この場で負けが決まった時だけ出す
       if (p.result) owner.resultShown = true;
-      playBgm("bgm_judging"); renderVotes(owner, true); return;
+      // この場で結果が決まった時だけ、板の前に10カウント（TSH10）。LOAD後の再表示・旧保存では流さない。
+      const reveal = !!p.result && owner.revealNow === (p.attempts ?? true);
+      owner.revealNow = null;
+      if (reveal) {
+        hud(owner);
+        await resultCountdown(owner.cs || clone(p.craft), countdownKind(p.result.rank), null, { contestants: CONTESTANTS,
+          event: "HAZE: OPEN CLOUD", sub: "審査員3人、最後の持ち点の行方。", nameOf: who => displayName(who, state) });
+        if (!live(owner)) return;
+      }
+      playBgm("bgm_judging"); renderVotes(owner, true, { splash: reveal }); return;
     }
     else if (p.stage === "defeat") { await renderDefeat(owner); return; }
     else if (p.stage === "farewell") {
