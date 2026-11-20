@@ -15,3 +15,24 @@
 /* A8 混ざる煙（TMG60）: 煙の絵（smoke/haze）を人ごとの色で塗った煙。縦に立てて昇らせ、重なりは足し合わせて明るく混ざる */
 .mo-mixed-plume { position: absolute; left: 260px; top: 170px; width: 760px; height: 420px; opacity: 0; mix-blend-mode: screen;
   -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; filter: blur(1.5px); }
+/* #3965 の3つは、横長の画面で左右の余白まで暗くする。層は舞台の大きさのまま、暗い面だけ余白へ広げる（絵は舞台の枠で切る） */
+.mo-moment:is(.mo-taste, .mo-hush, .mo-unveil) { overflow: visible; }
+:is(.mo-iris, .mo-taste-dim) { --g: 0px; position: absolute; inset: 0 calc(-1 * var(--g)); opacity: 0; }
+#stage[data-wide] :is(.mo-iris, .mo-taste-dim) { --g: var(--stage-gutter, 0px); }
+/* 光を絞る暗い面（第3章の結果発表の前・第4章の四つ目の台）。--mo-hole が光の輪の大きさ、--mo-x／--mo-y が光の中心（舞台比） */
+.mo-iris { background: radial-gradient(ellipse 72% 96% at calc(var(--g) + (100% - 2 * var(--g)) * var(--mo-x, .5)) var(--mo-y, 40%),
+  transparent calc(var(--mo-hole) * .34), #06040cb8 calc(var(--mo-hole) * .78), #06040cf2 var(--mo-hole)); }
+/* 第2章 味が遠のく: 煙の絵（smoke/haze）の形に切った白い煙へ、同じ形の甘さの色を重ねる。抜けるのは色の層と輪郭だけ */
+.mo-taste-dim { background: radial-gradient(ellipse at 50% 40%, #0b081452 10%, #0b0814b3 100%); }
+.mo-taste-puff { position: absolute; inset: 0; overflow: hidden; opacity: 0; transform-origin: 50% 70%; }
+.mo-taste-wisp { position: absolute; }
+.mo-taste-wisp.w1 { left: 110px; top: 130px; width: 1060px; height: 440px; }
+.mo-taste-wisp.w2 { left: 330px; top: 20px; width: 760px; height: 360px; transform: rotate(-7deg) scaleX(-1); }
+.mo-taste-wisp.w3 { left: 250px; top: 250px; width: 820px; height: 330px; transform: rotate(5deg); }
+.mo-taste-plain, .mo-taste-sweet { position: absolute; inset: 0; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+.mo-taste-plain { background: #efecf4; opacity: .9; }
+.mo-taste-sweet { background: linear-gradient(100deg, #ff5f9e, #ff9e62 55%, #ff6f8e); opacity: 1; }
+/* 第4章 四つ目の台に立つ男: 会話と同じ枠取りの立ち絵（高さ・足元・--ax は engine.js の frame が付ける）と、その影 */
+.mo-unveil-stand { position: absolute; inset: 0; overflow: hidden; opacity: 0; }
+.mo-unveil-figure { position: absolute; left: 69%; width: auto; max-width: none; transform: translateX(var(--ax, -50%)); opacity: 0; -webkit-user-drag: none; }
+.mo-unveil-figure.shadow { opacity: 1; filter: brightness(0); }

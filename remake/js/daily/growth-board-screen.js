@@ -22,7 +22,7 @@ import {
   BOARD_KEYS, BOARD_JA, BOARD_HEAD, REWARD_JA, FEATURES,
   HUB, NODES, NODE_BY_ID, boardNodes, ringsOpen, statCount, statTotal, replay, nodeStatus, commitPending,
   pathTo, pendingTowards, lessonLock, hasMet, availableCount, paymentFor, spendableHidane,
-  GRID, lessonKnown, perkOf, HIDANE_NAME, perkTotals, featuresOf, statsFilled, HUB_AT, statRatio, boardRoutes, NOTABLES,
+  GRID, lessonKnown, perkOf, HIDANE_NAME, perkTotals, featuresOf, statsFilled, HUB_AT, statRatio, boardRoutes, NOTABLES, overlapNote,
 } from "../core/growth-board.js";
 
 // ---------------------------------------------------------------- 配置（盤の領域 760×488。紋は下の端 380,452。横13×縦9 の方眼で上へ育つ。SBD62）
@@ -119,6 +119,8 @@ let current = null;
 /** 盤を開き、閉じるまで待つ。onExit は確定内容と同じ保存境界で呼ぶ。戻り値=確定したマス。 */
 export function openBoard({ place = null, onExit = null } = {}) {
   if (current) return current.done;
+  // 閉じたら焦点を返す所（MENU のボタンなど。#1801 U4）
+  const opener = document.activeElement;
   const owner = state, original = ensureGrowth();
   // はじめて灯せる時は、最初の火種（白火）を渡して案内する（growth-board-tutorial.js・台帳 SBD）
   const hadStarter = !!owner?.flags?.[STARTER_FLAG];
@@ -160,11 +162,38 @@ export function openBoard({ place = null, onExit = null } = {}) {
   let zoom = ZOOM_START;
   const side = el("div.gb-side", { dataset: { test: "board-preview" }, "aria-live": "polite" });
   const footer = el("div.gb-footer");
-  const root = el(`div.gboard${canLight ? ".can-light" : ".view-only"}`, { role: "dialog", "aria-label": "心得の盤", dataset: { test: "growth-board", mode: canLight ? "light" : "view" } }, [
+  const root = el(`div.gboard${canLight ? ".can-light" : ".view-only"}`, { role: "dialog", "aria-modal": "true", "aria-label": "心得の盤", dataset: { test: "growth-board", mode: canLight ? "light" : "view" } }, [
     header,
     el("div.gb-main", [el("div.gb-left", [tabs, boardWrap]), side]),
     footer,
   ]);
+
+  // キーボードの焦点（#1801 U4）: 開いたら盤の中へ移し、Tab・Shift+Tab は盤の中だけを回る。描き直しで消えた部品にあった焦点は
+  // 同じ部品（data-test）へ戻し、無ければ選んでいるマス・今の盤の札へ。閉じたら開く前の所（opener）へ返す
+  const FOCUSABLE = 'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  const inBoard = (node) => !!node && !!root.contains?.(node);
+  const focusables = () => [...root.querySelectorAll(FOCUSABLE)].filter((n) => n.getClientRects().length > 0);
+  const focusTo = (node) => { if (!node || node.disabled) return false; node.focus?.({ preventScroll: true }); return document.activeElement === node; };
+  const part = (id) => root.querySelector(`[data-test="${id}"]`);
+  /** 盤の入口の焦点: 案内の吹き出しのボタン → 今の盤の札 */
+  const focusHome = () => focusTo(root.querySelector(".gb-tutorial-bubble .btn.primary")) || focusTo(part(`board-tab-${board}`)) || focusTo(focusables()[0]);
+  /** 描き直しの後も、焦点を盤の中に残す（描き直す前に盤の中にあった時だけ）。fallback は同じ部品が無い時の行き先 */
+  function keepFocus(redraw, fallback = null) {
+    const before = document.activeElement, key = inBoard(before) ? before.dataset?.test || "" : null;
+    redraw();
+    if (key === null || inBoard(document.activeElement)) return;
+    if ((key && focusTo(part(key))) || (fallback && focusTo(fallback()))) return;
+    if (!(selected && focusTo(part(`board-node-${selected}`)))) focusHome();
+  }
+  function trapTab(e) {
+    const items = focusables();
+    if (!items.length) return;
+    const first = items[0], last = items.at(-1), at = document.activeElement;
+    const to = !inBoard(at) ? (e.shiftKey ? last : first) : e.shiftKey && at === first ? last : !e.shiftKey && at === last ? first : null;
+    if (!to) return;
+    e.preventDefault();
+    to.focus({ preventScroll: true });
+  }
 
   function boardOfTarget() { return g.target ? NODE_BY_ID[g.target]?.board : null; }
 
@@ -192,11 +221,12 @@ export function openBoard({ place = null, onExit = null } = {}) {
     viewport.scrollTop = hub.y * zoom - vh * 0.72;
   }
   function renderZoomBar() {
-    zoomBar.replaceChildren(
+    // 押したボタンが使えなくなった時（「全体」など）は、隣の使えるボタンへ焦点を移す
+    keepFocus(() => zoomBar.replaceChildren(
       el("button.gb-icon.gb-zoom-btn", { text: "−", title: "縮小", "aria-label": "縮小", dataset: { test: "board-zoom-out" }, disabled: zoom <= ZOOM_MIN + 0.01, onclick: () => setZoom(zoom - 0.2) }),
       el("button.gb-icon.gb-zoom-btn", { text: "全体", title: "盤の全体を見る", "aria-label": "全体", dataset: { test: "board-zoom-fit" }, disabled: zoom <= ZOOM_MIN + 0.01, onclick: () => setZoom(ZOOM_MIN) }),
       el("button.gb-icon.gb-zoom-btn", { text: "＋", title: "拡大", "aria-label": "拡大", dataset: { test: "board-zoom-in" }, disabled: zoom >= ZOOM_MAX - 0.01, onclick: () => setZoom(zoom + 0.2) }),
-    );
+    ), () => [...zoomBar.children].find((b) => !b.disabled));
   }
   // ドラッグで動かす（マウス・ペン）。少し動いたらクリックにしない。指はブラウザのスクロールに任せ、2本指はつまんで倍率
   {
@@ -543,7 +573,7 @@ export function openBoard({ place = null, onExit = null } = {}) {
           ]));
         }
       }
-      if (node.feature) lines.push(el("p.gb-p-quality", { dataset: { test: "board-feature" }, text: `✦ 灯すと「${FEATURES[node.feature].text}」` }));
+      if (node.feature) lines.push(el("p.gb-p-quality", { dataset: { test: "board-feature" }, text: `✦ 灯すと「${FEATURES[node.feature].text}」` }), overlapLine(node, v));
       if (node.peak) lines.push(el("p.gb-p-next", { text: statsFilled(node.board, v.unlocked) ? "盤の能力のマスを全部灯した。極みを灯せる" : "この盤の能力のマスを全部灯すと灯せる（盤を埋めたご褒美）" }));
     } else if (node.kind === "gate") {
       // 色の台座（SBD89）: 色の火をはめると先へ進めて、台座の能力も手に入る
@@ -553,7 +583,7 @@ export function openBoard({ place = null, onExit = null } = {}) {
       lines.push(el("p.gb-p-sub", { text: `${HIDANE_NAME[node.board]}を先に使う。無ければほかの色の火でもはまる。火種の獲得が上限に届いた後は白火でもはまる` }));
     } else if (node.kind === "skill") {
       if (shown === "hidden") lines.push(el("p", { text: "物語が進むと盤に現れる" }));
-      else lines.push(el("p", { text: node.text }), el("p.gb-p-sub", { text: `効く場面：${node.scene}・火種${node.cost}${shown === "next" ? "・まだ開いていない" : ""}` }));
+      else lines.push(el("p", { text: node.text }), el("p.gb-p-sub", { text: `効く場面：${node.scene}・火種${node.cost}${shown === "next" ? "・まだ開いていない" : ""}` }), overlapLine(node, v));
     } else {
       const lock = lessonLock(node, v.unlocked);
       const met = lessonKnown(node, g);
@@ -577,7 +607,13 @@ export function openBoard({ place = null, onExit = null } = {}) {
       actions.push(el("button.btn.gb-aim", { text: g.target === node.id ? "目標をやめる" : "目標にする", dataset: { test: "board-target" }, onclick: () => toggleTarget(node.id) }));
       if (canLight && g.target === node.id && st !== "available") actions.push(el("button.btn.gb-aim", { text: "目標まで灯す", dataset: { test: "board-towards" }, onclick: () => towards(node.id) }));
     }
-    side.replaceChildren(...lines, el("div.gb-side-actions", actions));
+    side.replaceChildren(...lines.filter(Boolean), el("div.gb-side-actions", actions));
+  }
+
+  /** 同じ効果を持っている時の一文（#1801 U2）。灯す前に「重ねても増えない」と知らせるだけで、値・火種は変えない */
+  function overlapLine(node, v) {
+    const note = overlapNote(node, g, v.unlocked);
+    return note ? el("p.gb-p-next.gb-p-overlap", { dataset: { test: "board-overlap" }, text: note }) : null;
   }
 
   /** 何も選んでいない時（SBD63「段の概念は無くす。盤の伸びをグラフに」）: 恩恵ごとの合計の横棒と、✦のできること */
@@ -595,7 +631,7 @@ export function openBoard({ place = null, onExit = null } = {}) {
       icon.addEventListener("error", () => icon.replaceWith(el("span.gb-bar-glyph", { text: p.glyph })));
       // 押すと、その能力の名前と今の合計が一行で出る（もう一度押すと閉じる）。アイコンの意味は「？」の「能力」のページにもある
       return el(`button.gb-bar${was != null && was < width ? ".grew" : ""}${barOpen === key ? ".open" : ""}`, { type: "button", title: `${p.name}：${p.text}`, "aria-expanded": String(barOpen === key),
-        dataset: { test: `board-bar-${p.key}` }, onclick: () => { barOpen = barOpen === key ? null : key; SE.click?.(); renderSide(view()); } }, [
+        dataset: { test: `board-bar-${p.key}` }, onclick: () => { barOpen = barOpen === key ? null : key; SE.click?.(); keepFocus(() => renderSide(view())); } }, [
         el("span.gb-bar-name", [icon, el("span.gb-sr", { text: `${p.name}：${p.text}` })]),
         el("i.gb-bar-line", { "aria-hidden": "true" }, [fill]),
         el(`span.gb-bar-sum${p.sum ? "" : ".zero"}`, { "aria-hidden": "true", text: shortSum(p) }),
@@ -737,10 +773,12 @@ export function openBoard({ place = null, onExit = null } = {}) {
   }
 
   function render() {
-    const v = view();
-    pending = v.pending;
-    renderedView = v;
-    renderHeader(); renderTabs(v); renderBoard(v); renderSide(v); renderFooter(v);
+    keepFocus(() => {
+      const v = view();
+      pending = v.pending;
+      renderedView = v;
+      renderHeader(); renderTabs(v); renderBoard(v); renderSide(v); renderFooter(v);
+    });
   }
   function startRespec() {
     if (owner !== state || finishing) return;
@@ -927,8 +965,11 @@ export function openBoard({ place = null, onExit = null } = {}) {
     document.removeEventListener("keydown", onKey, true);
     root.classList.remove("show");
     await sleep(200);
+    // 焦点は開く前の所へ返す（盤の中か、どこにも無かった時だけ。ほかの窓が焦点を取っていたら動かさない）
+    const returnFocus = inBoard(document.activeElement) || !document.activeElement || document.activeElement === document.body;
     root.remove();
     current = null;
+    if (returnFocus && opener !== document.body && opener?.isConnected) opener.focus?.({ preventScroll: true });
     if (owner === state && committed.length) {
       emit("hud");
       // 知らせの印は盤と同じ絵（SBD125②）。絵が読めない時は今までの字（火・関・極）のまま
@@ -1016,8 +1057,11 @@ export function openBoard({ place = null, onExit = null } = {}) {
     return items.sort((a, b) => a.rank - b.rank).slice(0, 3);
   }
   function onKey(e) {
-    if (e.key !== "Escape" || document.querySelector("#modal.show")) return;
-    e.preventDefault();
+    if (document.querySelector("#modal.show")) return; // 確認・見方の窓が上にある時は、その窓に任せる
+    if (e.key === "Tab") { trapTab(e); return; }
+    if (e.key !== "Escape") return;
+    // 同じ Escape が、この後に開く確認の窓（window で聞いている）まで届くと、その場で「戻る」が押されて窓が一瞬で消える
+    e.preventDefault(); e.stopPropagation();
     close();
   }
 
@@ -1055,9 +1099,15 @@ export function openBoard({ place = null, onExit = null } = {}) {
   }
   if (canLight && tutorialPending(owner)) {
     stopTutorial = startBoardTutorial(root, { starterAmount: hadStarter ? null : starterGiven,
-      canPractice: !!nodeLayer.querySelector(".gb-node.s-available"),
-      onDone: () => { if (owner === state) { owner.flags[TUTORIAL_FLAG] = true; save(); } } });
+      canPractice: !!nodeLayer.querySelector(".gb-node.s-available"), capped: !!renderedView?.ctx?.capped,
+      onDone: () => {
+        if (owner === state) { owner.flags[TUTORIAL_FLAG] = true; save(); }
+        // 案内の吹き出しと一緒に消えた焦点は、盤の札へ戻す
+        if (!finishing && !inBoard(document.activeElement)) focusHome();
+      } });
   }
+  // 焦点を盤の中へ（案内があればその「次へ」、無ければ今の盤の札）
+  focusHome();
   // 盤の絵が届いたら描き直す。読み終えた印（data-art）は、描き直しの後に触る検査が待つのに使う。
   loadBoardArt().then((ok) => {
     if (!root.isConnected) return;

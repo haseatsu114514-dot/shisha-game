@@ -2196,7 +2196,7 @@ body:not(:root) #hud .dc-row span,
 body:not(:root) #hud .hud-card .hud-stamina > span:first-child { flex: none; width: auto; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 body:not(:root) #hud .dc-row.money b { font-size: 20px; line-height: 1; }
 body:not(:root) #hud .dc-row:not(.money) b { font-size: 15px; line-height: 1; }
-/* 体力: バーの長さは経験値ゲージと共通の固定長（#3034）。最大体力が伸びてもバーは伸ばさない（長さは hud.js の HUD_GAUGE_WIDTH が決める）。 */
+/* 体力: 枠の長さは hud.js が決める。盤の割り振り前は経験値ゲージ（HUD_GAUGE_WIDTH=120px）の半分から始め、盤の体力成長でだけ120pxまで伸ばす（#3821。#3034 の固定長から変更）。根性などによる最大体力では伸ばさない。行の幅は120pxのまま。 */
 body:not(:root) #hud .hud-card .hud-stamina { position: relative; }
 body:not(:root) #hud .hud-card .hud-stamina > span:first-child { width: 28px; }
 body:not(:root) #hud .hud-card .hud-stamina .hud-bar { position: relative; flex: none; box-sizing: border-box; height: 12px; min-width: 0; max-width: none; margin: 0; border-radius: 6px; }
