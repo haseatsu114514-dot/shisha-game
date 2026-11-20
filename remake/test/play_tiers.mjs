@@ -62,7 +62,16 @@ assert(!T.TIER_GAMES.ichidai, "the card game is on hold");
   assert.equal(JSON.stringify(old.growth.playTiers), before, "sync is idempotent");
   const fresh = core.newState();
   T.syncPlayTiers(fresh);
-  assert.equal(fresh.growth?.playTiers, undefined, "nothing to import, nothing written");
+  for (const game of Object.keys(T.TIER_GAMES)) assert.deepEqual(T.tierRecord(fresh, game).cleared, [], "nothing to import");
+  // 取り込みはその保存で一度だけ。後の結果は recordTierClear で確定するので、初めてのクリアの知らせが必ず出る
+  fresh.desert = { wins: 1 };
+  T.syncPlayTiers(fresh);
+  assert.deepEqual(T.tierRecord(fresh, "desert").cleared, [], "a later win is not imported behind the adapter's back");
+  const seen = [];
+  const off = on("play-tier", e => seen.push(e));
+  assert.deepEqual(T.recordTierClear(fresh, "desert", "normal"), ["easy", "normal"]);
+  off();
+  assert.equal(seen.length, 1, "the first clear after the import is announced");
 }
 
 // 上級クリアの白火: その場で一度だけ。保存／読込・周回（NG+）でも二度は渡さない。盤が埋まっていれば架空の+1を出さない
@@ -119,6 +128,9 @@ assert(!T.TIER_GAMES.ichidai, "the card game is on hold");
   assert(!PLAY_REWARDS.some(r => r.game === "tetsuko" && r.tier));
   const reward = PLAY_REWARDS.find(r => r.id === "tetsuko-heart");
   assert.deepEqual(reward.gift, { any: 1 });
+  const tetsuko = await import("../js/minigames/tetsuko-model.js");
+  assert.equal(growth.TETSUKO_AFFECTION_FULL, tetsuko.JOY_MAX, "growth's copy of the full-heart value matches the cat's model");
+  assert(tetsuko.VISIT_JOY * 4 < tetsuko.JOY_MAX, "one visit cannot fill five hearts (several visits are needed)");
   const { emit } = await import("../js/core/bus.js");
   const s = core.newState();
   core.setState(s);

@@ -216,10 +216,11 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     const newBest = !previous?.best || result.total > previous.best.total;
     records[mode] = { plays: (previous?.plays || 0) + 1, last: entry,
       best: newBest ? entry : previous.best };
-    recordPlayMastery(owner, "axe", result, `${owner.cycle || 1}:${chapter}:${day}:${mode}:${records[mode].plays}`);
-    // #3779 段のクリア: その部門の10投で、初級は B・中級と上級は A 以上だけ。初めての段なら一言（上級なら growth.js が白火を精算して知らせる）
+    // #3779 段のクリア: その部門の10投で、初級は B・中級と上級は A 以上だけ。初めての段なら一言（上級なら growth.js が白火を精算して知らせる）。
+    // 達人の記録（精算を呼ぶ）より先に確定する
     const clearedTier = axeTierClear(result);
     const unlock = tierUnlockNote("axe", clearedTier ? recordTierClear(owner, "axe", clearedTier) : []);
+    recordPlayMastery(owner, "axe", result, `${owner.cycle || 1}:${chapter}:${day}:${mode}:${records[mode].plays}`);
     addMoney(-AXE_BAR.playCost); addStamina(AXE_BAR.stamina); earnStat("guts", 1);
     const outcome = result.total === 0 ? "miss" : previous && newBest ? "record" : "finish";
     const goals = (result.challenges || []).filter(goal => goal.state === "done").length;

@@ -207,10 +207,11 @@ export function recordCamelRaceResult(value, run, runs = 1) {
   if (newBest) camel.best = entry;
   camel.lastPlayDay = value.day;
   if (camel.stage < CAMEL_STAGES.unlocked) camel.stage = CAMEL_STAGES.unlocked;
-  recordPlayMastery(value, "camel", run, `${value.cycle || 1}:${camel.plays}`);
-  // 三段階（#3779）: 入門・標準・上級大会の3位以内が、その段のクリア。上級を初めてクリアすると白火1つ（growth が精算）
+  // 三段階（#3779）: 入門・標準・上級大会の3位以内が、その段のクリア。上級を初めてクリアすると白火1つ（growth が精算）。
+  // 達人の記録（精算を呼ぶ）より先に確定する
   const tier = camelCupTier(cup);
   if (tier && camelCupQualified(run)) recordTierClear(value, "camel", tier);
+  recordPlayMastery(value, "camel", run, `${value.cycle || 1}:${camel.plays}`);
   return { firstClear, newBest, plays: camel.plays };
 }
 

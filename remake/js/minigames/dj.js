@@ -61,10 +61,11 @@ export function recordDjResult(s, data) {
   sets[result.set] = { plays: previous.plays + 1, best: newBest ? entry : previous.best };
   const after = djRecords({ dj: { sets } });
   s.dj = { sets, bestRank: after.bestRank };
-  recordPlayMastery(s, "dj", result, `${s.cycle || 1}:${result.set}:${sets[result.set].plays}`);
-  // 三段階（#3779）: B 以上で回しきったら、そのセットの段をクリア。上級（SET 3）を初めてクリアすると白火1つ（growth が精算）
+  // 三段階（#3779）: B 以上で回しきったら、そのセットの段をクリア。上級（SET 3）を初めてクリアすると白火1つ（growth が精算）。
+  // 達人の記録（精算を呼ぶ）より先に確定する
   const tier = DJ_SETS[result.set - 1]?.tier;
   const tiers = tier && rankIndex(result.rank) >= rankIndex("B") ? recordTierClear(s, "dj", tier) : [];
+  recordPlayMastery(s, "dj", result, `${s.cycle || 1}:${result.set}:${sets[result.set].plays}`);
   return { entry, newBest, rankUp: before.bestRank === null || rankIndex(after.bestRank) > rankIndex(before.bestRank), tiers };
 }
 

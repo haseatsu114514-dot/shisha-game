@@ -28,6 +28,12 @@
       "run": ["node remake/test/play_mastery.mjs"]
     },
     {
+      "id": "axe-tiers",
+      "title": "Axe bar three tiers (#3779): divisions as tiers, clear lines (B, A, A), unlocks, old-save import and the top-tier fire",
+      "kind": "quick",
+      "run": ["node remake/test/axe_tiers.mjs"]
+    },
+    {
       "id": "play-tiers",
       "title": "Mini-game three tiers (#3779): unlocks, clear records, old-save import and the one-time top-tier fire",
       "kind": "quick",
@@ -727,7 +733,7 @@
       "kind": "browser",
       "weight": 0.5,
       "timeout": 3,
-      "paths": ["remake/js/minigames/dj.js", "remake/js/daily/dj-club.js", "remake/js/chapters/ch3.js", "remake/js/chapters/ch3-map-model.js", "remake/previews/dj/**", "data/dialogue/ch3_club.json", "remake/test/browser/dj_club.mjs"],
+      "paths": ["remake/js/minigames/dj.js", "remake/js/daily/dj-club.js", "remake/js/chapters/ch3.js", "remake/js/chapters/ch3-map-model.js", "remake/previews/dj/**", "data/dialogue/ch3_club.json", "remake/test/browser/dj_club.mjs", "remake/js/core/play-tiers.js"],
       "run": ["node remake/test/browser/dj_club.mjs"]
     },
     {
@@ -755,8 +761,8 @@
       "id": "desert-ride",
       "title": "DESERT RIDE on PC and touch, reduced motion, and the chapter 4 outing with save/load and interruption",
       "kind": "browser",
-      "weight": 3.5,
-      "timeout": 8,
+      "weight": 4,
+      "timeout": 10,
       "paths": [
         "remake/js/core/stage-fit.js",
         "remake/js/minigames/desert-ride.js",
@@ -773,7 +779,8 @@
         "remake/desert-ride.html",
         "remake/css/desert-ride.css",
         "data/dialogue/ch4_desert.json",
-        "remake/test/browser/desert_ride.mjs"
+        "remake/test/browser/desert_ride.mjs",
+        "remake/js/core/play-tiers.js"
       ],
       "run": ["node remake/test/browser/desert_ride.mjs"]
     },
@@ -1923,7 +1930,8 @@
         "assets/sprites/characters/khalil/**",
         "remake/img/sprites/characters/hajime/**",
         "assets/backgrounds/bg_dubai_camel_track_morning.png",
-        "remake/test/browser/ch4_camel_race.mjs"
+        "remake/test/browser/ch4_camel_race.mjs",
+        "remake/js/core/play-tiers.js"
       ],
       "run": ["node remake/test/browser/ch4_camel_race.mjs"]
     },
@@ -3314,7 +3322,8 @@
         "remake/test/browser/venue_hours.mjs",
         "remake/test/venue_hours.mjs",
         "data/dialogue/venue_hours.json",
-        "data/dialogue/trpg_club.json"
+        "data/dialogue/trpg_club.json",
+        "remake/js/core/play-tiers.js"
       ],
       "run": [
         "node remake/test/browser/play_spots.mjs",
