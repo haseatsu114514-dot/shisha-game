@@ -40,7 +40,7 @@ import { chapterFourRetryContext, recordChapterFourRetryChoice } from "./ch4-tou
 import { craftContinueContext, recordContinueContext, clearContinueHistory } from "./continue-context.js";
 import { TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
 import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
-import { CH4_MORNING_FILES, CH4_MORNING_FLAG, chapterFourMorningDue, chapterFourMorningScript } from "./ch4-morning.js";
+import { CH4_MORNING_FILES, CH4_MORNING_FLAG, chapterFourMorningDue, chapterFourMorningScript, chapterFourResultScript } from "./ch4-morning.js";
 import { CH4_LOVERS_FILES, CH4_LOVERS_FLAG, CH4_LOVERS_PETIT, CH4_LOVERS_SCENE, chapterFourLoversDue, chapterFourLoversScript } from "./ch4-lovers.js";
 import { markPetit } from "../core/petit-shuraba.js";
 import { strainSuspect } from "../core/lover-strain.js";
@@ -139,8 +139,10 @@ async function readScene(owner, id) {
   if (!source) throw new Error(`台本がありません: ${id}`);
   // 台本の metadata.bg は持ち込まず、ch4-progress.js の対応表（仮置き）で背景を決める。
   const craft = chapterFourProgress(state).match?.craft;
+  // 結果発表の後ろには、来てくれた人の一言をつなぐ（ch4-morning.js・#3097 第3弾）
   const actual = id === "ch4_final" && craft ? chapterFourFinalDialogue(source, state, craft)
-    : id === "ch4_defeat" && craft ? chapterFourDefeatDialogue(source, state, craft) : source;
+    : id === "ch4_defeat" && craft ? chapterFourDefeatDialogue(source, state, craft)
+    : id === "ch4_result" ? chapterFourResultScript(source, state, DB.dialogues) : source;
   const dialogue = { ...actual, metadata: { ...source.metadata, bg: "" } };
   showScreen("none", null);
   hud();
