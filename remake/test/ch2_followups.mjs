@@ -337,8 +337,10 @@ fixture = preparation; await loader.namespace.loadPreparationDialogues();
 // + 地元の普段の会話10本（みんと2・凛想1・サメちゃん2・ひより2・アダム2・なる1。ch2_home.json・#3097 PR-C）
 // + tonariのつむぎがいる日の3本とシフト上がりの第3弾5本（ch2_tonari_talks.json・#3097 PR-D）
 // + 地元の普段の会話の続き5本（みんと・凛想・アダム・サメちゃん・ひより 各1。ch2_home.json・#3097 第2弾 VOL20）
-assert.equal(Object.keys(loaderDB.dialogues).length, 132 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
-for (const id of ["ch2_minto_nickname_notes", "ch2_rio_plain_lunch", "ch2_adam_apple_errand", "ch2_samechan_poster", "ch2_hiyori_mirror_pose"])
+// + 同じ5人の続き5本（#3097 第3弾）
+assert.equal(Object.keys(loaderDB.dialogues).length, 137 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+for (const id of ["ch2_minto_nickname_notes", "ch2_rio_plain_lunch", "ch2_adam_apple_errand", "ch2_samechan_poster", "ch2_hiyori_mirror_pose",
+  "ch2_minto_umbrella_day", "ch2_rio_label_words", "ch2_adam_peel_record", "ch2_samechan_menu_letters", "ch2_hiyori_commute_poem"])
   assert(loaderDB.dialogues[id]?.lines?.length, `#3097 VOL20: ${id}`);
 for (const id of ["ch2_minto_lost_pass", "ch2_minto_mint_scale", "ch2_rio_rush_hour", "ch2_samechan_remora_seat", "ch2_samechan_spare_teeth",
   "ch2_hiyori_health_check", "ch2_hiyori_capsule_toy", "ch2_adam_yuzugaya_apples", "ch2_adam_out_of_stock", "ch2_naru_sign_light"]) {

@@ -58,7 +58,9 @@ const isPrepTalk = id => Object.values(SAMECHAN_PREP_TALKS).includes(id);
 // #3097 PR-C で2本（コバンザメ席・予備のグラス）を足し、一来店に一本ずつ並びの順に読む。
 export const SAMECHAN_CH2_TALK = "ch2_samechan_resting_shark";
 // #3097 第2弾（VOL20）で ch2_samechan_poster（サメ映画のポスターを、どの席からも目が合わない位置に貼る）を足した
-export const SAMECHAN_CH2_TALKS = Object.freeze([SAMECHAN_CH2_TALK, "ch2_samechan_remora_seat", "ch2_samechan_spare_teeth", "ch2_samechan_poster"]);
+// #3097 第3弾で ch2_samechan_menu_letters（黒板の字をサメの歯の形にするか迷う）を足した
+export const SAMECHAN_CH2_TALKS = Object.freeze([SAMECHAN_CH2_TALK, "ch2_samechan_remora_seat", "ch2_samechan_spare_teeth", "ch2_samechan_poster",
+  "ch2_samechan_menu_letters"]);
 const ch2TalkDue = () => state.chapter === 2
   && SAMECHAN_CH2_TALKS.find(id => !state.flags[`_talk_seen_${id}`] && !!DB.dialogues[id]?.lines?.length) || null;
 

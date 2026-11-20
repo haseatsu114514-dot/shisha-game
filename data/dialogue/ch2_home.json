@@ -4756,6 +4756,366 @@
           "text": "ひよりさんは首をまっすぐにしたまま、窓の外を見た。さっきより、ずっと楽そうだった。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch2_minto_umbrella_day",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第2章の交流）。地元の普段の会話の続き。みんと（daily/spots.js の CHAPTER_TALKS。あだ名の手帳 ch2_minto_nickname_notes の後）。いつも傘を持ってくる「傘の人」が、今日は傘を忘れて来た。店の置き傘を貸した。営業中の口調だけで、年齢・正体・♥段階に触れない。天気は決めない（帰り道に降り出した話）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "PEPPERMINTの入口の傘立てに、見慣れない黒い傘が一本だけ立っていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくん、いらっしゃ〜い♡ 聞いて聞いて、事件なの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "事件ですか"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "「傘の人」がね、昨日、傘を忘れてきたの！ あの人が！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "晴れの日も持ってくる人が、ですか"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "そう。しかも帰る時に、ちょうど降り出しちゃって"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "だから、お店の置き傘を貸したの。「今日だけは、みんとの傘です」って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "喜んでました？"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "すっごく困った顔してた。……でも、ちゃんと持って帰ってくれた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとは傘立ての黒い傘を、指でちょんとつついた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "で、今朝これが届いてたの。お店の傘と、同じ長さの新しい傘"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "返すだけじゃなくて、一本増えたんですね"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "そういうこと♡ 次に来たら、手帳に一行足さなきゃ。「傘を増やす人」"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_rio_label_words",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第2章の交流）。地元の普段の会話の続き。凛想（daily/spots.js の CHAPTER_TALKS。塩だけのおにぎり ch2_rio_plain_lunch の後）。日本向けの袋に貼るラベルの言葉を、吸う人に伝わる方で選ぶ（はじめは客の言い方で答える。吸った味の感想は言わない）。恋愛を進めない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "Dr.fookahの2階。凛想さんの机に、小さなラベルの試し刷りが二枚並んでいた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "モルモットくん、ちょうどいい。どっちが伝わる？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一枚には「清涼感：強」、もう一枚には「ミント、かなり強め」と書いてある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……お客さんなら、こっちです。「かなり強め」"
+        },
+        {
+          "speaker": "rio",
+          "face": "surprise",
+          "text": "即答だね。理由は？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "tonariで「清涼感」って言う人、いないんです。みんな「スースーする」とか「強い」とか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "強めの日は、吸う前に一回こっちを見て、身構えてから吸ってくれますし"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "……身構えてから、か。いいね、その顔"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは「清涼感：強」の方を裏返して、机の端へ寄せた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "会議では、こっちの言葉が通るんだけどね。数字っぽいから"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "でも、袋を手に取るのは会議室の人じゃない。……採用。これで刷る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺の一言で決めていいんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "君の一言じゃないよ。tonariのお客さんたちの一言。君は運んできただけ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_adam_peel_record",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第2章の交流）。地元の普段の会話の続き。アダム（daily/spots.js の CHAPTER_TALKS。林檎のお使い ch2_adam_apple_errand の後）。毎朝の林檎の皮の長さを記録した手帳。はじめが買ってきた林檎の皮は、一度も途切れなかった。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "EDENのカウンターで、アダムが分厚い手帳を開いていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ページには、日付と数字が縦に並んでいる。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "来たか。……見ろ。これが、俺の朝だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "数字……長さですか"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "皮の長さだ。毎朝、一つ剥いて測る。途切れた日は、赤で書く"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ページをめくるたびに、赤い数字がところどころ混じっている。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "そして、これが昨日。お前が柚ヶ谷から運んできた林檎だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "指の先の数字は、ほかの日よりずっと大きく、黒いインクで丸く囲まれていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "途切れなかったんですね"
+        },
+        {
+          "speaker": "adam",
+          "face": "intense",
+          "text": "一度もな。皮が、カウンターの端から床まで届いた"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "……人の手を経た林檎は、剥きやすいのかもしれん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "電車に揺られただけですよ"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "揺られた分だけ、果実もほぐれる。……俺の決まりに、一行足す"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは手帳の余白に、小さく「たまに、人に頼む」と書き足した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_samechan_menu_letters",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第2章の交流）。地元の普段の会話の続き。サメちゃん（daily/samechan.js の SAMECHAN_CH2_TALKS。ポスター ch2_samechan_poster の後）。黒板のメニューの字を、サメの歯みたいに尖らせるか、読みやすくするかで迷う（店作りには真面目・characters.json）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "SHISHARKの黒板の前で、サメちゃんがチョークを持ったまま固まっていた。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……お主。この字、読めるか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "黒板には、先の尖ったギザギザの字で、フレーバーの名前が並んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……「ア」……「アップル」、ですかね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "む……やはり読みにくいか。サメの歯の形にしたのじゃが"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、これを三晩かけて書いた。そして三晩、消すか迷っている"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コロちゃん！ 二晩じゃ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "一番上のタイトルだけ、ギザギザにするのはどうですか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……タイトルだけ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "店の名前は、尖ってても読めます。味の名前は、すぐ読めた方が、お客さんも頼みやすいので"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……なるほどのう。牙は、看板だけで見せればよいのじゃな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメちゃんは味の名前だけを消して、丸い字で書き直し始めた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一番上の「SHISHARK」だけが、尖ったまま残った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_hiyori_commute_poem",
+      "comment": "#3097 第3弾（2026-11-21 オーナー「特に差が大きいとこを埋めたい」・第2章の交流）。地元の普段の会話の続き。ひよりの相席（daily/hiyori.js の HIYORI_CH2_TALKS。儚い角度 ch2_hiyori_mirror_pose の後）。儚いポエムを読み上げるが、中身は通勤電車の話で、はじめに当てられる。店名を出さず、斧投げの前後・恋人／友人のどちらでも読める。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "相席になったひよりさんが、スマホの画面を胸に当てて、深く息を吸った。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……はじめくん。聞いて。今朝、詩ができたの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "詩、ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "「名もなき箱に揺られて、私は今日も、誰かの肩の重さを知る」"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "「扉が開くたび、私の一部が、どこかの駅にこぼれていく」……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……満員電車の話ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "なんで分かるの！？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も毎日乗ってるので。肩の重さ、分かります"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……そうなのよ。今朝は特に、隣の人の傘の先が、ずっと私のすねにいたの"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "でもね、詩にしたら、ちょっと許せた。儚さって、便利でしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "傘の人には、言わなかったんですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……言えなかった。儚い女は、すねの痛みを口にしないの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんはスマホに一行足して、保存した。題名は「すね」だった。"
+        }
+      ]
     }
   ]
 }

@@ -157,7 +157,9 @@ await visitRio(); assert.deepEqual(played, ["ch2_rio_city_scent"]);
 await visitRio(); assert.deepEqual(played, ["ch2_rio_rush_hour"]);
 // #3097 第2弾（VOL20）: 塩だけのおにぎりの回は、満員電車の回の後に一本
 await visitRio(); assert.deepEqual(played, ["ch2_rio_plain_lunch"]);
-await visitRio(); assert(!played.some(id => id.startsWith("ch2_rio_")), "all five read");
+// #3097 第3弾: 袋のラベルの言葉の回は、おにぎりの回の後に一本
+await visitRio(); assert.deepEqual(played, ["ch2_rio_label_words"]);
+await visitRio(); assert(!played.some(id => id.startsWith("ch2_rio_")), "all six read");
 // 中断したら既読にしない
 state = rioSave({ flags: { _ch2_taste_distant: true } }); playMode = "cancel";
 played = []; affinity = [];
@@ -176,8 +178,9 @@ assert.equal(spots.chapterTalkDue("adam"), null);
 // #3097 第1弾: アダム・みんとの第2章の会話。初めて話した後の第2章だけ、一度きり
 // #3097 PR-C: アダム・みんとに2本ずつ。第1弾の回の後に、並びの順で一来店に一本
 // #3097 第2弾（VOL20）: アダム・みんとに1本ずつ（林檎のお使い・あだ名の手帳）
-for (const [id, scenes] of [["adam", ["ch2_adam_ticket_machine", "ch2_adam_yuzugaya_apples", "ch2_adam_out_of_stock", "ch2_adam_apple_errand"]],
-  ["minto", ["ch2_minto_commute_frame", "ch2_minto_lost_pass", "ch2_minto_mint_scale", "ch2_minto_nickname_notes"]]]) {
+// #3097 第3弾: もう1本ずつ（皮の長さの手帳・傘の人が傘を忘れた日）
+for (const [id, scenes] of [["adam", ["ch2_adam_ticket_machine", "ch2_adam_yuzugaya_apples", "ch2_adam_out_of_stock", "ch2_adam_apple_errand", "ch2_adam_peel_record"]],
+  ["minto", ["ch2_minto_commute_frame", "ch2_minto_lost_pass", "ch2_minto_mint_scale", "ch2_minto_nickname_notes", "ch2_minto_umbrella_day"]]]) {
   const seen = {};
   for (const scene of scenes) {
     state = rioSave({ story: { [id]: 2 }, flags: { ...seen } });
