@@ -11,3 +11,8 @@ Reference images in order:
 2. 後ろ姿  (chr_hajime_normal.png)
 3. 場所  (bg_ch2_venue_bench_night.png)
 4. Rendering style only (cg_naru_after_hours.png)
+
+
+--- ImageGenでの採用編集（入力は直前の生成画像） ---
+
+Edit this existing Japanese anime visual novel image in opaque 16:9 to keep the scene, the room, the character likeness and the rendering. Close side angle on Kuraudo. Keep his little in-ear device visible near y=28%, without a cable, and Hajime's white wireless earbud in foreground rear view. There is no connection, string or cord between them. Keep the dark case at bench level and raised above y=64%. Continue same moment of listening apart on the same bench, lighting and likeness. Keep red streaks irregular on both sides, embroidery and visible original tattoos. No score marks or names.

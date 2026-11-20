@@ -16,3 +16,7 @@ Reference images in order:
 --- ImageGenでの採用編集（入力は直前の生成画像） ---
 
 Edit this existing Japanese anime visual novel image in opaque 16:9 to keep the scene, the room, the character likeness and the rendering. Wide side view of both men at far ends, both earbuds wholly wireless. Remove every cable and wire between the men. Keep closed black case at upper middle of bench, around y=49–60%, and faces above it. Continue same moment of listening apart on the same bench, lighting and likeness. Keep red streaks irregular on both sides, embroidery and visible original tattoos. No score marks or names.
+
+--- ImageGenでの採用編集（入力は直前の生成画像） ---
+
+Edit the existing 16:9 visual novel art. Keep the wide lateral view of BOTH men and the long empty bench with the equipment case between them. The black-cap man on the LEFT (Hajime) turns head AWAY to face the distant building, so only black hair at the BACK of his head and a tiny wireless earbud may be seen; his nose, eyes, cheeks and mouth must all disappear from camera view. The black cap is plain black with no embroidery, marking, logo or pattern. Kuraudo at right remains identical, resting quietly with one wireless earbud, red-streaked black hair, black embroidered coat with red lining, and tattoo. Empty bench, cool night, no wire, text or other change.
