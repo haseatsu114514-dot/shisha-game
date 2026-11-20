@@ -94,7 +94,7 @@
     },
     {
       "dialogue_id": "ch2_naru_lunch",
-      "comment": "2-4（SPC28・2026-11-15 オーナー採用「なるの店で昼に一服」）。DAY8の朝に読み、その日の昼の行動を使う（ch2-story.js の readChapterTwoDayScene）。DAY3の祝い（ch2_naru_warm「いい常連がついた」）とDAY11の決裂（ch2_naru_confrontation の常連の親子・苺の一台）の間。なるのまかない（料理学校の得意料理）の味が遠い（DAY5〜）ことを、はじめは言わない。なるが常連の話をしても、はじめは技術の話へ寄せてしまい、なるの笑いが少し短くなる（決裂の前ぶれ。ここでは衝突させない）。県大会の課題がストロベリーなのはDAY9の試煙会で知るので、ここでは言わない。食事・睡眠を説教しない（STK22）。報酬なし。",
+      "comment": "2-4（SPC28・2026-11-15 オーナー採用「なるの店で昼に一服」）。DAY8の朝に読み、その日の昼の行動を使う（ch2-story.js の readChapterTwoDayScene）。DAY3の祝い（ch2_naru_warm「いい常連がついた」）とDAY11の決裂（ch2_naru_confrontation の常連の親子・苺の一台）の間。なるのまかない（料理学校の得意料理）の味が遠い（DAY5〜）ことを、はじめは言わない。なるが常連の話をしても、はじめは技術の話へ寄せてしまい、なるの笑いが少し短くなる（決裂の前ぶれ。ここでは衝突させない）。県大会の課題がストロベリーなのはDAY9の試煙会で知るので、ここでは言わない。食事・睡眠を説教しない（STK22）。報酬なし。常連の親子は、DAY3の祝いで「次はどんなお客さんに？」を選んだ保存（_ch2_naru_warm_customers）だけ「こないだ話した」と受ける。選ばなかった保存は、ここで初めて親子の話を聞く（#3922）。",
       "lines": [
         {
           "speaker": "",
@@ -157,9 +157,11 @@
           "text": "なるは自分の分には手をつけず、俺の顔を一度だけ見た。"
         },
         {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "そういや、こないだ話した常連の親子な"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_naru_warm_customers",
+          "next_true": "customers_told",
+          "next_false": "customers_new"
         },
         {
           "speaker": "naru",
@@ -206,7 +208,23 @@
           "face": "",
           "text": "店を出てから、親子の話の続きを聞かなかったことに気づいた。"
         }
-      ]
+      ],
+      "branches": {
+        "customers_told": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "そういや、こないだ話した常連の親子な"
+          }
+        ],
+        "customers_new": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "そういや、うちの常連に親子がいてさ。娘さんが二十歳になってから、二人で来てくれんの"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch2_ageha_lesson",

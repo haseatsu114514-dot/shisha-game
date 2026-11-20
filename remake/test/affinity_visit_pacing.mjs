@@ -136,4 +136,10 @@ for(const mode of ['cancel','load','malformed']){
   assert((await h.visit()).used);assert.deepEqual(h.played,['remake_ch2_ageha_followup'],'late bad day is a separate arrival, not a sudden mood change after the followup');
   h.s.day++;assert((await h.visit()).used);assert.equal(h.played.at(-1),'remake_ch2_ageha_badday');
 }
+// #3922: 大会後の準備期間（第3章）に初めて来ても「ダメな日」は読まない（再会で渡していない水の礼を受けないように）
+{
+  const h=harness('ageha',22);h.s.chapter=3;h.s.day=30;h.s.flags._ch2_talks={ageha:2};h.s.flags._ch2_followup_done={ageha:true};
+  assert((await h.visit()).used);assert.deepEqual(h.played,['remake_ch2_ageha_gyaru'],'prep period continues the regular visits');
+  assert(!h.s.flags._ch2_read_remake_ch2_ageha_badday);
+}
 console.log('affinity visit pacing: PASS (real entrypoints/gain, neutral 7 / 7-8 visits, friendship/romance, night, old saves, interruption, one receipt)');

@@ -60,7 +60,27 @@ const night = day => CH2_NIGHTS.find(entry => entry.day === day);
   assert.doesNotMatch(lunch, /ストロベリー|課題/, "the tournament flavour is announced at the DAY9 tasting");
   assert.doesNotMatch(lunch, /寝ろ|食えよ|ちゃんと食/, "no lecture on food and sleep (STK22)");
   assert.match(lunch, /常連の親子/); assert.match(lunch, /苺/, "the request Naru fulfils on DAY11");
-  assert.deepEqual([...new Set(dialogues.ch2_naru_lunch.lines.map(line => line.speaker))].sort(), ["", "hajime", "naru"]);
+  const spoken = id => [...dialogues[id].lines, ...Object.values(dialogues[id].branches || {}).flat()].filter(line => !line.type);
+  assert.deepEqual([...new Set(spoken("ch2_naru_lunch").map(line => line.speaker))].sort(), ["", "hajime", "naru"]);
+  // #3922: 常連の親子は、DAY3の祝いで「次はどんなお客さんに？」を選んだ保存だけ「こないだ話した」。選ばなかった保存は、ここで初めて聞く
+  const lunchRows = dialogues.ch2_naru_lunch.lines, gate = lunchRows.find(line => line.type === "condition");
+  assert.equal(gate.flag, "_ch2_naru_warm_customers");
+  const branchText = (id, key) => dialogues[id].branches[key].map(line => line.text).join("\n");
+  assert.match(branchText("ch2_naru_lunch", gate.next_true), /こないだ話した常連の親子/);
+  assert.match(branchText("ch2_naru_lunch", gate.next_false), /常連に親子/);
+  assert.doesNotMatch(branchText("ch2_naru_lunch", gate.next_false), /こないだ|前に話した/, "not heard on DAY3");
+  assert.match(lunchRows[lunchRows.indexOf(gate) + 1].text, /苺の一台/, "both lead into the strawberry request");
+  // #3922: 翌日の試煙会は、昼を読んだ保存では依頼を「昨日言ったろ」と受ける。昼が飛んだ保存（病気の朝）は試煙会が初出のまま
+  const tasting = read("ch2_ageha_story").dialogues.find(row => row.dialogue_id === "remake_ch2_ageha_tasting");
+  const lunchGates = tasting.lines.filter(line => line.type === "condition" && line.flag === "_ch2_read_ch2_naru_lunch");
+  assert.equal(lunchGates.length, 2);
+  const tastingBranch = key => tasting.branches[key].map(line => line.text).join("\n");
+  const [order, smile] = lunchGates;
+  assert.match(tastingBranch(order.next_true), /昨日言ったろ/);
+  assert.match(tastingBranch(order.next_false), /常連の娘さんに頼まれて/);
+  assert.match(tastingBranch(smile.next_true), /昨日の昼より/);
+  assert.match(tastingBranch(smile.next_false), /いつもより少しだけ、短い/);
+  assert(tasting.lines.indexOf(order) < tasting.lines.indexOf(smile));
   assert.deepEqual([...new Set(dialogues.ch2_ageha_lesson.lines.map(line => line.speaker))].sort(), ["", "ageha", "hajime"]);
   assert.match(text("ch2_ageha_lesson"), /太くて長いのを、奥まで、ゆっくり/);
   // B: 控室の冒頭。あげはの「手を隠した日」の枝はそのまま残す

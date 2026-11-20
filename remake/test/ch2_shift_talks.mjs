@@ -41,6 +41,12 @@ assert.equal(due(save({ day: 15 }), dialogues), null, "DAY1: no shift talk yet")
 assert.equal(due(save({ flags: seen("ch2_shift_talk_fare") }), dialogues), "ch2_shift_talk_student", "DAY2 without the three shops");
 assert.equal(due(save({ met: { ageha: true, kumicho: true, rei: true }, flags: seen("ch2_shift_talk_fare") }), dialogues), "ch2_shift_talk_three_shops");
 assert.equal(due(save({ met: { ageha: true, kumicho: true }, flags: seen("ch2_shift_talk_fare") }), dialogues) === "ch2_shift_talk_three_shops", false);
+// #3922: 三軒の話は第1日に全員が見たこと（配達・店内）だけを語る。吸い方の擬音（MELTY PUFFの通い会話 repeat_f）は、まだ見ていない保存が多い
+{
+  const shops = dialogues.ch2_shift_talk_three_shops.lines.map(line => line.text).join("\n");
+  assert.doesNotMatch(shops, /ズボー|擬音/, "three_shops does not retell remake_ch2_ageha_repeat_f");
+  assert.match(shops, /グミベア/, "retells the day-one delivery");
+}
 // 夕飯の話は DAY6 の ch2_lingering_smell の後だけ
 const early = seen("ch2_shift_talk_fare", "ch2_shift_talk_three_shops");
 assert.notEqual(due(save({ day: 22, flags: early }), dialogues), "ch2_shift_talk_supper");

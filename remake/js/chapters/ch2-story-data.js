@@ -120,7 +120,7 @@ export function strawberryTrialReady(s, dialogues) {
     && STRAWBERRY_TRIAL_IDS.every(id => dialogues?.[id]?.lines?.length);
 }
 
-// あげはの店に通う回（初回・続編のあと、この順に一度ずつ）。7日目以降は先に「ダメな日」を挟む。
+// あげはの店に通う回（初回・続編のあと、この順に一度ずつ）。第2章の7日目以降は先に「ダメな日」を挟む。
 export const AGEHA_VISITS = AGEHA_AFFINITY_VISITS;
 export const AGEHA_BADDAY = { id: "remake_ch2_ageha_badday", fromDay: 7 };
 const VIBES = ["scout", "gyaru", "newcomer", "magazine"];
@@ -132,10 +132,12 @@ export function syncAgehaVibes(flags) {
   return hits;
 }
 
-/** あげはの店の3回目以降に読む場面（なければ null＝いつもの会話）。章内日 day が7以上なら「ダメな日」を先に */
+/** あげはの店の3回目以降に読む場面（なければ null＝いつもの会話）。第2章で章内日 day が7以上なら「ダメな日」を先に */
 export function agehaStoryScene(save, day, dialogues) {
   const unread = (id) => !!dialogues[id]?.lines?.length && !save.flags?.[`_ch2_read_${id}`];
-  if (day >= AGEHA_BADDAY.fromDay && unread(AGEHA_BADDAY.id)) return AGEHA_BADDAY.id;
+  // 「ダメな日」は大会前の第2章だけ（#3922）。大会後の準備期間に初めて読むと、渡していない水の礼を第3章の再会で受けてしまう。
+  // 読まずに大会を越えた保存は、再会で本人から震えを聞く（ch3_ageha_reunion の tremor_told）。
+  if (save?.chapter === 2 && day >= AGEHA_BADDAY.fromDay && unread(AGEHA_BADDAY.id)) return AGEHA_BADDAY.id;
   const next = AGEHA_VISITS.find(id => !save.flags?.[`_ch2_read_${id}`]);
   const required = AGEHA_VISITS.indexOf(next) + 2;
   // 次の実会話の♥を満たすまで、いつもの会話。欠落原稿を飛ばして後段へ進めない。
@@ -151,7 +153,8 @@ export const AGEHA_LATER_SCENES = Object.freeze([
   { id: "ch1_ageha_bear_seat", flag: "_ageha_bear_seat_done" },
 ]);
 export function agehaLaterScene(save, dialogues) {
-  const needed = [...AGEHA_VISITS, AGEHA_BADDAY.id];
+  // 「ダメな日」は第2章でしか出ないので、第2章の外では前提に数えない（#3922）
+  const needed = save?.chapter === 2 ? [...AGEHA_VISITS, AGEHA_BADDAY.id] : AGEHA_VISITS;
   if (!needed.every((id) => save?.flags?.[`_ch2_read_${id}`])) return null;
   for (const extra of AGEHA_LATER_SCENES) {
     if (save?.flags?.[extra.flag]) continue;
