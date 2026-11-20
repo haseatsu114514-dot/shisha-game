@@ -43,9 +43,11 @@ for(const script of Object.values(LOVER_CONTINUE_SCRIPTS)) {
 // Run the actual modal selection with deferred answers and owner/attempt invalidation.
 let resolve, current=true;
 const context=vm.createContext({});
-const ui=new vm.SyntheticModule(["modal"],function(){this.setExport("modal",()=>new Promise(r=>resolve=r));},{context});
+let asked=null;
+const ui=new vm.SyntheticModule(["modal"],function(){this.setExport("modal",options=>{asked=options;return new Promise(r=>resolve=r);});},{context});
+const level=new vm.SourceTextModule(fs.readFileSync(new URL('../js/craft/retry-assist-level.js',import.meta.url),'utf8'),{context});
 const assist=new vm.SourceTextModule(fs.readFileSync(new URL('../js/chapters/retry-assist.js',import.meta.url),'utf8'),{context});
-await assist.link(()=>ui);await assist.evaluate();
+await assist.link(spec=>spec.endsWith('retry-assist-level.js')?level:ui);await assist.evaluate();
 const t={losses:3,retryAssist:false};
 for(const answer of [true,false,null]) {
   const pending=assist.namespace.chooseRetryAssist(t,()=>current);resolve(answer);
@@ -56,4 +58,12 @@ assert.equal(await pending,null);assert.equal(t.retryAssist,false);
 current=true;
 const nextAttempt=assist.namespace.chooseRetryAssist(t,()=>current);t.attempts=2;resolve(true);
 assert.equal(await nextAttempt,null);assert.equal(t.retryAssist,false);
+// 3回負けるごとに一段ずつ下がる問い（WIN13）。2敗では聞かず、12敗以上は4段目で止まる。
+for(const [losses,label,last] of [[3,'1段目',false],[5,'1段目',false],[6,'2段目',false],[9,'3段目',false],[12,'4段目',true],[20,'4段目',true]]) {
+  const r={losses,retryAssist:false};asked=null;
+  const p=assist.namespace.chooseRetryAssist(r,()=>true);resolve(true);assert.equal(await p,true);
+  assert(asked.body.startsWith(`今回だけ難易度を下げますか？（${label}／4段まで）`),asked.body);
+  assert.equal(asked.body.includes('いちばん下の段'),last);assert.equal(asked.body.includes('もう一段下げられます'),!last);
+}
+{ const r={losses:2,retryAssist:true};asked=null;assert.equal(await assist.namespace.chooseRetryAssist(r,()=>true),false);assert.equal(asked,null);assert.equal(r.retryAssist,false); }
 console.log("PASS: four reasons, finite completed advice/ties, detached context, session losses, seven/four cues, owner invalidation and assist yes/no/cancel");

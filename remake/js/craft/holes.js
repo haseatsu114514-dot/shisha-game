@@ -20,6 +20,7 @@ import { RINGS, circularAngleDistance, templateComplete, evaluateFoil, usesFoil,
 import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, availableHoleTemplates, ringsForTemplate, templateCountsLabel } from "./holes_templates.js";
 import { stepVent } from "./steps.js";
 import { renewalCraft } from "../core/craft-version.js";
+import { assistEffect } from "./retry-assist-level.js";
 export { RINGS } from "./holes_logic.js";
 /**
  * 穴あけの手触りの調整値（CRN・P8）。試遊ページの ?tune=holes.timeLimit:40 で差し替えて試せる。
@@ -121,7 +122,7 @@ export async function runHoles(cs) {
   const slow = skill.slow(cs) * (tutorial ? HOLES_TUNING.lessonSlow : 1);
   const perfWin = HOLES_TUNING.perfectDeg * skill.window(cs, "holes") * (tutorial ? HOLES_TUNING.lessonPerfect : 1);
   const basePerfWin = perfWin / (1 + 0.45 * effectTier("sense"));
-  const goodWin = HOLES_TUNING.goodDeg * craftCondition(cs).window * (tutorial ? HOLES_TUNING.lessonGood : 1) * (cs.retryAssist ? 1.35 : 1);
+  const goodWin = HOLES_TUNING.goodDeg * craftCondition(cs).window * (tutorial ? HOLES_TUNING.lessonGood : 1) * assistEffect(cs).holesGood;
   const limit = tutorial ? HOLES_TUNING.lessonTimeLimit : HOLES_TUNING.timeLimit + (growthSkill(gameState, "K01") ? SKILL_TUNING.holesSeconds : 0);
   // 操作の詳しい説明・凡例・採点は「?」へ。基本画面には置かない（ミニゲームUI共通の方針）。
   benchRoot(cs)?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", { dataset: { test: "hole-guide" } }, [

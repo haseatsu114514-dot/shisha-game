@@ -1269,6 +1269,7 @@
         "node remake/test/steam_heart.mjs",
         "node remake/test/steam_patterns.mjs",
         "node remake/test/steam_mind.mjs",
+        "node remake/test/retry_assist_level.mjs",
         "node remake/test/venue_hours.mjs",
         "node remake/test/ch2_progress.mjs",
         "node --experimental-vm-modules remake/test/ch2_followups.mjs",

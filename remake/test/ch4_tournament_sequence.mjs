@@ -5,6 +5,7 @@ import vm from "node:vm";
 import { newState, setState } from "../js/core/state.js";
 import { DB } from "../js/core/data.js";
 import * as match from "../js/chapters/ch4-tournament-state.js";
+import * as assistLevel from "../js/craft/retry-assist-level.js";
 globalThis.document = { addEventListener() {} };
 const score = await import("../js/craft/score.js");
 const verdict = await import("../js/chapters/ch4-verdict.js");
@@ -33,7 +34,7 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
   const initial = () => { trace.push(`session-stamina:${value.stamina}`); return { mode: "tournament", chapter: 4, equip: {}, mix: {}, careHistory: [],
     pack: "normal", place: "triangle", steamSeconds: 480, pullDone: false, total: 0 }; };
   const values = { ...match, ...score, ...verdict, ...growth, state: value, CRAFT_STEPS: [],
-    maxStamina, applyAssistRecovery,
+    maxStamina, applyAssistRecovery, chosenAssistLevel: assistLevel.chosenAssistLevel,
     CH4_STAFF_IDS: { echo: "ch4_staff_match_echo" },
     readChapterFourStaffCheckpoint: async () => {
       if (staffCancel) { trace.push("staff-echo-cancel"); return false; }
@@ -95,7 +96,11 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
   const context = vm.createContext({ console, structuredClone, DOMException });
   // 実際の3敗判定/取消/所有者確認を使い、UIの選択だけを制御する。
   const retry = new vm.SourceTextModule(retrySource, { context });
-  await retry.link(() => new vm.SyntheticModule(["modal"], function () { this.setExport("modal", values.modal); }, { context }));
+  // 救済の段（WIN13）は本物の段の計算を使う。
+  const levelNames = Object.keys(assistLevel);
+  await retry.link(spec => spec.endsWith("retry-assist-level.js")
+    ? new vm.SyntheticModule(levelNames, function () { for (const name of levelNames) this.setExport(name, assistLevel[name]); }, { context })
+    : new vm.SyntheticModule(["modal"], function () { this.setExport("modal", values.modal); }, { context }));
   await retry.evaluate(); values.chooseRetryAssist = retry.namespace.chooseRetryAssist;
   const module = new vm.SourceTextModule(source, { context });
   await module.link(async spec => {
@@ -272,10 +277,12 @@ previewStorage.clear();
   const yes = await run({ resume: structuredClone(failed), assistChoice: true });
   assert.equal(yes.error, undefined);
   assert.equal(yes.value.flags._ch4.match.craft.retryAssist, true);
+  assert.equal(yes.value.flags._ch4.match.craft.retryAssistLevel, 1, "3敗は1段目");
   assert(yes.trace.includes("session-stamina:100"), "The accepted one-craft assist recovers stamina before creating its condition snapshot");
   assert.equal(yes.trace.filter(item => item === "コンティニュー").length, 1);
   const no = await run({ resume: structuredClone(failed), assistChoice: false });
   assert.equal(no.value.flags._ch4.match.craft.retryAssist, false);
+  assert.equal(no.value.flags._ch4.match.craft.retryAssistLevel, 0, "断った一台に段は付かない");
   assert(no.trace.includes("session-stamina:22"), "Declining assist does not recover stamina");
   const cancelled = await run({ resume: structuredClone(failed), assistChoice: null });
   assert.equal(cancelled.result, false);
@@ -289,6 +296,14 @@ previewStorage.clear();
   const pending = yes.snapshots.find(snapshot => snapshot.flags._ch4.match.step === 8 && snapshot.flags._ch4.match.rollback);
   const continued = await run({ resume: pending });
   assert.equal(continued.value.flags._ch4.match.craft.retryAssist, true);
+  assert.equal(continued.value.flags._ch4.match.craft.retryAssistLevel, 1, "途中再開でも選んだ段のまま");
+  // 3回負けるごとに一段ずつ下がる（6敗で2段目・12敗以上は4段目で止まる）。
+  for (const [losses, level] of [[6, 2], [8, 2], [12, 4], [15, 4]]) {
+    const more = structuredClone(failed);
+    match.chapterFourMatch(more).history = Array.from({ length: losses }, () => ({ win: false }));
+    const deeper = await run({ resume: more, assistChoice: true });
+    assert.equal(deeper.value.flags._ch4.match.craft.retryAssistLevel, level, `${losses}敗は${level}段目`);
+  }
   assert(!continued.trace.includes("コンティニュー"), "SAVE/LOAD keeps the selected assist without asking again mid-craft");
   const unknown = structuredClone(failed); unknown.flags._ch4.match.history = [];
   unknown.flags._ch4.attempts = 99;
