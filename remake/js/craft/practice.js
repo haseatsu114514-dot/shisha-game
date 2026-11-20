@@ -74,7 +74,7 @@ export async function runFullPractice({ coached = false, adjustments = true, kin
     const before = { ...state.flavorMastery };
     const gains = gainFlavorExperience(state, cs.mix, staffPractice ? 2 + 4 * own / Math.max(1, total) : 2, DB.flavorById);
     cs.masteryGained = gains.some(({ id }) => state.flavorMastery[id] > (before[id] || 0));
-    notifyMastery(gains);
+    notifyMastery(gains, cs.mix);
     state.flags[key] = true;
   }
   retireScreen();

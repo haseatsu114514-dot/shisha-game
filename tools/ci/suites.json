@@ -657,6 +657,25 @@
       ]
     },
     {
+      "id": "board-focus-browser",
+      "title": "Growth board keyboard focus (aria-modal, Tab/Shift+Tab stay inside, redraws keep focus, close returns to MENU) and the same-effect note (#1801 U4/U2)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/growth-board-screen.js",
+        "remake/js/daily/growth-board-tutorial.js",
+        "remake/js/core/growth-board.js",
+        "remake/js/core/growth-board-data.js",
+        "remake/js/daily/menu.js",
+        "remake/test/browser/board_focus.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/board_focus.mjs"
+      ]
+    },
+    {
       "id": "kannondo-day3",
       "title": "Chapter 1 DAY3 Kannondo, interactive fire-seed tutorial, day/night and SAVE/LOAD (#3820)",
       "kind": "browser",
@@ -1528,6 +1547,22 @@
         "/asset_sources/map-facilities-579/"
       ],
       "pillow": true
+    },
+    {
+      "id": "ch1-first-play-feedback-browser",
+      "title": "Chapter 1: foil ring feedback and same-day LIME reply guide",
+      "kind": "browser",
+      "weight": 5,
+      "timeout": 12,
+      "paths": [
+        "remake/js/craft/common.js",
+        "remake/js/craft/holes.js",
+        "remake/js/daily/calendar.js",
+        "remake/js/daily/phone.js",
+        "data/lime_messages.json",
+        "remake/test/browser/ch1_first_play_feedback.mjs"
+      ],
+      "run": ["node remake/test/browser/ch1_first_play_feedback.mjs"]
     },
     {
       "id": "ch1-presentation",
@@ -3254,6 +3289,25 @@
       ]
     },
     {
+      "id": "chapter-moments",
+      "title": "第2〜4章の山場の演出（味が遠のく・結果発表前の静けさ・四つ目の台の影）の位置・後片付け・再開",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 10,
+      "paths": [
+        "remake/js/motions/moments.js",
+        "remake/css/motions/moments.css",
+        "remake/js/core/scene-motions.js",
+        "remake/js/chapters/ch3-tournament.js",
+        "data/dialogue/ch2_main.json",
+        "data/dialogue/ch4_main.json",
+        "remake/test/browser/chapter_moments.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/chapter_moments.mjs"
+      ]
+    },
+    {
       "id": "text-editor",
       "title": "Text editor, wrapping, notifications and rewards",
       "kind": "browser",
@@ -4734,6 +4788,27 @@
       "run": [
         "node remake/test/browser/shopping_tutorial.mjs",
         "node remake/test/browser/rio_shop_entry.mjs"
+      ]
+    },
+    {
+      "id": "tutorial-growth",
+      "title": "Chapter 1 scout and delivery EXP, stamina capacity HUD and saves",
+      "kind": "browser",
+      "weight": 0.7,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/calendar.js",
+        "remake/js/daily/spots.js",
+        "remake/js/daily/hud.js",
+        "remake/js/core/growth.js",
+        "remake/js/core/growth-effects.js",
+        "remake/js/core/growth-board.js",
+        "remake/js/core/stats.js",
+        "remake/js/core/state.js",
+        "remake/test/browser/tutorial_growth.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/tutorial_growth.mjs"
       ]
     },
     {

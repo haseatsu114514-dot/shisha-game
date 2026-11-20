@@ -11924,7 +11924,7 @@ body:not(:root) #hud .dc-row span,
 body:not(:root) #hud .hud-card .hud-stamina > span:first-child { flex: none; width: auto; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 body:not(:root) #hud .dc-row.money b { font-size: 20px; line-height: 1; }
 body:not(:root) #hud .dc-row:not(.money) b { font-size: 15px; line-height: 1; }
-/* 体力: バーの長さは経験値ゲージと共通の固定長（#3034）。最大体力が伸びてもバーは伸ばさない（長さは hud.js の HUD_GAUGE_WIDTH が決める）。 */
+/* 体力: 枠の長さは hud.js が決める。盤の割り振り前は経験値ゲージ（HUD_GAUGE_WIDTH=120px）の半分から始め、盤の体力成長でだけ120pxまで伸ばす（#3821。#3034 の固定長から変更）。根性などによる最大体力では伸ばさない。行の幅は120pxのまま。 */
 body:not(:root) #hud .hud-card .hud-stamina { position: relative; }
 body:not(:root) #hud .hud-card .hud-stamina > span:first-child { width: 28px; }
 body:not(:root) #hud .hud-card .hud-stamina .hud-bar { position: relative; flex: none; box-sizing: border-box; height: 12px; min-width: 0; max-width: none; margin: 0; border-radius: 6px; }
@@ -14769,6 +14769,24 @@ html:root[data-density="phone"] body:not(:root) .reel-note .rn-close { min-heigh
 .gc-badge:not(.face) { font-size: 21px; }
 .st-badge { border-image-width: 5px; font-size: 17px; }
 .gc-title { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.gain-card.mastery { max-width: 355px; padding: 10px 17px 10px 12px; gap: 12px; }
+.gain-card.mastery .gc-meta { min-width: 0; gap: 2px; overflow-wrap: anywhere; }
+.gain-card.mastery .gc-main { line-height: 1.3; }
+.gain-card.mastery .shop-product-art {
+  width: 66px;
+  height: 66px;
+  background: #f6efe2;
+  border: 1px solid color-mix(in srgb, var(--gc) 55%, #9c7d6e);
+  border-radius: 4px;
+}
+.gc-mastery { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+.gc-mastery-label { color: var(--text-dim); font-size: 14px; font-weight: 700; white-space: nowrap; }
+.gc-mastery-stars { display: flex; gap: 3px; color: var(--gc); font-size: 18px; line-height: 1; }
+.gc-mastery-stars .filled { color: #e8ab4b; text-shadow: 0 0 1px #563212; }
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .gain-card.mastery .gc-top, .gc-mastery-label { font-size: max(16px, calc(11.5px / var(--k, 1))); }
+  .gain-card.mastery .gc-main, .gc-mastery-stars { font-size: max(22px, calc(13px / var(--k, 1))); }
+}
 .gc-points { color: var(--gc); font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* 原素材に近い4:1の比率で金属縁をつぶさず、通常68pxに収める。
    上下10.5pxの余白と47.2pxの文字列（見出し14px×1.2＋間隔1px＋本文21px×1.4）で高さを決める。
@@ -15430,6 +15448,205 @@ body:not(.game-ds) .shop.shop-paper, body:not(.game-ds) .shop-entry { top: 24px;
 }
 
 /* ===== css/craft-header.css ===== */
+/* @import: craft-route.css */
+/* 桜井式の一枚舞台用。数字札と比較版のレイアウトは触らない。 */
+.craft-route-track {
+  display: flex; flex: none; align-items: center; gap: 7px; padding: 0; margin: 0; list-style: none;
+}
+.craft-route-stop {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  box-sizing: border-box; min-width: 36px; height: 38px; padding: 3px;
+  border: 1px solid #796587; border-radius: 9px; background: #211629; color: #c7b9d2;
+}
+.craft-route-stop:not(.now) .bench-phase-copy, .craft-route-stop:not(.now) .bench-phase-step { display: none; }
+html body.craft-stage:not(.game-ds) #stage .bench[data-mode] .craft-route-stop:not(:last-child)::after { content: none; display: none; }
+.craft-route-icon { position: relative; display: grid; place-items: center; width: 26px; height: 26px; flex: none; }
+.craft-route-icon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; }
+.craft-route-stop.seen { color: #e8ddf3; border-color: #a18cb1; }
+.craft-route-stop.seen .craft-route-icon::after {
+  content: "✓"; position: absolute; right: 0; bottom: 0; width: 14px; height: 14px; border-radius: 50%;
+  background: #d2bddf; color: #201429; font: bold 12px/14px sans-serif; text-align: center;
+}
+.craft-route-stop.now { height: 44px; padding: 4px 13px; border: 2px solid #e4be7c; background: #38233e; color: #fff1d4; }
+html body.craft-stage:not(.game-ds) #stage .bench .craft-route-stop.now .bench-phase-copy b {
+  display: inline; min-width: 0; font-size: 24px; letter-spacing: 0; color: inherit;
+}
+html body.craft-stage:not(.game-ds) #stage .bench .craft-route-stop.now .bench-phase-step:not(:empty) {
+  flex: none; min-width: 0; margin: 0; padding: 0; border: 0; font-size: 24px; letter-spacing: 0; color: inherit;
+}
+html body.craft-stage:not(.game-ds) #stage .bench .craft-route-stop.now:has(.bench-phase-step:not(:empty)) .bench-phase-copy { display: none; }
+html[data-density="phone"] .craft-route-track { gap: 5px; }
+html[data-density="phone"] .craft-route-stop.now { height: max(44px, calc(23px / var(--k,1))); }
+html[data-density="phone"] .craft-route-icon { width: max(30px, calc(16px / var(--k,1))); height: max(30px, calc(16px / var(--k,1))); }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench .craft-route-stop.now :is(.bench-phase-copy b,.bench-phase-step:not(:empty)) {
+  font-size: max(24px, calc(14px / var(--k,1)));
+}
+.craft-record-review { margin: 10px 0; }
+.craft-record-review:not(:has(.rig-lamp:not([data-tier="off"]))) { display: none; }
+.craft-record-review .rig-record { position: static; display: flex; flex-wrap: wrap; gap: .5em; margin-top: 6px; }
+.craft-record-review .rig-lamp { display: inline-flex; gap: 3px; align-items: center; width: auto; height: auto; padding: 3px 7px; border-radius: 5px; }
+.craft-record-review .rig-lamp b { display: none; }
+.craft-record-review .rig-lamp::before { content: attr(data-label); font-size: max(14px, calc(12px / var(--k,1))); font-style: normal; }
+.craft-record-review .rig-lamp[data-tier="off"] { border-style: dashed; }
+/* スマホの共通規格（wide-craft.css）は上の帯の丸い灯の寸法を #stage 付きで固定する。説明の中の札は文字の幅に合わせ、見出しも実寸の下限へ。 */
+html:root[data-density="phone"] body #stage .bench .craft-record-review .rig-lamp { width: auto; height: auto; }
+html:root[data-density="phone"] body #stage .bench .craft-record-review > strong { font-size: var(--wide-small); }
+.craft-choice-mark { display: grid; place-items: center; align-self: center; flex: none; color: inherit; }
+.craft-choice-mark svg { width: 100%; height: 100%; }
+body.craft-stage #stage .bench[data-craft-version="sakurai"] .packing .pack-choice:has(.craft-choice-mark) {
+  display: grid; grid-template-columns: 54px minmax(0,1fr); grid-auto-rows: auto; place-content: center; align-items: center; justify-items: start;
+  column-gap: 14px; row-gap: 0; text-align: left; padding-inline: 16px 30px !important;
+}
+body.craft-stage #stage .bench .pack-choice .craft-choice-mark { grid-column: 1; grid-row: 1 / span 2; width: 50px; height: 50px; }
+body.craft-stage #stage .bench .pack-choice:has(.craft-choice-mark) :is(b,small) { grid-column: 2; white-space: normal; overflow-wrap: anywhere; }
+body.craft-stage #stage .bench .pack-choice:disabled .craft-choice-mark { color: #d7c4e2; }
+body.craft-stage #stage .bench .opt:has(.craft-choice-mark) { display: grid; grid-template-columns: 62px minmax(0,1fr); column-gap: 14px; align-content: center; text-align: left; }
+body.craft-stage #stage .bench .opt .craft-choice-mark { grid-column: 1; grid-row: 1 / span 2; width: 58px; height: 58px; }
+body.craft-stage #stage .bench .opt:has(.craft-choice-mark) :is(b,small) { grid-column: 2; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .flavor-row .fr-feature {
+  width: 100%; max-width: none; height: auto; justify-content: flex-start; overflow: visible; white-space: normal; gap: 8px;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .flavor-row .fr-feature b {
+  flex: 0 1 auto; min-width: 0; max-width: 100%; white-space: normal; overflow: visible; text-overflow: clip; letter-spacing: 0; overflow-wrap: anywhere; line-height: 1.15;
+}
+html[data-density="phone"] body.craft-stage #stage .bench[data-craft-version="sakurai"] .flavor-row .fr-feature::after {
+  content: "ⓘ"; color: #e9d6f0; font: bold max(24px,calc(14px / var(--k,1)))/1 sans-serif;
+}
+
+/* プレビューだけ小さくできる。実際に刺す .foil と針の座標には触らない。 */
+html body.craft-stage:not(.game-ds) #stage .bench[data-mode] .holes.hole-chooser {
+  grid-template-columns: minmax(0, .95fr) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 14px; align-items: center;
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-mode] .hole-chooser .hr-stage > .ht-preview {
+  width: min(100%,430px); height: auto; aspect-ratio: 1; transform: none;
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-mode] .hole-chooser .ht-side {
+  display: grid; grid-template-rows: minmax(0,1fr) auto; align-self: stretch; min-height: 0; gap: 12px; overflow: visible;
+}
+.hole-chooser-scroll { display: flex; flex-direction: column; min-height: 0; gap: 10px; overflow-y: auto; padding: 3px; scrollbar-width: thin; }
+.hole-chooser-scroll > * { flex-shrink: 0; }
+.hole-chooser-scroll > details { margin-top: 4px; }
+.hole-chooser-scroll .ht-description { margin: 0; }
+.hole-chooser .craft-choice-mark { width: 42px; height: 42px; }
+html body.craft-stage #stage .bench .hole-chooser .ht-option {
+  display: flex; justify-content: flex-start; gap: 12px; min-width: 0; padding-inline: 12px;
+}
+html body.craft-stage #stage .bench .hole-chooser .btn-label { min-width: 0; white-space: normal; line-height: 1.2; }
+html body.craft-stage #stage .bench .hole-chooser .ht-option .btn-label { text-align: left; }
+html body.craft-stage #stage .bench .hole-chooser [data-test="hole-start"] { margin: 0; width: 100%; }
+html body.craft-stage #stage .bench[data-craft-version="sakurai"] .bench-top:not(:has(.rival-windows,.bench-appearance-button:not([hidden]))) > .craft-rank { margin-left: auto; }
+html body.craft-stage #stage .bench .hole-chooser .ht-option { flex-direction: row; }
+html body.craft-stage:not(.game-ds) #stage .bench[data-mode] .hole-chooser .hr-stage { grid-template-columns: minmax(0,1fr); }
+html body.craft-stage:not(.game-ds) #stage .bench[data-mode] .hole-chooser .hr-stage > .ht-preview { max-width: 100%; min-width: 0; box-sizing: border-box; }
+/* 横持ちでは、任意の説明の本文を他の説明と同じ実寸に、開閉・配置・開始は実寸44pxの押す所にする。 */
+html:root[data-density="phone"] body #stage .bench .hole-chooser .ht-help p { font-size: var(--wide-text); line-height: 1.45; }
+html:root[data-density="phone"] body.craft-stage #stage .bench .hole-chooser :is(.ht-help summary, .ht-option, [data-test="hole-start"]) {
+  box-sizing: border-box; min-height: calc(44px / var(--k, 1));
+}
+html:root[data-density="phone"] body #stage .bench .hole-chooser .ht-help summary { padding-block: calc(12px / var(--k, 1)); }
+
+/* 機材が揃ってくると、長い名前の最小幅が2列とも広げる。カードの幅を先に決め、
+   名前・装備中の表示・注意書きは縦に折り返す。横へスワイプしなくても選べる。 */
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"][data-step="setup"] .bench-panel:has(> .opt-grid) {
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"][data-step="setup"] .bench-panel > .opt-grid.cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"][data-step="setup"] .bench-panel > .opt-grid > .opt {
+  min-width: 0;
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"][data-step="setup"] .bench-panel > .opt-grid > .opt > :is(b, small, .opt-badge) {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* 一枚の舞台の操作札。文字・当たり判定は縮めず、説明や絵の余白で受ける。 */
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .bench-guide[open] .bench-guide-tip {
+  width: min(580px, calc(92vw / var(--k, 1)));
+  max-height: calc(720px - max(84px, var(--bench-tap, 0px)) - 36px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .bench-guide [data-test="bench-guide-close"] {
+  position: sticky; bottom: 0; z-index: 1;
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .flavor-row {
+  height: auto !important; min-height: 116px !important;
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .fr-feature {
+  min-width: 0; max-width: 100%; height: auto; white-space: normal;
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .fr-feature b {
+  overflow: visible; text-overflow: clip; white-space: normal; overflow-wrap: anywhere;
+}
+html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .flavor-row :is(.fr-stock, .fr-reg) {
+  white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere;
+}
+
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .timer-button[data-test="timer-reset"] {
+  white-space: normal; text-wrap: balance; overflow-wrap: anywhere; line-height: 1.05;
+}
+/* 札の外寸と弾幕／スティックの座標はそのまま。絵と文字のための高さを分ける。 */
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .dodge-controls .refresh-emblem {
+  width: 104px; height: 104px;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .dodge-controls .refresh-emblem img {
+  inset: -8px; width: calc(100% + 16px); height: calc(100% + 16px);
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .dodge-action {
+  justify-content: center; padding-inline: 4px;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .dodge-controls .refresh-copy {
+  white-space: normal; text-wrap: balance; overflow-wrap: anywhere; max-width: 100%;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .precision-copy { gap: 4px; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .precision-state {
+  width: auto; height: auto; padding: 2px 4px; line-height: 1.2; white-space: nowrap;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .dodge-controls .slash-growth { right: 0; }
+
+/* 「持ち」「回数」は吸う・提供の札と別の欄に収める。葉の数と残り回数は変えない。 */
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .pull-play {
+  grid-template-columns: minmax(0, 1fr) 156px 270px;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .pull-summary .pull-life {
+  padding-inline: 8px !important; gap: 4px;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .pull-life-leaves .leaf-icon,
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .pull-count-box :is(.pull-count, .pull-pips) { gap: 4px; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .pull-btns:not(.with-options) > .btn { padding-inline: 12px; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .pull-btns .btn-label {
+  min-width: 0; white-space: normal; overflow-wrap: anywhere;
+}
+
+/* 検査結果と最終順位の本文はスクロール可。前に進む札・画像保存は本文の外。 */
+html body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: 128px minmax(0, 1fr) auto;
+}
+html body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] > :is(.rt-hero, .rt-layout) { grid-column: 1 / -1; }
+html body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] > .rt-save {
+  position: relative; grid-column: 1; grid-row: 3; align-self: center; min-width: 0; overflow-wrap: anywhere;
+}
+html body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] > [data-test="result-next"] { grid-column: 2; grid-row: 3; min-height: 54px; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] :is([data-test="result-save"], [data-test="result-next"]) {
+  min-height: calc(44px / var(--k, 1));
+}
+/* 票の内訳は省略せず、狭い時だけ折り返して順位欄の中で読めるようにする。 */
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] .rt-ranking {
+  overflow-y: auto; overscroll-behavior: contain;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] .rt-row {
+  grid-template-columns: 48px 42px minmax(0, 1fr) 64px; column-gap: 8px;
+}
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] :is(.rt-rank, .rt-face) { max-width: 100%; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] .rt-name { flex-wrap: wrap; gap: 0 8px; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .result-table[data-craft-version="sakurai"] .rt-votes {
+  min-width: 0; white-space: normal; overflow: visible; text-overflow: clip; overflow-wrap: anywhere;
+}
 /* body:not(:root)／.title:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds)／:not([data-layout="ds"]) と同じ詳細度を保つための置き換え。 */
 /* 工程名は上の帯へまとめ、右パネルは遊ぶための面積にする。 */
 .bench-top { height: 64px; gap: 18px; }
@@ -16002,11 +16219,12 @@ html:root[data-density="phone"] body:not(:root) .gameover .go-limit-note { font-
 .ts-splash:not(.win) .ts-splash-copy p { font-size: 24px; color: #d9cde6; text-shadow: 0 2px 0 #1a0f24; }
 .ts-splash.show .ts-splash-eyebrow, .ts-splash.show .ts-splash-copy p { opacity: 1; transform: none; }
 .ts-splash.show .ts-splash-copy h2 { transform: none; opacity: 1; }
-/* 優勝の文字を横切る光 */
-.ts-splash.win .ts-splash-copy::after { content: ""; position: absolute; left: -10%; top: 46%; width: 34%; height: 150px; pointer-events: none; mix-blend-mode: screen;
-  background: linear-gradient(100deg, transparent, #fff8e0cc 50%, transparent); transform: translateX(-140%) skewX(-18deg); opacity: 0; }
-.ts-splash.win.show .ts-splash-copy::after { animation: ts-shine 1.5s ease-in-out 1s 2; }
-@keyframes ts-shine { 0% { transform: translateX(-140%) skewX(-18deg); opacity: 0; } 20% { opacity: .9; } 100% { transform: translateX(420%) skewX(-18deg); opacity: 0; } }
+/* 優勝の文字を横切る光。文字の中だけを通す（文字の塗りに光の帯を重ね、塗りの位置を動かす。TSH12）。
+   前は文字の箱の外まで白い帯が出て、立ち絵の上を白い四角が横切っていた */
+.ts-splash.win .ts-splash-copy h2 { background-image: linear-gradient(100deg, transparent 42%, #fffdf3 50%, transparent 58%), var(--ts-gold-text);
+  background-size: 300% 100%, 100% 100%; background-repeat: no-repeat; background-position: 150% 0, 0 0; }
+.ts-splash.win.show .ts-splash-copy h2 { animation: ts-text-shine 1.5s ease-in-out 1.1s 2; }
+@keyframes ts-text-shine { from { background-position: 150% 0, 0 0; } to { background-position: -50% 0, 0 0; } }
 .ts-splash-tap { position: absolute; right: 44px; bottom: 30px; z-index: 4 !important; font-size: 16px; font-weight: 700; letter-spacing: .1em; color: #d9cde6; opacity: 0; transition: opacity .4s ease 1.4s; }
 .ts-splash.show .ts-splash-tap { opacity: .85; animation: ts-tap 1.4s ease-in-out 1.8s infinite alternate; }
 @keyframes ts-tap { to { opacity: .35; } }
@@ -16100,6 +16318,27 @@ html:root body:not(:root) #stage #modal > .modal-box.ts-contest-modal .modal-act
   background: var(--ts-gold-text); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 4px 0 #3b2405) drop-shadow(0 0 24px #f6d68e66); }
 .ts-eyecatch-copy .ts-eyecatch-sub { padding: 4px 26px; border-top: 1px solid #e3bd6e; border-bottom: 1px solid #e3bd6e; font-size: 26px; font-weight: 800; letter-spacing: .2em; color: #f6f1fa; }
 .ts-eyecatch-copy small { margin-top: 8px; font-size: 22px; font-weight: 700; letter-spacing: .08em; color: #ffe2a6; }
+
+/* ================================================================ 入場のカード・ROUND の帯（TSH12）
+   形・寸法・出るタイミングは今までどおり（入場＝#2031、帯＝TMG59 の生成りの帯）。金の縁・光・文字の金で、授賞式の調子にそろえる。 */
+.entrance { background: radial-gradient(ellipse 70% 60% at 50% 50%, #2a1840e6, #0d0716f2 72%); }
+.entrance > .ent-card { z-index: 1; }
+.ent-cut { box-shadow: 0 0 0 1px #150d22, 0 0 0 3px #c9a7e655, 0 14px 30px #000b; }
+.ent-card.me .ent-cut { border: 2px solid #f6d68e; box-shadow: 0 0 0 1px #6b4a12, 0 0 0 4px #e3bd6e66, 0 0 40px #f6d68e66, 0 14px 30px #000b; }
+.ent-tag { padding: 3px 12px; border: 1px solid #c9a7e688; font-weight: 800; letter-spacing: .12em; }
+.ent-card.me .ent-tag { background: linear-gradient(180deg, #fff1c4, #e3bd6e 55%, #b98c3a); border-color: #fff6dc; color: #2a1638; }
+.ent-meta { position: relative; padding-bottom: 14px; }
+.ent-meta::after { content: ""; position: absolute; left: 0; bottom: 0; width: 420px; height: 9px; pointer-events: none;
+  background: linear-gradient(90deg, #e3bd6e, #e3bd6e 40%, transparent) top / 100% 1px no-repeat, linear-gradient(90deg, #c9a7e688, transparent 70%) bottom / 100% 1px no-repeat; }
+.ent-card:not(.me) .ent-meta::after { background: linear-gradient(90deg, #c9a7e6aa, transparent 70%) top / 100% 1px no-repeat; }
+.ent-card.me .ent-ring { color: #f6d68e; }
+.ent-card.me .ent-name { background: var(--ts-gold-text); -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-shadow: none; filter: drop-shadow(0 3px 0 #2a1638) drop-shadow(0 0 18px #f6d68e66); }
+
+/* ROUND の帯: 生成りの帯（TMG59）はそのまま。上下に金の二重罫、外に金の光、上の札を夜紫と金に */
+.round-cut-band { box-shadow: 0 0 0 1px #6b4a12, 0 16px 36px #05020a99, 0 0 50px #f6d68e44;
+  background: linear-gradient(180deg, #e3bd6e 0 4px, #f4ecda 4px 9px, #e3bd6e 9px 10px, #f4ecda 10px calc(100% - 10px), #e3bd6e calc(100% - 10px) calc(100% - 9px), #f4ecda calc(100% - 9px) calc(100% - 4px), #e3bd6e calc(100% - 4px)); }
+.round-cut-band small { background: linear-gradient(180deg, #2a1638, #150d22); color: #f6d68e; border: 1px solid #e3bd6e; border-bottom: 0; }
 
 /* ================================================================ スマホ規格（横持ち）: 読む文字は実寸 11.5px 以上にする（phone-density.css の変数） */
 html:root[data-density="phone"] body:not(:root) .ts-live-bug { height: auto; min-height: 50px; padding-top: 4px; padding-bottom: 4px; }

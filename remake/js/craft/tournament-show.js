@@ -6,6 +6,7 @@
 import { el, rand, sleep } from "../core/util.js";
 import { portraitInfo, faceIconUrl } from "../core/data.js";
 import { SE } from "../core/audio.js";
+import { layers, flash } from "../core/ui.js";
 import { fxMode } from "./fx.js";
 import { VOTE_SCALE, givenBy, judgeLeftText, JUDGE_LOOK } from "./tournament-graphics.js";
 
@@ -530,6 +531,70 @@ export async function eyecatch(host, { title = "", sub = "", note = "", ms = 125
   node.remove();
 }
 
+// ---------------------------------------------------------------- 結果の大見出し・結果の種類・合間のアイキャッチの中身
+
+/**
+ * 結果の大見出し。1位は「CHAMPION」（冠と月桂冠・後光・紙吹雪・はじめの立ち絵）、それ以外は順位だけを静かに出す。
+ * 動きを見せない時（自動操作・動きを減らす）は何も出さない。押す（Enter・Space）と閉じる。
+ * @param o.event 大会名（見出しの上の小さな帯）
+ * @param o.face  はじめの表情（第2章の優勝は、味のしない舌を抱えたまま笑わない）
+ * @param o.host  重ねる所（第4章の結果はモーダルの上に出すので #modal）
+ */
+export async function resultSplash(rank, { event = "SMOKE CROWN CUP", face = null, host = layers.fx } = {}) {
+  if (!showMoves() || !host) return;
+  const win = rank === 1, metal = metalOf(rank);
+  // 優勝は冠と月桂冠に「1 ST」。届かなかった時は月桂冠だけを順位の後ろに薄く敷く。
+  const crest = crestSvg({ metal, crown: win });
+  if (win) crest.append(el("b", { text: "1" }), el("small", { text: "ST" }));
+  const node = el(`div.ts-splash${win ? ".win" : ""}`, { dataset: { test: "result-splash", rank, metal }, tabindex: "-1", role: "status",
+    "aria-label": win ? "優勝" : `${rank}位` }, [
+    win ? haloOf() : null,
+    el("i.ts-splash-floor", { "aria-hidden": "true" }),
+    bustOf("hajime", { cls: ".ts-splash-bust", face: face || (win ? "smile" : "serious"), zoom: 1.5, headTop: 0.06, name: "はじめ" }),
+    el("div.ts-splash-copy", [
+      crest,
+      el("small.ts-splash-eyebrow", { text: `${event} ／ FINAL RESULT` }),
+      el("h2", { text: win ? "CHAMPION" : `${rank}位` }),
+      el("p", { text: win ? "逢縁 はじめ" : "この一台の記録を、次の挑戦へ。" }),
+    ]),
+    el("span.ts-splash-tap", { text: "タップで順位表へ" }),
+  ]);
+  stageLights(node, { beams: win ? 5 : 2, dust: win ? 30 : 8, tone: win ? "gold" : "cool" });
+  const previous = document.activeElement;
+  host.append(node);
+  await sleep(30);
+  node.classList.add("show");
+  node.focus({ preventScroll: true });
+  if (win) { SE.fanfare?.(); SE.crowd?.(2.6); showConfetti(node, { count: 150, ms: 5200 }); flash("gold"); }
+  else SE.stamp?.();
+  await holdOrTap(node, win ? 3600 : 2200);
+  node.classList.add("out");
+  await sleep(380);
+  node.remove();
+  if (previous?.isConnected && document.activeElement === document.body) previous.focus({ preventScroll: true });
+}
+
+/** 10カウントの終わり方（第2〜4章）。1位＝プチュン、2・3位＝プチュ…→パリン、4位＝パリン。 */
+export const countdownKind = (rank) => rank === 1 ? "win" : rank <= 3 ? "close" : "lose";
+
+/** 合間の掛け合い → アイキャッチの見出し（第2〜4章。第1章は ROUND の名前で ch1.js が組む）。 */
+const INTERVAL_CARD = Object.freeze({
+  interlude_pull: ["INTERVAL", "制作 → 吸い出し・提供"],
+  interlude1: ["INTERVAL", "提供 → 調整1回目"],
+  interlude2: ["INTERVAL", "調整1回目 → 調整2回目"],
+  interlude3: ["FINAL JUDGING", "全工程 終了"],
+});
+/**
+ * 合間の掛け合いの前に出すアイキャッチの中身。合間ではない掛け合いは null（何も出さない）。
+ * @param rows いまの並び [{ id, rank, points }]（票が出る前は空）
+ */
+export function intervalCard(event, rows = []) {
+  const card = INTERVAL_CARD[event];
+  if (!card) return null;
+  const me = rows.find((row) => row.id === "hajime");
+  return { title: card[0], sub: card[1], note: me ? `はじめ 現在${me.rank}位 ・ ${me.points}pt` : "" };
+}
+
 // ---------------------------------------------------------------- 待ち（タップで早送り）
 
 /** ms 待つ。途中で node を押す（Enter・Space を含む）と、すぐに次へ進む。 */
@@ -542,7 +607,8 @@ export function holdOrTap(node, ms) {
       node.removeEventListener("keydown", onKey);
       resolve();
     };
-    const onKey = (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); finish(); } };
+    // Enter・Space は、後ろの画面（モーダルの「Enter で決定」など）へ渡さない。
+    const onKey = (event) => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); event.stopPropagation(); finish(); } };
     node.addEventListener("pointerdown", finish);
     node.addEventListener("keydown", onKey);
     timer = setTimeout(finish, ms);

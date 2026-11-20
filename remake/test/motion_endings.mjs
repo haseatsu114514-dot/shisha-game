@@ -261,7 +261,10 @@ async function checkTrains() {
       assert.equal(result.mid, 1); assert.equal(result.opacity, 1); assert.equal(result.covering, true);
       assert.equal(result.unchanged, true); assert.equal(result.overlays, 0); assert.equal(result.coveringAfter, false);
       assert.equal(result.points, 5, `${name}: the car covers all corners before the scene changes`); assert.equal(result.flag, "1");
-      assert(result.elapsed < 2800, `${name}: ${result.elapsed}ms took too long`);
+      // 乗っている時間は「最短 C_RIDE（train.js の 900ms）と場面の差し替え（mid）の長い方」。わざと遅らせた
+      // 到着（delay）は、最短を超えた分だけ全体が延びるのが仕様なので、その分だけ上限に足す（演出自体の余裕は同じ）。
+      const budget = 2800 + Math.max(0, (options.delay || 0) - 900);
+      assert(result.elapsed < budget, `${name}: ${result.elapsed}ms took too long (budget ${budget}ms)`);
       await page.keyboard.press("Enter"); assert.equal(await page.evaluate(() => audit.keys), 1);
       if (name === "normal") {
         const policy = await page.evaluate(async () => {
