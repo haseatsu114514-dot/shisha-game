@@ -286,6 +286,25 @@
       "run": ["node remake/test/browser/ch1_victory_resume_2190.mjs"]
     },
     {
+      "id": "chapter-clear-levelup-3938",
+      "title": "第2〜5章の「第N章・完」で、章クリアのレベルアップ・火種の札が本文・成長図・ボタンにかからない",
+      "kind": "browser",
+      "weight": 2.5,
+      "timeout": 8,
+      "paths": [
+        "remake/css/daily.css",
+        "remake/css/ch2-tournament.css",
+        "remake/js/daily/levelup.js",
+        "remake/js/core/chapter-card.js",
+        "remake/js/chapters/ch2-tournament.js",
+        "remake/js/chapters/ch3-aftermath.js",
+        "remake/js/chapters/ch4.js",
+        "remake/js/chapters/ch5.js",
+        "remake/test/browser/chapter_clear_levelup_3938.mjs"
+      ],
+      "run": ["node remake/test/browser/chapter_clear_levelup_3938.mjs"]
+    },
+    {
       "id": "resume-modal-title-cleared-3514",
       "title": "LOAD直後に最初のモーダルが出る再開でも、タイトル画面が背後に残らない",
       "kind": "browser",
