@@ -35,6 +35,8 @@ const context = vm.createContext({
   DB: { dialogues: {} }, bondAfterNext: (s, id) => id === "master_hookah" ? bondAfter : null,
   loadBondAfterScenes: async () => { if (!bondAfterLoad) throw new Error("offline"); },
   markBondAfterRead: (s, id, next) => { if (next) bondAfterMarked.push([id, next.scene]); },
+  // 通いの続き（#4010）はこの検査では開かない（龍龍水煙所での再生は visit_chains_wiring.mjs）
+  chainVisitDue: async () => null, playChainStage: async () => false,
 });
 vm.runInContext(`${spotSource}\n${actionSource}\nthis.mapSpot = spotNow; this.perform = performDubaiSpot;`, context);
 const reset = money => {
