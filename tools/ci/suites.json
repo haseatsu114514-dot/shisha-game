@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "tonari-floor",
+      "title": "tonari floor service (one-person): guest wishes, mixes built from game flavors with main/sub attributes, timed shuffle, coal tending, care calls, refills, fever, rating and shift boundaries",
+      "kind": "quick",
+      "run": ["node --test remake/test/tonari_floor_model.mjs", "node --experimental-vm-modules remake/test/tonari_floor_shift.mjs"]
+    },
+    {
       "id": "rest-variations",
       "title": "Rest dialogue rotation, SAVE/LOAD and interrupted chapter visits",
       "kind": "quick",
@@ -577,6 +583,7 @@
         "remake/js/dev/**",
         "remake/js/main.js",
         "remake/js/craft/session.js",
+        "remake/js/daily/tonari-floor-view.js",
         "remake/test/browser/debug_tools.mjs",
         "remake/test/browser/support.mjs"
       ],
@@ -1416,6 +1423,28 @@
         "npm ci --prefix remake/tools --prefer-offline --no-audit --no-fund",
         "node remake/tools/build_js_bundle.mjs --check"
       ]
+    },
+    {
+      "id": "tonari-floor-browser",
+      "title": "tonari floor service on the real screen: shift flow, mix list with flavors and shuffle, coal tending, PC/touch controls, no overlapping text, clock stops and LOAD",
+      "kind": "browser",
+      "weight": 1.6,
+      "timeout": 10,
+      "paths": [
+        "remake/js/daily/tonari-floor-*.js",
+        "remake/css/tonari-floor.css",
+        "remake/js/daily/tonari.js",
+        "remake/test/tonari_floor_bot.mjs",
+        "remake/test/tonari_floor_guide.mjs",
+        "remake/test/browser/tonari_floor.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/tonari_floor.mjs"
+      ],
+      "env": {
+        "ARTIFACT_DIR": ".codex/artifacts/remake-browser/tonari-floor"
+      },
+      "chrome": "playwright"
     },
     {
       "id": "action-context",
