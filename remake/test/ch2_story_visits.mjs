@@ -22,7 +22,7 @@ const statePort = new vm.SyntheticModule(["state", "save", "markMet", "timeOfDay
 const mocks = {
   "remake/js/core/data.js": { DB, bgUrl: x => x },
   "remake/js/core/travel-budget.js": { spendableMoney: value => value.money },
-  "remake/js/chapters/ch2-commute.js": { normalizeCommuteState() {}, chooseMorningCity: async () => {}, returnCityHome: async () => {} },
+  "remake/js/chapters/ch2-commute.js": { normalizeCommuteState() {}, chooseMorningCity: async () => {}, readMorningStationCommute: async () => {}, returnCityHome: async () => {} },
   "remake/js/core/city-locations.js": { CH2_CITY_NAME: "柚ヶ谷", HOME_CITY_NAME: "橙須", CITY_BACKGROUNDS: { c_station_night: "c" },
     CH2_SCENE_BACKGROUNDS: { naruWindow: "res://assets/backgrounds/bg_kemurikusa_outside_night.png", venueBench: "bench" } },
   "remake/js/core/stats.js": { affinityLevel: () => 1, releaseAffinity: () => 0,

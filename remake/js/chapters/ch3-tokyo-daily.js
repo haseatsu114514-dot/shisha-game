@@ -188,11 +188,21 @@ export function chapterThreeTokyoDefinition(io) {
     tournamentName: "HAZE: NATIONAL TOKYO",
     get nightEvents() { const event = tokyoNightEvent(io); return event ? { [state.day]: event } : {}; },
     slotEvent: () => tokyoSlotEvent(io),
-    mapOptions: () => ({
-      regionId: TOKYO,
-      regions: [{ id: TOKYO, label: "東京", background: () => bgUrl(`bg_tokyo_map_${timeOfDay()}`), spots: chapterThreeTokyoSpots }],
-      onRegionChange: () => {},
-    }),
+    mapOptions: () => {
+      const owner = state;
+      const firstFreeNight = tokyoDay() === 2 && state.slot === 1 && !state.flags._ch3_free_night_guide;
+      return {
+        regionId: TOKYO,
+        regions: [{ id: TOKYO, label: "東京", background: () => bgUrl(`bg_tokyo_map_${timeOfDay()}`), spots: chapterThreeTokyoSpots }],
+        onRegionChange: () => {},
+        notice: firstFreeNight ? "今夜は、地図から好きな行き先を選べる。" : "",
+        onShown: firstFreeNight ? () => {
+          if (state !== owner) return;
+          state.flags._ch3_free_night_guide = true;
+          save();
+        } : null,
+      };
+    },
     // 夜は mukai の奥の部屋で寝る（地元へは帰らない）。地元の帰り道の一言・道での出会いは出さない（_home_tonight）。
     // 東京でも寝る前の家シーシャを選べる（荷物に詰めてきた台・VOL12）。
     beforeHomecoming: async () => {

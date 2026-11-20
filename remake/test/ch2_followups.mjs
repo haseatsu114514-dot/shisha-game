@@ -32,7 +32,7 @@ const states = new vm.SyntheticModule(["state", "save", "markMet", "timeOfDay"],
 }, { context });
 const mocks = {
   "../core/travel-budget.js": { spendableMoney: value => value.money },
-  "./ch2-commute.js": { normalizeCommuteState() {}, chooseMorningCity: async () => {}, returnCityHome: async () => {} },
+  "./ch2-commute.js": { normalizeCommuteState() {}, chooseMorningCity: async () => {}, readMorningStationCommute: async () => {}, returnCityHome: async () => {} },
   "../core/data.js": { DB, bgUrl: x => x },
   "../core/city-locations.js": { CH2_CITY_NAME: "柚ヶ谷", HOME_CITY_NAME: "橙須" },
   "../core/stats.js": {
