@@ -6,6 +6,7 @@
 // スマホは下の2つの大きなボタン（ムチは押し続ける）。
 // ラクダ・ロボット騎手・SUV・車輪は Codex の絵（assets/ui/camel_race・2026-11-02 採用。原画は asset_sources/ch4-camel-race）。
 // 絵が読めない環境では Canvas の描画に戻す。砂漠・柵・砂煙・合図の輪・HUD は Canvas で描く。
+import { installRotateGuard, rotateGuarded } from "../core/rotate-guard.js";
 import { el } from "../core/util.js";
 import { TIER_LABEL } from "../core/play-tiers.js";
 import { SE, currentBgm, playBgm, preloadBgm, unlockAudio, playCamelRaceSe, preloadCamelRaceSe, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
@@ -411,6 +412,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     return { completed, cancelled: !completed, runs: runs.map(run => ({ ...run })), best: bestRun ? { ...bestRun } : null, last: runs.length ? { ...runs.at(-1) } : null };
   };
   if (signal?.aborted) return Promise.resolve(summary(false));
+  installRotateGuard();
   let finish;
   const promise = new Promise(resolve => { finish = resolve; });
   active.set(host, promise);
@@ -699,7 +701,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     jockeyPop = reducedMotion ? 0 : FEEL.jockeyPop[1]; // 押した最初のコマから、声の届く先（騎手）が跳ねる
   };
   const onVoice = () => {
-    if (!race) return;
+    if (rotateGuarded() || !race) return;
     if (phase === "goal") { skipGoal(); return; }
     // スタート前に押しても黙らない: ボタンが沈み、騎手が跳ね、はじめが一言（判定も消耗も無い）。
     if (phase === "countdown") { dipVoice(); hajime("まだだ……", "serious", 0.6); return; }
@@ -739,7 +741,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   /** ムチを押す・離す。押している間だけ騎手の腕が回り続け、ラクダが伸びる（スタミナを使う）。 */
   let whipDown = false;
   const onWhip = on => {
-    if (!race) return;
+    if (!race || (on && rotateGuarded())) return;
     whipDown = !!on;
     // スタート前に押しても黙らない: ボタンが沈み、はじめが一言。押したまま GO を迎えると、そのままムチが入る（先行入力）。
     if (phase === "countdown" && on) { if (!signalButton.classList.contains("held")) { signalButton.classList.add("held"); hajime("まだだ……", "serious", 0.6); } return; }
@@ -774,6 +776,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   // ムチは押している間だけ。指が少しずれても離れないよう、押した要素に捕まえておく。
   signalButton.addEventListener("pointerdown", event => {
     event.preventDefault();
+    if (rotateGuarded()) return;
     try { signalButton.setPointerCapture(event.pointerId); } catch { /* 捕まえられない端末 */ }
     onWhip(true);
   });
@@ -795,6 +798,13 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     && (root.contains(document.activeElement) || phase === "race" || phase === "countdown" || phase === "goal");
   const isPauseKey = event => event.key === "Escape" || event.key === "p" || event.key === "P";
   const windowKey = event => {
+    if (rotateGuarded()) {
+      if (ours(event) || isPauseKey(event) || event.key === "Enter") {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+      return;
+    }
     // Esc・P: 一時停止と再開。本編のキー処理へは流さない。
     if (isPauseKey(event) && (paused || phase === "race" || phase === "countdown")) {
       event.preventDefault(); event.stopImmediatePropagation();
@@ -808,6 +818,14 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   // タブを離れた・画面を切り替えた時は、自動で一時停止にする（自動操作のデモ・検査では止めない）。
   const onHide = () => { if (document.hidden && !pilotPolicy) openPause(); };
   document.addEventListener("visibilitychange", onHide);
+  // 回転案内の停止は手動ポーズと独立させる。横に戻しても、隠れていた時間や押しっぱなしは持ち越さない。
+  const onRotateGuardChange = () => {
+    last = null;
+    root.inert = rotateGuarded();
+    if (root.inert) onWhip(false);
+  };
+  document.addEventListener("rotateguardchange", onRotateGuardChange);
+  onRotateGuardChange();
   const windowKeyUp = event => {
     if (!isWhipKey(event)) return;
     onWhip(false);
@@ -827,6 +845,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     window.removeEventListener("keyup", windowKeyUp, true);
     window.removeEventListener("blur", onBlur);
     document.removeEventListener("visibilitychange", onHide);
+    document.removeEventListener("rotateguardchange", onRotateGuardChange);
     window.removeEventListener("resize", measureView);
     signal?.removeEventListener("abort", abort);
     root.remove();
@@ -1014,7 +1033,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   function frame(now) {
     if (done) return;
     raf = requestAnimationFrame(frame);
-    if (paused || frozen) { last = now; return; } // 一時停止の間は時計も演出も進めない（最後のコマが残る）
+    if (rotateGuarded() || paused || frozen) { last = now; return; } // 一時停止の間は時計も演出も進めない（最後のコマが残る）
     if (last === null) last = now;
     let dt = Math.min(0.1, (now - last) / 1000) * timeScale;
     last = now;

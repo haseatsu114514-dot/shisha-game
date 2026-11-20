@@ -5,9 +5,9 @@ import { suite, assertFits } from "./support.mjs";
 const t = name => `[data-test="ch3-tournament-${name}"]`;
 const get = page => page.evaluate(() => structuredClone(window.__remake.state));
 
-async function seed(page, auto = "good", overrides = {}) {
+async function seed(page, auto = "good", overrides = {}, { atPull = false } = {}) {
   page.setDefaultTimeout(30000);
-  await page.evaluate(async ({ auto, overrides }) => {
+  await page.evaluate(async ({ auto, overrides, atPull }) => {
     const core = await import("./js/core/state.js");
     const value = core.newGame();
     const { CH3_INTRO_SCENES } = await import("./js/chapters/ch3-progress.js");
@@ -26,8 +26,20 @@ async function seed(page, auto = "good", overrides = {}) {
     const vn = await import("./js/vn/engine.js");
     vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
     const craft = await import("./js/craft/session.js"); craft.craftTest.auto = auto;
+    if (atPull) {
+      const { startAttempt, tournamentProgress, castVotes } = await import("./js/chapters/ch3-tournament-state.js");
+      const cs = Object.assign(craft.newSession("tournament"), {
+        mix: { chocolate: 8 }, steam: { temp: .84, score: 73, hits: 1 },
+        tournamentStory: { seen: ["interlude_pull", "serve"] },
+      });
+      startAttempt(value, cs);
+      const p = tournamentProgress(value);
+      p.step = 8;
+      castVotes(p, 0, 67);
+      core.save();
+    }
     void (await import("./js/chapters/ch3-tournament.js")).runChapterThreeTournament();
-  }, { auto, overrides });
+  }, { auto, overrides, atPull });
 }
 
 await suite("ch3-tournament", async check => {
@@ -126,6 +138,30 @@ await suite("ch3-tournament", async check => {
     assert.equal(after.flavorStock.chocolate ?? 0, 0,
       "The supplied challenge leaf never lands in the private stock (no carry-over)");
   }, { reducedMotion: "reduce" });
+  await check("burned-pull-keeps-result-until-continue", async page => {
+    let releaseArt;
+    const artGate = new Promise(resolve => { releaseArt = resolve; });
+    await page.route(/\/ui\/continue\/backdrop_stage\.(?:png|webp)$/, async route => {
+      await artGate;
+      await route.continue();
+    });
+    try {
+      await seed(page, "burn", {}, { atPull: true });
+      await page.waitForFunction(() => window.__remake.state.flags._ch3_tournament?.stage === "defeat");
+      assert.equal((await get(page)).flags._ch3_tournament.failure, "burnt");
+      // 結果の「次へ」は自動操作が押す。以前は300msで札が消え、素材待ちの間に操作欄が現れた。
+      await page.waitForTimeout(480);
+      assert.equal(await page.locator(t("defeat")).count(), 0, "CONTINUE art is still pending");
+      assert(await page.locator(".bench .result-card.show").isVisible(), "The failure result remains visible");
+      assert(await page.locator(".bench .result-card").evaluate(card => card.inert));
+      assert.equal(await page.locator('[data-test="pull-stop"]:visible,[data-test="pull-serve"]:visible').count(), 0);
+    } finally { releaseArt(); }
+    await page.locator(t("defeat")).waitFor();
+    assert.equal(await page.locator(".bench,.result-card").count(), 0);
+    await page.locator(t("retry")).click();
+    await page.locator(t("ready")).waitFor();
+    assert.equal((await get(page)).flags._ch3_tournament.losses, 1);
+  });
   await check("burned-pull-still-counts-as-a-loss", async page => {
     await seed(page, "burn");
     await page.locator(t("entry")).waitFor();

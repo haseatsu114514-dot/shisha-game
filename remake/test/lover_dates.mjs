@@ -134,3 +134,44 @@ assert.match(sceneText(mashiroLv3), /重ければ、何でもいいわけじゃ�
 assert.match(sceneText(mashiroLv3), /紅茶も残るのが好き/);
 assert.match(sceneText(mashiroLv3), /一緒に来てくれる.*僕が重いのを頼むお店/);
 console.log("OK: Mashiro keeps her tea preferences and speaks about her own taste");
+
+// ---- デートの話題（#4030）: 元の台本 → 話題5本を順に → 元へ。毎回同じ会話にしない -------------------------------------
+{
+  const { DB } = await import("../js/core/data.js");
+  const { dateTopic, advanceDateTopic, dateTopicFlag } = await import("../js/daily/date-scene.js");
+  DB.lover = data;
+  const width = s => [...s].reduce((n, c) => n + (c.charCodeAt(0) < 128 ? 0.5 : 1), 0);
+  for (const id of ids) {
+    const topics = data.dates[id].topics;
+    assert.equal(topics?.length, 5, `${id}: five extra date topics`);
+    const seen = new Set();
+    for (const topic of topics) {
+      for (const field of ["mid", "close"]) assert.ok(topic[field]?.face && topic[field]?.text, `${id}: topic ${field}`);
+      assert.ok(topic.choiceQ, `${id}: topic choice prompt`);
+      for (const field of ["optA", "optB"]) {
+        const choice = topic[field];
+        assert.ok(choice?.text && choice?.line && allowedStats.has(choice.stat), `${id}: topic ${field}`);
+        assert.ok([...choice.text].length <= 26, `${id}: topic choice exceeds 26 characters (${choice.text})`);
+        assert.ok(width(choice.line) <= 48, `${id}: topic line exceeds 48 (${choice.line})`);
+      }
+      for (const text of [topic.mid.text, topic.close.text]) assert.ok(width(text) <= 48, `${id}: topic line exceeds 48 (${text})`);
+      assert.ok(!("arrive" in topic), `${id}: the arrival line stays the same`);
+      seen.add(topic.mid.text);
+    }
+    assert.equal(seen.size, 5, `${id}: every topic is different`);
+    // 読み終えるたびに一つ進み、6回で一周する。元の台本の arrive はいつも同じ
+    const value = { flags: {} };
+    const mids = [];
+    for (let n = 0; n < 7; n++) { const sc = dateTopic(id, value); mids.push(sc.mid.text); assert.equal(sc.arrive.text, data.dates[id].arrive.text); advanceDateTopic(id, value); }
+    assert.equal(new Set(mids.slice(0, 6)).size, 6, `${id}: six different conversations in a row`);
+    assert.equal(mids[6], mids[0], `${id}: then the cycle starts again`);
+    assert.equal(value.flags[dateTopicFlag(id)], 7);
+    // 壊れた記録は最初の話題として読む
+    assert.equal(dateTopic(id, { flags: { [dateTopicFlag(id)]: "x" } }).mid.text, data.dates[id].mid.text);
+  }
+  const mashiroTopics = JSON.stringify(data.dates.mashiro.topics);
+  assert.doesNotMatch(mashiroTopics, /わたし|私|はじめさん/, "Mashiro's topics keep her voice");
+  assert.match(readFileSync(new URL("../js/daily/romance.js", import.meta.url), "utf8"), /if \(result && !result\.cancelled\) advanceDateTopic\(id\)/);
+  assert.match(readFileSync(new URL("../js/daily/samechan-date.js", import.meta.url), "utf8"), /advanceDateTopic\("samechan"\)/);
+  console.log("OK: date topics rotate through six conversations per lover (#4030)");
+}

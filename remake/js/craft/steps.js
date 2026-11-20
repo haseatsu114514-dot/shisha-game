@@ -464,7 +464,7 @@ export async function stepMix(cs) {
     el("div.mix-side", [vessel, taste, lifePreview, recipeLine]),
     // ひらめきは葉の組み合わせの助言なので葉の一覧の頭に置き、決定欄に隠れないようにする（#907）。
     // 見出しとまとめて1要素にし、一覧の子の数（行数に応じた配置の切り替え）を変えない。
-    el("div.mix-list", [el("div.mix-list-head", [singleStyle,
+    el(cs.orderFlavorIds ? "div.mix-list.mix-list-supplied" : "div.mix-list", [el("div.mix-list-head", [singleStyle,
       recall.length ? el("details.mix-recall", [el("summary", { text: "香りの記憶" }),
         el("div.chips", recall.map(option => el("button.btn.ghost.small", {
           text: option.name, dataset: { test: `mix-recall-${option.id}` }, onclick: () => {

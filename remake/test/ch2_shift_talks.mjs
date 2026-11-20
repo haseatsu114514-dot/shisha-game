@@ -73,6 +73,45 @@ assert.equal(ts({}, true), "ch2_shift_talk_tsumugi_board");
 assert.equal(ts({}, false), "ch2_shift_talk_one_hose", "Tsumugi not at tonari today");
 assert.equal(ts({ met: {} }, true), "ch2_shift_talk_one_hose", "not met yet");
 assert.equal(ts({ day: 27 }, true), "ch2_shift_talk_one_hose", "not on DAY13");
+// #3097 計画 2-7（PR-D）: つむぎの普段の会話3本は、黒板の回の後に、つむぎが店にいる日だけ・DAY13以外で一本ずつ
+{
+  const trio = ["ch2_shift_talk_tsumugi_ash", "ch2_shift_talk_tsumugi_backs", "ch2_shift_talk_tsumugi_hands"];
+  assert.deepEqual(ids.slice(ids.indexOf("ch2_shift_talk_tsumugi_board") + 1, ids.indexOf("ch2_shift_talk_tsumugi_board") + 4), trio,
+    "right after the blackboard talk (Tsumugi is at tonari on few days)");
+  let flags = seen("ch2_shift_talk_tsumugi_board");
+  for (const id of trio) {
+    assert.equal(ts({ flags }, true), id, `${id}: one per shift while she is there`);
+    assert.notEqual(ts({ flags }, false), id, `${id}: not when she is away`);
+    assert.notEqual(ts({ flags, met: {} }, true), id, `${id}: not before meeting her`);
+    assert.notEqual(ts({ flags, day: 27 }, true), id, `${id}: not on DAY13 (Tsumugi's colour night)`);
+    flags = { ...flags, ...seen(id) };
+  }
+  assert.equal(ts({ flags }, true), "ch2_shift_talk_one_hose", "then the usual order");
+  // つむぎがいない日は、未読のつむぎの回を飛ばしてスミさんの回を読む（後で、いる日に読める）
+  assert.equal(ts({ flags: seen("ch2_shift_talk_tsumugi_board") }, false), "ch2_shift_talk_one_hose");
+  for (const id of trio) {
+    const rows = dialogues[id].lines;
+    assert(rows.some(line => line.speaker === "tsumugi"), `${id}: Tsumugi speaks`);
+    assert(!/恋|好きです|デート|手を(握|つな)|二人きり/.test(rows.map(line => line.text).join("")), `${id}: an everyday talk that does not move the romance`);
+  }
+}
+// #3097 計画 2-8（PR-D）第3弾: スミさんの手仕事と客の話5本。火傷の回の後、柚ヶ谷へ通い始めた後（DAY2以降）に一本ずつ
+{
+  const third = ["ch2_shift_talk_water_line", "ch2_shift_talk_my_mouthpiece", "ch2_shift_talk_short_one", "ch2_shift_talk_early_coal", "ch2_shift_talk_last_visit"];
+  assert.deepEqual(ids.slice(-5), third, "appended after the second batch");
+  const allButThird = ids.filter(id => !third.includes(id));
+  let flags = seen(...allButThird);
+  assert.equal(due(save({ day: 15, met: { ageha: true, kumicho: true, rei: true }, flags }), dialogues), null, "DAY1: none of the third batch");
+  for (const id of third) {
+    assert.equal(due(save({ day: 20, flags }), dialogues, { tsumugiHere: false }), id, `${id}: in order`);
+    flags = { ...flags, ...seen(id) };
+  }
+  for (const id of third) {
+    const rows = dialogues[id].lines;
+    assert(rows.some(line => line.speaker === "sumi"), `${id}: Sumi's craft`);
+    assert(rows.length >= 8 && rows.length <= 14, `${id}: 8-14 lines`);
+  }
+}
 // 全部読んだら定型へ
 assert.equal(due(save({ day: 20, met: { tsumugi: true }, flags: seen(...ids) }), dialogues, { tsumugiHere: true }), null, "each read once");
 
@@ -82,6 +121,12 @@ assert(/const ch2Talk = after \? null : ch2ShiftTalkDue\(state, DB\.dialogues, \
 assert(/after\?\.scene \|\| ch2Talk \|\| "remake_sumi_after_shift"/.test(fn), "falls back to the usual line");
 assert(/if \(ch2Talk\) state\.flags\[`_talk_seen_\$\{ch2Talk\}`\] = true/.test(fn), "marked read only after finishing");
 for (const d of file.dialogues) {
+  // 大会・審査には触れない。はじめは味の感想を言わない（第2章DAY5以降は味が遠い）
+  if (/^ch2_shift_talk_(tsumugi_(ash|backs|hands)|water_line|my_mouthpiece|short_one|early_coal|last_visit)$/.test(d.dialogue_id)) {
+    const text = d.lines.map(line => line.text).join("\n");
+    assert(!/大会|県大会|本番|優勝|審査|採点|苺/.test(text), `${d.dialogue_id}: no tournament`);
+    assert(!d.lines.some(line => line.speaker === "hajime" && /(甘|苦|酸|しょっぱ|うま|おいし|美味|味)/.test(line.text)), `${d.dialogue_id}: Hajime does not taste`);
+  }
   for (const line of d.lines) {
     assert(!line.type, `${d.dialogue_id}: no commands (no affinity, flags or rewards from the script)`);
     assert.equal(typeof line.text, "string");

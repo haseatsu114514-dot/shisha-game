@@ -1,5 +1,5 @@
 {
-  "comment": "第4章DAY3予告・DAY4会場準備・DAY9一人への接客と一度の調整・DAY14回収。既存の任意日常、謎の男、恋人の夕方、宿試作とリハーサルは変更しない。現地のスタッフと成人客の言葉は通訳アプリを介した日本語表示。報酬・行動・体力・費用・在庫消費なし。",
+  "comment": "第4章DAY3予告・DAY4会場準備・DAY9一人への接客と一度の調整・DAY14回収。DAY4・DAY9は同じ夜の仕事の中に合間の短い場面を一本ずつ挟む（#3097 計画 4-7）。既存の任意日常、謎の男、恋人の夕方、宿試作とリハーサルは変更しない。現地のスタッフと成人客の言葉は通訳アプリを介した日本語表示。報酬・行動・体力・費用・在庫消費なし。",
   "dialogues": [
     {
       "dialogue_id": "ch4_staff_notice",
@@ -295,6 +295,62 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch4_staff_break_prep",
+      "comment": "DAY4の合間（#3097 計画 4-7）。会場の準備を終えた後、ノートを開く前に読む（ch4-staff-work-progress.js の runChapterFourStaffNight。仕事の記録・選択は変えない）。報酬・行動・体力・費用・在庫消費なし。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片づけが一段落すると、スタッフが小さなグラスを三つ、盆に載せて戻ってきた。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "開ける前の一杯です。座る人が来る前に、どうぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "引いたままの椅子に、なると並んで腰を下ろした。グラスの紅茶は、甘くて熱い。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "甘いな。……でも、一日動いた後だと、これがちょうどいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "開ける前に、客の席へ座ってみるのって、初めてかもしれない"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "座ると、見えるもんが変わるだろ。通路の幅とか、水の置き場とか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。立って見てた時より、隣の席が近い"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "私たちも、開ける前に一度ここへ座ります。お客さんの目の高さを見るために"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "……帰ったら、うちの店でもやってみるか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "空いたグラスを盆に戻した。座った高さから見ると、机の上の器具も少し違って見えた。"
+        }
+      ]
     },
     {
       "dialogue_id": "ch4_staff_notebook",
@@ -675,6 +731,67 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch4_staff_break_service",
+      "comment": "DAY9の合間（#3097 計画 4-7）。客への一台と片づけ（ch4_staff_returned）の後、同じ夜の仕事の中で読む（ch4-staff-work-progress.js）。調整の良し悪しに触れず、どの結果の後でも成り立つ文にする。報酬・行動・体力・費用・在庫消費なし。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "棚の前で一息つくと、スタッフが作業机の端の丸椅子を指した。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "次の方が来るまで、少し座ってください。ずっと立ったままでしたから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。……通訳アプリを打ち続けて、指が疲れました"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "私もです。ここには毎日、いろいろな国の言葉が来るので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スタッフが自分の画面を見せてくれた。短い言葉の履歴が、下までずっと続いている。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "長い文より、短い文の方が、ちゃんと返ってきます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日、それを何度も思いました。聞き直すのも、短い方がいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ブースの入口から、なるが戻ってきた。搬入の確認は済んだらしい。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "一台、出したのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。同じことを、二回聞いた"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "それでいい。……ノート、後で見せろよ"
+        }
+      ]
     },
     {
       "dialogue_id": "ch4_staff_match_echo",

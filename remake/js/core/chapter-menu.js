@@ -1,7 +1,7 @@
 // 第4・5章のMENU。項目・保存/LOADの順序は章runnerの従来実装を維持する。
-import { save, loadFromSlot, requestResumeOnBoot } from "./state.js";
+import { loadFromSlot, requestResumeOnBoot } from "./state.js";
 import { modal } from "./ui.js";
-import { saveFlow, loadFlow } from "../scenes/saves.js";
+import { saveFlow, loadFlow, returnToTitle } from "../scenes/saves.js";
 
 /** 章固有のsession判定・test名・見出しを受け取る。ゲームの進行は変更しない。 */
 export function createChapterMenu({ current, test, title }) {
@@ -29,10 +29,13 @@ export function createChapterMenu({ current, test, title }) {
         }
       }
       if (choice === "title") {
-        save();
-        owner.active = false;
-        owner.controller?.abort();
-        location.reload();
+        await returnToTitle({
+          current: () => current(owner),
+          leave: () => {
+            owner.active = false;
+            owner.controller?.abort();
+          },
+        });
       }
     } finally { owner.menuBusy = false; }
   }

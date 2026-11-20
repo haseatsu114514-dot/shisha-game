@@ -7,7 +7,8 @@ import { growthEnabled } from "../core/growth.js";
 import { runCamelRace, loadCamelArt } from "../minigames/camel-race.js";
 import { playArrival } from "../daily/venue-arrivals.js";
 import { CAMEL_SCENES, CAMEL_STAGES, camelRaceRecord, camelRaceDestination, recordCamelRaceResult, consumeCamelRaceDaytime,
-  advanceCamelRaceStage, resultSceneFor, availableCamelCups, camelTalkAfterRace, camelResultTalk } from "./ch4-camel-progress.js";
+  advanceCamelRaceStage, resultSceneFor, availableCamelCups, camelTalkAfterRace, camelResultTalk,
+  camelStableTalk, recordCamelStableTalk } from "./ch4-camel-progress.js";
 export * from "./ch4-camel-progress.js";
 
 /**
@@ -78,7 +79,11 @@ export async function visitCamelRace({ read, signal = null, isCurrent = () => tr
     return { used: true, exerted: true, slotsUsed: 0 };
   }
   // 二度目からは結果の会話を巡回する（#3097。2回目のレースは従来どおり replayBest・replayUsual）
-  await read(first ? resultSceneFor(best.rank) : camelResultTalk(outcome.plays, outcome.newBest));
+  const talked = await read(first ? resultSceneFor(best.rank) : camelResultTalk(outcome.plays, outcome.newBest));
+  // 二度目からは、結果の会話の後に待ち時間の場面を一本（#3097 計画 4-6）。三本を順に一度ずつ、読み終えたら出さない。
+  // 記録・消費・報酬はもう済んでいる。読み終えた時だけ本数を進めて保存する（中断なら次の再訪で同じ回）。
+  const stable = !first && talked && isCurrent() && state === value ? camelStableTalk(value) : null;
+  if (stable && await read(stable) && isCurrent() && state === value && recordCamelStableTalk(value, stable)) save();
   return { used: true, exerted: true, slotsUsed: 0 };
 }
 

@@ -1,0 +1,422 @@
+{
+  "comment": "第4章の出発前の準備3日（VOL02）に、地元と柚ヶ谷の顔なじみ（つむぎ・ひより・あげは・神崎・クラウド）が準備期間の来店で一度だけ話す送り出しの会話（#3097 計画 4-4・PR-I）。第3章の分と、アダム・みんと・凛想・サメちゃんの第4章の分は data/dialogue/ch3_ch4_home.json。つむぎ・あげは・神崎・クラウドは daily/spots.js の CHAPTER_TALKS（prep）、ひよりは daily/hiyori.js の HIYORI_PREP_TALKS が出し、chapters/departure-prep.js が準備期間に読み込む。全国大会の後なので優勝を初耳の知らせにせず、シェイク・王煙楼・ドバイの大会の結果などドバイで初めて知ることは言わない。五人とも恋人・友人としてドバイへ来ることがある（core/overseas-companion.js）ので、同行・見送り・応援には触れず、恋人でも友人でも通る普段の会話にする（恋愛は進めない）。味覚はダブルアップルの判別の後の「少し戻った」まで。第3章の送り出しを読んだ時だけの分岐は既読（_talk_seen_ch3_prep_<id>）で見る。能力・好感度の伸びは来店の処理が付けるので、台本に報酬の文は書かない。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_prep_tsumugi",
+      "comment": "#3097 PR-I（計画 4-4）。ドバイへ発つ前の準備3日、tonariの客席の来店で一度だけ（daily/spots.js の CHAPTER_TALKS・visitChar）。つむぎはドバイへ必ず応援に来る（SPC17）ので、同行・応援・見送りには触れない。帰郷の夜の ch3_tsumugi_result（作る手を描きたい）を読んでいなくても通る、スミさんの洗う手のスケッチから「教わった手」へ。第3章の送り出しを読んだ時だけ、窓側の雲の報告を返す。恋愛は進めない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "branches": {
+        "clouds": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "そうだ。東京の新幹線、窓側にしたよ。雲、ずっと見てた"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……ほんとに、見てくれたんですね"
+          }
+        ]
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓際の席で、つむぎがタブレットに、ボウルを洗う手を描いていた。流しに立つ、スミさんの手だ。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん。ドバイ、もうすぐですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。あと何日かで発つよ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_talk_seen_ch3_prep_tsumugi",
+          "next_true": "clouds",
+          "next_false": ""
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "洗う手、むずかしいです。泡で、指が隠れるので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "スミさん、洗うの速いからね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。でも、ボウルの縁だけは、毎回ゆっくりでした"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面には、同じ手が何枚も並んでいた。縁をなぞる指だけ、線が二重になっている。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさんの手も、そこでゆっくりになります。この前、見ました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺も？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "はい。……同じところで、同じ速さに。教わった手ですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自分の指を見た。縁をなぞる速さは、言われるまで気づかなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_prep_hiyori",
+      "comment": "#3097 PR-I（計画 4-4）。ドバイへ発つ前の準備3日、tonariでの再会の後、夜のtonariの対面（客席・シフト）で一度だけ（daily/hiyori.js の HIYORI_PREP_TALKS・meetHiyoriAtTonari）。ひよりは恋人・友人ならドバイへ来る（到着の ch4_hiyori_dubai_* は驚きの場面）ので、同行・応援・有給には触れない。会議の前の手の握り方を、儚い女の秘伝として渡す。第3章の送り出しを読んだ時だけ、荷造りの報告を返す。恋愛は進めない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "branches": {
+        "packed": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "東京の時、保険証も充電器も、ちゃんと入れていきました"
+          },
+          {
+            "speaker": "hiyori",
+            "face": "smile",
+            "text": "でしょ。総務の言うことは、聞いとくものよ"
+          }
+        ]
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの端で、仕事帰りのひよりさんが、スマホを伏せて紅茶の煙をくゆらせていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……はじめくん。次は、ドバイなんだってね。遠い、遠い国",
+          "inner": "地図アプリで見た。指が疲れるくらい遠かった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。もうすぐ発ちます"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_talk_seen_ch3_prep_hiyori",
+          "next_true": "packed",
+          "next_false": ""
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "大事な会議の前に、私がやってること、教えてあげよっか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "会議、ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "手をぎゅっと握って、ゆっくり開くの。三回。……それで、だいたい息が戻る",
+          "inner": "去年の予算会議で編み出した。効き目には個人差あり"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "世界の舞台でも、手は二つ。私の会議室と、そう変わらないから",
+          "inner": "ちょっと盛った。かなり変わる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、やってみます。一、二、三"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で三回、手を握って開いた。少し離れた炭場で、スミさんが見ないふりをしていた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……ほら。儚い女の秘伝、伝授完了",
+          "inner": "スミさん、絶対見てた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_prep_ageha",
+      "comment": "#3097 PR-I（計画 4-4）。ドバイへ発つ前の準備3日、MELTY PUFFの来店で一度だけ（daily/spots.js の CHAPTER_TALKS・chapters/ch2-preparation.js の visitPreparationSpot）。ドバイ到着の「店は、新しいバイトの子に任せてきた。やっと、任せてもいいかなって子が来たし」（ch4_ageha_dubai_*・SPC23 教えるのが苦手）の前段。炭を置いてから替えるまでの時間をスマホに記録する（characters.json の growth_stats）。再会の「してほしいこと言う練習中」の続き。同行・応援・見送りには触れない。恋人でも友人でも通る。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ch2_ageha_entry.webp"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの端で、あげはがスマホに何か打ち込んでは、首をかしげていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あ、ハジメっち。ドバイの前に寄ってくれたんだ。ちょい待ってね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何を書いてるんですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "新しいバイトの子に渡す、炭のメモ。うちが口で言うと、「いい感じで」しか出てこないの"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "「いい感じって、何分ですか」って聞かれた。……正論すぎて、泣いた"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "だから最近、炭を置いてから替えるまでの時間、毎日スマホに書いてんの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "見せてもらってもいいですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ダメ。まだぐちゃぐちゃだし。ハジメっちに見せるのは、完成してから"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……でも、書いてたら、うちがあの子に何してほしいのか、ちょっと分かってきた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "それ、そのまま伝えたら、きっと届きます"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "でしょ。……言う練習、ここでもしてんの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは画面に一行足して、スマホを胸の前でぎゅっと握った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_prep_kumicho",
+      "comment": "#3097 PR-I（計画 4-4）。ドバイへ発つ前の準備3日、神崎煙草店の来店で一度だけ（daily/spots.js の CHAPTER_TALKS・chapters/ch2-preparation.js の visitPreparationSpot）。炭の黒いところを確かめる手つき（第2章DAY5）と「炭は裏まで見ますぜ」の続き。神崎は♥5ならドバイへ来る（ch4_kumicho_dubai は驚きの場面）ので、同行・サウナには触れない。持ち点の表の話は第5章まで言わない。第3章の送り出しを読んだ時だけ、東京で頭を下げたかを聞く。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ch2_kumicho_entry.webp"
+      },
+      "branches": {
+        "bowed": [
+          {
+            "speaker": "kumicho",
+            "face": "normal",
+            "text": "東京じゃ、ちゃんと先に頭を下げてきなすったかい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "はい。どの店でも、最初に"
+          }
+        ]
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "暖簾をくぐると、神崎さんが炭を一つずつ、明かりにかざしていた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう、あんちゃん。今度は、ドバイだそうで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。荷造りは、もう半分です"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_talk_seen_ch3_prep_kumicho",
+          "next_true": "bowed",
+          "next_false": ""
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "向こうの炭は、こっちのとは火の回りが違うかもしれやせん"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "最初の一個は、裏まで見なせえ。慣れた手ほど、そこで気を抜きやす"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんが、かざしていた炭を一つこちらへ渡した。端に、まだ黒いところが残っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……これは、まだ使えませんね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "そういうこってす。黙って脇へ置ける奴が、いちばん強え"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "世界の前でも、炭は炭でさ。いつもどおり、裏まで見なせえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "黒いところの残った炭は、箱の脇へ、そっと置かれた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_prep_rei",
+      "comment": "#3097 PR-I（計画 4-4）。ドバイへ発つ前の準備3日、「貴方ノ為ノ此ノ煙。」の来店で一度だけ（daily/spots.js の CHAPTER_TALKS・chapters/ch2-preparation.js の visitPreparationSpot）。クラウドは♥5ならドバイへ来る（ch4_rei_dubai は驚きの場面）ので、同行・応援には触れない。本番の前の晩は、いつもの一枚。第3章の送り出しを読んだ時はアルバムの報告と引き出しておいた一枚、ライブの夜を読んだ時は「一番後ろまで」を返す（どちらか一方）。本名・笑顔の練習・「嘘」・同士には触れない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
+      },
+      "branches": {
+        "album": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "東京への新幹線で、言われたとおり、一枚通して聴きました"
+          },
+          {
+            "speaker": "rei",
+            "face": "smile",
+            "text": "……そうか。なら、引き出しといたやつ、今日かける"
+          }
+        ],
+        "live": [
+          {
+            "speaker": "rei",
+            "face": "normal",
+            "text": "……ライブの夜、一番後ろまで、って言った"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "はい。東京でも、後ろの席まで見るようにしてました"
+          }
+        ]
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に入ると、クラウドがCDの棚の前で、一枚を出しては戻していた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……ドバイ、もうすぐだろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。あと何日かで発ちます"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_talk_seen_ch3_prep_rei",
+          "next_true": "album",
+          "next_false": ""
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_talk_seen_ch3_prep_rei_live",
+          "next_true": "live",
+          "next_false": ""
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "本番の前の晩は、いつもの一枚を聴く。新しいのは、聴かない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "新しいのは、だめなんですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "気になって、眠れなくなる。だから、いつもの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いつもの一枚……俺なら、いつもの一台ですかね"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……それ。いつものを、いつもどおりに"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クラウドがプレイヤーに一枚を入れた。最初の音が鳴ると、その肩が少しだけ下がった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "曲が終わるまで、二人とも何も言わなかった。"
+        }
+      ]
+    }
+  ]
+}

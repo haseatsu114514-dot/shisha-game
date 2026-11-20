@@ -61,6 +61,52 @@ await suite("save-load", async check => {
     assert.deepEqual(await page.evaluate(() => ["suien_remake_slot2", "suien_remake_slot3"].map(key => localStorage.getItem(key))), retired);
   });
 
+  await check("chapter-five-same-day-slots-name-the-card-before-loading", async page => {
+    const button = id => page.locator(`[data-test="${id}"]`);
+    const card = title => button("ch5-scene").getByRole("heading", { name: title, exact: true });
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const { advanceToChapterFive } = await import("./js/chapters/ch5-progress.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 4, phase: "cleared", day: 50 });
+      value.flags._ch4_cleared = true;
+      if (!advanceToChapterFive(value)) throw new Error("第5章へ進めません");
+      value.flags._ch5.titleSeen = true;
+      core.save();
+      // 場面番号を持たない枠は従来の章・日・段階で表示する。
+      const older = structuredClone(value);
+      delete older.flags._ch5.stage;
+      localStorage.setItem(core.SAVE_SLOTS[1].key, JSON.stringify(older));
+    });
+    await page.reload();
+    await button("title-load").click();
+    assert.match(await button("slot-1").innerText(), /プロローグ/);
+    await button("slot-0").click();
+    await card("ドバイのあと").waitFor();
+    await button("ch5-menu").click();
+    await button("ch5-save").click();
+    await button("slot-1").click();
+    await button("confirm-overwrite").click();
+    await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.turbo = true; });
+    await button("ch5-continue").click();
+    await card("帰郷").waitFor();
+    const openLoad = async () => {
+      await button("ch5-menu").click();
+      await button("ch5-load").click();
+      assert.deepEqual(await page.locator(".ss-phase").allTextContents(), ["帰郷", "ドバイのあと"]);
+    };
+    await openLoad();
+    await button("slot-cancel").click();
+    await card("帰郷").waitFor();
+    await openLoad();
+    await button("slot-0").click();
+    await card("帰郷").waitFor();
+    await openLoad();
+    await button("slot-1").click();
+    await button("confirm-load").click();
+    await card("ドバイのあと").waitFor();
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+
   await check("paper-landscape-cards-fit-and-remain-readable", async page => {
     await prepare(page);
     await page.evaluate(async () => {

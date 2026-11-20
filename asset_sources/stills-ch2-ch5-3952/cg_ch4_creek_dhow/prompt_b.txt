@@ -1,0 +1,17 @@
+Create one finished visual novel event CG (a story still) for the Japanese shisha-bar game "Suien Zensen -EN:CODE-". Opaque landscape 16:9, at the largest 16:9 size the tool can make (at least 1672x941). Japanese 2D anime illustration in the same hand as the attached approved event CG: clean confident outlines, cel shading with two or three clearly shaped shadow steps, warm cinematic light, a detailed painted background with a fine pixel-painter texture; not 3D, not photographic, no airbrush skin gloss, no rim-light glow, no floating sparkles or light particles. The approved event CG is a rendering-style reference only: do not copy its people, composition, props or equipment. Every named character must be exactly the same person as their attached approved sprite: same face design, eye shape and color, hairstyle and hair color, age, build and outfit; do not drift toward a generic pretty face. Unless the scene says otherwise, the viewer is the protagonist Hajime: never show his face; at most his hands, sleeves, shoulder, back or the back of his head (short black hair under a black cap, black zip hoodie over a black t-shirt). Put every important face, hand and prop within the top 65% of the image, because a dialogue window covers the bottom 25%. No text, letters, numbers, logos, UI, borders or watermark anywhere; any paper, sign, label, bag, phone or monitor screen is blank or unreadable. Unnamed customers, workers and passers-by are ordinary adults with plain everyday faces and clothes, never caricatures.
+
+Scene: chapter 4, Dubai Creek, daytime. An old wooden dhow with a high curved bow is moored at the quay. On the quay, a mountain of mixed cargo: sacks, cardboard boxes, a refrigerator wrapped in plastic, bundles of tyres. A line of workers passes the cargo from hand to hand onto the boat with short calls, never stopping; on the deck the cargo is stacked in tiers, each layer leveled flat: heavy items at the bottom, light and water-sensitive items on top. Hajime watches from outside the line at the near edge: only his hand on a quay railing and his black hoodie sleeve. Blue water, hot white sun, low sandstone-colored buildings across the creek. The workers are ordinary, dignified working people seen mostly in motion, faces small and natural, no caricature. No text on boxes or on the boat, no flags, no logos. No hookah.
+
+Variant B: from slightly above, looking down on the leveled tiers on deck.
+
+Frame precisely: every important face, hand and story prop should be completely inside the upper 60% (absolute boundary 65%). Reserve the lower third for quiet foreground surfaces or legs only. Keep the scene and the specified action. No extra candles, plants, watches, bracelets, jewelry or ornaments. Existing sprite accessories alone are allowed when depicted on the reference sprite.
+
+Reference images in order:
+1. 袖と手  (chr_hajime_normal.png)
+2. 色調  (bg_dubai_souq_day.png)
+3. Rendering style only (cg_ch4_dubai_arrival.png)
+
+
+--- ImageGenでの採用編集（入力は直前の生成画像） ---
+
+Edit this 16:9 Japanese visual novel art, preserving identity, cel shading, outfit, and the original scene. Keep the diagonal look across cargo stacks and the wooden dhow. Reframe so Hajime's hand on the foreground rail and the central worker handover are completely above y=60%. The rail goes from the side toward the center at mid-height, not along the bottom. No readable markings.

@@ -229,7 +229,7 @@ for (const chapter of [4, 5]) {
     state, CH4_SCENE_FILES: {},
     createChapterActions: () => ({ button() {}, perform() {} }),
     modal: async spec => { dialogs.push(spec); if (errorAt === 'modal') throw new Error('modal failure'); if (waiting) await waiting.promise; return choice; },
-    save: () => { events.push('save'); if (saveError) throw new Error('save failure'); },
+    save: () => { events.push('save'); if (saveError) throw new Error('save failure'); return true; },
     saveFlow: async () => { events.push('saveFlow'); if (saveError) throw new Error('save failure'); },
     loadFlow: async options => { events.push(['loadFlow', options.inGame]); loadEntered?.resolve(); if (loadError) throw new Error('load failure'); if (loadWaiting) await loadWaiting.promise; return loadKey; },
     loadFromSlot: key => { events.push(['loadFromSlot', key]); if (errorAt === 'loadFromSlot') throw new Error('slot failure'); return loaded; },
@@ -242,6 +242,10 @@ for (const chapter of [4, 5]) {
   await configModule.link(() => {}); await configModule.evaluate();
   const options = { context, importModuleDynamically: async () => configModule };
   const url = new URL(`../js/chapters/ch${chapter}.js`, import.meta.url);
+  const savesUrl = new URL('../js/scenes/saves.js', import.meta.url);
+  const savesModule = new vm.SourceTextModule(read(savesUrl), { ...options, identifier: savesUrl.href });
+  // Keep the slot-picker stubs while exercising the real title-return flow.
+  bindings.returnToTitle = args => savesModule.namespace.returnToTitle(args);
   const source = read(url);
   let stateModule;
   const modules = new Map();
@@ -258,7 +262,9 @@ for (const chapter of [4, 5]) {
     const parentSource = parent.identifier === url.href ? source : read(new URL(parent.identifier));
     let names = [...parentSource.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)]
       .find(match => match[2] === spec)[1].split(',').map(name => name.trim());
-    if (target.pathname.endsWith('/core/state.js')) names = ['state', 'save', 'loadFromSlot', 'requestResumeOnBoot'];
+    if (target.pathname.endsWith('/core/state.js')) {
+      names = ['state', 'save', 'loadFromSlot', 'requestResumeOnBoot', 'SCHEMA', 'SAVE_SLOTS', 'readSlot', 'saveToSlotResult'];
+    }
     const stub = new vm.SyntheticModule(names, function () {
       for (const name of names) this.setExport(name, bindings[name] ?? (() => {}));
     }, { context });
@@ -271,7 +277,9 @@ for (const chapter of [4, 5]) {
       controller: { abort() { step('abort'); } } }; }
   `, { ...options, identifier: url.href });
   context.events = events; context.step = step;
-  await runner.link(link); await runner.evaluate();
+  await runner.link(link);
+  await savesModule.link(link); await savesModule.evaluate();
+  await runner.evaluate();
   const api = runner.namespace;
   const reset = () => { events.length = 0; dialogs.length = 0; choice = null; waiting = null;
     loadKey = 'slot1'; loaded = true; loadError = saveError = configError = false; errorAt = ''; loadWaiting = null; return api.owner(); };

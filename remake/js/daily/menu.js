@@ -6,7 +6,7 @@ import { el, yen } from "../core/util.js";
 import { layers, modal, toast, heartRow, statBadge, ghostOut } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { DB, displayName, faceIconUrl, cgUrl } from "../core/data.js";
-import { state, save, requestResumeOnBoot, STAT_KEYS, STAT_JA } from "../core/state.js";
+import { state, requestResumeOnBoot, STAT_KEYS, STAT_JA } from "../core/state.js";
 import { step, RANK_LABELS, affinityLevel, currentCondition, staminaRatio } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
 import { nextStepProgress } from "../core/stat-progress.js";
@@ -17,7 +17,7 @@ import { KEEPSAKES } from "../core/keepsakes.js";
 import { HOBBY_GEAR } from "../core/hobby-gear.js";
 import { growthEnabled, gaugeAt, hidaneTotal, openGrowthBoard } from "../core/growth.js";
 import { BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, statTotal, statCount, perkTotals } from "../core/growth-board.js";
-import { saveFlow, loadWithRecovery } from "../scenes/saves.js";
+import { saveFlow, loadWithRecovery, returnToTitle } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { isRainy } from "./weather.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
@@ -67,17 +67,18 @@ export async function openMenu({ tab = "status", canSave = () => true, current =
   if (busy || !state || !layers.modal) return null;
   busy = true;
   const owner = state;
+  const stillCurrent = () => state === owner && current();
   try {
     SE.select();
     // 紙の絵（img/ui/paper/menu-bg.webp）は起動時に他のUIの絵と一緒に読んである（core/ui.js）。読めなくても同じ色の紙と帯で開く。
     const action = await showMenu(MENU_TABS.some((t) => t.id === tab) ? tab : "status", { saveOk: !!canSave(), saveRule });
-    if (!action || state !== owner || !current()) return null;
-    await runAction(action, { canSave, leave, saveRule });
+    if (!action || !stillCurrent()) return null;
+    await runAction(action, { canSave, current: stillCurrent, leave, saveRule });
     return action;
   } finally { busy = false; }
 }
 
-async function runAction(action, { canSave, leave, saveRule }) {
+async function runAction(action, { canSave, current, leave, saveRule }) {
   if (action === "save") {
     // 開いた後に場面が変わった時も保存可否を確認する。大会作業台の保存は試合の開始地点から再開する。
     if (!canSave()) { toast(saveRule); return; }
@@ -91,7 +92,7 @@ async function runAction(action, { canSave, leave, saveRule }) {
   if (action === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
   if (action === "rules") await (await import("../scenes/rule-sheet.js")).openRuleSheet();
   // タイトルへ戻る時も、手動セーブと同じ時だけ保存する。途中の状態は残さず、行動前のオートセーブへ戻す（#638）。
-  if (action === "title") { if (canSave()) save(); leave(); location.reload(); }
+  if (action === "title") await returnToTitle({ canSave, current, leave });
 }
 
 /** MENUボタンの中心（#modal の座標）。開閉の小さな開口の起点（#2688 A13）。ボタンが見えない画面では null */

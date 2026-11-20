@@ -4,6 +4,7 @@
 //   A 煙と縁    … 余白が少しでもあれば出す。
 //   B 縦書きの帯 … 章・街・日付と時間帯を、ステージの端に沿った1列で。余白がステージ上 60px 以上。
 //   C 親指ボタン … 会話の AUTO／SKIP／LOG／用語／設定／「次へ」、地図の LIME／MENU。余白 118px 以上のタッチ端末だけ。
+//                 ミニゲームが自分のボタンを右の親指の位置へ置く場所（sideSlot。フロア営業のシャッフル・フィーバー・TFL54）も、同じ条件で出す。
 // 寸法は主流のスマホ（19:9〜20:9。余白はステージ上で片側 120〜160px）に合わせてある。余白が足りない端末・PC・
 // 16:9 の画面では C を出さず、ステージの中のボタンを今までどおり使う。
 // 試遊ページ（camel-race.html など。共通の画面当て core/stage-fit.js を使う単体ページ）は standalone で呼び、A だけ出す
@@ -61,7 +62,9 @@ function stripCity(value, screen) {
     const progress = flags?._ch4;
     if (flags?._ch4_cleared || progress?.read?.ch4_sumi_return === true
       || (progress?.part === "resolution" && screen === "homecoming")) return HOME_CITY_NAME;
-    if (progress?.part === "resolution") return "ドバイ";
+    // 空港・宿は出発前の2場面の後。配合を決めた翌日以降も、渡航前の地図では実際の街を使う。
+    if (progress?.part === "prologue" && !departurePrep(value) && progress.stage >= 2) return "ドバイ";
+    if (["free", "eve", "tournament", "resolution"].includes(progress?.part)) return "ドバイ";
   }
   // 第5章頭のtonariと打ち上げ。日常が始まった保存では、通常どおり実際の行き先を表示する。
   if (chapter === 5 && !flags?._ch5_region_started && ["prologue", "free"].includes(flags?._ch5?.part)) return HOME_CITY_NAME;
@@ -137,7 +140,7 @@ function build(viewport) {
   );
   pads.auto.setAttribute("aria-pressed", "false");
   pads.skip.setAttribute("aria-pressed", "false");
-  return { l: l.node, r: r.node, strip, chapter, city, when, pads };
+  return { l: l.node, r: r.node, rIn: r.inner, strip, chapter, city, when, pads, slots: {} };
 }
 
 // ---------------------------------------------------------------- 置き場所と段
@@ -168,8 +171,37 @@ function applyMode() {
   // DS風（retro）は自前の操作の面を持ち、ぼかし・グラデーションを使わない様式なので、余白は今までどおりにする。
   const enabled = config.sideArea !== "plain" && root.dataset.look !== "retro" && geom.tier !== "none";
   root.dataset.side = enabled ? geom.tier : "off";
-  root.dataset.sidePad = enabled && !standalone && geom.tier === "wide" && coarsePointer() && padAllowed() ? "on" : "off";
+  const pad = enabled && !standalone && geom.tier === "wide" && coarsePointer() && padAllowed() ? "on" : "off";
+  const changed = root.dataset.sidePad !== pad;
+  root.dataset.sidePad = pad;
   sync();
+  // 親指ボタンの出し入れ（画面の向き・設定）を、自分のボタンを余白へ置いている画面に知らせる（sideSlot）
+  if (changed) document.dispatchEvent(new CustomEvent("sidepadchange", { detail: { on: pad === "on" } }));
+}
+
+/**
+ * 画面が自分のボタンを、右の余白の親指の位置（会話の SKIP・次へ の所）に置くための入れ物（TFL54）。
+ * 親指ボタンが出ない端末（PC・16:9・余白が狭い）では null を返すので、呼んだ側はステージの中に置いたままにする。
+ * owner はその画面の根の要素。owner がページから外れたら、入れ物は空になる（片付け忘れの保険）。
+ * 親指ボタンの出し入れは document の "sidepadchange" で知らせる。
+ */
+export function sideSlot(id, owner) {
+  if (!dom || standalone || html().dataset.sidePad !== "on") return null;
+  let slot = dom.slots[id];
+  if (!slot) {
+    slot = dom.slots[id] = el("div.side-pad.bottom.side-slot", { dataset: { slot: id, test: `side-slot-${id}` } });
+    dom.rIn.append(slot);
+  }
+  slot.owner = owner || null;
+  return slot;
+}
+/** 入れ物を空にして返す（画面を閉じる時）。 */
+export function releaseSideSlot(id) {
+  const slot = dom?.slots[id];
+  if (!slot) return;
+  slot.replaceChildren();
+  slot.owner = null;
+  delete slot.dataset.mode;
 }
 
 /** 設定を変えた時に呼ぶ（scenes/title.js の設定）。 */
@@ -260,6 +292,7 @@ function sync() {
   if (!dom) return;
   updateStrip();
   syncPads();
+  for (const [id, slot] of Object.entries(dom.slots)) if (slot.owner && !slot.owner.isConnected) releaseSideSlot(id);
 }
 function scheduleSync(delay = 80) {
   if (syncTimer || !dom) return;
