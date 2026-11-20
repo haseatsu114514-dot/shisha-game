@@ -24,7 +24,7 @@ async function setup(page, { day = 4, slot = 1, manual = true } = {}) {
       const s = C.core.newGame();
       Object.assign(s, { phase: "daily", day: d, slot: sl, money: 30000, stamina: 100, weatherSeed: 4, baitoCount: 1 });
       Object.assign(s.flags, { _lime_tut: 1, _delivery_minto_done: true, _delivery_adam_done: true,
-        _errand_scout_done: true, _hiyori_meeting_done: true, _hiyori_message_delivered: true, _ev_ageha_cameo: true });
+        _errand_scout_done: true, _hiyori_meeting_done: true, _hiyori_message_delivered: true, _ev_ageha_cameo: true, _ev_salaryman: true });
       s.flags[`_morning_${d}`] = s.flags[`_morning_${d + 1}`] = true;
       s.met.naru = s.met.adam = s.met.minto = true;
       s.flags._spot_guide_naru = s.flags._spot_guide_adam = s.flags._spot_guide_minto = true;
@@ -105,7 +105,14 @@ await suite("tonari-floor", async (check) => {
     await page.locator('[data-test="tonari-baito"]').waitFor();
     assert.equal(await page.locator('[data-test="tonari-baito-floor"]').count(), 0, "最初のシフトの前は、フロアを任されない");
     await page.locator('[data-test="sub-back"]').click();
-    await page.evaluate(() => { C.core.state.baitoCount = 1; });
+    // 本編の「常連さんの話」を次のシフトで読む間（第1章 DAY2 以降・未読。#3819）も、いつものシフトだけ
+    await page.evaluate(() => { C.core.state.baitoCount = 1; C.core.state.flags._ev_salaryman = false; });
+    await page.locator('.map:not(.done) [data-spot="tonari"]').click();
+    await page.locator('[data-test="map-go"]').click();
+    await page.locator('[data-test="tonari-baito"]').waitFor();
+    assert.equal(await page.locator('[data-test="tonari-baito-floor"]').count(), 0, "常連さんの話を読むシフトの前は、フロアを任されない");
+    await page.locator('[data-test="sub-back"]').click();
+    await page.evaluate(() => { C.core.state.flags._ev_salaryman = true; });
     await page.locator('.map:not(.done) [data-spot="tonari"]').click();
     await page.locator('[data-test="map-go"]').click();
     const card = page.locator('[data-test="tonari-baito-floor"]');

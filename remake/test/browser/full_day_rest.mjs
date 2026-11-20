@@ -88,10 +88,12 @@ await suite("full-day-rest", async check => {
       await mapAt(page, 3, 1);
       assert.equal(await page.locator('[data-test="rest-full"]').count(), 0, "健康時の休養は既存1行動");
       await goHome(page, touch); await mapAt(page, 4, 0);
-      const completed = await page.evaluate(() => ({ done: R.core.state.flags._ev_salaryman,
+      // #3819: 常連さんの話は、次に入ったシフトの接客で読む。シフトに入らなかった DAY3 の夜には読まず、
+      // 休養で送った記録のまま残る（DAY7 までシフトに入らなければ DAY8 以降の夜に読む。delivery_night_plan.mjs）
+      const waiting = await page.evaluate(() => ({ done: !!R.core.state.flags._ev_salaryman,
         queue: R.core.state.deferredNightEvents, lines: R.vn.backlog().map(line => line.text) }));
-      assert(completed.done); assert.equal(completed.queue.length, 0);
-      assert.equal(completed.lines.filter(line => line.includes("カウンター頼めるか")).length, 1);
+      assert(!waiting.done); assert.equal(waiting.queue.length, 1); assert.equal(waiting.queue[0].id, "_ev_salaryman");
+      assert.equal(waiting.lines.filter(line => line.includes("カウンター頼めるか")).length, 0);
     }, { ...options, reducedMotion: "reduce" });
 
     await check(`${label}-night-rest-and-fixed-notice`, async page => {

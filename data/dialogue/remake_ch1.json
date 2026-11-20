@@ -1743,27 +1743,14 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "届けたら一服していけ。配達の手当は、バイト代につけとく"
+          "text": "届けたら一服していけ。向こうも、そのつもりで待ってる"
         },
         {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "その前に、C.STATIONの受付で大会の参加登録を済ませてこい"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "なるさんに教えてもらった受付ですね"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "ああ。今夜はシフトに入ってくれ。届け物は上がった帰りに、PEPPERMINT、それからEDENだ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "登録して、夜はシフト、帰りに二軒ですね。行ってきます"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_c_station_registered",
+          "next_true": "dl_route_registered",
+          "next_false": "dl_route_register"
         }
       ],
       "branches": {
@@ -1786,6 +1773,40 @@
           {
             "type": "set_flag",
             "flag": "_delivery_network_told"
+          }
+        ],
+        "dl_route_register": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "登録が済んだら、その足でPEPPERMINT、それからEDENだ"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "今日はシフトはいい。二軒とも届けたら、一度顔を出せ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "登録して、そのついでに二軒ですね。行ってきます"
+          }
+        ],
+        "dl_route_registered": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "PEPPERMINT、それからEDENの順で回ってこい"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "二軒とも届けたら、一度顔を出せ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "PEPPERMINT、それからEDENですね。行ってきます"
           }
         ]
       }
@@ -1848,7 +1869,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "客として寄るなら、仕事が片付いた後に、自分で行ってみろ"
+          "text": "客として寄るなら、用事が片付いてから、自分で行ってみろ"
         },
         {
           "speaker": "hajime",
@@ -1887,9 +1908,35 @@
         ],
         "dl_first": [
           {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_c_station_registered",
+            "next_true": "dl_first_plain",
+            "next_false": "dl_register"
+          }
+        ],
+        "dl_first_plain": [
+          {
             "speaker": "sumi",
             "face": "normal",
             "text": "はじめ。届け物を頼む。頼まれてたミントが入った"
+          }
+        ],
+        "dl_register": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "はじめ。今日はC.STATIONで、大会の参加登録を済ませてこい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "なるさんに教えてもらった受付ですね"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "ああ。で、出るついでに届け物を頼みたい。頼まれてたミントが入った"
           }
         ]
       }
@@ -5465,16 +5512,58 @@
           "text": "はい。PEPPERMINTもEDENも、ちゃんと受け取ってもらえました"
         },
         {
-          "speaker": "sumi",
-          "face": "smile",
-          "text": "ご苦労さん。配達の手当は今日のバイト代に上乗せしてある。これで上がっていいぞ"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_c_station_registered",
+          "next_true": "rep_registered",
+          "next_false": ""
         },
         {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "ありがとうございます。お疲れさまでした"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch1_day2_shift_done",
+          "next_true": "rep_after_shift",
+          "next_false": "rep_free_day"
         }
-      ]
+      ],
+      "branches": {
+        "rep_registered": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "大会の受付も、済ませてきたな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。規則の紙も、もらってきました"
+          }
+        ],
+        "rep_free_day": [
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "ご苦労さん。今日はシフトはいい。あとは好きに使え"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "ありがとうございます。助かります"
+          }
+        ],
+        "rep_after_shift": [
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "ご苦労さん。今日はこれで上がっていいぞ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "ありがとうございます。お疲れさまでした"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "remake_lemon_gift",

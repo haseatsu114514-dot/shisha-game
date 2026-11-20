@@ -2,12 +2,12 @@
 // Actual modules + controlled WebAudio; no real browser/listening claim.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {createSet,makeDeck,playDeck,pauseMix,resumeMix,beatAt,phaseError,gains,updateSet,nudgeDeck,SYNC_BAND,SNAP_BAND,DRIFT_BEATS,SYNC_FLOOR,SLIP_FLOOR,quality,floorStep,scoreTransition,scoreFromErr,scoreFromRatio,rankFromScore,scoreSet,lowCutDb,LOW_CUT_DB,PHRASE,LEAD,GRACE,FOLLOW_BAND,toward,gradeOf,ENTRY_BANDS,dancerPose,guideAt,keyMatch,energyMatch,pickRating,chooseTrack,REQUESTS,PICK_FLOOR,GRADE_FLOOR,RANK_FLOOR,FOLLOW_FLOOR,FLOOR_WARM,FOLLOW_SWEET,MOODS,moodOf,followHint,QUICK_GRID,quickEntry,RANK_LINES} from '../previews/dj/model.mjs';
+import {createSet,makeDeck,playDeck,pauseMix,resumeMix,beatAt,phaseError,gains,updateSet,nudgeDeck,SYNC_BAND,SNAP_BAND,DRIFT_BEATS,SYNC_FLOOR,SLIP_FLOOR,quality,floorStep,scoreTransition,scoreFromErr,scoreFromRatio,rankFromScore,scoreSet,lowCutDb,LOW_CUT_DB,PHRASE,LEAD,GRACE,FOLLOW_BAND,toward,gradeOf,ENTRY_BANDS,PHONES_ALLOWANCE,dancerPose,guideAt,keyMatch,energyMatch,pickRating,chooseTrack,REQUESTS,PICK_FLOOR,GRADE_FLOOR,RANK_FLOOR,FOLLOW_FLOOR,FLOOR_WARM,FOLLOW_SWEET,MOODS,moodOf,followHint,QUICK_GRID,quickEntry,RANK_LINES} from '../previews/dj/model.mjs';
 import {FEEL,applyFeelOverrides} from '../previews/dj/feel.mjs';
 import {DJSfx} from '../previews/dj/sfx.mjs';
 import {renderTrack,peakAt} from '../previews/dj/synth.mjs';
 import {DJAudio} from '../previews/dj/audio.mjs';
-import {TRACKS,SETS,buildTrackData,peakAt as fullPeakAt} from '../previews/dj/tracks.mjs';
+import {TRACKS,SETS,buildTrackData,peakAt as fullPeakAt,previewBeat} from '../previews/dj/tracks.mjs';
 let groups=0;async function check(name,fn){await fn();groups++;console.log('PASS '+name);}
 const near=(a,b,e=1e-7)=>assert(Math.abs(a-b)<e,`${a} != ${b}`);
 const S1=SETS[0],S2=SETS[1],S3=SETS[2];
@@ -51,11 +51,12 @@ await check('#2456 §4 forgiving entry: graded in beats (PERFECT ±½・GOOD ±2
  // aiming at the next line: past the middle of the gap the nearest line is the next one (4-bar lines)
  {const m=createSet(S1,Math.random,quickEntry());playDeck(m,0,0);const a=m.decks[0];assert.equal(m.cue.start,16);updateSet(m,sec(a,25));assert.equal(playDeck(m,1,sec(a,25)),false,'7 beats before the next line');
   assert(playDeck(m,1,sec(a,29)));assert.equal(m.cue.start,32);assert.equal(m.cue.missed,1);assert.equal(m.lastPlay.grade,'OK');assert(m.lastPlay.reserved);}
- // the main game's headphones widen every band by 10 ms
- {const m=createSet(S1,Math.random,{allowance:10});playDeck(m,0,0);const a=m.decks[0],t=sec(a,32)-2.009;updateSet(m,t);assert(playDeck(m,1,t),'2009 ms early is taken with the headphones');assert.equal(m.lastPlay.grade,'OK');}
- {const m=createSet(S1);playDeck(m,0,0);const a=m.decks[0],t=sec(a,32)-2.009;updateSet(m,t);assert.equal(playDeck(m,1,t),false,'and not without');}
+ // the main game's headphones widen every band by a quarter beat (DJK07: PERFECT ±½ → ±¾, OK reaches 4¼ beats)
+ {const m=createSet(S1,Math.random,{allowance:PHONES_ALLOWANCE});playDeck(m,0,0);const a=m.decks[0],t=sec(a,32-4.2);updateSet(m,t);assert(playDeck(m,1,t),'4.2 beats early is taken with the headphones');assert.equal(m.lastPlay.grade,'OK');}
+ {const m=createSet(S1,Math.random,{allowance:PHONES_ALLOWANCE});playDeck(m,0,0);const a=m.decks[0],t=sec(a,32.7);updateSet(m,t);assert(playDeck(m,1,t));assert.equal(m.lastPlay.grade,'PERFECT','¾ beat late is still PERFECT with them');}
+ {const m=createSet(S1);playDeck(m,0,0);const a=m.decks[0],t=sec(a,32-4.2);updateSet(m,t);assert.equal(playDeck(m,1,t),false,'and not without');}
  for(const [ms,g] of [[0,'PERFECT'],[250,'PERFECT'],[251,'GOOD'],[1000,'GOOD'],[1001,'OK'],[2000,'OK'],[-2000,'OK'],[-2001,'EARLY'],[2001,'LATE']])assert.equal(gradeOf(ms),g,`${ms}`);
- assert.equal(gradeOf(250,0,122),'GOOD','the bands are beats: a beat is shorter at 122 BPM');assert.equal(gradeOf(255,10),'PERFECT','headphones');
+ assert.equal(gradeOf(250,0,122),'GOOD','the bands are beats: a beat is shorter at 122 BPM');assert.equal(gradeOf(375,PHONES_ALLOWANCE),'PERFECT','headphones');assert.equal(gradeOf(376,PHONES_ALLOWANCE),'GOOD');
  assert.deepEqual(ENTRY_BANDS,{PERFECT:.5,GOOD:2,OK:4});assert(Object.isFrozen(ENTRY_BANDS));
  const m=createSet(S1);playDeck(m,0,0);playDeck(m,1,sec(m.decks[0],32));assert.equal(playDeck(m,1,20),false);
 });
@@ -182,7 +183,7 @@ await check('scores: thresholds, ビート = share of beats in time, fader = sha
  // 入り (#2456 §4): by the entry's grade; without one, the error in ms is graded in beats at the tempo (120 BPM: 250 / 1000 / 2000 ms)
  for(const [v,p] of [[250,100],[251,85],[1000,85],[1001,60],[2000,60],[2001,30]])assert.equal(scoreTransition({playMs:v,reached:.5,follow:1}).parts[1],p,`${v}`);
  for(const [g,p] of [['PERFECT',100],['GOOD',85],['OK',60],['EARLY',30],['LATE',30]])assert.equal(scoreTransition({playMs:9999,grade:g,reached:.5,follow:1}).parts[1],p,g);
- assert.equal(scoreTransition({playMs:250,bpm:122,reached:.5,follow:1}).parts[1],85);assert.equal(scoreTransition({playMs:260,allowance:10,reached:.5,follow:1}).parts[1],100);
+ assert.equal(scoreTransition({playMs:250,bpm:122,reached:.5,follow:1}).parts[1],85);assert.equal(scoreTransition({playMs:370,allowance:PHONES_ALLOWANCE,reached:.5,follow:1}).parts[1],100);
  for(const [r,p] of [[.9,100],[.89,85],[.75,85],[.74,60],[.5,60],[.49,30],[0,30]])assert.equal(scoreFromRatio(r),p);
  for(const [reached,follow,p] of [[null,1,30],[1.5,1,60],[1.5,.6,60],[1.5,.4,30],[.5,1,100],[1,.8,85],[0,.6,60]])assert.equal(scoreTransition({playMs:0,reached,follow}).parts[2],p,`${reached} ${follow}`);
  const s=scoreTransition({sync:.8,playMs:1500,reached:.2,follow:.8});assert.deepEqual(s.parts,[85,60,85]);assert.equal(s.total,Math.round((85+60+85)/3));assert.equal(s.rank,'A');
@@ -361,6 +362,24 @@ await check('audio (#2456 review 3): a track that failed to load is fetched agai
  assert(a.mix.running&&A.playing,'the set keeps playing');assert(a.voices[0]&&!a.voices[0].stopped,'the playing voice is untouched');assert(!a.mix.decks[1].playing);assert.equal(a.mix.cue.pressed,null);assert.equal(a.cache.has('digitalLemonade'),false,'the failure is not cached');
  failing=false;c.currentTime=sec(A,32.2);a.update();assert(await a.play(1),'▶ again loads it and comes in');assert.deepEqual(tries,['digitalLemonade','digitalLemonade']);assert(a.mix.decks[1].playing);assert.equal(a.mix.lastPlay.grade,'PERFECT');
  await a.dispose();
+});
+await check('試聴 (DJK06・#2456 §3): a card plays its loudest bars for a few seconds on its own path at the playing tempo, the music dips and comes back; another card, a stale load, the end of the clip or a pause',async()=>{
+ // where a card's preview starts: the loudest 2 bars of the loop (bar-aligned), worked out once
+ const fake={nativeBpm:120,firstBeat:0,duration:64,beats:128,peaks:new Float32Array(6400).fill(.1)};for(let i=40*50;i<48*50;i++)fake.peaks[i]=.9;
+ assert.equal(previewBeat(fake),40);assert.equal(fake.previewBeat,40);assert.equal(previewBeat({nativeBpm:120,firstBeat:0,duration:64,beats:128,peaks:new Float32Array(6400)}),0,'a silent track starts at the top');
+ const a=new DJAudio(Context,{setIndex:0,loadTrack});assert.equal(await a.preview('risingTide'),false,'nothing before the set is on');
+ await a.play(0);const c=a.context,master=a.voices[0];c.currentTime=10;a.update();const n=c.sources.length;
+ assert(await a.preview('risingTide'));const p=a.previewing;assert.equal(p.key,'risingTide');assert.equal(c.sources.length,n+1);
+ const t=await a.track('risingTide');near(p.source.started.t,10);near(p.source.started.offset,t.firstBeat+previewBeat(t,FEEL.preview.bars)*60/t.nativeBpm);near(p.source.playbackRate.value,120/122);
+ assert(p.gain.connections.includes(c.destination)&&!p.gain.connections.includes(a.output),'its own path: the meters stay the music on air');near(p.gain.gain.calls[1][0],.18*FEEL.preview.level*10**(5/20));
+ near(a.output.gain.value,.18*FEEL.preview.duck);assert.equal(a.voices[0],master,'the deck on air is not touched');assert(!master.stopped);
+ assert(await a.preview('cutAndDry'));assert(p.source.stopped,'another card stops the first');assert.equal(a.previewing.key,'cutAndDry');near(a.output.gain.value,.18*FEEL.preview.duck);
+ c.currentTime=10+FEEL.preview.seconds+.01;a.update();assert.equal(a.previewing,null,'the few seconds are over');near(a.output.gain.value,.18);
+ a.muted=true;assert(await a.preview('cutAndDry'));near(a.previewing.gain.gain.calls[1][0],0,1e-12);near(a.output.gain.value,0,1e-12);a.muted=false;
+ assert(await a.preview('ravingEnergy'));await a.pause();assert.equal(a.previewing,null,'a pause stops it');assert.equal(await a.preview('ravingEnergy'),false,'and nothing plays while paused');await a.dispose();
+ let release;const slow=async(ctx,key)=>{if(key==='ravingEnergy')await new Promise(r=>release=r);return loadTrack(ctx,key);};
+ const b=new DJAudio(Context,{setIndex:0,loadTrack:slow});await b.play(0);const first=b.preview('ravingEnergy');assert(await b.preview('cutAndDry'));release();
+ assert.equal(await first,false,'a card tapped earlier never plays after a newer one');assert.equal(b.previewing.key,'cutAndDry');await b.dispose();assert.equal(b.previewing,null);
 });
 await check('audio: a slip changes the incoming deck\'s rate and back; the platter re-seeks it onto the beat; the outgoing deck stops; both 選曲 candidates are prefetched and the pick loads once',async()=>{
  loads.length=0;const a=new DJAudio(Context,{setIndex:1,loadTrack,rng:()=>0});await a.play(0);const c=a.context,A=a.mix.decks[0];

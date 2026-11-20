@@ -43,7 +43,10 @@ const strawberryTrialOpen = () => state.chapter === 2 && !!state.flags._ch2_read
 
 // フロア営業（tonari-floor-*.js）: 注文（気分に合うミックスを選ぶ）・炭の調整・ケア・会計を一人で回す営業（ワンオペ）。日当と行動枠はいつものシフトと同じで、
 // 営業の評価に応じて店からの売上ボーナスが付く。バイトとして店に立つ第1〜2章で、最初のシフトを済ませた後に選べる。
-const floorShiftOpen = () => state.chapter <= 2 && (state.baitoCount || 0) >= 1;
+// 本編の「常連さんの話」を、次のシフトの接客として読む間（第1章 DAY2 以降で未読。calendar.js の carriedShiftStory と同じ条件。#3819）は、
+// いつものシフトだけを出す（フロアの札を選んでも話のシフトになってしまうため）。
+const shiftStoryPending = () => state.chapter === 1 && state.day >= 2 && !state.flags._ev_salaryman;
+const floorShiftOpen = () => state.chapter <= 2 && (state.baitoCount || 0) >= 1 && !shiftStoryPending();
 function floorShiftNote(forecast = "", stamp = "") {
   const pay = `${shiftPayNote(state)}＋売上ボーナス`;
   if (!floorProgress().nights) return `【新しい仕事】注文から会計まで、五つの卓を一人で回す。${pay}`;

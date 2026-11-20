@@ -84,9 +84,9 @@ function planDrifts(m) {
   const plan = m.set.drift; if (!plan) return [];
   return plan.windows.map(([from, to]) => ({ at: from + Math.floor(m.rng() * (to - from + 1)), size: (m.rng() < .5 ? -1 : 1) * (plan.size[0] + m.rng() * (plan.size[1] - plan.size[0])), started: false, ended: false }));
 }
-/** allowance: extra ms added to every ▶ timing window (the main game's monitor headphones, VOL07: 10). 0 = the club's house setup. */
+/** allowance: extra beats added to every ▶ timing band (the main game's monitor headphones, VOL07: PHONES_ALLOWANCE). 0 = the club's house setup. */
 export function createSet(set, rng = Math.random, { allowance = 0, grid = PHRASE, lead = LEAD } = {}) {
-  const m = { set, count: set.count, grid: grid > 0 ? grid : PHRASE, lead: lead >= 0 ? lead : LEAD, allowance: Number.isFinite(allowance) && allowance > 0 ? Math.min(30, allowance) : 0, played: [set.tracks[0], set.tracks[1]], rng,
+  const m = { set, count: set.count, grid: grid > 0 ? grid : PHRASE, lead: lead >= 0 ? lead : LEAD, allowance: Number.isFinite(allowance) && allowance > 0 ? Math.min(.5, allowance) : 0, played: [set.tracks[0], set.tracks[1]], rng,
     decks: [makeDeck(set.tracks[0]), makeDeck(set.tracks[1], TRACKS[set.tracks[0]].bpm)],
     running: false, resumeDecks: [], mix: 0, master: 0, phase: 'idle', cue: null, select: null, transitions: [], floor: .5,
     lastPlay: null, lastUpdate: null, fader: null, result: null, pendingPick: null };
@@ -106,16 +106,20 @@ export const FOLLOW_FLOOR = { hit: .003, miss: -.008 };
 export const MOODS = Object.freeze(['帰りそう', 'しらけ気味', '様子見', 'ノってきた', '最高潮']);
 export const moodOf = floor => floor >= .8 ? 4 : floor >= .6 ? 3 : floor >= .4 ? 2 : floor >= .2 ? 1 : 0;
 /** The ▶ timing bands, in beats either side of the entry line (#2456 §4: PERFECT ±½ beat, GOOD ±2, OK ±4 — 120 BPM: ±0.25 / 1 / 2 s).
- *  Past OK the ▶ is not taken. The main game's headphones (allowance, ms) widen every band a little. */
+ *  Past OK the ▶ is not taken. The main game's headphones (allowance, beats) widen every band a little. */
 export const ENTRY_BANDS = Object.freeze({ PERFECT: .5, GOOD: 2, OK: 4 });
 /** The entry part of a transition's score, by grade (EARLY / LATE only for a record made outside the bands). */
 export const ENTRY_SCORE = Object.freeze({ PERFECT: 100, GOOD: 85, OK: 60, EARLY: 30, LATE: 30 });
+/** モニターヘッドホン（VOL07）: every band is wider by a quarter beat either side (PERFECT ±½ → ±¾ = 1.5×, GOOD ±2¼, OK ±4¼).
+ *  2026-11-20 DJK07: it was +10 ms, which meant nothing once the bands became beats. Mirrored by core/hobby-gear.js (DJ_ALLOWANCE_BEATS). */
+export const PHONES_ALLOWANCE = .25;
+/** errorMs: how far the ▶ was from the entry line; allowance: extra beats (headphones); bpm: the playing tempo. */
 export function gradeOf(errorMs, allowance = 0, bpm = 120) {
-  const v = Math.abs(errorMs) - allowance, beat = 60000 / bpm, within = band => v <= ENTRY_BANDS[band] * beat + 1e-9;
+  const beat = 60000 / bpm, v = Math.abs(errorMs) - allowance * beat, within = band => v <= ENTRY_BANDS[band] * beat + 1e-9;
   return within('PERFECT') ? 'PERFECT' : within('GOOD') ? 'GOOD' : within('OK') ? 'OK' : errorMs < 0 ? 'EARLY' : 'LATE';
 }
 /** How far from the entry line (beats) a ▶ is still taken: the OK band plus the headphones. */
-export const entryReach = (m, bpm) => ENTRY_BANDS.OK + (m.allowance || 0) * bpm / 60000;
+export const entryReach = m => ENTRY_BANDS.OK + (m.allowance || 0);
 /** ▶ on a deck. The incoming deck of an open cue comes in on the entry line (early: held for it, late: as if it had been on time);
  *  a ▶ further than the OK band from the nearest line is not taken (false). Anything else starts at once. */
 export function playDeck(m, id, now) {
@@ -126,7 +130,7 @@ export function playDeck(m, id, now) {
     const from = m.decks[c.from], fb = beatAt(from, now);
     // Judge against the nearest entry line: past the middle of the gap the player is aiming at the next one.
     const head = fb - c.start > m.grid / 2 ? c.start + m.grid : c.start;
-    if (Math.abs(fb - head) > entryReach(m, from.bpm)) return false; // まだ早い／間に合わなかった: not taken, nothing lost (the next count comes round)
+    if (Math.abs(fb - head) > entryReach(m)) return false; // まだ早い／間に合わなかった: not taken, nothing lost (the next count comes round)
     if (head !== c.start) { c.start = head; c.end = head + PHRASE; c.missed++; }
     const errorMs = (fb - c.start) * 60 / from.bpm * 1000, grade = gradeOf(errorMs, m.allowance || 0, from.bpm), reserved = fb < c.start;
     // B's beat 0 sits on the entry line: a little early waits for it (予約), a little late starts at once at the beat it would be on by now,
