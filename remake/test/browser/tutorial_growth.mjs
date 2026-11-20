@@ -175,6 +175,8 @@ await suite("tutorial-growth", async check => {
         const bar = document.querySelector(".hud-stamina .hud-bar"), exp = document.querySelector(".hud-exp .hx-bar");
         return {
           track: parseFloat(bar.style.width), fill: parseFloat(bar.querySelector("b").style.width),
+          // DS風の帯（looks/retro）が読む枠の割合
+          ratio: Number(bar.closest(".hud-stamina").dataset.track),
           max: maxStamina(), stamina: core.state.stamina, condition: currentCondition().label,
           equalHeight: getComputedStyle(bar).height === getComputedStyle(exp).height,
           hiddenExp: exp.closest(".hud-exp").hidden, hasGrowth: !!core.state.growth,
@@ -210,6 +212,9 @@ await suite("tutorial-growth", async check => {
     assert.deepEqual([result.filled.stamina, result.filled.fill, result.filled.track], [108, 100, result.lit.track]);
     assert.deepEqual([result.spent.stamina, result.spent.fill, result.spent.track], [84, 78, result.lit.track]);
     assert.deepEqual([result.off.track, result.off.max, result.off.hiddenExp], [120, 100, true]);
+    // 枠の割合は HUD の全長 120px に対する長さ（盤の割り振り前 0.5・盤を無効にした旧方式 1）。DS風の帯が同じ割合で伸びる
+    for (const key of ["legacy", "lit", "off"]) assert.equal(result[key].ratio, Math.round(result[key].track / 120 * 1000) / 1000, key);
+    assert.deepEqual([result.legacy.ratio, result.off.ratio], [0.5, 1]);
     assert.deepEqual(result.restored, result.spent);
   }, phone);
 });

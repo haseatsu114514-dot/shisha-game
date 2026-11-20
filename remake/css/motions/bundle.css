@@ -185,9 +185,12 @@
 .mo-coin-art { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
 .mo-coin-word { position: absolute; left: 50%; top: 548px; transform: translateX(-50%); font-size: 38px; font-weight: 900; letter-spacing: 0.24em; padding-left: 0.24em; white-space: nowrap; }
 .mo-coin-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 8px; transform: translateX(-8px); }
-/* c: tonari の吊り札（#3254 の表と裏の絵）を1回返す。店内は隠さず、上だけ少し落として札を読ませる */
-.mo-shop-shade { position: absolute; inset: 0; background: linear-gradient(#000a, #0004 38%, #0000 62%); }
-.mo-shop-sign { position: absolute; left: 340px; top: -10px; width: 600px; height: 400px; }
+/* c: tonari の吊り札（#3254 の表と裏の絵）を1回返す。店内は隠さず、札の周りだけ少し落として札を読ませる */
+.mo-shop-shade { position: absolute; inset: 0; background: radial-gradient(ellipse 60% 58% at 50% 50%, #000a, #0004 60%, #0000); }
+/* 札は画面の真ん中に出す（オーナー「もっと下げて真ん中に出したい」#3813）。絵（1536×1024）の板は y419〜994 なので、
+   top 84px で板の中心が舞台の高さ 720 のちょうど真ん中（360px）に来る。以前は top -10px（吊り輪が画面の上端・板の中心 266px）。
+   上から下りてくる距離は shift.js の SHOP_SIGN_OFF。 */
+.mo-shop-sign { position: absolute; left: 340px; top: 84px; width: 600px; height: 400px; }
 .mo-shop-swing { position: absolute; inset: 0; transform-origin: 50% 4%; perspective: 1400px; }
 .mo-shop-flip { position: absolute; inset: 0; transform-style: preserve-3d; }
 .mo-shop-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }

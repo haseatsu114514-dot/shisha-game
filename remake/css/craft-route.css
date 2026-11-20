@@ -138,6 +138,21 @@ html body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] 
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .timer-button[data-test="timer-reset"] {
   white-space: normal; text-wrap: balance; overflow-wrap: anywhere; line-height: 1.05;
 }
+/* PC（#3815）: 雑念よけの3つの札も、外寸176×180と当たり判定はそのまま、絵を縮めて名前を札のガラスの内側へ入れる。
+   絵152pxのままだと「リフレッシュ」などの名前が札の下の銅の縁に乗り、はみ出して読みにくかった。 */
+html:not([data-density="phone"]) body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .dodge-controls .dodge-action {
+  justify-content: center; gap: 4px; padding: 6px 6px 22px;
+}
+html:not([data-density="phone"]) body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .dodge-controls .refresh-emblem {
+  width: 116px; height: 116px;
+}
+html:not([data-density="phone"]) body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .dodge-controls .refresh-emblem img {
+  inset: -9px; width: calc(100% + 18px); height: calc(100% + 18px);
+}
+/* 琥珀のリフレッシュは他の琥珀のボタンと同じく、明るい縁取りの墨の文字（黒い影だと沈んで読めない） */
+html:not([data-density="phone"]) body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .dodge-refresh .refresh-copy {
+  text-shadow: 0 1px 0 #ffe9c299;
+}
 /* 札の外寸と弾幕／スティックの座標はそのまま。絵と文字のための高さを分ける。 */
 html[data-density="phone"] body.craft-stage:not(.game-ds) #stage .bench[data-craft-version="sakurai"] .dodge-controls .refresh-emblem {
   width: 104px; height: 104px;

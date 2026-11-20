@@ -262,10 +262,11 @@ for(const choice of ['new','classic']) {
   if(choice==='classic') assert.equal(p.style,'classic');
   const crop=ctx.api.faceCrop(p);
   if(!['da_silva'].includes(id)) assert(crop,`${id}: measured face crop for ${p.style}`);
+  // #3815: 顔の枠は実際の顔の座（正方形）いっぱいに合わせる。座の大きさが場面で違うので、幅・位置は座に対する割合で置く
   if(crop) {
-   assert.equal(image.style.width,`${80/crop[2]}px`);
-   assert.equal(image.style.left,`${-crop[0]*(80/crop[2])}px`);
-   assert.equal(image.style.top,`${-crop[1]*(80/crop[2])}px`);
+   assert.equal(image.style.width,`${100/crop[2]}%`);
+   assert.equal(image.style.left,`${-crop[0]*(100/crop[2])}%`);
+   assert.equal(image.style.top,`${-crop[1]*(100/crop[2])}%`);
   }
   assert(loaded.includes(image.src),'Displayed audience expression is preloaded');
  }

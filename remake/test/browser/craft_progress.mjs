@@ -134,6 +134,17 @@ await suite("craft-progress", async check => {
       if (mobile) await close.tap(); else await page.keyboard.press("Enter");
       await page.waitForFunction(() => document.activeElement?.matches(".bench-guide summary"));
       await page.waitForFunction(() => guideStarts === 1);
+      // #3815: 「リフレッシュ」「アタック」「精密 オフ」の名前は、札の下の銅の縁に乗らずガラスの内側に収まる（PC・横持ちとも）。
+      const copies = await page.locator(".dodge-controls").evaluate(controls => {
+        const stage = document.getElementById("stage"), k = stage.getBoundingClientRect().width / stage.offsetWidth;
+        return [...controls.querySelectorAll(".dodge-action")].map(button => {
+          const b = button.getBoundingClientRect(), copy = button.querySelector(".precision-copy") || button.querySelector(".refresh-copy");
+          const c = copy.getBoundingClientRect();
+          return { name: copy.textContent, bottom: +((b.bottom - c.bottom) / k).toFixed(1), left: +((c.left - b.left) / k).toFixed(1), right: +((b.right - c.right) / k).toFixed(1) };
+        });
+      });
+      assert.equal(copies.length, 3);
+      assert(copies.every(copy => copy.bottom >= 16 && copy.left >= 6 && copy.right >= 6), `Action names stay inside the glass: ${JSON.stringify(copies)}`);
       await page.waitForFunction(() => !document.querySelector('[data-test="dodge-precision"]')?.disabled);
       if (mobile) {
         await assertFits(page, '.dodge-action, .precision-state');
@@ -322,6 +333,97 @@ await suite("craft-progress", async check => {
     await start.tap();
     await page.locator('[data-test="hole-punch"]').waitFor();
   }, { viewport, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
+
+  // #3815 初回レッスンの穴あけ: お手本動画は開かない。スミさんの顔は顔の枠どおりに切り取られ、板の絵のガラスの座の中心に入る。
+  // 「温度帯」の札は温度計の中心。「穴を開ける」の中の目盛りは、押している間だけ浅い→深いへ伸び、離すと空に戻る（判定は変えない）。
+  for (const [size, viewport, touch] of [
+    ["desktop", { width: 1280, height: 720 }, false],
+    ["phone", { width: 844, height: 390 }, true],
+    ["short", { width: 740, height: 320 }, true],
+  ]) await check(`sakurai-lesson-face-label-and-press-meter-${size}`, async page => {
+    await page.evaluate(async () => {
+      const model = await import("./js/core/state.js"); model.newGame();
+      const session = await import("./js/craft/session.js"), holes = await import("./js/craft/holes.js");
+      const { CRAFT_STEPS } = await import("./js/craft/practice.js");
+      window.lessonCS = session.newSession("tutorial");
+      Object.assign(lessonCS, { mix: { double_apple: 9, mint: 3 }, pack: "normal",
+        holeTemplateId: "outer12-middle12", availableHoleTemplateIds: ["outer12-middle12"] });
+      await session.openBench(lessonCS, { steps: CRAFT_STEPS.filter(([id]) => !["setup", "care1", "care2"].includes(id)) }).ready;
+      window.lessonRun = holes.runHoles(lessonCS);
+    });
+    const start = page.locator('[data-test="hole-start"]');
+    await start.waitFor();
+    assert.equal(await page.locator(".bench").getAttribute("data-craft-version"), "sakurai");
+    await page.waitForTimeout(300);
+    assert.equal(await page.locator(".bench-demo-sheet").count(), 0, "穴あけのお手本動画は廃止");
+    await page.waitForFunction(() => { const img = document.querySelector(".audience-face img"); return img?.complete && img.naturalWidth > 0; });
+    const look = await page.evaluate(async () => {
+      const { portraitInfo, faceFrame } = await import("./js/core/data.js");
+      const stage = document.getElementById("stage"), k = stage.getBoundingClientRect().width / stage.offsetWidth;
+      const plate = document.querySelector(".bench-audience"), seat = plate.querySelector(".audience-face"), img = seat.querySelector("img");
+      const portrait = portraitInfo(plate.querySelector(".audience-person").dataset.person, "normal");
+      const box = faceFrame(portrait.folder, portrait.style || "classic").box.map(v => v / 896);
+      const ir = img.getBoundingClientRect(), sr = seat.getBoundingClientRect(), pr = plate.getBoundingClientRect();
+      const meter = document.querySelector(".bench:not(.done) .thermo.mix-temperature"), tube = meter.querySelector(".thermo-tube").getBoundingClientRect();
+      const label = getComputedStyle(meter, "::before"), mr = meter.getBoundingClientRect();
+      const shift = new DOMMatrixReadOnly(label.transform).m41;
+      return { k, crop: [ir.left + box[0] * ir.width - sr.left, ir.top + box[1] * ir.width - sr.top, box[2] * ir.width - sr.width],
+        seat: (sr.left + sr.width / 2 - pr.left) / k, text: (plate.querySelector(".audience-name").getBoundingClientRect().left - pr.left) / k,
+        label: label.content, labelOffset: mr.left + (parseFloat(label.left) + shift + parseFloat(label.width) / 2) * k - (tube.left + tube.right) / 2 };
+    });
+    assert(look.crop.every(px => Math.abs(px) < 1), `The face frame fills the face seat: ${JSON.stringify(look)}`);
+    // 板の絵（voice-plate.webp）のガラスの座の中心は、板の左端から約58px（舞台の座標）。
+    assert(Math.abs(look.seat - 57.9) < 1.5, `The face sits in the plate's glass seat: ${JSON.stringify(look)}`);
+    assert(Math.abs(look.text - 91.6) < 1.5, `The name and line keep their position: ${JSON.stringify(look)}`);
+    assert.equal(look.label, '"温度帯"');
+    assert(Math.abs(look.labelOffset) < 1, `The thermometer label is centred on the tube: ${JSON.stringify(look)}`);
+    if (touch) await start.tap(); else await start.click();
+    await page.locator('[data-test="hole-punch"]').waitFor();
+    await page.waitForFunction(() => !document.querySelector(".countdown"));
+    const meter = await page.locator('[data-test="hole-punch"]').evaluate(async button => {
+      const stage = document.getElementById("stage"), k = stage.getBoundingClientRect().width / stage.offsetWidth;
+      const meter = button.querySelector('[data-test="hole-press-meter"]'), fill = () => meter.querySelector(".hr-press-fill").getBoundingClientRect().width;
+      const b = button.getBoundingClientRect(), m = meter.getBoundingClientRect();
+      const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+      const read = () => ({ fill: fill(), press: Number(button.style.getPropertyValue("--press")), depth: button.dataset.depth || "" });
+      const rest = read();
+      button.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, cancelable: true }));
+      await wait(150); const early = read();
+      await wait(250); const late = read();
+      button.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
+      await new Promise(requestAnimationFrame); await new Promise(requestAnimationFrame);
+      return { rest, early, late, after: read(), width: m.width, height: m.height,
+        // 両端の小さな穴・大きな穴の印（左16px・右27px外側）まで札の中
+        inside: (m.left - b.left) / k >= 16 && (b.right - m.right) / k >= 27 && m.top >= b.top && m.bottom <= b.bottom,
+        punched: document.querySelectorAll(".foil-holes .foil-hole").length };
+    });
+    assert.deepEqual(meter.rest, { fill: 0, press: 0, depth: "" }, JSON.stringify(meter));
+    assert(meter.early.fill > 0 && meter.late.fill > meter.early.fill && meter.late.press > meter.early.press, `The meter grows while held: ${JSON.stringify(meter)}`);
+    assert(meter.late.depth, "The held button exposes the current depth");
+    assert(Math.abs(meter.late.fill - meter.width * meter.late.press) < 1.5, JSON.stringify(meter));
+    assert.deepEqual(meter.after, { fill: 0, press: 0, depth: "" }, "Releasing empties the meter");
+    assert.equal(meter.punched, 1, "The hold still punches exactly one hole");
+    assert(meter.inside && meter.height >= 4, `The meter and its hole marks stay inside the button: ${JSON.stringify(meter)}`);
+    await assertFits(page, '[data-test="hole-punch"]');
+  }, { viewport, isMobile: touch, hasTouch: touch, reducedMotion: "reduce" });
+
+  // #3815 吸い出しの状態の札（ぬるい・適温…）は温度計の中心にそろう（右端そろえで左へずれない）。
+  for (const [size, viewport, touch] of [
+    ["desktop", { width: 1280, height: 720 }, false],
+    ["phone", { width: 844, height: 390 }, true],
+    ["short", { width: 740, height: 320 }, true],
+  ]) await check(`sakurai-pull-label-centered-${size}`, async page => {
+    await init(page, null, "sakurai");
+    await page.evaluate(() => { window.run = T.pull.runPull(cs); });
+    await page.waitForFunction(() => !document.querySelector('[data-test="pull-stop"]')?.disabled && document.querySelector(".pull-read .pull-state")?.textContent);
+    const label = await page.evaluate(() => {
+      const read = document.querySelector(".pull > .thermo .pull-read"), tube = read.closest(".thermo").querySelector(".thermo-tube");
+      const r = read.getBoundingClientRect(), t = tube.getBoundingClientRect();
+      return { text: read.textContent, offset: (r.left + r.right) / 2 - (t.left + t.right) / 2, width: r.width };
+    });
+    assert(Math.abs(label.offset) < 1, `The state label is centred on the thermometer: ${JSON.stringify(label)}`);
+    await assertFits(page, ".pull > .thermo .pull-read");
+  }, { viewport, isMobile: touch, hasTouch: touch, reducedMotion: "reduce" });
 
   await check("failed-pull-stays-on-pull", async page => {
     await init(page);

@@ -283,8 +283,9 @@ await suite("side-area", async check => {
     await idle(page, "next").waitFor({ state: "attached" });
   }, { ...PHONE, pageEntry: `${baseURL}?look=neo` });
 
-  // 選択肢の高さ: 会話欄の上 3択以上は 62px、2択は 112px（舞台上の px）。
-  // 沿革: 当初 94px（オーナー「2択が上すぎる」「もう少し上」2026-11-13・YHK14）→ 2026-11-14 のオーナー指示で 2択をさらに 18px 上げて 112px（#3646）。最新の明示指示が正。
+  // 選択肢の高さ: 会話欄の上 3択以上は 62px、2択は 130px（舞台上の px）。
+  // 沿革: 当初 94px（オーナー「2択が上すぎる」「もう少し上」2026-11-13・YHK14）→ 2026-11-14 のオーナー指示で 2択をさらに 18px 上げて 112px（#3646）
+  // → 2026-11-18 オーナー「やや位置が下なのでもう気持ち上」で さらに 18px 上げて 130px（#3813）。最新の明示指示が正。
   // 余白へ操作を出していても、出していなくても同じ高さ。2択だけを高くしすぎない（#3499 の 142px は高すぎた）。
   for (const [label, options, pads] of [["phone-with-pads", PHONE, true], ["pc", {}, false]]) {
     await check(`choices-height-${label}`, async page => {
@@ -314,8 +315,10 @@ await suite("side-area", async check => {
       assert.equal(gaps[2].pads, pads ? "on" : "off");
       // 余白は ±8px（文字の組みの端数）まで許す
       assert(Math.abs(gaps[3].aboveBox - 62) <= 8, `3択は会話欄の上 62px: ${JSON.stringify(gaps)}`);
-      assert(Math.abs(gaps[2].aboveBox - 112) <= 8, `2択は会話欄の上 112px: ${JSON.stringify(gaps)}`);
-      assert(gaps[2].aboveBox - gaps[3].aboveBox >= 38 && gaps[2].aboveBox - gaps[3].aboveBox <= 62, `2択は3択より少しだけ上: ${JSON.stringify(gaps)}`);
+      assert(Math.abs(gaps[2].aboveBox - 130) <= 8, `2択は会話欄の上 130px: ${JSON.stringify(gaps)}`);
+      // 2択と3択の差は 68px（130−62）。#3813 で差 50px から +18 したのに合わせ、許す幅（±12）ごと動かした
+      assert(gaps[2].aboveBox - gaps[3].aboveBox >= 56 && gaps[2].aboveBox - gaps[3].aboveBox <= 80, `2択は3択より少しだけ上: ${JSON.stringify(gaps)}`);
+      assert(gaps[2].aboveBox < 142, `2択は #3499 の高すぎた 142px より下: ${JSON.stringify(gaps)}`);
       assert(gaps[2].aboveName >= 16, `2択は名前札から離れている: ${JSON.stringify(gaps)}`);
     }, options);
   }

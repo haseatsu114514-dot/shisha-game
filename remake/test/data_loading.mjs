@@ -108,7 +108,7 @@ assert.deepEqual(Array.from(all.DB.lime.slice(-73, -43), m => m.id), [
 // L01〜L43 の増量候補を末尾に足した（番号は固定）
 assert.deepEqual(Array.from(all.DB.lime.slice(-43), m => m.id), Array.from({ length: 43 }, (_, i) => `L${String(i + 1).padStart(2, "0")}`));
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.limeTemplates)), realJSON("../data/lime_messages.json").templates);
-assert.equal(all.DB.lime.length, 162); // 139 + 王煙楼8・アダム2・クラウド2（好感度キャラのLIMEをそろえる）+ 太陽6（RVE03）+ 王煙楼の大会後1（RVE07）+ スティーブ×綾取の後日1（#3468 C案）+ ヌールの帰国後の時差2 + ひよりの夢の話1（SPC11）
+assert.equal(all.DB.lime.length, 166); // 139 + 王煙楼8・アダム2・クラウド2（好感度キャラのLIMEをそろえる）+ 太陽6（RVE03）+ 王煙楼の大会後1（RVE07）+ スティーブ×綾取の後日1（#3468 C案）+ ヌールの帰国後の時差2 + ひよりの夢の話1（SPC11）+ 神崎・クラウドの♥3の外出の誘いと後日4（#3097）
 assert(!all.DB.lime.some(m => m.accept_event === "__hiyori_shop__"));
 assert.equal(all.DB.samechan.lime, undefined);
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
@@ -341,4 +341,4 @@ assert.equal(all.DB.limeTemplates.sumi_baito.accept_reply.stamp, "st_sumi_ack");
 assert.equal(all.DB.limeTemplates.sumi_baito.reasons.length, 3);
 assert(!all.DB.lime.some(m => m.accept_event === "__sumi_baito__"));
 
-assert.deepEqual(Object.keys(all.DB.limeTemplates.temporary_closure_preface).sort(), ["adam", "fallback", "minto", "naru"]);
+assert.deepEqual(Object.keys(all.DB.limeTemplates.temporary_closure_preface).sort(), ["adam", "fallback", "kumicho", "minto", "naru"]); // kumicho: ♥3の外出の誘い（#3097）

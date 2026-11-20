@@ -237,6 +237,8 @@
 .ts-splash[data-metal="plain"] .ts-crest b { background: linear-gradient(180deg, #efe4fb, #c9a7e6 50%, #7d5aa6); -webkit-background-clip: text; background-clip: text; }
 .ts-splash:not(.win) .ts-splash-copy .ts-crest { position: absolute; left: 50%; top: 50%; width: 250px; height: 250px; margin: -128px 0 0 -125px; opacity: 0; }
 .ts-splash.show:not(.win) .ts-splash-copy .ts-crest { opacity: .4; }
+/* 届かなかった時は冠を出さず、月桂冠だけを敷く（冠が上の大会名の帯にかぶらないように） */
+.ts-splash:not(.win) .ts-crest-art img { clip-path: inset(26% 0 0 0); }
 .ts-splash:not(.win) .ts-splash-copy h2 { position: relative; }
 .ts-splash-eyebrow { margin-top: 2px; padding: 3px 18px 3px calc(18px + .3em); border-radius: 99px; background: #150d22cc; font-size: 15px; font-weight: 800; letter-spacing: .3em; color: #f6d68e; opacity: 0; transition: opacity .4s ease .5s; }
 .ts-splash-copy h2 { margin: -18px 0 -16px -.06em; max-width: 100%; font-size: 96px; line-height: 1.5; font-weight: 900; font-style: italic; letter-spacing: .03em; padding: 0 .16em; white-space: nowrap;

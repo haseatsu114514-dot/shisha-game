@@ -1118,15 +1118,53 @@ export function openBoard({ place = null, onExit = null } = {}) {
     SE.boardCommit?.();
     await sleep(360);
     if (!alive()) return;
+    // 極み（盤の能力のマスを全部灯したご褒美）は、それだけの山場を挟む（SBD138③）
+    const peak = committed.find((n) => n.peak && n.board === board);
+    if (peak) await peakFx(peak, alive);
+    if (!alive()) return;
     await commitBanner(root, { count: committed.length, board, rows: perkDeltaRows(committed, before) });
     if (!alive()) return;
     await commitCutIn(root, cutInItems(committed));
+  }
+  /**
+   * 極みの山場（SBD138③）: 盤の灯したマスが紋から近い順に波のように光り、極みのマスに金の大きな火が入って、
+   * 盤の奥が一度明るく燃え、画面の縁に金の光、盤が大きく揺れる。そのあとまとめの札・「盤を極めた」のカットイン
+   */
+  async function peakFx(peak, alive) {
+    const color = HIDANE_COLOR[peak.board], gold = "#ffe08a";
+    // 盤の全体が見えるところまで引いてから、波を走らせる
+    setZoom(ZOOM_MIN);
+    await sleep(120);
+    if (!alive()) return;
+    const lit = boardNodes(board).filter((n) => n.kind === "stat" && !n.peak && g.nodes.includes(n.id))
+      .sort((a, b) => Math.hypot(a.gx, a.gy) - Math.hypot(b.gx, b.gy));
+    const gap = Math.max(12, Math.min(28, 700 / Math.max(1, lit.length)));
+    lit.forEach((n, i) => setTimeout(() => {
+      if (!alive()) return;
+      const p = at(n.gx, n.gy);
+      ringPulse(fxLayer, p.x, p.y, { color, size: 74, duration: 440 });
+      nodeLayer.querySelector(`[data-test="board-node-${n.id}"]`)?.classList.add("lit-now");
+      if (i % 4 === 0) SE.boardSpark?.(Math.min(10, Math.floor(i / 4)));
+    }, i * gap));
+    await sleep(lit.length * gap + 240);
+    if (!alive()) return;
+    const p = at(peak.gx, peak.gy);
+    flashAt(fxLayer, p.x, p.y, { color: gold, size: 240, duration: 520 });
+    igniteAt(fxLayer, p.x, p.y, { color: gold, big: true });
+    ringPulse(fxLayer, p.x, p.y, { color: gold, size: 420, duration: 900, delay: 80 });
+    ringPulse(fxLayer, p.x, p.y, { color: "#fff6dc", size: 640, duration: 1100, delay: 200 });
+    root.classList.add("peak-burst");
+    edgeFlash(root, { color: gold, duration: 1000 });
+    kick(stage, { power: 7, duration: 460 });
+    SE.fanfare?.();
+    await sleep(900);
+    root.classList.remove("peak-burst");
   }
   /** カットインに出すもの（大きい順に3つまで。長く待たせない）: 極み・スキル・✦・色の台座・要のマス・授業 */
   function cutInItems(committed) {
     const items = [];
     for (const n of committed) {
-      if (n.peak) items.push({ rank: 0, tone: "peak", board: n.board, head: "COMPLETE", name: `${BOARD_JA[n.board]}を極めた`, text: "盤の能力のマスを全部灯した", icon: `${ART_DIR}icons/peak.webp`, glyph: "極" });
+      if (n.peak) items.push({ rank: 0, tone: "peak", board: n.board, head: "COMPLETE　盤を極めた", name: `${BOARD_JA[n.board]}を極めた`, text: "盤の能力のマスを全部灯した", icon: `${ART_DIR}icons/peak.webp`, glyph: "極" });
       else if (n.kind === "skill") items.push({ rank: 1, tone: "skill", board: n.board, head: "SKILL　スキルを覚えた", name: n.name, text: n.text, icon: `${ART_DIR}icons/skill_${n.id}.webp`, glyph: n.glyph, art: SKILL_ART[n.id] ? `${ART_DIR}skill_art/${SKILL_ART[n.id]}.webp` : null });
       else if (n.kind === "gate") items.push({ rank: 3, tone: "gate", board: n.board, head: "BREAK　色の台座", name: `${HIDANE_NAME[n.board]}がはまった`, text: `${perkOf(n)?.text || ""}・この先の道が開いた`, icon: `${ART_DIR}hidane_${n.board}.webp`, glyph: "◆" });
       else if (n.kind === "lesson") items.push({ rank: 5, tone: "lesson", board: n.board, head: "LESSON　授業", name: `${whoName(n.who)}に相談できる`, text: `「${n.name}」。次に会った時に話を聞こう`, icon: boardFaceUrl(n.who) || faceIconUrl(n.who, state), glyph: "授" });

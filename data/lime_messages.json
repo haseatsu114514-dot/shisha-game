@@ -4,6 +4,7 @@
       "naru": "今日は店を臨時で閉めたから、午後ちょっと付き合えよ",
       "adam": "今日は店を臨時で休む。午後、共に出かけよう",
       "minto": "今日は臨時でお店を休みにしたの。午後、会えたら嬉しいな",
+      "kumicho": "今日は店を臨時で閉めてやしてね",
       "fallback": "今日は臨時のお休み。午後、会えたらうれしいな"
     },
     "sumi_baito": {
@@ -1232,6 +1233,64 @@
       ]
     },
     {
+      "id": "lime_outing_kumicho_1",
+      "important": true,
+      "sender": "kumicho",
+      "chapter": 2,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "kumicho",
+          "text": "あんちゃん、昼から駅裏の銭湯へ行くんでさ。熱波師が来る日でね"
+        },
+        {
+          "sender": "kumicho",
+          "text": "……あんちゃんも、来なさるかい"
+        }
+      ],
+      "accept_event": "outing_kumicho_1",
+      "accept_text": "昼から行きます",
+      "decline_response": {
+        "sender": "kumicho",
+        "text": "おう、無理はしなさんな。湯は逃げやしねえ"
+      },
+      "closed_on": 0,
+      "reminder_text": "この前の銭湯、今日も昼から行くんでさ。都合がつきゃ、来なせえ",
+      "private_schedule": "holiday_or_temporary"
+    },
+    {
+      "id": "lime_after_outing_kumicho",
+      "sender": "kumicho",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_kumicho",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "kumicho",
+          "text": "この前は、付き合わせちまったな。湯冷めはしなかったかい"
+        },
+        {
+          "sender": "kumicho",
+          "text": "籠を二つ並べるのが、癖になりそうでさ。……次も、下の段からですぜ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "次も下の段から行きます",
+          "response": "それでいい。上の段は、体と相談してからでさ",
+          "affinity": 2
+        },
+        {
+          "text": "牛乳、ごちそうさまでした",
+          "response": "あれも込みで、サウナなんでさ。礼を言うほどのもんじゃねえ",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_rei_first",
       "sender": "rei",
       "chapter": 2,
@@ -1515,6 +1574,71 @@
         {
           "text": "迷ってたんですね",
           "response": "……三回しまった。四回目で、出せた",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_outing_rei_1",
+      "important": true,
+      "sender": "rei",
+      "chapter": 2,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "night",
+      "after_close": true,
+      "messages": [
+        {
+          "sender": "rei",
+          "text": "……今夜、店を閉めたら、駅の向こうのライブハウスの前まで行く"
+        },
+        {
+          "sender": "rei",
+          "text": "中には入らない。扉が開くたびに漏れてくる音を、聞くだけ"
+        },
+        {
+          "sender": "rei",
+          "text": "キミも、来る？"
+        }
+      ],
+      "accept_event": "outing_rei_1",
+      "accept_text": "仕事のあとに行きます",
+      "decline_response": {
+        "sender": "rei",
+        "text": "……うん。音は、また漏れてくる"
+      },
+      "reminder_text": "……この前言った、ライブハウスの前。今夜も、店を閉めたら行く"
+    },
+    {
+      "id": "lime_after_outing_rei",
+      "sender": "rei",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_rei",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "rei",
+          "text": "……この前の、扉の前"
+        },
+        {
+          "sender": "rei",
+          "text": "帰ってから、最後の曲を頭からかけた。外で聞いたのと、少し違って聞こえた"
+        },
+        {
+          "sender": "rei",
+          "text": "キミの拍、少し走ってた"
+        }
+      ],
+      "replies": [
+        {
+          "text": "また連れていってください",
+          "response": "……うん。扉の前なら、いつでも空いてる",
+          "affinity": 2
+        },
+        {
+          "text": "拍、走ってましたか",
+          "response": "……少し。でも、走るのは楽しい時だ",
           "affinity": 1
         }
       ]
