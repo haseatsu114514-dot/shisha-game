@@ -3,6 +3,7 @@
 // 前夜→大会→勝ち側の本線→完了カードまでを、1本のセーブで実UI・実saveだけで通す。
 // 自由行動の途中で実セーブ→リロード→再開し、進行が壊れないことも確認する。
 import assert from "node:assert/strict";
+import path from "node:path";
 import { suite } from "./support.mjs";
 
 const dt = name => `[data-test="${name}"]`;
@@ -83,6 +84,55 @@ async function loadSlot(page, slot) {
 }
 
 await suite("ch4-full-flow", async check => {
+  // #3938: 出発カードの表示名だけ。恋人・応援の判定や保存のIDは元のまま。
+  for (const [label, known, selected, partnered = true] of [
+    ["companion-picker-private-name-unknown", false, "mashiro"],
+    ["companion-picker-private-name-known", true, null],
+    ["companion-picker-no-lover", false, null, false],
+  ]) {
+    await check(label, async page => {
+      await seed(page);
+      if (partnered) await page.evaluate(async known => {
+        const core = await import("./js/core/state.js");
+        Object.assign(core.state, { lovers: ["mashiro", "minto"], loverSince: { mashiro: 35, minto: 8 } });
+        Object.assign(core.state.met, { mashiro: true, minto: true });
+        Object.assign(core.state.affinity, { mashiro: 400, minto: 380 });
+        // 正体を知ることと、本人から私的な呼び名を聞いたことは別。
+        core.state.flags._minto_identity_revealed = true;
+        if (known) core.state.flags._minto_name_known = true;
+        core.save();
+      }, known);
+      await loadSlot(page, 0);
+      await page.locator(dt("ch3-aftermath-complete")).waitFor({ timeout: 60000 });
+      await page.locator(dt("ch3-aftermath-chapter-four")).tap();
+      await page.locator(dt("ch4-companion")).waitFor({ timeout: 60000 });
+      const before = await get(page);
+      const mashiro = page.locator(dt("ch4-companion-mashiro"));
+      const minto = page.locator(dt("ch4-companion-minto"));
+      const none = page.locator(dt("ch4-companion-none"));
+      const artifacts = path.resolve(process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser");
+      await page.screenshot({ path: path.join(artifacts, `${label}-landscape.png`) });
+      if (partnered) {
+        assert.equal(await mashiro.innerText(), "ましろ");
+        assert.equal(await minto.innerText(), known ? "栞" : "みんと");
+      } else {
+        assert.equal(await mashiro.count(), 0);
+        assert.equal(await minto.count(), 0);
+      }
+      assert.equal(await none.innerText(), "同行なし");
+      assert.equal(before.flags._overseas_companion, undefined, "表示だけでは選択・保存しない");
+      await (selected ? mashiro : none).tap();
+      await page.waitForFunction(id => window.__remake.state.flags._overseas_companion?.companion === id, selected);
+      const after = await get(page);
+      assert.deepEqual(after.flags._overseas_companion,
+        { decided: true, companion: selected, supports: !partnered ? ["tsumugi", "mashiro"] : selected ? ["tsumugi", "minto"] : ["tsumugi", "minto", "mashiro"], guests: [] });
+      assert.deepEqual(after.lovers, before.lovers);
+      assert.deepEqual(after.affinity, before.affinity);
+      assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")).flags._overseas_companion),
+        after.flags._overseas_companion);
+    }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: "reduce" });
+  }
+
   await check("chapter-four-prologue-dubai-eve-tournament-and-resolution-on-one-save", async page => {
     await seed(page);
     // 1. タイトルからロード → 第3章の完了カード → 第4章へ

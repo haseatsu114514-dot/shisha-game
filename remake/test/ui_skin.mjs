@@ -38,7 +38,7 @@ try {
     core.state.phase = "daily";
     for (const id of ["minto", "naru", "adam", "tsumugi", "rio"]) core.state.met[id] = true;
     hud.initHud({}); hud.showHud();
-    window.previewMap = map.chooseSpot();
+    window.previewMap = map.chooseSpot({ guide: { pin: "shop", text: "Dr.fookah で仕入れ" } });
     await Promise.all(["panel", "button", "map-pin", "heart", "reward-clean", "gauge-frame", "gauge-fill"].map(async (name) => {
       const image = new Image(); image.src = `img/ui/lounge/${name}.webp`;
       await image.decode();
@@ -50,8 +50,55 @@ try {
   // 地図画面に着いて HUD の幅が出るまで待ってから計測する。
   await page.waitForFunction(() => document.body.dataset.screen === "map"
     && document.querySelector(".hud-stamina")?.getBoundingClientRect().width > 0, null, { timeout: 30000 });
-  for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
+  for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }, { width: 740, height: 320 }]) {
     await setViewportAndFit(page, viewport);
+    const dayCard = await page.evaluate(async () => {
+      await document.fonts.ready;
+      const card = document.querySelector(".hud-card");
+      const label = card.querySelector(".dc-day-label");
+      const day = card.querySelector(".dc-day");
+      const dateText = () => day.textContent;
+      const r = card.getBoundingClientRect();
+      const overlaps = sel => {
+        const pin = document.querySelector(`[data-test="pin-shop"] ${sel}`).getBoundingClientRect();
+        return r.right > pin.left && r.bottom > pin.top && r.left < pin.right && r.top < pin.bottom;
+      };
+      const { state } = T.core;
+      const start = { day: state.day, chapter: state.chapter, flags: state.flags };
+      const dates = [];
+      for (const sample of [
+        { day: 1, chapter: 1, flags: {} },
+        { day: 16, chapter: 3, flags: { _ch3_prep: { startDay: 15, days: 3 } } },
+        { day: 43, chapter: 5, flags: { _ch5: { startDay: 32 } } },
+        { day: 43, chapter: 5, flags: { _ch5: { startDay: 32, matchDay: 67 } } },
+      ]) {
+        Object.assign(state, sample);
+        T.hud.updateHud();
+        const glyphs = document.createRange();
+        glyphs.selectNodeContents(day);
+        dates.push({
+          text: dateText(), description: label.title,
+          fits: glyphs.getBoundingClientRect().right <= day.getBoundingClientRect().right + 1,
+        });
+      }
+      Object.assign(state, start);
+      T.hud.updateHud();
+      const k = parseFloat(getComputedStyle(document.getElementById("stage")).getPropertyValue("--k"));
+      return {
+        label: label.textContent, visible: getComputedStyle(label).display !== "none",
+        px: parseFloat(getComputedStyle(label).fontSize) * k, dates,
+        shopClear: !overlaps(".pin-visual") && !overlaps(".sub-label"),
+      };
+    });
+    assert.equal(dayCard.visible, viewport.width < 900, "the date heading is added only on the phone map");
+    if (dayCard.visible) {
+      assert.equal(dayCard.label, "日付");
+      assert(dayCard.px >= 11.49, "the date is readable at actual phone scale");
+      assert(dayCard.shopClear, "the day card must not cover the Day 1 Dr.fookah pin or caption");
+      assert(dayCard.dates.every(date => date.fits), "dates with or without a chapter deadline fit the card");
+    }
+    assert.deepEqual(dayCard.dates.map(day => day.text), ["1/14", "2/3", "12", "12/36"]);
+    assert.equal(dayCard.dates[0].description, "14日間のうち 1日目");
     const geometry = await page.evaluate(() => {
       document.querySelector(".hud-bar").style.transition = "none";
       const snapshot = () => [".hud-card", ".hud-stamina", ".hud-lime", ".hud-menu"].map((selector) => {

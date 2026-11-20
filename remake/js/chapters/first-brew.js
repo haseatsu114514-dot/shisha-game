@@ -5,6 +5,7 @@ import { state, save } from "../core/state.js";
 import { play } from "../vn/engine.js";
 import { newSession, openBench } from "../craft/session.js";
 import { stepMix } from "../craft/steps.js";
+import { mixExpression } from "../craft/flavor-profile.js";
 import { layers, retire } from "../core/ui.js";
 
 export const FIRST_BREW_FLAVORS = Object.freeze(["lemon", "orange", "mint"]);
@@ -27,10 +28,13 @@ export function firstBrewResponse(mix = {}) {
 
 export function rememberFirstBrew(progress, cs, guided = true) {
   const pull = cs.pull;
-  // 吸い出し自身の判定を記録する。補助制作・旧セーブ・未完了からは推測しない。
-  const finish = guided && cs.pullDone && !cs.failed && !pull?.failed && Number.isFinite(pull?.temp)
-    ? pull.inZone ? "balanced" : pull.under ? "cool" : pull.over ? "hot" : null
-    : null;
+  // 補助制作・旧セーブ・未完了からは推測しない。品質点や丸めた表示値ではなく、提供時の味の実測モデルを見る。
+  let finish = null;
+  if (guided && cs.pullDone && !cs.failed && !pull?.failed && Number.isFinite(pull?.temp)) {
+    const expression = mixExpression(cs, pull.temp);
+    finish = expression.zone === "cold" && expression.aromaScale === 0 ? "dry"
+      : pull.inZone ? "balanced" : pull.under ? "cool" : pull.over ? "hot" : null;
+  }
   progress.firstBrew = { mix: { ...cs.mix }, guided, finish };
   save();
 }
@@ -70,6 +74,14 @@ export async function serveFirstBrew(progress) {
   }
   const original = DB.dialogues.ch1_tutorial_oneesan;
   if (!original?.lines) return false;
+  if (progress.firstBrew.guided && progress.firstBrew.finish === "dry") {
+    const dry = DB.dialogues.ch1_tutorial_oneesan_dry;
+    if (!dry?.lines) return false;
+    // 接客選択の記録と既存の固定報酬キューは従来と同じ。煙を吸うCG・配合ごとの味・褒められた感想は出さない。
+    const cues = original.lines.filter(line => line.type === "apply");
+    const result = await play({ ...original, lines: [...dry.lines, ...cues], branches: dry.branches }, { bg: TONARI });
+    return !result?.cancelled && state === owner;
+  }
   const serveAt = original.lines.findIndex(l => l.type === "show_cg" && l.cg_id === "cg_oneesan_first_smoke");
   if (serveAt < 0) throw new Error("First customer serving scene is missing");
   const lines = original.lines.slice(serveAt);

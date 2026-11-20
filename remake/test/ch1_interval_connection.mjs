@@ -55,7 +55,7 @@ const sequence = [
   'const lobby = BG("bg_c_station_lobby");',
   'inScene(lobby, () => play({ ...after, lines: after.lines.slice(0, tonariAt) }, { bg: lobby })),',
   'id: "_sys_sumi_scoresheet"', 'title: "表彰式のあと"',
-  'inScene(TONARI_N, () => play({ ...after, lines: after.lines.slice(tonariAt) })),',
+  'inScene(TONARI_N, () => play({ ...after, lines: withMix(after.lines.slice(tonariAt)) })),',
   'inScene(TONARI_N, () => play("interval_day1_naru_lime")),', 'inScene(TONARI_N, () => gainStat("guts", 1)),',
   'id: "_sys_unknown_recorded"', 'title: "優勝の夜"',
   'inScene(BG("bg_home_day"), () => play("interval_day1_morning_win")),', 'inScene(BG("kemurikusa"), () => play("ch1_naru_promise")),',

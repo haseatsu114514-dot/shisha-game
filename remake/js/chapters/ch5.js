@@ -712,7 +712,7 @@ function renderComplete(owner) {
 
 function reflectionActions(owner) {
   return canReflect() ? [button(owner, "観音堂で盤を開く（時間は進まない）", "reflect", async () => {
-    await reflectAtSpot("kannon", { boardOnly: true });
+    await reflectAtSpot("kannon");
     if (current(owner)) await renderStage(owner);
   })] : [];
 }

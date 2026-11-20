@@ -100,7 +100,8 @@ await suite('minto-delivery',async check=>{
     return {points:s.affinity.minto||0,carry:s.affinityCarry.minto||0,met:s.met.minto,pending:s.flags._affinity_first_meeting_pending_minto,story:s.story.minto||0,visits:s.visits.minto||0};
    },scene);
    assert.deepEqual(delivered,{points:0,carry:0,met:true,pending:true,story:0,visits:0});
-   await page.reload({waitUntil:'load'});
+   // 再読込の直後は起動処理（#boot）が会話層を作り直している。終わるまで待ってから保存を読む（support.mjs の起動待ちと同じ）。
+   await page.reload({waitUntil:'load'});await page.locator('[data-test="title-new"]').waitFor({timeout:30000});await page.locator('#boot').waitFor({state:'detached'});
    const first=await page.evaluate(async()=>{
     const core=await import('./js/core/state.js'),vn=await import('./js/vn/engine.js'),stats=await import('./js/core/stats.js'),spots=await import('./js/daily/spots.js');
     if(!core.load())throw Error('delivery save did not load');
@@ -112,7 +113,7 @@ await suite('minto-delivery',async check=>{
    assert.equal(first.remote.pending,true,'LIME must not consume the first voluntary visit');
    assert(first.remote.points+first.remote.carry>0,'LIME still uses its existing reward formula');
    assert.deepEqual({...first,remote:undefined},{remote:undefined,points:9,carry:0,pending:false,story:1,visits:1});
-   await page.reload({waitUntil:'load'});
+   await page.reload({waitUntil:'load'});await page.locator('[data-test="title-new"]').waitFor({timeout:30000});await page.locator('#boot').waitFor({state:'detached'});
    const repeat=await page.evaluate(async()=>{
     const core=await import('./js/core/state.js'),vn=await import('./js/vn/engine.js'),spots=await import('./js/daily/spots.js');
     if(!core.load())throw Error('first voluntary visit save did not load');

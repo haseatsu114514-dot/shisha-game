@@ -375,6 +375,22 @@ export function chapterFourStoryNightDue(value) {
   return next && progress.day >= next.day ? next : null;
 }
 
+// DAY12の通常の夜に買い出しまでしか届かなかった場合だけ、同じ夜の宿で電話に出られる。
+export const CH4_SUMI_CALL = "ch4_story_sumi_call";
+export function chapterFourLastNightCall(value) {
+  if (!chapterFourDaily(value)) return null;
+  const p = chapterFourProgress(value);
+  if (p.part !== "free" || value.slot !== 2 || value.day !== p.startDay + CH4_DAILY_EVE_DAY - 2
+    || !["pending", "skipped"].includes(p.lastNightCall)) return null;
+  return p.lastNightCall === "pending" && chapterFourStoryNightDue(value)?.id === CH4_SUMI_CALL ? "pending" : "closed";
+}
+
+export function skipChapterFourLastNightCall(value) {
+  if (chapterFourLastNightCall(value) !== "pending") return false;
+  chapterFourProgress(value).lastNightCall = "skipped";
+  return true;
+}
+
 /**
  * 前夜祭の日に読む、別便の応援の到着場面（未読だけ。{id, scene} を OVERSEAS_HEROINES の順）。
  * 出発前に決めた supports（同行者を除く恋人・♥5の友人・第3章クリア済みのましろ・つむぎ）だけが対象。恋人は恋人版、恋人でない人は友人版。
@@ -460,6 +476,10 @@ export function completeChapterFourScene(value, id) {
     // ドバイの本筋の夜（SPC27）: 今夜の分だけ確定できる。
     if (chapterFourStoryNightDue(value)?.id === id) {
       progress.read[id] = true;
+      if (id === "ch4_story_market" && chapterFourDaily(value) && value.slot === 2
+        && progress.day === CH4_DAILY_EVE_DAY - 1 && chapterFourStoryNightDue(value)?.id === CH4_SUMI_CALL) {
+        progress.lastNightCall = "pending";
+      }
       return true;
     }
     if (chapterFourDaily(value) && id === "ch4_stranger_first_forced_in") {
