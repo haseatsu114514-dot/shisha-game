@@ -39,7 +39,7 @@ const values = {
   "scene-motions.js": { shiftClose: async () => {} },
   "bus.js": { emit() {}, on: () => () => {} },
   "growth.js": { EXP: { tutorial: 10 }, gainExp: () => 0, growthEnabled: () => false, hidaneTotal: () => 0, readyLessons: () => [], consultLessons: async () => [] },
-  "growth-effects.js": { callingSalesBonus: () => 0 }, // このスイートは盤無効の既存の接客・給料を検証する。
+  "growth-effects.js": { callingSalesBonus: () => 0, growthSkill: () => false, SKILL_TUNING: { baitoPay: .1 } }, // このスイートは盤無効の既存の接客・給料を検証する。
   "reel.js": { installReel() {} },
   "weather.js": { isRainy: () => rainy, weatherOf: () => (rainy ? "rain" : "sun"), RAIN_BAITO: ["baito_rainy_day", "baito_tsumugi_rain"], RAIN_BAITO_BONUS: 500, RAIN_SPOT_TEXTS: {} },
 };
