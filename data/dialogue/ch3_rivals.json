@@ -3046,6 +3046,254 @@
           "face": "smile"
         }
       ]
+    },
+    {
+      "dialogue_id": "outing_saku_1",
+      "comment": "#3097 PR-H（計画 §3-3 の 3-2）。綾取の♥3の友人の外出。公園のベンチで、きゅうりにはちみつを垂らしてメロンを出す（味の錯覚と、そのフレーバーを使わない再現・AFR06）を、店の外の遊びとして見せる。動機の言葉（『嘘つきのまま、人を幸せにできる』）・幼い頃の話・ましろ・大会・時間帯には触れない（♥4 の ch3_saku_liar を先取りしない）。外れた方もノートに書く癖（ch3_saku_lime）で結ぶ。入口は二つ: 東京の日常ループでは LIME lime_outing_saku_1 の昼（この周回の LIME 交換の後・♥5の締めくくりの前・daily/phone.js）、届かなかった保存は大会後の寄り道（ch3-aftermath-progress.js）。どちらから読んでも通るよう、待ち合わせの経緯と時間帯を言わない。好感度・能力の行は置かない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tokyo_park_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "公園の入口で、綾取が小さな紙袋を提げて待っていた。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "来た来た。今日の君は、試食係ね",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "試食係、ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "紙袋の中には、きゅうりが一本と、スティックのはちみつが二本だけ。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "材料、先に見せちゃった。伏せる方がよかった？",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "見ても、何ができるのか全然わかりません",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "それでいい。見当がつかない人の方が、驚き方がきれいなんだ",
+          "face": "smug"
+        },
+        {
+          "speaker": "",
+          "text": "池のそばのベンチで、綾取はきゅうりを手で二つに折り、断面にはちみつを細く垂らした。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "はい、半分。目は閉じた方が、たぶん当たる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "かじる。青い匂いが抜けたあとに、甘さが追いかけてきた。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "……メロン？",
+          "face": "surprise"
+        },
+        {
+          "speaker": "saku",
+          "text": "正解。メロンは、一個も買ってない",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "きゅうりの味も、ちゃんとするのに",
+          "face": "surprise"
+        },
+        {
+          "speaker": "saku",
+          "text": "両方するのがいいんだ。全部メロンになったら、ただのメロンでしょ",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "煙でも同じ。入れてない味は、入ってる味の隣にしか立たない",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "綾取さんの一台も、こういうふうに作ってるんですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "saku",
+          "text": "種明かしは、ここまで。残りは、店の棚に伏せてある",
+          "face": "smug"
+        },
+        {
+          "speaker": "",
+          "text": "綾取も自分の半分をかじって、少しだけ眉を寄せた。",
+          "face": ""
+        },
+        {
+          "speaker": "saku",
+          "text": "……僕の方、はちみつが足りなかった。ただのきゅうりだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "外れた方も、ノートに書きますか",
+          "face": "smile"
+        },
+        {
+          "speaker": "saku",
+          "text": "書くよ。『試食係はメロン。僕はきゅうり』",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "はちみつの空き袋を、綾取は丁寧に二つ折りにして、腰のポーチへしまった。",
+          "face": ""
+        }
+      ]
+    },
+    {
+      "dialogue_id": "outing_steve_1",
+      "comment": "#3097 PR-H（計画 §3-3 の 3-2）。スティーブの♥3の友人の外出。池のある公園の貸しボート（池の弁天堂が見える）。たった一つのタイマーは店に置いてきて、三十分を自分で数えるつもりが、二人で時間を忘れる（タイマーは一つまで・AFR07。この場面には出さない）。客の顔の知らせ（LIME交換）や、空の席・トング・伏せたタイマーの段階会話は繰り返さない。味の言葉は使わない（味覚が戻る前でも読める）。ハガル・マウンテンミスト・大会・時間帯には触れない。入口は二つ: 東京の日常ループでは LIME lime_outing_steve_1 の昼（この周回の LIME 交換の後・♥5の締めくくりの前・daily/phone.js）、届かなかった保存は大会後の寄り道（ch3-aftermath-progress.js）。好感度・能力の行は置かない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tokyo_park_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "公園の池のほとりで、柄シャツのスティーブが大きく手を振っていた。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "ヘイ、ハジメ。来たか。今日は偵察も客もなしだ",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ボートに乗るんですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "イエス。前から乗りたかった。一人だと、池の真ん中ですることがない",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "貸しボートは三十分。係の人が、番号の書かれた札を渡してくれた。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "スティーブはオールを握ると、数ミリずつ水をなでるように漕ぎはじめた。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "……スティーブさん、それだと岸から離れません",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "分かってる。強く漕ぐと、水がはねる。はねると、急いだ気がする",
+          "face": "serious"
+        },
+        {
+          "speaker": "hajime",
+          "text": "漕ぐの、代わりましょうか",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "漕ぎ手を替わると、ボートはやっと池の真ん中へ出た。水の向こうに、弁天堂の屋根が見える。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "スティーブが、胸のポケットを軽く叩いた。中は、空だ。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "タイマーは、店に置いてきた。三十分、自分で数えられるか試したくてな",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "今も、数えてるんですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "最初はな。……途中から、鳥を見てた",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "水鳥が一羽、ボートのすぐ横を通っていく。スティーブは、それが岸に着くまで黙って見ていた。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "ここには、熱も秒もない。俺は、何も動かさなくていい",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "店にいる時より、肩が下がってますね",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "……そうか？　ハジメは、俺の肩まで見てるのか",
+          "face": "surprise"
+        },
+        {
+          "speaker": "",
+          "text": "そのとき、岸のほうから係の人の声がした。呼ばれているのは、俺たちの札の番号だ。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "三十分、とっくに過ぎてるみたいです",
+          "face": "surprise"
+        },
+        {
+          "speaker": "steve",
+          "text": "ノー、ノー……俺が、時間を忘れた？",
+          "face": "surprise"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブは大きな手で額を押さえて、声を上げて笑った。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "延びた分の代金は、スティーブが払ってくれた。",
+          "face": ""
+        },
+        {
+          "speaker": "steve",
+          "text": "ハジメと乗ると、秒が消えるな。……今日のカードは、余白だけだ",
+          "face": "smile"
+        }
+      ]
     }
   ]
 }
