@@ -9,6 +9,8 @@ import { newDayTrial, rollDayTrial, stopDayTrial } from "./day-trial.js";
 import { loadTrpgLibrary, preloadTrpgAssets, runTrpg } from "./index.js";
 import { playTrpgEntrance } from "./entrance.js";
 import { shelfHelpButton } from "./shelf-help.js";
+import { openTrpgBookshelf } from "./play-record-view.js";
+import { saveTrpgReplay } from "./play-record.js";
 import { displayName, portraitUrl, sceneArt } from "./presentation.js";
 import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable, keepTrpgBookmark, trpgBookmarkFor, clubRecord, clubGain, trpgBookProgress } from "./campaign.js";
 
@@ -29,7 +31,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
   const owner = getState();
   const visitStamp = owner && `${owner.chapter}:${owner.day}:${owner.slot}`;
   let trial = null;
-  let reflection = null;
+  let reflection = null, archiveStatus = "";
   let justFounded = false; // 設立した直後だけ、気づけば部長になっていた場面を出す
   let foundingChoice = null;
   let disposed = false, resources = null, busy = false, completed = false, root = null, entrance = null, lastGain = null;
@@ -65,11 +67,17 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       el("small", { text: name(line.speaker) }), line.speaker === "hajime" && line.text.startsWith("（") ? line.text : "「" + line.text + "」",
     ]) : el("p.trpg-club-line.trpg-club-narration", { text: line.text });
     root = el("section.trpg-root.trpg-campaign", { tabindex: "-1", dataset: { phase: "campaign" } });
+    const bookshelf = button("本棚", "trpg-bookshelf-open", () => openTrpgBookshelf(root, state, scenarios, characters));
+    bookshelf.setAttribute("aria-label", "本棚（過去プレイを再生）");
+    bookshelf.replaceChildren(el("span", { style: { display: "grid" } }, [
+      el("span", { text: "本棚" }), el("small", { text: "過去プレイを再生" }),
+    ]));
     root.append(el("header.trpg-campaign-header", [
       el("div", [!readOnly ? storeLogo("trpg_bar", { width: 130, height: 72 }) : null, el("span.trpg-kicker", { text: readOnly ? "TABLETOP MEMORIES" : "ボドゲカフェ / TABLETOP CAFE" }),
         el("h1", { text: readOnly ? "遊んだ記録" : completed ? "今夜の卓を終えました" : daytime ? "昼の試遊と本選び" : "今夜、誰と物語を囲む？" })]),
       el("div.trpg-campaign-meta", [el("span", { text: state ? `CH.${state.chapter} · DAY ${chapterDay(state)} · ${yen(state.money)}` : "まだ記録がありません" }),
         shelfHelpButton(() => root, { title: "ボドゲカフェの遊び方", sections: SHOP_HELP, test: "trpg-campaign-help" }),
+        bookshelf,
         button(closeLabel, "trpg-campaign-close", close)]),
     ]));
     if (!readOnly) root.append(venueHost("sai", hostLine(completed ? reflection || "after_table" : trial
@@ -77,7 +85,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       // 入口でサイと話したばかりの来店（daily/venue-arrivals.js）は、挨拶を繰り返さず棚へ促す一言にする
       : daytime ? seated("day") : seated("night")), resources));
     if (completed) {
-      root.append(el("p.trpg-campaign-notice", { text: "遊んだ記録は、物語の一覧で見返せます。" }));
+      if (archiveStatus) root.append(el("p.trpg-campaign-notice", { role: "status", text: archiveStatus }));
       if (lastGain) root.append(clubBanner(clubRecord(state, catalog), lastGain));
       if (!reflection) root.append(el("div.trpg-trial-actions", [
         button("うまくいった場面を話す", "trpg-reflect-good", () => { reflection = "after_table_good"; render(); }),
@@ -291,12 +299,31 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         tutorial: !state.flags?._trpg_tutorial_seen,
         onComplete: result => {
           const before = clubRecord(state, resources.catalog);
-          if (!disposed && getState() === state && completeTrpgTable(state, resources.catalog, scenario, ticket, result, { nightBusy: nightBusy() })) {
+          let makeReplay = null;
+          if (!disposed && getState() === state && completeTrpgTable(state, resources.catalog, scenario, ticket, result, {
+            nightBusy: nightBusy(), recordTable: table, characters: resources.characters, onReplayOffer: build => { makeReplay = build; },
+          })) {
             state.flags ||= {}; state.flags._trpg_tutorial_seen = true;
-            completed = true; save();
-            // 今夜の卓で部の実績がどれだけ増えたか。結末の画面と、カフェに戻った時の札に出す。
+            completed = true;
+            // 進行・報酬・夜の枠はリプレイの選択より前に一度だけ保存。LOADで選択を失っても卓は完了済み。
+            const progressSaved = save() !== false;
+            archiveStatus = progressSaved ? "" : "ゲームの進行を保存できませんでした。";
             lastGain = clubGain(before, clubRecord(state, resources.catalog));
-            return { club: lastGain };
+            let decided = false;
+            return { club: lastGain, chooseReplay: makeReplay && (keep => {
+              if (decided || disposed || getState() !== state) return "";
+              decided = true;
+              if (!keep) {
+                if (progressSaved) archiveStatus = "リプレイは保存しませんでした。";
+                return archiveStatus;
+              }
+              let outcome = "failed";
+              try { outcome = saveTrpgReplay(state, scenario.id, makeReplay(), save); } catch { /* 完了済みの進行は残す */ }
+              if (outcome === "saved") archiveStatus = "本棚にリプレイを保存しました。";
+              else if (outcome === "full") archiveStatus += "本棚の保存上限に達しました。前のリプレイは残っています。";
+              else if (outcome === "failed") archiveStatus += "本棚にリプレイを保存できませんでした。";
+              return archiveStatus;
+            }) };
           }
           return null;
         } });

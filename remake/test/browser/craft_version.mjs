@@ -67,7 +67,7 @@ await suite("craft-version", async (check) => {
     assert.equal(evidence.care, "sakurai");
     assert.equal(evidence.flagsUnchanged, true);
     assert.equal(evidence.config, "renewal", "旧設定は保存したまま、通常制作にだけ桜井版を使う");
-    assert.equal(evidence.schema, 28);
+    assert.equal(evidence.schema, 29);
   }, { pageEntry: `${baseURL}?craft=renewal&vote=classic` });
 
   await check("resume-serialized-bench-keeps-recorded-scores", async (page) => {

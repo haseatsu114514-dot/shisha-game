@@ -1,5 +1,6 @@
 import { playEntrance } from "./tournament-entrance.js";
 import { defeatFade } from "../core/transitions.js";
+import { sceneMoment } from "../core/scene-motions.js";
 import { advanceTournamentCraft } from "./tournament-craft-runner.js";
 // HAZE: NATIONAL TOKYO。四人同時の一試合を、確定した制作工程と票から再開する。
 import { createChapterActions } from "../core/chapter-actions.js";
@@ -528,20 +529,36 @@ async function drive(owner) {
       // この場で結果が決まった（LOAD後の再表示ではない）。結果の板の前に10カウントを流す印（TSH10）。
       owner.revealNow = progress().attempts ?? true;
       checkpoint("result");
+      owner.hush = true; // この場で発表へ進んだ時だけ、結果の前に会場の光を絞る（#3965）。再開では出さない
     } else if (p.stage === "votes") { renderVotes(owner); return; }
     else if (p.stage === "result") {
       // この場で結果を出したことを覚える。敗北の入り（#2688 A19）は、この場で負けが決まった時だけ出す
       if (p.result) owner.resultShown = true;
+      playBgm("bgm_judging");
       // この場で結果が決まった時だけ、板の前に10カウント（TSH10）。LOAD後の再表示・旧保存では流さない。
       const reveal = !!p.result && owner.revealNow === (p.attempts ?? true);
       owner.revealNow = null;
+      // この場で発表へ進んだ時だけ、結果の前に会場の光を絞る（#3965 TMG62）。
+      const hush = owner.hush;
+      owner.hush = false;
       if (reveal) {
         hud(owner);
-        await resultCountdown(owner.cs || clone(p.craft), countdownKind(p.result.rank), null, { contestants: CONTESTANTS,
-          event: "HAZE: NATIONAL TOKYO", sub: "審査員3人、最後の持ち点の行方。", nameOf: who => displayName(who, state) });
+        // 光が絞られて暗くなった所に10カウントの画面を置き、光が開くと数え始める（TMG62 と TSH10 をつなぐ）。
+        let counting = null;
+        const startCount = () => {
+          counting = resultCountdown(owner.cs || clone(p.craft), countdownKind(p.result.rank), null, { contestants: CONTESTANTS,
+            event: "HAZE: NATIONAL TOKYO", sub: "審査員3人、最後の持ち点の行方。", nameOf: who => displayName(who, state) });
+        };
+        if (hush) await sceneMoment("stageHush", startCount);
+        else startCount();
+        await counting;
         if (!live(owner)) return;
+        playBgm("bgm_judging"); renderVotes(owner, true, { splash: true }); return;
       }
-      playBgm("bgm_judging"); renderVotes(owner, true, { splash: reveal }); return;
+      // 光を絞り、暗い間に結果の画面を出す。見せるだけで、順位・点・保存地点は変えない
+      if (hush) await sceneMoment("stageHush", () => { if (live(owner)) renderVotes(owner, true); });
+      else renderVotes(owner, true);
+      return;
     }
     else if (p.stage === "defeat") { await renderDefeat(owner); return; }
     else if (p.stage === "victory") {
