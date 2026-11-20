@@ -7,6 +7,8 @@ import { suite } from "./support.mjs";
 
 const touch = { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true };
 const t = (key) => `[data-test="tonari-floor-${key}"]`;
+// 画面を横切る帯（営業開始・フィーバー・営業終了）が消えるまで待つ。帯が出ている間は、卓の札と手応えの言葉を出さない
+const afterBand = (page) => page.waitForFunction(() => document.querySelector(".tonari-floor")?.dataset.band !== "true", null, { timeout: 5000 });
 const shots = process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser";
 
 async function setup(page, { day = 4, slot = 1, manual = true } = {}) {
@@ -204,6 +206,12 @@ await suite("tonari-floor", async (check) => {
       const wishLabel = (id) => page.evaluate((id) => C.floorData.WISHES.find((w) => w.id === id).label, id);
       await page.locator(t("option-start")).click();
       assert.equal(await api((a) => a.mode()), "live");
+      // 営業開始の帯が出ている間は、卓の札・番号札・手応えの言葉を出さない（帯の文字と重ねない）。右の列は、帯より手前にある
+      assert.deepEqual(await page.evaluate(() => { const root = document.querySelector(".tonari-floor"), z = (sel) => Number(getComputedStyle(root.querySelector(sel)).zIndex);
+        return [root.dataset.band, getComputedStyle(root.querySelector(".tf-spots")).opacity, root.querySelector(".tf-cutin").dataset.on, z(".tf-presets") > z(".tf-cutin"), z(".tf-layer") > z(".tf-presets")]; }),
+        ["true", "0", "true", true, true]);
+      await afterBand(page);
+      assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector(".tf-spots")).opacity), "1");
       // 空席の卓は、札を出さない（番号札だけ）。出す先が無い間は、右の列に卓の番号を出さない
       assert.equal(await spot(1).locator(".tf-bubble").isVisible(), false);
       assert.equal(await spot(1).locator(".tf-plate").innerText(), "1");
@@ -409,7 +417,9 @@ await suite("tonari-floor", async (check) => {
       await page.evaluate(() => C.others([1, 2]));
       assert.equal(await api((a) => a.state().tables[2].make.active), false);
       assert.deepEqual([await tagText(3), await spot(3).getAttribute("data-queued")], ["3", "true"], "順番待ちの札は、卓番号と時計の印だけ");
-      assert.match(await page.locator(".tf-making-more").innerText(), /待ち 1台/);
+      // 順番待ちの台数は、器の印の隅の数（＋N）。仕込み中の枠の中に収まり、行の文字に被らない
+      assert.deepEqual(await page.locator(".tf-making-more").evaluate((n) => { const r = n.getBoundingClientRect(), box = document.querySelector(".tf-making").getBoundingClientRect(), list = document.querySelector(".tf-making-list").getBoundingClientRect();
+        return [n.textContent, r.left >= box.left && r.right <= list.left + 1 && r.bottom <= box.bottom + 1]; }), ["待ち＋1台", true]);
       assert.equal(await page.locator(".tf-making-row:not(.empty)").count(), 2);
       // 出来上がると、自動で卓へ運ばれる。初回のドリンクとチャージは伝票に入る。満足の顔は ◎○△ の形の中の顔
       await until("s.tables[0].phase === 'enjoy'", [1]);
@@ -440,10 +450,10 @@ await suite("tonari-floor", async (check) => {
       // 炭の調整: 炭の残りが少なくなったら、頼まれる前に自分から行く（卓を押すだけ）。まだ残っているうちは変わらない
       await api((a) => { const x = a.state().tables[0]; x.wants = []; x.mood = 70; });
       await table(1).click();
-      assert.equal(await spot(1).locator(".tf-pop").last().innerText(), "炭はまだ大丈夫");
+      assert.equal(await spot(1).locator(".tf-pop").last().innerText(), "炭はまだ平気");
       // 同じ卓に続けて言葉が出ても、重ねない（新しい言葉に替わる）
       await table(1).click();
-      assert.deepEqual([await spot(1).locator(".tf-pop").count(), await spot(1).locator(".tf-pop").innerText()], [1, "炭はまだ大丈夫"]);
+      assert.deepEqual([await spot(1).locator(".tf-pop").count(), await spot(1).locator(".tf-pop").innerText()], [1, "炭はまだ平気"]);
       assert.equal(await api((a) => a.state().counts.tend), 0);
       await until("C.model.floorTendDue(s, 1)", [1]);
       assert.match(await tagText(1), /^炭の調整 /);
@@ -526,6 +536,10 @@ await suite("tonari-floor", async (check) => {
       await page.locator(t("bonus")).click({ force: true });
       assert.equal(await page.locator(t("screen")).getAttribute("data-fever"), "on");
       assert.match(await page.locator(".tf-cutin").innerText(), /FEVER TIME!\s*Lv1/);
+      // フィーバーの帯が出ている間も、卓の札は出さない。帯の文字は、右の列まで届かない
+      assert.deepEqual(await page.evaluate(() => { const root = document.querySelector(".tonari-floor"), side = root.querySelector(".tf-presets").getBoundingClientRect();
+        return [root.dataset.band, getComputedStyle(root.querySelector(".tf-spots")).opacity, [...root.querySelectorAll(".tf-cutin > b, .tf-cutin > small")].every((n) => n.getBoundingClientRect().right <= side.left)]; }), ["true", "0", true]);
+      await afterBand(page);
       const fever = await api((a) => { const s = a.state(); return { level: s.feverLevel, tables: s.tables.filter((x) => x.fever).map((x) => [x.id, x.mood]), fevers: s.fevers }; });
       assert.deepEqual([fever.level, fever.fevers, fever.tables.length], [1, 1, 2], "Lv1 は2卓まで");
       assert(fever.tables.every(([, m]) => m === 100));
@@ -585,6 +599,74 @@ await suite("tonari-floor", async (check) => {
     }, options);
   }
 
+  // 文字と文字を重ねない（2026-11-20 オーナー「こういうの見ると文字と文字が重なってるの避けたい」・TFL45）:
+  // 満席の日を、言葉が消える前に次の出来事が起きる速さで回し、画面の文字の箱（手応えの言葉・卓の札・見出し・番号札・帯の文字・まん中の札・
+  // 上下の帯・右の列）が、どのコマでも重ならないことを確かめる。動きは本番と同じ（出はじめに言葉がふくらむ）
+  for (const [platform, options] of [["pc", {}], ["touch", touch]]) {
+    await run(`${platform}-no-text-overlap`, async (page) => {
+      await setup(page);
+      await page.evaluate(() => {
+        C.fresh();
+        window.done = C.view.runTonariFloor({ seed: 5, level: 6, chapter: 2, night: true, fans: 12, visitor: "tsumugi",
+          art: C.data.bgUrl("res://assets/backgrounds/bg_tonari_inside.png", "night") }).then((r) => { window.result = r; });
+      });
+      await page.locator(t("option-start")).click();
+      const audit = await page.evaluate(async () => {
+        const root = document.querySelector(".tonari-floor"), a = C.view.floorTest.api;
+        const shown = (n) => { if (!n.getClientRects().length) return false;
+          for (let x = n; x && x !== root.parentNode; x = x.parentElement) { const cs = getComputedStyle(x); if (cs.visibility === "hidden" || cs.display === "none" || Number(cs.opacity) < 0.05) return false; }
+          return true; };
+        const kinds = { pop: ".tf-pop", head: ".tf-tag-want", box: ".tf-tag-box", plate: ".tf-plate", cutin: ".tf-cutin > b, .tf-cutin > small", banner: ".tf-banner",
+          making: ".tf-making-list", clock: ".tf-clock", sales: ".tf-sales", pause: ".tf-pause-button", side: ".tf-presets", dock: ".tf-dock", ticker: ".tf-ticker" };
+        const seen = new Map(), counts = { frames: 0, pops: 0, bands: 0, twoPops: 0 };
+        const look = () => {
+          counts.frames++;
+          const boxes = [];
+          for (const [kind, sel] of Object.entries(kinds)) for (const n of root.querySelectorAll(sel)) {
+            if (!shown(n) || (kind === "head" && !n.textContent.trim())) continue;
+            const r = n.getBoundingClientRect();
+            if (r.width >= 2 && r.height >= 2) boxes.push({ kind, spot: n.closest(".tf-spot")?.dataset.id || "", text: n.textContent.trim().slice(0, 12), r });
+          }
+          const pops = boxes.filter((b) => b.kind === "pop");
+          counts.pops = Math.max(counts.pops, pops.length);
+          if (new Set(pops.map((b) => b.spot)).size < pops.length) counts.twoPops++;
+          if (boxes.some((b) => b.kind === "cutin")) counts.bands++;
+          for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
+            const x = boxes[i], y = boxes[j];
+            if (x.spot && x.spot === y.spot) continue; // 同じ卓の札の中の部品どうしは見ない（言葉は一つしか出ない。下で数える）
+            if (!x.spot && !y.spot && x.kind === y.kind) continue;
+            const w = Math.min(x.r.right, y.r.right) - Math.max(x.r.left, y.r.left), h = Math.min(x.r.bottom, y.r.bottom) - Math.max(x.r.top, y.r.top);
+            if (w > 1.5 && h > 1.5) seen.set(`${x.kind}${x.spot}×${y.kind}${y.spot}`, `${x.kind}${x.spot}「${x.text}」×${y.kind}${y.spot}「${y.text}」`);
+          }
+        };
+        for (let i = 0; i < 420; i++) {
+          const s = a.state();
+          if (s.done || a.mode() === "result") break;
+          if (a.mode() === "panel") { document.querySelector(".tf-sheet .tf-option")?.click(); continue; }
+          for (const table of s.tables) {
+            const tap = C.model.floorTap(s, table.id), guest = s.guests[table.guestId];
+            if (tap === "order" && s.t >= s.shuffleAt && i % 3 === 0) a.act({ type: "order", tableId: table.id, mix: C.bot.bestMix(s, guest.order, { worst: i % 5 === 0 }).id });
+            else if (tap === "care" && i % 4 === 0) a.act({ type: "care", tableId: table.id, verb: i % 8 === 0 ? "chat" : C.floorData.CALLS[table.call.type].verb });
+            else if (tap === "tend") a.act({ type: "tend", tableId: table.id });
+            else if (tap === "bill" && i % 2 === 0) a.act({ type: "bill", tableId: table.id });
+          }
+          if (i % 37 === 20) a.act({ type: "shuffle" });
+          if (s.fever >= 100 && !s.feverLevel && i % 9 === 0) document.querySelector('[data-test="tonari-floor-bonus"]').click();
+          if (i % 11 === 5) document.querySelector(`[data-test="tonari-floor-table-${1 + (i % 5)}"]`)?.click(); // 押しても進まない卓の言葉も混ぜる
+          a.tick(1);
+          look();
+          await new Promise((r) => setTimeout(r, 45));
+          look();
+        }
+        return { hits: [...seen.values()], ...counts, fevers: a.state().fevers };
+      });
+      assert.deepEqual(audit.hits, [], `文字どうしが重なった: ${audit.hits.join(" / ")}`);
+      assert.equal(audit.twoPops, 0, "同じ卓に、言葉は一つしか出ない");
+      // 点検が空振りしていないこと: 言葉が同時に2つ以上出ていて、帯の演出（営業開始かフィーバー）も通っている
+      assert(audit.frames > 300 && audit.pops >= 2 && audit.bands >= 1 && audit.fevers >= 1, JSON.stringify(audit));
+    }, { ...options, reducedMotion: "no-preference" });
+  }
+
   // 専用の店内画: 絵が届く前でも、配置図の舞台で重なりと操作を確かめる。
   // 席は「上3（こちら向き）・下2（内向き）」。客は全身を描かず、席に「丸の中の顔」で出す（二人組は丸が二つ）。絵の登録があれば影絵の代わりに絵を出す。
   for (const [platform, options] of [["pc", {}], ["touch", touch]]) {
@@ -601,6 +683,7 @@ await suite("tonari-floor", async (check) => {
       const api = (fn, arg) => page.evaluate(({ fn, arg }) => new Function("a", "arg", `return (${fn})(a, arg)`)(C.view.floorTest.api, arg), { fn: fn.toString(), arg });
       const until = (stop, skip = []) => page.evaluate(({ stop, skip }) => C.until(stop, skip), { stop, skip });
       await page.locator(t("option-start")).click();
+      await afterBand(page);
       assert.equal(await page.locator(t("screen")).getAttribute("data-style"), "seated");
       assert.equal(await page.locator(".tf-front").count(), 1);
       // 奥の卓の札は、席の上に出て、上の帯にも右のミックスの列にも隠れない

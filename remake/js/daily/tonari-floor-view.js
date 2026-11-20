@@ -33,7 +33,7 @@ export const FLOOR_VISITORS = VISITORS;
 const WISH = Object.fromEntries(WISHES.map((w) => [w.id, w]));
 const MOOD = Object.fromEntries(MOODS.map((m) => [m.id, m]));
 // 提供した時の手応え: [言葉, 色, 判定の印]
-const POP = { best: ["ぴったり！", "best", "best"], good: ["いい感じ", "best", "good"], off: ["ちがうかも…", "off", "miss"] };
+const POP = { best: ["ぴったり！", "best", "best"], good: ["いい感じ", "best", "good"], off: ["ちがうかも", "off", "miss"] };
 const MARK = { best: "markBest", good: "markGood", miss: "markMiss", bad: "markBad", drink: "glass", bill: "coin", anger: "anger" };
 const CALL_ICON = { thin: "thin", harsh: "harsh", thirsty: "glass", cough: "ask", chatty: "talk" };
 const VERB_ICON = { add: "add", ease: "ease", water: "drink", teach: "ask", chat: "talk" };
@@ -41,6 +41,8 @@ const APT_MARK = { best: "◎", good: "○", none: "×" };
 const WISH_ICON = { fruit: "wishFruit", sweet: "wishSweet", fresh: "wishFresh", deep: "wishDeep" };
 // フィーバーの曲: プリクラ用に作った平成ユーロビート（2026-11-20 オーナー「フィーバーのBGMはプリクラ用に作ったイケイケなアレで」）
 const FEVER_BGM = "bgm_purikura";
+// 画面を横切る帯（営業開始・フィーバー・営業終了）が出ている長さ。その間は、卓の札と手応えの言葉を出さない（文字の上に文字を重ねない。TFL45）
+const CUTIN_MS = 1500;
 const SHIFT_BGM = "tonari"; // フィーバーの前に流れていた曲が分からない時に戻す先
 const SALES_STEP = 10000; // 店の売上がこの額をまたぐたびに、下の帯で知らせる
 const test = (key) => ({ test: `tonari-floor-${key}` });
@@ -131,7 +133,7 @@ export function runTonariFloor({
   };
   let mode = "intro"; // intro → live ⇄ panel / pause / cutin → closing → result
   let panel = null, selected = 1, speed = 1, active = true, leaving = false, outerMenu = false;
-  let carry = 0, lastAt = 0, timer = null, bannerTimer = null, verdictTimer = null, cutinTimer = null, lastHint = "", salesMark = 0;
+  let carry = 0, lastAt = 0, timer = null, bannerTimer = null, verdictTimer = null, cutinTimer = null, bandTimer = null, lastHint = "", salesMark = 0;
   let feverBgm = null; // フィーバー中だけ、前に流れていた曲の名前を持つ（明けたらその曲へ戻す）
   const refs = { spots: [] };
 
@@ -192,7 +194,9 @@ export function runTonariFloor({
 
     // 上の帯: 左に仕込み中の一台（同時に仕込める枠）、まん中に残り時間、右に店の売上
     const makingList = el("div.tf-making-list");
-    const making = el("div.tf-making", { dataset: test("making") }, [el("small", {}, [glyph("cook"), el("span.tf-sr", { text: "仕込み中" })]), makingList]);
+    // 順番待ちの台数は、器の印の隅の小さな数（＋N）。枠の外へはみ出す札にしない（文字の上に文字を重ねない。TFL45）
+    const makingMore = el("i.tf-making-more", { hidden: true });
+    const making = el("div.tf-making", { dataset: test("making") }, [el("small", {}, [glyph("cook"), el("span.tf-sr", { text: "仕込み中" }), makingMore]), makingList]);
     const clockText = el("b", { text: "0:00", dataset: test("time-left") });
     const clockBar = el("i");
     const salesText = el("strong", { text: yen(0), dataset: test("sales") });
@@ -251,12 +255,13 @@ export function runTonariFloor({
       ...test("screen"), night: String(night), mode, stage: layout.id, style: layout.style } }, [
       stageBox, top, side, bottom, cutinBand, layer, banner, announce,
     ]);
+    host.style.setProperty("--tf-cutin-ms", `${CUTIN_MS}ms`);
 
     function settle(result) {
       if (!active) return;
       active = false;
       clearInterval(timer);
-      for (const t of [bannerTimer, verdictTimer, cutinTimer]) clearTimeout(t);
+      for (const t of [bannerTimer, verdictTimer, cutinTimer, bandTimer]) clearTimeout(t);
       if (feverBgm) playBgm(feverBgm);
       signal?.removeEventListener("abort", cancel);
       document.removeEventListener("visibilitychange", onVisibility);
@@ -342,7 +347,10 @@ export function runTonariFloor({
       cutinBand.dataset.on = "false";
       void cutinBand.offsetWidth; // 同じ帯を続けて出す時に、動きを最初からやり直す
       cutinBand.dataset.on = "true";
-      setTimeout(() => { cutinBand.dataset.on = "false"; }, 1700);
+      // 帯が消えきるまで、卓の札・手応えの言葉・まん中の札を出さない（帯の文字と重ねない）
+      host.dataset.band = "true";
+      clearTimeout(bandTimer);
+      bandTimer = setTimeout(() => { cutinBand.dataset.on = "false"; host.dataset.band = "false"; }, CUTIN_MS);
     }
     function play(events) {
       for (const e of events) {
@@ -355,7 +363,7 @@ export function runTonariFloor({
             if (e.rare) { SE.jingle(); log(`${guest.name}が遊びに来た！ ${e.tableId}卓へ`, "good"); }
             else log(`${e.tableId}卓　${guest.name}「${e.line}」`);
             break;
-          case "left": SE.miss(); pop(e.tableId, "帰ってしまった", "off", "anger"); log(`${e.tableId}卓の${guest.name}が、待ちきれずに帰ってしまいました`, "bad"); break;
+          case "left": SE.miss(); pop(e.tableId, "帰った…", "off", "anger"); log(`${e.tableId}卓の${guest.name}が、待ちきれずに帰ってしまいました`, "bad"); break;
           case "order": SE.click(); log(`${e.tableId}卓　${mixName(e.mix)}を仕込みはじめた`); break;
           case "shuffle": SE.whoosh(); log(`ミックスを入れ替える（${seconds(e.ticks)}秒かかる）`); break;
           case "shuffleDone": SE.select(); log("新しいミックスが並んだ", "good"); break;
@@ -369,7 +377,7 @@ export function runTonariFloor({
           case "tend": SE.good(); pop(e.tableId, "いい調整", "best", "best"); log(`${e.tableId}卓　炭を整えた`, "good"); break;
           case "call": SE.tick(); log(e.coal ? `${e.tableId}卓　炭を見てほしそうです` : `${e.tableId}卓で、お客さんの様子が変わりました`, e.coal ? "bad" : ""); break;
           case "care":
-            if (e.ok) { SE.perfect(); pop(e.tableId, "いいケア", "best", "best"); } else { SE.miss(); pop(e.tableId, "ちがったみたい", "off", "bad"); }
+            if (e.ok) { SE.perfect(); pop(e.tableId, "いいケア", "best", "best"); } else { SE.miss(); pop(e.tableId, "ちがった…", "off", "bad"); }
             say(e.tableId, e.line, e.ok ? "good" : "bad");
             break;
           case "callLate": SE.miss(); pop(e.tableId, "見逃した", "off"); log(`${e.tableId}卓の頼みを見逃しました`, "bad"); break;
@@ -499,7 +507,10 @@ export function runTonariFloor({
           el("b", { text: String(m.tableId) }), attrBadge(m.mix), el("span", { text: m.label }), el("i.tf-bar", {}, [el("i")]),
         ]));
         while (rows.length < floorSlots) rows.push(el("div.tf-making-row.empty", {}, [el("span.tf-sr", { text: "空き" })]));
-        makingList.replaceChildren(...rows, list.length > floorSlots ? el("small.tf-making-more", { text: `待ち ${list.length - floorSlots}台` }) : "");
+        makingList.replaceChildren(...rows);
+        const waiting = Math.max(0, list.length - floorSlots);
+        makingMore.hidden = !waiting;
+        makingMore.replaceChildren(...(waiting ? [el("span.tf-sr", { text: "待ち" }), `＋${waiting}`, el("span.tf-sr", { text: "台" })] : []));
       }
       for (const m of list.slice(0, floorSlots)) {
         const bar = makingList.querySelector(`[data-table="${m.tableId}"] .tf-bar i`);
@@ -622,7 +633,7 @@ export function runTonariFloor({
       if (tap === "tend") { perform({ type: "tend", tableId: id }); return; } // 炭の調整もひと押し（頼まれる前に行く）
       const table = state.tables[id - 1];
       SE.click();
-      if (table.phase !== "empty") pop(id, table.phase === "prep" ? (table.make.active ? "仕込み中" : "順番待ち") : table.phase === "enjoy" ? "炭はまだ大丈夫" : "片付け中");
+      if (table.phase !== "empty") pop(id, table.phase === "prep" ? (table.make.active ? "仕込み中" : "順番待ち") : table.phase === "enjoy" ? "炭はまだ平気" : "片付け中");
     }
     function followHint() {
       if (mode !== "live") return;
@@ -656,7 +667,7 @@ export function runTonariFloor({
       log(`フィーバー Lv${level}！`, "good");
       if (floorTest.manual) return;
       setMode("cutin");
-      cutinTimer = setTimeout(() => { if (active && mode === "cutin") { setMode("live"); lastAt = performance.now(); } }, 1200);
+      cutinTimer = setTimeout(() => { if (active && mode === "cutin") { setMode("live"); lastAt = performance.now(); } }, CUTIN_MS);
     }
     function endFever() {
       if (!feverBgm) return;
@@ -895,7 +906,7 @@ export function runTonariFloor({
         setTimeout(() => { if (active) { SE.stamp(); if (result.rank === "S") SE.fanfare(); else if (result.rank === "A") SE.jingle(); } }, 380);
         layer.querySelector('[data-test="tonari-floor-option-continue"]')?.focus({ preventScroll: true });
       };
-      if (floorTest.manual) show(); else setTimeout(show, 1500);
+      if (floorTest.manual) show(); else setTimeout(show, CUTIN_MS);
     }
     // 結果（精算）: 左に売上の内訳と合計、右に評価・ファン・満足の内訳・好評だったミックス（原価・利益は扱わない）
     function renderResult() {

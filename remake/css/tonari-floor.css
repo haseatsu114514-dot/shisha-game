@@ -242,15 +242,16 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 @keyframes tf-guide { from { opacity: 1; scale: 0.94; } to { opacity: 0; scale: 1.14; } }
 /* 手応えの言葉・客のひとことは、卓の札の見出しの所（箱のすぐ上）に出す。出ている間は見出しを隠す（札の上に札を重ねない） */
 .tf-fx { position: relative; justify-self: center; width: 0; height: 0; z-index: 7; }
+/* 幅は、卓の札の幅まで（出はじめに1.08倍へふくらんでも、隣の卓の言葉・見出しと重ならない。文字の上に文字を重ねない・TFL45）。収まらない言葉は折る */
 .tf-pop {
-  position: absolute; left: 0; bottom: 2px; translate: -50% 0; white-space: nowrap; padding: 3px 14px; border-radius: 18px; min-height: 34px;
-  display: inline-flex; align-items: center; gap: 5px;
+  position: absolute; left: 0; bottom: 2px; translate: -50% 0; width: max-content; max-width: 190px; padding: 3px 14px; border-radius: 18px; min-height: 34px;
+  display: inline-flex; align-items: center; gap: 5px; text-wrap: balance;
   background: #2a1c15f5; color: var(--tf-ivory); font-size: var(--tf-text); font-weight: 700; line-height: 1.15; box-shadow: 0 0 0 2px #e7c27a;
   animation: tf-pop 1.5s var(--ease-out, ease) forwards;
 }
 /* 見出しのある札では、見出しの所に重ねて出す */
 .tf-spot[data-head="true"] .tf-pop { bottom: -36px; }
-.tf-bubble:has(.tf-pop) .tf-tag-want { visibility: hidden; }
+.tf-bubble:has(.tf-pop) :is(.tf-tag-want, .tf-tag-anger) { visibility: hidden; }
 .tf-pop .tf-icon { width: 27px; height: 27px; }
 .tf-pop .tf-icon svg { stroke-width: 2.6; }
 .tf-pop[data-kind="best"] { background: #2d6a44; box-shadow: 0 0 0 2px #c9f2d5; }
@@ -259,7 +260,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* 客のひとこと（来店した時に、気分を言う）。長い言葉は2行に折って、隣の札や右の一覧へはみ出さない */
 .tf-pop[data-kind="say"] {
   background: #fffaf0; color: #3a2a1c; box-shadow: 0 0 0 2px #c9a877; border-radius: 16px 16px 16px 4px; animation-duration: 2.6s;
-  font-size: var(--tf-small); white-space: normal; text-wrap: balance; text-align: center; width: max-content; max-width: 270px;
+  font-size: var(--tf-small); text-align: center;
 }
 .tf-pop[data-kind="coin"] { background: #fff1c4; color: #5a3c0c; box-shadow: 0 0 0 2px #c79a3a; }
 @keyframes tf-pop { 0% { opacity: 0; scale: 0.7; } 14% { opacity: 1; scale: 1.08; } 24% { scale: 1; } 82% { opacity: 1; } 100% { opacity: 0; } }
@@ -341,9 +342,10 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-making-row .tf-bar i { background: linear-gradient(90deg, #9fd8e0, #f0fbff); }
 .tf-making-row.empty span { color: #8a7c6c; }
 .tf-making-more {
-  position: absolute; right: 14px; bottom: -16px; padding: 2px 10px; border-radius: 13px; white-space: nowrap;
-  background: #7c1f1a; color: #fff; box-shadow: 0 0 0 2px #ffb4a8; font-size: var(--tf-small); line-height: 1.1;
+  position: absolute; right: -9px; bottom: -7px; min-width: 26px; height: 24px; padding: 0 4px; border-radius: 12px; display: grid; place-items: center; white-space: nowrap;
+  background: #7c1f1a; color: #fff; box-shadow: 0 0 0 2px #ffb4a8; font-size: 17px; font-weight: 700; font-style: normal; line-height: 1;
 }
+.tf-making-more[hidden] { display: none; }
 /* 残り時間は、まん中に大きく */
 .tf-clock { position: relative; display: flex; align-items: center; gap: 10px; padding: 6px 30px 16px 24px; white-space: nowrap; }
 .tf-clock small { position: relative; display: inline-flex; color: var(--tf-dim); }
@@ -371,6 +373,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 .tf-presets {
   position: absolute; right: var(--tf-pad-r); top: 8px; bottom: 10px; width: 212px; padding: 6px 8px 7px;
   display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; gap: 4px; transition: opacity 0.2s ease;
+  z-index: 12; /* 画面を横切る帯（.tf-cutin）より手前。帯の端が、ミックスの名前に掛からない */
 }
 .tf-preset-box { position: relative; display: grid; min-height: 0; }
 .tf-presets-head { display: flex; align-items: center; gap: 6px; }
@@ -476,7 +479,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 @keyframes tf-log-in { from { opacity: 0; translate: 0 8px; } }
 .tf-advice { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .tf-advice img { width: 30px; height: 30px; border-radius: 50%; flex: 0 0 auto; box-shadow: 0 0 0 2px #e7c27a; object-fit: cover; }
-.tf-advice p { font-size: var(--tf-small); font-weight: 700; line-height: 1.15; color: #ffe2a6; white-space: nowrap; }
+.tf-advice p { min-width: 0; font-size: var(--tf-small); font-weight: 700; line-height: 1.15; color: #ffe2a6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* フィーバーのゲージ（3段）。1段でも溜まれば押せて、溜まった段までを一度に使う（Lv1＝2卓、Lv2＝4卓、Lv3＝全卓） */
 .tf-bonus {
   position: relative; display: grid; align-content: center; gap: 7px; width: 100%; min-width: 0; min-height: max(var(--tf-tap), 84px); padding: 6px; border: none; border-radius: 14px;
@@ -508,20 +511,22 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 /* 寄った卓の札が上の帯に掛かるので、売上も引っ込める（選んでいる間は時間が止まっている） */
 /* 接客の画面（卓へ行って対応する間）は、店内の帯・一覧・卓の札・手応え・帯の演出を出さない（UI の上に UI を重ねない） */
 .tonari-floor[data-mode="panel"] :is(.tf-top, .tf-presets, .tf-bottom, .tf-spots, .tf-cutin, .tf-banner) { visibility: hidden; }
-/* 帯の演出（フィーバーの突入・営業終了）の間は、卓の札を沈める */
-.tonari-floor:is([data-mode="cutin"], [data-mode="closing"]) .tf-spots { opacity: 0.25; transition: opacity 0.2s ease; }
+/* 帯の演出（営業開始・フィーバーの突入・営業終了）が出ている間は、卓の札・手応えの言葉・番号札・まん中の札を出さない（帯の文字と重ねない・TFL45） */
+.tonari-floor:is([data-band="true"], [data-mode="cutin"], [data-mode="closing"]) .tf-spots { opacity: 0; pointer-events: none; } /* 透明にするだけ（キーボードの選択は残す） */
+.tonari-floor[data-band="true"] .tf-banner { display: none; }
 
 /* ---- 帯の演出（開店・フィーバー・閉店） ---- */
 .tf-cutin {
   position: absolute; left: -5%; right: -5%; top: 36%; height: 150px; display: grid; place-content: center; text-align: center; gap: 2px;
+  padding-right: 228px; /* 文字は、右の列の手前（店内の見えている所）のまん中に置く。帯そのものは、右の列の後ろを通る */
   background: linear-gradient(90deg, transparent, #1b1220f2 14%, #1b1220f2 86%, transparent); border-block: 3px solid #e7c27a;
   rotate: -2deg; opacity: 0; pointer-events: none; z-index: 6;
 }
 .tf-cutin-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; }
 .tf-cutin b { font-size: 68px; letter-spacing: 0.16em; color: #fff1c4; text-shadow: 0 0 24px #ffb45a; line-height: 1.1; }
 .tf-cutin small { font-size: var(--tf-text); color: var(--tf-dim); letter-spacing: 0.1em; }
-.tf-cutin[data-on="true"] { animation: tf-cutin 1.7s var(--ease-out, ease) forwards; }
-@keyframes tf-cutin { 0% { opacity: 0; translate: -18% 0; } 16% { opacity: 1; translate: 0 0; } 78% { opacity: 1; translate: 1.5% 0; } 100% { opacity: 0; translate: 16% 0; } }
+.tf-cutin[data-on="true"] { animation: tf-cutin var(--tf-cutin-ms, 1.5s) var(--ease-out, ease) forwards; }
+@keyframes tf-cutin { 0% { opacity: 0; translate: -6% 0; } 16% { opacity: 1; translate: 0 0; } 78% { opacity: 1; translate: 0.5% 0; } 100% { opacity: 0; translate: 3% 0; } }
 /* フィーバーの突入（この帯が出ている間、店の時間は止まる） */
 .tf-cutin[data-kind="fever"] {
   height: 190px; z-index: 11; border-block: 4px solid #f0e4ff;
@@ -545,7 +550,7 @@ body[data-screen="tonari-floor"] #hud { visibility: hidden; }
 @keyframes tf-banner { 0% { opacity: 0; scale: 0.7; } 12% { opacity: 1; scale: 1.06; } 20% { scale: 1; } 80% { opacity: 1; } 100% { opacity: 0; scale: 1.02; } }
 
 /* ---- 重なる窓（接客の画面・開店前・休止・締め） ---- */
-.tf-layer { position: absolute; inset: 0; display: none; z-index: 8; }
+.tf-layer { position: absolute; inset: 0; display: none; z-index: 13; } /* 休止・接客の画面・精算は、右の列（12）より手前 */
 .tf-layer[data-on="true"] { display: grid; background: #140c08a6; }
 /* 接客の画面（卓へ行って対応する）: 店内を暗く沈めて、左に大きな選択肢、右に卓の様子。対応が済んだら店へ戻る */
 .tf-layer[data-kind="panel"] { background: #120b08f0; backdrop-filter: blur(5px); }

@@ -1424,7 +1424,7 @@
     },
     {
       "id": "tonari-floor-browser",
-      "title": "tonari floor service on the real screen: shift flow, mix list and shuffle, coal tending, PC/touch controls, clock stops and LOAD",
+      "title": "tonari floor service on the real screen: shift flow, mix list with flavors and shuffle, coal tending, PC/touch controls, no overlapping text, clock stops and LOAD",
       "kind": "browser",
       "weight": 1.6,
       "timeout": 10,
