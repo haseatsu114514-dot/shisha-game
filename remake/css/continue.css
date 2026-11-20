@@ -327,3 +327,16 @@
 .gameover[data-layout="inner"][data-paused="true"] *::after { animation-play-state: paused !important; }
 .gameover[data-layout="inner"][data-reduced-motion="true"] { animation: none; }
 @media (prefers-reduced-motion: reduce) { .gameover[data-layout="inner"] { animation: none; } }
+
+/* 3敗目からの「難易度を下げる？」（WIN14）。再挑戦を押した後だけ、同じ画面の中に名前だけの選択肢を出す。カウントは止める。 */
+.gameover .go-difficulty { position: absolute; z-index: 6; left: 50%; top: 50%; width: 540px; transform: translate(-50%, -50%);
+  display: grid; gap: 16px; padding: 28px 32px 32px; border: 2px solid #f6d68e; border-radius: 16px; background: #150d22f2;
+  box-shadow: 0 18px 50px #000a; text-align: center; }
+.gameover .go-difficulty[hidden] { display: none; }
+.gameover .go-difficulty-title { margin: 0; font-size: 36px; font-weight: 900; letter-spacing: .06em; color: #fff6dc; }
+.gameover .go-difficulty-list { display: grid; gap: 12px; }
+.gameover .go-difficulty-choice { min-height: 76px; border: 2px solid #c9a7e6; border-radius: 12px; background: #2b1d3d; color: #fff;
+  font: inherit; font-size: 34px; font-weight: 800; letter-spacing: .08em; cursor: pointer; }
+.gameover .go-difficulty-choice.primary { border-color: #f6d68e; background: #f6d68e; color: #1a0f24; }
+.gameover .go-difficulty-choice:is(:hover, :focus-visible) { outline: 3px solid #fff; outline-offset: 3px; }
+.gameover[data-phase="difficulty"] :is(.go-clock, .go-count-back, .go-next) { visibility: hidden; }

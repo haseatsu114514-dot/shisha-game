@@ -3,7 +3,7 @@ import { state, save } from "../core/state.js";
 import { loadTournamentCraftDialogue } from "../core/data.js";
 import { awardTournamentExp } from "../core/growth.js";
 import { maxStamina } from "../core/stats.js";
-import { chooseRetryAssist } from "./retry-assist.js";
+import { chooseRetryAssist, applyRetryAssistChoice } from "./retry-assist.js";
 import { chosenAssistLevel } from "../craft/retry-assist-level.js";
 import { applyAssistRecovery } from "./tournament-resources.js";
 import { play } from "../vn/engine.js";
@@ -24,7 +24,7 @@ import { TOURNAMENT_STORY_STEPS } from "../craft/tournament-story-data.js";
 import { showChapterFourStandings, chapterFourNameOf } from "./ch4-standings.js";
 import { liveOf, intervalCard } from "../craft/tournament-show.js";
 import { chapterFourMatch, startChapterFourCraft, recoverChapterFourStep, chapterFourRetryContext,
-  beginChapterFourStep, finishChapterFourStep, chapterFourStandings } from "./ch4-tournament-state.js";
+  beginChapterFourStep, finishChapterFourStep, chapterFourStandings, takeChapterFourRetryChoice } from "./ch4-tournament-state.js";
 import { chapterFourCraftAdvice, chapterFourCustomerLines } from "./ch4-verdict.js";
 import { readChapterFourStaffCheckpoint } from "./ch4-staff-work.js";
 import { CH4_STAFF_IDS } from "./ch4-staff-work-progress.js";
@@ -45,8 +45,11 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
   const p = recoverChapterFourStep(state);
   if (!p.craft && !p.result) {
     // 第1〜3章と同じ補助を次の一台だけに適用。中断再開では聞き直さない。
+    // 難易度はコンティニュー画面で選んだもの（WIN14）。画面の選択を持たない旧保存だけ、ここで聞く。
     const retry = chapterFourRetryContext(state);
-    const assisted = await chooseRetryAssist(retry, () => live() && !p.craft && !p.result);
+    const picked = takeChapterFourRetryChoice(state);
+    const assisted = picked === null ? await chooseRetryAssist(retry, () => live() && !p.craft && !p.result)
+      : applyRetryAssistChoice(retry, picked);
     requireCurrent();
     if (assisted === null) return false;
     applyAssistRecovery(state, assisted, maxStamina());

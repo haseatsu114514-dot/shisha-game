@@ -696,23 +696,29 @@ await suite('ch2-tournament',async check=>{
     let s=await get(page);assert(s.flags._ch2_tournament.failure);assert.equal(s.flags._ch2_tournament.history.length,0);
     await reload(page);await page.locator(t('defeat')).waitFor();await page.locator(t('retry')).click();await page.locator(t('ready')).waitFor();
   });
-  for (const touch of [false,true]) await check(`continue-assist-cancel-${touch?'touch':'pc'}`,async page=>{
+  // WIN14: 3敗目からは、再挑戦を押した同じCONTINUE画面で難易度を選ぶ。名前だけ・カウントは止まる・別の窓は出ない。
+  for (const touch of [false,true]) await check(`continue-difficulty-in-screen-${touch?'touch':'pc'}`,async page=>{
     const press=sel=>touch?page.locator(sel).tap():page.locator(sel).click();
     await seed(page,{stage:'defeat',auto:null,progress:{attempts:3,losses:2,lastLossAttempt:2,failure:'leaf'}});
     await page.locator(t('defeat')).waitFor();
-    const speaker=await page.locator(t('defeat')).getAttribute('data-speaker');
-    const variant=await page.locator(t('defeat')).getAttribute('data-variant');
     const before=await get(page);
-    await press(t('retry'));await press(dt('retry-assist-cancel'));
-    await page.waitForFunction(()=>document.querySelector('.gameover')?.dataset.phase==='speaking');
-    assert.equal(await page.locator(t('defeat')).getAttribute('data-speaker'),speaker);
-    assert.equal(await page.locator(t('defeat')).getAttribute('data-variant'),variant);
+    await press(t('retry'));
+    await page.locator(dt('retry-difficulty')).waitFor();
+    assert.equal(await page.locator(t('defeat')).getAttribute('data-phase'),'difficulty');
+    assert.equal(await page.locator('#modal.show').count(),0,'難易度は別の窓ではなく、CONTINUE画面の中で選ぶ');
+    assert.deepEqual(await page.locator(`${dt('retry-difficulty')} button`).allInnerTexts(),['イージー','ノーマル']);
+    assert.equal(await page.locator(`${dt('retry-difficulty')} p`).innerText(),'難易度を下げる？');
+    const count=await page.locator('.go-count').textContent();
+    await page.waitForTimeout(1600);
+    assert.equal(await page.locator('.go-count').textContent(),count,'選んでいる間はカウントが止まる');
+    const during=await get(page);
+    assert.equal(during.flags._ch2_tournament.attempts,3);
+    assert.equal(during.flags._ch2_tournament.losses,3);
+    assert.equal(during.flags._ch2_tournament.retryAssist,false);
+    assert.equal(during.stamina,before.stamina);assert.deepEqual(during.flavorStock,before.flavorStock);
+    await press(dt('retry-assist-no'));await page.locator(t('ready')).waitFor();
     const after=await get(page);
-    assert.equal(after.flags._ch2_tournament.attempts,3);
-    assert.equal(after.flags._ch2_tournament.losses,3);
-    assert.equal(after.flags._ch2_tournament.retryAssist,false);
-    assert.equal(after.stamina,before.stamina);assert.deepEqual(after.flavorStock,before.flavorStock);
-    await press(t('retry'));await press(dt('retry-assist-no'));await page.locator(t('ready')).waitFor();
+    assert.equal(after.flags._ch2_tournament.retryAssist,false);assert.equal(after.flags._ch2_tournament.retryAssistLevel,0);
   },touch?{viewport:{width:844,height:390},isMobile:true,hasTouch:true,reducedMotion:'reduce'}:{});
   // #590: 3敗目の再挑戦で第1章と同じ救済。選んだ挑戦だけ現在の最大体力へ、断れば大会開始時の体力。
   for(const assist of [true,false]) await check(`third-loss-retry-assist-${assist?'yes':'no'}`,async page=>{
