@@ -178,6 +178,33 @@ CRAFT_STAGE_PARTS = {
 }
 
 
+# 大会の演出リニューアル（TSH）の部品。原画は asset_sources/ui/tournament-show-20261120/raw/、
+# 採用PNGはそのまま（切り出しなし）で、ここでは表示幅へ縮小した WebP だけを作る。
+TOURNAMENT_SHOW_SOURCES = ROOT / "assets/ui/tournament-show"
+TOURNAMENT_SHOW_OUT = ROOT / "remake/img/ui/tournament-show"
+TOURNAMENT_SHOW_PARTS = {
+    "backdrop": {"source_size": (1536, 1024), "width": 1280, "alpha": False},
+    "vote-token": {"source_size": (1254, 1254), "width": 128, "alpha": True},
+    "crest-gold": {"source_size": (1254, 1254), "width": 512, "alpha": True},
+    "curtain": {"source_size": (1024, 1536), "width": 640, "alpha": True},
+}
+
+
+def build_tournament_show():
+    TOURNAMENT_SHOW_OUT.mkdir(parents=True, exist_ok=True)
+    for name, spec in TOURNAMENT_SHOW_PARTS.items():
+        with Image.open(TOURNAMENT_SHOW_SOURCES / f"{name}.png") as source:
+            if source.size != spec["source_size"]:
+                raise ValueError(f"tournament-show {name}: expected {spec['source_size']}, got {source.size}")
+            width = spec["width"]
+            size = (width, round(width * source.height / source.width))
+            image = source.convert("RGBA" if spec["alpha"] else "RGB").resize(size, Image.Resampling.LANCZOS)
+            path = TOURNAMENT_SHOW_OUT / f"{name}.webp"
+            image.save(path, "WEBP", quality=90 if spec["alpha"] else 84,
+                       alpha_quality=100, method=6, exact=spec["alpha"])
+            print(f"{path.relative_to(ROOT)}: {image.width}×{image.height}, {path.stat().st_size:,} bytes")
+
+
 def build_craft_stage():
     CRAFT_STAGE_OUT.mkdir(parents=True, exist_ok=True)
     for name, spec in CRAFT_STAGE_PARTS.items():
@@ -536,6 +563,7 @@ def main():
     build_paper()
     build_craft_paper()
     build_craft_night()
+    build_tournament_show()
     build_craft_stage()
     build_neo()
     build_craft_glass()
@@ -564,4 +592,10 @@ def main():
 if __name__ == "__main__":
     import sys
     # くじの絵だけ作り直す: python3 remake/tools/build_ui_skin.py kuji（ほかの原画が手元に無くても動く）
-    build_kuji() if sys.argv[1:] == ["kuji"] else main()
+    # 大会演出の絵だけ作り直す: python3 remake/tools/build_ui_skin.py tournament-show
+    if sys.argv[1:] == ["kuji"]:
+        build_kuji()
+    elif sys.argv[1:] == ["tournament-show"]:
+        build_tournament_show()
+    else:
+        main()

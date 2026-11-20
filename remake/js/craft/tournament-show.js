@@ -138,6 +138,16 @@ export function crestSvg({ metal = "gold", crown = true, laurel = true } = {}) {
       <path d="M86 181Q100 190 114 181" fill="none" stroke="url(#${id}-m)" stroke-width="5" stroke-linecap="round"/>` : ""}${crownArt}</svg>` });
 }
 
+/**
+ * 大見出しの紋章（生成絵 crest-gold）。中央は透過で、順位などの文字は呼び出し側が重ねる。
+ * 金以外の順位は CSS の filter で色を寄せる（.ts-crest-art img）。
+ */
+export function crestImg({ metal = "gold" } = {}) {
+  return el("span.ts-crest.ts-crest-art", { "aria-hidden": "true", dataset: { metal } }, [
+    el("img", { src: "img/ui/tournament-show/crest-gold.webp", alt: "", decoding: "async", draggable: "false" }),
+  ]);
+}
+
 // ---------------------------------------------------------------- 胸から上の立ち絵
 
 /**
@@ -543,8 +553,8 @@ export async function eyecatch(host, { title = "", sub = "", note = "", ms = 125
 export async function resultSplash(rank, { event = "SMOKE CROWN CUP", face = null, host = layers.fx } = {}) {
   if (!showMoves() || !host) return;
   const win = rank === 1, metal = metalOf(rank);
-  // 優勝は冠と月桂冠に「1 ST」。届かなかった時は月桂冠だけを順位の後ろに薄く敷く。
-  const crest = crestSvg({ metal, crown: win });
+  // 優勝は紋章（生成絵）に「1 ST」。届かなかった時は紋章を順位の後ろに薄く敷く。
+  const crest = crestImg({ metal });
   if (win) crest.append(el("b", { text: "1" }), el("small", { text: "ST" }));
   const node = el(`div.ts-splash${win ? ".win" : ""}`, { dataset: { test: "result-splash", rank, metal }, tabindex: "-1", role: "status",
     "aria-label": win ? "優勝" : `${rank}位` }, [

@@ -629,7 +629,7 @@ await suite("ch1-tournament", async check => {
     const splash = page.locator('[data-test="result-splash"]');
     await splash.and(page.locator('.show')).waitFor();
     assert.equal(await splash.locator('h2').textContent(), "CHAMPION");
-    assert.equal(await splash.locator('.ts-crest svg').count(), 1);
+    assert.equal(await splash.locator('.ts-crest img').count(), 1);
     assert.equal(await splash.locator('.ts-splash-bust img').count(), 1);
     await page.waitForTimeout(900);
     await assertFits(page, '[data-test="result-splash"] h2, [data-test="result-splash"] p, .ts-splash-tap');
