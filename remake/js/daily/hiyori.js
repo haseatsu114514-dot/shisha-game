@@ -85,6 +85,13 @@ export const hiyoriMintoRestSeatDue = spot => spot?.id === "minto" && state.slot
   && !!state.flags._hiyori_minto_seat_done && !state.flags[MINTO_REST_SEAT_SEEN]
   && !!DB.dialogues[MINTO_REST_SEAT]?.lines?.length;
 
+// #3097 PR-C: 第2章の普段の相席（data/dialogue/ch2_home.json）。第2章のいつもの相席の代わりに一本ずつ・一度だけ、並びの順に。
+// ひびの回（_hiyori_cracks_done）の後だけ（演技と本心の差を、既存の場面の範囲で見せるため）。相席の巡回は進めない。
+// 店名を出さず、斧投げの前後・恋人／友人のどちらでも読める台本。第2章の準備期間に読み込むので、未読込なら出さない。既読は `_talk_seen_<scene>`。
+export const HIYORI_CH2_TALKS = Object.freeze(["ch2_hiyori_health_check", "ch2_hiyori_capsule_toy"]);
+export const hiyoriChapterTalkDue = () => state.chapter === 2 && !!state.flags._hiyori_cracks_done
+  && HIYORI_CH2_TALKS.find(id => !state.flags[`_talk_seen_${id}`] && !!DB.dialogues[id]?.lines?.length) || null;
+
 /** 買い物だけでは会わない。実際に一服できる他店を滞在候補にする（ショールームは除外）。 */
 export const hiyoriShopEligible = (spot) => !!spot && (spot.kind === "rival" || spot.kind === "samechan"
   || spot.id === "c_station");
@@ -166,6 +173,16 @@ export async function visitHiyoriAtShop(spot, { bg, scheduledSpot = hiyoriShopLo
     } else if (hiyoriEventStatus("shop_charm") === "ready") {
       // 再会のあと他店で一度だけ。相席の繰り返しには数えない（#3081）。
       if (!await playHiyoriEvent("shop_charm", options)) return false;
+    } else if (hiyoriChapterTalkDue()) {
+      // 第2章の間しか読めないので、ぺぱーみんとの相席より先に読む
+      const scene = hiyoriChapterTalkDue();
+      active = true;
+      try {
+        const result = await play(scene, options);
+        if (state !== owner || signal?.aborted || !result || result.cancelled) return false;
+        state.flags[`_talk_seen_${scene}`] = true;
+        gainAffinity("hiyori", 10); // いつもの相席と同じ
+      } finally { active = false; }
     } else if (hiyoriMintoSeatDue(spot)) {
       active = true;
       try {

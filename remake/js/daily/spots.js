@@ -284,6 +284,7 @@ export function afterChapterVisitDue(charId, s = state) {
  * prep は、東京・ドバイへ発つ前の地元の準備3日（chapters/departure-prep.js）だけ読む送り出しの会話（第3・4章・N3a）。
  * 出発後（その章の大会の前後とも）には出ないので、大会後の分岐は持たない。台本は準備期間に読み込む（第3章は data/dialogue/ch3_ch4_home.json、
  * #3097 PR-I で足した第4章のつむぎ・ひより・柚ヶ谷の三人は data/dialogue/ch4_prep_home.json）。
+ * untilRift は、なるとの対峙（naruRiftActive）より前だけ読む会話。対峙の後、なるは店を長く休むため。
  * サメちゃんの店（SHISHARK）は来店の処理が別なので、同じ扱いの会話を daily/samechan.js の SAMECHAN_PREP_TALKS に持つ。
  * ひより（tonariに仕事帰りに寄る）も同じ理由で daily/hiyori.js の HIYORI_PREP_TALKS に持つ。
  * つむぎは tonari の客席の来店（daily/tonari.js の tonariCustomer → visitChar）、柚ヶ谷の三人は柚ヶ谷の店の来店
@@ -296,18 +297,26 @@ export const CHAPTER_TALKS = Object.freeze({
     { chapter: 2, scene: "ch2_rio_strawberry" },
     // #3097 第1弾: 柚ヶ谷の匂いを嗅ぎ当て、吸う人の顔の報告を受け取る（ルート・♥段階・大会の前後に依存しない普段の会話）
     { chapter: 2, scene: "ch2_rio_city_scent" },
+    // #3097 PR-C: 朝の満員電車は柔軟剤の見本市。匂わない車両をはじめに聞く（はじめは試作を吸わない）
+    { chapter: 2, scene: "ch2_rio_rush_hour" },
     { chapter: 3, scene: "ch3_prep_rio", prep: true },
     { chapter: 4, scene: "ch4_prep_rio", prep: true },
   ]),
   adam: Object.freeze([
     // #3097 第1弾: 柚ヶ谷の林檎を買いに行くため、券売機の押し方を習う（はじめは吸った感想を言わない）
     { chapter: 2, scene: "ch2_adam_ticket_machine" },
+    // #3097 PR-C: 券売機の回の続き（柚ヶ谷で迷って買った七つの林檎）と、初めての客への「在庫切れ」
+    { chapter: 2, scene: "ch2_adam_yuzugaya_apples" },
+    { chapter: 2, scene: "ch2_adam_out_of_stock" },
     { chapter: 3, scene: "ch3_prep_adam", prep: true },
     { chapter: 4, scene: "ch4_prep_adam", prep: true },
   ]),
   minto: Object.freeze([
     // #3097 第1弾: 通勤客向けのチェキのフレームの試し撮り。営業中の口調だけで、正体・ルート・♥段階に依存しない
     { chapter: 2, scene: "ch2_minto_commute_frame" },
+    // #3097 PR-C: 客の忘れ物の定期券と、ミントの強さの札。営業中の口調だけ（年齢・正体・♥段階に触れない）
+    { chapter: 2, scene: "ch2_minto_lost_pass" },
+    { chapter: 2, scene: "ch2_minto_mint_scale" },
     { chapter: 3, scene: "ch3_prep_minto", prep: true },
     { chapter: 4, scene: "ch4_prep_minto", prep: true },
   ]),
@@ -330,6 +339,10 @@ export const CHAPTER_TALKS = Object.freeze({
     { chapter: 3, scene: "ch3_prep_rei", prep: true, flag: "!_ch2_rei_ticket" },
     { chapter: 4, scene: "ch4_prep_rei", prep: true },
   ]),
+  naru: Object.freeze([
+    // #3097 PR-C: 看板の電球の付け替え。DAY3の祝いの後、DAY11の対峙より前だけ（対峙の後は店を長く休む）
+    { chapter: 2, scene: "ch2_naru_sign_light", flag: "_ch2_naru_warm_done", untilRift: true },
+  ]),
 });
 /**
  * 出発前の地元の準備期間か。判定は core/chapter-clock.js の departurePrep と同じ
@@ -344,7 +357,7 @@ const talkFlagMet = (flags, flag) => !flag || (flag.startsWith("!") ? !flags?.[f
 export function chapterTalkDue(charId, s = state) {
   if (!((s?.story?.[charId] || 0) >= 1) && !((s?.flags?._ch2_talks?.[charId] || 0) >= 1)) return null;
   return (CHAPTER_TALKS[charId] || []).find(talk => (s?.chapter || 1) === talk.chapter && s.phase === "daily"
-    && (!talk.prep || inDeparturePrep(s))
+    && (!talk.prep || inDeparturePrep(s)) && (!talk.untilRift || !naruRiftActive(s))
     && !s.flags?.[`_talk_seen_${talk.scene}`] && talkFlagMet(s.flags, talk.flag)
     && DB.dialogues[talk.scene]?.lines?.length)?.scene || null;
 }

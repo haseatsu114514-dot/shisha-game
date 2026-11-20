@@ -464,6 +464,18 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
     }
     // 必要ハートに届いた最古の未読の段階、無ければ小会話（ch4-longlong.js）。読み終えた時だけ記録する。
     longlong = nextLonglongVisit(state, affinityLevel(LONGLONG_CHAR));
+    // 小会話の番なら、通いの続き（chapters/visit-chains.js・#4010）を先に読む。小会話の巡回は進めない。代金・好感度は小会話と同じ
+    const teaChain = longlong.kind === "talk" ? await chainVisitDue("longlong") : null;
+    if (state !== owner) return unused;
+    if (teaChain) {
+      done = await playChainStage(teaChain, id => readPlain(id, LONGLONG_BG, owner));
+      if (!done || state !== owner) return unused;
+      if (entry.cost) addMoney(-entry.cost);
+      addStamina(entry.stamina || 0);
+      if (entry.stat) earnStat(entry.stat, 4);
+      gainAffinity(LONGLONG_CHAR, visitAffinity("talk"));
+      return { used: true, exerted: (entry.stamina || 0) < 0 };
+    }
     // ♥5の締めくくりの後（#3693）: 小会話の代わりに♥5後の場面を一度ずつ、読み終えたら短い汎用（core/bond-after.js）。
     // 小会話の巡回は進めない。代金・好感度・能力は小会話と同じ。台本を読めなければ小会話のまま。
     after = longlong.kind === "talk" ? bondAfterNext(state, LONGLONG_CHAR) : null;

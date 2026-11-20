@@ -18,10 +18,14 @@ const switchedOff = () => { try { return globalThis.localStorage?.getItem(SWITCH
 /** 最初の火種をまだ渡していないか（観音堂などで、火種が0でも初回だけは盤を開ける）。 */
 export const starterPending = (s) => !switchedOff() && !!s?.flags && !s.flags[STARTER_FLAG];
 
-/** 最初の火種を一度だけ渡す。戻り値＝渡した数（渡し済みなら0）。 */
+/**
+ * 最初の火種を一度だけ渡す。手元の火種が STARTER_HIDANE になるまでの差だけ白火を渡す（もう持っていれば0。SBD153）。
+ * 戻り値＝渡した数（渡し済み・足りている・上限なら0）。
+ */
 export function grantStarterHidane(s, growth) {
   if (!starterPending(s) || !growth?.hidane) return 0;
-  const given = giveColored(growth, "any", STARTER_HIDANE).n;
+  const held = Object.values(growth.hidane).reduce((n, v) => n + (Number.isFinite(v) && v > 0 ? v : 0), 0);
+  const given = giveColored(growth, "any", Math.max(0, STARTER_HIDANE - held)).n;
   growth.starterAccounted = true;
   s.flags[STARTER_FLAG] = true;
   return given;
@@ -148,6 +152,7 @@ export function startBoardTutorial(root, { onDone = () => {}, starterAmount = ST
     bubble.replaceChildren();
     const title = doc.createElement("h3");
     title.textContent = s.title;
+    // null＝渡すものが無い（前に受け取った・もう手元に足りている）、0＝上限で渡せなかった
     const starterText = starterAmount === null ? "白火の残りはここで確認できる。"
       : starterAmount === 0 ? "火種の獲得は上限に届いている。"
         : `はじめての今回は、白火を${starterAmount}つ渡しておく。`;

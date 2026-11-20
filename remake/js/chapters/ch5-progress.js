@@ -46,6 +46,7 @@ export const CH5_SCENE_BG = Object.freeze({
   ch5_free_mashiro_visit_lover: "bg_tonari_inside_day",        // ましろの訪問の末尾に続く（表示は親場面の bg）
   ch5_free_mashiro_visit_lover_memory: "bg_tonari_inside_day",
   ch5_free_eden_adam: "bg_eden_shop",                // #1588 EDENの任意場面（第1・2章のEDENと同じ背景）
+  ch5_wang_tonari_visit: "bg_tonari_inside",        // #4010 王煙楼が tonari の一台を吸う（昼の約束）
   ch5_prep_trial_heat: "bg_tonari_inside_night",     // 仮置き bg（閉店後の試作。以下 ch5_prep_* も同じ）
   ch5_prep_trial_pack: "bg_tonari_inside_night",
   ch5_prep_trial_aroma: "bg_tonari_inside_night",
@@ -177,6 +178,11 @@ export const CH5_FREE_SCENES = Object.freeze([
   { id: "ch5_free_eden_adam", label: "二つのダブルアップル", location: "EDEN" },
 ].map(scene => Object.freeze(scene)));
 
+// 第5章に日本へ寄る人の、tonari での一台（#4010）。本人のLIMEの誘い（data/lime_messages.json の reminder_spot: tonari）を
+// 受けた昼に、daily/calendar.js の約束として読む。自由行動の並び（CH5_FREE_SCENES）には入れず、勝負までの流れを変えない。
+//   王煙楼: 段階3（ch4_longlong_fourth）で連絡先を交換した時の「いつか日本へ寄ったら、tonariの一台も」の回収
+export const CH5_GUEST_VISITS = Object.freeze({ master_hookah: "ch5_wang_tonari_visit" });
+
 // 恋人のましろの来訪で、訪問の末尾に続ける台本（#2024 A2。使い方は下の chapterFiveLoverEcho）。
 export const CH5_MASHIRO_LOVER_ECHO = Object.freeze({
   visit: "ch5_free_mashiro_visit_lover",
@@ -274,6 +280,7 @@ export const CH5_SCENE_FILES = Object.freeze({
     ...CH5_PROLOGUE.map(scene => scene.id),
     "ch5_unrecorded_day",
     ...CH5_FREE_SCENES.map(scene => scene.id),
+    ...Object.values(CH5_GUEST_VISITS),
     ...PREP_TRIAL_IDS.flatMap(trial => [chapterFivePrepScene("trial", trial), chapterFivePrepScene("adjust", trial)]),
     chapterFivePrepScene("keep"), ...PREP_ECHO_IDS, ...SUMI_TRIAL_IDS,
     ...Object.values(CH5_MASHIRO_LOVER_ECHO),
