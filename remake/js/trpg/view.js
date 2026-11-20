@@ -987,9 +987,10 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       const node = button("", "trpg-search", () => {
         if (busy || disposed || session.snapshot().search) return;
         const result = session.search();
-        syncResources(); keepMark(); audio.play("roll"); rolled();
+        syncResources(); keepMark(); rolled();
         // じっくり調べる、も同じ劇場で（TRF29）。下の卓はもう結果を出していて、劇場が閉じると見える。
         if (rollShow({ ...result, bonus: result.base }, { title: "じっくり調べる", who, statName: statLabel("eye"), labels: SEARCH_LABELS, onDone: () => {} })) return;
+        audio.play("roll");
         const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
         clearTimeout(searchTimer);
         searchTimer = setTimeout(() => {
@@ -1023,7 +1024,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const near = nearMissOf(result);
     const show = playRollShow(overlay, {
       title, who, rule: DICE.success + "以上で成功", dice: result.dice, thrown, bonus: result.bonus, bonusLabel: result.bonus === result.base && statName ? statName : "補正",
-      total: result.total, goal: DICE.success, grade: result.grade, special: result.special || "",
+      total: result.total, goal: DICE.success, mixed: DICE.mixed, grade: result.grade, special: result.special || "",
+      sound: kind => { if (!disposed) audio.play(kind); },
       label: special ? SPECIALS[special] : labels[result.grade] + (result.grade === "success" && !labels[result.grade].endsWith("！") ? "！" : ""),
       sub: special === "critical" ? "20の目 · 必ず成功" : result.special === "double" ? SPECIALS.double : near ? "あと" + near + "……！" : "",
       onVerdict: () => {
@@ -1203,9 +1205,9 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       thrown.forEach((node, i) => { node.dataset.throw = "ab"[i]; });
       body.querySelector(".trpg-dice-row").replaceChildren(...thrown, el("span.trpg-dice-bonus", { text: "＋" + result.bonus }));
       settleGuard = false;
-      audio.play("roll");
-      // 画面いっぱいの劇場で見せられる時は、卓の窓は結果が出るまで下で待つ（TRF29）。
+      // 画面いっぱいの劇場で見せられる時は、卓の窓は結果が出るまで下で待つ（TRF29）。音は劇場が着地に合わせて鳴らす。
       if (rollShow(result, { ...showCopy(result), onDone: () => showRollResult(pop, body, null, true) })) return;
+      audio.play("roll");
       const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (!reduced) {
         // Faces tumble while the dice are in the air, then each stops on its real value as it lands.
@@ -1291,7 +1293,6 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       body.append(el("div.trpg-rerolls", [0, 1].map(i =>
       button("", "trpg-reroll-" + i, () => {
         if (settleGuard || session.snapshot().used[session.rerollActor] || session.snapshot().teamwork < 1) return;
-        audio.play("rethrow");
         session.reroll(i);
         // 振り直しも劇場で: 選んだ1個だけがもう一度投げ込まれ、合計と評価が出直す。その間、卓の札は押せない。
         const again = session.checkResult();
@@ -1304,6 +1305,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
           pop.box.focus({ preventScroll: true });
           return;
         }
+        audio.play("rethrow");
         showRollResult(pop, body, i);
       }, { class: "trpg-reroll-choice" }))));
       body.querySelectorAll(".trpg-reroll-choice").forEach((node, i) => node.append(

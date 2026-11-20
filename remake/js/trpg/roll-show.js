@@ -1,65 +1,113 @@
-// 判定のダイス劇場（TRF29）。サイコロを振った瞬間から結果が出るまでを、卓の窓の中ではなく画面いっぱいで見せる。
+// 判定のダイス劇場（TRF29）。サイコロを振った瞬間から結果が出るまでを、卓の窓ではなく画面いっぱいで見せる。
 // 見た目だけ: 出目・補正・評価は呼び出し側（session）が決めた値をそのまま描き、ここでは何も決めない。
-// 流れ: 2個のダイスが画面の外から投げ込まれて跳ねる → 止まった瞬間に目が入る → 補正の札 → 合計が数え上がる → 評価の帯と光・紙吹雪。
-// タップ・Enter・Space で結果まで飛ばせる。動きを減らす設定と、本番のDOM以外（単体テストの簡易DOM）では null を返し、
-// 呼び出し側がこれまでどおり卓の窓の中で見せる。
+//
+// 流れ（ためて、一気に解く）:
+//   1. 2個の大きな20面ダイスが画面の外から投げ込まれる。先に1個が止まって目が入る。
+//   2. 残りの1個は宙で回り続け（スローモーション・心音）、画面に「あと 14 以上で成功！」。20の目がある時は20を、
+//      ファンブルの時は1を最後に残す（いちばん揺さぶれる順）。
+//   3. 叩きつけるように着地 → 一瞬止まって明暗のフラッシュ → 目が入り「とどいた!!／とどかない…」。
+//   4. 補正のチップが入り、目標までのゲージが伸びる。30の旗を越えたら旗が弾け飛ぶ。届かなければ「あと N」が残る。
+//   5. 評価の大文字が叩きつけられる。成功＝金・紙吹雪・集中線、クリティカル＝四方から文字が飛んでくる・金の噴水・大揺れ、
+//      ひと手間＝緑、思わぬ出来事＝落ちてくる重い文字・画面が沈む、ファンブル＝ダイスが割れ・青く暗く・文字が崩れる。
+// タップ・Enter・Space・Escape で結果まで飛ばせる。動きを減らす設定と、本番のDOM以外（単体テストの簡易DOM）では null を返し、
+// 呼び出し側がこれまでどおり卓の窓の中で見せる。揺れを減らす設定（body.reduce-shake）では揺れ・閃光・寄りを省く。
 import { el } from "../core/util.js";
 
-const EASE = { out: "cubic-bezier(.16,1,.3,1)", back: "cubic-bezier(.2,1.5,.4,1)", rise: "cubic-bezier(.2,.6,.4,1)", fall: "cubic-bezier(.6,0,.9,.5)" };
-// 投げ込みの道筋: [進み具合, 横, 縦, 大きさ]。地面に付く時刻は効果音の「カラ、カラ、カラ」（audio.js の roll）に合わせてある。
-const THROWS = [
-  { ms: 1000, spin: -620, path: [[0, -700, -250, 1.5], [.37, -190, 0, 1], [.52, -108, -112, 1.12], [.66, -44, 0, 1], [.77, -18, -42, 1.04], [.87, -4, 0, 1], [.94, 0, -8, 1], [1, 0, 0, 1]] },
-  { ms: 1080, spin: 700, path: [[0, 720, -300, 1.5], [.41, 170, 0, 1], [.55, 96, -100, 1.1], [.68, 40, 0, 1], [.78, 15, -36, 1.03], [.86, 4, 0, 1], [.93, 0, -7, 1], [1, 0, 0, 1]] },
-];
+const EASE = {
+  out: "cubic-bezier(.16,1,.3,1)", back: "cubic-bezier(.2,1.6,.4,1)", soft: "cubic-bezier(.3,.7,.4,1)",
+  rise: "cubic-bezier(.2,.6,.4,1)", fall: "cubic-bezier(.55,0,.9,.45)", slam: "cubic-bezier(.7,0,1,.6)",
+};
+// ダイスの止まる場所（ステージ 1280×720 の座標・中心）と大きさ。
+const REST = [[430, 300], [790, 300]], SIZE = 300;
+const MEGA = { success: "SUCCESS", critical: "CRITICAL!!", mixed: "PARTIAL", trouble: "MISS", fumble: "FUMBLE" };
 const CONFETTI = {
-  success: ["#f2c44e", "#fff3c9", "#7fb894", "#c94f5d", "#f6e8c5"],
-  critical: ["#ffe08a", "#ffffff", "#f2c44e", "#ff9c6b", "#8fe0c0", "#c94f5d"],
-  mixed: ["#e4c79b", "#7fb894", "#f6e8c5"],
+  success: ["#ffd76a", "#fff3c9", "#7fe0b0", "#ff6f7d", "#fff", "#f2a83a"],
+  critical: ["#ffe08a", "#ffffff", "#ffbf3c", "#ff7a59", "#8ff0d0", "#ff5f8f", "#b7a4ff"],
+  mixed: ["#a6f0c6", "#e4f7d0", "#5fc79a"],
   trouble: ["#d48a70", "#8a6f66", "#5d6f80"],
   fumble: ["#8ea2c4", "#5d6f80", "#3b4a63", "#c0cbe0"],
 };
+const CRACK = '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><path d="M50 8 44 30 54 38 40 56 50 64 36 92"/><path d="M44 30 30 34 22 26"/><path d="M54 38 70 40 78 52"/><path d="M40 56 26 62"/><path d="M50 64 64 74 70 90"/></svg>';
 const live = host => typeof document?.createElement === "function" && typeof host?.animate === "function" && host.isConnected !== false;
 const calm = () => typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
 const rand = (lo, hi) => lo + Math.random() * (hi - lo);
+const pick = list => list[Math.floor(Math.random() * list.length)];
+
+/** 1文字ずつの札にした言葉。字ごとに金属の塗り（::after）と太い縁取り（本体）を重ね、字ごとに動かせる。 */
+function word(text, cls = "") {
+  return el("span.trpg-rs-word" + (cls ? "." + cls : ""), [...String(text)].map((c, i) =>
+    el("span.c", { class: c === "…" ? "dot" : null, dataset: { c: c === " " ? " " : c }, style: { "--i": String(i) }, text: c === " " ? " " : c })));
+}
 
 /**
  * @param host 判定の窓を載せている幕（.trpg-overlay）。演出はその上に重なり、終わると自分で片付く。
- * @param show { title, who, rule, dice: [a, b], thrown: 振り直した1個の番号（最初の判定は null）, bonus, bonusLabel, total, goal,
- *               grade, special, label, sub, onVerdict: 評価が出た瞬間（一度だけ）, onDone: 片付いた後 }
+ * @param show { title, who, rule, dice: [a, b], thrown: 振り直した1個の番号（最初の判定は null）, bonus, bonusLabel, total, goal, mixed,
+ *               grade, special, label, sub, sound(kind), onVerdict: 評価が出た瞬間（一度だけ）, onDone: 片付いた後 }
  * @returns { playing, cancel(), skip() } 。演出しない環境では null。
  */
 export function playRollShow(host, show) {
   if (!live(host) || calm()) return null;
-  const { dice, thrown = null, grade = "mixed", special = "" } = show;
+  const { dice, thrown = null, grade = "mixed", special = "", goal = 30, mixed = 19, bonus = 0, total = 0 } = show;
   const tone = special === "critical" || special === "fumble" ? special : grade;
   const still = !!document.body?.classList.contains("reduce-shake");
+  const sound = kind => { try { show.sound?.(kind); } catch { /* 音が出なくても演出は続ける */ } };
   const animations = [], timers = [];
   let done = false, judged = false;
 
-  const dieNodes = dice.map((value, i) => el("div.trpg-rs-die", { dataset: { i: String(i) } }, [
-    el("i.trpg-rs-shadow"), el("span.trpg-rs-body"), el("i.trpg-rs-ring"), el("b.trpg-rs-num", { text: String(value) }),
+  // ---- どのダイスを最後に残すか: 振り直しは投げた1個。20の目・ファンブルの1は最後に（いちばん揺さぶれる順）。 ----
+  const last = thrown !== null ? thrown
+    : dice.indexOf(20) >= 0 && dice[0] !== dice[1] ? dice.indexOf(20)
+    : special === "fumble" && dice[0] !== dice[1] ? dice.indexOf(1) : 1;
+  const first = 1 - last, firstValue = dice[first];
+  const need = goal - bonus - firstValue;
+  // 最初の1個が止まった時点で決まっているか（20の目＝必ず成功、合計が最低でも届く）。決まっていれば宙の「ため」は短く。
+  const decided = firstValue === 20 ? "critical" : need <= 1 ? "success" : "";
+  const hover = decided ? 260 : 820;
+
+  // ---- 部品 ----
+  const dieNodes = dice.map((value, i) => el("div.trpg-rs-die", { dataset: { i: String(i) }, style: { left: REST[i][0] - SIZE / 2 + "px", top: REST[i][1] - SIZE / 2 + "px" } }, [
+    el("i.trpg-rs-halo"), el("i.trpg-rs-shadow"),
+    el("div.trpg-rs-spin", el("span.trpg-rs-body")),
+    el("i.trpg-rs-ring"), el("b.trpg-rs-num", [word(value, "num")]),
+    el("span.trpg-rs-crack", { html: CRACK }),
   ]));
-  const plus = [el("span.trpg-rs-plus", { text: "＋" }), el("span.trpg-rs-plus", { text: "＋" })];
-  const chip = el("div.trpg-rs-chip", [el("small", { text: show.bonusLabel || "補正" }), el("b", { text: "＋" + show.bonus })]);
-  const totalNumber = el("strong", { text: "0" });
-  const total = el("div.trpg-rs-total", [el("small", { text: "合計" }), totalNumber, el("span.trpg-rs-goal", { text: "目標 " + show.goal })]);
-  const band = el("i.trpg-rs-band"), verdictLabel = el("strong", { text: show.label });
+  const plus = [el("span.trpg-rs-plus.a", { text: "+" }), el("span.trpg-rs-plus.b", { text: "+" })];
+  const chip = el("div.trpg-rs-chip", [el("small", { text: show.bonusLabel || "補正" }), el("b", { text: "＋" + bonus })]);
+  const head = el("header.trpg-rs-head", [
+    el("small.trpg-rs-kicker", { text: thrown === null ? "DICE ROLL" : "RE-ROLL" }),
+    el("strong", { text: show.title }), show.who ? el("span", { text: show.who + (show.bonusLabel && show.bonusLabel !== "補正" ? " · " + show.bonusLabel : "") }) : null,
+  ].filter(Boolean));
+  const goalStamp = el("i.trpg-rs-stamp");
+  const goalNode = el("div.trpg-rs-goal", [el("small", { text: "TARGET" }), el("b", { text: String(goal) }), el("span", { text: "以上で成功" }), goalStamp]);
+  const needNode = el("div.trpg-rs-need", { dataset: { state: "wait" } });
+  const sumNumber = el("strong", [word("0", "sum")]);
+  const sum = el("div.trpg-rs-sum", [el("small", { text: "TOTAL" }), sumNumber]);
+  // 目標までのゲージ: 左端＝出目の最小の合計、右端＝最大の合計。19と30で色が変わり、30に旗。
+  const lo = 2 + bonus, hi = 40 + bonus, at = value => Math.max(0, Math.min(1, (value - lo) / (hi - lo)));
+  const fill = el("i.trpg-rs-fill"), head2 = el("i.trpg-rs-tip");
+  const flag = el("span.trpg-rs-flag", { style: { left: at(goal) * 100 + "%" } }, [el("b", { text: String(goal) })]);
+  const gap = el("span.trpg-rs-gap");
+  const meter = el("div.trpg-rs-meter", { style: { "--mixed": at(mixed) * 100 + "%", "--goal": at(goal) * 100 + "%" } }, [
+    el("i.trpg-rs-track"), fill, head2, gap, el("i.trpg-rs-tick", { style: { left: at(mixed) * 100 + "%" } }), flag,
+  ]);
+  const verdictWord = word(String(show.label).replace(/…+$/, ""), "verdict");
+  const verdictMega = el("span.trpg-rs-mega", { text: MEGA[tone] || "" });
   const verdictSub = show.sub ? el("em", { text: show.sub }) : null;
-  const verdict = el("div.trpg-rs-verdict", [band, verdictLabel, verdictSub].filter(Boolean));
-  const head = el("header.trpg-rs-head", [el("small", { text: [thrown === null ? "" : "振り直し", show.who].filter(Boolean).join(" · ") }),
-    el("strong", { text: show.title }), el("span", { text: show.rule })]);
-  const frame = el("div.trpg-rs-frame", [head, el("div.trpg-rs-dice", [dieNodes[0], plus[0], dieNodes[1], plus[1], chip]), total, verdict]);
-  const rays = el("i.trpg-rs-rays"), burst = el("div.trpg-rs-burst"), flash = el("i.trpg-rs-flash");
+  const verdict = el("div.trpg-rs-verdict", [verdictMega, el("strong", [verdictWord]), verdictSub].filter(Boolean));
+  const camera = el("div.trpg-rs-camera", [head, goalNode, plus[0], ...dieNodes, plus[1], chip, needNode, sum, meter, verdict]);
+  const lines = el("i.trpg-rs-lines"), rays = el("i.trpg-rs-rays"), vignette = el("i.trpg-rs-vignette"), tint = el("i.trpg-rs-tint");
+  const burst = el("div.trpg-rs-burst"), flash = el("i.trpg-rs-flash");
   const hint = el("small.trpg-rs-skip", { text: "タップでスキップ" });
-  const node = el("div.trpg-roll-show", { "aria-hidden": "true", dataset: { grade, special, tone, phase: "throw" } },
-    [el("i.trpg-rs-veil"), rays, el("i.trpg-rs-bar.top"), el("i.trpg-rs-bar.bottom"), frame, burst, flash, hint]);
+  const node = el("div.trpg-roll-show", { "aria-hidden": "true", dataset: { grade, special, tone, phase: "throw", ...(thrown === null ? {} : { thrown: String(thrown) }) } },
+    [el("i.trpg-rs-veil"), tint, rays, lines, camera, vignette, burst, flash, hint]);
 
   const animate = (target, frames, options) => {
+    if (!target) return null;
     const animation = target.animate(frames, { fill: "both", ...options });
     animations.push(animation);
     return animation;
   };
-  const at = (ms, fn) => { timers.push(setTimeout(() => { if (!done) fn(); }, ms)); };
+  const after = (ms, fn) => { timers.push(setTimeout(() => { if (!done) fn(); }, ms)); };
   function cleanup() {
     done = true; handle.playing = false;
     for (const timer of timers) clearTimeout(timer);
@@ -97,114 +145,314 @@ export function playRollShow(host, show) {
   host.addEventListener("keydown", onKey, true);
   document.addEventListener("visibilitychange", onHide);
   host.append(node);
-  at(320, () => { armed = true; });
+  after(320, () => { armed = true; });
 
-  // ---- 幕と見出し ----
-  animate(node, [{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: "ease-out" });
-  animate(head, [{ opacity: 0, transform: "translateY(-18px)" }, { opacity: 1, transform: "translateY(0)" }], { duration: 320, delay: 60, easing: EASE.out });
-  animate(hint, [{ opacity: 0 }, { opacity: .7 }], { duration: 300, delay: 500 });
-
-  // ---- 投げ込み ----
-  const kick = power => {
-    if (still) return;
-    animate(frame, [{ translate: "0 " + power + "px" }, { translate: "0 " + -power * .4 + "px" }, { translate: "0 0" }], { duration: 170, easing: "ease-out", fill: "none" });
-  };
-  const sparks = (die, count, color) => {
-    for (let n = 0; n < count; n++) {
-      const angle = n / count * Math.PI * 2 + rand(-.25, .25), reach = rand(90, 170);
-      const spark = el("i.trpg-rs-spark", { style: { background: color } });
-      die.append(spark);
-      animate(spark, [{ opacity: 1, transform: "translate(-50%,-50%) scale(1)" },
-        { opacity: 0, transform: `translate(calc(-50% + ${Math.cos(angle) * reach}px), calc(-50% + ${Math.sin(angle) * reach * .7}px)) scale(.2)` }],
-      { duration: rand(380, 560), easing: EASE.out });
+  // ---- 画面の手応え: 揺れ（大→小に収束・少しランダム）、明暗のフラッシュ、寄り ----
+  function shake(amp, ms = 420, vertical = .45) {
+    if (still || amp <= 0) return;
+    const steps = 9, frames = [];
+    for (let n = 0; n <= steps; n++) {
+      const k = n === steps ? 0 : (1 - n / steps) ** 1.6 * (n % 2 ? -1 : 1);
+      frames.push({ translate: `${(k * amp + rand(-1, 1) * amp * .15).toFixed(1)}px ${(Math.abs(k) * amp * vertical * (n % 3 ? 1 : -1)).toFixed(1)}px`, offset: n / steps });
     }
-  };
-  /** ダイスが止まって、目が入る。20 は金、ファンブルの 1 は冷たい色で、評価の前から分かる。 */
-  const land = (i, quiet = false) => {
+    animate(camera, frames, { duration: ms, easing: "linear", fill: "none", composite: "add" });
+  }
+  function blink(colors, ms = 360, peak = .85) {
+    if (still) return;
+    const frames = colors.map((color, n) => ({ background: color, opacity: n === colors.length - 1 ? 0 : peak * (1 - n / colors.length * .5), offset: n / (colors.length - 1) }));
+    animate(flash, frames, { duration: ms, easing: "linear", fill: "none" });
+  }
+  let camScale = 1;
+  function zoom(scale, ms, origin = "50% 50%", easing = EASE.out) {
+    if (still) return;
+    camera.style.transformOrigin = origin;
+    animate(camera, [{ scale: String(camScale) }, { scale: String(scale) }], { duration: ms, easing });
+    camScale = scale;
+  }
+  function sparks(die, count, colors, reach = [110, 220]) {
+    for (let n = 0; n < count; n++) {
+      const angle = n / count * Math.PI * 2 + rand(-.3, .3), r = rand(...reach), long = rand(.8, 2.4);
+      const spark = el("i.trpg-rs-spark", { style: { background: pick(colors), width: (8 * long).toFixed(0) + "px", rotate: angle + "rad" } });
+      die.append(spark);
+      animate(spark, [{ opacity: 1, translate: "-50% -50%", scale: "1.4" },
+        { opacity: 0, translate: `calc(-50% + ${(Math.cos(angle) * r).toFixed(0)}px) calc(-50% + ${(Math.sin(angle) * r).toFixed(0)}px)`, scale: ".2" }],
+      { duration: rand(360, 620), easing: EASE.out });
+    }
+  }
+  /** 目が入る: 叩きつけるように大きく入り、光の輪と火花。20は金の後光、ファンブルの1はひびと冷たい色。 */
+  function reveal(i, { quiet = false, big = false } = {}) {
     const die = dieNodes[i], value = dice[i];
     const hot = value === 20 && grade === "success", cold = value === 1 && special === "fumble";
+    die.dataset.state = "rest";
     die.dataset.landed = "true";
     if (hot) die.dataset.glow = "critical"; else if (cold) die.dataset.glow = "fumble";
     if (quiet) return;
-    animate(die.querySelector(".trpg-rs-num"), [{ opacity: 0, transform: "translate(-50%,-50%) scale(2.8)" }, { opacity: 1, transform: "translate(-50%,-50%) scale(1)" }],
-      { duration: 260, easing: EASE.back });
-    animate(die.querySelector(".trpg-rs-ring"), [{ opacity: .95, transform: "translate(-50%,-50%) scale(.35)" }, { opacity: 0, transform: "translate(-50%,-50%) scale(" + (hot ? 3.4 : 2.1) + ")" }],
-      { duration: hot ? 720 : 480, easing: EASE.out });
-    sparks(die, hot ? 16 : 8, hot ? "#ffe08a" : cold ? "#8ea2c4" : "#fff3c9");
-    kick(hot || cold ? 10 : 6);
-  };
-  const toss = i => {
-    const die = dieNodes[i], body = die.querySelector(".trpg-rs-body"), plan = THROWS[i];
-    die.dataset.state = "tumbling";
-    animate(die, plan.path.map(([offset, x, y, scale], n, all) => ({
-      offset, transform: `translate(${x}px, ${y}px) scale(${scale})`,
-      easing: n === 0 ? EASE.fall : n === all.length - 1 ? "linear" : y === 0 ? EASE.rise : EASE.fall,
-    })), { duration: plan.ms });
-    animate(die, [{ opacity: 0 }, { opacity: 1 }], { duration: 90, composite: "replace" });
-    animate(body, [{ rotate: plan.spin + "deg" }, { rotate: "0deg" }], { duration: plan.ms, easing: "cubic-bezier(.25,.6,.3,1)" });
-    animate(die.querySelector(".trpg-rs-shadow"), plan.path.map(([offset, , y]) => ({ offset, opacity: .55 + y / 600, transform: `translate(-50%, ${-y * .9}px) scale(${1 - y / 400})` })), { duration: plan.ms });
-    // 最初に卓へ当たった瞬間は、画面が小さく沈む。
-    at(plan.path[1][0] * plan.ms, () => kick(4));
-    at(plan.ms, () => { die.dataset.state = "rest"; land(i); });
-    return plan.ms;
-  };
-  if (thrown !== null) node.dataset.thrown = String(thrown);
-  const tossed = dice.map((_, i) => i).filter(i => thrown === null || thrown === i);
-  for (const i of [0, 1]) if (!tossed.includes(i)) { dieNodes[i].dataset.state = "rest"; dieNodes[i].dataset.held = "true"; land(i, true); }
-  const landedAt = Math.max(...tossed.map(toss));
+    const num = die.querySelector(".trpg-rs-num");
+    animate(num, [{ opacity: 0, scale: big ? "3.6" : "2.6", rotate: "-14deg" }, { opacity: 1, scale: ".9", rotate: "3deg", offset: .62 }, { opacity: 1, scale: "1", rotate: "0deg" }],
+      { duration: big ? 340 : 260, easing: EASE.out });
+    animate(die.querySelector(".trpg-rs-spin"), [{ scale: "1.22 .78" }, { scale: ".92 1.1", offset: .45 }, { scale: "1 1" }], { duration: 260, easing: EASE.soft, fill: "none" });
+    animate(die.querySelector(".trpg-rs-ring"), [{ opacity: 1, scale: ".3" }, { opacity: 0, scale: hot ? "3.6" : big ? "2.8" : "2.1" }],
+      { duration: hot ? 760 : 480, easing: EASE.out });
+    sparks(die, hot ? 22 : big ? 14 : 9, hot ? ["#ffe08a", "#fff", "#ffb84a"] : cold ? ["#8ea2c4", "#c9d6ee"] : ["#fff3c9", "#ffd76a"], hot ? [160, 320] : [110, 220]);
+    if (hot) {
+      animate(die.querySelector(".trpg-rs-halo"), [{ opacity: 0, scale: ".2" }, { opacity: 1, scale: "1.15", offset: .4 }, { opacity: .85, scale: "1" }], { duration: 520, easing: EASE.out });
+      blink(["#fff", "#2a1600", "#fff4c2", "#ffe08a"], 420, .9);
+      shake(16, 520, .5);
+      sound("critical-hit");
+    } else if (cold) {
+      die.querySelectorAll(".trpg-rs-crack path").forEach((path, n) => animate(path, [{ strokeDashoffset: "120" }, { strokeDashoffset: "0" }], { duration: 260, delay: 90 + n * 40, easing: EASE.out }));
+      blink(["#0b1222", "#c9d6ee", "#0b1222"], 380, .7);
+      shake(11, 460, .3);
+      sound("crack");
+    } else {
+      shake(big ? 10 : 5, big ? 380 : 260, big ? .5 : 1);
+      if (big) blink(["#fff", "#000", "#fff"], 300, .55);
+    }
+  }
 
-  // ---- 補正の札 → 合計 → 評価 ----
-  const chipAt = thrown === null ? landedAt + 230 : 0, totalAt = (thrown === null ? chipAt + 260 : landedAt + 260), countMs = 460;
-  const verdictAt = totalAt + countMs + 130, endAt = verdictAt + (special === "critical" ? 1750 : grade === "success" ? 1450 : 1250);
+  // ---- 1. 幕と見出し ----
+  animate(node, [{ opacity: 0 }, { opacity: 1 }], { duration: 120, easing: "linear" });
+  animate(node.querySelector(".trpg-rs-veil"), [{ clipPath: "polygon(0 0, 0 0, -30% 100%, -30% 100%)" }, { clipPath: "polygon(0 0, 130% 0, 100% 100%, -30% 100%)" }], { duration: 300, easing: EASE.out });
+  animate(lines, [{ opacity: 0 }, { opacity: .32, offset: .3 }, { opacity: .14 }], { duration: 900, easing: "ease-out" });
+  animate(head, [{ opacity: 0, transform: "translateX(-120px) skewX(-20deg)" }, { opacity: 1, transform: "none" }], { duration: 360, delay: 80, easing: EASE.out });
+  animate(goalNode, [{ opacity: 0, scale: "2.4", rotate: "20deg" }, { opacity: 1, scale: "1", rotate: "0deg" }], { duration: 380, delay: 200, easing: EASE.back });
+  animate(hint, [{ opacity: 0 }, { opacity: .75 }], { duration: 300, delay: 600 });
+  sound("shake");
+
+  // ---- 2. 投げ込み ----
+  /** 宙の道筋: [時刻ms, 横, 縦, 大きさ]。止まる場所からのずれ。大きいほど手前（カメラに近い）。 */
+  function fly(i, points, spins, { state = "tumbling" } = {}) {
+    const die = dieNodes[i], end = points[points.length - 1][0];
+    die.dataset.state = state;
+    animate(die, points.map(([t, x, y, s], n) => ({
+      offset: t / end, transform: `translate(${x}px, ${y}px) scale(${s})`,
+      easing: n === points.length - 1 ? "linear" : points[n + 1][2] === 0 ? EASE.slam : y === 0 ? EASE.rise : EASE.soft,
+    })), { duration: end });
+    animate(die, [{ opacity: 0 }, { opacity: 1 }], { duration: 80, composite: "replace" });
+    animate(die.querySelector(".trpg-rs-spin"), spins.map(([t, r]) => ({ offset: t / end, rotate: r + "deg" })), { duration: end, easing: "linear" });
+    animate(die.querySelector(".trpg-rs-shadow"), points.map(([t, , y, s]) => ({ offset: t / end, opacity: Math.max(.08, .6 + y / 500), scale: String(Math.max(.4, 1 - Math.abs(y) / 420) * s), translate: `0 ${-y}px` })), { duration: end });
+  }
+  // 先に止まる1個: 左下の手前から投げ込まれ、跳ねて止まる。
+  const firstRest = 880;
   if (thrown === null) {
-    plus.forEach((sign, n) => animate(sign, [{ opacity: 0 }, { opacity: 1 }], { duration: 180, delay: chipAt - 60 + n * 60 }));
-    animate(chip, [{ opacity: 0, transform: "scale(.2) rotate(-40deg)" }, { opacity: 1, transform: "scale(1) rotate(0)" }], { duration: 300, delay: chipAt, easing: EASE.back });
+    const side = first === 0 ? -1 : 1;
+    fly(first, [[0, side * 820, 320, 1.9], [300, side * 300, -220, 1.36], [540, 0, 0, 1], [660, 0, -70, 1.06], [770, 0, 0, 1], [830, 0, -12, 1.01], [firstRest, 0, 0, 1]],
+      [[0, side * -980], [540, side * -140], [770, side * -18], [firstRest, 0]]);
+    after(540, () => { shake(6, 220, 1); sound("die"); });
+    after(firstRest, () => reveal(first));
+  } else {
+    // 振り直し: 残した1個は目を見せたまま卓にいて、少し沈んでいる。
+    dieNodes[first].dataset.held = "true";
+    reveal(first, { quiet: true });
+    animate(dieNodes[first], [{ opacity: 0 }, { opacity: 1 }], { duration: 200 });
   }
-  animate(total, [{ opacity: 0, transform: "translateY(22px) scale(.8)" }, { opacity: 1, transform: "translateY(0) scale(1)" }], { duration: 220, delay: totalAt, easing: EASE.out });
-  for (let step = 1; step <= 12; step++) {
-    at(totalAt + countMs * step / 12, () => { totalNumber.textContent = String(Math.round(show.total * (1 - (1 - step / 12) ** 2))); });
+  // 最後の1個: 高く放られて宙で回り続け、ためてから叩きつける。
+  const hoverAt = thrown === null ? firstRest + 40 : 520, slamAt = hoverAt + hover + 300;
+  {
+    const side = last === 0 ? -1 : 1;
+    // 着地の後 90ms は動かさない（止め）。それから小さく跳ねて落ち着く。
+    fly(last, [[0, side * 860, 340, 1.95], [380, side * 320, -230, 1.45], [hoverAt, side * 70, -190, 1.3],
+      [hoverAt + hover / 2, side * 40, -205, 1.32], [hoverAt + hover, side * 15, -195, 1.34], [hoverAt + hover + 110, 0, -235, 1.42], [slamAt, 0, 0, 1],
+      [slamAt + 90, 0, 0, 1], [slamAt + 190, 0, -30, 1.03], [slamAt + 290, 0, 0, 1]],
+    [[0, side * 1100], [380, side * 420], [hoverAt, side * 150], [hoverAt + hover, side * 60], [slamAt, 0], [slamAt + 290, 0]]);
+    // 宙で「ため」ている間は、コマ送りもゆっくり（スローモーション）。叩きつける直前に速さが戻る。
+    after(hoverAt, () => { if (dieNodes[last].dataset.state === "tumbling") dieNodes[last].dataset.state = "hover"; });
+    after(hoverAt + hover, () => { if (dieNodes[last].dataset.state === "hover") dieNodes[last].dataset.state = "tumbling"; });
   }
-  at(verdictAt, () => {
+
+  // ---- 3. ため: 「あと N 以上で成功！」・心音・寄り ----
+  const needAt = thrown === null ? firstRest + 60 : 380;
+  function needCopy() {
+    if (decided === "critical") return { tone: "critical", kicker: "20の目", big: "確定", text: "クリティカル!!" };
+    if (decided === "success") return { tone: "success", kicker: "もう", big: "届く", text: "成功確定！" };
+    if (need > 20) return { tone: "danger", kicker: "LAST HOPE", big: "20", text: "が出れば…！" };
+    return { tone: firstValue === 1 ? "danger" : "need", kicker: "NEED", big: String(need), text: need === 20 ? "を出せ！" : "以上で成功！" };
+  }
+  after(needAt, () => {
+    const copy = needCopy();
+    needNode.dataset.state = copy.tone;
+    needNode.replaceChildren(el("small", { text: copy.kicker }), el("b", [word(copy.big, "need")]), el("span", { text: copy.text }),
+      ...(firstValue === 1 && !decided ? [el("em", { text: "1の目… ファンブルの危機！" })] : []));
+    animate(needNode, [{ opacity: 0, translate: "-260px 0", scale: "1 .2" }, { opacity: 1, translate: "0 0", scale: "1 1" }], { duration: 300, easing: EASE.out });
+    if (!decided) {
+      sound("tension");
+      node.dataset.phase = "tension";
+      zoom(1.07, hover + 260, `${REST[last][0]}px ${REST[last][1] - 120}px`, "ease-in");
+      animate(vignette, [{ opacity: 0 }, { opacity: .9 }], { duration: hover, easing: "ease-in" });
+      animate(lines, [{ opacity: .14 }, { opacity: .5 }], { duration: hover, easing: "ease-in" });
+      const beats = Math.max(1, Math.floor(hover / 380));
+      for (let n = 0; n < beats; n++) after(n * 380 + 40, () => {
+        sound("beat");
+        animate(needNode.querySelector(".trpg-rs-word"), [{ scale: "1" }, { scale: "1.22" }, { scale: "1" }], { duration: 260, easing: EASE.out, fill: "none" });
+        animate(vignette, [{ scale: "1" }, { scale: "1.06" }, { scale: "1" }], { duration: 300, easing: EASE.out, fill: "none", composite: "add" });
+      });
+    }
+  });
+
+  // ---- 4. 叩きつけ: 一瞬止まって、目が入り、届いたか分かる ----
+  after(slamAt - 90, () => sound("whoosh"));
+  after(slamAt, () => {
+    node.dataset.phase = "slam";
+    reveal(last, { big: true });
+    sound("die");
+    if (!still) {
+      camera.style.transformOrigin = `${REST[last][0]}px ${REST[last][1]}px`;
+      animate(camera, [{ scale: decided ? "1" : "1.07" }, { scale: "1.13", offset: .25 }, { scale: ".98", offset: .7 }, { scale: "1" }], { duration: 420, easing: EASE.out });
+    }
+    animate(vignette, [{ opacity: decided ? 0 : .9 }, { opacity: 0 }], { duration: 400, easing: "ease-out" });
+    const reached = grade === "success";
+    const copy = special === "critical" ? ["CRITICAL", "20!!", "必ず成功！"] : special === "fumble" ? ["FUMBLE", "1…", "ファンブル…"]
+      : reached ? ["CLEAR", "とどいた", "!!"] : grade === "mixed" ? ["あと", String(goal - total), "…届かない"] : ["MISS", "とどかない", "…"];
+    needNode.dataset.state = "result-" + tone;
+    needNode.replaceChildren(el("small", { text: copy[0] }), el("b", [word(copy[1], "need")]), el("span", { text: copy[2] }));
+    animate(needNode, [{ scale: "1.3", filter: "brightness(2.4)" }, { scale: "1", filter: "brightness(1)" }], { duration: 300, easing: EASE.out });
+    animate(lines, [{ opacity: .7 }, { opacity: tone === "success" || tone === "critical" ? .3 : .06 }], { duration: 500, easing: "ease-out" });
+  });
+
+  // ---- 5. 補正のチップと、目標までのゲージ ----
+  const sumAt = slamAt + 380, meterAt = sumAt + 160, meterMs = 620, verdictAt = meterAt + meterMs + 200;
+  after(sumAt, () => {
+    node.dataset.phase = "sum";
+    animate(needNode, [{ opacity: 1, translate: "0 0" }, { opacity: 0, translate: "160px 0" }], { duration: 150, easing: "ease-in" });
+    animate(chip, [{ opacity: 0, translate: "420px -60px", rotate: "160deg", scale: "1.6" }, { opacity: 1, translate: "0 0", rotate: "0deg", scale: "1" }], { duration: 300, easing: EASE.out });
+    plus.forEach((sign, n) => animate(sign, [{ opacity: 0, scale: "0" }, { opacity: 1, scale: "1" }], { duration: 220, delay: n * 70, easing: EASE.back }));
+    animate(sum, [{ opacity: 0, translate: "0 40px" }, { opacity: 1, translate: "0 0" }], { duration: 220, delay: 150, easing: EASE.out });
+    animate(meter, [{ opacity: 0, scale: ".6 1" }, { opacity: 1, scale: "1 1" }], { duration: 240, easing: EASE.out });
+    sound("chip");
+  });
+  // ゲージは ease-out（3乗）で伸びる。合計の数字も同じ速さで数え上がり、30の旗を越えた瞬間に旗が弾ける。
+  const shown = special === "critical" ? Math.max(total, goal + 2) : total;
+  const ease = t => 1 - (1 - t) ** 3, timeAt = p => 1 - Math.cbrt(1 - p);
+  const filled = at(total), surge = special === "critical" && total < goal;
+  after(meterAt, () => {
+    animate(fill, [{ scale: "0 1" }, { scale: `${filled} 1` }], { duration: meterMs, easing: "cubic-bezier(.33,1,.68,1)" });
+    animate(head2, [{ left: "0%" }, { left: filled * 100 + "%" }], { duration: meterMs, easing: "cubic-bezier(.33,1,.68,1)" });
+    const steps = 14;
+    for (let n = 1; n <= steps; n++) after(meterMs * n / steps, () => {
+      const value = Math.round(lo + (total - lo) * ease(n / steps));
+      sumNumber.replaceChildren(word(n === steps ? total : value, "sum"));
+      sum.dataset.zone = value >= goal ? "success" : value >= mixed ? "mixed" : "trouble";
+      meter.dataset.zone = sum.dataset.zone;
+    });
+    if (total >= goal) {
+      after(meterMs * timeAt(Math.min(1, (at(goal) - 0) / Math.max(filled, .001))), breakFlag);
+    } else if (!surge) {
+      after(meterMs + 40, () => {
+        gap.style.left = filled * 100 + "%"; gap.style.width = (at(goal) - filled) * 100 + "%";
+        gap.dataset.label = "あと " + (goal - total);
+        meter.dataset.short = "true";
+        animate(gap, [{ opacity: 0, scale: "0 1" }, { opacity: 1, scale: "1 1" }], { duration: 260, easing: EASE.out });
+        animate(head2, [{ translate: "-50% -50%" }, { translate: "calc(-50% - 7px) -50%" }, { translate: "calc(-50% + 7px) -50%" }, { translate: "-50% -50%" }], { duration: 260, iterations: 2, fill: "none" });
+        sound("short");
+      });
+    }
+    if (surge) {
+      // 20の目: 合計が届かなくても、金の光がゲージを旗の先まで押し上げる。
+      after(meterMs + 60, () => {
+        meter.dataset.surge = "true";
+        animate(fill, [{ scale: `${filled} 1` }, { scale: `${at(shown)} 1` }], { duration: 240, easing: EASE.out });
+        animate(head2, [{ left: filled * 100 + "%" }, { left: at(shown) * 100 + "%" }], { duration: 240, easing: EASE.out });
+        after(140, breakFlag);
+      });
+    }
+  });
+  function breakFlag() {
+    meter.dataset.cleared = "true";
+    animate(flag, [{ translate: "-50% 0", rotate: "0deg", opacity: 1 }, { translate: "40px -90px", rotate: "38deg", opacity: 1, offset: .6 }, { translate: "70px -60px", rotate: "60deg", opacity: 0 }],
+      { duration: 520, easing: EASE.out });
+    sparks(meter, 12, ["#ffe08a", "#fff", "#ffb84a"], [60, 140]);
+    meter.querySelectorAll(".trpg-rs-spark").forEach(spark => { spark.style.left = at(goal) * 100 + "%"; spark.style.top = "50%"; });
+    shake(6, 240, 1);
+    sound("clear");
+  }
+
+  // ---- 6. 評価: 大文字が叩きつけられる ----
+  after(verdictAt, () => {
     node.dataset.phase = "verdict";
-    totalNumber.textContent = String(show.total);
     judge();
-    animate(totalNumber, [{ transform: "scale(1.45)" }, { transform: "scale(1)" }], { duration: 320, easing: EASE.back, fill: "none" });
-    animate(band, [{ transform: "skewX(-12deg) scaleX(0)" }, { transform: "skewX(-12deg) scaleX(1)" }], { duration: 260, easing: EASE.out });
-    animate(verdictLabel, [{ opacity: 0, transform: "scale(3.2)" }, { opacity: 1, transform: "scale(1)" }], { duration: 300, delay: 60, easing: EASE.back });
-    if (verdictSub) animate(verdictSub, [{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "translateY(0)" }], { duration: 240, delay: 320, easing: EASE.out });
+    sound("slam");
+    const chars = [...verdictWord.children];
     animate(verdict, [{ opacity: 0 }, { opacity: 1 }], { duration: 60 });
-    if (!still) animate(flash, [{ opacity: 0 }, { opacity: tone === "critical" ? .85 : tone === "success" ? .6 : .35, offset: .12 }, { opacity: 0 }], { duration: tone === "critical" ? 700 : 480, easing: "ease-out" });
-    if (grade === "success") animate(rays, [{ opacity: 0, scale: ".5" }, { opacity: special === "critical" ? .9 : .55, scale: "1" }], { duration: 420, easing: EASE.out });
-    if (!still && tone !== "success" && tone !== "mixed") {
-      const amp = tone === "critical" ? 12 : tone === "fumble" ? 9 : 5;
-      animate(frame, [0, 1, -1, .7, -.5, .3, 0].map((k, n, all) => ({ translate: `${k * amp}px ${(n % 2 ? -1 : 1) * Math.abs(k) * amp * .4}px`, offset: n / (all.length - 1) })), { duration: 440, easing: "linear", fill: "none" });
+    animate(verdictMega, [{ opacity: 0, translate: "30% 0" }, { opacity: 1, translate: "0 0", offset: .25 }, { opacity: 1, translate: "-8% 0" }], { duration: 2200, easing: EASE.out });
+    // サイコロは少し退いて、言葉を主役に（合計とゲージは届いたかを見せるので、そのまま）。
+    for (const part of [...dieNodes, ...plus, chip, needNode]) {
+      animate(part, [{ filter: "brightness(1) blur(0px)" }, { filter: "brightness(.5) blur(2px)" }], { duration: 260, easing: "ease-out" });
+    }
+    dieNodes.forEach(die => animate(die, [{ scale: "1" }, { scale: ".9" }], { duration: 320, easing: EASE.out }));
+    animate(tint, [{ opacity: 0 }, { opacity: 1 }], { duration: 240, easing: "ease-out" });
+    if (tone === "critical") {
+      chars.forEach((c, n) => {
+        const a = rand(0, Math.PI * 2);
+        animate(c, [{ opacity: 0, translate: `${Math.cos(a) * 900}px ${Math.sin(a) * 600}px`, rotate: rand(-540, 540) + "deg", scale: "3" },
+          { opacity: 1, translate: "0 0", rotate: "0deg", scale: "1" }], { duration: 380, delay: n * 45, easing: EASE.out });
+      });
+      after(chars.length * 45 + 300, () => { shake(26, 700, .55); blink(["#fff", "#3a2000", "#fff6cf", "#ffe08a", "#fff"], 560, .9); sound("boom"); });
+      animate(rays, [{ opacity: 0, scale: ".3" }, { opacity: 1, scale: "1.1" }], { duration: 500, easing: EASE.out });
+    } else if (tone === "success") {
+      chars.forEach((c, n) => animate(c, [{ opacity: 0, scale: "3.2", translate: "0 -60px", rotate: rand(-24, 24) + "deg" },
+        { opacity: 1, scale: ".9", translate: "0 6px", rotate: "0deg", offset: .7 }, { opacity: 1, scale: "1", translate: "0 0" }], { duration: 300, delay: n * 55, easing: EASE.out }));
+      after(chars.length * 55 + 160, () => { shake(14, 480, .5); blink(["#fff", "#120c00", "#fff7d6"], 340, .75); });
+      animate(rays, [{ opacity: 0, scale: ".4" }, { opacity: .75, scale: "1" }], { duration: 460, easing: EASE.out });
+    } else if (tone === "mixed") {
+      chars.forEach((c, n) => animate(c, [{ opacity: 0, translate: "240px 0", transform: "skewX(-30deg)" }, { opacity: 1, translate: "0 0", transform: "none" }], { duration: 280, delay: n * 38, easing: EASE.out }));
+      after(chars.length * 38 + 200, () => shake(7, 300, .3));
+    } else if (tone === "trouble") {
+      chars.forEach((c, n) => animate(c, [{ opacity: 0, translate: "0 -420px" }, { opacity: 1, translate: "0 0", offset: .55, easing: "ease-out" },
+        { translate: "0 -36px", offset: .72, easing: "ease-in" }, { translate: "0 0", offset: .86 }, { translate: "0 -8px", offset: .93 }, { opacity: 1, translate: "0 0" }],
+      { duration: 640, delay: n * 60, easing: "cubic-bezier(.5,0,1,.6)" }));
+      after(chars.length * 60 + 300, () => { shake(10, 420, 1); });
+      if (!still) animate(camera, [{ rotate: "0deg" }, { rotate: "-1.6deg" }], { duration: 700, delay: 300, easing: EASE.out });
+    } else if (tone === "fumble") {
+      chars.forEach((c, n) => {
+        animate(c, [{ opacity: 0, scale: "1.8" }, { opacity: 1, scale: "1" }], { duration: 200, delay: n * 40, easing: EASE.out });
+        // 字が力尽きて、ばらばらに崩れ落ちる。
+        animate(c, [{ translate: "0 0", rotate: "0deg" }, { translate: `${rand(-14, 14)}px ${rand(30, 70)}px`, rotate: rand(-28, 28) + "deg" }],
+          { duration: 700, delay: 760 + n * 70, easing: "cubic-bezier(.5,0,.8,.4)", composite: "add" });
+      });
+      after(120, () => { shake(18, 560, .8); blink(["#000", "#c9d6ee", "#000", "#3b4a63"], 520, .8); sound("boom"); });
+      if (!still) animate(camera, [{ rotate: "0deg" }, { rotate: "2.6deg" }], { duration: 1400, delay: 500, easing: EASE.soft });
+    }
+    if (verdictSub) animate(verdictSub, [{ opacity: 0, translate: "0 24px", scale: ".6" }, { opacity: 1, translate: "0 0", scale: "1" }],
+      { duration: 280, delay: chars.length * 50 + 200, easing: EASE.back });
+    if (grade === "success") {
+      goalNode.dataset.result = "clear";
+      animate(goalStamp, [{ opacity: 0, scale: "3", rotate: "-30deg" }, { opacity: 1, scale: "1", rotate: "-12deg" }], { duration: 260, delay: 300, easing: EASE.back });
+    } else {
+      goalNode.dataset.result = "miss";
+      animate(goalStamp, [{ opacity: 0, scale: "3" }, { opacity: 1, scale: "1" }], { duration: 240, delay: 300, easing: EASE.out });
     }
     confetti();
   });
-  /** 評価ごとの紙吹雪: 成功は中央から弾け、クリティカルは左右の下からも吹き上がる。うまくいかない時は、静かに降るだけ。 */
+  /** 評価ごとの紙吹雪: 成功は中央から弾け、クリティカルは左右の下から噴き上がる。うまくいかない時は、静かに降るだけ。 */
   function confetti() {
     const colors = CONFETTI[tone], pieces = [];
     const add = (count, make) => { for (let n = 0; n < count; n++) pieces.push(make(n, count)); };
     if (tone === "success" || tone === "critical") {
-      add(tone === "critical" ? 70 : 46, () => { const a = rand(0, Math.PI * 2), r = rand(180, 620); return { x: 50, y: 58, dx: Math.cos(a) * r, dy: Math.sin(a) * r * .6 - 120, fall: rand(120, 320) }; });
-      if (tone === "critical") for (const side of [-1, 1]) add(34, () => ({ x: side < 0 ? 4 : 96, y: 100, dx: -side * rand(120, 620), dy: -rand(320, 680), fall: rand(260, 520), late: rand(80, 320) }));
+      add(tone === "critical" ? 64 : 52, () => { const a = rand(0, Math.PI * 2), r = rand(220, 700); return { x: 50, y: 48, dx: Math.cos(a) * r, dy: Math.sin(a) * r * .6 - 140, fall: rand(160, 360) }; });
+      if (tone === "critical") for (const side of [-1, 1]) add(42, () => ({ x: side < 0 ? 3 : 97, y: 104, dx: -side * rand(120, 700), dy: -rand(380, 760), fall: rand(300, 560), late: rand(250, 700) }));
     } else if (tone === "mixed") {
-      add(16, () => { const a = rand(Math.PI, Math.PI * 2), r = rand(120, 300); return { x: 50, y: 62, dx: Math.cos(a) * r, dy: Math.sin(a) * r * .7, fall: rand(60, 160) }; });
+      add(18, () => { const a = rand(Math.PI, Math.PI * 2), r = rand(140, 340); return { x: 50, y: 50, dx: Math.cos(a) * r, dy: Math.sin(a) * r * .7, fall: rand(60, 160) }; });
     } else {
-      add(tone === "fumble" ? 30 : 18, () => ({ x: rand(8, 92), y: -4, dx: rand(-40, 40), dy: rand(200, 420), fall: rand(240, 420), late: rand(0, 380), slow: true }));
+      // 落ちてくる冷たい雨。
+      add(tone === "fumble" ? 46 : 26, () => ({ x: rand(2, 98), y: -6, dx: rand(-30, 10), dy: rand(420, 760), fall: 0, late: rand(0, 900), rain: true }));
     }
     for (const piece of pieces) {
-      const size = rand(8, 16), spin = rand(-720, 720);
-      const bit = el("i", { style: { left: piece.x + "%", top: piece.y + "%", width: size + "px", height: size * rand(.4, 1) + "px", background: colors[Math.floor(Math.random() * colors.length)] } });
+      const size = rand(9, 18), spin = rand(-900, 900);
+      const bit = el("i", { dataset: { kind: piece.rain ? "rain" : Math.random() < .25 ? "star" : "paper" },
+        style: { left: piece.x + "%", top: piece.y + "%", width: piece.rain ? "3px" : size + "px", height: piece.rain ? rand(28, 60) + "px" : size * rand(.45, 1) + "px", background: pick(colors) } });
       burst.append(bit);
-      animate(bit, [
-        { opacity: 0, transform: "translate(0, 0) rotate(0deg)", easing: EASE.out },
-        { opacity: 1, transform: `translate(${piece.dx * .8}px, ${piece.dy}px) rotate(${spin * .6}deg)`, offset: piece.slow ? .5 : .38, easing: "ease-in" },
-        { opacity: 0, transform: `translate(${piece.dx}px, ${piece.dy + piece.fall}px) rotate(${spin}deg)` },
-      ], { duration: rand(900, 1500), delay: piece.late || rand(0, 90) });
+      animate(bit, piece.rain ? [
+        { opacity: 0, translate: "0 0" }, { opacity: .7, offset: .2 }, { opacity: 0, translate: `${piece.dx}px ${piece.dy}px` },
+      ] : [
+        { opacity: 0, translate: "0 0", rotate: "0deg", easing: EASE.out },
+        { opacity: 1, translate: `${piece.dx * .8}px ${piece.dy}px`, rotate: spin * .6 + "deg", offset: .38, easing: "ease-in" },
+        { opacity: 0, translate: `${piece.dx}px ${piece.dy + piece.fall}px`, rotate: spin + "deg" },
+      ], { duration: piece.rain ? rand(600, 900) : rand(1000, 1700), delay: piece.late || rand(0, 90) });
     }
   }
-  at(endAt - 220, () => animate(node, [{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: "ease-in" }));
-  at(endAt, () => handle.skip());
+  const hold = special === "critical" ? 2300 : grade === "success" ? 1800 : special === "fumble" ? 2100 : 1500;
+  const endAt = verdictAt + hold;
+  after(endAt - 240, () => animate(node, [{ opacity: 1 }, { opacity: 0 }], { duration: 240, easing: "ease-in" }));
+  after(endAt, () => handle.skip());
   return handle;
 }

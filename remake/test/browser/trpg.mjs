@@ -613,7 +613,7 @@ try {
       assert.equal(first.chip, "＋" + pending.bonus);
       assert.deepEqual([first.grade, first.label, first.thrown, first.settle], ["mixed", "ひと手間かかる", null, false], "Seed 3 opens with 12 and 8");
       // 評価が出るまで待つと、劇場は自分で閉じて結果の卓になる。卓は同じ動き・音を繰り返さない。
-      await show.locator('.trpg-rs-total strong').filter({ hasText: String(pending.dice[0] + pending.dice[1] + pending.bonus) }).waitFor();
+      await show.locator('.trpg-rs-sum strong').filter({ hasText: String(pending.dice[0] + pending.dice[1] + pending.bonus) }).waitFor();
       await page.locator('[data-test="trpg-settle"]').waitFor();
       assert.equal(await show.count(), 0, "The show leaves by itself");
       assert.equal(await page.locator(".trpg-roll-stage").getAttribute("data-shown"), "true");
