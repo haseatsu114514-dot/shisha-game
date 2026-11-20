@@ -291,6 +291,15 @@ export const PLAY_REWARDS = [
   { id: "desert-master", game: "desert", master: true, label: "砂丘の乗り手", gift: { any: 1 } },
   { id: "trpg-master", game: "trpg", master: true, label: "物語の読み手", gift: { any: 1 } },
   { id: "tetsuko-master", game: "tetsuko", master: true, label: "てつこの友だち", gift: { any: 1 } },
+  // ミニゲームの三段階（#3779・core/play-tiers.js）: 上級を初めてクリアしたら白火1つ。各ゲーム一度だけ
+  { id: "axe-hard", game: "axe", tier: "hard", label: "斧投げ 上級クリア", gift: { any: 1 } },
+  { id: "camel-hard", game: "camel", tier: "hard", label: "ラクダレース 上級クリア", gift: { any: 1 } },
+  { id: "desert-hard", game: "desert", tier: "hard", label: "サンドボード 上級クリア", gift: { any: 1 } },
+  { id: "dj-hard", game: "dj", tier: "hard", label: "DJ 上級クリア", gift: { any: 1 } },
+  // てつこは段を持たない。来訪をまたいで溜まる好感度がハート5（flags._tetsuko_time.affection が満タン）に届いたら白火1つ（#3779）
+  { id: "tetsuko-heart", game: "tetsuko", affection: true, label: "てつこの好感度 ♥5", gift: { any: 1 } },
+  // TRPG は三段階にしない。サイが立ちはだかる最後の本（data/trpg_catalog.json の finale）を初めてクリアしたら白火1つ（#3779）
+  { id: "trpg-finale", game: "trpg", scenario: "mist-kingdom", label: "TRPG 最後の本をクリア", gift: { any: 1 } },
 ];
 /** くじのラストワン賞（中身はシークレット）。箱を引き切るたびに色つきの火種1つ（いちばん伸びの少ない盤の色）。
  * 第5章の限定台くじ（core/rules.js の KUJI_LIMITED_GRADES・KJ05）は付けない（#2455） */
