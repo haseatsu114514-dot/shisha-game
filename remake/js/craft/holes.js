@@ -6,7 +6,7 @@ import { el, sleep, clamp, rand } from "../core/util.js";
 import { createCraftClock } from "./clock.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, showStepDemo, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady, setBenchHoleAction, benchRoot } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady, setBenchHoleAction, benchRoot } from "./session.js";
 import { effectBadge, effectLine, effectVisible, senseBand, effectTier } from "./effect-visual.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 import { craftCondition } from "../core/condition.js";
@@ -116,8 +116,8 @@ export async function runHoles(cs) {
   }
   await waitBenchReady(cs, "holes");
   const tutorial = cs.mode === "tutorial";
+  // 穴あけのお手本動画は廃止（#3815）。押し加減は「穴を開ける」の中の目盛りと「?」の説明で伝える。
   const panel = stepPanel("holes", "アルミ穴あけ", "配置図を見てテンプレートを選ぶ。開始すると、光る目印の近くを針が動く", { brief: "穴の配置を選んでから、穴あけを始める" });
-  await showStepDemo(cs, "holes");
   const template = await chooseTemplate(panel, cs);
   // リニューアル（CRN02・05・08）: リングが埋まると自動で次へ・判定は穴のそば・刺した点の閃光・結果でアルミを残す。
   // 桜井版（CRN16）: リニューアル前のとおり「次のリングへ」「穴あけを終えて結果へ」のボタン・判定は右の札・小さな火の粉だけ。
@@ -171,7 +171,10 @@ export async function runHoles(cs) {
   // 一刺しの判定の出し先（桜井版は右の札）
   const judged = (text, kind, a, r) => renewal ? calloutAt(text, kind, a, r) : report(text, kind);
   const plan = el("div.hr-plan", { dataset: { test: "hole-plan" } });
-  const punchBtn = el("button.btn.primary.hr-punch", { dataset: { test: "hole-punch" } }, [el("span.btn-label", { text: "穴を開ける" })]);
+  // 桜井版（#3815）: 押している長さを「穴を開ける」の中の目盛りでも見せる。左の小さな穴（短く）から右の大きな穴（長く）へ伸びる。
+  // 針の --press をそのまま写すだけで、判定・採点は変えない。リニューアル（第1章大会の旧方式）は従来のまま。
+  const pressMeter = renewal ? null : el("span.hr-press-meter", { "aria-hidden": "true", dataset: { test: "hole-press-meter" } }, [el("i.hr-press-fill")]);
+  const punchBtn = el("button.btn.primary.hr-punch", { dataset: { test: "hole-punch" } }, [el("span.btn-label", { text: "穴を開ける" }), pressMeter]);
   const nextBtn = renewal ? null : el("button.btn.small", { text: "次のリングへ", dataset: { test: "hole-next" } });
   const doneBtn = renewal ? null : el("button.btn.small.ghost", { text: "穴あけを終えて結果へ", dataset: { test: "hole-done" } });
   const side = el("div.hr-side", [el("small.ht-current", { text: template.label }), ringLabel,
@@ -243,7 +246,12 @@ export async function runHoles(cs) {
     putClass(cursor, "pressing", !!press);
     const pressed = press ? clamp(held / pressLimit(slow), 0, 1).toFixed(3) : "0";
     if (cursor.style.getPropertyValue?.("--press") !== pressed) cursor.style.setProperty("--press", pressed);
-    putData(cursor, "depth", press ? pressDepth(held, slow) : "");
+    const depth = press ? pressDepth(held, slow) : "";
+    putData(cursor, "depth", depth);
+    if (pressMeter) {
+      if (punchBtn.style.getPropertyValue?.("--press") !== pressed) punchBtn.style.setProperty("--press", pressed);
+      putData(punchBtn, "depth", depth);
+    }
   };
   const drawMarkers = () => {
     markers.replaceChildren();

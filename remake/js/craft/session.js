@@ -413,17 +413,6 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   return b.panel;
 }
 
-/** 初回レッスンの工程だけ、操作開始前にお手本を一度見せる。 */
-export async function showStepDemo(cs, step) {
-  const b = bench;
-  if (cs.mode !== "tutorial" || craftTest.auto || !b || !demoFor(step, b.root.dataset.craftVersion) || b.cs !== cs || !b.root.isConnected) return;
-  const seenDemo = state.flags.seenDemo ||= {};
-  if (seenDemo[step]) return;
-  seenDemo[step] = true; // とばしても既読。再度見たいときは brief のリンクから開ける。
-  if (!cs.preview) save();
-  await openDemoSheet(b.root, step);
-}
-
 /** 同じ一台の実温度を、蒸らし以降の背景と煙の絵へ返す。 */
 export function setBenchTemperature(cs, temp) {
   if (bench?.cs === cs && !bench.root.classList.contains("done")) bench.thermal.update(temp);

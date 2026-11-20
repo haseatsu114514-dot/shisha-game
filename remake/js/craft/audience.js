@@ -101,10 +101,19 @@ export function buildAudience(cs) {
       fallbackName.hidden = true;
       image.hidden = false; image.classList.remove("audience-icon"); image.src = portrait.src;
       const crop = faceCrop(portrait);
-      const width = crop ? 80 / crop[2] : 380;
-      image.style.width = `${width}px`;
-      image.style.left = crop ? `${-crop[0] * width}px` : `calc(50% - ${portrait.ax * width}px)`;
-      image.style.top = crop ? `${-crop[1] * width}px` : `${6 - (1 - portrait.h - portrait.b) * width / portrait.aspect}px`;
+      if (crop) {
+        // 顔の枠を、実際の顔の座（一枚の舞台は56px、旧配置は82px）いっぱいに合わせる（#3815）。
+        // 80px決め打ちだと、小さい座では枠の左上だけが写り、顔が右下へずれて見えた。座は正方形なので、上も幅の比で置く。
+        const scale = 100 / crop[2];
+        image.style.width = `${scale}%`;
+        image.style.left = `${-crop[0] * scale}%`;
+        image.style.top = `${-crop[1] * scale}%`;
+      } else {
+        const width = 380;
+        image.style.width = `${width}px`;
+        image.style.left = `calc(50% - ${portrait.ax * width}px)`;
+        image.style.top = `${6 - (1 - portrait.h - portrait.b) * width / portrait.aspect}px`;
+      }
     } else {
       const fallback = faceIconUrl(id, state); image.hidden = !fallback;
       if (fallback) image.src = fallback;

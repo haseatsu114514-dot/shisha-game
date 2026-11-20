@@ -154,13 +154,27 @@ await suite("craft-version", async (check) => {
     assert.equal(await secondCountdown(page), "GO!", "同じ作業台の2回目は GO! だけ");
   }, { pageEntry: preview("step=holes&mode=rehearsal&craft=renewal"), pageReadySelector: t("hole-start") });
 
-  await check("sakurai-lesson-demo-is-the-old-recording", async (page) => {
-    const src = await page.locator(".bench-demo-sheet video").getAttribute("src");
-    assert.match(src, /demo-holes-classic\.mp4$/, "桜井版のお手本は「次のリングへ」を押す前の画面の映像");
-    await page.locator(".bench-demo-skip").click();
-    await page.locator(t("hole-start")).waitFor();
-  }, { pageEntry: preview("step=holes&mode=tutorial&craft=sakurai"), pageReadySelector: ".bench-demo-sheet",
-    ignoreFailedResource: (failure) => /\.mp4/.test(failure) });
+  // #3815: 穴あけのお手本動画は廃止。レッスンの穴あけはお手本を開かず、「?」にも穴あけの「お手本を見る」を出さない。
+  // 押し加減は桜井版の「穴を開ける」の目盛りで見せる。ほかの工程のお手本（リニューアルの吸い出し）は残す。
+  for (const craft of ["sakurai", "renewal"]) await check(`${craft}-lesson-holes-without-demo`, async (page) => {
+    assert.equal(await page.locator(".bench").getAttribute("data-craft-version"), craft);
+    await page.waitForTimeout(500); // 以前はこの間に、穴あけのお手本のシートが自動で開いた
+    assert.equal(await page.locator(".bench-demo-sheet").count(), 0, "穴あけのお手本を自動で開かない");
+    await page.locator(".bench-guide > summary").click();
+    await page.locator(t("bench-guide-close")).waitFor();
+    assert.equal(await page.locator(".bench-guide .bench-demo-link").count(), 0, "「?」に穴あけのお手本の入口を残さない");
+    await page.locator(t("bench-guide-close")).click();
+    await page.locator(t("hole-start")).click();
+    await page.locator(t("hole-punch")).waitFor();
+    assert.equal(await page.locator(`${t("hole-punch")} ${t("hole-press-meter")}`).count(), craft === "sakurai" ? 1 : 0,
+      "押し加減の目盛りは桜井版の「穴を開ける」だけ（第1章大会の旧方式は変えない）");
+    assert.equal(await page.locator(".bench-demo-sheet").count(), 0);
+    const demos = await page.evaluate(async () => {
+      const { demoFor } = await import("./js/craft/demo.js");
+      return { sakurai: !!demoFor("holes", "sakurai"), renewal: !!demoFor("holes", "renewal"), pull: demoFor("pull", "renewal")?.src };
+    });
+    assert.deepEqual(demos, { sakurai: false, renewal: false, pull: "./media/demo-pull.mp4" }, "吸い出しのお手本は残す");
+  }, { pageEntry: preview(`step=holes&mode=tutorial&craft=${craft}`), pageReadySelector: t("hole-start") });
 
   await check("sakurai-steam-and-pull-before-renewal", async (page) => {
     await autoGood(page);
