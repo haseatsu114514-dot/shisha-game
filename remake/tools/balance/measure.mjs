@@ -1,6 +1,8 @@
 /** SPEC 8.2: offline Chapter 1 tournament sampler. Run with `node remake/tools/balance/measure.mjs --board --n 200 --seed 1`.
  * `--votes sakurai` scores the same plays with the trial Sakurai-style votes (SKR04); `--aim attack` makes the player aim
  * the serve and both adjustments at the attack band (same input error), so overshooting costs points as in the game.
+ * `--chapter 2` plays the same operation model in the Chapter 2 prefectural final (supplied strawberry 8g + mint 4g)
+ * and casts the real Chapter 2 votes after the same steps as ch2-tournament.js (VOTE_BOUNDARIES / partialQuality).
  * Uses the game's mix, heat, steam, temperature and final scoring. The Gaussian input
  * model is an explicit approximation of human operation, not a frame simulation.
  */
@@ -23,6 +25,9 @@ assert(['classic', 'sakurai'].includes(voteStyle), '--votes must be classic or s
 assert(['center', 'attack'].includes(aim), '--aim must be center or attack');
 assert(!(aim === 'attack' && voteStyle !== 'sakurai'), '--aim attack needs --votes sakurai');
 const seedStart = option('--seed', 1);
+const chapter = option('--chapter', 1);
+assert([1, 2].includes(chapter), '--chapter must be 1 or 2');
+assert(!(chapter !== 1 && voteStyle !== 'classic'), '--votes sakurai is Chapter 1 only');
 assert(Number.isSafeInteger(samples) && samples > 0, '--n must be a positive integer');
 assert(Number.isSafeInteger(seedStart) && seedStart > 0, '--seed must be a positive integer');
 assert(!(boardMode && mode === 'star'), '--board uses production ten-step rules');
@@ -65,6 +70,7 @@ const board = await import('../../js/core/growth-board.js');
 const steam = await import('../../js/craft/steam.js');
 const ch1Votes = await import('../../js/craft/ch1-votes.js');
 const attackBand = await import('../../js/craft/attack-band.js');
+const ch2Votes = await import('../../js/chapters/ch2-tournament-state.js');
 // Central Chapter 1 model before tournament/clear/breadth rewards: about Lv.9, 16 fire.
 // These are deterministic examples of legal allocations, not an optimized build search.
 const boardBuilds = {};
@@ -106,15 +112,18 @@ const normal=rng=>Math.sqrt(-2*Math.log(Math.max(rng(),Number.MIN_VALUE)))*Math.
 export const hasSkill = (scenario, id) => scenario.skills?.includes(id) === true; // future skill injection seam
 function setup(profile, build = null) {
   const playStats=Object.fromEntries(keys.map((k,i)=>[k,profile[i]*10]));
-  const state=stateModule.setState({cycle:1,chapter:1,day:14,stats:{...playStats},flags:{_last_night:'sleep_early'},owned:['silicone_bowl','lotos_hagal','flat_charcoal'],goods:[],stamina:100,flavorMastery:{},rehearsal:null});
+  const state=stateModule.setState({cycle:1,chapter,day:14,stats:{...playStats},flags:{_last_night:'sleep_early'},owned:['silicone_bowl','lotos_hagal','flat_charcoal'],goods:[],stamina:100,flavorMastery:{},rehearsal:null});
   if(build) state.growth=structuredClone(build);
-  mastery.gainFlavorExperience(state,{lemon:1},12,DB.flavorById);
-  mastery.gainFlavorExperience(state,{lemon:10,mint:2},2,DB.flavorById);
-  assert.equal(mastery.masteryLevel(state,'lemon',DB.flavorById),2);
+  // 第2章も第1章と同じ練習量（課題の葉 Lv.2・ミント Lv.1）とし、章の差は相手と課題の葉だけにする。
+  const task=chapter===2?'afsahr_strawberry':'lemon';
+  const mix=chapter===2?{afsahr_strawberry:8,mint:4}:{lemon:10,mint:2};
+  mastery.gainFlavorExperience(state,{[task]:1},12,DB.flavorById);
+  mastery.gainFlavorExperience(state,mix,2,DB.flavorById);
+  assert.equal(mastery.masteryLevel(state,task,DB.flavorById),2);
   assert.equal(mastery.masteryLevel(state,'mint',DB.flavorById),1);
-  return {mode:'tournament',chapter:1,condition:condition.STAMINA_CONDITIONS.green,
+  return {mode:'tournament',chapter,condition:condition.STAMINA_CONDITIONS.green,
     equip:{bowl:'silicone_bowl',hms:'lotos_hagal',charcoal:'flat_charcoal'},
-    mix:{lemon:10,mint:2},pack:'normal',place:'triangle',foilOptIn:false,
+    mix:{...mix},pack:'normal',place:'triangle',foilOptIn:false,
     steamSeconds:360,environment:{rainy:false,ambientC:23,humidityPercent:50},
     steamVariation:{offset:0,transfer:1},masteryAtStart:{...state.flavorMastery},
     careHistory:[],strain:0,retryAssist:false};
@@ -168,7 +177,26 @@ export function runOne(id, operation, seed, config = plan, skillLookup = hasSkil
     return result;
   };
   const attempt={};
-  if(voteStyle==='sakurai') {
+  if(chapter===2) {
+    // ch2-tournament.js と同じ: 蒸らしの後・提供の後・調整1の後・調整2の後に、それまでの工程の平均（最後は総合）で投票する。
+    const p={votes:Object.fromEntries(ch2Votes.JUDGES.map(j=>[j,Object.fromEntries(ch2Votes.CONTESTANTS.map(c=>[c,0]))])),voted:0,baseVotes:Object.fromEntries(ch2Votes.CONTESTANTS.map(c=>[c,1]))};
+    const partial=round=>{
+      if(round===3) return score.finalize(cs).total;
+      const parts=[cs.holes?.score,cs.heat?.score].filter(Number.isFinite);
+      if(round>=1) parts.push(score.computeShisha(cs).craftQuality);
+      if(round>=2) parts.push(cs.careHistory[0].score);
+      return parts.reduce((sum,value)=>sum+value,0)/(parts.length||1);
+    };
+    assert.equal(ch2Votes.castVotes(p,0,partial(0)),true);
+    cs.pull=finishThermal(0);
+    assert.equal(ch2Votes.castVotes(p,1,partial(1)),true);
+    cs.careHistory=[finishThermal(1)];
+    assert.equal(ch2Votes.castVotes(p,2,partial(2)),true);
+    cs.careHistory.push(finishThermal(2));
+    assert.equal(ch2Votes.castVotes(p,3,partial(3)),true);
+    const rows=ch2Votes.standings(p);
+    attempt.voteAttempt={result:{rank:rows.find(row=>row.id==='hajime').rank,rows}};
+  } else if(voteStyle==='sakurai') {
     // 桜井式は各回をその回の工程で決めるので、ch1.js と同じ順で投票する（提供の回は調整前の完成品）。
     ch1Votes.beginCh1Votes(attempt,{style:'sakurai'});
     assert.equal(ch1Votes.castCh1Votes(attempt,0,cs),true);
@@ -227,7 +255,7 @@ if (process.argv.includes('--calibrate-poor')) {
       loserTotalMax:losers.length?Math.max(...losers.map(x=>x.total)):null,
       sha256:sha(rows),repeatSha256:sha(again)});
   }
-  console.log(JSON.stringify({tierMode:mode,seedStart,samples,ranking:voteStyle==='sakurai'?`ch1-votes-sakurai-v3/aim-${aim}`:'ch1-votes-v2',model:boardMode
+  console.log(JSON.stringify({tierMode:mode,seedStart,samples,chapter,ranking:chapter===2?'ch2-votes':voteStyle==='sakurai'?`ch1-votes-sakurai-v3/aim-${aim}`:'ch1-votes-v2',model:boardMode
     ? 'gaussian-input-approximation; legal Lv9/16-fire examples; excludes manual refresh, replacement coal, fatigue and skill input decisions; not integrated acceptance'
     : 'gaussian-input-approximation; legacy-stats-only; no growth-board acceptance',
     ...(boardMode?{builds:Object.fromEntries(Object.entries(boardBuilds).map(([id,g])=>[id,{nodes:g.nodes,remaining:growth.hidaneTotal(g)}]))}:{}),
