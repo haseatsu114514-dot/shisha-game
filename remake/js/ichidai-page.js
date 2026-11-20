@@ -8,6 +8,7 @@
 import { el } from "./core/util.js";
 import { initStageFit } from "./core/stage-fit.js";
 import { initSideArea } from "./core/side-area.js";
+import { calmFlash } from "./core/transition-kit.js";
 initStageFit(document.getElementById("stage"));
 initSideArea({ stage: document.getElementById("stage"), standalone: true }); // 左右の余白の煙と縁（YHK）
 import { runIchidai, ICHIDAI_TITLE } from "./minigames/ichidai.js";
@@ -31,7 +32,7 @@ function menu(outcome = null) {
     try {
       const result = await runIchidai({ host, config, tutorial, pilot: params.get("pilot"), speed: Number(params.get("speed")) || 1,
         seed: params.has("seed") ? Number(params.get("seed")) : null, skin, opponentKit: params.get("foe"), opponent: { id: params.get("face") || "sumi", name: params.get("name") || "スミさん" },
-        opponents: params.has("face") ? null : RIVALS, assist: params.get("assist") !== "0" });
+        opponents: params.has("face") ? null : RIVALS, assist: params.get("assist") !== "0", reducedMotion: calmFlash() });
       menu(result);
     } catch (error) { console.error(error); menu(null); }
   };
@@ -54,7 +55,10 @@ if (params.has("versus")) {
   const SAMPLE = [["hajime", "はじめ"], ["sumi", "スミさん"], ["naru", "なる"], ["adam", "アダム"]], raw = params.get("versus");
   const players = /^[234]$/.test(raw) ? SAMPLE.slice(0, Number(raw)).map(([id, name]) => ({ id, name }))
     : raw.split(",").filter((id) => /^[a-z0-9_]{1,24}$/.test(id)).slice(0, 4).map((id) => ({ id, name: SAMPLE.find((x) => x[0] === id)?.[1] || id }));
-  const show = async () => { const { playVersus } = await import("./minigames/ichidai-versus.js"); await playVersus({ host, players, speed: Number(params.get("speed")) || 1 }); };
+  const show = async () => {
+    const { playVersus } = await import("./minigames/ichidai-versus.js");
+    await playVersus({ host, players, speed: Number(params.get("speed")) || 1, reducedMotion: calmFlash() });
+  };
   if (players.length >= 2) {
     host.querySelector(".ichi-menu")?.append(el("button.btn", { type: "button", text: `VS演出を見る（${players.length}人）`, dataset: { test: "ichi-menu-versus" }, onclick: show }));
   }
