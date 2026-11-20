@@ -36,9 +36,9 @@ const sumiRig = DB.equipById[rig.SUMI_RIG], proRig = DB.equipById[rig.PRO_RIG];
   const oldManifest = DB.manifest;
   DB.manifest = read("../data/manifest.json");
   const s = newGame(); s.owned.push(rig.SUMI_RIG);
-  // 昼・夜の自室背景は台を描き込み済み（#3418）のため重ね表示しない。重ね表示の残る曇りの昼で受取との一致を確かめる。
-  assert(!sceneArtUrls("img/backgrounds/bg_home_day.webp").includes(img(rig.SUMI_RIG_IMAGE)), "昼は背景に描き込み済みで台を重ねない");
-  assert(sceneArtUrls("img/backgrounds/bg_home_overcast_day.webp").includes(img(rig.SUMI_RIG_IMAGE)), "受取と自室で同じ採用済み台を使う");
+  for (const file of ["bg_home_day", "bg_home_night", "bg_home_overcast_day"]) {
+    assert(sceneArtUrls(`img/backgrounds/${file}.webp`).includes(img(rig.SUMI_RIG_IMAGE)), `${file}: 受取と自室で同じ採用済み台を使う`);
+  }
   assert(DB.manifest.webp.includes(rig.SUMI_RIG_IMAGE), "既存の配信用WebPを使う");
   // CI の quick ジョブは画像を取得しない（sparse checkout）。画像がある環境でだけ中身を確かめる。
   const originalUrl = new URL(`../../assets/${rig.SUMI_RIG_IMAGE}`, import.meta.url);
